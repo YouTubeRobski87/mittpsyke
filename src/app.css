@@ -2,6 +2,9 @@
 
 :root {
 	--container-max: 980px;
+	--font-heading: 'Albert Sans', 'Avenir Next', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+	--font-body: 'Work Sans', 'Albert Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+	/* --font-body: 'Albert Sans', 'Avenir Next', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; */
 	--foreground: 240 10% 4%;
 	--muted-foreground: 240 4% 46%;
 	--border: 240 6% 90%;
@@ -23,12 +26,31 @@ html,
 body {
 	margin: 0;
 	padding: 0;
-	@apply font-sans;
 }
 
 body {
+	font-family: var(--font-body);
 	color: hsl(var(--foreground));
 	background: #ffffff;
+}
+
+p,
+li {
+	font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+nav,
+button,
+.btn,
+input[type='button'],
+input[type='submit'] {
+	font-family: var(--font-heading);
 }
 
 .dark body {
