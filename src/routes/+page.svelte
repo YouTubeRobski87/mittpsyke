@@ -9,15 +9,11 @@
 
 <section class="container py-16 text-center">
 	<div class="hero">
-		<img
-			src="/assets/mittpsyke-hero.png"
-			alt="Illustration av hjärna och hjärta – balans mellan tanke och känsla"
-		/>
+		
 		<img
 			src="/assets/MittPsykeLogo1.png"
-			alt="Illustration av hjärna och hjärta – balans mellan tanke och känsla"
-			class="mx-auto mb-6 opacity-80"
-			style="max-width: 240px"
+			alt="MittPsyke logotyp"
+			class="hero-logo"
 		/>
 		<h1 class="text-4xl font-bold tracking-tight mb-4">
 			Välkommen till MittPsyke
@@ -70,6 +66,15 @@
 \tmargin: 0 auto 1.5rem;
 \tborder-radius: 1.25rem;
 \topacity: 0.95;
+}
+
+.hero .hero-logo {
+\tdisplay: block;
+\tmax-width: 240px;
+\twidth: 100%;
+\tmargin: 0 auto 1.5rem;
+\tborder-radius: 0;
+\topacity: 0.8;
 }
 </style>
 
