@@ -23,6 +23,23 @@
 		</p>
 	</div>
 
+	<section class="max-w-2xl mx-auto mb-10 text-left">
+		<p class="opacity-80 leading-relaxed mb-4">
+			MittPsyke är byggt med respekt för integritet, frivillighet och mänsklig sårbarhet.
+			Målet är inte att ge snabba lösningar, utan att:
+		</p>
+		<ul class="list-disc pl-5 space-y-2 opacity-80 leading-relaxed mb-5">
+			<li>minska ensamhet</li>
+			<li>skapa förståelse</li>
+			<li>ge stöd i stunden</li>
+			<li>och vid behov hjälpa användaren vidare till professionella resurser</li>
+		</ul>
+		<p class="opacity-85 leading-relaxed">
+			<span class="font-medium">Kort sagt:</span><br />
+			MittPsyke finns där när det känns tungt – på dina villkor, i din takt
+		</p>
+	</section>
+
 	<h2 class="text-lg opacity-85 mb-5">Vad vill du fokusera på?</h2>
 
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
