@@ -34,10 +34,12 @@
 			<li>ge stöd i stunden</li>
 			<li>och vid behov hjälpa användaren vidare till professionella resurser</li>
 		</ul>
-		<p class="opacity-85 leading-relaxed">
-			<span class="font-medium">Kort sagt:</span><br />
-			MittPsyke finns där när det känns tungt – på dina villkor, i din takt
-		</p>
+		<div class="mt-6 pt-4 border-t border-black/10 dark:border-white/10">
+			<p class="opacity-85 leading-relaxed">
+				<span class="font-medium">Kort sagt…</span><br />
+				MittPsyke finns där när det känns tungt – på dina villkor, i din takt
+			</p>
+		</div>
 	</section>
 
 	<h2 class="text-lg opacity-85 mb-5">Vad vill du fokusera på?</h2>
