@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import PortalCard from '$lib/components/PortalCard.svelte';
 	import { portals } from '$lib/data/portals';
 </script>
@@ -8,13 +8,18 @@
 </svelte:head>
 
 <section class="container py-16 text-center">
-	<h1 class="text-4xl font-bold tracking-tight mb-4">
-		Välkommen till MittPsyke
-	</h1>
-	<p class="max-w-xl mx-auto opacity-75 leading-relaxed mb-10">
-		MittPsyke möter dig utan dömande, utan krav och utan brådska.
-		Här finns inget rätt eller fel sätt att känna, tänka eller uttrycka sig.
-	</p>
+	<div class="hero">
+		<img
+			src="/assets/mittpsyke-hero.png"
+			alt="Illustration av hjärna och hjärta – balans mellan tanke och känsla"
+		/>
+		<h1 class="text-4xl font-bold tracking-tight mb-4">
+			Välkommen till MittPsyke
+		</h1>
+		<p class="max-w-xl mx-auto opacity-75 leading-relaxed mb-10">
+			Ett tryggt rum för tanke, känsla och återhämtning.
+		</p>
+	</div>
 
 	<h2 class="text-lg opacity-85 mb-5">Vad vill du fokusera på?</h2>
 
@@ -46,3 +51,19 @@
 		</ul>
 	</div>
 </section>
+
+<style>
+.hero {
+\ttext-align: center;
+\tmargin-bottom: 3rem;
+}
+
+.hero img {
+\tmax-width: 420px;
+\twidth: 100%;
+\tmargin: 0 auto 1.5rem;
+\tborder-radius: 1.25rem;
+\topacity: 0.95;
+}
+</style>
+
