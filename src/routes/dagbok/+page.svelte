@@ -114,22 +114,33 @@
 
 	async function saveEntry() {
 		const content = note.trim();
-		if (!content || saving || !userId) return;
+		if (!content || saving) return;
 
 		saving = true;
 		error = '';
 
+		const {
+			data: { user },
+			error: userError
+		} = await supabase.auth.getUser();
+
+		if (userError || !user) {
+			console.error('User not logged in', userError);
+			error = 'Du behöver vara inloggad för att spara anteckningar.';
+			saving = false;
+			return;
+		}
+
 		const parsedTags = parseTags(tagsInput);
-		const { error: insertError } = await supabase.from('journal_entries').insert([
-			{
-				user_id: userId,
-				content,
-				tags: parsedTags.length > 0 ? parsedTags : null,
-				mood: selectedMood || null
-			}
-		]);
+		const { error: insertError } = await supabase.from('journal_entries').insert({
+			user_id: user.id,
+			content,
+			tags: parsedTags.length > 0 ? parsedTags : null,
+			mood: selectedMood || null
+		});
 
 		if (insertError) {
+			console.error('Supabase insert error:', insertError);
 			error = 'Kunde inte spara anteckningen just nu.';
 			saving = false;
 			return;
@@ -138,7 +149,8 @@
 		note = '';
 		tagsInput = '';
 		selectedMood = '';
-		await loadEntries(userId);
+		userId = user.id;
+		await loadEntries(user.id);
 		saving = false;
 	}
 
