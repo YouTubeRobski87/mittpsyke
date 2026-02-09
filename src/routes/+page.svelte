@@ -23,9 +23,10 @@
 		</p>
 		<a
 			href="/om-mittpsyke"
-			class="inline-block text-sm underline opacity-70 hover:opacity-100 transition-opacity"
+			class="inline-flex items-center justify-center px-5 py-2.5 rounded-full border border-black/12 dark:border-white/12
+				bg-white/55 dark:bg-white/5 hover:border-black/22 dark:hover:border-white/22 transition-colors text-sm opacity-85"
 		>
-			Läs mer om MittPsyke
+			Klicka här för att läsa mer om MittPsyke
 		</a>
 	</div>
 
