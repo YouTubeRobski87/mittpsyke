@@ -75,6 +75,17 @@
 \tmargin: 0 auto 1.5rem;
 \tborder-radius: 0;
 \topacity: 0.8;
+\tanimation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+\tfrom {
+\t\topacity: 0;
+\t\ttransform: translateY(6px);
+\t}
+\tto {
+\t\topacity: 0.8;
+\t\ttransform: translateY(0);
+\t}
 }
 </style>
-
