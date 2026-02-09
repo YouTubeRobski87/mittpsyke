@@ -28,12 +28,7 @@ body {
 	padding: 0;
 }
 
-body {
-	font-family: var(--font-body);
-	color: hsl(var(--foreground));
-	background: #ffffff;
-}
-
+body,
 p,
 li {
 	font-family: var(--font-body);
@@ -46,11 +41,13 @@ h4,
 h5,
 h6,
 nav,
-button,
-.btn,
-input[type='button'],
-input[type='submit'] {
+button {
 	font-family: var(--font-heading);
+}
+
+body {
+	color: hsl(var(--foreground));
+	background: #ffffff;
 }
 
 .dark body {
