@@ -1,6 +1,7 @@
 ﻿<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
+	import { tick } from 'svelte';
 	import type { ChatMessage } from '$lib/types';
 
 	let { category }: { category: string } = $props();
@@ -24,21 +25,31 @@
 		messages.push({ role: 'user', content: text });
 		input = '';
 		sending = true;
+		await tick();
 		scrollToBottom();
 
 		try {
 			const res = await fetch('/api/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ message: text, category: category.toUpperCase() })
+				body: JSON.stringify({ message: text, category })
 			});
 
-			const data = await res.json();
+			if (!res.ok) {
+				throw new Error(`API error: ${res.status}`);
+			}
+
+			const data: { reply?: string } = await res.json();
 			messages.push({ role: 'assistant', content: data.reply ?? 'Något gick fel.' });
+			await tick();
+			scrollToBottom();
 		} catch {
-			messages.push({ role: 'assistant', content: 'Kunde inte nå AI just nu. Försök igen.' });
+			messages.push({ role: 'assistant', content: 'Något gick fel.' });
+			await tick();
+			scrollToBottom();
 		} finally {
 			sending = false;
+			await tick();
 			scrollToBottom();
 		}
 	}
