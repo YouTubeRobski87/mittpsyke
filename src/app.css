@@ -23,10 +23,10 @@ html,
 body {
 	margin: 0;
 	padding: 0;
+	@apply font-sans;
 }
 
 body {
-	font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 	color: hsl(var(--foreground));
 	background: #ffffff;
 }
