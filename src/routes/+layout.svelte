@@ -61,7 +61,7 @@
 		href="https://stodlinjer.se"
 		target="_blank"
 		rel="noopener noreferrer"
-		class="text-sm opacity-70 hover:opacity-100 transition-opacity"
+		class="text-sm font-medium text-teal-700/90 dark:text-teal-300/90 opacity-90 hover:opacity-100 transition-opacity"
 	>
 		Akut hjälp (Stödlinjer)
 	</a>

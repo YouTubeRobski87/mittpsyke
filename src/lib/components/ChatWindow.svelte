@@ -113,6 +113,17 @@
 				Skicka
 			</button>
 		</div>
+		<p class="mt-2 text-xs opacity-60 text-center">
+			Behöver du akut stöd?
+			<a
+				href="https://stodlinjer.se"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="underline hover:opacity-100 transition-opacity"
+			>
+				Hitta stödlinjer här
+			</a>
+		</p>
 	</div>
 </div>
 
