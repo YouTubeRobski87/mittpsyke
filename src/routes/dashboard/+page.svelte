@@ -27,6 +27,11 @@
 	<div class="container py-16 text-center opacity-60">Laddar...</div>
 {:else if user}
 	<section class="container py-12 text-center">
+		<img
+			src="/assets/MittPsykeLogo1.png"
+			alt="MittPsyke logotyp"
+			class="portal-logo"
+		/>
 		<h1 class="text-3xl font-bold mb-2">
 			Välkommen{user.email ? `, ${user.email}` : ''}
 		</h1>
@@ -66,3 +71,25 @@
 		</div>
 	</section>
 {/if}
+
+<style>
+.portal-logo {
+	display: block;
+	max-width: 160px;
+	width: 100%;
+	margin: 0 auto 1.25rem;
+	opacity: 0.8;
+	animation: fadeIn 1.1s ease-out;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 0.8;
+		transform: translateY(0);
+	}
+}
+</style>
