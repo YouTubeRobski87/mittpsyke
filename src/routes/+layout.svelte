@@ -52,4 +52,17 @@
 
 <footer class="border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
 	© {new Date().getFullYear()} MittPsyke. Alla rättigheter förbehållna.
+	<span class="mx-2">&middot;</span>
+	<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+		Om MittPsyke
+	</a>
+	<span class="mx-2">&middot;</span>
+	<a
+		href="https://stodlinjer.se"
+		target="_blank"
+		rel="noopener noreferrer"
+		class="text-sm opacity-70 hover:opacity-100 transition-opacity"
+	>
+		Akut hjälp (Stödlinjer)
+	</a>
 </footer>
