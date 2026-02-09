@@ -32,6 +32,18 @@
 	<a href="/" class="flex items-center gap-2.5 font-semibold">
 		💙 <span>MittPsyke</span>
 	</a>
+	<a href="/om-mittpsyke" class="text-sm opacity-80 hover:opacity-100 transition-opacity">
+		Om MittPsyke
+	</a>
+	<a
+		href="https://stodlinjer.se"
+		target="_blank"
+		rel="noopener noreferrer"
+		class="text-sm opacity-80 hover:opacity-100 transition-opacity"
+	>
+		Akut hjälp (Stödlinjer)
+	</a>
+	</div>
 
 	<nav class="flex items-center gap-4">
 		{#if user}
