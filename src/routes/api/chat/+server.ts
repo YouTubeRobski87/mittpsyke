@@ -1,7 +1,8 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import OpenAI from 'openai';
 import type { RequestHandler } from './$types';
+import { randomUUID } from 'crypto';
 
 const systemByCategory: Record<string, string> = {
 	A: 'Du är MittPsyke – ett lugnt, empatiskt svenskt stöd för ångest. Svara i samtalston.',
@@ -10,10 +11,13 @@ const systemByCategory: Record<string, string> = {
 };
 
 export const POST: RequestHandler = async ({ request }) => {
-	const { message, category = 'A' } = await request.json();
+	const requestId = randomUUID();
+	const body = await request.json();
+	const message = body.message;
+	const category = (body.category || 'A').toUpperCase();
 
 	if (!message) {
-		return json({ error: 'No message provided' }, { status: 400 });
+		return json({ error: 'No message provided', requestId }, { status: 400 });
 	}
 
 	const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY });
@@ -27,8 +31,14 @@ export const POST: RequestHandler = async ({ request }) => {
 			]
 		});
 
-		return json({ reply: completion.choices[0].message.content });
-	} catch {
-		return json({ error: 'AI error' }, { status: 500 });
+		const reply =
+			completion.choices?.[0]?.message?.content ??
+			'Jag är här. Vill du berätta lite mer?';
+
+		return json({ reply, requestId });
+	} catch (err) {
+		console.error('OpenAI error in /api/chat', { requestId, err });
+		return json({ error: 'AI error', requestId }, { status: 500 });
 	}
 };
+
