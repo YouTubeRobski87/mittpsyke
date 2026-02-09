@@ -1,18 +1,29 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
 
 	type JournalEntry = {
 		content: string;
 		created_at: string | null;
+		tags: string[];
+		mood: string | null;
 	};
+
+	const moods = ['Lugn', 'Orolig', 'Nedstämd', 'Hoppfull', 'Trött', 'Tacksam'];
 
 	let loading = $state(true);
 	let saving = $state(false);
+	let exportingPdf = $state(false);
 	let note = $state('');
+	let tagsInput = $state('');
+	let selectedMood = $state('');
 	let userId = $state('');
 	let entries = $state<JournalEntry[]>([]);
 	let error = $state('');
+	let reminderOptIn = $state(false);
+	let reminderSaving = $state(false);
+	let reminderError = $state('');
+	let reminderNextAt = $state<string | null>(null);
 
 	$effect(() => {
 		async function init() {
@@ -25,6 +36,15 @@
 			}
 
 			userId = session.user.id;
+
+			const metadata = (session.user.user_metadata ?? {}) as Record<string, unknown>;
+			reminderOptIn = Boolean(metadata.journal_reminder_opt_in);
+			reminderNextAt =
+				typeof metadata.journal_reminder_next_at === 'string'
+					? metadata.journal_reminder_next_at
+					: null;
+
+			applyPrefillFromUrl();
 			await loadEntries(userId);
 			loading = false;
 		}
@@ -32,10 +52,50 @@
 		init();
 	});
 
+	function applyPrefillFromUrl() {
+		if (typeof window === 'undefined') return;
+
+		const url = new URL(window.location.href);
+		const prefill = url.searchParams.get('prefill');
+		if (!prefill) return;
+
+		note = prefill;
+		url.searchParams.delete('prefill');
+		window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+	}
+
+	function parseTags(input: string) {
+		return Array.from(
+			new Set(
+				input
+					.split(',')
+					.map((tag) => tag.trim())
+					.filter(Boolean)
+			)
+		);
+	}
+
+	function normalizeTags(value: unknown) {
+		if (Array.isArray(value)) {
+			return value
+				.map((item) => (typeof item === 'string' ? item.trim() : ''))
+				.filter(Boolean);
+		}
+
+		if (typeof value === 'string') {
+			return value
+				.split(',')
+				.map((item) => item.trim())
+				.filter(Boolean);
+		}
+
+		return [];
+	}
+
 	async function loadEntries(uid: string) {
 		const { data, error: loadError } = await supabase
 			.from('journal_entries')
-			.select('content, created_at')
+			.select('content, created_at, tags, mood')
 			.eq('user_id', uid)
 			.order('created_at', { ascending: false });
 
@@ -44,7 +104,12 @@
 			return;
 		}
 
-		entries = data ?? [];
+		entries = (data ?? []).map((entry) => ({
+			content: typeof entry.content === 'string' ? entry.content : '',
+			created_at: typeof entry.created_at === 'string' ? entry.created_at : null,
+			tags: normalizeTags(entry.tags),
+			mood: typeof entry.mood === 'string' ? entry.mood : null
+		}));
 	}
 
 	async function saveEntry() {
@@ -54,10 +119,13 @@
 		saving = true;
 		error = '';
 
+		const parsedTags = parseTags(tagsInput);
 		const { error: insertError } = await supabase.from('journal_entries').insert([
 			{
 				user_id: userId,
-				content
+				content,
+				tags: parsedTags.length > 0 ? parsedTags : null,
+				mood: selectedMood || null
 			}
 		]);
 
@@ -68,8 +136,122 @@
 		}
 
 		note = '';
+		tagsInput = '';
+		selectedMood = '';
 		await loadEntries(userId);
 		saving = false;
+	}
+
+	function getNextReminderAtIso() {
+		const next = new Date();
+		next.setDate(next.getDate() + 1);
+		next.setHours(18, 0, 0, 0);
+		return next.toISOString();
+	}
+
+	async function updateReminderPreference() {
+		if (!userId || reminderSaving) return;
+
+		const previousOptIn = reminderOptIn;
+		const nextReminderAt = reminderOptIn ? getNextReminderAtIso() : null;
+
+		reminderSaving = true;
+		reminderError = '';
+
+		const { error: updateError } = await supabase.auth.updateUser({
+			data: {
+				journal_reminder_opt_in: reminderOptIn,
+				journal_reminder_next_at: nextReminderAt,
+				journal_reminder_channel: reminderOptIn ? 'email' : null
+			}
+		});
+
+		if (updateError) {
+			reminderError = 'Kunde inte uppdatera påminnelsevalet just nu.';
+			reminderOptIn = !previousOptIn;
+			reminderSaving = false;
+			return;
+		}
+
+		reminderNextAt = nextReminderAt;
+		reminderSaving = false;
+	}
+
+	async function exportAsPdf() {
+		if (exportingPdf || entries.length === 0) return;
+
+		exportingPdf = true;
+		error = '';
+
+		try {
+			const { jsPDF } = await import('jspdf');
+			const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+			const marginX = 44;
+			const contentWidth = doc.internal.pageSize.getWidth() - marginX * 2;
+			const pageBottom = doc.internal.pageSize.getHeight() - 44;
+			let y = 52;
+
+			const ensureSpace = (needed: number) => {
+				if (y + needed <= pageBottom) return;
+				doc.addPage();
+				y = 52;
+			};
+
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(16);
+			doc.text('MittPsyke - Dagbok', marginX, y);
+			y += 22;
+
+			doc.setFont('helvetica', 'normal');
+			doc.setFontSize(10);
+			doc.text(`Exporterad: ${new Date().toLocaleString('sv-SE')}`, marginX, y);
+			y += 24;
+
+			for (const entry of entries) {
+				const dateText = formatDateTime(entry.created_at) || 'Utan datum';
+				const moodText = entry.mood ? `Känsla: ${entry.mood}` : '';
+				const tagsText = entry.tags.length > 0 ? `Taggar: ${entry.tags.join(', ')}` : '';
+				const contentLines = doc.splitTextToSize(entry.content || '', contentWidth);
+
+				let estimatedHeight = 34 + contentLines.length * 14;
+				if (moodText) estimatedHeight += 14;
+				if (tagsText) estimatedHeight += 14;
+
+				ensureSpace(estimatedHeight);
+
+				doc.setFont('helvetica', 'bold');
+				doc.setFontSize(11);
+				doc.text(dateText, marginX, y);
+				y += 16;
+
+				doc.setFont('helvetica', 'normal');
+				doc.setFontSize(10);
+				if (moodText) {
+					doc.text(moodText, marginX, y);
+					y += 14;
+				}
+
+				if (tagsText) {
+					doc.text(tagsText, marginX, y);
+					y += 14;
+				}
+
+				doc.setFontSize(11);
+				doc.text(contentLines, marginX, y);
+				y += contentLines.length * 14 + 10;
+
+				doc.setDrawColor(220);
+				doc.line(marginX, y, marginX + contentWidth, y);
+				y += 14;
+			}
+
+			doc.save('mittpsyke-dagbok.pdf');
+		} catch {
+			error = 'Kunde inte exportera PDF just nu.';
+		} finally {
+			exportingPdf = false;
+		}
 	}
 
 	function formatDateTime(value: string | null) {
@@ -82,14 +264,25 @@
 </script>
 
 <svelte:head>
-	<title>Dagbok – MittPsyke</title>
+	<title>Dagbok - MittPsyke</title>
 </svelte:head>
 
 {#if loading}
 	<div class="container py-16 text-center opacity-60">Laddar...</div>
 {:else}
 	<section class="container max-w-2xl py-12">
-		<h1 class="text-3xl font-bold tracking-tight mb-3">Dagbok</h1>
+		<div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+			<h1 class="text-3xl font-bold tracking-tight">Dagbok</h1>
+			<button
+				type="button"
+				onclick={exportAsPdf}
+				disabled={exportingPdf || entries.length === 0}
+				class="px-4 py-2 rounded-xl border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
+			>
+				{exportingPdf ? 'Exporterar...' : 'Exportera som PDF'}
+			</button>
+		</div>
+
 		<p class="opacity-75 leading-relaxed mb-6">Detta är din privata plats att skriva fritt.</p>
 
 		<div class="rounded-2xl border border-black/10 dark:border-white/10 bg-white/45 dark:bg-white/5 p-4 mb-7">
@@ -99,6 +292,34 @@
 				placeholder="Skriv din anteckning här..."
 				class="w-full resize-y rounded-xl border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-4 py-3 text-sm leading-relaxed outline-none focus:border-[var(--primary)] transition-colors"
 			></textarea>
+
+			<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+				<div>
+					<label class="block text-xs opacity-65 mb-1" for="mood">Känsla (valfritt)</label>
+					<select
+						id="mood"
+						bind:value={selectedMood}
+						class="w-full rounded-xl border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
+					>
+						<option value="">Välj känsla</option>
+						{#each moods as mood}
+							<option value={mood}>{mood}</option>
+						{/each}
+					</select>
+				</div>
+
+				<div>
+					<label class="block text-xs opacity-65 mb-1" for="tags">Taggar (valfritt)</label>
+					<input
+						id="tags"
+						type="text"
+						bind:value={tagsInput}
+						placeholder="t.ex. sömn, oro, lättnad"
+						class="w-full rounded-xl border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
+					/>
+				</div>
+			</div>
+
 			<div class="mt-3 flex justify-end">
 				<button
 					type="button"
@@ -121,11 +342,45 @@
 				{#each entries as entry, i (`${entry.created_at ?? 'no-date'}-${i}`)}
 					<article class="rounded-2xl border border-black/10 dark:border-white/10 bg-white/45 dark:bg-white/5 p-4">
 						<p class="text-xs opacity-60 mb-2">{formatDateTime(entry.created_at)}</p>
+						{#if entry.mood || entry.tags.length > 0}
+							<p class="text-xs opacity-65 mb-2">
+								{#if entry.mood}<span>Känsla: {entry.mood}</span>{/if}
+								{#if entry.tags.length > 0}
+									{#if entry.mood}<span class="mx-1">·</span>{/if}
+									<span>Taggar: {entry.tags.join(', ')}</span>
+								{/if}
+							</p>
+						{/if}
 						<p class="text-sm leading-relaxed whitespace-pre-wrap opacity-85">{entry.content}</p>
 					</article>
 				{/each}
 			{/if}
 		</div>
+
+		<div class="mt-6 rounded-xl border border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5 p-3">
+			<label class="flex items-start gap-2 text-sm opacity-80">
+				<input
+					type="checkbox"
+					bind:checked={reminderOptIn}
+					onchange={updateReminderPreference}
+					class="mt-0.5 h-4 w-4 rounded border-black/20 dark:border-white/20"
+				/>
+				<span>Skicka påminnelse om att skriva dagbok</span>
+			</label>
+			<p class="mt-2 text-xs opacity-60">
+				Valet sparas i din profil så att påminnelser kan hanteras via e-post eller notifiering.
+			</p>
+			{#if reminderOptIn && reminderNextAt}
+				<p class="mt-1 text-xs opacity-60">Nästa möjliga påminnelse: {formatDateTime(reminderNextAt)}</p>
+			{/if}
+			{#if reminderSaving}
+				<p class="mt-1 text-xs opacity-60">Sparar påminnelseval...</p>
+			{/if}
+			{#if reminderError}
+				<p class="mt-1 text-xs opacity-70">{reminderError}</p>
+			{/if}
+		</div>
+
 		<p class="mt-4 text-xs opacity-50 text-center">Det du skriver här delas inte med någon.</p>
 	</section>
 {/if}

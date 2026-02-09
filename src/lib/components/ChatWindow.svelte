@@ -1,4 +1,6 @@
 ﻿<script lang="ts">
+	import { goto } from '$app/navigation';
+	import { supabase } from '$lib/supabase';
 	import type { ChatMessage } from '$lib/types';
 
 	let { category }: { category: string } = $props();
@@ -6,6 +8,7 @@
 	let messages = $state<ChatMessage[]>([]);
 	let input = $state('');
 	let sending = $state(false);
+	let savePromptHidden = $state<Record<number, boolean>>({});
 	let chatLog: HTMLDivElement;
 
 	function scrollToBottom() {
@@ -46,6 +49,18 @@
 			send();
 		}
 	}
+
+	async function saveAsJournalNote(content: string, index: number) {
+		savePromptHidden[index] = true;
+
+		const { data } = await supabase.auth.getSession();
+		if (!data.session) {
+			goto('/login');
+			return;
+		}
+
+		goto(`/dagbok?prefill=${encodeURIComponent(content)}`);
+	}
 </script>
 
 <div class="flex flex-col h-[calc(100vh-200px)] max-w-2xl mx-auto">
@@ -68,19 +83,34 @@
 			</div>
 		{/if}
 
-		{#each messages as msg}
-			<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'}">
-				<div
-					class="max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed
-						{msg.role === 'user'
-						? 'bg-[var(--primary)] text-white rounded-br-md'
-						: 'bg-black/5 dark:bg-white/10 rounded-bl-md'}"
-				>
-					{#each msg.content.split('\n') as line, i}
-						{#if i > 0}<br />{/if}
-						{line}
-					{/each}
+		{#each messages as msg, i}
+			<div class="space-y-1">
+				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'}">
+					<div
+						class="max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed
+							{msg.role === 'user'
+							? 'bg-[var(--primary)] text-white rounded-br-md'
+							: 'bg-black/5 dark:bg-white/10 rounded-bl-md'}"
+					>
+						{#each msg.content.split('\n') as line, j}
+							{#if j > 0}<br />{/if}
+							{line}
+						{/each}
+					</div>
 				</div>
+
+				{#if msg.role === 'assistant' && !savePromptHidden[i]}
+					<div class="text-xs opacity-55 px-1 text-left">
+						Vill du spara detta som anteckning?
+						<button
+							type="button"
+							class="ml-1 underline hover:opacity-100 transition-opacity"
+							onclick={() => saveAsJournalNote(msg.content, i)}
+						>
+							Ja
+						</button>
+					</div>
+				{/if}
 			</div>
 		{/each}
 
