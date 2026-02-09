@@ -28,6 +28,7 @@
 </script>
 
 <header class="flex items-center justify-between px-5 py-3.5 border-b border-black/8">
+	<div class="flex items-center gap-4">
 	<a href="/" class="flex items-center gap-2.5 font-semibold">
 		💙 <span>MittPsyke</span>
 	</a>
