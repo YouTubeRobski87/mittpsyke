@@ -32,7 +32,7 @@
 	<div class="flex items-center justify-between gap-3 px-5 py-3.5">
 		<div class="flex items-center gap-3 sm:gap-4 min-w-0">
 			<a href="/" class="flex items-center gap-2.5 font-semibold opacity-95 hover:opacity-100 transition-opacity">
-				ðŸ’™ <span>MittPsyke</span>
+				💙 <span>MittPsyke</span>
 			</a>
 
 			<nav class="hidden md:flex items-center gap-4">
@@ -160,7 +160,7 @@
 </main>
 
 <footer class="border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
-	Â© {new Date().getFullYear()} MittPsyke. Alla rÃ¤ttigheter fÃ¶rbehÃ¥llna.
+	© {new Date().getFullYear()} MittPsyke. Alla rättigheter förbehållna.
 	<span class="mx-2">&middot;</span>
 	<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
 		Om MittPsyke
@@ -172,7 +172,7 @@
 		rel="noopener noreferrer"
 		class="text-sm font-medium text-teal-700/90 dark:text-teal-300/90 opacity-90 hover:opacity-100 transition-opacity"
 	>
-		Akut hjÃ¤lp (StÃ¶dlinjer)
+		Akut hjälp (Stödlinjer)
 	</a>
 </footer>
 
