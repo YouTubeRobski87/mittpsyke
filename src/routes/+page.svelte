@@ -21,6 +21,12 @@
 		<p class="max-w-xl mx-auto opacity-75 leading-relaxed mb-10">
 			Ett tryggt rum för tanke, känsla och återhämtning.
 		</p>
+		<a
+			href="/om-mittpsyke"
+			class="inline-block text-sm underline opacity-70 hover:opacity-100 transition-opacity"
+		>
+			Läs mer om MittPsyke
+		</a>
 	</div>
 
 	<section class="max-w-2xl mx-auto mb-10 text-left">
