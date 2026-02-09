@@ -56,3 +56,15 @@
 		digitalt samtalsrum, och för vissa även som en personlig journal i vardagen.
 	</p>
 </section>
+
+<section class="container max-w-2xl mb-12">
+	<div class="border border-black/10 dark:border-white/10 rounded-2xl p-5 bg-white/45 dark:bg-white/5">
+		<h3 class="font-semibold mb-2.5">Hur MittPsyke ser på psyket</h3>
+		<ul class="list-disc pl-5 space-y-2 opacity-85 text-sm">
+			<li>Psyket är inte trasigt – det är ofta överbelastat</li>
+			<li>Ångest, depression och stress är signaler, inte fel</li>
+			<li>Tankar, känslor och kropp hänger samman</li>
+			<li>Trygghet och förståelse är ofta första steget mot förändring</li>
+		</ul>
+	</div>
+</section>
