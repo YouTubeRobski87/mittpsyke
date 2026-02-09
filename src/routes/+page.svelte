@@ -13,6 +13,12 @@
 			src="/assets/mittpsyke-hero.png"
 			alt="Illustration av hjärna och hjärta – balans mellan tanke och känsla"
 		/>
+		<img
+			src="/assets/MittPsykeLogo1.png"
+			alt="Illustration av hjärna och hjärta – balans mellan tanke och känsla"
+			class="mx-auto mb-6 opacity-80"
+			style="max-width: 240px"
+		/>
 		<h1 class="text-4xl font-bold tracking-tight mb-4">
 			Välkommen till MittPsyke
 		</h1>
