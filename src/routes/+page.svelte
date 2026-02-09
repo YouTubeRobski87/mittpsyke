@@ -50,6 +50,25 @@
 		{/each}
 	</div>
 
+	<section class="max-w-3xl mx-auto mt-12 text-left">
+		<h3 class="text-2xl font-semibold tracking-tight mb-5 opacity-90">
+			Beskrivning av webbplatsen – MittPsyke
+		</h3>
+		<p class="opacity-80 leading-relaxed mb-5">
+			MittPsyke är en svensk webbplats skapad för att erbjuda ett tryggt, lugnt och
+			tillgängligt digitalt stöd för människor som kämpar med psykisk ohälsa.
+			Plattformen riktar sig till personer som upplever exempelvis ångest, depression,
+			trauma, stress, ensamhet eller livskriser – men också till anhöriga som söker
+			förståelse och vägledning.
+		</p>
+		<p class="opacity-80 leading-relaxed">
+			Webbplatsen kombinerar mänsklig värme med modern teknik. I centrum finns ett
+			AI-baserat samtalsstöd som fungerar som en empatisk följeslagare – inte som
+			ersättning för vård, utan som ett komplement. Användaren kan skriva av sig i egen
+			takt, reflektera, få stödjande svar och bli varsamt vägledd vidare vid behov.
+		</p>
+	</section>
+
 	<div class="mt-10">
 		<a
 			href="/chat/a"
