@@ -61,11 +61,33 @@
 			trauma, stress, ensamhet eller livskriser – men också till anhöriga som söker
 			förståelse och vägledning.
 		</p>
-		<p class="opacity-80 leading-relaxed">
+		<p class="opacity-80 leading-relaxed mb-5">
 			Webbplatsen kombinerar mänsklig värme med modern teknik. I centrum finns ett
 			AI-baserat samtalsstöd som fungerar som en empatisk följeslagare – inte som
 			ersättning för vård, utan som ett komplement. Användaren kan skriva av sig i egen
 			takt, reflektera, få stödjande svar och bli varsamt vägledd vidare vid behov.
+		</p>
+		<p class="opacity-80 leading-relaxed mb-5">
+			MittPsyke är uppdelad i tydliga tematiska ingångar för att göra stödet mer begripligt
+			och lätt att närma sig utifrån den situation man befinner sig i.
+		</p>
+		<ul class="list-disc pl-5 space-y-2 opacity-80 leading-relaxed mb-5">
+			<li>Ångest</li>
+			<li>Depression</li>
+			<li>Trauma & våld</li>
+		</ul>
+		<p class="opacity-80 leading-relaxed mb-5">
+			Detta gör det enklare att bli mött där man är, utan krav på prestation eller långa
+			förklaringar.
+		</p>
+		<p class="opacity-80 leading-relaxed mb-5">
+			Designfilosofin är avskalad, mjuk och icke-klinisk, med fokus på närvaro och lugn
+			utan distraktioner.
+		</p>
+		<p class="opacity-80 leading-relaxed">
+			Tjänsten kan användas anonymt för den som vill börja försiktigt, men erbjuder också
+			möjlighet till inloggning där samtal kan sparas över tid – som ett digitalt
+			samtalsrum eller en personlig journal.
 		</p>
 	</section>
 
