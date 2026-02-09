@@ -75,7 +75,7 @@
 	margin: 0 auto 1.5rem;
 	border-radius: 0;
 	opacity: 0.8;
-	animation: fadeIn 0.8s ease-out;
+	animation: fadeIn 1.1s ease-out;
 }
 
 @keyframes fadeIn {
