@@ -56,36 +56,36 @@
 
 <style>
 .hero {
-\ttext-align: center;
-\tmargin-bottom: 3rem;
+	text-align: center;
+	margin-bottom: 3rem;
 }
 
 .hero img {
-\tmax-width: 420px;
-\twidth: 100%;
-\tmargin: 0 auto 1.5rem;
-\tborder-radius: 1.25rem;
-\topacity: 0.95;
+	max-width: 420px;
+	width: 100%;
+	margin: 0 auto 1.5rem;
+	border-radius: 1.25rem;
+	opacity: 0.95;
 }
 
 .hero .hero-logo {
-\tdisplay: block;
-\tmax-width: 240px;
-\twidth: 100%;
-\tmargin: 0 auto 1.5rem;
-\tborder-radius: 0;
-\topacity: 0.8;
-\tanimation: fadeIn 0.8s ease-out;
+	display: block;
+	max-width: 240px;
+	width: 100%;
+	margin: 0 auto 1.5rem;
+	border-radius: 0;
+	opacity: 0.8;
+	animation: fadeIn 0.8s ease-out;
 }
 
 @keyframes fadeIn {
-\tfrom {
-\t\topacity: 0;
-\t\ttransform: translateY(6px);
-\t}
-\tto {
-\t\topacity: 0.8;
-\t\ttransform: translateY(0);
-\t}
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 0.8;
+		transform: translateY(0);
+	}
 }
 </style>
