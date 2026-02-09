@@ -29,25 +29,6 @@
 		</a>
 	</div>
 
-	<section class="max-w-2xl mx-auto mb-10 text-left">
-		<p class="opacity-80 leading-relaxed mb-4">
-			MittPsyke är byggt med respekt för integritet, frivillighet och mänsklig sårbarhet.
-			Målet är inte att ge snabba lösningar, utan att:
-		</p>
-		<ul class="list-disc pl-5 space-y-2 opacity-80 leading-relaxed mb-5">
-			<li>minska ensamhet</li>
-			<li>skapa förståelse</li>
-			<li>ge stöd i stunden</li>
-			<li>och vid behov hjälpa användaren vidare till professionella resurser</li>
-		</ul>
-		<div class="mt-6 pt-4 border-t border-black/10 dark:border-white/10">
-			<p class="opacity-85 leading-relaxed">
-				<span class="font-medium">Kort sagt…</span><br />
-				MittPsyke finns där när det känns tungt – på dina villkor, i din takt
-			</p>
-		</div>
-	</section>
-
 	<h2 class="text-lg opacity-85 mb-5">Vad vill du fokusera på?</h2>
 
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
@@ -55,47 +36,6 @@
 			<PortalCard {portal} active={i === 0} />
 		{/each}
 	</div>
-
-	<section class="max-w-3xl mx-auto mt-12 text-left">
-		<h3 class="text-2xl font-semibold tracking-tight mb-5 opacity-90">
-			Beskrivning av webbplatsen – MittPsyke
-		</h3>
-		<p class="opacity-80 leading-relaxed mb-5">
-			MittPsyke är en svensk webbplats skapad för att erbjuda ett tryggt, lugnt och
-			tillgängligt digitalt stöd för människor som kämpar med psykisk ohälsa.
-			Plattformen riktar sig till personer som upplever exempelvis ångest, depression,
-			trauma, stress, ensamhet eller livskriser – men också till anhöriga som söker
-			förståelse och vägledning.
-		</p>
-		<p class="opacity-80 leading-relaxed mb-5">
-			Webbplatsen kombinerar mänsklig värme med modern teknik. I centrum finns ett
-			AI-baserat samtalsstöd som fungerar som en empatisk följeslagare – inte som
-			ersättning för vård, utan som ett komplement. Användaren kan skriva av sig i egen
-			takt, reflektera, få stödjande svar och bli varsamt vägledd vidare vid behov.
-		</p>
-		<p class="opacity-80 leading-relaxed mb-5">
-			MittPsyke är uppdelad i tydliga tematiska ingångar för att göra stödet mer begripligt
-			och lätt att närma sig utifrån den situation man befinner sig i.
-		</p>
-		<ul class="list-disc pl-5 space-y-2 opacity-80 leading-relaxed mb-5">
-			<li>Ångest</li>
-			<li>Depression</li>
-			<li>Trauma & våld</li>
-		</ul>
-		<p class="opacity-80 leading-relaxed mb-5">
-			Detta gör det enklare att bli mött där man är, utan krav på prestation eller långa
-			förklaringar.
-		</p>
-		<p class="opacity-80 leading-relaxed mb-5">
-			Designfilosofin är avskalad, mjuk och icke-klinisk, med fokus på närvaro och lugn
-			utan distraktioner.
-		</p>
-		<p class="opacity-80 leading-relaxed">
-			Tjänsten kan användas anonymt för den som vill börja försiktigt, men erbjuder också
-			möjlighet till inloggning där samtal kan sparas över tid – som ett digitalt
-			samtalsrum eller en personlig journal.
-		</p>
-	</section>
 
 	<div class="mt-10">
 		<a
