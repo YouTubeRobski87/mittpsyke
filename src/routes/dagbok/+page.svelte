@@ -283,6 +283,15 @@
 	<div class="container py-16 text-center opacity-60">Laddar...</div>
 {:else}
 	<section class="container max-w-2xl py-12">
+		<!-- Tillfällig lösning: informationsruta om tillfälligt otillgängliga sparfunktioner. Ta bort när funktionen är återställd. -->
+		<div class="mb-5 rounded-2xl border border-black/10 dark:border-white/10 bg-white/55 dark:bg-white/5 px-4 py-3">
+			<p class="text-sm leading-relaxed opacity-80">
+				<strong class="font-semibold">Tillfällig information:</strong> Just nu fungerar inte
+				sparfunktionerna för dagbok och personliga anteckningar. Samtalsfunktionen fungerar som
+				vanligt. Vi arbetar med att lösa detta och tackar för ditt tålamod.
+			</p>
+		</div>
+
 		<div class="flex flex-wrap items-center justify-between gap-3 mb-3">
 			<h1 class="text-3xl font-bold tracking-tight">Dagbok</h1>
 			<button
