@@ -10,3 +10,28 @@ export interface ChatMessage {
 	role: 'user' | 'assistant';
 	content: string;
 }
+
+export interface CreateDiaryRequestBody {
+	text: string;
+	mood?: string | null;
+	tags?: string[];
+}
+
+export interface DiaryRecord {
+	id: string;
+	user_id: string;
+	text: string;
+	mood: string | null;
+	tags: string[] | null;
+	created_at: string;
+}
+
+export interface CreateDiarySuccessResponse {
+	success: true;
+	diary: DiaryRecord;
+}
+
+export interface CreateDiaryErrorResponse {
+	success: false;
+	error: string;
+}
