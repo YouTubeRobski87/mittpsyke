@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
@@ -160,7 +160,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				(legacyInsertError?.message ?? '').includes("Could not find the table 'public.journal_entries'");
 			if (legacyTableMissing) {
 				return errorResponse(
-					'Databastabell saknas. Skapa tabellen "diary" i Supabase (kör filen supabase/diary.sql).',
+					`Databastabell saknas i Supabase-projektet "${projectRef}". Kontrollera att SUPABASE_URL/PUBLIC_SUPABASE_URL pekar mot projektet där "diary" skapades.`,
 					500
 				);
 			}
@@ -192,3 +192,5 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 	return errorResponse('Could not save note.', 500);
 };
+
+
