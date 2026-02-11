@@ -27,7 +27,6 @@
 		window.location.href = '/login';
 	}
 </script>
-
 <svelte:head>
 	<title>MittPsyke – Digitalt samtalsstöd för ångest och nedstämdhet</title>
 
@@ -41,8 +40,18 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 	<link rel="canonical" href="https://mittpsyke.se" />
-</svelte:head>
 
+	<meta property="og:title" content="MittPsyke – Digitalt samtalsstöd" />
+	<meta
+		property="og:description"
+		content="Ett lugnt och tryggt digitalt stöd för ångest, nedstämdhet och trauma."
+	/>
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://mittpsyke.se" />
+	<meta property="og:site_name" content="MittPsyke" />
+
+	<meta name="twitter:card" content="summary" />
+</svelte:head>
 <header class="sticky top-0 z-30 border-b border-black/8 bg-white/75 dark:bg-black/35 backdrop-blur">
 	<div class="flex items-center justify-between gap-3 px-5 py-3.5">
 		<div class="flex items-center gap-3 sm:gap-4 min-w-0">
