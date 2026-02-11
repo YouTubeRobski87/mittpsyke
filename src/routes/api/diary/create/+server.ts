@@ -24,6 +24,15 @@ function errorResponse(message: string, status: number) {
 	return json(body, { status });
 }
 
+function getProjectRefFromUrl(url: string): string {
+	try {
+		const hostname = new URL(url).hostname;
+		return hostname.split('.')[0] || 'unknown';
+	} catch {
+		return 'unknown';
+	}
+}
+
 function getAccessToken(authorizationHeader: string | null): string | null {
 	if (!authorizationHeader) return null;
 
@@ -86,6 +95,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
 	const supabaseAnonKey = env.SUPABASE_ANON_KEY || publicEnv.PUBLIC_SUPABASE_ANON_KEY;
+	const projectRef = supabaseUrl ? getProjectRefFromUrl(supabaseUrl) : 'unknown';
 	if (!supabaseUrl || !supabaseAnonKey) {
 		console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY.');
 		return errorResponse('Server configuration error.', 500);
