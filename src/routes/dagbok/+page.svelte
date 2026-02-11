@@ -112,6 +112,16 @@
 				.order('created_at', { ascending: false });
 
 			if (legacyLoadError) {
+				const legacyTableMissing =
+					legacyLoadError.code === 'PGRST205' ||
+					legacyLoadError.code === '42P01' ||
+					(legacyLoadError.message ?? '').includes(
+						"Could not find the table 'public.journal_entries'"
+					);
+				if (legacyTableMissing) {
+					error = 'Databastabell saknas. Be administratören köra supabase/diary.sql i Supabase.';
+					return;
+				}
 				error = 'Kunde inte hämta anteckningar just nu.';
 				return;
 			}

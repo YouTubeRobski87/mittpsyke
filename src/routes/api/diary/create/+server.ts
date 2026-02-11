@@ -144,6 +144,16 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		if (legacyInsertError || !legacyInserted) {
 			console.error('Fallback insert into journal_entries failed:', legacyInsertError);
+			const legacyTableMissing =
+				legacyInsertError?.code === 'PGRST205' ||
+				legacyInsertError?.code === '42P01' ||
+				(legacyInsertError?.message ?? '').includes("Could not find the table 'public.journal_entries'");
+			if (legacyTableMissing) {
+				return errorResponse(
+					'Databastabell saknas. Skapa tabellen "diary" i Supabase (kör filen supabase/diary.sql).',
+					500
+				);
+			}
 			return errorResponse(legacyInsertError?.message ?? 'Could not save note.', 500);
 		}
 
