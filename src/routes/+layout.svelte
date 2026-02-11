@@ -28,21 +28,19 @@
 	}
 </script>
 <svelte:head>
-	<title>MittPsyke – Lugnt digitalt samtalsstöd för ångest och nedstämdhet</title>
+	<title>MittPsyke – Digitalt samtalsstöd för ångest och nedstämdhet</title>
 
 	<meta
 		name="description"
-		content="MittPsyke är ett tryggt digitalt samtalsstöd för ångest, nedstämdhet och trauma. Samtala i din egen takt."
+		content="MittPsyke är ett lugnt och tryggt digitalt samtalsstöd för ångest, nedstämdhet och trauma. Samtala i din egen takt."
 	/>
 
-	<meta
-		name="keywords"
-		content="psykisk hälsa, ångest, depression, samtalsstöd online, mental hälsa, digitalt stöd"
-	/>
-
-	<meta name="author" content="MittPsyke" />
 	<meta name="robots" content="index, follow" />
+	<meta name="author" content="MittPsyke" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<!-- Canonical URL (viktigt för Google) -->
+	<link rel="canonical" href="https://mittpsyke.se" />
 
 	<!-- Open Graph (för sociala medier) -->
 	<meta property="og:title" content="MittPsyke – Digitalt samtalsstöd" />
@@ -52,6 +50,12 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://mittpsyke.se" />
+	<meta property="og:site_name" content="MittPsyke" />
+
+	<!-- Twitter Card -->
+	<meta name="twitter:card" content="summary" />
+</svelte:head>
+
 </svelte:head>
 <header class="sticky top-0 z-30 border-b border-black/8 bg-white/75 dark:bg-black/35 backdrop-blur">
 	<div class="flex items-center justify-between gap-3 px-5 py-3.5">
