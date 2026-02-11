@@ -14,7 +14,7 @@ export interface ChatMessage {
 export interface CreateDiaryRequestBody {
 	text: string;
 	mood?: string | null;
-	tags?: string[];
+	tags?: string[] | null;
 }
 
 export interface DiaryRecord {

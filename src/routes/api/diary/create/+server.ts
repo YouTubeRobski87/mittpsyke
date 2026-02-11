@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { env as privateEnv } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
 import { createClient } from '@supabase/supabase-js';
+import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 import type {
 	CreateDiaryErrorResponse,
@@ -10,86 +9,76 @@ import type {
 	DiaryRecord
 } from '$lib/types';
 
-const DIARY_TABLE = privateEnv.DIARY_TABLE_NAME?.trim() || 'diary';
-
-type ValidatedDiaryPayload = {
-	text: string;
-	mood: string | null;
-	tags: string[];
-};
-
-function getBearerToken(authorizationHeader: string | null): string | null {
-	if (!authorizationHeader) return null;
-	const [scheme, token] = authorizationHeader.split(' ');
-	if (!scheme || !token || scheme.toLowerCase() !== 'bearer') return null;
-	return token.trim() || null;
-}
-
-function validatePayload(body: unknown): { data: ValidatedDiaryPayload | null; error: string | null } {
-	if (!body || typeof body !== 'object' || Array.isArray(body)) {
-		return { data: null, error: 'Invalid request body.' };
-	}
-
-	const input = body as CreateDiaryRequestBody;
-	const text = typeof input.text === 'string' ? input.text.trim() : '';
-	if (!text) {
-		return { data: null, error: 'Field "text" is required.' };
-	}
-
-	if (input.mood !== undefined && input.mood !== null && typeof input.mood !== 'string') {
-		return { data: null, error: 'Field "mood" must be a string when provided.' };
-	}
-
-	if (input.tags !== undefined) {
-		const invalidTags = !Array.isArray(input.tags) || input.tags.some((tag) => typeof tag !== 'string');
-		if (invalidTags) {
-			return { data: null, error: 'Field "tags" must be an array of strings.' };
-		}
-	}
-
-	const tags = Array.from(
-		new Set((input.tags ?? []).map((tag) => tag.trim()).filter((tag) => tag.length > 0))
-	);
-
-	return {
-		data: {
-			text,
-			mood: typeof input.mood === 'string' && input.mood.trim() ? input.mood.trim() : null,
-			tags
-		},
-		error: null
-	};
-}
-
-function serverError(message: string, status = 500) {
+function errorResponse(message: string, status: number) {
 	const body: CreateDiaryErrorResponse = { success: false, error: message };
 	return json(body, { status });
 }
 
+function getAccessToken(authorizationHeader: string | null): string | null {
+	if (!authorizationHeader) return null;
+
+	const [scheme, token] = authorizationHeader.split(' ');
+	if (scheme?.toLowerCase() !== 'bearer' || !token?.trim()) {
+		return null;
+	}
+
+	return token.trim();
+}
+
+function validateBody(input: unknown): { ok: true; data: CreateDiaryRequestBody } | { ok: false; error: string } {
+	if (!input || typeof input !== 'object' || Array.isArray(input)) {
+		return { ok: false, error: 'Invalid request body.' };
+	}
+
+	const body = input as Partial<CreateDiaryRequestBody>;
+
+	if (typeof body.text !== 'string' || body.text.trim().length === 0) {
+		return { ok: false, error: 'Field "text" is required and must be a non-empty string.' };
+	}
+
+	if (body.mood !== undefined && body.mood !== null && typeof body.mood !== 'string') {
+		return { ok: false, error: 'Field "mood" must be a string or null.' };
+	}
+
+	if (body.tags !== undefined && body.tags !== null) {
+		if (!Array.isArray(body.tags) || body.tags.some((tag) => typeof tag !== 'string')) {
+			return { ok: false, error: 'Field "tags" must be an array of strings or null.' };
+		}
+	}
+
+	return {
+		ok: true,
+		data: {
+			text: body.text.trim(),
+			mood: body.mood ?? null,
+			tags: body.tags ?? null
+		}
+	};
+}
+
 export const POST: RequestHandler = async ({ request }) => {
-	let body: unknown;
+	let parsedBody: unknown;
 	try {
-		body = await request.json();
+		parsedBody = await request.json();
 	} catch {
-		return serverError('Invalid JSON body.', 400);
+		return errorResponse('Invalid JSON body.', 400);
 	}
 
-	const validated = validatePayload(body);
-	if (!validated.data) {
-		return serverError(validated.error ?? 'Invalid request body.', 400);
+	const validated = validateBody(parsedBody);
+	if (!validated.ok) {
+		return errorResponse(validated.error, 400);
 	}
 
-	const token = getBearerToken(request.headers.get('authorization'));
+	const token = getAccessToken(request.headers.get('authorization'));
 	if (!token) {
-		return serverError('Missing or invalid Authorization header.', 401);
+		return errorResponse('Missing or invalid Authorization header.', 401);
 	}
 
-	const supabaseUrl = privateEnv.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
-	const supabaseAnonKey = privateEnv.SUPABASE_ANON_KEY || publicEnv.PUBLIC_SUPABASE_ANON_KEY;
-
+	const supabaseUrl = env.SUPABASE_URL;
+	const supabaseAnonKey = env.SUPABASE_ANON_KEY;
 	if (!supabaseUrl || !supabaseAnonKey) {
-		console.error('Supabase env vars are missing (SUPABASE_URL / SUPABASE_ANON_KEY).');
-		return serverError('Server configuration error.');
+		console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY.');
+		return errorResponse('Server configuration error.', 500);
 	}
 
 	const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -103,33 +92,28 @@ export const POST: RequestHandler = async ({ request }) => {
 	} = await supabase.auth.getUser();
 
 	if (userError || !user) {
-		console.error('Unauthorized diary save attempt:', userError);
-		return serverError('Unauthorized.', 401);
+		return errorResponse('Unauthorized.', 401);
 	}
 
-	const insertPayload = {
-		user_id: user.id,
-		text: validated.data.text,
-		mood: validated.data.mood,
-		tags: validated.data.tags.length > 0 ? validated.data.tags : null,
-		created_at: new Date().toISOString()
-	};
-
-	const { data: diary, error: insertError } = await supabase
-		.from(DIARY_TABLE)
-		.insert(insertPayload)
+	const { data: inserted, error: insertError } = await supabase
+		.from('diary')
+		.insert({
+			user_id: user.id,
+			text: validated.data.text,
+			mood: validated.data.mood,
+			tags: validated.data.tags
+		})
 		.select('id, user_id, text, mood, tags, created_at')
 		.single();
 
-	if (insertError) {
-		console.error('Diary insert error:', insertError);
-		const status = insertError.code === '42501' ? 403 : 500;
-		return serverError(insertError.message || 'Could not save note.', status);
+	if (insertError || !inserted) {
+		console.error('Failed to save diary entry:', insertError);
+		return errorResponse(insertError?.message ?? 'Could not save note.', 500);
 	}
 
 	const response: CreateDiarySuccessResponse = {
 		success: true,
-		diary: diary as DiaryRecord
+		diary: inserted as DiaryRecord
 	};
 
 	return json(response, { status: 200 });
