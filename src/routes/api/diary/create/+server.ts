@@ -10,6 +10,15 @@ import type {
 	DiaryRecord
 } from '$lib/types';
 
+type LegacyJournalRow = {
+	id: string;
+	user_id: string;
+	content: string;
+	mood: string | null;
+	tags: string[] | null;
+	created_at: string;
+};
+
 function errorResponse(message: string, status: number) {
 	const body: CreateDiaryErrorResponse = { success: false, error: message };
 	return json(body, { status });
@@ -107,21 +116,59 @@ export const POST: RequestHandler = async ({ request }) => {
 		.select('id, user_id, text, mood, tags, created_at')
 		.single();
 
+	if (!insertError && inserted) {
+		const response: CreateDiarySuccessResponse = {
+			success: true,
+			diary: inserted as DiaryRecord
+		};
+
+		return json(response, { status: 200 });
+	}
+
+	const tableMissing =
+		insertError?.code === 'PGRST205' ||
+		insertError?.code === '42P01' ||
+		(insertError?.message ?? '').includes("Could not find the table 'public.diary'");
+
+	if (tableMissing) {
+		const { data: legacyInserted, error: legacyInsertError } = await supabase
+			.from('journal_entries')
+			.insert({
+				user_id: user.id,
+				content: validated.data.text,
+				mood: validated.data.mood,
+				tags: validated.data.tags
+			})
+			.select('id, user_id, content, mood, tags, created_at')
+			.single();
+
+		if (legacyInsertError || !legacyInserted) {
+			console.error('Fallback insert into journal_entries failed:', legacyInsertError);
+			return errorResponse(legacyInsertError?.message ?? 'Could not save note.', 500);
+		}
+
+		const legacy = legacyInserted as LegacyJournalRow;
+		const response: CreateDiarySuccessResponse = {
+			success: true,
+			diary: {
+				id: legacy.id,
+				user_id: legacy.user_id,
+				text: legacy.content,
+				mood: legacy.mood,
+				tags: legacy.tags,
+				created_at: legacy.created_at
+			}
+		};
+
+		return json(response, { status: 200 });
+	}
+
 	if (insertError || !inserted) {
 		console.error('Failed to save diary entry:', insertError);
-		if (insertError?.code === '42P01') {
-			return errorResponse('Table "diary" does not exist.', 500);
-		}
 		if (insertError?.code === '42501') {
 			return errorResponse('Not allowed to save diary entry.', 403);
 		}
 		return errorResponse(insertError?.message ?? 'Could not save note.', 500);
 	}
-
-	const response: CreateDiarySuccessResponse = {
-		success: true,
-		diary: inserted as DiaryRecord
-	};
-
-	return json(response, { status: 200 });
+	return errorResponse('Could not save note.', 500);
 };
