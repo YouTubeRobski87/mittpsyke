@@ -99,6 +99,32 @@
 			.eq('user_id', uid)
 			.order('created_at', { ascending: false });
 
+		const diaryTableMissing =
+			loadError?.code === 'PGRST205' ||
+			loadError?.code === '42P01' ||
+			(loadError?.message ?? '').includes("Could not find the table 'public.diary'");
+
+		if (diaryTableMissing) {
+			const { data: legacyData, error: legacyLoadError } = await supabase
+				.from('journal_entries')
+				.select('content, created_at, tags, mood')
+				.eq('user_id', uid)
+				.order('created_at', { ascending: false });
+
+			if (legacyLoadError) {
+				error = 'Kunde inte hämta anteckningar just nu.';
+				return;
+			}
+
+			entries = (legacyData ?? []).map((entry) => ({
+				content: typeof entry.content === 'string' ? entry.content : '',
+				created_at: typeof entry.created_at === 'string' ? entry.created_at : null,
+				tags: normalizeTags(entry.tags),
+				mood: typeof entry.mood === 'string' ? entry.mood : null
+			}));
+			return;
+		}
+
 		if (loadError) {
 			error = 'Kunde inte hämta anteckningar just nu.';
 			return;
