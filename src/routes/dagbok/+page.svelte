@@ -94,8 +94,8 @@
 
 	async function loadEntries(uid: string) {
 		const { data, error: loadError } = await supabase
-			.from('journal_entries')
-			.select('content, created_at, tags, mood')
+			.from('diary')
+			.select('text, created_at, tags, mood')
 			.eq('user_id', uid)
 			.order('created_at', { ascending: false });
 
@@ -105,7 +105,7 @@
 		}
 
 		entries = (data ?? []).map((entry) => ({
-			content: typeof entry.content === 'string' ? entry.content : '',
+			content: typeof entry.text === 'string' ? entry.text : '',
 			created_at: typeof entry.created_at === 'string' ? entry.created_at : null,
 			tags: normalizeTags(entry.tags),
 			mood: typeof entry.mood === 'string' ? entry.mood : null
@@ -120,28 +120,37 @@
 		error = '';
 
 		const {
-			data: { user },
-			error: userError
-		} = await supabase.auth.getUser();
+			data: { session },
+			error: sessionError
+		} = await supabase.auth.getSession();
 
-		if (userError || !user) {
-			console.error('User not logged in', userError);
+		if (sessionError || !session?.user || !session.access_token) {
+			console.error('Session missing', sessionError);
 			error = 'Du behöver vara inloggad för att spara anteckningar.';
 			saving = false;
 			return;
 		}
 
 		const parsedTags = parseTags(tagsInput);
-		const { error: insertError } = await supabase.from('journal_entries').insert({
-			user_id: user.id,
-			content,
-			tags: parsedTags.length > 0 ? parsedTags : null,
-			mood: selectedMood || null
+
+		const response = await fetch('/api/diary/create', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${session.access_token}`
+			},
+			body: JSON.stringify({
+				text: content,
+				mood: selectedMood || null,
+				tags: parsedTags.length > 0 ? parsedTags : null
+			})
 		});
 
-		if (insertError) {
-			console.error('Supabase insert error:', insertError);
-			error = 'Kunde inte spara anteckningen just nu.';
+		if (!response.ok) {
+			const result = (await response.json().catch(() => null)) as
+				| { error?: string; success?: false }
+				| null;
+			error = result?.error || 'Kunde inte spara anteckningen just nu.';
 			saving = false;
 			return;
 		}
@@ -149,8 +158,8 @@
 		note = '';
 		tagsInput = '';
 		selectedMood = '';
-		userId = user.id;
-		await loadEntries(user.id);
+		userId = session.user.id;
+		await loadEntries(session.user.id);
 		saving = false;
 	}
 
@@ -283,15 +292,6 @@
 	<div class="container py-16 text-center opacity-60">Laddar...</div>
 {:else}
 	<section class="container max-w-2xl py-12">
-		<!-- Tillfällig lösning: informationsruta om tillfälligt otillgängliga sparfunktioner. Ta bort när funktionen är återställd. -->
-		<div class="mb-5 rounded-2xl border border-black/10 dark:border-white/10 bg-white/55 dark:bg-white/5 px-4 py-3">
-			<p class="text-sm leading-relaxed opacity-80">
-				<strong class="font-semibold">Tillfällig information:</strong> Just nu fungerar inte
-				sparfunktionerna för dagbok och personliga anteckningar. Samtalsfunktionen fungerar som
-				vanligt. Vi arbetar med att lösa detta och tackar för ditt tålamod.
-			</p>
-		</div>
-
 		<div class="flex flex-wrap items-center justify-between gap-3 mb-3">
 			<h1 class="text-3xl font-bold tracking-tight">Dagbok</h1>
 			<button

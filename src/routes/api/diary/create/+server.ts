@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
+import { env as publicEnv } from '$env/dynamic/public';
 import type { RequestHandler } from './$types';
 import type {
 	CreateDiaryErrorResponse,
@@ -74,8 +75,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('Missing or invalid Authorization header.', 401);
 	}
 
-	const supabaseUrl = env.SUPABASE_URL;
-	const supabaseAnonKey = env.SUPABASE_ANON_KEY;
+	const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
+	const supabaseAnonKey = env.SUPABASE_ANON_KEY || publicEnv.PUBLIC_SUPABASE_ANON_KEY;
 	if (!supabaseUrl || !supabaseAnonKey) {
 		console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY.');
 		return errorResponse('Server configuration error.', 500);
@@ -108,6 +109,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	if (insertError || !inserted) {
 		console.error('Failed to save diary entry:', insertError);
+		if (insertError?.code === '42P01') {
+			return errorResponse('Table "diary" does not exist.', 500);
+		}
+		if (insertError?.code === '42501') {
+			return errorResponse('Not allowed to save diary entry.', 403);
+		}
 		return errorResponse(insertError?.message ?? 'Could not save note.', 500);
 	}
 
