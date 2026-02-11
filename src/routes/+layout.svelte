@@ -183,11 +183,34 @@
 	{@render children()}
 </main>
 
+<section class="mt-10 px-5">
+	<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
+		MittPsyke är ett AI-baserat samtalsstöd och ersätter inte medicinsk eller psykologisk vård.
+		Vid akut fara: ring 112. Vid behov av vårdråd: 1177.
+		<a
+			href="https://stodlinjer.se"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="underline hover:no-underline ml-1"
+		>
+			Akut hjälp
+		</a>
+	</p>
+</section>
+
 <footer class="border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
 	© {new Date().getFullYear()} MittPsyke. Alla rättigheter förbehållna.
 	<span class="mx-2">&middot;</span>
 	<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
 		Om MittPsyke
+	</a>
+	<span class="mx-2">&middot;</span>
+	<a href="/integritet" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+		Integritetspolicy
+	</a>
+	<span class="mx-2">&middot;</span>
+	<a href="/ansvar" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+		Ansvarsinfo
 	</a>
 	<span class="mx-2">&middot;</span>
 	<a
