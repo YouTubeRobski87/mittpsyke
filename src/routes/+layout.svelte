@@ -28,6 +28,21 @@
 	}
 </script>
 
+<svelte:head>
+	<title>MittPsyke – Digitalt samtalsstöd för ångest och nedstämdhet</title>
+
+	<meta
+		name="description"
+		content="MittPsyke är ett lugnt och tryggt digitalt samtalsstöd för ångest, nedstämdhet och trauma. Samtala i din egen takt."
+	/>
+
+	<meta name="robots" content="index, follow" />
+	<meta name="author" content="MittPsyke" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<link rel="canonical" href="https://mittpsyke.se" />
+</svelte:head>
+
 <header class="sticky top-0 z-30 border-b border-black/8 bg-white/75 dark:bg-black/35 backdrop-blur">
 	<div class="flex items-center justify-between gap-3 px-5 py-3.5">
 		<div class="flex items-center gap-3 sm:gap-4 min-w-0">
