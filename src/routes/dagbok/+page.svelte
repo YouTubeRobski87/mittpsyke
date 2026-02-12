@@ -1,6 +1,8 @@
 ﻿<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
+	import { onDestroy } from 'svelte';
+	import type { Chart as ChartInstance } from 'chart.js';
 
 	type JournalEntry = {
 		id: string;
@@ -35,7 +37,33 @@
 		error: string;
 	};
 
+	type MoodTimelinePoint = {
+		date: string;
+		mood: string;
+	};
+
+	type StatsTimelineSuccessResponse = {
+		success: true;
+		data: MoodTimelinePoint[];
+	};
+
+	type StatsTimelineErrorResponse = {
+		success: false;
+		error: string;
+	};
+
 	const moods = ['Lugn', 'Orolig', 'Nedstämd', 'Hoppfull', 'Trött', 'Tacksam', 'Arg', 'Stressad'];
+	const moodLineColors: Record<string, string> = {
+		Lugn: '#60a5fa',
+		Orolig: '#34d399',
+		Nedstämd: '#a78bfa',
+		Hoppfull: '#22d3ee',
+		Trött: '#f59e0b',
+		Tacksam: '#10b981',
+		Arg: '#ef4444',
+		Stressad: '#8b5cf6'
+	};
+	const fallbackLineColors = ['#60a5fa', '#34d399', '#a78bfa', '#f59e0b', '#22d3ee', '#f472b6'];
 
 	let loading = $state(true);
 	let saving = $state(false);
@@ -58,6 +86,11 @@
 	let reminderSaving = $state(false);
 	let reminderError = $state('');
 	let reminderNextAt = $state<string | null>(null);
+	let statsLoading = $state(false);
+	let statsError = $state('');
+	let moodTimeline = $state<MoodTimelinePoint[]>([]);
+	let moodChartCanvas = $state<HTMLCanvasElement | null>(null);
+	let moodChart: ChartInstance | null = null;
 
 	$effect(() => {
 		async function init() {
@@ -80,6 +113,7 @@
 
 			applyPrefillFromUrl();
 			await loadEntries(userId);
+			await loadMoodTimeline();
 			loading = false;
 		}
 
@@ -124,6 +158,50 @@
 		}
 
 		return [];
+	}
+
+	function sortByDate(a: string, b: string) {
+		return a.localeCompare(b);
+	}
+
+	function getMoodLineColor(mood: string, index: number) {
+		return moodLineColors[mood] ?? fallbackLineColors[index % fallbackLineColors.length];
+	}
+
+	function buildMoodChartData(points: MoodTimelinePoint[]) {
+		const moodCountsByDate = new Map<string, Map<string, number>>();
+		const moodSet = new Set<string>();
+
+		for (const point of points) {
+			const date = point.date.trim();
+			const mood = point.mood.trim();
+			if (!date || !mood) continue;
+
+			moodSet.add(mood);
+			const existingForDate = moodCountsByDate.get(date) ?? new Map<string, number>();
+			existingForDate.set(mood, (existingForDate.get(mood) ?? 0) + 1);
+			moodCountsByDate.set(date, existingForDate);
+		}
+
+		const labels = Array.from(moodCountsByDate.keys()).sort(sortByDate);
+		const moodsInSeries = Array.from(moodSet.values()).sort((a, b) => a.localeCompare(b, 'sv-SE'));
+
+		const datasets = moodsInSeries.map((mood, index) => {
+			const lineColor = getMoodLineColor(mood, index);
+			return {
+				label: mood,
+				data: labels.map((date) => moodCountsByDate.get(date)?.get(mood) ?? 0),
+				borderColor: lineColor,
+				backgroundColor: `${lineColor}55`,
+				tension: 0.35,
+				fill: false,
+				pointRadius: 3,
+				pointHoverRadius: 5,
+				borderWidth: 2
+			};
+		});
+
+		return { labels, datasets };
 	}
 
 	async function loadEntries(uid: string) {
@@ -183,6 +261,144 @@
 			mood: typeof entry.mood === 'string' ? entry.mood : null
 		}));
 	}
+
+	async function loadMoodTimeline() {
+		statsLoading = true;
+		statsError = '';
+
+		const {
+			data: { session },
+			error: sessionError
+		} = await supabase.auth.getSession();
+
+		if (sessionError || !session?.access_token) {
+			statsError = 'Du behöver vara inloggad för att se statistik.';
+			moodTimeline = [];
+			statsLoading = false;
+			return;
+		}
+
+		try {
+			const response = await fetch('/api/diary/stats-timeline', {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${session.access_token}`
+				}
+			});
+
+			const result = (await response.json().catch(() => null)) as
+				| StatsTimelineSuccessResponse
+				| StatsTimelineErrorResponse
+				| null;
+
+			if (!response.ok || !result || !result.success) {
+				statsError =
+					result && 'error' in result ? result.error : 'Kunde inte hämta känslostatistik just nu.';
+				moodTimeline = [];
+				statsLoading = false;
+				return;
+			}
+
+			moodTimeline = result.data.filter(
+				(point) =>
+					typeof point.date === 'string' &&
+					typeof point.mood === 'string' &&
+					point.date.trim().length > 0 &&
+					point.mood.trim().length > 0
+			);
+			statsLoading = false;
+		} catch {
+			statsError = 'Kunde inte hämta känslostatistik just nu.';
+			moodTimeline = [];
+			statsLoading = false;
+		}
+	}
+
+	async function renderMoodChart() {
+		if (typeof window === 'undefined' || !moodChartCanvas || moodTimeline.length === 0) return;
+
+		const chartData = buildMoodChartData(moodTimeline);
+		if (chartData.labels.length === 0 || chartData.datasets.length === 0) return;
+
+		const { default: Chart } = await import('chart.js/auto');
+
+		if (moodChart) {
+			moodChart.destroy();
+		}
+
+		moodChart = new Chart(moodChartCanvas, {
+			type: 'line',
+			data: {
+				labels: chartData.labels,
+				datasets: chartData.datasets
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				animation: {
+					duration: 700,
+					easing: 'easeOutQuart'
+				},
+				plugins: {
+					legend: {
+						labels: {
+							color: '#e5e7eb'
+						}
+					},
+					tooltip: {
+						enabled: true,
+						backgroundColor: '#111827',
+						titleColor: '#f9fafb',
+						bodyColor: '#f3f4f6',
+						borderColor: '#374151',
+						borderWidth: 1
+					}
+				},
+				scales: {
+					x: {
+						ticks: {
+							color: '#d1d5db'
+						},
+						grid: {
+							color: 'rgba(148, 163, 184, 0.2)'
+						}
+					},
+					y: {
+						beginAtZero: true,
+						ticks: {
+							color: '#d1d5db',
+							precision: 0
+						},
+						grid: {
+							color: 'rgba(148, 163, 184, 0.2)'
+						}
+					}
+				}
+			}
+		});
+	}
+
+	$effect(() => {
+		const points = moodTimeline.length;
+		const canvas = moodChartCanvas;
+
+		if (!canvas || points === 0) {
+			if (moodChart) {
+				moodChart.destroy();
+				moodChart = null;
+			}
+			return;
+		}
+
+		void renderMoodChart();
+	});
+
+	onDestroy(() => {
+		if (moodChart) {
+			moodChart.destroy();
+			moodChart = null;
+		}
+	});
 
 	function startEditing(entry: JournalEntry) {
 		editingEntryId = entry.id;
@@ -269,6 +485,7 @@
 		}
 
 		deletingEntryId = null;
+		void loadMoodTimeline();
 	}
 
 	async function saveEditedEntry() {
@@ -336,6 +553,7 @@
 
 		updatingEntry = false;
 		cancelEditing();
+		void loadMoodTimeline();
 	}
 
 	async function saveEntry() {
@@ -386,6 +604,7 @@
 		selectedMood = '';
 		userId = session.user.id;
 		await loadEntries(session.user.id);
+		void loadMoodTimeline();
 		saving = false;
 	}
 
@@ -594,6 +813,32 @@
 			</div>
 			{#if error}
 				<p class="mt-2 text-sm opacity-70">{error}</p>
+			{/if}
+		</div>
+
+		<div class="mb-7 rounded-2xl border border-slate-700/70 bg-slate-900/80 p-4">
+			<div class="mb-3 flex items-center justify-between gap-3">
+				<h2 class="text-sm font-semibold text-slate-100">Känslotrender över tid</h2>
+				<button
+					type="button"
+					onclick={loadMoodTimeline}
+					disabled={statsLoading}
+					class="rounded-lg border border-slate-600 px-3 py-1.5 text-xs text-slate-200 opacity-90 transition-opacity hover:opacity-100 disabled:opacity-50"
+				>
+					{statsLoading ? 'Laddar...' : 'Uppdatera'}
+				</button>
+			</div>
+
+			{#if statsError}
+				<p class="text-sm text-slate-300">{statsError}</p>
+			{:else if statsLoading && moodTimeline.length === 0}
+				<p class="text-sm text-slate-300">Laddar känslostatistik...</p>
+			{:else if moodTimeline.length === 0}
+				<p class="text-sm text-slate-300">Ingen känslodata ännu.</p>
+			{:else}
+				<div class="h-72 w-full">
+					<canvas bind:this={moodChartCanvas} aria-label="Känslotrender per dag"></canvas>
+				</div>
 			{/if}
 		</div>
 

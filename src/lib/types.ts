@@ -65,3 +65,18 @@ export interface DeleteDiaryErrorResponse {
 	success: false;
 	error: string;
 }
+
+export interface DiaryStatsTimelinePoint {
+	date: string;
+	mood: string;
+}
+
+export interface DiaryStatsTimelineSuccessResponse {
+	success: true;
+	data: DiaryStatsTimelinePoint[];
+}
+
+export interface DiaryStatsTimelineErrorResponse {
+	success: false;
+	error: string;
+}
