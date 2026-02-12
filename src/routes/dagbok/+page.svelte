@@ -26,6 +26,15 @@
 		error: string;
 	};
 
+	type DeleteDiarySuccessResponse = {
+		success: true;
+	};
+
+	type DeleteDiaryErrorResponse = {
+		success: false;
+		error: string;
+	};
+
 	const moods = ['Lugn', 'Orolig', 'Nedstämd', 'Hoppfull', 'Trött', 'Tacksam', 'Arg', 'Stressad'];
 
 	let loading = $state(true);
@@ -39,7 +48,9 @@
 	let editableMood = $state('');
 	let editableTags = $state('');
 	let updatingEntry = $state(false);
+	let deletingEntryId = $state<string | null>(null);
 	let updateError = $state('');
+	let deleteError = $state('');
 	let userId = $state('');
 	let entries = $state<JournalEntry[]>([]);
 	let error = $state('');
@@ -179,6 +190,7 @@
 		editableMood = entry.mood ?? '';
 		editableTags = entry.tags.join(', ');
 		updateError = '';
+		deleteError = '';
 	}
 
 	function cancelEditing() {
@@ -187,6 +199,54 @@
 		editableMood = '';
 		editableTags = '';
 		updateError = '';
+	}
+
+	async function deleteEntry(entryId: string) {
+		if (!entryId || deletingEntryId) return;
+		deleteError = '';
+		if (typeof window !== 'undefined') {
+			const confirmed = window.confirm('Är du säker på att du vill radera detta inlägg?');
+			if (!confirmed) return;
+		}
+
+		deletingEntryId = entryId;
+
+		const {
+			data: { session },
+			error: sessionError
+		} = await supabase.auth.getSession();
+
+		if (sessionError || !session?.user || !session.access_token) {
+			deleteError = 'Du behöver vara inloggad för att radera anteckningar.';
+			deletingEntryId = null;
+			return;
+		}
+
+		const response = await fetch('/api/diary/delete', {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${session.access_token}`
+			},
+			body: JSON.stringify({ id: entryId })
+		});
+
+		const result = (await response.json().catch(() => null)) as
+			| DeleteDiarySuccessResponse
+			| DeleteDiaryErrorResponse
+			| null;
+
+		if (!response.ok || !result || !result.success) {
+			deleteError = result && 'error' in result ? result.error : 'Kunde inte radera anteckningen just nu.';
+			deletingEntryId = null;
+			return;
+		}
+
+		entries = entries.filter((entry) => entry.id !== entryId);
+		if (editingEntryId === entryId) {
+			cancelEditing();
+		}
+		deletingEntryId = null;
 	}
 
 	async function saveEditedEntry() {
@@ -598,13 +658,24 @@
 						{:else}
 							<div class="mb-2 flex items-start justify-between gap-3">
 								<p class="text-xs opacity-60">{formatDateTime(entry.created_at)}</p>
-								<button
-									type="button"
-									onclick={() => startEditing(entry)}
-									class="text-xs px-2.5 py-1 rounded-lg border border-black/12 dark:border-white/12 bg-white/50 dark:bg-white/5 opacity-85 hover:opacity-100 transition-opacity"
-								>
-									Redigera
-								</button>
+								<div class="flex items-center gap-2">
+									<button
+										type="button"
+										onclick={() => startEditing(entry)}
+										disabled={deletingEntryId === entry.id}
+										class="text-xs px-2.5 py-1 rounded-lg border border-black/12 dark:border-white/12 bg-white/50 dark:bg-white/5 opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
+									>
+										Redigera
+									</button>
+									<button
+										type="button"
+										onclick={() => deleteEntry(entry.id)}
+										disabled={deletingEntryId === entry.id}
+										class="text-xs px-2.5 py-1 rounded-lg border border-red-700/40 bg-red-900/20 text-red-100 opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
+									>
+										{deletingEntryId === entry.id ? 'Raderar...' : 'Radera'}
+									</button>
+								</div>
 							</div>
 							{#if entry.mood || entry.tags.length > 0}
 								<p class="text-xs opacity-65 mb-2">
@@ -619,6 +690,9 @@
 						{/if}
 					</article>
 				{/each}
+			{/if}
+			{#if deleteError}
+				<p class="text-sm opacity-70">{deleteError}</p>
 			{/if}
 		</div>
 

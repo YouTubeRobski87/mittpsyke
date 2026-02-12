@@ -52,3 +52,16 @@ export interface UpdateDiaryErrorResponse {
 	success: false;
 	error: string;
 }
+
+export interface DeleteDiaryRequestBody {
+	id: string;
+}
+
+export interface DeleteDiarySuccessResponse {
+	success: true;
+}
+
+export interface DeleteDiaryErrorResponse {
+	success: false;
+	error: string;
+}
