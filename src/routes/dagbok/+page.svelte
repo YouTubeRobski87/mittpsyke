@@ -209,7 +209,23 @@
 			if (!confirmed) return;
 		}
 
+		const removedIndex = entries.findIndex((entry) => entry.id === entryId);
+		if (removedIndex === -1) return;
+		const removedEntry = entries[removedIndex];
+
+		entries = entries.filter((entry) => entry.id !== entryId);
+		if (editingEntryId === entryId) {
+			cancelEditing();
+		}
+
 		deletingEntryId = entryId;
+		const restoreEntry = () => {
+			if (entries.some((entry) => entry.id === removedEntry.id)) return;
+			const next = [...entries];
+			const insertAt = Math.min(removedIndex, next.length);
+			next.splice(insertAt, 0, removedEntry);
+			entries = next;
+		};
 
 		const {
 			data: { session },
@@ -218,34 +234,40 @@
 
 		if (sessionError || !session?.user || !session.access_token) {
 			deleteError = 'Du behöver vara inloggad för att radera anteckningar.';
+			restoreEntry();
 			deletingEntryId = null;
 			return;
 		}
 
-		const response = await fetch('/api/diary/delete', {
-			method: 'DELETE',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${session.access_token}`
-			},
-			body: JSON.stringify({ id: entryId })
-		});
+		try {
+			const response = await fetch('/api/diary/delete', {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session.access_token}`
+				},
+				body: JSON.stringify({ id: entryId })
+			});
 
-		const result = (await response.json().catch(() => null)) as
-			| DeleteDiarySuccessResponse
-			| DeleteDiaryErrorResponse
-			| null;
+			const result = (await response.json().catch(() => null)) as
+				| DeleteDiarySuccessResponse
+				| DeleteDiaryErrorResponse
+				| null;
 
-		if (!response.ok || !result || !result.success) {
-			deleteError = result && 'error' in result ? result.error : 'Kunde inte radera anteckningen just nu.';
+			if (!response.ok || !result || !result.success) {
+				deleteError =
+					result && 'error' in result ? result.error : 'Kunde inte radera anteckningen just nu.';
+				restoreEntry();
+				deletingEntryId = null;
+				return;
+			}
+		} catch {
+			deleteError = 'Kunde inte radera anteckningen just nu.';
+			restoreEntry();
 			deletingEntryId = null;
 			return;
 		}
 
-		entries = entries.filter((entry) => entry.id !== entryId);
-		if (editingEntryId === entryId) {
-			cancelEditing();
-		}
 		deletingEntryId = null;
 	}
 

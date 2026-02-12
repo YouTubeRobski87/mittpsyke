@@ -2,21 +2,50 @@
 	import '../app.css';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { supabase } from '$lib/supabase';
+	import type { User } from '@supabase/supabase-js';
 
 	let { children } = $props();
 
-	let user = $state<{ email?: string } | null>(null);
+	let user = $state<User | null>(null);
+	let displayName = $state<string | null>(null);
 	let mobileMenuOpen = $state(false);
+	let profileRequestVersion = 0;
+
+	async function syncUser(sessionUser: User | null) {
+		user = sessionUser;
+		const requestVersion = ++profileRequestVersion;
+
+		if (!sessionUser) {
+			displayName = null;
+			return;
+		}
+
+		const { data, error } = await supabase
+			.from('profiles')
+			.select('display_name')
+			.eq('id', sessionUser.id)
+			.maybeSingle();
+
+		if (requestVersion !== profileRequestVersion) return;
+
+		if (error) {
+			displayName = null;
+			return;
+		}
+
+		const nextName = typeof data?.display_name === 'string' ? data.display_name.trim() : '';
+		displayName = nextName.length > 0 ? nextName : null;
+	}
 
 	$effect(() => {
 		supabase.auth.getSession().then(({ data }) => {
-			user = data.session?.user ?? null;
+			void syncUser(data.session?.user ?? null);
 		});
 
 		const {
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, session) => {
-			user = session?.user ?? null;
+			void syncUser(session?.user ?? null);
 		});
 
 		return () => subscription.unsubscribe();
@@ -80,6 +109,9 @@
 		<div class="flex items-center gap-3">
 			<nav class="hidden md:flex items-center gap-4">
 				{#if user}
+					<span class="text-sm opacity-70">
+						{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}
+					</span>
 					<a href="/dagbok" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 						+ Dagbok
 					</a>
@@ -135,6 +167,7 @@
 				Akut hjälp (Stödlinjer)
 			</a>
 			{#if user}
+				<p class="text-sm opacity-70">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
 				<a
 					href="/dagbok"
 					class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
@@ -222,4 +255,5 @@
 		Akut hjälp (Stödlinjer)
 	</a>
 </footer>
+
 
