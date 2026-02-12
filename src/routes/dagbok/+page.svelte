@@ -353,16 +353,31 @@
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
 				<div>
 					<label class="block text-xs opacity-65 mb-1" for="mood">Känsla (valfritt)</label>
-					<select
-						id="mood"
-						bind:value={selectedMood}
-						class="w-full rounded-xl border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
-					>
-						<option value="">Välj känsla</option>
-						{#each moods as mood}
-							<option value={mood}>{mood}</option>
-						{/each}
-					</select>
+					<div class="relative">
+						<select
+							id="mood"
+							name="mood"
+							bind:value={selectedMood}
+							class="w-full appearance-none rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 pr-10 text-sm text-slate-100 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+						>
+							<option value="" class="bg-slate-800 text-slate-100">Välj känsla</option>
+							{#each moods as mood}
+								<option value={mood} class="bg-slate-800 text-slate-100">{mood}</option>
+							{/each}
+						</select>
+						<svg
+							aria-hidden="true"
+							viewBox="0 0 20 20"
+							fill="currentColor"
+							class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+						>
+							<path
+								fill-rule="evenodd"
+								d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+								clip-rule="evenodd"
+							/>
+						</svg>
+					</div>
 				</div>
 
 				<div>
