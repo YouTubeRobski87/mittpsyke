@@ -3,13 +3,30 @@
 	import { supabase } from '$lib/supabase';
 
 	type JournalEntry = {
+		id: string;
 		content: string;
 		created_at: string | null;
 		tags: string[];
 		mood: string | null;
 	};
 
-	const moods = ['Lugn', 'Orolig', 'Nedstämd', 'Hoppfull', 'Trött', 'Tacksam'];
+	type UpdateDiarySuccessResponse = {
+		success: true;
+		diary: {
+			id: string;
+			text: string;
+			mood: string | null;
+			tags: string[] | null;
+			created_at: string;
+		};
+	};
+
+	type UpdateDiaryErrorResponse = {
+		success: false;
+		error: string;
+	};
+
+	const moods = ['Lugn', 'Orolig', 'Nedstämd', 'Hoppfull', 'Trött', 'Tacksam', 'Arg', 'Stressad'];
 
 	let loading = $state(true);
 	let saving = $state(false);
@@ -17,6 +34,12 @@
 	let note = $state('');
 	let tagsInput = $state('');
 	let selectedMood = $state('');
+	let editingEntryId = $state<string | null>(null);
+	let editableText = $state('');
+	let editableMood = $state('');
+	let editableTags = $state('');
+	let updatingEntry = $state(false);
+	let updateError = $state('');
 	let userId = $state('');
 	let entries = $state<JournalEntry[]>([]);
 	let error = $state('');
@@ -95,7 +118,7 @@
 	async function loadEntries(uid: string) {
 		const { data, error: loadError } = await supabase
 			.from('diary')
-			.select('text, created_at, tags, mood')
+			.select('id, text, created_at, tags, mood')
 			.eq('user_id', uid)
 			.order('created_at', { ascending: false });
 
@@ -107,7 +130,7 @@
 		if (diaryTableMissing) {
 			const { data: legacyData, error: legacyLoadError } = await supabase
 				.from('journal_entries')
-				.select('content, created_at, tags, mood')
+				.select('id, content, created_at, tags, mood')
 				.eq('user_id', uid)
 				.order('created_at', { ascending: false });
 
@@ -127,6 +150,7 @@
 			}
 
 			entries = (legacyData ?? []).map((entry) => ({
+				id: typeof entry.id === 'string' ? entry.id : '',
 				content: typeof entry.content === 'string' ? entry.content : '',
 				created_at: typeof entry.created_at === 'string' ? entry.created_at : null,
 				tags: normalizeTags(entry.tags),
@@ -141,11 +165,95 @@
 		}
 
 		entries = (data ?? []).map((entry) => ({
+			id: typeof entry.id === 'string' ? entry.id : '',
 			content: typeof entry.text === 'string' ? entry.text : '',
 			created_at: typeof entry.created_at === 'string' ? entry.created_at : null,
 			tags: normalizeTags(entry.tags),
 			mood: typeof entry.mood === 'string' ? entry.mood : null
 		}));
+	}
+
+	function startEditing(entry: JournalEntry) {
+		editingEntryId = entry.id;
+		editableText = entry.content;
+		editableMood = entry.mood ?? '';
+		editableTags = entry.tags.join(', ');
+		updateError = '';
+	}
+
+	function cancelEditing() {
+		editingEntryId = null;
+		editableText = '';
+		editableMood = '';
+		editableTags = '';
+		updateError = '';
+	}
+
+	async function saveEditedEntry() {
+		const entryId = editingEntryId;
+		const content = editableText.trim();
+
+		if (!entryId || !content || updatingEntry) return;
+
+		updatingEntry = true;
+		updateError = '';
+
+		const {
+			data: { session },
+			error: sessionError
+		} = await supabase.auth.getSession();
+
+		if (sessionError || !session?.user || !session.access_token) {
+			updateError = 'Du behöver vara inloggad för att uppdatera anteckningar.';
+			updatingEntry = false;
+			return;
+		}
+
+		const parsedTags = parseTags(editableTags);
+
+		const response = await fetch('/api/diary/update', {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${session.access_token}`
+			},
+			body: JSON.stringify({
+				id: entryId,
+				text: content,
+				mood: editableMood || null,
+				tags: parsedTags.length > 0 ? parsedTags : null
+			})
+		});
+
+		const result = (await response.json().catch(() => null)) as
+			| UpdateDiarySuccessResponse
+			| UpdateDiaryErrorResponse
+			| null;
+
+		if (!response.ok || !result || !result.success) {
+			updateError =
+				result && 'error' in result ? result.error : 'Kunde inte uppdatera anteckningen just nu.';
+			updatingEntry = false;
+			return;
+		}
+
+		entries = entries.map((entry) =>
+			entry.id === result.diary.id
+				? {
+						...entry,
+						content: result.diary.text,
+						mood: result.diary.mood,
+						tags: normalizeTags(result.diary.tags),
+						created_at:
+							typeof result.diary.created_at === 'string'
+								? result.diary.created_at
+								: entry.created_at
+					}
+				: entry
+		);
+
+		updatingEntry = false;
+		cancelEditing();
 	}
 
 	async function saveEntry() {
@@ -411,19 +519,104 @@
 			{#if entries.length === 0}
 				<p class="text-sm opacity-60">Inga anteckningar ännu.</p>
 			{:else}
-				{#each entries as entry, i (`${entry.created_at ?? 'no-date'}-${i}`)}
+				{#each entries as entry (entry.id)}
 					<article class="rounded-2xl border border-black/10 dark:border-white/10 bg-white/45 dark:bg-white/5 p-4">
-						<p class="text-xs opacity-60 mb-2">{formatDateTime(entry.created_at)}</p>
-						{#if entry.mood || entry.tags.length > 0}
-							<p class="text-xs opacity-65 mb-2">
-								{#if entry.mood}<span>Känsla: {entry.mood}</span>{/if}
-								{#if entry.tags.length > 0}
-									{#if entry.mood}<span class="mx-1">·</span>{/if}
-									<span>Taggar: {entry.tags.join(', ')}</span>
-								{/if}
-							</p>
+						{#if editingEntryId === entry.id}
+							<p class="text-xs opacity-60 mb-2">{formatDateTime(entry.created_at)}</p>
+							<textarea
+								bind:value={editableText}
+								rows={5}
+								class="w-full resize-y rounded-xl border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-4 py-3 text-sm leading-relaxed outline-none focus:border-[var(--primary)] transition-colors"
+							></textarea>
+
+							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+								<div>
+									<label class="block text-xs opacity-65 mb-1" for={`edit-mood-${entry.id}`}>
+										Känsla (valfritt)
+									</label>
+									<div class="relative">
+										<select
+											id={`edit-mood-${entry.id}`}
+											bind:value={editableMood}
+											class="w-full appearance-none rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 pr-10 text-sm text-slate-100 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+										>
+											<option value="" class="bg-slate-800 text-slate-100">Välj känsla</option>
+											{#each moods as mood}
+												<option value={mood} class="bg-slate-800 text-slate-100">{mood}</option>
+											{/each}
+										</select>
+										<svg
+											aria-hidden="true"
+											viewBox="0 0 20 20"
+											fill="currentColor"
+											class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+										>
+											<path
+												fill-rule="evenodd"
+												d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+												clip-rule="evenodd"
+											/>
+										</svg>
+									</div>
+								</div>
+
+								<div>
+									<label class="block text-xs opacity-65 mb-1" for={`edit-tags-${entry.id}`}>
+										Taggar (valfritt)
+									</label>
+									<input
+										id={`edit-tags-${entry.id}`}
+										type="text"
+										bind:value={editableTags}
+										placeholder="t.ex. sömn, oro, lättnad"
+										class="w-full rounded-xl border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
+									/>
+								</div>
+							</div>
+
+							<div class="mt-3 flex justify-end gap-2">
+								<button
+									type="button"
+									onclick={cancelEditing}
+									disabled={updatingEntry}
+									class="px-4 py-2 rounded-xl border border-black/12 dark:border-white/12 bg-white/50 dark:bg-white/5 text-sm opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
+								>
+									Avbryt
+								</button>
+								<button
+									type="button"
+									onclick={saveEditedEntry}
+									disabled={updatingEntry || !editableText.trim()}
+									class="px-4 py-2 rounded-xl border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm font-medium opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
+								>
+									{updatingEntry ? 'Sparar...' : 'Spara ändringar'}
+								</button>
+							</div>
+							{#if updateError}
+								<p class="mt-2 text-sm opacity-70">{updateError}</p>
+							{/if}
+						{:else}
+							<div class="mb-2 flex items-start justify-between gap-3">
+								<p class="text-xs opacity-60">{formatDateTime(entry.created_at)}</p>
+								<button
+									type="button"
+									onclick={() => startEditing(entry)}
+									class="text-xs px-2.5 py-1 rounded-lg border border-black/12 dark:border-white/12 bg-white/50 dark:bg-white/5 opacity-85 hover:opacity-100 transition-opacity"
+								>
+									Redigera
+								</button>
+							</div>
+							{#if entry.mood || entry.tags.length > 0}
+								<p class="text-xs opacity-65 mb-2">
+									{#if entry.mood}<span>Känsla: {entry.mood}</span>{/if}
+									{#if entry.tags.length > 0}
+										{#if entry.mood}<span class="mx-1">·</span>{/if}
+										<span>Taggar: {entry.tags.join(', ')}</span>
+									{/if}
+								</p>
+							{/if}
+							<p class="text-sm leading-relaxed whitespace-pre-wrap opacity-85">{entry.content}</p>
 						{/if}
-						<p class="text-sm leading-relaxed whitespace-pre-wrap opacity-85">{entry.content}</p>
 					</article>
 				{/each}
 			{/if}

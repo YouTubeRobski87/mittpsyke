@@ -35,3 +35,20 @@ export interface CreateDiaryErrorResponse {
 	success: false;
 	error: string;
 }
+
+export interface UpdateDiaryRequestBody {
+	id: string;
+	text: string;
+	mood?: string | null;
+	tags?: string[] | null;
+}
+
+export interface UpdateDiarySuccessResponse {
+	success: true;
+	diary: DiaryRecord;
+}
+
+export interface UpdateDiaryErrorResponse {
+	success: false;
+	error: string;
+}
