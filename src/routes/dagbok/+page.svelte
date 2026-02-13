@@ -56,8 +56,9 @@
 		mood: string;
 		currentCount: number;
 		previousCount: number;
-		percentageChange: number;
+		changeCount: number;
 		direction: 'up' | 'down' | 'flat';
+		significant: boolean;
 	};
 
 	const moods = ['Lugn', 'Orolig', 'Nedstämd', 'Hoppfull', 'Trött', 'Tacksam', 'Arg', 'Stressad'];
@@ -72,6 +73,8 @@
 		Stressad: '#8b5cf6'
 	};
 	const fallbackLineColors = ['#60a5fa', '#34d399', '#a78bfa', '#f59e0b', '#22d3ee', '#f472b6'];
+	const positiveMoods = new Set(['Lugn', 'Hoppfull', 'Tacksam']);
+	const heavierMoods = new Set(['Orolig', 'Nedstämd', 'Stressad', 'Arg', 'Trött']);
 
 	let loading = $state(true);
 	let saving = $state(false);
@@ -98,6 +101,7 @@
 	let statsError = $state('');
 	let moodTimeline = $state<MoodTimelinePoint[]>([]);
 	let moodWeeklyTrends = $state<MoodWeeklyTrend[]>([]);
+	let moodReflection = $state('När du har skrivit fler inlägg kommer en reflektion här.');
 	let moodChartCanvas = $state<HTMLCanvasElement | null>(null);
 	let moodChart: ChartInstance | null = null;
 
