@@ -52,6 +52,14 @@
 		error: string;
 	};
 
+	type MoodWeeklyTrend = {
+		mood: string;
+		currentCount: number;
+		previousCount: number;
+		percentageChange: number;
+		direction: 'up' | 'down' | 'flat';
+	};
+
 	const moods = ['Lugn', 'Orolig', 'Nedstämd', 'Hoppfull', 'Trött', 'Tacksam', 'Arg', 'Stressad'];
 	const moodLineColors: Record<string, string> = {
 		Lugn: '#60a5fa',
@@ -89,6 +97,7 @@
 	let statsLoading = $state(false);
 	let statsError = $state('');
 	let moodTimeline = $state<MoodTimelinePoint[]>([]);
+	let moodWeeklyTrends = $state<MoodWeeklyTrend[]>([]);
 	let moodChartCanvas = $state<HTMLCanvasElement | null>(null);
 	let moodChart: ChartInstance | null = null;
 
