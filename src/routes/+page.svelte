@@ -30,13 +30,14 @@
 		</a>
 	</div>
 
-	<h2 class="text-xl font-semibold mb-3 text-white">
+	<h2 class="text-xl font-semibold mb-4 text-white">
 		Vad vill du fokusera på?
 	</h2>
 
-	<p class="max-w-2xl mx-auto mb-8 text-center text-sm text-gray-400 leading-relaxed">
-		Välj en kategori för att starta en trygg, specialiserad AI-chatt.
-		Varje område har en egen inriktning för att bättre möta det du går igenom.
+	<p class="max-w-xl mx-auto mb-10 text-center text-sm text-gray-400 leading-relaxed">
+		När du väljer en kategori får du möta en AI som är särskilt anpassad för just det området.
+		<br />
+		Det gör samtalet mer träffsäkert, tryggt och relevant för dig.
 	</p>
 
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
