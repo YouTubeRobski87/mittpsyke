@@ -261,22 +261,18 @@
 			.map((mood) => {
 				const currentCount = currentCounts.get(mood) ?? 0;
 				const previousCount = previousCounts.get(mood) ?? 0;
-				const percentageChange =
-					previousCount === 0
-						? currentCount === 0
-							? 0
-							: 100
-						: ((currentCount - previousCount) / previousCount) * 100;
-
+				const changeCount = currentCount - previousCount;
 				const direction: MoodWeeklyTrend['direction'] =
-					percentageChange > 0 ? 'up' : percentageChange < 0 ? 'down' : 'flat';
+					changeCount > 0 ? 'up' : changeCount < 0 ? 'down' : 'flat';
+				const significant = Math.abs(changeCount) >= 2;
 
 				return {
 					mood,
 					currentCount,
 					previousCount,
-					percentageChange,
-					direction
+					changeCount,
+					direction,
+					significant
 				};
 			})
 			.sort((a, b) => a.mood.localeCompare(b.mood, 'sv-SE'));
@@ -284,8 +280,45 @@
 		return trends;
 	}
 
-	function formatPercentageChange(value: number) {
-		return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
+	function moodLabel(mood: string) {
+		return mood.toLowerCase();
+	}
+
+	function generateMoodReflection(trends: MoodWeeklyTrend[]) {
+		const significantUps = trends
+			.filter((trend) => trend.significant && trend.direction === 'up')
+			.sort((a, b) => Math.abs(b.changeCount) - Math.abs(a.changeCount));
+		const significantDowns = trends
+			.filter((trend) => trend.significant && trend.direction === 'down')
+			.sort((a, b) => Math.abs(b.changeCount) - Math.abs(a.changeCount));
+
+		if (significantUps.length === 0 && significantDowns.length === 0) {
+			return 'Känslorna har varit mer blandade den senaste tiden.';
+		}
+
+		const positiveUp = significantUps.find((trend) => positiveMoods.has(trend.mood));
+		if (positiveUp?.mood === 'Lugn') {
+			return 'Det verkar som att lugn har fått mer utrymme.';
+		}
+		if (positiveUp) {
+			return `Det verkar som att ${moodLabel(positiveUp.mood)} har fått lite mer plats den senaste veckan.`;
+		}
+
+		const heavierUp = significantUps.find((trend) => heavierMoods.has(trend.mood));
+		if (heavierUp) {
+			return `Du har känt dig lite mer ${moodLabel(heavierUp.mood)} den senaste veckan.`;
+		}
+
+		const heavierDown = significantDowns.find((trend) => heavierMoods.has(trend.mood));
+		if (heavierDown) {
+			return `Det verkar som att ${moodLabel(heavierDown.mood)} har lättat något den senaste veckan.`;
+		}
+
+		if (significantUps.length > 0 && significantDowns.length > 0) {
+			return 'Känslorna har varit mer blandade den senaste tiden.';
+		}
+
+		return 'Det syns små skiften i dina känslor den senaste tiden.';
 	}
 
 	async function loadEntries(uid: string) {
@@ -359,6 +392,7 @@
 			statsError = 'Du behöver vara inloggad för att se statistik.';
 			moodTimeline = [];
 			moodWeeklyTrends = [];
+			moodReflection = 'När du har skrivit fler inlägg kommer en reflektion här.';
 			statsLoading = false;
 			return;
 		}
@@ -381,6 +415,7 @@
 					result && 'error' in result ? result.error : 'Kunde inte hämta känslostatistik just nu.';
 				moodTimeline = [];
 				moodWeeklyTrends = [];
+				moodReflection = 'När du har skrivit fler inlägg kommer en reflektion här.';
 				statsLoading = false;
 				return;
 			}
@@ -393,11 +428,16 @@
 					point.mood.trim().length > 0
 			);
 			moodWeeklyTrends = calculateMoodWeeklyTrends(moodTimeline);
+			moodReflection =
+				moodTimeline.length > 0
+					? generateMoodReflection(moodWeeklyTrends)
+					: 'När du har skrivit fler inlägg kommer en reflektion här.';
 			statsLoading = false;
 		} catch {
 			statsError = 'Kunde inte hämta känslostatistik just nu.';
 			moodTimeline = [];
 			moodWeeklyTrends = [];
+			moodReflection = 'När du har skrivit fler inlägg kommer en reflektion här.';
 			statsLoading = false;
 		}
 	}
@@ -917,25 +957,10 @@
 				</button>
 			</div>
 
-			{#if !statsError && moodWeeklyTrends.length > 0}
-				<div class="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-					{#each moodWeeklyTrends as trend}
-						<div class="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-2">
-							<span class="text-sm text-slate-100">{trend.mood}</span>
-							<span
-								class={`text-xs font-medium ${
-									trend.direction === 'up'
-										? 'text-emerald-300'
-										: trend.direction === 'down'
-											? 'text-rose-300'
-											: 'text-slate-300'
-								}`}
-							>
-								{trend.direction === 'up' ? '↑' : trend.direction === 'down' ? '↓' : '→'}
-								&nbsp;{formatPercentageChange(trend.percentageChange)}
-							</span>
-						</div>
-					{/each}
+			{#if !statsError}
+				<div class="mb-3 rounded-xl border border-slate-700 bg-slate-800/60 p-3">
+					<p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-300">Reflektion</p>
+					<p class="text-sm leading-relaxed text-slate-100">{moodReflection}</p>
 				</div>
 			{/if}
 
