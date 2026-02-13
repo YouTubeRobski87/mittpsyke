@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { BarChart3 } from 'lucide-svelte';
 	import type { DiaryEntry } from '$lib/state/diary';
 
 	let {
@@ -14,7 +15,8 @@
 	function truncateContent(text: string, maxLength = 120) {
 		const normalized = text.trim();
 		if (normalized.length <= maxLength) return normalized;
-		return `${normalized.slice(0, maxLength - 1).trimEnd()}…`;
+		if (maxLength <= 3) return normalized.slice(0, maxLength);
+		return `${normalized.slice(0, maxLength - 3).trimEnd()}...`;
 	}
 
 	function formatCreatedDate(createdAt: string | null) {
@@ -30,7 +32,10 @@
 </script>
 
 <aside class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/40 text-slate-100">
-	<h2 class="text-lg font-semibold mb-3">Din dagbok</h2>
+	<div class="mb-3 flex items-center gap-2 font-semibold text-gray-100">
+		<BarChart3 size={18} class="text-blue-400" aria-hidden="true" />
+		<h2 class="text-lg">Din dagbok</h2>
+	</div>
 
 	{#if loading}
 		<p class="text-sm text-slate-300/85">Laddar senaste inlägg...</p>
