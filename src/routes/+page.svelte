@@ -43,7 +43,7 @@
 			</span>
 		</div>
 
-		<p class="text-base text-gray-200 leading-relaxed">
+		<p class="text-base text-gray-100 leading-relaxed mt-4">
 			När du väljer en kategori får du möta en AI som är anpassad för just det området.
 		</p>
 
