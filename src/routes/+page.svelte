@@ -30,9 +30,12 @@
 		</a>
 	</div>
 
-	<h2 class="text-lg opacity-85 mb-5">Vad vill du fokusera på?</h2>
-	<p class="max-w-3xl mx-auto text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-7">
-		Välj en kategori för att starta en trygg, specialiserad AI-chatt.<br />
+	<h2 class="text-xl font-semibold mb-3 text-white">
+		Vad vill du fokusera på?
+	</h2>
+
+	<p class="max-w-2xl mx-auto mb-8 text-center text-sm text-gray-400 leading-relaxed">
+		Välj en kategori för att starta en trygg, specialiserad AI-chatt.
 		Varje område har en egen inriktning för att bättre möta det du går igenom.
 	</p>
 
