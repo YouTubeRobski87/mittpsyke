@@ -35,14 +35,19 @@
 		Vad vill du fokusera på?
 	</h2>
 
-	<div class="max-w-xl mx-auto mb-10 text-center text-sm text-gray-400 leading-relaxed">
-		<p class="mb-2 flex items-center justify-center gap-2 font-medium text-gray-300">
-			<MessageCircle size={18} class="text-blue-400" />
-			<span>Specialiserad AI-chatt</span>
-		</p>
-		<p>
+	<div class="max-w-xl mx-auto mb-12 text-center">
+		<div class="flex items-center justify-center gap-2 mb-3 text-blue-400">
+			<MessageCircle size={20} />
+			<span class="text-sm font-semibold tracking-wide uppercase">
+				Specialiserad AI-chatt
+			</span>
+		</div>
+
+		<p class="text-base text-gray-200 leading-relaxed">
 			När du väljer en kategori får du möta en AI som är anpassad för just det området.
-			<br />
+		</p>
+
+		<p class="mt-2 text-base text-gray-300 leading-relaxed">
 			Det gör samtalet mer träffsäkert, tryggt och relevant för dig.
 		</p>
 	</div>
