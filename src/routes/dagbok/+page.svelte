@@ -1,16 +1,11 @@
 ﻿<script lang="ts">
 	import { goto } from '$app/navigation';
+	import { loadDiaryEntries, setDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import { supabase } from '$lib/supabase';
 	import { onDestroy } from 'svelte';
 	import type { Chart as ChartInstance } from 'chart.js';
 
-	type JournalEntry = {
-		id: string;
-		content: string;
-		created_at: string | null;
-		tags: string[];
-		mood: string | null;
-	};
+	type JournalEntry = DiaryEntry;
 
 	type UpdateDiarySuccessResponse = {
 		success: true;
@@ -33,6 +28,22 @@
 	};
 
 	type DeleteDiaryErrorResponse = {
+		success: false;
+		error: string;
+	};
+
+	type CreateDiarySuccessResponse = {
+		success: true;
+		diary: {
+			id: string;
+			text: string;
+			mood: string | null;
+			tags: string[] | null;
+			created_at: string;
+		};
+	};
+
+	type CreateDiaryErrorResponse = {
 		success: false;
 		error: string;
 	};
@@ -322,61 +333,13 @@
 	}
 
 	async function loadEntries(uid: string) {
-		const { data, error: loadError } = await supabase
-			.from('diary')
-			.select('id, text, created_at, tags, mood')
-			.eq('user_id', uid)
-			.order('created_at', { ascending: false });
-
-		const diaryTableMissing =
-			loadError?.code === 'PGRST205' ||
-			loadError?.code === '42P01' ||
-			(loadError?.message ?? '').includes("Could not find the table 'public.diary'");
-
-		if (diaryTableMissing) {
-			const { data: legacyData, error: legacyLoadError } = await supabase
-				.from('journal_entries')
-				.select('id, content, created_at, tags, mood')
-				.eq('user_id', uid)
-				.order('created_at', { ascending: false });
-
-			if (legacyLoadError) {
-				const legacyTableMissing =
-					legacyLoadError.code === 'PGRST205' ||
-					legacyLoadError.code === '42P01' ||
-					(legacyLoadError.message ?? '').includes(
-						"Could not find the table 'public.journal_entries'"
-					);
-				if (legacyTableMissing) {
-					error = 'Databastabell saknas. Be administratören köra supabase/diary.sql i Supabase.';
-					return;
-				}
-				error = 'Kunde inte hämta anteckningar just nu.';
-				return;
-			}
-
-			entries = (legacyData ?? []).map((entry) => ({
-				id: typeof entry.id === 'string' ? entry.id : '',
-				content: typeof entry.content === 'string' ? entry.content : '',
-				created_at: typeof entry.created_at === 'string' ? entry.created_at : null,
-				tags: normalizeTags(entry.tags),
-				mood: typeof entry.mood === 'string' ? entry.mood : null
-			}));
-			return;
+		error = '';
+		try {
+			entries = await loadDiaryEntries(uid);
+		} catch (loadError) {
+			entries = [];
+			error = loadError instanceof Error ? loadError.message : 'Kunde inte hämta anteckningar just nu.';
 		}
-
-		if (loadError) {
-			error = 'Kunde inte hämta anteckningar just nu.';
-			return;
-		}
-
-		entries = (data ?? []).map((entry) => ({
-			id: typeof entry.id === 'string' ? entry.id : '',
-			content: typeof entry.text === 'string' ? entry.text : '',
-			created_at: typeof entry.created_at === 'string' ? entry.created_at : null,
-			tags: normalizeTags(entry.tags),
-			mood: typeof entry.mood === 'string' ? entry.mood : null
-		}));
 	}
 
 	async function loadMoodTimeline() {
@@ -558,6 +521,7 @@
 		const removedEntry = entries[removedIndex];
 
 		entries = entries.filter((entry) => entry.id !== entryId);
+		setDiaryEntries(userId, entries);
 		if (editingEntryId === entryId) {
 			cancelEditing();
 		}
@@ -569,6 +533,7 @@
 			const insertAt = Math.min(removedIndex, next.length);
 			next.splice(insertAt, 0, removedEntry);
 			entries = next;
+			setDiaryEntries(userId, entries);
 		};
 
 		const {
@@ -613,6 +578,7 @@
 		}
 
 		deletingEntryId = null;
+		setDiaryEntries(userId, entries);
 		void loadMoodTimeline();
 	}
 
@@ -678,6 +644,7 @@
 					}
 				: entry
 		);
+		setDiaryEntries(userId, entries);
 
 		updatingEntry = false;
 		cancelEditing();
@@ -718,11 +685,13 @@
 			})
 		});
 
-		if (!response.ok) {
-			const result = (await response.json().catch(() => null)) as
-				| { error?: string; success?: false }
-				| null;
-			error = result?.error || 'Kunde inte spara anteckningen just nu.';
+		const result = (await response.json().catch(() => null)) as
+			| CreateDiarySuccessResponse
+			| CreateDiaryErrorResponse
+			| null;
+
+		if (!response.ok || !result || !result.success) {
+			error = result && 'error' in result ? result.error : 'Kunde inte spara anteckningen just nu.';
 			saving = false;
 			return;
 		}
@@ -731,7 +700,17 @@
 		tagsInput = '';
 		selectedMood = '';
 		userId = session.user.id;
-		await loadEntries(session.user.id);
+
+		const createdEntry: JournalEntry = {
+			id: result.diary.id,
+			content: result.diary.text,
+			created_at: typeof result.diary.created_at === 'string' ? result.diary.created_at : null,
+			tags: normalizeTags(result.diary.tags),
+			mood: result.diary.mood
+		};
+
+		entries = [createdEntry, ...entries.filter((entry) => entry.id !== createdEntry.id)];
+		setDiaryEntries(userId, entries);
 		void loadMoodTimeline();
 		saving = false;
 	}
