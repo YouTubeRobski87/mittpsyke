@@ -213,6 +213,77 @@
 		return { labels, datasets };
 	}
 
+	function addDays(date: Date, days: number) {
+		const next = new Date(date);
+		next.setUTCDate(next.getUTCDate() + days);
+		return next;
+	}
+
+	function parseUtcDate(dateText: string) {
+		return new Date(`${dateText}T00:00:00.000Z`);
+	}
+
+	function calculateMoodWeeklyTrends(points: MoodTimelinePoint[]) {
+		if (points.length === 0) return [];
+
+		const latestDateText = points.reduce((latest, point) =>
+			point.date.localeCompare(latest) > 0 ? point.date : latest
+		, points[0].date);
+		const latestDate = parseUtcDate(latestDateText);
+		const currentStart = addDays(latestDate, -6);
+		const previousEnd = addDays(latestDate, -7);
+		const previousStart = addDays(latestDate, -13);
+
+		const currentCounts = new Map<string, number>();
+		const previousCounts = new Map<string, number>();
+
+		for (const point of points) {
+			const mood = point.mood.trim();
+			if (!mood) continue;
+
+			const pointDate = parseUtcDate(point.date);
+			if (pointDate >= currentStart && pointDate <= latestDate) {
+				currentCounts.set(mood, (currentCounts.get(mood) ?? 0) + 1);
+				continue;
+			}
+
+			if (pointDate >= previousStart && pointDate <= previousEnd) {
+				previousCounts.set(mood, (previousCounts.get(mood) ?? 0) + 1);
+			}
+		}
+
+		const moodsInTrends = new Set<string>([...currentCounts.keys(), ...previousCounts.keys()]);
+		const trends: MoodWeeklyTrend[] = Array.from(moodsInTrends.values())
+			.map((mood) => {
+				const currentCount = currentCounts.get(mood) ?? 0;
+				const previousCount = previousCounts.get(mood) ?? 0;
+				const percentageChange =
+					previousCount === 0
+						? currentCount === 0
+							? 0
+							: 100
+						: ((currentCount - previousCount) / previousCount) * 100;
+
+				const direction: MoodWeeklyTrend['direction'] =
+					percentageChange > 0 ? 'up' : percentageChange < 0 ? 'down' : 'flat';
+
+				return {
+					mood,
+					currentCount,
+					previousCount,
+					percentageChange,
+					direction
+				};
+			})
+			.sort((a, b) => a.mood.localeCompare(b.mood, 'sv-SE'));
+
+		return trends;
+	}
+
+	function formatPercentageChange(value: number) {
+		return `${value > 0 ? '+' : ''}${value.toFixed(1)}%`;
+	}
+
 	async function loadEntries(uid: string) {
 		const { data, error: loadError } = await supabase
 			.from('diary')
@@ -283,6 +354,7 @@
 		if (sessionError || !session?.access_token) {
 			statsError = 'Du behöver vara inloggad för att se statistik.';
 			moodTimeline = [];
+			moodWeeklyTrends = [];
 			statsLoading = false;
 			return;
 		}
@@ -304,6 +376,7 @@
 				statsError =
 					result && 'error' in result ? result.error : 'Kunde inte hämta känslostatistik just nu.';
 				moodTimeline = [];
+				moodWeeklyTrends = [];
 				statsLoading = false;
 				return;
 			}
@@ -315,10 +388,12 @@
 					point.date.trim().length > 0 &&
 					point.mood.trim().length > 0
 			);
+			moodWeeklyTrends = calculateMoodWeeklyTrends(moodTimeline);
 			statsLoading = false;
 		} catch {
 			statsError = 'Kunde inte hämta känslostatistik just nu.';
 			moodTimeline = [];
+			moodWeeklyTrends = [];
 			statsLoading = false;
 		}
 	}
@@ -837,6 +912,28 @@
 					{statsLoading ? 'Laddar...' : 'Uppdatera'}
 				</button>
 			</div>
+
+			{#if !statsError && moodWeeklyTrends.length > 0}
+				<div class="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+					{#each moodWeeklyTrends as trend}
+						<div class="flex items-center justify-between rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-2">
+							<span class="text-sm text-slate-100">{trend.mood}</span>
+							<span
+								class={`text-xs font-medium ${
+									trend.direction === 'up'
+										? 'text-emerald-300'
+										: trend.direction === 'down'
+											? 'text-rose-300'
+											: 'text-slate-300'
+								}`}
+							>
+								{trend.direction === 'up' ? '↑' : trend.direction === 'down' ? '↓' : '→'}
+								&nbsp;{formatPercentageChange(trend.percentageChange)}
+							</span>
+						</div>
+					{/each}
+				</div>
+			{/if}
 
 			{#if statsError}
 				<p class="text-sm text-slate-300">{statsError}</p>
