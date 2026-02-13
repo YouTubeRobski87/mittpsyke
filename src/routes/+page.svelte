@@ -1,6 +1,7 @@
 ﻿<script lang="ts">
 	import PortalCard from '$lib/components/PortalCard.svelte';
 	import { portals } from '$lib/data/portals';
+	import { MessageCircle } from 'lucide-svelte';
 </script>
 
 <svelte:head>
@@ -34,11 +35,17 @@
 		Vad vill du fokusera på?
 	</h2>
 
-	<p class="max-w-xl mx-auto mb-10 text-center text-sm text-gray-400 leading-relaxed">
-		När du väljer en kategori får du möta en AI som är särskilt anpassad för just det området.
-		<br />
-		Det gör samtalet mer träffsäkert, tryggt och relevant för dig.
-	</p>
+	<div class="max-w-xl mx-auto mb-10 text-center text-sm text-gray-400 leading-relaxed">
+		<p class="mb-2 flex items-center justify-center gap-2 font-medium text-gray-300">
+			<MessageCircle size={18} class="text-blue-400" />
+			<span>Specialiserad AI-chatt</span>
+		</p>
+		<p>
+			När du väljer en kategori får du möta en AI som är anpassad för just det området.
+			<br />
+			Det gör samtalet mer träffsäkert, tryggt och relevant för dig.
+		</p>
+	</div>
 
 	<div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
 		{#each portals as portal, i}
@@ -92,3 +99,5 @@
 	}
 }
 </style>
+
+
