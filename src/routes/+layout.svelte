@@ -291,10 +291,11 @@
 
 	.maintenance-card {
 		width: min(560px, 100%);
-		padding: 2rem 1.5rem;
+		padding: 2.5rem 3rem;
 		border-radius: 14px;
-		border: 1px solid #1f2937;
-		background: #111827;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		background: rgba(255, 255, 255, 0.03);
+		backdrop-filter: blur(6px);
 		text-align: center;
 	}
 
@@ -313,7 +314,7 @@
 
 	.maintenance-card .details {
 		margin: 0.9rem 0 0;
-		color: #94a3b8;
+		color: rgba(255, 255, 255, 0.65);
 		font-size: 0.95rem;
 		line-height: 1.5;
 	}
