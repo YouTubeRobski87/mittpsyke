@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 
-	const slug = $derived(page.params.slug);
+	const slug = $derived(page.params.slug ?? '');
 	const portal = $derived(getPortalByKey(slug));
 
 	$effect(() => {

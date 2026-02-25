@@ -3,7 +3,7 @@
 	import { getPortalByKey } from '$lib/data/portals';
 	import { page } from '$app/state';
 
-	const category = $derived(page.params.category);
+	const category = $derived(page.params.category ?? '');
 	const portal = $derived(getPortalByKey(category));
 </script>
 
