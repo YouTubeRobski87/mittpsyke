@@ -59,26 +59,14 @@
 	}
 </script>
 
-{#if UNDER_CONSTRUCTION}
-	<svelte:head>
+<svelte:head>
+	{#if UNDER_CONSTRUCTION}
 		<title>MittPsyke - Under konstruktion</title>
 		<meta
 			name="description"
 			content="MittPsyke är tillfälligt under konstruktion medan vi arbetar med förbättringar."
 		/>
-	</svelte:head>
-
-	<main class="maintenance-screen">
-		<section class="maintenance-card" aria-label="Under konstruktion">
-			<h1>MittPsyke</h1>
-			<p class="subtitle">Sidan är tillfälligt under konstruktion.</p>
-			<p class="details">
-				Vi arbetar lugnt och metodiskt med förbättringar. Tack för ditt tålamod.
-			</p>
-		</section>
-	</main>
-{:else}
-	<svelte:head>
+	{:else}
 		<title>MittPsyke – Digitalt samtalsstöd för ångest och nedstämdhet</title>
 
 		<meta
@@ -102,8 +90,20 @@
 		<meta property="og:site_name" content="MittPsyke" />
 
 		<meta name="twitter:card" content="summary" />
-	</svelte:head>
+	{/if}
+</svelte:head>
 
+{#if UNDER_CONSTRUCTION}
+	<main class="maintenance-screen">
+		<section class="maintenance-card" aria-label="Under konstruktion">
+			<h1>MittPsyke</h1>
+			<p class="subtitle">Sidan är tillfälligt under konstruktion.</p>
+			<p class="details">
+				Vi arbetar lugnt och metodiskt med förbättringar. Tack för ditt tålamod.
+			</p>
+		</section>
+	</main>
+{:else}
 	<header class="sticky top-0 z-30 border-b border-black/8 bg-white/75 dark:bg-black/35 backdrop-blur">
 		<div class="flex items-center justify-between gap-3 px-5 py-3.5">
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
