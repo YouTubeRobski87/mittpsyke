@@ -2,15 +2,17 @@
 	<title>MittPsyke - Under konstruktion</title>
 	<meta
 		name="description"
-		content="MittPsyke är tillfälligt under konstruktion medan vi arbetar med förbättringar."
+		content="MittPsyke &auml;r tillf&auml;lligt under konstruktion medan vi arbetar med f&ouml;rb&auml;ttringar."
 	/>
 </svelte:head>
 
 <main class="maintenance-screen">
 	<section class="maintenance-card" aria-label="Under konstruktion">
 		<h1>MittPsyke</h1>
-		<p class="subtitle">Sidan är tillfälligt under konstruktion.</p>
-		<p class="details">Vi arbetar lugnt och metodiskt med förbättringar. Tack för ditt tålamod.</p>
+		<p class="subtitle">Sidan &auml;r tillf&auml;lligt under konstruktion.</p>
+		<p class="details">
+			Vi arbetar lugnt och metodiskt med f&ouml;rb&auml;ttringar. Tack f&ouml;r ditt t&aring;lamod.
+		</p>
 	</section>
 </main>
 
@@ -62,4 +64,4 @@
 		line-height: 1.5;
 		color: #94a3b8;
 	}
- </style>
+</style>
