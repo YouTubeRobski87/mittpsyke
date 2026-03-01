@@ -3,34 +3,30 @@
 </script>
 
 <svelte:head>
-	<title>MittPsyke - Tryggt st?d f?r ditt psyke</title>
+	<title>MittPsyke - Tryggt st&ouml;d f&ouml;r ditt psyke</title>
 </svelte:head>
 
 <main class="staging-look">
 	<section class="hero-section" aria-label="Introduktion till MittPsyke">
 		<div class="hero-content">
-			<h1>V?lkommen till MittPsyke</h1>
+			<h1>V&auml;lkommen till MittPsyke</h1>
 			<p>
-				Hitta r?tt st?d f?r psykiskt m?ende p? ett enkelt och tryggt s?tt.
+				Hitta r&auml;tt st&ouml;d f&ouml;r psykiskt m&aring;ende p&aring; ett enkelt och tryggt s&auml;tt.
 			</p>
-			<a href="/om-mittpsyke" class="hero-cta">L?s mer om MittPsyke</a>
+			<a href="/om-mittpsyke" class="hero-cta">L&auml;s mer om MittPsyke</a>
 		</div>
 	</section>
 
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
-			<img
-				src="/assets/home/intro.jpg"
-				alt="Person i samtal"
-				loading="lazy"
-			/>
+			<img src="/assets/home/intro.jpg" alt="Person i samtal" loading="lazy" />
 			<div>
 				<h2>Ett tryggt rum online</h2>
 				<p>
-					MittPsyke ?r byggt f?r att ge lugn, struktur och varsamt st?d n?r tankarna blir tunga.
+					MittPsyke &auml;r byggt f&ouml;r att ge lugn, struktur och varsamt st&ouml;d n&auml;r tankarna blir tunga.
 				</p>
 				<p>
-					Du v?ljer sj?lv tempo, fokus och vilken inriktning som passar din situation just nu.
+					Du v&auml;ljer sj&auml;lv tempo, fokus och vilken inriktning som passar din situation just nu.
 				</p>
 			</div>
 		</div>
@@ -39,30 +35,26 @@
 	<section class="band band-brown">
 		<div class="narrow support-grid">
 			<div>
-				<h2>Din v?g till psykiskt st?d</h2>
+				<h2>Din v&auml;g till psykiskt st&ouml;d</h2>
 				<p>
-					Varje portal ?r specialiserad f?r att skapa ett mer tr?ffs?kert och tryggt samtal.
+					Varje portal &auml;r specialiserad f&ouml;r att skapa ett mer tr&auml;ffs&auml;kert och tryggt samtal.
 				</p>
 				<ul>
-					<li>stabilt st?d f?r oro och ?ngest</li>
-					<li>varsam struktur vid nedst?mdhet</li>
-					<li>fokus p? trygghet och gr?nss?ttning vid trauma</li>
+					<li>stabilt st&ouml;d f&ouml;r oro och &aring;ngest</li>
+					<li>varsam struktur vid nedst&auml;mdhet</li>
+					<li>fokus p&aring; trygghet och gr&auml;nss&auml;ttning vid trauma</li>
 				</ul>
 				<p>
-					M?let ?r inte snabba svar, utan ett h?llbart samtal d?r du kan landa och ta n?sta steg.
+					M&aring;let &auml;r inte snabba svar, utan ett h&aring;llbart samtal d&auml;r du kan landa och ta n&auml;sta steg.
 				</p>
 			</div>
-			<img
-				src="/assets/home/support.jpg"
-				alt="Reflektion och digitalt samtal"
-				loading="lazy"
-			/>
+			<img src="/assets/home/support.jpg" alt="Reflektion och digitalt samtal" loading="lazy" />
 		</div>
 	</section>
 
 	<section class="band band-taupe">
 		<div class="narrow">
-			<h2 class="cards-title">V?lj fokusomr?de</h2>
+			<h2 class="cards-title">V&auml;lj fokusomr&aring;de</h2>
 			<div class="portal-cards">
 				{#each portals as portal}
 					<a class="portal-card" href={`/chat/${portal.key}`}>
@@ -100,13 +92,6 @@
 		padding: 1.3rem 1.6rem 1.6rem;
 		background: rgba(39, 45, 53, 0.56);
 		border: 1px solid rgba(255, 255, 255, 0.18);
-	}
-
-	.hero-logo {
-		display: block;
-		width: min(220px, 60%);
-		margin: 0 auto 1rem;
-		opacity: 0.84;
 	}
 
 	h1 {
@@ -260,5 +245,3 @@
 		}
 	}
 </style>
-
-
