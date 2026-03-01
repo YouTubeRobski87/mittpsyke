@@ -9,7 +9,6 @@
 <main class="staging-look">
 	<section class="hero-section" aria-label="Introduktion till MittPsyke">
 		<div class="hero-content">
-			<img src="/assets/MittPsykeLogo1.png" alt="MittPsyke logotyp" class="hero-logo" />
 			<h1>Valkommen till MittPsyke</h1>
 			<p>
 				Hitta ratt stod for psykiskt maende pa ett enkelt och tryggt satt.
