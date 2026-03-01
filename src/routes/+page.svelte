@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { portals } from '$lib/data/portals';
 </script>
 
@@ -21,7 +21,7 @@
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
 			<img
-				src="https://images.unsplash.com/photo-1516302752625-fcc3c50ae61f?auto=format&fit=crop&w=960&q=80"
+				src="/assets/home/intro.jpg"
 				alt="Person i samtal"
 				loading="lazy"
 			/>
@@ -50,11 +50,11 @@
 					<li>fokus pa trygghet och granssattning vid trauma</li>
 				</ul>
 				<p>
-					M�let ar inte snabba svar, utan ett hallbart samtal dar du kan landa och ta nasta steg.
+					Målet ar inte snabba svar, utan ett hallbart samtal dar du kan landa och ta nasta steg.
 				</p>
 			</div>
 			<img
-				src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=960&q=80"
+				src="/assets/home/support.jpg"
 				alt="Reflektion och digitalt samtal"
 				loading="lazy"
 			/>
@@ -90,7 +90,7 @@
 		place-items: center;
 		padding: 2rem 1.25rem;
 		background-image: linear-gradient(rgba(28, 28, 28, 0.52), rgba(23, 23, 23, 0.58)),
-			url('https://images.unsplash.com/photo-1452857297128-d9c29adba80b?auto=format&fit=crop&w=1800&q=80');
+			url('/assets/home/hero.jpg');
 		background-size: cover;
 		background-position: center;
 	}
@@ -261,3 +261,4 @@
 		}
 	}
 </style>
+
