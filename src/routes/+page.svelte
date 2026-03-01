@@ -3,17 +3,17 @@
 </script>
 
 <svelte:head>
-	<title>MittPsyke - Tryggt stod for ditt psyke</title>
+	<title>MittPsyke - Tryggt stöd för ditt psyke</title>
 </svelte:head>
 
 <main class="staging-look">
 	<section class="hero-section" aria-label="Introduktion till MittPsyke">
 		<div class="hero-content">
-			<h1>Valkommen till MittPsyke</h1>
+			<h1>Välkommen till MittPsyke</h1>
 			<p>
-				Hitta ratt stod for psykiskt maende pa ett enkelt och tryggt satt.
+				Hitta rätt stöd för psykiskt mående på ett enkelt och tryggt sätt.
 			</p>
-			<a href="/om-mittpsyke" class="hero-cta">Las mer om MittPsyke</a>
+			<a href="/om-mittpsyke" class="hero-cta">Läs mer om MittPsyke</a>
 		</div>
 	</section>
 
@@ -27,10 +27,10 @@
 			<div>
 				<h2>Ett tryggt rum online</h2>
 				<p>
-					MittPsyke ar byggt for att ge lugn, struktur och varsamt stod nar tankarna blir tunga.
+					MittPsyke är byggt för att ge lugn, struktur och varsamt stöd när tankarna blir tunga.
 				</p>
 				<p>
-					Du valjer sjalv tempo, fokus och vilken inriktning som passar din situation just nu.
+					Du väljer själv tempo, fokus och vilken inriktning som passar din situation just nu.
 				</p>
 			</div>
 		</div>
@@ -39,17 +39,17 @@
 	<section class="band band-brown">
 		<div class="narrow support-grid">
 			<div>
-				<h2>Din vag till psykiskt stod</h2>
+				<h2>Din väg till psykiskt stöd</h2>
 				<p>
-					Varje portal ar specialiserad for att skapa ett mer traffsakert och tryggt samtal.
+					Varje portal är specialiserad för att skapa ett mer träffsäkert och tryggt samtal.
 				</p>
 				<ul>
-					<li>stabilt stod for oro och angest</li>
-					<li>varsam struktur vid nedstamdhet</li>
-					<li>fokus pa trygghet och granssattning vid trauma</li>
+					<li>stabilt stöd för oro och ångest</li>
+					<li>varsam struktur vid nedstämdhet</li>
+					<li>fokus på trygghet och gränssättning vid trauma</li>
 				</ul>
 				<p>
-					Målet ar inte snabba svar, utan ett hallbart samtal dar du kan landa och ta nasta steg.
+					Målet är inte snabba svar, utan ett hållbart samtal där du kan landa och ta nästa steg.
 				</p>
 			</div>
 			<img
@@ -62,7 +62,7 @@
 
 	<section class="band band-taupe">
 		<div class="narrow">
-			<h2 class="cards-title">Valj fokusomrade</h2>
+			<h2 class="cards-title">Välj fokusområde</h2>
 			<div class="portal-cards">
 				{#each portals as portal}
 					<a class="portal-card" href={`/chat/${portal.key}`}>

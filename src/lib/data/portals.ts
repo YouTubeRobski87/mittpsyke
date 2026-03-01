@@ -1,9 +1,9 @@
-import type { Portal } from '$lib/types';
+﻿import type { Portal } from '$lib/types';
 
 export const portals: Portal[] = [
 	{
 		key: 'a',
-		title: 'Angest',
+		title: 'Ångest',
 		description: 'Trygghet, lugn och att landa i kroppen',
 		icon: '💙',
 		category: 'A'
