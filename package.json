@@ -9,9 +9,9 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
-    "@sveltejs/adapter-node": "^0.0.18",
+    "@sveltejs/adapter-node": "^5.5.2",
     "@sveltejs/adapter-vercel": "^6.3.3",
-    "@sveltejs/kit": "^0.0.30",
+    "@sveltejs/kit": "^2.53.4",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@tailwindcss/vite": "^4.0.0",
     "svelte": "^5.0.0",
@@ -31,3 +31,4 @@
   },
   "type": "module"
 }
+
