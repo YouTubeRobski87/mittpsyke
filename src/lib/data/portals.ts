@@ -3,23 +3,23 @@ import type { Portal } from '$lib/types';
 export const portals: Portal[] = [
 	{
 		key: 'a',
-		title: 'Ångest',
+		title: '?ngest',
 		description: 'Trygghet, lugn och att landa i kroppen',
-		icon: '💙',
+		icon: '??',
 		category: 'A'
 	},
 	{
 		key: 'b',
 		title: 'Depression',
-		description: 'Varsam kontakt, energi och självvärde',
-		icon: '🌧️',
+		description: 'Varsam kontakt, energi och sj?lvv?rde',
+		icon: '???',
 		category: 'B'
 	},
 	{
 		key: 'e',
 		title: 'Trauma',
-		description: 'Kontroll, gränser och säkerhet',
-		icon: '🛡️',
+		description: 'Kontroll, gr?nser och s?kerhet',
+		icon: '???',
 		category: 'E'
 	}
 ];
