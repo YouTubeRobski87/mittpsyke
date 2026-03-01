@@ -1,4 +1,4 @@
-﻿import type { Portal } from '$lib/types';
+import type { Portal } from '$lib/types';
 
 export const portals: Portal[] = [
 	{

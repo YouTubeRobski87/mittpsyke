@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { portals } from '$lib/data/portals';
 </script>
 
