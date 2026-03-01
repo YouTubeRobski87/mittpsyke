@@ -90,7 +90,7 @@
 		place-items: center;
 		padding: 2rem 1.25rem;
 		background-image: linear-gradient(rgba(28, 28, 28, 0.52), rgba(23, 23, 23, 0.58)),
-			url('/assets/home/hero.jpg');
+			url('/assets/home/intro.jpg');
 		background-size: cover;
 		background-position: center;
 	}

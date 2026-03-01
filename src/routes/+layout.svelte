@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import '../app.css';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { supabase } from '$lib/supabase';
@@ -64,14 +64,14 @@
 		<title>MittPsyke - Under konstruktion</title>
 		<meta
 			name="description"
-			content="MittPsyke är tillfälligt under konstruktion medan vi arbetar med förbättringar."
+			content="MittPsyke Ã¤r tillfÃ¤lligt under konstruktion medan vi arbetar med fÃ¶rbÃ¤ttringar."
 		/>
 	{:else}
-		<title>MittPsyke – Digitalt samtalsstöd för ångest och nedstämdhet</title>
+		<title>MittPsyke â€“ Digitalt samtalsstÃ¶d fÃ¶r Ã¥ngest och nedstÃ¤mdhet</title>
 
 		<meta
 			name="description"
-			content="MittPsyke är ett lugnt och tryggt digitalt samtalsstöd för ångest, nedstämdhet och trauma. Samtala i din egen takt."
+			content="MittPsyke Ã¤r ett lugnt och tryggt digitalt samtalsstÃ¶d fÃ¶r Ã¥ngest, nedstÃ¤mdhet och trauma. Samtala i din egen takt."
 		/>
 
 		<meta name="robots" content="index, follow" />
@@ -80,10 +80,10 @@
 
 		<link rel="canonical" href="https://mittpsyke.se" />
 
-		<meta property="og:title" content="MittPsyke – Digitalt samtalsstöd" />
+		<meta property="og:title" content="MittPsyke â€“ Digitalt samtalsstÃ¶d" />
 		<meta
 			property="og:description"
-			content="Ett lugnt och tryggt digitalt stöd för ångest, nedstämdhet och trauma."
+			content="Ett lugnt och tryggt digitalt stÃ¶d fÃ¶r Ã¥ngest, nedstÃ¤mdhet och trauma."
 		/>
 		<meta property="og:type" content="website" />
 		<meta property="og:url" content="https://mittpsyke.se" />
@@ -97,9 +97,9 @@
 	<main class="maintenance-screen">
 		<section class="maintenance-card" aria-label="Under konstruktion">
 			<h1>MittPsyke</h1>
-			<p class="subtitle">Sidan är tillfälligt under konstruktion.</p>
+			<p class="subtitle">Sidan Ã¤r tillfÃ¤lligt under konstruktion.</p>
 			<p class="details">
-				Vi arbetar lugnt och metodiskt med förbättringar. Tack för ditt tålamod.
+				Vi arbetar lugnt och metodiskt med fÃ¶rbÃ¤ttringar. Tack fÃ¶r ditt tÃ¥lamod.
 			</p>
 		</section>
 	</main>
@@ -124,7 +124,7 @@
 						rel="noopener noreferrer"
 						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
 					>
-						Akut hjälp (Stödlinjer)
+						Akut hjÃ¤lp (StÃ¶dlinjer)
 					</a>
 				</nav>
 			</div>
@@ -133,7 +133,7 @@
 				<nav class="hidden md:flex items-center gap-4">
 					{#if user}
 						<span class="text-sm opacity-70">
-							{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}
+							{displayName ? `VÃ¤lkommen, ${displayName}` : 'VÃ¤lkommen tillbaka'}
 						</span>
 						<a href="/dagbok" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							+ Dagbok
@@ -162,11 +162,11 @@
 				<button
 					type="button"
 					class="md:hidden inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/10 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
-					aria-label="Öppna meny"
+					aria-label="Ã–ppna meny"
 					aria-expanded={mobileMenuOpen}
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 				>
-					☰
+					â˜°
 				</button>
 			</div>
 		</div>
@@ -187,10 +187,10 @@
 					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
 					onclick={() => (mobileMenuOpen = false)}
 				>
-					Akut hjälp (Stödlinjer)
+					Akut hjÃ¤lp (StÃ¶dlinjer)
 				</a>
 				{#if user}
-					<p class="text-sm opacity-70">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
+					<p class="text-sm opacity-70">{displayName ? `VÃ¤lkommen, ${displayName}` : 'VÃ¤lkommen tillbaka'}</p>
 					<a
 						href="/dagbok"
 						class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
@@ -241,21 +241,21 @@
 
 	<section class="mt-10 px-5">
 		<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
-			MittPsyke är ett AI-baserat samtalsstöd och ersätter inte medicinsk eller psykologisk vård.
-			Vid akut fara: ring 112. Vid behov av vårdråd: 1177.
+			MittPsyke Ã¤r ett AI-baserat samtalsstÃ¶d och ersÃ¤tter inte medicinsk eller psykologisk vÃ¥rd.
+			Vid akut fara: ring 112. Vid behov av vÃ¥rdrÃ¥d: 1177.
 			<a
 				href="https://stodlinjer.se"
 				target="_blank"
 				rel="noopener noreferrer"
 				class="underline hover:no-underline ml-1"
 			>
-				Akut hjälp
+				Akut hjÃ¤lp
 			</a>
 		</p>
 	</section>
 
 	<footer class="border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
-		© {new Date().getFullYear()} MittPsyke. Alla rättigheter förbehållna.
+		Â© {new Date().getFullYear()} MittPsyke. Alla rÃ¤ttigheter fÃ¶rbehÃ¥llna.
 		<span class="mx-2">&middot;</span>
 		<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
 			Om MittPsyke
@@ -275,7 +275,7 @@
 			rel="noopener noreferrer"
 			class="text-sm font-medium text-teal-700/90 dark:text-teal-300/90 opacity-90 hover:opacity-100 transition-opacity"
 		>
-			Akut hjälp (Stödlinjer)
+			Akut hjÃ¤lp (StÃ¶dlinjer)
 		</a>
 	</footer>
 {/if}
@@ -319,3 +319,4 @@
 		line-height: 1.5;
 	}
 </style>
+
