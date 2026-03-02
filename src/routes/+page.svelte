@@ -26,7 +26,7 @@
 						<img
 							class="portal-cover"
 							src={portal.image}
-							alt={`Bild f&ouml;r ${portal.title}`}
+							alt={`Bild for ${portal.title}`}
 							loading="lazy"
 						/>
 						<span class="portal-icon">{portal.icon}</span>
