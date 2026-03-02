@@ -133,7 +133,7 @@
 	}
 
 	.band-olive {
-		background: #7e8c5a;
+		background: #6f92ae;
 	}
 
 	.band-brown {
