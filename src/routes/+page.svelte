@@ -17,22 +17,29 @@
 		</div>
 	</section>
 
-	<section class="band band-taupe">
-		<div class="narrow cards-narrow">
-			<h2 class="cards-title">V&auml;lj fokusomr&aring;de</h2>
-			<div class="portal-cards">
+	<section class="focus-section">
+		<div class="narrow cards-narrow focus-content">
+			<header class="focus-header">
+				<h2>V&auml;lj fokusomr&aring;de</h2>
+				<p>
+					Du beh&ouml;ver inte f&ouml;rklara allt. V&auml;lj det som k&auml;nns n&auml;rmast just nu.
+				</p>
+			</header>
+			<div class="focus-cards">
 				{#each portals as portal}
-					<a class="portal-card" href={`/chat/${portal.key}`}>
+					<a class="focus-card" href={`/chat/${portal.key}`}>
 						<img
-							class="portal-cover"
+							class="focus-cover"
 							src={portal.image}
 							alt={`Bild for ${portal.title}`}
 							loading="lazy"
 						/>
-						<span class="portal-icon">{portal.icon}</span>
-						<h3>{portal.title}</h3>
-						<p>{portal.description}</p>
-						<span class="portal-link">Starta samtal</span>
+						<div class="focus-body">
+							<span class="focus-icon">{portal.icon}</span>
+							<h3>{portal.title}</h3>
+							<p>{portal.description}</p>
+							<span class="focus-cta">B&ouml;rja skriva</span>
+						</div>
 					</a>
 				{/each}
 			</div>
@@ -140,10 +147,6 @@
 		background: #56453d;
 	}
 
-	.band-taupe {
-		background: #78645a;
-	}
-
 	.narrow {
 		width: min(760px, 100%);
 		margin: 0 auto;
@@ -189,65 +192,102 @@
 		color: rgba(255, 255, 255, 0.9);
 	}
 
-	.cards-title {
-		margin-bottom: 1.2rem;
-		text-align: center;
+	.focus-section {
+		background: #f4f6f7;
+		padding: clamp(3.8rem, 10vw, 6.8rem) 1.25rem;
 	}
 
-	.portal-cards {
+	.focus-content {
+		color: #2c3338;
+	}
+
+	.focus-header {
+		max-width: 62ch;
+		margin: 0 auto 1.5rem;
+		text-align: left;
+	}
+
+	.focus-header h2 {
+		margin: 0;
+		color: #263036;
+		font-size: clamp(1.55rem, 3vw, 2.2rem);
+	}
+
+	.focus-header p {
+		margin: 0.75rem 0 0;
+		color: #54626b;
+		line-height: 1.75;
+		font-size: 1rem;
+	}
+
+	.focus-cards {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(220px, 1fr));
-		gap: clamp(1.2rem, 2.6vw, 2rem);
+		grid-template-columns: 1fr;
+		gap: 0.95rem;
 	}
 
-	.portal-card {
+	.focus-card {
 		display: block;
-		padding: 1rem 1rem 1.25rem;
-		background: rgba(33, 29, 27, 0.46);
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		color: inherit;
+		padding: 0.85rem;
+		border-radius: 16px;
+		background: #ffffff;
+		border: 1px solid #e7ecef;
+		color: #2c3338;
+		transition: transform 180ms ease, background-color 180ms ease;
 	}
 
-	.portal-cover {
+	.focus-card:hover {
+		transform: translateY(-2px);
+		background: #fafcfc;
+	}
+
+	.focus-cover {
 		display: block;
 		width: 100%;
-		height: clamp(170px, 18vw, 220px);
-		margin-bottom: 0.95rem;
+		height: clamp(150px, 28vw, 178px);
 		object-fit: cover;
-		border: 1px solid rgba(255, 255, 255, 0.18);
+		border-radius: 12px;
+		filter: saturate(0.88) contrast(0.96);
 	}
 
-	.portal-icon {
+	.focus-body {
+		padding: 0.9rem 0.2rem 0.25rem;
+	}
+
+	.focus-icon {
 		display: inline-flex;
-		width: 2.25rem;
-		height: 2.25rem;
+		width: 2.05rem;
+		height: 2.05rem;
 		align-items: center;
 		justify-content: center;
-		font-size: 1.35rem;
-		margin-bottom: 0.7rem;
-		background: rgba(255, 255, 255, 0.16);
+		font-size: 1.1rem;
+		margin-bottom: 0.58rem;
+		background: #edf1f2;
 		border-radius: 999px;
 	}
 
-	.portal-card h3 {
+	.focus-card h3 {
 		margin: 0;
-		font-size: 1.2rem;
+		color: #273237;
+		font-size: 1.1rem;
 	}
 
-	.portal-card p {
-		margin: 0.7rem 0 0;
-		font-size: 1.02rem;
-		line-height: 1.65;
+	.focus-card p {
+		margin: 0.6rem 0 0;
+		font-size: 0.95rem;
+		line-height: 1.7;
+		color: #516069;
 	}
 
-	.portal-link {
+	.focus-cta {
 		display: inline-block;
-		margin-top: 1.05rem;
-		font-size: 0.84rem;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: #d7e8b8;
+		margin-top: 0.85rem;
+		padding: 0.38rem 0.72rem;
+		border-radius: 999px;
+		background: #e7f1ee;
+		color: #2e5850;
+		font-size: 0.82rem;
+		font-weight: 600;
 	}
 
 	@media (max-width: 900px) {
@@ -256,12 +296,26 @@
 			grid-template-columns: 1fr;
 		}
 
-		.portal-cards {
-			grid-template-columns: 1fr;
-		}
-
 		.hero-content {
 			padding: 1.1rem 1rem 1.2rem;
+		}
+	}
+
+	@media (min-width: 700px) {
+		.focus-cards {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1.1rem;
+		}
+
+		.focus-header {
+			margin-bottom: 1.8rem;
+		}
+	}
+
+	@media (min-width: 1040px) {
+		.focus-cards {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 1.25rem;
 		}
 	}
 </style>

@@ -159,16 +159,16 @@
 		<section class="panel welcome-panel">
 			<p class="welcome-kicker">Min portal</p>
 			<h1>Hej {firstName}</h1>
-			<p class="welcome-subtitle">Hur kanns det idag? Du kan ta allt i din egen takt.</p>
+			<p class="welcome-subtitle">Hur k&auml;nns det idag? Du kan ta allt i din egen takt.</p>
 		</section>
 
 		<!-- Quick Actions Section -->
 		<section class="section-block">
 			<h2>Snabba val</h2>
 			<div class="quick-actions">
-				<a class="action action-primary" href="/dagbok">Borja skriva</a>
+				<a class="action action-primary" href="/dagbok">B&ouml;rja skriva</a>
 				<a class="action action-secondary" href={continueChatHref}>
-					Fortsatt senaste samtal
+					Forts&auml;tt senaste samtal
 					<span>{continuePortal ? continuePortal.title : 'Samtal'}</span>
 				</a>
 			</div>
@@ -178,13 +178,13 @@
 		<section class="section-block">
 			<div class="section-header">
 				<h2>Mina reflektioner</h2>
-				<a href="/dagbok">Oppna dagbok</a>
+				<a href="/dagbok">&Ouml;ppna dagbok</a>
 			</div>
 
 			{#if reflectionPreview.length === 0}
 				<div class="empty-state">
-					<p>Du har inga sparade reflektioner annu.</p>
-					<p>Nar du skriver forsta gangen visas dina senaste anteckningar har.</p>
+					<p>Du har inga sparade reflektioner &auml;nnu.</p>
+					<p>N&auml;r du skriver f&ouml;rsta g&aring;ngen visas dina senaste anteckningar h&auml;r.</p>
 				</div>
 			{:else}
 				<ul class="reflection-list">
@@ -201,7 +201,7 @@
 
 		<!-- Emotional Overview Section -->
 		<section class="section-block">
-			<h2>Kanslooversikt</h2>
+			<h2>K&auml;nslo&ouml;versikt</h2>
 			<div class="mood-panel">
 				<div class="mood-indicators" aria-hidden="true">
 					{#if moodTrail.length === 0}
@@ -220,8 +220,8 @@
 
 		<!-- Support Bridge Section -->
 		<section class="panel support-panel">
-			<p>Behover du prata med nagon direkt?</p>
-			<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Oppna Stodlinjer</a>
+			<p>Beh&ouml;ver du prata med n&aring;gon direkt?</p>
+			<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">&Ouml;ppna St&ouml;dlinjer</a>
 		</section>
 	{/if}
 </main>
