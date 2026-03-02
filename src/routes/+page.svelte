@@ -18,7 +18,7 @@
 	</section>
 
 	<section class="band band-taupe">
-		<div class="narrow">
+		<div class="narrow cards-narrow">
 			<h2 class="cards-title">V&auml;lj fokusomr&aring;de</h2>
 			<div class="portal-cards">
 				{#each portals as portal}
@@ -149,6 +149,10 @@
 		margin: 0 auto;
 	}
 
+	.cards-narrow {
+		width: min(1080px, 100%);
+	}
+
 	.intro-grid,
 	.support-grid {
 		display: grid;
@@ -192,13 +196,13 @@
 
 	.portal-cards {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.9rem;
+		grid-template-columns: repeat(3, minmax(220px, 1fr));
+		gap: clamp(1.2rem, 2.6vw, 2rem);
 	}
 
 	.portal-card {
 		display: block;
-		padding: 0.75rem 0.75rem 1rem;
+		padding: 1rem 1rem 1.25rem;
 		background: rgba(33, 29, 27, 0.46);
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		color: inherit;
@@ -207,39 +211,39 @@
 	.portal-cover {
 		display: block;
 		width: 100%;
-		height: 150px;
-		margin-bottom: 0.75rem;
+		height: clamp(170px, 18vw, 220px);
+		margin-bottom: 0.95rem;
 		object-fit: cover;
 		border: 1px solid rgba(255, 255, 255, 0.18);
 	}
 
 	.portal-icon {
 		display: inline-flex;
-		width: 2rem;
-		height: 2rem;
+		width: 2.25rem;
+		height: 2.25rem;
 		align-items: center;
 		justify-content: center;
-		font-size: 1.25rem;
-		margin-bottom: 0.55rem;
+		font-size: 1.35rem;
+		margin-bottom: 0.7rem;
 		background: rgba(255, 255, 255, 0.16);
 		border-radius: 999px;
 	}
 
 	.portal-card h3 {
 		margin: 0;
-		font-size: 1.05rem;
+		font-size: 1.2rem;
 	}
 
 	.portal-card p {
-		margin: 0.55rem 0 0;
-		font-size: 0.94rem;
-		line-height: 1.55;
+		margin: 0.7rem 0 0;
+		font-size: 1.02rem;
+		line-height: 1.65;
 	}
 
 	.portal-link {
 		display: inline-block;
-		margin-top: 0.8rem;
-		font-size: 0.76rem;
+		margin-top: 1.05rem;
+		font-size: 0.84rem;
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
