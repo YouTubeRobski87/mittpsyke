@@ -6,9 +6,18 @@
 	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import { getPortalByKey } from '$lib/data/portals';
 
+	type RecentConversation = {
+		id: string;
+		category: string | null;
+		created_at: string | null;
+		title: string | null;
+		displayTitle: string;
+	};
+
 	let loading = $state(true);
 	let firstName = $state('du');
 	let latestEntries = $state<DiaryEntry[]>([]);
+	let recentConversations = $state<RecentConversation[]>([]);
 	let lastChatCategory = $state('a');
 	let lastConversationId = $state<string | null>(null);
 
@@ -72,6 +81,39 @@
 		const text = value.trim();
 		if (text.length <= max) return text;
 		return `${text.slice(0, max - 1).trimEnd()}...`;
+	}
+
+	function conversationTitleFromText(value: string, max = 60) {
+		const normalized = value.trim().replace(/\s+/g, ' ');
+		if (!normalized) return 'Samtal';
+		return normalized.length <= max ? normalized : `${normalized.slice(0, max - 1).trimEnd()}...`;
+	}
+
+	function toRouteCategory(value: string | null | undefined) {
+		const normalized = (value ?? '').trim().toLowerCase();
+		if (normalized === 'b') return 'b';
+		if (normalized === 'e') return 'e';
+		return 'a';
+	}
+
+	function formatConversationCategory(value: string | null | undefined) {
+		const portal = getPortalByKey(toRouteCategory(value));
+		return portal ? portal.title : 'Samtal';
+	}
+
+	function formatDate(value: string | null) {
+		if (!value) return 'Okänt datum';
+
+		const d = new Date(value);
+		if (Number.isNaN(d.getTime())) return 'Okänt datum';
+
+		const now = new Date();
+		const diff = (now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
+
+		if (diff < 1) return 'Idag';
+		if (diff < 2) return 'Igår';
+		if (diff < 7) return `${Math.floor(diff)} dagar sedan`;
+		return d.toLocaleDateString('sv-SE');
 	}
 
 	function moodIcon(value: string) {
@@ -139,11 +181,88 @@
 
 			const resolvedName = pickUserName(session.user, (profile?.display_name as string | null) ?? null);
 			const nextEntries = await loadDiaryEntries(session.user.id);
+			let nextConversations: RecentConversation[] = [];
+
+			const { data: conversations, error: conversationsError } = await supabase
+				.from('conversations')
+				.select('id, category, created_at, title')
+				.eq('user_id', session.user.id)
+				.order('created_at', { ascending: false })
+				.limit(5);
+
+			if (conversationsError) {
+				const missingTitleColumn =
+					conversationsError.code === 'PGRST204' ||
+					conversationsError.code === '42703' ||
+					(conversationsError.message ?? '').toLowerCase().includes('title');
+
+				if (missingTitleColumn) {
+					const { data: fallbackConversations, error: fallbackError } = await supabase
+						.from('conversations')
+						.select('id, category, created_at')
+						.eq('user_id', session.user.id)
+						.order('created_at', { ascending: false })
+						.limit(5);
+
+					if (!fallbackError && fallbackConversations) {
+						nextConversations = fallbackConversations.map((conversation) => ({
+							id: conversation.id as string,
+							category: (conversation.category as string | null) ?? null,
+							created_at: (conversation.created_at as string | null) ?? null,
+							title: null,
+							displayTitle: 'Samtal'
+						}));
+					}
+				} else {
+					console.error('Failed to load recent conversations:', conversationsError);
+				}
+			} else if (conversations) {
+				nextConversations = conversations.map((conversation) => {
+					const title = typeof conversation.title === 'string' ? conversation.title.trim() : '';
+					return {
+						id: conversation.id as string,
+						category: (conversation.category as string | null) ?? null,
+						created_at: (conversation.created_at as string | null) ?? null,
+						title: title || null,
+						displayTitle: title || 'Samtal'
+					};
+				});
+			}
+
+			const missingTitleIds = nextConversations
+				.filter((conversation) => conversation.displayTitle === 'Samtal')
+				.map((conversation) => conversation.id);
+
+			if (missingTitleIds.length > 0) {
+				const { data: titleRows, error: titleRowsError } = await supabase
+					.from('messages')
+					.select('conversation_id, content, created_at')
+					.in('conversation_id', missingTitleIds)
+					.eq('role', 'user')
+					.order('created_at', { ascending: true });
+
+				if (!titleRowsError && titleRows) {
+					const titleByConversation = new Map<string, string>();
+
+					for (const row of titleRows) {
+						const conversationId = row.conversation_id as string | null;
+						const content = typeof row.content === 'string' ? row.content : '';
+						if (!conversationId || titleByConversation.has(conversationId) || !content.trim()) continue;
+						titleByConversation.set(conversationId, conversationTitleFromText(content));
+					}
+
+					nextConversations = nextConversations.map((conversation) => ({
+						...conversation,
+						displayTitle: titleByConversation.get(conversation.id) ?? conversation.displayTitle
+					}));
+				}
+			}
 
 			if (!alive) return;
 
 			firstName = extractFirstName(resolvedName);
 			latestEntries = nextEntries;
+			recentConversations = nextConversations;
 			loading = false;
 		}
 
@@ -179,6 +298,22 @@
 					Forts&auml;tt senaste samtal
 					<span>{continuePortal ? continuePortal.title : 'Samtal'}</span>
 				</a>
+			</div>
+
+			<div class="conversation-history">
+				<h3>Senaste samtal</h3>
+				{#if recentConversations.length === 0}
+					<p class="conversation-empty">Inga tidigare samtal &auml;n.</p>
+				{:else}
+					{#each recentConversations as conversation (conversation.id)}
+						<a class="conversation-card" href={`/chat/${toRouteCategory(conversation.category)}?id=${conversation.id}`}>
+							<div class="conversation-title">{conversation.displayTitle}</div>
+							<div class="conversation-meta">
+								{formatConversationCategory(conversation.category)} &bull; {formatDate(conversation.created_at)}
+							</div>
+						</a>
+					{/each}
+				{/if}
 			</div>
 		</section>
 
@@ -356,6 +491,57 @@
 		font-family: var(--font-body);
 		font-size: 0.79rem;
 		opacity: 0.7;
+	}
+
+	.conversation-history {
+		margin-top: 1rem;
+	}
+
+	.conversation-history h3 {
+		margin: 0 0 0.6rem;
+		font-size: 0.95rem;
+	}
+
+	.conversation-empty {
+		margin: 0;
+		font-family: var(--font-body);
+		font-size: 0.88rem;
+		opacity: 0.68;
+	}
+
+	.conversation-card {
+		display: block;
+		padding: 14px 16px;
+		border-radius: 14px;
+		border: 1px solid rgba(0, 0, 0, 0.05);
+		margin-bottom: 10px;
+		background: rgba(255, 255, 255, 0.45);
+		transition: background 0.2s ease;
+	}
+
+	:global(.dark) .conversation-card {
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(255, 255, 255, 0.02);
+	}
+
+	.conversation-card:hover {
+		background: rgba(0, 0, 0, 0.03);
+	}
+
+	:global(.dark) .conversation-card:hover {
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	.conversation-title {
+		font-family: var(--font-body);
+		font-weight: 500;
+	}
+
+	.conversation-meta {
+		margin-top: 0.15rem;
+		font-size: 0.85rem;
+		opacity: 0.6;
+		font-family: var(--font-body);
 	}
 
 	/* Reflection Cards */

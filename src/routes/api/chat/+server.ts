@@ -135,6 +135,14 @@ function normalizeConversationId(value: unknown): string | null {
 	return trimmed;
 }
 
+function buildConversationTitle(input: string): string {
+	const normalized = input.trim().replace(/\s+/g, ' ');
+	if (!normalized) return 'Samtal';
+
+	const firstWords = normalized.split(' ').slice(0, 8).join(' ');
+	return firstWords.slice(0, 60).trim() || 'Samtal';
+}
+
 const normalizeApiKey = (value: string | undefined): string | null => {
 	if (!value) return null;
 
@@ -235,14 +243,34 @@ export const POST: RequestHandler = async ({ request }) => {
 			const conversation = existingConversation as ConversationRow;
 			category = normalizeCategory(conversation.category);
 		} else {
-			const { data: createdConversation, error: createConversationError } = await supabase
+			const title = buildConversationTitle(message);
+			let { data: createdConversation, error: createConversationError } = await supabase
 				.from('conversations')
 				.insert({
 					user_id: user.id,
-					category
+					category,
+					title
 				})
 				.select('id')
 				.single();
+
+			const missingTitleColumn =
+				createConversationError?.code === 'PGRST204' ||
+				createConversationError?.code === '42703' ||
+				(createConversationError?.message ?? '').toLowerCase().includes('title');
+
+			if (missingTitleColumn) {
+				const retry = await supabase
+					.from('conversations')
+					.insert({
+						user_id: user.id,
+						category
+					})
+					.select('id')
+					.single();
+				createdConversation = retry.data;
+				createConversationError = retry.error;
+			}
 
 			if (createConversationError || !createdConversation) {
 				console.error('Failed to create conversation:', createConversationError);
