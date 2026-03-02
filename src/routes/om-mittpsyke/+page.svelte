@@ -153,6 +153,17 @@
 </main>
 
 <style>
+	@font-face {
+		font-family: 'Recursive T Heading';
+		src:
+			url('/assets/recursive/fonts/recursive-t/RecursiveT-ExtraBold.woff2') format('woff2'),
+			url('/assets/recursive/fonts/recursive-t/RecursiveT-ExtraBold.woff') format('woff'),
+			url('/assets/recursive/fonts/recursive-t/RecursiveT-ExtraBold.ttf') format('truetype');
+		font-weight: 850;
+		font-style: normal;
+		font-display: swap;
+	}
+
 	.page {
 		padding: clamp(2.2rem, 6vw, 3rem) clamp(1.25rem, 4vw, 1.5rem) clamp(3.2rem, 8vw, 4rem);
 	}
@@ -187,8 +198,9 @@
 	}
 
 	h1 {
+		font-family: 'Recursive T Heading', var(--font-heading);
 		font-size: clamp(1.8rem, 1.45rem + 1.8vw, 2.2rem);
-		font-weight: 600;
+		font-weight: 850;
 		letter-spacing: -0.02em;
 		margin-bottom: 1.5rem;
 	}
