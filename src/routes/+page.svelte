@@ -90,7 +90,7 @@
 	}
 
 	.hero-section {
-		min-height: 88vh;
+		min-height: 65vh;
 		display: grid;
 		place-items: center;
 		padding: 2rem 1.25rem;
