@@ -6,6 +6,7 @@ export const portals: Portal[] = [
 		title: '\u00c5ngest',
 		description: 'Trygghet, lugn och att landa i kroppen',
 		icon: '\u{1F499}',
+		image: '/assets/home/Angest.jpg',
 		category: 'A'
 	},
 	{
@@ -13,6 +14,7 @@ export const portals: Portal[] = [
 		title: 'Depression',
 		description: 'Varsam kontakt, energi och sj\u00e4lvv\u00e4rde',
 		icon: '\u{1F327}\uFE0F',
+		image: '/assets/home/Depression.jpg',
 		category: 'B'
 	},
 	{
@@ -20,6 +22,7 @@ export const portals: Portal[] = [
 		title: 'Trauma',
 		description: 'Kontroll, gr\u00e4nser och s\u00e4kerhet',
 		icon: '\u{1F6E1}\uFE0F',
+		image: '/assets/home/Trauma.jpg',
 		category: 'E'
 	}
 ];
