@@ -148,6 +148,27 @@
 							Logga ut
 						</button>
 					{:else}
+						<a
+							href="mailto:mittpsyke@ownit.nu"
+							aria-label="Kontakta oss via e-post"
+							title="Kontakta oss"
+							class="inline-flex items-center opacity-85 hover:opacity-100 transition-opacity"
+						>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								class="h-4 w-4"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+							>
+								<rect x="3" y="5" width="18" height="14" rx="2" />
+								<path d="m3 7 9 6 9-6" />
+							</svg>
+						</a>
 						<a href="/login" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							Logga in
 						</a>
@@ -215,6 +236,27 @@
 						Logga ut
 					</button>
 				{:else}
+					<a
+						href="mailto:mittpsyke@ownit.nu"
+						class="inline-flex items-center gap-2 text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
+						onclick={() => (mobileMenuOpen = false)}
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							class="h-4 w-4"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<rect x="3" y="5" width="18" height="14" rx="2" />
+							<path d="m3 7 9 6 9-6" />
+						</svg>
+						<span>Kontakt</span>
+					</a>
 					<a
 						href="/login"
 						class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
