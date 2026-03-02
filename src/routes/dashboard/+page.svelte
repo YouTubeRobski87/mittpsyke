@@ -1,12 +1,21 @@
+ï»¿<script lang="ts">
+	import PortalCard from '$lib/components/PortalCard.svelte';
+	import { portals } from '$lib/data/portals';
+</script>
+
 <svelte:head>
-	<title>Min portal – MittPsyke</title>
+	<title>Min portal - MittPsyke</title>
 </svelte:head>
 
-<section class="container py-12">
-	<div class="min-h-[60vh] flex items-center justify-center px-6">
-		<div class="text-center text-gray-200">
-			<h1 class="text-3xl font-semibold mb-4">Sidan är under konstruktion</h1>
-			<p class="text-lg text-gray-300">Det finns inget att göra här just nu.</p>
-		</div>
+<section class="container py-10">
+	<div class="mx-auto max-w-3xl text-center mb-8">
+		<h1 class="text-3xl font-semibold mb-3">Min portal</h1>
+		<p class="opacity-75">Valj den inriktning som kanns mest relevant just nu.</p>
+	</div>
+
+	<div class="mx-auto max-w-3xl grid gap-3">
+		{#each portals as portal, index}
+			<PortalCard {portal} active={index === 0} />
+		{/each}
 	</div>
 </section>
