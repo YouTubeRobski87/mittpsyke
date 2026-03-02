@@ -106,9 +106,10 @@ export const POST: RequestHandler = async ({ request }) => {
 		const systemPrompt = systemByCategory[category] || SYSTEM_PROMPT;
 		const completion = await openai.chat.completions.create({
 			model: 'gpt-4o-mini',
-			temperature: 0.7,
-			frequency_penalty: 0.2,
-			presence_penalty: 0.1,
+			temperature: 0.75,
+			top_p: 1,
+			frequency_penalty: 0.25,
+			presence_penalty: 0.15,
 			messages: [
 				{ role: 'system', content: systemPrompt },
 				{ role: 'user', content: message }
