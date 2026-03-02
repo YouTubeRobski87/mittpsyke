@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	try {
 		const completion = await openai.chat.completions.create({
-			model: 'chatgpt-5.3',
+			model: 'gpt-4o-mini',
 			messages: [
 				{ role: 'system', content: systemByCategory[category] || systemByCategory.A },
 				{ role: 'user', content: message }
