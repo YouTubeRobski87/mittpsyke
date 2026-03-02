@@ -187,13 +187,30 @@
 	}
 
 	h1 {
-		font-size: clamp(1.95rem, 4vw, 2.55rem);
-		margin-bottom: 0.95rem;
+		font-size: clamp(1.8rem, 1.45rem + 1.8vw, 2.2rem);
+		font-weight: 600;
+		letter-spacing: -0.02em;
+		margin-bottom: 1.5rem;
 	}
 
-	h2 {
-		font-size: clamp(1.3rem, 2.5vw, 1.55rem);
-		margin-bottom: 0.8rem;
+	.section > h2 {
+		font-size: 1.6rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		margin-top: 3rem;
+		margin-bottom: 1rem;
+		color: var(--primary);
+	}
+
+	.section > h2::after {
+		content: '';
+		display: block;
+		width: 40px;
+		height: 3px;
+		margin-top: 0.45rem;
+		border-radius: 999px;
+		background: rgba(15, 118, 110, 0.28);
+		background: color-mix(in srgb, var(--primary) 32%, transparent);
 	}
 
 	h3 {
@@ -366,6 +383,10 @@
 	:global(.dark) .hero h1,
 	:global(.dark) .section > h2,
 	:global(.dark) .links-section h2 {
-		color: #f5f5f5;
+		color: #86dfd6;
+	}
+
+	:global(.dark) .section > h2::after {
+		background: rgba(134, 223, 214, 0.5);
 	}
 </style>
