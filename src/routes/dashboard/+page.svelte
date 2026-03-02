@@ -102,16 +102,16 @@
 	}
 
 	function formatDate(value: string | null) {
-		if (!value) return 'Okänt datum';
+		if (!value) return 'Ok\u00e4nt datum';
 
 		const d = new Date(value);
-		if (Number.isNaN(d.getTime())) return 'Okänt datum';
+		if (Number.isNaN(d.getTime())) return 'Ok\u00e4nt datum';
 
 		const now = new Date();
 		const diff = (now.getTime() - d.getTime()) / (1000 * 60 * 60 * 24);
 
 		if (diff < 1) return 'Idag';
-		if (diff < 2) return 'Igår';
+		if (diff < 2) return 'Ig\u00e5r';
 		if (diff < 7) return `${Math.floor(diff)} dagar sedan`;
 		return d.toLocaleDateString('sv-SE');
 	}
