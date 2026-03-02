@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import '../app.css';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { supabase } from '$lib/supabase';
@@ -108,7 +108,7 @@
 		<div class="flex items-center justify-between gap-3 px-5 py-3.5">
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
 				<a href="/" class="flex items-center gap-2.5 font-semibold opacity-95 hover:opacity-100 transition-opacity">
-					&#x1F499; <span>MittPsyke</span>
+					<img src="/assets/home/MittpsykeTree.jpg" alt="MittpsykeTree" class="h-9 w-auto rounded-md" />
 				</a>
 
 				<nav class="hidden md:flex items-center gap-4">
