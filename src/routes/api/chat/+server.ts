@@ -121,8 +121,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			model: 'gpt-4o-mini',
 			temperature: 0.75,
 			top_p: 1,
-			frequency_penalty: 0.25,
-			presence_penalty: 0.15,
+			frequency_penalty: 0.3,
+			presence_penalty: 0.2,
 			messages: [
 				{ role: 'system', content: systemPrompt },
 				{ role: 'user', content: message }
