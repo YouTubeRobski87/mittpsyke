@@ -1,14 +1,20 @@
-<script lang="ts">
+﻿<script lang="ts">
+	import { browser } from '$app/environment';
 	import ChatWindow from '$lib/components/ChatWindow.svelte';
 	import { getPortalByKey } from '$lib/data/portals';
 	import { page } from '$app/state';
 
 	const category = $derived(page.params.category ?? '');
 	const portal = $derived(getPortalByKey(category));
+
+	$effect(() => {
+		if (!browser || !category) return;
+		window.localStorage.setItem('mittpsyke:last-chat-category', category);
+	});
 </script>
 
 <svelte:head>
-	<title>{portal ? portal.title : 'Chatt'} – MittPsyke</title>
+	<title>{portal ? portal.title : 'Chatt'} - MittPsyke</title>
 </svelte:head>
 
 <div class="container py-6">
