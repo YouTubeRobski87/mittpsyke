@@ -70,7 +70,7 @@
 					M&aring;let &auml;r inte snabba svar, utan ett h&aring;llbart samtal d&auml;r du kan landa och ta n&auml;sta steg.
 				</p>
 			</div>
-			<img src="/assets/home/support.jpg" alt="Reflektion och digitalt samtal" loading="lazy" />
+			<img src="/assets/home/Digitalastod.PNG" alt="Digitalt stöd" loading="lazy" />
 		</div>
 	</section>
 
