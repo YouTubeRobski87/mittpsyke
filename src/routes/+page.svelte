@@ -140,7 +140,7 @@
 		right: 0;
 		top: -24px;
 		bottom: -24px;
-		background-image: url('/assets/home/heart.jpeg');
+		background-image: url('/assets/home/MittpsykeTree.jpg');
 		background-size: cover;
 		background-position: center;
 		transform: translate3d(0, 0, 0);
