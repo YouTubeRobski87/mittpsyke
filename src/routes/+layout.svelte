@@ -136,7 +136,7 @@
 							{displayName ? `V\u00e4lkommen, ${displayName}` : 'V\u00e4lkommen tillbaka'}
 						</span>
 						<a href="/dagbok" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
-							+ Dagbok
+							Dagbok
 						</a>
 						<a href="/dashboard" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							Min portal
@@ -202,7 +202,7 @@
 						class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
 						onclick={() => (mobileMenuOpen = false)}
 					>
-						+ Dagbok
+						Dagbok
 					</a>
 					<a
 						href="/dashboard"
