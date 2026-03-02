@@ -1,5 +1,39 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { portals } from '$lib/data/portals';
+
+	let heroEl: HTMLElement | null = null;
+	let bgEl: HTMLDivElement | null = null;
+
+	onMount(() => {
+		if (!heroEl || !bgEl) return;
+		if (window.innerWidth < 768) return;
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+		const speed = 0.14;
+		const maxOffset = 24;
+		let ticking = false;
+
+		const update = () => {
+			const y = window.scrollY || window.pageYOffset;
+			const offset = Math.max(-maxOffset, Math.min(maxOffset, y * speed));
+			bgEl!.style.transform = `translate3d(0, ${offset}px, 0)`;
+			ticking = false;
+		};
+
+		const onScroll = () => {
+			if (ticking) return;
+			ticking = true;
+			window.requestAnimationFrame(update);
+		};
+
+		update();
+		window.addEventListener('scroll', onScroll, { passive: true });
+
+		return () => {
+			window.removeEventListener('scroll', onScroll);
+		};
+	});
 </script>
 
 <svelte:head>
@@ -7,7 +41,9 @@
 </svelte:head>
 
 <main class="staging-look">
-	<section class="hero-section" aria-label="Introduktion till MittPsyke">
+	<section class="hero-section" aria-label="Introduktion till MittPsyke" bind:this={heroEl}>
+		<div class="hero-bg" bind:this={bgEl}></div>
+		<div class="hero-overlay"></div>
 		<div class="hero-content">
 			<h1>V&auml;lkommen till MittPsyke</h1>
 			<p>
@@ -94,13 +130,34 @@
 		display: grid;
 		place-items: center;
 		padding: 2rem 1.25rem;
-		background-image: linear-gradient(rgba(28, 28, 28, 0.52), rgba(23, 23, 23, 0.58)),
-			url('/assets/home/25308540-alzheimer-disease-e1669787685700.jpg');
+		position: relative;
+		overflow: hidden;
+	}
+
+	.hero-bg {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: -24px;
+		bottom: -24px;
+		background-image: url('/assets/home/25308540-alzheimer-disease-e1669787685700.jpg');
 		background-size: cover;
 		background-position: center;
+		transform: translate3d(0, 0, 0);
+		will-change: transform;
+		pointer-events: none;
+	}
+
+	.hero-overlay {
+		position: absolute;
+		inset: 0;
+		background-image: linear-gradient(rgba(28, 28, 28, 0.52), rgba(23, 23, 23, 0.58));
+		pointer-events: none;
 	}
 
 	.hero-content {
+		position: relative;
+		z-index: 2;
 		width: min(560px, 100%);
 		text-align: center;
 		padding: 1.3rem 1.6rem 1.6rem;
