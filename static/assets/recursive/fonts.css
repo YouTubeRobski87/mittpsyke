@@ -1,0 +1,421 @@
+/* Recursive T */
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-ExtraLight.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-ExtraLight.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-ExtraLight.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-ExtraLightItalic.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-ExtraLightItalic.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-ExtraLightItalic.ttf') format('truetype');
+  font-weight: 200;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-Light.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-Light.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-LightItalic.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-LightItalic.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-Book.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-Book.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-Book.ttf') format('truetype');
+  font-weight: 350;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-BookItalic.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-BookItalic.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-BookItalic.ttf') format('truetype');
+  font-weight: 350;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-Regular.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-Regular.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-RegularItalic.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-RegularItalic.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-RegularItalic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-Medium.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-Medium.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-MediumItalic.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-MediumItalic.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-SemiBold.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-SemiBold.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-SemiBoldItalic.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-SemiBoldItalic.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-Bold.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-Bold.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-BoldItalic.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-BoldItalic.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-ExtraBold.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-ExtraBold.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-ExtraBoldItalic.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-ExtraBoldItalic.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-ExtraBoldItalic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-Black.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-Black.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-BlackItalic.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-BlackItalic.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-BlackItalic.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-ExtraBlack.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-ExtraBlack.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-ExtraBlack.ttf') format('truetype');
+  font-weight: 950;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive T';
+  src:
+    url('./fonts/recursive-t/RecursiveH-ExtraBlackItalic.woff2') format('woff2'),
+    url('./fonts/recursive-t/RecursiveH-ExtraBlackItalic.woff') format('woff'),
+    url('./fonts/recursive-t/RecursiveH-ExtraBlackItalic.ttf') format('truetype');
+  font-weight: 950;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Recursive H */
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-Light.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-Light.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-LightItalic.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-LightItalic.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-Regular.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-Regular.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-RegularItalic.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-RegularItalic.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-RegularItalic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-Medium.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-Medium.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-MediumItalic.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-MediumItalic.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-SemiBold.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-SemiBold.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-SemiBoldItalic.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-SemiBoldItalic.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-Bold.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-Bold.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-BoldItalic.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-BoldItalic.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-ExtraBold.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-ExtraBold.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-ExtraBoldItalic.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-ExtraBoldItalic.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-ExtraBoldItalic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-Heavy.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-Heavy.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-Heavy.ttf') format('truetype');
+  font-weight: 850;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-HeavyItalic.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-HeavyItalic.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-HeavyItalic.ttf') format('truetype');
+  font-weight: 850;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-Black.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-Black.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-BlackItalic.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-BlackItalic.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-BlackItalic.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-ExtraBlack.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-ExtraBlack.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-ExtraBlack.ttf') format('truetype');
+  font-weight: 950;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Recursive H';
+  src:
+    url('./fonts/recursive-h/RecursiveH-ExtraBlackItalic.woff2') format('woff2'),
+    url('./fonts/recursive-h/RecursiveH-ExtraBlackItalic.woff') format('woff'),
+    url('./fonts/recursive-h/RecursiveH-ExtraBlackItalic.ttf') format('truetype');
+  font-weight: 950;
+  font-style: italic;
+  font-display: swap;
+}
