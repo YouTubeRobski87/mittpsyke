@@ -1,16 +1,44 @@
 ﻿<script lang="ts">
+	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
 	import { tick } from 'svelte';
 	import type { ChatMessage } from '$lib/types';
 
-	let { category }: { category: string } = $props();
+	let {
+		category,
+		initialMessages = [],
+		initialConversationId = null
+	}: {
+		category: string;
+		initialMessages?: ChatMessage[];
+		initialConversationId?: string | null;
+	} = $props();
 
 	let messages = $state<ChatMessage[]>([]);
 	let input = $state('');
 	let sending = $state(false);
 	let savePromptHidden = $state<Record<number, boolean>>({});
+	let conversationId = $state<string | null>(
+		browser ? window.localStorage.getItem('mittpsyke:last-conversation-id') : null
+	);
 	let chatLog: HTMLDivElement;
+
+	$effect(() => {
+		messages = initialMessages.map((message) => ({ ...message }));
+		savePromptHidden = {};
+
+		if (initialConversationId) {
+			conversationId = initialConversationId;
+			if (browser) {
+				window.localStorage.setItem('mittpsyke:last-conversation-id', initialConversationId);
+			}
+		} else {
+			conversationId = null;
+		}
+
+		void tick().then(scrollToBottom);
+	});
 
 	function scrollToBottom() {
 		if (chatLog) {
@@ -22,6 +50,14 @@
 		const text = input.trim();
 		if (!text || sending) return;
 
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+		if (!session) {
+			goto('/login');
+			return;
+		}
+
 		messages.push({ role: 'user', content: text });
 		input = '';
 		sending = true;
@@ -31,15 +67,32 @@
 		try {
 			const res = await fetch('/api/chat', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ message: text, category })
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session.access_token}`
+				},
+				body: JSON.stringify({
+					message: text,
+					category,
+					conversationId
+				})
 			});
 
 			if (!res.ok) {
 				throw new Error(`API error: ${res.status}`);
 			}
 
-			const data: { reply?: string } = await res.json();
+			const data: { reply?: string; conversationId?: string } = await res.json();
+			if (data.conversationId) {
+				conversationId = data.conversationId;
+				if (browser) {
+					window.localStorage.setItem('mittpsyke:last-conversation-id', data.conversationId);
+				}
+			}
+			if (browser) {
+				window.localStorage.setItem('mittpsyke:last-chat-category', category);
+			}
+
 			messages.push({ role: 'assistant', content: data.reply ?? 'Något gick fel.' });
 			await tick();
 			scrollToBottom();
@@ -167,4 +220,3 @@
 		</p>
 	</div>
 </div>
-

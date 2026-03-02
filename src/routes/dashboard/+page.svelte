@@ -10,8 +10,13 @@
 	let firstName = $state('du');
 	let latestEntries = $state<DiaryEntry[]>([]);
 	let lastChatCategory = $state('a');
+	let lastConversationId = $state<string | null>(null);
 
-	const continueChatHref = $derived(`/chat/${lastChatCategory}`);
+	const continueChatHref = $derived(
+		lastConversationId
+			? `/chat/${lastChatCategory}?id=${encodeURIComponent(lastConversationId)}`
+			: `/chat/${lastChatCategory}`
+	);
 	const continuePortal = $derived(getPortalByKey(lastChatCategory));
 	const reflectionPreview = $derived(latestEntries.slice(0, 5));
 	const moodTrail = $derived(
@@ -121,6 +126,9 @@
 				if (storedCategory && getPortalByKey(storedCategory)) {
 					lastChatCategory = storedCategory;
 				}
+
+				const storedConversationId = window.localStorage.getItem('mittpsyke:last-conversation-id');
+				lastConversationId = storedConversationId && storedConversationId.trim() ? storedConversationId : null;
 			}
 
 			const { data: profile } = await supabase
