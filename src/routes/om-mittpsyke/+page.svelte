@@ -342,4 +342,30 @@
 			font-size: 1.02rem;
 		}
 	}
+
+	:global(.dark) .feature-card,
+	:global(.dark) .steps li,
+	:global(.dark) .callout {
+		background: #1a1a1a;
+		color: #f5f5f5;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .feature-card h3,
+	:global(.dark) .steps li h3,
+	:global(.dark) .callout h2 {
+		color: #ffffff;
+	}
+
+	:global(.dark) .feature-card p,
+	:global(.dark) .steps li p,
+	:global(.dark) .callout p {
+		color: rgba(255, 255, 255, 0.85);
+	}
+
+	:global(.dark) .hero h1,
+	:global(.dark) .section > h2,
+	:global(.dark) .links-section h2 {
+		color: #f5f5f5;
+	}
 </style>
