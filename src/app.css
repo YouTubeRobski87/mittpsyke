@@ -2,9 +2,9 @@
 
 :root {
 	--container-max: 980px;
-	--font-heading: 'Albert Sans', 'Avenir Next', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-	--font-body: 'Work Sans', 'Albert Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-	/* --font-body: 'Albert Sans', 'Avenir Next', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; */
+	--font-main: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	--font-heading: var(--font-main);
+	--font-body: var(--font-main);
 	--foreground: 240 10% 4%;
 	--muted-foreground: 240 4% 46%;
 	--border: 240 6% 90%;
@@ -46,8 +46,20 @@ button {
 }
 
 body {
+	font-family: var(--font-main);
+	line-height: 1.6;
+	letter-spacing: -0.01em;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 	color: hsl(var(--foreground));
 	background: #ffffff;
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
 }
 
 .dark body {
