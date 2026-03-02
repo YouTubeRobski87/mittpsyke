@@ -17,6 +17,28 @@
 		</div>
 	</section>
 
+	<section class="band band-taupe">
+		<div class="narrow">
+			<h2 class="cards-title">V&auml;lj fokusomr&aring;de</h2>
+			<div class="portal-cards">
+				{#each portals as portal}
+					<a class="portal-card" href={`/chat/${portal.key}`}>
+						<img
+							class="portal-cover"
+							src={portal.image}
+							alt={`Bild f&ouml;r ${portal.title}`}
+							loading="lazy"
+						/>
+						<span class="portal-icon">{portal.icon}</span>
+						<h3>{portal.title}</h3>
+						<p>{portal.description}</p>
+						<span class="portal-link">Starta samtal</span>
+					</a>
+				{/each}
+			</div>
+		</div>
+	</section>
+
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
 			<img src="/assets/home/intro.jpg" alt="Person i samtal" loading="lazy" />
@@ -52,21 +74,6 @@
 		</div>
 	</section>
 
-	<section class="band band-taupe">
-		<div class="narrow">
-			<h2 class="cards-title">V&auml;lj fokusomr&aring;de</h2>
-			<div class="portal-cards">
-				{#each portals as portal}
-					<a class="portal-card" href={`/chat/${portal.key}`}>
-						<span class="portal-icon">{portal.icon}</span>
-						<h3>{portal.title}</h3>
-						<p>{portal.description}</p>
-						<span class="portal-link">Starta samtal</span>
-					</a>
-				{/each}
-			</div>
-		</div>
-	</section>
 </main>
 
 <style>
@@ -191,10 +198,19 @@
 
 	.portal-card {
 		display: block;
-		padding: 1rem;
+		padding: 0.75rem 0.75rem 1rem;
 		background: rgba(33, 29, 27, 0.46);
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		color: inherit;
+	}
+
+	.portal-cover {
+		display: block;
+		width: 100%;
+		height: 150px;
+		margin-bottom: 0.75rem;
+		object-fit: cover;
+		border: 1px solid rgba(255, 255, 255, 0.18);
 	}
 
 	.portal-icon {
