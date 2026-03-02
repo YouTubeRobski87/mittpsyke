@@ -41,7 +41,7 @@
 
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
-			<img src="/assets/home/intro.jpg" alt="Person i samtal" loading="lazy" />
+			<img src="/assets/home/Tryggplats.png" alt="Trygg plats" loading="lazy" />
 			<div>
 				<h2>Ett tryggt rum online</h2>
 				<p>
