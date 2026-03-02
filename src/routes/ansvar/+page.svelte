@@ -6,7 +6,7 @@
 	/>
 </svelte:head>
 
-<main class="mx-auto w-full max-w-3xl px-5 py-10">
+<main class="ansvar-content mx-auto w-full px-5 py-10">
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Ansvarsinfo</h1>
 	<p class="opacity-80 leading-relaxed mb-4">
 		MittPsyke är ett AI-baserat samtalsstöd. Tjänsten är till för reflektion och stöd i vardagen, men ersätter inte
@@ -39,3 +39,19 @@
 		för att hitta stödlinjer.
 	</p>
 </main>
+
+<style>
+	.ansvar-content {
+		max-width: 720px;
+	}
+
+	.ansvar-content p {
+		line-height: 1.72;
+		margin-bottom: 1rem;
+	}
+
+	.ansvar-content h1,
+	.ansvar-content h2 {
+		font-weight: 600;
+	}
+</style>
