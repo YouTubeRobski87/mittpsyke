@@ -16,10 +16,6 @@
 	--bg-main: #0e1621; /* deep blue-black */
 	--bg-section: #121e2c; /* soft dark blue */
 	--bg-card: #182536; /* raised card */
-	--accent: #4c7a96;
-	--accent-soft: #5f90ad;
-	--accent-hover: #3f677f;
-	--shadow-elevated: 0 10px 30px rgba(0, 0, 0, 0.4);
 	--foreground: 240 10% 4%;
 	--muted-foreground: 240 4% 46%;
 	--border: 240 6% 90%;
@@ -124,11 +120,6 @@ select {
 
 .bg-card {
 	background: var(--bg-card);
-}
-
-.elevated-card {
-	box-shadow: var(--shadow-elevated);
-	border-radius: 14px;
 }
 
 a {
