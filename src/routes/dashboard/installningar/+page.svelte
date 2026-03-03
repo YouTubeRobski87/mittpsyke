@@ -198,12 +198,12 @@
 		display: flex;
 		gap: 0.35rem;
 		border-radius: var(--radius-card);
-		background: #f5f3ef;
+		background: var(--bg-card);
 		padding: 0.3rem;
 	}
 
 	:global(.dark) .dashboard-tabs {
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
 	}
 
 	.tab {
@@ -215,7 +215,7 @@
 		font-weight: 500;
 		font-size: 0.9rem;
 		letter-spacing: -0.01em;
-		color: #2f2a24;
+		color: var(--text-main);
 		opacity: 0.55;
 		transition: background-color 160ms ease, opacity 160ms ease;
 	}
@@ -225,7 +225,7 @@
 	}
 
 	.tab.active {
-		background: rgba(255, 255, 255, 0.7);
+		background: rgba(76, 122, 150, 0.24);
 		opacity: 1;
 	}
 
@@ -234,23 +234,23 @@
 	}
 
 	:global(.dark) .tab.active {
-		background: rgba(255, 255, 255, 0.08);
+		background: rgba(63, 103, 127, 0.4);
 	}
 
 	.section-block {
 		border-radius: var(--radius-card);
-		background: #fcfbf9;
+		background: var(--bg-card);
 		padding: 1.05rem;
 	}
 
 	:global(.dark) .section-block {
-		background: rgba(255, 255, 255, 0.04);
+		background: var(--bg-card);
 	}
 
 	.section-block h2 {
 		font-family: var(--font-heading);
 		font-weight: 700;
-		color: #2f2a24;
+		color: var(--text-main);
 		font-size: 1.03rem;
 		letter-spacing: -0.02em;
 		margin: 0 0 0.25rem;
@@ -284,13 +284,13 @@
 		width: 100%;
 		padding: 0.65rem 0.75rem;
 		border-radius: var(--radius-input);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: rgba(255, 255, 255, 0.6);
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		background: var(--bg-card);
 		font-family: var(--font-body);
 		font-weight: 400;
 		font-size: 0.95rem;
 		letter-spacing: -0.005em;
-		color: #2f2a24;
+		color: var(--text-main);
 		outline: none;
 		transition: border-color 160ms ease;
 	}
@@ -300,9 +300,9 @@
 	}
 
 	:global(.dark) .text-input {
-		border-color: rgba(255, 255, 255, 0.12);
-		background: rgba(255, 255, 255, 0.06);
-		color: #f0ede8;
+		border-color: rgba(255, 255, 255, 0.05);
+		background: var(--bg-card);
+		color: var(--text-main);
 	}
 
 	:global(.dark) .text-input:focus {
@@ -325,9 +325,9 @@
 		justify-content: center;
 		padding: 0.65rem 1.25rem;
 		border-radius: var(--radius-input);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #e5f1ec;
-		color: #2e2a24;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		background: var(--accent);
+		color: var(--text-main);
 		font-family: var(--font-heading);
 		font-weight: 500;
 		font-size: 0.92rem;
@@ -343,7 +343,7 @@
 	}
 
 	.save-btn:hover:not(:disabled) {
-		background: #dbe9e3;
+		background: var(--accent-hover);
 	}
 
 	.save-btn:disabled {
@@ -352,13 +352,13 @@
 	}
 
 	:global(.dark) .save-btn {
-		background: rgba(15, 118, 110, 0.18);
-		border-color: rgba(255, 255, 255, 0.1);
-		color: #e8e4de;
+		background: var(--accent);
+		border-color: rgba(255, 255, 255, 0.05);
+		color: var(--text-main);
 	}
 
 	:global(.dark) .save-btn:hover:not(:disabled) {
-		background: rgba(15, 118, 110, 0.28);
+		background: var(--accent-hover);
 	}
 
 	.feedback {
@@ -392,5 +392,37 @@
 		.section-block {
 			padding: 1.35rem;
 		}
+	}
+
+	/* Unified dark therapeutic theme */
+	.dashboard-tabs,
+	.section-block,
+	.text-input,
+	.save-btn,
+	.tab.active {
+		background: var(--bg-card) !important;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		box-shadow: var(--shadow-elevated);
+	}
+
+	.save-btn {
+		background: var(--accent) !important;
+		color: var(--text-main);
+	}
+
+	.save-btn:hover:not(:disabled) {
+		background: var(--accent-hover) !important;
+	}
+
+	h1,
+	h2,
+	h3 {
+		color: var(--text-main) !important;
+	}
+
+	p,
+	span,
+	label {
+		color: var(--text-muted) !important;
 	}
 </style>
