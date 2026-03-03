@@ -77,8 +77,9 @@
 		margin-top: 1.5rem;
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #f9fcfb;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		background: var(--bg-card);
+		box-shadow: var(--shadow-elevated);
 	}
 
 	.block h2 {
@@ -105,8 +106,9 @@
 	.tool-card {
 		padding: 0.85rem;
 		border-radius: var(--radius-input);
-		border: 1px solid rgba(0, 0, 0, 0.08);
-		background: #ffffff;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		background: var(--bg-card);
+		box-shadow: var(--shadow-elevated);
 	}
 
 	.tool-card h3 {
@@ -120,13 +122,4 @@
 		opacity: 0.8;
 	}
 
-	:global(.dark) .block {
-		background: #1a2221;
-		border-color: rgba(255, 255, 255, 0.12);
-	}
-
-	:global(.dark) .tool-card {
-		background: #232c2a;
-		border-color: rgba(255, 255, 255, 0.12);
-	}
 </style>

@@ -74,8 +74,9 @@
 		margin-top: 1.4rem;
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #fbfcfd;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		background: var(--bg-card);
+		box-shadow: var(--shadow-elevated);
 	}
 
 	.block h2 {
@@ -101,8 +102,4 @@
 		margin-top: 0.4rem;
 	}
 
-	:global(.dark) .block {
-		background: #1b2024;
-		border-color: rgba(255, 255, 255, 0.12);
-	}
 </style>

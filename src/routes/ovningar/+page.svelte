@@ -55,14 +55,15 @@
 	.card {
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #f7fbff;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		background: var(--bg-card);
+		box-shadow: var(--shadow-elevated);
 		transition: transform 160ms ease, background-color 160ms ease;
 	}
 
 	.card:hover {
 		transform: translateY(-2px);
-		background: #eef5fb;
+		background: #1c2c3f;
 	}
 
 	.card h2 {
@@ -83,12 +84,4 @@
 		opacity: 0.74;
 	}
 
-	:global(.dark) .card {
-		background: #192127;
-		border-color: rgba(255, 255, 255, 0.12);
-	}
-
-	:global(.dark) .card:hover {
-		background: #1f2a31;
-	}
 </style>
