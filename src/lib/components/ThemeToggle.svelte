@@ -15,9 +15,10 @@
 
 <button
 	onclick={toggle}
-	class="p-2 rounded-[var(--radius-input)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+	class="p-2 rounded-[var(--radius-input)] hover:bg-[var(--bg-card)] transition-colors"
 	aria-label="Växla tema"
 	type="button"
 >
 	{dark ? '☀️' : '🌙'}
 </button>
+

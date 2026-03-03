@@ -1,4 +1,4 @@
-ï»¿<script lang="ts">
+<script lang="ts">
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
@@ -93,11 +93,11 @@
 				window.localStorage.setItem('mittpsyke:last-chat-category', category);
 			}
 
-			messages.push({ role: 'assistant', content: data.reply ?? 'NÃ¥got gick fel.' });
+			messages.push({ role: 'assistant', content: data.reply ?? 'Något gick fel.' });
 			await tick();
 			scrollToBottom();
 		} catch {
-			messages.push({ role: 'assistant', content: 'NÃ¥got gick fel.' });
+			messages.push({ role: 'assistant', content: 'Något gick fel.' });
 			await tick();
 			scrollToBottom();
 		} finally {
@@ -140,9 +140,9 @@
 					class="mx-auto mb-4 opacity-80"
 					style="max-width: 220px"
 				/>
-				<p class="text-sm opacity-70 mb-2">Hur mÃ¥r du?</p>
+				<p class="text-sm opacity-70 mb-2">Hur mår du?</p>
 				<p class="text-center opacity-60">
-					Skriv nÃ¥got sÃ¥ bÃ¶rjar vi prata. Allt sker utan dÃ¶mande.
+					Skriv något så börjar vi prata. Allt sker utan dömande.
 				</p>
 			</div>
 		{/if}
@@ -154,7 +154,7 @@
 						class="max-w-[80%] px-4 py-3 rounded-[var(--radius-card)] text-sm leading-relaxed
 							{msg.role === 'user'
 							? 'bg-[var(--primary)] text-white rounded-br-md'
-							: 'bg-black/5 dark:bg-white/10 rounded-bl-md'}"
+							: 'bg-[var(--bg-card)] rounded-bl-md'}"
 					>
 						{#each msg.content.split('\n') as line, j}
 							{#if j > 0}<br />{/if}
@@ -180,7 +180,7 @@
 
 		{#if sending}
 			<div class="flex justify-start">
-				<div class="bg-black/5 dark:bg-white/10 px-4 py-3 rounded-[var(--radius-card)] rounded-bl-md text-sm opacity-60">
+				<div class="bg-[var(--bg-card)] px-4 py-3 rounded-[var(--radius-card)] rounded-bl-md text-sm opacity-60">
 					Skriver...
 				</div>
 			</div>
@@ -192,10 +192,10 @@
 			<textarea
 				bind:value={input}
 				onkeydown={handleKeydown}
-				placeholder="Skriv hÃ¤r..."
+				placeholder="Skriv här..."
 				rows={1}
 				class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
-					bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none
+					bg-[var(--bg-card)] px-4 py-3 text-sm outline-none
 					focus:border-[var(--primary)] transition-colors"
 			></textarea>
 			<button
@@ -208,15 +208,16 @@
 			</button>
 		</div>
 		<p class="mt-3 sm:mt-2 text-xs opacity-60 text-center sm:text-left">
-			BehÃ¶ver du akut stÃ¶d?
+			Behöver du akut stöd?
 			<a
 				href="https://stodlinjer.se"
 				target="_blank"
 				rel="noopener noreferrer"
 				class="underline opacity-75 hover:opacity-100 transition-opacity"
 			>
-				Hitta stÃ¶dlinjer hÃ¤r
+				Hitta stödlinjer här
 			</a>
 		</p>
 	</div>
 </div>
+
