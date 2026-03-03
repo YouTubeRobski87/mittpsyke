@@ -229,7 +229,7 @@
 	}
 
 	.band-olive {
-		background: #6f92ae;
+		background: #1b2b3a;
 	}
 
 	.band-brown {
@@ -559,7 +559,7 @@
 	}
 
 	:global(.dark) .band-olive {
-		background: #3d5060;
+		background: #1b2b3a;
 	}
 
 	:global(.dark) .band-brown {
