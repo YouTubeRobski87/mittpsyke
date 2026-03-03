@@ -95,12 +95,17 @@
 
 			messages.push({
 				role: 'assistant',
-				content: (data.reply && data.reply.trim()) ? data.reply : 'Något gick fel.'
+				content: (data.reply && data.reply.trim())
+					? data.reply
+					: 'Något gick fel.'
 			});
 			await tick();
 			scrollToBottom();
 		} catch {
-			messages.push({ role: 'assistant', content: 'Något gick fel.' });
+			messages.push({
+				role: 'assistant',
+				content: 'Något gick fel.'
+			});
 			await tick();
 			scrollToBottom();
 		} finally {
