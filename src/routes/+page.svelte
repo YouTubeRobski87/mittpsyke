@@ -143,14 +143,14 @@
 <style>
 	.staging-look {
 		width: 100%;
-		color: #f5f5f2;
+		color: var(--text-main);
 	}
 
 	.hero-section {
 		min-height: 65vh;
 		display: grid;
 		place-items: center;
-		padding: 2rem 1.25rem;
+		padding: clamp(2.8rem, 7vw, 4.6rem) 0;
 		position: relative;
 		overflow: hidden;
 	}
@@ -179,13 +179,13 @@
 	.hero-content {
 		position: relative;
 		z-index: 2;
-		width: min(560px, 100%);
+		width: min(680px, 100%);
 		text-align: center;
-		padding: 1.3rem 1.6rem 1.6rem;
+		padding: 1.6rem 1.8rem 1.9rem;
 		background: rgba(22, 36, 51, 0.76);
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		box-shadow: var(--shadow-elevated);
-		border-radius: var(--radius-card);
+		border: 1px solid var(--border-soft);
+		box-shadow: var(--shadow);
+		border-radius: 16px;
 	}
 
 	h1 {
@@ -217,7 +217,7 @@
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
 		background: var(--accent);
-		color: var(--text-main);
+		color: var(--bg-main);
 		font-weight: 700;
 		border-radius: var(--radius-pill);
 		transition: 0.25s ease;
@@ -228,24 +228,24 @@
 	}
 
 	.band {
-		padding: clamp(3rem, 8vw, 7rem) 1.25rem;
+		padding: clamp(2.5rem, 7vw, 5rem) 0;
 	}
 
 	.band-olive {
-		background: var(--bg-section);
+		background: transparent;
 	}
 
 	.band-brown {
-		background: var(--bg-section);
+		background: transparent;
 	}
 
 	.narrow {
-		width: min(760px, 100%);
+		width: min(1100px, 100%);
 		margin: 0 auto;
 	}
 
 	.cards-narrow {
-		width: min(1080px, 100%);
+		width: min(1200px, 100%);
 	}
 
 	.intro-grid,
@@ -293,16 +293,16 @@
 	}
 
 	.focus-section {
-		padding: clamp(4rem, 9vw, 6.8rem) 1.25rem;
+		padding: clamp(2.5rem, 7vw, 5rem) 0;
 	}
 
 	.focus-section--calm {
-		background: var(--bg-section);
+		background: transparent;
 	}
 
 	.content-hub {
-		padding: clamp(2.8rem, 8vw, 4.2rem) 1.25rem;
-		background: var(--bg-section);
+		padding: clamp(2.5rem, 7vw, 5rem) 0;
+		background: transparent;
 		color: var(--text-main);
 	}
 
@@ -319,29 +319,29 @@
 	}
 
 	.hub-grid {
-		margin-top: 1.15rem;
+		margin-top: 1.5rem;
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-		gap: 0.95rem;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 1.1rem;
 	}
 
 	.hub-card {
-		padding: 1rem;
-		border-radius: var(--radius-card);
+		padding: 1.15rem;
+		border-radius: 16px;
 		background: var(--bg-card);
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		box-shadow: var(--shadow-elevated);
-		transition: transform 180ms ease, background-color 180ms ease;
+		border: 1px solid var(--border-soft);
+		box-shadow: var(--shadow);
+		transition: 200ms ease;
 	}
 
 	.hub-card:hover {
 		transform: translateY(-2px);
-		background: #1c2c3f;
+		border-color: rgba(76, 122, 150, 0.25);
 	}
 
 	.hub-card h3 {
 		margin: 0;
-		color: var(--text-main);
+		color: var(--text-strong);
 		font-size: 1.05rem;
 	}
 
@@ -364,14 +364,14 @@
 	}
 
 	.focus-header {
-		max-width: 62ch;
-		margin: 0 auto 1.5rem;
-		text-align: left;
+		max-width: 72ch;
+		margin: 0 auto 2rem;
+		text-align: center;
 	}
 
 	.focus-header h2 {
 		margin: 0;
-		color: var(--text-main);
+		color: var(--text-strong);
 		font-family: var(--font-heading);
 		font-weight: 700;
 		font-size: clamp(1.55rem, 3vw, 2.2rem);
@@ -390,23 +390,23 @@
 	.focus-cards {
 		display: grid;
 		grid-template-columns: 1fr;
-		gap: 0.95rem;
+		gap: 1.1rem;
 	}
 
 	.focus-card {
 		display: block;
-		padding: 0.85rem;
-		border-radius: var(--radius-card);
+		padding: 1rem;
+		border-radius: 16px;
 		background: var(--bg-card);
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		box-shadow: var(--shadow-elevated);
+		border: 1px solid var(--border-soft);
+		box-shadow: var(--shadow);
 		color: var(--text-main);
-		transition: transform 180ms ease, background-color 180ms ease;
+		transition: 200ms ease;
 	}
 
 	.focus-card:hover {
 		transform: translateY(-2px);
-		background: #1c2c3f;
+		border-color: rgba(76, 122, 150, 0.25);
 	}
 
 	.focus-cover {
@@ -436,7 +436,7 @@
 
 	.focus-card h3 {
 		margin: 0;
-		color: var(--text-main);
+		color: var(--text-strong);
 		font-family: var(--font-heading);
 		font-weight: 600;
 		font-size: 1.1rem;
@@ -458,7 +458,7 @@
 		padding: 0.38rem 0.72rem;
 		border-radius: var(--radius-pill);
 		background: var(--accent);
-		color: var(--text-main);
+		color: var(--bg-main);
 		font-family: var(--font-heading);
 		font-size: 0.82rem;
 		font-weight: 600;
@@ -484,11 +484,11 @@
 	@media (min-width: 700px) {
 		.focus-cards {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 1.1rem;
+			gap: 1.2rem;
 		}
 
 		.focus-header {
-			margin-bottom: 1.8rem;
+			margin-bottom: 2.15rem;
 		}
 	}
 
