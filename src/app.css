@@ -8,26 +8,32 @@
 }
 
 :root {
-	color-scheme: dark;
+	color-scheme: light;
 	--container-max: 980px;
 	--font-heading: 'Recursive H', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-body: 'Recursive T', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-main: var(--font-body);
-	--bg-main: #0e1621;
-	--bg-section: #111b27;
-	--bg-card: #162433;
+	--bg-main: #0e1621; /* deep blue-black */
+	--bg-section: #121e2c; /* soft dark blue */
+	--bg-card: #182536; /* raised card */
 	--accent: #4c7a96;
+	--accent-soft: #5f90ad;
 	--accent-hover: #3f677f;
-	--text-main: #e6edf3;
-	--text-muted: #a8b3bd;
 	--shadow-elevated: 0 10px 30px rgba(0, 0, 0, 0.4);
-	--foreground: 0 0% 95%;
-	--muted-foreground: 240 5% 65%;
-	--border: 240 4% 20%;
-	--primary: var(--accent);
+	--foreground: 240 10% 4%;
+	--muted-foreground: 240 4% 46%;
+	--border: 240 6% 90%;
+	--primary: #0f766e;
 	--radius-card: 14px;
 	--radius-input: 12px;
 	--radius-pill: 999px;
+}
+
+.dark {
+	color-scheme: dark;
+	--foreground: 0 0% 95%;
+	--muted-foreground: 240 5% 65%;
+	--border: 240 4% 20%;
 }
 
 * {
@@ -93,8 +99,8 @@ body {
 	letter-spacing: -0.005em;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	color: var(--text-main);
-	background: linear-gradient(180deg, #0e1621 0%, #111b27 100%);
+	color: hsl(var(--foreground));
+	background: #ffffff;
 }
 
 button,
@@ -102,6 +108,10 @@ input,
 textarea,
 select {
 	font: inherit;
+}
+
+.dark body {
+	background: var(--bg-main);
 }
 
 .bg-main {
@@ -122,69 +132,9 @@ select {
 	transition: 0.25s ease;
 }
 
-section {
-	background: var(--bg-section);
-}
-
-.card,
-.hub-card,
-.focus-card,
-.tool-card,
-.block,
-.maintenance-card {
-	background: var(--bg-card);
-	border: 1px solid rgba(255, 255, 255, 0.05);
-	box-shadow: var(--shadow-elevated);
-	border-radius: 14px;
-}
-
-[class*='bg-white'],
-[class*='bg-gray-50'],
-[class*='bg-slate-100'],
-[class*='bg-zinc-50'],
-[class*='bg-neutral-50'],
-[class*='bg-neutral-900'],
-[class*='bg-zinc-900'] {
-	background-color: var(--bg-card) !important;
-}
-
 a {
 	color: inherit;
 	text-decoration: none;
-}
-
-h1,
-h2,
-h3 {
-	color: var(--text-main);
-}
-
-p,
-span,
-li {
-	color: var(--text-muted);
-}
-
-button {
-	background: var(--accent);
-	color: var(--text-main);
-	border: 1px solid rgba(255, 255, 255, 0.05);
-	border-radius: var(--radius-input);
-	box-shadow: var(--shadow-elevated);
-	transition: 0.25s ease;
-}
-
-button:hover {
-	background: var(--accent-hover);
-}
-
-input,
-textarea,
-select {
-	background: var(--bg-card);
-	color: var(--text-main);
-	border: 1px solid rgba(255, 255, 255, 0.05);
-	border-radius: var(--radius-input);
 }
 
 .container {
