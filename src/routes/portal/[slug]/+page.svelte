@@ -25,7 +25,7 @@
 
 		<a
 			href="/chat/{portal.key}"
-			class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-[var(--primary)] text-white font-medium hover:opacity-90 transition-opacity"
+			class="inline-flex items-center justify-center px-6 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium hover:opacity-90 transition-opacity"
 		>
 			Börja samtala
 		</a>

@@ -37,7 +37,7 @@
 			bind:value={email}
 			placeholder="E-post"
 			required
-			class="w-full px-4 py-3 rounded-xl border border-black/12 dark:border-white/12
+			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
 		<input
@@ -45,7 +45,7 @@
 			bind:value={password}
 			placeholder="Lösenord"
 			required
-			class="w-full px-4 py-3 rounded-xl border border-black/12 dark:border-white/12
+			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
 
@@ -56,7 +56,7 @@
 		<button
 			type="submit"
 			disabled={loading}
-			class="w-full px-5 py-3 rounded-xl bg-[var(--primary)] text-white font-medium
+			class="w-full px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium
 				disabled:opacity-40 transition-opacity"
 		>
 			{loading ? 'Loggar in...' : 'Logga in'}

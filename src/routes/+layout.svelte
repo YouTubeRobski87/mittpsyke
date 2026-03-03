@@ -248,7 +248,7 @@
 		{/if}
 	</header>
 
-	<main>
+	<main class="mt-6">
 		{@render children()}
 	</main>
 
@@ -305,7 +305,7 @@
 	.maintenance-card {
 		width: min(560px, 100%);
 		padding: 2.5rem 3rem;
-		border-radius: 14px;
+		border-radius: var(--radius-card);
 		border: 1px solid rgba(255, 255, 255, 0.06);
 		background: rgba(255, 255, 255, 0.03);
 		backdrop-filter: blur(6px);
@@ -315,20 +315,28 @@
 	.maintenance-card h1 {
 		margin: 0;
 		color: #f8fafc;
+		font-family: var(--font-heading);
+		font-weight: 850;
 		font-size: clamp(1.75rem, 4vw, 2.25rem);
-		line-height: 1.2;
+		line-height: 1.1;
+		letter-spacing: -0.02em;
 	}
 
 	.maintenance-card .subtitle {
 		margin: 0.85rem 0 0;
 		color: #cbd5e1;
+		font-family: var(--font-body);
+		font-weight: 400;
 		font-size: clamp(1rem, 2.2vw, 1.125rem);
+		line-height: 1.6;
 	}
 
 	.maintenance-card .details {
 		margin: 0.9rem 0 0;
 		color: rgba(255, 255, 255, 0.65);
+		font-family: var(--font-body);
+		font-weight: 400;
 		font-size: 0.95rem;
-		line-height: 1.5;
+		line-height: 1.6;
 	}
 </style>

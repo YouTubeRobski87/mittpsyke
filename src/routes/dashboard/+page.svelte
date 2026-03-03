@@ -282,6 +282,12 @@
 	{#if loading}
 		<p class="loading-copy">Laddar din portal...</p>
 	{:else}
+		<!-- Tab Navigation -->
+		<nav class="dashboard-tabs" aria-label="Portalnavigering">
+			<a href="/dashboard" class="tab active" aria-current="page">Min portal</a>
+			<a href="/dashboard/installningar" class="tab">Kontoinst&auml;llningar</a>
+		</nav>
+
 		<!-- Welcome Section -->
 		<section class="panel welcome-panel">
 			<p class="welcome-kicker">Min portal</p>
@@ -388,7 +394,7 @@
 	/* Shared Surface Styles */
 	.panel,
 	.section-block {
-		border-radius: 14px;
+		border-radius: var(--radius-card);
 		background: #f8f7f4;
 		padding: 1.05rem;
 	}
@@ -402,13 +408,58 @@
 		background: #f5f3ef;
 	}
 
+	/* Tab Navigation */
+	.dashboard-tabs {
+		display: flex;
+		gap: 0.35rem;
+		border-radius: var(--radius-card);
+		background: #f5f3ef;
+		padding: 0.3rem;
+	}
+
+	:global(.dark) .dashboard-tabs {
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	.tab {
+		flex: 1;
+		text-align: center;
+		padding: 0.55rem 0.8rem;
+		border-radius: var(--radius-input);
+		font-family: var(--font-heading);
+		font-weight: 500;
+		font-size: 0.9rem;
+		letter-spacing: -0.01em;
+		color: #2f2a24;
+		opacity: 0.55;
+		transition: background-color 160ms ease, opacity 160ms ease;
+	}
+
+	.tab:hover {
+		opacity: 0.8;
+	}
+
+	.tab.active {
+		background: rgba(255, 255, 255, 0.7);
+		opacity: 1;
+	}
+
+	:global(.dark) .tab {
+		color: #e8e4de;
+	}
+
+	:global(.dark) .tab.active {
+		background: rgba(255, 255, 255, 0.08);
+	}
+
 	.welcome-kicker {
 		margin: 0 0 0.35rem;
 		font-size: 0.76rem;
-		letter-spacing: 0.04em;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		opacity: 0.65;
-		font-family: var(--font-body);
+		font-family: var(--font-heading);
+		font-weight: 500;
 	}
 
 	h1,
@@ -416,16 +467,28 @@
 	h3 {
 		font-family: var(--font-heading);
 		color: #2f2a24;
+		letter-spacing: -0.02em;
 	}
 
 	h1 {
 		margin: 0;
+		font-weight: 850;
 		font-size: clamp(1.6rem, 4.3vw, 2.1rem);
-		line-height: 1.2;
+		line-height: 1.1;
+	}
+
+	h2 {
+		font-weight: 700;
+	}
+
+	h3 {
+		font-weight: 600;
 	}
 
 	.welcome-subtitle {
 		margin: 0.5rem 0 0;
+		font-family: var(--font-body);
+		font-weight: 400;
 		font-size: 0.98rem;
 		line-height: 1.65;
 		max-width: 46ch;
@@ -461,10 +524,12 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		border-radius: 14px;
+		border-radius: var(--radius-card);
 		padding: 0.85rem 1rem;
 		font-family: var(--font-heading);
+		font-weight: 500;
 		font-size: 0.95rem;
+		letter-spacing: -0.01em;
 		background: #efece7;
 		color: #2e2a24;
 		transition: background-color 160ms ease, opacity 160ms ease;
@@ -489,6 +554,7 @@
 
 	.action-secondary span {
 		font-family: var(--font-body);
+		font-weight: 400;
 		font-size: 0.79rem;
 		opacity: 0.7;
 	}
@@ -512,7 +578,7 @@
 	.conversation-card {
 		display: block;
 		padding: 14px 16px;
-		border-radius: 14px;
+		border-radius: var(--radius-card);
 		border: 1px solid rgba(0, 0, 0, 0.05);
 		margin-bottom: 10px;
 		background: rgba(255, 255, 255, 0.45);
@@ -535,6 +601,7 @@
 	.conversation-title {
 		font-family: var(--font-body);
 		font-weight: 500;
+		letter-spacing: -0.005em;
 	}
 
 	.conversation-meta {
@@ -555,7 +622,7 @@
 
 	.reflection-card {
 		background: #f5f2ed;
-		border-radius: 12px;
+		border-radius: var(--radius-input);
 		padding: 0.85rem 0.9rem;
 	}
 
@@ -567,8 +634,9 @@
 	.reflection-card p {
 		margin: 0.38rem 0 0;
 		font-size: 0.9rem;
-		line-height: 1.62;
+		line-height: 1.65;
 		font-family: var(--font-body);
+		font-weight: 400;
 	}
 
 	.reflection-card time {
@@ -581,7 +649,7 @@
 
 	.empty-state {
 		background: #f5f2ed;
-		border-radius: 12px;
+		border-radius: var(--radius-input);
 		padding: 0.95rem;
 	}
 
@@ -600,7 +668,7 @@
 	/* Emotional Overview */
 	.mood-panel {
 		background: #f5f2ed;
-		border-radius: 12px;
+		border-radius: var(--radius-input);
 		padding: 0.9rem;
 	}
 
@@ -616,9 +684,10 @@
 		justify-content: center;
 		width: 1.6rem;
 		height: 1.6rem;
-		border-radius: 999px;
+		border-radius: var(--radius-pill);
 		background: #e6e1d9;
 		font-family: var(--font-heading);
+		font-weight: 600;
 		font-size: 0.82rem;
 		color: #4a453f;
 	}
@@ -650,7 +719,9 @@
 
 	.support-panel a {
 		font-family: var(--font-heading);
+		font-weight: 500;
 		font-size: 0.92rem;
+		letter-spacing: -0.005em;
 		opacity: 0.82;
 	}
 
@@ -669,5 +740,88 @@
 		.quick-actions {
 			grid-template-columns: 1fr 1fr;
 		}
+	}
+
+	/* Dark mode */
+	:global(.dark) .panel,
+	:global(.dark) .section-block {
+		background: #1a1a1a;
+	}
+
+	:global(.dark) .welcome-panel {
+		background: #1e1d1b;
+	}
+
+	:global(.dark) h1,
+	:global(.dark) h2,
+	:global(.dark) h3 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .action {
+		background: rgba(255, 255, 255, 0.06);
+		color: #e8e4de;
+	}
+
+	:global(.dark) .action:hover {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	:global(.dark) .action-primary {
+		background: rgba(134, 223, 214, 0.1);
+		color: #b8ece6;
+	}
+
+	:global(.dark) .action-primary:hover {
+		background: rgba(134, 223, 214, 0.16);
+	}
+
+	:global(.dark) .reflection-card {
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	:global(.dark) .reflection-card h3 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .reflection-card p {
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	:global(.dark) .reflection-card time {
+		color: rgba(255, 255, 255, 0.5);
+	}
+
+	:global(.dark) .empty-state {
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	:global(.dark) .empty-state p {
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	:global(.dark) .mood-panel {
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	:global(.dark) .mood-panel p {
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	:global(.dark) .mood-dot {
+		background: rgba(255, 255, 255, 0.1);
+		color: #d4d0ca;
+	}
+
+	:global(.dark) .support-panel {
+		background: #1e1d1b;
+	}
+
+	:global(.dark) .support-panel p {
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	:global(.dark) .support-panel a {
+		color: #86dfd6;
 	}
 </style>

@@ -405,6 +405,10 @@
 		}
 	}
 
+	function isDarkMode() {
+		return typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+	}
+
 	async function renderMoodChart() {
 		if (typeof window === 'undefined' || !moodChartCanvas || moodTimeline.length === 0) return;
 
@@ -416,6 +420,14 @@
 		if (moodChart) {
 			moodChart.destroy();
 		}
+
+		const dark = isDarkMode();
+		const textColor = dark ? '#d1d5db' : '#4b5563';
+		const gridColor = dark ? 'rgba(148, 163, 184, 0.2)' : 'rgba(100, 116, 139, 0.15)';
+		const tooltipBg = dark ? '#111827' : '#ffffff';
+		const tooltipTitle = dark ? '#f9fafb' : '#1f2937';
+		const tooltipBody = dark ? '#f3f4f6' : '#374151';
+		const tooltipBorder = dark ? '#374151' : '#e5e7eb';
 
 		moodChart = new Chart(moodChartCanvas, {
 			type: 'line',
@@ -433,35 +445,35 @@
 				plugins: {
 					legend: {
 						labels: {
-							color: '#e5e7eb'
+							color: textColor
 						}
 					},
 					tooltip: {
 						enabled: true,
-						backgroundColor: '#111827',
-						titleColor: '#f9fafb',
-						bodyColor: '#f3f4f6',
-						borderColor: '#374151',
+						backgroundColor: tooltipBg,
+						titleColor: tooltipTitle,
+						bodyColor: tooltipBody,
+						borderColor: tooltipBorder,
 						borderWidth: 1
 					}
 				},
 				scales: {
 					x: {
 						ticks: {
-							color: '#d1d5db'
+							color: textColor
 						},
 						grid: {
-							color: 'rgba(148, 163, 184, 0.2)'
+							color: gridColor
 						}
 					},
 					y: {
 						beginAtZero: true,
 						ticks: {
-							color: '#d1d5db',
+							color: textColor,
 							precision: 0
 						},
 						grid: {
-							color: 'rgba(148, 163, 184, 0.2)'
+							color: gridColor
 						}
 					}
 				}
@@ -850,7 +862,7 @@
 				type="button"
 				onclick={exportAsPdf}
 				disabled={exportingPdf || entries.length === 0}
-				class="px-4 py-2 rounded-xl border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
+				class="px-4 py-2 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
 			>
 				{exportingPdf ? 'Exporterar...' : 'Exportera som PDF'}
 			</button>
@@ -858,12 +870,12 @@
 
 		<p class="opacity-75 leading-relaxed mb-6">Detta är din privata plats att skriva fritt.</p>
 
-		<div class="rounded-2xl border border-black/10 dark:border-white/10 bg-white/45 dark:bg-white/5 p-4 mb-7">
+		<div class="rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-white/45 dark:bg-[#1a1a1a] p-4 mb-7">
 			<textarea
 				bind:value={note}
 				rows={6}
 				placeholder="Skriv din anteckning här..."
-				class="w-full resize-y rounded-xl border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-4 py-3 text-sm leading-relaxed outline-none focus:border-[var(--primary)] transition-colors"
+				class="w-full resize-y rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-4 py-3 text-sm leading-relaxed outline-none focus:border-[var(--primary)] transition-colors"
 			></textarea>
 
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
@@ -874,18 +886,18 @@
 							id="mood"
 							name="mood"
 							bind:value={selectedMood}
-							class="w-full appearance-none rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 pr-10 text-sm text-slate-100 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+							class="w-full appearance-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 pr-10 text-sm outline-none transition-colors focus:border-[var(--primary)]"
 						>
-							<option value="" class="bg-slate-800 text-slate-100">Välj känsla</option>
+							<option value="">Välj känsla</option>
 							{#each moods as mood}
-								<option value={mood} class="bg-slate-800 text-slate-100">{mood}</option>
+								<option value={mood}>{mood}</option>
 							{/each}
 						</select>
 						<svg
 							aria-hidden="true"
 							viewBox="0 0 20 20"
 							fill="currentColor"
-							class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+							class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50"
 						>
 							<path
 								fill-rule="evenodd"
@@ -903,7 +915,7 @@
 						type="text"
 						bind:value={tagsInput}
 						placeholder="t.ex. sömn, oro, lättnad"
-						class="w-full rounded-xl border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
+						class="w-full rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
 					/>
 				</div>
 			</div>
@@ -913,7 +925,7 @@
 					type="button"
 					onclick={saveEntry}
 					disabled={saving || !note.trim()}
-					class="px-5 py-2.5 rounded-xl border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm font-medium opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
+					class="px-5 py-2.5 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm font-medium opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
 				>
 					{saving ? 'Sparar...' : 'Spara'}
 				</button>
@@ -923,32 +935,32 @@
 			{/if}
 		</div>
 
-		<div class="mb-7 rounded-2xl border border-slate-700/70 bg-slate-900/80 p-4">
+		<div class="mb-7 rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-white/45 dark:bg-[#1a1a1a] p-4">
 			<div class="mb-3 flex items-center justify-between gap-3">
-				<h2 class="text-sm font-semibold text-slate-100">Känslotrender över tid</h2>
+				<h2 class="text-sm font-semibold">Känslotrender över tid</h2>
 				<button
 					type="button"
 					onclick={loadMoodTimeline}
 					disabled={statsLoading}
-					class="rounded-lg border border-slate-600 px-3 py-1.5 text-xs text-slate-200 opacity-90 transition-opacity hover:opacity-100 disabled:opacity-50"
+					class="rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 px-3 py-1.5 text-xs opacity-85 hover:opacity-100 disabled:opacity-50 transition-opacity"
 				>
 					{statsLoading ? 'Laddar...' : 'Uppdatera'}
 				</button>
 			</div>
 
 			{#if !statsError}
-				<div class="mb-3 rounded-xl border border-slate-700 bg-slate-800/60 p-3">
-					<p class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-300">Reflektion</p>
-					<p class="text-sm leading-relaxed text-slate-100">{moodReflection}</p>
+				<div class="mb-3 rounded-[var(--radius-input)] border border-black/8 dark:border-white/8 bg-black/3 dark:bg-white/5 p-3">
+					<p class="mb-1 text-xs font-semibold uppercase tracking-wide opacity-60">Reflektion</p>
+					<p class="text-sm leading-relaxed">{moodReflection}</p>
 				</div>
 			{/if}
 
 			{#if statsError}
-				<p class="text-sm text-slate-300">{statsError}</p>
+				<p class="text-sm opacity-70">{statsError}</p>
 			{:else if statsLoading && moodTimeline.length === 0}
-				<p class="text-sm text-slate-300">Laddar känslostatistik...</p>
+				<p class="text-sm opacity-70">Laddar känslostatistik...</p>
 			{:else if moodTimeline.length === 0}
-				<p class="text-sm text-slate-300">Ingen känslodata ännu.</p>
+				<p class="text-sm opacity-70">Ingen känslodata ännu.</p>
 			{:else}
 				<div class="h-72 w-full">
 					<canvas bind:this={moodChartCanvas} aria-label="Känslotrender per dag"></canvas>
@@ -961,13 +973,13 @@
 				<p class="text-sm opacity-60">Inga anteckningar ännu.</p>
 			{:else}
 				{#each entries as entry (entry.id)}
-					<article class="rounded-2xl border border-black/10 dark:border-white/10 bg-white/45 dark:bg-white/5 p-4">
+					<article class="rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-white/45 dark:bg-[#1a1a1a] p-4">
 						{#if editingEntryId === entry.id}
 							<p class="text-xs opacity-60 mb-2">{formatDateTime(entry.created_at)}</p>
 							<textarea
 								bind:value={editableText}
 								rows={5}
-								class="w-full resize-y rounded-xl border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-4 py-3 text-sm leading-relaxed outline-none focus:border-[var(--primary)] transition-colors"
+								class="w-full resize-y rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-4 py-3 text-sm leading-relaxed outline-none focus:border-[var(--primary)] transition-colors"
 							></textarea>
 
 							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
@@ -979,18 +991,18 @@
 										<select
 											id={`edit-mood-${entry.id}`}
 											bind:value={editableMood}
-											class="w-full appearance-none rounded-xl border border-slate-700 bg-slate-800 px-3 py-2.5 pr-10 text-sm text-slate-100 outline-none transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30"
+											class="w-full appearance-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 pr-10 text-sm outline-none transition-colors focus:border-[var(--primary)]"
 										>
-											<option value="" class="bg-slate-800 text-slate-100">Välj känsla</option>
+											<option value="">Välj känsla</option>
 											{#each moods as mood}
-												<option value={mood} class="bg-slate-800 text-slate-100">{mood}</option>
+												<option value={mood}>{mood}</option>
 											{/each}
 										</select>
 										<svg
 											aria-hidden="true"
 											viewBox="0 0 20 20"
 											fill="currentColor"
-											class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+											class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50"
 										>
 											<path
 												fill-rule="evenodd"
@@ -1010,7 +1022,7 @@
 										type="text"
 										bind:value={editableTags}
 										placeholder="t.ex. sömn, oro, lättnad"
-										class="w-full rounded-xl border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
+										class="w-full rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
 									/>
 								</div>
 							</div>
@@ -1020,7 +1032,7 @@
 									type="button"
 									onclick={cancelEditing}
 									disabled={updatingEntry}
-									class="px-4 py-2 rounded-xl border border-black/12 dark:border-white/12 bg-white/50 dark:bg-white/5 text-sm opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
+									class="px-4 py-2 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white/50 dark:bg-white/5 text-sm opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
 								>
 									Avbryt
 								</button>
@@ -1028,7 +1040,7 @@
 									type="button"
 									onclick={saveEditedEntry}
 									disabled={updatingEntry || !editableText.trim()}
-									class="px-4 py-2 rounded-xl border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm font-medium opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
+									class="px-4 py-2 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm font-medium opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
 								>
 									{updatingEntry ? 'Sparar...' : 'Spara ändringar'}
 								</button>
@@ -1044,7 +1056,7 @@
 										type="button"
 										onclick={() => startEditing(entry)}
 										disabled={deletingEntryId === entry.id}
-										class="text-xs px-2.5 py-1 rounded-lg border border-black/12 dark:border-white/12 bg-white/50 dark:bg-white/5 opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
+										class="text-xs px-2.5 py-1 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white/50 dark:bg-white/5 opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
 									>
 										Redigera
 									</button>
@@ -1052,7 +1064,7 @@
 										type="button"
 										onclick={() => deleteEntry(entry.id)}
 										disabled={deletingEntryId === entry.id}
-										class="text-xs px-2.5 py-1 rounded-lg border border-red-700/40 bg-red-900/20 text-red-100 opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
+										class="text-xs px-2.5 py-1 rounded-[var(--radius-input)] border border-red-300 dark:border-red-700/40 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200 opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
 									>
 										{deletingEntryId === entry.id ? 'Raderar...' : 'Radera'}
 									</button>
@@ -1077,7 +1089,7 @@
 			{/if}
 		</div>
 
-		<div class="mt-6 rounded-xl border border-black/10 dark:border-white/10 bg-white/40 dark:bg-white/5 p-3">
+		<div class="mt-6 rounded-[var(--radius-input)] border border-black/10 dark:border-white/8 bg-white/40 dark:bg-[#1a1a1a] p-3">
 			<label class="flex items-start gap-2 text-sm opacity-80">
 				<input
 					type="checkbox"

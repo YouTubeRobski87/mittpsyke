@@ -46,12 +46,24 @@
 	}
 
 	.ansvar-content p {
-		line-height: 1.72;
+		font-family: var(--font-body);
+		font-weight: 400;
+		line-height: 1.7;
+		letter-spacing: -0.005em;
 		margin-bottom: 1rem;
 	}
 
-	.ansvar-content h1,
+	.ansvar-content h1 {
+		font-family: var(--font-heading);
+		font-weight: 850;
+		letter-spacing: -0.025em;
+		line-height: 1.1;
+	}
+
 	.ansvar-content h2 {
-		font-weight: 600;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.15;
 	}
 </style>

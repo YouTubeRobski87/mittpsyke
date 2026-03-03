@@ -31,7 +31,7 @@
 	const previewEntries = $derived(entries.slice(0, 3));
 </script>
 
-<aside class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/40 text-slate-100">
+<aside class="bg-slate-800/50 rounded-[var(--radius-input)] p-4 border border-slate-700/40 text-slate-100">
 	<div class="mb-3 flex items-center gap-2 font-semibold text-gray-100">
 		<BarChart3 size={18} class="text-blue-400" aria-hidden="true" />
 		<h2 class="text-lg">Din dagbok</h2>
@@ -46,7 +46,7 @@
 	{:else}
 		<ul class="space-y-3">
 			{#each previewEntries as entry (entry.id)}
-				<li class="bg-slate-800/50 rounded-xl p-4 border border-slate-700/40">
+				<li class="bg-slate-800/50 rounded-[var(--radius-input)] p-4 border border-slate-700/40">
 					<p class="text-sm leading-relaxed text-slate-100">{truncateContent(entry.content, 120)}</p>
 					<div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-300/90">
 						<span>{entry.mood ? `Känsla: ${entry.mood}` : 'Känsla: Ej vald'}</span>
@@ -59,7 +59,7 @@
 
 	<a
 		href="/dagbok"
-		class="mt-4 inline-flex items-center justify-center rounded-lg border border-slate-600/70 px-3 py-2 text-sm text-slate-100 hover:bg-slate-700/40 transition-colors"
+		class="mt-4 inline-flex items-center justify-center rounded-[var(--radius-input)] border border-slate-600/70 px-3 py-2 text-sm text-slate-100 hover:bg-slate-700/40 transition-colors"
 	>
 		Öppna hela dagboken
 	</a>

@@ -151,7 +151,7 @@
 			<div class="space-y-1">
 				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'}">
 					<div
-						class="max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed
+						class="max-w-[80%] px-4 py-3 rounded-[var(--radius-card)] text-sm leading-relaxed
 							{msg.role === 'user'
 							? 'bg-[var(--primary)] text-white rounded-br-md'
 							: 'bg-black/5 dark:bg-white/10 rounded-bl-md'}"
@@ -180,7 +180,7 @@
 
 		{#if sending}
 			<div class="flex justify-start">
-				<div class="bg-black/5 dark:bg-white/10 px-4 py-3 rounded-2xl rounded-bl-md text-sm opacity-60">
+				<div class="bg-black/5 dark:bg-white/10 px-4 py-3 rounded-[var(--radius-card)] rounded-bl-md text-sm opacity-60">
 					Skriver...
 				</div>
 			</div>
@@ -194,14 +194,14 @@
 				onkeydown={handleKeydown}
 				placeholder="Skriv här..."
 				rows={1}
-				class="flex-1 resize-none rounded-xl border border-black/12 dark:border-white/12
+				class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 					bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none
 					focus:border-[var(--primary)] transition-colors"
 			></textarea>
 			<button
 				onclick={send}
 				disabled={sending || !input.trim()}
-				class="px-5 py-3 rounded-xl bg-[var(--primary)] text-white text-sm font-medium
+				class="px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white text-sm font-medium
 					disabled:opacity-40 transition-opacity"
 			>
 				Skicka

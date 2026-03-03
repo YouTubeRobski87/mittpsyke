@@ -153,23 +153,12 @@
 </main>
 
 <style>
-	@font-face {
-		font-family: 'Recursive T Heading';
-		src:
-			url('/assets/recursive/fonts/recursive-t/RecursiveT-ExtraBold.woff2') format('woff2'),
-			url('/assets/recursive/fonts/recursive-t/RecursiveT-ExtraBold.woff') format('woff'),
-			url('/assets/recursive/fonts/recursive-t/RecursiveT-ExtraBold.ttf') format('truetype');
-		font-weight: 850;
-		font-style: normal;
-		font-display: swap;
-	}
-
 	.page {
 		padding: clamp(2.2rem, 6vw, 3rem) clamp(1.25rem, 4vw, 1.5rem) clamp(3.2rem, 8vw, 4rem);
 	}
 
 	.page-container {
-		max-width: 860px;
+		max-width: 840px;
 		margin: 0 auto;
 		display: grid;
 		gap: clamp(2rem, 3.5vw, 2.5rem);
@@ -192,23 +181,24 @@
 	h2,
 	h3 {
 		font-family: var(--font-heading);
-		font-weight: 600;
-		letter-spacing: -0.01em;
+		letter-spacing: -0.02em;
 		margin: 0;
 	}
 
 	h1 {
-		font-family: 'Recursive T Heading', var(--font-heading);
+		font-family: var(--font-heading);
 		font-size: clamp(1.8rem, 1.45rem + 1.8vw, 2.2rem);
 		font-weight: 850;
-		letter-spacing: -0.02em;
+		letter-spacing: -0.025em;
+		line-height: 1.08;
 		margin-bottom: 1.5rem;
 	}
 
 	.section > h2 {
 		font-size: 1.6rem;
-		font-weight: 600;
-		letter-spacing: -0.01em;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.12;
 		margin-top: 3rem;
 		margin-bottom: 1rem;
 		color: var(--primary);
@@ -220,21 +210,25 @@
 		width: 40px;
 		height: 3px;
 		margin-top: 0.45rem;
-		border-radius: 999px;
+		border-radius: var(--radius-pill);
 		background: rgba(15, 118, 110, 0.28);
 		background: color-mix(in srgb, var(--primary) 32%, transparent);
 	}
 
 	h3 {
+		font-weight: 600;
 		font-size: 1.05rem;
+		line-height: 1.2;
 		margin-bottom: 0.45rem;
 	}
 
 	p,
 	li {
 		font-family: var(--font-body);
+		font-weight: 400;
 		font-size: clamp(1rem, 0.95rem + 0.45vw, 1.125rem);
-		line-height: 1.65;
+		line-height: 1.7;
+		letter-spacing: -0.005em;
 	}
 
 	p {
@@ -260,13 +254,14 @@
 
 	.feature-card {
 		border: 1px solid rgba(15, 23, 42, 0.1);
-		border-radius: 18px;
+		border-radius: var(--radius-card);
 		padding: 1rem 1rem 1.05rem;
 		background: rgba(248, 250, 252, 0.78);
 	}
 
 	.feature-card p {
 		font-size: clamp(1rem, 0.96rem + 0.3vw, 1.05rem);
+		line-height: 1.65;
 	}
 
 	.steps {
@@ -283,7 +278,7 @@
 		gap: 0.75rem;
 		align-items: start;
 		border: 1px solid rgba(15, 23, 42, 0.1);
-		border-radius: 16px;
+		border-radius: var(--radius-card);
 		padding: 0.9rem 0.95rem;
 		background: rgba(248, 250, 252, 0.7);
 	}
@@ -291,22 +286,23 @@
 	.step-number {
 		width: 1.9rem;
 		height: 1.9rem;
-		border-radius: 999px;
+		border-radius: var(--radius-pill);
 		background: rgba(15, 118, 110, 0.12);
 		color: #145a54;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		font-family: var(--font-heading);
-		font-weight: 600;
+		font-weight: 700;
 		font-size: 0.95rem;
+		letter-spacing: -0.01em;
 		margin-top: 0.05rem;
 	}
 
 	.callout {
 		max-width: 720px;
 		border: 1px solid rgba(15, 23, 42, 0.12);
-		border-radius: 18px;
+		border-radius: var(--radius-card);
 		padding: 1.05rem;
 		background: rgba(226, 240, 236, 0.6);
 	}
@@ -324,7 +320,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 0.45rem 0.8rem;
-		border-radius: 999px;
+		border-radius: var(--radius-pill);
 		border: 1px solid rgba(20, 90, 84, 0.24);
 		font-family: var(--font-heading);
 		font-weight: 500;

@@ -167,15 +167,21 @@
 
 	h1 {
 		margin: 0;
+		font-family: var(--font-heading);
+		font-weight: 850;
 		font-size: clamp(2rem, 3.9vw, 3.2rem);
-		line-height: 1.08;
+		line-height: 1.05;
+		letter-spacing: -0.025em;
 	}
 
 	.hero-content p {
 		margin: 0.95rem auto 0;
 		max-width: 45ch;
+		font-family: var(--font-body);
+		font-weight: 400;
 		font-size: clamp(1rem, 1.7vw, 1.15rem);
-		line-height: 1.6;
+		line-height: 1.65;
+		letter-spacing: -0.005em;
 		color: rgba(255, 255, 255, 0.9);
 	}
 
@@ -183,13 +189,14 @@
 		display: inline-block;
 		margin-top: 1.2rem;
 		padding: 0.62rem 1rem;
+		font-family: var(--font-heading);
 		font-size: 0.85rem;
-		letter-spacing: 0.02em;
+		letter-spacing: 0.04em;
 		text-transform: uppercase;
 		background: #8ca36a;
 		color: #182016;
 		font-weight: 700;
-		border-radius: 999px;
+		border-radius: var(--radius-pill);
 	}
 
 	.band {
@@ -231,26 +238,34 @@
 
 	h2 {
 		margin: 0;
+		font-family: var(--font-heading);
+		font-weight: 700;
 		font-size: clamp(1.6rem, 3vw, 2.3rem);
-		line-height: 1.15;
+		line-height: 1.1;
+		letter-spacing: -0.02em;
 	}
 
 	.band p {
 		margin: 0.85rem 0 0;
+		font-family: var(--font-body);
+		font-weight: 400;
 		line-height: 1.7;
 		font-size: 1rem;
+		letter-spacing: -0.005em;
 		color: rgba(255, 255, 255, 0.9);
 	}
 
 	ul {
 		margin: 1rem 0 0;
 		padding-left: 1.2rem;
+		font-family: var(--font-body);
+		font-weight: 400;
 		line-height: 1.7;
 		color: rgba(255, 255, 255, 0.9);
 	}
 
 	.focus-section {
-		background: #0f1418;
+		background: #f4f6f7;
 		padding: clamp(3.8rem, 10vw, 6.8rem) 1.25rem;
 	}
 
@@ -266,14 +281,19 @@
 
 	.focus-header h2 {
 		margin: 0;
-		color: #e5e7eb;
+		color: #263036;
+		font-family: var(--font-heading);
+		font-weight: 700;
 		font-size: clamp(1.55rem, 3vw, 2.2rem);
+		letter-spacing: -0.02em;
 	}
 
 	.focus-header p {
 		margin: 0.75rem 0 0;
-		color: #9ca3af;
-		line-height: 1.75;
+		color: #54626b;
+		font-family: var(--font-body);
+		font-weight: 400;
+		line-height: 1.7;
 		font-size: 1rem;
 	}
 
@@ -286,17 +306,16 @@
 	.focus-card {
 		display: block;
 		padding: 0.85rem;
-		border-radius: 16px;
-		background: #111827;
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-		color: #e5e7eb;
+		border-radius: var(--radius-card);
+		background: #ffffff;
+		border: 1px solid #e7ecef;
+		color: #2c3338;
 		transition: transform 180ms ease, background-color 180ms ease;
 	}
 
 	.focus-card:hover {
 		transform: translateY(-2px);
-		background: #172033;
+		background: #fafcfc;
 	}
 
 	.focus-cover {
@@ -304,7 +323,7 @@
 		width: 100%;
 		height: clamp(150px, 28vw, 178px);
 		object-fit: cover;
-		border-radius: 12px;
+		border-radius: var(--radius-input);
 		filter: saturate(0.88) contrast(0.96);
 	}
 
@@ -320,32 +339,39 @@
 		justify-content: center;
 		font-size: 1.1rem;
 		margin-bottom: 0.58rem;
-		background: #1d2739;
-		border-radius: 999px;
+		background: #edf1f2;
+		border-radius: var(--radius-pill);
 	}
 
 	.focus-card h3 {
 		margin: 0;
-		color: #e5e7eb;
+		color: #273237;
+		font-family: var(--font-heading);
+		font-weight: 600;
 		font-size: 1.1rem;
+		letter-spacing: -0.015em;
 	}
 
 	.focus-card p {
 		margin: 0.6rem 0 0;
+		font-family: var(--font-body);
+		font-weight: 400;
 		font-size: 0.95rem;
 		line-height: 1.7;
-		color: #9ca3af;
+		color: #516069;
 	}
 
 	.focus-cta {
 		display: inline-block;
 		margin-top: 0.85rem;
 		padding: 0.38rem 0.72rem;
-		border-radius: 999px;
+		border-radius: var(--radius-pill);
 		background: #e7f1ee;
 		color: #2e5850;
+		font-family: var(--font-heading);
 		font-size: 0.82rem;
 		font-weight: 600;
+		letter-spacing: 0.005em;
 	}
 
 	@media (max-width: 900px) {
@@ -375,5 +401,62 @@
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 			gap: 1.25rem;
 		}
+	}
+
+	/* Dark mode */
+	:global(.dark) .focus-section {
+		background: #1a1c1d;
+	}
+
+	:global(.dark) .focus-content {
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .focus-header h2 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .focus-header p {
+		color: rgba(255, 255, 255, 0.65);
+	}
+
+	:global(.dark) .focus-card {
+		background: #232526;
+		border-color: rgba(255, 255, 255, 0.08);
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .focus-card:hover {
+		background: #2a2c2e;
+	}
+
+	:global(.dark) .focus-icon {
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .focus-card h3 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .focus-card p {
+		color: rgba(255, 255, 255, 0.65);
+	}
+
+	:global(.dark) .focus-cta {
+		background: rgba(134, 223, 214, 0.12);
+		color: #86dfd6;
+	}
+
+	:global(.dark) .band-olive {
+		background: #3d5060;
+	}
+
+	:global(.dark) .band-brown {
+		background: #3a2e28;
+	}
+
+	:global(.dark) .intro-grid img,
+	:global(.dark) .support-grid img {
+		border-color: rgba(255, 255, 255, 0.12);
 	}
 </style>

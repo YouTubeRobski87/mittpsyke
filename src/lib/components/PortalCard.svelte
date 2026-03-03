@@ -6,7 +6,7 @@
 
 <a
 	href="/chat/{portal.key}"
-	class="flex gap-3.5 p-4.5 rounded-[14px] border transition-transform hover:-translate-y-px text-left no-underline
+	class="flex gap-3.5 p-4.5 rounded-[var(--radius-card)] border transition-transform hover:-translate-y-px text-left no-underline
 		{active
 		? 'border-black/28 shadow-[0_8px_24px_rgba(0,0,0,0.06)]'
 		: 'border-black/12 hover:border-black/22'}
