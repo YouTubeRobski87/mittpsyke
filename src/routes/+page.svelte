@@ -74,7 +74,7 @@
 		</div>
 	</section>
 
-	<section class="focus-section focus-section--calm">
+	<section class="focus-section">
 		<div class="narrow cards-narrow focus-content">
 			<header class="focus-header">
 				<h2>V&auml;lj fokusomr&aring;de</h2>
@@ -286,11 +286,8 @@
 	}
 
 	.focus-section {
-		padding: clamp(4rem, 9vw, 6.8rem) 1.25rem;
-	}
-
-	.focus-section--calm {
 		background: #f4f6f7;
+		padding: clamp(3.8rem, 10vw, 6.8rem) 1.25rem;
 	}
 
 	.content-hub {
@@ -486,6 +483,10 @@
 	}
 
 	/* Dark mode */
+	:global(.dark) .focus-section {
+		background: #1a1c1d;
+	}
+
 	:global(.dark) .content-hub {
 		background: #1e1f1a;
 		color: #e8e6e2;
@@ -512,6 +513,45 @@
 	:global(.dark) .hub-card h3,
 	:global(.dark) .hub-card span {
 		color: #f0eeea;
+	}
+
+	:global(.dark) .focus-content {
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .focus-header h2 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .focus-header p {
+		color: rgba(255, 255, 255, 0.65);
+	}
+
+	:global(.dark) .focus-card {
+		background: #232526;
+		border-color: rgba(255, 255, 255, 0.08);
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .focus-card:hover {
+		background: #2a2c2e;
+	}
+
+	:global(.dark) .focus-icon {
+		background: rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .focus-card h3 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .focus-card p {
+		color: rgba(255, 255, 255, 0.65);
+	}
+
+	:global(.dark) .focus-cta {
+		background: rgba(134, 223, 214, 0.12);
+		color: #86dfd6;
 	}
 
 	:global(.dark) .band-olive {
