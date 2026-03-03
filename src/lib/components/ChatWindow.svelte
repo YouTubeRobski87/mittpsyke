@@ -93,7 +93,10 @@
 				window.localStorage.setItem('mittpsyke:last-chat-category', category);
 			}
 
-			messages.push({ role: 'assistant', content: data.reply ?? 'Något gick fel.' });
+			messages.push({
+				role: 'assistant',
+				content: (data.reply && data.reply.trim()) ? data.reply : 'Något gick fel.'
+			});
 			await tick();
 			scrollToBottom();
 		} catch {
