@@ -24,7 +24,7 @@
 	</header>
 
 	<section class="block">
-		<h2>Tillhorande guide</h2>
+		<h2>Tillhörande guide</h2>
 		<p>
 			&Ouml;vningen h&ouml;r ihop med guiden
 			<a href={`/guider/${data.pillar.slug}`}>{data.pillar.title}</a>.
@@ -32,12 +32,12 @@
 	</section>
 
 	<section class="block">
-		<h2>Arbetsgang</h2>
+		<h2>Arbetsgång</h2>
 		<ol>
-			<li>Las igenom syftet med ovningen.</li>
-			<li>Avsatt 5-15 minuter i lugn miljo.</li>
-			<li>Folj stegen i din egen takt.</li>
-			<li>Reflektera kort over vad du marker efterat.</li>
+			<li>Läs igenom syftet med övningen.</li>
+			<li>Avsätt 5-15 minuter i lugn miljö.</li>
+			<li>Följ stegen i din egen takt.</li>
+			<li>Reflektera kort över vad du märker efteråt.</li>
 		</ol>
 	</section>
 </main>
