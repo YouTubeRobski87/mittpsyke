@@ -109,6 +109,18 @@
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
 				<a
 					href="/"
+					class="flex items-center gap-2 hover:opacity-80 transition-opacity flex-shrink-0"
+					aria-label="MittPsyke hemsida"
+				>
+					<img
+						src="/assets/home/MittPsykeLogo.png"
+						alt="MittPsyke logotyp"
+						class="h-8 w-auto"
+					/>
+				</a>
+
+				<a
+					href="/"
 					class="text-sm font-semibold opacity-95 hover:opacity-100 hover:underline transition-opacity whitespace-nowrap"
 				>
 					Hem
