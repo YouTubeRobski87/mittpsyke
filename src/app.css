@@ -129,7 +129,6 @@ select {
 .elevated-card {
 	box-shadow: var(--shadow-elevated);
 	border-radius: 14px;
-	transition: 0.25s ease;
 }
 
 a {
