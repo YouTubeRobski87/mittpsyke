@@ -128,6 +128,18 @@
 
 				<nav class="hidden md:flex items-center gap-4">
 					<a
+						href="/guider"
+						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+					>
+						Guider
+					</a>
+					<a
+						href="/ovningar"
+						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+					>
+						&Ouml;vningar
+					</a>
+					<a
 						href="/om-mittpsyke"
 						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
 					>
@@ -194,6 +206,20 @@
 
 		{#if mobileMenuOpen}
 			<div class="md:hidden border-t border-black/8 dark:border-white/10 px-5 py-3 space-y-2">
+				<a
+					href="/guider"
+					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+					onclick={() => (mobileMenuOpen = false)}
+				>
+					Guider
+				</a>
+				<a
+					href="/ovningar"
+					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+					onclick={() => (mobileMenuOpen = false)}
+				>
+					&Ouml;vningar
+				</a>
 				<a
 					href="/om-mittpsyke"
 					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"

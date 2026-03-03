@@ -53,6 +53,27 @@
 		</div>
 	</section>
 
+	<section class="content-hub">
+		<div class="narrow cards-narrow hub-inner">
+			<h2>Guider och &ouml;vningar</h2>
+			<p>
+				L&auml;s strukturerade guider och prova konkreta steg som du kan anv&auml;nda direkt i din vardag.
+			</p>
+			<div class="hub-grid">
+				<a class="hub-card" href="/guider">
+					<h3>Guider</h3>
+					<p>8 fokusomr&aring;den med klusterartiklar inom psykiskt m&aring;ende.</p>
+					<span>G&aring; till guider</span>
+				</a>
+				<a class="hub-card" href="/ovningar">
+					<h3>&Ouml;vningar</h3>
+					<p>Praktiska steg-f&ouml;r-steg-&ouml;vningar f&ouml;r reflektion och lugn.</p>
+					<span>G&aring; till &ouml;vningar</span>
+				</a>
+			</div>
+		</div>
+	</section>
+
 	<section class="focus-section">
 		<div class="narrow cards-narrow focus-content">
 			<header class="focus-header">
@@ -269,6 +290,64 @@
 		padding: clamp(3.8rem, 10vw, 6.8rem) 1.25rem;
 	}
 
+	.content-hub {
+		padding: clamp(2.8rem, 8vw, 4.2rem) 1.25rem;
+		background: #fdf9f2;
+		color: #2f3538;
+	}
+
+	.hub-inner h2 {
+		margin: 0;
+		color: #253137;
+		font-size: clamp(1.5rem, 2.8vw, 2rem);
+	}
+
+	.hub-inner p {
+		margin: 0.75rem 0 0;
+		max-width: 62ch;
+		color: #556269;
+	}
+
+	.hub-grid {
+		margin-top: 1.15rem;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 0.95rem;
+	}
+
+	.hub-card {
+		padding: 1rem;
+		border-radius: var(--radius-card);
+		background: #ffffff;
+		border: 1px solid #ece7dc;
+		transition: transform 180ms ease, background-color 180ms ease;
+	}
+
+	.hub-card:hover {
+		transform: translateY(-2px);
+		background: #fcfaf5;
+	}
+
+	.hub-card h3 {
+		margin: 0;
+		color: #2a3438;
+		font-size: 1.05rem;
+	}
+
+	.hub-card p {
+		margin: 0.55rem 0 0;
+		font-size: 0.94rem;
+		line-height: 1.65;
+		color: #556269;
+	}
+
+	.hub-card span {
+		display: inline-block;
+		margin-top: 0.75rem;
+		font-size: 0.85rem;
+		font-weight: 600;
+	}
+
 	.focus-content {
 		color: #2c3338;
 	}
@@ -406,6 +485,34 @@
 	/* Dark mode */
 	:global(.dark) .focus-section {
 		background: #1a1c1d;
+	}
+
+	:global(.dark) .content-hub {
+		background: #1e1f1a;
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .hub-inner h2 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .hub-inner p,
+	:global(.dark) .hub-card p {
+		color: rgba(255, 255, 255, 0.7);
+	}
+
+	:global(.dark) .hub-card {
+		background: #292922;
+		border-color: rgba(255, 255, 255, 0.1);
+	}
+
+	:global(.dark) .hub-card:hover {
+		background: #2f3028;
+	}
+
+	:global(.dark) .hub-card h3,
+	:global(.dark) .hub-card span {
+		color: #f0eeea;
 	}
 
 	:global(.dark) .focus-content {
