@@ -250,7 +250,7 @@
 	}
 
 	.focus-section {
-		background: #f4f6f7;
+		background: #0f1418;
 		padding: clamp(3.8rem, 10vw, 6.8rem) 1.25rem;
 	}
 
@@ -266,13 +266,13 @@
 
 	.focus-header h2 {
 		margin: 0;
-		color: #263036;
+		color: #e5e7eb;
 		font-size: clamp(1.55rem, 3vw, 2.2rem);
 	}
 
 	.focus-header p {
 		margin: 0.75rem 0 0;
-		color: #54626b;
+		color: #9ca3af;
 		line-height: 1.75;
 		font-size: 1rem;
 	}
@@ -287,15 +287,16 @@
 		display: block;
 		padding: 0.85rem;
 		border-radius: 16px;
-		background: #ffffff;
-		border: 1px solid #e7ecef;
-		color: #2c3338;
+		background: #111827;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+		color: #e5e7eb;
 		transition: transform 180ms ease, background-color 180ms ease;
 	}
 
 	.focus-card:hover {
 		transform: translateY(-2px);
-		background: #fafcfc;
+		background: #172033;
 	}
 
 	.focus-cover {
@@ -319,13 +320,13 @@
 		justify-content: center;
 		font-size: 1.1rem;
 		margin-bottom: 0.58rem;
-		background: #edf1f2;
+		background: #1d2739;
 		border-radius: 999px;
 	}
 
 	.focus-card h3 {
 		margin: 0;
-		color: #273237;
+		color: #e5e7eb;
 		font-size: 1.1rem;
 	}
 
@@ -333,7 +334,7 @@
 		margin: 0.6rem 0 0;
 		font-size: 0.95rem;
 		line-height: 1.7;
-		color: #516069;
+		color: #9ca3af;
 	}
 
 	.focus-cta {
