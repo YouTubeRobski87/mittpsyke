@@ -6,7 +6,7 @@
 	<title>Guider | MittPsyke</title>
 	<meta
 		name="description"
-		content="Utforska MittPsykes guider inom angest, stress, sjalvkansla, relationer och mer."
+		content="Utforska MittPsykes guider inom ångest, stress, självkänsla, relationer och mer."
 	/>
 </svelte:head>
 
@@ -14,7 +14,7 @@
 	<header class="intro">
 		<h1>Guider</h1>
 		<p>
-			Valj ett omrade och las en samlad, lugn guide med relaterade artiklar och praktiska &ouml;vningar.
+			Välj ett område och läs en samlad, lugn guide med relaterade artiklar och praktiska övningar.
 		</p>
 	</header>
 
