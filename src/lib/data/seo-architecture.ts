@@ -16,16 +16,16 @@ export type Tool = {
 export const pillars: Pillar[] = [
 	{
 		slug: 'angest',
-		title: 'Ångest',
+		title: '�.ngest',
 		description: 'Förstå symtom, orsaker och verktyg som kan minska oro i vardagen.',
 		clusterTopics: [
 			'Vad händer i kroppen vid ångest?',
-			'Är ångest farligt?',
+			'�"r ångest farligt?',
 			'5 andningsövningar mot ångest',
 			'Skillnaden mellan oro och ångest',
 			'Hur slutar man undvika saker?',
-			'Ångest på kvällen',
-			'Ångest och fysisk aktivitet',
+			'�.ngest på kvällen',
+			'�.ngest och fysisk aktivitet',
 			'Acceptans och att leva med ångest'
 		],
 		toolSlugs: ['grounding-5-4-3-2-1', '4-7-8-andning', 'cbt-katastroftankar']
@@ -37,7 +37,7 @@ export const pillars: Pillar[] = [
 		clusterTopics: [
 			'Stresshormon och din kropp',
 			'Burnout-test',
-			'Återhämta dig från utmattning',
+			'�.terhämta dig från utmattning',
 			'Gränssättning och nej utan skuld',
 			'Balans mellan arbete och liv utan prestationsmyter',
 			'Mini-pauser som återställer',
@@ -55,7 +55,7 @@ export const pillars: Pillar[] = [
 			'Perfektionism och självkritik',
 			'Jämförelse i sociala medier',
 			'Självmedkänsla i praktiken',
-			'Återhämtning från skam och skuld',
+			'�.terhämtning från skam och skuld',
 			'Imposter-syndrom',
 			'Bekräftelser som fungerar'
 		],
@@ -78,7 +78,7 @@ export const pillars: Pillar[] = [
 	},
 	{
 		slug: 'overtankande',
-		title: 'Övertänkande och grubblande',
+		title: '�-vertänkande och grubblande',
 		description: 'Bryt tankeloopar med tydliga metoder för närvaro och mental flexibilitet.',
 		clusterTopics: [
 			'Varför grubblande inte löser problem',
