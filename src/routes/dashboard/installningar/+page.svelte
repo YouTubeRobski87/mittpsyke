@@ -414,15 +414,13 @@
 		background: var(--accent-hover) !important;
 	}
 
-	h1,
-	h2,
-	h3 {
+	.section-block h2 {
 		color: var(--text-main) !important;
 	}
 
-	p,
-	span,
-	label {
+	.field-hint,
+	.field-label,
+	.feedback {
 		color: var(--text-muted) !important;
 	}
 </style>
