@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.tool.title} | Ovningar | MittPsyke</title>
+	<title>{data.tool.title} | &Ouml;vningar | MittPsyke</title>
 	<meta name="description" content={data.tool.description} />
 </svelte:head>
 
@@ -13,7 +13,7 @@
 	<nav class="crumbs" aria-label="Breadcrumb">
 		<a href="/">Hem</a>
 		<span>/</span>
-		<a href="/ovningar">Ovningar</a>
+		<a href="/ovningar">&Ouml;vningar</a>
 		<span>/</span>
 		<span>{data.tool.title}</span>
 	</nav>
@@ -26,7 +26,7 @@
 	<section class="block">
 		<h2>Tillhorande guide</h2>
 		<p>
-			Ovningen hor ihop med guiden
+			&Ouml;vningen h&ouml;r ihop med guiden
 			<a href={`/guider/${data.pillar.slug}`}>{data.pillar.title}</a>.
 		</p>
 	</section>

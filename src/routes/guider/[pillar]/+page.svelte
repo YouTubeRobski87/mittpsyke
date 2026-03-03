@@ -32,8 +32,8 @@
 		</ul>
 	</section>
 
-	<section class="block" aria-label="Relaterade ovningar">
-		<h2>Relaterade ovningar</h2>
+	<section class="block" aria-label="Relaterade övningar">
+		<h2>Relaterade &ouml;vningar</h2>
 		<div class="tool-grid">
 			{#each data.tools as tool}
 				<a class="tool-card" href={`/ovningar/${tool.slug}`}>

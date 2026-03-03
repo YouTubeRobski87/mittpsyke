@@ -14,7 +14,7 @@
 	<header class="intro">
 		<h1>Guider</h1>
 		<p>
-			Valj ett omrade och las en samlad, lugn guide med relaterade artiklar och praktiska ovningar.
+			Valj ett omrade och las en samlad, lugn guide med relaterade artiklar och praktiska &ouml;vningar.
 		</p>
 	</header>
 

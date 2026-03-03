@@ -5,20 +5,20 @@
 </script>
 
 <svelte:head>
-	<title>Ovningar | MittPsyke</title>
+	<title>&Ouml;vningar | MittPsyke</title>
 	<meta
 		name="description"
-		content="Praktiska ovningar for angest, stress, sjalvkansla, relationer och mental aterhamtning."
+		content="Praktiska &ouml;vningar f&ouml;r &aring;ngest, stress, sj&auml;lvk&auml;nsla, relationer och mental &aring;terh&auml;mtning."
 	/>
 </svelte:head>
 
 <main class="container tools-page">
 	<header class="intro">
-		<h1>Ovningar</h1>
-		<p>Valkomponerade steg-for-steg-ovningar som du kan anvanda direkt i vardagen.</p>
+		<h1>&Ouml;vningar</h1>
+		<p>V&auml;lkomponerade steg-f&ouml;r-steg-&ouml;vningar som du kan anv&auml;nda direkt i vardagen.</p>
 	</header>
 
-	<section class="grid" aria-label="Alla ovningar">
+	<section class="grid" aria-label="Alla övningar">
 		{#each tools as tool}
 			<a class="card" href={`/ovningar/${tool.slug}`}>
 				<h2>{tool.title}</h2>
