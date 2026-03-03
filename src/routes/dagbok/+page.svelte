@@ -72,20 +72,20 @@
 		significant: boolean;
 	};
 
-	const moods = ['Lugn', 'Orolig', 'Nedst√§md', 'Hoppfull', 'Tr√∂tt', 'Tacksam', 'Arg', 'Stressad'];
+	const moods = ['Lugn', 'Orolig', 'Nedst‰md', 'Hoppfull', 'Trˆtt', 'Tacksam', 'Arg', 'Stressad'];
 	const moodLineColors: Record<string, string> = {
 		Lugn: '#60a5fa',
 		Orolig: '#34d399',
-		Nedst√§md: '#a78bfa',
+		Nedst‰md: '#a78bfa',
 		Hoppfull: '#22d3ee',
-		Tr√∂tt: '#f59e0b',
+		Trˆtt: '#f59e0b',
 		Tacksam: '#10b981',
 		Arg: '#ef4444',
 		Stressad: '#8b5cf6'
 	};
 	const fallbackLineColors = ['#60a5fa', '#34d399', '#a78bfa', '#f59e0b', '#22d3ee', '#f472b6'];
 	const positiveMoods = new Set(['Lugn', 'Hoppfull', 'Tacksam']);
-	const heavierMoods = new Set(['Orolig', 'Nedst√§md', 'Stressad', 'Arg', 'Tr√∂tt']);
+	const heavierMoods = new Set(['Orolig', 'Nedst‰md', 'Stressad', 'Arg', 'Trˆtt']);
 
 	let loading = $state(true);
 	let saving = $state(false);
@@ -112,7 +112,7 @@
 	let statsError = $state('');
 	let moodTimeline = $state<MoodTimelinePoint[]>([]);
 	let moodWeeklyTrends = $state<MoodWeeklyTrend[]>([]);
-	let moodReflection = $state('N√§r du har skrivit fler inl√§gg kommer en reflektion h√§r.');
+	let moodReflection = $state('N‰r du har skrivit fler inl‰gg kommer en reflektion h‰r.');
 	let moodChartCanvas = $state<HTMLCanvasElement | null>(null);
 	let moodChart: ChartInstance | null = null;
 
@@ -304,32 +304,32 @@
 			.sort((a, b) => Math.abs(b.changeCount) - Math.abs(a.changeCount));
 
 		if (significantUps.length === 0 && significantDowns.length === 0) {
-			return 'K√§nslorna har varit mer blandade den senaste tiden.';
+			return 'K‰nslorna har varit mer blandade den senaste tiden.';
 		}
 
 		const positiveUp = significantUps.find((trend) => positiveMoods.has(trend.mood));
 		if (positiveUp?.mood === 'Lugn') {
-			return 'Det verkar som att lugn har f√•tt mer utrymme.';
+			return 'Det verkar som att lugn har fÂtt mer utrymme.';
 		}
 		if (positiveUp) {
-			return `Det verkar som att ${moodLabel(positiveUp.mood)} har f√•tt lite mer plats den senaste veckan.`;
+			return `Det verkar som att ${moodLabel(positiveUp.mood)} har fÂtt lite mer plats den senaste veckan.`;
 		}
 
 		const heavierUp = significantUps.find((trend) => heavierMoods.has(trend.mood));
 		if (heavierUp) {
-			return `Du har k√§nt dig lite mer ${moodLabel(heavierUp.mood)} den senaste veckan.`;
+			return `Du har k‰nt dig lite mer ${moodLabel(heavierUp.mood)} den senaste veckan.`;
 		}
 
 		const heavierDown = significantDowns.find((trend) => heavierMoods.has(trend.mood));
 		if (heavierDown) {
-			return `Det verkar som att ${moodLabel(heavierDown.mood)} har l√§ttat n√•got den senaste veckan.`;
+			return `Det verkar som att ${moodLabel(heavierDown.mood)} har l‰ttat nÂgot den senaste veckan.`;
 		}
 
 		if (significantUps.length > 0 && significantDowns.length > 0) {
-			return 'K√§nslorna har varit mer blandade den senaste tiden.';
+			return 'K‰nslorna har varit mer blandade den senaste tiden.';
 		}
 
-		return 'Det syns sm√• skiften i dina k√§nslor den senaste tiden.';
+		return 'Det syns smÂ skiften i dina k‰nslor den senaste tiden.';
 	}
 
 	async function loadEntries(uid: string) {
@@ -338,7 +338,7 @@
 			entries = await loadDiaryEntries(uid);
 		} catch (loadError) {
 			entries = [];
-			error = loadError instanceof Error ? loadError.message : 'Kunde inte h√§mta anteckningar just nu.';
+			error = loadError instanceof Error ? loadError.message : 'Kunde inte h‰mta anteckningar just nu.';
 		}
 	}
 
@@ -352,10 +352,10 @@
 		} = await supabase.auth.getSession();
 
 		if (sessionError || !session?.access_token) {
-			statsError = 'Du beh√∂ver vara inloggad f√∂r att se statistik.';
+			statsError = 'Du behˆver vara inloggad fˆr att se statistik.';
 			moodTimeline = [];
 			moodWeeklyTrends = [];
-			moodReflection = 'N√§r du har skrivit fler inl√§gg kommer en reflektion h√§r.';
+			moodReflection = 'N‰r du har skrivit fler inl‰gg kommer en reflektion h‰r.';
 			statsLoading = false;
 			return;
 		}
@@ -375,10 +375,10 @@
 
 			if (!response.ok || !result || !result.success) {
 				statsError =
-					result && 'error' in result ? result.error : 'Kunde inte h√§mta k√§nslostatistik just nu.';
+					result && 'error' in result ? result.error : 'Kunde inte h‰mta k‰nslostatistik just nu.';
 				moodTimeline = [];
 				moodWeeklyTrends = [];
-				moodReflection = 'N√§r du har skrivit fler inl√§gg kommer en reflektion h√§r.';
+				moodReflection = 'N‰r du har skrivit fler inl‰gg kommer en reflektion h‰r.';
 				statsLoading = false;
 				return;
 			}
@@ -394,13 +394,13 @@
 			moodReflection =
 				moodTimeline.length > 0
 					? generateMoodReflection(moodWeeklyTrends)
-					: 'N√§r du har skrivit fler inl√§gg kommer en reflektion h√§r.';
+					: 'N‰r du har skrivit fler inl‰gg kommer en reflektion h‰r.';
 			statsLoading = false;
 		} catch {
-			statsError = 'Kunde inte h√§mta k√§nslostatistik just nu.';
+			statsError = 'Kunde inte h‰mta k‰nslostatistik just nu.';
 			moodTimeline = [];
 			moodWeeklyTrends = [];
-			moodReflection = 'N√§r du har skrivit fler inl√§gg kommer en reflektion h√§r.';
+			moodReflection = 'N‰r du har skrivit fler inl‰gg kommer en reflektion h‰r.';
 			statsLoading = false;
 		}
 	}
@@ -524,7 +524,7 @@
 		if (!entryId || deletingEntryId) return;
 		deleteError = '';
 		if (typeof window !== 'undefined') {
-			const confirmed = window.confirm('√Ñr du s√§ker p√• att du vill radera detta inl√§gg?');
+			const confirmed = window.confirm('ƒr du s‰ker pÂ att du vill radera detta inl‰gg?');
 			if (!confirmed) return;
 		}
 
@@ -554,7 +554,7 @@
 		} = await supabase.auth.getSession();
 
 		if (sessionError || !session?.user || !session.access_token) {
-			deleteError = 'Du beh√∂ver vara inloggad f√∂r att radera anteckningar.';
+			deleteError = 'Du behˆver vara inloggad fˆr att radera anteckningar.';
 			restoreEntry();
 			deletingEntryId = null;
 			return;
@@ -609,7 +609,7 @@
 		} = await supabase.auth.getSession();
 
 		if (sessionError || !session?.user || !session.access_token) {
-			updateError = 'Du beh√∂ver vara inloggad f√∂r att uppdatera anteckningar.';
+			updateError = 'Du behˆver vara inloggad fˆr att uppdatera anteckningar.';
 			updatingEntry = false;
 			return;
 		}
@@ -677,7 +677,7 @@
 
 		if (sessionError || !session?.user || !session.access_token) {
 			console.error('Session missing', sessionError);
-			error = 'Du beh√∂ver vara inloggad f√∂r att spara anteckningar.';
+			error = 'Du behˆver vara inloggad fˆr att spara anteckningar.';
 			saving = false;
 			return;
 		}
@@ -752,7 +752,7 @@
 		});
 
 		if (updateError) {
-			reminderError = 'Kunde inte uppdatera p√•minnelsevalet just nu.';
+			reminderError = 'Kunde inte uppdatera pÂminnelsevalet just nu.';
 			reminderOptIn = !previousOptIn;
 			reminderSaving = false;
 			return;
@@ -795,7 +795,7 @@
 
 			for (const entry of entries) {
 				const dateText = formatDateTime(entry.created_at) || 'Utan datum';
-				const moodText = entry.mood ? `K√§nsla: ${entry.mood}` : '';
+				const moodText = entry.mood ? `K‰nsla: ${entry.mood}` : '';
 				const tagsText = entry.tags.length > 0 ? `Taggar: ${entry.tags.join(', ')}` : '';
 				const contentLines = doc.splitTextToSize(entry.content || '', contentWidth);
 
@@ -868,19 +868,19 @@
 			</button>
 		</div>
 
-		<p class="opacity-75 leading-relaxed mb-6">Detta √§r din privata plats att skriva fritt.</p>
+		<p class="opacity-75 leading-relaxed mb-6">Detta ‰r din privata plats att skriva fritt.</p>
 
 		<div class="rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-[var(--bg-card)] p-4 mb-7">
 			<textarea
 				bind:value={note}
 				rows={6}
-				placeholder="Skriv din anteckning h√§r..."
+				placeholder="Skriv din anteckning h‰r..."
 				class="w-full resize-y rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-[var(--bg-card)] dark:text-[#f0ede8] px-4 py-3 text-sm leading-relaxed outline-none focus:border-[var(--primary)] transition-colors"
 			></textarea>
 
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
 				<div>
-					<label class="block text-xs opacity-65 mb-1" for="mood">K√§nsla (valfritt)</label>
+					<label class="block text-xs opacity-65 mb-1" for="mood">K‰nsla (valfritt)</label>
 					<div class="relative">
 						<select
 							id="mood"
@@ -888,7 +888,7 @@
 							bind:value={selectedMood}
 							class="w-full appearance-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-[var(--bg-card)] dark:text-[#f0ede8] px-3 py-2.5 pr-10 text-sm outline-none transition-colors focus:border-[var(--primary)]"
 						>
-							<option value="">V√§lj k√§nsla</option>
+							<option value="">V‰lj k‰nsla</option>
 							{#each moods as mood}
 								<option value={mood}>{mood}</option>
 							{/each}
@@ -914,7 +914,7 @@
 						id="tags"
 						type="text"
 						bind:value={tagsInput}
-						placeholder="t.ex. s√∂mn, oro, l√§ttnad"
+						placeholder="t.ex. sˆmn, oro, l‰ttnad"
 						class="w-full rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-[var(--bg-card)] dark:text-[#f0ede8] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
 					/>
 				</div>
@@ -937,7 +937,7 @@
 
 		<div class="mb-7 rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-[var(--bg-card)] p-4">
 			<div class="mb-3 flex items-center justify-between gap-3">
-				<h2 class="text-sm font-semibold">K√§nslotrender √∂ver tid</h2>
+				<h2 class="text-sm font-semibold">K‰nslotrender ˆver tid</h2>
 				<button
 					type="button"
 					onclick={loadMoodTimeline}
@@ -958,19 +958,19 @@
 			{#if statsError}
 				<p class="text-sm opacity-70">{statsError}</p>
 			{:else if statsLoading && moodTimeline.length === 0}
-				<p class="text-sm opacity-70">Laddar k√§nslostatistik...</p>
+				<p class="text-sm opacity-70">Laddar k‰nslostatistik...</p>
 			{:else if moodTimeline.length === 0}
-				<p class="text-sm opacity-70">Ingen k√§nslodata √§nnu.</p>
+				<p class="text-sm opacity-70">Ingen k‰nslodata ‰nnu.</p>
 			{:else}
 				<div class="h-72 w-full">
-					<canvas bind:this={moodChartCanvas} aria-label="K√§nslotrender per dag"></canvas>
+					<canvas bind:this={moodChartCanvas} aria-label="K‰nslotrender per dag"></canvas>
 				</div>
 			{/if}
 		</div>
 
 		<div class="space-y-3">
 			{#if entries.length === 0}
-				<p class="text-sm opacity-60">Inga anteckningar √§nnu.</p>
+				<p class="text-sm opacity-60">Inga anteckningar ‰nnu.</p>
 			{:else}
 				{#each entries as entry (entry.id)}
 					<article class="rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-[var(--bg-card)] p-4">
@@ -985,7 +985,7 @@
 							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
 								<div>
 									<label class="block text-xs opacity-65 mb-1" for={`edit-mood-${entry.id}`}>
-										K√§nsla (valfritt)
+										K‰nsla (valfritt)
 									</label>
 									<div class="relative">
 										<select
@@ -993,7 +993,7 @@
 											bind:value={editableMood}
 											class="w-full appearance-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-[var(--bg-card)] dark:text-[#f0ede8] px-3 py-2.5 pr-10 text-sm outline-none transition-colors focus:border-[var(--primary)]"
 										>
-											<option value="">V√§lj k√§nsla</option>
+											<option value="">V‰lj k‰nsla</option>
 											{#each moods as mood}
 												<option value={mood}>{mood}</option>
 											{/each}
@@ -1021,7 +1021,7 @@
 										id={`edit-tags-${entry.id}`}
 										type="text"
 										bind:value={editableTags}
-										placeholder="t.ex. s√∂mn, oro, l√§ttnad"
+										placeholder="t.ex. sˆmn, oro, l‰ttnad"
 										class="w-full rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-[var(--bg-card)] dark:text-[#f0ede8] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
 									/>
 								</div>
@@ -1042,7 +1042,7 @@
 									disabled={updatingEntry || !editableText.trim()}
 									class="px-4 py-2 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-[var(--bg-card)] text-sm font-medium opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
 								>
-									{updatingEntry ? 'Sparar...' : 'Spara √§ndringar'}
+									{updatingEntry ? 'Sparar...' : 'Spara ‰ndringar'}
 								</button>
 							</div>
 							{#if updateError}
@@ -1072,9 +1072,9 @@
 							</div>
 							{#if entry.mood || entry.tags.length > 0}
 								<p class="text-xs opacity-65 mb-2">
-									{#if entry.mood}<span>K√§nsla: {entry.mood}</span>{/if}
+									{#if entry.mood}<span>K‰nsla: {entry.mood}</span>{/if}
 									{#if entry.tags.length > 0}
-										{#if entry.mood}<span class="mx-1">¬∑</span>{/if}
+										{#if entry.mood}<span class="mx-1">∑</span>{/if}
 										<span>Taggar: {entry.tags.join(', ')}</span>
 									{/if}
 								</p>
@@ -1097,23 +1097,23 @@
 					onchange={updateReminderPreference}
 					class="mt-0.5 h-4 w-4 rounded border-black/20 dark:border-white/20"
 				/>
-				<span>Skicka p√•minnelse om att skriva dagbok</span>
+				<span>Skicka pÂminnelse om att skriva dagbok</span>
 			</label>
 			<p class="mt-2 text-xs opacity-60">
-				Valet sparas i din profil s√• att p√•minnelser kan hanteras via e-post eller notifiering.
+				Valet sparas i din profil sÂ att pÂminnelser kan hanteras via e-post eller notifiering.
 			</p>
 			{#if reminderOptIn && reminderNextAt}
-				<p class="mt-1 text-xs opacity-60">N√§sta m√∂jliga p√•minnelse: {formatDateTime(reminderNextAt)}</p>
+				<p class="mt-1 text-xs opacity-60">N‰sta mˆjliga pÂminnelse: {formatDateTime(reminderNextAt)}</p>
 			{/if}
 			{#if reminderSaving}
-				<p class="mt-1 text-xs opacity-60">Sparar p√•minnelseval...</p>
+				<p class="mt-1 text-xs opacity-60">Sparar pÂminnelseval...</p>
 			{/if}
 			{#if reminderError}
 				<p class="mt-1 text-xs opacity-70">{reminderError}</p>
 			{/if}
 		</div>
 
-		<p class="mt-4 text-xs opacity-50 text-center">Det du skriver h√§r delas inte med n√•gon.</p>
+		<p class="mt-4 text-xs opacity-50 text-center">Det du skriver h‰r delas inte med nÂgon.</p>
 	</section>
 {/if}
 

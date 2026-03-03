@@ -25,7 +25,7 @@
 </script>
 
 <svelte:head>
-	<title>Logga in â€“ MittPsyke</title>
+	<title>Logga in – MittPsyke</title>
 </svelte:head>
 
 <section class="container max-w-sm py-16">
@@ -43,7 +43,7 @@
 		<input
 			type="password"
 			bind:value={password}
-			placeholder="LÃ¶senord"
+			placeholder="Lösenord"
 			required
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 				bg-[var(--bg-card)] outline-none focus:border-[var(--primary)] transition-colors"
