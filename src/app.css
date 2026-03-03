@@ -13,6 +13,9 @@
 	--font-heading: 'Recursive H', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-body: 'Recursive T', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-main: var(--font-body);
+	--bg-main: #0e1621; /* deep blue-black */
+	--bg-section: #121e2c; /* soft dark blue */
+	--bg-card: #182536; /* raised card */
 	--foreground: 240 10% 4%;
 	--muted-foreground: 240 4% 46%;
 	--border: 240 6% 90%;
@@ -104,7 +107,19 @@ select {
 }
 
 .dark body {
-	background: #0f0f0f;
+	background: var(--bg-main);
+}
+
+.bg-main {
+	background: var(--bg-main);
+}
+
+.bg-section {
+	background: var(--bg-section);
+}
+
+.bg-card {
+	background: var(--bg-card);
 }
 
 a {
