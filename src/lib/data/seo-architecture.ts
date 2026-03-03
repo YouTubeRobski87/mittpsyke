@@ -188,7 +188,7 @@ export const tools: Tool[] = [
 	},
 	{
 		slug: 'vardekartlaggning',
-		title: 'Vardekartlaggning',
+		title: 'Värdekartläggning',
 		description: 'Klargör vad som betyder mest och hur du vill leva.',
 		pillarSlug: 'existentiell-oro'
 	},
@@ -212,7 +212,7 @@ export const tools: Tool[] = [
 	},
 	{
 		slug: 'tacksamhetsovning',
-		title: 'Tacksamhetsovning for utmattning',
+		title: 'Tacksamhetsövning för utmattning',
 		description: 'Kort daglig rutin för att uppmärksamma återhämtning.',
 		pillarSlug: 'depression'
 	},
@@ -224,7 +224,7 @@ export const tools: Tool[] = [
 	},
 	{
 		slug: 'trygghetscirkel-exponering',
-		title: 'Trygghetscirkel: exponering i smagrupp',
+		title: 'Trygghetscirkel: exponering i smågrupp',
 		description: 'Social exponering i lagom steg tillsammans med andra.',
 		pillarSlug: 'social-angest'
 	}
