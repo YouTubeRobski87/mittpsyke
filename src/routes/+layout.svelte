@@ -340,7 +340,7 @@
 		display: grid;
 		place-items: center;
 		padding: 1.5rem;
-		background: linear-gradient(180deg, #0e1621 0%, #111b27 100%);
+		background: #0f172a;
 	}
 
 	.maintenance-card {
@@ -348,14 +348,14 @@
 		padding: 2.5rem 3rem;
 		border-radius: var(--radius-card);
 		border: 1px solid rgba(255, 255, 255, 0.06);
-		background: rgba(22, 36, 51, 0.9);
+		background: rgba(255, 255, 255, 0.03);
 		backdrop-filter: blur(6px);
 		text-align: center;
 	}
 
 	.maintenance-card h1 {
 		margin: 0;
-		color: var(--text-main);
+		color: #f8fafc;
 		font-family: var(--font-heading);
 		font-weight: 850;
 		font-size: clamp(1.75rem, 4vw, 2.25rem);
@@ -365,7 +365,7 @@
 
 	.maintenance-card .subtitle {
 		margin: 0.85rem 0 0;
-		color: var(--text-muted);
+		color: #cbd5e1;
 		font-family: var(--font-body);
 		font-weight: 400;
 		font-size: clamp(1rem, 2.2vw, 1.125rem);
@@ -374,7 +374,7 @@
 
 	.maintenance-card .details {
 		margin: 0.9rem 0 0;
-		color: var(--text-muted);
+		color: rgba(255, 255, 255, 0.65);
 		font-family: var(--font-body);
 		font-weight: 400;
 		font-size: 0.95rem;
