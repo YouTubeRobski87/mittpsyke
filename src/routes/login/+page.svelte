@@ -38,7 +38,7 @@
 			placeholder="E-post"
 			required
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
-				bg-[var(--bg-card)] outline-none focus:border-[var(--primary)] transition-colors"
+				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
 		<input
 			type="password"
@@ -46,7 +46,7 @@
 			placeholder="Lösenord"
 			required
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
-				bg-[var(--bg-card)] outline-none focus:border-[var(--primary)] transition-colors"
+				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
 
 		{#if error}
@@ -67,4 +67,3 @@
 		Inget konto? <a href="/register" class="underline">Registrera dig</a>
 	</p>
 </section>
-

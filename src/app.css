@@ -123,7 +123,7 @@ select {
 }
 
 section {
-	background: var(--bg-section) !important;
+	background: var(--bg-section);
 }
 
 .card,
@@ -132,8 +132,8 @@ section {
 .tool-card,
 .block,
 .maintenance-card {
-	background: var(--bg-card) !important;
-	border: 1px solid rgba(255, 255, 255, 0.05) !important;
+	background: var(--bg-card);
+	border: 1px solid rgba(255, 255, 255, 0.05);
 	box-shadow: var(--shadow-elevated);
 	border-radius: 14px;
 }
@@ -156,18 +156,18 @@ a {
 h1,
 h2,
 h3 {
-	color: var(--text-main) !important;
+	color: var(--text-main);
 }
 
 p,
 span,
 li {
-	color: var(--text-muted) !important;
+	color: var(--text-muted);
 }
 
 button {
-	background: var(--accent) !important;
-	color: var(--text-main) !important;
+	background: var(--accent);
+	color: var(--text-main);
 	border: 1px solid rgba(255, 255, 255, 0.05);
 	border-radius: var(--radius-input);
 	box-shadow: var(--shadow-elevated);
@@ -175,14 +175,14 @@ button {
 }
 
 button:hover {
-	background: var(--accent-hover) !important;
+	background: var(--accent-hover);
 }
 
 input,
 textarea,
 select {
-	background: var(--bg-card) !important;
-	color: var(--text-main) !important;
+	background: var(--bg-card);
+	color: var(--text-main);
 	border: 1px solid rgba(255, 255, 255, 0.05);
 	border-radius: var(--radius-input);
 }

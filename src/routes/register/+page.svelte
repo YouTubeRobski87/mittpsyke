@@ -39,7 +39,7 @@
 			placeholder="E-post"
 			required
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
-				bg-[var(--bg-card)] outline-none focus:border-[var(--primary)] transition-colors"
+				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
 		<input
 			type="password"
@@ -48,7 +48,7 @@
 			required
 			minlength={6}
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
-				bg-[var(--bg-card)] outline-none focus:border-[var(--primary)] transition-colors"
+				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
 
 		{#if error}
@@ -69,4 +69,3 @@
 		Har du redan ett konto? <a href="/login" class="underline">Logga in</a>
 	</p>
 </section>
-

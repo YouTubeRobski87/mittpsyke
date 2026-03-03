@@ -10,10 +10,10 @@
 		{active
 		? 'border-black/28 shadow-[0_8px_24px_rgba(0,0,0,0.06)]'
 		: 'border-black/12 hover:border-black/22'}
-		bg-[var(--bg-card)] dark:border-white/12 dark:hover:border-white/22"
+		bg-white/55 dark:bg-white/5 dark:border-white/12 dark:hover:border-white/22"
 >
 	<span
-		class="w-11 h-11 rounded-full flex items-center justify-center bg-[var(--bg-card)] text-xl shrink-0"
+		class="w-11 h-11 rounded-full flex items-center justify-center bg-black/6 dark:bg-white/10 text-xl shrink-0"
 	>
 		{portal.icon}
 	</span>
@@ -22,4 +22,3 @@
 		<span class="opacity-80 leading-snug text-sm">{portal.description}</span>
 	</span>
 </a>
-
