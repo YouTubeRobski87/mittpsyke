@@ -172,7 +172,11 @@
 	.hero-overlay {
 		position: absolute;
 		inset: 0;
-		background-image: linear-gradient(rgba(28, 28, 28, 0.52), rgba(23, 23, 23, 0.58));
+		background: linear-gradient(
+			180deg,
+			rgba(14, 22, 33, 0.55) 0%,
+			rgba(14, 22, 33, 0.85) 100%
+		);
 		pointer-events: none;
 	}
 
