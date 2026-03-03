@@ -9,21 +9,20 @@
 
 :root {
 	color-scheme: dark;
-	--container-max: 980px;
+	--container-max: 1100px;
 	--font-heading: 'Recursive H', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-body: 'Recursive T', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-	--font-main: var(--font-body);
 	--bg-main: #0e1621;
-	--bg-section: #111b27;
+	--bg-a: #0e1621;
+	--bg-b: #101c29;
 	--bg-card: #162433;
+	--border-soft: rgba(255, 255, 255, 0.06);
+	--shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+	--text-main: #e6edf3;
+	--text-strong: #f0f6fb;
+	--text-muted: #b4c0ca;
 	--accent: #4c7a96;
 	--accent-hover: #3f677f;
-	--text-main: #e6edf3;
-	--text-muted: #a8b3bd;
-	--shadow-elevated: 0 10px 30px rgba(0, 0, 0, 0.4);
-	--foreground: 0 0% 95%;
-	--muted-foreground: 240 5% 65%;
-	--border: 240 4% 20%;
 	--primary: var(--accent);
 	--radius-card: 14px;
 	--radius-input: 12px;
@@ -36,19 +35,15 @@
 
 html {
 	font-size: 17px;
+	background:
+		radial-gradient(1200px 600px at 50% -10%, rgba(76, 122, 150, 0.12), transparent 60%),
+		linear-gradient(180deg, #0e1621 0%, #0b121b 100%);
 }
 
 html,
 body {
 	margin: 0;
 	padding: 0;
-}
-
-body,
-p,
-li {
-	font-family: var(--font-body);
-	font-weight: 400;
 }
 
 h1,
@@ -60,24 +55,7 @@ h6 {
 	font-family: var(--font-heading);
 	letter-spacing: -0.02em;
 	line-height: 1.15;
-}
-
-h1 {
-	font-weight: 850;
-}
-
-h2 {
-	font-weight: 700;
-}
-
-h3 {
-	font-weight: 600;
-}
-
-h4,
-h5,
-h6 {
-	font-weight: 500;
+	color: var(--text-strong);
 }
 
 nav,
@@ -94,7 +72,9 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	color: var(--text-main);
-	background: linear-gradient(180deg, #0e1621 0%, #111b27 100%);
+	background:
+		radial-gradient(1200px 600px at 50% -10%, rgba(76, 122, 150, 0.12), transparent 60%),
+		linear-gradient(180deg, #0e1621 0%, #0b121b 100%);
 }
 
 button,
@@ -104,26 +84,12 @@ select {
 	font: inherit;
 }
 
-.bg-main {
-	background: var(--bg-main);
+main > section:nth-of-type(odd) {
+	background: var(--bg-a);
 }
 
-.bg-section {
-	background: var(--bg-section);
-}
-
-.bg-card {
-	background: var(--bg-card);
-}
-
-.elevated-card {
-	box-shadow: var(--shadow-elevated);
-	border-radius: 14px;
-	transition: 0.25s ease;
-}
-
-section {
-	background: var(--bg-section) !important;
+main > section:nth-of-type(even) {
+	background: var(--bg-b);
 }
 
 .card,
@@ -132,63 +98,58 @@ section {
 .tool-card,
 .block,
 .maintenance-card {
-	background: var(--bg-card) !important;
-	border: 1px solid rgba(255, 255, 255, 0.05) !important;
-	box-shadow: var(--shadow-elevated);
-	border-radius: 14px;
-}
-
-[class*='bg-white'],
-[class*='bg-gray-50'],
-[class*='bg-slate-100'],
-[class*='bg-zinc-50'],
-[class*='bg-neutral-50'],
-[class*='bg-neutral-900'],
-[class*='bg-zinc-900'] {
-	background-color: var(--bg-card) !important;
+	background: var(--bg-card);
+	border: 1px solid var(--border-soft);
+	border-radius: 16px;
+	box-shadow: var(--shadow);
+	transition: 200ms ease;
 }
 
 a {
-	color: inherit;
+	color: var(--accent);
 	text-decoration: none;
 }
 
-h1,
-h2,
-h3 {
-	color: var(--text-main) !important;
+a:hover {
+	color: var(--accent-hover);
 }
 
 p,
-span,
-li {
-	color: var(--text-muted) !important;
+small,
+span {
+	color: var(--text-muted);
 }
 
 button {
-	background: var(--accent) !important;
-	color: var(--text-main) !important;
-	border: 1px solid rgba(255, 255, 255, 0.05);
-	border-radius: var(--radius-input);
-	box-shadow: var(--shadow-elevated);
-	transition: 0.25s ease;
+	background: var(--accent);
+	color: var(--bg-main);
+	border: 1px solid var(--border-soft);
+	border-radius: 12px;
+	box-shadow: var(--shadow);
+	transition: 200ms ease;
 }
 
 button:hover {
-	background: var(--accent-hover) !important;
+	background: var(--accent-hover);
 }
 
 input,
 textarea,
 select {
-	background: var(--bg-card) !important;
-	color: var(--text-main) !important;
-	border: 1px solid rgba(255, 255, 255, 0.05);
+	background: var(--bg-card);
+	color: var(--text-main);
+	border: 1px solid var(--border-soft);
 	border-radius: var(--radius-input);
 }
 
 .container {
 	max-width: var(--container-max);
 	margin: 0 auto;
-	padding: 0 20px;
+	padding: 0 24px;
+}
+
+@media (min-width: 900px) {
+	.container {
+		padding: 0 32px;
+	}
 }

@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-	<title>Registrera – MittPsyke</title>
+	<title>Registrera â€“ MittPsyke</title>
 </svelte:head>
 
 <section class="container max-w-sm py-16">
@@ -44,7 +44,7 @@
 		<input
 			type="password"
 			bind:value={password}
-			placeholder="Lösenord"
+			placeholder="LÃ¶senord"
 			required
 			minlength={6}
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12

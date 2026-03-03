@@ -104,7 +104,9 @@
 		</section>
 	</main>
 {:else}
-	<header class="sticky top-0 z-30 border-b border-white/10 bg-[#111B27]/92 backdrop-blur">
+	<header
+		class="sticky top-0 z-30 border-b border-[rgba(255,255,255,0.1)] bg-[rgba(14,22,33,0.9)] backdrop-blur"
+	>
 		<div class="flex items-center justify-between gap-3 px-5 py-3.5">
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
 				<a
@@ -194,7 +196,7 @@
 
 				<button
 					type="button"
-					class="md:hidden inline-flex items-center justify-center rounded-md border border-white/12 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
+					class="md:hidden inline-flex items-center justify-center rounded-md border border-[rgba(255,255,255,0.12)] px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
 					aria-label="&Ouml;ppna meny"
 					aria-expanded={mobileMenuOpen}
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
@@ -205,7 +207,7 @@
 		</div>
 
 		{#if mobileMenuOpen}
-			<div class="md:hidden border-t border-white/10 px-5 py-3 space-y-2">
+			<div class="md:hidden border-t border-[rgba(255,255,255,0.1)] px-5 py-3 space-y-2">
 				<a
 					href="/guider"
 					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
@@ -289,7 +291,7 @@
 		{/if}
 	</header>
 
-	<main class="mt-6">
+	<main class="site-shell mt-6">
 		{@render children()}
 	</main>
 
@@ -308,7 +310,7 @@
 		</p>
 	</section>
 
-	<footer class="border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
+	<footer class="border-t border-[rgba(255,255,255,0.1)] py-5 px-5 text-sm opacity-60 text-center mt-12">
 		&copy; {new Date().getFullYear()} MittPsyke. Alla r&auml;ttigheter f&ouml;rbeh&aring;llna.
 		<span class="mx-2">&middot;</span>
 		<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
@@ -335,6 +337,18 @@
 {/if}
 
 <style>
+	.site-shell {
+		width: min(1200px, 100%);
+		margin: 0 auto;
+		padding: 0 24px;
+	}
+
+	@media (min-width: 900px) {
+		.site-shell {
+			padding: 0 32px;
+		}
+	}
+
 	.maintenance-screen {
 		min-height: 100vh;
 		display: grid;

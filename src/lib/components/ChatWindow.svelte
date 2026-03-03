@@ -93,11 +93,11 @@
 				window.localStorage.setItem('mittpsyke:last-chat-category', category);
 			}
 
-			messages.push({ role: 'assistant', content: data.reply ?? 'Något gick fel.' });
+			messages.push({ role: 'assistant', content: data.reply ?? 'NÃ¥got gick fel.' });
 			await tick();
 			scrollToBottom();
 		} catch {
-			messages.push({ role: 'assistant', content: 'Något gick fel.' });
+			messages.push({ role: 'assistant', content: 'NÃ¥got gick fel.' });
 			await tick();
 			scrollToBottom();
 		} finally {
@@ -140,9 +140,9 @@
 					class="mx-auto mb-4 opacity-80"
 					style="max-width: 220px"
 				/>
-				<p class="text-sm opacity-70 mb-2">Hur mår du?</p>
+				<p class="text-sm opacity-70 mb-2">Hur mÃ¥r du?</p>
 				<p class="text-center opacity-60">
-					Skriv något så börjar vi prata. Allt sker utan dömande.
+					Skriv nÃ¥got sÃ¥ bÃ¶rjar vi prata. Allt sker utan dÃ¶mande.
 				</p>
 			</div>
 		{/if}
@@ -192,7 +192,7 @@
 			<textarea
 				bind:value={input}
 				onkeydown={handleKeydown}
-				placeholder="Skriv här..."
+				placeholder="Skriv hÃ¤r..."
 				rows={1}
 				class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 					bg-[var(--bg-card)] px-4 py-3 text-sm outline-none
@@ -208,14 +208,14 @@
 			</button>
 		</div>
 		<p class="mt-3 sm:mt-2 text-xs opacity-60 text-center sm:text-left">
-			Behöver du akut stöd?
+			BehÃ¶ver du akut stÃ¶d?
 			<a
 				href="https://stodlinjer.se"
 				target="_blank"
 				rel="noopener noreferrer"
 				class="underline opacity-75 hover:opacity-100 transition-opacity"
 			>
-				Hitta stödlinjer här
+				Hitta stÃ¶dlinjer hÃ¤r
 			</a>
 		</p>
 	</div>
