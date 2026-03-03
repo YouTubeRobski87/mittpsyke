@@ -104,7 +104,7 @@
 		</section>
 	</main>
 {:else}
-	<header class="sticky top-0 z-30 border-b border-white/10 bg-[#111B27]/92 backdrop-blur">
+	<header class="sticky top-0 z-30 border-b border-black/8 bg-white/75 dark:bg-black/35 backdrop-blur">
 		<div class="flex items-center justify-between gap-3 px-5 py-3.5">
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
 				<a
@@ -194,7 +194,7 @@
 
 				<button
 					type="button"
-					class="md:hidden inline-flex items-center justify-center rounded-md border border-white/12 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
+					class="md:hidden inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/10 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
 					aria-label="&Ouml;ppna meny"
 					aria-expanded={mobileMenuOpen}
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
@@ -205,7 +205,7 @@
 		</div>
 
 		{#if mobileMenuOpen}
-			<div class="md:hidden border-t border-white/10 px-5 py-3 space-y-2">
+			<div class="md:hidden border-t border-black/8 dark:border-white/10 px-5 py-3 space-y-2">
 				<a
 					href="/guider"
 					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
