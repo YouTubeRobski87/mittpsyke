@@ -164,6 +164,7 @@
 		background-image: url('/assets/home/MittpsykeTree.jpg');
 		background-size: cover;
 		background-position: center;
+		filter: brightness(1.1);
 		transform: translate3d(0, 0, 0);
 		will-change: transform;
 		pointer-events: none;
