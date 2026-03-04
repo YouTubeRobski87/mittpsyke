@@ -104,7 +104,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Hur bygger jag mer trygghet i vardagen?',
-				answer: 'Små forutsagbara rutiner, grounding och trygg kontakt med andra brukar vara hjalpsamt.'
+				answer: 'Sma forutsagbara rutiner, grounding och trygg kontakt med andra brukar vara hjalpsamt.'
 			},
 			{
 				question: 'Nar bor jag prata med en terapeut?',
