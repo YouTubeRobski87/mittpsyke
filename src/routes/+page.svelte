@@ -164,7 +164,7 @@
 		background-image: url('/assets/home/MittpsykeTree.jpg');
 		background-size: cover;
 		background-position: center;
-		filter: brightness(1.1);
+		filter: brightness(1.22) contrast(1.06) saturate(1.12);
 		transform: translate3d(0, 0, 0);
 		will-change: transform;
 		pointer-events: none;
@@ -175,8 +175,8 @@
 		inset: 0;
 		background: linear-gradient(
 			180deg,
-			rgba(14, 22, 33, 0.55) 0%,
-			rgba(14, 22, 33, 0.85) 100%
+			rgba(22, 20, 16, 0.18) 0%,
+			rgba(22, 20, 16, 0.36) 100%
 		);
 		pointer-events: none;
 	}
