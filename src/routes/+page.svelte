@@ -175,8 +175,9 @@
 		inset: 0;
 		background: linear-gradient(
 			180deg,
-			rgba(22, 20, 16, 0.18) 0%,
-			rgba(22, 20, 16, 0.36) 100%
+			rgba(14, 22, 33, 0.65) 0%,
+			rgba(14, 22, 33, 0.85) 60%,
+			rgba(14, 22, 33, 0.95) 100%
 		);
 		pointer-events: none;
 	}
