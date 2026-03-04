@@ -297,20 +297,20 @@
 
 	.content-hub {
 		padding: clamp(2.8rem, 8vw, 4.2rem) 1.25rem;
-		background: #fdf9f2;
-		color: #2f3538;
+		background: #23384d;
+		color: #eaf3fb;
 	}
 
 	.hub-inner h2 {
 		margin: 0;
-		color: #253137;
+		color: #f3f8fd;
 		font-size: clamp(1.5rem, 2.8vw, 2rem);
 	}
 
 	.hub-inner p {
 		margin: 0.75rem 0 0;
 		max-width: 62ch;
-		color: #556269;
+		color: #c7d6e5;
 	}
 
 	.hub-grid {
@@ -323,19 +323,19 @@
 	.hub-card {
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		background: #ffffff;
-		border: 1px solid #ece7dc;
+		background: #2d4660;
+		border: 1px solid #45617d;
 		transition: transform 180ms ease, background-color 180ms ease;
 	}
 
 	.hub-card:hover {
 		transform: translateY(-2px);
-		background: #fcfaf5;
+		background: #355270;
 	}
 
 	.hub-card h3 {
 		margin: 0;
-		color: #2a3438;
+		color: #f3f8fd;
 		font-size: 1.05rem;
 	}
 
@@ -343,7 +343,7 @@
 		margin: 0.55rem 0 0;
 		font-size: 0.94rem;
 		line-height: 1.65;
-		color: #556269;
+		color: #c7d6e5;
 	}
 
 	.hub-card span {
@@ -351,6 +351,7 @@
 		margin-top: 0.75rem;
 		font-size: 0.85rem;
 		font-weight: 600;
+		color: #d9e7f5;
 	}
 
 	.focus-content {
