@@ -41,9 +41,8 @@
 </svelte:head>
 
 <main class="staging-look">
-	<section class="hero-section" aria-label="Introduktion till MittPsyke" bind:this={heroEl}>
+	<section class="hero-section hero" aria-label="Introduktion till MittPsyke" bind:this={heroEl}>
 		<div class="hero-bg" bind:this={bgEl}></div>
-		<div class="hero-overlay"></div>
 		<div class="hero-content">
 			<h1>V&auml;lkommen till MittPsyke</h1>
 			<p>
@@ -151,6 +150,9 @@
 		display: grid;
 		place-items: center;
 		padding: 2rem 1.25rem;
+	}
+
+	.hero {
 		position: relative;
 		overflow: hidden;
 	}
@@ -164,22 +166,31 @@
 		background-image: url('/assets/home/MittpsykeTree.jpg');
 		background-size: cover;
 		background-position: center;
-		filter: brightness(1.22) contrast(1.06) saturate(1.12);
+		filter: saturate(0.75) brightness(0.85) contrast(1.05);
 		transform: translate3d(0, 0, 0);
 		will-change: transform;
 		pointer-events: none;
+		z-index: 0;
 	}
 
-	.hero-overlay {
+	.hero::before {
+		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(
-			180deg,
-			rgba(14, 22, 33, 0.65) 0%,
-			rgba(14, 22, 33, 0.85) 60%,
-			rgba(14, 22, 33, 0.95) 100%
-		);
+		background:
+			radial-gradient(
+				800px 400px at 50% 20%,
+				rgba(76, 122, 150, 0.18),
+				transparent 60%
+			),
+			linear-gradient(
+				180deg,
+				rgba(14, 22, 33, 0.65) 0%,
+				rgba(14, 22, 33, 0.85) 60%,
+				rgba(14, 22, 33, 0.95) 100%
+			);
 		pointer-events: none;
+		z-index: 1;
 	}
 
 	.hero-content {
