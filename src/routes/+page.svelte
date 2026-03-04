@@ -3,7 +3,7 @@
 	import { portals } from '$lib/data/portals';
 
 	let heroEl: HTMLElement | null = null;
-	let bgEl: HTMLDivElement | null = null;
+	let bgEl: HTMLImageElement | null = null;
 
 	onMount(() => {
 		if (!heroEl || !bgEl) return;
@@ -42,7 +42,13 @@
 
 <main class="staging-look">
 	<section class="hero-section hero" aria-label="Introduktion till MittPsyke" bind:this={heroEl}>
-		<div class="hero-bg" bind:this={bgEl}></div>
+		<img
+			class="hero-bg"
+			bind:this={bgEl}
+			src="/assets/home/MittpsykeTree.jpg"
+			alt=""
+			aria-hidden="true"
+		/>
 		<div class="hero-content">
 			<h1>V&auml;lkommen till MittPsyke</h1>
 			<p>
@@ -157,19 +163,22 @@
 		overflow: hidden;
 	}
 
+	.hero img {
+		width: 100%;
+		height: auto;
+		object-fit: cover;
+		filter: saturate(0.75) brightness(0.85) contrast(1.05);
+	}
+
 	.hero-bg {
 		position: absolute;
 		left: 0;
-		right: 0;
 		top: -24px;
-		bottom: -24px;
-		background-image: url('/assets/home/MittpsykeTree.jpg');
-		background-size: cover;
-		background-position: center;
-		filter: saturate(0.75) brightness(0.85) contrast(1.05);
+		height: calc(100% + 48px);
 		transform: translate3d(0, 0, 0);
 		will-change: transform;
 		pointer-events: none;
+		display: block;
 		z-index: 0;
 	}
 
