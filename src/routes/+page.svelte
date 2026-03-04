@@ -494,31 +494,31 @@
 	}
 
 	:global(.dark) .content-hub {
-		background: #1b2f44;
-		color: #eaf3fb;
+		background: #1b2430;
+		color: #e5edf6;
 	}
 
 	:global(.dark) .hub-inner h2 {
-		color: #f3f8fd;
+		color: #edf3f9;
 	}
 
 	:global(.dark) .hub-inner p,
 	:global(.dark) .hub-card p {
-		color: #c7d6e5;
+		color: #bcc9d8;
 	}
 
 	:global(.dark) .hub-card {
-		background: #243b54;
-		border-color: #3f5d78;
+		background: #223041;
+		border-color: #34475c;
 	}
 
 	:global(.dark) .hub-card:hover {
-		background: #2b4764;
+		background: #27384b;
 	}
 
 	:global(.dark) .hub-card h3,
 	:global(.dark) .hub-card span {
-		color: #eaf3fb;
+		color: #e5edf6;
 	}
 
 	:global(.dark) .focus-content {
