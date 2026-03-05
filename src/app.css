@@ -201,6 +201,18 @@ a {
 		padding: 0;
 	}
 	
+	/* Adjust chat page container for mobile */
+	[data-page="chat"].container {
+		max-width: 100%;
+		padding: 0;
+		margin: 0;
+	}
+	
+	/* Hide portal header on mobile to maximize chat space */
+	[data-page="chat"] .portal-header {
+		display: none;
+	}
+	
 	.chat-messages {
 		/* Allow messages to scroll independently */
 		flex: 1;
