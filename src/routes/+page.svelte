@@ -303,14 +303,14 @@
 
 	.cta-button-primary {
 		display: inline-block;
-		margin-top: 1.6rem;
-		padding: 0.875rem 2.2rem;
+		margin-top: 1rem;
+		padding: 0.75rem 1.8rem;
 		font-family: var(--font-heading);
 		font-weight: 600;
-		font-size: 1.05rem;
+		font-size: 1rem;
 		letter-spacing: 0.02em;
-		background: #1bbfa8;
-		color: #02201c;
+		background: #38bdf8;
+		color: #0f172a;
 		border-radius: var(--radius-pill);
 		text-decoration: none;
 		transition: all 0.25s ease;
@@ -319,13 +319,13 @@
 	}
 
 	.cta-button-primary:hover {
-		transform: translateY(-3px);
-		box-shadow: 0 8px 24px rgba(27, 191, 168, 0.35);
-		background: #20d4ba;
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba(56, 189, 248, 0.25);
+		background: #22d3ee;
 	}
 
 	.cta-button-primary:active {
-		transform: translateY(-1px);
+		transform: translateY(0);
 	}
 
 	.narrow {
@@ -660,17 +660,17 @@
 	}
 
 	:global(.dark) .band-cta {
-		background: linear-gradient(180deg, #0f2f2b 0%, #0c2421 100%);
+		background: #0f172a;
 	}
 
 	:global(.dark) .cta-button-primary {
-		background: #1bbfa8;
-		color: #02201c;
+		background: #38bdf8;
+		color: #0f172a;
 	}
 
 	:global(.dark) .cta-button-primary:hover {
-		background: #20d4ba;
-		box-shadow: 0 8px 24px rgba(27, 191, 168, 0.35);
+		background: #22d3ee;
+		box-shadow: 0 6px 16px rgba(56, 189, 248, 0.25);
 	}
 
 	:global(.dark) .intro-grid img,
