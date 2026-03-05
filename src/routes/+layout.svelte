@@ -2,11 +2,14 @@
 	import '../app.css';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { supabase } from '$lib/supabase';
+	import { page } from '$app/state';
 	import type { User } from '@supabase/supabase-js';
 
 	const UNDER_CONSTRUCTION = false;
 
 	let { children } = $props();
+
+	const isChat = $derived(Boolean(page.route.id?.includes('/chat/')));
 
 	let user = $state<User | null>(null);
 	let displayName = $state<string | null>(null);
@@ -277,17 +280,18 @@
 		{/if}
 	</header>
 
-	<main class="mt-6">
-		{@render children()}
-	</main>
+	<div class:is-chat-page={isChat}>
+		<main class="mt-6">
+			{@render children()}
+		</main>
 
-	<section class="site-disclaimer mt-10 px-5">
-		<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
-			MittPsyke ers&auml;tter inte v&aring;rd. Vid akut fara ring 112 &middot; V&aring;rdr&aring;d 1177.
-		</p>
-	</section>
+		<section class="site-disclaimer mt-10 px-5">
+			<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
+				MittPsyke ers&auml;tter inte v&aring;rd. Vid akut fara ring 112 &middot; V&aring;rdr&aring;d 1177.
+			</p>
+		</section>
 
-	<footer class="site-footer border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
+		<footer class="site-footer border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
 		&copy; {new Date().getFullYear()} MittPsyke. Alla r&auml;ttigheter f&ouml;rbeh&aring;llna.
 		<span class="mx-2">&middot;</span>
 		<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">

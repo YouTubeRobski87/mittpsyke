@@ -149,8 +149,8 @@ a {
 
 /* Mobile optimizations for chat page */
 @media (max-width: 768px) {
-	:global([data-page="chat"]) .site-footer,
-	:global([data-page="chat"]) .site-disclaimer {
+	.is-chat-page .site-footer,
+	.is-chat-page .site-disclaimer {
 		display: none;
 	}
 }
