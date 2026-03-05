@@ -108,6 +108,14 @@
 		</div>
 	</section>
 
+	<section class="band band-cta">
+		<div class="narrow cta-section">
+			<h2>K&auml;nner du att tankarna snurrar?</h2>
+			<p>Du kan skriva anonymt h&auml;r.</p>
+			<a href="/chat/a" class="cta-button-primary">Starta samtal &rarr;</a>
+		</div>
+	</section>
+
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
 			<img src="/assets/home/Tryggplats.png" alt="Trygg plats" loading="lazy" />
@@ -140,14 +148,6 @@
 				</p>
 			</div>
 			<img src="/assets/home/Digitalastod.PNG" alt="Digitalt stöd" loading="lazy" />
-		</div>
-	</section>
-
-	<section class="band band-cta">
-		<div class="narrow cta-section">
-			<h2>K&auml;nner du att tankarna snurrar?</h2>
-			<p>Du kan skriva anonymt h&auml;r.</p>
-			<a href="/chat/a" class="cta-button-primary">Starta samtal &rarr;</a>
 		</div>
 	</section>
 
@@ -267,7 +267,7 @@
 	}
 
 	.band-cta {
-		background: #0f766e;
+		background: linear-gradient(180deg, #0f2f2b 0%, #0c2421 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -275,7 +275,7 @@
 
 	.cta-section {
 		text-align: center;
-		padding: clamp(2.5rem, 6vw, 4rem) 1.25rem;
+		padding: clamp(3rem, 8vw, 5rem) 1.25rem;
 	}
 
 	.cta-section h2 {
@@ -283,47 +283,47 @@
 		color: #f5f5f2;
 		font-family: var(--font-heading);
 		font-weight: 700;
-		font-size: clamp(1.5rem, 3vw, 2rem);
+		font-size: clamp(1.6rem, 3.5vw, 2.2rem);
 		line-height: 1.15;
 		letter-spacing: -0.02em;
 	}
 
 	.cta-section p {
-		margin: 0.55rem auto 0;
+		margin: 0.75rem auto 0;
 		max-width: 55ch;
-		color: rgba(255, 255, 255, 0.9);
+		color: rgba(255, 255, 255, 0.85);
 		font-family: var(--font-body);
 		font-weight: 400;
-		font-size: clamp(1rem, 1.5vw, 1.15rem);
+		font-size: clamp(1rem, 1.5vw, 1.125rem);
 		line-height: 1.65;
 		letter-spacing: -0.005em;
 	}
 
 	.cta-button-primary {
 		display: inline-block;
-		margin-top: 1.2rem;
-		padding: 0.75rem 1.8rem;
+		margin-top: 1.6rem;
+		padding: 0.875rem 2.2rem;
 		font-family: var(--font-heading);
 		font-weight: 600;
-		font-size: 1rem;
+		font-size: 1.05rem;
 		letter-spacing: 0.02em;
-		background: #ffffff;
-		color: #0f766e;
+		background: #1bbfa8;
+		color: #02201c;
 		border-radius: var(--radius-pill);
 		text-decoration: none;
-		transition: all 0.2s ease;
-		border: 2px solid #ffffff;
+		transition: all 0.25s ease;
+		border: none;
 		cursor: pointer;
 	}
 
 	.cta-button-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-		background: #f0f0f0;
+		transform: translateY(-3px);
+		box-shadow: 0 8px 24px rgba(27, 191, 168, 0.35);
+		background: #20d4ba;
 	}
 
 	.cta-button-primary:active {
-		transform: translateY(0);
+		transform: translateY(-1px);
 	}
 
 	.narrow {
@@ -658,17 +658,17 @@
 	}
 
 	:global(.dark) .band-cta {
-		background: #0f766e;
+		background: linear-gradient(180deg, #0f2f2b 0%, #0c2421 100%);
 	}
 
 	:global(.dark) .cta-button-primary {
-		background: #ffffff;
-		color: #0f766e;
+		background: #1bbfa8;
+		color: #02201c;
 	}
 
 	:global(.dark) .cta-button-primary:hover {
-		background: #f0f0f0;
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+		background: #20d4ba;
+		box-shadow: 0 8px 24px rgba(27, 191, 168, 0.35);
 	}
 
 	:global(.dark) .intro-grid img,
