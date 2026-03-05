@@ -143,6 +143,14 @@
 		</div>
 	</section>
 
+	<section class="band band-cta">
+		<div class="narrow cta-section">
+			<h2>K&auml;nner du att tankarna snurrar?</h2>
+			<p>Du kan skriva anonymt h&auml;r.</p>
+			<a href="/chat/a" class="cta-button-primary">Starta samtal &rarr;</a>
+		</div>
+	</section>
+
 </main>
 
 <style>
@@ -256,6 +264,66 @@
 
 	.band-brown {
 		background: #56453d;
+	}
+
+	.band-cta {
+		background: #0f766e;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.cta-section {
+		text-align: center;
+		padding: clamp(2.5rem, 6vw, 4rem) 1.25rem;
+	}
+
+	.cta-section h2 {
+		margin: 0;
+		color: #f5f5f2;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: clamp(1.5rem, 3vw, 2rem);
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+	}
+
+	.cta-section p {
+		margin: 0.55rem auto 0;
+		max-width: 55ch;
+		color: rgba(255, 255, 255, 0.9);
+		font-family: var(--font-body);
+		font-weight: 400;
+		font-size: clamp(1rem, 1.5vw, 1.15rem);
+		line-height: 1.65;
+		letter-spacing: -0.005em;
+	}
+
+	.cta-button-primary {
+		display: inline-block;
+		margin-top: 1.2rem;
+		padding: 0.75rem 1.8rem;
+		font-family: var(--font-heading);
+		font-weight: 600;
+		font-size: 1rem;
+		letter-spacing: 0.02em;
+		background: #ffffff;
+		color: #0f766e;
+		border-radius: var(--radius-pill);
+		text-decoration: none;
+		transition: all 0.2s ease;
+		border: 2px solid #ffffff;
+		cursor: pointer;
+	}
+
+	.cta-button-primary:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+		background: #f0f0f0;
+	}
+
+	.cta-button-primary:active {
+		transform: translateY(0);
 	}
 
 	.narrow {
