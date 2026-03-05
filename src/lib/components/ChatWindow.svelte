@@ -135,10 +135,10 @@
 	}
 </script>
 
-<div class="flex flex-col h-[calc(100vh-200px)] max-w-2xl mx-auto">
+<div class="chat-container flex flex-col h-[calc(100vh-200px)] max-w-2xl mx-auto">
 	<div
 		bind:this={chatLog}
-		class="flex-1 overflow-y-auto p-4 space-y-3"
+		class="chat-messages flex-1 overflow-y-auto p-4 space-y-3"
 	>
 		{#if messages.length === 0}
 			<div class="text-center mt-6">
