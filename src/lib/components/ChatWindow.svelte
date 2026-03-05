@@ -195,7 +195,7 @@
 		{/if}
 	</div>
 
-	<div class="border-t border-black/8 dark:border-white/10 p-4">
+	<div class="chat-input-area border-t border-black/8 dark:border-white/10 p-4">
 		<div class="flex gap-2">
 			<textarea
 				bind:value={input}
