@@ -117,3 +117,40 @@ a {
 	margin: 0 auto;
 	padding: 0 20px;
 }
+
+/* Contact button styling */
+.contact-button {
+	display: inline-block;
+	padding: 0.5rem 1rem;
+	border-radius: 12px;
+	background-color: var(--teal-50, #f0fdfa);
+	color: #0d9488;
+	font-size: 0.875rem;
+	font-weight: 500;
+	border: 1px solid #99f6e4;
+	text-decoration: none;
+	transition: all 0.3s ease;
+}
+
+.contact-button:hover {
+	background-color: var(--teal-100, #ccfbf1);
+	color: #0d9488;
+}
+
+.dark .contact-button {
+	background-color: rgba(20, 184, 166, 0.1);
+	color: #5eead4;
+	border-color: rgba(20, 184, 166, 0.3);
+}
+
+.dark .contact-button:hover {
+	background-color: rgba(20, 184, 166, 0.2);
+}
+
+/* Mobile optimizations for chat page */
+@media (max-width: 768px) {
+	:global([data-page="chat"]) .site-footer,
+	:global([data-page="chat"]) .site-disclaimer {
+		display: none;
+	}
+}

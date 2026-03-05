@@ -96,7 +96,7 @@
 	<title>{portal ? portal.title : 'Chatt'} - MittPsyke</title>
 </svelte:head>
 
-<div class="container py-6">
+<div class="container py-6" data-page="chat">
 	{#if portal}
 		<div class="text-center mb-4">
 			<span class="text-2xl">{portal.icon}</span>

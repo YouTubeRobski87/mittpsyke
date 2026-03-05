@@ -216,15 +216,25 @@
 			</button>
 		</div>
 		<p class="mt-3 sm:mt-2 text-xs opacity-60 text-center sm:text-left">
-			Behöver du akut stöd?
+			Behöver du akut stöd? 
 			<a
 				href="https://stodlinjer.se"
 				target="_blank"
 				rel="noopener noreferrer"
 				class="underline opacity-75 hover:opacity-100 transition-opacity"
 			>
-				Hitta stödlinjer här
+				Stödlinjer
 			</a>
 		</p>
+		<div class="mt-3 text-center">
+			<a
+				href="mailto:mittpsyke@ownit.nu"
+				class="inline-block px-4 py-2 rounded-[12px] bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-200 text-sm font-medium
+					hover:bg-teal-100 dark:hover:bg-teal-900/30 transition-colors border border-teal-200 dark:border-teal-800/50"
+				title="Skicka e-post till support"
+			>
+				Kontakta oss
+			</a>
+		</div>
 	</div>
 </div>

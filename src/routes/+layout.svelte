@@ -281,22 +281,13 @@
 		{@render children()}
 	</main>
 
-	<section class="mt-10 px-5">
+	<section class="site-disclaimer mt-10 px-5">
 		<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
-			MittPsyke &auml;r ett AI-baserat samtalsst&ouml;d och ers&auml;tter inte medicinsk eller psykologisk v&aring;rd.
-			Vid akut fara: ring 112. Vid behov av v&aring;rdr&aring;d: 1177.
-			<a
-				href="https://stodlinjer.se"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="underline hover:no-underline ml-1"
-			>
-				Akut hj&auml;lp
-			</a>
+			MittPsyke ers&auml;tter inte v&aring;rd. Vid akut fara ring 112 &middot; V&aring;rdr&aring;d 1177.
 		</p>
 	</section>
 
-	<footer class="border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
+	<footer class="site-footer border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
 		&copy; {new Date().getFullYear()} MittPsyke. Alla r&auml;ttigheter f&ouml;rbeh&aring;llna.
 		<span class="mx-2">&middot;</span>
 		<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
