@@ -267,7 +267,7 @@
 	}
 
 	.band-cta {
-		background: linear-gradient(180deg, #0f2f2b 0%, #0c2421 100%);
+		background: #0f172a;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -275,7 +275,9 @@
 
 	.cta-section {
 		text-align: center;
-		padding: clamp(3rem, 8vw, 5rem) 1.25rem;
+		padding: 4rem 1.25rem;
+		max-width: 680px;
+		margin: 0 auto;
 	}
 
 	.cta-section h2 {
