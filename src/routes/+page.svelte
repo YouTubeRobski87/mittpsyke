@@ -281,23 +281,23 @@
 	}
 
 	.cta-section h2 {
-		margin: 0;
+		margin: 0 0 0.625rem 0;
 		color: #f5f5f2;
 		font-family: var(--font-heading);
-		font-weight: 700;
-		font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-		line-height: 1.15;
+		font-weight: 600;
+		font-size: 1.75rem;
+		line-height: 1.25;
 		letter-spacing: -0.02em;
 	}
 
 	.cta-section p {
-		margin: 0.75rem auto 0;
+		margin: 0 auto 1.375rem;
 		max-width: 55ch;
-		color: rgba(255, 255, 255, 0.85);
+		color: rgba(255, 255, 255, 0.8);
 		font-family: var(--font-body);
 		font-weight: 400;
-		font-size: clamp(1rem, 1.5vw, 1.125rem);
-		line-height: 1.65;
+		font-size: 1rem;
+		line-height: 1.6;
 		letter-spacing: -0.005em;
 	}
 
