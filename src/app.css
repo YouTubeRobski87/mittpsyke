@@ -154,6 +154,22 @@ a {
 	color: #5eead4;
 }
 
+/* Chat layout base styles */
+.chat-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.chat-messages {
+	flex: 1;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.chat-input-area {
+	flex-shrink: 0;
+}
+
 /* Mobile optimizations for chat page */
 @media (max-width: 768px) {
 	.is-chat-page .site-footer,
@@ -170,5 +186,49 @@ a {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+	}
+	
+	/* Native messaging app-like layout for chat on mobile */
+	.chat-container {
+		/* Fill the viewport, accounting for header and avoiding double scroll */
+		min-height: calc(100vh - 60px);
+		height: 100vh;
+		max-height: calc(100vh - 60px);
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.chat-messages {
+		/* Allow messages to scroll independently */
+		flex: 1;
+		overflow-y: auto;
+		overflow-x: hidden;
+		padding-bottom: 8px;
+		-webkit-overflow-scrolling: touch;
+		/* Ensure proper spacing from input */
+		margin-bottom: 0;
+	}
+	
+	.chat-input-area {
+		/* Keep input fixed at bottom, above keyboard */
+		position: sticky;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: var(--background, #ffffff);
+		border-top: 1px solid rgba(0, 0, 0, 0.08);
+		padding: 12px 16px;
+		z-index: 10;
+		flex-shrink: 0;
+		/* Prevent layout shift on keyboard open */
+		box-sizing: border-box;
+	}
+	
+	.dark .chat-input-area {
+		background: #0f0f0f;
+		border-top-color: rgba(255, 255, 255, 0.1);
 	}
 }
