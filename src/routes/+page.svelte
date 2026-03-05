@@ -657,6 +657,20 @@
 		background: #3a2e28;
 	}
 
+	:global(.dark) .band-cta {
+		background: #0f766e;
+	}
+
+	:global(.dark) .cta-button-primary {
+		background: #ffffff;
+		color: #0f766e;
+	}
+
+	:global(.dark) .cta-button-primary:hover {
+		background: #f0f0f0;
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+	}
+
 	:global(.dark) .intro-grid img,
 	:global(.dark) .support-grid img {
 		border-color: rgba(255, 255, 255, 0.12);
