@@ -98,7 +98,7 @@
 
 <div class="container py-6" data-page="chat">
 	{#if portal}
-		<div class="text-center mb-4">
+		<div class="portal-header text-center mb-4">
 			<span class="text-2xl">{portal.icon}</span>
 			<h1 class="text-xl font-semibold mt-1">{portal.title}</h1>
 			<p class="text-sm opacity-70">{portal.description}</p>
