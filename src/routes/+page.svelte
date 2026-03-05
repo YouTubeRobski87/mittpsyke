@@ -267,7 +267,7 @@
 	}
 
 	.band-cta {
-		background: linear-gradient(180deg, #0f2f2b 0%, #0c2421 100%);
+		background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
