@@ -315,6 +315,7 @@
 			Akut hj&auml;lp (St&ouml;dlinjer)
 		</a>
 	</footer>
+	</div>
 {/if}
 
 <style>
