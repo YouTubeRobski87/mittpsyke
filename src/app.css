@@ -130,11 +130,17 @@ a {
 	border: 1px solid #99f6e4;
 	text-decoration: none;
 	transition: all 0.3s ease;
+	cursor: pointer;
 }
 
 .contact-button:hover {
 	background-color: var(--teal-100, #ccfbf1);
 	color: #0d9488;
+	text-decoration: none;
+}
+
+.contact-button:active {
+	transform: scale(0.98);
 }
 
 .dark .contact-button {
@@ -145,6 +151,7 @@ a {
 
 .dark .contact-button:hover {
 	background-color: rgba(20, 184, 166, 0.2);
+	color: #5eead4;
 }
 
 /* Mobile optimizations for chat page */
@@ -152,5 +159,16 @@ a {
 	.is-chat-page .site-footer,
 	.is-chat-page .site-disclaimer {
 		display: none;
+	}
+	
+	/* Ensure contact button is touch-friendly on mobile */
+	.contact-button {
+		padding: 0.625rem 1.25rem;
+		font-size: 0.9375rem;
+		min-height: 44px;
+		min-width: 120px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 	}
 }
