@@ -1,0 +1,95 @@
+{
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/angest": [
+		"src/routes/+layout.ts"
+	],
+	"/ansvar": [
+		"src/routes/+layout.ts"
+	],
+	"/api/chat": [
+		"src/routes/api/chat/+server.ts"
+	],
+	"/api/diary/create": [
+		"src/routes/api/diary/create/+server.ts"
+	],
+	"/api/diary/delete": [
+		"src/routes/api/diary/delete/+server.ts"
+	],
+	"/api/diary/stats-timeline": [
+		"src/routes/api/diary/stats-timeline/+server.ts"
+	],
+	"/api/diary/update": [
+		"src/routes/api/diary/update/+server.ts"
+	],
+	"/chat/[category]": [
+		"src/routes/+layout.ts"
+	],
+	"/dagbok": [
+		"src/routes/+layout.ts"
+	],
+	"/dashboard": [
+		"src/routes/+layout.ts"
+	],
+	"/dashboard/installningar": [
+		"src/routes/+layout.ts"
+	],
+	"/depression": [
+		"src/routes/+layout.ts"
+	],
+	"/ensamhet": [
+		"src/routes/+layout.ts"
+	],
+	"/guider-seo": [
+		"src/routes/guider-seo/+page.ts",
+		"src/routes/+layout.ts"
+	],
+	"/guider-seo/[pillar]": [
+		"src/routes/guider-seo/[pillar]/+page.ts",
+		"src/routes/+layout.ts"
+	],
+	"/guider-seo/[pillar]/[guide]": [
+		"src/routes/guider-seo/[pillar]/[guide]/+page.ts",
+		"src/routes/+layout.ts"
+	],
+	"/guider": [
+		"src/routes/+layout.ts"
+	],
+	"/guider/[pillar]": [
+		"src/routes/guider/[pillar]/+page.ts",
+		"src/routes/+layout.ts"
+	],
+	"/integritet": [
+		"src/routes/+layout.ts"
+	],
+	"/login": [
+		"src/routes/+layout.ts"
+	],
+	"/om-mittpsyke": [
+		"src/routes/+layout.ts"
+	],
+	"/ovningar": [
+		"src/routes/+layout.ts"
+	],
+	"/ovningar/[tool]": [
+		"src/routes/ovningar/[tool]/+page.ts",
+		"src/routes/+layout.ts"
+	],
+	"/panikattack": [
+		"src/routes/+layout.ts"
+	],
+	"/portal/[slug]": [
+		"src/routes/+layout.ts"
+	],
+	"/register": [
+		"src/routes/+layout.ts"
+	],
+	"/robots.txt": [
+		"src/routes/robots.txt/+server.ts"
+	],
+	"/sitemap.xml": [
+		"src/routes/sitemap.xml/+server.ts"
+	]
+}

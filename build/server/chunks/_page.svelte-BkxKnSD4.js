@@ -1,0 +1,83 @@
+import { h as head, d as escape_html, j as derived, f as ensure_array_like, k as attr_class, l as stringify, c as attr } from './index-CtSeC24C.js';
+import './root-D-GT__9B.js';
+import './state.svelte-BDsCnSn7.js';
+import './supabase-CC3ezZS5.js';
+import { g as getPortalByKey } from './portals-dDiiJZBT.js';
+import { p as page } from './index2-CQEO0GnZ.js';
+import '@supabase/supabase-js';
+import './shared-server-DaWdgxVh.js';
+import './index3-BhvTCElu.js';
+
+function ChatWindow($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    let messages = [];
+    let input = "";
+    let savePromptHidden = {};
+    $$renderer2.push(`<div class="flex flex-col h-[calc(100vh-200px)] max-w-2xl mx-auto"><div class="flex-1 overflow-y-auto p-4 space-y-3">`);
+    if (messages.length === 0) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<div class="text-center mt-6"><img src="/assets/mittpsyke-hero.png" alt="" class="mx-auto mb-4 opacity-80" style="max-width: 220px"/> <p class="text-sm opacity-70 mb-2">Hur mår du?</p> <p class="text-center opacity-60">Skriv något så börjar vi prata. Allt sker utan dömande.</p></div>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> <!--[-->`);
+    const each_array = ensure_array_like(messages);
+    for (let i = 0, $$length = each_array.length; i < $$length; i++) {
+      let msg = each_array[i];
+      $$renderer2.push(`<div class="space-y-1"><div${attr_class(`flex ${stringify(msg.role === "user" ? "justify-end" : "justify-start")}`)}><div${attr_class(`max-w-[80%] px-4 py-3 rounded-[var(--radius-card)] text-sm leading-relaxed ${stringify(msg.role === "user" ? "bg-[var(--primary)] text-white rounded-br-md" : "bg-black/5 dark:bg-white/10 rounded-bl-md")}`)}><!--[-->`);
+      const each_array_1 = ensure_array_like(msg.content.split("\n"));
+      for (let j = 0, $$length2 = each_array_1.length; j < $$length2; j++) {
+        let line = each_array_1[j];
+        if (j > 0) {
+          $$renderer2.push("<!--[-->");
+          $$renderer2.push(`<br/>`);
+        } else {
+          $$renderer2.push("<!--[!-->");
+        }
+        $$renderer2.push(`<!--]--> ${escape_html(line)}`);
+      }
+      $$renderer2.push(`<!--]--></div></div> `);
+      if (msg.role === "assistant" && !savePromptHidden[i]) {
+        $$renderer2.push("<!--[-->");
+        $$renderer2.push(`<div class="text-xs opacity-55 px-1 text-left">Vill du spara detta som anteckning? <button type="button" class="ml-1 underline hover:opacity-100 transition-opacity">Ja</button></div>`);
+      } else {
+        $$renderer2.push("<!--[!-->");
+      }
+      $$renderer2.push(`<!--]--></div>`);
+    }
+    $$renderer2.push(`<!--]--> `);
+    {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--></div> <div class="border-t border-black/8 dark:border-white/10 p-4"><div class="flex gap-2"><textarea placeholder="Skriv här..."${attr("rows", 1)} class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none focus:border-[var(--primary)] transition-colors">`);
+    const $$body = escape_html(input);
+    if ($$body) {
+      $$renderer2.push(`${$$body}`);
+    }
+    $$renderer2.push(`</textarea> <button${attr("disabled", !input.trim(), true)} class="px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white text-sm font-medium disabled:opacity-40 transition-opacity">Skicka</button></div> <p class="mt-3 sm:mt-2 text-xs opacity-60 text-center sm:text-left">Behöver du akut stöd? <a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="underline opacity-75 hover:opacity-100 transition-opacity">Hitta stödlinjer här</a></p></div></div>`);
+  });
+}
+function _page($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    const category = derived(() => page.params.category ?? "");
+    const portal = derived(() => getPortalByKey(category()));
+    head("1dpu1ns", $$renderer2, ($$renderer3) => {
+      $$renderer3.title(($$renderer4) => {
+        $$renderer4.push(`<title>${escape_html(portal() ? portal().title : "Chatt")} - MittPsyke</title>`);
+      });
+    });
+    $$renderer2.push(`<div class="container py-6">`);
+    if (portal()) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<div class="text-center mb-4"><span class="text-2xl">${escape_html(portal().icon)}</span> <h1 class="text-xl font-semibold mt-1">${escape_html(portal().title)}</h1> <p class="text-sm opacity-70">${escape_html(portal().description)}</p></div>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    ChatWindow($$renderer2, { category: category() });
+    $$renderer2.push(`<!----></div>`);
+  });
+}
+
+export { _page as default };
+//# sourceMappingURL=_page.svelte-BkxKnSD4.js.map
