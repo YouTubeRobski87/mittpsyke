@@ -116,6 +116,19 @@
 		</div>
 	</section>
 
+	<section class="ai-support">
+		<div class="ai-support-inner">
+			<h2>Prata med n&aring;gon direkt</h2>
+			<p>
+				Om tankarna snurrar kan du ringa Samtalsstöd MittPsyke och prata en stund.
+				Samtalet är anonymt och du kan ta det i din egen takt.
+			</p>
+			<a href="tel:+15672921889" class="ai-call-button">
+				&#128222; Ring Samtalsstöd
+			</a>
+		</div>
+	</section>
+
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
 			<img src="/assets/home/Tryggplats.png" alt="Trygg plats" loading="lazy" />
@@ -550,6 +563,53 @@
 		letter-spacing: 0.005em;
 	}
 
+	/* Samtalsstöd-sektion */
+	.ai-support {
+		padding: 60px 20px;
+		text-align: center;
+		background: #f4f7f5;
+		color: #2c3338;
+	}
+
+	.ai-support-inner {
+		max-width: 600px;
+		margin: auto;
+	}
+
+	.ai-support-inner h2 {
+		color: #263036;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: clamp(1.55rem, 3vw, 2.2rem);
+		letter-spacing: -0.02em;
+	}
+
+	.ai-support-inner p {
+		margin: 0.85rem auto 1.5rem;
+		max-width: 52ch;
+		color: #516069;
+		font-family: var(--font-body);
+		font-weight: 400;
+		line-height: 1.7;
+		font-size: 1rem;
+	}
+
+	.ai-call-button {
+		display: inline-block;
+		background: #6b8e7a;
+		color: white;
+		padding: 14px 26px;
+		border-radius: 12px;
+		font-size: 18px;
+		text-decoration: none;
+		transition: background 0.2s ease, transform 0.2s ease;
+	}
+
+	.ai-call-button:hover {
+		background: #557a66;
+		transform: translateY(-2px);
+	}
+
 	@media (max-width: 900px) {
 		.intro-grid,
 		.support-grid {
@@ -676,5 +736,18 @@
 	:global(.dark) .intro-grid img,
 	:global(.dark) .support-grid img {
 		border-color: rgba(255, 255, 255, 0.12);
+	}
+
+	:global(.dark) .ai-support {
+		background: #1a1c1d;
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .ai-support-inner h2 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .ai-support-inner p {
+		color: rgba(255, 255, 255, 0.65);
 	}
 </style>
