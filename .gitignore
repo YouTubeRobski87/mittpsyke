@@ -12,3 +12,4 @@ chatgpt-share-699e3be1-c7ac-800d-acf1-8809f09728e0.md
 openai.chatgpt-26.5304.11628-win32-x64.vsix
 openai.chatgpt-26.5304.11628-win32-x64.vsix
 *.vsix
+.env*.local
