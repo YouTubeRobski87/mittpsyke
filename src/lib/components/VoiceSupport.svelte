@@ -1,41 +1,28 @@
 <script>
-	let listening = false;
-	let recognition;
+	import Retell from 'retell-client-js-sdk';
 
-	function startListening() {
-		if (!('webkitSpeechRecognition' in window)) {
-			alert('Din webbläsare stödjer tyvärr inte röst ännu.');
-			return;
-		}
+	let retell;
+	let active = false;
 
-		recognition = new webkitSpeechRecognition();
-		recognition.lang = 'sv-SE';
-		recognition.continuous = false;
+	async function startCall() {
+		const res = await fetch('/api/retell-webcall');
+		const data = await res.json();
 
-		recognition.onstart = () => {
-			listening = true;
-		};
+		retell = new Retell();
 
-		recognition.onend = () => {
-			listening = false;
-		};
+		await retell.startCall({
+			accessToken: data.accessToken
+		});
 
-		recognition.onresult = (event) => {
-			const text = event.results[0][0].transcript;
-			console.log('User said:', text);
-
-			// här kan du koppla till din AI
-		};
-
-		recognition.start();
+		active = true;
 	}
 </script>
 
 <section class="voice-support">
 	<h2>Prata direkt här</h2>
 	<p>Du kan också prata direkt med Samtalsstöd MittPsyke här på sidan.</p>
-	<button on:click={startListening}>
-		🎤 {listening ? 'Lyssnar...' : 'Starta samtal'}
+	<button on:click={startCall}>
+		🎤 {active ? 'Samtal igång...' : 'Prata med MittPsyke'}
 	</button>
 </section>
 
