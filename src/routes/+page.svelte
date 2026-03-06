@@ -116,19 +116,27 @@
 		</div>
 	</section>
 
-	<section class="ai-support">
-		<div class="ai-support-inner">
-			<h2>Prata med n&aring;gon direkt</h2>
+	<section class="support-grid">
+		<div class="support-card">
+			<h3>Chatta anonymt</h3>
+			<p>
+				Du kan skriva om hur du m&aring;r och f&aring; st&ouml;d direkt i chatten.
+			</p>
+			<a href="/chat" class="support-button">
+				&#128172; Starta chat
+			</a>
+		</div>
+		<div class="support-card">
+			<h3>Prata med n&aring;gon direkt</h3>
 			<p>
 				Om tankarna snurrar kan du ringa Samtalsstöd MittPsyke och prata en stund.
 				Samtalet är anonymt och du kan ta det i din egen takt.
 			</p>
-			<a href="tel:+15672921889" class="ai-call-button">
+			<a href="tel:+15672921889" class="support-button">
 				&#128222; Ring Samtalsstöd
 			</a>
-			<div class="phone-card">
-				<p>Du kan också ringa direkt:</p>
-				<strong>+1 567 292 1889</strong>
+			<div class="phone-number">
+				+1 567 292 1889
 			</div>
 		</div>
 	</section>
@@ -149,7 +157,7 @@
 	</section>
 
 	<section class="band band-brown">
-		<div class="narrow support-grid">
+		<div class="narrow support-columns">
 			<div>
 				<h2>Din v&auml;g till psykiskt st&ouml;d</h2>
 				<p>
@@ -355,7 +363,7 @@
 	}
 
 	.intro-grid,
-	.support-grid {
+	.support-columns {
 		display: grid;
 		grid-template-columns: 1fr 1.2fr;
 		gap: 1.6rem;
@@ -363,7 +371,7 @@
 	}
 
 	.intro-grid img,
-	.support-grid img {
+	.support-columns img {
 		width: 100%;
 		height: clamp(220px, 30vw, 340px);
 		object-fit: cover;
@@ -567,30 +575,35 @@
 		letter-spacing: 0.005em;
 	}
 
-	/* Samtalsstöd-sektion */
-	.ai-support {
-		padding: 60px 20px;
-		text-align: center;
+	/* Stödkort-grid */
+	.support-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 30px;
+		max-width: 900px;
+		margin: 60px auto;
+		padding: 0 20px;
+	}
+
+	.support-card {
 		background: #f4f7f5;
+		padding: 30px;
+		border-radius: 14px;
+		text-align: center;
 		color: #2c3338;
 	}
 
-	.ai-support-inner {
-		max-width: 600px;
-		margin: auto;
-	}
-
-	.ai-support-inner h2 {
+	.support-card h3 {
+		margin: 0 0 10px;
 		color: #263036;
 		font-family: var(--font-heading);
 		font-weight: 700;
-		font-size: clamp(1.55rem, 3vw, 2.2rem);
-		letter-spacing: -0.02em;
+		font-size: 1.25rem;
+		letter-spacing: -0.015em;
 	}
 
-	.ai-support-inner p {
-		margin: 0.85rem auto 1.5rem;
-		max-width: 52ch;
+	.support-card p {
+		margin: 0;
 		color: #516069;
 		font-family: var(--font-body);
 		font-weight: 400;
@@ -598,48 +611,35 @@
 		font-size: 1rem;
 	}
 
-	.ai-call-button {
+	.support-button {
 		display: inline-block;
+		margin-top: 15px;
 		background: #6b8e7a;
 		color: white;
-		padding: 14px 26px;
-		border-radius: 12px;
-		font-size: 18px;
+		padding: 12px 22px;
+		border-radius: 10px;
 		text-decoration: none;
-		margin-top: 20px;
+		font-size: 1rem;
+		font-weight: 600;
 		transition: background 0.2s ease, transform 0.2s ease;
 	}
 
-	.ai-call-button:hover {
+	.support-button:hover {
 		background: #557a66;
 		transform: translateY(-2px);
 	}
 
-	.phone-card {
-		margin-top: 30px;
-		padding: 18px;
-		background: #f4f7f5;
-		border: 1px solid #d5e0da;
-		border-radius: 10px;
-		font-size: 18px;
-		color: #2c3338;
-	}
-
-	.phone-card p {
-		margin: 0 0 0.5rem;
-		color: #516069;
-		font-size: 0.95rem;
-	}
-
-	.phone-card strong {
-		font-size: 1.3rem;
+	.phone-number {
+		margin-top: 15px;
+		font-weight: 600;
+		font-size: 1.1rem;
 		color: #263036;
 		letter-spacing: 0.02em;
 	}
 
 	@media (max-width: 900px) {
 		.intro-grid,
-		.support-grid {
+		.support-columns {
 			grid-template-columns: 1fr;
 		}
 
@@ -761,34 +761,24 @@
 	}
 
 	:global(.dark) .intro-grid img,
-	:global(.dark) .support-grid img {
+	:global(.dark) .support-columns img {
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
-	:global(.dark) .ai-support {
-		background: #1a1c1d;
+	:global(.dark) .support-card {
+		background: #1e2422;
 		color: #e8e6e2;
 	}
 
-	:global(.dark) .ai-support-inner h2 {
+	:global(.dark) .support-card h3 {
 		color: #f0eeea;
 	}
 
-	:global(.dark) .ai-support-inner p {
+	:global(.dark) .support-card p {
 		color: rgba(255, 255, 255, 0.65);
 	}
 
-	:global(.dark) .phone-card {
-		background: #1e2422;
-		border-color: rgba(255, 255, 255, 0.08);
-		color: #e8e6e2;
-	}
-
-	:global(.dark) .phone-card p {
-		color: rgba(255, 255, 255, 0.65);
-	}
-
-	:global(.dark) .phone-card strong {
+	:global(.dark) .phone-number {
 		color: #f0eeea;
 	}
 </style>
