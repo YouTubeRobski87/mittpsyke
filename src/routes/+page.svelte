@@ -122,8 +122,8 @@
 		<div class="support-card">
 			<h3>📞 Prata med n&aring;gon direkt</h3>
 			<p>
-				Om tankarna snurrar kan du ringa Samtalst&ouml;d MittPsyke och prata en stund.
-				Samtalet &auml;r anonymt och du kan ta det i din egen takt.
+				Du kan ringa och prata med en AI-baserad samtalsguide fr&aring;n MittPsyke.
+				Samtalet &auml;r anonymt och du kan prata i din egen takt.
 			</p>
 			<a href="tel:+15672921889" class="support-button">
 				Ring Samtalst&ouml;d
