@@ -115,7 +115,7 @@
 				Skriv om hur du m&aring;r och f&aring; st&ouml;d direkt i chatten.
 				Du best&auml;mmer tempot.
 			</p>
-			<a href="/chat" class="support-button">
+			<a href="/chat/a" class="support-button">
 				Starta chat
 			</a>
 		</div>
