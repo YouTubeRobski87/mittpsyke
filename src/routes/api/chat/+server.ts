@@ -326,12 +326,11 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const systemPrompt = systemByCategory[category] || SYSTEM_PROMPT;
 		const completion = await openai.chat.completions.create({
-			model: 'gpt-4o-mini',
-			temperature: 0.75,
-			top_p: 1,
-			frequency_penalty: 0.3,
-			presence_penalty: 0.2,
-			messages: [
+  model: 'gpt-4o-mini',
+  temperature: 0.75,
+  max_tokens: 350,        // Matchar promptens "kort svar"-intention
+  frequency_penalty: 0.3,
+  presence_penalty: 0.2,
 				{ role: 'system', content: systemPrompt },
 				...promptHistory,
 				{ role: 'user', content: message }
