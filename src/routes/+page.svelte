@@ -118,22 +118,23 @@
 
 	<section class="support-grid">
 		<div class="support-card">
-			<h3>Chatta anonymt</h3>
+			<h3>💬 Chatta anonymt</h3>
 			<p>
-				Du kan skriva om hur du m&aring;r och f&aring; st&ouml;d direkt i chatten.
+				Skriv om hur du m&aring;r och f&aring; st&ouml;d direkt i chatten.
+				Du best&auml;mmer tempot.
 			</p>
 			<a href="/chat" class="support-button">
-				&#128172; Starta chat
+				Starta chat
 			</a>
 		</div>
 		<div class="support-card">
-			<h3>Prata med n&aring;gon direkt</h3>
+			<h3>📞 Prata med n&aring;gon direkt</h3>
 			<p>
-				Om tankarna snurrar kan du ringa Samtalsstöd MittPsyke och prata en stund.
-				Samtalet är anonymt och du kan ta det i din egen takt.
+				Om tankarna snurrar kan du ringa Samtalst&ouml;d MittPsyke och prata en stund.
+				Samtalet &auml;r anonymt och du kan ta det i din egen takt.
 			</p>
 			<a href="tel:+15672921889" class="support-button">
-				&#128222; Ring Samtalsstöd
+				Ring Samtalst&ouml;d
 			</a>
 			<div class="phone-number">
 				+1 567 292 1889
@@ -581,14 +582,14 @@
 		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 		gap: 30px;
 		max-width: 900px;
-		margin: 60px auto;
+		margin: 40px auto 80px;
 		padding: 0 20px;
 	}
 
 	.support-card {
 		background: #f4f7f5;
 		padding: 30px;
-		border-radius: 14px;
+		border-radius: 16px;
 		text-align: center;
 		color: #2c3338;
 	}
