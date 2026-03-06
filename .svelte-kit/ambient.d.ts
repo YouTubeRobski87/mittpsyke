@@ -40,6 +40,7 @@
 declare module '$env/static/private' {
 	export const SUPABASE_URL: string;
 	export const SUPABASE_ANON_KEY: string;
+	export const RETELL_API_KEY: string;
 	export const ACLOCAL_PATH: string;
 	export const ALLUSERSPROFILE: string;
 	export const APPDATA: string;
@@ -221,6 +222,7 @@ declare module '$env/dynamic/private' {
 	export const env: {
 		SUPABASE_URL: string;
 		SUPABASE_ANON_KEY: string;
+		RETELL_API_KEY: string;
 		ACLOCAL_PATH: string;
 		ALLUSERSPROFILE: string;
 		APPDATA: string;
