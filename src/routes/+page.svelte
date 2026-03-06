@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { portals } from '$lib/data/portals';
-	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
@@ -127,10 +126,12 @@
 			<a href="tel:+15672921889" class="ai-call-button">
 				&#128222; Ring Samtalsstöd
 			</a>
+			<div class="phone-card">
+				<p>Du kan också ringa direkt:</p>
+				<strong>+1 567 292 1889</strong>
+			</div>
 		</div>
 	</section>
-
-	<VoiceSupport />
 
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
@@ -605,12 +606,35 @@
 		border-radius: 12px;
 		font-size: 18px;
 		text-decoration: none;
+		margin-top: 20px;
 		transition: background 0.2s ease, transform 0.2s ease;
 	}
 
 	.ai-call-button:hover {
 		background: #557a66;
 		transform: translateY(-2px);
+	}
+
+	.phone-card {
+		margin-top: 30px;
+		padding: 18px;
+		background: #f4f7f5;
+		border: 1px solid #d5e0da;
+		border-radius: 10px;
+		font-size: 18px;
+		color: #2c3338;
+	}
+
+	.phone-card p {
+		margin: 0 0 0.5rem;
+		color: #516069;
+		font-size: 0.95rem;
+	}
+
+	.phone-card strong {
+		font-size: 1.3rem;
+		color: #263036;
+		letter-spacing: 0.02em;
 	}
 
 	@media (max-width: 900px) {
@@ -752,5 +776,19 @@
 
 	:global(.dark) .ai-support-inner p {
 		color: rgba(255, 255, 255, 0.65);
+	}
+
+	:global(.dark) .phone-card {
+		background: #1e2422;
+		border-color: rgba(255, 255, 255, 0.08);
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .phone-card p {
+		color: rgba(255, 255, 255, 0.65);
+	}
+
+	:global(.dark) .phone-card strong {
+		color: #f0eeea;
 	}
 </style>
