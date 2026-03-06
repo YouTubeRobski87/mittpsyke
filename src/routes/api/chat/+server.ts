@@ -1,4 +1,4 @@
-﻿import { json } from '@sveltejs/kit';
+import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { createClient } from '@supabase/supabase-js';
@@ -94,13 +94,22 @@ const systemByCategory: Record<string, string> = {
 };
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const GUEST_ID_REGEX = /^[a-zA-Z0-9_-]{8,128}$/;
 
 type SupportCategory = 'A' | 'B' | 'E';
+
 type ConversationRow = {
 	id: string;
 	user_id: string;
 	category: string | null;
 };
+
+type GuestConversationRow = {
+	id: string;
+	guest_id: string;
+	category: string | null;
+};
+
 type StoredMessageRow = {
 	role: string | null;
 	content: string | null;
@@ -135,6 +144,13 @@ function normalizeConversationId(value: unknown): string | null {
 	return trimmed;
 }
 
+function normalizeGuestId(value: unknown): string | null {
+	if (typeof value !== 'string') return null;
+	const trimmed = value.trim();
+	if (!trimmed || !GUEST_ID_REGEX.test(trimmed)) return null;
+	return trimmed;
+}
+
 function buildConversationTitle(input: string): string {
 	const normalized = input.trim().replace(/\s+/g, ' ');
 	if (!normalized) return 'Samtal';
@@ -152,7 +168,6 @@ const normalizeApiKey = (value: string | undefined): string | null => {
 		.replace(/^Bearer\s+/i, '')
 		.replace(/\s+/g, '');
 
-	// Header values cannot include control characters.
 	if (!normalized || /[\u0000-\u001f\u007f]/.test(normalized)) {
 		return null;
 	}
@@ -162,6 +177,7 @@ const normalizeApiKey = (value: string | undefined): string | null => {
 
 export const POST: RequestHandler = async ({ request }) => {
 	let parsedBody: unknown;
+
 	try {
 		parsedBody = await request.json();
 	} catch {
@@ -176,41 +192,32 @@ export const POST: RequestHandler = async ({ request }) => {
 		message?: unknown;
 		category?: unknown;
 		conversationId?: unknown;
+		guestId?: unknown;
 	};
+
 	const message = typeof body.message === 'string' ? body.message.trim() : '';
 	if (!message) {
-  return errorResponse('No message provided', 400);
-}
- 
-const MAX_MESSAGE_LENGTH = 2000;
-if (message.length > MAX_MESSAGE_LENGTH) {
-  return errorResponse('Message too long.', 400);
-}
+		return errorResponse('No message provided', 400);
+	}
+
+	const MAX_MESSAGE_LENGTH = 2000;
+	if (message.length > MAX_MESSAGE_LENGTH) {
+		return errorResponse('Message too long.', 400);
+	}
 
 	const token = getAccessToken(request.headers.get('authorization'));
-	if (!token) {
-		return errorResponse('Missing or invalid Authorization header.', 401);
+	const guestId = normalizeGuestId(body.guestId);
+
+	if (!token && !guestId) {
+		return errorResponse('Missing auth. Provide either bearer token or guestId.', 401);
 	}
 
 	const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
 	const supabaseAnonKey = env.SUPABASE_ANON_KEY || publicEnv.PUBLIC_SUPABASE_ANON_KEY;
+
 	if (!supabaseUrl || !supabaseAnonKey) {
 		console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY.');
 		return errorResponse('Server configuration error', 500);
-	}
-
-	const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-		auth: { autoRefreshToken: false, persistSession: false },
-		global: { headers: { Authorization: `Bearer ${token}` } }
-	});
-
-	const {
-		data: { user },
-		error: userError
-	} = await supabase.auth.getUser();
-
-	if (userError || !user) {
-		return errorResponse('Unauthorized.', 401);
 	}
 
 	const apiKey = normalizeApiKey(env.OPENAI_API_KEY);
@@ -221,38 +228,213 @@ if (message.length > MAX_MESSAGE_LENGTH) {
 
 	const openai = new OpenAI({ apiKey });
 
+	const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+		auth: { autoRefreshToken: false, persistSession: false },
+		global: token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+	});
+
+	const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY;
+	const serviceClient =
+		serviceRoleKey
+			? createClient(supabaseUrl, serviceRoleKey, {
+					auth: { autoRefreshToken: false, persistSession: false }
+			  })
+			: null;
+
 	try {
 		let category = normalizeCategory(body.category);
 		let conversationId = normalizeConversationId(body.conversationId);
 
+		// INLOGGAD ANVÄNDARE
+		if (token) {
+			const {
+				data: { user },
+				error: userError
+			} = await authClient.auth.getUser();
+
+			if (userError || !user) {
+				return errorResponse('Unauthorized.', 401);
+			}
+
+			if (conversationId) {
+				const { data: existingConversation, error: existingConversationError } = await authClient
+					.from('conversations')
+					.select('id, user_id, category')
+					.eq('id', conversationId)
+					.eq('user_id', user.id)
+					.maybeSingle();
+
+				if (existingConversationError) {
+					console.error('Failed to verify conversation:', existingConversationError);
+					if (existingConversationError.code === '42501') {
+						return errorResponse('Not allowed to access this conversation.', 403);
+					}
+					return errorResponse('Could not validate conversation.', 500);
+				}
+
+				if (!existingConversation) {
+					return errorResponse('Conversation not found for this user.', 403);
+				}
+
+				const conversation = existingConversation as ConversationRow;
+				category = normalizeCategory(conversation.category);
+			} else {
+				const title = buildConversationTitle(message);
+
+				let { data: createdConversation, error: createConversationError } = await authClient
+					.from('conversations')
+					.insert({
+						user_id: user.id,
+						category,
+						title
+					})
+					.select('id')
+					.single();
+
+				const missingTitleColumn =
+					createConversationError?.code === 'PGRST204' ||
+					createConversationError?.code === '42703' ||
+					(createConversationError?.message ?? '').toLowerCase().includes('title');
+
+				if (missingTitleColumn) {
+					const retry = await authClient
+						.from('conversations')
+						.insert({
+							user_id: user.id,
+							category
+						})
+						.select('id')
+						.single();
+
+					createdConversation = retry.data;
+					createConversationError = retry.error;
+				}
+
+				if (createConversationError || !createdConversation) {
+					console.error('Failed to create conversation:', createConversationError);
+					if (createConversationError?.code === '42501') {
+						return errorResponse('Not allowed to create conversation.', 403);
+					}
+					return errorResponse('Could not create conversation.', 500);
+				}
+
+				conversationId = createdConversation.id as string;
+			}
+
+			const { data: previousMessages, error: previousMessagesError } = await authClient
+				.from('messages')
+				.select('role, content')
+				.eq('conversation_id', conversationId)
+				.order('created_at', { ascending: true })
+				.limit(20);
+
+			if (previousMessagesError) {
+				console.error('Failed to load conversation history:', previousMessagesError);
+				if (previousMessagesError.code === '42501') {
+					return errorResponse('Not allowed to read conversation history.', 403);
+				}
+				return errorResponse('Could not load conversation history.', 500);
+			}
+
+			const { error: userMessageError } = await authClient.from('messages').insert({
+				conversation_id: conversationId,
+				role: 'user',
+				content: message
+			});
+
+			if (userMessageError) {
+				console.error('Failed to save user message:', userMessageError);
+				if (userMessageError.code === '42501') {
+					return errorResponse('Not allowed to save message.', 403);
+				}
+				return errorResponse('Could not save message.', 500);
+			}
+
+			const promptHistory = (previousMessages ?? [])
+				.filter(
+					(row): row is StoredMessageRow =>
+						(row.role === 'user' || row.role === 'assistant') &&
+						typeof row.content === 'string' &&
+						row.content.trim().length > 0
+				)
+				.map((row) => ({
+					role: row.role as 'user' | 'assistant',
+					content: row.content as string
+				}));
+
+			const systemPrompt = systemByCategory[category] || SYSTEM_PROMPT;
+			const completion = await openai.chat.completions.create({
+				model: 'gpt-4o-mini',
+				temperature: 0.75,
+				max_tokens: 350,
+				frequency_penalty: 0.3,
+				presence_penalty: 0.2,
+				messages: [
+					{ role: 'system', content: systemPrompt },
+					...promptHistory,
+					{ role: 'user', content: message }
+				]
+			});
+
+			const reply = completion.choices[0]?.message?.content?.trim() ?? 'Något gick fel.';
+
+			const { error: assistantMessageError } = await authClient.from('messages').insert({
+				conversation_id: conversationId,
+				role: 'assistant',
+				content: reply
+			});
+
+			if (assistantMessageError) {
+				console.error('Failed to save assistant message:', assistantMessageError);
+				if (assistantMessageError.code === '42501') {
+					return errorResponse('Not allowed to save message.', 403);
+				}
+				return errorResponse('Could not save message.', 500);
+			}
+
+			return json({
+				reply,
+				conversationId,
+				mode: 'user'
+			});
+		}
+
+		// GÄSTANVÄNDARE
+		if (!guestId) {
+			return errorResponse('Missing guestId.', 400);
+		}
+
+		if (!serviceClient) {
+			console.error('SUPABASE_SERVICE_ROLE_KEY is missing.');
+			return errorResponse('Server configuration error', 500);
+		}
+
 		if (conversationId) {
-			const { data: existingConversation, error: existingConversationError } = await supabase
-				.from('conversations')
-				.select('id, user_id, category')
+			const { data: existingConversation, error: existingConversationError } = await serviceClient
+				.from('guest_conversations')
+				.select('id, guest_id, category')
 				.eq('id', conversationId)
-				.eq('user_id', user.id)
+				.eq('guest_id', guestId)
 				.maybeSingle();
 
 			if (existingConversationError) {
-				console.error('Failed to verify conversation:', existingConversationError);
-				if (existingConversationError.code === '42501') {
-					return errorResponse('Not allowed to access this conversation.', 403);
-				}
-				return errorResponse('Could not validate conversation.', 500);
+				console.error('Failed to verify guest conversation:', existingConversationError);
+				return errorResponse('Could not validate guest conversation.', 500);
 			}
 
 			if (!existingConversation) {
-				return errorResponse('Conversation not found for this user.', 403);
+				return errorResponse('Guest conversation not found.', 403);
 			}
 
-			const conversation = existingConversation as ConversationRow;
+			const conversation = existingConversation as GuestConversationRow;
 			category = normalizeCategory(conversation.category);
 		} else {
 			const title = buildConversationTitle(message);
-			let { data: createdConversation, error: createConversationError } = await supabase
-				.from('conversations')
+
+			let { data: createdConversation, error: createConversationError } = await serviceClient
+				.from('guest_conversations')
 				.insert({
-					user_id: user.id,
+					guest_id: guestId,
 					category,
 					title
 				})
@@ -265,56 +447,48 @@ if (message.length > MAX_MESSAGE_LENGTH) {
 				(createConversationError?.message ?? '').toLowerCase().includes('title');
 
 			if (missingTitleColumn) {
-				const retry = await supabase
-					.from('conversations')
+				const retry = await serviceClient
+					.from('guest_conversations')
 					.insert({
-						user_id: user.id,
+						guest_id: guestId,
 						category
 					})
 					.select('id')
 					.single();
+
 				createdConversation = retry.data;
 				createConversationError = retry.error;
 			}
 
 			if (createConversationError || !createdConversation) {
-				console.error('Failed to create conversation:', createConversationError);
-				if (createConversationError?.code === '42501') {
-					return errorResponse('Not allowed to create conversation.', 403);
-				}
-				return errorResponse('Could not create conversation.', 500);
+				console.error('Failed to create guest conversation:', createConversationError);
+				return errorResponse('Could not create guest conversation.', 500);
 			}
 
 			conversationId = createdConversation.id as string;
 		}
 
-		const { data: previousMessages, error: previousMessagesError } = await supabase
-			.from('messages')
+		const { data: previousMessages, error: previousMessagesError } = await serviceClient
+			.from('guest_messages')
 			.select('role, content')
 			.eq('conversation_id', conversationId)
 			.order('created_at', { ascending: true })
 			.limit(20);
 
 		if (previousMessagesError) {
-			console.error('Failed to load conversation history:', previousMessagesError);
-			if (previousMessagesError.code === '42501') {
-				return errorResponse('Not allowed to read conversation history.', 403);
-			}
-			return errorResponse('Could not load conversation history.', 500);
+			console.error('Failed to load guest conversation history:', previousMessagesError);
+			return errorResponse('Could not load guest conversation history.', 500);
 		}
 
-		const { error: userMessageError } = await supabase.from('messages').insert({
+		const { error: guestMessageError } = await serviceClient.from('guest_messages').insert({
 			conversation_id: conversationId,
 			role: 'user',
 			content: message
 		});
 
-		if (userMessageError) {
-			console.error('Failed to save user message:', userMessageError);
-			if (userMessageError.code === '42501') {
-				return errorResponse('Not allowed to save message.', 403);
-			}
-			return errorResponse('Could not save message.', 500);
+		if (guestMessageError) {
+			console.error('Failed to save guest message:', guestMessageError);
+			return errorResponse('Could not save guest message.', 500);
 		}
 
 		const promptHistory = (previousMessages ?? [])
@@ -331,34 +505,37 @@ if (message.length > MAX_MESSAGE_LENGTH) {
 
 		const systemPrompt = systemByCategory[category] || SYSTEM_PROMPT;
 		const completion = await openai.chat.completions.create({
-  model: 'gpt-4o-mini',
-  temperature: 0.75,
-  max_tokens: 350,
-  frequency_penalty: 0.3,
-  presence_penalty: 0.2,
-  messages: [
-    { role: 'system', content: systemPrompt },
-    ...promptHistory,
-    { role: 'user', content: message }
-  ]
-});
+			model: 'gpt-4o-mini',
+			temperature: 0.75,
+			max_tokens: 350,
+			frequency_penalty: 0.3,
+			presence_penalty: 0.2,
+			messages: [
+				{ role: 'system', content: systemPrompt },
+				...promptHistory,
+				{ role: 'user', content: message }
+			]
+		});
 
 		const reply = completion.choices[0]?.message?.content?.trim() ?? 'Något gick fel.';
-		const { error: assistantMessageError } = await supabase.from('messages').insert({
+
+		const { error: assistantMessageError } = await serviceClient.from('guest_messages').insert({
 			conversation_id: conversationId,
 			role: 'assistant',
 			content: reply
 		});
 
 		if (assistantMessageError) {
-			console.error('Failed to save assistant message:', assistantMessageError);
-			if (assistantMessageError.code === '42501') {
-				return errorResponse('Not allowed to save message.', 403);
-			}
-			return errorResponse('Could not save message.', 500);
+			console.error('Failed to save guest assistant message:', assistantMessageError);
+			return errorResponse('Could not save guest assistant message.', 500);
 		}
 
-		return json({ reply, conversationId });
+		return json({
+			reply,
+			conversationId,
+			mode: 'guest',
+			guestId
+		});
 	} catch (err) {
 		console.error('Chat API error:', err);
 		return errorResponse('AI error', 500);

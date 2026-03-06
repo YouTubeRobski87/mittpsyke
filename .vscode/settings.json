@@ -1,4 +1,5 @@
 {
     "chatgpt.openOnStartup": true,
-    "workbench.browser.enableChatTools": true
+    "workbench.browser.enableChatTools": true,
+    "editor.defaultFormatter": "genieai.chatgpt-vscode"
 }
