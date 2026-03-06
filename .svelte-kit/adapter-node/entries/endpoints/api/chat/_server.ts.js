@@ -144,6 +144,10 @@ const POST = async ({ request }) => {
   if (!message) {
     return errorResponse("No message provided", 400);
   }
+  const MAX_MESSAGE_LENGTH = 2e3;
+  if (message.length > MAX_MESSAGE_LENGTH) {
+    return errorResponse("Message too long.", 400);
+  }
   const token = getAccessToken(request.headers.get("authorization"));
   if (!token) {
     return errorResponse("Missing or invalid Authorization header.", 401);
@@ -243,7 +247,7 @@ const POST = async ({ request }) => {
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       temperature: 0.75,
-      top_p: 1,
+      max_tokens: 350,
       frequency_penalty: 0.3,
       presence_penalty: 0.2,
       messages: [

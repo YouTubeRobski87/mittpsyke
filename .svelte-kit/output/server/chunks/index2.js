@@ -33,6 +33,9 @@ const page$1 = {
   get params() {
     return context().page.params;
   },
+  get route() {
+    return context().page.route;
+  },
   get status() {
     return context().page.status;
   }

@@ -1,4 +1,4 @@
-import { h as head, b as ensure_array_like, a as attr, e as escape_html } from "../../../chunks/index.js";
+import { h as head, a as ensure_array_like, b as attr, e as escape_html } from "../../../chunks/index.js";
 import { p as pillars } from "../../../chunks/seo-architecture.js";
 function _page($$renderer) {
   head("1mgpyhj", $$renderer, ($$renderer2) => {

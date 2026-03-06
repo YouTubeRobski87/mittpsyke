@@ -17,27 +17,41 @@ export const nodes = [
 	() => import('./nodes/13'),
 	() => import('./nodes/14'),
 	() => import('./nodes/15'),
-	() => import('./nodes/16')
+	() => import('./nodes/16'),
+	() => import('./nodes/17'),
+	() => import('./nodes/18'),
+	() => import('./nodes/19'),
+	() => import('./nodes/20'),
+	() => import('./nodes/21'),
+	() => import('./nodes/22'),
+	() => import('./nodes/23')
 ];
 
 export const server_loads = [];
 
 export const dictionary = {
 		"/": [2],
-		"/ansvar": [3],
-		"/chat/[category]": [4],
-		"/dagbok": [5],
-		"/dashboard": [6],
-		"/dashboard/installningar": [7],
-		"/guider": [8],
-		"/guider/[pillar]": [9],
-		"/integritet": [10],
-		"/login": [11],
-		"/om-mittpsyke": [12],
-		"/ovningar": [13],
-		"/ovningar/[tool]": [14],
-		"/portal/[slug]": [15],
-		"/register": [16]
+		"/angest": [3],
+		"/ansvar": [4],
+		"/chat/[category]": [5],
+		"/dagbok": [6],
+		"/dashboard": [7],
+		"/dashboard/installningar": [8],
+		"/depression": [9],
+		"/ensamhet": [10],
+		"/guider-seo": [13],
+		"/guider-seo/[pillar]": [14],
+		"/guider-seo/[pillar]/[guide]": [15],
+		"/guider": [11],
+		"/guider/[pillar]": [12],
+		"/integritet": [16],
+		"/login": [17],
+		"/om-mittpsyke": [18],
+		"/ovningar": [19],
+		"/ovningar/[tool]": [20],
+		"/panikattack": [21],
+		"/portal/[slug]": [22],
+		"/register": [23]
 	};
 
 export const hooks = {

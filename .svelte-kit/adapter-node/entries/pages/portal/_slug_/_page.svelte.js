@@ -1,4 +1,4 @@
-import { h as head, e as escape_html, a as attr, s as stringify, d as derived } from "../../../../chunks/index.js";
+import { h as head, e as escape_html, b as attr, s as stringify, d as derived } from "../../../../chunks/index.js";
 import { g as getPortalByKey } from "../../../../chunks/portals.js";
 import { p as page } from "../../../../chunks/index2.js";
 import "@sveltejs/kit/internal";

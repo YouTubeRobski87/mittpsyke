@@ -1,9 +1,0 @@
-const index = 1;
-let component_cache;
-const component = async () => component_cache ??= (await import('./error.svelte-qCFxh4mR.js')).default;
-const imports = ["_app/immutable/nodes/1.CCpYCgKg.js","_app/immutable/chunks/BAD376BG.js","_app/immutable/chunks/RwQtde1r.js","_app/immutable/chunks/DmhVe2Q0.js","_app/immutable/chunks/DqFXm5_V.js","_app/immutable/chunks/DTSn5MdF.js","_app/immutable/chunks/BuUVrlL1.js","_app/immutable/chunks/B3MuFy6C.js","_app/immutable/chunks/BUApaBEI.js","_app/immutable/chunks/diwoDcsS.js"];
-const stylesheets = [];
-const fonts = [];
-
-export { component, fonts, imports, index, stylesheets };
-//# sourceMappingURL=1-BuZlpYbz.js.map
