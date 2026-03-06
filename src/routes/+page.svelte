@@ -108,14 +108,6 @@
 		</div>
 	</section>
 
-	<section class="band band-cta">
-		<div class="narrow cta-section">
-			<h2>K&auml;nner du att tankarna snurrar?</h2>
-			<p>Du kan skriva anonymt h&auml;r.</p>
-			<a href="/chat/a" class="cta-button-primary">Starta samtal &rarr;</a>
-		</div>
-	</section>
-
 	<section class="support-grid">
 		<div class="support-card">
 			<h3>💬 Chatta anonymt</h3>
@@ -290,68 +282,6 @@
 
 	.band-brown {
 		background: #56453d;
-	}
-
-	.band-cta {
-		background: #0f172a;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.cta-section {
-		text-align: center;
-		padding: 4rem 1.25rem;
-		max-width: 680px;
-		margin: 0 auto;
-	}
-
-	.cta-section h2 {
-		margin: 0 0 0.625rem 0;
-		color: #f5f5f2;
-		font-family: var(--font-heading);
-		font-weight: 600;
-		font-size: 1.75rem;
-		line-height: 1.25;
-		letter-spacing: -0.02em;
-	}
-
-	.cta-section p {
-		margin: 0 auto 1.375rem;
-		max-width: 55ch;
-		color: rgba(255, 255, 255, 0.8);
-		font-family: var(--font-body);
-		font-weight: 400;
-		font-size: 1rem;
-		line-height: 1.6;
-		letter-spacing: -0.005em;
-	}
-
-	.cta-button-primary {
-		display: inline-block;
-		margin-top: 1rem;
-		padding: 0.75rem 1.8rem;
-		font-family: var(--font-heading);
-		font-weight: 600;
-		font-size: 1rem;
-		letter-spacing: 0.02em;
-		background: #38bdf8;
-		color: #0f172a;
-		border-radius: var(--radius-pill);
-		text-decoration: none;
-		transition: all 0.25s ease;
-		border: none;
-		cursor: pointer;
-	}
-
-	.cta-button-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(56, 189, 248, 0.25);
-		background: #22d3ee;
-	}
-
-	.cta-button-primary:active {
-		transform: translateY(0);
 	}
 
 	.narrow {
@@ -745,25 +675,6 @@
 
 	:global(.dark) .band-brown {
 		background: #3a2e28;
-	}
-
-	:global(.dark) .band-cta {
-		background: #0f172a;
-	}
-
-	:global(.dark) .cta-button-primary {
-		background: #38bdf8;
-		color: #0f172a;
-	}
-
-	:global(.dark) .cta-button-primary:hover {
-		background: #22d3ee;
-		box-shadow: 0 6px 16px rgba(56, 189, 248, 0.25);
-	}
-
-	:global(.dark) .intro-grid img,
-	:global(.dark) .support-columns img {
-		border-color: rgba(255, 255, 255, 0.12);
 	}
 
 	:global(.dark) .support-card {
