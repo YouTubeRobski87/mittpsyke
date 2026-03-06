@@ -180,6 +180,10 @@ export const POST: RequestHandler = async ({ request }) => {
 	const message = typeof body.message === 'string' ? body.message.trim() : '';
 	if (!message) {
 		return errorResponse('No message provided', 400);
+	const MAX_MESSAGE_LENGTH = 2000;
+   if (message.length > MAX_MESSAGE_LENGTH) {
+   return errorResponse('Message too long.', 400);
+}
 	}
 
 	const token = getAccessToken(request.headers.get('authorization'));
