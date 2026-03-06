@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { portals } from '$lib/data/portals';
+	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
@@ -128,6 +129,8 @@
 			</a>
 		</div>
 	</section>
+
+	<VoiceSupport />
 
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
