@@ -1,1 +1,0 @@
-const o=[{key:"a",title:"Angest",description:"Trygghet, lugn och att landa i kroppen",icon:"💙",category:"A"},{key:"b",title:"Depression",description:"Varsam kontakt, energi och självvärde",icon:"🌧️",category:"B"},{key:"e",title:"Trauma",description:"Kontroll, gränser och säkerhet",icon:"🛡️",category:"E"}];function r(e){return o.find(t=>t.key===e)}export{r as g,o as p};
