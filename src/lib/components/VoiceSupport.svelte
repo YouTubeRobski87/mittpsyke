@@ -1,5 +1,5 @@
 <script>
-	import Retell from 'retell-client-js-sdk';
+	import { RetellWebClient } from 'retell-client-js-sdk';
 
 	let retell;
 	let active = false;
@@ -8,7 +8,7 @@
 		const res = await fetch('/api/retell-webcall');
 		const data = await res.json();
 
-		retell = new Retell();
+		retell = new RetellWebClient();
 
 		await retell.startCall({
 			accessToken: data.accessToken
