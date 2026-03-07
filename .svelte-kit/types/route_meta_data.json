@@ -18,11 +18,29 @@
 	"/api/diary/delete": [
 		"src/routes/api/diary/delete/+server.ts"
 	],
+	"/api/diary/heatmap": [
+		"src/routes/api/diary/heatmap/+server.ts"
+	],
+	"/api/diary/insights": [
+		"src/routes/api/diary/insights/+server.ts"
+	],
+	"/api/diary/milestones": [
+		"src/routes/api/diary/milestones/+server.ts"
+	],
 	"/api/diary/stats-timeline": [
 		"src/routes/api/diary/stats-timeline/+server.ts"
 	],
+	"/api/diary/streak": [
+		"src/routes/api/diary/streak/+server.ts"
+	],
 	"/api/diary/update": [
 		"src/routes/api/diary/update/+server.ts"
+	],
+	"/api/diary/weekly-summary": [
+		"src/routes/api/diary/weekly-summary/+server.ts"
+	],
+	"/api/retell-webcall": [
+		"src/routes/api/retell-webcall/+server.js"
 	],
 	"/chat/[category]": [
 		"src/routes/+layout.ts"
