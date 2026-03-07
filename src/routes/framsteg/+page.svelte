@@ -161,7 +161,7 @@
 									((milestonesData.totalEntries / milestonesData.nextMilestone.entries) *
 										100)
 								)}%"
-							/>
+							></div>
 						</div>
 						<small>
 							{milestonesData.totalEntries} / {milestonesData.nextMilestone.entries}
