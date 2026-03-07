@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { createClient } from '@supabase/supabase-js';
+	import { supabase } from '$lib/supabase';
 	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import { Flame, Trophy, TrendingUp, Lightbulb, Calendar } from 'lucide-svelte';
@@ -48,7 +48,6 @@
 
 	onMount(async () => {
 		try {
-			const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
 			const { data: { session } } = await supabase.auth.getSession();
 			const token = session?.access_token;
 
