@@ -1,12 +1,7 @@
 // src/routes/api/diary/insights/+server.ts
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-	import.meta.env.VITE_SUPABASE_URL,
-	import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 interface MoodByWeekday {
 	[day: string]: {
@@ -65,7 +60,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Hämta user_id från session
 		const {
 			data: { session }
-		} = await supabase.auth.getSession();
+		} = await locals.supabase.auth.getSession();
 
 		if (!session?.user?.id) {
 			return json({ error: 'Unauthorized' }, { status: 401 });
@@ -74,7 +69,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const userId = session.user.id;
 
 		// Hämta alla inlägg
-		const { data: entries, error } = await supabase
+		const { data: entries, error } = await locals.supabase
 			.from('diary')
 			.select('date, mood, content')
 			.eq('user_id', userId)
@@ -178,3 +173,4 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
+

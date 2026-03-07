@@ -1,12 +1,7 @@
 // src/routes/api/diary/milestones/+server.ts
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-	import.meta.env.VITE_SUPABASE_URL,
-	import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 interface Milestone {
 	entries: number;
@@ -38,7 +33,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Hämta user_id från session
 		const {
 			data: { session }
-		} = await supabase.auth.getSession();
+		} = await locals.supabase.auth.getSession();
 
 		if (!session?.user?.id) {
 			return json({ error: 'Unauthorized' }, { status: 401 });
@@ -47,7 +42,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const userId = session.user.id;
 
 		// Räkna antalet inlägg
-		const { count, error } = await supabase
+		const { count, error } = await locals.supabase
 			.from('diary')
 			.select('*', { count: 'exact', head: true })
 			.eq('user_id', userId);
@@ -112,3 +107,4 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
+

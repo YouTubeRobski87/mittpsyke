@@ -1,12 +1,7 @@
 // src/routes/api/diary/heatmap/+server.ts
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-	import.meta.env.VITE_SUPABASE_URL,
-	import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 interface HeatmapData {
 	[date: string]: number; // ISO 8601 format → antal inlägg
@@ -24,7 +19,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Hämta user_id från session
 		const {
 			data: { session }
-		} = await supabase.auth.getSession();
+		} = await locals.supabase.auth.getSession();
 
 		if (!session?.user?.id) {
 			return json({ error: 'Unauthorized' }, { status: 401 });
@@ -41,7 +36,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const endDateISO = endDate.toISOString().split('T')[0];
 
 		// Hämta alla inlägg från senaste året
-		const { data: entries, error } = await supabase
+		const { data: entries, error } = await locals.supabase
 			.from('diary')
 			.select('date')
 			.eq('user_id', userId)
@@ -83,3 +78,4 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
+

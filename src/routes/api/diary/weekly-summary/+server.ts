@@ -1,16 +1,12 @@
 // src/routes/api/diary/weekly-summary/+server.ts
 import { json } from '@sveltejs/kit';
+import { OPENAI_API_KEY } from '$env/static/private';
 import type { RequestHandler } from '@sveltejs/kit';
-import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 
-const supabase = createClient(
-	import.meta.env.VITE_SUPABASE_URL,
-	import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 const openai = new OpenAI({
-	apiKey: import.meta.env.VITE_OPENAI_API_KEY
+	apiKey: OPENAI_API_KEY
 });
 
 interface DiaryEntry {
@@ -41,7 +37,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		// Hämta user_id från session
 		const {
 			data: { session }
-		} = await supabase.auth.getSession();
+		} = await locals.supabase.auth.getSession();
 
 		if (!session?.user?.id) {
 			return json({ error: 'Unauthorized' }, { status: 401 });
@@ -58,7 +54,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 
 		// Hämta alla inlägg mellan dessa datum
-		const { data: entries, error } = await supabase
+		const { data: entries, error } = await locals.supabase
 			.from('diary')
 			.select('date, mood, content')
 			.eq('user_id', userId)
@@ -172,3 +168,4 @@ function getWeekNumber(date: Date): number {
 	const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
 	return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
 }
+
