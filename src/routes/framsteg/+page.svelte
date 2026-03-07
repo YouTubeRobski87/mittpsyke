@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Heatmap from './Heatmap.svelte';
+	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import { Flame, Trophy, TrendingUp, Lightbulb, Calendar } from 'lucide-svelte';
 
 	interface StreakData {
