@@ -156,6 +156,9 @@
 						<a href="/dagbok" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							Dagbok
 						</a>
+						<a href="/framsteg" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
+							Framsteg
+						</a>
 						<a href="/dashboard" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							Min portal
 						</a>
@@ -238,6 +241,13 @@
 					</a>
 					<a
 						href="/dashboard"
+<a
+							href="/framsteg"
+							class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
+							onclick={() => (mobileMenuOpen = false)}
+						>
+							Framsteg
+						</a>
 						class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
 						onclick={() => (mobileMenuOpen = false)}
 					>
