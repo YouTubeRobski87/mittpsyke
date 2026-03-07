@@ -1,63 +1,135 @@
-MittPsyke är en trygg, personlig plats för inre reflektion och emotionellt stöd.
-Det är inte terapi och inte traditionell rådgivning – utan ett lugnt, närvarande samtalsrum där du får vara människa, precis som du är.
+# MittPsyke
 
-MittPsyke möter dig utan dömande, utan krav och utan brådska.
-Här finns inget rätt eller fel sätt att känna, tänka eller uttrycka sig.
+> En svensk plattform för psykisk hälsa, stöd och återhämtning.
 
-🧠 Hur MittPsyke ser på psyket
+MittPsyke är byggd för att göra stöd kring psykisk hälsa mer tillgängligt, lugnt och lätt att använda.  
+Fokus ligger på att hjälpa användaren att förstå sitt mående, få stöd direkt och följa sin utveckling över tid.
 
-MittPsyke utgår från att:
+---
 
-Psyket är inte trasigt – det är ofta överbelastat
+## Innehåll
 
-Ångest, nedstämdhet och stress är signaler, inte fel
+- [Om projektet](#om-projektet)
+- [Huvudfunktioner](#huvudfunktioner)
+- [Min resa](#min-resa)
+- [Teknisk stack](#teknisk-stack)
+- [Projektstruktur](#projektstruktur)
+- [API-endpoints](#api-endpoints)
+- [Installation](#installation)
+- [Miljövariabler](#miljövariabler)
+- [Vision](#vision)
+- [Status](#status)
 
-Tankar, känslor och kropp hänger samman
+---
 
-Trygghet och förståelse är ofta första steget mot förändring
+## Om projektet
 
-MittPsyke försöker inte fixa dig –
-det hjälper dig att förstå dig själv lite bättre, i din takt.
+MittPsyke är en svensk webbplattform med fokus på psykisk hälsa.  
+Målet är att skapa en trygg digital plats där användaren kan:
 
-🤍 Hur MittPsyke bemöter dig
+- få stöd utifrån hur hen mår just nu
+- skriva dagbok och följa sitt mående
+- se mönster och framsteg över tid
+- få AI-baserade sammanfattningar och insikter
+- hitta rätt väg vidare till stöd, samtal eller akut hjälp
 
-MittPsyke är:
+Plattformen är tänkt att kännas **varm**, **tydlig**, **enkel** och **icke-stressande** även när användaren är trött, överväldigad eller mår dåligt.
 
-Varmt och inkännande
+---
 
-Lugn i tempo och ton
+## Huvudfunktioner
 
-Bekräftande utan att förstärka hopplöshet
+### Stöd och innehåll
+- guider och övningar
+- stöd utifrån olika fokusområden, till exempel:
+  - ångest
+  - depression
+  - trauma
+- akut hjälp och stödlinjer
 
-Varsamt nyfiket, aldrig påträngande
+### Personliga funktioner
+- dagbok
+- personlig portal
+- framstegsvy
+- känslotrender och aktivitetsmönster
 
-Stödjande utan att styra eller pressa
+### AI-stöd
+- AI-chatt
+- AI-samtal / telefonstöd
+- AI-genererade veckosammanfattningar
+- återkommande mönster och insikter
 
-MittPsyke ställer öppna frågor, speglar det du delar och hjälper dig att sätta ord på sådant som kan vara svårt, rörigt eller otydligt inuti.
+---
 
-🧭 Anpassning efter område
+## Min resa
 
-MittPsyke anpassar sitt bemötande efter vad du väljer att fokusera på:
+En central del av MittPsyke är sidan **"Min resa"**, där användaren kan följa sin utveckling över tid.
 
-💙 Ångest
+### Det som finns just nu
 
-Fokus på trygghet, lugn och att landa i kroppen.
-MittPsyke hjälper dig att bromsa, andas och orientera dig i nuet.
+#### 🔥 Streak-räknare
+- visar antal dagar i rad användaren skrivit i dagboken
+- visar längsta streak
+- visar hur länge sedan senaste inlägget skrevs
 
-🤍 Nedstämdhet & depression
+#### 🏆 Milstolpar
+- uppnådda mål baserat på antal inlägg
+- nästa mål visas med progress bar
+- uppmuntrande texter och visuella markörer
 
-Fokus på varsam kontakt, energi och självvärde.
-MittPsyke möter trötthet och tomhet utan krav på förändring.
+#### 📈 Aktivitetsheatmap
+- GitHub-liknande aktivitetskarta
+- visar aktiva dagar över tid
+- responsiv layout
+- färgkodad aktivitet per dag
 
-🕊️ Trauma & svåra upplevelser
+#### 💡 Insikter
+- vilken veckodag användaren verkar må bäst
+- vilken veckodag som verkar svårare
+- återkommande mönster, till exempel oro vissa dagar
+- genomsnittligt humör per veckodag
 
-Fokus på kontroll, gränser och säkerhet.
-Du bestämmer vad som delas – MittPsyke lyssnar och anpassar sig efter dig.
+#### 📊 Veckosammanfattningar
+- AI-genererad sammanfattning av veckan
+- överblick av känslotrend
+- hjälper användaren att se förändring utan att läsa allt igen
 
-🌿 Grundprincip
+---
 
-MittPsyke tror inte på snabba lösningar.
-Det tror på närvaro, förståelse och små steg.
+## Teknisk stack
 
-Du behöver inte veta vad du ska säga.
-Det räcker att du är här.
+Projektet använder en modern webbstack med fokus på enkel utveckling och skalbarhet.
+
+- **Frontend:** Svelte 5
+- **Framework:** SvelteKit 2
+- **Styling:** Tailwind CSS
+- **Ikoner:** lucide-svelte
+- **Backend / datalager:** Supabase
+- **Databas:** PostgreSQL
+- **AI:** OpenAI API
+
+---
+
+## Projektstruktur
+
+```bash
+src/
+├── routes/
+│   ├── api/
+│   │   └── diary/
+│   │       ├── streak/
+│   │       │   └── +server.ts
+│   │       ├── heatmap/
+│   │       │   └── +server.ts
+│   │       ├── milestones/
+│   │       │   └── +server.ts
+│   │       ├── weekly-summary/
+│   │       │   └── +server.ts
+│   │       └── insights/
+│   │           └── +server.ts
+│   └── journey/
+│       ├── +page.svelte
+│       └── +page.server.ts
+└── lib/
+    └── components/
+        └── Heatmap.svelte
