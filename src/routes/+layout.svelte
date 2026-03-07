@@ -240,14 +240,14 @@
 						Dagbok
 					</a>
 					<a
+						href="/framsteg"
+						class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
+						onclick={() => (mobileMenuOpen = false)}
+					>
+						Framsteg
+					</a>
+					<a
 						href="/dashboard"
-<a
-							href="/framsteg"
-							class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
-							onclick={() => (mobileMenuOpen = false)}
-						>
-							Framsteg
-						</a>
 						class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
 						onclick={() => (mobileMenuOpen = false)}
 					>
