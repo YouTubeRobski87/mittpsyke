@@ -4,17 +4,17 @@ import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
+const WEEKDAYS = ['SÃ¶ndag', 'MÃ¥ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'LÃ¶rdag'];
 const WEEKDAY_EMOJIS: { [key: string]: string } = {
-	Söndag: '🌙', Måndag: '📚', Tisdag: '⚡', Onsdag: '🎯', Torsdag: '🌤️', Fredag: '🎉', Lördag: '🌳'
+	SÃ¶ndag: 'ðŸŒ™', MÃ¥ndag: 'ðŸ“š', Tisdag: 'âš¡', Onsdag: 'ðŸŽ¯', Torsdag: 'ðŸŒ¤ï¸', Fredag: 'ðŸŽ‰', LÃ¶rdag: 'ðŸŒ³'
 };
 const EMOTION_KEYWORDS: { [key: string]: string[] } = {
-	Oro: ['oro', 'oroad', 'nervös', 'spänd', 'rädd', 'ängslig'],
-	Glädje: ['glad', 'lugn', 'lycklig', 'nöjd', 'bra'],
-	Ledsenhet: ['ledsen', 'bedrövad', 'deprimerad', 'olycklig', 'trist'],
-	Trötthet: ['trött', 'uttråkad', 'energilös'],
+	Oro: ['oro', 'oroad', 'nervÃ¶s', 'spÃ¤nd', 'rÃ¤dd', 'Ã¤ngslig'],
+	GlÃ¤dje: ['glad', 'lugn', 'lycklig', 'nÃ¶jd', 'bra'],
+	Ledsenhet: ['ledsen', 'bedrÃ¶vad', 'deprimerad', 'olycklig', 'trist'],
+	TrÃ¶tthet: ['trÃ¶tt', 'uttrÃ¥kad', 'energilÃ¶s'],
 	Fokus: ['fokus', 'produktiv', 'effektiv'],
-	Träning: ['träning', 'gym', 'motion', 'jogging', 'löpning']
+	TrÃ¤ning: ['trÃ¤ning', 'gym', 'motion', 'jogging', 'lÃ¶pning']
 };
 
 export const GET: RequestHandler = async ({ request }) => {
@@ -27,8 +27,9 @@ export const GET: RequestHandler = async ({ request }) => {
 			global: { headers: { Authorization: `Bearer ${token}` } }
 		});
 
-		const { data: { user } } = await supabase.auth.getUser(token);
-		if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
+		const { data, error: authError } = await supabase.auth.getUser(token);
+		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
+		const user = data.user;
 
 		const { data: entries, error } = await supabase
 			.from('diary')
@@ -63,7 +64,7 @@ export const GET: RequestHandler = async ({ request }) => {
 			const content = entry.content.toLowerCase();
 			Object.entries(EMOTION_KEYWORDS).forEach(([emotion, keywords]) => {
 				if (keywords.some((kw) => content.includes(kw))) {
-					const pattern = `${emotion} på ${day}`;
+					const pattern = `${emotion} pÃ¥ ${day}`;
 					patterns[pattern] = (patterns[pattern] || 0) + 1;
 				}
 			});
@@ -76,8 +77,8 @@ export const GET: RequestHandler = async ({ request }) => {
 			.map(([pattern, frequency]) => ({ pattern, frequency, type: 'emotion' }));
 
 		return json({
-			bestDayOfWeek: { day: bestDay?.[0] || '-', emoji: WEEKDAY_EMOJIS[bestDay?.[0]] || '📅', average: bestDay?.[1].average || 0, count: bestDay?.[1].count || 0 },
-			worstDayOfWeek: { day: worstDay?.[0] || '-', emoji: WEEKDAY_EMOJIS[worstDay?.[0]] || '📅', average: worstDay?.[1].average || 0, count: worstDay?.[1].count || 0 },
+			bestDayOfWeek: { day: bestDay?.[0] || '-', emoji: WEEKDAY_EMOJIS[bestDay?.[0]] || 'ðŸ“…', average: bestDay?.[1].average || 0, count: bestDay?.[1].count || 0 },
+			worstDayOfWeek: { day: worstDay?.[0] || '-', emoji: WEEKDAY_EMOJIS[worstDay?.[0]] || 'ðŸ“…', average: worstDay?.[1].average || 0, count: worstDay?.[1].count || 0 },
 			moodByWeekday,
 			recurringPatterns,
 			dataPoints: entries.length

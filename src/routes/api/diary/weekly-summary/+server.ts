@@ -26,8 +26,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			global: { headers: { Authorization: `Bearer ${token}` } }
 		});
 
-		const { data: { user } } = await supabase.auth.getUser(token);
-		if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
+		const { data, error: authError } = await supabase.auth.getUser(token);
+		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
+		const user = data.user;
 
 		const body = await request.json();
 		const { startDate, endDate } = body;
@@ -44,7 +45,15 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (error) return json({ error: error.message }, { status: 500 });
 
 		if (!entries || entries.length === 0) {
-			return json({ week: 0, year: new Date().getFullYear(), startDate, endDate, summary: 'Inga inlägg denna vecka.', moodTrend: { trend: 'stable', average_mood: 0, start_mood: 0, end_mood: 0 }, entryCount: 0 });
+			return json({
+				week: 0,
+				year: new Date().getFullYear(),
+				startDate,
+				endDate,
+				summary: 'Inga inlÃ¤gg denna vecka.',
+				moodTrend: { trend: 'stable', average_mood: 0, start_mood: 0, end_mood: 0 },
+				entryCount: 0
+			});
 		}
 
 		const moods = entries.map((e) => e.mood);
@@ -59,16 +68,27 @@ export const POST: RequestHandler = async ({ request }) => {
 		const weekNumber = getWeekNumber(startDateObj);
 		const year = startDateObj.getFullYear();
 
-		const entriesText = entries.map((e) => `[${e.date}] Humör: ${e.mood}/10\n${e.content}`).join('\n\n');
+		const entriesText = entries
+			.map((e) => `[${e.date}] HumÃ¶r: ${e.mood}/10\n${e.content}`)
+			.join('\n\n');
+
 		const completion = await openai.chat.completions.create({
 			model: 'gpt-4-turbo',
-			messages: [{ role: 'user', content: `Du är en empatisk psykolog som läser dagboksinlägg.\n\nAnalysera dessa dagboksinlägg från vecka ${weekNumber} år ${year}:\n\n${entriesText}\n\nSkriv en kort, känslig sammanfattning (2-3 meningar) om användarens mentala tillstånd denna vecka.\nFokusera på känslotrender och övergripande mönster, inte specifika fakta.\nVar uppmuntrande men ärlig. Skriv på svenska. Börja INTE med "Denna vecka".` }],
+			messages: [
+				{
+					role: 'user',
+					content: `Du Ã¤r en empatisk psykolog som lÃ¤ser dagboksinlÃ¤gg.\n\nAnalysera dessa dagboksinlÃ¤gg frÃ¥n vecka ${weekNumber} Ã¥r ${year}:\n\n${entriesText}\n\nSkriv en kort, kÃ¤nslig sammanfattning (2-3 meningar) om anvÃ¤ndarens mentala tillstÃ¥nd denna vecka.\nFokusera pÃ¥ kÃ¤nslotrender och Ã¶vergripande mÃ¶nster, inte specifika fakta.\nVar uppmuntrande men Ã¤rlig. Skriv pÃ¥ svenska. BÃ¶rja INTE med "Denna vecka".`
+				}
+			],
 			max_tokens: 200,
 			temperature: 0.7
 		});
 
 		return json({
-			week: weekNumber, year, startDate, endDate,
+			week: weekNumber,
+			year,
+			startDate,
+			endDate,
 			summary: (completion.choices[0]?.message?.content || 'Kunde inte generera sammanfattning.').trim(),
 			moodTrend: { trend, average_mood: averageMood, start_mood: startMood, end_mood: endMood },
 			entryCount: entries.length

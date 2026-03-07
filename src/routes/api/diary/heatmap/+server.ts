@@ -14,10 +14,9 @@ export const GET: RequestHandler = async ({ request }) => {
 			global: { headers: { Authorization: `Bearer ${token}` } }
 		});
 
-		const { data: { user } } = await supabase.auth.getUser(token);
-		if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
-
-		const userId = user.id;
+		const { data, error: authError } = await supabase.auth.getUser(token);
+		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
+		const user = data.user;
 
 		const endDate = new Date();
 		const startDate = new Date();
@@ -28,7 +27,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		const { data: entries, error } = await supabase
 			.from('diary')
 			.select('date')
-			.eq('user_id', userId)
+			.eq('user_id', user.id)
 			.gte('date', startDateISO)
 			.lte('date', endDateISO)
 			.order('date', { ascending: true });
