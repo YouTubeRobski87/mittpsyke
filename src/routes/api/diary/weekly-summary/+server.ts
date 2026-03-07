@@ -68,4 +68,13 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 
 		return json({
-			week: weekNumber, year, startDate
+			week: weekNumber, year, startDate, endDate,
+			summary: (completion.choices[0]?.message?.content || 'Kunde inte generera sammanfattning.').trim(),
+			moodTrend: { trend, average_mood: averageMood, start_mood: startMood, end_mood: endMood },
+			entryCount: entries.length
+		});
+	} catch (err) {
+		console.error('Weekly summary error:', err);
+		return json({ error: 'Internal server error' }, { status: 500 });
+	}
+};
