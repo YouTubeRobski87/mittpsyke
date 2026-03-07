@@ -21,6 +21,7 @@
     "vite": "^6.0.0"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.57.4",
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^1.3.1",
