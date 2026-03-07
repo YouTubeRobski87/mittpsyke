@@ -1,7 +1,6 @@
 {
     "recommendations": [
         "openai.chatgpt",
-        "tabnine.tabnine-vscode",
         "genieai.chatgpt-vscode"
     ]
 }

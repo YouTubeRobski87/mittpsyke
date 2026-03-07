@@ -2,19 +2,23 @@
 import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { OPENAI_API_KEY } from '$env/static/private';
 import type { RequestHandler } from '@sveltejs/kit';
+import OpenAI from 'openai';
 
-const WEEKDAYS = ['SÃ¶ndag', 'MÃ¥ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'LÃ¶rdag'];
+const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+
+const WEEKDAYS = ['Sondag', 'Mandag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lordag'];
 const WEEKDAY_EMOJIS: { [key: string]: string } = {
-	SÃ¶ndag: 'ðŸŒ™', MÃ¥ndag: 'ðŸ“š', Tisdag: 'âš¡', Onsdag: 'ðŸŽ¯', Torsdag: 'ðŸŒ¤ï¸', Fredag: 'ðŸŽ‰', LÃ¶rdag: 'ðŸŒ³'
+	Sondag: 'Natt', Mandag: 'Maandag', Tisdag: 'Tisdag', Onsdag: 'Onsdag',
+	Torsdag: 'Torsdag', Fredag: 'Fredag', Lordag: 'Lordag'
 };
 const EMOTION_KEYWORDS: { [key: string]: string[] } = {
-	Oro: ['oro', 'oroad', 'nervÃ¶s', 'spÃ¤nd', 'rÃ¤dd', 'Ã¤ngslig'],
-	GlÃ¤dje: ['glad', 'lugn', 'lycklig', 'nÃ¶jd', 'bra'],
-	Ledsenhet: ['ledsen', 'bedrÃ¶vad', 'deprimerad', 'olycklig', 'trist'],
-	TrÃ¶tthet: ['trÃ¶tt', 'uttrÃ¥kad', 'energilÃ¶s'],
-	Fokus: ['fokus', 'produktiv', 'effektiv'],
-	TrÃ¤ning: ['trÃ¤ning', 'gym', 'motion', 'jogging', 'lÃ¶pning']
+	anxiety: ['orolig', 'angest', 'nervos', 'radd', 'panik', 'stressad'],
+	sadness: ['ledsen', 'sorgsen', 'deprimerad', 'tom', 'hopplÃ¶s', 'ensam'],
+	joy: ['glad', 'lycklig', 'bra', 'fantastisk', 'positiv', 'energisk'],
+	anger: ['arg', 'frustrerad', 'irriterad', 'rasande', 'upprÃ¶rd'],
+	calm: ['lugn', 'avslappnad', 'fridfull', 'harmonisk', 'trygg']
 };
 
 export const GET: RequestHandler = async ({ request }) => {
@@ -31,57 +35,127 @@ export const GET: RequestHandler = async ({ request }) => {
 		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
 		const user = data.user;
 
+		const thirtyDaysAgo = new Date();
+		thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+		const startDate = thirtyDaysAgo.toISOString().split('T')[0];
+
 		const { data: entries, error } = await supabase
 			.from('diary')
 			.select('date, mood, content')
 			.eq('user_id', user.id)
+			.gte('date', startDate)
 			.order('date', { ascending: true });
 
 		if (error) return json({ error: error.message }, { status: 500 });
-
-		if (!entries || entries.length === 0) {
-			return json({ bestDayOfWeek: { day: '-', emoji: '-', average: 0, count: 0 }, worstDayOfWeek: { day: '-', emoji: '-', average: 0, count: 0 }, moodByWeekday: {}, recurringPatterns: [], dataPoints: 0 });
+		if (!entries || entries.length < 3) {
+			return json({ insights: [], bestDay: null, worstDay: null, emotionDistribution: {}, aiSummary: null });
 		}
 
-		const moodByWeekday: { [day: string]: { average: number; count: number } } = {};
-		entries.forEach((entry) => {
-			const day = WEEKDAYS[new Date(entry.date).getDay()];
-			if (!moodByWeekday[day]) moodByWeekday[day] = { average: 0, count: 0 };
-			moodByWeekday[day].average += entry.mood;
-			moodByWeekday[day].count += 1;
-		});
-		Object.keys(moodByWeekday).forEach((day) => {
-			moodByWeekday[day].average = Math.round((moodByWeekday[day].average / moodByWeekday[day].count) * 10) / 10;
-		});
+		const weekdayMoods: { [key: string]: number[] } = {};
+		WEEKDAYS.forEach((day) => { weekdayMoods[day] = []; });
 
-		const sorted = Object.entries(moodByWeekday).sort((a, b) => b[1].average - a[1].average);
-		const bestDay = sorted[0];
-		const worstDay = sorted[sorted.length - 1];
+		const emotionCounts: { [key: string]: number } = {};
+		Object.keys(EMOTION_KEYWORDS).forEach((e) => { emotionCounts[e] = 0; });
 
-		const patterns: { [key: string]: number } = {};
-		entries.forEach((entry) => {
-			const day = WEEKDAYS[new Date(entry.date).getDay()];
-			const content = entry.content.toLowerCase();
-			Object.entries(EMOTION_KEYWORDS).forEach(([emotion, keywords]) => {
-				if (keywords.some((kw) => content.includes(kw))) {
-					const pattern = `${emotion} pÃ¥ ${day}`;
-					patterns[pattern] = (patterns[pattern] || 0) + 1;
+		for (const entry of entries) {
+			const date = new Date(entry.date);
+			const dayName = WEEKDAYS[date.getDay()];
+			if (entry.mood) weekdayMoods[dayName].push(entry.mood);
+
+			if (entry.content) {
+				const contentLower = entry.content.toLowerCase();
+				for (const [emotion, keywords] of Object.entries(EMOTION_KEYWORDS)) {
+					if (keywords.some((k) => contentLower.includes(k))) emotionCounts[emotion]++;
 				}
-			});
-		});
+			}
+		}
 
-		const recurringPatterns = Object.entries(patterns)
-			.filter(([, f]) => f >= 2)
-			.sort((a, b) => b[1] - a[1])
-			.slice(0, 5)
-			.map(([pattern, frequency]) => ({ pattern, frequency, type: 'emotion' }));
+		const weekdayAverages = Object.entries(weekdayMoods)
+			.filter(([, moods]) => moods.length > 0)
+			.map(([day, moods]) => ({
+				day,
+				average: Math.round((moods.reduce((a, b) => a + b, 0) / moods.length) * 10) / 10,
+				count: moods.length
+			}))
+			.sort((a, b) => b.average - a.average);
+
+		const bestDay = weekdayAverages[0] || null;
+		const worstDay = weekdayAverages[weekdayAverages.length - 1] || null;
+
+		const insights = [];
+		if (bestDay && worstDay && bestDay.day !== worstDay.day) {
+			insights.push({
+				type: 'weekday_pattern',
+				title: 'Veckans monster',
+				description: `Du mar bast pa ${bestDay.day} (snitt ${bestDay.average}/10) och har det tuffast pa ${worstDay.day} (snitt ${worstDay.average}/10).`,
+				icon: 'calendar'
+			});
+		}
+
+		const moods = entries.map((e) => e.mood).filter(Boolean);
+		if (moods.length >= 5) {
+			const firstHalf = moods.slice(0, Math.floor(moods.length / 2));
+			const secondHalf = moods.slice(Math.floor(moods.length / 2));
+			const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+			const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+			const trend = secondAvg - firstAvg;
+			if (Math.abs(trend) > 0.5) {
+				insights.push({
+					type: 'mood_trend',
+					title: trend > 0 ? 'Positiv trend' : 'Utmanande period',
+					description: trend > 0
+						? `Ditt humÃ¶r har fÃ¶rbÃ¤ttrats med ${Math.abs(trend).toFixed(1)} poÃ¤ng de senaste 30 dagarna.`
+						: `Det har varit lite tuffare pÃ¥ sistone. Kom ihÃ¥g att det Ã¤r okej att ha svÃ¥ra perioder.`,
+					icon: trend > 0 ? 'trending-up' : 'trending-down'
+				});
+			}
+		}
+
+		const dominantEmotion = Object.entries(emotionCounts)
+			.filter(([, count]) => count > 0)
+			.sort(([, a], [, b]) => b - a)[0];
+
+		if (dominantEmotion) {
+			const emotionLabels: { [key: string]: string } = {
+				anxiety: 'oro och angest',
+				sadness: 'ledsenhet',
+				joy: 'gladje och positivitet',
+				anger: 'frustration',
+				calm: 'lugn och harmoni'
+			};
+			insights.push({
+				type: 'emotion_pattern',
+				title: 'Vanligaste kanslan',
+				description: `Dina inlÃ¤gg handlar ofta om ${emotionLabels[dominantEmotion[0]] || dominantEmotion[0]}. Det Ã¤r viktigt att kÃ¤nna igen sina kÃ¤nslomÃ¶nster.`,
+				icon: 'heart'
+			});
+		}
+
+		const recentEntries = entries.slice(-7);
+		const recentText = recentEntries.map((e) => `[${e.date}] HumÃ¶r: ${e.mood}/10\n${e.content || ''}`).join('\n\n');
+
+		let aiSummary = null;
+		try {
+			const completion = await openai.chat.completions.create({
+				model: 'gpt-4-turbo',
+				messages: [{
+					role: 'user',
+					content: `Du ar en empatisk psykolog. Analysera dessa dagboksinlagg och ge EN kort insikt (max 2 meningar) om ett intressant monster du ser. Var specifik och uppmuntrande. Skriv pa svenska:\n\n${recentText}`
+				}],
+				max_tokens: 150,
+				temperature: 0.7
+			});
+			aiSummary = completion.choices[0]?.message?.content?.trim() || null;
+		} catch {
+			aiSummary = null;
+		}
 
 		return json({
-			bestDayOfWeek: { day: bestDay?.[0] || '-', emoji: WEEKDAY_EMOJIS[bestDay?.[0]] || 'ðŸ“…', average: bestDay?.[1].average || 0, count: bestDay?.[1].count || 0 },
-			worstDayOfWeek: { day: worstDay?.[0] || '-', emoji: WEEKDAY_EMOJIS[worstDay?.[0]] || 'ðŸ“…', average: worstDay?.[1].average || 0, count: worstDay?.[1].count || 0 },
-			moodByWeekday,
-			recurringPatterns,
-			dataPoints: entries.length
+			insights,
+			bestDay,
+			worstDay,
+			emotionDistribution: emotionCounts,
+			aiSummary
 		});
 	} catch (err) {
 		console.error('Insights error:', err);
