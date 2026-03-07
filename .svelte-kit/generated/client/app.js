@@ -24,7 +24,8 @@ export const nodes = [
 	() => import('./nodes/20'),
 	() => import('./nodes/21'),
 	() => import('./nodes/22'),
-	() => import('./nodes/23')
+	() => import('./nodes/23'),
+	() => import('./nodes/24')
 ];
 
 export const server_loads = [];
@@ -39,19 +40,20 @@ export const dictionary = {
 		"/dashboard/installningar": [8],
 		"/depression": [9],
 		"/ensamhet": [10],
-		"/guider-seo": [13],
-		"/guider-seo/[pillar]": [14],
-		"/guider-seo/[pillar]/[guide]": [15],
-		"/guider": [11],
-		"/guider/[pillar]": [12],
-		"/integritet": [16],
-		"/login": [17],
-		"/om-mittpsyke": [18],
-		"/ovningar": [19],
-		"/ovningar/[tool]": [20],
-		"/panikattack": [21],
-		"/portal/[slug]": [22],
-		"/register": [23]
+		"/framsteg": [~11],
+		"/guider-seo": [14],
+		"/guider-seo/[pillar]": [15],
+		"/guider-seo/[pillar]/[guide]": [16],
+		"/guider": [12],
+		"/guider/[pillar]": [13],
+		"/integritet": [17],
+		"/login": [18],
+		"/om-mittpsyke": [19],
+		"/ovningar": [20],
+		"/ovningar/[tool]": [21],
+		"/panikattack": [22],
+		"/portal/[slug]": [23],
+		"/register": [24]
 	};
 
 export const hooks = {

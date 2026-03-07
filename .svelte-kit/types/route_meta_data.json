@@ -60,6 +60,10 @@
 	"/ensamhet": [
 		"src/routes/+layout.ts"
 	],
+	"/framsteg": [
+		"src/routes/framsteg/+page.server.ts",
+		"src/routes/+layout.ts"
+	],
 	"/guider-seo": [
 		"src/routes/guider-seo/+page.ts",
 		"src/routes/+layout.ts"

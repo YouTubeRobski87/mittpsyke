@@ -12,7 +12,7 @@ type EnsureDefined<T> = T extends null | undefined ? {} : T;
 type OptionalUnion<U extends Record<string, any>, A extends keyof U = U extends U ? keyof U : never> = U extends unknown ? { [P in Exclude<A, keyof U>]?: never } & U : never;
 export type Snapshot<T = any> = Kit.Snapshot<T>;
 type PageParentData = EnsureDefined<LayoutData>;
-type LayoutRouteId = RouteId | "/" | "/angest" | "/ansvar" | "/chat/[category]" | "/dagbok" | "/dashboard" | "/dashboard/installningar" | "/depression" | "/ensamhet" | "/guider" | "/guider/[pillar]" | "/guider-seo" | "/guider-seo/[pillar]" | "/guider-seo/[pillar]/[guide]" | "/integritet" | "/login" | "/om-mittpsyke" | "/ovningar" | "/ovningar/[tool]" | "/panikattack" | "/portal/[slug]" | "/register" | null
+type LayoutRouteId = RouteId | "/" | "/angest" | "/ansvar" | "/chat/[category]" | "/dagbok" | "/dashboard" | "/dashboard/installningar" | "/depression" | "/ensamhet" | "/framsteg" | "/guider" | "/guider/[pillar]" | "/guider-seo" | "/guider-seo/[pillar]" | "/guider-seo/[pillar]/[guide]" | "/integritet" | "/login" | "/om-mittpsyke" | "/ovningar" | "/ovningar/[tool]" | "/panikattack" | "/portal/[slug]" | "/register" | null
 type LayoutParams = RouteParams & { category?: string; pillar?: string; guide?: string; tool?: string; slug?: string }
 type LayoutParentData = EnsureDefined<{}>;
 
