@@ -78,4 +78,3 @@ export const GET: RequestHandler = async ({ locals }) => {
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
-

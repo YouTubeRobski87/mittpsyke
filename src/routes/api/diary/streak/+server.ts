@@ -1,12 +1,7 @@
 // src/routes/api/diary/streak/+server.ts
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-	import.meta.env.VITE_SUPABASE_URL,
-	import.meta.env.VITE_SUPABASE_ANON_KEY
-);
 
 interface StreakData {
 	currentStreak: number;
@@ -17,10 +12,10 @@ interface StreakData {
 
 export const GET: RequestHandler = async ({ locals }) => {
 	try {
-		// Hämta user_id från session
+		// HÃ¤mta user_id frÃ¥n session
 		const {
 			data: { session }
-		} = await supabase.auth.getSession();
+		} = await locals.supabase.auth.getSession();
 
 		if (!session?.user?.id) {
 			return json({ error: 'Unauthorized' }, { status: 401 });
@@ -28,8 +23,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		const userId = session.user.id;
 
-		// Hämta alla dagboksinlägg sorterade efter datum (senaste först)
-		const { data: entries, error } = await supabase
+		// HÃ¤mta alla dagboksinlÃ¤gg sorterade efter datum (senaste fÃ¶rst)
+		const { data: entries, error } = await locals.supabase
 			.from('diary')
 			.select('date')
 			.eq('user_id', userId)
@@ -54,7 +49,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			.map((e) => new Date(e.date).toDateString())
 			.filter((date, index, self) => self.indexOf(date) === index); // Deduplisera
 
-		// Beräkna current streak
+		// BerÃ¤kna current streak
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 
@@ -74,7 +69,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			}
 		}
 
-		// Beräkna longest streak
+		// BerÃ¤kna longest streak
 		let longestStreak = 0;
 		let tempStreak = 1;
 
@@ -94,7 +89,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		}
 		longestStreak = Math.max(longestStreak, tempStreak);
 
-		// Beräkna hur många dagar sedan sista inlägg
+		// BerÃ¤kna hur mÃ¥nga dagar sedan sista inlÃ¤gg
 		const lastEntry = new Date(entryDates[0]);
 		lastEntry.setHours(0, 0, 0, 0);
 		const lastEntryDaysAgo = Math.floor(
