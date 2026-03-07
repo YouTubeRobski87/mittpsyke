@@ -1,22 +1,9 @@
 // src/routes/api/diary/milestones/+server.ts
 import { json } from '@sveltejs/kit';
+import { createClient } from '@supabase/supabase-js';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { RequestHandler } from '@sveltejs/kit';
 
-
-interface Milestone {
-	entries: number;
-	text: string;
-	achieved: boolean;
-	emoji: string;
-}
-
-interface MilestonesResponse {
-	achieved: Milestone[];
-	nextMilestone: Milestone & { entriesNeeded: number };
-	totalEntries: number;
-}
-
-// Alla möjliga milstolpar
 const MILESTONES = [
 	{ entries: 1, text: 'Din första dagboksanteckning', emoji: '📝' },
 	{ entries: 3, text: 'Du börjar hitta en rytm', emoji: '🎵' },
@@ -28,82 +15,50 @@ const MILESTONES = [
 	{ entries: 365, text: 'Ett helt år – Du är otrolig!', emoji: '🎉' }
 ];
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const GET: RequestHandler = async ({ request }) => {
 	try {
-		// Hämta user_id från session
-		const {
-			data: { session }
-		} = await locals.supabase.auth.getSession();
+		const authHeader = request.headers.get('Authorization');
+		if (!authHeader) return json({ error: 'Unauthorized' }, { status: 401 });
 
-		if (!session?.user?.id) {
-			return json({ error: 'Unauthorized' }, { status: 401 });
-		}
+		const token = authHeader.replace('Bearer ', '');
+		const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+			global: { headers: { Authorization: `Bearer ${token}` } }
+		});
 
-		const userId = session.user.id;
+		const { data: { user } } = await supabase.auth.getUser(token);
+		if (!user) return json({ error: 'Unauthorized' }, { status: 401 });
 
-		// Räkna antalet inlägg
-		const { count, error } = await locals.supabase
+		const { count, error } = await supabase
 			.from('diary')
 			.select('*', { count: 'exact', head: true })
-			.eq('user_id', userId);
+			.eq('user_id', user.id);
 
-		if (error) {
-			console.error('Supabase error:', error);
-			return json({ error: error.message }, { status: 500 });
-		}
+		if (error) return json({ error: error.message }, { status: 500 });
 
 		const totalEntries = count || 0;
-
-		// Bestäm vilka milstolpar som är uppnådda
-		const achieved: Milestone[] = [];
-		let nextMilestone: (Milestone & { entriesNeeded: number }) | null = null;
+		const achieved = [];
+		let nextMilestone = null;
 
 		for (const milestone of MILESTONES) {
 			if (totalEntries >= milestone.entries) {
-				achieved.push({
-					entries: milestone.entries,
-					text: milestone.text,
-					achieved: true,
-					emoji: milestone.emoji
-				});
+				achieved.push({ ...milestone, achieved: true });
 			} else if (!nextMilestone) {
-				nextMilestone = {
-					entries: milestone.entries,
-					text: milestone.text,
-					achieved: false,
-					emoji: milestone.emoji,
-					entriesNeeded: milestone.entries - totalEntries
-				};
+				nextMilestone = { ...milestone, achieved: false, entriesNeeded: milestone.entries - totalEntries };
 			}
 		}
 
-		// Om all milstolpar är uppnådda, sätt nästa till samma som den sista
 		if (!nextMilestone && achieved.length > 0) {
-			const lastMilestone = MILESTONES[MILESTONES.length - 1];
-			nextMilestone = {
-				entries: lastMilestone.entries * 2,
-				text: `${lastMilestone.entries * 2} inlägg – Fortsätt så här!`,
-				achieved: false,
-				emoji: '✨',
-				entriesNeeded: lastMilestone.entries * 2 - totalEntries
-			};
+			const last = MILESTONES[MILESTONES.length - 1];
+			nextMilestone = { entries: last.entries * 2, text: `${last.entries * 2} inlägg – Fortsätt så här!`, achieved: false, emoji: '✨', entriesNeeded: last.entries * 2 - totalEntries };
 		}
 
-		const response: MilestonesResponse = {
+		return json({
 			achieved,
-			nextMilestone: nextMilestone || {
-				entries: 1,
-				text: 'Skriv ditt första inlägg!',
-				achieved: false,
-				emoji: '📝',
-				entriesNeeded: 1
-			},
+			nextMilestone: nextMilestone || { entries: 1, text: 'Skriv ditt första inlägg!', achieved: false, emoji: '📝', entriesNeeded: 1 },
 			totalEntries
-		};
-
-		return json(response);
+		});
 	} catch (err) {
-		console.error('Milestones calculation error:', err);
+		console.error('Milestones error:', err);
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
