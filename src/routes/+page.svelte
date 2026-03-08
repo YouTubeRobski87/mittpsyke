@@ -38,7 +38,13 @@
 </script>
 
 <svelte:head>
-	<title>MittPsyke - Tryggt st&ouml;d f&ouml;r ditt psyke</title>
+	<title>Psykiskt stöd online | Verktyg mot ångest | Mittpsyke.se</title>
+	<meta name="description" content="Mittpsyke erbjuder anonymt samtalsstöd online och digitala verktyg mot ångest och trauma. Starta din dagbok eller chatta med oss idag." />
+	<meta property="og:title" content="Psykiskt stöd online | Verktyg mot ångest | Mittpsyke.se" />
+	<meta property="og:description" content="Mittpsyke erbjuder anonymt samtalsstöd online och digitala verktyg mot ångest och trauma. Starta din dagbok eller chatta med oss idag." />
+	<meta property="og:type" content="website" />
+	<meta name="twitter:card" content="summary" />
+	<link rel="canonical" href="https://mittpsyke.se/" />
 </svelte:head>
 
 <main class="staging-look">
@@ -51,11 +57,25 @@
 			aria-hidden="true"
 		/>
 		<div class="hero-content">
-			<h1>V&auml;lkommen till MittPsyke</h1>
+			<h1>Psykiskt stöd online – Din trygga plats för återhämtning</h1>
 			<p>
-				Hitta r&auml;tt st&ouml;d f&ouml;r psykiskt m&aring;ende p&aring; ett enkelt och tryggt s&auml;tt.
+				Välkommen till MittPsyke. Vi erbjuder en professionell plattform för dig som söker anonymt samtalsstöd online och konkreta verktyg för att hantera livets utmaningar.
 			</p>
 			<a href="/om-mittpsyke" class="hero-cta">L&auml;s mer om MittPsyke</a>
+		</div>
+	</section>
+
+	<section class="seo-intro">
+		<div class="narrow seo-inner">
+			<h2>Verktyg mot ångest och personlig utveckling</h2>
+			<p>
+				Att hitta rätt verktyg mot ångest online kan vara avgörande. Genom vår digitala dagbok och chattfunktion kan du i din egen takt bearbeta tankar och känslor. Vi erbjuder även specialiserat <a href="/trauma">samtalsstöd vid trauma</a> för dig som behöver bearbeta svåra upplevelser i en trygg miljö.
+			</p>
+			<ul class="seo-features">
+				<li><strong>Anonymitet &amp; Trygghet:</strong> Vi värnar om din integritet med tystnadsplikt.</li>
+				<li><strong>Enkelt att använda:</strong> Din personliga dashboard ger dig full överblick över din utveckling.</li>
+				<li><strong>Erfarenhet som grund:</strong> Plattformen är byggd på förståelse och verklig expertis inom psykisk hälsa.</li>
+			</ul>
 		</div>
 	</section>
 
@@ -696,4 +716,66 @@
 	:global(.dark) .phone-number {
 		color: #f0eeea;
 	}
+
+	.seo-intro {
+		padding: clamp(2.5rem, 6vw, 4rem) 1.25rem;
+		background: #f4f6f7;
+		color: #2c3338;
+	}
+
+	.seo-inner {
+		max-width: 760px;
+	}
+
+	.seo-intro h2 {
+		margin: 0 0 1rem;
+		color: #263036;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: clamp(1.5rem, 2.8vw, 2rem);
+		letter-spacing: -0.02em;
+	}
+
+	.seo-intro p {
+		margin: 0;
+		color: #516069;
+		font-family: var(--font-body);
+		font-weight: 400;
+		line-height: 1.75;
+		font-size: 1rem;
+	}
+
+	.seo-intro a {
+		color: #0f766e;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.seo-features {
+		margin: 1.2rem 0 0;
+		padding-left: 1.4rem;
+		color: #516069;
+		font-family: var(--font-body);
+		line-height: 1.75;
+	}
+
+	.seo-features li + li {
+		margin-top: 0.5rem;
+	}
+
+	:global(.dark) .seo-intro {
+		background: #1a1c1d;
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .seo-intro h2 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .seo-intro p,
+	:global(.dark) .seo-features {
+		color: rgba(255, 255, 255, 0.65);
+	}
+
 </style>
+
