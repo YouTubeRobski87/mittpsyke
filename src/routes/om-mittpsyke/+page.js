@@ -1,6 +1,6 @@
 export const load = () => {
   return {
-    title: "Om MittPsyke – Din trygga plats för psykiskt stöd",
-    description: "Lär dig mer om MittPsyke, vår vision och hur vi erbjuder anonymt psykiskt stöd online för alla."
+    title: "Om Mittpsyke – Erfarenhet av psykisk hälsa",
+    description: "Lär dig mer om Mittpsyke och vår erfarenhet av psykisk hälsa. Vi erbjuder tryggt, anonymt samtalsstöd online baserat på beprövade metoder."
   };
 };
