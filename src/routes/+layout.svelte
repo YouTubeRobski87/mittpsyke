@@ -89,8 +89,10 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:site_name" content="MittPsyke" />
 
-		<meta property="og:url" content="https://mittpsyke.se/" />
+		<meta property="og:url" content="https://www.mittpsyke.se{page.url.pathname}" />
 		<meta property="og:image" content="https://mittpsyke.se/og-image.png" />
+
+		<link rel="canonical" href="https://www.mittpsyke.se{page.url.pathname}" />
 
 		<link rel="canonical" href="https://www.mittpsyke.se{page.url.pathname}" />
 
