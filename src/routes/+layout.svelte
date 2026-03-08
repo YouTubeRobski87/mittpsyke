@@ -70,26 +70,23 @@
 			content="MittPsyke &auml;r tillf&auml;lligt under konstruktion medan vi arbetar med f&ouml;rb&auml;ttringar."
 		/>
 	{:else}
-		<title>MittPsyke &ndash; Digitalt samtalsst&ouml;d f&ouml;r &aring;ngest och nedst&auml;mdhet</title>
+		<title>{page.data?.title ? `${page.data.title} | Mittpsyke` : 'Psykiskt st&ouml;d online | Verktyg mot &aring;ngest | Mittpsyke.se'}</title>
 
 		<meta
 			name="description"
-			content="MittPsyke &auml;r ett lugnt och tryggt digitalt samtalsst&ouml;d f&ouml;r &aring;ngest, nedst&auml;mdhet och trauma. Samtala i din egen takt."
+			content={page.data?.description || 'Anonymt samtalsst&ouml;d och digitala verktyg f&ouml;r din psykiska h&auml;lsa.'}
 		/>
 
 		<meta name="robots" content="index, follow" />
 		<meta name="author" content="MittPsyke" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<link rel="canonical" href="https://mittpsyke.se" />
-
-		<meta property="og:title" content="MittPsyke &ndash; Digitalt samtalsst&ouml;d" />
+		<meta property="og:title" content={page.data?.title ? `${page.data.title} | Mittpsyke` : 'MittPsyke – Psykiskt stöd online'} />
 		<meta
 			property="og:description"
-			content="Ett lugnt och tryggt digitalt st&ouml;d f&ouml;r &aring;ngest, nedst&auml;mdhet och trauma."
+			content={page.data?.description || 'Anonymt samtalsstöd och digitala verktyg för din psykiska hälsa.'}
 		/>
 		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://mittpsyke.se" />
 		<meta property="og:site_name" content="MittPsyke" />
 
 		<meta name="twitter:card" content="summary" />
