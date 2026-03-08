@@ -2,11 +2,29 @@
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
+
+	const jsonLd = $derived({
+		"@context": "https://schema.org",
+		"@type": "CollectionPage",
+		"name": data.pillar.title,
+		"description": data.pillar.description,
+		"url": `https://mittpsyke.se/guider/${data.pillar.slug}`,
+		"breadcrumb": {
+			"@type": "BreadcrumbList",
+			"itemListElement": [
+				{ "@type": "ListItem", "position": 1, "name": "Hem", "item": "https://mittpsyke.se" },
+				{ "@type": "ListItem", "position": 2, "name": "Guider", "item": "https://mittpsyke.se/guider" },
+				{ "@type": "ListItem", "position": 3, "name": data.pillar.title, "item": `https://mittpsyke.se/guider/${data.pillar.slug}` }
+			]
+		},
+		"publisher": { "@type": "Organization", "name": "MittPsyke", "url": "https://mittpsyke.se" }
+	});
 </script>
 
 <svelte:head>
 	<title>{data.pillar.title} | Guider | MittPsyke</title>
 	<meta name="description" content={data.pillar.description} />
+	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`}
 </svelte:head>
 
 <main class="container pillar-page">
