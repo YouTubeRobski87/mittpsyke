@@ -65,6 +65,20 @@
 		</div>
 	</section>
 
+
+	<section class="video-section">
+		<div class="video-inner">
+			<h2>Se hur MittPsyke fungerar</h2>
+			<p>En kort introduktion till dagboken, framsteg och AI-chatten.</p>
+			<div class="video-wrapper">
+				<video controls preload="none" poster="/og-image.png">
+					<source src="/intro.mp4" type="video/mp4" />
+					Din webbläsare stöder inte videouppspelning.
+				</video>
+			</div>
+		</div>
+	</section>
+
 	<section class="seo-intro">
 		<div class="narrow seo-inner">
 			<h2>Verktyg mot ångest och personlig utveckling</h2>
@@ -776,6 +790,50 @@
 	:global(.dark) .seo-features {
 		color: rgba(255, 255, 255, 0.65);
 	}
+
+
+	.video-section {
+		padding: clamp(2.5rem, 6vw, 4rem) 1.25rem;
+		background: #1b2b3a;
+		text-align: center;
+		color: #f5f5f2;
+	}
+
+	.video-inner {
+		max-width: 760px;
+		margin: 0 auto;
+	}
+
+	.video-inner h2 {
+		margin: 0 0 0.6rem;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: clamp(1.5rem, 2.8vw, 2rem);
+		letter-spacing: -0.02em;
+		color: #f3f8fd;
+	}
+
+	.video-inner p {
+		margin: 0 0 1.5rem;
+		color: #c7d6e5;
+		font-family: var(--font-body);
+		line-height: 1.7;
+	}
+
+	.video-wrapper {
+		position: relative;
+		width: 100%;
+		border-radius: var(--radius-card);
+		overflow: hidden;
+		box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+	}
+
+	.video-wrapper video {
+		width: 100%;
+		display: block;
+		border-radius: var(--radius-card);
+	}
+
 
 </style>
 
