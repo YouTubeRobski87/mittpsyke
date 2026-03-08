@@ -89,7 +89,15 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:site_name" content="MittPsyke" />
 
-		<meta name="twitter:card" content="summary" />
+		<meta property="og:url" content="https://mittpsyke.se/" />
+		<meta property="og:image" content="https://mittpsyke.se/og-image.jpg" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | Mittpsyke` : 'MittPsyke – Psykiskt stöd online'} />
+		<meta
+			name="twitter:description"
+			content={page.data?.description || 'Anonymt samtalsstöd och digitala verktyg för din psykiska hälsa.'}
+		/>
 	{/if}
 </svelte:head>
 
