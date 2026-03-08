@@ -3,7 +3,6 @@
 	import { supabase } from '$lib/supabase';
 
 	let loading = $state(true);
-	let userId = $state('');
 
 	// Display name
 	let displayName = $state('');
@@ -31,17 +30,10 @@
 				return;
 			}
 
-			userId = session.user.id;
-
-			const { data: profile } = await supabase
-				.from('profiles')
-				.select('display_name')
-				.eq('id', session.user.id)
-				.maybeSingle();
-
 			if (!alive) return;
 
-			displayName = typeof profile?.display_name === 'string' ? profile.display_name.trim() : '';
+			// Load display name from user metadata
+			displayName = session.user.user_metadata?.display_name ?? '';
 			loading = false;
 		}
 
@@ -55,12 +47,12 @@
 	async function saveDisplayName() {
 		nameMessage = '';
 		const trimmed = displayName.trim();
-
 		nameSaving = true;
 
-		const { error } = await supabase
-			.from('profiles')
-			.upsert({ id: userId, display_name: trimmed }, { onConflict: 'id' });
+		// Save to Supabase user metadata (no extra table needed)
+		const { error } = await supabase.auth.updateUser({
+			data: { display_name: trimmed }
+		});
 
 		nameSaving = false;
 
@@ -193,7 +185,6 @@
 		opacity: 0.7;
 	}
 
-	/* Tab Navigation */
 	.dashboard-tabs {
 		display: flex;
 		gap: 0.35rem;
