@@ -1,28 +1,6 @@
 <script lang="ts">
-	import { supabase } from '$lib/supabase';
-	import { goto } from '$app/navigation';
-
-	let email = $state('');
-	let password = $state('');
-	let error = $state('');
-	let loading = $state(false);
-
-	async function handleRegister(e: Event) {
-		e.preventDefault();
-		error = '';
-		loading = true;
-
-		const { error: err } = await supabase.auth.signUp({ email, password });
-
-		if (err) {
-			error = err.message;
-			loading = false;
-			return;
-		}
-
-		alert('Konto skapat! Du kan nu logga in.');
-		goto('/login');
-	}
+	import type { ActionData } from './$types';
+	let { form }: { form: ActionData } = $props();
 </script>
 
 <svelte:head>
@@ -32,10 +10,10 @@
 <section class="container max-w-sm py-16">
 	<h1 class="text-2xl font-bold text-center mb-6">Skapa konto</h1>
 
-	<form onsubmit={handleRegister} class="space-y-4">
+	<form method="POST" class="space-y-4">
 		<input
 			type="email"
-			bind:value={email}
+			name="email"
 			placeholder="E-post"
 			required
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
@@ -43,7 +21,7 @@
 		/>
 		<input
 			type="password"
-			bind:value={password}
+			name="password"
 			placeholder="Lösenord"
 			required
 			minlength={6}
@@ -51,17 +29,15 @@
 				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
 
-		{#if error}
-			<p class="text-red-500 text-sm">{error}</p>
+		{#if form?.error}
+			<p class="text-red-500 text-sm">{form.error}</p>
 		{/if}
 
 		<button
 			type="submit"
-			disabled={loading}
-			class="w-full px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium
-				disabled:opacity-40 transition-opacity"
+			class="w-full px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium transition-opacity"
 		>
-			{loading ? 'Skapar konto...' : 'Registrera'}
+			Registrera
 		</button>
 	</form>
 
