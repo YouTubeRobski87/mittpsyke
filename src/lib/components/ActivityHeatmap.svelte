@@ -11,6 +11,7 @@
 	let loading = true;
 	let error = '';
 	let weeks: Array<Array<{ date: string; count: number; dayName: string }>> = [];
+	let heatmapWrapper: HTMLDivElement;
 
 	const MONTHS = [
 		'Jan',
@@ -62,6 +63,10 @@
 
 			heatmapData = json.data || {};
 			buildHeatmapGrid();
+			// Scroll to the right (today) after data loads
+			setTimeout(() => {
+				if (heatmapWrapper) heatmapWrapper.scrollLeft = heatmapWrapper.scrollWidth;
+			}, 50);
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Ett fel inträffade';
 		} finally {
@@ -109,7 +114,7 @@
 	{:else if error}
 		<div class="error">{error}</div>
 	{:else}
-		<div class="heatmap-wrapper">
+		<div class="heatmap-wrapper" bind:this={heatmapWrapper}>
 			<div class="weekdays-column">
 				{#each WEEKDAYS as day}
 					<div class="weekday-label">{day}</div>
