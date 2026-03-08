@@ -5,7 +5,7 @@
 
 	let { data } = $props<{ data: PageData }>();
 
-	$: jsonLdArticle = {
+	const jsonLdArticle = $derived({
 		"@context": "https://schema.org",
 		"@type": "Article",
 		"headline": data.guide.title,
@@ -22,9 +22,9 @@
 			"url": "https://mittpsyke.se"
 		},
 		"inLanguage": "sv-SE"
-	};
+	});
 
-	$: jsonLdFaq = data.guide.faqs?.length ? {
+	const jsonLdFaq = $derived(data.guide.faqs?.length ? {
 		"@context": "https://schema.org",
 		"@type": "FAQPage",
 		"mainEntity": data.guide.faqs.map((faq: { question: string; answer: string }) => ({
@@ -35,16 +35,16 @@
 				"text": faq.answer
 			}
 		}))
-	} : null;
+	} : null);
 </script>
 
 <svelte:head>
 	<title>{buildTitle(data.guide.title)}</title>
 	<link rel="canonical" href={canonical(`/guider-seo/${data.pillar.slug}/${data.guide.slug}`)} />
 	<meta name="description" content={data.guide.description} />
-	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdArticle)}</script>`}
+	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdArticle)}<\/script>`}
 	{#if jsonLdFaq}
-		{@html `<script type="application/ld+json">${JSON.stringify(jsonLdFaq)}</script>`}
+		{@html `<script type="application/ld+json">${JSON.stringify(jsonLdFaq)}<\/script>`}
 	{/if}
 </svelte:head>
 
