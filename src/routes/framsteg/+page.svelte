@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { supabase } from '$lib/supabase';
-	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import { Flame, Trophy, TrendingUp, Lightbulb, Calendar } from 'lucide-svelte';
 
@@ -40,52 +37,17 @@
 		dataPoints: number;
 	}
 
-	let streakData: StreakData | null = null;
-	let milestonesData: MilestonesResponse | null = null;
-	let insightsData: InsightsResponse | null = null;
-	let loading = true;
-	let error = '';
+	let { data } = $props();
 
-	onMount(async () => {
-		try {
-			const { data: { session } } = await supabase.auth.getSession();
-			const token = session?.access_token;
-
-			if (!token) {
-				error = 'Du måste vara inloggad för att se din resa';
-				loading = false;
-				return;
-			}
-
-			const headers = { 'Authorization': `Bearer ${token}` };
-
-			const [streakRes, milestonesRes, insightsRes] = await Promise.all([
-				fetch('/api/diary/streak', { headers }),
-				fetch('/api/diary/milestones', { headers }),
-				fetch('/api/diary/insights', { headers })
-			]);
-
-			if (!streakRes.ok) throw new Error('Kunde inte ladda streak');
-			if (!milestonesRes.ok) throw new Error('Kunde inte ladda milstolpar');
-			if (!insightsRes.ok) throw new Error('Kunde inte ladda insikter');
-
-			streakData = await streakRes.json();
-			milestonesData = await milestonesRes.json();
-			insightsData = await insightsRes.json();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Ett fel inträffade';
-		} finally {
-			loading = false;
-		}
-	});
-
-	function getMoodEmoji(mood: number): string {
-		if (mood >= 8) return '😊';
-		if (mood >= 6) return '🙂';
-		if (mood >= 4) return '😐';
-		if (mood >= 2) return '😔';
-		return '😢';
-	}
+	let streakData: StreakData | null = $derived(data.streak ?? null);
+	let milestonesData: MilestonesResponse | null = $derived(data.milestones ?? null);
+	let insightsData: InsightsResponse | null = $derived(data.insights ?? null);
+	let loading = false;
+	let error = $derived(
+		data.streak === null && data.milestones === null && data.insights === null
+			? 'Kunde inte ladda data. Försök ladda om sidan.'
+			: ''
+	);
 </script>
 
 <div class="journey-container">
