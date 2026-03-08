@@ -4,7 +4,7 @@
 
 	let { data } = $props<{ data: PageData }>();
 
-	$: jsonLd = {
+	const jsonLd = $derived({
 		"@context": "https://schema.org",
 		"@type": "CollectionPage",
 		"headline": data.pillar.title,
@@ -16,14 +16,14 @@
 			"url": "https://mittpsyke.se"
 		},
 		"inLanguage": "sv-SE"
-	};
+	});
 </script>
 
 <svelte:head>
 	<title>{buildTitle(data.pillar.title)}</title>
 	<link rel="canonical" href={canonical(`/guider-seo/${data.pillar.slug}`)} />
 	<meta name="description" content={data.pillar.description} />
-	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`}
+	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
 </svelte:head>
 
 <main>
