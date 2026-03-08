@@ -1,27 +1,9 @@
 <script lang="ts">
-	import { supabase } from '$lib/supabase';
-	import { goto } from '$app/navigation';
+	import { enhance } from '$app/forms';
+	import type { ActionData } from './$types';
 
-	let email = $state('');
-	let password = $state('');
-	let error = $state('');
+	let { form }: { form: ActionData } = $props();
 	let loading = $state(false);
-
-	async function handleLogin(e: Event) {
-		e.preventDefault();
-		error = '';
-		loading = true;
-
-		const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-
-		if (err) {
-			error = err.message;
-			loading = false;
-			return;
-		}
-
-		goto('/dashboard');
-	}
 </script>
 
 <svelte:head>
@@ -31,10 +13,16 @@
 <section class="container max-w-sm py-16">
 	<h1 class="text-2xl font-bold text-center mb-6">Logga in</h1>
 
-	<form onsubmit={handleLogin} class="space-y-4">
+	<form method="POST" use:enhance={() => {
+		loading = true;
+		return async ({ update }) => {
+			loading = false;
+			await update();
+		};
+	}} class="space-y-4">
 		<input
 			type="email"
-			bind:value={email}
+			name="email"
 			placeholder="E-post"
 			required
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
@@ -42,15 +30,15 @@
 		/>
 		<input
 			type="password"
-			bind:value={password}
+			name="password"
 			placeholder="Lösenord"
 			required
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
 
-		{#if error}
-			<p class="text-red-500 text-sm">{error}</p>
+		{#if form?.error}
+			<p class="text-red-500 text-sm">{form.error}</p>
 		{/if}
 
 		<button
@@ -65,5 +53,9 @@
 
 	<p class="text-center text-sm mt-4 opacity-70">
 		Inget konto? <a href="/register" class="underline">Registrera dig</a>
+	</p>
+
+	<p class="text-center text-xs mt-8 opacity-40">
+		MittPsyke ersätter inte vård. Vid akut fara ring 112 · Vårdråd 1177.
 	</p>
 </section>
