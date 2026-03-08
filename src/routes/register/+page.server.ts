@@ -11,10 +11,18 @@ export const actions: Actions = {
 			return fail(400, { error: 'E-post och lösenord krävs.' });
 		}
 
-		const { error } = await locals.supabase.auth.signUp({ email, password });
+		const { error: signUpError } = await locals.supabase.auth.signUp({ email, password });
 
-		if (error) {
-			return fail(400, { error: error.message });
+		if (signUpError) {
+			return fail(400, { error: signUpError.message });
+		}
+
+		// Automatically sign in after successful registration
+		const { error: signInError } = await locals.supabase.auth.signInWithPassword({ email, password });
+
+		if (signInError) {
+			// Account created but couldn't auto-login, send to login page
+			throw redirect(303, '/login');
 		}
 
 		throw redirect(303, '/dagbok');
