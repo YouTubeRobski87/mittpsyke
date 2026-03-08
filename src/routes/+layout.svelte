@@ -90,7 +90,7 @@
 		<meta property="og:site_name" content="MittPsyke" />
 
 		<meta property="og:url" content="https://mittpsyke.se/" />
-		<meta property="og:image" content="https://mittpsyke.se/og-image.jpg" />
+		<meta property="og:image" content="https://mittpsyke.se/og-image.png" />
 
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | Mittpsyke` : 'MittPsyke – Psykiskt stöd online'} />
