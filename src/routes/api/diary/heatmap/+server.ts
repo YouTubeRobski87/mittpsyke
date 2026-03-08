@@ -24,13 +24,32 @@ export const GET: RequestHandler = async ({ request }) => {
 		const startDateISO = startDate.toISOString().split('T')[0];
 		const endDateISO = endDate.toISOString().split('T')[0];
 
-		const { data: entries, error } = await supabase
+		// Try diary table first
+		let { data: entries, error } = await supabase
 			.from('diary')
 			.select('created_at')
 			.eq('user_id', user.id)
 			.gte('created_at', startDateISO)
 			.lte('created_at', endDateISO + 'T23:59:59Z')
 			.order('created_at', { ascending: true });
+
+		// Fallback to journal_entries if diary table doesn't exist
+		const tableMissing =
+			error?.code === 'PGRST205' ||
+			error?.code === '42P01' ||
+			(error?.message ?? '').includes("diary");
+
+		if (tableMissing) {
+			const fallback = await supabase
+				.from('journal_entries')
+				.select('created_at')
+				.eq('user_id', user.id)
+				.gte('created_at', startDateISO)
+				.lte('created_at', endDateISO + 'T23:59:59Z')
+				.order('created_at', { ascending: true });
+			entries = fallback.data;
+			error = fallback.error;
+		}
 
 		if (error) return json({ error: error.message }, { status: 500 });
 
