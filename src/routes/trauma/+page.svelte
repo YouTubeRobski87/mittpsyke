@@ -1,8 +1,8 @@
 <svelte:head>
-	<title>Stöd vid trauma – prata anonymt | MittPsyke</title>
-	<meta name="description" content="Få stöd vid trauma i ett tryggt och anonymt rum. AI-baserat samtalsstöd dygnet runt – utan krav, utan bedömning." />
-	<meta property="og:title" content="Stöd vid trauma – prata anonymt | MittPsyke" />
-	<meta property="og:description" content="Få stöd vid trauma i ett tryggt och anonymt rum. AI-baserat samtalsstöd dygnet runt." />
+	<title>Samtalsstöd vid trauma – Bearbeta i din egen takt | MittPsyke</title>
+	<meta name="description" content="Vi erbjuder samtalsstöd vid trauma i ett tryggt och anonymt rum, byggt på förståelse och tystnadsplikt. Bearbeta svåra upplevelser i din egen takt." />
+	<meta property="og:title" content="Samtalsstöd vid trauma – Bearbeta i din egen takt | MittPsyke" />
+	<meta property="og:description" content="Vi erbjuder samtalsstöd vid trauma i ett tryggt och anonymt rum, byggt på förståelse och tystnadsplikt." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	<link rel="canonical" href="https://mittpsyke.se/trauma" />
@@ -12,28 +12,26 @@
 	<div class="page-container">
 		<!-- Hero Section -->
 		<header class="hero">
-			<h1>Stöd vid trauma – ett tryggt rum för dig</h1>
+			<h1>Samtalsstöd vid trauma – Bearbeta i din egen takt</h1>
 			<p>
-				Att bära på trauma kan vara tungt och ensamt. Det du har upplevt är verkligt, och du förtjänar
-				ett tryggt rum att bearbeta det i – i din egen takt, utan att behöva förklara allt på en gång.
+				Att leva med svåra minnen kräver rätt förutsättningar. Vi erbjuder samtalsstöd vid trauma genom en plattform byggd på förståelse och tystnadsplikt.
 			</p>
 		</header>
 
 		<div class="text-block">
-			<!-- Support Text -->
 			<section class="section">
+				<h2>Professionell hjälp och anonymitet</h2>
 				<p>
-					Trauma kan ta sig många uttryck – minnesbilder som dyker upp, svårigheter att lita på
-					omgivningen, eller en känsla av att kroppen är fastlåst i det som hände. Det är normala
-					reaktioner på onormala händelser. Du är inte trasig.
+					Här kan du få stöd att hantera posttraumatisk stress och återfå kontrollen över din vardag.
+				</p>
+				<p>
+					Vår tjänst är utformad för att vara en brygga till ett bättre mående genom beprövade metoder. Du behöver aldrig förklara allt på en gång – du sätter tempot.
 				</p>
 			</section>
 
 			<section class="section">
 				<p>
-					MittPsyke erbjuder ett lugnt, anonymt utrymme där du kan tala fritt om det som tynger dig.
-					Samtalsstödet finns tillgängligt dygnet runt, utan väntetider och utan att du behöver ta dig
-					till ett kontor. Varje samtal börjar där du är.
+					Trauma kan ta sig många uttryck – minnesbilder som dyker upp, svårigheter att lita på omgivningen, eller en känsla av att kroppen är fastlåst i det som hände. Det är normala reaktioner på onormala händelser. Du är inte trasig.
 				</p>
 			</section>
 		</div>
@@ -43,7 +41,7 @@
 			<a class="cta-button" href="/chat/a">Starta ett samtal</a>
 		</div>
 
-		<!-- Additional Support Info -->
+		<!-- Callout -->
 		<aside class="callout" aria-label="Viktigt att veta">
 			<h2>Din berättelse är viktig</h2>
 			<p>Trauma behöver inte hanteras ensamt. Att sätta ord på det som hänt – även lite i taget – kan vara ett viktigt första steg mot att må bättre.</p>
@@ -76,6 +74,10 @@
 		max-width: 720px;
 	}
 
+	.section + .section {
+		margin-top: 1.5rem;
+	}
+
 	h1,
 	h2 {
 		font-family: var(--font-heading);
@@ -89,6 +91,12 @@
 		letter-spacing: -0.025em;
 		line-height: 1.08;
 		margin-bottom: 1.5rem;
+	}
+
+	h2 {
+		font-size: 1.35rem;
+		font-weight: 700;
+		margin-bottom: 0.75rem;
 	}
 
 	p {
