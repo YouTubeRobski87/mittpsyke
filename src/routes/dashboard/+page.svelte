@@ -53,7 +53,7 @@
 		}
 
 		const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
-		const candidateKeys = ['given_name', 'first_name', 'full_name', 'name'];
+		const candidateKeys = ['display_name', 'given_name', 'first_name', 'full_name', 'name'];
 
 		for (const key of candidateKeys) {
 			const value = metadata[key];
