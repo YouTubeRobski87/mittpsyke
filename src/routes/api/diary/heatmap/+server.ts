@@ -26,18 +26,19 @@ export const GET: RequestHandler = async ({ request }) => {
 
 		const { data: entries, error } = await supabase
 			.from('diary')
-			.select('date')
+			.select('created_at')
 			.eq('user_id', user.id)
-			.gte('date', startDateISO)
-			.lte('date', endDateISO)
-			.order('date', { ascending: true });
+			.gte('created_at', startDateISO)
+			.lte('created_at', endDateISO + 'T23:59:59Z')
+			.order('created_at', { ascending: true });
 
 		if (error) return json({ error: error.message }, { status: 500 });
 
 		const heatmapData: { [date: string]: number } = {};
 		if (entries && entries.length > 0) {
 			entries.forEach((entry) => {
-				heatmapData[entry.date] = (heatmapData[entry.date] || 0) + 1;
+				const date = entry.created_at.split('T')[0];
+				heatmapData[date] = (heatmapData[date] || 0) + 1;
 			});
 		}
 
