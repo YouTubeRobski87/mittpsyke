@@ -5,14 +5,14 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import type { RequestHandler } from '@sveltejs/kit';
 
 const MILESTONES = [
-	{ entries: 1, text: 'Din fÃ¶rsta dagboksanteckning', emoji: 'ðŸ“' },
-	{ entries: 3, text: 'Du bÃ¶rjar hitta en rytm', emoji: 'ðŸŽµ' },
-	{ entries: 5, text: '5 inlÃ¤gg â€“ Du Ã¤r pÃ¥ vÃ¤gen!', emoji: 'ðŸš€' },
-	{ entries: 10, text: '10 inlÃ¤gg â€“ Stark bÃ¶rjan', emoji: 'ðŸ’ª' },
-	{ entries: 25, text: '25 inlÃ¤gg â€“ En vanlig journalist!', emoji: 'ðŸ“–' },
-	{ entries: 50, text: '50 inlÃ¤gg â€“ HÃ¤lften till 100!', emoji: 'ðŸ”¥' },
-	{ entries: 100, text: '100 inlÃ¤gg â€“ Miljon tankar sparade', emoji: 'ðŸŒŸ' },
-	{ entries: 365, text: 'Ett helt Ã¥r â€“ Du Ã¤r otrolig!', emoji: 'ðŸŽ‰' }
+	{ entries: 1, text: 'Din första dagboksanteckning', emoji: '📝' },
+	{ entries: 3, text: 'Du börjar hitta en rytm', emoji: '🎵' },
+	{ entries: 5, text: '5 inlägg – Du är på vägen!', emoji: '🚀' },
+	{ entries: 10, text: '10 inlägg – Stark början', emoji: '💪' },
+	{ entries: 25, text: '25 inlägg – En vanlig journalist!', emoji: '📖' },
+	{ entries: 50, text: '50 inlägg – Hälften till 100!', emoji: '🔥' },
+	{ entries: 100, text: '100 inlägg – Miljon tankar sparade', emoji: '🌟' },
+	{ entries: 365, text: 'Ett helt år – Du är otrolig!', emoji: '🎉' }
 ];
 
 export const GET: RequestHandler = async ({ request }) => {
@@ -50,12 +50,12 @@ export const GET: RequestHandler = async ({ request }) => {
 
 		if (!nextMilestone && achieved.length > 0) {
 			const last = MILESTONES[MILESTONES.length - 1];
-			nextMilestone = { entries: last.entries * 2, text: `${last.entries * 2} inlÃ¤gg â€“ FortsÃ¤tt sÃ¥ hÃ¤r!`, achieved: false, emoji: 'âœ¨', entriesNeeded: last.entries * 2 - totalEntries };
+			nextMilestone = { entries: last.entries * 2, text: `${last.entries * 2} inlägg – Fortsätt så här!`, achieved: false, emoji: '✨', entriesNeeded: last.entries * 2 - totalEntries };
 		}
 
 		return json({
 			achieved,
-			nextMilestone: nextMilestone || { entries: 1, text: 'Skriv ditt fÃ¶rsta inlÃ¤gg!', achieved: false, emoji: 'ðŸ“', entriesNeeded: 1 },
+			nextMilestone: nextMilestone || { entries: 1, text: 'Skriv ditt första inlägg!', achieved: false, emoji: '📝', entriesNeeded: 1 },
 			totalEntries
 		});
 	} catch (err) {
