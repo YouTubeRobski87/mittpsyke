@@ -1,11 +1,16 @@
 export async function GET() {
-  // Här listar du alla dina offentliga sidor
   const pages = [
     "", 
     "trauma", 
     "dagbok", 
-    "om-mittpsyke",
-    "kontakt"
+    "angest",
+    "depression",
+    "stress",
+    "oro",
+    "nedstamdhet",
+    "ensamhet",
+    "panikattack",
+    "om-mittpsyke"
   ];
   
   const sitemap = `<?xml version="1.0" encoding="UTF-8" ?>
