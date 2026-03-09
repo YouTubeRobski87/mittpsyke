@@ -332,7 +332,7 @@
 			Akut hj&auml;lp (St&ouml;dlinjer)
 		</a>
 		<p class="mt-2 text-xs opacity-70">
-			MittPsyke &middot; Org.nr 198712284895 &middot; Enskild n&auml;ringsverksamhet &middot;
+			MittPsyke &middot; Org.nr 198712284895 &middot; Enskild näringsverksamhet &middot;
 			<a href="mailto:mittpsyke@ownit.nu" class="hover:opacity-100 transition-opacity">mittpsyke@ownit.nu</a>
 		</p>
 	</footer>

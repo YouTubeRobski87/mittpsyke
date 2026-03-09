@@ -152,12 +152,12 @@
 
 		<!-- 9) Foretagsinformation -->
 		<section class="section company-section">
-			<h2>F&ouml;retagsinformation</h2>
-			<p>MittPsyke drivs som enskild n&auml;ringsverksamhet.</p>
+			<h2>Företagsinformation</h2>
+			<p>MittPsyke drivs som enskild näringsverksamhet.</p>
 			<ul class="company-list">
-				<li><strong>F&ouml;retag:</strong> MittPsyke</li>
+				<li><strong>Företag:</strong> MittPsyke</li>
 				<li><strong>Organisationsnummer:</strong> 198712284895</li>
-				<li><strong>Verksamhetsform:</strong> Enskild n&auml;ringsverksamhet</li>
+				<li><strong>Verksamhetsform:</strong> Enskild näringsverksamhet</li>
 				<li><strong>Ansvarig:</strong> Robert Claesson</li>
 			</ul>
 
