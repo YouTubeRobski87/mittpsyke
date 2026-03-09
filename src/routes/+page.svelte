@@ -86,6 +86,31 @@
 		</div>
 	</section>
 
+	<section class="support-options" aria-label="Tre sätt att få stöd">
+		<div class="narrow support-options-inner">
+			<h2>Tre sätt att få stöd direkt</h2>
+			<p>Välj det som känns lättast just nu.</p>
+			<div class="support-grid">
+				<div class="support-card">
+					<h3>💬 Chatta</h3>
+					<p>Skriv om hur du mår och få stöd direkt i chatten. Du bestämmer tempot.</p>
+					<a href="/chat/a" class="support-button">Starta chat</a>
+				</div>
+				<div class="support-card support-card-phone">
+					<h3>📞 Telefonsamtal</h3>
+					<p>Här finns en röst du kan luta dig mot, om text känns för kantigt eller för långt bort.</p>
+					<a href="tel:+15672921889" class="support-button">Ring nu</a>
+					<div class="phone-number">+1 567 292 1889</div>
+				</div>
+				<div class="support-card">
+					<h3>📝 Dagbok</h3>
+					<p>Skriv i lugn och ro, och få en egen plats för reflektion när du behöver sortera tankar.</p>
+					<a href="/dagbok" class="support-button">Öppna dagbok</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
 
 	<section class="video-section">
 		<div class="video-inner">
@@ -160,32 +185,6 @@
 						</div>
 					</a>
 				{/each}
-			</div>
-		</div>
-	</section>
-
-	<section class="support-grid">
-		<div class="support-card">
-			<h3>💬 Chatta anonymt</h3>
-			<p>
-				Skriv om hur du m&aring;r och f&aring; st&ouml;d direkt i chatten.
-				Du best&auml;mmer tempot.
-			</p>
-			<a href="/chat/a" class="support-button">
-				Starta chat
-			</a>
-		</div>
-		<div class="support-card">
-			<h3>📞 Prata med n&aring;gon direkt</h3>
-			<p>
-				Du kan ringa och prata med en AI-baserad samtalsguide fr&aring;n MittPsyke.
-				Samtalet &auml;r anonymt och du kan prata i din egen takt.
-			</p>
-			<a href="tel:+15672921889" class="support-button">
-				Ring Samtalst&ouml;d
-			</a>
-			<div class="phone-number">
-				+1 567 292 1889
 			</div>
 		</div>
 	</section>
@@ -612,14 +611,29 @@
 		letter-spacing: 0.005em;
 	}
 
-	/* Stödkort-grid */
+	.support-options {
+		padding: 2rem 1.25rem 1.25rem;
+		background: #172330;
+	}
+
+	.support-options-inner > h2 {
+		font-size: clamp(1.35rem, 2.7vw, 1.9rem);
+		color: #f3f8fd;
+	}
+
+	.support-options-inner > p {
+		margin: 0.55rem 0 0;
+		color: #c7d6e5;
+	}
+
+	/* Stodkort-grid */
 	.support-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 		gap: 30px;
-		max-width: 900px;
-		margin: 40px auto 80px;
-		padding: 0 20px;
+		max-width: 100%;
+		margin: 1rem 0 0;
+		padding: 0;
 	}
 
 	.support-card {
@@ -646,6 +660,10 @@
 		font-weight: 400;
 		line-height: 1.7;
 		font-size: 1rem;
+	}
+
+	.support-card-phone {
+		border: 1px solid #c7d4cc;
 	}
 
 	.support-button {
@@ -808,6 +826,18 @@
 	:global(.dark) .support-card {
 		background: #1e2422;
 		color: #e8e6e2;
+	}
+
+	:global(.dark) .support-options {
+		background: #1a2129;
+	}
+
+	:global(.dark) .support-options-inner > h2 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .support-options-inner > p {
+		color: rgba(255, 255, 255, 0.65);
 	}
 
 	:global(.dark) .support-card h3 {
