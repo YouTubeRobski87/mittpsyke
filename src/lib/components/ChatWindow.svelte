@@ -24,6 +24,45 @@
 	);
 	let chatLog: HTMLDivElement;
 
+	const elevatedSupportKeywords = [
+		'för mycket',
+		'orkar inte',
+		'hopplös',
+		'hopplöst',
+		'ensam',
+		'kan inte mer',
+		'prata med någon',
+		'prata med en människa',
+		'text räcker inte',
+		'texten räcker inte'
+	];
+
+	const acuteSupportKeywords = [
+		'akut fara',
+		'självmord',
+		'ta mitt liv',
+		'vill dö',
+		'orkar inte leva',
+		'skada mig själv',
+		'skada någon annan'
+	];
+
+	function latestUserMessageContent() {
+		for (let i = messages.length - 1; i >= 0; i -= 1) {
+			const msg = messages[i];
+			if (msg.role === 'user') return msg.content.toLowerCase();
+		}
+		return '';
+	}
+
+	function supportLevel() {
+		const text = latestUserMessageContent();
+		if (!text) return 'standard';
+		if (acuteSupportKeywords.some((keyword) => text.includes(keyword))) return 'acute';
+		if (elevatedSupportKeywords.some((keyword) => text.includes(keyword))) return 'elevated';
+		return 'standard';
+	}
+
 	$effect(() => {
 		messages = initialMessages.map((message) => ({ ...message }));
 		savePromptHidden = {};
@@ -136,6 +175,17 @@
 </script>
 
 <div class="chat-container flex flex-col h-[calc(100vh-200px)] max-w-2xl mx-auto">
+	<div class="px-4 pb-2 text-right">
+		<a
+			href="https://stodlinjer.se"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="text-xs underline opacity-70 hover:opacity-100 transition-opacity"
+		>
+			Behöver du mänsklig kontakt? Se stödlinjer
+		</a>
+	</div>
+
 	<div
 		bind:this={chatLog}
 		class="chat-messages flex-1 overflow-y-auto p-4 space-y-3"
@@ -196,6 +246,39 @@
 	</div>
 
 	<div class="chat-input-area border-t border-black/8 dark:border-white/10 p-4">
+		{@const currentSupportLevel = supportLevel()}
+		{#if currentSupportLevel === 'acute'}
+			<div class="mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
+				<p class="font-medium text-rose-900 dark:text-rose-100">
+					Om du är i akut fara eller riskerar att skada dig själv eller någon annan, ring 112 direkt.
+				</p>
+				<div class="mt-2 flex flex-wrap gap-2">
+					<a href="tel:112" class="support-chip support-chip-urgent">Ring 112</a>
+					<a href="tel:1177" class="support-chip">Ring 1177</a>
+					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip">Se stödlinjer</a>
+				</div>
+			</div>
+		{:else if currentSupportLevel === 'elevated'}
+			<div class="mb-3 rounded-[var(--radius-card)] border border-amber-300/70 bg-amber-50 dark:bg-amber-900/20 px-3 py-3 text-sm">
+				<p class="text-amber-900 dark:text-amber-100">
+					Du behöver inte bära allt ensam. Här finns stödlinjer om du vill prata med någon.
+				</p>
+				<div class="mt-2 flex flex-wrap gap-2">
+					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip">Se stödlinjer</a>
+					<a href="tel:+15672921889" class="support-chip">Prata med någon</a>
+				</div>
+			</div>
+		{:else}
+			<div class="mb-3 rounded-[var(--radius-card)] border border-black/10 dark:border-white/12 bg-black/[0.02] dark:bg-white/[0.03] px-3 py-3 text-sm">
+				<p class="opacity-85">
+					Behöver du mänsklig kontakt? Här finns stödlinjer med chatt och telefon.
+				</p>
+				<div class="mt-2">
+					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip">Se stödlinjer</a>
+				</div>
+			</div>
+		{/if}
+
 		<div class="flex gap-2">
 			<textarea
 				bind:value={input}
@@ -215,17 +298,6 @@
 				Skicka
 			</button>
 		</div>
-		<p class="mt-3 sm:mt-2 text-xs opacity-60 text-center sm:text-left">
-			Behöver du akut stöd? 
-			<a
-				href="https://stodlinjer.se"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="underline opacity-75 hover:opacity-100 transition-opacity"
-			>
-				Stödlinjer
-			</a>
-		</p>
 		<div class="mt-3 text-center">
 			<a
 				href="mailto:mittpsyke@ownit.nu"
@@ -238,3 +310,37 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.support-chip {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.4rem 0.7rem;
+		border-radius: 999px;
+		border: 1px solid rgba(15, 23, 42, 0.18);
+		background: rgba(255, 255, 255, 0.85);
+		font-size: 0.78rem;
+		font-weight: 600;
+		color: #1e293b;
+		text-decoration: none;
+	}
+
+	.support-chip-urgent {
+		background: #b91c1c;
+		border-color: #b91c1c;
+		color: #fff;
+	}
+
+	:global(.dark) .support-chip {
+		border-color: rgba(255, 255, 255, 0.18);
+		background: rgba(255, 255, 255, 0.08);
+		color: #e5e7eb;
+	}
+
+	:global(.dark) .support-chip-urgent {
+		background: #dc2626;
+		border-color: #dc2626;
+		color: #fff;
+	}
+</style>
