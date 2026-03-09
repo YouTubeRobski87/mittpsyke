@@ -76,16 +76,22 @@
 	let currentSupportLevel = $derived(supportLevel());
 	let showStarterSuggestions = $derived(messages.length === 0 && input.trim().length === 0);
 
-	function trackChatEvent(
+	async function trackEvent(
 		eventName: string,
-		params: Record<string, string | number> = {}
+		data: Record<string, string | number> = {}
 	) {
 		if (!browser) return;
 		try {
-			const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
-			if (typeof gtag === 'function') {
-				gtag('event', eventName, params);
-			}
+			await fetch('/api/events', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					event: eventName,
+					category: category || null,
+					timestamp: new Date().toISOString(),
+					...data
+				})
+			});
 		} catch {
 			// Best effort: analytics must never affect chat flow.
 		}
@@ -109,11 +115,8 @@
 
 	onMount(() => {
 		if (hasTrackedOpen) return;
-		trackChatEvent('chat_open', {
-			category: category || 'unknown',
-			timestamp: new Date().toISOString()
-		});
 		hasTrackedOpen = true;
+		void trackEvent('chat_open');
 	});
 
 	function scrollToBottom() {
@@ -170,11 +173,9 @@
 			}
 
 			if (!hasTrackedFirstMessage) {
-				trackChatEvent('first_message_sent', {
-					category: category || 'unknown',
+				void trackEvent('first_message_sent', {
 					source: firstMessageSource,
-					textLength: text.length,
-					timestamp: new Date().toISOString()
+					textLength: text.length
 				});
 				hasTrackedFirstMessage = true;
 			}
@@ -210,11 +211,9 @@
 
 	function useStarterSuggestion(text: string) {
 		firstMessageSource = 'chip';
-		trackChatEvent('starter_chip_clicked', {
-			category: category || 'unknown',
+		void trackEvent('starter_chip_clicked', {
 			source: 'chip',
-			textLength: text.length,
-			timestamp: new Date().toISOString()
+			textLength: text.length
 		});
 		input = text;
 	}
