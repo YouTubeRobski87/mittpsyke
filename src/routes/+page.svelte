@@ -98,20 +98,19 @@
 			<p>Välj det som känns lättast just nu.</p>
 				<div class="support-grid">
 				<div class="support-card">
-					<h3>Chatta anonymt</h3>
-					<p>Skriv om hur du mår och få stöd i stunden. Du bestämmer tempot.</p>
+					<h3>Börja anonymt direkt</h3>
+					<p>Du kan skriva av dig och få stöd i stunden utan att behöva prestera eller förklara allt från början.</p>
 					<a href="/chat/a" class="support-button">Starta chat</a>
 				</div>
 				<div class="support-card support-card-phone">
-					<h3>Telefonsamtal</h3>
-					<p>Här finns en röst du kan luta dig mot, om text känns för kantigt eller för långt bort.</p>
-					<a href="tel:+15672921889" class="support-button">Ring nu</a>
-					<div class="phone-number">+1 567 292 1889</div>
+					<h3>Spara din resa över tid</h3>
+					<p>Med konto får du en egen plats för dagbok, historik och framsteg så att du kan följa hur måendet förändras över tid.</p>
+					<a href="/register" class="support-button">Skapa konto</a>
 				</div>
 				<div class="support-card">
-					<h3>Dagbok och reflektion</h3>
-					<p>Skriv i lugn och ro och samla dina tankar i din egen plats över tid.</p>
-					<a href="/dagbok" class="support-button">Öppna dagbok</a>
+					<h3>Hitta väg vidare vid behov</h3>
+					<p>MittPsyke ersätter inte vård, men kan vara ett första steg för att landa, sortera tankar och hitta mänskligt stöd.</p>
+					<a href="https://stodlinjer.se" class="support-button" rel="noopener noreferrer" target="_blank">Se stödlinjer</a>
 				</div>
 				</div>
 				<div class="support-path">
@@ -132,18 +131,19 @@
 			<section class="account-value" aria-label="Varför skapa konto">
 				<div class="narrow account-value-inner">
 					<div>
-						<h2>Skapa konto för en egen plats att återvända till</h2>
-						<p>Du kan börja anonymt utan konto. Med konto får du kontinuitet med sparad historik, dagbok och framsteg i samma vy.</p>
+						<h2>När du vill ha mer än ett samtal i stunden</h2>
+						<p>Du kan börja anonymt direkt. Om du vill spara det som betyder något, skriva i dagboken och följa mönster över tid kan du skapa en egen plats i MittPsyke.</p>
 					</div>
 					<div class="account-value-list">
-						<p><strong>Spara din resa:</strong> behåll chatthistorik och dagboksinlägg.</p>
-						<p><strong>Följ mönster över tid:</strong> se statistik och utveckling i lugn takt.</p>
-						<p><strong>Kom tillbaka imorgon:</strong> fortsätt där du slutade, när du behöver stöd igen.</p>
+						<p><strong>Dagbok i din egen takt:</strong> skriv när du behöver landa.</p>
+						<p><strong>Sparad historik och framsteg:</strong> se vad som förändras över tid.</p>
+						<p><strong>En lugn plats att återvända till:</strong> stöd i stunden, struktur över tid.</p>
 					</div>
 					<div class="hero-actions">
 						<a href="/register" class="hero-cta hero-cta-primary">Skapa konto</a>
 						<a href="/om-mittpsyke" class="hero-cta hero-cta-secondary">Läs hur det fungerar</a>
 					</div>
+					<p class="account-return-note">Inte bara för idag. Kom tillbaka i din egen takt och följ det som förändras över tid.</p>
 				</div>
 			</section>
 
@@ -231,13 +231,18 @@
 		<div class="narrow intro-grid">
 			<img src="/assets/home/Tryggplats.png" alt="Trygg plats" loading="lazy" />
 			<div>
-				<h2>Ett tryggt rum med tydliga gränser</h2>
+				<h2>Tryggt, varsamt och tydligt avgränsat</h2>
 				<p>
-					MittPsyke ger ett lugnt tempo, respektfull ton och en plats att landa när tankarna blir tunga.
+					MittPsyke är ett digitalt samtalsstöd för reflektion och stöd i vardagen. Du bestämmer tempot, och allt börjar i lugn takt.
 				</p>
 				<p>
-					Vi ställer inte diagnoser och ersätter inte vård. När du behöver mänsklig kontakt finns Stödlinjer som väg vidare.
+					Tjänsten ställer inte diagnoser och ersätter inte vård, men kan hjälpa dig att stanna upp, sätta ord på det som känns och hitta nästa steg.
 				</p>
+				<ul>
+					<li>Du bestämmer tempot</li>
+					<li>Ingen diagnos eller behandling</li>
+					<li>Väg vidare till mänskligt stöd vid behov</li>
+				</ul>
 			</div>
 		</div>
 	</section>
@@ -715,6 +720,12 @@
 		font-size: 0.95rem;
 	}
 
+	.account-return-note {
+		margin: 0.2rem 0 0;
+		color: #54626b;
+		font-size: 0.95rem;
+	}
+
 	/* Stodkort-grid */
 	.support-grid {
 		display: grid;
@@ -979,6 +990,10 @@
 		background: #222830;
 		border-color: rgba(255, 255, 255, 0.12);
 		color: rgba(255, 255, 255, 0.82);
+	}
+
+	:global(.dark) .account-return-note {
+		color: rgba(255, 255, 255, 0.72);
 	}
 
 	:global(.dark) .support-path-card {
