@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { onMount } from 'svelte';
 	import { portals } from '$lib/data/portals';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
@@ -38,10 +38,10 @@
 </script>
 
 <svelte:head>
-	<title>Psykiskt stöd online | Verktyg mot ångest | Mittpsyke.se</title>
-	<meta name="description" content="Mittpsyke erbjuder anonymt samtalsstöd online och digitala verktyg mot ångest och trauma. Starta din dagbok eller chatta med oss idag." />
-	<meta property="og:title" content="Psykiskt stöd online | Verktyg mot ångest | Mittpsyke.se" />
-	<meta property="og:description" content="Mittpsyke erbjuder anonymt samtalsstöd online och digitala verktyg mot ångest och trauma. Starta din dagbok eller chatta med oss idag." />
+	<title>Psykiskt stÃ¶d online | Verktyg mot Ã¥ngest | Mittpsyke.se</title>
+	<meta name="description" content="Mittpsyke erbjuder anonymt samtalsstÃ¶d online och digitala verktyg mot Ã¥ngest och trauma. Starta din dagbok eller chatta med oss idag." />
+	<meta property="og:title" content="Psykiskt stÃ¶d online | Verktyg mot Ã¥ngest | Mittpsyke.se" />
+	<meta property="og:description" content="Mittpsyke erbjuder anonymt samtalsstÃ¶d online och digitala verktyg mot Ã¥ngest och trauma. Starta din dagbok eller chatta med oss idag." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	<link rel="canonical" href="https://mittpsyke.se/" />
@@ -57,14 +57,15 @@
 			aria-hidden="true"
 		/>
 		<div class="hero-content">
-			<h1>Ett lugnt digitalt stödrum för dina tankar</h1>
+			<h1>Ett lugnt digitalt stödrum för tankar som behöver plats</h1>
 			<p>
-				Prata, reflektera och hitta rätt stöd i din egen takt. MittPsyke är ett första steg när livet känns tungt – inte vård, inte terapi och ingen diagnos.
+				Börja anonymt direkt i chatten. Skapa konto när du vill spara dagbok, följa mönster över tid och komma tillbaka till din egen plats.
 			</p>
 			<div class="hero-actions">
 				<a href="/chat/a" class="hero-cta hero-cta-primary">Prata anonymt nu</a>
-				<a href="/dagbok" class="hero-cta hero-cta-secondary">Skriv i dagboken</a>
+				<a href="/register" class="hero-cta hero-cta-secondary">Skapa konto och spara din resa</a>
 			</div>
+			<p class="hero-subnote">Ingen diagnos. Ingen behandling. Ett tryggt första steg med väg vidare vid behov.</p>
 			<p class="hero-support-link">
 				Behöver du mänsklig kontakt? <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Öppna Stödlinjer</a>
 			</p>
@@ -72,55 +73,74 @@
 	</section>
 
 
-	<section class="hero-clarity" aria-label="Så fungerar MittPsyke">
+	<section class="hero-clarity" aria-label="SÃ¥ fungerar MittPsyke">
 		<div class="narrow hero-clarity-inner">
 			<div class="clarity-item">
 				<h2>1. Prata och reflektera</h2>
-				<p>Du kan börja i chatten eller dagboken och sätta ord på det som känns tungt.</p>
+				<p>Du kan bÃ¶rja i chatten eller dagboken och sÃ¤tta ord pÃ¥ det som kÃ¤nns tungt.</p>
 			</div>
 			<div class="clarity-item">
-				<h2>2. Hitta mänskligt stöd</h2>
-				<p>I MittPsyke finns Stödlinjer när du vill gå vidare till mänsklig kontakt.</p>
+				<h2>2. Hitta mÃ¤nskligt stÃ¶d</h2>
+				<p>I MittPsyke finns StÃ¶dlinjer nÃ¤r du vill gÃ¥ vidare till mÃ¤nsklig kontakt.</p>
 			</div>
 			<div class="clarity-item">
-				<h2>3. Akut hjälp vid behov</h2>
-				<p>Vid akut fara ska du alltid ringa 112. MittPsyke ersätter inte vård.</p>
+				<h2>3. Akut hjÃ¤lp vid behov</h2>
+				<p>Vid akut fara ska du alltid ringa 112. MittPsyke ersÃ¤tter inte vÃ¥rd.</p>
 			</div>
 		</div>
 	</section>
 
-	<section class="support-options" aria-label="Tre sätt att få stöd">
+	<section class="support-options" aria-label="Tre sÃ¤tt att fÃ¥ stÃ¶d">
 		<div class="narrow support-options-inner">
-			<h2>Tre sätt att få stöd direkt</h2>
-			<p>Välj det som känns lättast just nu.</p>
+			<h2>Tre sÃ¤tt att fÃ¥ stÃ¶d direkt</h2>
+			<p>VÃ¤lj det som kÃ¤nns lÃ¤ttast just nu.</p>
 				<div class="support-grid">
 				<div class="support-card">
-					<h3>💬 Chatta</h3>
-					<p>Skriv om hur du mår och få stöd direkt i chatten. Du bestämmer tempot.</p>
+					<h3>ðŸ’¬ Chatta</h3>
+					<p>Skriv om hur du mÃ¥r och fÃ¥ stÃ¶d direkt i chatten. Du bestÃ¤mmer tempot.</p>
 					<a href="/chat/a" class="support-button">Starta chat</a>
 				</div>
 				<div class="support-card support-card-phone">
-					<h3>📞 Telefonsamtal</h3>
-					<p>Här finns en röst du kan luta dig mot, om text känns för kantigt eller för långt bort.</p>
+					<h3>ðŸ“ž Telefonsamtal</h3>
+					<p>HÃ¤r finns en rÃ¶st du kan luta dig mot, om text kÃ¤nns fÃ¶r kantigt eller fÃ¶r lÃ¥ngt bort.</p>
 					<a href="tel:+15672921889" class="support-button">Ring nu</a>
 					<div class="phone-number">+1 567 292 1889</div>
 				</div>
 				<div class="support-card">
-					<h3>📝 Dagbok</h3>
-					<p>Skriv i lugn och ro, och få en egen plats för reflektion när du behöver sortera tankar.</p>
-					<a href="/dagbok" class="support-button">Öppna dagbok</a>
+					<h3>ðŸ“ Dagbok</h3>
+					<p>Skriv i lugn och ro, och fÃ¥ en egen plats fÃ¶r reflektion nÃ¤r du behÃ¶ver sortera tankar.</p>
+					<a href="/dagbok" class="support-button">Ã–ppna dagbok</a>
 				</div>
 				</div>
 				<div class="support-path">
 					<a class="support-path-card" href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">
-						<h3>Stödlinjer i MittPsyke</h3>
-						<p>Samlad väg vidare till mänskligt stöd när du vill prata med någon.</p>
+						<h3>StÃ¶dlinjer i MittPsyke</h3>
+						<p>Samlad vÃ¤g vidare till mÃ¤nskligt stÃ¶d nÃ¤r du vill prata med nÃ¥gon.</p>
 					</a>
 					<div class="support-path-card support-path-card-urgent">
-						<h3>Akut hjälp</h3>
-						<p>Vid akut fara eller självmordstankar, ring alltid 112 direkt.</p>
+						<h3>Akut hjÃ¤lp</h3>
+						<p>Vid akut fara eller sjÃ¤lvmordstankar, ring alltid 112 direkt.</p>
 						<a href="tel:112" class="support-button">Ring 112</a>
 					</div>
+				</div>
+			</div>
+		</section>
+
+
+		<section class="account-value" aria-label="Varför skapa konto">
+			<div class="narrow account-value-inner">
+				<div>
+					<h2>Skapa konto för din egen återhämtningsyta</h2>
+					<p>Du kan börja anonymt utan konto. När du vill ha kontinuitet kan du spara historik, dagbok och framsteg på ett ställe.</p>
+				</div>
+				<div class="account-value-list">
+					<p><strong>Spara din resa:</strong> behåll chatthistorik och dagboksinlägg.</p>
+					<p><strong>Följ ditt mående:</strong> se mönster, statistik och utveckling över tid.</p>
+					<p><strong>Kom tillbaka enkelt:</strong> fortsätt i din egen takt, när du behöver det.</p>
+				</div>
+				<div class="hero-actions">
+					<a href="/register" class="hero-cta hero-cta-primary">Skapa konto</a>
+					<a href="/framsteg" class="hero-cta hero-cta-secondary">Se hur framsteg fungerar</a>
 				</div>
 			</div>
 		</section>
@@ -133,7 +153,7 @@
 			<div class="video-wrapper">
 				<video controls preload="none" poster="/og-image.png">
 					<source src="/intro.mp4" type="video/mp4" />
-					Din webbläsare stöder inte videouppspelning.
+					Din webblÃ¤sare stÃ¶der inte videouppspelning.
 				</video>
 			</div>
 		</div>
@@ -141,14 +161,14 @@
 
 	<section class="seo-intro">
 		<div class="narrow seo-inner">
-			<h2>Verktyg mot ångest och personlig utveckling</h2>
+			<h2>Verktyg mot Ã¥ngest och personlig utveckling</h2>
 			<p>
-				Att hitta rätt verktyg mot ångest online kan vara avgörande. Genom vår digitala dagbok och chattfunktion kan du i din egen takt bearbeta tankar och känslor. Vi erbjuder även specialiserat <a href="/trauma">samtalsstöd vid trauma</a> för dig som behöver bearbeta svåra upplevelser i en trygg miljö.
+				Att hitta rÃ¤tt verktyg mot Ã¥ngest online kan vara avgÃ¶rande. Genom vÃ¥r digitala dagbok och chattfunktion kan du i din egen takt bearbeta tankar och kÃ¤nslor. Vi erbjuder Ã¤ven specialiserat <a href="/trauma">samtalsstÃ¶d vid trauma</a> fÃ¶r dig som behÃ¶ver bearbeta svÃ¥ra upplevelser i en trygg miljÃ¶.
 			</p>
 			<ul class="seo-features">
-				<li><strong>Anonymitet &amp; Trygghet:</strong> Vi värnar om din integritet med tystnadsplikt.</li>
-				<li><strong>Enkelt att använda:</strong> Din personliga dashboard ger dig full överblick över din utveckling.</li>
-				<li><strong>Erfarenhet som grund:</strong> Plattformen är byggd på förståelse och verklig expertis inom psykisk hälsa.</li>
+				<li><strong>Anonymitet &amp; Trygghet:</strong> Vi vÃ¤rnar om din integritet med tystnadsplikt.</li>
+				<li><strong>Enkelt att anvÃ¤nda:</strong> Din personliga dashboard ger dig full Ã¶verblick Ã¶ver din utveckling.</li>
+				<li><strong>Erfarenhet som grund:</strong> Plattformen Ã¤r byggd pÃ¥ fÃ¶rstÃ¥else och verklig expertis inom psykisk hÃ¤lsa.</li>
 			</ul>
 		</div>
 	</section>
@@ -236,7 +256,7 @@
 					M&aring;let &auml;r inte snabba svar, utan ett h&aring;llbart samtal d&auml;r du kan landa och ta n&auml;sta steg.
 				</p>
 			</div>
-			<img src="/assets/home/Digitalastod.PNG" alt="Digitalt stöd" loading="lazy" />
+			<img src="/assets/home/Digitalastod.PNG" alt="Digitalt stÃ¶d" loading="lazy" />
 		</div>
 	</section>
 
@@ -354,6 +374,12 @@
 		margin: 0.7rem 0 0;
 		font-size: 0.95rem;
 		color: rgba(255, 255, 255, 0.86);
+	}
+
+	.hero-subnote {
+		margin: 0.75rem auto 0;
+		font-size: 0.88rem;
+		color: rgba(255, 255, 255, 0.78);
 	}
 
 	.hero-support-link a {
@@ -652,6 +678,41 @@
 		color: #c7d6e5;
 	}
 
+	.account-value {
+		padding: 1.9rem 1.25rem 2.4rem;
+		background: #f3f6f8;
+		color: #263036;
+	}
+
+	.account-value-inner {
+		display: grid;
+		gap: 0.85rem;
+	}
+
+	.account-value-inner h2 {
+		font-size: clamp(1.3rem, 2.6vw, 1.85rem);
+	}
+
+	.account-value-inner > div > p {
+		margin: 0.65rem 0 0;
+		color: #516069;
+	}
+
+	.account-value-list {
+		display: grid;
+		gap: 0.45rem;
+	}
+
+	.account-value-list p {
+		margin: 0;
+		padding: 0.75rem 0.85rem;
+		background: #ffffff;
+		border: 1px solid #dce5eb;
+		border-radius: 12px;
+		color: #44525a;
+		font-size: 0.95rem;
+	}
+
 	/* Stodkort-grid */
 	.support-grid {
 		display: grid;
@@ -901,6 +962,21 @@
 
 	:global(.dark) .support-options-inner > p {
 		color: rgba(255, 255, 255, 0.65);
+	}
+
+	:global(.dark) .account-value {
+		background: #171b20;
+		color: #ece7e1;
+	}
+
+	:global(.dark) .account-value-inner > div > p {
+		color: rgba(255, 255, 255, 0.72);
+	}
+
+	:global(.dark) .account-value-list p {
+		background: #222830;
+		border-color: rgba(255, 255, 255, 0.12);
+		color: rgba(255, 255, 255, 0.82);
 	}
 
 	:global(.dark) .support-path-card {
