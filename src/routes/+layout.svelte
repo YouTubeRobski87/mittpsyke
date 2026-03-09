@@ -8,6 +8,18 @@
 	const UNDER_CONSTRUCTION = false;
 
 	let { children } = $props();
+	const organizationJsonLd = {
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		name: 'MittPsyke',
+		url: 'https://www.mittpsyke.se',
+		email: 'mittpsyke@ownit.nu',
+		founder: {
+			'@type': 'Person',
+			name: 'Robert Claesson'
+		},
+		identifier: '198712284895'
+	};
 
 	const isChat = $derived(Boolean(page.route.id?.includes('/chat/')));
 
@@ -100,6 +112,7 @@
 			name="twitter:description"
 			content={page.data?.description || 'Anonymt samtalsstöd och digitala verktyg för din psykiska hälsa.'}
 		/>
+		{@html `<script type="application/ld+json">${JSON.stringify(organizationJsonLd)}<\/script>`}
 	{/if}
 </svelte:head>
 
@@ -331,10 +344,12 @@
 		>
 			Akut hj&auml;lp (St&ouml;dlinjer)
 		</a>
-		<p class="mt-2 text-xs opacity-70">
-			MittPsyke &middot; Org.nr 198712284895 &middot; Enskild näringsverksamhet &middot;
-			<a href="mailto:mittpsyke@ownit.nu" class="hover:opacity-100 transition-opacity">mittpsyke@ownit.nu</a>
-		</p>
+		<div class="footer-company mt-2 text-xs opacity-70">
+			<p>&copy; MittPsyke</p>
+			<p>Enskild näringsverksamhet</p>
+			<p>Org.nr: 198712284895</p>
+			<p><a href="mailto:mittpsyke@ownit.nu" class="hover:opacity-100 transition-opacity">mittpsyke@ownit.nu</a></p>
+		</div>
 	</footer>
 	</div>
 {/if}
@@ -384,5 +399,9 @@
 		font-weight: 400;
 		font-size: 0.95rem;
 		line-height: 1.6;
+	}
+
+	.footer-company p {
+		margin: 0.1rem 0;
 	}
 </style>

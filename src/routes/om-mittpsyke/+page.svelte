@@ -150,25 +150,41 @@
 			</ul>
 		</section>
 
-		<!-- 9) Foretagsinformation -->
-		<section class="section company-section">
-			<h2>Företagsinformation</h2>
+		<!-- 9) Företagsinformation -->
+		<section class="section company-section" aria-labelledby="foretagsinformation">
+			<h2 id="foretagsinformation">Företagsinformation</h2>
 			<p>MittPsyke drivs som enskild näringsverksamhet.</p>
-			<ul class="company-list">
-				<li><strong>Företag:</strong> MittPsyke</li>
-				<li><strong>Organisationsnummer:</strong> 198712284895</li>
-				<li><strong>Verksamhetsform:</strong> Enskild näringsverksamhet</li>
-				<li><strong>Ansvarig:</strong> Robert Claesson</li>
-			</ul>
+
+			<dl class="company-list">
+				<div class="company-row">
+					<dt>Företag:</dt>
+					<dd>MittPsyke</dd>
+				</div>
+				<div class="company-row">
+					<dt>Organisationsnummer:</dt>
+					<dd>198712284895</dd>
+				</div>
+				<div class="company-row">
+					<dt>Verksamhetsform:</dt>
+					<dd>Enskild näringsverksamhet</dd>
+				</div>
+				<div class="company-row">
+					<dt>Ansvarig:</dt>
+					<dd>Robert Claesson</dd>
+				</div>
+			</dl>
 
 			<h3>Kontakt</h3>
-			<ul class="company-list">
-				<li><strong>E-post:</strong> <a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a></li>
-				<li>
+			<address class="company-address">
+				<p>
+					<strong>E-post:</strong>
+					<a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a>
+				</p>
+				<p>
 					<strong>Webbplats:</strong>
 					<a href="https://www.mittpsyke.se" target="_blank" rel="noopener noreferrer">https://www.mittpsyke.se</a>
-				</li>
-			</ul>
+				</p>
+			</address>
 		</section>
 	</div>
 </main>
@@ -369,15 +385,35 @@
 	}
 
 	.company-list {
-		list-style: none;
-		padding: 0;
 		margin: 0.55rem 0 0;
+		display: grid;
+		gap: 0.45rem;
+	}
+
+	.company-row {
+		display: grid;
+		grid-template-columns: minmax(160px, auto) 1fr;
+		gap: 0.6rem;
+	}
+
+	.company-list dt {
+		font-weight: 600;
+		margin: 0;
+	}
+
+	.company-list dd {
+		margin: 0;
+	}
+
+	.company-address {
+		margin: 0.4rem 0 0;
+		font-style: normal;
 		display: grid;
 		gap: 0.35rem;
 	}
 
-	.company-list strong {
-		font-weight: 600;
+	.company-address p {
+		margin: 0;
 	}
 
 	@media (min-width: 760px) {
@@ -403,6 +439,11 @@
 		p,
 		li {
 			font-size: 1.02rem;
+		}
+
+		.company-row {
+			grid-template-columns: 1fr;
+			gap: 0.12rem;
 		}
 	}
 
