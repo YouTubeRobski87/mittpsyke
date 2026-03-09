@@ -62,7 +62,7 @@
 				Prata, reflektera och hitta rätt stöd i din egen takt. MittPsyke är ett första steg när livet känns tungt – inte vård, inte terapi och ingen diagnos.
 			</p>
 			<div class="hero-actions">
-				<a href="/chat/a" class="hero-cta hero-cta-primary">Börja prata i chatten</a>
+				<a href="/chat/a" class="hero-cta hero-cta-primary">Prata anonymt nu</a>
 				<a href="/dagbok" class="hero-cta hero-cta-secondary">Skriv i dagboken</a>
 			</div>
 		</div>
