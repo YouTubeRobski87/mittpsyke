@@ -20,9 +20,9 @@ export const GET: RequestHandler = async ({ request }) => {
 
 		const { data: entries, error } = await supabase
 			.from('diary')
-			.select('date')
+			.select('created_at')
 			.eq('user_id', user.id)
-			.order('date', { ascending: false });
+			.order('created_at', { ascending: false });
 
 		if (error) return json({ error: error.message }, { status: 500 });
 
@@ -31,7 +31,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		}
 
 		const entryDates = entries
-			.map((e) => new Date(e.date).toDateString())
+			.map((e) => new Date(e.created_at).toDateString())
 			.filter((date, index, self) => self.indexOf(date) === index);
 
 		const today = new Date();

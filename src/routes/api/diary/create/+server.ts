@@ -10,15 +10,6 @@ import type {
 	DiaryRecord
 } from '$lib/types';
 
-type LegacyJournalRow = {
-	id: string;
-	user_id: string;
-	content: string;
-	mood: string | null;
-	tags: string[] | null;
-	created_at: string;
-};
-
 function errorResponse(message: string, status: number) {
 	const body: CreateDiaryErrorResponse = { success: false, error: message };
 	return json(body, { status });
@@ -135,52 +126,18 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json(response, { status: 200 });
 	}
 
+	// We intentionally do not insert into legacy journal_entries anymore.
+	// Writing to one table keeps Dagbok and Framsteg counters consistent.
 	const tableMissing =
 		insertError?.code === 'PGRST205' ||
 		insertError?.code === '42P01' ||
 		(insertError?.message ?? '').includes("Could not find the table 'public.diary'");
 
 	if (tableMissing) {
-		const { data: legacyInserted, error: legacyInsertError } = await supabase
-			.from('journal_entries')
-			.insert({
-				user_id: user.id,
-				content: validated.data.text,
-				mood: validated.data.mood,
-				tags: validated.data.tags
-			})
-			.select('id, user_id, content, mood, tags, created_at')
-			.single();
-
-		if (legacyInsertError || !legacyInserted) {
-			console.error('Fallback insert into journal_entries failed:', legacyInsertError);
-			const legacyTableMissing =
-				legacyInsertError?.code === 'PGRST205' ||
-				legacyInsertError?.code === '42P01' ||
-				(legacyInsertError?.message ?? '').includes("Could not find the table 'public.journal_entries'");
-			if (legacyTableMissing) {
-				return errorResponse(
-					`Databastabell saknas i Supabase-projektet "${projectRef}". Kontrollera att SUPABASE_URL/PUBLIC_SUPABASE_URL pekar mot projektet där "diary" skapades.`,
-					500
-				);
-			}
-			return errorResponse(legacyInsertError?.message ?? 'Could not save note.', 500);
-		}
-
-		const legacy = legacyInserted as LegacyJournalRow;
-		const response: CreateDiarySuccessResponse = {
-			success: true,
-			diary: {
-				id: legacy.id,
-				user_id: legacy.user_id,
-				text: legacy.content,
-				mood: legacy.mood,
-				tags: legacy.tags,
-				created_at: legacy.created_at
-			}
-		};
-
-		return json(response, { status: 200 });
+		return errorResponse(
+			`Databastabell saknas i Supabase-projektet "${projectRef}". Kontrollera att SUPABASE_URL/PUBLIC_SUPABASE_URL pekar mot projektet där "diary" skapades.`,
+			500
+		);
 	}
 
 	if (insertError || !inserted) {
@@ -192,5 +149,3 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 	return errorResponse('Could not save note.', 500);
 };
-
-
