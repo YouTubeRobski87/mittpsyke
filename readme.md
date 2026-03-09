@@ -1,252 +1,78 @@
+﻿# MittPsyke
 
-# 🧠 MittPsyke
-
-![Status](https://img.shields.io/badge/status-active-success)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![SvelteKit](https://img.shields.io/badge/SvelteKit-framework-orange)
-![Supabase](https://img.shields.io/badge/Supabase-backend-green)
-![Vercel](https://img.shields.io/badge/Vercel-deploy-black)
+![SvelteKit](https://img.shields.io/badge/SvelteKit-1.x-ff3e00)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ecf8e)
+![Vercel](https://img.shields.io/badge/Vercel-Deployed-black)
+![Status](https://img.shields.io/badge/status-active-success)
 
-**MittPsyke** är en svensk digital plattform för psykiskt välmående där människor kan
-skriva av sig, reflektera och prata anonymt.
+MittPsyke is a Swedish mental wellbeing platform where users can talk anonymously with AI, write a personal diary, track emotional progress, and find support lines.
 
-Plattformen kombinerar:
+## Demo
 
-- 🤖 AI-baserade samtal
-- 📓 personlig dagbok
-- 📈 framsteg & insikter
-- ☎️ stödlinjer och resurser
+Live site: [https://www.mittpsyke.se](https://www.mittpsyke.se)
 
-Målet är att skapa en låg tröskel till stöd när tankarna känns tunga.
+## Screenshots
 
----
+### Home
+<p align="center">
+  <img src="docs/screenshots/home.png" width="900" alt="MittPsyke home">
+</p>
 
-# 🌐 Demo
+### Chat
+<p align="center">
+  <img src="docs/screenshots/chat.png" width="900" alt="MittPsyke chat">
+</p>
 
-**Live:**  
-https://www.mittpsyke.se
+### Diary
+<p align="center">
+  <img src="docs/screenshots/diary.png" width="900" alt="MittPsyke diary">
+</p>
 
----
+### Progress
+<p align="center">
+  <img src="docs/screenshots/progress.png" width="900" alt="MittPsyke progress">
+</p>
 
-# 📸 Screenshots
+## Features
 
-## Startsida
-![Start](docs/screenshots/home.png)
+- **AI conversation support**: Anonymous AI-guided conversations for reflection and emotional support.
+- **Diary journaling**: Personal diary entries for thoughts, feelings, and everyday events.
+- **Progress tracking**: Streaks, milestones, and charts to follow emotional patterns over time.
+- **Support lines**: Quick access to important support contacts.
 
-## AI-samtal
-![Chat](docs/screenshots/chat.png)
+## Tech Stack
 
-## Dagbok
-![Diary](docs/screenshots/diary.png)
-
-## Framsteg
-![Progress](docs/screenshots/progress.png)
-
-*(lägg screenshots i `/docs/screenshots/`)*
-
----
-
-# ✨ Funktioner
-
-## 🤖 AI Samtal
-Användare kan prata anonymt med ett AI‑baserat samtalsstöd.
-
-Kategorier:
-
-- 💙 Ångest
-- 🌧️ Depression
-- 🛡️ Trauma
-
-AI:n är designad för att:
-
-- vara lugn
-- validera känslor
-- hjälpa användaren reflektera
-
----
-
-## 📓 Dagbok
-
-Personlig journaling med:
-
-- känsloval
-- textinlägg
-- historik
-
-Funktioner:
-
-- skriv av dig
-- följ känslotrender
-- reflektera över tid
-
----
-
-## 📈 Framsteg
-
-Visualisering av användarens resa:
-
-- streak (dagar i rad)
-- aktivitetskarta
-- milstolpar
-- känslotrend
-
----
-
-## ☎️ Stödlinjer
-
-Snabb tillgång till svenska hjälporganisationer.
-
-Exempel:
-
-- Mind
-- Jourhavande medmänniska
-- BRIS
-- 1177
-
----
-
-# 🎯 Vision
-
-MittPsyke ska fungera som en digital första plats när någon mår dåligt.
-
-Istället för att vara ensam kan man:
-
-1. skriva
-2. reflektera
-3. prata
-
-och känna sig mindre ensam i det.
-
----
-
-# 🧩 Tech Stack
-
-Frontend
-
+### Frontend
 - SvelteKit
 - TailwindCSS
 - Chart.js
 
-Backend
-
+### Backend
 - Supabase
 - PostgreSQL
-- API routes
 
-AI
-
+### AI
 - OpenAI API
 
-Deployment
-
+### Deployment
 - Vercel
 
----
+## Installation
 
-# 📂 Projektstruktur
-
-```
-src/
-routes/
-chat/
-dagbok/
-framsteg/
-
-lib/
-supabase.ts
-
-static/
-assets/
-```
-
----
-
-# ⚙️ Installation
-
-Clone repo:
-
-```
-git clone https://github.com/YouTubeRobski87/mittpsyke-main.git
-```
-
-Install dependencies:
-
-```
+```bash
+git clone <repo-url>
+cd mittpsyke-main
 npm install
-```
-
-Start dev server:
-
-```
 npm run dev
 ```
 
-Öppna sedan i webbläsaren:
-
-```
-http://localhost:5173
-```
-
----
-
-# 🔐 Säkerhet
-
-MittPsyke använder:
+## Security
 
 - Supabase authentication
 - Row Level Security (RLS)
-- krypterad HTTPS via Vercel
+- HTTPS
 
-Användardata är skyddad och isolerad per konto.
+## Disclaimer
 
----
-
-# 📈 SEO
-
-Projektet är designat för att hjälpa människor hitta stöd via Google.
-
-Exempel på sökningar:
-
-- ångest på kvällen
-- någon att prata med anonymt
-- panikattack vad göra
-
----
-
-# ⚠️ Ansvarsinfo
-
-MittPsyke är ett digitalt samtalsstöd.
-
-Det ersätter inte:
-
-- läkare
-- psykolog
-- professionell vård
-
-Vid akut fara ring **112**.
-
----
-
-# 🤝 Bidra
-
-Förslag, idéer och förbättringar är välkomna.
-
-1. Fork repo
-2. Skapa branch
-3. Gör ändringar
-4. Skicka PR
-
----
-
-# 📜 License
-
-MIT License
-
----
-
-# 💚 Tack
-
-Projektet är skapat för att hjälpa människor känna sig mindre ensamma.
-
-Om MittPsyke hjälper någon att ta ett första steg
-har det redan gjort något viktigt.
+MittPsyke is a digital support tool and is not a replacement for professional healthcare, therapy, or medical advice. In emergencies, call **112**.
