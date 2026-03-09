@@ -1,3 +1,32 @@
+<script lang="ts">
+	const jsonLd = {
+		"@context": "https://schema.org",
+		"@graph": [
+			{
+				"@type": "BreadcrumbList",
+				"itemListElement": [
+					{ "@type": "ListItem", "position": 1, "name": "Hem", "item": "https://www.mittpsyke.se/" },
+					{ "@type": "ListItem", "position": 2, "name": "Dagbok", "item": "https://www.mittpsyke.se/dagbok" }
+				]
+			},
+			{
+				"@type": "WebApplication",
+				"name": "MittPsyke Dagbok",
+				"url": "https://www.mittpsyke.se/dagbok",
+				"description": "Digitalt verktyg mot ångest – skriv din personliga dagbok och följ ditt mående med visuell statistik.",
+				"applicationCategory": "HealthApplication",
+				"operatingSystem": "Web",
+				"offers": { "@type": "Offer", "price": "0", "priceCurrency": "SEK" },
+				"publisher": {
+					"@type": "Organization",
+					"name": "MittPsyke",
+					"url": "https://www.mittpsyke.se"
+				}
+			}
+		]
+	};
+</script>
+
 ﻿<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { loadDiaryEntries, setDiaryEntries, type DiaryEntry } from '$lib/state/diary';
@@ -847,6 +876,10 @@
 		});
 	}
 </script>
+
+<svelte:head>
+	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
+</svelte:head>
 
 {#if loading}
 	<div class="container py-16 text-center opacity-60">Laddar...</div>
