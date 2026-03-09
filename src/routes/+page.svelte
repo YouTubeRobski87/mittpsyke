@@ -57,16 +57,18 @@
 			aria-hidden="true"
 		/>
 		<div class="hero-content">
-			<h1>Ett lugnt digitalt stödrum för tankar som behöver plats</h1>
+			<h1>Ett tryggt rum för att landa, skriva av dig och börja i din egen takt</h1>
 			<p>
-				Börja anonymt direkt i chatten. Skapa konto när du vill spara dagbok, följa mönster över tid och komma tillbaka till din egen plats.
+				Prata anonymt när du behöver stöd i stunden. Skapa konto om du vill spara din dagbok, följa mönster över tid och få en plats att återvända till.
 			</p>
 			<div class="hero-actions">
-				<a href="/chat/a" class="hero-cta hero-cta-primary">Prata anonymt nu</a>
-				<a href="/register" class="hero-cta hero-cta-secondary">Skapa konto och spara din resa</a>
+				<a href="/chat/a" class="hero-cta hero-cta-primary">Börja anonymt</a>
+				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
 			</div>
-			<p class="hero-subnote">Ingen diagnos. Ingen behandling. Ett tryggt första steg med väg vidare vid behov.</p>
+			<p class="hero-subnote">Ingen diagnos. Ingen press. Bara ett lugnt första steg.</p>
 			<p class="hero-support-link">
+				<a href="/om-mittpsyke">Så fungerar MittPsyke</a>
+				<span aria-hidden="true"> · </span>
 				Behöver du mänsklig kontakt? <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Öppna Stödlinjer</a>
 			</p>
 		</div>
