@@ -149,6 +149,27 @@
 				<li><a href="/ansvar">Ansvarsinfo</a></li>
 			</ul>
 		</section>
+
+		<!-- 9) Foretagsinformation -->
+		<section class="section company-section">
+			<h2>F&ouml;retagsinformation</h2>
+			<p>MittPsyke drivs som enskild n&auml;ringsverksamhet.</p>
+			<ul class="company-list">
+				<li><strong>F&ouml;retag:</strong> MittPsyke</li>
+				<li><strong>Organisationsnummer:</strong> 198712284895</li>
+				<li><strong>Verksamhetsform:</strong> Enskild n&auml;ringsverksamhet</li>
+				<li><strong>Ansvarig:</strong> Robert Claesson</li>
+			</ul>
+
+			<h3>Kontakt</h3>
+			<ul class="company-list">
+				<li><strong>E-post:</strong> <a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a></li>
+				<li>
+					<strong>Webbplats:</strong>
+					<a href="https://www.mittpsyke.se" target="_blank" rel="noopener noreferrer">https://www.mittpsyke.se</a>
+				</li>
+			</ul>
+		</section>
 	</div>
 </main>
 
@@ -340,6 +361,23 @@
 	.links-section a {
 		text-decoration: underline;
 		text-underline-offset: 2px;
+	}
+
+	.company-section h3 {
+		margin-top: 1rem;
+		margin-bottom: 0.45rem;
+	}
+
+	.company-list {
+		list-style: none;
+		padding: 0;
+		margin: 0.55rem 0 0;
+		display: grid;
+		gap: 0.35rem;
+	}
+
+	.company-list strong {
+		font-weight: 600;
 	}
 
 	@media (min-width: 760px) {

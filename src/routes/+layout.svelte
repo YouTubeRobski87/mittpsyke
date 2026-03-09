@@ -308,7 +308,7 @@
 			</p>
 		</section>
 
-		<footer class="site-footer border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
+	<footer class="site-footer border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
 		&copy; {new Date().getFullYear()} MittPsyke. Alla r&auml;ttigheter f&ouml;rbeh&aring;llna.
 		<span class="mx-2">&middot;</span>
 		<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
@@ -331,6 +331,10 @@
 		>
 			Akut hj&auml;lp (St&ouml;dlinjer)
 		</a>
+		<p class="mt-2 text-xs opacity-70">
+			MittPsyke &middot; Org.nr 198712284895 &middot; Enskild n&auml;ringsverksamhet &middot;
+			<a href="mailto:mittpsyke@ownit.nu" class="hover:opacity-100 transition-opacity">mittpsyke@ownit.nu</a>
+		</p>
 	</footer>
 	</div>
 {/if}
