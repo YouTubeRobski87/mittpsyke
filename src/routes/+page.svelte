@@ -73,53 +73,53 @@
 	</section>
 
 
-	<section class="hero-clarity" aria-label="SÃ¥ fungerar MittPsyke">
+	<section class="hero-clarity" aria-label="Så fungerar MittPsyke">
 		<div class="narrow hero-clarity-inner">
 			<div class="clarity-item">
 				<h2>1. Prata och reflektera</h2>
-				<p>Du kan bÃ¶rja i chatten eller dagboken och sÃ¤tta ord pÃ¥ det som kÃ¤nns tungt.</p>
+				<p>Du kan börja i chatten eller dagboken och sätta ord på det som känns tungt.</p>
 			</div>
 			<div class="clarity-item">
-				<h2>2. Hitta mÃ¤nskligt stÃ¶d</h2>
-				<p>I MittPsyke finns StÃ¶dlinjer nÃ¤r du vill gÃ¥ vidare till mÃ¤nsklig kontakt.</p>
+				<h2>2. Hitta mänskligt stöd</h2>
+				<p>I MittPsyke finns Stödlinjer när du vill gå vidare till mänsklig kontakt.</p>
 			</div>
 			<div class="clarity-item">
-				<h2>3. Akut hjÃ¤lp vid behov</h2>
-				<p>Vid akut fara ska du alltid ringa 112. MittPsyke ersÃ¤tter inte vÃ¥rd.</p>
+				<h2>3. Akut hjälp vid behov</h2>
+				<p>Vid akut fara ska du alltid ringa 112. MittPsyke ersätter inte vård.</p>
 			</div>
 		</div>
 	</section>
 
-	<section class="support-options" aria-label="Tre sÃ¤tt att fÃ¥ stÃ¶d">
+	<section class="support-options" aria-label="Tre sätt att få stöd">
 		<div class="narrow support-options-inner">
-			<h2>Tre sÃ¤tt att fÃ¥ stÃ¶d direkt</h2>
-			<p>VÃ¤lj det som kÃ¤nns lÃ¤ttast just nu.</p>
+			<h2>Tre sätt att få stöd direkt</h2>
+			<p>Välj det som känns lättast just nu.</p>
 				<div class="support-grid">
 				<div class="support-card">
-					<h3>ðŸ’¬ Chatta</h3>
-					<p>Skriv om hur du mÃ¥r och fÃ¥ stÃ¶d direkt i chatten. Du bestÃ¤mmer tempot.</p>
+					<h3>Chatta anonymt</h3>
+					<p>Skriv om hur du mår och få stöd i stunden. Du bestämmer tempot.</p>
 					<a href="/chat/a" class="support-button">Starta chat</a>
 				</div>
 				<div class="support-card support-card-phone">
-					<h3>ðŸ“ž Telefonsamtal</h3>
-					<p>HÃ¤r finns en rÃ¶st du kan luta dig mot, om text kÃ¤nns fÃ¶r kantigt eller fÃ¶r lÃ¥ngt bort.</p>
+					<h3>Telefonsamtal</h3>
+					<p>Här finns en röst du kan luta dig mot, om text känns för kantigt eller för långt bort.</p>
 					<a href="tel:+15672921889" class="support-button">Ring nu</a>
 					<div class="phone-number">+1 567 292 1889</div>
 				</div>
 				<div class="support-card">
-					<h3>ðŸ“ Dagbok</h3>
-					<p>Skriv i lugn och ro, och fÃ¥ en egen plats fÃ¶r reflektion nÃ¤r du behÃ¶ver sortera tankar.</p>
-					<a href="/dagbok" class="support-button">Ã–ppna dagbok</a>
+					<h3>Dagbok och reflektion</h3>
+					<p>Skriv i lugn och ro och samla dina tankar i din egen plats över tid.</p>
+					<a href="/dagbok" class="support-button">Öppna dagbok</a>
 				</div>
 				</div>
 				<div class="support-path">
 					<a class="support-path-card" href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">
-						<h3>StÃ¶dlinjer i MittPsyke</h3>
-						<p>Samlad vÃ¤g vidare till mÃ¤nskligt stÃ¶d nÃ¤r du vill prata med nÃ¥gon.</p>
+						<h3>Stödlinjer i MittPsyke</h3>
+						<p>Väg vidare till mänskligt stöd när du vill prata med någon.</p>
 					</a>
 					<div class="support-path-card support-path-card-urgent">
-						<h3>Akut hjÃ¤lp</h3>
-						<p>Vid akut fara eller sjÃ¤lvmordstankar, ring alltid 112 direkt.</p>
+						<h3>Akut hjälp</h3>
+						<p>Vid akut fara eller självmordstankar, ring alltid 112 direkt.</p>
 						<a href="tel:112" class="support-button">Ring 112</a>
 					</div>
 				</div>
