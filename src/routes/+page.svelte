@@ -57,11 +57,32 @@
 			aria-hidden="true"
 		/>
 		<div class="hero-content">
-			<h1>Psykiskt stöd online – Din trygga plats för återhämtning</h1>
+			<h1>Ett lugnt digitalt stödrum för dina tankar</h1>
 			<p>
-				Välkommen till MittPsyke. Vi erbjuder en professionell plattform för dig som söker anonymt samtalsstöd online och konkreta verktyg för att hantera livets utmaningar.
+				Prata, reflektera och hitta rätt stöd i din egen takt. MittPsyke är ett första steg när livet känns tungt – inte vård, inte terapi och ingen diagnos.
 			</p>
-			<a href="/om-mittpsyke" class="hero-cta">L&auml;s mer om MittPsyke</a>
+			<div class="hero-actions">
+				<a href="/chat/a" class="hero-cta hero-cta-primary">Börja prata i chatten</a>
+				<a href="/dagbok" class="hero-cta hero-cta-secondary">Skriv i dagboken</a>
+			</div>
+		</div>
+	</section>
+
+
+	<section class="hero-clarity" aria-label="Så fungerar MittPsyke">
+		<div class="narrow hero-clarity-inner">
+			<div class="clarity-item">
+				<h2>1. Prata och reflektera</h2>
+				<p>Du kan börja i chatten eller dagboken och sätta ord på det som känns tungt.</p>
+			</div>
+			<div class="clarity-item">
+				<h2>2. Hitta mänskligt stöd</h2>
+				<p>Stödlinjer hjälper dig vidare när du vill prata med en människa.</p>
+			</div>
+			<div class="clarity-item">
+				<h2>3. Akut hjälp vid behov</h2>
+				<p>Vid akut fara ska du alltid ringa 112. MittPsyke ersätter inte vård.</p>
+			</div>
 		</div>
 	</section>
 
