@@ -115,6 +115,7 @@
 	const heavierMoods = new Set(['Orolig', 'Nedstämd', 'Stressad', 'Arg', 'Trött']);
 
 	let loading = $state(true);
+	let isLoggedIn = $state(false);
 	let saving = $state(false);
 	let exportingPdf = $state(false);
 	let note = $state('');
@@ -154,6 +155,7 @@
 			}
 
 			userId = session.user.id;
+			isLoggedIn = true;
 
 			const metadata = (session.user.user_metadata ?? {}) as Record<string, unknown>;
 			reminderOptIn = Boolean(metadata.journal_reminder_opt_in);
@@ -739,6 +741,7 @@
 		tagsInput = '';
 		selectedMood = '';
 		userId = session.user.id;
+			isLoggedIn = true;
 
 		const createdEntry: JournalEntry = {
 			id: result.diary.id,
@@ -882,7 +885,7 @@
 
 {#if loading}
 	<div class="container py-16 text-center opacity-60">Laddar...</div>
-{:else}
+{:else if isLoggedIn}
 	<section class="container max-w-2xl py-12">
 		<div class="flex flex-wrap items-center justify-between gap-3 mb-3">
 			<h1 class="text-3xl font-bold tracking-tight">Dagbok</h1>
@@ -1142,5 +1145,46 @@
 		</div>
 
 		<p class="mt-4 text-xs opacity-50 text-center">Det du skriver här delas inte med någon.</p>
+	</section>
+{:else}
+	<!-- SEO Landing for non-logged-in visitors -->
+	<section class="container max-w-2xl py-12">
+		<h1 class="text-3xl font-bold mb-4 text-center">Digitala verktyg mot ångest – Din personliga dagbok</h1>
+		<p class="text-lg text-center text-gray-600 dark:text-gray-300 mb-8">
+			MittPsyke erbjuder en gratis digital dagbok där du kan skriva ner dina tankar,
+			välja känsloläge och följa ditt mående över tid med visuell statistik.
+		</p>
+
+		<div class="grid gap-6 sm:grid-cols-2 mb-10">
+			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+				<div class="text-2xl mb-2">✍️</div>
+				<h2 class="font-semibold text-lg mb-2">Skriv fritt</h2>
+				<p class="text-gray-600 dark:text-gray-400 text-sm">Uttryck dina tankar och känslor i en trygg, anonym miljö. Ingen dömer – det här är din plats.</p>
+			</div>
+			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+				<div class="text-2xl mb-2">🎭</div>
+				<h2 class="font-semibold text-lg mb-2">Välj känsloläge</h2>
+				<p class="text-gray-600 dark:text-gray-400 text-sm">Tagga varje inlägg med ditt humör – lugn, orolig, hoppfull eller något annat. Spåra mönster i ditt mående.</p>
+			</div>
+			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+				<div class="text-2xl mb-2">📊</div>
+				<h2 class="font-semibold text-lg mb-2">Visuell statistik</h2>
+				<p class="text-gray-600 dark:text-gray-400 text-sm">Följ din utveckling med grafer och trendlinjer. Se hur ditt mående förändras vecka för vecka.</p>
+			</div>
+			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+				<div class="text-2xl mb-2">🔒</div>
+				<h2 class="font-semibold text-lg mb-2">Helt anonymt</h2>
+				<p class="text-gray-600 dark:text-gray-400 text-sm">Ingen personlig information krävs. Dina dagboksinlägg är privata och tillhör bara dig.</p>
+			</div>
+		</div>
+
+		<div class="text-center">
+			<h2 class="text-xl font-semibold mb-3">Redo att börja skriva?</h2>
+			<p class="text-gray-600 dark:text-gray-300 mb-6">Skapa ett gratis konto och börja din dagbok idag. Det tar bara några sekunder.</p>
+			<div class="flex flex-col sm:flex-row gap-3 justify-center">
+				<a href="/register" class="btn btn-primary px-8 py-3 rounded-full font-semibold text-white bg-green-600 hover:bg-green-700 transition">Skapa konto gratis</a>
+				<a href="/login" class="btn btn-outline px-8 py-3 rounded-full font-semibold border-2 border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition">Logga in</a>
+			</div>
+		</div>
 	</section>
 {/if}
