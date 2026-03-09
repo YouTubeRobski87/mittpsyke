@@ -12,12 +12,14 @@ type EnsureDefined<T> = T extends null | undefined ? {} : T;
 type OptionalUnion<U extends Record<string, any>, A extends keyof U = U extends U ? keyof U : never> = U extends unknown ? { [P in Exclude<A, keyof U>]?: never } & U : never;
 export type Snapshot<T = any> = Kit.Snapshot<T>;
 type PageParentData = EnsureDefined<LayoutData>;
-type LayoutRouteId = RouteId | "/" | "/angest" | "/ansvar" | "/chat/[category]" | "/dagbok" | "/dashboard" | "/dashboard/installningar" | "/depression" | "/ensamhet" | "/framsteg" | "/guider" | "/guider/[pillar]" | "/guider-seo" | "/guider-seo/[pillar]" | "/guider-seo/[pillar]/[guide]" | "/integritet" | "/login" | "/om-mittpsyke" | "/ovningar" | "/ovningar/[tool]" | "/panikattack" | "/portal/[slug]" | "/register" | null
+type LayoutRouteId = RouteId | "/" | "/angest" | "/ansvar" | "/avregistrera" | "/chat/[category]" | "/dagbok" | "/dashboard" | "/dashboard/installningar" | "/depression" | "/ensamhet" | "/framsteg" | "/guider" | "/guider/[pillar]" | "/guider-seo" | "/guider-seo/[pillar]" | "/guider-seo/[pillar]/[guide]" | "/integritet" | "/login" | "/nedstamdhet" | "/om-mittpsyke" | "/oro" | "/ovningar" | "/ovningar/[tool]" | "/panikattack" | "/portal/[slug]" | "/register" | "/stress" | "/trauma" | null
 type LayoutParams = RouteParams & { category?: string; pillar?: string; guide?: string; tool?: string; slug?: string }
 type LayoutParentData = EnsureDefined<{}>;
 
 export type PageServerData = null;
-export type PageData = Expand<PageParentData>;
+export type PageLoad<OutputData extends OutputDataShape<PageParentData> = OutputDataShape<PageParentData>> = Kit.Load<RouteParams, PageServerData, PageParentData, OutputData, RouteId>;
+export type PageLoadEvent = Parameters<PageLoad>[0];
+export type PageData = Expand<Omit<PageParentData, keyof Kit.LoadProperties<Awaited<ReturnType<typeof import('../../../../src/routes/+page.js').load>>>> & OptionalUnion<EnsureDefined<Kit.LoadProperties<Awaited<ReturnType<typeof import('../../../../src/routes/+page.js').load>>>>>>;
 export type PageProps = { params: RouteParams; data: PageData }
 export type LayoutServerData = null;
 export type LayoutLoad<OutputData extends OutputDataShape<LayoutParentData> = OutputDataShape<LayoutParentData>> = Kit.Load<LayoutParams, LayoutServerData, LayoutParentData, OutputData, LayoutRouteId>;

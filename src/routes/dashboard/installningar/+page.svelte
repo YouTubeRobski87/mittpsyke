@@ -64,7 +64,7 @@
 		nameSaving = false;
 
 		if (error) {
-			nameMessage = 'Något gick fel. Försök igen.';
+			nameMessage = 'Nï¿½got gick fel. Fï¿½rsï¿½k igen.';
 			nameMessageType = 'error';
 		} else {
 			nameMessage = 'Sparat!';
@@ -76,13 +76,13 @@
 		passwordMessage = '';
 
 		if (newPassword.length < 6) {
-			passwordMessage = 'Lösenordet måste vara minst 6 tecken.';
+			passwordMessage = 'Lï¿½senordet mï¿½ste vara minst 6 tecken.';
 			passwordMessageType = 'error';
 			return;
 		}
 
 		if (newPassword !== confirmPassword) {
-			passwordMessage = 'Lösenorden matchar inte.';
+			passwordMessage = 'Lï¿½senorden matchar inte.';
 			passwordMessageType = 'error';
 			return;
 		}
@@ -94,10 +94,10 @@
 		passwordSaving = false;
 
 		if (error) {
-			passwordMessage = 'Kunde inte uppdatera lösenordet. Försök igen.';
+			passwordMessage = 'Kunde inte uppdatera lï¿½senordet. Fï¿½rsï¿½k igen.';
 			passwordMessageType = 'error';
 		} else {
-			passwordMessage = 'Lösenordet har uppdaterats!';
+			passwordMessage = 'Lï¿½senordet har uppdaterats!';
 			passwordMessageType = 'success';
 			newPassword = '';
 			confirmPassword = '';
@@ -109,7 +109,7 @@
 
 		const normalized = deleteConfirm.trim().toLowerCase();
 		if (normalized !== 'radera') {
-			deleteMessage = 'Skriv RADERA i fältet för att bekräfta.';
+			deleteMessage = 'Skriv RADERA i fï¿½ltet fï¿½r att bekrï¿½fta.';
 			deleteMessageType = 'error';
 			return;
 		}
@@ -137,7 +137,7 @@
 			});
 		} catch {
 			deleteLoading = false;
-			deleteMessage = 'Kunde inte nå servern. Försök igen.';
+			deleteMessage = 'Kunde inte nï¿½ servern. Fï¿½rsï¿½k igen.';
 			deleteMessageType = 'error';
 			return;
 		}
@@ -173,12 +173,12 @@
 </script>
 
 <svelte:head>
-	<title>Kontoinställningar - MittPsyke</title>
+	<title>Kontoinstï¿½llningar - MittPsyke</title>
 </svelte:head>
 
 <main class="settings-page container">
 	{#if loading}
-		<p class="loading-copy">Laddar inställningar...</p>
+		<p class="loading-copy">Laddar instï¿½llningar...</p>
 	{:else}
 		<!-- Tab Navigation -->
 		<nav class="dashboard-tabs" aria-label="Portalnavigering">
@@ -211,9 +211,9 @@
 
 		<!-- Password Section -->
 		<section class="section-block">
-			<h2>Byt lösenord</h2>
+			<h2>Byt lï¿½senord</h2>
 
-			<label class="field-label" for="new-password">Nytt lösenord</label>
+			<label class="field-label" for="new-password">Nytt lï¿½senord</label>
 			<input
 				id="new-password"
 				type="password"
@@ -223,33 +223,40 @@
 				autocomplete="new-password"
 			/>
 
-			<label class="field-label" for="confirm-password">Bekräfta lösenord</label>
+			<label class="field-label" for="confirm-password">Bekrï¿½fta lï¿½senord</label>
 			<input
 				id="confirm-password"
 				type="password"
 				bind:value={confirmPassword}
-				placeholder="Upprepa lösenordet"
+				placeholder="Upprepa lï¿½senordet"
 				class="text-input"
 				autocomplete="new-password"
 			/>
 
 			<button class="save-btn" onclick={savePassword} disabled={passwordSaving}>
-				{passwordSaving ? 'Sparar...' : 'Byt lösenord'}
+				{passwordSaving ? 'Sparar...' : 'Byt lï¿½senord'}
 			</button>
 
 			{#if passwordMessage}
 				<p class="feedback {passwordMessageType}">{passwordMessage}</p>
 			{/if}
 		</section>
+
+		<section class="section-block">
+			<h2>Mejlutskick</h2>
+			<p class="field-hint">Hantera avregistrering och stoppa framtida utskick.</p>
+			<a class="save-btn link-btn" href="/avregistrera">Hantera avregistrering</a>
+		</section>
+
 		<!-- Delete Account Section -->
-		<section class="section-block danger-zone">
+		<section id="radera-konto" class="section-block danger-zone">
 			<h2>Radera konto</h2>
 			<p class="field-hint danger-copy">
-				Detta raderar din dagbok, chatthistorik och profil permanent. Åtgärden går inte att ångra.
+				Detta raderar din dagbok, chatthistorik och profil permanent. ï¿½tgï¿½rden gï¿½r inte att ï¿½ngra.
 			</p>
 
 			<label class="field-label" for="delete-confirm">
-				Skriv <span class="confirm-token">RADERA</span> för att bekräfta
+				Skriv <span class="confirm-token">RADERA</span> fï¿½r att bekrï¿½fta
 			</label>
 			<input
 				id="delete-confirm"
@@ -446,6 +453,10 @@
 	.save-btn:disabled {
 		opacity: 0.55;
 		cursor: default;
+	}
+
+	.link-btn {
+		text-decoration: none;
 	}
 
 	:global(.dark) .save-btn {
