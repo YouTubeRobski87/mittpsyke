@@ -44,6 +44,9 @@
 	"/api/diary/weekly-summary": [
 		"src/routes/api/diary/weekly-summary/+server.ts"
 	],
+	"/api/events": [
+		"src/routes/api/events/+server.ts"
+	],
 	"/api/retell-webcall": [
 		"src/routes/api/retell-webcall/+server.js"
 	],
