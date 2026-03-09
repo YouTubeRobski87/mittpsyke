@@ -150,7 +150,7 @@
 			const session = data.session;
 
 			if (!session) {
-				goto('/login');
+				loading = false;
 				return;
 			}
 
