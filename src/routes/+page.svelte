@@ -65,6 +65,9 @@
 				<a href="/chat/a" class="hero-cta hero-cta-primary">Prata anonymt nu</a>
 				<a href="/dagbok" class="hero-cta hero-cta-secondary">Skriv i dagboken</a>
 			</div>
+			<p class="hero-support-link">
+				Behöver du mänsklig kontakt? <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Öppna Stödlinjer</a>
+			</p>
 		</div>
 	</section>
 
@@ -77,7 +80,7 @@
 			</div>
 			<div class="clarity-item">
 				<h2>2. Hitta mänskligt stöd</h2>
-				<p>Stödlinjer hjälper dig vidare när du vill prata med en människa.</p>
+				<p>I MittPsyke finns Stödlinjer när du vill gå vidare till mänsklig kontakt.</p>
 			</div>
 			<div class="clarity-item">
 				<h2>3. Akut hjälp vid behov</h2>
@@ -90,7 +93,7 @@
 		<div class="narrow support-options-inner">
 			<h2>Tre sätt att få stöd direkt</h2>
 			<p>Välj det som känns lättast just nu.</p>
-			<div class="support-grid">
+				<div class="support-grid">
 				<div class="support-card">
 					<h3>💬 Chatta</h3>
 					<p>Skriv om hur du mår och få stöd direkt i chatten. Du bestämmer tempot.</p>
@@ -107,9 +110,20 @@
 					<p>Skriv i lugn och ro, och få en egen plats för reflektion när du behöver sortera tankar.</p>
 					<a href="/dagbok" class="support-button">Öppna dagbok</a>
 				</div>
+				</div>
+				<div class="support-path">
+					<a class="support-path-card" href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">
+						<h3>Stödlinjer i MittPsyke</h3>
+						<p>Samlad väg vidare till mänskligt stöd när du vill prata med någon.</p>
+					</a>
+					<div class="support-path-card support-path-card-urgent">
+						<h3>Akut hjälp</h3>
+						<p>Vid akut fara eller självmordstankar, ring alltid 112 direkt.</p>
+						<a href="tel:112" class="support-button">Ring 112</a>
+					</div>
+				</div>
 			</div>
-		</div>
-	</section>
+		</section>
 
 
 	<section class="video-section">
@@ -334,6 +348,18 @@
 		flex-wrap: wrap;
 		gap: 0.65rem;
 		justify-content: center;
+	}
+
+	.hero-support-link {
+		margin: 0.7rem 0 0;
+		font-size: 0.95rem;
+		color: rgba(255, 255, 255, 0.86);
+	}
+
+	.hero-support-link a {
+		color: #d7e7ff;
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 
 	.hero-cta-primary {
@@ -666,6 +692,43 @@
 		border: 1px solid #c7d4cc;
 	}
 
+	.support-path {
+		margin-top: 1rem;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+		gap: 0.9rem;
+	}
+
+	.support-path-card {
+		display: block;
+		padding: 1rem;
+		border-radius: 14px;
+		background: #24384d;
+		border: 1px solid rgba(255, 255, 255, 0.16);
+		color: #f3f8fd;
+	}
+
+	.support-path-card h3 {
+		margin: 0;
+		font-size: 1.05rem;
+		color: #f3f8fd;
+	}
+
+	.support-path-card p {
+		margin: 0.5rem 0 0;
+		color: #c7d6e5;
+		font-size: 0.95rem;
+		line-height: 1.6;
+	}
+
+	.support-path-card-urgent {
+		background: #2a3644;
+	}
+
+	.support-path-card-urgent .support-button {
+		margin-top: 0.85rem;
+	}
+
 	.support-button {
 		display: inline-block;
 		margin-top: 15px;
@@ -838,6 +901,15 @@
 
 	:global(.dark) .support-options-inner > p {
 		color: rgba(255, 255, 255, 0.65);
+	}
+
+	:global(.dark) .support-path-card {
+		background: #1f2a36;
+		border-color: rgba(255, 255, 255, 0.14);
+	}
+
+	:global(.dark) .support-path-card-urgent {
+		background: #252d36;
 	}
 
 	:global(.dark) .support-card h3 {
