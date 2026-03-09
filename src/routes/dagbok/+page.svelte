@@ -880,10 +880,6 @@
 </svelte:head>
 
 
-<svelte:head>
-	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
-</svelte:head>
-
 {#if loading}
 	<div class="container py-16 text-center opacity-60">Laddar...</div>
 {:else}
