@@ -38,10 +38,10 @@
 </script>
 
 <svelte:head>
-	<title>Psykiskt stÃ¶d online | Verktyg mot Ã¥ngest | Mittpsyke.se</title>
-	<meta name="description" content="Mittpsyke erbjuder anonymt samtalsstÃ¶d online och digitala verktyg mot Ã¥ngest och trauma. Starta din dagbok eller chatta med oss idag." />
-	<meta property="og:title" content="Psykiskt stÃ¶d online | Verktyg mot Ã¥ngest | Mittpsyke.se" />
-	<meta property="og:description" content="Mittpsyke erbjuder anonymt samtalsstÃ¶d online och digitala verktyg mot Ã¥ngest och trauma. Starta din dagbok eller chatta med oss idag." />
+	<title>Psykiskt stöd online | Verktyg mot ångest | Mittpsyke.se</title>
+	<meta name="description" content="Mittpsyke erbjuder anonymt samtalsstöd online och digitala verktyg mot ångest och trauma. Starta din dagbok eller chatta med oss idag." />
+	<meta property="og:title" content="Psykiskt stöd online | Verktyg mot ångest | Mittpsyke.se" />
+	<meta property="og:description" content="Mittpsyke erbjuder anonymt samtalsstöd online och digitala verktyg mot ångest och trauma. Starta din dagbok eller chatta med oss idag." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	<link rel="canonical" href="https://mittpsyke.se/" />
@@ -155,7 +155,7 @@
 			<div class="video-wrapper">
 				<video controls preload="none" poster="/og-image.png">
 					<source src="/intro.mp4" type="video/mp4" />
-					Din webblÃ¤sare stÃ¶der inte videouppspelning.
+					Din webbläsare stöder inte videouppspelning.
 				</video>
 			</div>
 		</div>
@@ -163,14 +163,14 @@
 
 	<section class="seo-intro">
 		<div class="narrow seo-inner">
-			<h2>Verktyg mot Ã¥ngest och personlig utveckling</h2>
+			<h2>Verktyg mot ångest och personlig utveckling</h2>
 			<p>
-				Att hitta rÃ¤tt verktyg mot Ã¥ngest online kan vara avgÃ¶rande. Genom vÃ¥r digitala dagbok och chattfunktion kan du i din egen takt bearbeta tankar och kÃ¤nslor. Vi erbjuder Ã¤ven specialiserat <a href="/trauma">samtalsstÃ¶d vid trauma</a> fÃ¶r dig som behÃ¶ver bearbeta svÃ¥ra upplevelser i en trygg miljÃ¶.
+				Att hitta rätt verktyg mot ångest online kan vara avgörande. Genom vår digitala dagbok och chattfunktion kan du i din egen takt bearbeta tankar och känslor. Vi erbjuder även specialiserat <a href="/trauma">samtalsstöd vid trauma</a> för dig som behöver bearbeta svåra upplevelser i en trygg miljö.
 			</p>
 			<ul class="seo-features">
-				<li><strong>Anonymitet &amp; Trygghet:</strong> Vi vÃ¤rnar om din integritet med tystnadsplikt.</li>
-				<li><strong>Enkelt att anvÃ¤nda:</strong> Din personliga dashboard ger dig full Ã¶verblick Ã¶ver din utveckling.</li>
-				<li><strong>Erfarenhet som grund:</strong> Plattformen Ã¤r byggd pÃ¥ fÃ¶rstÃ¥else och verklig expertis inom psykisk hÃ¤lsa.</li>
+				<li><strong>Anonymitet &amp; Trygghet:</strong> Vi värnar om din integritet med tystnadsplikt.</li>
+				<li><strong>Enkelt att använda:</strong> Din personliga dashboard ger dig full överblick över din utveckling.</li>
+				<li><strong>Erfarenhet som grund:</strong> Plattformen är byggd på förståelse och verklig expertis inom psykisk hälsa.</li>
 			</ul>
 		</div>
 	</section>
@@ -263,7 +263,7 @@
 					M&aring;let &auml;r inte snabba svar, utan ett h&aring;llbart samtal d&auml;r du kan landa och ta n&auml;sta steg.
 				</p>
 			</div>
-			<img src="/assets/home/Digitalastod.PNG" alt="Digitalt stÃ¶d" loading="lazy" />
+			<img src="/assets/home/Digitalastod.PNG" alt="Digitalt stöd" loading="lazy" />
 		</div>
 	</section>
 
