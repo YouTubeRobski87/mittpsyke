@@ -25,9 +25,7 @@
 			}
 		]
 	};
-</script>
 
-﻿<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { loadDiaryEntries, setDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import { supabase } from '$lib/supabase';
@@ -876,6 +874,11 @@
 		});
 	}
 </script>
+
+<svelte:head>
+	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
+</svelte:head>
+
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
