@@ -4,6 +4,28 @@ import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { RequestHandler } from '@sveltejs/kit';
 
+const STOCKHOLM_TIME_ZONE = 'Europe/Stockholm';
+const DAY_MS = 24 * 60 * 60 * 1000;
+const stockholmDateFormatter = new Intl.DateTimeFormat('sv-CA', {
+	timeZone: STOCKHOLM_TIME_ZONE,
+	year: 'numeric',
+	month: '2-digit',
+	day: '2-digit'
+});
+
+function toStockholmDateKey(value: string) {
+	return stockholmDateFormatter.format(new Date(value));
+}
+
+function stockholmTodayKey() {
+	return stockholmDateFormatter.format(new Date());
+}
+
+function dateKeyToUtcMs(dateKey: string) {
+	const [year, month, day] = dateKey.split('-').map(Number);
+	return Date.UTC(year, month - 1, day);
+}
+
 export const GET: RequestHandler = async ({ request }) => {
 	try {
 		const authHeader = request.headers.get('Authorization');
@@ -30,23 +52,22 @@ export const GET: RequestHandler = async ({ request }) => {
 			return json({ currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 });
 		}
 
+		// Normalize all entry timestamps to Swedish local day before streak math.
 		const entryDates = entries
-			.map((e) => new Date(e.created_at).toDateString())
+			.map((e) => toStockholmDateKey(e.created_at))
 			.filter((date, index, self) => self.indexOf(date) === index);
 
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
+		const todayUtcMs = dateKeyToUtcMs(stockholmTodayKey());
 
 		let currentStreak = 0;
-		let checkDate = new Date(today);
+		let checkDateUtcMs = todayUtcMs;
 
 		for (const entryDate of entryDates) {
-			const date = new Date(entryDate);
-			date.setHours(0, 0, 0, 0);
-			if (checkDate.getTime() === date.getTime()) {
+			const dateUtcMs = dateKeyToUtcMs(entryDate);
+			if (checkDateUtcMs === dateUtcMs) {
 				currentStreak++;
-				checkDate.setDate(checkDate.getDate() - 1);
-			} else if (checkDate.getTime() > date.getTime()) {
+				checkDateUtcMs -= DAY_MS;
+			} else if (checkDateUtcMs > dateUtcMs) {
 				break;
 			}
 		}
@@ -54,9 +75,9 @@ export const GET: RequestHandler = async ({ request }) => {
 		let longestStreak = 0;
 		let tempStreak = 1;
 		for (let i = 0; i < entryDates.length - 1; i++) {
-			const date1 = new Date(entryDates[i]);
-			const date2 = new Date(entryDates[i + 1]);
-			const diffDays = Math.ceil(Math.abs(date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24));
+			const date1UtcMs = dateKeyToUtcMs(entryDates[i]);
+			const date2UtcMs = dateKeyToUtcMs(entryDates[i + 1]);
+			const diffDays = Math.round(Math.abs(date1UtcMs - date2UtcMs) / DAY_MS);
 			if (diffDays === 1) {
 				tempStreak++;
 			} else {
@@ -66,9 +87,8 @@ export const GET: RequestHandler = async ({ request }) => {
 		}
 		longestStreak = Math.max(longestStreak, tempStreak);
 
-		const lastEntry = new Date(entryDates[0]);
-		lastEntry.setHours(0, 0, 0, 0);
-		const lastEntryDaysAgo = Math.floor((today.getTime() - lastEntry.getTime()) / (1000 * 60 * 60 * 24));
+		const lastEntryUtcMs = dateKeyToUtcMs(entryDates[0]);
+		const lastEntryDaysAgo = Math.floor((todayUtcMs - lastEntryUtcMs) / DAY_MS);
 
 		return json({ currentStreak, longestStreak, lastEntryDate: entryDates[0], lastEntryDaysAgo });
 	} catch (err) {
