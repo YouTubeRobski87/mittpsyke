@@ -19,6 +19,8 @@
 	let input = $state('');
 	let sending = $state(false);
 	let savePromptHidden = $state<Record<number, boolean>>({});
+	let chatOpenTracked = $state(false);
+	let firstMessageTracked = $state(false);
 	let conversationId = $state<string | null>(
 		browser ? window.localStorage.getItem('mittpsyke:last-conversation-id') : null
 	);
@@ -72,6 +74,14 @@
 	let currentSupportLevel = $derived(supportLevel());
 	let showStarterSuggestions = $derived(messages.length === 0 && input.trim().length === 0);
 
+	function trackChatEvent(eventName: string, params: Record<string, string | number> = {}) {
+		if (!browser) return;
+		const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+		if (typeof gtag === 'function') {
+			gtag('event', eventName, params);
+		}
+	}
+
 	$effect(() => {
 		messages = initialMessages.map((message) => ({ ...message }));
 		savePromptHidden = {};
@@ -86,6 +96,12 @@
 		}
 
 		void tick().then(scrollToBottom);
+	});
+
+	$effect(() => {
+		if (!browser || chatOpenTracked) return;
+		trackChatEvent('chat_open', { category: category || 'unknown' });
+		chatOpenTracked = true;
 	});
 
 	function scrollToBottom() {
@@ -139,6 +155,11 @@
 			}
 			if (browser) {
 				window.localStorage.setItem('mittpsyke:last-chat-category', category);
+			}
+
+			if (!firstMessageTracked) {
+				trackChatEvent('first_message_sent', { category: category || 'unknown' });
+				firstMessageTracked = true;
 			}
 
 			messages.push({
