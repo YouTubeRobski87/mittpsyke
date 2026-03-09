@@ -7,17 +7,22 @@
 
 	// Display name
 	let displayName = $state('');
+	let nameSaving = $state(false);
+	let nameMessage = $state('');
 	let nameMessageType = $state<'success' | 'error'>('success');
 
 	// Password
 	let newPassword = $state('');
+	let confirmPassword = $state('');
 	let passwordSaving = $state(false);
 	let passwordMessage = $state('');
 	let passwordMessageType = $state<'success' | 'error'>('success');
 
-\t// Account deletion
-\tlet deleteConfirm = ('');
-\tlet deleteMessageType = <'success' | 'error'>('success');
+	// Account deletion
+	let deleteConfirm = $state('');
+	let deleteLoading = $state(false);
+	let deleteMessage = $state('');
+	let deleteMessageType = $state<'success' | 'error'>('success');
 
 	$effect(() => {
 		let alive = true;
@@ -36,6 +41,18 @@
 
 			// Load display name from user metadata
 			displayName = session.user.user_metadata?.display_name ?? '';
+			loading = false;
+		}
+
+		void init();
+
+		return () => {
+			alive = false;
+		};
+	});
+
+	async function saveDisplayName() {
+		nameMessage = '';
 		const trimmed = displayName.trim();
 		nameSaving = true;
 
@@ -47,7 +64,7 @@
 		nameSaving = false;
 
 		if (error) {
-			nameMessage = 'NÃ¥got gick fel. FÃ¶rsÃ¶k igen.';
+			nameMessage = 'Något gick fel. Försök igen.';
 			nameMessageType = 'error';
 		} else {
 			nameMessage = 'Sparat!';
@@ -59,13 +76,13 @@
 		passwordMessage = '';
 
 		if (newPassword.length < 6) {
-			passwordMessage = 'LÃ¶senordet mÃ¥ste vara minst 6 tecken.';
+			passwordMessage = 'Lösenordet måste vara minst 6 tecken.';
 			passwordMessageType = 'error';
 			return;
 		}
 
 		if (newPassword !== confirmPassword) {
-			passwordMessage = 'LÃ¶senorden matchar inte.';
+			passwordMessage = 'Lösenorden matchar inte.';
 			passwordMessageType = 'error';
 			return;
 		}
@@ -77,32 +94,91 @@
 		passwordSaving = false;
 
 		if (error) {
-			passwordMessage = 'Kunde inte uppdatera lÃ¶senordet. FÃ¶rsÃ¶k igen.';
+			passwordMessage = 'Kunde inte uppdatera lösenordet. Försök igen.';
 			passwordMessageType = 'error';
 		} else {
-			passwordMessage = 'LÃ¶senordet har uppdaterats!';
+			passwordMessage = 'Lösenordet har uppdaterats!';
 			passwordMessageType = 'success';
 			newPassword = '';
+			confirmPassword = '';
 		}
 	}
 
 	async function deleteAccount() {
-		deleteMessage = ''radera''Skriv RADERA i fältet för att bekräfta.''error''/login''/api/account/delete''DELETE''Kunde inte nå servern. Försök igen.''error''error''string''Kunde inte radera kontot.''error''Ditt konto har raderats. Du loggas ut...''success'';
+		deleteMessage = '';
+
+		const normalized = deleteConfirm.trim().toLowerCase();
+		if (normalized !== 'radera') {
+			deleteMessage = 'Skriv RADERA i fältet för att bekräfta.';
+			deleteMessageType = 'error';
+			return;
+		}
+
+		deleteLoading = true;
+
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		if (!session) {
+			deleteLoading = false;
+			goto('/login');
+			return;
+		}
+
+		let response: Response | null = null;
+
+		try {
+			response = await fetch('/api/account/delete', {
+				method: 'DELETE',
+				headers: {
+					Authorization: `Bearer ${session.access_token}`
+				}
+			});
+		} catch {
+			deleteLoading = false;
+			deleteMessage = 'Kunde inte nå servern. Försök igen.';
+			deleteMessageType = 'error';
+			return;
+		}
+
+		let payload: DeleteAccountSuccessResponse | DeleteAccountErrorResponse | null = null;
+		try {
+			payload = await response.json();
+		} catch {
+			payload = null;
+		}
+
+		deleteLoading = false;
+
+		if (!response || !response.ok || !payload || payload.success !== true) {
+			const serverMessage =
+				payload && 'error' in payload && typeof payload.error === 'string'
+					? payload.error
+					: 'Kunde inte radera kontot.';
+			deleteMessage = serverMessage;
+			deleteMessageType = 'error';
+			return;
+		}
+
+		deleteMessage = 'Ditt konto har raderats. Du loggas ut...';
+		deleteMessageType = 'success';
+		deleteConfirm = '';
 
 		await supabase.auth.signOut();
 		setTimeout(() => {
-			window.location.href = '';
+			window.location.href = '/';
 		}, 1200);
 	}
 </script>
 
 <svelte:head>
-	<title>KontoinstÃ¤llningar - MittPsyke</title>
+	<title>Kontoinställningar - MittPsyke</title>
 </svelte:head>
 
 <main class="settings-page container">
 	{#if loading}
-		<p class="loading-copy">Laddar instÃ¤llningar...</p>
+		<p class="loading-copy">Laddar inställningar...</p>
 	{:else}
 		<!-- Tab Navigation -->
 		<nav class="dashboard-tabs" aria-label="Portalnavigering">
@@ -135,9 +211,9 @@
 
 		<!-- Password Section -->
 		<section class="section-block">
-			<h2>Byt lÃ¶senord</h2>
+			<h2>Byt lösenord</h2>
 
-			<label class="field-label" for="new-password">Nytt lÃ¶senord</label>
+			<label class="field-label" for="new-password">Nytt lösenord</label>
 			<input
 				id="new-password"
 				type="password"
@@ -147,24 +223,56 @@
 				autocomplete="new-password"
 			/>
 
-			<label class="field-label" for="confirm-password">BekrÃ¤fta lÃ¶senord</label>
+			<label class="field-label" for="confirm-password">Bekräfta lösenord</label>
 			<input
 				id="confirm-password"
 				type="password"
 				bind:value={confirmPassword}
-				placeholder="Upprepa lÃ¶senordet"
+				placeholder="Upprepa lösenordet"
 				class="text-input"
 				autocomplete="new-password"
 			/>
 
 			<button class="save-btn" onclick={savePassword} disabled={passwordSaving}>
-				{passwordSaving ? 'Sparar...' : 'Byt lÃ¶senord'}
+				{passwordSaving ? 'Sparar...' : 'Byt lösenord'}
 			</button>
 
 			{#if passwordMessage}
 				<p class="feedback {passwordMessageType}">{passwordMessage}</p>
 			{/if}
 		</section>
+		<!-- Delete Account Section -->
+		<section class="section-block danger-zone">
+			<h2>Radera konto</h2>
+			<p class="field-hint danger-copy">
+				Detta raderar din dagbok, chatthistorik och profil permanent. Åtgärden går inte att ångra.
+			</p>
+
+			<label class="field-label" for="delete-confirm">
+				Skriv <span class="confirm-token">RADERA</span> för att bekräfta
+			</label>
+			<input
+				id="delete-confirm"
+				type="text"
+				class="text-input"
+				bind:value={deleteConfirm}
+				placeholder="RADERA"
+				autocomplete="off"
+			/>
+
+			<button
+				class="danger-btn"
+				onclick={deleteAccount}
+				disabled={deleteLoading || deleteConfirm.trim().length === 0}
+			>
+				{deleteLoading ? 'Raderar...' : 'Radera mitt konto'}
+			</button>
+
+			{#if deleteMessage}
+				<p class="feedback {deleteMessageType}">{deleteMessage}</p>
+			{/if}
+		</section>
+
 	{/if}
 </main>
 
@@ -372,7 +480,59 @@
 		color: #fca5a5;
 	}
 
-	@media (min-width: 740px) {
+	
+	.danger-zone {
+		border: 1px solid rgba(185, 28, 28, 0.18);
+		background: #fff6f5;
+	}
+
+	:global(.dark) .danger-zone {
+		background: rgba(185, 28, 28, 0.08);
+		border-color: rgba(248, 113, 113, 0.4);
+	}
+
+	.danger-copy {
+		color: #9b1c1c;
+	}
+
+	.confirm-token {
+		font-weight: 600;
+		color: #b91c1c;
+	}
+
+	.danger-zone .text-input {
+		border-color: rgba(185, 28, 28, 0.25);
+	}
+
+	:global(.dark) .danger-zone .text-input {
+		border-color: rgba(248, 113, 113, 0.35);
+	}
+
+	.danger-btn {
+		background: #b91c1c;
+		color: #fff;
+		border-color: transparent;
+		margin-top: 0.8rem;
+	}
+
+	.danger-btn:hover:not(:disabled) {
+		background: #991b1b;
+	}
+
+	.danger-btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	:global(.dark) .danger-btn {
+		background: rgba(248, 113, 113, 0.25);
+		color: #fee2e2;
+	}
+
+	:global(.dark) .danger-btn:hover:not(:disabled) {
+		background: rgba(248, 113, 113, 0.35);
+	}
+@media (min-width: 740px) {
 		.settings-page {
 			gap: 1.2rem;
 			padding-top: 1.5rem;
@@ -383,6 +543,11 @@
 		}
 	}
 </style>
+
+
+
+
+
 
 
 
