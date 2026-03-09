@@ -1,21 +1,23 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
+	import type { DeleteAccountErrorResponse, DeleteAccountSuccessResponse } from '$lib/types';
 
 	let loading = $state(true);
 
 	// Display name
 	let displayName = $state('');
-	let nameSaving = $state(false);
-	let nameMessage = $state('');
 	let nameMessageType = $state<'success' | 'error'>('success');
 
 	// Password
 	let newPassword = $state('');
-	let confirmPassword = $state('');
 	let passwordSaving = $state(false);
 	let passwordMessage = $state('');
 	let passwordMessageType = $state<'success' | 'error'>('success');
+
+\t// Account deletion
+\tlet deleteConfirm = ('');
+\tlet deleteMessageType = <'success' | 'error'>('success');
 
 	$effect(() => {
 		let alive = true;
@@ -34,18 +36,6 @@
 
 			// Load display name from user metadata
 			displayName = session.user.user_metadata?.display_name ?? '';
-			loading = false;
-		}
-
-		void init();
-
-		return () => {
-			alive = false;
-		};
-	});
-
-	async function saveDisplayName() {
-		nameMessage = '';
 		const trimmed = displayName.trim();
 		nameSaving = true;
 
@@ -93,8 +83,16 @@
 			passwordMessage = 'LÃ¶senordet har uppdaterats!';
 			passwordMessageType = 'success';
 			newPassword = '';
-			confirmPassword = '';
 		}
+	}
+
+	async function deleteAccount() {
+		deleteMessage = ''radera''Skriv RADERA i fältet för att bekräfta.''error''/login''/api/account/delete''DELETE''Kunde inte nå servern. Försök igen.''error''error''string''Kunde inte radera kontot.''error''Ditt konto har raderats. Du loggas ut...''success'';
+
+		await supabase.auth.signOut();
+		setTimeout(() => {
+			window.location.href = '';
+		}, 1200);
 	}
 </script>
 
@@ -385,3 +383,10 @@
 		}
 	}
 </style>
+
+
+
+
+
+
+

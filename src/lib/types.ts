@@ -67,6 +67,15 @@ export interface DeleteDiaryErrorResponse {
 	error: string;
 }
 
+export interface DeleteAccountSuccessResponse {
+	success: true;
+}
+
+export interface DeleteAccountErrorResponse {
+	success: false;
+	error: string;
+}
+
 export interface DiaryStatsTimelinePoint {
 	date: string;
 	mood: string;
@@ -81,3 +90,5 @@ export interface DiaryStatsTimelineErrorResponse {
 	success: false;
 	error: string;
 }
+
+
