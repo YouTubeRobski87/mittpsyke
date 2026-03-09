@@ -63,6 +63,8 @@
 		return 'standard';
 	}
 
+	let currentSupportLevel = $derived(supportLevel());
+
 	$effect(() => {
 		messages = initialMessages.map((message) => ({ ...message }));
 		savePromptHidden = {};
@@ -246,7 +248,6 @@
 	</div>
 
 	<div class="chat-input-area border-t border-black/8 dark:border-white/10 p-4">
-		{@const currentSupportLevel = supportLevel()}
 		{#if currentSupportLevel === 'acute'}
 			<div class="mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
 				<p class="font-medium text-rose-900 dark:text-rose-100">
