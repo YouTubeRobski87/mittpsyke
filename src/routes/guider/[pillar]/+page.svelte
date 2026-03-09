@@ -82,6 +82,15 @@
 			{/each}
 		</div>
 	</section>
+
+	<section class="cta-section" aria-label="Kom igång">
+		<h2>Redo att ta nästa steg?</h2>
+		<p>MittPsyke ger dig verktyg för att bearbeta känslor, följa ditt mående och få stöd – anonymt och i din egen takt.</p>
+		<div class="cta-buttons">
+			<a href="/dagbok" class="cta-primary">Starta din dagbok</a>
+			<a href="/kontakt" class="cta-secondary">Prata med någon</a>
+		</div>
+	</section>
 </main>
 
 <style>
@@ -167,5 +176,85 @@
 	:global(.dark) .tool-card {
 		background: #232c2a;
 		border-color: rgba(255, 255, 255, 0.12);
+	}
+
+	.cta-section {
+		margin-top: 2rem;
+		padding: 2rem;
+		border-radius: var(--radius-card);
+		background: linear-gradient(135deg, #e8f4ee 0%, #f0f7f4 100%);
+		border: 1px solid rgba(163, 193, 173, 0.4);
+		text-align: center;
+	}
+
+	.cta-section h2 {
+		margin: 0;
+		font-size: 1.5rem;
+	}
+
+	.cta-section p {
+		margin: 0.75rem auto 1.5rem;
+		max-width: 52ch;
+		opacity: 0.84;
+	}
+
+	.cta-buttons {
+		display: flex;
+		gap: 0.85rem;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+
+	.cta-primary {
+		padding: 0.75rem 1.75rem;
+		border-radius: var(--radius-input);
+		background: #3d7a5e;
+		color: #ffffff;
+		font-weight: 600;
+		text-decoration: none;
+		transition: background 0.2s;
+	}
+
+	.cta-primary:hover {
+		background: #2f6049;
+	}
+
+	.cta-secondary {
+		padding: 0.75rem 1.75rem;
+		border-radius: var(--radius-input);
+		background: transparent;
+		color: #3d7a5e;
+		font-weight: 600;
+		text-decoration: none;
+		border: 2px solid #3d7a5e;
+		transition: background 0.2s, color 0.2s;
+	}
+
+	.cta-secondary:hover {
+		background: #3d7a5e;
+		color: #ffffff;
+	}
+
+	:global(.dark) .cta-section {
+		background: linear-gradient(135deg, #1a2b24 0%, #1e2e27 100%);
+		border-color: rgba(163, 193, 173, 0.2);
+	}
+
+	:global(.dark) .cta-primary {
+		background: #4e9970;
+	}
+
+	:global(.dark) .cta-primary:hover {
+		background: #3d7a5e;
+	}
+
+	:global(.dark) .cta-secondary {
+		color: #4e9970;
+		border-color: #4e9970;
+	}
+
+	:global(.dark) .cta-secondary:hover {
+		background: #4e9970;
+		color: #ffffff;
 	}
 </style>
