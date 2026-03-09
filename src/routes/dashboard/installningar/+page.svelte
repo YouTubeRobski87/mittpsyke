@@ -64,7 +64,7 @@
 		nameSaving = false;
 
 		if (error) {
-			nameMessage = 'N�got gick fel. F�rs�k igen.';
+			nameMessage = 'N\u00e5got gick fel. F\u00f6rs\u00f6k igen.';
 			nameMessageType = 'error';
 		} else {
 			nameMessage = 'Sparat!';
@@ -76,13 +76,13 @@
 		passwordMessage = '';
 
 		if (newPassword.length < 6) {
-			passwordMessage = 'L�senordet m�ste vara minst 6 tecken.';
+			passwordMessage = 'L\u00f6senordet m\u00e5ste vara minst 6 tecken.';
 			passwordMessageType = 'error';
 			return;
 		}
 
 		if (newPassword !== confirmPassword) {
-			passwordMessage = 'L�senorden matchar inte.';
+			passwordMessage = 'L\u00f6senorden matchar inte.';
 			passwordMessageType = 'error';
 			return;
 		}
@@ -94,10 +94,10 @@
 		passwordSaving = false;
 
 		if (error) {
-			passwordMessage = 'Kunde inte uppdatera l�senordet. F�rs�k igen.';
+			passwordMessage = 'Kunde inte uppdatera l\u00f6senordet. F\u00f6rs\u00f6k igen.';
 			passwordMessageType = 'error';
 		} else {
-			passwordMessage = 'L�senordet har uppdaterats!';
+			passwordMessage = 'L\u00f6senordet har uppdaterats!';
 			passwordMessageType = 'success';
 			newPassword = '';
 			confirmPassword = '';
@@ -109,7 +109,7 @@
 
 		const normalized = deleteConfirm.trim().toLowerCase();
 		if (normalized !== 'radera') {
-			deleteMessage = 'Skriv RADERA i f�ltet f�r att bekr�fta.';
+			deleteMessage = 'Skriv RADERA i f\u00e4ltet f\u00f6r att bekr\u00e4fta.';
 			deleteMessageType = 'error';
 			return;
 		}
@@ -137,7 +137,7 @@
 			});
 		} catch {
 			deleteLoading = false;
-			deleteMessage = 'Kunde inte n� servern. F�rs�k igen.';
+			deleteMessage = 'Kunde inte n\u00e5 servern. F\u00f6rs\u00f6k igen.';
 			deleteMessageType = 'error';
 			return;
 		}
@@ -173,12 +173,12 @@
 </script>
 
 <svelte:head>
-	<title>Kontoinst�llningar - MittPsyke</title>
+	<title>Kontoinst&auml;llningar - MittPsyke</title>
 </svelte:head>
 
 <main class="settings-page container">
 	{#if loading}
-		<p class="loading-copy">Laddar inst�llningar...</p>
+		<p class="loading-copy">Laddar inst&auml;llningar...</p>
 	{:else}
 		<!-- Tab Navigation -->
 		<nav class="dashboard-tabs" aria-label="Portalnavigering">
@@ -211,9 +211,9 @@
 
 		<!-- Password Section -->
 		<section class="section-block">
-			<h2>Byt l�senord</h2>
+			<h2>Byt l&ouml;senord</h2>
 
-			<label class="field-label" for="new-password">Nytt l�senord</label>
+			<label class="field-label" for="new-password">Nytt l&ouml;senord</label>
 			<input
 				id="new-password"
 				type="password"
@@ -223,18 +223,18 @@
 				autocomplete="new-password"
 			/>
 
-			<label class="field-label" for="confirm-password">Bekr�fta l�senord</label>
+			<label class="field-label" for="confirm-password">Bekr&auml;fta l&ouml;senord</label>
 			<input
 				id="confirm-password"
 				type="password"
 				bind:value={confirmPassword}
-				placeholder="Upprepa l�senordet"
+				placeholder="Upprepa l&ouml;senordet"
 				class="text-input"
 				autocomplete="new-password"
 			/>
 
 			<button class="save-btn" onclick={savePassword} disabled={passwordSaving}>
-				{passwordSaving ? 'Sparar...' : 'Byt l�senord'}
+				{passwordSaving ? 'Sparar...' : 'Byt l\u00f6senord'}
 			</button>
 
 			{#if passwordMessage}
@@ -252,11 +252,11 @@
 		<section id="radera-konto" class="section-block danger-zone">
 			<h2>Radera konto</h2>
 			<p class="field-hint danger-copy">
-				Detta raderar din dagbok, chatthistorik och profil permanent. �tg�rden g�r inte att �ngra.
+				Detta raderar din dagbok, chatthistorik och profil permanent. &Aring;tg&auml;rden g&aring;r inte att &aring;ngra.
 			</p>
 
 			<label class="field-label" for="delete-confirm">
-				Skriv <span class="confirm-token">RADERA</span> f�r att bekr�fta
+				Skriv <span class="confirm-token">RADERA</span> f&ouml;r att bekr&auml;fta
 			</label>
 			<input
 				id="delete-confirm"
