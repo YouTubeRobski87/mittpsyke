@@ -23,6 +23,12 @@
 		browser ? window.localStorage.getItem('mittpsyke:last-conversation-id') : null
 	);
 	let chatLog: HTMLDivElement;
+	const starterSuggestions = [
+		'Jag känner mig orolig just nu',
+		'Tankarna snurrar och jag får ingen ro',
+		'Jag vet inte riktigt varför jag mår dåligt',
+		'Kan du hjälpa mig sortera mina tankar?'
+	];
 
 	const elevatedSupportKeywords = [
 		'för mycket',
@@ -64,6 +70,7 @@
 	}
 
 	let currentSupportLevel = $derived(supportLevel());
+	let showStarterSuggestions = $derived(messages.length === 0 && input.trim().length === 0);
 
 	$effect(() => {
 		messages = initialMessages.map((message) => ({ ...message }));
@@ -161,6 +168,10 @@
 			e.preventDefault();
 			send();
 		}
+	}
+
+	function useStarterSuggestion(text: string) {
+		input = text;
 	}
 
 	async function saveAsJournalNote(content: string, index: number) {
@@ -280,6 +291,19 @@
 			</div>
 		{/if}
 
+		{#if showStarterSuggestions}
+			<div class="mb-3">
+				<p class="text-xs opacity-70 mb-2">Du kan börja med något enkelt:</p>
+				<div class="starter-chips">
+					{#each starterSuggestions as suggestion}
+						<button type="button" class="starter-chip" onclick={() => useStarterSuggestion(suggestion)}>
+							{suggestion}
+						</button>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
 		<div class="flex gap-2">
 			<textarea
 				bind:value={input}
@@ -343,5 +367,32 @@
 		background: #dc2626;
 		border-color: #dc2626;
 		color: #fff;
+	}
+
+	.starter-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+	}
+
+	.starter-chip {
+		padding: 0.4rem 0.65rem;
+		border-radius: 999px;
+		border: 1px solid rgba(15, 23, 42, 0.12);
+		background: rgba(15, 23, 42, 0.03);
+		font-size: 0.78rem;
+		line-height: 1.25;
+		text-align: left;
+		color: rgba(15, 23, 42, 0.86);
+	}
+
+	.starter-chip:hover {
+		background: rgba(15, 23, 42, 0.07);
+	}
+
+	:global(.dark) .starter-chip {
+		border-color: rgba(255, 255, 255, 0.14);
+		background: rgba(255, 255, 255, 0.06);
+		color: rgba(255, 255, 255, 0.9);
 	}
 </style>
