@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
+	import { onMount } from 'svelte';
 	import { tick } from 'svelte';
 	import type { ChatMessage } from '$lib/types';
 
@@ -19,8 +20,9 @@
 	let input = $state('');
 	let sending = $state(false);
 	let savePromptHidden = $state<Record<number, boolean>>({});
-	let chatOpenTracked = $state(false);
-	let firstMessageTracked = $state(false);
+	let hasTrackedOpen = $state(false);
+	let hasTrackedFirstMessage = $state(false);
+	let firstMessageSource = $state<'manual' | 'chip'>('manual');
 	let conversationId = $state<string | null>(
 		browser ? window.localStorage.getItem('mittpsyke:last-conversation-id') : null
 	);
@@ -74,11 +76,18 @@
 	let currentSupportLevel = $derived(supportLevel());
 	let showStarterSuggestions = $derived(messages.length === 0 && input.trim().length === 0);
 
-	function trackChatEvent(eventName: string, params: Record<string, string | number> = {}) {
+	function trackChatEvent(
+		eventName: string,
+		params: Record<string, string | number> = {}
+	) {
 		if (!browser) return;
-		const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
-		if (typeof gtag === 'function') {
-			gtag('event', eventName, params);
+		try {
+			const gtag = (window as Window & { gtag?: (...args: unknown[]) => void }).gtag;
+			if (typeof gtag === 'function') {
+				gtag('event', eventName, params);
+			}
+		} catch {
+			// Best effort: analytics must never affect chat flow.
 		}
 	}
 
@@ -98,10 +107,13 @@
 		void tick().then(scrollToBottom);
 	});
 
-	$effect(() => {
-		if (!browser || chatOpenTracked) return;
-		trackChatEvent('chat_open', { category: category || 'unknown' });
-		chatOpenTracked = true;
+	onMount(() => {
+		if (hasTrackedOpen) return;
+		trackChatEvent('chat_open', {
+			category: category || 'unknown',
+			timestamp: new Date().toISOString()
+		});
+		hasTrackedOpen = true;
 	});
 
 	function scrollToBottom() {
@@ -157,9 +169,14 @@
 				window.localStorage.setItem('mittpsyke:last-chat-category', category);
 			}
 
-			if (!firstMessageTracked) {
-				trackChatEvent('first_message_sent', { category: category || 'unknown' });
-				firstMessageTracked = true;
+			if (!hasTrackedFirstMessage) {
+				trackChatEvent('first_message_sent', {
+					category: category || 'unknown',
+					source: firstMessageSource,
+					textLength: text.length,
+					timestamp: new Date().toISOString()
+				});
+				hasTrackedFirstMessage = true;
 			}
 
 			messages.push({
@@ -192,6 +209,13 @@
 	}
 
 	function useStarterSuggestion(text: string) {
+		firstMessageSource = 'chip';
+		trackChatEvent('starter_chip_clicked', {
+			category: category || 'unknown',
+			source: 'chip',
+			textLength: text.length,
+			timestamp: new Date().toISOString()
+		});
 		input = text;
 	}
 
