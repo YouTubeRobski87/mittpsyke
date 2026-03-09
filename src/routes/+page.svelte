@@ -127,23 +127,23 @@
 		</section>
 
 
-		<section class="account-value" aria-label="Varför skapa konto">
-			<div class="narrow account-value-inner">
-				<div>
-					<h2>Skapa konto för din egen återhämtningsyta</h2>
-					<p>Du kan börja anonymt utan konto. När du vill ha kontinuitet kan du spara historik, dagbok och framsteg på ett ställe.</p>
+			<section class="account-value" aria-label="Varför skapa konto">
+				<div class="narrow account-value-inner">
+					<div>
+						<h2>Skapa konto för en egen plats att återvända till</h2>
+						<p>Du kan börja anonymt utan konto. Med konto får du kontinuitet med sparad historik, dagbok och framsteg i samma vy.</p>
+					</div>
+					<div class="account-value-list">
+						<p><strong>Spara din resa:</strong> behåll chatthistorik och dagboksinlägg.</p>
+						<p><strong>Följ mönster över tid:</strong> se statistik och utveckling i lugn takt.</p>
+						<p><strong>Kom tillbaka imorgon:</strong> fortsätt där du slutade, när du behöver stöd igen.</p>
+					</div>
+					<div class="hero-actions">
+						<a href="/register" class="hero-cta hero-cta-primary">Skapa konto</a>
+						<a href="/om-mittpsyke" class="hero-cta hero-cta-secondary">Läs hur det fungerar</a>
+					</div>
 				</div>
-				<div class="account-value-list">
-					<p><strong>Spara din resa:</strong> behåll chatthistorik och dagboksinlägg.</p>
-					<p><strong>Följ ditt mående:</strong> se mönster, statistik och utveckling över tid.</p>
-					<p><strong>Kom tillbaka enkelt:</strong> fortsätt i din egen takt, när du behöver det.</p>
-				</div>
-				<div class="hero-actions">
-					<a href="/register" class="hero-cta hero-cta-primary">Skapa konto</a>
-					<a href="/framsteg" class="hero-cta hero-cta-secondary">Se hur framsteg fungerar</a>
-				</div>
-			</div>
-		</section>
+			</section>
 
 
 	<section class="video-section">
@@ -229,12 +229,12 @@
 		<div class="narrow intro-grid">
 			<img src="/assets/home/Tryggplats.png" alt="Trygg plats" loading="lazy" />
 			<div>
-				<h2>Ett tryggt rum online</h2>
+				<h2>Ett tryggt rum med tydliga gränser</h2>
 				<p>
-					MittPsyke &auml;r byggt f&ouml;r att ge lugn, struktur och varsamt st&ouml;d n&auml;r tankarna blir tunga.
+					MittPsyke ger ett lugnt tempo, respektfull ton och en plats att landa när tankarna blir tunga.
 				</p>
 				<p>
-					Du v&auml;ljer sj&auml;lv tempo, fokus och vilken inriktning som passar din situation just nu.
+					Vi ställer inte diagnoser och ersätter inte vård. När du behöver mänsklig kontakt finns Stödlinjer som väg vidare.
 				</p>
 			</div>
 		</div>
