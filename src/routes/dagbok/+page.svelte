@@ -848,10 +848,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Dagbok - MittPsyke</title>
-</svelte:head>
-
 {#if loading}
 	<div class="container py-16 text-center opacity-60">Laddar...</div>
 {:else}
