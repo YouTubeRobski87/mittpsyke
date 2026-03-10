@@ -46,6 +46,7 @@
 			<h2>Fördjupa vidare</h2>
 			<p>
 				Om du vill använda övningen som en del av ett större stöd kan du läsa mer om
+				<a href="/4-7-8-andning-ovning">4-7-8 andning övning</a>,
 				<a href="/andningsovningar-mot-angest">andningsövningar mot ångest</a>,
 				<a href="/ovningar-mot-angest-online">övningar mot ångest online</a> eller
 				<a href="/hjalp-vid-angest-online">hjälp vid ångest online</a>.

@@ -1,74 +1,73 @@
 <svelte:head>
-	<title>Samtalsstöd vid trauma | Lugn reflektion och nästa steg | MittPsyke</title>
+	<title>4-7-8 andning övning | Lugna andetag i egen takt | MittPsyke</title>
 	<meta
 		name="description"
-		content="Få samtalsstöd vid trauma i lugn takt genom reflektion, dagbok och varsamma nästa steg online."
+		content="Prova en 4-7-8 andning övning för att landa lite lugnare när tankarna snurrar eller kroppen är spänd."
 	/>
-	<meta property="og:title" content="Samtalsstöd vid trauma | MittPsyke" />
+	<meta property="og:title" content="4-7-8 andning övning | MittPsyke" />
 	<meta
 		property="og:description"
-		content="När svåra minnen tar plats kan du börja varsamt, skriva av dig och hitta ett lugnt nästa steg."
+		content="När kroppen går upp i varv kan lugna andetag vara ett enkelt första steg innan du går vidare."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/samtalsstod-vid-trauma" />
+	<link rel="canonical" href="https://mittpsyke.se/4-7-8-andning-ovning" />
 </svelte:head>
 
 <main class="page">
 	<div class="page-container">
 		<header class="hero">
-			<h1>Samtalsstöd vid trauma</h1>
+			<h1>4-7-8 andning övning</h1>
 			<p>
-				När något svårt har satt sig i kroppen eller tankarna kan det vara hjälpsamt att börja försiktigt.
-				Här kan du skriva av dig, reflektera och hitta ett lugnt nästa steg i din egen takt.
+				När tankarna snurrar eller kroppen känns spänd kan en enkel andningsövning vara ett lugnt första
+				steg. Här kan du börja varsamt och hitta vägar vidare i din egen takt.
 			</p>
 		</header>
 
 		<div class="cta-container">
-			<a class="cta-button" href="/chat/a">Starta ett lugnt samtal</a>
-			<a class="cta-button ghost" href="/trauma">Läs mer om trauma</a>
+			<a class="cta-button" href="/ovningar/4-7-8-andning">Öppna 4-7-8-övningen</a>
+			<a class="cta-button ghost" href="/andningsovningar-mot-angest">Se fler andningsövningar</a>
 		</div>
 
 		<section class="section">
-			<h2>Det är okej att ta det steg för steg</h2>
+			<h2>När du behöver landa i stunden</h2>
 			<p>
-				Du behöver inte berätta allt på en gång. MittPsyke är till för reflektion, struktur och stöd när
-				du vill börja varsamt och behålla kontroll över tempot.
+				Det behöver inte vara avancerat för att vara hjälpsamt. Ett par lugna andetag kan göra det lättare
+				att stanna upp och välja nästa steg med lite mer överblick.
 			</p>
 		</section>
 
 		<section class="section">
 			<h2>Vad MittPsyke erbjuder</h2>
 			<ul>
-				<li><a href="/chat/a">Samtalsstöd</a> när du behöver sätta ord på det som känns svårt.</li>
-				<li><a href="/stod-vid-ptsd-online">Stöd vid PTSD online</a> om du vill läsa vidare i lugn takt.</li>
-				<li><a href="/dagbok">Dagbok</a> för att skriva i lugn takt och få mer kontinuitet.</li>
-				<li><a href="/framsteg">Framsteg</a> för att följa små förändringar över tid.</li>
-				<li><a href="/om-mittpsyke">Om MittPsyke</a> om du vill förstå tjänsten bättre innan du börjar.</li>
+				<li><a href="/andningsovningar-mot-angest">Andningsövningar mot ångest</a> för att komma igång varsamt.</li>
+				<li><a href="/ovningar-mot-angest-online">Övningar mot ångest online</a> när du vill prova fler verktyg.</li>
+				<li><a href="/hjalp-vid-angest-online">Hjälp vid ångest online</a> om du vill fortsätta i samtal.</li>
+				<li><a href="/dagbok">Dagbok</a> för att skriva ner hur det känns före och efter.</li>
 			</ul>
 		</section>
 
 		<section class="section">
-			<h2>Nästa steg i din takt</h2>
+			<h2>Nästa steg</h2>
 			<p>
-				Om du vill spara dagbok och historik kan du <a href="/register">skapa konto</a>. Behöver du
-				mänsklig kontakt finns <a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer</a>.
+				Du kan börja med själva övningen, skriva i dagboken eller fortsätta i samtal om du märker att du
+				vill ha mer stöd än en övning just nu.
 			</p>
 			<p class="links-row">
+				<a href="/chat/a">Starta samtal om ångest</a>
+				<a href="/ovningar">Se fler övningar</a>
 				<a href="/dagbok">Skriv i dagboken</a>
-				<a href="/framsteg">Följ framsteg</a>
-				<a href="/register">Skapa konto</a>
 			</p>
 		</section>
 
 		<section class="section faq">
 			<h2>Vanliga frågor</h2>
 			<h3>Måste jag ha konto?</h3>
-			<p>Nej. Du kan börja utan konto och skapa en egen plats först när du vill spara det du skriver.</p>
-			<h3>Är detta akut hjälp?</h3>
-			<p>Nej. Vid akut fara eller om någon riskerar att skadas ska du ringa 112 direkt.</p>
-			<h3>Kan jag börja anonymt?</h3>
-			<p>Ja, du kan börja försiktigt och använda stödet i din egen takt.</p>
+			<p>Nej. Du kan börja med övningen direkt och använda andra delar av MittPsyke när det passar.</p>
+			<h3>Hur kan en övning hjälpa i stunden?</h3>
+			<p>Den kan ge kroppen och tankarna lite mer lugn så att nästa steg känns mer hanterbart.</p>
+			<h3>Ersätter detta vård?</h3>
+			<p>Nej. MittPsyke är ett digitalt samtalsstöd och ett komplement till vård.</p>
 		</section>
 	</div>
 </main>

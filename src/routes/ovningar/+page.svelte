@@ -29,6 +29,8 @@
 			Om du vill börja med ångestrelaterade verktyg kan du läsa mer om
 			<a href="/andningsovningar-mot-angest">andningsövningar mot ångest</a> eller
 			<a href="/ovningar-mot-angest-online">övningar mot ångest online</a>.
+			Du kan också läsa om <a href="/4-7-8-andning-ovning">4-7-8 andning övning</a> och
+			<a href="/exponering-ovningar-mot-angest">exponering övningar mot ångest</a>.
 		</p>
 	</section>
 

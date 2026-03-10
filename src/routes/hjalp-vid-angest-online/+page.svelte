@@ -43,6 +43,9 @@
 				<li><a href="/chat/a">Anonym chatt om ångest</a> när oron är stark.</li>
 				<li><a href="/dagbok">Dagbok</a> för att skriva av dig och följa återkommande mönster.</li>
 				<li><a href="/guider/overtankande">Guide om övertänkande</a> och oro.</li>
+				<li><a href="/andningsovningar-mot-angest">Andningsövningar mot ångest</a> när du behöver landa i kroppen.</li>
+				<li><a href="/4-7-8-andning-ovning">4-7-8 andning övning</a> för ett enkelt första steg.</li>
+				<li><a href="/exponering-ovningar-mot-angest">Exponering övningar mot ångest</a> om undvikande tar mycket plats.</li>
 				<li><a href="/ovningar/cbt-katastroftankar">Övning mot katastroftankar</a>.</li>
 				<li><a href="/ovningar/daglig-reflektionsmall">Daglig reflektionsmall</a> för struktur.</li>
 			</ul>
