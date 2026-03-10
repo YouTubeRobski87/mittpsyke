@@ -100,6 +100,48 @@
 		</section>
 	{/if}
 
+	{#if data.pillar.slug === 'depression'}
+		<section class="block" aria-label="Nästa steg vid nedstämdhet">
+			<h2>Nästa steg vid nedstämdhet</h2>
+			<p>Du kan börja lugnt och välja det som känns möjligt just idag.</p>
+			<ul>
+				<li><a href="/chat/b">Starta samtal om nedstämdhet</a></li>
+				<li><a href="/hjalp-vid-depression-online">Läs mer om hjälp vid depression online</a></li>
+				<li><a href="/dagbok">Skriv i dagboken</a></li>
+				<li><a href="/framsteg">Följ förändring över tid</a></li>
+				<li><a href="/om-mittpsyke">Läs om hur MittPsyke fungerar</a></li>
+			</ul>
+		</section>
+	{/if}
+
+	{#if data.pillar.slug === 'stress-utmattning'}
+		<section class="block" aria-label="Nästa steg vid stress">
+			<h2>Nästa steg vid stress</h2>
+			<p>När belastningen är hög kan det hjälpa att välja ett litet nästa steg.</p>
+			<ul>
+				<li><a href="/chat/e">Starta samtal om stress</a></li>
+				<li><a href="/stod-vid-stress-online">Läs mer om stöd vid stress online</a></li>
+				<li><a href="/ovningar/daglig-reflektionsmall">Prova daglig reflektionsmall</a></li>
+				<li><a href="/dagbok">Skriv i dagboken</a></li>
+				<li><a href="/framsteg">Följ återkommande mönster</a></li>
+			</ul>
+		</section>
+	{/if}
+
+	{#if data.pillar.slug === 'overtankande'}
+		<section class="block" aria-label="Nästa steg vid oro och grubblande">
+			<h2>Nästa steg vid oro och grubblande</h2>
+			<p>Om tankarna går runt kan det hjälpa att växla från analys till ett lugnt nästa steg.</p>
+			<ul>
+				<li><a href="/chat/e">Starta samtal om oro</a></li>
+				<li><a href="/hjalp-mot-oro-online">Läs mer om hjälp mot oro online</a></li>
+				<li><a href="/guider/existentiell-oro">Läs vidare om existentiell oro</a></li>
+				<li><a href="/dagbok">Skriv i dagboken</a></li>
+				<li><a href="/ovningar">Prova en övning</a></li>
+			</ul>
+		</section>
+	{/if}
+
 	<section class="cta-section" aria-label="Kom igång">
 		<h2>Redo att ta nästa steg?</h2>
 		<p>MittPsyke ger dig verktyg för att bearbeta känslor, följa ditt mående och få stöd – anonymt och i din egen takt.</p>

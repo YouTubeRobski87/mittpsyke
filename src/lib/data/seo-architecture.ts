@@ -33,7 +33,7 @@ export const pillars: Pillar[] = [
 	{
 		slug: 'stress-utmattning',
 		title: 'Stress och utmattning',
-		description: 'Lugn, tydlig vägledning för återhämtning, gränssättning och hållbar energi.',
+		description: 'Stöd vid stress online med återhämtning, struktur och varsamma nästa steg i ett lugnt tempo.',
 		clusterTopics: [
 			'Stresshormon och din kropp',
 			'Burnout-test',
@@ -64,7 +64,7 @@ export const pillars: Pillar[] = [
 	{
 		slug: 'depression',
 		title: 'Nedstämdhet och depression',
-		description: 'Förstå symtom och hitta varsamma strategier för ork, struktur och hopp.',
+		description: 'Hjälp vid depression online med lugn reflektion, struktur och möjlighet att följa små steg över tid.',
 		clusterTopics: [
 			'Symtom på depression',
 			'Depression och energi',
@@ -79,7 +79,7 @@ export const pillars: Pillar[] = [
 	{
 		slug: 'overtankande',
 		title: 'Övertänkande och grubblande',
-		description: 'Bryt tankeloopar med tydliga metoder för närvaro och mental flexibilitet.',
+		description: 'Hjälp mot oro online med tydliga sätt att bryta tankeloopar och hitta mer lugn i vardagen.',
 		clusterTopics: [
 			'Varför grubblande inte löser problem',
 			'Mental rumination',
