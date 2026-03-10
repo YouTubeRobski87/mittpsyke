@@ -5,11 +5,17 @@
 </script>
 
 <svelte:head>
-	<title>&Ouml;vningar | MittPsyke</title>
+	<title>Övningar | Verktyg i lugn takt | MittPsyke</title>
 	<meta
 		name="description"
-		content="Praktiska &ouml;vningar f&ouml;r &aring;ngest, stress, sj&auml;lvk&auml;nsla, relationer och mental &aring;terh&auml;mtning."
+		content="Praktiska övningar för ångest, stress, självkänsla, relationer och mental återhämtning i lugn takt."
 	/>
+	<meta property="og:title" content="Övningar | Verktyg i lugn takt | MittPsyke" />
+	<meta
+		property="og:description"
+		content="Utforska lugna övningar för reflektion, ångest, oro och återhämtning. Börja där du är och ta små steg."
+	/>
+	<link rel="canonical" href="https://mittpsyke.se/ovningar" />
 </svelte:head>
 
 <main class="container tools-page">
@@ -17,6 +23,14 @@
 		<h1>&Ouml;vningar</h1>
 		<p>V&auml;lkomponerade steg-f&ouml;r-steg-&ouml;vningar som du kan anv&auml;nda direkt i vardagen.</p>
 	</header>
+
+	<section class="links-block" aria-label="Fördjupning">
+		<p>
+			Om du vill börja med ångestrelaterade verktyg kan du läsa mer om
+			<a href="/andningsovningar-mot-angest">andningsövningar mot ångest</a> eller
+			<a href="/ovningar-mot-angest-online">övningar mot ångest online</a>.
+		</p>
+	</section>
 
 	<section class="grid" aria-label="Alla övningar">
 		{#each tools as tool}
@@ -50,6 +64,17 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 		gap: 0.95rem;
+	}
+
+	.links-block {
+		margin-top: 1.3rem;
+		max-width: 62ch;
+		opacity: 0.84;
+	}
+
+	.links-block a {
+		text-decoration: underline;
+		text-underline-offset: 2px;
 	}
 
 	.card {

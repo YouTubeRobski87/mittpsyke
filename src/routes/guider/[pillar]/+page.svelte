@@ -93,6 +93,8 @@
 			<ul>
 				<li><a href="/chat/a">Starta samtal om ångest</a></li>
 				<li><a href="/hjalp-vid-angest-online">Läs mer om hjälp vid ångest online</a></li>
+				<li><a href="/andningsovningar-mot-angest">Se andningsövningar mot ångest</a></li>
+				<li><a href="/ovningar-mot-angest-online">Utforska övningar mot ångest online</a></li>
 				<li><a href="/ovningar/cbt-katastroftankar">Prova övning mot katastroftankar</a></li>
 				<li><a href="/dagbok">Skriv i dagboken</a></li>
 				<li><a href="/framsteg">Följ mönster över tid</a></li>
@@ -135,6 +137,8 @@
 			<ul>
 				<li><a href="/chat/e">Starta samtal om oro</a></li>
 				<li><a href="/hjalp-mot-oro-online">Läs mer om hjälp mot oro online</a></li>
+				<li><a href="/andningsovningar-mot-angest">Se andningsövningar mot ångest</a></li>
+				<li><a href="/ovningar-mot-angest-online">Utforska övningar mot ångest online</a></li>
 				<li><a href="/guider/existentiell-oro">Läs vidare om existentiell oro</a></li>
 				<li><a href="/dagbok">Skriv i dagboken</a></li>
 				<li><a href="/ovningar">Prova en övning</a></li>
