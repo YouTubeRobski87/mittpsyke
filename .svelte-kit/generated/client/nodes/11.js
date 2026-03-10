@@ -1,3 +1,3 @@
-import * as universal from "../../../../src/routes/ensamhet/+page.js";
+import * as universal from "../../../../src/routes/depression/+page.js";
 export { universal };
-export { default as component } from "../../../../src/routes/ensamhet/+page.svelte";
+export { default as component } from "../../../../src/routes/depression/+page.svelte";
