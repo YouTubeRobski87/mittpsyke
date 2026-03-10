@@ -1,1 +1,3 @@
-export { default as component } from "../../../../src/routes/digital-dagbok-for-maende/+page.svelte";
+import * as universal from "../../../../src/routes/depression/+page.js";
+export { universal };
+export { default as component } from "../../../../src/routes/depression/+page.svelte";

@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/routes/chattstod-psykisk-ohalsa/+page.svelte";
+export { default as component } from "../../../../src/routes/chatta-anonymt-med-nagon/+page.svelte";

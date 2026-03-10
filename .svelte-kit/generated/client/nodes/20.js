@@ -1,1 +1,3 @@
-export { default as component } from "../../../../src/routes/exponering-ovningar-mot-angest/+page.svelte";
+import * as universal from "../../../../src/routes/ensamhet/+page.js";
+export { universal };
+export { default as component } from "../../../../src/routes/ensamhet/+page.svelte";
