@@ -295,6 +295,158 @@ export const guides: Guide[] = [
 		]
 	},
 	{
+		pillarSlug: 'depression',
+		slug: 'trotthet-och-meningsloshet',
+		title: 'Trotthet och meningsloshet - nar ingenting kanns vart att gora',
+		description: 'Om trotthet, tomhet och kanslan av att vardagen forlorar sin riktning.',
+		faqs: [
+			{
+				question: 'Varfor blir allt sa tungt nar jag mar daligt?',
+				answer: 'Nedstamdhet kan paverka energi, motivation och kanslan av mening, vilket gor att sma saker kan kannas mycket stora.'
+			},
+			{
+				question: 'Ar trottheten bara fysisk?',
+				answer: 'Nej, den kan ocksa vara mental och kanslomassig, som om allt i dig gar langsammare.'
+			},
+			{
+				question: 'Varfor tappar jag lusten till sant jag brukade tycka om?',
+				answer: 'Det ar vanligt att nedstamdhet gor att intresse och drivkraft minskar, aven for sadant som tidigare kandes viktigt.'
+			},
+			{
+				question: 'Vad kan hjalpa nar allt kanns tomt?',
+				answer: 'Ofta ar mycket sma och konkreta steg mer realistiska an att forsoka hitta stor motivation direkt.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Nedstamdhet eller depression',
+				href: '/guider-seo/depression/nedstamdhet'
+			},
+			{
+				title: 'Sma steg nar energin tryter - vad som faktiskt kan hjalpa',
+				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
+			},
+			{
+				title: 'Hur nedstamdhet paverkar relationer och narheten till andra',
+				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+			}
+		]
+	},
+	{
+		pillarSlug: 'depression',
+		slug: 'nedstamdhet-och-relationer',
+		title: 'Hur nedstamdhet paverkar relationer och narheten till andra',
+		description: 'Om hur nedstamdhet kan gora det svarare att orka med kontakt, narhet och samtal.',
+		faqs: [
+			{
+				question: 'Varfor drar jag mig undan nar jag ar nedstamd?',
+				answer: 'Nar orken ar lag blir social kontakt ofta mer kravfylld, och ensamhet kan ibland kannas enklare an att forsoka forklara hur det ar.'
+			},
+			{
+				question: 'Kan nedstamdhet skapa missforstand i relationer?',
+				answer: 'Ja, andra kan tolka tillbakadragenhet som ointresse trots att det egentligen handlar om att du kampar mycket inombords.'
+			},
+			{
+				question: 'Varfor kanns narhet svarare?',
+				answer: 'Nedstamdhet kan minska energi, hopp och tillgang till kanslor, vilket ibland gor det svart att vara narvarande med andra.'
+			},
+			{
+				question: 'Hur kan jag borja prata om det?',
+				answer: 'Det kan hjalpa att borja enkelt och beskriva att du har mindre ork just nu, utan att behova forklara allt pa en gang.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Nedstamdhet eller depression',
+				href: '/guider-seo/depression/nedstamdhet'
+			},
+			{
+				title: 'Lag sjalvkansla - vad det ar och var det kommer ifran',
+				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+			},
+			{
+				title: 'Jamforelsetrasket - sociala medier och din sjalvbild',
+				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
+			}
+		]
+	},
+	{
+		pillarSlug: 'depression',
+		slug: 'sorg-och-depression',
+		title: 'Skillnaden mellan sorg och depression - och varfor det spelar roll',
+		description: 'Om likheter och skillnader mellan sorg och depression, och varfor de ibland blandas ihop.',
+		faqs: [
+			{
+				question: 'Hur skiljer sig sorg fran depression?',
+				answer: 'Sorg ar ofta kopplad till en forlust, medan depression kan vara bredare och paverka hela vardagen under langre tid.'
+			},
+			{
+				question: 'Kan sorg ocksa vara tung och overvaldiga?',
+				answer: 'Ja, sorg kan vara mycket stark och paverka bade kropp, somn och ork, utan att det betyder att det ar depression.'
+			},
+			{
+				question: 'Kan man ha bade sorg och depression samtidigt?',
+				answer: 'Ja, de kan overlappa varandra och ibland gora det svart att sjalv avgora vad som pagar.'
+			},
+			{
+				question: 'Varfor spelar skillnaden roll?',
+				answer: 'For att stodet ibland ser olika ut, och det kan vara viktigt att forsta vad som driver maendet just nu.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Nedstamdhet eller depression',
+				href: '/guider-seo/depression/nedstamdhet'
+			},
+			{
+				title: 'Trotthet och meningsloshet - nar ingenting kanns vart att gora',
+				href: '/guider-seo/depression/trotthet-och-meningsloshet'
+			},
+			{
+				title: 'Sma steg nar energin tryter - vad som faktiskt kan hjalpa',
+				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
+			}
+		]
+	},
+	{
+		pillarSlug: 'depression',
+		slug: 'sma-steg-vid-nedstamdhet',
+		title: 'Sma steg nar energin tryter - vad som faktiskt kan hjalpa',
+		description: 'Om varsamma och realistiska steg nar energin ar lag och allt kanns svart att borja med.',
+		faqs: [
+			{
+				question: 'Varfor hjalper sma steg battre an stora planer?',
+				answer: 'Nar orken ar lag blir for stora krav ofta overvaldiga, medan sma steg ar lattare att genomfora och bygga vidare pa.'
+			},
+			{
+				question: 'Vad kan ett litet steg vara?',
+				answer: 'Det kan vara att ata nagot enkelt, ga ut en kort stund eller skicka ett meddelande till nagon du litar pa.'
+			},
+			{
+				question: 'Racker sma steg verkligen?',
+				answer: 'Ja, ofta ar det just regelbundna och genomforbara steg som skapar rorelse nar allt annars star still.'
+			},
+			{
+				question: 'Hur undviker jag att bli besviken pa mig sjalv?',
+				answer: 'Genom att mata framsteg efter vad som ar mojligt just nu, inte efter hur mycket du tycker att du borde orka.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Nedstamdhet eller depression',
+				href: '/guider-seo/depression/nedstamdhet'
+			},
+			{
+				title: 'Trotthet och meningsloshet - nar ingenting kanns vart att gora',
+				href: '/guider-seo/depression/trotthet-och-meningsloshet'
+			},
+			{
+				title: 'Hur nedstamdhet paverkar relationer och narheten till andra',
+				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+			}
+		]
+	},
+	{
 		pillarSlug: 'trauma',
 		slug: 'trygghet',
 		title: 'Trygghet efter trauma',
