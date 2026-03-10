@@ -38,10 +38,10 @@
 </script>
 
 <svelte:head>
-	<title>Psykiskt stöd online | Verktyg mot ångest | Mittpsyke.se</title>
-	<meta name="description" content="Mittpsyke erbjuder anonymt samtalsstöd online och digitala verktyg mot ångest och trauma. Starta din dagbok eller chatta med oss idag." />
-	<meta property="og:title" content="Psykiskt stöd online | Verktyg mot ångest | Mittpsyke.se" />
-	<meta property="og:description" content="Mittpsyke erbjuder anonymt samtalsstöd online och digitala verktyg mot ångest och trauma. Starta din dagbok eller chatta med oss idag." />
+	<title>Psykiskt stöd online i lugn takt | MittPsyke</title>
+	<meta name="description" content="Prata anonymt, skriv dagbok och följ ditt mående över tid. MittPsyke är ett tryggt digitalt samtalsstöd när livet känns tungt." />
+	<meta property="og:title" content="Psykiskt stöd online i lugn takt | MittPsyke" />
+	<meta property="og:description" content="Ett tryggt digitalt stödrum för samtal, dagbok, reflektion och nästa steg när du behöver stöd." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	<link rel="canonical" href="https://mittpsyke.se/" />
@@ -166,6 +166,11 @@
 			<h2>Verktyg mot ångest och personlig utveckling</h2>
 			<p>
 				Att hitta rätt verktyg mot ångest online kan vara avgörande. Genom vår digitala dagbok och chattfunktion kan du i din egen takt bearbeta tankar och känslor. Vi erbjuder även specialiserat <a href="/trauma">samtalsstöd vid trauma</a> för dig som behöver bearbeta svåra upplevelser i en trygg miljö.
+			</p>
+			<p>
+				Om du vill läsa mer kan du börja här: <a href="/psykiskt-stod-online">psykiskt stöd online</a>,
+				<a href="/anonymt-samtalsstod-online">anonymt samtalsstöd online</a> och
+				<a href="/hjalp-vid-angest-online">hjälp vid ångest online</a>.
 			</p>
 			<ul class="seo-features">
 				<li><strong>Anonymitet &amp; Trygghet:</strong> Vi värnar om din integritet med tystnadsplikt.</li>
