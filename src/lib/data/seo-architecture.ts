@@ -17,7 +17,7 @@ export const pillars: Pillar[] = [
 	{
 		slug: 'angest',
 		title: 'Ångest',
-		description: 'Förstå symtom, orsaker och verktyg som kan minska oro i vardagen.',
+		description: 'Hjälp vid ångest online med tydliga verktyg, reflektion och varsamma nästa steg i din egen takt.',
 		clusterTopics: [
 			'Vad händer i kroppen vid ångest?',
 			'Är ångest farligt?',
