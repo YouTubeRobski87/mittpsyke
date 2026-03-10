@@ -8,6 +8,9 @@
 		"src/routes/angest/+page.js",
 		"src/routes/+layout.ts"
 	],
+	"/anonymt-samtalsstod-online": [
+		"src/routes/+layout.ts"
+	],
 	"/ansvar": [
 		"src/routes/+layout.ts"
 	],
@@ -101,6 +104,9 @@
 		"src/routes/guider/[pillar]/+page.ts",
 		"src/routes/+layout.ts"
 	],
+	"/hjalp-vid-angest-online": [
+		"src/routes/+layout.ts"
+	],
 	"/integritet": [
 		"src/routes/+layout.ts"
 	],
@@ -132,6 +138,9 @@
 		"src/routes/+layout.ts"
 	],
 	"/portal/[slug]": [
+		"src/routes/+layout.ts"
+	],
+	"/psykiskt-stod-online": [
 		"src/routes/+layout.ts"
 	],
 	"/register": [
