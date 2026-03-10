@@ -80,6 +80,24 @@ export const guides: Guide[] = [
 				question: 'Kan andningstekniker hjalpa snabbt?',
 				answer: 'Ja, langsam och regelbunden andning kan ofta minska stressreaktionen inom nagra minuter.'
 			}
+		],
+		relatedArticles: [
+			{
+				title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det',
+				href: '/guider/panikangest-och-kroppen'
+			},
+			{
+				title: 'Orostankar som snurrar – när hjärnan inte kan stänga av',
+				href: '/guider/orostankar'
+			},
+			{
+				title: 'Ångest och sömn – varför natten kan bli svårare',
+				href: '/guider/angest-och-somn'
+			},
+			{
+				title: 'Social ångest – rädslan för att bli bedömd av andra',
+				href: '/guider/social-angest'
+			}
 		]
 	},
 	{
@@ -104,6 +122,24 @@ export const guides: Guide[] = [
 				question: 'Nar ar det akut att soka hjalp?',
 				answer: 'Vid sjalvskadetankar eller kansla av att inte vilja leva ska du soka akut hjalp direkt.'
 			}
+		],
+		relatedArticles: [
+			{
+				title: 'Trötthet och meningslöshet – när ingenting känns värt att göra',
+				href: '/guider/trotthet-och-meningsloshet'
+			},
+			{
+				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
+				href: '/guider/nedstamdhet-och-relationer'
+			},
+			{
+				title: 'Skillnaden mellan sorg och depression – och varför det spelar roll',
+				href: '/guider/sorg-och-depression'
+			},
+			{
+				title: 'Små steg när energin tryter – vad som faktiskt kan hjälpa',
+				href: '/guider/sma-steg-vid-nedstamdhet'
+			}
 		]
 	},
 	{
@@ -127,6 +163,24 @@ export const guides: Guide[] = [
 			{
 				question: 'Nar bor jag prata med en terapeut?',
 				answer: 'Om symtomen varar eller okar, eller om minnen och undvikande begransar ditt liv.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Vad händer i nervsystemet vid trauma – fight, flight och freeze',
+				href: '/guider/nervsystemet-och-trauma'
+			},
+			{
+				title: 'Grounding – enkla övningar för att landa i kroppen igen',
+				href: '/guider/grounding-ovningar'
+			},
+			{
+				title: 'Undvikande efter trauma – varför vi gör det och vad det kostar',
+				href: '/guider/undvikande-efter-trauma'
+			},
+			{
+				title: 'Tillit och trygghet i relationer efter svåra upplevelser',
+				href: '/guider/tillit-efter-trauma'
 			}
 		]
 	},
@@ -193,6 +247,24 @@ export const guides: Guide[] = [
 			{
 				question: 'Hur borjar man arbeta med sjalvkansla?',
 				answer: 'Ofta genom att bli medveten om den inre rosta – hur du pratar med dig sjalv – och borja utforska varifraN den restan kom.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Den inre kritikern – varför rösten finns och vad den egentligen vill',
+				href: '/guider/inre-kritikern'
+			},
+			{
+				title: 'Perfektionism och självkänsla – när ingenting känns tillräckligt bra',
+				href: '/guider/perfektionism-och-sjalvkansla'
+			},
+			{
+				title: 'Att sätta gränser när självkänslan är låg – varför det är svårt',
+				href: '/guider/gransen-och-sjalvkansla'
+			},
+			{
+				title: 'Jämförelseträsket – sociala medier och din självbild',
+				href: '/guider/jamforelse-och-sjalvbild'
 			}
 		]
 	}
