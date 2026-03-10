@@ -1,5 +1,15 @@
 <svelte:head>
 	<title>Om MittPsyke &ndash; Tryggt st&ouml;d f&ouml;r ditt psyke</title>
+	<meta
+		name="description"
+		content="Läs om MittPsyke, hur tjänsten fungerar och hur chatten, dagboken och framsteg kan ge ett lugnt digitalt samtalsstöd."
+	/>
+	<meta property="og:title" content="Om MittPsyke – Tryggt stöd för ditt psyke" />
+	<meta
+		property="og:description"
+		content="MittPsyke är ett lugnt digitalt samtalsstöd med chat, dagbok och stöd för reflektion över tid."
+	/>
+	<link rel="canonical" href="https://mittpsyke.se/om-mittpsyke" />
 </svelte:head>
 
 <main class="page">
@@ -141,6 +151,9 @@
 		<section class="section links-section">
 			<h2>Kontakt och l&auml;nkar</h2>
 			<ul>
+				<li><a href="/chat">Öppna chatten</a></li>
+				<li><a href="/dagbok">Läs om dagboken</a></li>
+				<li><a href="/digital-dagbok-for-maende">Digital dagbok för mående</a></li>
 				<li>
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">
 						Akut hj&auml;lp (St&ouml;dlinjer)

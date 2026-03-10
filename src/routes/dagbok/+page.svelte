@@ -879,6 +879,17 @@
 </script>
 
 <svelte:head>
+	<title>Dagbok | Skriv, följ och förstå ditt mående | MittPsyke</title>
+	<meta
+		name="description"
+		content="Skriv i dagboken, följ ditt mående över tid och få en lugn plats för reflektion. MittPsykes dagbok hjälper dig att se mönster och nästa steg."
+	/>
+	<meta property="og:title" content="Dagbok | Skriv, följ och förstå ditt mående | MittPsyke" />
+	<meta
+		property="og:description"
+		content="En lugn digital dagbok där du kan skriva av dig, följa känslor över tid och få mer kontinuitet i ditt mående."
+	/>
+	<link rel="canonical" href="https://www.mittpsyke.se/dagbok" />
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
 </svelte:head>
 
@@ -1181,6 +1192,12 @@
 		<div class="text-center">
 			<h2 class="text-xl font-semibold mb-3">Redo att börja skriva?</h2>
 			<p class="text-gray-600 dark:text-gray-300 mb-6">Skapa ett gratis konto och börja din dagbok idag. Det tar bara några sekunder.</p>
+			<p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
+				Läs mer om <a href="/digital-dagbok-for-maende" class="underline underline-offset-2">digital dagbok för mående</a>,
+				utforska <a href="/guider" class="underline underline-offset-2">guider</a> och
+				<a href="/ovningar" class="underline underline-offset-2">övningar</a>, eller
+				<a href="/chat" class="underline underline-offset-2">öppna chatten</a> om du vill reflektera vidare.
+			</p>
 			<div class="flex flex-col sm:flex-row gap-3 justify-center">
 				<a href="/register" class="btn btn-primary px-8 py-3 rounded-full font-semibold text-white bg-green-600 hover:bg-green-700 transition">Skapa konto gratis</a>
 				<a href="/login" class="btn btn-outline px-8 py-3 rounded-full font-semibold border-2 border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition">Logga in</a>
