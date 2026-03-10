@@ -36,7 +36,7 @@
 
 				<div class="story-text">
 					<p>
-						Jag heter Robert. Jag har gått igenom mycket i livet.
+						Jag heter Robert men kallas Robban. Jag har gått igenom mycket i livet.
 					</p>
 					<p>
 						Det har funnits perioder av missbruk, kaos, destruktiva relationer och en lång kamp för att hitta tillbaka till mig själv. Under flera år levde jag på ett sätt som slet sönder mig inifrån. Jag bar på mycket smärta och många saker som jag aldrig riktigt hann bearbeta. Till slut märkte jag att det man flyr ifrån börjar hinna ikapp en.
@@ -56,7 +56,7 @@
 
 					<blockquote class="story-quote">
 						"Det här är inte historien om ett perfekt liv. Det är historien om att överleva, falla, kämpa och långsamt börja bygga upp sig själv igen. Och kanske är det just där den verkliga styrkan finns."
-						<cite>— Robert Claesson, grundare av MittPsyke</cite>
+						<cite>— Robban (Robert Claesson), grundare av MittPsyke</cite>
 					</blockquote>
 				</div>
 			</div>
@@ -221,7 +221,7 @@
 				</div>
 				<div class="company-row">
 					<dt>Ansvarig:</dt>
-					<dd>Robert Claesson</dd>
+					<dd>Robert "Robban" Claesson</dd>
 				</div>
 			</dl>
 
@@ -609,3 +609,4 @@
 		border-color: rgba(134, 223, 214, 0.15);
 	}
 </style>
+
