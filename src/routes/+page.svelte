@@ -104,7 +104,7 @@
 				</div>
 				<div class="support-card support-card-phone">
 					<h3>Spara din resa över tid</h3>
-					<p>Med konto får du en egen plats för dagbok, historik och framsteg så att du kan följa hur måendet förändras över tid.</p>
+					<p>Med konto får du en egen plats för dagbok, historik och framsteg, så att du kan följa hur ditt mående förändras över tid.</p>
 					<a href="/register" class="support-button">Skapa konto</a>
 				</div>
 				<div class="support-card">
