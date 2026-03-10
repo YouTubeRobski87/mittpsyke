@@ -1,1 +1,3 @@
-export { default as component } from "../../../../src/routes/hjalp-mot-oro-online/+page.svelte";
+import * as universal from "../../../../src/routes/guider-seo/[pillar]/[guide]/+page.ts";
+export { universal };
+export { default as component } from "../../../../src/routes/guider-seo/[pillar]/[guide]/+page.svelte";
