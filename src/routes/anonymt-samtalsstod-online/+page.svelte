@@ -40,7 +40,7 @@
 		<section class="section">
 			<h2>Det här kan du göra här</h2>
 			<ul>
-				<li>Chatta anonymt när du behöver stöd i stunden.</li>
+				<li><a href="/chat">Chatta anonymt</a> när du behöver stöd i stunden.</li>
 				<li>Få struktur med <a href="/ovningar/daglig-reflektionsmall">enkla övningar</a>.</li>
 				<li>Läs <a href="/guider/overtankande">guider om övertänkande</a> och oro.</li>
 				<li>Skapa konto för dagbok, historik och framsteg.</li>
@@ -55,9 +55,10 @@
 				Vid akut fara ska du alltid ringa 112.
 			</p>
 			<p class="links-row">
-				<a href="/chat/a">Starta samtal</a>
-				<a href="/register">Skapa konto</a>
-				<a href="/guider/angest">Läs guide om ångest</a>
+				<a href="/chat/a">Chatta om ångest</a>
+				<a href="/chat/b">Chatta om nedstämdhet</a>
+				<a href="/chat/e">Chatta om stress</a>
+				<a href="/om-mittpsyke">Om MittPsyke</a>
 			</p>
 		</section>
 
