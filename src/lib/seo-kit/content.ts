@@ -103,37 +103,37 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'panikangest-och-kroppen',
-		title: 'Panikangest - vad som hander i kroppen och hur du kan hantera det',
-		description: 'Om kroppens starka reaktioner vid panikangest och hur du kan forsta det som hander.',
+		title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det',
+		description: 'Om kroppens starka reaktioner vid panikångest och hur du kan förstå det som händer.',
 		faqs: [
 			{
-				question: 'Varfor reagerar kroppen sa starkt vid panikangest?',
-				answer: 'Kroppen gar in i alarmberedskap, vilket kan ge hjartklappning, yrsel, tryck over brostet och snabb andning.'
+				question: 'Varför reagerar kroppen så starkt vid panikångest?',
+				answer: 'Kroppen går in i alarmberedskap, vilket kan ge hjärtklappning, yrsel, tryck över bröstet och snabb andning.'
 			},
 			{
 				question: 'Ar panikangest farligt?',
 				answer: 'Det brukar inte vara farligt i sig, men upplevelsen kan vara mycket intensiv och skrämmande.'
 			},
 			{
-				question: 'Varfor kanns det som att jag tappar kontrollen?',
-				answer: 'Nar stressystemet slar pa starkt kan hjarnan tolka reaktionerna som ett hot, vilket forstarker kanslan.'
+				question: 'Varför känns det som att jag tappar kontrollen?',
+				answer: 'När stressystemet slår på starkt kan hjärnan tolka reaktionerna som ett hot, vilket förstärker känslan.'
 			},
 			{
-				question: 'Vad kan hjalpa i stunden?',
-				answer: 'Att sakta ner andningen, stanna kvar i nuet och paminna dig om att reaktionen gar over kan minska intensiteten.'
+				question: 'Vad kan hjälpa i stunden?',
+				answer: 'Att sakta ner andningen, stanna kvar i nuet och påminna dig om att reaktionen går över kan minska intensiteten.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Tecken pa angest',
+				title: 'Tecken på ångest',
 				href: '/guider-seo/angest/tecken'
 			},
 			{
-				title: 'Orostankar som snurrar - nar hjarnan inte kan stanga av',
+				title: 'Orostankar som snurrar – när hjärnan inte kan stänga av',
 				href: '/guider-seo/angest/orostankar'
 			},
 			{
-				title: 'Angest och somn - varfor natten kan bli svarare',
+				title: 'Ångest och sömn – varför natten kan bli svårare',
 				href: '/guider-seo/angest/angest-och-somn'
 			}
 		]
