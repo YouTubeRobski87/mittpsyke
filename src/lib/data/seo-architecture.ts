@@ -62,6 +62,21 @@ export const pillars: Pillar[] = [
 		toolSlugs: ['skrivovningar-sjalvkansla', 'sjalvmedkansla-ovning', 'vardekartlaggning']
 	},
 	{
+		slug: 'sovproblem',
+		title: 'Sömnproblem',
+		description: 'Stöd vid sömnproblem – lugna tankarna, förstå mönstren och hitta din väg till bättre sömn.',
+		clusterTopics: [
+			'Varför kan jag inte sova?',
+			'Tankar som snurrar på natten',
+			'Sömnhygien i praktiken',
+			'Ångest och sömnproblem',
+			'Sova utan lugnande medel',
+			'Vakna på natten – vad göra?',
+			'KBT för sömnproblem (CBT-i)'
+		],
+		toolSlugs: ['4-7-8-andning', 'body-scan', 'dagens-avslut-reflektion']
+	},
+	{
 		slug: 'depression',
 		title: 'Nedstämdhet och depression',
 		description: 'Hjälp vid depression online med lugn reflektion, struktur och möjlighet att följa små steg över tid.',
