@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/routes/framsteg/+page.svelte";
+export { default as component } from "../../../../src/routes/digital-dagbok-for-maende/+page.svelte";

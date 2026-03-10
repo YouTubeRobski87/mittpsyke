@@ -1,1 +1,3 @@
-export { default as component } from "../../../../src/routes/ansvar/+page.svelte";
+import * as universal from "../../../../src/routes/angest/+page.js";
+export { universal };
+export { default as component } from "../../../../src/routes/angest/+page.svelte";

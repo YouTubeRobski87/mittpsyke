@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/routes/anonymt-samtalsstod-online/+page.svelte";
+export { default as component } from "../../../../src/routes/andningsovningar-mot-angest/+page.svelte";

@@ -1,3 +1,1 @@
-import * as universal from "../../../../src/routes/angest/+page.js";
-export { universal };
-export { default as component } from "../../../../src/routes/angest/+page.svelte";
+export { default as component } from "../../../../src/routes/ai-samtalsstod-online/+page.svelte";
