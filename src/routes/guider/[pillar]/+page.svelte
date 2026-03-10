@@ -86,6 +86,17 @@
 		</div>
 	</section>
 
+	{#if data.pillar.relatedArticles?.length}
+		<section class="block" aria-label="Relaterade artiklar">
+			<h2>Relaterade artiklar</h2>
+			<ul>
+				{#each data.pillar.relatedArticles as article}
+					<li><a href={article.href}>{article.title}</a></li>
+				{/each}
+			</ul>
+		</section>
+	{/if}
+
 	{#if data.pillar.slug === 'angest'}
 		<section class="block" aria-label="Nästa steg vid ångest">
 			<h2>Nästa steg vid ångest</h2>

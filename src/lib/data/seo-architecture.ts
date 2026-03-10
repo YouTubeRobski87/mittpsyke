@@ -1,9 +1,15 @@
+export type RelatedArticle = {
+	title: string;
+	href: string;
+};
+
 export type Pillar = {
 	slug: string;
 	title: string;
 	description: string;
 	clusterTopics: string[];
 	toolSlugs: string[];
+	relatedArticles?: RelatedArticle[];
 };
 
 export type Tool = {
@@ -28,7 +34,13 @@ export const pillars: Pillar[] = [
 			'Ångest och fysisk aktivitet',
 			'Acceptans och att leva med ångest'
 		],
-		toolSlugs: ['grounding-5-4-3-2-1', '4-7-8-andning', 'cbt-katastroftankar']
+		toolSlugs: ['grounding-5-4-3-2-1', '4-7-8-andning', 'cbt-katastroftankar'],
+		relatedArticles: [
+			{ title: 'Panikattack eller ångest – vad är skillnaden?', href: '/guider/panikattack-eller-angest' },
+			{ title: 'Ångest på kvällen – varför det ofta blir värre', href: '/guider/angest-pa-kvallen' },
+			{ title: 'Undvikande och hur det håller ångesten vid liv', href: '/guider/undvikande-och-angest' },
+			{ title: 'Kroppen vid ångest – symtom du kan lära dig förstå', href: '/guider/kroppen-vid-angest' }
+		]
 	},
 	{
 		slug: 'stress-utmattning',
@@ -44,7 +56,13 @@ export const pillars: Pillar[] = [
 			'Stress och sömnproblem',
 			'När ska man söka professionell hjälp?'
 		],
-		toolSlugs: ['dagens-avslut-reflektion', 'tacksamhetsovning', 'daglig-reflektionsmall']
+		toolSlugs: ['dagens-avslut-reflektion', 'tacksamhetsovning', 'daglig-reflektionsmall'],
+		relatedArticles: [
+			{ title: 'Skillnaden mellan stress och utmattning', href: '/guider/stress-vs-utmattning' },
+			{ title: 'Gränssättning – varför det är svårt och hur du börjar', href: '/guider/granssattning' },
+			{ title: 'Återhämtning tar tid – tecken på att du är på rätt väg', href: '/guider/aterhamtning-fran-stress' },
+			{ title: 'Kropp och stress – vad som händer när systemet är överbelastat', href: '/guider/kropp-och-stress' }
+		]
 	},
 	{
 		slug: 'sjalvkansla',
@@ -59,7 +77,13 @@ export const pillars: Pillar[] = [
 			'Imposter-syndrom',
 			'Bekräftelser som fungerar'
 		],
-		toolSlugs: ['skrivovningar-sjalvkansla', 'sjalvmedkansla-ovning', 'vardekartlaggning']
+		toolSlugs: ['skrivovningar-sjalvkansla', 'sjalvmedkansla-ovning', 'vardekartlaggning'],
+		relatedArticles: [
+			{ title: 'Den inre kritikern – vad den säger och hur du svarar', href: '/guider/den-inre-kritikern' },
+			{ title: 'Självmedkänsla som verktyg – inte bara ett buzzword', href: '/guider/sjalvmedkansla-i-praktiken' },
+			{ title: 'Jämförelse och sociala medier – varför det sår tvivel', href: '/guider/jamforelse-sociala-medier' },
+			{ title: 'Skam och skuld – att bära mindre och leva mer', href: '/guider/skam-och-skuld' }
+		]
 	},
 	{
 		slug: 'sovproblem',
@@ -74,7 +98,13 @@ export const pillars: Pillar[] = [
 			'Vakna på natten – vad göra?',
 			'KBT för sömnproblem (CBT-i)'
 		],
-		toolSlugs: ['4-7-8-andning', 'body-scan', 'dagens-avslut-reflektion']
+		toolSlugs: ['4-7-8-andning', 'body-scan', 'dagens-avslut-reflektion'],
+		relatedArticles: [
+			{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider/stress-och-somn' },
+			{ title: 'Ältande på kvällen – varför tankarna blir starkare i sängen', href: '/guider/altande-pa-kvallen' },
+			{ title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget', href: '/guider/trott-men-uppvarvad' },
+			{ title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet', href: '/guider/somnbrist-och-maendet' }
+		]
 	},
 	{
 		slug: 'depression',
@@ -89,7 +119,13 @@ export const pillars: Pillar[] = [
 			'Isolering och vägen tillbaka',
 			'Hopp och återhämtning'
 		],
-		toolSlugs: ['daglig-reflektionsmall', 'tacksamhetsovning', 'body-scan']
+		toolSlugs: ['daglig-reflektionsmall', 'tacksamhetsovning', 'body-scan'],
+		relatedArticles: [
+			{ title: 'Energi och depression – varför det känns omöjligt att göra saker', href: '/guider/energi-och-depression' },
+			{ title: 'Negativa tankar – hur de håller nedstämdhet vid liv', href: '/guider/negativa-tankar-och-depression' },
+			{ title: 'Söka hjälp vid depression – när är det dags?', href: '/guider/soka-hjalp-vid-depression' },
+			{ title: 'Aktivering – rörelse och rutiner som faktiskt hjälper', href: '/guider/aktivering-vid-depression' }
+		]
 	},
 	{
 		slug: 'overtankande',
