@@ -246,6 +246,7 @@
 			<h2>Mejlutskick</h2>
 			<p class="field-hint">Hantera avregistrering och stoppa framtida utskick.</p>
 			<a class="save-btn link-btn" href="/avregistrera">Hantera avregistrering</a>
+			<p class="field-hint">Läs mer om radering, export och hur uppgifter hanteras i <a href="/integritet">integritetspolicyn</a>.</p>
 		</section>
 
 		<!-- Delete Account Section -->
