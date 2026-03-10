@@ -109,7 +109,7 @@
 				</div>
 				<div class="support-card">
 					<h3>Hitta väg vidare vid behov</h3>
-					<p>MittPsyke ersätter inte vård, men kan vara ett första steg för att landa, sortera tankar och hitta mänskligt stöd.</p>
+					<p>MittPsyke ersätter inte vård, men kan vara ett första steg när du behöver landa, sortera tankar eller hitta vidare till mänskligt stöd.</p>
 					<a href="https://stodlinjer.se" class="support-button" rel="noopener noreferrer" target="_blank">Se stödlinjer</a>
 				</div>
 				</div>
