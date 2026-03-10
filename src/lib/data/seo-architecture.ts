@@ -100,10 +100,10 @@ export const pillars: Pillar[] = [
 		],
 		toolSlugs: ['4-7-8-andning', 'body-scan', 'dagens-avslut-reflektion'],
 		relatedArticles: [
-			{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider/stress-och-somn' },
-			{ title: 'Ältande på kvällen – varför tankarna blir starkare i sängen', href: '/guider/altande-pa-kvallen' },
-			{ title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget', href: '/guider/trott-men-uppvarvad' },
-			{ title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet', href: '/guider/somnbrist-och-maendet' }
+			{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider-seo/sovproblem/stress-och-somn' },
+			{ title: 'Ältande på kvällen – varför tankarna blir starkare i sängen', href: '/guider-seo/sovproblem/altande-pa-kvallen' },
+			{ title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget', href: '/guider-seo/sovproblem/trott-men-uppvarvad' },
+			{ title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet', href: '/guider-seo/sovproblem/somnbrist-och-maendet' }
 		]
 	},
 	{
