@@ -97,7 +97,7 @@
 
 		<meta
 			name="description"
-			content={page.data?.description || 'Anonymt samtalsstöd och digitala verktyg för din psykiska hälsa.'}
+			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
 		/>
 
 		<meta name="robots" content={isPrivateOrUtilityPage ? 'noindex, nofollow' : 'index, follow'} />
@@ -107,7 +107,7 @@
 		<meta property="og:title" content={page.data?.title ? `${page.data.title} | Mittpsyke` : 'MittPsyke – Psykiskt stöd online'} />
 		<meta
 			property="og:description"
-			content={page.data?.description || 'Anonymt samtalsstöd och digitala verktyg för din psykiska hälsa.'}
+			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
 		/>
 		<meta property="og:type" content="website" />
 		<meta property="og:site_name" content="MittPsyke" />
@@ -121,7 +121,7 @@
 		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | Mittpsyke` : 'MittPsyke – Psykiskt stöd online'} />
 		<meta
 			name="twitter:description"
-			content={page.data?.description || 'Anonymt samtalsstöd och digitala verktyg för din psykiska hälsa.'}
+			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
 		/>
 		{@html `<script type="application/ld+json">${JSON.stringify(organizationJsonLd)}<\/script>`}
 	{/if}

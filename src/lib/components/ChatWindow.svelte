@@ -376,7 +376,7 @@
 				Skicka
 			</button>
 		</div>
-		<p id="chat-help-text" class="mt-2 text-xs opacity-60">Skriv i din egen takt. Vid akut fara, ring 112.</p>
+		<p id="chat-help-text" class="mt-2 text-xs opacity-60">Skriv i din egen takt. Vid akut fara, ring 112. För vårdråd, kontakta 1177.</p>
 		<div class="mt-3 text-center">
 			<a
 				href="mailto:mittpsyke@ownit.nu"

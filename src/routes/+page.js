@@ -1,6 +1,6 @@
 export const load = () => {
   return {
-    title: "Psykiskt stöd online – Din trygga plats för återhämtning",
-    description: "Mittpsyke erbjuder anonymt samtalsstöd online och digitala verktyg mot ångest och trauma. Starta din dagbok eller chatta med oss idag."
+    title: "AI-baserat samtalsstöd för vardagen",
+    description: "MittPsyke erbjuder AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats för dagbok och mönster över tid."
   };
 };
