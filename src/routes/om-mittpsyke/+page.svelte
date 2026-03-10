@@ -156,6 +156,7 @@
 				<li><a href="/chat">Öppna chatten</a></li>
 				<li><a href="/dagbok">Läs om dagboken</a></li>
 				<li><a href="/digital-dagbok-for-maende">Digital dagbok för mående</a></li>
+				<li><a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a></li>
 				<li>
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">
 						Akut hj&auml;lp (St&ouml;dlinjer)

@@ -40,6 +40,7 @@
 		<section class="section">
 			<h2>Vad MittPsyke erbjuder</h2>
 			<ul>
+				<li><a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a> eller <a href="/chattstod-psykisk-ohalsa">läs om chattstöd psykisk ohälsa</a>.</li>
 				<li><a href="/chat/a">Chatta om ångest</a>, <a href="/chat/b">nedstämdhet</a> eller <a href="/chat/e">stress och oro</a>.</li>
 				<li><a href="/dagbok">Dagbok</a> när du vill skriva av dig i stället för att prata.</li>
 				<li><a href="/register">Skapa konto</a> för att spara historik och få en egen plats över tid.</li>
@@ -54,9 +55,10 @@
 				Du kan också börja i dagboken eller välja den chattingång som känns närmast.
 			</p>
 			<p class="links-row">
+				<a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a>
+				<a href="/chattstod-psykisk-ohalsa">Läs om chattstöd</a>
 				<a href="/dagbok">Skriv i dagboken</a>
 				<a href="/register">Skapa konto</a>
-				<a href="/chat/e">Prata om oro</a>
 			</p>
 		</section>
 

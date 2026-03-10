@@ -1,74 +1,73 @@
 <svelte:head>
-	<title>Digital dagbok för mående | Skriv, följ och förstå över tid | MittPsyke</title>
+	<title>Chattstöd psykisk ohälsa | Stöd i lugn takt online | MittPsyke</title>
 	<meta
 		name="description"
-		content="Använd en digital dagbok för mående för att skriva av dig, se mönster och följa små steg över tid."
+		content="Få chattstöd vid psykisk ohälsa genom samtal, reflektion, guider och övningar i din egen takt."
 	/>
-	<meta property="og:title" content="Digital dagbok för mående | MittPsyke" />
+	<meta property="og:title" content="Chattstöd psykisk ohälsa | MittPsyke" />
 	<meta
 		property="og:description"
-		content="När du vill förstå ditt mående bättre kan en digital dagbok ge mer struktur, reflektion och kontinuitet."
+		content="När något känns tungt kan ett lugnt chattstöd online hjälpa dig att börja, få struktur och hitta nästa steg."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/digital-dagbok-for-maende" />
+	<link rel="canonical" href="https://mittpsyke.se/chattstod-psykisk-ohalsa" />
 </svelte:head>
 
 <main class="page">
 	<div class="page-container">
 		<header class="hero">
-			<h1>Digital dagbok för mående</h1>
+			<h1>Chattstöd psykisk ohälsa</h1>
 			<p>
-				När mycket pågår samtidigt kan det vara svårt att se mönster. En digital dagbok kan hjälpa dig att
-				skriva av dig, följa små förändringar och få en lugnare överblick över tid.
+				När livet känns tungt kan det vara hjälpsamt att börja i text. Här kan du få lugnt chattstöd,
+				skriva av dig och hitta nästa steg i din egen takt.
 			</p>
 		</header>
 
 		<div class="cta-container">
-			<a class="cta-button" href="/dagbok">Öppna dagboken</a>
-			<a class="cta-button ghost" href="/register">Skapa din egen plats</a>
+			<a class="cta-button" href="/chat">Öppna chatten</a>
+			<a class="cta-button ghost" href="/psykiskt-stod-online">Läs om psykiskt stöd online</a>
 		</div>
 
 		<section class="section">
-			<h2>När skrivande hjälper dig att landa</h2>
+			<h2>När du behöver en lugn plats att börja på</h2>
 			<p>
-				Dagboken är till för reflektion, inte prestation. Du kan skriva kort eller långt, följa känslor
-				över tid och återvända när du behöver.
+				Det behöver inte vara en stor berättelse. Ett första steg kan vara några få rader som hjälper dig
+				att fånga det som känns mest just nu.
 			</p>
 		</section>
 
 		<section class="section">
 			<h2>Vad MittPsyke erbjuder</h2>
 			<ul>
-				<li><a href="/dagbok">Dagbok</a> och <a href="/anonym-dagbok-online">anonym dagbok online</a> för att skriva av dig i din egen takt.</li>
-				<li><a href="/framsteg">Framsteg</a> för att se mönster och återkommande skiften.</li>
-				<li><a href="/chat">Chatten</a> när du vill reflektera vidare i samtal.</li>
-				<li><a href="/guider">Guider</a> och <a href="/ovningar">övningar</a> som stöd kring det du skriver om.</li>
+				<li><a href="/ai-samtalsstod-online">AI samtalsstöd online</a> och <a href="/chatta-anonymt-med-nagon">chatta anonymt med någon</a>.</li>
+				<li><a href="/dagbok">Dagbok</a> när du vill skriva vidare för dig själv.</li>
+				<li><a href="/guider">Guider</a> och <a href="/ovningar">övningar</a> som stöd i lugn takt.</li>
+				<li><a href="/om-mittpsyke">Om MittPsyke</a> och <a href="/register">skapa konto</a> när du vill spara mer över tid.</li>
 			</ul>
 		</section>
 
 		<section class="section">
 			<h2>Nästa steg</h2>
 			<p>
-				Om du vill spara historik över tid kan du <a href="/register">skapa konto</a>. Mer om hur
-				tjänsten fungerar finns på <a href="/om-mittpsyke">Om MittPsyke</a>.
+				Du kan börja i chatten direkt eller läsa vidare om anonymt samtalsstöd om du vill förstå
+				alternativen bättre innan du startar.
 			</p>
 			<p class="links-row">
-				<a href="/anonym-dagbok-online">Läs om anonym dagbok</a>
-				<a href="/framsteg">Se framsteg</a>
-				<a href="/chat">Öppna chatten</a>
+				<a href="/chat">Starta samtal</a>
+				<a href="/dagbok">Skriv i dagboken</a>
 				<a href="/register">Skapa konto</a>
 			</p>
 		</section>
 
 		<section class="section faq">
 			<h2>Vanliga frågor</h2>
-			<h3>Måste jag skriva varje dag?</h3>
-			<p>Nej. Dagboken är till för att användas i din egen takt, när det känns hjälpsamt.</p>
-			<h3>Kan jag följa mitt mående över tid?</h3>
-			<p>Ja. Med konto kan du spara innehåll och få mer kontinuitet genom historik och framsteg.</p>
-			<h3>Kan jag kombinera dagboken med chatten?</h3>
-			<p>Ja. Många använder dagboken för att skriva av sig och chatten för att reflektera vidare.</p>
+			<h3>Måste jag ha konto?</h3>
+			<p>Nej. Du kan börja utan konto och skapa en egen plats senare om du vill.</p>
+			<h3>Kan jag ta det i min egen takt?</h3>
+			<p>Ja. MittPsyke är byggt för låg tröskel, små steg och ett lugnt tempo.</p>
+			<h3>Ersätter detta vård?</h3>
+			<p>Nej. Det är ett digitalt samtalsstöd och ett komplement till vård.</p>
 		</section>
 	</div>
 </main>

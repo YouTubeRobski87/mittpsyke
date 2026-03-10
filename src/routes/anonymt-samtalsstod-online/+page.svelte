@@ -40,6 +40,7 @@
 		<section class="section">
 			<h2>Det här kan du göra här</h2>
 			<ul>
+				<li><a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a> eller <a href="/chattstod-psykisk-ohalsa">läs om chattstöd psykisk ohälsa</a>.</li>
 				<li><a href="/chat">Chatta anonymt</a> när du behöver stöd i stunden.</li>
 				<li>Få struktur med <a href="/ovningar/daglig-reflektionsmall">enkla övningar</a>.</li>
 				<li>Läs <a href="/guider/overtankande">guider om övertänkande</a> och oro.</li>
@@ -55,6 +56,8 @@
 				Vid akut fara ska du alltid ringa 112.
 			</p>
 			<p class="links-row">
+				<a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a>
+				<a href="/chattstod-psykisk-ohalsa">Läs om chattstöd</a>
 				<a href="/chat/a">Chatta om ångest</a>
 				<a href="/chat/b">Chatta om nedstämdhet</a>
 				<a href="/chat/e">Chatta om stress</a>
