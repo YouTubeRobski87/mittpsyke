@@ -68,5 +68,16 @@
 		{/each}
 	</ul>
 
+	{#if data.guide.relatedArticles?.length}
+		<h2>Relaterade artiklar</h2>
+		<ul>
+			{#each data.guide.relatedArticles as article}
+				<li>
+					<a href={article.href}>{article.title}</a>
+				</li>
+			{/each}
+		</ul>
+	{/if}
+
 	<SeoCta chatPath={data.pillar.chatPath} />
 </main>

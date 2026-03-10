@@ -3,6 +3,11 @@ export type FaqItem = {
 	answer: string;
 };
 
+export type RelatedArticle = {
+	title: string;
+	href: string;
+};
+
 export type Pillar = {
 	slug: string;
 	title: string;
@@ -16,6 +21,7 @@ export type Guide = {
 	title: string;
 	description: string;
 	faqs: FaqItem[];
+	relatedArticles?: RelatedArticle[];
 };
 
 export const pillars: Pillar[] = [
@@ -145,6 +151,24 @@ export const guides: Guide[] = [
 			{
 				question: 'Hjalper det att prata om det som oroar en?',
 				answer: 'Ofta ja. Att satta ord pa oron kan minska den mentala aktiveringen och gora det lattare att slappna av.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Stress och sömn – när kroppen inte kan varva ner',
+				href: '/guider/stress-och-somn'
+			},
+			{
+				title: 'Ältande på kvällen – varför tankarna blir starkare i sängen',
+				href: '/guider/altande-pa-kvallen'
+			},
+			{
+				title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget',
+				href: '/guider/trott-men-uppvarvad'
+			},
+			{
+				title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet',
+				href: '/guider/somnbrist-och-maendet'
 			}
 		]
 	},
