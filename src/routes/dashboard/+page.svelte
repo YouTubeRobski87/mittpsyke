@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import type { User } from '@supabase/supabase-js';
@@ -285,23 +285,23 @@
 		<!-- Tab Navigation -->
 		<nav class="dashboard-tabs" aria-label="Portalnavigering">
 			<a href="/dashboard" class="tab active" aria-current="page">Min portal</a>
-			<a href="/dashboard/installningar" class="tab">Kontoinst&auml;llningar</a>
+			<a href="/dashboard/installningar" class="tab">Kontoinställningar</a>
 		</nav>
 
 		<!-- Welcome Section -->
 		<section class="panel welcome-panel">
 			<p class="welcome-kicker">Min portal</p>
 			<h1>Hej {firstName}</h1>
-			<p class="welcome-subtitle">Hur k&auml;nns det idag? Du kan ta allt i din egen takt.</p>
+			<p class="welcome-subtitle">Hur känns det idag? Du kan ta allt i din egen takt.</p>
 		</section>
 
 		<!-- Quick Actions Section -->
 		<section class="section-block">
 			<h2>Snabba val</h2>
 			<div class="quick-actions">
-				<a class="action action-primary" href="/dagbok">B&ouml;rja skriva</a>
+				<a class="action action-primary" href="/dagbok">Börja skriva</a>
 				<a class="action action-secondary" href={continueChatHref}>
-					Forts&auml;tt senaste samtal
+					Fortsätt senaste samtal
 					<span>{continuePortal ? continuePortal.title : 'Samtal'}</span>
 				</a>
 			</div>
@@ -309,7 +309,7 @@
 			<div class="conversation-history">
 				<h3>Senaste samtal</h3>
 				{#if recentConversations.length === 0}
-					<p class="conversation-empty">Inga tidigare samtal &auml;n.</p>
+					<p class="conversation-empty">Inga tidigare samtal än.</p>
 				{:else}
 					{#each recentConversations as conversation (conversation.id)}
 						<a class="conversation-card" href={`/chat/${toRouteCategory(conversation.category)}?id=${conversation.id}`}>
@@ -327,13 +327,13 @@
 		<section class="section-block">
 			<div class="section-header">
 				<h2>Mina reflektioner</h2>
-				<a href="/dagbok">&Ouml;ppna dagbok</a>
+				<a href="/dagbok">Öppna dagbok</a>
 			</div>
 
 			{#if reflectionPreview.length === 0}
 				<div class="empty-state">
-					<p>Du har inga sparade reflektioner &auml;nnu.</p>
-					<p>N&auml;r du skriver f&ouml;rsta g&aring;ngen visas dina senaste anteckningar h&auml;r.</p>
+					<p>Du har inga sparade reflektioner ännu.</p>
+					<p>När du skriver första gången visas dina senaste anteckningar här.</p>
 				</div>
 			{:else}
 				<ul class="reflection-list">
@@ -350,7 +350,7 @@
 
 		<!-- Emotional Overview Section -->
 		<section class="section-block">
-			<h2>K&auml;nslo&ouml;versikt</h2>
+			<h2>Känsloöversikt</h2>
 			<div class="mood-panel">
 				<div class="mood-indicators" aria-hidden="true">
 					{#if moodTrail.length === 0}
@@ -369,8 +369,8 @@
 
 		<!-- Support Bridge Section -->
 		<section class="panel support-panel">
-			<p>Beh&ouml;ver du prata med n&aring;gon direkt?</p>
-			<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">&Ouml;ppna St&ouml;dlinjer</a>
+			<p>Behöver du prata med någon direkt?</p>
+			<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Öppna Stödlinjer</a>
 		</section>
 	{/if}
 </main>
@@ -825,3 +825,4 @@
 		color: #86dfd6;
 	}
 </style>
+

@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
 	import type { DeleteAccountErrorResponse, DeleteAccountSuccessResponse } from '$lib/types';
@@ -173,17 +173,17 @@
 </script>
 
 <svelte:head>
-	<title>Kontoinst&auml;llningar - MittPsyke</title>
+	<title>Kontoinställningar - MittPsyke</title>
 </svelte:head>
 
 <main class="settings-page container">
 	{#if loading}
-		<p class="loading-copy">Laddar inst&auml;llningar...</p>
+		<p class="loading-copy">Laddar inställningar...</p>
 	{:else}
 		<!-- Tab Navigation -->
 		<nav class="dashboard-tabs" aria-label="Portalnavigering">
 			<a href="/dashboard" class="tab">Min portal</a>
-			<a href="/dashboard/installningar" class="tab active" aria-current="page">Kontoinst&auml;llningar</a>
+			<a href="/dashboard/installningar" class="tab active" aria-current="page">Kontoinställningar</a>
 		</nav>
 
 		<!-- Display Name Section -->
@@ -211,9 +211,9 @@
 
 		<!-- Password Section -->
 		<section class="section-block">
-			<h2>Byt l&ouml;senord</h2>
+			<h2>Byt lösenord</h2>
 
-			<label class="field-label" for="new-password">Nytt l&ouml;senord</label>
+			<label class="field-label" for="new-password">Nytt lösenord</label>
 			<input
 				id="new-password"
 				type="password"
@@ -223,12 +223,12 @@
 				autocomplete="new-password"
 			/>
 
-			<label class="field-label" for="confirm-password">Bekr&auml;fta l&ouml;senord</label>
+			<label class="field-label" for="confirm-password">Bekräfta lösenord</label>
 			<input
 				id="confirm-password"
 				type="password"
 				bind:value={confirmPassword}
-				placeholder="Upprepa l&ouml;senordet"
+				placeholder="Upprepa lösenordet"
 				class="text-input"
 				autocomplete="new-password"
 			/>
@@ -252,11 +252,11 @@
 		<section id="radera-konto" class="section-block danger-zone">
 			<h2>Radera konto</h2>
 			<p class="field-hint danger-copy">
-				Detta raderar din dagbok, chatthistorik och profil permanent. &Aring;tg&auml;rden g&aring;r inte att &aring;ngra.
+				Detta raderar din dagbok, chatthistorik och profil permanent. Åtgärden går inte att ångra.
 			</p>
 
 			<label class="field-label" for="delete-confirm">
-				Skriv <span class="confirm-token">RADERA</span> f&ouml;r att bekr&auml;fta
+				Skriv <span class="confirm-token">RADERA</span> för att bekräfta
 			</label>
 			<input
 				id="delete-confirm"
@@ -554,6 +554,7 @@
 		}
 	}
 </style>
+
 
 
 

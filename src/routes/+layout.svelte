@@ -79,14 +79,14 @@
 		<title>MittPsyke - Under konstruktion</title>
 		<meta
 			name="description"
-			content="MittPsyke &auml;r tillf&auml;lligt under konstruktion medan vi arbetar med f&ouml;rb&auml;ttringar."
+			content="MittPsyke är tillfälligt under konstruktion medan vi arbetar med förbättringar."
 		/>
 	{:else}
-		<title>{page.data?.title ? `${page.data.title} | Mittpsyke` : 'Psykiskt st&ouml;d online | Verktyg mot &aring;ngest | Mittpsyke.se'}</title>
+		<title>{page.data?.title ? `${page.data.title} | Mittpsyke` : 'Psykiskt stöd online | Verktyg mot ångest | Mittpsyke.se'}</title>
 
 		<meta
 			name="description"
-			content={page.data?.description || 'Anonymt samtalsst&ouml;d och digitala verktyg f&ouml;r din psykiska h&auml;lsa.'}
+			content={page.data?.description || 'Anonymt samtalsstöd och digitala verktyg för din psykiska hälsa.'}
 		/>
 
 		<meta name="robots" content="index, follow" />
@@ -120,9 +120,9 @@
 	<main class="maintenance-screen">
 		<section class="maintenance-card" aria-label="Under konstruktion">
 			<h1>MittPsyke</h1>
-			<p class="subtitle">Sidan &auml;r tillf&auml;lligt under konstruktion.</p>
+			<p class="subtitle">Sidan är tillfälligt under konstruktion.</p>
 			<p class="details">
-				Vi arbetar lugnt och metodiskt med f&ouml;rb&auml;ttringar. Tack f&ouml;r ditt t&aring;lamod.
+				Vi arbetar lugnt och metodiskt med förbättringar. Tack för ditt tålamod.
 			</p>
 		</section>
 	</main>
@@ -148,7 +148,7 @@
 						href="/ovningar"
 						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
 					>
-						&Ouml;vningar
+						Övningar
 					</a>
 					<a
 						href="/om-mittpsyke"
@@ -162,7 +162,7 @@
 						rel="noopener noreferrer"
 						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
 					>
-						Akut hj&auml;lp (St&ouml;dlinjer)
+						Akut hjälp (Stödlinjer)
 					</a>
 				</nav>
 			</div>
@@ -209,7 +209,7 @@
 				<button
 					type="button"
 					class="md:hidden inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/10 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
-					aria-label="&Ouml;ppna meny"
+					aria-label="Öppna meny"
 					aria-expanded={mobileMenuOpen}
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 				>
@@ -232,7 +232,7 @@
 					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
 					onclick={() => (mobileMenuOpen = false)}
 				>
-					&Ouml;vningar
+					Övningar
 				</a>
 				<a
 					href="/om-mittpsyke"
@@ -248,7 +248,7 @@
 					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
 					onclick={() => (mobileMenuOpen = false)}
 				>
-					Akut hj&auml;lp (St&ouml;dlinjer)
+					Akut hjälp (Stödlinjer)
 				</a>
 				{#if user}
 					<p class="text-sm opacity-70">{displayName ? `V\u00e4lkommen, ${displayName}` : 'V\u00e4lkommen tillbaka'}</p>
@@ -317,12 +317,12 @@
 
 		<section class="site-disclaimer mt-10 px-5">
 			<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
-				MittPsyke ers&auml;tter inte v&aring;rd. Vid akut fara ring 112 &middot; V&aring;rdr&aring;d 1177.
+				MittPsyke ersätter inte vård. Vid akut fara ring 112 &middot; Vårdråd 1177.
 			</p>
 		</section>
 
 	<footer class="site-footer border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
-		&copy; {new Date().getFullYear()} MittPsyke. Alla r&auml;ttigheter f&ouml;rbeh&aring;llna.
+		© {new Date().getFullYear()} MittPsyke. Alla rättigheter förbehållna.
 		<span class="mx-2">&middot;</span>
 		<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
 			Om MittPsyke
@@ -342,10 +342,10 @@
 			rel="noopener noreferrer"
 			class="text-sm font-medium text-teal-700/90 dark:text-teal-300/90 opacity-90 hover:opacity-100 transition-opacity"
 		>
-			Akut hj&auml;lp (St&ouml;dlinjer)
+			Akut hjälp (Stödlinjer)
 		</a>
 		<div class="footer-company mt-2 text-xs opacity-70">
-			<p>&copy; MittPsyke</p>
+			<p>© MittPsyke</p>
 			<p>Enskild näringsverksamhet</p>
 			<p>Org.nr: 198712284895</p>
 			<p><a href="mailto:mittpsyke@ownit.nu" class="hover:opacity-100 transition-opacity">mittpsyke@ownit.nu</a></p>
@@ -405,3 +405,4 @@
 		margin: 0.1rem 0;
 	}
 </style>
+

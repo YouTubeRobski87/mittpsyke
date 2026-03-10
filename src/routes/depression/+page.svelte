@@ -1,8 +1,8 @@
-<svelte:head>
+﻿<svelte:head>
 	<title>Hjälp vid depression – prata anonymt | MittPsyke</title>
-	<meta name="description" content="Få stöd för depression och tomhet. Prata anonymt med AI-baserat samtalsst&ouml;d dygnet runt. Lugn, &auml;rlig och tillg&auml;nglig hj&auml;lp." />
+	<meta name="description" content="Få stöd för depression och tomhet. Prata anonymt med AI-baserat samtalsstöd dygnet runt. Lugn, ärlig och tillgänglig hjälp." />
 	<meta property="og:title" content="Hjälp vid depression – prata anonymt | MittPsyke" />
-	<meta property="og:description" content="Få stöd för depression och tomhet. Prata anonymt med AI-baserat samtalsst&ouml;d dygnet runt." />
+	<meta property="og:description" content="Få stöd för depression och tomhet. Prata anonymt med AI-baserat samtalsstöd dygnet runt." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	<link rel="canonical" href="https://mittpsyke.se/depression" />
@@ -200,3 +200,4 @@
 		box-shadow: 0 6px 20px rgba(134, 223, 214, 0.3);
 	}
 </style>
+

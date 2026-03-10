@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import { pillars, tools } from '$lib/data/seo-architecture';
 
 	const pillarLabelBySlug = Object.fromEntries(pillars.map((pillar) => [pillar.slug, pillar.title]));
@@ -20,8 +20,8 @@
 
 <main class="container tools-page">
 	<header class="intro">
-		<h1>&Ouml;vningar</h1>
-		<p>V&auml;lkomponerade steg-f&ouml;r-steg-&ouml;vningar som du kan anv&auml;nda direkt i vardagen.</p>
+		<h1>Övningar</h1>
+		<p>Välkomponerade steg-för-steg-övningar som du kan använda direkt i vardagen.</p>
 	</header>
 
 	<section class="links-block" aria-label="Fördjupning">
@@ -119,3 +119,4 @@
 		background: #1f2a31;
 	}
 </style>
+

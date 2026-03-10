@@ -1,5 +1,5 @@
-<svelte:head>
-	<title>Om MittPsyke &ndash; Tryggt st&ouml;d f&ouml;r ditt psyke</title>
+﻿<svelte:head>
+	<title>Om MittPsyke – Tryggt stöd för ditt psyke</title>
 	<meta
 		name="description"
 		content="Läs om MittPsyke, hur tjänsten fungerar och hur chatten, dagboken och framsteg kan ge ett lugnt digitalt samtalsstöd."
@@ -20,65 +20,65 @@
 		<header class="hero">
 			<h1>Om MittPsyke</h1>
 			<p>
-				MittPsyke &auml;r en svensk plattform f&ouml;r digitalt samtalsst&ouml;d, skapad f&ouml;r m&auml;nniskor som
-				lever med psykisk belastning i olika former. Tanken &auml;r att erbjuda ett tryggt och tillg&auml;ngligt
-				rum d&auml;r det g&aring;r att stanna upp, s&auml;tta ord p&aring; det som k&auml;nns sv&aring;rt och f&aring;
-				st&ouml;d i stunden, utan att beh&ouml;va prestera eller f&ouml;rklara allt fr&aring;n b&ouml;rjan.
+				MittPsyke är en svensk plattform för digitalt samtalsstöd, skapad för människor som
+				lever med psykisk belastning i olika former. Tanken är att erbjuda ett tryggt och tillgängligt
+				rum där det går att stanna upp, sätta ord på det som känns svårt och få
+				stöd i stunden, utan att behöva prestera eller förklara allt från början.
 			</p>
 		</header>
 
 		<div class="text-block">
 			<!-- 2) Vad ar MittPsyke -->
 			<section class="section">
-				<h2>Vad &auml;r MittPsyke?</h2>
+				<h2>Vad är MittPsyke?</h2>
 				<p>
-					Plattformen fungerar som ett kompletterande st&ouml;d mellan, f&ouml;re eller efter kontakt med
-					v&aring;rden. I centrum finns ett AI-baserat samtalsst&ouml;d som &auml;r utformat f&ouml;r att svara med
+					Plattformen fungerar som ett kompletterande stöd mellan, före eller efter kontakt med
+					vården. I centrum finns ett AI-baserat samtalsstöd som är utformat för att svara med
 					lugn, respekt och empati.
 				</p>
 				<p>
-					M&aring;let &auml;r inte att ers&auml;tta professionell behandling, utan att g&ouml;ra det l&auml;ttare att
-					reflektera, sortera tankar och vid behov hitta vidare till r&auml;tt resurser.
+					Målet är inte att ersätta professionell behandling, utan att göra det lättare att
+					reflektera, sortera tankar och vid behov hitta vidare till rätt resurser.
 				</p>
 			</section>
 
 			<!-- 3) For vem -->
 			<section class="section">
-				<h2>F&ouml;r vem &auml;r det h&auml;r?</h2>
+				<h2>För vem är det här?</h2>
 				<p>
-					MittPsyke &auml;r skapat f&ouml;r m&auml;nniskor som vill ha ett lugnt, tillg&auml;ngligt och respektfullt
-					samtalsst&ouml;d i vardagen.
+					MittPsyke är skapat för människor som vill ha ett lugnt, tillgängligt och respektfullt
+					samtalsstöd i vardagen.
 				</p>
 				<ul>
-					<li>F&ouml;r dig som lever med psykisk belastning i olika former.</li>
-					<li>F&ouml;r dig som vill stanna upp och s&auml;tta ord p&aring; det som k&auml;nns sv&aring;rt.</li>
-					<li>F&ouml;r dig som vill ta steg i egen takt, utan d&ouml;mande ton eller krav p&aring; snabba svar.</li>
+					<li>För dig som lever med psykisk belastning i olika former.</li>
+					<li>För dig som vill stanna upp och sätta ord på det som känns svårt.</li>
+					<li>För dig som vill ta steg i egen takt, utan dömande ton eller krav på snabba svar.</li>
 				</ul>
 			</section>
 		</div>
 
 		<!-- 4) Cards -->
 		<section class="section">
-			<h2>Vad du kan g&ouml;ra h&auml;r</h2>
+			<h2>Vad du kan göra här</h2>
 			<div class="feature-grid">
 				<article class="feature-card">
 					<h3>Dagbok</h3>
 					<p>
-						Skriva reflektioner i vardagen och bygga en personlig historik av det som varit viktigt f&ouml;r
+						Skriva reflektioner i vardagen och bygga en personlig historik av det som varit viktigt för
 						dig.
 					</p>
 				</article>
 				<article class="feature-card">
 					<h3>Statistik</h3>
 					<p>
-						F&aring; mer kontinuitet &ouml;ver tid genom att kunna se m&ouml;nster i dina anteckningar och
+						Få mer kontinuitet över tid genom att kunna se mönster i dina anteckningar och
 						reflektioner.
 					</p>
 				</article>
 				<article class="feature-card">
 					<h3>Trygg chat</h3>
 					<p>
-						Samtala i ett AI-baserat st&ouml;d som &auml;r utformat f&ouml;r att svara med lugn, respekt och
+						Samtala i ett AI-baserat stöd som är utformat för att svara med lugn, respekt och
 						empati.
 					</p>
 				</article>
@@ -92,10 +92,10 @@
 				<li>
 					<span class="step-number">1</span>
 					<div>
-						<h3>V&auml;lj ing&aring;ng</h3>
+						<h3>Välj ingång</h3>
 						<p>
-							B&ouml;rja i ett tema som k&auml;nns relevant direkt: &Aring;ngest, Depression eller Trauma &amp;
-							v&aring;ld.
+							Börja i ett tema som känns relevant direkt: Ångest, Depression eller Trauma &amp;
+							våld.
 						</p>
 					</div>
 				</li>
@@ -104,17 +104,17 @@
 					<div>
 						<h3>Reflektera i din takt</h3>
 						<p>
-							Stanna upp, sortera tankar och f&aring; st&ouml;d i stunden utan att beh&ouml;va prestera eller
-							f&ouml;rklara allt fr&aring;n b&ouml;rjan.
+							Stanna upp, sortera tankar och få stöd i stunden utan att behöva prestera eller
+							förklara allt från början.
 						</p>
 					</div>
 				</li>
 				<li>
 					<span class="step-number">3</span>
 					<div>
-						<h3>F&ouml;lj din kontinuitet</h3>
+						<h3>Följ din kontinuitet</h3>
 						<p>
-							Om du vill kan du logga in och spara samtal &ouml;ver tid, s&aring; att plattformen blir ett
+							Om du vill kan du logga in och spara samtal över tid, så att plattformen blir ett
 							personligt samtalsrum.
 						</p>
 					</div>
@@ -127,17 +127,17 @@
 			<section class="section">
 				<h2>Trygghet och integritet</h2>
 				<p>
-					MittPsykes v&auml;rdegrund bygger p&aring; integritet, frivillighet och m&auml;nsklig s&aring;rbarhet.
-					Anv&auml;ndaren ska kunna m&ouml;tas utan d&ouml;mande ton, utan krav p&aring; att m&aring; b&auml;ttre snabbt och
-					utan k&auml;nslan av att bli reducerad till ett symptom.
+					MittPsykes värdegrund bygger på integritet, frivillighet och mänsklig sårbarhet.
+					Användaren ska kunna mötas utan dömande ton, utan krav på att må bättre snabbt och
+					utan känslan av att bli reducerad till ett symptom.
 				</p>
 				<p>
-					MittPsyke kan anv&auml;ndas anonymt f&ouml;r den som vill b&ouml;rja f&ouml;rsiktigt. F&ouml;r den som &ouml;nskar
-					mer kontinuitet finns m&ouml;jlighet till inloggning, d&auml;r samtal kan sparas &ouml;ver tid.
+					MittPsyke kan användas anonymt för den som vill börja försiktigt. För den som önskar
+					mer kontinuitet finns möjlighet till inloggning, där samtal kan sparas över tid.
 				</p>
 				<p>
-					Designfilosofin &auml;r avskalad, mjuk och icke-klinisk f&ouml;r att minska stress, undvika on&ouml;diga
-					distraktioner och skapa en k&auml;nsla av n&auml;rvaro.
+					Designfilosofin är avskalad, mjuk och icke-klinisk för att minska stress, undvika onödiga
+					distraktioner och skapa en känsla av närvaro.
 				</p>
 			</section>
 		</div>
@@ -145,13 +145,13 @@
 		<!-- 7) Callout -->
 		<aside class="callout" aria-label="Viktigt att veta">
 			<h2>Viktigt att veta</h2>
-			<p>L&auml;s mer om begr&auml;nsningar och ansvar innan du anv&auml;nder tj&auml;nsten.</p>
-			<a class="callout-link" href="/ansvar">G&aring; till Ansvarsinfo</a>
+			<p>Läs mer om begränsningar och ansvar innan du använder tjänsten.</p>
+			<a class="callout-link" href="/ansvar">Gå till Ansvarsinfo</a>
 		</aside>
 
 		<!-- 8) Kontakt och lankar -->
 		<section class="section links-section">
-			<h2>Kontakt och l&auml;nkar</h2>
+			<h2>Kontakt och länkar</h2>
 			<ul>
 				<li><a href="/chat">Öppna chatten</a></li>
 				<li><a href="/dagbok">Läs om dagboken</a></li>
@@ -159,7 +159,7 @@
 				<li><a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a></li>
 				<li>
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">
-						Akut hj&auml;lp (St&ouml;dlinjer)
+						Akut hjälp (Stödlinjer)
 					</a>
 				</li>
 				<li><a href="/ansvar">Ansvarsinfo</a></li>
@@ -493,3 +493,4 @@
 		background: rgba(134, 223, 214, 0.5);
 	}
 </style>
+
