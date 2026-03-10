@@ -2,6 +2,7 @@
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
+	const pillarUpdatedAt = '2026-03-08';
 
 	const jsonLd = $derived({
 		"@context": "https://schema.org",
@@ -32,7 +33,7 @@
 						"url": "https://mittpsyke.se/favicon.png"
 					}
 				},
-				"datePublished": "2026-03-08",
+				"datePublished": pillarUpdatedAt,
 				"mainEntityOfPage": {
 					"@type": "WebPage",
 					"@id": `https://mittpsyke.se/guider/${data.pillar.slug}`
@@ -64,6 +65,12 @@
 		<h1>{data.pillar.title}</h1>
 		<p>{data.pillar.description}</p>
 	</header>
+
+	<section class="info-box" aria-label="Om innehållet">
+		<p><strong>Innehåll från MittPsyke</strong></p>
+		<p>Senast uppdaterad: 8 mars 2026</p>
+		<p>Guiden är tänkt som stöd för reflektion och ökad förståelse. Den ersätter inte vård, diagnos eller behandling.</p>
+	</section>
 
 	<section class="block" aria-label="Klusterartiklar">
 		<h2>Klusterartiklar</h2>
@@ -203,6 +210,24 @@
 		background: #f9fcfb;
 	}
 
+	.info-box {
+		margin-top: 1rem;
+		padding: 0.9rem 1rem;
+		border-radius: var(--radius-card);
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		background: #f4f8f6;
+	}
+
+	.info-box p {
+		margin: 0;
+		font-size: 0.93rem;
+		opacity: 0.84;
+	}
+
+	.info-box p + p {
+		margin-top: 0.35rem;
+	}
+
 	.block h2 {
 		margin: 0;
 		font-size: 1.2rem;
@@ -244,6 +269,11 @@
 
 	:global(.dark) .block {
 		background: #1a2221;
+		border-color: rgba(255, 255, 255, 0.12);
+	}
+
+	:global(.dark) .info-box {
+		background: #1a2320;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 

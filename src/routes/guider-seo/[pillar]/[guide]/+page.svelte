@@ -58,6 +58,14 @@
 	<h1>{data.guide.title}</h1>
 	<p>{data.guide.description}</p>
 
+	<section aria-label="Om innehållet">
+		<p><strong>Innehåll från MittPsyke</strong></p>
+		<p>Det här är stödjande information för reflektion och egen förståelse. Det ersätter inte vård, diagnos eller behandling.</p>
+		{#if data.guide.relatedArticles?.length}
+			<p>Källa och vidare läsning: relaterade artiklar inom MittPsyke finns längre ned på sidan.</p>
+		{/if}
+	</section>
+
 	<h2>Vanliga fragor</h2>
 	<ul>
 		{#each data.guide.faqs as faq}
@@ -70,6 +78,7 @@
 
 	{#if data.guide.relatedArticles?.length}
 		<h2>Relaterade artiklar</h2>
+		<p>Fördjupning och vidare läsning inom samma område.</p>
 		<ul>
 			{#each data.guide.relatedArticles as article}
 				<li>

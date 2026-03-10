@@ -23,6 +23,12 @@
 		<p>{data.tool.description}</p>
 	</header>
 
+	<section class="info-box" aria-label="Om övningen">
+		<p><strong>Sammanställt av MittPsyke</strong></p>
+		<p>Övningen är ett enkelt stöd för reflektion och lugn i vardagen. Den ersätter inte vård, diagnos eller behandling.</p>
+		<p>Om något känns för starkt eller inte passar dig just nu kan du pausa och välja ett mindre steg.</p>
+	</section>
+
 	<section class="block">
 		<h2>Tillhörande guide</h2>
 		<p>
@@ -53,6 +59,14 @@
 			</p>
 		</section>
 	{/if}
+
+	<section class="block">
+		<h2>Läs vidare</h2>
+		<p>
+			Du kan läsa vidare i guiden <a href={`/guider/${data.pillar.slug}`}>{data.pillar.title}</a> och utforska fler
+			övningar eller artiklar i samma område när du vill ta nästa steg.
+		</p>
+	</section>
 </main>
 
 <style>
@@ -91,6 +105,24 @@
 		background: #fbfcfd;
 	}
 
+	.info-box {
+		margin-top: 1rem;
+		padding: 0.9rem 1rem;
+		border-radius: var(--radius-card);
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		background: #f4f8f6;
+	}
+
+	.info-box p {
+		margin: 0;
+		font-size: 0.93rem;
+		opacity: 0.84;
+	}
+
+	.info-box p + p {
+		margin-top: 0.35rem;
+	}
+
 	.block h2 {
 		margin: 0;
 		font-size: 1.16rem;
@@ -116,6 +148,11 @@
 
 	:global(.dark) .block {
 		background: #1b2024;
+		border-color: rgba(255, 255, 255, 0.12);
+	}
+
+	:global(.dark) .info-box {
+		background: #1a2320;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 </style>
