@@ -910,7 +910,8 @@
 			</button>
 		</div>
 
-		<p class="opacity-75 leading-relaxed mb-6">Detta är din privata plats att skriva fritt.</p>
+		<p class="opacity-75 leading-relaxed mb-3">Detta är din privata plats att skriva fritt.</p>
+		<p class="opacity-65 leading-relaxed mb-6 text-sm">Dagboken är till för reflektion och stöd i vardagen. Den ersätter inte vård och ska inte vara enda underlag för medicinska beslut. Vid akut fara, ring 112. För vårdråd, kontakta 1177.</p>
 
 		<div class="rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-white/45 dark:bg-[#1a1a1a] p-4 mb-7">
 			<textarea
@@ -1155,7 +1156,7 @@
 			{/if}
 		</div>
 
-		<p class="mt-4 text-xs opacity-50 text-center">Det du skriver här delas inte med någon.</p>
+		<p class="mt-4 text-xs opacity-50 text-center">Läs mer om hur uppgifter hanteras i <a href="/integritet" class="underline underline-offset-2">integritetspolicyn</a>.</p>
 	</section>
 {:else}
 	<!-- SEO Landing for non-logged-in visitors -->
@@ -1165,12 +1166,15 @@
 			MittPsyke erbjuder en gratis digital dagbok där du kan skriva ner dina tankar,
 			välja känsloläge och följa ditt mående över tid med visuell statistik.
 		</p>
+		<p class="text-sm text-center text-gray-600 dark:text-gray-300 mb-8">
+			Dagboken sparas med konto och är till för reflektion i vardagen. Den ersätter inte vård eller medicinsk bedömning. Vid akut fara, ring 112. För vårdråd, kontakta 1177.
+		</p>
 
 		<div class="grid gap-6 sm:grid-cols-2 mb-10">
 			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
 				<div class="text-2xl mb-2">✍️</div>
 				<h2 class="font-semibold text-lg mb-2">Skriv fritt</h2>
-				<p class="text-gray-600 dark:text-gray-400 text-sm">Uttryck dina tankar och känslor i en trygg, anonym miljö. Ingen dömer – det här är din plats.</p>
+				<p class="text-gray-600 dark:text-gray-400 text-sm">Uttryck dina tankar och känslor i en lugn, privat miljö. Ingen dömer – det här är din plats.</p>
 			</div>
 			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
 				<div class="text-2xl mb-2">🎭</div>
@@ -1184,8 +1188,8 @@
 			</div>
 			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
 				<div class="text-2xl mb-2">🔒</div>
-				<h2 class="font-semibold text-lg mb-2">Helt anonymt</h2>
-				<p class="text-gray-600 dark:text-gray-400 text-sm">Ingen personlig information krävs. Dina dagboksinlägg är privata och tillhör bara dig.</p>
+				<h2 class="font-semibold text-lg mb-2">Privat med konto</h2>
+				<p class="text-gray-600 dark:text-gray-400 text-sm">Du skapar konto för att spara din dagbok över tid. Läs mer om hur uppgifter hanteras i integritetspolicyn.</p>
 			</div>
 		</div>
 

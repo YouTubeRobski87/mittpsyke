@@ -20,7 +20,9 @@
 
 <section class="voice-support">
 	<h2>Prata direkt här</h2>
-	<p>Du kan också prata direkt med Samtalsstöd MittPsyke här på sidan.</p>
+	<p>Du kan också prata direkt med MittPsykes AI-baserade samtalsstöd här på sidan.</p>
+	<p>Det är till för reflektion och stöd i vardagen. Det ersätter inte vård, ställer inte diagnos och ska inte vara enda underlag för medicinska beslut.</p>
+	<p class="voice-support-note">Vid akut fara, ring 112. För vårdråd, kontakta 1177. Du kan också använda Akut hjälp för att hitta stödlinjer.</p>
 	<button on:click={startCall}>
 		🎤 {active ? 'Samtal igång...' : 'Prata med MittPsyke'}
 	</button>
@@ -51,6 +53,10 @@
 		font-weight: 400;
 		line-height: 1.7;
 		font-size: 1rem;
+	}
+
+	.voice-support-note {
+		font-size: 0.95rem;
 	}
 
 	button {

@@ -102,12 +102,12 @@
 			<section class="section">
 				<h2>Trygghet, ansvar och metod</h2>
 				<p>
-					MittPsyke är skapat ur egen erfarenhet av psykisk belastning, men tjänsten bygger också på tydliga gränser. Syftet är att erbjuda stöd för reflektion, lugn och struktur i vardagen — inte att ställa diagnoser, ge akutvård eller ersätta kontakt med legitimerad vårdpersonal.
+					MittPsyke är skapat ur egen erfarenhet av psykisk belastning, men tjänsten bygger också på tydliga gränser. Syftet är att erbjuda AI-baserat stöd för reflektion, lugn och struktur i vardagen — inte att ställa diagnoser, ge akutvård eller ersätta kontakt med legitimerad vårdpersonal.
 				</p>
 				<ul>
 					<li>
 						<strong>Tydliga ramar</strong><br />
-						MittPsyke är till för samtalsstöd, egen reflektion och vardagsnära vägledning. Tjänsten är inte avsedd att ersätta vård, behandling eller professionell bedömning.
+						MittPsyke är till för samtalsstöd, egen reflektion och vardagsnära vägledning. Tjänsten är inte avsedd att ersätta vård, behandling eller professionell bedömning och ska inte vara enda underlag för medicinska beslut.
 					</li>
 					<li>
 						<strong>Ansvar och öppenhet</strong><br />
@@ -231,8 +231,8 @@
 					utan känslan av att bli reducerad till ett symptom.
 				</p>
 				<p>
-					MittPsyke kan användas anonymt för den som vill börja försiktigt. För den som önskar
-					mer kontinuitet finns möjlighet till inloggning, där samtal kan sparas över tid.
+					Du kan börja utan konto om du vill ta ett försiktigt första steg. För den som önskar
+					mer kontinuitet finns möjlighet till inloggning, där samtal kan sparas över tid. Vissa tekniska uppgifter hanteras enligt integritetspolicyn.
 				</p>
 				<p>
 					Designfilosofin är avskalad, mjuk och icke-klinisk — för att minska stress, undvika onödiga
@@ -244,7 +244,7 @@
 		<!-- 8) Callout -->
 		<aside class="callout" aria-label="Viktigt att veta">
 			<h2>Viktigt att veta</h2>
-			<p>Läs mer om begränsningar och ansvar innan du använder tjänsten.</p>
+			<p>Vid akut fara, ring 112. För vårdråd, kontakta 1177. Läs mer om begränsningar och ansvar innan du använder tjänsten.</p>
 			<a class="callout-link" href="/ansvar">Gå till Ansvarsinfo</a>
 		</aside>
 

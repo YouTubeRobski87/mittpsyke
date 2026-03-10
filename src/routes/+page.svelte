@@ -39,7 +39,7 @@
 
 <svelte:head>
 	<title>Psykiskt stöd online i lugn takt | MittPsyke</title>
-	<meta name="description" content="Prata anonymt, skriv dagbok och följ ditt mående över tid. MittPsyke är ett tryggt digitalt samtalsstöd när livet känns tungt." />
+	<meta name="description" content="Börja utan konto, skriv dagbok och följ ditt mående över tid. MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen." />
 	<meta property="og:title" content="Psykiskt stöd online i lugn takt | MittPsyke" />
 	<meta property="og:description" content="Ett tryggt digitalt stödrum för samtal, dagbok, reflektion och nästa steg när du behöver stöd." />
 	<meta property="og:type" content="website" />
@@ -59,14 +59,14 @@
 		<div class="hero-content">
 			<h1>Ett tryggt rum för att landa, skriva av dig och börja i din egen takt</h1>
 			<p>
-				Prata anonymt när du behöver stöd i stunden. Skapa ett konto om du vill spara din dagbok, följa dina mönster över tid och ha en egen plats att återvända till.
+				Börja utan konto när du behöver stöd i stunden. Skapa ett konto om du vill spara din dagbok, följa dina mönster över tid och ha en egen plats att återvända till.
 			</p>
 			<div class="hero-actions">
 				<a href="/chat/a" class="hero-cta hero-cta-primary">Börja anonymt</a>
 				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
 			</div>
 			<div class="trust-bar">
-				<span class="trust-item">🔒 Helt anonymt</span>
+				<span class="trust-item">🔒 Börja utan konto</span>
 				<span class="trust-divider" aria-hidden="true">·</span>
 				<span class="trust-item">🆓 Gratis</span>
 				<span class="trust-divider" aria-hidden="true">·</span>
@@ -76,6 +76,8 @@
 			</div>
 			<p class="hero-support-link">
 				<a href="/om-mittpsyke">Så fungerar MittPsyke</a>
+				<span aria-hidden="true"> · </span>
+				<a href="/integritet">Så hanteras uppgifter</a>
 				<span aria-hidden="true"> · </span>
 				Behöver du mänsklig kontakt? <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Öppna Stödlinjer</a>
 			</p>
@@ -95,7 +97,7 @@
 			</div>
 			<div class="clarity-item">
 				<h2>3. Akut hjälp vid behov</h2>
-				<p>Vid akut fara ska du alltid ringa 112. MittPsyke ersätter inte vård.</p>
+				<p>Vid akut fara, ring 112. För vårdråd, kontakta 1177. MittPsyke ersätter inte vård.</p>
 			</div>
 		</div>
 	</section>
@@ -140,7 +142,7 @@
 				<div class="narrow account-value-inner">
 					<div>
 						<h2>När du vill ha mer än ett samtal i stunden</h2>
-						<p>Du kan börja anonymt direkt. Om du vill spara det som betyder något, skriva i dagboken och följa mönster över tid kan du skapa en egen plats i MittPsyke.</p>
+						<p>Du kan börja utan konto direkt. Om du vill spara det som betyder något, skriva i dagboken och följa mönster över tid kan du skapa en egen plats i MittPsyke.</p>
 					</div>
 					<div class="account-value-list">
 						<p><strong>Dagbok i din egen takt:</strong> skriv när du behöver landa.</p>
@@ -181,9 +183,9 @@
 				<a href="/hjalp-vid-angest-online">hjälp vid ångest online</a>.
 			</p>
 			<ul class="seo-features">
-				<li><strong>Anonymitet &amp; Trygghet:</strong> Vi värnar om din integritet med tystnadsplikt.</li>
+				<li><strong>Integritet &amp; Trygghet:</strong> Vi värnar om din integritet. Läs mer i integritetspolicyn.</li>
 				<li><strong>Enkelt att använda:</strong> Din personliga dashboard ger dig full överblick över din utveckling.</li>
-				<li><strong>Erfarenhet som grund:</strong> Plattformen är byggd på förståelse och verklig expertis inom psykisk hälsa.</li>
+				<li><strong>Erfarenhet som grund:</strong> Plattformen är byggd för lugn reflektion, tydliga ramar och stöd i vardagen.</li>
 			</ul>
 		</div>
 	</section>
@@ -246,10 +248,10 @@
 			<div>
 				<h2>Tryggt, varsamt och tydligt avgränsat</h2>
 				<p>
-					MittPsyke är ett digitalt samtalsstöd för reflektion och stöd i vardagen. Du bestämmer tempot, och allt börjar i lugn takt.
+					MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen. Du bestämmer tempot, och allt börjar i lugn takt.
 				</p>
 				<p>
-					Tjänsten ställer inte diagnoser och ersätter inte vård, men kan hjälpa dig att stanna upp, sätta ord på det som känns och hitta nästa steg.
+					Tjänsten ställer inte diagnoser, ersätter inte vård eller kontakt med psykolog, läkare eller annan legitimerad vårdpersonal och ska inte vara enda underlag för medicinska beslut.
 				</p>
 				<ul>
 					<li>Du bestämmer tempot</li>

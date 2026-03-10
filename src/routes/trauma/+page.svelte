@@ -1,8 +1,8 @@
 <svelte:head>
 	<title>Samtalsstöd vid trauma – Bearbeta i din egen takt | MittPsyke</title>
-	<meta name="description" content="Vi erbjuder samtalsstöd vid trauma i ett tryggt och anonymt rum, byggt på förståelse och tystnadsplikt. Bearbeta svåra upplevelser i din egen takt." />
+	<meta name="description" content="Vi erbjuder samtalsstöd vid trauma i ett tryggt rum där du kan börja utan konto och reflektera i din egen takt." />
 	<meta property="og:title" content="Samtalsstöd vid trauma – Bearbeta i din egen takt | MittPsyke" />
-	<meta property="og:description" content="Vi erbjuder samtalsstöd vid trauma i ett tryggt och anonymt rum, byggt på förståelse och tystnadsplikt." />
+	<meta property="og:description" content="Vi erbjuder samtalsstöd vid trauma i ett tryggt rum där du kan börja utan konto och reflektera i din egen takt." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	<link rel="canonical" href="https://mittpsyke.se/trauma" />
@@ -14,7 +14,7 @@
 		<header class="hero">
 			<h1>Samtalsstöd vid trauma – Bearbeta i din egen takt</h1>
 			<p>
-				Att leva med svåra minnen kräver rätt förutsättningar. Vi erbjuder samtalsstöd vid trauma genom en plattform byggd på förståelse och tystnadsplikt.
+				Att leva med svåra minnen kräver rätt förutsättningar. Här finns ett lugnt samtalsstöd där du kan börja utan konto och ta ett första steg i din egen takt.
 			</p>
 		</header>
 
@@ -25,7 +25,7 @@
 					Här kan du få stöd att hantera posttraumatisk stress och återfå kontrollen över din vardag.
 				</p>
 				<p>
-					Vår tjänst är utformad för att vara en brygga till ett bättre mående genom beprövade metoder. Du behöver aldrig förklara allt på en gång – du sätter tempot.
+					Tjänsten är till för reflektion och stöd i vardagen. Den ersätter inte vård, ställer inte diagnos och ska inte vara enda underlag för medicinska beslut. Du behöver aldrig förklara allt på en gång – du sätter tempot.
 				</p>
 			</section>
 

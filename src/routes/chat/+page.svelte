@@ -21,6 +21,8 @@
 			<p>
 				Du behöver inte veta exakt hur du ska börja. Välj det som känns närmast just nu och låt samtalet
 				ta form i din egen takt.
+				MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen. Det ersätter inte vård
+				eller kontakt med psykolog, läkare eller annan legitimerad vårdpersonal.
 			</p>
 		</header>
 
@@ -41,8 +43,8 @@
 
 		<section class="section">
 			<p>
-				Om du vill läsa mer först finns <a href="/prata-anonymt-online">prata anonymt online</a>.
-				Behöver du akut hjälp eller mänsklig kontakt finns
+				Du kan börja utan konto. Vissa tekniska uppgifter hanteras enligt <a href="/integritet">integritetspolicyn</a>.
+				Om du vill läsa mer först finns <a href="/prata-anonymt-online">prata anonymt online</a>. Vid akut fara, ring 112. För vårdråd, kontakta 1177. Behöver du mänsklig kontakt finns
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer</a>.
 			</p>
 		</section>
