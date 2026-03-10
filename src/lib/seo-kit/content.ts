@@ -84,19 +84,171 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det',
-				href: '/guider/panikangest-och-kroppen'
+				href: '/guider-seo/angest/panikangest-och-kroppen'
 			},
 			{
 				title: 'Orostankar som snurrar – när hjärnan inte kan stänga av',
-				href: '/guider/orostankar'
+				href: '/guider-seo/angest/orostankar'
 			},
 			{
 				title: 'Ångest och sömn – varför natten kan bli svårare',
-				href: '/guider/angest-och-somn'
+				href: '/guider-seo/angest/angest-och-somn'
 			},
 			{
 				title: 'Social ångest – rädslan för att bli bedömd av andra',
-				href: '/guider/social-angest'
+				href: '/guider-seo/angest/social-angest'
+			}
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'panikangest-och-kroppen',
+		title: 'Panikangest - vad som hander i kroppen och hur du kan hantera det',
+		description: 'Om kroppens starka reaktioner vid panikangest och hur du kan forsta det som hander.',
+		faqs: [
+			{
+				question: 'Varfor reagerar kroppen sa starkt vid panikangest?',
+				answer: 'Kroppen gar in i alarmberedskap, vilket kan ge hjartklappning, yrsel, tryck over brostet och snabb andning.'
+			},
+			{
+				question: 'Ar panikangest farligt?',
+				answer: 'Det brukar inte vara farligt i sig, men upplevelsen kan vara mycket intensiv och skrämmande.'
+			},
+			{
+				question: 'Varfor kanns det som att jag tappar kontrollen?',
+				answer: 'Nar stressystemet slar pa starkt kan hjarnan tolka reaktionerna som ett hot, vilket forstarker kanslan.'
+			},
+			{
+				question: 'Vad kan hjalpa i stunden?',
+				answer: 'Att sakta ner andningen, stanna kvar i nuet och paminna dig om att reaktionen gar over kan minska intensiteten.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Tecken pa angest',
+				href: '/guider-seo/angest/tecken'
+			},
+			{
+				title: 'Orostankar som snurrar - nar hjarnan inte kan stanga av',
+				href: '/guider-seo/angest/orostankar'
+			},
+			{
+				title: 'Angest och somn - varfor natten kan bli svarare',
+				href: '/guider-seo/angest/angest-och-somn'
+			}
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'orostankar',
+		title: 'Orostankar som snurrar - nar hjarnan inte kan stanga av',
+		description: 'Om oro som gar runt i cirklar och gor det svart att komma till ro.',
+		faqs: [
+			{
+				question: 'Varfor fastnar jag i orostankar?',
+				answer: 'Hjarnan forsoker ofta forutse problem for att skydda dig, men det kan i stallet leda till att tankarna aldrig far vila.'
+			},
+			{
+				question: 'Ar oro alltid nagot negativt?',
+				answer: 'Inte alltid, men nar oron tar over och paverkar somn, fokus eller vardag blir den ofta mer belastande an hjalpsam.'
+			},
+			{
+				question: 'Kan orostankar oka pa kvallen?',
+				answer: 'Ja, nar det blir tyst och stilla far tankarna ofta mer utrymme och kan kannas starkare.'
+			},
+			{
+				question: 'Vad kan vara ett forsta steg?',
+				answer: 'Att lagga marke till nar oron borjar dra ivag och ge den en tydlig plats i stallet for att folja varje tanke kan hjalpa.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Tecken pa angest',
+				href: '/guider-seo/angest/tecken'
+			},
+			{
+				title: 'Panikangest - vad som hander i kroppen och hur du kan hantera det',
+				href: '/guider-seo/angest/panikangest-och-kroppen'
+			},
+			{
+				title: 'Angest och somn - varfor natten kan bli svarare',
+				href: '/guider-seo/angest/angest-och-somn'
+			}
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'angest-och-somn',
+		title: 'Angest och somn - varfor natten kan bli svarare',
+		description: 'Om hur angest ofta blir tydligare pa kvallen och kan gora det svart att somna eller sova lugnt.',
+		faqs: [
+			{
+				question: 'Varfor blir angesten starkare pa natten?',
+				answer: 'Nar tempot sjunker och intrycken minskar far kanslor och tankar ofta mer plats, vilket kan gora angesten tydligare.'
+			},
+			{
+				question: 'Kan angest vacka mig under natten?',
+				answer: 'Ja, vissa vaknar med hjartklappning, oro eller stark kroppslig anspanning mitt i natten.'
+			},
+			{
+				question: 'Gor dalig somn angesten varre?',
+				answer: 'Ofta ja. Somnbrist kan gora nervsystemet mer kansligt och det kan bli svarare att hantera oro dagen efter.'
+			},
+			{
+				question: 'Vad kan hjalpa mest?',
+				answer: 'Att minska pressen kring somnen och samtidigt fa stod i det som skapar angesten brukar vara viktigare an att bara forsoka sova mer.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Tecken pa angest',
+				href: '/guider-seo/angest/tecken'
+			},
+			{
+				title: 'Varfor kan jag inte sova',
+				href: '/guider-seo/sovproblem/orsaker'
+			},
+			{
+				title: 'Stress och somn - nar kroppen inte kan varva ner',
+				href: '/guider-seo/sovproblem/stress-och-somn'
+			}
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'social-angest',
+		title: 'Social angest - radslan for att bli bedomd av andra',
+		description: 'Om oro i sociala situationer och varfor blicken fran andra kan kannas sa stark.',
+		faqs: [
+			{
+				question: 'Vad ar social angest?',
+				answer: 'Det handlar ofta om stark oro for att bli granskad, bortgjord eller negativt bedomd i sociala sammanhang.'
+			},
+			{
+				question: 'Varfor undviker jag vissa situationer?',
+				answer: 'Undvikande blir ofta ett satt att forsoka minska obehaget snabbt, men det kan samtidigt halla oron vid liv.'
+			},
+			{
+				question: 'Ar det bara blyghet?',
+				answer: 'Inte nodvandigtvis. Social angest brukar vara mer intensiv och kan paverka arbete, relationer och vardag.'
+			},
+			{
+				question: 'Kan det bli battre?',
+				answer: 'Ja, med forstaelse, sma steg och stod gar det ofta att minska radsla och bygga mer trygghet i sociala situationer.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Tecken pa angest',
+				href: '/guider-seo/angest/tecken'
+			},
+			{
+				title: 'Orostankar som snurrar - nar hjarnan inte kan stanga av',
+				href: '/guider-seo/angest/orostankar'
+			},
+			{
+				title: 'Lag sjalvkansla - vad det ar och var det kommer ifran',
+				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			}
 		]
 	},
@@ -126,19 +278,19 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Trötthet och meningslöshet – när ingenting känns värt att göra',
-				href: '/guider/trotthet-och-meningsloshet'
+				href: '/guider-seo/depression/trotthet-och-meningsloshet'
 			},
 			{
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
-				href: '/guider/nedstamdhet-och-relationer'
+				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			},
 			{
 				title: 'Skillnaden mellan sorg och depression – och varför det spelar roll',
-				href: '/guider/sorg-och-depression'
+				href: '/guider-seo/depression/sorg-och-depression'
 			},
 			{
 				title: 'Små steg när energin tryter – vad som faktiskt kan hjälpa',
-				href: '/guider/sma-steg-vid-nedstamdhet'
+				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
 	},
@@ -168,19 +320,19 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Vad händer i nervsystemet vid trauma – fight, flight och freeze',
-				href: '/guider/nervsystemet-och-trauma'
+				href: '/guider-seo/trauma/nervsystemet-och-trauma'
 			},
 			{
 				title: 'Grounding – enkla övningar för att landa i kroppen igen',
-				href: '/guider/grounding-ovningar'
+				href: '/guider-seo/trauma/grounding-ovningar'
 			},
 			{
 				title: 'Undvikande efter trauma – varför vi gör det och vad det kostar',
-				href: '/guider/undvikande-efter-trauma'
+				href: '/guider-seo/trauma/undvikande-efter-trauma'
 			},
 			{
 				title: 'Tillit och trygghet i relationer efter svåra upplevelser',
-				href: '/guider/tillit-efter-trauma'
+				href: '/guider-seo/trauma/tillit-efter-trauma'
 			}
 		]
 	},
@@ -348,19 +500,19 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Den inre kritikern – varför rösten finns och vad den egentligen vill',
-				href: '/guider/inre-kritikern'
+				href: '/guider-seo/sjalvkansla/inre-kritikern'
 			},
 			{
 				title: 'Perfektionism och självkänsla – när ingenting känns tillräckligt bra',
-				href: '/guider/perfektionism-och-sjalvkansla'
+				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
 			},
 			{
 				title: 'Att sätta gränser när självkänslan är låg – varför det är svårt',
-				href: '/guider/gransen-och-sjalvkansla'
+				href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla'
 			},
 			{
 				title: 'Jämförelseträsket – sociala medier och din självbild',
-				href: '/guider/jamforelse-och-sjalvbild'
+				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
 			}
 		]
 	}
