@@ -210,19 +210,19 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Stress och sömn – när kroppen inte kan varva ner',
-				href: '/guider/stress-och-somn'
+				href: '/guider-seo/sovproblem/stress-och-somn'
 			},
 			{
 				title: 'Ältande på kvällen – varför tankarna blir starkare i sängen',
-				href: '/guider/altande-pa-kvallen'
+				href: '/guider-seo/sovproblem/altande-pa-kvallen'
 			},
 			{
 				title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget',
-				href: '/guider/trott-men-uppvarvad'
+				href: '/guider-seo/sovproblem/trott-men-uppvarvad'
 			},
 			{
 				title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet',
-				href: '/guider/somnbrist-och-maendet'
+				href: '/guider-seo/sovproblem/somnbrist-och-maendet'
 			}
 		]
 	},
