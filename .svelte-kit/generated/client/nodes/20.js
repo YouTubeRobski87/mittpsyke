@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/routes/integritet/+page.svelte";
+export { default as component } from "../../../../src/routes/hjalp-vid-angest-online/+page.svelte";

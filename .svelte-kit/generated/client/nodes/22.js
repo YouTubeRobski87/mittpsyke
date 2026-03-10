@@ -1,3 +1,1 @@
-import * as universal from "../../../../src/routes/nedstamdhet/+page.js";
-export { universal };
-export { default as component } from "../../../../src/routes/nedstamdhet/+page.svelte";
+export { default as component } from "../../../../src/routes/integritet/+page.svelte";

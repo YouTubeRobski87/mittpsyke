@@ -33,7 +33,10 @@ export const nodes = [
 	() => import('./nodes/29'),
 	() => import('./nodes/30'),
 	() => import('./nodes/31'),
-	() => import('./nodes/32')
+	() => import('./nodes/32'),
+	() => import('./nodes/33'),
+	() => import('./nodes/34'),
+	() => import('./nodes/35')
 ];
 
 export const server_loads = [];
@@ -56,20 +59,23 @@ export const dictionary = {
 		"/guider-seo/[pillar]/[guide]": [18],
 		"/guider": [14],
 		"/guider/[pillar]": [15],
-		"/hjalp-vid-angest-online": [19],
-		"/integritet": [20],
-		"/login": [~21],
-		"/nedstamdhet": [22],
-		"/om-mittpsyke": [23],
-		"/oro": [24],
-		"/ovningar": [25],
-		"/ovningar/[tool]": [26],
-		"/panikattack": [27],
-		"/portal/[slug]": [28],
-		"/psykiskt-stod-online": [29],
-		"/register": [~30],
-		"/stress": [31],
-		"/trauma": [32]
+		"/hjalp-mot-oro-online": [19],
+		"/hjalp-vid-angest-online": [20],
+		"/hjalp-vid-depression-online": [21],
+		"/integritet": [22],
+		"/login": [~23],
+		"/nedstamdhet": [24],
+		"/om-mittpsyke": [25],
+		"/oro": [26],
+		"/ovningar": [27],
+		"/ovningar/[tool]": [28],
+		"/panikattack": [29],
+		"/portal/[slug]": [30],
+		"/psykiskt-stod-online": [31],
+		"/register": [~32],
+		"/stod-vid-stress-online": [33],
+		"/stress": [34],
+		"/trauma": [35]
 	};
 
 export const hooks = {
