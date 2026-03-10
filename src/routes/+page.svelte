@@ -177,20 +177,20 @@
 
 	<section class="content-hub">
 		<div class="narrow cards-narrow hub-inner">
-			<h2>Guider och &ouml;vningar</h2>
+			<h2>Guider och övningar</h2>
 			<p>
-				L&auml;s strukturerade guider och prova konkreta steg som du kan anv&auml;nda direkt i din vardag.
+				Läs strukturerade guider och prova konkreta steg som du kan använda direkt i din vardag.
 			</p>
 			<div class="hub-grid">
 				<a class="hub-card" href="/guider">
 					<h3>Guider</h3>
-					<p>8 fokusomr&aring;den med klusterartiklar inom psykiskt m&aring;ende.</p>
-					<span>G&aring; till guider</span>
+					<p>8 fokusområden med klusterartiklar inom psykiskt mående.</p>
+					<span>Gå till guider</span>
 				</a>
 				<a class="hub-card" href="/ovningar">
-					<h3>&Ouml;vningar</h3>
-					<p>Praktiska steg-f&ouml;r-steg-&ouml;vningar f&ouml;r reflektion och lugn.</p>
-					<span>G&aring; till &ouml;vningar</span>
+					<h3>Övningar</h3>
+					<p>Praktiska steg-för-steg-övningar för reflektion och lugn.</p>
+					<span>Gå till övningar</span>
 				</a>
 			</div>
 		</div>
@@ -199,9 +199,9 @@
 	<section class="focus-section">
 		<div class="narrow cards-narrow focus-content">
 			<header class="focus-header">
-				<h2>V&auml;lj fokusomr&aring;de</h2>
+				<h2>Välj fokusområde</h2>
 				<p>
-					Du beh&ouml;ver inte f&ouml;rklara allt. V&auml;lj det som k&auml;nns n&auml;rmast just nu.
+					Du behöver inte förklara allt. Välj det som känns närmast just nu.
 				</p>
 			</header>
 			<div class="focus-cards">
@@ -217,7 +217,7 @@
 							<span class="focus-icon">{portal.icon}</span>
 							<h3>{portal.title}</h3>
 							<p>{portal.description}</p>
-							<span class="focus-cta">B&ouml;rja skriva</span>
+							<span class="focus-cta">Börja skriva</span>
 						</div>
 					</a>
 				{/each}
@@ -250,17 +250,17 @@
 	<section class="band band-brown">
 		<div class="narrow support-columns">
 			<div>
-				<h2>Din v&auml;g till psykiskt st&ouml;d</h2>
+				<h2>Din väg till psykiskt stöd</h2>
 				<p>
-					Varje portal &auml;r specialiserad f&ouml;r att skapa ett mer tr&auml;ffs&auml;kert och tryggt samtal.
+					Varje portal är specialiserad för att skapa ett mer träffsäkert och tryggt samtal.
 				</p>
 				<ul>
-					<li>stabilt st&ouml;d f&ouml;r oro och &aring;ngest</li>
-					<li>varsam struktur vid nedst&auml;mdhet</li>
-					<li>fokus p&aring; trygghet och gr&auml;nss&auml;ttning vid trauma</li>
+					<li>stabilt stöd för oro och ångest</li>
+					<li>varsam struktur vid nedstämdhet</li>
+					<li>fokus på trygghet och gränssättning vid trauma</li>
 				</ul>
 				<p>
-					M&aring;let &auml;r inte snabba svar, utan ett h&aring;llbart samtal d&auml;r du kan landa och ta n&auml;sta steg.
+					Målet är inte snabba svar, utan ett hållbart samtal där du kan landa och ta nästa steg.
 				</p>
 			</div>
 			<img src="/assets/home/Digitalastod.PNG" alt="Digitalt stöd" loading="lazy" />
@@ -1122,4 +1122,5 @@
 
 
 </style>
+
 
