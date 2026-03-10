@@ -65,7 +65,7 @@
 				<a href="/chat/a" class="hero-cta hero-cta-primary">Börja anonymt</a>
 				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
 			</div>
-			<p class="hero-subnote">Ingen diagnos. Ingen press. Bara ett lugnt första steg.</p>
+			<p class="hero-subnote">Stöd i stunden, struktur över tid</p>
 			<p class="hero-support-link">
 				<a href="/om-mittpsyke">Så fungerar MittPsyke</a>
 				<span aria-hidden="true"> · </span>
