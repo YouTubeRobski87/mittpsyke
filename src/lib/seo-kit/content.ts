@@ -227,6 +227,102 @@ export const guides: Guide[] = [
 		]
 	},
 	{
+		pillarSlug: 'sovproblem',
+		slug: 'stress-och-somn',
+		title: 'Stress och somn - nar kroppen inte kan varva ner',
+		description: 'Om hur stress kan halla kroppen i beredskap och gora det svart att komma till ro pa kvallen.',
+		faqs: [
+			{
+				question: 'Varfor blir somnen svarare nar jag ar stressad?',
+				answer: 'Stress aktiverar nervsystemet och gor att kroppen stannar i hog beredskap trots att du egentligen behover vila.'
+			},
+			{
+				question: 'Kan kroppen vara trott men anda inte slappna av?',
+				answer: 'Ja, det ar vanligt att vara utmattad men samtidigt uppvarvad nar belastningen har varit hog under lang tid.'
+			},
+			{
+				question: 'Hjalper det att forsoka tvinga fram somn?',
+				answer: 'Ofta inte. Press och kamp med somnen kan i stallet oka stressen och gora insomnandet annu svarare.'
+			},
+			{
+				question: 'Vad kan vara ett forsta steg?',
+				answer: 'Att lagga marke till stresspaslaget, sakta ner tempot och ge kroppen en tydlig overgang mellan dag och natt kan vara en bra borjan.'
+			}
+		]
+	},
+	{
+		pillarSlug: 'sovproblem',
+		slug: 'altande-pa-kvallen',
+		title: 'Altande pa kvallen - varfor tankarna blir starkare i sangen',
+		description: 'Om varfor tankar ofta tar mer plats pa kvallen och hur altande kan halla dig vaken.',
+		faqs: [
+			{
+				question: 'Varfor borjar jag tanka mer just nar jag lagger mig?',
+				answer: 'Nar det blir tyst omkring dig far hjarnan mer utrymme, och oro eller obearbetade intryck kan bli tydligare.'
+			},
+			{
+				question: 'Ar altande samma sak som problemlosning?',
+				answer: 'Inte riktigt. Altande kanns ofta som att tankarna gar i cirklar utan att leda till ett tydligt svar eller beslut.'
+			},
+			{
+				question: 'Kan kvallsoro gora att jag somnar senare?',
+				answer: 'Ja, mental aktivering pa kvallen kan gora det svare att komma ner i ro och slappa taget om dagen.'
+			},
+			{
+				question: 'Vad kan hjalpa nar tankarna snurrar i sangen?',
+				answer: 'Det kan hjalpa att satta ord pa tankarna tidigare pa kvallen eller anvanda en lugn rutin som markerar att dagen ar slut.'
+			}
+		]
+	},
+	{
+		pillarSlug: 'sovproblem',
+		slug: 'trott-men-uppvarvad',
+		title: 'Trott men uppvarvad - nar kroppen vill sova men hjarnan inte slapper taget',
+		description: 'Om den vanliga konflikten mellan trott kropp och overaktiv hjarna vid somnproblem.',
+		faqs: [
+			{
+				question: 'Hur kan jag vara trott men anda inte kunna somna?',
+				answer: 'Det hander nar kroppen behover vila men hjarnan fortfarande ar aktiv av stress, oro eller overstimulering.'
+			},
+			{
+				question: 'Ar det vanligt att kanna sig rastlos pa kvallen?',
+				answer: 'Ja, manga beskriver en rastlos eller spand kansla trots att de ar helt slut i kroppen.'
+			},
+			{
+				question: 'Betyder det har att nagot ar fel pa mig?',
+				answer: 'Inte nodvandigtvis. Det ar ofta en reaktion pa belastning, hog anspanning eller att nervsystemet inte har hunnit varva ner.'
+			},
+			{
+				question: 'Vad kan minska den har kanslan?',
+				answer: 'Lugna overganger, mindre press kring somnen och regelbundna stunder for aterhamtning under dagen kan gora skillnad over tid.'
+			}
+		]
+	},
+	{
+		pillarSlug: 'sovproblem',
+		slug: 'somnbrist-och-maendet',
+		title: 'Nar somnbrist paverkar maendet - oro, irritation och nedstamdhet',
+		description: 'Om hur for lite somn kan paverka kanslolaget, tankarna och orken i vardagen.',
+		faqs: [
+			{
+				question: 'Kan somnbrist gora mig mer orolig?',
+				answer: 'Ja, for lite somn kan gora nervsystemet mer kansligt och det kan bli svarare att hantera oro och stress.'
+			},
+			{
+				question: 'Varfor blir jag lattare irriterad nar jag sovit daligt?',
+				answer: 'Nar du har somnbrist far hjarnan svarare att reglera kanslor, vilket kan gora att sma saker kanns storre an de brukar.'
+			},
+			{
+				question: 'Kan dalig somn hanga ihop med nedstamdhet?',
+				answer: 'Ja, somn och maende paverkar varandra starkt och langvariga somnproblem kan bidra till nedstamdhet eller forvarra den.'
+			},
+			{
+				question: 'Nar bor jag ta hjalp for bade somn och maende?',
+				answer: 'Om somnbristen pagatt ett tag och samtidigt paverkar hur du mar, fungerar eller orkar i vardagen ar det klokt att soka stod.'
+			}
+		]
+	},
+	{
 		pillarSlug: 'sjalvkansla',
 		slug: 'lag-sjalvkansla',
 		title: 'Lag sjalvkansla – vad det ar och var det kommer ifran',
