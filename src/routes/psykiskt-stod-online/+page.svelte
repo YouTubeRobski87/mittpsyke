@@ -52,9 +52,10 @@
 			<p>
 				Du kan börja med ett samtal, skriva i dagboken eller läsa en guide. Om du behöver mänsklig
 				kontakt finns <a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer</a>.
+				Mer om hur MittPsyke fungerar finns på <a href="/om-mittpsyke">Om MittPsyke</a>.
 			</p>
 			<p class="links-row">
-				<a href="/chat/a">Starta samtal</a>
+				<a href="/chat">Öppna chatten</a>
 				<a href="/guider/angest">Läs guide om ångest</a>
 				<a href="/ovningar/daglig-reflektionsmall">Prova en övning</a>
 			</p>
