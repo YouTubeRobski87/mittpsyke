@@ -50,7 +50,9 @@ export const nodes = [
 	() => import('./nodes/46'),
 	() => import('./nodes/47'),
 	() => import('./nodes/48'),
-	() => import('./nodes/49')
+	() => import('./nodes/49'),
+	() => import('./nodes/50'),
+	() => import('./nodes/51')
 ];
 
 export const server_loads = [];
@@ -100,10 +102,12 @@ export const dictionary = {
 		"/register": [~43],
 		"/samtalsstod-utan-vantetid": [44],
 		"/samtalsstod-vid-trauma": [45],
-		"/stod-vid-ptsd-online": [46],
-		"/stod-vid-stress-online": [47],
-		"/stress": [48],
-		"/trauma": [49]
+		"/sjalvkansla": [46],
+		"/sovproblem": [47],
+		"/stod-vid-ptsd-online": [48],
+		"/stod-vid-stress-online": [49],
+		"/stress": [50],
+		"/trauma": [51]
 	};
 
 export const hooks = {
