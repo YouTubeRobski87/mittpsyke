@@ -16,6 +16,7 @@
 		<p>
 			Välj ett område och läs en samlad, lugn guide med relaterade artiklar och praktiska övningar.
 		</p>
+		<p class="intro-note">Innehållet är sammanställt av MittPsyke som stöd för reflektion och ökad förståelse. Det ersätter inte vård eller behandling.</p>
 	</header>
 
 	<section class="grid" aria-label="Alla guider">
@@ -43,6 +44,10 @@
 		margin: 0.8rem 0 0;
 		max-width: 62ch;
 		opacity: 0.84;
+	}
+
+	.intro-note {
+		font-size: 0.94rem;
 	}
 
 	.grid {

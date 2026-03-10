@@ -280,7 +280,7 @@
 
 <main class="portal-page container">
 	{#if loading}
-		<p class="loading-copy">Laddar din portal...</p>
+		<p class="loading-copy">Laddar din portal. Det kan ta en liten stund.</p>
 	{:else}
 		<!-- Tab Navigation -->
 		<nav class="dashboard-tabs" aria-label="Portalnavigering">
@@ -309,7 +309,7 @@
 			<div class="conversation-history">
 				<h3>Senaste samtal</h3>
 				{#if recentConversations.length === 0}
-					<p class="conversation-empty">Inga tidigare samtal än.</p>
+					<p class="conversation-empty">Inga tidigare samtal än. När du börjar skriva i chatten visas dina senaste samtal här.</p>
 				{:else}
 					{#each recentConversations as conversation (conversation.id)}
 						<a class="conversation-card" href={`/chat/${toRouteCategory(conversation.category)}?id=${conversation.id}`}>
@@ -333,7 +333,7 @@
 			{#if reflectionPreview.length === 0}
 				<div class="empty-state">
 					<p>Du har inga sparade reflektioner ännu.</p>
-					<p>När du skriver första gången visas dina senaste anteckningar här.</p>
+					<p>När du vill kan du börja med några rader i dagboken. Dina senaste anteckningar visas här när de finns.</p>
 				</div>
 			{:else}
 				<ul class="reflection-list">

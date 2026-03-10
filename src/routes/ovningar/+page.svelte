@@ -22,6 +22,7 @@
 	<header class="intro">
 		<h1>Övningar</h1>
 		<p>Välkomponerade steg-för-steg-övningar som du kan använda direkt i vardagen.</p>
+		<p class="intro-note">Övningarna är tänkta som stöd för reflektion och lugn. De ersätter inte vård, diagnos eller behandling.</p>
 	</header>
 
 	<section class="links-block" aria-label="Fördjupning">
@@ -59,6 +60,10 @@
 		margin: 0.8rem 0 0;
 		max-width: 62ch;
 		opacity: 0.84;
+	}
+
+	.intro-note {
+		font-size: 0.94rem;
 	}
 
 	.grid {

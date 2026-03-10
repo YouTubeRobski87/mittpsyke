@@ -895,7 +895,7 @@
 
 
 {#if loading}
-	<div class="container py-16 text-center opacity-60">Laddar...</div>
+	<div class="container py-16 text-center opacity-60">Laddar din dagbok...</div>
 {:else if isLoggedIn}
 	<section class="container max-w-2xl py-12">
 		<div class="flex flex-wrap items-center justify-between gap-3 mb-3">
@@ -987,7 +987,7 @@
 					disabled={statsLoading}
 					class="rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 px-3 py-1.5 text-xs opacity-85 hover:opacity-100 disabled:opacity-50 transition-opacity"
 				>
-					{statsLoading ? 'Laddar...' : 'Uppdatera'}
+					{statsLoading ? 'Laddar statistik...' : 'Uppdatera'}
 				</button>
 			</div>
 
@@ -1001,9 +1001,9 @@
 			{#if statsError}
 				<p class="text-sm opacity-70">{statsError}</p>
 			{:else if statsLoading && moodTimeline.length === 0}
-				<p class="text-sm opacity-70">Laddar känslostatistik...</p>
+				<p class="text-sm opacity-70">Laddar känslostatistik. Det kan ta en liten stund.</p>
 			{:else if moodTimeline.length === 0}
-				<p class="text-sm opacity-70">Ingen känslodata ännu.</p>
+				<p class="text-sm opacity-70">Ingen känslodata ännu. När du har skrivit några inlägg med känsloläge visas mönster här.</p>
 			{:else}
 				<div class="h-72 w-full">
 					<canvas bind:this={moodChartCanvas} aria-label="Känslotrender per dag"></canvas>
@@ -1013,7 +1013,7 @@
 
 		<div class="space-y-3">
 			{#if entries.length === 0}
-				<p class="text-sm opacity-60">Inga anteckningar ännu.</p>
+				<p class="text-sm opacity-60">Din dagbok är tom än så länge. När du vill kan du börja med några rader om hur du har det idag.</p>
 			{:else}
 				{#each entries as entry (entry.id)}
 					<article class="rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-white/45 dark:bg-[#1a1a1a] p-4">

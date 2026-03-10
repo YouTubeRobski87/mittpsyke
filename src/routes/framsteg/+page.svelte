@@ -57,7 +57,7 @@
 	</div>
 
 	{#if loading}
-		<div class="loading-state">Laddar din resehistoria...</div>
+		<div class="loading-state">Laddar din sida med framsteg...</div>
 	{:else if error}
 		<div class="error-state">
 			<p>⚠️ {error}</p>
@@ -166,7 +166,7 @@
 		{#if !streakData || streakData.currentStreak === 0}
 			<section class="card empty-state">
 				<h2>🌱 Börja din resa</h2>
-				<p>Skriv ditt första dagboksinlägg för att börja följa din utveckling och få insikter om dina mönster.</p>
+				<p>Inga framsteg visas ännu. När du börjar använda dagboken och verktygen här kan du följa mönster över tid.</p>
 				<a href="/dagbok" class="btn-primary">Skriv inlägg</a>
 			</section>
 		{/if}

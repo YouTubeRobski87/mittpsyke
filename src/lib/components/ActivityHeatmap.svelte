@@ -57,7 +57,7 @@
 			const json = await response.json();
 
 			if (!response.ok) {
-				error = json.error || 'Kunde inte ladda heatmap';
+				error = json.error || 'Det gick inte att visa aktivitetskartan just nu.';
 				return;
 			}
 
@@ -112,7 +112,7 @@
 	{#if loading}
 		<div class="loading">Laddar aktivitetskarta...</div>
 	{:else if error}
-		<div class="error">{error}</div>
+		<div class="error">{error} Försök igen om en stund.</div>
 	{:else}
 		<div class="heatmap-wrapper" bind:this={heatmapWrapper}>
 			<div class="weekdays-column">
