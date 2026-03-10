@@ -59,7 +59,7 @@
 		<div class="hero-content">
 			<h1>Ett tryggt rum för att landa, skriva av dig och börja i din egen takt</h1>
 			<p>
-				Prata anonymt när du behöver stöd i stunden. Skapa konto om du vill spara din dagbok, följa mönster över tid och få en plats att återvända till.
+				Prata anonymt när du behöver stöd i stunden. Skapa ett konto om du vill spara din dagbok, följa dina mönster över tid och ha en egen plats att återvända till.
 			</p>
 			<div class="hero-actions">
 				<a href="/chat/a" class="hero-cta hero-cta-primary">Börja anonymt</a>
