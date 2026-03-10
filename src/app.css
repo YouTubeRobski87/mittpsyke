@@ -103,6 +103,16 @@ select {
 	font: inherit;
 }
 
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+	outline: 3px solid rgba(15, 118, 110, 0.35);
+	outline-offset: 2px;
+	border-radius: 12px;
+}
+
 .dark body {
 	background: #0f0f0f;
 }

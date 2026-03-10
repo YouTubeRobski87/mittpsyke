@@ -55,6 +55,8 @@
 			src="/assets/home/MittpsykeTree.jpg"
 			alt=""
 			aria-hidden="true"
+			decoding="async"
+			fetchpriority="high"
 		/>
 		<div class="hero-content">
 			<h1>Ett tryggt rum för att landa, skriva av dig och börja i din egen takt</h1>

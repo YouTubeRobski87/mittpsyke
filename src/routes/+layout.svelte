@@ -22,6 +22,18 @@
 	};
 
 	const isChat = $derived(Boolean(page.route.id?.includes('/chat/')));
+	const isPrivateOrUtilityPage = $derived(
+		Boolean(
+			page.route.id &&
+			(
+				page.route.id.includes('/dashboard') ||
+				page.route.id.includes('/dagbok') ||
+				page.route.id.includes('/framsteg') ||
+				page.route.id.includes('/login') ||
+				page.route.id.includes('/register')
+			)
+		)
+	);
 
 	let user = $state<User | null>(null);
 	let displayName = $state<string | null>(null);
@@ -89,7 +101,7 @@
 			content={page.data?.description || 'Anonymt samtalsstöd och digitala verktyg för din psykiska hälsa.'}
 		/>
 
-		<meta name="robots" content="index, follow" />
+		<meta name="robots" content={isPrivateOrUtilityPage ? 'noindex, nofollow' : 'index, follow'} />
 		<meta name="author" content="MittPsyke" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -101,10 +113,10 @@
 		<meta property="og:type" content="website" />
 		<meta property="og:site_name" content="MittPsyke" />
 
-		<meta property="og:url" content="https://www.mittpsyke.se{page.url.pathname}" />
+		<meta property="og:url" content={`https://www.mittpsyke.se${page.url.pathname}`} />
 		<meta property="og:image" content="https://www.mittpsyke.se/og-image.png" />
 
-		<link rel="canonical" href="https://www.mittpsyke.se{page.url.pathname}" />
+		<link rel="canonical" href={`https://www.mittpsyke.se${page.url.pathname}`} />
 
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | Mittpsyke` : 'MittPsyke – Psykiskt stöd online'} />
@@ -127,6 +139,7 @@
 		</section>
 	</main>
 {:else}
+	<a href="#main-content" class="skip-link">Hoppa till innehåll</a>
 	<header class="sticky top-0 z-30 border-b border-black/8 bg-white/75 dark:bg-black/35 backdrop-blur">
 		<div class="flex items-center justify-between gap-3 px-5 py-3.5">
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
@@ -137,7 +150,7 @@
 					Hem
 				</a>
 
-				<nav class="hidden md:flex items-center gap-4">
+				<nav class="hidden md:flex items-center gap-4" aria-label="Huvudnavigering">
 					<a
 						href="/guider"
 						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
@@ -168,7 +181,7 @@
 			</div>
 
 			<div class="flex items-center gap-3">
-				<nav class="hidden md:flex items-center gap-4">
+				<nav class="hidden md:flex items-center gap-4" aria-label="Kontonavigering">
 					{#if user}
 						<span class="text-sm opacity-70">
 							{displayName ? `V\u00e4lkommen, ${displayName}` : 'V\u00e4lkommen tillbaka'}
@@ -211,6 +224,7 @@
 					class="md:hidden inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/10 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
 					aria-label="Öppna meny"
 					aria-expanded={mobileMenuOpen}
+					aria-controls="mobile-menu"
 					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
 				>
 					&#9776;
@@ -219,7 +233,7 @@
 		</div>
 
 		{#if mobileMenuOpen}
-			<div class="md:hidden border-t border-black/8 dark:border-white/10 px-5 py-3 space-y-2">
+			<div id="mobile-menu" class="md:hidden border-t border-black/8 dark:border-white/10 px-5 py-3 space-y-2" aria-label="Mobilmeny">
 				<a
 					href="/guider"
 					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
@@ -311,7 +325,7 @@
 	</header>
 
 	<div class:is-chat-page={isChat}>
-		<main class="mt-6">
+		<main id="main-content" class="mt-6">
 			{@render children()}
 		</main>
 
@@ -403,6 +417,22 @@
 
 	.footer-company p {
 		margin: 0.1rem 0;
+	}
+
+	.skip-link {
+		position: absolute;
+		left: 1rem;
+		top: -3rem;
+		z-index: 60;
+		padding: 0.65rem 0.9rem;
+		border-radius: 12px;
+		background: #ffffff;
+		color: #0f172a;
+		border: 1px solid rgba(0, 0, 0, 0.12);
+	}
+
+	.skip-link:focus-visible {
+		top: 1rem;
 	}
 </style>
 

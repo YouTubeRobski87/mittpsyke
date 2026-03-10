@@ -246,12 +246,17 @@
 	<div
 		bind:this={chatLog}
 		class="chat-messages flex-1 overflow-y-auto p-4 space-y-3"
+		aria-live="polite"
+		aria-busy={sending}
 	>
 		{#if messages.length === 0}
 			<div class="text-center mt-6">
 				<img
 					src="/assets/mittpsyke-hero.png"
 					alt=""
+					width="220"
+					height="220"
+					decoding="async"
 					class="mx-auto mb-4 opacity-80"
 					style="max-width: 220px"
 				/>
@@ -294,7 +299,7 @@
 		{/each}
 
 		{#if sending}
-			<div class="flex justify-start">
+			<div class="flex justify-start" role="status" aria-live="polite">
 				<div class="bg-black/5 dark:bg-white/10 px-4 py-3 rounded-[var(--radius-card)] rounded-bl-md text-sm opacity-60">
 					Skriver...
 				</div>
@@ -349,16 +354,20 @@
 		{/if}
 
 		<div class="flex gap-2">
+			<label class="sr-only" for="chat-message">Skriv ditt meddelande</label>
 			<textarea
+				id="chat-message"
 				bind:value={input}
 				onkeydown={handleKeydown}
 				placeholder="Skriv här..."
+				aria-describedby="chat-help-text"
 				rows={1}
 				class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 					bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none
 					focus:border-[var(--primary)] transition-colors"
 			></textarea>
 			<button
+				type="button"
 				onclick={send}
 				disabled={sending || !input.trim()}
 				class="px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white text-sm font-medium
@@ -367,6 +376,7 @@
 				Skicka
 			</button>
 		</div>
+		<p id="chat-help-text" class="mt-2 text-xs opacity-60">Skriv i din egen takt. Vid akut fara, ring 112.</p>
 		<div class="mt-3 text-center">
 			<a
 				href="mailto:mittpsyke@ownit.nu"
