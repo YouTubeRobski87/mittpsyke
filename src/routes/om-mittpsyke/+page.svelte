@@ -86,6 +86,9 @@
 					<p>
 						Jag gav inte upp.
 					</p>
+					<p>
+						Min erfarenhet är grunden till varför MittPsyke finns. Men tryggheten i tjänsten bygger också på tydliga ramar, ansvar och öppenhet kring vad stödet är till för.
+					</p>
 
 					<blockquote class="story-quote">
 						"Det här är inte historien om ett perfekt liv. Det är historien om att överleva, falla, kämpa och långsamt börja bygga upp sig själv igen. Och kanske är det just där den verkliga styrkan finns."
@@ -96,6 +99,34 @@
 		</section>
 
 		<div class="text-block">
+			<section class="section">
+				<h2>Trygghet, ansvar och metod</h2>
+				<p>
+					MittPsyke är skapat ur egen erfarenhet av psykisk belastning, men tjänsten bygger också på tydliga gränser. Syftet är att erbjuda stöd för reflektion, lugn och struktur i vardagen — inte att ställa diagnoser, ge akutvård eller ersätta kontakt med legitimerad vårdpersonal.
+				</p>
+				<ul>
+					<li>
+						<strong>Tydliga ramar</strong><br />
+						MittPsyke är till för samtalsstöd, egen reflektion och vardagsnära vägledning. Tjänsten är inte avsedd att ersätta vård, behandling eller professionell bedömning.
+					</li>
+					<li>
+						<strong>Ansvar och öppenhet</strong><br />
+						Det ska vara tydligt för användaren vad tjänsten är till för, vilka begränsningar som finns och när annan hjälp behövs. Därför finns också tydlig ansvarsinfo och hänvisningar vidare.
+					</li>
+					<li>
+						<strong>Lugn och respektfull metod</strong><br />
+						Samtalen är utformade för att möta människor med lugn, respekt och låg tröskel. Fokus ligger på att hjälpa användaren att stanna upp, sätta ord på det som känns och få struktur i stunden.
+					</li>
+					<li>
+						<strong>När annan hjälp behövs</strong><br />
+						Vid akut fara, allvarlig psykisk kris eller behov av medicinsk bedömning ska användaren alltid vända sig till vården, 1177 eller 112 beroende på situation.
+					</li>
+				</ul>
+				<p>
+					<a href="/ansvar">Läs mer i ansvarsinformationen</a>
+				</p>
+			</section>
+
 			<!-- 3) Vad ar MittPsyke -->
 			<section class="section">
 				<h2>Vad är MittPsyke?</h2>
