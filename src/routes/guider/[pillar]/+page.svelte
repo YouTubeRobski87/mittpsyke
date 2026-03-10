@@ -45,6 +45,9 @@
 <svelte:head>
 	<title>{data.pillar.title} | Guider | MittPsyke</title>
 	<meta name="description" content={data.pillar.description} />
+	<meta property="og:title" content={`${data.pillar.title} | Guider | MittPsyke`} />
+	<meta property="og:description" content={data.pillar.description} />
+	<link rel="canonical" href={`https://mittpsyke.se/guider/${data.pillar.slug}`} />
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
 </svelte:head>
 
@@ -82,6 +85,20 @@
 			{/each}
 		</div>
 	</section>
+
+	{#if data.pillar.slug === 'angest'}
+		<section class="block" aria-label="Nästa steg vid ångest">
+			<h2>Nästa steg vid ångest</h2>
+			<p>Om du vill ta det vidare kan du välja det som känns mest hjälpsamt just nu.</p>
+			<ul>
+				<li><a href="/chat/a">Starta samtal om ångest</a></li>
+				<li><a href="/hjalp-vid-angest-online">Läs mer om hjälp vid ångest online</a></li>
+				<li><a href="/ovningar/cbt-katastroftankar">Prova övning mot katastroftankar</a></li>
+				<li><a href="/dagbok">Skriv i dagboken</a></li>
+				<li><a href="/framsteg">Följ mönster över tid</a></li>
+			</ul>
+		</section>
+	{/if}
 
 	<section class="cta-section" aria-label="Kom igång">
 		<h2>Redo att ta nästa steg?</h2>
