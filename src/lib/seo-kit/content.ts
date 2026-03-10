@@ -45,13 +45,13 @@ export const pillars: Pillar[] = [
 	},
 	{
 		slug: 'sovproblem',
-		title: 'Sövnproblem',
+		title: 'SÃ¶vnproblem',
 		description: 'Forsta varfor somnen uteblir och hur du kan borja hantera det som haller dig vaken.',
 		chatPath: '/chat/a'
 	},
 	{
 		slug: 'sjalvkansla',
-		title: 'Självkänsla',
+		title: 'SjÃ¤lvkÃ¤nsla',
 		description: 'Om lag sjalvkansla, vad det beror pa och hur du kan borja utforska din relation till dig sjalv.',
 		chatPath: '/chat/a'
 	}
@@ -83,19 +83,19 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det',
+				title: 'PanikÃ¥ngest â€“ vad som hÃ¤nder i kroppen och hur du kan hantera det',
 				href: '/guider-seo/angest/panikangest-och-kroppen'
 			},
 			{
-				title: 'Orostankar som snurrar – när hjärnan inte kan stänga av',
+				title: 'Orostankar som snurrar â€“ nÃ¤r hjÃ¤rnan inte kan stÃ¤nga av',
 				href: '/guider-seo/angest/orostankar'
 			},
 			{
-				title: 'Ångest och sömn – varför natten kan bli svårare',
+				title: 'Ã…ngest och sÃ¶mn â€“ varfÃ¶r natten kan bli svÃ¥rare',
 				href: '/guider-seo/angest/angest-och-somn'
 			},
 			{
-				title: 'Social ångest – rädslan för att bli bedömd av andra',
+				title: 'Social Ã¥ngest â€“ rÃ¤dslan fÃ¶r att bli bedÃ¶md av andra',
 				href: '/guider-seo/angest/social-angest'
 			}
 		]
@@ -103,37 +103,37 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'panikangest-och-kroppen',
-		title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det',
-		description: 'Om kroppens starka reaktioner vid panikångest och hur du kan förstå det som händer.',
+		title: 'PanikÃ¥ngest â€“ vad som hÃ¤nder i kroppen och hur du kan hantera det',
+		description: 'Om kroppens starka reaktioner vid panikÃ¥ngest och hur du kan fÃ¶rstÃ¥ det som hÃ¤nder.',
 		faqs: [
 			{
-				question: 'Varför reagerar kroppen så starkt vid panikångest?',
-				answer: 'Kroppen går in i alarmberedskap, vilket kan ge hjärtklappning, yrsel, tryck över bröstet och snabb andning.'
+				question: 'VarfÃ¶r reagerar kroppen sÃ¥ starkt vid panikÃ¥ngest?',
+				answer: 'Kroppen gÃ¥r in i alarmberedskap, vilket kan ge hjÃ¤rtklappning, yrsel, tryck Ã¶ver brÃ¶stet och snabb andning.'
 			},
 			{
 				question: 'Ar panikangest farligt?',
-				answer: 'Det brukar inte vara farligt i sig, men upplevelsen kan vara mycket intensiv och skrämmande.'
+				answer: 'Det brukar inte vara farligt i sig, men upplevelsen kan vara mycket intensiv och skrÃ¤mmande.'
 			},
 			{
-				question: 'Varför känns det som att jag tappar kontrollen?',
-				answer: 'När stressystemet slår på starkt kan hjärnan tolka reaktionerna som ett hot, vilket förstärker känslan.'
+				question: 'VarfÃ¶r kÃ¤nns det som att jag tappar kontrollen?',
+				answer: 'NÃ¤r stressystemet slÃ¥r pÃ¥ starkt kan hjÃ¤rnan tolka reaktionerna som ett hot, vilket fÃ¶rstÃ¤rker kÃ¤nslan.'
 			},
 			{
-				question: 'Vad kan hjälpa i stunden?',
-				answer: 'Att sakta ner andningen, stanna kvar i nuet och påminna dig om att reaktionen går över kan minska intensiteten.'
+				question: 'Vad kan hjÃ¤lpa i stunden?',
+				answer: 'Att sakta ner andningen, stanna kvar i nuet och pÃ¥minna dig om att reaktionen gÃ¥r Ã¶ver kan minska intensiteten.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Tecken på ångest',
+				title: 'Tecken pÃ¥ Ã¥ngest',
 				href: '/guider-seo/angest/tecken'
 			},
 			{
-				title: 'Orostankar som snurrar – när hjärnan inte kan stänga av',
+				title: 'Orostankar som snurrar â€“ nÃ¤r hjÃ¤rnan inte kan stÃ¤nga av',
 				href: '/guider-seo/angest/orostankar'
 			},
 			{
-				title: 'Ångest och sömn – varför natten kan bli svårare',
+				title: 'Ã…ngest och sÃ¶mn â€“ varfÃ¶r natten kan bli svÃ¥rare',
 				href: '/guider-seo/angest/angest-och-somn'
 			}
 		]
@@ -157,7 +157,7 @@ export const guides: Guide[] = [
 				answer: 'Ja, nar det blir tyst och stilla far tankarna ofta mer utrymme och kan kannas starkare.'
 			},
 			{
-				question: 'Vad kan vara ett forsta steg?',
+				question: 'Vad kan vara ett första steg?',
 				answer: 'Att lagga marke till nar oron borjar dra ivag och ge den en tydlig plats i stallet for att folja varje tanke kan hjalpa.'
 			}
 		],
@@ -209,7 +209,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/sovproblem/orsaker'
 			},
 			{
-				title: 'Stress och somn - nar kroppen inte kan varva ner',
+				title: 'Stress och sömn – när kroppen inte kan varva ner',
 				href: '/guider-seo/sovproblem/stress-och-somn'
 			}
 		]
@@ -277,19 +277,19 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Trötthet och meningslöshet – när ingenting känns värt att göra',
+				title: 'TrÃ¶tthet och meningslÃ¶shet â€“ nÃ¤r ingenting kÃ¤nns vÃ¤rt att gÃ¶ra',
 				href: '/guider-seo/depression/trotthet-och-meningsloshet'
 			},
 			{
-				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
+				title: 'Hur nedstÃ¤mdhet pÃ¥verkar relationer och nÃ¤rheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			},
 			{
-				title: 'Skillnaden mellan sorg och depression – och varför det spelar roll',
+				title: 'Skillnaden mellan sorg och depression â€“ och varfÃ¶r det spelar roll',
 				href: '/guider-seo/depression/sorg-och-depression'
 			},
 			{
-				title: 'Små steg när energin tryter – vad som faktiskt kan hjälpa',
+				title: 'SmÃ¥ steg nÃ¤r energin tryter â€“ vad som faktiskt kan hjÃ¤lpa',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
@@ -471,19 +471,19 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Vad händer i nervsystemet vid trauma – fight, flight och freeze',
+				title: 'Vad hÃ¤nder i nervsystemet vid trauma â€“ fight, flight och freeze',
 				href: '/guider-seo/trauma/nervsystemet-och-trauma'
 			},
 			{
-				title: 'Grounding – enkla övningar för att landa i kroppen igen',
+				title: 'Grounding â€“ enkla Ã¶vningar fÃ¶r att landa i kroppen igen',
 				href: '/guider-seo/trauma/grounding-ovningar'
 			},
 			{
-				title: 'Undvikande efter trauma – varför vi gör det och vad det kostar',
+				title: 'Undvikande efter trauma â€“ varfÃ¶r vi gÃ¶r det och vad det kostar',
 				href: '/guider-seo/trauma/undvikande-efter-trauma'
 			},
 			{
-				title: 'Tillit och trygghet i relationer efter svåra upplevelser',
+				title: 'Tillit och trygghet i relationer efter svÃ¥ra upplevelser',
 				href: '/guider-seo/trauma/tillit-efter-trauma'
 			}
 		]
@@ -521,7 +521,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/trauma/grounding-ovningar'
 			},
 			{
-				title: 'Stress och somn - nar kroppen inte kan varva ner',
+				title: 'Stress och sömn – när kroppen inte kan varva ner',
 				href: '/guider-seo/sovproblem/stress-och-somn'
 			}
 		]
@@ -656,7 +656,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Kan man tranas upp till battre somn?',
-				answer: 'Ja, somn paverkas av vanor, kanslobearbetning och trygghetskansla – alla saker som kan forandra med tid och stod.'
+				answer: 'Ja, somn paverkas av vanor, kanslobearbetning och trygghetskansla â€“ alla saker som kan forandra med tid och stod.'
 			},
 			{
 				question: 'Hjalper det att prata om det som oroar en?',
@@ -665,19 +665,19 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Stress och sömn – när kroppen inte kan varva ner',
+				title: 'Stress och sÃ¶mn â€“ nÃ¤r kroppen inte kan varva ner',
 				href: '/guider-seo/sovproblem/stress-och-somn'
 			},
 			{
-				title: 'Ältande på kvällen – varför tankarna blir starkare i sängen',
+				title: 'Ã„ltande pÃ¥ kvÃ¤llen â€“ varfÃ¶r tankarna blir starkare i sÃ¤ngen',
 				href: '/guider-seo/sovproblem/altande-pa-kvallen'
 			},
 			{
-				title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget',
+				title: 'TrÃ¶tt men uppvarvad â€“ nÃ¤r kroppen vill sova men hjÃ¤rnan inte slÃ¤pper taget',
 				href: '/guider-seo/sovproblem/trott-men-uppvarvad'
 			},
 			{
-				title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet',
+				title: 'NÃ¤r sÃ¶mnbrist pÃ¥verkar mÃ¥endet â€“ oro, irritation och nedstÃ¤mdhet',
 				href: '/guider-seo/sovproblem/somnbrist-och-maendet'
 			}
 		]
@@ -685,32 +685,32 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sovproblem',
 		slug: 'stress-och-somn',
-		title: 'Stress och somn - nar kroppen inte kan varva ner',
-		description: 'Om hur stress kan halla kroppen i beredskap och gora det svart att komma till ro pa kvallen.',
+		title: 'Stress och sömn – när kroppen inte kan varva ner',
+		description: 'Om hur stress kan hålla kroppen i beredskap och göra det svårt att komma till ro på kvällen.',
 		faqs: [
 			{
-				question: 'Varfor blir somnen svarare nar jag ar stressad?',
-				answer: 'Stress aktiverar nervsystemet och gor att kroppen stannar i hog beredskap trots att du egentligen behover vila.'
+				question: 'Varför blir sömnen svårare när jag är stressad?',
+				answer: 'Stress aktiverar nervsystemet och gör att kroppen stannar i hög beredskap trots att du egentligen behöver vila.'
 			},
 			{
-				question: 'Kan kroppen vara trott men anda inte slappna av?',
-				answer: 'Ja, det ar vanligt att vara utmattad men samtidigt uppvarvad nar belastningen har varit hog under lang tid.'
+				question: 'Kan kroppen vara trött men ändå inte slappna av?',
+				answer: 'Ja, det är vanligt att vara utmattad men samtidigt uppvarvad när belastningen har varit hög under lång tid.'
 			},
 			{
-				question: 'Hjalper det att forsoka tvinga fram somn?',
-				answer: 'Ofta inte. Press och kamp med somnen kan i stallet oka stressen och gora insomnandet annu svarare.'
+				question: 'Hjälper det att försöka tvinga fram sömn?',
+				answer: 'Ofta inte. Press och kamp med sömnen kan i stället öka stressen och göra insomnandet ännu svårare.'
 			},
 			{
-				question: 'Vad kan vara ett forsta steg?',
-				answer: 'Att lagga marke till stresspaslaget, sakta ner tempot och ge kroppen en tydlig overgang mellan dag och natt kan vara en bra borjan.'
+				question: 'Vad kan vara ett första steg?',
+				answer: 'Att lägga märke till stresspåslaget, sakta ner tempot och ge kroppen en tydlig övergång mellan dag och natt kan vara en bra början.'
 			}
 		]
 	},
 	{
 		pillarSlug: 'sovproblem',
 		slug: 'altande-pa-kvallen',
-		title: 'Altande pa kvallen - varfor tankarna blir starkare i sangen',
-		description: 'Om varfor tankar ofta tar mer plats pa kvallen och hur altande kan halla dig vaken.',
+		title: 'Ältande på kvällen – varför tankarna blir starkare i sängen',
+		description: 'Om varför tankar ofta tar mer plats på kvällen och hur ältande kan hålla dig vaken.',
 		faqs: [
 			{
 				question: 'Varfor borjar jag tanka mer just nar jag lagger mig?',
@@ -733,8 +733,8 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sovproblem',
 		slug: 'trott-men-uppvarvad',
-		title: 'Trott men uppvarvad - nar kroppen vill sova men hjarnan inte slapper taget',
-		description: 'Om den vanliga konflikten mellan trott kropp och overaktiv hjarna vid somnproblem.',
+		title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget',
+		description: 'Om den vanliga konflikten mellan trött kropp och överaktiv hjärna vid sömnproblem.',
 		faqs: [
 			{
 				question: 'Hur kan jag vara trott men anda inte kunna somna?',
@@ -757,8 +757,8 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sovproblem',
 		slug: 'somnbrist-och-maendet',
-		title: 'Nar somnbrist paverkar maendet - oro, irritation och nedstamdhet',
-		description: 'Om hur for lite somn kan paverka kanslolaget, tankarna och orken i vardagen.',
+		title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet',
+		description: 'Om hur för lite sömn kan påverka känsloläget, tankarna och orken i vardagen.',
 		faqs: [
 			{
 				question: 'Kan somnbrist gora mig mer orolig?',
@@ -781,7 +781,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sjalvkansla',
 		slug: 'lag-sjalvkansla',
-		title: 'Lag sjalvkansla – vad det ar och var det kommer ifran',
+		title: 'Lag sjalvkansla â€“ vad det ar och var det kommer ifran',
 		description: 'Om vad lag sjalvkansla innebar, hur den uppstar och hur du kan borja utforska forhallandena till dig sjalv.',
 		faqs: [
 			{
@@ -790,7 +790,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Kan lag sjalvkansla forandra sig?',
-				answer: 'Ja. Sjalvkansla ar inte fast – den paverkas av erfarenheter, relationer och hur vi bearbetar dem over tid.'
+				answer: 'Ja. Sjalvkansla ar inte fast â€“ den paverkas av erfarenheter, relationer och hur vi bearbetar dem over tid.'
 			},
 			{
 				question: 'Varfor ar det svart att ta emot berom?',
@@ -798,24 +798,24 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Hur borjar man arbeta med sjalvkansla?',
-				answer: 'Ofta genom att bli medveten om den inre rosta – hur du pratar med dig sjalv – och borja utforska varifraN den restan kom.'
+				answer: 'Ofta genom att bli medveten om den inre rosta â€“ hur du pratar med dig sjalv â€“ och borja utforska varifraN den restan kom.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Den inre kritikern – varför rösten finns och vad den egentligen vill',
+				title: 'Den inre kritikern â€“ varfÃ¶r rÃ¶sten finns och vad den egentligen vill',
 				href: '/guider-seo/sjalvkansla/inre-kritikern'
 			},
 			{
-				title: 'Perfektionism och självkänsla – när ingenting känns tillräckligt bra',
+				title: 'Perfektionism och sjÃ¤lvkÃ¤nsla â€“ nÃ¤r ingenting kÃ¤nns tillrÃ¤ckligt bra',
 				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
 			},
 			{
-				title: 'Att sätta gränser när självkänslan är låg – varför det är svårt',
+				title: 'Att sÃ¤tta grÃ¤nser nÃ¤r sjÃ¤lvkÃ¤nslan Ã¤r lÃ¥g â€“ varfÃ¶r det Ã¤r svÃ¥rt',
 				href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla'
 			},
 			{
-				title: 'Jämförelseträsket – sociala medier och din självbild',
+				title: 'JÃ¤mfÃ¶relsetrÃ¤sket â€“ sociala medier och din sjÃ¤lvbild',
 				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
 			}
 		]
