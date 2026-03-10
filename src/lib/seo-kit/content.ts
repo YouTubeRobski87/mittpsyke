@@ -489,6 +489,158 @@ export const guides: Guide[] = [
 		]
 	},
 	{
+		pillarSlug: 'trauma',
+		slug: 'nervsystemet-och-trauma',
+		title: 'Vad hander i nervsystemet vid trauma - fight, flight och freeze',
+		description: 'Om hur nervsystemet kan fastna i stark beredskap efter svara upplevelser.',
+		faqs: [
+			{
+				question: 'Vad betyder fight, flight och freeze?',
+				answer: 'Det ar kroppens automatiska overlevnadsreaktioner nar nagot upplevs som hotfullt eller overvaldiga.'
+			},
+			{
+				question: 'Varfor reagerar kroppen sa snabbt?',
+				answer: 'Nervsystemet ar byggt for att skydda dig, och efter trauma kan det bli extra kansligt for signaler om fara.'
+			},
+			{
+				question: 'Kan reaktionerna komma trots att jag vet att jag ar saker nu?',
+				answer: 'Ja, kroppen kan reagera fore den medvetna tanken hinner ikapp, sarskilt om den lart sig att vara pa sin vakt.'
+			},
+			{
+				question: 'Hjalper det att forsta reaktionen?',
+				answer: 'Ofta ja. Att se reaktionen som ett skyddssystem snarare an ett personligt fel kan minska skam och forvirring.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Trygghet efter trauma',
+				href: '/guider-seo/trauma/trygghet'
+			},
+			{
+				title: 'Grounding - enkla ovningar for att landa i kroppen igen',
+				href: '/guider-seo/trauma/grounding-ovningar'
+			},
+			{
+				title: 'Stress och somn - nar kroppen inte kan varva ner',
+				href: '/guider-seo/sovproblem/stress-och-somn'
+			}
+		]
+	},
+	{
+		pillarSlug: 'trauma',
+		slug: 'grounding-ovningar',
+		title: 'Grounding - enkla ovningar for att landa i kroppen igen',
+		description: 'Om grounding som ett satt att aterfa orientering och kontakt med nuet nar kroppen ar i alarm.',
+		faqs: [
+			{
+				question: 'Vad ar grounding?',
+				answer: 'Grounding ar enkla satt att flytta uppmarksamheten till kroppen, omgivningen och det som ar har och nu.'
+			},
+			{
+				question: 'Nar kan grounding vara hjalpsamt?',
+				answer: 'Det kan hjalpa vid overstark aktivering, flashbacks, dissociation eller nar du kanner att du tappar fotfastet.'
+			},
+			{
+				question: 'Maste jag gora det perfekt for att det ska fungera?',
+				answer: 'Nej, det viktiga ar inte att gora ratt utan att forsiktigt hitta nagot som gor dig lite mer narvarande.'
+			},
+			{
+				question: 'Vad ar ett enkelt exempel?',
+				answer: 'Att namna fem saker du ser, kanna fotterna mot golvet eller halla i ett foremal kan vara en enkel borjan.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Trygghet efter trauma',
+				href: '/guider-seo/trauma/trygghet'
+			},
+			{
+				title: 'Vad hander i nervsystemet vid trauma - fight, flight och freeze',
+				href: '/guider-seo/trauma/nervsystemet-och-trauma'
+			},
+			{
+				title: 'Undvikande efter trauma - varfor vi gor det och vad det kostar',
+				href: '/guider-seo/trauma/undvikande-efter-trauma'
+			}
+		]
+	},
+	{
+		pillarSlug: 'trauma',
+		slug: 'undvikande-efter-trauma',
+		title: 'Undvikande efter trauma - varfor vi gor det och vad det kostar',
+		description: 'Om hur undvikande kan skydda pa kort sikt men samtidigt gora livet mindre med tiden.',
+		faqs: [
+			{
+				question: 'Varfor undviker jag vissa platser eller situationer?',
+				answer: 'Undvikande ar ofta ett satt att minska risken att triggas eller overvaldigas igen.'
+			},
+			{
+				question: 'Ar undvikande alltid fel?',
+				answer: 'Nej, det kan vara ett forsta skydd. Problemet uppstar nar det borjar styra allt mer av vardagen.'
+			},
+			{
+				question: 'Hur kan undvikande paverka livet pa sikt?',
+				answer: 'Det kan gora livet mindre, skapa isolering och halla radsla vid liv eftersom kroppen aldrig far erfara att allt inte ar farligt.'
+			},
+			{
+				question: 'Vad kan vara ett varsamt nasta steg?',
+				answer: 'Att forst lagga marke till vad du undviker och varfor kan vara ett viktigt steg innan du provar nagon liten forandring.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Trygghet efter trauma',
+				href: '/guider-seo/trauma/trygghet'
+			},
+			{
+				title: 'Grounding - enkla ovningar for att landa i kroppen igen',
+				href: '/guider-seo/trauma/grounding-ovningar'
+			},
+			{
+				title: 'Tillit och trygghet i relationer efter svara upplevelser',
+				href: '/guider-seo/trauma/tillit-efter-trauma'
+			}
+		]
+	},
+	{
+		pillarSlug: 'trauma',
+		slug: 'tillit-efter-trauma',
+		title: 'Tillit och trygghet i relationer efter svara upplevelser',
+		description: 'Om hur trauma kan paverka narhet, tillit och kanslan av trygghet med andra.',
+		faqs: [
+			{
+				question: 'Varfor ar det svart att lita pa andra efter trauma?',
+				answer: 'Svara upplevelser kan gora att nervsystemet blir mer vaksamt, ocksa i relationer som egentligen ar trygga.'
+			},
+			{
+				question: 'Kan jag vilja ha narhet men samtidigt dra mig undan?',
+				answer: 'Ja, det ar vanligt att langta efter kontakt och samtidigt kanna att den blir for utsatt eller overvaldiga.'
+			},
+			{
+				question: 'Hur bygger man upp tillit igen?',
+				answer: 'Ofta i sma steg, genom forutsagbarhet, tydliga granser och erfarenheter av att bli mottagen utan press.'
+			},
+			{
+				question: 'Ar det konstigt om gamla reaktioner kommer tillbaka i relationer?',
+				answer: 'Nej, relationer kan vacka gamla skyddsreaktioner, sarskilt om du tidigare blivit sarad eller otrygg med andra.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Trygghet efter trauma',
+				href: '/guider-seo/trauma/trygghet'
+			},
+			{
+				title: 'Undvikande efter trauma - varfor vi gor det och vad det kostar',
+				href: '/guider-seo/trauma/undvikande-efter-trauma'
+			},
+			{
+				title: 'Grounding - enkla ovningar for att landa i kroppen igen',
+				href: '/guider-seo/trauma/grounding-ovningar'
+			}
+		]
+	},
+	{
 		pillarSlug: 'sovproblem',
 		slug: 'orsaker',
 		title: 'Varfor kan jag inte sova',
