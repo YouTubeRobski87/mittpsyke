@@ -819,6 +819,158 @@ export const guides: Guide[] = [
 				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
 			}
 		]
+	},
+	{
+		pillarSlug: 'sjalvkansla',
+		slug: 'inre-kritikern',
+		title: 'Den inre kritikern - varfor rosten finns och vad den egentligen vill',
+		description: 'Om den sjalvkritiska rosten, var den kan komma fran och hur du kan forsta den utan att styras av den.',
+		faqs: [
+			{
+				question: 'Varfor ar jag sa hard mot mig sjalv?',
+				answer: 'Den inre kritikern utvecklas ofta som ett satt att forsoka skydda dig fran misstag, avvisande eller skam.'
+			},
+			{
+				question: 'Betyder sjalvkritik att jag ar lat eller svag?',
+				answer: 'Nej, stark sjalvkritik ar ofta ett tecken pa hog press och gamla satt att hantera otrygghet.'
+			},
+			{
+				question: 'Kan den inre kritikern ha en funktion?',
+				answer: 'Ja, den forsoker ofta hjalpa genom kontroll, men den gor det pa ett satt som kan bli hart och nedbrytande.'
+			},
+			{
+				question: 'Hur kan jag borja forandra den rosten?',
+				answer: 'Ett forsta steg ar att lagga marke till tonen och orden, sa att du kan skilja rosten fran det du faktiskt behover.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Lag sjalvkansla - vad det ar och var det kommer ifran',
+				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+			},
+			{
+				title: 'Perfektionism och sjalvkansla - nar ingenting kanns tillrackligt bra',
+				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
+			},
+			{
+				title: 'Hur nedstamdhet paverkar relationer och narheten till andra',
+				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+			}
+		]
+	},
+	{
+		pillarSlug: 'sjalvkansla',
+		slug: 'perfektionism-och-sjalvkansla',
+		title: 'Perfektionism och sjalvkansla - nar ingenting kanns tillrackligt bra',
+		description: 'Om hur perfektionism och lag sjalvkansla ofta hanger ihop och skapar hard press inifran.',
+		faqs: [
+			{
+				question: 'Varfor blir jag aldrig nojd med det jag gor?',
+				answer: 'Nar sjalvkanslan ar skor blir prestation ibland ett satt att forsoka kanna sig tillracklig, men ribban flyttas hela tiden.'
+			},
+			{
+				question: 'Ar perfektionism ett tecken pa ambition?',
+				answer: 'Ibland, men det kan ocksa handla om radsla for kritik, misslyckande eller att inte duga.'
+			},
+			{
+				question: 'Hur paverkar perfektionism maendet?',
+				answer: 'Den kan skapa stress, sjalvkritik och kanslan av att du maste prestera for att fa vila eller kanna dig okej.'
+			},
+			{
+				question: 'Vad kan hjalpa?',
+				answer: 'Att upptacka dina egna krav och prova mer tillrackligt bra i sma situationer kan minska trycket over tid.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Lag sjalvkansla - vad det ar och var det kommer ifran',
+				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+			},
+			{
+				title: 'Den inre kritikern - varfor rosten finns och vad den egentligen vill',
+				href: '/guider-seo/sjalvkansla/inre-kritikern'
+			},
+			{
+				title: 'Sma steg nar energin tryter - vad som faktiskt kan hjalpa',
+				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
+			}
+		]
+	},
+	{
+		pillarSlug: 'sjalvkansla',
+		slug: 'gransen-och-sjalvkansla',
+		title: 'Att satta granser nar sjalvkanslan ar lag - varfor det ar svart',
+		description: 'Om varfor granser ofta blir svarare nar du tvivlar pa ditt eget varde.',
+		faqs: [
+			{
+				question: 'Varfor ar det sa svart att saga nej?',
+				answer: 'Nar sjalvkanslan ar lag blir andras reaktioner ofta extra viktiga, och da kan ett nej kannas riskfyllt.'
+			},
+			{
+				question: 'Kan lag sjalvkansla gora att jag gar over mina egna behov?',
+				answer: 'Ja, det ar vanligt att prioritera andras behov for att undvika skuld, konflikt eller kanslan av att vara besvarlig.'
+			},
+			{
+				question: 'Hur marks det att jag saknar granser?',
+				answer: 'Du kanske sager ja fast du inte vill, blir overbelastad eller kanner bitterhet efterat utan att riktigt veta varfor.'
+			},
+			{
+				question: 'Vad ar ett litet forsta steg?',
+				answer: 'Att borja lagga marke till nar du egentligen vill dra en grans kan vara ett viktigt steg innan du uttrycker den hogt.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Lag sjalvkansla - vad det ar och var det kommer ifran',
+				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+			},
+			{
+				title: 'Den inre kritikern - varfor rosten finns och vad den egentligen vill',
+				href: '/guider-seo/sjalvkansla/inre-kritikern'
+			},
+			{
+				title: 'Hur nedstamdhet paverkar relationer och narheten till andra',
+				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+			}
+		]
+	},
+	{
+		pillarSlug: 'sjalvkansla',
+		slug: 'jamforelse-och-sjalvbild',
+		title: 'Jamforelsetrasket - sociala medier och din sjalvbild',
+		description: 'Om hur jamforelser med andra kan paverka sjalvbilden och forstarka kanslan av att inte racka till.',
+		faqs: [
+			{
+				question: 'Varfor paverkas jag sa mycket av andras liv online?',
+				answer: 'Sociala medier visar ofta utvalda delar av andras liv, och hjarnan jamfor dem latt med dina minst glansiga stunder.'
+			},
+			{
+				question: 'Kan jamforelser sanka sjalvkanslan?',
+				answer: 'Ja, sarskilt om du redan tvivlar pa ditt eget varde eller ofta letar efter tecken pa att andra lyckas battre.'
+			},
+			{
+				question: 'Ar losningen att sluta helt med sociala medier?',
+				answer: 'Inte alltid, men det kan hjalpa att lagga marke till vad som triggar jamforelser och skapa mer medvetna vanor.'
+			},
+			{
+				question: 'Hur kan jag skydda min sjalvbild?',
+				answer: 'Att begransa det som far dig att ma samre och samtidigt ova pa att atervanda till ditt eget perspektiv kan gora skillnad.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Lag sjalvkansla - vad det ar och var det kommer ifran',
+				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+			},
+			{
+				title: 'Perfektionism och sjalvkansla - nar ingenting kanns tillrackligt bra',
+				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
+			},
+			{
+				title: 'Hur nedstamdhet paverkar relationer och narheten till andra',
+				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+			}
+		]
 	}
 ];
 
