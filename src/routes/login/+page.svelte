@@ -7,38 +7,47 @@
 </script>
 
 <svelte:head>
-	<title>Logga in – MittPsyke</title>
+	<title>Logga in - MittPsyke</title>
+	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <section class="container max-w-sm py-16">
 	<h1 class="text-2xl font-bold text-center mb-6">Logga in</h1>
 
-	<form method="POST" use:enhance={() => {
+	<form method="POST" novalidate use:enhance={() => {
 		loading = true;
 		return async ({ update }) => {
 			loading = false;
 			await update();
 		};
 	}} class="space-y-4">
+		<label class="block text-sm" for="login-email">E-post</label>
 		<input
+			id="login-email"
 			type="email"
 			name="email"
 			placeholder="E-post"
+			autocomplete="email"
 			required
+			aria-describedby={form?.error ? 'login-form-error' : undefined}
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
+		<label class="block text-sm" for="login-password">Lösenord</label>
 		<input
+			id="login-password"
 			type="password"
 			name="password"
 			placeholder="Lösenord"
+			autocomplete="current-password"
 			required
+			aria-describedby={form?.error ? 'login-form-error' : undefined}
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
 
 		{#if form?.error}
-			<p class="text-red-500 text-sm">{form.error}</p>
+			<p id="login-form-error" class="text-red-500 text-sm" role="alert">{form.error}</p>
 		{/if}
 
 		<button

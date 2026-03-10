@@ -4,33 +4,43 @@
 </script>
 
 <svelte:head>
-	<title>Registrera – MittPsyke</title>
+	<title>Registrera - MittPsyke</title>
+	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <section class="container max-w-sm py-16">
 	<h1 class="text-2xl font-bold text-center mb-6">Skapa konto</h1>
 
-	<form method="POST" class="space-y-4">
+	<form method="POST" novalidate class="space-y-4">
+		<label class="block text-sm" for="register-email">E-post</label>
 		<input
+			id="register-email"
 			type="email"
 			name="email"
 			placeholder="E-post"
+			autocomplete="email"
 			required
+			aria-describedby={form?.error ? 'register-form-error register-password-help' : 'register-password-help'}
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
+		<label class="block text-sm" for="register-password">Lösenord</label>
 		<input
+			id="register-password"
 			type="password"
 			name="password"
 			placeholder="Lösenord"
 			required
 			minlength={6}
+			autocomplete="new-password"
+			aria-describedby={form?.error ? 'register-form-error register-password-help' : 'register-password-help'}
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
 		/>
+		<p id="register-password-help" class="text-xs opacity-70">Välj minst 6 tecken.</p>
 
 		{#if form?.error}
-			<p class="text-red-500 text-sm">{form.error}</p>
+			<p id="register-form-error" class="text-red-500 text-sm" role="alert">{form.error}</p>
 		{/if}
 
 		<button
