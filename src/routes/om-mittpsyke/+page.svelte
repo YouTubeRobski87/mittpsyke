@@ -9,6 +9,8 @@
 		property="og:description"
 		content="MittPsyke är ett lugnt digitalt samtalsstöd med chat, dagbok och stöd för reflektion över tid."
 	/>
+	<meta property="og:type" content="website" />
+	<meta name="twitter:card" content="summary" />
 	<link rel="canonical" href="https://mittpsyke.se/om-mittpsyke" />
 </svelte:head>
 
