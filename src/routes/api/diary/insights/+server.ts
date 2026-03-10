@@ -1,4 +1,4 @@
-// src/routes/api/diary/insights/+server.ts
+﻿// src/routes/api/diary/insights/+server.ts
 import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
@@ -8,16 +8,16 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-const WEEKDAYS = ['Sondag', 'Mandag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lordag'];
+const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
 const WEEKDAY_EMOJIS: { [key: string]: string } = {
-	Sondag: 'Natt', Mandag: 'Maandag', Tisdag: 'Tisdag', Onsdag: 'Onsdag',
-	Torsdag: 'Torsdag', Fredag: 'Fredag', Lordag: 'Lordag'
+	Söndag: 'Natt', Måndag: 'Måndag', Tisdag: 'Tisdag', Onsdag: 'Onsdag',
+	Torsdag: 'Torsdag', Fredag: 'Fredag', Lördag: 'Lördag'
 };
 const EMOTION_KEYWORDS: { [key: string]: string[] } = {
 	anxiety: ['orolig', 'angest', 'nervos', 'radd', 'panik', 'stressad'],
-	sadness: ['ledsen', 'sorgsen', 'deprimerad', 'tom', 'hopplÃ¶s', 'ensam'],
+	sadness: ['ledsen', 'sorgsen', 'deprimerad', 'tom', 'hopplös', 'ensam'],
 	joy: ['glad', 'lycklig', 'bra', 'fantastisk', 'positiv', 'energisk'],
-	anger: ['arg', 'frustrerad', 'irriterad', 'rasande', 'upprÃ¶rd'],
+	anger: ['arg', 'frustrerad', 'irriterad', 'rasande', 'upprörd'],
 	calm: ['lugn', 'avslappnad', 'fridfull', 'harmonisk', 'trygg']
 };
 
@@ -86,8 +86,8 @@ export const GET: RequestHandler = async ({ request }) => {
 		if (bestDay && worstDay && bestDay.day !== worstDay.day) {
 			insights.push({
 				type: 'weekday_pattern',
-				title: 'Veckans monster',
-				description: `Du mar bast pa ${bestDay.day} (snitt ${bestDay.average}/10) och har det tuffast pa ${worstDay.day} (snitt ${worstDay.average}/10).`,
+				title: 'Veckans mönster',
+				description: `Du mår bäst på ${bestDay.day} (snitt ${bestDay.average}/10) och har det tuffast på ${worstDay.day} (snitt ${worstDay.average}/10).`,
 				icon: 'calendar'
 			});
 		}
@@ -104,8 +104,8 @@ export const GET: RequestHandler = async ({ request }) => {
 					type: 'mood_trend',
 					title: trend > 0 ? 'Positiv trend' : 'Utmanande period',
 					description: trend > 0
-						? `Ditt humÃ¶r har fÃ¶rbÃ¤ttrats med ${Math.abs(trend).toFixed(1)} poÃ¤ng de senaste 30 dagarna.`
-						: `Det har varit lite tuffare pÃ¥ sistone. Kom ihÃ¥g att det Ã¤r okej att ha svÃ¥ra perioder.`,
+						? `Ditt humör har förbättrats med ${Math.abs(trend).toFixed(1)} poäng de senaste 30 dagarna.`
+						: `Det har varit lite tuffare på sistone. Kom ihåg att det är okej att ha svåra perioder.`,
 					icon: trend > 0 ? 'trending-up' : 'trending-down'
 				});
 			}
@@ -117,7 +117,7 @@ export const GET: RequestHandler = async ({ request }) => {
 
 		if (dominantEmotion) {
 			const emotionLabels: { [key: string]: string } = {
-				anxiety: 'oro och angest',
+				anxiety: 'oro och ångest',
 				sadness: 'ledsenhet',
 				joy: 'gladje och positivitet',
 				anger: 'frustration',
@@ -125,14 +125,14 @@ export const GET: RequestHandler = async ({ request }) => {
 			};
 			insights.push({
 				type: 'emotion_pattern',
-				title: 'Vanligaste kanslan',
-				description: `Dina inlÃ¤gg handlar ofta om ${emotionLabels[dominantEmotion[0]] || dominantEmotion[0]}. Det Ã¤r viktigt att kÃ¤nna igen sina kÃ¤nslomÃ¶nster.`,
+				title: 'Vanligaste känslan',
+				description: `Dina inlägg handlar ofta om ${emotionLabels[dominantEmotion[0]] || dominantEmotion[0]}. Det är viktigt att känna igen sina känslomönster.`,
 				icon: 'heart'
 			});
 		}
 
 		const recentEntries = entries.slice(-7);
-		const recentText = recentEntries.map((e) => `[${e.date}] HumÃ¶r: ${e.mood}/10\n${e.content || ''}`).join('\n\n');
+		const recentText = recentEntries.map((e) => `[${e.date}] Humör: ${e.mood}/10\n${e.content || ''}`).join('\n\n');
 
 		let aiSummary = null;
 		try {
@@ -140,7 +140,7 @@ export const GET: RequestHandler = async ({ request }) => {
 				model: 'gpt-4-turbo',
 				messages: [{
 					role: 'user',
-					content: `Du ar en empatisk psykolog. Analysera dessa dagboksinlagg och ge EN kort insikt (max 2 meningar) om ett intressant monster du ser. Var specifik och uppmuntrande. Skriv pa svenska:\n\n${recentText}`
+					content: `Du är en empatisk psykolog. Analysera dessa dagboksinlägg och ge EN kort insikt (max 2 meningar) om ett intressant mönster du ser. Var specifik och uppmuntrande. Skriv på svenska:\n\n${recentText}`
 				}],
 				max_tokens: 150,
 				temperature: 0.7
@@ -162,3 +162,4 @@ export const GET: RequestHandler = async ({ request }) => {
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
+

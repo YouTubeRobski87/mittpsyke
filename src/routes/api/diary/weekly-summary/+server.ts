@@ -1,4 +1,4 @@
-// src/routes/api/diary/weekly-summary/+server.ts
+﻿// src/routes/api/diary/weekly-summary/+server.ts
 import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
@@ -50,7 +50,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				year: new Date().getFullYear(),
 				startDate,
 				endDate,
-				summary: 'Inga inlÃ¤gg denna vecka.',
+				summary: 'Inga inlägg denna vecka.',
 				moodTrend: { trend: 'stable', average_mood: 0, start_mood: 0, end_mood: 0 },
 				entryCount: 0
 			});
@@ -69,7 +69,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const year = startDateObj.getFullYear();
 
 		const entriesText = entries
-			.map((e) => `[${e.date}] HumÃ¶r: ${e.mood}/10\n${e.content}`)
+			.map((e) => `[${e.date}] Humör: ${e.mood}/10\n${e.content}`)
 			.join('\n\n');
 
 		const completion = await openai.chat.completions.create({
@@ -77,7 +77,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			messages: [
 				{
 					role: 'user',
-					content: `Du Ã¤r en empatisk psykolog som lÃ¤ser dagboksinlÃ¤gg.\n\nAnalysera dessa dagboksinlÃ¤gg frÃ¥n vecka ${weekNumber} Ã¥r ${year}:\n\n${entriesText}\n\nSkriv en kort, kÃ¤nslig sammanfattning (2-3 meningar) om anvÃ¤ndarens mentala tillstÃ¥nd denna vecka.\nFokusera pÃ¥ kÃ¤nslotrender och Ã¶vergripande mÃ¶nster, inte specifika fakta.\nVar uppmuntrande men Ã¤rlig. Skriv pÃ¥ svenska. BÃ¶rja INTE med "Denna vecka".`
+					content: `Du är en empatisk psykolog som läser dagboksinlägg.\n\nAnalysera dessa dagboksinlägg från vecka ${weekNumber} år ${year}:\n\n${entriesText}\n\nSkriv en kort, känslig sammanfattning (2-3 meningar) om användarens mentala tillstånd denna vecka.\nFokusera på känslotrender och övergripande mönster, inte specifika fakta.\nVar uppmuntrande men ärlig. Skriv på svenska. Börja INTE med "Denna vecka".`
 				}
 			],
 			max_tokens: 200,
@@ -98,3 +98,4 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
+

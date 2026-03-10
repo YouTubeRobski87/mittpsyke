@@ -1,19 +1,19 @@
-// src/lib/ai/safety.ts
+ï»¿// src/lib/ai/safety.ts
 
 const CRISIS_SIGNALS = Object.freeze([
   'vill inte leva',
   'ta mitt liv',
-  'självmord',
+  'sjÃ¤lvmord',
   'avsluta allt',
   'orkar inte mer',
   'inte orka mer',
   'skada mig',
-  'skada mig själv',
-  'vill försvinna',
-  'försvinna för alltid',
-  'allt är hopplöst',
+  'skada mig sjÃ¤lv',
+  'vill fÃ¶rsvinna',
+  'fÃ¶rsvinna fÃ¶r alltid',
+  'allt Ã¤r hopplÃ¶st',
   'ingen mening',
-  'vill dö'
+  'vill dÃ¶'
 ]);
 
 export function containsCrisisSignal(text: string): boolean {
