@@ -505,7 +505,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const systemPrompt = systemByCategory[category] || SYSTEM_PROMPT;
 		const completion = await openai.chat.completions.create({
-			model: 'gpt-4o-mini',
+			model: 'gpt-5.4', // Uppdaterat till gpt-5.4 för bättre prestanda och kostnadseffektivitet
 			temperature: 0.75,
 			max_tokens: 350,
 			frequency_penalty: 0.3,
