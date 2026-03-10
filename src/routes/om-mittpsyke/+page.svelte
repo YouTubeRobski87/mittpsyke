@@ -1,21 +1,22 @@
-﻿<svelte:head>
-	<title>Om MittPsyke – Tryggt stöd för ditt psyke</title>
+<svelte:head>
+	<title>Om MittPsyke – Skapad av erfarenhet, inte teori</title>
 	<meta
 		name="description"
-		content="Läs om MittPsyke, hur tjänsten fungerar och hur chatten, dagboken och framsteg kan ge ett lugnt digitalt samtalsstöd."
+		content="MittPsyke skapades av Robert Claesson – av egna erfarenheter av psykisk ohälsa, missbruk och återhämtning. Läs hans story och förstå varför MittPsyke finns."
 	/>
-	<meta property="og:title" content="Om MittPsyke – Tryggt stöd för ditt psyke" />
+	<meta property="og:title" content="Om MittPsyke – Skapad av erfarenhet, inte teori" />
 	<meta
 		property="og:description"
-		content="MittPsyke är ett lugnt digitalt samtalsstöd med chat, dagbok och stöd för reflektion över tid."
+		content="MittPsyke skapades av Robert Claesson – av egna erfarenheter av psykisk ohälsa, missbruk och återhämtning. Läs hans story och förstå varför MittPsyke finns."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/om-mittpsyke" />
+	<link rel="canonical" href="https://www.mittpsyke.se/om-mittpsyke" />
 </svelte:head>
 
 <main class="page">
 	<div class="page-container">
+
 		<!-- 1) Hero -->
 		<header class="hero">
 			<h1>Om MittPsyke</h1>
@@ -23,16 +24,50 @@
 				MittPsyke är en svensk plattform för digitalt samtalsstöd, skapad för människor som
 				lever med psykisk belastning i olika former. Tanken är att erbjuda ett tryggt och tillgängligt
 				rum där det går att stanna upp, sätta ord på det som känns svårt och få
-				stöd i stunden, utan att behöva prestera eller förklara allt från början.
+				stöd i stunden — utan att behöva prestera eller förklara allt från början.
 			</p>
 		</header>
 
+		<!-- 2) Personlig story -->
+		<section class="story-section">
+			<div class="story-inner">
+				<div class="story-label">Grundarens story</div>
+				<h2 class="story-heading">Skapad av erfarenhet, inte teori</h2>
+
+				<div class="story-text">
+					<p>
+						Jag heter Robert. Jag har gått igenom mycket i livet.
+					</p>
+					<p>
+						Det har funnits perioder av missbruk, kaos, destruktiva relationer och en lång kamp för att hitta tillbaka till mig själv. Under flera år levde jag på ett sätt som slet sönder mig inifrån. Jag bar på mycket smärta och många saker som jag aldrig riktigt hann bearbeta. Till slut märkte jag att det man flyr ifrån börjar hinna ikapp en.
+					</p>
+					<p>
+						Jag har gjort misstag. Jag har hamnat fel. Men jag har också rest mig — många gånger mer än folk kanske förstår.
+					</p>
+					<p>
+						Idag är jag ren, och det är jag stolt över. Det betyder inte att allt alltid är lätt. Men det betyder att jag varje dag försöker välja närvaro, ansvar och ett liv som faktiskt går att stå i.
+					</p>
+					<p>
+						Jag vet hur det känns att må dåligt på riktigt. Jag vet hur det känns att känna sig ensam fast man har människor omkring sig. Jag vet hur det känns att skämmas över sitt liv och sitt förflutna. Men jag vet också att en människa är så mycket mer än sina mörkaste perioder.
+					</p>
+					<p>
+						Allt jag gått igenom har gjort mig mer ödmjuk, mer inkännande och mer mån om att skapa något som faktiskt kan hjälpa andra. Det är anledningen till varför jag byggt MittPsyke. Inte för att jag har alla svar — utan för att jag vet hur mycket det kan betyda att bara känna sig lite mindre ensam.
+					</p>
+
+					<blockquote class="story-quote">
+						"Det här är inte historien om ett perfekt liv. Det är historien om att överleva, falla, kämpa och långsamt börja bygga upp sig själv igen. Och kanske är det just där den verkliga styrkan finns."
+						<cite>— Robert Claesson, grundare av MittPsyke</cite>
+					</blockquote>
+				</div>
+			</div>
+		</section>
+
 		<div class="text-block">
-			<!-- 2) Vad ar MittPsyke -->
+			<!-- 3) Vad ar MittPsyke -->
 			<section class="section">
 				<h2>Vad är MittPsyke?</h2>
 				<p>
-					Plattformen fungerar som ett kompletterande stöd mellan, före eller efter kontakt med
+					Plattformen fungerar som ett kompletterande stöd — mellan, före eller efter kontakt med
 					vården. I centrum finns ett AI-baserat samtalsstöd som är utformat för att svara med
 					lugn, respekt och empati.
 				</p>
@@ -42,7 +77,7 @@
 				</p>
 			</section>
 
-			<!-- 3) For vem -->
+			<!-- 4) For vem -->
 			<section class="section">
 				<h2>För vem är det här?</h2>
 				<p>
@@ -57,14 +92,14 @@
 			</section>
 		</div>
 
-		<!-- 4) Cards -->
+		<!-- 5) Cards -->
 		<section class="section">
 			<h2>Vad du kan göra här</h2>
 			<div class="feature-grid">
 				<article class="feature-card">
 					<h3>Dagbok</h3>
 					<p>
-						Skriva reflektioner i vardagen och bygga en personlig historik av det som varit viktigt för
+						Skriv reflektioner i vardagen och bygg en personlig historik av det som varit viktigt för
 						dig.
 					</p>
 				</article>
@@ -85,7 +120,7 @@
 			</div>
 		</section>
 
-		<!-- 5) Hur det funkar -->
+		<!-- 6) Hur det funkar -->
 		<section class="section">
 			<h2>Hur det funkar</h2>
 			<ol class="steps">
@@ -123,7 +158,7 @@
 		</section>
 
 		<div class="text-block">
-			<!-- 6) Trygghet och integritet -->
+			<!-- 7) Trygghet och integritet -->
 			<section class="section">
 				<h2>Trygghet och integritet</h2>
 				<p>
@@ -136,20 +171,20 @@
 					mer kontinuitet finns möjlighet till inloggning, där samtal kan sparas över tid.
 				</p>
 				<p>
-					Designfilosofin är avskalad, mjuk och icke-klinisk för att minska stress, undvika onödiga
+					Designfilosofin är avskalad, mjuk och icke-klinisk — för att minska stress, undvika onödiga
 					distraktioner och skapa en känsla av närvaro.
 				</p>
 			</section>
 		</div>
 
-		<!-- 7) Callout -->
+		<!-- 8) Callout -->
 		<aside class="callout" aria-label="Viktigt att veta">
 			<h2>Viktigt att veta</h2>
 			<p>Läs mer om begränsningar och ansvar innan du använder tjänsten.</p>
 			<a class="callout-link" href="/ansvar">Gå till Ansvarsinfo</a>
 		</aside>
 
-		<!-- 8) Kontakt och lankar -->
+		<!-- 9) Kontakt och lankar -->
 		<section class="section links-section">
 			<h2>Kontakt och länkar</h2>
 			<ul>
@@ -166,7 +201,7 @@
 			</ul>
 		</section>
 
-		<!-- 9) Företagsinformation -->
+		<!-- 10) Företagsinformation -->
 		<section class="section company-section" aria-labelledby="foretagsinformation">
 			<h2 id="foretagsinformation">Företagsinformation</h2>
 			<p>MittPsyke drivs som enskild näringsverksamhet.</p>
@@ -297,6 +332,72 @@
 		padding-left: 1.2rem;
 		display: grid;
 		gap: 0.35rem;
+	}
+
+	/* Story section */
+	.story-section {
+		max-width: 720px;
+	}
+
+	.story-inner {
+		background: linear-gradient(135deg, rgba(163, 193, 173, 0.15) 0%, rgba(195, 230, 203, 0.1) 100%);
+		border: 1px solid rgba(15, 118, 110, 0.15);
+		border-left: 4px solid var(--primary);
+		border-radius: var(--radius-card);
+		padding: clamp(1.5rem, 3vw, 2.2rem);
+	}
+
+	.story-label {
+		font-family: var(--font-heading);
+		font-size: 0.8rem;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--primary);
+		margin-bottom: 0.6rem;
+		opacity: 0.85;
+	}
+
+	.story-heading {
+		font-family: var(--font-heading);
+		font-size: clamp(1.4rem, 1.2rem + 1vw, 1.75rem);
+		font-weight: 750;
+		letter-spacing: -0.02em;
+		line-height: 1.12;
+		color: var(--primary);
+		margin-bottom: 1.4rem;
+	}
+
+	.story-text p {
+		font-size: clamp(1rem, 0.95rem + 0.45vw, 1.1rem);
+		line-height: 1.75;
+		color: #2d3748;
+	}
+
+	.story-text p + p {
+		margin-top: 1rem;
+	}
+
+	.story-quote {
+		margin: 1.8rem 0 0;
+		padding: 1.2rem 1.4rem;
+		background: rgba(255, 255, 255, 0.6);
+		border-radius: calc(var(--radius-card) - 2px);
+		border: 1px solid rgba(15, 118, 110, 0.12);
+		font-style: italic;
+		font-size: clamp(1rem, 0.95rem + 0.3vw, 1.05rem);
+		line-height: 1.65;
+		color: #2d3748;
+	}
+
+	.story-quote cite {
+		display: block;
+		margin-top: 0.8rem;
+		font-style: normal;
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: var(--primary);
+		opacity: 0.85;
 	}
 
 	.feature-grid {
@@ -492,5 +593,19 @@
 	:global(.dark) .section > h2::after {
 		background: rgba(134, 223, 214, 0.5);
 	}
-</style>
 
+	:global(.dark) .story-inner {
+		background: linear-gradient(135deg, rgba(15, 118, 110, 0.12) 0%, rgba(15, 118, 110, 0.06) 100%);
+		border-color: rgba(134, 223, 214, 0.2);
+	}
+
+	:global(.dark) .story-text p {
+		color: rgba(255, 255, 255, 0.85);
+	}
+
+	:global(.dark) .story-quote {
+		background: rgba(255, 255, 255, 0.05);
+		color: rgba(255, 255, 255, 0.85);
+		border-color: rgba(134, 223, 214, 0.15);
+	}
+</style>
