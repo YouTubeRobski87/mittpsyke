@@ -32,7 +32,9 @@ const staticPages = Array.from(
 		'nedstamdhet',
 		'ensamhet',
 		'panikattack',
-		'om-mittpsyke'
+		'om-mittpsyke',
+		'sovproblem',
+		'sjalvkansla'
 	])
 );
 

@@ -36,6 +36,18 @@ export const pillars: Pillar[] = [
 		title: 'Trauma och trygghet',
 		description: 'Om stressreaktioner efter svaira handelser och satt att bygga mer trygghet.',
 		chatPath: '/chat/e'
+	},
+	{
+		slug: 'sovproblem',
+		title: 'Sövnproblem',
+		description: 'Forsta varfor somnen uteblir och hur du kan borja hantera det som haller dig vaken.',
+		chatPath: '/chat/a'
+	},
+	{
+		slug: 'sjalvkansla',
+		title: 'Självkänsla',
+		description: 'Om lag sjalvkansla, vad det beror pa och hur du kan borja utforska din relation till dig sjalv.',
+		chatPath: '/chat/a'
 	}
 ];
 
@@ -109,6 +121,54 @@ export const guides: Guide[] = [
 			{
 				question: 'Nar bor jag prata med en terapeut?',
 				answer: 'Om symtomen varar eller okar, eller om minnen och undvikande begransar ditt liv.'
+			}
+		]
+	},
+	{
+		pillarSlug: 'sovproblem',
+		slug: 'orsaker',
+		title: 'Varfor kan jag inte sova',
+		description: 'Vanliga orsaker till somnproblem och vad som haller hjarnan vaken pa natten.',
+		faqs: [
+			{
+				question: 'Varfor kan jag inte somna trots att jag ar trott?',
+				answer: 'Hjarnan kan vara i hog beredskap pa grund av stress, oro eller obearbetade tankar som aktiverar nervsystemet.'
+			},
+			{
+				question: 'Ar somnproblem ett tecken pa nagonting allvarligt?',
+				answer: 'Inte alltid, men langvariga somnproblem kan vara kopplade till angest, depression eller stress som fortjanar uppmarksamhet.'
+			},
+			{
+				question: 'Kan man tranas upp till battre somn?',
+				answer: 'Ja, somn paverkas av vanor, kanslobearbetning och trygghetskansla – alla saker som kan forandra med tid och stod.'
+			},
+			{
+				question: 'Hjalper det att prata om det som oroar en?',
+				answer: 'Ofta ja. Att satta ord pa oron kan minska den mentala aktiveringen och gora det lattare att slappna av.'
+			}
+		]
+	},
+	{
+		pillarSlug: 'sjalvkansla',
+		slug: 'lag-sjalvkansla',
+		title: 'Lag sjalvkansla – vad det ar och var det kommer ifran',
+		description: 'Om vad lag sjalvkansla innebar, hur den uppstar och hur du kan borja utforska forhallandena till dig sjalv.',
+		faqs: [
+			{
+				question: 'Vad ar skillnaden mellan sjalvkansla och sjalvfortroende?',
+				answer: 'Sjalvkansla handlar om kanslan av att vara tillracklig som person. Sjalvfortroende handlar mer om tron pa sin formaga i specifika situationer.'
+			},
+			{
+				question: 'Kan lag sjalvkansla forandra sig?',
+				answer: 'Ja. Sjalvkansla ar inte fast – den paverkas av erfarenheter, relationer och hur vi bearbetar dem over tid.'
+			},
+			{
+				question: 'Varfor ar det svart att ta emot berom?',
+				answer: 'Vid lag sjalvkansla stammer inte berom overens med den inre bilden av sig sjalv, och hjarnan tenderar att avfarda det som oarligt.'
+			},
+			{
+				question: 'Hur borjar man arbeta med sjalvkansla?',
+				answer: 'Ofta genom att bli medveten om den inre rosta – hur du pratar med dig sjalv – och borja utforska varifraN den restan kom.'
 			}
 		]
 	}
