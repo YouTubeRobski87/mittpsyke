@@ -65,7 +65,15 @@
 				<a href="/chat/a" class="hero-cta hero-cta-primary">Börja anonymt</a>
 				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
 			</div>
-			<p class="hero-subnote">Stöd i stunden, struktur över tid</p>
+			<div class="trust-bar">
+				<span class="trust-item">🔒 Helt anonymt</span>
+				<span class="trust-divider" aria-hidden="true">·</span>
+				<span class="trust-item">🆓 Gratis</span>
+				<span class="trust-divider" aria-hidden="true">·</span>
+				<span class="trust-item">⚕️ Ersätter ej vård</span>
+				<span class="trust-divider" aria-hidden="true">·</span>
+				<span class="trust-item">📞 Akut: ring 112</span>
+			</div>
 			<p class="hero-support-link">
 				<a href="/om-mittpsyke">Så fungerar MittPsyke</a>
 				<span aria-hidden="true"> · </span>
@@ -1126,6 +1134,38 @@
 	}
 
 
+	.trust-bar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem 0.6rem;
+		justify-content: center;
+		align-items: center;
+		margin-top: 1rem;
+		padding: 0.5rem 0.75rem;
+		background: rgba(255,255,255,0.08);
+		border-radius: var(--radius-pill);
+		border: 1px solid rgba(255,255,255,0.15);
+	}
+
+	.trust-item {
+		font-size: 0.8rem;
+		color: rgba(255,255,255,0.85);
+		white-space: nowrap;
+	}
+
+	.trust-divider {
+		color: rgba(255,255,255,0.35);
+		font-size: 0.8rem;
+	}
+
+	@media (max-width: 480px) {
+		.trust-divider {
+			display: none;
+		}
+		.trust-bar {
+			gap: 0.3rem;
+		}
+	}
 </style>
 
 
