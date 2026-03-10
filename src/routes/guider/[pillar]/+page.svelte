@@ -151,7 +151,7 @@
 		<p>MittPsyke ger dig verktyg för att bearbeta känslor, följa ditt mående och få stöd – anonymt och i din egen takt.</p>
 		<div class="cta-buttons">
 			<a href="/dagbok" class="cta-primary">Starta din dagbok</a>
-			<a href="/kontakt" class="cta-secondary">Prata med någon</a>
+			<a href="/prata-anonymt-online" class="cta-secondary">Prata med någon</a>
 		</div>
 	</section>
 </main>
