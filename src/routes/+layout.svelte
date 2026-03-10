@@ -27,7 +27,6 @@
 			page.route.id &&
 			(
 				page.route.id.includes('/dashboard') ||
-				page.route.id.includes('/dagbok') ||
 				page.route.id.includes('/framsteg') ||
 				page.route.id.includes('/login') ||
 				page.route.id.includes('/register')
