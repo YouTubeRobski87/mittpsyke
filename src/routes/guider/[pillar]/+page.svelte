@@ -100,7 +100,7 @@
 	{#if data.pillar.relatedArticles?.length}
 		<section class="block" aria-label="Relaterade artiklar">
 			<h2>Relaterade artiklar</h2>
-			<ul class="stack-list stack-list-links">
+			<ul class="stack-list stack-list-links stack-list-choices">
 				{#each data.pillar.relatedArticles as article}
 					<li><a href={article.href}>{article.title}</a></li>
 				{/each}
@@ -112,7 +112,7 @@
 		<section class="block" aria-label="Nästa steg vid ångest">
 			<h2>Nästa steg vid ångest</h2>
 			<p class="block-note">Om du vill ta det vidare kan du välja det som känns mest hjälpsamt just nu.</p>
-			<ul class="stack-list stack-list-links">
+			<ul class="stack-list stack-list-links stack-list-choices">
 				<li><a href="/chat/a">Starta samtal om ångest</a></li>
 				<li><a href="/hjalp-vid-angest-online">Läs mer om hjälp vid ångest online</a></li>
 				<li><a href="/andningsovningar-mot-angest">Se andningsövningar mot ångest</a></li>
@@ -128,7 +128,7 @@
 		<section class="block" aria-label="Nästa steg vid nedstämdhet">
 			<h2>Nästa steg vid nedstämdhet</h2>
 			<p class="block-note">Du kan börja lugnt och välja det som känns möjligt just idag.</p>
-			<ul class="stack-list stack-list-links">
+			<ul class="stack-list stack-list-links stack-list-choices">
 				<li><a href="/chat/b">Starta samtal om nedstämdhet</a></li>
 				<li><a href="/hjalp-vid-depression-online">Läs mer om hjälp vid depression online</a></li>
 				<li><a href="/dagbok">Skriv i dagboken</a></li>
@@ -142,7 +142,7 @@
 		<section class="block" aria-label="Nästa steg vid stress">
 			<h2>Nästa steg vid stress</h2>
 			<p class="block-note">När belastningen är hög kan det hjälpa att välja ett litet nästa steg.</p>
-			<ul class="stack-list stack-list-links">
+			<ul class="stack-list stack-list-links stack-list-choices">
 				<li><a href="/chat/e">Starta samtal om stress</a></li>
 				<li><a href="/stod-vid-stress-online">Läs mer om stöd vid stress online</a></li>
 				<li><a href="/ovningar/daglig-reflektionsmall">Prova daglig reflektionsmall</a></li>
