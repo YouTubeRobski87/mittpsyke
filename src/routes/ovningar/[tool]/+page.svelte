@@ -178,6 +178,7 @@
 
 	.link-list {
 		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 		gap: 0.65rem;
 		margin: 0.8rem 0 0;
 		padding: 0;
@@ -226,6 +227,10 @@
 		.step-list,
 		.link-list {
 			gap: 0.55rem;
+		}
+
+		.link-list {
+			grid-template-columns: 1fr;
 		}
 
 		.step-list li,
