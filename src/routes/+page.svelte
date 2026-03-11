@@ -64,7 +64,7 @@
 				Börja utan konto när du behöver stöd i stunden. Skapa ett konto om du vill spara din dagbok, följa dina mönster över tid och ha en egen plats att återvända till.
 			</p>
 			<div class="hero-actions">
-				<a href="/chat/a" class="hero-cta hero-cta-primary">Börja anonymt</a>
+				<a href="#fokusomraden" class="hero-cta hero-cta-primary">Börja anonymt</a>
 				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
 			</div>
 			<div class="trust-bar">
@@ -213,13 +213,14 @@
 		</div>
 	</section>
 
-	<section class="focus-section">
+	<section id="fokusomraden" class="focus-section">
 		<div class="narrow cards-narrow focus-content">
 			<header class="focus-header">
 				<h2>Välj fokusområde</h2>
 				<p>
 					Du behöver inte förklara allt. Välj det som känns närmast just nu.
 				</p>
+				<p>Det hjälper MittPsyke att öppna rätt samtalsstöd.</p>
 			</header>
 			<div class="focus-cards">
 				{#each portals as portal}
