@@ -1,5 +1,6 @@
 ﻿// src/routes/api/diary/insights/+server.ts
 import { json } from '@sveltejs/kit';
+import { hasSensitiveConsentHeader } from '$lib/consent';
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { OPENAI_API_KEY } from '$env/static/private';
@@ -23,6 +24,10 @@ const EMOTION_KEYWORDS: { [key: string]: string[] } = {
 
 export const GET: RequestHandler = async ({ request }) => {
 	try {
+		if (!hasSensitiveConsentHeader(request)) {
+			return json({ error: 'Consent required for sensitive AI features.' }, { status: 403 });
+		}
+
 		const authHeader = request.headers.get('Authorization');
 		if (!authHeader) return json({ error: 'Unauthorized' }, { status: 401 });
 
