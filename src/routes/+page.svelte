@@ -61,11 +61,11 @@
 		<div class="hero-content">
 			<h1>Ett tryggt rum för att landa, skriva av dig och börja i din egen takt</h1>
 			<p>
-				Börja utan konto när du behöver stöd i stunden. Skapa konto om du vill spara din dagbok och kunna återvända över tid.
+				Börja utan konto när du behöver stöd i stunden. Skapa ett konto om du vill spara din dagbok och kunna återvända över tid.
 			</p>
 			<div class="hero-actions">
 				<a href="#fokusomraden" class="hero-cta hero-cta-primary">Börja anonymt</a>
-				<a href="/register" class="hero-cta hero-cta-secondary">Skapa konto</a>
+				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
 			</div>
 			<div class="hero-facts" aria-label="Bra att veta innan du börjar">
 				<p class="hero-facts-title">Bra att veta innan du börjar</p>
@@ -84,7 +84,7 @@
 		</div>
 	</section>
 
-	<section class="support-options" aria-label="Tre sätt att få stöd">
+	<section class="support-options" aria-label="Vägar in till MittPsyke">
 		<div class="narrow support-options-inner">
 			<h2>Välj hur du vill börja</h2>
 			<p>Börja anonymt direkt eller skapa konto om du vill kunna återvända.</p>
@@ -122,7 +122,7 @@
 			</div>
 			<div class="hero-actions">
 				<a href="/register" class="hero-cta hero-cta-primary">Skapa konto</a>
-				<a href="/om-mittpsyke" class="hero-cta hero-cta-secondary">Så fungerar det</a>
+				<a href="/om-mittpsyke" class="hero-cta hero-cta-secondary">Läs hur det fungerar</a>
 			</div>
 		</div>
 	</section>
@@ -211,6 +211,18 @@
 	</section>
 
 	<VoiceSupport />
+
+	<section class="band band-olive">
+		<div class="narrow intro-grid">
+			<img src="/assets/home/Tryggplats.png" alt="Trygg plats" loading="lazy" />
+			<div>
+				<h2>Tryggt, varsamt och tydligt avgränsat</h2>
+				<p>
+					MittPsyke är byggt för lugn reflektion i egen takt. Det är inte vård eller behandling, men kan vara en första plats att landa innan du tar nästa steg.
+				</p>
+			</div>
+		</div>
+	</section>
 
 </main>
 
