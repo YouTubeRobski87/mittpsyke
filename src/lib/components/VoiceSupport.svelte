@@ -47,9 +47,20 @@
 	<p>Du kan också prata direkt med MittPsykes AI-baserade samtalsstöd här på sidan.</p>
 	<p>Det är till för reflektion och stöd i vardagen. Det ersätter inte vård, ställer inte diagnos och ska inte vara enda underlag för medicinska beslut.</p>
 	<p class="voice-support-note">Vid akut fara, ring 112. För vårdråd, kontakta 1177. Du kan också använda Akut hjälp för att hitta stödlinjer.</p>
-	<button on:click={startCall}>
-		🎤 {active ? 'Samtal igång...' : 'Prata med MittPsyke'}
-	</button>
+	{#if hasSensitiveDataConsent}
+		<button on:click={startCall}>
+			🎤 {active ? 'Samtal igång...' : 'Prata med MittPsyke'}
+		</button>
+	{:else}
+		<div class="voice-support-consent">
+			<ConsentGate
+				title="Samtycke innan röstsamtal"
+				dataLabel="Det du säger i röstsamtalet"
+				serviceLabel="AI-, röst- och tredjepartstjänster"
+				onAccept={acceptSensitiveConsent}
+			/>
+		</div>
+	{/if}
 </section>
 
 <style>
@@ -81,6 +92,12 @@
 
 	.voice-support-note {
 		font-size: 0.95rem;
+	}
+
+	.voice-support-consent {
+		max-width: 52ch;
+		margin: 0 auto;
+		text-align: left;
 	}
 
 	button {
