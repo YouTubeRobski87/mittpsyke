@@ -192,7 +192,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Gor dalig s?mn ?ngesten varre?',
-				answer: 'Ofta ja. S?mnbrist kan gora nervsystemet mer kansligt och det kan bli sv?rare att hantera oro dagen efter.'
+				answer: 'Ofta ja. S?mnbrist kan gora nervsystemet mer k?nsligt och det kan bli sv?rare att hantera oro dagen efter.'
 			},
 			{
 				question: 'Vad kan hj?lp? mest?',
@@ -234,7 +234,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Kan det bli battre?',
-				answer: 'Ja, med f?rst?else, sma steg och stod gar det ofta att minska radsla och bygga mer trygghet i sociala situationer.'
+				answer: 'Ja, med f?rst?else, sma steg och stod gar det ofta att minska r?dsla och bygga mer trygghet i sociala situationer.'
 			}
 		],
 		relatedArticles: [
@@ -306,7 +306,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Ar tr?ttheten bara fysisk?',
-				answer: 'Nej, den kan ocksa vara mental och kanslomassig, som om allt i dig gar langsammare.'
+				answer: 'Nej, den kan ocksa vara mental och k?nslom?ssig, som om allt i dig gar langsammare.'
 			},
 			{
 				question: 'Varf?r tapp?r jag lusten till sant jag brukade tycka om?',
@@ -390,7 +390,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Varf?r spelar skillnaden roll?',
-				answer: 'For att stodet ibland ser olika ut, och det kan vara viktigt att f?rst? vad som driver m?endet just nu.'
+				answer: 'F?r att stodet ibland ser olika ut, och det kan vara viktigt att f?rst? vad som driver m?endet just nu.'
 			}
 		],
 		relatedArticles: [
@@ -500,14 +500,14 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Varf?r reagerar kroppen sa snabbt?',
-				answer: 'Nervsystemet ar byggt f?r att skydda dig, och efter trauma kan det bli extra kansligt f?r signaler om f?ra.'
+				answer: 'Nervsystemet ar byggt f?r att skydda dig, och efter trauma kan det bli extra k?nsligt f?r signaler om f?ra.'
 			},
 			{
 				question: 'Kan reaktionerna komma trots att jag vet att jag ar saker nu?',
 				answer: 'Ja, kroppen kan reagera f?re den medvetna tanken hinner ikapp, sarskilt om den lart sig att vara p? sin vakt.'
 			},
 			{
-				question: 'Hjalper det att f?rst? reaktionen?',
+				question: 'Hj?lper det att f?rst? reaktionen?',
 				answer: 'Ofta ja. Att se reaktionen som ett skyddssystem sn?rare an ett personligt fel kan minska skam och f?rvirring.'
 			}
 		],
@@ -580,7 +580,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Hur kan undvikande p?verka livet p? sikt?',
-				answer: 'Det kan gora livet mindre, skap? isolering och halla radsla vid liv eftersom kroppen aldrig f?r erf?ra att allt inte ar f?rligt.'
+				answer: 'Det kan gora livet mindre, skap? isolering och halla r?dsla vid liv eftersom kroppen aldrig f?r erf?ra att allt inte ar f?rligt.'
 			},
 			{
 				question: 'Vad kan vara ett varsamt n?sta steg?',
@@ -659,7 +659,7 @@ export const guides: Guide[] = [
 				answer: 'Ja, s?mn p?verkas av vanor, kanslobearbetning och trygghetsk?nsla â€“ alla saker som kan f?randra med tid och stod.'
 			},
 			{
-				question: 'Hjalper det att prata om det som oroar en?',
+				question: 'Hj?lper det att prata om det som oroar en?',
 				answer: 'Ofta ja. Att satta ord p? oron kan minska den mentala aktiveringen och gora det lattare att slappna av.'
 			}
 		],
@@ -762,7 +762,7 @@ export const guides: Guide[] = [
 		f?qs: [
 			{
 				question: 'Kan s?mnbrist gora mig mer orolig?',
-				answer: 'Ja, f?r lite s?mn kan gora nervsystemet mer kansligt och det kan bli sv?rare att hantera oro och stress.'
+				answer: 'Ja, f?r lite s?mn kan gora nervsystemet mer k?nsligt och det kan bli sv?rare att hantera oro och stress.'
 			},
 			{
 				question: 'Varf?r blir jag lattare irriterad n?r jag sovit daligt?',
@@ -870,14 +870,14 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Ar perfektionism ett tecken p? ambition?',
-				answer: 'Ibland, men det kan ocksa handla om radsla f?r kritik, misslyckande eller att inte duga.'
+				answer: 'Ibland, men det kan ocksa handla om r?dsla f?r kritik, misslyckande eller att inte duga.'
 			},
 			{
 				question: 'Hur p?verkar perfektionism m?endet?',
 				answer: 'Den kan skap? stress, sj?lvkritik och k?nslan av att du maste prestera f?r att f? vila eller kanna dig okej.'
 			},
 			{
-				question: 'Vad kan hj?lp??',
+				question: 'Vad kan hj?lp?',
 				answer: 'Att upptacka dina egna krav och prova mer tillrackligt bra i sma situationer kan minska trycket ?ver tid.'
 			}
 		],
