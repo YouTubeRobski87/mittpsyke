@@ -10,7 +10,7 @@
 	<link rel="canonical" href={canonical('/guider-seo')} />
 	<meta
 		name="description"
-		content="Oversikt over guider inom angest, depression och trauma under ett separat SEO-skelett."
+		content="Översikt över guider inom ångest, depression och trauma under ett separat SEO-skelett."
 	/>
 </svelte:head>
 
