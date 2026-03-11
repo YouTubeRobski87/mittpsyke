@@ -34,7 +34,7 @@ export const pillars: Pillar[] = [
 	{
 		slug: 'depression',
 		title: 'Nedstämdhet och depression',
-		description: 'En lugn oversikt av symtom, vardagsstod och nar extra hjalp kan behovas.',
+		description: 'En lugn översikt av symtom, vardagsstöd och när extra hjälp kan behövas.',
 		chatPath: '/chat/b'
 	},
 	{
@@ -255,7 +255,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'depression',
 		slug: 'nedstamdhet',
-		title: 'Nedstamdhet eller depression',
+		title: 'Nedstämdhet eller depression',
 		description: 'Skillnader mellan tillfallig nedstamdhet och depression.',
 		faqs: [
 			{
@@ -297,7 +297,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'depression',
 		slug: 'trotthet-och-meningsloshet',
-		title: 'Trotthet och meningsloshet - nar ingenting kanns vart att gora',
+		title: 'Trötthet och meningslöshet - när ingenting känns värt att göra',
 		description: 'Om trotthet, tomhet och kanslan av att vardagen forlorar sin riktning.',
 		faqs: [
 			{
@@ -335,7 +335,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'depression',
 		slug: 'nedstamdhet-och-relationer',
-		title: 'Hur nedstamdhet paverkar relationer och narheten till andra',
+		title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 		description: 'Om hur nedstamdhet kan gora det svarare att orka med kontakt, narhet och samtal.',
 		faqs: [
 			{
@@ -373,7 +373,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'depression',
 		slug: 'sorg-och-depression',
-		title: 'Skillnaden mellan sorg och depression - och varfor det spelar roll',
+		title: 'Skillnaden mellan sorg och depression - och varför det spelar roll',
 		description: 'Om likheter och skillnader mellan sorg och depression, och varfor de ibland blandas ihop.',
 		faqs: [
 			{
@@ -411,7 +411,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'depression',
 		slug: 'sma-steg-vid-nedstamdhet',
-		title: 'Sma steg nar energin tryter - vad som faktiskt kan hjalpa',
+		title: 'Små steg när energin tryter - vad som faktiskt kan hjälpa',
 		description: 'Om varsamma och realistiska steg nar energin ar lag och allt kanns svart att borja med.',
 		faqs: [
 			{
