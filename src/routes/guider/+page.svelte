@@ -13,10 +13,11 @@
 <main class="container guides-page">
 	<header class="intro">
 		<h1>Guider</h1>
-		<p>
-			Välj ett område och läs en samlad, lugn guide med relaterade artiklar och praktiska övningar.
+		<p>Välj ett område och läs en samlad guide med artiklar och övningar i lugn takt.</p>
+		<p class="intro-note">
+			Innehållet är sammanställt av MittPsyke som stöd för reflektion och ökad förståelse.
+			Det ersätter inte vård eller behandling.
 		</p>
-		<p class="intro-note">Innehållet är sammanställt av MittPsyke som stöd för reflektion och ökad förståelse. Det ersätter inte vård eller behandling.</p>
 	</header>
 
 	<section class="grid" aria-label="Alla guider">
@@ -24,7 +25,7 @@
 			<a class="card" href={`/guider/${pillar.slug}`}>
 				<h2>{pillar.title}</h2>
 				<p>{pillar.description}</p>
-				<span class="meta">{pillar.clusterTopics.length} klusterartiklar</span>
+				<span class="meta">{pillar.clusterTopics.length} artiklar att utforska</span>
 			</a>
 		{/each}
 	</section>
@@ -43,6 +44,7 @@
 	.intro p {
 		margin: 0.8rem 0 0;
 		max-width: 62ch;
+		line-height: 1.65;
 		opacity: 0.84;
 	}
 
@@ -51,14 +53,16 @@
 	}
 
 	.grid {
-		margin-top: 1.6rem;
+		margin-top: 1.8rem;
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-		gap: 0.95rem;
+		gap: 1.05rem;
 	}
 
 	.card {
-		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+		padding: 1.1rem 1rem 1rem;
 		border-radius: var(--radius-card);
 		border: 1px solid rgba(0, 0, 0, 0.1);
 		background: #f8fbfa;
@@ -73,19 +77,25 @@
 	.card h2 {
 		margin: 0;
 		font-size: 1.1rem;
+		line-height: 1.3;
 	}
 
 	.card p {
-		margin: 0.55rem 0 0;
+		margin: 0.6rem 0 0;
 		font-size: 0.95rem;
+		line-height: 1.6;
 		opacity: 0.82;
 	}
 
 	.meta {
-		display: inline-block;
-		margin-top: 0.8rem;
-		font-size: 0.83rem;
-		opacity: 0.72;
+		display: inline-flex;
+		align-self: flex-start;
+		margin-top: 0.9rem;
+		padding: 0.34rem 0.58rem;
+		border-radius: 999px;
+		background: rgba(95, 129, 112, 0.1);
+		font-size: 0.82rem;
+		opacity: 0.8;
 	}
 
 	:global(.dark) .card {
@@ -95,5 +105,24 @@
 
 	:global(.dark) .card:hover {
 		background: #1f2b29;
+	}
+
+	:global(.dark) .meta {
+		background: rgba(140, 163, 106, 0.16);
+	}
+
+	@media (max-width: 640px) {
+		.guides-page {
+			padding: 1.25rem 1rem 3rem;
+		}
+
+		.grid {
+			margin-top: 1.45rem;
+			gap: 0.85rem;
+		}
+
+		.card {
+			padding: 1rem 0.95rem 0.95rem;
+		}
 	}
 </style>
