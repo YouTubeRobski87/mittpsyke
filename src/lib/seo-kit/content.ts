@@ -61,24 +61,24 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'tecken',
-		title: 'Tecken p? ?ngest',
-		description: 'Vanliga kroppsliga och mentala tecken p? ?ngest.',
+		title: 'Tecken på ångest',
+		description: 'Vanliga kroppsliga och mentala tecken på ångest.',
 		f?qs: [
 			{
-				question: 'Hur k?nns ?ngest i kroppen?',
-				answer: 'Manga upplever hj?rtklappning, tryck ?ver br?stet, yrsel eller snabb andning.'
+				question: 'Hur känns ångest i kroppen?',
+				answer: 'Många upplever hjärtklappning, tryck över bröstet, yrsel eller snabb andning.'
 			},
 			{
-				question: 'Ar ?ngest f?rligt?',
-				answer: '?ngest i sig ar oftast inte f?rligt, men den kan vara mycket jobbig och bor tas p? allvar.'
+				question: 'Är ångest farligt?',
+				answer: 'Ångest i sig är oftast inte farligt, men den kan vara mycket jobbig och bör tas på allvar.'
 			},
 			{
-				question: 'N?r bor jag soka professionell hj?lp?',
-				answer: 'Om ?ngesten styr vardagen, p?verkar s?mn eller gor att du undviker mycket i livet.'
+				question: 'När bör jag söka professionell hjälp?',
+				answer: 'Om ångesten styr vardagen, påverkar sömn eller gör att du undviker mycket i livet.'
 			},
 			{
-				question: 'Kan andningstekniker hj?lp? snabbt?',
-				answer: 'Ja, langsam och regelbunden andning kan ofta minska stressreaktionen inom nagra minuter.'
+				question: 'Kan andningstekniker hjälpa snabbt?',
+				answer: 'Ja, långsam och regelbunden andning kan ofta minska stressreaktionen inom några minuter.'
 			}
 		],
 		relatedArticles: [
@@ -103,23 +103,23 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'panikangest-och-kroppen',
-		title: 'Panikångest â€“ vad som händer i kroppen och hur du kan hantera det',
-		description: 'Om kroppens starka reaktioner vid p?nikångest och hur du kan förstå det som händer.',
+		title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det',
+		description: 'Om kroppens starka reaktioner vid panikångest och hur du kan förstå det som händer.',
 		f?qs: [
 			{
-				question: 'Varför reagerar kroppen så starkt vid p?nikångest?',
+				question: 'Varför reagerar kroppen så starkt vid panikångest?',
 				answer: 'Kroppen går in i alarmberedskap, vilket kan ge hjärtklappning, yrsel, tryck över bröstet och snabb andning.'
 			},
 			{
-				question: 'Ar p?nik?ngest f?rligt?',
-				answer: 'Det brukar inte vara f?rligt i sig, men upplevelsen kan vara mycket intensiv och skrämmande.'
+				question: 'Är panikångest farligt?',
+				answer: 'Det brukar inte vara farligt i sig, men upplevelsen kan vara mycket intensiv och skrämmande.'
 			},
 			{
-				question: 'Varför känns det som att jag tapp?r kontrollen?',
+				question: 'Varför känns det som att jag tappar kontrollen?',
 				answer: 'När stressystemet slår på starkt kan hjärnan tolka reaktionerna som ett hot, vilket förstärker känslan.'
 			},
 			{
-				question: 'Vad kan hjälp? i stunden?',
+				question: 'Vad kan hjälpa i stunden?',
 				answer: 'Att sakta ner andningen, stanna kvar i nuet och påminna dig om att reaktionen går över kan minska intensiteten.'
 			}
 		],
@@ -129,7 +129,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/angest/tecken'
 			},
 			{
-				title: 'Orostankar som snurrar â€“ när hjärnan inte kan stänga av',
+				title: 'Orostankar som snurrar – när hjärnan inte kan stänga av',
 				href: '/guider-seo/angest/orostankar'
 			},
 			{
@@ -141,37 +141,37 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'orostankar',
-		title: 'Orostankar som snurrar - n?r hj?rnan inte kan st?nga av',
-		description: 'Om oro som gar runt i cirklar och gor det sv?rt att komma till ro.',
+		title: 'Orostankar som snurrar - när hjärnan inte kan stänga av',
+		description: 'Om oro som går runt i cirklar och gör det svårt att komma till ro.',
 		f?qs: [
 			{
-				question: 'Varf?r f?stn?r jag i orostankar?',
-				answer: 'Hj?rnan f?rsoker ofta f?rutse problem f?r att skydda dig, men det kan i stallet leda till att tankarna aldrig f?r vila.'
+				question: 'Varför fastnar jag i orostankar?',
+				answer: 'Hjärnan försöker ofta förutse problem för att skydda dig, men det kan i stället leda till att tankarna aldrig får vila.'
 			},
 			{
-				question: 'Ar oro alltid nagot negativt?',
-				answer: 'Inte alltid, men n?r oron tar ?ver och p?verkar s?mn, fokus eller vardag blir den ofta mer belastande an hj?lpsam.'
+				question: 'Är oro alltid något negativt?',
+				answer: 'Inte alltid, men när oron tar över och påverkar sömn, fokus eller vardag blir den ofta mer belastande än hjälpsam.'
 			},
 			{
-				question: 'Kan orostankar oka p? kvallen?',
-				answer: 'Ja, n?r det blir tyst och stilla f?r tankarna ofta mer utrymme och kan kannas starkare.'
+				question: 'Kan orostankar öka på kvällen?',
+				answer: 'Ja, när det blir tyst och stilla får tankarna ofta mer utrymme och kan kännas starkare.'
 			},
 			{
 				question: 'Vad kan vara ett första steg?',
-				answer: 'Att l?gga marke till n?r oron b?rjar dra iv?g och ge den en tydlig plats i stallet f?r att folja varje tanke kan hj?lp?.'
+				answer: 'Att lägga märke till när oron börjar dra iväg och ge den en tydlig plats i stället för att följa varje tanke kan hjälpa.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Tecken p? ?ngest',
+				title: 'Tecken på ångest',
 				href: '/guider-seo/angest/tecken'
 			},
 			{
-				title: 'Panik?ngest - vad som hander i kroppen och hur du kan hantera det',
+				title: 'Panikångest - vad som händer i kroppen och hur du kan hantera det',
 				href: '/guider-seo/angest/panikangest-och-kroppen'
 			},
 			{
-				title: '?ngest och s?mn - varf?r natten kan bli sv?rare',
+				title: 'Ångest och sömn - varför natten kan bli svårare',
 				href: '/guider-seo/angest/angest-och-somn'
 			}
 		]
@@ -179,24 +179,24 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'angest-och-somn',
-		title: '?ngest och s?mn - varf?r natten kan bli sv?rare',
-		description: 'Om hur ?ngest ofta blir tydligare p? kvallen och kan gora det sv?rt att s?mna eller sova lugnt.',
+		title: 'Ångest och sömn - varför natten kan bli svårare',
+		description: 'Om hur ångest ofta blir tydligare på kvällen och kan göra det svårt att somna eller sova lugnt.',
 		f?qs: [
 			{
-				question: 'Varf?r blir ?ngesten starkare p? natten?',
-				answer: 'N?r tempot sjunker och intrycken minskar f?r k?nslor och tankar ofta mer plats, vilket kan gora ?ngesten tydligare.'
+				question: 'Varför blir ångesten starkare på natten?',
+				answer: 'När tempot sjunker och intrycken minskar får känslor och tankar ofta mer plats, vilket kan göra ångesten tydligare.'
 			},
 			{
-				question: 'Kan ?ngest vacka mig under natten?',
-				answer: 'Ja, vissa vakn?r med hj?rtklappning, oro eller stark kroppslig ansp?nning mitt i natten.'
+				question: 'Kan ångest väcka mig under natten?',
+				answer: 'Ja, vissa vaknar med hjärtklappning, oro eller stark kroppslig anspänning mitt i natten.'
 			},
 			{
-				question: 'Gor dalig s?mn ?ngesten varre?',
-				answer: 'Ofta ja. S?mnbrist kan gora nervsystemet mer k?nsligt och det kan bli sv?rare att hantera oro dagen efter.'
+				question: 'Gör dålig sömn ångesten värre?',
+				answer: 'Ofta ja. Sömnbrist kan göra nervsystemet mer känsligt och det kan bli svårare att hantera oro dagen efter.'
 			},
 			{
-				question: 'Vad kan hj?lp? mest?',
-				answer: 'Att minska pressen kring s?mnen och samtidigt f? stod i det som skap?r ?ngesten brukar vara viktigare an att bara f?rsoka sova mer.'
+				question: 'Vad kan hjälpa mest?',
+				answer: 'Att minska pressen kring sömnen och samtidigt få stöd i det som skapar ångesten brukar vara viktigare än att bara försöka sova mer.'
 			}
 		],
 		relatedArticles: [
@@ -217,37 +217,37 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'social-angest',
-		title: 'Social ?ngest - r?dslan f?r att bli bed?md av andra',
-		description: 'Om oro i sociala situationer och varf?r blicken fran andra kan kannas sa stark.',
+		title: 'Social ångest - rädslan för att bli bedömd av andra',
+		description: 'Om oro i sociala situationer och varför blicken från andra kan kännas så stark.',
 		f?qs: [
 			{
-				question: 'Vad ar social ?ngest?',
-				answer: 'Det handlar ofta om stark oro f?r att bli gr?nskad, bortgjord eller negativt bed?md i sociala sammanhang.'
+				question: 'Vad är social ångest?',
+				answer: 'Det handlar ofta om stark oro för att bli granskad, bortgjord eller negativt bedömd i sociala sammanhang.'
 			},
 			{
-				question: 'Varf?r undviker jag vissa situationer?',
-				answer: 'Undvikande blir ofta ett satt att f?rsoka minska obehaget snabbt, men det kan samtidigt halla oron vid liv.'
+				question: 'Varför undviker jag vissa situationer?',
+				answer: 'Undvikande blir ofta ett sätt att försöka minska obehaget snabbt, men det kan samtidigt hålla oron vid liv.'
 			},
 			{
-				question: 'Ar det bara blyghet?',
-				answer: 'Inte nodvandigtvis. Social ?ngest brukar vara mer intensiv och kan p?verka arbete, relationer och vardag.'
+				question: 'Är det bara blyghet?',
+				answer: 'Inte nödvändigtvis. Social ångest brukar vara mer intensiv och kan påverka arbete, relationer och vardag.'
 			},
 			{
 				question: 'Kan det bli battre?',
-				answer: 'Ja, med f?rst?else, sm? steg och stod gar det ofta att minska r?dsla och bygga mer trygghet i sociala situationer.'
+				answer: 'Ja, med förståelse, små steg och stöd går det ofta att minska rädsla och bygga mer trygghet i sociala situationer.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Tecken p? ?ngest',
+				title: 'Tecken på ångest',
 				href: '/guider-seo/angest/tecken'
 			},
 			{
-				title: 'Orostankar som snurrar - n?r hj?rnan inte kan st?nga av',
+				title: 'Orostankar som snurrar - när hjärnan inte kan stänga av',
 				href: '/guider-seo/angest/orostankar'
 			},
 			{
-				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'Låg självkänsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			}
 		]
