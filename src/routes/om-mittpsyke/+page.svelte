@@ -28,6 +28,17 @@
 			</p>
 		</header>
 
+		<section class="trust-overview" aria-label="Snabbt om MittPsyke">
+			<h2>Snabbt om MittPsyke</h2>
+			<ul>
+				<li><strong>Är detta vård?</strong> Nej. MittPsyke är ett AI-baserat samtalsstöd, inte vård eller behandling.</li>
+				<li><strong>Vad används tjänsten till?</strong> Reflektion, samtalsstöd, dagbok och struktur i vardagen.</li>
+				<li><strong>Vad gäller i akut läge?</strong> Ring 112 vid akut fara. För vårdråd, kontakta 1177.</li>
+				<li><strong>Vem står bakom?</strong> MittPsyke drivs av Robert Claesson som enskild näringsverksamhet (org.nr 198712284895).</li>
+				<li><strong>Hur kontaktar man er?</strong> <a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a></li>
+			</ul>
+		</section>
+
 		<!-- 2) Personlig story -->
 		<section class="story-section">
 			<div class="story-inner">
@@ -250,8 +261,11 @@
 
 		<!-- 9) Kontakt och lankar -->
 		<section class="section links-section">
-			<h2>Kontakt och länkar</h2>
+			<h2>Kontakt och viktiga länkar</h2>
+			<p>Här hittar du vägar in till tjänsten och till information om ansvar, integritet och akut stöd.</p>
 			<ul>
+				<li><a href="/ansvar">Ansvarsinfo</a></li>
+				<li><a href="/integritet">Integritetspolicy</a></li>
 				<li><a href="/chat">Öppna chatten</a></li>
 				<li><a href="/dagbok">Läs om dagboken</a></li>
 				<li><a href="/digital-dagbok-for-maende">Digital dagbok för mående</a></li>
@@ -261,7 +275,6 @@
 						Akut hjälp (Stödlinjer)
 					</a>
 				</li>
-				<li><a href="/ansvar">Ansvarsinfo</a></li>
 			</ul>
 		</section>
 
@@ -323,6 +336,34 @@
 	.hero {
 		max-width: 720px;
 		padding: clamp(1rem, 2vw, 1.25rem) 0 0.2rem;
+	}
+
+	.trust-overview {
+		max-width: 720px;
+		padding: 1rem;
+		border-radius: var(--radius-card);
+		border: 1px solid rgba(15, 23, 42, 0.1);
+		background: rgba(248, 250, 252, 0.82);
+	}
+
+	.trust-overview h2 {
+		font-size: 1.2rem;
+		font-weight: 700;
+		line-height: 1.2;
+		margin-bottom: 0.55rem;
+		color: var(--primary);
+	}
+
+	.trust-overview ul {
+		margin: 0;
+		padding-left: 1.2rem;
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.trust-overview li {
+		font-size: clamp(0.98rem, 0.94rem + 0.35vw, 1.05rem);
+		line-height: 1.65;
 	}
 
 	.section {
@@ -552,7 +593,11 @@
 		padding: 0;
 		margin: 0;
 		display: grid;
-		gap: 0.55rem;
+		gap: 0.65rem;
+	}
+
+	.links-section p {
+		margin-bottom: 0.8rem;
 	}
 
 	.links-section a {
@@ -617,6 +662,10 @@
 			padding: 2rem 1rem 2.8rem;
 		}
 
+		.trust-overview {
+			padding: 0.9rem;
+		}
+
 		p,
 		li {
 			font-size: 1.02rem;
@@ -634,6 +683,11 @@
 		background: #1a1a1a;
 		color: #f5f5f5;
 		border: 1px solid rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .trust-overview {
+		background: #1a1a1a;
+		border-color: rgba(255, 255, 255, 0.08);
 	}
 
 	:global(.dark) .feature-card h3,
@@ -673,4 +727,3 @@
 		border-color: rgba(134, 223, 214, 0.15);
 	}
 </style>
-
