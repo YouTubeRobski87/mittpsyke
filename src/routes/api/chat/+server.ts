@@ -161,6 +161,9 @@ type StoredMessageRow = {
 	content: string | null;
 };
 
+const GUEST_CONVERSATIONS_TABLE = 'conversations';
+const GUEST_MESSAGES_TABLE = 'messages';
+
 function errorResponse(message: string, status: number) {
 	return json({ error: message }, { status });
 }
@@ -489,7 +492,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		if (conversationId) {
 			const { data: existingConversation, error: existingConversationError } = await guestDbClient
-				.from('guest_conversations')
+				.from(GUEST_CONVERSATIONS_TABLE)
 				.select('id, guest_id, category')
 				.eq('id', conversationId)
 				.eq('guest_id', guestId)
@@ -516,7 +519,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			const title = buildConversationTitle(message);
 
 			let { data: createdConversation, error: createConversationError } = await guestDbClient
-				.from('guest_conversations')
+				.from(GUEST_CONVERSATIONS_TABLE)
 				.insert({
 					guest_id: guestId,
 					category,
@@ -532,7 +535,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 			if (missingTitleColumn) {
 				const retry = await guestDbClient
-					.from('guest_conversations')
+					.from(GUEST_CONVERSATIONS_TABLE)
 					.insert({
 						guest_id: guestId,
 						category
@@ -553,7 +556,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		const { data: previousMessages, error: previousMessagesError } = await guestDbClient
-			.from('guest_messages')
+			.from(GUEST_MESSAGES_TABLE)
 			.select('role, content')
 			.eq('conversation_id', conversationId)
 			.order('created_at', { ascending: true })
@@ -564,7 +567,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			return errorResponse('Could not load guest conversation history.', 500);
 		}
 
-		const { error: guestMessageError } = await guestDbClient.from('guest_messages').insert({
+		const { error: guestMessageError } = await guestDbClient.from(GUEST_MESSAGES_TABLE).insert({
 			conversation_id: conversationId,
 			role: 'user',
 			content: message
@@ -609,7 +612,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const reply = completion.choices[0]?.message?.content?.trim() ?? 'NÃ¥got gick fel.';
 
-		const { error: assistantMessageError } = await guestDbClient.from('guest_messages').insert({
+		const { error: assistantMessageError } = await guestDbClient.from(GUEST_MESSAGES_TABLE).insert({
 			conversation_id: conversationId,
 			role: 'assistant',
 			content: reply
