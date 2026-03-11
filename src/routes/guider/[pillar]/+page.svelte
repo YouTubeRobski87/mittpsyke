@@ -268,6 +268,10 @@
 		text-underline-offset: 2px;
 	}
 
+	.stack-list-choices {
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	}
+
 	.tool-grid {
 		margin-top: 0.9rem;
 		display: grid;
@@ -406,6 +410,10 @@
 
 		.stack-list {
 			gap: 0.55rem;
+		}
+
+		.stack-list-choices {
+			grid-template-columns: 1fr;
 		}
 
 		.stack-list li,
