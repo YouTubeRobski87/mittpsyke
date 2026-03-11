@@ -136,6 +136,10 @@
 		font-size: 0.94rem;
 		line-height: 1.6;
 		opacity: 0.82;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
 	.meta {
