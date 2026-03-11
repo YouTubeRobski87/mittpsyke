@@ -45,13 +45,13 @@ export const pillars: Pillar[] = [
 	},
 	{
 		slug: 'sovproblem',
-		title: 'SÃ¶vnproblem',
+		title: 'Sövnproblem',
 		description: 'Forsta varfor somnen uteblir och hur du kan borja hantera det som haller dig vaken.',
 		chatPath: '/chat/a'
 	},
 	{
 		slug: 'sjalvkansla',
-		title: 'SjÃ¤lvkÃ¤nsla',
+		title: 'Självkänsla',
 		description: 'Om lag sjalvkansla, vad det beror pa och hur du kan borja utforska din relation till dig sjalv.',
 		chatPath: '/chat/a'
 	}
@@ -83,19 +83,19 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'PanikÃ¥ngest â€“ vad som hÃ¤nder i kroppen och hur du kan hantera det',
+				title: 'Panikångest â€“ vad som händer i kroppen och hur du kan hantera det',
 				href: '/guider-seo/angest/panikangest-och-kroppen'
 			},
 			{
-				title: 'Orostankar som snurrar â€“ nÃ¤r hjÃ¤rnan inte kan stÃ¤nga av',
+				title: 'Orostankar som snurrar â€“ när hjärnan inte kan stänga av',
 				href: '/guider-seo/angest/orostankar'
 			},
 			{
-				title: 'Ã…ngest och sÃ¶mn â€“ varfÃ¶r natten kan bli svÃ¥rare',
+				title: 'Ångest och sömn â€“ varför natten kan bli svårare',
 				href: '/guider-seo/angest/angest-och-somn'
 			},
 			{
-				title: 'Social Ã¥ngest â€“ rÃ¤dslan fÃ¶r att bli bedÃ¶md av andra',
+				title: 'Social ångest â€“ rädslan för att bli bedömd av andra',
 				href: '/guider-seo/angest/social-angest'
 			}
 		]
@@ -103,37 +103,37 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'panikangest-och-kroppen',
-		title: 'PanikÃ¥ngest â€“ vad som hÃ¤nder i kroppen och hur du kan hantera det',
-		description: 'Om kroppens starka reaktioner vid panikÃ¥ngest och hur du kan fÃ¶rstÃ¥ det som hÃ¤nder.',
+		title: 'Panikångest â€“ vad som händer i kroppen och hur du kan hantera det',
+		description: 'Om kroppens starka reaktioner vid panikångest och hur du kan förstå det som händer.',
 		faqs: [
 			{
-				question: 'VarfÃ¶r reagerar kroppen sÃ¥ starkt vid panikÃ¥ngest?',
-				answer: 'Kroppen gÃ¥r in i alarmberedskap, vilket kan ge hjÃ¤rtklappning, yrsel, tryck Ã¶ver brÃ¶stet och snabb andning.'
+				question: 'Varför reagerar kroppen så starkt vid panikångest?',
+				answer: 'Kroppen går in i alarmberedskap, vilket kan ge hjärtklappning, yrsel, tryck över bröstet och snabb andning.'
 			},
 			{
 				question: 'Ar panikangest farligt?',
-				answer: 'Det brukar inte vara farligt i sig, men upplevelsen kan vara mycket intensiv och skrÃ¤mmande.'
+				answer: 'Det brukar inte vara farligt i sig, men upplevelsen kan vara mycket intensiv och skrämmande.'
 			},
 			{
-				question: 'VarfÃ¶r kÃ¤nns det som att jag tappar kontrollen?',
-				answer: 'NÃ¤r stressystemet slÃ¥r pÃ¥ starkt kan hjÃ¤rnan tolka reaktionerna som ett hot, vilket fÃ¶rstÃ¤rker kÃ¤nslan.'
+				question: 'Varför känns det som att jag tappar kontrollen?',
+				answer: 'När stressystemet slår på starkt kan hjärnan tolka reaktionerna som ett hot, vilket förstärker känslan.'
 			},
 			{
-				question: 'Vad kan hjÃ¤lpa i stunden?',
-				answer: 'Att sakta ner andningen, stanna kvar i nuet och pÃ¥minna dig om att reaktionen gÃ¥r Ã¶ver kan minska intensiteten.'
+				question: 'Vad kan hjälpa i stunden?',
+				answer: 'Att sakta ner andningen, stanna kvar i nuet och påminna dig om att reaktionen går över kan minska intensiteten.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Tecken pÃ¥ Ã¥ngest',
+				title: 'Tecken på ångest',
 				href: '/guider-seo/angest/tecken'
 			},
 			{
-				title: 'Orostankar som snurrar â€“ nÃ¤r hjÃ¤rnan inte kan stÃ¤nga av',
+				title: 'Orostankar som snurrar â€“ när hjärnan inte kan stänga av',
 				href: '/guider-seo/angest/orostankar'
 			},
 			{
-				title: 'Ã…ngest och sÃ¶mn â€“ varfÃ¶r natten kan bli svÃ¥rare',
+				title: 'Ångest och sömn â€“ varför natten kan bli svårare',
 				href: '/guider-seo/angest/angest-och-somn'
 			}
 		]
@@ -277,19 +277,19 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'TrÃ¶tthet och meningslÃ¶shet â€“ nÃ¤r ingenting kÃ¤nns vÃ¤rt att gÃ¶ra',
+				title: 'Trötthet och meningslöshet â€“ när ingenting känns värt att göra',
 				href: '/guider-seo/depression/trotthet-och-meningsloshet'
 			},
 			{
-				title: 'Hur nedstÃ¤mdhet pÃ¥verkar relationer och nÃ¤rheten till andra',
+				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			},
 			{
-				title: 'Skillnaden mellan sorg och depression â€“ och varfÃ¶r det spelar roll',
+				title: 'Skillnaden mellan sorg och depression â€“ och varför det spelar roll',
 				href: '/guider-seo/depression/sorg-och-depression'
 			},
 			{
-				title: 'SmÃ¥ steg nÃ¤r energin tryter â€“ vad som faktiskt kan hjÃ¤lpa',
+				title: 'Små steg när energin tryter â€“ vad som faktiskt kan hjälpa',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
@@ -471,19 +471,19 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Vad hÃ¤nder i nervsystemet vid trauma â€“ fight, flight och freeze',
+				title: 'Vad händer i nervsystemet vid trauma â€“ fight, flight och freeze',
 				href: '/guider-seo/trauma/nervsystemet-och-trauma'
 			},
 			{
-				title: 'Grounding â€“ enkla Ã¶vningar fÃ¶r att landa i kroppen igen',
+				title: 'Grounding â€“ enkla övningar för att landa i kroppen igen',
 				href: '/guider-seo/trauma/grounding-ovningar'
 			},
 			{
-				title: 'Undvikande efter trauma â€“ varfÃ¶r vi gÃ¶r det och vad det kostar',
+				title: 'Undvikande efter trauma â€“ varför vi gör det och vad det kostar',
 				href: '/guider-seo/trauma/undvikande-efter-trauma'
 			},
 			{
-				title: 'Tillit och trygghet i relationer efter svÃ¥ra upplevelser',
+				title: 'Tillit och trygghet i relationer efter svåra upplevelser',
 				href: '/guider-seo/trauma/tillit-efter-trauma'
 			}
 		]
@@ -665,19 +665,19 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Stress och sÃ¶mn â€“ nÃ¤r kroppen inte kan varva ner',
+				title: 'Stress och sömn â€“ när kroppen inte kan varva ner',
 				href: '/guider-seo/sovproblem/stress-och-somn'
 			},
 			{
-				title: 'Ã„ltande pÃ¥ kvÃ¤llen â€“ varfÃ¶r tankarna blir starkare i sÃ¤ngen',
+				title: 'Ältande på kvällen â€“ varför tankarna blir starkare i sängen',
 				href: '/guider-seo/sovproblem/altande-pa-kvallen'
 			},
 			{
-				title: 'TrÃ¶tt men uppvarvad â€“ nÃ¤r kroppen vill sova men hjÃ¤rnan inte slÃ¤pper taget',
+				title: 'Trött men uppvarvad â€“ när kroppen vill sova men hjärnan inte släpper taget',
 				href: '/guider-seo/sovproblem/trott-men-uppvarvad'
 			},
 			{
-				title: 'NÃ¤r sÃ¶mnbrist pÃ¥verkar mÃ¥endet â€“ oro, irritation och nedstÃ¤mdhet',
+				title: 'När sömnbrist påverkar måendet â€“ oro, irritation och nedstämdhet',
 				href: '/guider-seo/sovproblem/somnbrist-och-maendet'
 			}
 		]
@@ -803,19 +803,19 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Den inre kritikern â€“ varfÃ¶r rÃ¶sten finns och vad den egentligen vill',
+				title: 'Den inre kritikern â€“ varför rösten finns och vad den egentligen vill',
 				href: '/guider-seo/sjalvkansla/inre-kritikern'
 			},
 			{
-				title: 'Perfektionism och sjÃ¤lvkÃ¤nsla â€“ nÃ¤r ingenting kÃ¤nns tillrÃ¤ckligt bra',
+				title: 'Perfektionism och självkänsla â€“ när ingenting känns tillräckligt bra',
 				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
 			},
 			{
-				title: 'Att sÃ¤tta grÃ¤nser nÃ¤r sjÃ¤lvkÃ¤nslan Ã¤r lÃ¥g â€“ varfÃ¶r det Ã¤r svÃ¥rt',
+				title: 'Att sätta gränser när självkänslan är låg â€“ varför det är svårt',
 				href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla'
 			},
 			{
-				title: 'JÃ¤mfÃ¶relsetrÃ¤sket â€“ sociala medier och din sjÃ¤lvbild',
+				title: 'Jämförelseträsket â€“ sociala medier och din självbild',
 				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
 			}
 		]
