@@ -161,8 +161,8 @@ type StoredMessageRow = {
 	content: string | null;
 };
 
-const GUEST_CONVERSATIONS_TABLE = 'conversations';
-const GUEST_MESSAGES_TABLE = 'messages';
+const GUEST_CONVERSATIONS_TABLE = 'guest_conversations';
+const GUEST_MESSAGES_TABLE = 'guest_messages';
 
 function errorResponse(message: string, status: number) {
 	return json({ error: message }, { status });
