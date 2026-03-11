@@ -61,103 +61,71 @@
 		<div class="hero-content">
 			<h1>Ett tryggt rum för att landa, skriva av dig och börja i din egen takt</h1>
 			<p>
-				Börja utan konto när du behöver stöd i stunden. Skapa ett konto om du vill spara din dagbok, följa dina mönster över tid och ha en egen plats att återvända till.
+				Börja utan konto när du behöver stöd i stunden. Skapa konto om du vill spara din dagbok och kunna återvända över tid.
 			</p>
 			<div class="hero-actions">
 				<a href="#fokusomraden" class="hero-cta hero-cta-primary">Börja anonymt</a>
-				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
+				<a href="/register" class="hero-cta hero-cta-secondary">Skapa konto</a>
 			</div>
-			<div class="trust-bar">
-				<span class="trust-item">🔒 Börja utan konto</span>
-				<span class="trust-divider" aria-hidden="true">·</span>
-				<span class="trust-item">🆓 Gratis</span>
-				<span class="trust-divider" aria-hidden="true">·</span>
-				<span class="trust-item">⚕️ Ersätter ej vård</span>
-				<span class="trust-divider" aria-hidden="true">·</span>
-				<span class="trust-item">📞 Akut: ring 112</span>
-			</div>
-			<p class="hero-support-link">
-				<a href="/om-mittpsyke">Så fungerar MittPsyke</a>
-				<span aria-hidden="true"> · </span>
-				<a href="/integritet">Så hanteras uppgifter</a>
-				<span aria-hidden="true"> · </span>
-				Behöver du mänsklig kontakt? <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Öppna Stödlinjer</a>
-			</p>
-		</div>
-	</section>
-
-
-	<section class="hero-clarity" aria-label="Så fungerar MittPsyke">
-		<div class="narrow hero-clarity-inner">
-			<div class="clarity-item">
-				<h2>1. Prata och reflektera</h2>
-				<p>Du kan börja i chatten eller dagboken och sätta ord på det som känns tungt.</p>
-			</div>
-			<div class="clarity-item">
-				<h2>2. Hitta mänskligt stöd</h2>
-				<p>I MittPsyke finns Stödlinjer när du vill gå vidare till mänsklig kontakt.</p>
-			</div>
-			<div class="clarity-item">
-				<h2>3. Akut hjälp vid behov</h2>
-				<p>Vid akut fara, ring 112. För vårdråd, kontakta 1177. MittPsyke ersätter inte vård.</p>
+			<div class="hero-facts" aria-label="Bra att veta innan du börjar">
+				<p class="hero-facts-title">Bra att veta innan du börjar</p>
+				<ul class="hero-facts-list">
+					<li><strong>Inte vård:</strong> MittPsyke är ett samtalsstöd för reflektion i vardagen.</li>
+					<li><strong>Börja anonymt:</strong> du kan starta utan konto.</li>
+					<li><strong>Mänskligt stöd:</strong> <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Stödlinjer</a> finns när du vill prata med någon.</li>
+					<li><strong>Akut:</strong> ring 112 vid akut fara.</li>
+				</ul>
+				<p class="hero-meta-links">
+					<a href="/om-mittpsyke">Så fungerar MittPsyke</a>
+					<span aria-hidden="true"> · </span>
+					<a href="/integritet">Så hanteras uppgifter</a>
+				</p>
 			</div>
 		</div>
 	</section>
 
 	<section class="support-options" aria-label="Tre sätt att få stöd">
 		<div class="narrow support-options-inner">
-			<h2>Tre sätt att få stöd direkt</h2>
-			<p>Välj det som känns lättast just nu.</p>
-				<div class="support-grid">
-				<div class="support-card">
-					<h3>Börja anonymt direkt</h3>
-					<p>Du kan skriva av dig och få stöd i stunden utan att behöva prestera eller förklara allt från början.</p>
-					<a href="/chat/a" class="support-button">Starta chat</a>
+			<h2>Välj hur du vill börja</h2>
+			<p>Börja anonymt direkt eller skapa konto om du vill kunna återvända.</p>
+			<div class="support-grid">
+				<div class="support-card support-card-primary">
+					<h3>Börja anonymt</h3>
+					<p>Välj ett fokusområde och öppna rätt samtalsstöd direkt, utan konto.</p>
+					<a href="#fokusomraden" class="support-button">Välj fokusområde</a>
 				</div>
 				<div class="support-card support-card-phone">
-					<h3>Spara din resa över tid</h3>
-					<p>Med konto får du en egen plats för dagbok, historik och framsteg, så att du kan följa hur ditt mående förändras över tid.</p>
+					<h3>Skapa konto</h3>
+					<p>Få en egen plats för dagbok, historik och framsteg när du vill följa ditt mående över tid.</p>
 					<a href="/register" class="support-button">Skapa konto</a>
 				</div>
-				<div class="support-card">
-					<h3>Hitta väg vidare vid behov</h3>
-					<p>MittPsyke ersätter inte vård, men kan vara ett första steg när du behöver landa, sortera tankar eller hitta vidare till mänskligt stöd.</p>
-					<a href="https://stodlinjer.se" class="support-button" rel="noopener noreferrer" target="_blank">Se stödlinjer</a>
-				</div>
-				</div>
-				<div class="support-path">
-					<a class="support-path-card" href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">
-						<h3>Stödlinjer i MittPsyke</h3>
-						<p>Väg vidare till mänskligt stöd när du vill prata med någon.</p>
-					</a>
-					<div class="support-path-card support-path-card-urgent">
-						<h3>Akut hjälp</h3>
-						<p>Vid akut fara eller självmordstankar, ring alltid 112 direkt.</p>
-						<a href="tel:112" class="support-button">Ring 112</a>
-					</div>
-				</div>
 			</div>
-		</section>
+			<div class="support-links" aria-label="Fler vägar in">
+				<a href="/guider" class="support-link-chip">Guider</a>
+				<a href="/ovningar" class="support-link-chip">Övningar</a>
+				<a href="https://stodlinjer.se" class="support-link-chip" rel="noopener noreferrer" target="_blank">Stödlinjer</a>
+			</div>
+		</div>
+	</section>
 
 
-			<section class="account-value" aria-label="Varför skapa konto">
-				<div class="narrow account-value-inner">
-					<div>
-						<h2>När du vill ha mer än ett samtal i stunden</h2>
-						<p>Du kan börja utan konto direkt. Om du vill spara det som betyder något, skriva i dagboken och följa mönster över tid kan du skapa en egen plats i MittPsyke.</p>
-					</div>
-					<div class="account-value-list">
-						<p><strong>Dagbok i din egen takt:</strong> skriv när du behöver landa.</p>
-						<p><strong>Sparad historik och framsteg:</strong> se vad som förändras över tid.</p>
-						<p><strong>En lugn plats att återvända till:</strong> stöd i stunden, struktur över tid.</p>
-					</div>
-					<div class="hero-actions">
-						<a href="/register" class="hero-cta hero-cta-primary">Skapa konto</a>
-						<a href="/om-mittpsyke" class="hero-cta hero-cta-secondary">Läs hur det fungerar</a>
-					</div>
-					<p class="account-return-note">Inte bara för idag. Kom tillbaka i din egen takt och följ det som förändras över tid.</p>
-				</div>
-			</section>
+	<section class="account-value" aria-label="Varför skapa konto">
+		<div class="narrow account-value-inner">
+			<div>
+				<h2>Om du vill kunna komma tillbaka</h2>
+				<p>Med konto kan du spara det som betyder något, skriva i dagboken och följa mönster över tid.</p>
+			</div>
+			<div class="account-value-list">
+				<p><strong>Dagbok:</strong> skriv i din egen takt.</p>
+				<p><strong>Historik och framsteg:</strong> se vad som förändras över tid.</p>
+				<p><strong>En egen plats:</strong> återvänd när du vill.</p>
+			</div>
+			<div class="hero-actions">
+				<a href="/register" class="hero-cta hero-cta-primary">Skapa konto</a>
+				<a href="/om-mittpsyke" class="hero-cta hero-cta-secondary">Så fungerar det</a>
+			</div>
+		</div>
+	</section>
 
 
 	<section class="video-section">
@@ -218,9 +186,8 @@
 			<header class="focus-header">
 				<h2>Välj fokusområde</h2>
 				<p>
-					Du behöver inte förklara allt. Välj det som känns närmast just nu.
+					Välj det som känns närmast just nu. Det hjälper MittPsyke att öppna rätt samtalsstöd.
 				</p>
-				<p>Det hjälper MittPsyke att öppna rätt samtalsstöd.</p>
 			</header>
 			<div class="focus-cards">
 				{#each portals as portal}
@@ -244,26 +211,6 @@
 	</section>
 
 	<VoiceSupport />
-
-	<section class="band band-olive">
-		<div class="narrow intro-grid">
-			<img src="/assets/home/Tryggplats.png" alt="Trygg plats" loading="lazy" />
-			<div>
-				<h2>Tryggt, varsamt och tydligt avgränsat</h2>
-				<p>
-					MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen. Du bestämmer tempot, och allt börjar i lugn takt.
-				</p>
-				<p>
-					Tjänsten ställer inte diagnoser, ersätter inte vård eller kontakt med psykolog, läkare eller annan legitimerad vårdpersonal och ska inte vara enda underlag för medicinska beslut.
-				</p>
-				<ul>
-					<li>Du bestämmer tempot</li>
-					<li>Ingen diagnos eller behandling</li>
-					<li>Väg vidare till mänskligt stöd vid behov</li>
-				</ul>
-			</div>
-		</div>
-	</section>
 
 </main>
 
@@ -375,24 +322,6 @@
 		justify-content: center;
 	}
 
-	.hero-support-link {
-		margin: 0.7rem 0 0;
-		font-size: 0.95rem;
-		color: rgba(255, 255, 255, 0.86);
-	}
-
-	.hero-subnote {
-		margin: 0.75rem auto 0;
-		font-size: 0.88rem;
-		color: rgba(255, 255, 255, 0.78);
-	}
-
-	.hero-support-link a {
-		color: #d7e7ff;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
 	.hero-cta-primary {
 		background: #8ca36a;
 		color: #182016;
@@ -402,36 +331,6 @@
 		background: rgba(255, 255, 255, 0.14);
 		color: #f4f6f9;
 		border: 1px solid rgba(255, 255, 255, 0.28);
-	}
-
-	.hero-clarity {
-		padding: 1.1rem 1.25rem 2rem;
-		background: #0f1824;
-	}
-
-	.hero-clarity-inner {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.75rem;
-	}
-
-	.clarity-item {
-		background: #1d2a39;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		padding: 1rem;
-	}
-
-	.clarity-item h2 {
-		font-size: 1rem;
-		line-height: 1.3;
-		margin: 0;
-	}
-
-	.clarity-item p {
-		margin: 0.5rem 0 0;
-		font-size: 0.94rem;
-		line-height: 1.55;
-		color: rgba(255, 255, 255, 0.88);
 	}
 
 	.band {
@@ -764,41 +663,32 @@
 		border: 1px solid #c7d4cc;
 	}
 
-	.support-path {
-		margin-top: 1rem;
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-		gap: 0.9rem;
+	.support-card-primary {
+		border: 1px solid #aec0b0;
+		background: #eff5f0;
 	}
 
-	.support-path-card {
-		display: block;
-		padding: 1rem;
-		border-radius: 14px;
+	.support-links {
+		margin-top: 1rem;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+		gap: 0.75rem;
+	}
+
+	.support-link-chip {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.85rem 1rem;
+		border-radius: 12px;
 		background: #24384d;
 		border: 1px solid rgba(255, 255, 255, 0.16);
 		color: #f3f8fd;
+		font-weight: 600;
 	}
 
-	.support-path-card h3 {
-		margin: 0;
-		font-size: 1.05rem;
-		color: #f3f8fd;
-	}
-
-	.support-path-card p {
-		margin: 0.5rem 0 0;
-		color: #c7d6e5;
-		font-size: 0.95rem;
-		line-height: 1.6;
-	}
-
-	.support-path-card-urgent {
-		background: #2a3644;
-	}
-
-	.support-path-card-urgent .support-button {
-		margin-top: 0.85rem;
+	.support-link-chip:hover {
+		background: #2b435b;
 	}
 
 	.support-button {
@@ -827,6 +717,48 @@
 		letter-spacing: 0.02em;
 	}
 
+	.hero-facts {
+		margin-top: 1rem;
+		padding: 0.9rem 1rem;
+		background: rgba(255, 255, 255, 0.09);
+		border: 1px solid rgba(255, 255, 255, 0.16);
+		text-align: left;
+	}
+
+	.hero-facts-title {
+		margin: 0;
+		font-size: 0.85rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.92);
+	}
+
+	.hero-facts-list {
+		margin: 0.75rem 0 0;
+		padding-left: 1.1rem;
+		font-size: 0.95rem;
+		line-height: 1.55;
+		color: rgba(255, 255, 255, 0.88);
+	}
+
+	.hero-facts-list li + li {
+		margin-top: 0.35rem;
+	}
+
+	.hero-facts a,
+	.hero-meta-links a {
+		color: #d7e7ff;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.hero-meta-links {
+		margin: 0.75rem 0 0;
+		font-size: 0.92rem;
+		color: rgba(255, 255, 255, 0.82);
+	}
+
 	@media (max-width: 900px) {
 		.intro-grid,
 		.support-columns {
@@ -844,10 +776,6 @@
 
 		.hero-cta {
 			width: 100%;
-		}
-
-		.hero-clarity-inner {
-			grid-template-columns: 1fr;
 		}
 	}
 
@@ -949,15 +877,6 @@
 		background: #3a2e28;
 	}
 
-	:global(.dark) .hero-clarity {
-		background: #12181f;
-	}
-
-	:global(.dark) .clarity-item {
-		background: #1b2028;
-		border-color: rgba(255, 255, 255, 0.12);
-	}
-
 	:global(.dark) .support-card {
 		background: #1e2422;
 		color: #e8e6e2;
@@ -992,15 +911,6 @@
 
 	:global(.dark) .account-return-note {
 		color: rgba(255, 255, 255, 0.72);
-	}
-
-	:global(.dark) .support-path-card {
-		background: #1f2a36;
-		border-color: rgba(255, 255, 255, 0.14);
-	}
-
-	:global(.dark) .support-path-card-urgent {
-		background: #252d36;
 	}
 
 	:global(.dark) .support-card h3 {
@@ -1119,37 +1029,18 @@
 	}
 
 
-	.trust-bar {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4rem 0.6rem;
-		justify-content: center;
-		align-items: center;
-		margin-top: 1rem;
-		padding: 0.5rem 0.75rem;
-		background: rgba(255,255,255,0.08);
-		border-radius: var(--radius-pill);
-		border: 1px solid rgba(255,255,255,0.15);
+	:global(.dark) .support-card-primary {
+		background: #222d29;
+		border-color: rgba(173, 204, 180, 0.28);
 	}
 
-	.trust-item {
-		font-size: 0.8rem;
-		color: rgba(255,255,255,0.85);
-		white-space: nowrap;
+	:global(.dark) .support-link-chip {
+		background: #1f2a36;
+		border-color: rgba(255, 255, 255, 0.14);
 	}
 
-	.trust-divider {
-		color: rgba(255,255,255,0.35);
-		font-size: 0.8rem;
-	}
-
-	@media (max-width: 480px) {
-		.trust-divider {
-			display: none;
-		}
-		.trust-bar {
-			gap: 0.3rem;
-		}
+	:global(.dark) .support-link-chip:hover {
+		background: #243241;
 	}
 </style>
 
