@@ -353,10 +353,6 @@
 		background: #1b2b3a;
 	}
 
-	.band-brown {
-		background: #56453d;
-	}
-
 	.narrow {
 		width: min(760px, 100%);
 		margin: 0 auto;
@@ -366,16 +362,14 @@
 		width: min(1080px, 100%);
 	}
 
-	.intro-grid,
-	.support-columns {
+	.intro-grid {
 		display: grid;
 		grid-template-columns: 1fr 1.2fr;
 		gap: 1.6rem;
 		align-items: center;
 	}
 
-	.intro-grid img,
-	.support-columns img {
+	.intro-grid img {
 		width: 100%;
 		height: clamp(220px, 30vw, 340px);
 		object-fit: cover;
@@ -629,12 +623,6 @@
 		font-size: 0.95rem;
 	}
 
-	.account-return-note {
-		margin: 0.2rem 0 0;
-		color: #54626b;
-		font-size: 0.95rem;
-	}
-
 	/* Stodkort-grid */
 	.support-grid {
 		display: grid;
@@ -721,14 +709,6 @@
 		transform: translateY(-2px);
 	}
 
-	.phone-number {
-		margin-top: 15px;
-		font-weight: 600;
-		font-size: 1.1rem;
-		color: #263036;
-		letter-spacing: 0.02em;
-	}
-
 	.hero-facts {
 		margin-top: 1rem;
 		padding: 0.9rem 1rem;
@@ -772,8 +752,7 @@
 	}
 
 	@media (max-width: 900px) {
-		.intro-grid,
-		.support-columns {
+		.intro-grid {
 			grid-template-columns: 1fr;
 		}
 
@@ -885,10 +864,6 @@
 		background: #1b2b3a;
 	}
 
-	:global(.dark) .band-brown {
-		background: #3a2e28;
-	}
-
 	:global(.dark) .support-card {
 		background: #1e2422;
 		color: #e8e6e2;
@@ -921,20 +896,12 @@
 		color: rgba(255, 255, 255, 0.82);
 	}
 
-	:global(.dark) .account-return-note {
-		color: rgba(255, 255, 255, 0.72);
-	}
-
 	:global(.dark) .support-card h3 {
 		color: #f0eeea;
 	}
 
 	:global(.dark) .support-card p {
 		color: rgba(255, 255, 255, 0.65);
-	}
-
-	:global(.dark) .phone-number {
-		color: #f0eeea;
 	}
 
 	.seo-intro {
