@@ -1,5 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { p as private_env, a as public_env } from "../../../../chunks/shared-server.js";
+import { h as hasSensitiveConsentHeader } from "../../../../chunks/consent.js";
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
 const SYSTEM_PROMPT = `
@@ -176,6 +177,9 @@ const normalizeApiKey = (value) => {
   return normalized;
 };
 const POST = async ({ request }) => {
+  if (!hasSensitiveConsentHeader(request)) {
+    return errorResponse("Consent required for sensitive AI features.", 403);
+  }
   let parsedBody;
   try {
     parsedBody = await request.json();

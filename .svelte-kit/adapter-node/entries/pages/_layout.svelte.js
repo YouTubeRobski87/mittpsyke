@@ -1,4 +1,4 @@
-import { e as escape_html, h as head, b as attr, c as attr_class, d as derived } from "../../chunks/index.js";
+import { e as escape_html, h as head, a as attr, c as attr_class, d as derived } from "../../chunks/index.js";
 import "clsx";
 import "../../chunks/supabase.js";
 import { p as page } from "../../chunks/index2.js";

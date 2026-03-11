@@ -1,8 +1,9 @@
-import { e as escape_html, h as head, a as ensure_array_like, b as attr } from "../../chunks/index.js";
+import { e as escape_html, h as head, b as ensure_array_like, a as attr } from "../../chunks/index.js";
 import { p as portals } from "../../chunks/portals.js";
 import "clsx";
 import "retell-client-js-sdk";
-import { C as ConsentGate, g as grantSensitiveConsent } from "../../chunks/consent.js";
+import { C as ConsentGate } from "../../chunks/ConsentGate.js";
+import { g as grantSensitiveConsent } from "../../chunks/consent.js";
 function VoiceSupport($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let hasSensitiveDataConsent = false;

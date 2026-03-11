@@ -11,12 +11,16 @@
       "_shared-server.js"
     ]
   },
-  "_consent.js": {
-    "file": "chunks/consent.js",
-    "name": "consent",
+  "_ConsentGate.js": {
+    "file": "chunks/ConsentGate.js",
+    "name": "ConsentGate",
     "imports": [
       "_index.js"
     ]
+  },
+  "_consent.js": {
+    "file": "chunks/consent.js",
+    "name": "consent"
   },
   "_content.js": {
     "file": "chunks/content.js",
@@ -228,6 +232,7 @@
     "imports": [
       "_index.js",
       "_portals.js",
+      "_ConsentGate.js",
       "_consent.js"
     ],
     "css": [
@@ -339,7 +344,8 @@
     "src": "src/routes/api/chat/+server.ts",
     "isEntry": true,
     "imports": [
-      "_shared-server.js"
+      "_shared-server.js",
+      "_consent.js"
     ]
   },
   "src/routes/api/diary/create/+server.ts": {
@@ -375,6 +381,7 @@
     "src": "src/routes/api/diary/insights/+server.ts",
     "isEntry": true,
     "imports": [
+      "_consent.js",
       "_public.js",
       "_private.js"
     ]
@@ -421,6 +428,7 @@
     "src": "src/routes/api/diary/weekly-summary/+server.ts",
     "isEntry": true,
     "imports": [
+      "_consent.js",
       "_public.js",
       "_private.js"
     ]
@@ -435,7 +443,10 @@
     "file": "entries/endpoints/api/retell-webcall/_server.js",
     "name": "entries/endpoints/api/retell-webcall/_server",
     "src": "src/routes/api/retell-webcall/+server.js",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "_consent.js"
+    ]
   },
   "src/routes/api/unsubscribe/link/+server.ts": {
     "file": "entries/endpoints/api/unsubscribe/link/_server.ts.js",
@@ -491,6 +502,7 @@
       "_utils.js",
       "_root.js",
       "_state.svelte.js",
+      "_ConsentGate.js",
       "_consent.js",
       "_supabase.js",
       "_portals.js",
@@ -651,10 +663,13 @@
     "src": "src/routes/framsteg/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index.js",
+      "_ConsentGate.js",
+      "_consent.js",
+      "_supabase.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.BHi9czHh.css"
+      "_app/immutable/assets/_page.DTS-h6x2.css"
     ]
   },
   "src/routes/guider-seo/+page.svelte": {

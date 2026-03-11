@@ -1,4 +1,4 @@
-import { b as attr, a as ensure_array_like, c as attr_class, s as stringify, e as escape_html, d as derived, h as head } from "../../../../chunks/index.js";
+import { a as attr, b as ensure_array_like, c as attr_class, s as stringify, e as escape_html, d as derived, h as head } from "../../../../chunks/index.js";
 import "@sveltejs/kit/internal";
 import "../../../../chunks/exports.js";
 import "../../../../chunks/utils.js";
@@ -6,7 +6,8 @@ import "clsx";
 import "@sveltejs/kit/internal/server";
 import "../../../../chunks/root.js";
 import "../../../../chunks/state.svelte.js";
-import { C as ConsentGate, g as grantSensitiveConsent } from "../../../../chunks/consent.js";
+import { C as ConsentGate } from "../../../../chunks/ConsentGate.js";
+import { g as grantSensitiveConsent } from "../../../../chunks/consent.js";
 import "../../../../chunks/supabase.js";
 import { g as getPortalByKey } from "../../../../chunks/portals.js";
 import { p as page } from "../../../../chunks/index2.js";
