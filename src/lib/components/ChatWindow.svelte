@@ -1,6 +1,13 @@
 ﻿<script lang="ts">
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import {
+		SENSITIVE_CONSENT_HEADER,
+		SENSITIVE_CONSENT_VERSION,
+		grantSensitiveConsent,
+		hasSensitiveConsent
+	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 	import { tick } from 'svelte';
@@ -23,6 +30,7 @@
 	let hasTrackedOpen = $state(false);
 	let hasTrackedFirstMessage = $state(false);
 	let firstMessageSource = $state<'manual' | 'chip'>('manual');
+	let hasSensitiveDataConsent = $state(false);
 	let conversationId = $state<string | null>(
 		browser ? window.localStorage.getItem('mittpsyke:last-conversation-id') : null
 	);
@@ -75,7 +83,9 @@
 	}
 
 	let currentSupportLevel = $derived(supportLevel());
-	let showStarterSuggestions = $derived(messages.length === 0 && input.trim().length === 0);
+	let showStarterSuggestions = $derived(
+		hasSensitiveDataConsent && messages.length === 0 && input.trim().length === 0
+	);
 
 	async function trackEvent(
 		eventName: string,
@@ -115,6 +125,8 @@
 	});
 
 	onMount(() => {
+		hasSensitiveDataConsent = hasSensitiveConsent();
+
 		if (hasTrackedOpen) return;
 		hasTrackedOpen = true;
 		void trackEvent('chat_open');
@@ -138,7 +150,7 @@
 
 	async function send() {
 		const text = input.trim();
-		if (!text || sending) return;
+		if (!hasSensitiveDataConsent || !text || sending) return;
 
 		const {
 			data: { session }
@@ -156,6 +168,7 @@
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION,
 					...(session ? { Authorization: `Bearer ${session.access_token}` } : {})
 				},
 				body: JSON.stringify({
@@ -219,6 +232,7 @@
 	}
 
 	function useStarterSuggestion(text: string) {
+		if (!hasSensitiveDataConsent) return;
 		firstMessageSource = 'chip';
 		void trackEvent('starter_chip_clicked', {
 			source: 'chip',
@@ -237,6 +251,11 @@
 		}
 
 		goto(`/dagbok?prefill=${encodeURIComponent(content)}`);
+	}
+
+	function acceptSensitiveConsent() {
+		grantSensitiveConsent();
+		hasSensitiveDataConsent = true;
 	}
 </script>
 
@@ -317,6 +336,17 @@
 	</div>
 
 	<div class="chat-input-area border-t border-black/8 dark:border-white/10 p-4">
+		{#if !hasSensitiveDataConsent}
+			<div class="mb-3">
+				<ConsentGate
+					title="Samtycke innan chatt"
+					dataLabel="Det du skriver i chatten"
+					serviceLabel="AI- och tredjepartstjänster"
+					onAccept={acceptSensitiveConsent}
+				/>
+			</div>
+		{/if}
+
 		{#if currentSupportLevel === 'acute'}
 			<div class="mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
 				<p class="font-medium text-rose-900 dark:text-rose-100">
@@ -362,30 +392,32 @@
 			</div>
 		{/if}
 
-		<div class="flex gap-2">
-			<label class="sr-only" for="chat-message">Skriv ditt meddelande</label>
-			<textarea
-				id="chat-message"
-				bind:value={input}
-				onkeydown={handleKeydown}
-				placeholder="Skriv här..."
-				aria-describedby="chat-help-text"
-				rows={1}
-				class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
-					bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none
-					focus:border-[var(--primary)] transition-colors"
-			></textarea>
-			<button
-				type="button"
-				onclick={send}
-				disabled={sending || !input.trim()}
-				class="px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white text-sm font-medium
-					disabled:opacity-40 transition-opacity"
-			>
-				Skicka
-			</button>
-		</div>
-		<p id="chat-help-text" class="mt-2 text-xs opacity-60">Skriv i din egen takt. Vid akut fara, ring 112. För vårdråd, kontakta 1177.</p>
+		{#if hasSensitiveDataConsent}
+			<div class="flex gap-2">
+				<label class="sr-only" for="chat-message">Skriv ditt meddelande</label>
+				<textarea
+					id="chat-message"
+					bind:value={input}
+					onkeydown={handleKeydown}
+					placeholder="Skriv här..."
+					aria-describedby="chat-help-text"
+					rows={1}
+					class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
+						bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none
+						focus:border-[var(--primary)] transition-colors"
+				></textarea>
+				<button
+					type="button"
+					onclick={send}
+					disabled={sending || !input.trim()}
+					class="px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white text-sm font-medium
+						disabled:opacity-40 transition-opacity"
+				>
+					Skicka
+				</button>
+			</div>
+			<p id="chat-help-text" class="mt-2 text-xs opacity-60">Skriv i din egen takt. Vid akut fara, ring 112. För vårdråd, kontakta 1177.</p>
+		{/if}
 		<div class="mt-3 text-center">
 			<a
 				href="mailto:mittpsyke@ownit.nu"
