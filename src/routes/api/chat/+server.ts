@@ -253,8 +253,29 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const token = getAccessToken(request.headers.get('authorization'));
 	const guestId = normalizeGuestId(body.guestId);
+	const isGuestRequest = !token;
+
+	if (isGuestRequest) {
+		console.info('[chat][guest] request identified as guest', {
+			hasToken: Boolean(token),
+			bodyFields: {
+				message: typeof body.message === 'string' ? `string(${body.message.trim().length})` : typeof body.message,
+				category: typeof body.category === 'string' ? body.category : typeof body.category,
+				conversationId: typeof body.conversationId === 'string' ? body.conversationId : typeof body.conversationId,
+				guestId: typeof body.guestId === 'string' ? `string(${body.guestId.trim().length})` : typeof body.guestId
+			},
+			normalized: {
+				guestIdPresent: Boolean(guestId),
+				conversationIdPresent: Boolean(normalizeConversationId(body.conversationId))
+			}
+		});
+	}
 
 	if (!token && !guestId) {
+		console.warn('[chat][guest] missing required auth field', {
+			required: 'guestId',
+			rawGuestIdType: typeof body.guestId
+		});
 		return errorResponse('Missing auth. Provide either bearer token or guestId.', 401);
 	}
 
@@ -453,16 +474,21 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// GÃ„STANVÃ„NDARE
 		if (!guestId) {
+			console.warn('[chat][guest] missing required field', {
+				required: 'guestId',
+				rawGuestIdType: typeof body.guestId
+			});
 			return errorResponse('Missing guestId.', 400);
 		}
 
-		if (!serviceClient) {
-			console.error('SUPABASE_SERVICE_ROLE_KEY is missing.');
-			return errorResponse('Server configuration error', 500);
-		}
+		const guestDbClient = serviceClient ?? authClient;
+		console.info('[chat][guest] supabase client initialized', {
+			hasServiceRoleKey: Boolean(serviceRoleKey),
+			mode: serviceClient ? 'service_role' : 'anon_fallback'
+		});
 
 		if (conversationId) {
-			const { data: existingConversation, error: existingConversationError } = await serviceClient
+			const { data: existingConversation, error: existingConversationError } = await guestDbClient
 				.from('guest_conversations')
 				.select('id, guest_id, category')
 				.eq('id', conversationId)
@@ -470,20 +496,26 @@ export const POST: RequestHandler = async ({ request }) => {
 				.maybeSingle();
 
 			if (existingConversationError) {
-				console.error('Failed to verify guest conversation:', existingConversationError);
+				console.error('[chat][guest] DB operation failed: verify guest conversation', existingConversationError);
 				return errorResponse('Could not validate guest conversation.', 500);
 			}
 
 			if (!existingConversation) {
-				return errorResponse('Guest conversation not found.', 403);
+				console.warn('[chat][guest] conversationId not found for guest, creating a new one', {
+					conversationId,
+					guestId
+				});
+				conversationId = null;
+			} else {
+				const conversation = existingConversation as GuestConversationRow;
+				category = normalizeCategory(conversation.category);
 			}
+		}
 
-			const conversation = existingConversation as GuestConversationRow;
-			category = normalizeCategory(conversation.category);
-		} else {
+		if (!conversationId) {
 			const title = buildConversationTitle(message);
 
-			let { data: createdConversation, error: createConversationError } = await serviceClient
+			let { data: createdConversation, error: createConversationError } = await guestDbClient
 				.from('guest_conversations')
 				.insert({
 					guest_id: guestId,
@@ -499,7 +531,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				(createConversationError?.message ?? '').toLowerCase().includes('title');
 
 			if (missingTitleColumn) {
-				const retry = await serviceClient
+				const retry = await guestDbClient
 					.from('guest_conversations')
 					.insert({
 						guest_id: guestId,
@@ -513,14 +545,14 @@ export const POST: RequestHandler = async ({ request }) => {
 			}
 
 			if (createConversationError || !createdConversation) {
-				console.error('Failed to create guest conversation:', createConversationError);
+				console.error('[chat][guest] DB operation failed: create guest conversation', createConversationError);
 				return errorResponse('Could not create guest conversation.', 500);
 			}
 
 			conversationId = createdConversation.id as string;
 		}
 
-		const { data: previousMessages, error: previousMessagesError } = await serviceClient
+		const { data: previousMessages, error: previousMessagesError } = await guestDbClient
 			.from('guest_messages')
 			.select('role, content')
 			.eq('conversation_id', conversationId)
@@ -528,18 +560,18 @@ export const POST: RequestHandler = async ({ request }) => {
 			.limit(20);
 
 		if (previousMessagesError) {
-			console.error('Failed to load guest conversation history:', previousMessagesError);
+			console.error('[chat][guest] DB operation failed: load guest conversation history', previousMessagesError);
 			return errorResponse('Could not load guest conversation history.', 500);
 		}
 
-		const { error: guestMessageError } = await serviceClient.from('guest_messages').insert({
+		const { error: guestMessageError } = await guestDbClient.from('guest_messages').insert({
 			conversation_id: conversationId,
 			role: 'user',
 			content: message
 		});
 
 		if (guestMessageError) {
-			console.error('Failed to save guest message:', guestMessageError);
+			console.error('[chat][guest] DB operation failed: save guest user message', guestMessageError);
 			return errorResponse('Could not save guest message.', 500);
 		}
 
@@ -577,14 +609,14 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		const reply = completion.choices[0]?.message?.content?.trim() ?? 'NÃ¥got gick fel.';
 
-		const { error: assistantMessageError } = await serviceClient.from('guest_messages').insert({
+		const { error: assistantMessageError } = await guestDbClient.from('guest_messages').insert({
 			conversation_id: conversationId,
 			role: 'assistant',
 			content: reply
 		});
 
 		if (assistantMessageError) {
-			console.error('Failed to save guest assistant message:', assistantMessageError);
+			console.error('[chat][guest] DB operation failed: save guest assistant message', assistantMessageError);
 			return errorResponse('Could not save guest assistant message.', 500);
 		}
 
@@ -595,6 +627,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			guestId
 		});
 	} catch (err) {
+		if (!token) {
+			console.error('[chat][guest] catch error object:', err);
+		}
 		console.error('Chat API error:', err);
 		return errorResponse('AI error', 500);
 	}
