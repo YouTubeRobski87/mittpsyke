@@ -27,13 +27,13 @@ export type Guide = {
 export const pillars: Pillar[] = [
 	{
 		slug: 'angest',
-		title: 'Angest',
+		title: 'Ångest',
 		description: 'Forsta vanliga reaktioner vid angest och hur du kan hantera dem stegvis.',
 		chatPath: '/chat/a'
 	},
 	{
 		slug: 'depression',
-		title: 'Nedstamdhet och depression',
+		title: 'Nedstämdhet och depression',
 		description: 'En lugn oversikt av symtom, vardagsstod och nar extra hjalp kan behovas.',
 		chatPath: '/chat/b'
 	},
@@ -45,7 +45,7 @@ export const pillars: Pillar[] = [
 	},
 	{
 		slug: 'sovproblem',
-		title: 'Sövnproblem',
+		title: 'Sömnproblem',
 		description: 'Forsta varfor somnen uteblir och hur du kan borja hantera det som haller dig vaken.',
 		chatPath: '/chat/a'
 	},
