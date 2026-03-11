@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/routes/dashboard/+page.svelte";
+export { default as component } from "../../../../src/routes/anonym-dagbok-online/+page.svelte";

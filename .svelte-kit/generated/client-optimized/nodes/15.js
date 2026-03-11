@@ -1,3 +1,3 @@
-import * as universal from "../../../../src/routes/guider-seo/[pillar]/[guide]/+page.ts";
+import * as universal from "../../../../src/routes/dagbok/+page.js";
 export { universal };
-export { default as component } from "../../../../src/routes/guider-seo/[pillar]/[guide]/+page.svelte";
+export { default as component } from "../../../../src/routes/dagbok/+page.svelte";
