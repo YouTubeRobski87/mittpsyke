@@ -66,7 +66,7 @@
 		{/if}
 	</section>
 
-	<h2>Vanliga fragor</h2>
+	<h2>Vanliga frågor</h2>
 	<ul>
 		{#each data.guide.faqs as faq}
 			<li>
