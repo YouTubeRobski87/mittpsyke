@@ -36,10 +36,10 @@ export const pillars: Pillar[] = [
 		],
 		toolSlugs: ['grounding-5-4-3-2-1', '4-7-8-andning', 'cbt-katastroftankar'],
 		relatedArticles: [
-			{ title: 'Panikattack eller ångest – vad är skillnaden?', href: '/guider/panikattack-eller-angest' },
-			{ title: 'Ångest på kvällen – varför det ofta blir värre', href: '/guider/angest-pa-kvallen' },
-			{ title: 'Undvikande och hur det håller ångesten vid liv', href: '/guider/undvikande-och-angest' },
-			{ title: 'Kroppen vid ångest – symtom du kan lära dig förstå', href: '/guider/kroppen-vid-angest' }
+			{ title: 'Panikattack eller ångest – vad är skillnaden?', href: '/guider-seo/angest/panikangest-och-kroppen' },
+			{ title: 'Ångest på kvällen – varför det ofta blir värre', href: '/guider-seo/angest/angest-och-somn' },
+			{ title: 'Undvikande och hur det håller ångesten vid liv', href: '/guider-seo/trauma/undvikande-efter-trauma' },
+			{ title: 'Kroppen vid ångest – symtom du kan lära dig förstå', href: '/guider-seo/angest/panikangest-och-kroppen' }
 		]
 	},
 	{
