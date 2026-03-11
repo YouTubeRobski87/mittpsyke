@@ -34,7 +34,6 @@
 				data: { session }
 			} = await supabase.auth.getSession();
 			if (!session) {
-				goto('/login');
 				return;
 			}
 

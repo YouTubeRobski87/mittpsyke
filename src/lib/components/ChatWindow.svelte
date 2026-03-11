@@ -27,6 +27,7 @@
 		browser ? window.localStorage.getItem('mittpsyke:last-conversation-id') : null
 	);
 	let chatLog: HTMLDivElement;
+	const guestIdStorageKey = 'mittpsyke:guest-id';
 	const starterSuggestions = [
 		'Jag känner mig orolig just nu',
 		'Tankarna snurrar och jag får ingen ro',
@@ -125,6 +126,16 @@
 		}
 	}
 
+	function getOrCreateGuestId() {
+		if (!browser) return null;
+		const existingGuestId = window.localStorage.getItem(guestIdStorageKey)?.trim();
+		if (existingGuestId) return existingGuestId;
+
+		const guestId = crypto.randomUUID();
+		window.localStorage.setItem(guestIdStorageKey, guestId);
+		return guestId;
+	}
+
 	async function send() {
 		const text = input.trim();
 		if (!text || sending) return;
@@ -132,10 +143,7 @@
 		const {
 			data: { session }
 		} = await supabase.auth.getSession();
-		if (!session) {
-			goto('/login');
-			return;
-		}
+		const guestId = session ? null : getOrCreateGuestId();
 
 		messages.push({ role: 'user', content: text });
 		input = '';
@@ -148,12 +156,13 @@
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.access_token}`
+					...(session ? { Authorization: `Bearer ${session.access_token}` } : {})
 				},
 				body: JSON.stringify({
 					message: text,
 					category,
-					conversationId
+					conversationId,
+					...(guestId ? { guestId } : {})
 				})
 			});
 
