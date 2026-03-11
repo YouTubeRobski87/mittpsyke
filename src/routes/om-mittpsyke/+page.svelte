@@ -31,7 +31,7 @@
 		<!-- 2) Personlig story -->
 		<section class="story-section">
 			<div class="story-inner">
-				<div class="story-label">Grundarens story</div>
+				<div class="story-label">GRUNDARNES STORY</div>
 				<h2 class="story-heading">Skapad av erfarenhet, inte teori</h2>
 
 				<div class="story-text">
