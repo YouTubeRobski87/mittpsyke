@@ -1,7 +1,7 @@
-import { w as with_request_store, t as text_decoder, b as base64_decode, r as root, d as decode_pathname, a as browser, n as normalize_path, c as disable_search, e as decode_params, v as validate_layout_server_exports, f as validate_layout_exports, g as validate_page_server_exports, h as validate_page_exports, i as text_encoder, j as resolve, m as make_trackable, k as get_relative_path, l as base64_encode } from './chunks/root-DQgTQx1x.js';
-import { H as HttpError, j as json, t as text, S as SvelteKitError, R as Redirect, e as error, A as ActionFailure } from './chunks/index-CoD1IJuy.js';
-import { D as DevalueError, i as is_primitive, g as get_type, a as is_plain_object, e as enumerable_symbols, s as stringify_key, b as stringify_string, v as valid_array_indices, u as uneval } from './chunks/index-Cqk7iGq3.js';
-import { w as writable, r as readable } from './chunks/index3-DxFv6mrL.js';
+import { w as with_request_store, t as text_decoder, b as base64_decode, r as root, d as decode_pathname, D as DEV, n as normalize_path, a as disable_search, c as decode_params, v as validate_layout_server_exports, e as validate_layout_exports, f as validate_page_server_exports, g as validate_page_exports, h as text_encoder, i as resolve, m as make_trackable, j as get_relative_path, k as base64_encode } from './chunks/root-Dduhbsrw.js';
+import { H as HttpError, j as json, t as text, S as SvelteKitError, R as Redirect, e as error, A as ActionFailure } from './chunks/index-B2LGyy1l.js';
+import { D as DevalueError, i as is_primitive, g as get_type, a as is_plain_object, e as enumerable_symbols, s as stringify_key, b as stringify_string, v as valid_array_indices, u as uneval } from './chunks/index-Driup3Ox.js';
+import { w as writable, r as readable } from './chunks/index3-BrcpwG89.js';
 import { s as set_private_env, a as set_public_env, p as public_env } from './chunks/shared-server-DaWdgxVh.js';
 
 /**
@@ -1978,7 +1978,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "aeo76a"
+  version_hash: "fnn93w"
 };
 async function get_hooks() {
   let handle;
@@ -1986,6 +1986,7 @@ async function get_hooks() {
   let handleError;
   let handleValidationError;
   let init;
+  ({ handle, handleFetch, handleError, handleValidationError, init } = await import('./chunks/hooks.server-Dj2P4dNm.js'));
   let reroute;
   let transport;
   return {
@@ -2196,7 +2197,7 @@ async function handle_action_json_request(event, event_state, options2, server) 
   check_named_default_separate(actions);
   try {
     const data = await call_action(event, event_state, actions);
-    if (browser) ;
+    if (DEV) ;
     if (data instanceof ActionFailure) {
       return action_json({
         type: "failure",
@@ -2281,7 +2282,7 @@ async function handle_action_request(event, event_state, server) {
   check_named_default_separate(actions);
   try {
     const data = await call_action(event, event_state, actions);
-    if (browser) ;
+    if (DEV) ;
     if (data instanceof ActionFailure) {
       return {
         type: "failure",
@@ -3573,7 +3574,7 @@ async function render_response({
       csp: csp.script_needs_nonce ? { nonce: csp.nonce } : { hash: csp.script_needs_hash }
     };
     try {
-      if (browser) ;
+      if (DEV) ;
       event_state.allows_commands = false;
       rendered = await with_request_store({ event, state: event_state }, async () => {
         if (relative) override({ base: base$1, assets: assets$1 });
@@ -4441,7 +4442,7 @@ async function render_page(event, event_state, page, options2, manifest, state, 
     const ssr = nodes.ssr();
     const csr = nodes.csr();
     if (ssr === false && !(state.prerendering && should_prerender_data)) {
-      if (browser && action_result && !event.request.headers.has("x-sveltekit-action")) ;
+      if (DEV && action_result && !event.request.headers.has("x-sveltekit-action")) ;
       return await render_response({
         branch: [],
         fetched,
@@ -5294,12 +5295,12 @@ async function internal_respond(request, options2, manifest, state) {
       if (url.pathname === base || url.pathname === base + "/") {
         trailing_slash = "always";
       } else if (page_nodes) {
-        if (browser) ;
+        if (DEV) ;
         trailing_slash = page_nodes.trailing_slash();
       } else if (route.endpoint) {
         const node = await route.endpoint();
         trailing_slash = node.trailingSlash ?? "never";
-        if (browser) ;
+        if (DEV) ;
       }
       if (!is_data_request) {
         const normalized = normalize_path(url.pathname, trailing_slash);
@@ -5560,7 +5561,7 @@ async function internal_respond(request, options2, manifest, state) {
         });
       }
       if (state.depth === 0) {
-        if (browser && event2.url.pathname === "/.well-known/appspecific/com.chrome.devtools.json") ;
+        if (DEV && event2.url.pathname === "/.well-known/appspecific/com.chrome.devtools.json") ;
         return await respond_with_error({
           event: event2,
           event_state,

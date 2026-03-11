@@ -17,7 +17,7 @@ function _page($$renderer, $$props) {
     $$renderer2.push(`<main class="portal-page container svelte-x1i5gj">`);
     {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<p class="loading-copy svelte-x1i5gj">Laddar din portal...</p>`);
+      $$renderer2.push(`<p class="loading-copy svelte-x1i5gj">Laddar din portal. Det kan ta en liten stund.</p>`);
     }
     $$renderer2.push(`<!--]--></main>`);
   });

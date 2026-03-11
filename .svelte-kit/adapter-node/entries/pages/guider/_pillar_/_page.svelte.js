@@ -1,14 +1,68 @@
-import { h as head, e as escape_html, a as ensure_array_like, b as attr } from "../../../../chunks/index.js";
+import { h as head, e as escape_html, a as ensure_array_like, b as attr, d as derived } from "../../../../chunks/index.js";
+import { h as html } from "../../../../chunks/html.js";
 function _page($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let { data } = $$props;
+    const pillarUpdatedAt = "2026-03-08";
+    const jsonLd = derived(() => ({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Hem",
+              "item": "https://mittpsyke.se"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Guider",
+              "item": "https://mittpsyke.se/guider"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": data.pillar.title,
+              "item": `https://mittpsyke.se/guider/${data.pillar.slug}`
+            }
+          ]
+        },
+        {
+          "@type": "Article",
+          "headline": data.pillar.title,
+          "description": data.pillar.description,
+          "image": "https://mittpsyke.se/og-image.png",
+          "author": {
+            "@type": "Organization",
+            "name": "MittPsyke",
+            "url": "https://mittpsyke.se/om-mittpsyke"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "MittPsyke",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://mittpsyke.se/favicon.png"
+            }
+          },
+          "datePublished": pillarUpdatedAt,
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://mittpsyke.se/guider/${data.pillar.slug}`
+          }
+        }
+      ]
+    }));
     head("1misdmc", $$renderer2, ($$renderer3) => {
       $$renderer3.title(($$renderer4) => {
         $$renderer4.push(`<title>${escape_html(data.pillar.title)} | Guider | MittPsyke</title>`);
       });
-      $$renderer3.push(`<meta name="description"${attr("content", data.pillar.description)}/>`);
+      $$renderer3.push(`<meta name="description"${attr("content", data.pillar.description)}/> <meta property="og:title"${attr("content", `${data.pillar.title} | Guider | MittPsyke`)}/> <meta property="og:description"${attr("content", data.pillar.description)}/> <link rel="canonical"${attr("href", `https://mittpsyke.se/guider/${data.pillar.slug}`)}/> ${html(`<script type="application/ld+json">${JSON.stringify(jsonLd())}<\/script>`)}`);
     });
-    $$renderer2.push(`<main class="container pillar-page svelte-1misdmc"><nav class="crumbs svelte-1misdmc" aria-label="Breadcrumb"><a href="/">Hem</a> <span>/</span> <a href="/guider">Guider</a> <span>/</span> <span>${escape_html(data.pillar.title)}</span></nav> <header class="intro svelte-1misdmc"><h1 class="svelte-1misdmc">${escape_html(data.pillar.title)}</h1> <p class="svelte-1misdmc">${escape_html(data.pillar.description)}</p></header> <section class="block svelte-1misdmc" aria-label="Klusterartiklar"><h2 class="svelte-1misdmc">Klusterartiklar</h2> <ul class="svelte-1misdmc"><!--[-->`);
+    $$renderer2.push(`<main class="container pillar-page svelte-1misdmc"><nav class="crumbs svelte-1misdmc" aria-label="Breadcrumb"><a href="/">Hem</a> <span>/</span> <a href="/guider">Guider</a> <span>/</span> <span>${escape_html(data.pillar.title)}</span></nav> <header class="intro svelte-1misdmc"><h1 class="svelte-1misdmc">${escape_html(data.pillar.title)}</h1> <p class="svelte-1misdmc">${escape_html(data.pillar.description)}</p></header> <section class="info-box svelte-1misdmc" aria-label="Om innehållet"><p class="svelte-1misdmc"><strong>Innehåll från MittPsyke</strong></p> <p class="svelte-1misdmc">Senast uppdaterad: 8 mars 2026</p> <p class="svelte-1misdmc">Guiden är tänkt som stöd för reflektion och ökad förståelse. Den ersätter inte vård, diagnos eller behandling.</p></section> <section class="block svelte-1misdmc" aria-label="Klusterartiklar"><h2 class="svelte-1misdmc">Klusterartiklar</h2> <ul class="svelte-1misdmc"><!--[-->`);
     const each_array = ensure_array_like(data.pillar.clusterTopics);
     for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
       let topic = each_array[$$index];
@@ -20,7 +74,48 @@ function _page($$renderer, $$props) {
       let tool = each_array_1[$$index_1];
       $$renderer2.push(`<a class="tool-card svelte-1misdmc"${attr("href", `/ovningar/${tool.slug}`)}><h3 class="svelte-1misdmc">${escape_html(tool.title)}</h3> <p class="svelte-1misdmc">${escape_html(tool.description)}</p></a>`);
     }
-    $$renderer2.push(`<!--]--></div></section></main>`);
+    $$renderer2.push(`<!--]--></div></section> `);
+    if (data.pillar.relatedArticles?.length) {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<section class="block svelte-1misdmc" aria-label="Relaterade artiklar"><h2 class="svelte-1misdmc">Relaterade artiklar</h2> <ul class="svelte-1misdmc"><!--[-->`);
+      const each_array_2 = ensure_array_like(data.pillar.relatedArticles);
+      for (let $$index_2 = 0, $$length = each_array_2.length; $$index_2 < $$length; $$index_2++) {
+        let article = each_array_2[$$index_2];
+        $$renderer2.push(`<li class="svelte-1misdmc"><a${attr("href", article.href)}>${escape_html(article.title)}</a></li>`);
+      }
+      $$renderer2.push(`<!--]--></ul></section>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (data.pillar.slug === "angest") {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<section class="block svelte-1misdmc" aria-label="Nästa steg vid ångest"><h2 class="svelte-1misdmc">Nästa steg vid ångest</h2> <p>Om du vill ta det vidare kan du välja det som känns mest hjälpsamt just nu.</p> <ul class="svelte-1misdmc"><li class="svelte-1misdmc"><a href="/chat/a">Starta samtal om ångest</a></li> <li class="svelte-1misdmc"><a href="/hjalp-vid-angest-online">Läs mer om hjälp vid ångest online</a></li> <li class="svelte-1misdmc"><a href="/andningsovningar-mot-angest">Se andningsövningar mot ångest</a></li> <li class="svelte-1misdmc"><a href="/ovningar-mot-angest-online">Utforska övningar mot ångest online</a></li> <li class="svelte-1misdmc"><a href="/ovningar/cbt-katastroftankar">Prova övning mot katastroftankar</a></li> <li class="svelte-1misdmc"><a href="/dagbok">Skriv i dagboken</a></li> <li class="svelte-1misdmc"><a href="/framsteg">Följ mönster över tid</a></li></ul></section>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (data.pillar.slug === "depression") {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<section class="block svelte-1misdmc" aria-label="Nästa steg vid nedstämdhet"><h2 class="svelte-1misdmc">Nästa steg vid nedstämdhet</h2> <p>Du kan börja lugnt och välja det som känns möjligt just idag.</p> <ul class="svelte-1misdmc"><li class="svelte-1misdmc"><a href="/chat/b">Starta samtal om nedstämdhet</a></li> <li class="svelte-1misdmc"><a href="/hjalp-vid-depression-online">Läs mer om hjälp vid depression online</a></li> <li class="svelte-1misdmc"><a href="/dagbok">Skriv i dagboken</a></li> <li class="svelte-1misdmc"><a href="/framsteg">Följ förändring över tid</a></li> <li class="svelte-1misdmc"><a href="/om-mittpsyke">Läs om hur MittPsyke fungerar</a></li></ul></section>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (data.pillar.slug === "stress-utmattning") {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<section class="block svelte-1misdmc" aria-label="Nästa steg vid stress"><h2 class="svelte-1misdmc">Nästa steg vid stress</h2> <p>När belastningen är hög kan det hjälpa att välja ett litet nästa steg.</p> <ul class="svelte-1misdmc"><li class="svelte-1misdmc"><a href="/chat/e">Starta samtal om stress</a></li> <li class="svelte-1misdmc"><a href="/stod-vid-stress-online">Läs mer om stöd vid stress online</a></li> <li class="svelte-1misdmc"><a href="/ovningar/daglig-reflektionsmall">Prova daglig reflektionsmall</a></li> <li class="svelte-1misdmc"><a href="/dagbok">Skriv i dagboken</a></li> <li class="svelte-1misdmc"><a href="/framsteg">Följ återkommande mönster</a></li></ul></section>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> `);
+    if (data.pillar.slug === "overtankande") {
+      $$renderer2.push("<!--[-->");
+      $$renderer2.push(`<section class="block svelte-1misdmc" aria-label="Nästa steg vid oro och grubblande"><h2 class="svelte-1misdmc">Nästa steg vid oro och grubblande</h2> <p>Om tankarna går runt kan det hjälpa att växla från analys till ett lugnt nästa steg.</p> <ul class="svelte-1misdmc"><li class="svelte-1misdmc"><a href="/chat/e">Starta samtal om oro</a></li> <li class="svelte-1misdmc"><a href="/hjalp-mot-oro-online">Läs mer om hjälp mot oro online</a></li> <li class="svelte-1misdmc"><a href="/andningsovningar-mot-angest">Se andningsövningar mot ångest</a></li> <li class="svelte-1misdmc"><a href="/ovningar-mot-angest-online">Utforska övningar mot ångest online</a></li> <li class="svelte-1misdmc"><a href="/guider/existentiell-oro">Läs vidare om existentiell oro</a></li> <li class="svelte-1misdmc"><a href="/dagbok">Skriv i dagboken</a></li> <li class="svelte-1misdmc"><a href="/ovningar">Prova en övning</a></li></ul></section>`);
+    } else {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> <section class="cta-section svelte-1misdmc" aria-label="Kom igång"><h2 class="svelte-1misdmc">Redo att ta nästa steg?</h2> <p class="svelte-1misdmc">MittPsyke ger dig verktyg för att bearbeta känslor, följa ditt mående och få stöd – anonymt och i din egen takt.</p> <div class="cta-buttons svelte-1misdmc"><a href="/dagbok" class="cta-primary svelte-1misdmc">Starta din dagbok</a> <a href="/prata-anonymt-online" class="cta-secondary svelte-1misdmc">Prata med någon</a></div></section></main>`);
   });
 }
 export {

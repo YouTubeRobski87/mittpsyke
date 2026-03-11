@@ -1,10 +1,8 @@
-import * as universal from '../entries/pages/guider-seo/_pillar_/_page.ts.js';
+
 
 export const index = 14;
 let component_cache;
-export const component = async () => component_cache ??= (await import('../entries/pages/guider-seo/_pillar_/_page.svelte.js')).default;
-export { universal };
-export const universal_id = "src/routes/guider-seo/[pillar]/+page.ts";
-export const imports = ["_app/immutable/nodes/14.CbKKP-xl.js","_app/immutable/chunks/CBbuBPfZ.js","_app/immutable/chunks/BUApaBEI.js","_app/immutable/chunks/CdO0ASgK.js","_app/immutable/chunks/BAD376BG.js","_app/immutable/chunks/RwQtde1r.js","_app/immutable/chunks/DqFXm5_V.js","_app/immutable/chunks/BLGx2bIs.js","_app/immutable/chunks/YaPhPclm.js","_app/immutable/chunks/CGSwyzFb.js"];
-export const stylesheets = [];
+export const component = async () => component_cache ??= (await import('../entries/pages/chattstod-psykisk-ohalsa/_page.svelte.js')).default;
+export const imports = ["_app/immutable/nodes/14.CQo3BCdT.js","_app/immutable/chunks/Bzak7iHL.js","_app/immutable/chunks/BTdkizQl.js","_app/immutable/chunks/wmoIkXtC.js","_app/immutable/chunks/Bk8wH2sw.js"];
+export const stylesheets = ["_app/immutable/assets/14.K4dpXgFd.css"];
 export const fonts = [];

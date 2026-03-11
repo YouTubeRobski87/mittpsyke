@@ -2,7 +2,7 @@ const pillars = [
   {
     slug: "angest",
     title: "Ångest",
-    description: "Förstå symtom, orsaker och verktyg som kan minska oro i vardagen.",
+    description: "Hjälp vid ångest online med tydliga verktyg, reflektion och varsamma nästa steg i din egen takt.",
     clusterTopics: [
       "Vad händer i kroppen vid ångest?",
       "Är ångest farligt?",
@@ -13,12 +13,18 @@ const pillars = [
       "Ångest och fysisk aktivitet",
       "Acceptans och att leva med ångest"
     ],
-    toolSlugs: ["grounding-5-4-3-2-1", "4-7-8-andning", "cbt-katastroftankar"]
+    toolSlugs: ["grounding-5-4-3-2-1", "4-7-8-andning", "cbt-katastroftankar"],
+    relatedArticles: [
+      { title: "Panikattack eller ångest – vad är skillnaden?", href: "/guider-seo/angest/panikangest-och-kroppen" },
+      { title: "Ångest på kvällen – varför det ofta blir värre", href: "/guider-seo/angest/angest-och-somn" },
+      { title: "Undvikande och hur det håller ångesten vid liv", href: "/guider-seo/trauma/undvikande-efter-trauma" },
+      { title: "Kroppen vid ångest – symtom du kan lära dig förstå", href: "/guider-seo/angest/panikangest-och-kroppen" }
+    ]
   },
   {
     slug: "stress-utmattning",
     title: "Stress och utmattning",
-    description: "Lugn, tydlig vägledning för återhämtning, gränssättning och hållbar energi.",
+    description: "Stöd vid stress online med återhämtning, struktur och varsamma nästa steg i ett lugnt tempo.",
     clusterTopics: [
       "Stresshormon och din kropp",
       "Burnout-test",
@@ -29,7 +35,10 @@ const pillars = [
       "Stress och sömnproblem",
       "När ska man söka professionell hjälp?"
     ],
-    toolSlugs: ["dagens-avslut-reflektion", "tacksamhetsovning", "daglig-reflektionsmall"]
+    toolSlugs: ["dagens-avslut-reflektion", "tacksamhetsovning", "daglig-reflektionsmall"],
+    relatedArticles: [
+      { title: "Gränssättning – varför det är svårt och hur du börjar", href: "/guider-seo/sjalvkansla/gransen-och-sjalvkansla" }
+    ]
   },
   {
     slug: "sjalvkansla",
@@ -44,12 +53,37 @@ const pillars = [
       "Imposter-syndrom",
       "Bekräftelser som fungerar"
     ],
-    toolSlugs: ["skrivovningar-sjalvkansla", "sjalvmedkansla-ovning", "vardekartlaggning"]
+    toolSlugs: ["skrivovningar-sjalvkansla", "sjalvmedkansla-ovning", "vardekartlaggning"],
+    relatedArticles: [
+      { title: "Den inre kritikern – vad den säger och hur du svarar", href: "/guider-seo/sjalvkansla/inre-kritikern" },
+      { title: "Jämförelse och sociala medier – varför det sår tvivel", href: "/guider-seo/sjalvkansla/jamforelse-och-sjalvbild" }
+    ]
+  },
+  {
+    slug: "sovproblem",
+    title: "Sömnproblem",
+    description: "Stöd vid sömnproblem – lugna tankarna, förstå mönstren och hitta din väg till bättre sömn.",
+    clusterTopics: [
+      "Varför kan jag inte sova?",
+      "Tankar som snurrar på natten",
+      "Sömnhygien i praktiken",
+      "Ångest och sömnproblem",
+      "Sova utan lugnande medel",
+      "Vakna på natten – vad göra?",
+      "KBT för sömnproblem (CBT-i)"
+    ],
+    toolSlugs: ["4-7-8-andning", "body-scan", "dagens-avslut-reflektion"],
+    relatedArticles: [
+      { title: "Stress och sömn – när kroppen inte kan varva ner", href: "/guider-seo/sovproblem/stress-och-somn" },
+      { title: "Ältande på kvällen – varför tankarna blir starkare i sängen", href: "/guider-seo/sovproblem/altande-pa-kvallen" },
+      { title: "Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget", href: "/guider-seo/sovproblem/trott-men-uppvarvad" },
+      { title: "När sömnbrist påverkar måendet – oro, irritation och nedstämdhet", href: "/guider-seo/sovproblem/somnbrist-och-maendet" }
+    ]
   },
   {
     slug: "depression",
     title: "Nedstämdhet och depression",
-    description: "Förstå symtom och hitta varsamma strategier för ork, struktur och hopp.",
+    description: "Hjälp vid depression online med lugn reflektion, struktur och möjlighet att följa små steg över tid.",
     clusterTopics: [
       "Symtom på depression",
       "Depression och energi",
@@ -59,12 +93,16 @@ const pillars = [
       "Isolering och vägen tillbaka",
       "Hopp och återhämtning"
     ],
-    toolSlugs: ["daglig-reflektionsmall", "tacksamhetsovning", "body-scan"]
+    toolSlugs: ["daglig-reflektionsmall", "tacksamhetsovning", "body-scan"],
+    relatedArticles: [
+      { title: "Energi och depression – varför det känns omöjligt att göra saker", href: "/guider-seo/depression/trotthet-och-meningsloshet" },
+      { title: "Aktivering – rörelse och rutiner som faktiskt hjälper", href: "/guider-seo/depression/sma-steg-vid-nedstamdhet" }
+    ]
   },
   {
     slug: "overtankande",
     title: "Övertänkande och grubblande",
-    description: "Bryt tankeloopar med tydliga metoder för närvaro och mental flexibilitet.",
+    description: "Hjälp mot oro online med tydliga sätt att bryta tankeloopar och hitta mer lugn i vardagen.",
     clusterTopics: [
       "Varför grubblande inte löser problem",
       "Mental rumination",
