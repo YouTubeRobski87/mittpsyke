@@ -58,10 +58,7 @@ export const pillars: Pillar[] = [
 		],
 		toolSlugs: ['dagens-avslut-reflektion', 'tacksamhetsovning', 'daglig-reflektionsmall'],
 		relatedArticles: [
-			{ title: 'Skillnaden mellan stress och utmattning', href: '/guider/stress-vs-utmattning' },
-			{ title: 'Gränssättning – varför det är svårt och hur du börjar', href: '/guider/granssattning' },
-			{ title: 'Återhämtning tar tid – tecken på att du är på rätt väg', href: '/guider/aterhamtning-fran-stress' },
-			{ title: 'Kropp och stress – vad som händer när systemet är överbelastat', href: '/guider/kropp-och-stress' }
+			{ title: 'Gränssättning – varför det är svårt och hur du börjar', href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla' }
 		]
 	},
 	{
@@ -79,10 +76,8 @@ export const pillars: Pillar[] = [
 		],
 		toolSlugs: ['skrivovningar-sjalvkansla', 'sjalvmedkansla-ovning', 'vardekartlaggning'],
 		relatedArticles: [
-			{ title: 'Den inre kritikern – vad den säger och hur du svarar', href: '/guider/den-inre-kritikern' },
-			{ title: 'Självmedkänsla som verktyg – inte bara ett buzzword', href: '/guider/sjalvmedkansla-i-praktiken' },
-			{ title: 'Jämförelse och sociala medier – varför det sår tvivel', href: '/guider/jamforelse-sociala-medier' },
-			{ title: 'Skam och skuld – att bära mindre och leva mer', href: '/guider/skam-och-skuld' }
+			{ title: 'Den inre kritikern – vad den säger och hur du svarar', href: '/guider-seo/sjalvkansla/inre-kritikern' },
+			{ title: 'Jämförelse och sociala medier – varför det sår tvivel', href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild' }
 		]
 	},
 	{
@@ -121,10 +116,8 @@ export const pillars: Pillar[] = [
 		],
 		toolSlugs: ['daglig-reflektionsmall', 'tacksamhetsovning', 'body-scan'],
 		relatedArticles: [
-			{ title: 'Energi och depression – varför det känns omöjligt att göra saker', href: '/guider/energi-och-depression' },
-			{ title: 'Negativa tankar – hur de håller nedstämdhet vid liv', href: '/guider/negativa-tankar-och-depression' },
-			{ title: 'Söka hjälp vid depression – när är det dags?', href: '/guider/soka-hjalp-vid-depression' },
-			{ title: 'Aktivering – rörelse och rutiner som faktiskt hjälper', href: '/guider/aktivering-vid-depression' }
+			{ title: 'Energi och depression – varför det känns omöjligt att göra saker', href: '/guider-seo/depression/trotthet-och-meningsloshet' },
+			{ title: 'Aktivering – rörelse och rutiner som faktiskt hjälper', href: '/guider-seo/depression/sma-steg-vid-nedstamdhet' }
 		]
 	},
 	{
