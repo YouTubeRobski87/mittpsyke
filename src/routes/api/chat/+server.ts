@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { hasSensitiveConsentHeader } from '$lib/consent';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 import type { RequestHandler } from './$types';
@@ -225,6 +226,10 @@ const normalizeApiKey = (value: string | undefined): string | null => {
 };
 
 export const POST: RequestHandler = async ({ request }) => {
+	if (!hasSensitiveConsentHeader(request)) {
+		return errorResponse('Consent required for sensitive AI features.', 403);
+	}
+
 	let parsedBody: unknown;
 
 	try {

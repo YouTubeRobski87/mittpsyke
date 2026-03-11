@@ -1,5 +1,14 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
+	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import {
+		SENSITIVE_CONSENT_HEADER,
+		SENSITIVE_CONSENT_VERSION,
+		grantSensitiveConsent,
+		hasSensitiveConsent
+	} from '$lib/consent';
+	import { supabase } from '$lib/supabase';
 	import { Flame, Trophy, TrendingUp, Lightbulb, Calendar } from 'lucide-svelte';
 
 	interface StreakData {
@@ -22,46 +31,124 @@
 		totalEntries: number;
 	}
 
+	interface InsightItem {
+		type: string;
+		title: string;
+		description: string;
+		icon: string;
+	}
+
 	interface InsightDay {
 		day: string;
-		emoji: string;
 		average: number;
 		count: number;
 	}
 
 	interface InsightsResponse {
-		bestDayOfWeek: InsightDay;
-		worstDayOfWeek: InsightDay;
-		moodByWeekday: { [key: string]: { average: number; count: number } };
-		recurringPatterns: Array<{ pattern: string; frequency: number; type: string }>;
-		dataPoints: number;
+		insights: InsightItem[];
+		bestDay: InsightDay | null;
+		worstDay: InsightDay | null;
+		emotionDistribution: Record<string, number>;
+		aiSummary: string | null;
 	}
 
 	let { data } = $props();
 
 	let streakData: StreakData | null = $derived(data.streak ?? null);
 	let milestonesData: MilestonesResponse | null = $derived(data.milestones ?? null);
-	let insightsData: InsightsResponse | null = $derived(data.insights ?? null);
+	let insightsData = $state<InsightsResponse | null>(null);
+	let insightsLoading = $state(false);
+	let insightsError = $state('');
+	let hasSensitiveDataConsent = $state(false);
 	let loading = false;
 	let error = $derived(
-		data.streak === null && data.milestones === null && data.insights === null
-			? 'Kunde inte ladda data. Försök ladda om sidan.'
+		data.streak === null && data.milestones === null
+			? 'Kunde inte ladda data. Forsok ladda om sidan.'
 			: ''
 	);
+	let hasInsightsContent = $derived(
+		Boolean(
+			insightsData &&
+				(insightsData.aiSummary ||
+					insightsData.insights.length > 0 ||
+					insightsData.bestDay ||
+					insightsData.worstDay)
+		)
+	);
+
+	onMount(() => {
+		hasSensitiveDataConsent = hasSensitiveConsent();
+		if (hasSensitiveDataConsent) {
+			void loadInsights();
+		}
+	});
+
+	async function loadInsights() {
+		insightsLoading = true;
+		insightsError = '';
+
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		if (!session?.access_token) {
+			insightsError = 'Du behover vara inloggad for att se AI-insikter.';
+			insightsData = null;
+			insightsLoading = false;
+			return;
+		}
+
+		try {
+			const response = await fetch('/api/diary/insights', {
+				headers: {
+					Authorization: `Bearer ${session.access_token}`,
+					[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION
+				}
+			});
+
+			const result = (await response.json().catch(() => null)) as
+				| InsightsResponse
+				| { error?: string }
+				| null;
+
+			if (!response.ok || !result || !('insights' in result)) {
+				insightsError =
+					result && 'error' in result && typeof result.error === 'string'
+						? result.error
+						: 'Kunde inte ladda AI-insikter just nu.';
+				insightsData = null;
+				insightsLoading = false;
+				return;
+			}
+
+			insightsData = result;
+		} catch {
+			insightsError = 'Kunde inte ladda AI-insikter just nu.';
+			insightsData = null;
+		} finally {
+			insightsLoading = false;
+		}
+	}
+
+	function acceptSensitiveDataConsent() {
+		grantSensitiveConsent();
+		hasSensitiveDataConsent = true;
+		void loadInsights();
+	}
 </script>
 
 <div class="journey-container">
 	<div class="journey-header">
-		<h1>🧭 Min resa</h1>
-		<p>Följ din utveckling över tid</p>
+		<h1>Min resa</h1>
+		<p>Folj din utveckling over tid</p>
 	</div>
 
 	{#if loading}
 		<div class="loading-state">Laddar din sida med framsteg...</div>
 	{:else if error}
 		<div class="error-state">
-			<p>⚠️ {error}</p>
-			<small>Försök att ladda sidan igen</small>
+			<p>{error}</p>
+			<small>Forsok att ladda sidan igen</small>
 		</div>
 	{:else}
 		{#if streakData}
@@ -75,14 +162,14 @@
 					<div class="streak-label">dagar i rad</div>
 				</div>
 				{#if streakData.lastEntryDaysAgo === 0}
-					<p class="streak-note">✨ Utmärkt! Du skrev idag</p>
+					<p class="streak-note">Utmarkt! Du skrev idag</p>
 				{:else if streakData.lastEntryDaysAgo === 1}
-					<p class="streak-note">📝 Du var här igår – fortsätt idag!</p>
+					<p class="streak-note">Du var har igar - fortsatt idag!</p>
 				{:else}
-					<p class="streak-note">⏳ Senaste inlägg: {streakData.lastEntryDaysAgo} dagar sedan</p>
+					<p class="streak-note">Senaste inlagg: {streakData.lastEntryDaysAgo} dagar sedan</p>
 				{/if}
 				<div class="streak-meta">
-					<small>Din längsta streak: {streakData.longestStreak} dagar</small>
+					<small>Din langsta streak: {streakData.longestStreak} dagar</small>
 				</div>
 			</section>
 		{/if}
@@ -103,7 +190,7 @@
 				</div>
 				{#if milestonesData.nextMilestone}
 					<div class="next-milestone">
-						<div class="next-header"><Calendar size={18} /><span>Nästa mål</span></div>
+						<div class="next-header"><Calendar size={18} /><span>Nasta mal</span></div>
 						<p>{milestonesData.nextMilestone.text}</p>
 						<div class="progress-bar">
 							<div class="progress-fill" style="width: {Math.min(100, (milestonesData.totalEntries / milestonesData.nextMilestone.entries) * 100)}%"></div>
@@ -119,55 +206,76 @@
 				<div class="icon-badge heat"><TrendingUp size={24} /></div>
 				<h2>Din aktivitetskarta</h2>
 			</div>
-			<p class="heatmap-description">Varje ruta motsvarar en dag. Mörkare färg = fler inlägg.</p>
+			<p class="heatmap-description">Varje ruta motsvarar en dag. Morkare farg = fler inlagg.</p>
 			<ActivityHeatmap />
 		</section>
 
-		{#if insightsData && insightsData.dataPoints > 0}
-			<section class="card insights-card">
-				<div class="card-header">
-					<div class="icon-badge insight"><Lightbulb size={24} /></div>
-					<h2>💡 Dina mönster</h2>
-				</div>
-				<div class="insights-grid">
-					<div class="insight-item best">
-						<div class="insight-emoji">{insightsData.bestDayOfWeek.emoji}</div>
-						<div class="insight-content">
-							<h3>Mår bäst på</h3>
-							<p class="day-name">{insightsData.bestDayOfWeek.day}</p>
-							<small>Genomsnitt: {insightsData.bestDayOfWeek.average}/10</small>
-						</div>
-					</div>
-					<div class="insight-item worst">
-						<div class="insight-emoji">{insightsData.worstDayOfWeek.emoji}</div>
-						<div class="insight-content">
-							<h3>Svårare på</h3>
-							<p class="day-name">{insightsData.worstDayOfWeek.day}</p>
-							<small>Genomsnitt: {insightsData.worstDayOfWeek.average}/10</small>
-						</div>
-					</div>
-				</div>
-				{#if insightsData.recurringPatterns.length > 0}
-					<div class="patterns-section">
-						<h3>🔄 Återkommande mönster</h3>
-						<ul class="patterns-list">
-							{#each insightsData.recurringPatterns as pattern}
-								<li>
-									<span class="pattern-text">{pattern.pattern}</span>
-									<span class="pattern-badge">{pattern.frequency}x</span>
-								</li>
-							{/each}
-						</ul>
+		<section class="card insights-card">
+			<div class="card-header">
+				<div class="icon-badge insight"><Lightbulb size={24} /></div>
+				<h2>Dina AI-insikter</h2>
+			</div>
+
+			{#if !hasSensitiveDataConsent}
+				<ConsentGate
+					title="Samtycke innan AI-insikter"
+					dataLabel="Din dagbok och dina monster"
+					serviceLabel="AI- och tredjepartstjanster"
+					onAccept={acceptSensitiveDataConsent}
+				/>
+			{:else if insightsLoading}
+				<p class="heatmap-description">Laddar AI-insikter...</p>
+			{:else if insightsError}
+				<p class="heatmap-description">{insightsError}</p>
+			{:else if hasInsightsContent && insightsData}
+				{#if insightsData.aiSummary}
+					<div class="summary-box">
+						<p>{insightsData.aiSummary}</p>
 					</div>
 				{/if}
-			</section>
-		{/if}
+
+				{#if insightsData.bestDay || insightsData.worstDay}
+					<div class="insights-grid">
+						{#if insightsData.bestDay}
+							<div class="insight-item best">
+								<div class="insight-content">
+									<h3>Mar bast pa</h3>
+									<p class="day-name">{insightsData.bestDay.day}</p>
+									<small>Genomsnitt: {insightsData.bestDay.average}/10</small>
+								</div>
+							</div>
+						{/if}
+						{#if insightsData.worstDay}
+							<div class="insight-item worst">
+								<div class="insight-content">
+									<h3>Svarare pa</h3>
+									<p class="day-name">{insightsData.worstDay.day}</p>
+									<small>Genomsnitt: {insightsData.worstDay.average}/10</small>
+								</div>
+							</div>
+						{/if}
+					</div>
+				{/if}
+
+				{#if insightsData.insights.length > 0}
+					<ul class="patterns-list">
+						{#each insightsData.insights as insight}
+							<li>
+								<span class="pattern-text">{insight.title}: {insight.description}</span>
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			{:else}
+				<p class="heatmap-description">Det finns inte tillrackligt med data for AI-insikter annu.</p>
+			{/if}
+		</section>
 
 		{#if !streakData || streakData.currentStreak === 0}
 			<section class="card empty-state">
-				<h2>🌱 Börja din resa</h2>
-				<p>Inga framsteg visas ännu. När du börjar använda dagboken och verktygen här kan du följa mönster över tid.</p>
-				<a href="/dagbok" class="btn-primary">Skriv inlägg</a>
+				<h2>Borja din resa</h2>
+				<p>Inga framsteg visas annu. Nar du borjar anvanda dagboken och verktygen har kan du folja monster over tid.</p>
+				<a href="/dagbok" class="btn-primary">Skriv inlagg</a>
 			</section>
 		{/if}
 	{/if}
@@ -208,21 +316,19 @@
 	.next-milestone small { color: #999; display: block; }
 	.heatmap-card { overflow-x: auto; }
 	.heatmap-description { color: #666; font-size: 0.95rem; margin: 0 0 1.5rem 0; }
+	.summary-box { margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem; background: #f9f9f9; border: 1px solid #eee; }
+	.summary-box p { margin: 0; color: #1a1a1a; line-height: 1.6; }
 	.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
 	.insight-item { padding: 1.5rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid #eee; transition: all 0.2s ease; }
 	.insight-item.best { background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(129,199,132,0.1)); border-color: #4caf50; }
 	.insight-item.worst { background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,142,114,0.1)); border-color: #ff6b6b; }
 	.insight-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-	.insight-emoji { font-size: 2rem; min-width: 3rem; }
 	.insight-content h3 { margin: 0 0 0.25rem 0; font-size: 0.9rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px; }
 	.day-name { margin: 0; font-size: 1.2rem; font-weight: 600; color: #1a1a1a; }
 	.insight-content small { color: #999; font-size: 0.85rem; }
-	.patterns-section { margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; }
-	.patterns-section h3 { margin: 0 0 1rem 0; color: #1a1a1a; }
 	.patterns-list { list-style: none; padding: 0; margin: 0; }
 	.patterns-list li { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: #f9f9f9; border-radius: 0.25rem; margin-bottom: 0.5rem; font-size: 0.95rem; }
 	.pattern-text { color: #1a1a1a; font-weight: 500; }
-	.pattern-badge { background: #667eea; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 600; }
 	.empty-state { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, rgba(76,175,80,0.05), rgba(129,199,132,0.05)); border: 2px dashed #4caf50; }
 	.empty-state h2 { margin-top: 0; color: #2e7d32; }
 	.empty-state p { color: #555; margin: 1rem 0 1.5rem 0; }

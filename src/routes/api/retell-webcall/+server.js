@@ -1,6 +1,12 @@
 import fetch from 'node-fetch';
+import { json } from '@sveltejs/kit';
+import { hasSensitiveConsentHeader } from '$lib/consent';
 
-export async function GET() {
+export async function GET({ request }) {
+	if (!hasSensitiveConsentHeader(request)) {
+		return json({ error: 'Consent required for sensitive voice features.' }, { status: 403 });
+	}
+
 	const response = await fetch('https://api.retellai.com/v1/create-web-call', {
 		method: 'POST',
 		headers: {
@@ -14,7 +20,5 @@ export async function GET() {
 
 	const data = await response.json();
 
-	return new Response(JSON.stringify(data), {
-		headers: { 'Content-Type': 'application/json' }
-	});
+	return json(data, { status: response.status });
 }
