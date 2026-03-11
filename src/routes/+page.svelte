@@ -265,26 +265,6 @@
 		</div>
 	</section>
 
-	<section class="band band-brown">
-		<div class="narrow support-columns">
-			<div>
-				<h2>Din väg till psykiskt stöd</h2>
-				<p>
-					Varje portal är specialiserad för att skapa ett mer träffsäkert och tryggt samtal.
-				</p>
-				<ul>
-					<li>stabilt stöd för oro och ångest</li>
-					<li>varsam struktur vid nedstämdhet</li>
-					<li>fokus på trygghet och gränssättning vid trauma</li>
-				</ul>
-				<p>
-					Målet är inte snabba svar, utan ett hållbart samtal där du kan landa och ta nästa steg.
-				</p>
-			</div>
-			<img src="/assets/home/Digitalastod.PNG" alt="Digitalt stöd" loading="lazy" />
-		</div>
-	</section>
-
 </main>
 
 <style>
