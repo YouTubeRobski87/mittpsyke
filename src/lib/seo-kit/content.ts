@@ -146,7 +146,7 @@ export const guides: Guide[] = [
 		f?qs: [
 			{
 				question: 'Varf?r f?stn?r jag i orostankar?',
-				answer: 'Hjarnan f?rsoker ofta f?rutse problem f?r att skydda dig, men det kan i stallet leda till att tankarna aldrig f?r vila.'
+				answer: 'Hj?rnan f?rsoker ofta f?rutse problem f?r att skydda dig, men det kan i stallet leda till att tankarna aldrig f?r vila.'
 			},
 			{
 				question: 'Ar oro alltid nagot negativt?',
@@ -234,7 +234,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Kan det bli battre?',
-				answer: 'Ja, med f?rst?else, sma steg och stod gar det ofta att minska r?dsla och bygga mer trygghet i sociala situationer.'
+				answer: 'Ja, med f?rst?else, sm? steg och stod gar det ofta att minska r?dsla och bygga mer trygghet i sociala situationer.'
 			}
 		],
 		relatedArticles: [
@@ -247,7 +247,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/angest/orostankar'
 			},
 			{
-				title: 'Lag sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			}
 		]
@@ -267,7 +267,7 @@ export const guides: Guide[] = [
 				answer: 'Ja, manga f?r minskad ork, sv?rt att komma igang och mindre intresse f?r tidigare aktiviteter.'
 			},
 			{
-				question: 'Kan sma steg gora skillnad?',
+				question: 'Kan sm? steg gora skillnad?',
 				answer: 'Ja, f?sta rutiner, korta promenader och kontakt med andra kan vara viktiga f?rbattringssteg.'
 			},
 			{
@@ -302,7 +302,7 @@ export const guides: Guide[] = [
 		f?qs: [
 			{
 				question: 'Varf?r blir allt sa tungt n?r jag mar daligt?',
-				answer: 'Nedst?mdhet kan p?verka energi, motivation och k?nslan av mening, vilket gor att sma saker kan kannas mycket stora.'
+				answer: 'Nedst?mdhet kan p?verka energi, motivation och k?nslan av mening, vilket gor att sm? saker kan kannas mycket stora.'
 			},
 			{
 				question: 'Ar tr?ttheten bara fysisk?',
@@ -314,7 +314,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Vad kan hj?lp? n?r allt k?nns tomt?',
-				answer: 'Ofta ar mycket sma och konkreta steg mer realistiska an att f?rsoka hitta stor motivation direkt.'
+				answer: 'Ofta ar mycket sm? och konkreta steg mer realistiska an att f?rsoka hitta stor motivation direkt.'
 			}
 		],
 		relatedArticles: [
@@ -361,7 +361,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/nedstamdhet'
 			},
 			{
-				title: 'Lag sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			},
 			{
@@ -415,15 +415,15 @@ export const guides: Guide[] = [
 		description: 'Om varsamma och realistiska steg n?r energin ar l?g och allt k?nns sv?rt att b?rja med.',
 		f?qs: [
 			{
-				question: 'Varf?r hj?lper sma steg battre an stora planer?',
-				answer: 'N?r orken ar l?g blir f?r stora krav ofta ?vervaldiga, medan sma steg ar lattare att genomf?ra och bygga vidare p?.'
+				question: 'Varf?r hj?lper sm? steg battre an stora planer?',
+				answer: 'N?r orken ar l?g blir f?r stora krav ofta ?vervaldiga, medan sm? steg ar lattare att genomf?ra och bygga vidare p?.'
 			},
 			{
 				question: 'Vad kan ett litet steg vara?',
 				answer: 'Det kan vara att ata nagot enkelt, ga ut en kort stund eller skicka ett meddelande till nagon du litar p?.'
 			},
 			{
-				question: 'Racker sma steg verkligen?',
+				question: 'Racker sm? steg verkligen?',
 				answer: 'Ja, ofta ar det just regelbundna och genomf?rbara steg som skap?r r?relse n?r allt ann?rs star still.'
 			},
 			{
@@ -618,7 +618,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Hur bygger man upp tillit igen?',
-				answer: 'Ofta i sma steg, genom f?rutsagbarhet, tydliga gr?nser och erf?renheter av att bli mottagen utan press.'
+				answer: 'Ofta i sm? steg, genom f?rutsagbarhet, tydliga gr?nser och erf?renheter av att bli mottagen utan press.'
 			},
 			{
 				question: 'Ar det konstigt om gamla reaktioner kommer tillbaka i relationer?',
@@ -648,7 +648,7 @@ export const guides: Guide[] = [
 		f?qs: [
 			{
 				question: 'Varf?r kan jag inte s?mna trots att jag ar trott?',
-				answer: 'Hjarnan kan vara i hog beredskap p? grund av stress, oro eller obearbetade tankar som aktiverar nervsystemet.'
+				answer: 'Hj?rnan kan vara i hog beredskap p? grund av stress, oro eller obearbetade tankar som aktiverar nervsystemet.'
 			},
 			{
 				question: 'Ar s?mnproblem ett tecken p? nagonting allvarligt?',
@@ -766,7 +766,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Varf?r blir jag lattare irriterad n?r jag sovit daligt?',
-				answer: 'N?r du har s?mnbrist f?r hj?rnan sv?rare att reglera k?nslor, vilket kan gora att sma saker k?nns storre an de brukar.'
+				answer: 'N?r du har s?mnbrist f?r hj?rnan sv?rare att reglera k?nslor, vilket kan gora att sm? saker k?nns storre an de brukar.'
 			},
 			{
 				question: 'Kan dalig s?mn hanga ihop med nedst?mdhet?',
@@ -781,7 +781,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sjalvkansla',
 		slug: 'lag-sjalvkansla',
-		title: 'Lag sj?lvk?nsla â€“ vad det ar och var det kommer ifran',
+		title: 'L?g sj?lvk?nsla â€“ vad det ar och var det kommer ifran',
 		description: 'Om vad l?g sj?lvk?nsla innebar, hur den uppstar och hur du kan b?rja utf?rska f?rhallandena till dig sj?lv.',
 		f?qs: [
 			{
@@ -845,7 +845,7 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Lag sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			},
 			{
@@ -878,12 +878,12 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Vad kan hj?lp?',
-				answer: 'Att upptacka dina egna krav och prova mer tillrackligt bra i sma situationer kan minska trycket ?ver tid.'
+				answer: 'Att upptacka dina egna krav och prova mer tillrackligt bra i sm? situationer kan minska trycket ?ver tid.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Lag sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			},
 			{
@@ -921,7 +921,7 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Lag sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			},
 			{
@@ -959,7 +959,7 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Lag sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			},
 			{
