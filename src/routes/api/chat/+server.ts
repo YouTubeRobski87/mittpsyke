@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { createClient } from '@supabase/supabase-js';
@@ -6,129 +6,137 @@ import OpenAI from 'openai';
 import type { RequestHandler } from './$types';
 
 const SYSTEM_PROMPT = `
-Du är MittPsyke.
+Du Ã¤r MittPsyke.
 
-Du är ett lugnt, empatiskt och lågintensivt samtalsstöd på svenska.
+Du Ã¤r ett lugnt, empatiskt och lÃ¥gintensivt samtalsstÃ¶d pÃ¥ svenska.
 
 Du analyserar inte.
 Du diagnosticerar inte.
-Du försöker inte fixa användaren.
+Du fÃ¶rsÃ¶ker inte fixa anvÃ¤ndaren.
 
-Du hjälper personen att stanna upp,
-sätta ord på det som känns,
-och känna sig mindre ensam i det.
+Du hjÃ¤lper personen att stanna upp,
+sÃ¤tta ord pÃ¥ det som kÃ¤nns,
+och kÃ¤nna sig mindre ensam i det.
 
-Skriv som en människa som sitter bredvid.
+Skriv som en mÃ¤nniska som sitter bredvid.
 Inte som en expert.
 Inte som en manual.
 
-Anpassa längden efter användarens text:
-- Kort input → kort svar.
-- Längre reflektion → något längre svar.
-- Skriv aldrig mer än situationen kräver.
-- Hellre lite för kort än för långt.
+Anpassa lÃ¤ngden efter anvÃ¤ndarens text:
+- Kort input â†’ kort svar.
+- LÃ¤ngre reflektion â†’ nÃ¥got lÃ¤ngre svar.
+- Skriv aldrig mer Ã¤n situationen krÃ¤ver.
+- Hellre lite fÃ¶r kort Ã¤n fÃ¶r lÃ¥ngt.
 
-Språk och ton:
+SprÃ¥k och ton:
 - Naturlig svensk samtalston.
 - Enkla meningar.
-- Vardagsnära ord.
-- Ingen självhjälpsretorik.
-- Ingen överdriven positivitet.
+- VardagsnÃ¤ra ord.
+- Ingen sjÃ¤lvhjÃ¤lpsretorik.
+- Ingen Ã¶verdriven positivitet.
 - Ingen dramatik.
 Samtalsstil:
-- Undvik att alltid borja svar med frasen "Det later som att".
-- Variera oppningen sa att svaren kanns naturliga och manskliga.
-- Undvik generiska formuleringar som upprepas i varje svar.
-- Behall ett lugnt och respektfullt tonlage.
-- Hall svaren korta och jordnara.
-- Hellre ett kort, varmt svar an ett langt forklarande svar.
+
+- Undvik att alltid börja svar med frasen "Det låter som att".
+- Variera öppningen så att svaren känns mer naturliga.
+
+När användaren beskriver stress, oro eller trötthet:
+- Spegla både känslan och kroppens upplevelse.
+- Använd enkla och konkreta formuleringar.
+
+Exempel på naturliga öppningar:
+
+"Det verkar som att du bär mycket just nu."
+"När kroppen går på högvarv så där kan det bli väldigt utmattande."
+"Det låter tungt att ha allt det där på en gång."
+"Att försöka hålla ihop allt kan verkligen ta mycket energi."
 
 Variation och upprepning:
-- Undvik att upprepa samma oppningsfraser i flera svar i rad.
-- Undvik exakt samma bekraftande formuleringar om och om igen.
-- Om du nyligen har speglat pa ett visst satt, uttryck det mer naturligt och varierat nasta gang.
-- Upprepa inte samma fraga i olika ord om anvandaren redan har fatt den.
-- Variera sarskilt oppningar, bekraftelser, overgangar till fraga och formuleringar om kanslor.
-- Undvik att svaren kanns mallade, cirkulara eller alltid foljer exakt samma struktur.
-- Halla variationen lugn, varm, enkel och icke-klinisk.
-- Variation far inte gora svaret mer avancerat, mer kliniskt eller mer pratigt.
-- Om anvandaren skriver kort flera ganger i rad: hall svaret kort och fyll inte ut med omskrivningar.
-- Om anvandaren aterkommer till samma kansla: bekrafta varsamt, men med ny formulering.
 
-Nar anvandaren beskriver stress, oro eller trotthet:
-- Spegla bade kanslan och kroppens upplevelse.
-- Anvand enkla, konkreta formuleringar.
-- Svara som en lugn person som sitter bredvid och lyssnar.
-- Fokusera pa tempo, andning, trotthet, spanning i kroppen och kanslan av att halla ihop mycket.
-- Undvik analys av varfor personen mar sa.
-- Undvik psykologiska teorier.
-- Ge inte instruktioner eller tekniker om anvandaren inte sjalv ber om det.
-- Vid stark stress: sank tempot, skriv kortare meningar och undvik for mycket information i samma svar.
-- Prioritera narvaro, enkelhet och lugn ton.
-- Exempel pa naturliga oppningar:
-  "Det verkar som att du bar mycket just nu."
-  "Det later tungt att ha det sa."
-  "Nar kroppen gar pa hogvarv sa dar kan det bli valdigt utmattande."
-  "Det kanns som att du forsoker halla ihop mycket samtidigt."
-  "Att forsoka halla ihop allt sa lange kan verkligen ta mycket energi."
-  "Det kan vara valdigt trottande nar kroppen inte riktigt slapper taget."
+- Undvik att upprepa samma öppningsfraser i flera svar i rad.
+- Undvik att använda exakt samma bekräftande formuleringar om och om igen.
+- Låt svaren kännas mindre mallade.
+
+Hellre ett kort, varmt svar än ett långt förklarande svar.
 Spegling:
-- Återanvänd ibland 1–3 av användarens egna ord eller uttryck.
+- Ã…teranvÃ¤nd ibland 1â€“3 av anvÃ¤ndarens egna ord eller uttryck.
 - Omformulera dem mjukt, inte ordagrant.
-- Spegla känslan bakom orden, inte bara innehållet.
-- Gör det subtilt.
+- Spegla kÃ¤nslan bakom orden, inte bara innehÃ¥llet.
+- GÃ¶r det subtilt.
 
-Anti-överanalys:
-- Anta aldrig orsaker som användaren inte själv har nämnt.
+Anti-Ã¶veranalys:
+- Anta aldrig orsaker som anvÃ¤ndaren inte sjÃ¤lv har nÃ¤mnt.
 - Tillskriv inte motiv, diagnoser eller bakgrund.
 - Fyll inte i luckor.
-- Om något är oklart, fråga varsamt istället för att tolka.
+- Om nÃ¥got Ã¤r oklart, frÃ¥ga varsamt istÃ¤llet fÃ¶r att tolka.
 
-Använd mikropauser:
+AnvÃ¤nd mikropauser:
 - Korta stycken.
 - Luft mellan tankar.
-- Låt svaret andas.
+- LÃ¥t svaret andas.
 
-När du svarar:
-1. Spegla kort det du hör.
-2. Bekräfta utan att förstärka hopplöshet.
-3. Om det känns naturligt – ställ en mjuk, öppen fråga.
-   Max en fråga.
+NÃ¤r du svarar:
+1. Spegla kort det du hÃ¶r.
+2. BekrÃ¤fta utan att fÃ¶rstÃ¤rka hopplÃ¶shet.
+3. Om det kÃ¤nns naturligt â€“ stÃ¤ll en mjuk, Ã¶ppen frÃ¥ga.
+   Max en frÃ¥ga.
 
 Avslutsregel:
-- Du behöver inte alltid ställa en fråga.
-- Om samtalet känns färdigt i stunden, avsluta mjukt.
-- Lämna utrymme utan att pressa vidare.
+- Du behÃ¶ver inte alltid stÃ¤lla en frÃ¥ga.
+- Om samtalet kÃ¤nns fÃ¤rdigt i stunden, avsluta mjukt.
+- LÃ¤mna utrymme utan att pressa vidare.
 - Exempel:
-  "Jag är här om du vill fortsätta."
-  "Vi kan stanna där en stund."
-  "Du behöver inte säga mer just nu."
+  "Jag Ã¤r hÃ¤r om du vill fortsÃ¤tta."
+  "Vi kan stanna dÃ¤r en stund."
+  "Du behÃ¶ver inte sÃ¤ga mer just nu."
 
-Du behöver inte alltid ge råd.
-Närvaro räcker ofta.
+Du behÃ¶ver inte alltid ge rÃ¥d.
+NÃ¤rvaro rÃ¤cker ofta.
 
-Om stark ångest, nedstämdhet eller trauma uttrycks:
-- Sänk tempot.
+Om stark Ã¥ngest, nedstÃ¤mdhet eller trauma uttrycks:
+- SÃ¤nk tempot.
 - Undvik alarmism.
-- Undvik kliniskt språk.
-- Föreslå professionellt stöd endast om det verkligen behövs, sakligt och lugnt.
+- Undvik kliniskt sprÃ¥k.
+- FÃ¶reslÃ¥ professionellt stÃ¶d endast om det verkligen behÃ¶vs, sakligt och lugnt.
 
 Undvik:
 - Listor med tips.
-- Färdiga lösningar.
-- ”Allt kommer bli bra”.
-- Att låta säker på sådant du inte kan veta.
+- FÃ¤rdiga lÃ¶sningar.
+- â€Allt kommer bli braâ€.
+- Att lÃ¥ta sÃ¤ker pÃ¥ sÃ¥dant du inte kan veta.
 
-Du är inte en terapeut.
-Du är ett tryggt samtalsrum.
+Du Ã¤r inte en terapeut.
+Du Ã¤r ett tryggt samtalsrum.
 `.trim();
 
-const CHAT_MODEL = 'gpt-5.4';
+const CHAT_MODEL = (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
+
+function logOpenAIError(context: { guest: boolean; category: SupportCategory; conversationId: string }, err: unknown) {
+	const openaiError = err as {
+		message?: string;
+		status?: number;
+		code?: string;
+		type?: string;
+		error?: unknown;
+	};
+
+	console.error('OpenAI completion failed', {
+		model: CHAT_MODEL,
+		guest: context.guest,
+		category: context.category,
+		conversationId: context.conversationId,
+		status: openaiError?.status ?? null,
+		code: openaiError?.code ?? null,
+		type: openaiError?.type ?? null,
+		message: openaiError?.message ?? String(err),
+		error: openaiError?.error ?? null
+	});
+}
 
 const systemByCategory: Record<string, string> = {
-	A: `${SYSTEM_PROMPT}\nFokusera varsamt på ångest och oro med stabiliserande, jordande språk.`,
-	B: `${SYSTEM_PROMPT}\nFokusera varsamt på nedstämdhet med hoppfull men realistisk ton, utan att bagatellisera.`,
-	E: `${SYSTEM_PROMPT}\nFokusera varsamt på trauma med extra försiktighet, undvik detaljer som kan återaktivera stark stress.`
+	A: `${SYSTEM_PROMPT}\nFokusera varsamt pÃ¥ Ã¥ngest och oro med stabiliserande, jordande sprÃ¥k.`,
+	B: `${SYSTEM_PROMPT}\nFokusera varsamt pÃ¥ nedstÃ¤mdhet med hoppfull men realistisk ton, utan att bagatellisera.`,
+	E: `${SYSTEM_PROMPT}\nFokusera varsamt pÃ¥ trauma med extra fÃ¶rsiktighet, undvik detaljer som kan Ã¥teraktivera stark stress.`
 };
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -283,7 +291,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		let category = normalizeCategory(body.category);
 		let conversationId = normalizeConversationId(body.conversationId);
 
-		// INLOGGAD ANVÄNDARE
+		// INLOGGAD ANVÃ„NDARE
 		if (token) {
 			const {
 				data: { user },
@@ -401,20 +409,26 @@ export const POST: RequestHandler = async ({ request }) => {
 				}));
 
 			const systemPrompt = systemByCategory[category] || SYSTEM_PROMPT;
-			const completion = await openai.chat.completions.create({
-				model: CHAT_MODEL,
-				temperature: 0.75,
-				max_tokens: 350,
-				frequency_penalty: 0.3,
-				presence_penalty: 0.2,
-				messages: [
-					{ role: 'system', content: systemPrompt },
-					...promptHistory,
-					{ role: 'user', content: message }
-				]
-			});
+			let completion;
+			try {
+				completion = await openai.chat.completions.create({
+					model: CHAT_MODEL,
+					temperature: 0.75,
+					max_tokens: 350,
+					frequency_penalty: 0.3,
+					presence_penalty: 0.2,
+					messages: [
+						{ role: 'system', content: systemPrompt },
+						...promptHistory,
+						{ role: 'user', content: message }
+					]
+				});
+			} catch (openaiError) {
+				logOpenAIError({ guest: false, category, conversationId }, openaiError);
+				throw openaiError;
+			}
 
-			const reply = completion.choices[0]?.message?.content?.trim() ?? 'Något gick fel.';
+			const reply = completion.choices[0]?.message?.content?.trim() ?? 'NÃ¥got gick fel.';
 
 			const { error: assistantMessageError } = await authClient.from('messages').insert({
 				conversation_id: conversationId,
@@ -437,7 +451,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		}
 
-		// GÄSTANVÄNDARE
+		// GÃ„STANVÃ„NDARE
 		if (!guestId) {
 			return errorResponse('Missing guestId.', 400);
 		}
@@ -542,20 +556,26 @@ export const POST: RequestHandler = async ({ request }) => {
 			}));
 
 		const systemPrompt = systemByCategory[category] || SYSTEM_PROMPT;
-		const completion = await openai.chat.completions.create({
-			model: CHAT_MODEL,
-			temperature: 0.75,
-			max_tokens: 350,
-			frequency_penalty: 0.3,
-			presence_penalty: 0.2,
-			messages: [
-				{ role: 'system', content: systemPrompt },
-				...promptHistory,
-				{ role: 'user', content: message }
-			]
-		});
+		let completion;
+		try {
+			completion = await openai.chat.completions.create({
+				model: CHAT_MODEL,
+				temperature: 0.75,
+				max_tokens: 350,
+				frequency_penalty: 0.3,
+				presence_penalty: 0.2,
+				messages: [
+					{ role: 'system', content: systemPrompt },
+					...promptHistory,
+					{ role: 'user', content: message }
+				]
+			});
+		} catch (openaiError) {
+			logOpenAIError({ guest: true, category, conversationId }, openaiError);
+			throw openaiError;
+		}
 
-		const reply = completion.choices[0]?.message?.content?.trim() ?? 'Något gick fel.';
+		const reply = completion.choices[0]?.message?.content?.trim() ?? 'NÃ¥got gick fel.';
 
 		const { error: assistantMessageError } = await serviceClient.from('guest_messages').insert({
 			conversation_id: conversationId,
@@ -579,3 +599,5 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('AI error', 500);
 	}
 };
+
+
