@@ -13,6 +13,17 @@
 		vilka uppgifter som kan behandlas, varför de används och vilka val du har.
 	</p>
 
+	<section class="rounded-2xl border border-black/10 bg-black/[0.02] p-4 sm:p-5 mt-6" aria-label="Snabb överblick">
+		<h2 class="text-lg font-semibold mt-0 mb-2">Snabb överblick</h2>
+		<ul class="opacity-80 leading-relaxed list-disc pl-6 space-y-2.5">
+			<li><strong>Är detta vård?</strong> Nej. MittPsyke är ett samtalsstöd, inte vård eller behandling.</li>
+			<li><strong>Vad används tjänsten till?</strong> Reflektion, dagbok, samtalsstöd och struktur i vardagen.</li>
+			<li><strong>Sparas uppgifter?</strong> Ja, uppgifter kan sparas när du använder konto och funktioner i tjänsten.</li>
+			<li><strong>Akut läge?</strong> Ring 112 vid akut fara. För vårdråd i Sverige, kontakta 1177.</li>
+			<li><strong>Vem står bakom och hur kontaktar man er?</strong> MittPsyke. Kontakt: <a href="mailto:mittpsyke@ownit.nu" class="underline hover:no-underline">mittpsyke@ownit.nu</a>.</li>
+		</ul>
+	</section>
+
 	<h2 class="text-lg font-semibold mt-8 mb-2">Vilka vi är</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
 		MittPsyke är en svensk webbtjänst för samtalsstöd, dagbok och reflektion. Om du har frågor om integritet eller
@@ -21,73 +32,66 @@
 	</p>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Vilka uppgifter som kan behandlas</h2>
-	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2">
+	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li>Kontouppgifter, till exempel e-postadress och tekniska identifierare som behövs för inloggning.</li>
 		<li>Innehåll som du själv väljer att skriva eller spara, till exempel i dagbok, chatt eller andra fält i tjänsten.</li>
 		<li>Uppgifter i kontoinställningar, till exempel tilltalsnamn och val kring påminnelser eller utskick.</li>
-		<li>Tekniska uppgifter som kan behövas för att få tjänsten att fungera, skydda konton, förebygga missbruk och förbättra stabilitet och säkerhet.</li>
+		<li>Tekniska uppgifter som behövs för funktion, säkerhet, missbruksförebyggande arbete och stabil drift.</li>
 		<li>Uppgifter om användning av webbsamtal eller AI-funktioner när du aktivt väljer att använda dem.</li>
 	</ul>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Varför uppgifterna behandlas</h2>
-	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2">
+	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li>För att skapa och hantera konto och inloggning.</li>
 		<li>För att ge tillgång till funktioner som dagbok, historik, chatt och personliga inställningar.</li>
-		<li>För att driva, skydda och förbättra tjänsten, till exempel genom felsökning, säkerhetsarbete och stabilitet.</li>
-		<li>För att besvara frågor, hantera support och hantera önskemål om radering, export eller andra integritetsfrågor.</li>
+		<li>För att driva, skydda och förbättra tjänsten, till exempel genom felsökning och säkerhetsarbete.</li>
+		<li>För att besvara frågor och hantera support, radering, export och andra integritetsärenden.</li>
 		<li>För att uppfylla rättsliga skyldigheter när det krävs.</li>
 	</ul>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Rättslig grund</h2>
-	<p class="opacity-80 leading-relaxed mb-3">
-		När du skapar konto och använder tjänsten behandlas uppgifter i första hand för att kunna leverera de funktioner
-		du använder. Viss behandling kan också ske för att uppfylla rättsliga skyldigheter eller för berättigade intressen
-		som säkerhet, missbruksförebyggande arbete och stabil drift.
-	</p>
+	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
+		<li>Leverans av tjänstens funktioner när du använder konto och innehåll.</li>
+		<li>Rättsliga skyldigheter när lag kräver behandling.</li>
+		<li>Berättigade intressen, till exempel säkerhet, missbruksförebyggande arbete och stabil drift.</li>
+	</ul>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Lagringstid</h2>
-	<p class="opacity-80 leading-relaxed mb-3">
-		Uppgifter sparas så länge de behövs för att tillhandahålla tjänsten, uppfylla rättsliga skyldigheter eller
-		hantera säkerhet, support och felsökning. Uppgifter som hör till ditt konto sparas normalt så länge kontot är
-		aktivt eller tills du själv begär radering, om inte längre lagring krävs av rättsliga eller säkerhetsrelaterade skäl.
-		När uppgifter inte längre behövs raderas eller anonymiseras de när det är möjligt.
-	</p>
+	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
+		<li>Uppgifter sparas så länge de behövs för att tillhandahålla tjänsten och hantera säkerhet, support och felsökning.</li>
+		<li>Kontorelaterade uppgifter sparas normalt så länge kontot är aktivt eller tills du begär radering.</li>
+		<li>När uppgifter inte längre behövs raderas eller anonymiseras de när det är möjligt.</li>
+	</ul>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Tjänster och leverantörer</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		För att driva MittPsyke används externa tekniska leverantörer. Det kan innebära att uppgifter behandlas av sådana
+		För att driva MittPsyke används externa tekniska leverantörer. Det kan innebära att uppgifter behandlas av dessa
 		leverantörer i den utsträckning det behövs för att tjänsten ska fungera.
 	</p>
-	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2">
-		<li><strong>Supabase</strong> används för konto, inloggning, sessioner och lagring av innehåll kopplat till tjänsten.</li>
-		<li><strong>OpenAI</strong> används för AI-funktioner som chatt och vissa AI-genererade sammanfattningar eller insikter.</li>
-		<li><strong>Retell</strong> används för webbsamtal när du väljer att använda röstfunktionen.</li>
-		<li><strong>Vercel</strong> används för drift, analys och prestandainsikter för webbplatsen.</li>
+	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
+		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll.</li>
+		<li><strong>OpenAI:</strong> AI-funktioner som chatt och vissa AI-genererade sammanfattningar eller insikter.</li>
+		<li><strong>Retell:</strong> webbsamtal när du väljer att använda röstfunktionen.</li>
+		<li><strong>Vercel:</strong> drift, analys och prestandainsikter för webbplatsen.</li>
 	</ul>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Cookies och lokal lagring</h2>
-	<p class="opacity-80 leading-relaxed mb-3">
-		MittPsyke använder både cookies och lokal lagring i webbläsaren för att tjänsten ska fungera på ett stabilt sätt.
-		Det betyder inte att allt automatiskt är anonymt. Hur uppgifter hanteras beror på vilka funktioner du använder.
-	</p>
-	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2">
-		<li><strong>Nödvändiga cookies och tekniska lagringar:</strong> används för inloggning, sessioner, säkerhet och grundläggande funktioner i tjänsten.</li>
-		<li><strong>Lokal lagring i webbläsaren:</strong> kan användas för sådant som tema, senaste chattkategori och viss lokal samtalsinformation för att göra upplevelsen smidigare.</li>
-		<li><strong>Analys och prestanda:</strong> webbplatsen använder även verktyg från Vercel för att förstå användning, upptäcka fel och förbättra stabilitet och prestanda.</li>
+	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
+		<li><strong>Nödvändiga cookies och teknisk lagring:</strong> inloggning, sessioner, säkerhet och grundfunktioner.</li>
+		<li><strong>Lokal lagring i webbläsaren:</strong> till exempel tema, senaste chattkategori och viss lokal samtalsinformation.</li>
+		<li><strong>Analys och prestanda:</strong> verktyg från Vercel för att förstå användning, upptäcka fel och förbättra stabilitet.</li>
 	</ul>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Dina rättigheter</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		Beroende på vilken behandling som är aktuell kan du ha rätt att begära information om vilka uppgifter som
-		behandlas, begära rättelse, begära radering, invända mot viss behandling och i vissa fall begära export av dina
-		uppgifter. Om du har konto kan du själv använda vissa funktioner i tjänsten, till exempel radera konto eller
-		exportera dagboken där sådan funktion finns.
+		Beroende på behandling kan du bland annat begära information, rättelse, radering, invända mot viss behandling och
+		i vissa fall begära export av dina uppgifter.
 	</p>
-	<p class="opacity-80 leading-relaxed mb-3">
-		Om du vill använda någon av dina rättigheter eller har frågor om hur uppgifter hanteras kan du kontakta oss på
-		<a href="mailto:mittpsyke@ownit.nu" class="underline hover:no-underline">mittpsyke@ownit.nu</a>. Du kan också lämna klagomål till
-		Integritetsskyddsmyndigheten (IMY) om du anser att personuppgifter behandlas på fel sätt.
-	</p>
+	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
+		<li>Om du har konto kan du själv använda vissa funktioner, till exempel radera konto eller exportera dagbok där sådan funktion finns.</li>
+		<li>För frågor om rättigheter och personuppgifter: <a href="mailto:mittpsyke@ownit.nu" class="underline hover:no-underline">mittpsyke@ownit.nu</a>.</li>
+		<li>Du kan också lämna klagomål till Integritetsskyddsmyndigheten (IMY).</li>
+	</ul>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Kontakt</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
