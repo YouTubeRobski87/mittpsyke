@@ -48,45 +48,47 @@
 	{/if}
 </svelte:head>
 
-<main>
-	<nav>
-		<a href="/guider-seo">Guider SEO</a>
+<main class="mx-auto max-w-3xl px-4 py-10">
+	<nav class="mb-5 text-sm opacity-75">
+		<a class="hover:underline" href="/guider-seo">Guider SEO</a>
 		<span> / </span>
-		<a href={`/guider-seo/${data.pillar.slug}`}>{data.pillar.title}</a>
+		<a class="hover:underline" href={`/guider-seo/${data.pillar.slug}`}>{data.pillar.title}</a>
 	</nav>
 
-	<h1>{data.guide.title}</h1>
-	<p>{data.guide.description}</p>
+	<h1 class="text-3xl font-semibold tracking-tight">{data.guide.title}</h1>
+	<p class="mt-3 leading-relaxed text-black/75">{data.guide.description}</p>
 
-	<section aria-label="Om innehållet">
-		<p><strong>Innehåll från MittPsyke</strong></p>
-		<p>Det här är stödjande information för reflektion och egen förståelse. Det ersätter inte vård, diagnos eller behandling.</p>
+	<section class="mt-6 rounded-xl border border-black/10 bg-black/[0.02] p-4" aria-label="Om innehållet">
+		<p class="text-sm"><strong>Innehåll från MittPsyke</strong></p>
+		<p class="mt-2 text-sm leading-relaxed text-black/80">Det här är stödjande information för reflektion och egen förståelse. Det ersätter inte vård, diagnos eller behandling.</p>
 		{#if data.guide.relatedArticles?.length}
-			<p>Källa och vidare läsning: relaterade artiklar inom MittPsyke finns längre ned på sidan.</p>
+			<p class="mt-2 text-sm leading-relaxed text-black/80">Källa och vidare läsning: relaterade artiklar inom MittPsyke finns längre ned på sidan.</p>
 		{/if}
 	</section>
 
-	<h2>Vanliga frågor</h2>
-	<ul>
+	<h2 class="mt-8 text-xl font-semibold">Vanliga frågor</h2>
+	<ul class="mt-4 space-y-3">
 		{#each data.guide.faqs as faq}
-			<li>
+			<li class="rounded-lg border border-black/10 p-4">
 				<strong>{faq.question}</strong>
-				<p>{faq.answer}</p>
+				<p class="mt-2 leading-relaxed text-black/80">{faq.answer}</p>
 			</li>
 		{/each}
 	</ul>
 
 	{#if data.guide.relatedArticles?.length}
-		<h2>Relaterade artiklar</h2>
-		<p>Fördjupning och vidare läsning inom samma område.</p>
-		<ul>
+		<h2 class="mt-8 text-xl font-semibold">Relaterade artiklar</h2>
+		<p class="mt-2 leading-relaxed text-black/75">Fördjupning och vidare läsning inom samma område.</p>
+		<ul class="mt-3 space-y-2">
 			{#each data.guide.relatedArticles as article}
 				<li>
-					<a href={article.href}>{article.title}</a>
+					<a class="hover:underline" href={article.href}>{article.title}</a>
 				</li>
 			{/each}
 		</ul>
 	{/if}
 
-	<SeoCta chatPath={data.pillar.chatPath} />
+	<div class="mt-10">
+		<SeoCta chatPath={data.pillar.chatPath} />
+	</div>
 </main>
