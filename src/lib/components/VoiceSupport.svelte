@@ -1,11 +1,30 @@
 <script>
+	import { onMount } from 'svelte';
 	import { RetellWebClient } from 'retell-client-js-sdk';
+	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import {
+		SENSITIVE_CONSENT_HEADER,
+		SENSITIVE_CONSENT_VERSION,
+		grantSensitiveConsent,
+		hasSensitiveConsent
+	} from '$lib/consent';
 
 	let retell;
 	let active = false;
+	let hasSensitiveDataConsent = false;
+
+	onMount(() => {
+		hasSensitiveDataConsent = hasSensitiveConsent();
+	});
 
 	async function startCall() {
-		const res = await fetch('/api/retell-webcall');
+		if (!hasSensitiveDataConsent) return;
+
+		const res = await fetch('/api/retell-webcall', {
+			headers: {
+				[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION
+			}
+		});
 		const data = await res.json();
 
 		retell = new RetellWebClient();
@@ -15,6 +34,11 @@
 		});
 
 		active = true;
+	}
+
+	function acceptSensitiveConsent() {
+		grantSensitiveConsent();
+		hasSensitiveDataConsent = true;
 	}
 </script>
 
