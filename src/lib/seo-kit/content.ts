@@ -2147,10 +2147,7 @@ export const guides: Guide[] = [
 			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
 			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/psykisk-ohalsa/' }
 		]
-	}
-];
-
-	// === EXTRA GUIDE: ÅNGEST ===
+	},
 	{
 		pillarSlug: 'angest',
 		slug: 'fast-i-negativa-tankar',
@@ -2158,14 +2155,8 @@ export const guides: Guide[] = [
 		description: 'Negativa tankar som snurrar och fastnar är vanligt vid stress och ångest. Här är vad som händer och vad som faktiskt hjälper.',
 		updatedAt: '2026-03-12',
 		sources: [
-			{
-				name: '1177 Vårdguiden – Oro och ångest',
-				url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/oro-och-angest/oro-och-angest/'
-			},
-			{
-				name: 'Folkhälsomyndigheten – Psykisk hälsa och välbefinnande',
-				url: 'https://www.folkhalsomyndigheten.se/livsvillkor-levnadsvanor/psykisk-halsa-och-suicidprevention/psykisk-halsa-och-valbefinnande/'
-			}
+			{ label: '1177 Vårdguiden – Oro och ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/oro-och-angest/oro-och-angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa och välbefinnande', url: 'https://www.folkhalsomyndigheten.se/livsvillkor-levnadsvanor/psykisk-halsa-och-suicidprevention/psykisk-halsa-och-valbefinnande/' }
 		],
 		relatedArticles: [
 			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
@@ -2190,7 +2181,8 @@ export const guides: Guide[] = [
 				answer: 'Om de negativa tankarna tar upp en stor del av din dag, hindrar dig från att sova, jobba eller umgås, eller om de innehåller tankar på att skada dig själv, är det värt att prata med en vårdcentral eller psykiatrisk mottagning.'
 			}
 		]
-	},
+	}
+];
 
 export function getPillarBySlug(slug: string): Pillar | undefined {
 	return pillars.find((pillar) => pillar.slug === slug);
