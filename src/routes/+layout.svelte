@@ -1,6 +1,7 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import '../app.css';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import CookieBanner from '$lib/components/CookieBanner.svelte';
 	import { supabase } from '$lib/supabase';
 	import { page } from '$app/state';
 	import type { User } from '@supabase/supabase-js';
@@ -365,6 +366,8 @@
 		</div>
 	</footer>
 	</div>
+
+	<CookieBanner />
 {/if}
 
 <style>
@@ -434,4 +437,3 @@
 		top: 1rem;
 	}
 </style>
-
