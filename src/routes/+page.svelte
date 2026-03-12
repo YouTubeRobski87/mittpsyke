@@ -538,10 +538,10 @@
 
 	.hero-facts-title {
 		margin: 0;
+		font-family: var(--font-heading);
 		font-size: 0.85rem;
 		font-weight: 700;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
+		letter-spacing: -0.02em;
 		color: rgba(255, 255, 255, 0.92);
 	}
 
@@ -743,10 +743,10 @@
 
 	.mode-label {
 		margin: 0 0 0.4rem;
+		font-family: var(--font-heading);
 		font-size: 0.82rem;
 		font-weight: 700;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
+		letter-spacing: -0.02em;
 		color: rgba(255, 255, 255, 0.7);
 	}
 
