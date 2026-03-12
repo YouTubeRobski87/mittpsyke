@@ -745,9 +745,9 @@
 		margin: 0 0 0.4rem;
 		font-family: var(--font-heading);
 		font-size: 0.82rem;
-		font-weight: 700;
+		font-weight: 800;
 		letter-spacing: -0.02em;
-		color: rgba(255, 255, 255, 0.7);
+		color: rgba(255, 255, 255, 0.9);
 	}
 
 	.mode-list {
