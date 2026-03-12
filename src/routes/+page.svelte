@@ -745,7 +745,7 @@
 		margin: 0 0 0.4rem;
 		font-family: var(--font-heading);
 		font-size: 0.82rem;
-		font-weight: 800;
+		font-weight: 900;
 		letter-spacing: -0.02em;
 		color: rgba(255, 255, 255, 0.9);
 	}
