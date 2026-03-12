@@ -105,7 +105,7 @@ export const guides: Guide[] = [
 				title: 'Social ångest – rädslan för att bli bedömd av andra',
 				href: '/guider-seo/angest/social-angest'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
@@ -148,7 +148,7 @@ export const guides: Guide[] = [
 				title: 'Ångest och sömn – varför natten kan bli svårare',
 				href: '/guider-seo/angest/angest-och-somn'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Paniksyndrom', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/paniksyndrom/' },
@@ -191,7 +191,7 @@ export const guides: Guide[] = [
 				title: 'Ångest och sömn - varför natten kan bli svårare',
 				href: '/guider-seo/angest/angest-och-somn'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
@@ -234,7 +234,7 @@ export const guides: Guide[] = [
 				title: 'Stress och sömn – när kroppen inte kan varva ner',
 				href: '/guider-seo/sovproblem/stress-och-somn'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
@@ -277,7 +277,7 @@ export const guides: Guide[] = [
 				title: 'Låg självkänsla - vad det är och var det kommer ifrån',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
@@ -324,7 +324,7 @@ export const guides: Guide[] = [
 				title: 'Små steg när energin tryter – vad som faktiskt kan hjälpa',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
@@ -367,7 +367,7 @@ export const guides: Guide[] = [
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
         { label: '1177 – Depression', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression-och-nedstamdhet/depression/' },
@@ -410,7 +410,7 @@ export const guides: Guide[] = [
 				title: 'Jämförelsetrasket - sociala medier och din självbild',
 				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
@@ -453,7 +453,7 @@ export const guides: Guide[] = [
 				title: 'Små steg när energin tryter - vad som faktiskt kan hjälpa',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
         { label: '1177 – Sorg och kris', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sorg-och-kris/' },
@@ -496,7 +496,7 @@ export const guides: Guide[] = [
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
@@ -543,7 +543,7 @@ export const guides: Guide[] = [
 				title: 'Tillit och trygghet i relationer efter svåra upplevelser',
 				href: '/guider-seo/trauma/tillit-efter-trauma'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – PTSD och trauma', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
@@ -586,7 +586,7 @@ export const guides: Guide[] = [
 				title: 'Stress och sömn – när kroppen inte kan varva ner',
 				href: '/guider-seo/sovproblem/stress-och-somn'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – PTSD och trauma', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
@@ -629,7 +629,7 @@ export const guides: Guide[] = [
 				title: 'Undvikande efter trauma - varför vi gör det och vad det kostar',
 				href: '/guider-seo/trauma/undvikande-efter-trauma'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – PTSD och trauma', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
@@ -672,7 +672,7 @@ export const guides: Guide[] = [
 				title: 'Tillit och trygghet i relationer efter svara upplevelser',
 				href: '/guider-seo/trauma/tillit-efter-trauma'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – PTSD och trauma', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
@@ -715,7 +715,7 @@ export const guides: Guide[] = [
 				title: 'Grounding - enkla övningar för att landa i kroppen igen',
 				href: '/guider-seo/trauma/grounding-ovningar'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – PTSD och trauma', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
@@ -762,7 +762,7 @@ export const guides: Guide[] = [
 				title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet',
 				href: '/guider-seo/sovproblem/somnbrist-och-maendet'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Sömn och hälsa', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
@@ -791,7 +791,7 @@ export const guides: Guide[] = [
 				question: 'Vad kan vara ett första steg?',
 				answer: 'Att lägga märke till stresspåslaget, sakta ner tempot och ge kroppen en tydlig övergång mellan dag och natt kan vara en bra början.'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
@@ -820,7 +820,7 @@ export const guides: Guide[] = [
 				question: 'Vad kan hjälpa när tankarna snurrar i sängen?',
 				answer: 'Det kan hjälpa att sätta ord på tankarna tidigare på kvällen eller använda en lugn rutin som markerar att dagen är slut.'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
@@ -849,7 +849,7 @@ export const guides: Guide[] = [
 				question: 'Vad kan minska den har känslan?',
 				answer: 'Lugna övergångar, mindre press kring sömnen och regelbundna stunder för återhämtning under dagen kan göra skillnad över tid.'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
@@ -878,7 +878,7 @@ export const guides: Guide[] = [
 				question: 'När bör jag ta hjälp för både sömn och mående?',
 				answer: 'Om sömnbristen pågått ett tag och samtidigt påverkar hur du mår, fungerar eller orkar i vardagen är det klokt att soka stöd.'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
@@ -925,7 +925,7 @@ export const guides: Guide[] = [
 				title: 'Jämförelseträsket – sociala medier och din självbild',
 				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
@@ -968,7 +968,7 @@ export const guides: Guide[] = [
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
@@ -1011,7 +1011,7 @@ export const guides: Guide[] = [
 				title: 'Små steg när energin tryter - vad som faktiskt kan hjälpa',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
@@ -1054,7 +1054,7 @@ export const guides: Guide[] = [
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
@@ -1097,7 +1097,7 @@ export const guides: Guide[] = [
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
-		]
+		],
 		updatedAt: '2026-03-12',
 		sources: [
 			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
