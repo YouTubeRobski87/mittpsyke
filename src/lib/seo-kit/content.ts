@@ -28,7 +28,7 @@ export const pillars: Pillar[] = [
 	{
 		slug: 'angest',
 		title: 'Ångest',
-		description: 'Förstå vanliga reaktioner vid ?ngest och hur du kan hantera dem stegvis.',
+		description: 'Förstå vanliga reaktioner vid ångest och hur du kan hantera dem stegvis.',
 		chatPath: '/chat/a'
 	},
 	{
@@ -201,7 +201,7 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Tecken på ?ngest',
+				title: 'Tecken på ångest',
 				href: '/guider-seo/angest/tecken'
 			},
 			{
@@ -323,7 +323,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/nedstamdhet'
 			},
 			{
-				title: 'Sm? steg när energin tryter - vad som faktiskt kan hjälpa',
+				title: 'Små steg när energin tryter - vad som faktiskt kan hjälpa',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			},
 			{
@@ -381,16 +381,16 @@ export const guides: Guide[] = [
 				answer: 'Sorg ar ofta kopplad till en förlust, medan depression kan vara bredare och påverka hela vardagen under längre tid.'
 			},
 			{
-				question: 'Kan sorg ocksa vara tung och ?vervaldiga?',
+				question: 'Kan sorg ocksa vara tung och överväldigar?',
 				answer: 'Ja, sorg kan vara mycket stark och påverka bade kropp, sömn och ork, utan att det betyder att det ar depression.'
 			},
 			{
 				question: 'Kan man ha bade sorg och depression samtidigt?',
-				answer: 'Ja, de kan ?verlapp? varandra och ibland gora det svårt att själv avgora vad som pågår.'
+				answer: 'Ja, de kan överlappa varandra och ibland gora det svårt att själv avgora vad som pågår.'
 			},
 			{
 				question: 'Varför spelar skillnaden roll?',
-				answer: 'for att stodet ibland ser olika ut, och det kan vara viktigt att först? vad som driver måendet just nu.'
+				answer: 'for att stodet ibland ser olika ut, och det kan vara viktigt att förstå vad som driver måendet just nu.'
 			}
 		],
 		relatedArticles: [
@@ -403,7 +403,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/trotthet-och-meningsloshet'
 			},
 			{
-				title: 'Sm? steg när energin tryter - vad som faktiskt kan hjälpa',
+				title: 'Små steg när energin tryter - vad som faktiskt kan hjälpa',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
@@ -416,7 +416,7 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Varför hjälper små steg battre an stora planer?',
-				answer: 'När orken ar låg blir for stora krav ofta ?vervaldiga, medan små steg ar lattare att genomföra och bygga vidare på.'
+				answer: 'När orken ar låg blir for stora krav ofta överväldigar, medan små steg ar lattare att genomföra och bygga vidare på.'
 			},
 			{
 				question: 'Vad kan ett litet steg vara?',
@@ -450,7 +450,7 @@ export const guides: Guide[] = [
 		pillarSlug: 'trauma',
 		slug: 'trygghet',
 		title: 'Trygghet efter trauma',
-		description: 'Om ?verstarkta stressreaktioner och hur trygghet kan byggas upp igen.',
+		description: 'Om överstärkta stressreaktioner och hur trygghet kan byggas upp igen.',
 		faqs: [
 			{
 				question: 'Vad ar en vanlig reaktion efter trauma?',
@@ -458,11 +458,11 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Varför reagerar kroppen sa starkt?',
-				answer: 'Nervsystemet kan sta kvar i hog beredskap efter en ?vervaldigande handelse.'
+				answer: 'Nervsystemet kan sta kvar i hog beredskap efter en överväldigande handelse.'
 			},
 			{
 				question: 'Hur bygger jag mer trygghet i vardagen?',
-				answer: 'Sm? förutsägbara rutiner, grounding och trygg kontakt med andra brukar vara hjälpsamt.'
+				answer: 'Små förutsägbara rutiner, grounding och trygg kontakt med andra brukar vara hjälpsamt.'
 			},
 			{
 				question: 'När bor jag prata med en terapeut?',
@@ -496,7 +496,7 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Vad betyder fight, flight och freeze?',
-				answer: 'Det ar kroppens automatiska ?verlevnadsreaktioner när nagot upplevs som hotfullt eller ?vervaldiga.'
+				answer: 'Det ar kroppens automatiska överlevnadsreaktioner när nagot upplevs som hotfullt eller överväldigar.'
 			},
 			{
 				question: 'Varför reagerar kroppen sa snabbt?',
@@ -507,7 +507,7 @@ export const guides: Guide[] = [
 				answer: 'Ja, kroppen kan reagera före den medvetna tanken hinner ikapp, sarskilt om den lart sig att vara på sin vakt.'
 			},
 			{
-				question: 'Hjälper det att först? reaktionen?',
+				question: 'Hjälper det att förstå reaktionen?',
 				answer: 'Ofta ja. Att se reaktionen som ett skyddssystem snarare an ett personligt fel kan minska skam och förvirring.'
 			}
 		],
@@ -517,7 +517,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/trauma/trygghet'
 			},
 			{
-				title: 'Grounding - enkla ?vningar for att landa i kroppen igen',
+				title: 'Grounding - enkla övningar for att landa i kroppen igen',
 				href: '/guider-seo/trauma/grounding-ovningar'
 			},
 			{
@@ -529,8 +529,8 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'trauma',
 		slug: 'grounding-ovningar',
-		title: 'Grounding - enkla ?vningar for att landa i kroppen igen',
-		description: 'Om grounding som ett satt att aterf? orientering och kontakt med nuet när kroppen ar i alarm.',
+		title: 'Grounding - enkla övningar for att landa i kroppen igen',
+		description: 'Om grounding som ett satt att återfå orientering och kontakt med nuet när kroppen ar i alarm.',
 		faqs: [
 			{
 				question: 'Vad ar grounding?',
@@ -538,7 +538,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'När kan grounding vara hjälpsamt?',
-				answer: 'Det kan hjälpa vid ?verstark aktivering, flashbacks, dissociation eller när du kanner att du tappar fotfästet.'
+				answer: 'Det kan hjälpa vid överstärkt aktivering, flashbacks, dissociation eller när du kanner att du tappar fotfästet.'
 			},
 			{
 				question: 'Maste jag gora det perfekt for att det ska fungera?',
@@ -572,11 +572,11 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Varför undviker jag vissa platser eller situationer?',
-				answer: 'Undvikande ar ofta ett satt att minska risken att triggas eller ?vervaldigas igen.'
+				answer: 'Undvikande ar ofta ett satt att minska risken att triggas eller överväldigas igen.'
 			},
 			{
 				question: 'Ar undvikande alltid fel?',
-				answer: 'Nej, det kan vara ett först? skydd. Problemet uppstar när det börjar styra allt mer av vardagen.'
+				answer: 'Nej, det kan vara ett första skydd. Problemet uppstar när det börjar styra allt mer av vardagen.'
 			},
 			{
 				question: 'Hur kan undvikande påverka livet på sikt?',
@@ -593,7 +593,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/trauma/trygghet'
 			},
 			{
-				title: 'Grounding - enkla ?vningar for att landa i kroppen igen',
+				title: 'Grounding - enkla övningar for att landa i kroppen igen',
 				href: '/guider-seo/trauma/grounding-ovningar'
 			},
 			{
@@ -614,7 +614,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Kan jag vilja ha närhet men samtidigt dra mig undan?',
-				answer: 'Ja, det ar vanligt att langta efter kontakt och samtidigt kanna att den blir for utsatt eller ?vervaldiga.'
+				answer: 'Ja, det ar vanligt att langta efter kontakt och samtidigt kanna att den blir for utsatt eller överväldigar.'
 			},
 			{
 				question: 'Hur bygger man upp tillit igen?',
@@ -635,7 +635,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/trauma/undvikande-efter-trauma'
 			},
 			{
-				title: 'Grounding - enkla ?vningar for att landa i kroppen igen',
+				title: 'Grounding - enkla övningar for att landa i kroppen igen',
 				href: '/guider-seo/trauma/grounding-ovningar'
 			}
 		]
@@ -652,7 +652,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Ar sömnproblem ett tecken på nagonting allvarligt?',
-				answer: 'Inte alltid, men langvariga sömnproblem kan vara kopplade till ?ngest, depression eller stress som förtjänar uppmarksamhet.'
+				answer: 'Inte alltid, men langvariga sömnproblem kan vara kopplade till ångest, depression eller stress som förtjänar uppmarksamhet.'
 			},
 			{
 				question: 'Kan man tranas upp till battre sömn?',
@@ -722,7 +722,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Kan kvallsoro gora att jag somnar senare?',
-				answer: 'Ja, mental aktivering på kvallen kan gora det svare att komma ner i ro och slapp? taget om dagen.'
+				answer: 'Ja, mental aktivering på kvallen kan gora det svare att komma ner i ro och slappa taget om dagen.'
 			},
 			{
 				question: 'Vad kan hjälpa när tankarna snurrar i sangen?',
@@ -738,7 +738,7 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Hur kan jag vara trott men anda inte kunna somna?',
-				answer: 'Det hander när kroppen behöver vila men hjärnan fortfarande ar aktiv av stress, oro eller ?verstimulering.'
+				answer: 'Det hander när kroppen behöver vila men hjärnan fortfarande ar aktiv av stress, oro eller överstimulering.'
 			},
 			{
 				question: 'Ar det vanligt att kanna sig rastlos på kvallen?',
@@ -750,7 +750,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Vad kan minska den har känslan?',
-				answer: 'Lugna ?verganger, mindre press kring sömnen och regelbundna stunder for återhämtning under dagen kan gora skillnad ?ver tid.'
+				answer: 'Lugna övergångar, mindre press kring sömnen och regelbundna stunder for återhämtning under dagen kan gora skillnad över tid.'
 			}
 		]
 	},
@@ -790,11 +790,11 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Kan låg självkänsla förändra sig?',
-				answer: 'Ja. Självkänsla ar inte fast – den påverkas av erfarenheter, relationer och hur vi bearbetar dem ?ver tid.'
+				answer: 'Ja. Självkänsla ar inte fast – den påverkas av erfarenheter, relationer och hur vi bearbetar dem över tid.'
 			},
 			{
 				question: 'Varför ar det svårt att ta emot berom?',
-				answer: 'Vid låg självkänsla stammer inte berom ?verens med den inre bilden av sig själv, och hjärnan tenderar att avfärda det som oarligt.'
+				answer: 'Vid låg självkänsla stammer inte berom överens med den inre bilden av sig själv, och hjärnan tenderar att avfärda det som oarligt.'
 			},
 			{
 				question: 'Hur börjar man arbeta med självkänsla?',
@@ -824,7 +824,7 @@ export const guides: Guide[] = [
 		pillarSlug: 'sjalvkansla',
 		slug: 'inre-kritikern',
 		title: 'Den inre kritikern - varför rosten finns och vad den egentligen vill',
-		description: 'Om den självkritiska rosten, var den kan komma fran och hur du kan först? den utan att styras av den.',
+		description: 'Om den självkritiska rosten, var den kan komma fran och hur du kan förstå den utan att styras av den.',
 		faqs: [
 			{
 				question: 'Varför ar jag sa hard mot mig själv?',
@@ -836,11 +836,11 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Kan den inre kritikern ha en funktion?',
-				answer: 'Ja, den försöker ofta hjälp? genom kontroll, men den gor det på ett satt som kan bli hart och nedbrytande.'
+				answer: 'Ja, den försöker ofta hjälpa genom kontroll, men den gor det på ett satt som kan bli hart och nedbrytande.'
 			},
 			{
 				question: 'Hur kan jag börja förändra den rosten?',
-				answer: 'Ett först? steg ar att lägga marke till tonen och orden, sa att du kan skilja rosten fran det du faktiskt behöver.'
+				answer: 'Ett första steg ar att lägga marke till tonen och orden, sa att du kan skilja rosten fran det du faktiskt behöver.'
 			}
 		],
 		relatedArticles: [
@@ -878,7 +878,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Vad kan hjälpa',
-				answer: 'Att upptacka dina egna krav och prova mer tillrackligt bra i små situationer kan minska trycket ?ver tid.'
+				answer: 'Att upptacka dina egna krav och prova mer tillrackligt bra i små situationer kan minska trycket över tid.'
 			}
 		],
 		relatedArticles: [
@@ -891,7 +891,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/sjalvkansla/inre-kritikern'
 			},
 			{
-				title: 'Sm? steg när energin tryter - vad som faktiskt kan hjälpa',
+				title: 'Små steg när energin tryter - vad som faktiskt kan hjälpa',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
@@ -907,15 +907,15 @@ export const guides: Guide[] = [
 				answer: 'När självkänslan ar låg blir andras reaktioner ofta extra viktiga, och da kan ett nej kannas riskfyllt.'
 			},
 			{
-				question: 'Kan låg självkänsla gora att jag gar ?ver mina egna behov?',
+				question: 'Kan låg självkänsla gora att jag gar över mina egna behov?',
 				answer: 'Ja, det ar vanligt att prioritera andras behov for att undvika skuld, konflikt eller känslan av att vara besvarlig.'
 			},
 			{
 				question: 'Hur marks det att jag saknar gränser?',
-				answer: 'Du kanske sager ja fast du inte vill, blir ?verbelastad eller kanner bitterhet efterat utan att riktigt veta varför.'
+				answer: 'Du kanske sager ja fast du inte vill, blir överbelastad eller kanner bitterhet efterat utan att riktigt veta varför.'
 			},
 			{
-				question: 'Vad ar ett litet först? steg?',
+				question: 'Vad ar ett litet första steg?',
 				answer: 'Att börja lägga marke till när du egentligen vill dra en gräns kan vara ett viktigt steg innan du uttrycker den hogt.'
 			}
 		],
