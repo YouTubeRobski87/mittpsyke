@@ -265,7 +265,7 @@
 		font-size: clamp(1rem, 1.7vw, 1.15rem);
 		line-height: 1.65;
 		letter-spacing: -0.005em;
-		color: rgba(255, 255, 255, 0.9);
+		color: #ffffff;
 	}
 
 	.hero-cta {
@@ -347,7 +347,7 @@
 		line-height: 1.7;
 		font-size: 1rem;
 		letter-spacing: -0.005em;
-		color: rgba(255, 255, 255, 0.9);
+		color: #ffffff;
 	}
 
 	ul {
@@ -356,7 +356,7 @@
 		font-family: var(--font-body);
 		font-weight: 400;
 		line-height: 1.7;
-		color: rgba(255, 255, 255, 0.9);
+		color: #ffffff;
 	}
 
 	.focus-section {
@@ -747,7 +747,7 @@
 		font-size: 0.82rem;
 		font-weight: 900;
 		letter-spacing: -0.02em;
-		color: rgba(255, 255, 255, 0.9);
+		color: #ffffff;
 	}
 
 	.mode-list {
