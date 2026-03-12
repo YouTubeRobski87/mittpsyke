@@ -1,4 +1,4 @@
-﻿// src/routes/api/diary/insights/+server.ts
+// src/routes/api/diary/insights/+server.ts
 import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { createClient } from '@supabase/supabase-js';
@@ -42,14 +42,15 @@ export const GET: RequestHandler = async ({ request }) => {
 
 		const thirtyDaysAgo = new Date();
 		thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-		const startDate = thirtyDaysAgo.toISOString().split('T')[0];
+		const startDate = thirtyDaysAgo.toISOString();
 
+		// Rätta kolumnnamn: created_at (inte date), text (inte content)
 		const { data: entries, error } = await supabase
 			.from('diary')
-			.select('date, mood, content')
+			.select('created_at, mood, text')
 			.eq('user_id', user.id)
-			.gte('date', startDate)
-			.order('date', { ascending: true });
+			.gte('created_at', startDate)
+			.order('created_at', { ascending: true });
 
 		if (error) return json({ error: error.message }, { status: 500 });
 		if (!entries || entries.length < 3) {
@@ -63,12 +64,13 @@ export const GET: RequestHandler = async ({ request }) => {
 		Object.keys(EMOTION_KEYWORDS).forEach((e) => { emotionCounts[e] = 0; });
 
 		for (const entry of entries) {
-			const date = new Date(entry.date);
+			const date = new Date(entry.created_at);
 			const dayName = WEEKDAYS[date.getDay()];
-			if (entry.mood) weekdayMoods[dayName].push(entry.mood);
+			const moodNum = entry.mood ? parseFloat(entry.mood) : null;
+			if (moodNum !== null && !isNaN(moodNum)) weekdayMoods[dayName].push(moodNum);
 
-			if (entry.content) {
-				const contentLower = entry.content.toLowerCase();
+			if (entry.text) {
+				const contentLower = entry.text.toLowerCase();
 				for (const [emotion, keywords] of Object.entries(EMOTION_KEYWORDS)) {
 					if (keywords.some((k) => contentLower.includes(k))) emotionCounts[emotion]++;
 				}
@@ -97,7 +99,7 @@ export const GET: RequestHandler = async ({ request }) => {
 			});
 		}
 
-		const moods = entries.map((e) => e.mood).filter(Boolean);
+		const moods = entries.map((e) => parseFloat(e.mood)).filter((m) => !isNaN(m));
 		if (moods.length >= 5) {
 			const firstHalf = moods.slice(0, Math.floor(moods.length / 2));
 			const secondHalf = moods.slice(Math.floor(moods.length / 2));
@@ -124,7 +126,7 @@ export const GET: RequestHandler = async ({ request }) => {
 			const emotionLabels: { [key: string]: string } = {
 				anxiety: 'oro och ångest',
 				sadness: 'ledsenhet',
-				joy: 'gladje och positivitet',
+				joy: 'glädje och positivitet',
 				anger: 'frustration',
 				calm: 'lugn och harmoni'
 			};
@@ -137,7 +139,9 @@ export const GET: RequestHandler = async ({ request }) => {
 		}
 
 		const recentEntries = entries.slice(-7);
-		const recentText = recentEntries.map((e) => `[${e.date}] Humör: ${e.mood}/10\n${e.content || ''}`).join('\n\n');
+		const recentText = recentEntries
+			.map((e) => `[${new Date(e.created_at).toISOString().split('T')[0]}] Humör: ${e.mood}/10\n${e.text || ''}`)
+			.join('\n\n');
 
 		let aiSummary = null;
 		try {
@@ -167,4 +171,3 @@ export const GET: RequestHandler = async ({ request }) => {
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
-
