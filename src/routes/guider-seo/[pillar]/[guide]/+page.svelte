@@ -5,6 +5,12 @@
 
 	let { data } = $props<{ data: PageData }>();
 
+	function formatDate(iso: string): string {
+		const months = ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
+		const [year, month, day] = iso.split('-');
+		return `${parseInt(day)} ${months[parseInt(month) - 1]} ${year}`;
+	}
+
 	const jsonLdArticle = $derived({
 		"@context": "https://schema.org",
 		"@type": "Article",
@@ -92,7 +98,7 @@
 	{#if data.guide.sources?.length || data.guide.updatedAt}
 		<section class="mt-10 border-t border-black/10 pt-6" aria-label="Källor och vidare läsning">
 			{#if data.guide.updatedAt}
-				<p class="mb-3 text-xs text-black/50">Senast uppdaterad: {data.guide.updatedAt}</p>
+				<p class="mb-3 text-xs text-black/50">Senast uppdaterad: {formatDate(data.guide.updatedAt)}</p>
 			{/if}
 			{#if data.guide.sources?.length}
 				<h2 class="text-base font-semibold">Källor och vidare läsning</h2>

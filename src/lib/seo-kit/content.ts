@@ -370,9 +370,9 @@ export const guides: Guide[] = [
 		]
 		updatedAt: '2026-03-12',
 		sources: [
-			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
-			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
-		],
+        { label: '1177 – Depression', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression-och-nedstamdhet/depression/' },
+        { label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/psykisk-ohalsa/' }
+      ],
 	},
 	{
 		pillarSlug: 'depression',
@@ -456,9 +456,9 @@ export const guides: Guide[] = [
 		]
 		updatedAt: '2026-03-12',
 		sources: [
-			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
-			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/' },
-		],
+        { label: '1177 – Sorg och kris', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sorg-och-kris/' },
+        { label: '1177 – Depression', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression-och-nedstamdhet/depression/' }
+      ],
 	},
 	{
 		pillarSlug: 'depression',
