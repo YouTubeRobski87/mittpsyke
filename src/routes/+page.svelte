@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { portals } from '$lib/data/portals';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
@@ -84,50 +84,6 @@
 		</div>
 	</section>
 
-	<section class="support-options" aria-label="Vägar in till MittPsyke">
-		<div class="narrow support-options-inner">
-			<h2>Välj hur du vill börja</h2>
-			<p>Börja anonymt direkt eller skapa konto om du vill kunna återvända.</p>
-			<div class="support-grid">
-				<div class="support-card support-card-primary">
-					<h3>Börja anonymt</h3>
-					<p>Välj ett fokusområde och öppna rätt samtalsstöd direkt, utan konto.</p>
-					<a href="#fokusomraden" class="support-button">Välj fokusområde</a>
-				</div>
-				<div class="support-card support-card-phone">
-					<h3>Skapa konto</h3>
-					<p>Få en egen plats för dagbok, historik och framsteg när du vill följa ditt mående över tid.</p>
-					<a href="/register" class="support-button">Skapa konto</a>
-				</div>
-			</div>
-			<div class="support-links" aria-label="Fler vägar in">
-				<a href="/guider" class="support-link-chip">Guider</a>
-				<a href="/ovningar" class="support-link-chip">Övningar</a>
-				<a href="https://stodlinjer.se" class="support-link-chip" rel="noopener noreferrer" target="_blank">Stödlinjer</a>
-			</div>
-		</div>
-	</section>
-
-
-	<section class="account-value" aria-label="Varför skapa konto">
-		<div class="narrow account-value-inner">
-			<div>
-				<h2>Om du vill kunna komma tillbaka</h2>
-				<p>Med konto kan du spara det som betyder något, skriva i dagboken och följa mönster över tid.</p>
-			</div>
-			<div class="account-value-list">
-				<p><strong>Dagbok:</strong> skriv i din egen takt.</p>
-				<p><strong>Historik och framsteg:</strong> se vad som förändras över tid.</p>
-				<p><strong>En egen plats:</strong> återvänd när du vill.</p>
-			</div>
-			<div class="hero-actions">
-				<a href="/register" class="hero-cta hero-cta-primary">Skapa konto</a>
-				<a href="/om-mittpsyke" class="hero-cta hero-cta-secondary">Läs hur det fungerar</a>
-			</div>
-		</div>
-	</section>
-
-
 	<section class="video-section">
 		<div class="video-inner">
 			<h2>Se hur MittPsyke fungerar</h2>
@@ -141,25 +97,6 @@
 		</div>
 	</section>
 
-	<section class="seo-intro">
-		<div class="narrow seo-inner">
-			<h2>Verktyg mot ångest och personlig utveckling</h2>
-			<p>
-				Att hitta rätt verktyg mot ångest online kan vara avgörande. Genom vår digitala dagbok och chattfunktion kan du i din egen takt bearbeta tankar och känslor. Vi erbjuder även specialiserat <a href="/trauma">samtalsstöd vid trauma</a> för dig som behöver bearbeta svåra upplevelser i en trygg miljö.
-			</p>
-			<p>
-				Om du vill läsa mer kan du börja här: <a href="/psykiskt-stod-online">psykiskt stöd online</a>,
-				<a href="/anonymt-samtalsstod-online">anonymt samtalsstöd online</a> och
-				<a href="/hjalp-vid-angest-online">hjälp vid ångest online</a>.
-			</p>
-			<ul class="seo-features">
-				<li><strong>Integritet &amp; Trygghet:</strong> Vi värnar om din integritet. Läs mer i integritetspolicyn.</li>
-				<li><strong>Enkelt att använda:</strong> Din personliga dashboard ger dig full överblick över din utveckling.</li>
-				<li><strong>Erfarenhet som grund:</strong> Plattformen är byggd för lugn reflektion, tydliga ramar och stöd i vardagen.</li>
-			</ul>
-		</div>
-	</section>
-
 	<section class="content-hub">
 		<div class="narrow cards-narrow hub-inner">
 			<h2>Guider och övningar</h2>
@@ -169,7 +106,7 @@
 			<div class="hub-grid">
 				<a class="hub-card" href="/guider">
 					<h3>Guider</h3>
-					<p>8 fokusområden med klusterartiklar inom psykiskt mående.</p>
+					<p>9 fokusområden med klusterartiklar inom psykiskt mående.</p>
 					<span>Gå till guider</span>
 				</a>
 				<a class="hub-card" href="/ovningar">
@@ -573,142 +510,6 @@
 		letter-spacing: 0.005em;
 	}
 
-	.support-options {
-		padding: 2rem 1.25rem 1.25rem;
-		background: #172330;
-	}
-
-	.support-options-inner > h2 {
-		font-size: clamp(1.35rem, 2.7vw, 1.9rem);
-		color: #f3f8fd;
-	}
-
-	.support-options-inner > p {
-		margin: 0.55rem 0 0;
-		color: #c7d6e5;
-	}
-
-	.account-value {
-		padding: 1.9rem 1.25rem 2.4rem;
-		background: #f3f6f8;
-		color: #263036;
-	}
-
-	.account-value-inner {
-		display: grid;
-		gap: 0.85rem;
-	}
-
-	.account-value-inner h2 {
-		font-size: clamp(1.3rem, 2.6vw, 1.85rem);
-	}
-
-	.account-value-inner > div > p {
-		margin: 0.65rem 0 0;
-		color: #516069;
-	}
-
-	.account-value-list {
-		display: grid;
-		gap: 0.45rem;
-	}
-
-	.account-value-list p {
-		margin: 0;
-		padding: 0.75rem 0.85rem;
-		background: #ffffff;
-		border: 1px solid #dce5eb;
-		border-radius: 12px;
-		color: #44525a;
-		font-size: 0.95rem;
-	}
-
-	/* Stodkort-grid */
-	.support-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 30px;
-		max-width: 100%;
-		margin: 1rem 0 0;
-		padding: 0;
-	}
-
-	.support-card {
-		background: #f4f7f5;
-		padding: 30px;
-		border-radius: 16px;
-		text-align: center;
-		color: #2c3338;
-	}
-
-	.support-card h3 {
-		margin: 0 0 10px;
-		color: #263036;
-		font-family: var(--font-heading);
-		font-weight: 700;
-		font-size: 1.25rem;
-		letter-spacing: -0.015em;
-	}
-
-	.support-card p {
-		margin: 0;
-		color: #516069;
-		font-family: var(--font-body);
-		font-weight: 400;
-		line-height: 1.7;
-		font-size: 1rem;
-	}
-
-	.support-card-phone {
-		border: 1px solid #c7d4cc;
-	}
-
-	.support-card-primary {
-		border: 1px solid #aec0b0;
-		background: #eff5f0;
-	}
-
-	.support-links {
-		margin-top: 1rem;
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-		gap: 0.75rem;
-	}
-
-	.support-link-chip {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.85rem 1rem;
-		border-radius: 12px;
-		background: #24384d;
-		border: 1px solid rgba(255, 255, 255, 0.16);
-		color: #f3f8fd;
-		font-weight: 600;
-	}
-
-	.support-link-chip:hover {
-		background: #2b435b;
-	}
-
-	.support-button {
-		display: inline-block;
-		margin-top: 15px;
-		background: #6b8e7a;
-		color: white;
-		padding: 12px 22px;
-		border-radius: 10px;
-		text-decoration: none;
-		font-size: 1rem;
-		font-weight: 600;
-		transition: background 0.2s ease, transform 0.2s ease;
-	}
-
-	.support-button:hover {
-		background: #557a66;
-		transform: translateY(-2px);
-	}
-
 	.hero-facts {
 		margin-top: 1rem;
 		padding: 0.9rem 1rem;
@@ -864,107 +665,6 @@
 		background: #1b2b3a;
 	}
 
-	:global(.dark) .support-card {
-		background: #1e2422;
-		color: #e8e6e2;
-	}
-
-	:global(.dark) .support-options {
-		background: #1a2129;
-	}
-
-	:global(.dark) .support-options-inner > h2 {
-		color: #f0eeea;
-	}
-
-	:global(.dark) .support-options-inner > p {
-		color: rgba(255, 255, 255, 0.65);
-	}
-
-	:global(.dark) .account-value {
-		background: #171b20;
-		color: #ece7e1;
-	}
-
-	:global(.dark) .account-value-inner > div > p {
-		color: rgba(255, 255, 255, 0.72);
-	}
-
-	:global(.dark) .account-value-list p {
-		background: #222830;
-		border-color: rgba(255, 255, 255, 0.12);
-		color: rgba(255, 255, 255, 0.82);
-	}
-
-	:global(.dark) .support-card h3 {
-		color: #f0eeea;
-	}
-
-	:global(.dark) .support-card p {
-		color: rgba(255, 255, 255, 0.65);
-	}
-
-	.seo-intro {
-		padding: clamp(2.5rem, 6vw, 4rem) 1.25rem;
-		background: #f4f6f7;
-		color: #2c3338;
-	}
-
-	.seo-inner {
-		max-width: 760px;
-	}
-
-	.seo-intro h2 {
-		margin: 0 0 1rem;
-		color: #263036;
-		font-family: var(--font-heading);
-		font-weight: 700;
-		font-size: clamp(1.5rem, 2.8vw, 2rem);
-		letter-spacing: -0.02em;
-	}
-
-	.seo-intro p {
-		margin: 0;
-		color: #516069;
-		font-family: var(--font-body);
-		font-weight: 400;
-		line-height: 1.75;
-		font-size: 1rem;
-	}
-
-	.seo-intro a {
-		color: #0f766e;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	.seo-features {
-		margin: 1.2rem 0 0;
-		padding-left: 1.4rem;
-		color: #516069;
-		font-family: var(--font-body);
-		line-height: 1.75;
-	}
-
-	.seo-features li + li {
-		margin-top: 0.5rem;
-	}
-
-	:global(.dark) .seo-intro {
-		background: #1a1c1d;
-		color: #e8e6e2;
-	}
-
-	:global(.dark) .seo-intro h2 {
-		color: #f0eeea;
-	}
-
-	:global(.dark) .seo-intro p,
-	:global(.dark) .seo-features {
-		color: rgba(255, 255, 255, 0.65);
-	}
-
-
 	.video-section {
 		padding: clamp(2.5rem, 6vw, 4rem) 1.25rem;
 		background: #1b2b3a;
@@ -1006,21 +706,4 @@
 		display: block;
 		border-radius: var(--radius-card);
 	}
-
-
-	:global(.dark) .support-card-primary {
-		background: #222d29;
-		border-color: rgba(173, 204, 180, 0.28);
-	}
-
-	:global(.dark) .support-link-chip {
-		background: #1f2a36;
-		border-color: rgba(255, 255, 255, 0.14);
-	}
-
-	:global(.dark) .support-link-chip:hover {
-		background: #243241;
-	}
 </style>
-
-

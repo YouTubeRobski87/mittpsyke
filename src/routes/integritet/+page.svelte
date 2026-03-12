@@ -40,6 +40,17 @@
 		<li>Uppgifter om användning av webbsamtal eller AI-funktioner när du aktivt väljer att använda dem.</li>
 	</ul>
 
+	<section class="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 sm:p-5 mt-2 mb-6" aria-label="Känsliga uppgifter">
+		<h3 class="text-base font-semibold mt-0 mb-2">Känsliga uppgifter (artikel 9 GDPR)</h3>
+		<p class="opacity-80 leading-relaxed text-sm">
+			Innehåll som du delar i chatt, dagbok eller röstsamtal kan röra psykisk hälsa och betraktas som
+			<strong>känsliga personuppgifter</strong> enligt GDPR artikel 9. Sådana uppgifter behandlas enbart
+			med ditt <strong>uttryckliga samtycke</strong>, vilket du lämnar i samband med att du börjar använda
+			tjänstens AI-funktioner. Du kan när som helst återkalla samtycket genom att radera ditt konto eller
+			kontakta oss.
+		</p>
+	</section>
+
 	<h2 class="text-lg font-semibold mt-8 mb-2">Varför uppgifterna behandlas</h2>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li>För att skapa och hantera konto och inloggning.</li>
@@ -51,16 +62,26 @@
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Rättslig grund</h2>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
-		<li>Leverans av tjänstens funktioner när du använder konto och innehåll.</li>
-		<li>Rättsliga skyldigheter när lag kräver behandling.</li>
-		<li>Berättigade intressen, till exempel säkerhet, missbruksförebyggande arbete och stabil drift.</li>
+		<li><strong>Samtycke</strong> – för behandling av känsliga uppgifter om psykisk hälsa (artikel 9.2a GDPR).</li>
+		<li><strong>Samtycke</strong> – för analyskakor och statistik (du väljer i cookie-bannern).</li>
+		<li><strong>Avtal</strong> – leverans av tjänstens funktioner när du använder konto och innehåll.</li>
+		<li><strong>Rättsliga skyldigheter</strong> – när lag kräver behandling.</li>
+		<li><strong>Berättigade intressen</strong> – säkerhet, missbruksförebyggande arbete och stabil drift.</li>
 	</ul>
+
+	<h2 class="text-lg font-semibold mt-8 mb-2">Kakor och analyser</h2>
+	<p class="opacity-80 leading-relaxed mb-3">
+		MittPsyke använder Vercel Analytics för att förstå hur sajten används och förbättra upplevelsen.
+		Dessa analysverktyg aktiveras <strong>endast om du godkänner</strong> det i cookie-bannern som visas
+		vid ditt första besök. Du kan när som helst ändra ditt val genom att rensa cookies i din webbläsare.
+	</p>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Lagringstid</h2>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
-		<li>Uppgifter sparas så länge de behövs för att tillhandahålla tjänsten och hantera säkerhet, support och felsökning.</li>
-		<li>Kontorelaterade uppgifter sparas normalt så länge kontot är aktivt eller tills du begär radering.</li>
-		<li>När uppgifter inte längre behövs raderas eller anonymiseras de när det är möjligt.</li>
+		<li>Kontorelaterade uppgifter sparas så länge kontot är aktivt eller tills du begär radering.</li>
+		<li>Chatt- och dagboksinnehåll sparas så länge du har ett aktivt konto och inte raderar innehållet själv.</li>
+		<li>Tekniska loggar och säkerhetsuppgifter sparas normalt i upp till 90 dagar.</li>
+		<li>När uppgifter inte längre behövs raderas eller anonymiseras de.</li>
 	</ul>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Tjänster och leverantörer</h2>
@@ -69,43 +90,36 @@
 		leverantörer i den utsträckning det behövs för att tjänsten ska fungera.
 	</p>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
-		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll.</li>
-		<li><strong>OpenAI:</strong> AI-funktioner som chatt och vissa AI-genererade sammanfattningar eller insikter.</li>
-		<li><strong>Retell:</strong> webbsamtal när du väljer att använda röstfunktionen.</li>
-		<li><strong>Vercel:</strong> drift, analys och prestandainsikter för webbplatsen.</li>
+		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll. Data lagras inom EU (Frankfurt).</li>
+		<li><strong>OpenAI:</strong> AI-funktioner som chatt och röstsamtal. OpenAI använder inte API-data för att träna sina modeller. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
+		<li><strong>Retell:</strong> röstsamtalsfunktionen. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
+		<li><strong>Vercel:</strong> hosting och leverans av webbplatsen. Analytics aktiveras endast med ditt samtycke. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
 	</ul>
 
-	<h2 class="text-lg font-semibold mt-8 mb-2">Cookies och lokal lagring</h2>
-	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
-		<li><strong>Nödvändiga cookies och teknisk lagring:</strong> inloggning, sessioner, säkerhet och grundfunktioner.</li>
-		<li><strong>Lokal lagring i webbläsaren:</strong> till exempel tema, senaste chattkategori och viss lokal samtalsinformation.</li>
-		<li><strong>Analys och prestanda:</strong> verktyg från Vercel för att förstå användning, upptäcka fel och förbättra stabilitet.</li>
-	</ul>
+	<section class="rounded-2xl border border-black/10 bg-black/[0.02] p-4 sm:p-5 mt-2 mb-6" aria-label="Tredjelandsöverföring">
+		<h3 class="text-base font-semibold mt-0 mb-2">Överföring utanför EU/EES</h3>
+		<p class="opacity-80 leading-relaxed text-sm">
+			Flera av våra leverantörer (OpenAI, Retell, Vercel) är baserade i USA. Överföring av personuppgifter
+			till dessa sker med stöd av EU-kommissionens <strong>standardavtalsklausuler (SCCs)</strong>, vilket
+			säkerställer ett adekvat skydd för dina uppgifter i enlighet med GDPR.
+		</p>
+	</section>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Dina rättigheter</h2>
-	<p class="opacity-80 leading-relaxed mb-3">
-		Beroende på behandling kan du bland annat begära information, rättelse, radering, invända mot viss behandling och
-		i vissa fall begära export av dina uppgifter.
-	</p>
+	<p class="opacity-80 leading-relaxed mb-3">Du har rätt att:</p>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
-		<li>Om du har konto kan du själv använda vissa funktioner, till exempel radera konto eller exportera dagbok där sådan funktion finns.</li>
-		<li>För frågor om rättigheter och personuppgifter: <a href="mailto:mittpsyke@ownit.nu" class="underline hover:no-underline">mittpsyke@ownit.nu</a>.</li>
-		<li>Du kan också lämna klagomål till Integritetsskyddsmyndigheten (IMY).</li>
+		<li>Få tillgång till de uppgifter vi behandlar om dig.</li>
+		<li>Begära rättelse av felaktiga uppgifter.</li>
+		<li>Begära radering av ditt konto och dina uppgifter.</li>
+		<li>Återkalla samtycke som du har lämnat.</li>
+		<li>Invända mot behandling som grundas på berättigade intressen.</li>
+		<li>Lämna klagomål till Integritetsskyddsmyndigheten (IMY) på <a href="https://www.imy.se" class="underline hover:no-underline" target="_blank" rel="noopener">imy.se</a>.</li>
 	</ul>
-
-	<h2 class="text-lg font-semibold mt-8 mb-2">Kontakt</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		Kontakt i integritetsfrågor:
-		<a href="mailto:mittpsyke@ownit.nu" class="underline hover:no-underline">mittpsyke@ownit.nu</a>
-	</p>
-	<p class="opacity-80 leading-relaxed">
-		Mer allmän information om tjänsten finns också på
-		<a href="/om-mittpsyke" class="underline hover:no-underline">Om MittPsyke</a>.
+		För att använda dina rättigheter, kontakta oss på
+		<a href="mailto:mittpsyke@ownit.nu" class="underline hover:no-underline">mittpsyke@ownit.nu</a>.
+		Vi strävar efter att svara inom 30 dagar.
 	</p>
 
-	<h2 class="text-lg font-semibold mt-8 mb-2">Ändringar i policyn</h2>
-	<p class="opacity-80 leading-relaxed">
-		Vi kan uppdatera den här policyn när tjänsten förändras eller när vi behöver förtydliga hur uppgifter hanteras.
-		Den senaste versionen finns alltid på den här sidan.
-	</p>
+	<p class="opacity-60 text-sm mt-10">Senast uppdaterad: mars 2026</p>
 </main>
