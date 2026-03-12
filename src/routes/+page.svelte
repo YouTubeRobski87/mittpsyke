@@ -67,6 +67,24 @@
 				<a href="#fokusomraden" class="hero-cta hero-cta-primary">Börja anonymt</a>
 				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
 			</div>
+			<div class="mode-compare" aria-label="Vad är skillnaden?">
+				<div class="mode-col">
+					<p class="mode-label">Anonymt läge</p>
+					<ul class="mode-list">
+						<li>Ingen registrering</li>
+						<li>Inget sparas</li>
+						<li>Börja direkt</li>
+					</ul>
+				</div>
+				<div class="mode-col">
+					<p class="mode-label">Med konto</p>
+					<ul class="mode-list">
+						<li>Spara dagbok och reflektioner</li>
+						<li>Följ ditt mående över tid</li>
+						<li>Fortsätt där du slutade</li>
+					</ul>
+				</div>
+			</div>
 			<div class="hero-facts" aria-label="Bra att veta innan du börjar">
 				<p class="hero-facts-title">Bra att veta innan du börjar</p>
 				<ul class="hero-facts-list">
@@ -706,4 +724,42 @@
 		display: block;
 		border-radius: var(--radius-card);
 	}
+
+	.mode-compare {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.5rem;
+		margin-top: 1rem;
+		padding: 0.85rem 1rem;
+		background: rgba(255, 255, 255, 0.07);
+		border: 1px solid rgba(255, 255, 255, 0.14);
+		text-align: left;
+	}
+
+	.mode-col {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.mode-label {
+		margin: 0 0 0.4rem;
+		font-size: 0.82rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.7);
+	}
+
+	.mode-list {
+		margin: 0;
+		padding-left: 1.1rem;
+		font-size: 0.9rem;
+		line-height: 1.6;
+		color: rgba(255, 255, 255, 0.85);
+	}
+
+	.mode-list li + li {
+		margin-top: 0.2rem;
+	}
+
 </style>
