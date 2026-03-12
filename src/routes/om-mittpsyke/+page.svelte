@@ -39,6 +39,25 @@
 			</ul>
 		</section>
 
+		<section class="section" id="metod">
+			<h2>Metod och förhållningssätt</h2>
+			<p>
+				MittPsyke använder ett lugnt, stödjande och reflekterande samtalsupplägg. Svaren är utformade
+				för att hjälpa användaren att sätta ord på det som känns svårt, sortera tankar, minska
+				överväldigande och hitta nästa lilla steg.
+			</p>
+			<p>
+				Samtalsstödet kan innehålla inslag som påminner om psykoedukation, grounding, mindfulnessnära
+				uppmärksamhet och KBT-inspirerad struktur, men ersätter inte terapi eller annan professionell vård.
+			</p>
+			<ul>
+				<li><strong>Traumamedvetet och lågtröskligt bemötande</strong> – möta dig utan krav på förklaring eller prestation.</li>
+				<li><strong>Stöd för reflektion och känsloreglering</strong> – hjälpa dig att sätta ord på det som känns och sortera tankar.</li>
+				<li><strong>Grounding och struktur</strong> – lugnande samtalsstöd med fokus på nästa lilla steg.</li>
+				<li><strong>Inte vård, diagnos eller behandling</strong> – tjänsten följer inte ett specifikt terapeutiskt protokoll och är inte evidensbaserad behandling i klinisk mening.</li>
+			</ul>
+		</section>
+
 		<!-- 2) Personlig story -->
 		<section class="story-section">
 			<div class="story-inner">
