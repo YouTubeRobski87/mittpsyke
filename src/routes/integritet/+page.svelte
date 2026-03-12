@@ -51,6 +51,73 @@
 		</p>
 	</section>
 
+	<!-- DATAFLÖDESKARTA -->
+	<h2 class="text-lg font-semibold mt-8 mb-1">Så hanteras uppgifter i tjänsten</h2>
+	<p class="opacity-70 text-sm leading-relaxed mb-4">
+		Tabellen nedan visar vilka uppgifter som behandlas, var de lagras, vilken rättslig grund som gäller och hur länge de sparas.
+	</p>
+	<div class="overflow-x-auto rounded-2xl border border-black/10 mb-6">
+		<table class="w-full text-sm leading-relaxed border-collapse">
+			<thead>
+				<tr class="bg-black/[0.04] text-left">
+					<th class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Datatyp</th>
+					<th class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">System / leverantör</th>
+					<th class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Region</th>
+					<th class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Rättslig grund</th>
+					<th class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Lagringstid</th>
+				</tr>
+			</thead>
+			<tbody class="opacity-80 divide-y divide-black/[0.06]">
+				<tr>
+					<td class="px-4 py-3">Kontouppgifter (e-post, namn)</td>
+					<td class="px-4 py-3">Supabase</td>
+					<td class="px-4 py-3">EU (Frankfurt)</td>
+					<td class="px-4 py-3">Avtal</td>
+					<td class="px-4 py-3">Tills kontot raderas</td>
+				</tr>
+				<tr class="bg-black/[0.01]">
+					<td class="px-4 py-3">Chatt och dagboksinnehåll</td>
+					<td class="px-4 py-3">Supabase + OpenAI</td>
+					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<td class="px-4 py-3">Samtycke</td>
+					<td class="px-4 py-3">Tills du raderar</td>
+				</tr>
+				<tr>
+					<td class="px-4 py-3">Anonyma chattsamtal (gäst)</td>
+					<td class="px-4 py-3">Supabase + OpenAI</td>
+					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<td class="px-4 py-3">Samtycke</td>
+					<td class="px-4 py-3">Tillfällig session</td>
+				</tr>
+				<tr class="bg-black/[0.01]">
+					<td class="px-4 py-3">Röstsamtal</td>
+					<td class="px-4 py-3">OpenAI + Retell</td>
+					<td class="px-4 py-3">USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<td class="px-4 py-3">Samtycke</td>
+					<td class="px-4 py-3">Bearbetas i realtid, sparas ej</td>
+				</tr>
+				<tr>
+					<td class="px-4 py-3">Tekniska loggar</td>
+					<td class="px-4 py-3">Supabase / Vercel</td>
+					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<td class="px-4 py-3">Berättigat intresse</td>
+					<td class="px-4 py-3">Upp till 90 dagar</td>
+				</tr>
+				<tr class="bg-black/[0.01]">
+					<td class="px-4 py-3">Analyskakor</td>
+					<td class="px-4 py-3">Vercel Analytics</td>
+					<td class="px-4 py-3">USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<td class="px-4 py-3">Samtycke</td>
+					<td class="px-4 py-3">Sessionbaserat</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<p class="opacity-60 text-xs leading-relaxed mb-6">
+		SCC = EU-kommissionens standardavtalsklausuler, som säkerställer ett adekvat skydd vid överföring av uppgifter till länder utanför EU/EES.
+		OpenAI använder inte API-data för att träna sina modeller.
+	</p>
+
 	<h2 class="text-lg font-semibold mt-8 mb-2">Varför uppgifterna behandlas</h2>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li>För att skapa och hantera konto och inloggning.</li>
