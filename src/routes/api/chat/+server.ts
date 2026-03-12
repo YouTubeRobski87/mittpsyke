@@ -24,8 +24,8 @@ Inte som en expert.
 Inte som en manual.
 
 Anpassa längden efter användarens text:
-- Kort input â†’ kort svar.
-- Längre reflektion â†’ något längre svar.
+- Kort input → kort svar.
+- Längre reflektion → något längre svar.
 - Skriv aldrig mer än situationen kräver.
 - Hellre lite för kort än för långt.
 
@@ -60,7 +60,7 @@ Variation och upprepning:
 
 Hellre ett kort, varmt svar än ett långt förklarande svar.
 Spegling:
-- Återanvänd ibland 1â€“3 av användarens egna ord eller uttryck.
+- Återanvänd ibland 1–3 av användarens egna ord eller uttryck.
 - Omformulera dem mjukt, inte ordagrant.
 - Spegla känslan bakom orden, inte bara innehållet.
 - Gör det subtilt.
@@ -79,7 +79,7 @@ Använd mikropauser:
 När du svarar:
 1. Spegla kort det du hör.
 2. Bekräfta utan att förstärka hopplöshet.
-3. Om det känns naturligt â€“ ställ en mjuk, öppen fråga.
+3. Om det känns naturligt – ställ en mjuk, öppen fråga.
    Max en fråga.
 
 Avslutsregel:
@@ -98,17 +98,58 @@ Om stark ångest, nedstämdhet eller trauma uttrycks:
 - Sänk tempot.
 - Undvik alarmism.
 - Undvik kliniskt språk.
-- Föreslå professionellt stöd endast om det verkligen behövs, sakligt och lugnt.
+- Om användaren verkar vara i akut kris – påminn lugnt om att ringa 112 eller Mind Självmordslinjen (90101).
 
 Undvik:
 - Listor med tips.
 - Färdiga lösningar.
-- â€Allt kommer bli braâ€.
+- "Allt kommer bli bra".
 - Att låta säker på sådant du inte kan veta.
 
 Du är inte en terapeut.
 Du är ett tryggt samtalsrum.
 `.trim();
+
+// ---------------------------------------------------------------------------
+// Krisorddetektering – körs alltid FÖRE AI-anrop
+// ---------------------------------------------------------------------------
+const CRISIS_PATTERNS = [
+	/självmord/i,
+	/ta livet av (mig|sig|oss|dig)/i,
+	/avsluta (mitt|sitt|livet|allt)/i,
+	/inte orkar leva/i,
+	/orkar inte leva/i,
+	/vill inte leva/i,
+	/vill (bara |helst )?(dö|vara död)/i,
+	/hoppas att jag dör/i,
+	/bättre om jag (var|vore) död/i,
+	/ingen anledning att leva/i,
+	/suicid/i,
+	/självskad/i,
+	/skada mig (själv)?/i,
+	/hoppa (från|av|ner)/i,
+	/inte vilja finnas/i,
+	/försvinna för alltid/i
+];
+
+function detectCrisis(text: string): boolean {
+	return CRISIS_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+const CRISIS_RESPONSE = `Det du skriver rör mig, och jag vill att du vet att du inte är ensam just nu.
+
+Det här är inte rätt plats för akut hjälp – men det finns människor som kan vara där för dig:
+
+**Ring 112** om du befinner dig i omedelbar fara.
+
+**Mind Självmordslinjen** – ring 90101, öppen dygnet runt.
+
+**1177** – för råd och vägledning om psykisk hälsa och vård.
+
+**Stödlinjer.se** – lista över fler stödlinjer och chattar.
+
+Jag finns kvar här om du vill prata vidare, men vid akut kris är en riktig människa viktigast just nu.`;
+// ---------------------------------------------------------------------------
 
 const CHAT_MODEL = (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
 
@@ -262,6 +303,23 @@ export const POST: RequestHandler = async ({ request }) => {
 	const token = getAccessToken(request.headers.get('authorization'));
 	const guestId = normalizeGuestId(body.guestId);
 	const isGuestRequest = !token;
+
+	// ---------------------------------------------------------------------------
+	// Krischeck – avbryt AI-anrop och returnera säkerhetssvar om riskord hittas
+	// ---------------------------------------------------------------------------
+	if (detectCrisis(message)) {
+		console.warn('[chat] crisis keywords detected', {
+			guest: isGuestRequest,
+			messageLength: message.length
+		});
+		return json({
+			reply: CRISIS_RESPONSE,
+			crisis: true,
+			conversationId: null,
+			mode: isGuestRequest ? 'guest' : 'user'
+		});
+	}
+	// ---------------------------------------------------------------------------
 
 	if (isGuestRequest) {
 		console.info('[chat][guest] request identified as guest', {
@@ -642,5 +700,3 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('AI error', 500);
 	}
 };
-
-
