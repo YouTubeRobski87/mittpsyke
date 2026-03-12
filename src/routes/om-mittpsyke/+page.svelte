@@ -62,6 +62,36 @@
 			</p>
 		</section>
 
+		<section class="section" id="innehall">
+			<h2>Innehåll och kvalitet</h2>
+			<p>
+				MittPsykes guider och texter är skrivna för att vara begripliga, lugna och stödjande –
+				utan medicinsk jargong eller onödig komplexitet.
+			</p>
+			<ul>
+				<li>
+					<strong>Hur tas innehållet fram?</strong><br />
+					Guiderna utgår från tillgänglig och välkänd information om psykisk hälsa. Relevanta externa
+					källor – som 1177 och Folkhälsomyndigheten – anges direkt i varje guide.
+				</li>
+				<li>
+					<strong>Uppdateras innehållet?</strong><br />
+					Ja. Guider granskas och uppdateras löpande. Senast uppdaterat-datum visas i botten av varje
+					guide.
+				</li>
+				<li>
+					<strong>Ersätter innehållet vård?</strong><br />
+					Nej. Allt innehåll är till för reflektion och vägledning, inte vård, diagnos eller behandling.
+				</li>
+				<li>
+					<strong>Fel eller förbättringsförslag?</strong><br />
+					Hör av dig till
+					<a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a> – vi tar emot rättelser och
+					förbättringsförslag löpande.
+				</li>
+			</ul>
+		</section>
+
 		<!-- 2) Personlig story -->
 		<section class="story-section">
 			<div class="story-inner">
@@ -748,5 +778,16 @@
 		background: rgba(255, 255, 255, 0.05);
 		color: rgba(255, 255, 255, 0.85);
 		border-color: rgba(134, 223, 214, 0.15);
+	}
+
+	.crisis-note {
+		margin-top: 1rem;
+		padding: 0.75rem 1rem;
+		border-radius: var(--radius-card);
+		border-left: 3px solid rgba(15, 118, 110, 0.4);
+		background: rgba(226, 240, 236, 0.5);
+		font-size: clamp(0.95rem, 0.92rem + 0.25vw, 1rem);
+		line-height: 1.6;
+		color: #2d3748;
 	}
 </style>
