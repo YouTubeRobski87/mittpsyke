@@ -28,7 +28,7 @@ export const pillars: Pillar[] = [
 	{
 		slug: 'angest',
 		title: 'Ångest',
-		description: 'F?rst? vanliga reaktioner vid ?ngest och hur du kan hantera dem stegvis.',
+		description: 'Förstå vanliga reaktioner vid ?ngest och hur du kan hantera dem stegvis.',
 		chatPath: '/chat/a'
 	},
 	{
@@ -46,13 +46,13 @@ export const pillars: Pillar[] = [
 	{
 		slug: 'sovproblem',
 		title: 'Sömnproblem',
-		description: 'F?rst? varf?r s?mnen uteblir och hur du kan b?rja hantera det som haller dig vaken.',
+		description: 'Förstå varför sömnen uteblir och hur du kan börja hantera det som haller dig vaken.',
 		chatPath: '/chat/a'
 	},
 	{
 		slug: 'sjalvkansla',
 		title: 'Självkänsla',
-		description: 'Om l?g sj?lvk?nsla, vad det beror p? och hur du kan b?rja utf?rska din relation till dig sj?lv.',
+		description: 'Om låg självkänsla, vad det beror på och hur du kan börja utforska din relation till dig själv.',
 		chatPath: '/chat/a'
 	}
 ];
@@ -83,19 +83,19 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Panikångest â€“ vad som händer i kroppen och hur du kan hantera det',
+				title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det',
 				href: '/guider-seo/angest/panikangest-och-kroppen'
 			},
 			{
-				title: 'Orostankar som snurrar â€“ när hjärnan inte kan stänga av',
+				title: 'Orostankar som snurrar – när hjärnan inte kan stänga av',
 				href: '/guider-seo/angest/orostankar'
 			},
 			{
-				title: 'Ångest och sömn â€“ varför natten kan bli svårare',
+				title: 'Ångest och sömn – varför natten kan bli svårare',
 				href: '/guider-seo/angest/angest-och-somn'
 			},
 			{
-				title: 'Social ångest â€“ rädslan för att bli bedömd av andra',
+				title: 'Social ångest – rädslan för att bli bedömd av andra',
 				href: '/guider-seo/angest/social-angest'
 			}
 		]
@@ -133,7 +133,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/angest/orostankar'
 			},
 			{
-				title: 'Ångest och sömn â€“ varför natten kan bli svårare',
+				title: 'Ångest och sömn – varför natten kan bli svårare',
 				href: '/guider-seo/angest/angest-och-somn'
 			}
 		]
@@ -201,11 +201,11 @@ export const guides: Guide[] = [
 		],
 		relatedArticles: [
 			{
-				title: 'Tecken p? ?ngest',
+				title: 'Tecken på ?ngest',
 				href: '/guider-seo/angest/tecken'
 			},
 			{
-				title: 'Varf?r kan jag inte sova',
+				title: 'Varför kan jag inte sova',
 				href: '/guider-seo/sovproblem/orsaker'
 			},
 			{
@@ -256,28 +256,28 @@ export const guides: Guide[] = [
 		pillarSlug: 'depression',
 		slug: 'nedstamdhet',
 		title: 'Nedstämdhet eller depression',
-		description: 'Skillnader mellan tillf?llig nedst?mdhet och depression.',
+		description: 'Skillnader mellan tillfällig nedstämdhet och depression.',
 		faqs: [
 			{
 				question: 'Hur vet jag om det ar depression?',
-				answer: 'Om nedst?mdhet, hopploshet eller energibrist sitter i under flera veckor och p?verkar vardagen.'
+				answer: 'Om nedstämdhet, hopploshet eller energibrist sitter i under flera veckor och påverkar vardagen.'
 			},
 			{
-				question: 'Ar tr?tthet ett vanligt tecken?',
-				answer: 'Ja, manga for minskad ork, sv?rt att komma igang och mindre intresse for tidigare aktiviteter.'
+				question: 'Ar trötthet ett vanligt tecken?',
+				answer: 'Ja, manga for minskad ork, svårt att komma igang och mindre intresse for tidigare aktiviteter.'
 			},
 			{
-				question: 'Kan sm? steg gora skillnad?',
+				question: 'Kan små steg gora skillnad?',
 				answer: 'Ja, f?sta rutiner, korta promenader och kontakt med andra kan vara viktiga f?rbattringssteg.'
 			},
 			{
-				question: 'N?r ar det akut att soka hj?lp?',
-				answer: 'Vid sj?lvskadetankar eller k?nsla av att inte vilja leva ska du soka akut hj?lp direkt.'
+				question: 'När ar det akut att soka hjälp?',
+				answer: 'Vid självskade tankar eller känsla av att inte vilja leva ska du soka akut hjälp direkt.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Trötthet och meningslöshet â€“ när ingenting känns värt att göra',
+				title: 'Trötthet och meningslöshet – när ingenting känns värt att göra',
 				href: '/guider-seo/depression/trotthet-och-meningsloshet'
 			},
 			{
@@ -285,11 +285,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			},
 			{
-				title: 'Skillnaden mellan sorg och depression â€“ och varför det spelar roll',
+				title: 'Skillnaden mellan sorg och depression – och varför det spelar roll',
 				href: '/guider-seo/depression/sorg-och-depression'
 			},
 			{
-				title: 'Små steg när energin tryter â€“ vad som f?ktiskt kan hjälp?',
+				title: 'Små steg när energin tryter – vad som f?ktiskt kan hjälp?',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
@@ -298,36 +298,36 @@ export const guides: Guide[] = [
 		pillarSlug: 'depression',
 		slug: 'trotthet-och-meningsloshet',
 		title: 'Trötthet och meningslöshet - när ingenting känns värt att göra',
-		description: 'Om tr?tthet, tomhet och k?nslan av att vardagen f?rlorar sin riktning.',
+		description: 'Om trötthet, tomhet och känslan av att vardagen förlorar sin riktning.',
 		faqs: [
 			{
-				question: 'Varf?r blir allt sa tungt n?r jag mar daligt?',
-				answer: 'Nedst?mdhet kan p?verka energi, motivation och k?nslan av mening, vilket gor att sm? saker kan kannas mycket stora.'
+				question: 'Varför blir allt sa tungt när jag mar daligt?',
+				answer: 'Nedstämdhet kan påverka energi, motivation och känslan av mening, vilket gor att små saker kan kannas mycket stora.'
 			},
 			{
-				question: 'Ar tr?ttheten bara fysisk?',
-				answer: 'Nej, den kan ocksa vara mental och k?nslom?ssig, som om allt i dig gar langsammare.'
+				question: 'Ar tröttheten bara fysisk?',
+				answer: 'Nej, den kan ocksa vara mental och känslomässig, som om allt i dig gar langsammare.'
 			},
 			{
-				question: 'Varf?r tapp?r jag lusten till sant jag brukade tycka om?',
-				answer: 'Det ar vanligt att nedst?mdhet gor att intresse och drivkraft minskar, aven for sadant som tidigare kandes viktigt.'
+				question: 'Varför tapp?r jag lusten till sant jag brukade tycka om?',
+				answer: 'Det ar vanligt att nedstämdhet gor att intresse och drivkraft minskar, aven for sadant som tidigare kandes viktigt.'
 			},
 			{
-				question: 'Vad kan hj?lp? n?r allt k?nns tomt?',
-				answer: 'Ofta ar mycket sm? och konkreta steg mer realistiska an att f?rsoka hitta stor motivation direkt.'
+				question: 'Vad kan hjälp? när allt känns tomt?',
+				answer: 'Ofta ar mycket små och konkreta steg mer realistiska an att f?rsoka hitta stor motivation direkt.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Nedst?mdhet eller depression',
+				title: 'Nedstämdhet eller depression',
 				href: '/guider-seo/depression/nedstamdhet'
 			},
 			{
-				title: 'Sm? steg n?r energin tryter - vad som f?ktiskt kan hj?lp?',
+				title: 'Sm? steg när energin tryter - vad som f?ktiskt kan hjälp?',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			},
 			{
-				title: 'Hur nedst?mdhet p?verkar relationer och n?rheten till andra',
+				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
 		]
@@ -336,36 +336,36 @@ export const guides: Guide[] = [
 		pillarSlug: 'depression',
 		slug: 'nedstamdhet-och-relationer',
 		title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
-		description: 'Om hur nedst?mdhet kan gora det sv?rare att orka med kontakt, n?rhet och samtal.',
+		description: 'Om hur nedstämdhet kan gora det svårare att orka med kontakt, närhet och samtal.',
 		faqs: [
 			{
-				question: 'Varf?r drar jag mig undan n?r jag ar nedstamd?',
-				answer: 'N?r orken ar l?g blir social kontakt ofta mer kravfylld, och ensamhet kan ibland kannas enklare an att f?rsoka f?rklara hur det ar.'
+				question: 'Varför drar jag mig undan när jag ar nedstamd?',
+				answer: 'När orken ar låg blir social kontakt ofta mer kravfylld, och ensamhet kan ibland kannas enklare an att f?rsoka förklara hur det ar.'
 			},
 			{
-				question: 'Kan nedst?mdhet skap? missf?rst?nd i relationer?',
+				question: 'Kan nedstämdhet skap? missförstånd i relationer?',
 				answer: 'Ja, andra kan tolka tillbakadragenhet som ointresse trots att det egentligen handlar om att du kamp?r mycket inombords.'
 			},
 			{
-				question: 'Varf?r k?nns n?rhet sv?rare?',
-				answer: 'Nedst?mdhet kan minska energi, hopp och tillgang till k?nslor, vilket ibland gor det sv?rt att vara n?rvarande med andra.'
+				question: 'Varför känns närhet svårare?',
+				answer: 'Nedstämdhet kan minska energi, hopp och tillgang till känslor, vilket ibland gor det svårt att vara närvarande med andra.'
 			},
 			{
-				question: 'Hur kan jag b?rja prata om det?',
-				answer: 'Det kan hj?lp? att b?rja enkelt och beskriva att du har mindre ork just nu, utan att behova f?rklara allt p? en gang.'
+				question: 'Hur kan jag börja prata om det?',
+				answer: 'Det kan hjälp? att börja enkelt och beskriva att du har mindre ork just nu, utan att behova förklara allt på en gang.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Nedst?mdhet eller depression',
+				title: 'Nedstämdhet eller depression',
 				href: '/guider-seo/depression/nedstamdhet'
 			},
 			{
-				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'Låg självkänsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			},
 			{
-				title: 'Jamf?relsetrasket - sociala medier och din sj?lvbild',
+				title: 'Jamf?relsetrasket - sociala medier och din självbild',
 				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
 			}
 		]
@@ -374,36 +374,36 @@ export const guides: Guide[] = [
 		pillarSlug: 'depression',
 		slug: 'sorg-och-depression',
 		title: 'Skillnaden mellan sorg och depression - och varför det spelar roll',
-		description: 'Om likheter och skillnader mellan sorg och depression, och varf?r de ibland blandas ihop.',
+		description: 'Om likheter och skillnader mellan sorg och depression, och varför de ibland blandas ihop.',
 		faqs: [
 			{
 				question: 'Hur skiljer sig sorg fran depression?',
-				answer: 'Sorg ar ofta kopplad till en f?rlust, medan depression kan vara bredare och p?verka hela vardagen under l?ngre tid.'
+				answer: 'Sorg ar ofta kopplad till en förlust, medan depression kan vara bredare och påverka hela vardagen under längre tid.'
 			},
 			{
 				question: 'Kan sorg ocksa vara tung och ?vervaldiga?',
-				answer: 'Ja, sorg kan vara mycket stark och p?verka bade kropp, s?mn och ork, utan att det betyder att det ar depression.'
+				answer: 'Ja, sorg kan vara mycket stark och påverka bade kropp, sömn och ork, utan att det betyder att det ar depression.'
 			},
 			{
 				question: 'Kan man ha bade sorg och depression samtidigt?',
-				answer: 'Ja, de kan ?verlapp? varandra och ibland gora det sv?rt att sj?lv avgora vad som p?gar.'
+				answer: 'Ja, de kan ?verlapp? varandra och ibland gora det svårt att själv avgora vad som p?gar.'
 			},
 			{
-				question: 'Varf?r spelar skillnaden roll?',
-				answer: 'for att stodet ibland ser olika ut, och det kan vara viktigt att f?rst? vad som driver m?endet just nu.'
+				question: 'Varför spelar skillnaden roll?',
+				answer: 'for att stodet ibland ser olika ut, och det kan vara viktigt att först? vad som driver måendet just nu.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Nedst?mdhet eller depression',
+				title: 'Nedstämdhet eller depression',
 				href: '/guider-seo/depression/nedstamdhet'
 			},
 			{
-				title: 'Tr?tthet och meningsl?shet - n?r ingenting k?nns v?rt att gora',
+				title: 'Trötthet och meningslöshet - när ingenting känns värt att gora',
 				href: '/guider-seo/depression/trotthet-och-meningsloshet'
 			},
 			{
-				title: 'Sm? steg n?r energin tryter - vad som f?ktiskt kan hj?lp?',
+				title: 'Sm? steg när energin tryter - vad som f?ktiskt kan hjälp?',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
@@ -412,36 +412,36 @@ export const guides: Guide[] = [
 		pillarSlug: 'depression',
 		slug: 'sma-steg-vid-nedstamdhet',
 		title: 'Små steg när energin tryter - vad som f?ktiskt kan hjälp?',
-		description: 'Om varsamma och realistiska steg n?r energin ar l?g och allt k?nns sv?rt att b?rja med.',
+		description: 'Om varsamma och realistiska steg när energin ar låg och allt känns svårt att börja med.',
 		faqs: [
 			{
-				question: 'Varf?r hj?lper sm? steg battre an stora planer?',
-				answer: 'N?r orken ar l?g blir for stora krav ofta ?vervaldiga, medan sm? steg ar lattare att genomf?ra och bygga vidare p?.'
+				question: 'Varför hjälper små steg battre an stora planer?',
+				answer: 'När orken ar låg blir for stora krav ofta ?vervaldiga, medan små steg ar lattare att genomföra och bygga vidare på.'
 			},
 			{
 				question: 'Vad kan ett litet steg vara?',
-				answer: 'Det kan vara att ata nagot enkelt, ga ut en kort stund eller skicka ett meddelande till nagon du litar p?.'
+				answer: 'Det kan vara att ata nagot enkelt, ga ut en kort stund eller skicka ett meddelande till nagon du litar på.'
 			},
 			{
-				question: 'Racker sm? steg verkligen?',
-				answer: 'Ja, ofta ar det just regelbundna och genomf?rbara steg som skap?r r?relse n?r allt ann?rs star still.'
+				question: 'Racker små steg verkligen?',
+				answer: 'Ja, ofta ar det just regelbundna och genomförbara steg som skap?r rörelse när allt ann?rs star still.'
 			},
 			{
-				question: 'Hur undviker jag att bli besviken p? mig sj?lv?',
+				question: 'Hur undviker jag att bli besviken på mig själv?',
 				answer: 'Genom att mata framsteg efter vad som ar mojligt just nu, inte efter hur mycket du tycker att du borde orka.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Nedst?mdhet eller depression',
+				title: 'Nedstämdhet eller depression',
 				href: '/guider-seo/depression/nedstamdhet'
 			},
 			{
-				title: 'Tr?tthet och meningsl?shet - n?r ingenting k?nns v?rt att gora',
+				title: 'Trötthet och meningslöshet - när ingenting känns värt att gora',
 				href: '/guider-seo/depression/trotthet-och-meningsloshet'
 			},
 			{
-				title: 'Hur nedst?mdhet p?verkar relationer och n?rheten till andra',
+				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
 		]
@@ -454,32 +454,32 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Vad ar en vanlig reaktion efter trauma?',
-				answer: 'Flashbacks, oro, sp?nningsk?nsla och sv?rta s?mnperioder ar vanliga tidiga reaktioner.'
+				answer: 'Flashbacks, oro, spänningskänsla och sv?rta sömnperioder ar vanliga tidiga reaktioner.'
 			},
 			{
-				question: 'Varf?r reagerar kroppen sa starkt?',
+				question: 'Varför reagerar kroppen sa starkt?',
 				answer: 'Nervsystemet kan sta kvar i hog beredskap efter en ?vervaldigande handelse.'
 			},
 			{
 				question: 'Hur bygger jag mer trygghet i vardagen?',
-				answer: 'Sm? f?rutsagbara rutiner, grounding och trygg kontakt med andra brukar vara hj?lpsamt.'
+				answer: 'Sm? f?rutsagbara rutiner, grounding och trygg kontakt med andra brukar vara hjälpsamt.'
 			},
 			{
-				question: 'N?r bor jag prata med en terapeut?',
-				answer: 'Om symtomen varar eller okar, eller om minnen och undvikande begr?nsar ditt liv.'
+				question: 'När bor jag prata med en terapeut?',
+				answer: 'Om symtomen varar eller okar, eller om minnen och undvikande begränsar ditt liv.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Vad händer i nervsystemet vid trauma â€“ fight, flight och freeze',
+				title: 'Vad händer i nervsystemet vid trauma – fight, flight och freeze',
 				href: '/guider-seo/trauma/nervsystemet-och-trauma'
 			},
 			{
-				title: 'Grounding â€“ enkla övningar för att landa i kroppen igen',
+				title: 'Grounding – enkla övningar för att landa i kroppen igen',
 				href: '/guider-seo/trauma/grounding-ovningar'
 			},
 			{
-				title: 'Undvikande efter trauma â€“ varför vi gör det och vad det kostar',
+				title: 'Undvikande efter trauma – varför vi gör det och vad det kostar',
 				href: '/guider-seo/trauma/undvikande-efter-trauma'
 			},
 			{
@@ -496,19 +496,19 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Vad betyder fight, flight och freeze?',
-				answer: 'Det ar kroppens automatiska ?verlevnadsreaktioner n?r nagot upplevs som hotfullt eller ?vervaldiga.'
+				answer: 'Det ar kroppens automatiska ?verlevnadsreaktioner när nagot upplevs som hotfullt eller ?vervaldiga.'
 			},
 			{
-				question: 'Varf?r reagerar kroppen sa snabbt?',
-				answer: 'Nervsystemet ar byggt for att skydda dig, och efter trauma kan det bli extra k?nsligt for signaler om f?ra.'
+				question: 'Varför reagerar kroppen sa snabbt?',
+				answer: 'Nervsystemet ar byggt for att skydda dig, och efter trauma kan det bli extra känsligt for signaler om fara.'
 			},
 			{
 				question: 'Kan reaktionerna komma trots att jag vet att jag ar saker nu?',
-				answer: 'Ja, kroppen kan reagera f?re den medvetna tanken hinner ikapp, sarskilt om den lart sig att vara p? sin vakt.'
+				answer: 'Ja, kroppen kan reagera före den medvetna tanken hinner ikapp, sarskilt om den lart sig att vara på sin vakt.'
 			},
 			{
-				question: 'Hj?lper det att f?rst? reaktionen?',
-				answer: 'Ofta ja. Att se reaktionen som ett skyddssystem sn?rare an ett personligt fel kan minska skam och f?rvirring.'
+				question: 'Hjälper det att först? reaktionen?',
+				answer: 'Ofta ja. Att se reaktionen som ett skyddssystem sn?rare an ett personligt fel kan minska skam och förvirring.'
 			}
 		],
 		relatedArticles: [
@@ -530,23 +530,23 @@ export const guides: Guide[] = [
 		pillarSlug: 'trauma',
 		slug: 'grounding-ovningar',
 		title: 'Grounding - enkla ?vningar for att landa i kroppen igen',
-		description: 'Om grounding som ett satt att aterf? orientering och kontakt med nuet n?r kroppen ar i alarm.',
+		description: 'Om grounding som ett satt att aterf? orientering och kontakt med nuet när kroppen ar i alarm.',
 		faqs: [
 			{
 				question: 'Vad ar grounding?',
 				answer: 'Grounding ar enkla satt att flytta uppmarksamheten till kroppen, omgivningen och det som ar har och nu.'
 			},
 			{
-				question: 'N?r kan grounding vara hj?lpsamt?',
-				answer: 'Det kan hj?lp? vid ?verstark aktivering, flashbacks, dissociation eller n?r du kanner att du tapp?r fotf?stet.'
+				question: 'När kan grounding vara hjälpsamt?',
+				answer: 'Det kan hjälp? vid ?verstark aktivering, flashbacks, dissociation eller när du kanner att du tapp?r fotfästet.'
 			},
 			{
 				question: 'Maste jag gora det perfekt for att det ska fungera?',
-				answer: 'Nej, det viktiga ar inte att gora ratt utan att f?rsiktigt hitta nagot som gor dig lite mer n?rvarande.'
+				answer: 'Nej, det viktiga ar inte att gora ratt utan att försiktigt hitta nagot som gor dig lite mer närvarande.'
 			},
 			{
 				question: 'Vad ar ett enkelt exempel?',
-				answer: 'Att namna fem saker du ser, kanna fotterna mot golvet eller halla i ett f?remal kan vara en enkel b?rjan.'
+				answer: 'Att namna fem saker du ser, kanna fotterna mot golvet eller halla i ett f?remal kan vara en enkel början.'
 			}
 		],
 		relatedArticles: [
@@ -559,7 +559,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/trauma/nervsystemet-och-trauma'
 			},
 			{
-				title: 'Undvikande efter trauma - varf?r vi gor det och vad det kostar',
+				title: 'Undvikande efter trauma - varför vi gor det och vad det kostar',
 				href: '/guider-seo/trauma/undvikande-efter-trauma'
 			}
 		]
@@ -567,24 +567,24 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'trauma',
 		slug: 'undvikande-efter-trauma',
-		title: 'Undvikande efter trauma - varf?r vi gor det och vad det kostar',
-		description: 'Om hur undvikande kan skydda p? kort sikt men samtidigt gora livet mindre med tiden.',
+		title: 'Undvikande efter trauma - varför vi gor det och vad det kostar',
+		description: 'Om hur undvikande kan skydda på kort sikt men samtidigt gora livet mindre med tiden.',
 		faqs: [
 			{
-				question: 'Varf?r undviker jag vissa platser eller situationer?',
+				question: 'Varför undviker jag vissa platser eller situationer?',
 				answer: 'Undvikande ar ofta ett satt att minska risken att triggas eller ?vervaldigas igen.'
 			},
 			{
 				question: 'Ar undvikande alltid fel?',
-				answer: 'Nej, det kan vara ett f?rst? skydd. Problemet uppstar n?r det b?rjar styra allt mer av vardagen.'
+				answer: 'Nej, det kan vara ett först? skydd. Problemet uppstar när det börjar styra allt mer av vardagen.'
 			},
 			{
-				question: 'Hur kan undvikande p?verka livet p? sikt?',
-				answer: 'Det kan gora livet mindre, skap? isolering och halla r?dsla vid liv eftersom kroppen aldrig for erf?ra att allt inte ar f?rligt.'
+				question: 'Hur kan undvikande påverka livet på sikt?',
+				answer: 'Det kan gora livet mindre, skap? isolering och halla rädsla vid liv eftersom kroppen aldrig for erf?ra att allt inte ar f?rligt.'
 			},
 			{
-				question: 'Vad kan vara ett varsamt n?sta steg?',
-				answer: 'Att f?rst l?gga marke till vad du undviker och varf?r kan vara ett viktigt steg innan du provar nagon liten f?randring.'
+				question: 'Vad kan vara ett varsamt nästa steg?',
+				answer: 'Att först l?gga marke till vad du undviker och varför kan vara ett viktigt steg innan du provar nagon liten f?randring.'
 			}
 		],
 		relatedArticles: [
@@ -606,19 +606,19 @@ export const guides: Guide[] = [
 		pillarSlug: 'trauma',
 		slug: 'tillit-efter-trauma',
 		title: 'Tillit och trygghet i relationer efter svara upplevelser',
-		description: 'Om hur trauma kan p?verka n?rhet, tillit och k?nslan av trygghet med andra.',
+		description: 'Om hur trauma kan påverka närhet, tillit och känslan av trygghet med andra.',
 		faqs: [
 			{
-				question: 'Varf?r ar det sv?rt att lita p? andra efter trauma?',
+				question: 'Varför ar det svårt att lita på andra efter trauma?',
 				answer: 'Svara upplevelser kan gora att nervsystemet blir mer vaksamt, ocksa i relationer som egentligen ar trygga.'
 			},
 			{
-				question: 'Kan jag vilja ha n?rhet men samtidigt dra mig undan?',
+				question: 'Kan jag vilja ha närhet men samtidigt dra mig undan?',
 				answer: 'Ja, det ar vanligt att langta efter kontakt och samtidigt kanna att den blir for utsatt eller ?vervaldiga.'
 			},
 			{
 				question: 'Hur bygger man upp tillit igen?',
-				answer: 'Ofta i sm? steg, genom f?rutsagbarhet, tydliga gr?nser och erf?renheter av att bli mottagen utan press.'
+				answer: 'Ofta i små steg, genom f?rutsagbarhet, tydliga gränser och erf?renheter av att bli mottagen utan press.'
 			},
 			{
 				question: 'Ar det konstigt om gamla reaktioner kommer tillbaka i relationer?',
@@ -631,7 +631,7 @@ export const guides: Guide[] = [
 				href: '/guider-seo/trauma/trygghet'
 			},
 			{
-				title: 'Undvikande efter trauma - varf?r vi gor det och vad det kostar',
+				title: 'Undvikande efter trauma - varför vi gor det och vad det kostar',
 				href: '/guider-seo/trauma/undvikande-efter-trauma'
 			},
 			{
@@ -643,41 +643,41 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sovproblem',
 		slug: 'orsaker',
-		title: 'Varf?r kan jag inte sova',
-		description: 'Vanliga orsaker till s?mnproblem och vad som haller hj?rnan vaken p? natten.',
+		title: 'Varför kan jag inte sova',
+		description: 'Vanliga orsaker till s?mnproblem och vad som haller hjärnan vaken på natten.',
 		faqs: [
 			{
-				question: 'Varf?r kan jag inte s?mna trots att jag ar trott?',
-				answer: 'Hj?rnan kan vara i hog beredskap p? grund av stress, oro eller obearbetade tankar som aktiverar nervsystemet.'
+				question: 'Varför kan jag inte s?mna trots att jag ar trott?',
+				answer: 'Hjärnan kan vara i hog beredskap på grund av stress, oro eller obearbetade tankar som aktiverar nervsystemet.'
 			},
 			{
-				question: 'Ar s?mnproblem ett tecken p? nagonting allvarligt?',
+				question: 'Ar s?mnproblem ett tecken på nagonting allvarligt?',
 				answer: 'Inte alltid, men langvariga s?mnproblem kan vara kopplade till ?ngest, depression eller stress som f?rtjan?r uppmarksamhet.'
 			},
 			{
-				question: 'Kan man tranas upp till battre s?mn?',
-				answer: 'Ja, s?mn p?verkas av vanor, kanslobearbetning och trygghetsk?nsla â€“ alla saker som kan f?randra med tid och stod.'
+				question: 'Kan man tranas upp till battre sömn?',
+				answer: 'Ja, sömn påverkas av vanor, kanslobearbetning och trygghetsk?nsla – alla saker som kan f?randra med tid och stod.'
 			},
 			{
-				question: 'Hj?lper det att prata om det som oroar en?',
-				answer: 'Ofta ja. Att satta ord p? oron kan minska den mentala aktiveringen och gora det lattare att slappna av.'
+				question: 'Hjälper det att prata om det som oroar en?',
+				answer: 'Ofta ja. Att satta ord på oron kan minska den mentala aktiveringen och gora det lattare att slappna av.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Stress och sömn â€“ när kroppen inte kan varva ner',
+				title: 'Stress och sömn – när kroppen inte kan varva ner',
 				href: '/guider-seo/sovproblem/stress-och-somn'
 			},
 			{
-				title: 'Ältande på kvällen â€“ varför tankarna blir starkare i sängen',
+				title: 'Ältande på kvällen – varför tankarna blir starkare i sängen',
 				href: '/guider-seo/sovproblem/altande-pa-kvallen'
 			},
 			{
-				title: 'Trött men uppvarvad â€“ när kroppen vill sova men hjärnan inte släpper taget',
+				title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget',
 				href: '/guider-seo/sovproblem/trott-men-uppvarvad'
 			},
 			{
-				title: 'När sömnbrist påverkar måendet â€“ oro, irritation och nedstämdhet',
+				title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet',
 				href: '/guider-seo/sovproblem/somnbrist-och-maendet'
 			}
 		]
@@ -698,7 +698,7 @@ export const guides: Guide[] = [
 			},
 			{
 				question: 'Hjälper det att försöka tvinga fram sömn?',
-				answer: 'Ofta inte. Press och kamp med sömnen kan i stället öka stressen och göra ins?mnandet ännu svårare.'
+				answer: 'Ofta inte. Press och kamp med sömnen kan i stället öka stressen och göra insomnandet ännu svårare.'
 			},
 			{
 				question: 'Vad kan vara ett första steg?',
@@ -713,20 +713,20 @@ export const guides: Guide[] = [
 		description: 'Om varför tankar ofta tar mer plats på kvällen och hur ältande kan hålla dig vaken.',
 		faqs: [
 			{
-				question: 'Varf?r b?rjar jag tanka mer just n?r jag l?gger mig?',
-				answer: 'N?r det blir tyst omkring dig for hj?rnan mer utrymme, och oro eller obearbetade intryck kan bli tydligare.'
+				question: 'Varför börjar jag tanka mer just när jag l?gger mig?',
+				answer: 'När det blir tyst omkring dig for hjärnan mer utrymme, och oro eller obearbetade intryck kan bli tydligare.'
 			},
 			{
 				question: 'Ar altande samma sak som problemlosning?',
-				answer: 'Inte riktigt. Altande k?nns ofta som att tankarna gar i cirklar utan att leda till ett tydligt svar eller beslut.'
+				answer: 'Inte riktigt. Altande känns ofta som att tankarna gar i cirklar utan att leda till ett tydligt svar eller beslut.'
 			},
 			{
-				question: 'Kan kvallsoro gora att jag s?mn?r sen?re?',
-				answer: 'Ja, mental aktivering p? kvallen kan gora det svare att komma ner i ro och slapp? taget om dagen.'
+				question: 'Kan kvallsoro gora att jag sömn?r sen?re?',
+				answer: 'Ja, mental aktivering på kvallen kan gora det svare att komma ner i ro och slapp? taget om dagen.'
 			},
 			{
-				question: 'Vad kan hj?lp? n?r tankarna snurrar i sangen?',
-				answer: 'Det kan hj?lp? att satta ord p? tankarna tidigare p? kvallen eller anvanda en lugn rutin som markerar att dagen ar slut.'
+				question: 'Vad kan hjälp? när tankarna snurrar i sangen?',
+				answer: 'Det kan hjälp? att satta ord på tankarna tidigare på kvallen eller anvanda en lugn rutin som markerar att dagen ar slut.'
 			}
 		]
 	},
@@ -738,19 +738,19 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Hur kan jag vara trott men anda inte kunna s?mna?',
-				answer: 'Det hander n?r kroppen beh?ver vila men hj?rnan f?rtf?rande ar aktiv av stress, oro eller ?verstimulering.'
+				answer: 'Det hander när kroppen behöver vila men hjärnan f?rtf?rande ar aktiv av stress, oro eller ?verstimulering.'
 			},
 			{
-				question: 'Ar det vanligt att kanna sig rastlos p? kvallen?',
-				answer: 'Ja, manga beskriver en rastlos eller sp?nd k?nsla trots att de ar helt slut i kroppen.'
+				question: 'Ar det vanligt att kanna sig rastlos på kvallen?',
+				answer: 'Ja, manga beskriver en rastlos eller sp?nd känsla trots att de ar helt slut i kroppen.'
 			},
 			{
-				question: 'Betyder det har att nagot ar fel p? mig?',
-				answer: 'Inte nodvandigtvis. Det ar ofta en reaktion p? belastning, hog ansp?nning eller att nervsystemet inte har hunnit varva ner.'
+				question: 'Betyder det har att nagot ar fel på mig?',
+				answer: 'Inte nodvandigtvis. Det ar ofta en reaktion på belastning, hog ansp?nning eller att nervsystemet inte har hunnit varva ner.'
 			},
 			{
-				question: 'Vad kan minska den har k?nslan?',
-				answer: 'Lugna ?verganger, mindre press kring s?mnen och regelbundna stunder for ?terh?mtning under dagen kan gora skillnad ?ver tid.'
+				question: 'Vad kan minska den har känslan?',
+				answer: 'Lugna ?verganger, mindre press kring sömnen och regelbundna stunder for ?terh?mtning under dagen kan gora skillnad ?ver tid.'
 			}
 		]
 	},
@@ -762,60 +762,60 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Kan s?mnbrist gora mig mer orolig?',
-				answer: 'Ja, for lite s?mn kan gora nervsystemet mer k?nsligt och det kan bli sv?rare att hantera oro och stress.'
+				answer: 'Ja, for lite sömn kan gora nervsystemet mer känsligt och det kan bli svårare att hantera oro och stress.'
 			},
 			{
-				question: 'Varf?r blir jag lattare irriterad n?r jag sovit daligt?',
-				answer: 'N?r du har s?mnbrist for hj?rnan sv?rare att reglera k?nslor, vilket kan gora att sm? saker k?nns storre an de brukar.'
+				question: 'Varför blir jag lattare irriterad när jag sovit daligt?',
+				answer: 'När du har s?mnbrist for hjärnan svårare att reglera känslor, vilket kan gora att små saker känns storre an de brukar.'
 			},
 			{
-				question: 'Kan dalig s?mn hanga ihop med nedst?mdhet?',
-				answer: 'Ja, s?mn och m?ende p?verkar varandra starkt och langvariga s?mnproblem kan bidra till nedst?mdhet eller f?rvarra den.'
+				question: 'Kan dalig sömn hanga ihop med nedstämdhet?',
+				answer: 'Ja, sömn och mående påverkar varandra starkt och langvariga s?mnproblem kan bidra till nedstämdhet eller f?rvarra den.'
 			},
 			{
-				question: 'N?r bor jag ta hj?lp for bade s?mn och m?ende?',
-				answer: 'Om s?mnbristen p?gatt ett tag och samtidigt p?verkar hur du mar, fungerar eller orkar i vardagen ar det klokt att soka stod.'
+				question: 'När bor jag ta hjälp for bade sömn och mående?',
+				answer: 'Om sömnbristen p?gatt ett tag och samtidigt påverkar hur du mar, fungerar eller orkar i vardagen ar det klokt att soka stod.'
 			}
 		]
 	},
 	{
 		pillarSlug: 'sjalvkansla',
 		slug: 'lag-sjalvkansla',
-		title: 'L?g sj?lvk?nsla â€“ vad det ar och var det kommer ifran',
-		description: 'Om vad l?g sj?lvk?nsla innebar, hur den uppstar och hur du kan b?rja utf?rska f?rhallandena till dig sj?lv.',
+		title: 'Låg självkänsla – vad det ar och var det kommer ifran',
+		description: 'Om vad låg självkänsla innebar, hur den uppstar och hur du kan börja utforska f?rhallandena till dig själv.',
 		faqs: [
 			{
-				question: 'Vad ar skillnaden mellan sj?lvk?nsla och sj?lvf?rtroende?',
-				answer: 'Sjalvk?nsla handlar om k?nslan av att vara tillracklig som person. Sjalvf?rtroende handlar mer om tron p? sin f?rmaga i specifika situationer.'
+				question: 'Vad ar skillnaden mellan självkänsla och sj?lvf?rtroende?',
+				answer: 'Sjalvk?nsla handlar om känslan av att vara tillracklig som person. Sjalvf?rtroende handlar mer om tron på sin f?rmaga i specifika situationer.'
 			},
 			{
-				question: 'Kan l?g sj?lvk?nsla f?randra sig?',
-				answer: 'Ja. Sjalvk?nsla ar inte f?st â€“ den p?verkas av erf?renheter, relationer och hur vi bearbetar dem ?ver tid.'
+				question: 'Kan låg självkänsla f?randra sig?',
+				answer: 'Ja. Sjalvk?nsla ar inte f?st – den påverkas av erf?renheter, relationer och hur vi bearbetar dem ?ver tid.'
 			},
 			{
-				question: 'Varf?r ar det sv?rt att ta emot berom?',
-				answer: 'Vid l?g sj?lvk?nsla stammer inte berom ?verens med den inre bilden av sig sj?lv, och hj?rnan tenderar att avf?rda det som oarligt.'
+				question: 'Varför ar det svårt att ta emot berom?',
+				answer: 'Vid låg självkänsla stammer inte berom ?verens med den inre bilden av sig själv, och hjärnan tenderar att avf?rda det som oarligt.'
 			},
 			{
-				question: 'Hur b?rjar man arbeta med sj?lvk?nsla?',
-				answer: 'Ofta genom att bli medveten om den inre rosta â€“ hur du pratar med dig sj?lv â€“ och b?rja utf?rska varifraN den restan kom.'
+				question: 'Hur börjar man arbeta med självkänsla?',
+				answer: 'Ofta genom att bli medveten om den inre rosta – hur du pratar med dig själv – och börja utforska varifraN den restan kom.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'Den inre kritikern â€“ varför rösten finns och vad den egentligen vill',
+				title: 'Den inre kritikern – varför rösten finns och vad den egentligen vill',
 				href: '/guider-seo/sjalvkansla/inre-kritikern'
 			},
 			{
-				title: 'Perfektionism och självkänsla â€“ när ingenting känns tillräckligt bra',
+				title: 'Perfektionism och självkänsla – när ingenting känns tillräckligt bra',
 				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
 			},
 			{
-				title: 'Att sätta gränser när självkänslan är låg â€“ varför det är svårt',
+				title: 'Att sätta gränser när självkänslan är låg – varför det är svårt',
 				href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla'
 			},
 			{
-				title: 'Jämförelseträsket â€“ sociala medier och din självbild',
+				title: 'Jämförelseträsket – sociala medier och din självbild',
 				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
 			}
 		]
@@ -823,37 +823,37 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sjalvkansla',
 		slug: 'inre-kritikern',
-		title: 'Den inre kritikern - varf?r rosten finns och vad den egentligen vill',
-		description: 'Om den sj?lvkritiska rosten, var den kan komma fran och hur du kan f?rst? den utan att styras av den.',
+		title: 'Den inre kritikern - varför rosten finns och vad den egentligen vill',
+		description: 'Om den självkritiska rosten, var den kan komma fran och hur du kan först? den utan att styras av den.',
 		faqs: [
 			{
-				question: 'Varf?r ar jag sa hard mot mig sj?lv?',
+				question: 'Varför ar jag sa hard mot mig själv?',
 				answer: 'Den inre kritikern utvecklas ofta som ett satt att f?rsoka skydda dig fran misstag, avvisande eller skam.'
 			},
 			{
 				question: 'Betyder sj?lvkritik att jag ar lat eller sv?g?',
-				answer: 'Nej, stark sj?lvkritik ar ofta ett tecken p? hog press och gamla satt att hantera otrygghet.'
+				answer: 'Nej, stark sj?lvkritik ar ofta ett tecken på hog press och gamla satt att hantera otrygghet.'
 			},
 			{
 				question: 'Kan den inre kritikern ha en funktion?',
-				answer: 'Ja, den f?rsoker ofta hj?lp? genom kontroll, men den gor det p? ett satt som kan bli hart och nedbrytande.'
+				answer: 'Ja, den f?rsoker ofta hjälp? genom kontroll, men den gor det på ett satt som kan bli hart och nedbrytande.'
 			},
 			{
-				question: 'Hur kan jag b?rja f?randra den rosten?',
-				answer: 'Ett f?rst? steg ar att l?gga marke till tonen och orden, sa att du kan skilja rosten fran det du f?ktiskt beh?ver.'
+				question: 'Hur kan jag börja f?randra den rosten?',
+				answer: 'Ett först? steg ar att l?gga marke till tonen och orden, sa att du kan skilja rosten fran det du f?ktiskt behöver.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'Låg självkänsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			},
 			{
-				title: 'Perfektionism och sj?lvk?nsla - n?r ingenting k?nns tillrackligt bra',
+				title: 'Perfektionism och självkänsla - när ingenting känns tillrackligt bra',
 				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
 			},
 			{
-				title: 'Hur nedst?mdhet p?verkar relationer och n?rheten till andra',
+				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
 		]
@@ -861,37 +861,37 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sjalvkansla',
 		slug: 'perfektionism-och-sjalvkansla',
-		title: 'Perfektionism och sj?lvk?nsla - n?r ingenting k?nns tillrackligt bra',
-		description: 'Om hur perfektionism och l?g sj?lvk?nsla ofta hanger ihop och skap?r hard press inifran.',
+		title: 'Perfektionism och självkänsla - när ingenting känns tillrackligt bra',
+		description: 'Om hur perfektionism och låg självkänsla ofta hanger ihop och skap?r hard press inifran.',
 		faqs: [
 			{
-				question: 'Varf?r blir jag aldrig nojd med det jag gor?',
-				answer: 'N?r sj?lvk?nslan ar skor blir prestation ibland ett satt att f?rsoka kanna sig tillracklig, men ribban flyttas hela tiden.'
+				question: 'Varför blir jag aldrig nojd med det jag gor?',
+				answer: 'När sj?lvk?nslan ar skor blir prestation ibland ett satt att f?rsoka kanna sig tillracklig, men ribban flyttas hela tiden.'
 			},
 			{
-				question: 'Ar perfektionism ett tecken p? ambition?',
-				answer: 'Ibland, men det kan ocksa handla om r?dsla for kritik, misslyckande eller att inte duga.'
+				question: 'Ar perfektionism ett tecken på ambition?',
+				answer: 'Ibland, men det kan ocksa handla om rädsla for kritik, misslyckande eller att inte duga.'
 			},
 			{
-				question: 'Hur p?verkar perfektionism m?endet?',
-				answer: 'Den kan skap? stress, sj?lvkritik och k?nslan av att du maste prestera for att f? vila eller kanna dig okej.'
+				question: 'Hur påverkar perfektionism måendet?',
+				answer: 'Den kan skap? stress, sj?lvkritik och känslan av att du maste prestera for att f? vila eller kanna dig okej.'
 			},
 			{
-				question: 'Vad kan hj?lp?',
-				answer: 'Att upptacka dina egna krav och prova mer tillrackligt bra i sm? situationer kan minska trycket ?ver tid.'
+				question: 'Vad kan hjälp?',
+				answer: 'Att upptacka dina egna krav och prova mer tillrackligt bra i små situationer kan minska trycket ?ver tid.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'Låg självkänsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			},
 			{
-				title: 'Den inre kritikern - varf?r rosten finns och vad den egentligen vill',
+				title: 'Den inre kritikern - varför rosten finns och vad den egentligen vill',
 				href: '/guider-seo/sjalvkansla/inre-kritikern'
 			},
 			{
-				title: 'Sm? steg n?r energin tryter - vad som f?ktiskt kan hj?lp?',
+				title: 'Sm? steg när energin tryter - vad som f?ktiskt kan hjälp?',
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
@@ -899,37 +899,37 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sjalvkansla',
 		slug: 'gransen-och-sjalvkansla',
-		title: 'Att satta gr?nser n?r sj?lvk?nslan ar l?g - varf?r det ar sv?rt',
-		description: 'Om varf?r gr?nser ofta blir sv?rare n?r du tvivlar p? ditt eget varde.',
+		title: 'Att satta gränser när sj?lvk?nslan ar låg - varför det ar svårt',
+		description: 'Om varför gränser ofta blir svårare när du tvivlar på ditt eget varde.',
 		faqs: [
 			{
-				question: 'Varf?r ar det sa sv?rt att saga nej?',
-				answer: 'N?r sj?lvk?nslan ar l?g blir andras reaktioner ofta extra viktiga, och da kan ett nej kannas riskfyllt.'
+				question: 'Varför ar det sa svårt att saga nej?',
+				answer: 'När sj?lvk?nslan ar låg blir andras reaktioner ofta extra viktiga, och da kan ett nej kannas riskfyllt.'
 			},
 			{
-				question: 'Kan l?g sj?lvk?nsla gora att jag gar ?ver mina egna behov?',
-				answer: 'Ja, det ar vanligt att prioritera andras behov for att undvika skuld, konflikt eller k?nslan av att vara besvarlig.'
+				question: 'Kan låg självkänsla gora att jag gar ?ver mina egna behov?',
+				answer: 'Ja, det ar vanligt att prioritera andras behov for att undvika skuld, konflikt eller känslan av att vara besvarlig.'
 			},
 			{
-				question: 'Hur marks det att jag sakn?r gr?nser?',
-				answer: 'Du kanske sager ja f?st du inte vill, blir ?verbelastad eller kanner bitterhet efterat utan att riktigt veta varf?r.'
+				question: 'Hur marks det att jag sakn?r gränser?',
+				answer: 'Du kanske sager ja f?st du inte vill, blir ?verbelastad eller kanner bitterhet efterat utan att riktigt veta varför.'
 			},
 			{
-				question: 'Vad ar ett litet f?rst? steg?',
-				answer: 'Att b?rja l?gga marke till n?r du egentligen vill dra en gr?ns kan vara ett viktigt steg innan du uttrycker den hogt.'
+				question: 'Vad ar ett litet först? steg?',
+				answer: 'Att börja l?gga marke till när du egentligen vill dra en gr?ns kan vara ett viktigt steg innan du uttrycker den hogt.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'Låg självkänsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			},
 			{
-				title: 'Den inre kritikern - varf?r rosten finns och vad den egentligen vill',
+				title: 'Den inre kritikern - varför rosten finns och vad den egentligen vill',
 				href: '/guider-seo/sjalvkansla/inre-kritikern'
 			},
 			{
-				title: 'Hur nedst?mdhet p?verkar relationer och n?rheten till andra',
+				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
 		]
@@ -937,37 +937,37 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sjalvkansla',
 		slug: 'jamforelse-och-sjalvbild',
-		title: 'Jamf?relsetrasket - sociala medier och din sj?lvbild',
-		description: 'Om hur j?mf?relser med andra kan p?verka sj?lvbilden och f?rst?rka k?nslan av att inte racka till.',
+		title: 'Jamf?relsetrasket - sociala medier och din självbild',
+		description: 'Om hur jämförelser med andra kan påverka självbilden och först?rka känslan av att inte racka till.',
 		faqs: [
 			{
-				question: 'Varf?r p?verkas jag sa mycket av andras liv online?',
-				answer: 'Sociala medier visar ofta utvalda delar av andras liv, och hj?rnan jamf?r dem latt med dina minst glansiga stunder.'
+				question: 'Varför påverkas jag sa mycket av andras liv online?',
+				answer: 'Sociala medier visar ofta utvalda delar av andras liv, och hjärnan jamf?r dem latt med dina minst glansiga stunder.'
 			},
 			{
-				question: 'Kan j?mf?relser sanka sj?lvk?nslan?',
-				answer: 'Ja, sarskilt om du redan tvivlar p? ditt eget varde eller ofta letar efter tecken p? att andra lyckas battre.'
+				question: 'Kan jämförelser sanka sj?lvk?nslan?',
+				answer: 'Ja, sarskilt om du redan tvivlar på ditt eget varde eller ofta letar efter tecken på att andra lyckas battre.'
 			},
 			{
 				question: 'Ar losningen att sluta helt med sociala medier?',
-				answer: 'Inte alltid, men det kan hj?lp? att l?gga marke till vad som triggar j?mf?relser och skap? mer medvetna vanor.'
+				answer: 'Inte alltid, men det kan hjälp? att l?gga marke till vad som triggar jämförelser och skap? mer medvetna vanor.'
 			},
 			{
-				question: 'Hur kan jag skydda min sj?lvbild?',
-				answer: 'Att begr?nsa det som for dig att ma samre och samtidigt ova p? att atervanda till ditt eget perspektiv kan gora skillnad.'
+				question: 'Hur kan jag skydda min självbild?',
+				answer: 'Att begr?nsa det som for dig att ma samre och samtidigt ova på att atervanda till ditt eget perspektiv kan gora skillnad.'
 			}
 		],
 		relatedArticles: [
 			{
-				title: 'L?g sj?lvk?nsla - vad det ar och var det kommer ifran',
+				title: 'Låg självkänsla - vad det ar och var det kommer ifran',
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			},
 			{
-				title: 'Perfektionism och sj?lvk?nsla - n?r ingenting k?nns tillrackligt bra',
+				title: 'Perfektionism och självkänsla - när ingenting känns tillrackligt bra',
 				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
 			},
 			{
-				title: 'Hur nedst?mdhet p?verkar relationer och n?rheten till andra',
+				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
 		]
