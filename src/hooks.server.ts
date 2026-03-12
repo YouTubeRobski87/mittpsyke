@@ -7,9 +7,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 		cookies: {
 			getAll: () => event.cookies.getAll(),
 			setAll: (cookiesToSet) => {
-				cookiesToSet.forEach(({ name, value, options }) =>
-					event.cookies.set(name, value, { ...options, path: '/' })
-				)
+				try {
+					cookiesToSet.forEach(({ name, value, options }) =>
+						event.cookies.set(name, value, { ...options, path: '/' })
+					)
+				} catch {
+					// applyServerStorage kan anropas efter att responsen redan skickats
+					// (t.ex. vid token-refresh på snabba API-routes).
+					// Sessionen uppdateras korrekt på nästa request – detta kan ignoreras.
+				}
 			}
 		}
 	})
