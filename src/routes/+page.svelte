@@ -744,8 +744,9 @@
 	.mode-label {
 		margin: 0 0 0.4rem;
 		font-family: var(--font-heading);
-		font-size: 1rem;
-		font-weight: 750;
+		font-size: clamp(0.92rem, 1.35vw, 1.04rem);
+		font-weight: 850;
+		line-height: 1.05;
 		letter-spacing: -0.025em;
 		color: rgba(255, 255, 255, 0.95);
 	}
