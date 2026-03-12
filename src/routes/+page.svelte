@@ -72,7 +72,7 @@
 					<p class="mode-label">Anonymt läge</p>
 					<ul class="mode-list">
 						<li>Ingen registrering</li>
-						<li>Inget sparas</li>
+						<li>Ingen profil skapas</li>
 						<li>Börja direkt</li>
 					</ul>
 				</div>
