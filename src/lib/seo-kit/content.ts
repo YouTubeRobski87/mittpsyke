@@ -62,6 +62,20 @@ export const pillars: Pillar[] = [
 		description: 'Om låg självkänsla, vad det beror på och hur du kan börja utforska din relation till dig själv.',
 		chatPath: '/chat/a'
 	}
+,
+
+	{
+		slug: 'stress',
+		title: 'Stress och överbelastning',
+		description: 'Om stress, mental utmattning och hur du kan börja hitta tillbaka till ett lugnare läge.',
+		chatPath: '/chat/a'
+	},
+	{
+		slug: 'ensamhet',
+		title: 'Ensamhet och tomhet',
+		description: 'Om känslan av ensamhet, tomhet och hur du kan börja hitta kontakt med dig själv och andra.',
+		chatPath: '/chat/b'
+	}
 ];
 
 export const guides: Guide[] = [
@@ -1103,6 +1117,1036 @@ export const guides: Guide[] = [
 			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
 			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
 		],
+	},
+
+	// === NYA GUIDER: ÅNGEST (10) ===
+	{
+		pillarSlug: 'angest',
+		slug: 'angest-hjalp',
+		title: 'Ångesthjälp – vad du kan göra när ångesten tar tag',
+		description: 'Konkreta och varsamma sätt att hantera ångest i vardagen, utan att det behöver bli komplicerat.',
+		faqs: [
+			{
+				question: 'Vad kan jag göra just nu när ångesten är stark?',
+				answer: 'Börja med att bromsa andningen. Andas in i fyra sekunder, håll ett ögonblick och andas ut i sex. Det hjälper nervsystemet att landa.'
+			},
+			{
+				question: 'Varför hjälper det inte att tänka sig ur ångesten?',
+				answer: 'Ångest är en kropplig reaktion. Att försöka resonera sig fri fungerar sällan i stunden – kroppen behöver lugnas, inte övertygas.'
+			},
+			{
+				question: 'Är det okej att undvika det som skapar ångest?',
+				answer: 'Kortsiktigt kan undvikande ge lättnad, men på sikt håller det ofta ångesten vid liv. Små steg mot det svåra brukar hjälpa mer.'
+			},
+			{
+				question: 'När bör jag söka mer hjälp?',
+				answer: 'Om ångesten styr ditt liv, håller dig hemma eller gör att du undviker mer och mer är det ett tecken på att du förtjänar mer stöd.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
+			{ title: 'Ångest i kroppen – vad som händer och vad som hjälper', href: '/guider-seo/angest/angest-i-kroppen' },
+			{ title: 'Lugna en panikattack – steg för steg', href: '/guider-seo/angest/lugna-en-panikattack' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'panikattack-hjalp',
+		title: 'Panikattack – hjälp direkt när kroppen larmar',
+		description: 'Vad som händer vid en panikattack och vad du kan göra för att ta dig igenom den.',
+		faqs: [
+			{
+				question: 'Vad är det som händer i kroppen vid en panikattack?',
+				answer: 'Kroppens larmsystem slår på fullt, vilket ger hjärtklappning, yrsel, tryck och svårt att andas. Det är obehagligt men inte farligt.'
+			},
+			{
+				question: 'Hur länge varar en panikattack?',
+				answer: 'Oftast 5–20 minuter. Kroppen kan inte hålla den intensiteten länge – reaktionen klingar av av sig själv.'
+			},
+			{
+				question: 'Vad hjälper mest när det händer?',
+				answer: 'Stanna kvar, bromsa andningen och försök påminna dig om att reaktionen går över. Att springa iväg förstärker ofta rädslan.'
+			},
+			{
+				question: 'Måste jag söka vård om jag haft en panikattack?',
+				answer: 'Om det är första gången eller du är osäker kan det vara klokt att kolla med en läkare. Återkommande attacker som styr livet förtjänar stöd.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det', href: '/guider-seo/angest/panikangest-och-kroppen' },
+			{ title: 'Lugna en panikattack – steg för steg', href: '/guider-seo/angest/lugna-en-panikattack' },
+			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Paniksyndrom', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/paniksyndrom/' },
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' }
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'kan-inte-sluta-tanka',
+		title: 'Kan inte sluta tänka – när tankarna bara snurrar',
+		description: 'Om hjärnan som inte stänger av och vad du kan göra när tankarna inte ger dig ro.',
+		faqs: [
+			{
+				question: 'Varför kan inte hjärnan bara stänga av?',
+				answer: 'Hjärnan försöker lösa problem och förutse risker – men ibland fastnar den i loopar utan att hitta svar. Det är vanligt, inte ett fel på dig.'
+			},
+			{
+				question: 'Hjälper det att försöka tvinga tankarna att sluta?',
+				answer: 'Sällan. Ju mer du kämpar mot en tanke, desto starkare kan den bli. Att notera den och låta den vara brukar fungera bättre.'
+			},
+			{
+				question: 'Vad kan jag göra praktiskt just nu?',
+				answer: 'Prova att rikta uppmärksamheten mot något konkret – ett föremål du ser, ett ljud, en känsla i kroppen. Det ger tankarna ett avbrott.'
+			},
+			{
+				question: 'Är det ett tecken på ångest?',
+				answer: 'Ja, snurrande tankar är ofta en del av ångest eller stress. Det behöver inte vara allvarligt, men det förtjänar att tas på allvar.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' },
+			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
+			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider-seo/angest/nar-tankarna-inte-stannar' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'angest-pa-kvallen',
+		title: 'Ångest på kvällen – varför det ökar när dagen tar slut',
+		description: 'Om varför ångesten ofta blir starkare på kvällen och vad du kan göra för att hitta mer ro.',
+		faqs: [
+			{
+				question: 'Varför är det värre på kvällen?',
+				answer: 'Dagen ger distraktioner. När det lugnar ner sig får tankar och känslor mer utrymme – och ångesten kan fylla ut tystnaden.'
+			},
+			{
+				question: 'Är det normalt att inte kunna varva ner?',
+				answer: 'Ja, väldigt vanligt. Nervsystemet behöver aktiv hjälp att växla ner – det sker inte automatiskt för alla.'
+			},
+			{
+				question: 'Vad kan hjälpa mig att landa på kvällen?',
+				answer: 'En lugn rutin, minska skärmar en timme innan läggdags och något som ger kroppen signal om att dagen är slut – ett te, en promenad, lugn musik.'
+			},
+			{
+				question: 'Hur skiljer jag på trötthet och ångest?',
+				answer: 'Trötthet vill sova. Ångest håller dig vaken fast kroppen är slut. Om du är trött men inte kan somna kan ångesten vara inblandad.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider-seo/angest/angest-och-somn' },
+			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' },
+			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' }
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'vaknar-med-angest',
+		title: 'Vaknar med ångest – när morgonen börjar tungt',
+		description: 'Om att vakna med ångest, klump i magen eller oro – och hur du kan börja dagen på ett lugnare sätt.',
+		faqs: [
+			{
+				question: 'Varför känns ångesten värst på morgonen?',
+				answer: 'Stresshormonet kortisol toppar tidigt på morgonen. För den som redan bär på oro kan det skapa en stark ångestkänsla direkt vid uppvaknandet.'
+			},
+			{
+				question: 'Är det farligt att vakna med ångest?',
+				answer: 'Inte farligt, men det är ett tecken på att kroppen och sinnet behöver mer stöd. Det förtjänar att tas på allvar.'
+			},
+			{
+				question: 'Vad kan jag göra direkt när jag vaknar?',
+				answer: 'Ligg still en stund. Lägg handen på magen och andas lugnt. Undvik att direkt kolla telefonen – ge kroppen en chans att landa.'
+			},
+			{
+				question: 'Kan detta bero på dålig sömn?',
+				answer: 'Ja, sömnbrist och ytlig sömn kan göra nervsystemet mer känsligt och förstärka morgonångesten. De hänger ofta ihop.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider-seo/angest/angest-och-somn' },
+			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' },
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymptom' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'oro-i-kroppen',
+		title: 'Oro i kroppen – när ångesten sitter fysiskt',
+		description: 'Om hur oro och ångest kan visa sig som spänningar, tryck och obehag i kroppen.',
+		faqs: [
+			{
+				question: 'Var i kroppen kan ångesten sitta?',
+				answer: 'Vanliga ställen är bröst, mage, hals, axlar och käke. Kroppen spänner sig när nervsystemet aktiveras av oro.'
+			},
+			{
+				question: 'Kan kroppsliga symptom vara oro och inte sjukdom?',
+				answer: 'Ja, ofta. Men om du är osäker är det alltid bra att kolla med en läkare för att utesluta fysiska orsaker.'
+			},
+			{
+				question: 'Vad kan hjälpa kroppen att slappna av?',
+				answer: 'Djupandning, rörelse, värme och medveten muskelavslappning kan alla signalera till nervsystemet att det är tryggt att vila.'
+			},
+			{
+				question: 'Försvinner de kroppsliga symptomen om jag hanterar oron?',
+				answer: 'Ofta ja. Kropp och sinne hänger ihop – när oron minskar brukar de fysiska reaktionerna också klinga av.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Ångest i kroppen – vad som händer och vad som hjälper', href: '/guider-seo/angest/angest-i-kroppen' },
+			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymptom' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'lugna-en-panikattack',
+		title: 'Lugna en panikattack – steg för steg',
+		description: 'Enkla och beprövade sätt att ta sig igenom en panikattack och hjälpa kroppen att landa.',
+		faqs: [
+			{
+				question: 'Vad är det första jag ska göra?',
+				answer: 'Stanna kvar om det är säkert. Börja andas långsamt – in genom näsan i 4 sekunder, ut genom munnen i 6. Det bromsar larmsystemet.'
+			},
+			{
+				question: 'Ska jag andas i en papperspåse?',
+				answer: 'Det gamla rådet om papperspåsar rekommenderas inte längre. Fokusera i stället på lång, lugn utandning.'
+			},
+			{
+				question: 'Vad hjälper om andningen inte fungerar?',
+				answer: 'Prova 5-4-3-2-1: nämn 5 saker du ser, 4 du hör, 3 du kan ta på, 2 du luktar, 1 du smakar. Det för uppmärksamheten till nuet.'
+			},
+			{
+				question: 'Hur lång tid tar det att bli bättre?',
+				answer: 'En panikattack klingar oftast av inom 10–20 minuter, även utan att du gör något. Du tar dig igenom det.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider-seo/angest/panikattack-hjalp' },
+			{ title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det', href: '/guider-seo/angest/panikangest-och-kroppen' },
+			{ title: 'Ångest i kroppen – vad som händer och vad som hjälper', href: '/guider-seo/angest/angest-i-kroppen' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Paniksyndrom', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/paniksyndrom/' },
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' }
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'angest-i-kroppen',
+		title: 'Ångest i kroppen – vad som händer och vad som hjälper',
+		description: 'En förklaring av varför ångest ger kroppsliga reaktioner och hur du kan hjälpa kroppen att lugna ner sig.',
+		faqs: [
+			{
+				question: 'Varför ger ångest fysiska reaktioner?',
+				answer: 'Hjärnan tolkar hotet som verkligt och aktiverar kamp-flykt-systemet. Det påverkar hjärta, lungor, muskler och mage.'
+			},
+			{
+				question: 'Kan ångest ge smärta?',
+				answer: 'Ja, spänningshuvudvärk, magont, bröstsmärta och muskelvärk kan alla ha stress och ångest som delorsak.'
+			},
+			{
+				question: 'Är det farligt att ha hjärtklappning av ångest?',
+				answer: 'Ångestutlöst hjärtklappning är i sig ofarligt. Men om du är osäker bör du kontrollera hjärtat hos en läkare.'
+			},
+			{
+				question: 'Hur hjälper jag kroppen att landa?',
+				answer: 'Lång utandning, kyla mot ansiktet, rörelse och medveten avspänning skickar alla signaler till nervsystemet om att det är tryggt.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Oro i kroppen – när ångesten sitter fysiskt', href: '/guider-seo/angest/oro-i-kroppen' },
+			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' },
+			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'overtankande-hjalp',
+		title: 'Övertänkande – hjälp när hjärnan kör på för högt varv',
+		description: 'Om övertänkande, varför det händer och hur du kan skapa mer ro utan att stänga av hjärnan helt.',
+		faqs: [
+			{
+				question: 'Vad är övertänkande egentligen?',
+				answer: 'Det handlar om att hjärnan analyserar, grubblar eller planerar långt mer än situationen kräver – ofta utan att komma till ett svar.'
+			},
+			{
+				question: 'Är det ett tecken på ångest?',
+				answer: 'Ofta ja. Övertänkande är ett vanligt sätt för hjärnan att försöka hantera osäkerhet och oro.'
+			},
+			{
+				question: 'Kan övertänkande faktiskt lösa problem?',
+				answer: 'Ibland, men ofta fastnar hjärnan i loopar utan att komma vidare. Att sätta en tidsgräns för grubblandet kan hjälpa.'
+			},
+			{
+				question: 'Vad kan bryta mönstret?',
+				answer: 'Fysisk rörelse, att skriva ner tankarna eller att engagera sig i något konkret kan ge hjärnan en paus från cirkeltänkandet.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Kan inte sluta tänka – när tankarna bara snurrar', href: '/guider-seo/angest/kan-inte-sluta-tanka' },
+			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider-seo/angest/nar-tankarna-inte-stannar' },
+			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'angest',
+		slug: 'nar-tankarna-inte-stannar',
+		title: 'När tankarna inte stannar – att hitta ro på kvällen',
+		description: 'Om varför kvällen kan fyllas av tankar och hur du kan skapa mer ro inför sömnen.',
+		faqs: [
+			{
+				question: 'Varför är det svårast att stänga av på kvällen?',
+				answer: 'Utan dagens intryck att fokusera på får hjärnan plötsligt tid att bearbeta det som legat och väntade. Tankarna fyller ut tystnaden.'
+			},
+			{
+				question: 'Hjälper det att tvinga sig att inte tänka?',
+				answer: 'Sällan. Att kämpa mot tankar gör dem ofta starkare. Att i stället ge dem ett specifikt utrymme – t.ex. en orosstund tidigare på kvällen – kan fungera bättre.'
+			},
+			{
+				question: 'Vad är en orosstund?',
+				answer: 'En avsatt tid på 15–20 minuter tidigare på kvällen då du aktivt tänker igenom det som oroar. Utanför den tiden skjuter du upp grubblandet.'
+			},
+			{
+				question: 'Vad mer kan hjälpa?',
+				answer: 'Att skriva ner tankar i en dagbok, ha en lugn nedvarvningsrutin och undvika stimulerande innehåll nära läggdags.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
+			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' },
+			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' }
+		]
+	},
+
+	// === NYA GUIDER: STRESS (8) ===
+	{
+		pillarSlug: 'stress',
+		slug: 'stressymptom',
+		title: 'Stressymtom – tecken på att kroppen bär för mycket',
+		description: 'Vanliga tecken på stress i kropp och sinne, och vad de kan betyda för dig.',
+		faqs: [
+			{
+				question: 'Vilka är de vanligaste stressymtomen?',
+				answer: 'Huvudvärk, sömnproblem, koncentrationssvårigheter, irritabilitet, spänningar i nacke och axlar samt magbesvär är alla vanliga tecken på stress.'
+			},
+			{
+				question: 'Kan stress ge fysiska symptom utan att jag känner mig stressad?',
+				answer: 'Ja. Kroppen kan reagera på stress länge innan du själv uppmärksammar den. Kronisk låggradig stress är vanlig och kan gå obemärkt.'
+			},
+			{
+				question: 'Hur vet jag om det är stress eller sjukdom?',
+				answer: 'Om symptomen dyker upp i perioder av hög belastning och minskar när du vilar kan det peka på stress. Vid osäkerhet är det bra att kontakta vården.'
+			},
+			{
+				question: 'Vad är ett första steg att ta?',
+				answer: 'Att börja notera vad som tar energi och vad som ger energi är ett enkelt men kraftfullt första steg.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider-seo/stress/inre-stress' },
+			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
+			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/att-hantera-stress/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'stress',
+		slug: 'inre-stress',
+		title: 'Inre stress – när det är stressigt inombords trots lugn yta',
+		description: 'Om inre stress som inte alltid syns utåt men sliter på kropp och sinne på djupet.',
+		faqs: [
+			{
+				question: 'Vad är inre stress?',
+				answer: 'Det är stress som drivs av tankar, krav och förväntningar inifrån – inte nödvändigtvis av yttre händelser. Man kan se lugn ut men vara i konstant alarmberedskap.'
+			},
+			{
+				question: 'Varför märker inte omgivningen att jag är stressad?',
+				answer: 'Inre stress syns inte alltid utåt. Många lär sig att fungera trots hög inre belastning, vilket kan göra det svårare att få förståelse och stöd.'
+			},
+			{
+				question: 'Vilka tecken brukar finnas?',
+				answer: 'Svårt att koppla bort tankar, känsla av aldrig vara klar, sömnproblem trots trötthet, irritabilitet och känsla av att alltid behöva prestera.'
+			},
+			{
+				question: 'Vad kan hjälpa?',
+				answer: 'Att lära sig känna igen de inre kravens röst och öva på att möta sig själv lite mjukare är ett viktigt första steg.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymptom' },
+			{ title: 'Känner mig överväldigad – när allt är för mycket', href: '/guider-seo/stress/kanner-mig-overvaldigad' },
+			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/att-hantera-stress/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'stress',
+		slug: 'hjarntrotthet-hjalp',
+		title: 'Hjärntrötthet – när hjärnan inte orkar bearbeta mer',
+		description: 'Om kognitiv utmattning och hjärntrötthet – vad det är, varför det händer och hur du kan börja återhämta dig.',
+		faqs: [
+			{
+				question: 'Vad är hjärntrötthet?',
+				answer: 'Hjärntrötthet innebär att hjärnans förmåga att bearbeta information, fatta beslut och hålla fokus är kraftigt nedsatt efter lång tids hög belastning.'
+			},
+			{
+				question: 'Hur skiljer sig hjärntrötthet från vanlig trötthet?',
+				answer: 'Vanlig trötthet går över med sömn. Hjärntrötthet sitter kvar och kan förvärras av intryck, ljud och krav – även efter vila.'
+			},
+			{
+				question: 'Vad är tecknen på hjärntrötthet?',
+				answer: 'Svårt att läsa, koncentrera sig, komma ihåg saker, ta beslut och hantera flera saker samtidigt. Känslighet för ljud och ljus är vanligt.'
+			},
+			{
+				question: 'Hur återhämtar man sig?',
+				answer: 'Grunden är lugn och lågstimulerad återhämtning: tystnad, natur, enkla rutiner och att dra ner på krav. Det tar tid men kroppen läker.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
+			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymptom' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Utmattningssyndrom', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/stress-och-utmattning/utmattningssyndrom/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'stress',
+		slug: 'kanner-mig-overvaldigad',
+		title: 'Känner mig överväldigad – när allt är för mycket',
+		description: 'Om känslan av att allt staplas på hög och vad du kan göra när livet känns övermäktigt.',
+		faqs: [
+			{
+				question: 'Varför känner jag mig överväldigad?',
+				answer: 'Det händer när krav, intryck eller känslor överstiger vad du för stunden klarar av att hantera. Det är inte ett tecken på svaghet.'
+			},
+			{
+				question: 'Vad gör jag när allting känns för stort?',
+				answer: 'Stanna. Ta ett djupt andetag. Fråga dig vad som är det enda lilla ting du kan göra just nu – inte allt, bara ett.'
+			},
+			{
+				question: 'Är det normalt att vilja gömma sig och inte göra något?',
+				answer: 'Ja, väldigt vanligt. Att dra sig undan är en naturlig reaktion när systemet är överbelastat. Det viktiga är att inte fastna där för länge.'
+			},
+			{
+				question: 'När bör jag söka mer stöd?',
+				answer: 'Om känslan av överväldigande är konstant och påverkar arbete, relationer eller din förmåga att ta hand om dig själv är det dags att söka hjälp.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider-seo/stress/inre-stress' },
+			{ title: 'Hjärntrötthet – när hjärnan inte orkar bearbeta mer', href: '/guider-seo/stress/hjarntrotthet-hjalp' },
+			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider-seo/ensamhet/orkar-ingenting' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/att-hantera-stress/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'stress',
+		slug: 'stressad-hela-tiden',
+		title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret',
+		description: 'Om att leva i konstant stress, vad det gör med kroppen och hur du kan börja skapa mer utrymme.',
+		faqs: [
+			{
+				question: 'Är det farligt att vara stressad hela tiden?',
+				answer: 'Kronisk stress belastar hjärta, immunförsvar, sömn och psykisk hälsa. Det är inte farligt på kort sikt men allvarligt om det pågår länge.'
+			},
+			{
+				question: 'Varför vänjer man sig vid att vara stressad?',
+				answer: 'Hjärnan anpassar sig och stress kan börja kännas normalt. Många märker inte hur belastade de är förrän de faller ihop.'
+			},
+			{
+				question: 'Hur bryter man mönstret?',
+				answer: 'Börja med att identifiera de största stressörerna. Vilken av dem kan du påverka? Att ta ett litet steg i rätt riktning räcker som start.'
+			},
+			{
+				question: 'Kan man lära om hjärnan att inte vara stressad?',
+				answer: 'Ja, nervsystemet är formbart. Med rätt stöd och återhämtning går det att successivt sänka grundnivån av stress.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymptom' },
+			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider-seo/stress/inre-stress' },
+			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/att-hantera-stress/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'stress',
+		slug: 'utmattad-mentalt',
+		title: 'Utmattad mentalt – när hjärnan inte orkar mer',
+		description: 'Om mental utmattning, vad den skiljer sig från vanlig trötthet och hur återhämtning kan se ut.',
+		faqs: [
+			{
+				question: 'Hur vet jag att det är mental utmattning?',
+				answer: 'Tecken är att vila inte längre hjälper, att enkla beslut känns omöjliga, att du är emotionellt avflattad och att minnet sviker.'
+			},
+			{
+				question: 'Är utmattning samma sak som utbrändhet?',
+				answer: 'Utbrändhet är ett vardagsord för ett tillstånd som inom vården kallas utmattningssyndrom. Mental utmattning kan vara ett förstadium.'
+			},
+			{
+				question: 'Vad hjälper verkligen?',
+				answer: 'Grundläggande saker: sömn, lugn, mat, rörelse i lagom mängd och att minska krav. Professionellt stöd är värdefullt vid allvarligare utmattning.'
+			},
+			{
+				question: 'Måste jag bli sjukskriven?',
+				answer: 'Inte alltid, men vid utmattningssyndrom är det ofta nödvändigt. Prata med din läkare om hur det ser ut för dig.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Hjärntrötthet – när hjärnan inte orkar bearbeta mer', href: '/guider-seo/stress/hjarntrotthet-hjalp' },
+			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
+			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider-seo/ensamhet/orkar-ingenting' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Utmattningssyndrom', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/stress-och-utmattning/utmattningssyndrom/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'stress',
+		slug: 'kan-inte-varva-ner',
+		title: 'Kan inte varva ner – om stress som sitter kvar i kroppen',
+		description: 'Om varför nervsystemet ibland inte kan koppla av och vad du kan göra för att hitta ner i ett lugnare läge.',
+		faqs: [
+			{
+				question: 'Varför kan jag inte varva ner trots att jag är trött?',
+				answer: 'Nervsystemet fastnar i ett aktiverat läge. Kroppen vet att den behöver vila men larmsystemet har inte fått signalen om att det är tryggt.'
+			},
+			{
+				question: 'Är det dåligt att inte kunna slappna av?',
+				answer: 'På sikt ja. Kroppen behöver återhämtning för att fungera. Att aldrig varva ner belastar hjärta, immunförsvar och psyk.'
+			},
+			{
+				question: 'Vad hjälper nervsystemet att lugna ner sig?',
+				answer: 'Lång utandning, lugn rörelse, kyla mot ansiktet, natur och regelbundenhet är alla saker som hjälper parasympatiska nervsystemet att ta över.'
+			},
+			{
+				question: 'Hur lång tid tar det att landa?',
+				answer: 'Det varierar. Kroppen behöver konsekventa signaler över tid – ett lugnt kvällsmoment hjälper mer om det upprepas än om det görs en gång.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
+			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' },
+			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider-seo/sovproblem/kan-inte-sova-stress' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/att-hantera-stress/' },
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' }
+		]
+	},
+	{
+		pillarSlug: 'stress',
+		slug: 'mycket-tankar-pa-kvallen',
+		title: 'Mycket tankar på kvällen – när hjärnan inte vill stänga av',
+		description: 'Om varför kvällen fylls av tankar och oro, och hur du kan skapa mer ro inför sömnen.',
+		faqs: [
+			{
+				question: 'Varför exploderar tankarna på kvällen?',
+				answer: 'Dagen är full av distraktioner. På kvällen, när det tystnar, får hjärnan plötsligt tid att ta upp allt det den lade åt sidan under dagen.'
+			},
+			{
+				question: 'Är kvällstankar ett tecken på stress?',
+				answer: 'Ofta ja. Hjärnan bearbetar det den inte hann med under dagen. Det är inte konstigt, men kan bli utmattande.'
+			},
+			{
+				question: 'Vad kan jag göra för att dämpa det?',
+				answer: 'Att skriva ner det du bär på i en dagbok, ha en avsatt "tanketid" tidigare på kvällen och skapa en lugn övergångsritual hjälper hjärnan att landa.'
+			},
+			{
+				question: 'Hjälper telefonen att distrahera mig?',
+				answer: 'Inte alltid. Skärmar håller hjärnan aktiv och kan göra det svårare att somna. Lugna aktiviteter utan skärm fungerar bättre för att landa.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' },
+			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider-seo/angest/nar-tankarna-inte-stannar' },
+			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/att-hantera-stress/' },
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' }
+		]
+	},
+
+	// === NYA GUIDER: ENSAMHET (4) ===
+	{
+		pillarSlug: 'ensamhet',
+		slug: 'kanner-mig-ensam',
+		title: 'Känner mig ensam – när ensamheten gör ont',
+		description: 'Om ensamhet som inte är ett val och hur du kan börja hitta vägen tillbaka till kontakt.',
+		faqs: [
+			{
+				question: 'Kan man vara ensam fast man är omgiven av folk?',
+				answer: 'Ja. Ensamhet handlar om brist på meningsfull kontakt, inte om antal människor runt omkring dig. Man kan vara ensam mitt i en folksamling.'
+			},
+			{
+				question: 'Är det konstigt att ensamhet gör fysiskt ont?',
+				answer: 'Nej, forskning visar att social smärta aktiverar samma delar av hjärnan som fysisk smärta. Ensamhet är en riktig smärta.'
+			},
+			{
+				question: 'Varför är det svårt att ta första steget?',
+				answer: 'Ensamhet kan skapa en känsla av att vara ovälkommen eller att det inte spelar någon roll. Det är en känsla, inte en sanning.'
+			},
+			{
+				question: 'Vad kan ett litet första steg vara?',
+				answer: 'Att skicka ett meddelande till någon du inte pratat med på länge, gå på ett event du normalt undviker, eller bara säga hej till grannen.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Ensamhet – hjälp att förstå och hantera känslan', href: '/guider-seo/ensamhet/ensamhet-hjalp' },
+			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider-seo/ensamhet/orkar-ingenting' },
+			{ title: 'Tomhetskänsla – när inget riktigt känns', href: '/guider-seo/ensamhet/tomhetskansla' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: 'Mind – Ensamhet', url: 'https://mind.se/psykisk-ohalsa/ensamhet/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'ensamhet',
+		slug: 'ensamhet-hjalp',
+		title: 'Ensamhet – hjälp att förstå och hantera känslan',
+		description: 'Vad ensamhet egentligen är, varför den uppstår och vad du kan göra för att börja bryta den.',
+		faqs: [
+			{
+				question: 'Varför känner sig så många ensamma?',
+				answer: 'Moderna levnadssätt med färre fasta gemenskaper, mer skärmar och mer rörlighet gör det svårare att bygga djupa relationer.'
+			},
+			{
+				question: 'Är ensamhet farligt för hälsan?',
+				answer: 'Långvarig ensamhet är kopplad till sämre fysisk och psykisk hälsa. Det är ett folkhälsoproblem som tas på allt större allvar.'
+			},
+			{
+				question: 'Hur börjar man bryta ensamheten?',
+				answer: 'Börja med aktiviteter snarare än relationer – gå med i en kurs, en grupp, en förening. Kontakt uppstår naturligt kring gemensamma intressen.'
+			},
+			{
+				question: 'Vad om man inte vet vad man vill göra?',
+				answer: 'Börja med att prova. Välj något som verkar okej, inte perfekt. Känslan av tillhörighet byggs upp med tid och upprepning.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Känner mig ensam – när ensamheten gör ont', href: '/guider-seo/ensamhet/kanner-mig-ensam' },
+			{ title: 'Tomhetskänsla – när inget riktigt känns', href: '/guider-seo/ensamhet/tomhetskansla' },
+			{ title: 'Hur nedstämdhet påverkar relationer och närheten till andra', href: '/guider-seo/depression/nedstamdhet-och-relationer' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: 'Mind – Ensamhet', url: 'https://mind.se/psykisk-ohalsa/ensamhet/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'ensamhet',
+		slug: 'orkar-ingenting',
+		title: 'Orkar ingenting – om tomhet och tyngd som inte släpper',
+		description: 'När energin tryter och motivationen är borta – vad som kan ligga bakom och vad som faktiskt hjälper.',
+		faqs: [
+			{
+				question: 'Varför orkar jag ingenting?',
+				answer: 'Det kan bero på många saker: utmattning, nedstämdhet, ensamhet, stress eller en kombination. Kropp och sinne kommunicerar att de behöver stöd.'
+			},
+			{
+				question: 'Är det lat att inte orka?',
+				answer: 'Nej. Att inte orka är ett symptom, inte ett karaktärsdrag. Det finns alltid en orsak bakom – och du förtjänar att få förstå den.'
+			},
+			{
+				question: 'Vad kan jag göra när allt känns tungt?',
+				answer: 'Börja med det allra minsta möjliga. Inte listan – bara en sak. Rörelse, frisk luft och kontakt med någon du litar på kan sakta röra på något.'
+			},
+			{
+				question: 'När ska jag söka hjälp?',
+				answer: 'Om känslan håller i sig mer än ett par veckor och påverkar vardagen är det ett tecken på att du förtjänar stöd från en professionell.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Trötthet och meningslöshet – när ingenting känns värt att göra', href: '/guider-seo/depression/trotthet-och-meningsloshet' },
+			{ title: 'Tomhetskänsla – när inget riktigt känns', href: '/guider-seo/ensamhet/tomhetskansla' },
+			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/psykisk-ohalsa/' },
+			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'ensamhet',
+		slug: 'tomhetskansla',
+		title: 'Tomhetskänsla – när inget riktigt känns',
+		description: 'Om känslan av inre tomhet, vad som kan ligga bakom och hur du kan börja hitta tillbaka till dig själv.',
+		faqs: [
+			{
+				question: 'Vad är tomhetskänsla?',
+				answer: 'En känsla av att vara avskuren från sig själv och världen, som om livet sker bakom glas. Inget väcker riktigt glädje eller engagemang.'
+			},
+			{
+				question: 'Vad beror tomhetskänsla på?',
+				answer: 'Det kan hänga ihop med nedstämdhet, utmattning, ensamhet, trauma eller en känsla av att leva ett liv som inte passar en.'
+			},
+			{
+				question: 'Kan tomhetskänsla gå över?',
+				answer: 'Ja, oftast. Men det kräver ofta att man förstår vad som driver den – och ibland behövs professionellt stöd för att komma vidare.'
+			},
+			{
+				question: 'Vad kan ett litet steg vara?',
+				answer: 'Att skriva ner vad du saknar i livet just nu – inte vad du borde vilja, utan vad du faktiskt saknar. Det kan ge en riktning.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider-seo/ensamhet/orkar-ingenting' },
+			{ title: 'Känner mig ensam – när ensamheten gör ont', href: '/guider-seo/ensamhet/kanner-mig-ensam' },
+			{ title: 'Trötthet och meningslöshet – när ingenting känns värt att göra', href: '/guider-seo/depression/trotthet-och-meningsloshet' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/psykisk-ohalsa/' },
+			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' }
+		]
+	},
+
+	// === NYA GUIDER: SOVPROBLEM (3) ===
+	{
+		pillarSlug: 'sovproblem',
+		slug: 'kan-inte-sova-stress',
+		title: 'Kan inte sova av stress – när kroppen inte ger sig',
+		description: 'Om varför stress håller dig vaken och vad du kan göra för att hjälpa kroppen att landa inför sömnen.',
+		faqs: [
+			{
+				question: 'Varför hindrar stress mig från att sova?',
+				answer: 'Stresshormonet kortisol håller kroppen i ett aktiverat läge. När du vill sova men stressen inte har varvet ner blockeras sömnens signaler.'
+			},
+			{
+				question: 'Hjälper det att ligga kvar i sängen?',
+				answer: 'Inte alltid. Om du ligger vaken länge kan sängen kopplas ihop med vakenhet. Det kan hjälpa att gå upp, göra något lugnt och sedan försöka igen.'
+			},
+			{
+				question: 'Vad är bra att göra på kvällen om man är stressad?',
+				answer: 'Lugn rörelse, en varm dusch, skriva ner det du bär på och undvika skärmar den sista timmen kan alla hjälpa nervsystemet att skifta läge.'
+			},
+			{
+				question: 'Skapar sömnbrist mer stress?',
+				answer: 'Ja. Sömnbrist och stress förstärker varandra i en ond cirkel. Att bryta den cykeln brukar börja med att minska stresskällan, inte bara försöka sova.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' },
+			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider-seo/sovproblem/svart-att-somna-angest' },
+			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/att-hantera-stress/' }
+		]
+	},
+	{
+		pillarSlug: 'sovproblem',
+		slug: 'svart-att-somna-angest',
+		title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren',
+		description: 'Om kopplingen mellan ångest och sömnsvårigheter och hur du kan göra det lättare att somna.',
+		faqs: [
+			{
+				question: 'Varför ökar ångesten när jag försöker sova?',
+				answer: 'Tystnaden och bristen på distraktioner ger ångesten mer utrymme. Kroppen är trött men sinnet håller beredskapen uppe.'
+			},
+			{
+				question: 'Vad hjälper direkt i stunden?',
+				answer: 'Djup magandning, progressiv muskelavslappning och att rikta uppmärksamheten mot kroppen snarare än tankarna kan alla hjälpa.'
+			},
+			{
+				question: 'Är sömnmedicin ett alternativ?',
+				answer: 'Det kan vara ett kortsiktigt stöd men bör alltid diskuteras med en läkare. Det behandlar inte den underliggande ångesten.'
+			},
+			{
+				question: 'Hur lång tid tar det att förbättra sömnen?',
+				answer: 'Det varierar, men med regelbundna sömnrutiner och stöd för ångesten brukar sömnen förbättras gradvis inom några veckor.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider-seo/angest/angest-och-somn' },
+			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider-seo/sovproblem/kan-inte-sova-stress' },
+			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' }
+		]
+	},
+	{
+		pillarSlug: 'sovproblem',
+		slug: 'nattlig-oro',
+		title: 'Nattlig oro – att vakna med tankar som inte ger ro',
+		description: 'Om att vakna mitt i natten med oro och tankar, och vad du kan göra för att hitta tillbaka till sömnen.',
+		faqs: [
+			{
+				question: 'Varför vaknar jag av oro mitt i natten?',
+				answer: 'Sömnens lätta faser sker under andra halvan av natten. Oro och stress kan göra att hjärnan aktiveras i dessa faser och inte hittar tillbaka till djupsömn.'
+			},
+			{
+				question: 'Vad ska jag göra när jag vaknar och oroar mig?',
+				answer: 'Undvik att kolla klockan. Lägg handen på magen, andas lugnt och försök inte tvinga fram sömnen. Acceptans brukar fungera bättre än kamp.'
+			},
+			{
+				question: 'Ska jag stiga upp om jag inte somnar?',
+				answer: 'Om du legat vaken mer än 20 minuter kan det hjälpa att gå upp, göra något mycket lugnt i svagt ljus och sedan försöka igen.'
+			},
+			{
+				question: 'Kan nattlig oro bli kronisk?',
+				answer: 'Ja, om man börjar oroa sig för sömnen i sig skapas en ond cirkel. Att bryta kopplingen sängen = oro är ett viktigt steg.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider-seo/sovproblem/svart-att-somna-angest' },
+			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider-seo/sovproblem/kan-inte-sova-stress' },
+			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+
+	// === NYA GUIDER: SJÄLVKÄNSLA (5) ===
+	{
+		pillarSlug: 'sjalvkansla',
+		slug: 'dalig-sjalvkansla',
+		title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det',
+		description: 'Om låg självkänsla, varifrån den kommer och konkreta sätt att börja bygga en mjukare relation till dig själv.',
+		faqs: [
+			{
+				question: 'Vad är egentligen dålig självkänsla?',
+				answer: 'Det handlar om en djup känsla av att inte duga, inte vara värd kärlek eller respekt – oberoende av vad du presterar.'
+			},
+			{
+				question: 'Var kommer dålig självkänsla ifrån?',
+				answer: 'Ofta från tidiga erfarenheter av kritik, otrygga relationer eller miljöer där man inte fick bekräftelse för den man var – snarare än det man gjorde.'
+			},
+			{
+				question: 'Kan dålig självkänsla förändras?',
+				answer: 'Ja. Självkänsla är inte fast – den kan förändras med förståelse, tid och en medveten relation till de egna tankarna.'
+			},
+			{
+				question: 'Vad är ett första steg?',
+				answer: 'Att börja lägga märke till när den inre kritiska rösten pratar – inte för att tiga den, utan för att förstå att den är en röst, inte en sanning.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Låg självkänsla – vad det är och var det kommer ifrån', href: '/guider-seo/sjalvkansla/lag-sjalvkansla' },
+			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider-seo/sjalvkansla/sjalvkritiska-tankar' },
+			{ title: 'Hur får man bättre självkänsla – ett praktiskt perspektiv', href: '/guider-seo/sjalvkansla/hur-far-man-battre-sjalvkansla' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/psykisk-ohalsa/' }
+		]
+	},
+	{
+		pillarSlug: 'sjalvkansla',
+		slug: 'sjalvkritiska-tankar',
+		title: 'Självkritiska tankar – den röst som aldrig är nöjd',
+		description: 'Om den inre kritikern, varför den uppstår och hur du kan skapa lite mer frihet från den.',
+		faqs: [
+			{
+				question: 'Varför är jag så hård mot mig själv?',
+				answer: 'Den självkritiska rösten uppstår ofta som ett sätt att skydda dig – att kritisera dig själv innan andra gör det. Den vill dig väl, men gör det på fel sätt.'
+			},
+			{
+				question: 'Hjälper det att vara hård mot sig själv?',
+				answer: 'Sällan. Forskning visar att självkritik snarare minskar motivation och ökar ångest, medan självmedkänsla leder till mer hållbar förändring.'
+			},
+			{
+				question: 'Hur svarar jag på den självkritiska rösten?',
+				answer: 'Börja med att notera den utan att tro på allt den säger. Fråga dig: Hade jag sagt detta till en vän i samma situation?'
+			},
+			{
+				question: 'Kan den förändras?',
+				answer: 'Ja, med tid och träning. Rösten brukar inte försvinna helt, men den kan bli mindre dominerande och lättare att se igenom.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Den inre kritikern – varför rösten finns och vad den egentligen vill', href: '/guider-seo/sjalvkansla/inre-kritikern' },
+			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider-seo/sjalvkansla/dalig-sjalvkansla' },
+			{ title: 'Känner mig värdelös – om tankar som ljuger om vem du är', href: '/guider-seo/sjalvkansla/kanner-mig-vardelos' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/psykisk-ohalsa/' }
+		]
+	},
+	{
+		pillarSlug: 'sjalvkansla',
+		slug: 'kanner-mig-vardelos',
+		title: 'Känner mig värdelös – om tankar som ljuger om vem du är',
+		description: 'Om känslan av att inte duga eller vara värd något, och hur du kan börja ifrågasätta de tankarna.',
+		faqs: [
+			{
+				question: 'Är tankar om att vara värdelös sanna?',
+				answer: 'Nej. Tankar är inte fakta. Känslan av värdelöshet är verklig, men den berättar om ditt mående – inte om din faktiska person.'
+			},
+			{
+				question: 'Varför är det svårt att ta emot komplimanger?',
+				answer: 'Den som tror sig vara värdelös avvisar ofta positiv återkoppling för att den inte stämmer med den inre bilden. Det är ett tecken på låg självkänsla, inte ett tecken på att komplimangen är osann.'
+			},
+			{
+				question: 'Vad gör jag om känslan är mycket stark?',
+				answer: 'Prata med någon du litar på eller sök professionellt stöd. Starka tankar om värdelöshet förtjänar att tas på allvar och mötas med omsorg.'
+			},
+			{
+				question: 'Finns det ett litet steg?',
+				answer: 'Att börja lista tre saker du gjort – hur litet som helst – varje dag kan gradvis börja ändra hjärnans mönster av att se bort från det positiva.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider-seo/sjalvkansla/sjalvkritiska-tankar' },
+			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider-seo/sjalvkansla/dalig-sjalvkansla' },
+			{ title: 'Hur får man bättre självkänsla – ett praktiskt perspektiv', href: '/guider-seo/sjalvkansla/hur-far-man-battre-sjalvkansla' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/psykisk-ohalsa/' }
+		]
+	},
+	{
+		pillarSlug: 'sjalvkansla',
+		slug: 'jamfor-mig-med-andra',
+		title: 'Jämför mig med andra – när andras liv känns bättre',
+		description: 'Om jämförelsetänkandet, varför det skadar självkänslan och hur du kan börja frigöra dig från det.',
+		faqs: [
+			{
+				question: 'Varför jämför jag mig hela tiden?',
+				answer: 'Jämförelse är ett grundläggande mänskligt beteende – hjärnan söker information om hur vi förhåller oss till gruppen. Men i en tid med sociala medier är det svårt att hantera.'
+			},
+			{
+				question: 'Är jämförelse alltid dåligt?',
+				answer: 'Inte alltid. Att se upp till någon kan inspirera. Men om jämförelsen konstant får dig att känna dig mindervärdig är det dags att titta på den.'
+			},
+			{
+				question: 'Hur bryter jag mönstret?',
+				answer: 'Lägg märke till när du jämför. Fråga dig: Jämför jag mitt inre med deras yttre? Vad vet jag egentligen om deras verkliga liv?'
+			},
+			{
+				question: 'Vad hjälper på sikt?',
+				answer: 'Att flytta fokus från hur du förhåller dig till andra till vad som faktiskt är viktigt för dig – dina värden, inte deras milstolpar.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Jämförelsetrasket – sociala medier och din självbild', href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild' },
+			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider-seo/sjalvkansla/dalig-sjalvkansla' },
+			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider-seo/sjalvkansla/sjalvkritiska-tankar' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
+		pillarSlug: 'sjalvkansla',
+		slug: 'hur-far-man-battre-sjalvkansla',
+		title: 'Hur får man bättre självkänsla – ett praktiskt perspektiv',
+		description: 'Konkreta och realistiska sätt att stärka självkänslan, utan snabba fix eller tomma råd.',
+		faqs: [
+			{
+				question: 'Kan man verkligen förändra sin självkänsla?',
+				answer: 'Ja. Självkänsla är inte ett fast drag – det är ett mönster av tankar och relationer som kan förändras med tid och medvetenhet.'
+			},
+			{
+				question: 'Vad hjälper faktiskt?',
+				answer: 'Att lära sig se och ifrågasätta de självkritiska tankarna, bygga relationer där du känner dig sedd och gradvis utmana det du undviker av rädsla.'
+			},
+			{
+				question: 'Varför hjälper inte prestationer att bygga självkänsla?',
+				answer: 'Prestationsbaserat välmående är bräckligt – det håller bara tills nästa misslyckande. Självkänsla behöver vila på något som inte kan tas ifrån dig.'
+			},
+			{
+				question: 'Hur lång tid tar det?',
+				answer: 'Det finns inga snabba lösningar, men de flesta upplever förändring inom veckor om de arbetar konsekvent med de egna mönstren.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider-seo/sjalvkansla/dalig-sjalvkansla' },
+			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider-seo/sjalvkansla/sjalvkritiska-tankar' },
+			{ title: 'Låg självkänsla – vad det är och var det kommer ifrån', href: '/guider-seo/sjalvkansla/lag-sjalvkansla' }
+		],
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/psykisk-ohalsa/' }
+		]
 	}
 ];
 
