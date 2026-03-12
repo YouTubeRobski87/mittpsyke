@@ -1,5 +1,5 @@
 import { H as HYDRATION_ERROR, C as COMMENT_NODE, u as HYDRATION_END, v as HYDRATION_START, w as HYDRATION_START_ELSE, x as run_all, B as BOUNDARY_EFFECT, R as REACTION_RAN, E as ERROR_VALUE, y as EFFECT, z as CONNECTED, A as CLEAN, M as MAYBE_DIRTY, D as DIRTY, F as DERIVED, W as WAS_MARKED, I as INERT, G as BLOCK_EFFECT, U as UNINITIALIZED, J as deferred, K as BRANCH_EFFECT, L as ROOT_EFFECT, N as RENDER_EFFECT, O as MANAGED_EFFECT, P as DESTROYED, Q as ASYNC, S as includes, T as HYDRATION_START_FAILED, V as EFFECT_TRANSPARENT, X as EFFECT_PRESERVED, Y as STALE_REACTION, n as noop, Z as EAGER_EFFECT, _ as STATE_SYMBOL, $ as object_prototype, a0 as array_prototype, a1 as get_descriptor, a2 as get_prototype_of, a3 as is_array, a4 as is_extensible, a5 as HEAD_EFFECT, a6 as USER_EFFECT, a7 as REACTION_IS_UPDATING, a8 as index_of, a9 as define_property, aa as array_from, ab as is_passive_event, ac as LEGACY_PROPS, ad as render, ae as setContext, d as derived } from "./index.js";
-import { D as DEV } from "./false.js";
+import { b as browser } from "./false.js";
 function equals(value) {
   return value === this.v;
 }
@@ -588,12 +588,12 @@ function flush_effects() {
       var batch = Batch.ensure();
       if (flush_count++ > 1e3) {
         var updates, entry;
-        if (DEV) ;
+        if (browser) ;
         infinite_loop_guard();
       }
       batch.process(queued_root_effects);
       old_values.clear();
-      if (DEV) ;
+      if (browser) ;
     }
   } finally {
     queued_root_effects = [];
@@ -2104,7 +2104,7 @@ function update_effect(effect) {
     effect.teardown = typeof teardown === "function" ? teardown : null;
     effect.wv = write_version;
     var dep;
-    if (DEV && tracing_mode_flag && (effect.f & DIRTY) !== 0 && effect.deps !== null) ;
+    if (browser && tracing_mode_flag && (effect.f & DIRTY) !== 0 && effect.deps !== null) ;
   } finally {
     is_updating_effect = was_updating_effect;
     active_effect = previous_effect;

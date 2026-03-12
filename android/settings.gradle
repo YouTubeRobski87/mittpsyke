@@ -1,0 +1,18 @@
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.10.0'
+}
+include ':app'
+
+def pluginsDir = new File('./capacitor-cordova-android-plugins/')
+if (pluginsDir.exists()) {
+    include ':capacitor-cordova-android-plugins'
+    project(':capacitor-cordova-android-plugins').projectDir = pluginsDir
+}
+
+def capacitorSettings = new File('capacitor.settings.gradle')
+if (capacitorSettings.exists()) {
+    apply from: 'capacitor.settings.gradle'
+} else {
+    assert true // Skip if not found, or you can print a warning
+    println "Warning: capacitor.settings.gradle not found. Run 'npx cap sync' to generate it."
+}

@@ -8,6 +8,14 @@ function ThemeToggle($$renderer, $$props) {
     $$renderer2.push(`<button class="p-2 rounded-[var(--radius-input)] hover:bg-black/5 dark:hover:bg-white/10 transition-colors" aria-label="Växla tema" type="button">${escape_html("🌙")}</button>`);
   });
 }
+function CookieBanner($$renderer, $$props) {
+  $$renderer.component(($$renderer2) => {
+    {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]-->`);
+  });
+}
 function _layout($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let { children } = $$props;
@@ -48,7 +56,9 @@ function _layout($$renderer, $$props) {
       }
       $$renderer2.push(`<!--]--></header> <div${attr_class("", void 0, { "is-chat-page": isChat() })}><main id="main-content" class="mt-6">`);
       children($$renderer2);
-      $$renderer2.push(`<!----></main> <section class="site-disclaimer mt-10 px-5"><p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">MittPsyke ersätter inte vård. Vid akut fara ring 112 · Vårdråd 1177.</p></section> <footer class="site-footer border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">© ${escape_html((/* @__PURE__ */ new Date()).getFullYear())} MittPsyke. Alla rättigheter förbehållna. <span class="mx-2">·</span> <a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">Om MittPsyke</a> <span class="mx-2">·</span> <a href="/integritet" class="text-sm opacity-70 hover:opacity-100 transition-opacity">Integritetspolicy</a> <span class="mx-2">·</span> <a href="/ansvar" class="text-sm opacity-70 hover:opacity-100 transition-opacity">Ansvarsinfo</a> <span class="mx-2">·</span> <a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-teal-700/90 dark:text-teal-300/90 opacity-90 hover:opacity-100 transition-opacity">Akut hjälp (Stödlinjer)</a> <div class="footer-company mt-2 text-xs opacity-70 svelte-12qhfyh"><p class="svelte-12qhfyh">© MittPsyke</p> <p class="svelte-12qhfyh">Enskild näringsverksamhet</p> <p class="svelte-12qhfyh">Org.nr: 198712284895</p> <p class="svelte-12qhfyh"><a href="mailto:mittpsyke@ownit.nu" class="hover:opacity-100 transition-opacity">mittpsyke@ownit.nu</a></p></div></footer></div>`);
+      $$renderer2.push(`<!----></main> <section class="site-disclaimer mt-10 px-5"><p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">MittPsyke ersätter inte vård. Vid akut fara ring 112 · Vårdråd 1177.</p></section> <footer class="site-footer border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">© ${escape_html((/* @__PURE__ */ new Date()).getFullYear())} MittPsyke. Alla rättigheter förbehållna. <span class="mx-2">·</span> <a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">Om MittPsyke</a> <span class="mx-2">·</span> <a href="/integritet" class="text-sm opacity-70 hover:opacity-100 transition-opacity">Integritetspolicy</a> <span class="mx-2">·</span> <a href="/ansvar" class="text-sm opacity-70 hover:opacity-100 transition-opacity">Ansvarsinfo</a> <span class="mx-2">·</span> <a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-teal-700/90 dark:text-teal-300/90 opacity-90 hover:opacity-100 transition-opacity">Akut hjälp (Stödlinjer)</a> <div class="footer-company mt-2 text-xs opacity-70 svelte-12qhfyh"><p class="svelte-12qhfyh">© MittPsyke</p> <p class="svelte-12qhfyh">Enskild näringsverksamhet</p> <p class="svelte-12qhfyh">Org.nr: 198712284895</p> <p class="svelte-12qhfyh"><a href="mailto:mittpsyke@ownit.nu" class="hover:opacity-100 transition-opacity">mittpsyke@ownit.nu</a></p></div></footer></div> `);
+      CookieBanner($$renderer2);
+      $$renderer2.push(`<!---->`);
     }
     $$renderer2.push(`<!--]-->`);
   });
