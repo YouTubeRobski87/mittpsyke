@@ -265,7 +265,7 @@
 		font-size: clamp(1rem, 1.7vw, 1.15rem);
 		line-height: 1.65;
 		letter-spacing: -0.005em;
-		color: #ffffff;
+		color: rgba(255, 255, 255, 0.9);
 	}
 
 	.hero-cta {
@@ -347,7 +347,7 @@
 		line-height: 1.7;
 		font-size: 1rem;
 		letter-spacing: -0.005em;
-		color: #ffffff;
+		color: rgba(255, 255, 255, 0.9);
 	}
 
 	ul {
@@ -356,7 +356,7 @@
 		font-family: var(--font-body);
 		font-weight: 400;
 		line-height: 1.7;
-		color: #ffffff;
+		color: rgba(255, 255, 255, 0.9);
 	}
 
 	.focus-section {
@@ -744,10 +744,10 @@
 	.mode-label {
 		margin: 0 0 0.4rem;
 		font-family: var(--font-heading);
-		font-size: 0.82rem;
-		font-weight: 900;
-		letter-spacing: -0.02em;
-		color: #ffffff;
+		font-size: 1rem;
+		font-weight: 750;
+		letter-spacing: -0.025em;
+		color: rgba(255, 255, 255, 0.95);
 	}
 
 	.mode-list {
