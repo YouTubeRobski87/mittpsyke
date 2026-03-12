@@ -454,7 +454,7 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Vad ar en vanlig reaktion efter trauma?',
-				answer: 'Flashbacks, oro, spänningskänsla och sv?rta sömnperioder ar vanliga tidiga reaktioner.'
+				answer: 'Flashbacks, oro, spänningskänsla och svåra sömnperioder ar vanliga tidiga reaktioner.'
 			},
 			{
 				question: 'Varför reagerar kroppen sa starkt?',
