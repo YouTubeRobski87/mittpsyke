@@ -1282,7 +1282,7 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider-seo/angest/angest-och-somn' },
 			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' },
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymptom' }
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
@@ -1316,7 +1316,7 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Ångest i kroppen – vad som händer och vad som hjälper', href: '/guider-seo/angest/angest-i-kroppen' },
 			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymptom' }
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
@@ -1464,7 +1464,7 @@ export const guides: Guide[] = [
 	// === NYA GUIDER: STRESS (8) ===
 	{
 		pillarSlug: 'stress',
-		slug: 'stressymptom',
+		slug: 'stressymtom',
 		title: 'Stressymtom – tecken på att kroppen bär för mycket',
 		description: 'Vanliga tecken på stress i kropp och sinne, och vad de kan betyda för dig.',
 		faqs: [
@@ -1520,7 +1520,7 @@ export const guides: Guide[] = [
 			}
 		],
 		relatedArticles: [
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymptom' },
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' },
 			{ title: 'Känner mig överväldigad – när allt är för mycket', href: '/guider-seo/stress/kanner-mig-overvaldigad' },
 			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' }
 		],
@@ -1556,7 +1556,7 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
 			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymptom' }
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
@@ -1622,7 +1622,7 @@ export const guides: Guide[] = [
 			}
 		],
 		relatedArticles: [
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymptom' },
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' },
 			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider-seo/stress/inre-stress' },
 			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' }
 		],
@@ -2149,6 +2149,48 @@ export const guides: Guide[] = [
 		]
 	}
 ];
+
+	// === EXTRA GUIDE: ÅNGEST ===
+	{
+		pillarSlug: 'angest',
+		slug: 'fast-i-negativa-tankar',
+		title: 'Fast i negativa tankar – när hjärnan fastnar i ett spår',
+		description: 'Negativa tankar som snurrar och fastnar är vanligt vid stress och ångest. Här är vad som händer och vad som faktiskt hjälper.',
+		updatedAt: '2026-03-12',
+		sources: [
+			{
+				name: '1177 Vårdguiden – Oro och ångest',
+				url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/oro-och-angest/oro-och-angest/'
+			},
+			{
+				name: 'Folkhälsomyndigheten – Psykisk hälsa och välbefinnande',
+				url: 'https://www.folkhalsomyndigheten.se/livsvillkor-levnadsvanor/psykisk-halsa-och-suicidprevention/psykisk-halsa-och-valbefinnande/'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
+			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' },
+			{ title: 'Kan inte sluta tänka – när tankarna bara snurrar', href: '/guider-seo/angest/kan-inte-sluta-tanka' }
+		],
+		faqs: [
+			{
+				question: 'Varför fastnar hjärnan i negativa tankar?',
+				answer: 'Det handlar inte om svaghet eller dålig karaktär. Hjärnan är tränad att leta efter hot och problem – det är ett urgammalt skyddssystem. När vi är stressade eller mår dåligt förstärks det mönstret och tankarna tenderar att kretsa kring det svåraste.'
+			},
+			{
+				question: 'Vad hjälper när negativa tankar tar över?',
+				answer: 'Tre saker som ofta hjälper: Lägg märke till tanken utan att följa med den ("Där är den igen"). Byt fokus med en konkret handling – ett glas vatten, rörelse, ett samtal. Skriv ner tanken och fråga dig: Är det ett faktum eller en känsla som talar?'
+			},
+			{
+				question: 'Kan man träna sig att inte fastna lika lätt?',
+				answer: 'Ja, och det behöver inte vara komplicerat. Att öva sig att märka när tankarna börjar snurra – och medvetet välja att göra något annat – bygger med tid ett nytt mönster. Det är inte en fråga om viljestyrka utan om att upprepa ett mildare sätt att möta tankarna.'
+			},
+			{
+				question: 'När är negativa tankar ett tecken på att jag behöver mer hjälp?',
+				answer: 'Om de negativa tankarna tar upp en stor del av din dag, hindrar dig från att sova, jobba eller umgås, eller om de innehåller tankar på att skada dig själv, är det värt att prata med en vårdcentral eller psykiatrisk mottagning.'
+			}
+		]
+	},
 
 export function getPillarBySlug(slug: string): Pillar | undefined {
 	return pillars.find((pillar) => pillar.slug === slug);
