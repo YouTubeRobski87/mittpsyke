@@ -11,6 +11,7 @@
 		"headline": data.guide.title,
 		"description": data.guide.description,
 		"url": `https://mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`,
+		"dateModified": data.guide.updatedAt ?? undefined,
 		"author": {
 			"@type": "Organization",
 			"name": "MittPsyke",
@@ -86,6 +87,29 @@
 				</li>
 			{/each}
 		</ul>
+	{/if}
+
+	{#if data.guide.sources?.length || data.guide.updatedAt}
+		<section class="mt-10 border-t border-black/10 pt-6" aria-label="Källor och vidare läsning">
+			{#if data.guide.updatedAt}
+				<p class="mb-3 text-xs text-black/50">Senast uppdaterad: {data.guide.updatedAt}</p>
+			{/if}
+			{#if data.guide.sources?.length}
+				<h2 class="text-base font-semibold">Källor och vidare läsning</h2>
+				<ul class="mt-2 space-y-1">
+					{#each data.guide.sources as source}
+						<li class="text-sm">
+							<a
+								class="text-black/70 underline underline-offset-2 hover:text-black"
+								href={source.url}
+								target="_blank"
+								rel="noopener noreferrer"
+							>{source.label}</a>
+						</li>
+					{/each}
+				</ul>
+			{/if}
+		</section>
 	{/if}
 
 	<div class="mt-10">

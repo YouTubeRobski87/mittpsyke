@@ -8,6 +8,11 @@ export type RelatedArticle = {
 	href: string;
 };
 
+export type SourceItem = {
+	label: string;
+	url: string;
+};
+
 export type Pillar = {
 	slug: string;
 	title: string;
@@ -22,6 +27,8 @@ export type Guide = {
 	description: string;
 	faqs: FaqItem[];
 	relatedArticles?: RelatedArticle[];
+	updatedAt?: string;
+	sources?: SourceItem[];
 };
 
 export const pillars: Pillar[] = [
@@ -99,6 +106,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/angest/social-angest'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+		],
 	},
 	{
 		pillarSlug: 'angest',
@@ -137,6 +149,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/angest/angest-och-somn'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Paniksyndrom', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/paniksyndrom/' },
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+		],
 	},
 	{
 		pillarSlug: 'angest',
@@ -175,6 +192,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/angest/angest-och-somn'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+		],
 	},
 	{
 		pillarSlug: 'angest',
@@ -213,6 +235,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/sovproblem/stress-och-somn'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+		],
 	},
 	{
 		pillarSlug: 'angest',
@@ -251,6 +278,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+		],
 	},
 	{
 		pillarSlug: 'depression',
@@ -293,6 +325,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+		],
 	},
 	{
 		pillarSlug: 'depression',
@@ -331,6 +368,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+		],
 	},
 	{
 		pillarSlug: 'depression',
@@ -369,6 +411,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/' },
+		],
 	},
 	{
 		pillarSlug: 'depression',
@@ -407,6 +454,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/' },
+		],
 	},
 	{
 		pillarSlug: 'depression',
@@ -445,6 +497,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Psykisk hälsa', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+		],
 	},
 	{
 		pillarSlug: 'trauma',
@@ -487,6 +544,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/trauma/tillit-efter-trauma'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – PTSD och trauma', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: 'Socialstyrelsen – TF-KBT', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/evidensbaserad-praktik/metodguiden/tf-kbt-traumafokuserad-kognitiv-beteendeterapi/' },
+		],
 	},
 	{
 		pillarSlug: 'trauma',
@@ -525,6 +587,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/sovproblem/stress-och-somn'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – PTSD och trauma', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: 'Socialstyrelsen – TF-KBT', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/evidensbaserad-praktik/metodguiden/tf-kbt-traumafokuserad-kognitiv-beteendeterapi/' },
+		],
 	},
 	{
 		pillarSlug: 'trauma',
@@ -563,6 +630,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/trauma/undvikande-efter-trauma'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – PTSD och trauma', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: '1177 – Mindfulness och avslappning', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/mindfulness/' },
+		],
 	},
 	{
 		pillarSlug: 'trauma',
@@ -601,6 +673,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/trauma/tillit-efter-trauma'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – PTSD och trauma', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: 'Socialstyrelsen – TF-KBT', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/evidensbaserad-praktik/metodguiden/tf-kbt-traumafokuserad-kognitiv-beteendeterapi/' },
+		],
 	},
 	{
 		pillarSlug: 'trauma',
@@ -639,6 +716,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/trauma/grounding-ovningar'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – PTSD och trauma', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/' },
+		],
 	},
 	{
 		pillarSlug: 'sovproblem',
@@ -681,6 +763,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/sovproblem/somnbrist-och-maendet'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Sömn och hälsa', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+		],
 	},
 	{
 		pillarSlug: 'sovproblem',
@@ -705,6 +792,11 @@ export const guides: Guide[] = [
 				answer: 'Att lägga märke till stresspåslaget, sakta ner tempot och ge kroppen en tydlig övergång mellan dag och natt kan vara en bra början.'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+		],
 	},
 	{
 		pillarSlug: 'sovproblem',
@@ -729,6 +821,11 @@ export const guides: Guide[] = [
 				answer: 'Det kan hjälpa att sätta ord på tankarna tidigare på kvällen eller använda en lugn rutin som markerar att dagen är slut.'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: '1177 – Mindfulness och avslappning', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/mindfulness/' },
+		],
 	},
 	{
 		pillarSlug: 'sovproblem',
@@ -753,6 +850,11 @@ export const guides: Guide[] = [
 				answer: 'Lugna övergångar, mindre press kring sömnen och regelbundna stunder för återhämtning under dagen kan göra skillnad över tid.'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+		],
 	},
 	{
 		pillarSlug: 'sovproblem',
@@ -777,6 +879,11 @@ export const guides: Guide[] = [
 				answer: 'Om sömnbristen pågått ett tag och samtidigt påverkar hur du mår, fungerar eller orkar i vardagen är det klokt att soka stöd.'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Sömnsvårigheter', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+		],
 	},
 	{
 		pillarSlug: 'sjalvkansla',
@@ -819,6 +926,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+		],
 	},
 	{
 		pillarSlug: 'sjalvkansla',
@@ -857,6 +969,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+		],
 	},
 	{
 		pillarSlug: 'sjalvkansla',
@@ -895,6 +1012,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+		],
 	},
 	{
 		pillarSlug: 'sjalvkansla',
@@ -933,6 +1055,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Mind – Psykisk ohälsa', url: 'https://mind.se/' },
+		],
 	},
 	{
 		pillarSlug: 'sjalvkansla',
@@ -971,6 +1098,11 @@ export const guides: Guide[] = [
 				href: '/guider-seo/depression/nedstamdhet-och-relationer'
 			}
 		]
+		updatedAt: '2026-03-12',
+		sources: [
+			{ label: '1177 – Självkänsla', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+		],
 	}
 ];
 
