@@ -1,4 +1,4 @@
-﻿<svelte:head>
+<svelte:head>
 	<title>Hjälp vid ensamhet – prata anonymt | MittPsyke</title>
 	<meta name="description" content="Få stöd för ensamhet och isolering. Prata anonymt med AI-baserat samtalsstöd dygnet runt. Lugn, ärlig och tillgänglig hjälp." />
 	<meta property="og:title" content="Hjälp vid ensamhet – prata anonymt | MittPsyke" />
@@ -49,8 +49,6 @@
 			<h2>Du är inte ensam med ensamheten</h2>
 			<p>Många människor känner denna tomhet. Det du söker efter – förbindelse, förståelse, att bli sedd – är helt mänskligt och naturligt. MittPsyke kan vara ett första steg.</p>
 		</aside>
-	</div>
-</main>
 
 		<!-- Guide links -->
 		<section class="guide-links" aria-label="Läs mer om ensamhet">
@@ -62,6 +60,8 @@
 			</ul>
 			<a href="/guider-seo/ensamhet" class="guide-link-all">Se alla guider om ensamhet →</a>
 		</section>
+	</div>
+</main>
 
 <style>
 	.page {

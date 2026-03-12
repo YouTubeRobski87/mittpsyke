@@ -44,8 +44,6 @@
 			<h2>Du behöver inte veta varför</h2>
 			<p>Ibland räcker det att sätta ord på hur det känns. Sömnproblem minskar sällan av att ignoreras – men kan börja lösas upp när du får prata om dem.</p>
 		</aside>
-	</div>
-</main>
 
 		<!-- Guide links -->
 		<section class="guide-links" aria-label="Läs mer om sömnproblem">
@@ -57,6 +55,8 @@
 			</ul>
 			<a href="/guider-seo/sovproblem" class="guide-link-all">Se alla guider om sömnproblem →</a>
 		</section>
+	</div>
+</main>
 
 <style>
 	.page {

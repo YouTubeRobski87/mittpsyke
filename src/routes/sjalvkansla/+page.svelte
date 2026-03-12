@@ -43,8 +43,6 @@
 			<h2>Du förtjänar att bli lyssnad på</h2>
 			<p>Självkänsla formas av erfarenheter och relationer – och den kan förändras. Det börjar ofta med att någon faktiskt lyssnar, utan att döma.</p>
 		</aside>
-	</div>
-</main>
 
 		<!-- Guide links -->
 		<section class="guide-links" aria-label="Läs mer om självkänsla">
@@ -56,6 +54,8 @@
 			</ul>
 			<a href="/guider-seo/sjalvkansla" class="guide-link-all">Se alla guider om självkänsla →</a>
 		</section>
+	</div>
+</main>
 
 <style>
 	.page {

@@ -48,8 +48,6 @@
 			<h2>Du behöver inte klara allt själv</h2>
 			<p>Att tala om stress – vad som faktiskt tynger dig – kan vara ett viktigt första steg mot att hitta balans igen. Du förtjänar stöd.</p>
 		</aside>
-	</div>
-</main>
 
 		<!-- Guide links -->
 		<section class="guide-links" aria-label="Läs mer om stress">
@@ -61,6 +59,8 @@
 			</ul>
 			<a href="/guider-seo/stress" class="guide-link-all">Se alla guider om stress →</a>
 		</section>
+	</div>
+</main>
 
 <style>
 	.page {
