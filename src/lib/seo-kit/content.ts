@@ -40,7 +40,7 @@ export const pillars: Pillar[] = [
 	{
 		slug: 'trauma',
 		title: 'Trauma och trygghet',
-		description: 'Om stressreaktioner efter svaira handelser och satt att bygga mer trygghet.',
+		description: 'Om stressreaktioner efter svaira handelser och sätt att bygga mer trygghet.',
 		chatPath: '/chat/e'
 	},
 	{
@@ -301,7 +301,7 @@ export const guides: Guide[] = [
 		description: 'Om trötthet, tomhet och känslan av att vardagen förlorar sin riktning.',
 		faqs: [
 			{
-				question: 'Varför blir allt sa tungt när jag mår dåligt?',
+				question: 'Varför blir allt så tungt när jag mår dåligt?',
 				answer: 'Nedstämdhet kan påverka energi, motivation och känslan av mening, vilket gör att små saker kan kännas mycket stora.'
 			},
 			{
@@ -530,11 +530,11 @@ export const guides: Guide[] = [
 		pillarSlug: 'trauma',
 		slug: 'grounding-ovningar',
 		title: 'Grounding - enkla övningar för att landa i kroppen igen',
-		description: 'Om grounding som ett satt att återfå orientering och kontakt med nuet när kroppen är i alarm.',
+		description: 'Om grounding som ett sätt att återfå orientering och kontakt med nuet när kroppen är i alarm.',
 		faqs: [
 			{
 				question: 'Vad är grounding?',
-				answer: 'Grounding är enkla satt att flytta uppmärksamheten till kroppen, omgivningen och det som är har och nu.'
+				answer: 'Grounding är enkla sätt att flytta uppmärksamheten till kroppen, omgivningen och det som är här och nu.'
 			},
 			{
 				question: 'När kan grounding vara hjälpsamt?',
@@ -572,7 +572,7 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Varför undviker jag vissa platser eller situationer?',
-				answer: 'Undvikande är ofta ett satt att minska risken att triggas eller överväldigas igen.'
+				answer: 'Undvikande är ofta ett sätt att minska risken att triggas eller överväldigas igen.'
 			},
 			{
 				question: 'Är undvikande alltid fel?',
@@ -717,16 +717,16 @@ export const guides: Guide[] = [
 				answer: 'När det blir tyst omkring dig för hjärnan mer utrymme, och oro eller obearbetade intryck kan bli tydligare.'
 			},
 			{
-				question: 'Är altande samma sak som problemlosning?',
-				answer: 'Inte riktigt. Altande känns ofta som att tankarna går i cirklar utan att leda till ett tydligt svar eller beslut.'
+				question: 'Är ältande samma sak som problemlösning?',
+				answer: 'Inte riktigt. Ältande känns ofta som att tankarna går i cirklar utan att leda till ett tydligt svar eller beslut.'
 			},
 			{
-				question: 'Kan kvallsoro göra att jag somnar senare?',
-				answer: 'Ja, mental aktivering på kvallen kan göra det svare att komma ner i ro och slappa taget om dagen.'
+				question: 'Kan kvällsoro göra att jag somnar senare?',
+				answer: 'Ja, mental aktivering på kvällen kan göra det svårare att komma ner i ro och släppa taget om dagen.'
 			},
 			{
-				question: 'Vad kan hjälpa när tankarna snurrar i sangen?',
-				answer: 'Det kan hjälpa att sätta ord på tankarna tidigare på kvallen eller anvanda en lugn rutin som markerar att dagen är slut.'
+				question: 'Vad kan hjälpa när tankarna snurrar i sängen?',
+				answer: 'Det kan hjälpa att sätta ord på tankarna tidigare på kvällen eller använda en lugn rutin som markerar att dagen är slut.'
 			}
 		]
 	},
@@ -741,12 +741,12 @@ export const guides: Guide[] = [
 				answer: 'Det händer när kroppen behöver vila men hjärnan fortfarande är aktiv av stress, oro eller överstimulering.'
 			},
 			{
-				question: 'Är det vanligt att känna sig rastlos på kvallen?',
-				answer: 'Ja, många beskriver en rastlos eller spänd känsla trots att de är helt slut i kroppen.'
+				question: 'Är det vanligt att känna sig rastlös på kvällen?',
+				answer: 'Ja, många beskriver en rastlös eller spänd känsla trots att de är helt slut i kroppen.'
 			},
 			{
 				question: 'Betyder det har att något är fel på mig?',
-				answer: 'Inte nodvandigtvis. Det är ofta en reaktion på belastning, hög anspänning eller att nervsystemet inte har hunnit varva ner.'
+				answer: 'Inte nödvändigtvis. Det är ofta en reaktion på belastning, hög anspänning eller att nervsystemet inte har hunnit varva ner.'
 			},
 			{
 				question: 'Vad kan minska den har känslan?',
@@ -769,7 +769,7 @@ export const guides: Guide[] = [
 				answer: 'När du har sömnbrist för hjärnan svårare att reglera känslor, vilket kan göra att små saker känns storre an de brukar.'
 			},
 			{
-				question: 'Kan dalig sömn hanga ihop med nedstämdhet?',
+				question: 'Kan dålig sömn hanga ihop med nedstämdhet?',
 				answer: 'Ja, sömn och mående påverkar varandra starkt och långvariga sömnproblem kan bidra till nedstämdhet eller förvärra den.'
 			},
 			{
@@ -828,15 +828,15 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Varför är jag sa hård mot mig själv?',
-				answer: 'Den inre kritikern utvecklas ofta som ett satt att försöka skydda dig fran misstag, avvisande eller skam.'
+				answer: 'Den inre kritikern utvecklas ofta som ett sätt att försöka skydda dig fran misstag, avvisande eller skam.'
 			},
 			{
 				question: 'Betyder självkritik att jag är lat eller svag?',
-				answer: 'Nej, stark självkritik är ofta ett tecken på hög press och gamla satt att hantera otrygghet.'
+				answer: 'Nej, stark självkritik är ofta ett tecken på hög press och gamla sätt att hantera otrygghet.'
 			},
 			{
 				question: 'Kan den inre kritikern ha en funktion?',
-				answer: 'Ja, den försöker ofta hjälpa genom kontroll, men den gör det på ett satt som kan bli hart och nedbrytande.'
+				answer: 'Ja, den försöker ofta hjälpa genom kontroll, men den gör det på ett sätt som kan bli hart och nedbrytande.'
 			},
 			{
 				question: 'Hur kan jag börja förändra den rosten?',
@@ -866,7 +866,7 @@ export const guides: Guide[] = [
 		faqs: [
 			{
 				question: 'Varför blir jag aldrig nojd med det jag gör?',
-				answer: 'När självkänslan är skör blir prestation ibland ett satt att försöka känna sig tillräcklig, men ribban flyttas hela tiden.'
+				answer: 'När självkänslan är skör blir prestation ibland ett sätt att försöka känna sig tillräcklig, men ribban flyttas hela tiden.'
 			},
 			{
 				question: 'Är perfektionism ett tecken på ambition?',
