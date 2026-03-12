@@ -56,6 +56,10 @@
 				<li><strong>Grounding och struktur</strong> – lugnande samtalsstöd med fokus på nästa lilla steg.</li>
 				<li><strong>Inte vård, diagnos eller behandling</strong> – tjänsten följer inte ett specifikt terapeutiskt protokoll och är inte evidensbaserad behandling i klinisk mening.</li>
 			</ul>
+
+			<p class="crisis-note">
+				MittPsyke kan vid vissa tecken på akut kris visa ett särskilt säkerhetssvar med hänvisning till akut hjälp. Tjänsten är inte en akuttjänst och ska inte användas som enda stöd i en nödsituation.
+			</p>
 		</section>
 
 		<!-- 2) Personlig story -->
