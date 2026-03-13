@@ -1618,7 +1618,8 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		relatedArticles: [
 			{ title: 'Varför orkar jag ingenting? – när energin tar slut', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' },
 			{ title: 'Stressymtom – så märker du att kroppen är under press', href: '/guider-seo/stress/stressymtom' },
-			{ title: 'Grounding-övning vid stress – 5-4-3-2-1', href: '/guider-seo/stress/grounding-ovning-vid-stress' }
+			{ title: 'Grounding-övning vid stress – 5-4-3-2-1', href: '/guider-seo/stress/grounding-ovning-vid-stress' },
+			{ title: 'Hur återhämtar man sig mentalt?', href: '/guider-seo/stress/hur-aterhamtar-man-sig-mentalt' }
 		],
 		updatedAt: '2026-03-13',
 		sources: [
@@ -2621,9 +2622,63 @@ Om de kroppsliga signalerna är ihållande — om du sover dåligt i månader, h
 			{
 				title: 'Grounding-övning vid stress',
 				href: '/guider-seo/stress/grounding-ovning-vid-stress'
+			},
+			{
+				title: 'Hur återhämtar man sig mentalt?',
+				href: '/guider-seo/stress/hur-aterhamtar-man-sig-mentalt'
 			}
 		]
 	},
+	{
+		pillarSlug: 'stress',
+		slug: 'hur-aterhamtar-man-sig-mentalt',
+		nextStepTool: 'stresshantering',
+		title: 'Hur återhämtar man sig mentalt? Små steg som faktiskt hjälper',
+		description: 'Mental återhämtning handlar inte om att skärpa sig. Här får du konkreta steg för att minska belastningen och ge hjärnan tid att hinna ikapp.',
+		content: `## Varför mental återhämtning kan kännas svår\n\nDu kanske vet att du behöver vila, men det hjälper inte att bara lägga sig ner. Hjärnan fortsätter gå på högvarv. Du är trött men kan inte varva ner. Du skuldbelägger dig själv för att du inte orkar. Du försöker vila men är fortfarande mentalt påkopplad. Det är inte lathet. Det är ett nervsystem som fastnat i alarmberedskap.\n\n## Tecken på att du behöver mental återhämtning\n\n- Svårt att fokusera även på enkla saker\n- Lättirriterad utan tydlig anledning\n- Allt känns tungt och meningslöst\n- Svårt att känna efter vad du behöver\n- Kroppen känns spänd även i vila\n- Du vaknar trött trots tillräckligt med sömn\n\nOm du känner igen flera av dessa signaler har din hjärna sannolikt varit överbelastad längre än du tror. Det innebär att återhämtningen också behöver tid, inte bara en kväll.\n\n## Små steg som faktiskt hjälper\n\n### Sänk inflödet en stund\n\nDin hjärna bearbetar allt du tar in: nyheter, sociala medier, andras problem, notiser. Att medvetet minska inflödet ger nervsystemet utrymme att lugna ner sig. Du behöver inte stänga av allt, men testa att minska under en begränsad period.\n\n### Gör mindre, inte perfekt\n\nNär du är mentalt utmattad fungerar inte prestige och prestation. Sänk ribban. Gör det viktigaste, inte det bästa. Att göra tre saker halvbra är bättre för återhämtning än att göra en sak perfekt under press.\n\n### Återkommande pauser utan syfte\n\nÅterhämtning sker inte bara på natten. Korta pauser under dagen, där du inte gör något alls, hjälper nervsystemet att kalibrera om. Ingen musik, ingen skärm, bara stillhet i några minuter.\n\n### Skriv av dig\n\nAtt skriva ner tankar hjälper hjärnan att sortera och släppa. Det behöver inte vara snyggt eller sammanhängande. Bara att få ut orden kan minska den inre pressen märkbart.\n\n### Grounding och andning\n\nEnkla övningar som att andas långsamt, känna fötterna mot golvet eller beskriva det du ser runt dig hjälper kroppen att lämna alarmberedskap. Det handlar inte om att slappna av på kommando, utan om att ge nervsystemet en signal att faran har passerat.\n\n### Sömn och rytm utan press\n\nFörsök inte tvinga fram perfekt sömn. Fokusera istället på att ha en ungefärlig rytm: gå upp vid samma tid, ha en lugn rutin innan sängen, undvik skärm nära insomnandet. Strukturen i sig ger trygghet åt hjärnan.\n\n## Vad som inte alltid hjälper\n\n- **Att pressa sig hårdare.** Det förstärker belastningen.\n- **Att försöka tänka bort allt.** Undertryckt stress lagras i kroppen.\n- **Att fylla varje paus med skärm eller nytt inflöde.** Hjärnan får aldrig tyst.\n\nÅterhämtning handlar inte om att göra ingenting perfekt. Det handlar om att minska belastningen tillräckligt länge för att hjärnan ska hinna ikapp.\n\n## När du bör söka mer stöd\n\nOm du har känt dig mentalt utmattad i flera veckor, om du märker att vardagen påverkas allt mer, eller om det börjar kännas hopplöst, kan det vara bra att prata med någon professionell. Det är inget tecken på svaghet. Det är ett steg mot att ta hand om dig själv på riktigt.`,
+		faqs: [
+			{
+				question: 'Hur lång tid tar mental återhämtning?',
+				answer: 'Det varierar från person till person. Har du varit överbelastad länge kan det ta veckor att känna skillnad. Små, regelbundna steg ger bäst resultat.'
+			},
+			{
+				question: 'Varför hjälper det inte att bara vila?',
+				answer: 'Om nervsystemet är i alarmberedskap räcker det inte att lägga sig ner. Hjärnan behöver aktiva signaler om trygghet, till exempel grounding eller att sänka inflödet.'
+			},
+			{
+				question: 'Kan jag återhämta mig mentalt utan professionell hjälp?',
+				answer: 'I många fall kan du göra mycket själv. Men om utmattningen håller i sig länge eller påverkar vardagen starkt kan det vara bra att prata med någon.'
+			},
+			{
+				question: 'Är mental utmattning samma sak som utmattningssyndrom?',
+				answer: 'Inte nödvändigtvis. Mental utmattning är ett bredare begrepp. Utmattningssyndrom är en klinisk diagnos som ställs av vårdpersonal.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Tecken på mental överbelastning',
+				href: '/guider-seo/stress/tecken-pa-mental-overbelastning'
+			},
+			{
+				title: 'När kroppen säger ifrån av stress',
+				href: '/guider-seo/stress/nar-kroppen-sager-ifran-stress'
+			},
+			{
+				title: 'Grounding-övning vid stress',
+				href: '/guider-seo/stress/grounding-ovning-vid-stress'
+			},
+			{
+				title: 'Varför orkar jag ingenting?',
+				href: '/guider-seo/stress/varfor-orkar-jag-ingenting'
+			}
+		],
+		updatedAt: '2026-03-13',
+		sources: [
+			{ label: '1177 – Stress', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/stress/' },
+			{ label: 'Hjärnfonden – Mental återhämtning', url: 'https://www.hjarnfonden.se/om-hjarnan/stress/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	}
 ];
 
 	for (const pillar of pillars) {
