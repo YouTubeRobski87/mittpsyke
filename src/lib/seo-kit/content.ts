@@ -30,6 +30,7 @@ export type Guide = {
 	relatedArticles?: RelatedArticle[];
 	updatedAt?: string;
 	sources?: SourceItem[];
+	content?: string;
 };
 
 export const pillars: Pillar[] = [
@@ -2197,7 +2198,7 @@ export const guides: Guide[] = [
 				answer: 'Om de negativa tankarna tar upp en stor del av din dag, hindrar dig från att sova, jobba eller umgås, eller om de innehåller tankar på att skada dig själv, är det värt att prata med en vårdcentral eller psykiatrisk mottagning.'
 			}
 		]
-	}
+	},
 	{
 		pillarSlug: 'stress',
 		slug: 'grounding-ovning-vid-stress',
@@ -2250,10 +2251,10 @@ export const guides: Guide[] = [
 				url: 'https://www.folkhalsomyndigheten.se/livsvillkor-levnadsvanor/psykisk-halsa-och-suicidprevention/'
 			}
 		],
-		crossLinks: [
-			{ label: 'Stressymtom – vad kroppen försöker säga', href: '/guider-seo/stress/stressymtom' },
-			{ label: 'Hjärntrötthet – när hjärnan stänger av', href: '/guider-seo/stress/hjarntrotthet-hjalp' },
-			{ label: 'Svårt att sova när oron tar över', href: '/guider-seo/sovproblem/svart-att-somna-angest' }
+		relatedArticles: [
+			{ title: 'Stressymtom – vad kroppen försöker säga', href: '/guider-seo/stress/stressymtom' },
+			{ title: 'Hjärntrötthet – när hjärnan stänger av', href: '/guider-seo/stress/hjarntrotthet-hjalp' },
+			{ title: 'Svårt att sova när oron tar över', href: '/guider-seo/sovproblem/svart-att-somna-angest' }
 		],
 		content: `
 ## Att inte orka är inte detsamma som att vara svag
@@ -2324,7 +2325,7 @@ Om brist på ork pågår länge, om vardagen påverkas mycket eller om du märke
 Det kan handla om att prata med en läkare, psykolog eller annan stödkontakt. Att söka hjälp är ett av de starkaste saker du kan göra.
 
 Vid akuta tankar på att skada dig själv: ring 112 eller gå till närmaste akutmottagning.
-\`,
+`,
 		faqs: [
 			{
 				question: 'Är det normalt att inte orka utan att förstå varför?',

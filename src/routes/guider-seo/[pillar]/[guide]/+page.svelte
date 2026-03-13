@@ -44,6 +44,16 @@
 		"inLanguage": "sv-SE"
 	});
 
+	function markdownToHtml(md: string): string {
+		return md
+			.replace(/^## (.+)$/gm, '<h2 class="mt-7 text-xl font-semibold">$1</h2>')
+			.replace(/^\*\*(.+?)\*\*$/gm, '<p class="mt-3 font-semibold">$1</p>')
+			.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+			.replace(/\n\n/g, '</p><p class="mt-3 leading-relaxed text-black/80">')
+			.replace(/^(?!<)(.+)$/gm, '<p class="mt-3 leading-relaxed text-black/80">$1</p>')
+			.replace(/<p[^>]*><\/p>/g, '');
+	}
+
 	const jsonLdFaq = $derived(data.guide.faqs?.length ? {
 		"@context": "https://schema.org",
 		"@type": "FAQPage",
@@ -85,6 +95,12 @@
 			<p class="mt-2 text-sm leading-relaxed text-black/80">Källa och vidare läsning: relaterade artiklar inom MittPsyke finns längre ned på sidan.</p>
 		{/if}
 	</section>
+
+	{#if data.guide.content}
+		<div class="guide-content mt-8">
+			{@html markdownToHtml(data.guide.content)}
+		</div>
+	{/if}
 
 	<h2 class="mt-8 text-xl font-semibold">Vanliga frågor</h2>
 	<ul class="mt-4 space-y-3">
