@@ -2511,7 +2511,6 @@ Vid akuta tankar på att skada dig själv: ring 112 eller gå till närmaste aku
 			}
 		]
 	},
-,
 	{
 		pillarSlug: 'stress',
 		slug: 'nar-kroppen-sager-ifran-stress',
