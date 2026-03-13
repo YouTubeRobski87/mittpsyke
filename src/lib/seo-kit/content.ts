@@ -1536,6 +1536,101 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 
 	// === NYA GUIDER: STRESS (8) ===
 	{
+
+	{
+		pillarSlug: 'stress',
+		slug: 'tecken-pa-mental-overbelastning',
+		nextStepTool: 'grounding-5-4-3-2-1',
+		title: 'Tecken på mental överbelastning – när kroppen och hjärnan säger ifrån',
+		description: 'Hur vet man att man är mentalt överbelastad? Vanliga tecken som är lätta att missa – och vad du kan göra redan idag.',
+		content: `## Det märks inte alltid direkt
+
+Mental överbelastning smyger sig på. Det händer sällan med en enda stor händelse – det är snarare summan av allt som samlats under lång tid. Många bär på det i månader innan de ens sätter ord på det.
+
+Att inte märka det tidigt är inte ett tecken på bristande självkännedom. Det är ett tecken på att du anpassat dig – kanske för länge.
+
+## Vanliga tecken att känna igen
+
+### Irritation som dyker upp oväntat
+Saker som normalt inte stör dig börjar reta dig. Du reagerar starkare än situationen motiverar. Det är inte temperament – det är ett nervsystem som är fulladdat och har tröttnat på att hålla masken.
+
+### Koncentrationssvårigheter
+Du börjar en sak, tappar tråden, byter uppgift. Svårt att slutföra. Svårt att hålla fokus. Hjärnan är för trött för att hålla kvar uppmärksamheten.
+
+### Trötthet som inte går över
+Du sover men vaknar inte utvilad. Kaffet hjälper inte. Det är inte brist på sömn – det är att hjärnan aldrig riktigt återhämtar sig mellan varven.
+
+### Ljud, krav och intryck känns för mycket
+Barnens röster, notifikationer, frågor på jobbet – allt verkar för högt, för mycket, för nu. Det är hjärnan som sänkt sin toleransgräns för att den redan är full.
+
+### Svårt att varva ner
+Du kan ligga i sängen men hjärnan fortsätter snurra. Du kan vara ledig men kan inte koppla av. Kroppen är stilla, hjärnan är inte det.
+
+### Kroppen spänner sig
+Käkspänning, axlar uppe vid öronen, tungt bröst, magknip. Kroppen bär det som sinnet inte hinner bearbeta.
+
+## Varför det händer
+
+Överbelastning uppstår när kraven – externa eller interna – överstiger möjligheterna till återhämtning under tillräckligt lång tid.
+
+Det kan bero på:
+- **Långvarig stress** utan tillräckliga pauser
+- **För lite djup återhämtning** (inte bara passiv vila)
+- **För många intryck och beslut** per dag
+- **Höga inre krav** – att alltid prestera, aldrig be om hjälp, alltid finnas till
+- **Sömnbrist** som ackumulerats under lång tid
+
+Det är inte svaghet. Det är fysiologi.
+
+## Vad du kan göra i små steg
+
+Du behöver inte göra om allt. Du behöver börja med att sänka tempot, inte höja det.
+
+**Välj bort något aktivt.** Ta bort ett åtagande från veckan – inte för att du "ska" utan för att du behöver. Det är inte att svika, det är att vara hållbar.
+
+**Rör kroppen lugnt.** En kort promenad utan telefon aktiverar återhämtningssystemet. Det behöver inte vara träning.
+
+**Grounding när det kokar till.** 5-4-3-2-1-tekniken är ett enkelt sätt att bryta ett överväldigat tillstånd direkt. Fem saker du ser, fyra du hör – hjärnan tvingas landa i nuet.
+
+**Skriv av dig.** Att skriva ner vad som tynger – utan att behöva lösa det – minskar den kognitiva bördan. Dagboken är ett bra ställe att börja.
+
+**Vila utan krav.** Du behöver inte förtjäna vila. Återhämtning är inte belöning – det är förutsättning.
+
+## När du bör söka mer stöd
+
+Om tecknen ovan har pågått i flera veckor och börjar påverka din vardag, relationer eller arbetsförmåga – ta kontakt med din vårdcentral. Utmattning är en medicinsk tillstånd som det finns hjälp för.
+
+Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
+		faqs: [
+			{
+				question: 'Vad är skillnaden mellan vanlig trötthet och mental överbelastning?',
+				answer: 'Vanlig trötthet går över med sömn och vila. Mental överbelastning gör det inte – du vaknar fortfarande trött, har svårt att koncentrera dig och känner irritation eller tomhet trots vila.'
+			},
+			{
+				question: 'Kan man vara mentalt överbelastad utan att inse det?',
+				answer: 'Ja – det är vanligt. Många anpassar sig gradvis och vänjer sig vid sin nya "normalnivå". Det är ofta först när man bromsar upp, eller när kroppen tvingar till stopp, som man inser hur länge det pågått.'
+			},
+			{
+				question: 'Hur skiljer sig mental överbelastning från depression?',
+				answer: 'Det kan överlappa, men mental överbelastning är ofta mer kopplad till yttre krav och brist på återhämtning. Depression kan ha djupare och mer ihållande orsaker. Om du är osäker – prata med en läkare.'
+			},
+			{
+				question: 'Vad är det första jag ska göra om jag känner igen mig?',
+				answer: 'Börja med att sänka tempot och välja bort något. Det låter enkelt men är ofta det svåraste. Du kan också börja med en enkel grounding-övning för att hjälpa nervsystemet landa.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Varför orkar jag ingenting? – när energin tar slut', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' },
+			{ title: 'Stressymtom – så märker du att kroppen är under press', href: '/guider-seo/stress/stressymtom' },
+			{ title: 'Grounding-övning vid stress – 5-4-3-2-1', href: '/guider-seo/stress/grounding-ovning-vid-stress' }
+		],
+		updatedAt: '2026-03-13',
+		sources: [
+			{ label: '1177 – Utmattningssyndrom', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/utmattningssyndrom/' },
+			{ label: 'Folkhälsomyndigheten – Stress och psykisk ohälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
 		pillarSlug: 'stress',
 		slug: 'stressymtom',
 		nextStepTool: 'body-scan',
