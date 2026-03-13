@@ -1267,8 +1267,6 @@ export const guides: Guide[] = [
 		]
 	},
 	{
-
-	{
 		pillarSlug: 'angest',
 		slug: 'hjalp-vid-oro-pa-kvallen',
 		nextStepTool: '4-7-8-andning',
@@ -1535,8 +1533,6 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 	},
 
 	// === NYA GUIDER: STRESS (8) ===
-	{
-
 	{
 		pillarSlug: 'stress',
 		slug: 'tecken-pa-mental-overbelastning',
