@@ -2223,6 +2223,117 @@ export const guides: Guide[] = [
 			{ label: '1177 – Stress', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/att-hantera-stress/' }
 		]
 	},
+	{
+		pillarSlug: 'stress',
+		slug: 'varfor-orkar-jag-ingenting',
+		nextStepTool: 'body-scan',
+		title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper',
+		description: 'Att inte orka är inte detsamma som att vara svag eller lat. Förstå vad som händer i kroppen och hjärnan – och vad du kan göra i små steg.',
+		updatedAt: '2026-03-13',
+		sources: [
+			{
+				label: '1177 Vårdguiden – Utmattningssyndrom',
+				url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/stressrelaterad-psykisk-ohalsa/utmattningssyndrom/'
+			},
+			{
+				label: 'Folkhälsomyndigheten – Psykisk hälsa och stress',
+				url: 'https://www.folkhalsomyndigheten.se/livsvillkor-levnadsvanor/psykisk-halsa-och-suicidprevention/'
+			}
+		],
+		crossLinks: [
+			{ label: 'Stressymtom – vad kroppen försöker säga', href: '/guider-seo/stress/stressymtom' },
+			{ label: 'Hjärntrötthet – när hjärnan stänger av', href: '/guider-seo/stress/hjarntrotthet-hjalp' },
+			{ label: 'Svårt att sova när oron tar över', href: '/guider-seo/sovproblem/svart-att-somna-angest' }
+		],
+		content: `
+## Att inte orka är inte detsamma som att vara svag
+
+Ibland vaknar man upp trött. Man ska göra saker som egentligen är enkla – men det känns tungt. Man försöker ta sig an dagen, men energin finns inte riktigt där.
+
+Det är lätt att tolka det som lathet, dålig disciplin eller att man "inte är tillräcklig". Men ofta handlar det om något helt annat.
+
+Kroppen och hjärnan har ett system för att skydda sig. När det har gått för länge med för mycket – stress, sömnbrist, oro, press – kan det systemet slå av. Inte för att straffa dig, utan för att skydda dig.
+
+## Vanliga orsaker till att man inte orkar
+
+Det finns sällan en enda förklaring. Ofta är det en kombination:
+
+**Stress och överbelastning**
+När kroppen länge har gått på högvarv tar energireserverna slut. Det märks inte alltid direkt – men till slut orkar man helt enkelt inte mer.
+
+**Sömnbrist**
+Även kortvarig sömnbrist påverkar motivation, beslutskraft och ork dramatiskt. Hjärnan behöver sömn för att återhämta sig och ladda om.
+
+**Nedstämdhet eller depression**
+Brist på energi och motivation är ett av de vanligaste tecknen på nedstämdhet. Det behöver inte kallas "depression" för att vara verkligt och påverka vardagen.
+
+**Mental överbelastning**
+Att bära på många tankar, bekymmer och ansvar på samma gång är utmattande – även om ingenting ser "stort" ut utifrån.
+
+**Oro och ångest**
+Att vara i konstant beredskap tar enormt med energi. Kroppen är spänd, hjärnan är igång – och det lämnar lite kvar till annat.
+
+## Hur det kan kännas inifrån
+
+Det är inte alltid tydligt varför man inte orkar. Ibland känns det så här:
+
+- Enkla saker känns överväldigande
+- Man skjuter upp saker man egentligen vill göra
+- Det känns som att man "borde" orka men inte gör det
+- Man mår dåligt över att inte orka, vilket tar ännu mer energi
+- Allt tar längre tid än vanligt
+
+Allt det är förståeliga reaktioner på en kropp och hjärna som behöver återhämtning – inte bevis på att något är fel med dig som person.
+
+## Vad som faktiskt hjälper
+
+### Sänk ribban – på riktigt
+
+Inte som en tillfällig lösning, utan som ett aktivt val. Vad är det minsta meningsfulla du kan göra idag? Börja där. Det är inte att ge upp, det är att vara klok.
+
+### Välj en sak
+
+Att ha en lång lista framför sig när man inte orkar gör det värre. Stäng listan. Välj en sak. Gör den. Det räcker.
+
+### Vila utan skuld
+
+Hjärnan och kroppen återhämtar sig under vila – inte under press. Att vila när du behöver det är inte svaghet. Det är nödvändigt.
+
+### Skriv av dig
+
+Ibland är en del av bördan just att bära allt inombords. Att skriva ner det som snurrar – utan att behöva lösa det – kan lätta lite på trycket.
+
+### Ta ett litet steg i stället för att försöka lösa allt
+
+Stor förändring sker inte på en dag. Men ett litet steg idag, och ett imorgon, och ett dagen efter – det bygger rörelse. Det räcker.
+
+## När det är dags att söka mer stöd
+
+Om brist på ork pågår länge, om vardagen påverkas mycket eller om du märker att du mår sämre över tid – är det ett tecken på att du förtjänar mer stöd än det du kan ge dig själv.
+
+Det kan handla om att prata med en läkare, psykolog eller annan stödkontakt. Att söka hjälp är ett av de starkaste saker du kan göra.
+
+Vid akuta tankar på att skada dig själv: ring 112 eller gå till närmaste akutmottagning.
+\`,
+		faqs: [
+			{
+				question: 'Är det normalt att inte orka utan att förstå varför?',
+				answer: 'Ja, det är vanligare än man tror. Kroppen och hjärnan bearbetar mer än vi märker – stress, oro och sömnbrist kan samlas upp och ta ut sin rätt utan att det finns en tydlig orsak.'
+			},
+			{
+				question: 'Är det lathet om man inte orkar?',
+				answer: 'Nej. Lathet är ett val. Att inte orka är en reaktion – ofta på överbelastning, sömnbrist eller nedstämdhet. Det ser liknande ut utifrån, men är helt olika saker inifrån.'
+			},
+			{
+				question: 'Vad är det minsta jag kan göra när jag inte orkar?',
+				answer: 'Välj en enda sak – den minsta meningsfulla. Det kan vara att ta en promenad runt kvarteret, dricka ett glas vatten, eller skriva en mening i en dagbok. Rörelse i rätt riktning räcker.'
+			},
+			{
+				question: 'När ska jag söka hjälp om jag inte orkar?',
+				answer: 'Om det pågår länge (mer än ett par veckor), om det påverkar din vardag eller dina relationer, eller om du börjar må sämre – ta kontakt med vården. Det är ett tecken på styrka, inte svaghet.'
+			}
+		]
+	},
 ];
 
 export function getPillarBySlug(slug: string): Pillar | undefined {
