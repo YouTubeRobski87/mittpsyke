@@ -1537,6 +1537,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'stress',
 		slug: 'hjarntrotthet-hjalp',
+		nextStepTool: 'body-scan',
 		title: 'Hjärntrötthet – när hjärnan inte orkar bearbeta mer',
 		description: 'Om kognitiv utmattning och hjärntrötthet – vad det är, varför det händer och hur du kan börja återhämta dig.',
 		faqs: [
@@ -1571,6 +1572,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'stress',
 		slug: 'kanner-mig-overvaldigad',
+		nextStepTool: 'grounding',
 		title: 'Känner mig överväldigad – när allt är för mycket',
 		description: 'Om känslan av att allt staplas på hög och vad du kan göra när livet känns övermäktigt.',
 		faqs: [
@@ -1605,6 +1607,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'stress',
 		slug: 'stressad-hela-tiden',
+		nextStepTool: 'grounding',
 		title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret',
 		description: 'Om att leva i konstant stress, vad det gör med kroppen och hur du kan börja skapa mer utrymme.',
 		faqs: [
@@ -1639,6 +1642,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'stress',
 		slug: 'utmattad-mentalt',
+		nextStepTool: 'body-scan',
 		title: 'Utmattad mentalt – när hjärnan inte orkar mer',
 		description: 'Om mental utmattning, vad den skiljer sig från vanlig trötthet och hur återhämtning kan se ut.',
 		faqs: [
@@ -1673,6 +1677,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'stress',
 		slug: 'kan-inte-varva-ner',
+		nextStepTool: 'andning-4-7-8',
 		title: 'Kan inte varva ner – om stress som sitter kvar i kroppen',
 		description: 'Om varför nervsystemet ibland inte kan koppla av och vad du kan göra för att hitta ner i ett lugnare läge.',
 		faqs: [
@@ -1707,6 +1712,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'stress',
 		slug: 'mycket-tankar-pa-kvallen',
+		nextStepTool: 'andning-4-7-8',
 		title: 'Mycket tankar på kvällen – när hjärnan inte vill stänga av',
 		description: 'Om varför kvällen fylls av tankar och oro, och hur du kan skapa mer ro inför sömnen.',
 		faqs: [
@@ -1743,6 +1749,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'ensamhet',
 		slug: 'kanner-mig-ensam',
+		nextStepTool: 'sjalvmedkansla',
 		title: 'Känner mig ensam – när ensamheten gör ont',
 		description: 'Om ensamhet som inte är ett val och hur du kan börja hitta vägen tillbaka till kontakt.',
 		faqs: [
@@ -1777,6 +1784,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'ensamhet',
 		slug: 'ensamhet-hjalp',
+		nextStepTool: 'sjalvmedkansla',
 		title: 'Ensamhet – hjälp att förstå och hantera känslan',
 		description: 'Vad ensamhet egentligen är, varför den uppstår och vad du kan göra för att börja bryta den.',
 		faqs: [
@@ -1811,6 +1819,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'ensamhet',
 		slug: 'orkar-ingenting',
+		nextStepTool: 'body-scan',
 		title: 'Orkar ingenting – om tomhet och tyngd som inte släpper',
 		description: 'När energin tryter och motivationen är borta – vad som kan ligga bakom och vad som faktiskt hjälper.',
 		faqs: [
@@ -1845,6 +1854,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'ensamhet',
 		slug: 'tomhetskansla',
+		nextStepTool: 'grounding',
 		title: 'Tomhetskänsla – när inget riktigt känns',
 		description: 'Om känslan av inre tomhet, vad som kan ligga bakom och hur du kan börja hitta tillbaka till dig själv.',
 		faqs: [
