@@ -2188,6 +2188,56 @@ export const guides: Guide[] = [
 			}
 		]
 	}
+	{
+		slug: 'hjalp-vid-oro-pa-kvallen',
+		pillarSlug: 'angest',
+		title: 'Hjälp vid oro på kvällen',
+		description: 'Oro som blir starkare på kvällen är vanligt och betyder inte att något är fel med dig. Här får du förklaring och konkreta steg att ta just nu.',
+		intro: 'Kvällen är ofta den tid på dygnet då tankar och oro tar störst plats. Dagen är över, distraktionerna försvinner – och plötsligt är det bara du och allt det du inte hann tänka på. Det är ett vanligt mönster, och det finns enkla saker du kan göra för att göra kvällen lite lättare.',
+		sections: [
+			{
+				heading: 'Varför känns oro starkare på kvällen?',
+				content: 'Under dagen är hjärnan sysselsatt – jobb, möten, prylar, samtal. Det håller oron på avstånd. Men på kvällen minskar intrycken, kroppen saktar ner och hjärnan börjar bearbeta allt som har hänt. Det ger oro och tankar mer utrymme att ta plats. Tröttheten gör också att det är svårare att sålla bland tankar och hålla perspektivet. Saker som känns hanterbara på eftermiddagen kan kännas överväldigande klockan 22. Det är inte ett tecken på svaghet – det är neurologi.'
+			},
+			{
+				heading: 'Vad du kan göra just nu',
+				content: 'Du behöver inte lösa allt innan du somnar. Här är fem saker som faktiskt hjälper:\n\n**1. Skriv ner det som snurrar**\nGe tankarna ett ställe att landa. Skriv en kortlista – inte för att lösa, bara för att tömma huvudet. "Det här oroar mig ikväll" räcker.\n\n**2. Välj en sak till imorgon**\nIstället för att mentalt försöka hantera allt: välj EN sak du tar tag i imorgon. Resten får vänta.\n\n**3. Prova andning eller grounding**\nKroppen kan lugna hjärnan. Prova 4-7-8-andning (andas in 4 sek, håll 7, andas ut 8) eller grounding-tekniken 5-4-3-2-1.\n\n**4. Sänk kraven för kvällen**\nKvällen är inte platsen för stora beslut. Ge dig själv tillåtelse att bara vara – utan att prestera eller lösa.\n\n**5. Bryt tankespiralen med rörelse**\nEn kort promenad, stretching eller bara att byta rum kan avbryta tankemönstret fysiskt.'
+			},
+			{
+				heading: 'När bör du söka mer stöd?',
+				content: 'Kvällsoro som uppstår ibland är normalt. Men om det pågår varje kväll under lång tid, om sömnen påverkas allvarligt eller om det börjar påverka hur du fungerar under dagarna – då är det läge att söka stöd. Prata med din vårdcentral, en psykolog eller ring 1177 för rådgivning. Vid akut kris: ring 112 eller Självmordslinjen 90101.'
+			}
+		],
+		faqs: [
+			{
+				question: 'Varför blir jag alltid mer orolig på kvällen?',
+				answer: 'Det är ett vanligt mönster. Utan dagens distraktioner får hjärnan mer utrymme att bearbeta tankar och oro. Tröttheten gör det också svårare att hålla perspektivet. Det är inte ett fel på dig – det är hur hjärnan fungerar.'
+			},
+			{
+				question: 'Hur stoppar jag tankarna innan jag ska sova?',
+				answer: 'Försök inte tvinga bort tankarna – det brukar göra det värre. Istället: skriv ner dem, prova en andningsövning, eller fokusera på något konkret med sinnena (5-4-3-2-1-tekniken). Målet är att ge hjärnan något annat att hålla i.'
+			},
+			{
+				question: 'Är kvällsoro ett tecken på ångest?',
+				answer: 'Inte nödvändigtvis. Oro på kvällen är väldigt vanligt och kan ha många orsaker – stress, livsförändringar, sömnbrist. Om oron är stark, återkommande och påverkar din vardag kan det vara värt att prata med någon.'
+			},
+			{
+				question: 'Hjälper det att skriva dagbok om kvällsoro?',
+				answer: 'Ja, för många hjälper det att tömma huvudet på papper. Det behöver inte vara välformulerat – bara en lista på vad som snurrar. Det ger hjärnan signal om att tankarna är "dokumenterade" och inte behöver hållas aktiva.'
+			}
+		],
+		crossLinks: [
+			{ slug: 'angest-hjalp', pillarSlug: 'angest', label: 'Hjälp vid ångest' },
+			{ slug: 'svart-att-somna-angest', pillarSlug: 'sovproblem', label: 'Svårt att somna av ångest' },
+			{ slug: 'kan-inte-sluta-tanka', pillarSlug: 'angest', label: 'Kan inte sluta tänka' }
+		],
+		sources: [
+			{ label: '1177 – Oro och ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/oro-och-angest/oro-och-angest/' },
+			{ label: 'Mind – Psykisk ohälsa på kvällen', url: 'https://mind.se/psykisk-halsa/' }
+		],
+		updatedAt: '2026-03-13',
+		nextStepTool: 'andning-4-7-8'
+	},
 ];
 
 export function getPillarBySlug(slug: string): Pillar | undefined {
