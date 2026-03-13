@@ -249,6 +249,10 @@ export const guides: Guide[] = [
 			{
 				title: 'Stress och sömn – när kroppen inte kan varva ner',
 				href: '/guider-seo/sovproblem/stress-och-somn'
+			},
+			{
+				title: 'Hjälp vid oro på kvällen – vad du kan göra just nu',
+				href: '/guider-seo/angest/hjalp-vid-oro-pa-kvallen'
 			}
 		],
 		updatedAt: '2026-03-12',
@@ -1183,7 +1187,8 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det', href: '/guider-seo/angest/panikangest-och-kroppen' },
 			{ title: 'Lugna en panikattack – steg för steg', href: '/guider-seo/angest/lugna-en-panikattack' },
-			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' }
+			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' },
+			{ title: 'Grounding-övning vid stress – 5-4-3-2-1-tekniken', href: '/guider-seo/stress/grounding-ovning-vid-stress' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
@@ -1218,7 +1223,8 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' },
 			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
-			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider-seo/angest/nar-tankarna-inte-stannar' }
+			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider-seo/angest/nar-tankarna-inte-stannar' },
+			{ title: 'Varför orkar jag ingenting? – om utmattning och energibrist', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
@@ -1388,7 +1394,8 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Oro i kroppen – när ångesten sitter fysiskt', href: '/guider-seo/angest/oro-i-kroppen' },
 			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' },
-			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' }
+			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
+			{ title: 'Grounding-övning vid stress – 5-4-3-2-1-tekniken', href: '/guider-seo/stress/grounding-ovning-vid-stress' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
@@ -1493,7 +1500,8 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider-seo/stress/inre-stress' },
 			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
-			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' }
+			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
+			{ title: 'Grounding-övning vid stress – 5-4-3-2-1-tekniken', href: '/guider-seo/stress/grounding-ovning-vid-stress' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
@@ -1562,7 +1570,8 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
 			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' }
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' },
+			{ title: 'Varför orkar jag ingenting? – om utmattning och energibrist', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
@@ -1702,7 +1711,8 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
 			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' },
-			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider-seo/sovproblem/kan-inte-sova-stress' }
+			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider-seo/sovproblem/kan-inte-sova-stress' },
+			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider-seo/angest/hjalp-vid-oro-pa-kvallen' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
@@ -1844,7 +1854,8 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Trötthet och meningslöshet – när ingenting känns värt att göra', href: '/guider-seo/depression/trotthet-och-meningsloshet' },
 			{ title: 'Tomhetskänsla – när inget riktigt känns', href: '/guider-seo/ensamhet/tomhetskansla' },
-			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' }
+			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
+			{ title: 'Varför orkar jag ingenting? – om utmattning och energibrist', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
@@ -1984,7 +1995,8 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider-seo/sovproblem/svart-att-somna-angest' },
 			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider-seo/sovproblem/kan-inte-sova-stress' },
-			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' }
+			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' },
+			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider-seo/angest/hjalp-vid-oro-pa-kvallen' }
 		],
 		updatedAt: '2026-03-12',
 		sources: [
