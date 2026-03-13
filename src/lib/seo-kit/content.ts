@@ -2511,22 +2511,7 @@ Vid akuta tankar på att skada dig själv: ring 112 eller gå till närmaste aku
 			}
 		]
 	},
-];
-
-export function getPillarBySlug(slug: string): Pillar | undefined {
-	return pillars.find((pillar) => pillar.slug === slug);
-}
-
-export function getGuidesForPillar(pillarSlug: string): Guide[] {
-	return guides.filter((guide) => guide.pillarSlug === pillarSlug);
-}
-
-export function getGuideBySlugs(pillarSlug: string, guideSlug: string): Guide | undefined {
-	return guides.find((guide) => guide.pillarSlug === pillarSlug && guide.slug === guideSlug);
-}
-
-export function getGuiderSeoPaths(): string[] {
-	const paths = ['/guider-seo'
+,
 	{
 		pillarSlug: 'stress',
 		slug: 'nar-kroppen-sager-ifran-stress',
@@ -2681,7 +2666,22 @@ Om de kroppsliga signalerna är ihållande — om du sover dåligt i månader, h
 	}
 ];
 
-	for (const pillar of pillars) {
+export function getPillarBySlug(slug: string): Pillar | undefined {
+	return pillars.find((pillar) => pillar.slug === slug);
+}
+
+export function getGuidesForPillar(pillarSlug: string): Guide[] {
+	return guides.filter((guide) => guide.pillarSlug === pillarSlug);
+}
+
+export function getGuideBySlugs(pillarSlug: string, guideSlug: string): Guide | undefined {
+	return guides.find((guide) => guide.pillarSlug === pillarSlug && guide.slug === guideSlug);
+}
+
+export function getGuiderSeoPaths(): string[] {
+	const paths: string[] = ['/guider-seo'];
+
+		for (const pillar of pillars) {
 		paths.push(`/guider-seo/${pillar.slug}`);
 	}
 
