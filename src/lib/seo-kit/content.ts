@@ -2525,7 +2525,106 @@ export function getGuideBySlugs(pillarSlug: string, guideSlug: string): Guide | 
 }
 
 export function getGuiderSeoPaths(): string[] {
-	const paths = ['/guider-seo'];
+	const paths = ['/guider-seo'
+	{
+		pillarSlug: 'stress',
+		slug: 'nar-kroppen-sager-ifran-stress',
+		nextStepTool: 'grounding-5-4-3-2-1',
+		title: 'När kroppen säger ifrån av stress',
+		description: 'Kroppen märker stress innan vi gör det. Lär dig känna igen de vanligaste kroppsliga signalerna och vad du kan göra när de dyker upp.',
+		updatedAt: '2026-03-13',
+		sources: [
+			{ label: '1177 – Stress', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/stress/' },
+			{ label: 'Folkhälsomyndigheten – Stress och återhämtning', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/psykisk-halsa-och-arbete/stress-och-aterhamtning/' }
+		],
+		content: `## Kroppen håller räkning — även när vi inte gör det
+
+Stress brukar beskrivas som något mentalt. Men kroppen reagerar på stress lika mycket som hjärnan — ibland tidigare. Muskler spänns. Andningen blir ytligare. Magen knyter sig. Sömnkvaliteten försämras.
+
+Det är inte svaghet. Det är biologi.
+
+Kroppens stressystem — ofta kallat "fight or flight"-systemet — är designat för att hjälpa oss hantera hot. Problemet är att systemet inte skiljer på ett fysiskt hot och en överfull kalender, ett svårt samtal eller månader av för lite återhämtning.
+
+## Vanliga kroppsliga signaler på stress
+
+### Spänningar i kropp och muskulatur
+Axlarna sitter högt. Käken är spänd. Nacken värker. Ryggen protesterar. Det är kroppen som håller kvar det du inte fått bearbeta.
+
+### Hjärtklappning och tryck över bröstet
+Hjärtat slår snabbare, ibland utan tydlig anledning. Det kan kännas skrämmande men är ofta en normal stressreaktion.
+
+### Ytlig andning
+Under stress andas de flesta ytligare och snabbare. Det kan ge en känsla av att det är svårt att andas ordentligt, eller av lättyrsel.
+
+### Magproblem
+Magen och tarmen är känsliga för stress. Illamående, dålig aptit, ont i magen eller förändrade matvanor kan alla vara signaler.
+
+### Huvudvärk
+Spänningshuvudvärk är vanlig vid långvarig stress — ofta beror den på muskler i nacke och huvud som aldrig riktigt slappnar av.
+
+### Trött men kan inte sova
+En av de vanligaste kombinationerna: kroppen är utmattad men stressystemet är fortfarande aktiverat, vilket gör det svårt att somna eller sova djupt.
+
+### Svårt att varva ner
+Även när du loggar ut, stänger datorn eller sätter dig i soffan — känslan av beredskap finns kvar. Det är ett tydligt tecken på att systemet är överaktiverat.
+
+## Varför kroppen reagerar så
+
+Stressreaktionen är i grunden ett skyddssystem. När hjärnan registrerar ett hot frisätts stresshormoner som adrenalin och kortisol. Dessa hormoner förbereder kroppen för handling — muskler spänns, hjärtat pumpar snabbare, sinnen skärps.
+
+Problemet uppstår när det inte finns ett konkret hot att hantera. Vid kronisk stress — jobbtryck, relationsproblem, ekonomisk oro, sömnbrist — hålls systemet aktiverat utan naturlig avladdning. Kroppen betalar priset.
+
+## Vad du kan göra i små steg
+
+Du behöver inte lösa allt på en gång. Några små saker som faktiskt hjälper kroppen att signalera "det är lugnt":
+
+**Andning.** Medveten, långsam utandning aktiverar det parasympatiska nervsystemet — kroppens eget bromssystem. Prova att andas in i 4 sekunder, hålla i 2, andas ut i 6.
+
+**Rörelse.** Promenader, stretching eller yoga hjälper musklerna att frisätta spänningar som byggts upp.
+
+**Värme.** Bad, varm dryck eller ett varmt täcke skickar signaler om trygghet till nervsystemet.
+
+**Grounding.** Att rikta uppmärksamheten mot det konkreta här och nu — vad du ser, hör, känner — hjälper systemet att landa.
+
+**Skriv av dig.** Att sätta ord på det som tynger kan minska den kognitiva belastningen och göra det lättare för kroppen att slappna av.
+
+## När du bör söka mer stöd
+
+Om de kroppsliga signalerna är ihållande — om du sover dåligt i månader, har konstant värk, hjärtklappning som inte ger med sig eller känner dig helt urladdad — är det klokt att prata med en läkare. Kroppen kommunicerar. Det är värt att lyssna.`,
+		faqs: [
+			{
+				question: 'Varför känner jag kroppsliga symptom av stress?',
+				answer: 'Kroppen och hjärnan är tätt sammankopplade. När stressystemet aktiveras reagerar kroppen med spänningar, snabbare hjärtslag, ytligare andning och andra fysiska signaler.'
+			},
+			{
+				question: 'Är det farligt att ha kroppsliga stressymtom?',
+				answer: 'De flesta stressreaktioner är ofarliga i sig, men långvarig stress kan påverka hälsan. Om symptomen är ihållande är det klokt att prata med en läkare.'
+			},
+			{
+				question: 'Vad kan jag göra direkt när kroppen spänner sig?',
+				answer: 'Prova en medveten utandning, låt axlarna sjunka, och rikta uppmärksamheten mot något konkret i rummet. Det aktiverar kroppens eget lugnsystem.'
+			},
+			{
+				question: 'Hur vet jag om det är stress och inte något fysiskt?',
+				answer: 'Det kan vara svårt att skilja på. Om du är osäker — kontakta vården. Att utesluta fysiska orsaker är alltid ett klokt första steg.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Tecken på mental överbelastning',
+				href: '/guider-seo/stress/tecken-pa-mental-overbelastning'
+			},
+			{
+				title: 'Stressymtom – hur stress visar sig i kropp och tankar',
+				href: '/guider-seo/stress/stressymtom'
+			},
+			{
+				title: 'Grounding-övning vid stress',
+				href: '/guider-seo/stress/grounding-ovning-vid-stress'
+			}
+		]
+	},
+];
 
 	for (const pillar of pillars) {
 		paths.push(`/guider-seo/${pillar.slug}`);
