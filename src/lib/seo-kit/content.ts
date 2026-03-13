@@ -1267,6 +1267,68 @@ export const guides: Guide[] = [
 		]
 	},
 	{
+
+	{
+		pillarSlug: 'angest',
+		slug: 'hjalp-vid-oro-pa-kvallen',
+		nextStepTool: '4-7-8-andning',
+		title: 'Hjälp vid oro på kvällen – vad du kan göra just nu',
+		description: 'Varför ångesten och oron ofta ökar på kvällen – och tre enkla saker som faktiskt hjälper.',
+		content: `## Varför kvällen kan kännas tyngst
+
+Under dagen är hjärnan sysselsatt. Jobb, samtal, uppgifter – det finns hela tiden något att fokusera på. Men när kvällen kommer och det tystnar, tar hjärnan ofta chansen att bearbeta allt som inte hanns med under dagen.
+
+Det är inte ett tecken på svaghet. Det är inte för att du "övertänker". Det är hjärnan som gör sitt jobb – men på fel tid.
+
+## Tre saker som faktiskt hjälper
+
+### 1. Ge tankarna ett ställe att landa
+
+Skriv ner det som snurrar. Inte för att lösa det – bara för att flytta det ur huvudet och ut på papper. Det är förvånansvärt effektivt för att minska cirkelgång.
+
+### 2. Välj EN sak till imorgon
+
+En lång lista av oavklarade saker är en av de vanligaste orsakerna till kvällsoro. Ta listan och välj ut en sak. Resten får vänta. Det hjälper hjärnan att "stänga av" för natten.
+
+### 3. Prova 4-7-8-andning
+
+Andas in i 4 sekunder. Håll andan i 7 sekunder. Andas ut i 8 sekunder. Gör det tre gånger. Tekniken aktiverar det parasympatiska nervsystemet och signalerar till kroppen att det är tryggt att slappna av.
+
+## När oron inte ger med sig
+
+Om oro på kvällen är ett mönster som pågår, kan det vara värt att se om det finns ett underliggande tema – som oro för framtiden, relationsstress, eller en känsla av att inte räcka till. Att skriva om det i dagboken kan hjälpa dig hitta mönstret.
+
+Om oron börjar påverka sömnen regelbundet är det ett tecken på att du förtjänar mer stöd.`,
+		faqs: [
+			{
+				question: 'Varför blir oron värre på kvällen?',
+				answer: 'Under dagen håller intryck och uppgifter tankarna sysselsatta. På kvällen, när det tystnar, får hjärnan utrymme att bearbeta det som samlats upp under dagen – vilket kan kännas som att oron "exploderar".'
+			},
+			{
+				question: 'Vad är 4-7-8-andning?',
+				answer: 'En andningsteknik där du andas in 4 sekunder, håller 7, och andas ut 8. Det aktiverar det lugnande nervsystemet och kan snabbt minska stressnivån.'
+			},
+			{
+				question: 'Hjälper det att skriva ner tankarna?',
+				answer: 'Ja – att skriva ner orostankar minskar deras grepp. Det kallas "cognitive offloading" och hjälper hjärnan att inte behöva hålla kvar allt aktivt.'
+			},
+			{
+				question: 'När ska jag söka hjälp för kvällsoro?',
+				answer: 'Om oro på kvällen är ett återkommande mönster som påverkar sömnen eller livskvaliteten – ta kontakt med din vårdcentral eller en psykolog.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' },
+			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' },
+			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' }
+		],
+		updatedAt: '2026-03-13',
+		sources: [
+			{ label: '1177 – Oro och ångest', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Folkhälsomyndigheten – Psykisk hälsa', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	{
 		pillarSlug: 'angest',
 		slug: 'vaknar-med-angest',
 		title: 'Vaknar med ångest – när morgonen börjar tungt',
