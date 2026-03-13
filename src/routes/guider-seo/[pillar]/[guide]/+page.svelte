@@ -5,6 +5,19 @@
 
 	let { data } = $props<{ data: PageData }>();
 
+	// Map content.ts pillar slugs → main pillar route paths
+	const pillarRoutes: Record<string, string> = {
+		angest: '/angest',
+		depression: '/depression',
+		trauma: '/trauma',
+		sovproblem: '/sovproblem',
+		sjalvkansla: '/sjalvkansla',
+		stress: '/stress',
+		ensamhet: '/ensamhet'
+	};
+
+	const pillarRoute = pillarRoutes[data.pillar.slug] ?? null;
+
 	function formatDate(iso: string): string {
 		const months = ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
 		const [year, month, day] = iso.split('-');
@@ -118,7 +131,62 @@
 		</section>
 	{/if}
 
+	{#if data.nextTool || pillarRoute}
+		<section class="nasta-steg mt-10 rounded-xl border border-black/10 p-5" aria-label="Nästa steg">
+			<h2 class="text-base font-semibold">Nästa steg</h2>
+			<ul class="mt-3 space-y-2">
+				{#if data.nextTool}
+					<li>
+						<a class="next-link" href={`/ovningar/${data.nextTool.slug}`}>
+							<span class="next-icon">🧘</span> Testa övningen: {data.nextTool.title}
+						</a>
+					</li>
+				{/if}
+				{#if pillarRoute}
+					<li>
+						<a class="next-link" href={pillarRoute}>
+							<span class="next-icon">📖</span> Mer om {data.pillar.title}
+						</a>
+					</li>
+				{/if}
+				<li>
+					<a class="next-link" href="/dagbok">
+						<span class="next-icon">✏️</span> Skriv om det i dagboken
+					</a>
+				</li>
+			</ul>
+		</section>
+	{/if}
+
 	<div class="mt-10">
 		<SeoCta chatPath={data.pillar.chatPath} />
 	</div>
 </main>
+
+<style>
+	.nasta-steg {
+		background: rgba(67, 110, 143, 0.04);
+	}
+
+	.next-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		font-size: 0.95rem;
+	}
+
+	.next-link:hover {
+		opacity: 0.75;
+	}
+
+	.next-icon {
+		font-size: 1rem;
+	}
+
+	:global(.dark) .nasta-steg {
+		background: rgba(86, 148, 201, 0.06);
+		border-color: rgba(255, 255, 255, 0.1);
+	}
+</style>

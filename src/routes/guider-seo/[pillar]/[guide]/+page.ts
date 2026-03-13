@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { getGuideBySlugs, getPillarBySlug } from '$lib/seo-kit/content';
+import { getToolBySlug } from '$lib/data/seo-architecture';
 
 export function load({ params }) {
 	const pillar = getPillarBySlug(params.pillar);
@@ -14,5 +15,7 @@ export function load({ params }) {
 		throw error(404, 'Guide hittades inte');
 	}
 
-	return { pillar, guide };
+	const nextTool = guide.nextStepTool ? getToolBySlug(guide.nextStepTool) : null;
+
+	return { pillar, guide, nextTool };
 }

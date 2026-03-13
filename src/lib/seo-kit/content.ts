@@ -23,6 +23,7 @@ export type Pillar = {
 export type Guide = {
 	pillarSlug: Pillar['slug'];
 	slug: string;
+	nextStepTool?: string;
 	title: string;
 	description: string;
 	faqs: FaqItem[];
@@ -1123,6 +1124,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'angest-hjalp',
+		nextStepTool: 'grounding-5-4-3-2-1',
 		title: 'Ångesthjälp – vad du kan göra när ångesten tar tag',
 		description: 'Konkreta och varsamma sätt att hantera ångest i vardagen, utan att det behöver bli komplicerat.',
 		faqs: [
@@ -1191,6 +1193,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'kan-inte-sluta-tanka',
+		nextStepTool: 'sju-fragor-vid-oro',
 		title: 'Kan inte sluta tänka – när tankarna bara snurrar',
 		description: 'Om hjärnan som inte stänger av och vad du kan göra när tankarna inte ger dig ro.',
 		faqs: [
@@ -1465,6 +1468,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'stress',
 		slug: 'stressymtom',
+		nextStepTool: 'body-scan',
 		title: 'Stressymtom – tecken på att kroppen bär för mycket',
 		description: 'Vanliga tecken på stress i kropp och sinne, och vad de kan betyda för dig.',
 		faqs: [
@@ -1911,6 +1915,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sovproblem',
 		slug: 'svart-att-somna-angest',
+		nextStepTool: '4-7-8-andning',
 		title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren',
 		description: 'Om kopplingen mellan ångest och sömnsvårigheter och hur du kan göra det lättare att somna.',
 		faqs: [
@@ -1981,6 +1986,7 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'sjalvkansla',
 		slug: 'dalig-sjalvkansla',
+		nextStepTool: 'sjalvmedkansla-ovning',
 		title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det',
 		description: 'Om låg självkänsla, varifrån den kommer och konkreta sätt att börja bygga en mjukare relation till dig själv.',
 		faqs: [
