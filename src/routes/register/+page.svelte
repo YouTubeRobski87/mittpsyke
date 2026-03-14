@@ -1,11 +1,34 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { trackRegisterView } from '$lib/analytics';
+	import {
+		ANALYTICS_CONSENT_EVENT,
+		hasAnalyticsConsent
+	} from '$lib/consent';
 	import type { ActionData } from './$types';
 	let { form }: { form: ActionData } = $props();
 
-	onMount(() => {
+	let registerViewTracked = false;
+
+	function maybeTrackRegisterView() {
+		if (registerViewTracked || !hasAnalyticsConsent()) return;
+
 		trackRegisterView();
+		registerViewTracked = true;
+	}
+
+	onMount(() => {
+		maybeTrackRegisterView();
+
+		const handleConsentChange = () => {
+			maybeTrackRegisterView();
+		};
+
+		window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+
+		return () => {
+			window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+		};
 	});
 </script>
 
