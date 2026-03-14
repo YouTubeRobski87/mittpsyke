@@ -2470,11 +2470,6 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 				url: 'https://www.folkhalsomyndigheten.se/livsvillkor-levnadsvanor/psykisk-halsa-och-suicidprevention/'
 			}
 		],
-		relatedArticles: [
-			{ title: 'Stressymtom – vad kroppen försöker säga', href: '/guider-seo/stress/stressymtom' },
-			{ title: 'Hjärntrötthet – när hjärnan stänger av', href: '/guider-seo/stress/hjarntrotthet-hjalp' },
-			{ title: 'Svårt att sova när oron tar över', href: '/guider-seo/sovproblem/svart-att-somna-angest' }
-		],
 		content: `
 ## Att inte orka är inte detsamma som att vara svag
 
