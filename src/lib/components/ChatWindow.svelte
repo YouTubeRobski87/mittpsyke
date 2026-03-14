@@ -1,5 +1,6 @@
 ﻿<script lang="ts">
 	import { browser } from '$app/environment';
+	import { containsCrisisSignal } from '$lib/ai/safety';
 	import { goto } from '$app/navigation';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import {
@@ -59,11 +60,30 @@
 	const acuteSupportKeywords = [
 		'akut fara',
 		'självmord',
+		'suicid',
 		'ta mitt liv',
+		'ta livet av mig',
 		'vill dö',
+		'vill vara död',
 		'orkar inte leva',
+		'inte orkar leva',
 		'skada mig själv',
-		'skada någon annan'
+		'självskad',
+		'skada någon annan',
+		'hoppa från',
+		'försvinna för alltid',
+		'ingen mening att leva',
+		'hoppas att jag dör',
+		'bättre om jag var död',
+		'avsluta allt',
+		'avsluta mitt liv',
+		'inte vakna',
+		'somna för alltid',
+		'avskedsbrev',
+		'ta tabletter',
+		'ta överdos',
+		'sista utvägen',
+		'göra slut på allt'
 	];
 
 	function latestUserMessageContent() {
@@ -77,7 +97,7 @@
 	function supportLevel() {
 		const text = latestUserMessageContent();
 		if (!text) return 'standard';
-		if (acuteSupportKeywords.some((keyword) => text.includes(keyword))) return 'acute';
+		if (acuteSupportKeywords.some((keyword) => text.includes(keyword)) || containsCrisisSignal(text)) return 'acute';
 		if (elevatedSupportKeywords.some((keyword) => text.includes(keyword))) return 'elevated';
 		return 'standard';
 	}
@@ -183,7 +203,7 @@
 				throw new Error(`API error: ${res.status}`);
 			}
 
-			const data: { reply?: string; conversationId?: string } = await res.json();
+			const data: { reply?: string; conversationId?: string; crisis?: boolean } = await res.json();
 			if (data.conversationId) {
 				conversationId = data.conversationId;
 				if (browser) {
@@ -206,7 +226,8 @@
 				role: 'assistant',
 				content: (data.reply && data.reply.trim())
 					? data.reply
-					: 'Något gick fel.'
+					: 'Något gick fel.',
+				crisis: data.crisis ?? false
 			});
 			await tick();
 			scrollToBottom();
@@ -302,7 +323,9 @@
 						class="max-w-[80%] px-4 py-3 rounded-[var(--radius-card)] text-sm leading-relaxed
 							{msg.role === 'user'
 							? 'bg-[var(--primary)] text-white rounded-br-md'
-							: 'bg-black/5 dark:bg-white/10 rounded-bl-md'}"
+							: msg.crisis
+								? 'bg-rose-50 dark:bg-rose-900/30 border border-rose-300 dark:border-rose-700 rounded-bl-md crisis-message'
+								: 'bg-black/5 dark:bg-white/10 rounded-bl-md'}"
 					>
 						{#each msg.content.split('\n') as line, j}
 							{#if j > 0}<br />{/if}
@@ -354,9 +377,11 @@
 				</p>
 				<div class="mt-2 flex flex-wrap gap-2">
 					<a href="tel:112" class="support-chip support-chip-urgent">Ring 112</a>
+					<a href="tel:90101" class="support-chip support-chip-mind">Mind 90101</a>
 					<a href="tel:1177" class="support-chip">Ring 1177</a>
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip">Se stödlinjer</a>
 				</div>
+				<p class="mt-2 text-xs opacity-70">MittPsyke är inte en akuttjänst. Vid akut kris, kontakta alltid professionell hjälp.</p>
 			</div>
 		{:else if currentSupportLevel === 'elevated'}
 			<div class="mb-3 rounded-[var(--radius-card)] border border-amber-300/70 bg-amber-50 dark:bg-amber-900/20 px-3 py-3 text-sm">
@@ -489,5 +514,21 @@
 		border-color: rgba(255, 255, 255, 0.14);
 		background: rgba(255, 255, 255, 0.06);
 		color: rgba(255, 255, 255, 0.9);
+	}
+
+	.support-chip-mind {
+		background: #7c3aed;
+		border-color: #7c3aed;
+		color: #fff;
+	}
+
+	:global(.dark) .support-chip-mind {
+		background: #8b5cf6;
+		border-color: #8b5cf6;
+		color: #fff;
+	}
+
+	:global(.crisis-message) {
+		white-space: pre-line;
 	}
 </style>

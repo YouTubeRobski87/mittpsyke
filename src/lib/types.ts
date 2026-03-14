@@ -10,6 +10,7 @@ export interface Portal {
 export interface ChatMessage {
 	role: 'user' | 'assistant';
 	content: string;
+	crisis?: boolean;
 }
 
 export interface CreateDiaryRequestBody {

@@ -129,7 +129,20 @@ const CRISIS_PATTERNS = [
 	/skada mig (själv)?/i,
 	/hoppa (från|av|ner)/i,
 	/inte vilja finnas/i,
-	/försvinna för alltid/i
+	/försvinna för alltid/i,
+	/ge upp (allt|livet|hoppet)/i,
+	/inget hopp/i,
+	/ingen mening (med|att leva)/i,
+	/alla vore bättre utan mig/i,
+	/ingen (saknar|behöver|bryr sig om) mig/i,
+	/ta (tabletter|piller|överdos)/i,
+	/lagt en plan/i,
+	/skriva (ett )?avskedsbrev/i,
+	/inte vakna (imorgon|igen|upp)/i,
+	/somna (in )?för alltid/i,
+	/göra slut på (allt|det här|mitt liv)/i,
+	/kan inte fortsätta/i,
+	/sista (utvägen|chansen)/i
 ];
 
 function detectCrisis(text: string): boolean {
