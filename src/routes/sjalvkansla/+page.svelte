@@ -54,6 +54,17 @@
 			</ul>
 			<a href="/guider-seo/sjalvkansla" class="guide-link-all">Se alla guider om självkänsla →</a>
 		</section>
+		<!-- Källor och uppdatering -->
+		<section class="source-block" aria-label="Källor och uppdatering">
+			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
+			<h2>Källor</h2>
+			<ul>
+				<li><a href="https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/" target="_blank" rel="noopener noreferrer">Självkänsla – 1177 Vårdguiden</a></li>
+				<li><a href="https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/" target="_blank" rel="noopener noreferrer">Om psykisk hälsa – Folkhälsomyndigheten</a></li>
+				<li><a href="https://dinpsykiskahalsa.se/" target="_blank" rel="noopener noreferrer">Din psykiska hälsa</a></li>
+			</ul>
+		</section>
+
 	</div>
 </main>
 
@@ -259,5 +270,47 @@
 	:global(.dark) .guide-links ul li a,
 	:global(.dark) .guide-link-all {
 		color: #86dfd6;
+	}
+
+	.source-block {
+		margin-top: clamp(2rem, 4vw, 3rem);
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(0, 0, 0, 0.1);
+	}
+
+	.source-block .updated-date {
+		font-size: 0.8rem;
+		opacity: 0.5;
+		margin-bottom: 1rem;
+	}
+
+	.source-block h2 {
+		font-size: 1rem;
+		font-weight: 600;
+		margin-bottom: 0.5rem;
+	}
+
+	.source-block ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+
+	.source-block li {
+		font-size: 0.85rem;
+	}
+
+	.source-block a {
+		color: inherit;
+		opacity: 0.7;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	.source-block a:hover {
+		opacity: 1;
 	}
 </style>

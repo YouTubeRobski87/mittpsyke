@@ -1,4 +1,4 @@
-﻿export type FaqItem = {
+export type FaqItem = {
 	question: string;
 	answer: string;
 };
@@ -86,6 +86,12 @@ export const guides: Guide[] = [
 		slug: 'tecken',
 		title: 'Tecken på ångest',
 		description: 'Vanliga kroppsliga och mentala tecken på ångest.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Hur känns ångest i kroppen?',
@@ -133,6 +139,12 @@ export const guides: Guide[] = [
 		slug: 'panikangest-och-kroppen',
 		title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det',
 		description: 'Om kroppens starka reaktioner vid panikångest och hur du kan förstå det som händer.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför reagerar kroppen så starkt vid panikångest?',
@@ -176,6 +188,12 @@ export const guides: Guide[] = [
 		slug: 'orostankar',
 		title: 'Orostankar som snurrar - när hjärnan inte kan stänga av',
 		description: 'Om oro som går runt i cirklar och gör det svårt att komma till ro.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför fastnar jag i orostankar?',
@@ -219,6 +237,12 @@ export const guides: Guide[] = [
 		slug: 'angest-och-somn',
 		title: 'Ångest och sömn - varför natten kan bli svårare',
 		description: 'Om hur ångest ofta blir tydligare på kvällen och kan göra det svårt att somna eller sova lugnt.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför blir ångesten starkare på natten?',
@@ -266,6 +290,12 @@ export const guides: Guide[] = [
 		slug: 'social-angest',
 		title: 'Social ångest - rädslan för att bli bedömd av andra',
 		description: 'Om oro i sociala situationer och varför blicken från andra kan kännas så stark.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är social ångest?',
@@ -309,6 +339,12 @@ export const guides: Guide[] = [
 		slug: 'nedstamdhet',
 		title: 'Nedstämdhet eller depression',
 		description: 'Skillnader mellan tillfällig nedstämdhet och depression.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Depression – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/depression/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Hur vet jag om det är depression?',
@@ -356,6 +392,12 @@ export const guides: Guide[] = [
 		slug: 'trotthet-och-meningsloshet',
 		title: 'Trötthet och meningslöshet - när ingenting känns värt att göra',
 		description: 'Om trötthet, tomhet och känslan av att vardagen förlorar sin riktning.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Depression – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/depression/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför blir allt så tungt när jag mår dåligt?',
@@ -399,6 +441,12 @@ export const guides: Guide[] = [
 		slug: 'nedstamdhet-och-relationer',
 		title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
 		description: 'Om hur nedstämdhet kan göra det svårare att orka med kontakt, närhet och samtal.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Depression – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/depression/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför drar jag mig undan när jag är nedstämd?',
@@ -442,6 +490,12 @@ export const guides: Guide[] = [
 		slug: 'sorg-och-depression',
 		title: 'Skillnaden mellan sorg och depression - och varför det spelar roll',
 		description: 'Om likheter och skillnader mellan sorg och depression, och varför de ibland blandas ihop.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Depression – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/depression/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Hur skiljer sig sorg fran depression?',
@@ -485,6 +539,12 @@ export const guides: Guide[] = [
 		slug: 'sma-steg-vid-nedstamdhet',
 		title: 'Små steg när energin tryter - vad som faktiskt kan hjälpa',
 		description: 'Om varsamma och realistiska steg när energin är låg och allt känns svårt att börja med.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Depression – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/depression/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför hjälper små steg battre an stora planer?',
@@ -528,6 +588,12 @@ export const guides: Guide[] = [
 		slug: 'trygghet',
 		title: 'Trygghet efter trauma',
 		description: 'Om överstärkta stressreaktioner och hur trygghet kan byggas upp igen.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Posttraumatiskt stressyndrom (PTSD) – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är en vanlig reaktion efter trauma?',
@@ -575,6 +641,12 @@ export const guides: Guide[] = [
 		slug: 'nervsystemet-och-trauma',
 		title: 'Vad händer i nervsystemet vid trauma - fight, flight och freeze',
 		description: 'Om hur nervsystemet kan fastna i stark beredskap efter svara upplevelser.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Posttraumatiskt stressyndrom (PTSD) – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad betyder fight, flight och freeze?',
@@ -618,6 +690,12 @@ export const guides: Guide[] = [
 		slug: 'grounding-ovningar',
 		title: 'Grounding - enkla övningar för att landa i kroppen igen',
 		description: 'Om grounding som ett sätt att återfå orientering och kontakt med nuet när kroppen är i alarm.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Posttraumatiskt stressyndrom (PTSD) – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är grounding?',
@@ -661,6 +739,12 @@ export const guides: Guide[] = [
 		slug: 'undvikande-efter-trauma',
 		title: 'Undvikande efter trauma - varför vi gör det och vad det kostar',
 		description: 'Om hur undvikande kan skydda på kort sikt men samtidigt göra livet mindre med tiden.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Posttraumatiskt stressyndrom (PTSD) – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför undviker jag vissa platser eller situationer?',
@@ -704,6 +788,12 @@ export const guides: Guide[] = [
 		slug: 'tillit-efter-trauma',
 		title: 'Tillit och trygghet i relationer efter svara upplevelser',
 		description: 'Om hur trauma kan påverka närhet, tillit och känslan av trygghet med andra.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Posttraumatiskt stressyndrom (PTSD) – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför är det svårt att lita på andra efter trauma?',
@@ -747,6 +837,12 @@ export const guides: Guide[] = [
 		slug: 'orsaker',
 		title: 'Varför kan jag inte sova',
 		description: 'Vanliga orsaker till sömnproblem och vad som håller hjärnan vaken på natten.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför kan jag inte somna trots att jag är trott?',
@@ -794,6 +890,12 @@ export const guides: Guide[] = [
 		slug: 'stress-och-somn',
 		title: 'Stress och sömn – när kroppen inte kan varva ner',
 		description: 'Om hur stress kan hålla kroppen i beredskap och göra det svårt att komma till ro på kvällen.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför blir sömnen svårare när jag är stressad?',
@@ -823,6 +925,12 @@ export const guides: Guide[] = [
 		slug: 'altande-pa-kvallen',
 		title: 'Ältande på kvällen – varför tankarna blir starkare i sängen',
 		description: 'Om varför tankar ofta tar mer plats på kvällen och hur ältande kan hålla dig vaken.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför börjar jag tänka mer just när jag lägger mig?',
@@ -852,6 +960,12 @@ export const guides: Guide[] = [
 		slug: 'trott-men-uppvarvad',
 		title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget',
 		description: 'Om den vanliga konflikten mellan trött kropp och överaktiv hjärna vid sömnproblem.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Hur kan jag vara trott men ändå inte kunna somna?',
@@ -881,6 +995,12 @@ export const guides: Guide[] = [
 		slug: 'somnbrist-och-maendet',
 		title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet',
 		description: 'Om hur för lite sömn kan påverka känsloläget, tankarna och orken i vardagen.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Kan sömnbrist göra mig mer orolig?',
@@ -910,6 +1030,12 @@ export const guides: Guide[] = [
 		slug: 'lag-sjalvkansla',
 		title: 'Låg självkänsla – vad det är och var det kommer ifrån',
 		description: 'Om vad låg självkänsla innebär, hur den uppstår och hur du kan börja utforska förhållandena till dig själv.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Självkänsla – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är skillnaden mellan självkänsla och självförtroende?',
@@ -957,6 +1083,12 @@ export const guides: Guide[] = [
 		slug: 'inre-kritikern',
 		title: 'Den inre kritikern - varför rosten finns och vad den egentligen vill',
 		description: 'Om den självkritiska rosten, var den kan komma fran och hur du kan förstå den utan att styras av den.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Självkänsla – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Varför är jag sa hård mot mig själv?',
@@ -1000,6 +1132,12 @@ export const guides: Guide[] = [
 		slug: 'perfektionism-och-sjalvkansla',
 		title: 'Perfektionism och självkänsla - när ingenting känns tillräckligt bra',
 		description: 'Om hur perfektionism och låg självkänsla ofta hänger ihop och skapar hård press inifrån.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Självkänsla – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Varför blir jag aldrig nojd med det jag gör?',
@@ -1043,6 +1181,12 @@ export const guides: Guide[] = [
 		slug: 'gransen-och-sjalvkansla',
 		title: 'Att sätta gränser när självkänslan är låg - varför det är svårt',
 		description: 'Om varför gränser ofta blir svårare när du tvivlar på ditt eget varde.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Självkänsla – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Varför är det sa svårt att säga nej?',
@@ -1086,6 +1230,12 @@ export const guides: Guide[] = [
 		slug: 'jamforelse-och-sjalvbild',
 		title: 'Jämförelsetrasket - sociala medier och din självbild',
 		description: 'Om hur jämförelser med andra kan påverka självbilden och förstärka känslan av att inte racka till.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Självkänsla – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Varför påverkas jag sa mycket av andras liv online?',
@@ -1132,6 +1282,12 @@ export const guides: Guide[] = [
 		nextStepTool: 'grounding-5-4-3-2-1',
 		title: 'Ångesthjälp – vad du kan göra när ångesten tar tag',
 		description: 'Konkreta och varsamma sätt att hantera ångest i vardagen, utan att det behöver bli komplicerat.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad kan jag göra just nu när ångesten är stark?',
@@ -1166,6 +1322,12 @@ export const guides: Guide[] = [
 		slug: 'panikattack-hjalp',
 		title: 'Panikattack – hjälp direkt när kroppen larmar',
 		description: 'Vad som händer vid en panikattack och vad du kan göra för att ta dig igenom den.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är det som händer i kroppen vid en panikattack?',
@@ -1202,6 +1364,12 @@ export const guides: Guide[] = [
 		nextStepTool: 'sju-fragor-vid-oro',
 		title: 'Kan inte sluta tänka – när tankarna bara snurrar',
 		description: 'Om hjärnan som inte stänger av och vad du kan göra när tankarna inte ger dig ro.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför kan inte hjärnan bara stänga av?',
@@ -1237,6 +1405,12 @@ export const guides: Guide[] = [
 		slug: 'angest-pa-kvallen',
 		title: 'Ångest på kvällen – varför det ökar när dagen tar slut',
 		description: 'Om varför ångesten ofta blir starkare på kvällen och vad du kan göra för att hitta mer ro.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför är det värre på kvällen?',
@@ -1297,6 +1471,12 @@ Andas in i 4 sekunder. Håll andan i 7 sekunder. Andas ut i 8 sekunder. Gör det
 Om oro på kvällen är ett mönster som pågår, kan det vara värt att se om det finns ett underliggande tema – som oro för framtiden, relationsstress, eller en känsla av att inte räcka till. Att skriva om det i dagboken kan hjälpa dig hitta mönstret.
 
 Om oron börjar påverka sömnen regelbundet är det ett tecken på att du förtjänar mer stöd.`,
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför blir oron värre på kvällen?',
@@ -1331,6 +1511,12 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 		slug: 'vaknar-med-angest',
 		title: 'Vaknar med ångest – när morgonen börjar tungt',
 		description: 'Om att vakna med ångest, klump i magen eller oro – och hur du kan börja dagen på ett lugnare sätt.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför känns ångesten värst på morgonen?',
@@ -1365,6 +1551,12 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 		slug: 'oro-i-kroppen',
 		title: 'Oro i kroppen – när ångesten sitter fysiskt',
 		description: 'Om hur oro och ångest kan visa sig som spänningar, tryck och obehag i kroppen.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Var i kroppen kan ångesten sitta?',
@@ -1399,6 +1591,12 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 		slug: 'lugna-en-panikattack',
 		title: 'Lugna en panikattack – steg för steg',
 		description: 'Enkla och beprövade sätt att ta sig igenom en panikattack och hjälpa kroppen att landa.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är det första jag ska göra?',
@@ -1433,6 +1631,12 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 		slug: 'angest-i-kroppen',
 		title: 'Ångest i kroppen – vad som händer och vad som hjälper',
 		description: 'En förklaring av varför ångest ger kroppsliga reaktioner och hur du kan hjälpa kroppen att lugna ner sig.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför ger ångest fysiska reaktioner?',
@@ -1468,6 +1672,12 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 		slug: 'overtankande-hjalp',
 		title: 'Övertänkande – hjälp när hjärnan kör på för högt varv',
 		description: 'Om övertänkande, varför det händer och hur du kan skapa mer ro utan att stänga av hjärnan helt.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är övertänkande egentligen?',
@@ -1502,6 +1712,12 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 		slug: 'nar-tankarna-inte-stannar',
 		title: 'När tankarna inte stannar – att hitta ro på kvällen',
 		description: 'Om varför kvällen kan fyllas av tankar och hur du kan skapa mer ro inför sömnen.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför är det svårast att stänga av på kvällen?',
@@ -1597,6 +1813,12 @@ Du behöver inte göra om allt. Du behöver börja med att sänka tempot, inte h
 Om tecknen ovan har pågått i flera veckor och börjar påverka din vardag, relationer eller arbetsförmåga – ta kontakt med din vårdcentral. Utmattning är en medicinsk tillstånd som det finns hjälp för.
 
 Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är skillnaden mellan vanlig trötthet och mental överbelastning?',
@@ -1633,6 +1855,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'body-scan',
 		title: 'Stressymtom – tecken på att kroppen bär för mycket',
 		description: 'Vanliga tecken på stress i kropp och sinne, och vad de kan betyda för dig.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vilka är de vanligaste stressymtomen?',
@@ -1668,6 +1896,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		slug: 'inre-stress',
 		title: 'Inre stress – när det är stressigt inombords trots lugn yta',
 		description: 'Om inre stress som inte alltid syns utåt men sliter på kropp och sinne på djupet.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är inre stress?',
@@ -1703,6 +1937,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'body-scan',
 		title: 'Hjärntrötthet – när hjärnan inte orkar bearbeta mer',
 		description: 'Om kognitiv utmattning och hjärntrötthet – vad det är, varför det händer och hur du kan börja återhämta dig.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är hjärntrötthet?',
@@ -1739,6 +1979,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'grounding',
 		title: 'Känner mig överväldigad – när allt är för mycket',
 		description: 'Om känslan av att allt staplas på hög och vad du kan göra när livet känns övermäktigt.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför känner jag mig överväldigad?',
@@ -1774,6 +2020,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'grounding',
 		title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret',
 		description: 'Om att leva i konstant stress, vad det gör med kroppen och hur du kan börja skapa mer utrymme.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Är det farligt att vara stressad hela tiden?',
@@ -1809,6 +2061,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'body-scan',
 		title: 'Utmattad mentalt – när hjärnan inte orkar mer',
 		description: 'Om mental utmattning, vad den skiljer sig från vanlig trötthet och hur återhämtning kan se ut.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Hur vet jag att det är mental utmattning?',
@@ -1844,6 +2102,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'andning-4-7-8',
 		title: 'Kan inte varva ner – om stress som sitter kvar i kroppen',
 		description: 'Om varför nervsystemet ibland inte kan koppla av och vad du kan göra för att hitta ner i ett lugnare läge.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför kan jag inte varva ner trots att jag är trött?',
@@ -1880,6 +2144,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'andning-4-7-8',
 		title: 'Mycket tankar på kvällen – när hjärnan inte vill stänga av',
 		description: 'Om varför kvällen fylls av tankar och oro, och hur du kan skapa mer ro inför sömnen.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför exploderar tankarna på kvällen?',
@@ -1917,6 +2187,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'sjalvmedkansla',
 		title: 'Känner mig ensam – när ensamheten gör ont',
 		description: 'Om ensamhet som inte är ett val och hur du kan börja hitta vägen tillbaka till kontakt.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ensamhet – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/ensamhet/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Kan man vara ensam fast man är omgiven av folk?',
@@ -1952,6 +2228,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'sjalvmedkansla',
 		title: 'Ensamhet – hjälp att förstå och hantera känslan',
 		description: 'Vad ensamhet egentligen är, varför den uppstår och vad du kan göra för att börja bryta den.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ensamhet – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/ensamhet/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Varför känner sig så många ensamma?',
@@ -1987,6 +2269,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'body-scan',
 		title: 'Orkar ingenting – om tomhet och tyngd som inte släpper',
 		description: 'När energin tryter och motivationen är borta – vad som kan ligga bakom och vad som faktiskt hjälper.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ensamhet – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/ensamhet/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Varför orkar jag ingenting?',
@@ -2023,6 +2311,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'grounding',
 		title: 'Tomhetskänsla – när inget riktigt känns',
 		description: 'Om känslan av inre tomhet, vad som kan ligga bakom och hur du kan börja hitta tillbaka till dig själv.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Ensamhet – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/ensamhet/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är tomhetskänsla?',
@@ -2059,6 +2353,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		slug: 'kan-inte-sova-stress',
 		title: 'Kan inte sova av stress – när kroppen inte ger sig',
 		description: 'Om varför stress håller dig vaken och vad du kan göra för att hjälpa kroppen att landa inför sömnen.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför hindrar stress mig från att sova?',
@@ -2094,6 +2394,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: '4-7-8-andning',
 		title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren',
 		description: 'Om kopplingen mellan ångest och sömnsvårigheter och hur du kan göra det lättare att somna.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför ökar ångesten när jag försöker sova?',
@@ -2128,6 +2434,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		slug: 'nattlig-oro',
 		title: 'Nattlig oro – att vakna med tankar som inte ger ro',
 		description: 'Om att vakna mitt i natten med oro och tankar, och vad du kan göra för att hitta tillbaka till sömnen.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför vaknar jag av oro mitt i natten?',
@@ -2166,6 +2478,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'sjalvmedkansla-ovning',
 		title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det',
 		description: 'Om låg självkänsla, varifrån den kommer och konkreta sätt att börja bygga en mjukare relation till dig själv.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Självkänsla – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är egentligen dålig självkänsla?',
@@ -2200,6 +2518,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		slug: 'sjalvkritiska-tankar',
 		title: 'Självkritiska tankar – den röst som aldrig är nöjd',
 		description: 'Om den inre kritikern, varför den uppstår och hur du kan skapa lite mer frihet från den.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Självkänsla – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Varför är jag så hård mot mig själv?',
@@ -2234,6 +2558,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		slug: 'kanner-mig-vardelos',
 		title: 'Känner mig värdelös – om tankar som ljuger om vem du är',
 		description: 'Om känslan av att inte duga eller vara värd något, och hur du kan börja ifrågasätta de tankarna.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Självkänsla – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Är tankar om att vara värdelös sanna?',
@@ -2268,6 +2598,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		slug: 'jamfor-mig-med-andra',
 		title: 'Jämför mig med andra – när andras liv känns bättre',
 		description: 'Om jämförelsetänkandet, varför det skadar självkänslan och hur du kan börja frigöra dig från det.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Självkänsla – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Varför jämför jag mig hela tiden?',
@@ -2302,6 +2638,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		slug: 'hur-far-man-battre-sjalvkansla',
 		title: 'Hur får man bättre självkänsla – ett praktiskt perspektiv',
 		description: 'Konkreta och realistiska sätt att stärka självkänslan, utan snabba fix eller tomma råd.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Självkänsla – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/' },
+			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' },
+			{ label: 'Din psykiska hälsa', url: 'https://dinpsykiskahalsa.se/' }
+		],
 		faqs: [
 			{
 				question: 'Kan man verkligen förändra sin självkänsla?',
@@ -2371,6 +2713,12 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		nextStepTool: 'grounding-5-4-3-2-1',
 		title: 'Grounding-övning vid stress – landa i nuet på 5 minuter',
 		description: 'En enkel och effektiv grounding-övning som hjälper dig att bryta stressens grepp och komma tillbaka till nuet.',
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Vad är grounding?',
@@ -2492,6 +2840,12 @@ Det kan handla om att prata med en läkare, psykolog eller annan stödkontakt. A
 
 Vid akuta tankar på att skada dig själv: ring 112 eller gå till närmaste akutmottagning.
 `,
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Är det normalt att inte orka utan att förstå varför?',
@@ -2576,6 +2930,12 @@ Du behöver inte lösa allt på en gång. Några små saker som faktiskt hjälpe
 ## När du bör söka mer stöd
 
 Om de kroppsliga signalerna är ihållande — om du sover dåligt i månader, har konstant värk, hjärtklappning som inte ger med sig eller känner dig helt urladdad — är det klokt att prata med en läkare. Kroppen kommunicerar. Det är värt att lyssna.`,
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Varför känner jag kroppsliga symptom av stress?',
@@ -2620,6 +2980,12 @@ Om de kroppsliga signalerna är ihållande — om du sover dåligt i månader, h
 		title: 'Hur återhämtar man sig mentalt? Små steg som faktiskt hjälper',
 		description: 'Mental återhämtning handlar inte om att skärpa sig. Här får du konkreta steg för att minska belastningen och ge hjärnan tid att hinna ikapp.',
 		content: `## Varför mental återhämtning kan kännas svår\n\nDu kanske vet att du behöver vila, men det hjälper inte att bara lägga sig ner. Hjärnan fortsätter gå på högvarv. Du är trött men kan inte varva ner. Du skuldbelägger dig själv för att du inte orkar. Du försöker vila men är fortfarande mentalt påkopplad. Det är inte lathet. Det är ett nervsystem som fastnat i alarmberedskap.\n\n## Tecken på att du behöver mental återhämtning\n\n- Svårt att fokusera även på enkla saker\n- Lättirriterad utan tydlig anledning\n- Allt känns tungt och meningslöst\n- Svårt att känna efter vad du behöver\n- Kroppen känns spänd även i vila\n- Du vaknar trött trots tillräckligt med sömn\n\nOm du känner igen flera av dessa signaler har din hjärna sannolikt varit överbelastad längre än du tror. Det innebär att återhämtningen också behöver tid, inte bara en kväll.\n\n## Små steg som faktiskt hjälper\n\n### Sänk inflödet en stund\n\nDin hjärna bearbetar allt du tar in: nyheter, sociala medier, andras problem, notiser. Att medvetet minska inflödet ger nervsystemet utrymme att lugna ner sig. Du behöver inte stänga av allt, men testa att minska under en begränsad period.\n\n### Gör mindre, inte perfekt\n\nNär du är mentalt utmattad fungerar inte prestige och prestation. Sänk ribban. Gör det viktigaste, inte det bästa. Att göra tre saker halvbra är bättre för återhämtning än att göra en sak perfekt under press.\n\n### Återkommande pauser utan syfte\n\nÅterhämtning sker inte bara på natten. Korta pauser under dagen, där du inte gör något alls, hjälper nervsystemet att kalibrera om. Ingen musik, ingen skärm, bara stillhet i några minuter.\n\n### Skriv av dig\n\nAtt skriva ner tankar hjälper hjärnan att sortera och släppa. Det behöver inte vara snyggt eller sammanhängande. Bara att få ut orden kan minska den inre pressen märkbart.\n\n### Grounding och andning\n\nEnkla övningar som att andas långsamt, känna fötterna mot golvet eller beskriva det du ser runt dig hjälper kroppen att lämna alarmberedskap. Det handlar inte om att slappna av på kommando, utan om att ge nervsystemet en signal att faran har passerat.\n\n### Sömn och rytm utan press\n\nFörsök inte tvinga fram perfekt sömn. Fokusera istället på att ha en ungefärlig rytm: gå upp vid samma tid, ha en lugn rutin innan sängen, undvik skärm nära insomnandet. Strukturen i sig ger trygghet åt hjärnan.\n\n## Vad som inte alltid hjälper\n\n- **Att pressa sig hårdare.** Det förstärker belastningen.\n- **Att försöka tänka bort allt.** Undertryckt stress lagras i kroppen.\n- **Att fylla varje paus med skärm eller nytt inflöde.** Hjärnan får aldrig tyst.\n\nÅterhämtning handlar inte om att göra ingenting perfekt. Det handlar om att minska belastningen tillräckligt länge för att hjärnan ska hinna ikapp.\n\n## När du bör söka mer stöd\n\nOm du har känt dig mentalt utmattad i flera veckor, om du märker att vardagen påverkas allt mer, eller om det börjar kännas hopplöst, kan det vara bra att prata med någon professionell. Det är inget tecken på svaghet. Det är ett steg mot att ta hand om dig själv på riktigt.`,
+		updatedAt: '2026-03-14',
+		sources: [
+			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		faqs: [
 			{
 				question: 'Hur lång tid tar mental återhämtning?',

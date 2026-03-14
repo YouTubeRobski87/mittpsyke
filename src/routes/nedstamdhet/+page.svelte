@@ -48,6 +48,17 @@
 			<h2>Dina känslor är verkliga</h2>
 			<p>Att sätta ord på nedstämdhet – även lite i taget – kan göra en stor skillnad. Du förtjänar att bli lyssnad på, utan att behöva minimera det du känner.</p>
 		</aside>
+		<!-- Källor och uppdatering -->
+		<section class="source-block" aria-label="Källor och uppdatering">
+			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
+			<h2>Källor</h2>
+			<ul>
+				<li><a href="https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/depression/" target="_blank" rel="noopener noreferrer">Depression – 1177 Vårdguiden</a></li>
+				<li><a href="https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/" target="_blank" rel="noopener noreferrer">Psykisk hälsa och suicidprevention – Socialstyrelsen</a></li>
+				<li><a href="https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/" target="_blank" rel="noopener noreferrer">Om psykisk hälsa – Folkhälsomyndigheten</a></li>
+			</ul>
+		</section>
+
 	</div>
 </main>
 
@@ -196,5 +207,47 @@
 
 	:global(.dark) .cta-button:hover {
 		box-shadow: 0 6px 20px rgba(134, 223, 214, 0.3);
+	}
+
+	.source-block {
+		margin-top: clamp(2rem, 4vw, 3rem);
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(0, 0, 0, 0.1);
+	}
+
+	.source-block .updated-date {
+		font-size: 0.8rem;
+		opacity: 0.5;
+		margin-bottom: 1rem;
+	}
+
+	.source-block h2 {
+		font-size: 1rem;
+		font-weight: 600;
+		margin-bottom: 0.5rem;
+	}
+
+	.source-block ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+	}
+
+	.source-block li {
+		font-size: 0.85rem;
+	}
+
+	.source-block a {
+		color: inherit;
+		opacity: 0.7;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	.source-block a:hover {
+		opacity: 1;
 	}
 </style>
