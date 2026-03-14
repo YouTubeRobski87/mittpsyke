@@ -920,7 +920,6 @@
 				rows={6}
 				placeholder="Skriv din anteckning här..."
 				aria-label="Dagboksanteckning"
-				aria-label="Dagboksanteckning"
 				class="w-full resize-y rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-4 py-3 text-sm leading-relaxed outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2 focus:border-[var(--primary)] transition-colors"
 			></textarea>
 
