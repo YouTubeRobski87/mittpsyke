@@ -765,6 +765,7 @@
 		};
 
 		entries = [createdEntry, ...entries.filter((entry) => entry.id !== createdEntry.id)];
+		if (entries.length === 1 && typeof window.gtag === 'function') window.gtag('event', 'first_diary_entry');
 		setDiaryEntries(userId, entries);
 		void loadMoodTimeline();
 		saving = false;
