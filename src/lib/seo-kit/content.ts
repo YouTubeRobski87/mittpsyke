@@ -2550,7 +2550,7 @@ Det kan handla om att prata med en läkare, psykolog eller annan stödkontakt. A
 
 Vid akuta tankar på att skada dig själv: ring 112 eller gå till närmaste akutmottagning.
 `,
-			},
+		faqs: [
 			{
 				question: 'Är det lathet om man inte orkar?',
 				answer: 'Nej. Lathet är ett val. Att inte orka är en reaktion – ofta på överbelastning, sömnbrist eller nedstämdhet. Det ser liknande ut utifrån, men är helt olika saker inifrån.'
@@ -2563,6 +2563,11 @@ Vid akuta tankar på att skada dig själv: ring 112 eller gå till närmaste aku
 				question: 'När ska jag söka hjälp om jag inte orkar?',
 				answer: 'Om det pågår länge (mer än ett par veckor), om det påverkar din vardag eller dina relationer, eller om du börjar må sämre – ta kontakt med vården. Det är ett tecken på styrka, inte svaghet.'
 			}
+		],
+		relatedArticles: [
+			{ title: 'Stressymtom – vad kroppen försöker säga', href: '/guider-seo/stress/stressymtom' },
+			{ title: 'Hjärntrötthet – när hjärnan stänger av', href: '/guider-seo/stress/hjarntrotthet-hjalp' },
+			{ title: 'Svårt att sova när oron tar över', href: '/guider-seo/sovproblem/svart-att-somna-angest' }
 		]
 	},
 	{
@@ -2630,7 +2635,7 @@ Du behöver inte lösa allt på en gång. Några små saker som faktiskt hjälpe
 ## När du bör söka mer stöd
 
 Om de kroppsliga signalerna är ihållande — om du sover dåligt i månader, har konstant värk, hjärtklappning som inte ger med sig eller känner dig helt urladdad — är det klokt att prata med en läkare. Kroppen kommunicerar. Det är värt att lyssna.`,
-			},
+		faqs: [
 			{
 				question: 'Är det farligt att ha kroppsliga stressymtom?',
 				answer: 'De flesta stressreaktioner är ofarliga i sig, men långvarig stress kan påverka hälsan. Om symptomen är ihållande är det klokt att prata med en läkare.'
