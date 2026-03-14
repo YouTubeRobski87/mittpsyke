@@ -10,11 +10,19 @@
 		"headline": data.pillar.title,
 		"description": data.pillar.description,
 		"url": `https://mittpsyke.se/guider-seo/${data.pillar.slug}`,
-		"author": {
-			"@type": "Organization",
-			"name": "MittPsyke",
-			"url": "https://mittpsyke.se"
-		},
+		"author": [
+			{
+				"@type": "Organization",
+				"name": "MittPsyke",
+				"url": "https://mittpsyke.se"
+			},
+			{
+				"@type": "Person",
+				"name": "Robert Claesson",
+				"jobTitle": "Grundare",
+				"url": "https://mittpsyke.se/om-mittpsyke"
+			}
+		],
 		"inLanguage": "sv-SE"
 	});
 </script>

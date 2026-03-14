@@ -25,11 +25,19 @@
 				headline: data.pillar.title,
 				description: data.pillar.description,
 				image: 'https://mittpsyke.se/og-image.png',
-				author: {
-					'@type': 'Organization',
-					name: 'MittPsyke',
-					url: 'https://mittpsyke.se/om-mittpsyke'
-				},
+				author: [
+					{
+						'@type': 'Organization',
+						name: 'MittPsyke',
+						url: 'https://mittpsyke.se'
+					},
+					{
+						'@type': 'Person',
+						name: 'Robert Claesson',
+						jobTitle: 'Grundare',
+						url: 'https://mittpsyke.se/om-mittpsyke'
+					}
+				],
 				publisher: {
 					'@type': 'Organization',
 					name: 'MittPsyke',
@@ -72,8 +80,11 @@
 	</header>
 
 	<section class="info-box" aria-label="Om innehållet">
-		<p><strong>Uppdaterad 8 mars 2026.</strong> Guiden är sammanställd av MittPsyke.</p>
-		<p>Den är tänkt som stöd för reflektion och ökad förståelse. Den ersätter inte vård, diagnos eller behandling.</p>
+		<p><strong>Senast uppdaterad: 14 mars 2026</strong></p>
+		<p>Författare: MittPsyke-redaktionen</p>
+		<p>Faktagranskad mot: <a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177 Vårdguiden</a>, <a href="https://www.socialstyrelsen.se" target="_blank" rel="noopener noreferrer">Socialstyrelsen</a>, <a href="https://www.folkhalsomyndigheten.se" target="_blank" rel="noopener noreferrer">Folkhälsomyndigheten</a></p>
+		<p>Innehållet är informationsbaserat och ersätter inte vård, diagnos eller individuell medicinsk bedömning.</p>
+		<p class="om-innehall-link"><a href="/sa-arbetar-vi-med-innehall">Läs mer om hur vi arbetar med innehåll →</a></p>
 	</section>
 
 	<section class="block" aria-label="Artiklar i guiden">
@@ -232,6 +243,16 @@
 
 	.info-box p + p {
 		margin-top: 0.45rem;
+	}
+
+	.om-innehall-link {
+		margin-top: 0.5rem;
+	}
+	.om-innehall-link a {
+		font-size: 0.85rem;
+		opacity: 0.8;
+		text-decoration: underline;
+		text-underline-offset: 2px;
 	}
 
 	.block h2 {

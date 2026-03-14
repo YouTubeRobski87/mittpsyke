@@ -31,11 +31,19 @@
 		"description": data.guide.description,
 		"url": `https://mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`,
 		"dateModified": data.guide.updatedAt ?? undefined,
-		"author": {
-			"@type": "Organization",
-			"name": "MittPsyke",
-			"url": "https://mittpsyke.se"
-		},
+		"author": [
+			{
+				"@type": "Organization",
+				"name": "MittPsyke",
+				"url": "https://mittpsyke.se"
+			},
+			{
+				"@type": "Person",
+				"name": "Robert Claesson",
+				"jobTitle": "Grundare",
+				"url": "https://mittpsyke.se/om-mittpsyke"
+			}
+		],
 		"publisher": {
 			"@type": "Organization",
 			"name": "MittPsyke",
@@ -93,11 +101,10 @@
 	<p class="mt-3 leading-relaxed text-black/75">{data.guide.description}</p>
 
 	<section class="mt-6 rounded-xl border border-black/10 bg-black/[0.02] p-4" aria-label="Om innehållet">
-		<p class="text-sm"><strong>Innehåll från MittPsyke</strong></p>
+		<p class="text-sm"><strong>Innehåll från MittPsyke-redaktionen</strong></p>
+		<p class="mt-2 text-sm leading-relaxed text-black/80">Faktagranskad mot: <a class="underline" href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>, <a class="underline" href="https://www.socialstyrelsen.se" target="_blank" rel="noopener noreferrer">Socialstyrelsen</a>, <a class="underline" href="https://www.folkhalsomyndigheten.se" target="_blank" rel="noopener noreferrer">Folkhälsomyndigheten</a></p>
 		<p class="mt-2 text-sm leading-relaxed text-black/80">Det här är stödjande information för reflektion och egen förståelse. Det ersätter inte vård, diagnos eller behandling.</p>
-		{#if data.guide.relatedArticles?.length}
-			<p class="mt-2 text-sm leading-relaxed text-black/80">Källa och vidare läsning: relaterade artiklar inom MittPsyke finns längre ned på sidan.</p>
-		{/if}
+		<p class="mt-2 text-sm"><a class="text-black/60 underline underline-offset-2 hover:text-black" href="/sa-arbetar-vi-med-innehall">Läs mer om hur vi arbetar med innehåll →</a></p>
 	</section>
 
 	{#if data.guide.content}
