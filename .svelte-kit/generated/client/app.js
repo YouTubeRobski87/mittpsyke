@@ -52,7 +52,8 @@ export const nodes = [
 	() => import('./nodes/48'),
 	() => import('./nodes/49'),
 	() => import('./nodes/50'),
-	() => import('./nodes/51')
+	() => import('./nodes/51'),
+	() => import('./nodes/52')
 ];
 
 export const server_loads = [];
@@ -100,14 +101,15 @@ export const dictionary = {
 		"/prata-anonymt-online": [41],
 		"/psykiskt-stod-online": [42],
 		"/register": [~43],
-		"/samtalsstod-utan-vantetid": [44],
-		"/samtalsstod-vid-trauma": [45],
-		"/sjalvkansla": [46],
-		"/sovproblem": [47],
-		"/stod-vid-ptsd-online": [48],
-		"/stod-vid-stress-online": [49],
-		"/stress": [50],
-		"/trauma": [51]
+		"/sa-arbetar-vi-med-innehall": [44],
+		"/samtalsstod-utan-vantetid": [45],
+		"/samtalsstod-vid-trauma": [46],
+		"/sjalvkansla": [47],
+		"/sovproblem": [48],
+		"/stod-vid-ptsd-online": [49],
+		"/stod-vid-stress-online": [50],
+		"/stress": [51],
+		"/trauma": [52]
 	};
 
 export const hooks = {

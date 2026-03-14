@@ -9,7 +9,32 @@
 </svelte:head>
 
 <section class="container max-w-sm py-16">
-	<h1 class="text-2xl font-bold text-center mb-6">Skapa konto</h1>
+	<!-- Benefits section -->
+	<div class="text-center mb-8">
+		<h1 class="text-2xl font-bold mb-2">Skapa ditt konto</h1>
+		<p class="opacity-70 text-sm leading-relaxed">
+			Ett konto ger dig tillgång till verktyg som hjälper dig följa ditt mående över tid.
+		</p>
+	</div>
+
+	<div class="grid grid-cols-2 gap-3 mb-8">
+		<div class="rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-3 text-center">
+			<span class="text-xl block mb-1">📓</span>
+			<p class="text-xs leading-snug opacity-80">Spara dagbok och reflektioner</p>
+		</div>
+		<div class="rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-3 text-center">
+			<span class="text-xl block mb-1">📊</span>
+			<p class="text-xs leading-snug opacity-80">Följ ditt mående med visuell statistik</p>
+		</div>
+		<div class="rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-3 text-center">
+			<span class="text-xl block mb-1">🔥</span>
+			<p class="text-xs leading-snug opacity-80">Bygg streaks och se din resa</p>
+		</div>
+		<div class="rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-3 text-center">
+			<span class="text-xl block mb-1">🔒</span>
+			<p class="text-xs leading-snug opacity-80">Din data — din kontroll</p>
+		</div>
+	</div>
 
 	<form method="POST" novalidate class="space-y-4">
 		<label class="block text-sm" for="register-email">E-post</label>
@@ -50,6 +75,10 @@
 			Registrera
 		</button>
 	</form>
+
+	<p class="text-center text-xs mt-4 opacity-50">
+		Gratis. Inga krav. Du kan ta bort ditt konto när som helst.
+	</p>
 
 	<p class="text-center text-sm mt-4 opacity-70">
 		Har du redan ett konto? <a href="/login" class="underline">Logga in</a>

@@ -30,6 +30,9 @@
 	let savePromptHidden = $state<Record<number, boolean>>({});
 	let hasTrackedOpen = $state(false);
 	let hasTrackedFirstMessage = $state(false);
+	let showAccountNudge = $state(false);
+	let nudgeDismissed = $state(false);
+	let isAnonymous = $state(true);
 	let firstMessageSource = $state<'manual' | 'chip'>('manual');
 	let hasSensitiveDataConsent = $state(false);
 	let conversationId = $state<string | null>(
@@ -144,12 +147,22 @@
 		void tick().then(scrollToBottom);
 	});
 
-	onMount(() => {
+	onMount(async () => {
 		hasSensitiveDataConsent = hasSensitiveConsent();
+
+		const { data } = await supabase.auth.getSession();
+		isAnonymous = !data.session;
 
 		if (hasTrackedOpen) return;
 		hasTrackedOpen = true;
 		void trackEvent('chat_open');
+	});
+
+	$effect(() => {
+		const assistantCount = messages.filter((m) => m.role === 'assistant').length;
+		if (assistantCount >= 3 && isAnonymous && !nudgeDismissed) {
+			showAccountNudge = true;
+		}
 	});
 
 	function scrollToBottom() {
@@ -357,6 +370,21 @@
 			</div>
 		{/if}
 	</div>
+
+	{#if showAccountNudge}
+		<div class="px-4 py-2 flex items-center justify-between gap-2 text-xs opacity-60 border-t border-black/5 dark:border-white/5">
+			<p>
+				Vill du kunna återvända hit? <a href="/register" class="underline hover:opacity-100">Skapa konto</a> för att spara dina reflektioner.
+			</p>
+			<button
+				type="button"
+				class="shrink-0 opacity-70 hover:opacity-100 transition-opacity"
+				onclick={() => { showAccountNudge = false; nudgeDismissed = true; }}
+			>
+				Stäng
+			</button>
+		</div>
+	{/if}
 
 	<div class="chat-input-area border-t border-black/8 dark:border-white/10 p-4">
 		{#if !hasSensitiveDataConsent}

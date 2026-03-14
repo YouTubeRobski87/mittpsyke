@@ -116,6 +116,7 @@
 
 	let loading = $state(true);
 	let isLoggedIn = $state(false);
+	let showWelcome = $state(false);
 	let saving = $state(false);
 	let exportingPdf = $state(false);
 	let note = $state('');
@@ -165,6 +166,17 @@
 					: null;
 
 			applyPrefillFromUrl();
+
+			if (typeof window !== 'undefined') {
+				const url = new URL(window.location.href);
+				if (url.searchParams.get('welcome') === 'true') {
+					showWelcome = true;
+					url.searchParams.delete('welcome');
+					window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+					setTimeout(() => { showWelcome = false; }, 8000);
+				}
+			}
+
 			await loadEntries(userId);
 			await loadMoodTimeline();
 			loading = false;
@@ -898,6 +910,15 @@
 	<div class="container py-16 text-center opacity-60">Laddar din dagbok...</div>
 {:else if isLoggedIn}
 	<section class="container max-w-2xl py-12">
+		{#if showWelcome}
+			<button
+				type="button"
+				onclick={() => { showWelcome = false; }}
+				class="w-full mb-5 rounded-[var(--radius-card)] border border-emerald-300/50 dark:border-emerald-700/40 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-3 text-sm text-left transition-opacity hover:opacity-90"
+			>
+				Välkommen! 🎉 Det här är din dagbok. Börja med att skriva hur du mår just nu.
+			</button>
+		{/if}
 		<div class="flex flex-wrap items-center justify-between gap-3 mb-3">
 			<h1 class="text-3xl font-bold tracking-tight">Dagbok</h1>
 			<button
@@ -1167,53 +1188,53 @@
 		<p class="mt-4 text-xs opacity-50 text-center">Läs mer om hur uppgifter hanteras i <a href="/integritet" class="underline underline-offset-2">integritetspolicyn</a>.</p>
 	</section>
 {:else}
-	<!-- SEO Landing for non-logged-in visitors -->
-	<section class="container max-w-2xl py-12">
-		<h1 class="text-3xl font-bold mb-4 text-center">Digitala verktyg mot ångest – Din personliga dagbok</h1>
-		<p class="text-lg text-center text-gray-600 dark:text-gray-300 mb-8">
-			MittPsyke erbjuder en gratis digital dagbok där du kan skriva ner dina tankar,
-			välja känsloläge och följa ditt mående över tid med visuell statistik.
-		</p>
-		<p class="text-sm text-center text-gray-600 dark:text-gray-300 mb-8">
-			Dagboken sparas med konto och är till för reflektion i vardagen. Den ersätter inte vård eller medicinsk bedömning. Vid akut fara, ring 112. För vårdråd, kontakta 1177.
-		</p>
-
-		<div class="grid gap-6 sm:grid-cols-2 mb-10">
-			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-				<div class="text-2xl mb-2">✍️</div>
-				<h2 class="font-semibold text-lg mb-2">Skriv fritt</h2>
-				<p class="text-gray-600 dark:text-gray-400 text-sm">Uttryck dina tankar och känslor i en lugn, privat miljö. Ingen dömer – det här är din plats.</p>
-			</div>
-			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-				<div class="text-2xl mb-2">🎭</div>
-				<h2 class="font-semibold text-lg mb-2">Välj känsloläge</h2>
-				<p class="text-gray-600 dark:text-gray-400 text-sm">Tagga varje inlägg med ditt humör – lugn, orolig, hoppfull eller något annat. Spåra mönster i ditt mående.</p>
-			</div>
-			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-				<div class="text-2xl mb-2">📊</div>
-				<h2 class="font-semibold text-lg mb-2">Visuell statistik</h2>
-				<p class="text-gray-600 dark:text-gray-400 text-sm">Följ din utveckling med grafer och trendlinjer. Se hur ditt mående förändras vecka för vecka.</p>
-			</div>
-			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-				<div class="text-2xl mb-2">🔒</div>
-				<h2 class="font-semibold text-lg mb-2">Privat med konto</h2>
-				<p class="text-gray-600 dark:text-gray-400 text-sm">Du skapar konto för att spara din dagbok över tid. Läs mer om hur uppgifter hanteras i integritetspolicyn.</p>
-			</div>
-		</div>
-
-		<div class="text-center">
-			<h2 class="text-xl font-semibold mb-3">Redo att börja skriva?</h2>
-			<p class="text-gray-600 dark:text-gray-300 mb-6">Skapa ett gratis konto och börja din dagbok idag. Det tar bara några sekunder.</p>
-			<p class="text-sm text-gray-600 dark:text-gray-300 mb-6">
-				Läs mer om <a href="/digital-dagbok-for-maende" class="underline underline-offset-2">digital dagbok för mående</a>,
-				utforska <a href="/guider" class="underline underline-offset-2">guider</a> och
-				<a href="/ovningar" class="underline underline-offset-2">övningar</a>, eller
-				<a href="/chat" class="underline underline-offset-2">öppna chatten</a> om du vill reflektera vidare.
+	<!-- Landing for non-logged-in visitors -->
+	<section class="container max-w-2xl py-16">
+		<div class="text-center mb-10">
+			<h1 class="text-3xl font-bold tracking-tight mb-3">Din personliga dagbok</h1>
+			<p class="text-lg opacity-75 leading-relaxed max-w-md mx-auto">
+				En lugn plats att skriva av dig, följa dina känslor och se mönster över tid.
 			</p>
-			<div class="flex flex-col sm:flex-row gap-3 justify-center">
-				<a href="/register" class="btn btn-primary px-8 py-3 rounded-full font-semibold text-white bg-green-600 hover:bg-green-700 transition">Skapa konto gratis</a>
-				<a href="/login" class="btn btn-outline px-8 py-3 rounded-full font-semibold border-2 border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition">Logga in</a>
+		</div>
+
+		<div class="space-y-3 mb-10 max-w-sm mx-auto">
+			<div class="flex items-start gap-3 rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-4">
+				<span class="text-xl shrink-0">✍️</span>
+				<div>
+					<p class="text-sm font-medium mb-0.5">Skriv fritt</p>
+					<p class="text-xs opacity-65 leading-relaxed">Reflektera i din egen takt — ingen dömer.</p>
+				</div>
+			</div>
+			<div class="flex items-start gap-3 rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-4">
+				<span class="text-xl shrink-0">😊</span>
+				<div>
+					<p class="text-sm font-medium mb-0.5">Välj humör</p>
+					<p class="text-xs opacity-65 leading-relaxed">Se mönster över tid genom att tagga dina inlägg.</p>
+				</div>
+			</div>
+			<div class="flex items-start gap-3 rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-4">
+				<span class="text-xl shrink-0">📈</span>
+				<div>
+					<p class="text-sm font-medium mb-0.5">Följ framsteg</p>
+					<p class="text-xs opacity-65 leading-relaxed">Streaks, statistik och milstolpar — allt på ett ställe.</p>
+				</div>
 			</div>
 		</div>
+
+		<div class="text-center space-y-3">
+			<a
+				href="/register"
+				class="inline-block px-6 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium transition-opacity hover:opacity-90"
+			>
+				Skapa konto för att börja skriva
+			</a>
+			<p class="text-sm opacity-55">
+				Eller <a href="/#fokusomraden" class="underline hover:opacity-80">börja med ett anonymt samtal</a>
+			</p>
+		</div>
+
+		<p class="mt-10 text-xs opacity-40 text-center max-w-sm mx-auto leading-relaxed">
+			Dagboken är till för reflektion i vardagen. Den ersätter inte vård. Vid akut fara, ring 112. För vårdråd, kontakta 1177.
+		</p>
 	</section>
 {/if}
