@@ -2452,11 +2452,6 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 				answer: 'De flesta hittar att åtminstone en variant fungerar. Om 5-4-3-2-1 känns svårt, prova att bara hålla i ett föremål och beskriva det detaljerat – temperatur, vikt, yta, form.'
 			}
 		],
-		relatedArticles: [
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' },
-			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' },
-			{ title: 'Grounding – enkla övningar för att landa i kroppen igen', href: '/guider-seo/trauma/grounding-ovningar' }
-		],
 	},
 	{
 		pillarSlug: 'stress',
