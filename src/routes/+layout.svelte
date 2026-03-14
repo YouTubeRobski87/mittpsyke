@@ -1,7 +1,18 @@
 <script lang="ts">
 	import '../app.css';
+	import { browser } from '$app/environment';
+	import { afterNavigate } from '$app/navigation';
+	import {
+		GA_MEASUREMENT_ID,
+		initializeAnalytics,
+		trackPageView
+	} from '$lib/analytics';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
+	import {
+		ANALYTICS_CONSENT_EVENT,
+		hasAnalyticsConsent
+	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import { page } from '$app/state';
 	import type { User } from '@supabase/supabase-js';
@@ -38,6 +49,8 @@
 	let user = $state<User | null>(null);
 	let displayName = $state<string | null>(null);
 	let mobileMenuOpen = $state(false);
+	let analyticsEnabled = $state(false);
+	let lastTrackedPagePath = $state('');
 	let profileRequestVersion = 0;
 
 	async function syncUser(sessionUser: User | null) {
@@ -84,6 +97,55 @@
 		await supabase.auth.signOut();
 		window.location.href = '/login';
 	}
+
+	function pageKey(url: URL) {
+		return `${url.pathname}${url.search}`;
+	}
+
+	function trackCurrentPage(url?: URL) {
+		if (!analyticsEnabled || !url) return;
+
+		const nextPageKey = pageKey(url);
+		if (lastTrackedPagePath === nextPageKey) return;
+
+		trackPageView(url);
+		lastTrackedPagePath = nextPageKey;
+	}
+
+	function syncAnalyticsConsent() {
+		if (!browser) return;
+
+		analyticsEnabled = hasAnalyticsConsent();
+		if (!analyticsEnabled) {
+			lastTrackedPagePath = '';
+			return;
+		}
+
+		initializeAnalytics();
+		trackCurrentPage(new URL(window.location.href));
+	}
+
+	$effect(() => {
+		if (!browser) return;
+
+		syncAnalyticsConsent();
+
+		const handleConsentChange = () => {
+			syncAnalyticsConsent();
+		};
+
+		window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+
+		return () => {
+			window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+		};
+	});
+
+	afterNavigate(({ to }) => {
+		if (to?.url) {
+			trackCurrentPage(to.url);
+		}
+	});
 </script>
 
 <svelte:head>
@@ -124,6 +186,9 @@
 			name="twitter:description"
 			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
 		/>
+		{#if analyticsEnabled}
+			<script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+		{/if}
 		{@html `<script type="application/ld+json">${JSON.stringify(organizationJsonLd)}<\/script>`}
 	{/if}
 </svelte:head>

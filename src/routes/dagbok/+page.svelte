@@ -27,6 +27,11 @@
 	};
 
 	import { goto } from '$app/navigation';
+	import {
+		trackDagbokCtaClick,
+		trackFirstDiaryEntry,
+		trackRegistrationComplete
+	} from '$lib/analytics';
 	import { loadDiaryEntries, setDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import { supabase } from '$lib/supabase';
 	import { onDestroy } from 'svelte';
@@ -171,7 +176,7 @@
 				const url = new URL(window.location.href);
 				if (url.searchParams.get('welcome') === 'true') {
 					showWelcome = true;
-					if (typeof window.gtag === 'function') window.gtag('event', 'registration_complete');
+					trackRegistrationComplete();
 					url.searchParams.delete('welcome');
 					window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
 					setTimeout(() => { showWelcome = false; }, 8000);
@@ -765,7 +770,12 @@
 		};
 
 		entries = [createdEntry, ...entries.filter((entry) => entry.id !== createdEntry.id)];
-		if (entries.length === 1 && typeof window.gtag === 'function') window.gtag('event', 'first_diary_entry');
+		if (entries.length === 1) {
+			trackFirstDiaryEntry({
+				hasMood: Boolean(createdEntry.mood),
+				tagCount: createdEntry.tags.length
+			});
+		}
 		setDiaryEntries(userId, entries);
 		void loadMoodTimeline();
 		saving = false;
@@ -1227,7 +1237,7 @@
 			<a
 				href="/register"
 				class="inline-block px-6 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium transition-opacity hover:opacity-90"
-				onclick={() => { if (typeof window !== 'undefined' && typeof window.gtag === 'function') window.gtag('event', 'click_dagbok_cta'); }}
+				onclick={trackDagbokCtaClick}
 			>
 				Skapa konto för att börja skriva
 			</a>

@@ -1,23 +1,26 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import {
+		getAnalyticsConsent,
+		grantAnalyticsConsent,
+		declineAnalyticsConsent
+	} from '$lib/consent';
 
 	let visible = $state(false);
 
 	$effect(() => {
-		if (browser && localStorage.getItem('cookie-consent') === null) {
+		if (browser && getAnalyticsConsent() === null) {
 			visible = true;
 		}
 	});
 
 	function accept() {
-		localStorage.setItem('cookie-consent', 'accepted');
+		grantAnalyticsConsent();
 		visible = false;
-		// Ladda om så analytics injiceras
-		location.reload();
 	}
 
 	function decline() {
-		localStorage.setItem('cookie-consent', 'declined');
+		declineAnalyticsConsent();
 		visible = false;
 	}
 </script>

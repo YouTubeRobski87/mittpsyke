@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { trackRegisterView } from '$lib/analytics';
 	import type { ActionData } from './$types';
 	let { form }: { form: ActionData } = $props();
 
 	onMount(() => {
-		if (browser && typeof window.gtag === 'function') window.gtag('event', 'view_register_page');
+		trackRegisterView();
 	});
 </script>
 
