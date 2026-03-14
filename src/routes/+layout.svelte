@@ -423,6 +423,14 @@
 		>
 			Akut hjälp (Stödlinjer)
 		</a>
+		<span class="mx-2">&middot;</span>
+		<a
+			href="https://analytics.google.com/analytics/web/#/a63154192p523877155/reports/intelligenthome"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="text-sm opacity-30 hover:opacity-70 transition-opacity"
+			title="Analytics"
+		>📊</a>
 		<div class="footer-company mt-2 text-xs opacity-70">
 			<p>© MittPsyke</p>
 			<p>Enskild näringsverksamhet</p>
