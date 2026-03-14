@@ -162,6 +162,7 @@
 		const assistantCount = messages.filter((m) => m.role === 'assistant').length;
 		if (assistantCount >= 3 && isAnonymous && !nudgeDismissed) {
 			showAccountNudge = true;
+			if (browser && typeof window.gtag === 'function') window.gtag('event', 'view_chat_nudge');
 		}
 	});
 
@@ -374,7 +375,7 @@
 	{#if showAccountNudge}
 		<div class="px-4 py-2 flex items-center justify-between gap-2 text-xs opacity-60 border-t border-black/5 dark:border-white/5">
 			<p>
-				Vill du kunna återvända hit? <a href="/register" class="underline hover:opacity-100">Skapa konto</a> för att spara dina reflektioner.
+				Vill du kunna återvända hit? <a href="/register" class="underline hover:opacity-100" onclick={() => { if (typeof window.gtag === 'function') window.gtag('event', 'click_chat_nudge'); }}>Skapa konto</a> för att spara dina reflektioner.
 			</p>
 			<button
 				type="button"

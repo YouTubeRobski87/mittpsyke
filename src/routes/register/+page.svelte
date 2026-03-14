@@ -1,6 +1,12 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { ActionData } from './$types';
 	let { form }: { form: ActionData } = $props();
+
+	onMount(() => {
+		if (browser && typeof window.gtag === 'function') window.gtag('event', 'view_register_page');
+	});
 </script>
 
 <svelte:head>

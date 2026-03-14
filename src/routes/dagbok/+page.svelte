@@ -171,6 +171,7 @@
 				const url = new URL(window.location.href);
 				if (url.searchParams.get('welcome') === 'true') {
 					showWelcome = true;
+					if (typeof window.gtag === 'function') window.gtag('event', 'registration_complete');
 					url.searchParams.delete('welcome');
 					window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
 					setTimeout(() => { showWelcome = false; }, 8000);
@@ -1225,6 +1226,7 @@
 			<a
 				href="/register"
 				class="inline-block px-6 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium transition-opacity hover:opacity-90"
+				onclick={() => { if (typeof window !== 'undefined' && typeof window.gtag === 'function') window.gtag('event', 'click_dagbok_cta'); }}
 			>
 				Skapa konto för att börja skriva
 			</a>
