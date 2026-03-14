@@ -128,7 +128,7 @@
 								class="day-cell"
 								style="background-color: {getColor(day.count)}"
 								title={getTooltip(day.date, day.count)}
-							/>
+							></div>
 						{/each}
 					</div>
 				{/each}
@@ -137,11 +137,11 @@
 		<div class="legend">
 			<span class="legend-label">Mindre</span>
 			<div class="legend-cells">
-				<div class="legend-cell" style="background-color: #ebedf0" />
-				<div class="legend-cell" style="background-color: #c6e48b" />
-				<div class="legend-cell" style="background-color: #7bc96f" />
-				<div class="legend-cell" style="background-color: #239a3b" />
-				<div class="legend-cell" style="background-color: #196127" />
+				<div class="legend-cell" style="background-color: #ebedf0"></div>
+				<div class="legend-cell" style="background-color: #c6e48b"></div>
+				<div class="legend-cell" style="background-color: #7bc96f"></div>
+				<div class="legend-cell" style="background-color: #239a3b"></div>
+				<div class="legend-cell" style="background-color: #196127"></div>
 			</div>
 			<span class="legend-label">Mer</span>
 		</div>

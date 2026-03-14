@@ -16,7 +16,7 @@
 		ensamhet: '/ensamhet'
 	};
 
-	const pillarRoute = pillarRoutes[data.pillar.slug] ?? null;
+	const pillarRoute = $derived(pillarRoutes[data.pillar.slug] ?? null);
 
 	function formatDate(iso: string): string {
 		const months = ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];

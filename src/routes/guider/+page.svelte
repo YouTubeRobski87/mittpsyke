@@ -86,6 +86,7 @@
 		line-height: 1.6;
 		opacity: 0.82;
 		display: -webkit-box;
+		line-clamp: 3;
 		-webkit-line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: hidden;

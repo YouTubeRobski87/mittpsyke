@@ -126,10 +126,6 @@
 		margin: 0;
 	}
 
-	.section p + p {
-		margin-top: 0.95rem;
-	}
-
 	.cta-container {
 		max-width: 720px;
 		display: flex;
