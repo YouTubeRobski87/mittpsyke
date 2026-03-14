@@ -199,7 +199,7 @@
 					class="text-input"
 					maxlength="80"
 				/>
-				<button class="save-btn" onclick={saveDisplayName} disabled={nameSaving}>
+				<button class="save-btn" onclick={saveDisplayName} aria-label="Spara visningsnamn" disabled={nameSaving}>
 					{nameSaving ? 'Sparar...' : 'Spara'}
 				</button>
 			</div>
@@ -233,7 +233,7 @@
 				autocomplete="new-password"
 			/>
 
-			<button class="save-btn" onclick={savePassword} disabled={passwordSaving}>
+			<button class="save-btn" onclick={savePassword} aria-label="Spara lösenord" disabled={passwordSaving}>
 				{passwordSaving ? 'Sparar...' : 'Byt l\u00f6senord'}
 			</button>
 

@@ -904,6 +904,7 @@
 				type="button"
 				onclick={exportAsPdf}
 				disabled={exportingPdf || entries.length === 0}
+				aria-label="Exportera dagbok som PDF"
 				class="px-4 py-2 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
 			>
 				{exportingPdf ? 'Exporterar...' : 'Exportera som PDF'}
@@ -911,25 +912,27 @@
 		</div>
 
 		<p class="opacity-75 leading-relaxed mb-3">Detta är din privata plats att skriva fritt.</p>
-		<p class="opacity-65 leading-relaxed mb-6 text-sm">Dagboken är till för reflektion och stöd i vardagen. Den ersätter inte vård och ska inte vara enda underlag för medicinska beslut. Vid akut fara, ring 112. För vårdråd, kontakta 1177.</p>
+		<p class="opacity-75 leading-relaxed mb-6 text-sm">Dagboken är till för reflektion och stöd i vardagen. Den ersätter inte vård och ska inte vara enda underlag för medicinska beslut. Vid akut fara, ring 112. För vårdråd, kontakta 1177.</p>
 
 		<div class="rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-white/45 dark:bg-[#1a1a1a] p-4 mb-7">
 			<textarea
 				bind:value={note}
 				rows={6}
 				placeholder="Skriv din anteckning här..."
-				class="w-full resize-y rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-4 py-3 text-sm leading-relaxed outline-none focus:border-[var(--primary)] transition-colors"
+				aria-label="Dagboksanteckning"
+				aria-label="Dagboksanteckning"
+				class="w-full resize-y rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-4 py-3 text-sm leading-relaxed outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2 focus:border-[var(--primary)] transition-colors"
 			></textarea>
 
 			<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
 				<div>
-					<label class="block text-xs opacity-65 mb-1" for="mood">Känsla (valfritt)</label>
+					<label class="block text-xs opacity-75 mb-1" for="mood">Känsla (valfritt)</label>
 					<div class="relative">
 						<select
 							id="mood"
 							name="mood"
 							bind:value={selectedMood}
-							class="w-full appearance-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 pr-10 text-sm outline-none transition-colors focus:border-[var(--primary)]"
+							class="w-full appearance-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 pr-10 text-sm outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2 transition-colors focus:border-[var(--primary)]"
 						>
 							<option value="">Välj känsla</option>
 							{#each moods as mood}
@@ -952,13 +955,13 @@
 				</div>
 
 				<div>
-					<label class="block text-xs opacity-65 mb-1" for="tags">Taggar (valfritt)</label>
+					<label class="block text-xs opacity-75 mb-1" for="tags">Taggar (valfritt)</label>
 					<input
 						id="tags"
 						type="text"
 						bind:value={tagsInput}
 						placeholder="t.ex. sömn, oro, lättnad"
-						class="w-full rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
+						class="w-full rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 text-sm outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2 focus:border-[var(--primary)] transition-colors"
 					/>
 				</div>
 			</div>
@@ -968,6 +971,7 @@
 					type="button"
 					onclick={saveEntry}
 					disabled={saving || !note.trim()}
+					aria-label="Spara anteckning"
 					class="px-5 py-2.5 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm font-medium opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
 				>
 					{saving ? 'Sparar...' : 'Spara'}
@@ -984,6 +988,7 @@
 				<button
 					type="button"
 					onclick={loadMoodTimeline}
+					aria-label="Visa känslotrender"
 					disabled={statsLoading}
 					class="rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 px-3 py-1.5 text-xs opacity-85 hover:opacity-100 disabled:opacity-50 transition-opacity"
 				>
@@ -1022,19 +1027,19 @@
 							<textarea
 								bind:value={editableText}
 								rows={5}
-								class="w-full resize-y rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-4 py-3 text-sm leading-relaxed outline-none focus:border-[var(--primary)] transition-colors"
+								class="w-full resize-y rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-4 py-3 text-sm leading-relaxed outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2 focus:border-[var(--primary)] transition-colors"
 							></textarea>
 
 							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
 								<div>
-									<label class="block text-xs opacity-65 mb-1" for={`edit-mood-${entry.id}`}>
+									<label class="block text-xs opacity-75 mb-1" for={`edit-mood-${entry.id}`}>
 										Känsla (valfritt)
 									</label>
 									<div class="relative">
 										<select
 											id={`edit-mood-${entry.id}`}
 											bind:value={editableMood}
-											class="w-full appearance-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 pr-10 text-sm outline-none transition-colors focus:border-[var(--primary)]"
+											class="w-full appearance-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 pr-10 text-sm outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2 transition-colors focus:border-[var(--primary)]"
 										>
 											<option value="">Välj känsla</option>
 											{#each moods as mood}
@@ -1057,7 +1062,7 @@
 								</div>
 
 								<div>
-									<label class="block text-xs opacity-65 mb-1" for={`edit-tags-${entry.id}`}>
+									<label class="block text-xs opacity-75 mb-1" for={`edit-tags-${entry.id}`}>
 										Taggar (valfritt)
 									</label>
 									<input
@@ -1065,7 +1070,7 @@
 										type="text"
 										bind:value={editableTags}
 										placeholder="t.ex. sömn, oro, lättnad"
-										class="w-full rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 text-sm outline-none focus:border-[var(--primary)] transition-colors"
+										class="w-full rounded-[var(--radius-input)] border border-black/12 dark:border-white/10 bg-white dark:bg-[#242424] dark:text-[#f0ede8] px-3 py-2.5 text-sm outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2 focus:border-[var(--primary)] transition-colors"
 									/>
 								</div>
 							</div>
@@ -1074,6 +1079,7 @@
 								<button
 									type="button"
 									onclick={cancelEditing}
+									aria-label="Avbryt redigering"
 									disabled={updatingEntry}
 									class="px-4 py-2 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white/50 dark:bg-white/5 text-sm opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
 								>
@@ -1082,6 +1088,7 @@
 								<button
 									type="button"
 									onclick={saveEditedEntry}
+									aria-label="Spara ändringar"
 									disabled={updatingEntry || !editableText.trim()}
 									class="px-4 py-2 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white/60 dark:bg-white/5 text-sm font-medium opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
 								>
@@ -1098,6 +1105,7 @@
 									<button
 										type="button"
 										onclick={() => startEditing(entry)}
+										aria-label="Redigera anteckning"
 										disabled={deletingEntryId === entry.id}
 										class="text-xs px-2.5 py-1 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white/50 dark:bg-white/5 opacity-85 hover:opacity-100 disabled:opacity-45 transition-opacity"
 									>
@@ -1106,6 +1114,7 @@
 									<button
 										type="button"
 										onclick={() => deleteEntry(entry.id)}
+										aria-label="Radera anteckning"
 										disabled={deletingEntryId === entry.id}
 										class="text-xs px-2.5 py-1 rounded-[var(--radius-input)] border border-red-300 dark:border-red-700/40 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200 opacity-90 hover:opacity-100 disabled:opacity-45 transition-opacity"
 									>

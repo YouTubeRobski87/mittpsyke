@@ -50,7 +50,7 @@
 		Om du hellre vill prata med en människa finns <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Stödlinjer</a>. Vid akut fara, ring 112.
 	</p>
 	{#if hasSensitiveDataConsent}
-		<button on:click={startCall}>
+		<button on:click={startCall} aria-label="Starta röstsamtal med MittPsyke">
 			{active ? 'Samtal igång...' : 'Prata med MittPsyke'}
 		</button>
 	{:else}

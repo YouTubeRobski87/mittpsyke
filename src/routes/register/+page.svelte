@@ -22,7 +22,7 @@
 			required
 			aria-describedby={form?.error ? 'register-form-error register-password-help' : 'register-password-help'}
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
-				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
+				bg-white dark:bg-white/5 outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2 focus:border-[var(--primary)] transition-colors"
 		/>
 		<label class="block text-sm" for="register-password">Lösenord</label>
 		<input

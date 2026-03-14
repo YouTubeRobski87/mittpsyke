@@ -31,7 +31,7 @@
 			required
 			aria-describedby={form?.error ? 'login-form-error' : undefined}
 			class="w-full px-4 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
-				bg-white dark:bg-white/5 outline-none focus:border-[var(--primary)] transition-colors"
+				bg-white dark:bg-white/5 outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2 focus:border-[var(--primary)] transition-colors"
 		/>
 		<label class="block text-sm" for="login-password">Lösenord</label>
 		<input
@@ -54,7 +54,7 @@
 			type="submit"
 			disabled={loading}
 			class="w-full px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium
-				disabled:opacity-40 transition-opacity"
+				disabled:opacity-60 transition-opacity"
 		>
 			{loading ? 'Loggar in...' : 'Logga in'}
 		</button>
@@ -64,7 +64,7 @@
 		Inget konto? <a href="/register" class="underline">Registrera dig</a>
 	</p>
 
-	<p class="text-center text-xs mt-8 opacity-40">
+	<p class="text-center text-xs mt-8 opacity-60">
 		MittPsyke ersätter inte vård. Vid akut fara ring 112 · Vårdråd 1177.
 	</p>
 </section>

@@ -424,11 +424,11 @@
 					id="chat-message"
 					bind:value={input}
 					onkeydown={handleKeydown}
-					placeholder="Skriv här..."
+					aria-label="Skriv ditt meddelande" placeholder="Skriv här..."
 					aria-describedby="chat-help-text"
 					rows={1}
 					class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
-						bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none
+						bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2
 						focus:border-[var(--primary)] transition-colors"
 				></textarea>
 				<button

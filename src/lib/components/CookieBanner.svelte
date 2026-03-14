@@ -25,6 +25,7 @@
 {#if visible}
 	<div
 		role="dialog"
+		aria-live="polite"
 		aria-label="Cookie-samtycke"
 		class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[min(480px,calc(100vw-2rem))] rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-zinc-900 px-4 py-3 shadow-lg text-sm flex flex-col sm:flex-row sm:items-center gap-3"
 	>

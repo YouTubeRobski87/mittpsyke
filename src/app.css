@@ -254,3 +254,57 @@ a {
 		border-top-color: rgba(255, 255, 255, 0.1);
 	}
 }
+
+/* ===== WCAG Focus Indicators ===== */
+*:focus-visible {
+  outline: 2px solid var(--primary, #0d9488) !important;
+  outline-offset: 2px !important;
+  border-radius: 4px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--primary, #0d9488) !important;
+  outline-offset: 2px !important;
+}
+
+/* Ensure high contrast for focus in dark mode */
+.dark *:focus-visible {
+  outline-color: #5eead4 !important;
+}
+
+/* Minimum touch target size for mobile accessibility */
+@media (pointer: coarse) {
+  button, a, [role="button"], input[type="submit"], input[type="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Status messages for screen readers */
+[role="status"],
+[role="alert"] {
+  /* Ensure screen readers announce these */
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip-link enhancement */
+.skip-link:focus-visible {
+  outline: 3px solid var(--primary, #0d9488);
+  outline-offset: 4px;
+}

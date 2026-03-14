@@ -233,7 +233,7 @@
 		</div>
 
 		{#if mobileMenuOpen}
-			<div id="mobile-menu" class="md:hidden border-t border-black/8 dark:border-white/10 px-5 py-3 space-y-2" aria-label="Mobilmeny">
+			<div id="mobile-menu" class="md:hidden border-t border-black/8 dark:border-white/10 px-5 py-3 space-y-2" role="navigation" aria-label="Mobilmeny">
 				<a
 					href="/guider"
 					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
