@@ -32,6 +32,10 @@
 		trackFirstDiaryEntry,
 		trackRegistrationComplete
 	} from '$lib/analytics';
+	import {
+		ANALYTICS_CONSENT_EVENT,
+		hasAnalyticsConsent
+	} from '$lib/consent';
 	import { loadDiaryEntries, setDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import { supabase } from '$lib/supabase';
 	import { onDestroy } from 'svelte';
@@ -149,6 +153,35 @@
 	let moodReflection = $state('När du har skrivit fler inlägg kommer en reflektion här.');
 	let moodChartCanvas = $state<HTMLCanvasElement | null>(null);
 	let moodChart: ChartInstance | null = null;
+	let pendingRegistrationComplete = $state(false);
+	let registrationCompleteTracked = $state(false);
+
+	function maybeTrackRegistrationComplete() {
+		if (!pendingRegistrationComplete || registrationCompleteTracked || !hasAnalyticsConsent()) {
+			return;
+		}
+
+		trackRegistrationComplete();
+		pendingRegistrationComplete = false;
+		registrationCompleteTracked = true;
+	}
+
+	function syncWelcomeStateFromUrl() {
+		if (typeof window === 'undefined') return;
+
+		const url = new URL(window.location.href);
+		if (url.searchParams.get('welcome') !== 'true') return;
+
+		showWelcome = true;
+		pendingRegistrationComplete = true;
+		maybeTrackRegistrationComplete();
+
+		url.searchParams.delete('welcome');
+		window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
+		setTimeout(() => {
+			showWelcome = false;
+		}, 8000);
+	}
 
 	$effect(() => {
 		async function init() {
@@ -171,17 +204,7 @@
 					: null;
 
 			applyPrefillFromUrl();
-
-			if (typeof window !== 'undefined') {
-				const url = new URL(window.location.href);
-				if (url.searchParams.get('welcome') === 'true') {
-					showWelcome = true;
-					trackRegistrationComplete();
-					url.searchParams.delete('welcome');
-					window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-					setTimeout(() => { showWelcome = false; }, 8000);
-				}
-			}
+			syncWelcomeStateFromUrl();
 
 			await loadEntries(userId);
 			await loadMoodTimeline();
@@ -189,6 +212,20 @@
 		}
 
 		init();
+	});
+
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+
+		const handleConsentChange = () => {
+			maybeTrackRegistrationComplete();
+		};
+
+		window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+
+		return () => {
+			window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+		};
 	});
 
 	function applyPrefillFromUrl() {
