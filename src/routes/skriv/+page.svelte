@@ -178,7 +178,11 @@
 		box-sizing: border-box;
 	}
 
-	:global(html.dark) .skriv-textarea,
+	:global(html.dark) .skriv-textarea {
+		background: rgba(255,255,255,0.05);
+		border-color: rgba(255,255,255,0.12);
+	}
+
 	@media (prefers-color-scheme: dark) {
 		.skriv-textarea {
 			background: rgba(255,255,255,0.05);
