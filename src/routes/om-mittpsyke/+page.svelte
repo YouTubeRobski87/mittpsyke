@@ -294,16 +294,24 @@
 
 		<!-- 10) Verksamhet och utveckling -->
 		<section class="section" id="verksamhet">
-			<h2>Verksamhet och utveckling</h2>
+			<h2>Om verksamheten</h2>
 			<p>
-				MittPsyke är en digital plattform för mental hälsa och självreflektion. Plattformen utvecklas
-				och drivs som en digital tjänst med målsättning att erbjuda verktyg, guider och digitala
-				funktioner inom psykiskt välbefinnande.
+				MittPsyke är en digital plattform under utveckling som syftar till att erbjuda verktyg
+				för självreflektion, mental återhämtning och informationsstöd kring psykisk hälsa.
 			</p>
 			<p>
-				Plattformen utvecklas kontinuerligt och används av besökare som skriver dagbok, följer
-				sitt mående och reflekterar kring sin psykiska hälsa. Funktioner som samtalsstöd, dagbok,
-				framstegsöversikt och guider uppdateras löpande baserat på användarfeedback och behov.
+				Plattformen utvecklas och drivs självständigt av Robert Claesson och är en del av en
+				verksamhet inriktad på utveckling av digitala tjänster, webbapplikationer och
+				informationsplattformar på internet.
+			</p>
+			<p>
+				Verksamheten omfattar utveckling, drift och vidareutveckling av digitala tjänster,
+				däribland webbplattformar som MittPsyke och informationssajten
+				<a href="https://stodlinjer.se" target="_blank" rel="noopener">stodlinjer.se</a>.
+			</p>
+			<p>
+				Målsättningen är att på sikt erbjuda digitala funktioner, samarbeten och tjänster
+				kopplade till dessa plattformar.
 			</p>
 		</section>
 
@@ -311,18 +319,17 @@
 		<section class="section" id="tjanster">
 			<h2>Tjänster och samarbeten</h2>
 			<p>
-				MittPsyke utvecklas med en långsiktig ambition att erbjuda både kostnadsfria och
-				betalda tjänster inom digital mental hälsa. Möjliga intäktsområden inkluderar:
+				Verksamheten erbjuder och utvecklar tjänster inom följande områden:
 			</p>
 			<ul>
-				<li>Premiumfunktioner i plattformen</li>
+				<li>Digitala verktyg och plattformar för psykisk hälsa och självreflektion</li>
+				<li>Utveckling och drift av webbplattformar och webbapplikationer</li>
 				<li>Samarbeten med organisationer och verksamheter inom psykisk hälsa</li>
-				<li>Digitala verktyg och guider</li>
-				<li>Utveckling och drift av webbplattformar</li>
+				<li>Informationsplattformar och digitala guider</li>
 			</ul>
 			<p>
-				Är du intresserad av samarbete eller har frågor om verksamheten?
-				Kontakta oss på <a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a>.
+				För samarbeten eller frågor kring plattformen, kontakta
+				<a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a>.
 			</p>
 		</section>
 
