@@ -22,7 +22,11 @@
 	let lastConversationId = $state<string | null>(null);
 
 	// Personalization state
-	let profileTheme = $state('neutral');
+	let profileTheme = $state(
+		typeof globalThis.localStorage !== 'undefined'
+			? (localStorage.getItem('mittpsyke:theme') ?? 'neutral')
+			: 'neutral'
+	);
 	let weeklyGoalType = $state('diary_3_week');
 	let dashboardWidget = $state('dagbok');
 	let entriesThisWeek = $state(0);
@@ -241,11 +245,12 @@
 		`\${entriesThisWeek} av \${goalTarget} denna vecka`
 	);
 	const goalSubText = $derived(
-		!goalTarget ? 'Skriv när det känns rätt.' :
-		entriesThisWeek === 0 ? 'Du kan ta en liten stund när det passar.' :
-		entriesThisWeek >= goalTarget ? 'Bra jobbat — du nådde ditt mål!' :
-		entriesThisWeek === 1 ? 'Du är igång! Fortsätt i din takt.' :
-		'Det går fint att ta det steg för steg.'
+		!goalTarget ? 'Skriv när det känns rätt — det finns inget krav här.' :
+		entriesThisWeek === 0 ? 'Börja där du är idag. En kort stund räcker.' :
+		entriesThisWeek >= goalTarget ? 'Du nådde ditt mål den här veckan — fint jobbat! 🌱' :
+		entriesThisWeek === 1 ? 'Du är igång — små steg, i din takt.' :
+		entriesThisWeek === 2 ? 'Det går framåt. Du tar hand om dig.' :
+		'Steg för steg — du är på god väg.'
 	);
 
 	
@@ -373,6 +378,7 @@
 			// Load personalization preferences from user_metadata
 			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
 			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
+			if (browser) localStorage.setItem('mittpsyke:theme', profileTheme);
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
 

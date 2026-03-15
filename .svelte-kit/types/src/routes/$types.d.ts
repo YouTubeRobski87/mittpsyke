@@ -14,6 +14,7 @@ export type Snapshot<T = any> = Kit.Snapshot<T>;
 type PageParentData = EnsureDefined<LayoutData>;
 type LayoutRouteId = RouteId | "/" | "/4-7-8-andning-ovning" | "/ai-samtalsstod-online" | "/andningsovningar-mot-angest" | "/angest" | "/anonym-dagbok-online" | "/anonymt-samtalsstod-online" | "/ansvar" | "/avregistrera" | "/chat" | "/chat/[category]" | "/chatta-anonymt-med-nagon" | "/chattstod-psykisk-ohalsa" | "/dagbok" | "/dashboard" | "/dashboard/installningar" | "/depression" | "/digital-dagbok-for-maende" | "/ensamhet" | "/exponering-ovningar-mot-angest" | "/framsteg" | "/guider" | "/guider/[pillar]" | "/guider-seo" | "/guider-seo/[pillar]" | "/guider-seo/[pillar]/[guide]" | "/hjalp-mot-oro-online" | "/hjalp-vid-angest-online" | "/hjalp-vid-depression-online" | "/integritet" | "/login" | "/nedstamdhet" | "/om-mittpsyke" | "/oro" | "/ovningar" | "/ovningar/[tool]" | "/ovningar-mot-angest-online" | "/panikattack" | "/portal/[slug]" | "/prata-anonymt-online" | "/psykiskt-stod-online" | "/register" | "/sa-arbetar-vi-med-innehall" | "/samtalsstod-utan-vantetid" | "/samtalsstod-vid-trauma" | "/sjalvkansla" | "/sovproblem" | "/stod-vid-ptsd-online" | "/stod-vid-stress-online" | "/stress" | "/trauma" | null
 type LayoutParams = RouteParams & { category?: string; pillar?: string; guide?: string; tool?: string; slug?: string }
+type LayoutServerParentData = EnsureDefined<{}>;
 type LayoutParentData = EnsureDefined<{}>;
 
 export type PageServerData = null;
@@ -21,6 +22,9 @@ export type PageLoad<OutputData extends OutputDataShape<PageParentData> = Output
 export type PageLoadEvent = Parameters<PageLoad>[0];
 export type PageData = Expand<Omit<PageParentData, keyof Kit.LoadProperties<Awaited<ReturnType<typeof import('../../../../src/routes/+page.js').load>>>> & OptionalUnion<EnsureDefined<Kit.LoadProperties<Awaited<ReturnType<typeof import('../../../../src/routes/+page.js').load>>>>>>;
 export type PageProps = { params: RouteParams; data: PageData }
-export type LayoutServerData = null;
-export type LayoutData = Expand<LayoutParentData>;
+export type LayoutServerLoad<OutputData extends OutputDataShape<LayoutServerParentData> = OutputDataShape<LayoutServerParentData>> = Kit.ServerLoad<LayoutParams, LayoutServerParentData, OutputData, LayoutRouteId>;
+export type LayoutServerLoadEvent = Parameters<LayoutServerLoad>[0];
+export type LayoutServerData = Expand<OptionalUnion<EnsureDefined<Kit.LoadProperties<Awaited<ReturnType<typeof import('./proxy+layout.server.js').load>>>>>>;
+export type LayoutData = Expand<Omit<LayoutParentData, keyof LayoutServerData> & EnsureDefined<LayoutServerData>>;
 export type LayoutProps = { params: LayoutParams; data: LayoutData; children: import("svelte").Snippet }
+export type RequestEvent = Kit.RequestEvent<RouteParams, RouteId>;

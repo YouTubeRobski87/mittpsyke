@@ -103,8 +103,9 @@
 			nameMessage = 'N\u00e5got gick fel. F\u00f6rs\u00f6k igen.';
 			nameMessageType = 'error';
 		} else {
-			nameMessage = 'Sparat!';
+			nameMessage = 'Sparat ✓';
 			nameMessageType = 'success';
+			setTimeout(() => { nameMessage = ''; }, 3000);
 		}
 	}
 
@@ -126,8 +127,13 @@
 			prefMessage = 'Något gick fel. Försök igen.';
 			prefMessageType = 'error';
 		} else {
-			prefMessage = 'Inställningarna är sparade!';
+			prefMessage = 'Dina val har sparats ✓';
 			prefMessageType = 'success';
+			setTimeout(() => { prefMessage = ''; }, 3000);
+			// Cache theme locally for instant load on dashboard
+			if (typeof localStorage !== 'undefined') {
+				localStorage.setItem('mittpsyke:theme', profileTheme);
+			}
 		}
 	}
 
@@ -598,6 +604,7 @@
 		margin: 0.55rem 0 0;
 		font-family: var(--font-body);
 		font-size: 0.86rem;
+		transition: opacity 400ms ease;
 	}
 
 	.feedback.success {
