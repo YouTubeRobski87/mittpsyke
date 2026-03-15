@@ -222,6 +222,37 @@
 		}, 8000);
 	}
 
+	async function saveDraftIfPresent() {
+		const DRAFT_KEY = 'mittpsyke:draft';
+		if (typeof window === 'undefined') return;
+
+		const draft = localStorage.getItem(DRAFT_KEY);
+		if (!draft || !draft.trim()) return;
+
+		const { data } = await supabase.auth.getSession();
+		const session = data.session;
+		if (!session?.access_token) return;
+
+		try {
+			const res = await fetch('/api/diary/create', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session.access_token}`
+				},
+				body: JSON.stringify({ text: draft.trim() })
+			});
+
+			if (res.ok) {
+				localStorage.removeItem(DRAFT_KEY);
+				// Reload entries to show the new one
+				if (userId) await loadEntries(userId);
+			}
+		} catch {
+			// Silent fail – not critical
+		}
+	}
+
 	$effect(() => {
 		async function init() {
 			const { data } = await supabase.auth.getSession();
@@ -244,6 +275,7 @@
 
 			applyPrefillFromUrl();
 			syncWelcomeStateFromUrl();
+			await saveDraftIfPresent();
 			applyTheme();
 			pickIntroText();
 

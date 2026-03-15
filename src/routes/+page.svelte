@@ -64,7 +64,7 @@
 				Börja utan konto när du behöver stöd i stunden. Skapa ett konto om du vill spara din dagbok och kunna återvända över tid.
 			</p>
 			<div class="hero-actions">
-				<a href="#fokusomraden" class="hero-cta hero-cta-primary">Börja anonymt</a>
+				<a href="/skriv" class="hero-cta hero-cta-primary">Börja skriva anonymt</a>
 				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
 			</div>
 			<div class="mode-compare" aria-label="Vad är skillnaden?">
