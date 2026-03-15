@@ -156,6 +156,63 @@
 	let pendingRegistrationComplete = $state(false);
 	let registrationCompleteTracked = $state(false);
 
+	// — Theme support (same as dashboard/framsteg) —
+	let themeAccent = $state('');
+	let themeBg = $state('');
+
+	// — Personalization —
+	let savedAt = $state<string | null>(null);
+	let savedFading = $state(false);
+	let displayName = $state('');
+
+	const introTexts = [
+		'Hur känns det idag?',
+		'Vad vill du ge plats åt just nu?',
+		'Du kan skriva av dig i lugn takt.',
+		'Några ord räcker — börja där du är.',
+		'Det behöver inte vara perfekt.',
+		'Ta en stund för dig själv.',
+		'Skriv det som finns, utan krav.'
+	];
+	let introText = $state(introTexts[0]);
+
+	function pickIntroText() {
+		const dayIndex = new Date().getDay();
+		introText = introTexts[dayIndex % introTexts.length];
+	}
+
+	function applyTheme() {
+		if (typeof window === 'undefined') return;
+		const cached = localStorage.getItem('mittpsyke_theme');
+		if (!cached || cached === 'neutral') {
+			themeAccent = '';
+			themeBg = '';
+			return;
+		}
+		const themes: Record<string, { accent: string; bg: string }> = {
+			salvia: { accent: '#6b9080', bg: '#f5faf7' },
+			havsblå: { accent: '#4a90a4', bg: '#f0f7fa' },
+			lavendel: { accent: '#8b7bb5', bg: '#f5f3fa' },
+			sand: { accent: '#b08d6e', bg: '#faf5f0' },
+			skogsgrön: { accent: '#5a7a5a', bg: '#f2f7f2' }
+		};
+		const t = themes[cached];
+		if (t) {
+			themeAccent = t.accent;
+			themeBg = t.bg;
+			document.documentElement.style.setProperty('--theme-accent', t.accent);
+			document.documentElement.style.setProperty('--theme-bg', t.bg);
+		}
+	}
+
+	function showSavedConfirmation() {
+		const now = new Date();
+		savedAt = now.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit' });
+		savedFading = false;
+		setTimeout(() => { savedFading = true; }, 2500);
+		setTimeout(() => { savedAt = null; savedFading = false; }, 3500);
+	}
+
 	function maybeTrackRegistrationComplete() {
 		if (!pendingRegistrationComplete || registrationCompleteTracked || !hasAnalyticsConsent()) {
 			return;
@@ -205,6 +262,13 @@
 
 			applyPrefillFromUrl();
 			syncWelcomeStateFromUrl();
+			applyTheme();
+			pickIntroText();
+
+			// Load display name
+			if (typeof metadata.display_name === 'string' && metadata.display_name) {
+				displayName = metadata.display_name;
+			}
 
 			await loadEntries(userId);
 			await loadMoodTimeline();
@@ -744,6 +808,7 @@
 
 		updatingEntry = false;
 		cancelEditing();
+		showSavedConfirmation();
 		void loadMoodTimeline();
 	}
 
@@ -815,6 +880,7 @@
 		}
 		setDiaryEntries(userId, entries);
 		void loadMoodTimeline();
+		showSavedConfirmation();
 		saving = false;
 	}
 
@@ -958,7 +1024,7 @@
 {#if loading}
 	<div class="container py-16 text-center opacity-60">Laddar din dagbok...</div>
 {:else if isLoggedIn}
-	<section class="container max-w-2xl py-12">
+	<section class="container max-w-2xl py-12" style={themeBg ? `background-color: ${themeBg}` : ""}>
 		{#if showWelcome}
 			<button
 				type="button"
@@ -968,7 +1034,7 @@
 				Välkommen! 🎉 Det här är din dagbok. Börja med att skriva hur du mår just nu.
 			</button>
 		{/if}
-		<div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+		<div class="flex flex-wrap items-center justify-between gap-3 mb-2">
 			<h1 class="text-3xl font-bold tracking-tight">Dagbok</h1>
 			<button
 				type="button"
@@ -981,8 +1047,43 @@
 			</button>
 		</div>
 
-		<p class="opacity-75 leading-relaxed mb-3">Detta är din privata plats att skriva fritt.</p>
-		<p class="opacity-75 leading-relaxed mb-6 text-sm">Dagboken är till för reflektion och stöd i vardagen. Den ersätter inte vård och ska inte vara enda underlag för medicinska beslut. Vid akut fara, ring 112. För vårdråd, kontakta 1177.</p>
+		<p class="opacity-65 leading-relaxed mb-5 text-sm">Din privata plats att skriva fritt. Dagboken ersätter inte vård — vid akut fara, ring 112.</p>
+
+		<!-- Personlig introtext -->
+		<p class="text-base opacity-70 leading-relaxed mb-5 italic" style={themeAccent ? `color: ${themeAccent}` : ''}>
+			{introText}
+		</p>
+
+		<!-- Senast sparat-bekräftelse -->
+		{#if savedAt}
+			<div
+				class="mb-4 text-sm opacity-70 transition-opacity duration-700"
+				style={savedFading ? 'opacity: 0' : ''}
+			>
+				Sparat {savedAt} ✓
+			</div>
+		{/if}
+
+		<!-- Fortsätt där du var -->
+		{#if entries.length > 0}
+			{@const lastEntry = entries[0]}
+			<div
+				class="mb-5 rounded-[var(--radius-card)] border p-4"
+				style={themeAccent
+					? `border-color: ${themeAccent}30; background: ${themeBg || 'transparent'}`
+					: 'border-color: rgba(0,0,0,0.08); background: rgba(255,255,255,0.3)'}
+			>
+				<p class="text-xs opacity-55 mb-1">
+					{#if lastEntry.created_at}
+						Senast skrev du {formatDateTime(lastEntry.created_at)}
+					{:else}
+						Du har tidigare anteckningar
+					{/if}
+				</p>
+				<p class="text-sm opacity-75 leading-relaxed mb-2 line-clamp-2">{lastEntry.content}</p>
+				<p class="text-xs opacity-50">Fortsätt där du var, eller börja något nytt.</p>
+			</div>
+		{/if}
 
 		<div class="rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-white/45 dark:bg-[#1a1a1a] p-4 mb-7">
 			<textarea
@@ -1087,7 +1188,18 @@
 
 		<div class="space-y-3">
 			{#if entries.length === 0}
-				<p class="text-sm opacity-60">Din dagbok är tom än så länge. När du vill kan du börja med några rader om hur du har det idag.</p>
+				<div
+					class="rounded-[var(--radius-card)] border p-6 text-center"
+					style={themeAccent
+						? `border-color: ${themeAccent}30; background: ${themeBg || 'transparent'}`
+						: 'border-color: rgba(0,0,0,0.08); background: rgba(255,255,255,0.3)'}
+				>
+					<p class="text-lg font-medium mb-2 opacity-80">Dagboken är din plats</p>
+					<p class="text-sm opacity-60 leading-relaxed max-w-sm mx-auto mb-1">
+						Du kan skriva fritt, kort eller långt. Börja där du är idag.
+					</p>
+					<p class="text-xs opacity-45">Det finns inget rätt sätt att skriva här. Några ord kan räcka.</p>
+				</div>
 			{:else}
 				{#each entries as entry (entry.id)}
 					<article class="rounded-[var(--radius-card)] border border-black/10 dark:border-white/8 bg-white/45 dark:bg-[#1a1a1a] p-4">
