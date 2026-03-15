@@ -445,6 +445,34 @@
 	.btn-primary { display: inline-block; padding: 0.75rem 1.5rem; background: var(--theme-accent, #4caf50); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; transition: all 0.2s ease; }
 	.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
+	/* ── Dark mode ── */
+	@media (prefers-color-scheme: dark) {
+		.journey-header h1, .card-header h2, .summary-text, .reflection-prompt,
+		.overview-heading, .milestone-text, .next-milestone p, .summary-box p,
+		.day-name, .pattern-text { color: rgba(255,255,255,0.9); }
+
+		.encouragement, .loading-state, .heatmap-description,
+		.overview-label, .overview-note, .journey-header p,
+		.reflection-hint, .next-milestone small, .insight-content h3,
+		.insight-content small { color: rgba(255,255,255,0.55); }
+
+		.empty-state p { color: rgba(255,255,255,0.65); }
+
+		.card { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+		.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.12); }
+
+		.summary-card { background: var(--theme-bg, rgba(15,118,110,0.15)); }
+		.milestone { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+		.milestone.achieved { background: rgba(76,175,80,0.15); border-color: rgba(76,175,80,0.4); }
+		.summary-box { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
+		.patterns-list li { background: rgba(255,255,255,0.05); }
+		.next-milestone { background: rgba(102,126,234,0.1); border-color: rgba(102,126,234,0.3); }
+		.progress-bar { background: rgba(255,255,255,0.1); }
+		.error-state { background: rgba(211,47,47,0.15); color: #ff8a80; }
+		.error-state small { color: #ff5252; }
+		.empty-state { background: var(--theme-bg, rgba(76,175,80,0.1)); border-color: var(--theme-accent, #4caf50); }
+	}
+
 	@media (max-width: 640px) {
 		.journey-container { padding: 1rem; }
 		.journey-header h1 { font-size: 1.8rem; }
