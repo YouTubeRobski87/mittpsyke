@@ -5,6 +5,7 @@
 	import { supabase } from '$lib/supabase';
 	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import { getPortalByKey } from '$lib/data/portals';
+	import { THEMES, THEME_STORAGE_KEY, getCachedTheme, themeStyleVars } from '$lib/theme';
 
 	type RecentConversation = {
 		id: string;
@@ -22,24 +23,12 @@
 	let lastConversationId = $state<string | null>(null);
 
 	// Personalization state
-	let profileTheme = $state(
-		typeof globalThis.localStorage !== 'undefined'
-			? (localStorage.getItem('mittpsyke:theme') ?? 'neutral')
-			: 'neutral'
-	);
+	let profileTheme = $state(getCachedTheme());
 	let weeklyGoalType = $state('diary_3_week');
 	let dashboardWidget = $state('dagbok');
 	let entriesThisWeek = $state(0);
 	let daysSinceLastEntry = $state<number | null>(null);
 
-	const THEMES: Record<string, { label: string; accent: string; bg: string }> = {
-		neutral:   { label: 'Neutral',    accent: '#0f766e', bg: 'rgba(15, 118, 110, 0.07)' },
-		salvia:    { label: 'Salvia',     accent: '#7a9e7e', bg: 'rgba(122, 158, 126, 0.09)' },
-		havsblå:   { label: 'Havsblå',   accent: '#5b8db8', bg: 'rgba(91, 141, 184, 0.09)' },
-		lavendel:  { label: 'Lavendel',  accent: '#8b7ab8', bg: 'rgba(139, 122, 184, 0.09)' },
-		sand:      { label: 'Sand',       accent: '#b8956a', bg: 'rgba(184, 149, 106, 0.09)' },
-		skogsgrön: { label: 'Skogsgrön', accent: '#4a7c59', bg: 'rgba(74, 124, 89, 0.09)' },
-	};
 
 	const GOAL_OPTIONS = [
 		{ value: 'diary_3_week',   label: 'Jag vill skriva i dagboken 3 gånger i veckan', target: 3 },
@@ -378,7 +367,7 @@
 			// Load personalization preferences from user_metadata
 			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
 			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
-			if (browser) localStorage.setItem('mittpsyke:theme', profileTheme);
+			if (browser) localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
 

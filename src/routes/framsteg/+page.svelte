@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { THEMES, THEME_STORAGE_KEY, getThemeColors, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
@@ -54,20 +55,8 @@
 	}
 
 	// ── Theme ──
-	const THEMES: Record<string, { label: string; accent: string; bg: string }> = {
-		neutral:  { label: 'Neutral',   accent: '#0f766e', bg: 'rgba(15,118,110,0.07)' },
-		salvia:   { label: 'Salvia',    accent: '#6b8f71', bg: 'rgba(107,143,113,0.09)' },
-		havsblå:  { label: 'Havsblå',  accent: '#3b82f6', bg: 'rgba(59,130,246,0.07)' },
-		lavendel: { label: 'Lavendel',  accent: '#8b5cf6', bg: 'rgba(139,92,246,0.07)' },
-		sand:     { label: 'Sand',      accent: '#b08d57', bg: 'rgba(176,141,87,0.08)' },
-		skogsgrön:{ label: 'Skogsgrön', accent: '#2d6a4f', bg: 'rgba(45,106,79,0.08)' }
-	};
 
-	let profileTheme = $state(
-		typeof globalThis.localStorage !== 'undefined'
-			? (localStorage.getItem('mittpsyke:theme') ?? 'neutral')
-			: 'neutral'
-	);
+	let profileTheme = $state(getCachedTheme());
 	const currentTheme = $derived(THEMES[profileTheme] ?? THEMES.neutral);
 	const themeStyle = $derived(
 		`--theme-accent: ${currentTheme.accent}; --theme-bg: ${currentTheme.bg};`
@@ -376,7 +365,7 @@
 </div>
 
 <style>
-	.journey-container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
+	.journey-container { max-width: 840px; margin: 0 auto; padding: 2rem 1rem; }
 	.journey-header { text-align: center; margin-bottom: 2.5rem; }
 	.journey-header h1 { font-size: 2.2rem; margin-bottom: 0.4rem; color: #1a1a1a; }
 	.journey-header p { font-size: 1.05rem; color: #888; font-style: italic; }
@@ -385,7 +374,7 @@
 	.error-state small { display: block; margin-top: 0.5rem; color: #c62828; font-size: 0.9rem; }
 
 	/* Cards base */
-	.card { background: white; border-radius: 0.75rem; padding: 2rem; margin-bottom: 1.5rem; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.3s ease; }
+	.card { background: white; border-radius: 0.75rem; padding: 2rem; margin-bottom: 1.2rem; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.3s ease; }
 	.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #ddd; }
 	.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
 	.card-header h2 { font-size: 1.3rem; margin: 0; color: #1a1a1a; }
@@ -417,7 +406,7 @@
 	.overview-note { font-size: 0.9rem; color: #888; text-align: center; font-style: italic; margin: 0.5rem 0 0 0; }
 
 	/* Milestones */
-	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.2rem; }
 	.milestone { padding: 1rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; background: #f5f5f5; border: 1px solid #eee; transition: all 0.2s ease; }
 	.milestone.achieved { background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(129,199,132,0.1)); border-color: #4caf50; }
 	.milestone:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -437,7 +426,7 @@
 	/* Insights */
 	.summary-box { margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem; background: #f9f9f9; border: 1px solid #eee; }
 	.summary-box p { margin: 0; color: #1a1a1a; line-height: 1.6; }
-	.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+	.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.2rem; }
 	.insight-item { padding: 1.5rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid #eee; transition: all 0.2s ease; }
 	.insight-item.best { background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(129,199,132,0.1)); border-color: #4caf50; }
 	.insight-item.worst { background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,142,114,0.1)); border-color: #ff6b6b; }

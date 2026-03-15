@@ -40,6 +40,7 @@
 	import { supabase } from '$lib/supabase';
 	import { onDestroy } from 'svelte';
 	import type { Chart as ChartInstance } from 'chart.js';
+	import { getCachedTheme, getThemeColors, themeStyleVars } from '$lib/theme';
 
 	type JournalEntry = DiaryEntry;
 
@@ -156,9 +157,9 @@
 	let pendingRegistrationComplete = $state(false);
 	let registrationCompleteTracked = $state(false);
 
-	// — Theme support (same as dashboard/framsteg) —
-	let themeAccent = $state('');
-	let themeBg = $state('');
+	// — Theme support (shared with dashboard/framsteg) —
+	let profileTheme = $state(getCachedTheme());
+	const themeStyle = $derived(themeStyleVars(profileTheme));
 
 	// — Personalization —
 	let savedAt = $state<string | null>(null);
@@ -183,26 +184,7 @@
 
 	function applyTheme() {
 		if (typeof window === 'undefined') return;
-		const cached = localStorage.getItem('mittpsyke_theme');
-		if (!cached || cached === 'neutral') {
-			themeAccent = '';
-			themeBg = '';
-			return;
-		}
-		const themes: Record<string, { accent: string; bg: string }> = {
-			salvia: { accent: '#6b9080', bg: '#f5faf7' },
-			havsblå: { accent: '#4a90a4', bg: '#f0f7fa' },
-			lavendel: { accent: '#8b7bb5', bg: '#f5f3fa' },
-			sand: { accent: '#b08d6e', bg: '#faf5f0' },
-			skogsgrön: { accent: '#5a7a5a', bg: '#f2f7f2' }
-		};
-		const t = themes[cached];
-		if (t) {
-			themeAccent = t.accent;
-			themeBg = t.bg;
-			document.documentElement.style.setProperty('--theme-accent', t.accent);
-			document.documentElement.style.setProperty('--theme-bg', t.bg);
-		}
+		profileTheme = getCachedTheme();
 	}
 
 	function showSavedConfirmation() {
@@ -1024,7 +1006,7 @@
 {#if loading}
 	<div class="container py-16 text-center opacity-60">Laddar din dagbok...</div>
 {:else if isLoggedIn}
-	<section class="container max-w-2xl py-12" style={themeBg ? `background-color: ${themeBg}` : ""}>
+	<section class="container dagbok-page py-12" style={themeStyle}>
 		{#if showWelcome}
 			<button
 				type="button"
@@ -1035,7 +1017,7 @@
 			</button>
 		{/if}
 		<div class="flex flex-wrap items-center justify-between gap-3 mb-2">
-			<h1 class="text-3xl font-bold tracking-tight">Dagbok</h1>
+			<h2 class="text-2xl font-bold tracking-tight">Dagbok</h2>
 			<button
 				type="button"
 				onclick={exportAsPdf}
@@ -1050,7 +1032,7 @@
 		<p class="opacity-65 leading-relaxed mb-5 text-sm">Din privata plats att skriva fritt. Dagboken ersätter inte vård — vid akut fara, ring 112.</p>
 
 		<!-- Personlig introtext -->
-		<p class="text-base opacity-70 leading-relaxed mb-5 italic" style={themeAccent ? `color: ${themeAccent}` : ''}>
+		<p class="text-base opacity-70 leading-relaxed mb-5 italic" style="color: var(--theme-accent, inherit)">
 			{introText}
 		</p>
 
@@ -1069,8 +1051,7 @@
 			{@const lastEntry = entries[0]}
 			<div
 				class="mb-5 rounded-[var(--radius-card)] border p-4"
-				style={themeAccent
-					? `border-color: ${themeAccent}30; background: ${themeBg || 'transparent'}`
+				style="border-color: var(--theme-accent, transparent); background: var(--theme-bg, transparent)"
 					: 'border-color: rgba(0,0,0,0.08); background: rgba(255,255,255,0.3)'}
 			>
 				<p class="text-xs opacity-55 mb-1">
@@ -1350,7 +1331,7 @@
 	</section>
 {:else}
 	<!-- Landing for non-logged-in visitors -->
-	<section class="container max-w-2xl py-16">
+	<section class="container dagbok-page py-16">
 		<div class="text-center mb-10">
 			<h1 class="text-3xl font-bold tracking-tight mb-3">Din personliga dagbok</h1>
 			<p class="text-lg opacity-75 leading-relaxed max-w-md mx-auto">
@@ -1400,3 +1381,10 @@
 		</p>
 	</section>
 {/if}
+
+<style>
+    .dagbok-page {
+        max-width: 840px;
+        margin: 0 auto;
+    }
+</style>
