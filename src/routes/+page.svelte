@@ -59,14 +59,16 @@
 			fetchpriority="high"
 		/>
 		<div class="hero-content">
-			<h1>Ett tryggt rum för att landa, skriva av dig och börja i din egen takt</h1>
+			<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
+			<h1>MittPsyke är en lugn plats att börja.</h1>
 			<p>
-				Börja utan konto när du behöver stöd i stunden. Skapa ett konto om du vill spara din dagbok och kunna återvända över tid.
+				Skriv av dig direkt — inget konto, ingen registrering. Skapa ett konto om du vill spara din dagbok och kunna återvända över tid.
 			</p>
 			<div class="hero-actions">
 				<a href="/skriv" class="hero-cta hero-cta-primary">Börja skriva anonymt</a>
 				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
 			</div>
+			<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
 			<div class="mode-compare" aria-label="Vad är skillnaden?">
 				<div class="mode-col">
 					<p class="mode-label">Anonymt läge</p>
@@ -279,6 +281,21 @@
 		color: #182016;
 		font-weight: 700;
 		border-radius: var(--radius-pill);
+	}
+
+	.hero-eyebrow {
+		font-size: 1rem;
+		color: rgba(255, 255, 255, 0.75);
+		font-weight: 400;
+		margin-bottom: 0.4rem;
+		letter-spacing: 0.01em;
+	}
+
+	.hero-trust-note {
+		margin-top: 0.75rem;
+		font-size: 0.82rem;
+		color: rgba(255, 255, 255, 0.5);
+		letter-spacing: 0.01em;
 	}
 
 	.hero-actions {
