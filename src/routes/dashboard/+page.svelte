@@ -440,6 +440,7 @@
 			<h2 class="prompt-question">{dailyPrompt}</h2>
 			<p class="prompt-sub">Det räcker med några ord.</p>
 			<a href="/dagbok?prefill={encodeURIComponent(dailyPrompt)}&from=prompt" class="prompt-cta">Svara</a>
+			<a href="/checkin" class="checkin-link">Eller gör en snabb check-in →</a>
 		</section>
 
 		<!-- Goal Widget -->
@@ -1253,6 +1254,17 @@
 	}
 	.prompt-cta:hover {
 		opacity: 0.85;
+	}
+	.checkin-link {
+		display: block;
+		text-align: center;
+		margin-top: 0.5rem;
+		font-size: 0.85rem;
+		color: #888;
+		text-decoration: none;
+	}
+	.checkin-link:hover {
+		color: #6b8f71;
 	}
 	@media (prefers-color-scheme: dark) {
 		.prompt-question { color: #a7d8c8; }

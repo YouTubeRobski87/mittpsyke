@@ -33,10 +33,13 @@ Exempel på bra öppningar:
 
 const normalizeApiKey = (value: string | undefined): string | null => {
 	if (!value) return null;
-	const normalized = value.trim().replace(/^['"]|['"]$/g, '').replace(/^Bearer\s+/i, '').replace(/\s+/g, '');
+	const normalized = value.trim().replace(/^['"]/,'').replace(/['"]$/,'').replace(/^Bearer\s+/i, '').replace(/\s+/g, '');
 	if (!normalized || /[\u0000-\u001f\u007f]/.test(normalized)) return null;
 	return normalized;
 };
+
+const rateLimitMap = new Map<string, number>();
+const RATE_LIMIT_MS = 3 * 60 * 1000; // 3 minutes
 
 export const POST: RequestHandler = async ({ request }) => {
 	let parsedBody: unknown;
@@ -66,10 +69,26 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ reflection: null });
 	}
 
+	// Rate limiting (in-memory per IP)
+	const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+	const lastCall = rateLimitMap.get(clientIp) || 0;
+	if (Date.now() - lastCall < RATE_LIMIT_MS) {
+		return json({ reflection: 'Tack för att du skrev ner dina tankar idag 🌱' });
+	}
+	rateLimitMap.set(clientIp, Date.now());
+
+	// Cleanup to prevent memory leak
+	if (rateLimitMap.size > 1000) {
+		const now = Date.now();
+		for (const [key, time] of rateLimitMap) {
+			if (now - time > RATE_LIMIT_MS) rateLimitMap.delete(key);
+		}
+	}
+
 	const apiKey = normalizeApiKey(env.OPENAI_API_KEY);
 	if (!apiKey) {
 		console.error('OPENAI_API_KEY is missing or malformed');
-		return json({ error: 'Server configuration error' }, { status: 500 });
+		return json({ reflection: 'Tack för att du skrev ner dina tankar idag 🌱' });
 	}
 
 	const openai = new OpenAI({ apiKey });
@@ -84,14 +103,14 @@ export const POST: RequestHandler = async ({ request }) => {
 			presence_penalty: 0.3,
 			messages: [
 				{ role: 'system', content: REFLECTION_PROMPT },
-				{ role: 'user', content: text }
+				{ role: 'user', content: `Dagboksinlägg:\n"""\n${text}\n"""` }
 			]
 		});
 
-		const reflection = completion.choices[0]?.message?.content?.trim() ?? null;
-		return json({ reflection });
+		const reflection = completion.choices[0]?.message?.content?.trim() || null;
+		return json({ reflection: reflection || 'Tack för att du skrev ner dina tankar idag 🌱' });
 	} catch (err) {
 		console.error('Reflection API error:', err);
-		return json({ error: 'AI error' }, { status: 500 });
+		return json({ reflection: 'Tack för att du skrev ner dina tankar idag 🌱' });
 	}
 };
