@@ -62,7 +62,7 @@
 		<p class="share-tagline">Små steg räknas. I din takt.</p>
 
 		<div class="share-actions">
-			<a href="/" class="share-cta">Börja din resa på MittPsyke</a>
+			<a href="/skriv" class="share-cta">Börja anonymt → mittpsyke.se</a>
 			<a href="/skriv" class="share-cta share-cta-secondary">Skriv anonymt direkt</a>
 		</div>
 
