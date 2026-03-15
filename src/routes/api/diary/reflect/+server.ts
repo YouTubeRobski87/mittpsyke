@@ -38,10 +38,19 @@ const normalizeApiKey = (value: string | undefined): string | null => {
 	return normalized;
 };
 
+// Rate limiting: per user_id (logged in) or per IP (anonymous)
 const rateLimitMap = new Map<string, number>();
 const RATE_LIMIT_MS = 3 * 60 * 1000; // 3 minutes
 
-export const POST: RequestHandler = async ({ request }) => {
+// Minimum text length for AI reflection (cost gating ~40% savings)
+const MIN_TEXT_LENGTH = 50;
+
+// Hard timeout for AI call
+const AI_TIMEOUT_MS = 8000;
+
+const FALLBACK = 'Tack för att du skrev ner dina tankar idag 🌱';
+
+export const POST: RequestHandler = async ({ request, locals }) => {
 	let parsedBody: unknown;
 	try {
 		parsedBody = await request.json();
@@ -53,7 +62,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ error: 'Invalid request body.' }, { status: 400 });
 	}
 
-	const body = parsedBody as { text?: unknown };
+	const body = parsedBody as { text?: unknown; entryId?: unknown };
 	const text = typeof body.text === 'string' ? body.text.trim() : '';
 
 	if (!text) {
@@ -64,18 +73,22 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ error: 'Text too long.' }, { status: 400 });
 	}
 
-	// Don't reflect on very short entries
-	if (text.length < 10) {
-		return json({ reflection: null });
+	// AI gating: min 50 chars for meaningful reflection (saves ~40% cost)
+	if (text.length < MIN_TEXT_LENGTH) {
+		return json({ reflection: text.length < 10 ? null : FALLBACK });
 	}
 
-	// Rate limiting (in-memory per IP)
+	// Rate limit key: prefer user_id (avoids NAT/shared IP issues), fallback to IP
+	const session = (locals as Record<string, unknown>)?.session as { user?: { id?: string } } | undefined;
+	const userId = session?.user?.id;
 	const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-	const lastCall = rateLimitMap.get(clientIp) || 0;
+	const rateLimitKey = userId ? `user:${userId}` : `ip:${clientIp}`;
+
+	const lastCall = rateLimitMap.get(rateLimitKey) || 0;
 	if (Date.now() - lastCall < RATE_LIMIT_MS) {
-		return json({ reflection: 'Tack för att du skrev ner dina tankar idag 🌱' });
+		return json({ reflection: FALLBACK });
 	}
-	rateLimitMap.set(clientIp, Date.now());
+	rateLimitMap.set(rateLimitKey, Date.now());
 
 	// Cleanup to prevent memory leak
 	if (rateLimitMap.size > 1000) {
@@ -88,10 +101,10 @@ export const POST: RequestHandler = async ({ request }) => {
 	const apiKey = normalizeApiKey(env.OPENAI_API_KEY);
 	if (!apiKey) {
 		console.error('OPENAI_API_KEY is missing or malformed');
-		return json({ reflection: 'Tack för att du skrev ner dina tankar idag 🌱' });
+		return json({ reflection: FALLBACK });
 	}
 
-	const openai = new OpenAI({ apiKey });
+	const openai = new OpenAI({ apiKey, timeout: AI_TIMEOUT_MS });
 	const model = (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
 
 	try {
@@ -108,9 +121,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 
 		const reflection = completion.choices[0]?.message?.content?.trim() || null;
-		return json({ reflection: reflection || 'Tack för att du skrev ner dina tankar idag 🌱' });
+		return json({ reflection: reflection || FALLBACK });
 	} catch (err) {
 		console.error('Reflection API error:', err);
-		return json({ reflection: 'Tack för att du skrev ner dina tankar idag 🌱' });
+		return json({ reflection: FALLBACK });
 	}
 };

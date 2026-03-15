@@ -192,8 +192,13 @@
 		profileTheme = getCachedTheme();
 	}
 
+	let reflectionFetchedForSave = false;
+
 	async function fetchReflection(text: string) {
 		if (!text || text.trim().length < 10) return;
+		// Max 1 reflection per save session — prevents edit-loop spam
+		if (reflectionFetchedForSave) return;
+		reflectionFetchedForSave = true;
 		reflectionLoading = true;
 		reflectionDismissed = false;
 		reflection = null;
@@ -1124,7 +1129,7 @@
 				<p class="reflection-label">Din reflektion</p>
 				<p class="reflection-text">{reflection}</p>
 				<p class="reflection-dismiss">Du kan ignorera detta om du vill.</p>
-				<button class="reflection-continue" onclick={() => { reflectionDismissed = true; document.querySelector('textarea')?.focus(); }}>Fortsätt skriva</button>
+				<button class="reflection-continue" onclick={() => { reflectionDismissed = true; reflectionFetchedForSave = false; document.querySelector('textarea')?.focus(); }}>Fortsätt skriva</button>
 			</div>
 		{/if}
 
