@@ -41,11 +41,14 @@
 	let chatLog: HTMLDivElement;
 	const guestIdStorageKey = 'mittpsyke:guest-id';
 	const starterSuggestions = [
-		'Jag känner mig orolig just nu',
-		'Tankarna snurrar och jag får ingen ro',
-		'Jag vet inte riktigt varför jag mår dåligt',
-		'Kan du hjälpa mig sortera mina tankar?'
+		'Jag känner mig orolig',
+		'Hjälp mig sortera mina tankar'
 	];
+	const extraSuggestions = [
+		'Tankarna snurrar och jag får ingen ro',
+		'Jag vet inte varför jag mår dåligt'
+	];
+	let showMoreSuggestions = $state(false);
 
 	const elevatedSupportKeywords = [
 		'för mycket',
@@ -422,14 +425,25 @@
 		{/if}
 
 		{#if showStarterSuggestions}
-			<div class="mb-3">
-				<p class="text-xs opacity-70 mb-2">Du kan börja med något enkelt:</p>
+			<div class="mb-4">
+				<p class="text-xs opacity-55 mb-2">Eller börja med ett förslag:</p>
 				<div class="starter-chips">
 					{#each starterSuggestions as suggestion}
 						<button type="button" class="starter-chip" onclick={() => useStarterSuggestion(suggestion)}>
 							{suggestion}
 						</button>
 					{/each}
+					{#if showMoreSuggestions}
+						{#each extraSuggestions as suggestion}
+							<button type="button" class="starter-chip" onclick={() => useStarterSuggestion(suggestion)}>
+								{suggestion}
+							</button>
+						{/each}
+					{:else}
+						<button type="button" class="starter-chip starter-chip-more" onclick={() => { showMoreSuggestions = true; }}>
+							Visa fler…
+						</button>
+					{/if}
 				</div>
 			</div>
 		{/if}
@@ -509,28 +523,44 @@
 	.starter-chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.45rem;
+		gap: 0.5rem;
 	}
 
 	.starter-chip {
-		padding: 0.4rem 0.65rem;
+		padding: 0.45rem 0.8rem;
 		border-radius: 999px;
-		border: 1px solid rgba(15, 23, 42, 0.12);
-		background: rgba(15, 23, 42, 0.03);
-		font-size: 0.78rem;
-		line-height: 1.25;
+		border: 1px solid rgba(15, 23, 42, 0.10);
+		background: rgba(15, 23, 42, 0.02);
+		font-size: 0.8rem;
+		line-height: 1.3;
 		text-align: left;
-		color: rgba(15, 23, 42, 0.86);
+		color: rgba(15, 23, 42, 0.75);
+		transition: background 0.15s, opacity 0.15s;
 	}
 
 	.starter-chip:hover {
-		background: rgba(15, 23, 42, 0.07);
+		background: rgba(15, 23, 42, 0.06);
+		color: rgba(15, 23, 42, 0.9);
+	}
+
+	.starter-chip-more {
+		border-style: dashed;
+		opacity: 0.55;
+		font-size: 0.75rem;
+	}
+
+	.starter-chip-more:hover {
+		opacity: 0.8;
 	}
 
 	:global(.dark) .starter-chip {
-		border-color: rgba(255, 255, 255, 0.14);
-		background: rgba(255, 255, 255, 0.06);
-		color: rgba(255, 255, 255, 0.9);
+		border-color: rgba(255, 255, 255, 0.12);
+		background: rgba(255, 255, 255, 0.04);
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	:global(.dark) .starter-chip-more {
+		opacity: 0.45;
 	}
 
 	.support-chip-mind {
