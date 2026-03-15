@@ -230,8 +230,8 @@
 	const goalPct = $derived(goalTarget ? Math.min(100, Math.round((entriesThisWeek / goalTarget) * 100)) : 0);
 	const goalLabel = $derived(
 		!goalTarget ? null :
-		entriesThisWeek >= goalTarget ? `\${goalTarget} av \${goalTarget} — fint jobbat den här veckan! 🎉` :
-		`\${entriesThisWeek} av \${goalTarget} denna vecka`
+		entriesThisWeek >= goalTarget ? `${goalTarget} av ${goalTarget} — fint jobbat den här veckan! 🎉` :
+		`${entriesThisWeek} av ${goalTarget} denna vecka`
 	);
 	const goalSubText = $derived(
 		!goalTarget ? 'Skriv när det känns rätt — det finns inget krav här.' :

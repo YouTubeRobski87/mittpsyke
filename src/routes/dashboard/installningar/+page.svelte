@@ -132,7 +132,7 @@
 			setTimeout(() => { prefMessage = ''; }, 3000);
 			// Cache theme locally for instant load on dashboard
 			if (typeof localStorage !== 'undefined') {
-				localStorage.setItem('mittpsyke:theme', profileTheme);
+				localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
 			}
 		}
 	}

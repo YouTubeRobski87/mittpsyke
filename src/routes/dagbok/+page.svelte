@@ -1050,9 +1050,7 @@
 		{#if entries.length > 0}
 			{@const lastEntry = entries[0]}
 			<div
-				class="mb-5 rounded-[var(--radius-card)] border p-4"
-				style="border-color: var(--theme-accent, transparent); background: var(--theme-bg, transparent)"
-					: 'border-color: rgba(0,0,0,0.08); background: rgba(255,255,255,0.3)'}
+				class="mb-5 rounded-[var(--radius-card)] border border-black/8 dark:border-white/6 p-4 bg-white/30 dark:bg-white/[0.03]"
 			>
 				<p class="text-xs opacity-55 mb-1">
 					{#if lastEntry.created_at}
