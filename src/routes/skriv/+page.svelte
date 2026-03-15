@@ -2,10 +2,12 @@
 	import { onMount } from 'svelte';
 
 	const DRAFT_KEY = 'mittpsyke:draft';
+	const TEMP_KEY = 'mittpsyke_temp_entry';
 
 	let text = $state('');
 	let phase: 'writing' | 'done' = $state('writing');
 	let charCount = $derived(text.trim().length);
+	let returningDraft = $state(''); // Text from previous anonymous session
 
 	function handleContinue() {
 		if (charCount < 3) return;
@@ -15,13 +17,13 @@
 
 	function handleSaveAccount() {
 		// Save as temp entry for register page to pick up
-		localStorage.setItem('mittpsyke_temp_entry', text.trim());
+		localStorage.setItem(TEMP_KEY, text.trim());
 		window.location.href = '/register?from=skriv';
 	}
 
 	function handleAnonymous() {
 		// Save as temp entry in case they change their mind later
-		localStorage.setItem('mittpsyke_temp_entry', text.trim());
+		localStorage.setItem(TEMP_KEY, text.trim());
 		// Go back to writing phase
 		phase = 'writing';
 	}
@@ -30,10 +32,30 @@
 		phase = 'writing';
 	}
 
+	function restoreDraft() {
+		text = returningDraft;
+		returningDraft = '';
+		// Remove from temp storage since it's now in the textarea
+		localStorage.removeItem(TEMP_KEY);
+	}
+
+	function dismissDraft() {
+		returningDraft = '';
+		localStorage.removeItem(TEMP_KEY);
+	}
+
 	onMount(() => {
-		// If they come back here with a draft, restore it
-		const saved = localStorage.getItem(DRAFT_KEY);
-		if (saved) text = saved;
+		// Check for a previous anonymous session draft
+		const tempEntry = localStorage.getItem(TEMP_KEY);
+		// Only show "returning draft" if no current draft
+		const currentDraft = localStorage.getItem(DRAFT_KEY);
+
+		if (tempEntry && !currentDraft) {
+			returningDraft = tempEntry;
+		} else if (currentDraft) {
+			// Restore normal draft
+			text = currentDraft;
+		}
 	});
 </script>
 
@@ -52,6 +74,22 @@
 				<h1 class="skriv-heading">Vad snurrar i huvudet just nu?</h1>
 				<p class="skriv-sub">Du behöver inte ha rätt ord. Skriv precis som det känns.</p>
 			</header>
+
+			{#if returningDraft}
+			<div class="returning-banner">
+				<div class="returning-banner-top">
+					<span class="returning-icon">💬</span>
+					<p class="returning-text">Vi hittade ett utkast från tidigare.</p>
+				</div>
+				<blockquote class="returning-preview">
+					{returningDraft.length > 120 ? returningDraft.slice(0, 120) + '…' : returningDraft}
+				</blockquote>
+				<div class="returning-actions">
+					<button class="btn-restore" onclick={restoreDraft}>Hämta tillbaka</button>
+					<button class="btn-dismiss" onclick={dismissDraft}>Börja om</button>
+				</div>
+			</div>
+			{/if}
 
 			<div class="textarea-wrap">
 				<textarea
@@ -162,6 +200,91 @@
 		opacity: 0.6;
 		margin: 0;
 	}
+
+	/* Returning user banner */
+	.returning-banner {
+		background: color-mix(in srgb, var(--primary, #6b8f71) 8%, transparent);
+		border: 1px solid color-mix(in srgb, var(--primary, #6b8f71) 20%, transparent);
+		border-radius: 12px;
+		padding: 1rem 1.25rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.returning-banner-top {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.returning-icon {
+		font-size: 1.1rem;
+		flex-shrink: 0;
+	}
+
+	.returning-text {
+		font-size: 0.88rem;
+		font-weight: 500;
+		margin: 0;
+		opacity: 0.85;
+	}
+
+	.returning-preview {
+		background: rgba(0, 0, 0, 0.04);
+		border-left: 3px solid var(--primary, #6b8f71);
+		border-radius: 0 6px 6px 0;
+		padding: 0.6rem 0.875rem;
+		margin: 0 0 0.875rem;
+		font-size: 0.85rem;
+		line-height: 1.55;
+		font-style: italic;
+		color: inherit;
+		opacity: 0.75;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+
+	:global(html.dark) .returning-preview {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.returning-actions {
+		display: flex;
+		gap: 0.75rem;
+	}
+
+	.btn-restore {
+		background: var(--primary, #6b8f71);
+		color: white;
+		border: none;
+		border-radius: 8px;
+		padding: 0.5rem 1.25rem;
+		font-size: 0.85rem;
+		font-weight: 500;
+		cursor: pointer;
+		font-family: inherit;
+		transition: opacity 0.2s;
+	}
+	.btn-restore:hover { opacity: 0.85; }
+
+	.btn-dismiss {
+		background: transparent;
+		color: inherit;
+		border: 1px solid rgba(0, 0, 0, 0.12);
+		border-radius: 8px;
+		padding: 0.5rem 1.25rem;
+		font-size: 0.85rem;
+		cursor: pointer;
+		font-family: inherit;
+		opacity: 0.6;
+		transition: opacity 0.2s;
+	}
+
+	:global(html.dark) .btn-dismiss {
+		border-color: rgba(255, 255, 255, 0.15);
+	}
+
+	.btn-dismiss:hover { opacity: 0.9; }
 
 	/* Textarea */
 	.textarea-wrap {

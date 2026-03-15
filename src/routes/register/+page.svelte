@@ -17,11 +17,11 @@
 		registerViewTracked = true;
 	}
 
-	let hasTempEntry = $state(false);
+	let tempEntryText = $state('');
 
 	onMount(() => {
 		maybeTrackRegisterView();
-		hasTempEntry = !!localStorage.getItem('mittpsyke_temp_entry');
+		tempEntryText = localStorage.getItem('mittpsyke_temp_entry') ?? '';
 
 		const handleConsentChange = () => {
 			maybeTrackRegisterView();
@@ -49,18 +49,20 @@
 		</p>
 	</div>
 
-	{#if hasTempEntry}
-	<div class="temp-entry-banner">
-		<span class="temp-entry-icon">📓</span>
-		<p>Ditt anonyma inlägg sparas automatiskt som ditt första dagboksinlägg.</p>
+	{#if tempEntryText}
+	<div class="temp-entry-card">
+		<div class="temp-entry-card-header">
+			<span class="temp-entry-icon">📓</span>
+			<h2 class="temp-entry-title">Ditt första dagboksinlägg</h2>
+		</div>
+		<blockquote class="temp-entry-preview">
+			{tempEntryText.length > 180 ? tempEntryText.slice(0, 180) + '…' : tempEntryText}
+		</blockquote>
+		<p class="temp-entry-cta">Skapa konto för att spara din resa.</p>
 	</div>
 	{/if}
 
 	<div class="grid grid-cols-2 gap-3 mb-8">
-		<div class="rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-3 text-center">
-			<span class="text-xl block mb-1">📓</span>
-			<p class="text-xs leading-snug opacity-80">Spara dagbok och reflektioner</p>
-		</div>
 		<div class="rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-3 text-center">
 			<span class="text-xl block mb-1">📊</span>
 			<p class="text-xs leading-snug opacity-80">Följ ditt mående med visuell statistik</p>
@@ -68,6 +70,10 @@
 		<div class="rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-3 text-center">
 			<span class="text-xl block mb-1">🔥</span>
 			<p class="text-xs leading-snug opacity-80">Bygg streaks och se din resa</p>
+		</div>
+		<div class="rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-3 text-center">
+			<span class="text-xl block mb-1">🤖</span>
+			<p class="text-xs leading-snug opacity-80">AI-reflektion på dina inlägg</p>
 		</div>
 		<div class="rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-3 text-center">
 			<span class="text-xl block mb-1">🔒</span>
@@ -125,18 +131,58 @@
 </section>
 
 <style>
-	.temp-entry-banner {
+	/* Temp entry card - full preview version */
+	.temp-entry-card {
+		background: color-mix(in srgb, var(--primary, #7c6af7) 8%, transparent);
+		border: 1px solid color-mix(in srgb, var(--primary, #7c6af7) 22%, transparent);
+		border-radius: 0.875rem;
+		padding: 1.25rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.temp-entry-card-header {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-		background: color-mix(in srgb, var(--primary, #7c6af7) 10%, transparent);
-		border: 1px solid color-mix(in srgb, var(--primary, #7c6af7) 25%, transparent);
-		border-radius: 0.75rem;
-		padding: 0.875rem 1rem;
-		margin-bottom: 1.25rem;
-		font-size: 0.85rem;
-		line-height: 1.4;
+		gap: 0.6rem;
+		margin-bottom: 0.75rem;
 	}
-	.temp-entry-icon { font-size: 1.25rem; flex-shrink: 0; }
-	.temp-entry-banner p { margin: 0; opacity: 0.9; }
+
+	.temp-entry-icon {
+		font-size: 1.25rem;
+		flex-shrink: 0;
+	}
+
+	.temp-entry-title {
+		font-size: 0.9rem;
+		font-weight: 600;
+		margin: 0;
+		opacity: 0.85;
+	}
+
+	.temp-entry-preview {
+		background: rgba(0, 0, 0, 0.04);
+		border-left: 3px solid var(--primary, #7c6af7);
+		border-radius: 0 6px 6px 0;
+		padding: 0.75rem 1rem;
+		margin: 0 0 0.75rem;
+		font-size: 0.875rem;
+		line-height: 1.6;
+		font-style: italic;
+		color: inherit;
+		opacity: 0.8;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+
+	:global(html.dark) .temp-entry-preview {
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.temp-entry-cta {
+		font-size: 0.82rem;
+		font-weight: 500;
+		opacity: 0.65;
+		margin: 0;
+		text-align: center;
+	}
 </style>
