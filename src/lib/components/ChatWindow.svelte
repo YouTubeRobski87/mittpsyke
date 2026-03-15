@@ -313,20 +313,8 @@
 		aria-busy={sending}
 	>
 		{#if messages.length === 0}
-			<div class="text-center mt-6">
-				<img
-					src="/assets/mittpsyke-hero.png"
-					alt=""
-					width="220"
-					height="220"
-					decoding="async"
-					class="mx-auto mb-4 opacity-80"
-					style="max-width: 220px"
-				/>
-				<p class="text-sm opacity-70 mb-2">Hur mår du?</p>
-				<p class="text-center opacity-60">
-					Skriv något så börjar vi prata. Allt sker utan dömande.
-				</p>
+			<div class="text-center mt-4">
+				<p class="text-sm opacity-60">Skriv något så börjar vi prata. Allt sker utan dömande.</p>
 			</div>
 		{/if}
 

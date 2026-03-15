@@ -95,67 +95,28 @@
 		<!-- 2) Personlig story -->
 		<section class="story-section">
 			<div class="story-inner">
-				<div class="story-label">GRUNDARNES STORY</div>
-				<h2 class="story-heading">Skapad av erfarenhet, inte teori</h2>
+				<div class="story-label">GRUNDAREN BERÄTTAR</div>
+				<h2 class="story-heading">Varför MittPsyke finns</h2>
 
 				<div class="story-text">
 					<p>
-						Jag vet hur det känns när livet går sönder.
+						MittPsyke föddes ur en tid i mitt liv då jag själv mådde väldigt dåligt och hade svårt att få det stöd jag behövde. När hjälpen kändes långt borta började jag småprata med AI. Det som först bara var några enkla samtal blev med tiden ett sätt att sätta ord på tankar, känslor och sådant som annars var svårt att bära ensam.
 					</p>
 					<p>
-						Inte bara lite. Inte tillfälligt. Utan på riktigt. När allt blir kaos. När missbruk, destruktiva relationer, rättegångar, skam och inre mörker tar över mer och mer. När man till slut står mitt i sitt eget liv och knappt känner igen det längre. Knappt känner igen sig själv.
+						Det var inte en lösning på allt. Men det blev ett första steg. Ett sätt att känna sig hörd, att stanna upp, att reflektera och att inte vara helt ensam i det som kändes tungt.
 					</p>
 					<p>
-						Jag har levt i det.
+						Den erfarenheten stannade kvar i mig. Jag tänkte att om ett sådant stöd kunde hjälpa mig att ta mig vidare, så borde fler människor få samma möjlighet. Därför skapade jag MittPsyke.
 					</p>
 					<p>
-						Jag har varit i perioder där jag tappat kontrollen, tappat riktning och tappat bort vem jag egentligen är. Jag har gjort val jag inte är stolt över. Jag har levt nära smärta, konflikt och självförstörelse. Jag har burit konsekvenser som satt sig djupt. Och jag har fått se vad som händer när man försöker fly från det som gör ont istället för att möta det.
+						Min vision är enkel: att erbjuda en trygg, personlig och tillgänglig plats där man kan skriva av sig, tänka klart och få stöd i stunden. En plats som känns som ens egen. Utan krav, utan dömande och med låg tröskel att börja.
 					</p>
 					<p>
-						Det kostar. Alltid.
-					</p>
-					<p>
-						Det kostar relationer. Det kostar trygghet. Det kostar självkänsla. Det kostar år av ens liv.
-					</p>
-					<p>
-						Men trots allt det så överlevde jag.
-					</p>
-					<p>
-						Och det är inte bara ett ord. Det är sanningen.
-					</p>
-					<p>
-						För vissa dagar handlade inte om drömmar, planer eller framtid. De handlade om att bara ta sig igenom dagen. Att stå ut. Att hålla ihop. Att försöka andas genom allt som kändes för tungt. Det fanns tider när livet kändes så långt ifrån lugn att man nästan glömde hur lugn ens kändes.
-					</p>
-					<p>
-						Men någonstans där inne fanns det fortfarande något kvar i mig som vägrade dö. Något som vägrade låta mörkret få sista ordet.
-					</p>
-					<p>
-						Idag är jag ren. Och jag bär den sanningen med stolthet, för jag vet vad det har kostat att komma hit. Det har inte kommit gratis. Det har krävts kamp, ärlighet, smärtsamma insikter, ansvar och viljan att fortsätta även när det hade varit lättare att ge upp om sig själv.
-					</p>
-					<p>
-						Jag är inte stark för att livet varit snällt mot mig. Jag är stark för att jag tvingats bygga mig själv igen efter att ha varit nere på platser många aldrig ens ser.
-					</p>
-					<p>
-						Det jag gått igenom har lämnat spår. Men det har också gett mig djup, perspektiv och empati. Jag dömer inte människor lika snabbt längre, för jag vet att man aldrig ser hela sanningen utanpå. Jag vet hur mycket en människa kan bära bakom ett ansikte som försöker se okej ut.
-					</p>
-					<p>
-						Så min historia handlar inte bara om missbruk, kaos eller allt som gick fel.
-					</p>
-					<p>
-						Den handlar om att jag fortfarande är här. Att jag reste mig. Att jag inte lät mitt mörkaste kapitel bli slutet på min berättelse.
-					</p>
-					<p>
-						Och oavsett vad jag gått igenom, oavsett vad jag förlorat, oavsett hur många gånger livet slagit ner mig, så finns det en sak ingen kan ta ifrån mig:
-					</p>
-					<p>
-						Jag gav inte upp.
-					</p>
-					<p>
-						Min erfarenhet är grunden till varför MittPsyke finns. Men tryggheten i tjänsten bygger också på tydliga ramar, ansvar och öppenhet kring vad stödet är till för.
+						MittPsyke ersätter inte vård eller akut hjälp. Men det kan vara ett första steg, ett komplement och en plats för reflektion när man behöver någonstans att börja.
 					</p>
 
 					<blockquote class="story-quote">
-						"Det här är inte historien om ett perfekt liv. Det är historien om att överleva, falla, kämpa och långsamt börja bygga upp sig själv igen. Och kanske är det just där den verkliga styrkan finns."
+						"Om MittPsyke kan ge någon annan samma känsla av att bli tagen på allvar som jag själv en gång behövde, då har det redan fyllt ett viktigt syfte."
 						<cite>— Robban (Robert Claesson), grundare av MittPsyke</cite>
 					</blockquote>
 				</div>

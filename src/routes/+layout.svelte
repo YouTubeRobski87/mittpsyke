@@ -217,6 +217,12 @@
 
 				<nav class="hidden md:flex items-center gap-4" aria-label="Huvudnavigering">
 					<a
+						href="/chat"
+						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+					>
+						Chatta
+					</a>
+					<a
 						href="/guider"
 						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
 					>
@@ -299,6 +305,13 @@
 
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="md:hidden border-t border-black/8 dark:border-white/10 px-5 py-3 space-y-2" role="navigation" aria-label="Mobilmeny">
+				<a
+					href="/chat"
+					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+					onclick={() => (mobileMenuOpen = false)}
+				>
+					Chatta
+				</a>
 				<a
 					href="/guider"
 					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
