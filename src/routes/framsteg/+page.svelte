@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import {
@@ -9,7 +10,7 @@
 		hasSensitiveConsent
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
-	import { Flame, Trophy, TrendingUp, Lightbulb, Calendar } from 'lucide-svelte';
+	import { Flame, Trophy, TrendingUp, Lightbulb, Calendar, Heart, BookOpen } from 'lucide-svelte';
 
 	interface StreakData {
 		currentStreak: number;
@@ -52,10 +53,32 @@
 		aiSummary: string | null;
 	}
 
+	// ── Theme ──
+	const THEMES: Record<string, { label: string; accent: string; bg: string }> = {
+		neutral:  { label: 'Neutral',   accent: '#0f766e', bg: 'rgba(15,118,110,0.07)' },
+		salvia:   { label: 'Salvia',    accent: '#6b8f71', bg: 'rgba(107,143,113,0.09)' },
+		havsblå:  { label: 'Havsblå',  accent: '#3b82f6', bg: 'rgba(59,130,246,0.07)' },
+		lavendel: { label: 'Lavendel',  accent: '#8b5cf6', bg: 'rgba(139,92,246,0.07)' },
+		sand:     { label: 'Sand',      accent: '#b08d57', bg: 'rgba(176,141,87,0.08)' },
+		skogsgrön:{ label: 'Skogsgrön', accent: '#2d6a4f', bg: 'rgba(45,106,79,0.08)' }
+	};
+
+	let profileTheme = $state(
+		typeof globalThis.localStorage !== 'undefined'
+			? (localStorage.getItem('mittpsyke:theme') ?? 'neutral')
+			: 'neutral'
+	);
+	const currentTheme = $derived(THEMES[profileTheme] ?? THEMES.neutral);
+	const themeStyle = $derived(
+		`--theme-accent: ${currentTheme.accent}; --theme-bg: ${currentTheme.bg};`
+	);
+
+	// ── Props + State ──
 	let { data } = $props();
 
 	let streakData: StreakData | null = $derived(data.streak ?? null);
 	let milestonesData: MilestonesResponse | null = $derived(data.milestones ?? null);
+	let weeklyEntries: number = $derived(data.weeklyEntries ?? 0);
 	let insightsData = $state<InsightsResponse | null>(null);
 	let insightsLoading = $state(false);
 	let insightsError = $state('');
@@ -63,7 +86,7 @@
 	let loading = false;
 	let error = $derived(
 		data.streak === null && data.milestones === null
-			? 'Kunde inte ladda data. Forsok ladda om sidan.'
+			? 'Kunde inte ladda data. Försök ladda om sidan.'
 			: ''
 	);
 	let hasInsightsContent = $derived(
@@ -76,10 +99,45 @@
 		)
 	);
 
-	onMount(() => {
+	// ── Weekly summary copy (no AI, just warm text) ──
+	const weeklySummaryText = $derived.by(() => {
+		if (weeklyEntries === 0) return 'Du har inte checkat in den här veckan än — och det är helt okej.';
+		if (weeklyEntries === 1) return 'Du har checkat in en gång den här veckan. Det räcker fint.';
+		if (weeklyEntries === 2) return 'Två incheckningar den här veckan — du tar hand om dig.';
+		if (weeklyEntries <= 4) return `${weeklyEntries} incheckningar den här veckan. Du fortsätter komma tillbaka, i din takt.`;
+		return `${weeklyEntries} incheckningar den här veckan — du har verkligen tagit dig tid för dig själv.`;
+	});
+
+	const weeklyEncouragement = $derived.by(() => {
+		if (!streakData) return 'Det finns inget som måste vara perfekt för att räknas.';
+		if (streakData.currentStreak >= 7) return 'En vecka i rad — det visar att du prioriterar dig själv. Fint.';
+		if (streakData.currentStreak >= 3) return 'Flera dagar i rad. Små steg som gör skillnad.';
+		if (streakData.currentStreak >= 1) return 'Att du är här räcker. Börja där du är.';
+		return 'Det finns inget som måste vara perfekt för att räknas.';
+	});
+
+	// ── Reflection prompts (rotate based on day) ──
+	const reflections = [
+		'Vad har hjälpt dig mest den senaste tiden?',
+		'Finns det något du vill ta med dig in i nästa vecka?',
+		'Vad har du gjort för dig själv idag?',
+		'Finns det något du vill släppa taget om?',
+		'Vad gör dig lugn just nu?',
+		'Hur vill du att kommande vecka ska kännas?',
+		'Vad är du tacksam för just nu?'
+	];
+	const todayReflection = reflections[new Date().getDay()];
+
+	onMount(async () => {
 		hasSensitiveDataConsent = hasSensitiveConsent();
 		if (hasSensitiveDataConsent) {
 			void loadInsights();
+		}
+		// Load theme from user_metadata
+		const { data: { session } } = await supabase.auth.getSession();
+		if (session?.user?.user_metadata?.profile_theme) {
+			profileTheme = session.user.user_metadata.profile_theme;
+			if (browser) localStorage.setItem('mittpsyke:theme', profileTheme);
 		}
 	});
 
@@ -92,7 +150,7 @@
 		} = await supabase.auth.getSession();
 
 		if (!session?.access_token) {
-			insightsError = 'Du behover vara inloggad for att se AI-insikter.';
+			insightsError = 'Du behöver vara inloggad för att se AI-insikter.';
 			insightsData = null;
 			insightsLoading = false;
 			return;
@@ -137,10 +195,10 @@
 	}
 </script>
 
-<div class="journey-container">
+<div class="journey-container" style={themeStyle}>
 	<div class="journey-header">
-		<h1>Min resa</h1>
-		<p>Folj din utveckling over tid</p>
+		<h1>Din resa</h1>
+		<p>En lugn överblick — i din takt</p>
 	</div>
 
 	{#if loading}
@@ -148,32 +206,65 @@
 	{:else if error}
 		<div class="error-state">
 			<p>{error}</p>
-			<small>Forsok att ladda sidan igen</small>
+			<small>Försök att ladda sidan igen</small>
 		</div>
 	{:else}
-		{#if streakData}
-			<section class="card streak-card">
-				<div class="card-header">
-					<div class="icon-badge"><Flame size={24} /></div>
-					<h2>Din nuvarande streak</h2>
+
+		<!-- ── Mjuk veckosammanfattning ── -->
+		<section class="card summary-card">
+			<div class="card-header">
+				<div class="icon-badge week"><Heart size={24} /></div>
+				<h2>Den här veckan</h2>
+			</div>
+			<p class="summary-text">{weeklySummaryText}</p>
+			<p class="encouragement">{weeklyEncouragement}</p>
+		</section>
+
+		<!-- ── Enkel reflektion ── -->
+		<section class="card reflection-card">
+			<div class="card-header">
+				<div class="icon-badge reflect"><BookOpen size={24} /></div>
+				<h2>En liten reflektion</h2>
+			</div>
+			<p class="reflection-prompt">{todayReflection}</p>
+			<p class="reflection-hint">Du behöver inte svara. Ibland räcker det att stanna upp en stund.</p>
+		</section>
+
+		<!-- ── Lugn dataöverblick ── -->
+		{#if streakData || milestonesData}
+			<section class="card overview-card">
+				<h2 class="overview-heading">Lugn överblick</h2>
+				<div class="overview-grid">
+					{#if streakData}
+						<div class="overview-item">
+							<div class="overview-number">{streakData.currentStreak}</div>
+							<div class="overview-label">dagar i rad</div>
+						</div>
+						<div class="overview-item">
+							<div class="overview-number">{streakData.longestStreak}</div>
+							<div class="overview-label">längsta streak</div>
+						</div>
+					{/if}
+					{#if milestonesData}
+						<div class="overview-item">
+							<div class="overview-number">{milestonesData.totalEntries}</div>
+							<div class="overview-label">totalt inlägg</div>
+						</div>
+						<div class="overview-item">
+							<div class="overview-number">{weeklyEntries}</div>
+							<div class="overview-label">den här veckan</div>
+						</div>
+					{/if}
 				</div>
-				<div class="streak-display">
-					<div class="big-number">{streakData.currentStreak}</div>
-					<div class="streak-label">dagar i rad</div>
-				</div>
-				{#if streakData.lastEntryDaysAgo === 0}
-					<p class="streak-note">Utmarkt! Du skrev idag</p>
-				{:else if streakData.lastEntryDaysAgo === 1}
-					<p class="streak-note">Du var har igar - fortsatt idag!</p>
-				{:else}
-					<p class="streak-note">Senaste inlagg: {streakData.lastEntryDaysAgo} dagar sedan</p>
+				{#if streakData && streakData.lastEntryDaysAgo <= 1}
+					<p class="overview-note">Fint att du fortsätter komma tillbaka.</p>
+				{:else if streakData && streakData.lastEntryDaysAgo > 1}
+					<p class="overview-note">Senaste inlägget var {streakData.lastEntryDaysAgo} dagar sedan. Det går bra att börja om.</p>
 				{/if}
-				<div class="streak-meta">
-					<small>Din langsta streak: {streakData.longestStreak} dagar</small>
-				</div>
 			</section>
 		{/if}
 
+		<!-- ── Milstolpar ── -->
 		{#if milestonesData}
 			<section class="card milestones-card">
 				<div class="card-header">
@@ -190,7 +281,7 @@
 				</div>
 				{#if milestonesData.nextMilestone}
 					<div class="next-milestone">
-						<div class="next-header"><Calendar size={18} /><span>Nasta mal</span></div>
+						<div class="next-header"><Calendar size={18} /><span>Nästa mål</span></div>
 						<p>{milestonesData.nextMilestone.text}</p>
 						<div class="progress-bar">
 							<div class="progress-fill" style="width: {Math.min(100, (milestonesData.totalEntries / milestonesData.nextMilestone.entries) * 100)}%"></div>
@@ -201,15 +292,17 @@
 			</section>
 		{/if}
 
+		<!-- ── Aktivitetskarta ── -->
 		<section class="card heatmap-card">
 			<div class="card-header">
 				<div class="icon-badge heat"><TrendingUp size={24} /></div>
 				<h2>Din aktivitetskarta</h2>
 			</div>
-			<p class="heatmap-description">Varje ruta motsvarar en dag. Morkare farg = fler inlagg.</p>
+			<p class="heatmap-description">Varje ruta motsvarar en dag. Mörkare färg = fler inlägg.</p>
 			<ActivityHeatmap />
 		</section>
 
+		<!-- ── AI-insikter ── -->
 		<section class="card insights-card">
 			<div class="card-header">
 				<div class="icon-badge insight"><Lightbulb size={24} /></div>
@@ -219,8 +312,8 @@
 			{#if !hasSensitiveDataConsent}
 				<ConsentGate
 					title="Samtycke innan AI-insikter"
-					dataLabel="Din dagbok och dina monster"
-					serviceLabel="AI- och tredjepartstjanster"
+					dataLabel="Din dagbok och dina mönster"
+					serviceLabel="AI- och tredjepartstjänster"
 					onAccept={acceptSensitiveDataConsent}
 				/>
 			{:else if insightsLoading}
@@ -239,7 +332,7 @@
 						{#if insightsData.bestDay}
 							<div class="insight-item best">
 								<div class="insight-content">
-									<h3>Mar bast pa</h3>
+									<h3>Mår bäst på</h3>
 									<p class="day-name">{insightsData.bestDay.day}</p>
 									<small>Genomsnitt: {insightsData.bestDay.average}/10</small>
 								</div>
@@ -248,7 +341,7 @@
 						{#if insightsData.worstDay}
 							<div class="insight-item worst">
 								<div class="insight-content">
-									<h3>Svarare pa</h3>
+									<h3>Svårare på</h3>
 									<p class="day-name">{insightsData.worstDay.day}</p>
 									<small>Genomsnitt: {insightsData.worstDay.average}/10</small>
 								</div>
@@ -267,15 +360,16 @@
 					</ul>
 				{/if}
 			{:else}
-				<p class="heatmap-description">Det finns inte tillrackligt med data for AI-insikter annu.</p>
+				<p class="heatmap-description">Det finns inte tillräckligt med data för AI-insikter ännu.</p>
 			{/if}
 		</section>
 
+		<!-- ── Tom state ── -->
 		{#if !streakData || streakData.currentStreak === 0}
 			<section class="card empty-state">
-				<h2>Borja din resa</h2>
-				<p>Inga framsteg visas annu. Nar du borjar anvanda dagboken och verktygen har kan du folja monster over tid.</p>
-				<a href="/dagbok" class="btn-primary">Skriv inlagg</a>
+				<h2>Börja där du är</h2>
+				<p>Inga framsteg visas ännu — och det är helt okej. När du börjar använda dagboken kan du följa din resa här.</p>
+				<a href="/dagbok" class="btn-primary">Skriv ett inlägg</a>
 			</section>
 		{/if}
 	{/if}
@@ -283,25 +377,46 @@
 
 <style>
 	.journey-container { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; }
-	.journey-header { text-align: center; margin-bottom: 3rem; }
-	.journey-header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; color: #1a1a1a; }
-	.journey-header p { font-size: 1.1rem; color: #666; }
+	.journey-header { text-align: center; margin-bottom: 2.5rem; }
+	.journey-header h1 { font-size: 2.2rem; margin-bottom: 0.4rem; color: #1a1a1a; }
+	.journey-header p { font-size: 1.05rem; color: #888; font-style: italic; }
 	.loading-state, .error-state { text-align: center; padding: 3rem 2rem; color: #666; font-size: 1.05rem; }
 	.error-state { color: #d32f2f; background: #ffebee; border-radius: 0.5rem; padding: 2rem; }
 	.error-state small { display: block; margin-top: 0.5rem; color: #c62828; font-size: 0.9rem; }
-	.card { background: white; border-radius: 0.75rem; padding: 2rem; margin-bottom: 2rem; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.3s ease; }
+
+	/* Cards base */
+	.card { background: white; border-radius: 0.75rem; padding: 2rem; margin-bottom: 1.5rem; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.3s ease; }
 	.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #ddd; }
-	.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-	.card-header h2 { font-size: 1.4rem; margin: 0; color: #1a1a1a; }
-	.icon-badge { width: 3rem; height: 3rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; background: linear-gradient(135deg, #ff6b6b, #ff8e72); }
+	.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
+	.card-header h2 { font-size: 1.3rem; margin: 0; color: #1a1a1a; }
+	.icon-badge { width: 2.8rem; height: 2.8rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
+
+	/* Badge colors */
+	.icon-badge.week { background: var(--theme-accent, #0f766e); }
+	.icon-badge.reflect { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
 	.icon-badge.trophy { background: linear-gradient(135deg, #ffd93d, #ffb347); }
 	.icon-badge.heat { background: linear-gradient(135deg, #6bcf7f, #4caf50); }
 	.icon-badge.insight { background: linear-gradient(135deg, #667eea, #764ba2); }
-	.streak-display { text-align: center; margin: 2rem 0; }
-	.big-number { font-size: 4rem; font-weight: 700; background: linear-gradient(135deg, #ff6b6b, #ff8e72); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 0; }
-	.streak-label { font-size: 1rem; color: #666; margin-top: 0.5rem; }
-	.streak-note { text-align: center; color: #4caf50; font-size: 1rem; margin: 1rem 0 0 0; font-weight: 500; }
-	.streak-meta { text-align: center; color: #999; margin-top: 1rem; }
+
+	/* Weekly summary */
+	.summary-card { background: var(--theme-bg, rgba(15,118,110,0.07)); border-color: transparent; }
+	.summary-text { font-size: 1.1rem; color: #1a1a1a; line-height: 1.7; margin: 0 0 0.75rem 0; }
+	.encouragement { font-size: 0.95rem; color: #666; font-style: italic; margin: 0; }
+
+	/* Reflection */
+	.reflection-card { border-left: 3px solid var(--theme-accent, #0f766e); }
+	.reflection-prompt { font-size: 1.15rem; color: #1a1a1a; font-weight: 500; line-height: 1.6; margin: 0 0 0.75rem 0; }
+	.reflection-hint { font-size: 0.9rem; color: #999; margin: 0; font-style: italic; }
+
+	/* Overview */
+	.overview-heading { font-size: 1.2rem; margin: 0 0 1.5rem 0; color: #1a1a1a; }
+	.overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1.2rem; margin-bottom: 1rem; }
+	.overview-item { text-align: center; padding: 1rem 0.5rem; border-radius: 0.5rem; background: var(--theme-bg, rgba(15,118,110,0.07)); }
+	.overview-number { font-size: 2.2rem; font-weight: 700; color: var(--theme-accent, #0f766e); }
+	.overview-label { font-size: 0.85rem; color: #888; margin-top: 0.3rem; }
+	.overview-note { font-size: 0.9rem; color: #888; text-align: center; font-style: italic; margin: 0.5rem 0 0 0; }
+
+	/* Milestones */
 	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
 	.milestone { padding: 1rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; background: #f5f5f5; border: 1px solid #eee; transition: all 0.2s ease; }
 	.milestone.achieved { background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(129,199,132,0.1)); border-color: #4caf50; }
@@ -309,13 +424,17 @@
 	.milestone-emoji { font-size: 2rem; }
 	.milestone-text { font-size: 0.9rem; font-weight: 500; color: #1a1a1a; }
 	.next-milestone { background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05)); border: 1px solid rgba(102,126,234,0.3); padding: 1.5rem; border-radius: 0.5rem; margin-top: 1.5rem; }
-	.next-header { display: flex; align-items: center; gap: 0.5rem; color: #667eea; font-weight: 600; margin-bottom: 0.75rem; }
+	.next-header { display: flex; align-items: center; gap: 0.5rem; color: var(--theme-accent, #667eea); font-weight: 600; margin-bottom: 0.75rem; }
 	.next-milestone p { font-size: 1rem; color: #1a1a1a; margin: 0.5rem 0 1rem 0; }
 	.progress-bar { height: 0.5rem; background: #eee; border-radius: 0.25rem; overflow: hidden; margin-bottom: 0.5rem; }
-	.progress-fill { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 0.25rem; transition: width 0.3s ease; }
+	.progress-fill { height: 100%; background: var(--theme-accent, linear-gradient(90deg, #667eea, #764ba2)); border-radius: 0.25rem; transition: width 0.3s ease; }
 	.next-milestone small { color: #999; display: block; }
+
+	/* Heatmap */
 	.heatmap-card { overflow-x: auto; }
 	.heatmap-description { color: #666; font-size: 0.95rem; margin: 0 0 1.5rem 0; }
+
+	/* Insights */
 	.summary-box { margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem; background: #f9f9f9; border: 1px solid #eee; }
 	.summary-box p { margin: 0; color: #1a1a1a; line-height: 1.6; }
 	.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
@@ -327,21 +446,25 @@
 	.day-name { margin: 0; font-size: 1.2rem; font-weight: 600; color: #1a1a1a; }
 	.insight-content small { color: #999; font-size: 0.85rem; }
 	.patterns-list { list-style: none; padding: 0; margin: 0; }
-	.patterns-list li { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: #f9f9f9; border-radius: 0.25rem; margin-bottom: 0.5rem; font-size: 0.95rem; }
+	.patterns-list li { display: flex; align-items: center; padding: 0.75rem; background: #f9f9f9; border-radius: 0.25rem; margin-bottom: 0.5rem; font-size: 0.95rem; }
 	.pattern-text { color: #1a1a1a; font-weight: 500; }
-	.empty-state { text-align: center; padding: 3rem 2rem; background: linear-gradient(135deg, rgba(76,175,80,0.05), rgba(129,199,132,0.05)); border: 2px dashed #4caf50; }
-	.empty-state h2 { margin-top: 0; color: #2e7d32; }
-	.empty-state p { color: #555; margin: 1rem 0 1.5rem 0; }
-	.btn-primary { display: inline-block; padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #4caf50, #45a049); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; transition: all 0.2s ease; }
-	.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(76,175,80,0.3); }
+
+	/* Empty state */
+	.empty-state { text-align: center; padding: 3rem 2rem; background: var(--theme-bg, rgba(76,175,80,0.05)); border: 2px dashed var(--theme-accent, #4caf50); }
+	.empty-state h2 { margin-top: 0; color: var(--theme-accent, #2e7d32); }
+	.empty-state p { color: #555; margin: 1rem 0 1.5rem 0; line-height: 1.6; }
+	.btn-primary { display: inline-block; padding: 0.75rem 1.5rem; background: var(--theme-accent, #4caf50); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; transition: all 0.2s ease; }
+	.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
 	@media (max-width: 640px) {
 		.journey-container { padding: 1rem; }
 		.journey-header h1 { font-size: 1.8rem; }
-		.card { padding: 1.5rem; margin-bottom: 1.5rem; }
+		.card { padding: 1.5rem; margin-bottom: 1.2rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.milestones-grid { grid-template-columns: 1fr; }
 		.insights-grid { grid-template-columns: 1fr; }
-		.big-number { font-size: 3rem; }
-		.icon-badge { width: 2.5rem; height: 2.5rem; }
+		.overview-grid { grid-template-columns: repeat(2, 1fr); }
+		.overview-number { font-size: 1.8rem; }
+		.icon-badge { width: 2.3rem; height: 2.3rem; }
 	}
 </style>
