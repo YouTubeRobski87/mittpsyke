@@ -6,6 +6,7 @@
 	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import { getPortalByKey } from '$lib/data/portals';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme, themeStyleVars } from '$lib/theme';
+	import { getDailyPrompt } from '$lib/dailyPrompt';
 
 	type RecentConversation = {
 		id: string;
@@ -28,6 +29,7 @@
 	let dashboardWidget = $state('dagbok');
 	let entriesThisWeek = $state(0);
 	let daysSinceLastEntry = $state<number | null>(null);
+	let dailyPrompt = $state(getDailyPrompt());
 
 
 	const GOAL_OPTIONS = [
@@ -430,6 +432,14 @@
 					<span class="streak-text">Börja där du är idag — en kort rad kan räcka.</span>
 				</div>
 			{/if}
+		</section>
+
+		<!-- Dagens fråga -->
+		<section class="panel prompt-panel">
+			<p class="panel-kicker">Dagens fråga</p>
+			<h2 class="prompt-question">{dailyPrompt}</h2>
+			<p class="prompt-sub">Det räcker med några ord.</p>
+			<a href="/dagbok?prefill={encodeURIComponent(dailyPrompt)}&from=prompt" class="prompt-cta">Svara</a>
 		</section>
 
 		<!-- Goal Widget -->
@@ -1213,5 +1223,38 @@
 		opacity: 0.75;
 		margin: 0 0 0.8rem;
 		line-height: 1.5;
+	}
+	.prompt-panel {
+		background: var(--theme-bg, rgba(15,118,110,0.07));
+		border-left: 3px solid var(--theme-accent, #0f766e);
+	}
+	.prompt-question {
+		font-size: 1.15rem;
+		font-weight: 500;
+		line-height: 1.5;
+		margin: 0.3rem 0 0.4rem;
+		color: var(--theme-accent, #0f766e);
+	}
+	.prompt-sub {
+		font-size: 0.85rem;
+		opacity: 0.6;
+		margin-bottom: 0.6rem;
+	}
+	.prompt-cta {
+		display: inline-block;
+		padding: 0.45rem 1.2rem;
+		border-radius: 8px;
+		background: var(--theme-accent, #0f766e);
+		color: #fff;
+		text-decoration: none;
+		font-size: 0.9rem;
+		font-weight: 500;
+		transition: opacity 0.2s;
+	}
+	.prompt-cta:hover {
+		opacity: 0.85;
+	}
+	@media (prefers-color-scheme: dark) {
+		.prompt-question { color: #a7d8c8; }
 	}
 </style>

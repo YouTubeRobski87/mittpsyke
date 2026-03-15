@@ -39,6 +39,7 @@
 	import { loadDiaryEntries, setDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import { supabase } from '$lib/supabase';
 	import { onDestroy } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import type { Chart as ChartInstance } from 'chart.js';
 	import { getCachedTheme, getThemeColors, themeStyleVars } from '$lib/theme';
 
@@ -156,6 +157,7 @@
 	let moodChart: ChartInstance | null = null;
 	let pendingRegistrationComplete = $state(false);
 	let registrationCompleteTracked = $state(false);
+	let promptCheckin = $state(false);
 
 	// — Theme support (shared with dashboard/framsteg) —
 	let profileTheme = $state(getCachedTheme());
@@ -314,6 +316,10 @@
 		if (!prefill) return;
 
 		note = prefill;
+		if (url.searchParams.get('from') === 'prompt') {
+			promptCheckin = true;
+		}
+		url.searchParams.delete('from');
 		url.searchParams.delete('prefill');
 		window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
 	}
@@ -1076,6 +1082,9 @@
 			>
 				Sparat {savedAt} ✓
 			</div>
+			{#if promptCheckin && savedAt}
+				<p class="checkin-confirm" transition:fade>Bra jobbat 🌱 Du checkade in idag.</p>
+			{/if}
 		{/if}
 
 		<!-- Fortsätt där du var -->
@@ -1417,4 +1426,10 @@
         max-width: 840px;
         margin: 0 auto;
     }
+	.checkin-confirm {
+		font-size: 0.85rem;
+		color: var(--theme-accent, #0f766e);
+		margin-top: 0.3rem;
+		font-weight: 500;
+	}
 </style>

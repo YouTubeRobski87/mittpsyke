@@ -1,9 +1,9 @@
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ url }) => {
-	const streak = parseInt(url.searchParams.get('streak') ?? '0', 10);
-	const total = parseInt(url.searchParams.get('total') ?? '0', 10);
-	const weekly = parseInt(url.searchParams.get('weekly') ?? '0', 10);
+	const streak = Math.min(Math.max(parseInt(url.searchParams.get('streak') ?? '0', 10) || 0, 0), 365);
+	const total = Math.min(Math.max(parseInt(url.searchParams.get('total') ?? '0', 10) || 0, 0), 10000);
+	const weekly = Math.min(Math.max(parseInt(url.searchParams.get('weekly') ?? '0', 10) || 0, 0), 50);
 
 	// Build OG title
 	let ogTitle = 'Jag tar hand om mig själv 🌱 | MittPsyke';
