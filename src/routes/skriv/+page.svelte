@@ -14,14 +14,16 @@
 	}
 
 	function handleSaveAccount() {
-		// Draft already saved, go to register
+		// Save as temp entry for register page to pick up
+		localStorage.setItem('mittpsyke_temp_entry', text.trim());
 		window.location.href = '/register?from=skriv';
 	}
 
 	function handleAnonymous() {
-		// Clear and let them write more, or just go to chat
-		localStorage.removeItem(DRAFT_KEY);
-		window.location.href = '/';
+		// Save as temp entry in case they change their mind later
+		localStorage.setItem('mittpsyke_temp_entry', text.trim());
+		// Go back to writing phase
+		phase = 'writing';
 	}
 
 	function handleWriteMore() {
@@ -98,9 +100,12 @@
 						<button class="btn-primary" onclick={handleSaveAccount}>
 							Skapa konto och spara
 						</button>
-						<button class="btn-secondary" onclick={handleAnonymous}>
-							Fortsätt anonymt
-						</button>
+						<div class="anonymous-wrap">
+							<button class="btn-secondary" onclick={handleAnonymous}>
+								Fortsätt anonymt
+							</button>
+							<p class="anonymous-note">Din text sparas inte</p>
+						</div>
 					</div>
 
 					<button class="write-more-link" onclick={handleWriteMore}>
@@ -346,4 +351,18 @@
 		font-family: inherit;
 	}
 	.write-more-link:hover { opacity: 0.8; }
+
+	.anonymous-wrap {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	.anonymous-note {
+		font-size: 0.75rem;
+		color: var(--color-text-muted, #888);
+		margin: 0;
+	}
+
 </style>

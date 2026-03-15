@@ -17,8 +17,11 @@
 		registerViewTracked = true;
 	}
 
+	let hasTempEntry = $state(false);
+
 	onMount(() => {
 		maybeTrackRegisterView();
+		hasTempEntry = !!localStorage.getItem('mittpsyke_temp_entry');
 
 		const handleConsentChange = () => {
 			maybeTrackRegisterView();
@@ -45,6 +48,13 @@
 			Ett konto ger dig tillgång till verktyg som hjälper dig följa ditt mående över tid.
 		</p>
 	</div>
+
+	{#if hasTempEntry}
+	<div class="temp-entry-banner">
+		<span class="temp-entry-icon">📓</span>
+		<p>Ditt anonyma inlägg sparas automatiskt som ditt första dagboksinlägg.</p>
+	</div>
+	{/if}
 
 	<div class="grid grid-cols-2 gap-3 mb-8">
 		<div class="rounded-[var(--radius-card)] border border-black/8 dark:border-white/8 bg-white/40 dark:bg-white/[0.03] p-3 text-center">
@@ -113,3 +123,20 @@
 		Har du redan ett konto? <a href="/login" class="underline">Logga in</a>
 	</p>
 </section>
+
+<style>
+	.temp-entry-banner {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		background: color-mix(in srgb, var(--primary, #7c6af7) 10%, transparent);
+		border: 1px solid color-mix(in srgb, var(--primary, #7c6af7) 25%, transparent);
+		border-radius: 0.75rem;
+		padding: 0.875rem 1rem;
+		margin-bottom: 1.25rem;
+		font-size: 0.85rem;
+		line-height: 1.4;
+	}
+	.temp-entry-icon { font-size: 1.25rem; flex-shrink: 0; }
+	.temp-entry-banner p { margin: 0; opacity: 0.9; }
+</style>

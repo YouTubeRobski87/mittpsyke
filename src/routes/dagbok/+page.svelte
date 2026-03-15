@@ -258,6 +258,13 @@
 		const DRAFT_KEY = 'mittpsyke:draft';
 		if (typeof window === 'undefined') return;
 
+		// Also check for anonymous temp entry from /skriv
+		const tempEntry = localStorage.getItem('mittpsyke_temp_entry');
+		if (tempEntry && tempEntry.trim() && !localStorage.getItem(DRAFT_KEY)) {
+			localStorage.setItem(DRAFT_KEY, tempEntry.trim());
+			localStorage.removeItem('mittpsyke_temp_entry');
+		}
+
 		const draft = localStorage.getItem(DRAFT_KEY);
 		if (!draft || !draft.trim()) return;
 
