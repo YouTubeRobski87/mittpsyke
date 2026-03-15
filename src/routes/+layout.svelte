@@ -19,7 +19,7 @@
 
 	const UNDER_CONSTRUCTION = false;
 
-	let { children } = $props();
+	let { children, data } = $props();
 	const organizationJsonLd = {
 		'@context': 'https://schema.org',
 		'@type': 'Organization',
@@ -80,9 +80,15 @@
 	}
 
 	$effect(() => {
-		supabase.auth.getSession().then(({ data }) => {
-			void syncUser(data.session?.user ?? null);
-		});
+		// Seed klienten med server-side session direkt (undviker flash vid login/redirect)
+		if (data?.session) {
+			void syncUser(data.session.user);
+			void supabase.auth.setSession(data.session);
+		} else {
+			supabase.auth.getSession().then(({ data: sessionData }) => {
+				void syncUser(sessionData.session?.user ?? null);
+			});
+		}
 
 		const {
 			data: { subscription }

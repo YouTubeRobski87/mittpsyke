@@ -150,6 +150,39 @@
 		return 'Nar du vill kan du borja med nagra ord om hur dagen kanns.';
 	}
 
+	function calcStreak(entries: DiaryEntry[]): number {
+		if (entries.length === 0) return 0;
+		const days = new Set(
+			entries
+				.filter((e) => e.created_at)
+				.map((e) => new Date(e.created_at!).toISOString().slice(0, 10))
+		);
+		let streak = 0;
+		const today = new Date();
+		for (let i = 0; i < 365; i++) {
+			const d = new Date(today);
+			d.setDate(today.getDate() - i);
+			const key = d.toISOString().slice(0, 10);
+			if (days.has(key)) {
+				streak++;
+			} else if (i > 0) {
+				break;
+			}
+		}
+		return streak;
+	}
+
+	const streak = $derived(calcStreak(latestEntries));
+
+	function greetingByTime(): string {
+		const h = new Date().getHours();
+		if (h < 5) return 'God natt';
+		if (h < 10) return 'God morgon';
+		if (h < 13) return 'Hej';
+		if (h < 18) return 'God eftermiddag';
+		return 'God kväll';
+	}
+
 	$effect(() => {
 		let alive = true;
 
@@ -291,8 +324,21 @@
 		<!-- Welcome Section -->
 		<section class="panel welcome-panel">
 			<p class="welcome-kicker">Min portal</p>
-			<h1>Hej {firstName}</h1>
+			<h1>{greetingByTime()}, {firstName}</h1>
 			<p class="welcome-subtitle">Hur känns det idag? Du kan ta allt i din egen takt.</p>
+			{#if streak > 0}
+				<div class="streak-badge">
+					<span class="streak-flame">🔥</span>
+					<span class="streak-text">
+						{streak === 1 ? '1 dag i rad' : `${streak} dagar i rad`} — bra jobbat!
+					</span>
+				</div>
+			{:else}
+				<div class="streak-badge streak-start">
+					<span class="streak-flame">✨</span>
+					<span class="streak-text">Skriv i dagboken idag för att starta din streak!</span>
+				</div>
+			{/if}
 		</section>
 
 		<!-- Quick Actions Section -->
@@ -492,6 +538,33 @@
 		font-size: 0.98rem;
 		line-height: 1.65;
 		max-width: 46ch;
+	}
+
+	.streak-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-top: 0.9rem;
+		padding: 0.4rem 0.85rem;
+		background: rgba(255, 120, 50, 0.12);
+		border: 1px solid rgba(255, 120, 50, 0.3);
+		border-radius: 999px;
+		font-size: 0.88rem;
+		font-weight: 500;
+		color: var(--text-primary, #1a1a1a);
+	}
+
+	.streak-start {
+		background: rgba(100, 180, 120, 0.12);
+		border-color: rgba(100, 180, 120, 0.3);
+	}
+
+	.streak-flame {
+		font-size: 1rem;
+	}
+
+	.streak-text {
+		opacity: 0.85;
 	}
 
 	/* Section Headings */
