@@ -182,12 +182,59 @@
 		hasSensitiveDataConsent = true;
 		void loadInsights();
 	}
+
+	// ── Share feature ──
+	let shareConfirm = $state('');
+	let shareConfirmTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function buildShareUrl(): string {
+		const params = new URLSearchParams();
+		if (streakData?.currentStreak) params.set('streak', String(streakData.currentStreak));
+		if (milestonesData?.totalEntries) params.set('total', String(milestonesData.totalEntries));
+		if (weeklyEntries) params.set('weekly', String(weeklyEntries));
+		return `https://mittpsyke.se/share?${params.toString()}`;
+	}
+
+	async function handleShare() {
+		const url = buildShareUrl();
+		const streakNum = streakData?.currentStreak ?? 0;
+		const text =
+			streakNum >= 1
+				? `Jag har checkat in med mig själv ${streakNum} dagar i rad 🌱`
+				: `Jag tar hand om mitt psyke med MittPsyke 🌱`;
+
+		if (navigator.share) {
+			try {
+				await navigator.share({ title: 'Min resa på MittPsyke', text, url });
+				return;
+			} catch {
+				// User cancelled — fall through to clipboard
+			}
+		}
+		// Fallback: copy to clipboard
+		try {
+			await navigator.clipboard.writeText(`${text}\n\n${url}`);
+			if (shareConfirmTimer) clearTimeout(shareConfirmTimer);
+			shareConfirm = 'Länk kopierad! ✓';
+			shareConfirmTimer = setTimeout(() => (shareConfirm = ''), 2800);
+		} catch {
+			shareConfirm = url;
+		}
+	}
 </script>
 
 <div class="journey-container" style={themeStyle}>
 	<div class="journey-header">
 		<h1>Din resa</h1>
 		<p>En lugn överblick — i din takt</p>
+		{#if streakData || milestonesData}
+			<button class="share-btn" onclick={handleShare} aria-label="Dela din framstegssida">
+				🌱 Dela min resa
+			</button>
+			{#if shareConfirm}
+				<p class="share-confirm" role="status">{shareConfirm}</p>
+			{/if}
+		{/if}
 	</div>
 
 	{#if loading}
@@ -369,6 +416,31 @@
 	.journey-header { text-align: center; margin-bottom: 2.5rem; }
 	.journey-header h1 { font-size: 2.2rem; margin-bottom: 0.4rem; color: #1a1a1a; }
 	.journey-header p { font-size: 1.05rem; color: #888; font-style: italic; }
+
+	.share-btn {
+		margin-top: 1rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.55rem 1.2rem;
+		border-radius: 999px;
+		border: 1.5px solid rgba(107, 144, 113, 0.45);
+		background: transparent;
+		color: #4a7a55;
+		font-size: 0.88rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: background 0.18s, border-color 0.18s;
+	}
+	.share-btn:hover { background: rgba(107, 144, 113, 0.1); border-color: rgba(107, 144, 113, 0.7); }
+
+	.share-confirm {
+		margin-top: 0.5rem;
+		font-size: 0.82rem;
+		color: #6b9080;
+		animation: fadeIn 0.2s ease;
+	}
+	@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 	.loading-state, .error-state { text-align: center; padding: 3rem 2rem; color: #666; font-size: 1.05rem; }
 	.error-state { color: #d32f2f; background: #ffebee; border-radius: 0.5rem; padding: 2rem; }
 	.error-state small { display: block; margin-top: 0.5rem; color: #c62828; font-size: 0.9rem; }
@@ -455,6 +527,13 @@
 		.overview-label, .overview-note, .journey-header p,
 		.reflection-hint, .next-milestone small, .insight-content h3,
 		.insight-content small { color: rgba(255,255,255,0.55); }
+
+		.share-btn {
+			color: rgba(168, 200, 130, 0.85);
+			border-color: rgba(168, 200, 130, 0.3);
+		}
+		.share-btn:hover { background: rgba(168, 200, 130, 0.08); border-color: rgba(168, 200, 130, 0.5); }
+		.share-confirm { color: #a8c882; }
 
 		.empty-state p { color: rgba(255,255,255,0.65); }
 
