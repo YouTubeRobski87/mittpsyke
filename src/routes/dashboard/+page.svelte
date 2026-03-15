@@ -21,6 +21,37 @@
 	let lastChatCategory = $state('a');
 	let lastConversationId = $state<string | null>(null);
 
+	// Personalization state
+	let profileTheme = $state('neutral');
+	let weeklyGoalType = $state('diary_3_week');
+	let dashboardWidget = $state('dagbok');
+	let entriesThisWeek = $state(0);
+	let daysSinceLastEntry = $state<number | null>(null);
+
+	const THEMES: Record<string, { label: string; accent: string; bg: string }> = {
+		neutral:   { label: 'Neutral',    accent: '#0f766e', bg: 'rgba(15, 118, 110, 0.07)' },
+		salvia:    { label: 'Salvia',     accent: '#7a9e7e', bg: 'rgba(122, 158, 126, 0.09)' },
+		havsblå:   { label: 'Havsblå',   accent: '#5b8db8', bg: 'rgba(91, 141, 184, 0.09)' },
+		lavendel:  { label: 'Lavendel',  accent: '#8b7ab8', bg: 'rgba(139, 122, 184, 0.09)' },
+		sand:      { label: 'Sand',       accent: '#b8956a', bg: 'rgba(184, 149, 106, 0.09)' },
+		skogsgrön: { label: 'Skogsgrön', accent: '#4a7c59', bg: 'rgba(74, 124, 89, 0.09)' },
+	};
+
+	const GOAL_OPTIONS = [
+		{ value: 'diary_3_week',   label: 'Jag vill skriva i dagboken 3 gånger i veckan', target: 3 },
+		{ value: 'mood_daily',     label: 'Jag vill checka in mitt humör varje dag',       target: 7 },
+		{ value: 'write_when_needed', label: 'Jag vill skriva när tankarna blir mycket',   target: null },
+		{ value: 'calm_moments',   label: 'Jag vill skapa en lugn stund för mig själv några gånger i veckan', target: 3 },
+		{ value: 'none',           label: 'Inget mål just nu',                             target: null },
+	];
+
+	const WIDGET_OPTIONS = [
+		{ value: 'dagbok', label: 'Dagboken' },
+		{ value: 'mood',   label: 'Senaste humör' },
+		{ value: 'guide',  label: 'Guider' },
+		{ value: 'chat',   label: 'Chatten' },
+	];
+
 	const continueChatHref = $derived(
 		lastConversationId
 			? `/chat/${lastChatCategory}?id=${encodeURIComponent(lastConversationId)}`
@@ -174,6 +205,50 @@
 
 	const streak = $derived(calcStreak(latestEntries));
 
+	const streakSubText = $derived(
+		streak >= 7 ? 'fantastiskt — du tar hand om dig.' :
+		streak >= 3 ? 'fint att du fortsätter ta hand om dig.' :
+		'det behöver inte vara perfekt för att räknas.'
+	);
+
+	const NUDGE_TEXTS = [
+		'Hur känns dagen just nu?',
+		'Vill du skriva några rader för dig själv?',
+		'Små steg räknas också.',
+		'Du behöver inte göra mycket — bara börja där du är.',
+		'En liten stund för dig själv kan räcka idag.',
+		'Fint att du är här.',
+		'I din takt, på ditt sätt.',
+	];
+
+	const welcomeSubtitle = $derived(
+		daysSinceLastEntry !== null && daysSinceLastEntry >= 3
+			? `Det är \${daysSinceLastEntry} dagar sedan senast — ingen stress, vi finns här när du vill. 💛`
+			: NUDGE_TEXTS[new Date().getDay() % NUDGE_TEXTS.length]
+	);
+
+	const currentTheme = $derived(THEMES[profileTheme] ?? THEMES.neutral);
+	const themeStyle = $derived(
+		`--theme-accent: \${currentTheme.accent}; --theme-bg: \${currentTheme.bg};`
+	);
+
+	const currentGoal = $derived(GOAL_OPTIONS.find(g => g.value === weeklyGoalType) ?? GOAL_OPTIONS[0]);
+	const goalTarget = $derived(currentGoal.target);
+	const goalPct = $derived(goalTarget ? Math.min(100, Math.round((entriesThisWeek / goalTarget) * 100)) : 0);
+	const goalLabel = $derived(
+		!goalTarget ? null :
+		entriesThisWeek >= goalTarget ? `\${goalTarget} av \${goalTarget} — fint jobbat den här veckan! 🎉` :
+		`\${entriesThisWeek} av \${goalTarget} denna vecka`
+	);
+	const goalSubText = $derived(
+		!goalTarget ? 'Skriv när det känns rätt.' :
+		entriesThisWeek === 0 ? 'Du kan ta en liten stund när det passar.' :
+		entriesThisWeek >= goalTarget ? 'Bra jobbat — du nådde ditt mål!' :
+		entriesThisWeek === 1 ? 'Du är igång! Fortsätt i din takt.' :
+		'Det går fint att ta det steg för steg.'
+	);
+
+	
 	function greetingByTime(): string {
 		const h = new Date().getHours();
 		if (h < 5) return 'God natt';
@@ -294,6 +369,27 @@
 			if (!alive) return;
 
 			firstName = extractFirstName(resolvedName);
+
+			// Load personalization preferences from user_metadata
+			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
+			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
+			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
+			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
+
+			// Calculate entries this week
+			const startOfWeek = new Date();
+			startOfWeek.setHours(0, 0, 0, 0);
+			startOfWeek.setDate(startOfWeek.getDate() - ((startOfWeek.getDay() + 6) % 7)); // Mon
+			entriesThisWeek = nextEntries.filter(e => e.created_at && new Date(e.created_at) >= startOfWeek).length;
+
+			// Days since last entry
+			if (nextEntries.length > 0 && nextEntries[0].created_at) {
+				const last = new Date(nextEntries[0].created_at);
+				daysSinceLastEntry = Math.floor((Date.now() - last.getTime()) / 86400000);
+			} else {
+				daysSinceLastEntry = null;
+			}
+
 			latestEntries = nextEntries;
 			recentConversations = nextConversations;
 			loading = false;
@@ -311,7 +407,7 @@
 	<title>Min portal - MittPsyke</title>
 </svelte:head>
 
-<main class="portal-page container">
+<main class="portal-page container" style={themeStyle}>
 	{#if loading}
 		<p class="loading-copy">Laddar din portal. Det kan ta en liten stund.</p>
 	{:else}
@@ -322,22 +418,66 @@
 		</nav>
 
 		<!-- Welcome Section -->
-		<section class="panel welcome-panel">
+		<section class="panel welcome-panel" style="background: var(--theme-bg, rgba(15,118,110,0.07));">
 			<p class="welcome-kicker">Min portal</p>
 			<h1>{greetingByTime()}, {firstName}</h1>
-			<p class="welcome-subtitle">Hur känns det idag? Du kan ta allt i din egen takt.</p>
+			<p class="welcome-subtitle">{welcomeSubtitle}</p>
 			{#if streak > 0}
 				<div class="streak-badge">
 					<span class="streak-flame">🔥</span>
 					<span class="streak-text">
-						{streak === 1 ? '1 dag i rad' : `${streak} dagar i rad`} — bra jobbat!
+						{streak === 1 ? '1 dag i rad' : `${streak} dagar i rad`} — {streakSubText}
 					</span>
 				</div>
 			{:else}
 				<div class="streak-badge streak-start">
 					<span class="streak-flame">✨</span>
-					<span class="streak-text">Skriv i dagboken idag för att starta din streak!</span>
+					<span class="streak-text">Börja där du är idag — en kort rad kan räcka.</span>
 				</div>
+			{/if}
+		</section>
+
+		<!-- Goal Widget -->
+		{#if weeklyGoalType !== 'none'}
+		<section class="panel goal-panel">
+			<p class="panel-kicker">Ditt mål</p>
+			<p class="goal-label">{currentGoal.label}</p>
+			{#if goalLabel}
+				<div class="goal-progress">
+					<div class="goal-bar-track">
+						<div class="goal-bar-fill" style="width: {goalPct}%; background: var(--theme-accent, #0f766e);"></div>
+					</div>
+					<p class="goal-status">{goalLabel}</p>
+				</div>
+			{/if}
+			<p class="goal-sub">{goalSubText}</p>
+			<a href="/dagbok" class="goal-cta">Checka in nu</a>
+		</section>
+		{/if}
+
+		<!-- Configurable Widget -->
+		<section class="panel widget-panel">
+			<p class="panel-kicker">Din widget</p>
+			{#if dashboardWidget === 'mood'}
+				<h3 class="widget-heading">Senaste humör</h3>
+				{#if dominantMood}
+					<p class="widget-body">Senast du checkade in kände du dig <em>{dominantMood}</em>.</p>
+				{:else}
+					<p class="widget-body">Inga humörinlägg än — börja med att checka in idag.</p>
+				{/if}
+				<a href="/dagbok" class="widget-cta">Ny incheckning</a>
+			{:else if dashboardWidget === 'guide'}
+				<h3 class="widget-heading">Utforska guider</h3>
+				<p class="widget-body">Hitta en guide som passar det du bär på just nu.</p>
+				<a href="/guider" class="widget-cta">Bläddra i guider</a>
+			{:else if dashboardWidget === 'chat'}
+				<h3 class="widget-heading">Behöver du prata av dig?</h3>
+				<p class="widget-body">Du kan börja anonymt och i lugn takt.</p>
+				<a href="/chatta" class="widget-cta">Öppna chatten</a>
+			{:else}
+				<h3 class="widget-heading">Dagboken väntar</h3>
+				<p class="widget-body">Skriv av dig några rader och fånga det som känns viktigt idag.</p>
+				<a href="/dagbok" class="widget-cta">Öppna dagboken</a>
 			{/if}
 		</section>
 
@@ -897,5 +1037,186 @@
 	:global(.dark) .support-panel a {
 		color: #86dfd6;
 	}
-</style>
 
+	/* Theme accent (applied inline on panels) */
+	.goal-panel {
+		background: #f8f7f4;
+	}
+	.widget-panel {
+		background: #f8f7f4;
+	}
+	.panel-kicker {
+		font-family: var(--font-body);
+		font-size: 0.78rem;
+		text-transform: uppercase;
+		letter-spacing: 0.07em;
+		opacity: 0.5;
+		margin: 0 0 0.35rem;
+	}
+	.goal-label {
+		font-family: var(--font-body);
+		font-size: 0.97rem;
+		font-weight: 500;
+		color: #2f2a24;
+		margin: 0 0 0.75rem;
+		line-height: 1.4;
+	}
+	:global(.dark) .goal-label {
+		color: #e8e4de;
+	}
+	.goal-progress {
+		margin-bottom: 0.5rem;
+	}
+	.goal-bar-track {
+		height: 6px;
+		border-radius: 99px;
+		background: rgba(0,0,0,0.08);
+		overflow: hidden;
+		margin-bottom: 0.45rem;
+	}
+	:global(.dark) .goal-bar-track {
+		background: rgba(255,255,255,0.1);
+	}
+	.goal-bar-fill {
+		height: 100%;
+		border-radius: 99px;
+		transition: width 0.6s ease;
+	}
+	.goal-status {
+		font-family: var(--font-body);
+		font-size: 0.88rem;
+		opacity: 0.75;
+		margin: 0;
+	}
+	.goal-sub {
+		font-family: var(--font-body);
+		font-size: 0.88rem;
+		opacity: 0.6;
+		margin: 0.3rem 0 0.85rem;
+	}
+	.goal-cta,
+	.widget-cta {
+		display: inline-block;
+		padding: 0.5rem 1.1rem;
+		border-radius: var(--radius-input, 8px);
+		background: var(--theme-accent, #0f766e);
+		color: #fff;
+		font-family: var(--font-body);
+		font-size: 0.88rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: opacity 0.15s;
+	}
+	.goal-cta:hover,
+	.widget-cta:hover {
+		opacity: 0.85;
+	}
+	.widget-heading {
+		font-family: var(--font-heading);
+		font-size: 1rem;
+		font-weight: 700;
+		color: #2f2a24;
+		margin: 0 0 0.3rem;
+	}
+	:global(.dark) .widget-heading {
+		color: #e8e4de;
+	}
+	.widget-body {
+		font-family: var(--font-body);
+		font-size: 0.92rem;
+		opacity: 0.75;
+		margin: 0 0 0.8rem;
+		line-height: 1.5;
+	}
+
+	/* Theme accent (applied inline on panels) */
+	.goal-panel {
+		background: #f8f7f4;
+	}
+	.widget-panel {
+		background: #f8f7f4;
+	}
+	.panel-kicker {
+		font-family: var(--font-body);
+		font-size: 0.78rem;
+		text-transform: uppercase;
+		letter-spacing: 0.07em;
+		opacity: 0.5;
+		margin: 0 0 0.35rem;
+	}
+	.goal-label {
+		font-family: var(--font-body);
+		font-size: 0.97rem;
+		font-weight: 500;
+		color: #2f2a24;
+		margin: 0 0 0.75rem;
+		line-height: 1.4;
+	}
+	:global(.dark) .goal-label {
+		color: #e8e4de;
+	}
+	.goal-progress {
+		margin-bottom: 0.5rem;
+	}
+	.goal-bar-track {
+		height: 6px;
+		border-radius: 99px;
+		background: rgba(0,0,0,0.08);
+		overflow: hidden;
+		margin-bottom: 0.45rem;
+	}
+	:global(.dark) .goal-bar-track {
+		background: rgba(255,255,255,0.1);
+	}
+	.goal-bar-fill {
+		height: 100%;
+		border-radius: 99px;
+		transition: width 0.6s ease;
+	}
+	.goal-status {
+		font-family: var(--font-body);
+		font-size: 0.88rem;
+		opacity: 0.75;
+		margin: 0;
+	}
+	.goal-sub {
+		font-family: var(--font-body);
+		font-size: 0.88rem;
+		opacity: 0.6;
+		margin: 0.3rem 0 0.85rem;
+	}
+	.goal-cta,
+	.widget-cta {
+		display: inline-block;
+		padding: 0.5rem 1.1rem;
+		border-radius: var(--radius-input, 8px);
+		background: var(--theme-accent, #0f766e);
+		color: #fff;
+		font-family: var(--font-body);
+		font-size: 0.88rem;
+		font-weight: 600;
+		text-decoration: none;
+		transition: opacity 0.15s;
+	}
+	.goal-cta:hover,
+	.widget-cta:hover {
+		opacity: 0.85;
+	}
+	.widget-heading {
+		font-family: var(--font-heading);
+		font-size: 1rem;
+		font-weight: 700;
+		color: #2f2a24;
+		margin: 0 0 0.3rem;
+	}
+	:global(.dark) .widget-heading {
+		color: #e8e4de;
+	}
+	.widget-body {
+		font-family: var(--font-body);
+		font-size: 0.92rem;
+		opacity: 0.75;
+		margin: 0 0 0.8rem;
+		line-height: 1.5;
+	}
+</style>

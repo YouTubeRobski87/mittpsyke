@@ -9,6 +9,38 @@
 	let displayName = $state('');
 	let nameSaving = $state(false);
 	let nameMessage = $state('');
+
+	// Personalization
+	let profileTheme = $state('neutral');
+	let weeklyGoalType = $state('diary_3_week');
+	let dashboardWidget = $state('dagbok');
+	let prefSaving = $state(false);
+	let prefMessage = $state('');
+	let prefMessageType = $state<'success' | 'error'>('success');
+
+	const THEMES = [
+		{ value: 'neutral',   label: 'Neutral',    color: '#0f766e' },
+		{ value: 'salvia',    label: 'Salvia',      color: '#7a9e7e' },
+		{ value: 'havsblå',   label: 'Havsblå',    color: '#5b8db8' },
+		{ value: 'lavendel',  label: 'Lavendel',   color: '#8b7ab8' },
+		{ value: 'sand',      label: 'Sand',        color: '#b8956a' },
+		{ value: 'skogsgrön', label: 'Skogsgrön',  color: '#4a7c59' },
+	];
+
+	const GOALS = [
+		{ value: 'diary_3_week',     label: 'Skriva i dagboken 3 gånger i veckan' },
+		{ value: 'mood_daily',       label: 'Checka in mitt humör varje dag' },
+		{ value: 'write_when_needed', label: 'Skriva när tankarna blir mycket' },
+		{ value: 'calm_moments',     label: 'Skapa en lugn stund för mig själv några gånger i veckan' },
+		{ value: 'none',             label: 'Inget mål just nu' },
+	];
+
+	const WIDGETS = [
+		{ value: 'dagbok', label: 'Dagboken' },
+		{ value: 'mood',   label: 'Senaste humör' },
+		{ value: 'guide',  label: 'Guider' },
+		{ value: 'chat',   label: 'Chatten' },
+	];
 	let nameMessageType = $state<'success' | 'error'>('success');
 
 	// Password
@@ -39,8 +71,12 @@
 
 			if (!alive) return;
 
-			// Load display name from user metadata
-			displayName = session.user.user_metadata?.display_name ?? '';
+			// Load display name and personalization from user metadata
+			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
+			displayName = typeof meta.display_name === 'string' ? meta.display_name : '';
+			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
+			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
+			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
 			loading = false;
 		}
 
@@ -69,6 +105,29 @@
 		} else {
 			nameMessage = 'Sparat!';
 			nameMessageType = 'success';
+		}
+	}
+
+	async function savePreferences() {
+		prefMessage = '';
+		prefSaving = true;
+
+		const { error } = await supabase.auth.updateUser({
+			data: {
+				profile_theme: profileTheme,
+				weekly_goal_type: weeklyGoalType,
+				dashboard_widget: dashboardWidget
+			}
+		});
+
+		prefSaving = false;
+
+		if (error) {
+			prefMessage = 'Något gick fel. Försök igen.';
+			prefMessageType = 'error';
+		} else {
+			prefMessage = 'Inställningarna är sparade!';
+			prefMessageType = 'success';
 		}
 	}
 
@@ -206,6 +265,71 @@
 
 			{#if nameMessage}
 				<p class="feedback {nameMessageType}">{nameMessage}</p>
+			{/if}
+		</section>
+
+		<!-- Personalization Section -->
+		<section class="section-block">
+			<h2>Personalisera portalen</h2>
+			<p class="field-hint">Välj tema, mål och vilket kort du vill se på startsidan. Du kan ändra när du vill.</p>
+
+			<!-- Theme picker -->
+			<p class="pref-label">Ditt tema</p>
+			<div class="theme-row" role="group" aria-label="Välj tema">
+				{#each THEMES as t}
+					<button
+						class="theme-dot {profileTheme === t.value ? 'selected' : ''}"
+						style="--dot-color: {t.color};"
+						onclick={() => (profileTheme = t.value)}
+						aria-label={t.label}
+						aria-pressed={profileTheme === t.value}
+						title={t.label}
+					></button>
+				{/each}
+				<span class="theme-name">{THEMES.find(t => t.value === profileTheme)?.label ?? ''}</span>
+			</div>
+
+			<!-- Goal picker -->
+			<p class="pref-label">Ditt veckliga mål</p>
+			<div class="option-list" role="radiogroup" aria-label="Välj veckomål">
+				{#each GOALS as g}
+					<label class="option-row {weeklyGoalType === g.value ? 'selected' : ''}">
+						<input
+							type="radio"
+							name="weeklyGoal"
+							value={g.value}
+							bind:group={weeklyGoalType}
+							class="sr-only"
+						/>
+						<span class="option-dot"></span>
+						<span class="option-text">{g.label}</span>
+					</label>
+				{/each}
+			</div>
+
+			<!-- Widget picker -->
+			<p class="pref-label">Ditt valda kort på startsidan</p>
+			<div class="option-list widget-row" role="radiogroup" aria-label="Välj widget">
+				{#each WIDGETS as w}
+					<label class="option-chip {dashboardWidget === w.value ? 'selected' : ''}">
+						<input
+							type="radio"
+							name="dashboardWidget"
+							value={w.value}
+							bind:group={dashboardWidget}
+							class="sr-only"
+						/>
+						{w.label}
+					</label>
+				{/each}
+			</div>
+
+			<button class="save-btn" onclick={savePreferences} aria-label="Spara personalisering" disabled={prefSaving}>
+				{prefSaving ? 'Sparar...' : 'Spara'}
+			</button>
+
+			{#if prefMessage}
+				<p class="feedback {prefMessageType}">{prefMessage}</p>
 			{/if}
 		</section>
 
@@ -493,6 +617,160 @@
 	}
 
 	
+	/* Personalization styles */
+	.pref-label {
+		font-family: var(--font-body);
+		font-size: 0.88rem;
+		font-weight: 600;
+		opacity: 0.75;
+		margin: 1rem 0 0.4rem;
+	}
+
+	.theme-row {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		flex-wrap: wrap;
+		margin-bottom: 0.25rem;
+	}
+
+	.theme-dot {
+		width: 2rem;
+		height: 2rem;
+		border-radius: 50%;
+		background: var(--dot-color);
+		border: 3px solid transparent;
+		cursor: pointer;
+		transition: transform 120ms ease, border-color 120ms ease;
+		outline: none;
+		padding: 0;
+	}
+
+	.theme-dot:hover {
+		transform: scale(1.12);
+	}
+
+	.theme-dot.selected {
+		border-color: var(--dot-color);
+		box-shadow: 0 0 0 2px white, 0 0 0 4px var(--dot-color);
+	}
+
+	:global(.dark) .theme-dot.selected {
+		box-shadow: 0 0 0 2px #1a1814, 0 0 0 4px var(--dot-color);
+	}
+
+	.theme-name {
+		font-family: var(--font-body);
+		font-size: 0.84rem;
+		opacity: 0.65;
+		margin-left: 0.2rem;
+	}
+
+	.option-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		margin-bottom: 0.25rem;
+	}
+
+	.option-list.widget-row {
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	.option-row {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		padding: 0.55rem 0.75rem;
+		border-radius: var(--radius-input);
+		border: 1.5px solid rgba(0, 0, 0, 0.08);
+		background: rgba(255, 255, 255, 0.5);
+		cursor: pointer;
+		transition: border-color 120ms ease, background 120ms ease;
+	}
+
+	.option-row:hover {
+		border-color: rgba(15, 118, 110, 0.3);
+		background: rgba(15, 118, 110, 0.04);
+	}
+
+	.option-row.selected {
+		border-color: #0f766e;
+		background: rgba(15, 118, 110, 0.07);
+	}
+
+	:global(.dark) .option-row {
+		border-color: rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.04);
+	}
+
+	:global(.dark) .option-row.selected {
+		border-color: #5eead4;
+		background: rgba(94, 234, 212, 0.08);
+	}
+
+	.option-dot {
+		width: 0.75rem;
+		height: 0.75rem;
+		border-radius: 50%;
+		border: 2px solid #0f766e;
+		flex-shrink: 0;
+		transition: background 120ms ease;
+	}
+
+	.option-row.selected .option-dot {
+		background: #0f766e;
+	}
+
+	.option-text {
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+	}
+
+	.option-chip {
+		padding: 0.4rem 0.85rem;
+		border-radius: 2rem;
+		border: 1.5px solid rgba(0, 0, 0, 0.1);
+		background: rgba(255, 255, 255, 0.5);
+		font-family: var(--font-body);
+		font-size: 0.88rem;
+		cursor: pointer;
+		transition: border-color 120ms ease, background 120ms ease;
+	}
+
+	.option-chip:hover {
+		border-color: rgba(15, 118, 110, 0.3);
+	}
+
+	.option-chip.selected {
+		border-color: #0f766e;
+		background: rgba(15, 118, 110, 0.09);
+		font-weight: 500;
+	}
+
+	:global(.dark) .option-chip {
+		border-color: rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.04);
+		color: #e8e4de;
+	}
+
+	:global(.dark) .option-chip.selected {
+		border-color: #5eead4;
+		background: rgba(94, 234, 212, 0.08);
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		border: 0;
+	}
+
 	.danger-zone {
 		border: 1px solid rgba(185, 28, 28, 0.18);
 		background: #fff6f5;
