@@ -292,7 +292,41 @@
 			</ul>
 		</section>
 
-		<!-- 10) Företagsinformation -->
+		<!-- 10) Verksamhet och utveckling -->
+		<section class="section" id="verksamhet">
+			<h2>Verksamhet och utveckling</h2>
+			<p>
+				MittPsyke är en digital plattform för mental hälsa och självreflektion. Plattformen utvecklas
+				och drivs som en digital tjänst med målsättning att erbjuda verktyg, guider och digitala
+				funktioner inom psykiskt välbefinnande.
+			</p>
+			<p>
+				Plattformen utvecklas kontinuerligt och används av besökare som skriver dagbok, följer
+				sitt mående och reflekterar kring sin psykiska hälsa. Funktioner som samtalsstöd, dagbok,
+				framstegsöversikt och guider uppdateras löpande baserat på användarfeedback och behov.
+			</p>
+		</section>
+
+		<!-- 11) Tjänster och samarbeten -->
+		<section class="section" id="tjanster">
+			<h2>Tjänster och samarbeten</h2>
+			<p>
+				MittPsyke utvecklas med en långsiktig ambition att erbjuda både kostnadsfria och
+				betalda tjänster inom digital mental hälsa. Möjliga intäktsområden inkluderar:
+			</p>
+			<ul>
+				<li>Premiumfunktioner i plattformen</li>
+				<li>Samarbeten med organisationer och verksamheter inom psykisk hälsa</li>
+				<li>Digitala verktyg och guider</li>
+				<li>Utveckling och drift av webbplattformar</li>
+			</ul>
+			<p>
+				Är du intresserad av samarbete eller har frågor om verksamheten?
+				Kontakta oss på <a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a>.
+			</p>
+		</section>
+
+		<!-- 12) Företagsinformation -->
 		<section class="section company-section" aria-labelledby="foretagsinformation">
 			<h2 id="foretagsinformation">Företagsinformation</h2>
 			<p>MittPsyke drivs som enskild näringsverksamhet.</p>
