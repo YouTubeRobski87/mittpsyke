@@ -158,6 +158,9 @@
 	let pendingRegistrationComplete = $state(false);
 	let registrationCompleteTracked = $state(false);
 	let promptCheckin = $state(false);
+	let reflection = $state<string | null>(null);
+	let reflectionLoading = $state(false);
+	let reflectionDismissed = $state(false);
 
 	// — Theme support (shared with dashboard/framsteg) —
 	let profileTheme = $state(getCachedTheme());
@@ -187,6 +190,28 @@
 	function applyTheme() {
 		if (typeof window === 'undefined') return;
 		profileTheme = getCachedTheme();
+	}
+
+	async function fetchReflection(text: string) {
+		if (!text || text.trim().length < 10) return;
+		reflectionLoading = true;
+		reflectionDismissed = false;
+		reflection = null;
+		try {
+			const res = await fetch('/api/diary/reflect', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ text: text.trim() })
+			});
+			if (res.ok) {
+				const data = await res.json();
+				reflection = data.reflection;
+			}
+		} catch (e) {
+			console.error('Reflection fetch failed:', e);
+		} finally {
+			reflectionLoading = false;
+		}
 	}
 
 	function showSavedConfirmation() {
@@ -880,6 +905,8 @@
 		note = '';
 		tagsInput = '';
 		selectedMood = '';
+		reflection = null;
+		reflectionDismissed = false;
 		userId = session.user.id;
 			isLoggedIn = true;
 
@@ -901,6 +928,7 @@
 		setDiaryEntries(userId, entries);
 		void loadMoodTimeline();
 		showSavedConfirmation();
+		fetchReflection(content);
 		saving = false;
 	}
 
@@ -1085,6 +1113,19 @@
 			{#if promptCheckin && savedAt}
 				<p class="checkin-confirm" transition:fade>Bra jobbat 🌱 Du checkade in idag.</p>
 			{/if}
+		{/if}
+		{#if reflectionLoading}
+			<div class="reflection-box" transition:fade>
+				<p class="reflection-loading">Reflekterar...</p>
+			</div>
+		{/if}
+		{#if reflection && !reflectionDismissed}
+			<div class="reflection-box" transition:fade>
+				<p class="reflection-label">Din reflektion</p>
+				<p class="reflection-text">{reflection}</p>
+				<p class="reflection-dismiss">Du kan ignorera detta om du vill.</p>
+				<button class="reflection-continue" onclick={() => { reflectionDismissed = true; document.querySelector('textarea')?.focus(); }}>Fortsätt skriva</button>
+			</div>
 		{/if}
 
 		<!-- Fortsätt där du var -->
@@ -1431,5 +1472,53 @@
 		color: var(--theme-accent, #0f766e);
 		margin-top: 0.3rem;
 		font-weight: 500;
+	}
+	.reflection-box {
+		margin-top: 1rem;
+		padding: 1rem 1.2rem;
+		background: var(--theme-bg, rgba(15,118,110,0.05));
+		border-left: 3px solid var(--theme-accent, #0f766e);
+		border-radius: 8px;
+	}
+	.reflection-label {
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		opacity: 0.5;
+		margin-bottom: 0.4rem;
+	}
+	.reflection-text {
+		font-size: 0.95rem;
+		line-height: 1.6;
+		color: var(--theme-accent, #0f766e);
+		font-style: italic;
+	}
+	.reflection-loading {
+		font-size: 0.85rem;
+		opacity: 0.5;
+		font-style: italic;
+	}
+	.reflection-dismiss {
+		font-size: 0.75rem;
+		opacity: 0.4;
+		margin-top: 0.6rem;
+	}
+	.reflection-continue {
+		margin-top: 0.5rem;
+		padding: 0.35rem 1rem;
+		border-radius: 8px;
+		background: var(--theme-accent, #0f766e);
+		color: #fff;
+		border: none;
+		font-size: 0.8rem;
+		cursor: pointer;
+		transition: opacity 0.2s;
+	}
+	.reflection-continue:hover {
+		opacity: 0.85;
+	}
+	@media (prefers-color-scheme: dark) {
+		.reflection-text { color: #a7d8c8; }
+		.reflection-box { background: rgba(255,255,255,0.05); }
 	}
 </style>
