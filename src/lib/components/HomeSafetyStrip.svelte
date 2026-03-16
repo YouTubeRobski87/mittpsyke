@@ -2,7 +2,7 @@
 	<ul class="safety-list">
 		<li class="safety-item">
 			<p class="safety-label">Inte vård</p>
-			<p class="safety-copy">MittPsyke är ett lugnt samtalsstöd och ersätter inte vård eller akuthjälp.</p>
+			<p class="safety-copy">För stöd och reflektion i vardagen, inte vård eller akuthjälp.</p>
 		</li>
 		<li class="safety-item">
 			<p class="safety-label">Börja anonymt</p>
@@ -68,11 +68,10 @@
 		text-underline-offset: 3px;
 	}
 
-	@media (min-width: 760px) {
+	@media (min-width: 680px) {
 		.safety-list {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 			gap: 0.9rem;
 		}
 	}
-}
 </style>
