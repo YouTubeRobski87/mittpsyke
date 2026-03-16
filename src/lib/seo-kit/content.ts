@@ -57,6 +57,12 @@ export const pillars: Pillar[] = [
 		chatPath: '/chat/a'
 	},
 	{
+		slug: 'panikattack',
+		title: 'Panikattack',
+		description: 'Förstå panikattacker, vad som händer i kroppen och hur du kan ta dig igenom det steg för steg.',
+		chatPath: '/chat/a'
+	},
+	{
 		slug: 'depression',
 		title: 'Nedstämdhet och depression',
 		description: 'En lugn översikt av symtom, vardagsstöd och när extra hjälp kan behövas.',
@@ -93,6 +99,12 @@ export const pillars: Pillar[] = [
 		title: 'Ensamhet och tomhet',
 		description: 'Om känslan av ensamhet, tomhet och hur du kan börja hitta kontakt med dig själv och andra.',
 		chatPath: '/chat/b'
+	},
+	{
+		slug: 'overtankande',
+		title: 'Ältande och övertänkande',
+		description: 'Om tankeloopar, grubblande och hur du kan hitta mer lugn utan att behöva stänga av allt.',
+		chatPath: '/chat/e'
 	}
 ];
 
@@ -2923,6 +2935,78 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			{ title: 'Se alla artiklar om nedstämdhet', href: '/guider-seo/depression' },
 			{ title: 'Läs mer på sidan Nedstämdhet', href: '/nedstamdhet' },
 			{ title: 'Hjälp vid depression online', href: '/hjalp-vid-depression-online' }
+		]
+	},
+	panikattack: {
+		pillarSlug: 'panikattack',
+		seoTitle: 'Panikattack - vad som händer och hur du kan landa i stunden',
+		seoDescription:
+			'Få en lugn förklaring av panikattacker och konkreta steg som kan hjälpa när kroppen larmar. Information, internlänkar och nästa steg i trygg takt.',
+		h1: 'Stöd vid panikattack i stunden',
+		intro:
+			'En panikattack kan kännas skrämmande och överväldigande. Här hittar du lugn vägledning om vad som händer och hur du kan ta dig igenom attacken steg för steg.',
+		sections: [
+			{
+				heading: 'När kroppen går i full alarmberedskap',
+				body: 'Vid panik slår kroppens larmsystem på med hög intensitet. Hjärtklappning, yrsel och andningspåverkan är vanliga reaktioner. Det känns starkt, men går över.',
+				links: [
+					{ title: 'Panikattack - hjälp direkt när kroppen larmar', href: '/guider-seo/angest/panikattack-hjalp' },
+					{ title: 'Panikångest - vad som händer i kroppen', href: '/guider-seo/angest/panikangest-och-kroppen' }
+				]
+			},
+			{
+				heading: 'Vad du kan göra när paniken stiger',
+				body: 'Små, tydliga steg kan hjälpa kroppen att landa: långsam andning, grounding och att påminna dig om att reaktionen klingar av. Du behöver inte prestera för att få effekt.',
+				links: [
+					{ title: 'Lugna en panikattack - steg för steg', href: '/guider-seo/angest/lugna-en-panikattack' },
+					{ title: 'Grounding-övning vid stress', href: '/guider-seo/stress/grounding-ovning-vid-stress' }
+				]
+			},
+			{
+				heading: 'Trygga nästa steg',
+				body: 'Om panikattacker återkommer kan det hjälpa att prata med någon och följa mönster över tid. MittPsyke är ett komplement för stöd och reflektion, inte en ersättning för vård.'
+			}
+		],
+		primaryLinks: [
+			{ title: 'Läs mer om panikattack på MittPsyke', href: '/panikattack' },
+			{ title: 'Se guider om ångest', href: '/guider-seo/angest' },
+			{ title: 'Starta chatt om panik och ångest', href: '/chat/a' }
+		]
+	},
+	overtankande: {
+		pillarSlug: 'overtankande',
+		seoTitle: 'Ältande och övertänkande - när tankarna inte stannar',
+		seoDescription:
+			'Förstå varför tankar går i loopar och vad som kan hjälpa dig att bryta mönstret. Lugn vägledning med internlänkar till relevanta guider och nästa steg.',
+		h1: 'Stöd vid ältande och övertänkande',
+		intro:
+			'När tankarna snurrar kan det vara svårt att få vila. Här får du en tydlig översikt av övertänkande och ältande, och små steg som hjälper dig tillbaka till lugn.',
+		sections: [
+			{
+				heading: 'Varför hjärnan fastnar i loopar',
+				body: 'Övertänkande är ofta ett försök att skapa kontroll. Men när tankarna går runt utan att leda till beslut ökar stressen i stället. Det går att träna på ett annat förhållningssätt.',
+				links: [
+					{ title: 'Övertänkande - hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
+					{ title: 'Orostankar som snurrar', href: '/guider-seo/angest/orostankar' }
+				]
+			},
+			{
+				heading: 'Ältande blir ofta starkare på kvällen',
+				body: 'När tempot sjunker får oron mer plats. Det kan göra det svårt att somna eller koppla av. Tydliga kvällsrutiner och avgränsad orostid kan göra stor skillnad.',
+				links: [
+					{ title: 'Ältande på kvällen - varför tankarna blir starkare i sängen', href: '/guider-seo/sovproblem/altande-pa-kvallen' },
+					{ title: 'Nattlig oro - att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' }
+				]
+			},
+			{
+				heading: 'Lugn väg vidare',
+				body: 'Du kan börja med ett litet steg: chatta anonymt, skriv i dagboken eller prova en övning. MittPsyke ersätter inte vård men kan vara en trygg första ingång.'
+			}
+		],
+		primaryLinks: [
+			{ title: 'Läs mer om oro och övertänkande', href: '/oro' },
+			{ title: 'Se guider om ångest', href: '/guider-seo/angest' },
+			{ title: 'Starta chatt om oro', href: '/chat/e' }
 		]
 	}
 };
