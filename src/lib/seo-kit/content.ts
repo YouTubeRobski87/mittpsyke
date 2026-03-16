@@ -2802,7 +2802,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'När trötthet och oro förstärker varandra',
 				body: 'Sömnbrist gör oss mer sårbara för oro och stress nästa dag. Det kan bli en cirkel som känns svår att bryta. Små justeringar i vardagen kan minska trycket stegvis.',
 				links: [
-					{ title: 'Stress och sömn - när kroppen inte kan varva ner', href: '/guider-seo/sovproblem/stress-och-somn' },
+					{ title: 'Mycket tankar på kvällen - när hjärnan inte stänger av', href: '/guider-seo/stress/mycket-tankar-pa-kvallen' },
 					{ title: 'Varför orkar jag ingenting? - vad det kan bero på och vad som hjälper', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' }
 				]
 			},
@@ -2813,8 +2813,116 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 		],
 		primaryLinks: [
 			{ title: 'Se alla artiklar om stress', href: '/guider-seo/stress' },
-			{ title: 'Läs fler guider om sömnproblem', href: '/guider-seo/sovproblem' },
+			{ title: 'Läs mer om stöd vid stress online', href: '/stress' },
 			{ title: 'Stöd vid stress online', href: '/stod-vid-stress-online' }
+		]
+	},
+	trauma: {
+		pillarSlug: 'trauma',
+		seoTitle: 'Trauma - förstå reaktioner och hitta tryggare nästa steg',
+		seoDescription:
+			'Läs om vanliga reaktioner efter svåra händelser och hur du kan skapa mer trygghet i vardagen. Varsam information, guider och tydliga nästa steg.',
+		h1: 'Stöd vid trauma i lugn och trygg takt',
+		intro:
+			'Efter svåra händelser kan kroppen och tankarna reagera starkt. Här får du en lugn översikt, konkreta förklaringar och vägar vidare utan att behöva stressa fram något.',
+		sections: [
+			{
+				heading: 'När kroppen fortsätter vara i beredskap',
+				body: 'Det är vanligt med spänning, oro, sömnsvårigheter eller starka minnesbilder efter trauma. Reaktionerna kan kännas skrämmande, men de är ofta kroppens sätt att försöka skydda dig.',
+				links: [
+					{ title: 'Nervsystemet och trauma - varför kroppen reagerar starkt', href: '/guider-seo/trauma/nervsystemet-och-trauma' },
+					{ title: 'Trygghet efter trauma - små steg som hjälper', href: '/guider-seo/trauma/trygghet' }
+				]
+			},
+			{
+				heading: 'Varsam stabilisering i vardagen',
+				body: 'Många behöver börja med stabilisering innan fördjupad bearbetning. Små, trygga rutiner och enkla grounding-övningar kan hjälpa nervsystemet att hitta mer lugn.',
+				links: [
+					{ title: 'Grounding-övningar vid trauma', href: '/guider-seo/trauma/grounding-ovningar' },
+					{ title: 'Undvikande efter trauma - varför det händer', href: '/guider-seo/trauma/undvikande-efter-trauma' }
+				]
+			},
+			{
+				heading: 'När du vill ta nästa steg',
+				body: 'Du kan prata anonymt, skriva av dig eller prova en enkel övning. MittPsyke är ett komplement för stöd och reflektion, inte en ersättning för vård.'
+			}
+		],
+		primaryLinks: [
+			{ title: 'Se alla artiklar om trauma', href: '/guider-seo/trauma' },
+			{ title: 'Läs om samtalsstöd vid trauma', href: '/trauma' },
+			{ title: 'Stöd vid PTSD online', href: '/stod-vid-ptsd-online' }
+		]
+	},
+	ensamhet: {
+		pillarSlug: 'ensamhet',
+		seoTitle: 'Ensamhet - förstå känslan och hitta vägar tillbaka till kontakt',
+		seoDescription:
+			'Känn igen olika former av ensamhet och få konkreta steg för mer kontakt och mindre tomhet. Lugn vägledning, internlänkar och nästa steg i egen takt.',
+		h1: 'Stöd vid ensamhet och tomhet',
+		intro:
+			'Ensamhet kan göra ont även när man har människor omkring sig. Här får du tydlig och varm vägledning för att förstå känslan och hitta små steg tillbaka till kontakt.',
+		sections: [
+			{
+				heading: 'Olika sorters ensamhet',
+				body: 'Du kan känna dig ensam socialt, känslomässigt eller existentiellt. Att sätta ord på vilken sorts ensamhet du bär på kan göra nästa steg mer hanterbart.',
+				links: [
+					{ title: 'Känner mig ensam - varför det gör så ont', href: '/guider-seo/ensamhet/kanner-mig-ensam' },
+					{ title: 'Tomhetskänsla - när allt känns långt bort', href: '/guider-seo/ensamhet/tomhetskansla' }
+				]
+			},
+			{
+				heading: 'Små vägar tillbaka till kontakt',
+				body: 'När orken är låg hjälper det ofta att börja mycket smått. En kort hälsning, ett lugnt samtal eller några rader i dagboken kan vara tillräckligt som start.',
+				links: [
+					{ title: 'Ensamhet - hjälp när du fastnat i isolering', href: '/guider-seo/ensamhet/ensamhet-hjalp' },
+					{ title: 'Orkar ingenting - när ensamheten tar energi', href: '/guider-seo/ensamhet/orkar-ingenting' }
+				]
+			},
+			{
+				heading: 'Fortsätt i din egen takt',
+				body: 'Du behöver inte lösa allt direkt. MittPsyke kan vara en lågtröskel ingång för stöd och reflektion, som komplement till vård när mer hjälp behövs.'
+			}
+		],
+		primaryLinks: [
+			{ title: 'Se alla artiklar om ensamhet', href: '/guider-seo/ensamhet' },
+			{ title: 'Läs mer om ensamhet hos MittPsyke', href: '/ensamhet' },
+			{ title: 'Hitta stödlinjer', href: 'https://stodlinjer.se' }
+		]
+	},
+	depression: {
+		pillarSlug: 'depression',
+		seoTitle: 'Nedstämdhet - förstå måendet och ta små steg framåt',
+		seoDescription:
+			'Stödjande information vid nedstämdhet: skillnaden mot depression, vanliga mönster och små steg som kan hjälpa i vardagen. Tydliga guider och lugna nästa steg.',
+		h1: 'Stöd vid nedstämdhet i lugn takt',
+		intro:
+			'Nedstämdhet kan påverka energi, tankar och relationer. Här hittar du en tydlig översikt och konkreta steg som går att ta även när orken är låg.',
+		sections: [
+			{
+				heading: 'Nedstämdhet eller depression?',
+				body: 'Många undrar var gränsen går. Det viktigaste är hur länge måendet håller i sig och hur mycket vardagen påverkas. Du behöver inte vänta på "rätt ord" för att söka stöd.',
+				links: [
+					{ title: 'Nedstämdhet eller depression', href: '/guider-seo/depression/nedstamdhet' },
+					{ title: 'Skillnaden mellan sorg och depression', href: '/guider-seo/depression/sorg-och-depression' }
+				]
+			},
+			{
+				heading: 'När energin inte räcker',
+				body: 'Trötthet, tomhet och låg motivation är vanliga delar av nedstämdhet. Små steg och vardagsstruktur kan vara mer hjälpsamt än att försöka prestera sig ur läget.',
+				links: [
+					{ title: 'Trötthet och meningslöshet', href: '/guider-seo/depression/trotthet-och-meningsloshet' },
+					{ title: 'Små steg vid nedstämdhet', href: '/guider-seo/depression/sma-steg-vid-nedstamdhet' }
+				]
+			},
+			{
+				heading: 'Lugn väg vidare',
+				body: 'MittPsyke kan ge stöd för reflektion, men ersätter inte vård. Vid akut fara ringer du 112. För vårdråd finns 1177.'
+			}
+		],
+		primaryLinks: [
+			{ title: 'Se alla artiklar om nedstämdhet', href: '/guider-seo/depression' },
+			{ title: 'Läs mer på sidan Nedstämdhet', href: '/nedstamdhet' },
+			{ title: 'Hjälp vid depression online', href: '/hjalp-vid-depression-online' }
 		]
 	}
 };
