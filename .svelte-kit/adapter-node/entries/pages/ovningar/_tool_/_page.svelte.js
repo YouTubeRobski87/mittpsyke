@@ -1,4 +1,4 @@
-import { h as head, e as escape_html, a as attr } from "../../../../chunks/index.js";
+import { h as head, e as escape_html, a as attr } from "../../../../chunks/index2.js";
 function _page($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let { data } = $$props;

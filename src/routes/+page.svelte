@@ -6,6 +6,32 @@
 
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
+	const entryPaths = [
+		{
+			title: 'Jag behöver stöd nu',
+			description: 'Få ett lugnt första steg direkt, utan att behöva formulera allt perfekt.',
+			href: '/skriv',
+			cta: 'Börja anonymt'
+		},
+		{
+			title: 'Jag vill förstå mitt mående',
+			description: 'Läs guider om ångest, stress, trauma och andra vanliga tillstånd.',
+			href: '/guider',
+			cta: 'Läs guider'
+		},
+		{
+			title: 'Jag vill ha konkreta steg',
+			description: 'Börja med enkla övningar och små handlingar som går att göra idag.',
+			href: '/ovningar',
+			cta: 'Se övningar'
+		},
+		{
+			title: 'Jag vill följa min utveckling',
+			description: 'Skriv dagbok, spara reflektioner och se din resa över tid.',
+			href: '/register',
+			cta: 'Skapa konto'
+		}
+	];
 
 	onMount(() => {
 		if (!heroEl || !bgEl) return;
@@ -92,6 +118,25 @@
 		</div>
 	</section>
 
+	<section class="entry-paths" aria-labelledby="entry-paths-title">
+		<div class="cards-narrow entry-inner">
+			<p class="entry-eyebrow">Välj din väg in</p>
+			<h2 id="entry-paths-title">Det finns olika sätt att börja.</h2>
+			<p class="entry-intro">
+				Välj det som känns mest hjälpsamt just nu. Du kan alltid byta väg senare.
+			</p>
+			<div class="entry-grid">
+				{#each entryPaths as path}
+					<a class="entry-card" href={path.href}>
+						<h3>{path.title}</h3>
+						<p>{path.description}</p>
+						<span class="entry-card-cta">{path.cta}</span>
+					</a>
+				{/each}
+			</div>
+		</div>
+	</section>
+
 	<section class="video-section">
 		<div class="video-inner">
 			<h2>Se hur MittPsyke fungerar</h2>
@@ -101,27 +146,6 @@
 					<source src="/intro.mp4" type="video/mp4" />
 					Din webbläsare stöder inte videouppspelning.
 				</video>
-			</div>
-		</div>
-	</section>
-
-	<section class="content-hub">
-		<div class="narrow cards-narrow hub-inner">
-			<h2>Guider och övningar</h2>
-			<p>
-				Läs strukturerade guider och prova konkreta steg som du kan använda direkt i din vardag.
-			</p>
-			<div class="hub-grid">
-				<a class="hub-card" href="/guider">
-					<h3>Guider</h3>
-					<p>9 fokusområden med klusterartiklar inom psykiskt mående.</p>
-					<span>Gå till guider</span>
-				</a>
-				<a class="hub-card" href="/ovningar">
-					<h3>Övningar</h3>
-					<p>Praktiska steg-för-steg-övningar för reflektion och lugn.</p>
-					<span>Gå till övningar</span>
-				</a>
 			</div>
 		</div>
 	</section>
@@ -369,63 +393,86 @@
 		padding: clamp(3.8rem, 10vw, 6.8rem) 1.25rem;
 	}
 
-	.content-hub {
-		padding: clamp(2.8rem, 8vw, 4.2rem) 1.25rem;
-		background: #23384d;
-		color: #eaf3fb;
+	.entry-paths {
+		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
+		background: #eef2f0;
+		color: #2c3338;
 	}
 
-	.hub-inner h2 {
+	.entry-inner h2 {
 		margin: 0;
-		color: #f3f8fd;
-		font-size: clamp(1.5rem, 2.8vw, 2rem);
+		color: #263036;
+		font-size: clamp(1.55rem, 3vw, 2.1rem);
 	}
 
-	.hub-inner p {
+	.entry-eyebrow {
+		margin: 0 0 0.45rem;
+		font-family: var(--font-heading);
+		font-size: 0.88rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #5c6c64;
+	}
+
+	.entry-intro {
 		margin: 0.75rem 0 0;
-		max-width: 62ch;
-		color: #c7d6e5;
+		max-width: 58ch;
+		color: #54626b;
 	}
 
-	.hub-grid {
-		margin-top: 1.15rem;
+	.entry-grid {
+		margin-top: 1.2rem;
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		grid-template-columns: 1fr;
 		gap: 0.95rem;
 	}
 
-	.hub-card {
+	.entry-card {
+		display: block;
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		background: #2d4660;
-		border: 1px solid #45617d;
-		transition: transform 180ms ease, background-color 180ms ease;
+		background: #ffffff;
+		border: 1px solid #dde5e1;
+		color: #2c3338;
+		transition:
+			transform 180ms ease,
+			background-color 180ms ease,
+			border-color 180ms ease;
 	}
 
-	.hub-card:hover {
+	.entry-card:hover {
 		transform: translateY(-2px);
-		background: #355270;
+		background: #fbfcfb;
+		border-color: #cfd8d4;
 	}
 
-	.hub-card h3 {
+	.entry-card h3 {
 		margin: 0;
-		color: #f3f8fd;
-		font-size: 1.05rem;
+		color: #273237;
+		font-size: 1.08rem;
+		line-height: 1.3;
 	}
 
-	.hub-card p {
+	.entry-card p {
 		margin: 0.55rem 0 0;
-		font-size: 0.94rem;
+		font-size: 0.95rem;
 		line-height: 1.65;
-		color: #c7d6e5;
+		color: #5a686f;
 	}
 
-	.hub-card span {
-		display: inline-block;
-		margin-top: 0.75rem;
-		font-size: 0.85rem;
+	.entry-card-cta {
+		display: inline-flex;
+		align-items: center;
+		margin-top: 0.9rem;
+		padding: 0.42rem 0.78rem;
+		border-radius: var(--radius-pill);
+		background: #e7f1ee;
+		color: #2e5850;
+		font-family: var(--font-heading);
+		font-size: 0.83rem;
 		font-weight: 600;
-		color: #d9e7f5;
+		letter-spacing: 0.005em;
 	}
 
 	.focus-content {
@@ -553,6 +600,11 @@
 	}
 
 	@media (min-width: 700px) {
+		.entry-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1.05rem;
+		}
+
 		.focus-cards {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 1.1rem;
@@ -564,6 +616,11 @@
 	}
 
 	@media (min-width: 1040px) {
+		.entry-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 1.1rem;
+		}
+
 		.focus-cards {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 			gap: 1.25rem;
@@ -575,32 +632,42 @@
 		background: #1a1c1d;
 	}
 
-	:global(.dark) .content-hub {
-		background: #1b2430;
-		color: #e5edf6;
+	:global(.dark) .entry-paths {
+		background: #151b19;
+		color: #e8e6e2;
 	}
 
-	:global(.dark) .hub-inner h2 {
-		color: #edf3f9;
+	:global(.dark) .entry-inner h2 {
+		color: #f0eeea;
 	}
 
-	:global(.dark) .hub-inner p,
-	:global(.dark) .hub-card p {
-		color: #bcc9d8;
+	:global(.dark) .entry-eyebrow {
+		color: #9cb0a6;
 	}
 
-	:global(.dark) .hub-card {
-		background: #223041;
-		border-color: #34475c;
+	:global(.dark) .entry-intro,
+	:global(.dark) .entry-card p {
+		color: rgba(255, 255, 255, 0.68);
 	}
 
-	:global(.dark) .hub-card:hover {
-		background: #27384b;
+	:global(.dark) .entry-card {
+		background: #202624;
+		border-color: rgba(255, 255, 255, 0.08);
+		color: #e8e6e2;
 	}
 
-	:global(.dark) .hub-card h3,
-	:global(.dark) .hub-card span {
-		color: #e5edf6;
+	:global(.dark) .entry-card:hover {
+		background: #252c29;
+		border-color: rgba(255, 255, 255, 0.14);
+	}
+
+	:global(.dark) .entry-card h3 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .entry-card-cta {
+		background: rgba(134, 223, 214, 0.12);
+		color: #86dfd6;
 	}
 
 	:global(.dark) .focus-content {

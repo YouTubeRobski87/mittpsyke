@@ -24,20 +24,20 @@ const options = {
   service_worker: false,
   service_worker_options: void 0,
   templates: {
-    app: ({ head, body, assets, nonce, env }) => '<!doctype html>\n<html lang="sv">\n	<head>\n		<meta charset="utf-8" />\n		<meta name="viewport" content="width=device-width, initial-scale=1" />\n		<link rel="stylesheet" href="' + assets + '/assets/recursive/fonts.css" />\n		<link rel="icon" href="' + assets + '/favicon.png" />\n		' + head + `
-		<!-- Google tag (gtag.js) -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-8XG01VCB5N">
-		<\/script>
-		<script>
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
-
-		  gtag('config', 'G-8XG01VCB5N');
-		<\/script>
-	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">` + body + "</div>\n	</body>\n</html>\n",
+    app: ({ head, body, assets, nonce, env }) => '<!doctype html>\r\n<html lang="sv">\r\n	<head>\r\n		<meta charset="utf-8" />\r\n		<meta name="viewport" content="width=device-width, initial-scale=1" />\r\n		<link rel="stylesheet" href="' + assets + '/assets/recursive/fonts.css" />\r\n		<link rel="icon" href="' + assets + '/favicon.png" />\r\n		' + head + `\r
+		<!-- Google tag (gtag.js) -->\r
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-0CLWCRW7SN">\r
+		<\/script>\r
+		<script>\r
+		  window.dataLayer = window.dataLayer || [];\r
+		  function gtag(){dataLayer.push(arguments);}\r
+		  gtag('js', new Date());\r
+\r
+		  gtag('config', 'G-0CLWCRW7SN');\r
+		<\/script>\r
+	</head>\r
+	<body data-sveltekit-preload-data="hover">\r
+		<div style="display: contents">` + body + "</div>\r\n	</body>\r\n</html>\r\n",
     error: ({ status, message }) => '<!doctype html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8" />\n		<title>' + message + `</title>
 
 		<style>
@@ -109,7 +109,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "1xu6oaf"
+  version_hash: "igx8t6"
 };
 async function get_hooks() {
   let handle;

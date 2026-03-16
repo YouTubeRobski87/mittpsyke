@@ -1,4 +1,4 @@
-import { a as attr, b as ensure_array_like, c as attr_class, s as stringify, e as escape_html, d as derived, h as head } from "../../../../chunks/index.js";
+import { a as attr, c as ensure_array_like, b as attr_class, a3 as stringify, e as escape_html, d as derived, h as head } from "../../../../chunks/index2.js";
 import "@sveltejs/kit/internal";
 import "../../../../chunks/exports.js";
 import "../../../../chunks/utils.js";
@@ -10,7 +10,55 @@ import { C as ConsentGate } from "../../../../chunks/ConsentGate.js";
 import { g as grantSensitiveConsent } from "../../../../chunks/consent.js";
 import "../../../../chunks/supabase.js";
 import { g as getPortalByKey } from "../../../../chunks/portals.js";
-import { p as page } from "../../../../chunks/index2.js";
+import { p as page } from "../../../../chunks/index3.js";
+const CRISIS_SIGNALS = Object.freeze([
+  "vill inte leva",
+  "ta mitt liv",
+  "ta livet av mig",
+  "självmord",
+  "suicid",
+  "avsluta allt",
+  "avsluta mitt liv",
+  "orkar inte mer",
+  "orkar inte leva",
+  "inte orkar leva",
+  "skada mig",
+  "skada mig själv",
+  "självskad",
+  "vill försvinna",
+  "försvinna för alltid",
+  "allt är hopplöst",
+  "ingen mening",
+  "ingen mening att leva",
+  "vill dö",
+  "vill vara död",
+  "hoppas att jag dör",
+  "bättre om jag var död",
+  "ingen anledning att leva",
+  "hoppa från",
+  "inte vilja finnas",
+  "ge upp allt",
+  "ge upp hoppet",
+  "inget hopp",
+  "alla vore bättre utan mig",
+  "ingen saknar mig",
+  "ingen bryr sig om mig",
+  "ta tabletter",
+  "ta överdos",
+  "avskedsbrev",
+  "inte vakna imorgon",
+  "inte vakna igen",
+  "somna för alltid",
+  "somna in för alltid",
+  "göra slut på allt",
+  "kan inte fortsätta",
+  "sista utvägen"
+]);
+function containsCrisisSignal(text) {
+  if (!text) return false;
+  const normalized = text.toLowerCase().replace(/\s+/g, " ").trim();
+  return CRISIS_SIGNALS.some((signal) => normalized.includes(signal));
+}
 function ChatWindow($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     let messages = [];
@@ -18,12 +66,7 @@ function ChatWindow($$renderer, $$props) {
     let sending = false;
     let savePromptHidden = {};
     let hasSensitiveDataConsent = false;
-    const starterSuggestions = [
-      "Jag känner mig orolig just nu",
-      "Tankarna snurrar och jag får ingen ro",
-      "Jag vet inte riktigt varför jag mår dåligt",
-      "Kan du hjälpa mig sortera mina tankar?"
-    ];
+    const starterSuggestions = ["Jag känner mig orolig", "Hjälp mig sortera mina tankar"];
     const elevatedSupportKeywords = [
       "för mycket",
       "orkar inte",
@@ -39,11 +82,30 @@ function ChatWindow($$renderer, $$props) {
     const acuteSupportKeywords = [
       "akut fara",
       "självmord",
+      "suicid",
       "ta mitt liv",
+      "ta livet av mig",
       "vill dö",
+      "vill vara död",
       "orkar inte leva",
+      "inte orkar leva",
       "skada mig själv",
-      "skada någon annan"
+      "självskad",
+      "skada någon annan",
+      "hoppa från",
+      "försvinna för alltid",
+      "ingen mening att leva",
+      "hoppas att jag dör",
+      "bättre om jag var död",
+      "avsluta allt",
+      "avsluta mitt liv",
+      "inte vakna",
+      "somna för alltid",
+      "avskedsbrev",
+      "ta tabletter",
+      "ta överdos",
+      "sista utvägen",
+      "göra slut på allt"
     ];
     function latestUserMessageContent() {
       for (let i = messages.length - 1; i >= 0; i -= 1) {
@@ -55,7 +117,7 @@ function ChatWindow($$renderer, $$props) {
     function supportLevel() {
       const text = latestUserMessageContent();
       if (!text) return "standard";
-      if (acuteSupportKeywords.some((keyword) => text.includes(keyword))) return "acute";
+      if (acuteSupportKeywords.some((keyword) => text.includes(keyword)) || containsCrisisSignal(text)) return "acute";
       if (elevatedSupportKeywords.some((keyword) => text.includes(keyword))) return "elevated";
       return "standard";
     }
@@ -68,7 +130,7 @@ function ChatWindow($$renderer, $$props) {
     $$renderer2.push(`<div class="chat-container flex flex-col h-[calc(100vh-200px)] max-w-2xl mx-auto"><div class="px-4 pb-2 text-right"><a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="text-xs underline opacity-70 hover:opacity-100 transition-opacity">Behöver du mänsklig kontakt? Se stödlinjer</a></div> <div class="chat-messages flex-1 overflow-y-auto p-4 space-y-3" aria-live="polite"${attr("aria-busy", sending)}>`);
     if (messages.length === 0) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="text-center mt-6"><img src="/assets/mittpsyke-hero.png" alt="" width="220" height="220" decoding="async" class="mx-auto mb-4 opacity-80" style="max-width: 220px"/> <p class="text-sm opacity-70 mb-2">Hur mår du?</p> <p class="text-center opacity-60">Skriv något så börjar vi prata. Allt sker utan dömande.</p></div>`);
+      $$renderer2.push(`<div class="text-center mt-4"><p class="text-sm opacity-60">Skriv något så börjar vi prata. Allt sker utan dömande.</p></div>`);
     } else {
       $$renderer2.push("<!--[!-->");
     }
@@ -76,7 +138,7 @@ function ChatWindow($$renderer, $$props) {
     const each_array = ensure_array_like(messages);
     for (let i = 0, $$length = each_array.length; i < $$length; i++) {
       let msg = each_array[i];
-      $$renderer2.push(`<div class="space-y-1"><div${attr_class(`flex ${stringify(msg.role === "user" ? "justify-end" : "justify-start")}`)}><div${attr_class(`max-w-[80%] px-4 py-3 rounded-[var(--radius-card)] text-sm leading-relaxed ${stringify(msg.role === "user" ? "bg-[var(--primary)] text-white rounded-br-md" : "bg-black/5 dark:bg-white/10 rounded-bl-md")}`)}><!--[-->`);
+      $$renderer2.push(`<div class="space-y-1"><div${attr_class(`flex ${stringify(msg.role === "user" ? "justify-end" : "justify-start")}`)}><div${attr_class(`max-w-[80%] px-4 py-3 rounded-[var(--radius-card)] text-sm leading-relaxed ${stringify(msg.role === "user" ? "bg-[var(--primary)] text-white rounded-br-md" : msg.crisis ? "bg-rose-50 dark:bg-rose-900/30 border border-rose-300 dark:border-rose-700 rounded-bl-md crisis-message" : "bg-black/5 dark:bg-white/10 rounded-bl-md")}`)}><!--[-->`);
       const each_array_1 = ensure_array_like(msg.content.split("\n"));
       for (let j = 0, $$length2 = each_array_1.length; j < $$length2; j++) {
         let line = each_array_1[j];
@@ -101,7 +163,11 @@ function ChatWindow($$renderer, $$props) {
     {
       $$renderer2.push("<!--[!-->");
     }
-    $$renderer2.push(`<!--]--></div> <div class="chat-input-area border-t border-black/8 dark:border-white/10 p-4">`);
+    $$renderer2.push(`<!--]--></div> `);
+    {
+      $$renderer2.push("<!--[!-->");
+    }
+    $$renderer2.push(`<!--]--> <div class="chat-input-area border-t border-black/8 dark:border-white/10 p-4">`);
     if (!hasSensitiveDataConsent) {
       $$renderer2.push("<!--[-->");
       $$renderer2.push(`<div class="mb-3">`);
@@ -118,7 +184,7 @@ function ChatWindow($$renderer, $$props) {
     $$renderer2.push(`<!--]--> `);
     if (currentSupportLevel() === "acute") {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm"><p class="font-medium text-rose-900 dark:text-rose-100">Om du är i akut fara eller riskerar att skada dig själv eller någon annan, ring 112 direkt.</p> <div class="mt-2 flex flex-wrap gap-2"><a href="tel:112" class="support-chip support-chip-urgent svelte-1jlre7m">Ring 112</a> <a href="tel:1177" class="support-chip svelte-1jlre7m">Ring 1177</a> <a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip svelte-1jlre7m">Se stödlinjer</a></div></div>`);
+      $$renderer2.push(`<div class="mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm"><p class="font-medium text-rose-900 dark:text-rose-100">Om du är i akut fara eller riskerar att skada dig själv eller någon annan, ring 112 direkt.</p> <div class="mt-2 flex flex-wrap gap-2"><a href="tel:112" class="support-chip support-chip-urgent svelte-1jlre7m">Ring 112</a> <a href="tel:90101" class="support-chip support-chip-mind svelte-1jlre7m">Mind 90101</a> <a href="tel:1177" class="support-chip svelte-1jlre7m">Ring 1177</a> <a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip svelte-1jlre7m">Se stödlinjer</a></div> <p class="mt-2 text-xs opacity-70">MittPsyke är inte en akuttjänst. Vid akut kris, kontakta alltid professionell hjälp.</p></div>`);
     } else if (currentSupportLevel() === "elevated") {
       $$renderer2.push("<!--[1-->");
       $$renderer2.push(`<div class="mb-3 rounded-[var(--radius-card)] border border-amber-300/70 bg-amber-50 dark:bg-amber-900/20 px-3 py-3 text-sm"><p class="text-amber-900 dark:text-amber-100">Du behöver inte bära allt ensam. Här finns stödlinjer om du vill prata med någon.</p> <div class="mt-2 flex flex-wrap gap-2"><a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip svelte-1jlre7m">Se stödlinjer</a> <a href="tel:+15672921889" class="support-chip svelte-1jlre7m">Prata med någon</a></div></div>`);
@@ -129,11 +195,16 @@ function ChatWindow($$renderer, $$props) {
     $$renderer2.push(`<!--]--> `);
     if (showStarterSuggestions()) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="mb-3"><p class="text-xs opacity-70 mb-2">Du kan börja med något enkelt:</p> <div class="starter-chips svelte-1jlre7m"><!--[-->`);
+      $$renderer2.push(`<div class="mb-4"><p class="text-xs opacity-55 mb-2">Eller börja med ett förslag:</p> <div class="starter-chips svelte-1jlre7m"><!--[-->`);
       const each_array_2 = ensure_array_like(starterSuggestions);
       for (let $$index_2 = 0, $$length = each_array_2.length; $$index_2 < $$length; $$index_2++) {
         let suggestion = each_array_2[$$index_2];
         $$renderer2.push(`<button type="button" class="starter-chip svelte-1jlre7m">${escape_html(suggestion)}</button>`);
+      }
+      $$renderer2.push(`<!--]--> `);
+      {
+        $$renderer2.push("<!--[!-->");
+        $$renderer2.push(`<button type="button" class="starter-chip starter-chip-more svelte-1jlre7m">Visa fler…</button>`);
       }
       $$renderer2.push(`<!--]--></div></div>`);
     } else {
@@ -142,7 +213,7 @@ function ChatWindow($$renderer, $$props) {
     $$renderer2.push(`<!--]--> `);
     if (hasSensitiveDataConsent) {
       $$renderer2.push("<!--[-->");
-      $$renderer2.push(`<div class="flex gap-2"><label class="sr-only" for="chat-message">Skriv ditt meddelande</label> <textarea id="chat-message" placeholder="Skriv här..." aria-describedby="chat-help-text"${attr("rows", 1)} class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none focus:border-[var(--primary)] transition-colors">`);
+      $$renderer2.push(`<div class="flex gap-2"><label class="sr-only" for="chat-message">Skriv ditt meddelande</label> <textarea id="chat-message" aria-label="Skriv ditt meddelande" placeholder="Skriv här..." aria-describedby="chat-help-text"${attr("rows", 1)} class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2 focus:border-[var(--primary)] transition-colors">`);
       const $$body = escape_html(input);
       if ($$body) {
         $$renderer2.push(`${$$body}`);

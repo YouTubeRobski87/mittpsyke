@@ -1,6 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { createClient } from "@supabase/supabase-js";
-import { p as private_env, a as public_env } from "../../../../../chunks/shared-server.js";
+import { b as private_env, p as public_env } from "../../../../../chunks/shared-server.js";
 function errorResponse(message, status) {
   const body = { success: false, error: message };
   return json(body, { status });

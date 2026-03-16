@@ -1,6 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { createClient } from "@supabase/supabase-js";
-import { p as private_env, a as public_env } from "../../../../../chunks/shared-server.js";
+import { b as private_env, p as public_env } from "../../../../../chunks/shared-server.js";
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 function errorResponse(message, status) {
   const body = { success: false, error: message };

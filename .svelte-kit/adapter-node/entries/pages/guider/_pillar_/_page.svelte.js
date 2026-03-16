@@ -1,4 +1,4 @@
-import { h as head, e as escape_html, b as ensure_array_like, a as attr, d as derived } from "../../../../chunks/index.js";
+import { h as head, e as escape_html, c as ensure_array_like, a as attr, d as derived } from "../../../../chunks/index2.js";
 import { h as html } from "../../../../chunks/html.js";
 function _page($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
@@ -35,11 +35,19 @@ function _page($$renderer, $$props) {
           headline: data.pillar.title,
           description: data.pillar.description,
           image: "https://mittpsyke.se/og-image.png",
-          author: {
-            "@type": "Organization",
-            name: "MittPsyke",
-            url: "https://mittpsyke.se/om-mittpsyke"
-          },
+          author: [
+            {
+              "@type": "Organization",
+              name: "MittPsyke",
+              url: "https://mittpsyke.se"
+            },
+            {
+              "@type": "Person",
+              name: "Robert Claesson",
+              jobTitle: "Grundare",
+              url: "https://mittpsyke.se/om-mittpsyke"
+            }
+          ],
           publisher: {
             "@type": "Organization",
             name: "MittPsyke",
@@ -62,7 +70,7 @@ function _page($$renderer, $$props) {
       });
       $$renderer3.push(`<meta name="description"${attr("content", data.pillar.description)}/> <meta property="og:title"${attr("content", `${data.pillar.title} | Guider | MittPsyke`)}/> <meta property="og:description"${attr("content", data.pillar.description)}/> <link rel="canonical"${attr("href", `https://mittpsyke.se/guider/${data.pillar.slug}`)}/> ${html(`<script type="application/ld+json">${JSON.stringify(jsonLd())}<\/script>`)}`);
     });
-    $$renderer2.push(`<main class="container pillar-page svelte-1misdmc"><nav class="crumbs svelte-1misdmc" aria-label="Breadcrumb"><a href="/">Hem</a> <span>/</span> <a href="/guider">Guider</a> <span>/</span> <span>${escape_html(data.pillar.title)}</span></nav> <header class="intro svelte-1misdmc"><h1 class="svelte-1misdmc">${escape_html(data.pillar.title)}</h1> <p class="svelte-1misdmc">${escape_html(data.pillar.description)}</p></header> <section class="info-box svelte-1misdmc" aria-label="Om innehållet"><p class="svelte-1misdmc"><strong>Uppdaterad 8 mars 2026.</strong> Guiden är sammanställd av MittPsyke.</p> <p class="svelte-1misdmc">Den är tänkt som stöd för reflektion och ökad förståelse. Den ersätter inte vård, diagnos eller behandling.</p></section> <section class="block svelte-1misdmc" aria-label="Artiklar i guiden"><h2 class="svelte-1misdmc">Artiklar i guiden</h2> <ul class="stack-list svelte-1misdmc"><!--[-->`);
+    $$renderer2.push(`<main class="container pillar-page svelte-1misdmc"><nav class="crumbs svelte-1misdmc" aria-label="Breadcrumb"><a href="/">Hem</a> <span>/</span> <a href="/guider">Guider</a> <span>/</span> <span>${escape_html(data.pillar.title)}</span></nav> <header class="intro svelte-1misdmc"><h1 class="svelte-1misdmc">${escape_html(data.pillar.title)}</h1> <p class="svelte-1misdmc">${escape_html(data.pillar.description)}</p></header> <section class="info-box svelte-1misdmc" aria-label="Om innehållet"><p class="svelte-1misdmc"><strong>Senast uppdaterad: 14 mars 2026</strong></p> <p class="svelte-1misdmc">Författare: MittPsyke-redaktionen</p> <p class="svelte-1misdmc">Faktagranskad mot: <a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177 Vårdguiden</a>, <a href="https://www.socialstyrelsen.se" target="_blank" rel="noopener noreferrer">Socialstyrelsen</a>, <a href="https://www.folkhalsomyndigheten.se" target="_blank" rel="noopener noreferrer">Folkhälsomyndigheten</a></p> <p class="svelte-1misdmc">Innehållet är informationsbaserat och ersätter inte vård, diagnos eller individuell medicinsk bedömning.</p> <p class="om-innehall-link svelte-1misdmc"><a href="/sa-arbetar-vi-med-innehall" class="svelte-1misdmc">Läs mer om hur vi arbetar med innehåll →</a></p></section> <section class="block svelte-1misdmc" aria-label="Artiklar i guiden"><h2 class="svelte-1misdmc">Artiklar i guiden</h2> <ul class="stack-list svelte-1misdmc"><!--[-->`);
     const each_array = ensure_array_like(data.pillar.clusterTopics);
     for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
       let topic = each_array[$$index];

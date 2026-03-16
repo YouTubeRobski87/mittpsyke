@@ -1,60 +1,52 @@
-import { n as noop } from "./index.js";
-import { s as safe_not_equal } from "./root.js";
+import "./state.svelte.js";
 import "clsx";
-const subscriber_queue = [];
-function readable(value, start) {
-  return {
-    subscribe: writable(value, start).subscribe
-  };
-}
-function writable(value, start = noop) {
-  let stop = null;
-  const subscribers = /* @__PURE__ */ new Set();
-  function set(new_value) {
-    if (safe_not_equal(value, new_value)) {
-      value = new_value;
-      if (stop) {
-        const run_queue = !subscriber_queue.length;
-        for (const subscriber of subscribers) {
-          subscriber[1]();
-          subscriber_queue.push(subscriber, value);
-        }
-        if (run_queue) {
-          for (let i = 0; i < subscriber_queue.length; i += 2) {
-            subscriber_queue[i][0](subscriber_queue[i + 1]);
-          }
-          subscriber_queue.length = 0;
-        }
-      }
-    }
-  }
-  function update(fn) {
-    set(fn(
-      /** @type {T} */
-      value
-    ));
-  }
-  function subscribe(run, invalidate = noop) {
-    const subscriber = [run, invalidate];
-    subscribers.add(subscriber);
-    if (subscribers.size === 1) {
-      stop = start(set, update) || noop;
-    }
-    run(
-      /** @type {T} */
-      value
-    );
-    return () => {
-      subscribers.delete(subscriber);
-      if (subscribers.size === 0 && stop) {
-        stop();
-        stop = null;
-      }
+import "@sveltejs/kit/internal";
+import "./exports.js";
+import "./utils.js";
+import { w as writable } from "./index.js";
+import "@sveltejs/kit/internal/server";
+import "./root.js";
+import { a2 as getContext } from "./index2.js";
+function create_updated_store() {
+  const { set, subscribe } = writable(false);
+  {
+    return {
+      subscribe,
+      // eslint-disable-next-line @typescript-eslint/require-await
+      check: async () => false
     };
   }
-  return { set, update, subscribe };
 }
+const stores = {
+  updated: /* @__PURE__ */ create_updated_store()
+};
+({
+  check: stores.updated.check
+});
+function context() {
+  return getContext("__request__");
+}
+const page$1 = {
+  get data() {
+    return context().page.data;
+  },
+  get error() {
+    return context().page.error;
+  },
+  get params() {
+    return context().page.params;
+  },
+  get route() {
+    return context().page.route;
+  },
+  get status() {
+    return context().page.status;
+  },
+  get url() {
+    return context().page.url;
+  }
+};
+const page = page$1;
 export {
-  readable as r,
-  writable as w
+  page as p
 };

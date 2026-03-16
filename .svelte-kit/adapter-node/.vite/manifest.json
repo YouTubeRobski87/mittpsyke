@@ -15,7 +15,7 @@
     "file": "chunks/ConsentGate.js",
     "name": "ConsentGate",
     "imports": [
-      "_index.js"
+      "_index2.js"
     ]
   },
   "_consent.js": {
@@ -44,26 +44,26 @@
   },
   "_index.js": {
     "file": "chunks/index.js",
-    "name": "index"
+    "name": "index",
+    "imports": [
+      "_index2.js",
+      "_root.js"
+    ]
   },
   "_index2.js": {
     "file": "chunks/index2.js",
-    "name": "index",
-    "imports": [
-      "_state.svelte.js",
-      "_exports.js",
-      "_utils.js",
-      "_index3.js",
-      "_root.js",
-      "_index.js"
-    ]
+    "name": "index"
   },
   "_index3.js": {
     "file": "chunks/index3.js",
     "name": "index",
     "imports": [
+      "_state.svelte.js",
+      "_exports.js",
+      "_utils.js",
       "_index.js",
-      "_root.js"
+      "_root.js",
+      "_index2.js"
     ]
   },
   "_internal.js": {
@@ -94,7 +94,7 @@
     "file": "chunks/root.js",
     "name": "root",
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_false.js"
     ]
   },
@@ -121,7 +121,7 @@
     "file": "chunks/state.svelte.js",
     "name": "state.svelte",
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_exports.js",
       "_root.js"
     ]
@@ -132,6 +132,10 @@
     "imports": [
       "_shared-server.js"
     ]
+  },
+  "_theme.js": {
+    "file": "chunks/theme.js",
+    "name": "theme"
   },
   "_unsubscribe.js": {
     "file": "chunks/unsubscribe.js",
@@ -161,8 +165,8 @@
     "src": "node_modules/@sveltejs/kit/src/runtime/components/svelte-5/error.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
-      "_index2.js"
+      "_index2.js",
+      "_index3.js"
     ]
   },
   "node_modules/@sveltejs/kit/src/runtime/server/index.js": {
@@ -176,7 +180,7 @@
       "_shared.js",
       "_exports.js",
       "_utils.js",
-      "_index3.js",
+      "_index.js",
       "_shared-server.js",
       "_internal.js"
     ]
@@ -191,26 +195,30 @@
       "_public.js"
     ]
   },
+  "src/routes/+layout.server.ts": {
+    "file": "entries/pages/_layout.server.ts.js",
+    "name": "entries/pages/_layout.server.ts",
+    "src": "src/routes/+layout.server.ts",
+    "isEntry": true
+  },
   "src/routes/+layout.svelte": {
     "file": "entries/pages/_layout.svelte.js",
     "name": "entries/pages/_layout.svelte",
     "src": "src/routes/+layout.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
-      "_supabase.js",
       "_index2.js",
+      "_exports.js",
+      "_utils.js",
+      "_root.js",
+      "_state.svelte.js",
+      "_supabase.js",
+      "_index3.js",
       "_html.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.BcHi9MuL.css"
+      "_app/immutable/assets/_layout.n54tboeU.css"
     ]
-  },
-  "src/routes/+layout.ts": {
-    "file": "entries/pages/_layout.ts.js",
-    "name": "entries/pages/_layout.ts",
-    "src": "src/routes/+layout.ts",
-    "isEntry": true
   },
   "src/routes/+page.js": {
     "file": "entries/pages/_page.js",
@@ -224,13 +232,13 @@
     "src": "src/routes/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_portals.js",
       "_ConsentGate.js",
       "_consent.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.Dmwrwvg4.css"
+      "_app/immutable/assets/_page.CSS07rJe.css"
     ]
   },
   "src/routes/4-7-8-andning-ovning/+page.svelte": {
@@ -239,7 +247,7 @@
     "src": "src/routes/4-7-8-andning-ovning/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.B-jfgRvD.css"
@@ -251,10 +259,10 @@
     "src": "src/routes/ai-samtalsstod-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.JwXh9zkP.css"
+      "_app/immutable/assets/_page.CnWt7NEV.css"
     ]
   },
   "src/routes/andningsovningar-mot-angest/+page.svelte": {
@@ -263,10 +271,10 @@
     "src": "src/routes/andningsovningar-mot-angest/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DDn7azKK.css"
+      "_app/immutable/assets/_page.ColgIQci.css"
     ]
   },
   "src/routes/angest/+page.js": {
@@ -281,10 +289,10 @@
     "src": "src/routes/angest/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.Dnbq8kK3.css"
+      "_app/immutable/assets/_page.BhjECXv7.css"
     ]
   },
   "src/routes/anonym-dagbok-online/+page.svelte": {
@@ -293,7 +301,7 @@
     "src": "src/routes/anonym-dagbok-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.DLT4Hyxe.css"
@@ -305,10 +313,10 @@
     "src": "src/routes/anonymt-samtalsstod-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DnhAAzEj.css"
+      "_app/immutable/assets/_page.Dc29osW8.css"
     ]
   },
   "src/routes/ansvar/+page.svelte": {
@@ -317,7 +325,7 @@
     "src": "src/routes/ansvar/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.CeEGitPA.css"
@@ -387,6 +395,15 @@
     "isEntry": true,
     "imports": [
       "_public.js"
+    ]
+  },
+  "src/routes/api/diary/reflect/+server.ts": {
+    "file": "entries/endpoints/api/diary/reflect/_server.ts.js",
+    "name": "entries/endpoints/api/diary/reflect/_server.ts",
+    "src": "src/routes/api/diary/reflect/+server.ts",
+    "isEntry": true,
+    "imports": [
+      "_shared-server.js"
     ]
   },
   "src/routes/api/diary/stats-timeline/+server.ts": {
@@ -467,7 +484,7 @@
     "src": "src/routes/avregistrera/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.Bcn2Zh4L.css"
@@ -479,7 +496,7 @@
     "src": "src/routes/chat/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.qCwLY0wm.css"
@@ -491,7 +508,7 @@
     "src": "src/routes/chat/[category]/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_exports.js",
       "_utils.js",
       "_root.js",
@@ -500,10 +517,10 @@
       "_consent.js",
       "_supabase.js",
       "_portals.js",
-      "_index2.js"
+      "_index3.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.8RNu-gAT.css"
+      "_app/immutable/assets/_page.BMB1km0L.css"
     ]
   },
   "src/routes/chatta-anonymt-med-nagon/+page.svelte": {
@@ -512,7 +529,7 @@
     "src": "src/routes/chatta-anonymt-med-nagon/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.CnyMkju6.css"
@@ -524,10 +541,27 @@
     "src": "src/routes/chattstod-psykisk-ohalsa/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.K4dpXgFd.css"
+    ]
+  },
+  "src/routes/checkin/+page.svelte": {
+    "file": "entries/pages/checkin/_page.svelte.js",
+    "name": "entries/pages/checkin/_page.svelte",
+    "src": "src/routes/checkin/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js",
+      "_exports.js",
+      "_utils.js",
+      "_root.js",
+      "_state.svelte.js",
+      "_theme.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.BS1MuuOo.css"
     ]
   },
   "src/routes/dagbok/+page.js": {
@@ -542,13 +576,17 @@
     "src": "src/routes/dagbok/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_exports.js",
       "_utils.js",
       "_root.js",
       "_state.svelte.js",
       "_supabase.js",
+      "_theme.js",
       "_html.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.C2NBXMFS.css"
     ]
   },
   "src/routes/dashboard/+page.svelte": {
@@ -557,15 +595,16 @@
     "src": "src/routes/dashboard/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_exports.js",
       "_utils.js",
       "_root.js",
       "_state.svelte.js",
-      "_supabase.js"
+      "_supabase.js",
+      "_theme.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.D52-tOHo.css"
+      "_app/immutable/assets/_page.Dli2ySBz.css"
     ]
   },
   "src/routes/dashboard/installningar/+page.svelte": {
@@ -574,7 +613,7 @@
     "src": "src/routes/dashboard/installningar/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_exports.js",
       "_utils.js",
       "_root.js",
@@ -582,7 +621,7 @@
       "_supabase.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DF9qogws.css"
+      "_app/immutable/assets/_page.DX2qnMsr.css"
     ]
   },
   "src/routes/depression/+page.js": {
@@ -597,10 +636,10 @@
     "src": "src/routes/depression/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DKJ5QRS5.css"
+      "_app/immutable/assets/_page.eCyvWzYh.css"
     ]
   },
   "src/routes/digital-dagbok-for-maende/+page.svelte": {
@@ -609,7 +648,7 @@
     "src": "src/routes/digital-dagbok-for-maende/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.BtWR75Oo.css"
@@ -627,10 +666,10 @@
     "src": "src/routes/ensamhet/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.D3dwumQa.css"
+      "_app/immutable/assets/_page.DJXtY6B0.css"
     ]
   },
   "src/routes/exponering-ovningar-mot-angest/+page.svelte": {
@@ -639,10 +678,10 @@
     "src": "src/routes/exponering-ovningar-mot-angest/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DEgF2TMx.css"
+      "_app/immutable/assets/_page.CWb-jMCv.css"
     ]
   },
   "src/routes/framsteg/+page.server.ts": {
@@ -657,13 +696,14 @@
     "src": "src/routes/framsteg/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
+      "_theme.js",
       "_ConsentGate.js",
       "_consent.js",
       "_supabase.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DTS-h6x2.css"
+      "_app/immutable/assets/_page.BXzM5Iu0.css"
     ]
   },
   "src/routes/guider-seo/+page.svelte": {
@@ -672,7 +712,7 @@
     "src": "src/routes/guider-seo/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_seo.js"
     ]
   },
@@ -691,7 +731,7 @@
     "src": "src/routes/guider-seo/[pillar]/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_seo.js",
       "_html.js"
     ]
@@ -711,12 +751,12 @@
     "src": "src/routes/guider-seo/[pillar]/[guide]/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_seo.js",
       "_html.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.CMByuvj8.css"
+      "_app/immutable/assets/_page.BQT3qdYV.css"
     ]
   },
   "src/routes/guider-seo/[pillar]/[guide]/+page.ts": {
@@ -725,7 +765,8 @@
     "src": "src/routes/guider-seo/[pillar]/[guide]/+page.ts",
     "isEntry": true,
     "imports": [
-      "_content.js"
+      "_content.js",
+      "_seo-architecture.js"
     ]
   },
   "src/routes/guider/+page.svelte": {
@@ -734,11 +775,11 @@
     "src": "src/routes/guider/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_seo-architecture.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.YGrXa4oC.css"
+      "_app/immutable/assets/_page.C-kw2DjZ.css"
     ]
   },
   "src/routes/guider/[pillar]/+page.svelte": {
@@ -747,11 +788,11 @@
     "src": "src/routes/guider/[pillar]/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_html.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.BwNNS22l.css"
+      "_app/immutable/assets/_page.7SogFGib.css"
     ]
   },
   "src/routes/guider/[pillar]/+page.ts": {
@@ -769,10 +810,10 @@
     "src": "src/routes/hjalp-mot-oro-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.CmCx1e9o.css"
+      "_app/immutable/assets/_page.B33B5ptW.css"
     ]
   },
   "src/routes/hjalp-vid-angest-online/+page.svelte": {
@@ -781,10 +822,10 @@
     "src": "src/routes/hjalp-vid-angest-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.D5aDcn_C.css"
+      "_app/immutable/assets/_page.CtQaX2yh.css"
     ]
   },
   "src/routes/hjalp-vid-depression-online/+page.svelte": {
@@ -793,10 +834,10 @@
     "src": "src/routes/hjalp-vid-depression-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.BvMI6mLZ.css"
+      "_app/immutable/assets/_page.oV2uK8hY.css"
     ]
   },
   "src/routes/integritet/+page.svelte": {
@@ -805,7 +846,7 @@
     "src": "src/routes/integritet/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ]
   },
   "src/routes/login/+page.server.ts": {
@@ -820,7 +861,7 @@
     "src": "src/routes/login/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_exports.js",
       "_utils.js",
       "_root.js",
@@ -839,10 +880,10 @@
     "src": "src/routes/nedstamdhet/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.Bf9OdeEu.css"
+      "_app/immutable/assets/_page.DEG3sXdD.css"
     ]
   },
   "src/routes/om-mittpsyke/+page.js": {
@@ -857,10 +898,10 @@
     "src": "src/routes/om-mittpsyke/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.BmnAha6h.css"
+      "_app/immutable/assets/_page.DidFMa0U.css"
     ]
   },
   "src/routes/oro/+page.js": {
@@ -875,10 +916,10 @@
     "src": "src/routes/oro/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.C7qhccxl.css"
+      "_app/immutable/assets/_page.DHi8U5--.css"
     ]
   },
   "src/routes/ovningar-mot-angest-online/+page.svelte": {
@@ -887,10 +928,10 @@
     "src": "src/routes/ovningar-mot-angest-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DskFNeHB.css"
+      "_app/immutable/assets/_page.DT5QoESO.css"
     ]
   },
   "src/routes/ovningar/+page.svelte": {
@@ -899,11 +940,11 @@
     "src": "src/routes/ovningar/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
+      "_index2.js",
       "_seo-architecture.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DuAcyT-X.css"
+      "_app/immutable/assets/_page.B4cSQ-yS.css"
     ]
   },
   "src/routes/ovningar/[tool]/+page.svelte": {
@@ -912,7 +953,7 @@
     "src": "src/routes/ovningar/[tool]/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.BJxNzet2.css"
@@ -939,10 +980,10 @@
     "src": "src/routes/panikattack/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.C9CS5TGK.css"
+      "_app/immutable/assets/_page.57AdouFA.css"
     ]
   },
   "src/routes/portal/[slug]/+page.svelte": {
@@ -951,9 +992,9 @@
     "src": "src/routes/portal/[slug]/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
-      "_portals.js",
       "_index2.js",
+      "_portals.js",
+      "_index3.js",
       "_exports.js",
       "_utils.js",
       "_root.js",
@@ -966,7 +1007,7 @@
     "src": "src/routes/prata-anonymt-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.CE1CIHKv.css"
@@ -978,10 +1019,10 @@
     "src": "src/routes/psykiskt-stod-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.BXKqLR5A.css"
+      "_app/immutable/assets/_page.B_5dz3aP.css"
     ]
   },
   "src/routes/register/+page.server.ts": {
@@ -996,7 +1037,10 @@
     "src": "src/routes/register/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.B-LFQbsx.css"
     ]
   },
   "src/routes/robots.txt/+server.ts": {
@@ -1005,13 +1049,25 @@
     "src": "src/routes/robots.txt/+server.ts",
     "isEntry": true
   },
+  "src/routes/sa-arbetar-vi-med-innehall/+page.svelte": {
+    "file": "entries/pages/sa-arbetar-vi-med-innehall/_page.svelte.js",
+    "name": "entries/pages/sa-arbetar-vi-med-innehall/_page.svelte",
+    "src": "src/routes/sa-arbetar-vi-med-innehall/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CRw1-GSV.css"
+    ]
+  },
   "src/routes/samtalsstod-utan-vantetid/+page.svelte": {
     "file": "entries/pages/samtalsstod-utan-vantetid/_page.svelte.js",
     "name": "entries/pages/samtalsstod-utan-vantetid/_page.svelte",
     "src": "src/routes/samtalsstod-utan-vantetid/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.CjM-rZGR.css"
@@ -1023,10 +1079,28 @@
     "src": "src/routes/samtalsstod-vid-trauma/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DNEIdOjs.css"
+      "_app/immutable/assets/_page.CX4PSmML.css"
+    ]
+  },
+  "src/routes/share/+page.server.ts": {
+    "file": "entries/pages/share/_page.server.ts.js",
+    "name": "entries/pages/share/_page.server.ts",
+    "src": "src/routes/share/+page.server.ts",
+    "isEntry": true
+  },
+  "src/routes/share/+page.svelte": {
+    "file": "entries/pages/share/_page.svelte.js",
+    "name": "entries/pages/share/_page.svelte",
+    "src": "src/routes/share/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CSIiRxZ4.css"
     ]
   },
   "src/routes/sitemap.xml/+server.ts": {
@@ -1051,10 +1125,22 @@
     "src": "src/routes/sjalvkansla/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.Bw_QAXNj.css"
+      "_app/immutable/assets/_page.Dv4G_avz.css"
+    ]
+  },
+  "src/routes/skriv/+page.svelte": {
+    "file": "entries/pages/skriv/_page.svelte.js",
+    "name": "entries/pages/skriv/_page.svelte",
+    "src": "src/routes/skriv/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index2.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.DAV5ftVC.css"
     ]
   },
   "src/routes/sovproblem/+page.js": {
@@ -1069,10 +1155,10 @@
     "src": "src/routes/sovproblem/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.B2nzd8JE.css"
+      "_app/immutable/assets/_page.BFM1paL1.css"
     ]
   },
   "src/routes/stod-vid-ptsd-online/+page.svelte": {
@@ -1081,7 +1167,7 @@
     "src": "src/routes/stod-vid-ptsd-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
       "_app/immutable/assets/_page.oCWoKCaD.css"
@@ -1093,10 +1179,10 @@
     "src": "src/routes/stod-vid-stress-online/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DGPkWA1V.css"
+      "_app/immutable/assets/_page.CargzVB6.css"
     ]
   },
   "src/routes/stress/+page.js": {
@@ -1111,10 +1197,10 @@
     "src": "src/routes/stress/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DM5Mi7aH.css"
+      "_app/immutable/assets/_page.mWejtdpu.css"
     ]
   },
   "src/routes/trauma/+page.js": {
@@ -1129,10 +1215,10 @@
     "src": "src/routes/trauma/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index2.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DXjun1aj.css"
+      "_app/immutable/assets/_page.3U_0nUqH.css"
     ]
   }
 }
