@@ -4,13 +4,15 @@
 		chatHref: string;
 		exerciseHref?: string;
 		exerciseLabel?: string;
+		layout?: 'full' | 'compact';
 	};
 
 	let {
 		pillarSlug = '',
 		chatHref,
 		exerciseHref = '/ovningar',
-		exerciseLabel = 'Gör en enkel övning'
+		exerciseLabel = 'Gör en enkel övning',
+		layout = 'full'
 	}: GuideActionCtaProps = $props();
 
 	type GuideTone = {
@@ -77,7 +79,7 @@
 	const tone = $derived(toneByPillar[pillarSlug] ?? fallbackTone);
 </script>
 
-<section class="guide-cta" aria-label="Nästa steg">
+<section class="guide-cta" class:guide-cta-compact={layout === 'compact'} aria-label="Nästa steg">
 	<h2>{tone.heading}</h2>
 	<p class="guide-cta-intro">{tone.intro}</p>
 
@@ -126,6 +128,11 @@
 		background: #f2f7f4;
 	}
 
+	.guide-cta-compact {
+		margin-top: 1.4rem;
+		padding: 1rem 0.9rem 0.9rem;
+	}
+
 	.guide-cta h2 {
 		margin: 0;
 		font-size: 1.18rem;
@@ -153,6 +160,10 @@
 		border-radius: var(--radius-input);
 		border: 1px solid rgba(0, 0, 0, 0.08);
 		background: #ffffff;
+	}
+
+	.guide-cta-compact .guide-cta-card {
+		padding: 0.8rem;
 	}
 
 	.guide-cta-card h3 {
@@ -227,6 +238,10 @@
 		.guide-cta-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 0.85rem;
+		}
+
+		.guide-cta-compact .guide-cta-grid {
+			gap: 0.75rem;
 		}
 	}
 </style>
