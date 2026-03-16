@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import { portals } from '$lib/data/portals';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 
@@ -69,6 +70,7 @@
 				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
 			</div>
 			<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
+			<HomeSafetyStrip />
 			<div class="mode-compare" aria-label="Vad är skillnaden?">
 				<div class="mode-col">
 					<p class="mode-label">Anonymt läge</p>
@@ -86,20 +88,6 @@
 						<li>Fortsätt där du slutade</li>
 					</ul>
 				</div>
-			</div>
-			<div class="hero-facts" aria-label="Bra att veta innan du börjar">
-				<p class="hero-facts-title">Bra att veta innan du börjar</p>
-				<ul class="hero-facts-list">
-					<li><strong>Inte vård:</strong> MittPsyke är ett samtalsstöd för reflektion i vardagen.</li>
-					<li><strong>Börja anonymt:</strong> du kan starta utan konto.</li>
-					<li><strong>Mänskligt stöd:</strong> <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Stödlinjer</a> finns när du vill prata med någon.</li>
-					<li><strong>Akut:</strong> ring 112 vid akut fara.</li>
-				</ul>
-				<p class="hero-meta-links">
-					<a href="/om-mittpsyke">Så fungerar MittPsyke</a>
-					<span aria-hidden="true"> · </span>
-					<a href="/integritet">Så hanteras uppgifter</a>
-				</p>
 			</div>
 		</div>
 	</section>
@@ -543,48 +531,6 @@
 		font-size: 0.82rem;
 		font-weight: 600;
 		letter-spacing: 0.005em;
-	}
-
-	.hero-facts {
-		margin-top: 1rem;
-		padding: 0.9rem 1rem;
-		background: rgba(255, 255, 255, 0.09);
-		border: 1px solid rgba(255, 255, 255, 0.16);
-		text-align: left;
-	}
-
-	.hero-facts-title {
-		margin: 0;
-		font-family: var(--font-heading);
-		font-size: 0.85rem;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		color: rgba(255, 255, 255, 0.92);
-	}
-
-	.hero-facts-list {
-		margin: 0.75rem 0 0;
-		padding-left: 1.1rem;
-		font-size: 0.95rem;
-		line-height: 1.55;
-		color: rgba(255, 255, 255, 0.88);
-	}
-
-	.hero-facts-list li + li {
-		margin-top: 0.35rem;
-	}
-
-	.hero-facts a,
-	.hero-meta-links a {
-		color: #d7e7ff;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	.hero-meta-links {
-		margin: 0.75rem 0 0;
-		font-size: 0.92rem;
-		color: rgba(255, 255, 255, 0.82);
 	}
 
 	@media (max-width: 900px) {
