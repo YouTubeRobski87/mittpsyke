@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SeoCta from '$lib/seo-kit/SeoCta.svelte';
+	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import { buildTitle, canonical } from '$lib/seo-kit/seo';
 	import type { PageData } from './$types';
 
@@ -158,36 +158,27 @@
 		</section>
 	{/if}
 
-	{#if data.nextTool || pillarRoute}
-		<section class="nasta-steg mt-10 rounded-xl border border-black/10 p-5" aria-label="Nästa steg">
-			<h2 class="text-base font-semibold">Nästa steg</h2>
+	<div class="mt-10">
+		<GuideActionCta
+			pillarSlug={data.pillar.slug}
+			chatHref={data.pillar.chatPath}
+			exerciseHref={data.nextTool ? `/ovningar/${data.nextTool.slug}` : '/ovningar'}
+			exerciseLabel={data.nextTool ? `Prova: ${data.nextTool.title}` : 'Gör en enkel övning'}
+		/>
+	</div>
+
+	{#if pillarRoute}
+		<section class="nasta-steg mt-6 rounded-xl border border-black/10 p-5" aria-label="Mer i samma tema">
+			<h2 class="text-base font-semibold">Mer i samma tema</h2>
 			<ul class="mt-3 space-y-2">
-				{#if data.nextTool}
-					<li>
-						<a class="next-link" href={`/ovningar/${data.nextTool.slug}`}>
-							<span class="next-icon">🧘</span> Testa övningen: {data.nextTool.title}
-						</a>
-					</li>
-				{/if}
-				{#if pillarRoute}
-					<li>
-						<a class="next-link" href={pillarRoute}>
-							<span class="next-icon">📖</span> Mer om {data.pillar.title}
-						</a>
-					</li>
-				{/if}
 				<li>
-					<a class="next-link" href="/dagbok">
-						<span class="next-icon">✏️</span> Skriv om det i dagboken
+					<a class="next-link" href={pillarRoute}>
+						<span class="next-icon">📖</span> Fortsätt läsa om {data.pillar.title.toLowerCase()}
 					</a>
 				</li>
 			</ul>
 		</section>
 	{/if}
-
-	<div class="mt-10">
-		<SeoCta chatPath={data.pillar.chatPath} />
-	</div>
 </main>
 
 <style>
