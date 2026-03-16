@@ -2886,7 +2886,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 		primaryLinks: [
 			{ title: 'Se alla artiklar om ensamhet', href: '/guider-seo/ensamhet' },
 			{ title: 'Läs mer om ensamhet hos MittPsyke', href: '/ensamhet' },
-			{ title: 'Hitta stödlinjer', href: 'https://stodlinjer.se' }
+			{ title: 'Prata anonymt om ensamhet', href: '/chat/b' }
 		]
 	},
 	depression: {
