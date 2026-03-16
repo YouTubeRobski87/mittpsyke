@@ -16,12 +16,14 @@
 		'existentiell-oro': '/chat/e'
 	};
 
-	const chatPath = chatPathByPillar[data.pillar.slug] ?? '/chat';
-	const guideExercise = data.tools[0];
-	const guideExerciseHref = guideExercise ? `/ovningar/${guideExercise.slug}` : '/ovningar';
-	const guideExerciseLabel = guideExercise
-		? `Prova: ${guideExercise.title}`
-		: 'Gör en enkel övning';
+	const chatPath = $derived(chatPathByPillar[data.pillar.slug] ?? '/chat');
+	const guideExercise = $derived(data.tools[0]);
+	const guideExerciseHref = $derived(
+		guideExercise ? `/ovningar/${guideExercise.slug}` : '/ovningar'
+	);
+	const guideExerciseLabel = $derived(
+		guideExercise ? `Prova: ${guideExercise.title}` : 'Gör en enkel övning'
+	);
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
