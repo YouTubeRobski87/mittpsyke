@@ -33,6 +33,22 @@ export type Guide = {
 	content?: string;
 };
 
+export type SeoLandingSection = {
+	heading: string;
+	body: string;
+	links?: RelatedArticle[];
+};
+
+export type SeoLandingPage = {
+	pillarSlug: Pillar['slug'];
+	seoTitle: string;
+	seoDescription: string;
+	h1: string;
+	intro: string;
+	sections: SeoLandingSection[];
+	primaryLinks?: RelatedArticle[];
+};
+
 export const pillars: Pillar[] = [
 	{
 		slug: 'angest',
@@ -2720,6 +2736,91 @@ export function getGuidesForPillar(pillarSlug: string): Guide[] {
 
 export function getGuideBySlugs(pillarSlug: string, guideSlug: string): Guide | undefined {
 	return guides.find((guide) => guide.pillarSlug === pillarSlug && guide.slug === guideSlug);
+}
+
+export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>> = {
+	angest: {
+		pillarSlug: 'angest',
+		seoTitle: 'Stöd vid ångest - förstå känslorna och ta små steg i lugn takt',
+		seoDescription:
+			'Lär dig mer om ångest, vad som händer i kroppen och vilka små steg som kan hjälpa. Läs guider och välj nästa steg med chatt, dagbok eller övning.',
+		h1: 'Stöd vid ångest i lugn takt',
+		intro:
+			'Ångest kan kännas stark och överväldigande, men du behöver inte hantera allt på en gång. Här får du en trygg översikt och tydliga vägar vidare.',
+		sections: [
+			{
+				heading: 'Vad händer vid ångest?',
+				body: 'När hjärnan tolkar något som hot aktiveras kroppen snabbt. Hjärtat slår hårdare, andningen blir snabbare och tankarna kan rusa. Reaktionen är vanlig och går att förstå steg för steg.',
+				links: [
+					{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
+					{
+						title: 'Panikångest - vad som händer i kroppen och hur du kan hantera det',
+						href: '/guider-seo/angest/panikangest-och-kroppen'
+					}
+				]
+			},
+			{
+				heading: 'När tankarna snurrar och sömnen påverkas',
+				body: 'Oro och ångest blir ofta tydligare på kvällen. Det kan göra det svårt att varva ner eller somna. Små, återkommande strategier brukar hjälpa mer än att pressa sig.',
+				links: [
+					{
+						title: 'Orostankar som snurrar - när hjärnan inte kan stänga av',
+						href: '/guider-seo/angest/orostankar'
+					},
+					{
+						title: 'Ångest och sömn - varför natten kan bli svårare',
+						href: '/guider-seo/angest/angest-och-somn'
+					}
+				]
+			},
+			{
+				heading: 'Lugna nästa steg',
+				body: 'Du kan välja ett enkelt nästa steg: prata anonymt, skriva av dig eller prova en övning. MittPsyke är ett komplement för stöd och reflektion, inte en ersättning för vård.'
+			}
+		],
+		primaryLinks: [
+			{ title: 'Se alla artiklar om ångest', href: '/guider-seo/angest' },
+			{ title: 'Utforska övningar mot ångest', href: '/ovningar-mot-angest-online' },
+			{ title: 'Läs om hjälp vid ångest online', href: '/hjalp-vid-angest-online' }
+		]
+	},
+	stress: {
+		pillarSlug: 'stress',
+		seoTitle: 'Stress och sömn - när kroppen inte kan varva ner',
+		seoDescription:
+			'Förstå sambandet mellan stress och sömn, varför kroppen blir uppvarvad och vad du kan prova i lugn takt. Guider, övningar och varsamma nästa steg.',
+		h1: 'Stress och sömn - när kroppen inte kan varva ner',
+		intro:
+			'När stressen blir långvarig påverkas både sömn, återhämtning och ork. Här hittar du en tydlig översikt och hjälpsamma steg som går att börja med direkt.',
+		sections: [
+			{
+				heading: 'Varför stress påverkar sömnen',
+				body: 'Ett uppvarvat nervsystem gör det svårare att somna och lättare att vakna under natten. Det handlar inte om svaghet, utan om hur kroppen reagerar på belastning.',
+				links: [{ title: 'Stressymtom - hur stress visar sig i kropp och tankar', href: '/guider-seo/stress/stressymtom' }]
+			},
+			{
+				heading: 'När trötthet och oro förstärker varandra',
+				body: 'Sömnbrist gör oss mer sårbara för oro och stress nästa dag. Det kan bli en cirkel som känns svår att bryta. Små justeringar i vardagen kan minska trycket stegvis.',
+				links: [
+					{ title: 'Stress och sömn - när kroppen inte kan varva ner', href: '/guider-seo/sovproblem/stress-och-somn' },
+					{ title: 'Varför orkar jag ingenting? - vad det kan bero på och vad som hjälper', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' }
+				]
+			},
+			{
+				heading: 'Små steg för återhämtning',
+				body: 'Du behöver inte lösa allt direkt. Ett lugnt nästa steg kan vara en kort övning, en stund i dagboken eller att prata med någon. Vid akut fara ringer du 112 och för vårdråd finns 1177.'
+			}
+		],
+		primaryLinks: [
+			{ title: 'Se alla artiklar om stress', href: '/guider-seo/stress' },
+			{ title: 'Läs fler guider om sömnproblem', href: '/guider-seo/sovproblem' },
+			{ title: 'Stöd vid stress online', href: '/stod-vid-stress-online' }
+		]
+	}
+};
+
+export function getPillarLandingBySlug(slug: string): SeoLandingPage | null {
+	return pillarLandingPages[slug as Pillar['slug']] ?? null;
 }
 
 export function getGuiderSeoPaths(): string[] {
