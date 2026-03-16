@@ -1,4 +1,5 @@
 <script lang="ts">
+	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import { buildTitle, canonical } from '$lib/seo-kit/seo';
 	import type { PageData } from './$types';
 
@@ -34,18 +35,26 @@
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
 </svelte:head>
 
-<main>
-	<nav>
-		<a href="/guider-seo">Guider SEO</a>
+<main class="mx-auto max-w-3xl px-4 py-10">
+	<nav class="text-sm opacity-75">
+		<a class="hover:underline" href="/guider-seo">Guider SEO</a>
 	</nav>
-	<h1>{data.pillar.title}</h1>
-	<p>{data.pillar.description}</p>
+	<h1 class="mt-3 text-3xl font-semibold tracking-tight">{data.pillar.title}</h1>
+	<p class="mt-3 leading-relaxed text-black/75">{data.pillar.description}</p>
 
-	<ul>
+	<ul class="mt-5 space-y-2">
 		{#each data.guides as guide}
 			<li>
-				<a href={`/guider-seo/${guide.pillarSlug}/${guide.slug}`}>{guide.title}</a>
+				<a class="hover:underline" href={`/guider-seo/${guide.pillarSlug}/${guide.slug}`}>{guide.title}</a>
 			</li>
 		{/each}
 	</ul>
+
+	<GuideActionCta
+		layout="compact"
+		pillarSlug={data.pillar.slug}
+		chatHref={data.pillar.chatPath}
+		exerciseHref="/ovningar"
+		exerciseLabel="Se alla övningar"
+	/>
 </main>
