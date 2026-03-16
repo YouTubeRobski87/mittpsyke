@@ -34,6 +34,32 @@ function VoiceSupport($$renderer, $$props) {
 }
 function _page($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
+    const entryPaths = [
+      {
+        title: "Jag behöver stöd nu",
+        description: "Få ett lugnt första steg direkt, utan att behöva formulera allt perfekt.",
+        href: "/skriv",
+        cta: "Börja anonymt"
+      },
+      {
+        title: "Jag vill förstå mitt mående",
+        description: "Läs guider om ångest, stress, trauma och andra vanliga tillstånd.",
+        href: "/guider",
+        cta: "Läs guider"
+      },
+      {
+        title: "Jag vill ha konkreta steg",
+        description: "Börja med enkla övningar och små handlingar som går att göra idag.",
+        href: "/ovningar",
+        cta: "Se övningar"
+      },
+      {
+        title: "Jag vill följa min utveckling",
+        description: "Skriv dagbok, spara reflektioner och se din resa över tid.",
+        href: "/register",
+        cta: "Skapa konto"
+      }
+    ];
     head("1uha8ag", $$renderer2, ($$renderer3) => {
       $$renderer3.title(($$renderer4) => {
         $$renderer4.push(`<title>Psykiskt stöd online i lugn takt | MittPsyke</title>`);
@@ -42,10 +68,16 @@ function _page($$renderer, $$props) {
     });
     $$renderer2.push(`<main class="staging-look svelte-1uha8ag"><section class="hero-section hero svelte-1uha8ag" aria-label="Introduktion till MittPsyke"><img class="hero-bg svelte-1uha8ag" src="/assets/home/MittpsykeTree.jpg" alt="" aria-hidden="true" decoding="async" fetchpriority="high"/> <div class="hero-content svelte-1uha8ag"><p class="hero-eyebrow svelte-1uha8ag">Om du mår dåligt och inte vet var du ska börja</p> <h1 class="svelte-1uha8ag">MittPsyke är en lugn plats att börja.</h1> <p class="svelte-1uha8ag">Skriv av dig direkt — inget konto, ingen registrering. Skapa ett konto om du vill spara din dagbok och kunna återvända över tid.</p> <div class="hero-actions svelte-1uha8ag"><a href="/skriv" class="hero-cta hero-cta-primary svelte-1uha8ag">Börja skriva anonymt</a> <a href="/register" class="hero-cta hero-cta-secondary svelte-1uha8ag">Skapa din egen plats</a></div> <p class="hero-trust-note svelte-1uha8ag">Ingen registrering krävs. Du kan börja skriva direkt.</p> `);
     HomeSafetyStrip($$renderer2);
-    $$renderer2.push(`<!----> <div class="mode-compare svelte-1uha8ag" aria-label="Vad är skillnaden?"><div class="mode-col svelte-1uha8ag"><p class="mode-label svelte-1uha8ag">Anonymt läge</p> <ul class="mode-list svelte-1uha8ag"><li class="svelte-1uha8ag">Ingen registrering</li> <li class="svelte-1uha8ag">Ingen profil skapas</li> <li class="svelte-1uha8ag">Börja direkt</li></ul></div> <div class="mode-col svelte-1uha8ag"><p class="mode-label svelte-1uha8ag">Med konto</p> <ul class="mode-list svelte-1uha8ag"><li class="svelte-1uha8ag">Spara dagbok och reflektioner</li> <li class="svelte-1uha8ag">Följ ditt mående över tid</li> <li class="svelte-1uha8ag">Fortsätt där du slutade</li></ul></div></div></div></section> <section class="video-section svelte-1uha8ag"><div class="video-inner svelte-1uha8ag"><h2 class="svelte-1uha8ag">Se hur MittPsyke fungerar</h2> <p class="svelte-1uha8ag">En kort introduktion till dagboken, framsteg och AI-chatten.</p> <div class="video-wrapper svelte-1uha8ag"><video controls="" preload="none" poster="/og-image.png" class="svelte-1uha8ag"><source src="/intro.mp4" type="video/mp4"/> Din webbläsare stöder inte videouppspelning.</video></div></div></section> <section class="content-hub svelte-1uha8ag"><div class="narrow cards-narrow hub-inner svelte-1uha8ag"><h2 class="svelte-1uha8ag">Guider och övningar</h2> <p class="svelte-1uha8ag">Läs strukturerade guider och prova konkreta steg som du kan använda direkt i din vardag.</p> <div class="hub-grid svelte-1uha8ag"><a class="hub-card svelte-1uha8ag" href="/guider"><h3 class="svelte-1uha8ag">Guider</h3> <p class="svelte-1uha8ag">9 fokusområden med klusterartiklar inom psykiskt mående.</p> <span class="svelte-1uha8ag">Gå till guider</span></a> <a class="hub-card svelte-1uha8ag" href="/ovningar"><h3 class="svelte-1uha8ag">Övningar</h3> <p class="svelte-1uha8ag">Praktiska steg-för-steg-övningar för reflektion och lugn.</p> <span class="svelte-1uha8ag">Gå till övningar</span></a></div></div></section> <section id="fokusomraden" class="focus-section svelte-1uha8ag"><div class="narrow cards-narrow focus-content svelte-1uha8ag"><header class="focus-header svelte-1uha8ag"><h2 class="svelte-1uha8ag">Välj fokusområde</h2> <p class="svelte-1uha8ag">Välj det som känns närmast just nu. Det hjälper MittPsyke att öppna rätt samtalsstöd.</p></header> <div class="focus-cards svelte-1uha8ag"><!--[-->`);
-    const each_array = ensure_array_like(portals);
+    $$renderer2.push(`<!----> <div class="mode-compare svelte-1uha8ag" aria-label="Vad är skillnaden?"><div class="mode-col svelte-1uha8ag"><p class="mode-label svelte-1uha8ag">Anonymt läge</p> <ul class="mode-list svelte-1uha8ag"><li class="svelte-1uha8ag">Ingen registrering</li> <li class="svelte-1uha8ag">Ingen profil skapas</li> <li class="svelte-1uha8ag">Börja direkt</li></ul></div> <div class="mode-col svelte-1uha8ag"><p class="mode-label svelte-1uha8ag">Med konto</p> <ul class="mode-list svelte-1uha8ag"><li class="svelte-1uha8ag">Spara dagbok och reflektioner</li> <li class="svelte-1uha8ag">Följ ditt mående över tid</li> <li class="svelte-1uha8ag">Fortsätt där du slutade</li></ul></div></div></div></section> <section class="entry-paths svelte-1uha8ag" aria-labelledby="entry-paths-title"><div class="cards-narrow entry-inner svelte-1uha8ag"><p class="entry-eyebrow svelte-1uha8ag">Välj din väg in</p> <h2 id="entry-paths-title" class="svelte-1uha8ag">Det finns olika sätt att börja.</h2> <p class="entry-intro svelte-1uha8ag">Välj det som känns mest hjälpsamt just nu. Du kan alltid byta väg senare.</p> <div class="entry-grid svelte-1uha8ag"><!--[-->`);
+    const each_array = ensure_array_like(entryPaths);
     for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
-      let portal = each_array[$$index];
+      let path = each_array[$$index];
+      $$renderer2.push(`<a class="entry-card svelte-1uha8ag"${attr("href", path.href)}><h3 class="svelte-1uha8ag">${escape_html(path.title)}</h3> <p class="svelte-1uha8ag">${escape_html(path.description)}</p> <span class="entry-card-cta svelte-1uha8ag">${escape_html(path.cta)}</span></a>`);
+    }
+    $$renderer2.push(`<!--]--></div></div></section> <section class="video-section svelte-1uha8ag"><div class="video-inner svelte-1uha8ag"><h2 class="svelte-1uha8ag">Se hur MittPsyke fungerar</h2> <p class="svelte-1uha8ag">En kort introduktion till dagboken, framsteg och AI-chatten.</p> <div class="video-wrapper svelte-1uha8ag"><video controls="" preload="none" poster="/og-image.png" class="svelte-1uha8ag"><source src="/intro.mp4" type="video/mp4"/> Din webbläsare stöder inte videouppspelning.</video></div></div></section> <section id="fokusomraden" class="focus-section svelte-1uha8ag"><div class="narrow cards-narrow focus-content svelte-1uha8ag"><header class="focus-header svelte-1uha8ag"><h2 class="svelte-1uha8ag">Välj fokusområde</h2> <p class="svelte-1uha8ag">Välj det som känns närmast just nu. Det hjälper MittPsyke att öppna rätt samtalsstöd.</p></header> <div class="focus-cards svelte-1uha8ag"><!--[-->`);
+    const each_array_1 = ensure_array_like(portals);
+    for (let $$index_1 = 0, $$length = each_array_1.length; $$index_1 < $$length; $$index_1++) {
+      let portal = each_array_1[$$index_1];
       $$renderer2.push(`<a class="focus-card svelte-1uha8ag"${attr("href", `/chat/${portal.key}`)}><img class="focus-cover svelte-1uha8ag"${attr("src", portal.image)}${attr("alt", `Bild for ${portal.title}`)} loading="lazy"/> <div class="focus-body svelte-1uha8ag"><span class="focus-icon svelte-1uha8ag">${escape_html(portal.icon)}</span> <h3 class="svelte-1uha8ag">${escape_html(portal.title)}</h3> <p class="svelte-1uha8ag">${escape_html(portal.description)}</p> <span class="focus-cta svelte-1uha8ag">Börja skriva</span></div></a>`);
     }
     $$renderer2.push(`<!--]--></div></div></section> `);
