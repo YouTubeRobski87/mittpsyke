@@ -119,6 +119,7 @@ declare module '$env/static/private' {
 	export const ZSH_TMUX_AUTOSTART: string;
 	export const ZSH_TMUX_AUTOSTARTED: string;
 	export const _VOLTA_TOOL_RECURSION: string;
+	export const __COMPAT_LAYER: string;
 }
 
 /**
@@ -287,6 +288,7 @@ declare module '$env/dynamic/private' {
 		ZSH_TMUX_AUTOSTART: string;
 		ZSH_TMUX_AUTOSTARTED: string;
 		_VOLTA_TOOL_RECURSION: string;
+		__COMPAT_LAYER: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
