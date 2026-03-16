@@ -42,7 +42,7 @@
 	}
 </script>
 
-<section class="voice-support">
+<section id="roststod" class="voice-support">
 	<h2>Prata direkt här</h2>
 	<p>Du kan också prata direkt med MittPsykes AI-baserade samtalsstöd här på sidan.</p>
 	<p>Det är till för reflektion och stöd i vardagen. Det ersätter inte vård eller ställer diagnos.</p>

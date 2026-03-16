@@ -137,6 +137,59 @@
 		</div>
 	</section>
 
+	<section class="how-it-works" aria-labelledby="how-it-works-title">
+		<div class="cards-narrow how-inner">
+			<p class="how-eyebrow">Så fungerar MittPsyke</p>
+			<h2 id="how-it-works-title">Du kan börja enkelt och spara först när du vill.</h2>
+			<p class="how-intro">
+				Här är skillnaden mellan att börja anonymt, skapa konto och använda dagbok eller vidare stöd.
+			</p>
+			<div class="how-grid">
+				<article class="how-card">
+					<span class="how-step">01</span>
+					<h3>Börja anonymt</h3>
+					<p>
+						Skriv direkt utan konto när du bara behöver ett första steg. Det skapas ingen profil när du börjar så.
+					</p>
+					<a class="how-card-cta" href="/skriv">Börja skriva</a>
+				</article>
+				<article class="how-card">
+					<span class="how-step">02</span>
+					<h3>Skapa konto</h3>
+					<p>
+						Konto behövs först när du vill spara dagbok, historik och kunna komma tillbaka till samma plats.
+					</p>
+					<a class="how-card-cta" href="/register">Skapa konto</a>
+				</article>
+				<article class="how-card">
+					<span class="how-step">03</span>
+					<h3>Dagbok och historik</h3>
+					<p>
+						Med konto kan du spara reflektioner, följa känslor över tid och se din utveckling i lugn takt.
+					</p>
+					<a class="how-card-cta" href="/dagbok">Se dagboken</a>
+				</article>
+				<article class="how-card">
+					<span class="how-step">04</span>
+					<h3>Röstsamtal eller vidare stöd</h3>
+					<p>
+						Det finns också röstsamtal här på sidan. Vid akut fara ska du ringa 112, kontakta 1177 eller använda stödlinjer.
+					</p>
+					<a class="how-card-cta" href="#roststod">Se stödvägar</a>
+					<div class="how-support-links" aria-label="Akuta och vidare stödvägar">
+						<a href="tel:112">112</a>
+						<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>
+						<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer</a>
+					</div>
+				</article>
+			</div>
+			<p class="how-footer">
+				Vill du läsa mer om vad som sparas och hur uppgifter hanteras?
+				<a href="/integritet">Läs integritetspolicyn</a>.
+			</p>
+		</div>
+	</section>
+
 	<section class="video-section">
 		<div class="video-inner">
 			<h2>Se hur MittPsyke fungerar</h2>
@@ -475,6 +528,121 @@
 		letter-spacing: 0.005em;
 	}
 
+	.how-it-works {
+		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
+		background: #ffffff;
+		color: #2c3338;
+	}
+
+	.how-eyebrow {
+		margin: 0 0 0.45rem;
+		font-family: var(--font-heading);
+		font-size: 0.88rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #5f7067;
+	}
+
+	.how-inner h2 {
+		margin: 0;
+		color: #263036;
+		font-size: clamp(1.55rem, 3vw, 2.05rem);
+	}
+
+	.how-intro {
+		margin: 0.75rem 0 0;
+		max-width: 60ch;
+		color: #55646c;
+	}
+
+	.how-grid {
+		margin-top: 1.2rem;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.95rem;
+	}
+
+	.how-card {
+		padding: 1rem;
+		border-radius: var(--radius-card);
+		background: #f7f8f6;
+		border: 1px solid #e2e8e3;
+	}
+
+	.how-step {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 2.3rem;
+		padding: 0.2rem 0.5rem;
+		border-radius: var(--radius-pill);
+		background: #e5ece7;
+		color: #4e6259;
+		font-family: var(--font-heading);
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
+	.how-card h3 {
+		margin: 0.8rem 0 0;
+		color: #273237;
+		font-size: 1.06rem;
+		line-height: 1.3;
+	}
+
+	.how-card p {
+		margin: 0.55rem 0 0;
+		color: #5a686f;
+		font-size: 0.95rem;
+		line-height: 1.65;
+	}
+
+	.how-card-cta {
+		display: inline-flex;
+		align-items: center;
+		margin-top: 0.9rem;
+		padding: 0.42rem 0.78rem;
+		border-radius: var(--radius-pill);
+		background: #e7f1ee;
+		color: #2e5850;
+		font-family: var(--font-heading);
+		font-size: 0.83rem;
+		font-weight: 600;
+		letter-spacing: 0.005em;
+	}
+
+	.how-support-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+		margin-top: 0.85rem;
+	}
+
+	.how-support-links a {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.32rem 0.62rem;
+		border-radius: var(--radius-pill);
+		background: #ffffff;
+		border: 1px solid #d5ddd8;
+		color: #43564f;
+		font-size: 0.8rem;
+	}
+
+	.how-footer {
+		margin: 1rem 0 0;
+		color: #55646c;
+		font-size: 0.94rem;
+	}
+
+	.how-footer a {
+		color: #0f766e;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
 	.focus-content {
 		color: #2c3338;
 	}
@@ -605,6 +773,11 @@
 			gap: 1.05rem;
 		}
 
+		.how-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1.05rem;
+		}
+
 		.focus-cards {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 1.1rem;
@@ -617,6 +790,11 @@
 
 	@media (min-width: 1040px) {
 		.entry-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 1.1rem;
+		}
+
+		.how-grid {
 			grid-template-columns: repeat(4, minmax(0, 1fr));
 			gap: 1.1rem;
 		}
@@ -668,6 +846,54 @@
 	:global(.dark) .entry-card-cta {
 		background: rgba(134, 223, 214, 0.12);
 		color: #86dfd6;
+	}
+
+	:global(.dark) .how-it-works {
+		background: #121414;
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .how-eyebrow {
+		color: #99afa4;
+	}
+
+	:global(.dark) .how-inner h2 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .how-intro,
+	:global(.dark) .how-card p,
+	:global(.dark) .how-footer {
+		color: rgba(255, 255, 255, 0.68);
+	}
+
+	:global(.dark) .how-card {
+		background: #1d2221;
+		border-color: rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .how-step {
+		background: rgba(255, 255, 255, 0.08);
+		color: #c9d8d0;
+	}
+
+	:global(.dark) .how-card h3 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .how-card-cta {
+		background: rgba(134, 223, 214, 0.12);
+		color: #86dfd6;
+	}
+
+	:global(.dark) .how-support-links a {
+		background: #202624;
+		border-color: rgba(255, 255, 255, 0.1);
+		color: #dce7e2;
+	}
+
+	:global(.dark) .how-footer a {
+		color: #9ad7ce;
 	}
 
 	:global(.dark) .focus-content {
