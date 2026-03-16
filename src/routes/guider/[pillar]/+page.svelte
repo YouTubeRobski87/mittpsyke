@@ -1,8 +1,27 @@
 <script lang="ts">
+	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
 	const pillarUpdatedAt = '2026-03-08';
+	const chatPathByPillar: Record<string, string> = {
+		angest: '/chat/a',
+		depression: '/chat/b',
+		'stress-utmattning': '/chat/e',
+		overtankande: '/chat/e',
+		sjalvkansla: '/chat/a',
+		sovproblem: '/chat/a',
+		'social-angest': '/chat/a',
+		relationsproblem: '/chat/b',
+		'existentiell-oro': '/chat/e'
+	};
+
+	const chatPath = chatPathByPillar[data.pillar.slug] ?? '/chat';
+	const guideExercise = data.tools[0];
+	const guideExerciseHref = guideExercise ? `/ovningar/${guideExercise.slug}` : '/ovningar';
+	const guideExerciseLabel = guideExercise
+		? `Prova: ${guideExercise.title}`
+		: 'Gör en enkel övning';
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
@@ -179,14 +198,12 @@
 		</section>
 	{/if}
 
-	<section class="cta-section" aria-label="Kom igång">
-		<h2>Redo att ta nästa steg?</h2>
-		<p>Välj det som känns hjälpsamt just nu: skriv i dagboken eller prata anonymt i din egen takt.</p>
-		<div class="cta-buttons">
-			<a href="/dagbok" class="cta-primary">Starta din dagbok</a>
-			<a href="/prata-anonymt-online" class="cta-secondary">Prata med någon</a>
-		</div>
-	</section>
+	<GuideActionCta
+		pillarSlug={data.pillar.slug}
+		chatHref={chatPath}
+		exerciseHref={guideExerciseHref}
+		exerciseLabel={guideExerciseLabel}
+	/>
 </main>
 
 <style>
@@ -322,64 +339,6 @@
 		opacity: 0.8;
 	}
 
-	.cta-section {
-		margin-top: 2rem;
-		padding: 1.7rem 1.25rem;
-		border-radius: var(--radius-card);
-		background: linear-gradient(135deg, #e8f4ee 0%, #f0f7f4 100%);
-		border: 1px solid rgba(163, 193, 173, 0.4);
-		text-align: center;
-	}
-
-	.cta-section h2 {
-		margin: 0;
-		font-size: 1.5rem;
-	}
-
-	.cta-section p {
-		margin: 0.75rem auto 1.25rem;
-		max-width: 52ch;
-		line-height: 1.6;
-		opacity: 0.84;
-	}
-
-	.cta-buttons {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 0.85rem;
-	}
-
-	.cta-primary {
-		padding: 0.75rem 1.75rem;
-		border-radius: var(--radius-input);
-		background: #3d7a5e;
-		color: #ffffff;
-		font-weight: 600;
-		text-decoration: none;
-		transition: background 0.2s;
-	}
-
-	.cta-primary:hover {
-		background: #2f6049;
-	}
-
-	.cta-secondary {
-		padding: 0.75rem 1.75rem;
-		border-radius: var(--radius-input);
-		background: transparent;
-		color: #3d7a5e;
-		font-weight: 600;
-		text-decoration: none;
-		border: 2px solid #3d7a5e;
-		transition: background 0.2s, color 0.2s;
-	}
-
-	.cta-secondary:hover {
-		background: #3d7a5e;
-		color: #ffffff;
-	}
-
 	:global(.dark) .block {
 		background: #1a2221;
 		border-color: rgba(255, 255, 255, 0.12);
@@ -394,29 +353,6 @@
 	:global(.dark) .tool-card {
 		background: #232c2a;
 		border-color: rgba(255, 255, 255, 0.12);
-	}
-
-	:global(.dark) .cta-section {
-		background: linear-gradient(135deg, #1a2b24 0%, #1e2e27 100%);
-		border-color: rgba(163, 193, 173, 0.2);
-	}
-
-	:global(.dark) .cta-primary {
-		background: #4e9970;
-	}
-
-	:global(.dark) .cta-primary:hover {
-		background: #3d7a5e;
-	}
-
-	:global(.dark) .cta-secondary {
-		color: #4e9970;
-		border-color: #4e9970;
-	}
-
-	:global(.dark) .cta-secondary:hover {
-		background: #4e9970;
-		color: #ffffff;
 	}
 
 	@media (max-width: 640px) {
@@ -447,17 +383,5 @@
 			gap: 0.8rem;
 		}
 
-		.cta-section {
-			padding: 1.35rem 1rem;
-		}
-
-		.cta-buttons {
-			flex-direction: column;
-		}
-
-		.cta-primary,
-		.cta-secondary {
-			width: 100%;
-		}
 	}
 </style>
