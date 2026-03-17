@@ -13,6 +13,7 @@
 	let draftError = '';
 	let draftSuccess = '';
 	let savingDraft = false;
+	let isLoggedIn = false;
 
 	function parseStoredDraft(value: string | null): string {
 		if (!value) return '';
@@ -44,6 +45,7 @@
 	async function loadEntries(options: { force?: boolean } = {}) {
 		const { data } = await supabase.auth.getSession();
 		const userId = data.session?.user?.id;
+		isLoggedIn = Boolean(userId);
 		if (!userId) {
 			entries = [];
 			return;
@@ -150,14 +152,34 @@
 					<p class="mt-3 text-sm text-green-700">{draftSuccess}</p>
 				{/if}
 
-				<button
-					type="button"
-					class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-					onclick={saveDraftToDiary}
-					disabled={savingDraft}
-				>
-					{savingDraft ? 'Sparar...' : 'Spara i dagboken'}
-				</button>
+				{#if isLoggedIn}
+					<button
+						type="button"
+						class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+						onclick={saveDraftToDiary}
+						disabled={savingDraft}
+					>
+						{savingDraft ? 'Sparar...' : 'Spara i dagboken'}
+					</button>
+				{:else}
+					<p class="mt-3 text-sm text-blue-900/80">
+						Skapa konto eller logga in för att spara utkastet i din dagbok.
+					</p>
+					<div class="mt-4 flex flex-wrap gap-2">
+						<a
+							href="/register"
+							class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+						>
+							Skapa konto
+						</a>
+						<a
+							href="/login"
+							class="rounded-lg border border-blue-300 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-100"
+						>
+							Logga in
+						</a>
+					</div>
+				{/if}
 			</section>
 		{/if}
 
