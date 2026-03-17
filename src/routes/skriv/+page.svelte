@@ -104,6 +104,8 @@
 
 			<div class="textarea-wrap">
 				<textarea
+					id="skriv-textarea"
+					name="entry"
 					bind:value={text}
 					oninput={handleWriteInput}
 					placeholder="Börja skriva här…"
