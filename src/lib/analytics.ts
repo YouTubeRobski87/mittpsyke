@@ -1,4 +1,5 @@
 import { browser, dev } from '$app/environment';
+import { env } from '$env/dynamic/public';
 import { hasAnalyticsConsent } from '$lib/consent';
 
 type EventName =
@@ -23,6 +24,37 @@ type EventName =
 	| 'hero_cta_secondary_click';
 
 type EventParams = Record<string, string | number | boolean>;
+
+export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || '';
+
+let analyticsInitialized = false;
+
+export function initializeAnalytics() {
+	if (!browser || !hasAnalyticsConsent() || analyticsInitialized || !GA_MEASUREMENT_ID) return;
+
+	const gtag = (window as any).gtag;
+	if (!gtag) return;
+
+	gtag('js', new Date());
+	gtag('config', GA_MEASUREMENT_ID, { send_page_view: false });
+	analyticsInitialized = true;
+}
+
+export function trackPageView(url: URL) {
+	if (!browser || !hasAnalyticsConsent()) return;
+
+	const gtag = (window as any).gtag;
+	if (!gtag) {
+		if (dev) console.warn('gtag not found');
+		return;
+	}
+
+	gtag('event', 'page_view', {
+		page_path: `${url.pathname}${url.search}`,
+		page_location: url.href,
+		page_title: document.title
+	});
+}
 
 function trackEvent(eventName: EventName, params: EventParams = {}) {
 	if (!browser || !hasAnalyticsConsent()) return;
@@ -120,4 +152,12 @@ export function trackHeroCTAPrimaryClick() {
 
 export function trackHeroCTASecondaryClick() {
 	trackEvent('hero_cta_secondary_click');
+}
+
+export function trackHeroCtaPrimaryClick() {
+	trackHeroCTAPrimaryClick();
+}
+
+export function trackHeroCtaSecondaryClick() {
+	trackHeroCTASecondaryClick();
 }
