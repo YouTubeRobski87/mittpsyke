@@ -7,6 +7,7 @@
 
 	// Display name
 	let displayName = $state('');
+	let birthday = $state('');
 	let nameSaving = $state(false);
 	let nameMessage = $state('');
 
@@ -74,6 +75,7 @@
 			// Load display name and personalization from user metadata
 			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
 			displayName = typeof meta.display_name === 'string' ? meta.display_name : '';
+			birthday = typeof meta.birthday === 'string' ? meta.birthday : '';
 			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
@@ -94,7 +96,7 @@
 
 		// Save to Supabase user metadata (no extra table needed)
 		const { error } = await supabase.auth.updateUser({
-			data: { display_name: trimmed }
+			data: { display_name: trimmed, birthday: birthday.trim() }
 		});
 
 		nameSaving = false;
@@ -268,6 +270,16 @@
 					{nameSaving ? 'Sparar...' : 'Spara'}
 				</button>
 			</div>
+
+			<label class="field-label" for="birthday">Födelsedag</label>
+			<input
+				id="birthday"
+				type="date"
+				bind:value={birthday}
+				class="text-input"
+				max={new Date().toISOString().slice(0, 10)}
+			/>
+			<p class="field-hint birthday-hint">Används för ditt dagliga horoskop 🔮</p>
 
 			{#if nameMessage}
 				<p class="feedback {nameMessageType}">{nameMessage}</p>
@@ -500,6 +512,10 @@
 		font-family: var(--font-body);
 		font-size: 0.88rem;
 		opacity: 0.65;
+	}
+
+	.birthday-hint {
+		margin: 0.35rem 0 0;
 	}
 
 	.field-label {
