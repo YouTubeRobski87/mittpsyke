@@ -47,7 +47,7 @@
 	<p>Du kan också prata direkt med MittPsykes AI-baserade samtalsstöd här på sidan.</p>
 	<p>Det är till för reflektion och stöd i vardagen. Det ersätter inte vård eller ställer diagnos.</p>
 	<p class="voice-support-note">
-		Om du hellre vill prata med en människa finns <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Stödlinjer</a>. Vid akut fara, ring <a href="tel:112">112</a>.
+		Om du hellre vill prata med en människa finns <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Stödlinjer</a>. Vid akut fara, ring 112.
 	</p>
 	{#if hasSensitiveDataConsent}
 		<button on:click={startCall} aria-label="Starta röstsamtal med MittPsyke">
