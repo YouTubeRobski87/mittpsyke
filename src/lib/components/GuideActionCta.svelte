@@ -64,6 +64,22 @@
 			diaryCopy: 'Skriv ned tankar och reaktioner för att ge dem mer tydlig form.',
 			exerciseCopy: 'Börja med en enkel och trygg övning som hjälper dig att landa.',
 			supportCopy: 'Om du vill prata med en människa finns stödlinjer och akutvägar här.'
+		},
+		sovproblem: {
+			heading: 'Nästa steg vid sömnproblem',
+			intro: 'Du behöver inte lösa allt på en natt. Välj det steg som känns minst ansträngande just nu.',
+			chatCopy: 'Sätt ord på det som håller dig vaken, i din egen takt och utan krav på att formulera allt.',
+			diaryCopy: 'Skriv av dig kvällstankarna och ge dem en tydlig plats utanför huvudet.',
+			exerciseCopy: 'Prova en kort övning för att hjälpa kroppen att varva ned inför sömnen.',
+			supportCopy: 'Om sömnproblemen påverkar ditt mående allvarligt finns stödlinjer och vårdråd nära till hands.'
+		},
+		sjalvkansla: {
+			heading: 'Nästa steg mot bättre självkänsla',
+			intro: 'Förändring sker i liten skala. Välj ett steg som känns möjligt just nu.',
+			chatCopy: 'Prata anonymt om det som känns svårt att säga högt, i lugn och trygg takt.',
+			diaryCopy: 'Skriv ned tankar om dig själv och följ hur självbilden förändras över tid.',
+			exerciseCopy: 'Prova en enkel övning som hjälper dig att möta dig själv med lite mer värme.',
+			supportCopy: 'Om du behöver mer stöd kan du hitta rätt stödlinje eller kontakt här.'
 		}
 	};
 

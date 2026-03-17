@@ -3008,7 +3008,80 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			{ title: 'Se guider om ångest', href: '/guider-seo/angest' },
 			{ title: 'Starta chatt om oro', href: '/chat/e' }
 		]
+	},
+	sovproblem: {
+		pillarSlug: 'sovproblem',
+		seoTitle: 'Sömnproblem – förstå vad som stör sömnen och ta lugna steg framåt',
+		seoDescription:
+			'Läs om vanliga orsaker till sömnproblem, varför kroppen ibland inte kan varva ner och vilka små steg som kan hjälpa. Guider och varsamma nästa steg.',
+		h1: 'Stöd vid sömnproblem i lugn takt',
+		intro:
+			'Sömnproblem kan ha många orsaker – stress, oro eller ett nervsystem som inte fått chansen att landa. Här får du en tydlig översikt och steg som är lätta att börja med.',
+		sections: [
+			{
+				heading: 'Varför sömnen kan bli svår',
+				body: 'Sömnproblem beror sällan på en enda sak. Stress, ångest och oro är vanliga orsaker, liksom ett nervsystem som inte hunnit varva ner. Det är ett vanligare problem än du kanske tror.',
+				links: [
+					{ title: 'Orsaker till sömnproblem', href: '/guider-seo/sovproblem/orsaker' },
+					{ title: 'Stress och sömn – sambandet som stör natten', href: '/guider-seo/sovproblem/stress-och-somn' }
+				]
+			},
+			{
+				heading: 'Trött men uppvarvad',
+				body: 'Att vara utmattad men ändå inte kunna somna är ett vanligt mönster. Det beror ofta på ett aktiverat nervsystem som inte fått signal om att det är tryggt att vila.',
+				links: [
+					{ title: 'Trött men uppvarvad – vad det beror på', href: '/guider-seo/sovproblem/trott-men-uppvarvad' },
+					{ title: 'Ältande på kvällen – när tankarna tar över', href: '/guider-seo/sovproblem/altande-pa-kvallen' }
+				]
+			},
+			{
+				heading: 'Lugn väg framåt',
+				body: 'Du behöver inte hitta perfekt sömn direkt. Små justeringar i rutiner och tankemönster kan göra stor skillnad över tid. MittPsyke är ett komplement för stöd och reflektion, inte en ersättning för vård.'
+			}
+		],
+		primaryLinks: [
+			{ title: 'Se alla artiklar om sömnproblem', href: '/guider-seo/sovproblem' },
+			{ title: 'Sömnbrist och mående – vad det gör med dig', href: '/guider-seo/sovproblem/somnbrist-och-maendet' },
+			{ title: 'Utforska övningar', href: '/ovningar' }
+		]
+	},
+	sjalvkansla: {
+		pillarSlug: 'sjalvkansla',
+		seoTitle: 'Låg självkänsla – förstå mönstren och hitta en varsam väg framåt',
+		seoDescription:
+			'Läs om vad låg självkänsla handlar om, hur den inre kritikern påverkar dig och vilka steg du kan ta i din egen takt. Guider och trygga nästa steg.',
+		h1: 'Stöd vid låg självkänsla i varsam takt',
+		intro:
+			'Självkänsla handlar om hur du värderar dig själv i grunden. Den kan förändras, och du behöver inte göra det snabbt eller ensam. Här hittar du en trygg ingång.',
+		sections: [
+			{
+				heading: 'Vad låg självkänsla handlar om',
+				body: 'Låg självkänsla visar sig ofta som en inre röst som ifrågasätter, jämför och kritiserar. Det är inte en karaktärsbrist, utan ett inlärt mönster som går att förändra steg för steg.',
+				links: [
+					{ title: 'Låg självkänsla – vad det är och vad som hjälper', href: '/guider-seo/sjalvkansla/lag-sjalvkansla' },
+					{ title: 'Inre kritikern – rösten som alltid hittar fel', href: '/guider-seo/sjalvkansla/inre-kritikern' }
+				]
+			},
+			{
+				heading: 'Jämförelse och självbild',
+				body: 'Att jämföra sig med andra kan förstärka känslan av att inte räcka till. Det finns sätt att se sig själv med lite mer rättvisa och värme, och det börjar ofta med ökad medvetenhet.',
+				links: [
+					{ title: 'Jämförelse och självbild – att se sig själv rättvist', href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild' },
+					{ title: 'Perfektionism och självkänsla', href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla' }
+				]
+			},
+			{
+				heading: 'Varsam väg vidare',
+				body: 'Förändring i självkänsla sker sällan snabbt, men varje litet steg räknas. Du kan börja med att sätta ord på det som känns svårt, skriva i dagboken eller prova en enkel övning.'
+			}
+		],
+		primaryLinks: [
+			{ title: 'Se alla artiklar om självkänsla', href: '/guider-seo/sjalvkansla' },
+			{ title: 'Gränser och självkänsla', href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla' },
+			{ title: 'Utforska övningar', href: '/ovningar' }
+		]
 	}
+
 };
 
 export function getPillarLandingBySlug(slug: string): SeoLandingPage | null {
