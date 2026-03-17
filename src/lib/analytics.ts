@@ -30,6 +30,14 @@ type AnalyticsEventMap = {
 	save_account_from_write: {
 		char_count: number;
 	};
+	hero_cta_primary_click: {
+		destination: '/skriv';
+		location: 'hero';
+	};
+	hero_cta_secondary_click: {
+		destination: '/register';
+		location: 'hero';
+	};
 };
 
 declare global {
@@ -162,4 +170,12 @@ export function trackContinueFromWrite(charCount: number) {
 
 export function trackSaveAccountFromWrite(charCount: number) {
 	trackEvent('save_account_from_write', { char_count: charCount });
+}
+
+export function trackHeroCtaPrimaryClick() {
+	trackEvent('hero_cta_primary_click', { destination: '/skriv', location: 'hero' });
+}
+
+export function trackHeroCtaSecondaryClick() {
+	trackEvent('hero_cta_secondary_click', { destination: '/register', location: 'hero' });
 }

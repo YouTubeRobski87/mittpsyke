@@ -3,6 +3,7 @@
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import { portals } from '$lib/data/portals';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
+	import { trackHeroCtaPrimaryClick, trackHeroCtaSecondaryClick } from '$lib/analytics';
 
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
@@ -92,8 +93,8 @@
 				Skriv av dig direkt — inget konto, ingen registrering. Skapa ett konto om du vill spara din dagbok och kunna återvända över tid.
 			</p>
 			<div class="hero-actions">
-				<a href="/skriv" class="hero-cta hero-cta-primary">Börja skriva anonymt</a>
-				<a href="/register" class="hero-cta hero-cta-secondary">Skapa din egen plats</a>
+				<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
+				<a href="/register" class="hero-cta hero-cta-secondary" onclick={() => trackHeroCtaSecondaryClick()}>Skapa din egen plats</a>
 			</div>
 			<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
 			<HomeSafetyStrip />
