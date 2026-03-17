@@ -98,6 +98,14 @@ export function initializeAnalytics() {
 
 	if (gaInitialized) return;
 
+	// Dynamically inject the GA4 script after consent — only once
+	if (!document.querySelector(`script[src*="${GA_MEASUREMENT_ID}"]`)) {
+		const script = document.createElement('script');
+		script.async = true;
+		script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+		document.head.appendChild(script);
+	}
+
 	window.gtag?.('js', new Date());
 	window.gtag?.('config', GA_MEASUREMENT_ID, withDebugMode({ send_page_view: false }));
 	gaInitialized = true;
