@@ -1,7 +1,7 @@
 import { browser, dev } from '$app/environment';
 import { hasAnalyticsConsent } from '$lib/consent';
 
-export const GA_MEASUREMENT_ID = 'G-0CLWCRW7SN';
+export const GA_MEASUREMENT_ID = 'G-8XG01VCB5N';
 
 type AnalyticsParams = Record<string, string | number | boolean | null | undefined>;
 
