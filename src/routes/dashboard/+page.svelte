@@ -463,22 +463,37 @@
 
 		<!-- Welcome Section -->
 		<section class="panel welcome-panel" style="background: var(--theme-bg, rgba(15,118,110,0.07));">
-			<p class="welcome-kicker">Min portal</p>
-			<h1>{greetingByTime()}, {firstName}</h1>
-			<p class="welcome-subtitle">{welcomeSubtitle}</p>
-			{#if streak > 0}
-				<div class="streak-badge">
-					<span class="streak-flame">🔥</span>
-					<span class="streak-text">
-						{streak === 1 ? '1 dag i rad' : `${streak} dagar i rad`} — {streakSubText}
-					</span>
+			<div class="welcome-row">
+				<div class="welcome-text">
+					<p class="welcome-kicker">Min portal</p>
+					<h1>{greetingByTime()}, {firstName}</h1>
+					<p class="welcome-subtitle">{welcomeSubtitle}</p>
+					{#if streak > 0}
+						<div class="streak-badge">
+							<span class="streak-flame">🔥</span>
+							<span class="streak-text">
+								{streak === 1 ? '1 dag i rad' : `${streak} dagar i rad`} — {streakSubText}
+							</span>
+						</div>
+					{:else}
+						<div class="streak-badge streak-start">
+							<span class="streak-flame">✨</span>
+							<span class="streak-text">Börja där du är idag — en kort rad kan räcka.</span>
+						</div>
+					{/if}
 				</div>
-			{:else}
-				<div class="streak-badge streak-start">
-					<span class="streak-flame">✨</span>
-					<span class="streak-text">Börja där du är idag — en kort rad kan räcka.</span>
+				{#if zodiacSign && (horoscopeText || horoscopeLoading)}
+				<div class="horoscope-bubble">
+					<span class="horoscope-bubble-icon">🔮</span>
+					<p class="horoscope-bubble-sign">{zodiacSign}</p>
+					{#if horoscopeLoading}
+						<p class="horoscope-bubble-text loading">Hämtar dagens horoskop...</p>
+					{:else}
+						<p class="horoscope-bubble-text">{horoscopeText}</p>
+					{/if}
 				</div>
-			{/if}
+				{/if}
+			</div>
 		</section>
 
 		<!-- Dagens fråga -->
@@ -490,18 +505,6 @@
 			<a href="/checkin" class="checkin-link">Eller gör en snabb check-in →</a>
 		</section>
 
-		<!-- Horoscope Panel -->
-		{#if zodiacSign}
-		<section class="panel horoscope-panel">
-			<p class="panel-kicker">🔮 Ditt horoskop</p>
-			<p class="horoscope-sign">{zodiacSign}</p>
-			{#if horoscopeLoading}
-				<p class="horoscope-text horoscope-loading">Hämtar dagens horoskop...</p>
-			{:else if horoscopeText}
-				<p class="horoscope-text">{horoscopeText}</p>
-			{/if}
-		</section>
-		{/if}
 
 		<!-- Goal Widget -->
 		{#if weeklyGoalType !== 'none'}
@@ -539,7 +542,7 @@
 			{:else if dashboardWidget === 'chat'}
 				<h3 class="widget-heading">Behöver du prata av dig?</h3>
 				<p class="widget-body">Du kan börja anonymt och i lugn takt.</p>
-				<a href="/chatta" class="widget-cta">Öppna chatten</a>
+				<a href="/chat" class="widget-cta">Öppna chatten</a>
 			{:else}
 				<h3 class="widget-heading">Dagboken väntar</h3>
 				<p class="widget-body">Skriv av dig några rader och fånga det som känns viktigt idag.</p>
@@ -1104,38 +1107,70 @@
 		color: #86dfd6;
 	}
 
-	/* Horoscope Panel */
-	.horoscope-panel {
-		background: #f7f5f0;
+	/* Horoscope Quote Bubble */
+	.welcome-row {
+		display: flex;
+		gap: 1.2rem;
+		align-items: flex-start;
 	}
-	:global(.dark) .horoscope-panel {
-		background: rgba(255, 255, 255, 0.04);
+	.welcome-text {
+		flex: 1;
+		min-width: 0;
 	}
-	.horoscope-sign {
+	.horoscope-bubble {
+		flex-shrink: 0;
+		width: 220px;
+		padding: 1rem 1.1rem;
+		background: rgba(255, 255, 255, 0.65);
+		border-radius: 18px 18px 4px 18px;
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+		position: relative;
+		text-align: center;
+	}
+	:global(.dark) .horoscope-bubble {
+		background: rgba(255, 255, 255, 0.06);
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+	}
+	.horoscope-bubble-icon {
+		font-size: 1.5rem;
+		display: block;
+		margin-bottom: 0.3rem;
+	}
+	.horoscope-bubble-sign {
 		font-family: var(--font-heading);
-		font-size: 0.95rem;
+		font-size: 0.82rem;
 		font-weight: 700;
 		color: var(--theme-accent, #0f766e);
-		margin: 0 0 0.5rem;
-		letter-spacing: -0.01em;
+		margin: 0 0 0.4rem;
+		letter-spacing: 0.03em;
+		text-transform: uppercase;
 	}
-	:global(.dark) .horoscope-sign {
+	:global(.dark) .horoscope-bubble-sign {
 		color: #86dfd6;
 	}
-	.horoscope-text {
+	.horoscope-bubble-text {
 		font-family: var(--font-body);
-		font-size: 0.93rem;
-		line-height: 1.7;
+		font-size: 0.82rem;
+		line-height: 1.6;
 		margin: 0;
-		color: #3a3530;
-	}
-	:global(.dark) .horoscope-text {
-		color: rgba(255, 255, 255, 0.8);
-	}
-	.horoscope-loading {
-		opacity: 0.5;
+		color: #4a453f;
 		font-style: italic;
 	}
+	:global(.dark) .horoscope-bubble-text {
+		color: rgba(255, 255, 255, 0.7);
+	}
+	.horoscope-bubble-text.loading {
+		opacity: 0.5;
+	}
+	@media (max-width: 639px) {
+		.welcome-row {
+			flex-direction: column;
+		}
+		.horoscope-bubble {
+			width: 100%;
+			border-radius: 18px;
+		}
+	}
 
 	/* Theme accent (applied inline on panels) */
 	.goal-panel {
@@ -1228,96 +1263,6 @@
 		line-height: 1.5;
 	}
 
-	/* Theme accent (applied inline on panels) */
-	.goal-panel {
-		background: #f8f7f4;
-	}
-	.widget-panel {
-		background: #f8f7f4;
-	}
-	.panel-kicker {
-		font-family: var(--font-body);
-		font-size: 0.78rem;
-		text-transform: uppercase;
-		letter-spacing: 0.07em;
-		opacity: 0.5;
-		margin: 0 0 0.35rem;
-	}
-	.goal-label {
-		font-family: var(--font-body);
-		font-size: 0.97rem;
-		font-weight: 500;
-		color: #2f2a24;
-		margin: 0 0 0.75rem;
-		line-height: 1.4;
-	}
-	:global(.dark) .goal-label {
-		color: #e8e4de;
-	}
-	.goal-progress {
-		margin-bottom: 0.5rem;
-	}
-	.goal-bar-track {
-		height: 6px;
-		border-radius: 99px;
-		background: rgba(0,0,0,0.08);
-		overflow: hidden;
-		margin-bottom: 0.45rem;
-	}
-	:global(.dark) .goal-bar-track {
-		background: rgba(255,255,255,0.1);
-	}
-	.goal-bar-fill {
-		height: 100%;
-		border-radius: 99px;
-		transition: width 0.6s ease;
-	}
-	.goal-status {
-		font-family: var(--font-body);
-		font-size: 0.88rem;
-		opacity: 0.75;
-		margin: 0;
-	}
-	.goal-sub {
-		font-family: var(--font-body);
-		font-size: 0.88rem;
-		opacity: 0.6;
-		margin: 0.3rem 0 0.85rem;
-	}
-	.goal-cta,
-	.widget-cta {
-		display: inline-block;
-		padding: 0.5rem 1.1rem;
-		border-radius: var(--radius-input, 8px);
-		background: var(--theme-accent, #0f766e);
-		color: #fff;
-		font-family: var(--font-body);
-		font-size: 0.88rem;
-		font-weight: 600;
-		text-decoration: none;
-		transition: opacity 0.15s;
-	}
-	.goal-cta:hover,
-	.widget-cta:hover {
-		opacity: 0.85;
-	}
-	.widget-heading {
-		font-family: var(--font-heading);
-		font-size: 1rem;
-		font-weight: 700;
-		color: #2f2a24;
-		margin: 0 0 0.3rem;
-	}
-	:global(.dark) .widget-heading {
-		color: #e8e4de;
-	}
-	.widget-body {
-		font-family: var(--font-body);
-		font-size: 0.92rem;
-		opacity: 0.75;
-		margin: 0 0 0.8rem;
-		line-height: 1.5;
-	}
 	.prompt-panel {
 		background: var(--theme-bg, rgba(15,118,110,0.07));
 		border-left: 3px solid var(--theme-accent, #0f766e);
