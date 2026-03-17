@@ -192,9 +192,6 @@
 			name="twitter:description"
 			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
 		/>
-		{#if analyticsEnabled}
-			<script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
-		{/if}
 		{@html `<script type="application/ld+json">${JSON.stringify(organizationJsonLd)}<\/script>`}
 	{/if}
 </svelte:head>
