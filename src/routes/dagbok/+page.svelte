@@ -94,7 +94,7 @@
 			}
 
 			draftText = '';
-			draftSuccess = 'Ditt inlägg är sparat.';
+			draftSuccess = 'Ditt första inlägg är sparat';
 			await loadEntries({ force: true });
 		} catch (error) {
 			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
@@ -154,10 +154,6 @@
 					<p class="mt-3 text-sm text-red-600">{draftError}</p>
 				{/if}
 
-				{#if draftSuccess}
-					<p class="mt-3 text-sm text-green-700">{draftSuccess}</p>
-				{/if}
-
 				<button
 					type="button"
 					class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
@@ -173,6 +169,13 @@
 				>
 					Fortsätt skriva senare
 				</a>
+			</section>
+		{/if}
+
+		{#if draftSuccess && !draftText}
+			<section class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4">
+				<h2 class="text-base font-semibold text-green-900">{draftSuccess}</h2>
+				<p class="mt-2 text-sm text-green-900/80">Du kan fortsätta skriva i din dagbok när som helst.</p>
 			</section>
 		{/if}
 
