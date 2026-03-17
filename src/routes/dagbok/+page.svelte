@@ -141,8 +141,16 @@
 	{:else}
 		{#if draftText}
 			<section class="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
-				<h2 class="text-base font-semibold text-blue-900">Osparet utkast</h2>
-				<p class="mt-2 whitespace-pre-wrap text-sm text-blue-900/90">{draftText}</p>
+				<h2 class="text-base font-semibold text-blue-900">Spara ditt första inlägg</h2>
+				<p class="mt-2 text-sm text-blue-900/85">
+					Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
+				</p>
+				<textarea
+					bind:value={draftText}
+					rows={8}
+					class="mt-3 w-full rounded-lg border border-blue-200 bg-white p-3 text-sm text-blue-950 focus:outline-none focus:ring-2 focus:ring-blue-300"
+					placeholder="Skriv några ord..."
+				></textarea>
 
 				{#if draftError}
 					<p class="mt-3 text-sm text-red-600">{draftError}</p>
@@ -152,20 +160,25 @@
 					<p class="mt-3 text-sm text-green-700">{draftSuccess}</p>
 				{/if}
 
-				{#if isLoggedIn}
-					<button
-						type="button"
-						class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-						onclick={saveDraftToDiary}
-						disabled={savingDraft}
-					>
-						{savingDraft ? 'Sparar...' : 'Spara i dagboken'}
-					</button>
-				{:else}
-					<p class="mt-3 text-sm text-blue-900/80">
-						Skapa konto eller logga in för att spara utkastet i din dagbok.
-					</p>
-					<div class="mt-4 flex flex-wrap gap-2">
+				<button
+					type="button"
+					class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+					onclick={saveDraftToDiary}
+					disabled={savingDraft || !draftText.trim()}
+				>
+					{savingDraft ? 'Sparar...' : 'Spara som första inlägg'}
+				</button>
+
+				<a
+					href="/skriv"
+					class="mt-3 inline-flex rounded-lg border border-blue-300 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-100"
+				>
+					Fortsätt skriva senare
+				</a>
+
+				{#if !isLoggedIn}
+					<p class="mt-3 text-sm text-blue-900/80">Du behöver konto för att spara i dagboken.</p>
+					<div class="mt-2 flex flex-wrap gap-2">
 						<a
 							href="/register"
 							class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
