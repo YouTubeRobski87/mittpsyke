@@ -40,9 +40,9 @@
 
 	{#if showPreview && tempEntryPreview}
 		<div class="mb-6 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-700/40 p-4">
-			<p class="text-sm font-medium mb-2">📓 Ditt första dagboksinlägg</p>
+			<p class="text-sm font-medium mb-2">📓 Du har redan börjat skriva</p>
 			<p class="text-sm opacity-80 mb-2 line-clamp-3">{tempEntryPreview.content || 'Tomt utkast'}</p>
-			<p class="text-xs opacity-60">Vi hittade ett utkast från tidigare — skapa konto för att spara din resa.</p>
+			<p class="text-xs opacity-60">Ditt utkast väntar på dig i dagboken efter att du skapat konto.</p>
 		</div>
 	{/if}
 
