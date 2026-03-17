@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { trackWriteStarted, trackContinueFromWrite, trackSaveAccountFromWrite } from '$lib/analytics';
 
 	const DRAFT_KEY = 'mittpsyke:draft';
 	const TEMP_KEY = 'mittpsyke_temp_entry';
@@ -8,16 +9,26 @@
 	let phase: 'writing' | 'done' = $state('writing');
 	let charCount = $derived(text.trim().length);
 	let returningDraft = $state(''); // Text from previous anonymous session
+	let writeStarted = false;
+
+	function handleWriteInput() {
+		if (!writeStarted) {
+			writeStarted = true;
+			trackWriteStarted();
+		}
+	}
 
 	function handleContinue() {
 		if (charCount < 3) return;
 		localStorage.setItem(DRAFT_KEY, text.trim());
+		trackContinueFromWrite(charCount);
 		phase = 'done';
 	}
 
 	function handleSaveAccount() {
 		// Save as temp entry for register page to pick up
 		localStorage.setItem(TEMP_KEY, text.trim());
+		trackSaveAccountFromWrite(charCount);
 		window.location.href = '/register?from=skriv';
 	}
 
@@ -94,6 +105,7 @@
 			<div class="textarea-wrap">
 				<textarea
 					bind:value={text}
+					oninput={handleWriteInput}
 					placeholder="Börja skriva här…"
 					class="skriv-textarea"
 					rows="10"

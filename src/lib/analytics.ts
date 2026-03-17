@@ -21,6 +21,15 @@ type AnalyticsEventMap = {
 	view_register_page: {
 		page_name: 'register';
 	};
+	write_started: {
+		location: 'skriv';
+	};
+	continue_from_write: {
+		char_count: number;
+	};
+	save_account_from_write: {
+		char_count: number;
+	};
 };
 
 declare global {
@@ -141,4 +150,16 @@ export function trackDagbokCtaClick() {
 		destination: '/register',
 		location: 'dagbok_guest'
 	});
+}
+
+export function trackWriteStarted() {
+	trackEvent('write_started', { location: 'skriv' });
+}
+
+export function trackContinueFromWrite(charCount: number) {
+	trackEvent('continue_from_write', { char_count: charCount });
+}
+
+export function trackSaveAccountFromWrite(charCount: number) {
+	trackEvent('save_account_from_write', { char_count: charCount });
 }
