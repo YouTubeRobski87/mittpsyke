@@ -68,10 +68,25 @@
 		sovproblem: {
 			heading: 'Nästa steg vid sömnproblem',
 			intro: 'Du behöver inte lösa allt på en natt. Välj det steg som känns minst ansträngande just nu.',
+<<<<<<< HEAD
 			chatCopy: 'Prata anonymt om det som håller dig vaken eller gör återhämtningen svår.',
 			diaryCopy: 'Skriv ned kvällstankar, sömnmönster eller sådant som påverkar återhämtningen.',
 			exerciseCopy: 'Prova en lugn övning som hjälper kroppen att varva ned steg för steg.',
 			supportCopy: 'Om du behöver prata med någon finns stödlinjer och vårdvägar att ta hjälp av.'
+=======
+			chatCopy: 'Sätt ord på det som håller dig vaken, i din egen takt och utan krav på att formulera allt.',
+			diaryCopy: 'Skriv av dig kvällstankarna och ge dem en tydlig plats utanför huvudet.',
+			exerciseCopy: 'Prova en kort övning för att hjälpa kroppen att varva ned inför sömnen.',
+			supportCopy: 'Om sömnproblemen påverkar ditt mående allvarligt finns stödlinjer och vårdråd nära till hands.'
+		},
+		sjalvkansla: {
+			heading: 'Nästa steg mot bättre självkänsla',
+			intro: 'Förändring sker i liten skala. Välj ett steg som känns möjligt just nu.',
+			chatCopy: 'Prata anonymt om det som känns svårt att säga högt, i lugn och trygg takt.',
+			diaryCopy: 'Skriv ned tankar om dig själv och följ hur självbilden förändras över tid.',
+			exerciseCopy: 'Prova en enkel övning som hjälper dig att möta dig själv med lite mer värme.',
+			supportCopy: 'Om du behöver mer stöd kan du hitta rätt stödlinje eller kontakt här.'
+>>>>>>> 432d75dde70711a3eb809bd2cd6600feaa5e0e2c
 		}
 	} satisfies Record<string, GuideTone>;
 
