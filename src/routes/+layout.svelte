@@ -8,6 +8,7 @@
 		trackPageView
 	} from '$lib/analytics';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
 	import {
 		ANALYTICS_CONSENT_EVENT,
@@ -144,6 +145,32 @@
 
 		return () => {
 			window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+		};
+	});
+
+	// Apply color theme globally (CSS variables on <html>)
+	$effect(() => {
+		if (!browser) return;
+
+		function applyColorTheme() {
+			const key = getCachedTheme();
+			const colors = getThemeColors(key);
+			const el = document.documentElement;
+			el.style.setProperty('--primary', colors.accent);
+			el.style.setProperty('--theme-accent', colors.accent);
+			el.style.setProperty('--theme-bg', colors.bg);
+		}
+
+		applyColorTheme();
+
+		const onChanged = () => applyColorTheme();
+		window.addEventListener('mittpsyke:theme-changed', onChanged);
+		window.addEventListener('storage', (e) => {
+			if (e.key === THEME_STORAGE_KEY) applyColorTheme();
+		});
+
+		return () => {
+			window.removeEventListener('mittpsyke:theme-changed', onChanged);
 		};
 	});
 

@@ -1,13 +1,39 @@
 <!doctype html>
 <html lang="sv">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" href="%sveltekit.assets%/assets/recursive/fonts.css" />
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
-		%sveltekit.head%
-	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.svg" type="image/svg+xml" />
+    <script>
+      // Flash prevention: apply theme before first paint
+      (function() {
+        try {
+          var mode = localStorage.getItem('theme-mode');
+          if (mode === 'dark') document.documentElement.classList.add('dark');
+          var theme = localStorage.getItem('mittpsyke:theme');
+          if (theme) {
+            var themes = {
+              neutral:    { a: '#0f766e', b: 'rgba(15, 118, 110, 0.07)' },
+              salvia:     { a: '#7a9e7e', b: 'rgba(122, 158, 126, 0.09)' },
+              'havsbl\u00e5':    { a: '#5b8db8', b: 'rgba(91, 141, 184, 0.09)' },
+              lavendel:   { a: '#8b7ab8', b: 'rgba(139, 122, 184, 0.09)' },
+              sand:       { a: '#b8956a', b: 'rgba(184, 149, 106, 0.09)' },
+              'skogsgr\u00f6n': { a: '#4a7c59', b: 'rgba(74, 124, 89, 0.09)' }
+            };
+            var t = themes[theme];
+            if (t) {
+              var s = document.documentElement.style;
+              s.setProperty('--primary', t.a);
+              s.setProperty('--theme-accent', t.a);
+              s.setProperty('--theme-bg', t.b);
+            }
+          }
+        } catch(e) {}
+      })();
+    </script>
+    %sveltekit.head%
+  </head>
+  <body data-sveltekit-prerender="false">
+    <div style="display:contents">%sveltekit.body%</div>
+  </body>
 </html>
