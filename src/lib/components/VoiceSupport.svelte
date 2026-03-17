@@ -63,6 +63,9 @@
 			/>
 		</div>
 	{/if}
+	<a class="voice-support-call-button" href="tel:+15672921889" aria-label="Ring AI-samtalsstöd på +15672921889">
+		Ring AI-samtalsstöd
+	</a>
 </section>
 
 <style>
@@ -108,7 +111,8 @@
 		text-align: left;
 	}
 
-	button {
+	button,
+	.voice-support-call-button {
 		background: #6b8e7a;
 		color: white;
 		border: none;
@@ -117,9 +121,13 @@
 		font-size: 18px;
 		cursor: pointer;
 		transition: background 0.2s ease, transform 0.2s ease;
+		display: inline-block;
+		text-decoration: none;
+		margin-top: 0.9rem;
 	}
 
-	button:hover {
+	button:hover,
+	.voice-support-call-button:hover {
 		background: #557a66;
 		transform: translateY(-2px);
 	}
