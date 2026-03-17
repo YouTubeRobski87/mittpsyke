@@ -483,16 +483,22 @@
 					{/if}
 				</div>
 				{#if zodiacSign && (horoscopeText || horoscopeLoading)}
-				<div class="horoscope-bubble">
+			<div class="horoscope-bubble">
+				<div class="horoscope-bubble-header">
 					<span class="horoscope-bubble-icon">🔮</span>
 					<p class="horoscope-bubble-sign">{zodiacSign}</p>
-					{#if horoscopeLoading}
-						<p class="horoscope-bubble-text loading">Hämtar dagens horoskop...</p>
-					{:else}
-						<p class="horoscope-bubble-text">{horoscopeText}</p>
-					{/if}
 				</div>
+				{#if horoscopeLoading}
+					<p class="horoscope-bubble-text loading">Hämtar dagens tanke...</p>
+				{:else}
+					<p class="horoscope-bubble-text">{horoscopeText}</p>
+					<div class="horoscope-nudge">
+						<span class="horoscope-nudge-dot"></span>
+						<a href="/dagbok?from=horoscope" class="horoscope-nudge-link">Vill du skriva några ord om det här?</a>
+					</div>
 				{/if}
+			</div>
+			{/if}
 			</div>
 		</section>
 
@@ -1119,30 +1125,35 @@
 	}
 	.horoscope-bubble {
 		flex-shrink: 0;
-		width: 220px;
-		padding: 1rem 1.1rem;
-		background: rgba(255, 255, 255, 0.65);
+		width: 240px;
+		padding: 1.1rem 1.2rem 1rem;
+		background: rgba(255, 255, 255, 0.6);
 		border-radius: 18px 18px 4px 18px;
-		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+		box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04);
 		position: relative;
-		text-align: center;
+		text-align: left;
 	}
 	:global(.dark) .horoscope-bubble {
-		background: rgba(255, 255, 255, 0.06);
-		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+		background: rgba(255, 255, 255, 0.05);
+		box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+	}
+	.horoscope-bubble-header {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-bottom: 0.55rem;
 	}
 	.horoscope-bubble-icon {
-		font-size: 1.5rem;
-		display: block;
-		margin-bottom: 0.3rem;
+		font-size: 1.15rem;
+		line-height: 1;
 	}
 	.horoscope-bubble-sign {
 		font-family: var(--font-heading);
-		font-size: 0.82rem;
+		font-size: 0.76rem;
 		font-weight: 700;
 		color: var(--theme-accent, #0f766e);
-		margin: 0 0 0.4rem;
-		letter-spacing: 0.03em;
+		margin: 0;
+		letter-spacing: 0.04em;
 		text-transform: uppercase;
 	}
 	:global(.dark) .horoscope-bubble-sign {
@@ -1150,17 +1161,57 @@
 	}
 	.horoscope-bubble-text {
 		font-family: var(--font-body);
-		font-size: 0.82rem;
-		line-height: 1.6;
+		font-size: 0.84rem;
+		line-height: 1.72;
+		letter-spacing: 0.005em;
 		margin: 0;
 		color: #4a453f;
 		font-style: italic;
 	}
 	:global(.dark) .horoscope-bubble-text {
-		color: rgba(255, 255, 255, 0.7);
+		color: rgba(255, 255, 255, 0.72);
 	}
 	.horoscope-bubble-text.loading {
 		opacity: 0.5;
+		font-style: normal;
+	}
+	.horoscope-nudge {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-top: 0.7rem;
+		padding-top: 0.6rem;
+		border-top: 1px solid rgba(0, 0, 0, 0.06);
+	}
+	:global(.dark) .horoscope-nudge {
+		border-top-color: rgba(255, 255, 255, 0.08);
+	}
+	.horoscope-nudge-dot {
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: var(--theme-accent, #0f766e);
+		opacity: 0.5;
+		flex-shrink: 0;
+	}
+	:global(.dark) .horoscope-nudge-dot {
+		background: #86dfd6;
+	}
+	.horoscope-nudge-link {
+		font-family: var(--font-body);
+		font-size: 0.78rem;
+		font-weight: 450;
+		color: var(--theme-accent, #0f766e);
+		text-decoration: none;
+		opacity: 0.75;
+		transition: opacity 0.15s ease;
+		line-height: 1.4;
+	}
+	.horoscope-nudge-link:hover {
+		opacity: 1;
+	}
+	:global(.dark) .horoscope-nudge-link {
+		color: #86dfd6;
 	}
 	@media (max-width: 639px) {
 		.welcome-row {
@@ -1169,6 +1220,7 @@
 		.horoscope-bubble {
 			width: 100%;
 			border-radius: 18px;
+			text-align: left;
 		}
 	}
 
