@@ -185,8 +185,8 @@
 
 		{#if entries.length === 0}
 			<section class="rounded-lg border border-neutral-200 bg-white p-4">
-				<h2 class="text-lg font-semibold">Din dagbok är tom just nu</h2>
-				<p class="mt-2 text-sm text-neutral-600">Börja med några ord. Du kan skriva i din takt.</p>
+				<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
+				<p class="mt-2 text-sm text-neutral-600">Det räcker med några ord. Skriv i lugn och ro, i din egen takt.</p>
 				<a
 					href="/skriv"
 					class="mt-4 inline-flex rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-800 hover:bg-neutral-100"
