@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
 	import type { DeleteAccountErrorResponse, DeleteAccountSuccessResponse } from '$lib/types';
+	import { THEME_STORAGE_KEY } from '$lib/theme';
 
 	let loading = $state(true);
 
@@ -135,6 +136,7 @@
 			// Cache theme locally for instant load on dashboard
 			if (typeof localStorage !== 'undefined') {
 				localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
+				window.dispatchEvent(new CustomEvent('mittpsyke:theme-changed'));
 			}
 		}
 	}
