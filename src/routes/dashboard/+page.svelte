@@ -30,6 +30,10 @@
 	let entriesThisWeek = $state(0);
 	let daysSinceLastEntry = $state<number | null>(null);
 	let dailyPrompt = $state(getDailyPrompt());
+	let birthday = $state('');
+	let zodiacSign = $state('');
+	let horoscopeText = $state('');
+	let horoscopeLoading = $state(false);
 
 
 	const GOAL_OPTIONS = [
@@ -245,6 +249,27 @@
 	);
 
 	
+	function getZodiacSign(dateStr: string): string {
+		if (!dateStr) return '';
+		const d = new Date(dateStr);
+		if (isNaN(d.getTime())) return '';
+		const m = d.getMonth() + 1;
+		const day = d.getDate();
+		if ((m === 3 && day >= 21) || (m === 4 && day <= 19)) return 'Väduren';
+		if ((m === 4 && day >= 20) || (m === 5 && day <= 20)) return 'Oxen';
+		if ((m === 5 && day >= 21) || (m === 6 && day <= 20)) return 'Tvillingarna';
+		if ((m === 6 && day >= 21) || (m === 7 && day <= 22)) return 'Kräftan';
+		if ((m === 7 && day >= 23) || (m === 8 && day <= 22)) return 'Lejonet';
+		if ((m === 8 && day >= 23) || (m === 9 && day <= 22)) return 'Jungfrun';
+		if ((m === 9 && day >= 23) || (m === 10 && day <= 22)) return 'Vågen';
+		if ((m === 10 && day >= 23) || (m === 11 && day <= 21)) return 'Skorpionen';
+		if ((m === 11 && day >= 22) || (m === 12 && day <= 21)) return 'Skytten';
+		if ((m === 12 && day >= 22) || (m === 1 && day <= 19)) return 'Stenbocken';
+		if ((m === 1 && day >= 20) || (m === 2 && day <= 18)) return 'Vattumannen';
+		if ((m === 2 && day >= 19) || (m === 3 && day <= 20)) return 'Fiskarna';
+		return '';
+	}
+
 	function greetingByTime(): string {
 		const h = new Date().getHours();
 		if (h < 5) return 'God natt';
@@ -373,6 +398,28 @@
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
 
+			// Load birthday and fetch horoscope
+			birthday = typeof meta.birthday === 'string' ? meta.birthday : '';
+			zodiacSign = getZodiacSign(birthday);
+			if (zodiacSign) {
+				horoscopeLoading = true;
+				try {
+					const horoResp = await fetch('/api/horoscope', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ sign: zodiacSign })
+					});
+					if (alive) {
+						const horoData = await horoResp.json();
+						horoscopeText = typeof horoData.text === 'string' ? horoData.text : '';
+					}
+				} catch {
+					// silent — horoscope is optional
+				} finally {
+					if (alive) horoscopeLoading = false;
+				}
+			}
+
 			// Calculate entries this week
 			const startOfWeek = new Date();
 			startOfWeek.setHours(0, 0, 0, 0);
@@ -442,6 +489,19 @@
 			<a href="/dagbok?prefill={encodeURIComponent(dailyPrompt)}&from=prompt" class="prompt-cta">Svara</a>
 			<a href="/checkin" class="checkin-link">Eller gör en snabb check-in →</a>
 		</section>
+
+		<!-- Horoscope Panel -->
+		{#if zodiacSign}
+		<section class="panel horoscope-panel">
+			<p class="panel-kicker">🔮 Ditt horoskop</p>
+			<p class="horoscope-sign">{zodiacSign}</p>
+			{#if horoscopeLoading}
+				<p class="horoscope-text horoscope-loading">Hämtar dagens horoskop...</p>
+			{:else if horoscopeText}
+				<p class="horoscope-text">{horoscopeText}</p>
+			{/if}
+		</section>
+		{/if}
 
 		<!-- Goal Widget -->
 		{#if weeklyGoalType !== 'none'}
@@ -1042,6 +1102,39 @@
 
 	:global(.dark) .support-panel a {
 		color: #86dfd6;
+	}
+
+	/* Horoscope Panel */
+	.horoscope-panel {
+		background: #f7f5f0;
+	}
+	:global(.dark) .horoscope-panel {
+		background: rgba(255, 255, 255, 0.04);
+	}
+	.horoscope-sign {
+		font-family: var(--font-heading);
+		font-size: 0.95rem;
+		font-weight: 700;
+		color: var(--theme-accent, #0f766e);
+		margin: 0 0 0.5rem;
+		letter-spacing: -0.01em;
+	}
+	:global(.dark) .horoscope-sign {
+		color: #86dfd6;
+	}
+	.horoscope-text {
+		font-family: var(--font-body);
+		font-size: 0.93rem;
+		line-height: 1.7;
+		margin: 0;
+		color: #3a3530;
+	}
+	:global(.dark) .horoscope-text {
+		color: rgba(255, 255, 255, 0.8);
+	}
+	.horoscope-loading {
+		opacity: 0.5;
+		font-style: italic;
 	}
 
 	/* Theme accent (applied inline on panels) */
