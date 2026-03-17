@@ -24,7 +24,7 @@
 		supportCopy: string;
 	};
 
-	const toneByPillar = {
+	const toneByPillar: Record<string, GuideTone> = {
 		angest: {
 			heading: 'Nästa steg vid ångest',
 			intro: 'Välj det som känns mest hjälpsamt just nu. Små steg kan räcka.',
@@ -68,12 +68,6 @@
 		sovproblem: {
 			heading: 'Nästa steg vid sömnproblem',
 			intro: 'Du behöver inte lösa allt på en natt. Välj det steg som känns minst ansträngande just nu.',
-<<<<<<< HEAD
-			chatCopy: 'Prata anonymt om det som håller dig vaken eller gör återhämtningen svår.',
-			diaryCopy: 'Skriv ned kvällstankar, sömnmönster eller sådant som påverkar återhämtningen.',
-			exerciseCopy: 'Prova en lugn övning som hjälper kroppen att varva ned steg för steg.',
-			supportCopy: 'Om du behöver prata med någon finns stödlinjer och vårdvägar att ta hjälp av.'
-=======
 			chatCopy: 'Sätt ord på det som håller dig vaken, i din egen takt och utan krav på att formulera allt.',
 			diaryCopy: 'Skriv av dig kvällstankarna och ge dem en tydlig plats utanför huvudet.',
 			exerciseCopy: 'Prova en kort övning för att hjälpa kroppen att varva ned inför sömnen.',
@@ -86,17 +80,31 @@
 			diaryCopy: 'Skriv ned tankar om dig själv och följ hur självbilden förändras över tid.',
 			exerciseCopy: 'Prova en enkel övning som hjälper dig att möta dig själv med lite mer värme.',
 			supportCopy: 'Om du behöver mer stöd kan du hitta rätt stödlinje eller kontakt här.'
->>>>>>> 432d75dde70711a3eb809bd2cd6600feaa5e0e2c
+		},
+		panikattack: {
+			heading: 'Nästa steg vid panikattacker',
+			intro: 'Det värsta brukar gå över. Välj ett litet steg när du känner dig redo.',
+			chatCopy: 'Prata anonymt om det som utlöser rädslan och vad som händer i kroppen, i din takt.',
+			diaryCopy: 'Skriv ned mönster och tankar kring dina panikattacker för att förstå dem bättre.',
+			exerciseCopy: 'Prova en enkel andnings- eller jordningsövning som hjälper kroppen att landa.',
+			supportCopy: 'Om panikattackerna är frekventa eller begränsar vardagen finns stöd att få.'
+		},
+		ensamhet: {
+			heading: 'Nästa steg vid ensamhet',
+			intro: 'Ensamhet gör ont, men du behöver inte hantera det helt ensam. Ta ett steg i taget.',
+			chatCopy: 'Sätt ord på ensamhetskänslan anonymt och bli sedd utan krav på prestation.',
+			diaryCopy: 'Skriv om hur ensamheten tar sig uttryck och vad du längtar efter.',
+			exerciseCopy: 'Prova en enkel övning som hjälper dig att känna mer kontakt med dig själv.',
+			supportCopy: 'Om ensamheten tynger mycket kan en stödlinje ge ett tryggt första samtal.'
+		},
+		overtankande: {
+			heading: 'Nästa steg vid övertänkande',
+			intro: 'Tankarna behöver inte lösas – ibland räcker det att ge dem en plats. Välj ett litet steg.',
+			chatCopy: 'Prata anonymt om det tankarna fastnat på och få lite perspektiv i lugn takt.',
+			diaryCopy: 'Skriv ned tankarna och ta dem ur huvudet – det minskar ofta snurrandet.',
+			exerciseCopy: 'Prova en enkel närvaro- eller fokusövning som hjälper tankarna att sakta ned.',
+			supportCopy: 'Om övertänkandet påverkar vardagen allvarligt finns stöd och råd att nå.'
 		}
-	} satisfies Record<string, GuideTone>;
-
-	type PillarToneKey = keyof typeof toneByPillar;
-
-	const pillarAliases: Partial<Record<string, PillarToneKey>> = {
-		ångest: 'angest',
-		utmattning: 'stress-utmattning',
-		somnproblem: 'sovproblem',
-		sömnproblem: 'sovproblem'
 	};
 
 	const fallbackTone: GuideTone = {
@@ -108,67 +116,42 @@
 		supportCopy: 'Behöver du mänsklig kontakt? Se stödlinjer och akut hjälp.'
 	};
 
-	const normalizedPillarSlug = $derived(
-		pillarSlug
-			.trim()
-			.toLowerCase()
-			.normalize('NFD')
-			.replace(/[^\w-]+/g, '')
-	);
-
-	const toneKey = $derived(
-		(pillarAliases[normalizedPillarSlug] ?? normalizedPillarSlug) as PillarToneKey
-	);
-
-	const tone = $derived(toneByPillar[toneKey] ?? fallbackTone);
-
-	const cards = $derived([
-		{
-			href: chatHref,
-			title: 'Chatta anonymt nu',
-			copy: tone.chatCopy,
-			cta: 'Starta chatt'
-		},
-		{
-			href: '/dagbok',
-			title: 'Skriv i dagboken',
-			copy: tone.diaryCopy,
-			cta: 'Öppna dagboken'
-		},
-		{
-			href: exerciseHref,
-			title: 'Gör en enkel övning',
-			copy: tone.exerciseCopy,
-			cta: exerciseLabel
-		},
-		{
-			href: 'https://stodlinjer.se',
-			title: 'Hitta rätt stödlinje',
-			copy: tone.supportCopy,
-			cta: 'Se stödlinjer',
-			target: '_blank',
-			rel: 'noopener noreferrer'
-		}
-	]);
+	const tone = $derived(toneByPillar[pillarSlug] ?? fallbackTone);
 </script>
 
-<section class="guide-cta" class:guide-cta-compact={layout === 'compact'} aria-labelledby="guide-cta-heading">
-	<h2 id="guide-cta-heading">{tone.heading}</h2>
+<section class="guide-cta" class:guide-cta-compact={layout === 'compact'} aria-label="Nästa steg">
+	<h2>{tone.heading}</h2>
 	<p class="guide-cta-intro">{tone.intro}</p>
 
 	<div class="guide-cta-grid">
-		{#each cards as card}
-			<a
-				class="guide-cta-card"
-				href={card.href}
-				target={card.target}
-				rel={card.rel}
-			>
-				<h3>{card.title}</h3>
-				<p>{card.copy}</p>
-				<span>{card.cta}</span>
-			</a>
-		{/each}
+		<a class="guide-cta-card" href={chatHref}>
+			<h3>Chatta anonymt nu</h3>
+			<p>{tone.chatCopy}</p>
+			<span>Starta chatt</span>
+		</a>
+
+		<a class="guide-cta-card" href="/dagbok">
+			<h3>Skriv i dagboken</h3>
+			<p>{tone.diaryCopy}</p>
+			<span>Öppna dagboken</span>
+		</a>
+
+		<a class="guide-cta-card" href={exerciseHref}>
+			<h3>Gör en enkel övning</h3>
+			<p>{tone.exerciseCopy}</p>
+			<span>{exerciseLabel}</span>
+		</a>
+
+		<a
+			class="guide-cta-card"
+			href="https://stodlinjer.se"
+			target="_blank"
+			rel="noopener noreferrer"
+		>
+			<h3>Hitta rätt stödlinje</h3>
+			<p>{tone.supportCopy}</p>
+			<span>Se stödlinjer</span>
+		</a>
 	</div>
 
 	<p class="guide-cta-note">
@@ -217,24 +200,6 @@
 		border-radius: var(--radius-input);
 		border: 1px solid rgba(0, 0, 0, 0.08);
 		background: #ffffff;
-		text-decoration: none;
-		color: inherit;
-		transition:
-			transform 120ms ease,
-			border-color 120ms ease,
-			box-shadow 120ms ease;
-	}
-
-	.guide-cta-card:hover,
-	.guide-cta-card:focus-visible {
-		transform: translateY(-1px);
-		border-color: rgba(48, 74, 63, 0.28);
-		box-shadow: 0 8px 24px rgba(42, 51, 57, 0.08);
-	}
-
-	.guide-cta-card:focus-visible {
-		outline: 2px solid rgba(48, 74, 63, 0.35);
-		outline-offset: 2px;
 	}
 
 	.guide-cta-compact .guide-cta-card {
@@ -294,12 +259,6 @@
 	:global(.dark) .guide-cta-card {
 		background: #232c2a;
 		border-color: rgba(255, 255, 255, 0.12);
-	}
-
-	:global(.dark) .guide-cta-card:hover,
-	:global(.dark) .guide-cta-card:focus-visible {
-		border-color: rgba(213, 230, 220, 0.28);
-		box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
 	}
 
 	:global(.dark) .guide-cta-card h3 {
