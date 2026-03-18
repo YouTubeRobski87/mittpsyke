@@ -13,9 +13,17 @@
 	--font-heading: 'Recursive H', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-body: 'Recursive T', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-main: var(--font-body);
+	--background: 48 38% 98%;
+	--surface: 0 0% 100%;
+	--surface-muted: 38 30% 95%;
+	--surface-soft: 160 26% 96%;
 	--foreground: 240 10% 4%;
 	--muted-foreground: 240 4% 46%;
 	--border: 240 6% 90%;
+	--success-surface: 148 45% 94%;
+	--success-foreground: 148 52% 25%;
+	--error-surface: 0 70% 96%;
+	--error-foreground: 0 58% 40%;
 	--primary: #0f766e;
 	--radius-card: 14px;
 	--radius-input: 12px;
@@ -24,9 +32,17 @@
 
 .dark {
 	color-scheme: dark;
+	--background: 222 26% 9%;
+	--surface: 222 18% 13%;
+	--surface-muted: 222 14% 16%;
+	--surface-soft: 220 15% 18%;
 	--foreground: 0 0% 95%;
 	--muted-foreground: 240 5% 65%;
-	--border: 240 4% 20%;
+	--border: 220 10% 24%;
+	--success-surface: 153 30% 20%;
+	--success-foreground: 153 45% 80%;
+	--error-surface: 0 26% 19%;
+	--error-foreground: 0 60% 83%;
 }
 
 * {
@@ -93,7 +109,7 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	color: hsl(var(--foreground));
-	background: #ffffff;
+	background: hsl(var(--background));
 }
 
 button,
@@ -113,10 +129,6 @@ select:focus-visible {
 	border-radius: 12px;
 }
 
-.dark body {
-	background: #0f0f0f;
-}
-
 a {
 	color: inherit;
 	text-decoration: none;
@@ -126,6 +138,148 @@ a {
 	max-width: var(--container-max);
 	margin: 0 auto;
 	padding: 0 20px;
+}
+
+.auth-page {
+	padding: 0 1rem 2.75rem;
+}
+
+.auth-shell {
+	max-width: 920px;
+	margin: 0 auto;
+	display: grid;
+	gap: 1rem;
+}
+
+.auth-subnav {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	padding: 0.28rem;
+	border-radius: var(--radius-card);
+	background: hsl(var(--surface-muted));
+	border: 1px solid hsl(var(--border));
+}
+
+.auth-subnav-link {
+	flex: 1 1 156px;
+	text-align: center;
+	padding: 0.55rem 0.8rem;
+	border-radius: var(--radius-input);
+	font-family: var(--font-heading);
+	font-size: 0.9rem;
+	font-weight: 550;
+	letter-spacing: -0.01em;
+	color: hsl(var(--muted-foreground));
+	transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
+	border: 1px solid transparent;
+}
+
+.auth-subnav-link:hover {
+	color: hsl(var(--foreground));
+	background: hsl(var(--surface));
+}
+
+.auth-subnav-link.active {
+	color: hsl(var(--foreground));
+	background: hsl(var(--surface));
+	border-color: hsl(var(--border));
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.auth-hero {
+	display: flex;
+	gap: 0.8rem;
+	align-items: flex-start;
+	justify-content: space-between;
+}
+
+.auth-hero h1 {
+	margin: 0;
+	font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2rem);
+	letter-spacing: -0.02em;
+}
+
+.auth-hero p {
+	margin: 0.35rem 0 0;
+	font-size: 0.98rem;
+	color: hsl(var(--muted-foreground));
+}
+
+.auth-panel {
+	background: hsl(var(--surface));
+	border-radius: var(--radius-card);
+	border: 1px solid hsl(var(--border));
+	padding: 1rem;
+	transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.auth-panel:hover {
+	border-color: color-mix(in srgb, hsl(var(--border)) 70%, hsl(var(--foreground)));
+}
+
+.auth-panel-accent {
+	background: var(--theme-bg, hsl(var(--surface-soft)));
+}
+
+.auth-panel-success {
+	background: hsl(var(--success-surface));
+	border-color: color-mix(in srgb, hsl(var(--success-foreground)) 28%, hsl(var(--border)));
+	color: hsl(var(--success-foreground));
+}
+
+.auth-panel-error {
+	background: hsl(var(--error-surface));
+	border-color: color-mix(in srgb, hsl(var(--error-foreground)) 24%, hsl(var(--border)));
+	color: hsl(var(--error-foreground));
+}
+
+.auth-muted {
+	color: hsl(var(--muted-foreground));
+}
+
+.auth-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
+	padding: 0.55rem 1rem;
+	border-radius: var(--radius-input);
+	border: 1px solid hsl(var(--border));
+	background: hsl(var(--surface));
+	color: hsl(var(--foreground));
+	font-family: var(--font-heading);
+	font-size: 0.92rem;
+	font-weight: 550;
+	transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.auth-button:hover {
+	background: hsl(var(--surface-soft));
+	border-color: color-mix(in srgb, hsl(var(--border)) 68%, hsl(var(--foreground)));
+}
+
+.auth-button.primary {
+	background: var(--theme-bg, hsl(var(--surface-soft)));
+	border-color: color-mix(in srgb, var(--primary) 26%, hsl(var(--border)));
+}
+
+.auth-button.primary:hover {
+	background: color-mix(in srgb, var(--theme-bg, hsl(var(--surface-soft))) 84%, hsl(var(--surface)));
+}
+
+@media (max-width: 760px) {
+	.auth-page {
+		padding-inline: 0.75rem;
+	}
+
+	.auth-panel {
+		padding: 0.9rem;
+	}
+
+	.auth-subnav-link {
+		flex-basis: 128px;
+	}
 }
 
 /* Contact button styling */

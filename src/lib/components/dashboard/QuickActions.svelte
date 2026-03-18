@@ -1,10 +1,10 @@
-<section class="mt-8">
+<section class="auth-panel">
 	<h2 class="text-lg font-semibold mb-3">Snabbval</h2>
 	<div class="grid gap-3 sm:grid-cols-2">
-		<a href="/dagbok" class="rounded-xl border border-neutral-200 px-4 py-3 hover:bg-neutral-50">
+		<a href="/dagbok" class="auth-button">
 			Öppna dagboken
 		</a>
-		<a href="/chat/a" class="rounded-xl border border-neutral-200 px-4 py-3 hover:bg-neutral-50">
+		<a href="/chat/a" class="auth-button">
 			Starta samtal
 		</a>
 	</div>

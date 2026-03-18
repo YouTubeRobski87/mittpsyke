@@ -4,7 +4,7 @@
 	$: displayName = user?.user_metadata?.full_name || user?.email || 'vän';
 </script>
 
-<section class="mb-6">
-	<h1 class="text-2xl font-semibold">Hej {displayName}</h1>
-	<p class="mt-2 text-neutral-600">Här är en lugn översikt över dina nästa steg.</p>
+<section>
+	<h2 class="text-xl font-semibold">Hej {displayName}</h2>
+	<p class="mt-2 auth-muted">Här är en lugn översikt över dina nästa steg.</p>
 </section>
