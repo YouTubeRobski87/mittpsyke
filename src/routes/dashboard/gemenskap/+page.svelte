@@ -1,15 +1,23 @@
 <script lang="ts">
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
+	import { supabase } from '$lib/supabase';
+	import type { CreateCommunityUnshareSuccessResponse } from '$lib/types';
 
 	type CommunityPost = {
 		id: string;
 		content: string;
 		mood: string | null;
 		created_at: string | null;
+		isOwnPost: boolean;
+		diaryEntryId: string | null;
 	};
 
 	let { data }: { data: { posts?: CommunityPost[] } } = $props();
-	const posts = $derived(data.posts ?? []);
+	let posts = $state<CommunityPost[]>([...(data.posts ?? [])]);
+	let confirmingUnsharePostId = $state('');
+	let unsharingPostId = $state('');
+	let feedNotice = $state('');
+	let feedNoticeType = $state<'success' | 'error' | 'info'>('info');
 
 	function formatPublishedAt(value: string | null): string {
 		if (!value) return 'Nyligen';
@@ -40,6 +48,85 @@
 		}
 		return '';
 	}
+
+	function setFeedNotice(message: string, type: 'success' | 'error' | 'info') {
+		feedNotice = message;
+		feedNoticeType = type;
+	}
+
+	function openUnshareConfirmation(postId: string) {
+		confirmingUnsharePostId = postId;
+		feedNotice = '';
+	}
+
+	function closeUnshareConfirmation() {
+		if (unsharingPostId) return;
+		confirmingUnsharePostId = '';
+	}
+
+	async function unsharePost(post: CommunityPost) {
+		if (!post.isOwnPost || !post.diaryEntryId || unsharingPostId) return;
+
+		unsharingPostId = post.id;
+		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+
+			if (!session?.access_token) {
+				setFeedNotice('Logga in för att ta bort delningen.', 'error');
+				return;
+			}
+
+			const response = await fetch('/api/community/unshare', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session.access_token}`
+				},
+				body: JSON.stringify({ diaryEntryId: post.diaryEntryId })
+			});
+
+			const payload = (await response.json().catch(() => null)) as
+				| CreateCommunityUnshareSuccessResponse
+				| { success?: boolean; error?: string; alreadyUnshared?: boolean }
+				| null;
+
+			if (!response.ok || !payload) {
+				const errorPayload = payload as { error?: string; alreadyUnshared?: boolean } | null;
+				if (response.status === 409 && errorPayload?.alreadyUnshared) {
+					posts = posts.filter((item) => item.id !== post.id);
+					setFeedNotice('Delningen är redan borttagen från Gemenskap.', 'info');
+					confirmingUnsharePostId = '';
+					return;
+				}
+				if (response.status === 404) {
+					posts = posts.filter((item) => item.id !== post.id);
+					setFeedNotice('Delningen finns inte längre i Gemenskap.', 'info');
+					confirmingUnsharePostId = '';
+					return;
+				}
+				setFeedNotice(errorPayload?.error ?? 'Kunde inte ta bort delningen just nu.', 'error');
+				return;
+			}
+
+			if (!payload.success) {
+				setFeedNotice('Kunde inte ta bort delningen just nu.', 'error');
+				return;
+			}
+
+			posts = posts.filter((item) => item.id !== post.id);
+			setFeedNotice('Delningen har tagits bort från Gemenskap.', 'success');
+			confirmingUnsharePostId = '';
+		} catch (error) {
+			setFeedNotice(
+				error instanceof Error ? error.message : 'Kunde inte ta bort delningen just nu.',
+				'error'
+			);
+		} finally {
+			unsharingPostId = '';
+		}
+	}
 </script>
 
 <main class="auth-page">
@@ -66,6 +153,9 @@
 		{#if posts.length > 0}
 			<section class="auth-panel feed-panel">
 				<h2>Delningar i lugn takt</h2>
+				{#if feedNotice}
+					<p class="feed-notice {feedNoticeType}">{feedNotice}</p>
+				{/if}
 				<div class="community-feed">
 					{#each posts as post (post.id)}
 						<article class="community-post">
@@ -77,6 +167,46 @@
 							</div>
 							<p class="content">{post.content}</p>
 							<p class="published">{formatPublishedAt(post.created_at)}</p>
+							{#if post.isOwnPost}
+								<div class="post-actions">
+									<p class="own-post-label">Din delning</p>
+									<button
+										type="button"
+										class="post-action-btn"
+										onclick={() => openUnshareConfirmation(post.id)}
+									>
+										Ta bort delning
+									</button>
+								</div>
+
+								{#if confirmingUnsharePostId === post.id}
+									<div class="post-confirmation" role="status">
+										<h3>Ta bort delning?</h3>
+										<p>
+											Det här tar bort den anonyma versionen från Gemenskap.
+											Ditt privata dagboksinlägg finns kvar i Dagbok.
+										</p>
+										<div class="post-confirmation-actions">
+											<button
+												type="button"
+												class="auth-button"
+												onclick={closeUnshareConfirmation}
+												disabled={unsharingPostId === post.id}
+											>
+												Avbryt
+											</button>
+											<button
+												type="button"
+												class="auth-button primary"
+												onclick={() => unsharePost(post)}
+												disabled={unsharingPostId === post.id}
+											>
+												{unsharingPostId === post.id ? 'Tar bort...' : 'Ta bort delning'}
+											</button>
+										</div>
+									</div>
+								{/if}
+							{/if}
 						</article>
 					{/each}
 				</div>
@@ -159,6 +289,27 @@
 		font-size: 1.03rem;
 	}
 
+	.feed-notice {
+		margin: 0.7rem 0 0;
+		padding: 0.65rem 0.75rem;
+		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-soft));
+		font-size: 0.86rem;
+	}
+
+	.feed-notice.success {
+		color: hsl(var(--success-foreground));
+	}
+
+	.feed-notice.error {
+		color: hsl(var(--error-foreground));
+	}
+
+	.feed-notice.info {
+		color: hsl(var(--muted-foreground));
+	}
+
 	.community-feed {
 		margin-top: 0.75rem;
 		display: grid;
@@ -206,6 +357,62 @@
 		margin: 0.45rem 0 0;
 		font-size: 0.77rem;
 		color: hsl(var(--muted-foreground));
+	}
+
+	.post-actions {
+		margin-top: 0.65rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.35rem 0.65rem;
+	}
+
+	.own-post-label {
+		margin: 0;
+		font-size: 0.77rem;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.post-action-btn {
+		border: 0;
+		background: transparent;
+		padding: 0;
+		font-size: 0.8rem;
+		color: hsl(var(--muted-foreground));
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		cursor: pointer;
+	}
+
+	.post-action-btn:hover {
+		color: hsl(var(--foreground));
+	}
+
+	.post-confirmation {
+		margin-top: 0.65rem;
+		padding: 0.7rem 0.75rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: var(--radius-input);
+		background: hsl(var(--surface-soft));
+	}
+
+	.post-confirmation h3 {
+		margin: 0;
+		font-size: 0.92rem;
+	}
+
+	.post-confirmation p {
+		margin: 0.45rem 0 0;
+		font-size: 0.84rem;
+		color: hsl(var(--muted-foreground));
+		line-height: 1.55;
+	}
+
+	.post-confirmation-actions {
+		margin-top: 0.7rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
 	}
 
 	.empty-panel p {
