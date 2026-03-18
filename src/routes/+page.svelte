@@ -102,17 +102,17 @@
 					<div class="mode-col">
 						<p class="mode-label">Anonymt läge</p>
 						<ul class="mode-list">
-						<li>Ingen registrering</li>
-						<li>Ingen profil skapas</li>
-						<li>Börja direkt</li>
-					</ul>
-				</div>
-				<div class="mode-col">
-					<p class="mode-label">Med konto</p>
-					<ul class="mode-list">
-						<li>Spara dagbok och reflektioner</li>
-						<li>Följ ditt mående över tid</li>
-						<li>Fortsätt där du slutade</li>
+							<li>Ingen registrering</li>
+							<li>Ingen profil skapas</li>
+							<li>Börja direkt</li>
+						</ul>
+					</div>
+					<div class="mode-col">
+						<p class="mode-label">Med konto</p>
+						<ul class="mode-list">
+							<li>Spara dagbok och reflektioner</li>
+							<li>Följ ditt mående över tid</li>
+							<li>Fortsätt där du slutade</li>
 						</ul>
 					</div>
 				</div>
@@ -121,7 +121,7 @@
 		<!-- TODO: Lägg verifierat social proof här när vi har verkliga omdömen eller data. -->
 
 		<section class="entry-paths" aria-labelledby="entry-paths-title">
-		<div class="cards-narrow entry-inner">
+			<div class="cards-narrow entry-inner">
 			<p class="entry-eyebrow">Välj din väg in</p>
 			<h2 id="entry-paths-title">Det finns olika sätt att börja.</h2>
 			<p class="entry-intro">
