@@ -546,7 +546,14 @@
 										<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
 										<div class="share-row">
 											{#if isEntryShared(entry.id)}
-												<p class="share-status auth-muted">Redan delat anonymt i Gemenskap.</p>
+												<p class="share-status auth-muted">Redan delat i Gemenskap.</p>
+												<button
+													type="button"
+													class="share-trigger"
+													onclick={() => openUnshareConfirmation(entry.id)}
+												>
+													Ta bort delning
+												</button>
 												<a href="/dashboard/gemenskap" class="share-link">Öppna Gemenskap</a>
 											{:else}
 												<button
@@ -589,10 +596,38 @@
 											</div>
 										{/if}
 
+										{#if confirmingUnshareEntryId === entry.id}
+											<div class="share-confirmation" role="status">
+												<h3>Ta bort delning?</h3>
+												<p>
+													Det här tar bort den anonyma versionen från Gemenskap. Ditt
+													privata dagboksinlägg finns kvar i Dagbok.
+												</p>
+												<div class="share-confirmation-actions">
+													<button
+														type="button"
+														class="auth-button"
+														onclick={closeUnshareConfirmation}
+														disabled={unsharingEntryId === entry.id}
+													>
+														Avbryt
+													</button>
+													<button
+														type="button"
+														class="auth-button primary"
+														onclick={() => unshareEntry(entry)}
+														disabled={unsharingEntryId === entry.id}
+													>
+														{unsharingEntryId === entry.id ? 'Tar bort...' : 'Ta bort delning'}
+													</button>
+												</div>
+											</div>
+										{/if}
+
 										{#if shareFeedbackEntryId === entry.id && shareFeedbackMessage}
 											<p class="share-feedback {shareFeedbackType}">
 												{shareFeedbackMessage}
-												{#if shareFeedbackType === 'success'}
+												{#if shareFeedbackType === 'success' && shareFeedbackShowCommunityLink}
 													<a href="/dashboard/gemenskap" class="share-feedback-link">
 														Öppna Gemenskap
 													</a>
