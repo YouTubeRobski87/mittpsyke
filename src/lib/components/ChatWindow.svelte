@@ -260,7 +260,7 @@
 
 			messages.push({
 				role: 'assistant',
-				content: (data.reply && data.reply.trim())
+				content: (data?.reply && data.reply.trim())
 					? data.reply
 					: GENERIC_CHAT_ERROR,
 				crisis: data.crisis ?? false
