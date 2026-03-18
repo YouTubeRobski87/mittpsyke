@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+</script>
+
 <svelte:head>
     <title>Så arbetar vi med innehåll | MittPsyke</title>
     <meta name="description" content="Läs om hur MittPsyke skapar, granskar och uppdaterar sitt innehåll om psykisk hälsa." />
@@ -74,10 +78,10 @@
 
     <section class="mt-8">
         <h2 class="text-xl font-semibold">Kontakt</h2>
-        <p class="mt-3 leading-relaxed text-black/80">
-            Har du frågor om vårt innehåll eller vill rapportera felaktig information? Kontakta oss på <a class="underline underline-offset-2" href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a>.
-        </p>
-    </section>
+	        <p class="mt-3 leading-relaxed text-black/80">
+	            Har du frågor om vårt innehåll eller vill rapportera felaktig information? Kontakta oss på <a class="underline underline-offset-2" href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a>.
+	        </p>
+	    </section>
 
     <p class="mt-10 text-xs text-black/50">Senast uppdaterad: 14 mars 2026</p>
 </main>

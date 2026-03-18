@@ -92,10 +92,10 @@
 			<p>
 				Skriv av dig direkt — inget konto, ingen registrering. Skapa ett konto om du vill spara din dagbok och kunna återvända över tid.
 			</p>
-			<div class="hero-actions">
-				<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
-				<a href="/register" class="hero-cta hero-cta-secondary" onclick={() => trackHeroCtaSecondaryClick()}>Skapa din egen plats</a>
-			</div>
+				<div class="hero-actions">
+					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
+					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa din egen plats</a>
+				</div>
 			<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
 			<HomeSafetyStrip />
 			<div class="mode-compare" aria-label="Vad är skillnaden?">
@@ -377,11 +377,20 @@
 		color: #182016;
 	}
 
-	.hero-cta-secondary {
-		background: rgba(255, 255, 255, 0.14);
-		color: #f4f6f9;
-		border: 1px solid rgba(255, 255, 255, 0.28);
-	}
+		.hero-cta-link {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0.35rem 0.15rem;
+			font-family: var(--font-body);
+			font-size: 0.92rem;
+			font-weight: 500;
+			letter-spacing: 0;
+			color: rgba(255, 255, 255, 0.82);
+			text-decoration: underline;
+			text-underline-offset: 3px;
+			opacity: 0.9;
+		}
 
 	.band {
 		padding: clamp(3rem, 8vw, 7rem) 1.25rem;
