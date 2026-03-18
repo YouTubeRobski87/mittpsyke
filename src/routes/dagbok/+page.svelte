@@ -10,6 +10,7 @@
 	let loading = true;
 	let loadError = '';
 	let draftText = '';
+	let draftMood = '';
 	let draftError = '';
 	let draftSuccess = '';
 	let savingDraft = false;
@@ -73,7 +74,10 @@
 					'Content-Type': 'application/json',
 					Authorization: `Bearer ${session.access_token}`
 				},
-				body: JSON.stringify({ text: draftText.trim() })
+				body: JSON.stringify({
+					text: draftText.trim(),
+					mood: draftMood || null
+				})
 			});
 
 			const payload = await response.json().catch(() => null);
@@ -94,6 +98,7 @@
 			}
 
 			draftText = '';
+			draftMood = '';
 			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true });
 		} catch (error) {
@@ -149,6 +154,22 @@
 					<p class="mt-2 text-sm auth-muted">
 						Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
 					</p>
+					<div class="mood-field">
+						<label for="draft-mood" class="text-sm">Humör just nu (valfritt)</label>
+						<select id="draft-mood" bind:value={draftMood} class="mood-select">
+							<option value="">Välj humör</option>
+							<option value="1">1 - Väldigt tungt</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							<option value="8">8</option>
+							<option value="9">9</option>
+							<option value="10">10 - Mer stabilt</option>
+						</select>
+					</div>
 					<textarea
 						bind:value={draftText}
 						rows={8}
@@ -202,6 +223,9 @@
 					{#each entries as entry (entry.id)}
 						<article class="auth-panel diary-entry">
 							<p class="text-xs auth-muted">{formatDate(entry.created_at)}</p>
+							{#if entry.mood}
+								<p class="mt-1 text-xs auth-muted">Humör: {entry.mood}/10</p>
+							{/if}
 							<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
 						</article>
 					{/each}
@@ -230,6 +254,26 @@
 
 	.diary-input::placeholder {
 		color: hsl(var(--muted-foreground));
+	}
+
+	.mood-field {
+		margin-top: 0.8rem;
+		display: grid;
+		gap: 0.35rem;
+	}
+
+	.mood-select {
+		width: 100%;
+		padding: 0.55rem 0.7rem;
+		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+	}
+
+	.mood-select:focus {
+		border-color: var(--primary, #0f766e);
+		outline: none;
 	}
 
 	.actions-row {
