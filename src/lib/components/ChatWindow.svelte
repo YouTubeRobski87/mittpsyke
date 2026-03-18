@@ -27,6 +27,7 @@
 	let messages = $state<ChatMessage[]>([]);
 	let input = $state('');
 	let sending = $state(false);
+	let chatError = $state('');
 	let savePromptHidden = $state<Record<number, boolean>>({});
 	let hasTrackedOpen = $state(false);
 	let hasTrackedFirstMessage = $state(false);
@@ -39,6 +40,9 @@
 		browser ? window.localStorage.getItem('mittpsyke:last-conversation-id') : null
 	);
 	let chatLog: HTMLDivElement;
+	const MAX_MESSAGE_LENGTH = 2000;
+	const LONG_MESSAGE_ERROR = 'Din text blev lite för lång. Dela gärna upp den i två delar.';
+	const GENERIC_CHAT_ERROR = 'Något gick fel. Försök igen om en stund.';
 	const guestIdStorageKey = 'mittpsyke:guest-id';
 	const starterSuggestions = [
 		'Jag känner mig orolig',
@@ -112,6 +116,7 @@
 	let showStarterSuggestions = $derived(
 		hasSensitiveDataConsent && messages.length === 0 && input.trim().length === 0
 	);
+	let inputLength = $derived(input.length);
 
 	async function trackEvent(
 		eventName: string,
@@ -137,6 +142,7 @@
 	$effect(() => {
 		messages = initialMessages.map((message) => ({ ...message }));
 		savePromptHidden = {};
+		chatError = '';
 
 		if (initialConversationId) {
 			conversationId = initialConversationId;
@@ -188,6 +194,11 @@
 	async function send() {
 		const text = input.trim();
 		if (!hasSensitiveDataConsent || !text || sending) return;
+		chatError = '';
+		if (text.length > MAX_MESSAGE_LENGTH) {
+			chatError = LONG_MESSAGE_ERROR;
+			return;
+		}
 
 		const {
 			data: { session }
@@ -216,12 +227,20 @@
 				})
 			});
 
+			const data = await res
+				.json()
+				.catch(() => null) as { reply?: string; conversationId?: string; crisis?: boolean; error?: string; code?: string } | null;
 			if (!res.ok) {
-				throw new Error(`API error: ${res.status}`);
+				if (res.status === 413 || data?.code === 'MESSAGE_TOO_LONG') {
+					throw new Error(LONG_MESSAGE_ERROR);
+				}
+				if (typeof data?.error === 'string' && data.error.trim()) {
+					throw new Error(data.error);
+				}
+				throw new Error(GENERIC_CHAT_ERROR);
 			}
 
-			const data: { reply?: string; conversationId?: string; crisis?: boolean } = await res.json();
-			if (data.conversationId) {
+			if (data?.conversationId) {
 				conversationId = data.conversationId;
 				if (browser) {
 					window.localStorage.setItem('mittpsyke:last-conversation-id', data.conversationId);
@@ -243,16 +262,21 @@
 				role: 'assistant',
 				content: (data.reply && data.reply.trim())
 					? data.reply
-					: 'Något gick fel.',
+					: GENERIC_CHAT_ERROR,
 				crisis: data.crisis ?? false
 			});
 			await tick();
 			scrollToBottom();
-		} catch {
-			messages.push({
-				role: 'assistant',
-				content: 'Något gick fel.'
-			});
+		} catch (error) {
+			const lastMessage = messages[messages.length - 1];
+			if (lastMessage?.role === 'user' && lastMessage.content === text) {
+				messages = messages.slice(0, -1);
+			}
+			chatError =
+				error instanceof Error && error.message.trim().length > 0
+					? error.message
+					: GENERIC_CHAT_ERROR;
+			input = text;
 			await tick();
 			scrollToBottom();
 		} finally {
@@ -271,6 +295,7 @@
 
 	function useStarterSuggestion(text: string) {
 		if (!hasSensitiveDataConsent) return;
+		chatError = '';
 		firstMessageSource = 'chip';
 		void trackEvent('starter_chip_clicked', {
 			source: 'chip',
@@ -449,14 +474,24 @@
 		{/if}
 
 		{#if hasSensitiveDataConsent}
+			{#if chatError}
+				<div class="mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
+					<p id="chat-error-text" class="text-rose-900 dark:text-rose-100">{chatError}</p>
+				</div>
+			{/if}
 			<div class="flex gap-2">
 				<label class="sr-only" for="chat-message">Skriv ditt meddelande</label>
 				<textarea
 					id="chat-message"
 					bind:value={input}
+					maxlength={MAX_MESSAGE_LENGTH}
+					oninput={() => {
+						if (chatError) chatError = '';
+					}}
 					onkeydown={handleKeydown}
 					aria-label="Skriv ditt meddelande" placeholder="Skriv här..."
-					aria-describedby="chat-help-text"
+					aria-describedby={chatError ? 'chat-help-text chat-error-text' : 'chat-help-text'}
+					aria-invalid={chatError.length > 0}
 					rows={1}
 					class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 						bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2
@@ -472,7 +507,9 @@
 					Skicka
 				</button>
 			</div>
-			<p id="chat-help-text" class="mt-2 text-xs opacity-60">Skriv i din egen takt. Vid akut fara, ring 112. För vårdråd, kontakta 1177.</p>
+			<p id="chat-help-text" class="mt-2 text-xs opacity-60">
+				Max {MAX_MESSAGE_LENGTH} tecken ({inputLength}/{MAX_MESSAGE_LENGTH}). Skriv i din egen takt. Vid akut fara, ring 112. För vårdråd, kontakta 1177.
+			</p>
 		{/if}
 		<div class="mt-3 text-center">
 			<a
