@@ -12,6 +12,7 @@
 	let zodiacSign = '';
 	let horoscopeText = '';
 	let horoscopeLoading = false;
+	let horoscopeUnavailable = false;
 
 	function getZodiacSign(dateStr: string): string {
 		if (!dateStr) return '';
@@ -47,6 +48,7 @@
 					: '';
 
 			zodiacSign = getZodiacSign(birthday);
+			horoscopeUnavailable = false;
 
 			if (zodiacSign) {
 				horoscopeLoading = true;
@@ -57,6 +59,7 @@
 				});
 				const payload = await response.json().catch(() => null);
 				horoscopeText = typeof payload?.text === 'string' ? payload.text : '';
+				horoscopeUnavailable = horoscopeText.length === 0;
 			}
 		} finally {
 			horoscopeLoading = false;
@@ -93,8 +96,10 @@
 				{:else if zodiacSign && horoscopeText}
 					<p class="horoscope-sign">🔮 {zodiacSign}</p>
 					<p class="horoscope-text">{horoscopeText}</p>
+				{:else if zodiacSign && horoscopeUnavailable}
+					<p class="auth-muted">Dagens horoskop kunde inte hämtas just nu. Du kan ändå skriva några ord.</p>
 				{:else}
-					<p class="auth-muted">När du vill kan du fånga tanken direkt i dagboken.</p>
+					<p class="auth-muted">Lägg till födelsedag i inställningar om du vill få en daglig horoskoprad här.</p>
 				{/if}
 				<a
 					href="/dagbok?from=horoscope"
