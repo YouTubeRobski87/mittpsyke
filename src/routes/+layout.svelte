@@ -293,6 +293,9 @@
 						<a href="/framsteg" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							Framsteg
 						</a>
+						<a href="/dashboard/gemenskap" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
+							Gemenskap
+						</a>
 						<a href="/dashboard" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							Min portal
 						</a>
@@ -387,6 +390,13 @@
 						onclick={() => (mobileMenuOpen = false)}
 					>
 						Framsteg
+					</a>
+					<a
+						href="/dashboard/gemenskap"
+						class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
+						onclick={() => (mobileMenuOpen = false)}
+					>
+						Gemenskap
 					</a>
 					<a
 						href="/dashboard"
