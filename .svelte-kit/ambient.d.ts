@@ -42,16 +42,11 @@ declare module '$env/static/private' {
 	export const VERCEL_OIDC_TOKEN: string;
 	export const ALLUSERSPROFILE: string;
 	export const APPDATA: string;
-	export const CHROME_CRASHPAD_PIPE_NAME: string;
-	export const CODEX_INTERNAL_ORIGINATOR_OVERRIDE: string;
-	export const CODEX_SHELL: string;
-	export const CODEX_THREAD_ID: string;
 	export const COLOR: string;
 	export const CommonProgramFiles: string;
 	export const CommonProgramW6432: string;
 	export const COMPUTERNAME: string;
 	export const ComSpec: string;
-	export const DISABLE_AUTO_UPDATE: string;
 	export const DriverData: string;
 	export const EDITOR: string;
 	export const HOME: string;
@@ -86,7 +81,6 @@ declare module '$env/static/private' {
 	export const NPM_PREFIX_JS: string;
 	export const NPM_PREFIX_NPM_CLI_JS: string;
 	export const NUMBER_OF_PROCESSORS: string;
-	export const NVIDIAWHITELISTED: string;
 	export const OneDrive: string;
 	export const OneDriveConsumer: string;
 	export const OS: string;
@@ -104,9 +98,7 @@ declare module '$env/static/private' {
 	export const PROMPT: string;
 	export const PSModulePath: string;
 	export const PUBLIC: string;
-	export const RUST_LOG: string;
-	export const SHELL: string;
-	export const SHIM_MCCOMPAT: string;
+	export const SESSIONNAME: string;
 	export const SystemDrive: string;
 	export const SystemRoot: string;
 	export const TEMP: string;
@@ -116,8 +108,6 @@ declare module '$env/static/private' {
 	export const USERNAME: string;
 	export const USERPROFILE: string;
 	export const windir: string;
-	export const ZSH_TMUX_AUTOSTART: string;
-	export const ZSH_TMUX_AUTOSTARTED: string;
 	export const _VOLTA_TOOL_RECURSION: string;
 }
 
@@ -157,6 +147,7 @@ declare module '$env/static/private' {
 declare module '$env/static/public' {
 	export const PUBLIC_SUPABASE_ANON_KEY: string;
 	export const PUBLIC_SUPABASE_URL: string;
+	export const PUBLIC_CONTACT_EMAIL: string;
 }
 
 /**
@@ -210,16 +201,11 @@ declare module '$env/dynamic/private' {
 		VERCEL_OIDC_TOKEN: string;
 		ALLUSERSPROFILE: string;
 		APPDATA: string;
-		CHROME_CRASHPAD_PIPE_NAME: string;
-		CODEX_INTERNAL_ORIGINATOR_OVERRIDE: string;
-		CODEX_SHELL: string;
-		CODEX_THREAD_ID: string;
 		COLOR: string;
 		CommonProgramFiles: string;
 		CommonProgramW6432: string;
 		COMPUTERNAME: string;
 		ComSpec: string;
-		DISABLE_AUTO_UPDATE: string;
 		DriverData: string;
 		EDITOR: string;
 		HOME: string;
@@ -254,7 +240,6 @@ declare module '$env/dynamic/private' {
 		NPM_PREFIX_JS: string;
 		NPM_PREFIX_NPM_CLI_JS: string;
 		NUMBER_OF_PROCESSORS: string;
-		NVIDIAWHITELISTED: string;
 		OneDrive: string;
 		OneDriveConsumer: string;
 		OS: string;
@@ -272,9 +257,7 @@ declare module '$env/dynamic/private' {
 		PROMPT: string;
 		PSModulePath: string;
 		PUBLIC: string;
-		RUST_LOG: string;
-		SHELL: string;
-		SHIM_MCCOMPAT: string;
+		SESSIONNAME: string;
 		SystemDrive: string;
 		SystemRoot: string;
 		TEMP: string;
@@ -284,8 +267,6 @@ declare module '$env/dynamic/private' {
 		USERNAME: string;
 		USERPROFILE: string;
 		windir: string;
-		ZSH_TMUX_AUTOSTART: string;
-		ZSH_TMUX_AUTOSTARTED: string;
 		_VOLTA_TOOL_RECURSION: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
@@ -344,6 +325,7 @@ declare module '$env/dynamic/public' {
 	export const env: {
 		PUBLIC_SUPABASE_ANON_KEY: string;
 		PUBLIC_SUPABASE_URL: string;
+		PUBLIC_CONTACT_EMAIL: string;
 		[key: `PUBLIC_${string}`]: string | undefined;
 	}
 }
