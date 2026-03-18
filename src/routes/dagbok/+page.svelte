@@ -7,7 +7,8 @@
 	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import type {
 		CommunityMySharesSuccessResponse,
-		CreateCommunityShareSuccessResponse
+		CreateCommunityShareSuccessResponse,
+		CreateCommunityUnshareSuccessResponse
 	} from '$lib/types';
 
 	let entries: DiaryEntry[] = [];
@@ -24,10 +25,13 @@
 	let weeklyEntryCount = 0;
 	let sharedEntryIds = new Set<string>();
 	let confirmingShareEntryId = '';
+	let confirmingUnshareEntryId = '';
 	let sharingEntryId = '';
+	let unsharingEntryId = '';
 	let shareFeedbackEntryId = '';
 	let shareFeedbackMessage = '';
 	let shareFeedbackType: 'success' | 'error' | 'info' = 'info';
+	let shareFeedbackShowCommunityLink = false;
 
 	function parseStoredDraft(value: string | null): string {
 		if (!value) return '';
@@ -135,6 +139,7 @@
 		shareFeedbackEntryId = entryId;
 		shareFeedbackMessage = message;
 		shareFeedbackType = type;
+		shareFeedbackShowCommunityLink = false;
 	}
 
 	async function loadEntries(options: { force?: boolean } = {}) {
@@ -183,8 +188,10 @@
 
 	function openShareConfirmation(entryId: string) {
 		confirmingShareEntryId = entryId;
+		confirmingUnshareEntryId = '';
 		shareFeedbackEntryId = '';
 		shareFeedbackMessage = '';
+		shareFeedbackShowCommunityLink = false;
 	}
 
 	function closeShareConfirmation() {
@@ -192,8 +199,21 @@
 		confirmingShareEntryId = '';
 	}
 
+	function openUnshareConfirmation(entryId: string) {
+		confirmingUnshareEntryId = entryId;
+		confirmingShareEntryId = '';
+		shareFeedbackEntryId = '';
+		shareFeedbackMessage = '';
+		shareFeedbackShowCommunityLink = false;
+	}
+
+	function closeUnshareConfirmation() {
+		if (unsharingEntryId) return;
+		confirmingUnshareEntryId = '';
+	}
+
 	async function shareEntryAnonymously(entry: DiaryEntry) {
-		if (sharingEntryId || !entry.id) return;
+		if (sharingEntryId || unsharingEntryId || !entry.id) return;
 
 		if (isEntryShared(entry.id)) {
 			setShareFeedback(entry.id, 'Det här inlägget är redan delat i Gemenskap.', 'info');
@@ -245,6 +265,7 @@
 
 			sharedEntryIds = new Set([...sharedEntryIds, entry.id]);
 			setShareFeedback(entry.id, 'Inlägget har delats anonymt i Gemenskap.', 'success');
+			shareFeedbackShowCommunityLink = true;
 			confirmingShareEntryId = '';
 		} catch (error) {
 			setShareFeedback(
@@ -254,6 +275,80 @@
 			);
 		} finally {
 			sharingEntryId = '';
+		}
+	}
+
+	async function unshareEntry(entry: DiaryEntry) {
+		if (sharingEntryId || unsharingEntryId || !entry.id) return;
+
+		if (!isEntryShared(entry.id)) {
+			setShareFeedback(entry.id, 'Det finns ingen aktiv delning att ta bort.', 'info');
+			confirmingUnshareEntryId = '';
+			return;
+		}
+
+		unsharingEntryId = entry.id;
+
+		try {
+			const { data } = await supabase.auth.getSession();
+			const session = data.session;
+
+			if (!session?.access_token) {
+				setShareFeedback(entry.id, 'Logga in för att ta bort delningen.', 'error');
+				return;
+			}
+
+			const response = await fetch('/api/community/unshare', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session.access_token}`
+				},
+				body: JSON.stringify({ diaryEntryId: entry.id })
+			});
+
+			const payload = (await response.json().catch(() => null)) as
+				| CreateCommunityUnshareSuccessResponse
+				| { success?: boolean; error?: string; alreadyUnshared?: boolean }
+				| null;
+
+			if (!response.ok || !payload) {
+				const errorPayload = payload as { error?: string; alreadyUnshared?: boolean } | null;
+				const alreadyUnshared = response.status === 409 && Boolean(errorPayload?.alreadyUnshared);
+
+				if (alreadyUnshared || response.status === 404) {
+					const nextSharedIds = new Set(sharedEntryIds);
+					nextSharedIds.delete(entry.id);
+					sharedEntryIds = nextSharedIds;
+					setShareFeedback(entry.id, 'Delningen är redan borttagen från Gemenskap.', 'info');
+				} else {
+					setShareFeedback(
+						entry.id,
+						errorPayload?.error || 'Kunde inte ta bort delningen just nu.',
+						'error'
+					);
+				}
+				return;
+			}
+
+			if (!payload.success) {
+				setShareFeedback(entry.id, 'Kunde inte ta bort delningen just nu.', 'error');
+				return;
+			}
+
+			const nextSharedIds = new Set(sharedEntryIds);
+			nextSharedIds.delete(entry.id);
+			sharedEntryIds = nextSharedIds;
+			setShareFeedback(entry.id, 'Delningen har tagits bort från Gemenskap.', 'success');
+			confirmingUnshareEntryId = '';
+		} catch (error) {
+			setShareFeedback(
+				entry.id,
+				error instanceof Error ? error.message : 'Kunde inte ta bort delningen just nu.',
+				'error'
+			);
+		} finally {
+			unsharingEntryId = '';
 		}
 	}
 
