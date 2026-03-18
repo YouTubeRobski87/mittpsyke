@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+</script>
+
 <svelte:head>
 	<title>Om MittPsyke – Skapad av erfarenhet, inte teori</title>
 	<meta
@@ -35,7 +39,7 @@
 				<li><strong>Vad används tjänsten till?</strong> Reflektion, samtalsstöd, dagbok och struktur i vardagen.</li>
 				<li><strong>Vad gäller i akut läge?</strong> Ring 112 vid akut fara. För vårdråd, kontakta 1177.</li>
 				<li><strong>Vem står bakom?</strong> MittPsyke drivs av Robert Claesson som enskild näringsverksamhet (org.nr 198712284895).</li>
-				<li><strong>Hur kontaktar man er?</strong> <a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a></li>
+					<li><strong>Hur kontaktar man er?</strong> <a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a></li>
 			</ul>
 		</section>
 
@@ -86,7 +90,7 @@
 				<li>
 					<strong>Fel eller förbättringsförslag?</strong><br />
 					Hör av dig till
-					<a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a> – vi tar emot rättelser och
+						<a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a> – vi tar emot rättelser och
 					förbättringsförslag löpande.
 				</li>
 			</ul>
@@ -328,8 +332,8 @@
 				<li>Informationsplattformar och digitala guider</li>
 			</ul>
 			<p>
-				För samarbeten eller frågor kring plattformen, kontakta
-				<a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a>.
+					För samarbeten eller frågor kring plattformen, kontakta
+					<a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a>.
 			</p>
 		</section>
 
@@ -360,9 +364,9 @@
 			<h3>Kontakt</h3>
 			<address class="company-address">
 				<p>
-					<strong>E-post:</strong>
-					<a href="mailto:mittpsyke@ownit.nu">mittpsyke@ownit.nu</a>
-				</p>
+						<strong>E-post:</strong>
+						<a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a>
+					</p>
 				<p>
 					<strong>Webbplats:</strong>
 					<a href="https://www.mittpsyke.se" target="_blank" rel="noopener noreferrer">https://www.mittpsyke.se</a>
