@@ -6,6 +6,8 @@ type CommunityPost = {
 	content: string;
 	mood: string | null;
 	created_at: string | null;
+	isOwnPost: boolean;
+	diaryEntryId: string | null;
 };
 
 function isMissingTableError(
@@ -31,7 +33,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const { data: postsData, error: postsError } = await locals.supabase
 		.from('community_posts')
-		.select('id, content, mood, created_at')
+		.select('id, content, mood, created_at, diary_entry_id, user_id')
 		.is('deleted_at', null)
 		.order('created_at', { ascending: false })
 		.limit(40);
@@ -46,7 +48,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 				id: typeof row.id === 'string' ? row.id : '',
 				content: typeof row.content === 'string' ? row.content : '',
 				mood: typeof row.mood === 'string' ? row.mood : null,
-				created_at: typeof row.created_at === 'string' ? row.created_at : null
+				created_at: typeof row.created_at === 'string' ? row.created_at : null,
+				isOwnPost: row.user_id === user.id,
+				diaryEntryId:
+					row.user_id === user.id && typeof row.diary_entry_id === 'string'
+						? row.diary_entry_id
+						: null
 			}))
 			.filter((row) => row.id.length > 0 && row.content.trim().length > 0);
 	}
