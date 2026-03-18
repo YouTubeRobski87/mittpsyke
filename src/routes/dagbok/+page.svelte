@@ -15,8 +15,9 @@
 	let draftError = '';
 	let draftSuccess = '';
 	let savingDraft = false;
-	type MoodGraphPoint = { mood: number; createdAt: string | null };
+	type MoodGraphPoint = { mood: number };
 	let moodGraphPoints: MoodGraphPoint[] = [];
+	let weeklyEntryCount = 0;
 
 	function parseStoredDraft(value: string | null): string {
 		if (!value) return '';
@@ -94,13 +95,27 @@
 		for (const entry of source) {
 			const mood = parseMoodValue(entry.mood);
 			if (mood === null) continue;
-			points.push({ mood, createdAt: entry.created_at });
+			points.push({ mood });
 			if (points.length >= 10) break;
 		}
 		return points.reverse();
 	}
 
+	function countEntriesThisWeek(source: DiaryEntry[]): number {
+		const cutoff = new Date();
+		cutoff.setDate(cutoff.getDate() - 6);
+		cutoff.setHours(0, 0, 0, 0);
+
+		return source.filter((entry) => {
+			if (!entry.created_at) return false;
+			const created = new Date(entry.created_at);
+			if (Number.isNaN(created.getTime())) return false;
+			return created >= cutoff;
+		}).length;
+	}
+
 	$: moodGraphPoints = buildMoodGraphPoints(entries);
+	$: weeklyEntryCount = countEntriesThisWeek(entries);
 
 	async function loadEntries(options: { force?: boolean } = {}) {
 		const { data } = await supabase.auth.getSession();
@@ -210,128 +225,161 @@
 				<p class="auth-muted">Laddar...</p>
 			</section>
 		{:else}
-			<section class="auth-panel auth-panel-accent">
-				<h2 class="text-base font-semibold">Nytt inlägg</h2>
-					<p class="mt-2 text-sm auth-muted">
-						Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
-					</p>
-					<div class="mood-field">
-						<p class="text-sm">Humör just nu (valfritt)</p>
-						<p class="mood-current">
-							{draftMood ? `Humör: ${draftMood}/10` : 'Humör: Ej valt'}
+			<div class="diary-layout">
+				<div class="diary-main">
+					<section class="auth-panel auth-panel-accent">
+						<h2 class="text-base font-semibold">Nytt inlägg</h2>
+						<p class="mt-2 text-sm auth-muted">
+							Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
 						</p>
-						<p class="mood-meaning auth-muted">
-							{draftMood ? moodLabel(Number(draftMood)) : 'Flytta reglaget om du vill lägga till humör.'}
-						</p>
-						<input
-							id="draft-mood"
-							type="range"
-							min="1"
-							max="10"
-							step="1"
-							value={draftMood || String(draftMoodPreview)}
-							oninput={handleMoodInput}
-							class="mood-slider"
-							aria-describedby="draft-mood-anchors"
-						/>
-						<div id="draft-mood-anchors" class="mood-anchors auth-muted">
-							<span>Tungt</span>
-							<span>Mitt emellan</span>
-							<span>Ljusare</span>
+						<div class="mood-field">
+							<p class="text-sm">Humör just nu (valfritt)</p>
+							<p class="mood-current">
+								{draftMood ? `Humör: ${draftMood}/10` : 'Humör: Ej valt'}
+							</p>
+							<p class="mood-meaning auth-muted">
+								{draftMood ? moodLabel(Number(draftMood)) : 'Flytta reglaget om du vill lägga till humör.'}
+							</p>
+							<input
+								id="draft-mood"
+								type="range"
+								min="1"
+								max="10"
+								step="1"
+								value={draftMood || String(draftMoodPreview)}
+								oninput={handleMoodInput}
+								class="mood-slider"
+								aria-describedby="draft-mood-anchors"
+							/>
+							<div id="draft-mood-anchors" class="mood-anchors auth-muted">
+								<span>Tungt</span>
+								<span>Mitt emellan</span>
+								<span>Ljusare</span>
+							</div>
+							<button type="button" class="mood-clear auth-muted" onclick={clearMoodSelection} disabled={!draftMood}>
+								Rensa humör
+							</button>
 						</div>
-						<button type="button" class="mood-clear auth-muted" onclick={clearMoodSelection} disabled={!draftMood}>
-							Rensa humör
-						</button>
-					</div>
-					<textarea
-						bind:value={draftText}
-						rows={8}
-						class="diary-input"
-						placeholder="Skriv några ord..."
-					></textarea>
+						<textarea
+							bind:value={draftText}
+							rows={8}
+							class="diary-input"
+							placeholder="Skriv några ord..."
+						></textarea>
 
-					{#if draftError}
-						<p class="mt-3 text-sm error-copy">{draftError}</p>
+						{#if draftError}
+							<p class="mt-3 text-sm error-copy">{draftError}</p>
+						{/if}
+
+						<div class="actions-row">
+							<button
+								type="button"
+								class="auth-button primary"
+								onclick={saveDraftToDiary}
+								disabled={savingDraft || !draftText.trim()}
+							>
+								{savingDraft ? 'Sparar...' : 'Spara inlägg'}
+							</button>
+
+							<a href="/skriv" class="auth-button">
+								Fortsätt skriva senare
+							</a>
+						</div>
+					</section>
+
+					{#if draftSuccess && !draftText}
+						<section class="auth-panel auth-panel-success">
+							<h2 class="text-base font-semibold">{draftSuccess}</h2>
+							<p class="mt-2 text-sm">Du kan fortsätta skriva i din dagbok när som helst.</p>
+						</section>
 					{/if}
 
-					<div class="actions-row">
-						<button
-							type="button"
-							class="auth-button primary"
-							onclick={saveDraftToDiary}
-							disabled={savingDraft || !draftText.trim()}
-						>
-							{savingDraft ? 'Sparar...' : 'Spara inlägg'}
-						</button>
+					{#if loadError}
+						<section class="auth-panel auth-panel-error">
+							<p class="text-sm">{loadError}</p>
+						</section>
+					{/if}
 
-						<a href="/skriv" class="auth-button">
-							Fortsätt skriva senare
-						</a>
-					</div>
-			</section>
-
-			{#if draftSuccess && !draftText}
-				<section class="auth-panel auth-panel-success">
-					<h2 class="text-base font-semibold">{draftSuccess}</h2>
-					<p class="mt-2 text-sm">Du kan fortsätta skriva i din dagbok när som helst.</p>
-				</section>
-			{/if}
-
-			{#if loadError}
-				<section class="auth-panel auth-panel-error">
-					<p class="text-sm">{loadError}</p>
-				</section>
-			{/if}
-
-			<section class="auth-panel mood-graph-panel">
-				<div class="mood-graph-header">
-					<h3 class="text-sm font-semibold">Humörtrend</h3>
-					<p class="text-xs auth-muted">Senaste inlägg med humör</p>
+					{#if entries.length === 0}
+						<section class="auth-panel">
+							<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
+							<p class="mt-2 text-sm auth-muted">Det räcker med några ord. Skriv i lugn och ro, i din egen takt.</p>
+							<a href="/skriv" class="auth-button mt-4">
+								Skriv första inlägget
+							</a>
+						</section>
+					{:else}
+						<div class="diary-flow">
+							<p class="flow-heading auth-muted">Senaste och äldre inlägg</p>
+							<div class="diary-entries">
+								{#each entries as entry (entry.id)}
+									<article class="auth-panel diary-entry">
+										<p class="text-xs auth-muted">{formatDate(entry.created_at)}</p>
+										{#if entry.mood}
+											<p class="mt-1 text-xs auth-muted">Humör: {entry.mood}/10</p>
+										{/if}
+										<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
+									</article>
+								{/each}
+							</div>
+						</div>
+					{/if}
 				</div>
-				{#if moodGraphPoints.length >= 2}
-					<svg viewBox="0 0 100 36" class="mood-chart" aria-label="Humörtrend över senaste inlägg">
-						<rect x="1" y="1" width="98" height="34" rx="8" class="mood-chart-bg"></rect>
-						<polyline points={buildMoodPolyline(moodGraphPoints)} class="mood-chart-line"></polyline>
-						{#each moodGraphPoints as point, index}
-							<circle cx={moodX(index, moodGraphPoints.length)} cy={moodY(point.mood)} r="1.35" class="mood-chart-dot"></circle>
-						{/each}
-					</svg>
-					<div class="mood-chart-anchors auth-muted">
-						<span>Tungt</span>
-						<span>Mitt emellan</span>
-						<span>Ljusare</span>
-					</div>
-				{:else}
-					<p class="text-sm auth-muted">Lägg till humör i minst två inlägg för att se en trend.</p>
-				{/if}
-			</section>
 
-			{#if entries.length === 0}
-				<section class="auth-panel">
-					<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
-					<p class="mt-2 text-sm auth-muted">Det räcker med några ord. Skriv i lugn och ro, i din egen takt.</p>
-					<a href="/skriv" class="auth-button mt-4">
-						Skriv första inlägget
-					</a>
-				</section>
-			{:else}
-				<div class="diary-entries">
-					{#each entries as entry (entry.id)}
-						<article class="auth-panel diary-entry">
-							<p class="text-xs auth-muted">{formatDate(entry.created_at)}</p>
-							{#if entry.mood}
-								<p class="mt-1 text-xs auth-muted">Humör: {entry.mood}/10</p>
+				<aside class="diary-side">
+					<section class="auth-panel diary-week-panel">
+						<div class="week-head">
+							<h3 class="text-sm font-semibold">Denna vecka</h3>
+							<p class="text-xs auth-muted">Liten översikt i lugn takt</p>
+						</div>
+						<p class="week-count">{weeklyEntryCount}</p>
+						<p class="text-xs auth-muted">inlägg senaste 7 dagarna</p>
+
+						<div class="mood-graph-panel">
+							<div class="mood-graph-header">
+								<h3 class="text-sm font-semibold">Humörtrend</h3>
+								<p class="text-xs auth-muted">Senaste inlägg med humör</p>
+							</div>
+							{#if moodGraphPoints.length >= 2}
+								<svg viewBox="0 0 100 36" class="mood-chart" aria-label="Humörtrend över senaste inlägg">
+									<rect x="1" y="1" width="98" height="34" rx="8" class="mood-chart-bg"></rect>
+									<polyline points={buildMoodPolyline(moodGraphPoints)} class="mood-chart-line"></polyline>
+									{#each moodGraphPoints as point, index}
+										<circle cx={moodX(index, moodGraphPoints.length)} cy={moodY(point.mood)} r="1.35" class="mood-chart-dot"></circle>
+									{/each}
+								</svg>
+								<div class="mood-chart-anchors auth-muted">
+									<span>Tungt</span>
+									<span>Mitt emellan</span>
+									<span>Ljusare</span>
+								</div>
+							{:else}
+								<p class="text-sm auth-muted">Lägg till humör i minst två inlägg för att se en trend.</p>
 							{/if}
-							<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
-						</article>
-					{/each}
-				</div>
-			{/if}
+						</div>
+					</section>
+				</aside>
+			</div>
 		{/if}
 	</div>
 </main>
 
 <style>
+	.diary-layout {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.diary-main {
+		display: grid;
+		gap: 0.85rem;
+	}
+
+	.diary-side {
+		display: grid;
+		gap: 0.85rem;
+	}
+
 	.diary-input {
 		width: 100%;
 		margin-top: 0.8rem;
@@ -460,6 +508,34 @@
 		color: hsl(var(--error-foreground));
 	}
 
+	.diary-flow {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.flow-heading {
+		margin: 0.1rem 0 0;
+		font-size: 0.82rem;
+	}
+
+	.diary-week-panel {
+		display: grid;
+		gap: 0.65rem;
+	}
+
+	.week-head h3,
+	.week-head p {
+		margin: 0;
+	}
+
+	.week-count {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: 1.9rem;
+		line-height: 1;
+		letter-spacing: -0.02em;
+	}
+
 	.mood-graph-panel {
 		display: grid;
 		gap: 0.55rem;
@@ -517,5 +593,17 @@
 
 	:global(.dark) .diary-entry:hover {
 		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
+	}
+
+	@media (min-width: 980px) {
+		.diary-layout {
+			grid-template-columns: minmax(0, 1fr) 300px;
+			align-items: start;
+		}
+
+		.diary-side {
+			position: sticky;
+			top: 0.7rem;
+		}
 	}
 </style>
