@@ -234,8 +234,8 @@
 	<div class="auth-shell">
 		<div class="journey-container">
 			<section class="journey-header auth-panel">
-				<h1>Din resa</h1>
-				<p>En lugn överblick — i din takt</p>
+				<h2>Din resa</h2>
+				<p>Så har det gått, i din takt.</p>
 				{#if streakData || milestonesData}
 					<button class="share-btn" onclick={handleShare} aria-label="Dela din framstegssida">
 						🌱 Dela min resa
@@ -425,7 +425,7 @@
 <style>
 	.journey-container { display: grid; gap: 1rem; }
 	.journey-header { text-align: center; margin: 0; }
-	.journey-header h1 { font-size: 2.05rem; margin: 0; color: hsl(var(--foreground)); }
+	.journey-header h2 { font-size: 1.35rem; margin: 0; color: hsl(var(--foreground)); }
 	.journey-header p { margin: 0.45rem 0 0; font-size: 1rem; color: hsl(var(--muted-foreground)); font-style: italic; }
 
 	.share-btn {
@@ -536,7 +536,7 @@
 	.empty-state .auth-button { margin-top: 0.25rem; }
 
 	@media (max-width: 640px) {
-		.journey-header h1 { font-size: 1.8rem; }
+		.journey-header h2 { font-size: 1.2rem; }
 		.card { padding: 1.5rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.milestones-grid { grid-template-columns: 1fr; }
