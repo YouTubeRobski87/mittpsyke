@@ -263,7 +263,7 @@
 				content: (data?.reply && data.reply.trim())
 					? data.reply
 					: GENERIC_CHAT_ERROR,
-				crisis: data.crisis ?? false
+				crisis: data?.crisis ?? false
 			});
 			await tick();
 			scrollToBottom();
