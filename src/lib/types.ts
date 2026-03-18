@@ -141,4 +141,29 @@ export interface CreateCommunityUnshareErrorResponse {
 	alreadyUnshared?: boolean;
 }
 
+export interface CommunityCommentRecord {
+	id: string;
+	post_id: string;
+	user_id: string;
+	body: string;
+	created_at: string;
+	updated_at: string;
+	deleted_at: string | null;
+}
+
+export interface CreateCommunityCommentRequestBody {
+	postId: string;
+	body: string;
+}
+
+export interface CreateCommunityCommentSuccessResponse {
+	success: true;
+	comment: Pick<CommunityCommentRecord, 'id' | 'post_id' | 'body' | 'created_at'>;
+}
+
+export interface CreateCommunityCommentErrorResponse {
+	success: false;
+	error: string;
+}
+
 
