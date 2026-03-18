@@ -1,0 +1,7 @@
+
+> mittpsyke@1.0.0 check
+> svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
+
+Loading svelte-check in workspace: d:\mittpsyke-main
+Getting Svelte diagnostics...
+
