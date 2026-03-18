@@ -15,6 +15,7 @@
 	let draftError = '';
 	let draftSuccess = '';
 	let savingDraft = false;
+	type MoodGraphPoint = { mood: number; createdAt: string | null };
 
 	function parseStoredDraft(value: string | null): string {
 		if (!value) return '';
@@ -43,6 +44,30 @@
 		});
 	}
 
+	function parseMoodValue(value: string | null): number | null {
+		if (!value) return null;
+		const numeric = Number(value);
+		if (!Number.isFinite(numeric)) return null;
+		if (numeric < 1 || numeric > 10) return null;
+		return Math.round(numeric);
+	}
+
+	function moodX(index: number, total: number): number {
+		if (total <= 1) return 50;
+		return 4 + (index / (total - 1)) * 92;
+	}
+
+	function moodY(mood: number): number {
+		return 34 - ((mood - 1) / 9) * 26;
+	}
+
+	function buildMoodPolyline(points: MoodGraphPoint[]): string {
+		if (points.length === 0) return '';
+		return points
+			.map((point, index) => `${moodX(index, points.length)},${moodY(point.mood)}`)
+			.join(' ');
+	}
+
 	function moodLabel(value: number) {
 		if (value <= 2) return 'Väldigt tungt';
 		if (value <= 4) return 'Tungt';
@@ -62,6 +87,17 @@
 		draftMood = '';
 		draftMoodPreview = 5;
 	}
+
+	const moodGraphPoints = $derived.by(() => {
+		const points: MoodGraphPoint[] = [];
+		for (const entry of entries) {
+			const mood = parseMoodValue(entry.mood);
+			if (mood === null) continue;
+			points.push({ mood, createdAt: entry.created_at });
+			if (points.length >= 10) break;
+		}
+		return points.reverse();
+	});
 
 	async function loadEntries(options: { force?: boolean } = {}) {
 		const { data } = await supabase.auth.getSession();
@@ -244,6 +280,29 @@
 				</section>
 			{/if}
 
+			<section class="auth-panel mood-graph-panel">
+				<div class="mood-graph-header">
+					<h3 class="text-sm font-semibold">Humörtrend</h3>
+					<p class="text-xs auth-muted">Senaste inlägg med humör</p>
+				</div>
+				{#if moodGraphPoints.length >= 2}
+					<svg viewBox="0 0 100 36" class="mood-chart" aria-label="Humörtrend över senaste inlägg">
+						<rect x="1" y="1" width="98" height="34" rx="8" class="mood-chart-bg"></rect>
+						<polyline points={buildMoodPolyline(moodGraphPoints)} class="mood-chart-line"></polyline>
+						{#each moodGraphPoints as point, index}
+							<circle cx={moodX(index, moodGraphPoints.length)} cy={moodY(point.mood)} r="1.35" class="mood-chart-dot"></circle>
+						{/each}
+					</svg>
+					<div class="mood-chart-anchors auth-muted">
+						<span>Tungt</span>
+						<span>Mitt emellan</span>
+						<span>Ljusare</span>
+					</div>
+				{:else}
+					<p class="text-sm auth-muted">Lägg till humör i minst två inlägg för att se en trend.</p>
+				{/if}
+			</section>
+
 			{#if entries.length === 0}
 				<section class="auth-panel">
 					<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
@@ -396,6 +455,48 @@
 
 	.error-copy {
 		color: hsl(var(--error-foreground));
+	}
+
+	.mood-graph-panel {
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.mood-graph-header h3,
+	.mood-graph-header p {
+		margin: 0;
+	}
+
+	.mood-chart {
+		display: block;
+		width: 100%;
+		height: 106px;
+	}
+
+	.mood-chart-bg {
+		fill: hsl(var(--surface-muted));
+		stroke: hsl(var(--border));
+		stroke-width: 0.4;
+	}
+
+	.mood-chart-line {
+		fill: none;
+		stroke: var(--primary, #0f766e);
+		stroke-width: 1.2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.mood-chart-dot {
+		fill: var(--primary, #0f766e);
+		stroke: hsl(var(--surface));
+		stroke-width: 0.6;
+	}
+
+	.mood-chart-anchors {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.75rem;
 	}
 
 	.diary-entries {
