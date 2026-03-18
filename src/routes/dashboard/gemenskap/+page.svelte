@@ -18,7 +18,10 @@
 				<li>Det du delar här ska vara anonymt.</li>
 				<li>Skriv inte ut namn, personnummer, adresser eller andra personuppgifter.</li>
 				<li>Gemenskapen är ett stöd mellan människor, inte vård eller akut hjälp.</li>
-				<li>Vid akut fara: ring 112 eller kontakta 1177. Vidare stöd finns på stodlinjer.se.</li>
+				<li>
+					Vid akut fara: ring 112 eller kontakta 1177. Vidare stöd finns på
+					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
+				</li>
 			</ul>
 		</section>
 
@@ -30,8 +33,8 @@
 			</p>
 
 			<div class="empty-actions">
-				<button type="button" class="auth-button primary" onclick={() => (showSharePlaceholder = true)}>
-					Dela en tanke
+				<button type="button" class="auth-button primary" onclick={() => (showSharePlaceholder = !showSharePlaceholder)}>
+					{showSharePlaceholder ? 'Stäng exempel' : 'Dela en tanke'}
 				</button>
 				<a href="/dagbok" class="auth-button">Öppna dagboken</a>
 			</div>
@@ -93,6 +96,11 @@
 
 	.info-panel li {
 		color: hsl(var(--foreground));
+	}
+
+	.info-panel a {
+		text-decoration: underline;
+		text-underline-offset: 2px;
 	}
 
 	.empty-panel p {
