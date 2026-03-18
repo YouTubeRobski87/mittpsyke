@@ -46,6 +46,5 @@
 				<p>{description}</p>
 			{/if}
 		</div>
-		<slot name="actions" />
 	</header>
 </div>
