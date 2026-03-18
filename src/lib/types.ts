@@ -92,4 +92,39 @@ export interface DiaryStatsTimelineErrorResponse {
 	error: string;
 }
 
+export interface CommunityPostRecord {
+	id: string;
+	user_id: string;
+	diary_entry_id: string;
+	content: string;
+	mood: string | null;
+	created_at: string;
+	deleted_at: string | null;
+}
+
+export interface CreateCommunityShareRequestBody {
+	diaryEntryId: string;
+}
+
+export interface CreateCommunityShareSuccessResponse {
+	success: true;
+	share: CommunityPostRecord;
+}
+
+export interface CreateCommunityShareErrorResponse {
+	success: false;
+	error: string;
+	alreadyShared?: boolean;
+}
+
+export interface CommunityMySharesSuccessResponse {
+	success: true;
+	diaryEntryIds: string[];
+}
+
+export interface CommunityMySharesErrorResponse {
+	success: false;
+	error: string;
+}
+
 
