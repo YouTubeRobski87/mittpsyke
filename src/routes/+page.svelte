@@ -96,6 +96,10 @@
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa din egen plats</a>
 				</div>
+				<div class="hero-community-note" aria-label="Anonym gemenskap">
+					<p class="hero-community-title">Du är inte ensam här</p>
+					<p class="hero-community-text">I Gemenskap kan delade inlägg få anonyma och omtänksamma svar i lugn ton.</p>
+				</div>
 				<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
 				<HomeSafetyStrip />
 				<div class="mode-compare" aria-label="Vad är skillnaden?">
@@ -363,6 +367,32 @@
 		font-size: 0.82rem;
 		color: rgba(255, 255, 255, 0.5);
 		letter-spacing: 0.01em;
+	}
+
+	.hero-community-note {
+		margin-top: 0.95rem;
+		padding: 0.7rem 0.85rem;
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.16);
+		text-align: left;
+	}
+
+	.hero-community-title {
+		margin: 0;
+		max-width: none;
+		font-family: var(--font-heading);
+		font-size: clamp(1rem, 1.45vw, 1.12rem);
+		font-weight: 700;
+		line-height: 1.2;
+		color: rgba(255, 255, 255, 0.95);
+	}
+
+	.hero-community-text {
+		margin: 0.35rem 0 0;
+		max-width: none;
+		font-size: 0.92rem;
+		line-height: 1.55;
+		color: rgba(255, 255, 255, 0.86);
 	}
 
 	.hero-actions {
