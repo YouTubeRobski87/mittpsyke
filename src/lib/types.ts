@@ -127,4 +127,18 @@ export interface CommunityMySharesErrorResponse {
 	error: string;
 }
 
+export interface CreateCommunityUnshareRequestBody {
+	diaryEntryId: string;
+}
+
+export interface CreateCommunityUnshareSuccessResponse {
+	success: true;
+}
+
+export interface CreateCommunityUnshareErrorResponse {
+	success: false;
+	error: string;
+	alreadyUnshared?: boolean;
+}
+
 
