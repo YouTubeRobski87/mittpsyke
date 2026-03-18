@@ -94,7 +94,7 @@
 			}
 
 			draftText = '';
-			draftSuccess = 'Ditt första inlägg är sparat';
+			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true });
 		} catch (error) {
 			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
@@ -144,9 +144,8 @@
 				<p class="auth-muted">Laddar...</p>
 			</section>
 		{:else}
-			{#if draftText}
-				<section class="auth-panel auth-panel-accent">
-					<h2 class="text-base font-semibold">Spara ditt första inlägg</h2>
+			<section class="auth-panel auth-panel-accent">
+				<h2 class="text-base font-semibold">Nytt inlägg</h2>
 					<p class="mt-2 text-sm auth-muted">
 						Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
 					</p>
@@ -168,15 +167,14 @@
 							onclick={saveDraftToDiary}
 							disabled={savingDraft || !draftText.trim()}
 						>
-							{savingDraft ? 'Sparar...' : 'Spara som första inlägg'}
+							{savingDraft ? 'Sparar...' : 'Spara inlägg'}
 						</button>
 
 						<a href="/skriv" class="auth-button">
 							Fortsätt skriva senare
 						</a>
 					</div>
-				</section>
-			{/if}
+			</section>
 
 			{#if draftSuccess && !draftText}
 				<section class="auth-panel auth-panel-success">
