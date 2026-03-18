@@ -86,22 +86,22 @@
 			decoding="async"
 			fetchpriority="high"
 		/>
-		<div class="hero-content">
-			<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
-			<h1>MittPsyke är en lugn plats att börja.</h1>
-			<p>
-				Skriv av dig direkt — inget konto, ingen registrering. Skapa ett konto om du vill spara din dagbok och kunna återvända över tid.
-			</p>
+			<div class="hero-content">
+				<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
+				<h1>MittPsyke är en lugn plats att börja.</h1>
+				<p>
+					Skriv av dig direkt — inget konto, ingen registrering. Skapa ett konto om du vill spara din dagbok och kunna återvända över tid.
+				</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa din egen plats</a>
 				</div>
-			<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
-			<HomeSafetyStrip />
-			<div class="mode-compare" aria-label="Vad är skillnaden?">
-				<div class="mode-col">
-					<p class="mode-label">Anonymt läge</p>
-					<ul class="mode-list">
+				<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
+				<HomeSafetyStrip />
+				<div class="mode-compare" aria-label="Vad är skillnaden?">
+					<div class="mode-col">
+						<p class="mode-label">Anonymt läge</p>
+						<ul class="mode-list">
 						<li>Ingen registrering</li>
 						<li>Ingen profil skapas</li>
 						<li>Börja direkt</li>
@@ -113,13 +113,14 @@
 						<li>Spara dagbok och reflektioner</li>
 						<li>Följ ditt mående över tid</li>
 						<li>Fortsätt där du slutade</li>
-					</ul>
+						</ul>
+					</div>
 				</div>
 			</div>
-		</div>
-	</section>
+		</section>
+		<!-- TODO: Lägg verifierat social proof här när vi har verkliga omdömen eller data. -->
 
-	<section class="entry-paths" aria-labelledby="entry-paths-title">
+		<section class="entry-paths" aria-labelledby="entry-paths-title">
 		<div class="cards-narrow entry-inner">
 			<p class="entry-eyebrow">Välj din väg in</p>
 			<h2 id="entry-paths-title">Det finns olika sätt att börja.</h2>
@@ -381,6 +382,7 @@
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
+			align-self: center;
 			padding: 0.35rem 0.15rem;
 			font-family: var(--font-body);
 			font-size: 0.92rem;
@@ -390,6 +392,11 @@
 			text-decoration: underline;
 			text-underline-offset: 3px;
 			opacity: 0.9;
+		}
+
+		.hero-cta-link:hover,
+		.hero-cta-link:focus-visible {
+			opacity: 1;
 		}
 
 	.band {
