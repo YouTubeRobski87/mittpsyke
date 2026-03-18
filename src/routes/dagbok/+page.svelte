@@ -16,6 +16,7 @@
 	let draftSuccess = '';
 	let savingDraft = false;
 	type MoodGraphPoint = { mood: number; createdAt: string | null };
+	let moodGraphPoints: MoodGraphPoint[] = [];
 
 	function parseStoredDraft(value: string | null): string {
 		if (!value) return '';
@@ -88,16 +89,18 @@
 		draftMoodPreview = 5;
 	}
 
-	const moodGraphPoints = $derived.by(() => {
+	function buildMoodGraphPoints(source: DiaryEntry[]): MoodGraphPoint[] {
 		const points: MoodGraphPoint[] = [];
-		for (const entry of entries) {
+		for (const entry of source) {
 			const mood = parseMoodValue(entry.mood);
 			if (mood === null) continue;
 			points.push({ mood, createdAt: entry.created_at });
 			if (points.length >= 10) break;
 		}
 		return points.reverse();
-	});
+	}
+
+	$: moodGraphPoints = buildMoodGraphPoints(entries);
 
 	async function loadEntries(options: { force?: boolean } = {}) {
 		const { data } = await supabase.auth.getSession();
