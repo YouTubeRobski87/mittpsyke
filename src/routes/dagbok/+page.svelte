@@ -227,12 +227,13 @@
 				| null;
 
 			if (!response.ok || !payload) {
-				const alreadyShared = response.status === 409 && payload?.alreadyShared;
+				const errorPayload = payload as { error?: string; alreadyShared?: boolean } | null;
+				const alreadyShared = response.status === 409 && Boolean(errorPayload?.alreadyShared);
 				if (alreadyShared) {
 					sharedEntryIds = new Set([...sharedEntryIds, entry.id]);
 					setShareFeedback(entry.id, 'Det här inlägget är redan delat i Gemenskap.', 'info');
 				} else {
-					setShareFeedback(entry.id, payload?.error || 'Kunde inte dela inlägget just nu.', 'error');
+					setShareFeedback(entry.id, errorPayload?.error || 'Kunde inte dela inlägget just nu.', 'error');
 				}
 				return;
 			}
