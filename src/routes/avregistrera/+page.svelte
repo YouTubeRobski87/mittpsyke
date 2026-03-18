@@ -49,15 +49,19 @@
 		{/if}
 	</section>
 
-	<section class="panel danger-panel">
-		<h2>Avsluta konto</h2>
-		<p>
-			Om du vill radera kontot helt (dagbok, chatthistorik och profil) kan du gora det i
-			kontoinstallningar.
-		</p>
-		<a class="danger-btn" href="/dashboard/installningar#radera-konto">Ga till kontoradering</a>
-	</section>
-</main>
+		<section class="panel danger-panel">
+			<h2>Avsluta konto</h2>
+			<p>
+				Om du vill radera kontot helt (dagbok, chatthistorik och profil) kan du gora det i
+				kontoinstallningar.
+			</p>
+			{#if data.isLoggedIn}
+				<a class="danger-btn" href="/dashboard/installningar#radera-konto">Ga till kontoradering</a>
+			{:else}
+				<a class="ghost-btn" href="/login">Logga in for kontoradering</a>
+			{/if}
+		</section>
+	</main>
 
 <style>
 	.unsubscribe-page {
