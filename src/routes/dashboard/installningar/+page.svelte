@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import PortalSubnav from '/components/PortalSubnav.svelte';
+	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import { supabase } from '$lib/supabase';
 	import type { DeleteAccountErrorResponse, DeleteAccountSuccessResponse } from '$lib/types';
 	import { THEME_STORAGE_KEY } from '$lib/theme';
@@ -246,15 +246,17 @@
 	<title>Kontoinställningar - MittPsyke</title>
 </svelte:head>
 
-<main class="settings-page container">
-	{#if loading}
-		<p class="loading-copy">Laddar inställningar...</p>
-	{:else}
-		<!-- Tab Navigation -->
-		<nav class="dashboard-tabs" aria-label="Portalnavigering">
-			<a href="/dashboard" class="tab">Min portal</a>
-			<a href="/dashboard/installningar" class="tab active" aria-current="page">Kontoinställningar</a>
-		</nav>
+<main class="auth-page">
+	<PortalSubnav
+		active="installningar"
+		title="Kontoinställningar"
+		description="Hantera konto, tema och personliga val i lugn takt."
+	/>
+
+	<div class="settings-page auth-shell">
+		{#if loading}
+			<p class="loading-copy">Laddar inställningar...</p>
+		{:else}
 
 		<!-- Display Name Section -->
 		<section class="section-block">
@@ -426,7 +428,8 @@
 			{/if}
 		</section>
 
-	{/if}
+		{/if}
+	</div>
 </main>
 
 <style>
@@ -442,49 +445,6 @@
 		font-family: var(--font-body);
 		padding: 1.6rem 0;
 		opacity: 0.7;
-	}
-
-	.dashboard-tabs {
-		display: flex;
-		gap: 0.35rem;
-		border-radius: var(--radius-card);
-		background: #f5f3ef;
-		padding: 0.3rem;
-	}
-
-	:global(.dark) .dashboard-tabs {
-		background: rgba(255, 255, 255, 0.04);
-	}
-
-	.tab {
-		flex: 1;
-		text-align: center;
-		padding: 0.55rem 0.8rem;
-		border-radius: var(--radius-input);
-		font-family: var(--font-heading);
-		font-weight: 500;
-		font-size: 0.9rem;
-		letter-spacing: -0.01em;
-		color: #2f2a24;
-		opacity: 0.55;
-		transition: background-color 160ms ease, opacity 160ms ease;
-	}
-
-	.tab:hover {
-		opacity: 0.8;
-	}
-
-	.tab.active {
-		background: rgba(255, 255, 255, 0.7);
-		opacity: 1;
-	}
-
-	:global(.dark) .tab {
-		color: #e8e4de;
-	}
-
-	:global(.dark) .tab.active {
-		background: rgba(255, 255, 255, 0.08);
 	}
 
 	.section-block {
