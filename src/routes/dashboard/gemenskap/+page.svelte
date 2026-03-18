@@ -9,7 +9,8 @@
 	};
 
 	let { data }: { data: { posts?: CommunityPost[] } } = $props();
-	const posts = data.posts ?? [];
+	let posts: CommunityPost[] = [];
+	$: posts = data.posts ?? [];
 
 	function formatPublishedAt(value: string | null): string {
 		if (!value) return 'Nyligen';
