@@ -1,7 +1,19 @@
 <script lang="ts">
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import { supabase } from '$lib/supabase';
-	import type { CreateCommunityUnshareSuccessResponse } from '$lib/types';
+	import type {
+		CreateCommunityCommentSuccessResponse,
+		CreateCommunityUnshareSuccessResponse
+	} from '$lib/types';
+
+	const COMMENT_MAX_LENGTH = 280;
+
+	type CommunityComment = {
+		id: string;
+		postId: string;
+		body: string;
+		created_at: string | null;
+	};
 
 	type CommunityPost = {
 		id: string;
@@ -10,6 +22,7 @@
 		created_at: string | null;
 		isOwnPost: boolean;
 		diaryEntryId: string | null;
+		comments: CommunityComment[];
 	};
 
 	let { data }: { data: { posts?: CommunityPost[] } } = $props();
@@ -17,6 +30,12 @@
 	let posts = $state<CommunityPost[]>([]);
 	let confirmingUnsharePostId = $state('');
 	let unsharingPostId = $state('');
+	let openCommentsByPostId = $state<Record<string, boolean>>({});
+	let commentDraftByPostId = $state<Record<string, string>>({});
+	let commentFeedbackByPostId = $state<
+		Record<string, { message: string; type: 'success' | 'error' | 'info' }>
+	>({});
+	let commentingPostId = $state('');
 	let feedNotice = $state('');
 	let feedNoticeType = $state<'success' | 'error' | 'info'>('info');
 
@@ -62,6 +81,139 @@
 	function openUnshareConfirmation(postId: string) {
 		confirmingUnsharePostId = postId;
 		feedNotice = '';
+	}
+
+	function isCommentsOpen(postId: string): boolean {
+		return openCommentsByPostId[postId] === true;
+	}
+
+	function toggleComments(postId: string) {
+		const nextIsOpen = !isCommentsOpen(postId);
+		openCommentsByPostId = {
+			...openCommentsByPostId,
+			[postId]: nextIsOpen
+		};
+	}
+
+	function getCommentDraft(postId: string): string {
+		return commentDraftByPostId[postId] ?? '';
+	}
+
+	function updateCommentDraft(postId: string, value: string) {
+		commentDraftByPostId = {
+			...commentDraftByPostId,
+			[postId]: value.slice(0, COMMENT_MAX_LENGTH)
+		};
+	}
+
+	function setCommentFeedback(
+		postId: string,
+		message: string,
+		type: 'success' | 'error' | 'info'
+	) {
+		commentFeedbackByPostId = {
+			...commentFeedbackByPostId,
+			[postId]: { message, type }
+		};
+	}
+
+	function clearCommentFeedback(postId: string) {
+		if (!commentFeedbackByPostId[postId]) return;
+		const nextFeedback = { ...commentFeedbackByPostId };
+		delete nextFeedback[postId];
+		commentFeedbackByPostId = nextFeedback;
+	}
+
+	function commentCountLabel(count: number): string {
+		if (count <= 0) return '';
+		return count === 1 ? '1 svar' : `${count} svar`;
+	}
+
+	async function submitComment(post: CommunityPost) {
+		if (post.isOwnPost || commentingPostId) return;
+
+		const draft = getCommentDraft(post.id);
+		const body = draft.trim();
+
+		if (!body) {
+			setCommentFeedback(post.id, 'Skriv gärna några ord innan du skickar.', 'info');
+			return;
+		}
+
+		if (body.length > COMMENT_MAX_LENGTH) {
+			setCommentFeedback(post.id, `Kommentaren får vara högst ${COMMENT_MAX_LENGTH} tecken.`, 'error');
+			return;
+		}
+
+		commentingPostId = post.id;
+		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+
+			if (!session?.access_token) {
+				setCommentFeedback(post.id, 'Logga in för att svara med omtanke.', 'error');
+				return;
+			}
+
+			const response = await fetch('/api/community/comments', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session.access_token}`
+				},
+				body: JSON.stringify({
+					postId: post.id,
+					body
+				})
+			});
+
+			const payload = (await response.json().catch(() => null)) as
+				| CreateCommunityCommentSuccessResponse
+				| { success?: boolean; error?: string }
+				| null;
+
+			if (!response.ok || !payload || payload.success !== true) {
+				const errorPayload = payload as { error?: string } | null;
+				setCommentFeedback(
+					post.id,
+					errorPayload?.error ?? 'Kunde inte spara svaret just nu. Försök igen om en stund.',
+					'error'
+				);
+				return;
+			}
+
+			const successPayload = payload as CreateCommunityCommentSuccessResponse;
+			const nextComment: CommunityComment = {
+				id: successPayload.comment.id,
+				postId: successPayload.comment.post_id,
+				body: successPayload.comment.body,
+				created_at: successPayload.comment.created_at
+			};
+
+			posts = posts.map((item) =>
+				item.id === post.id
+					? { ...item, comments: [...item.comments, nextComment] }
+					: item
+			);
+
+			commentDraftByPostId = {
+				...commentDraftByPostId,
+				[post.id]: ''
+			};
+
+			setCommentFeedback(post.id, 'Tack för att du skriver med omtanke.', 'success');
+		} catch (error) {
+			setCommentFeedback(
+				post.id,
+				error instanceof Error
+					? error.message
+					: 'Kunde inte spara svaret just nu. Försök igen om en stund.',
+				'error'
+			);
+		} finally {
+			commentingPostId = '';
+		}
 	}
 
 	function closeUnshareConfirmation() {
@@ -170,12 +322,89 @@
 								{#if formatMoodLabel(post.mood)}
 									<p class="mood-tag">{formatMoodLabel(post.mood)}</p>
 								{/if}
-							</div>
-							<p class="content">{post.content}</p>
-							<p class="published">{formatPublishedAt(post.created_at)}</p>
-							{#if post.isOwnPost}
-								<div class="post-actions">
-									<p class="own-post-label">Din delning</p>
+								</div>
+								<p class="content">{post.content}</p>
+								<p class="published">{formatPublishedAt(post.created_at)}</p>
+								<div class="comment-toggle-row">
+									<button
+										type="button"
+										class="comment-toggle-btn"
+										onclick={() => {
+											clearCommentFeedback(post.id);
+											toggleComments(post.id);
+										}}
+									>
+										{#if isCommentsOpen(post.id)}
+											Dölj svar
+										{:else if post.isOwnPost}
+											Visa svar
+										{:else}
+											Svara med omtanke
+										{/if}
+										{#if commentCountLabel(post.comments.length)}
+											<span class="comment-count">{commentCountLabel(post.comments.length)}</span>
+										{/if}
+									</button>
+								</div>
+								{#if isCommentsOpen(post.id)}
+									<div class="comments-panel">
+										{#if post.comments.length > 0}
+											<ul class="comments-list">
+												{#each post.comments as comment (comment.id)}
+													<li class="comments-item">
+														<p class="comment-author">Anonym medlem</p>
+														<p class="comment-body">{comment.body}</p>
+														<p class="comment-time">{formatPublishedAt(comment.created_at)}</p>
+													</li>
+												{/each}
+											</ul>
+										{:else}
+											<p class="comments-empty">Inga svar ännu.</p>
+										{/if}
+
+										{#if !post.isOwnPost}
+											<div class="comment-form">
+												<p class="comments-help">Skriv några lugna och vänliga ord. Ditt svar visas anonymt.</p>
+												<textarea
+													rows="3"
+													maxlength={COMMENT_MAX_LENGTH}
+													class="comment-input"
+													placeholder="Skriv ett kort, vänligt svar..."
+													aria-label="Skriv ett anonymt svar"
+													value={getCommentDraft(post.id)}
+													oninput={(event) =>
+														updateCommentDraft(
+															post.id,
+															(event.currentTarget as HTMLTextAreaElement).value
+														)}
+												></textarea>
+												<div class="comment-form-footer">
+													<p class="comment-length">
+														{getCommentDraft(post.id).length}/{COMMENT_MAX_LENGTH}
+													</p>
+													<button
+														type="button"
+														class="auth-button primary"
+														disabled={commentingPostId === post.id}
+														onclick={() => submitComment(post)}
+													>
+														{commentingPostId === post.id
+															? 'Sparar...'
+															: 'Svara med omtanke'}
+													</button>
+												</div>
+												{#if commentFeedbackByPostId[post.id]}
+													<p class="comment-feedback {commentFeedbackByPostId[post.id].type}">
+														{commentFeedbackByPostId[post.id].message}
+													</p>
+												{/if}
+											</div>
+										{/if}
+									</div>
+								{/if}
+								{#if post.isOwnPost}
+									<div class="post-actions">
+										<p class="own-post-label">Din delning</p>
 									<button
 										type="button"
 										class="post-action-btn"
@@ -232,15 +461,15 @@
 			</section>
 		{/if}
 
-		<section class="auth-panel future-panel">
-			<h2>Kommer i nästa steg</h2>
-			<div class="future-list" role="list">
-				<p role="listitem">Dela anonymt från dagboken</p>
-				<p role="listitem">Mjuka stödreaktioner</p>
-				<p role="listitem">Korta anonyma svar</p>
-				<p role="listitem">Rapportera innehåll</p>
-			</div>
-		</section>
+			<section class="auth-panel future-panel">
+				<h2>Kommer i nästa steg</h2>
+				<div class="future-list" role="list">
+					<p role="listitem">Dela anonymt från dagboken</p>
+					<p role="listitem">Mjuka stödreaktioner</p>
+					<p role="listitem">Mjuk rapportering av svar</p>
+					<p role="listitem">Rapportera innehåll</p>
+				</div>
+			</section>
 
 		{#if posts.length === 0}
 			<section class="auth-panel sample-panel">
@@ -359,11 +588,145 @@
 		color: hsl(var(--foreground));
 	}
 
-	.published {
-		margin: 0.45rem 0 0;
-		font-size: 0.77rem;
-		color: hsl(var(--muted-foreground));
-	}
+		.published {
+			margin: 0.45rem 0 0;
+			font-size: 0.77rem;
+			color: hsl(var(--muted-foreground));
+		}
+
+		.comment-toggle-row {
+			margin-top: 0.65rem;
+		}
+
+		.comment-toggle-btn {
+			border: 0;
+			background: transparent;
+			padding: 0;
+			font-size: 0.82rem;
+			color: hsl(var(--muted-foreground));
+			text-decoration: underline;
+			text-underline-offset: 2px;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			gap: 0.4rem;
+		}
+
+		.comment-toggle-btn:hover {
+			color: hsl(var(--foreground));
+		}
+
+		.comment-count {
+			font-size: 0.76rem;
+			color: hsl(var(--muted-foreground));
+		}
+
+		.comments-panel {
+			margin-top: 0.6rem;
+			padding: 0.7rem 0.75rem;
+			border: 1px solid hsl(var(--border));
+			border-radius: var(--radius-input);
+			background: hsl(var(--surface-soft));
+		}
+
+		.comments-list {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+			display: grid;
+			gap: 0.55rem;
+		}
+
+		.comments-item {
+			padding: 0.6rem 0.65rem;
+			border: 1px solid hsl(var(--border));
+			border-radius: var(--radius-input);
+			background: hsl(var(--surface));
+		}
+
+		.comment-author {
+			margin: 0;
+			font-size: 0.74rem;
+			color: hsl(var(--muted-foreground));
+		}
+
+		.comment-body {
+			margin: 0.35rem 0 0;
+			line-height: 1.6;
+			white-space: pre-wrap;
+		}
+
+		.comment-time {
+			margin: 0.35rem 0 0;
+			font-size: 0.74rem;
+			color: hsl(var(--muted-foreground));
+		}
+
+		.comments-empty {
+			margin: 0;
+			font-size: 0.84rem;
+			color: hsl(var(--muted-foreground));
+		}
+
+		.comment-form {
+			margin-top: 0.7rem;
+			display: grid;
+			gap: 0.45rem;
+		}
+
+		.comments-help {
+			margin: 0;
+			font-size: 0.82rem;
+			color: hsl(var(--muted-foreground));
+		}
+
+		.comment-input {
+			width: 100%;
+			resize: vertical;
+			min-height: 4.4rem;
+			padding: 0.6rem 0.65rem;
+			border-radius: var(--radius-input);
+			border: 1px solid hsl(var(--border));
+			background: hsl(var(--surface));
+			color: hsl(var(--foreground));
+			font: inherit;
+			line-height: 1.55;
+		}
+
+		.comment-input:focus {
+			outline: 2px solid hsl(var(--ring));
+			outline-offset: 1px;
+		}
+
+		.comment-form-footer {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.6rem;
+		}
+
+		.comment-length {
+			margin: 0;
+			font-size: 0.74rem;
+			color: hsl(var(--muted-foreground));
+		}
+
+		.comment-feedback {
+			margin: 0;
+			font-size: 0.8rem;
+		}
+
+		.comment-feedback.success {
+			color: hsl(var(--success-foreground));
+		}
+
+		.comment-feedback.error {
+			color: hsl(var(--error-foreground));
+		}
+
+		.comment-feedback.info {
+			color: hsl(var(--muted-foreground));
+		}
 
 	.post-actions {
 		margin-top: 0.65rem;
