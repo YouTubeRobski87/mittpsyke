@@ -79,7 +79,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Rate limit key: prefer user_id (avoids NAT/shared IP issues), fallback to IP
-	const session = (locals as Record<string, unknown>)?.session as { user?: { id?: string } } | undefined;
+	const session = (locals as unknown as { session?: { user?: { id?: string } } })?.session;
 	const userId = session?.user?.id;
 	const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
 	const rateLimitKey = userId ? `user:${userId}` : `ip:${clientIp}`;

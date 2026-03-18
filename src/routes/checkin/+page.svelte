@@ -13,7 +13,7 @@
     ];
     
     let profileTheme = getCachedTheme();
-    $: themeColor = THEMES[profileTheme]?.color || '#6b8f71';
+    $: themeColor = THEMES[profileTheme]?.accent || '#6b8f71';
     
     function submit() {
         const parts = [
