@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
 	import type { DeleteAccountErrorResponse, DeleteAccountSuccessResponse } from '$lib/types';
@@ -858,6 +858,7 @@
 		}
 	}
 </style>
+
 
 
 
