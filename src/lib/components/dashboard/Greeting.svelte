@@ -1,11 +1,17 @@
 <script lang="ts">
 	export let user: any = null;
+	export let greetingName = '';
 
 	function clean(value: unknown): string {
-		return typeof value === 'string' ? value.trim() : '';
+		if (typeof value !== 'string') return '';
+		const trimmed = value.trim();
+		if (!trimmed) return '';
+		if (trimmed.includes('@')) return '';
+		return trimmed;
 	}
 
 	$: displayName =
+		clean(greetingName) ||
 		clean(user?.user_metadata?.display_name) ||
 		clean(user?.user_metadata?.full_name) ||
 		clean(user?.user_metadata?.name) ||
