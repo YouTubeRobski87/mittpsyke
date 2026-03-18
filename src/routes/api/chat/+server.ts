@@ -219,7 +219,7 @@ type StoredMessageRow = {
 const GUEST_CONVERSATIONS_TABLE = 'guest_conversations';
 const GUEST_MESSAGES_TABLE = 'guest_messages';
 const MAX_CHAT_MESSAGE_LENGTH = 2000;
-const CHAT_MESSAGE_TOO_LONG_ERROR = 'Din text blev lite för lång. Dela gärna upp den i två delar.';
+const CHAT_MESSAGE_TOO_LONG_ERROR = 'Din text blev lite för lång att skicka på en gång. Dela gärna upp den i två delar.';
 
 function errorResponse(message: string, status: number, details: Record<string, unknown> = {}) {
 	return json({ error: message, ...details }, { status });
@@ -717,3 +717,4 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('AI error', 500);
 	}
 };
+

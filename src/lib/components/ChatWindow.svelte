@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import { browser } from '$app/environment';
 	import { containsCrisisSignal } from '$lib/ai/safety';
 	import { goto } from '$app/navigation';
@@ -41,7 +41,7 @@
 	);
 	let chatLog: HTMLDivElement;
 	const MAX_MESSAGE_LENGTH = 2000;
-	const LONG_MESSAGE_ERROR = 'Din text blev lite för lång. Dela gärna upp den i två delar.';
+	const LONG_MESSAGE_ERROR = 'Din text blev lite för lång att skicka på en gång. Dela gärna upp den i två delar.';
 	const GENERIC_CHAT_ERROR = 'Något gick fel. Försök igen om en stund.';
 	const guestIdStorageKey = 'mittpsyke:guest-id';
 	const starterSuggestions = [
@@ -616,3 +616,4 @@
 		white-space: pre-line;
 	}
 </style>
+
