@@ -18,7 +18,7 @@
 				<li>Det du delar här ska vara anonymt.</li>
 				<li>Skriv inte ut namn, personnummer, adresser eller andra personuppgifter.</li>
 				<li>Gemenskapen är ett stöd mellan människor, inte vård eller akut hjälp.</li>
-				<li>Vid akut fara: ring 112 eller kontakta 1177.</li>
+				<li>Vid akut fara: ring 112 eller kontakta 1177. Vidare stöd finns på stodlinjer.se.</li>
 			</ul>
 		</section>
 
