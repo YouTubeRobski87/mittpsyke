@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { trackSignupCompleted, trackDiaryPageOpenedFromHoroscope } from '$lib/analytics';
-	import Header from '$lib/components/Header.svelte';
+	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import { supabase } from '$lib/supabase';
 	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 
@@ -131,78 +131,134 @@
 	});
 </script>
 
-<Header />
+<main class="auth-page">
+	<PortalSubnav
+		active="dagbok"
+		title="Din dagbok"
+		description="Skriv i lugn och ro, i din egen takt. Det räcker med några ord."
+	/>
 
-<div class="container mx-auto px-4 py-8">
-	{#if loading}
-		<div class="text-center text-neutral-500">Laddar...</div>
-	{:else}
-		{#if draftText}
-			<section class="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
-				<h2 class="text-base font-semibold text-blue-900">Spara ditt första inlägg</h2>
-				<p class="mt-2 text-sm text-blue-900/85">
-					Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
-				</p>
-				<textarea
-					bind:value={draftText}
-					rows={8}
-					class="mt-3 w-full rounded-lg border border-blue-200 bg-white p-3 text-sm text-blue-950 focus:outline-none focus:ring-2 focus:ring-blue-300"
-					placeholder="Skriv några ord..."
-				></textarea>
-
-				{#if draftError}
-					<p class="mt-3 text-sm text-red-600">{draftError}</p>
-				{/if}
-
-				<button
-					type="button"
-					class="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-					onclick={saveDraftToDiary}
-					disabled={savingDraft || !draftText.trim()}
-				>
-					{savingDraft ? 'Sparar...' : 'Spara som första inlägg'}
-				</button>
-
-				<a
-					href="/skriv"
-					class="mt-3 inline-flex rounded-lg border border-blue-300 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-100"
-				>
-					Fortsätt skriva senare
-				</a>
-			</section>
-		{/if}
-
-		{#if draftSuccess && !draftText}
-			<section class="mb-6 rounded-lg border border-green-200 bg-green-50 p-4">
-				<h2 class="text-base font-semibold text-green-900">{draftSuccess}</h2>
-				<p class="mt-2 text-sm text-green-900/80">Du kan fortsätta skriva i din dagbok när som helst.</p>
-			</section>
-		{/if}
-
-		{#if loadError}
-			<p class="mb-4 text-sm text-red-600">{loadError}</p>
-		{/if}
-
-		{#if entries.length === 0}
-			<section class="rounded-lg border border-neutral-200 bg-white p-4">
-				<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
-				<p class="mt-2 text-sm text-neutral-600">Det räcker med några ord. Skriv i lugn och ro, i din egen takt.</p>
-				<a
-					href="/skriv"
-					class="mt-4 inline-flex rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-800 hover:bg-neutral-100"
-				>
-					Skriv första inlägget
-				</a>
+	<div class="auth-shell">
+		{#if loading}
+			<section class="auth-panel">
+				<p class="auth-muted">Laddar...</p>
 			</section>
 		{:else}
-			<div class="diary-entries space-y-4">
-				{#each entries as entry (entry.id)}
-					<article class="rounded-lg border border-neutral-200 bg-white p-4">
-						<p class="text-xs text-neutral-500">{formatDate(entry.created_at)}</p>
-						<p class="mt-2 whitespace-pre-wrap text-sm text-neutral-800">{entry.content}</p>
-					</article>
-				{/each}
-			</div>
+			{#if draftText}
+				<section class="auth-panel auth-panel-accent">
+					<h2 class="text-base font-semibold">Spara ditt första inlägg</h2>
+					<p class="mt-2 text-sm auth-muted">
+						Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
+					</p>
+					<textarea
+						bind:value={draftText}
+						rows={8}
+						class="diary-input"
+						placeholder="Skriv några ord..."
+					></textarea>
+
+					{#if draftError}
+						<p class="mt-3 text-sm error-copy">{draftError}</p>
+					{/if}
+
+					<div class="actions-row">
+						<button
+							type="button"
+							class="auth-button primary"
+							onclick={saveDraftToDiary}
+							disabled={savingDraft || !draftText.trim()}
+						>
+							{savingDraft ? 'Sparar...' : 'Spara som första inlägg'}
+						</button>
+
+						<a href="/skriv" class="auth-button">
+							Fortsätt skriva senare
+						</a>
+					</div>
+				</section>
+			{/if}
+
+			{#if draftSuccess && !draftText}
+				<section class="auth-panel auth-panel-success">
+					<h2 class="text-base font-semibold">{draftSuccess}</h2>
+					<p class="mt-2 text-sm">Du kan fortsätta skriva i din dagbok när som helst.</p>
+				</section>
+			{/if}
+
+			{#if loadError}
+				<section class="auth-panel auth-panel-error">
+					<p class="text-sm">{loadError}</p>
+				</section>
+			{/if}
+
+			{#if entries.length === 0}
+				<section class="auth-panel">
+					<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
+					<p class="mt-2 text-sm auth-muted">Det räcker med några ord. Skriv i lugn och ro, i din egen takt.</p>
+					<a href="/skriv" class="auth-button mt-4">
+						Skriv första inlägget
+					</a>
+				</section>
+			{:else}
+				<div class="diary-entries">
+					{#each entries as entry (entry.id)}
+						<article class="auth-panel diary-entry">
+							<p class="text-xs auth-muted">{formatDate(entry.created_at)}</p>
+							<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
+						</article>
+					{/each}
+				</div>
+			{/if}
 		{/if}
-	{/if}
-</div>
+	</div>
+</main>
+
+<style>
+	.diary-input {
+		width: 100%;
+		margin-top: 0.8rem;
+		padding: 0.75rem 0.85rem;
+		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+		resize: vertical;
+	}
+
+	.diary-input:focus {
+		border-color: var(--primary, #0f766e);
+		outline: none;
+	}
+
+	.diary-input::placeholder {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.actions-row {
+		margin-top: 0.95rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+	}
+
+	.error-copy {
+		color: hsl(var(--error-foreground));
+	}
+
+	.diary-entries {
+		display: grid;
+		gap: 0.75rem;
+	}
+
+	.diary-entry {
+		transition: border-color 160ms ease, box-shadow 160ms ease;
+	}
+
+	.diary-entry:hover {
+		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+	}
+
+	:global(.dark) .diary-entry:hover {
+		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
+	}
+</style>
