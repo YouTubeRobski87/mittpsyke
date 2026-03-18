@@ -4,12 +4,68 @@
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import Greeting from '$lib/components/dashboard/Greeting.svelte';
 	import QuickActions from '$lib/components/dashboard/QuickActions.svelte';
+	import { supabase } from '$lib/supabase';
+	import type { User } from '@supabase/supabase-js';
 
-	let user: any = null;
+	let user: User | null = null;
 	let loading = true;
+	let zodiacSign = '';
+	let horoscopeText = '';
+	let horoscopeLoading = false;
+
+	function getZodiacSign(dateStr: string): string {
+		if (!dateStr) return '';
+		const d = new Date(dateStr);
+		if (Number.isNaN(d.getTime())) return '';
+		const m = d.getMonth() + 1;
+		const day = d.getDate();
+		if ((m === 3 && day >= 21) || (m === 4 && day <= 19)) return 'Väduren';
+		if ((m === 4 && day >= 20) || (m === 5 && day <= 20)) return 'Oxen';
+		if ((m === 5 && day >= 21) || (m === 6 && day <= 20)) return 'Tvillingarna';
+		if ((m === 6 && day >= 21) || (m === 7 && day <= 22)) return 'Kräftan';
+		if ((m === 7 && day >= 23) || (m === 8 && day <= 22)) return 'Lejonet';
+		if ((m === 8 && day >= 23) || (m === 9 && day <= 22)) return 'Jungfrun';
+		if ((m === 9 && day >= 23) || (m === 10 && day <= 22)) return 'Vågen';
+		if ((m === 10 && day >= 23) || (m === 11 && day <= 21)) return 'Skorpionen';
+		if ((m === 11 && day >= 22) || (m === 12 && day <= 21)) return 'Skytten';
+		if ((m === 12 && day >= 22) || (m === 1 && day <= 19)) return 'Stenbocken';
+		if ((m === 1 && day >= 20) || (m === 2 && day <= 18)) return 'Vattumannen';
+		if ((m === 2 && day >= 19) || (m === 3 && day <= 20)) return 'Fiskarna';
+		return '';
+	}
+
+	async function loadDashboard() {
+		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+
+			user = session?.user ?? null;
+			const birthday =
+				typeof session?.user?.user_metadata?.birthday === 'string'
+					? session.user.user_metadata.birthday
+					: '';
+
+			zodiacSign = getZodiacSign(birthday);
+
+			if (zodiacSign) {
+				horoscopeLoading = true;
+				const response = await fetch('/api/horoscope', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ sign: zodiacSign })
+				});
+				const payload = await response.json().catch(() => null);
+				horoscopeText = typeof payload?.text === 'string' ? payload.text : '';
+			}
+		} finally {
+			horoscopeLoading = false;
+			loading = false;
+		}
+	}
 
 	onMount(async () => {
-		loading = false;
+		await loadDashboard();
 	});
 </script>
 
@@ -31,7 +87,15 @@
 			</section>
 
 			<section class="auth-panel auth-panel-accent">
-				<p class="auth-muted">När du vill kan du fånga tanken direkt i dagboken.</p>
+				<p class="horoscope-kicker">Dagens tanke</p>
+				{#if horoscopeLoading}
+					<p class="auth-muted">Hämtar horoskop...</p>
+				{:else if zodiacSign && horoscopeText}
+					<p class="horoscope-sign">🔮 {zodiacSign}</p>
+					<p class="horoscope-text">{horoscopeText}</p>
+				{:else}
+					<p class="auth-muted">När du vill kan du fånga tanken direkt i dagboken.</p>
+				{/if}
 				<a
 					href="/dagbok?from=horoscope"
 					class="auth-button primary mt-3"
@@ -45,3 +109,24 @@
 		{/if}
 	</div>
 </main>
+
+<style>
+	.horoscope-kicker {
+		margin: 0;
+		font-size: 0.76rem;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.horoscope-sign {
+		margin: 0.45rem 0 0;
+		font-size: 0.9rem;
+		font-family: var(--font-heading);
+	}
+
+	.horoscope-text {
+		margin: 0.4rem 0 0;
+		line-height: 1.6;
+	}
+</style>
