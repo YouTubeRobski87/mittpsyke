@@ -3,6 +3,7 @@
 	import { THEMES, THEME_STORAGE_KEY, getThemeColors, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
+	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import {
 		SENSITIVE_CONSENT_HEADER,
@@ -223,28 +224,36 @@
 	}
 </script>
 
-<div class="journey-container" style={themeStyle}>
-	<div class="journey-header">
-		<h1>Din resa</h1>
-		<p>En lugn överblick — i din takt</p>
-		{#if streakData || milestonesData}
-			<button class="share-btn" onclick={handleShare} aria-label="Dela din framstegssida">
-				🌱 Dela min resa
-			</button>
-			{#if shareConfirm}
-				<p class="share-confirm" role="status">{shareConfirm}</p>
-			{/if}
-		{/if}
-	</div>
+<main class="auth-page" style={themeStyle}>
+	<PortalSubnav
+		active="framsteg"
+		title="Framsteg"
+		description="En lugn överblick över din resa, i din egen takt."
+	/>
 
-	{#if loading}
-		<div class="loading-state">Laddar din sida med framsteg...</div>
-	{:else if error}
-		<div class="error-state">
-			<p>{error}</p>
-			<small>Försök att ladda sidan igen</small>
-		</div>
-	{:else}
+	<div class="auth-shell">
+		<div class="journey-container">
+			<section class="journey-header auth-panel">
+				<h1>Din resa</h1>
+				<p>En lugn överblick — i din takt</p>
+				{#if streakData || milestonesData}
+					<button class="share-btn" onclick={handleShare} aria-label="Dela din framstegssida">
+						🌱 Dela min resa
+					</button>
+					{#if shareConfirm}
+						<p class="share-confirm" role="status">{shareConfirm}</p>
+					{/if}
+				{/if}
+			</section>
+
+			{#if loading}
+				<section class="auth-panel loading-state">Laddar din sida med framsteg...</section>
+			{:else if error}
+				<section class="auth-panel auth-panel-error error-state">
+					<p>{error}</p>
+					<small>Försök att ladda sidan igen</small>
+				</section>
+			{:else}
 
 		<!-- ── Mjuk veckosammanfattning ── -->
 		<section class="card summary-card">
@@ -405,17 +414,19 @@
 			<section class="card empty-state">
 				<h2>Börja där du är</h2>
 				<p>Inga framsteg visas ännu — och det är helt okej. När du börjar använda dagboken kan du följa din resa här.</p>
-				<a href="/dagbok" class="btn-primary">Skriv ett inlägg</a>
+				<a href="/dagbok" class="auth-button primary">Skriv ett inlägg</a>
 			</section>
 		{/if}
-	{/if}
-</div>
+			{/if}
+		</div>
+	</div>
+</main>
 
 <style>
-	.journey-container { max-width: 840px; margin: 0 auto; padding: 2rem 1rem; }
-	.journey-header { text-align: center; margin-bottom: 2.5rem; }
-	.journey-header h1 { font-size: 2.2rem; margin-bottom: 0.4rem; color: #1a1a1a; }
-	.journey-header p { font-size: 1.05rem; color: #888; font-style: italic; }
+	.journey-container { display: grid; gap: 1rem; }
+	.journey-header { text-align: center; margin: 0; }
+	.journey-header h1 { font-size: 2.05rem; margin: 0; color: hsl(var(--foreground)); }
+	.journey-header p { margin: 0.45rem 0 0; font-size: 1rem; color: hsl(var(--muted-foreground)); font-style: italic; }
 
 	.share-btn {
 		margin-top: 1rem;
@@ -424,32 +435,40 @@
 		gap: 0.4rem;
 		padding: 0.55rem 1.2rem;
 		border-radius: 999px;
-		border: 1.5px solid rgba(107, 144, 113, 0.45);
-		background: transparent;
-		color: #4a7a55;
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
 		font-size: 0.88rem;
 		font-weight: 500;
 		cursor: pointer;
-		transition: background 0.18s, border-color 0.18s;
+		transition: background-color 150ms ease, border-color 150ms ease;
 	}
-	.share-btn:hover { background: rgba(107, 144, 113, 0.1); border-color: rgba(107, 144, 113, 0.7); }
+	.share-btn:hover { background: hsl(var(--surface-soft)); border-color: hsl(var(--muted-foreground) / 0.45); }
 
 	.share-confirm {
 		margin-top: 0.5rem;
 		font-size: 0.82rem;
-		color: #6b9080;
+		color: hsl(var(--muted-foreground));
 		animation: fadeIn 0.2s ease;
 	}
 	@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
-	.loading-state, .error-state { text-align: center; padding: 3rem 2rem; color: #666; font-size: 1.05rem; }
-	.error-state { color: #d32f2f; background: #ffebee; border-radius: 0.5rem; padding: 2rem; }
-	.error-state small { display: block; margin-top: 0.5rem; color: #c62828; font-size: 0.9rem; }
+	.loading-state, .error-state { text-align: center; padding: 2rem 1rem; font-size: 1.05rem; }
+	.loading-state { color: hsl(var(--muted-foreground)); }
+	.error-state small { display: block; margin-top: 0.5rem; opacity: 0.9; font-size: 0.9rem; }
 
 	/* Cards base */
-	.card { background: white; border-radius: 0.75rem; padding: 2rem; margin-bottom: 1.2rem; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.3s ease; }
-	.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: #ddd; }
+	.card {
+		background: hsl(var(--surface));
+		border-radius: var(--radius-card);
+		padding: 2rem;
+		margin: 0;
+		border: 1px solid hsl(var(--border));
+		box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+		transition: border-color 160ms ease, box-shadow 160ms ease;
+	}
+	.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: hsl(var(--muted-foreground) / 0.45); }
 	.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
-	.card-header h2 { font-size: 1.3rem; margin: 0; color: #1a1a1a; }
+	.card-header h2 { font-size: 1.3rem; margin: 0; color: hsl(var(--foreground)); }
 	.icon-badge { width: 2.8rem; height: 2.8rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
 
 	/* Badge colors */
@@ -460,102 +479,65 @@
 	.icon-badge.insight { background: linear-gradient(135deg, #667eea, #764ba2); }
 
 	/* Weekly summary */
-	.summary-card { background: var(--theme-bg, rgba(15,118,110,0.07)); border-color: transparent; }
-	.summary-text { font-size: 1.1rem; color: #1a1a1a; line-height: 1.7; margin: 0 0 0.75rem 0; }
-	.encouragement { font-size: 0.95rem; color: #666; font-style: italic; margin: 0; }
+	.summary-card { background: var(--theme-bg, hsl(var(--surface-soft))); }
+	.summary-text { font-size: 1.1rem; color: hsl(var(--foreground)); line-height: 1.7; margin: 0 0 0.75rem 0; }
+	.encouragement { font-size: 0.95rem; color: hsl(var(--muted-foreground)); font-style: italic; margin: 0; }
 
 	/* Reflection */
 	.reflection-card { border-left: 3px solid var(--theme-accent, #0f766e); }
-	.reflection-prompt { font-size: 1.15rem; color: #1a1a1a; font-weight: 500; line-height: 1.6; margin: 0 0 0.75rem 0; }
-	.reflection-hint { font-size: 0.9rem; color: #999; margin: 0; font-style: italic; }
+	.reflection-prompt { font-size: 1.15rem; color: hsl(var(--foreground)); font-weight: 500; line-height: 1.6; margin: 0 0 0.75rem 0; }
+	.reflection-hint { font-size: 0.9rem; color: hsl(var(--muted-foreground)); margin: 0; font-style: italic; }
 
 	/* Overview */
-	.overview-heading { font-size: 1.2rem; margin: 0 0 1.5rem 0; color: #1a1a1a; }
+	.overview-heading { font-size: 1.2rem; margin: 0 0 1.5rem 0; color: hsl(var(--foreground)); }
 	.overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1.2rem; margin-bottom: 1rem; }
-	.overview-item { text-align: center; padding: 1rem 0.5rem; border-radius: 0.5rem; background: var(--theme-bg, rgba(15,118,110,0.07)); }
+	.overview-item { text-align: center; padding: 1rem 0.5rem; border-radius: 0.5rem; background: var(--theme-bg, hsl(var(--surface-soft))); }
 	.overview-number { font-size: 2.2rem; font-weight: 700; color: var(--theme-accent, #0f766e); }
-	.overview-label { font-size: 0.85rem; color: #888; margin-top: 0.3rem; }
-	.overview-note { font-size: 0.9rem; color: #888; text-align: center; font-style: italic; margin: 0.5rem 0 0 0; }
+	.overview-label { font-size: 0.85rem; color: hsl(var(--muted-foreground)); margin-top: 0.3rem; }
+	.overview-note { font-size: 0.9rem; color: hsl(var(--muted-foreground)); text-align: center; font-style: italic; margin: 0.5rem 0 0 0; }
 
 	/* Milestones */
 	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.2rem; }
-	.milestone { padding: 1rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; background: #f5f5f5; border: 1px solid #eee; transition: all 0.2s ease; }
-	.milestone.achieved { background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(129,199,132,0.1)); border-color: #4caf50; }
+	.milestone { padding: 1rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; background: hsl(var(--surface-muted)); border: 1px solid hsl(var(--border)); transition: all 0.2s ease; }
+	.milestone.achieved { background: var(--theme-bg, hsl(var(--success-surface))); border-color: var(--theme-accent, hsl(var(--border))); }
 	.milestone:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 	.milestone-emoji { font-size: 2rem; }
-	.milestone-text { font-size: 0.9rem; font-weight: 500; color: #1a1a1a; }
-	.next-milestone { background: linear-gradient(135deg, rgba(102,126,234,0.05), rgba(118,75,162,0.05)); border: 1px solid rgba(102,126,234,0.3); padding: 1.5rem; border-radius: 0.5rem; margin-top: 1.5rem; }
+	.milestone-text { font-size: 0.9rem; font-weight: 500; color: hsl(var(--foreground)); }
+	.next-milestone { background: hsl(var(--surface-soft)); border: 1px solid hsl(var(--border)); padding: 1.5rem; border-radius: 0.5rem; margin-top: 1.5rem; }
 	.next-header { display: flex; align-items: center; gap: 0.5rem; color: var(--theme-accent, #667eea); font-weight: 600; margin-bottom: 0.75rem; }
-	.next-milestone p { font-size: 1rem; color: #1a1a1a; margin: 0.5rem 0 1rem 0; }
-	.progress-bar { height: 0.5rem; background: #eee; border-radius: 0.25rem; overflow: hidden; margin-bottom: 0.5rem; }
+	.next-milestone p { font-size: 1rem; color: hsl(var(--foreground)); margin: 0.5rem 0 1rem 0; }
+	.progress-bar { height: 0.5rem; background: hsl(var(--surface-muted)); border-radius: 0.25rem; overflow: hidden; margin-bottom: 0.5rem; }
 	.progress-fill { height: 100%; background: var(--theme-accent, linear-gradient(90deg, #667eea, #764ba2)); border-radius: 0.25rem; transition: width 0.3s ease; }
-	.next-milestone small { color: #999; display: block; }
+	.next-milestone small { color: hsl(var(--muted-foreground)); display: block; }
 
 	/* Heatmap */
 	.heatmap-card { overflow-x: auto; }
-	.heatmap-description { color: #666; font-size: 0.95rem; margin: 0 0 1.5rem 0; }
+	.heatmap-description { color: hsl(var(--muted-foreground)); font-size: 0.95rem; margin: 0 0 1.5rem 0; }
 
 	/* Insights */
-	.summary-box { margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem; background: #f9f9f9; border: 1px solid #eee; }
-	.summary-box p { margin: 0; color: #1a1a1a; line-height: 1.6; }
+	.summary-box { margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem; background: hsl(var(--surface-muted)); border: 1px solid hsl(var(--border)); }
+	.summary-box p { margin: 0; color: hsl(var(--foreground)); line-height: 1.6; }
 	.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.2rem; }
-	.insight-item { padding: 1.5rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid #eee; transition: all 0.2s ease; }
-	.insight-item.best { background: linear-gradient(135deg, rgba(76,175,80,0.1), rgba(129,199,132,0.1)); border-color: #4caf50; }
-	.insight-item.worst { background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,142,114,0.1)); border-color: #ff6b6b; }
+	.insight-item { padding: 1.5rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid hsl(var(--border)); background: hsl(var(--surface-muted)); transition: all 0.2s ease; }
+	.insight-item.best { background: var(--theme-bg, hsl(var(--surface-soft))); border-color: var(--theme-accent, hsl(var(--border))); }
+	.insight-item.worst { background: hsl(var(--error-surface)); border-color: hsl(var(--error-foreground) / 0.24); }
 	.insight-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-	.insight-content h3 { margin: 0 0 0.25rem 0; font-size: 0.9rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px; }
-	.day-name { margin: 0; font-size: 1.2rem; font-weight: 600; color: #1a1a1a; }
-	.insight-content small { color: #999; font-size: 0.85rem; }
+	.insight-content h3 { margin: 0 0 0.25rem 0; font-size: 0.9rem; color: hsl(var(--muted-foreground)); text-transform: uppercase; letter-spacing: 0.5px; }
+	.day-name { margin: 0; font-size: 1.2rem; font-weight: 600; color: hsl(var(--foreground)); }
+	.insight-content small { color: hsl(var(--muted-foreground)); font-size: 0.85rem; }
 	.patterns-list { list-style: none; padding: 0; margin: 0; }
-	.patterns-list li { display: flex; align-items: center; padding: 0.75rem; background: #f9f9f9; border-radius: 0.25rem; margin-bottom: 0.5rem; font-size: 0.95rem; }
-	.pattern-text { color: #1a1a1a; font-weight: 500; }
+	.patterns-list li { display: flex; align-items: center; padding: 0.75rem; background: hsl(var(--surface-muted)); border-radius: 0.25rem; margin-bottom: 0.5rem; font-size: 0.95rem; }
+	.pattern-text { color: hsl(var(--foreground)); font-weight: 500; }
 
 	/* Empty state */
-	.empty-state { text-align: center; padding: 3rem 2rem; background: var(--theme-bg, rgba(76,175,80,0.05)); border: 2px dashed var(--theme-accent, #4caf50); }
-	.empty-state h2 { margin-top: 0; color: var(--theme-accent, #2e7d32); }
-	.empty-state p { color: #555; margin: 1rem 0 1.5rem 0; line-height: 1.6; }
-	.btn-primary { display: inline-block; padding: 0.75rem 1.5rem; background: var(--theme-accent, #4caf50); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 600; transition: all 0.2s ease; }
-	.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-
-	/* ── Dark mode ── */
-	@media (prefers-color-scheme: dark) {
-		.journey-header h1, .card-header h2, .summary-text, .reflection-prompt,
-		.overview-heading, .milestone-text, .next-milestone p, .summary-box p,
-		.day-name, .pattern-text { color: rgba(255,255,255,0.9); }
-
-		.encouragement, .loading-state, .heatmap-description,
-		.overview-label, .overview-note, .journey-header p,
-		.reflection-hint, .next-milestone small, .insight-content h3,
-		.insight-content small { color: rgba(255,255,255,0.55); }
-
-		.share-btn {
-			color: rgba(168, 200, 130, 0.85);
-			border-color: rgba(168, 200, 130, 0.3);
-		}
-		.share-btn:hover { background: rgba(168, 200, 130, 0.08); border-color: rgba(168, 200, 130, 0.5); }
-		.share-confirm { color: #a8c882; }
-
-		.empty-state p { color: rgba(255,255,255,0.65); }
-
-		.card { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-		.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.12); }
-
-		.summary-card { background: var(--theme-bg, rgba(15,118,110,0.15)); }
-		.milestone { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
-		.milestone.achieved { background: rgba(76,175,80,0.15); border-color: rgba(76,175,80,0.4); }
-		.summary-box { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
-		.patterns-list li { background: rgba(255,255,255,0.05); }
-		.next-milestone { background: rgba(102,126,234,0.1); border-color: rgba(102,126,234,0.3); }
-		.progress-bar { background: rgba(255,255,255,0.1); }
-		.error-state { background: rgba(211,47,47,0.15); color: #ff8a80; }
-		.error-state small { color: #ff5252; }
-		.empty-state { background: var(--theme-bg, rgba(76,175,80,0.1)); border-color: var(--theme-accent, #4caf50); }
-	}
+	.empty-state { text-align: center; padding: 3rem 2rem; background: var(--theme-bg, hsl(var(--surface-soft))); border: 1px dashed hsl(var(--border)); }
+	.empty-state h2 { margin-top: 0; color: hsl(var(--foreground)); }
+	.empty-state p { color: hsl(var(--muted-foreground)); margin: 1rem 0 1.5rem 0; line-height: 1.6; }
+	.empty-state .auth-button { margin-top: 0.25rem; }
 
 	@media (max-width: 640px) {
-		.journey-container { padding: 1rem; }
 		.journey-header h1 { font-size: 1.8rem; }
-		.card { padding: 1.5rem; margin-bottom: 1.2rem; }
+		.card { padding: 1.5rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.milestones-grid { grid-template-columns: 1fr; }
 		.insights-grid { grid-template-columns: 1fr; }
