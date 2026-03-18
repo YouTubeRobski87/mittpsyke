@@ -448,6 +448,61 @@
 											<p class="mt-1 text-xs auth-muted">Humör: {entry.mood}/10</p>
 										{/if}
 										<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
+										<div class="share-row">
+											{#if isEntryShared(entry.id)}
+												<p class="share-status auth-muted">Redan delat anonymt i Gemenskap.</p>
+												<a href="/dashboard/gemenskap" class="share-link">Öppna Gemenskap</a>
+											{:else}
+												<button
+													type="button"
+													class="share-trigger"
+													onclick={() => openShareConfirmation(entry.id)}
+												>
+													Dela anonymt i Gemenskapen
+												</button>
+											{/if}
+										</div>
+
+										{#if confirmingShareEntryId === entry.id}
+											<div class="share-confirmation" role="status">
+												<h3>Dela anonymt?</h3>
+												<p>
+													Det här publicerar en anonym version av ditt inlägg i Gemenskap.
+													Ditt namn visas aldrig för andra. Kontrollera att inlägget inte
+													innehåller namn, adresser, telefonnummer eller andra
+													personuppgifter.
+												</p>
+												<div class="share-confirmation-actions">
+													<button
+														type="button"
+														class="auth-button"
+														onclick={closeShareConfirmation}
+														disabled={sharingEntryId === entry.id}
+													>
+														Avbryt
+													</button>
+													<button
+														type="button"
+														class="auth-button primary"
+														onclick={() => shareEntryAnonymously(entry)}
+														disabled={sharingEntryId === entry.id}
+													>
+														{sharingEntryId === entry.id ? 'Delar...' : 'Dela anonymt'}
+													</button>
+												</div>
+											</div>
+										{/if}
+
+										{#if shareFeedbackEntryId === entry.id && shareFeedbackMessage}
+											<p class="share-feedback {shareFeedbackType}">
+												{shareFeedbackMessage}
+												{#if shareFeedbackType === 'success'}
+													<a href="/dashboard/gemenskap" class="share-feedback-link">
+														Öppna Gemenskap
+													</a>
+												{/if}
+											</p>
+										{/if}
 									</article>
 								{/each}
 							</div>
