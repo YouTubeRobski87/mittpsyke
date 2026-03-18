@@ -11,6 +11,7 @@
 	let loadError = '';
 	let draftText = '';
 	let draftMood = '';
+	let draftMoodPreview = 5;
 	let draftError = '';
 	let draftSuccess = '';
 	let savingDraft = false;
@@ -40,6 +41,26 @@
 			month: 'short',
 			day: 'numeric'
 		});
+	}
+
+	function moodLabel(value: number) {
+		if (value <= 2) return 'Väldigt tungt';
+		if (value <= 4) return 'Tungt';
+		if (value <= 6) return 'Mitt emellan';
+		if (value <= 8) return 'Lite lättare';
+		return 'Mer stabilt';
+	}
+
+	function handleMoodInput(event: Event) {
+		const value = Number((event.currentTarget as HTMLInputElement).value);
+		if (!Number.isFinite(value)) return;
+		draftMoodPreview = value;
+		draftMood = String(value);
+	}
+
+	function clearMoodSelection() {
+		draftMood = '';
+		draftMoodPreview = 5;
 	}
 
 	async function loadEntries(options: { force?: boolean } = {}) {
@@ -99,6 +120,7 @@
 
 			draftText = '';
 			draftMood = '';
+			draftMoodPreview = 5;
 			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true });
 		} catch (error) {
@@ -155,20 +177,32 @@
 						Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
 					</p>
 					<div class="mood-field">
-						<label for="draft-mood" class="text-sm">Humör just nu (valfritt)</label>
-						<select id="draft-mood" bind:value={draftMood} class="mood-select">
-							<option value="">Välj humör</option>
-							<option value="1">1 - Väldigt tungt</option>
-							<option value="2">2</option>
-							<option value="3">3</option>
-							<option value="4">4</option>
-							<option value="5">5</option>
-							<option value="6">6</option>
-							<option value="7">7</option>
-							<option value="8">8</option>
-							<option value="9">9</option>
-							<option value="10">10 - Mer stabilt</option>
-						</select>
+						<p class="text-sm">Humör just nu (valfritt)</p>
+						<p class="mood-current">
+							{draftMood ? `Humör: ${draftMood}/10` : 'Humör: Ej valt'}
+						</p>
+						<p class="mood-meaning auth-muted">
+							{draftMood ? moodLabel(Number(draftMood)) : 'Flytta reglaget om du vill lägga till humör.'}
+						</p>
+						<input
+							id="draft-mood"
+							type="range"
+							min="1"
+							max="10"
+							step="1"
+							value={draftMood || String(draftMoodPreview)}
+							oninput={handleMoodInput}
+							class="mood-slider"
+							aria-describedby="draft-mood-anchors"
+						/>
+						<div id="draft-mood-anchors" class="mood-anchors auth-muted">
+							<span>Tungt</span>
+							<span>Mitt emellan</span>
+							<span>Ljusare</span>
+						</div>
+						<button type="button" class="mood-clear auth-muted" onclick={clearMoodSelection} disabled={!draftMood}>
+							Rensa humör
+						</button>
 					</div>
 					<textarea
 						bind:value={draftText}
@@ -259,21 +293,98 @@
 	.mood-field {
 		margin-top: 0.8rem;
 		display: grid;
-		gap: 0.35rem;
+		gap: 0.3rem;
 	}
 
-	.mood-select {
-		width: 100%;
-		padding: 0.55rem 0.7rem;
-		border-radius: var(--radius-input);
-		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface));
+	.mood-current {
+		margin: 0;
+		font-size: 0.84rem;
+		font-weight: 600;
 		color: hsl(var(--foreground));
 	}
 
-	.mood-select:focus {
-		border-color: var(--primary, #0f766e);
-		outline: none;
+	.mood-meaning {
+		margin: 0;
+		font-size: 0.82rem;
+	}
+
+	.mood-slider {
+		width: 100%;
+		height: 0.45rem;
+		appearance: none;
+		background: hsl(var(--surface-muted));
+		border: 1px solid hsl(var(--border));
+		border-radius: var(--radius-pill);
+	}
+
+	.mood-slider:focus-visible {
+		outline: 2px solid hsl(var(--foreground) / 0.16);
+		outline-offset: 2px;
+	}
+
+	.mood-slider::-webkit-slider-runnable-track {
+		height: 0.45rem;
+		background: hsl(var(--surface-muted));
+		border-radius: var(--radius-pill);
+	}
+
+	.mood-slider::-webkit-slider-thumb {
+		appearance: none;
+		width: 1rem;
+		height: 1rem;
+		margin-top: -0.34rem;
+		border-radius: 999px;
+		background: var(--primary, #0f766e);
+		border: 2px solid hsl(var(--surface));
+		box-shadow: 0 0 0 1px hsl(var(--border));
+		cursor: pointer;
+	}
+
+	.mood-slider::-moz-range-track {
+		height: 0.45rem;
+		background: hsl(var(--surface-muted));
+		border-radius: var(--radius-pill);
+		border: 0;
+	}
+
+	.mood-slider::-moz-range-thumb {
+		width: 1rem;
+		height: 1rem;
+		border-radius: 999px;
+		background: var(--primary, #0f766e);
+		border: 2px solid hsl(var(--surface));
+		box-shadow: 0 0 0 1px hsl(var(--border));
+		cursor: pointer;
+	}
+
+	.mood-anchors {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.5rem;
+		font-size: 0.75rem;
+	}
+
+	.mood-clear {
+		justify-self: start;
+		border: 0;
+		background: transparent;
+		padding: 0;
+		font-size: 0.78rem;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		cursor: pointer;
+	}
+
+	.mood-clear:disabled {
+		opacity: 0.45;
+		cursor: default;
+		text-decoration: none;
+	}
+
+	.mood-clear:focus-visible {
+		border-radius: 6px;
+		outline: 2px solid hsl(var(--foreground) / 0.18);
+		outline-offset: 1px;
 	}
 
 	.actions-row {
