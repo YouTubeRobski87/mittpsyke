@@ -259,7 +259,7 @@
 		{:else}
 
 		<!-- Display Name Section -->
-		<section class="section-block">
+		<section class="auth-panel section-block">
 			<h2>Tilltalsnamn</h2>
 			<p class="field-hint">Vad vill du bli kallad?</p>
 
@@ -292,7 +292,7 @@
 		</section>
 
 		<!-- Personalization Section -->
-		<section class="section-block">
+		<section class="auth-panel section-block">
 			<h2>Personalisera portalen</h2>
 			<p class="field-hint">Välj tema, mål och vilket kort du vill se på startsidan. Du kan ändra när du vill.</p>
 
@@ -357,7 +357,7 @@
 		</section>
 
 		<!-- Password Section -->
-		<section class="section-block">
+		<section class="auth-panel section-block">
 			<h2>Byt lösenord</h2>
 
 			<label class="field-label" for="new-password">Nytt lösenord</label>
@@ -389,7 +389,7 @@
 			{/if}
 		</section>
 
-		<section class="section-block">
+		<section class="auth-panel section-block">
 			<h2>Mejlutskick</h2>
 			<p class="field-hint">Hantera avregistrering och stoppa framtida utskick.</p>
 			<a class="save-btn link-btn" href="/avregistrera">Hantera avregistrering</a>
@@ -397,7 +397,7 @@
 		</section>
 
 		<!-- Delete Account Section -->
-		<section id="radera-konto" class="section-block danger-zone">
+		<section id="radera-konto" class="auth-panel section-block danger-zone">
 			<h2>Radera konto</h2>
 			<p class="field-hint danger-copy">
 				Detta raderar din dagbok, chatthistorik och profil permanent. Åtgärden går inte att ångra.
@@ -448,33 +448,23 @@
 	}
 
 	.section-block {
-		border-radius: var(--radius-card);
-		background: #fcfbf9;
 		padding: 1.05rem;
-	}
-
-	:global(.dark) .section-block {
-		background: rgba(255, 255, 255, 0.04);
 	}
 
 	.section-block h2 {
 		font-family: var(--font-heading);
 		font-weight: 700;
-		color: #2f2a24;
+		color: hsl(var(--foreground));
 		font-size: 1.03rem;
 		letter-spacing: -0.02em;
 		margin: 0 0 0.25rem;
-	}
-
-	:global(.dark) .section-block h2 {
-		color: #e8e4de;
 	}
 
 	.field-hint {
 		margin: 0 0 0.7rem;
 		font-family: var(--font-body);
 		font-size: 0.88rem;
-		opacity: 0.65;
+		color: hsl(var(--muted-foreground));
 	}
 
 	.birthday-hint {
@@ -485,7 +475,7 @@
 		display: block;
 		font-family: var(--font-body);
 		font-size: 0.88rem;
-		opacity: 0.75;
+		color: hsl(var(--muted-foreground));
 		margin: 0.7rem 0 0.3rem;
 	}
 
@@ -498,28 +488,18 @@
 		width: 100%;
 		padding: 0.65rem 0.75rem;
 		border-radius: var(--radius-input);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: rgba(255, 255, 255, 0.6);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
 		font-family: var(--font-body);
 		font-weight: 400;
 		font-size: 0.95rem;
 		letter-spacing: -0.005em;
-		color: #2f2a24;
+		color: hsl(var(--foreground));
 		outline: none;
 		transition: border-color 160ms ease;
 	}
 
 	.text-input:focus {
-		border-color: var(--primary, #0f766e);
-	}
-
-	:global(.dark) .text-input {
-		border-color: rgba(255, 255, 255, 0.12);
-		background: rgba(255, 255, 255, 0.06);
-		color: #f0ede8;
-	}
-
-	:global(.dark) .text-input:focus {
 		border-color: var(--primary, #0f766e);
 	}
 
@@ -539,9 +519,9 @@
 		justify-content: center;
 		padding: 0.65rem 1.25rem;
 		border-radius: var(--radius-input);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #e5f1ec;
-		color: #2e2a24;
+		border: 1px solid hsl(var(--border));
+		background: var(--theme-bg, hsl(var(--surface-soft)));
+		color: hsl(var(--foreground));
 		font-family: var(--font-heading);
 		font-weight: 500;
 		font-size: 0.92rem;
@@ -557,7 +537,7 @@
 	}
 
 	.save-btn:hover:not(:disabled) {
-		background: #dbe9e3;
+		background: hsl(var(--surface-soft));
 	}
 
 	.save-btn:disabled {
@@ -569,16 +549,6 @@
 		text-decoration: none;
 	}
 
-	:global(.dark) .save-btn {
-		background: rgba(15, 118, 110, 0.18);
-		border-color: rgba(255, 255, 255, 0.1);
-		color: #e8e4de;
-	}
-
-	:global(.dark) .save-btn:hover:not(:disabled) {
-		background: rgba(15, 118, 110, 0.28);
-	}
-
 	.feedback {
 		margin: 0.55rem 0 0;
 		font-family: var(--font-body);
@@ -587,19 +557,11 @@
 	}
 
 	.feedback.success {
-		color: #0f766e;
+		color: hsl(var(--success-foreground));
 	}
 
 	.feedback.error {
-		color: #b91c1c;
-	}
-
-	:global(.dark) .feedback.success {
-		color: #5eead4;
-	}
-
-	:global(.dark) .feedback.error {
-		color: #fca5a5;
+		color: hsl(var(--error-foreground));
 	}
 
 	
@@ -670,30 +632,20 @@
 		gap: 0.55rem;
 		padding: 0.55rem 0.75rem;
 		border-radius: var(--radius-input);
-		border: 1.5px solid rgba(0, 0, 0, 0.08);
-		background: rgba(255, 255, 255, 0.5);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
 		cursor: pointer;
 		transition: border-color 120ms ease, background 120ms ease;
 	}
 
 	.option-row:hover {
-		border-color: rgba(15, 118, 110, 0.3);
-		background: rgba(15, 118, 110, 0.04);
+		border-color: hsl(var(--muted-foreground) / 0.35);
+		background: hsl(var(--surface-soft));
 	}
 
 	.option-row.selected {
-		border-color: #0f766e;
-		background: rgba(15, 118, 110, 0.07);
-	}
-
-	:global(.dark) .option-row {
-		border-color: rgba(255, 255, 255, 0.1);
-		background: rgba(255, 255, 255, 0.04);
-	}
-
-	:global(.dark) .option-row.selected {
-		border-color: #5eead4;
-		background: rgba(94, 234, 212, 0.08);
+		border-color: var(--primary, #0f766e);
+		background: var(--theme-bg, hsl(var(--surface-soft)));
 	}
 
 	.option-dot {
@@ -717,8 +669,8 @@
 	.option-chip {
 		padding: 0.4rem 0.85rem;
 		border-radius: 2rem;
-		border: 1.5px solid rgba(0, 0, 0, 0.1);
-		background: rgba(255, 255, 255, 0.5);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
 		font-family: var(--font-body);
 		font-size: 0.88rem;
 		cursor: pointer;
@@ -726,24 +678,13 @@
 	}
 
 	.option-chip:hover {
-		border-color: rgba(15, 118, 110, 0.3);
+		border-color: hsl(var(--muted-foreground) / 0.35);
 	}
 
 	.option-chip.selected {
-		border-color: #0f766e;
-		background: rgba(15, 118, 110, 0.09);
+		border-color: var(--primary, #0f766e);
+		background: var(--theme-bg, hsl(var(--surface-soft)));
 		font-weight: 500;
-	}
-
-	:global(.dark) .option-chip {
-		border-color: rgba(255, 255, 255, 0.1);
-		background: rgba(255, 255, 255, 0.04);
-		color: #e8e4de;
-	}
-
-	:global(.dark) .option-chip.selected {
-		border-color: #5eead4;
-		background: rgba(94, 234, 212, 0.08);
 	}
 
 	.sr-only {
@@ -758,41 +699,32 @@
 	}
 
 	.danger-zone {
-		border: 1px solid rgba(185, 28, 28, 0.18);
-		background: #fff6f5;
-	}
-
-	:global(.dark) .danger-zone {
-		background: rgba(185, 28, 28, 0.08);
-		border-color: rgba(248, 113, 113, 0.4);
+		background: hsl(var(--error-surface));
+		border-color: hsl(var(--error-foreground) / 0.3);
 	}
 
 	.danger-copy {
-		color: #9b1c1c;
+		color: hsl(var(--error-foreground));
 	}
 
 	.confirm-token {
 		font-weight: 600;
-		color: #b91c1c;
+		color: hsl(var(--error-foreground));
 	}
 
 	.danger-zone .text-input {
-		border-color: rgba(185, 28, 28, 0.25);
-	}
-
-	:global(.dark) .danger-zone .text-input {
-		border-color: rgba(248, 113, 113, 0.35);
+		border-color: hsl(var(--error-foreground) / 0.35);
 	}
 
 	.danger-btn {
-		background: #b91c1c;
+		background: hsl(var(--error-foreground));
 		color: #fff;
 		border-color: transparent;
 		margin-top: 0.8rem;
 	}
 
 	.danger-btn:hover:not(:disabled) {
-		background: #991b1b;
+		filter: brightness(0.93);
 	}
 
 	.danger-btn:disabled {
@@ -800,14 +732,6 @@
 		cursor: not-allowed;
 	}
 
-	:global(.dark) .danger-btn {
-		background: rgba(248, 113, 113, 0.25);
-		color: #fee2e2;
-	}
-
-	:global(.dark) .danger-btn:hover:not(:disabled) {
-		background: rgba(248, 113, 113, 0.35);
-	}
 @media (min-width: 740px) {
 		.settings-page {
 			gap: 1.2rem;
