@@ -215,7 +215,7 @@ a {
 }
 
 .auth-panel:hover {
-	border-color: color-mix(in srgb, hsl(var(--border)) 70%, hsl(var(--foreground)));
+	border-color: hsl(var(--muted-foreground) / 0.45);
 }
 
 .auth-panel-accent {
@@ -224,13 +224,13 @@ a {
 
 .auth-panel-success {
 	background: hsl(var(--success-surface));
-	border-color: color-mix(in srgb, hsl(var(--success-foreground)) 28%, hsl(var(--border)));
+	border-color: hsl(var(--success-foreground) / 0.24);
 	color: hsl(var(--success-foreground));
 }
 
 .auth-panel-error {
 	background: hsl(var(--error-surface));
-	border-color: color-mix(in srgb, hsl(var(--error-foreground)) 24%, hsl(var(--border)));
+	border-color: hsl(var(--error-foreground) / 0.24);
 	color: hsl(var(--error-foreground));
 }
 
@@ -256,12 +256,12 @@ a {
 
 .auth-button:hover {
 	background: hsl(var(--surface-soft));
-	border-color: color-mix(in srgb, hsl(var(--border)) 68%, hsl(var(--foreground)));
+	border-color: hsl(var(--muted-foreground) / 0.4);
 }
 
 .auth-button.primary {
 	background: var(--theme-bg, hsl(var(--surface-soft)));
-	border-color: color-mix(in srgb, var(--primary) 26%, hsl(var(--border)));
+	border-color: hsl(var(--border));
 }
 
 .auth-button.primary:hover {
