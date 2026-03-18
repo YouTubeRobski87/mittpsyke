@@ -4,15 +4,25 @@
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import Greeting from '$lib/components/dashboard/Greeting.svelte';
 	import QuickActions from '$lib/components/dashboard/QuickActions.svelte';
-	import { supabase } from '$lib/supabase';
-	import type { User } from '@supabase/supabase-js';
+import { supabase } from '$lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
 	let user: User | null = null;
 	let loading = true;
 	let zodiacSign = '';
-	let horoscopeText = '';
-	let horoscopeLoading = false;
-	let horoscopeUnavailable = false;
+let horoscopeText = '';
+let horoscopeLoading = false;
+let horoscopeUnavailable = false;
+let greetingName = 'igen';
+
+function cleanName(value: unknown): string {
+	if (typeof value !== 'string') return '';
+	const trimmed = value.trim();
+	if (!trimmed) return '';
+	// Never show email-like values in greeting.
+	if (trimmed.includes('@')) return '';
+	return trimmed;
+}
 
 	function getZodiacSign(dateStr: string): string {
 		if (!dateStr) return '';
@@ -36,16 +46,38 @@
 	}
 
 	async function loadDashboard() {
-		try {
-			const {
-				data: { session }
-			} = await supabase.auth.getSession();
+	try {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
 
-			user = session?.user ?? null;
-			const birthday =
-				typeof session?.user?.user_metadata?.birthday === 'string'
-					? session.user.user_metadata.birthday
-					: '';
+		const { data: userData } = await supabase.auth.getUser();
+		user = userData.user ?? session?.user ?? null;
+
+		const profileDisplayName = user?.id
+			? await supabase
+					.from('profiles')
+					.select('display_name')
+					.eq('id', user.id)
+					.maybeSingle()
+					.then(({ data }) => cleanName(data?.display_name))
+			: '';
+
+		const metadataDisplayName = cleanName(user?.user_metadata?.display_name);
+		const metadataFullName = cleanName(user?.user_metadata?.full_name);
+		const metadataName = cleanName(user?.user_metadata?.name);
+
+		greetingName =
+			metadataDisplayName ||
+			profileDisplayName ||
+			metadataFullName ||
+			metadataName ||
+			'igen';
+
+		const birthday =
+			typeof user?.user_metadata?.birthday === 'string'
+				? user.user_metadata.birthday
+				: '';
 
 			zodiacSign = getZodiacSign(birthday);
 			horoscopeUnavailable = false;
@@ -86,7 +118,7 @@
 			</section>
 		{:else}
 			<section class="auth-panel">
-				<Greeting {user} />
+				<Greeting {user} {greetingName} />
 			</section>
 
 			<section class="auth-panel auth-panel-accent">
