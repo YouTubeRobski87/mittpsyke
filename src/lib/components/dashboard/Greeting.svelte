@@ -1,7 +1,15 @@
 <script lang="ts">
 	export let user: any = null;
 
-	$: displayName = user?.user_metadata?.full_name || user?.email || 'vän';
+	function clean(value: unknown): string {
+		return typeof value === 'string' ? value.trim() : '';
+	}
+
+	$: displayName =
+		clean(user?.user_metadata?.display_name) ||
+		clean(user?.user_metadata?.full_name) ||
+		clean(user?.user_metadata?.name) ||
+		'igen';
 </script>
 
 <section>
