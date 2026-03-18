@@ -218,9 +218,11 @@ type StoredMessageRow = {
 
 const GUEST_CONVERSATIONS_TABLE = 'guest_conversations';
 const GUEST_MESSAGES_TABLE = 'guest_messages';
+const MAX_CHAT_MESSAGE_LENGTH = 2000;
+const CHAT_MESSAGE_TOO_LONG_ERROR = 'Din text blev lite för lång. Dela gärna upp den i två delar.';
 
-function errorResponse(message: string, status: number) {
-	return json({ error: message }, { status });
+function errorResponse(message: string, status: number, details: Record<string, unknown> = {}) {
+	return json({ error: message, ...details }, { status });
 }
 
 function getAccessToken(authorizationHeader: string | null): string | null {
@@ -308,9 +310,11 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('No message provided', 400);
 	}
 
-	const MAX_MESSAGE_LENGTH = 2000;
-	if (message.length > MAX_MESSAGE_LENGTH) {
-		return errorResponse('Message too long.', 400);
+	if (message.length > MAX_CHAT_MESSAGE_LENGTH) {
+		return errorResponse(CHAT_MESSAGE_TOO_LONG_ERROR, 413, {
+			code: 'MESSAGE_TOO_LONG',
+			maxLength: MAX_CHAT_MESSAGE_LENGTH
+		});
 	}
 
 	const token = getAccessToken(request.headers.get('authorization'));
