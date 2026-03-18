@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+</script>
+
 <svelte:head>
 	<title>Ansvarsinfo | MittPsyke</title>
 	<meta
@@ -61,7 +65,7 @@
 	<h2 class="text-lg font-semibold mt-8 mb-2">Kontakt</h2>
 	<p class="opacity-80 leading-relaxed">
 		Om du har frågor om ansvar och hur tjänsten fungerar kan du kontakta oss på
-		<a href="mailto:mittpsyke@ownit.nu" class="underline hover:no-underline">mittpsyke@ownit.nu</a>.
+		<a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a>.
 	</p>
 </main>
 

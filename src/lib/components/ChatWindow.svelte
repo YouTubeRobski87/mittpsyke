@@ -3,6 +3,7 @@
 	import { containsCrisisSignal } from '$lib/ai/safety';
 	import { goto } from '$app/navigation';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -511,12 +512,12 @@
 				Max {MAX_MESSAGE_LENGTH} tecken ({inputLength}/{MAX_MESSAGE_LENGTH}). Skriv i din egen takt. Vid akut fara, ring 112. För vårdråd, kontakta 1177.
 			</p>
 		{/if}
-		<div class="mt-3 text-center">
-			<a
-				href="mailto:mittpsyke@ownit.nu"
-				class="inline-block px-4 py-2 rounded-[12px] bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-200 text-sm font-medium
-					hover:bg-teal-100 dark:hover:bg-teal-900/30 transition-colors border border-teal-200 dark:border-teal-800/50"
-				title="Skicka e-post till support"
+			<div class="mt-3 text-center">
+				<a
+					href={PUBLIC_CONTACT_MAILTO}
+					class="inline-block px-4 py-2 rounded-[12px] bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-200 text-sm font-medium
+						hover:bg-teal-100 dark:hover:bg-teal-900/30 transition-colors border border-teal-200 dark:border-teal-800/50"
+					title="Skicka e-post till support"
 			>
 				Kontakta oss
 			</a>

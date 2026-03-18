@@ -14,6 +14,7 @@
 		ANALYTICS_CONSENT_EVENT,
 		hasAnalyticsConsent
 	} from '$lib/consent';
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import { supabase } from '$lib/supabase';
 	import { page } from '$app/state';
 	import type { User } from '@supabase/supabase-js';
@@ -23,13 +24,13 @@
 	let { children, data } = $props();
 	const organizationJsonLd = {
 		'@context': 'https://schema.org',
-		'@type': 'Organization',
-		name: 'MittPsyke',
-		url: 'https://www.mittpsyke.se',
-		email: 'mittpsyke@ownit.nu',
-		founder: {
-			'@type': 'Person',
-			name: 'Robert Claesson'
+			'@type': 'Organization',
+			name: 'MittPsyke',
+			url: 'https://www.mittpsyke.se',
+			email: PUBLIC_CONTACT_EMAIL,
+			founder: {
+				'@type': 'Person',
+				name: 'Robert Claesson'
 		},
 		identifier: '198712284895'
 	};
@@ -305,12 +306,12 @@
 						>
 							Logga ut
 						</button>
-					{:else}
-						<a
-							href="mailto:mittpsyke@ownit.nu"
-							class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
-						>
-							Kontakt
+						{:else}
+							<a
+								href={PUBLIC_CONTACT_MAILTO}
+								class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
+							>
+								Kontakt
 						</a>
 						<a href="/login" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							Logga in
@@ -414,12 +415,12 @@
 					>
 						Logga ut
 					</button>
-				{:else}
-					<a
-						href="mailto:mittpsyke@ownit.nu"
-						class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
-						onclick={() => (mobileMenuOpen = false)}
-					>
+					{:else}
+						<a
+							href={PUBLIC_CONTACT_MAILTO}
+							class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
+							onclick={() => (mobileMenuOpen = false)}
+						>
 						Kontakt
 					</a>
 					<a
@@ -475,22 +476,16 @@
 			class="text-sm font-medium text-teal-700/90 dark:text-teal-300/90 opacity-90 hover:opacity-100 transition-opacity"
 		>
 			Akut hjälp (Stödlinjer)
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a
-			href="https://analytics.google.com/analytics/web/#/a63154192p523877155/reports/intelligenthome"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="text-sm opacity-30 hover:opacity-70 transition-opacity"
-			title="Analytics"
-		>📊</a>
-		<div class="footer-company mt-2 text-xs opacity-70">
-			<p>© MittPsyke</p>
-			<p>Enskild näringsverksamhet</p>
-			<p>Org.nr: 198712284895</p>
-			<p><a href="mailto:mittpsyke@ownit.nu" class="hover:opacity-100 transition-opacity">mittpsyke@ownit.nu</a></p>
-		</div>
-	</footer>
+			</a>
+			<span class="mx-2">&middot;</span>
+			<span class="text-xs opacity-50">Analys aktiveras bara med samtycke.</span>
+			<div class="footer-company mt-2 text-xs opacity-70">
+				<p>© MittPsyke</p>
+				<p>Enskild näringsverksamhet</p>
+				<p>Org.nr: 198712284895</p>
+				<p><a href={PUBLIC_CONTACT_MAILTO} class="hover:opacity-100 transition-opacity">{PUBLIC_CONTACT_EMAIL}</a></p>
+			</div>
+		</footer>
 	</div>
 
 	<CookieBanner />
