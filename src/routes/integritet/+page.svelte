@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+</script>
+
 <svelte:head>
 	<title>Integritetspolicy | MittPsyke</title>
 	<meta
@@ -20,7 +24,7 @@
 			<li><strong>Företag:</strong> MittPsyke (Enskild näringsverksamhet)</li>
 			<li><strong>Organisationsnummer:</strong> 198712284895</li>
 			<li><strong>Grundare:</strong> Robert Claesson</li>
-			<li><strong>E-post:</strong> <a href="mailto:mittpsyke@ownit.nu" class="underline hover:no-underline">mittpsyke@ownit.nu</a></li>
+				<li><strong>E-post:</strong> <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a></li>
 		</ul>
 	</section>
 
@@ -246,7 +250,7 @@
 		<h3 class="text-base font-semibold mt-0 mb-2">📋 Så här begär du radering eller export</h3>
 		<ol class="opacity-80 leading-relaxed text-sm list-decimal pl-6 space-y-2">
 			<li><strong>Via inställningar</strong> — logga in och gå till kontoinställningar för att radera ditt konto direkt.</li>
-			<li><strong>Via e-post</strong> — skicka ett mejl till <a href="mailto:mittpsyke@ownit.nu" class="underline hover:no-underline">mittpsyke@ownit.nu</a> och ange vad du vill (radering, export, eller båda).</li>
+				<li><strong>Via e-post</strong> — skicka ett mejl till <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a> och ange vad du vill (radering, export, eller båda).</li>
 			<li>Vi bekräftar din begäran och genomför den <strong>inom 30 dagar</strong>.</li>
 			<li>Vid export får du din data i JSON-format via e-post.</li>
 		</ol>
@@ -265,7 +269,7 @@
 		Har du frågor om hur vi hanterar dina uppgifter? Kontakta oss:
 	</p>
 	<ul class="opacity-80 leading-relaxed mb-3 list-none space-y-1.5">
-		<li>📧 <a href="mailto:mittpsyke@ownit.nu" class="underline hover:no-underline">mittpsyke@ownit.nu</a></li>
+			<li>📧 <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a></li>
 		<li>🏢 MittPsyke, Org.nr: 198712284895</li>
 	</ul>
 	<p class="opacity-80 leading-relaxed mb-3">
