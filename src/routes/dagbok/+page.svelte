@@ -775,6 +775,92 @@
 		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
 	}
 
+	.share-row {
+		margin-top: 0.8rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.45rem 0.65rem;
+	}
+
+	.share-trigger {
+		border: 0;
+		background: transparent;
+		padding: 0;
+		font-size: 0.84rem;
+		color: hsl(var(--muted-foreground));
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		cursor: pointer;
+	}
+
+	.share-trigger:hover {
+		color: hsl(var(--foreground));
+	}
+
+	.share-status {
+		margin: 0;
+		font-size: 0.82rem;
+	}
+
+	.share-link {
+		font-size: 0.82rem;
+		color: hsl(var(--muted-foreground));
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	.share-confirmation {
+		margin-top: 0.75rem;
+		padding: 0.75rem 0.8rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: var(--radius-input);
+		background: hsl(var(--surface-soft));
+	}
+
+	.share-confirmation h3 {
+		margin: 0;
+		font-size: 0.94rem;
+	}
+
+	.share-confirmation p {
+		margin: 0.45rem 0 0;
+		font-size: 0.85rem;
+		color: hsl(var(--muted-foreground));
+		line-height: 1.55;
+	}
+
+	.share-confirmation-actions {
+		margin-top: 0.75rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.share-feedback {
+		margin: 0.65rem 0 0;
+		font-size: 0.82rem;
+	}
+
+	.share-feedback.success {
+		color: hsl(var(--success-foreground));
+	}
+
+	.share-feedback.error {
+		color: hsl(var(--error-foreground));
+	}
+
+	.share-feedback.info {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.share-feedback-link {
+		margin-left: 0.35rem;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		color: inherit;
+	}
+
 	:global(.dark) .diary-entry:hover {
 		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
 	}
