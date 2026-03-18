@@ -5,3 +5,12 @@
 Loading svelte-check in workspace: d:\mittpsyke-main
 Getting Svelte diagnostics...
 
+d:\mittpsyke-main\[32msrc\routes\share\+page.svelte[39m:3:60
+[33mWarn[39m: This reference only captures the initial value of `data`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+[36m	let { data } = $props();
+	const { streak, total, weekly, ogTitle, ogDescription } = [35mdata[36m;[39m
+
+====================================
+[33msvelte-check found 0 errors and 1 warning in 1 file
+[39m
