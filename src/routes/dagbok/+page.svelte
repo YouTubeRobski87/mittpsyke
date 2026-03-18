@@ -5,6 +5,10 @@
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import { supabase } from '$lib/supabase';
 	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
+	import type {
+		CommunityMySharesSuccessResponse,
+		CreateCommunityShareSuccessResponse
+	} from '$lib/types';
 
 	let entries: DiaryEntry[] = [];
 	let loading = true;
@@ -18,6 +22,12 @@
 	type MoodGraphPoint = { mood: number };
 	let moodGraphPoints: MoodGraphPoint[] = [];
 	let weeklyEntryCount = 0;
+	let sharedEntryIds = new Set<string>();
+	let confirmingShareEntryId = '';
+	let sharingEntryId = '';
+	let shareFeedbackEntryId = '';
+	let shareFeedbackMessage = '';
+	let shareFeedbackType: 'success' | 'error' | 'info' = 'info';
 
 	function parseStoredDraft(value: string | null): string {
 		if (!value) return '';
@@ -117,15 +127,133 @@
 	$: moodGraphPoints = buildMoodGraphPoints(entries);
 	$: weeklyEntryCount = countEntriesThisWeek(entries);
 
+	function isEntryShared(entryId: string): boolean {
+		return sharedEntryIds.has(entryId);
+	}
+
+	function setShareFeedback(entryId: string, message: string, type: 'success' | 'error' | 'info') {
+		shareFeedbackEntryId = entryId;
+		shareFeedbackMessage = message;
+		shareFeedbackType = type;
+	}
+
 	async function loadEntries(options: { force?: boolean } = {}) {
 		const { data } = await supabase.auth.getSession();
 		const userId = data.session?.user?.id;
 		if (!userId) {
 			entries = [];
+			sharedEntryIds = new Set();
 			return;
 		}
 
 		entries = await loadDiaryEntries(userId, options);
+	}
+
+	async function loadSharedEntryIds() {
+		const { data } = await supabase.auth.getSession();
+		const session = data.session;
+
+		if (!session?.access_token) {
+			sharedEntryIds = new Set();
+			return;
+		}
+
+		try {
+			const response = await fetch('/api/community/my-shares', {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${session.access_token}`
+				}
+			});
+
+			if (!response.ok) {
+				return;
+			}
+
+			const payload = (await response.json().catch(() => null)) as CommunityMySharesSuccessResponse | null;
+			if (!payload?.success || !Array.isArray(payload.diaryEntryIds)) {
+				return;
+			}
+
+			sharedEntryIds = new Set(payload.diaryEntryIds.filter((id) => typeof id === 'string' && id.length > 0));
+		} catch {
+			// Silent fallback: sharing status can load later without blocking the diary.
+		}
+	}
+
+	function openShareConfirmation(entryId: string) {
+		confirmingShareEntryId = entryId;
+		shareFeedbackEntryId = '';
+		shareFeedbackMessage = '';
+	}
+
+	function closeShareConfirmation() {
+		if (sharingEntryId) return;
+		confirmingShareEntryId = '';
+	}
+
+	async function shareEntryAnonymously(entry: DiaryEntry) {
+		if (sharingEntryId || !entry.id) return;
+
+		if (isEntryShared(entry.id)) {
+			setShareFeedback(entry.id, 'Det här inlägget är redan delat i Gemenskap.', 'info');
+			confirmingShareEntryId = '';
+			return;
+		}
+
+		sharingEntryId = entry.id;
+
+		try {
+			const { data } = await supabase.auth.getSession();
+			const session = data.session;
+
+			if (!session?.access_token) {
+				setShareFeedback(entry.id, 'Logga in för att dela inlägget anonymt.', 'error');
+				return;
+			}
+
+			const response = await fetch('/api/community/share', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session.access_token}`
+				},
+				body: JSON.stringify({ diaryEntryId: entry.id })
+			});
+
+			const payload = (await response.json().catch(() => null)) as
+				| CreateCommunityShareSuccessResponse
+				| { success?: boolean; error?: string; alreadyShared?: boolean }
+				| null;
+
+			if (!response.ok || !payload) {
+				const alreadyShared = response.status === 409 && payload?.alreadyShared;
+				if (alreadyShared) {
+					sharedEntryIds = new Set([...sharedEntryIds, entry.id]);
+					setShareFeedback(entry.id, 'Det här inlägget är redan delat i Gemenskap.', 'info');
+				} else {
+					setShareFeedback(entry.id, payload?.error || 'Kunde inte dela inlägget just nu.', 'error');
+				}
+				return;
+			}
+
+			if (!payload.success) {
+				setShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
+				return;
+			}
+
+			sharedEntryIds = new Set([...sharedEntryIds, entry.id]);
+			setShareFeedback(entry.id, 'Inlägget har delats anonymt i Gemenskap.', 'success');
+			confirmingShareEntryId = '';
+		} catch (error) {
+			setShareFeedback(
+				entry.id,
+				error instanceof Error ? error.message : 'Kunde inte dela inlägget just nu.',
+				'error'
+			);
+		} finally {
+			sharingEntryId = '';
+		}
 	}
 
 	async function saveDraftToDiary() {
@@ -204,6 +332,7 @@
 
 		try {
 			await loadEntries();
+			await loadSharedEntryIds();
 		} catch (error) {
 			loadError = error instanceof Error ? error.message : 'Kunde inte ladda dagboken just nu.';
 		} finally {
