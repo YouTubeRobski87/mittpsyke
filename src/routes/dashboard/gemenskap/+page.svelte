@@ -13,11 +13,16 @@
 	};
 
 	let { data }: { data: { posts?: CommunityPost[] } } = $props();
-	let posts = $state<CommunityPost[]>([...(data.posts ?? [])]);
+	const initialPosts = $derived(data.posts ?? []);
+	let posts = $state<CommunityPost[]>([]);
 	let confirmingUnsharePostId = $state('');
 	let unsharingPostId = $state('');
 	let feedNotice = $state('');
 	let feedNoticeType = $state<'success' | 'error' | 'info'>('info');
+
+	$effect(() => {
+		posts = [...initialPosts];
+	});
 
 	function formatPublishedAt(value: string | null): string {
 		if (!value) return 'Nyligen';
