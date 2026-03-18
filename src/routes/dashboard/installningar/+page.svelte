@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import PortalSubnav from '/components/PortalSubnav.svelte';
 	import { supabase } from '$lib/supabase';
 	import type { DeleteAccountErrorResponse, DeleteAccountSuccessResponse } from '$lib/types';
 	import { THEME_STORAGE_KEY } from '$lib/theme';
