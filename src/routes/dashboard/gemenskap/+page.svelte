@@ -150,12 +150,13 @@
 			</ul>
 		</section>
 
+		{#if feedNotice}
+			<p class="feed-notice {feedNoticeType}">{feedNotice}</p>
+		{/if}
+
 		{#if posts.length > 0}
 			<section class="auth-panel feed-panel">
 				<h2>Delningar i lugn takt</h2>
-				{#if feedNotice}
-					<p class="feed-notice {feedNoticeType}">{feedNotice}</p>
-				{/if}
 				<div class="community-feed">
 					{#each posts as post (post.id)}
 						<article class="community-post">
