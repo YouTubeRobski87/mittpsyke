@@ -152,10 +152,8 @@
 			</section>
 
 			<section class="auth-panel auth-panel-accent">
-				<h2 class="text-lg font-semibold">Ditt humör – senaste 7 dagarna</h2>
-				<div class="mt-3">
-					<MoodChart data={moodSeries} />
-				</div>
+				<h2 class="mood-title">Ditt humör – senaste 7 dagarna</h2>
+				<MoodChart data={moodSeries} />
 			</section>
 
 			<QuickActions />
@@ -181,5 +179,11 @@
 	.horoscope-text {
 		margin: 0.4rem 0 0;
 		line-height: 1.6;
+	}
+
+	.mood-title {
+		margin: 0 0 0.6rem;
+		font-size: 1rem;
+		font-weight: 600;
 	}
 </style>
