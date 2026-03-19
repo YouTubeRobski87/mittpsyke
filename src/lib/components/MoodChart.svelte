@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import type { Chart } from 'chart.js';
 
 	type MoodPoint = {
 		date: string;
@@ -14,8 +13,8 @@
 	let { data }: Props = $props();
 
 	let canvasEl: HTMLCanvasElement | null = null;
-	let chart: Chart | null = null;
-	let ChartClass: typeof Chart | null = null;
+	let chart: any = null;
+	let ChartClass: any = null;
 
 	const EMPTY_STATE = 'Skriv i dagboken ett par dagar så visar vi ditt humörmönster här 🌱';
 
