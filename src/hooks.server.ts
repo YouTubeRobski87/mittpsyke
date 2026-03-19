@@ -32,7 +32,7 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		// Fonts (lokala)
 		"font-src 'self'",
 		// API-anrop
-		`connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://api.retellai.com`,
+		`connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://www.google-analytics.com https://*.google-analytics.com https://region1.analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://api.retellai.com`,
 		// Frames
 		"frame-src 'none'",
 		// Objects
