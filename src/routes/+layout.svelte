@@ -308,11 +308,11 @@
 						</button>
 						{:else}
 							<a
-								href={PUBLIC_CONTACT_MAILTO}
+								href="mailto:kontakt@mittpsyke.se"
 								class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
 							>
 								Kontakt
-						</a>
+							</a>
 						<a href="/login" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							Logga in
 						</a>
@@ -417,12 +417,12 @@
 					</button>
 					{:else}
 						<a
-							href={PUBLIC_CONTACT_MAILTO}
+							href="mailto:kontakt@mittpsyke.se"
 							class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
 							onclick={() => (mobileMenuOpen = false)}
 						>
-						Kontakt
-					</a>
+							Kontakt
+						</a>
 					<a
 						href="/login"
 						class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
