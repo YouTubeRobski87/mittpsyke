@@ -22,15 +22,29 @@
 	}
 
 	interface Milestone {
-		entries: number;
+		id: string;
+		category: 'entries' | 'streak' | 'time' | 'quality';
+		metric: 'totalEntries' | 'longestStreak' | 'daysSinceJoined' | 'maxWordsInEntry' | 'maxWordsInDay';
+		threshold: number;
 		text: string;
 		achieved: boolean;
 		emoji: string;
+		current: number;
+		remaining: number;
+		progressPercent: number;
+		unit: 'inlägg' | 'dagar' | 'ord';
+	}
+
+	interface MilestoneSection {
+		id: 'entries' | 'streak' | 'time' | 'quality';
+		title: string;
+		milestones: Milestone[];
 	}
 
 	interface MilestonesResponse {
 		achieved: Milestone[];
-		nextMilestone: Milestone & { entriesNeeded: number };
+		sections: MilestoneSection[];
+		nextMilestone: Milestone | null;
 		totalEntries: number;
 	}
 
@@ -316,22 +330,39 @@
 					<div class="icon-badge trophy"><Trophy size={24} /></div>
 					<h2>Dina milstolpar</h2>
 				</div>
-				<div class="milestones-grid">
-					{#each milestonesData.achieved as milestone}
-						<div class="milestone achieved">
-							<div class="milestone-emoji">{milestone.emoji}</div>
-							<div class="milestone-text">{milestone.text}</div>
+				{#each milestonesData.sections as section}
+					<div class="milestones-section">
+						<h3 class="milestones-section-title">{section.title}</h3>
+						<div class="milestones-grid">
+							{#each section.milestones as milestone}
+								<div class="milestone {milestone.achieved ? 'achieved' : 'locked'}">
+									<div class="milestone-emoji">{milestone.emoji}</div>
+									<div class="milestone-text">{milestone.text}</div>
+								</div>
+							{/each}
 						</div>
-					{/each}
-				</div>
+					</div>
+				{/each}
 				{#if milestonesData.nextMilestone}
 					<div class="next-milestone">
 						<div class="next-header"><Calendar size={18} /><span>Nästa mål</span></div>
 						<p>{milestonesData.nextMilestone.text}</p>
 						<div class="progress-bar">
-							<div class="progress-fill" style="width: {Math.min(100, (milestonesData.totalEntries / milestonesData.nextMilestone.entries) * 100)}%"></div>
+							<div
+								class="progress-fill"
+								style="width: {milestonesData.nextMilestone.progressPercent}%"
+							></div>
 						</div>
-						<small>{milestonesData.totalEntries} / {milestonesData.nextMilestone.entries} ({milestonesData.nextMilestone.entriesNeeded} kvar)</small>
+						<small>
+							{milestonesData.nextMilestone.current} / {milestonesData.nextMilestone.threshold}
+							{milestonesData.nextMilestone.unit}
+							({milestonesData.nextMilestone.remaining} kvar)
+						</small>
+					</div>
+				{:else}
+					<div class="next-milestone">
+						<div class="next-header"><Calendar size={18} /><span>Nästa mål</span></div>
+						<p>Du har låst upp alla milstolpar just nu. Fantastiskt fint jobbat.</p>
 					</div>
 				{/if}
 			</section>
