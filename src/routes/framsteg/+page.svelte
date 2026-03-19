@@ -528,9 +528,18 @@
 	.overview-note { font-size: 0.9rem; color: hsl(var(--muted-foreground)); text-align: center; font-style: italic; margin: 0.5rem 0 0 0; }
 
 	/* Milestones */
-	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.2rem; }
+	.milestones-section + .milestones-section { margin-top: 1.2rem; }
+	.milestones-section-title {
+		margin: 0 0 0.65rem;
+		font-size: 0.95rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+		color: hsl(var(--muted-foreground));
+	}
+	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
 	.milestone { padding: 1rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; background: hsl(var(--surface-muted)); border: 1px solid hsl(var(--border)); transition: all 0.2s ease; }
 	.milestone.achieved { background: var(--theme-bg, hsl(var(--success-surface))); border-color: var(--theme-accent, hsl(var(--border))); }
+	.milestone.locked { opacity: 0.62; filter: saturate(0.6); }
 	.milestone:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 	.milestone-emoji { font-size: 2rem; }
 	.milestone-text { font-size: 0.9rem; font-weight: 500; color: hsl(var(--foreground)); }
