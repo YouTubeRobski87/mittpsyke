@@ -1,6 +1,8 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
+
 	type BlogArticleProps = {
-		children?: () => unknown;
+		children?: Snippet;
 		title: string;
 		lead: string;
 		publishedLabel: string;
