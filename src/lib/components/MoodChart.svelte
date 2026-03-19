@@ -12,7 +12,7 @@
 
 	let { data }: Props = $props();
 
-	let canvasEl: HTMLCanvasElement | null = null;
+	let canvasEl = $state<HTMLCanvasElement | null>(null);
 	let chart: any = null;
 	let ChartClass: any = null;
 
@@ -124,7 +124,7 @@
 						ticks: {
 							stepSize: 1,
 							color: tickColor,
-							callback: (value) => String(value)
+							callback: (value: string | number) => String(value)
 						},
 						grid: {
 							color: gridColor,
@@ -139,15 +139,20 @@
 		});
 	}
 
-	onMount(async () => {
-		const chartJs = await import('chart.js/auto');
-		ChartClass = chartJs.Chart;
-		buildChart();
-
+	onMount(() => {
+		let mounted = true;
 		const onThemeChanged = () => buildChart();
-		window.addEventListener('mittpsyke:theme-changed', onThemeChanged);
+
+		void (async () => {
+			const chartJs = await import('chart.js/auto');
+			if (!mounted) return;
+			ChartClass = chartJs.Chart;
+			buildChart();
+			window.addEventListener('mittpsyke:theme-changed', onThemeChanged);
+		})();
 
 		return () => {
+			mounted = false;
 			window.removeEventListener('mittpsyke:theme-changed', onThemeChanged);
 		};
 	});
