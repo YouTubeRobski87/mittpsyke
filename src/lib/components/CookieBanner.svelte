@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { initializeAnalytics } from '$lib/analytics';
 	import {
 		getAnalyticsConsent,
 		grantAnalyticsConsent,
@@ -16,6 +17,7 @@
 
 	function accept() {
 		grantAnalyticsConsent();
+		initializeAnalytics();
 		visible = false;
 	}
 
