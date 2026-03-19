@@ -7,6 +7,9 @@
 	} from '$lib/types';
 
 	const COMMENT_MAX_LENGTH = 280;
+	const REPORT_REASONS = ['Olämpligt innehåll', 'Skadligt eller störande', 'Annat'] as const;
+	type ReportReason = (typeof REPORT_REASONS)[number];
+	type ReportContentType = 'post' | 'comment';
 
 	type CommunityComment = {
 		id: string;
@@ -36,6 +39,12 @@
 		Record<string, { message: string; type: 'success' | 'error' | 'info' }>
 	>({});
 	let commentingPostId = $state('');
+	let openReportTargetKey = $state('');
+	let reportReasonByTargetKey = $state<Record<string, ReportReason>>({});
+	let reportFeedbackByTargetKey = $state<
+		Record<string, { message: string; type: 'success' | 'error' | 'info' }>
+	>({});
+	let reportingTargetKey = $state('');
 	let feedNotice = $state('');
 	let feedNoticeType = $state<'success' | 'error' | 'info'>('info');
 
@@ -127,6 +136,97 @@
 	function commentCountLabel(count: number): string {
 		if (count <= 0) return '';
 		return count === 1 ? '1 svar' : `${count} svar`;
+	}
+
+	function reportTargetKey(contentType: ReportContentType, contentId: string): string {
+		return `${contentType}:${contentId}`;
+	}
+
+	function openReportPanel(contentType: ReportContentType, contentId: string) {
+		const key = reportTargetKey(contentType, contentId);
+		openReportTargetKey = key;
+		reportReasonByTargetKey = {
+			...reportReasonByTargetKey,
+			[key]: reportReasonByTargetKey[key] ?? REPORT_REASONS[0]
+		};
+	}
+
+	function closeReportPanel(targetKey: string) {
+		if (reportingTargetKey === targetKey) return;
+		if (openReportTargetKey === targetKey) {
+			openReportTargetKey = '';
+		}
+	}
+
+	function getReportReason(targetKey: string): ReportReason {
+		return reportReasonByTargetKey[targetKey] ?? REPORT_REASONS[0];
+	}
+
+	function updateReportReason(targetKey: string, value: string) {
+		if (!REPORT_REASONS.includes(value as ReportReason)) return;
+		reportReasonByTargetKey = {
+			...reportReasonByTargetKey,
+			[targetKey]: value as ReportReason
+		};
+	}
+
+	function setReportFeedback(
+		targetKey: string,
+		message: string,
+		type: 'success' | 'error' | 'info'
+	) {
+		reportFeedbackByTargetKey = {
+			...reportFeedbackByTargetKey,
+			[targetKey]: { message, type }
+		};
+	}
+
+	async function submitReport(contentType: ReportContentType, contentId: string) {
+		const targetKey = reportTargetKey(contentType, contentId);
+		if (reportingTargetKey) return;
+
+		const reason = getReportReason(targetKey);
+		reportingTargetKey = targetKey;
+
+		try {
+			const response = await fetch('/api/community/report', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					contentId,
+					contentType,
+					reason
+				})
+			});
+
+			const payload = (await response.json().catch(() => null)) as
+				| { success?: boolean; error?: string }
+				| null;
+
+			if (!response.ok || !payload || payload.success !== true) {
+				setReportFeedback(
+					targetKey,
+					payload?.error ?? 'Kunde inte skicka rapporten just nu. Försök igen snart.',
+					'error'
+				);
+				return;
+			}
+
+			setReportFeedback(targetKey, 'Tack — vi har tagit emot din rapport.', 'success');
+			openReportTargetKey = '';
+		} catch (error) {
+			setReportFeedback(
+				targetKey,
+				error instanceof Error
+					? error.message
+					: 'Kunde inte skicka rapporten just nu. Försök igen snart.',
+				'error'
+			);
+		} finally {
+			reportingTargetKey = '';
+		}
 	}
 
 	async function submitComment(post: CommunityPost) {
@@ -324,7 +424,60 @@
 								{/if}
 								</div>
 								<p class="content">{post.content}</p>
-								<p class="published">{formatPublishedAt(post.created_at)}</p>
+								<div class="post-meta-row">
+									<p class="published">{formatPublishedAt(post.created_at)}</p>
+									<button
+										type="button"
+										class="report-link"
+										onclick={() => openReportPanel('post', post.id)}
+									>
+										Rapportera
+									</button>
+								</div>
+								{#if openReportTargetKey === reportTargetKey('post', post.id)}
+									<div class="report-panel" role="status">
+										<label class="report-label" for={`report-post-${post.id}`}>Anledning</label>
+										<select
+											id={`report-post-${post.id}`}
+											class="report-select"
+											value={getReportReason(reportTargetKey('post', post.id))}
+											onchange={(event) =>
+												updateReportReason(
+													reportTargetKey('post', post.id),
+													(event.currentTarget as HTMLSelectElement).value
+												)}
+										>
+											{#each REPORT_REASONS as reason}
+												<option value={reason}>{reason}</option>
+											{/each}
+										</select>
+										<div class="report-actions">
+											<button
+												type="button"
+												class="report-submit"
+												onclick={() => submitReport('post', post.id)}
+												disabled={reportingTargetKey === reportTargetKey('post', post.id)}
+											>
+												{reportingTargetKey === reportTargetKey('post', post.id)
+													? 'Skickar...'
+													: 'Skicka'}
+											</button>
+											<button
+												type="button"
+												class="report-cancel"
+												onclick={() => closeReportPanel(reportTargetKey('post', post.id))}
+												disabled={reportingTargetKey === reportTargetKey('post', post.id)}
+											>
+												Avbryt
+											</button>
+										</div>
+									</div>
+								{/if}
+								{#if reportFeedbackByTargetKey[reportTargetKey('post', post.id)]}
+									<p class="report-feedback {reportFeedbackByTargetKey[reportTargetKey('post', post.id)].type}">
+										{reportFeedbackByTargetKey[reportTargetKey('post', post.id)].message}
+									</p>
+								{/if}
 								<div class="comment-toggle-row">
 									<button
 										type="button"
@@ -354,7 +507,60 @@
 													<li class="comments-item">
 														<p class="comment-author">Anonym medlem</p>
 														<p class="comment-body">{comment.body}</p>
-														<p class="comment-time">{formatPublishedAt(comment.created_at)}</p>
+														<div class="comment-meta-row">
+															<p class="comment-time">{formatPublishedAt(comment.created_at)}</p>
+															<button
+																type="button"
+																class="report-link"
+																onclick={() => openReportPanel('comment', comment.id)}
+															>
+																Rapportera
+															</button>
+														</div>
+														{#if openReportTargetKey === reportTargetKey('comment', comment.id)}
+															<div class="report-panel" role="status">
+																<label class="report-label" for={`report-comment-${comment.id}`}>Anledning</label>
+																<select
+																	id={`report-comment-${comment.id}`}
+																	class="report-select"
+																	value={getReportReason(reportTargetKey('comment', comment.id))}
+																	onchange={(event) =>
+																		updateReportReason(
+																			reportTargetKey('comment', comment.id),
+																			(event.currentTarget as HTMLSelectElement).value
+																		)}
+																>
+																	{#each REPORT_REASONS as reason}
+																		<option value={reason}>{reason}</option>
+																	{/each}
+																</select>
+																<div class="report-actions">
+																	<button
+																		type="button"
+																		class="report-submit"
+																		onclick={() => submitReport('comment', comment.id)}
+																		disabled={reportingTargetKey === reportTargetKey('comment', comment.id)}
+																	>
+																		{reportingTargetKey === reportTargetKey('comment', comment.id)
+																			? 'Skickar...'
+																			: 'Skicka'}
+																	</button>
+																	<button
+																		type="button"
+																		class="report-cancel"
+																		onclick={() => closeReportPanel(reportTargetKey('comment', comment.id))}
+																		disabled={reportingTargetKey === reportTargetKey('comment', comment.id)}
+																	>
+																		Avbryt
+																	</button>
+																</div>
+															</div>
+														{/if}
+														{#if reportFeedbackByTargetKey[reportTargetKey('comment', comment.id)]}
+															<p class="report-feedback {reportFeedbackByTargetKey[reportTargetKey('comment', comment.id)].type}">
+																{reportFeedbackByTargetKey[reportTargetKey('comment', comment.id)].message}
+															</p>
+														{/if}
 													</li>
 												{/each}
 											</ul>
@@ -588,10 +794,94 @@
 		color: hsl(var(--foreground));
 	}
 
+		.post-meta-row {
+			margin-top: 0.45rem;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.45rem;
+		}
+
 		.published {
-			margin: 0.45rem 0 0;
+			margin: 0;
 			font-size: 0.77rem;
 			color: hsl(var(--muted-foreground));
+		}
+
+		.report-link {
+			border: 0;
+			background: transparent;
+			padding: 0;
+			font-size: 0.74rem;
+			color: hsl(var(--muted-foreground));
+			cursor: pointer;
+			text-decoration: underline;
+			text-underline-offset: 2px;
+		}
+
+		.report-link:hover {
+			color: hsl(var(--foreground));
+		}
+
+		.report-panel {
+			margin-top: 0.45rem;
+			padding: 0.5rem 0.55rem;
+			border: 1px solid hsl(var(--border));
+			border-radius: var(--radius-input);
+			background: hsl(var(--surface-soft));
+			display: grid;
+			gap: 0.42rem;
+		}
+
+		.report-label {
+			font-size: 0.74rem;
+			color: hsl(var(--muted-foreground));
+		}
+
+		.report-select {
+			border: 1px solid hsl(var(--border));
+			border-radius: var(--radius-input);
+			background: hsl(var(--surface));
+			color: hsl(var(--foreground));
+			font: inherit;
+			font-size: 0.82rem;
+			padding: 0.4rem 0.5rem;
+		}
+
+		.report-actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.45rem;
+		}
+
+		.report-submit,
+		.report-cancel {
+			border: 0;
+			background: transparent;
+			padding: 0;
+			font-size: 0.74rem;
+			color: hsl(var(--muted-foreground));
+			cursor: pointer;
+			text-decoration: underline;
+			text-underline-offset: 2px;
+		}
+
+		.report-submit:hover,
+		.report-cancel:hover {
+			color: hsl(var(--foreground));
+		}
+
+		.report-feedback {
+			margin: 0.4rem 0 0;
+			font-size: 0.74rem;
+		}
+
+		.report-feedback.success {
+			color: hsl(var(--success-foreground));
+		}
+
+		.report-feedback.error {
+			color: hsl(var(--error-foreground));
 		}
 
 		.comment-toggle-row {
@@ -657,9 +947,17 @@
 		}
 
 		.comment-time {
-			margin: 0.35rem 0 0;
+			margin: 0;
 			font-size: 0.74rem;
 			color: hsl(var(--muted-foreground));
+		}
+
+		.comment-meta-row {
+			margin-top: 0.35rem;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.45rem;
 		}
 
 		.comments-empty {
