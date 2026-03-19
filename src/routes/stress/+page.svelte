@@ -5,7 +5,7 @@
 	<meta property="og:description" content="Känner du dig överväldigad av stress? Få anonymt samtalsstöd online dygnet runt." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/stress" />
+	<link rel="canonical" href="https://www.mittpsyke.se/stress" />
 </svelte:head>
 
 <main class="page">
@@ -315,3 +315,4 @@
 		opacity: 1;
 	}
 </style>
+

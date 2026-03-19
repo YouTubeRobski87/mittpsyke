@@ -72,7 +72,7 @@
 	<meta property="og:description" content="Ett tryggt digitalt stödrum för samtal, dagbok, reflektion och nästa steg när du behöver stöd." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/" />
+	<link rel="canonical" href="https://www.mittpsyke.se/" />
 </svelte:head>
 
 <main class="staging-look">
@@ -1067,3 +1067,4 @@
 	}
 
 </style>
+

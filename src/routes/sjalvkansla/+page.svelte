@@ -5,7 +5,7 @@
 	<meta property="og:description" content="Låg självkänsla är tyst men tung. Prata anonymt och utforska din relation till dig själv." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/sjalvkansla" />
+	<link rel="canonical" href="https://www.mittpsyke.se/sjalvkansla" />
 </svelte:head>
 
 <main class="page">
@@ -310,3 +310,4 @@
 		opacity: 1;
 	}
 </style>
+

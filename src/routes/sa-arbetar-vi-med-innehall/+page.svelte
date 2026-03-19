@@ -5,7 +5,7 @@
 <svelte:head>
     <title>Så arbetar vi med innehåll | MittPsyke</title>
     <meta name="description" content="Läs om hur MittPsyke skapar, granskar och uppdaterar sitt innehåll om psykisk hälsa." />
-    <link rel="canonical" href="https://mittpsyke.se/sa-arbetar-vi-med-innehall" />
+    <link rel="canonical" href="https://www.mittpsyke.se/sa-arbetar-vi-med-innehall" />
 </svelte:head>
 
 <main class="mx-auto max-w-3xl px-4 py-10">
@@ -94,3 +94,4 @@
     color: rgba(255,255,255,0.85);
 }
 </style>
+

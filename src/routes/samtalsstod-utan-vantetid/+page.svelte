@@ -11,7 +11,7 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/samtalsstod-utan-vantetid" />
+	<link rel="canonical" href="https://www.mittpsyke.se/samtalsstod-utan-vantetid" />
 </svelte:head>
 
 <main class="page">
@@ -175,3 +175,4 @@
 		border-color: #86dfd6;
 	}
 </style>
+

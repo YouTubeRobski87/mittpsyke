@@ -29,25 +29,25 @@
 		"@type": "Article",
 		"headline": data.guide.title,
 		"description": data.guide.description,
-		"url": `https://mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`,
+		"url": `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`,
 		"dateModified": data.guide.updatedAt ?? undefined,
 		"author": [
 			{
 				"@type": "Organization",
 				"name": "MittPsyke",
-				"url": "https://mittpsyke.se"
+				"url": "https://www.mittpsyke.se"
 			},
 			{
 				"@type": "Person",
 				"name": "Robert Claesson",
 				"jobTitle": "Grundare",
-				"url": "https://mittpsyke.se/om-mittpsyke"
+				"url": "https://www.mittpsyke.se/om-mittpsyke"
 			}
 		],
 		"publisher": {
 			"@type": "Organization",
 			"name": "MittPsyke",
-			"url": "https://mittpsyke.se"
+			"url": "https://www.mittpsyke.se"
 		},
 		"inLanguage": "sv-SE"
 	});
@@ -208,3 +208,4 @@
 		border-color: rgba(255, 255, 255, 0.1);
 	}
 </style>
+

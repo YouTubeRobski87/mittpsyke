@@ -193,7 +193,7 @@
 		if (streakData?.currentStreak) params.set('streak', String(streakData.currentStreak));
 		if (milestonesData?.totalEntries) params.set('total', String(milestonesData.totalEntries));
 		if (weeklyEntries) params.set('weekly', String(weeklyEntries));
-		return `https://mittpsyke.se/share?${params.toString()}`;
+		return `https://www.mittpsyke.se/share?${params.toString()}`;
 	}
 
 	async function handleShare() {
@@ -546,3 +546,4 @@
 		.icon-badge { width: 2.3rem; height: 2.3rem; }
 	}
 </style>
+

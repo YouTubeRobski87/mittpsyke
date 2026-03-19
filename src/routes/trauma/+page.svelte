@@ -5,7 +5,7 @@
 	<meta property="og:description" content="Vi erbjuder samtalsstöd vid trauma i ett tryggt rum där du kan börja utan konto och reflektera i din egen takt." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/trauma" />
+	<link rel="canonical" href="https://www.mittpsyke.se/trauma" />
 </svelte:head>
 
 <main class="page">
@@ -259,3 +259,4 @@
 		opacity: 1;
 	}
 </style>
+

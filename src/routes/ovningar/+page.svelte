@@ -15,7 +15,7 @@
 		property="og:description"
 		content="Utforska lugna övningar för reflektion, ångest, oro och återhämtning. Börja där du är och ta små steg."
 	/>
-	<link rel="canonical" href="https://mittpsyke.se/ovningar" />
+	<link rel="canonical" href="https://www.mittpsyke.se/ovningar" />
 </svelte:head>
 
 <main class="container tools-page">
@@ -200,3 +200,4 @@
 		}
 	}
 </style>
+

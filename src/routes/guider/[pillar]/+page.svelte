@@ -31,13 +31,13 @@
 			{
 				'@type': 'BreadcrumbList',
 				'itemListElement': [
-					{ '@type': 'ListItem', position: 1, name: 'Hem', item: 'https://mittpsyke.se' },
-					{ '@type': 'ListItem', position: 2, name: 'Guider', item: 'https://mittpsyke.se/guider' },
+					{ '@type': 'ListItem', position: 1, name: 'Hem', item: 'https://www.mittpsyke.se' },
+					{ '@type': 'ListItem', position: 2, name: 'Guider', item: 'https://www.mittpsyke.se/guider' },
 					{
 						'@type': 'ListItem',
 						position: 3,
 						name: data.pillar.title,
-						item: `https://mittpsyke.se/guider/${data.pillar.slug}`
+						item: `https://www.mittpsyke.se/guider/${data.pillar.slug}`
 					}
 				]
 			},
@@ -45,18 +45,18 @@
 				'@type': 'Article',
 				headline: data.pillar.title,
 				description: data.pillar.description,
-				image: 'https://mittpsyke.se/og-image.png',
+				image: 'https://www.mittpsyke.se/og-image.png',
 				author: [
 					{
 						'@type': 'Organization',
 						name: 'MittPsyke',
-						url: 'https://mittpsyke.se'
+						url: 'https://www.mittpsyke.se'
 					},
 					{
 						'@type': 'Person',
 						name: 'Robert Claesson',
 						jobTitle: 'Grundare',
-						url: 'https://mittpsyke.se/om-mittpsyke'
+						url: 'https://www.mittpsyke.se/om-mittpsyke'
 					}
 				],
 				publisher: {
@@ -64,13 +64,13 @@
 					name: 'MittPsyke',
 					logo: {
 						'@type': 'ImageObject',
-						url: 'https://mittpsyke.se/favicon.png'
+						url: 'https://www.mittpsyke.se/favicon.png'
 					}
 				},
 				datePublished: pillarUpdatedAt,
 				mainEntityOfPage: {
 					'@type': 'WebPage',
-					'@id': `https://mittpsyke.se/guider/${data.pillar.slug}`
+					'@id': `https://www.mittpsyke.se/guider/${data.pillar.slug}`
 				}
 			}
 		]
@@ -82,7 +82,7 @@
 	<meta name="description" content={data.pillar.description} />
 	<meta property="og:title" content={`${data.pillar.title} | Guider | MittPsyke`} />
 	<meta property="og:description" content={data.pillar.description} />
-	<link rel="canonical" href={`https://mittpsyke.se/guider/${data.pillar.slug}`} />
+	<link rel="canonical" href={`https://www.mittpsyke.se/guider/${data.pillar.slug}`} />
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
 </svelte:head>
 
@@ -387,3 +387,4 @@
 
 	}
 </style>
+

@@ -5,7 +5,7 @@
 	<meta property="og:description" content="Kan du inte sova? Prata anonymt med AI-baserat samtalsstöd om vad som håller dig vaken." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/sovproblem" />
+	<link rel="canonical" href="https://www.mittpsyke.se/sovproblem" />
 </svelte:head>
 
 <main class="page">
@@ -258,3 +258,4 @@
 		color: #86dfd6;
 	}
 </style>
+

@@ -13,18 +13,18 @@
 		'@type': 'CollectionPage',
 		headline: data.landing?.h1 ?? data.pillar.title,
 		description: pageDescription,
-		url: `https://mittpsyke.se/guider-seo/${data.pillar.slug}`,
+		url: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`,
 		author: [
 			{
 				'@type': 'Organization',
 				name: 'MittPsyke',
-				url: 'https://mittpsyke.se'
+				url: 'https://www.mittpsyke.se'
 			},
 			{
 				'@type': 'Person',
 				name: 'Robert Claesson',
 				jobTitle: 'Grundare',
-				url: 'https://mittpsyke.se/om-mittpsyke'
+				url: 'https://www.mittpsyke.se/om-mittpsyke'
 			}
 		],
 		inLanguage: 'sv-SE'
@@ -41,3 +41,4 @@
 </svelte:head>
 
 <SeoPillarLanding pillar={data.pillar} guides={data.guides} landing={data.landing} />
+

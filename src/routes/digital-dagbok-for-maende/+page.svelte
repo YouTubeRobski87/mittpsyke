@@ -11,7 +11,7 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/digital-dagbok-for-maende" />
+	<link rel="canonical" href="https://www.mittpsyke.se/digital-dagbok-for-maende" />
 </svelte:head>
 
 <main class="page">
@@ -176,3 +176,4 @@
 		border-color: #86dfd6;
 	}
 </style>
+

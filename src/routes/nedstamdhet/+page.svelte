@@ -5,7 +5,7 @@
 	<meta property="og:description" content="Känner du dig nedstämd utan att veta varför? Få anonymt samtalsstöd online dygnet runt." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/nedstamdhet" />
+	<link rel="canonical" href="https://www.mittpsyke.se/nedstamdhet" />
 </svelte:head>
 
 <main class="page">
@@ -247,3 +247,4 @@
 		opacity: 1;
 	}
 </style>
+

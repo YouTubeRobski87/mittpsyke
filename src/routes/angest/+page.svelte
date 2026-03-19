@@ -5,7 +5,7 @@
 	<meta property="og:description" content="Få stöd för ångest och oron. Prata anonymt med AI-baserat samtalsstöd dygnet runt." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/angest" />
+	<link rel="canonical" href="https://www.mittpsyke.se/angest" />
 </svelte:head>
 
 <main class="page">
@@ -318,3 +318,4 @@
 		opacity: 1;
 	}
 </style>
+

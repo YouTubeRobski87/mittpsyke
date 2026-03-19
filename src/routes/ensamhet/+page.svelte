@@ -5,7 +5,7 @@
 	<meta property="og:description" content="Få stöd för ensamhet och isolering. Prata anonymt med AI-baserat samtalsstöd dygnet runt." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/ensamhet" />
+	<link rel="canonical" href="https://www.mittpsyke.se/ensamhet" />
 </svelte:head>
 
 <main class="page">
@@ -316,3 +316,4 @@
 		opacity: 1;
 	}
 </style>
+

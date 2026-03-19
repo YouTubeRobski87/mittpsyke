@@ -5,7 +5,7 @@
 	<meta property="og:description" content="Plågas du av oro och ältande tankar? Få anonymt samtalsstöd online dygnet runt." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/oro" />
+	<link rel="canonical" href="https://www.mittpsyke.se/oro" />
 </svelte:head>
 
 <main class="page">
@@ -247,3 +247,4 @@
 		opacity: 1;
 	}
 </style>
+

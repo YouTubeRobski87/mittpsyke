@@ -11,7 +11,7 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://mittpsyke.se/chat" />
+	<link rel="canonical" href="https://www.mittpsyke.se/chat" />
 </svelte:head>
 
 <main class="page">
@@ -133,3 +133,4 @@
 		background: #1f2a28;
 	}
 </style>
+
