@@ -247,19 +247,6 @@
 
 	<div class="auth-shell">
 		<div class="journey-container">
-			<section class="journey-header auth-panel">
-				<h2>Din resa</h2>
-				<p>Så har det gått, i din takt.</p>
-				{#if streakData || milestonesData}
-					<button class="share-btn" onclick={handleShare} aria-label="Dela din framstegssida">
-						🌱 Dela min resa
-					</button>
-					{#if shareConfirm}
-						<p class="share-confirm" role="status">{shareConfirm}</p>
-					{/if}
-				{/if}
-			</section>
-
 			{#if loading}
 				<section class="auth-panel loading-state">Laddar din sida med framsteg...</section>
 			{:else if error}
@@ -449,6 +436,19 @@
 			</section>
 		{/if}
 			{/if}
+
+			<section class="journey-header auth-panel">
+				<h2>Din resa</h2>
+				<p>Så har det gått, i din takt.</p>
+				{#if streakData || milestonesData}
+					<button class="share-btn" onclick={handleShare} aria-label="Dela din framstegssida">
+						🌱 Dela min resa
+					</button>
+					{#if shareConfirm}
+						<p class="share-confirm" role="status">{shareConfirm}</p>
+					{/if}
+				{/if}
+			</section>
 		</div>
 	</div>
 </main>
