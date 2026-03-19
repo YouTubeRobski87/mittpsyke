@@ -3,26 +3,35 @@
 	import { trackHoroscopeCTAClick } from '$lib/analytics';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import Greeting from '$lib/components/dashboard/Greeting.svelte';
+	import MoodChart from '$lib/components/MoodChart.svelte';
 	import QuickActions from '$lib/components/dashboard/QuickActions.svelte';
-import { supabase } from '$lib/supabase';
-import type { User } from '@supabase/supabase-js';
+	import { supabase } from '$lib/supabase';
+	import type { User } from '@supabase/supabase-js';
+
+	type MoodPoint = {
+		date: string;
+		mood: number;
+	};
+
+	let { data } = $props<{ data: { moodSeries: MoodPoint[] } }>();
 
 	let user: User | null = null;
 	let loading = true;
 	let zodiacSign = '';
-let horoscopeText = '';
-let horoscopeLoading = false;
-let horoscopeUnavailable = false;
-let greetingName = 'igen';
+	let horoscopeText = '';
+	let horoscopeLoading = false;
+	let horoscopeUnavailable = false;
+	let greetingName = 'igen';
+	const moodSeries = $derived(data?.moodSeries ?? []);
 
-function cleanName(value: unknown): string {
-	if (typeof value !== 'string') return '';
-	const trimmed = value.trim();
-	if (!trimmed) return '';
-	// Never show email-like values in greeting.
-	if (trimmed.includes('@')) return '';
-	return trimmed;
-}
+	function cleanName(value: unknown): string {
+		if (typeof value !== 'string') return '';
+		const trimmed = value.trim();
+		if (!trimmed) return '';
+		// Never show email-like values in greeting.
+		if (trimmed.includes('@')) return '';
+		return trimmed;
+	}
 
 	function getZodiacSign(dateStr: string): string {
 		if (!dateStr) return '';
@@ -140,6 +149,13 @@ function cleanName(value: unknown): string {
 				>
 					Vill du skriva några ord om det här?
 				</a>
+			</section>
+
+			<section class="auth-panel auth-panel-accent">
+				<h2 class="text-lg font-semibold">Ditt humör – senaste 7 dagarna</h2>
+				<div class="mt-3">
+					<MoodChart data={moodSeries} />
+				</div>
 			</section>
 
 			<QuickActions />
