@@ -223,7 +223,7 @@
 						<img
 							class="focus-cover"
 							src={portal.image}
-							alt={`Bild for ${portal.title}`}
+							alt={`Stämningsbild för ${portal.title}`}
 							loading="lazy"
 						/>
 						<div class="focus-body">
@@ -242,7 +242,7 @@
 
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
-			<img src="/assets/home/Tryggplats.png" alt="Trygg plats" loading="lazy" />
+			<img src="/assets/home/Tryggplats.png" alt="Illustration av en trygg plats i naturen" loading="lazy" />
 			<div>
 				<h2>Tryggt, varsamt och tydligt avgränsat</h2>
 				<p>
