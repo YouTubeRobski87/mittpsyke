@@ -98,7 +98,7 @@
 				</div>
 				<div class="hero-community-note" aria-label="Anonym gemenskap">
 					<p class="hero-community-title">Du är inte ensam här</p>
-					<p class="hero-community-text">I Gemenskap kan delade inlägg få anonyma och omtänksamma svar i lugn ton.</p>
+					<p class="hero-community-text">I Gemenskapen kan du dela dagboksinlägg anonymt och få anonyma svar från andra. Enkelt, lågmält och tryggt.</p>
 				</div>
 				<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
 				<HomeSafetyStrip />
