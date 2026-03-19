@@ -1,5 +1,6 @@
 <script lang="ts">
 	type BlogArticleProps = {
+		children?: () => unknown;
 		title: string;
 		lead: string;
 		publishedLabel: string;
@@ -12,6 +13,7 @@
 	};
 
 	let {
+		children,
 		title,
 		lead,
 		publishedLabel,
@@ -34,7 +36,7 @@
 	</header>
 
 	<div class="article-content">
-		<slot />
+		{@render children?.()}
 	</div>
 
 	<section class="article-cta" aria-label="Prova MittPsyke">
@@ -102,19 +104,19 @@
 		gap: 1.2rem;
 	}
 
-	.article-content section {
+	.article-content :global(section) {
 		display: grid;
 		gap: 0.85rem;
 	}
 
-	.article-content h2 {
+	.article-content :global(h2) {
 		font-size: clamp(1.38rem, 1.2rem + 0.7vw, 1.62rem);
 		line-height: 1.2;
 		color: #184f4a;
 	}
 
-	.article-content p,
-	.article-content li {
+	.article-content :global(p),
+	.article-content :global(li) {
 		margin: 0;
 		font-family: var(--font-body);
 		font-size: clamp(1rem, 0.96rem + 0.35vw, 1.08rem);
@@ -122,14 +124,14 @@
 		letter-spacing: -0.003em;
 	}
 
-	.article-content ul {
+	.article-content :global(ul) {
 		margin: 0;
 		padding-left: 1.2rem;
 		display: grid;
 		gap: 0.45rem;
 	}
 
-	.article-content a {
+	.article-content :global(a) {
 		text-decoration: underline;
 		text-underline-offset: 2px;
 	}
@@ -191,7 +193,7 @@
 		}
 	}
 
-	:global(.dark) .article-content h2 {
+	:global(.dark) .article-content :global(h2) {
 		color: #9ad7ce;
 	}
 
