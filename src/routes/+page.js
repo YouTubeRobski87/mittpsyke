@@ -1,6 +1,7 @@
 export const load = () => {
-  return {
-    title: "AI-baserat samtalsstöd för vardagen",
-    description: "MittPsyke erbjuder AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats för dagbok och mönster över tid."
-  };
+	return {
+		title: 'MittPsyke – AI-dagbok för mental hälsa',
+		description:
+			'Skriv dagbok med AI-stöd, spåra ditt humör och förstå dina känslomönster. MittPsyke är din personliga digitala dagbok för välmående.'
+	};
 };
