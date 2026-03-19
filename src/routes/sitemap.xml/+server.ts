@@ -4,6 +4,10 @@ import { canonical } from '$lib/seo-kit/seo';
 const staticPages = Array.from(
 	new Set([
 		'',
+		'blogg',
+		'blogg/vad-ar-journalterapi',
+		'blogg/kbt-dagbok-vs-fri-journalforing',
+		'blogg/ai-hjalper-dig-bearbeta-kanslor',
 		'trauma',
 		'dagbok',
 		'psykiskt-stod-online',
@@ -38,6 +42,13 @@ const staticPages = Array.from(
 	])
 );
 
+const priorityOverrides: Record<string, string> = {
+	blogg: '0.7',
+	'blogg/vad-ar-journalterapi': '0.7',
+	'blogg/kbt-dagbok-vs-fri-journalforing': '0.7',
+	'blogg/ai-hjalper-dig-bearbeta-kanslor': '0.7'
+};
+
 export function GET() {
 	const dynamicUrls = getGuiderSeoPaths()
 		.map((path) => `<url><loc>${canonical(path)}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`)
@@ -48,7 +59,7 @@ export function GET() {
 		const loc = page === ''
 			? 'https://www.mittpsyke.se/'
 			: `https://www.mittpsyke.se/${page}`;
-		const priority = page === '' ? '1.0' : '0.8';
+		const priority = page === '' ? '1.0' : (priorityOverrides[page] ?? '0.8');
 		return `<url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
 	})
 	.join('');
