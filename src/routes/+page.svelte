@@ -94,7 +94,7 @@
 				</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
-					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa din egen plats</a>
+					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa konto</a>
 				</div>
 				<div class="hero-community-note" aria-label="Anonym gemenskap">
 					<p class="hero-community-title">Du är inte ensam här</p>
