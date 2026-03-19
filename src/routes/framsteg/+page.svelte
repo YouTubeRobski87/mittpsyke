@@ -290,6 +290,16 @@
 			</section>
 		{/if}
 
+		<!-- ── Mjuk veckosammanfattning ── -->
+		<section class="card summary-card">
+			<div class="card-header">
+				<div class="icon-badge week"><Heart size={24} /></div>
+				<h2>Den här veckan</h2>
+			</div>
+			<p class="summary-text">{weeklySummaryText}</p>
+			<p class="encouragement">{weeklyEncouragement}</p>
+		</section>
+
 		<!-- ── Aktivitetskarta ── -->
 		<section class="card heatmap-card">
 			<div class="card-header">
@@ -406,16 +416,6 @@
 				{/if}
 			</section>
 		{/if}
-
-		<!-- ── Mjuk veckosammanfattning ── -->
-		<section class="card summary-card">
-			<div class="card-header">
-				<div class="icon-badge week"><Heart size={24} /></div>
-				<h2>Den här veckan</h2>
-			</div>
-			<p class="summary-text">{weeklySummaryText}</p>
-			<p class="encouragement">{weeklyEncouragement}</p>
-		</section>
 
 		<!-- ── Enkel reflektion ── -->
 		<section class="card reflection-card">
