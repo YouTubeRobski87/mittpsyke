@@ -26,13 +26,11 @@ type EventName =
 type EventParams = Record<string, string | number | boolean>;
 
 export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || '';
-const GA_SCRIPT_ID = 'mittpsyke-ga4-script';
-const GA_SCRIPT_BASE_URL = 'https://www.googletagmanager.com/gtag/js?id=';
 
 let analyticsInitialized = false;
 
 function ensureGtag() {
-	if (!browser || !GA_MEASUREMENT_ID) return null;
+	if (!browser) return null;
 
 	const windowWithGtag = window as any;
 	windowWithGtag.dataLayer = windowWithGtag.dataLayer || [];
@@ -41,14 +39,6 @@ function ensureGtag() {
 		windowWithGtag.gtag = (...args: any[]) => {
 			windowWithGtag.dataLayer.push(args);
 		};
-	}
-
-	if (!document.getElementById(GA_SCRIPT_ID)) {
-		const script = document.createElement('script');
-		script.id = GA_SCRIPT_ID;
-		script.async = true;
-		script.src = `${GA_SCRIPT_BASE_URL}${encodeURIComponent(GA_MEASUREMENT_ID)}`;
-		document.head.appendChild(script);
 	}
 
 	return windowWithGtag.gtag as (...args: any[]) => void;
@@ -60,6 +50,9 @@ export function initializeAnalytics() {
 	const gtag = ensureGtag();
 	if (!gtag) return;
 
+	gtag('consent', 'update', {
+		analytics_storage: 'granted'
+	});
 	gtag('js', new Date());
 	gtag('config', GA_MEASUREMENT_ID);
 	analyticsInitialized = true;
@@ -68,7 +61,9 @@ export function initializeAnalytics() {
 export function trackPageView(url: URL) {
 	if (!browser || !hasAnalyticsConsent()) return;
 
-	const gtag = (window as any).gtag;
+	if (!analyticsInitialized) initializeAnalytics();
+
+	const gtag = ensureGtag();
 	if (!gtag) {
 		if (dev) console.warn('gtag not found');
 		return;
@@ -84,7 +79,9 @@ export function trackPageView(url: URL) {
 function trackEvent(eventName: EventName, params: EventParams = {}) {
 	if (!browser || !hasAnalyticsConsent()) return;
 
-	const gtag = (window as any).gtag;
+	if (!analyticsInitialized) initializeAnalytics();
+
+	const gtag = ensureGtag();
 	if (!gtag) {
 		if (dev) console.warn('gtag not found');
 		return;
