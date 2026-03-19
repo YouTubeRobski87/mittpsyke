@@ -15,13 +15,13 @@
 
 	let { data } = $props<{ data: { moodSeries: MoodPoint[] } }>();
 
-	let user: User | null = null;
-	let loading = true;
-	let zodiacSign = '';
-	let horoscopeText = '';
-	let horoscopeLoading = false;
-	let horoscopeUnavailable = false;
-	let greetingName = 'igen';
+	let user = $state<User | null>(null);
+	let loading = $state(true);
+	let zodiacSign = $state('');
+	let horoscopeText = $state('');
+	let horoscopeLoading = $state(false);
+	let horoscopeUnavailable = $state(false);
+	let greetingName = $state('igen');
 	const moodSeries = $derived(data?.moodSeries ?? []);
 
 	function cleanName(value: unknown): string {
@@ -55,38 +55,38 @@
 	}
 
 	async function loadDashboard() {
-	try {
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
 
-		const { data: userData } = await supabase.auth.getUser();
-		user = userData.user ?? session?.user ?? null;
+			const { data: userData } = await supabase.auth.getUser();
+			user = userData.user ?? session?.user ?? null;
 
-		const profileDisplayName = user?.id
-			? await supabase
-					.from('profiles')
-					.select('display_name')
-					.eq('id', user.id)
-					.maybeSingle()
-					.then(({ data }) => cleanName(data?.display_name))
-			: '';
-
-		const metadataDisplayName = cleanName(user?.user_metadata?.display_name);
-		const metadataFullName = cleanName(user?.user_metadata?.full_name);
-		const metadataName = cleanName(user?.user_metadata?.name);
-
-		greetingName =
-			metadataDisplayName ||
-			profileDisplayName ||
-			metadataFullName ||
-			metadataName ||
-			'igen';
-
-		const birthday =
-			typeof user?.user_metadata?.birthday === 'string'
-				? user.user_metadata.birthday
+			const profileDisplayName = user?.id
+				? await supabase
+						.from('profiles')
+						.select('display_name')
+						.eq('id', user.id)
+						.maybeSingle()
+						.then(({ data }) => cleanName(data?.display_name))
 				: '';
+
+			const metadataDisplayName = cleanName(user?.user_metadata?.display_name);
+			const metadataFullName = cleanName(user?.user_metadata?.full_name);
+			const metadataName = cleanName(user?.user_metadata?.name);
+
+			greetingName =
+				metadataDisplayName ||
+				profileDisplayName ||
+				metadataFullName ||
+				metadataName ||
+				'igen';
+
+			const birthday =
+				typeof user?.user_metadata?.birthday === 'string'
+					? user.user_metadata.birthday
+					: '';
 
 			zodiacSign = getZodiacSign(birthday);
 			horoscopeUnavailable = false;
