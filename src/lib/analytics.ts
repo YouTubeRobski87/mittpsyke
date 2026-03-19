@@ -26,13 +26,38 @@ type EventName =
 type EventParams = Record<string, string | number | boolean>;
 
 export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || '';
+const GA_SCRIPT_ID = 'mittpsyke-ga4-script';
+const GA_SCRIPT_BASE_URL = 'https://www.googletagmanager.com/gtag/js?id=';
 
 let analyticsInitialized = false;
+
+function ensureGtag() {
+	if (!browser || !GA_MEASUREMENT_ID) return null;
+
+	const windowWithGtag = window as any;
+	windowWithGtag.dataLayer = windowWithGtag.dataLayer || [];
+
+	if (typeof windowWithGtag.gtag !== 'function') {
+		windowWithGtag.gtag = (...args: any[]) => {
+			windowWithGtag.dataLayer.push(args);
+		};
+	}
+
+	if (!document.getElementById(GA_SCRIPT_ID)) {
+		const script = document.createElement('script');
+		script.id = GA_SCRIPT_ID;
+		script.async = true;
+		script.src = `${GA_SCRIPT_BASE_URL}${encodeURIComponent(GA_MEASUREMENT_ID)}`;
+		document.head.appendChild(script);
+	}
+
+	return windowWithGtag.gtag as (...args: any[]) => void;
+}
 
 export function initializeAnalytics() {
 	if (!browser || !hasAnalyticsConsent() || analyticsInitialized || !GA_MEASUREMENT_ID) return;
 
-	const gtag = (window as any).gtag;
+	const gtag = ensureGtag();
 	if (!gtag) return;
 
 	gtag('js', new Date());
