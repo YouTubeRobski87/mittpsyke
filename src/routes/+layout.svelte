@@ -262,7 +262,7 @@
 					Hem
 				</a>
 
-				<nav class="hidden md:flex items-center gap-4" aria-label="Huvudnavigering">
+				<nav class="hidden md:flex items-center gap-3" aria-label="Huvudnavigering">
 					<a
 						href="/chat"
 						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
@@ -305,7 +305,7 @@
 			</div>
 
 			<div class="flex items-center gap-3">
-				<nav class="hidden md:flex items-center gap-4" aria-label="Kontonavigering">
+				<nav class="hidden md:flex items-center gap-3" aria-label="Kontonavigering">
 					{#if user}
 						<span class="text-sm opacity-70">
 							{displayName ? `V\u00e4lkommen, ${displayName}` : 'V\u00e4lkommen tillbaka'}
