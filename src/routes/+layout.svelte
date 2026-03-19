@@ -282,6 +282,12 @@
 						Övningar
 					</a>
 					<a
+						href="/blogg"
+						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+					>
+						Blogg
+					</a>
+					<a
 						href="/om-mittpsyke"
 						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
 					>
@@ -375,6 +381,13 @@
 					onclick={() => (mobileMenuOpen = false)}
 				>
 					Övningar
+				</a>
+				<a
+					href="/blogg"
+					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+					onclick={() => (mobileMenuOpen = false)}
+				>
+					Blogg
 				</a>
 				<a
 					href="/om-mittpsyke"
