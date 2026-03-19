@@ -269,26 +269,6 @@
 				</section>
 			{:else}
 
-		<!-- ── Mjuk veckosammanfattning ── -->
-		<section class="card summary-card">
-			<div class="card-header">
-				<div class="icon-badge week"><Heart size={24} /></div>
-				<h2>Den här veckan</h2>
-			</div>
-			<p class="summary-text">{weeklySummaryText}</p>
-			<p class="encouragement">{weeklyEncouragement}</p>
-		</section>
-
-		<!-- ── Enkel reflektion ── -->
-		<section class="card reflection-card">
-			<div class="card-header">
-				<div class="icon-badge reflect"><BookOpen size={24} /></div>
-				<h2>En liten reflektion</h2>
-			</div>
-			<p class="reflection-prompt">{todayReflection}</p>
-			<p class="reflection-hint">Du behöver inte svara. Ibland räcker det att stanna upp en stund.</p>
-		</section>
-
 		<!-- ── Lugn dataöverblick ── -->
 		{#if streakData || milestonesData}
 			<section class="card overview-card">
@@ -319,51 +299,6 @@
 					<p class="overview-note">Fint att du fortsätter komma tillbaka.</p>
 				{:else if streakData && streakData.lastEntryDaysAgo > 1}
 					<p class="overview-note">Senaste inlägget var {streakData.lastEntryDaysAgo} dagar sedan. Det går bra att börja om.</p>
-				{/if}
-			</section>
-		{/if}
-
-		<!-- ── Milstolpar ── -->
-		{#if milestonesData}
-			<section class="card milestones-card">
-				<div class="card-header">
-					<div class="icon-badge trophy"><Trophy size={24} /></div>
-					<h2>Dina milstolpar</h2>
-				</div>
-				{#each milestonesData.sections as section}
-					<div class="milestones-section">
-						<h3 class="milestones-section-title">{section.title}</h3>
-						<div class="milestones-grid">
-							{#each section.milestones as milestone}
-								<div class="milestone {milestone.achieved ? 'achieved' : 'locked'}">
-									<div class="milestone-emoji">{milestone.emoji}</div>
-									<div class="milestone-text">{milestone.text}</div>
-								</div>
-							{/each}
-						</div>
-					</div>
-				{/each}
-				{#if milestonesData.nextMilestone}
-					<div class="next-milestone">
-						<div class="next-header"><Calendar size={18} /><span>Nästa mål</span></div>
-						<p>{milestonesData.nextMilestone.text}</p>
-						<div class="progress-bar">
-							<div
-								class="progress-fill"
-								style="width: {milestonesData.nextMilestone.progressPercent}%"
-							></div>
-						</div>
-						<small>
-							{milestonesData.nextMilestone.current} / {milestonesData.nextMilestone.threshold}
-							{milestonesData.nextMilestone.unit}
-							({milestonesData.nextMilestone.remaining} kvar)
-						</small>
-					</div>
-				{:else}
-					<div class="next-milestone">
-						<div class="next-header"><Calendar size={18} /><span>Nästa mål</span></div>
-						<p>Du har låst upp alla milstolpar just nu. Fantastiskt fint jobbat.</p>
-					</div>
 				{/if}
 			</section>
 		{/if}
@@ -438,6 +373,71 @@
 			{:else}
 				<p class="heatmap-description">Det finns inte tillräckligt med data för AI-insikter ännu.</p>
 			{/if}
+		</section>
+
+		<!-- ── Milstolpar ── -->
+		{#if milestonesData}
+			<section class="card milestones-card">
+				<div class="card-header">
+					<div class="icon-badge trophy"><Trophy size={24} /></div>
+					<h2>Dina milstolpar</h2>
+				</div>
+				{#each milestonesData.sections as section}
+					<div class="milestones-section">
+						<h3 class="milestones-section-title">{section.title}</h3>
+						<div class="milestones-grid">
+							{#each section.milestones as milestone}
+								<div class="milestone {milestone.achieved ? 'achieved' : 'locked'}">
+									<div class="milestone-emoji">{milestone.emoji}</div>
+									<div class="milestone-text">{milestone.text}</div>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/each}
+				{#if milestonesData.nextMilestone}
+					<div class="next-milestone">
+						<div class="next-header"><Calendar size={18} /><span>Nästa mål</span></div>
+						<p>{milestonesData.nextMilestone.text}</p>
+						<div class="progress-bar">
+							<div
+								class="progress-fill"
+								style="width: {milestonesData.nextMilestone.progressPercent}%"
+							></div>
+						</div>
+						<small>
+							{milestonesData.nextMilestone.current} / {milestonesData.nextMilestone.threshold}
+							{milestonesData.nextMilestone.unit}
+							({milestonesData.nextMilestone.remaining} kvar)
+						</small>
+					</div>
+				{:else}
+					<div class="next-milestone">
+						<div class="next-header"><Calendar size={18} /><span>Nästa mål</span></div>
+						<p>Du har låst upp alla milstolpar just nu. Fantastiskt fint jobbat.</p>
+					</div>
+				{/if}
+			</section>
+		{/if}
+
+		<!-- ── Mjuk veckosammanfattning ── -->
+		<section class="card summary-card">
+			<div class="card-header">
+				<div class="icon-badge week"><Heart size={24} /></div>
+				<h2>Den här veckan</h2>
+			</div>
+			<p class="summary-text">{weeklySummaryText}</p>
+			<p class="encouragement">{weeklyEncouragement}</p>
+		</section>
+
+		<!-- ── Enkel reflektion ── -->
+		<section class="card reflection-card">
+			<div class="card-header">
+				<div class="icon-badge reflect"><BookOpen size={24} /></div>
+				<h2>En liten reflektion</h2>
+			</div>
+			<p class="reflection-prompt">{todayReflection}</p>
+			<p class="reflection-hint">Du behöver inte svara. Ibland räcker det att stanna upp en stund.</p>
 		</section>
 
 		<!-- ── Tom state ── -->
