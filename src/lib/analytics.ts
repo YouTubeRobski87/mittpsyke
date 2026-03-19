@@ -61,7 +61,7 @@ export function initializeAnalytics() {
 	if (!gtag) return;
 
 	gtag('js', new Date());
-	gtag('config', GA_MEASUREMENT_ID, { send_page_view: false });
+	gtag('config', GA_MEASUREMENT_ID);
 	analyticsInitialized = true;
 }
 
