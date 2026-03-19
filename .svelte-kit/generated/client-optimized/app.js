@@ -89,7 +89,7 @@ export const dictionary = {
 		"/chat/[category]": [16],
 		"/checkin": [19],
 		"/dagbok": [20],
-		"/dashboard": [21],
+		"/dashboard": [~21],
 		"/dashboard/gemenskap": [~22],
 		"/dashboard/installningar": [23],
 		"/depression": [24],
