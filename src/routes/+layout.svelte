@@ -35,6 +35,20 @@
 		identifier: '198712284895'
 	};
 
+	const webApplicationJsonLd = {
+		'@context': 'https://schema.org',
+		'@type': 'WebApplication',
+		name: 'MittPsyke',
+		url: 'https://www.mittpsyke.se',
+		description: 'AI-driven dagbok för mental hälsa på svenska',
+		applicationCategory: 'HealthApplication',
+		inLanguage: 'sv',
+		offers: {
+			'@type': 'Offer',
+			price: '0'
+		}
+	};
+
 	const isChat = $derived(Boolean(page.route.id?.includes('/chat/')));
 	const isPrivateOrUtilityPage = $derived(
 		Boolean(
@@ -213,6 +227,7 @@
 		<meta property="og:image" content="https://www.mittpsyke.se/og-image.png" />
 
 		<link rel="canonical" href={`https://www.mittpsyke.se${page.url.pathname}`} />
+		<link rel="alternate" hreflang="sv" href="https://www.mittpsyke.se" />
 
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | Mittpsyke` : 'MittPsyke – Psykiskt stöd online'} />
@@ -221,6 +236,7 @@
 			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
 		/>
 		{@html `<script type="application/ld+json">${JSON.stringify(organizationJsonLd)}<\/script>`}
+		{@html `<script type="application/ld+json">${JSON.stringify(webApplicationJsonLd)}<\/script>`}
 	{/if}
 </svelte:head>
 

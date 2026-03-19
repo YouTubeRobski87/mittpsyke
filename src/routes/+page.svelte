@@ -66,10 +66,16 @@
 </script>
 
 <svelte:head>
-	<title>Psykiskt stöd online i lugn takt | MittPsyke</title>
-	<meta name="description" content="Börja utan konto, skriv dagbok och följ ditt mående över tid. MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen." />
-	<meta property="og:title" content="Psykiskt stöd online i lugn takt | MittPsyke" />
-	<meta property="og:description" content="Ett tryggt digitalt stödrum för samtal, dagbok, reflektion och nästa steg när du behöver stöd." />
+	<title>MittPsyke – AI-dagbok för mental hälsa</title>
+	<meta
+		name="description"
+		content="Skriv dagbok med AI-stöd, spåra ditt humör och förstå dina känslomönster. MittPsyke är din personliga digitala dagbok för välmående."
+	/>
+	<meta property="og:title" content="MittPsyke – AI-dagbok för mental hälsa" />
+	<meta
+		property="og:description"
+		content="Skriv dagbok med AI-stöd, spåra ditt humör och förstå dina känslomönster. MittPsyke är din personliga digitala dagbok för välmående."
+	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	<link rel="canonical" href="https://www.mittpsyke.se/" />
