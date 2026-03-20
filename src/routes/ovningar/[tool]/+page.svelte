@@ -60,11 +60,21 @@
 	{/if}
 
 	<section class="block">
-		<h2>Läs vidare</h2>
-		<p>
-			Du kan läsa vidare i guiden <a href={`/guider/${data.pillar.slug}`}>{data.pillar.title}</a>
-			och utforska fler övningar i samma område när du vill ta nästa steg.
-		</p>
+		<h2>{data.relatedTools.length > 0 ? 'Fler övningar i samma område' : 'Nästa steg'}</h2>
+		{#if data.relatedTools.length > 0}
+			<p>Om du vill fortsätta i samma område kan du prova någon av de här övningarna.</p>
+			<ul class="link-list">
+				{#each data.relatedTools as relatedTool}
+					<li><a href={`/ovningar/${relatedTool.slug}`}>{relatedTool.title}</a></li>
+				{/each}
+			</ul>
+		{:else}
+			<p>
+				Det finns inga fler övningar i det här området just nu. Gå gärna vidare till
+				<a href="/ovningar">övningsöversikten</a>
+				för fler lugna nästa steg.
+			</p>
+		{/if}
 	</section>
 </main>
 
