@@ -261,6 +261,19 @@
 		gap: 0.7rem;
 	}
 
+	.links-row a {
+		color: var(--primary);
+		text-decoration: underline;
+		text-underline-offset: 0.16em;
+		text-decoration-thickness: 1.5px;
+		font-weight: 500;
+	}
+
+	.links-row a:hover,
+	.links-row a:focus-visible {
+		text-decoration-thickness: 2px;
+	}
+
 	@media (max-width: 640px) {
 		.cta-button {
 			width: 100%;
@@ -307,5 +320,9 @@
 	:global(.dark) .cta-button.ghost {
 		color: #86dfd6;
 		border-color: #86dfd6;
+	}
+
+	:global(.dark) .links-row a {
+		color: #86dfd6;
 	}
 </style>
