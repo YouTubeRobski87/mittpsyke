@@ -159,16 +159,16 @@
 
 		const labels = dailyMoodData.map((point) => toShortDateLabel(point.date));
 		const datasetValues = dailyMoodData.map((point) => point.averageMood);
-		const lineColor = 'rgba(34, 197, 94, 0.8)';
+		const lineColor = 'rgba(96, 165, 250, 0.9)';
 		const tickColor = 'rgba(148, 163, 184, 0.72)';
-		const gridColor = 'rgba(255, 255, 255, 0.05)';
+		const gridColor = 'rgba(255, 255, 255, 0.03)';
 
 		const context = chartCanvas.getContext('2d');
 		if (!context) return;
 
 		const gradient = context.createLinearGradient(0, 0, 0, chartCanvas.height || 220);
-		gradient.addColorStop(0, 'rgba(34, 197, 94, 0.25)');
-		gradient.addColorStop(1, 'rgba(34, 197, 94, 0.02)');
+		gradient.addColorStop(0, 'rgba(96, 165, 250, 0.35)');
+		gradient.addColorStop(1, 'rgba(96, 165, 250, 0.05)');
 
 		destroyChart();
 		chart = new ChartClass(context, {
@@ -182,10 +182,13 @@
 						backgroundColor: gradient,
 						fill: true,
 						tension: 0.4,
+						cubicInterpolationMode: 'monotone',
 						spanGaps: false,
 						borderWidth: 2,
-						pointRadius: (ctx: any) => (ctx.raw === null ? 0 : 3),
-						pointHoverRadius: (ctx: any) => (ctx.raw === null ? 0 : 5),
+						borderCapStyle: 'round',
+						borderJoinStyle: 'round',
+						pointRadius: (ctx: any) => (ctx.raw === null ? 0 : 4),
+						pointHoverRadius: (ctx: any) => (ctx.raw === null ? 0 : 6),
 						pointBackgroundColor: lineColor,
 						pointBorderWidth: 0
 					}
@@ -261,7 +264,7 @@
 						},
 						grid: {
 							color: gridColor,
-							lineWidth: 1,
+							lineWidth: 0.8,
 							drawTicks: false
 						},
 						border: { display: false }
@@ -324,6 +327,7 @@
 
 	{#if hasEnoughData}
 		<div class="timeline-chart-shell">
+			<p class="timeline-chart-context">En lugn överblick över hur dagarna har känts.</p>
 			<canvas bind:this={chartCanvas} aria-label="Lugn linjegraf över humör över tid"></canvas>
 		</div>
 		<p class="timeline-note">Det här är en enkel överblick, inte en bedömning av dig.</p>
@@ -393,6 +397,21 @@
 	.timeline-chart-shell {
 		height: 240px;
 		width: 100%;
+		display: grid;
+		grid-template-rows: auto minmax(0, 1fr);
+		gap: 0.4rem;
+	}
+
+	.timeline-chart-context {
+		margin: 0;
+		font-size: 0.8rem;
+		line-height: 1.4;
+		color: hsl(var(--muted-foreground) / 0.9);
+	}
+
+	.timeline-chart-shell canvas {
+		width: 100% !important;
+		height: 100% !important;
 	}
 
 	.timeline-note {
