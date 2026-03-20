@@ -34,6 +34,20 @@
 			cta: 'Skapa konto'
 		}
 	];
+	const featureHighlights = [
+		{
+			title: 'Journalföring',
+			description: 'Skriv av dig i lugn och ro och få mer struktur i tankar och känslor.',
+			href: '/journalforing',
+			cta: 'Läs mer'
+		},
+		{
+			title: 'Humörspårning',
+			description: 'Följ ditt mående över tid och upptäck mönster i vardagen.',
+			href: '/humorsparning',
+			cta: 'Läs mer'
+		}
+	];
 
 	onMount(() => {
 		if (!heroEl || !bgEl) return;
@@ -130,6 +144,22 @@
 			</div>
 		</section>
 		<!-- TODO: Lägg verifierat social proof här när vi har verkliga omdömen eller data. -->
+
+		<section class="feature-highlights" aria-labelledby="feature-highlights-title">
+			<div class="cards-narrow feature-inner">
+				<p class="feature-eyebrow">Funktioner</p>
+				<h2 id="feature-highlights-title">Vad du kan göra med MittPsyke</h2>
+				<div class="feature-grid">
+					{#each featureHighlights as feature}
+						<article class="feature-card">
+							<h3>{feature.title}</h3>
+							<p>{feature.description}</p>
+							<a class="feature-card-cta" href={feature.href}>{feature.cta}</a>
+						</article>
+					{/each}
+				</div>
+			</div>
+		</section>
 
 		<section class="entry-paths" aria-labelledby="entry-paths-title">
 			<div class="cards-narrow entry-inner">
@@ -509,6 +539,70 @@
 		color: #2c3338;
 	}
 
+	.feature-highlights {
+		padding: clamp(2.5rem, 7vw, 3.9rem) 1.25rem;
+		background: #f7f9f8;
+		color: #2c3338;
+	}
+
+	.feature-eyebrow {
+		margin: 0 0 0.45rem;
+		font-family: var(--font-heading);
+		font-size: 0.88rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #5c6c64;
+	}
+
+	.feature-inner h2 {
+		margin: 0;
+		color: #263036;
+		font-size: clamp(1.5rem, 3vw, 2rem);
+	}
+
+	.feature-grid {
+		margin-top: 1.1rem;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.95rem;
+	}
+
+	.feature-card {
+		padding: 1rem;
+		border-radius: var(--radius-card);
+		background: #ffffff;
+		border: 1px solid #dde5e1;
+	}
+
+	.feature-card h3 {
+		margin: 0;
+		color: #273237;
+		font-size: 1.08rem;
+		line-height: 1.3;
+	}
+
+	.feature-card p {
+		margin: 0.55rem 0 0;
+		font-size: 0.95rem;
+		line-height: 1.65;
+		color: #5a686f;
+	}
+
+	.feature-card-cta {
+		display: inline-flex;
+		align-items: center;
+		margin-top: 0.9rem;
+		padding: 0.42rem 0.78rem;
+		border-radius: var(--radius-pill);
+		background: #e7f1ee;
+		color: #2e5850;
+		font-family: var(--font-heading);
+		font-size: 0.83rem;
+		font-weight: 600;
+		letter-spacing: 0.005em;
+	}
+
 	.entry-inner h2 {
 		margin: 0;
 		color: #263036;
@@ -829,6 +923,11 @@
 	}
 
 	@media (min-width: 700px) {
+		.feature-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1.05rem;
+		}
+
 		.entry-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 1.05rem;
@@ -874,6 +973,37 @@
 	:global(.dark) .entry-paths {
 		background: #151b19;
 		color: #e8e6e2;
+	}
+
+	:global(.dark) .feature-highlights {
+		background: #131918;
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .feature-eyebrow {
+		color: #9cb0a6;
+	}
+
+	:global(.dark) .feature-inner h2 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .feature-card {
+		background: #202624;
+		border-color: rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .feature-card h3 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .feature-card p {
+		color: rgba(255, 255, 255, 0.68);
+	}
+
+	:global(.dark) .feature-card-cta {
+		background: rgba(134, 223, 214, 0.12);
+		color: #86dfd6;
 	}
 
 	:global(.dark) .entry-inner h2 {
