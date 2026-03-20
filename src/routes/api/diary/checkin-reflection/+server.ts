@@ -123,17 +123,30 @@ export const POST: RequestHandler = async ({ request }) => {
 	const body = parsedBody as {
 		selectedMoods?: unknown;
 		selectedFactors?: unknown;
+		selectedDuration?: unknown;
+		selectedSelfCare?: unknown;
+		selectedHelp?: unknown;
 		moodFreeText?: unknown;
 		factorFreeText?: unknown;
 	};
 
 	const selectedMoods = normalizeList(body.selectedMoods);
 	const selectedFactors = normalizeList(body.selectedFactors);
+	const selectedDuration = normalizeText(body.selectedDuration, 80);
+	const selectedSelfCare = normalizeList(body.selectedSelfCare);
+	const selectedHelp = normalizeList(body.selectedHelp);
 	const moodFreeText = normalizeText(body.moodFreeText);
 	const factorFreeText = normalizeText(body.factorFreeText);
 	const ownWords = [moodFreeText, factorFreeText].filter(Boolean).join(' | ');
 
-	if (selectedMoods.length === 0 && selectedFactors.length === 0 && !ownWords) {
+	if (
+		selectedMoods.length === 0 &&
+		selectedFactors.length === 0 &&
+		!selectedDuration &&
+		selectedSelfCare.length === 0 &&
+		selectedHelp.length === 0 &&
+		!ownWords
+	) {
 		return errorResponse('Tom incheckning kan inte reflekteras.', 400);
 	}
 
@@ -145,6 +158,9 @@ export const POST: RequestHandler = async ({ request }) => {
 	const userMessage = [
 		`Användaren mår: ${selectedMoods.length > 0 ? selectedMoods.join(', ') : 'Inte angivet'}`,
 		`Påverkas av: ${selectedFactors.length > 0 ? selectedFactors.join(', ') : 'Inte angivet'}`,
+		`Hur länge: ${selectedDuration || 'Inte angivet'}`,
+		`Gjort för sig själv idag: ${selectedSelfCare.length > 0 ? selectedSelfCare.join(', ') : 'Inte angivet'}`,
+		`Vad skulle hjälpa: ${selectedHelp.length > 0 ? selectedHelp.join(', ') : 'Inte angivet'}`,
 		`Egna ord: ${ownWords || 'Inga egna ord.'}`
 	].join('\n');
 
@@ -187,4 +203,3 @@ export const POST: RequestHandler = async ({ request }) => {
 		clearTimeout(timeout);
 	}
 };
-

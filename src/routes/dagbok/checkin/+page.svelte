@@ -26,6 +26,25 @@
 		'Vet inte riktigt',
 		'Inget speciellt'
 	];
+	const durationOptions = ['Idag', 'Några dagar', 'En vecka eller mer', 'Länge nu', 'Vet inte riktigt'];
+
+	const selfCareOptions = [
+		'Sovit tillräckligt',
+		'Ätit ordentligt',
+		'Rört på mig',
+		'Pratat med någon',
+		'Tagit en paus',
+		'Inget av ovanstående'
+	];
+
+	const helpOptions = [
+		'Att skriva av mig',
+		'Att bara vila',
+		'Att prata med någon',
+		'Att göra något konkret',
+		'Att känna mig förstådd',
+		'Vet inte'
+	];
 
 	const reflectionFallback =
 		'Det är fint att du stannade upp och gjorde en incheckning. Känslor kan skifta snabbt, och det är okej att de gör det. Du behöver inte lösa allt nu, ett litet steg i taget räcker. Om du vill kan du skriva vidare i dagboken och ge plats åt det som pågår.';
@@ -33,6 +52,9 @@
 	let step = 1;
 	let selectedMoods: string[] = [];
 	let selectedFactors: string[] = [];
+	let selectedDuration = '';
+	let selectedSelfCare: string[] = [];
+	let selectedHelp: string[] = [];
 	let moodFreeText = '';
 	let factorFreeText = '';
 	let reflection = '';
@@ -59,12 +81,36 @@
 		selectedFactors = toggleOption(selectedFactors, value);
 	}
 
+	function selectDuration(value: string) {
+		selectedDuration = selectedDuration === value ? '' : value;
+	}
+
+	function toggleSelfCare(value: string) {
+		selectedSelfCare = toggleOption(selectedSelfCare, value);
+	}
+
+	function toggleHelp(value: string) {
+		selectedHelp = toggleOption(selectedHelp, value);
+	}
+
 	function canProceedStep1() {
 		return selectedMoods.length > 0 || moodFreeText.trim().length > 0;
 	}
 
 	function canProceedStep2() {
 		return selectedFactors.length > 0 || factorFreeText.trim().length > 0;
+	}
+
+	function canProceedStep3() {
+		return selectedDuration.length > 0;
+	}
+
+	function canProceedStep4() {
+		return selectedSelfCare.length > 0;
+	}
+
+	function canProceedStep5() {
+		return selectedHelp.length > 0;
 	}
 
 	function goToStep2() {
@@ -82,10 +128,40 @@
 		step = 2;
 	}
 
-	async function goToStep3() {
-		if (!canProceedStep2() || generatingReflection || !sessionToken) return;
-
+	function goBackToStep3() {
+		if (generatingReflection || savingToDiary) return;
 		step = 3;
+	}
+
+	function goBackToStep4() {
+		if (generatingReflection || savingToDiary) return;
+		step = 4;
+	}
+
+	function goBackToStep5() {
+		if (generatingReflection || savingToDiary) return;
+		step = 5;
+	}
+
+	function goToStep3() {
+		if (!canProceedStep2()) return;
+		step = 3;
+	}
+
+	function goToStep4() {
+		if (!canProceedStep3()) return;
+		step = 4;
+	}
+
+	function goToStep5() {
+		if (!canProceedStep4()) return;
+		step = 5;
+	}
+
+	async function goToStep6() {
+		if (!canProceedStep5() || generatingReflection || !sessionToken) return;
+
+		step = 6;
 		generatingReflection = true;
 		reflection = '';
 		reflectionError = '';
@@ -101,6 +177,9 @@
 				body: JSON.stringify({
 					selectedMoods,
 					selectedFactors,
+					selectedDuration,
+					selectedSelfCare,
+					selectedHelp,
 					moodFreeText: moodFreeText.trim(),
 					factorFreeText: factorFreeText.trim()
 				})
@@ -133,6 +212,10 @@
 		return items.map((item) => `- ${item}`).join('\n');
 	}
 
+	function formatSingleValue(value: string) {
+		return value ? `- ${value}` : '- Inget valt';
+	}
+
 	function buildDiaryContent() {
 		const ownWords = [moodFreeText.trim(), factorFreeText.trim()].filter(Boolean);
 
@@ -143,7 +226,16 @@
 			formatSelectedList(selectedMoods),
 			'',
 			'Vad som påverkar:',
-			formatSelectedList(selectedFactors)
+			formatSelectedList(selectedFactors),
+			'',
+			'Hur länge det har känts så:',
+			formatSingleValue(selectedDuration),
+			'',
+			'Gjort för mig själv idag:',
+			formatSelectedList(selectedSelfCare),
+			'',
+			'Vad som skulle hjälpa just nu:',
+			formatSelectedList(selectedHelp)
 		];
 
 		if (ownWords.length > 0) {
@@ -217,7 +309,7 @@
 	<PortalSubnav
 		active="dagbok"
 		title="Guidad incheckning"
-		description="Tre lugna steg för att sätta ord på hur du mår just nu."
+		description="Sex lugna steg för att sätta ord på hur du mår just nu."
 	/>
 
 	<div class="auth-shell checkin-shell">
@@ -232,10 +324,10 @@
 			</section>
 		{:else}
 			<section class="auth-panel auth-panel-accent checkin-panel">
-				<div class="progress-wrap" aria-label={`Steg ${step} av 3`}>
-					<p class="progress-label">Steg {step} av 3</p>
+				<div class="progress-wrap" aria-label={`Steg ${step} av 6`}>
+					<p class="progress-label">Steg {step} av 6</p>
 					<div class="progress-track">
-						{#each [1, 2, 3] as progressStep}
+						{#each [1, 2, 3, 4, 5, 6] as progressStep}
 							<span class={`progress-dot ${step >= progressStep ? 'active' : ''}`}></span>
 						{/each}
 					</div>
@@ -330,6 +422,104 @@
 							</button>
 						</div>
 					</div>
+				{:else if step === 3}
+					<div class="step-wrap">
+						<h2>Hur länge har det känts så?</h2>
+						<p class="auth-muted">Välj det som passar bäst just nu.</p>
+
+						<div class="chips-wrap">
+							{#each durationOptions as duration}
+								<button
+									type="button"
+									class={`chip ${selectedDuration === duration ? 'selected' : ''}`}
+									onclick={() => selectDuration(duration)}
+								>
+									{#if selectedDuration === duration}
+										<span class="chip-check" aria-hidden="true">✓</span>
+									{/if}
+									<span>{duration}</span>
+								</button>
+							{/each}
+						</div>
+
+						<div class="actions-wrap">
+							<button type="button" class="auth-button back-button" onclick={goBackToStep2}>Tillbaka</button>
+							<button
+								type="button"
+								class="auth-button primary next-button"
+								onclick={goToStep4}
+								disabled={!canProceedStep3()}
+							>
+								Nästa
+							</button>
+						</div>
+					</div>
+				{:else if step === 4}
+					<div class="step-wrap">
+						<h2>Har du gjort något för dig själv idag?</h2>
+						<p class="auth-muted">Välj det som stämmer in.</p>
+
+						<div class="chips-wrap">
+							{#each selfCareOptions as selfCare}
+								<button
+									type="button"
+									class={`chip ${selectedSelfCare.includes(selfCare) ? 'selected' : ''}`}
+									onclick={() => toggleSelfCare(selfCare)}
+								>
+									{#if selectedSelfCare.includes(selfCare)}
+										<span class="chip-check" aria-hidden="true">✓</span>
+									{/if}
+									<span>{selfCare}</span>
+								</button>
+							{/each}
+						</div>
+						<p class="chips-hint auth-muted">Du kan välja flera.</p>
+
+						<div class="actions-wrap">
+							<button type="button" class="auth-button back-button" onclick={goBackToStep3}>Tillbaka</button>
+							<button
+								type="button"
+								class="auth-button primary next-button"
+								onclick={goToStep5}
+								disabled={!canProceedStep4()}
+							>
+								Nästa
+							</button>
+						</div>
+					</div>
+				{:else if step === 5}
+					<div class="step-wrap">
+						<h2>Vad skulle hjälpa dig just nu?</h2>
+						<p class="auth-muted">Välj det som känns mest hjälpsamt.</p>
+
+						<div class="chips-wrap">
+							{#each helpOptions as help}
+								<button
+									type="button"
+									class={`chip ${selectedHelp.includes(help) ? 'selected' : ''}`}
+									onclick={() => toggleHelp(help)}
+								>
+									{#if selectedHelp.includes(help)}
+										<span class="chip-check" aria-hidden="true">✓</span>
+									{/if}
+									<span>{help}</span>
+								</button>
+							{/each}
+						</div>
+						<p class="chips-hint auth-muted">Du kan välja flera.</p>
+
+						<div class="actions-wrap">
+							<button type="button" class="auth-button back-button" onclick={goBackToStep4}>Tillbaka</button>
+							<button
+								type="button"
+								class="auth-button primary next-button"
+								onclick={goToStep6}
+								disabled={!canProceedStep5()}
+							>
+								Nästa
+							</button>
+						</div>
+					</div>
 				{:else}
 					<div class="step-wrap">
 						<h2>AI-genererad reflektion</h2>
@@ -367,7 +557,7 @@
 								<button
 									type="button"
 									class="auth-button back-button"
-									onclick={goBackToStep2}
+									onclick={goBackToStep5}
 									disabled={savingToDiary}
 								>
 									Tillbaka
@@ -411,7 +601,7 @@
 
 	.progress-track {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(6, minmax(0, 1fr));
 		gap: 0.4rem;
 	}
 
