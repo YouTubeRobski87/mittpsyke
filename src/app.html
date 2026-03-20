@@ -9,7 +9,9 @@
       (function() {
         try {
           var mode = localStorage.getItem('theme-mode');
-          if (mode === 'dark') document.documentElement.classList.add('dark');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = mode === 'dark' || (mode !== 'light' && prefersDark);
+          document.documentElement.classList.toggle('dark', isDark);
           var theme = localStorage.getItem('mittpsyke:theme');
           if (theme) {
             var themes = {
