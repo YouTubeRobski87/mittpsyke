@@ -220,7 +220,7 @@
 		description="Tre lugna steg för att sätta ord på hur du mår just nu."
 	/>
 
-	<div class="auth-shell">
+	<div class="auth-shell checkin-shell">
 		{#if authLoading}
 			<section class="auth-panel">
 				<p class="auth-muted">Laddar guidad incheckning...</p>
@@ -253,26 +253,31 @@
 									class={`chip ${selectedMoods.includes(mood) ? 'selected' : ''}`}
 									onclick={() => toggleMood(mood)}
 								>
-									{mood}
+									{#if selectedMoods.includes(mood)}
+										<span class="chip-check" aria-hidden="true">✓</span>
+									{/if}
+									<span>{mood}</span>
 								</button>
 							{/each}
 						</div>
+						<p class="chips-hint auth-muted">Du kan välja flera.</p>
 
 						<label class="field-label" for="mood-free-text">
-							Vill du beskriva det med egna ord? (valfritt)
+							Vill du lägga till något? (helt valfritt)
 						</label>
 						<textarea
 							id="mood-free-text"
 							class="checkin-input"
 							rows={4}
 							bind:value={moodFreeText}
-							placeholder="Skriv några ord om du vill."
+							placeholder="Det behöver inte vara perfekt. Skriv kort eller långt."
 						></textarea>
+						<p class="field-hint auth-muted">Det här är bara för dig.</p>
 
 						<div class="actions-wrap">
 							<button
 								type="button"
-								class="auth-button primary"
+								class="auth-button primary next-button"
 								onclick={goToStep2}
 								disabled={!canProceedStep1()}
 							>
@@ -292,10 +297,14 @@
 									class={`chip ${selectedFactors.includes(factor) ? 'selected' : ''}`}
 									onclick={() => toggleFactor(factor)}
 								>
-									{factor}
+									{#if selectedFactors.includes(factor)}
+										<span class="chip-check" aria-hidden="true">✓</span>
+									{/if}
+									<span>{factor}</span>
 								</button>
 							{/each}
 						</div>
+						<p class="chips-hint auth-muted">Du kan välja flera.</p>
 
 						<label class="field-label" for="factor-free-text">
 							Något mer du vill lägga till? (valfritt)
@@ -305,14 +314,15 @@
 							class="checkin-input"
 							rows={4}
 							bind:value={factorFreeText}
-							placeholder="Skriv några ord om du vill."
+							placeholder="Det behöver inte vara perfekt. Skriv kort eller långt."
 						></textarea>
+						<p class="field-hint auth-muted">Det här är bara för dig.</p>
 
 						<div class="actions-wrap">
-							<button type="button" class="auth-button" onclick={goBackToStep1}>Tillbaka</button>
+							<button type="button" class="auth-button back-button" onclick={goBackToStep1}>Tillbaka</button>
 							<button
 								type="button"
-								class="auth-button primary"
+								class="auth-button primary next-button"
 								onclick={goToStep3}
 								disabled={!canProceedStep2()}
 							>
@@ -354,7 +364,12 @@
 								<button type="button" class="auth-button" onclick={continueToDiaryWriting}>
 									Börja skriva mer
 								</button>
-								<button type="button" class="auth-button" onclick={goBackToStep2} disabled={savingToDiary}>
+								<button
+									type="button"
+									class="auth-button back-button"
+									onclick={goBackToStep2}
+									disabled={savingToDiary}
+								>
 									Tillbaka
 								</button>
 							</div>
@@ -367,9 +382,20 @@
 </main>
 
 <style>
+	.checkin-shell {
+		max-width: 1080px;
+	}
+
 	.checkin-panel {
 		display: grid;
 		gap: 1rem;
+		padding: clamp(1.05rem, 2.2vw, 1.55rem);
+	}
+
+	@media (min-width: 900px) {
+		.checkin-panel {
+			padding-inline: clamp(1.65rem, 3.6vw, 2.4rem);
+		}
 	}
 
 	.progress-wrap {
@@ -417,12 +443,20 @@
 		gap: 0.55rem;
 	}
 
+	.chips-hint {
+		margin: -0.2rem 0 0;
+		font-size: 0.8rem;
+	}
+
 	.chip {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
 		border: 1px solid hsl(var(--border));
 		border-radius: var(--radius-pill);
 		background: hsl(var(--surface));
 		color: hsl(var(--foreground));
-		padding: 0.42rem 0.8rem;
+		padding: 0.48rem 0.84rem;
 		font-size: 0.9rem;
 		line-height: 1.2;
 		cursor: pointer;
@@ -435,9 +469,15 @@
 	}
 
 	.chip.selected {
-		background: color-mix(in srgb, var(--theme-accent, var(--primary)) 16%, hsl(var(--surface)));
-		border-color: color-mix(in srgb, var(--theme-accent, var(--primary)) 48%, hsl(var(--border)));
-		color: hsl(var(--foreground));
+		background: var(--theme-accent, var(--primary));
+		border: 2px solid var(--theme-accent, var(--primary));
+		color: #ffffff;
+	}
+
+	.chip-check {
+		font-size: 0.85rem;
+		line-height: 1;
+		font-weight: 700;
 	}
 
 	.field-label {
@@ -461,10 +501,43 @@
 		border-color: var(--theme-accent, var(--primary));
 	}
 
+	.field-hint {
+		margin: -0.22rem 0 0;
+		font-size: 0.79rem;
+	}
+
 	.actions-wrap {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.6rem;
+	}
+
+	.next-button.auth-button.primary {
+		min-width: 160px;
+		padding: 0.68rem 1.3rem;
+		background: var(--theme-accent, var(--primary));
+		border-color: var(--theme-accent, var(--primary));
+		color: #ffffff;
+	}
+
+	.next-button.auth-button.primary:hover {
+		background: color-mix(in srgb, var(--theme-accent, var(--primary)) 90%, black);
+		border-color: color-mix(in srgb, var(--theme-accent, var(--primary)) 90%, black);
+	}
+
+	.back-button.auth-button {
+		background: transparent;
+		border-color: transparent;
+		color: hsl(var(--muted-foreground));
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		padding-inline: 0.3rem;
+	}
+
+	.back-button.auth-button:hover {
+		background: transparent;
+		border-color: transparent;
+		color: hsl(var(--foreground));
 	}
 
 	.reflection-loading {
@@ -514,6 +587,9 @@
 		.actions-wrap :global(.auth-button) {
 			width: 100%;
 		}
+
+		.next-button.auth-button.primary {
+			min-width: 100%;
+		}
 	}
 </style>
-
