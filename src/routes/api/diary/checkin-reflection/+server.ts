@@ -15,7 +15,7 @@ const FALLBACK_REFLECTION =
 	'Det är fint att du stannade upp och gjorde en incheckning. Känslor kan skifta snabbt, och det är okej att de gör det. Du behöver inte lösa allt nu, ett litet steg i taget räcker. Om du vill kan du skriva vidare i dagboken och ge plats åt det som pågår.';
 
 const REQUEST_TIMEOUT_MS = 12000;
-const CLAUDE_MODEL = (env.CLAUDE_MODEL || env.ANTHROPIC_MODEL || 'claude-3-5-haiku-latest').trim();
+const OPENAI_MODEL = (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
 
 function errorResponse(message: string, status: number) {
 	return json({ success: false, error: message }, { status });
@@ -67,21 +67,20 @@ function normalizeList(value: unknown, maxItems = 10): string[] {
 	return items;
 }
 
-function extractClaudeText(payload: unknown): string {
+function extractOpenAIText(payload: unknown): string {
 	if (!payload || typeof payload !== 'object') return '';
-	const content = (payload as { content?: unknown }).content;
-	if (!Array.isArray(content)) return '';
 
-	return content
-		.map((item) => {
-			if (!item || typeof item !== 'object') return '';
-			const block = item as { type?: unknown; text?: unknown };
-			if (block.type !== 'text' || typeof block.text !== 'string') return '';
-			return block.text.trim();
-		})
-		.filter(Boolean)
-		.join('\n')
-		.trim();
+	const choices = (payload as { choices?: unknown }).choices;
+	if (!Array.isArray(choices) || choices.length === 0) return '';
+
+	const firstChoice = choices[0];
+	if (!firstChoice || typeof firstChoice !== 'object') return '';
+
+	const message = (firstChoice as { message?: unknown }).message;
+	if (!message || typeof message !== 'object') return '';
+
+	const content = (message as { content?: unknown }).content;
+	return typeof content === 'string' ? content.trim() : '';
 }
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -159,7 +158,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('Tom incheckning kan inte reflekteras.', 400);
 	}
 
-	const apiKey = normalizeApiKey(env.ANTHROPIC_API_KEY || env.CLAUDE_API_KEY);
+	const apiKey = normalizeApiKey(env.OPENAI_API_KEY);
 	if (!apiKey) {
 		return json({ success: true, reflection: FALLBACK_REFLECTION });
 	}
@@ -177,36 +176,37 @@ export const POST: RequestHandler = async ({ request }) => {
 	const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
 	try {
-		const response = await fetch('https://api.anthropic.com/v1/messages', {
+		const response = await fetch('https://api.openai.com/v1/chat/completions', {
 			method: 'POST',
 			headers: {
-				'x-api-key': apiKey,
-				'anthropic-version': '2023-06-01',
+				Authorization: `Bearer ${apiKey}`,
 				'content-type': 'application/json'
 			},
 			body: JSON.stringify({
-				model: CLAUDE_MODEL,
-				system: SYSTEM_PROMPT,
-				max_tokens: 260,
+				model: OPENAI_MODEL,
 				temperature: 0.7,
-				messages: [{ role: 'user', content: userMessage }]
+				max_tokens: 260,
+				messages: [
+					{ role: 'system', content: SYSTEM_PROMPT },
+					{ role: 'user', content: userMessage }
+				]
 			}),
 			signal: controller.signal
 		});
 
 		if (!response.ok) {
-			console.error('Claude check-in reflection failed:', response.status, await response.text());
+			console.error('OpenAI check-in reflection failed:', response.status, await response.text());
 			return json({ success: true, reflection: FALLBACK_REFLECTION });
 		}
 
 		const payload = (await response.json()) as unknown;
-		const reflection = extractClaudeText(payload);
+		const reflection = extractOpenAIText(payload);
 		return json({
 			success: true,
 			reflection: reflection || FALLBACK_REFLECTION
 		});
 	} catch (error) {
-		console.error('Claude check-in reflection error:', error);
+		console.error('OpenAI check-in reflection error:', error);
 		return json({ success: true, reflection: FALLBACK_REFLECTION });
 	} finally {
 		clearTimeout(timeout);
