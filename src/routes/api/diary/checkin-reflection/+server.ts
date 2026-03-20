@@ -8,7 +8,8 @@ const SYSTEM_PROMPT = `Du är ett varmt och empatiskt AI-stöd på MittPsyke.
 Användaren har gjort en snabbincheckning och beskrivit hur de mår.
 Skriv en kort, varm och icke-dömande reflektion på 3-4 meningar
 baserat på deras svar. Börja inte med "Jag" eller "Det verkar".
-Använd ett lugnt, mänskligt språk. Skriv på svenska.`;
+Använd ett lugnt, mänskligt språk. Skriv på svenska.
+Svara ALLTID unikt och personligt baserat på exakt vad användaren svarat. Nämn specifika ord från deras svar. Skriv aldrig samma svar två gånger.`;
 
 const FALLBACK_REFLECTION =
 	'Det är fint att du stannade upp och gjorde en incheckning. Känslor kan skifta snabbt, och det är okej att de gör det. Du behöver inte lösa allt nu, ett litet steg i taget räcker. Om du vill kan du skriva vidare i dagboken och ge plats åt det som pågår.';
@@ -138,6 +139,14 @@ export const POST: RequestHandler = async ({ request }) => {
 	const moodFreeText = normalizeText(body.moodFreeText);
 	const factorFreeText = normalizeText(body.factorFreeText);
 	const ownWords = [moodFreeText, factorFreeText].filter(Boolean).join(' | ');
+	const moods = selectedMoods;
+	const factors = selectedFactors;
+	const duration = selectedDuration;
+	const selfCare = selectedSelfCare;
+	const helpNeeded = selectedHelp;
+	const freeText = ownWords;
+
+	console.log('Check-in data:', { moods, factors, duration, selfCare, helpNeeded, freeText });
 
 	if (
 		selectedMoods.length === 0 &&
@@ -156,12 +165,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	const userMessage = [
-		`Användaren mår: ${selectedMoods.length > 0 ? selectedMoods.join(', ') : 'Inte angivet'}`,
-		`Påverkas av: ${selectedFactors.length > 0 ? selectedFactors.join(', ') : 'Inte angivet'}`,
-		`Hur länge: ${selectedDuration || 'Inte angivet'}`,
-		`Gjort för sig själv idag: ${selectedSelfCare.length > 0 ? selectedSelfCare.join(', ') : 'Inte angivet'}`,
-		`Vad skulle hjälpa: ${selectedHelp.length > 0 ? selectedHelp.join(', ') : 'Inte angivet'}`,
-		`Egna ord: ${ownWords || 'Inga egna ord.'}`
+		`Användaren mår: ${moods.length > 0 ? moods.join(', ') : 'Inte angivet'}`,
+		`Påverkas av: ${factors.length > 0 ? factors.join(', ') : 'Inte angivet'}`,
+		`Hur länge: ${duration || 'Inte angivet'}`,
+		`Gjort för sig själv idag: ${selfCare.length > 0 ? selfCare.join(', ') : 'Inte angivet'}`,
+		`Vad skulle hjälpa: ${helpNeeded.length > 0 ? helpNeeded.join(', ') : 'Inte angivet'}`,
+		`Egna ord: ${freeText || 'Inga egna ord.'}`
 	].join('\n');
 
 	const controller = new AbortController();
