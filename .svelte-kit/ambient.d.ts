@@ -40,6 +40,7 @@
 declare module '$env/static/private' {
 	export const OPENAI_API_KEY: string;
 	export const VERCEL_OIDC_TOKEN: string;
+	export const ANTHROPIC_API_KEY: string;
 	export const ALLUSERSPROFILE: string;
 	export const APPDATA: string;
 	export const CHROME_CRASHPAD_PIPE_NAME: string;
@@ -209,6 +210,7 @@ declare module '$env/dynamic/private' {
 	export const env: {
 		OPENAI_API_KEY: string;
 		VERCEL_OIDC_TOKEN: string;
+		ANTHROPIC_API_KEY: string;
 		ALLUSERSPROFILE: string;
 		APPDATA: string;
 		CHROME_CRASHPAD_PIPE_NAME: string;
