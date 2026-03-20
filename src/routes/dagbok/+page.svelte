@@ -457,6 +457,9 @@
 						<p class="mt-2 text-sm auth-muted">
 							Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
 						</p>
+						<div class="mt-3">
+							<a href="/dagbok/checkin" class="auth-button">Guidad incheckning</a>
+						</div>
 						<div class="mood-field">
 							<p class="text-sm">Humör just nu (valfritt)</p>
 							<p class="mood-current">
