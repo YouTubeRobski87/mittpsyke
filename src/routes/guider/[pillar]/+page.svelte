@@ -117,8 +117,14 @@
 		<h2>I den här guiden</h2>
 		<p class="block-note">Här ser du vilka teman den här översiktsguiden tar upp.</p>
 		<ul class="stack-list stack-list-topics">
-			{#each data.pillar.clusterTopics as topic}
-				<li>{topic}</li>
+			{#each data.clusterTopics as topic}
+				<li>
+					{#if topic.href}
+						<a href={topic.href} class="topic-link">{topic.label}</a>
+					{:else}
+						<span class="topic-text">{topic.label}</span>
+					{/if}
+				</li>
 			{/each}
 		</ul>
 	</section>
@@ -314,10 +320,22 @@
 	}
 
 	.stack-list-topics li {
-		padding: 0.25rem 0;
+		padding: 0;
 		border: 0;
 		border-radius: 0;
 		background: transparent;
+	}
+
+	.topic-link,
+	.topic-text {
+		display: block;
+		padding: 0.25rem 0;
+		line-height: 1.55;
+	}
+
+	.topic-link {
+		text-decoration: underline;
+		text-underline-offset: 2px;
 	}
 
 	.stack-list-links a {
