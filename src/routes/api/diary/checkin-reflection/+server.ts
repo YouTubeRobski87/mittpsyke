@@ -185,7 +185,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			body: JSON.stringify({
 				model: OPENAI_MODEL,
 				temperature: 0.7,
-				max_tokens: 260,
+				max_completion_tokens: 260,
 				messages: [
 					{ role: 'system', content: SYSTEM_PROMPT },
 					{ role: 'user', content: userMessage }
