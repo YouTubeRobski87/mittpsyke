@@ -1,1 +1,0 @@
-export { default as component } from "../../../../src/routes/ai-samtalsstod-online/+page.svelte";

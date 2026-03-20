@@ -14,3 +14,4 @@ openai.chatgpt-26.5304.11628-win32-x64.vsix
 openai.chatgpt-26.5304.11628-win32-x64.vsix
 *.vsix
 .env*.local
+.svelte-kit/.svelte-kit/
