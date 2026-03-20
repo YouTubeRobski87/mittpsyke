@@ -65,9 +65,9 @@
 				vardag.
 			</p>
 			<p class="links-row">
-				<a href="/dagbok">Öppna dagboken</a>
-				<a href="/framsteg">Se framsteg</a>
-				<a href="/humorsparning">Läs om humörspårning</a>
+				<a class="secondary-link" href="/dagbok">Öppna dagboken</a>
+				<a class="secondary-link" href="/framsteg">Se framsteg</a>
+				<a class="secondary-link" href="/humorsparning">Läs om humörspårning</a>
 			</p>
 		</section>
 
@@ -149,17 +149,18 @@
 		gap: 0.7rem;
 	}
 
-	.links-row a {
-		color: var(--primary);
+	.secondary-link {
+		display: inline-block;
+		color: var(--theme-accent, #0f766e);
 		text-decoration: underline;
-		text-underline-offset: 0.16em;
-		text-decoration-thickness: 1.5px;
+		font-size: 0.95rem;
 		font-weight: 500;
+		margin-right: 1rem;
+		opacity: 0.9;
+		transition: opacity 150ms ease;
 	}
-
-	.links-row a:hover,
-	.links-row a:focus-visible {
-		text-decoration-thickness: 2px;
+	.secondary-link:hover {
+		opacity: 1;
 	}
 
 	@media (max-width: 640px) {
@@ -171,9 +172,5 @@
 	:global(.dark) .cta-button.ghost {
 		color: #86dfd6;
 		border-color: #86dfd6;
-	}
-
-	:global(.dark) .links-row a {
-		color: #86dfd6;
 	}
 </style>
