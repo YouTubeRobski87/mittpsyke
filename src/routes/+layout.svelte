@@ -508,6 +508,12 @@
 			</a>
 			<span class="mx-2">&middot;</span>
 			<span class="text-xs opacity-50">Analys aktiveras bara med samtycke.</span>
+			<div class="footer-features mt-2 text-xs opacity-70" aria-label="Funktioner">
+				<span class="font-medium">Funktioner:</span>
+				<a href="/journalforing" class="hover:opacity-100 transition-opacity">Journalföring</a>
+				<span class="mx-1">&middot;</span>
+				<a href="/humorsparning" class="hover:opacity-100 transition-opacity">Humörspårning</a>
+			</div>
 			<div class="footer-company mt-2 text-xs opacity-70">
 				<p>© MittPsyke</p>
 				<p>Enskild näringsverksamhet</p>
