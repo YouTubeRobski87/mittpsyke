@@ -2,8 +2,8 @@
 	<h2>Forskning &amp; evidens</h2>
 	<p>
 		Forskning visar att digitalt stöd för psykisk hälsa kan ha positiva effekter, särskilt när
-		information kombineras med aktiva delar som reflektion, övningar och stöd. MittPsyke är
-		utformat i den riktningen – som ett lugnt komplement för stöd, struktur och egen reflektion.
+		information kombineras med reflektion, övningar och stöd. MittPsyke är tänkt som ett lugnt
+		komplement för stöd, struktur och egen reflektion.
 	</p>
 	<p class="research-source">Källa: Yeo et al., Journal of Medical Internet Research, 2024</p>
 	<p class="research-note">MittPsyke ersätter inte vård, diagnos eller akut hjälp.</p>
