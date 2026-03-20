@@ -144,36 +144,6 @@
 		});
 	}
 
-	function readCssColor(variableName: string, fallback: string): string {
-		if (typeof window === 'undefined') return fallback;
-		const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-		return value || fallback;
-	}
-
-	function hexToRgba(hex: string, alpha: number): string {
-		const normalized = hex.replace('#', '');
-		if (![3, 6].includes(normalized.length)) return `rgba(15, 118, 110, ${alpha})`;
-		const fullHex =
-			normalized.length === 3
-				? normalized
-						.split('')
-						.map((char) => `${char}${char}`)
-						.join('')
-				: normalized;
-
-		const r = Number.parseInt(fullHex.slice(0, 2), 16);
-		const g = Number.parseInt(fullHex.slice(2, 4), 16);
-		const b = Number.parseInt(fullHex.slice(4, 6), 16);
-		return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-	}
-
-	function getAccentWithAlpha(alpha: number): string {
-		const accent = readCssColor('--primary', '#0f766e');
-		if (accent.startsWith('#')) return hexToRgba(accent, alpha);
-		if (accent.startsWith('rgb(')) return accent.replace('rgb(', 'rgba(').replace(')', `, ${alpha})`);
-		return `rgba(15, 118, 110, ${alpha})`;
-	}
-
 	function destroyChart() {
 		if (chart) {
 			chart.destroy();
@@ -189,16 +159,16 @@
 
 		const labels = dailyMoodData.map((point) => toShortDateLabel(point.date));
 		const datasetValues = dailyMoodData.map((point) => point.averageMood);
-		const tickColor = readCssColor('--muted-foreground', '#6b7280');
-		const borderColor = readCssColor('--primary', '#0f766e');
-		const gridColor = readCssColor('--border', '#d8dde1');
+		const lineColor = 'rgba(34, 197, 94, 0.8)';
+		const tickColor = 'rgba(148, 163, 184, 0.72)';
+		const gridColor = 'rgba(255, 255, 255, 0.05)';
 
 		const context = chartCanvas.getContext('2d');
 		if (!context) return;
 
 		const gradient = context.createLinearGradient(0, 0, 0, chartCanvas.height || 220);
-		gradient.addColorStop(0, getAccentWithAlpha(0.18));
-		gradient.addColorStop(1, getAccentWithAlpha(0.02));
+		gradient.addColorStop(0, 'rgba(34, 197, 94, 0.25)');
+		gradient.addColorStop(1, 'rgba(34, 197, 94, 0.02)');
 
 		destroyChart();
 		chart = new ChartClass(context, {
@@ -208,15 +178,15 @@
 				datasets: [
 					{
 						data: datasetValues,
-						borderColor,
+						borderColor: lineColor,
 						backgroundColor: gradient,
 						fill: true,
-						tension: 0.34,
+						tension: 0.4,
 						spanGaps: false,
 						borderWidth: 2,
-						pointRadius: (ctx: any) => (ctx.raw === null ? 0 : 2),
-						pointHoverRadius: (ctx: any) => (ctx.raw === null ? 0 : 3),
-						pointBackgroundColor: borderColor,
+						pointRadius: (ctx: any) => (ctx.raw === null ? 0 : 3),
+						pointHoverRadius: (ctx: any) => (ctx.raw === null ? 0 : 5),
+						pointBackgroundColor: lineColor,
 						pointBorderWidth: 0
 					}
 				]
@@ -225,12 +195,19 @@
 				responsive: true,
 				maintainAspectRatio: false,
 				interaction: {
-					mode: 'nearest',
+					mode: 'index',
 					intersect: false
+				},
+				animation: {
+					duration: 700,
+					easing: 'easeOutQuart'
 				},
 				plugins: {
 					legend: { display: false },
 					tooltip: {
+						backgroundColor: 'rgba(15, 23, 42, 0.9)',
+						borderRadius: 8,
+						padding: 10,
 						displayColors: false,
 						callbacks: {
 							title: (items: any[]) => {
@@ -241,23 +218,25 @@
 								const index = context.dataIndex ?? 0;
 								const point = dailyMoodData[index];
 								if (!point || point.averageMood === null) {
-									return 'Inget humör sparat den dagen';
+									return 'Inget sparat humör den dagen';
 								}
-								return `Genomsnittligt humör: ${point.averageMood.toFixed(1)}/10`;
+								return `Humör: ${point.averageMood.toFixed(1)} av 10`;
 							},
 							afterLabel: (context: any) => {
 								const index = context.dataIndex ?? 0;
 								const point = dailyMoodData[index];
 								if (!point) return '';
 								const label = point.entriesCount === 1 ? 'inlägg' : 'inlägg';
-								return `Antal inlägg: ${point.entriesCount} ${label}`;
+								return `Inlägg den dagen: ${point.entriesCount} ${label}`;
 							}
 						}
 					}
 				},
 				scales: {
 					x: {
-						grid: { display: false },
+						grid: {
+							display: false
+						},
 						ticks: {
 							color: tickColor,
 							maxRotation: 0,
@@ -269,20 +248,21 @@
 					y: {
 						min: 1,
 						max: 10,
+						afterBuildTicks: (axis: any) => {
+							axis.ticks = [{ value: 1 }, { value: 5 }, { value: 10 }];
+						},
 						ticks: {
-							stepSize: 1,
 							color: tickColor,
 							callback: (value: string | number) => {
 								const numeric = Number(value);
-								if (numeric === 2) return 'Tyngre';
-								if (numeric === 5) return 'Mittemellan';
-								if (numeric === 8) return 'Lättare';
+								if (numeric === 1 || numeric === 5 || numeric === 10) return numeric.toString();
 								return '';
 							}
 						},
 						grid: {
 							color: gridColor,
-							lineWidth: 0.55
+							lineWidth: 1,
+							drawTicks: false
 						},
 						border: { display: false }
 					}
