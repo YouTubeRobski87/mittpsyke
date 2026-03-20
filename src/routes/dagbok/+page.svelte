@@ -3,6 +3,7 @@
 	import { page } from '$app/stores';
 	import { trackSignupCompleted, trackDiaryPageOpenedFromHoroscope } from '$lib/analytics';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
+	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import { supabase } from '$lib/supabase';
 	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import type {
@@ -527,6 +528,8 @@
 							<p class="text-sm">{loadError}</p>
 						</section>
 					{/if}
+
+					<DiaryMoodTimeline entries={entries} />
 
 					{#if entries.length === 0}
 						<section class="auth-panel">
