@@ -37,19 +37,14 @@
 		</p>
 	</section>
 
-	{#if data.tool.slug === 'trygghetscirkel-exponering'}
+	{#if data.tool.purpose}
 		<section class="block">
 			<h2>Syfte</h2>
-			<p>
-				Den här övningen hjälper dig att närma dig sociala situationer i små, hanterbara steg
-				i stället för allt på en gång. Målet är att minska undvikande och bygga mer trygghet
-				i kontakt med andra över tid.
-			</p>
-			<p>
-				Du väljer själv tempo och nivå, så att stegen känns utmanande men fortfarande möjliga.
-			</p>
+			<p>{data.tool.purpose}</p>
 		</section>
+	{/if}
 
+	{#if data.tool.slug === 'trygghetscirkel-exponering'}
 		<section class="block">
 			<h2>Gör så här</h2>
 			<ol class="step-list">
