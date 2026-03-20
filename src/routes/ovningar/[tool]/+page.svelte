@@ -37,15 +37,50 @@
 		</p>
 	</section>
 
-	<section class="block">
-		<h2>Så går övningen till</h2>
-		<ol class="step-list">
-			<li>Läs igenom syftet med övningen.</li>
-			<li>Avsätt 5-15 minuter i en lugn miljö.</li>
-			<li>Följ stegen i din egen takt.</li>
-			<li>Reflektera kort över vad du märker efteråt.</li>
-		</ol>
-	</section>
+	{#if data.tool.slug === 'trygghetscirkel-exponering'}
+		<section class="block">
+			<h2>Syfte</h2>
+			<p>
+				Den här övningen hjälper dig att närma dig sociala situationer i små, hanterbara steg
+				i stället för allt på en gång. Målet är att minska undvikande och bygga mer trygghet
+				i kontakt med andra över tid.
+			</p>
+			<p>
+				Du väljer själv tempo och nivå, så att stegen känns utmanande men fortfarande möjliga.
+			</p>
+		</section>
+
+		<section class="block">
+			<h2>Gör så här</h2>
+			<ol class="step-list">
+				<li>Rita tre nivåer: <strong>Tryggt</strong>, <strong>Lagom utmaning</strong> och <strong>För svårt just nu</strong>.</li>
+				<li>Skriv 2-3 sociala situationer i varje nivå, till exempel i mindre gruppsammanhang.</li>
+				<li>Välj en situation från <strong>Lagom utmaning</strong> som du kan göra inom 24 timmar.</li>
+				<li>Bestäm ett tydligt mikrosteg, till exempel: säga en mening i gruppen eller ställa en kort fråga.</li>
+				<li>Genomför steget och stanna kvar i situationen en kort stund i stället för att lämna direkt.</li>
+				<li>Upprepa samma nivå 2-3 gånger innan du går vidare till nästa steg i cirkeln.</li>
+			</ol>
+		</section>
+
+		<section class="block">
+			<h2>Reflektera efteråt</h2>
+			<ul class="reflect-list">
+				<li>Vad var lättare än du trodde?</li>
+				<li>Vad kändes mest utmanande, och vad hjälpte dig att stanna kvar?</li>
+				<li>Vilket nästa lilla steg vill du prova nästa gång?</li>
+			</ul>
+		</section>
+	{:else}
+		<section class="block">
+			<h2>Så går övningen till</h2>
+			<ol class="step-list">
+				<li>Läs igenom syftet med övningen.</li>
+				<li>Avsätt 5-15 minuter i en lugn miljö.</li>
+				<li>Följ stegen i din egen takt.</li>
+				<li>Reflektera kort över vad du märker efteråt.</li>
+			</ol>
+		</section>
+	{/if}
 
 	{#if data.tool.slug === '4-7-8-andning'}
 		<section class="block">
@@ -203,6 +238,22 @@
 		line-height: 1.55;
 	}
 
+	.reflect-list {
+		display: grid;
+		gap: 0.65rem;
+		margin: 0.8rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.reflect-list li {
+		padding: 0.8rem 0.9rem;
+		border-radius: 12px;
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		background: #ffffff;
+		line-height: 1.55;
+	}
+
 	:global(.dark) .block {
 		background: #1b2024;
 		border-color: rgba(255, 255, 255, 0.12);
@@ -214,7 +265,8 @@
 	}
 
 	:global(.dark) .step-list li,
-	:global(.dark) .link-list li {
+	:global(.dark) .link-list li,
+	:global(.dark) .reflect-list li {
 		background: #232a2e;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
@@ -235,7 +287,8 @@
 		}
 
 		.step-list,
-		.link-list {
+		.link-list,
+		.reflect-list {
 			gap: 0.55rem;
 		}
 
@@ -244,7 +297,8 @@
 		}
 
 		.step-list li,
-		.link-list li {
+		.link-list li,
+		.reflect-list li {
 			padding: 0.8rem 0.85rem;
 		}
 	}
