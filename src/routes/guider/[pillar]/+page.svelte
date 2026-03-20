@@ -98,6 +98,11 @@
 	<header class="intro">
 		<h1>{data.pillar.title}</h1>
 		<p>{data.pillar.description}</p>
+		{#if data.pillar.slug === 'social-angest'}
+			<p class="intro-note">
+				Det här är en översiktssida för området social ångest med teman och nästa steg.
+			</p>
+		{/if}
 	</header>
 
 	<section class="info-box" aria-label="Om innehållet">
@@ -108,9 +113,10 @@
 		<p class="om-innehall-link"><a href="/sa-arbetar-vi-med-innehall">Läs mer om hur vi arbetar med innehåll →</a></p>
 	</section>
 
-	<section class="block" aria-label="Artiklar i guiden">
-		<h2>Artiklar i guiden</h2>
-		<ul class="stack-list">
+	<section class="block" aria-label="I den här guiden">
+		<h2>I den här guiden</h2>
+		<p class="block-note">Här ser du vilka teman den här översiktsguiden tar upp.</p>
+		<ul class="stack-list stack-list-topics">
 			{#each data.pillar.clusterTopics as topic}
 				<li>{topic}</li>
 			{/each}
@@ -237,6 +243,10 @@
 		opacity: 0.84;
 	}
 
+	.intro-note {
+		font-size: 0.94rem;
+	}
+
 	.block {
 		margin-top: 1.45rem;
 		padding: 1.1rem 1rem 1rem;
@@ -301,6 +311,13 @@
 		border: 1px solid rgba(0, 0, 0, 0.08);
 		background: #ffffff;
 		line-height: 1.55;
+	}
+
+	.stack-list-topics li {
+		padding: 0.25rem 0;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
 	}
 
 	.stack-list-links a {
