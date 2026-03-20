@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
+	import ResearchEvidenceCard from '$lib/components/ResearchEvidenceCard.svelte';
 	import { portals } from '$lib/data/portals';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { trackHeroCtaPrimaryClick, trackHeroCtaSecondaryClick } from '$lib/analytics';
@@ -199,6 +200,9 @@
 				Vill du läsa mer om vad som sparas och hur uppgifter hanteras?
 				<a href="/integritet">Läs integritetspolicyn</a>.
 			</p>
+			<div class="how-evidence">
+				<ResearchEvidenceCard />
+			</div>
 		</div>
 	</section>
 
@@ -694,6 +698,10 @@
 		color: #0f766e;
 		text-decoration: underline;
 		text-underline-offset: 3px;
+	}
+
+	.how-evidence {
+		margin-top: 1rem;
 	}
 
 	.focus-content {
