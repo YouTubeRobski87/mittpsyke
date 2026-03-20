@@ -6,6 +6,9 @@
 		komplement för stöd, struktur och egen reflektion.
 	</p>
 	<p class="research-source">Källa: Yeo et al., Journal of Medical Internet Research, 2024</p>
+	<p class="research-study-link">
+		<a href="https://www.jmir.org/2024/1/e51268" target="_blank" rel="noopener noreferrer">Läs studien</a>
+	</p>
 	<p class="research-note">MittPsyke ersätter inte vård, diagnos eller akut hjälp.</p>
 </section>
 
@@ -39,6 +42,16 @@
 	.research-source {
 		font-size: 0.92rem;
 		opacity: 0.84;
+	}
+
+	.research-study-link {
+		font-size: 0.9rem;
+		opacity: 0.8;
+	}
+
+	.research-study-link a {
+		text-decoration: underline;
+		text-underline-offset: 2px;
 	}
 
 	.research-note {
