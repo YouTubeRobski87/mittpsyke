@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import ResearchEvidenceCard from '$lib/components/ResearchEvidenceCard.svelte';
 </script>
 
 <svelte:head>
@@ -65,6 +66,8 @@
 				MittPsyke kan vid vissa tecken på akut kris visa ett särskilt säkerhetssvar med hänvisning till akut hjälp. Tjänsten är inte en akuttjänst och ska inte användas som enda stöd i en nödsituation.
 			</p>
 		</section>
+
+		<ResearchEvidenceCard />
 
 		<section class="section" id="innehall">
 			<h2>Innehåll och kvalitet</h2>
