@@ -1,5 +1,16 @@
 <script lang="ts">
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
+	import { supabase } from '$lib/supabase';
+	import { onMount } from 'svelte';
+
+	let loggedIn = $state(false);
+
+	onMount(async () => {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+		loggedIn = !!session;
+	});
 </script>
 
 <svelte:head>
@@ -38,8 +49,12 @@
 		</header>
 
 		<div class="cta-container" aria-label="Starta med journalföring">
-			<a class="cta-button" href="/register">Skapa konto och börja skriva</a>
-			<a class="cta-button ghost" href="/login">Logga in</a>
+			{#if loggedIn}
+				<a class="cta-button" href="/dagbok">Öppna dagboken</a>
+			{:else}
+				<a class="cta-button" href="/register">Skapa konto och börja skriva</a>
+				<a class="cta-button ghost" href="/login">Logga in</a>
+			{/if}
 		</div>
 
 		<section class="section">

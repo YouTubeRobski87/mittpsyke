@@ -1,5 +1,16 @@
 <script lang="ts">
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
+	import { supabase } from '$lib/supabase';
+	import { onMount } from 'svelte';
+
+	let loggedIn = $state(false);
+
+	onMount(async () => {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+		loggedIn = !!session;
+	});
 
 	const previewWeeks = [
 		[0, 1, 1, 2, 2, 1, 0],
@@ -73,8 +84,12 @@
 		</section>
 
 		<div class="cta-container" aria-label="Starta humörspårning">
-			<a class="cta-button" href="/register">Skapa konto och följ ditt humör</a>
-			<a class="cta-button ghost" href="/login">Logga in</a>
+			{#if loggedIn}
+				<a class="cta-button" href="/framsteg">Se mitt framsteg</a>
+			{:else}
+				<a class="cta-button" href="/register">Skapa konto</a>
+				<a class="cta-button ghost" href="/login">Logga in</a>
+			{/if}
 		</div>
 
 		<section class="section">
