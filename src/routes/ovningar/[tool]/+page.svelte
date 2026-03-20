@@ -74,7 +74,7 @@
 		<section class="block">
 			<h2>Så går övningen till</h2>
 			<ol class="step-list">
-				<li>Läs igenom syftet med övningen.</li>
+				<li>Läs igenom övningens beskrivning och välj ett lugnt första steg.</li>
 				<li>Avsätt 5-15 minuter i en lugn miljö.</li>
 				<li>Följ stegen i din egen takt.</li>
 				<li>Reflektera kort över vad du märker efteråt.</li>
