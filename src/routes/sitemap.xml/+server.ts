@@ -38,7 +38,8 @@ const staticPages = Array.from(
 		'panikattack',
 		'om-mittpsyke',
 		'sovproblem',
-		'sjalvkansla'
+		'sjalvkansla',
+		'kbt'
 	])
 );
 

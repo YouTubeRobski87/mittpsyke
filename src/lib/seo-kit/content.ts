@@ -105,6 +105,12 @@ export const pillars: Pillar[] = [
 		title: 'Ältande och övertänkande',
 		description: 'Om tankeloopar, grubblande och hur du kan hitta mer lugn utan att behöva stänga av allt.',
 		chatPath: '/chat/e'
+	},
+	{
+		slug: 'kbt',
+		title: 'KBT – Kognitiv beteendeterapi',
+		description: 'Förstå KBT-principer och prova tekniker du kan använda hemma för att hantera tankar, känslor och beteenden.',
+		chatPath: '/chat/a'
 	}
 ];
 
@@ -2735,6 +2741,160 @@ Om de kroppsliga signalerna är ihållande — om du sover dåligt i månader, h
 				href: '/guider-seo/stress/varfor-orkar-jag-ingenting'
 			}
 		],
+	},
+
+	// KBT-guider
+	{
+		pillarSlug: 'kbt',
+		slug: 'vad-ar-kbt',
+		title: 'Vad är KBT och hur fungerar det?',
+		description: 'En lättillgänglig introduktion till kognitiv beteendeterapi – vad det bygger på och hur du kan börja använda det.',
+		updatedAt: '2026-03-21',
+		sources: [
+			{ label: 'KBT – 1177 Vårdguiden', url: 'https://www.1177.se/behandlingar--hjalpmedel/behandlingar-vid-psykiska-besvar/kognitiv-beteendeterapi-kbt/' },
+			{ label: 'Psykisk hälsa – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
+		faqs: [
+			{
+				question: 'Vad är KBT?',
+				answer: 'KBT, kognitiv beteendeterapi, är en behandlingsform som fokuserar på sambandet mellan tankar, känslor och beteenden. Målet är att identifiera och förändra destruktiva tankemönster.'
+			},
+			{
+				question: 'Kan man göra KBT på egen hand?',
+				answer: 'Många grundläggande KBT-tekniker kan användas som självhjälp. Strukturerade övningar som tankedagbok och beteendeaktivering går att testa hemma.'
+			},
+			{
+				question: 'Hur lång tid tar KBT?',
+				answer: 'Traditionellt pågår KBT i 8–20 sessioner, men effekter kan märkas redan efter några veckors självhjälpsövningar.'
+			},
+			{
+				question: 'Passar KBT alla?',
+				answer: 'KBT har stark evidens för ångest och depression. Hur väl det passar beror på individen – vissa föredrar andra terapiformer.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Tankeomstrukturering – utmana negativa tankar', href: '/guider-seo/kbt/tankeomstrukturering' },
+			{ title: 'Beteendeaktivering vid nedstämdhet', href: '/guider-seo/kbt/beteendeaktivering' },
+			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider-seo/kbt/kbt-tekniker-hemma' }
+		]
+	},
+	{
+		pillarSlug: 'kbt',
+		slug: 'tankeomstrukturering',
+		title: 'Tankeomstrukturering – utmana dina negativa tankar',
+		description: 'Lär dig hur du identifierar och ifrågasätter tankefällor med hjälp av en enkel KBT-teknik.',
+		updatedAt: '2026-03-21',
+		sources: [
+			{ label: 'KBT – 1177 Vårdguiden', url: 'https://www.1177.se/behandlingar--hjalpmedel/behandlingar-vid-psykiska-besvar/kognitiv-beteendeterapi-kbt/' }
+		],
+		faqs: [
+			{
+				question: 'Vad är tankeomstrukturering?',
+				answer: 'Tankeomstrukturering innebär att du aktivt undersöker om en negativ tanke stämmer, och ersätter den med en mer realistisk och balanserad version.'
+			},
+			{
+				question: 'Vilka är vanliga tankefällor?',
+				answer: 'Katastrofiering ("det värsta kommer hända"), svartvitt tänkande och tankeläsning ("de tycker illa om mig") är vanliga mönster.'
+			},
+			{
+				question: 'Hur börjar jag med tankeomstrukturering?',
+				answer: 'Skriv ned den negativa tanken, fråga dig vilket bevis som finns för och emot den, och formulera sedan en mer nyanserad version.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
+			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider-seo/kbt/kbt-tekniker-hemma' },
+			{ title: 'Övertänkande – när hjärnan inte stannar', href: '/guider-seo/overtankande/nar-hjarnan-inte-stannar' }
+		]
+	},
+	{
+		pillarSlug: 'kbt',
+		slug: 'beteendeaktivering',
+		title: 'Beteendeaktivering – ta ett steg ut ur passiviteten',
+		description: 'En central KBT-teknik vid nedstämdhet: hur små handlingar kan bryta den negativa spiralen.',
+		updatedAt: '2026-03-21',
+		sources: [
+			{ label: 'Depression – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/' },
+			{ label: 'Psykisk hälsa – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
+		faqs: [
+			{
+				question: 'Vad är beteendeaktivering?',
+				answer: 'Beteendeaktivering handlar om att medvetet öka aktiviteter som ger glädje eller mening, även när motivationen saknas. Handling kan komma före känsla.'
+			},
+			{
+				question: 'Varför fungerar beteendeaktivering vid depression?',
+				answer: 'Depression skapar en spiral av passivitet och minskad njutning. Beteendeaktivering bryter den spiralen steg för steg.'
+			},
+			{
+				question: 'Hur börjar jag?',
+				answer: 'Välj en liten, konkret aktivitet (t.ex. en kort promenad) och gör den oavsett motivation. Följ upp hur du mådde efteråt.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
+			{ title: 'Nedstämdhet – varför orkar jag ingenting?', href: '/guider-seo/depression/varfor-orkar-jag-ingenting' }
+		]
+	},
+	{
+		pillarSlug: 'kbt',
+		slug: 'kbt-tekniker-hemma',
+		title: 'KBT-tekniker du kan använda hemma',
+		description: 'Fem konkreta KBT-baserade övningar du kan börja med direkt – utan terapeut.',
+		updatedAt: '2026-03-21',
+		sources: [
+			{ label: 'KBT – 1177 Vårdguiden', url: 'https://www.1177.se/behandlingar--hjalpmedel/behandlingar-vid-psykiska-besvar/kognitiv-beteendeterapi-kbt/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
+		faqs: [
+			{
+				question: 'Kan jag göra KBT utan terapeut?',
+				answer: 'Många grundläggande tekniker går utmärkt att använda som självhjälp. För djupare problematik rekommenderas professionellt stöd.'
+			},
+			{
+				question: 'Vilka KBT-tekniker passar bäst som självhjälp?',
+				answer: 'Tankedagbok, beteendeaktivering, exponering i liten skala och andningsövningar är bra startpunkter.'
+			},
+			{
+				question: 'Hur snabbt märker man effekt av KBT-övningar?',
+				answer: 'Vissa märker skillnad inom dagar, men de flesta ser tydligare effekt efter 2–4 veckors regelbundet övande.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
+			{ title: 'Tankeomstrukturering – utmana negativa tankar', href: '/guider-seo/kbt/tankeomstrukturering' },
+			{ title: 'Beteendeaktivering – ta ett steg ur passiviteten', href: '/guider-seo/kbt/beteendeaktivering' }
+		]
+	},
+	{
+		pillarSlug: 'kbt',
+		slug: 'kbt-vid-angest',
+		title: 'KBT vid ångest – hur det fungerar steg för steg',
+		description: 'Hur KBT används specifikt för ångest: exponering, tankeanalys och gradvis träning.',
+		updatedAt: '2026-03-21',
+		sources: [
+			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'KBT – 1177 Vårdguiden', url: 'https://www.1177.se/behandlingar--hjalpmedel/behandlingar-vid-psykiska-besvar/kognitiv-beteendeterapi-kbt/' }
+		],
+		faqs: [
+			{
+				question: 'Varför är KBT effektivt mot ångest?',
+				answer: 'KBT hjälper dig att förstå och förändra de tankemönster och beteenden (som undvikande) som håller ångesten vid liv.'
+			},
+			{
+				question: 'Vad är exponering i KBT?',
+				answer: 'Exponering innebär att du gradvis och kontrollerat möter det du är rädd för, så att hjärnan lär sig att faran inte är reell.'
+			},
+			{
+				question: 'Hur lång tid tar KBT för ångest?',
+				answer: 'Vanligtvis 8–16 sessioner, men förbättring kan märkas tidigare med strukturerad självhjälp.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
+			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
+			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider-seo/kbt/kbt-tekniker-hemma' }
+		]
 	}
 ];
 
@@ -3079,6 +3239,41 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			{ title: 'Se alla artiklar om självkänsla', href: '/guider-seo/sjalvkansla' },
 			{ title: 'Gränser och självkänsla', href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla' },
 			{ title: 'Utforska övningar', href: '/ovningar' }
+		]
+	},
+
+	kbt: {
+		pillarSlug: 'kbt',
+		seoTitle: 'KBT – Kognitiv beteendeterapi | Tekniker och guider | MittPsyke',
+		seoDescription: 'Lär dig hur KBT fungerar och prova konkreta tekniker hemma. Guider om tankeomstrukturering, beteendeaktivering och mer – i lugn takt.',
+		h1: 'KBT – verktyg för tankar, känslor och beteenden',
+		intro: 'Kognitiv beteendeterapi är en av de mest välstuderade metoderna för psykisk hälsa. Här hittar du förklaringar och övningar du kan använda i din vardag.',
+		sections: [
+			{
+				heading: 'Förstå grunderna i KBT',
+				body: 'KBT bygger på sambandet mellan tankar, känslor och beteenden. Genom att förändra ett led kan du påverka de andra. Det kräver inte en terapeut för att komma igång.',
+				links: [
+					{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
+					{ title: 'KBT vid ångest – hur det fungerar steg för steg', href: '/guider-seo/kbt/kbt-vid-angest' }
+				]
+			},
+			{
+				heading: 'Tekniker du kan testa hemma',
+				body: 'Många KBT-tekniker passar utmärkt som självhjälp. Tankeomstrukturering och beteendeaktivering är bra startpunkter som du kan öva på utan förkunskaper.',
+				links: [
+					{ title: 'Tankeomstrukturering – utmana dina negativa tankar', href: '/guider-seo/kbt/tankeomstrukturering' },
+					{ title: 'Beteendeaktivering – ta ett steg ut ur passiviteten', href: '/guider-seo/kbt/beteendeaktivering' },
+					{ title: 'KBT-tekniker du kan använda hemma', href: '/guider-seo/kbt/kbt-tekniker-hemma' }
+				]
+			},
+			{
+				heading: 'Nästa steg',
+				body: 'Du kan reflektera kring dina tankar och beteenden i MittPsykes dagbok, eller börja ett samtal för att utforska vad som känns svårt just nu.'
+			}
+		],
+		primaryLinks: [
+			{ title: 'Se alla KBT-guider', href: '/guider-seo/kbt' },
+			{ title: 'Börja reflektera i dagboken', href: '/dagbok' }
 		]
 	}
 
