@@ -5,33 +5,13 @@
 		if (!browser) return false;
 
 		const mode = localStorage.getItem('theme-mode');
-		if (mode === 'dark') return true;
-		if (mode === 'light') return false;
-
-		return window.matchMedia('(prefers-color-scheme: dark)').matches;
+		return mode === 'dark';
 	}
 
 	let dark = $state(getInitialDarkMode());
 
 	$effect(() => {
 		document.documentElement.classList.toggle('dark', dark);
-	});
-
-	$effect(() => {
-		if (!browser) return;
-
-		const mode = localStorage.getItem('theme-mode');
-		if (mode === 'dark' || mode === 'light') return;
-
-		const media = window.matchMedia('(prefers-color-scheme: dark)');
-		const onChange = (event: MediaQueryListEvent) => {
-			dark = event.matches;
-		};
-
-		media.addEventListener('change', onChange);
-		return () => {
-			media.removeEventListener('change', onChange);
-		};
 	});
 
 	function toggle() {
