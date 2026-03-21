@@ -44,47 +44,24 @@
 		</section>
 	{/if}
 
-	{#if data.tool.slug === 'trygghetscirkel-exponering'}
+	{#if data.tool.steps && data.tool.steps.length > 0}
 		<section class="block">
 			<h2>Gör så här</h2>
 			<ol class="step-list">
-				<li>Rita tre nivåer: <strong>Tryggt</strong>, <strong>Lagom utmaning</strong> och <strong>För svårt just nu</strong>.</li>
-				<li>Skriv 2-3 sociala situationer i varje nivå, till exempel i mindre gruppsammanhang.</li>
-				<li>Välj en situation från <strong>Lagom utmaning</strong> som du kan göra inom 24 timmar.</li>
-				<li>Bestäm ett tydligt mikrosteg, till exempel: säga en mening i gruppen eller ställa en kort fråga.</li>
-				<li>Genomför steget och stanna kvar i situationen en kort stund i stället för att lämna direkt.</li>
-				<li>Upprepa samma nivå 2-3 gånger innan du går vidare till nästa steg i cirkeln.</li>
-			</ol>
-		</section>
-
-		<section class="block">
-			<h2>Reflektera efteråt</h2>
-			<ul class="reflect-list">
-				<li>Vad var lättare än du trodde?</li>
-				<li>Vad kändes mest utmanande, och vad hjälpte dig att stanna kvar?</li>
-				<li>Vilket nästa lilla steg vill du prova nästa gång?</li>
-			</ul>
-		</section>
-	{:else}
-		<section class="block">
-			<h2>Så går övningen till</h2>
-			<ol class="step-list">
-				<li>Läs igenom övningens beskrivning och välj ett lugnt första steg.</li>
-				<li>Avsätt 5-15 minuter i en lugn miljö.</li>
-				<li>Följ stegen i din egen takt.</li>
-				<li>Reflektera kort över vad du märker efteråt.</li>
+				{#each data.tool.steps as step}
+					<li>{step}</li>
+				{/each}
 			</ol>
 		</section>
 	{/if}
 
-	{#if data.tool.slug === '4-7-8-andning'}
+	{#if data.tool.reflections && data.tool.reflections.length > 0}
 		<section class="block">
-			<h2>Fördjupa vidare</h2>
-			<ul class="link-list">
-				<li><a href="/4-7-8-andning-ovning">Läs mer om 4-7-8 andning</a></li>
-				<li><a href="/andningsovningar-mot-angest">Se fler andningsövningar mot ångest</a></li>
-				<li><a href="/ovningar-mot-angest-online">Utforska övningar mot ångest online</a></li>
-				<li><a href="/hjalp-vid-angest-online">Läs mer om hjälp vid ångest online</a></li>
+			<h2>Reflektera efteråt</h2>
+			<ul class="reflect-list">
+				{#each data.tool.reflections as question}
+					<li>{question}</li>
+				{/each}
 			</ul>
 		</section>
 	{/if}
