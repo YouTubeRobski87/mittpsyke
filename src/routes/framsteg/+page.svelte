@@ -256,60 +256,6 @@
 				</section>
 			{:else}
 
-		<!-- ── Lugn dataöverblick ── -->
-		{#if streakData || milestonesData}
-			<section class="card overview-card">
-				<h2 class="overview-heading">Lugn överblick</h2>
-				<div class="overview-grid">
-					{#if streakData}
-						<div class="overview-item">
-							<div class="overview-number">{streakData.currentStreak}</div>
-							<div class="overview-label">dagar i rad</div>
-						</div>
-						<div class="overview-item">
-							<div class="overview-number">{streakData.longestStreak}</div>
-							<div class="overview-label">längsta streak</div>
-						</div>
-					{/if}
-					{#if milestonesData}
-						<div class="overview-item">
-							<div class="overview-number">{milestonesData.totalEntries}</div>
-							<div class="overview-label">totalt inlägg</div>
-						</div>
-						<div class="overview-item">
-							<div class="overview-number">{weeklyEntries}</div>
-							<div class="overview-label">den här veckan</div>
-						</div>
-					{/if}
-				</div>
-				{#if streakData && streakData.lastEntryDaysAgo <= 1}
-					<p class="overview-note">Fint att du fortsätter komma tillbaka.</p>
-				{:else if streakData && streakData.lastEntryDaysAgo > 1}
-					<p class="overview-note">Senaste inlägget var {streakData.lastEntryDaysAgo} dagar sedan. Det går bra att börja om.</p>
-				{/if}
-			</section>
-		{/if}
-
-		<!-- ── Mjuk veckosammanfattning ── -->
-		<section class="card summary-card">
-			<div class="card-header">
-				<div class="icon-badge week"><Heart size={24} /></div>
-				<h2>Den här veckan</h2>
-			</div>
-			<p class="summary-text">{weeklySummaryText}</p>
-			<p class="encouragement">{weeklyEncouragement}</p>
-		</section>
-
-		<!-- ── Aktivitetskarta ── -->
-		<section class="card heatmap-card">
-			<div class="card-header">
-				<div class="icon-badge heat"><TrendingUp size={24} /></div>
-				<h2>Din aktivitetskarta</h2>
-			</div>
-			<p class="heatmap-description">Varje ruta motsvarar en dag. Mörkare färg = fler inlägg.</p>
-			<ActivityHeatmap />
-		</section>
-
 		<!-- ── AI-insikter ── -->
 		<section class="card insights-card">
 			<div class="card-header">
@@ -370,6 +316,60 @@
 			{:else}
 				<p class="heatmap-description">Det finns inte tillräckligt med data för AI-insikter ännu.</p>
 			{/if}
+		</section>
+
+		<!-- ── Lugn dataöverblick ── -->
+		{#if streakData || milestonesData}
+			<section class="card overview-card">
+				<h2 class="overview-heading">Lugn överblick</h2>
+				<div class="overview-grid">
+					{#if streakData}
+						<div class="overview-item">
+							<div class="overview-number">{streakData.currentStreak}</div>
+							<div class="overview-label">dagar i rad</div>
+						</div>
+						<div class="overview-item">
+							<div class="overview-number">{streakData.longestStreak}</div>
+							<div class="overview-label">längsta streak</div>
+						</div>
+					{/if}
+					{#if milestonesData}
+						<div class="overview-item">
+							<div class="overview-number">{milestonesData.totalEntries}</div>
+							<div class="overview-label">totalt inlägg</div>
+						</div>
+						<div class="overview-item">
+							<div class="overview-number">{weeklyEntries}</div>
+							<div class="overview-label">den här veckan</div>
+						</div>
+					{/if}
+				</div>
+				{#if streakData && streakData.lastEntryDaysAgo <= 1}
+					<p class="overview-note">Fint att du fortsätter komma tillbaka.</p>
+				{:else if streakData && streakData.lastEntryDaysAgo > 1}
+					<p class="overview-note">Senaste inlägget var {streakData.lastEntryDaysAgo} dagar sedan. Det går bra att börja om.</p>
+				{/if}
+			</section>
+		{/if}
+
+		<!-- ── Mjuk veckosammanfattning ── -->
+		<section class="card summary-card">
+			<div class="card-header">
+				<div class="icon-badge week"><Heart size={24} /></div>
+				<h2>Den här veckan</h2>
+			</div>
+			<p class="summary-text">{weeklySummaryText}</p>
+			<p class="encouragement">{weeklyEncouragement}</p>
+		</section>
+
+		<!-- ── Aktivitetskarta ── -->
+		<section class="card heatmap-card">
+			<div class="card-header">
+				<div class="icon-badge heat"><TrendingUp size={24} /></div>
+				<h2>Din aktivitetskarta</h2>
+			</div>
+			<p class="heatmap-description">Varje ruta motsvarar en dag. Mörkare färg = fler inlägg.</p>
+			<ActivityHeatmap />
 		</section>
 
 		<!-- ── Milstolpar ── -->
