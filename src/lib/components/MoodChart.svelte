@@ -61,6 +61,13 @@
 		}
 	}
 
+	// Returnerar en färg baserad på humörnivå: grön (högt), gult (mitten), rött (lågt)
+	function moodColor(value: number, alpha = 1): string {
+		if (value >= 7) return `rgba(34, 197, 94, ${alpha})`;   // grön
+		if (value >= 4) return `rgba(245, 158, 11, ${alpha})`;  // gul
+		return `rgba(239, 68, 68, ${alpha})`;                   // röd
+	}
+
 	function buildChart() {
 		if (!ChartClass || !canvasEl || data.length < 2) {
 			destroyChart();
@@ -70,15 +77,19 @@
 		const labels = data.map((point) => toWeekdayLabel(point.date));
 		const points = data.map((point) => point.mood);
 
-		const borderColor = readCssColor('--primary', '#0f766e');
-		const tickColor = readCssColor('--muted-foreground', 'hsl(240 5% 65%)');
-		const gridColor = readCssColor('--border', 'hsl(220 10% 24%)');
+		const tickColor = readCssColor('--muted-foreground', '#888');
+		const gridColor = readCssColor('--border', 'rgba(0,0,0,0.07)');
+		const isDark = document.documentElement.classList.contains('dark');
 
 		const context = canvasEl.getContext('2d');
 		if (!context) return;
-		const gradient = context.createLinearGradient(0, 0, 0, canvasEl.height || 180);
-		gradient.addColorStop(0, getAccentWithAlpha(0.22));
-		gradient.addColorStop(1, getAccentWithAlpha(0.03));
+
+		// Vertikal gradient: grön (topp/högt humör) → gul (mitten) → röd (botten/lågt)
+		const chartHeight = canvasEl.height || 220;
+		const areaGradient = context.createLinearGradient(0, 0, 0, chartHeight);
+		areaGradient.addColorStop(0,    'rgba(34, 197, 94, 0.32)');
+		areaGradient.addColorStop(0.45, 'rgba(245, 158, 11, 0.18)');
+		areaGradient.addColorStop(1,    'rgba(239, 68, 68, 0.04)');
 
 		destroyChart();
 		chart = new ChartClass(context, {
@@ -88,23 +99,46 @@
 				datasets: [
 					{
 						data: points,
-						borderColor,
-						backgroundColor: gradient,
+						// Linjesegment färgade efter genomsnittlig humörnivå
+						segment: {
+							borderColor: (ctx: any) => {
+								const avg = (ctx.p0.parsed.y + ctx.p1.parsed.y) / 2;
+								return moodColor(avg);
+							}
+						},
+						backgroundColor: areaGradient,
 						fill: true,
-						tension: 0.4,
-						borderWidth: 2.2,
-						pointRadius: 2.6,
-						pointHoverRadius: 3.4,
-						pointBackgroundColor: borderColor,
-						pointBorderWidth: 0
+						tension: 0.45,
+						cubicInterpolationMode: 'monotone' as const,
+						borderWidth: 2.5,
+						pointRadius: 5,
+						pointHoverRadius: 7,
+						// Punkter färgade efter humörnivå
+						pointBackgroundColor: (ctx: any) => moodColor(ctx.parsed?.y ?? 5),
+						pointBorderColor: isDark ? '#1e2428' : '#ffffff',
+						pointBorderWidth: 2,
+						pointHoverBorderWidth: 2.5
 					}
 				]
 			},
 			options: {
 				responsive: true,
 				maintainAspectRatio: false,
+				animation: { duration: 500, easing: 'easeInOutQuart' as const },
 				plugins: {
-					legend: { display: false }
+					legend: { display: false },
+					tooltip: {
+						backgroundColor: isDark ? '#1e2428' : '#ffffff',
+						borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+						borderWidth: 1,
+						titleColor: isDark ? '#f0f0f0' : '#1a1a1a',
+						bodyColor: isDark ? '#ccc' : '#444',
+						padding: 10,
+						cornerRadius: 10,
+						callbacks: {
+							label: (item: any) => ` Humör: ${item.parsed.y}/10`
+						}
+					}
 				},
 				scales: {
 					x: {
@@ -112,27 +146,31 @@
 						ticks: {
 							color: tickColor,
 							maxRotation: 0,
-							autoSkipPadding: 14
+							autoSkipPadding: 14,
+							font: { size: 12 }
 						},
-						border: {
-							display: false
-						}
+						border: { display: false }
 					},
 					y: {
 						min: 1,
 						max: 10,
 						ticks: {
-							stepSize: 1,
+							stepSize: 3,
 							color: tickColor,
-							callback: (value: string | number) => String(value)
+							font: { size: 11 },
+							callback: (value: string | number) => {
+								if (value === 1)  return '1 😔';
+								if (value === 4)  return '4';
+								if (value === 7)  return '7';
+								if (value === 10) return '10 😊';
+								return '';
+							}
 						},
 						grid: {
 							color: gridColor,
-							lineWidth: 0.5
+							lineWidth: 0.6
 						},
-						border: {
-							display: false
-						}
+						border: { display: false }
 					}
 				}
 			}
@@ -177,7 +215,7 @@
 
 <style>
 	.chart-shell {
-		height: 180px;
+		height: 220px;
 		width: 100%;
 	}
 
