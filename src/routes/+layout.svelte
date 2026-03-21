@@ -18,6 +18,8 @@
 	import { supabase } from '$lib/supabase';
 	import { page } from '$app/state';
 	import type { User } from '@supabase/supabase-js';
+	import { injectAnalytics } from '@vercel/analytics/sveltekit';
+	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
 	const UNDER_CONSTRUCTION = false;
 
@@ -193,6 +195,13 @@
 		if (to?.url) {
 			trackCurrentPage(to.url);
 		}
+	});
+
+	// Initiera Vercel Analytics och Speed Insights en gång vid mount
+	$effect(() => {
+		if (!browser) return;
+		injectAnalytics();
+		injectSpeedInsights();
 	});
 </script>
 
