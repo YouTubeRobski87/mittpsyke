@@ -121,7 +121,8 @@
 				</div>
 				<div class="hero-community-note" aria-label="Forum">
 					<p class="hero-community-title">Du är inte ensam här</p>
-					<p class="hero-community-text">I forumet kan du läsa vad andra skriver, dela egna tankar och stötta någon med några ord.<br />Du kan skapa en tråd anonymt eller som inloggad, och du får också gärna bara läsa i din egen takt.</p>
+					<p class="hero-community-text">Forumet är en lugn plats där du kan läsa vad andra går igenom, dela egna tankar och möta stöd i ett lågmält sammanhang.<br />Du kan skapa en tråd anonymt eller som inloggad, och det är lika okej att bara läsa i din egen takt.</p>
+					<p class="hero-community-text">Här kan några ord från någon annan göra skillnad — och dina ord kan göra skillnad för någon med.</p>
 				</div>
 				<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
 				<HomeSafetyStrip />
