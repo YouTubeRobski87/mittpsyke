@@ -33,6 +33,16 @@
 	let shareFeedbackMessage = '';
 	let shareFeedbackType: 'success' | 'error' | 'info' = 'info';
 	let shareFeedbackShowCommunityLink = false;
+	let editingEntryId = '';
+	let editingText = '';
+	let editingMood = '';
+	let editingMoodPreview = 5;
+	let savingEditId = '';
+	let editError = '';
+	let confirmingDeleteEntryId = '';
+	let deletingEntryId = '';
+	let deleteErrorEntryId = '';
+	let deleteErrorMessage = '';
 
 	function parseStoredDraft(value: string | null): string {
 		if (!value) return '';
@@ -353,6 +363,143 @@
 		}
 	}
 
+	function openEditMode(entry: DiaryEntry) {
+		confirmingShareEntryId = '';
+		confirmingUnshareEntryId = '';
+		confirmingDeleteEntryId = '';
+		deleteErrorEntryId = '';
+		deleteErrorMessage = '';
+		editingEntryId = entry.id;
+		editingText = entry.content;
+		editingMood = entry.mood ?? '';
+		editingMoodPreview = parseMoodValue(entry.mood) ?? 5;
+		editError = '';
+	}
+
+	function closeEditMode() {
+		if (savingEditId) return;
+		editingEntryId = '';
+		editingText = '';
+		editingMood = '';
+		editError = '';
+	}
+
+	async function saveEdit(entry: DiaryEntry) {
+		if (savingEditId || !editingText.trim()) return;
+		editError = '';
+		savingEditId = entry.id;
+
+		try {
+			const { data } = await supabase.auth.getSession();
+			const session = data.session;
+
+			if (!session?.access_token) {
+				editError = 'Logga in för att spara ändringar.';
+				return;
+			}
+
+			const response = await fetch('/api/diary/update', {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session.access_token}`
+				},
+				body: JSON.stringify({
+					id: entry.id,
+					text: editingText.trim(),
+					mood: editingMood || null,
+					tags: entry.tags
+				})
+			});
+
+			const payload = await response.json().catch(() => null);
+			if (!response.ok || !payload?.success) {
+				editError = payload?.error ?? 'Kunde inte spara ändringen just nu.';
+				return;
+			}
+
+			entries = entries.map((e) =>
+				e.id === entry.id
+					? { ...e, content: editingText.trim(), mood: editingMood || null }
+					: e
+			);
+			editingEntryId = '';
+			editingText = '';
+			editingMood = '';
+			await loadEntries({ force: true });
+		} catch (error) {
+			editError = error instanceof Error ? error.message : 'Kunde inte spara ändringen just nu.';
+		} finally {
+			savingEditId = '';
+		}
+	}
+
+	function openDeleteConfirmation(entryId: string) {
+		if (deletingEntryId) return;
+		confirmingDeleteEntryId = entryId;
+		confirmingShareEntryId = '';
+		confirmingUnshareEntryId = '';
+		editingEntryId = '';
+		deleteErrorEntryId = '';
+		deleteErrorMessage = '';
+	}
+
+	function closeDeleteConfirmation() {
+		if (deletingEntryId) return;
+		confirmingDeleteEntryId = '';
+		deleteErrorEntryId = '';
+		deleteErrorMessage = '';
+	}
+
+	async function deleteEntry(entry: DiaryEntry) {
+		if (deletingEntryId) return;
+		deletingEntryId = entry.id;
+
+		try {
+			const { data } = await supabase.auth.getSession();
+			const session = data.session;
+
+			if (!session?.access_token) {
+				deleteErrorEntryId = entry.id;
+				deleteErrorMessage = 'Logga in för att ta bort inlägget.';
+				return;
+			}
+
+			const response = await fetch('/api/diary/delete', {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${session.access_token}`
+				},
+				body: JSON.stringify({ id: entry.id })
+			});
+
+			const payload = await response.json().catch(() => null);
+
+			if (!response.ok || !payload?.success) {
+				if (response.status === 404) {
+					entries = entries.filter((e) => e.id !== entry.id);
+					confirmingDeleteEntryId = '';
+					await loadEntries({ force: true });
+					return;
+				}
+				deleteErrorEntryId = entry.id;
+				deleteErrorMessage = payload?.error ?? 'Kunde inte ta bort inlägget just nu.';
+				return;
+			}
+
+			entries = entries.filter((e) => e.id !== entry.id);
+			confirmingDeleteEntryId = '';
+			await loadEntries({ force: true });
+		} catch (error) {
+			deleteErrorEntryId = entry.id;
+			deleteErrorMessage =
+				error instanceof Error ? error.message : 'Kunde inte ta bort inlägget just nu.';
+		} finally {
+			deletingEntryId = '';
+		}
+	}
+
 	async function saveDraftToDiary() {
 		if (!draftText.trim() || savingDraft) return;
 		draftError = '';
@@ -546,99 +693,205 @@
 								{#each entries as entry (entry.id)}
 									<article class="auth-panel diary-entry">
 										<p class="text-xs auth-muted">{formatDate(entry.created_at)}</p>
-										{#if entry.mood}
+										{#if entry.mood && editingEntryId !== entry.id}
 											<p class="mt-1 text-xs auth-muted">Humör: {entry.mood}/10</p>
 										{/if}
-										<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
-										<div class="share-row">
-											{#if isEntryShared(entry.id)}
-												<p class="share-status auth-muted">Redan delat i Gemenskap.</p>
-												<button
-													type="button"
-													class="share-trigger"
-													onclick={() => openUnshareConfirmation(entry.id)}
-												>
-													Ta bort delning
-												</button>
-												<a href="/dashboard/gemenskap" class="share-link">Öppna Gemenskap</a>
-											{:else}
-												<button
-													type="button"
-													class="share-trigger"
-													onclick={() => openShareConfirmation(entry.id)}
-												>
-													Dela anonymt i Gemenskapen
-												</button>
-											{/if}
-										</div>
 
-										{#if confirmingShareEntryId === entry.id}
-											<div class="share-confirmation" role="status">
-												<h3>Dela anonymt?</h3>
-												<p>
-													Det här publicerar en anonym version av ditt inlägg i Gemenskap.
-													Ditt namn visas aldrig för andra. Kontrollera att inlägget inte
-													innehåller namn, adresser, telefonnummer eller andra
-													personuppgifter.
-												</p>
-												<div class="share-confirmation-actions">
+										{#if editingEntryId === entry.id}
+											<div class="entry-edit-form">
+												<textarea
+													class="entry-edit-textarea"
+													rows={6}
+													bind:value={editingText}
+													placeholder="Skriv några ord..."
+												></textarea>
+												<div class="entry-edit-mood">
+													<p class="edit-mood-label auth-muted">
+														Humör: {editingMood ? `${editingMood}/10` : 'Ej valt'}
+													</p>
+													<input
+														type="range"
+														min="1"
+														max="10"
+														step="1"
+														value={editingMood || String(editingMoodPreview)}
+														oninput={(e) => {
+															const v = Number((e.currentTarget as HTMLInputElement).value);
+															editingMoodPreview = v;
+															editingMood = String(v);
+														}}
+														class="mood-slider"
+													/>
 													<button
 														type="button"
-														class="auth-button"
-														onclick={closeShareConfirmation}
-														disabled={sharingEntryId === entry.id}
+														class="mood-clear auth-muted"
+														onclick={() => { editingMood = ''; editingMoodPreview = 5; }}
+														disabled={!editingMood}
 													>
-														Avbryt
-													</button>
-													<button
-														type="button"
-														class="auth-button primary"
-														onclick={() => shareEntryAnonymously(entry)}
-														disabled={sharingEntryId === entry.id}
-													>
-														{sharingEntryId === entry.id ? 'Delar...' : 'Dela anonymt'}
+														Rensa humör
 													</button>
 												</div>
-											</div>
-										{/if}
-
-										{#if confirmingUnshareEntryId === entry.id}
-											<div class="share-confirmation" role="status">
-												<h3>Ta bort delning?</h3>
-												<p>
-													Det här tar bort den anonyma versionen från Gemenskap. Ditt
-													privata dagboksinlägg finns kvar i Dagbok.
-												</p>
-												<div class="share-confirmation-actions">
-													<button
-														type="button"
-														class="auth-button"
-														onclick={closeUnshareConfirmation}
-														disabled={unsharingEntryId === entry.id}
-													>
-														Avbryt
-													</button>
-													<button
-														type="button"
-														class="auth-button primary"
-														onclick={() => unshareEntry(entry)}
-														disabled={unsharingEntryId === entry.id}
-													>
-														{unsharingEntryId === entry.id ? 'Tar bort...' : 'Ta bort delning'}
-													</button>
-												</div>
-											</div>
-										{/if}
-
-										{#if shareFeedbackEntryId === entry.id && shareFeedbackMessage}
-											<p class="share-feedback {shareFeedbackType}">
-												{shareFeedbackMessage}
-												{#if shareFeedbackType === 'success' && shareFeedbackShowCommunityLink}
-													<a href="/dashboard/gemenskap" class="share-feedback-link">
-														Öppna Gemenskap
-													</a>
+												{#if editError}
+													<p class="edit-error">{editError}</p>
 												{/if}
-											</p>
+												<div class="entry-edit-actions">
+													<button
+														type="button"
+														class="auth-button primary"
+														onclick={() => saveEdit(entry)}
+														disabled={savingEditId === entry.id || !editingText.trim()}
+													>
+														{savingEditId === entry.id ? 'Sparar...' : 'Spara ändringar'}
+													</button>
+													<button
+														type="button"
+														class="auth-button"
+														onclick={closeEditMode}
+														disabled={savingEditId === entry.id}
+													>
+														Avbryt
+													</button>
+												</div>
+											</div>
+										{:else}
+											<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
+											<div class="share-row">
+												{#if isEntryShared(entry.id)}
+													<p class="share-status auth-muted">Redan delat i Gemenskap.</p>
+													<button
+														type="button"
+														class="share-trigger"
+														onclick={() => openUnshareConfirmation(entry.id)}
+													>
+														Ta bort delning
+													</button>
+													<a href="/dashboard/gemenskap" class="share-link">Öppna Gemenskap</a>
+												{:else}
+													<button
+														type="button"
+														class="share-trigger"
+														onclick={() => openShareConfirmation(entry.id)}
+													>
+														Dela anonymt i Gemenskapen
+													</button>
+												{/if}
+											</div>
+
+											{#if confirmingShareEntryId === entry.id}
+												<div class="share-confirmation" role="status">
+													<h3>Dela anonymt?</h3>
+													<p>
+														Det här publicerar en anonym version av ditt inlägg i Gemenskap.
+														Ditt namn visas aldrig för andra. Kontrollera att inlägget inte
+														innehåller namn, adresser, telefonnummer eller andra
+														personuppgifter.
+													</p>
+													<div class="share-confirmation-actions">
+														<button
+															type="button"
+															class="auth-button"
+															onclick={closeShareConfirmation}
+															disabled={sharingEntryId === entry.id}
+														>
+															Avbryt
+														</button>
+														<button
+															type="button"
+															class="auth-button primary"
+															onclick={() => shareEntryAnonymously(entry)}
+															disabled={sharingEntryId === entry.id}
+														>
+															{sharingEntryId === entry.id ? 'Delar...' : 'Dela anonymt'}
+														</button>
+													</div>
+												</div>
+											{/if}
+
+											{#if confirmingUnshareEntryId === entry.id}
+												<div class="share-confirmation" role="status">
+													<h3>Ta bort delning?</h3>
+													<p>
+														Det här tar bort den anonyma versionen från Gemenskap. Ditt
+														privata dagboksinlägg finns kvar i Dagbok.
+													</p>
+													<div class="share-confirmation-actions">
+														<button
+															type="button"
+															class="auth-button"
+															onclick={closeUnshareConfirmation}
+															disabled={unsharingEntryId === entry.id}
+														>
+															Avbryt
+														</button>
+														<button
+															type="button"
+															class="auth-button primary"
+															onclick={() => unshareEntry(entry)}
+															disabled={unsharingEntryId === entry.id}
+														>
+															{unsharingEntryId === entry.id ? 'Tar bort...' : 'Ta bort delning'}
+														</button>
+													</div>
+												</div>
+											{/if}
+
+											{#if shareFeedbackEntryId === entry.id && shareFeedbackMessage}
+												<p class="share-feedback {shareFeedbackType}">
+													{shareFeedbackMessage}
+													{#if shareFeedbackType === 'success' && shareFeedbackShowCommunityLink}
+														<a href="/dashboard/gemenskap" class="share-feedback-link">
+															Öppna Gemenskap
+														</a>
+													{/if}
+												</p>
+											{/if}
+
+											<div class="entry-actions">
+												<button
+													type="button"
+													class="entry-action-btn"
+													onclick={() => openEditMode(entry)}
+												>
+													Redigera
+												</button>
+												<span class="entry-action-sep" aria-hidden="true">·</span>
+												<button
+													type="button"
+													class="entry-action-btn"
+													onclick={() => openDeleteConfirmation(entry.id)}
+													disabled={Boolean(deletingEntryId)}
+												>
+													Ta bort
+												</button>
+											</div>
+
+											{#if confirmingDeleteEntryId === entry.id}
+												<div class="entry-delete-confirm" role="status">
+													<h3>Ta bort inlägg?</h3>
+													<p>Inlägget raderas permanent och kan inte återställas.</p>
+													<div class="entry-delete-actions">
+														<button
+															type="button"
+															class="auth-button"
+															onclick={closeDeleteConfirmation}
+															disabled={deletingEntryId === entry.id}
+														>
+															Avbryt
+														</button>
+														<button
+															type="button"
+															class="auth-button primary"
+															onclick={() => deleteEntry(entry)}
+															disabled={deletingEntryId === entry.id}
+														>
+															{deletingEntryId === entry.id ? 'Tar bort...' : 'Ta bort'}
+														</button>
+													</div>
+													{#if deleteErrorEntryId === entry.id && deleteErrorMessage}
+														<p class="delete-error">{deleteErrorMessage}</p>
+													{/if}
+												</div>
+											{/if}
 										{/if}
 									</article>
 								{/each}
@@ -1000,6 +1253,123 @@
 
 	:global(.dark) .diary-entry:hover {
 		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
+	}
+
+	.entry-actions {
+		margin-top: 0.6rem;
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+	}
+
+	.entry-action-btn {
+		border: 0;
+		background: transparent;
+		padding: 0;
+		font-size: 0.82rem;
+		color: hsl(var(--muted-foreground));
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		cursor: pointer;
+	}
+
+	.entry-action-btn:hover {
+		color: hsl(var(--foreground));
+	}
+
+	.entry-action-btn:disabled {
+		opacity: 0.4;
+		cursor: default;
+		text-decoration: none;
+	}
+
+	.entry-action-sep {
+		font-size: 0.75rem;
+		color: hsl(var(--muted-foreground) / 0.45);
+		user-select: none;
+	}
+
+	.entry-edit-form {
+		margin-top: 0.55rem;
+		display: grid;
+		gap: 0.6rem;
+	}
+
+	.entry-edit-textarea {
+		width: 100%;
+		padding: 0.65rem 0.75rem;
+		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+		font: inherit;
+		font-size: 0.9rem;
+		line-height: 1.6;
+		resize: vertical;
+	}
+
+	.entry-edit-textarea:focus {
+		border-color: var(--primary, #0f766e);
+		outline: none;
+	}
+
+	.entry-edit-textarea::placeholder {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.entry-edit-mood {
+		display: grid;
+		gap: 0.3rem;
+	}
+
+	.edit-mood-label {
+		margin: 0;
+		font-size: 0.82rem;
+	}
+
+	.entry-edit-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.edit-error {
+		margin: 0;
+		font-size: 0.82rem;
+		color: hsl(var(--error-foreground));
+	}
+
+	.entry-delete-confirm {
+		margin-top: 0.75rem;
+		padding: 0.75rem 0.8rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: var(--radius-input);
+		background: hsl(var(--surface-soft));
+	}
+
+	.entry-delete-confirm h3 {
+		margin: 0;
+		font-size: 0.94rem;
+	}
+
+	.entry-delete-confirm p {
+		margin: 0.45rem 0 0;
+		font-size: 0.85rem;
+		color: hsl(var(--muted-foreground));
+		line-height: 1.55;
+	}
+
+	.entry-delete-actions {
+		margin-top: 0.75rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.delete-error {
+		margin: 0.5rem 0 0;
+		font-size: 0.82rem;
+		color: hsl(var(--error-foreground));
 	}
 
 	@media (min-width: 980px) {
