@@ -119,9 +119,9 @@
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa konto</a>
 				</div>
-				<div class="hero-community-note" aria-label="Anonym gemenskap">
+				<div class="hero-community-note" aria-label="Forum">
 					<p class="hero-community-title">Du är inte ensam här</p>
-					<p class="hero-community-text">I Gemenskapen kan du dela dagboksinlägg anonymt och få anonyma svar från andra. Enkelt, lågmält och tryggt.</p>
+					<p class="hero-community-text">I forumet kan du läsa vad andra skriver, dela egna tankar och stötta någon med några ord.<br />Du kan skapa en tråd anonymt eller som inloggad, och du får också gärna bara läsa i din egen takt.</p>
 				</div>
 				<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
 				<HomeSafetyStrip />
