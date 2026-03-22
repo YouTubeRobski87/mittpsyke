@@ -10,24 +10,37 @@
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
-		'@type': 'CollectionPage',
-		headline: data.landing?.h1 ?? data.pillar.title,
-		description: pageDescription,
-		url: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`,
-		author: [
+		'@graph': [
 			{
-				'@type': 'Organization',
-				name: 'MittPsyke',
-				url: 'https://www.mittpsyke.se'
+				'@type': 'CollectionPage',
+				headline: data.landing?.h1 ?? data.pillar.title,
+				description: pageDescription,
+				url: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`,
+				author: [
+					{ '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' },
+					{
+						'@type': 'Person',
+						name: 'Robert Claesson',
+						jobTitle: 'Grundare',
+						url: 'https://www.mittpsyke.se/om-mittpsyke'
+					}
+				],
+				inLanguage: 'sv-SE'
 			},
 			{
-				'@type': 'Person',
-				name: 'Robert Claesson',
-				jobTitle: 'Grundare',
-				url: 'https://www.mittpsyke.se/om-mittpsyke'
+				'@type': 'BreadcrumbList',
+				itemListElement: [
+					{ '@type': 'ListItem', position: 1, name: 'Hem', item: 'https://www.mittpsyke.se' },
+					{ '@type': 'ListItem', position: 2, name: 'Guider', item: 'https://www.mittpsyke.se/guider' },
+					{
+						'@type': 'ListItem',
+						position: 3,
+						name: data.pillar.title,
+						item: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`
+					}
+				]
 			}
-		],
-		inLanguage: 'sv-SE'
+		]
 	});
 </script>
 

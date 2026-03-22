@@ -1,6 +1,7 @@
 export const load = () => {
   return {
-    title: "Hjälp vid panikattack – Andningsövningar och stöd online",
-    description: "Lär dig hantera panikattacker med MittPsykes digitala verktyg och andningsövningar. Anonymt stöd dygnet runt."
+    title: 'Hjälp vid panikattacker – prata anonymt',
+    description:
+      'Få stöd för panikattacker och plötslig rädsla. Prata anonymt med AI-baserat samtalsstöd dygnet runt. Lugn, ärlig och tillgänglig hjälp.'
   };
 };

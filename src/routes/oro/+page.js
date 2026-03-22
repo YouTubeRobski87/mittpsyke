@@ -1,6 +1,7 @@
 export const load = () => {
   return {
-    title: "Hjälp mot oro online – Lugn och verktyg för din vardag",
-    description: "MittPsyke erbjuder hjälp mot oro online. Beprövade metoder och anonymt stöd för dig som kämpar med ständig oro."
+    title: 'Hjälp mot oro online – prata anonymt',
+    description:
+      'Plågas du av oro och ältande tankar? Få anonymt samtalsstöd online dygnet runt – ett tryggt rum att prata fritt i.'
   };
 };

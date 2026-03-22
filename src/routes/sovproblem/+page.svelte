@@ -1,11 +1,15 @@
 <svelte:head>
-	<title>Sömnproblem – samtalsstöd och stöd i stunden | MittPsyke</title>
-	<meta name="description" content="Kan du inte sova? Prata anonymt med AI-baserat samtalsstöd om vad som håller dig vaken. Lugnt, tillgängligt och utan krav." />
-	<meta property="og:title" content="Sömnproblem – samtalsstöd och stöd i stunden | MittPsyke" />
-	<meta property="og:description" content="Kan du inte sova? Prata anonymt med AI-baserat samtalsstöd om vad som håller dig vaken." />
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/sovproblem" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'MedicalWebPage',
+		name: 'Sömnproblem – samtalsstöd och stöd i stunden',
+		url: 'https://www.mittpsyke.se/sovproblem',
+		description: 'Kan du inte sova? Prata anonymt med AI-baserat samtalsstöd om vad som håller dig vaken. Lugnt, tillgängligt och utan krav.',
+		about: { '@type': 'MedicalCondition', name: 'Sömnproblem' },
+		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
+		specialty: 'https://schema.org/Psychiatric',
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+	})}<\/script>`}
 </svelte:head>
 
 <main class="page">

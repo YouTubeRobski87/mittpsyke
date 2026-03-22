@@ -1,11 +1,16 @@
 <svelte:head>
-	<title>Samtalsstöd vid trauma – Bearbeta i din egen takt | MittPsyke</title>
-	<meta name="description" content="Vi erbjuder samtalsstöd vid trauma i ett tryggt rum där du kan börja utan konto och reflektera i din egen takt." />
-	<meta property="og:title" content="Samtalsstöd vid trauma – Bearbeta i din egen takt | MittPsyke" />
-	<meta property="og:description" content="Vi erbjuder samtalsstöd vid trauma i ett tryggt rum där du kan börja utan konto och reflektera i din egen takt." />
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/trauma" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'MedicalWebPage',
+		name: 'Samtalsstöd vid trauma – Bearbeta i din egen takt',
+		url: 'https://www.mittpsyke.se/trauma',
+		description: 'Vi erbjuder samtalsstöd vid trauma i ett tryggt rum där du kan börja utan konto och reflektera i din egen takt.',
+		about: { '@type': 'MedicalCondition', name: 'Trauma' },
+		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
+		specialty: 'https://schema.org/Psychiatric',
+		dateModified: '2026-03-14',
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+	})}<\/script>`}
 </svelte:head>
 
 <main class="page">

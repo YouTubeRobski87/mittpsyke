@@ -1,6 +1,7 @@
 export const load = () => {
   return {
-    title: "Om MittPsyke",
-    description: "Lär dig mer om MittPsyke, hur tjänsten fungerar och hur vi beskriver AI-stödet, integritet och ansvar på ett tydligt sätt."
+    title: 'Om MittPsyke – Skapad av erfarenhet, inte teori',
+    description:
+      'MittPsyke skapades av Robert Claesson – av egna erfarenheter av psykisk ohälsa och återhämtning. Läs om varför MittPsyke finns och hur tjänsten fungerar.'
   };
 };

@@ -1,11 +1,16 @@
 <svelte:head>
-	<title>Stöd vid stress online – prata anonymt | MittPsyke</title>
-	<meta name="description" content="Känner du dig överväldigad av stress? Få anonymt samtalsstöd online dygnet runt – utan väntetid och utan bedömning." />
-	<meta property="og:title" content="Stöd vid stress online – prata anonymt | MittPsyke" />
-	<meta property="og:description" content="Känner du dig överväldigad av stress? Få anonymt samtalsstöd online dygnet runt." />
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/stress" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'MedicalWebPage',
+		name: 'Stöd vid stress online – prata anonymt',
+		url: 'https://www.mittpsyke.se/stress',
+		description: 'Känner du dig överväldigad av stress? Få anonymt samtalsstöd online dygnet runt – utan väntetid och utan bedömning.',
+		about: { '@type': 'MedicalCondition', name: 'Stress' },
+		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
+		specialty: 'https://schema.org/Psychiatric',
+		dateModified: '2026-03-14',
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+	})}<\/script>`}
 </svelte:head>
 
 <main class="page">

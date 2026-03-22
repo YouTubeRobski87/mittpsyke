@@ -26,14 +26,21 @@
 	let { children, data } = $props();
 	const organizationJsonLd = {
 		'@context': 'https://schema.org',
-			'@type': 'Organization',
-			name: 'MittPsyke',
-			url: 'https://www.mittpsyke.se',
-			email: PUBLIC_CONTACT_EMAIL,
-			founder: {
-				'@type': 'Person',
-				name: 'Robert Claesson'
+		'@type': 'Organization',
+		name: 'MittPsyke',
+		url: 'https://www.mittpsyke.se',
+		email: PUBLIC_CONTACT_EMAIL,
+		description: 'Svensk plattform för AI-baserat samtalsstöd och mental hälsa.',
+		logo: {
+			'@type': 'ImageObject',
+			url: 'https://www.mittpsyke.se/og-image.png'
 		},
+		founder: {
+			'@type': 'Person',
+			name: 'Robert Claesson'
+		},
+		areaServed: { '@type': 'Country', name: 'Sverige' },
+		inLanguage: 'sv',
 		identifier: '198712284895'
 	};
 

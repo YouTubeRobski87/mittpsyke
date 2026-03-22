@@ -1,6 +1,7 @@
 export const load = () => {
   return {
-    title: "Hjälp vid ångest online – Verktyg och samtalsstöd",
-    description: "Få hjälp vid ångest online via MittPsyke. Anonyma verktyg, andningsövningar och samtalsstöd för din psykiska hälsa."
+    title: 'Hjälp vid ångest – prata anonymt',
+    description:
+      'Få stöd för ångest och oron. Prata anonymt med AI-baserat samtalsstöd dygnet runt. Lugn, ärlig och tillgänglig hjälp.'
   };
 };

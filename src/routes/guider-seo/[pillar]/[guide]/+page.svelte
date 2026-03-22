@@ -78,6 +78,27 @@
 			}
 		}))
 	} : null);
+
+	const jsonLdBreadcrumb = $derived({
+		'@context': 'https://schema.org',
+		'@type': 'BreadcrumbList',
+		itemListElement: [
+			{ '@type': 'ListItem', position: 1, name: 'Hem', item: 'https://www.mittpsyke.se' },
+			{ '@type': 'ListItem', position: 2, name: 'Guider', item: 'https://www.mittpsyke.se/guider' },
+			{
+				'@type': 'ListItem',
+				position: 3,
+				name: data.pillar.title,
+				item: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`
+			},
+			{
+				'@type': 'ListItem',
+				position: 4,
+				name: data.guide.title,
+				item: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`
+			}
+		]
+	});
 </script>
 
 <svelte:head>
@@ -85,14 +106,15 @@
 	<link rel="canonical" href={canonical(`/guider-seo/${data.pillar.slug}/${data.guide.slug}`)} />
 	<meta name="description" content={data.guide.description} />
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdArticle)}<\/script>`}
+	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdBreadcrumb)}<\/script>`}
 	{#if jsonLdFaq}
 		{@html `<script type="application/ld+json">${JSON.stringify(jsonLdFaq)}<\/script>`}
 	{/if}
 </svelte:head>
 
 <main class="mx-auto max-w-3xl px-4 py-10">
-	<nav class="mb-5 text-sm opacity-75">
-		<a class="hover:underline" href="/guider-seo">Guider SEO</a>
+	<nav class="mb-5 text-sm opacity-75" aria-label="Brödsmulor">
+		<a class="hover:underline" href="/guider">Guider</a>
 		<span> / </span>
 		<a class="hover:underline" href={`/guider-seo/${data.pillar.slug}`}>{data.pillar.title}</a>
 	</nav>

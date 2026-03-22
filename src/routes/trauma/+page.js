@@ -1,6 +1,7 @@
 export const load = () => {
   return {
-    title: "Samtalsstöd vid trauma – Bearbeta i din egen takt",
-    description: "Få anonymt samtalsstöd vid trauma och PTSD. Vi erbjuder trygga verktyg för din återhämtning i din egen takt."
+    title: 'Samtalsstöd vid trauma – Bearbeta i din egen takt',
+    description:
+      'Vi erbjuder samtalsstöd vid trauma i ett tryggt rum där du kan börja utan konto och reflektera i din egen takt.'
   };
 };

@@ -1,11 +1,16 @@
 <svelte:head>
-	<title>Samtalsstöd vid nedstämdhet – prata anonymt | MittPsyke</title>
-	<meta name="description" content="Känner du dig nedstämd utan att veta varför? Få anonymt samtalsstöd online dygnet runt – ett tryggt rum att prata i." />
-	<meta property="og:title" content="Samtalsstöd vid nedstämdhet – prata anonymt | MittPsyke" />
-	<meta property="og:description" content="Känner du dig nedstämd utan att veta varför? Få anonymt samtalsstöd online dygnet runt." />
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/nedstamdhet" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'MedicalWebPage',
+		name: 'Samtalsstöd vid nedstämdhet – prata anonymt',
+		url: 'https://www.mittpsyke.se/nedstamdhet',
+		description: 'Känner du dig nedstämd utan att veta varför? Få anonymt samtalsstöd online dygnet runt – ett tryggt rum att prata i.',
+		about: { '@type': 'MedicalCondition', name: 'Nedstämdhet' },
+		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
+		specialty: 'https://schema.org/Psychiatric',
+		dateModified: '2026-03-14',
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+	})}<\/script>`}
 </svelte:head>
 
 <main class="page">

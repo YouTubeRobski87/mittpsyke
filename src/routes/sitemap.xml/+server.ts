@@ -1,6 +1,21 @@
 import { getGuiderSeoPaths } from '$lib/seo-kit/content';
 import { canonical } from '$lib/seo-kit/seo';
 
+// Pillar-sidor (ångest, stress, depression etc.) – hög prioritet
+const pillarPages = new Set([
+	'angest',
+	'depression',
+	'stress',
+	'oro',
+	'nedstamdhet',
+	'ensamhet',
+	'panikattack',
+	'sovproblem',
+	'sjalvkansla',
+	'trauma',
+	'kbt'
+]);
+
 const staticPages = Array.from(
 	new Set([
 		'',
@@ -10,6 +25,13 @@ const staticPages = Array.from(
 		'blogg/ai-hjalper-dig-bearbeta-kanslor',
 		'trauma',
 		'dagbok',
+		'journalforing',
+		'humorsparning',
+		'guider',
+		'ovningar',
+		'om-mittpsyke',
+		'ansvar',
+		'integritet',
 		'psykiskt-stod-online',
 		'anonymt-samtalsstod-online',
 		'hjalp-vid-angest-online',
@@ -36,34 +58,41 @@ const staticPages = Array.from(
 		'nedstamdhet',
 		'ensamhet',
 		'panikattack',
-		'om-mittpsyke',
 		'sovproblem',
 		'sjalvkansla',
 		'kbt'
 	])
 );
 
+const LASTMOD = '2026-03-22';
+
 const priorityOverrides: Record<string, string> = {
 	blogg: '0.7',
 	'blogg/vad-ar-journalterapi': '0.7',
 	'blogg/kbt-dagbok-vs-fri-journalforing': '0.7',
-	'blogg/ai-hjalper-dig-bearbeta-kanslor': '0.7'
+	'blogg/ai-hjalper-dig-bearbeta-kanslor': '0.7',
+	ansvar: '0.5',
+	integritet: '0.5'
 };
 
 export function GET() {
 	const dynamicUrls = getGuiderSeoPaths()
-		.map((path) => `<url><loc>${canonical(path)}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>`)
+		.map(
+			(path) =>
+				`<url><loc>${canonical(path)}</loc><lastmod>${LASTMOD}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`
+		)
 		.join('');
 
 	const staticUrls = staticPages
 		.map((page) => {
-		const loc = page === ''
-			? 'https://www.mittpsyke.se/'
-			: `https://www.mittpsyke.se/${page}`;
-		const priority = page === '' ? '1.0' : (priorityOverrides[page] ?? '0.8');
-		return `<url><loc>${loc}</loc><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
-	})
-	.join('');
+			const loc = page === '' ? 'https://www.mittpsyke.se/' : `https://www.mittpsyke.se/${page}`;
+			let priority: string;
+			if (page === '') priority = '1.0';
+			else if (pillarPages.has(page)) priority = '0.9';
+			else priority = priorityOverrides[page] ?? '0.8';
+			return `<url><loc>${loc}</loc><lastmod>${LASTMOD}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`;
+		})
+		.join('');
 
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${staticUrls}${dynamicUrls}</urlset>`;

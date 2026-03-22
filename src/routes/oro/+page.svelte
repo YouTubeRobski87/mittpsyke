@@ -1,11 +1,16 @@
 <svelte:head>
-	<title>Hjälp mot oro online – prata anonymt | MittPsyke</title>
-	<meta name="description" content="Plågas du av oro och ältande tankar? Få anonymt samtalsstöd online dygnet runt – ett tryggt rum att prata fritt i." />
-	<meta property="og:title" content="Hjälp mot oro online – prata anonymt | MittPsyke" />
-	<meta property="og:description" content="Plågas du av oro och ältande tankar? Få anonymt samtalsstöd online dygnet runt." />
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/oro" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'MedicalWebPage',
+		name: 'Hjälp mot oro online – prata anonymt',
+		url: 'https://www.mittpsyke.se/oro',
+		description: 'Plågas du av oro och ältande tankar? Få anonymt samtalsstöd online dygnet runt – ett tryggt rum att prata fritt i.',
+		about: { '@type': 'MedicalCondition', name: 'Oro' },
+		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
+		specialty: 'https://schema.org/Psychiatric',
+		dateModified: '2026-03-14',
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+	})}<\/script>`}
 </svelte:head>
 
 <main class="page">

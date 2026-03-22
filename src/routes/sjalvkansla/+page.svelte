@@ -1,11 +1,16 @@
 <svelte:head>
-	<title>Självkänsla – samtalsstöd och stöd i din takt | MittPsyke</title>
-	<meta name="description" content="Låg självkänsla är tyst men tung. Prata anonymt och utforska din relation till dig själv – utan dömande ton, utan krav." />
-	<meta property="og:title" content="Självkänsla – samtalsstöd och stöd i din takt | MittPsyke" />
-	<meta property="og:description" content="Låg självkänsla är tyst men tung. Prata anonymt och utforska din relation till dig själv." />
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/sjalvkansla" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'MedicalWebPage',
+		name: 'Självkänsla – samtalsstöd och stöd i din takt',
+		url: 'https://www.mittpsyke.se/sjalvkansla',
+		description: 'Låg självkänsla är tyst men tung. Prata anonymt och utforska din relation till dig själv – utan dömande ton, utan krav.',
+		about: { '@type': 'MedicalCondition', name: 'Låg självkänsla' },
+		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
+		specialty: 'https://schema.org/Psychiatric',
+		dateModified: '2026-03-14',
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+	})}<\/script>`}
 </svelte:head>
 
 <main class="page">

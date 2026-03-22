@@ -1,6 +1,7 @@
 export const load = () => {
   return {
-    title: "Samtalsstöd för nedstämdhet – Du behöver inte bära det ensam",
-    description: "Få samtalsstöd för nedstämdhet online via MittPsyke. Anonymt, tryggt och tillgängligt dygnet runt."
+    title: 'Samtalsstöd vid nedstämdhet – prata anonymt',
+    description:
+      'Känner du dig nedstämd utan att veta varför? Få anonymt samtalsstöd online dygnet runt – ett tryggt rum att prata i.'
   };
 };

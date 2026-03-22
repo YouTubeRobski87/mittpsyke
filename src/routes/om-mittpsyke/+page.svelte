@@ -4,19 +4,14 @@
 </script>
 
 <svelte:head>
-	<title>Om MittPsyke – Skapad av erfarenhet, inte teori</title>
-	<meta
-		name="description"
-		content="MittPsyke skapades av Robert Claesson – av egna erfarenheter av psykisk ohälsa, missbruk och återhämtning. Läs hans story och förstå varför MittPsyke finns."
-	/>
-	<meta property="og:title" content="Om MittPsyke – Skapad av erfarenhet, inte teori" />
-	<meta
-		property="og:description"
-		content="MittPsyke skapades av Robert Claesson – av egna erfarenheter av psykisk ohälsa, missbruk och återhämtning. Läs hans story och förstå varför MittPsyke finns."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/om-mittpsyke" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'AboutPage',
+		name: 'Om MittPsyke – Skapad av erfarenhet, inte teori',
+		url: 'https://www.mittpsyke.se/om-mittpsyke',
+		description: 'MittPsyke skapades av Robert Claesson – av egna erfarenheter av psykisk ohälsa och återhämtning.',
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+	})}<\/script>`}
 </svelte:head>
 
 <main class="page">

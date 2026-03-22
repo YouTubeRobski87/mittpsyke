@@ -6,12 +6,10 @@
 </script>
 
 <svelte:head>
-	<title>{buildTitle('Guider SEO')}</title>
+	<title>{buildTitle('Guider')}</title>
 	<link rel="canonical" href={canonical('/guider-seo')} />
-	<meta
-		name="description"
-		content="Översikt över guider inom ångest, depression och trauma under ett separat SEO-skelett."
-	/>
+	<meta name="description" content="Utforska guider inom ångest, depression, stress och trauma." />
+	<meta name="robots" content="noindex, follow" />
 </svelte:head>
 
 <main>

@@ -1,11 +1,16 @@
 <svelte:head>
-	<title>Hjälp vid ångest – prata anonymt | MittPsyke</title>
-	<meta name="description" content="Få stöd för ångest och oron. Prata anonymt med AI-baserat samtalsstöd dygnet runt. Lugn, ärlig och tillgänglig hjälp." />
-	<meta property="og:title" content="Hjälp vid ångest – prata anonymt | MittPsyke" />
-	<meta property="og:description" content="Få stöd för ångest och oron. Prata anonymt med AI-baserat samtalsstöd dygnet runt." />
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/angest" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'MedicalWebPage',
+		name: 'Hjälp vid ångest – prata anonymt',
+		url: 'https://www.mittpsyke.se/angest',
+		description: 'Få stöd för ångest och oron. Prata anonymt med AI-baserat samtalsstöd dygnet runt.',
+		about: { '@type': 'MedicalCondition', name: 'Ångest' },
+		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
+		specialty: 'https://schema.org/Psychiatric',
+		dateModified: '2026-03-14',
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+	})}<\/script>`}
 </svelte:head>
 
 <main class="page">

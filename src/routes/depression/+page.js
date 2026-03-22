@@ -1,6 +1,7 @@
 export const load = () => {
   return {
-    title: "Stöd vid depression online – Bearbeta i din egen takt",
-    description: "MittPsyke erbjuder anonymt stöd vid depression online. Digitala verktyg och samtalsstöd för dig som mår dåligt."
+    title: 'Hjälp vid depression – prata anonymt',
+    description:
+      'Få stöd för depression och tomhet. Prata anonymt med AI-baserat samtalsstöd dygnet runt. Lugn, ärlig och tillgänglig hjälp.'
   };
 };
