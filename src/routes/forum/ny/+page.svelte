@@ -59,6 +59,9 @@
 		}}
 		class="new-post-form"
 	>
+		<!-- Skicka med display_name som fallback om server-actionen inte kan läsa profiles -->
+		<input type="hidden" name="_displayName" value={data.displayName ?? ''} />
+
 		<!-- Samtalsrum -->
 		<div class="form-group">
 			<label for="category" class="form-label">Samtalsrum</label>

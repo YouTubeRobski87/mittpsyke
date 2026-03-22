@@ -117,12 +117,25 @@ export const actions: Actions = {
 		// Hämta visningsnamn om inte anonym
 		let displayName: string | null = null;
 		if (!isAnonymous) {
-			const { data: profile } = await locals.supabase
+			const { data: profile, error: profileError } = await locals.supabase
 				.from('profiles')
 				.select('display_name')
 				.eq('id', user.id)
 				.maybeSingle();
+
+			if (profileError) {
+				console.error('Forum ny: could not fetch display_name from profiles:', profileError);
+			}
+
 			displayName = typeof profile?.display_name === 'string' ? profile.display_name.trim() || null : null;
+
+			// Fallback: använd det display_name som load-funktionen skickade med i formuläret
+			if (!displayName) {
+				const hiddenName = (formData.get('_displayName') as string | null)?.trim() ?? '';
+				if (hiddenName.length > 0) {
+					displayName = hiddenName;
+				}
+			}
 		}
 
 		const { data: thread, error: insertError } = await locals.supabase

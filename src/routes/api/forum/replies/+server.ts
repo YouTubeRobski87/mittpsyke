@@ -78,12 +78,22 @@ export const POST: RequestHandler = async ({ request }) => {
 	// Hämta visningsnamn
 	let displayName: string | null = null;
 	if (!isAnonymous) {
-		const { data: profile } = await supabase
+		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('display_name')
 			.eq('id', user.id)
 			.maybeSingle();
+
+		if (profileError) {
+			console.error('Forum reply: could not fetch display_name from profiles:', profileError);
+		}
+
 		displayName = typeof profile?.display_name === 'string' ? profile.display_name.trim() || null : null;
+
+		// Fallback: klientens user_metadata (om det finns ett namn där)
+		if (!displayName && typeof user.user_metadata?.display_name === 'string') {
+			displayName = user.user_metadata.display_name.trim() || null;
+		}
 	}
 
 	const { data: reply, error: insertError } = await supabase

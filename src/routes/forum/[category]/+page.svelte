@@ -22,7 +22,7 @@
 
 	function authorLabel(thread: { is_anonymous: boolean; display_name: string | null }): string {
 		if (thread.is_anonymous) return 'Anonym';
-		return thread.display_name?.trim() || 'Okänd';
+		return thread.display_name?.trim() || 'Namnlös';
 	}
 </script>
 

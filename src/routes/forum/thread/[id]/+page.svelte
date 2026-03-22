@@ -68,7 +68,7 @@
 
 	function authorLabel(item: { is_anonymous: boolean; display_name: string | null }): string {
 		if (item.is_anonymous) return 'Anonym';
-		return item.display_name?.trim() || 'Okänd';
+		return item.display_name?.trim() || 'Namnlös';
 	}
 
 	async function getToken(): Promise<string | null> {
