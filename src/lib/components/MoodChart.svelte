@@ -152,10 +152,11 @@
 						border: { display: false }
 					},
 					y: {
+						type: 'linear',
 						min: 1,
 						max: 10,
 						ticks: {
-							stepSize: 3,
+							stepSize: 1,
 							color: tickColor,
 							font: { size: 11 },
 							callback: (value: string | number) => {
