@@ -298,6 +298,12 @@
 						Övningar
 					</a>
 					<a
+						href="/forum"
+						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+					>
+						Forum
+					</a>
+					<a
 						href="/blogg"
 						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
 					>
@@ -397,6 +403,13 @@
 					onclick={() => (mobileMenuOpen = false)}
 				>
 					Övningar
+				</a>
+				<a
+					href="/forum"
+					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+					onclick={() => (mobileMenuOpen = false)}
+				>
+					Forum
 				</a>
 				<a
 					href="/blogg"
