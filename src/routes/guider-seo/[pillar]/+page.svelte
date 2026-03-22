@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SeoPillarLanding from '$lib/components/SeoPillarLanding.svelte';
-	import { buildTitle, canonical } from '$lib/seo-kit/seo';
+	import { buildTitle } from '$lib/seo-kit/seo';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
@@ -46,7 +46,6 @@
 
 <svelte:head>
 	<title>{buildTitle(pageTitle)}</title>
-	<link rel="canonical" href={canonical(`/guider-seo/${data.pillar.slug}`)} />
 	<meta name="description" content={pageDescription} />
 	<meta property="og:title" content={buildTitle(pageTitle)} />
 	<meta property="og:description" content={pageDescription} />

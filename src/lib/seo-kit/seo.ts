@@ -9,7 +9,6 @@ export function canonical(path: string): string {
 	const guiderSeoPath = normalizedPath.startsWith('/guider-seo')
 		? normalizedPath
 		: `/guider-seo${normalizedPath === '/' ? '' : normalizedPath}`;
-	const withTrailingSlash = guiderSeoPath.endsWith('/') ? guiderSeoPath : `${guiderSeoPath}/`;
 
-	return `${SITE_URL}${withTrailingSlash}`;
+	return `${SITE_URL}${guiderSeoPath}`;
 }

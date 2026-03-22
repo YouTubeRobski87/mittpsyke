@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
-	import { buildTitle, canonical } from '$lib/seo-kit/seo';
+	import { buildTitle } from '$lib/seo-kit/seo';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
@@ -103,7 +103,6 @@
 
 <svelte:head>
 	<title>{buildTitle(data.guide.title)}</title>
-	<link rel="canonical" href={canonical(`/guider-seo/${data.pillar.slug}/${data.guide.slug}`)} />
 	<meta name="description" content={data.guide.description} />
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdArticle)}<\/script>`}
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdBreadcrumb)}<\/script>`}

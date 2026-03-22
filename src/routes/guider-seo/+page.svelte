@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { buildTitle, canonical } from '$lib/seo-kit/seo';
+	import { buildTitle } from '$lib/seo-kit/seo';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
@@ -7,7 +7,6 @@
 
 <svelte:head>
 	<title>{buildTitle('Guider')}</title>
-	<link rel="canonical" href={canonical('/guider-seo')} />
 	<meta name="description" content="Utforska guider inom ångest, depression, stress och trauma." />
 	<meta name="robots" content="noindex, follow" />
 </svelte:head>
