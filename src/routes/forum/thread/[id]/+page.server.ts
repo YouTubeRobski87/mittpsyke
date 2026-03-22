@@ -106,16 +106,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		data: { user }
 	} = await locals.supabase.auth.getUser();
 
-	let userDisplayName: string | null = null;
-	if (user) {
-		const { data: profile } = await locals.supabase
-			.from('profiles')
-			.select('display_name')
-			.eq('id', user.id)
-			.maybeSingle();
-		userDisplayName =
-			typeof profile?.display_name === 'string' ? profile.display_name.trim() || null : null;
-	}
+	// display_name lagras i user_metadata (via auth.updateUser i inställningar)
+	const userDisplayName: string | null = user
+		? (typeof user.user_metadata?.display_name === 'string'
+			? user.user_metadata.display_name.trim() || null
+			: null)
+		: null;
 
 	return {
 		title: thread.title,

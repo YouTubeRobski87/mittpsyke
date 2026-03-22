@@ -38,6 +38,9 @@
 	let editReplySaving = $state(false);
 	let editReplyError = $state('');
 
+	// Delete-felmeddelande
+	let deleteError = $state('');
+
 	// Rapport-modal
 	type ReportTarget = { threadId?: string; replyId?: string; label: string };
 	let reportTarget = $state<ReportTarget | null>(null);
@@ -176,8 +179,12 @@
 	async function deleteThread() {
 		if (!confirm('Är du säker på att du vill radera det här inlägget? Det går inte att ångra.')) return;
 
+		deleteError = '';
 		const token = await getToken();
-		if (!token) return;
+		if (!token) {
+			deleteError = 'Du verkar inte vara inloggad just nu. Ladda om sidan och försök igen.';
+			return;
+		}
 
 		const res = await fetch('/api/forum/threads', {
 			method: 'DELETE',
@@ -190,6 +197,13 @@
 
 		if (res.ok) {
 			window.location.href = `/forum/${data.thread.category_id}`;
+		} else {
+			let msg = 'Kunde inte radera inlägget.';
+			try {
+				const json = await res.json();
+				if (typeof json.error === 'string') msg = json.error;
+			} catch { /* ignore */ }
+			deleteError = msg;
 		}
 	}
 
@@ -458,7 +472,10 @@
 					{/if}
 				{/each}
 			</div>
-			<div class="thread-post__actions">
+			{#if deleteError}
+			<p class="delete-error" role="alert">{deleteError}</p>
+		{/if}
+		<div class="thread-post__actions">
 				{#if data.userId && data.thread.user_id === data.userId}
 					<button
 						class="action-btn action-btn--edit"
@@ -707,6 +724,15 @@
 		font-size: 0.75rem;
 		color: hsl(var(--muted-foreground));
 		opacity: 0.7;
+	}
+
+	.delete-error {
+		font-size: 0.875rem;
+		color: hsl(var(--error-foreground));
+		background: hsl(var(--error-surface));
+		border-radius: var(--radius-input);
+		padding: 0.5rem 0.75rem;
+		margin-bottom: 0.5rem;
 	}
 
 	/* Action-knappar */

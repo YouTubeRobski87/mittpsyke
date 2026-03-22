@@ -25,6 +25,11 @@ const FALLBACK_CATEGORIES: CategoryOption[] = [
 	{ id: 'framsteg-och-ljusglimtar', name: 'Framsteg och ljusglimtar', icon: '✨' }
 ];
 
+function getDisplayNameFromMeta(meta: Record<string, unknown> | null | undefined): string | null {
+	const name = typeof meta?.display_name === 'string' ? meta.display_name.trim() : '';
+	return name.length > 0 ? name : null;
+}
+
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const {
 		data: { user }
@@ -44,19 +49,16 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			? catsData.map((c) => ({ id: String(c.id), name: String(c.name), icon: String(c.icon) }))
 			: FALLBACK_CATEGORIES;
 
-	const { data: profile } = await locals.supabase
-		.from('profiles')
-		.select('display_name')
-		.eq('id', user.id)
-		.maybeSingle();
-
 	const preselectedCategory = url.searchParams.get('kategori') ?? '';
+
+	// display_name lagras i user_metadata (via auth.updateUser i inställningar)
+	const displayName = getDisplayNameFromMeta(user.user_metadata as Record<string, unknown>);
 
 	return {
 		title: 'Nytt inlägg',
 		categories,
 		preselectedCategory,
-		displayName: typeof profile?.display_name === 'string' ? profile.display_name.trim() : null
+		displayName
 	};
 };
 
@@ -78,65 +80,22 @@ export const actions: Actions = {
 
 		// Validering
 		if (title.length < 3) {
-			return fail(400, {
-				error: 'Rubriken måste vara minst 3 tecken.',
-				title,
-				body,
-				categoryId,
-				isAnonymous
-			});
+			return fail(400, { error: 'Rubriken måste vara minst 3 tecken.', title, body, categoryId, isAnonymous });
 		}
 		if (title.length > 200) {
-			return fail(400, {
-				error: 'Rubriken får vara högst 200 tecken.',
-				title,
-				body,
-				categoryId,
-				isAnonymous
-			});
+			return fail(400, { error: 'Rubriken får vara högst 200 tecken.', title, body, categoryId, isAnonymous });
 		}
 		if (body.length < 10) {
-			return fail(400, {
-				error: 'Texten måste vara minst 10 tecken.',
-				title,
-				body,
-				categoryId,
-				isAnonymous
-			});
+			return fail(400, { error: 'Texten måste vara minst 10 tecken.', title, body, categoryId, isAnonymous });
 		}
 		if (!categoryId || !VALID_CATEGORY_IDS.has(categoryId)) {
-			return fail(400, {
-				error: 'Välj ett samtalsrum.',
-				title,
-				body,
-				categoryId,
-				isAnonymous
-			});
+			return fail(400, { error: 'Välj ett samtalsrum.', title, body, categoryId, isAnonymous });
 		}
 
-		// Hämta visningsnamn om inte anonym
-		let displayName: string | null = null;
-		if (!isAnonymous) {
-			const { data: profile, error: profileError } = await locals.supabase
-				.from('profiles')
-				.select('display_name')
-				.eq('id', user.id)
-				.maybeSingle();
-
-			if (profileError) {
-				console.error('Forum ny: could not fetch display_name from profiles:', profileError);
-			}
-
-			displayName = typeof profile?.display_name === 'string' ? profile.display_name.trim() || null : null;
-
-			// Fallback: använd det display_name som load-funktionen skickade med i formuläret
-			if (!displayName) {
-				const hiddenName = (formData.get('_displayName') as string | null)?.trim() ?? '';
-				if (hiddenName.length > 0) {
-					displayName = hiddenName;
-				}
-			}
-		}
+		// display_name hämtas direkt från user_metadata – ingen separat DB-fråga behövs
+		const displayName = isAnonymous
+			? null
+			: getDisplayNameFromMeta(user.user_metadata as Record<string, unknown>);
 
 		const { data: thread, error: insertError } = await locals.supabase
 			.from('forum_threads')
@@ -146,7 +105,7 @@ export const actions: Actions = {
 				title,
 				body,
 				is_anonymous: isAnonymous,
-				display_name: isAnonymous ? null : displayName
+				display_name: displayName
 			})
 			.select('id')
 			.single();
@@ -156,18 +115,12 @@ export const actions: Actions = {
 			if (insertError.code === 'PGRST205' || insertError.code === '42P01') {
 				return fail(500, {
 					error: 'Forumtabellen saknas. Kör supabase/forum.sql i Supabase SQL Editor.',
-					title,
-					body,
-					categoryId,
-					isAnonymous
+					title, body, categoryId, isAnonymous
 				});
 			}
 			return fail(500, {
 				error: 'Kunde inte spara inlägget just nu. Försök igen.',
-				title,
-				body,
-				categoryId,
-				isAnonymous
+				title, body, categoryId, isAnonymous
 			});
 		}
 
