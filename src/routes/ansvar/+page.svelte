@@ -104,8 +104,8 @@
 		margin-top: 1.1rem;
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #f4f8f6;
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-soft));
 	}
 
 	.trust-quick ul {
