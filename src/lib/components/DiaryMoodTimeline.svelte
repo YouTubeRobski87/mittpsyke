@@ -14,6 +14,11 @@
 
 	type RangeDays = 7 | 30 | 90;
 
+	type MoodDataResult = {
+		points: DailyMoodPoint[];
+		trimmedDays: number;
+	};
+
 	export let entries: DiaryMoodEntry[] = [];
 
 	const RANGE_OPTIONS: RangeDays[] = [7, 30, 90];
@@ -26,6 +31,7 @@
 	let chart: any = null;
 	let ChartClass: any = null;
 	let dailyMoodData: DailyMoodPoint[] = [];
+	let isSparseView = false;
 	let hasEnoughData = false;
 	let supportiveLine = '';
 
@@ -64,7 +70,7 @@
 		return result;
 	}
 
-	function buildDailyMoodData(source: DiaryMoodEntry[], rangeDays: RangeDays): DailyMoodPoint[] {
+	function buildDailyMoodData(source: DiaryMoodEntry[], rangeDays: RangeDays): MoodDataResult {
 		const grouped = new Map<string, { moodSum: number; moodCount: number; entriesCount: number }>();
 
 		for (const entry of source) {
@@ -84,7 +90,24 @@
 			grouped.set(dateKey, bucket);
 		}
 
-		return createDateRange(rangeDays).map((dateKey) => {
+		const fullRange = createDateRange(rangeDays);
+
+		// Trim leading empty days so sparse data doesn't cluster to the right.
+		// Keep LEAD_DAYS empty days before the first entry for visual breathing room.
+		const LEAD_DAYS = 2;
+		const SPARSE_THRESHOLD = Math.ceil(rangeDays * 0.25);
+		const firstDataIndex = fullRange.findIndex((date) => grouped.has(date));
+
+		let effectiveRange = fullRange;
+		let trimmedDays = 0;
+
+		if (firstDataIndex > SPARSE_THRESHOLD) {
+			const startIdx = Math.max(0, firstDataIndex - LEAD_DAYS);
+			effectiveRange = fullRange.slice(startIdx);
+			trimmedDays = startIdx;
+		}
+
+		const points = effectiveRange.map((dateKey) => {
 			const bucket = grouped.get(dateKey);
 			if (!bucket) {
 				return {
@@ -100,6 +123,8 @@
 				entriesCount: bucket.entriesCount
 			};
 		});
+
+		return { points, trimmedDays };
 	}
 
 	function buildSupportiveLine(points: DailyMoodPoint[], range: RangeDays): string {
@@ -274,7 +299,8 @@
 		});
 	}
 
-	$: dailyMoodData = buildDailyMoodData(entries, selectedRange);
+	$: ({ points: dailyMoodData, trimmedDays: _trimmedDays } = buildDailyMoodData(entries, selectedRange));
+	$: isSparseView = _trimmedDays > 0;
 	$: hasEnoughData = dailyMoodData.filter((point) => point.averageMood !== null).length >= 2;
 	$: supportiveLine = buildSupportiveLine(dailyMoodData, selectedRange);
 	$: buildChart();
@@ -327,7 +353,13 @@
 
 	{#if hasEnoughData}
 		<div class="timeline-chart-shell">
-			<p class="timeline-chart-context">En lugn överblick över hur dagarna har känts.</p>
+			{#if isSparseView}
+				<p class="timeline-chart-context timeline-chart-context--sparse">
+					Grafen börjar vid ditt första inlägg i perioden – inga anteckningar finns tidigare.
+				</p>
+			{:else}
+				<p class="timeline-chart-context">En lugn överblick över hur dagarna har känts.</p>
+			{/if}
 			<canvas bind:this={chartCanvas} aria-label="Lugn linjegraf över humör över tid"></canvas>
 		</div>
 		<p class="timeline-note">Det här är en enkel överblick, inte en bedömning av dig.</p>
@@ -407,6 +439,11 @@
 		font-size: 0.8rem;
 		line-height: 1.4;
 		color: hsl(var(--muted-foreground) / 0.9);
+	}
+
+	.timeline-chart-context--sparse {
+		color: hsl(var(--muted-foreground) / 0.65);
+		font-style: italic;
 	}
 
 	.timeline-chart-shell canvas {
