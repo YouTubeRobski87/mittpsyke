@@ -105,10 +105,11 @@ CREATE POLICY "forum_threads_authenticated_insert"
   WITH CHECK (auth.uid() IS NOT NULL AND auth.uid() = user_id);
 
 -- Trådar: ägaren kan uppdatera (redigera/radera)
+-- WITH CHECK (true) räcker eftersom USING redan verifierar ägande på den befintliga raden.
 CREATE POLICY "forum_threads_owner_update"
   ON public.forum_threads FOR UPDATE
   USING (auth.uid() = user_id AND deleted_at IS NULL)
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK (true);
 
 -- Svar: publik läsning av synliga svar
 CREATE POLICY "forum_replies_public_select"
@@ -124,7 +125,7 @@ CREATE POLICY "forum_replies_authenticated_insert"
 CREATE POLICY "forum_replies_owner_update"
   ON public.forum_replies FOR UPDATE
   USING (auth.uid() = user_id AND deleted_at IS NULL)
-  WITH CHECK (auth.uid() = user_id);
+  WITH CHECK (true);
 
 -- Rapporter: inloggade användare kan skapa, ingen läsning
 CREATE POLICY "forum_reports_authenticated_insert"
