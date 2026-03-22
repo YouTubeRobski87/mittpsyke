@@ -66,6 +66,19 @@ const staticPages = Array.from(
 
 const LASTMOD = '2026-03-22';
 
+// Forum – index + samtalsrum (fasta kategorier)
+const forumPages = [
+	'forum',
+	'forum/angest-och-oro',
+	'forum/nedstamdhet-och-tunga-dagar',
+	'forum/stress-och-utmattning',
+	'forum/somn-och-nattankar',
+	'forum/relationer-och-ensamhet',
+	'forum/sjalvkansla-och-sjalvkritik',
+	'forum/trauma-och-svara-upplevelser',
+	'forum/framsteg-och-ljusglimtar'
+];
+
 const priorityOverrides: Record<string, string> = {
 	blogg: '0.7',
 	'blogg/vad-ar-journalterapi': '0.7',
@@ -94,8 +107,16 @@ export function GET() {
 		})
 		.join('');
 
+	const forumUrls = forumPages
+		.map((page) => {
+			const loc = `https://www.mittpsyke.se/${page}`;
+			const priority = page === 'forum' ? '0.8' : '0.7';
+			return `<url><loc>${loc}</loc><lastmod>${LASTMOD}</lastmod><changefreq>daily</changefreq><priority>${priority}</priority></url>`;
+		})
+		.join('');
+
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${staticUrls}${dynamicUrls}</urlset>`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${staticUrls}${dynamicUrls}${forumUrls}</urlset>`;
 
 	return new Response(xml, {
 		headers: {

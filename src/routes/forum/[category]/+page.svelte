@@ -27,8 +27,21 @@
 </script>
 
 <svelte:head>
-	<title>{data.category.name} – Forum – MittPsyke</title>
+	<title>{data.category.name} – Samtalsrum | MittPsyke Forum</title>
 	<meta name="description" content={data.category.description} />
+	<link rel="canonical" href="https://www.mittpsyke.se/forum/{data.category.id}" />
+	<meta property="og:title" content="{data.category.name} – Samtalsrum | MittPsyke Forum" />
+	<meta property="og:description" content={data.category.description} />
+	<meta property="og:url" content="https://www.mittpsyke.se/forum/{data.category.id}" />
+	<meta property="og:type" content="website" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": "CollectionPage",
+		"name": data.category.name + " – Samtalsrum | MittPsyke Forum",
+		"description": data.category.description,
+		"url": "https://www.mittpsyke.se/forum/" + data.category.id,
+		"isPartOf": { "@type": "WebPage", "name": "Forum", "url": "https://www.mittpsyke.se/forum" }
+	})}<\/script>`}
 </svelte:head>
 
 <div class="room-page">

@@ -5,11 +5,25 @@
 </script>
 
 <svelte:head>
-	<title>Forum – MittPsyke</title>
+	<title>Forum – Samtalsrum för psykisk hälsa | MittPsyke</title>
 	<meta
 		name="description"
-		content="Samtalsrum för igenkänning, stöd och reflektion. Dela och lyssna i en lugn och varsam miljö."
+		content="Dela tankar och hitta igenkänning i MittPsykes forum. Lugna samtalsrum om ångest, stress, sömn, relationer och mer. Skriv anonymt eller med namn."
 	/>
+	<link rel="canonical" href="https://www.mittpsyke.se/forum" />
+	<meta property="og:title" content="Forum – Samtalsrum för psykisk hälsa | MittPsyke" />
+	<meta property="og:description" content="Dela tankar och hitta igenkänning i MittPsykes forum. Lugna samtalsrum om ångest, stress, sömn, relationer och mer. Skriv anonymt eller med namn." />
+	<meta property="og:url" content="https://www.mittpsyke.se/forum" />
+	<meta property="og:type" content="website" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": "WebPage",
+		"name": "Forum – Samtalsrum för psykisk hälsa",
+		"description": "Dela tankar och hitta igenkänning i MittPsykes forum. Lugna samtalsrum om ångest, stress, sömn, relationer och mer.",
+		"url": "https://www.mittpsyke.se/forum",
+		"isPartOf": { "@type": "WebSite", "name": "MittPsyke", "url": "https://www.mittpsyke.se" },
+		"about": { "@type": "Thing", "name": "Psykisk hälsa" }
+	})}<\/script>`}
 </svelte:head>
 
 <div class="forum-page">

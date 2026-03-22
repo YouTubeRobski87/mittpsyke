@@ -342,7 +342,31 @@
 </script>
 
 <svelte:head>
-	<title>{data.thread.title} – Forum – MittPsyke</title>
+	<title>{data.thread.title} – {data.category.name} | MittPsyke Forum</title>
+	<meta name="description" content={data.description} />
+	<link rel="canonical" href="https://www.mittpsyke.se/forum/thread/{data.thread.id}" />
+	<meta property="og:title" content="{data.thread.title} – {data.category.name} | MittPsyke Forum" />
+	<meta property="og:description" content={data.description} />
+	<meta property="og:url" content="https://www.mittpsyke.se/forum/thread/{data.thread.id}" />
+	<meta property="og:type" content="article" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": "DiscussionForumPosting",
+		"headline": data.thread.title,
+		"text": data.description,
+		"datePublished": data.thread.created_at,
+		"dateModified": data.thread.updated_at,
+		"author": {
+			"@type": "Person",
+			"name": data.thread.is_anonymous ? "Anonym" : (data.thread.display_name ?? "Okänd")
+		},
+		"url": "https://www.mittpsyke.se/forum/thread/" + data.thread.id,
+		"isPartOf": {
+			"@type": "CollectionPage",
+			"name": data.category.name,
+			"url": "https://www.mittpsyke.se/forum/" + data.category.id
+		}
+	})}<\/script>`}
 </svelte:head>
 
 <!-- Rapport-modal -->

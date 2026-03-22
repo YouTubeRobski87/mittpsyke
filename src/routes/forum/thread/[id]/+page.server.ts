@@ -113,8 +113,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			: null)
 		: null;
 
+	// Generera meta-description från brödtexten (max 155 tecken)
+	const descriptionRaw = thread.body.replace(/\s+/g, ' ').trim();
+	const description =
+		descriptionRaw.length > 155
+			? descriptionRaw.slice(0, 152) + '...'
+			: descriptionRaw;
+
 	return {
 		title: thread.title,
+		description,
 		thread,
 		category,
 		replies,
