@@ -46,23 +46,32 @@ export const POST: RequestHandler = async ({ request }) => {
 		return err('Ogiltig rapportorsak.', 400);
 	}
 
-	const token = getToken(request.headers.get('authorization'));
-	if (!token) return err('Du måste vara inloggad för att rapportera.', 401);
-
 	const url = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
-	const anon = env.SUPABASE_ANON_KEY || publicEnv.PUBLIC_SUPABASE_ANON_KEY;
-	if (!url || !anon) return err('Server configuration error.', 500);
+	const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
+	if (!url || !serviceKey) return err('Server configuration error.', 500);
 
-	const supabase = createClient(url, anon, {
-		auth: { autoRefreshToken: false, persistSession: false },
-		global: { headers: { Authorization: `Bearer ${token}` } }
+	// Hämta reporter_id om token finns — annars null (anonym rapport)
+	let reporterId: string | null = null;
+	const token = getToken(request.headers.get('authorization'));
+	if (token) {
+		const anon = env.SUPABASE_ANON_KEY || publicEnv.PUBLIC_SUPABASE_ANON_KEY;
+		if (anon) {
+			const authClient = createClient(url, anon, {
+				auth: { autoRefreshToken: false, persistSession: false },
+				global: { headers: { Authorization: `Bearer ${token}` } }
+			});
+			const { data: { user } } = await authClient.auth.getUser();
+			if (user) reporterId = user.id;
+		}
+	}
+
+	// Använd service role för att tillåta nullable reporter_id
+	const supabase = createClient(url, serviceKey, {
+		auth: { autoRefreshToken: false, persistSession: false }
 	});
 
-	const { data: { user }, error: userError } = await supabase.auth.getUser();
-	if (userError || !user) return err('Ej autentiserad.', 401);
-
 	const { error: insertError } = await supabase.from('forum_reports').insert({
-		reporter_id: user.id,
+		reporter_id: reporterId,
 		thread_id: hasThread ? threadId : null,
 		reply_id: hasReply ? replyId : null,
 		reason,

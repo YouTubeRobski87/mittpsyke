@@ -306,24 +306,17 @@
 		reportSending = true;
 		reportError = '';
 
-		const token = await getToken();
-		if (!token) {
-			reportError = 'Du måste vara inloggad för att rapportera.';
-			reportSending = false;
-			return;
-		}
-
 		const payload: Record<string, string> = { reason: reportReason };
-		if (reportDetails.trim()) payload.details = reportDetails.trim();
 		if (reportTarget.threadId) payload.threadId = reportTarget.threadId;
 		if (reportTarget.replyId) payload.replyId = reportTarget.replyId;
 
+		const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+		const token = await getToken();
+		if (token) headers['Authorization'] = `Bearer ${token}`;
+
 		const res = await fetch('/api/forum/reports', {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			},
+			headers,
 			body: JSON.stringify(payload)
 		});
 
@@ -395,11 +388,9 @@
 				<fieldset class="report-reasons">
 					<legend class="sr-only">Rapportorsak</legend>
 					{#each [
-						{ value: 'offensive', label: 'Kränkande eller stötande' },
-						{ value: 'spam', label: 'Spam eller irrelevant' },
-						{ value: 'crisis', label: 'Jag är orolig för den här personen' },
-						{ value: 'misinformation', label: 'Felaktig eller vilseledande information' },
-						{ value: 'other', label: 'Annat' }
+						{ value: 'offensive', label: 'Olämpligt innehåll' },
+						{ value: 'crisis', label: 'Skadligt innehåll' },
+						{ value: 'spam', label: 'Spam' }
 					] as opt}
 						<label class="report-reason-option">
 							<input
@@ -412,15 +403,6 @@
 						</label>
 					{/each}
 				</fieldset>
-
-				{#if reportReason === 'other' || reportReason === 'crisis'}
-					<textarea
-						bind:value={reportDetails}
-						placeholder="Beskriv kort vad du har sett (valfritt)..."
-						rows="3"
-						class="form-textarea"
-					></textarea>
-				{/if}
 
 				<div class="modal__actions">
 					<button
@@ -509,14 +491,14 @@
 					</button>
 					<button class="action-btn action-btn--delete" onclick={deleteThread}>Radera</button>
 				{/if}
-				{#if data.userId}
-					<button
-						class="action-btn action-btn--report"
-						onclick={() => openReport({ threadId: data.thread.id, label: 'inlägget' })}
-					>
-						Rapportera
-					</button>
-				{/if}
+				<button
+					class="action-btn action-btn--report"
+					aria-label="Rapportera inlägget"
+					onclick={() => openReport({ threadId: data.thread.id, label: 'inlägget' })}
+				>
+					<svg aria-hidden="true" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2a1 1 0 0 1 1-1h8.586A1 1 0 0 1 13.293 2.707L10.414 5.586 13.293 8.464A1 1 0 0 1 12.586 10H4v4a1 1 0 0 1-2 0V3z"/></svg>
+					Rapportera
+				</button>
 			</div>
 		{/if}
 	</article>
@@ -589,14 +571,14 @@
 										Radera
 									</button>
 								{/if}
-								{#if data.userId}
-									<button
-										class="action-btn action-btn--report"
-										onclick={() => openReport({ replyId: reply.id, label: 'svaret' })}
-									>
-										Rapportera
-									</button>
-								{/if}
+								<button
+									class="action-btn action-btn--report"
+									aria-label="Rapportera svaret"
+									onclick={() => openReport({ replyId: reply.id, label: 'svaret' })}
+								>
+									<svg aria-hidden="true" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2a1 1 0 0 1 1-1h8.586A1 1 0 0 1 13.293 2.707L10.414 5.586 13.293 8.464A1 1 0 0 1 12.586 10H4v4a1 1 0 0 1-2 0V3z"/></svg>
+									Rapportera
+								</button>
 							</div>
 						{/if}
 					</li>
@@ -783,6 +765,9 @@
 	}
 
 	.action-btn--report {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
 		opacity: 0.65;
 	}
 
