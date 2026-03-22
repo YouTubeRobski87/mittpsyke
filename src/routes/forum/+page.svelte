@@ -5,16 +5,6 @@
 </script>
 
 <svelte:head>
-	<title>Forum – Samtalsrum för psykisk hälsa | MittPsyke</title>
-	<meta
-		name="description"
-		content="Dela tankar och hitta igenkänning i MittPsykes forum. Lugna samtalsrum om ångest, stress, sömn, relationer och mer. Skriv anonymt eller med namn."
-	/>
-	<link rel="canonical" href="https://www.mittpsyke.se/forum" />
-	<meta property="og:title" content="Forum – Samtalsrum för psykisk hälsa | MittPsyke" />
-	<meta property="og:description" content="Dela tankar och hitta igenkänning i MittPsykes forum. Lugna samtalsrum om ångest, stress, sömn, relationer och mer. Skriv anonymt eller med namn." />
-	<meta property="og:url" content="https://www.mittpsyke.se/forum" />
-	<meta property="og:type" content="website" />
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		"@context": "https://schema.org",
 		"@type": "WebPage",

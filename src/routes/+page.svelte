@@ -121,8 +121,9 @@
 				</div>
 				<div class="hero-community-note" aria-label="Forum">
 					<p class="hero-community-title">Du är inte ensam här</p>
-					<p class="hero-community-text">Forumet är en lugn plats där du kan läsa vad andra går igenom, dela egna tankar och möta stöd i ett lågmält sammanhang.<br />Du kan skapa en tråd anonymt eller som inloggad, och det är lika okej att bara läsa i din egen takt.</p>
+					<p class="hero-community-text">I forumet kan du läsa vad andra går igenom, dela egna tankar och känna att du inte är ensam.<br />Du kan skapa en tråd anonymt eller som inloggad — eller bara läsa i din egen takt.</p>
 					<p class="hero-community-text">Här kan några ord från någon annan göra skillnad — och dina ord kan göra skillnad för någon med.</p>
+					<a href="/forum" class="hero-community-cta">Gå till forumet</a>
 				</div>
 				<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
 				<HomeSafetyStrip />
@@ -446,6 +447,23 @@
 		font-size: 0.92rem;
 		line-height: 1.55;
 		color: rgba(255, 255, 255, 0.86);
+	}
+
+	.hero-community-cta {
+		display: inline-block;
+		margin-top: 0.7rem;
+		font-size: 0.88rem;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.9);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		text-decoration-color: rgba(255, 255, 255, 0.4);
+		transition: text-decoration-color 0.15s;
+	}
+
+	.hero-community-cta:hover,
+	.hero-community-cta:focus-visible {
+		text-decoration-color: rgba(255, 255, 255, 0.9);
 	}
 
 	.hero-actions {
