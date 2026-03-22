@@ -109,9 +109,11 @@
 		/>
 			<div class="hero-content">
 				<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
-				<h1>MittPsyke är en lugn plats att börja.</h1>
+				<h1>MittPsyke är en lugn plats att börja på.</h1>
 				<p>
-					Skriv av dig direkt — inget konto, ingen registrering. Skapa ett konto om du vill spara din dagbok och kunna återvända över tid.
+					Skriv av dig direkt — utan konto eller registrering.<br />
+				Skapar du ett konto kan du spara din dagbok, följa ditt mående över tid i en graf, få en sammanfattning, se dina framsteg och hitta tillbaka till det du skrivit senare.
+
 				</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
@@ -282,8 +284,10 @@
 
 	<section class="band forum-band" aria-labelledby="forum-band-title">
 		<div class="narrow forum-inner">
-			<h2 id="forum-band-title">Delta i forumet</h2>
-			<p>Dela tankar och stötta andra på resan mot bättre mående.</p>
+			<h2 id="forum-band-title">Du behöver inte bära allt ensam</h2>
+			<p>Forumet är en plats där du kan läsa vad andra går igenom, dela egna tankar och möta stöd i ett lågmält sammanhang.<br />
+			Du kan skapa en tråd anonymt eller som inloggad, och du får också gärna bara läsa i din egen takt.</p>
+			<p class="forum-band-extra">Här kan några ord från någon annan göra skillnad — och dina ord kan göra skillnad för någon med.</p>
 			<a href="/forum" class="forum-cta">Gå till forumet</a>
 		</div>
 	</section>
@@ -491,6 +495,13 @@
 
 	.forum-inner {
 		text-align: center;
+	}
+
+	.forum-band-extra {
+		margin-top: 0.9rem;
+		opacity: 0.75;
+		font-style: italic;
+		font-size: 0.95rem;
 	}
 
 	.forum-cta {
