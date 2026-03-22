@@ -73,6 +73,16 @@
 		});
 	}
 
+	// Stable variant (0–4) from post id — same post always gets same accent.
+	// Variant 0 = no accent (baseline), 1–4 = muted top-border colour.
+	function postVariant(id: string): 0 | 1 | 2 | 3 | 4 {
+		let h = 5381;
+		for (let i = 0; i < id.length; i++) {
+			h = (((h << 5) + h) ^ id.charCodeAt(i)) >>> 0;
+		}
+		return (h % 5) as 0 | 1 | 2 | 3 | 4;
+	}
+
 	function formatMoodLabel(value: string | null): string {
 		if (!value) return '';
 		const mood = Number(value);
@@ -416,7 +426,7 @@
 				<h2>Delningar i lugn takt</h2>
 				<div class="community-feed">
 					{#each posts as post (post.id)}
-						<article class="community-post">
+						<article class="community-post post-variant-{postVariant(post.id)}">
 							<div class="community-post-head">
 								<p class="voice">Anonym röst</p>
 								{#if formatMoodLabel(post.mood)}
@@ -763,6 +773,15 @@
 		border: 1px solid hsl(var(--border));
 		background: hsl(var(--surface-muted));
 	}
+
+	/* Variant 0: no accent — baseline, intentionally unchanged */
+
+	/* Variants 1–4: muted top-border replaces the standard top border.
+	   Low saturation + opacity so they stay calm in both light and dark mode. */
+	.post-variant-1 { border-top: 2px solid hsl(215 38% 68% / 0.6); }
+	.post-variant-2 { border-top: 2px solid hsl(158 32% 62% / 0.6); }
+	.post-variant-3 { border-top: 2px solid hsl(36 42% 65% / 0.6); }
+	.post-variant-4 { border-top: 2px solid hsl(278 22% 66% / 0.55); }
 
 	.community-post-head {
 		display: flex;
