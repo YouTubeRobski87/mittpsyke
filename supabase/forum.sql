@@ -99,6 +99,11 @@ CREATE POLICY "forum_threads_public_select"
   ON public.forum_threads FOR SELECT
   USING (deleted_at IS NULL AND is_hidden = false);
 
+-- Trådar: ägaren kan alltid läsa sina egna (behövs för att Supabase ska godkänna UPDATE/soft-delete)
+CREATE POLICY "forum_threads_owner_select"
+  ON public.forum_threads FOR SELECT
+  USING (auth.uid() = user_id);
+
 -- Trådar: inloggade användare kan skapa
 CREATE POLICY "forum_threads_authenticated_insert"
   ON public.forum_threads FOR INSERT
@@ -115,6 +120,11 @@ CREATE POLICY "forum_threads_owner_update"
 CREATE POLICY "forum_replies_public_select"
   ON public.forum_replies FOR SELECT
   USING (deleted_at IS NULL AND is_hidden = false);
+
+-- Svar: ägaren kan alltid läsa sina egna (behövs för att Supabase ska godkänna UPDATE/soft-delete)
+CREATE POLICY "forum_replies_owner_select"
+  ON public.forum_replies FOR SELECT
+  USING (auth.uid() = user_id);
 
 -- Svar: inloggade användare kan skapa
 CREATE POLICY "forum_replies_authenticated_insert"
