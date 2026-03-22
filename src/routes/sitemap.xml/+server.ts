@@ -1,5 +1,6 @@
 import { getGuiderSeoPaths } from '$lib/seo-kit/content';
 import { canonical } from '$lib/seo-kit/seo';
+import { tools } from '$lib/data/seo-architecture';
 
 // Pillar-sidor (ångest, stress, depression etc.) – hög prioritet
 const pillarPages = new Set([
@@ -115,8 +116,15 @@ export function GET() {
 		})
 		.join('');
 
+	const toolUrls = tools
+		.map(
+			(tool) =>
+				`<url><loc>https://www.mittpsyke.se/ovningar/${tool.slug}</loc><lastmod>${LASTMOD}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`
+		)
+		.join('');
+
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${staticUrls}${dynamicUrls}${forumUrls}</urlset>`;
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${staticUrls}${dynamicUrls}${forumUrls}${toolUrls}</urlset>`;
 
 	return new Response(xml, {
 		headers: {
