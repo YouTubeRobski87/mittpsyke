@@ -280,6 +280,14 @@
 
 	<VoiceSupport />
 
+	<section class="band forum-band" aria-labelledby="forum-band-title">
+		<div class="narrow forum-inner">
+			<h2 id="forum-band-title">Delta i forumet</h2>
+			<p>Dela tankar och stötta andra på resan mot bättre mående.</p>
+			<a href="/forum" class="forum-cta">Gå till forumet</a>
+		</div>
+	</section>
+
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
 			<img src="/assets/home/Tryggplats.png" alt="Illustration av en trygg plats i naturen" loading="lazy" />
@@ -475,6 +483,28 @@
 
 	.band-olive {
 		background: #1b2b3a;
+	}
+
+	.forum-band {
+		background: #162232;
+	}
+
+	.forum-inner {
+		text-align: center;
+	}
+
+	.forum-cta {
+		display: inline-block;
+		margin-top: 1.4rem;
+		padding: 0.62rem 1.3rem;
+		font-family: var(--font-heading);
+		font-size: 0.85rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		background: #8ca36a;
+		color: #182016;
+		border-radius: var(--radius-pill);
 	}
 
 	.narrow {

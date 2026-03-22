@@ -23,6 +23,10 @@ No test or lint commands are configured.
 
 **Adapter selection** (`svelte.config.js`): Uses `@sveltejs/adapter-vercel` in production (Node.js 22.x) and `adapter-node` on Windows locally.
 
+### Auth Flow
+
+`src/hooks.server.ts` initializes a Supabase server client on every request and stores it as `locals.supabase`. `src/routes/+layout.server.ts` calls `locals.supabase.auth.getSession()` and passes the session to all pages. Client components access session from the layout data.
+
 ### Core Data Flow
 
 **Chat** (`src/routes/api/chat/+server.ts` — ~880 lines):
@@ -58,9 +62,14 @@ No test or lint commands are configured.
 Required in `.env`:
 - `OPENAI_API_KEY` — Chat completions (gpt-4o-mini)
 - `PUBLIC_SUPABASE_URL` + `PUBLIC_SUPABASE_ANON_KEY` — Client-side Supabase
-- `SUPABASE_SERVICE_ROLE_KEY` — Server-side (guest conversations)
+- `SUPABASE_URL` + `SUPABASE_ANON_KEY` — Server-side Supabase (private, used in hooks)
+- `SUPABASE_SERVICE_ROLE_KEY` — Server-side (guest conversations, bypasses RLS)
 - `ANTHROPIC_API_KEY` — Anthropic integration
 - `GA_MEASUREMENT_ID` — Google Analytics
+
+## Svelte 5 Runes
+
+This project uses Svelte 5 runes throughout: `$state()` for reactive state, `$derived()` for computed values, `$effect()` for side effects. Avoid Svelte 4 patterns (`let x = ...` with `$: ...` reactivity).
 
 ## Regler
 
