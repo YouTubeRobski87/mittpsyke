@@ -1,5 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import { notifyNewThread } from '$lib/notifications';
 
 const VALID_CATEGORY_IDS = new Set([
 	'angest-och-oro',
@@ -123,6 +124,16 @@ export const actions: Actions = {
 				title, body, categoryId, isAnonymous
 			});
 		}
+
+		// Notifiera kategori-följare (best-effort)
+		const categoryName = FALLBACK_CATEGORIES.find((c) => c.id === categoryId)?.name ?? categoryId;
+		notifyNewThread({
+			categoryId,
+			categoryName,
+			threadId: thread.id,
+			threadTitle: title,
+			actorUserId: user.id
+		}).catch((e) => console.error('notifyNewThread error:', e));
 
 		throw redirect(303, `/forum/thread/${thread.id}`);
 	}

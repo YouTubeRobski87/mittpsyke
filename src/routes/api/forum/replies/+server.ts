@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import type { RequestHandler } from './$types';
+import { notifyNewReply } from '$lib/notifications';
 import type {
 	CreateForumReplySuccessResponse,
 	CreateForumReplyErrorResponse,
@@ -104,6 +105,21 @@ export const POST: RequestHandler = async ({ request }) => {
 		.from('forum_threads')
 		.update({ reply_count: (thread as { reply_count?: number }).reply_count ?? 0 + 1, last_reply_at: new Date().toISOString() })
 		.eq('id', threadId);
+
+	// Hämta trådens titel för notistexten
+	const { data: threadFull } = await supabase
+		.from('forum_threads')
+		.select('title')
+		.eq('id', threadId)
+		.maybeSingle();
+
+	// Skicka notiser (best-effort, blockerar inte svaret)
+	notifyNewReply({
+		threadId,
+		threadTitle: threadFull?.title ?? 'okänd tråd',
+		replyId: reply.id,
+		actorUserId: user.id
+	}).catch((e) => console.error('notifyNewReply error:', e));
 
 	const response: CreateForumReplySuccessResponse = {
 		success: true,

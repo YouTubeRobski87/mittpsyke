@@ -87,11 +87,24 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Hämta inloggad användare
 	const { data: { user } } = await locals.supabase.auth.getUser();
 
+	// Kolla om inloggad användare följer kategorin
+	let isFollowing = false;
+	if (user) {
+		const { data: followData } = await locals.supabase
+			.from('user_category_follows')
+			.select('id')
+			.eq('user_id', user.id)
+			.eq('category_id', category)
+			.maybeSingle();
+		isFollowing = !!followData;
+	}
+
 	return {
 		title: cat.name,
 		description: cat.description,
 		category: cat,
 		threads,
-		userId: user?.id ?? null
+		userId: user?.id ?? null,
+		isFollowing
 	};
 };

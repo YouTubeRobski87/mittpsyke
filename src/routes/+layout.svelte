@@ -286,6 +286,7 @@
 						<a href="/dashboard/gemenskap" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Gemenskap</a>
 						<a href="/dashboard" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Min portal</a>
 						<a href="/forum" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Forum</a>
+						<a href="/notiser" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Notiser</a>
 					{:else}
 						<a href="/chat" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Chatta</a>
 						<a href="/guider" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Guider</a>
@@ -342,6 +343,7 @@
 					<a href="/dashboard/gemenskap" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Gemenskap</a>
 					<a href="/dashboard" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Min portal</a>
 					<a href="/forum" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Forum</a>
+					<a href="/notiser" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Notiser</a>
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
 						class="block text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"

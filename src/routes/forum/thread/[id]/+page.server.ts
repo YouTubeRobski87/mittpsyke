@@ -113,6 +113,18 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			: null)
 		: null;
 
+	// Kolla om inloggad användare följer tråden
+	let isFollowing = false;
+	if (user) {
+		const { data: followData } = await locals.supabase
+			.from('user_thread_follows')
+			.select('id')
+			.eq('user_id', user.id)
+			.eq('thread_id', id)
+			.maybeSingle();
+		isFollowing = !!followData;
+	}
+
 	// Generera meta-description från brödtexten (max 155 tecken)
 	const descriptionRaw = thread.body.replace(/\s+/g, ' ').trim();
 	const description =
@@ -127,6 +139,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		category,
 		replies,
 		userId: user?.id ?? null,
-		userDisplayName
+		userDisplayName,
+		isFollowing
 	};
 };

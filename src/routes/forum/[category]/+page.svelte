@@ -1,7 +1,32 @@
 <script lang="ts">
+	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	let isFollowing = $state(data.isFollowing);
+	let followLoading = $state(false);
+
+	async function getToken(): Promise<string | null> {
+		const { data: { session } } = await supabase.auth.getSession();
+		return session?.access_token ?? null;
+	}
+
+	async function toggleCategoryFollow() {
+		if (!data.userId || followLoading) return;
+		followLoading = true;
+		const token = await getToken();
+		if (!token) { followLoading = false; return; }
+		const method = isFollowing ? 'DELETE' : 'POST';
+		const res = await fetch('/api/forum/category-follows', {
+			method,
+			headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+			body: JSON.stringify({ categoryId: data.category.id })
+		});
+		const json = await res.json();
+		if (res.ok && json.success) isFollowing = json.following;
+		followLoading = false;
+	}
 
 	function formatRelativeTime(dateStr: string): string {
 		if (!dateStr) return '';
@@ -68,6 +93,15 @@
 			<a href="/forum/ny?kategori={data.category.id}" class="btn btn--primary">
 				Skriv nytt inlägg
 			</a>
+			<button
+				class="action-btn"
+				class:action-btn--following={isFollowing}
+				onclick={toggleCategoryFollow}
+				disabled={followLoading}
+				title={isFollowing ? 'Sluta följa det här samtalsrummet' : 'Få notis när någon skapar ett nytt inlägg här'}
+			>
+				{followLoading ? '…' : isFollowing ? 'Följer rum' : 'Följ rum'}
+			</button>
 		{:else}
 			<a href="/login?redirect=/forum/ny?kategori={data.category.id}" class="btn btn--secondary">
 				Logga in för att skriva
@@ -207,6 +241,38 @@
 	.room-actions__count {
 		font-size: 0.875rem;
 		color: hsl(var(--muted-foreground));
+	}
+
+	/* Följ-knapp */
+	.action-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+		font-size: 0.875rem;
+		font-weight: 500;
+		padding: 0.4rem 0.875rem;
+		border-radius: var(--radius-pill);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-muted));
+		color: hsl(var(--muted-foreground));
+		cursor: pointer;
+		transition: background 0.15s, color 0.15s, border-color 0.15s;
+	}
+
+	.action-btn:hover:not(:disabled) {
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+	}
+
+	.action-btn--following {
+		background: color-mix(in srgb, var(--primary) 12%, transparent);
+		border-color: var(--primary);
+		color: var(--primary);
+	}
+
+	.action-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	/* Buttons */

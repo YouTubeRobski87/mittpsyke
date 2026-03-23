@@ -41,6 +41,26 @@
 	// Delete-felmeddelande
 	let deleteError = $state('');
 
+	// Följ tråd
+	let isFollowing = $state(data.isFollowing);
+	let followLoading = $state(false);
+
+	async function toggleFollow() {
+		if (!data.userId || followLoading) return;
+		followLoading = true;
+		const token = await getToken();
+		if (!token) { followLoading = false; return; }
+		const method = isFollowing ? 'DELETE' : 'POST';
+		const res = await fetch('/api/forum/follows', {
+			method,
+			headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+			body: JSON.stringify({ threadId: data.thread.id })
+		});
+		const json = await res.json();
+		if (res.ok && json.success) isFollowing = json.following;
+		followLoading = false;
+	}
+
 	// Rapport-modal
 	type ReportTarget = { threadId?: string; replyId?: string; label: string };
 	let reportTarget = $state<ReportTarget | null>(null);
@@ -482,6 +502,17 @@
 			<p class="delete-error" role="alert">{deleteError}</p>
 		{/if}
 		<div class="thread-post__actions">
+				{#if data.userId}
+					<button
+						class="action-btn"
+						class:action-btn--following={isFollowing}
+						onclick={toggleFollow}
+						disabled={followLoading}
+						title={isFollowing ? 'Sluta följa denna tråd' : 'Få notis när någon svarar'}
+					>
+						{followLoading ? '…' : isFollowing ? 'Följer' : 'Följ tråd'}
+					</button>
+				{/if}
 				{#if data.userId && data.thread.user_id === data.userId}
 					<button
 						class="action-btn action-btn--edit"
@@ -751,6 +782,12 @@
 		cursor: pointer;
 		transition: background 0.12s, color 0.12s;
 		color: hsl(var(--muted-foreground));
+	}
+
+	.action-btn--following {
+		color: hsl(var(--primary, 160 60% 35%));
+		border-color: currentColor;
+		opacity: 0.85;
 	}
 
 	.action-btn:hover {
