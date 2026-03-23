@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ error: 'Fältet "userInput" är obligatoriskt.' }, { status: 400 });
 	}
 
-	const anthropicKey = env.ANTHROPIC_API_KEY;
+	const anthropicKey = env.STORIFY_API_KEY;
 	if (!anthropicKey) {
 		return json({ error: 'AI-tjänsten är inte konfigurerad.' }, { status: 500 });
 	}
