@@ -1,17 +1,27 @@
 <svelte:head>
-	<title>Chatta i lugn takt | MittPsyke</title>
+	<title>AI-samtalsstöd för ångest och stress – chatta anonymt | MittPsyke</title>
 	<meta
 		name="description"
-		content="Börja i chatten i lugn takt. Välj en ingång som passar det du bär på just nu och ta ett första steg."
+		content="Anonymt AI-samtalsstöd för ångest, nedstämdhet och stress. Välj en ingång och börja i din egen takt – utan konto och utan väntetid."
 	/>
-	<meta property="og:title" content="Chatta i lugn takt | MittPsyke" />
+	<meta property="og:title" content="AI-samtalsstöd – chatta anonymt | MittPsyke" />
 	<meta
 		property="og:description"
-		content="En lugn ingång till MittPsykes chatt där du kan välja stöd för ångest, nedstämdhet eller stress och oro."
+		content="Anonymt AI-samtalsstöd för ångest, nedstämdhet och stress. Välj en ingång och börja i din egen takt – utan konto och utan väntetid."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	<link rel="canonical" href="https://www.mittpsyke.se/chat" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": "WebPage",
+		"name": "AI-samtalsstöd för ångest och stress – chatta anonymt | MittPsyke",
+		"description": "Anonymt AI-samtalsstöd för ångest, nedstämdhet och stress. Välj en ingång och börja i din egen takt – utan konto och utan väntetid.",
+		"url": "https://www.mittpsyke.se/chat",
+		"about": { "@type": "Thing", "name": "Psykisk hälsa och samtalsstöd" },
+		"inLanguage": "sv-SE",
+		"provider": { "@type": "Organization", "name": "MittPsyke", "url": "https://www.mittpsyke.se" }
+	})}<\/script>`}
 </svelte:head>
 
 <main class="page">

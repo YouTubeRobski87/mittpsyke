@@ -65,7 +65,7 @@ const staticPages = Array.from(
 	])
 );
 
-const LASTMOD = '2026-03-22';
+const LASTMOD = '2026-03-23';
 
 // Forum – index + samtalsrum (fasta kategorier)
 const forumPages = [

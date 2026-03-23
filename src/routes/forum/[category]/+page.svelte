@@ -61,11 +61,25 @@
 	<meta property="og:type" content="website" />
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		"@context": "https://schema.org",
-		"@type": "CollectionPage",
-		"name": data.category.name + " – Samtalsrum | MittPsyke Forum",
-		"description": data.category.description,
-		"url": "https://www.mittpsyke.se/forum/" + data.category.id,
-		"isPartOf": { "@type": "WebPage", "name": "Forum", "url": "https://www.mittpsyke.se/forum" }
+		"@graph": [
+			{
+				"@type": "CollectionPage",
+				"name": data.category.name + " – Samtalsrum | MittPsyke Forum",
+				"description": data.category.description,
+				"url": "https://www.mittpsyke.se/forum/" + data.category.id,
+				"isPartOf": { "@type": "WebSite", "name": "MittPsyke", "url": "https://www.mittpsyke.se" },
+				"about": { "@type": "Thing", "name": data.category.name },
+				"inLanguage": "sv-SE"
+			},
+			{
+				"@type": "BreadcrumbList",
+				"itemListElement": [
+					{ "@type": "ListItem", "position": 1, "name": "Hem", "item": "https://www.mittpsyke.se" },
+					{ "@type": "ListItem", "position": 2, "name": "Forum", "item": "https://www.mittpsyke.se/forum" },
+					{ "@type": "ListItem", "position": 3, "name": data.category.name, "item": "https://www.mittpsyke.se/forum/" + data.category.id }
+				]
+			}
+		]
 	})}<\/script>`}
 </svelte:head>
 

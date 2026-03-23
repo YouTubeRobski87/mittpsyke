@@ -5,22 +5,22 @@
 </script>
 
 <svelte:head>
-	<title>Övningar | Verktyg i lugn takt | MittPsyke</title>
+	<title>Övningar mot ångest och stress – steg för steg | MittPsyke</title>
 	<meta
 		name="description"
-		content="Praktiska övningar för ångest, stress, självkänsla, relationer och mental återhämtning i lugn takt."
+		content="Steg-för-steg-övningar mot ångest, stress, sömn och självkänsla. Konkreta verktyg för vardagen – börja i din egen takt."
 	/>
-	<meta property="og:title" content="Övningar | Verktyg i lugn takt | MittPsyke" />
+	<meta property="og:title" content="Övningar mot ångest och stress | MittPsyke" />
 	<meta
 		property="og:description"
-		content="Utforska lugna övningar för reflektion, ångest, oro och återhämtning. Börja där du är och ta små steg."
+		content="Steg-för-steg-övningar mot ångest, stress, sömn och självkänsla. Konkreta verktyg för vardagen – börja i din egen takt."
 	/>
 	<link rel="canonical" href="https://www.mittpsyke.se/ovningar" />
 </svelte:head>
 
 <main class="container tools-page">
 	<header class="intro">
-		<h1>Övningar</h1>
+		<h1>Övningar mot ångest och stress</h1>
 		<p>Steg-för-steg-övningar som hjälper dig att landa, sortera tankar och ta små steg i vardagen.</p>
 		<p class="intro-note">
 			Övningarna är tänkta som stöd för reflektion och lugn. De ersätter inte vård,

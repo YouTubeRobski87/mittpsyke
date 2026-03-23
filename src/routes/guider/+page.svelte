@@ -3,16 +3,23 @@
 </script>
 
 <svelte:head>
-	<title>Guider | MittPsyke</title>
+	<title>Guider om psykisk hälsa – ångest, stress och mer | MittPsyke</title>
 	<meta
 		name="description"
-		content="Utforska MittPsykes guider inom ångest, stress, självkänsla, relationer och mer."
+		content="Samlade guider om ångest, stress, nedstämdhet, sömn och självkänsla. Skrivet för reflektion och förståelse – ta del i din egen takt."
 	/>
+	<meta property="og:title" content="Guider om psykisk hälsa | MittPsyke" />
+	<meta
+		property="og:description"
+		content="Samlade guider om ångest, stress, nedstämdhet, sömn och självkänsla. Skrivet för reflektion och förståelse – ta del i din egen takt."
+	/>
+	<meta property="og:type" content="website" />
+	<link rel="canonical" href="https://www.mittpsyke.se/guider" />
 </svelte:head>
 
 <main class="container guides-page">
 	<header class="intro">
-		<h1>Guider</h1>
+		<h1>Guider om psykisk hälsa</h1>
 		<p>Välj ett område och läs en samlad guide med artiklar och övningar i lugn takt.</p>
 		<p class="intro-note">
 			Innehållet är sammanställt av MittPsyke som stöd för reflektion och ökad förståelse.
