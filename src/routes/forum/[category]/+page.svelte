@@ -49,6 +49,35 @@
 		if (thread.is_anonymous) return 'Anonym';
 		return thread.display_name?.trim() || 'Namnlös';
 	}
+
+	const categoryLinks: Record<string, { label: string; href: string }[]> = {
+		'angest-och-oro': [
+			{ label: 'Guide om ångest', href: '/angest' },
+			{ label: 'Andningsövningar mot ångest', href: '/andningsovningar-mot-angest' }
+		],
+		'nedstamdhet-och-tunga-dagar': [
+			{ label: 'Guide om nedstämdhet och depression', href: '/depression' }
+		],
+		'stress-och-utmattning': [
+			{ label: 'Guide om stress', href: '/stress' },
+			{ label: 'Stöd vid stress', href: '/stod-vid-stress-online' }
+		],
+		'somn-och-nattankar': [
+			{ label: 'Guide om sömnproblem', href: '/sovproblem' }
+		],
+		'relationer-och-ensamhet': [
+			{ label: 'Guide om ensamhet', href: '/ensamhet' }
+		],
+		'sjalvkansla-och-sjalvkritik': [
+			{ label: 'Guide om självkänsla', href: '/sjalvkansla' }
+		],
+		'trauma-och-svara-upplevelser': [
+			{ label: 'Guide om trauma', href: '/trauma' },
+			{ label: 'Stöd vid PTSD', href: '/stod-vid-ptsd-online' }
+		]
+	};
+
+	const relatedLinks = $derived(categoryLinks[data.category.id] ?? []);
 </script>
 
 <svelte:head>
@@ -166,6 +195,16 @@
 				</li>
 			{/each}
 		</ol>
+	{/if}
+
+	{#if relatedLinks.length > 0}
+		<aside class="related-reading" aria-label="Relaterat innehåll">
+			<p>Läs mer:
+				{#each relatedLinks as link, i}
+					<a href={link.href}>{link.label}</a>{i < relatedLinks.length - 1 ? '\u00a0·\u00a0' : ''}
+				{/each}
+			</p>
+		</aside>
 	{/if}
 </div>
 
@@ -429,5 +468,27 @@
 		color: hsl(var(--muted-foreground));
 		opacity: 0.5;
 		font-size: 1.125rem;
+	}
+
+	/* Kontextuell länkning */
+	.related-reading {
+		margin-top: 2rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid hsl(var(--border));
+		font-size: 0.875rem;
+	}
+
+	.related-reading p {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.related-reading a {
+		color: var(--primary);
+		text-decoration: none;
+	}
+
+	.related-reading a:hover {
+		text-decoration: underline;
 	}
 </style>

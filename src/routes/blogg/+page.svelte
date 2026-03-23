@@ -1,14 +1,36 @@
 <script lang="ts">
 	import { blogPosts } from '$lib/data/blogg';
+
+	const blogJsonLd = {
+		'@context': 'https://schema.org',
+		'@type': 'Blog',
+		name: 'MittPsykes blogg om mental hälsa',
+		description: 'Artiklar om journalföring, mental hälsa och självreflektion – skrivet för att vara lätt att ta till sig i vardagen.',
+		url: 'https://www.mittpsyke.se/blogg',
+		inLanguage: 'sv-SE',
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' },
+		blogPost: blogPosts.map((p) => ({
+			'@type': 'BlogPosting',
+			headline: p.title,
+			url: `https://www.mittpsyke.se/blogg/${p.slug}`
+		}))
+	};
 </script>
 
 <svelte:head>
-	<title>Blogg – MittPsyke</title>
+	<title>Blogg om mental hälsa och journalföring | MittPsyke</title>
 	<meta
 		name="description"
-		content="Artiklar om journalföring, mental hälsa och självreflektion. Lär dig mer om hur skrivande kan förbättra ditt mående."
+		content="Artiklar om journalföring, mental hälsa och självreflektion. Skrivet för att vara lätt att ta till sig i en vardag som redan kan kännas full."
 	/>
+	<meta property="og:title" content="Blogg om mental hälsa | MittPsyke" />
+	<meta
+		property="og:description"
+		content="Artiklar om journalföring, mental hälsa och självreflektion. Skrivet för att vara lätt att ta till sig i en vardag som redan kan kännas full."
+	/>
+	<meta property="og:type" content="website" />
 	<link rel="canonical" href="https://www.mittpsyke.se/blogg" />
+	{@html `<script type="application/ld+json">${JSON.stringify(blogJsonLd)}<\/script>`}
 </svelte:head>
 
 <main class="blog-index">

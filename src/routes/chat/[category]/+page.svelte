@@ -9,6 +9,28 @@
 
 	const category = $derived(page.params.category ?? '');
 	const portal = $derived(getPortalByKey(category));
+
+	const seoMeta: Record<string, { title: string; description: string }> = {
+		a: {
+			title: 'Samtalsstöd för ångest – chatta anonymt | MittPsyke',
+			description: 'Prata anonymt om ångest, oro och tankar som snurrar. AI-samtalsstöd utan väntetid – börja i din egen takt.'
+		},
+		b: {
+			title: 'Samtalsstöd vid depression – chatta anonymt | MittPsyke',
+			description: 'Varsamt stöd för tunga dagar och låg ork. Prata anonymt om nedstämdhet med AI-baserat samtalsstöd.'
+		},
+		e: {
+			title: 'Samtalsstöd vid trauma – chatta anonymt | MittPsyke',
+			description: 'Varsamt AI-samtalsstöd för dig som bär på svåra upplevelser. Prata anonymt i din takt och på dina villkor.'
+		}
+	};
+
+	const pageMeta = $derived(
+		seoMeta[category] ?? {
+			title: 'Samtalsstöd – chatta anonymt | MittPsyke',
+			description: 'Anonymt AI-samtalsstöd för psykisk hälsa. Börja i din egen takt utan konto.'
+		}
+	);
 	const conversationIdFromUrl = $derived(page.url.searchParams.get('id'));
 
 	let initialMessages = $state<ChatMessage[]>([]);
@@ -92,7 +114,12 @@
 </script>
 
 <svelte:head>
-	<title>{portal ? portal.title : 'Chatt'} - MittPsyke</title>
+	<title>{pageMeta.title}</title>
+	<meta name="description" content={pageMeta.description} />
+	<meta property="og:title" content={pageMeta.title} />
+	<meta property="og:description" content={pageMeta.description} />
+	<meta property="og:type" content="website" />
+	<link rel="canonical" href="https://www.mittpsyke.se/chat/{category}" />
 </svelte:head>
 
 <div class="container py-6" data-page="chat">
