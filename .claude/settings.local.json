@@ -2,6 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm run:*)",
+      "Bash(cd /d D:\\mittpsyke-main && npm run *)",
+      "Bash(cmd /c \"cd /d D:\\mittpsyke-main && dir *\")",
       "Bash(grep -v \"^$\")",
       "Bash(python3 -c \":*)",
       "Bash(node -e \":*)",
