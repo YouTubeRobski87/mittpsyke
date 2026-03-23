@@ -417,16 +417,6 @@
 			</section>
 		{/if}
 
-		<!-- ── Enkel reflektion ── -->
-		<section class="card reflection-card">
-			<div class="card-header">
-				<div class="icon-badge reflect"><BookOpen size={24} /></div>
-				<h2>En liten reflektion</h2>
-			</div>
-			<p class="reflection-prompt">{todayReflection}</p>
-			<p class="reflection-hint">Du behöver inte svara. Ibland räcker det att stanna upp en stund.</p>
-		</section>
-
 		<!-- ── Tom state ── -->
 		{#if !streakData || streakData.currentStreak === 0}
 			<section class="card empty-state">

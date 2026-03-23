@@ -278,7 +278,7 @@
 					Hem
 				</a>
 
-				<nav class="hidden md:flex items-center gap-3" aria-label="Huvudnavigering">
+				<nav class="hidden lg:flex items-center gap-3" aria-label="Huvudnavigering">
 					<a
 						href="/chat"
 						class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
@@ -327,7 +327,7 @@
 			</div>
 
 			<div class="flex items-center gap-3">
-				<nav class="hidden md:flex items-center gap-3" aria-label="Kontonavigering">
+				<nav class="hidden lg:flex items-center gap-3" aria-label="Kontonavigering">
 					{#if user}
 						<span class="text-sm opacity-70">
 							{displayName ? `V\u00e4lkommen, ${displayName}` : 'V\u00e4lkommen tillbaka'}
@@ -373,7 +373,7 @@
 
 				<button
 					type="button"
-					class="md:hidden inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/10 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
+					class="lg:hidden inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/10 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
 					aria-label="Öppna meny"
 					aria-expanded={mobileMenuOpen}
 					aria-controls="mobile-menu"
@@ -385,7 +385,7 @@
 		</div>
 
 		{#if mobileMenuOpen}
-			<div id="mobile-menu" class="md:hidden border-t border-black/8 dark:border-white/10 px-5 py-3 space-y-2" role="navigation" aria-label="Mobilmeny">
+			<div id="mobile-menu" class="lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3 space-y-2" role="navigation" aria-label="Mobilmeny">
 				<a
 					href="/chat"
 					class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
