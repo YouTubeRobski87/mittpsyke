@@ -1,0 +1,593 @@
+@import '/fonts.css';
+
+/* ==========================================================================
+   GT Pressura Typography System
+
+   Variable Font Axes:
+   - wght (Weight): 300-900
+   - wdth (Width/Stretch): 100%-150% (100=Normal, 150=Extended)
+   - ital (Italic): 0-1 (0=Normal, 1=Italic)
+
+   Design Philosophy:
+   GT Pressura embodies the warmth of analog printing - the visual gesture
+   of ink spreading under pressure. Its industrial horizontals and mechanical
+   construction create a utilitarian aesthetic perfect for this journaling app.
+   ========================================================================== */
+
+:root {
+  /* Colors - Light Theme (default) */
+  --color-bg: #fafafa;
+  --color-bg-elevated: #ffffff;
+  --color-text: #1a1a1a;
+  --color-text-muted: #5f5f5f;
+  --color-border: #e5e5e5;
+  --color-accent: #f43f7a;
+  --color-accent-hover: #dc2f68;
+  --color-neutral: #f0f0f0;
+  --color-neutral-hover: #e8e8e8;
+  --color-error: #dc2626;
+  --color-error-bg: #fef2f2;
+  --color-error-border: #fecaca;
+
+  --mood-yellow: #e8a820;
+  --mood-orange: #e8862f; /* ← amber accent */
+  --mood-red: #e52020; /* ← red accent */
+  --mood-pink: #f43f7a; /* ← pink accent */
+  --mood-purple: #9b50d8;
+  --mood-indigo: #5c5ce0;
+  --mood-blue: #3570d0;
+  --mood-sky: #2b8db8; /* ← blue accent */
+  --mood-cyan: #0ca8c0;
+  --mood-teal: #18a898;
+  --mood-green: #30a852;
+  --mood-lime: #7cb342; /* ← lime accent */
+  --mood-brown: #9a6518;
+  --mood-gray: #6e6e78;
+  --mood-black: #1a1a1e;
+  --mood-white: #fafaf8;
+}
+
+/* ==========================================================================
+   Dark Theme
+
+   Activated via [data-theme="dark"] attribute on <html>.
+   Uses warm, slightly desaturated tones to maintain the industrial aesthetic
+   while being easy on the eyes.
+   ========================================================================== */
+
+[data-theme='dark'] {
+  --color-bg: #121214;
+  --color-bg-elevated: #1c1c1f;
+  --color-text: #f0f0f3;
+  --color-text-muted: #a7a7ad;
+  --color-border: #2e2e33;
+  --color-accent: #ff5c8d;
+  --color-accent-hover: #ff759f;
+  --color-neutral: #252528;
+  --color-neutral-hover: #2f2f33;
+  --color-error: #f87171;
+  --color-error-bg: #2a1515;
+  --color-error-border: #5c2020;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+  --mood-yellow: #f5c844;
+  --mood-orange: #f5a04a; /* ← amber accent */
+  --mood-red: #f04848; /* ← red accent */
+  --mood-pink: #ff5c8d; /* ← pink accent */
+  --mood-purple: #be82f8;
+  --mood-indigo: #8080f4;
+  --mood-blue: #5a96f0;
+  --mood-sky: #42aad6; /* ← blue accent */
+  --mood-cyan: #28cce0;
+  --mood-teal: #2cc8b4;
+  --mood-green: #4cd472;
+  --mood-lime: #96cc5a; /* ← lime accent */
+  --mood-brown: #d48820;
+  --mood-gray: #9a9aa4;
+  --mood-black: #28282c;
+  --mood-white: #f4f4f2;
+}
+
+/* ==========================================================================
+   Accent Color Themes
+
+   Activated via [data-accent] attribute on <html>.
+   Pink is the default and needs no attribute. Each accent overrides
+   --color-accent and --color-accent-hover for both light and dark themes.
+   ========================================================================== */
+
+[data-accent='amber'] {
+  --color-accent: #e8862f;
+  --color-accent-hover: #d27728;
+}
+[data-accent='amber'][data-theme='dark'] {
+  --color-accent: #f5a04a;
+  --color-accent-hover: #f7b06a;
+}
+
+[data-accent='blue'] {
+  --color-accent: #2b8db8;
+  --color-accent-hover: #247da3;
+}
+[data-accent='blue'][data-theme='dark'] {
+  --color-accent: #42aad6;
+  --color-accent-hover: #5fbae0;
+}
+
+[data-accent='lime'] {
+  --color-accent: #7cb342;
+  --color-accent-hover: #6da236;
+}
+[data-accent='lime'][data-theme='dark'] {
+  --color-accent: #96cc5a;
+  --color-accent-hover: #a8d876;
+}
+
+[data-accent='red'] {
+  --color-accent: #e52020;
+  --color-accent-hover: #b81a1a;
+}
+[data-accent='red'][data-theme='dark'] {
+  --color-accent: #f04848;
+  --color-accent-hover: #f46e6e;
+}
+
+:root {
+  /* Font Families */
+  --font-primary: 'GT Pressura', system-ui, sans-serif;
+  --font-serif: 'Domaine Display', serif;
+  --font-mono: 'GT Pressura Mono', ui-monospace, monospace;
+
+  /* Legacy aliases for compatibility */
+  --font-heading: var(--font-primary);
+  --font-body: var(--font-primary);
+  --font-ui: var(--font-primary);
+
+  /* Border Radius */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+  /* ==========================================================================
+	   Typography Scale
+
+	   Using a modular scale based on 1.2 (minor third) ratio
+	   Base: 17px for optimal readability with GT Pressura's character width
+	   ========================================================================== */
+
+  --text-xs: 0.87rem; /* ~11.8px - micro labels */
+  --text-sm: 0.95rem; /* ~14.2px - small UI text */
+  --text-base: 1.03rem; /* 17px - body text */
+  --text-md: 1.125rem; /* ~19px - slightly emphasized */
+  --text-lg: 1.25rem; /* ~21px - subheadings */
+  --text-xl: 1.5rem; /* ~25.5px - section titles */
+  --text-2xl: 1.875rem; /* ~32px - page titles */
+  --text-3xl: 2.25rem; /* ~38px - hero titles */
+  --text-4xl: 3rem; /* ~51px - display */
+
+  /* ==========================================================================
+	   Line Heights
+
+	   GT Pressura benefits from generous line-height due to its mechanical,
+	   industrial character. Tighter for headings, looser for body text.
+	   ========================================================================== */
+
+  --leading-none: 1;
+  --leading-tight: 1.15;
+  --leading-snug: 1.25;
+  --leading-base: 1.4;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+  --leading-loose: 1.8;
+
+  /* ==========================================================================
+	   Letter Spacing
+
+	   GT Pressura's mechanical construction means:
+	   - Body text: slight positive tracking improves readability
+	   - Headings: tighter tracking for large sizes
+	   - Small caps/labels: open tracking for legibility
+	   ========================================================================== */
+
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.015em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ==========================================================================
+	   Font Weights
+
+	   GT Pressura variable weight range: 300-900
+	   Each weight appears slightly heavier than the name suggests to reflect
+	   the results of ink under pressure.
+	   ========================================================================== */
+
+  --weight-light: 300;
+  --weight-book: 375;
+  --weight-regular: 415;
+  --weight-news: 450;
+  --weight-medium: 480; /* Slightly heavier than typical 500 */
+  --weight-semibold: 560; /* Between medium and bold */
+  --weight-bold: 650; /* Robust but not too heavy */
+  --weight-heavy: 750;
+  --weight-black: 900;
+
+  /* Lyric font settings */
+  --lyric-weight-regular: 400;
+  --lyric-weight-medium: 500;
+  --lyric-weight-semibold: 600;
+  --lyric-weight-bold: 700;
+  --lyric-weight-extrabold: 800;
+  --lyric-weight-black: 900;
+}
+
+/* ==========================================================================
+   Base Reset
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==========================================================================
+   Root Typography
+   ========================================================================== */
+
+html {
+  font-family: var(--font-primary);
+  font-size: 17px;
+  line-height: var(--leading-relaxed);
+  font-weight: var(--weight-regular);
+  font-stretch: 100%;
+  font-style: normal;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+
+  /* Rendering optimizations */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+
+  /* OpenType features */
+  font-feature-settings:
+    'kern' 1,
+    /* Kerning */ 'liga' 1,
+    /* Standard ligatures */ 'calt' 1; /* Contextual alternates */
+
+  /* Letter spacing for body text */
+  letter-spacing: var(--tracking-wide);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* ==========================================================================
+   Headings
+
+   GT Pressura headings use:
+   - Heavier weights with slight extension for impact
+   - Tighter tracking at large sizes
+   - Snug line-height for compact hierarchy
+   ========================================================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-primary);
+  font-style: normal;
+  line-height: var(--leading-snug);
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1;
+}
+
+h1 {
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-medium);
+  font-stretch: 105%;
+  letter-spacing: var(--tracking-tight);
+}
+
+h2 {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-medium);
+  font-stretch: 103%;
+  letter-spacing: var(--tracking-tight);
+}
+
+h3 {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-medium);
+  font-stretch: 100%;
+  letter-spacing: var(--tracking-normal);
+}
+
+h4 {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  font-stretch: 100%;
+  letter-spacing: var(--tracking-normal);
+}
+
+h5 {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  font-stretch: 100%;
+  letter-spacing: var(--tracking-normal);
+}
+
+h6 {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  font-stretch: 100%;
+  letter-spacing: var(--tracking-wide);
+}
+
+/* ==========================================================================
+   Paragraph & Body Text
+   ========================================================================== */
+
+p {
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  letter-spacing: var(--tracking-wide);
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: var(--weight-medium);
+}
+
+a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+/* ==========================================================================
+   Strong & Emphasis
+
+   Note: Avoiding italic with GT Pressura per user preference.
+   Using weight and slight width variation instead.
+   ========================================================================== */
+
+strong,
+b {
+  font-weight: var(--weight-bold);
+}
+
+em,
+i {
+  /* Instead of italic, use slightly lighter weight with subtle distinction */
+  font-style: normal;
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wider);
+}
+
+/* ==========================================================================
+   Small Text & Captions
+   ========================================================================== */
+
+small {
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wider);
+}
+
+/* ==========================================================================
+   Labels & UI Micro Text
+
+   GT Pressura's industrial character shines in uppercase labels.
+   Using extended width for visual presence at small sizes.
+   ========================================================================== */
+
+.label,
+.category-name,
+.step-number,
+.preview-label,
+.summary-label,
+.voice-label {
+  font-family: var(--font-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  font-stretch: 110%;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   Code & Monospace
+
+   GT Pressura Mono for code blocks, timestamps, and technical content.
+   ========================================================================== */
+
+code,
+kbd,
+samp,
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--tracking-normal);
+}
+
+pre {
+  line-height: var(--leading-normal);
+  overflow-x: auto;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+button {
+  font-family: var(--font-primary);
+  font-size: inherit;
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1.25rem;
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  font-stretch: 105%;
+  letter-spacing: var(--tracking-wider);
+  border-radius: var(--radius-sm);
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary:disabled:active {
+  transform: none;
+}
+
+.btn-primary.btn-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary.btn-disabled:hover {
+  background-color: var(--color-accent);
+}
+
+.btn-primary.btn-disabled:active {
+  transform: none;
+}
+
+.btn-secondary {
+  background-color: var(--color-neutral);
+  color: var(--color-text);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-neutral-hover);
+}
+
+.btn-large {
+  padding: 0.875rem 2.25rem;
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  font-stretch: 108%;
+  letter-spacing: var(--tracking-wide);
+}
+
+/* ==========================================================================
+   Form Inputs
+
+   Using GT Pressura with slightly lighter weight for input fields
+   to create visual distinction from labels.
+   ========================================================================== */
+
+input,
+textarea,
+select {
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  font-stretch: 100%;
+  letter-spacing: var(--tracking-wide);
+  line-height: var(--leading-normal);
+  color: var(--color-text);
+  background-color: var(--color-bg-elevated);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-muted);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--tracking-wider);
+}
+
+/* ==========================================================================
+   Pills & Tags
+
+   Compact UI elements benefit from GT Pressura's mechanical character.
+   ========================================================================== */
+
+.pill,
+.tag,
+.badge,
+.chip {
+  font-family: var(--font-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-news);
+  font-stretch: 100%;
+  letter-spacing: var(--tracking-wide);
+}
+
+/* ==========================================================================
+   Optional Badge
+
+   For wizard step indicators and similar UI elements.
+   ========================================================================== */
+
+.optional-badge {
+  font-family: var(--font-primary);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  font-stretch: 110%;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Required Field Indicator
+   ========================================================================== */
+
+.required {
+  color: var(--color-accent);
+  font-weight: var(--weight-medium);
+  margin-left: 0.05em;
+}
+
+.required-icon {
+  color: var(--color-accent);
+  margin-left: 0.05em;
+  vertical-align: middle;
+  display: inline-block;
+}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="a" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 963.76">
+  <defs>
+    <style>
+      .d {
+        fill: url(#c);
+      }
+
+      .e {
+        fill: url(#b);
+      }
+
+      .f {
+        fill: #ffe12c;
+      }
+
+      .g {
+        fill: #006dae;
+      }
+    </style>
+    <linearGradient id="b" x1="225.88" y1="250.47" x2="286.12" y2="250.47" gradientTransform="translate(0 965.76) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset=".15" stop-color="#cfd8dd"/>
+      <stop offset=".41" stop-color="#c3cdd2"/>
+      <stop offset=".88" stop-color="#a3b0b6"/>
+      <stop offset="1" stop-color="#99a8ae"/>
+    </linearGradient>
+    <linearGradient id="c" x1="135.53" y1="1879.71" x2="376.47" y2="1879.71" gradientTransform="translate(0 -931)" gradientUnits="userSpaceOnUse">
+      <stop offset=".15" stop-color="#cfd8dd"/>
+      <stop offset=".41" stop-color="#c3cdd2"/>
+      <stop offset=".88" stop-color="#a3b0b6"/>
+      <stop offset="1" stop-color="#99a8ae"/>
+    </linearGradient>
+  </defs>
+  <path class="e" d="M225.88,481.88v466.82h60.24v-466.82h-60.24Z"/>
+  <path class="g" d="M512,527.06c0,8.28-6.78,15.06-15.06,15.06H15.06c-8.28,0-15.06-6.78-15.06-15.06V15.06C0,6.78,6.78,0,15.06,0h481.88c8.28,0,15.06,6.78,15.06,15.06v512Z"/>
+  <path class="d" d="M135.53,963.76v-23.36c0-9.01,240.94-9.01,240.94,0v23.36h-240.94Z"/>
+  <circle class="f" cx="256" cy="271.06" r="180.71"/>
+  <path class="g" d="M346.35,331.29c0,8.28-6.76,15.06-15.06,15.06h-150.59c-8.28,0-15.06-6.78-15.06-15.06v-150.59c0-8.28,6.78-15.06,15.06-15.06h150.59c8.3,0,15.06,6.78,15.06,15.06v150.59Z"/>
+  <path class="g" d="M180.71,368.94c0,4.14,3.39,7.53,7.53,7.53h15.06c4.14,0,7.53-3.39,7.53-7.53v-37.65h-30.12v37.65Z"/>
+  <path class="g" d="M301.18,331.29v37.65c0,4.14,3.39,7.53,7.53,7.53h15.06c4.14,0,7.53-3.39,7.53-7.53v-37.65h-30.12Z"/>
+  <circle class="f" cx="195.76" cy="301.18" r="15.06"/>
+  <circle class="f" cx="316.24" cy="301.18" r="15.06"/>
+  <path class="f" d="M316.24,244.71c0,6.2-5.09,11.29-11.29,11.29h-97.88c-6.2,0-11.29-5.09-11.29-11.29v-37.65c0-6.2,5.09-11.29,11.29-11.29h97.88c6.2,0,11.29,5.09,11.29,11.29v37.65Z"/>
+</svg>

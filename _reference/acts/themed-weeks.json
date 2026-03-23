@@ -1,0 +1,214 @@
+{
+  "weeks": [
+    {
+      "id": "week-1",
+      "title": "Inre omtanke",
+      "subtitle": "Mjuk vecka för självsnällhet, återhämtning och vänliga ord till dig själv.",
+      "act_ids": [
+        3,
+        76,
+        87,
+        41,
+        136,
+        95,
+        200
+      ]
+    },
+    {
+      "id": "week-2",
+      "title": "Kroppskompass",
+      "subtitle": "Lyssna på kroppen med små signaler, rörelse och tacksamhet.",
+      "act_ids": [
+        81,
+        63,
+        75,
+        30,
+        94,
+        134,
+        196
+      ]
+    },
+    {
+      "id": "week-3",
+      "title": "Klickpaus",
+      "subtitle": "Lätta på skärmtrycket och ge hjärnan lite offline-luft.",
+      "act_ids": [
+        14,
+        54,
+        88,
+        90,
+        149,
+        91,
+        130
+      ]
+    },
+    {
+      "id": "week-4",
+      "title": "Sinnesrundan",
+      "subtitle": "Utforska doft, smak, ljud och textur för mer närvaro.",
+      "act_ids": [
+        100,
+        67,
+        84,
+        127,
+        68,
+        163,
+        162
+      ]
+    },
+    {
+      "id": "week-5",
+      "title": "Låt-det-vara",
+      "subtitle": "Öva på att släppa kontroll och låta saker få vara ofärdiga.",
+      "act_ids": [
+        70,
+        44,
+        64,
+        98,
+        49,
+        73,
+        189
+      ]
+    },
+    {
+      "id": "week-6",
+      "title": "Lekfull revolt",
+      "subtitle": "Lite trams, lite mod, mycket lätthet och humor.",
+      "act_ids": [
+        122,
+        128,
+        66,
+        72,
+        156,
+        158,
+        160
+      ]
+    },
+    {
+      "id": "week-7",
+      "title": "Omtanke utåt",
+      "subtitle": "Små vänliga handlingar som gör andras dag mjukare.",
+      "act_ids": [
+        1,
+        7,
+        17,
+        29,
+        45,
+        104,
+        140
+      ]
+    },
+    {
+      "id": "week-8",
+      "title": "Mikropausa",
+      "subtitle": "Korta pauser som återställer fokus och lugn.",
+      "act_ids": [
+        5,
+        19,
+        150,
+        177,
+        161,
+        166,
+        170
+      ]
+    },
+    {
+      "id": "week-9",
+      "title": "Titta tillbaka",
+      "subtitle": "Reflektion och små insikter om vad du klarat.",
+      "act_ids": [
+        10,
+        25,
+        33,
+        69,
+        93,
+        192,
+        147
+      ]
+    },
+    {
+      "id": "week-10",
+      "title": "Oväntat vackert",
+      "subtitle": "Träna blicken på vardagliga skönhetsglimtar.",
+      "act_ids": [
+        37,
+        65,
+        96,
+        187,
+        168,
+        131,
+        185
+      ]
+    },
+    {
+      "id": "week-11",
+      "title": "Kontrollerat kaos",
+      "subtitle": "Lekfullt kaos inom rimliga ramar.",
+      "act_ids": [
+        151,
+        152,
+        153,
+        171,
+        172,
+        173,
+        195
+      ]
+    },
+    {
+      "id": "week-12",
+      "title": "Vardagstrams",
+      "subtitle": "Snäll busighet och små överraskningar i vardagen.",
+      "act_ids": [
+        154,
+        155,
+        157,
+        158,
+        160,
+        175,
+        197
+      ]
+    },
+    {
+      "id": "week-13",
+      "title": "Smått briljant",
+      "subtitle": "Onödigt perfekta, charmiga små saker.",
+      "act_ids": [
+        61,
+        72,
+        128,
+        174,
+        198,
+        59,
+        13
+      ]
+    },
+    {
+      "id": "week-14",
+      "title": "Enmansföreställning",
+      "subtitle": "Dina små solonummer för mod och glädje.",
+      "act_ids": [
+        66,
+        124,
+        156,
+        122,
+        80,
+        53,
+        123
+      ]
+    },
+    {
+      "id": "week-15",
+      "title": "Mikrouppror",
+      "subtitle": "Små uppror mot måsten, för mer andrum.",
+      "act_ids": [
+        12,
+        38,
+        62,
+        83,
+        159,
+        26,
+        60
+      ]
+    }
+  ]
+}

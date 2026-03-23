@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "536082224894",
+    "project_id": "storify-v2103",
+    "storage_bucket": "storify-v2103.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:536082224894:android:b28efef8fac8b906a9f7af",
+        "android_client_info": {
+          "package_name": "com.storify.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBK1Ow__iCW6C3na-mSd_G-jBdpkLnEGzE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

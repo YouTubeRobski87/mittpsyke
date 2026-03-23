@@ -1,0 +1,156 @@
+@font-face {
+  font-family: 'GT Pressura';
+  src:
+    url('/fonts/GTPressura.woff2') format('woff2'),
+    url('/fonts/GTPressura.woff') format('woff'),
+    url('/fonts/GTPressura.ttf') format('truetype');
+  font-weight: 300 900;
+  font-stretch: 100% 150%;
+  font-style: normal italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT Pressura Mono';
+  src:
+    url('/fonts/GTPressuraMono.woff2') format('woff2'),
+    url('/fonts/GTPressuraMono.woff') format('woff'),
+    url('/fonts/GTPressuraMono.ttf') format('truetype');
+  font-weight: 300 900;
+  font-style: normal italic;
+  font-display: swap;
+}
+
+/* Domaine Display */
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-Regular.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-Regular.woff') format('woff'),
+    url('/fonts/DomainDisplay-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-RegularItalic.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-RegularItalic.woff') format('woff'),
+    url('/fonts/DomainDisplay-RegularItalic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-Medium.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-Medium.woff') format('woff'),
+    url('/fonts/DomainDisplay-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-MediumItalic.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-MediumItalic.woff') format('woff'),
+    url('/fonts/DomainDisplay-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-SemiBold.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-SemiBold.woff') format('woff'),
+    url('/fonts/DomainDisplay-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-SemiBoldItalic.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-SemiBoldItalic.woff') format('woff'),
+    url('/fonts/DomainDisplay-SemiBoldItalic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-Bold.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-Bold.woff') format('woff'),
+    url('/fonts/DomainDisplay-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-BoldItalic.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-BoldItalic.woff') format('woff'),
+    url('/fonts/DomainDisplay-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-ExtraBold.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-ExtraBold.woff') format('woff'),
+    url('/fonts/DomainDisplay-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-ExtraBoldItalic.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-ExtraBoldItalic.woff') format('woff'),
+    url('/fonts/DomainDisplay-ExtraBoldItalic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-Black.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-Black.woff') format('woff'),
+    url('/fonts/DomainDisplay-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Domaine Display';
+  src:
+    url('/fonts/DomainDisplay-BlackItalic.woff2') format('woff2'),
+    url('/fonts/DomainDisplay-BlackItalic.woff') format('woff'),
+    url('/fonts/DomainDisplay-BlackItalic.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}

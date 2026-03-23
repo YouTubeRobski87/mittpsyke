@@ -1,0 +1,10 @@
+export { default as Number0 } from './Number0.svelte';
+export { default as Number1 } from './Number1.svelte';
+export { default as Number2 } from './Number2.svelte';
+export { default as Number3 } from './Number3.svelte';
+export { default as Number4 } from './Number4.svelte';
+export { default as Number5 } from './Number5.svelte';
+export { default as Number6 } from './Number6.svelte';
+export { default as Number7 } from './Number7.svelte';
+export { default as Number8 } from './Number8.svelte';
+export { default as Number9 } from './Number9.svelte';

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="a" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 568.89">
+  <defs>
+    <style>
+      .d {
+        fill: url(#c);
+      }
+
+      .e {
+        fill: url(#b);
+      }
+
+      .f {
+        fill: #b3c2c6;
+      }
+
+      .g {
+        fill: #594640;
+      }
+
+      .h {
+        fill: #45332c;
+      }
+
+      .i {
+        fill: #e6ebef;
+      }
+    </style>
+    <linearGradient id="b" x1="262.3" y1="2" x2="262.3" y2="174.8" gradientTransform="translate(0 570.89) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#45332c"/>
+      <stop offset="1" stop-color="#594640"/>
+    </linearGradient>
+    <radialGradient id="c" cx="279.73" cy="339.55" fx="279.73" fy="339.55" r="274.48" gradientTransform="translate(6.08 570.89) scale(1.01 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#bf7c60"/>
+      <stop offset=".37" stop-color="#bc7a5e"/>
+      <stop offset=".67" stop-color="#b27459"/>
+      <stop offset=".94" stop-color="#a16951"/>
+      <stop offset="1" stop-color="#9c664e"/>
+    </radialGradient>
+  </defs>
+  <path class="e" d="M493.06,552.67c-52.81,0-465.56-156.59-465.56-156.59l14.46,172.8h60.15s1.07-84.48,9.19-109.81c67.56,0,100.85,109.81,168.4,109.81h213.36c5.37,0,5.37-16.21,0-16.21Z"/>
+  <path class="h" d="M27.51,396.09l14.46,172.8h31.31s-3.56-60.81,1.85-120.81c105.13-15.67,187.51,104.25,204.58,104.25C177.9,411.83,27.51,396.09,27.51,396.09Z"/>
+  <path class="d" d="M475.93,458.2c-146.36-52.07-224.82-104.67-224.82-323.82,0-67.16,8.49-134.38,8.49-134.38C135.87,0,9.61,37.93,9.61,37.93,66.94,227.79,0,260.05,0,344.57c0,50.7,36.84,94.56,103.64,94.56,85.77,0,123.24,113.55,177.84,113.55h211.57c16.18,0,39.91-74.2-17.12-94.48Z"/>
+  <polygon class="g" points="105.76 284.44 86.53 284.44 86.53 19.3 105.76 15.57 105.76 284.44"/>
+  <path class="i" d="M105.96,58.26l-3.15-23.52c-.99-7.48-12.32-7.59-13.37-.11l-3.13,23.48c-1.75,13.21,21.41,13.39,19.65.16ZM90.01,60.77l1.21-13.09,9.79.09,1.27,13.11c-.32,1.03-11.98.95-12.28-.11Z"/>
+  <polygon class="f" points="99.88 40.82 92.4 40.74 92.39 22.24 99.88 22.31 99.88 40.82"/>
+</svg>
