@@ -335,6 +335,9 @@
 						<a href="/dagbok" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							Dagbok
 						</a>
+						<a href="/dagars-avtryck" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
+							Dagars avtryck
+						</a>
 						<a href="/framsteg" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">
 							Framsteg
 						</a>
@@ -442,6 +445,13 @@
 						onclick={() => (mobileMenuOpen = false)}
 					>
 						Dagbok
+					</a>
+					<a
+						href="/dagars-avtryck"
+						class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity"
+						onclick={() => (mobileMenuOpen = false)}
+					>
+						Dagars avtryck
 					</a>
 					<a
 						href="/framsteg"
