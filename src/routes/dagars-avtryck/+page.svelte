@@ -312,7 +312,7 @@
 </script>
 
 <svelte:head>
-	<title>Dagars avtryck | MittPsyke</title>
+	<title>Guidad reflektion | MittPsyke</title>
 	<meta name="description" content="En AI-ledd intervju om din dag – omvandlas till ett personligt dagboksinlägg." />
 </svelte:head>
 
@@ -321,9 +321,9 @@
 
 		<!-- Sidhuvud -->
 		<div class="auth-panel page-header">
-			<h1 class="page-title">Dagars avtryck</h1>
+			<h1 class="page-title">Guidad reflektion</h1>
 			<p class="auth-muted header-desc">
-				Dagars avtryck guidar dig genom en kort reflektion och skapar sedan ett personligt dagboksinlägg utifrån din röst och den kategori du väljer.
+				Guidad reflektion guidar dig genom en kort reflektion och skapar sedan ett personligt dagboksinlägg utifrån din röst och den kategori du väljer.
 			</p>
 		</div>
 

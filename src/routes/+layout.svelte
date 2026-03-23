@@ -281,7 +281,7 @@
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
 						<a href="/dagbok" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Dagbok</a>
-						<a href="/dagars-avtryck" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Dagars avtryck</a>
+						<a href="/dagars-avtryck" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Guidad reflektion</a>
 						<a href="/framsteg" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Framsteg</a>
 						<a href="/dashboard/gemenskap" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Gemenskap</a>
 						<a href="/dashboard" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Min portal</a>
@@ -336,7 +336,7 @@
 				{#if user}
 					<p class="text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
 					<a href="/dagbok" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Dagbok</a>
-					<a href="/dagars-avtryck" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Dagars avtryck</a>
+					<a href="/dagars-avtryck" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guidad reflektion</a>
 					<a href="/framsteg" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Framsteg</a>
 					<a href="/dashboard/gemenskap" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Gemenskap</a>
 					<a href="/dashboard" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Min portal</a>
