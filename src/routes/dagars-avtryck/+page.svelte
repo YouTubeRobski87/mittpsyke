@@ -1,5 +1,17 @@
 <script lang="ts">
 	import { supabase } from '$lib/supabase';
+	import { storifyTones } from '$lib/data/storifyTones';
+
+	// --- Typer ---
+
+	type Phase = 'empty' | 'chatting' | 'tone-selection' | 'generating' | 'result';
+	type Role = 'user' | 'assistant';
+
+	type ChatMessage = {
+		id: string;
+		role: Role;
+		content: string;
+	};
 
 	type StorifyEntry = {
 		id: string;
@@ -9,138 +21,58 @@
 		created_at: string;
 	};
 
+	// --- Props ---
+
 	let { data } = $props<{ data: { entries: StorifyEntry[] } }>();
 
-	// Flikhantering
+	// --- Globalt tillstånd ---
+
 	let activeTab = $state<'skriv' | 'entries'>('skriv');
 
-	// Skriv-formulär
-	let userInput = $state('');
-	let selectedMoods = $state<string[]>([]);
-	let energyScore = $state(5);
-	let generating = $state(false);
+	// --- Intervjutillstånd ---
+
+	let phase = $state<Phase>('empty');
+	let messages = $state<ChatMessage[]>([]);
+	let isStreaming = $state(false);
+	let streamError = $state('');
+	let inputValue = $state('');
+
+	// --- Tonval ---
+
+	let selectedTone = $state('classic');
+
+	// --- Genereringtillstånd ---
+
 	let generatedEntry = $state('');
 	let generatedTone = $state('');
-	let saving = $state(false);
-	let saved = $state(false);
-	let errorMsg = $state('');
+	let generating = $state(false);
+	let generateError = $state('');
 
-	// Inläggslista – initieras från servern, uppdateras efter sparning
+	// --- Sparatillstånd ---
+
+	let isSaved = $state(false);
+	let saveError = $state('');
+	let isCopied = $state(false);
+
+	// --- Inläggslist ---
+
 	let entries = $state<StorifyEntry[]>(data.entries ?? []);
 
-	const MOOD_OPTIONS = [
-		{ emoji: '😊', label: 'Glad' },
-		{ emoji: '😌', label: 'Lugn' },
-		{ emoji: '🤗', label: 'Tacksam' },
-		{ emoji: '💪', label: 'Stark' },
-		{ emoji: '😔', label: 'Ledsen' },
-		{ emoji: '😴', label: 'Trött' },
-		{ emoji: '😰', label: 'Orolig' },
-		{ emoji: '😤', label: 'Frustrerad' }
-	];
+	// --- Scrollreferens för chattfönstret ---
 
-	function toggleMood(emoji: string) {
-		if (selectedMoods.includes(emoji)) {
-			selectedMoods = selectedMoods.filter((m) => m !== emoji);
-		} else {
-			selectedMoods = [...selectedMoods, emoji];
+	let messageListEl = $state<HTMLElement | null>(null);
+
+	// Scrolla till botten efter nya meddelanden
+	$effect(() => {
+		if (messages.length > 0 && messageListEl) {
+			messageListEl.scrollTop = messageListEl.scrollHeight;
 		}
-	}
+	});
 
-	async function getToken(): Promise<string | null> {
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
-		return session?.access_token ?? null;
-	}
+	// --- Helpers ---
 
-	async function generateEntry() {
-		if (!userInput.trim()) return;
-
-		generating = true;
-		errorMsg = '';
-		generatedEntry = '';
-		saved = false;
-
-		const token = await getToken();
-		if (!token) {
-			errorMsg = 'Du är inte inloggad. Ladda om sidan och försök igen.';
-			generating = false;
-			return;
-		}
-
-		const res = await fetch('/api/storify/generate', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			},
-			body: JSON.stringify({
-				userInput: userInput.trim(),
-				moodEmojis: selectedMoods,
-				energyScore
-			})
-		});
-
-		const body = await res.json().catch(() => ({})) as { entry?: string; tone?: string; error?: string };
-
-		if (!res.ok) {
-			errorMsg = body.error ?? 'Något gick fel. Försök igen.';
-			generating = false;
-			return;
-		}
-
-		generatedEntry = body.entry ?? '';
-		generatedTone = body.tone ?? 'neutral';
-		generating = false;
-
-		// Spara automatiskt efter generering
-		await saveEntry(token);
-	}
-
-	async function saveEntry(existingToken?: string) {
-		if (!generatedEntry) return;
-
-		saving = true;
-		errorMsg = '';
-
-		const token = existingToken ?? (await getToken());
-		if (!token) {
-			errorMsg = 'Du är inte inloggad.';
-			saving = false;
-			return;
-		}
-
-		const res = await fetch('/api/storify/save', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			},
-			body: JSON.stringify({
-				entry: generatedEntry,
-				tone: generatedTone,
-				moodEmojis: selectedMoods,
-				energyScore
-			})
-		});
-
-		if (res.ok) {
-			saved = true;
-			// Lägg till i listan direkt utan att ladda om
-			const newEntry: StorifyEntry = {
-				id: crypto.randomUUID(),
-				content: generatedEntry,
-				tone: generatedTone,
-				mood_emojis: selectedMoods,
-				created_at: new Date().toISOString()
-			};
-			entries = [newEntry, ...entries];
-		} else {
-			errorMsg = 'Kunde inte spara inlägget. Försök igen.';
-		}
-
-		saving = false;
+	function uid(): string {
+		return Math.random().toString(36).slice(2);
 	}
 
 	function formatDate(dateStr: string): string {
@@ -152,20 +84,246 @@
 			minute: '2-digit'
 		});
 	}
+
+	function formatTranscript(): string {
+		return messages
+			.filter((m) => m.content.trim().length > 0)
+			.map((m) => {
+				const prefix = m.role === 'user' ? 'Användaren' : 'Intervjuaren';
+				return `${prefix}: ${m.content}`;
+			})
+			.join('\n\n');
+	}
+
+	function userMessageCount(): number {
+		return messages.filter((m) => m.role === 'user').length;
+	}
+
+	async function getToken(): Promise<string | null> {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+		return session?.access_token ?? null;
+	}
+
+	// --- Starta om ---
+
+	function resetInterview() {
+		phase = 'empty';
+		messages = [];
+		inputValue = '';
+		streamError = '';
+		selectedTone = 'classic';
+		generatedEntry = '';
+		generatedTone = '';
+		generateError = '';
+		isSaved = false;
+		saveError = '';
+		isCopied = false;
+	}
+
+	// --- Streaming-chatt ---
+
+	async function streamResponse(newMessages: ChatMessage[]) {
+		isStreaming = true;
+		streamError = '';
+
+		// Lägg till tomt assistentmeddelande som fylls på
+		const assistantMsg: ChatMessage = { id: uid(), role: 'assistant', content: '' };
+		messages = [...newMessages, assistantMsg];
+
+		try {
+			const response = await fetch('/api/storify/chat', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					messages: newMessages.map((m) => ({ role: m.role, content: m.content }))
+				})
+			});
+
+			if (!response.ok) {
+				const err = await response.json().catch(() => ({})) as { error?: string };
+				throw new Error(err.error ?? `Fel ${response.status}`);
+			}
+
+			const reader = response.body!.getReader();
+			const decoder = new TextDecoder();
+			let buffer = '';
+
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+
+				buffer += decoder.decode(value, { stream: true });
+				const lines = buffer.split('\n');
+				buffer = lines.pop() ?? '';
+
+				for (const line of lines) {
+					const trimmed = line.trim();
+					if (!trimmed.startsWith('data: ')) continue;
+
+					const data = trimmed.slice(6);
+					if (data === '[DONE]') break;
+
+					try {
+						const parsed = JSON.parse(data) as { text?: string; error?: string };
+						if (parsed.error) throw new Error(parsed.error);
+						if (parsed.text) {
+							// Lägg till text till sista assistentmeddelandet
+							messages = messages.map((m, i) =>
+								i === messages.length - 1 ? { ...m, content: m.content + parsed.text } : m
+							);
+						}
+					} catch (e) {
+						if (e instanceof SyntaxError) continue;
+						throw e;
+					}
+				}
+			}
+		} catch (e) {
+			streamError = e instanceof Error ? e.message : 'Ett oväntat fel uppstod.';
+			// Ta bort det tomma assistentmeddelandet vid fel
+			messages = messages.filter((m) => !(m.role === 'assistant' && m.content === ''));
+		} finally {
+			isStreaming = false;
+		}
+	}
+
+	function handleSend() {
+		const text = inputValue.trim();
+		if (!text || isStreaming) return;
+
+		inputValue = '';
+
+		const userMsg: ChatMessage = { id: uid(), role: 'user', content: text };
+		const newMessages = [...messages, userMsg];
+
+		if (phase === 'empty') {
+			phase = 'chatting';
+		}
+
+		streamResponse(newMessages);
+	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault();
+			handleSend();
+		}
+	}
+
+	// --- Tonval och generering ---
+
+	function proceedToToneSelection() {
+		phase = 'tone-selection';
+	}
+
+	async function handleGenerate() {
+		generateError = '';
+		generatedEntry = '';
+		phase = 'generating';
+		generating = true;
+
+		const token = await getToken();
+		if (!token) {
+			generateError = 'Sessionen har gått ut. Ladda om sidan och försök igen.';
+			generating = false;
+			phase = 'tone-selection';
+			return;
+		}
+
+		const transcript = formatTranscript();
+
+		const res = await fetch('/api/storify/generate', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({ chatTranscript: transcript, selectedTone })
+		});
+
+		const body = await res.json().catch(() => ({})) as { entry?: string; tone?: string; error?: string };
+
+		if (!res.ok) {
+			generateError = body.error ?? 'Generering misslyckades. Försök igen.';
+			generating = false;
+			phase = 'tone-selection';
+			return;
+		}
+
+		generatedEntry = body.entry ?? '';
+		generatedTone = body.tone ?? selectedTone;
+		generating = false;
+		phase = 'result';
+
+		// Spara automatiskt efter generering
+		await autoSave(token);
+	}
+
+	async function autoSave(existingToken?: string) {
+		const token = existingToken ?? (await getToken());
+		if (!token || !generatedEntry) return;
+
+		const res = await fetch('/api/storify/save', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({
+				entry: generatedEntry,
+				tone: generatedTone,
+				moodEmojis: [],
+				energyScore: 5
+			})
+		});
+
+		if (res.ok) {
+			isSaved = true;
+			const newEntry: StorifyEntry = {
+				id: uid(),
+				content: generatedEntry,
+				tone: generatedTone,
+				mood_emojis: [],
+				created_at: new Date().toISOString()
+			};
+			entries = [newEntry, ...entries];
+		} else {
+			saveError = 'Inlägget genererades men kunde inte sparas. Kopiera texten manuellt.';
+		}
+	}
+
+	async function copyToClipboard() {
+		if (!generatedEntry || isCopied) return;
+		try {
+			await navigator.clipboard.writeText(generatedEntry);
+			isCopied = true;
+			setTimeout(() => (isCopied = false), 2000);
+		} catch {
+			// Tyst fel — kopiera stöds inte i alla miljöer
+		}
+	}
+
+	// Tonetikett för visning
+	function getToneLabel(toneId: string): string {
+		return storifyTones.find((t) => t.id === toneId)?.label ?? toneId;
+	}
 </script>
 
 <svelte:head>
 	<title>Dagars avtryck | MittPsyke</title>
-	<meta name="description" content="Beskriv din dag och låt AI forma ett personligt dagboksinlägg på svenska." />
+	<meta name="description" content="En AI-ledd intervju om din dag – omvandlas till ett personligt dagboksinlägg." />
 </svelte:head>
 
 <main class="auth-page">
 	<div class="auth-shell">
+
 		<!-- Sidhuvud -->
 		<div class="auth-panel page-header">
 			<h1 class="page-title">Dagars avtryck</h1>
 			<p class="auth-muted header-desc">
-				Beskriv din dag – AI hjälper dig forma ett personligt dagboksinlägg.
+				Berätta om din dag i ett samtal — AI skapar ett personligt dagboksinlägg åt dig.
 			</p>
 		</div>
 
@@ -187,88 +345,167 @@
 			</button>
 		</nav>
 
+		<!-- ===== SKRIV-FLIKEN ===== -->
 		{#if activeTab === 'skriv'}
-			<!-- Skriv-vy -->
-			<section class="auth-panel">
-				<label class="field-label" for="day-input">Hur var din dag?</label>
-				<textarea
-					id="day-input"
-					class="day-textarea"
-					bind:value={userInput}
-					placeholder="Berätta kortfattat vad som hände, hur du kände dig eller vad du tänkt på..."
-					rows={4}
-					disabled={generating}
-				></textarea>
 
-				<!-- Stämningsväljare -->
-				<fieldset class="mood-fieldset">
-					<legend class="field-label">Stämning (valfritt)</legend>
-					<div class="mood-grid">
-						{#each MOOD_OPTIONS as { emoji, label }}
+			<!-- FAS: Tom start -->
+			{#if phase === 'empty'}
+				<section class="auth-panel empty-panel">
+					<p class="empty-prompt">
+						Hej! Berätta – hur var din dag?
+					</p>
+					<div class="input-row">
+						<textarea
+							class="chat-input"
+							placeholder="Skriv något och tryck Enter..."
+							bind:value={inputValue}
+							onkeydown={handleKeydown}
+							rows={2}
+							aria-label="Berätta om din dag"
+						></textarea>
+						<button
+							class="send-btn"
+							onclick={handleSend}
+							disabled={!inputValue.trim()}
+							aria-label="Skicka"
+						>
+							→
+						</button>
+					</div>
+				</section>
+
+			<!-- FAS: Chattar -->
+			{:else if phase === 'chatting'}
+				<section class="auth-panel chat-panel">
+					<!-- Meddelandelista -->
+					<div class="message-list" bind:this={messageListEl} aria-live="polite" aria-label="Konversation">
+						{#each messages as msg (msg.id)}
+							<div class="message" class:user={msg.role === 'user'} class:assistant={msg.role === 'assistant'}>
+								<div class="bubble">
+									{#if msg.content}
+										{msg.content}
+									{:else if isStreaming}
+										<span class="typing-dots"><span></span><span></span><span></span></span>
+									{/if}
+								</div>
+							</div>
+						{/each}
+					</div>
+
+					{#if streamError}
+						<div class="stream-error" role="alert">
+							{streamError}
+							<button class="retry-btn" onclick={() => streamResponse(messages.slice(0, -1))}>Försök igen</button>
+						</div>
+					{/if}
+
+					<!-- Inmatningsfält -->
+					<div class="input-area">
+						<textarea
+							class="chat-input"
+							placeholder="Skriv ditt svar..."
+							bind:value={inputValue}
+							onkeydown={handleKeydown}
+							disabled={isStreaming}
+							rows={2}
+							aria-label="Ditt svar"
+						></textarea>
+						<button
+							class="send-btn"
+							onclick={handleSend}
+							disabled={!inputValue.trim() || isStreaming}
+							aria-label="Skicka"
+						>
+							→
+						</button>
+					</div>
+
+					<!-- Avsluta-knapp (synlig efter minst 3 användarmeddelanden) -->
+					{#if userMessageCount() >= 3}
+						<div class="finish-row">
+							<button class="auth-button primary finish-btn" onclick={proceedToToneSelection} disabled={isStreaming}>
+								Välj ton och skapa dagbok →
+							</button>
+						</div>
+					{/if}
+				</section>
+
+			<!-- FAS: Tonval -->
+			{:else if phase === 'tone-selection'}
+				<section class="auth-panel">
+					<h2 class="section-title">Välj en ton för ditt inlägg</h2>
+					<p class="auth-muted tone-intro">Hur ska din dag låta?</p>
+
+					<div class="tone-grid">
+						{#each storifyTones as tone}
 							<button
-								type="button"
-								class="mood-btn"
-								class:selected={selectedMoods.includes(emoji)}
-								onclick={() => toggleMood(emoji)}
-								aria-pressed={selectedMoods.includes(emoji)}
-								title={label}
+								class="tone-btn"
+								class:selected={selectedTone === tone.id}
+								onclick={() => (selectedTone = tone.id)}
+								aria-pressed={selectedTone === tone.id}
+								title={tone.description}
 							>
-								<span class="mood-emoji">{emoji}</span>
-								<span class="mood-label">{label}</span>
+								<span class="tone-emoji">{tone.emoji}</span>
+								<span class="tone-label">{tone.label}</span>
 							</button>
 						{/each}
 					</div>
-				</fieldset>
 
-				<!-- Energinivå -->
-				<div class="energy-row">
-					<span class="field-label">Energinivå: {energyScore}/10</span>
-					<div class="energy-buttons" role="group" aria-label="Välj energinivå">
-						{#each Array.from({ length: 10 }, (_, i) => i + 1) as n}
-							<button
-								type="button"
-								class="energy-btn"
-								class:selected={energyScore === n}
-								onclick={() => (energyScore = n)}
-								aria-label="Energinivå {n}"
-								aria-pressed={energyScore === n}
-							>{n}</button>
-						{/each}
+					{#if generateError}
+						<p class="error-msg" role="alert">{generateError}</p>
+					{/if}
+
+					<div class="tone-actions">
+						<button class="auth-button back-btn" onclick={() => (phase = 'chatting')}>
+							← Tillbaka
+						</button>
+						<button class="auth-button primary generate-btn" onclick={handleGenerate}>
+							Skapa dagboksinlägg
+						</button>
 					</div>
-				</div>
+				</section>
 
-				<button
-					class="auth-button primary generate-btn"
-					onclick={generateEntry}
-					disabled={generating || !userInput.trim()}
-				>
-					{generating ? 'Skapar inlägg...' : 'Skapa dagboksinlägg'}
-				</button>
-			</section>
+			<!-- FAS: Genererar -->
+			{:else if phase === 'generating'}
+				<section class="auth-panel generating-panel">
+					<div class="spinner" aria-hidden="true"></div>
+					<p class="generating-text">Skriver ditt dagboksinlägg...</p>
+					<p class="auth-muted generating-tone">Ton: {getToneLabel(selectedTone)}</p>
+				</section>
 
-			{#if generatedEntry}
-				<section class="auth-panel auth-panel-accent">
-					<p class="entry-kicker">Ditt inlägg</p>
-					{#if generatedTone}
-						<span class="tone-badge">{generatedTone}</span>
-					{/if}
-					<p class="generated-text">{generatedEntry}</p>
+			<!-- FAS: Resultat -->
+			{:else if phase === 'result'}
+				<section class="auth-panel auth-panel-accent result-panel">
+					<div class="result-header">
+						<p class="entry-kicker">Ditt dagboksinlägg</p>
+						<span class="tone-badge">{getToneLabel(generatedTone || selectedTone)}</span>
+					</div>
 
-					{#if saving}
-						<p class="auth-muted save-status">Sparar...</p>
-					{:else if saved}
-						<p class="save-status saved-msg">Sparat ✓</p>
-					{/if}
+					<div class="entry-text">
+						{generatedEntry}
+					</div>
+
+					<div class="result-status">
+						{#if isSaved}
+							<p class="saved-msg">Sparat till Mina inlägg ✓</p>
+						{:else if saveError}
+							<p class="error-msg" role="alert">{saveError}</p>
+						{/if}
+					</div>
+
+					<div class="result-actions">
+						<button class="auth-button" onclick={copyToClipboard} disabled={isCopied}>
+							{isCopied ? 'Kopierat ✓' : 'Kopiera text'}
+						</button>
+						<button class="auth-button primary" onclick={resetInterview}>
+							Ny intervju
+						</button>
+					</div>
 				</section>
 			{/if}
 
-			{#if errorMsg}
-				<section class="auth-panel auth-panel-error">
-					<p style="margin:0">{errorMsg}</p>
-				</section>
-			{/if}
+		<!-- ===== MINA INLÄGG-FLIKEN ===== -->
 		{:else}
-			<!-- Mina inlägg-vy -->
 			{#if entries.length === 0}
 				<section class="auth-panel">
 					<p class="auth-muted">
@@ -287,7 +524,7 @@
 									<span class="entry-moods" aria-label="Stämning">{entry.mood_emojis.join(' ')}</span>
 								{/if}
 								{#if entry.tone}
-									<span class="tone-badge">{entry.tone}</span>
+									<span class="tone-badge">{getToneLabel(entry.tone)}</span>
 								{/if}
 							</div>
 						</header>
@@ -296,10 +533,12 @@
 				{/each}
 			{/if}
 		{/if}
+
 	</div>
 </main>
 
 <style>
+	/* Sidhuvud */
 	.page-header {
 		padding: 1.25rem;
 	}
@@ -314,138 +553,309 @@
 		font-size: 0.95rem;
 	}
 
-	/* Knappåterställning för flikar */
+	/* Flikar */
 	.tab-btn {
 		background: transparent;
 		cursor: pointer;
 	}
 
-	.field-label {
-		display: block;
-		margin-bottom: 0.45rem;
-		font-size: 0.82rem;
-		font-weight: 600;
-		letter-spacing: 0.04em;
-		color: hsl(var(--muted-foreground));
-		text-transform: uppercase;
+	/* Tom startpanel */
+	.empty-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
-	.day-textarea {
-		width: 100%;
-		padding: 0.75rem;
+	.empty-prompt {
+		margin: 0;
+		font-size: 1.05rem;
+	}
+
+	/* Chattpanel */
+	.chat-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 0;
+		overflow: hidden;
+	}
+
+	.message-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding: 1rem;
+		max-height: 55vh;
+		overflow-y: auto;
+		scroll-behavior: smooth;
+	}
+
+	.message {
+		display: flex;
+	}
+
+	.message.user {
+		justify-content: flex-end;
+	}
+
+	.message.assistant {
+		justify-content: flex-start;
+	}
+
+	.bubble {
+		max-width: 78%;
+		padding: 0.6rem 0.85rem;
+		border-radius: 18px;
+		line-height: 1.55;
+		font-size: 0.95rem;
+		white-space: pre-wrap;
+	}
+
+	.message.user .bubble {
+		background: var(--theme-bg, hsl(var(--surface-soft)));
+		border: 1px solid hsl(var(--border));
+		border-bottom-right-radius: 4px;
+	}
+
+	.message.assistant .bubble {
+		background: hsl(var(--surface-muted));
+		border: 1px solid hsl(var(--border));
+		border-bottom-left-radius: 4px;
+		color: hsl(var(--foreground));
+	}
+
+	/* Skrivindikator */
+	.typing-dots {
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		padding: 2px 0;
+	}
+
+	.typing-dots span {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: hsl(var(--muted-foreground));
+		animation: dot-bounce 1.2s infinite ease-in-out;
+	}
+
+	.typing-dots span:nth-child(1) { animation-delay: 0s; }
+	.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+	.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+	@keyframes dot-bounce {
+		0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+		40% { transform: translateY(-5px); opacity: 1; }
+	}
+
+	/* Fel */
+	.stream-error {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: hsl(var(--error-surface));
+		color: hsl(var(--error-foreground));
+		font-size: 0.88rem;
+	}
+
+	.retry-btn {
+		background: none;
+		border: none;
+		cursor: pointer;
+		text-decoration: underline;
+		color: inherit;
+		font-size: inherit;
+	}
+
+	/* Inmatningsfält */
+	.input-area {
+		display: flex;
+		gap: 0.5rem;
+		align-items: flex-end;
+		padding: 0.75rem 1rem;
+		border-top: 1px solid hsl(var(--border));
+	}
+
+	.input-row {
+		display: flex;
+		gap: 0.5rem;
+		align-items: flex-end;
+	}
+
+	.chat-input {
+		flex: 1;
+		padding: 0.6rem 0.75rem;
 		border-radius: var(--radius-input);
 		border: 1px solid hsl(var(--border));
 		background: hsl(var(--surface-muted));
 		color: hsl(var(--foreground));
-		font-size: 0.97rem;
-		line-height: 1.6;
-		resize: vertical;
+		font-size: 0.95rem;
+		line-height: 1.5;
+		resize: none;
 		transition: border-color 150ms ease;
 	}
 
-	.day-textarea:focus {
+	.chat-input:focus {
 		outline: none;
 		border-color: hsl(var(--muted-foreground) / 0.5);
 	}
 
-	.day-textarea:disabled {
+	.chat-input:disabled {
 		opacity: 0.6;
 	}
 
-	/* Stämning */
-	.mood-fieldset {
-		border: none;
-		padding: 0;
-		margin: 1rem 0 0;
-	}
-
-	.mood-grid {
+	.send-btn {
+		flex-shrink: 0;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: var(--theme-bg, hsl(var(--surface-soft)));
+		cursor: pointer;
+		font-size: 1.1rem;
+		transition: background-color 120ms ease;
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.4rem;
+		align-items: center;
+		justify-content: center;
 	}
 
-	.mood-btn {
+	.send-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.send-btn:not(:disabled):hover {
+		background: hsl(var(--surface-soft));
+	}
+
+	/* Avsluta-rad */
+	.finish-row {
+		padding: 0.5rem 1rem 0.75rem;
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.finish-btn {
+		font-size: 0.9rem;
+	}
+
+	/* Sektionsrubrik */
+	.section-title {
+		margin: 0 0 0.25rem;
+		font-size: 1.1rem;
+	}
+
+	.tone-intro {
+		margin: 0 0 1rem;
+		font-size: 0.9rem;
+	}
+
+	/* Tonväljare */
+	.tone-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		gap: 0.4rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.tone-btn {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.15rem;
-		padding: 0.4rem 0.55rem;
+		gap: 0.2rem;
+		padding: 0.6rem 0.4rem;
 		border-radius: var(--radius-input);
 		border: 1px solid hsl(var(--border));
 		background: hsl(var(--surface-muted));
 		cursor: pointer;
 		transition: background-color 120ms ease, border-color 120ms ease;
+		text-align: center;
 	}
 
-	.mood-btn:hover {
+	.tone-btn:hover {
 		background: hsl(var(--surface-soft));
 		border-color: hsl(var(--muted-foreground) / 0.4);
 	}
 
-	.mood-btn.selected {
+	.tone-btn.selected {
 		background: var(--theme-bg, hsl(var(--surface-soft)));
-		border-color: hsl(var(--muted-foreground) / 0.5);
+		border-color: hsl(var(--muted-foreground) / 0.6);
 	}
 
-	.mood-emoji {
-		font-size: 1.3rem;
+	.tone-emoji {
+		font-size: 1.4rem;
 	}
 
-	.mood-label {
-		font-size: 0.68rem;
-		color: hsl(var(--muted-foreground));
+	.tone-label {
+		font-size: 0.72rem;
+		line-height: 1.2;
+		color: hsl(var(--foreground));
 	}
 
-	/* Energinivå */
-	.energy-row {
-		margin-top: 1rem;
-	}
-
-	.energy-buttons {
+	.tone-actions {
 		display: flex;
+		gap: 0.5rem;
 		flex-wrap: wrap;
-		gap: 0.3rem;
-		margin-top: 0.4rem;
 	}
 
-	.energy-btn {
-		width: 2.25rem;
-		height: 2.25rem;
-		border-radius: var(--radius-input);
-		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface-muted));
-		font-size: 0.85rem;
-		cursor: pointer;
-		transition: background-color 120ms ease, border-color 120ms ease;
-	}
-
-	.energy-btn:hover {
-		background: hsl(var(--surface-soft));
-	}
-
-	.energy-btn.selected {
-		background: var(--theme-bg, hsl(var(--surface-soft)));
-		border-color: hsl(var(--muted-foreground) / 0.5);
-		font-weight: 700;
-	}
-
-	/* Generera-knapp */
 	.generate-btn {
-		margin-top: 1.2rem;
-		width: 100%;
-		padding: 0.7rem 1rem;
+		flex: 1;
+	}
+
+	.back-btn {
+		flex-shrink: 0;
+	}
+
+	/* Genererar */
+	.generating-panel {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 2.5rem 1rem;
+	}
+
+	.spinner {
+		width: 32px;
+		height: 32px;
+		border: 3px solid hsl(var(--border));
+		border-top-color: hsl(var(--muted-foreground));
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	.generating-text {
+		margin: 0;
 		font-size: 0.95rem;
 	}
 
-	.generate-btn:disabled {
-		opacity: 0.55;
-		cursor: not-allowed;
+	.generating-tone {
+		margin: 0;
+		font-size: 0.85rem;
 	}
 
-	/* Genererat inlägg */
+	/* Resultatpanel */
+	.result-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.result-header {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
 	.entry-kicker {
-		margin: 0 0 0.35rem;
+		margin: 0;
 		font-size: 0.76rem;
 		letter-spacing: 0.05em;
 		text-transform: uppercase;
@@ -460,26 +870,36 @@
 		border: 1px solid hsl(var(--border));
 		font-size: 0.75rem;
 		color: hsl(var(--muted-foreground));
-		margin-bottom: 0.55rem;
-		text-transform: capitalize;
 	}
 
-	.generated-text {
-		margin: 0;
+	.entry-text {
 		line-height: 1.75;
 		white-space: pre-wrap;
 	}
 
-	.save-status {
-		margin: 0.75rem 0 0;
-		font-size: 0.88rem;
+	.result-status {
+		min-height: 1.4rem;
 	}
 
 	.saved-msg {
+		margin: 0;
+		font-size: 0.88rem;
 		color: hsl(var(--success-foreground));
 	}
 
-	/* Inläggskort */
+	.error-msg {
+		margin: 0;
+		font-size: 0.88rem;
+		color: hsl(var(--error-foreground));
+	}
+
+	.result-actions {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	/* Mina inlägg */
 	.entry-card {
 		display: flex;
 		flex-direction: column;

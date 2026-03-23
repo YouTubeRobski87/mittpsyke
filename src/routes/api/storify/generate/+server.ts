@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { buildTonePrompt } from '$lib/data/tonePrompts';
 import type { RequestHandler } from './$types';
 
 function getAccessToken(authorizationHeader: string | null): string | null {
@@ -47,54 +48,65 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ error: 'Åtkomst nekad.' }, { status: 401 });
 	}
 
-	// Parsa request-kropp
-	let userInput: string;
-	let moodEmojis: string[];
-	let energyScore: number;
-
-	try {
-		const body = await request.json();
-		userInput = typeof body.userInput === 'string' ? body.userInput.trim() : '';
-		moodEmojis = Array.isArray(body.moodEmojis) ? body.moodEmojis : [];
-		energyScore = typeof body.energyScore === 'number' ? body.energyScore : 5;
-	} catch {
-		return json({ error: 'Ogiltig förfrågningskropp.' }, { status: 400 });
-	}
-
-	if (!userInput) {
-		return json({ error: 'Fältet "userInput" är obligatoriskt.' }, { status: 400 });
-	}
-
-	const anthropicKey = env.STORIFY_API_KEY;
-	if (!anthropicKey) {
+	const storifyKey = env.STORIFY_API_KEY;
+	if (!storifyKey) {
 		return json({ error: 'AI-tjänsten är inte konfigurerad.' }, { status: 500 });
 	}
 
-	// Bygg prompten
-	const moodStr = moodEmojis.length > 0 ? `Stämning: ${moodEmojis.join(' ')}` : '';
-	const energyStr = `Energinivå: ${energyScore}/10`;
+	// Parsa request-kropp — stöder intervjuläge och snabbläge
+	let systemPrompt: string;
+	let userMessage: string;
+	let tone: string;
 
-	const userMessage = [userInput, moodStr, energyStr].filter(Boolean).join('\n');
+	try {
+		const body = await request.json();
+
+		if (body.chatTranscript) {
+			// Intervjuläge: använd vald ton och transkript
+			const selectedTone: string = typeof body.selectedTone === 'string' ? body.selectedTone : 'classic';
+			systemPrompt = buildTonePrompt(selectedTone);
+			tone = selectedTone;
+			userMessage = `Här är transkriptet från en intervju om min dag:\n\n${body.chatTranscript}\n\nSkriv ett dagboksinlägg baserat på det vi pratade om.`;
+		} else {
+			// Snabbläge: fri text + stämning + energi
+			const userInput: string = typeof body.userInput === 'string' ? body.userInput.trim() : '';
+			const moodEmojis: string[] = Array.isArray(body.moodEmojis) ? body.moodEmojis : [];
+			const energyScore: number = typeof body.energyScore === 'number' ? body.energyScore : 5;
+
+			if (!userInput) {
+				return json({ error: 'Fältet "userInput" är obligatoriskt.' }, { status: 400 });
+			}
+
+			systemPrompt =
+				'Du är en empatisk dagboksassistent. Omvandla användarens korta beskrivning av sin dag till ett personligt, reflekterande dagboksinlägg på svenska. Skriv i första person med en varm och ärlig ton. Inlägget ska vara 3–5 meningar. Inga rubriker eller metadata – bara den rena dagbokstexten.';
+
+			const moodStr = moodEmojis.length > 0 ? `Stämning: ${moodEmojis.join(' ')}` : '';
+			const energyStr = `Energinivå: ${energyScore}/10`;
+			userMessage = [userInput, moodStr, energyStr].filter(Boolean).join('\n');
+			tone = deriveTone(energyScore, moodEmojis);
+		}
+	} catch {
+		return json({ error: 'Ogiltig förfrågningskropp.' }, { status: 400 });
+	}
 
 	// Anropa Anthropic API
 	const anthropicResponse = await fetch('https://api.anthropic.com/v1/messages', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
-			'x-api-key': anthropicKey,
+			'x-api-key': storifyKey,
 			'anthropic-version': '2023-06-01'
 		},
 		body: JSON.stringify({
 			model: 'claude-haiku-4-5-20251001',
-			max_tokens: 512,
-			system:
-				'Du är en empatisk dagboksassistent. Omvandla användarens korta beskrivning av sin dag till ett personligt, reflekterande dagboksinlägg på svenska. Skriv i första person med en varm och ärlig ton. Inlägget ska vara 3–5 meningar. Inga rubriker eller metadata – bara den rena dagbokstexten.',
+			max_tokens: 1024,
+			system: systemPrompt,
 			messages: [{ role: 'user', content: userMessage }]
 		})
 	});
 
 	if (!anthropicResponse.ok) {
-		console.error('Anthropic API-fel:', await anthropicResponse.text());
+		console.error('Anthropic generate-fel:', await anthropicResponse.text());
 		return json({ error: 'AI-tjänsten är inte tillgänglig just nu.' }, { status: 502 });
 	}
 
@@ -103,7 +115,6 @@ export const POST: RequestHandler = async ({ request }) => {
 	};
 
 	const entry = result.content?.find((c) => c.type === 'text')?.text ?? '';
-	const tone = deriveTone(energyScore, moodEmojis);
 
 	return json({ entry, tone });
 };
