@@ -323,7 +323,7 @@
 		<div class="auth-panel page-header">
 			<h1 class="page-title">Dagars avtryck</h1>
 			<p class="auth-muted header-desc">
-				Berätta om din dag i ett samtal — AI skapar ett personligt dagboksinlägg åt dig.
+				Dagars avtryck guidar dig genom en kort reflektion och skapar sedan ett personligt dagboksinlägg utifrån din röst och den kategori du väljer.
 			</p>
 		</div>
 
