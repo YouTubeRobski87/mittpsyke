@@ -345,37 +345,37 @@
 		</div>
 
 		{#if mobileMenuOpen}
-			<div id="mobile-menu" class="lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3 space-y-2" role="navigation" aria-label="Mobilmeny">
+			<div id="mobile-menu" class="mobile-menu-panel lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3" role="navigation" aria-label="Mobilmeny">
 				{#if user}
-					<p class="text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
-					<a href="/dagbok" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Dagbok</a>
-					<a href="/dagars-avtryck" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guidad reflektion</a>
-					<a href="/framsteg" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Framsteg</a>
-					<a href="/dashboard/gemenskap" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Gemenskap</a>
-					<a href="/dashboard" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Min portal</a>
-					<a href="/forum" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Forum</a>
-					<a href="/notiser" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Notiser</a>
-					<a href="/guider" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guider</a>
-					<a href="/ovningar" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Övningar</a>
-					<a href="/om-mittpsyke" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
-					<a href={PUBLIC_CONTACT_MAILTO} class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
+					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
+					<a href="/dagbok" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Dagbok</a>
+					<a href="/dagars-avtryck" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guidad reflektion</a>
+					<a href="/framsteg" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Framsteg</a>
+					<a href="/dashboard/gemenskap" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Gemenskap</a>
+					<a href="/dashboard" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Min portal</a>
+					<a href="/forum" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Forum</a>
+					<a href="/notiser" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Notiser</a>
+					<a href="/guider" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guider</a>
+					<a href="/ovningar" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Övningar</a>
+					<a href="/om-mittpsyke" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
+					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
-						class="block text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
+						class="mobile-menu-link text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
 					>Logga ut</button>
 				{:else}
-					<a href="/chat" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Chatta</a>
-					<a href="/guider" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guider</a>
-					<a href="/ovningar" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Övningar</a>
-					<a href="/forum" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Forum</a>
-					<a href="/blogg" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Blogg</a>
-					<a href="/om-mittpsyke" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
-					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Akut hjälp (Stödlinjer)</a>
-					<a href="mailto:kontakt@mittpsyke.se" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
-					<a href="/login" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Logga in</a>
-					<a href="/register" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Registrera</a>
+					<a href="/chat" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Chatta</a>
+					<a href="/guider" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guider</a>
+					<a href="/ovningar" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Övningar</a>
+					<a href="/forum" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Forum</a>
+					<a href="/blogg" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Blogg</a>
+					<a href="/om-mittpsyke" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
+					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Akut hjälp (Stödlinjer)</a>
+					<a href="mailto:kontakt@mittpsyke.se" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
+					<a href="/login" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Logga in</a>
+					<a href="/register" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Registrera</a>
 				{/if}
-				<p class="pt-1 text-xs opacity-60">Vid akut fara: ring 112</p>
+				<p class="mobile-menu-help pt-1 text-xs opacity-60">Vid akut fara: ring 112</p>
 			</div>
 		{/if}
 	</header>
@@ -499,6 +499,36 @@
 
 	.skip-link:focus-visible {
 		top: 1rem;
+	}
+
+	.mobile-menu-panel {
+		max-height: calc(100vh - 5.5rem);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.mobile-menu-greeting {
+		margin: 0 0 0.35rem;
+	}
+
+	.mobile-menu-link {
+		display: block;
+		width: 100%;
+		margin: 0;
+		padding: 0.38rem 0;
+		line-height: 1.35;
+		text-align: left;
+		background: transparent;
+		border: 0;
+	}
+
+	.mobile-menu-link + .mobile-menu-link {
+		margin-top: 0.08rem;
+	}
+
+	.mobile-menu-help {
+		margin: 0.5rem 0 0;
 	}
 
 	.nav-info-menu {
