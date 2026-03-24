@@ -33,7 +33,7 @@
 		description: 'Svensk plattform för AI-baserat samtalsstöd och mental hälsa.',
 		logo: {
 			'@type': 'ImageObject',
-			url: 'https://www.mittpsyke.se/og-image.png'
+			url: 'https://www.mittpsyke.se/apple-touch-icon.png'
 		},
 		founder: {
 			'@type': 'Person',

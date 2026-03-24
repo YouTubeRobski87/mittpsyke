@@ -64,7 +64,7 @@
 					name: 'MittPsyke',
 					logo: {
 						'@type': 'ImageObject',
-						url: 'https://www.mittpsyke.se/favicon.png'
+						url: 'https://www.mittpsyke.se/apple-touch-icon.png'
 					}
 				},
 				datePublished: pillarUpdatedAt,
