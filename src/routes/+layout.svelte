@@ -277,15 +277,18 @@
 				>
 					Hem
 				</a>
+				<a href="/forum" class="forum-quick-link whitespace-nowrap">
+					Forum
+				</a>
 
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
 						<a href="/dagbok" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Dagbok</a>
+						<a href="/forum" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Forum</a>
 						<a href="/dagars-avtryck" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Guidad reflektion</a>
 						<a href="/framsteg" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Framsteg</a>
 						<a href="/dashboard/gemenskap" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Gemenskap</a>
 						<a href="/dashboard" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Min portal</a>
-						<a href="/forum" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Forum</a>
 						<a href="/notiser" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Notiser</a>
 						<a href="/guider" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Guider</a>
 						<a href="/ovningar" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Övningar</a>
@@ -523,9 +526,30 @@
 		border: 0;
 	}
 
-	.mobile-menu-link + .mobile-menu-link {
-		margin-top: 0.08rem;
-	}
+		.mobile-menu-link + .mobile-menu-link {
+			margin-top: 0.08rem;
+		}
+
+		.forum-quick-link {
+			display: inline-flex;
+			align-items: center;
+			padding: 0.38rem 0.75rem;
+			border-radius: 999px;
+			background: rgba(140, 163, 106, 0.16);
+			border: 1px solid rgba(140, 163, 106, 0.28);
+			color: inherit;
+			font-size: 0.9rem;
+			font-weight: 600;
+			text-decoration: none;
+			transition: background-color 140ms ease, border-color 140ms ease, opacity 140ms ease;
+		}
+
+		.forum-quick-link:hover,
+		.forum-quick-link:focus-visible {
+			background: rgba(140, 163, 106, 0.24);
+			border-color: rgba(140, 163, 106, 0.45);
+			opacity: 1;
+		}
 
 	.mobile-menu-help {
 		margin: 0.5rem 0 0;

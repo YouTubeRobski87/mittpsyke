@@ -7,6 +7,15 @@
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { trackHeroCtaPrimaryClick, trackHeroCtaSecondaryClick } from '$lib/analytics';
 
+	type HomepageForumThread = {
+		id: string;
+		title: string;
+		categoryName: string;
+		reply_count: number;
+		created_at: string;
+	};
+
+	let { data }: { data: { latestForumThreads?: HomepageForumThread[] } } = $props();
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
 	const entryPaths = [
@@ -74,6 +83,28 @@
 	];
 	const latestBlogPosts = blogPosts.slice(0, 3);
 
+	function formatForumTime(timestamp: string) {
+		if (!timestamp) return '';
+
+		const date = new Date(timestamp);
+		if (Number.isNaN(date.getTime())) return '';
+
+		const diffMs = date.getTime() - Date.now();
+		const diffHours = Math.round(diffMs / (1000 * 60 * 60));
+		const absHours = Math.abs(diffHours);
+		const rtf = new Intl.RelativeTimeFormat('sv', { numeric: 'auto' });
+
+		if (absHours < 24) return rtf.format(diffHours, 'hour');
+
+		const diffDays = Math.round(diffHours / 24);
+		if (Math.abs(diffDays) < 7) return rtf.format(diffDays, 'day');
+
+		return new Intl.DateTimeFormat('sv-SE', {
+			day: 'numeric',
+			month: 'short'
+		}).format(date);
+	}
+
 	onMount(() => {
 		if (!heroEl || !bgEl) return;
 		if (window.innerWidth < 768) return;
@@ -132,6 +163,7 @@
 			decoding="async"
 			fetchpriority="high"
 		/>
+			<div class="hero-shell">
 			<div class="hero-content">
 				<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
 				<h1>MittPsyke är en lugn plats att börja på.</h1>
@@ -170,6 +202,30 @@
 						</ul>
 					</div>
 				</div>
+			</div>
+			<aside class="hero-forum-rail" aria-labelledby="hero-forum-title">
+				<p class="hero-forum-eyebrow">Mest aktuella från forumet just nu</p>
+				<h2 id="hero-forum-title">Senaste forumsinläggen</h2>
+				<p class="hero-forum-intro">
+					Se vad andra pratar om just nu och gå direkt till forumet om du vill läsa eller skriva.
+				</p>
+				{#if data.latestForumThreads?.length}
+					<div class="hero-forum-list">
+						{#each data.latestForumThreads as thread}
+							<a class="hero-forum-card" href={`/forum/thread/${thread.id}`}>
+								<p class="hero-forum-meta">{thread.categoryName} · {formatForumTime(thread.created_at)}</p>
+								<h3>{thread.title}</h3>
+								<p class="hero-forum-count">{thread.reply_count} svar i tråden</p>
+							</a>
+						{/each}
+					</div>
+				{:else}
+					<div class="hero-forum-empty">
+						<p>Forumet finns öppet om du vill läsa andras erfarenheter eller starta en egen tråd.</p>
+					</div>
+				{/if}
+				<a href="/forum" class="hero-forum-cta">Gå till forumet</a>
+			</aside>
 			</div>
 		</section>
 		<!-- TODO: Lägg verifierat social proof här när vi har verkliga omdömen eller data. -->
@@ -418,8 +474,8 @@
 		z-index: 0;
 	}
 
-	.hero::before {
-		content: '';
+		.hero::before {
+			content: '';
 		position: absolute;
 		inset: 0;
 		background:
@@ -434,18 +490,27 @@
 				rgba(14, 22, 33, 0.85) 60%,
 				rgba(14, 22, 33, 0.95) 100%
 			);
-		pointer-events: none;
-		z-index: 1;
-	}
+			pointer-events: none;
+			z-index: 1;
+		}
 
-	.hero-content {
-		position: relative;
-		z-index: 2;
-		width: min(560px, 100%);
-		text-align: center;
-		padding: 1.3rem 1.6rem 1.6rem;
-		background: rgba(39, 45, 53, 0.56);
-		border: 1px solid rgba(255, 255, 255, 0.18);
+		.hero-shell {
+			position: relative;
+			z-index: 2;
+			width: min(1180px, 100%);
+			display: grid;
+			grid-template-columns: minmax(0, 560px) minmax(280px, 360px);
+			gap: 1.1rem;
+			align-items: start;
+			justify-content: center;
+		}
+
+		.hero-content {
+			width: min(560px, 100%);
+			text-align: center;
+			padding: 1.3rem 1.6rem 1.6rem;
+			background: rgba(39, 45, 53, 0.56);
+			border: 1px solid rgba(255, 255, 255, 0.18);
 	}
 
 	h1 {
@@ -534,13 +599,88 @@
 		transition: text-decoration-color 0.15s;
 	}
 
-	.hero-community-cta:hover,
-	.hero-community-cta:focus-visible {
-		text-decoration-color: rgba(255, 255, 255, 0.9);
-	}
+		.hero-community-cta:hover,
+		.hero-community-cta:focus-visible {
+			text-decoration-color: rgba(255, 255, 255, 0.9);
+		}
 
-	.hero-actions {
-		margin-top: 1.2rem;
+		.hero-forum-rail {
+			padding: 1rem;
+			background: rgba(17, 25, 33, 0.68);
+			border: 1px solid rgba(255, 255, 255, 0.14);
+			backdrop-filter: blur(8px);
+		}
+
+		.hero-forum-eyebrow {
+			margin: 0;
+			font-size: 0.78rem;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: rgba(255, 255, 255, 0.7);
+		}
+
+		.hero-forum-rail h2 {
+			margin: 0.45rem 0 0;
+			font-size: 1.3rem;
+			line-height: 1.15;
+			color: #f5f5f2;
+		}
+
+		.hero-forum-intro {
+			margin: 0.7rem 0 0;
+			font-size: 0.94rem;
+			line-height: 1.55;
+			color: rgba(255, 255, 255, 0.82);
+		}
+
+		.hero-forum-list {
+			display: grid;
+			gap: 0.7rem;
+			margin-top: 1rem;
+		}
+
+		.hero-forum-card,
+		.hero-forum-empty {
+			display: grid;
+			gap: 0.35rem;
+			padding: 0.85rem 0.9rem;
+			background: rgba(255, 255, 255, 0.08);
+			border: 1px solid rgba(255, 255, 255, 0.12);
+			text-align: left;
+		}
+
+		.hero-forum-card h3,
+		.hero-forum-empty p {
+			margin: 0;
+		}
+
+		.hero-forum-card h3 {
+			font-size: 1rem;
+			line-height: 1.35;
+			color: #f8faf8;
+		}
+
+		.hero-forum-meta,
+		.hero-forum-count {
+			margin: 0;
+			font-size: 0.8rem;
+			line-height: 1.45;
+			color: rgba(255, 255, 255, 0.7);
+		}
+
+		.hero-forum-cta {
+			display: inline-flex;
+			margin-top: 0.95rem;
+			font-size: 0.92rem;
+			font-weight: 600;
+			color: rgba(255, 255, 255, 0.92);
+			text-decoration: underline;
+			text-underline-offset: 3px;
+		}
+
+		.hero-actions {
+			margin-top: 1.2rem;
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.65rem;
@@ -1146,14 +1286,18 @@
 		letter-spacing: 0.005em;
 	}
 
-	@media (max-width: 900px) {
-		.intro-grid {
-			grid-template-columns: 1fr;
-		}
+		@media (max-width: 900px) {
+			.intro-grid {
+				grid-template-columns: 1fr;
+			}
 
-		.hero-content {
-			padding: 1.1rem 1rem 1.2rem;
-		}
+			.hero-shell {
+				grid-template-columns: 1fr;
+			}
+
+			.hero-content {
+				padding: 1.1rem 1rem 1.2rem;
+			}
 
 		.hero-actions {
 			flex-direction: column;
