@@ -289,7 +289,15 @@
 						<a href="/notiser" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Notiser</a>
 						<a href="/guider" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Guider</a>
 						<a href="/ovningar" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Övningar</a>
-						<a href="/om-mittpsyke" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Om MittPsyke</a>
+						<details class="nav-info-menu">
+							<summary class="nav-info-trigger">Info</summary>
+							<div class="nav-info-panel">
+								<p class="nav-info-copy">När du är inloggad kan du spara dagbok, följa framsteg och få notiser.</p>
+								<p class="nav-info-copy">Guider, övningar och information om tjänsten finns även utan inloggning.</p>
+								<a href="/om-mittpsyke" class="nav-info-link">Om MittPsyke</a>
+								<a href={PUBLIC_CONTACT_MAILTO} class="nav-info-link">Kontakt</a>
+							</div>
+						</details>
 					{:else}
 						<a href="/chat" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Chatta</a>
 						<a href="/guider" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Guider</a>
@@ -350,6 +358,7 @@
 					<a href="/guider" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guider</a>
 					<a href="/ovningar" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Övningar</a>
 					<a href="/om-mittpsyke" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
+					<a href={PUBLIC_CONTACT_MAILTO} class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
 						class="block text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
@@ -490,5 +499,77 @@
 
 	.skip-link:focus-visible {
 		top: 1rem;
+	}
+
+	.nav-info-menu {
+		position: relative;
+	}
+
+	.nav-info-trigger {
+		list-style: none;
+		cursor: pointer;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+		opacity: 0.8;
+		transition: opacity 140ms ease;
+	}
+
+	.nav-info-trigger:hover {
+		opacity: 1;
+		text-decoration: underline;
+	}
+
+	.nav-info-trigger::-webkit-details-marker {
+		display: none;
+	}
+
+	.nav-info-panel {
+		position: absolute;
+		top: calc(100% + 0.55rem);
+		right: 0;
+		min-width: 11rem;
+		display: grid;
+		gap: 0.2rem;
+		padding: 0.55rem;
+		border-radius: 0.85rem;
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		background: rgba(255, 255, 255, 0.96);
+		box-shadow: 0 14px 32px rgba(15, 23, 42, 0.14);
+		backdrop-filter: blur(8px);
+	}
+
+	.nav-info-copy {
+		margin: 0;
+		padding: 0.15rem 0.15rem 0;
+		font-size: 0.78rem;
+		line-height: 1.45;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.nav-info-link {
+		display: block;
+		padding: 0.45rem 0.55rem;
+		border-radius: 0.65rem;
+		font-size: 0.9rem;
+		line-height: 1.4;
+		color: inherit;
+		text-decoration: none;
+		opacity: 0.86;
+		transition: background-color 140ms ease, opacity 140ms ease;
+	}
+
+	.nav-info-link:hover {
+		background: rgba(15, 23, 42, 0.05);
+		opacity: 1;
+	}
+
+	:global(.dark) .nav-info-panel {
+		border-color: rgba(255, 255, 255, 0.1);
+		background: rgba(15, 23, 42, 0.96);
+		box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+	}
+
+	:global(.dark) .nav-info-link:hover {
+		background: rgba(255, 255, 255, 0.06);
 	}
 </style>
