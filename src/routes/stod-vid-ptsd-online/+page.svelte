@@ -1,3 +1,7 @@
+<script lang="ts">
+	import PublicTrustPanel from '$lib/components/PublicTrustPanel.svelte';
+</script>
+
 <svelte:head>
 	<title>Stöd vid PTSD online | Lugn reflektion och nästa steg | MittPsyke</title>
 	<meta
@@ -26,7 +30,7 @@
 
 		<div class="cta-container">
 			<a class="cta-button" href="/chat/a">Starta ett lugnt samtal</a>
-			<a class="cta-button ghost" href="/samtalsstod-vid-trauma">Läs om samtalsstöd vid trauma</a>
+			<a class="cta-button ghost" href="/samtalsstod-vid-trauma">Läs mer om samtalsstöd vid trauma</a>
 		</div>
 
 		<section class="section">
@@ -69,6 +73,23 @@
 			<h3>Är detta akut hjälp?</h3>
 			<p>Nej. Vid akut fara eller om någon riskerar att skadas ska du ringa 112 direkt.</p>
 		</section>
+		<PublicTrustPanel
+			updatedDate="14 mars 2026"
+			sources={[
+				{
+					label: 'Posttraumatiskt stressyndrom (PTSD) – 1177 Vårdguiden',
+					href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/'
+				},
+				{
+					label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen',
+					href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/'
+				},
+				{
+					label: 'Psykisk hälsa – Folkhälsomyndigheten',
+					href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/'
+				}
+			]}
+		/>
 	</div>
 </main>
 

@@ -1,3 +1,7 @@
+<script lang="ts">
+	import PublicTrustPanel from '$lib/components/PublicTrustPanel.svelte';
+</script>
+
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
@@ -25,7 +29,7 @@
 
 		<div class="text-block">
 			<section class="section">
-				<h2>Professionell hjälp och anonymitet</h2>
+				<h2>Varsamt stöd och anonymitet</h2>
 				<p>
 					Här kan du få stöd att hantera posttraumatisk stress och återfå kontrollen över din vardag.
 				</p>
@@ -51,16 +55,23 @@
 			<h2>Din berättelse är viktig</h2>
 			<p>Trauma behöver inte hanteras ensamt. Att sätta ord på det som hänt – även lite i taget – kan vara ett viktigt första steg mot att må bättre.</p>
 		</aside>
-		<!-- Källor och uppdatering -->
-		<section class="source-block" aria-label="Källor och uppdatering">
-			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
-			<h2>Källor</h2>
-			<ul>
-				<li><a href="https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/" target="_blank" rel="noopener noreferrer">Posttraumatiskt stressyndrom (PTSD) – 1177 Vårdguiden</a></li>
-				<li><a href="https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/" target="_blank" rel="noopener noreferrer">Psykisk hälsa och suicidprevention – Socialstyrelsen</a></li>
-				<li><a href="https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/" target="_blank" rel="noopener noreferrer">Psykisk hälsa – Folkhälsomyndigheten</a></li>
-			</ul>
-		</section>
+		<PublicTrustPanel
+			updatedDate="14 mars 2026"
+			sources={[
+				{
+					label: 'Posttraumatiskt stressyndrom (PTSD) – 1177 Vårdguiden',
+					href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/'
+				},
+				{
+					label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen',
+					href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/'
+				},
+				{
+					label: 'Psykisk hälsa – Folkhälsomyndigheten',
+					href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/'
+				}
+			]}
+		/>
 
 	</div>
 </main>
@@ -222,46 +233,4 @@
 		box-shadow: 0 6px 20px rgba(134, 223, 214, 0.3);
 	}
 
-	.source-block {
-		margin-top: clamp(2rem, 4vw, 3rem);
-		padding-top: 1.5rem;
-		border-top: 1px solid rgba(0, 0, 0, 0.1);
-	}
-
-	.source-block .updated-date {
-		font-size: 0.8rem;
-		opacity: 0.5;
-		margin-bottom: 1rem;
-	}
-
-	.source-block h2 {
-		font-size: 1rem;
-		font-weight: 600;
-		margin-bottom: 0.5rem;
-	}
-
-	.source-block ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-	}
-
-	.source-block li {
-		font-size: 0.85rem;
-	}
-
-	.source-block a {
-		color: inherit;
-		opacity: 0.7;
-		text-decoration: underline;
-		text-underline-offset: 2px;
-	}
-
-	.source-block a:hover {
-		opacity: 1;
-	}
 </style>
-
