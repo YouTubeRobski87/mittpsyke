@@ -35,9 +35,3 @@ export const storifyTones: StorifyTone[] = [
 	{ id: 'bureaucratic', label: 'Byråkratisk', emoji: '📋', description: 'Formulär och protokoll' },
 	{ id: 'overthinker', label: 'Övertänkaren', emoji: '💭', description: 'Analyserar varje litet val' }
 ];
-
-export const activeStorifyToneIds = ['therapist', 'self-help', 'overthinker', 'philosophical'] as const;
-
-export const activeStorifyTones: StorifyTone[] = activeStorifyToneIds
-	.map((id) => storifyTones.find((tone) => tone.id === id))
-	.filter((tone): tone is StorifyTone => Boolean(tone));

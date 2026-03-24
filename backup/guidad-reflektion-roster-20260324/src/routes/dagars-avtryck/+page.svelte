@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { supabase } from '$lib/supabase';
-	import { activeStorifyTones, storifyTones } from '$lib/data/storifyTones';
+	import { storifyTones } from '$lib/data/storifyTones';
 
 	// --- Typer ---
 
@@ -39,8 +39,7 @@
 
 	// --- Tonval ---
 
-	const DEFAULT_TONE_ID = activeStorifyTones[0]?.id ?? 'therapist';
-	let selectedTone = $state(DEFAULT_TONE_ID);
+	let selectedTone = $state('classic');
 
 	// --- Genereringtillstånd ---
 
@@ -114,7 +113,7 @@
 		messages = [];
 		inputValue = '';
 		streamError = '';
-		selectedTone = DEFAULT_TONE_ID;
+		selectedTone = 'classic';
 		generatedEntry = '';
 		generatedTone = '';
 		generateError = '';
@@ -438,7 +437,7 @@
 					<p class="auth-muted tone-intro">Hur ska din dag låta?</p>
 
 					<div class="tone-grid">
-						{#each activeStorifyTones as tone}
+						{#each storifyTones as tone}
 							<button
 								class="tone-btn"
 								class:selected={selectedTone === tone.id}

@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
-import { availableToneIds, buildTonePrompt } from '$lib/data/tonePrompts';
+import { buildTonePrompt } from '$lib/data/tonePrompts';
 import type { RequestHandler } from './$types';
 
 function getAccessToken(authorizationHeader: string | null): string | null {
@@ -63,10 +63,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		if (body.chatTranscript) {
 			// Intervjuläge: använd vald ton och transkript
-			const requestedTone = typeof body.selectedTone === 'string' ? body.selectedTone : '';
-			const selectedTone = availableToneIds.includes(requestedTone as (typeof availableToneIds)[number])
-				? requestedTone
-				: 'therapist';
+			const selectedTone: string = typeof body.selectedTone === 'string' ? body.selectedTone : 'classic';
 			systemPrompt = buildTonePrompt(selectedTone);
 			tone = selectedTone;
 			userMessage = `Här är transkriptet från en intervju om min dag:\n\n${body.chatTranscript}\n\nSkriv ett dagboksinlägg baserat på det vi pratade om.`;
