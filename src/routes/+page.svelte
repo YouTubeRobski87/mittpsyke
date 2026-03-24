@@ -15,7 +15,33 @@
 		created_at: string;
 	};
 
-	let { data }: { data: { latestForumThreads?: HomepageForumThread[] } } = $props();
+	type HomepageForumComment = {
+		id: string;
+		body: string;
+		created_at: string;
+		authorLabel: string;
+	};
+
+	type HomepageFeaturedForumThread = {
+		id: string;
+		title: string;
+		categoryName: string;
+		reply_count: number;
+		created_at: string;
+		active_at: string;
+		bodyPreview: string;
+		authorLabel: string;
+		comments: HomepageForumComment[];
+	};
+
+	let {
+		data
+	}: {
+		data: {
+			latestForumThreads?: HomepageForumThread[];
+			featuredForumThread?: HomepageFeaturedForumThread | null;
+		};
+	} = $props();
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
 	const entryPaths = [
@@ -205,19 +231,46 @@
 			</div>
 			<aside class="hero-forum-rail" aria-labelledby="hero-forum-title">
 				<p class="hero-forum-eyebrow">Mest aktuella från forumet just nu</p>
-				<h2 id="hero-forum-title">Senaste forumsinläggen</h2>
+				<h2 id="hero-forum-title">Hetaste forumtråden just nu</h2>
 				<p class="hero-forum-intro">
-					Se vad andra pratar om just nu och gå direkt till forumet om du vill läsa eller skriva.
+					Här ser du kommentarer från det som är mest aktivt just nu i forumet.
 				</p>
-				{#if data.latestForumThreads?.length}
-					<div class="hero-forum-list">
-						{#each data.latestForumThreads as thread}
-							<a class="hero-forum-card" href={`/forum/thread/${thread.id}`}>
-								<p class="hero-forum-meta">{thread.categoryName} · {formatForumTime(thread.created_at)}</p>
-								<h3>{thread.title}</h3>
-								<p class="hero-forum-count">{thread.reply_count} svar i tråden</p>
+				{#if data.featuredForumThread}
+					<div class="hero-forum-thread-preview">
+						<div class="hero-forum-thread-card">
+							<p class="hero-forum-meta hero-forum-meta--top">
+								{data.featuredForumThread.categoryName} · aktiv {formatForumTime(data.featuredForumThread.active_at)}
+							</p>
+							<a class="hero-forum-thread-link" href={`/forum/thread/${data.featuredForumThread.id}`}>
+								<h3>{data.featuredForumThread.title}</h3>
 							</a>
-						{/each}
+							<p class="hero-forum-thread-author">
+								{data.featuredForumThread.authorLabel} · {formatForumTime(data.featuredForumThread.created_at)}
+							</p>
+							<p class="hero-forum-thread-body">{data.featuredForumThread.bodyPreview}</p>
+							<div class="hero-forum-thread-footer">
+								<p class="hero-forum-count">{data.featuredForumThread.reply_count} svar i tråden</p>
+								<a class="hero-forum-inline-link" href={`/forum/thread/${data.featuredForumThread.id}`}>Gå till tråden</a>
+							</div>
+						</div>
+						<div class="hero-forum-comments" aria-label="Senaste kommentarer">
+							<p class="hero-forum-comments-label">Senaste kommentarer</p>
+							{#if data.featuredForumThread.comments.length}
+								{#each data.featuredForumThread.comments as comment}
+									<div class="hero-forum-comment">
+										<p class="hero-forum-comment-meta">
+											{comment.authorLabel} · {formatForumTime(comment.created_at)}
+										</p>
+										<p class="hero-forum-comment-body">{comment.body}</p>
+									</div>
+								{/each}
+							{:else}
+								<div class="hero-forum-comment">
+									<p class="hero-forum-comment-meta">Nytt inlägg</p>
+									<p class="hero-forum-comment-body">{data.featuredForumThread.bodyPreview}</p>
+								</div>
+							{/if}
+						</div>
 					</div>
 				{:else}
 					<div class="hero-forum-empty">
@@ -497,12 +550,12 @@
 		.hero-shell {
 			position: relative;
 			z-index: 2;
-			width: min(1180px, 100%);
+			width: min(1280px, 100%);
 			display: grid;
-			grid-template-columns: minmax(0, 560px) minmax(280px, 360px);
-			gap: 1.1rem;
+			grid-template-columns: minmax(0, 560px) minmax(320px, 400px);
+			gap: 1.4rem;
 			align-items: start;
-			justify-content: center;
+			justify-content: space-between;
 		}
 
 		.hero-content {
@@ -634,14 +687,16 @@
 			color: rgba(255, 255, 255, 0.82);
 		}
 
-		.hero-forum-list {
+		.hero-forum-thread-preview,
+		.hero-forum-comments {
 			display: grid;
 			gap: 0.7rem;
 			margin-top: 1rem;
 		}
 
-		.hero-forum-card,
-		.hero-forum-empty {
+		.hero-forum-thread-card,
+		.hero-forum-empty,
+		.hero-forum-comment {
 			display: grid;
 			gap: 0.35rem;
 			padding: 0.85rem 0.9rem;
@@ -650,33 +705,92 @@
 			text-align: left;
 		}
 
-		.hero-forum-card h3,
-		.hero-forum-empty p {
+		.hero-forum-thread-card h3,
+		.hero-forum-empty p,
+		.hero-forum-comment-body {
 			margin: 0;
 		}
 
-		.hero-forum-card h3 {
+		.hero-forum-thread-card h3 {
 			font-size: 1rem;
 			line-height: 1.35;
 			color: #f8faf8;
 		}
 
+		.hero-forum-thread-link {
+			text-decoration: none;
+		}
+
+		.hero-forum-thread-link:hover h3,
+		.hero-forum-thread-link:focus-visible h3 {
+			text-decoration: underline;
+			text-underline-offset: 3px;
+		}
+
 		.hero-forum-meta,
-		.hero-forum-count {
+		.hero-forum-count,
+		.hero-forum-comment-meta {
 			margin: 0;
 			font-size: 0.8rem;
 			line-height: 1.45;
 			color: rgba(255, 255, 255, 0.7);
 		}
 
+		.hero-forum-meta--top {
+			font-weight: 700;
+			letter-spacing: 0.03em;
+		}
+
+		.hero-forum-thread-author {
+			margin: 0;
+			font-size: 0.85rem;
+			line-height: 1.45;
+			color: rgba(255, 255, 255, 0.74);
+		}
+
+		.hero-forum-thread-body {
+			margin: 0.15rem 0 0;
+			font-size: 0.95rem;
+			line-height: 1.6;
+			color: rgba(255, 255, 255, 0.9);
+		}
+
+		.hero-forum-thread-footer {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.55rem;
+			margin-top: 0.2rem;
+		}
+
+		.hero-forum-comments-label {
+			margin: 0;
+			font-size: 0.8rem;
+			font-weight: 700;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+			color: rgba(255, 255, 255, 0.68);
+		}
+
+		.hero-forum-comment-body {
+			font-size: 0.92rem;
+			line-height: 1.55;
+			color: rgba(255, 255, 255, 0.88);
+		}
+
+		.hero-forum-inline-link,
 		.hero-forum-cta {
 			display: inline-flex;
-			margin-top: 0.95rem;
 			font-size: 0.92rem;
 			font-weight: 600;
 			color: rgba(255, 255, 255, 0.92);
 			text-decoration: underline;
 			text-underline-offset: 3px;
+		}
+
+		.hero-forum-cta {
+			margin-top: 0.95rem;
 		}
 
 		.hero-actions {
