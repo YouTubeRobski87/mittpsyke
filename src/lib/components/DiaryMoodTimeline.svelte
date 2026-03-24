@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
-
 	type DiaryMoodEntry = {
 		created_at: string | null;
 		mood: string | null;
@@ -22,15 +20,13 @@
 	export let entries: DiaryMoodEntry[] = [];
 
 	const RANGE_OPTIONS: RangeDays[] = [7, 30, 90];
-	const EMPTY_STATE_PRIMARY = 'När du har sparat några inlägg börjar din graf att fyllas här.';
+	const EMPTY_STATE_PRIMARY = 'När du har sparat några inlägg börjar en lugn överblick att ta form här.';
 	const EMPTY_STATE_SECONDARY =
 		'Fortsätt skriva några dagar till, så blir det lättare att se mönster över tid.';
 
 	let selectedRange: RangeDays = 30;
-	let chartCanvas: HTMLCanvasElement | null = null;
-	let chart: any = null;
-	let ChartClass: any = null;
 	let dailyMoodData: DailyMoodPoint[] = [];
+	let trimmedDays = 0;
 	let isSparseView = false;
 	let hasEnoughData = false;
 	let supportiveLine = '';
@@ -149,183 +145,10 @@
 		return `Du har skrivit ${totalEntries} ${entryWord} ${periodLabel}. Små förändringar över tid räknas också.`;
 	}
 
-	function toShortDateLabel(dateKey: string): string {
-		const date = new Date(`${dateKey}T00:00:00`);
-		if (Number.isNaN(date.getTime())) return dateKey;
-		return date.toLocaleDateString('sv-SE', {
-			month: 'short',
-			day: 'numeric'
-		});
-	}
-
-	function toLongDateLabel(dateKey: string): string {
-		const date = new Date(`${dateKey}T00:00:00`);
-		if (Number.isNaN(date.getTime())) return dateKey;
-		return date.toLocaleDateString('sv-SE', {
-			weekday: 'long',
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric'
-		});
-	}
-
-	function destroyChart() {
-		if (chart) {
-			chart.destroy();
-			chart = null;
-		}
-	}
-
-	function buildChart() {
-		if (!ChartClass || !chartCanvas || !hasEnoughData) {
-			destroyChart();
-			return;
-		}
-
-		const labels = dailyMoodData.map((point) => toShortDateLabel(point.date));
-		const datasetValues = dailyMoodData.map((point) => point.averageMood);
-		const lineColor = 'rgba(96, 165, 250, 0.9)';
-		const tickColor = 'rgba(148, 163, 184, 0.72)';
-		const gridColor = 'rgba(255, 255, 255, 0.03)';
-
-		const context = chartCanvas.getContext('2d');
-		if (!context) return;
-
-		const gradient = context.createLinearGradient(0, 0, 0, chartCanvas.height || 220);
-		gradient.addColorStop(0, 'rgba(96, 165, 250, 0.35)');
-		gradient.addColorStop(1, 'rgba(96, 165, 250, 0.05)');
-
-		destroyChart();
-		chart = new ChartClass(context, {
-			type: 'line',
-			data: {
-				labels,
-				datasets: [
-					{
-						data: datasetValues,
-						borderColor: lineColor,
-						backgroundColor: gradient,
-						fill: true,
-						tension: 0.4,
-						cubicInterpolationMode: 'monotone',
-						spanGaps: false,
-						borderWidth: 2,
-						borderCapStyle: 'round',
-						borderJoinStyle: 'round',
-						pointRadius: (ctx: any) => (ctx.raw === null ? 0 : 4),
-						pointHoverRadius: (ctx: any) => (ctx.raw === null ? 0 : 6),
-						pointBackgroundColor: lineColor,
-						pointBorderWidth: 0
-					}
-				]
-			},
-			options: {
-				responsive: true,
-				maintainAspectRatio: false,
-				interaction: {
-					mode: 'index',
-					intersect: false
-				},
-				animation: {
-					duration: 700,
-					easing: 'easeOutQuart'
-				},
-				plugins: {
-					legend: { display: false },
-					tooltip: {
-						backgroundColor: 'rgba(15, 23, 42, 0.9)',
-						borderRadius: 8,
-						padding: 10,
-						displayColors: false,
-						callbacks: {
-							title: (items: any[]) => {
-								const index = items[0]?.dataIndex ?? 0;
-								return toLongDateLabel(dailyMoodData[index]?.date ?? '');
-							},
-							label: (context: any) => {
-								const index = context.dataIndex ?? 0;
-								const point = dailyMoodData[index];
-								if (!point || point.averageMood === null) {
-									return 'Inget sparat humör den dagen';
-								}
-								return `Humör: ${point.averageMood.toFixed(1)} av 10`;
-							},
-							afterLabel: (context: any) => {
-								const index = context.dataIndex ?? 0;
-								const point = dailyMoodData[index];
-								if (!point) return '';
-								const label = point.entriesCount === 1 ? 'inlägg' : 'inlägg';
-								return `Inlägg den dagen: ${point.entriesCount} ${label}`;
-							}
-						}
-					}
-				},
-				scales: {
-					x: {
-						grid: {
-							display: false
-						},
-						ticks: {
-							color: tickColor,
-							maxRotation: 0,
-							autoSkip: true,
-							maxTicksLimit: selectedRange === 90 ? 8 : 10
-						},
-						border: { display: false }
-					},
-					y: {
-						min: 1,
-						max: 10,
-						afterBuildTicks: (axis: any) => {
-							axis.ticks = [{ value: 1 }, { value: 5 }, { value: 10 }];
-						},
-						ticks: {
-							color: tickColor,
-							callback: (value: string | number) => {
-								const numeric = Number(value);
-								if (numeric === 1 || numeric === 5 || numeric === 10) return numeric.toString();
-								return '';
-							}
-						},
-						grid: {
-							color: gridColor,
-							lineWidth: 0.8,
-							drawTicks: false
-						},
-						border: { display: false }
-					}
-				}
-			}
-		});
-	}
-
-	$: ({ points: dailyMoodData, trimmedDays: _trimmedDays } = buildDailyMoodData(entries, selectedRange));
-	$: isSparseView = _trimmedDays > 0;
+	$: ({ points: dailyMoodData, trimmedDays } = buildDailyMoodData(entries, selectedRange));
+	$: isSparseView = trimmedDays > 0;
 	$: hasEnoughData = dailyMoodData.filter((point) => point.averageMood !== null).length >= 2;
 	$: supportiveLine = buildSupportiveLine(dailyMoodData, selectedRange);
-	$: buildChart();
-
-	onMount(() => {
-		let mounted = true;
-		const onThemeChanged = () => buildChart();
-
-		void (async () => {
-			const chartJs = await import('chart.js/auto');
-			if (!mounted) return;
-			ChartClass = chartJs.Chart;
-			buildChart();
-			window.addEventListener('mittpsyke:theme-changed', onThemeChanged);
-		})();
-
-		return () => {
-			mounted = false;
-			window.removeEventListener('mittpsyke:theme-changed', onThemeChanged);
-		};
-	});
-
-	onDestroy(() => {
-		destroyChart();
-	});
 </script>
 
 <section class="auth-panel mood-timeline-panel" aria-labelledby="mood-timeline-title">
@@ -352,15 +175,14 @@
 	</div>
 
 	{#if hasEnoughData}
-		<div class="timeline-chart-shell">
+		<div class="timeline-summary" aria-live="polite">
 			{#if isSparseView}
-				<p class="timeline-chart-context timeline-chart-context--sparse">
-					Grafen börjar vid ditt första inlägg i perioden – inga anteckningar finns tidigare.
+				<p class="timeline-summary-context timeline-summary-context--sparse">
+					Dina anteckningar i den här perioden börjar vid ditt första sparade inlägg.
 				</p>
 			{:else}
-				<p class="timeline-chart-context">En lugn överblick över hur dagarna har känts.</p>
+				<p class="timeline-summary-context">En lugn textöverblick över hur dagarna har känts.</p>
 			{/if}
-			<canvas bind:this={chartCanvas} aria-label="Lugn linjegraf över humör över tid"></canvas>
 		</div>
 		<p class="timeline-note">Det här är en enkel överblick, inte en bedömning av dig.</p>
 		<p class="timeline-supportive">{supportiveLine}</p>
@@ -426,29 +248,23 @@
 		color: hsl(var(--foreground));
 	}
 
-	.timeline-chart-shell {
-		height: 240px;
-		width: 100%;
-		display: grid;
-		grid-template-rows: auto minmax(0, 1fr);
-		gap: 0.4rem;
+	.timeline-summary {
+		padding: 0.9rem 0.95rem;
+		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-soft));
 	}
 
-	.timeline-chart-context {
+	.timeline-summary-context {
 		margin: 0;
-		font-size: 0.8rem;
-		line-height: 1.4;
-		color: hsl(var(--muted-foreground) / 0.9);
+		font-size: 0.9rem;
+		line-height: 1.6;
+		color: hsl(var(--muted-foreground));
 	}
 
-	.timeline-chart-context--sparse {
+	.timeline-summary-context--sparse {
 		color: hsl(var(--muted-foreground) / 0.65);
 		font-style: italic;
-	}
-
-	.timeline-chart-shell canvas {
-		width: 100% !important;
-		height: 100% !important;
 	}
 
 	.timeline-note {
@@ -484,12 +300,6 @@
 		.timeline-head {
 			grid-template-columns: minmax(0, 1fr) auto;
 			align-items: start;
-		}
-	}
-
-	@media (max-width: 640px) {
-		.timeline-chart-shell {
-			height: 210px;
 		}
 	}
 </style>
