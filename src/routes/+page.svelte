@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { blogPosts } from '$lib/data/blogg';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import ResearchEvidenceCard from '$lib/components/ResearchEvidenceCard.svelte';
 	import { portals } from '$lib/data/portals';
@@ -48,6 +49,30 @@
 			cta: 'Läs mer'
 		}
 	];
+
+	const commonSearchIntents = [
+		{
+			title: 'Hjälp mot oro',
+			description: 'För dig som fastnar i ältande tankar och vill ha ett lugnare sätt att börja.',
+			href: '/oro'
+		},
+		{
+			title: 'Stöd vid stress',
+			description: 'När kroppen går på högvarv och det är svårt att varva ner.',
+			href: '/stress'
+		},
+		{
+			title: 'Hjälp vid panikattack',
+			description: 'Snabba steg och tydlig information när allt känns starkt på en gång.',
+			href: '/panikattack'
+		},
+		{
+			title: 'Prata anonymt online',
+			description: 'Ett första steg för den som söker någon att prata med utan konto.',
+			href: '/prata-anonymt-online'
+		}
+	];
+	const latestBlogPosts = blogPosts.slice(0, 3);
 
 	onMount(() => {
 		if (!heroEl || !bgEl) return;
@@ -282,6 +307,54 @@
 		</div>
 	</section>
 
+	<section class="discovery-section" aria-labelledby="discovery-title">
+		<div class="cards-narrow discovery-inner">
+			<div class="discovery-copy">
+				<p class="discovery-eyebrow">Vanliga ingÃ¥ngar frÃ¥n sÃ¶k</p>
+				<h2 id="discovery-title">BÃ¶rja dÃ¤r det kÃ¤nns mest trÃ¤ffsÃ¤kert</h2>
+				<p>
+					MÃ¥nga hittar hit mitt i nÃ¥got konkret: oro, stress, panik eller behovet av att prata anonymt.
+					HÃ¤r Ã¤r nÃ¥gra vanliga vÃ¤gar in.
+				</p>
+			</div>
+			<div class="discovery-grid">
+				{#each commonSearchIntents as item}
+					<a class="discovery-card" href={item.href}>
+						<h3>{item.title}</h3>
+						<p>{item.description}</p>
+						<span>LÃ¤s mer</span>
+					</a>
+				{/each}
+			</div>
+		</div>
+	</section>
+
+	<section class="blog-preview" aria-labelledby="blog-preview-title">
+		<div class="cards-narrow blog-preview-inner">
+			<div class="blog-preview-head">
+				<div>
+					<p class="blog-preview-eyebrow">InnehÃ¥ll som kan dra in rÃ¤tt trafik</p>
+					<h2 id="blog-preview-title">Senaste frÃ¥n bloggen</h2>
+					<p>
+						Artiklarna hjÃ¤lper fler att hitta MittPsyke via sÃ¶k och ger en lugnare vÃ¤g vidare in till guider,
+						Ã¶vningar och anonymt skrivstÃ¶d.
+					</p>
+				</div>
+				<a class="blog-preview-link" href="/blogg">Se alla artiklar</a>
+			</div>
+			<div class="blog-preview-grid">
+				{#each latestBlogPosts as post}
+					<article class="blog-preview-card">
+						<p class="blog-preview-meta">{post.publishedLabel} · {post.readTime}</p>
+						<h3>{post.title}</h3>
+						<p>{post.excerpt}</p>
+						<a href={`/blogg/${post.slug}`}>LÃ¤s artikel</a>
+					</article>
+				{/each}
+			</div>
+		</div>
+	</section>
+
 	<VoiceSupport />
 
 	<section class="band forum-band" aria-labelledby="forum-band-title">
@@ -495,10 +568,113 @@
 			opacity: 0.9;
 		}
 
-		.hero-cta-link:hover,
-		.hero-cta-link:focus-visible {
-			opacity: 1;
-		}
+	.hero-cta-link:hover,
+	.hero-cta-link:focus-visible {
+		opacity: 1;
+	}
+
+	.discovery-section,
+	.blog-preview {
+		padding: clamp(2.8rem, 7vw, 5.5rem) 1.25rem;
+	}
+
+	.discovery-section {
+		background: #f3f0e8;
+		color: #1d2b33;
+	}
+
+	.blog-preview {
+		background: #e6efe7;
+		color: #1d2b33;
+	}
+
+	.discovery-inner,
+	.blog-preview-inner {
+		max-width: 1120px;
+		margin: 0 auto;
+	}
+
+	.discovery-copy,
+	.blog-preview-head {
+		max-width: 760px;
+	}
+
+	.discovery-eyebrow,
+	.blog-preview-eyebrow {
+		margin: 0 0 0.45rem;
+		font-size: 0.82rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #61715c;
+	}
+
+	.discovery-copy h2,
+	.blog-preview-head h2 {
+		margin: 0;
+		font-size: clamp(1.8rem, 3vw, 2.4rem);
+		line-height: 1.1;
+		color: #182016;
+	}
+
+	.discovery-copy p,
+	.blog-preview-head p,
+	.discovery-card p,
+	.blog-preview-card p {
+		color: rgba(24, 32, 22, 0.82);
+	}
+
+	.discovery-grid,
+	.blog-preview-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 1rem;
+		margin-top: 1.4rem;
+	}
+
+	.discovery-card,
+	.blog-preview-card {
+		display: grid;
+		gap: 0.7rem;
+		padding: 1.1rem;
+		border-radius: var(--radius-card);
+		background: rgba(255, 255, 255, 0.72);
+		border: 1px solid rgba(24, 32, 22, 0.08);
+	}
+
+	.discovery-card h3,
+	.blog-preview-card h3 {
+		margin: 0;
+		font-size: 1.08rem;
+		line-height: 1.35;
+		color: #182016;
+	}
+
+	.discovery-card span,
+	.blog-preview-card a,
+	.blog-preview-link {
+		display: inline-flex;
+		align-items: center;
+		align-self: start;
+		font-weight: 600;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		color: #234235;
+	}
+
+	.blog-preview-head {
+		display: flex;
+		gap: 1rem;
+		align-items: end;
+		justify-content: space-between;
+		max-width: none;
+	}
+
+	.blog-preview-meta {
+		margin: 0;
+		font-size: 0.82rem;
+		color: rgba(24, 32, 22, 0.62);
+	}
 
 	.band {
 		padding: clamp(3rem, 8vw, 7rem) 1.25rem;
@@ -514,6 +690,13 @@
 
 	.forum-inner {
 		text-align: center;
+	}
+
+	@media (max-width: 720px) {
+		.blog-preview-head {
+			display: grid;
+			align-items: start;
+		}
 	}
 
 	.forum-band-extra {
