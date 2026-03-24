@@ -287,6 +287,9 @@
 						<a href="/dashboard" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Min portal</a>
 						<a href="/forum" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Forum</a>
 						<a href="/notiser" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Notiser</a>
+						<a href="/guider" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Guider</a>
+						<a href="/ovningar" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Övningar</a>
+						<a href="/om-mittpsyke" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Om MittPsyke</a>
 					{:else}
 						<a href="/chat" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Chatta</a>
 						<a href="/guider" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Guider</a>
@@ -344,6 +347,9 @@
 					<a href="/dashboard" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Min portal</a>
 					<a href="/forum" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Forum</a>
 					<a href="/notiser" class="block text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Notiser</a>
+					<a href="/guider" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guider</a>
+					<a href="/ovningar" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Övningar</a>
+					<a href="/om-mittpsyke" class="block text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
 						class="block text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
