@@ -550,15 +550,16 @@
 		.hero-shell {
 			position: relative;
 			z-index: 2;
-			width: min(1280px, 100%);
+			width: min(1360px, 100%);
 			display: grid;
-			grid-template-columns: minmax(0, 560px) minmax(320px, 400px);
-			gap: 1.4rem;
+			grid-template-columns: minmax(0, 560px) minmax(2rem, 1fr) minmax(320px, 400px);
+			column-gap: clamp(1.25rem, 3vw, 3.5rem);
 			align-items: start;
-			justify-content: space-between;
 		}
 
 		.hero-content {
+			grid-column: 1;
+			justify-self: start;
 			width: min(560px, 100%);
 			text-align: center;
 			padding: 1.3rem 1.6rem 1.6rem;
@@ -658,6 +659,10 @@
 		}
 
 		.hero-forum-rail {
+			grid-column: 3;
+			justify-self: end;
+			align-self: start;
+			width: min(400px, 100%);
 			padding: 1rem;
 			background: rgba(17, 25, 33, 0.68);
 			border: 1px solid rgba(255, 255, 255, 0.14);
@@ -1407,10 +1412,19 @@
 
 			.hero-shell {
 				grid-template-columns: 1fr;
+				row-gap: 1rem;
 			}
 
 			.hero-content {
+				grid-column: auto;
+				justify-self: stretch;
 				padding: 1.1rem 1rem 1.2rem;
+			}
+
+			.hero-forum-rail {
+				grid-column: auto;
+				justify-self: stretch;
+				width: 100%;
 			}
 
 		.hero-actions {
