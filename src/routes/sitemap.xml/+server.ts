@@ -99,7 +99,7 @@ export function GET() {
 
 	const staticUrls = staticPages
 		.map((page) => {
-			const loc = page === '' ? 'https://www.mittpsyke.se/' : `https://www.mittpsyke.se/${page}`;
+			const loc = page === '' ? canonical('/') : canonical(page);
 			let priority: string;
 			if (page === '') priority = '1.0';
 			else if (pillarPages.has(page)) priority = '0.9';
@@ -110,7 +110,7 @@ export function GET() {
 
 	const forumUrls = forumPages
 		.map((page) => {
-			const loc = `https://www.mittpsyke.se/${page}`;
+			const loc = canonical(page);
 			const priority = page === 'forum' ? '0.8' : '0.7';
 			return `<url><loc>${loc}</loc><lastmod>${LASTMOD}</lastmod><changefreq>daily</changefreq><priority>${priority}</priority></url>`;
 		})
@@ -119,7 +119,7 @@ export function GET() {
 	const toolUrls = tools
 		.map(
 			(tool) =>
-				`<url><loc>https://www.mittpsyke.se/ovningar/${tool.slug}</loc><lastmod>${LASTMOD}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`
+				`<url><loc>${canonical(`/ovningar/${tool.slug}`)}</loc><lastmod>${LASTMOD}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`
 		)
 		.join('');
 

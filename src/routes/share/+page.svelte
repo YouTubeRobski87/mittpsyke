@@ -4,8 +4,8 @@
 
 	// Build message for sharing
 	const shareMessage = streak >= 1
-		? `Jag har checkat in med mig själv ${streak} dagar i rad 🌱\n\nmittpsyke.se`
-		: `Jag tar hand om mitt psyke med MittPsyke 🌱\n\nmittpsyke.se`;
+		? `Jag har checkat in med mig själv ${streak} dagar i rad 🌱\n\nhttps://www.mittpsyke.se`
+		: `Jag tar hand om mitt psyke med MittPsyke 🌱\n\nhttps://www.mittpsyke.se`;
 </script>
 
 <svelte:head>
@@ -62,11 +62,11 @@
 		<p class="share-tagline">Små steg räknas. I din takt.</p>
 
 		<div class="share-actions">
-			<a href="/skriv" class="share-cta">Börja anonymt → mittpsyke.se</a>
+			<a href="/skriv" class="share-cta">Börja anonymt → www.mittpsyke.se</a>
 			<a href="/skriv" class="share-cta share-cta-secondary">Skriv anonymt direkt</a>
 		</div>
 
-		<p class="share-domain">mittpsyke.se</p>
+		<p class="share-domain">www.mittpsyke.se</p>
 	</div>
 </main>
 

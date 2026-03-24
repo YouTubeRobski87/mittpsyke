@@ -17,8 +17,8 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	const ogDescription =
 		total > 0
-			? `${total} incheckningar totalt. En person tar hand om sitt psyke — på mittpsyke.se`
-			: 'En lugn plats att checka in med sig själv — på mittpsyke.se';
+			? `${total} incheckningar totalt. En person tar hand om sitt psyke — på www.mittpsyke.se`
+			: 'En lugn plats att checka in med sig själv — på www.mittpsyke.se';
 
 	return { streak, total, weekly, ogTitle, ogDescription };
 };

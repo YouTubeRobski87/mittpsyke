@@ -1,3 +1,7 @@
+<script lang="ts">
+	import PublicTrustPanel from '$lib/components/PublicTrustPanel.svelte';
+</script>
+
 <svelte:head>
 	<title>Hjälp vid ångest online | Samtal, dagbok och övningar | MittPsyke</title>
 	<meta
@@ -44,8 +48,8 @@
 				<li><a href="/dagbok">Dagbok</a> för att skriva av dig och följa återkommande mönster.</li>
 				<li><a href="/guider/overtankande">Guide om övertänkande</a> och oro.</li>
 				<li><a href="/andningsovningar-mot-angest">Andningsövningar mot ångest</a> när du behöver landa i kroppen.</li>
-				<li><a href="/4-7-8-andning-ovning">4-7-8 andning övning</a> för ett enkelt första steg.</li>
-				<li><a href="/exponering-ovningar-mot-angest">Exponering övningar mot ångest</a> om undvikande tar mycket plats.</li>
+				<li><a href="/4-7-8-andning-ovning">4-7-8-andningsövning</a> för ett enkelt första steg.</li>
+				<li><a href="/exponering-ovningar-mot-angest">Exponeringsövningar mot ångest</a> om undvikande tar mycket plats.</li>
 				<li><a href="/ovningar/cbt-katastroftankar">Övning mot katastroftankar</a>.</li>
 				<li><a href="/ovningar/daglig-reflektionsmall">Daglig reflektionsmall</a> för struktur.</li>
 			</ul>
@@ -74,16 +78,23 @@
 			<h3>Vad gör jag vid akut fara?</h3>
 			<p>Vid akut fara eller risk att skada dig själv eller någon annan: ring 112 direkt.</p>
 		</section>
-		<!-- Källor och uppdatering -->
-		<section class="source-block" aria-label="Källor och uppdatering">
-			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
-			<h2>Källor</h2>
-			<ul>
-				<li><a href="https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/" target="_blank" rel="noopener noreferrer">Ångest – 1177 Vårdguiden</a></li>
-				<li><a href="https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/" target="_blank" rel="noopener noreferrer">Psykisk hälsa och suicidprevention – Socialstyrelsen</a></li>
-				<li><a href="https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/" target="_blank" rel="noopener noreferrer">Psykisk hälsa – Folkhälsomyndigheten</a></li>
-			</ul>
-		</section>
+		<PublicTrustPanel
+			updatedDate="14 mars 2026"
+			sources={[
+				{
+					label: 'Ångest – 1177 Vårdguiden',
+					href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/'
+				},
+				{
+					label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen',
+					href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/'
+				},
+				{
+					label: 'Psykisk hälsa – Folkhälsomyndigheten',
+					href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/'
+				}
+			]}
+		/>
 
 	</div>
 </main>
@@ -191,46 +202,5 @@
 		border-color: #86dfd6;
 	}
 
-	.source-block {
-		margin-top: clamp(2rem, 4vw, 3rem);
-		padding-top: 1.5rem;
-		border-top: 1px solid rgba(0, 0, 0, 0.1);
-	}
-
-	.source-block .updated-date {
-		font-size: 0.8rem;
-		opacity: 0.5;
-		margin-bottom: 1rem;
-	}
-
-	.source-block h2 {
-		font-size: 1rem;
-		font-weight: 600;
-		margin-bottom: 0.5rem;
-	}
-
-	.source-block ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-	}
-
-	.source-block li {
-		font-size: 0.85rem;
-	}
-
-	.source-block a {
-		color: inherit;
-		opacity: 0.7;
-		text-decoration: underline;
-		text-underline-offset: 2px;
-	}
-
-	.source-block a:hover {
-		opacity: 1;
-	}
 </style>
 

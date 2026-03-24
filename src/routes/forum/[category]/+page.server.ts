@@ -63,7 +63,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	const { data: threadsData, error: threadsError } = await locals.supabase
 		.from('forum_threads')
-		.select('id, title, is_anonymous, display_name, reply_count, created_at, user_id')
+		.select('id, title, is_anonymous, display_name, created_at, user_id')
 		.eq('category_id', category)
 		.is('deleted_at', null)
 		.eq('is_hidden', false)
@@ -78,10 +78,37 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			title: typeof row.title === 'string' ? row.title : '',
 			is_anonymous: Boolean(row.is_anonymous),
 			display_name: typeof row.display_name === 'string' ? row.display_name : null,
-			reply_count: typeof row.reply_count === 'number' ? row.reply_count : 0,
+			reply_count: 0,
 			created_at: typeof row.created_at === 'string' ? row.created_at : '',
 			user_id: typeof row.user_id === 'string' ? row.user_id : null
 		})).filter((t) => t.id.length > 0 && t.title.trim().length > 0);
+	}
+
+	if (threads.length > 0) {
+		const replyCounts: Record<string, number> = {};
+		const threadIds = threads.map((thread) => thread.id);
+
+		const { data: repliesData, error: repliesError } = await locals.supabase
+			.from('forum_replies')
+			.select('thread_id')
+			.in('thread_id', threadIds)
+			.is('deleted_at', null)
+			.eq('is_hidden', false);
+
+		if (repliesError && !isMissingTableError(repliesError, 'forum_replies')) {
+			console.error('Forum reply counts load error:', repliesError);
+		} else if (repliesData) {
+			for (const row of repliesData) {
+				if (typeof row.thread_id === 'string') {
+					replyCounts[row.thread_id] = (replyCounts[row.thread_id] ?? 0) + 1;
+				}
+			}
+		}
+
+		threads = threads.map((thread) => ({
+			...thread,
+			reply_count: replyCounts[thread.id] ?? 0
+		}));
 	}
 
 	// Hämta inloggad användare

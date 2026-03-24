@@ -220,7 +220,7 @@
 			content="MittPsyke är tillfälligt under konstruktion medan vi arbetar med förbättringar."
 		/>
 	{:else}
-		<title>{page.data?.title ? `${page.data.title} | Mittpsyke` : 'Psykiskt stöd online | Verktyg mot ångest | Mittpsyke.se'}</title>
+		<title>{page.data?.title ? `${page.data.title} | Mittpsyke` : 'Psykiskt stöd online | Verktyg mot ångest | MittPsyke'}</title>
 
 		<meta
 			name="description"
