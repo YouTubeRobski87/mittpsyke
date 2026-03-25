@@ -32,11 +32,11 @@
 	const signedInPrimaryNavItems: NavItem[] = [
 		{ href: '/forum', label: 'Forum' },
 		{ href: '/guider', label: 'Guider' },
-		{ href: '/ovningar', label: '÷vningar' }
+		{ href: '/ovningar', label: '√ñvningar' }
 	];
 
 	const signedInDiaryNavItems: NavItem[] = [
-		{ href: '/dagbok', label: 'Skriv sj‰lv' },
+		{ href: '/dagbok', label: 'Skriv sj√§lv' },
 		{ href: '/dagars-avtryck', label: 'AI-baserad reflektion' }
 	];
 
@@ -317,7 +317,7 @@
 						<details class="nav-info-menu">
 							<summary class="nav-info-trigger">Dagbok</summary>
 							<div class="nav-info-panel">
-								<p class="nav-info-copy">V‰lj hur du vill bearbeta dagen just nu.</p>
+								<p class="nav-info-copy">V√§lj hur du vill bearbeta dagen just nu.</p>
 								{#each signedInDiaryNavItems as item}
 									<a href={item.href} class="nav-info-link">{item.label}</a>
 								{/each}
@@ -329,7 +329,7 @@
 						<details class="nav-info-menu">
 							<summary class="nav-info-trigger">Min portal</summary>
 							<div class="nav-info-panel">
-								<p class="nav-info-copy">H‰r ligger dina personliga delar samlade n‰r du ‰r inloggad.</p>
+								<p class="nav-info-copy">H√§r ligger dina personliga delar samlade n√§r du √§r inloggad.</p>
 								{#each signedInPortalNavItems as item}
 									<a href={item.href} class="nav-info-link">{item.label}</a>
 								{/each}
@@ -387,7 +387,7 @@
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3" role="navigation" aria-label="Mobilmeny">
 				{#if user}
-					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `V‰lkommen, ${displayName}` : 'V‰lkommen tillbaka'}</p>
+					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `V√§lkommen, ${displayName}` : 'V√§lkommen tillbaka'}</p>
 					<p class="mobile-menu-section-title text-xs opacity-55">Dagbok</p>
 					{#each signedInDiaryNavItems as item}
 						<a href={item.href} class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>{item.label}</a>
