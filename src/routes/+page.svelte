@@ -548,19 +548,21 @@
 		}
 
 		.hero-shell {
+			--hero-main-width: 560px;
+			--hero-rail-gap: clamp(0.8rem, 1.6vw, 1.3rem);
+			--hero-rail-width: clamp(300px, 26vw, 380px);
 			position: relative;
 			z-index: 2;
-			width: min(1020px, 100%);
+			width: min(1280px, 100%);
 			display: grid;
-			grid-template-columns: minmax(0, 560px) minmax(320px, 400px);
-			column-gap: clamp(0.9rem, 2vw, 1.6rem);
-			justify-content: center;
+			grid-template-columns: 1fr;
+			justify-items: center;
 			align-items: start;
 		}
 
 		.hero-content {
 			grid-column: 1;
-			justify-self: start;
+			justify-self: center;
 			align-self: start;
 			width: min(560px, 100%);
 			text-align: center;
@@ -661,11 +663,14 @@
 		}
 
 		.hero-forum-rail {
-			grid-column: 2;
-			justify-self: stretch;
-			align-self: start;
-			width: 100%;
-			max-width: 400px;
+			position: absolute;
+			top: clamp(0.75rem, 2vw, 1.5rem);
+			left: calc(50% + (var(--hero-main-width) / 2) + var(--hero-rail-gap));
+			width: min(
+				var(--hero-rail-width),
+				calc(100% - (50% + (var(--hero-main-width) / 2) + var(--hero-rail-gap)))
+			);
+			max-width: 380px;
 			margin-top: 0;
 			padding: 1rem;
 			background: rgba(17, 25, 33, 0.68);
@@ -1426,6 +1431,9 @@
 			}
 
 			.hero-forum-rail {
+				position: static;
+				top: auto;
+				left: auto;
 				grid-column: auto;
 				justify-self: stretch;
 				align-self: start;
