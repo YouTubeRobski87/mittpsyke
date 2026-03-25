@@ -26,7 +26,7 @@
 	} = $props();
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
-	const homepageForumThreads = data.latestForumThreads ?? [];
+	const homepageForumThreads = $derived(data.latestForumThreads ?? []);
 	const entryPaths = [
 		{
 			title: 'Jag behöver stöd nu',
