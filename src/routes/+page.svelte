@@ -17,31 +17,11 @@
 		bodyPreview: string;
 	};
 
-	type HomepageForumComment = {
-		id: string;
-		body: string;
-		created_at: string;
-		authorLabel: string;
-	};
-
-	type HomepageFeaturedForumThread = {
-		id: string;
-		title: string;
-		categoryName: string;
-		reply_count: number;
-		created_at: string;
-		active_at: string;
-		bodyPreview: string;
-		authorLabel: string;
-		comments: HomepageForumComment[];
-	};
-
 	let {
 		data
 	}: {
 		data: {
 			latestForumThreads?: HomepageForumThread[];
-			featuredForumThread?: HomepageFeaturedForumThread | null;
 		};
 	} = $props();
 	let heroEl: HTMLElement | null = null;
@@ -232,51 +212,38 @@
 				</div>
 			</div>
 			<aside class="hero-forum-rail" aria-labelledby="hero-forum-title">
-				<p class="hero-forum-eyebrow">Mest aktuella från forumet just nu</p>
-				<h2 id="hero-forum-title">Hetaste forumtråden just nu</h2>
+				<p class="hero-forum-eyebrow">Forum</p>
+				<h2 id="hero-forum-title">Just nu i forumet</h2>
 				<p class="hero-forum-intro">
-					Här ser du kommentarer från det som är mest aktivt just nu i forumet.
+					Här kan du läsa några av de trådar som är mest levande just nu, i lugn och ro.
 				</p>
-				{#if data.featuredForumThread}
-					<div class="hero-forum-thread-preview">
-						<div class="hero-forum-thread-card">
-							<p class="hero-forum-meta hero-forum-meta--top">
-								{data.featuredForumThread.categoryName} · aktiv {formatForumTime(data.featuredForumThread.active_at)}
-							</p>
-							<a class="hero-forum-thread-link" href={`/forum/thread/${data.featuredForumThread.id}`}>
-								<h3>{data.featuredForumThread.title}</h3>
-							</a>
-							<p class="hero-forum-thread-author">
-								{data.featuredForumThread.authorLabel} · {formatForumTime(data.featuredForumThread.created_at)}
-							</p>
-							<p class="hero-forum-thread-body">{data.featuredForumThread.bodyPreview}</p>
-							<div class="hero-forum-thread-footer">
-								<p class="hero-forum-count">{data.featuredForumThread.reply_count} svar i tråden</p>
-								<a class="hero-forum-inline-link" href={`/forum/thread/${data.featuredForumThread.id}`}>Gå till tråden</a>
-							</div>
-						</div>
-						<div class="hero-forum-comments" aria-label="Senaste kommentarer">
-							<p class="hero-forum-comments-label">Senaste kommentarer</p>
-							{#if data.featuredForumThread.comments.length}
-								{#each data.featuredForumThread.comments as comment}
-									<div class="hero-forum-comment">
-										<p class="hero-forum-comment-meta">
-											{comment.authorLabel} · {formatForumTime(comment.created_at)}
-										</p>
-										<p class="hero-forum-comment-body">{comment.body}</p>
-									</div>
-								{/each}
-							{:else}
-								<div class="hero-forum-comment">
-									<p class="hero-forum-comment-meta">Nytt inlägg</p>
-									<p class="hero-forum-comment-body">{data.featuredForumThread.bodyPreview}</p>
+				{#if data.latestForumThreads?.length}
+					<div class="hero-forum-thread-preview" aria-label="Aktuella forumtrådar">
+						{#each data.latestForumThreads as thread}
+							<article class="hero-forum-thread-card">
+								<p class="hero-forum-meta hero-forum-meta--top">
+									{thread.categoryName} · aktiv {formatForumTime(thread.active_at || thread.created_at)}
+								</p>
+								<a class="hero-forum-thread-link" href={`/forum/thread/${thread.id}`}>
+									<h3>{thread.title}</h3>
+								</a>
+								{#if thread.bodyPreview}
+									<p class="hero-forum-thread-body">{thread.bodyPreview}</p>
+								{/if}
+								<div class="hero-forum-thread-footer">
+									{#if thread.reply_count > 0}
+										<p class="hero-forum-count">{thread.reply_count} svar</p>
+									{:else}
+										<p class="hero-forum-count">Nystartad tråd</p>
+									{/if}
+									<a class="hero-forum-inline-link" href={`/forum/thread/${thread.id}`}>Läs tråden</a>
 								</div>
-							{/if}
-						</div>
+							</article>
+						{/each}
 					</div>
 				{:else}
 					<div class="hero-forum-empty">
-						<p>Forumet finns öppet om du vill läsa andras erfarenheter eller starta en egen tråd.</p>
+						<p>Forumet är nytt och fylls på steg för steg. Du får gärna läsa, skriva eller starta en egen tråd.</p>
 					</div>
 				{/if}
 				<a href="/forum" class="hero-forum-cta">Gå till forumet</a>
@@ -467,38 +434,6 @@
 	</section>
 
 	<VoiceSupport />
-
-	<section class="band forum-band" aria-labelledby="forum-band-title">
-		<div class="narrow forum-inner">
-			<h2 id="forum-band-title">Just nu i forumet</h2>
-			<p>Forumet är en plats där du kan läsa vad andra går igenom, dela egna tankar och möta stöd i ett lågmält sammanhang.<br />
-			Du kan skapa en tråd anonymt eller som inloggad, och du får också gärna bara läsa i din egen takt.</p>
-			{#if data.latestForumThreads?.length}
-				<div class="forum-thread-list" aria-label="Aktuella forumtrådar">
-					{#each data.latestForumThreads as thread}
-						<article class="forum-thread-card">
-							<p class="forum-thread-meta">
-								<span>{thread.categoryName}</span>
-								<span>{formatForumTime(thread.active_at || thread.created_at)}</span>
-								{#if thread.reply_count > 0}
-									<span>{thread.reply_count} svar</span>
-								{/if}
-							</p>
-							<a class="forum-thread-link" href={`/forum/thread/${thread.id}`}>
-								<h3>{thread.title}</h3>
-							</a>
-							{#if thread.bodyPreview}
-								<p class="forum-thread-preview">{thread.bodyPreview}</p>
-							{/if}
-						</article>
-					{/each}
-				</div>
-			{:else}
-				<p class="forum-band-extra">Forumet är nytt och fylls på steg för steg. Du får gärna läsa, skriva eller starta en egen tråd.</p>
-			{/if}
-			<a href="/forum" class="forum-cta">Gå till forumet</a>
-		</div>
-	</section>
 
 	<section class="band band-olive">
 		<div class="narrow intro-grid">
@@ -733,16 +668,14 @@
 			color: rgba(255, 255, 255, 0.82);
 		}
 
-		.hero-forum-thread-preview,
-		.hero-forum-comments {
+		.hero-forum-thread-preview {
 			display: grid;
 			gap: 0.7rem;
 			margin-top: 1rem;
 		}
 
 		.hero-forum-thread-card,
-		.hero-forum-empty,
-		.hero-forum-comment {
+		.hero-forum-empty {
 			display: grid;
 			gap: 0.35rem;
 			padding: 0.85rem 0.9rem;
@@ -752,8 +685,7 @@
 		}
 
 		.hero-forum-thread-card h3,
-		.hero-forum-empty p,
-		.hero-forum-comment-body {
+		.hero-forum-empty p {
 			margin: 0;
 		}
 
@@ -774,8 +706,7 @@
 		}
 
 		.hero-forum-meta,
-		.hero-forum-count,
-		.hero-forum-comment-meta {
+		.hero-forum-count {
 			margin: 0;
 			font-size: 0.8rem;
 			line-height: 1.45;
@@ -785,13 +716,6 @@
 		.hero-forum-meta--top {
 			font-weight: 700;
 			letter-spacing: 0.03em;
-		}
-
-		.hero-forum-thread-author {
-			margin: 0;
-			font-size: 0.85rem;
-			line-height: 1.45;
-			color: rgba(255, 255, 255, 0.74);
 		}
 
 		.hero-forum-thread-body {
@@ -808,21 +732,6 @@
 			justify-content: space-between;
 			gap: 0.55rem;
 			margin-top: 0.2rem;
-		}
-
-		.hero-forum-comments-label {
-			margin: 0;
-			font-size: 0.8rem;
-			font-weight: 700;
-			letter-spacing: 0.06em;
-			text-transform: uppercase;
-			color: rgba(255, 255, 255, 0.68);
-		}
-
-		.hero-forum-comment-body {
-			font-size: 0.92rem;
-			line-height: 1.55;
-			color: rgba(255, 255, 255, 0.88);
 		}
 
 		.hero-forum-inline-link,
@@ -984,96 +893,10 @@
 		background: #1b2b3a;
 	}
 
-	.forum-band {
-		background: #162232;
-	}
-
-	.forum-inner {
-		text-align: center;
-	}
-
-	.forum-thread-list {
-		display: grid;
-		gap: 0.85rem;
-		margin-top: 1.25rem;
-		text-align: left;
-	}
-
-	.forum-thread-card {
-		padding: 1rem 1.05rem;
-		border-radius: var(--radius-card);
-		background: rgba(255, 255, 255, 0.08);
-		border: 1px solid rgba(255, 255, 255, 0.12);
-	}
-
-	.forum-thread-meta {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem 0.9rem;
-		margin: 0;
-		font-size: 0.82rem;
-		line-height: 1.5;
-		color: rgba(255, 255, 255, 0.72);
-	}
-
-	.forum-thread-link {
-		display: inline-block;
-		margin-top: 0.35rem;
-		color: inherit;
-		text-decoration: none;
-	}
-
-	.forum-thread-link h3 {
-		margin: 0;
-		font-size: 1.02rem;
-		line-height: 1.35;
-		color: #f5f5f2;
-	}
-
-	.forum-thread-link:hover h3,
-	.forum-thread-link:focus-visible h3 {
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	.forum-thread-preview {
-		margin: 0.45rem 0 0;
-		font-size: 0.94rem;
-		line-height: 1.65;
-		color: rgba(255, 255, 255, 0.88);
-	}
-
 	@media (max-width: 720px) {
 		.blog-preview-head {
 			display: grid;
 			align-items: start;
-		}
-	}
-
-	.forum-band-extra {
-		margin-top: 0.9rem;
-		opacity: 0.75;
-		font-style: italic;
-		font-size: 0.95rem;
-	}
-
-	.forum-cta {
-		display: inline-block;
-		margin-top: 1.4rem;
-		padding: 0.62rem 1.3rem;
-		font-family: var(--font-heading);
-		font-size: 0.85rem;
-		font-weight: 700;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-		background: #8ca36a;
-		color: #182016;
-		border-radius: var(--radius-pill);
-	}
-
-	@media (min-width: 760px) {
-		.forum-thread-list {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 	}
 
