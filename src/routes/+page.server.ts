@@ -33,6 +33,8 @@ type FeaturedForumThread = {
 	comments: FeaturedForumComment[];
 };
 
+const HERO_FORUM_THREAD_TITLE = 'Kvällsångest, fler?';
+
 function truncateText(text: string, maxLength: number) {
 	if (text.length <= maxLength) return text;
 	return `${text.slice(0, maxLength - 1).trimEnd()}…`;
@@ -94,13 +96,39 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.filter((thread) => thread.id.length > 0 && thread.title.length > 0);
 	}
 
-	const latestThread = latestForumThreads[0];
+	const { data: preferredThreadRows, error: preferredThreadError } = await locals.supabase
+		.from('forum_threads')
+		.select('id, title, category_id, reply_count, created_at, last_reply_at')
+		.is('deleted_at', null)
+		.eq('is_hidden', false)
+		.ilike('title', HERO_FORUM_THREAD_TITLE)
+		.order('last_reply_at', { ascending: false, nullsFirst: false })
+		.order('created_at', { ascending: false })
+		.limit(1);
 
-	if (latestThread) {
+	if (preferredThreadError && !isMissingTableError(preferredThreadError, 'forum_threads')) {
+		console.error('Homepage preferred forum thread load error:', preferredThreadError);
+	}
+
+	const preferredThread = preferredThreadRows
+		?.map((row) => ({
+			id: typeof row.id === 'string' ? row.id : '',
+			title: typeof row.title === 'string' ? row.title.trim() : '',
+			category_id: typeof row.category_id === 'string' ? row.category_id : '',
+			reply_count: typeof row.reply_count === 'number' ? row.reply_count : 0,
+			created_at: typeof row.created_at === 'string' ? row.created_at : '',
+			last_reply_at: typeof row.last_reply_at === 'string' ? row.last_reply_at : '',
+			categoryName: categoryNameById.get(typeof row.category_id === 'string' ? row.category_id : '') ?? 'Forum'
+		}))
+		.find((thread) => thread.id.length > 0 && thread.title.length > 0);
+
+	const featuredThreadCandidate = preferredThread ?? latestForumThreads[0];
+
+	if (featuredThreadCandidate) {
 		const { data: featuredThreadRow, error: featuredThreadError } = await locals.supabase
 			.from('forum_threads')
 			.select('id, title, body, category_id, reply_count, created_at, is_anonymous, display_name')
-			.eq('id', latestThread.id)
+			.eq('id', featuredThreadCandidate.id)
 			.is('deleted_at', null)
 			.eq('is_hidden', false)
 			.maybeSingle();
@@ -111,7 +139,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			const { data: replyRows, error: repliesError } = await locals.supabase
 				.from('forum_replies')
 				.select('id, body, created_at, is_anonymous, display_name')
-				.eq('thread_id', latestThread.id)
+				.eq('thread_id', featuredThreadCandidate.id)
 				.is('deleted_at', null)
 				.eq('is_hidden', false)
 				.order('created_at', { ascending: false })
@@ -138,7 +166,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				title: String(featuredThreadRow.title),
 				reply_count: typeof featuredThreadRow.reply_count === 'number' ? featuredThreadRow.reply_count : 0,
 				created_at: String(featuredThreadRow.created_at),
-				active_at: latestThread.last_reply_at || String(featuredThreadRow.created_at),
+				active_at: featuredThreadCandidate.last_reply_at || String(featuredThreadRow.created_at),
 				categoryName: categoryNameById.get(String(featuredThreadRow.category_id)) ?? 'Forum',
 				bodyPreview: truncateText(String(featuredThreadRow.body ?? '').trim(), 140),
 				authorLabel:
