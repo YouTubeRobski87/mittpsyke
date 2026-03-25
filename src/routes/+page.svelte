@@ -13,6 +13,8 @@
 		categoryName: string;
 		reply_count: number;
 		created_at: string;
+		active_at: string;
+		bodyPreview: string;
 	};
 
 	type HomepageForumComment = {
@@ -468,10 +470,32 @@
 
 	<section class="band forum-band" aria-labelledby="forum-band-title">
 		<div class="narrow forum-inner">
-			<h2 id="forum-band-title">Du behöver inte bära allt ensam</h2>
+			<h2 id="forum-band-title">Just nu i forumet</h2>
 			<p>Forumet är en plats där du kan läsa vad andra går igenom, dela egna tankar och möta stöd i ett lågmält sammanhang.<br />
 			Du kan skapa en tråd anonymt eller som inloggad, och du får också gärna bara läsa i din egen takt.</p>
-			<p class="forum-band-extra">Här kan några ord från någon annan göra skillnad — och dina ord kan göra skillnad för någon med.</p>
+			{#if data.latestForumThreads?.length}
+				<div class="forum-thread-list" aria-label="Aktuella forumtrådar">
+					{#each data.latestForumThreads as thread}
+						<article class="forum-thread-card">
+							<p class="forum-thread-meta">
+								<span>{thread.categoryName}</span>
+								<span>{formatForumTime(thread.active_at || thread.created_at)}</span>
+								{#if thread.reply_count > 0}
+									<span>{thread.reply_count} svar</span>
+								{/if}
+							</p>
+							<a class="forum-thread-link" href={`/forum/thread/${thread.id}`}>
+								<h3>{thread.title}</h3>
+							</a>
+							{#if thread.bodyPreview}
+								<p class="forum-thread-preview">{thread.bodyPreview}</p>
+							{/if}
+						</article>
+					{/each}
+				</div>
+			{:else}
+				<p class="forum-band-extra">Forumet är nytt och fylls på steg för steg. Du får gärna läsa, skriva eller starta en egen tråd.</p>
+			{/if}
 			<a href="/forum" class="forum-cta">Gå till forumet</a>
 		</div>
 	</section>
@@ -968,6 +992,57 @@
 		text-align: center;
 	}
 
+	.forum-thread-list {
+		display: grid;
+		gap: 0.85rem;
+		margin-top: 1.25rem;
+		text-align: left;
+	}
+
+	.forum-thread-card {
+		padding: 1rem 1.05rem;
+		border-radius: var(--radius-card);
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+	}
+
+	.forum-thread-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 0.9rem;
+		margin: 0;
+		font-size: 0.82rem;
+		line-height: 1.5;
+		color: rgba(255, 255, 255, 0.72);
+	}
+
+	.forum-thread-link {
+		display: inline-block;
+		margin-top: 0.35rem;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.forum-thread-link h3 {
+		margin: 0;
+		font-size: 1.02rem;
+		line-height: 1.35;
+		color: #f5f5f2;
+	}
+
+	.forum-thread-link:hover h3,
+	.forum-thread-link:focus-visible h3 {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.forum-thread-preview {
+		margin: 0.45rem 0 0;
+		font-size: 0.94rem;
+		line-height: 1.65;
+		color: rgba(255, 255, 255, 0.88);
+	}
+
 	@media (max-width: 720px) {
 		.blog-preview-head {
 			display: grid;
@@ -994,6 +1069,12 @@
 		background: #8ca36a;
 		color: #182016;
 		border-radius: var(--radius-pill);
+	}
+
+	@media (min-width: 760px) {
+		.forum-thread-list {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
 	}
 
 	.narrow {

@@ -10,6 +10,7 @@ type LatestForumThread = {
 	title: string;
 	category_id: string;
 	reply_count: number;
+	body: string;
 	created_at: string;
 	last_reply_at: string;
 };
@@ -53,7 +54,9 @@ function isMissingTableError(
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	let latestForumThreads: Array<LatestForumThread & { categoryName: string }> = [];
+	let latestForumThreads: Array<
+		LatestForumThread & { categoryName: string; active_at: string; bodyPreview: string }
+	> = [];
 	let featuredForumThread: FeaturedForumThread | null = null;
 
 	const { data: categoryRows, error: categoriesError } = await locals.supabase
@@ -73,7 +76,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const { data: threadRows, error: threadsError } = await locals.supabase
 		.from('forum_threads')
-		.select('id, title, category_id, reply_count, created_at, last_reply_at')
+		.select('id, title, category_id, reply_count, body, created_at, last_reply_at')
 		.is('deleted_at', null)
 		.eq('is_hidden', false)
 		.order('last_reply_at', { ascending: false, nullsFirst: false })
@@ -89,8 +92,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 				title: typeof row.title === 'string' ? row.title.trim() : '',
 				category_id: typeof row.category_id === 'string' ? row.category_id : '',
 				reply_count: typeof row.reply_count === 'number' ? row.reply_count : 0,
+				body: typeof row.body === 'string' ? row.body.trim() : '',
 				created_at: typeof row.created_at === 'string' ? row.created_at : '',
 				last_reply_at: typeof row.last_reply_at === 'string' ? row.last_reply_at : '',
+				active_at:
+					typeof row.last_reply_at === 'string' && row.last_reply_at.length > 0
+						? row.last_reply_at
+						: typeof row.created_at === 'string'
+							? row.created_at
+							: '',
+				bodyPreview: truncateText(typeof row.body === 'string' ? row.body.trim() : '', 110),
 				categoryName: categoryNameById.get(typeof row.category_id === 'string' ? row.category_id : '') ?? 'Forum'
 			}))
 			.filter((thread) => thread.id.length > 0 && thread.title.length > 0);
