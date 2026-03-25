@@ -33,7 +33,7 @@ type FeaturedForumThread = {
 	comments: FeaturedForumComment[];
 };
 
-const HERO_FORUM_THREAD_TITLE = 'Kvällsångest, fler?';
+const HERO_FORUM_THREAD_ID = '9c6620c6-1117-4e39-890e-537b5933a96a';
 
 function truncateText(text: string, maxLength: number) {
 	if (text.length <= maxLength) return text;
@@ -101,7 +101,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.select('id, title, category_id, reply_count, created_at, last_reply_at')
 		.is('deleted_at', null)
 		.eq('is_hidden', false)
-		.ilike('title', HERO_FORUM_THREAD_TITLE)
+		.eq('id', HERO_FORUM_THREAD_ID)
 		.order('last_reply_at', { ascending: false, nullsFirst: false })
 		.order('created_at', { ascending: false })
 		.limit(1);
