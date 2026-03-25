@@ -314,7 +314,7 @@
 				</a>
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
-						<details class="nav-info-menu">
+						<details class="nav-info-menu nav-info-menu-left">
 							<summary class="nav-info-trigger">Dagbok</summary>
 							<div class="nav-info-panel">
 								<p class="nav-info-copy">Välj hur du vill bearbeta dagen just nu.</p>
@@ -609,7 +609,9 @@
 		position: absolute;
 		top: calc(100% + 0.55rem);
 		right: 0;
+		left: auto;
 		min-width: 11rem;
+		max-width: min(20rem, calc(100vw - 1.5rem));
 		display: grid;
 		gap: 0.2rem;
 		padding: 0.55rem;
@@ -618,6 +620,11 @@
 		background: rgba(255, 255, 255, 0.96);
 		box-shadow: 0 14px 32px rgba(15, 23, 42, 0.14);
 		backdrop-filter: blur(8px);
+	}
+
+	.nav-info-menu-left .nav-info-panel {
+		left: 0;
+		right: auto;
 	}
 
 	.nav-info-copy {
