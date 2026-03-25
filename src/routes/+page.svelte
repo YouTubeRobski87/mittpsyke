@@ -550,13 +550,10 @@
 		.hero-shell {
 			position: relative;
 			z-index: 2;
-			width: min(1360px, 100%);
+			width: min(1020px, 100%);
 			display: grid;
-			grid-template-columns:
-				minmax(0, 560px)
-				minmax(0.8rem, 1.6rem)
-				minmax(320px, 400px);
-			column-gap: clamp(0.9rem, 1.6vw, 1.5rem);
+			grid-template-columns: minmax(0, 560px) minmax(320px, 400px);
+			column-gap: clamp(0.9rem, 2vw, 1.6rem);
 			justify-content: center;
 			align-items: start;
 		}
@@ -664,12 +661,12 @@
 		}
 
 		.hero-forum-rail {
-			grid-column: 3;
-			justify-self: start;
-			align-self: center;
+			grid-column: 2;
+			justify-self: stretch;
+			align-self: start;
 			width: 100%;
 			max-width: 400px;
-			margin-top: clamp(0.85rem, 2.2vw, 2rem);
+			margin-top: 0;
 			padding: 1rem;
 			background: rgba(17, 25, 33, 0.68);
 			border: 1px solid rgba(255, 255, 255, 0.14);
