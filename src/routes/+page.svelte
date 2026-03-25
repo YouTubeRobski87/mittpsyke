@@ -554,10 +554,10 @@
 			display: grid;
 			grid-template-columns:
 				minmax(0, 560px)
-				minmax(1rem, 2.25rem)
-				minmax(320px, 400px)
-				minmax(0, 1fr);
+				minmax(0.8rem, 1.6rem)
+				minmax(320px, 400px);
 			column-gap: clamp(0.9rem, 1.6vw, 1.5rem);
+			justify-content: center;
 			align-items: start;
 		}
 
