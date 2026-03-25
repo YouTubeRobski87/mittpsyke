@@ -23,6 +23,38 @@
 
 	const UNDER_CONSTRUCTION = false;
 
+	type NavItem = {
+		href: string;
+		label: string;
+		external?: boolean;
+	};
+
+	const signedInPrimaryNavItems: NavItem[] = [
+		{ href: '/dagbok', label: 'Dagbok' },
+		{ href: '/dagars-avtryck', label: 'Guidad reflektion' },
+		{ href: '/forum', label: 'Forum' },
+		{ href: '/guider', label: 'Guider' },
+		{ href: '/ovningar', label: 'Övningar' }
+	];
+
+	const signedInPortalNavItems: NavItem[] = [
+		{ href: '/dashboard', label: 'Översikt' },
+		{ href: '/framsteg', label: 'Framsteg' },
+		{ href: '/dashboard/gemenskap', label: 'Gemenskap' },
+		{ href: '/notiser', label: 'Notiser' },
+		{ href: '/dashboard/installningar', label: 'Inställningar' }
+	];
+
+	const guestPrimaryNavItems: NavItem[] = [
+		{ href: '/chat', label: 'Chatta' },
+		{ href: '/guider', label: 'Guider' },
+		{ href: '/ovningar', label: 'Övningar' },
+		{ href: '/forum', label: 'Forum' },
+		{ href: '/blogg', label: 'Blogg' },
+		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
+		{ href: 'https://stodlinjer.se', label: 'Akut hjälp (Stödlinjer)', external: true }
+	];
+
 	let { children, data } = $props();
 	const organizationJsonLd = {
 		'@context': 'https://schema.org',
@@ -277,31 +309,30 @@
 				>
 					Hem
 				</a>
-				<a href="/forum" class="forum-quick-link whitespace-nowrap">
-					Forum
-				</a>
-
-				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
+								<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
-						<a href="/dagbok" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Dagbok</a>
-						<a href="/forum" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Forum</a>
-						<a href="/dagars-avtryck" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Guidad reflektion</a>
-						<a href="/framsteg" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Framsteg</a>
-						<a href="/dashboard/gemenskap" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Gemenskap</a>
-						<a href="/dashboard" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Min portal</a>
-						<a href="/notiser" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Notiser</a>
-						<a href="/guider" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Guider</a>
-						<a href="/ovningar" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Övningar</a>
+						{#each signedInPrimaryNavItems as item}
+							<a href={item.href} class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">{item.label}</a>
+						{/each}
 						<details class="nav-info-menu">
-							<summary class="nav-info-trigger">Info</summary>
+							<summary class="nav-info-trigger">Min portal</summary>
 							<div class="nav-info-panel">
-								<p class="nav-info-copy">När du är inloggad kan du spara dagbok, följa framsteg och få notiser.</p>
-								<p class="nav-info-copy">Guider, övningar och information om tjänsten finns även utan inloggning.</p>
-								<a href="/om-mittpsyke" class="nav-info-link">Om MittPsyke</a>
-								<a href={PUBLIC_CONTACT_MAILTO} class="nav-info-link">Kontakt</a>
+								<p class="nav-info-copy">H�r ligger dina personliga delar samlade n�r du �r inloggad.</p>
+								{#each signedInPortalNavItems as item}
+									<a href={item.href} class="nav-info-link">{item.label}</a>
+								{/each}
 							</div>
-						</details>
-					{:else}
+						</details>					{:else}
+						{#each guestPrimaryNavItems as item}
+							<a
+								href={item.href}
+								class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+								target={item.external ? '_blank' : undefined}
+								rel={item.external ? 'noopener noreferrer' : undefined}
+							>
+								{item.label}
+							</a>
+						{/each}
 						<a href="/chat" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Chatta</a>
 						<a href="/guider" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Guider</a>
 						<a href="/ovningar" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Övningar</a>
@@ -348,25 +379,36 @@
 		</div>
 
 		{#if mobileMenuOpen}
-			<div id="mobile-menu" class="mobile-menu-panel lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3" role="navigation" aria-label="Mobilmeny">
+						<div id="mobile-menu" class="mobile-menu-panel lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3" role="navigation" aria-label="Mobilmeny">
 				{#if user}
-					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
-					<a href="/dagbok" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Dagbok</a>
-					<a href="/dagars-avtryck" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guidad reflektion</a>
-					<a href="/framsteg" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Framsteg</a>
-					<a href="/dashboard/gemenskap" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Gemenskap</a>
-					<a href="/dashboard" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Min portal</a>
-					<a href="/forum" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Forum</a>
-					<a href="/notiser" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Notiser</a>
-					<a href="/guider" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guider</a>
-					<a href="/ovningar" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Övningar</a>
+					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `V�lkommen, ${displayName}` : 'V�lkommen tillbaka'}</p>
+					{#each signedInPrimaryNavItems as item}
+						<a href={item.href} class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>{item.label}</a>
+					{/each}
+					<p class="mobile-menu-section-title text-xs opacity-55">Min portal</p>
+					{#each signedInPortalNavItems as item}
+						<a href={item.href} class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>{item.label}</a>
+					{/each}
 					<a href="/om-mittpsyke" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
 					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
 						class="mobile-menu-link text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
-					>Logga ut</button>
-				{:else}
+					>Logga ut</button>				{:else}
+					{#each guestPrimaryNavItems as item}
+						<a
+							href={item.href}
+							class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+							target={item.external ? '_blank' : undefined}
+							rel={item.external ? 'noopener noreferrer' : undefined}
+							onclick={() => (mobileMenuOpen = false)}
+						>
+							{item.label}
+						</a>
+					{/each}
+					<a href="mailto:kontakt@mittpsyke.se" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
+					<a href="/login" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Logga in</a>
+					<a href="/register" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Registrera</a>
 					<a href="/chat" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Chatta</a>
 					<a href="/guider" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guider</a>
 					<a href="/ovningar" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Övningar</a>
@@ -511,9 +553,13 @@
 		-webkit-overflow-scrolling: touch;
 	}
 
-	.mobile-menu-greeting {
-		margin: 0 0 0.35rem;
+
+	.mobile-menu-section-title {
+		margin: 0.5rem 0 0.2rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
 	}
+
 
 	.mobile-menu-link {
 		display: block;
@@ -530,26 +576,6 @@
 			margin-top: 0.08rem;
 		}
 
-		.forum-quick-link {
-			display: inline-flex;
-			align-items: center;
-			padding: 0.38rem 0.75rem;
-			border-radius: 999px;
-			background: rgba(140, 163, 106, 0.16);
-			border: 1px solid rgba(140, 163, 106, 0.28);
-			color: inherit;
-			font-size: 0.9rem;
-			font-weight: 600;
-			text-decoration: none;
-			transition: background-color 140ms ease, border-color 140ms ease, opacity 140ms ease;
-		}
-
-		.forum-quick-link:hover,
-		.forum-quick-link:focus-visible {
-			background: rgba(140, 163, 106, 0.24);
-			border-color: rgba(140, 163, 106, 0.45);
-			opacity: 1;
-		}
 
 	.mobile-menu-help {
 		margin: 0.5rem 0 0;
@@ -627,3 +653,4 @@
 		background: rgba(255, 255, 255, 0.06);
 	}
 </style>
+
