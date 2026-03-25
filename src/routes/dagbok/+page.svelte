@@ -589,7 +589,7 @@
 	<PortalSubnav
 		active="dagbok"
 		title="Din dagbok"
-		description="Dagbok är din plats för dagen. Välj mellan att skriva själv eller ta stöd av AI-baserad reflektion."
+		description="Dagbok är din plats för dagen. Välj mellan att skriva själv eller låta en röst guida dig vidare."
 	/>
 
 	<div class="auth-shell">
@@ -603,7 +603,7 @@
 					<section class="auth-panel diary-paths">
 						<h2 class="text-base font-semibold">Välj hur du vill börja</h2>
 						<p class="mt-2 text-sm auth-muted">
-							Du kan skriva fritt i din personliga dagbok eller börja med en AI-baserad reflektion.
+							Du kan skriva fritt i din personliga dagbok eller välja en röst som guidar dig genom dagen.
 						</p>
 						<div class="diary-path-grid mt-3">
 							<a href="/dagbok#skriv-sjalv" class="diary-path-card">
@@ -611,8 +611,9 @@
 								<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
 							</a>
 							<a href="/dagars-avtryck" class="diary-path-card">
-								<span class="diary-path-title">AI-baserad reflektion</span>
-								<span class="diary-path-copy">Guidad reflektion som blir ett dagboksinlägg.</span>
+								<span class="diary-path-title">Dagbok med röster</span>
+								<span class="diary-path-copy">Välj mellan Grubblaren, Filosofen, Psykologen och Quest log.</span>
+								<span class="diary-path-voices">Grubblaren · Filosofen · Psykologen · Quest log</span>
 							</a>
 						</div>
 					</section>
@@ -1004,6 +1005,12 @@
 		font-size: 0.82rem;
 		line-height: 1.55;
 		color: hsl(var(--muted-foreground));
+	}
+
+	.diary-path-voices {
+		font-size: 0.78rem;
+		line-height: 1.5;
+		color: hsl(var(--foreground) / 0.74);
 	}
 
 	.diary-side {

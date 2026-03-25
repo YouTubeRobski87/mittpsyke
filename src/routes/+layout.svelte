@@ -37,7 +37,7 @@
 
 	const signedInDiaryNavItems: NavItem[] = [
 		{ href: '/dagbok', label: 'Skriv själv' },
-		{ href: '/dagars-avtryck', label: 'AI-baserad reflektion' }
+		{ href: '/dagars-avtryck', label: 'Dagbok med röster' }
 	];
 
 	const signedInPortalNavItems: NavItem[] = [

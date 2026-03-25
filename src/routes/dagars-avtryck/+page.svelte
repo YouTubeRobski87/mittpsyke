@@ -41,6 +41,9 @@
 
 	const DEFAULT_TONE_ID = activeStorifyTones[0]?.id ?? 'therapist';
 	let selectedTone = $state(DEFAULT_TONE_ID);
+	const selectedToneMeta = $derived(
+		activeStorifyTones.find((tone) => tone.id === selectedTone) ?? activeStorifyTones[0]
+	);
 
 	// --- Genereringtillstånd ---
 
@@ -138,7 +141,8 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					messages: newMessages.map((m) => ({ role: m.role, content: m.content }))
+					messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
+					selectedTone
 				})
 			});
 
@@ -313,8 +317,8 @@
 </script>
 
 <svelte:head>
-	<title>AI-baserad reflektion | Dagbok | MittPsyke</title>
-	<meta name="description" content="En AI-ledd intervju om din dag – omvandlas till ett personligt dagboksinlägg." />
+	<title>Dagbok med röster | MittPsyke</title>
+	<meta name="description" content="Välj en röst som Grubblaren, Filosofen, Psykologen eller Quest log och låt en guidad intervju bli ett dagboksinlägg." />
 </svelte:head>
 
 <main class="auth-page">
@@ -322,9 +326,9 @@
 
 		<!-- Sidhuvud -->
 		<div class="auth-panel page-header">
-			<h1 class="page-title">AI-baserad reflektion</h1>
+			<h1 class="page-title">Dagbok med röster</h1>
 			<p class="auth-muted header-desc">
-				Guidad reflektion guidar dig genom en kort reflektion och skapar sedan ett personligt dagboksinlägg utifrån din röst och den kategori du väljer.
+				Välj en röst, svara i lugn takt och låt intervjun bli ett personligt dagboksinlägg.
 			</p>
 			<p class="auth-muted header-context">
 				En del av <a href="/dagbok" class="header-link">Dagbok</a>. Vill du skriva fritt i stället? Välj
@@ -356,8 +360,29 @@
 			<!-- FAS: Tom start -->
 			{#if phase === 'empty'}
 				<section class="auth-panel empty-panel">
+					<div class="voice-intro">
+						<p class="voice-kicker">Välj röst först</p>
+						<div class="voice-grid" aria-label="Välj röst för frågeflödet">
+							{#each activeStorifyTones as tone}
+								<button
+									type="button"
+									class="tone-btn voice-btn"
+									class:selected={selectedTone === tone.id}
+									onclick={() => (selectedTone = tone.id)}
+									aria-pressed={selectedTone === tone.id}
+									title={tone.description}
+								>
+									<span class="tone-emoji">{tone.emoji}</span>
+									<span class="tone-label">{tone.label}</span>
+								</button>
+							{/each}
+						</div>
+						<p class="voice-copy auth-muted">
+							Vald röst: {selectedToneMeta?.label}. Frågorna och dagboksinlägget följer samma ton.
+						</p>
+					</div>
 					<p class="empty-prompt">
-						Hej! Berätta – hur var din dag?
+						{selectedToneMeta?.label} börjar: hur var din dag?
 					</p>
 					<div class="input-row">
 						<textarea
@@ -438,8 +463,8 @@
 			<!-- FAS: Tonval -->
 			{:else if phase === 'tone-selection'}
 				<section class="auth-panel">
-					<h2 class="section-title">Välj en ton för ditt inlägg</h2>
-					<p class="auth-muted tone-intro">Hur ska din dag låta?</p>
+					<h2 class="section-title">Justera rösten innan du skapar inlägget</h2>
+					<p class="auth-muted tone-intro">Frågorna har gått i {selectedToneMeta?.label?.toLowerCase() ?? 'vald'} ton. Du kan byta innan dagboken skapas.</p>
 
 					<div class="tone-grid">
 						{#each activeStorifyTones as tone}
@@ -580,6 +605,34 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+	}
+
+	.voice-intro {
+		display: grid;
+		gap: 0.75rem;
+	}
+
+	.voice-kicker {
+		margin: 0;
+		font-size: 0.76rem;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.voice-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+		gap: 0.4rem;
+	}
+
+	.voice-btn {
+		min-height: 5.25rem;
+	}
+
+	.voice-copy {
+		margin: 0;
+		font-size: 0.86rem;
 	}
 
 	.empty-prompt {
