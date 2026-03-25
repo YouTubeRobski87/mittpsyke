@@ -9,7 +9,8 @@
       "Bash(node -e \":*)",
       "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''src/routes/sitemap.xml/+server.ts'',''utf-8''\\);console.log\\(c.includes\\(\"\"''guider''\"\"\\)\\);console.log\\(c.length\\);\")",
       "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''src/routes/sitemap.xml/+server.ts'',''utf-8''\\);fs.writeFileSync\\(''tmp_check.txt'',c.slice\\(700,900\\)\\);\")",
-      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''src/routes/sitemap.xml/+server.ts'',''utf-8''\\);fs.writeFileSync\\(''tmp_check.txt'',c.slice\\(550,750\\)\\);\")"
+      "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''src/routes/sitemap.xml/+server.ts'',''utf-8''\\);fs.writeFileSync\\(''tmp_check.txt'',c.slice\\(550,750\\)\\);\")",
+      "Bash(winget upgrade:*)"
     ]
   }
 }
