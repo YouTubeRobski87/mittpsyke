@@ -322,7 +322,7 @@
 
 		<!-- Sidhuvud -->
 		<div class="auth-panel page-header">
-			<h1 class="page-title">Guidad reflektion</h1>
+			<h1 class="page-title">AI-baserad reflektion</h1>
 			<p class="auth-muted header-desc">
 				Guidad reflektion guidar dig genom en kort reflektion och skapar sedan ett personligt dagboksinlägg utifrån din röst och den kategori du väljer.
 			</p>
