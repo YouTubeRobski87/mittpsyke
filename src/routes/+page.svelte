@@ -664,7 +664,7 @@
 			justify-self: end;
 			align-self: center;
 			width: min(400px, 100%);
-			margin-top: clamp(1.75rem, 4vw, 3.75rem);
+			margin-top: clamp(0.85rem, 2.2vw, 2rem);
 			padding: 1rem;
 			background: rgba(17, 25, 33, 0.68);
 			border: 1px solid rgba(255, 255, 255, 0.14);
