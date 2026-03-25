@@ -30,11 +30,14 @@
 	};
 
 	const signedInPrimaryNavItems: NavItem[] = [
-		{ href: '/dagbok', label: 'Dagbok' },
-		{ href: '/dagars-avtryck', label: 'Guidad reflektion' },
 		{ href: '/forum', label: 'Forum' },
 		{ href: '/guider', label: 'Guider' },
-		{ href: '/ovningar', label: '√ñvningar' }
+		{ href: '/ovningar', label: '÷vningar' }
+	];
+
+	const signedInDiaryNavItems: NavItem[] = [
+		{ href: '/dagbok', label: 'Skriv sj‰lv' },
+		{ href: '/dagars-avtryck', label: 'AI-baserad reflektion' }
 	];
 
 	const signedInPortalNavItems: NavItem[] = [
@@ -309,8 +312,17 @@
 				>
 					Hem
 				</a>
-								<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
+				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
+						<details class="nav-info-menu">
+							<summary class="nav-info-trigger">Dagbok</summary>
+							<div class="nav-info-panel">
+								<p class="nav-info-copy">V‰lj hur du vill bearbeta dagen just nu.</p>
+								{#each signedInDiaryNavItems as item}
+									<a href={item.href} class="nav-info-link">{item.label}</a>
+								{/each}
+							</div>
+						</details>
 						{#each signedInPrimaryNavItems as item}
 							<a href={item.href} class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">{item.label}</a>
 						{/each}
@@ -322,7 +334,8 @@
 									<a href={item.href} class="nav-info-link">{item.label}</a>
 								{/each}
 							</div>
-						</details>					{:else}
+						</details>
+					{:else}
 						{#each guestPrimaryNavItems as item}
 							<a
 								href={item.href}
@@ -333,13 +346,6 @@
 								{item.label}
 							</a>
 						{/each}
-						<a href="/chat" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Chatta</a>
-						<a href="/guider" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Guider</a>
-						<a href="/ovningar" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">√ñvningar</a>
-						<a href="/forum" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Forum</a>
-						<a href="/blogg" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Blogg</a>
-						<a href="/om-mittpsyke" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Om MittPsyke</a>
-						<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Akut hj√§lp (St√∂dlinjer)</a>
 					{/if}
 				</nav>
 			</div>
@@ -379,9 +385,14 @@
 		</div>
 
 		{#if mobileMenuOpen}
-						<div id="mobile-menu" class="mobile-menu-panel lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3" role="navigation" aria-label="Mobilmeny">
+			<div id="mobile-menu" class="mobile-menu-panel lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3" role="navigation" aria-label="Mobilmeny">
 				{#if user}
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `V‰lkommen, ${displayName}` : 'V‰lkommen tillbaka'}</p>
+					<p class="mobile-menu-section-title text-xs opacity-55">Dagbok</p>
+					{#each signedInDiaryNavItems as item}
+						<a href={item.href} class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>{item.label}</a>
+					{/each}
+					<p class="mobile-menu-section-title text-xs opacity-55">Utforska</p>
 					{#each signedInPrimaryNavItems as item}
 						<a href={item.href} class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>{item.label}</a>
 					{/each}
@@ -394,7 +405,8 @@
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
 						class="mobile-menu-link text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
-					>Logga ut</button>				{:else}
+					>Logga ut</button>
+				{:else}
 					{#each guestPrimaryNavItems as item}
 						<a
 							href={item.href}
@@ -406,16 +418,6 @@
 							{item.label}
 						</a>
 					{/each}
-					<a href="mailto:kontakt@mittpsyke.se" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
-					<a href="/login" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Logga in</a>
-					<a href="/register" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Registrera</a>
-					<a href="/chat" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Chatta</a>
-					<a href="/guider" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Guider</a>
-					<a href="/ovningar" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>√ñvningar</a>
-					<a href="/forum" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Forum</a>
-					<a href="/blogg" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Blogg</a>
-					<a href="/om-mittpsyke" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
-					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Akut hj√§lp (St√∂dlinjer)</a>
 					<a href="mailto:kontakt@mittpsyke.se" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
 					<a href="/login" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Logga in</a>
 					<a href="/register" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Registrera</a>

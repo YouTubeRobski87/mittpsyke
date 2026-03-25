@@ -313,7 +313,7 @@
 </script>
 
 <svelte:head>
-	<title>Guidad reflektion | MittPsyke</title>
+	<title>AI-baserad reflektion | Dagbok | MittPsyke</title>
 	<meta name="description" content="En AI-ledd intervju om din dag – omvandlas till ett personligt dagboksinlägg." />
 </svelte:head>
 
@@ -325,6 +325,10 @@
 			<h1 class="page-title">Guidad reflektion</h1>
 			<p class="auth-muted header-desc">
 				Guidad reflektion guidar dig genom en kort reflektion och skapar sedan ett personligt dagboksinlägg utifrån din röst och den kategori du väljer.
+			</p>
+			<p class="auth-muted header-context">
+				En del av <a href="/dagbok" class="header-link">Dagbok</a>. Vill du skriva fritt i stället? Välj
+				<a href="/dagbok#skriv-sjalv" class="header-link">Skriv själv</a>.
 			</p>
 		</div>
 
@@ -552,6 +556,17 @@
 	.header-desc {
 		margin: 0.3rem 0 0;
 		font-size: 0.95rem;
+	}
+
+	.header-context {
+		margin: 0.4rem 0 0;
+		font-size: 0.86rem;
+	}
+
+	.header-link {
+		color: inherit;
+		text-decoration: underline;
+		text-underline-offset: 2px;
 	}
 
 	/* Flikar */

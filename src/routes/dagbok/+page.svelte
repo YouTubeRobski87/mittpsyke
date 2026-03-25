@@ -589,7 +589,7 @@
 	<PortalSubnav
 		active="dagbok"
 		title="Din dagbok"
-		description="Skriv i lugn och ro, i din egen takt. Det räcker med några ord."
+		description="Dagbok är din plats för dagen. Välj mellan att skriva själv eller ta stöd av AI-baserad reflektion."
 	/>
 
 	<div class="auth-shell">
@@ -600,7 +600,24 @@
 		{:else}
 			<div class="diary-layout">
 				<div class="diary-main">
-					<section class="auth-panel auth-panel-accent">
+					<section class="auth-panel diary-paths">
+						<h2 class="text-base font-semibold">Välj hur du vill börja</h2>
+						<p class="mt-2 text-sm auth-muted">
+							Du kan skriva fritt i din personliga dagbok eller börja med en AI-baserad reflektion.
+						</p>
+						<div class="diary-path-grid mt-3">
+							<a href="/dagbok#skriv-sjalv" class="diary-path-card">
+								<span class="diary-path-title">Skriv själv</span>
+								<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
+							</a>
+							<a href="/dagars-avtryck" class="diary-path-card">
+								<span class="diary-path-title">AI-baserad reflektion</span>
+								<span class="diary-path-copy">Guidad reflektion som blir ett dagboksinlägg.</span>
+							</a>
+						</div>
+					</section>
+
+					<section class="auth-panel auth-panel-accent" id="skriv-sjalv">
 						<h2 class="text-base font-semibold">Nytt inlägg</h2>
 						<p class="mt-2 text-sm auth-muted">
 							Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
@@ -947,6 +964,49 @@
 	.diary-main {
 		display: grid;
 		gap: 0.85rem;
+	}
+
+	.diary-paths {
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.diary-path-grid {
+		display: grid;
+		gap: 0.65rem;
+	}
+
+	.diary-path-card {
+		display: grid;
+		gap: 0.2rem;
+		padding: 0.8rem 0.9rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: var(--radius-input);
+		background: hsl(var(--surface-soft));
+		text-decoration: none;
+		transition: border-color 150ms ease, box-shadow 150ms ease;
+	}
+
+	.diary-path-card:hover {
+		border-color: hsl(var(--foreground) / 0.18);
+		box-shadow: 0 5px 14px rgba(0, 0, 0, 0.05);
+	}
+
+	.diary-path-card:focus-visible {
+		outline: 2px solid hsl(var(--foreground) / 0.18);
+		outline-offset: 2px;
+	}
+
+	.diary-path-title {
+		font-size: 0.92rem;
+		font-weight: 600;
+		color: hsl(var(--foreground));
+	}
+
+	.diary-path-copy {
+		font-size: 0.82rem;
+		line-height: 1.55;
+		color: hsl(var(--muted-foreground));
 	}
 
 	.diary-side {
@@ -1378,9 +1438,14 @@
 			align-items: start;
 		}
 
+		.diary-path-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
 		.diary-side {
 			position: sticky;
 			top: 0.7rem;
 		}
 	}
 </style>
+
