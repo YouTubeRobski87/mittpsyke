@@ -560,6 +560,7 @@
 		.hero-content {
 			grid-column: 1;
 			justify-self: start;
+			align-self: start;
 			width: min(560px, 100%);
 			text-align: center;
 			padding: 1.3rem 1.6rem 1.6rem;
@@ -661,8 +662,9 @@
 		.hero-forum-rail {
 			grid-column: 3;
 			justify-self: end;
-			align-self: start;
+			align-self: center;
 			width: min(400px, 100%);
+			margin-top: clamp(1.75rem, 4vw, 3.75rem);
 			padding: 1rem;
 			background: rgba(17, 25, 33, 0.68);
 			border: 1px solid rgba(255, 255, 255, 0.14);
@@ -1424,6 +1426,8 @@
 			.hero-forum-rail {
 				grid-column: auto;
 				justify-self: stretch;
+				align-self: start;
+				margin-top: 0;
 				width: 100%;
 			}
 
