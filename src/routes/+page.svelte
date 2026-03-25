@@ -26,6 +26,7 @@
 	} = $props();
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
+	const homepageForumThreads = data.latestForumThreads ?? [];
 	const entryPaths = [
 		{
 			title: 'Jag behöver stöd nu',
@@ -217,9 +218,9 @@
 				<p class="hero-forum-intro">
 					Här kan du läsa några av de trådar som är mest levande just nu, i lugn och ro.
 				</p>
-				{#if data.latestForumThreads?.length}
+				{#if homepageForumThreads.length > 0}
 					<div class="hero-forum-thread-preview" aria-label="Aktuella forumtrådar">
-						{#each data.latestForumThreads as thread}
+						{#each homepageForumThreads as thread}
 							<article class="hero-forum-thread-card">
 								<p class="hero-forum-meta hero-forum-meta--top">
 									{thread.categoryName} · aktiv {formatForumTime(thread.active_at || thread.created_at)}
