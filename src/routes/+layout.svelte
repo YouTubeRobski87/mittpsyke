@@ -314,27 +314,11 @@
 				</a>
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
-						<details class="nav-info-menu nav-info-menu-left">
-							<summary class="nav-info-trigger">Dagbok</summary>
-							<div class="nav-info-panel">
-								<p class="nav-info-copy">Välj hur du vill bearbeta dagen just nu.</p>
-								{#each signedInDiaryNavItems as item}
-									<a href={item.href} class="nav-info-link">{item.label}</a>
-								{/each}
-							</div>
-						</details>
+						<a href="/dagbok" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Dagbok</a>
 						{#each signedInPrimaryNavItems as item}
 							<a href={item.href} class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">{item.label}</a>
 						{/each}
-						<details class="nav-info-menu">
-							<summary class="nav-info-trigger">Min portal</summary>
-							<div class="nav-info-panel">
-								<p class="nav-info-copy">Här ligger dina personliga delar samlade när du är inloggad.</p>
-								{#each signedInPortalNavItems as item}
-									<a href={item.href} class="nav-info-link">{item.label}</a>
-								{/each}
-							</div>
-						</details>
+						<a href="/dashboard" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Min portal</a>
 					{:else}
 						{#each guestPrimaryNavItems as item}
 							<a
@@ -583,83 +567,5 @@
 		margin: 0.5rem 0 0;
 	}
 
-	.nav-info-menu {
-		position: relative;
-	}
-
-	.nav-info-trigger {
-		list-style: none;
-		cursor: pointer;
-		font-size: 0.875rem;
-		line-height: 1.25rem;
-		opacity: 0.8;
-		transition: opacity 140ms ease;
-	}
-
-	.nav-info-trigger:hover {
-		opacity: 1;
-		text-decoration: underline;
-	}
-
-	.nav-info-trigger::-webkit-details-marker {
-		display: none;
-	}
-
-	.nav-info-panel {
-		position: absolute;
-		top: calc(100% + 0.55rem);
-		right: 0;
-		left: auto;
-		min-width: 11rem;
-		max-width: min(20rem, calc(100vw - 1.5rem));
-		display: grid;
-		gap: 0.2rem;
-		padding: 0.55rem;
-		border-radius: 0.85rem;
-		border: 1px solid rgba(0, 0, 0, 0.08);
-		background: rgba(255, 255, 255, 0.96);
-		box-shadow: 0 14px 32px rgba(15, 23, 42, 0.14);
-		backdrop-filter: blur(8px);
-	}
-
-	.nav-info-menu-left .nav-info-panel {
-		left: 0;
-		right: auto;
-	}
-
-	.nav-info-copy {
-		margin: 0;
-		padding: 0.15rem 0.15rem 0;
-		font-size: 0.78rem;
-		line-height: 1.45;
-		color: hsl(var(--muted-foreground));
-	}
-
-	.nav-info-link {
-		display: block;
-		padding: 0.45rem 0.55rem;
-		border-radius: 0.65rem;
-		font-size: 0.9rem;
-		line-height: 1.4;
-		color: inherit;
-		text-decoration: none;
-		opacity: 0.86;
-		transition: background-color 140ms ease, opacity 140ms ease;
-	}
-
-	.nav-info-link:hover {
-		background: rgba(15, 23, 42, 0.05);
-		opacity: 1;
-	}
-
-	:global(.dark) .nav-info-panel {
-		border-color: rgba(255, 255, 255, 0.1);
-		background: rgba(15, 23, 42, 0.96);
-		box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
-	}
-
-	:global(.dark) .nav-info-link:hover {
-		background: rgba(255, 255, 255, 0.06);
-	}
 </style>
 

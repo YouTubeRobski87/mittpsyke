@@ -1,168 +1,127 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { trackHoroscopeCTAClick } from '$lib/analytics';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
-	import Greeting from '$lib/components/dashboard/Greeting.svelte';
-	import MoodChart from '$lib/components/MoodChart.svelte';
-	import QuickActions from '$lib/components/dashboard/QuickActions.svelte';
-	import { supabase } from '$lib/supabase';
-	import type { User } from '@supabase/supabase-js';
 
-	type MoodPoint = {
-		date: string;
-		mood: number;
+	type DashboardData = {
+		diaryPreview: {
+			id: string | null;
+			snippet: string;
+			dateLabel: string;
+			hasEntry: boolean;
+		};
+		progressPreview: {
+			currentStreak: number;
+			weeklyEntries: number;
+			totalEntries: number;
+			summary: string;
+		};
+		communityPreview: {
+			id: string | null;
+			snippet: string;
+			dateLabel: string;
+			replyCount: number | null;
+			hasActivity: boolean;
+		};
+		settingsPreview: {
+			displayName: string | null;
+			themeLabel: string;
+			weeklyGoalLabel: string;
+			dashboardFocusLabel: string;
+		};
 	};
 
-	let { data } = $props<{ data: { moodSeries: MoodPoint[] } }>();
+	let { data } = $props<{ data: DashboardData }>();
 
-	let user = $state<User | null>(null);
-	let loading = $state(true);
-	let zodiacSign = $state('');
-	let horoscopeText = $state('');
-	let horoscopeLoading = $state(false);
-	let horoscopeUnavailable = $state(false);
-	let greetingName = $state('igen');
-	const moodSeries = $derived(data?.moodSeries ?? []);
-
-	function cleanName(value: unknown): string {
-		if (typeof value !== 'string') return '';
-		const trimmed = value.trim();
-		if (!trimmed) return '';
-		// Never show email-like values in greeting.
-		if (trimmed.includes('@')) return '';
-		return trimmed;
-	}
-
-	function getZodiacSign(dateStr: string): string {
-		if (!dateStr) return '';
-		const d = new Date(dateStr);
-		if (Number.isNaN(d.getTime())) return '';
-		const m = d.getMonth() + 1;
-		const day = d.getDate();
-		if ((m === 3 && day >= 21) || (m === 4 && day <= 19)) return 'Väduren';
-		if ((m === 4 && day >= 20) || (m === 5 && day <= 20)) return 'Oxen';
-		if ((m === 5 && day >= 21) || (m === 6 && day <= 20)) return 'Tvillingarna';
-		if ((m === 6 && day >= 21) || (m === 7 && day <= 22)) return 'Kräftan';
-		if ((m === 7 && day >= 23) || (m === 8 && day <= 22)) return 'Lejonet';
-		if ((m === 8 && day >= 23) || (m === 9 && day <= 22)) return 'Jungfrun';
-		if ((m === 9 && day >= 23) || (m === 10 && day <= 22)) return 'Vågen';
-		if ((m === 10 && day >= 23) || (m === 11 && day <= 21)) return 'Skorpionen';
-		if ((m === 11 && day >= 22) || (m === 12 && day <= 21)) return 'Skytten';
-		if ((m === 12 && day >= 22) || (m === 1 && day <= 19)) return 'Stenbocken';
-		if ((m === 1 && day >= 20) || (m === 2 && day <= 18)) return 'Vattumannen';
-		if ((m === 2 && day >= 19) || (m === 3 && day <= 20)) return 'Fiskarna';
-		return '';
-	}
-
-	async function loadDashboard() {
-		try {
-			const {
-				data: { session }
-			} = await supabase.auth.getSession();
-
-			const { data: userData } = await supabase.auth.getUser();
-			user = userData.user ?? session?.user ?? null;
-
-			const profileDisplayName = user?.id
-				? await supabase
-						.from('profiles')
-						.select('display_name')
-						.eq('id', user.id)
-						.maybeSingle()
-						.then(({ data }) => cleanName(data?.display_name))
-				: '';
-
-			const metadataDisplayName = cleanName(user?.user_metadata?.display_name);
-			const metadataFullName = cleanName(user?.user_metadata?.full_name);
-			const metadataName = cleanName(user?.user_metadata?.name);
-
-			greetingName =
-				metadataDisplayName ||
-				profileDisplayName ||
-				metadataFullName ||
-				metadataName ||
-				'igen';
-
-			const birthday =
-				typeof user?.user_metadata?.birthday === 'string'
-					? user.user_metadata.birthday
-					: '';
-
-			zodiacSign = getZodiacSign(birthday);
-			horoscopeUnavailable = false;
-
-			if (zodiacSign) {
-				horoscopeLoading = true;
-				const response = await fetch('/api/horoscope', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({ sign: zodiacSign })
-				});
-				const payload = await response.json().catch(() => null);
-				horoscopeText = typeof payload?.text === 'string' ? payload.text : '';
-				horoscopeUnavailable = horoscopeText.length === 0;
-			}
-		} finally {
-			horoscopeLoading = false;
-			loading = false;
-		}
-	}
-
-	onMount(async () => {
-		await loadDashboard();
-	});
+	const diaryPreview = $derived(data.diaryPreview);
+	const progressPreview = $derived(data.progressPreview);
+	const communityPreview = $derived(data.communityPreview);
+	const settingsPreview = $derived(data.settingsPreview);
+	const introName = $derived(settingsPreview.displayName ? `, ${settingsPreview.displayName}` : '');
 </script>
 
 <main class="auth-page">
 	<PortalSubnav
 		active="dashboard"
 		title="Min portal"
-		description="En lugn startsida med dina viktigaste vägar vidare."
+		description="Här finns dina viktigaste delar samlade i en lugn och tydlig översikt."
 	/>
 
 	<div class="auth-shell">
-		{#if loading}
-			<section class="auth-panel">
-				<p class="auth-muted">Laddar...</p>
-			</section>
-		{:else}
-			<section class="auth-panel">
-				<Greeting {user} {greetingName} />
-			</section>
+		<section class="auth-panel auth-panel-accent portal-status" aria-label="Portalöversikt">
+			<p class="portal-status-kicker">Du är här nu</p>
+			<h2>Min portal{introName}</h2>
+			<p>
+				Här ser du små glimtar av dagbok, framsteg, gemenskap och inställningar utan att något tar över.
+			</p>
+		</section>
 
-			<section class="auth-panel auth-panel-accent">
-				<p class="horoscope-kicker">Dagens tanke</p>
-				{#if horoscopeLoading}
-					<p class="auth-muted">Hämtar horoskop...</p>
-				{:else if zodiacSign && horoscopeText}
-					<p class="horoscope-sign">🔮 {zodiacSign}</p>
-					<p class="horoscope-text">{horoscopeText}</p>
-				{:else if zodiacSign && horoscopeUnavailable}
-					<p class="auth-muted">Dagens horoskop kunde inte hämtas just nu. Du kan ändå skriva några ord.</p>
-				{:else}
-					<p class="auth-muted">Lägg till födelsedag i inställningar om du vill få en daglig horoskoprad här.</p>
+		<section class="portal-grid" aria-label="Snabb översikt">
+			<article class="auth-panel portal-card">
+				<div class="portal-card-head">
+					<p class="portal-card-kicker">Dagbok</p>
+					{#if diaryPreview.hasEntry && diaryPreview.dateLabel}
+						<span class="portal-meta">{diaryPreview.dateLabel}</span>
+					{/if}
+				</div>
+				<h2>Fortsätt där du var</h2>
+				<p class="portal-copy">{diaryPreview.snippet}</p>
+				<a href="/dagbok" class="auth-button">Öppna dagboken</a>
+			</article>
+
+			<article class="auth-panel portal-card">
+				<div class="portal-card-head">
+					<p class="portal-card-kicker">Framsteg</p>
+					<span class="portal-meta">
+						{progressPreview.currentStreak} dag{progressPreview.currentStreak === 1 ? '' : 'ar'} i följd
+					</span>
+				</div>
+				<h2>Små steg som syns</h2>
+				<p class="portal-copy">{progressPreview.summary}</p>
+				<div class="portal-stat-row" aria-label="Sammanfattning av framsteg">
+					<span>{progressPreview.weeklyEntries} denna vecka</span>
+					<span>{progressPreview.totalEntries} totalt</span>
+				</div>
+				<a href="/framsteg" class="auth-button">Se framsteg</a>
+			</article>
+
+			<article class="auth-panel portal-card">
+				<div class="portal-card-head">
+					<p class="portal-card-kicker">Gemenskap</p>
+					{#if communityPreview.hasActivity && communityPreview.dateLabel}
+						<span class="portal-meta">{communityPreview.dateLabel}</span>
+					{/if}
+				</div>
+				<h2>Det rör sig stilla</h2>
+				<p class="portal-copy">{communityPreview.snippet}</p>
+				{#if communityPreview.hasActivity && communityPreview.replyCount !== null}
+					<p class="portal-subtle">
+						{communityPreview.replyCount} svar i tråden just nu
+					</p>
 				{/if}
-				<a
-					href="/dagbok?from=horoscope"
-					class="auth-button primary mt-3"
-					onclick={trackHoroscopeCTAClick}
-				>
-					Vill du skriva några ord om det här?
-				</a>
-			</section>
+				<a href="/dashboard/gemenskap" class="auth-button">Till gemenskapen</a>
+			</article>
 
-			<section class="auth-panel auth-panel-accent">
-				<h2 class="mood-title">Ditt humör – senaste 7 dagarna</h2>
-				<MoodChart data={moodSeries} />
-			</section>
-
-			<QuickActions />
-		{/if}
+			<article class="auth-panel portal-card">
+				<div class="portal-card-head">
+					<p class="portal-card-kicker">Inställningar</p>
+					<span class="portal-meta">{settingsPreview.themeLabel}</span>
+				</div>
+				<h2>Det som formar din portal</h2>
+				<p class="portal-copy">
+					Mål: {settingsPreview.weeklyGoalLabel}. Fokus på startsidan: {settingsPreview.dashboardFocusLabel}.
+				</p>
+				<a href="/dashboard/installningar" class="auth-button">Öppna inställningar</a>
+			</article>
+		</section>
 	</div>
 </main>
 
 <style>
-	.horoscope-kicker {
+	.portal-status {
+		padding: 1.15rem;
+	}
+
+	.portal-status-kicker,
+	.portal-card-kicker {
 		margin: 0;
 		font-size: 0.76rem;
 		letter-spacing: 0.05em;
@@ -170,20 +129,68 @@
 		color: hsl(var(--muted-foreground));
 	}
 
-	.horoscope-sign {
-		margin: 0.45rem 0 0;
-		font-size: 0.9rem;
-		font-family: var(--font-heading);
+	.portal-status h2,
+	.portal-card h2 {
+		margin: 0.4rem 0 0;
+		font-size: 1.15rem;
 	}
 
-	.horoscope-text {
-		margin: 0.4rem 0 0;
+	.portal-status p:last-child {
+		margin: 0.45rem 0 0;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.portal-grid {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.portal-card {
+		display: grid;
+		gap: 0.85rem;
+		align-content: start;
+		min-height: 100%;
+	}
+
+	.portal-card-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+	}
+
+	.portal-meta,
+	.portal-subtle,
+	.portal-stat-row {
+		color: hsl(var(--muted-foreground));
+		font-size: 0.92rem;
+	}
+
+	.portal-copy {
+		margin: 0;
 		line-height: 1.6;
 	}
 
-	.mood-title {
-		margin: 0 0 0.6rem;
-		font-size: 1rem;
-		font-weight: 600;
+	.portal-subtle {
+		margin: -0.35rem 0 0;
+	}
+
+	.portal-stat-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.85rem;
+	}
+
+	@media (max-width: 760px) {
+		.portal-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.portal-card-head {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 0.25rem;
+		}
 	}
 </style>
