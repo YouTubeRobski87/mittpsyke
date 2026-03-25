@@ -551,6 +551,7 @@
 			--hero-main-width: 560px;
 			--hero-rail-gap: clamp(0.8rem, 1.6vw, 1.3rem);
 			--hero-rail-width: clamp(300px, 26vw, 380px);
+			--hero-rail-edge: clamp(0.85rem, 2.2vw, 1.9rem);
 			position: relative;
 			z-index: 2;
 			width: min(1280px, 100%);
@@ -665,10 +666,17 @@
 		.hero-forum-rail {
 			position: absolute;
 			top: clamp(0.75rem, 2vw, 1.5rem);
-			left: calc(50% + (var(--hero-main-width) / 2) + var(--hero-rail-gap));
+			right: var(--hero-rail-edge);
 			width: min(
 				var(--hero-rail-width),
-				calc(100% - (50% + (var(--hero-main-width) / 2) + var(--hero-rail-gap)))
+				calc(
+					100% -
+						(
+							(50% + (var(--hero-main-width) / 2)) +
+								var(--hero-rail-gap) +
+								var(--hero-rail-edge)
+						)
+				)
 			);
 			max-width: 380px;
 			margin-top: 0;
@@ -1433,7 +1441,7 @@
 			.hero-forum-rail {
 				position: static;
 				top: auto;
-				left: auto;
+				right: auto;
 				grid-column: auto;
 				justify-self: stretch;
 				align-self: start;
