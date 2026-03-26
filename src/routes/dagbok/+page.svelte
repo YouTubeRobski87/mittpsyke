@@ -612,8 +612,8 @@
 							</a>
 							<a href="/dagars-avtryck" class="diary-path-card">
 								<span class="diary-path-title">Dagbok med röster</span>
-								<span class="diary-path-copy">Välj mellan Grubblaren, Filosofen, Psykologen och Quest log.</span>
-								<span class="diary-path-voices">Grubblaren · Filosofen · Psykologen · Quest log</span>
+								<span class="diary-path-copy">Välj bland nio röster — från Filosofen till Sportkommentatorn.</span>
+								<span class="diary-path-voices">Filosofen · Psykologen · Grubblaren · Quest log · Klassisk dagbok · Sportkommentator · AI-robot · Livscoach · Cyniker</span>
 							</a>
 						</div>
 					</section>

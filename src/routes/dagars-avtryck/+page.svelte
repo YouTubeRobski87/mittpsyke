@@ -318,7 +318,7 @@
 
 <svelte:head>
 	<title>Dagbok med röster | MittPsyke</title>
-	<meta name="description" content="Välj en röst som Grubblaren, Filosofen, Psykologen eller Quest log och låt en guidad intervju bli ett dagboksinlägg." />
+	<meta name="description" content="Välj bland nio röster — Filosofen, Psykologen, Grubblaren, Quest log, Klassisk dagbok, Sportkommentator, AI-robot, Livscoach eller Cyniker — och låt en guidad intervju bli ett dagboksinlägg." />
 </svelte:head>
 
 <main class="auth-page">
