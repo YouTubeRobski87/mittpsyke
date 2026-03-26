@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { blogPosts } from '$lib/data/blogg';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import ResearchEvidenceCard from '$lib/components/ResearchEvidenceCard.svelte';
 	import { portals } from '$lib/data/portals';
@@ -27,70 +26,71 @@
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
 	const homepageForumThreads = $derived(data.latestForumThreads ?? []);
+
 	const entryPaths = [
 		{
-			title: 'Jag behöver stöd nu',
-			description: 'Få ett lugnt första steg direkt, utan att behöva formulera allt perfekt.',
+			title: 'Skriv av dig',
+			description: 'Börja direkt med AI-stöd — anonymt eller med konto.',
 			href: '/skriv',
-			cta: 'Börja anonymt'
+			cta: 'Börja skriva'
 		},
 		{
-			title: 'Jag vill förstå mitt mående',
-			description: 'Läs guider om ångest, stress, trauma och andra vanliga tillstånd.',
+			title: 'Läs guider',
+			description: 'Förstå ångest, stress, trauma och andra vanliga tillstånd.',
 			href: '/guider',
 			cta: 'Läs guider'
 		},
 		{
-			title: 'Jag vill ha konkreta steg',
-			description: 'Börja med enkla övningar och små handlingar som går att göra idag.',
+			title: 'Prova övningar',
+			description: 'Enkla övningar och små handlingar du kan göra idag.',
 			href: '/ovningar',
 			cta: 'Se övningar'
 		},
 		{
-			title: 'Jag vill följa min utveckling',
-			description: 'Skriv dagbok, spara reflektioner och se din resa över tid.',
+			title: 'Följ ditt mående',
+			description: 'Dagbok, humörspårning och framsteg — över tid.',
 			href: '/register',
 			cta: 'Skapa konto'
 		}
 	];
-	const featureHighlights = [
+
+	const supportPoints = [
 		{
-			title: 'Journalföring',
-			description: 'Skriv av dig i lugn och ro och få mer struktur i tankar och känslor.',
-			href: '/journalforing',
-			cta: 'Läs mer'
+			label: 'Anonymt',
+			text: 'Skriv direkt utan konto. Ingen profil skapas.'
+		},
+		{
+			label: 'I din takt',
+			text: 'Börja litet. Spara och bygg vidare när du är redo.'
+		},
+		{
+			label: 'Inte vård',
+			text: 'Stöd för reflektion i vardagen — inte ersättning för professionell hjälp.'
+		}
+	];
+
+	const features = [
+		{
+			title: 'AI-samtal',
+			description: 'Skriv fritt och få lugna, stödjande svar som hjälper dig sortera tankar.',
+			href: '/skriv'
+		},
+		{
+			title: 'Dagbok med röster',
+			description: 'Berätta om din dag och få den formulerad i en röst du väljer — filosofisk, poetisk eller vardaglig.',
+			href: '/dagbok'
 		},
 		{
 			title: 'Humörspårning',
 			description: 'Följ ditt mående över tid och upptäck mönster i vardagen.',
-			href: '/humorsparning',
-			cta: 'Läs mer'
+			href: '/humorsparning'
+		},
+		{
+			title: 'Guider och övningar',
+			description: 'Läs om vanliga tillstånd och prova enkla övningar som fungerar i vardagen.',
+			href: '/guider'
 		}
 	];
-
-	const commonSearchIntents = [
-		{
-			title: 'Hjälp mot oro',
-			description: 'För dig som fastnar i ältande tankar och vill ha ett lugnare sätt att börja.',
-			href: '/oro'
-		},
-		{
-			title: 'Stöd vid stress',
-			description: 'När kroppen går på högvarv och det är svårt att varva ner.',
-			href: '/stress'
-		},
-		{
-			title: 'Hjälp vid panikattack',
-			description: 'Snabba steg och tydlig information när allt känns starkt på en gång.',
-			href: '/panikattack'
-		},
-		{
-			title: 'Prata anonymt online',
-			description: 'Ett första steg för den som söker någon att prata med utan konto.',
-			href: '/prata-anonymt-online'
-		}
-	];
-	const latestBlogPosts = blogPosts.slice(0, 3);
 
 	function formatForumTime(timestamp: string) {
 		if (!timestamp) return '';
@@ -162,6 +162,7 @@
 </svelte:head>
 
 <main class="staging-look">
+	<!-- 1. Hero -->
 	<section class="hero-section hero" aria-label="Introduktion till MittPsyke" bind:this={heroEl}>
 		<img
 			class="hero-bg"
@@ -172,109 +173,47 @@
 			decoding="async"
 			fetchpriority="high"
 		/>
-			<div class="hero-shell">
+		<div class="hero-shell">
 			<div class="hero-content">
 				<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
 				<h1>MittPsyke är en lugn plats att börja på.</h1>
 				<p>
-					Skriv av dig direkt — utan konto eller registrering.<br />
-				Skapar du ett konto kan du spara din dagbok, följa ditt mående över tid i en graf, få en sammanfattning, se dina framsteg och hitta tillbaka till det du skrivit senare.
-
+					Skriv av dig direkt — utan konto eller registrering.
+					Skapar du ett konto kan du spara dagbok, följa ditt mående och se dina framsteg.
 				</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa konto</a>
 				</div>
-				<div class="hero-community-note" aria-label="Forum">
-					<p class="hero-community-title">Du är inte ensam här</p>
-					<p class="hero-community-text">I forumet kan du läsa vad andra går igenom, dela egna tankar och känna att du inte är ensam.<br />Du kan skapa en tråd anonymt eller som inloggad — eller bara läsa i din egen takt.</p>
-					<p class="hero-community-text">Här kan några ord från någon annan göra skillnad — och dina ord kan göra skillnad för någon med.</p>
-					<a href="/forum" class="hero-community-cta">Gå till forumet</a>
-				</div>
 				<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
-				<HomeSafetyStrip />
-				<div class="mode-compare" aria-label="Vad är skillnaden?">
-					<div class="mode-col">
-						<p class="mode-label">Anonymt läge</p>
-						<ul class="mode-list">
-							<li>Ingen registrering</li>
-							<li>Ingen profil skapas</li>
-							<li>Börja direkt</li>
-						</ul>
-					</div>
-					<div class="mode-col">
-						<p class="mode-label">Med konto</p>
-						<ul class="mode-list">
-							<li>Spara dagbok och reflektioner</li>
-							<li>Följ ditt mående över tid</li>
-							<li>Fortsätt där du slutade</li>
-						</ul>
-					</div>
-				</div>
 			</div>
-			<aside class="hero-forum-rail" aria-labelledby="hero-forum-title">
-				<p class="hero-forum-eyebrow">Forum</p>
-				<h2 id="hero-forum-title">Just nu i forumet</h2>
-				<p class="hero-forum-intro">
-					Här kan du läsa några av de trådar som är mest levande just nu, i lugn och ro.
-				</p>
-				{#if homepageForumThreads.length > 0}
-					<div class="hero-forum-thread-preview" aria-label="Aktuella forumtrådar">
-						{#each homepageForumThreads as thread}
-							<article class="hero-forum-thread-card">
-								<p class="hero-forum-meta hero-forum-meta--top">
-									{thread.categoryName} · aktiv {formatForumTime(thread.active_at || thread.created_at)}
-								</p>
-								<a class="hero-forum-thread-link" href={`/forum/thread/${thread.id}`}>
-									<h3>{thread.title}</h3>
-								</a>
-								{#if thread.bodyPreview}
-									<p class="hero-forum-thread-body">{thread.bodyPreview}</p>
-								{/if}
-								<div class="hero-forum-thread-footer">
-									{#if thread.reply_count > 0}
-										<p class="hero-forum-count">{thread.reply_count} svar</p>
-									{:else}
-										<p class="hero-forum-count">Nystartad tråd</p>
-									{/if}
-									<a class="hero-forum-inline-link" href={`/forum/thread/${thread.id}`}>Läs tråden</a>
-								</div>
-							</article>
-						{/each}
-					</div>
-				{:else}
-					<div class="hero-forum-empty">
-						<p>Forumet är nytt och fylls på steg för steg. Du får gärna läsa, skriva eller starta en egen tråd.</p>
-					</div>
-				{/if}
-				<a href="/forum" class="hero-forum-cta">Gå till forumet</a>
-			</aside>
-			</div>
-		</section>
-		<!-- TODO: Lägg verifierat social proof här när vi har verkliga omdömen eller data. -->
+		</div>
+	</section>
 
-		<section class="feature-highlights" aria-labelledby="feature-highlights-title">
-			<div class="cards-narrow feature-inner">
-				<p class="feature-eyebrow">Funktioner</p>
-				<h2 id="feature-highlights-title">Vad du kan göra med MittPsyke</h2>
-				<div class="feature-grid">
-					{#each featureHighlights as feature}
-						<article class="feature-card">
-							<h3>{feature.title}</h3>
-							<p>{feature.description}</p>
-							<a class="feature-card-cta" href={feature.href}>{feature.cta}</a>
-						</article>
-					{/each}
-				</div>
+	<!-- 2. Ett första steg, i din egen takt -->
+	<section class="first-step" aria-labelledby="first-step-title">
+		<div class="cards-narrow first-step-inner">
+			<h2 id="first-step-title">Ett första steg, i din egen takt</h2>
+			<p class="first-step-body">
+				MittPsyke hjälper dig sätta ord på hur du mår. Du kan skriva fritt med AI-stöd, föra dagbok, spåra ditt humör och läsa guider — allt i ett lugnt tempo utan press.
+			</p>
+			<div class="support-points">
+				{#each supportPoints as point}
+					<div class="support-point">
+						<p class="support-label">{point.label}</p>
+						<p class="support-text">{point.text}</p>
+					</div>
+				{/each}
 			</div>
-		</section>
+		</div>
+	</section>
 
-		<section class="entry-paths" aria-labelledby="entry-paths-title">
-			<div class="cards-narrow entry-inner">
-			<p class="entry-eyebrow">Välj din väg in</p>
-			<h2 id="entry-paths-title">Det finns olika sätt att börja.</h2>
+	<!-- 3. Välj det som hjälper mest just nu -->
+	<section class="entry-paths" aria-labelledby="entry-paths-title">
+		<div class="cards-narrow entry-inner">
+			<h2 id="entry-paths-title">Välj det som hjälper mest just nu</h2>
 			<p class="entry-intro">
-				Välj det som känns mest hjälpsamt just nu. Du kan alltid byta väg senare.
+				Välj det som känns mest hjälpsamt. Du kan alltid byta väg senare.
 			</p>
 			<div class="entry-grid">
 				{#each entryPaths as path}
@@ -288,82 +227,65 @@
 		</div>
 	</section>
 
+	<!-- 4. Så fungerar det -->
 	<section class="how-it-works" aria-labelledby="how-it-works-title">
 		<div class="cards-narrow how-inner">
-			<p class="how-eyebrow">Så fungerar MittPsyke</p>
+			<p class="how-eyebrow">Så fungerar det</p>
 			<h2 id="how-it-works-title">Du kan börja enkelt och spara först när du vill.</h2>
-			<p class="how-intro">
-				Här är skillnaden mellan att börja anonymt, skapa konto och använda dagbok eller vidare stöd.
-			</p>
 			<div class="how-grid">
 				<article class="how-card">
 					<span class="how-step">01</span>
 					<h3>Börja anonymt</h3>
-					<p>
-						Skriv direkt utan konto när du bara behöver ett första steg. Det skapas ingen profil när du börjar så.
-					</p>
+					<p>Skriv direkt utan konto. Ingen profil skapas.</p>
 					<a class="how-card-cta" href="/skriv">Börja skriva</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">02</span>
 					<h3>Skapa konto</h3>
-					<p>
-						Konto behövs först när du vill spara dagbok, historik och kunna komma tillbaka till samma plats.
-					</p>
+					<p>Spara dagbok, historik och kunna komma tillbaka till samma plats.</p>
 					<a class="how-card-cta" href="/register">Skapa konto</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">03</span>
 					<h3>Dagbok och historik</h3>
-					<p>
-						Med konto kan du spara reflektioner, följa känslor över tid och se din utveckling i lugn takt.
-					</p>
+					<p>Spara reflektioner, följ känslor över tid och se din utveckling.</p>
 					<a class="how-card-cta" href="/dagbok">Se dagboken</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">04</span>
-					<h3>Röstsamtal eller vidare stöd</h3>
-					<p>
-						Det finns också röstsamtal här på sidan. Vid akut fara ska du ringa 112, kontakta 1177 eller använda stödlinjer.
-					</p>
+					<h3>Vidare stöd</h3>
+					<p>Röstsamtal finns här på sidan. Vid akut fara: ring 112 eller kontakta 1177.</p>
 					<a class="how-card-cta" href="#roststod">Se stödvägar</a>
-					<div class="how-support-links" aria-label="Akuta och vidare stödvägar">
-						<a href="tel:112">112</a>
-						<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>
-						<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer</a>
-					</div>
 				</article>
 			</div>
-			<p class="how-footer">
-				Vill du läsa mer om vad som sparas och hur uppgifter hanteras?
-				<a href="/integritet">Läs integritetspolicyn</a>.
-			</p>
 			<div class="how-evidence">
 				<ResearchEvidenceCard />
 			</div>
 		</div>
 	</section>
 
-	<section class="video-section">
-		<div class="video-inner">
-			<h2>Se hur MittPsyke fungerar</h2>
-			<p>En kort introduktion till dagboken, framsteg och AI-chatten.</p>
-			<div class="video-wrapper">
-				<video controls preload="none" poster="/og-image.png">
-					<source src="/intro.mp4" type="video/mp4" />
-					Din webbläsare stöder inte videouppspelning.
-				</video>
+	<!-- 5. Vad du kan använda MittPsyke till -->
+	<section class="features-section" aria-labelledby="features-title">
+		<div class="cards-narrow features-inner">
+			<h2 id="features-title">Vad du kan använda MittPsyke till</h2>
+			<div class="features-grid">
+				{#each features as feature}
+					<a class="feature-card" href={feature.href}>
+						<h3>{feature.title}</h3>
+						<p>{feature.description}</p>
+						<span class="feature-card-cta">Läs mer</span>
+					</a>
+				{/each}
 			</div>
 		</div>
 	</section>
 
+	<!-- Fokusområden -->
 	<section id="fokusomraden" class="focus-section">
 		<div class="narrow cards-narrow focus-content">
 			<header class="focus-header">
 				<h2>Välj fokusområde</h2>
-				<p>
-					Välj det som känns närmast just nu. Det hjälper MittPsyke att öppna rätt samtalsstöd.
-				</p>
+				<p>Välj det som känns närmast just nu. Det hjälper MittPsyke att öppna rätt samtalsstöd.</p>
 			</header>
 			<div class="focus-cards">
 				{#each portals as portal}
@@ -386,68 +308,86 @@
 		</div>
 	</section>
 
-	<section class="discovery-section" aria-labelledby="discovery-title">
-		<div class="cards-narrow discovery-inner">
-			<div class="discovery-copy">
-				<p class="discovery-eyebrow">Vanliga ingångar från sök</p>
-				<h2 id="discovery-title">Börja där det känns mest träffsäkert</h2>
+	<!-- 6. Forum -->
+	<section class="forum-section" aria-labelledby="forum-section-title">
+		<div class="cards-narrow forum-inner">
+			<div class="forum-header">
+				<h2 id="forum-section-title">Du är inte ensam här</h2>
 				<p>
-					Många hittar hit mitt i något konkret: oro, stress, panik eller behovet av att prata anonymt.
-					Här är några vanliga vägar in.
+					I forumet kan du läsa vad andra går igenom, dela egna tankar och känna att du inte är ensam.
+					Du kan skapa en tråd anonymt eller som inloggad — eller bara läsa i din egen takt.
 				</p>
 			</div>
-			<div class="discovery-grid">
-				{#each commonSearchIntents as item}
-					<a class="discovery-card" href={item.href}>
-						<h3>{item.title}</h3>
-						<p>{item.description}</p>
-						<span>Läs mer</span>
-					</a>
-				{/each}
-			</div>
-		</div>
-	</section>
-
-	<section class="blog-preview" aria-labelledby="blog-preview-title">
-		<div class="cards-narrow blog-preview-inner">
-			<div class="blog-preview-head">
-				<div>
-					<p class="blog-preview-eyebrow">Innehåll som kan dra in rätt trafik</p>
-					<h2 id="blog-preview-title">Senaste från bloggen</h2>
-					<p>
-						Artiklarna hjälper fler att hitta MittPsyke via sök och ger en lugnare väg vidare in till guider,
-						övningar och anonymt skrivstöd.
-					</p>
+			{#if homepageForumThreads.length > 0}
+				<div class="forum-thread-grid" aria-label="Aktuella forumtrådar">
+					{#each homepageForumThreads as thread}
+						<article class="forum-thread-card">
+							<p class="forum-meta">
+								{thread.categoryName} · aktiv {formatForumTime(thread.active_at || thread.created_at)}
+							</p>
+							<a class="forum-thread-link" href={`/forum/thread/${thread.id}`}>
+								<h3>{thread.title}</h3>
+							</a>
+							{#if thread.bodyPreview}
+								<p class="forum-thread-body">{thread.bodyPreview}</p>
+							{/if}
+							<div class="forum-thread-footer">
+								{#if thread.reply_count > 0}
+									<p class="forum-count">{thread.reply_count} svar</p>
+								{:else}
+									<p class="forum-count">Nystartad tråd</p>
+								{/if}
+								<a class="forum-inline-link" href={`/forum/thread/${thread.id}`}>Läs tråden</a>
+							</div>
+						</article>
+					{/each}
 				</div>
-				<a class="blog-preview-link" href="/blogg">Se alla artiklar</a>
-			</div>
-			<div class="blog-preview-grid">
-				{#each latestBlogPosts as post}
-					<article class="blog-preview-card">
-						<p class="blog-preview-meta">{post.publishedLabel} · {post.readTime}</p>
-						<h3>{post.title}</h3>
-						<p>{post.excerpt}</p>
-						<a href={`/blogg/${post.slug}`}>Läs artikel</a>
-					</article>
-				{/each}
-			</div>
+			{:else}
+				<div class="forum-empty">
+					<p>Forumet är nytt och fylls på steg för steg. Du får gärna läsa, skriva eller starta en egen tråd.</p>
+				</div>
+			{/if}
+			<a href="/forum" class="forum-cta-link">Gå till forumet</a>
 		</div>
 	</section>
 
 	<VoiceSupport />
 
-	<section class="band band-olive">
-		<div class="narrow intro-grid">
-			<img src="/assets/home/Tryggplats.png" alt="Illustration av en trygg plats i naturen" loading="lazy" />
-			<div>
-				<h2>Tryggt, varsamt och tydligt avgränsat</h2>
+	<!-- 7. Trygghet och avgränsning -->
+	<section class="trust-section" aria-labelledby="trust-title">
+		<div class="cards-narrow trust-inner">
+			<img src="/assets/home/Tryggplats.png" alt="Illustration av en trygg plats i naturen" loading="lazy" class="trust-image" />
+			<div class="trust-copy">
+				<h2 id="trust-title">Tryggt, varsamt och tydligt avgränsat</h2>
 				<p>
 					MittPsyke är byggt för lugn reflektion i egen takt. Det är inte vård eller behandling, men kan vara en första plats att landa innan du tar nästa steg.
+				</p>
+				<p class="trust-privacy">
+					Vill du läsa mer om vad som sparas och hur uppgifter hanteras?
+					<a href="/integritet">Läs integritetspolicyn</a>.
 				</p>
 			</div>
 		</div>
 	</section>
 
+	<!-- 8. Viktigt att veta -->
+	<section class="important-section" aria-labelledby="important-title">
+		<div class="cards-narrow important-inner">
+			<HomeSafetyStrip />
+		</div>
+	</section>
+
+	<!-- 9. Avslutande CTA -->
+	<section class="final-cta-section" aria-label="Kom igång">
+		<div class="final-cta-inner">
+			<h2>Redo att ta ett första steg?</h2>
+			<p>Du behöver inte veta exakt vad du vill säga. Börja skriva — så tar vi det därifrån.</p>
+			<div class="final-cta-actions">
+				<a href="/skriv" class="hero-cta hero-cta-primary">Börja skriva anonymt</a>
+				<a href="/register" class="hero-cta-link">Skapa konto</a>
+			</div>
+		</div>
+	</section>
 </main>
 
 <style>
@@ -456,6 +396,7 @@
 		color: #f5f5f2;
 	}
 
+	/* ── Hero ── */
 	.hero-section {
 		min-height: 65vh;
 		display: grid;
@@ -487,8 +428,8 @@
 		z-index: 0;
 	}
 
-		.hero::before {
-			content: '';
+	.hero::before {
+		content: '';
 		position: absolute;
 		inset: 0;
 		background:
@@ -503,33 +444,28 @@
 				rgba(14, 22, 33, 0.85) 60%,
 				rgba(14, 22, 33, 0.95) 100%
 			);
-			pointer-events: none;
-			z-index: 1;
-		}
+		pointer-events: none;
+		z-index: 1;
+	}
 
-		.hero-shell {
-			--hero-main-width: 560px;
-			--hero-rail-gap: clamp(0.8rem, 1.6vw, 1.3rem);
-			--hero-rail-width: clamp(300px, 26vw, 380px);
-			--hero-rail-edge: clamp(0.85rem, 2.2vw, 1.9rem);
-			position: relative;
-			z-index: 2;
-			width: min(1280px, 100%);
-			display: grid;
-			grid-template-columns: 1fr;
-			justify-items: center;
-			align-items: start;
-		}
+	.hero-shell {
+		position: relative;
+		z-index: 2;
+		width: min(1280px, 100%);
+		display: grid;
+		grid-template-columns: 1fr;
+		justify-items: center;
+		align-items: start;
+	}
 
-		.hero-content {
-			grid-column: 1;
-			justify-self: center;
-			align-self: start;
-			width: min(560px, 100%);
-			text-align: center;
-			padding: 1.3rem 1.6rem 1.6rem;
-			background: rgba(39, 45, 53, 0.56);
-			border: 1px solid rgba(255, 255, 255, 0.18);
+	.hero-content {
+		justify-self: center;
+		align-self: start;
+		width: min(560px, 100%);
+		text-align: center;
+		padding: 1.3rem 1.6rem 1.6rem;
+		background: rgba(39, 45, 53, 0.56);
+		border: 1px solid rgba(255, 255, 255, 0.18);
 	}
 
 	h1 {
@@ -580,177 +516,8 @@
 		letter-spacing: 0.01em;
 	}
 
-	.hero-community-note {
-		margin-top: 0.95rem;
-		padding: 0.7rem 0.85rem;
-		background: rgba(255, 255, 255, 0.08);
-		border: 1px solid rgba(255, 255, 255, 0.16);
-		text-align: left;
-	}
-
-	.hero-community-title {
-		margin: 0;
-		max-width: none;
-		font-family: var(--font-heading);
-		font-size: clamp(1rem, 1.45vw, 1.12rem);
-		font-weight: 700;
-		line-height: 1.2;
-		color: rgba(255, 255, 255, 0.95);
-	}
-
-	.hero-community-text {
-		margin: 0.35rem 0 0;
-		max-width: none;
-		font-size: 0.92rem;
-		line-height: 1.55;
-		color: rgba(255, 255, 255, 0.86);
-	}
-
-	.hero-community-cta {
-		display: inline-block;
-		margin-top: 0.7rem;
-		font-size: 0.88rem;
-		font-weight: 600;
-		color: rgba(255, 255, 255, 0.9);
-		text-decoration: underline;
-		text-underline-offset: 3px;
-		text-decoration-color: rgba(255, 255, 255, 0.4);
-		transition: text-decoration-color 0.15s;
-	}
-
-		.hero-community-cta:hover,
-		.hero-community-cta:focus-visible {
-			text-decoration-color: rgba(255, 255, 255, 0.9);
-		}
-
-		.hero-forum-rail {
-			position: absolute;
-			top: clamp(0.75rem, 2vw, 1.5rem);
-			right: var(--hero-rail-edge);
-			width: min(
-				var(--hero-rail-width),
-				calc(
-					100% -
-						(
-							(50% + (var(--hero-main-width) / 2)) +
-								var(--hero-rail-gap) +
-								var(--hero-rail-edge)
-						)
-				)
-			);
-			max-width: 380px;
-			margin-top: 0;
-			padding: 1rem;
-			background: rgba(17, 25, 33, 0.68);
-			border: 1px solid rgba(255, 255, 255, 0.14);
-			backdrop-filter: blur(8px);
-		}
-
-		.hero-forum-eyebrow {
-			margin: 0;
-			font-size: 0.78rem;
-			font-weight: 700;
-			letter-spacing: 0.08em;
-			text-transform: uppercase;
-			color: rgba(255, 255, 255, 0.7);
-		}
-
-		.hero-forum-rail h2 {
-			margin: 0.45rem 0 0;
-			font-size: 1.3rem;
-			line-height: 1.15;
-			color: #f5f5f2;
-		}
-
-		.hero-forum-intro {
-			margin: 0.7rem 0 0;
-			font-size: 0.94rem;
-			line-height: 1.55;
-			color: rgba(255, 255, 255, 0.82);
-		}
-
-		.hero-forum-thread-preview {
-			display: grid;
-			gap: 0.7rem;
-			margin-top: 1rem;
-		}
-
-		.hero-forum-thread-card,
-		.hero-forum-empty {
-			display: grid;
-			gap: 0.35rem;
-			padding: 0.85rem 0.9rem;
-			background: rgba(255, 255, 255, 0.08);
-			border: 1px solid rgba(255, 255, 255, 0.12);
-			text-align: left;
-		}
-
-		.hero-forum-thread-card h3,
-		.hero-forum-empty p {
-			margin: 0;
-		}
-
-		.hero-forum-thread-card h3 {
-			font-size: 1rem;
-			line-height: 1.35;
-			color: #f8faf8;
-		}
-
-		.hero-forum-thread-link {
-			text-decoration: none;
-		}
-
-		.hero-forum-thread-link:hover h3,
-		.hero-forum-thread-link:focus-visible h3 {
-			text-decoration: underline;
-			text-underline-offset: 3px;
-		}
-
-		.hero-forum-meta,
-		.hero-forum-count {
-			margin: 0;
-			font-size: 0.8rem;
-			line-height: 1.45;
-			color: rgba(255, 255, 255, 0.7);
-		}
-
-		.hero-forum-meta--top {
-			font-weight: 700;
-			letter-spacing: 0.03em;
-		}
-
-		.hero-forum-thread-body {
-			margin: 0.15rem 0 0;
-			font-size: 0.95rem;
-			line-height: 1.6;
-			color: rgba(255, 255, 255, 0.9);
-		}
-
-		.hero-forum-thread-footer {
-			display: flex;
-			flex-wrap: wrap;
-			align-items: center;
-			justify-content: space-between;
-			gap: 0.55rem;
-			margin-top: 0.2rem;
-		}
-
-		.hero-forum-inline-link,
-		.hero-forum-cta {
-			display: inline-flex;
-			font-size: 0.92rem;
-			font-weight: 600;
-			color: rgba(255, 255, 255, 0.92);
-			text-decoration: underline;
-			text-underline-offset: 3px;
-		}
-
-		.hero-forum-cta {
-			margin-top: 0.95rem;
-		}
-
-		.hero-actions {
-			margin-top: 1.2rem;
+	.hero-actions {
+		margin-top: 1.2rem;
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.65rem;
@@ -762,285 +529,102 @@
 		color: #182016;
 	}
 
-		.hero-cta-link {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			align-self: center;
-			padding: 0.35rem 0.15rem;
-			font-family: var(--font-body);
-			font-size: 0.92rem;
-			font-weight: 500;
-			letter-spacing: 0;
-			color: rgba(255, 255, 255, 0.82);
-			text-decoration: underline;
-			text-underline-offset: 3px;
-			opacity: 0.9;
-		}
+	.hero-cta-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		align-self: center;
+		padding: 0.35rem 0.15rem;
+		font-family: var(--font-body);
+		font-size: 0.92rem;
+		font-weight: 500;
+		letter-spacing: 0;
+		color: rgba(255, 255, 255, 0.82);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		opacity: 0.9;
+	}
 
 	.hero-cta-link:hover,
 	.hero-cta-link:focus-visible {
 		opacity: 1;
 	}
 
-	.discovery-section,
-	.blog-preview {
-		padding: clamp(2.8rem, 7vw, 5.5rem) 1.25rem;
+	/* ── Sektion 2: Första steget ── */
+	.first-step {
+		padding: clamp(2.5rem, 7vw, 4rem) 1.25rem;
+		background: #f7f9f8;
+		color: #2c3338;
 	}
 
-	.discovery-section {
-		background: #f3f0e8;
-		color: #1d2b33;
-	}
-
-	.blog-preview {
-		background: #e6efe7;
-		color: #1d2b33;
-	}
-
-	.discovery-inner,
-	.blog-preview-inner {
-		max-width: 1120px;
+	.first-step-inner {
+		max-width: 1080px;
 		margin: 0 auto;
 	}
 
-	.discovery-copy,
-	.blog-preview-head {
-		max-width: 760px;
-	}
-
-	.discovery-eyebrow,
-	.blog-preview-eyebrow {
-		margin: 0 0 0.45rem;
-		font-size: 0.82rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: #61715c;
-	}
-
-	.discovery-copy h2,
-	.blog-preview-head h2 {
+	.first-step-inner h2 {
 		margin: 0;
-		font-size: clamp(1.8rem, 3vw, 2.4rem);
-		line-height: 1.1;
-		color: #182016;
+		color: #263036;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: clamp(1.5rem, 3vw, 2rem);
 	}
 
-	.discovery-copy p,
-	.blog-preview-head p,
-	.discovery-card p,
-	.blog-preview-card p {
-		color: rgba(24, 32, 22, 0.82);
+	.first-step-body {
+		margin: 0.75rem 0 0;
+		max-width: 58ch;
+		color: #54626b;
+		font-family: var(--font-body);
+		line-height: 1.7;
 	}
 
-	.discovery-grid,
-	.blog-preview-grid {
+	.support-points {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-		gap: 1rem;
+		grid-template-columns: 1fr;
+		gap: 0.85rem;
 		margin-top: 1.4rem;
 	}
 
-	.discovery-card,
-	.blog-preview-card {
-		display: grid;
-		gap: 0.7rem;
-		padding: 1.1rem;
+	.support-point {
+		padding: 0.9rem 1rem;
+		background: #ffffff;
+		border: 1px solid #dde5e1;
 		border-radius: var(--radius-card);
-		background: rgba(255, 255, 255, 0.72);
-		border: 1px solid rgba(24, 32, 22, 0.08);
 	}
 
-	.discovery-card h3,
-	.blog-preview-card h3 {
-		margin: 0;
-		font-size: 1.08rem;
-		line-height: 1.35;
-		color: #182016;
-	}
-
-	.discovery-card span,
-	.blog-preview-card a,
-	.blog-preview-link {
-		display: inline-flex;
-		align-items: center;
-		align-self: start;
-		font-weight: 600;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-		color: #234235;
-	}
-
-	.blog-preview-head {
-		display: flex;
-		gap: 1rem;
-		align-items: end;
-		justify-content: space-between;
-		max-width: none;
-	}
-
-	.blog-preview-meta {
-		margin: 0;
-		font-size: 0.82rem;
-		color: rgba(24, 32, 22, 0.62);
-	}
-
-	.band {
-		padding: clamp(3rem, 8vw, 7rem) 1.25rem;
-	}
-
-	.band-olive {
-		background: #1b2b3a;
-	}
-
-	@media (max-width: 720px) {
-		.blog-preview-head {
-			display: grid;
-			align-items: start;
-		}
-	}
-
-	.narrow {
-		width: min(760px, 100%);
-		margin: 0 auto;
-	}
-
-	.cards-narrow {
-		width: min(1080px, 100%);
-	}
-
-	.intro-grid {
-		display: grid;
-		grid-template-columns: 1fr 1.2fr;
-		gap: 1.6rem;
-		align-items: center;
-	}
-
-	.intro-grid img {
-		width: 100%;
-		height: clamp(220px, 30vw, 340px);
-		object-fit: cover;
-		border: 1px solid rgba(255, 255, 255, 0.25);
-	}
-
-	h2 {
+	.support-label {
 		margin: 0;
 		font-family: var(--font-heading);
+		font-size: 0.88rem;
 		font-weight: 700;
-		font-size: clamp(1.6rem, 3vw, 2.3rem);
-		line-height: 1.1;
-		letter-spacing: -0.02em;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: #5f7067;
 	}
 
-	.band p {
-		margin: 0.85rem 0 0;
-		font-family: var(--font-body);
-		font-weight: 400;
-		line-height: 1.7;
-		font-size: 1rem;
-		letter-spacing: -0.005em;
-		color: rgba(255, 255, 255, 0.9);
+	.support-text {
+		margin: 0.3rem 0 0;
+		font-size: 0.95rem;
+		line-height: 1.65;
+		color: #5a686f;
 	}
 
-	ul {
-		margin: 1rem 0 0;
-		padding-left: 1.2rem;
-		font-family: var(--font-body);
-		font-weight: 400;
-		line-height: 1.7;
-		color: rgba(255, 255, 255, 0.9);
-	}
-
-	.focus-section {
-		background: #f4f6f7;
-		padding: clamp(3.8rem, 10vw, 6.8rem) 1.25rem;
-	}
-
+	/* ── Sektion 3: Ingångar ── */
 	.entry-paths {
 		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
 		background: #eef2f0;
 		color: #2c3338;
 	}
 
-	.feature-highlights {
-		padding: clamp(2.5rem, 7vw, 3.9rem) 1.25rem;
-		background: #f7f9f8;
-		color: #2c3338;
-	}
-
-	.feature-eyebrow {
-		margin: 0 0 0.45rem;
-		font-family: var(--font-heading);
-		font-size: 0.88rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: #5c6c64;
-	}
-
-	.feature-inner h2 {
-		margin: 0;
-		color: #263036;
-		font-size: clamp(1.5rem, 3vw, 2rem);
-	}
-
-	.feature-grid {
-		margin-top: 1.1rem;
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.95rem;
-	}
-
-	.feature-card {
-		padding: 1rem;
-		border-radius: var(--radius-card);
-		background: #ffffff;
-		border: 1px solid #dde5e1;
-	}
-
-	.feature-card h3 {
-		margin: 0;
-		color: #273237;
-		font-size: 1.08rem;
-		line-height: 1.3;
-	}
-
-	.feature-card p {
-		margin: 0.55rem 0 0;
-		font-size: 0.95rem;
-		line-height: 1.65;
-		color: #5a686f;
-	}
-
-	.feature-card-cta {
-		display: inline-flex;
-		align-items: center;
-		margin-top: 0.9rem;
-		padding: 0.42rem 0.78rem;
-		border-radius: var(--radius-pill);
-		background: #e7f1ee;
-		color: #2e5850;
-		font-family: var(--font-heading);
-		font-size: 0.83rem;
-		font-weight: 600;
-		letter-spacing: 0.005em;
+	.cards-narrow {
+		width: min(1080px, 100%);
+		margin: 0 auto;
 	}
 
 	.entry-inner h2 {
 		margin: 0;
 		color: #263036;
 		font-size: clamp(1.55rem, 3vw, 2.1rem);
-	}
-
-	.entry-eyebrow {
-		margin: 0 0 0.45rem;
-		font-family: var(--font-heading);
-		font-size: 0.88rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: #5c6c64;
 	}
 
 	.entry-intro {
@@ -1103,6 +687,7 @@
 		letter-spacing: 0.005em;
 	}
 
+	/* ── Sektion 4: Så fungerar det ── */
 	.how-it-works {
 		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
 		background: #ffffff;
@@ -1123,12 +708,6 @@
 		margin: 0;
 		color: #263036;
 		font-size: clamp(1.55rem, 3vw, 2.05rem);
-	}
-
-	.how-intro {
-		margin: 0.75rem 0 0;
-		max-width: 60ch;
-		color: #55646c;
 	}
 
 	.how-grid {
@@ -1188,38 +767,80 @@
 		letter-spacing: 0.005em;
 	}
 
-	.how-support-links {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.45rem;
-		margin-top: 0.85rem;
-	}
-
-	.how-support-links a {
-		display: inline-flex;
-		align-items: center;
-		padding: 0.32rem 0.62rem;
-		border-radius: var(--radius-pill);
-		background: #ffffff;
-		border: 1px solid #d5ddd8;
-		color: #43564f;
-		font-size: 0.8rem;
-	}
-
-	.how-footer {
-		margin: 1rem 0 0;
-		color: #55646c;
-		font-size: 0.94rem;
-	}
-
-	.how-footer a {
-		color: #0f766e;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
 	.how-evidence {
 		margin-top: 1rem;
+	}
+
+	/* ── Sektion 5: Funktioner ── */
+	.features-section {
+		padding: clamp(2.5rem, 7vw, 3.9rem) 1.25rem;
+		background: #f3f0e8;
+		color: #2c3338;
+	}
+
+	.features-inner h2 {
+		margin: 0;
+		color: #263036;
+		font-size: clamp(1.5rem, 3vw, 2rem);
+	}
+
+	.features-grid {
+		margin-top: 1.1rem;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.95rem;
+	}
+
+	.feature-card {
+		display: block;
+		padding: 1rem;
+		border-radius: var(--radius-card);
+		background: rgba(255, 255, 255, 0.72);
+		border: 1px solid rgba(24, 32, 22, 0.08);
+		color: #2c3338;
+		transition: transform 180ms ease, background-color 180ms ease;
+	}
+
+	.feature-card:hover {
+		transform: translateY(-2px);
+		background: rgba(255, 255, 255, 0.9);
+	}
+
+	.feature-card h3 {
+		margin: 0;
+		color: #182016;
+		font-size: 1.08rem;
+		line-height: 1.35;
+	}
+
+	.feature-card p {
+		margin: 0.55rem 0 0;
+		font-size: 0.95rem;
+		line-height: 1.65;
+		color: rgba(24, 32, 22, 0.82);
+	}
+
+	.feature-card-cta {
+		display: inline-flex;
+		align-items: center;
+		align-self: start;
+		margin-top: 0.9rem;
+		font-weight: 600;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		color: #234235;
+		font-size: 0.88rem;
+	}
+
+	/* ── Fokusområden ── */
+	.focus-section {
+		background: #f4f6f7;
+		padding: clamp(3.8rem, 10vw, 6.8rem) 1.25rem;
+	}
+
+	.narrow {
+		width: min(760px, 100%);
+		margin: 0 auto;
 	}
 
 	.focus-content {
@@ -1327,33 +948,251 @@
 		letter-spacing: 0.005em;
 	}
 
-		@media (max-width: 900px) {
-			.intro-grid {
-				grid-template-columns: 1fr;
-			}
+	/* ── Sektion 6: Forum ── */
+	.forum-section {
+		padding: clamp(2.8rem, 7vw, 5rem) 1.25rem;
+		background: #1b2b3a;
+		color: #f5f5f2;
+	}
 
-			.hero-shell {
-				grid-template-columns: 1fr;
-				row-gap: 1rem;
-			}
+	.forum-inner {
+		max-width: 1080px;
+		margin: 0 auto;
+	}
 
-			.hero-content {
-				grid-column: auto;
-				justify-self: stretch;
-				padding: 1.1rem 1rem 1.2rem;
-			}
+	.forum-header {
+		max-width: 62ch;
+	}
 
-			.hero-forum-rail {
-				position: static;
-				top: auto;
-				right: auto;
-				grid-column: auto;
-				justify-self: stretch;
-				align-self: start;
-				margin-top: 0;
-				width: 100%;
-				max-width: none;
-			}
+	.forum-header h2 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: clamp(1.55rem, 3vw, 2.2rem);
+		color: #f3f8fd;
+	}
+
+	.forum-header p {
+		margin: 0.75rem 0 0;
+		font-family: var(--font-body);
+		line-height: 1.7;
+		color: rgba(255, 255, 255, 0.82);
+	}
+
+	.forum-thread-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.7rem;
+		margin-top: 1.4rem;
+	}
+
+	.forum-thread-card,
+	.forum-empty {
+		display: grid;
+		gap: 0.35rem;
+		padding: 0.85rem 0.9rem;
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: var(--radius-card);
+		text-align: left;
+	}
+
+	.forum-thread-card h3,
+	.forum-empty p {
+		margin: 0;
+	}
+
+	.forum-thread-card h3 {
+		font-size: 1rem;
+		line-height: 1.35;
+		color: #f8faf8;
+	}
+
+	.forum-thread-link {
+		text-decoration: none;
+	}
+
+	.forum-thread-link:hover h3,
+	.forum-thread-link:focus-visible h3 {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.forum-meta,
+	.forum-count {
+		margin: 0;
+		font-size: 0.8rem;
+		line-height: 1.45;
+		color: rgba(255, 255, 255, 0.7);
+	}
+
+	.forum-meta {
+		font-weight: 700;
+		letter-spacing: 0.03em;
+	}
+
+	.forum-thread-body {
+		margin: 0.15rem 0 0;
+		font-size: 0.95rem;
+		line-height: 1.6;
+		color: rgba(255, 255, 255, 0.9);
+	}
+
+	.forum-thread-footer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.55rem;
+		margin-top: 0.2rem;
+	}
+
+	.forum-inline-link,
+	.forum-cta-link {
+		display: inline-flex;
+		font-size: 0.92rem;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.92);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.forum-cta-link {
+		margin-top: 1.2rem;
+	}
+
+	/* ── Sektion 7: Trygghet ── */
+	.trust-section {
+		padding: clamp(3rem, 8vw, 6rem) 1.25rem;
+		background: #1b2b3a;
+		color: #f5f5f2;
+	}
+
+	.trust-inner {
+		max-width: 1080px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 1fr 1.2fr;
+		gap: 1.6rem;
+		align-items: center;
+	}
+
+	.trust-image {
+		width: 100%;
+		height: clamp(220px, 30vw, 340px);
+		object-fit: cover;
+		border: 1px solid rgba(255, 255, 255, 0.25);
+	}
+
+	.trust-copy h2 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: clamp(1.6rem, 3vw, 2.3rem);
+		line-height: 1.1;
+		letter-spacing: -0.02em;
+	}
+
+	.trust-copy p {
+		margin: 0.85rem 0 0;
+		font-family: var(--font-body);
+		font-weight: 400;
+		line-height: 1.7;
+		font-size: 1rem;
+		color: rgba(255, 255, 255, 0.9);
+	}
+
+	.trust-privacy a {
+		color: #9ad7ce;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	/* ── Sektion 8: Viktigt att veta ── */
+	.important-section {
+		padding: clamp(2rem, 5vw, 3.5rem) 1.25rem;
+		background: #1a2530;
+		color: #f5f5f2;
+	}
+
+	.important-inner {
+		max-width: 1080px;
+		margin: 0 auto;
+	}
+
+	/* ── Sektion 9: Avslutande CTA ── */
+	.final-cta-section {
+		padding: clamp(3rem, 8vw, 5.5rem) 1.25rem;
+		background: #eef2f0;
+		color: #2c3338;
+		text-align: center;
+	}
+
+	.final-cta-inner {
+		max-width: 560px;
+		margin: 0 auto;
+	}
+
+	.final-cta-inner h2 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: clamp(1.6rem, 3vw, 2.3rem);
+		color: #263036;
+	}
+
+	.final-cta-inner p {
+		margin: 0.75rem 0 0;
+		font-family: var(--font-body);
+		line-height: 1.7;
+		color: #54626b;
+	}
+
+	.final-cta-actions {
+		margin-top: 1.4rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.65rem;
+		justify-content: center;
+	}
+
+	.final-cta-actions .hero-cta {
+		background: #8ca36a;
+		color: #182016;
+	}
+
+	.final-cta-actions .hero-cta-link {
+		color: #3a5a4a;
+	}
+
+	/* ── Gemensamma typografi ── */
+	h2 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: clamp(1.6rem, 3vw, 2.3rem);
+		line-height: 1.1;
+		letter-spacing: -0.02em;
+	}
+
+	ul {
+		margin: 1rem 0 0;
+		padding-left: 1.2rem;
+		font-family: var(--font-body);
+		font-weight: 400;
+		line-height: 1.7;
+		color: rgba(255, 255, 255, 0.9);
+	}
+
+	/* ── Responsivt ── */
+	@media (max-width: 900px) {
+		.trust-inner {
+			grid-template-columns: 1fr;
+		}
+
+		.hero-content {
+			padding: 1.1rem 1rem 1.2rem;
+		}
 
 		.hero-actions {
 			flex-direction: column;
@@ -1365,18 +1204,30 @@
 		}
 	}
 
-	@media (min-width: 700px) {
-		.feature-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 1.05rem;
+	@media (min-width: 680px) {
+		.support-points {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.9rem;
 		}
 
+		.forum-thread-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.85rem;
+		}
+	}
+
+	@media (min-width: 700px) {
 		.entry-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 1.05rem;
 		}
 
 		.how-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1.05rem;
+		}
+
+		.features-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 1.05rem;
 		}
@@ -1402,15 +1253,47 @@
 			gap: 1.1rem;
 		}
 
+		.features-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 1.1rem;
+		}
+
 		.focus-cards {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 			gap: 1.25rem;
 		}
+
+		.forum-thread-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 1rem;
+		}
 	}
 
-	/* Dark mode */
-	:global(.dark) .focus-section {
-		background: #1a1c1d;
+	/* ── Dark mode ── */
+	:global(.dark) .first-step {
+		background: #131918;
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .first-step-inner h2 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .first-step-body {
+		color: rgba(255, 255, 255, 0.68);
+	}
+
+	:global(.dark) .support-point {
+		background: #202624;
+		border-color: rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .support-label {
+		color: #9cb0a6;
+	}
+
+	:global(.dark) .support-text {
+		color: rgba(255, 255, 255, 0.68);
 	}
 
 	:global(.dark) .entry-paths {
@@ -1418,43 +1301,8 @@
 		color: #e8e6e2;
 	}
 
-	:global(.dark) .feature-highlights {
-		background: #131918;
-		color: #e8e6e2;
-	}
-
-	:global(.dark) .feature-eyebrow {
-		color: #9cb0a6;
-	}
-
-	:global(.dark) .feature-inner h2 {
-		color: #f0eeea;
-	}
-
-	:global(.dark) .feature-card {
-		background: #202624;
-		border-color: rgba(255, 255, 255, 0.08);
-	}
-
-	:global(.dark) .feature-card h3 {
-		color: #f0eeea;
-	}
-
-	:global(.dark) .feature-card p {
-		color: rgba(255, 255, 255, 0.68);
-	}
-
-	:global(.dark) .feature-card-cta {
-		background: rgba(134, 223, 214, 0.12);
-		color: #86dfd6;
-	}
-
 	:global(.dark) .entry-inner h2 {
 		color: #f0eeea;
-	}
-
-	:global(.dark) .entry-eyebrow {
-		color: #9cb0a6;
 	}
 
 	:global(.dark) .entry-intro,
@@ -1495,9 +1343,7 @@
 		color: #f0eeea;
 	}
 
-	:global(.dark) .how-intro,
-	:global(.dark) .how-card p,
-	:global(.dark) .how-footer {
+	:global(.dark) .how-card p {
 		color: rgba(255, 255, 255, 0.68);
 	}
 
@@ -1520,14 +1366,39 @@
 		color: #86dfd6;
 	}
 
-	:global(.dark) .how-support-links a {
-		background: #202624;
-		border-color: rgba(255, 255, 255, 0.1);
-		color: #dce7e2;
+	:global(.dark) .features-section {
+		background: #131918;
+		color: #e8e6e2;
 	}
 
-	:global(.dark) .how-footer a {
-		color: #9ad7ce;
+	:global(.dark) .features-inner h2 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .feature-card {
+		background: #202624;
+		border-color: rgba(255, 255, 255, 0.08);
+		color: #e8e6e2;
+	}
+
+	:global(.dark) .feature-card:hover {
+		background: #252c29;
+	}
+
+	:global(.dark) .feature-card h3 {
+		color: #f0eeea;
+	}
+
+	:global(.dark) .feature-card p {
+		color: rgba(255, 255, 255, 0.68);
+	}
+
+	:global(.dark) .feature-card-cta {
+		color: #86dfd6;
+	}
+
+	:global(.dark) .focus-section {
+		background: #1a1c1d;
 	}
 
 	:global(.dark) .focus-content {
@@ -1569,89 +1440,32 @@
 		color: #86dfd6;
 	}
 
-	:global(.dark) .band-olive {
-		background: #1b2b3a;
+	:global(.dark) .forum-section {
+		background: #0f1a24;
 	}
 
-	.video-section {
-		padding: clamp(2.5rem, 6vw, 4rem) 1.25rem;
-		background: #1b2b3a;
-		text-align: center;
-		color: #f5f5f2;
+	:global(.dark) .trust-section {
+		background: #0f1a24;
 	}
 
-	.video-inner {
-		max-width: 760px;
-		margin: 0 auto;
+	:global(.dark) .important-section {
+		background: #0d151e;
 	}
 
-	.video-inner h2 {
-		margin: 0 0 0.6rem;
-		font-family: var(--font-heading);
-		font-weight: 700;
-		font-size: clamp(1.5rem, 2.8vw, 2rem);
-		letter-spacing: -0.02em;
-		color: #f3f8fd;
+	:global(.dark) .final-cta-section {
+		background: #151b19;
+		color: #e8e6e2;
 	}
 
-	.video-inner p {
-		margin: 0 0 1.5rem;
-		color: #c7d6e5;
-		font-family: var(--font-body);
-		line-height: 1.7;
+	:global(.dark) .final-cta-inner h2 {
+		color: #f0eeea;
 	}
 
-	.video-wrapper {
-		position: relative;
-		width: 100%;
-		border-radius: var(--radius-card);
-		overflow: hidden;
-		box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+	:global(.dark) .final-cta-inner p {
+		color: rgba(255, 255, 255, 0.68);
 	}
 
-	.video-wrapper video {
-		width: 100%;
-		display: block;
-		border-radius: var(--radius-card);
+	:global(.dark) .final-cta-actions .hero-cta-link {
+		color: rgba(255, 255, 255, 0.82);
 	}
-
-	.mode-compare {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 0.5rem;
-		margin-top: 1rem;
-		padding: 0.85rem 1rem;
-		background: rgba(255, 255, 255, 0.07);
-		border: 1px solid rgba(255, 255, 255, 0.14);
-		text-align: left;
-	}
-
-	.mode-col {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.mode-label {
-		margin: 0 0 0.4rem;
-		font-family: var(--font-heading);
-		font-size: clamp(0.92rem, 1.35vw, 1.04rem);
-		font-weight: 850;
-		line-height: 1.05;
-		letter-spacing: -0.025em;
-		color: rgba(255, 255, 255, 0.95);
-	}
-
-	.mode-list {
-		margin: 0;
-		padding-left: 1.1rem;
-		font-size: 0.9rem;
-		line-height: 1.6;
-		color: rgba(255, 255, 255, 0.85);
-	}
-
-	.mode-list li + li {
-		margin-top: 0.2rem;
-	}
-
 </style>
-
