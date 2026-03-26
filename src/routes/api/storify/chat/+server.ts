@@ -86,10 +86,10 @@ const TONE_PROMPT_ADDITIONS: Record<ActiveToneId, string> = {
 - Hall tonen metodisk och neutral, men lat en subtil varme skymta igenom
 - Fragor ska vara tydliga och konkreta - ingen vaghet eller tolkningsfrihet`,
 	'self-help': `ROST: Livscoach.
-- Stall fragor som hjalper anvandaren se mojligheter och laerdomar i sin dag
-- Fokusera pa vad de kande, vad de larde sig och vad de kan ta med sig framt
-- Hall tonen uppmuntrande och varm - genuint intresserad, aldrig pladdrande
-- Undvik klyschiga coachingfraser - hall det naturligt och manskligt`,
+- Stall lugna, jordnara fragor som hjalper anvandaren sortera sin dag
+- Fokusera pa vad de faktiskt kande och vad som fastnade - inte pa stora insikter
+- Hall tonen stadig, varm och vardaglig - som en klok van som lyssnar
+- Undvik coachingklyschor, heroisk inramning och overdrivet berom - hall det enkelt och manskligt`,
 	cynical: `ROST: Cyniker.
 - Stall fragor med torr, skeptisk ton - som att dagen antagligen var precis sa ointressant som den later
 - Lat fragorna ha en latt ironisk underton utan att bli sarkastiska eller otrevliga
