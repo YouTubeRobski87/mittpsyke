@@ -30,7 +30,7 @@
 
 		<div class="cta-container">
 			<a class="cta-button" href="/chat/a">Starta ett lugnt samtal</a>
-			<a class="cta-button ghost" href="/samtalsstod-vid-trauma">Läs mer om samtalsstöd vid trauma</a>
+			<a class="cta-button ghost" href="/samtalsstod-utan-vantetid/samtalsstod-vid-trauma">Läs mer om samtalsstöd vid trauma</a>
 		</div>
 
 		<section class="section">
@@ -44,7 +44,7 @@
 		<section class="section">
 			<h2>Vad MittPsyke erbjuder</h2>
 			<ul>
-				<li><a href="/samtalsstod-vid-trauma">Samtalsstöd vid trauma</a> när du vill börja reflektera varsamt.</li>
+				<li><a href="/samtalsstod-utan-vantetid/samtalsstod-vid-trauma">Samtalsstöd vid trauma</a> när du vill börja reflektera varsamt.</li>
 				<li><a href="/dagbok">Dagbok</a> och <a href="/framsteg">framsteg</a> för kontinuitet över tid.</li>
 				<li><a href="/om-mittpsyke">Om MittPsyke</a> om du vill förstå tjänsten bättre innan du börjar.</li>
 				<li><a href="/register">Skapa konto</a> om du vill spara historik och återvända till din egen plats.</li>
