@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	} = await locals.supabase.auth.getUser();
 
 	if (!user) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/dagbok');
 	}
 
 	const { data: entries, error } = await locals.supabase

@@ -14,6 +14,7 @@
 
 	let entries: DiaryEntry[] = [];
 	let loading = true;
+	let isLoggedIn = false;
 	let loadError = '';
 	let draftText = '';
 	let draftMood = '';
@@ -557,11 +558,19 @@
 	}
 
 	onMount(async () => {
+		const { data: sessionData } = await supabase.auth.getSession();
+		isLoggedIn = Boolean(sessionData.session?.user);
+
+		if (!isLoggedIn) {
+			loading = false;
+			return;
+		}
+
 		// Track signup completion if coming from welcome flow
 		if ($page.url.searchParams.get('welcome') === 'true') {
 			trackSignupCompleted();
 		}
-		
+
 		// Track diary page opened from horoscope source
 		if ($page.url.searchParams.get('from') === 'horoscope') {
 			trackDiaryPageOpenedFromHoroscope();
@@ -586,18 +595,65 @@
 </script>
 
 <main class="auth-page">
-	<PortalSubnav
-		active="dagbok"
-		title="Din dagbok"
-		description="Dagbok är din plats för dagen. Välj mellan att skriva själv eller låta en röst guida dig vidare."
-	/>
-
-	<div class="auth-shell">
-		{#if loading}
+	{#if loading}
+		<div class="auth-shell">
 			<section class="auth-panel">
 				<p class="auth-muted">Laddar...</p>
 			</section>
-		{:else}
+		</div>
+	{:else if !isLoggedIn}
+		<!-- Publik dagboksvy för utloggade besökare -->
+		<div class="auth-shell">
+			<header class="auth-hero">
+				<div>
+					<h1>Dagbok</h1>
+					<p>Din plats för dagen — skriv fritt eller låt en röst guida dig.</p>
+				</div>
+			</header>
+
+			<section class="auth-panel">
+				<h2 class="text-base font-semibold">Så fungerar dagboken</h2>
+				<p class="mt-2 text-sm auth-muted">
+					Dagbok hjälper dig sätta ord på din dag. Du kan skriva fritt i din egen takt,
+					eller välja en röst som ställer lugna frågor och hjälper dig forma tankarna
+					till ett personligt dagboksinlägg.
+				</p>
+			</section>
+
+			<section class="auth-panel">
+				<h2 class="text-base font-semibold">Två sätt att skriva</h2>
+				<div class="diary-path-grid mt-3">
+					<div class="diary-path-card diary-path-card--preview">
+						<span class="diary-path-title">Skriv själv</span>
+						<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
+					</div>
+					<div class="diary-path-card diary-path-card--preview">
+						<span class="diary-path-title">Dagbok med röster</span>
+						<span class="diary-path-copy">Välj bland nio röster — från Filosofen till Sportkommentatorn.</span>
+						<span class="diary-path-voices">Filosofen · Psykologen · Grubblaren · Quest log · Klassisk dagbok · Sportkommentator · AI-robot · Livscoach · Cyniker</span>
+					</div>
+				</div>
+			</section>
+
+			<section class="auth-panel auth-panel-accent">
+				<p class="text-sm">
+					Logga in för att skriva och spara dina dagboksinlägg.
+				</p>
+				<div class="actions-row mt-3">
+					<a href="/login" class="auth-button primary">Logga in</a>
+					<a href="/register" class="auth-button">Skapa konto</a>
+				</div>
+			</section>
+		</div>
+	{:else}
+		<!-- Inloggad dagboksvy -->
+		<PortalSubnav
+			active="dagbok"
+			title="Din dagbok"
+			description="Dagbok är din plats för dagen. Välj mellan att skriva själv eller låta en röst guida dig vidare."
+		/>
+
+		<div class="auth-shell">
 			<div class="diary-layout">
 				<div class="diary-main">
 					<section class="auth-panel diary-paths">
@@ -949,8 +1005,8 @@
 					</section>
 				</aside>
 			</div>
-		{/if}
-	</div>
+		</div>
+	{/if}
 </main>
 
 <style>
@@ -985,7 +1041,12 @@
 		transition: border-color 150ms ease, box-shadow 150ms ease;
 	}
 
-	.diary-path-card:hover {
+	.diary-path-card--preview {
+		cursor: default;
+		opacity: 0.85;
+	}
+
+	.diary-path-card:hover:not(.diary-path-card--preview) {
 		border-color: hsl(var(--foreground) / 0.18);
 		box-shadow: 0 5px 14px rgba(0, 0, 0, 0.05);
 	}
