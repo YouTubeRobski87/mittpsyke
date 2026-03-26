@@ -4,6 +4,21 @@
       "source": "/samtalsstod-vid-trauma",
       "destination": "/samtalsstod-utan-vantetid/samtalsstod-vid-trauma",
       "permanent": true
+    },
+    {
+      "source": "/ai",
+      "destination": "/skriv",
+      "permanent": true
+    },
+    {
+      "source": "/b",
+      "destination": "/chat/b",
+      "permanent": true
+    },
+    {
+      "source": "/e",
+      "destination": "/chat/e",
+      "permanent": true
     }
   ]
 }
