@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
-	import ResearchEvidenceCard from '$lib/components/ResearchEvidenceCard.svelte';
-	import { portals } from '$lib/data/portals';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { trackHeroCtaPrimaryClick, trackHeroCtaSecondaryClick } from '$lib/analytics';
 
@@ -72,22 +70,22 @@
 	const features = [
 		{
 			title: 'AI-samtal',
-			description: 'Skriv fritt och få lugna, stödjande svar som hjälper dig sortera tankar.',
+			description: 'Skriv vad du bär på och få lugna, stödjande svar — utan att behöva formulera dig perfekt.',
 			href: '/skriv'
 		},
 		{
 			title: 'Dagbok med röster',
-			description: 'Berätta om din dag och få den formulerad i en röst du väljer — filosofisk, poetisk eller vardaglig.',
+			description: 'Berätta om din dag och få den skriven i en röst du väljer — filosofisk, vardaglig eller något annat.',
 			href: '/dagbok'
 		},
 		{
 			title: 'Humörspårning',
-			description: 'Följ ditt mående över tid och upptäck mönster i vardagen.',
+			description: 'Se hur ditt mående rör sig över tid. Mönster blir tydligare när du har något att gå tillbaka till.',
 			href: '/humorsparning'
 		},
 		{
 			title: 'Guider och övningar',
-			description: 'Läs om vanliga tillstånd och prova enkla övningar som fungerar i vardagen.',
+			description: 'Läs om ångest, stress och andra vanliga tillstånd — och hitta enkla övningar att börja med idag.',
 			href: '/guider'
 		}
 	];
@@ -258,9 +256,6 @@
 					<a class="how-card-cta" href="#roststod">Se stödvägar</a>
 				</article>
 			</div>
-			<div class="how-evidence">
-				<ResearchEvidenceCard />
-			</div>
 		</div>
 	</section>
 
@@ -274,34 +269,6 @@
 						<h3>{feature.title}</h3>
 						<p>{feature.description}</p>
 						<span class="feature-card-cta">Läs mer</span>
-					</a>
-				{/each}
-			</div>
-		</div>
-	</section>
-
-	<!-- Fokusområden -->
-	<section id="fokusomraden" class="focus-section">
-		<div class="narrow cards-narrow focus-content">
-			<header class="focus-header">
-				<h2>Välj fokusområde</h2>
-				<p>Välj det som känns närmast just nu. Det hjälper MittPsyke att öppna rätt samtalsstöd.</p>
-			</header>
-			<div class="focus-cards">
-				{#each portals as portal}
-					<a class="focus-card" href={`/chat/${portal.key}`}>
-						<img
-							class="focus-cover"
-							src={portal.image}
-							alt={`Stämningsbild för ${portal.title}`}
-							loading="lazy"
-						/>
-						<div class="focus-body">
-							<span class="focus-icon">{portal.icon}</span>
-							<h3>{portal.title}</h3>
-							<p>{portal.description}</p>
-							<span class="focus-cta">Börja skriva</span>
-						</div>
 					</a>
 				{/each}
 			</div>
@@ -363,8 +330,12 @@
 					MittPsyke är byggt för lugn reflektion i egen takt. Det är inte vård eller behandling, men kan vara en första plats att landa innan du tar nästa steg.
 				</p>
 				<p class="trust-privacy">
-					Vill du läsa mer om vad som sparas och hur uppgifter hanteras?
+					Vill du läsa mer om vad som sparas?
 					<a href="/integritet">Läs integritetspolicyn</a>.
+				</p>
+				<p class="trust-research">
+					Forskning visar att strukturerat digitalt stöd kan ha positiva effekter på psykisk hälsa.
+					<a href="https://www.jmir.org/2024/1/e51268" target="_blank" rel="noopener noreferrer">Källa: Yeo et al., JMIR 2024</a>.
 				</p>
 			</div>
 		</div>
@@ -767,9 +738,6 @@
 		letter-spacing: 0.005em;
 	}
 
-	.how-evidence {
-		margin-top: 1rem;
-	}
 
 	/* ── Sektion 5: Funktioner ── */
 	.features-section {
@@ -830,122 +798,6 @@
 		text-underline-offset: 3px;
 		color: #234235;
 		font-size: 0.88rem;
-	}
-
-	/* ── Fokusområden ── */
-	.focus-section {
-		background: #f4f6f7;
-		padding: clamp(3.8rem, 10vw, 6.8rem) 1.25rem;
-	}
-
-	.narrow {
-		width: min(760px, 100%);
-		margin: 0 auto;
-	}
-
-	.focus-content {
-		color: #2c3338;
-	}
-
-	.focus-header {
-		max-width: 62ch;
-		margin: 0 auto 1.5rem;
-		text-align: left;
-	}
-
-	.focus-header h2 {
-		margin: 0;
-		color: #263036;
-		font-family: var(--font-heading);
-		font-weight: 700;
-		font-size: clamp(1.55rem, 3vw, 2.2rem);
-		letter-spacing: -0.02em;
-	}
-
-	.focus-header p {
-		margin: 0.75rem 0 0;
-		color: #54626b;
-		font-family: var(--font-body);
-		font-weight: 400;
-		line-height: 1.7;
-		font-size: 1rem;
-	}
-
-	.focus-cards {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.95rem;
-	}
-
-	.focus-card {
-		display: block;
-		padding: 0.85rem;
-		border-radius: var(--radius-card);
-		background: #ffffff;
-		border: 1px solid #e7ecef;
-		color: #2c3338;
-		transition: transform 180ms ease, background-color 180ms ease;
-	}
-
-	.focus-card:hover {
-		transform: translateY(-2px);
-		background: #fafcfc;
-	}
-
-	.focus-cover {
-		display: block;
-		width: 100%;
-		height: clamp(150px, 28vw, 178px);
-		object-fit: cover;
-		border-radius: var(--radius-input);
-		filter: saturate(0.88) contrast(0.96);
-	}
-
-	.focus-body {
-		padding: 0.9rem 0.2rem 0.25rem;
-	}
-
-	.focus-icon {
-		display: inline-flex;
-		width: 2.05rem;
-		height: 2.05rem;
-		align-items: center;
-		justify-content: center;
-		font-size: 1.1rem;
-		margin-bottom: 0.58rem;
-		background: #edf1f2;
-		border-radius: var(--radius-pill);
-	}
-
-	.focus-card h3 {
-		margin: 0;
-		color: #273237;
-		font-family: var(--font-heading);
-		font-weight: 600;
-		font-size: 1.1rem;
-		letter-spacing: -0.015em;
-	}
-
-	.focus-card p {
-		margin: 0.6rem 0 0;
-		font-family: var(--font-body);
-		font-weight: 400;
-		font-size: 0.95rem;
-		line-height: 1.7;
-		color: #516069;
-	}
-
-	.focus-cta {
-		display: inline-block;
-		margin-top: 0.85rem;
-		padding: 0.38rem 0.72rem;
-		border-radius: var(--radius-pill);
-		background: #e7f1ee;
-		color: #2e5850;
-		font-family: var(--font-heading);
-		font-size: 0.82rem;
-		font-weight: 600;
-		letter-spacing: 0.005em;
 	}
 
 	/* ── Sektion 6: Forum ── */
@@ -1102,10 +954,16 @@
 		color: rgba(255, 255, 255, 0.9);
 	}
 
-	.trust-privacy a {
+	.trust-privacy a,
+	.trust-research a {
 		color: #9ad7ce;
 		text-decoration: underline;
 		text-underline-offset: 3px;
+	}
+
+	.trust-research {
+		font-size: 0.88rem;
+		opacity: 0.72;
 	}
 
 	/* ── Sektion 8: Viktigt att veta ── */
@@ -1231,15 +1089,6 @@
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 1.05rem;
 		}
-
-		.focus-cards {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 1.1rem;
-		}
-
-		.focus-header {
-			margin-bottom: 1.8rem;
-		}
 	}
 
 	@media (min-width: 1040px) {
@@ -1256,11 +1105,6 @@
 		.features-grid {
 			grid-template-columns: repeat(4, minmax(0, 1fr));
 			gap: 1.1rem;
-		}
-
-		.focus-cards {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 1.25rem;
 		}
 
 		.forum-thread-grid {
@@ -1394,49 +1238,6 @@
 	}
 
 	:global(.dark) .feature-card-cta {
-		color: #86dfd6;
-	}
-
-	:global(.dark) .focus-section {
-		background: #1a1c1d;
-	}
-
-	:global(.dark) .focus-content {
-		color: #e8e6e2;
-	}
-
-	:global(.dark) .focus-header h2 {
-		color: #f0eeea;
-	}
-
-	:global(.dark) .focus-header p {
-		color: rgba(255, 255, 255, 0.65);
-	}
-
-	:global(.dark) .focus-card {
-		background: #232526;
-		border-color: rgba(255, 255, 255, 0.08);
-		color: #e8e6e2;
-	}
-
-	:global(.dark) .focus-card:hover {
-		background: #2a2c2e;
-	}
-
-	:global(.dark) .focus-icon {
-		background: rgba(255, 255, 255, 0.08);
-	}
-
-	:global(.dark) .focus-card h3 {
-		color: #f0eeea;
-	}
-
-	:global(.dark) .focus-card p {
-		color: rgba(255, 255, 255, 0.65);
-	}
-
-	:global(.dark) .focus-cta {
-		background: rgba(134, 223, 214, 0.12);
 		color: #86dfd6;
 	}
 
