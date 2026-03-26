@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/samtalsstod-vid-trauma",
+      "destination": "/samtalsstod-utan-vantetid/samtalsstod-vid-trauma",
+      "permanent": true
+    }
+  ]
+}
