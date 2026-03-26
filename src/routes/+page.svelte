@@ -176,14 +176,14 @@
 				<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
 				<h1>MittPsyke är en lugn plats att börja på.</h1>
 				<p>
-					Skriv av dig direkt — utan konto eller registrering.
+					Skriv av dig direkt — utan konto.
 					Skapar du ett konto kan du spara dagbok, följa ditt mående och se dina framsteg.
 				</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa konto</a>
 				</div>
-				<p class="hero-trust-note">Ingen registrering krävs. Du kan börja skriva direkt.</p>
+				<p class="hero-trust-note">Ingen registrering krävs.</p>
 			</div>
 		</div>
 	</section>
@@ -193,7 +193,7 @@
 		<div class="cards-narrow first-step-inner">
 			<h2 id="first-step-title">Ett första steg, i din egen takt</h2>
 			<p class="first-step-body">
-				MittPsyke hjälper dig sätta ord på hur du mår. Du kan skriva fritt med AI-stöd, föra dagbok, spåra ditt humör och läsa guider — allt i ett lugnt tempo utan press.
+				MittPsyke hjälper dig sätta ord på hur du mår — med AI-stöd, dagbok och humörspårning, i ett lugnt tempo utan press.
 			</p>
 			<div class="support-points">
 				{#each supportPoints as point}
@@ -211,7 +211,7 @@
 		<div class="cards-narrow entry-inner">
 			<h2 id="entry-paths-title">Välj det som hjälper mest just nu</h2>
 			<p class="entry-intro">
-				Välj det som känns mest hjälpsamt. Du kan alltid byta väg senare.
+				Välj det som känns närmast just nu.
 			</p>
 			<div class="entry-grid">
 				{#each entryPaths as path}
@@ -234,25 +234,25 @@
 				<article class="how-card">
 					<span class="how-step">01</span>
 					<h3>Börja anonymt</h3>
-					<p>Skriv direkt utan konto. Ingen profil skapas.</p>
+					<p>Välj ett tema och skriv fritt. Samtalet tar form i din takt — utan konto.</p>
 					<a class="how-card-cta" href="/skriv">Börja skriva</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">02</span>
 					<h3>Skapa konto</h3>
-					<p>Spara dagbok, historik och kunna komma tillbaka till samma plats.</p>
+					<p>Spara dagbok och historik, och fortsätt där du slutade nästa gång.</p>
 					<a class="how-card-cta" href="/register">Skapa konto</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">03</span>
-					<h3>Dagbok och historik</h3>
-					<p>Spara reflektioner, följ känslor över tid och se din utveckling.</p>
+					<h3>Följ ditt mående</h3>
+					<p>Se hur du mår över tid med grafer och stämningslogg — mönster blir tydliga.</p>
 					<a class="how-card-cta" href="/dagbok">Se dagboken</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">04</span>
 					<h3>Vidare stöd</h3>
-					<p>Röstsamtal finns här på sidan. Vid akut fara: ring 112 eller kontakta 1177.</p>
+					<p>Röstsamtal finns på sidan. Vid akut fara: ring 112 eller kontakta 1177.</p>
 					<a class="how-card-cta" href="#roststod">Se stödvägar</a>
 				</article>
 			</div>
@@ -281,8 +281,7 @@
 			<div class="forum-header">
 				<h2 id="forum-section-title">Du är inte ensam här</h2>
 				<p>
-					I forumet kan du läsa vad andra går igenom, dela egna tankar och känna att du inte är ensam.
-					Du kan skapa en tråd anonymt eller som inloggad — eller bara läsa i din egen takt.
+					I forumet kan du läsa vad andra går igenom och dela egna tankar — anonymt eller med konto, utan press.
 				</p>
 			</div>
 			{#if homepageForumThreads.length > 0}
