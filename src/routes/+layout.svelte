@@ -50,6 +50,7 @@
 
 	const guestPrimaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chatta' },
+		{ href: '/dagbok', label: 'Dagbok' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' },
 		{ href: '/forum', label: 'Forum' },
