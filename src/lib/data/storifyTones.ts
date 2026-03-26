@@ -40,7 +40,12 @@ export const activeStorifyToneIds = [
 	'philosophical',
 	'therapist',
 	'overthinker',
-	'quest-log'
+	'quest-log',
+	'classic',
+	'sportscaster',
+	'ai-robot',
+	'self-help',
+	'cynical'
 ] as const;
 
 export const activeStorifyTones: StorifyTone[] = activeStorifyToneIds

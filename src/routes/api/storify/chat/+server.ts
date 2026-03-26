@@ -1,7 +1,16 @@
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
-type ActiveToneId = 'philosophical' | 'therapist' | 'overthinker' | 'quest-log';
+type ActiveToneId =
+	| 'philosophical'
+	| 'therapist'
+	| 'overthinker'
+	| 'quest-log'
+	| 'classic'
+	| 'sportscaster'
+	| 'ai-robot'
+	| 'self-help'
+	| 'cynical';
 
 const BASE_INTERVIEWER_PROMPT = `Du ar en vanlig och nyfiken intervjuare vars enda uppgift ar att hjalpa anvandaren samla material till ett personligt dagboksinlagg. Du staller fragor och lyssnar - du skriver INTE dagboken.
 
@@ -60,7 +69,32 @@ const TONE_PROMPT_ADDITIONS: Record<ActiveToneId, string> = {
 - Stall fragor som om dagen var ett uppdrag eller en serie sma quests
 - Anvand latt spelig terminologi sparsamt: quest, level, boss, checkpoint, side quest
 - Hall tonen lekfull men fortfarande lugn och mansklig
-- Gor inte hela svaret till ett skamt - fragorna ska fortfarande ge verkligt innehall till dagboken`
+- Gor inte hela svaret till ett skamt - fragorna ska fortfarande ge verkligt innehall till dagboken`,
+	classic: `ROST: Klassisk dagbok.
+- Stall varma, enkla fragor som en dagbok naturligt skulle kalla fram
+- Hall tonen personlig och jordnara - som att prata med sig sjalv pa papper
+- Fokusera pa vad som hande, hur det kandes och sma konkreta detaljer fran dagen
+- Undvik analyserat eller terapeutiskt sprak - hall det arligt och ofiltrerat`,
+	sportscaster: `ROST: Sportkommentator.
+- Stall fragor med energi och dramatik - som att varje stund av dagen hade insatser
+- Anvand sportterminologi sparsamt: match, halvlek, avgörande ogonblick, comeback
+- Hall tempot hogre an vanligt - korta, kontanta fragor
+- Gor det lekfullt och engagerat utan att tappa det riktiga innehallet`,
+	'ai-robot': `ROST: AI-robot.
+- Stall precisa, dataorienterade fragor - som en systemlogg som samlar information
+- Anvand systemlik terminologi sparsamt: registrera, bekrafta, specificera, input
+- Hall tonen metodisk och neutral, men lat en subtil varme skymta igenom
+- Fragor ska vara tydliga och konkreta - ingen vaghet eller tolkningsfrihet`,
+	'self-help': `ROST: Livscoach.
+- Stall fragor som hjalper anvandaren se mojligheter och laerdomar i sin dag
+- Fokusera pa vad de kande, vad de larde sig och vad de kan ta med sig framt
+- Hall tonen uppmuntrande och varm - genuint intresserad, aldrig pladdrande
+- Undvik klyschiga coachingfraser - hall det naturligt och manskligt`,
+	cynical: `ROST: Cyniker.
+- Stall fragor med torr, skeptisk ton - som att dagen antagligen var precis sa ointressant som den later
+- Lat fragorna ha en latt ironisk underton utan att bli sarkastiska eller otrevliga
+- Hall det lasbart och avmatt - du ar inte otrevlig, bara realistisk
+- Fragorna ska andas klar sansning, inte pessimism`
 };
 
 interface ChatMessage {
@@ -74,6 +108,11 @@ function normalizeToneId(value: unknown): ActiveToneId {
 		case 'therapist':
 		case 'overthinker':
 		case 'quest-log':
+		case 'classic':
+		case 'sportscaster':
+		case 'ai-robot':
+		case 'self-help':
+		case 'cynical':
 			return value;
 		default:
 			return 'therapist';

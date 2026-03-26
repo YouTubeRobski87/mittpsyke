@@ -8,6 +8,9 @@ import { buildPrompt as boredPrompt } from './bored';
 import { buildPrompt as therapistPrompt } from './therapist';
 import { buildPrompt as selfHelpPrompt } from './self-help';
 import { buildPrompt as overthinkerPrompt } from './overthinker';
+import { buildPrompt as sportscasterPrompt } from './sportscaster';
+import { buildPrompt as aiRobotPrompt } from './ai-robot';
+import { buildPrompt as cynicalPrompt } from './cynical';
 
 const activeToneIds = [
 	'classic',
@@ -17,7 +20,10 @@ const activeToneIds = [
 	'bored',
 	'therapist',
 	'self-help',
-	'overthinker'
+	'overthinker',
+	'sportscaster',
+	'ai-robot',
+	'cynical'
 ] as const;
 
 export type ToneId = (typeof activeToneIds)[number];
@@ -30,7 +36,10 @@ const toneBuilders: Record<ToneId, TonePromptBuilder> = {
 	bored: boredPrompt,
 	therapist: therapistPrompt,
 	'self-help': selfHelpPrompt,
-	overthinker: overthinkerPrompt
+	overthinker: overthinkerPrompt,
+	sportscaster: sportscasterPrompt,
+	'ai-robot': aiRobotPrompt,
+	cynical: cynicalPrompt
 };
 
 export function buildTonePrompt(toneId: string): string {
