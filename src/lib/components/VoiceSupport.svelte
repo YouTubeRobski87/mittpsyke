@@ -70,29 +70,30 @@
 
 <style>
 	.voice-support {
-		padding: 60px 20px;
+		padding: clamp(1.8rem, 4vw, 2.8rem) 1.25rem;
 		text-align: center;
 		background: #eef2f0;
 		color: #2c3338;
+		border-top: 1px solid #dde5e1;
 	}
 
 	.voice-support h2 {
-		margin: 0 0 0.75rem;
+		margin: 0 0 0.5rem;
 		font-family: var(--font-heading);
 		font-weight: 700;
-		font-size: clamp(1.55rem, 3vw, 2.2rem);
-		letter-spacing: -0.02em;
+		font-size: clamp(1.15rem, 2vw, 1.4rem);
+		letter-spacing: -0.015em;
 		color: #263036;
 	}
 
 	.voice-support p {
-		margin: 0 auto 1.5rem;
+		margin: 0 auto 0.9rem;
 		max-width: 52ch;
 		color: #516069;
 		font-family: var(--font-body);
 		font-weight: 400;
-		line-height: 1.7;
-		font-size: 1rem;
+		line-height: 1.65;
+		font-size: 0.95rem;
 	}
 
 	.voice-support-note {
@@ -116,14 +117,14 @@
 		background: #6b8e7a;
 		color: white;
 		border: none;
-		padding: 14px 24px;
-		border-radius: 12px;
-		font-size: 18px;
+		padding: 10px 20px;
+		border-radius: 10px;
+		font-size: 15px;
 		cursor: pointer;
 		transition: background 0.2s ease, transform 0.2s ease;
 		display: inline-block;
 		text-decoration: none;
-		margin-top: 0.9rem;
+		margin-top: 0.6rem;
 	}
 
 	button:hover,
