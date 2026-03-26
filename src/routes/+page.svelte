@@ -389,11 +389,11 @@
 	<section class="discovery-section" aria-labelledby="discovery-title">
 		<div class="cards-narrow discovery-inner">
 			<div class="discovery-copy">
-				<p class="discovery-eyebrow">Vanliga ingÃ¥ngar frÃ¥n sÃ¶k</p>
-				<h2 id="discovery-title">BÃ¶rja dÃ¤r det kÃ¤nns mest trÃ¤ffsÃ¤kert</h2>
+				<p class="discovery-eyebrow">Vanliga ingångar från sök</p>
+				<h2 id="discovery-title">Börja där det känns mest träffsäkert</h2>
 				<p>
-					MÃ¥nga hittar hit mitt i nÃ¥got konkret: oro, stress, panik eller behovet av att prata anonymt.
-					HÃ¤r Ã¤r nÃ¥gra vanliga vÃ¤gar in.
+					Många hittar hit mitt i något konkret: oro, stress, panik eller behovet av att prata anonymt.
+					Här är några vanliga vägar in.
 				</p>
 			</div>
 			<div class="discovery-grid">
@@ -401,7 +401,7 @@
 					<a class="discovery-card" href={item.href}>
 						<h3>{item.title}</h3>
 						<p>{item.description}</p>
-						<span>LÃ¤s mer</span>
+						<span>Läs mer</span>
 					</a>
 				{/each}
 			</div>
@@ -412,11 +412,11 @@
 		<div class="cards-narrow blog-preview-inner">
 			<div class="blog-preview-head">
 				<div>
-					<p class="blog-preview-eyebrow">InnehÃ¥ll som kan dra in rÃ¤tt trafik</p>
-					<h2 id="blog-preview-title">Senaste frÃ¥n bloggen</h2>
+					<p class="blog-preview-eyebrow">Innehåll som kan dra in rätt trafik</p>
+					<h2 id="blog-preview-title">Senaste från bloggen</h2>
 					<p>
-						Artiklarna hjÃ¤lper fler att hitta MittPsyke via sÃ¶k och ger en lugnare vÃ¤g vidare in till guider,
-						Ã¶vningar och anonymt skrivstÃ¶d.
+						Artiklarna hjälper fler att hitta MittPsyke via sök och ger en lugnare väg vidare in till guider,
+						övningar och anonymt skrivstöd.
 					</p>
 				</div>
 				<a class="blog-preview-link" href="/blogg">Se alla artiklar</a>
@@ -427,7 +427,7 @@
 						<p class="blog-preview-meta">{post.publishedLabel} · {post.readTime}</p>
 						<h3>{post.title}</h3>
 						<p>{post.excerpt}</p>
-						<a href={`/blogg/${post.slug}`}>LÃ¤s artikel</a>
+						<a href={`/blogg/${post.slug}`}>Läs artikel</a>
 					</article>
 				{/each}
 			</div>
