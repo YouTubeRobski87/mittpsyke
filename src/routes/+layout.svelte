@@ -256,7 +256,7 @@
 			content="MittPsyke är tillfälligt under konstruktion medan vi arbetar med förbättringar."
 		/>
 	{:else}
-		<title>{page.data?.title ? `${page.data.title} | Mittpsyke` : 'Psykiskt stöd online | Verktyg mot ångest | MittPsyke'}</title>
+		<title>{page.data?.title ? `${page.data.title} | MittPsyke` : 'Psykiskt stöd online | Verktyg mot ångest | MittPsyke'}</title>
 
 		<meta
 			name="description"
@@ -267,7 +267,7 @@
 		<meta name="author" content="MittPsyke" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<meta property="og:title" content={page.data?.title ? `${page.data.title} | Mittpsyke` : 'MittPsyke – Psykiskt stöd online'} />
+		<meta property="og:title" content={page.data?.title ? `${page.data.title} | MittPsyke` : 'MittPsyke – Psykiskt stöd online'} />
 		<meta
 			property="og:description"
 			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
@@ -282,7 +282,7 @@
 		<link rel="alternate" hreflang="sv" href="https://www.mittpsyke.se" />
 
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | Mittpsyke` : 'MittPsyke – Psykiskt stöd online'} />
+		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | MittPsyke` : 'MittPsyke – Psykiskt stöd online'} />
 		<meta
 			name="twitter:description"
 			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
