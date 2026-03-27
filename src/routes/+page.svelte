@@ -307,6 +307,32 @@
 				</div>
 			{/if}
 			<a href="/forum" class="forum-cta-link">Gå till forumet</a>
+			<div class="forum-subsection">
+				<h3 class="forum-subheading">Mest populÃ¤ra forumsinlÃ¤gg</h3>
+				{#if popularForumThreads.length > 0}
+					<div class="forum-thread-grid" aria-label="Mest populÃ¤ra forumsinlÃ¤gg">
+						{#each popularForumThreads as thread}
+							<article class="forum-thread-card">
+								<p class="forum-meta">{thread.reply_count} svar</p>
+								<a class="forum-thread-link" href={`/forum/thread/${thread.id}`}>
+									<h3>{thread.title}</h3>
+								</a>
+								<div class="forum-thread-footer">
+									<p class="forum-count">
+										Senast aktiv {formatForumTime(thread.active_at || thread.created_at)}
+									</p>
+									<a class="forum-inline-link" href={`/forum/thread/${thread.id}`}>LÃ¤s trÃ¥den</a>
+								</div>
+							</article>
+						{/each}
+					</div>
+				{:else}
+					<div class="forum-empty">
+						<p>Inga populÃ¤ra inlÃ¤gg Ã¤nnu</p>
+					</div>
+				{/if}
+			</div>
+			<a href="/forum" class="forum-cta-link">GÃ¥ till forumet</a>
 		</div>
 	</section>
 
