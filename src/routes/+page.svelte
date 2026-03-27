@@ -306,11 +306,10 @@
 					<p>Inga aktiva trådar ännu</p>
 				</div>
 			{/if}
-			<a href="/forum" class="forum-cta-link">Gå till forumet</a>
 			<div class="forum-subsection">
-				<h3 class="forum-subheading">Mest populÃ¤ra forumsinlÃ¤gg</h3>
+				<h3 class="forum-subheading">Mest popul&#228;ra forumsinl&#228;gg</h3>
 				{#if popularForumThreads.length > 0}
-					<div class="forum-thread-grid" aria-label="Mest populÃ¤ra forumsinlÃ¤gg">
+					<div class="forum-thread-grid" aria-label="Mest popul&#228;ra forumsinl&#228;gg">
 						{#each popularForumThreads as thread}
 							<article class="forum-thread-card">
 								<p class="forum-meta">{thread.reply_count} svar</p>
@@ -321,18 +320,18 @@
 									<p class="forum-count">
 										Senast aktiv {formatForumTime(thread.active_at || thread.created_at)}
 									</p>
-									<a class="forum-inline-link" href={`/forum/thread/${thread.id}`}>LÃ¤s trÃ¥den</a>
+									<a class="forum-inline-link" href={`/forum/thread/${thread.id}`}>L&#228;s tr&#229;den</a>
 								</div>
 							</article>
 						{/each}
 					</div>
 				{:else}
 					<div class="forum-empty">
-						<p>Inga populÃ¤ra inlÃ¤gg Ã¤nnu</p>
+						<p>Inga popul&#228;ra inl&#228;gg &#228;nnu</p>
 					</div>
 				{/if}
 			</div>
-			<a href="/forum" class="forum-cta-link">GÃ¥ till forumet</a>
+			<a href="/forum" class="forum-cta-link">G&#229; till forumet</a>
 		</div>
 	</section>
 
