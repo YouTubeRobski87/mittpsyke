@@ -19,9 +19,9 @@
 		loading?: boolean;
 	} = $props();
 
-	let weeks: HeatmapCell[][] = [];
-	let heatmapWrapper: HTMLDivElement | null = null;
-	let scrolledToToday = false;
+	let weeks = $state<HeatmapCell[][]>([]);
+	let heatmapWrapper = $state<HTMLDivElement | null>(null);
+	let scrolledToToday = $state(false);
 
 	const WEEKDAYS = ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'];
 
