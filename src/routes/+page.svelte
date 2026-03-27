@@ -16,12 +16,12 @@
 		data
 	}: {
 		data: {
-			latestForumThreads?: HomepageForumThread[];
+			homepageForumThreads?: HomepageForumThread[];
 		};
 	} = $props();
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
-	const homepageForumThreads = $derived(data.latestForumThreads ?? []);
+	const homepageForumThreads = $derived(data.homepageForumThreads ?? []);
 
 	const entryPaths = [
 		{

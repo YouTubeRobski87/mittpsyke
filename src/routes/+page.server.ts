@@ -21,7 +21,7 @@ function isMissingTableError(
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
-	let latestForumThreads: LatestForumThread[] = [];
+	let homepageForumThreads: LatestForumThread[] = [];
 
 	const { data: latestCreatedThreads, error: latestThreadsError } = await locals.supabase
 		.from('forum_threads')
@@ -151,7 +151,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}
 	}
 
-	latestForumThreads = Array.from(candidateThreads.values())
+	homepageForumThreads = Array.from(candidateThreads.values())
 		.map((thread) => {
 			const replyStats = replyStatsByThread.get(thread.id);
 			return {
@@ -170,16 +170,17 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.slice(0, 3);
 
 	console.log('Homepage latestForumThreads', {
+		returnedThreadCount: homepageForumThreads.length,
 		latestCreatedThreads: latestCreatedThreads?.length ?? 0,
 		recentReplyRows: recentReplies?.length ?? 0,
 		candidateThreads: candidateThreadIds.length,
-		returnedThreads: latestForumThreads
+		returnedThreads: homepageForumThreads
 	});
 
 	return {
 		title: 'MittPsyke â€“ AI-dagbok fÃ¶r mental hÃ¤lsa',
 		description:
 			'Skriv dagbok med AI-stÃ¶d, spÃ¥ra ditt humÃ¶r och fÃ¶rstÃ¥ dina kÃ¤nslomÃ¶nster. MittPsyke Ã¤r din personliga digitala dagbok fÃ¶r vÃ¤lmÃ¥ende.',
-		latestForumThreads
+		homepageForumThreads
 	};
 };
