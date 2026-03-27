@@ -3032,35 +3032,109 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 	},
 	stress: {
 		pillarSlug: 'stress',
-		seoTitle: 'Stress och sömn - när kroppen inte kan varva ner',
+		seoTitle: 'Stress och utmattning - förstå belastningen och hitta lugna nästa steg',
 		seoDescription:
-			'Förstå sambandet mellan stress och sömn, varför kroppen blir uppvarvad och vad du kan prova i lugn takt. Guider, övningar och varsamma nästa steg.',
-		h1: 'Stress och sömn - när kroppen inte kan varva ner',
+			'Läs om skillnaden mellan stress och utmattning, hur belastning kan märkas i kropp och tankar, vad som ibland hjälper i stunden och när mer stöd kan vara bra.',
+		h1: 'Stöd vid stress och utmattning i lugn takt',
 		intro:
-			'När stressen blir långvarig påverkas både sömn, återhämtning och ork. Här hittar du en tydlig översikt och hjälpsamma steg som går att börja med direkt.',
-		sections: [
+			'Stress kan byggas upp långsamt och märkas på många olika sätt innan man riktigt hinner förstå vad som händer. Här får du en lugn översikt över belastning, återhämtning och när det kan vara dags att stanna upp och söka mer stöd.',
+		updatedAt: '2026-03-27',
+		sources: [
 			{
-				heading: 'Varför stress påverkar sömnen',
-				body: 'Ett uppvarvat nervsystem gör det svårare att somna och lättare att vakna under natten. Det handlar inte om svaghet, utan om hur kroppen reagerar på belastning.',
-				links: [{ title: 'Stressymtom - hur stress visar sig i kropp och tankar', href: '/guider-seo/stress/stressymtom' }]
+				label: 'Stress – 1177 Vårdguiden',
+				url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/'
 			},
 			{
-				heading: 'När trötthet och oro förstärker varandra',
-				body: 'Sömnbrist gör oss mer sårbara för oro och stress nästa dag. Det kan bli en cirkel som känns svår att bryta. Små justeringar i vardagen kan minska trycket stegvis.',
+				label: 'Psykisk hälsa – Folkhälsomyndigheten',
+				url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/'
+			},
+			{
+				label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen',
+				url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/'
+			}
+		],
+		sections: [
+			{
+				heading: 'Vad stress och utmattning är',
+				body: 'Stress är kroppens sätt att mobilisera kraft när kraven känns höga eller något behöver hanteras snabbt. Utmattning handlar oftare om vad som händer när belastningen pågår länge utan tillräcklig återhämtning. De hör ihop, men är inte samma sak. Många märker först stresspåslaget och senare att orken inte längre kommer tillbaka som den brukade.',
 				links: [
-					{ title: 'Mycket tankar på kvällen - när hjärnan inte stänger av', href: '/guider-seo/stress/mycket-tankar-pa-kvallen' },
-					{ title: 'Varför orkar jag ingenting? - vad det kan bero på och vad som hjälper', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' }
+					{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' },
+					{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' }
 				]
 			},
 			{
-				heading: 'Små steg för återhämtning',
-				body: 'Du behöver inte lösa allt direkt. Ett lugnt nästa steg kan vara en kort övning, en stund i dagboken eller att prata med någon. Vid akut fara ringer du 112 och för vårdråd finns 1177.'
+				heading: 'Hur stress kan kännas i tankar, kropp och beteenden',
+				body: 'I tankarna kan stress märkas som rastlöshet, irritation, tunnelseende, grubblande eller en känsla av att aldrig riktigt bli klar. I kroppen kan det kännas som spända muskler, hjärtklappning, trötthet, huvudvärk, magbesvär eller att det är svårt att varva ner. I beteenden syns stress ofta som att man kör på fast man är slut, skjuter upp återhämtning eller blir mer kort i tonen än man egentligen vill.',
+				links: [
+					{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' },
+					{ title: 'Mycket tankar på kvällen – när hjärnan inte vill stänga av', href: '/guider-seo/stress/mycket-tankar-pa-kvallen' }
+				]
+			},
+			{
+				heading: 'Vanliga situationer där stress märks',
+				body: 'Stress kan märkas i arbete eller studier när tempot varit högt länge, i relationer när man bär mycket ansvar eller i livssituationer där flera saker pågår samtidigt. Ibland syns den tydligast först på kvällen eller i kroppen, när det egentligen borde finnas plats för vila.',
+				links: [
+					{ title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' },
+					{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider-seo/sovproblem/stress-och-somn' },
+					{ title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget', href: '/guider-seo/sovproblem/trott-men-uppvarvad' }
+				]
+			},
+			{
+				heading: 'Vad som ibland kan hjälpa i stunden',
+				body: 'När stressen känns överväldigande hjälper det ofta mer att sänka tempot lite än att försöka pressa igenom allt. En kort grounding-övning, några lugna andetag, en paus från intryck eller att välja bort en enda sak kan göra skillnad. Små signaler om trygghet och stopp är ofta mer hjälpsamma än stora planer mitt i belastningen.',
+				links: [
+					{ title: 'Grounding-övning vid stress – landa i nuet på 5 minuter', href: '/guider-seo/stress/grounding-ovning-vid-stress' },
+					{ title: 'Stöd vid stress online', href: '/stod-vid-stress-online' },
+					{ title: 'Skriv i dagboken', href: '/dagbok' }
+				]
+			},
+			{
+				heading: 'När det kan vara bra att söka mer stöd',
+				body: 'Det kan vara bra att söka mer stöd om stressen håller i sig, påverkar sömn eller koncentration, gör att du inte återhämtar dig trots vila eller om du känner att kroppen och huvudet inte längre hänger med. MittPsyke kan vara en lugn första ingång, men ersätter inte professionell vård. Vid akut fara ringer du 112. För vårdråd finns 1177 och för vidare mänskligt stöd finns stodlinjer.se.',
+				links: [
+					{ title: 'Läs mer om stöd vid stress online', href: '/stress' },
+					{ title: 'Hjälp mot oro online', href: '/hjalp-mot-oro-online' },
+					{ title: 'Prata anonymt om stress', href: '/chat/a' }
+				]
+			},
+			{
+				heading: 'Vidare läsning i MittPsyke',
+				body: 'Om du vill läsa vidare finns guider om utmattning, sömnproblem, gränssättning, ångest och grubblande. Du kan också fortsätta varsamt med en övning eller skriva av dig för att se mönstren tydligare.',
+				links: [
+					{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
+					{ title: 'Att sätta gränser när självkänslan är låg - varför det är svårt', href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla' },
+					{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
+					{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' },
+					{ title: 'Stöd vid sömnproblem i lugn takt', href: '/guider-seo/sovproblem' }
+				]
 			}
 		],
 		primaryLinks: [
 			{ title: 'Se alla artiklar om stress', href: '/guider-seo/stress' },
-			{ title: 'Läs mer om stöd vid stress online', href: '/stress' },
+			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
 			{ title: 'Stöd vid stress online', href: '/stod-vid-stress-online' }
+		],
+		faqs: [
+			{
+				question: 'Vad är skillnaden mellan stress och utmattning?',
+				answer: 'Stress är ofta ett påslag i kroppen när kraven är höga. Utmattning handlar mer om vad som kan hända när belastningen pågår länge och återhämtningen inte räcker till.'
+			},
+			{
+				question: 'Hur känns stress i kroppen?',
+				answer: 'Vanliga tecken är spända muskler, hjärtklappning, trötthet, huvudvärk, magoro eller att det är svårt att varva ner även när du vill vila.'
+			},
+			{
+				question: 'Vad kan hjälpa när stressen känns överväldigande?',
+				answer: 'Börja smått: sänk tempot lite, ta några lugna andetag, pausa från intryck och välj bort en enda sak. Små steg hjälper ofta mer än att pressa hårdare.'
+			},
+			{
+				question: 'Kan man bli utmattad utan att märka det?',
+				answer: 'Ja. Många fortsätter länge av vana eller ansvar och märker först senare att orken, minnet eller återhämtningen har förändrats mer än de trodde.'
+			},
+			{
+				question: 'När bör man söka hjälp för stress?',
+				answer: 'Sök mer stöd om stressen håller i sig, påverkar sömn eller vardag, eller om du inte återhämtar dig trots vila. Vid akut fara ringer du 112.'
+			}
 		]
 	},
 	trauma: {

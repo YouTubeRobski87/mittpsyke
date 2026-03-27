@@ -50,9 +50,16 @@
 		<section class="mt-8" aria-label="Fördjupning">
 			<h2 class="text-xl font-semibold">Fördjupa dig i området</h2>
 			<p class="mt-2 leading-relaxed text-black/75">Välj en guide som matchar det du behöver just nu.</p>
-			<ul class="mt-3 space-y-2">
+			<ul class="mt-4 grid gap-3 md:grid-cols-2">
 				{#each guides as guide}
-					<li><a class="hover:underline" href={`/guider-seo/${guide.pillarSlug}/${guide.slug}`}>{guide.title}</a></li>
+					<li class="rounded-xl border border-black/10 bg-white/70 p-4">
+						<a
+							class="block leading-relaxed hover:underline"
+							href={`/guider-seo/${guide.pillarSlug}/${guide.slug}`}
+						>
+							{guide.title}
+						</a>
+					</li>
 				{/each}
 			</ul>
 		</section>
