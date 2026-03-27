@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { THEMES, THEME_STORAGE_KEY, getThemeColors, getCachedTheme } from '$lib/theme';
+	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
@@ -11,7 +11,7 @@
 		hasSensitiveConsent
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
-	import { Flame, Trophy, TrendingUp, Lightbulb, Calendar, Heart, BookOpen } from 'lucide-svelte';
+	import { Trophy, TrendingUp, Lightbulb, Calendar, Heart } from 'lucide-svelte';
 
 	interface StreakData {
 		currentStreak: number;
@@ -97,7 +97,7 @@
 	let insightsData = $state<InsightsResponse | null>(null);
 	let insightsLoading = $state(false);
 	let insightsError = $state('');
-	let hasSensitiveDataConsent = $state(false);
+	let hasSensitiveDataConsent = $state(browser ? hasSensitiveConsent() : false);
 	let insightsVisible = $state(false);
 	let heatmapVisible = $state(false);
 	let insightsCardEl = $state<HTMLElement | null>(null);
@@ -311,7 +311,7 @@
 			{:else}
 
 		<!-- ── AI-insikter ── -->
-		<section class="card insights-card">
+		<section class="card insights-card" bind:this={insightsCardEl}>
 			<div class="card-header">
 				<div class="icon-badge insight"><Lightbulb size={24} /></div>
 				<h2>Dina AI-insikter</h2>
@@ -324,6 +324,8 @@
 					serviceLabel="AI- och tredjepartstjänster"
 					onAccept={acceptSensitiveDataConsent}
 				/>
+			{:else if !insightsVisible}
+				<div class="card-placeholder card-placeholder--insights" aria-hidden="true"></div>
 			{:else if insightsLoading}
 				<p class="heatmap-description">Laddar AI-insikter...</p>
 			{:else if insightsError}
@@ -417,13 +419,23 @@
 		</section>
 
 		<!-- ── Aktivitetskarta ── -->
-		<section class="card heatmap-card">
+		<section class="card heatmap-card" bind:this={heatmapCardEl}>
 			<div class="card-header">
 				<div class="icon-badge heat"><TrendingUp size={24} /></div>
 				<h2>Din aktivitetskarta</h2>
 			</div>
 			<p class="heatmap-description">Varje ruta motsvarar en dag. Mörkare färg = fler inlägg.</p>
-			<ActivityHeatmap />
+			{#if heatmapVisible}
+				{#await import('$lib/components/ActivityHeatmap.svelte')}
+					<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
+				{:then module}
+					<module.default data={heatmapData} error={heatmapError} />
+				{:catch}
+					<p class="heatmap-description">Aktivitetskartan kunde inte laddas just nu.</p>
+				{/await}
+			{:else}
+				<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
+			{/if}
 		</section>
 
 		<!-- ── Milstolpar ── -->
@@ -545,6 +557,22 @@
 	.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
 	.card-header h2 { font-size: 1.3rem; margin: 0; color: hsl(var(--foreground)); }
 	.icon-badge { width: 2.8rem; height: 2.8rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
+	.insights-card,
+	.heatmap-card { min-height: 22rem; }
+	.card-placeholder {
+		border-radius: 0.75rem;
+		background:
+			linear-gradient(90deg, hsl(var(--surface-muted)) 25%, hsl(var(--surface-soft)) 50%, hsl(var(--surface-muted)) 75%);
+		background-size: 200% 100%;
+		animation: cardPlaceholderShimmer 1.6s ease-in-out infinite;
+	}
+	.card-placeholder--insights { min-height: 11rem; }
+	.card-placeholder--heatmap { min-height: 18rem; }
+
+	@keyframes cardPlaceholderShimmer {
+		0% { background-position: 200% 0; }
+		100% { background-position: -200% 0; }
+	}
 
 	/* Badge colors */
 	.icon-badge.week { background: var(--theme-accent, #0f766e); }
@@ -623,6 +651,9 @@
 		.journey-header h2 { font-size: 1.2rem; }
 		.card { padding: 1.5rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
+		.insights-card,
+		.heatmap-card { min-height: 18rem; }
+		.card-placeholder--heatmap { min-height: 14rem; }
 		.milestones-grid { grid-template-columns: 1fr; }
 		.insights-grid { grid-template-columns: 1fr; }
 		.overview-grid { grid-template-columns: repeat(2, 1fr); }

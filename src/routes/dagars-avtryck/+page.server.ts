@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.select('id, content, tone, mood_emojis, created_at')
 		.eq('user_id', user.id)
 		.order('created_at', { ascending: false })
-		.limit(20);
+		.limit(10);
 
 	if (error) {
 		console.error('Fel vid hämtning av storify_entries:', error);

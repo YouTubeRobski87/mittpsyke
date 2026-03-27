@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Hämta tråd
 	const { data: threadData, error: threadError } = await locals.supabase
 		.from('forum_threads')
-		.select('id, category_id, user_id, title, body, is_anonymous, display_name, reply_count, created_at, updated_at')
+		.select('id, category_id, user_id, title, body, is_anonymous, display_name, created_at, updated_at')
 		.eq('id', id)
 		.is('deleted_at', null)
 		.eq('is_hidden', false)
@@ -48,7 +48,6 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		body: String(threadData.body),
 		is_anonymous: Boolean(threadData.is_anonymous),
 		display_name: threadData.display_name ? String(threadData.display_name) : null,
-		reply_count: typeof threadData.reply_count === 'number' ? threadData.reply_count : 0,
 		created_at: String(threadData.created_at),
 		updated_at: String(threadData.updated_at)
 	};
