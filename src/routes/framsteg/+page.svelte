@@ -79,15 +79,16 @@
 
 	// ── Theme ──
 
-	let profileTheme = $state(getCachedTheme());
+	let { data } = $props<{ data: PageData }>();
+	let profileTheme = $state(
+		data.profileTheme && THEMES[data.profileTheme] ? data.profileTheme : getCachedTheme()
+	);
 	const currentTheme = $derived(THEMES[profileTheme] ?? THEMES.neutral);
 	const themeStyle = $derived(
 		`--theme-accent: ${currentTheme.accent}; --theme-bg: ${currentTheme.bg};`
 	);
 
 	// ── Props + State ──
-	let { data } = $props();
-
 	let streakData: StreakData | null = $derived(data.streak ?? null);
 	let milestonesData: MilestonesResponse | null = $derived(data.milestones ?? null);
 	let weeklyEntries: number = $derived(data.weeklyEntries ?? 0);
