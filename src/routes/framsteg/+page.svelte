@@ -92,10 +92,16 @@
 	let streakData: StreakData | null = $derived(data.streak ?? null);
 	let milestonesData: MilestonesResponse | null = $derived(data.milestones ?? null);
 	let weeklyEntries: number = $derived(data.weeklyEntries ?? 0);
+	let heatmapData = $derived(data.heatmapData ?? {});
+	let heatmapError = $derived(data.heatmapError ?? '');
 	let insightsData = $state<InsightsResponse | null>(null);
 	let insightsLoading = $state(false);
 	let insightsError = $state('');
 	let hasSensitiveDataConsent = $state(false);
+	let insightsVisible = $state(false);
+	let heatmapVisible = $state(false);
+	let insightsCardEl = $state<HTMLElement | null>(null);
+	let heatmapCardEl = $state<HTMLElement | null>(null);
 	let loading = false;
 	let error = $derived(
 		data.streak === null && data.milestones === null
@@ -141,20 +147,59 @@
 	];
 	const todayReflection = reflections[new Date().getDay()];
 
-	onMount(async () => {
+	function maybeLoadInsights() {
+		if (!hasSensitiveDataConsent || !insightsVisible || insightsLoading || insightsData) return;
+		void loadInsights();
+	}
+
+	onMount(() => {
 		hasSensitiveDataConsent = hasSensitiveConsent();
-		if (hasSensitiveDataConsent) {
-			void loadInsights();
+		if (data.profileTheme && browser) {
+			localStorage.setItem(THEME_STORAGE_KEY, data.profileTheme);
 		}
-		// Load theme from user_metadata
-		const { data: { session } } = await supabase.auth.getSession();
-		if (session?.user?.user_metadata?.profile_theme) {
-			profileTheme = session.user.user_metadata.profile_theme;
-			if (browser) localStorage.setItem('mittpsyke:theme', profileTheme);
+
+		if (typeof IntersectionObserver === 'undefined') {
+			insightsVisible = true;
+			heatmapVisible = true;
+			maybeLoadInsights();
+			return;
+		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+
+					if (entry.target === insightsCardEl) {
+						insightsVisible = true;
+						maybeLoadInsights();
+						observer.unobserve(entry.target);
+					}
+
+					if (entry.target === heatmapCardEl) {
+						heatmapVisible = true;
+						observer.unobserve(entry.target);
+					}
+				}
+			},
+			{ rootMargin: '180px 0px' }
+		);
+
+		if (insightsCardEl) observer.observe(insightsCardEl);
+		if (heatmapCardEl) observer.observe(heatmapCardEl);
+
+		return () => observer.disconnect();
+	});
+
+	$effect(() => {
+		if (hasSensitiveDataConsent && insightsVisible) {
+			maybeLoadInsights();
 		}
 	});
 
 	async function loadInsights() {
+		if (insightsLoading) return;
+
 		insightsLoading = true;
 		insightsError = '';
 
@@ -204,7 +249,7 @@
 	function acceptSensitiveDataConsent() {
 		grantSensitiveConsent();
 		hasSensitiveDataConsent = true;
-		void loadInsights();
+		maybeLoadInsights();
 	}
 
 	// ── Share feature ──
