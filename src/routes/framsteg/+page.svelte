@@ -102,6 +102,8 @@
 	let heatmapVisible = $state(false);
 	let insightsCardEl = $state<HTMLElement | null>(null);
 	let heatmapCardEl = $state<HTMLElement | null>(null);
+	let insightsLoadScheduled = $state(false);
+	let idleInsightsHandle = $state<number | null>(null);
 	let loading = false;
 	let error = $derived(
 		data.streak === null && data.milestones === null
@@ -148,8 +150,29 @@
 	const todayReflection = reflections[new Date().getDay()];
 
 	function maybeLoadInsights() {
-		if (!hasSensitiveDataConsent || !insightsVisible || insightsLoading || insightsData) return;
-		void loadInsights();
+		if (
+			!browser ||
+			!hasSensitiveDataConsent ||
+			!insightsVisible ||
+			insightsLoading ||
+			insightsData ||
+			insightsLoadScheduled
+		) {
+			return;
+		}
+
+		insightsLoadScheduled = true;
+		const onIdle = () => {
+			idleInsightsHandle = null;
+			void loadInsights();
+		};
+
+		if ('requestIdleCallback' in window) {
+			idleInsightsHandle = window.requestIdleCallback(onIdle, { timeout: 1200 });
+			return;
+		}
+
+		idleInsightsHandle = window.setTimeout(onIdle, 280);
 	}
 
 	onMount(() => {
@@ -188,7 +211,16 @@
 		if (insightsCardEl) observer.observe(insightsCardEl);
 		if (heatmapCardEl) observer.observe(heatmapCardEl);
 
-		return () => observer.disconnect();
+		return () => {
+			observer.disconnect();
+			if (idleInsightsHandle !== null) {
+				if ('cancelIdleCallback' in window) {
+					window.cancelIdleCallback(idleInsightsHandle);
+				} else {
+					window.clearTimeout(idleInsightsHandle);
+				}
+			}
+		};
 	});
 
 	$effect(() => {
@@ -243,6 +275,9 @@
 			insightsData = null;
 		} finally {
 			insightsLoading = false;
+			if (!insightsData) {
+				insightsLoadScheduled = false;
+			}
 		}
 	}
 

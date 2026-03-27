@@ -12,9 +12,17 @@
 		CreateCommunityUnshareSuccessResponse
 	} from '$lib/types';
 
-	let entries: DiaryEntry[] = [];
-	let loading = true;
-	let isLoggedIn = false;
+	type PageData = {
+		entries?: DiaryEntry[];
+		isLoggedIn?: boolean;
+		sharedEntryIds?: string[];
+	};
+
+	let { data } = $props<{ data: PageData }>();
+
+	let entries: DiaryEntry[] = data.entries ?? [];
+	let loading = false;
+	let isLoggedIn = data.isLoggedIn ?? false;
 	let loadError = '';
 	let draftText = '';
 	let draftMood = '';
@@ -23,9 +31,9 @@
 	let draftSuccess = '';
 	let savingDraft = false;
 	type MoodGraphPoint = { mood: number };
-	let moodGraphPoints: MoodGraphPoint[] = [];
-	let weeklyEntryCount = 0;
-	let sharedEntryIds = new Set<string>();
+	let moodGraphPoints = $derived.by(() => buildMoodGraphPoints(entries));
+	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
+	let sharedEntryIds = new Set<string>(data.sharedEntryIds ?? []);
 	let confirmingShareEntryId = '';
 	let confirmingUnshareEntryId = '';
 	let sharingEntryId = '';
@@ -139,9 +147,6 @@
 			return created >= cutoff;
 		}).length;
 	}
-
-	$: moodGraphPoints = buildMoodGraphPoints(entries);
-	$: weeklyEntryCount = countEntriesThisWeek(entries);
 
 	function isEntryShared(entryId: string): boolean {
 		return sharedEntryIds.has(entryId);
@@ -558,9 +563,6 @@
 	}
 
 	onMount(async () => {
-		const { data: sessionData } = await supabase.auth.getSession();
-		isLoggedIn = Boolean(sessionData.session?.user);
-
 		if (!isLoggedIn) {
 			loading = false;
 			return;
@@ -584,8 +586,13 @@
 		}
 
 		try {
-			await loadEntries();
-			await loadSharedEntryIds();
+			if (entries.length === 0) {
+				await loadEntries();
+			}
+
+			if (sharedEntryIds.size === 0) {
+				await loadSharedEntryIds();
+			}
 		} catch (error) {
 			loadError = error instanceof Error ? error.message : 'Kunde inte ladda dagboken just nu.';
 		} finally {
