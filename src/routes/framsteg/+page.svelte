@@ -80,9 +80,9 @@
 	// ── Theme ──
 
 	let { data } = $props<{ data: PageData }>();
-	let profileTheme = $state(
-		data.profileTheme && THEMES[data.profileTheme] ? data.profileTheme : getCachedTheme()
-	);
+	const initialProfileTheme =
+		data.profileTheme && THEMES[data.profileTheme] ? data.profileTheme : getCachedTheme();
+	let profileTheme = $state(initialProfileTheme);
 	const currentTheme = $derived(THEMES[profileTheme] ?? THEMES.neutral);
 	const themeStyle = $derived(
 		`--theme-accent: ${currentTheme.accent}; --theme-bg: ${currentTheme.bg};`
@@ -576,7 +576,6 @@
 
 	/* Badge colors */
 	.icon-badge.week { background: var(--theme-accent, #0f766e); }
-	.icon-badge.reflect { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
 	.icon-badge.trophy { background: linear-gradient(135deg, #ffd93d, #ffb347); }
 	.icon-badge.heat { background: linear-gradient(135deg, #6bcf7f, #4caf50); }
 	.icon-badge.insight { background: linear-gradient(135deg, #667eea, #764ba2); }
@@ -585,11 +584,6 @@
 	.summary-card { background: var(--theme-bg, hsl(var(--surface-soft))); }
 	.summary-text { font-size: 1.1rem; color: hsl(var(--foreground)); line-height: 1.7; margin: 0 0 0.75rem 0; }
 	.encouragement { font-size: 0.95rem; color: hsl(var(--muted-foreground)); font-style: italic; margin: 0; }
-
-	/* Reflection */
-	.reflection-card { border-left: 3px solid var(--theme-accent, #0f766e); }
-	.reflection-prompt { font-size: 1.15rem; color: hsl(var(--foreground)); font-weight: 500; line-height: 1.6; margin: 0 0 0.75rem 0; }
-	.reflection-hint { font-size: 0.9rem; color: hsl(var(--muted-foreground)); margin: 0; font-style: italic; }
 
 	/* Overview */
 	.overview-heading { font-size: 1.2rem; margin: 0 0 1.5rem 0; color: hsl(var(--foreground)); }
