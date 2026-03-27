@@ -17,11 +17,13 @@
 	}: {
 		data: {
 			homepageForumThreads?: HomepageForumThread[];
+			popularForumThreads?: HomepageForumThread[];
 		};
 	} = $props();
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
 	const homepageForumThreads = $derived(data.homepageForumThreads ?? []);
+	const popularForumThreads = $derived(data.popularForumThreads ?? []);
 
 	const entryPaths = [
 		{

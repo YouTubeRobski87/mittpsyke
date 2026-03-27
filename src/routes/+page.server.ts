@@ -22,6 +22,7 @@ function isMissingTableError(
 
 export const load: PageServerLoad = async ({ locals }) => {
 	let homepageForumThreads: LatestForumThread[] = [];
+	let popularForumThreads: LatestForumThread[] = [];
 
 	const { data: latestCreatedThreads, error: latestThreadsError } = await locals.supabase
 		.from('forum_threads')
@@ -169,18 +170,42 @@ export const load: PageServerLoad = async ({ locals }) => {
 		})
 		.slice(0, 3);
 
+	popularForumThreads = Array.from(candidateThreads.values())
+		.map((thread) => {
+			const replyStats = replyStatsByThread.get(thread.id);
+			return {
+				id: thread.id,
+				title: thread.title,
+				created_at: thread.created_at,
+				active_at: replyStats?.last_reply_at || thread.created_at,
+				reply_count: replyStats?.reply_count ?? 0
+			};
+		})
+		.filter((thread) => thread.reply_count > 0)
+		.sort((a, b) => {
+			if (b.reply_count !== a.reply_count) return b.reply_count - a.reply_count;
+
+			const aTime = Date.parse(a.active_at || a.created_at || '');
+			const bTime = Date.parse(b.active_at || b.created_at || '');
+			return (Number.isNaN(bTime) ? 0 : bTime) - (Number.isNaN(aTime) ? 0 : aTime);
+		})
+		.slice(0, 3);
+
 	console.log('Homepage latestForumThreads', {
 		returnedThreadCount: homepageForumThreads.length,
+		popularForumThreadsCount: popularForumThreads.length,
 		latestCreatedThreads: latestCreatedThreads?.length ?? 0,
 		recentReplyRows: recentReplies?.length ?? 0,
 		candidateThreads: candidateThreadIds.length,
-		returnedThreads: homepageForumThreads
+		returnedThreads: homepageForumThreads,
+		popularForumThreads
 	});
 
 	return {
 		title: 'MittPsyke â€“ AI-dagbok fÃ¶r mental hÃ¤lsa',
 		description:
 			'Skriv dagbok med AI-stÃ¶d, spÃ¥ra ditt humÃ¶r och fÃ¶rstÃ¥ dina kÃ¤nslomÃ¶nster. MittPsyke Ã¤r din personliga digitala dagbok fÃ¶r vÃ¤lmÃ¥ende.',
-		homepageForumThreads
+		homepageForumThreads,
+		popularForumThreads
 	};
 };
