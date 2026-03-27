@@ -1,32 +1,28 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { createBrowserClient } from '@supabase/ssr';
-	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-
 	interface HeatmapData {
 		[date: string]: number;
 	}
 
-	let heatmapData: HeatmapData = {};
-	let loading = true;
-	let error = '';
-	let weeks: Array<Array<{ date: string; count: number; dayName: string }>> = [];
-	let heatmapWrapper: HTMLDivElement;
+	type HeatmapCell = {
+		date: string;
+		count: number;
+		dayName: string;
+	};
 
-	const MONTHS = [
-		'Jan',
-		'Feb',
-		'Mar',
-		'Apr',
-		'Maj',
-		'Jun',
-		'Jul',
-		'Aug',
-		'Sep',
-		'Okt',
-		'Nov',
-		'Dec'
-	];
+	let {
+		data = {},
+		error = '',
+		loading = false
+	}: {
+		data?: HeatmapData;
+		error?: string;
+		loading?: boolean;
+	} = $props();
+
+	let weeks: HeatmapCell[][] = [];
+	let heatmapWrapper: HTMLDivElement | null = null;
+	let scrolledToToday = false;
+
 	const WEEKDAYS = ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'];
 
 	function getColor(count: number): string {
@@ -43,38 +39,7 @@
 		return `${date}: ${count} inlägg`;
 	}
 
-	onMount(async () => {
-		try {
-			const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
-			const { data: { session } } = await supabase.auth.getSession();
-			const token = session?.access_token;
-
-			const fetchHeaders: HeadersInit = token
-				? { Authorization: `Bearer ${token}` }
-				: {};
-
-			const response = await fetch('/api/diary/heatmap', { headers: fetchHeaders });
-			const json = await response.json();
-
-			if (!response.ok) {
-				error = json.error || 'Det gick inte att visa aktivitetskartan just nu.';
-				return;
-			}
-
-			heatmapData = json.data || {};
-			buildHeatmapGrid();
-			// Scroll to the right (today) after data loads
-			setTimeout(() => {
-				if (heatmapWrapper) heatmapWrapper.scrollLeft = heatmapWrapper.scrollWidth;
-			}, 50);
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Ett fel inträffade';
-		} finally {
-			loading = false;
-		}
-	});
-
-	function buildHeatmapGrid() {
+	function buildHeatmapGrid(source: HeatmapData): HeatmapCell[][] {
 		const today = new Date();
 		const startDate = new Date(today);
 		startDate.setFullYear(startDate.getFullYear() - 1);
@@ -84,18 +49,18 @@
 			currentDate.setDate(currentDate.getDate() - 1);
 		}
 
-		weeks = [];
-		let currentWeek: Array<{ date: string; count: number; dayName: string }> = [];
+		const builtWeeks: HeatmapCell[][] = [];
+		let currentWeek: HeatmapCell[] = [];
 
 		while (currentDate <= today) {
 			const dateStr = currentDate.toISOString().split('T')[0];
-			const count = heatmapData[dateStr] || 0;
+			const count = source[dateStr] || 0;
 			const dayName = WEEKDAYS[currentDate.getDay() === 0 ? 6 : currentDate.getDay() - 1];
 
 			currentWeek.push({ date: dateStr, count, dayName });
 
-			if (currentWeek.length === 7 || currentDate.getTime() === today.getTime()) {
-				weeks.push(currentWeek);
+			if (currentWeek.length === 7 || currentDate.toDateString() === today.toDateString()) {
+				builtWeeks.push(currentWeek);
 				currentWeek = [];
 			}
 
@@ -103,9 +68,26 @@
 		}
 
 		if (currentWeek.length > 0) {
-			weeks.push(currentWeek);
+			builtWeeks.push(currentWeek);
 		}
+
+		return builtWeeks;
 	}
+
+	$effect(() => {
+		weeks = buildHeatmapGrid(data);
+		scrolledToToday = false;
+	});
+
+	$effect(() => {
+		if (loading || error || !heatmapWrapper || weeks.length === 0 || scrolledToToday) return;
+
+		requestAnimationFrame(() => {
+			if (!heatmapWrapper) return;
+			heatmapWrapper.scrollLeft = heatmapWrapper.scrollWidth;
+			scrolledToToday = true;
+		});
+	});
 </script>
 
 <div class="heatmap-container">
@@ -126,7 +108,7 @@
 						{#each week as day}
 							<div
 								class="day-cell"
-								style="background-color: {getColor(day.count)}"
+								style={`background-color: ${getColor(day.count)}`}
 								title={getTooltip(day.date, day.count)}
 							></div>
 						{/each}
@@ -149,26 +131,131 @@
 </div>
 
 <style>
-	.heatmap-container { width: 100%; padding: 1.5rem 0; }
-	.loading, .error { padding: 2rem; text-align: center; color: #666; font-size: 0.95rem; }
-	.error { color: #d32f2f; }
-	.heatmap-wrapper { display: flex; gap: 0.75rem; overflow-x: auto; padding-bottom: 1rem; }
-	.weekdays-column { display: flex; flex-direction: column; justify-content: flex-start; gap: 0.35rem; padding-top: 1.5rem; min-width: 3rem; }
-	.weekday-label { width: 2.5rem; height: 2.5rem; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #666; font-weight: 500; }
-	.heatmap-grid { display: flex; gap: 0.35rem; flex: 1; }
-	.week { display: flex; flex-direction: column; gap: 0.35rem; }
-	.day-cell { width: 2.5rem; height: 2.5rem; border-radius: 0.25rem; cursor: pointer; transition: all 0.2s ease; border: 1px solid rgba(0,0,0,0.05); }
-	.day-cell:hover { transform: scale(1.15); box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 10; }
-	.legend { display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem; font-size: 0.85rem; color: #666; }
-	.legend-cells { display: flex; gap: 0.35rem; }
-	.legend-cell { width: 1.5rem; height: 1.5rem; border-radius: 0.25rem; border: 1px solid rgba(0,0,0,0.05); }
-	.legend-label { color: #999; font-size: 0.8rem; }
+	.heatmap-container {
+		width: 100%;
+		padding: 1.5rem 0;
+		min-block-size: clamp(18rem, 40vw, 24rem);
+	}
+
+	.loading,
+	.error {
+		min-block-size: 14rem;
+		display: grid;
+		place-items: center;
+		padding: 2rem;
+		text-align: center;
+		color: #666;
+		font-size: 0.95rem;
+	}
+
+	.error {
+		color: #d32f2f;
+	}
+
+	.heatmap-wrapper {
+		display: flex;
+		gap: 0.75rem;
+		overflow-x: auto;
+		padding-bottom: 1rem;
+		overflow-anchor: none;
+	}
+
+	.weekdays-column {
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		gap: 0.35rem;
+		padding-top: 1.5rem;
+		min-width: 3rem;
+	}
+
+	.weekday-label {
+		width: 2.5rem;
+		height: 2.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.75rem;
+		color: #666;
+		font-weight: 500;
+	}
+
+	.heatmap-grid {
+		display: flex;
+		gap: 0.35rem;
+		flex: 1;
+	}
+
+	.week {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	.day-cell {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.25rem;
+		border: 1px solid rgba(0, 0, 0, 0.05);
+	}
+
+	.legend {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-top: 1.5rem;
+		font-size: 0.85rem;
+		color: #666;
+	}
+
+	.legend-cells {
+		display: flex;
+		gap: 0.35rem;
+	}
+
+	.legend-cell {
+		width: 1.5rem;
+		height: 1.5rem;
+		border-radius: 0.25rem;
+		border: 1px solid rgba(0, 0, 0, 0.05);
+	}
+
+	.legend-label {
+		color: #999;
+		font-size: 0.8rem;
+	}
+
 	@media (max-width: 640px) {
-		.heatmap-wrapper { gap: 0.3rem; }
-		.weekdays-column { gap: 0.25rem; }
-		.week { gap: 0.25rem; }
-		.day-cell { width: 1.8rem; height: 1.8rem; }
-		.weekday-label { width: 1.8rem; height: 1.8rem; font-size: 0.65rem; }
-		.legend-cell { width: 1.2rem; height: 1.2rem; }
+		.heatmap-container {
+			min-block-size: 15rem;
+		}
+
+		.heatmap-wrapper {
+			gap: 0.3rem;
+		}
+
+		.weekdays-column {
+			gap: 0.25rem;
+		}
+
+		.week {
+			gap: 0.25rem;
+		}
+
+		.day-cell {
+			width: 1.8rem;
+			height: 1.8rem;
+		}
+
+		.weekday-label {
+			width: 1.8rem;
+			height: 1.8rem;
+			font-size: 0.65rem;
+		}
+
+		.legend-cell {
+			width: 1.2rem;
+			height: 1.2rem;
+		}
 	}
 </style>
