@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ContentTrustBlock from '$lib/components/ContentTrustBlock.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import type { Guide, Pillar, SeoLandingPage } from '$lib/seo-kit/content';
 
@@ -20,6 +21,7 @@
 					}
 				]
 	);
+	const faqs = $derived(landing?.faqs ?? []);
 </script>
 
 <main class="mx-auto max-w-3xl px-4 py-10">
@@ -74,4 +76,22 @@
 		exerciseHref="/ovningar"
 		exerciseLabel="Se alla övningar"
 	/>
+
+	{#if faqs.length}
+		<section class="mt-8" aria-label="Vanliga frågor">
+			<h2 class="text-xl font-semibold">Vanliga frågor</h2>
+			<ul class="mt-4 space-y-3">
+				{#each faqs as faq}
+					<li class="rounded-xl border border-black/10 bg-black/[0.02] p-4">
+						<h3 class="text-base font-semibold">{faq.question}</h3>
+						<p class="mt-2 leading-relaxed text-black/80">{faq.answer}</p>
+					</li>
+				{/each}
+			</ul>
+		</section>
+	{/if}
+
+	{#if landing?.sources?.length || landing?.updatedAt}
+		<ContentTrustBlock updatedAt={landing?.updatedAt} sources={landing?.sources} />
+	{/if}
 </main>

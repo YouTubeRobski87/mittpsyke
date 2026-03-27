@@ -28,13 +28,18 @@
 	}
 </script>
 
-<section class="trust-block" aria-label="Om innehållet">
+<section class="trust-block" aria-label="Källor och kvalitet">
 	{#if updatedAt}
 		<p class="meta">Senast uppdaterad: {formatDate(updatedAt)}</p>
 	{/if}
 
+	<h2>Källor och kvalitet</h2>
+	<p class="note">
+		Innehållet på denna sida är sammanställt utifrån information från 1177,
+		Folkhälsomyndigheten, Socialstyrelsen och andra offentliga kunskapskällor.
+	</p>
+
 	{#if sources.length}
-		<h2>Källor</h2>
 		<ul>
 			{#each sources as source}
 				<li>
@@ -45,8 +50,8 @@
 	{/if}
 
 	<p class="note">
-		Innehållet är vägledande och skrivet för reflektion och ökad förståelse. Det ersätter inte vård,
-		diagnos eller behandling.
+		MittPsyke är ett stöd för reflektion och återhämtning i vardagen och ersätter inte professionell
+		vård, diagnos eller behandling.
 	</p>
 
 	{#if showEmergencyNote}

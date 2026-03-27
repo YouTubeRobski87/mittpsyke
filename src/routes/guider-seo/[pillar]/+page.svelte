@@ -7,6 +7,22 @@
 
 	const pageTitle = $derived(data.landing?.seoTitle ?? data.pillar.title);
 	const pageDescription = $derived(data.landing?.seoDescription ?? data.pillar.description);
+	const jsonLdFaq = $derived(
+		data.landing?.faqs?.length
+			? {
+					'@context': 'https://schema.org',
+					'@type': 'FAQPage',
+					mainEntity: data.landing.faqs.map((faq: { question: string; answer: string }) => ({
+						'@type': 'Question',
+						name: faq.question,
+						acceptedAnswer: {
+							'@type': 'Answer',
+							text: faq.answer
+						}
+					}))
+				}
+			: null
+	);
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
@@ -50,7 +66,9 @@
 	<meta property="og:title" content={buildTitle(pageTitle)} />
 	<meta property="og:description" content={pageDescription} />
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}
+	{#if jsonLdFaq}
+		{@html `<script type="application/ld+json">${JSON.stringify(jsonLdFaq)}<\/script>`}
+	{/if}
 </svelte:head>
 
 <SeoPillarLanding pillar={data.pillar} guides={data.guides} landing={data.landing} />
-

@@ -47,6 +47,9 @@ export type SeoLandingPage = {
 	intro: string;
 	sections: SeoLandingSection[];
 	primaryLinks?: RelatedArticle[];
+	faqs?: FaqItem[];
+	updatedAt?: string;
+	sources?: SourceItem[];
 };
 
 export const pillars: Pillar[] = [
@@ -2913,47 +2916,118 @@ export function getGuideBySlugs(pillarSlug: string, guideSlug: string): Guide | 
 export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>> = {
 	angest: {
 		pillarSlug: 'angest',
-		seoTitle: 'Stöd vid ångest - förstå känslorna och ta små steg i lugn takt',
+		seoTitle: 'Stöd vid ångest - förstå ångest och hitta lugna nästa steg',
 		seoDescription:
-			'Lär dig mer om ångest, vad som händer i kroppen och vilka små steg som kan hjälpa. Läs guider och välj nästa steg med chatt, dagbok eller övning.',
+			'Läs om vad ångest är, hur den kan kännas i kropp och tankar, vad som ibland hjälper i stunden och när mer stöd kan vara bra. Trygga guider och varsamma nästa steg.',
 		h1: 'Stöd vid ångest i lugn takt',
 		intro:
-			'Ångest kan kännas stark och överväldigande, men du behöver inte hantera allt på en gång. Här får du en trygg översikt och tydliga vägar vidare.',
+			'Ångest kan kännas stark, snabb och svår att förstå när den är mitt i kroppen. Här får du en lugn översikt över vad ångest är, hur den kan märkas och vilka små steg som kan hjälpa utan att du behöver lösa allt på en gång.',
+		updatedAt: '2026-03-27',
+		sources: [
+			{
+				label: 'Ångest – 1177 Vårdguiden',
+				url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/'
+			},
+			{
+				label: 'Psykisk hälsa – Folkhälsomyndigheten',
+				url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/'
+			},
+			{
+				label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen',
+				url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/'
+			}
+		],
 		sections: [
 			{
-				heading: 'Vad händer vid ångest?',
-				body: 'När hjärnan tolkar något som hot aktiveras kroppen snabbt. Hjärtat slår hårdare, andningen blir snabbare och tankarna kan rusa. Reaktionen är vanlig och går att förstå steg för steg.',
+				heading: 'Vad ångest är',
+				body: 'Ångest är kroppens sätt att slå larm när något känns hotfullt, osäkert eller svårt att överblicka. Reaktionen kan vara stark även när du egentligen är trygg. Det betyder inte att det är något fel på dig, utan att nervsystemet har gått upp i beredskap.',
 				links: [
 					{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
 					{
-						title: 'Panikångest - vad som händer i kroppen och hur du kan hantera det',
-						href: '/guider-seo/angest/panikangest-och-kroppen'
+						title: 'Ångest i kroppen – vad som händer och vad som hjälper',
+						href: '/guider-seo/angest/angest-i-kroppen'
 					}
 				]
 			},
 			{
-				heading: 'När tankarna snurrar och sömnen påverkas',
-				body: 'Oro och ångest blir ofta tydligare på kvällen. Det kan göra det svårt att varva ner eller somna. Små, återkommande strategier brukar hjälpa mer än att pressa sig.',
+				heading: 'Hur ångest kan kännas i tankar, kropp och beteenden',
+				body: 'I tankarna kan ångest märkas som katastroftankar, stark oro eller en känsla av att något snart ska gå fel. I kroppen kan det kännas som hjärtklappning, tryck över bröstet, spänning, yrsel, magoro eller snabb andning. I beteenden syns ångest ofta som att man skjuter upp, undviker eller håller sig väldigt nära det som känns tryggt.',
 				links: [
 					{
 						title: 'Orostankar som snurrar - när hjärnan inte kan stänga av',
 						href: '/guider-seo/angest/orostankar'
 					},
 					{
-						title: 'Ångest och sömn - varför natten kan bli svårare',
-						href: '/guider-seo/angest/angest-och-somn'
+						title: 'Oro i kroppen – när ångesten sitter fysiskt',
+						href: '/guider-seo/angest/oro-i-kroppen'
 					}
 				]
 			},
 			{
-				heading: 'Lugna nästa steg',
-				body: 'Du kan välja ett enkelt nästa steg: prata anonymt, skriva av dig eller prova en övning. MittPsyke är ett komplement för stöd och reflektion, inte en ersättning för vård.'
+				heading: 'Vanliga situationer där ångest märks',
+				body: 'Ångest kan märkas inför sociala situationer, när du ska sova, när något är oklart eller när kroppen redan är trött och stressad. För vissa kommer den i tydliga toppar, som vid panikattack. För andra ligger den mer som en ständig vaksamhet i bakgrunden.',
+				links: [
+					{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider-seo/angest/panikattack-hjalp' },
+					{ title: 'Ångest och sömn - varför natten kan bli svårare', href: '/guider-seo/angest/angest-och-somn' },
+					{ title: 'Social ångest - rädslan för att bli bedömd av andra', href: '/guider-seo/angest/social-angest' }
+				]
+			},
+			{
+				heading: 'Vad som ibland kan hjälpa i stunden',
+				body: 'När ångesten blir stark hjälper det ofta mer att göra något enkelt än att försöka tänka perfekt. En långsammare utandning, en kort grounding-övning, ett glas vatten eller att sätta ord på vad som händer kan hjälpa kroppen att landa. Välj gärna ett enda nästa steg i stället för att försöka lösa allt direkt.',
+				links: [
+					{ title: 'Andningsövningar mot ångest', href: '/andningsovningar-mot-angest' },
+					{ title: 'Övningar mot ångest online', href: '/ovningar-mot-angest-online' },
+					{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' }
+				]
+			},
+			{
+				heading: 'När det kan vara bra att söka mer stöd',
+				body: 'Det kan vara bra att söka mer stöd om ångesten ofta styr vardagen, gör att du undviker mycket, påverkar sömn eller arbete eller om du blir rädd för dina egna reaktioner. MittPsyke kan vara en lugn första ingång, men ersätter inte professionell vård. Vid akut fara ringer du 112. För vårdråd finns 1177 och för vidare mänskligt stöd finns stodlinjer.se.',
+				links: [
+					{ title: 'Hjälp vid ångest online', href: '/hjalp-vid-angest-online' },
+					{ title: 'Hjälp mot oro online', href: '/hjalp-mot-oro-online' },
+					{ title: 'Prata anonymt om ångest', href: '/chat/a' }
+				]
+			},
+			{
+				heading: 'Vidare läsning i MittPsyke',
+				body: 'Om du vill läsa vidare finns fördjupning om panikattack, grubblande, fysisk ångest, stress och sömn. Du kan också prova en andningsövning, skriva i dagboken eller fortsätta med en lugn guide i egen takt.',
+				links: [
+					{ title: 'Panikattack', href: '/panikattack' },
+					{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
+					{ title: 'Stress och sömn - när kroppen inte kan varva ner', href: '/guider-seo/stress' },
+					{ title: 'Stöd vid sömnproblem i lugn takt', href: '/guider-seo/sovproblem' },
+					{ title: 'Skriv i dagboken', href: '/dagbok' }
+				]
 			}
 		],
 		primaryLinks: [
 			{ title: 'Se alla artiklar om ångest', href: '/guider-seo/angest' },
-			{ title: 'Utforska övningar mot ångest', href: '/ovningar-mot-angest-online' },
+			{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider-seo/angest/panikattack-hjalp' },
 			{ title: 'Läs om hjälp vid ångest online', href: '/hjalp-vid-angest-online' }
+		],
+		faqs: [
+			{
+				question: 'Vad är ångest?',
+				answer: 'Ångest är kroppens sätt att slå larm när något känns hotfullt eller osäkert. Reaktionen kan vara stark, men den betyder inte att du är i fara just nu.'
+			},
+			{
+				question: 'Hur känns ångest i kroppen?',
+				answer: 'Vanliga tecken är hjärtklappning, tryck över bröstet, spänning, yrsel, magoro eller snabb andning. Det kan kännas skrämmande men är vanliga alarmsignaler från kroppen.'
+			},
+			{
+				question: 'Vad är skillnaden mellan oro och panikattack?',
+				answer: 'Oro brukar vara mer utdragen och tankedriven. En panikattack kommer ofta snabbare med starka kroppsliga reaktioner och en känsla av akut alarm.'
+			},
+			{
+				question: 'Vad kan hjälpa när ångesten blir stark?',
+				answer: 'Börja smått: förläng utandningen, fäst blicken på något i rummet, sätt ord på vad som händer och välj ett enda nästa steg. Du behöver inte lösa allt på en gång.'
+			},
+			{
+				question: 'När bör man söka hjälp för ångest?',
+				answer: 'Sök mer stöd om ångesten ofta styr vardagen, leder till mycket undvikande, påverkar sömn eller arbete eller om du känner dig rädd för dina reaktioner. Vid akut fara ringer du 112.'
+			}
 		]
 	},
 	stress: {

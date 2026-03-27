@@ -1,11 +1,11 @@
 <script lang="ts">
+	import ContentTrustBlock from '$lib/components/ContentTrustBlock.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import { buildTitle } from '$lib/seo-kit/seo';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
 
-	// Map content.ts pillar slugs → main pillar route paths
 	const pillarRoutes: Record<string, string> = {
 		angest: '/angest',
 		depression: '/depression',
@@ -18,45 +18,42 @@
 
 	const pillarRoute = $derived(pillarRoutes[data.pillar.slug] ?? null);
 
-	function formatDate(iso: string): string {
-		const months = ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
-		const [year, month, day] = iso.split('-');
-		return `${parseInt(day)} ${months[parseInt(month) - 1]} ${year}`;
-	}
-
 	const jsonLdArticle = $derived({
-		"@context": "https://schema.org",
-		"@type": "Article",
-		"headline": data.guide.title,
-		"description": data.guide.description,
-		"url": `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`,
-		"dateModified": data.guide.updatedAt ?? undefined,
-		"author": [
+		'@context': 'https://schema.org',
+		'@type': 'Article',
+		headline: data.guide.title,
+		description: data.guide.description,
+		url: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`,
+		dateModified: data.guide.updatedAt ?? undefined,
+		author: [
 			{
-				"@type": "Organization",
-				"name": "MittPsyke",
-				"url": "https://www.mittpsyke.se"
+				'@type': 'Organization',
+				name: 'MittPsyke',
+				url: 'https://www.mittpsyke.se'
 			},
 			{
-				"@type": "Person",
-				"name": "Robert Claesson",
-				"jobTitle": "Grundare",
-				"url": "https://www.mittpsyke.se/om-mittpsyke"
+				'@type': 'Person',
+				name: 'Robert Claesson',
+				jobTitle: 'Grundare',
+				url: 'https://www.mittpsyke.se/om-mittpsyke'
 			}
 		],
-		"publisher": {
-			"@type": "Organization",
-			"name": "MittPsyke",
-			"url": "https://www.mittpsyke.se"
+		publisher: {
+			'@type': 'Organization',
+			name: 'MittPsyke',
+			url: 'https://www.mittpsyke.se'
 		},
-		"inLanguage": "sv-SE"
+		inLanguage: 'sv-SE'
 	});
 
 	function markdownToHtml(md: string): string {
 		return md
 			.replace(/^### (.+)$/gm, '<h3 class="mt-5 text-lg font-semibold">$1</h3>')
 			.replace(/^## (.+)$/gm, '<h2 class="mt-7 text-xl font-semibold">$1</h2>')
-			.replace(/^- \*\*(.+?)\*\*(.*)$/gm, '<li class="ml-4 mt-1 leading-relaxed text-black/80"><strong>$1</strong>$2</li>')
+			.replace(
+				/^- \*\*(.+?)\*\*(.*)$/gm,
+				'<li class="ml-4 mt-1 leading-relaxed text-black/80"><strong>$1</strong>$2</li>'
+			)
 			.replace(/^- (.+)$/gm, '<li class="ml-4 mt-1 leading-relaxed text-black/80">$1</li>')
 			.replace(/(<li[^>]*>.*<\/li>\n?)+/g, (match) => `<ul class="mt-3 list-disc pl-4">${match}</ul>`)
 			.replace(/^\*\*(.+?)\*\*$/gm, '<p class="mt-3 font-semibold">$1</p>')
@@ -66,18 +63,22 @@
 			.replace(/<p[^>]*><\/p>/g, '');
 	}
 
-	const jsonLdFaq = $derived(data.guide.faqs?.length ? {
-		"@context": "https://schema.org",
-		"@type": "FAQPage",
-		"mainEntity": data.guide.faqs.map((faq: { question: string; answer: string }) => ({
-			"@type": "Question",
-			"name": faq.question,
-			"acceptedAnswer": {
-				"@type": "Answer",
-				"text": faq.answer
-			}
-		}))
-	} : null);
+	const jsonLdFaq = $derived(
+		data.guide.faqs?.length
+			? {
+					'@context': 'https://schema.org',
+					'@type': 'FAQPage',
+					mainEntity: data.guide.faqs.map((faq: { question: string; answer: string }) => ({
+						'@type': 'Question',
+						name: faq.question,
+						acceptedAnswer: {
+							'@type': 'Answer',
+							text: faq.answer
+						}
+					}))
+				}
+			: null
+	);
 
 	const jsonLdBreadcrumb = $derived({
 		'@context': 'https://schema.org',
@@ -121,13 +122,6 @@
 	<h1 class="text-3xl font-semibold tracking-tight">{data.guide.title}</h1>
 	<p class="mt-3 leading-relaxed text-black/75">{data.guide.description}</p>
 
-	<section class="mt-6 rounded-xl border border-black/10 bg-black/[0.02] p-4" aria-label="Om innehållet">
-		<p class="text-sm"><strong>Innehåll från MittPsyke-redaktionen</strong></p>
-		<p class="mt-2 text-sm leading-relaxed text-black/80">Faktagranskad mot: <a class="underline" href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>, <a class="underline" href="https://www.socialstyrelsen.se" target="_blank" rel="noopener noreferrer">Socialstyrelsen</a>, <a class="underline" href="https://www.folkhalsomyndigheten.se" target="_blank" rel="noopener noreferrer">Folkhälsomyndigheten</a></p>
-		<p class="mt-2 text-sm leading-relaxed text-black/80">Det här är stödjande information för reflektion och egen förståelse. Det ersätter inte vård, diagnos eller behandling.</p>
-		<p class="mt-2 text-sm"><a class="text-black/60 underline underline-offset-2 hover:text-black" href="/sa-arbetar-vi-med-innehall">Läs mer om hur vi arbetar med innehåll →</a></p>
-	</section>
-
 	{#if data.guide.content}
 		<div class="guide-content mt-8">
 			{@html markdownToHtml(data.guide.content)}
@@ -156,29 +150,6 @@
 		</ul>
 	{/if}
 
-	{#if data.guide.sources?.length || data.guide.updatedAt}
-		<section class="mt-10 border-t border-black/10 pt-6" aria-label="Källor och vidare läsning">
-			{#if data.guide.updatedAt}
-				<p class="mb-3 text-xs text-black/50">Senast uppdaterad: {formatDate(data.guide.updatedAt)}</p>
-			{/if}
-			{#if data.guide.sources?.length}
-				<h2 class="text-base font-semibold">Källor och vidare läsning</h2>
-				<ul class="mt-2 space-y-1">
-					{#each data.guide.sources as source}
-						<li class="text-sm">
-							<a
-								class="text-black/70 underline underline-offset-2 hover:text-black"
-								href={source.url}
-								target="_blank"
-								rel="noopener noreferrer"
-							>{source.label}</a>
-						</li>
-					{/each}
-				</ul>
-			{/if}
-		</section>
-	{/if}
-
 	<div class="mt-10">
 		<GuideActionCta
 			pillarSlug={data.pillar.slug}
@@ -193,12 +164,14 @@
 			<h2 class="text-base font-semibold">Mer i samma tema</h2>
 			<ul class="mt-3 space-y-2">
 				<li>
-					<a class="next-link" href={pillarRoute}>
-						<span class="next-icon">📖</span> Fortsätt läsa om {data.pillar.title.toLowerCase()}
-					</a>
+					<a class="next-link" href={pillarRoute}>Fortsätt läsa om {data.pillar.title.toLowerCase()}</a>
 				</li>
 			</ul>
 		</section>
+	{/if}
+
+	{#if data.guide.sources?.length || data.guide.updatedAt}
+		<ContentTrustBlock updatedAt={data.guide.updatedAt} sources={data.guide.sources} />
 	{/if}
 </main>
 
@@ -220,13 +193,8 @@
 		opacity: 0.75;
 	}
 
-	.next-icon {
-		font-size: 1rem;
-	}
-
 	:global(.dark) .nasta-steg {
 		background: rgba(86, 148, 201, 0.06);
 		border-color: rgba(255, 255, 255, 0.1);
 	}
 </style>
-
