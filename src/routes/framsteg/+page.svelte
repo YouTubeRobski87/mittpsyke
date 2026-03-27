@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { THEMES, THEME_STORAGE_KEY, getThemeColors, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
-	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import {
@@ -67,6 +66,15 @@
 		worstDay: InsightDay | null;
 		emotionDistribution: Record<string, number>;
 		aiSummary: string | null;
+	}
+
+	interface PageData {
+		streak: StreakData | null;
+		milestones: MilestonesResponse | null;
+		weeklyEntries: number;
+		heatmapData?: Record<string, number>;
+		heatmapError?: string;
+		profileTheme?: keyof typeof THEMES | null;
 	}
 
 	// ── Theme ──
