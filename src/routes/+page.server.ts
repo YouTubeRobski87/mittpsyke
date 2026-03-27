@@ -170,6 +170,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		})
 		.slice(0, 3);
 
+	const activeThreadIds = new Set(homepageForumThreads.map((thread) => thread.id));
+
 	popularForumThreads = Array.from(candidateThreads.values())
 		.map((thread) => {
 			const replyStats = replyStatsByThread.get(thread.id);
@@ -181,6 +183,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				reply_count: replyStats?.reply_count ?? 0
 			};
 		})
+		.filter((thread) => !activeThreadIds.has(thread.id))
 		.filter((thread) => thread.reply_count > 0)
 		.sort((a, b) => {
 			if (b.reply_count !== a.reply_count) return b.reply_count - a.reply_count;
