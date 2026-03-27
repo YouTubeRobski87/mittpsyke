@@ -7,11 +7,9 @@
 	type HomepageForumThread = {
 		id: string;
 		title: string;
-		categoryName: string;
 		reply_count: number;
 		created_at: string;
 		active_at: string;
-		bodyPreview: string;
 	};
 
 	let {
@@ -279,30 +277,23 @@
 	<section class="forum-section" aria-labelledby="forum-section-title">
 		<div class="cards-narrow forum-inner">
 			<div class="forum-header">
-				<h2 id="forum-section-title">Du är inte ensam här</h2>
+				<h2 id="forum-section-title">Aktiva forumtrådar</h2>
 				<p>
-					I forumet kan du läsa vad andra går igenom och dela egna tankar — anonymt eller med konto, utan press.
+					Det senaste som rör sig i forumet just nu.
 				</p>
 			</div>
 			{#if homepageForumThreads.length > 0}
-				<div class="forum-thread-grid" aria-label="Aktuella forumtrådar">
+				<div class="forum-thread-grid" aria-label="Aktiva forumtrådar">
 					{#each homepageForumThreads as thread}
 						<article class="forum-thread-card">
 							<p class="forum-meta">
-								{thread.categoryName} · aktiv {formatForumTime(thread.active_at || thread.created_at)}
+								Senast aktiv {formatForumTime(thread.active_at || thread.created_at)}
 							</p>
 							<a class="forum-thread-link" href={`/forum/thread/${thread.id}`}>
 								<h3>{thread.title}</h3>
 							</a>
-							{#if thread.bodyPreview}
-								<p class="forum-thread-body">{thread.bodyPreview}</p>
-							{/if}
 							<div class="forum-thread-footer">
-								{#if thread.reply_count > 0}
-									<p class="forum-count">{thread.reply_count} svar</p>
-								{:else}
-									<p class="forum-count">Nystartad tråd</p>
-								{/if}
+								<p class="forum-count">{thread.reply_count} svar</p>
 								<a class="forum-inline-link" href={`/forum/thread/${thread.id}`}>Läs tråden</a>
 							</div>
 						</article>
@@ -310,7 +301,7 @@
 				</div>
 			{:else}
 				<div class="forum-empty">
-					<p>Forumet är nytt och fylls på steg för steg. Du får gärna läsa, skriva eller starta en egen tråd.</p>
+					<p>Inga aktiva trådar ännu</p>
 				</div>
 			{/if}
 			<a href="/forum" class="forum-cta-link">Gå till forumet</a>
@@ -880,13 +871,6 @@
 	.forum-meta {
 		font-weight: 700;
 		letter-spacing: 0.03em;
-	}
-
-	.forum-thread-body {
-		margin: 0.15rem 0 0;
-		font-size: 0.95rem;
-		line-height: 1.6;
-		color: rgba(255, 255, 255, 0.9);
 	}
 
 	.forum-thread-footer {
