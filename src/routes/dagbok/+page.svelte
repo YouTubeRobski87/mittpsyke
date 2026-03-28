@@ -6,6 +6,7 @@
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import { supabase } from '$lib/supabase';
 	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
+	import type { Session, User } from '@supabase/supabase-js';
 	import type {
 		CommunityMySharesSuccessResponse,
 		CreateCommunityShareSuccessResponse,
@@ -14,44 +15,45 @@
 
 	type PageData = {
 		entries?: DiaryEntry[];
-		isLoggedIn?: boolean;
 		sharedEntryIds?: string[];
+		session?: Session | null;
 	};
 
 	let { data } = $props<{ data: PageData }>();
 
-	let entries: DiaryEntry[] = data.entries ?? [];
-	let loading = false;
-	let isLoggedIn = data.isLoggedIn ?? false;
-	let loadError = '';
-	let draftText = '';
-	let draftMood = '';
-	let draftMoodPreview = 5;
-	let draftError = '';
-	let draftSuccess = '';
-	let savingDraft = false;
+	let entries = $state<DiaryEntry[]>(data.entries ?? []);
+	let loading = $state(false);
+	let sessionUser = $state<User | null>(data.session?.user ?? null);
+	let isLoggedIn = $derived(Boolean(sessionUser));
+	let loadError = $state('');
+	let draftText = $state('');
+	let draftMood = $state('');
+	let draftMoodPreview = $state(5);
+	let draftError = $state('');
+	let draftSuccess = $state('');
+	let savingDraft = $state(false);
 	type MoodGraphPoint = { mood: number };
 	let moodGraphPoints = $derived.by(() => buildMoodGraphPoints(entries));
 	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
-	let sharedEntryIds = new Set<string>(data.sharedEntryIds ?? []);
-	let confirmingShareEntryId = '';
-	let confirmingUnshareEntryId = '';
-	let sharingEntryId = '';
-	let unsharingEntryId = '';
-	let shareFeedbackEntryId = '';
-	let shareFeedbackMessage = '';
-	let shareFeedbackType: 'success' | 'error' | 'info' = 'info';
-	let shareFeedbackShowCommunityLink = false;
-	let editingEntryId = '';
-	let editingText = '';
-	let editingMood = '';
-	let editingMoodPreview = 5;
-	let savingEditId = '';
-	let editError = '';
-	let confirmingDeleteEntryId = '';
-	let deletingEntryId = '';
-	let deleteErrorEntryId = '';
-	let deleteErrorMessage = '';
+	let sharedEntryIds = $state(new Set<string>(data.sharedEntryIds ?? []));
+	let confirmingShareEntryId = $state('');
+	let confirmingUnshareEntryId = $state('');
+	let sharingEntryId = $state('');
+	let unsharingEntryId = $state('');
+	let shareFeedbackEntryId = $state('');
+	let shareFeedbackMessage = $state('');
+	let shareFeedbackType = $state<'success' | 'error' | 'info'>('info');
+	let shareFeedbackShowCommunityLink = $state(false);
+	let editingEntryId = $state('');
+	let editingText = $state('');
+	let editingMood = $state('');
+	let editingMoodPreview = $state(5);
+	let savingEditId = $state('');
+	let editError = $state('');
+	let confirmingDeleteEntryId = $state('');
+	let deletingEntryId = $state('');
+	let deleteErrorEntryId = $state('');
+	let deleteErrorMessage = $state('');
 
 	function parseStoredDraft(value: string | null): string {
 		if (!value) return '';
@@ -562,13 +564,8 @@
 		}
 	}
 
-	onMount(async () => {
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
-		isLoggedIn = Boolean(session?.user);
-
-		if (!isLoggedIn) {
+	async function initializeDiary() {
+		if (!sessionUser) {
 			entries = [];
 			sharedEntryIds = new Set();
 			loading = false;
@@ -605,6 +602,25 @@
 		} finally {
 			loading = false;
 		}
+	}
+
+	onMount(() => {
+		if (!data.session) {
+			supabase.auth.getSession().then(({ data: sessionData }) => {
+				sessionUser = sessionData.session?.user ?? null;
+				void initializeDiary();
+			});
+		} else {
+			void initializeDiary();
+		}
+
+		const {
+			data: { subscription }
+		} = supabase.auth.onAuthStateChange((_event, session) => {
+			sessionUser = session?.user ?? null;
+		});
+
+		return () => subscription.unsubscribe();
 	});
 </script>
 
