@@ -5,6 +5,8 @@
 
 	let { form }: { form: ActionData } = $props();
 	let loading = $state(false);
+	let oauthLoading = $state(false);
+	let oauthError = $state('');
 
 	let showReset = $state(false);
 	let resetEmail = $state('');
@@ -23,6 +25,22 @@
 		resetSending = false;
 		if (error) { resetError = 'Kunde inte skicka e-post. Kontrollera adressen och försök igen.'; return; }
 		resetSent = true;
+	}
+	async function continueWithGoogle() {
+		oauthError = '';
+		oauthLoading = true;
+
+		const { error } = await supabase.auth.signInWithOAuth({
+			provider: 'google',
+			options: {
+				redirectTo: `${window.location.origin}/auth/callback?next=/min-portal`
+			}
+		});
+
+		if (error) {
+			oauthError = 'Det gick inte att starta Google-inloggningen. Försök igen om en liten stund.';
+			oauthLoading = false;
+		}
 	}
 </script>
 
@@ -112,6 +130,27 @@
 		>
 			{loading ? 'Loggar in...' : 'Logga in'}
 		</button>
+
+		<div class="flex items-center gap-3 py-1" aria-hidden="true">
+			<div class="h-px flex-1 bg-black/10 dark:bg-white/10"></div>
+			<span class="text-xs uppercase tracking-[0.18em] opacity-50">eller</span>
+			<div class="h-px flex-1 bg-black/10 dark:bg-white/10"></div>
+		</div>
+
+		<button
+			type="button"
+			disabled={loading || oauthLoading}
+			aria-busy={oauthLoading}
+			onclick={continueWithGoogle}
+			class="w-full px-5 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 font-medium
+				disabled:opacity-60 transition-opacity"
+		>
+			{oauthLoading ? 'Öppnar Google...' : 'Fortsätt med Google'}
+		</button>
+
+		{#if oauthError}
+			<p class="text-red-500 text-sm" role="alert">{oauthError}</p>
+		{/if}
 	</form>
 
 	<p class="text-center text-sm mt-4 opacity-70">
