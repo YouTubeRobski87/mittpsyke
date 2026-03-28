@@ -706,21 +706,29 @@
 						</div>
 					</section>
 
-					<section class="auth-panel auth-panel-accent" id="skriv-sjalv">
-						<h2 class="text-base font-semibold">Nytt inlägg</h2>
-						<p class="mt-2 text-sm auth-muted">
-							Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
-						</p>
-						{#if hasDraftToResume}
-							<p class="mt-2 text-sm auth-muted">
-								Fortsätt där du var. Du kan spara när du känner dig klar.
-							</p>
-						{:else if hasSavedEntries}
-							<p class="mt-2 text-sm auth-muted">
-								Du kan fortsätta i små steg. Det du sparar finns kvar här när du vill komma tillbaka.
-							</p>
-						{/if}
-						<div class="mood-field">
+					<section class="auth-panel auth-panel-accent diary-editor-panel" id="skriv-sjalv">
+						<div class="editor-shell">
+							<header class="editor-head">
+								<p class="editor-kicker">Skriv själv</p>
+								<h2 class="editor-title">Nytt inlägg</h2>
+								<p class="editor-intro auth-muted">
+									Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
+								</p>
+								{#if hasDraftToResume}
+									<p class="editor-support auth-muted">
+										Fortsätt där du var. Du kan spara när du känner dig klar.
+									</p>
+								{:else if hasSavedEntries}
+									<p class="editor-support auth-muted">
+										Du kan fortsätta i små steg. Det du sparar finns kvar här när du vill komma tillbaka.
+									</p>
+								{/if}
+								<p class="editor-date">
+									{new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
+								</p>
+							</header>
+							<div class="editor-card">
+								<div class="mood-field editor-mood-field">
 							<p class="text-sm">Humör just nu (valfritt)</p>
 							<p class="mood-current">
 								{draftMood ? `Humör: ${draftMood}/10` : 'Humör: Ej valt'}
@@ -747,15 +755,16 @@
 							<button type="button" class="mood-clear auth-muted" onclick={clearMoodSelection} disabled={!draftMood}>
 								Rensa humör
 							</button>
-						</div>
+								</div>
 						<textarea
 							bind:value={draftText}
 							rows={8}
-							class="diary-input"
+							class="diary-input diary-input--editor"
 							placeholder="Skriv några ord..."
 						></textarea>
+							</div>
 
-						<p class="text-sm auth-muted">
+						<p class="editor-note auth-muted">
 							När du sparar finns inlägget kvar i din dagbok, så att du kan fortsätta senare i din egen takt.
 						</p>
 
@@ -763,19 +772,20 @@
 							<p class="mt-3 text-sm error-copy">{draftError}</p>
 						{/if}
 
-						<div class="actions-row">
+						<div class="actions-row editor-actions">
 							<button
 								type="button"
-								class="auth-button primary"
+								class="auth-button primary editor-primary"
 								onclick={saveDraftToDiary}
 								disabled={savingDraft || !draftText.trim()}
 							>
 								{savingDraft ? 'Sparar...' : 'Spara inlägg'}
 							</button>
 
-							<a href="/skriv" class="auth-button">
+							<a href="/skriv" class="auth-button editor-secondary">
 								Fortsätt skriva senare
 							</a>
+						</div>
 						</div>
 					</section>
 
@@ -1084,6 +1094,81 @@
 		gap: 0.65rem;
 	}
 
+	.diary-editor-panel {
+		padding: clamp(1.15rem, 2vw, 1.65rem);
+	}
+
+	.editor-shell {
+		width: min(100%, 760px);
+		margin: 0 auto;
+		display: grid;
+		gap: 1rem;
+	}
+
+	.editor-head {
+		display: grid;
+		gap: 0.45rem;
+		text-align: center;
+	}
+
+	.editor-kicker {
+		margin: 0;
+		font-size: 0.74rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.editor-title {
+		margin: 0;
+		font-size: clamp(1.55rem, 1.15rem + 1vw, 2.1rem);
+		letter-spacing: -0.03em;
+	}
+
+	.editor-intro,
+	.editor-support,
+	.editor-date,
+	.editor-note {
+		margin: 0;
+	}
+
+	.editor-intro {
+		font-size: 0.95rem;
+		line-height: 1.7;
+		color: hsl(var(--foreground) / 0.82);
+	}
+
+	.editor-support {
+		font-size: 0.84rem;
+		line-height: 1.6;
+	}
+
+	.editor-date {
+		justify-self: center;
+		padding: 0.42rem 0.8rem;
+		border-radius: var(--radius-pill);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+		text-transform: capitalize;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.editor-card {
+		display: grid;
+		gap: 0;
+		border-radius: calc(var(--radius-card) + 2px);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		background: linear-gradient(180deg, rgba(24, 28, 39, 0.98) 0%, rgba(15, 18, 28, 0.98) 100%);
+		box-shadow:
+			0 18px 40px rgba(15, 23, 42, 0.18),
+			inset 0 1px 0 rgba(255, 255, 255, 0.03);
+		overflow: hidden;
+	}
+
 	.diary-path-card {
 		display: grid;
 		gap: 0.2rem;
@@ -1151,6 +1236,30 @@
 
 	.diary-input::placeholder {
 		color: hsl(var(--muted-foreground));
+	}
+
+	.diary-input--editor {
+		margin-top: 0;
+		padding: 1.2rem 1.2rem 1.35rem;
+		border: 0;
+		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: 0;
+		background: transparent;
+		color: rgba(248, 250, 252, 0.96);
+		font-size: 0.98rem;
+		line-height: 1.8;
+		min-height: 18rem;
+		resize: vertical;
+	}
+
+	.diary-input--editor:focus {
+		border-color: transparent;
+		outline: none;
+		box-shadow: inset 0 0 0 1px rgba(94, 234, 212, 0.28);
+	}
+
+	.diary-input--editor::placeholder {
+		color: rgba(226, 232, 240, 0.48);
 	}
 
 	.mood-field {
@@ -1250,6 +1359,34 @@
 		outline-offset: 1px;
 	}
 
+	.editor-mood-field {
+		margin-top: 0;
+		padding: 1rem 1.2rem 1.1rem;
+		background: rgba(255, 255, 255, 0.02);
+	}
+
+	.editor-card .mood-current,
+	.editor-card .text-sm:not(.auth-muted) {
+		color: rgba(248, 250, 252, 0.96);
+	}
+
+	.editor-card .auth-muted,
+	.editor-card .mood-meaning,
+	.editor-card .mood-anchors,
+	.editor-card .mood-clear {
+		color: rgba(226, 232, 240, 0.68);
+	}
+
+	.editor-card .mood-slider {
+		background: rgba(255, 255, 255, 0.08);
+		border-color: rgba(255, 255, 255, 0.08);
+	}
+
+	.editor-card .mood-slider::-webkit-slider-runnable-track,
+	.editor-card .mood-slider::-moz-range-track {
+		background: rgba(255, 255, 255, 0.08);
+	}
+
 	.actions-row {
 		margin-top: 0.95rem;
 		display: flex;
@@ -1259,6 +1396,23 @@
 
 	.error-copy {
 		color: hsl(var(--error-foreground));
+	}
+
+	.editor-actions {
+		justify-content: center;
+		align-items: center;
+	}
+
+	.editor-primary {
+		min-width: 12.5rem;
+		padding-inline: 1.35rem;
+		padding-block: 0.75rem;
+		font-size: 0.96rem;
+		box-shadow: 0 10px 24px rgba(15, 118, 110, 0.16);
+	}
+
+	.editor-secondary {
+		background: hsl(var(--surface-soft));
 	}
 
 	.diary-flow {
