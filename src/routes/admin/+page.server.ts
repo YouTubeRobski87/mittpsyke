@@ -16,8 +16,9 @@ const REASON_LABELS: Record<string, string> = {
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const {
-		data: { user }
-	} = await locals.supabase.auth.getUser();
+		data: { session }
+	} = await locals.supabase.auth.getSession();
+	const user = session?.user ?? null;
 
 	if (!user || user.id !== ADMIN_USER_ID) {
 		throw error(403, 'Åtkomst nekad.');

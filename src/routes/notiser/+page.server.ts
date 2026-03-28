@@ -3,8 +3,9 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const {
-		data: { user }
-	} = await locals.supabase.auth.getUser();
+		data: { session }
+	} = await locals.supabase.auth.getSession();
+	const user = session?.user ?? null;
 
 	if (!user) {
 		throw redirect(303, '/login?redirect=/notiser');

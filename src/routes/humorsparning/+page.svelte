@@ -10,6 +10,14 @@
 			data: { session }
 		} = await supabase.auth.getSession();
 		loggedIn = !!session;
+
+		const {
+			data: { subscription }
+		} = supabase.auth.onAuthStateChange((_event, session) => {
+			loggedIn = !!session;
+		});
+
+		return () => subscription.unsubscribe();
 	});
 
 	const previewWeeks = [

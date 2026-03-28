@@ -4,13 +4,15 @@ import { redirect } from '@sveltejs/kit';
 type HeatmapData = Record<string, number>;
 
 export const load: PageServerLoad = async ({ locals, fetch }) => {
-	const { data: { user } } = await locals.supabase.auth.getUser();
+	const {
+		data: { session }
+	} = await locals.supabase.auth.getSession();
+	const user = session?.user ?? null;
 
 	if (!user) {
 		throw redirect(303, '/login');
 	}
 
-	const { data: { session } } = await locals.supabase.auth.getSession();
 	const token = session?.access_token;
 
 	if (!token) {

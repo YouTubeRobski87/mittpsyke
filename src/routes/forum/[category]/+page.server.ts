@@ -112,7 +112,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	}
 
 	// Hämta inloggad användare
-	const { data: { user } } = await locals.supabase.auth.getUser();
+	const {
+		data: { session }
+	} = await locals.supabase.auth.getSession();
+	const user = session?.user ?? null;
 
 	// Kolla om inloggad användare följer kategorin
 	let isFollowing = false;

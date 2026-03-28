@@ -563,7 +563,14 @@
 	}
 
 	onMount(async () => {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+		isLoggedIn = Boolean(session?.user);
+
 		if (!isLoggedIn) {
+			entries = [];
+			sharedEntryIds = new Set();
 			loading = false;
 			return;
 		}

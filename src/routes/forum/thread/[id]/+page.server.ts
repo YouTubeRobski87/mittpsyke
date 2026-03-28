@@ -102,8 +102,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	// Hämta inloggad användare
 	const {
-		data: { user }
-	} = await locals.supabase.auth.getUser();
+		data: { session }
+	} = await locals.supabase.auth.getSession();
+	const user = session?.user ?? null;
 
 	// display_name lagras i user_metadata (via auth.updateUser i inställningar)
 	const userDisplayName: string | null = user

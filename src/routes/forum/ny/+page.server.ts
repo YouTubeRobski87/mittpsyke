@@ -33,8 +33,9 @@ function getDisplayNameFromMeta(meta: Record<string, unknown> | null | undefined
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const {
-		data: { user }
-	} = await locals.supabase.auth.getUser();
+		data: { session }
+	} = await locals.supabase.auth.getSession();
+	const user = session?.user ?? null;
 
 	if (!user) {
 		throw redirect(303, `/login?redirect=/forum/ny${url.search ? url.search : ''}`);
@@ -66,8 +67,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
 		const {
-			data: { user }
-		} = await locals.supabase.auth.getUser();
+			data: { session }
+		} = await locals.supabase.auth.getSession();
+		const user = session?.user ?? null;
 
 		if (!user) {
 			return fail(401, { error: 'Du måste vara inloggad för att skriva.' });
