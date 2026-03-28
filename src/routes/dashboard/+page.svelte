@@ -36,6 +36,17 @@
 	const communityPreview = $derived(data.communityPreview);
 	const settingsPreview = $derived(data.settingsPreview);
 	const introName = $derived(settingsPreview.displayName ? `, ${settingsPreview.displayName}` : '');
+	const continuityText = $derived(
+		diaryPreview.hasEntry && diaryPreview.dateLabel
+			? `Senast sparade du i dagboken ${diaryPreview.dateLabel}. Allt finns kvar när du vill fortsätta.`
+			: 'Här kan du börja skapa en egen rytm i lugn och ro, med små steg som går att återvända till.'
+	);
+	const nextStepText = $derived(
+		diaryPreview.hasEntry
+			? 'Nästa lilla steg kan vara att öppna dagboken och fortsätta med några ord.'
+			: 'Nästa lilla steg kan vara att skriva några ord i dagboken och spara dem till senare.'
+	);
+	const primaryDiaryCtaLabel = $derived(diaryPreview.hasEntry ? 'Fortsätt i dagboken' : 'Börja i dagboken');
 </script>
 
 <main class="auth-page">
@@ -52,6 +63,11 @@
 			<p>
 				Här ser du små glimtar av dagbok, framsteg, gemenskap och inställningar utan att något tar över.
 			</p>
+			<p class="portal-status-note">{continuityText}</p>
+			<div class="portal-status-actions">
+				<a href="/dagbok" class="auth-button primary">{primaryDiaryCtaLabel}</a>
+				<p class="portal-subtle">{nextStepText}</p>
+			</div>
 		</section>
 
 		<section class="portal-grid" aria-label="Snabb översikt">
@@ -64,7 +80,10 @@
 				</div>
 				<h2>Fortsätt där du var</h2>
 				<p class="portal-copy">{diaryPreview.snippet}</p>
-				<a href="/dagbok" class="auth-button">Öppna dagboken</a>
+				{#if diaryPreview.hasEntry}
+					<p class="portal-subtle">Din dagbok sparar det viktigaste, så att du kan plocka upp tråden senare.</p>
+				{/if}
+				<a href="/dagbok" class="auth-button">{primaryDiaryCtaLabel}</a>
 			</article>
 
 			<article class="auth-panel portal-card">
@@ -135,9 +154,20 @@
 		font-size: 1.15rem;
 	}
 
-	.portal-status p:last-child {
+	.portal-status > p:not(.portal-status-kicker) {
 		margin: 0.45rem 0 0;
 		color: hsl(var(--muted-foreground));
+	}
+
+	.portal-status-note {
+		max-width: 50rem;
+	}
+
+	.portal-status-actions {
+		margin-top: 0.85rem;
+		display: grid;
+		gap: 0.5rem;
+		justify-items: start;
 	}
 
 	.portal-grid {

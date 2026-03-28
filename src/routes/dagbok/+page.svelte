@@ -35,6 +35,8 @@
 	type MoodGraphPoint = { mood: number };
 	let moodGraphPoints = $derived.by(() => buildMoodGraphPoints(entries));
 	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
+	let hasDraftToResume = $derived(draftText.trim().length > 0);
+	let hasSavedEntries = $derived(entries.length > 0);
 	let sharedEntryIds = $state(new Set<string>(data.sharedEntryIds ?? []));
 	let confirmingShareEntryId = $state('');
 	let confirmingUnshareEntryId = $state('');
@@ -709,6 +711,15 @@
 						<p class="mt-2 text-sm auth-muted">
 							Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
 						</p>
+						{#if hasDraftToResume}
+							<p class="mt-2 text-sm auth-muted">
+								Fortsätt där du var. Du kan spara när du känner dig klar.
+							</p>
+						{:else if hasSavedEntries}
+							<p class="mt-2 text-sm auth-muted">
+								Du kan fortsätta i små steg. Det du sparar finns kvar här när du vill komma tillbaka.
+							</p>
+						{/if}
 						<div class="mood-field">
 							<p class="text-sm">Humör just nu (valfritt)</p>
 							<p class="mood-current">
@@ -744,6 +755,10 @@
 							placeholder="Skriv några ord..."
 						></textarea>
 
+						<p class="text-sm auth-muted">
+							När du sparar finns inlägget kvar i din dagbok, så att du kan fortsätta senare i din egen takt.
+						</p>
+
 						{#if draftError}
 							<p class="mt-3 text-sm error-copy">{draftError}</p>
 						{/if}
@@ -767,7 +782,16 @@
 					{#if draftSuccess && !draftText}
 						<section class="auth-panel auth-panel-success">
 							<h2 class="text-base font-semibold">{draftSuccess}</h2>
-							<p class="mt-2 text-sm">Du kan fortsätta skriva i din dagbok när som helst.</p>
+							<p class="mt-2 text-sm">
+								Ditt inlägg finns kvar här. Nästa lilla steg kan vara att skriva några ord till nu,
+								eller komma tillbaka senare och fortsätta där du slutade.
+							</p>
+							<div class="actions-row mt-3">
+								<a href="/dagbok#skriv-sjalv" class="auth-button primary">Skriv några ord till</a>
+								{#if hasSavedEntries}
+									<a href="/dagbok#senaste-inlagg" class="auth-button">Se dina senaste inlägg</a>
+								{/if}
+							</div>
 						</section>
 					{/if}
 
@@ -788,7 +812,7 @@
 							</a>
 						</section>
 					{:else}
-						<div class="diary-flow">
+						<div class="diary-flow" id="senaste-inlagg">
 							<p class="flow-heading auth-muted">Senaste och äldre inlägg</p>
 							<div class="diary-entries">
 								{#each entries as entry (entry.id)}
