@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
 	import { supabase } from '$lib/supabase';
+	import { getStableOAuthCallbackUrl } from '$lib/auth-redirect';
 
 	let { form }: { form: ActionData } = $props();
 	let loading = $state(false);
@@ -33,7 +34,7 @@
 		const { error } = await supabase.auth.signInWithOAuth({
 			provider: 'google',
 			options: {
-				redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`
+				redirectTo: getStableOAuthCallbackUrl('/dashboard')
 			}
 		});
 

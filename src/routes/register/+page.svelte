@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { trackRegisterPageView, trackTempEntryPreviewShown } from '$lib/analytics';
 	import { supabase } from '$lib/supabase';
+	import { getStableOAuthCallbackUrl } from '$lib/auth-redirect';
 	import type { ActionData } from './$types';
 
 	let tempEntryPreview = $state<{ title?: string; content?: string } | null>(null);
@@ -43,7 +44,7 @@
 		const { error } = await supabase.auth.signInWithOAuth({
 			provider: 'google',
 			options: {
-				redirectTo: `${window.location.origin}/auth/callback?next=/dashboard`
+				redirectTo: getStableOAuthCallbackUrl('/dashboard')
 			}
 		});
 
