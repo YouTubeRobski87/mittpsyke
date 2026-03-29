@@ -11,7 +11,7 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/samtalsstod-vid-trauma" />
+	<link rel="canonical" href="https://www.mittpsyke.se/samtalsstod-utan-vantetid/samtalsstod-vid-trauma" />
 </svelte:head>
 
 <main class="page">
