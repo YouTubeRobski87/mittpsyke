@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { trackRegisterPageView, trackTempEntryPreviewShown } from '$lib/analytics';
 	import { supabase } from '$lib/supabase';
-	import { getStableOAuthCallbackUrl } from '$lib/auth-redirect';
+	import { canUseGoogleOAuth, getStableOAuthCallbackUrl } from '$lib/auth-redirect';
 	import type { ActionData } from './$types';
 
 	let tempEntryPreview = $state<{ title?: string; content?: string } | null>(null);
@@ -12,8 +12,11 @@
 	let loading = $state(false);
 	let oauthLoading = $state(false);
 	let oauthError = $state('');
+	let googleOAuthAvailable = $state(false);
 
 	onMount(() => {
+		googleOAuthAvailable = canUseGoogleOAuth(window.location.origin);
+
 		// Load temp entry
 		if (typeof window !== 'undefined') {
 			const stored = localStorage.getItem('mittpsyke_temp_entry');
@@ -39,6 +42,10 @@
 
 	async function continueWithGoogle() {
 		oauthError = '';
+		if (!googleOAuthAvailable) {
+			oauthError = 'Google-inloggning finns bara på www.mittpsyke.se. Använd den sidan för att fortsätta.';
+			return;
+		}
 		oauthLoading = true;
 
 		const { error } = await supabase.auth.signInWithOAuth({
@@ -130,13 +137,19 @@
 
 		<button
 			type="button"
-			disabled={loading || oauthLoading}
+			disabled={loading || oauthLoading || !googleOAuthAvailable}
 			aria-busy={oauthLoading}
 			onclick={continueWithGoogle}
 			class="w-full px-5 py-3 rounded-[var(--radius-input)] border border-black/12 dark:border-white/12 bg-white dark:bg-white/5 font-medium disabled:opacity-60 transition-opacity"
 		>
 			{oauthLoading ? 'Öppnar Google...' : 'Fortsätt med Google'}
 		</button>
+
+		{#if !googleOAuthAvailable}
+			<p class="text-sm opacity-70">
+				Google-inloggning finns bara på <a href="https://www.mittpsyke.se/register" class="underline">www.mittpsyke.se</a>.
+			</p>
+		{/if}
 
 		{#if oauthError}
 			<p class="text-red-500 text-sm" role="alert">{oauthError}</p>
