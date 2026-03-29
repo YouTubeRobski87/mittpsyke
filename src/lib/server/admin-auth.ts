@@ -36,9 +36,15 @@ async function hydrateSessionUser(user: User): Promise<SessionUser> {
 	if (!isSuperAdmin) {
 		const serviceClient = createServiceClient();
 		if (serviceClient) {
-			const { data, error } = await serviceClient.auth.admin.getUserById(user.id);
-			if (!error && data.user) {
-				isSuperAdmin = isSuperAdminUser(data.user as User & UnknownRecord);
+			const { data, error } = await serviceClient
+				.schema('auth')
+				.from('users')
+				.select('is_super_admin')
+				.eq('id', user.id)
+				.maybeSingle<{ is_super_admin: boolean | null }>();
+
+			if (!error && data?.is_super_admin === true) {
+				isSuperAdmin = true;
 			}
 		}
 	}
