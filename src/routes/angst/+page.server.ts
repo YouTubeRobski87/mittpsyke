@@ -1,6 +1,6 @@
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { loadPublicLandingPage } from '$lib/server/landing-pages';
 
 export const load: PageServerLoad = async () => {
-	return loadPublicLandingPage('angst');
+	throw redirect(308, '/angest');
 };
