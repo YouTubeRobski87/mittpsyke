@@ -6,6 +6,7 @@ type SessionUser = User & {
 };
 
 type UnknownRecord = Record<string, unknown>;
+const LEGACY_ADMIN_USER_IDS = new Set(['f4f107ef-461a-4090-bc2f-6ddccc0cc64d']);
 
 function asRecord(value: unknown): UnknownRecord {
 	return value && typeof value === 'object' && !Array.isArray(value)
@@ -24,6 +25,7 @@ export function isSuperAdminUser(user: (User & UnknownRecord) | null | undefined
 	const userMetadata = asRecord(user.user_metadata);
 
 	return (
+		LEGACY_ADMIN_USER_IDS.has(user.id) ||
 		readBoolean(user.is_super_admin) ||
 		readBoolean(appMetadata.is_super_admin) ||
 		readBoolean(userMetadata.is_super_admin)
