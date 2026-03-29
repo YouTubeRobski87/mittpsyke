@@ -28,9 +28,7 @@ function renderUrl({ path, changefreq, priority }: SitemapEntry, lastmod: string
 export const GET: RequestHandler = async () => {
 	const staticPages: SitemapEntry[] = [
 		{ path: '/', changefreq: 'yearly', priority: '1.0' },
-		{ path: '/om', changefreq: 'yearly', priority: '0.5' },
-		{ path: '/kontakt', changefreq: 'yearly', priority: '0.5' },
-		{ path: '/faq', changefreq: 'yearly', priority: '0.5' },
+		{ path: '/om-mittpsyke', changefreq: 'yearly', priority: '0.5' },
 		{ path: '/guider', changefreq: 'yearly', priority: '0.5' },
 		{ path: '/ovningar', changefreq: 'yearly', priority: '0.5' }
 	];
