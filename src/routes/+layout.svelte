@@ -263,7 +263,9 @@
 			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
 		/>
 
-		<meta name="robots" content={isPrivateOrUtilityPage ? 'noindex, nofollow' : 'index, follow'} />
+		{#if isPrivateOrUtilityPage || page.data?.noindex}
+			<meta name="robots" content="noindex, nofollow" />
+		{/if}
 		<meta name="author" content="MittPsyke" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
