@@ -32,22 +32,14 @@ export function isSuperAdminUser(user: (User & UnknownRecord) | null | undefined
 	);
 }
 
-async function hydrateSessionUser(user: User): Promise<SessionUser> {
+async function hydrateSessionUser(supabase: SupabaseClient, user: User): Promise<SessionUser> {
 	let isSuperAdmin = isSuperAdminUser(user as User & UnknownRecord);
 
 	if (!isSuperAdmin) {
-		const serviceClient = createServiceClient();
-		if (serviceClient) {
-			const { data, error } = await serviceClient
-				.schema('auth')
-				.from('users')
-				.select('is_super_admin')
-				.eq('id', user.id)
-				.maybeSingle<{ is_super_admin: boolean | null }>();
+		const { data, error } = await supabase.rpc('current_user_is_super_admin');
 
-			if (!error && data?.is_super_admin === true) {
-				isSuperAdmin = true;
-			}
+		if (!error && data === true) {
+			isSuperAdmin = true;
 		}
 	}
 
@@ -66,7 +58,7 @@ export async function getSessionUser(supabase: SupabaseClient): Promise<SessionU
 		return null;
 	}
 
-	return hydrateSessionUser(session.user);
+	return hydrateSessionUser(supabase, session.user);
 }
 
 export async function getUserFromAccessToken(accessToken: string): Promise<SessionUser | null> {
@@ -84,5 +76,5 @@ export async function getUserFromAccessToken(accessToken: string): Promise<Sessi
 		return null;
 	}
 
-	return hydrateSessionUser(user);
+	return hydrateSessionUser(tokenClient, user);
 }
