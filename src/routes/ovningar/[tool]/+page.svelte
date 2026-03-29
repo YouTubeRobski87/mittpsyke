@@ -1,13 +1,24 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
+	import SeoHead from '$lib/components/SeoHead.svelte';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
 </script>
 
-<svelte:head>
-	<title>{data.tool.title} | Övningar | MittPsyke</title>
-	<meta name="description" content={data.tool.description} />
-</svelte:head>
+<SeoHead
+	title={`${data.tool.title} | Övningar | MittPsyke`}
+	description={data.tool.description}
+	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
+/>
+<BreadcrumbSchema
+	crumbs={[
+		{ name: 'Hem', url: '/' },
+		{ name: 'Övningar', url: '/ovningar' },
+		{ name: data.tool.title, url: $page.url.pathname }
+	]}
+/>
 
 <main class="container tool-page">
 	<nav class="crumbs" aria-label="Breadcrumb">

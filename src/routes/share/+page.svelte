@@ -1,11 +1,11 @@
 <script lang="ts">
 	let { data } = $props();
-	const { streak, total, weekly, ogTitle, ogDescription } = data;
+	const streak = $derived(data.streak);
+	const total = $derived(data.total);
+	const weekly = $derived(data.weekly);
+	const ogTitle = $derived(data.ogTitle);
+	const ogDescription = $derived(data.ogDescription);
 
-	// Build message for sharing
-	const shareMessage = streak >= 1
-		? `Jag har checkat in med mig själv ${streak} dagar i rad 🌱\n\nhttps://www.mittpsyke.se`
-		: `Jag tar hand om mitt psyke med MittPsyke 🌱\n\nhttps://www.mittpsyke.se`;
 </script>
 
 <svelte:head>

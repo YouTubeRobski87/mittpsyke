@@ -68,6 +68,14 @@
 		aiSummary: string | null;
 	}
 
+	type IdleWindow = Window & {
+		requestIdleCallback?: (
+			callback: IdleRequestCallback,
+			options?: IdleRequestOptions
+		) => number;
+		cancelIdleCallback?: (handle: number) => void;
+	};
+
 	interface PageData {
 		streak: StreakData | null;
 		milestones: MilestonesResponse | null;
@@ -80,13 +88,18 @@
 	// ── Theme ──
 
 	let { data } = $props<{ data: PageData }>();
-	const initialProfileTheme =
-		data.profileTheme && THEMES[data.profileTheme] ? data.profileTheme : getCachedTheme();
-	let profileTheme = $state(initialProfileTheme);
+	let profileTheme = $state<keyof typeof THEMES>(getCachedTheme());
 	const currentTheme = $derived(THEMES[profileTheme] ?? THEMES.neutral);
 	const themeStyle = $derived(
 		`--theme-accent: ${currentTheme.accent}; --theme-bg: ${currentTheme.bg};`
 	);
+
+	$effect(() => {
+		const nextProfileTheme = data.profileTheme;
+		if (nextProfileTheme && THEMES[nextProfileTheme]) {
+			profileTheme = nextProfileTheme;
+		}
+	});
 
 	// ── Props + State ──
 	let streakData: StreakData | null = $derived(data.streak ?? null);
@@ -103,7 +116,8 @@
 	let insightsCardEl = $state<HTMLElement | null>(null);
 	let heatmapCardEl = $state<HTMLElement | null>(null);
 	let insightsLoadScheduled = $state(false);
-	let idleInsightsHandle = $state<number | null>(null);
+	let idleInsightsHandle = $state<ReturnType<typeof setTimeout> | number | null>(null);
+	let idleInsightsMode = $state<'idle' | 'timeout' | null>(null);
 	let loading = false;
 	let error = $derived(
 		data.streak === null && data.milestones === null
@@ -164,21 +178,25 @@
 		insightsLoadScheduled = true;
 		const onIdle = () => {
 			idleInsightsHandle = null;
+			idleInsightsMode = null;
 			void loadInsights();
 		};
 
-		if ('requestIdleCallback' in window) {
-			idleInsightsHandle = window.requestIdleCallback(onIdle, { timeout: 1200 });
+		const idleWindow = window as IdleWindow;
+		if (typeof idleWindow.requestIdleCallback === 'function') {
+			idleInsightsMode = 'idle';
+			idleInsightsHandle = idleWindow.requestIdleCallback(onIdle, { timeout: 1200 });
 			return;
 		}
 
-		idleInsightsHandle = window.setTimeout(onIdle, 280);
+		idleInsightsMode = 'timeout';
+		idleInsightsHandle = setTimeout(onIdle, 280);
 	}
 
 	onMount(() => {
 		hasSensitiveDataConsent = hasSensitiveConsent();
-		if (data.profileTheme && browser) {
-			localStorage.setItem(THEME_STORAGE_KEY, data.profileTheme);
+		if (browser) {
+			localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
 		}
 
 		if (typeof IntersectionObserver === 'undefined') {
@@ -214,10 +232,12 @@
 		return () => {
 			observer.disconnect();
 			if (idleInsightsHandle !== null) {
-				if ('cancelIdleCallback' in window) {
-					window.cancelIdleCallback(idleInsightsHandle);
-				} else {
-					window.clearTimeout(idleInsightsHandle);
+				const idleWindow = window as IdleWindow;
+				if (idleInsightsMode === 'idle' && typeof idleWindow.cancelIdleCallback === 'function') {
+					idleWindow.cancelIdleCallback(idleInsightsHandle as number);
+				}
+				if (idleInsightsMode === 'timeout') {
+					clearTimeout(idleInsightsHandle);
 				}
 			}
 		};

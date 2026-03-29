@@ -1,21 +1,23 @@
 <script lang="ts">
-	import { pillars } from '$lib/data/seo-architecture';
+	import { page } from '$app/stores';
+	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
+	import SeoHead from '$lib/components/SeoHead.svelte';
+	import { guides, pillars } from '$lib/seo-kit/content';
+
+	const guideCountByPillar = Object.fromEntries(
+		pillars.map((pillar) => [
+			pillar.slug,
+			guides.filter((guide) => guide.pillarSlug === pillar.slug).length
+		])
+	);
 </script>
 
-<svelte:head>
-	<title>Guider om psykisk hälsa – ångest, stress och mer | MittPsyke</title>
-	<meta
-		name="description"
-		content="Samlade guider om ångest, stress, nedstämdhet, sömn och självkänsla. Skrivet för reflektion och förståelse – ta del i din egen takt."
-	/>
-	<meta property="og:title" content="Guider om psykisk hälsa | MittPsyke" />
-	<meta
-		property="og:description"
-		content="Samlade guider om ångest, stress, nedstämdhet, sömn och självkänsla. Skrivet för reflektion och förståelse – ta del i din egen takt."
-	/>
-	<meta property="og:type" content="website" />
-	<link rel="canonical" href="https://www.mittpsyke.se/guider" />
-</svelte:head>
+<SeoHead
+	title="Guider om psykisk hälsa – ångest, stress och mer | MittPsyke"
+	description="Samlade guider om ångest, stress, nedstämdhet, sömn och självkänsla. Skrivet för reflektion och förståelse i lugn takt."
+	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
+/>
+<BreadcrumbSchema crumbs={[{ name: 'Guider', url: '/guider' }]} />
 
 <main class="container guides-page">
 	<header class="intro">
@@ -32,7 +34,7 @@
 			<a class="card" href={`/guider/${pillar.slug}`}>
 				<h2>{pillar.title}</h2>
 				<p>{pillar.description}</p>
-				<span class="meta">{pillar.clusterTopics.length} artiklar att utforska</span>
+				<span class="meta">{guideCountByPillar[pillar.slug] ?? 0} artiklar att utforska</span>
 			</a>
 		{/each}
 	</section>

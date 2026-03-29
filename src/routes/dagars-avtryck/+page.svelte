@@ -60,7 +60,11 @@
 
 	// --- Inläggslist ---
 
-	let entries = $state<StorifyEntry[]>(data.entries ?? []);
+	let entries = $state<StorifyEntry[]>([]);
+
+	$effect(() => {
+		entries = data.entries ?? [];
+	});
 
 	// --- Scrollreferens för chattfönstret ---
 

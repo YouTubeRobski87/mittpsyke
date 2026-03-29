@@ -14,9 +14,13 @@
 		created_at: string;
 	};
 
-	let notifications = $state<Notification[]>(data.notifications as Notification[]);
+	let notifications = $state<Notification[]>([]);
 	let markingAll = $state(false);
 	let markAllDone = $state(false);
+
+	$effect(() => {
+		notifications = data.notifications as Notification[];
+	});
 
 	function formatRelativeTime(dateStr: string): string {
 		if (!dateStr) return '';

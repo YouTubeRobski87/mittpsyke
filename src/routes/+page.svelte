@@ -1043,15 +1043,6 @@
 		letter-spacing: -0.02em;
 	}
 
-	ul {
-		margin: 1rem 0 0;
-		padding-left: 1.2rem;
-		font-family: var(--font-body);
-		font-weight: 400;
-		line-height: 1.7;
-		color: rgba(255, 255, 255, 0.9);
-	}
-
 	/* ── Responsivt ── */
 	@media (max-width: 900px) {
 		.trust-inner {

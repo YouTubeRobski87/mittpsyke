@@ -11,6 +11,10 @@
 
 	let { pillar, guides, landing }: SeoPillarLandingProps = $props();
 
+	function normalizeGuideHref(href: string): string {
+		return href.startsWith('/guider-seo/') ? href.replace('/guider-seo/', '/guider/') : href;
+	}
+
 	const contentSections = $derived(
 		landing?.sections?.length
 			? landing.sections
@@ -25,8 +29,8 @@
 </script>
 
 <main class="mx-auto max-w-3xl px-4 py-10">
-	<nav class="text-sm opacity-75">
-		<a class="hover:underline" href="/guider-seo">Guider SEO</a>
+	<nav class="text-sm opacity-75" aria-label="Brödsmulor">
+		<a class="hover:underline" href="/guider">Guider</a>
 	</nav>
 
 	<h1 class="mt-3 text-3xl font-semibold tracking-tight">{landing?.h1 ?? pillar.title}</h1>
@@ -39,7 +43,7 @@
 			{#if section.links?.length}
 				<ul class="mt-3 space-y-2">
 					{#each section.links as link}
-						<li><a class="hover:underline" href={link.href}>{link.title}</a></li>
+						<li><a class="hover:underline" href={normalizeGuideHref(link.href)}>{link.title}</a></li>
 					{/each}
 				</ul>
 			{/if}
@@ -55,7 +59,7 @@
 					<li class="rounded-xl border border-black/10 bg-white/70 p-4">
 						<a
 							class="block leading-relaxed hover:underline"
-							href={`/guider-seo/${guide.pillarSlug}/${guide.slug}`}
+							href={`/guider/${guide.pillarSlug}/${guide.slug}`}
 						>
 							{guide.title}
 						</a>
@@ -70,7 +74,7 @@
 			<h2 class="text-xl font-semibold">Relaterade ämnen</h2>
 			<ul class="mt-3 space-y-2">
 				{#each landing.primaryLinks as link}
-					<li><a class="hover:underline" href={link.href}>{link.title}</a></li>
+					<li><a class="hover:underline" href={normalizeGuideHref(link.href)}>{link.title}</a></li>
 				{/each}
 			</ul>
 		</section>

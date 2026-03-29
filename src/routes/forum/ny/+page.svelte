@@ -4,16 +4,22 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	let title = $state((form as { title?: string } | null)?.title ?? '');
-	let body = $state((form as { body?: string } | null)?.body ?? '');
-	let selectedCategory = $state(
-		(form as { categoryId?: string } | null)?.categoryId ?? data.preselectedCategory
-	);
-	let isAnonymous = $state((form as { isAnonymous?: boolean } | null)?.isAnonymous ?? false);
+	let title = $state('');
+	let body = $state('');
+	let selectedCategory = $state('');
+	let isAnonymous = $state(false);
 	let submitting = $state(false);
 
 	const TITLE_MAX = 200;
 	const BODY_MAX = 5000;
+
+	$effect(() => {
+		title = (form as { title?: string } | null)?.title ?? '';
+		body = (form as { body?: string } | null)?.body ?? '';
+		selectedCategory =
+			(form as { categoryId?: string } | null)?.categoryId ?? data.preselectedCategory;
+		isAnonymous = (form as { isAnonymous?: boolean } | null)?.isAnonymous ?? false;
+	});
 </script>
 
 <svelte:head>
@@ -257,6 +263,7 @@
 		font-family: var(--font-body);
 		width: 100%;
 		transition: border-color 0.15s;
+		appearance: none;
 		-webkit-appearance: none;
 	}
 

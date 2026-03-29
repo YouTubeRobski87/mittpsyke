@@ -23,12 +23,12 @@
 		created_at: string;
 		updated_at: string;
 	};
-	let localReplies = $state<ReplyRow[]>(data.replies);
+	let localReplies = $state<ReplyRow[]>([]);
 
 	// Redigering av tråd
 	let editingThread = $state(false);
-	let editThreadTitle = $state(data.thread.title);
-	let editThreadBody = $state(data.thread.body);
+	let editThreadTitle = $state('');
+	let editThreadBody = $state('');
 	let editThreadSaving = $state(false);
 	let editThreadError = $state('');
 
@@ -42,8 +42,15 @@
 	let deleteError = $state('');
 
 	// Följ tråd
-	let isFollowing = $state(data.isFollowing);
+	let isFollowing = $state(false);
 	let followLoading = $state(false);
+
+	$effect(() => {
+		localReplies = data.replies;
+		editThreadTitle = data.thread.title;
+		editThreadBody = data.thread.body;
+		isFollowing = data.isFollowing;
+	});
 
 	async function toggleFollow() {
 		if (!data.userId || followLoading) return;

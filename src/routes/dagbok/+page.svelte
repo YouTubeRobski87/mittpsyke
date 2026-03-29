@@ -21,9 +21,9 @@
 
 	let { data } = $props<{ data: PageData }>();
 
-	let entries = $state<DiaryEntry[]>(data.entries ?? []);
+	let entries = $state<DiaryEntry[]>([]);
 	let loading = $state(false);
-	let sessionUser = $state<User | null>(data.session?.user ?? null);
+	let sessionUser = $state<User | null>(null);
 	let isLoggedIn = $derived(Boolean(sessionUser));
 	let loadError = $state('');
 	let draftText = $state('');
@@ -37,7 +37,7 @@
 	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
 	let hasSavedEntries = $derived(entries.length > 0);
-	let sharedEntryIds = $state(new Set<string>(data.sharedEntryIds ?? []));
+	let sharedEntryIds = $state(new Set<string>());
 	let confirmingShareEntryId = $state('');
 	let confirmingUnshareEntryId = $state('');
 	let sharingEntryId = $state('');
@@ -56,6 +56,12 @@
 	let deletingEntryId = $state('');
 	let deleteErrorEntryId = $state('');
 	let deleteErrorMessage = $state('');
+
+	$effect(() => {
+		entries = data.entries ?? [];
+		sessionUser = data.session?.user ?? null;
+		sharedEntryIds = new Set<string>(data.sharedEntryIds ?? []);
+	});
 
 	function parseStoredDraft(value: string | null): string {
 		if (!value) return '';

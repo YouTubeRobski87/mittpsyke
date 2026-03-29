@@ -4,8 +4,12 @@
 
 	let { data }: { data: PageData } = $props();
 
-	let isFollowing = $state(data.isFollowing);
+	let isFollowing = $state(false);
 	let followLoading = $state(false);
+
+	$effect(() => {
+		isFollowing = data.isFollowing;
+	});
 
 	async function getToken(): Promise<string | null> {
 		const { data: { session } } = await supabase.auth.getSession();

@@ -5,11 +5,13 @@
 
 	let loggedIn = $state(false);
 
-	onMount(async () => {
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
-		loggedIn = !!session;
+	onMount(() => {
+		let active = true;
+
+		void supabase.auth.getSession().then(({ data: { session } }) => {
+			if (!active) return;
+			loggedIn = !!session;
+		});
 
 		const {
 			data: { subscription }
@@ -17,7 +19,10 @@
 			loggedIn = !!session;
 		});
 
-		return () => subscription.unsubscribe();
+		return () => {
+			active = false;
+			subscription.unsubscribe();
+		};
 	});
 
 	const previewWeeks = [

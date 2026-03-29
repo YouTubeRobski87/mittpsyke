@@ -1,22 +1,18 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
+	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { pillars, tools } from '$lib/data/seo-architecture';
 
 	const pillarLabelBySlug = Object.fromEntries(pillars.map((pillar) => [pillar.slug, pillar.title]));
 </script>
 
-<svelte:head>
-	<title>Övningar mot ångest och stress – steg för steg | MittPsyke</title>
-	<meta
-		name="description"
-		content="Steg-för-steg-övningar mot ångest, stress, sömn och självkänsla. Konkreta verktyg för vardagen – börja i din egen takt."
-	/>
-	<meta property="og:title" content="Övningar mot ångest och stress | MittPsyke" />
-	<meta
-		property="og:description"
-		content="Steg-för-steg-övningar mot ångest, stress, sömn och självkänsla. Konkreta verktyg för vardagen – börja i din egen takt."
-	/>
-	<link rel="canonical" href="https://www.mittpsyke.se/ovningar" />
-</svelte:head>
+<SeoHead
+	title="Övningar mot ångest och stress – steg för steg | MittPsyke"
+	description="Steg-för-steg-övningar mot ångest, stress, sömn och självkänsla. Konkreta verktyg för vardagen i lugn takt."
+	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
+/>
+<BreadcrumbSchema crumbs={[{ name: 'Övningar', url: '/ovningar' }]} />
 
 <main class="container tools-page">
 	<header class="intro">

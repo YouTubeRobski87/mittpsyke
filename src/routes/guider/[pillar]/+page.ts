@@ -1,26 +1,22 @@
-import { error } from '@sveltejs/kit';
-import { getPillarBySlug, getToolsForPillar } from '$lib/data/seo-architecture';
-import { guides as seoGuides } from '$lib/seo-kit/content';
+import { error, redirect } from '@sveltejs/kit';
+import { getGuidesForPillar, getPillarBySlug, getPillarLandingBySlug } from '$lib/seo-kit/content';
 
 export function load({ params }) {
-	const pillar = getPillarBySlug(params.pillar);
+	const pillarSlug = params.pillar === 'stress-och-overbelastning' ? 'stress' : params.pillar;
+
+	if (pillarSlug !== params.pillar) {
+		throw redirect(308, `/guider/${pillarSlug}`);
+	}
+
+	const pillar = getPillarBySlug(pillarSlug);
 
 	if (!pillar) {
 		throw error(404, 'Guiden hittades inte');
 	}
 
-	const guideHrefByTitle = new Map(
-		seoGuides.map((guide) => [guide.title, `/guider-seo/${guide.pillarSlug}/${guide.slug}`])
-	);
-
-	const clusterTopics = pillar.clusterTopics.map((topic) => ({
-		label: topic,
-		href: guideHrefByTitle.get(topic) ?? null
-	}));
-
 	return {
 		pillar,
-		tools: getToolsForPillar(pillar.slug),
-		clusterTopics
+		guides: getGuidesForPillar(pillar.slug),
+		landing: getPillarLandingBySlug(pillar.slug)
 	};
 }
