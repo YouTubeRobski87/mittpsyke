@@ -1,7 +1,11 @@
 import { createServerClient } from '@supabase/ssr'
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public'
+import { env as publicEnv } from '$env/dynamic/public'
 import type { Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
+import { getSessionUser } from '$lib/server/admin-auth'
+
+const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
+const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''
 
 // --- Säkerhetsheaders ---
 const securityHeaders: Handle = async ({ event, resolve }) => {
@@ -16,8 +20,8 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 
 	// Content-Security-Policy
 	// Tillåter: self, Supabase, Google Analytics, inline för gtag
-	const supabaseHost = PUBLIC_SUPABASE_URL
-		? new URL(PUBLIC_SUPABASE_URL).host
+	const supabaseHost = supabaseUrl
+		? new URL(supabaseUrl).host
 		: '*.supabase.co'
 
 	const csp = [
@@ -72,7 +76,7 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 
 // --- Supabase auth ---
 const supabaseAuth: Handle = async ({ event, resolve }) => {
-	event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+	event.locals.supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
 		cookies: {
 			getAll: () => event.cookies.getAll(),
 			setAll: (cookiesToSet) => {
@@ -88,6 +92,8 @@ const supabaseAuth: Handle = async ({ event, resolve }) => {
 			}
 		}
 	})
+
+	event.locals.getSession = () => getSessionUser(event.locals.supabase)
 
 	return resolve(event, {
 		filterSerializedResponseHeaders(name) {

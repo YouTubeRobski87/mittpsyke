@@ -7,6 +7,7 @@ import {
 	type LandingPageContentRecord,
 	type LandingPageRecord
 } from '$lib/server/admin-system';
+import { createServiceClient } from '$lib/server/supabase-admin';
 
 const AB_COOKIE_NAME = 'mittpsyke-angst-variant';
 
@@ -46,8 +47,11 @@ function resolveVariant(existing: string | undefined): AbVariant {
 	return Math.random() >= 0.5 ? 'A' : 'B';
 }
 
-export const load: PageServerLoad = async ({ locals, cookies }) => {
-	const result = await getLandingPageByPageId(locals.supabase, 'angst');
+export const load: PageServerLoad = async ({ cookies }) => {
+	const client = createServiceClient();
+	const result = client
+		? await getLandingPageByPageId(client, 'angst')
+		: { page: null, content: null, abTest: null, error: null };
 
 	if (result.error && !isMissingSupabaseResourceError(result.error, 'landing_pages')) {
 		console.error('Angest landing page load error:', result.error);

@@ -2,12 +2,14 @@
 import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { OPENAI_API_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/public';
+import { env as privateEnv } from '$env/dynamic/private';
 import type { RequestHandler } from '@sveltejs/kit';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+function getOpenAIClient() {
+	return privateEnv.OPENAI_API_KEY ? new OpenAI({ apiKey: privateEnv.OPENAI_API_KEY }) : null;
+}
 
 const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
 const WEEKDAY_EMOJIS: { [key: string]: string } = {
@@ -32,7 +34,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		if (!authHeader) return json({ error: 'Unauthorized' }, { status: 401 });
 
 		const token = authHeader.replace('Bearer ', '');
-		const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		const supabase = createClient(env.PUBLIC_SUPABASE_URL ?? '', env.PUBLIC_SUPABASE_ANON_KEY ?? '', {
 			global: { headers: { Authorization: `Bearer ${token}` } }
 		});
 
@@ -145,6 +147,17 @@ export const GET: RequestHandler = async ({ request }) => {
 
 		let aiSummary = null;
 		try {
+			const openai = getOpenAIClient();
+			if (!openai) {
+				return json({
+					insights,
+					bestDay,
+					worstDay,
+					emotionDistribution: emotionCounts,
+					aiSummary: null
+				});
+			}
+
 			const completion = await openai.chat.completions.create({
 				model: 'gpt-4-turbo',
 				messages: [{

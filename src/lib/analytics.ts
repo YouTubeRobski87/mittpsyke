@@ -104,7 +104,6 @@ function trackEvent(eventName: EventName, params: EventParams = {}) {
 	}
 }
 
-// Write page events
 export function trackWritePageView() {
 	trackEvent('write_page_view');
 }
@@ -121,7 +120,6 @@ export function trackSaveAccountFromWrite() {
 	trackEvent('save_account_from_write');
 }
 
-// Temp entry events
 export function trackTempEntrySaved() {
 	trackEvent('temp_entry_saved');
 }
@@ -134,7 +132,6 @@ export function trackContinueAnonymousClicked() {
 	trackEvent('continue_anonymous_clicked');
 }
 
-// Register page events
 export function trackRegisterPageView(hasTempEntry: boolean) {
 	trackEvent('register_page_view', { has_temp_entry: hasTempEntry });
 }
@@ -147,7 +144,6 @@ export function trackViewRegisterPage() {
 	trackEvent('view_register_page');
 }
 
-// Registration completion
 export function trackSignupCompleted() {
 	trackEvent('signup_completed');
 }
@@ -156,7 +152,6 @@ export function trackRegistrationComplete() {
 	trackEvent('registration_complete');
 }
 
-// Diary events
 export function trackFirstDiaryEntry(params?: { hasMood?: boolean; tagCount?: number }) {
 	const eventParams: EventParams = {};
 	if (params?.hasMood !== undefined) eventParams.has_mood = params.hasMood;
@@ -172,12 +167,10 @@ export function trackDiaryPageOpenedFromHoroscope() {
 	trackEvent('diary_page_opened_from_horoscope');
 }
 
-// Horoscope events
 export function trackHoroscopeCTAClick() {
 	trackEvent('horoscope_cta_clicked');
 }
 
-// Hero section events
 export function trackHeroCTAPrimaryClick() {
 	trackEvent('hero_cta_primary_click');
 }

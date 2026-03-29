@@ -5,6 +5,11 @@ import {
 	LANDING_EVENT_TYPES,
 	isMissingSupabaseResourceError
 } from '$lib/server/admin-system';
+import {
+	createServiceClient,
+	isMissingTableError,
+	isUuid
+} from '$lib/server/supabase-admin';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -14,6 +19,58 @@ function isJsonRecord(value: unknown): value is JsonRecord {
 
 function asTrimmedString(value: unknown) {
 	return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+async function resolveLandingPageId(identifier: string) {
+	if (isUuid(identifier)) {
+		return { id: identifier, missingSchema: false, missingPage: false };
+	}
+
+	const admin = createServiceClient();
+	if (!admin) {
+		return { id: null, missingSchema: false, missingPage: true };
+	}
+
+	const byPageId = await admin
+		.from('landing_pages')
+		.select('id')
+		.eq('page_id', identifier)
+		.maybeSingle<{ id: string }>();
+
+	if (byPageId.error) {
+		if (isMissingTableError(byPageId.error, 'landing_pages')) {
+			return { id: null, missingSchema: true, missingPage: false };
+		}
+
+		console.error('Analytics landing page lookup error:', byPageId.error);
+		return { id: null, missingSchema: false, missingPage: true };
+	}
+
+	if (byPageId.data?.id) {
+		return { id: byPageId.data.id, missingSchema: false, missingPage: false };
+	}
+
+	const slug = identifier.startsWith('/') ? identifier : `/${identifier}`;
+	const bySlug = await admin
+		.from('landing_pages')
+		.select('id')
+		.eq('slug', slug)
+		.maybeSingle<{ id: string }>();
+
+	if (bySlug.error) {
+		if (isMissingTableError(bySlug.error, 'landing_pages')) {
+			return { id: null, missingSchema: true, missingPage: false };
+		}
+
+		console.error('Analytics landing page slug lookup error:', bySlug.error);
+		return { id: null, missingSchema: false, missingPage: true };
+	}
+
+	return {
+		id: bySlug.data?.id ?? null,
+		missingSchema: false,
+		missingPage: !bySlug.data?.id
+	};
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -48,13 +105,31 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ ok: false, error: 'Ogiltig variant.' }, { status: 400 });
 	}
 
+	const resolvedLandingPage = await resolveLandingPageId(landingPageId);
+
+	if (resolvedLandingPage.missingSchema) {
+		return json(
+			{
+				ok: true,
+				countersUpdated: false,
+				skipped: true,
+				message: 'Analytics-schemat saknas ännu. Kör `supabase/admin_system.sql` för att aktivera lagring.'
+			},
+			{ status: 202 }
+		);
+	}
+
+	if (!resolvedLandingPage.id || resolvedLandingPage.missingPage) {
+		return json({ ok: false, error: 'Landningssidan kunde inte hittas.' }, { status: 404 });
+	}
+
 	const {
 		data: { session }
 	} = await locals.supabase.auth.getSession();
 	const userId = session?.user?.id ?? null;
 
 	const rpcPayload = {
-		p_landing_page_id: landingPageId,
+		p_landing_page_id: resolvedLandingPage.id,
 		p_event_type: eventType,
 		p_variant: variant,
 		p_ab_test_id: abTestId,
@@ -79,8 +154,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ ok: false, error: 'Kunde inte spara analytics-eventet.' }, { status: 500 });
 	}
 
-	const { error: insertError } = await locals.supabase.from('analytics_events').insert({
-		landing_page_id: landingPageId,
+	const admin = createServiceClient();
+	const insertClient = admin ?? locals.supabase;
+	const { error: insertError } = await insertClient.from('analytics_events').insert({
+		landing_page_id: resolvedLandingPage.id,
 		ab_test_id: abTestId,
 		event_type: eventType,
 		variant,
@@ -90,7 +167,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	});
 
 	if (insertError) {
-		if (isMissingSupabaseResourceError(insertError, 'analytics_events')) {
+		if (
+			isMissingSupabaseResourceError(insertError, 'analytics_events') ||
+			isMissingTableError(insertError, 'analytics_events')
+		) {
 			return json(
 				{
 					ok: true,

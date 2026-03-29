@@ -1,3 +1,9 @@
+-- ============================================================
+-- MittPsyke Admin System: Landing pages, SEO prompts, A/B tests
+-- Kör i Supabase SQL Editor
+-- Idempotent - säker att köra flera gånger
+-- ============================================================
+
 create extension if not exists pgcrypto;
 
 create or replace function public.update_updated_at_column()
@@ -76,20 +82,20 @@ create table if not exists public.analytics_events (
 
 create index if not exists idx_landing_pages_page_id on public.landing_pages(page_id);
 create index if not exists idx_landing_pages_status on public.landing_pages(status);
-create index if not exists idx_landing_pages_created_at on public.landing_pages(created_at);
+create index if not exists idx_landing_pages_created_at on public.landing_pages(created_at desc);
 
 create index if not exists idx_seo_prompts_landing_page_id on public.seo_prompts(landing_page_id);
 create index if not exists idx_seo_prompts_prompt_type on public.seo_prompts(prompt_type);
-create index if not exists idx_seo_prompts_created_at on public.seo_prompts(created_at);
+create index if not exists idx_seo_prompts_created_at on public.seo_prompts(created_at desc);
 
 create index if not exists idx_ab_tests_landing_page_id on public.ab_tests(landing_page_id);
 create index if not exists idx_ab_tests_is_active on public.ab_tests(is_active);
-create index if not exists idx_ab_tests_created_at on public.ab_tests(created_at);
+create index if not exists idx_ab_tests_created_at on public.ab_tests(created_at desc);
 
 create index if not exists idx_landing_page_content_landing_page_id on public.landing_page_content(landing_page_id);
 
 create index if not exists idx_analytics_events_landing_page_id on public.analytics_events(landing_page_id);
-create index if not exists idx_analytics_events_created_at on public.analytics_events(created_at);
+create index if not exists idx_analytics_events_created_at on public.analytics_events(created_at desc);
 create index if not exists idx_analytics_events_event_type on public.analytics_events(event_type);
 create index if not exists idx_analytics_events_session_id on public.analytics_events(session_id);
 
@@ -99,69 +105,136 @@ alter table public.ab_tests enable row level security;
 alter table public.landing_page_content enable row level security;
 alter table public.analytics_events enable row level security;
 
-drop policy if exists "landing_pages_select_authenticated" on public.landing_pages;
-create policy "landing_pages_select_authenticated"
-on public.landing_pages
-for select
-using (auth.role() = 'authenticated');
-
-drop policy if exists "landing_pages_manage_authenticated" on public.landing_pages;
-create policy "landing_pages_manage_authenticated"
+drop policy if exists "landing_pages_admin_all" on public.landing_pages;
+create policy "landing_pages_admin_all"
 on public.landing_pages
 for all
-using (auth.role() = 'authenticated')
-with check (auth.role() = 'authenticated');
+using (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+)
+with check (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+);
 
-drop policy if exists "seo_prompts_select_authenticated" on public.seo_prompts;
-create policy "seo_prompts_select_authenticated"
+drop policy if exists "seo_prompts_admin_all" on public.seo_prompts;
+create policy "seo_prompts_admin_all"
 on public.seo_prompts
-for select
-using (auth.role() = 'authenticated');
-
-drop policy if exists "seo_prompts_manage_authenticated" on public.seo_prompts;
-create policy "seo_prompts_manage_authenticated"
-on public.seo_prompts
 for all
-using (auth.role() = 'authenticated')
-with check (auth.role() = 'authenticated');
+using (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+)
+with check (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+);
 
-drop policy if exists "ab_tests_select_authenticated" on public.ab_tests;
-create policy "ab_tests_select_authenticated"
+drop policy if exists "ab_tests_admin_all" on public.ab_tests;
+create policy "ab_tests_admin_all"
 on public.ab_tests
-for select
-using (auth.role() = 'authenticated');
-
-drop policy if exists "ab_tests_manage_authenticated" on public.ab_tests;
-create policy "ab_tests_manage_authenticated"
-on public.ab_tests
 for all
-using (auth.role() = 'authenticated')
-with check (auth.role() = 'authenticated');
+using (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+)
+with check (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+);
 
-drop policy if exists "landing_page_content_select_authenticated" on public.landing_page_content;
-create policy "landing_page_content_select_authenticated"
-on public.landing_page_content
-for select
-using (auth.role() = 'authenticated');
-
-drop policy if exists "landing_page_content_manage_authenticated" on public.landing_page_content;
-create policy "landing_page_content_manage_authenticated"
+drop policy if exists "landing_page_content_admin_all" on public.landing_page_content;
+create policy "landing_page_content_admin_all"
 on public.landing_page_content
 for all
-using (auth.role() = 'authenticated')
-with check (auth.role() = 'authenticated');
+using (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+)
+with check (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+);
 
-drop policy if exists "analytics_events_select_public" on public.analytics_events;
-create policy "analytics_events_select_public"
+drop policy if exists "analytics_events_select_all" on public.analytics_events;
+drop policy if exists "analytics_events_insert_all" on public.analytics_events;
+drop policy if exists "analytics_events_update_admin" on public.analytics_events;
+drop policy if exists "analytics_events_delete_admin" on public.analytics_events;
+
+create policy "analytics_events_select_all"
 on public.analytics_events
 for select
 using (true);
 
-drop policy if exists "analytics_events_insert_public" on public.analytics_events;
-create policy "analytics_events_insert_public"
+create policy "analytics_events_insert_all"
 on public.analytics_events
 for insert
 with check (true);
+
+create policy "analytics_events_update_admin"
+on public.analytics_events
+for update
+using (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+)
+with check (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+);
+
+create policy "analytics_events_delete_admin"
+on public.analytics_events
+for delete
+using (
+	exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	)
+);
 
 drop trigger if exists update_landing_pages_updated_at on public.landing_pages;
 create trigger update_landing_pages_updated_at
@@ -206,6 +279,10 @@ declare
 begin
 	if p_event_type not in ('view', 'conversion', 'click') then
 		raise exception 'Unsupported event type: %', p_event_type;
+	end if;
+
+	if p_variant is not null and p_variant not in ('A', 'B') then
+		raise exception 'Unsupported variant: %', p_variant;
 	end if;
 
 	insert into public.analytics_events (
@@ -260,7 +337,7 @@ grant execute on function public.record_landing_page_event(uuid, text, text, uui
 
 insert into public.landing_pages (page_id, name, slug, status, description)
 values
-	('angst', 'Ångest', '/angst', 'draft', 'Landningssida för ångest-relaterat innehåll.'),
-	('social-angst', 'Social ångest', '/social-angst', 'planned', 'Landningssida för social ångest.'),
-	('stress', 'Stress och utmattning', '/stress', 'planned', 'Landningssida för stress och utmattning.')
+	('angst', 'Ångest', '/angst', 'draft', 'Landningssida för ångestrelaterat stöd'),
+	('social-angst', 'Social ångest', '/social-angst', 'planned', 'Landningssida för social ångest'),
+	('stress', 'Stress och utmattning', '/stress', 'planned', 'Landningssida för stress och utmattning')
 on conflict (page_id) do nothing;

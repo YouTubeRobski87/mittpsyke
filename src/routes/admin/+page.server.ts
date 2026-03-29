@@ -1,7 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
-import { error, fail, redirect } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import {
 	AB_VARIANTS,
@@ -17,8 +15,7 @@ import {
 	type LandingPageRecord,
 	type SeoPromptRecord
 } from '$lib/server/admin-system';
-
-const ADMIN_USER_ID = 'f4f107ef-461a-4090-bc2f-6ddccc0cc64d';
+import { createServiceClient } from '$lib/server/supabase-admin';
 
 const REASON_LABELS: Record<string, string> = {
 	offensive: 'Olämpligt innehåll',
@@ -57,51 +54,24 @@ type DashboardAbTest = AbTestRecord & {
 	landing_page_name: string;
 };
 
-async function requireAdmin(locals: App.Locals, redirectTo = '/admin') {
-	const {
-		data: { session }
-	} = await locals.supabase.auth.getSession();
-	const user = session?.user ?? null;
+async function requireAdmin(locals: App.Locals) {
+	const user = await locals.getSession();
 
-	if (!user) {
-		throw redirect(303, `/login?redirect=${encodeURIComponent(redirectTo)}`);
-	}
-
-	if (user.id !== ADMIN_USER_ID) {
-		throw error(403, 'Åtkomst nekad.');
+	if (!user?.is_super_admin) {
+		throw redirect(303, '/');
 	}
 
 	return user;
 }
 
-async function ensureAdminAction(locals: App.Locals) {
-	const {
-		data: { session }
-	} = await locals.supabase.auth.getSession();
-	const user = session?.user ?? null;
+async function ensureAdminAction(locals: App.Locals, activeTab: 'prompts' | 'pages' | 'ab' = 'prompts') {
+	const user = await locals.getSession();
 
-	if (!user) {
-		return fail(401, { activeTab: 'prompts', error: 'Du behöver vara inloggad för att fortsätta.' });
-	}
-
-	if (user.id !== ADMIN_USER_ID) {
-		return fail(403, { activeTab: 'prompts', error: 'Åtkomst nekad.' });
+	if (!user?.is_super_admin) {
+		return fail(403, { activeTab, error: 'Åtkomst nekad.' });
 	}
 
 	return user;
-}
-
-function createServiceClient() {
-	const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
-	const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY;
-
-	if (!supabaseUrl || !serviceRoleKey) {
-		return null;
-	}
-
-	return createClient(supabaseUrl, serviceRoleKey, {
-		auth: { autoRefreshToken: false, persistSession: false }
-	});
 }
 
 async function loadReports(): Promise<Report[]> {
@@ -318,7 +288,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
 	generatePrompt: async ({ request, locals }) => {
-		const adminUser = await ensureAdminAction(locals);
+		const adminUser = await ensureAdminAction(locals, 'prompts');
 		if ('status' in adminUser) return adminUser;
 
 		const formData = await request.formData();
@@ -406,7 +376,7 @@ export const actions: Actions = {
 	},
 
 	addLandingPage: async ({ request, locals }) => {
-		const adminUser = await ensureAdminAction(locals);
+		const adminUser = await ensureAdminAction(locals, 'pages');
 		if ('status' in adminUser) return adminUser;
 
 		const formData = await request.formData();
@@ -491,7 +461,7 @@ export const actions: Actions = {
 	},
 
 	updatePageStatus: async ({ request, locals }) => {
-		const adminUser = await ensureAdminAction(locals);
+		const adminUser = await ensureAdminAction(locals, 'pages');
 		if ('status' in adminUser) return adminUser;
 
 		const formData = await request.formData();
@@ -526,7 +496,7 @@ export const actions: Actions = {
 	},
 
 	deleteLandingPage: async ({ request, locals }) => {
-		const adminUser = await ensureAdminAction(locals);
+		const adminUser = await ensureAdminAction(locals, 'pages');
 		if ('status' in adminUser) return adminUser;
 
 		const formData = await request.formData();
@@ -560,7 +530,7 @@ export const actions: Actions = {
 	},
 
 	saveLandingPageContent: async ({ request, locals }) => {
-		const adminUser = await ensureAdminAction(locals);
+		const adminUser = await ensureAdminAction(locals, 'pages');
 		if ('status' in adminUser) return adminUser;
 
 		const formData = await request.formData();
@@ -603,7 +573,7 @@ export const actions: Actions = {
 	},
 
 	updateABTest: async ({ request, locals }) => {
-		const adminUser = await ensureAdminAction(locals);
+		const adminUser = await ensureAdminAction(locals, 'ab');
 		if ('status' in adminUser) return adminUser;
 
 		const formData = await request.formData();
@@ -657,7 +627,7 @@ export const actions: Actions = {
 	},
 
 	calculateWinner: async ({ request, locals }) => {
-		const adminUser = await ensureAdminAction(locals);
+		const adminUser = await ensureAdminAction(locals, 'ab');
 		if ('status' in adminUser) return adminUser;
 
 		const formData = await request.formData();

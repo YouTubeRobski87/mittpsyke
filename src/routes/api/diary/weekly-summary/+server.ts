@@ -2,12 +2,14 @@
 import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { OPENAI_API_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/public';
+import { env as privateEnv } from '$env/dynamic/private';
 import type { RequestHandler } from '@sveltejs/kit';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+function getOpenAIClient() {
+	return privateEnv.OPENAI_API_KEY ? new OpenAI({ apiKey: privateEnv.OPENAI_API_KEY }) : null;
+}
 
 function getWeekNumber(date: Date): number {
 	const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -27,7 +29,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (!authHeader) return json({ error: 'Unauthorized' }, { status: 401 });
 
 		const token = authHeader.replace('Bearer ', '');
-		const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		const supabase = createClient(env.PUBLIC_SUPABASE_URL ?? '', env.PUBLIC_SUPABASE_ANON_KEY ?? '', {
 			global: { headers: { Authorization: `Bearer ${token}` } }
 		});
 
@@ -77,24 +79,30 @@ export const POST: RequestHandler = async ({ request }) => {
 			.map((e) => `[${e.date}] Humör: ${e.mood}/10\n${e.content}`)
 			.join('\n\n');
 
-		const completion = await openai.chat.completions.create({
-			model: 'gpt-4-turbo',
-			messages: [
-				{
-					role: 'user',
-					content: `Du är en empatisk psykolog som läser dagboksinlägg.\n\nAnalysera dessa dagboksinlägg från vecka ${weekNumber} år ${year}:\n\n${entriesText}\n\nSkriv en kort, känslig sammanfattning (2-3 meningar) om användarens mentala tillstånd denna vecka.\nFokusera på känslotrender och övergripande mönster, inte specifika fakta.\nVar uppmuntrande men ärlig. Skriv på svenska. Börja INTE med "Denna vecka".`
-				}
-			],
-			max_tokens: 200,
-			temperature: 0.7
-		});
+		const openai = getOpenAIClient();
+		const completion = openai
+			? await openai.chat.completions.create({
+					model: 'gpt-4-turbo',
+					messages: [
+						{
+							role: 'user',
+							content: `Du är en empatisk psykolog som läser dagboksinlägg.\n\nAnalysera dessa dagboksinlägg från vecka ${weekNumber} år ${year}:\n\n${entriesText}\n\nSkriv en kort, känslig sammanfattning (2-3 meningar) om användarens mentala tillstånd denna vecka.\nFokusera på känslotrender och övergripande mönster, inte specifika fakta.\nVar uppmuntrande men ärlig. Skriv på svenska. Börja INTE med "Denna vecka".`
+						}
+					],
+					max_tokens: 200,
+					temperature: 0.7
+				})
+			: null;
 
 		return json({
 			week: weekNumber,
 			year,
 			startDate,
 			endDate,
-			summary: (completion.choices[0]?.message?.content || 'Kunde inte generera sammanfattning.').trim(),
+			summary: (
+				completion?.choices[0]?.message?.content ||
+				'Det gick inte att generera AI-sammanfattningen just nu.'
+			).trim(),
 			moodTrend: { trend, average_mood: averageMood, start_mood: startMood, end_mood: endMood },
 			entryCount: entries.length
 		});

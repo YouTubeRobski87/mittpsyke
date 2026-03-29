@@ -1,7 +1,7 @@
 // src/routes/api/diary/heatmap/+server.ts
 import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import type { RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ request }) => {
@@ -10,7 +10,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		if (!authHeader) return json({ error: 'Unauthorized' }, { status: 401 });
 
 		const token = authHeader.replace('Bearer ', '');
-		const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		const supabase = createClient(env.PUBLIC_SUPABASE_URL ?? '', env.PUBLIC_SUPABASE_ANON_KEY ?? '', {
 			global: { headers: { Authorization: `Bearer ${token}` } }
 		});
 
