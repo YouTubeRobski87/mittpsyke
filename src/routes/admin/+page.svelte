@@ -7,20 +7,15 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	let activeTab = $state<TabId>((form?.activeTab as TabId | undefined) ?? 'prompts');
+	let activeTab = $state<TabId>('prompts');
 	let pendingForm = $state<string | null>(null);
 	let deletingId = $state<string | null>(null);
 	let reportErrors = $state<Record<string, string>>({});
-	let reports = $state(data.reports);
+	let reports = $state<PageData['reports']>([]);
 
 	$effect(() => {
+		activeTab = (form?.activeTab as TabId | undefined) ?? activeTab;
 		reports = data.reports;
-	});
-
-	$effect(() => {
-		if (form?.activeTab) {
-			activeTab = form.activeTab as TabId;
-		}
 	});
 
 	function enhanceForm(formKey: string, tab: TabId) {

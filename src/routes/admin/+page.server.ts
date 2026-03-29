@@ -104,7 +104,7 @@ function createServiceClient() {
 	});
 }
 
-async function loadReports() {
+async function loadReports(): Promise<Report[]> {
 	const admin = createServiceClient();
 	if (!admin) return [];
 
@@ -129,34 +129,35 @@ async function loadReports() {
 		return [];
 	}
 
-	return (data ?? []).map((report) => ({
-		id: String(report.id),
-		reason: REASON_LABELS[report.reason as string] ?? String(report.reason),
-		details: report.details ? String(report.details) : null,
-		created_at: String(report.created_at),
-		thread_id: report.thread_id ? String(report.thread_id) : null,
-		reply_id: report.reply_id ? String(report.reply_id) : null,
-		thread: report.thread
-			? {
-					id: String((report.thread as Record<string, unknown>).id),
-					title: String((report.thread as Record<string, unknown>).title),
-					body: String((report.thread as Record<string, unknown>).body),
-					deleted_at: (report.thread as Record<string, unknown>).deleted_at
-						? String((report.thread as Record<string, unknown>).deleted_at)
-						: null
-				}
-			: null,
-		reply: report.reply
-			? {
-					id: String((report.reply as Record<string, unknown>).id),
-					body: String((report.reply as Record<string, unknown>).body),
-					thread_id: String((report.reply as Record<string, unknown>).thread_id),
-					deleted_at: (report.reply as Record<string, unknown>).deleted_at
-						? String((report.reply as Record<string, unknown>).deleted_at)
-						: null
-				}
-			: null
-	})) satisfies Report[];
+	return (data ?? []).map((report) => {
+		const threadValue = Array.isArray(report.thread) ? report.thread[0] : report.thread;
+		const replyValue = Array.isArray(report.reply) ? report.reply[0] : report.reply;
+
+		return {
+			id: String(report.id),
+			reason: REASON_LABELS[report.reason as string] ?? String(report.reason),
+			details: report.details ? String(report.details) : null,
+			created_at: String(report.created_at),
+			thread_id: report.thread_id ? String(report.thread_id) : null,
+			reply_id: report.reply_id ? String(report.reply_id) : null,
+			thread: threadValue
+				? {
+						id: String(threadValue.id),
+						title: String(threadValue.title),
+						body: String(threadValue.body),
+						deleted_at: threadValue.deleted_at ? String(threadValue.deleted_at) : null
+					}
+				: null,
+			reply: replyValue
+				? {
+						id: String(replyValue.id),
+						body: String(replyValue.body),
+						thread_id: String(replyValue.thread_id),
+						deleted_at: replyValue.deleted_at ? String(replyValue.deleted_at) : null
+					}
+				: null
+		};
+	}) as Report[];
 }
 
 async function loadDashboardData(locals: App.Locals) {

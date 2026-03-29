@@ -24,8 +24,18 @@ type EventName =
 	| 'hero_cta_secondary_click';
 
 type EventParams = Record<string, string | number | boolean>;
+type LandingPageEventParams = Record<string, string | number | boolean | null>;
+type LandingPageEventPayload = {
+	landingPageId: string;
+	abTestId?: string | null;
+	eventType: 'view' | 'conversion' | 'click';
+	variant?: 'A' | 'B' | null;
+	sessionId?: string | null;
+	metadata?: LandingPageEventParams;
+};
 
 export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || '';
+const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
 
 let analyticsInitialized = false;
 
@@ -182,4 +192,55 @@ export function trackHeroCtaPrimaryClick() {
 
 export function trackHeroCtaSecondaryClick() {
 	trackHeroCTASecondaryClick();
+}
+
+function getLandingSessionId() {
+	if (!browser) return null;
+
+	const existing = window.localStorage.getItem(LANDING_SESSION_STORAGE_KEY);
+	if (existing) return existing;
+
+	const generated =
+		typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+			? crypto.randomUUID()
+			: `session-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+	window.localStorage.setItem(LANDING_SESSION_STORAGE_KEY, generated);
+	return generated;
+}
+
+export async function saveLandingPageEvent(payload: LandingPageEventPayload) {
+	if (!browser || !hasAnalyticsConsent()) {
+		return { ok: false, skipped: true as const };
+	}
+
+	const body = JSON.stringify({
+		landingPageId: payload.landingPageId,
+		abTestId: payload.abTestId ?? null,
+		eventType: payload.eventType,
+		variant: payload.variant ?? null,
+		sessionId: payload.sessionId ?? getLandingSessionId(),
+		metadata: payload.metadata ?? {}
+	});
+
+	try {
+		const response = await fetch('/api/analytics', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body,
+			keepalive: true
+		});
+
+		if (!response.ok && dev) {
+			console.warn('Landing page analytics request failed', response.status);
+		}
+
+		return { ok: response.ok };
+	} catch (error) {
+		if (dev) {
+			console.error('Landing page analytics error:', error);
+		}
+
+		return { ok: false };
+	}
 }
