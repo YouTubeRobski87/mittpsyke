@@ -190,7 +190,7 @@
 		<div class="cards-narrow first-step-inner">
 			<h2 id="first-step-title">Ett första steg, i din egen takt</h2>
 			<p class="first-step-body">
-				MittPsyke hjälper dig sätta ord på hur du mår med anonymt stöd online, samtalsstöd i text, dagbok och reflektion i lugnt tempo.
+				AI-dagboken hjälper dig att skriva av dig, reflektera och sätta ord på hur du mår. Med lugnt stöd i text kan du förstå ditt mående bättre över tid.
 			</p>
 			<div class="support-points">
 				{#each supportPoints as point}
