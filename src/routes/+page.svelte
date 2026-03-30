@@ -144,15 +144,15 @@
 </script>
 
 <svelte:head>
-	<title>MittPsyke – anonym chatt, dagbok och stöd för psykiskt mående</title>
+	<title>MittPsyke – anonymt stöd online, chatt och dagbok för psykiskt mående</title>
 	<meta
 		name="description"
-		content="MittPsyke är en lugn plats för anonymt stöd online. Chatta i text, skriv dagbok och få hjälp att reflektera över ditt psykiska mående i din egen takt."
+		content="MittPsyke är en lugn plats för anonymt stöd online. Chatta i text, skriv dagbok och få samtalsstöd i text för reflektion, självhjälp och bättre förståelse för ditt psykiska mående i din egen takt."
 	/>
-	<meta property="og:title" content="MittPsyke – anonym chatt, dagbok och stöd för psykiskt mående" />
+	<meta property="og:title" content="MittPsyke – anonymt stöd online, chatt och dagbok för psykiskt mående" />
 	<meta
 		property="og:description"
-		content="MittPsyke är en lugn plats för anonymt stöd online. Chatta i text, skriv dagbok och få hjälp att reflektera över ditt psykiska mående i din egen takt."
+		content="MittPsyke är en lugn plats för anonymt stöd online. Chatta i text, skriv dagbok och få samtalsstöd i text för reflektion, självhjälp och bättre förståelse för ditt psykiska mående i din egen takt."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
