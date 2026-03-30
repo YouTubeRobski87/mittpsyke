@@ -55,37 +55,37 @@
 	const supportPoints = [
 		{
 			label: 'Anonymt',
-			text: 'Skriv direkt utan konto. Ingen profil skapas.'
+			text: 'Skriv och få stöd direkt utan konto. Ingen profil skapas.'
 		},
 		{
 			label: 'I din takt',
-			text: 'Börja litet. Spara och bygg vidare när du är redo.'
+			text: 'Chatta, skriv och bygg vidare i din egen takt när du är redo.'
 		},
 		{
 			label: 'Inte vård',
-			text: 'Stöd för reflektion i vardagen — inte ersättning för professionell hjälp.'
+			text: 'Självhjälp och reflektion i vardagen — inte ersättning för professionell hjälp.'
 		}
 	];
 
 	const features = [
 		{
-			title: 'AI-samtal',
-			description: 'Skriv vad du bär på och få lugna, stödjande svar — utan att behöva formulera dig perfekt.',
+			title: 'Samtalsstöd i text',
+			description: 'Chatta om det du bär på och få lugna, stödjande svar i din egen takt.',
 			href: '/skriv'
 		},
 		{
 			title: 'Dagbok med röster',
-			description: 'Berätta om din dag och få den skriven i en röst du väljer — filosofisk, vardaglig eller något annat.',
+			description: 'Skriv dagbok och reflektera vidare med frågor och röster som hjälper dig sätta ord på dagen.',
 			href: '/dagbok'
 		},
 		{
 			title: 'Humörspårning',
-			description: 'Se hur ditt mående rör sig över tid. Mönster blir tydligare när du har något att gå tillbaka till.',
+			description: 'Se hur ditt psykiska mående rör sig över tid. Mönster blir tydligare när du har något att gå tillbaka till.',
 			href: '/humorsparning'
 		},
 		{
 			title: 'Guider och övningar',
-			description: 'Läs om ångest, stress och andra vanliga tillstånd — och hitta enkla övningar att börja med idag.',
+			description: 'Läs om ångest, stress och andra vanliga tillstånd, och hitta varsam självhjälp att börja med idag.',
 			href: '/guider'
 		}
 	];
@@ -144,15 +144,15 @@
 </script>
 
 <svelte:head>
-	<title>MittPsyke – AI-dagbok för mental hälsa</title>
+	<title>MittPsyke – anonymt stöd online för psykiskt mående</title>
 	<meta
 		name="description"
-		content="Skriv dagbok med AI-stöd, spåra ditt humör och förstå dina känslomönster. MittPsyke är din personliga digitala dagbok för välmående."
+		content="Anonymt stöd online för psykiskt mående. Chatta i text, skriv dagbok och reflektera i din egen takt med lugnt samtalsstöd och självhjälp."
 	/>
-	<meta property="og:title" content="MittPsyke – AI-dagbok för mental hälsa" />
+	<meta property="og:title" content="MittPsyke – anonymt stöd online för psykiskt mående" />
 	<meta
 		property="og:description"
-		content="Skriv dagbok med AI-stöd, spåra ditt humör och förstå dina känslomönster. MittPsyke är din personliga digitala dagbok för välmående."
+		content="Anonymt stöd online för psykiskt mående. Chatta i text, skriv dagbok och reflektera i din egen takt med lugnt samtalsstöd och självhjälp."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
@@ -175,12 +175,12 @@
 			<div class="hero-content">
 				<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
 				<h1>MittPsyke är en lugn plats att börja på.</h1>
-				<p>Skriv av dig direkt, utan konto. Om du vill kan du spara det senare.</p>
+				<p>Skriv av dig, chatta i text och reflektera i lugn takt, utan konto. Om du vill kan du spara det senare.</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa konto senare</a>
 				</div>
-				<p class="hero-trust-note">Börja direkt. Ingen registrering krävs.</p>
+				<p class="hero-trust-note">Anonymt stöd online. Ingen registrering krävs.</p>
 			</div>
 		</div>
 	</section>
@@ -190,7 +190,7 @@
 		<div class="cards-narrow first-step-inner">
 			<h2 id="first-step-title">Ett första steg, i din egen takt</h2>
 			<p class="first-step-body">
-				MittPsyke hjälper dig sätta ord på hur du mår — med AI-stöd, dagbok och humörspårning, i ett lugnt tempo utan press.
+				MittPsyke hjälper dig sätta ord på hur du mår med anonymt stöd online, samtalsstöd i text, dagbok och reflektion i lugnt tempo.
 			</p>
 			<div class="support-points">
 				{#each supportPoints as point}
@@ -366,7 +366,7 @@
 	<section class="final-cta-section" aria-label="Kom igång">
 		<div class="final-cta-inner">
 			<h2>Redo att ta ett första steg?</h2>
-			<p>Du behöver inte veta exakt vad du vill säga. Börja skriva — så tar vi det därifrån.</p>
+			<p>Du behöver inte veta exakt vad du vill säga. Börja skriva, chatta i text och reflektera i din egen takt.</p>
 			<div class="final-cta-actions">
 				<a href="/skriv" class="hero-cta hero-cta-primary">Börja skriva anonymt</a>
 				<a href="/register" class="hero-cta-link">Skapa konto</a>
