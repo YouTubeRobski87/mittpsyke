@@ -1,11 +1,24 @@
 import { createServerClient } from '@supabase/ssr'
 import { env as publicEnv } from '$env/dynamic/public'
-import type { Handle } from '@sveltejs/kit'
+import { redirect, type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { getSessionUser } from '$lib/server/admin-auth'
 
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''
+
+const canonicalHostRedirect: Handle = async ({ event, resolve }) => {
+	const forwardedHost = event.request.headers.get('x-forwarded-host')?.split(',')[0]?.trim() ?? ''
+	const requestHost = (forwardedHost || event.url.host).replace(/:\d+$/, '')
+
+	if (requestHost === 'mittpsyke.se') {
+		const canonicalUrl = new URL(event.url)
+		canonicalUrl.host = 'www.mittpsyke.se'
+		throw redirect(308, canonicalUrl.toString())
+	}
+
+	return resolve(event)
+}
 
 // --- Säkerhetsheaders ---
 const securityHeaders: Handle = async ({ event, resolve }) => {
@@ -103,4 +116,4 @@ const supabaseAuth: Handle = async ({ event, resolve }) => {
 }
 
 // Kör säkerhetsheaders först, sedan Supabase auth
-export const handle = sequence(securityHeaders, supabaseAuth)
+export const handle = sequence(canonicalHostRedirect, securityHeaders, supabaseAuth)

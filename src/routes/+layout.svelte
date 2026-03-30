@@ -281,7 +281,7 @@
 		<meta property="og:image" content="https://www.mittpsyke.se/og-image.png" />
 
 		<link rel="canonical" href={`https://www.mittpsyke.se${page.url.pathname}`} />
-		<link rel="alternate" hreflang="sv" href="https://www.mittpsyke.se" />
+		<link rel="alternate" hreflang="sv" href={`https://www.mittpsyke.se${page.url.pathname}`} />
 
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | MittPsyke` : 'MittPsyke – Psykiskt stöd online'} />
