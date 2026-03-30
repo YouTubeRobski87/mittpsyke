@@ -85,18 +85,18 @@
 	<div class="flex gap-3">
 		<button
 			type="button"
-			onclick={handleSaveAccount}
-			disabled={!note.trim() || saving}
-			class="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:opacity-50"
+			onclick={handleContinueAnonymous}
+			class="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700"
 		>
-			{saving ? 'Sparar...' : 'Skapa konto'}
+			Fortsätta anonymt
 		</button>
 		<button
 			type="button"
-			onclick={handleContinueAnonymous}
-			class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+			onclick={handleSaveAccount}
+			disabled={!note.trim() || saving}
+			class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
 		>
-			Fortätta anonymt
+			{saving ? 'Sparar...' : 'Skapa konto'}
 		</button>
 	</div>
 </main>
