@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { supabase } from '$lib/supabase';
 	import { activeStorifyTones, storifyTones } from '$lib/data/storifyTones';
+	import ColorPicker from '$lib/components/ColorPicker.svelte';
 
 	// --- Typer ---
 
@@ -41,6 +42,7 @@
 
 	const DEFAULT_TONE_ID = activeStorifyTones[0]?.id ?? 'therapist';
 	let selectedTone = $state(DEFAULT_TONE_ID);
+	let selectedColor = $state('');
 	const selectedToneMeta = $derived(
 		activeStorifyTones.find((tone) => tone.id === selectedTone) ?? activeStorifyTones[0]
 	);
@@ -122,6 +124,7 @@
 		inputValue = '';
 		streamError = '';
 		selectedTone = DEFAULT_TONE_ID;
+		selectedColor = '';
 		generatedEntry = '';
 		generatedTone = '';
 		generateError = '';
@@ -145,8 +148,7 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
-					selectedTone
+					messages: newMessages.map((m) => ({ role: m.role, content: m.content }))
 				})
 			});
 
@@ -364,38 +366,39 @@
 			<!-- FAS: Tom start -->
 			{#if phase === 'empty'}
 				<section class="auth-panel empty-panel">
-					<div class="voice-intro">
-						<p class="voice-kicker">Välj röst först</p>
-						<div class="voice-grid" aria-label="Välj röst för frågeflödet">
-							{#each activeStorifyTones as tone}
-								<button
-									type="button"
-									class="tone-btn voice-btn"
-									class:selected={selectedTone === tone.id}
-									onclick={() => (selectedTone = tone.id)}
-									aria-pressed={selectedTone === tone.id}
-									title={tone.description}
-								>
-									<span class="tone-emoji">{tone.emoji}</span>
-									<span class="tone-label">{tone.label}</span>
-								</button>
-							{/each}
-						</div>
-						<p class="voice-copy auth-muted">
-							Vald röst: {selectedToneMeta?.label}. Frågorna och dagboksinlägget följer samma ton.
-						</p>
+					<div class="empty-hero">
+						<h2 class="empty-greeting">Vad hände idag?</h2>
+						<p class="empty-desc auth-muted">Skriv något själv, eller välj ett av förslagen nedan för att komma igång.</p>
 					</div>
-					<p class="empty-prompt">
-						{selectedToneMeta?.label} börjar: hur var din dag?
-					</p>
+
+					<div class="starter-grid" role="list" aria-label="Samtalsförslag">
+						{#each [
+							'Berätta vad jag borde skriva om',
+							'Ställ en fråga jag inte väntar mig',
+							'Hjälp mig att komma ihåg den här dagen',
+							'Gräv fram något intressant ur min dag'
+						] as starter}
+							<button
+								type="button"
+								class="starter-card"
+								role="listitem"
+								onclick={() => { inputValue = starter; handleSend(); }}
+							>
+								<span class="starter-emoji" aria-hidden="true">💡</span>
+								<span class="starter-text">{starter}</span>
+							</button>
+						{/each}
+					</div>
+
 					<div class="input-row">
 						<textarea
-							class="chat-input"
+							class="chat-input chat-input--single"
 							placeholder="Skriv något och tryck Enter..."
 							bind:value={inputValue}
 							onkeydown={handleKeydown}
-							rows={2}
+							rows={1}
 							aria-label="Berätta om din dag"
+							autofocus
 						></textarea>
 						<button
 							class="send-btn"
@@ -483,6 +486,12 @@
 								<span class="tone-label">{tone.label}</span>
 							</button>
 						{/each}
+					</div>
+
+					<div class="color-picker-section">
+						<h2 class="section-title">Färgen på din dag</h2>
+						<p class="auth-muted" style="margin-bottom: 0.75rem;">Välj en färg som representerar hur dagen kändes.</p>
+						<ColorPicker bind:value={selectedColor} />
 					</div>
 
 					{#if generateError}
@@ -608,40 +617,63 @@
 	.empty-panel {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: 0.5rem;
 	}
 
-	.voice-intro {
-		display: grid;
-		gap: 0.75rem;
+	.empty-hero {
+		text-align: center;
+		padding: 0.5rem 0 0.25rem;
 	}
 
-	.voice-kicker {
+	.empty-greeting {
 		margin: 0;
-		font-size: 0.76rem;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-		color: hsl(var(--muted-foreground));
+		font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
+		font-weight: 600;
+		letter-spacing: -0.01em;
 	}
 
-	.voice-grid {
+	.empty-desc {
+		margin: 0.4rem 0 0;
+		font-size: 0.9rem;
+	}
+
+	.starter-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
-		gap: 0.4rem;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.5rem;
+		max-width: 32rem;
+		margin: 0.75rem auto 1.25rem;
 	}
 
-	.voice-btn {
-		min-height: 5.25rem;
-	}
-
-	.voice-copy {
-		margin: 0;
+	.starter-card {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.75rem 0.9rem;
+		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-muted));
+		color: hsl(var(--foreground));
 		font-size: 0.86rem;
+		line-height: 1.4;
+		text-align: left;
+		cursor: pointer;
+		transition: background-color 120ms ease, border-color 120ms ease;
 	}
 
-	.empty-prompt {
-		margin: 0;
-		font-size: 1.05rem;
+	.starter-card:hover {
+		background: hsl(var(--surface-soft));
+		border-color: hsl(var(--muted-foreground) / 0.4);
+	}
+
+	.starter-emoji {
+		font-size: 1.3rem;
+		flex-shrink: 0;
+		line-height: 1;
+	}
+
+	.starter-text {
+		flex: 1;
 	}
 
 	/* Chattpanel */
@@ -754,7 +786,12 @@
 	.input-row {
 		display: flex;
 		gap: 0.5rem;
-		align-items: flex-end;
+		align-items: center;
+	}
+
+	.chat-input--single {
+		height: 2.5rem;
+		resize: none;
 	}
 
 	.chat-input {
@@ -784,23 +821,24 @@
 		width: 2.5rem;
 		height: 2.5rem;
 		border-radius: var(--radius-input);
-		border: 1px solid hsl(var(--border));
-		background: var(--theme-bg, hsl(var(--surface-soft)));
+		border: none;
+		background: var(--primary);
+		color: #fff;
 		cursor: pointer;
 		font-size: 1.1rem;
-		transition: background-color 120ms ease;
+		transition: opacity 120ms ease;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
 
 	.send-btn:disabled {
-		opacity: 0.4;
+		opacity: 0.3;
 		cursor: not-allowed;
 	}
 
 	.send-btn:not(:disabled):hover {
-		background: hsl(var(--surface-soft));
+		opacity: 0.8;
 	}
 
 	/* Avsluta-rad */
@@ -870,6 +908,7 @@
 	.tone-actions {
 		display: flex;
 		gap: 0.5rem;
+		margin-top: 1.25rem;
 		flex-wrap: wrap;
 	}
 
