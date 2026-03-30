@@ -28,7 +28,7 @@
 	const entryPaths = [
 		{
 			title: 'Skriv av dig',
-			description: 'Börja direkt med AI-stöd — anonymt eller med konto.',
+			description: 'Börja direkt med anonymt samtalsstöd i text.',
 			href: '/skriv',
 			cta: 'Börja skriva'
 		},
@@ -174,7 +174,7 @@
 		<div class="hero-shell">
 			<div class="hero-content">
 				<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
-				<h1>MittPsyke är en lugn plats att börja på.</h1>
+				<h1>MittPsyke är en lugn plats för anonymt stöd online.</h1>
 				<p>Skriv av dig, chatta i text och reflektera i lugn takt, utan konto. Om du vill kan du spara det senare.</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
@@ -231,7 +231,7 @@
 				<article class="how-card">
 					<span class="how-step">01</span>
 					<h3>Börja anonymt</h3>
-					<p>Välj ett tema och skriv fritt. Samtalet tar form i din takt — utan konto.</p>
+					<p>Välj ett tema och skriv fritt. Du får lugnt samtalsstöd i text, i din takt — utan konto.</p>
 					<a class="how-card-cta" href="/skriv">Börja skriva</a>
 				</article>
 				<article class="how-card">
