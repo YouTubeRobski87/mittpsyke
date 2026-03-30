@@ -311,9 +311,10 @@
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
 				<a
 					href="/"
-					class="text-sm font-semibold opacity-95 hover:opacity-100 hover:underline transition-opacity whitespace-nowrap"
+					class="inline-flex shrink-0 items-center opacity-95 hover:opacity-100 transition-opacity"
+					aria-label="MittPsyke"
 				>
-					Hem
+					<img src="/frontlogga.jpg" alt="MittPsyke" class="block h-10 w-auto sm:h-11" />
 				</a>
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
