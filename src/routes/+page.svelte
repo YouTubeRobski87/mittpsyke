@@ -175,13 +175,10 @@
 			<div class="hero-content">
 				<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
 				<h1>MittPsyke är en lugn plats att börja på.</h1>
-				<p>
-					Skriv av dig direkt — utan konto.
-					Skapar du ett konto kan du spara dagbok, följa ditt mående och se dina framsteg.
-				</p>
+				<p>Skriv av dig direkt, utan konto. Om du vill kan du spara det senare.</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
-					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa konto</a>
+					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa konto senare</a>
 				</div>
 				<p class="hero-trust-note">Ingen registrering krävs.</p>
 			</div>
