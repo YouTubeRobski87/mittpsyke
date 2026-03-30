@@ -200,14 +200,6 @@
 						class="tree-inner"
 					/>
 					<path
-						d="M380 140 C388 134 398 136 404 144"
-						class="branch"
-					/>
-					<path
-						d="M390 126 C398 120 408 122 414 130"
-						class="branch"
-					/>
-					<path
 						d="M368 198 C378 194 390 194 400 198"
 						class="root-shadow"
 					/>
