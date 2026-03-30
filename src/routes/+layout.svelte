@@ -263,7 +263,9 @@
 			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
 		/>
 
-		<meta name="robots" content={isPrivateOrUtilityPage ? 'noindex, nofollow' : 'index, follow'} />
+		{#if isPrivateOrUtilityPage || page.data?.noindex}
+			<meta name="robots" content="noindex, nofollow" />
+		{/if}
 		<meta name="author" content="MittPsyke" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -348,7 +350,7 @@
 							Logga ut
 						</button>
 					{:else}
-						<a href="mailto:kontakt@mittpsyke.se" class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Kontakt</a>
+						<a href={PUBLIC_CONTACT_MAILTO} class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Kontakt</a>
 						<a href="/login" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Logga in</a>
 						<a href="/register" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Registrera</a>
 					{/if}
@@ -403,7 +405,7 @@
 							{item.label}
 						</a>
 					{/each}
-					<a href="mailto:kontakt@mittpsyke.se" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
+					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
 					<a href="/login" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Logga in</a>
 					<a href="/register" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Registrera</a>
 				{/if}

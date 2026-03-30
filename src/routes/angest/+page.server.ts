@@ -57,13 +57,14 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		console.error('Angest landing page load error:', result.error);
 	}
 
-	const page = result.page ?? FALLBACK_PAGE;
+	const managedPage = result.page?.status === 'published' ? result.page : null;
+	const page = managedPage ?? FALLBACK_PAGE;
 	const content: LandingPageContentRecord = {
 		...FALLBACK_CONTENT,
-		...(result.content ?? {}),
-		landing_page_id: result.content?.landing_page_id ?? result.page?.id ?? ''
+		...(managedPage ? (result.content ?? {}) : {}),
+		landing_page_id: managedPage ? (result.content?.landing_page_id ?? managedPage.id) : ''
 	};
-	const abTest = result.abTest ?? null;
+	const abTest = managedPage ? (result.abTest ?? null) : null;
 
 	let variant: AbVariant | null = null;
 	let ctaText = content.cta_text ?? FALLBACK_CONTENT.cta_text ?? 'Starta ett lugnt samtal';
@@ -103,12 +104,12 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		},
 		abTest,
 		variant,
-		noindex: Boolean(result.page && result.page.status !== 'published'),
+		noindex: false,
 		analytics: {
-			landingPageId: page.id || null,
+			landingPageId: managedPage?.id ?? null,
 			abTestId: abTest?.id ?? null,
 			variant
 		},
-		lastUpdated: content.updated_at ?? page.updated_at ?? '2026-03-14'
+		lastUpdated: content.updated_at ?? managedPage?.updated_at ?? '2026-03-14'
 	};
 };

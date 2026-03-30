@@ -6,6 +6,7 @@ type SessionUser = User & {
 };
 
 type UnknownRecord = Record<string, unknown>;
+const LEGACY_ADMIN_USER_IDS = new Set(['f4f107ef-461a-4090-bc2f-6ddccc0cc64d']);
 
 function asRecord(value: unknown): UnknownRecord {
 	return value && typeof value === 'object' && !Array.isArray(value)
@@ -24,22 +25,21 @@ export function isSuperAdminUser(user: (User & UnknownRecord) | null | undefined
 	const userMetadata = asRecord(user.user_metadata);
 
 	return (
+		LEGACY_ADMIN_USER_IDS.has(user.id) ||
 		readBoolean(user.is_super_admin) ||
 		readBoolean(appMetadata.is_super_admin) ||
 		readBoolean(userMetadata.is_super_admin)
 	);
 }
 
-async function hydrateSessionUser(user: User): Promise<SessionUser> {
+async function hydrateSessionUser(supabase: SupabaseClient, user: User): Promise<SessionUser> {
 	let isSuperAdmin = isSuperAdminUser(user as User & UnknownRecord);
 
 	if (!isSuperAdmin) {
-		const serviceClient = createServiceClient();
-		if (serviceClient) {
-			const { data, error } = await serviceClient.auth.admin.getUserById(user.id);
-			if (!error && data.user) {
-				isSuperAdmin = isSuperAdminUser(data.user as User & UnknownRecord);
-			}
+		const { data, error } = await supabase.rpc('current_user_is_super_admin');
+
+		if (!error && data === true) {
+			isSuperAdmin = true;
 		}
 	}
 
@@ -58,7 +58,7 @@ export async function getSessionUser(supabase: SupabaseClient): Promise<SessionU
 		return null;
 	}
 
-	return hydrateSessionUser(session.user);
+	return hydrateSessionUser(supabase, session.user);
 }
 
 export async function getUserFromAccessToken(accessToken: string): Promise<SessionUser | null> {
@@ -76,5 +76,5 @@ export async function getUserFromAccessToken(accessToken: string): Promise<Sessi
 		return null;
 	}
 
-	return hydrateSessionUser(user);
+	return hydrateSessionUser(tokenClient, user);
 }

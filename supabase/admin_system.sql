@@ -6,6 +6,23 @@
 
 create extension if not exists pgcrypto;
 
+create or replace function public.current_user_is_super_admin()
+returns boolean
+language sql
+security definer
+set search_path = ''
+as $$
+	select exists (
+		select 1
+		from auth.users
+		where auth.users.id = auth.uid()
+			and auth.users.is_super_admin = true
+	);
+$$;
+
+revoke all on function public.current_user_is_super_admin() from public;
+grant execute on function public.current_user_is_super_admin() to authenticated;
+
 create or replace function public.update_updated_at_column()
 returns trigger
 language plpgsql
