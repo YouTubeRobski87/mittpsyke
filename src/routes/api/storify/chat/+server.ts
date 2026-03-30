@@ -51,8 +51,27 @@ interface ChatMessage {
 	content: string;
 }
 
-function buildInterviewerPrompt(messageCount: number) {
+interface ColorTone {
+	id?: string;
+	name?: string;
+	meaning?: string;
+	keywords?: string[];
+}
+
+function buildInterviewerPrompt(messageCount: number, colorTone: ColorTone | null) {
 	let systemPrompt = `${BASE_INTERVIEWER_PROMPT}\n\n${FRIENDLY_PAL_TONE}`;
+
+	if (colorTone?.id) {
+		const keywords =
+			Array.isArray(colorTone.keywords) && colorTone.keywords.length > 0
+				? `\n- Nyckelord: ${colorTone.keywords.join(', ')}`
+				: '';
+		systemPrompt += `\n\nEMOTIONELL TON:
+- Vald farg: ${colorTone.name ?? colorTone.id}
+- Betydelse: ${colorTone.meaning ?? ''}${keywords}
+- Lat detta farga samtalet forsiktigt. Hall fragorna trygga, enkla och manskliga.
+- Behall intervjuarens lugna ton. Namn inte fargen om det inte faller sig naturligt.`;
+	}
 
 	if (messageCount >= 30) {
 		systemPrompt += `\n\nVIKTIGT: Samtalet ar langt. Stall en sista naturlig avslutande fraga och forbered anvandaren pa att det ar dags att skapa dagboken.`;
@@ -73,10 +92,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	let messages: ChatMessage[];
+	let colorTone: ColorTone | null = null;
 
 	try {
-		const body = (await request.json()) as { messages?: ChatMessage[] };
+		const body = (await request.json()) as { messages?: ChatMessage[]; colorTone?: ColorTone | null };
 		messages = body.messages ?? [];
+		colorTone = body.colorTone && typeof body.colorTone === 'object' ? body.colorTone : null;
 	} catch {
 		return new Response(JSON.stringify({ error: 'Ogiltig JSON.' }), {
 			status: 400,
@@ -102,7 +123,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			model: 'claude-haiku-4-5-20251001',
 			max_tokens: 512,
 			stream: true,
-			system: buildInterviewerPrompt(messages.length),
+			system: buildInterviewerPrompt(messages.length, colorTone),
 			messages: messages.map((message) => ({ role: message.role, content: message.content }))
 		})
 	});

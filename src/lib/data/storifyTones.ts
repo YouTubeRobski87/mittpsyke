@@ -37,7 +37,9 @@ export const storifyTones: StorifyTone[] = [
 ];
 
 export const activeStorifyToneIds = [
+	'storytelling',
 	'philosophical',
+	'bored',
 	'therapist',
 	'overthinker',
 	'quest-log',

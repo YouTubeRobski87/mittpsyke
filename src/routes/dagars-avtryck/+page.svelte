@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ColorPicker from '$lib/components/ColorPicker.svelte';
 	import { supabase } from '$lib/supabase';
 	import { activeStorifyTones, storifyTones } from '$lib/data/storifyTones';
 
@@ -41,8 +42,22 @@
 
 	const DEFAULT_TONE_ID = activeStorifyTones[0]?.id ?? 'therapist';
 	let selectedTone = $state(DEFAULT_TONE_ID);
+	let draftColor = $state('');
+	let draftColorName = $state('');
+	let draftColorMeaning = $state('');
+	let draftColorKeywords = $state<string[]>([]);
 	const selectedToneMeta = $derived(
 		activeStorifyTones.find((tone) => tone.id === selectedTone) ?? activeStorifyTones[0]
+	);
+	const colorTone = $derived(
+		draftColor
+			? {
+					id: draftColor,
+					name: draftColorName || draftColor,
+					meaning: draftColorMeaning,
+					keywords: draftColorKeywords
+				}
+			: null
 	);
 
 	// --- Genereringtillstånd ---
@@ -122,6 +137,10 @@
 		inputValue = '';
 		streamError = '';
 		selectedTone = DEFAULT_TONE_ID;
+		draftColor = '';
+		draftColorName = '';
+		draftColorMeaning = '';
+		draftColorKeywords = [];
 		generatedEntry = '';
 		generatedTone = '';
 		generateError = '';
@@ -146,7 +165,8 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
-					selectedTone
+					selectedTone,
+					colorTone
 				})
 			});
 
@@ -249,7 +269,7 @@
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${token}`
 			},
-			body: JSON.stringify({ chatTranscript: transcript, selectedTone })
+			body: JSON.stringify({ chatTranscript: transcript, selectedTone, colorTone })
 		});
 
 		const body = await res.json().catch(() => ({})) as { entry?: string; tone?: string; error?: string };
@@ -384,6 +404,16 @@
 						<p class="voice-copy auth-muted">
 							Vald röst: {selectedToneMeta?.label}. Frågorna och dagboksinlägget följer samma ton.
 						</p>
+						<p class="voice-kicker">Vilken färg har dagen idag?</p>
+						<p class="voice-copy auth-muted">
+							Det hjälper tonen i reflektionen att landa närmare det du bär på just nu.
+						</p>
+						<ColorPicker
+							bind:value={draftColor}
+							bind:selectedName={draftColorName}
+							bind:selectedMeaning={draftColorMeaning}
+							bind:selectedKeywords={draftColorKeywords}
+						/>
 					</div>
 					<p class="empty-prompt">
 						{selectedToneMeta?.label} börjar: hur var din dag?

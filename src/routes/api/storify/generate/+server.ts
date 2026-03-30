@@ -1,4 +1,4 @@
-import { json } from '@sveltejs/kit';
+﻿import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
@@ -13,18 +13,24 @@ function getAccessToken(authorizationHeader: string | null): string | null {
 }
 
 function deriveTone(energyScore: number, moodEmojis: string[]): string {
-	const sadEmojis = ['😔', '😰', '😤'];
+	const sadEmojis = ['ðŸ˜”', 'ðŸ˜°', 'ðŸ˜¤'];
 	const hasSadMood = moodEmojis.some((e) => sadEmojis.includes(e));
 	if (energyScore >= 7 && !hasSadMood) return 'positiv';
 	if (energyScore <= 3 || hasSadMood) return 'tung';
 	return 'neutral';
 }
 
+interface ColorTone {
+	id?: string;
+	name?: string;
+	meaning?: string;
+	keywords?: string[];
+}
 export const POST: RequestHandler = async ({ request }) => {
 	// Verifiera Bearer-token
 	const token = getAccessToken(request.headers.get('authorization'));
 	if (!token) {
-		return json({ error: 'Åtkomst nekad.' }, { status: 401 });
+		return json({ error: 'Ã…tkomst nekad.' }, { status: 401 });
 	}
 
 	const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL;
@@ -45,51 +51,67 @@ export const POST: RequestHandler = async ({ request }) => {
 	} = await supabase.auth.getUser();
 
 	if (authError || !user) {
-		return json({ error: 'Åtkomst nekad.' }, { status: 401 });
+		return json({ error: 'Ã…tkomst nekad.' }, { status: 401 });
 	}
 
 	const storifyKey = env.STORIFY_API_KEY;
 	if (!storifyKey) {
-		return json({ error: 'AI-tjänsten är inte konfigurerad.' }, { status: 500 });
+		return json({ error: 'AI-tjÃ¤nsten Ã¤r inte konfigurerad.' }, { status: 500 });
 	}
 
-	// Parsa request-kropp — stöder intervjuläge och snabbläge
+	// Parsa request-kropp â€” stÃ¶der intervjulÃ¤ge och snabblÃ¤ge
 	let systemPrompt: string;
 	let userMessage: string;
 	let tone: string;
 
 	try {
 		const body = await request.json();
+		const colorTone =
+			body.colorTone && typeof body.colorTone === 'object'
+				? (body.colorTone as ColorTone)
+				: null;
 
 		if (body.chatTranscript) {
-			// Intervjuläge: använd vald ton och transkript
+			// IntervjulÃ¤ge: anvÃ¤nd vald ton och transkript
 			const requestedTone = typeof body.selectedTone === 'string' ? body.selectedTone : '';
 			const selectedTone = availableToneIds.includes(requestedTone as (typeof availableToneIds)[number])
 				? requestedTone
 				: 'therapist';
 			systemPrompt = buildTonePrompt(selectedTone);
+			if (colorTone?.id) {
+				const keywords =
+					Array.isArray(colorTone.keywords) && colorTone.keywords.length > 0
+						? `\n- Nyckelord: ${colorTone.keywords.join(', ')}`
+						: '';
+				systemPrompt += `\n\nEMOTIONELL TON:
+- Vald farg: ${colorTone.name ?? colorTone.id}
+- Betydelse: ${colorTone.meaning ?? ''}${keywords}
+- Lat detta bli ett subtilt kanslolager i spraket, kanslan och sammanfattningen.
+- Behall rostens huvudkaraktar tydlig. Upprepa inte fargen onaturligt och gor inte texten flummig.
+- Resultatet ska fortfarande kannas manskligt, tryggt och seriost.`;
+			}
 			tone = selectedTone;
-			userMessage = `Här är transkriptet från en intervju om min dag:\n\n${body.chatTranscript}\n\nSkriv ett dagboksinlägg baserat på det vi pratade om.`;
+			userMessage = `HÃ¤r Ã¤r transkriptet frÃ¥n en intervju om min dag:\n\n${body.chatTranscript}\n\nSkriv ett dagboksinlÃ¤gg baserat pÃ¥ det vi pratade om.`;
 		} else {
-			// Snabbläge: fri text + stämning + energi
+			// SnabblÃ¤ge: fri text + stÃ¤mning + energi
 			const userInput: string = typeof body.userInput === 'string' ? body.userInput.trim() : '';
 			const moodEmojis: string[] = Array.isArray(body.moodEmojis) ? body.moodEmojis : [];
 			const energyScore: number = typeof body.energyScore === 'number' ? body.energyScore : 5;
 
 			if (!userInput) {
-				return json({ error: 'Fältet "userInput" är obligatoriskt.' }, { status: 400 });
+				return json({ error: 'FÃ¤ltet "userInput" Ã¤r obligatoriskt.' }, { status: 400 });
 			}
 
 			systemPrompt =
-				'Du är en empatisk dagboksassistent. Omvandla användarens korta beskrivning av sin dag till ett personligt, reflekterande dagboksinlägg på svenska. Skriv i första person med en varm och ärlig ton. Inlägget ska vara 3–5 meningar. Inga rubriker eller metadata – bara den rena dagbokstexten.';
+				'Du Ã¤r en empatisk dagboksassistent. Omvandla anvÃ¤ndarens korta beskrivning av sin dag till ett personligt, reflekterande dagboksinlÃ¤gg pÃ¥ svenska. Skriv i fÃ¶rsta person med en varm och Ã¤rlig ton. InlÃ¤gget ska vara 3â€“5 meningar. Inga rubriker eller metadata â€“ bara den rena dagbokstexten.';
 
-			const moodStr = moodEmojis.length > 0 ? `Stämning: ${moodEmojis.join(' ')}` : '';
-			const energyStr = `Energinivå: ${energyScore}/10`;
+			const moodStr = moodEmojis.length > 0 ? `StÃ¤mning: ${moodEmojis.join(' ')}` : '';
+			const energyStr = `EnerginivÃ¥: ${energyScore}/10`;
 			userMessage = [userInput, moodStr, energyStr].filter(Boolean).join('\n');
 			tone = deriveTone(energyScore, moodEmojis);
 		}
 	} catch {
-		return json({ error: 'Ogiltig förfrågningskropp.' }, { status: 400 });
+		return json({ error: 'Ogiltig fÃ¶rfrÃ¥gningskropp.' }, { status: 400 });
 	}
 
 	// Anropa Anthropic API
@@ -110,7 +132,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	if (!anthropicResponse.ok) {
 		console.error('Anthropic generate-fel:', await anthropicResponse.text());
-		return json({ error: 'AI-tjänsten är inte tillgänglig just nu.' }, { status: 502 });
+		return json({ error: 'AI-tjÃ¤nsten Ã¤r inte tillgÃ¤nglig just nu.' }, { status: 502 });
 	}
 
 	const result = (await anthropicResponse.json()) as {

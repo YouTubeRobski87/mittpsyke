@@ -27,9 +27,25 @@
 		{ id: 'white',  name: 'Vit',     hex: '#fafaf8', hexDark: '#f4f4f2', keywords: ['renhet', 'enkelhet', 'klarhet', 'nystart', 'frid'],                             meaning: 'En ren och enkel dag med känsla av klarhet eller nystart. Som ett blankt papper antyder detta nya möjligheter, mental frid eller en avskalad enkelhet.' },
 	];
 
-	let { value = $bindable('') }: { value?: string } = $props();
+	let {
+		value = $bindable(''),
+		selectedName = $bindable(''),
+		selectedMeaning = $bindable(''),
+		selectedKeywords = $bindable([] as string[])
+	}: {
+		value?: string;
+		selectedName?: string;
+		selectedMeaning?: string;
+		selectedKeywords?: string[];
+	} = $props();
 
 	const selected = $derived(moodColors.find(c => c.id === value) ?? null);
+
+	$effect(() => {
+		selectedName = selected?.name ?? '';
+		selectedMeaning = selected?.meaning ?? '';
+		selectedKeywords = [...(selected?.keywords ?? [])];
+	});
 
 	function toggle(id: string) {
 		value = value === id ? '' : id;
