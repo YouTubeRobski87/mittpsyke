@@ -180,7 +180,7 @@
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa konto senare</a>
 				</div>
-				<p class="hero-trust-note">Ingen registrering krävs.</p>
+				<p class="hero-trust-note">Börja direkt. Ingen registrering krävs.</p>
 			</div>
 		</div>
 	</section>
