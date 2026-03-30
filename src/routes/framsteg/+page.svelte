@@ -4,6 +4,7 @@
 	import { browser } from '$app/environment';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import GrowthGarden from '$lib/components/GrowthGarden.svelte';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -80,6 +81,10 @@
 		streak: StreakData | null;
 		milestones: MilestonesResponse | null;
 		weeklyEntries: number;
+		entryCount: number;
+		activeDays: number;
+		growthScore: number;
+		growthLevel: number;
 		heatmapData?: Record<string, number>;
 		heatmapError?: string;
 		profileTheme?: keyof typeof THEMES | null;
@@ -105,6 +110,10 @@
 	let streakData: StreakData | null = $derived(data.streak ?? null);
 	let milestonesData: MilestonesResponse | null = $derived(data.milestones ?? null);
 	let weeklyEntries: number = $derived(data.weeklyEntries ?? 0);
+	let entryCount: number = $derived(data.entryCount ?? 0);
+	let activeDays: number = $derived(data.activeDays ?? 0);
+	let growthScore: number = $derived(data.growthScore ?? 0);
+	let growthLevel: number = $derived(data.growthLevel ?? 0);
 	let heatmapData = $derived(data.heatmapData ?? {});
 	let heatmapError = $derived(data.heatmapError ?? '');
 	let insightsData = $state<InsightsResponse | null>(null);
@@ -364,6 +373,13 @@
 					<small>Försök att ladda sidan igen</small>
 				</section>
 			{:else}
+
+		<GrowthGarden
+			growthScore={growthScore}
+			growthLevel={growthLevel}
+			entryCount={entryCount}
+			activeDays={activeDays}
+		/>
 
 		<!-- ── AI-insikter ── -->
 		<section class="card insights-card" bind:this={insightsCardEl}>

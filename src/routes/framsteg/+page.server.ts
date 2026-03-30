@@ -3,6 +3,15 @@ import { redirect } from '@sveltejs/kit';
 
 type HeatmapData = Record<string, number>;
 
+function getGrowthLevel(growthScore: number) {
+	let growthLevel = 0;
+	if (growthScore >= 5) growthLevel = 1;
+	if (growthScore >= 15) growthLevel = 2;
+	if (growthScore >= 30) growthLevel = 3;
+	if (growthScore >= 60) growthLevel = 4;
+	return growthLevel;
+}
+
 export const load: PageServerLoad = async ({ locals, fetch }) => {
 	const {
 		data: { session }
@@ -38,8 +47,9 @@ export const load: PageServerLoad = async ({ locals, fetch }) => {
 		monday.setDate(now.getDate() + mondayOffset);
 		monday.setHours(0, 0, 0, 0);
 		const weekStart = monday.toISOString();
+		const yearAgoIso = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
 
-		const [{ count }, heatmapQuery] = await Promise.all([
+		const [{ count }, diaryEntriesQuery] = await Promise.all([
 			locals.supabase
 			.from('diary')
 			.select('*', { count: 'exact', head: true })
@@ -49,30 +59,49 @@ export const load: PageServerLoad = async ({ locals, fetch }) => {
 				.from('diary')
 				.select('created_at')
 				.eq('user_id', user.id)
-				.gte('created_at', new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString())
 				.order('created_at', { ascending: true })
 		]);
 
 		const heatmapData: HeatmapData = {};
 		let heatmapError = '';
+		let entryCount = 0;
+		let activeDays = 0;
+		let growthScore = 0;
+		let growthLevel = 0;
 
-		if (heatmapQuery.error) {
-			console.error('Framsteg heatmap load error:', heatmapQuery.error);
+		if (diaryEntriesQuery.error) {
+			console.error('Framsteg heatmap load error:', diaryEntriesQuery.error);
 			heatmapError = 'Aktivitetskartan kunde inte laddas just nu.';
 		} else {
-			for (const entry of heatmapQuery.data ?? []) {
+			const activeDaySet = new Set<string>();
+
+			for (const entry of diaryEntriesQuery.data ?? []) {
 				const createdAt = typeof entry.created_at === 'string' ? entry.created_at : '';
 				if (!createdAt) continue;
 				const day = createdAt.split('T')[0];
 				if (!day) continue;
-				heatmapData[day] = (heatmapData[day] ?? 0) + 1;
+
+				entryCount += 1;
+				activeDaySet.add(day);
+
+				if (createdAt >= yearAgoIso) {
+					heatmapData[day] = (heatmapData[day] ?? 0) + 1;
+				}
 			}
+
+			activeDays = activeDaySet.size;
+			growthScore = entryCount + activeDays * 3;
+			growthLevel = getGrowthLevel(growthScore);
 		}
 
 		return {
 			streak,
 			milestones,
 			weeklyEntries: count ?? 0,
+			entryCount,
+			activeDays,
+			growthScore,
+			growthLevel,
 			heatmapData,
 			heatmapError,
 			profileTheme:
@@ -86,6 +115,10 @@ export const load: PageServerLoad = async ({ locals, fetch }) => {
 			streak: null,
 			milestones: null,
 			weeklyEntries: 0,
+			entryCount: 0,
+			activeDays: 0,
+			growthScore: 0,
+			growthLevel: 0,
 			heatmapData: {},
 			heatmapError: 'Aktivitetskartan kunde inte laddas just nu.',
 			profileTheme: null
