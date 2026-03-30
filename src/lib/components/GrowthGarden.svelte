@@ -148,26 +148,68 @@
 			{/if}
 
 			{#if growthLevel >= 4}
-				<g class="layer tree">
+				<g class="layer tree level-four">
 					<path
-						d="M356 206 C356 182 358 164 362 150 C366 136 370 122 374 108 C378 96 386 88 392 88 C398 88 404 94 406 104 C409 116 412 132 415 146 C418 164 420 184 420 206 Z"
+						d="M270 206 C286 194 304 190 324 192 C336 182 352 178 368 180 C382 170 398 170 414 176 C430 172 446 178 456 188 C474 188 490 194 498 206 Z"
+						class="level-four-meadow"
+					/>
+					<g class="level-four-balance">
+						<path
+							d="M430 206 C434 192 444 184 456 186 C460 174 470 168 482 170 C492 170 500 178 502 188 C510 190 516 196 518 206 Z"
+							fill="url(#gardenBush)"
+						/>
+						<path
+							d="M438 206 C442 198 450 194 458 194 C464 188 472 186 480 188 C488 188 494 192 498 198 C506 198 510 202 512 206 Z"
+							class="level-four-balance-shadow"
+						/>
+					</g>
+					<g class="level-four-blooms">
+						<g transform="translate(296 210)">
+							<path d="M0 0 C0 -8 1 -16 2 -24" class="stem" />
+							<ellipse cx="-4" cy="-26" rx="3.8" ry="2.9" class="petal-soft" />
+							<ellipse cx="4" cy="-26" rx="3.8" ry="2.9" class="petal-soft" />
+							<ellipse cx="0" cy="-30.5" rx="3.1" ry="3.7" class="petal-soft" />
+							<ellipse cx="0" cy="-21.5" rx="3.1" ry="3.7" class="petal-soft" />
+							<circle cx="0" cy="-26" r="2.4" class="flower-core" />
+						</g>
+						<g transform="translate(452 212)">
+							<path d="M0 0 C0 -7 0 -14 1 -20" class="stem" />
+							<ellipse cx="-3.6" cy="-22" rx="3.4" ry="2.6" class="petal-muted" />
+							<ellipse cx="3.6" cy="-22" rx="3.4" ry="2.6" class="petal-muted" />
+							<ellipse cx="0" cy="-26" rx="2.8" ry="3.4" class="petal-muted" />
+							<ellipse cx="0" cy="-18" rx="2.8" ry="3.4" class="petal-muted" />
+							<circle cx="0" cy="-22" r="2.2" class="flower-core" />
+						</g>
+					</g>
+					<g class="level-four-grass">
+						<path d="M286 214 C294 192 300 182 306 214" />
+						<path d="M320 218 C326 196 332 186 338 218" />
+						<path d="M416 216 C422 194 428 184 434 216" />
+						<path d="M470 214 C476 194 480 184 486 214" />
+					</g>
+					<path
+						d="M360 206 C360 184 362 166 366 150 C370 136 374 122 380 106 C384 94 390 88 396 88 C402 88 406 92 408 102 C412 118 416 134 420 152 C424 170 426 186 426 206 Z"
 						fill="url(#gardenTrunk)"
 					/>
 					<path
-						d="M388 90 C372 92 360 100 354 114 C338 116 326 128 324 142 C314 148 308 160 310 172 C314 190 332 198 354 198 H422 C442 198 458 188 462 172 C466 158 460 146 450 138 C448 122 436 108 418 102 C410 92 400 88 388 90 Z"
+						d="M396 82 C380 84 366 92 358 104 C342 106 330 116 324 128 C312 134 304 146 304 160 C304 182 322 194 346 196 H432 C454 194 472 182 474 160 C476 146 470 134 460 126 C456 112 444 100 428 94 C420 86 410 82 396 82 Z"
 						fill="url(#gardenTreeFoliage)"
 					/>
 					<path
-						d="M390 102 C376 104 366 112 360 122 C348 124 338 132 336 144 C328 150 324 160 326 168 C330 184 344 190 362 190 H414 C432 190 446 182 448 168 C450 158 446 150 438 144 C436 132 426 122 412 116 C406 108 398 102 390 102 Z"
+						d="M396 96 C382 98 372 104 364 114 C350 116 340 124 336 136 C328 142 324 150 324 160 C324 176 338 186 358 188 H420 C440 186 452 176 454 160 C456 150 452 142 444 136 C440 124 430 116 418 110 C412 102 404 98 396 96 Z"
 						class="tree-inner"
 					/>
 					<path
-						d="M374 140 C382 136 392 138 398 144"
+						d="M380 140 C388 134 398 136 404 144"
 						class="branch"
 					/>
 					<path
-						d="M384 126 C392 122 402 124 408 132"
+						d="M390 126 C398 120 408 122 414 130"
 						class="branch"
+					/>
+					<path
+						d="M368 198 C378 194 390 194 400 198"
+						class="root-shadow"
 					/>
 				</g>
 			{/if}
@@ -329,10 +371,32 @@
 		fill: rgba(210, 224, 197, 0.18);
 	}
 
+	.level-four-meadow {
+		fill: rgba(178, 196, 168, 0.16);
+	}
+
+	.level-four-balance-shadow {
+		fill: rgba(42, 57, 46, 0.2);
+	}
+
+	.level-four-grass path {
+		fill: none;
+		stroke: color-mix(in srgb, var(--theme-accent, #0f766e) 42%, #617a63 58%);
+		stroke-width: 2.6;
+		stroke-linecap: round;
+	}
+
 	.branch {
 		fill: none;
 		stroke: rgba(84, 68, 57, 0.4);
 		stroke-width: 2;
+		stroke-linecap: round;
+	}
+
+	.root-shadow {
+		fill: none;
+		stroke: rgba(58, 45, 36, 0.22);
+		stroke-width: 3;
 		stroke-linecap: round;
 	}
 
@@ -419,8 +483,20 @@
 		fill: rgba(203, 216, 195, 0.1);
 	}
 
+	:global(.dark) .level-four-meadow {
+		fill: rgba(178, 196, 168, 0.08);
+	}
+
+	:global(.dark) .level-four-balance-shadow {
+		fill: rgba(8, 14, 11, 0.24);
+	}
+
 	:global(.dark) .branch {
 		stroke: rgba(21, 17, 14, 0.42);
+	}
+
+	:global(.dark) .root-shadow {
+		stroke: rgba(12, 10, 8, 0.28);
 	}
 
 	@media (max-width: 640px) {
