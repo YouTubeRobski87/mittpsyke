@@ -86,8 +86,11 @@ export const POST: RequestHandler = async ({ request }) => {
 				systemPrompt += `\n\nEMOTIONELL TON:
 - Vald farg: ${colorTone.name ?? colorTone.id}
 - Betydelse: ${colorTone.meaning ?? ''}${keywords}
-- Lat detta bli ett subtilt kanslolager i spraket, kanslan och sammanfattningen.
-- Behall rostens huvudkaraktar tydlig. Upprepa inte fargen onaturligt och gor inte texten flummig.
+- Lat detta bli ett subtilt kanslolager i spraket, kanslan, ordvalet och det som betonas i sammanfattningen.
+- Prioritera alltid anvandarens faktiska ord, handelser och nyanser framfor fargens symbolik.
+- Om fargen antyder tyngd, oro, trotthet eller lag energi far texten varsamt fa mer plats dar. Om den antyder klarhet, hopp, varme eller nystart far det ocksa markas stillsamt i hur dagen speglas.
+- Behall rostens huvudkaraktar tydlig. Fargen ar bara ett extra lager ovanpa rosten och far inte skriva over den.
+- Upprepa inte fargen onaturligt och gor inte texten flummig.
 - Resultatet ska fortfarande kannas manskligt, tryggt och seriost.`;
 			}
 			tone = selectedTone;

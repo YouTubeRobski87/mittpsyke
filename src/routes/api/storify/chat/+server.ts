@@ -70,7 +70,9 @@ function buildInterviewerPrompt(messageCount: number, colorTone: ColorTone | nul
 - Vald farg: ${colorTone.name ?? colorTone.id}
 - Betydelse: ${colorTone.meaning ?? ''}${keywords}
 - Lat detta farga samtalet forsiktigt. Hall fragorna trygga, enkla och manskliga.
-- Behall intervjuarens lugna ton. Namn inte fargen om det inte faller sig naturligt.`;
+- Lat fargen hjalpa dig valja vilka kanslospar och detaljer du foljer upp, men utga alltid fran anvandarens faktiska ord.
+- Om fargen antyder tyngd, oro, trötthet eller lag energi far fragorna landa lite mer dar. Om den antyder klarhet, hopp, varme eller nystart far det ocksa markas varsamt i hur du speglar anvandaren.
+- Behall intervjuarens lugna ton. Namn inte fargen eller dess betydelse rakt ut om det inte faller sig naturligt.`;
 	}
 
 	if (messageCount >= 30) {
