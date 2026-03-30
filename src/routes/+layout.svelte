@@ -314,7 +314,7 @@
 					class="inline-flex shrink-0 items-center opacity-95 hover:opacity-100 transition-opacity"
 					aria-label="MittPsyke"
 				>
-					<img src="/frontlogga.jpg" alt="MittPsyke" class="block h-10 w-auto sm:h-11" />
+					<img src="/frontlogga.ico" alt="MittPsyke" class="block h-10 w-auto sm:h-11" />
 				</a>
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
