@@ -311,7 +311,7 @@
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
 				<a
 					href="/"
-					class="inline-flex shrink-0 items-center opacity-95 hover:opacity-100 transition-opacity"
+					class="flex shrink-0 self-center items-center leading-none opacity-95 hover:opacity-100 transition-opacity"
 					aria-label="MittPsyke"
 				>
 					<img src="/frontlogga.ico" alt="MittPsyke" class="block h-10 w-auto sm:h-11" />
