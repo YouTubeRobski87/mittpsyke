@@ -667,8 +667,7 @@
 					</div>
 					<div class="diary-path-card diary-path-card--preview">
 						<span class="diary-path-title">Dagbok med röster</span>
-						<span class="diary-path-copy">Välj bland elva röster — från Berättaren till Cyniker.</span>
-						<span class="diary-path-voices">Berättaren · Filosofen · Uttråkad · Psykologen · Grubblaren · Quest log · Klassisk dagbok · Sportkommentator · AI-robot · Livscoach · Cyniker</span>
+						<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
 					</div>
 				</div>
 			</section>
@@ -706,8 +705,7 @@
 							</a>
 							<a href="/dagars-avtryck" class="diary-path-card">
 								<span class="diary-path-title">Dagbok med röster</span>
-								<span class="diary-path-copy">Välj bland elva röster — från Berättaren till Cyniker.</span>
-								<span class="diary-path-voices">Berättaren · Filosofen · Uttråkad · Psykologen · Grubblaren · Quest log · Klassisk dagbok · Sportkommentator · AI-robot · Livscoach · Cyniker</span>
+								<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
 							</a>
 						</div>
 					</section>
