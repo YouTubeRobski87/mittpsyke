@@ -1,6 +1,6 @@
 export const load = () => {
   return {
-    title: "Verktyg mot ångest online – Din personliga dagbok",
-    description: "Mittpsyke erbjuder digitala verktyg mot ångest online. Skriv din personliga dagbok och följ ditt mående med en visuell dashboard."
+    title: "Dagbok med röster – Guidat skrivstöd i din ton",
+    description: "Välj en röst som Filosofen, Psykologen eller Grubblaren och låt en lugn intervju bli ett personligt dagboksinlägg."
   };
 };

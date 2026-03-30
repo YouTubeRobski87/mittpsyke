@@ -1,1730 +1,1008 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
-	import { trackSignupCompleted, trackDiaryPageOpenedFromHoroscope } from '$lib/analytics';
-	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
-	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import { supabase } from '$lib/supabase';
-	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
-	import type { Session, User } from '@supabase/supabase-js';
-	import type {
-		CommunityMySharesSuccessResponse,
-		CreateCommunityShareSuccessResponse,
-		CreateCommunityUnshareSuccessResponse
-	} from '$lib/types';
+	import { activeStorifyTones, storifyTones } from '$lib/data/storifyTones';
 
-	type PageData = {
-		entries?: DiaryEntry[];
-		sharedEntryIds?: string[];
-		session?: Session | null;
+	// --- Typer ---
+
+	type Phase = 'empty' | 'chatting' | 'tone-selection' | 'generating' | 'result';
+	type Role = 'user' | 'assistant';
+
+	type ChatMessage = {
+		id: string;
+		role: Role;
+		content: string;
 	};
 
-	let { data } = $props<{ data: PageData }>();
+	type StorifyEntry = {
+		id: string;
+		content: string;
+		tone: string | null;
+		mood_emojis: string[] | null;
+		created_at: string;
+	};
 
-	let entries = $state<DiaryEntry[]>([]);
-	let loading = $state(false);
-	let sessionUser = $state<User | null>(null);
-	let isLoggedIn = $derived(Boolean(sessionUser));
-	let loadError = $state('');
-	let draftText = $state('');
-	let draftMood = $state('');
-	let draftMoodPreview = $state(5);
-	let draftError = $state('');
-	let draftSuccess = $state('');
-	let savingDraft = $state(false);
-	type MoodGraphPoint = { mood: number };
-	let moodGraphPoints = $derived.by(() => buildMoodGraphPoints(entries));
-	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
-	let hasDraftToResume = $derived(draftText.trim().length > 0);
-	let hasSavedEntries = $derived(entries.length > 0);
-	let sharedEntryIds = $state(new Set<string>());
-	let confirmingShareEntryId = $state('');
-	let confirmingUnshareEntryId = $state('');
-	let sharingEntryId = $state('');
-	let unsharingEntryId = $state('');
-	let shareFeedbackEntryId = $state('');
-	let shareFeedbackMessage = $state('');
-	let shareFeedbackType = $state<'success' | 'error' | 'info'>('info');
-	let shareFeedbackShowCommunityLink = $state(false);
-	let editingEntryId = $state('');
-	let editingText = $state('');
-	let editingMood = $state('');
-	let editingMoodPreview = $state(5);
-	let savingEditId = $state('');
-	let editError = $state('');
-	let confirmingDeleteEntryId = $state('');
-	let deletingEntryId = $state('');
-	let deleteErrorEntryId = $state('');
-	let deleteErrorMessage = $state('');
+	// --- Props ---
+
+	let { data } = $props<{ data: { entries: StorifyEntry[] } }>();
+
+	// --- Globalt tillstånd ---
+
+	let activeTab = $state<'skriv' | 'entries'>('skriv');
+
+	// --- Intervjutillstånd ---
+
+	let phase = $state<Phase>('empty');
+	let messages = $state<ChatMessage[]>([]);
+	let isStreaming = $state(false);
+	let streamError = $state('');
+	let inputValue = $state('');
+
+	// --- Tonval ---
+
+	const DEFAULT_TONE_ID = activeStorifyTones[0]?.id ?? 'therapist';
+	let selectedTone = $state(DEFAULT_TONE_ID);
+	const selectedToneMeta = $derived(
+		activeStorifyTones.find((tone) => tone.id === selectedTone) ?? activeStorifyTones[0]
+	);
+
+	// --- Genereringtillstånd ---
+
+	let generatedEntry = $state('');
+	let generatedTone = $state('');
+	let generating = $state(false);
+	let generateError = $state('');
+
+	// --- Sparatillstånd ---
+
+	let isSaved = $state(false);
+	let saveError = $state('');
+	let isCopied = $state(false);
+
+	// --- Inläggslist ---
+
+	let entries = $state<StorifyEntry[]>([]);
 
 	$effect(() => {
 		entries = data.entries ?? [];
-		sessionUser = data.session?.user ?? null;
-		sharedEntryIds = new Set<string>(data.sharedEntryIds ?? []);
 	});
 
-	function parseStoredDraft(value: string | null): string {
-		if (!value) return '';
+	// --- Scrollreferens för chattfönstret ---
 
-		try {
-			const parsed = JSON.parse(value);
-			if (typeof parsed === 'string') return parsed.trim();
-			if (parsed && typeof parsed === 'object' && typeof parsed.content === 'string') {
-				return parsed.content.trim();
-			}
-		} catch {
-			return value.trim();
+	let messageListEl = $state<HTMLElement | null>(null);
+
+	// Scrolla till botten efter nya meddelanden
+	$effect(() => {
+		if (messages.length > 0 && messageListEl) {
+			messageListEl.scrollTop = messageListEl.scrollHeight;
 		}
+	});
 
-		return value.trim();
+	// --- Helpers ---
+
+	function uid(): string {
+		return Math.random().toString(36).slice(2);
 	}
 
-	function formatDate(value: string | null): string {
-		if (!value) return 'Okänt datum';
-		const date = new Date(value);
-		if (Number.isNaN(date.getTime())) return 'Okänt datum';
-		return date.toLocaleDateString('sv-SE', {
+	function formatDate(dateStr: string): string {
+		return new Date(dateStr).toLocaleDateString('sv-SE', {
 			year: 'numeric',
-			month: 'short',
-			day: 'numeric'
+			month: 'long',
+			day: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
 		});
 	}
 
-	function parseMoodValue(value: string | null): number | null {
-		if (!value) return null;
-		const numeric = Number(value);
-		if (!Number.isFinite(numeric)) return null;
-		if (numeric < 1 || numeric > 10) return null;
-		return Math.round(numeric);
+	function formatTranscript(): string {
+		return messages
+			.filter((m) => m.content.trim().length > 0)
+			.map((m) => {
+				const prefix = m.role === 'user' ? 'Användaren' : 'Intervjuaren';
+				return `${prefix}: ${m.content}`;
+			})
+			.join('\n\n');
 	}
 
-	function moodX(index: number, total: number): number {
-		if (total <= 1) return 50;
-		return 4 + (index / (total - 1)) * 92;
+	function userMessageCount(): number {
+		return messages.filter((m) => m.role === 'user').length;
 	}
 
-	function moodY(mood: number): number {
-		return 34 - ((mood - 1) / 9) * 26;
-	}
-
-	function buildMoodPolyline(points: MoodGraphPoint[]): string {
-		if (points.length === 0) return '';
-		return points
-			.map((point, index) => `${moodX(index, points.length)},${moodY(point.mood)}`)
-			.join(' ');
-	}
-
-	function moodLabel(value: number) {
-		if (value <= 2) return 'Väldigt tungt';
-		if (value <= 4) return 'Tungt';
-		if (value <= 6) return 'Mitt emellan';
-		if (value <= 8) return 'Lite lättare';
-		return 'Mer stabilt';
-	}
-
-	function handleMoodInput(event: Event) {
-		const value = Number((event.currentTarget as HTMLInputElement).value);
-		if (!Number.isFinite(value)) return;
-		draftMoodPreview = value;
-		draftMood = String(value);
-	}
-
-	function clearMoodSelection() {
-		draftMood = '';
-		draftMoodPreview = 5;
-	}
-
-	function buildMoodGraphPoints(source: DiaryEntry[]): MoodGraphPoint[] {
-		const points: MoodGraphPoint[] = [];
-		for (const entry of source) {
-			const mood = parseMoodValue(entry.mood);
-			if (mood === null) continue;
-			points.push({ mood });
-			if (points.length >= 10) break;
-		}
-		return points.reverse();
-	}
-
-	function countEntriesThisWeek(source: DiaryEntry[]): number {
-		const cutoff = new Date();
-		cutoff.setDate(cutoff.getDate() - 6);
-		cutoff.setHours(0, 0, 0, 0);
-
-		return source.filter((entry) => {
-			if (!entry.created_at) return false;
-			const created = new Date(entry.created_at);
-			if (Number.isNaN(created.getTime())) return false;
-			return created >= cutoff;
-		}).length;
-	}
-
-	function isEntryShared(entryId: string): boolean {
-		return sharedEntryIds.has(entryId);
-	}
-
-	function setShareFeedback(entryId: string, message: string, type: 'success' | 'error' | 'info') {
-		shareFeedbackEntryId = entryId;
-		shareFeedbackMessage = message;
-		shareFeedbackType = type;
-		shareFeedbackShowCommunityLink = false;
-	}
-
-	async function loadEntries(options: { force?: boolean } = {}) {
-		const { data } = await supabase.auth.getSession();
-		const userId = data.session?.user?.id;
-		if (!userId) {
-			entries = [];
-			sharedEntryIds = new Set();
-			return;
-		}
-
-		entries = await loadDiaryEntries(userId, options);
-	}
-
-	async function loadSharedEntryIds() {
-		const { data } = await supabase.auth.getSession();
-		const session = data.session;
-
-		if (!session?.access_token) {
-			sharedEntryIds = new Set();
-			return;
-		}
-
-		try {
-			const response = await fetch('/api/community/my-shares', {
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${session.access_token}`
-				}
-			});
-
-			if (!response.ok) {
-				return;
-			}
-
-			const payload = (await response.json().catch(() => null)) as CommunityMySharesSuccessResponse | null;
-			if (!payload?.success || !Array.isArray(payload.diaryEntryIds)) {
-				return;
-			}
-
-			sharedEntryIds = new Set(payload.diaryEntryIds.filter((id) => typeof id === 'string' && id.length > 0));
-		} catch {
-			// Silent fallback: sharing status can load later without blocking the diary.
-		}
-	}
-
-	function openShareConfirmation(entryId: string) {
-		confirmingShareEntryId = entryId;
-		confirmingUnshareEntryId = '';
-		shareFeedbackEntryId = '';
-		shareFeedbackMessage = '';
-		shareFeedbackShowCommunityLink = false;
-	}
-
-	function closeShareConfirmation() {
-		if (sharingEntryId) return;
-		confirmingShareEntryId = '';
-	}
-
-	function openUnshareConfirmation(entryId: string) {
-		confirmingUnshareEntryId = entryId;
-		confirmingShareEntryId = '';
-		shareFeedbackEntryId = '';
-		shareFeedbackMessage = '';
-		shareFeedbackShowCommunityLink = false;
-	}
-
-	function closeUnshareConfirmation() {
-		if (unsharingEntryId) return;
-		confirmingUnshareEntryId = '';
-	}
-
-	async function shareEntryAnonymously(entry: DiaryEntry) {
-		if (sharingEntryId || unsharingEntryId || !entry.id) return;
-
-		if (isEntryShared(entry.id)) {
-			setShareFeedback(entry.id, 'Det här inlägget är redan delat i Gemenskap.', 'info');
-			confirmingShareEntryId = '';
-			return;
-		}
-
-		sharingEntryId = entry.id;
-
-		try {
-			const { data } = await supabase.auth.getSession();
-			const session = data.session;
-
-			if (!session?.access_token) {
-				setShareFeedback(entry.id, 'Logga in för att dela inlägget anonymt.', 'error');
-				return;
-			}
-
-			const response = await fetch('/api/community/share', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.access_token}`
-				},
-				body: JSON.stringify({ diaryEntryId: entry.id })
-			});
-
-			const payload = (await response.json().catch(() => null)) as
-				| CreateCommunityShareSuccessResponse
-				| { success?: boolean; error?: string; alreadyShared?: boolean }
-				| null;
-
-			if (!response.ok || !payload) {
-				const errorPayload = payload as { error?: string; alreadyShared?: boolean } | null;
-				const alreadyShared = response.status === 409 && Boolean(errorPayload?.alreadyShared);
-				if (alreadyShared) {
-					sharedEntryIds = new Set([...sharedEntryIds, entry.id]);
-					setShareFeedback(entry.id, 'Det här inlägget är redan delat i Gemenskap.', 'info');
-				} else {
-					setShareFeedback(entry.id, errorPayload?.error || 'Kunde inte dela inlägget just nu.', 'error');
-				}
-				return;
-			}
-
-			if (!payload.success) {
-				setShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
-				return;
-			}
-
-			sharedEntryIds = new Set([...sharedEntryIds, entry.id]);
-			setShareFeedback(entry.id, 'Inlägget har delats anonymt i Gemenskap.', 'success');
-			shareFeedbackShowCommunityLink = true;
-			confirmingShareEntryId = '';
-		} catch (error) {
-			setShareFeedback(
-				entry.id,
-				error instanceof Error ? error.message : 'Kunde inte dela inlägget just nu.',
-				'error'
-			);
-		} finally {
-			sharingEntryId = '';
-		}
-	}
-
-	async function unshareEntry(entry: DiaryEntry) {
-		if (sharingEntryId || unsharingEntryId || !entry.id) return;
-
-		if (!isEntryShared(entry.id)) {
-			setShareFeedback(entry.id, 'Det finns ingen aktiv delning att ta bort.', 'info');
-			confirmingUnshareEntryId = '';
-			return;
-		}
-
-		unsharingEntryId = entry.id;
-
-		try {
-			const { data } = await supabase.auth.getSession();
-			const session = data.session;
-
-			if (!session?.access_token) {
-				setShareFeedback(entry.id, 'Logga in för att ta bort delningen.', 'error');
-				return;
-			}
-
-			const response = await fetch('/api/community/unshare', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.access_token}`
-				},
-				body: JSON.stringify({ diaryEntryId: entry.id })
-			});
-
-			const payload = (await response.json().catch(() => null)) as
-				| CreateCommunityUnshareSuccessResponse
-				| { success?: boolean; error?: string; alreadyUnshared?: boolean }
-				| null;
-
-			if (!response.ok || !payload) {
-				const errorPayload = payload as { error?: string; alreadyUnshared?: boolean } | null;
-				const alreadyUnshared = response.status === 409 && Boolean(errorPayload?.alreadyUnshared);
-
-				if (alreadyUnshared || response.status === 404) {
-					const nextSharedIds = new Set(sharedEntryIds);
-					nextSharedIds.delete(entry.id);
-					sharedEntryIds = nextSharedIds;
-					setShareFeedback(entry.id, 'Delningen är redan borttagen från Gemenskap.', 'info');
-				} else {
-					setShareFeedback(
-						entry.id,
-						errorPayload?.error || 'Kunde inte ta bort delningen just nu.',
-						'error'
-					);
-				}
-				return;
-			}
-
-			if (!payload.success) {
-				setShareFeedback(entry.id, 'Kunde inte ta bort delningen just nu.', 'error');
-				return;
-			}
-
-			const nextSharedIds = new Set(sharedEntryIds);
-			nextSharedIds.delete(entry.id);
-			sharedEntryIds = nextSharedIds;
-			setShareFeedback(entry.id, 'Delningen har tagits bort från Gemenskap.', 'success');
-			confirmingUnshareEntryId = '';
-		} catch (error) {
-			setShareFeedback(
-				entry.id,
-				error instanceof Error ? error.message : 'Kunde inte ta bort delningen just nu.',
-				'error'
-			);
-		} finally {
-			unsharingEntryId = '';
-		}
-	}
-
-	function openEditMode(entry: DiaryEntry) {
-		confirmingShareEntryId = '';
-		confirmingUnshareEntryId = '';
-		confirmingDeleteEntryId = '';
-		deleteErrorEntryId = '';
-		deleteErrorMessage = '';
-		editingEntryId = entry.id;
-		editingText = entry.content;
-		editingMood = entry.mood ?? '';
-		editingMoodPreview = parseMoodValue(entry.mood) ?? 5;
-		editError = '';
-	}
-
-	function closeEditMode() {
-		if (savingEditId) return;
-		editingEntryId = '';
-		editingText = '';
-		editingMood = '';
-		editError = '';
-	}
-
-	async function saveEdit(entry: DiaryEntry) {
-		if (savingEditId || !editingText.trim()) return;
-		editError = '';
-		savingEditId = entry.id;
-
-		try {
-			const { data } = await supabase.auth.getSession();
-			const session = data.session;
-
-			if (!session?.access_token) {
-				editError = 'Logga in för att spara ändringar.';
-				return;
-			}
-
-			const response = await fetch('/api/diary/update', {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.access_token}`
-				},
-				body: JSON.stringify({
-					id: entry.id,
-					text: editingText.trim(),
-					mood: editingMood || null,
-					tags: entry.tags
-				})
-			});
-
-			const payload = await response.json().catch(() => null);
-			if (!response.ok || !payload?.success) {
-				editError = payload?.error ?? 'Kunde inte spara ändringen just nu.';
-				return;
-			}
-
-			entries = entries.map((e) =>
-				e.id === entry.id
-					? { ...e, content: editingText.trim(), mood: editingMood || null }
-					: e
-			);
-			editingEntryId = '';
-			editingText = '';
-			editingMood = '';
-			await loadEntries({ force: true });
-		} catch (error) {
-			editError = error instanceof Error ? error.message : 'Kunde inte spara ändringen just nu.';
-		} finally {
-			savingEditId = '';
-		}
-	}
-
-	function openDeleteConfirmation(entryId: string) {
-		if (deletingEntryId) return;
-		confirmingDeleteEntryId = entryId;
-		confirmingShareEntryId = '';
-		confirmingUnshareEntryId = '';
-		editingEntryId = '';
-		deleteErrorEntryId = '';
-		deleteErrorMessage = '';
-	}
-
-	function closeDeleteConfirmation() {
-		if (deletingEntryId) return;
-		confirmingDeleteEntryId = '';
-		deleteErrorEntryId = '';
-		deleteErrorMessage = '';
-	}
-
-	async function deleteEntry(entry: DiaryEntry) {
-		if (deletingEntryId) return;
-		deletingEntryId = entry.id;
-
-		try {
-			const { data } = await supabase.auth.getSession();
-			const session = data.session;
-
-			if (!session?.access_token) {
-				deleteErrorEntryId = entry.id;
-				deleteErrorMessage = 'Logga in för att ta bort inlägget.';
-				return;
-			}
-
-			const response = await fetch('/api/diary/delete', {
-				method: 'DELETE',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.access_token}`
-				},
-				body: JSON.stringify({ id: entry.id })
-			});
-
-			const payload = await response.json().catch(() => null);
-
-			if (!response.ok || !payload?.success) {
-				if (response.status === 404) {
-					entries = entries.filter((e) => e.id !== entry.id);
-					confirmingDeleteEntryId = '';
-					await loadEntries({ force: true });
-					return;
-				}
-				deleteErrorEntryId = entry.id;
-				deleteErrorMessage = payload?.error ?? 'Kunde inte ta bort inlägget just nu.';
-				return;
-			}
-
-			entries = entries.filter((e) => e.id !== entry.id);
-			confirmingDeleteEntryId = '';
-			await loadEntries({ force: true });
-		} catch (error) {
-			deleteErrorEntryId = entry.id;
-			deleteErrorMessage =
-				error instanceof Error ? error.message : 'Kunde inte ta bort inlägget just nu.';
-		} finally {
-			deletingEntryId = '';
-		}
-	}
-
-	async function saveDraftToDiary() {
-		if (!draftText.trim() || savingDraft) return;
-		draftError = '';
-		draftSuccess = '';
-		savingDraft = true;
-
-		try {
-			const { data } = await supabase.auth.getSession();
-			const session = data.session;
-
-			if (!session?.access_token) {
-				draftError = 'Logga in eller skapa konto för att spara i dagboken.';
-				return;
-			}
-
-			const response = await fetch('/api/diary/create', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.access_token}`
-				},
-				body: JSON.stringify({
-					text: draftText.trim(),
-					mood: draftMood || null
-				})
-			});
-
-			const payload = await response.json().catch(() => null);
-			if (!response.ok) {
-				draftError = payload?.error || 'Kunde inte spara inlägget just nu.';
-				return;
-			}
-
-			if (typeof window !== 'undefined') {
-				localStorage.removeItem('mittpsyke_temp_entry');
-
-				const url = new URL(window.location.href);
-				if (url.searchParams.has('prefill')) {
-					url.searchParams.delete('prefill');
-					const query = url.searchParams.toString();
-					window.history.replaceState({}, '', `${url.pathname}${query ? `?${query}` : ''}${url.hash}`);
-				}
-			}
-
-			draftText = '';
-			draftMood = '';
-			draftMoodPreview = 5;
-			draftSuccess = 'Inlägget är sparat';
-			await loadEntries({ force: true });
-		} catch (error) {
-			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
-		} finally {
-			savingDraft = false;
-		}
-	}
-
-	async function initializeDiary() {
-		if (!sessionUser) {
-			entries = [];
-			sharedEntryIds = new Set();
-			loading = false;
-			return;
-		}
-
-		// Track signup completion if coming from welcome flow
-		if ($page.url.searchParams.get('welcome') === 'true') {
-			trackSignupCompleted();
-		}
-
-		// Track diary page opened from horoscope source
-		if ($page.url.searchParams.get('from') === 'horoscope') {
-			trackDiaryPageOpenedFromHoroscope();
-		}
-
-		const prefill = $page.url.searchParams.get('prefill')?.trim();
-		if (prefill) {
-			draftText = prefill;
-		} else if (typeof window !== 'undefined') {
-			draftText = parseStoredDraft(localStorage.getItem('mittpsyke_temp_entry'));
-		}
-
-		try {
-			if (entries.length === 0) {
-				await loadEntries();
-			}
-
-			if (sharedEntryIds.size === 0) {
-				await loadSharedEntryIds();
-			}
-		} catch (error) {
-			loadError = error instanceof Error ? error.message : 'Kunde inte ladda dagboken just nu.';
-		} finally {
-			loading = false;
-		}
-	}
-
-	onMount(() => {
-		if (!data.session) {
-			supabase.auth.getSession().then(({ data: sessionData }) => {
-				sessionUser = sessionData.session?.user ?? null;
-				void initializeDiary();
-			});
-		} else {
-			void initializeDiary();
-		}
-
+	async function getToken(): Promise<string | null> {
 		const {
-			data: { subscription }
-		} = supabase.auth.onAuthStateChange((_event, session) => {
-			sessionUser = session?.user ?? null;
+			data: { session }
+		} = await supabase.auth.getSession();
+		return session?.access_token ?? null;
+	}
+
+	// --- Starta om ---
+
+	function resetInterview() {
+		phase = 'empty';
+		messages = [];
+		inputValue = '';
+		streamError = '';
+		selectedTone = DEFAULT_TONE_ID;
+		generatedEntry = '';
+		generatedTone = '';
+		generateError = '';
+		isSaved = false;
+		saveError = '';
+		isCopied = false;
+	}
+
+	// --- Streaming-chatt ---
+
+	async function streamResponse(newMessages: ChatMessage[]) {
+		isStreaming = true;
+		streamError = '';
+
+		// Lägg till tomt assistentmeddelande som fylls på
+		const assistantMsg: ChatMessage = { id: uid(), role: 'assistant', content: '' };
+		messages = [...newMessages, assistantMsg];
+
+		try {
+			const response = await fetch('/api/storify/chat', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
+					selectedTone
+				})
+			});
+
+			if (!response.ok) {
+				const err = await response.json().catch(() => ({})) as { error?: string };
+				throw new Error(err.error ?? `Fel ${response.status}`);
+			}
+
+			const reader = response.body!.getReader();
+			const decoder = new TextDecoder();
+			let buffer = '';
+
+			while (true) {
+				const { done, value } = await reader.read();
+				if (done) break;
+
+				buffer += decoder.decode(value, { stream: true });
+				const lines = buffer.split('\n');
+				buffer = lines.pop() ?? '';
+
+				for (const line of lines) {
+					const trimmed = line.trim();
+					if (!trimmed.startsWith('data: ')) continue;
+
+					const data = trimmed.slice(6);
+					if (data === '[DONE]') break;
+
+					try {
+						const parsed = JSON.parse(data) as { text?: string; error?: string };
+						if (parsed.error) throw new Error(parsed.error);
+						if (parsed.text) {
+							// Lägg till text till sista assistentmeddelandet
+							messages = messages.map((m, i) =>
+								i === messages.length - 1 ? { ...m, content: m.content + parsed.text } : m
+							);
+						}
+					} catch (e) {
+						if (e instanceof SyntaxError) continue;
+						throw e;
+					}
+				}
+			}
+		} catch (e) {
+			streamError = e instanceof Error ? e.message : 'Ett oväntat fel uppstod.';
+			// Ta bort det tomma assistentmeddelandet vid fel
+			messages = messages.filter((m) => !(m.role === 'assistant' && m.content === ''));
+		} finally {
+			isStreaming = false;
+		}
+	}
+
+	function handleSend() {
+		const text = inputValue.trim();
+		if (!text || isStreaming) return;
+
+		inputValue = '';
+
+		const userMsg: ChatMessage = { id: uid(), role: 'user', content: text };
+		const newMessages = [...messages, userMsg];
+
+		if (phase === 'empty') {
+			phase = 'chatting';
+		}
+
+		streamResponse(newMessages);
+	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault();
+			handleSend();
+		}
+	}
+
+	// --- Tonval och generering ---
+
+	function proceedToToneSelection() {
+		phase = 'tone-selection';
+	}
+
+	async function handleGenerate() {
+		generateError = '';
+		generatedEntry = '';
+		phase = 'generating';
+		generating = true;
+
+		const token = await getToken();
+		if (!token) {
+			generateError = 'Sessionen har gått ut. Ladda om sidan och försök igen.';
+			generating = false;
+			phase = 'tone-selection';
+			return;
+		}
+
+		const transcript = formatTranscript();
+
+		const res = await fetch('/api/storify/generate', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({ chatTranscript: transcript, selectedTone })
 		});
 
-		return () => subscription.unsubscribe();
-	});
+		const body = await res.json().catch(() => ({})) as { entry?: string; tone?: string; error?: string };
+
+		if (!res.ok) {
+			generateError = body.error ?? 'Generering misslyckades. Försök igen.';
+			generating = false;
+			phase = 'tone-selection';
+			return;
+		}
+
+		generatedEntry = body.entry ?? '';
+		generatedTone = body.tone ?? selectedTone;
+		generating = false;
+		phase = 'result';
+
+		// Spara automatiskt efter generering
+		await autoSave(token);
+	}
+
+	async function autoSave(existingToken?: string) {
+		const token = existingToken ?? (await getToken());
+		if (!token || !generatedEntry) return;
+
+		const res = await fetch('/api/storify/save', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({
+				entry: generatedEntry,
+				tone: generatedTone,
+				moodEmojis: [],
+				energyScore: 5
+			})
+		});
+
+		if (res.ok) {
+			isSaved = true;
+			const newEntry: StorifyEntry = {
+				id: uid(),
+				content: generatedEntry,
+				tone: generatedTone,
+				mood_emojis: [],
+				created_at: new Date().toISOString()
+			};
+			entries = [newEntry, ...entries];
+		} else {
+			saveError = 'Inlägget genererades men kunde inte sparas. Kopiera texten manuellt.';
+		}
+	}
+
+	async function copyToClipboard() {
+		if (!generatedEntry || isCopied) return;
+		try {
+			await navigator.clipboard.writeText(generatedEntry);
+			isCopied = true;
+			setTimeout(() => (isCopied = false), 2000);
+		} catch {
+			// Tyst fel — kopiera stöds inte i alla miljöer
+		}
+	}
+
+	// Tonetikett för visning
+	function getToneLabel(toneId: string): string {
+		return storifyTones.find((t) => t.id === toneId)?.label ?? toneId;
+	}
 </script>
 
+<svelte:head>
+	<title>Dagbok med röster | MittPsyke</title>
+	<meta name="description" content="Välj en röst som Grubblaren, Filosofen, Psykologen eller Quest log och låt en guidad intervju bli ett dagboksinlägg." />
+</svelte:head>
+
 <main class="auth-page">
-	{#if loading}
-		<div class="auth-shell">
-			<section class="auth-panel">
-				<p class="auth-muted">Laddar...</p>
-			</section>
+	<div class="auth-shell">
+
+		<!-- Sidhuvud -->
+		<div class="auth-panel page-header">
+			<h1 class="page-title">Dagbok med röster</h1>
+			<p class="auth-muted header-desc">
+				Välj en röst, svara i lugn takt och låt intervjun bli ett personligt dagboksinlägg.
+			</p>
+			<p class="auth-muted header-context">
+				En del av <a href="/dagbok" class="header-link">Dagbok</a>. Vill du skriva fritt i stället? Välj
+				<a href="/dagbok#skriv-sjalv" class="header-link">Skriv själv</a>.
+			</p>
 		</div>
-	{:else if !isLoggedIn}
-		<!-- Publik dagboksvy för utloggade besökare -->
-		<div class="auth-shell">
-			<header class="auth-hero">
-				<div>
-					<h1>Dagbok</h1>
-					<p>Din plats för dagen — skriv fritt eller låt en röst guida dig.</p>
-				</div>
-			</header>
 
-			<section class="auth-panel">
-				<h2 class="text-base font-semibold">Så fungerar dagboken</h2>
-				<p class="mt-2 text-sm auth-muted">
-					Dagbok hjälper dig sätta ord på din dag. Du kan skriva fritt i din egen takt,
-					eller välja en röst som ställer lugna frågor och hjälper dig forma tankarna
-					till ett personligt dagboksinlägg.
-				</p>
-			</section>
+		<!-- Fliknavigering -->
+		<nav class="auth-subnav" aria-label="Flikar">
+			<button
+				class="auth-subnav-link tab-btn"
+				class:active={activeTab === 'skriv'}
+				onclick={() => (activeTab = 'skriv')}
+			>
+				Skriv
+			</button>
+			<button
+				class="auth-subnav-link tab-btn"
+				class:active={activeTab === 'entries'}
+				onclick={() => (activeTab = 'entries')}
+			>
+				Mina inlägg ({entries.length})
+			</button>
+		</nav>
 
-			<section class="auth-panel">
-				<h2 class="text-base font-semibold">Två sätt att skriva</h2>
-				<div class="diary-path-grid mt-3">
-					<div class="diary-path-card diary-path-card--preview">
-						<span class="diary-path-title">Skriv själv</span>
-						<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
-					</div>
-					<div class="diary-path-card diary-path-card--preview">
-						<span class="diary-path-title">Dagbok med röster</span>
-						<span class="diary-path-copy">Välj bland nio röster — från Filosofen till Sportkommentatorn.</span>
-						<span class="diary-path-voices">Filosofen · Psykologen · Grubblaren · Quest log · Klassisk dagbok · Sportkommentator · AI-robot · Livscoach · Cyniker</span>
-					</div>
-				</div>
-			</section>
+		<!-- ===== SKRIV-FLIKEN ===== -->
+		{#if activeTab === 'skriv'}
 
-			<section class="auth-panel auth-panel-accent">
-				<p class="text-sm">
-					Logga in för att skriva och spara dina dagboksinlägg.
-				</p>
-				<div class="actions-row mt-3">
-					<a href="/login" class="auth-button primary">Logga in</a>
-					<a href="/register" class="auth-button">Skapa konto</a>
-				</div>
-			</section>
-		</div>
-	{:else}
-		<!-- Inloggad dagboksvy -->
-		<PortalSubnav
-			active="dagbok"
-			title="Din dagbok"
-			description="Dagbok är din plats för dagen. Välj mellan att skriva själv eller låta en röst guida dig vidare."
-		/>
-
-		<div class="auth-shell">
-			<div class="diary-layout">
-				<div class="diary-main">
-					<section class="auth-panel diary-paths">
-						<h2 class="text-base font-semibold">Välj hur du vill börja</h2>
-						<p class="mt-2 text-sm auth-muted">
-							Du kan skriva fritt i din personliga dagbok eller välja en röst som guidar dig genom dagen.
-						</p>
-						<div class="diary-path-grid mt-3">
-							<a href="/dagbok#skriv-sjalv" class="diary-path-card">
-								<span class="diary-path-title">Skriv själv</span>
-								<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
-							</a>
-							<a href="/dagars-avtryck" class="diary-path-card">
-								<span class="diary-path-title">Dagbok med röster</span>
-								<span class="diary-path-copy">Välj bland nio röster — från Filosofen till Sportkommentatorn.</span>
-								<span class="diary-path-voices">Filosofen · Psykologen · Grubblaren · Quest log · Klassisk dagbok · Sportkommentator · AI-robot · Livscoach · Cyniker</span>
-							</a>
+			<!-- FAS: Tom start -->
+			{#if phase === 'empty'}
+				<section class="auth-panel empty-panel">
+					<div class="voice-intro">
+						<p class="voice-kicker">Välj röst först</p>
+						<div class="voice-grid" aria-label="Välj röst för frågeflödet">
+							{#each activeStorifyTones as tone}
+								<button
+									type="button"
+									class="tone-btn voice-btn"
+									class:selected={selectedTone === tone.id}
+									onclick={() => (selectedTone = tone.id)}
+									aria-pressed={selectedTone === tone.id}
+									title={tone.description}
+								>
+									<span class="tone-emoji">{tone.emoji}</span>
+									<span class="tone-label">{tone.label}</span>
+								</button>
+							{/each}
 						</div>
-					</section>
-
-					<section class="auth-panel auth-panel-accent diary-editor-panel" id="skriv-sjalv">
-						<div class="editor-shell">
-							<header class="editor-head">
-								<p class="editor-kicker">Skriv själv</p>
-								<h2 class="editor-title">Nytt inlägg</h2>
-								<p class="editor-intro auth-muted">
-									Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
-								</p>
-								{#if hasDraftToResume}
-									<p class="editor-support auth-muted">
-										Fortsätt där du var. Du kan spara när du känner dig klar.
-									</p>
-								{:else if hasSavedEntries}
-									<p class="editor-support auth-muted">
-										Du kan fortsätta i små steg. Det du sparar finns kvar här när du vill komma tillbaka.
-									</p>
-								{/if}
-								<p class="editor-date">
-									{new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
-								</p>
-							</header>
-							<div class="editor-card">
-								<div class="mood-field editor-mood-field">
-							<p class="text-sm">Humör just nu (valfritt)</p>
-							<p class="mood-current">
-								{draftMood ? `Humör: ${draftMood}/10` : 'Humör: Ej valt'}
-							</p>
-							<p class="mood-meaning auth-muted">
-								{draftMood ? moodLabel(Number(draftMood)) : 'Flytta reglaget om du vill lägga till humör.'}
-							</p>
-							<input
-								id="draft-mood"
-								type="range"
-								min="1"
-								max="10"
-								step="1"
-								value={draftMood || String(draftMoodPreview)}
-								oninput={handleMoodInput}
-								class="mood-slider"
-								aria-describedby="draft-mood-anchors"
-							/>
-							<div id="draft-mood-anchors" class="mood-anchors auth-muted">
-								<span>Tungt</span>
-								<span>Mitt emellan</span>
-								<span>Ljusare</span>
-							</div>
-							<button type="button" class="mood-clear auth-muted" onclick={clearMoodSelection} disabled={!draftMood}>
-								Rensa humör
-							</button>
-								</div>
+						<p class="voice-copy auth-muted">
+							Vald röst: {selectedToneMeta?.label}. Frågorna och dagboksinlägget följer samma ton.
+						</p>
+					</div>
+					<p class="empty-prompt">
+						{selectedToneMeta?.label} börjar: hur var din dag?
+					</p>
+					<div class="input-row">
 						<textarea
-							bind:value={draftText}
-							rows={8}
-							class="diary-input diary-input--editor"
-							placeholder="Skriv några ord..."
+							class="chat-input"
+							placeholder="Skriv något och tryck Enter..."
+							bind:value={inputValue}
+							onkeydown={handleKeydown}
+							rows={2}
+							aria-label="Berätta om din dag"
 						></textarea>
+						<button
+							class="send-btn"
+							onclick={handleSend}
+							disabled={!inputValue.trim()}
+							aria-label="Skicka"
+						>
+							→
+						</button>
+					</div>
+				</section>
+
+			<!-- FAS: Chattar -->
+			{:else if phase === 'chatting'}
+				<section class="auth-panel chat-panel">
+					<!-- Meddelandelista -->
+					<div class="message-list" bind:this={messageListEl} aria-live="polite" aria-label="Konversation">
+						{#each messages as msg (msg.id)}
+							<div class="message" class:user={msg.role === 'user'} class:assistant={msg.role === 'assistant'}>
+								<div class="bubble">
+									{#if msg.content}
+										{msg.content}
+									{:else if isStreaming}
+										<span class="typing-dots"><span></span><span></span><span></span></span>
+									{/if}
+								</div>
 							</div>
+						{/each}
+					</div>
 
-						<p class="editor-note auth-muted">
-							När du sparar finns inlägget kvar i din dagbok, så att du kan fortsätta senare i din egen takt.
-						</p>
+					{#if streamError}
+						<div class="stream-error" role="alert">
+							{streamError}
+							<button class="retry-btn" onclick={() => streamResponse(messages.slice(0, -1))}>Försök igen</button>
+						</div>
+					{/if}
 
-						{#if draftError}
-							<p class="mt-3 text-sm error-copy">{draftError}</p>
-						{/if}
+					<!-- Inmatningsfält -->
+					<div class="input-area">
+						<textarea
+							class="chat-input"
+							placeholder="Skriv ditt svar..."
+							bind:value={inputValue}
+							onkeydown={handleKeydown}
+							disabled={isStreaming}
+							rows={2}
+							aria-label="Ditt svar"
+						></textarea>
+						<button
+							class="send-btn"
+							onclick={handleSend}
+							disabled={!inputValue.trim() || isStreaming}
+							aria-label="Skicka"
+						>
+							→
+						</button>
+					</div>
 
-						<div class="actions-row editor-actions">
-							<button
-								type="button"
-								class="auth-button primary editor-primary"
-								onclick={saveDraftToDiary}
-								disabled={savingDraft || !draftText.trim()}
-							>
-								{savingDraft ? 'Sparar...' : 'Spara inlägg'}
+					<!-- Avsluta-knapp (synlig efter minst 3 användarmeddelanden) -->
+					{#if userMessageCount() >= 3}
+						<div class="finish-row">
+							<button class="auth-button primary finish-btn" onclick={proceedToToneSelection} disabled={isStreaming}>
+								Välj ton och skapa dagbok →
 							</button>
-
-							<a href="/skriv" class="auth-button editor-secondary">
-								Fortsätt skriva senare
-							</a>
 						</div>
-						</div>
-					</section>
+					{/if}
+				</section>
 
-					{#if draftSuccess && !draftText}
-						<section class="auth-panel auth-panel-success">
-							<h2 class="text-base font-semibold">{draftSuccess}</h2>
-							<p class="mt-2 text-sm">
-								Ditt inlägg finns kvar här. Nästa lilla steg kan vara att skriva några ord till nu,
-								eller komma tillbaka senare och fortsätta där du slutade.
-							</p>
-							<div class="actions-row mt-3">
-								<a href="/dagbok#skriv-sjalv" class="auth-button primary">Skriv några ord till</a>
-								{#if hasSavedEntries}
-									<a href="/dagbok#senaste-inlagg" class="auth-button">Se dina senaste inlägg</a>
+			<!-- FAS: Tonval -->
+			{:else if phase === 'tone-selection'}
+				<section class="auth-panel">
+					<h2 class="section-title">Justera rösten innan du skapar inlägget</h2>
+					<p class="auth-muted tone-intro">Frågorna har gått i {selectedToneMeta?.label?.toLowerCase() ?? 'vald'} ton. Du kan byta innan dagboken skapas.</p>
+
+					<div class="tone-grid">
+						{#each activeStorifyTones as tone}
+							<button
+								class="tone-btn"
+								class:selected={selectedTone === tone.id}
+								onclick={() => (selectedTone = tone.id)}
+								aria-pressed={selectedTone === tone.id}
+								title={tone.description}
+							>
+								<span class="tone-emoji">{tone.emoji}</span>
+								<span class="tone-label">{tone.label}</span>
+							</button>
+						{/each}
+					</div>
+
+					{#if generateError}
+						<p class="error-msg" role="alert">{generateError}</p>
+					{/if}
+
+					<div class="tone-actions">
+						<button class="auth-button back-btn" onclick={() => (phase = 'chatting')}>
+							← Tillbaka
+						</button>
+						<button class="auth-button primary generate-btn" onclick={handleGenerate}>
+							Skapa dagboksinlägg
+						</button>
+					</div>
+				</section>
+
+			<!-- FAS: Genererar -->
+			{:else if phase === 'generating'}
+				<section class="auth-panel generating-panel">
+					<div class="spinner" aria-hidden="true"></div>
+					<p class="generating-text">Skriver ditt dagboksinlägg...</p>
+					<p class="auth-muted generating-tone">Ton: {getToneLabel(selectedTone)}</p>
+				</section>
+
+			<!-- FAS: Resultat -->
+			{:else if phase === 'result'}
+				<section class="auth-panel auth-panel-accent result-panel">
+					<div class="result-header">
+						<p class="entry-kicker">Ditt dagboksinlägg</p>
+						<span class="tone-badge">{getToneLabel(generatedTone || selectedTone)}</span>
+					</div>
+
+					<div class="entry-text">
+						{generatedEntry}
+					</div>
+
+					<div class="result-status">
+						{#if isSaved}
+							<p class="saved-msg">Sparat till Mina inlägg ✓</p>
+						{:else if saveError}
+							<p class="error-msg" role="alert">{saveError}</p>
+						{/if}
+					</div>
+
+					<div class="result-actions">
+						<button class="auth-button" onclick={copyToClipboard} disabled={isCopied}>
+							{isCopied ? 'Kopierat ✓' : 'Kopiera text'}
+						</button>
+						<button class="auth-button primary" onclick={resetInterview}>
+							Ny intervju
+						</button>
+					</div>
+				</section>
+			{/if}
+
+		<!-- ===== MINA INLÄGG-FLIKEN ===== -->
+		{:else}
+			{#if entries.length === 0}
+				<section class="auth-panel">
+					<p class="auth-muted">
+						Du har inga sparade inlägg ännu. Gå till "Skriv" och skapa ditt första!
+					</p>
+				</section>
+			{:else}
+				{#each entries as entry (entry.id)}
+					<article class="auth-panel entry-card">
+						<header class="entry-header">
+							<time class="entry-date auth-muted" datetime={entry.created_at}>
+								{formatDate(entry.created_at)}
+							</time>
+							<div class="entry-meta">
+								{#if entry.mood_emojis && entry.mood_emojis.length > 0}
+									<span class="entry-moods" aria-label="Stämning">{entry.mood_emojis.join(' ')}</span>
+								{/if}
+								{#if entry.tone}
+									<span class="tone-badge">{getToneLabel(entry.tone)}</span>
 								{/if}
 							</div>
-						</section>
-					{/if}
+						</header>
+						<p class="entry-content">{entry.content}</p>
+					</article>
+				{/each}
+			{/if}
+		{/if}
 
-					{#if loadError}
-						<section class="auth-panel auth-panel-error">
-							<p class="text-sm">{loadError}</p>
-						</section>
-					{/if}
-
-					<DiaryMoodTimeline entries={entries} />
-
-					{#if entries.length === 0}
-						<section class="auth-panel">
-							<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
-							<p class="mt-2 text-sm auth-muted">Det räcker med några ord. Skriv i lugn och ro, i din egen takt.</p>
-							<a href="/skriv" class="auth-button mt-4">
-								Skriv första inlägget
-							</a>
-						</section>
-					{:else}
-						<div class="diary-flow" id="senaste-inlagg">
-							<p class="flow-heading auth-muted">Senaste och äldre inlägg</p>
-							<div class="diary-entries">
-								{#each entries as entry (entry.id)}
-									<article class="auth-panel diary-entry">
-										<p class="text-xs auth-muted">{formatDate(entry.created_at)}</p>
-										{#if entry.mood && editingEntryId !== entry.id}
-											<p class="mt-1 text-xs auth-muted">Humör: {entry.mood}/10</p>
-										{/if}
-
-										{#if editingEntryId === entry.id}
-											<div class="entry-edit-form">
-												<textarea
-													class="entry-edit-textarea"
-													rows={6}
-													bind:value={editingText}
-													placeholder="Skriv några ord..."
-												></textarea>
-												<div class="entry-edit-mood">
-													<p class="edit-mood-label auth-muted">
-														Humör: {editingMood ? `${editingMood}/10` : 'Ej valt'}
-													</p>
-													<input
-														type="range"
-														min="1"
-														max="10"
-														step="1"
-														value={editingMood || String(editingMoodPreview)}
-														oninput={(e) => {
-															const v = Number((e.currentTarget as HTMLInputElement).value);
-															editingMoodPreview = v;
-															editingMood = String(v);
-														}}
-														class="mood-slider"
-													/>
-													<button
-														type="button"
-														class="mood-clear auth-muted"
-														onclick={() => { editingMood = ''; editingMoodPreview = 5; }}
-														disabled={!editingMood}
-													>
-														Rensa humör
-													</button>
-												</div>
-												{#if editError}
-													<p class="edit-error">{editError}</p>
-												{/if}
-												<div class="entry-edit-actions">
-													<button
-														type="button"
-														class="auth-button primary"
-														onclick={() => saveEdit(entry)}
-														disabled={savingEditId === entry.id || !editingText.trim()}
-													>
-														{savingEditId === entry.id ? 'Sparar...' : 'Spara ändringar'}
-													</button>
-													<button
-														type="button"
-														class="auth-button"
-														onclick={closeEditMode}
-														disabled={savingEditId === entry.id}
-													>
-														Avbryt
-													</button>
-												</div>
-											</div>
-										{:else}
-											<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
-											<div class="share-row">
-												{#if isEntryShared(entry.id)}
-													<p class="share-status auth-muted">Redan delat i Gemenskap.</p>
-													<button
-														type="button"
-														class="share-trigger"
-														onclick={() => openUnshareConfirmation(entry.id)}
-													>
-														Ta bort delning
-													</button>
-													<a href="/dashboard/gemenskap" class="share-link">Öppna Gemenskap</a>
-												{:else}
-													<button
-														type="button"
-														class="share-trigger"
-														onclick={() => openShareConfirmation(entry.id)}
-													>
-														Dela anonymt i Gemenskapen
-													</button>
-												{/if}
-											</div>
-
-											{#if confirmingShareEntryId === entry.id}
-												<div class="share-confirmation" role="status">
-													<h3>Dela anonymt?</h3>
-													<p>
-														Det här publicerar en anonym version av ditt inlägg i Gemenskap.
-														Ditt namn visas aldrig för andra. Kontrollera att inlägget inte
-														innehåller namn, adresser, telefonnummer eller andra
-														personuppgifter.
-													</p>
-													<div class="share-confirmation-actions">
-														<button
-															type="button"
-															class="auth-button"
-															onclick={closeShareConfirmation}
-															disabled={sharingEntryId === entry.id}
-														>
-															Avbryt
-														</button>
-														<button
-															type="button"
-															class="auth-button primary"
-															onclick={() => shareEntryAnonymously(entry)}
-															disabled={sharingEntryId === entry.id}
-														>
-															{sharingEntryId === entry.id ? 'Delar...' : 'Dela anonymt'}
-														</button>
-													</div>
-												</div>
-											{/if}
-
-											{#if confirmingUnshareEntryId === entry.id}
-												<div class="share-confirmation" role="status">
-													<h3>Ta bort delning?</h3>
-													<p>
-														Det här tar bort den anonyma versionen från Gemenskap. Ditt
-														privata dagboksinlägg finns kvar i Dagbok.
-													</p>
-													<div class="share-confirmation-actions">
-														<button
-															type="button"
-															class="auth-button"
-															onclick={closeUnshareConfirmation}
-															disabled={unsharingEntryId === entry.id}
-														>
-															Avbryt
-														</button>
-														<button
-															type="button"
-															class="auth-button primary"
-															onclick={() => unshareEntry(entry)}
-															disabled={unsharingEntryId === entry.id}
-														>
-															{unsharingEntryId === entry.id ? 'Tar bort...' : 'Ta bort delning'}
-														</button>
-													</div>
-												</div>
-											{/if}
-
-											{#if shareFeedbackEntryId === entry.id && shareFeedbackMessage}
-												<p class="share-feedback {shareFeedbackType}">
-													{shareFeedbackMessage}
-													{#if shareFeedbackType === 'success' && shareFeedbackShowCommunityLink}
-														<a href="/dashboard/gemenskap" class="share-feedback-link">
-															Öppna Gemenskap
-														</a>
-													{/if}
-												</p>
-											{/if}
-
-											<div class="entry-actions">
-												<button
-													type="button"
-													class="entry-action-btn"
-													onclick={() => openEditMode(entry)}
-												>
-													Redigera
-												</button>
-												<span class="entry-action-sep" aria-hidden="true">·</span>
-												<button
-													type="button"
-													class="entry-action-btn"
-													onclick={() => openDeleteConfirmation(entry.id)}
-													disabled={Boolean(deletingEntryId)}
-												>
-													Ta bort
-												</button>
-											</div>
-
-											{#if confirmingDeleteEntryId === entry.id}
-												<div class="entry-delete-confirm" role="status">
-													<h3>Ta bort inlägg?</h3>
-													<p>Inlägget raderas permanent och kan inte återställas.</p>
-													<div class="entry-delete-actions">
-														<button
-															type="button"
-															class="auth-button"
-															onclick={closeDeleteConfirmation}
-															disabled={deletingEntryId === entry.id}
-														>
-															Avbryt
-														</button>
-														<button
-															type="button"
-															class="auth-button primary"
-															onclick={() => deleteEntry(entry)}
-															disabled={deletingEntryId === entry.id}
-														>
-															{deletingEntryId === entry.id ? 'Tar bort...' : 'Ta bort'}
-														</button>
-													</div>
-													{#if deleteErrorEntryId === entry.id && deleteErrorMessage}
-														<p class="delete-error">{deleteErrorMessage}</p>
-													{/if}
-												</div>
-											{/if}
-										{/if}
-									</article>
-								{/each}
-							</div>
-						</div>
-					{/if}
-				</div>
-
-				<aside class="diary-side">
-					<section class="auth-panel diary-week-panel">
-						<div class="week-head">
-							<h3 class="text-sm font-semibold">Denna vecka</h3>
-							<p class="text-xs auth-muted">Liten översikt i lugn takt</p>
-						</div>
-						<p class="week-count">{weeklyEntryCount}</p>
-						<p class="text-xs auth-muted">inlägg senaste 7 dagarna</p>
-
-						<div class="mood-graph-panel">
-							<div class="mood-graph-header">
-								<h3 class="text-sm font-semibold">Humörtrend</h3>
-								<p class="text-xs auth-muted">Senaste inlägg med humör</p>
-							</div>
-							{#if moodGraphPoints.length >= 2}
-								<svg viewBox="0 0 100 36" class="mood-chart" aria-label="Humörtrend över senaste inlägg">
-									<rect x="1" y="1" width="98" height="34" rx="8" class="mood-chart-bg"></rect>
-									<polyline points={buildMoodPolyline(moodGraphPoints)} class="mood-chart-line"></polyline>
-									{#each moodGraphPoints as point, index}
-										<circle cx={moodX(index, moodGraphPoints.length)} cy={moodY(point.mood)} r="1.35" class="mood-chart-dot"></circle>
-									{/each}
-								</svg>
-								<div class="mood-chart-anchors auth-muted">
-									<span>Tungt</span>
-									<span>Mitt emellan</span>
-									<span>Ljusare</span>
-								</div>
-							{:else}
-								<p class="text-sm auth-muted">Lägg till humör i minst två inlägg för att se en trend.</p>
-							{/if}
-						</div>
-					</section>
-				</aside>
-			</div>
-		</div>
-	{/if}
+	</div>
 </main>
 
 <style>
-	.diary-layout {
-		display: grid;
-		gap: 1rem;
+	/* Sidhuvud */
+	.page-header {
+		padding: 1.25rem;
 	}
 
-	.diary-main {
-		display: grid;
-		gap: 0.85rem;
-	}
-
-	.diary-paths {
-		display: grid;
-		gap: 0.55rem;
-	}
-
-	.diary-path-grid {
-		display: grid;
-		gap: 0.65rem;
-	}
-
-	.diary-editor-panel {
-		padding: clamp(1.15rem, 2vw, 1.65rem);
-	}
-
-	.editor-shell {
-		width: min(100%, 760px);
-		margin: 0 auto;
-		display: grid;
-		gap: 1rem;
-	}
-
-	.editor-head {
-		display: grid;
-		gap: 0.45rem;
-		text-align: center;
-	}
-
-	.editor-kicker {
+	.page-title {
 		margin: 0;
-		font-size: 0.74rem;
-		font-weight: 700;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: hsl(var(--muted-foreground));
+		font-size: clamp(1.4rem, 1.1rem + 1vw, 1.9rem);
 	}
 
-	.editor-title {
-		margin: 0;
-		font-size: clamp(1.55rem, 1.15rem + 1vw, 2.1rem);
-		letter-spacing: -0.03em;
-	}
-
-	.editor-intro,
-	.editor-support,
-	.editor-date,
-	.editor-note {
-		margin: 0;
-	}
-
-	.editor-intro {
+	.header-desc {
+		margin: 0.3rem 0 0;
 		font-size: 0.95rem;
-		line-height: 1.7;
-		color: hsl(var(--foreground) / 0.82);
 	}
 
-	.editor-support {
-		font-size: 0.84rem;
-		line-height: 1.6;
+	.header-context {
+		margin: 0.4rem 0 0;
+		font-size: 0.86rem;
 	}
 
-	.editor-date {
-		justify-self: center;
-		padding: 0.42rem 0.8rem;
-		border-radius: var(--radius-pill);
-		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface));
-		font-size: 0.78rem;
-		font-weight: 600;
-		letter-spacing: 0.03em;
-		text-transform: capitalize;
-		color: hsl(var(--muted-foreground));
-	}
-
-	.editor-card {
-		display: grid;
-		gap: 0;
-		border-radius: calc(var(--radius-card) + 2px);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		background: linear-gradient(180deg, rgba(24, 28, 39, 0.98) 0%, rgba(15, 18, 28, 0.98) 100%);
-		box-shadow:
-			0 18px 40px rgba(15, 23, 42, 0.18),
-			inset 0 1px 0 rgba(255, 255, 255, 0.03);
-		overflow: hidden;
-	}
-
-	.diary-path-card {
-		display: grid;
-		gap: 0.2rem;
-		padding: 0.8rem 0.9rem;
-		border: 1px solid hsl(var(--border));
-		border-radius: var(--radius-input);
-		background: hsl(var(--surface-soft));
-		text-decoration: none;
-		transition: border-color 150ms ease, box-shadow 150ms ease;
-	}
-
-	.diary-path-card--preview {
-		cursor: default;
-		opacity: 0.85;
-	}
-
-	.diary-path-card:hover:not(.diary-path-card--preview) {
-		border-color: hsl(var(--foreground) / 0.18);
-		box-shadow: 0 5px 14px rgba(0, 0, 0, 0.05);
-	}
-
-	.diary-path-card:focus-visible {
-		outline: 2px solid hsl(var(--foreground) / 0.18);
-		outline-offset: 2px;
-	}
-
-	.diary-path-title {
-		font-size: 0.92rem;
-		font-weight: 600;
-		color: hsl(var(--foreground));
-	}
-
-	.diary-path-copy {
-		font-size: 0.82rem;
-		line-height: 1.55;
-		color: hsl(var(--muted-foreground));
-	}
-
-	.diary-path-voices {
-		font-size: 0.78rem;
-		line-height: 1.5;
-		color: hsl(var(--foreground) / 0.74);
-	}
-
-	.diary-side {
-		display: grid;
-		gap: 0.85rem;
-	}
-
-	.diary-input {
-		width: 100%;
-		margin-top: 0.8rem;
-		padding: 0.75rem 0.85rem;
-		border-radius: var(--radius-input);
-		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface));
-		color: hsl(var(--foreground));
-		resize: vertical;
-	}
-
-	.diary-input:focus {
-		border-color: var(--primary, #0f766e);
-		outline: none;
-	}
-
-	.diary-input::placeholder {
-		color: hsl(var(--muted-foreground));
-	}
-
-	.diary-input--editor {
-		margin-top: 0;
-		padding: 1.2rem 1.2rem 1.35rem;
-		border: 0;
-		border-top: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: 0;
-		background: transparent;
-		color: rgba(248, 250, 252, 0.96);
-		font-size: 0.98rem;
-		line-height: 1.8;
-		min-height: 18rem;
-		resize: vertical;
-	}
-
-	.diary-input--editor:focus {
-		border-color: transparent;
-		outline: none;
-		box-shadow: inset 0 0 0 1px rgba(94, 234, 212, 0.28);
-	}
-
-	.diary-input--editor::placeholder {
-		color: rgba(226, 232, 240, 0.48);
-	}
-
-	.mood-field {
-		margin-top: 0.8rem;
-		display: grid;
-		gap: 0.3rem;
-	}
-
-	.mood-current {
-		margin: 0;
-		font-size: 0.84rem;
-		font-weight: 600;
-		color: hsl(var(--foreground));
-	}
-
-	.mood-meaning {
-		margin: 0;
-		font-size: 0.82rem;
-	}
-
-	.mood-slider {
-		width: 100%;
-		height: 0.45rem;
-		appearance: none;
-		background: hsl(var(--surface-muted));
-		border: 1px solid hsl(var(--border));
-		border-radius: var(--radius-pill);
-	}
-
-	.mood-slider:focus-visible {
-		outline: 2px solid hsl(var(--foreground) / 0.16);
-		outline-offset: 2px;
-	}
-
-	.mood-slider::-webkit-slider-runnable-track {
-		height: 0.45rem;
-		background: hsl(var(--surface-muted));
-		border-radius: var(--radius-pill);
-	}
-
-	.mood-slider::-webkit-slider-thumb {
-		appearance: none;
-		width: 1rem;
-		height: 1rem;
-		margin-top: -0.34rem;
-		border-radius: 999px;
-		background: var(--primary, #0f766e);
-		border: 2px solid hsl(var(--surface));
-		box-shadow: 0 0 0 1px hsl(var(--border));
-		cursor: pointer;
-	}
-
-	.mood-slider::-moz-range-track {
-		height: 0.45rem;
-		background: hsl(var(--surface-muted));
-		border-radius: var(--radius-pill);
-		border: 0;
-	}
-
-	.mood-slider::-moz-range-thumb {
-		width: 1rem;
-		height: 1rem;
-		border-radius: 999px;
-		background: var(--primary, #0f766e);
-		border: 2px solid hsl(var(--surface));
-		box-shadow: 0 0 0 1px hsl(var(--border));
-		cursor: pointer;
-	}
-
-	.mood-anchors {
-		display: flex;
-		justify-content: space-between;
-		gap: 0.5rem;
-		font-size: 0.75rem;
-	}
-
-	.mood-clear {
-		justify-self: start;
-		border: 0;
-		background: transparent;
-		padding: 0;
-		font-size: 0.78rem;
+	.header-link {
+		color: inherit;
 		text-decoration: underline;
 		text-underline-offset: 2px;
+	}
+
+	/* Flikar */
+	.tab-btn {
+		background: transparent;
 		cursor: pointer;
 	}
 
-	.mood-clear:disabled {
-		opacity: 0.45;
-		cursor: default;
-		text-decoration: none;
-	}
-
-	.mood-clear:focus-visible {
-		border-radius: 6px;
-		outline: 2px solid hsl(var(--foreground) / 0.18);
-		outline-offset: 1px;
-	}
-
-	.editor-mood-field {
-		margin-top: 0;
-		padding: 1rem 1.2rem 1.1rem;
-		background: rgba(255, 255, 255, 0.02);
-	}
-
-	.editor-card .mood-current,
-	.editor-card .text-sm:not(.auth-muted) {
-		color: rgba(248, 250, 252, 0.96);
-	}
-
-	.editor-card .auth-muted,
-	.editor-card .mood-meaning,
-	.editor-card .mood-anchors,
-	.editor-card .mood-clear {
-		color: rgba(226, 232, 240, 0.68);
-	}
-
-	.editor-card .mood-slider {
-		background: rgba(255, 255, 255, 0.08);
-		border-color: rgba(255, 255, 255, 0.08);
-	}
-
-	.editor-card .mood-slider::-webkit-slider-runnable-track,
-	.editor-card .mood-slider::-moz-range-track {
-		background: rgba(255, 255, 255, 0.08);
-	}
-
-	.actions-row {
-		margin-top: 0.95rem;
+	/* Tom startpanel */
+	.empty-panel {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.6rem;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
-	.error-copy {
-		color: hsl(var(--error-foreground));
-	}
-
-	.editor-actions {
-		justify-content: center;
-		align-items: center;
-	}
-
-	.editor-primary {
-		min-width: 12.5rem;
-		padding-inline: 1.35rem;
-		padding-block: 0.75rem;
-		font-size: 0.96rem;
-		box-shadow: 0 10px 24px rgba(15, 118, 110, 0.16);
-	}
-
-	.editor-secondary {
-		background: hsl(var(--surface-soft));
-	}
-
-	.diary-flow {
-		display: grid;
-		gap: 0.5rem;
-	}
-
-	.flow-heading {
-		margin: 0.1rem 0 0;
-		font-size: 0.82rem;
-	}
-
-	.diary-week-panel {
-		display: grid;
-		gap: 0.65rem;
-	}
-
-	.week-head h3,
-	.week-head p {
-		margin: 0;
-	}
-
-	.week-count {
-		margin: 0;
-		font-family: var(--font-heading);
-		font-size: 1.9rem;
-		line-height: 1;
-		letter-spacing: -0.02em;
-	}
-
-	.mood-graph-panel {
-		display: grid;
-		gap: 0.55rem;
-	}
-
-	.mood-graph-header h3,
-	.mood-graph-header p {
-		margin: 0;
-	}
-
-	.mood-chart {
-		display: block;
-		width: 100%;
-		height: 106px;
-	}
-
-	.mood-chart-bg {
-		fill: hsl(var(--surface-muted));
-		stroke: hsl(var(--border));
-		stroke-width: 0.4;
-	}
-
-	.mood-chart-line {
-		fill: none;
-		stroke: var(--primary, #0f766e);
-		stroke-width: 1.2;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-	}
-
-	.mood-chart-dot {
-		fill: var(--primary, #0f766e);
-		stroke: hsl(var(--surface));
-		stroke-width: 0.6;
-	}
-
-	.mood-chart-anchors {
-		display: flex;
-		justify-content: space-between;
-		font-size: 0.75rem;
-	}
-
-	.diary-entries {
+	.voice-intro {
 		display: grid;
 		gap: 0.75rem;
 	}
 
-	.diary-entry {
-		transition: border-color 160ms ease, box-shadow 160ms ease;
-	}
-
-	.diary-entry:hover {
-		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
-	}
-
-	.share-row {
-		margin-top: 0.8rem;
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.45rem 0.65rem;
-	}
-
-	.share-trigger {
-		border: 0;
-		background: transparent;
-		padding: 0;
-		font-size: 0.84rem;
+	.voice-kicker {
+		margin: 0;
+		font-size: 0.76rem;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
 		color: hsl(var(--muted-foreground));
-		text-decoration: underline;
-		text-underline-offset: 2px;
-		cursor: pointer;
 	}
 
-	.share-trigger:hover {
+	.voice-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+		gap: 0.4rem;
+	}
+
+	.voice-btn {
+		min-height: 5.25rem;
+	}
+
+	.voice-copy {
+		margin: 0;
+		font-size: 0.86rem;
+	}
+
+	.empty-prompt {
+		margin: 0;
+		font-size: 1.05rem;
+	}
+
+	/* Chattpanel */
+	.chat-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 0;
+		overflow: hidden;
+	}
+
+	.message-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding: 1rem;
+		max-height: 55vh;
+		overflow-y: auto;
+		scroll-behavior: smooth;
+	}
+
+	.message {
+		display: flex;
+	}
+
+	.message.user {
+		justify-content: flex-end;
+	}
+
+	.message.assistant {
+		justify-content: flex-start;
+	}
+
+	.bubble {
+		max-width: 78%;
+		padding: 0.6rem 0.85rem;
+		border-radius: 18px;
+		line-height: 1.55;
+		font-size: 0.95rem;
+		white-space: pre-wrap;
+	}
+
+	.message.user .bubble {
+		background: var(--theme-bg, hsl(var(--surface-soft)));
+		border: 1px solid hsl(var(--border));
+		border-bottom-right-radius: 4px;
+	}
+
+	.message.assistant .bubble {
+		background: hsl(var(--surface-muted));
+		border: 1px solid hsl(var(--border));
+		border-bottom-left-radius: 4px;
 		color: hsl(var(--foreground));
 	}
 
-	.share-status {
-		margin: 0;
-		font-size: 0.82rem;
+	/* Skrivindikator */
+	.typing-dots {
+		display: inline-flex;
+		gap: 4px;
+		align-items: center;
+		padding: 2px 0;
 	}
 
-	.share-link {
-		font-size: 0.82rem;
-		color: hsl(var(--muted-foreground));
+	.typing-dots span {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: hsl(var(--muted-foreground));
+		animation: dot-bounce 1.2s infinite ease-in-out;
+	}
+
+	.typing-dots span:nth-child(1) { animation-delay: 0s; }
+	.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+	.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+	@keyframes dot-bounce {
+		0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+		40% { transform: translateY(-5px); opacity: 1; }
+	}
+
+	/* Fel */
+	.stream-error {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: hsl(var(--error-surface));
+		color: hsl(var(--error-foreground));
+		font-size: 0.88rem;
+	}
+
+	.retry-btn {
+		background: none;
+		border: none;
+		cursor: pointer;
 		text-decoration: underline;
-		text-underline-offset: 2px;
+		color: inherit;
+		font-size: inherit;
 	}
 
-	.share-confirmation {
-		margin-top: 0.75rem;
-		padding: 0.75rem 0.8rem;
-		border: 1px solid hsl(var(--border));
+	/* Inmatningsfält */
+	.input-area {
+		display: flex;
+		gap: 0.5rem;
+		align-items: flex-end;
+		padding: 0.75rem 1rem;
+		border-top: 1px solid hsl(var(--border));
+	}
+
+	.input-row {
+		display: flex;
+		gap: 0.5rem;
+		align-items: flex-end;
+	}
+
+	.chat-input {
+		flex: 1;
+		padding: 0.6rem 0.75rem;
 		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-muted));
+		color: hsl(var(--foreground));
+		font-size: 0.95rem;
+		line-height: 1.5;
+		resize: none;
+		transition: border-color 150ms ease;
+	}
+
+	.chat-input:focus {
+		outline: none;
+		border-color: hsl(var(--muted-foreground) / 0.5);
+	}
+
+	.chat-input:disabled {
+		opacity: 0.6;
+	}
+
+	.send-btn {
+		flex-shrink: 0;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: var(--theme-bg, hsl(var(--surface-soft)));
+		cursor: pointer;
+		font-size: 1.1rem;
+		transition: background-color 120ms ease;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.send-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.send-btn:not(:disabled):hover {
 		background: hsl(var(--surface-soft));
 	}
 
-	.share-confirmation h3 {
-		margin: 0;
-		font-size: 0.94rem;
-	}
-
-	.share-confirmation p {
-		margin: 0.45rem 0 0;
-		font-size: 0.85rem;
-		color: hsl(var(--muted-foreground));
-		line-height: 1.55;
-	}
-
-	.share-confirmation-actions {
-		margin-top: 0.75rem;
+	/* Avsluta-rad */
+	.finish-row {
+		padding: 0.5rem 1rem 0.75rem;
 		display: flex;
-		flex-wrap: wrap;
+		justify-content: flex-end;
+	}
+
+	.finish-btn {
+		font-size: 0.9rem;
+	}
+
+	/* Sektionsrubrik */
+	.section-title {
+		margin: 0 0 0.25rem;
+		font-size: 1.1rem;
+	}
+
+	.tone-intro {
+		margin: 0 0 1rem;
+		font-size: 0.9rem;
+	}
+
+	/* Tonväljare */
+	.tone-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+		gap: 0.4rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.tone-btn {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.2rem;
+		padding: 0.6rem 0.4rem;
+		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-muted));
+		cursor: pointer;
+		transition: background-color 120ms ease, border-color 120ms ease;
+		text-align: center;
+	}
+
+	.tone-btn:hover {
+		background: hsl(var(--surface-soft));
+		border-color: hsl(var(--muted-foreground) / 0.4);
+	}
+
+	.tone-btn.selected {
+		background: var(--theme-bg, hsl(var(--surface-soft)));
+		border-color: hsl(var(--muted-foreground) / 0.6);
+	}
+
+	.tone-emoji {
+		font-size: 1.4rem;
+	}
+
+	.tone-label {
+		font-size: 0.72rem;
+		line-height: 1.2;
+		color: hsl(var(--foreground));
+	}
+
+	.tone-actions {
+		display: flex;
 		gap: 0.5rem;
+		flex-wrap: wrap;
 	}
 
-	.share-feedback {
-		margin: 0.65rem 0 0;
-		font-size: 0.82rem;
+	.generate-btn {
+		flex: 1;
 	}
 
-	.share-feedback.success {
+	.back-btn {
+		flex-shrink: 0;
+	}
+
+	/* Genererar */
+	.generating-panel {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 2.5rem 1rem;
+	}
+
+	.spinner {
+		width: 32px;
+		height: 32px;
+		border: 3px solid hsl(var(--border));
+		border-top-color: hsl(var(--muted-foreground));
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	.generating-text {
+		margin: 0;
+		font-size: 0.95rem;
+	}
+
+	.generating-tone {
+		margin: 0;
+		font-size: 0.85rem;
+	}
+
+	/* Resultatpanel */
+	.result-panel {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.result-header {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
+
+	.entry-kicker {
+		margin: 0;
+		font-size: 0.76rem;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.tone-badge {
+		display: inline-block;
+		padding: 0.15rem 0.5rem;
+		border-radius: var(--radius-pill);
+		background: hsl(var(--surface-muted));
+		border: 1px solid hsl(var(--border));
+		font-size: 0.75rem;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.entry-text {
+		line-height: 1.75;
+		white-space: pre-wrap;
+	}
+
+	.result-status {
+		min-height: 1.4rem;
+	}
+
+	.saved-msg {
+		margin: 0;
+		font-size: 0.88rem;
 		color: hsl(var(--success-foreground));
 	}
 
-	.share-feedback.error {
+	.error-msg {
+		margin: 0;
+		font-size: 0.88rem;
 		color: hsl(var(--error-foreground));
 	}
 
-	.share-feedback.info {
-		color: hsl(var(--muted-foreground));
+	.result-actions {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
 	}
 
-	.share-feedback-link {
-		margin-left: 0.35rem;
-		text-decoration: underline;
-		text-underline-offset: 2px;
-		color: inherit;
+	/* Mina inlägg */
+	.entry-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 	}
 
-	:global(.dark) .diary-entry:hover {
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
-	}
-
-	.entry-actions {
-		margin-top: 0.6rem;
+	.entry-header {
 		display: flex;
 		align-items: center;
-		gap: 0.45rem;
-	}
-
-	.entry-action-btn {
-		border: 0;
-		background: transparent;
-		padding: 0;
-		font-size: 0.82rem;
-		color: hsl(var(--muted-foreground));
-		text-decoration: underline;
-		text-underline-offset: 2px;
-		cursor: pointer;
-	}
-
-	.entry-action-btn:hover {
-		color: hsl(var(--foreground));
-	}
-
-	.entry-action-btn:disabled {
-		opacity: 0.4;
-		cursor: default;
-		text-decoration: none;
-	}
-
-	.entry-action-sep {
-		font-size: 0.75rem;
-		color: hsl(var(--muted-foreground) / 0.45);
-		user-select: none;
-	}
-
-	.entry-edit-form {
-		margin-top: 0.55rem;
-		display: grid;
-		gap: 0.6rem;
-	}
-
-	.entry-edit-textarea {
-		width: 100%;
-		padding: 0.65rem 0.75rem;
-		border-radius: var(--radius-input);
-		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface));
-		color: hsl(var(--foreground));
-		font: inherit;
-		font-size: 0.9rem;
-		line-height: 1.6;
-		resize: vertical;
-	}
-
-	.entry-edit-textarea:focus {
-		border-color: var(--primary, #0f766e);
-		outline: none;
-	}
-
-	.entry-edit-textarea::placeholder {
-		color: hsl(var(--muted-foreground));
-	}
-
-	.entry-edit-mood {
-		display: grid;
-		gap: 0.3rem;
-	}
-
-	.edit-mood-label {
-		margin: 0;
-		font-size: 0.82rem;
-	}
-
-	.entry-edit-actions {
-		display: flex;
+		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 0.5rem;
+		gap: 0.4rem;
 	}
 
-	.edit-error {
-		margin: 0;
+	.entry-date {
 		font-size: 0.82rem;
-		color: hsl(var(--error-foreground));
 	}
 
-	.entry-delete-confirm {
-		margin-top: 0.75rem;
-		padding: 0.75rem 0.8rem;
-		border: 1px solid hsl(var(--border));
-		border-radius: var(--radius-input);
-		background: hsl(var(--surface-soft));
-	}
-
-	.entry-delete-confirm h3 {
-		margin: 0;
-		font-size: 0.94rem;
-	}
-
-	.entry-delete-confirm p {
-		margin: 0.45rem 0 0;
-		font-size: 0.85rem;
-		color: hsl(var(--muted-foreground));
-		line-height: 1.55;
-	}
-
-	.entry-delete-actions {
-		margin-top: 0.75rem;
+	.entry-meta {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
+		align-items: center;
+		gap: 0.4rem;
 	}
 
-	.delete-error {
-		margin: 0.5rem 0 0;
-		font-size: 0.82rem;
-		color: hsl(var(--error-foreground));
+	.entry-moods {
+		font-size: 1rem;
 	}
 
-	@media (min-width: 980px) {
-		.diary-layout {
-			grid-template-columns: minmax(0, 1fr) 300px;
-			align-items: start;
-		}
-
-		.diary-path-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-
-		.diary-side {
-			position: sticky;
-			top: 0.7rem;
-		}
+	.entry-content {
+		margin: 0;
+		line-height: 1.7;
 	}
 </style>
-
