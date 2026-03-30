@@ -378,13 +378,6 @@
 		stroke-linecap: round;
 	}
 
-	.branch {
-		fill: none;
-		stroke: rgba(84, 68, 57, 0.4);
-		stroke-width: 2;
-		stroke-linecap: round;
-	}
-
 	.root-shadow {
 		fill: none;
 		stroke: rgba(58, 45, 36, 0.22);
@@ -481,10 +474,6 @@
 
 	:global(.dark) .level-four-balance-shadow {
 		fill: rgba(8, 14, 11, 0.24);
-	}
-
-	:global(.dark) .branch {
-		stroke: rgba(21, 17, 14, 0.42);
 	}
 
 	:global(.dark) .root-shadow {

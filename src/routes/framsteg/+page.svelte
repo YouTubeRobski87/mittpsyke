@@ -493,16 +493,16 @@
 		<section class="card heatmap-card" bind:this={heatmapCardEl}>
 			<div class="card-header">
 				<div class="icon-badge heat"><TrendingUp size={24} /></div>
-				<h2>Din aktivitetskarta</h2>
+				<h2>Din rytm över tid</h2>
 			</div>
-			<p class="heatmap-description">Varje ruta motsvarar en dag. Mörkare färg = fler inlägg.</p>
+			<p class="heatmap-description">En lugn överblick över hur du har kommit tillbaka och skrivit över tid.</p>
 			{#if heatmapVisible}
 				{#await import('$lib/components/ActivityHeatmap.svelte')}
 					<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
 				{:then module}
 					<module.default data={heatmapData} error={heatmapError} />
 				{:catch}
-					<p class="heatmap-description">Aktivitetskartan kunde inte laddas just nu.</p>
+					<p class="heatmap-description">Grafen kunde inte laddas just nu.</p>
 				{/await}
 			{:else}
 				<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
