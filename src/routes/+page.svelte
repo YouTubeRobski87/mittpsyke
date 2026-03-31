@@ -4,26 +4,9 @@
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { trackHeroCtaPrimaryClick, trackHeroCtaSecondaryClick } from '$lib/analytics';
 
-	type HomepageForumThread = {
-		id: string;
-		title: string;
-		reply_count: number;
-		created_at: string;
-		active_at: string;
-	};
-
-	let {
-		data
-	}: {
-		data: {
-			homepageForumThreads?: HomepageForumThread[];
-			popularForumThreads?: HomepageForumThread[];
-		};
-	} = $props();
+	let { data }: { data: Record<string, unknown> } = $props();
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
-	const homepageForumThreads = $derived(data.homepageForumThreads ?? []);
-	const popularForumThreads = $derived(data.popularForumThreads ?? []);
 
 	const entryPaths = [
 		{
@@ -89,28 +72,6 @@
 			href: '/guider'
 		}
 	];
-
-	function formatForumTime(timestamp: string) {
-		if (!timestamp) return '';
-
-		const date = new Date(timestamp);
-		if (Number.isNaN(date.getTime())) return '';
-
-		const diffMs = date.getTime() - Date.now();
-		const diffHours = Math.round(diffMs / (1000 * 60 * 60));
-		const absHours = Math.abs(diffHours);
-		const rtf = new Intl.RelativeTimeFormat('sv', { numeric: 'auto' });
-
-		if (absHours < 24) return rtf.format(diffHours, 'hour');
-
-		const diffDays = Math.round(diffHours / 24);
-		if (Math.abs(diffDays) < 7) return rtf.format(diffDays, 'day');
-
-		return new Intl.DateTimeFormat('sv-SE', {
-			day: 'numeric',
-			month: 'short'
-		}).format(date);
-	}
 
 	onMount(() => {
 		if (!heroEl || !bgEl) return;
@@ -272,63 +233,20 @@
 		</div>
 	</section>
 
-	<!-- 6. Forum -->
-	<section class="forum-section" aria-labelledby="forum-section-title">
-		<div class="cards-narrow forum-inner">
-			<div class="forum-header">
-				<h2 id="forum-section-title">Aktiva forumtrådar</h2>
+	<!-- 6. Omdöme -->
+	<section class="review-section" aria-labelledby="review-section-title">
+		<div class="cards-narrow review-inner">
+			<h2 id="review-section-title">Det här uppskattade jag med MittPsyke</h2>
+			<blockquote class="review-quote">
 				<p>
-					Det senaste som rör sig i forumet just nu.
+					&ldquo;Jag testade MittPsyke under en period när jag hade mycket oro och behövde en lugn plats att skriva av mig. Det jag uppskattade mest var att det kändes enkelt att börja och att jag kunde ta det i min egen takt. För mig blev det ett bra sätt att sortera tankar, få lite mer överblick och ta små steg framåt.&rdquo;
 				</p>
-			</div>
-			{#if homepageForumThreads.length > 0}
-				<div class="forum-thread-grid" aria-label="Aktiva forumtrådar">
-					{#each homepageForumThreads as thread}
-						<article class="forum-thread-card">
-							<p class="forum-meta">
-								Senast aktiv {formatForumTime(thread.active_at || thread.created_at)}
-							</p>
-							<a class="forum-thread-link" href={`/forum/thread/${thread.id}`}>
-								<h3>{thread.title}</h3>
-							</a>
-							<div class="forum-thread-footer">
-								<p class="forum-count">{thread.reply_count} svar</p>
-								<a class="forum-inline-link" href={`/forum/thread/${thread.id}`}>Läs tråden</a>
-							</div>
-						</article>
-					{/each}
-				</div>
-			{:else}
-				<div class="forum-empty">
-					<p>Inga aktiva trådar ännu</p>
-				</div>
-			{/if}
-			<div class="forum-subsection">
-				<h3 class="forum-subheading">Mest popul&#228;ra forumsinl&#228;gg</h3>
-				{#if popularForumThreads.length > 0}
-					<div class="forum-thread-grid" aria-label="Mest popul&#228;ra forumsinl&#228;gg">
-						{#each popularForumThreads as thread}
-							<article class="forum-thread-card">
-								<p class="forum-meta">{thread.reply_count} svar</p>
-								<a class="forum-thread-link" href={`/forum/thread/${thread.id}`}>
-									<h3>{thread.title}</h3>
-								</a>
-								<div class="forum-thread-footer">
-									<p class="forum-count">
-										Senast aktiv {formatForumTime(thread.active_at || thread.created_at)}
-									</p>
-									<a class="forum-inline-link" href={`/forum/thread/${thread.id}`}>L&#228;s tr&#229;den</a>
-								</div>
-							</article>
-						{/each}
-					</div>
-				{:else}
-					<div class="forum-empty">
-						<p>Inga popul&#228;ra inl&#228;gg &#228;nnu</p>
-					</div>
-				{/if}
-			</div>
-			<a href="/forum" class="forum-cta-link">G&#229; till forumet</a>
+			</blockquote>
+			<ul class="review-highlights" aria-label="Korta omdömen">
+				<li>Låg tröskel att komma igång</li>
+				<li>Lugnt stöd i egen takt</li>
+				<li>Hjälper att sortera tankar</li>
+			</ul>
 		</div>
 	</section>
 
@@ -814,23 +732,19 @@
 		font-size: 0.88rem;
 	}
 
-	/* ── Sektion 6: Forum ── */
-	.forum-section {
+	/* ── Sektion 6: Omdöme ── */
+	.review-section {
 		padding: clamp(2.8rem, 7vw, 5rem) 1.25rem;
 		background: #1b2b3a;
 		color: #f5f5f2;
 	}
 
-	.forum-inner {
-		max-width: 1080px;
+	.review-inner {
+		max-width: 720px;
 		margin: 0 auto;
 	}
 
-	.forum-header {
-		max-width: 62ch;
-	}
-
-	.forum-header h2 {
+	.review-inner h2 {
 		margin: 0;
 		font-family: var(--font-heading);
 		font-weight: 700;
@@ -838,86 +752,38 @@
 		color: #f3f8fd;
 	}
 
-	.forum-header p {
-		margin: 0.75rem 0 0;
+	.review-quote {
+		margin: 1.4rem 0 0;
+		padding: 0;
+		border: none;
+	}
+
+	.review-quote p {
+		margin: 0;
 		font-family: var(--font-body);
-		line-height: 1.7;
-		color: rgba(255, 255, 255, 0.82);
+		font-size: 1.05rem;
+		line-height: 1.75;
+		color: rgba(255, 255, 255, 0.88);
+		font-style: italic;
 	}
 
-	.forum-thread-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.7rem;
-		margin-top: 1.4rem;
+	.review-highlights {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		margin: 1.4rem 0 0;
+		padding: 0;
+		list-style: none;
 	}
 
-	.forum-thread-card,
-	.forum-empty {
-		display: grid;
-		gap: 0.35rem;
-		padding: 0.85rem 0.9rem;
+	.review-highlights li {
+		padding: 0.4rem 0.85rem;
+		font-size: 0.88rem;
+		font-weight: 600;
+		color: rgba(255, 255, 255, 0.92);
 		background: rgba(255, 255, 255, 0.08);
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		border-radius: var(--radius-card);
-		text-align: left;
-	}
-
-	.forum-thread-card h3,
-	.forum-empty p {
-		margin: 0;
-	}
-
-	.forum-thread-card h3 {
-		font-size: 1rem;
-		line-height: 1.35;
-		color: #f8faf8;
-	}
-
-	.forum-thread-link {
-		text-decoration: none;
-	}
-
-	.forum-thread-link:hover h3,
-	.forum-thread-link:focus-visible h3 {
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	.forum-meta,
-	.forum-count {
-		margin: 0;
-		font-size: 0.8rem;
-		line-height: 1.45;
-		color: rgba(255, 255, 255, 0.7);
-	}
-
-	.forum-meta {
-		font-weight: 700;
-		letter-spacing: 0.03em;
-	}
-
-	.forum-thread-footer {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.55rem;
-		margin-top: 0.2rem;
-	}
-
-	.forum-inline-link,
-	.forum-cta-link {
-		display: inline-flex;
-		font-size: 0.92rem;
-		font-weight: 600;
-		color: rgba(255, 255, 255, 0.92);
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	.forum-cta-link {
-		margin-top: 1.2rem;
 	}
 
 	/* ── Sektion 7: Trygghet ── */
@@ -1066,10 +932,6 @@
 			gap: 0.9rem;
 		}
 
-		.forum-thread-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 0.85rem;
-		}
 	}
 
 	@media (min-width: 700px) {
@@ -1105,10 +967,6 @@
 			gap: 1.1rem;
 		}
 
-		.forum-thread-grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 1rem;
-		}
 	}
 
 	/* ── Dark mode ── */
@@ -1239,7 +1097,7 @@
 		color: #86dfd6;
 	}
 
-	:global(.dark) .forum-section {
+	:global(.dark) .review-section {
 		background: #0f1a24;
 	}
 
