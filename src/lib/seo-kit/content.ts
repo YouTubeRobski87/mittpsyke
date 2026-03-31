@@ -1300,36 +1300,104 @@ export const guides: Guide[] = [
 	{
 		pillarSlug: 'angest',
 		slug: 'angest-pa-kvallen',
-		title: 'Ångest på kvällen – varför det ökar när dagen tar slut',
-		description: 'Om varför ångesten ofta blir starkare på kvällen och vad du kan göra för att hitta mer ro.',
-		updatedAt: '2026-03-14',
+		nextStepTool: '4-7-8-andning',
+		title: 'Varför får jag ångest på kvällen?',
+		description: 'Många upplever att ångest blir starkare på kvällen. Här går vi igenom vanliga orsaker, vad som kan hjälpa i stunden och när det kan vara bra att söka mer stöd.',
+		content: `Många märker att ångest, oro eller inre stress blir starkare just på kvällen. När dagen saktar ner blir det ofta mindre som distraherar, och då kan tankar, känslor och kroppslig spänning komma ikapp. Det betyder inte att något är fel på dig. För många är kvällsångest en reaktion på stress, trötthet, grubblande eller att kroppen först då får utrymme att känna efter.
+
+**Därför kan ångest kännas värre på kvällen:**
+
+- det blir tystare omkring dig
+- kroppen är trött efter dagen
+- stress och spänning hinner ikapp
+- grubblande får mer plats
+- ensamhet eller oro inför nästa dag blir tydligare
+
+## När det blir tyst hörs tankarna mer
+
+Under dagen är hjärnan upptagen med intryck, uppgifter och kontakt med andra. Det finns mycket som håller fokus på plats. Men på kvällen försvinner de yttre distraktionerna – och sådant som legat i bakgrunden under dagen kan plötsligt kännas starkare. Tankar som inte hanns med, oro som skjutits undan eller känslor som inte fått plats dyker ofta upp just när det blir stilla.
+
+Det är inte ett tecken på att du gör något fel. Det är hjärnans sätt att bearbeta det som samlats under dagen – men timingen kan göra det svårt att hantera.
+
+## Kroppen kan vara trött men ändå uppe i varv
+
+Det går att vara helt slutkörd och samtidigt ha ett nervsystem som fortfarande är i högvarv. Kroppen kan signalera trötthet – tunga ögonlock, svaga muskler, brist på energi – medan det inuti pågår en helt annan process. Tryck över bröstet, en klump i magen, rastlöshet i benen eller en känsla av att inte kunna ligga still.
+
+Det beror ofta på att stresshormoner som kortisol inte hinner sjunka tillräckligt snabbt. Kroppen har inte fått signalen att faran är över, även om du intellektuellt vet att allt egentligen är lugnt.
+
+## Grubblande får mer plats på kvällen
+
+Ältande – att gå igenom samma tankar om och om igen utan att komma någonstans – tenderar att bli intensivare på kvällen. Självkritik, oro för morgondagen eller tankar om saker du borde ha gjort annorlunda kan ta över. Kontrolltänkande, där du försöker planera eller förutse allt som kan gå fel, gör ofta att du fastnar djupare i stället för att hitta lugn.
+
+Det handlar sällan om att du "övertänker" av fri vilja. Grubblandet är ofta ett försök att hantera osäkerhet – men det ger sällan den lättnad man hoppas på.
+
+## Ensamhet och känslor kan kännas starkare på kvällen
+
+Tomhet, sorg eller ensamhet kan bli tydligare när dagen tar slut. Kontakten med andra minskar, och tystnaden kan göra att känslor som dolts under vardagens tempo plötsligt blir påtagliga. Det behöver inte betyda att du är mer ensam än andra – men känslan kan ändå vara stark och svår att bära.
+
+Många beskriver det som att allt "landar" på kvällen. Det är inte ovanligt och det säger ingenting om ditt värde.
+
+## Oro inför sömn eller nästa dag kan trigga ångest
+
+Vetskapen om att man borde sova men inte kan det skapar lätt en ond cirkel. Oron för att inte somna gör kroppen mer vaken. Kroppen som är vaken gör det svårare att somna. Och ju längre natten drar ut, desto mer stress byggs upp inför morgondagen.
+
+Det kan också handla om oro för vad nästa dag innebär – möten, krav, sociala situationer eller helt enkelt känslan av att inte orka. Den oron kan i sig räcka för att aktivera ångesten.
+
+## Vad kan hjälpa när kvällsångesten kommer?
+
+Det finns inga snabba lösningar som fungerar för alla, men det finns saker som kan göra kvällen lite lättare:
+
+- **Sänk kraven på kvällen.** Kvällen behöver inte vara produktiv. Att bara vara räcker.
+- **Skriv av dig i några minuter.** Att flytta tankarna ur huvudet och ner på papper kan minska deras intensitet. Du behöver inte skriva snyggt eller strukturerat.
+- **Minska input en stund.** Skärmar, nyheter och sociala medier kan hålla nervsystemet aktiverat. En kort paus kan göra skillnad.
+- **Prova en enkel andningsövning.** Till exempel 4-7-8-andning: andas in i 4 sekunder, håll i 7, andas ut i 8. Det aktiverar kroppens eget lugn.
+- **Kort guidad nedvarvning eller meditation.** Även fem minuter kan hjälpa kroppen att förstå att dagen är slut.
+- **Påminn dig om att känslan kan vara tillfällig.** Ångest på kvällen känns ofta absolut i stunden – men den brukar se annorlunda ut på morgonen.
+
+## När kan det vara bra att söka mer stöd?
+
+Om kvällsångesten kommer ofta, påverkar din sömn eller vardag på ett sätt som känns svårt att hantera, kan det vara klokt att prata med någon. Det kan vara en vårdcentral, en psykolog eller en stödlinje. Att söka hjälp är inte ett tecken på svaghet – det är ett sätt att ta hand om dig själv.
+
+## Du behöver inte bära kvällen helt själv
+
+Kvällsångest är vanligt. Det betyder inte att du är svag eller att något är trasigt. Det är en reaktion som många delar, och det finns sätt att möta den som inte kräver stora insatser. Börja med det som känns möjligt, i din egen takt.
+
+När det snurrar mycket på kvällen kan det hjälpa att skriva av sig. Börja lugnt och anonymt, i din egen takt.`,
+		updatedAt: '2026-03-31',
 		sources: [
 			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/hjarna-och-nerver/somn/somnsvarigheter/' },
 			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
 			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
 		],
 		faqs: [
 			{
-				question: 'Varför är det värre på kvällen?',
-				answer: 'Dagen ger distraktioner. När det lugnar ner sig får tankar och känslor mer utrymme – och ångesten kan fylla ut tystnaden.'
+				question: 'Är det vanligt att få ångest på kvällen?',
+				answer: 'Ja, mycket vanligt. När dagens intryck avtar får tankar och känslor mer utrymme, vilket gör att ångest ofta blir tydligare på kvällen.'
 			},
 			{
-				question: 'Är det normalt att inte kunna varva ner?',
-				answer: 'Ja, väldigt vanligt. Nervsystemet behöver aktiv hjälp att växla ner – det sker inte automatiskt för alla.'
+				question: 'Varför känns ångest värre när jag ska sova?',
+				answer: 'Kroppen och hjärnan har färre distraktioner att hålla sig sysselsatta med. Dessutom kan oron för att inte somna i sig skapa mer anspänning.'
 			},
 			{
-				question: 'Vad kan hjälpa mig att landa på kvällen?',
-				answer: 'En lugn rutin, minska skärmar en timme innan läggdags och något som ger kroppen signal om att dagen är slut – ett te, en promenad, lugn musik.'
+				question: 'Kan trötthet göra ångest värre?',
+				answer: 'Ja. När kroppen är trött blir nervsystemet ofta mer känsligt, och det kan bli svårare att hantera oro och stress.'
 			},
 			{
-				question: 'Hur skiljer jag på trötthet och ångest?',
-				answer: 'Trötthet vill sova. Ångest håller dig vaken fast kroppen är slut. Om du är trött men inte kan somna kan ångesten vara inblandad.'
+				question: 'Hjälper meditation mot kvällsångest?',
+				answer: 'För många kan kort meditation eller guidad nedvarvning hjälpa kroppen att varva ner. Det behöver inte vara långt – redan fem minuter kan göra skillnad.'
+			},
+			{
+				question: 'När bör jag söka hjälp för kvällsångest?',
+				answer: 'Om ångesten kommer ofta, påverkar sömn eller vardag mycket eller känns svår att hantera på egen hand, kan det vara klokt att kontakta din vårdcentral eller en psykolog.'
 			}
 		],
 		relatedArticles: [
 			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider-seo/angest/angest-och-somn' },
-			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' },
-			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' }
+			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider-seo/angest/hjalp-vid-oro-pa-kvallen' },
+			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' },
+			{ title: 'Vaknar med ångest – när morgonen börjar tungt', href: '/guider-seo/angest/vaknar-med-angest' },
+			{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider-seo/sovproblem/stress-och-somn' }
 		],
 	},
 	{
