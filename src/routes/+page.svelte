@@ -183,6 +183,29 @@
 		</div>
 	</section>
 
+	<!-- Omdöme -->
+	<section class="review-section" aria-labelledby="review-section-title">
+		<div class="cards-narrow review-inner">
+			<h2 id="review-section-title">Ett lugnt första steg när kvällarna blir för tunga</h2>
+			<blockquote class="review-quote">
+				<p>
+					&ldquo;Jag testade MittPsyke när jag behövde en plats att skriva av mig i lugn takt &ndash; utan att behöva börja med allt på en gång. För mig hjälpte det att tonen kändes lugn och att jag kunde ta små steg i min egen takt. Det blev lättare att sätta ord på det som snurrade, särskilt under kvällar när tankarna tog mycket plats.
+				</p>
+				<p>
+					Jag uppskattade också att det kändes enkelt att komma igång. Jag behövde inte prestera eller formulera allt perfekt, utan kunde bara börja där jag var. För mig blev MittPsyke ett sätt att få lite mer överblick, sortera tankar och märka mönster i hur jag mådde.
+				</p>
+				<p>
+					Det här var inte vård för mig, utan ett komplement när jag behövde något lugnt och tillgängligt i vardagen. Jag tror att det kan passa den som vill ta ett första steg, skriva av sig eller få lite mer struktur i det som känns rörigt.&rdquo;
+				</p>
+			</blockquote>
+			<ul class="review-highlights" aria-label="Korta omdömen">
+				<li>Lugn ton</li>
+				<li>Små steg i egen takt</li>
+				<li>Ett komplement i vardagen</li>
+			</ul>
+		</div>
+	</section>
+
 	<!-- 4. Så fungerar det -->
 	<section class="how-it-works" aria-labelledby="how-it-works-title">
 		<div class="cards-narrow how-inner">
@@ -230,29 +253,6 @@
 					</a>
 				{/each}
 			</div>
-		</div>
-	</section>
-
-	<!-- 6. Omdöme -->
-	<section class="review-section" aria-labelledby="review-section-title">
-		<div class="cards-narrow review-inner">
-			<h2 id="review-section-title">Ett lugnt första steg när kvällarna blir för tunga</h2>
-			<blockquote class="review-quote">
-				<p>
-					&ldquo;Jag testade MittPsyke när jag behövde en plats att skriva av mig i lugn takt &ndash; utan att behöva börja med allt på en gång. För mig hjälpte det att tonen kändes lugn och att jag kunde ta små steg i min egen takt. Det blev lättare att sätta ord på det som snurrade, särskilt under kvällar när tankarna tog mycket plats.
-				</p>
-				<p>
-					Jag uppskattade också att det kändes enkelt att komma igång. Jag behövde inte prestera eller formulera allt perfekt, utan kunde bara börja där jag var. För mig blev MittPsyke ett sätt att få lite mer överblick, sortera tankar och märka mönster i hur jag mådde.
-				</p>
-				<p>
-					Det här var inte vård för mig, utan ett komplement när jag behövde något lugnt och tillgängligt i vardagen. Jag tror att det kan passa den som vill ta ett första steg, skriva av sig eller få lite mer struktur i det som känns rörigt.&rdquo;
-				</p>
-			</blockquote>
-			<ul class="review-highlights" aria-label="Korta omdömen">
-				<li>Lugn ton</li>
-				<li>Små steg i egen takt</li>
-				<li>Ett komplement i vardagen</li>
-			</ul>
 		</div>
 	</section>
 
