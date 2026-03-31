@@ -28,22 +28,22 @@
 	const faqs = $derived(landing?.faqs ?? []);
 </script>
 
-<main class="mx-auto max-w-3xl px-4 py-10">
-	<nav class="text-sm opacity-75" aria-label="Brödsmulor">
-		<a class="hover:underline" href="/guider">Guider</a>
+<main class="guide-page mx-auto max-w-3xl px-4 py-10">
+	<nav class="guide-breadcrumb text-sm" aria-label="Brödsmulor">
+		<a class="guide-link hover:underline" href="/guider">Guider</a>
 	</nav>
 
-	<h1 class="mt-3 text-3xl font-semibold tracking-tight">{landing?.h1 ?? pillar.title}</h1>
-	<p class="mt-3 leading-relaxed text-black/75">{landing?.intro ?? pillar.description}</p>
+	<h1 class="guide-title mt-3 text-3xl font-semibold tracking-tight">{landing?.h1 ?? pillar.title}</h1>
+	<p class="guide-copy mt-3 leading-relaxed">{landing?.intro ?? pillar.description}</p>
 
 	{#each contentSections as section}
-		<section class="mt-6 rounded-xl border border-black/10 bg-black/[0.02] p-4">
-			<h2 class="text-xl font-semibold">{section.heading}</h2>
-			<p class="mt-2 leading-relaxed text-black/80">{section.body}</p>
+		<section class="guide-surface mt-6 rounded-xl p-4">
+			<h2 class="guide-heading text-xl font-semibold">{section.heading}</h2>
+			<p class="guide-copy mt-2 leading-relaxed">{section.body}</p>
 			{#if section.links?.length}
 				<ul class="mt-3 space-y-2">
 					{#each section.links as link}
-						<li><a class="hover:underline" href={normalizeGuideHref(link.href)}>{link.title}</a></li>
+						<li><a class="guide-link hover:underline" href={normalizeGuideHref(link.href)}>{link.title}</a></li>
 					{/each}
 				</ul>
 			{/if}
@@ -52,13 +52,13 @@
 
 	{#if guides.length}
 		<section class="mt-8" aria-label="Fördjupning">
-			<h2 class="text-xl font-semibold">Fördjupa dig i området</h2>
-			<p class="mt-2 leading-relaxed text-black/75">Välj en guide som matchar det du behöver just nu.</p>
+			<h2 class="guide-heading text-xl font-semibold">Fördjupa dig i området</h2>
+			<p class="guide-copy mt-2 leading-relaxed">Välj en guide som matchar det du behöver just nu.</p>
 			<ul class="mt-4 grid gap-3 md:grid-cols-2">
 				{#each guides as guide}
-					<li class="rounded-xl border border-black/10 bg-white/70 p-4">
+					<li class="guide-surface rounded-xl p-4">
 						<a
-							class="block leading-relaxed hover:underline"
+							class="guide-link block leading-relaxed hover:underline"
 							href={`/guider/${guide.pillarSlug}/${guide.slug}`}
 						>
 							{guide.title}
@@ -71,10 +71,10 @@
 
 	{#if landing?.primaryLinks?.length}
 		<section class="mt-8" aria-label="Relaterade ämnen">
-			<h2 class="text-xl font-semibold">Relaterade ämnen</h2>
+			<h2 class="guide-heading text-xl font-semibold">Relaterade ämnen</h2>
 			<ul class="mt-3 space-y-2">
 				{#each landing.primaryLinks as link}
-					<li><a class="hover:underline" href={normalizeGuideHref(link.href)}>{link.title}</a></li>
+					<li><a class="guide-link hover:underline" href={normalizeGuideHref(link.href)}>{link.title}</a></li>
 				{/each}
 			</ul>
 		</section>
@@ -90,12 +90,12 @@
 
 	{#if faqs.length}
 		<section class="mt-8" aria-label="Vanliga frågor">
-			<h2 class="text-xl font-semibold">Vanliga frågor</h2>
+			<h2 class="guide-heading text-xl font-semibold">Vanliga frågor</h2>
 			<ul class="mt-4 space-y-3">
 				{#each faqs as faq}
-					<li class="rounded-xl border border-black/10 bg-black/[0.02] p-4">
-						<h3 class="text-base font-semibold">{faq.question}</h3>
-						<p class="mt-2 leading-relaxed text-black/80">{faq.answer}</p>
+					<li class="guide-surface rounded-xl p-4">
+						<h3 class="guide-heading text-base font-semibold">{faq.question}</h3>
+						<p class="guide-copy mt-2 leading-relaxed">{faq.answer}</p>
 					</li>
 				{/each}
 			</ul>
@@ -106,3 +106,59 @@
 		<ContentTrustBlock updatedAt={landing?.updatedAt} sources={landing?.sources} />
 	{/if}
 </main>
+
+<style>
+	.guide-page {
+		color: #0f172a;
+	}
+
+	.guide-breadcrumb {
+		color: rgba(15, 23, 42, 0.62);
+	}
+
+	.guide-title,
+	.guide-heading {
+		color: #0f172a;
+	}
+
+	.guide-copy {
+		color: rgba(15, 23, 42, 0.82);
+	}
+
+	.guide-surface {
+		border: 1px solid rgba(15, 23, 42, 0.08);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.08), transparent 42%),
+			linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 252, 0.98));
+	}
+
+	.guide-link {
+		color: #0f766e;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	:global(.dark) .guide-breadcrumb {
+		color: rgba(226, 232, 240, 0.68);
+	}
+
+	:global(.dark) .guide-title,
+	:global(.dark) .guide-heading {
+		color: #f8fafc;
+	}
+
+	:global(.dark) .guide-copy {
+		color: rgba(226, 232, 240, 0.82);
+	}
+
+	:global(.dark) .guide-surface {
+		border-color: rgba(148, 163, 184, 0.12);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+	}
+
+	:global(.dark) .guide-link {
+		color: #7dd3fc;
+	}
+</style>
