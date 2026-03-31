@@ -55,14 +55,14 @@
 			.replace(/^## (.+)$/gm, '<h2 class="mt-7 text-xl font-semibold">$1</h2>')
 			.replace(
 				/^- \*\*(.+?)\*\*(.*)$/gm,
-				'<li class="ml-4 mt-1 leading-relaxed text-black/80"><strong>$1</strong>$2</li>'
+				'<li class="guide-copy ml-4 mt-1 leading-relaxed"><strong>$1</strong>$2</li>'
 			)
-			.replace(/^- (.+)$/gm, '<li class="ml-4 mt-1 leading-relaxed text-black/80">$1</li>')
+			.replace(/^- (.+)$/gm, '<li class="guide-copy ml-4 mt-1 leading-relaxed">$1</li>')
 			.replace(/(<li[^>]*>.*<\/li>\n?)+/g, (match) => `<ul class="mt-3 list-disc pl-4">${match}</ul>`)
 			.replace(/^\*\*(.+?)\*\*$/gm, '<p class="mt-3 font-semibold">$1</p>')
 			.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-			.replace(/\n\n/g, '</p><p class="mt-3 leading-relaxed text-black/80">')
-			.replace(/^(?!<)(.+)$/gm, '<p class="mt-3 leading-relaxed text-black/80">$1</p>')
+			.replace(/\n\n/g, '</p><p class="guide-copy mt-3 leading-relaxed">')
+			.replace(/^(?!<)(.+)$/gm, '<p class="guide-copy mt-3 leading-relaxed">$1</p>')
 			.replace(/<p[^>]*><\/p>/g, '');
 	}
 
@@ -123,7 +123,7 @@
 	</nav>
 
 	<h1 class="text-3xl font-semibold tracking-tight">{data.guide.title}</h1>
-	<p class="mt-3 leading-relaxed text-black/75">{data.guide.description}</p>
+	<p class="guide-ingress mt-3 leading-relaxed">{data.guide.description}</p>
 
 	{#if data.guide.content}
 		<div class="guide-content mt-8">
@@ -136,14 +136,14 @@
 		{#each data.guide.faqs as faq}
 			<li class="rounded-lg border border-black/10 p-4">
 				<strong>{faq.question}</strong>
-				<p class="mt-2 leading-relaxed text-black/80">{faq.answer}</p>
+				<p class="guide-copy mt-2 leading-relaxed">{faq.answer}</p>
 			</li>
 		{/each}
 	</ul>
 
 	{#if data.guide.relatedArticles?.length}
 		<h2 class="mt-8 text-xl font-semibold">Relaterade artiklar</h2>
-		<p class="mt-2 leading-relaxed text-black/75">Fördjupning och vidare läsning inom samma område.</p>
+		<p class="guide-copy mt-2 leading-relaxed">Fördjupning och vidare läsning inom samma område.</p>
 		<ul class="mt-3 space-y-2">
 			{#each data.guide.relatedArticles as article}
 				<li>
@@ -183,6 +183,15 @@
 		background: rgba(67, 110, 143, 0.04);
 	}
 
+	.guide-ingress,
+	.guide-copy {
+		color: rgba(17, 24, 39, 0.8);
+	}
+
+	.guide-content :global(strong) {
+		color: rgba(17, 24, 39, 0.92);
+	}
+
 	.next-link {
 		display: inline-flex;
 		align-items: center;
@@ -199,5 +208,14 @@
 	:global(.dark) .nasta-steg {
 		background: rgba(86, 148, 201, 0.06);
 		border-color: rgba(255, 255, 255, 0.1);
+	}
+
+	:global(.dark) .guide-ingress,
+	:global(.dark) .guide-copy {
+		color: rgba(241, 245, 249, 0.82);
+	}
+
+	:global(.dark) .guide-content :global(strong) {
+		color: rgba(248, 250, 252, 0.94);
 	}
 </style>
