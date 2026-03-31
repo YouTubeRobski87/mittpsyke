@@ -1,3 +1,7 @@
+<script lang="ts">
+	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
+</script>
+
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
@@ -55,6 +59,7 @@
 			<p>Även när det känns omöjligt och evigt, så passerar panikattacker – i regel inom 15-30 minuter. Du är inte i fara. Din kropp försöker skydda dig. MittPsyke kan guida dig genom det.</p>
 		</aside>
 		<!-- Källor och uppdatering -->
+		<TopicGuideSection topicTitle="Panikattack" guideHref="/guider/panikattack" />
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
 			<h2>Källor</h2>
@@ -254,5 +259,4 @@
 		opacity: 1;
 	}
 </style>
-
 

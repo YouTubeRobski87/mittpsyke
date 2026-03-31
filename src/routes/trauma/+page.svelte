@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PublicTrustPanel from '$lib/components/PublicTrustPanel.svelte';
+	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
 </script>
 
 <svelte:head>
@@ -55,6 +56,7 @@
 			<h2>Din berättelse är viktig</h2>
 			<p>Trauma behöver inte hanteras ensamt. Att sätta ord på det som hänt – även lite i taget – kan vara ett viktigt första steg mot att må bättre.</p>
 		</aside>
+		<TopicGuideSection topicTitle="Trauma" guideHref="/guider/trauma" />
 		<PublicTrustPanel
 			updatedDate="14 mars 2026"
 			sources={[

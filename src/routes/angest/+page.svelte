@@ -186,14 +186,17 @@
 
 	<section class="guide-strip">
 		<div>
-			<p class="eyebrow">Läs vidare</p>
-			<h2>Guider och övningar som kan hjälpa när det känns mycket</h2>
+			<p class="eyebrow">Fördjupning</p>
+			<h2>Det här är startsidan om ångest. När du vill läsa vidare finns guiden här.</h2>
 		</div>
 		<div class="guide-links">
-			<a href="/guider-seo/angest/angest-hjalp" onclick={() => trackCta('guide')}>
+			<a href="/guider/angest" onclick={() => trackCta('guide')}>
+				Öppna guiden om ångest
+			</a>
+			<a href="/guider/angest/angest-hjalp" onclick={() => trackCta('guide')}>
 				Ångesthjälp när det känns svårt att få grepp
 			</a>
-			<a href="/guider-seo/angest/panikattack-hjalp" onclick={() => trackCta('guide')}>
+			<a href="/guider/angest/panikattack-hjalp" onclick={() => trackCta('guide')}>
 				Hjälp vid panikattack när kroppen larmar
 			</a>
 			<a href="/ovningar-mot-angest-online" onclick={() => trackCta('guide')}>

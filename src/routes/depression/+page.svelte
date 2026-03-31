@@ -1,3 +1,7 @@
+<script lang="ts">
+	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
+</script>
+
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
@@ -55,6 +59,7 @@
 			<p>Depression är en sjukdom, inte en personlig misslyckad. Det finns vägar ut och fram, och du behöver inte finna dem ensam. MittPsyke kan vara en början.</p>
 		</aside>
 		<!-- Källor och uppdatering -->
+		<TopicGuideSection topicTitle="Depression" guideHref="/guider/depression" />
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
 			<h2>Källor</h2>
@@ -254,5 +259,4 @@
 		opacity: 1;
 	}
 </style>
-
 

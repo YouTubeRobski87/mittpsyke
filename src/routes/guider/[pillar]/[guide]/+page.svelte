@@ -11,12 +11,15 @@
 
 	const pillarRoutes: Record<string, string> = {
 		angest: '/angest',
+		panikattack: '/panikattack',
 		depression: '/depression',
 		trauma: '/trauma',
 		sovproblem: '/sovproblem',
 		sjalvkansla: '/sjalvkansla',
 		stress: '/stress',
-		ensamhet: '/ensamhet'
+		ensamhet: '/ensamhet',
+		overtankande: '/oro',
+		kbt: '/kbt'
 	};
 
 	const pillarRoute = $derived(pillarRoutes[data.pillar.slug] ?? null);

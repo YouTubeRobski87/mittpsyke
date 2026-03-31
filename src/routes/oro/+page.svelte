@@ -1,3 +1,7 @@
+<script lang="ts">
+	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
+</script>
+
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
@@ -54,6 +58,12 @@
 			<p>Att tala om oro – vad som egentligen ligger bakom tankarna – kan hjälpa dig att se situationen klarare och känna lite mer ro.</p>
 		</aside>
 		<!-- Källor och uppdatering -->
+		<TopicGuideSection
+			topicTitle="Oro"
+			guideHref="/guider/angest"
+			guideTitle="ångest och oro"
+			intro="Det här är startsidan för oro. När du vill läsa vidare finns fördjupning om oro, ältande och ångest i guiden."
+		/>
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
 			<h2>Källor</h2>
@@ -252,4 +262,3 @@
 		opacity: 1;
 	}
 </style>
-

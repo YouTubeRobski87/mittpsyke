@@ -1,3 +1,7 @@
+<script lang="ts">
+	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
+</script>
+
 <svelte:head>
 	<title>KBT – Kognitiv beteendeterapi | Tekniker och guider | MittPsyke</title>
 	<meta name="description" content="Lär dig hur KBT fungerar och prova konkreta tekniker hemma. Guider om tankeomstrukturering, beteendeaktivering och mer – i lugn takt." />
@@ -51,18 +55,17 @@
 			</p>
 		</aside>
 
-		<!-- Guidelänkar -->
-		<section class="guide-links" aria-label="KBT-guider">
-			<h2>Läs mer i våra KBT-guider</h2>
-			<ul>
-				<li><a href="/guider-seo/kbt/vad-ar-kbt">Vad är KBT och hur fungerar det?</a></li>
-				<li><a href="/guider-seo/kbt/tankeomstrukturering">Tankeomstrukturering – utmana dina negativa tankar</a></li>
-				<li><a href="/guider-seo/kbt/beteendeaktivering">Beteendeaktivering – ta ett steg ut ur passiviteten</a></li>
-				<li><a href="/guider-seo/kbt/kbt-tekniker-hemma">KBT-tekniker du kan använda hemma</a></li>
-				<li><a href="/guider-seo/kbt/kbt-vid-angest">KBT vid ångest – hur det fungerar steg för steg</a></li>
-			</ul>
-			<a href="/guider-seo/kbt" class="guide-link-all">Se alla KBT-guider →</a>
-		</section>
+		<TopicGuideSection
+			topicTitle="KBT"
+			guideHref="/guider/kbt"
+			articleLinks={[
+				{ title: 'Vad är KBT och hur fungerar det?', href: '/guider/kbt/vad-ar-kbt' },
+				{ title: 'Tankeomstrukturering – utmana dina negativa tankar', href: '/guider/kbt/tankeomstrukturering' },
+				{ title: 'Beteendeaktivering – ta ett steg ut ur passiviteten', href: '/guider/kbt/beteendeaktivering' },
+				{ title: 'KBT-tekniker du kan använda hemma', href: '/guider/kbt/kbt-tekniker-hemma' },
+				{ title: 'KBT vid ångest – hur det fungerar steg för steg', href: '/guider/kbt/kbt-vid-angest' }
+			]}
+		/>
 
 		<!-- Källor -->
 		<section class="source-block" aria-label="Källor och uppdatering">
@@ -194,53 +197,6 @@
 		line-height: 1.65;
 	}
 
-	.guide-links {
-		max-width: 720px;
-	}
-
-	.guide-links h2 {
-		font-size: 1.1rem;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		margin-bottom: 0.75rem;
-		color: var(--primary);
-	}
-
-	.guide-links ul {
-		list-style: none;
-		padding: 0;
-		margin: 0 0 0.85rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.45rem;
-	}
-
-	.guide-links ul li a {
-		font-family: var(--font-body);
-		font-size: clamp(0.95rem, 0.92rem + 0.25vw, 1.05rem);
-		color: var(--primary);
-		text-decoration: underline;
-		text-decoration-color: rgba(15, 118, 110, 0.35);
-		text-underline-offset: 3px;
-	}
-
-	.guide-links ul li a:hover {
-		text-decoration-color: var(--primary);
-	}
-
-	.guide-link-all {
-		font-family: var(--font-heading);
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--primary);
-		text-decoration: none;
-		opacity: 0.8;
-	}
-
-	.guide-link-all:hover {
-		opacity: 1;
-	}
-
 	@media (max-width: 640px) {
 		.page {
 			padding: 2rem 1rem 2.8rem;
@@ -277,15 +233,6 @@
 
 	:global(.dark) .cta-button:hover {
 		box-shadow: 0 6px 20px rgba(134, 223, 214, 0.3);
-	}
-
-	:global(.dark) .guide-links h2 {
-		color: #86dfd6;
-	}
-
-	:global(.dark) .guide-links ul li a,
-	:global(.dark) .guide-link-all {
-		color: #86dfd6;
 	}
 
 	.source-block {

@@ -11,10 +11,24 @@
 
 	let { pillar, guides, landing }: SeoPillarLandingProps = $props();
 
+	const pillarRoutes: Record<string, string> = {
+		angest: '/angest',
+		panikattack: '/panikattack',
+		depression: '/depression',
+		trauma: '/trauma',
+		sovproblem: '/sovproblem',
+		sjalvkansla: '/sjalvkansla',
+		stress: '/stress',
+		ensamhet: '/ensamhet',
+		overtankande: '/oro',
+		kbt: '/kbt'
+	};
+
 	function normalizeGuideHref(href: string): string {
 		return href.startsWith('/guider-seo/') ? href.replace('/guider-seo/', '/guider/') : href;
 	}
 
+	const pillarRoute = $derived(pillarRoutes[pillar.slug] ?? null);
 	const contentSections = $derived(
 		landing?.sections?.length
 			? landing.sections
@@ -32,6 +46,19 @@
 	<nav class="guide-breadcrumb text-sm" aria-label="Brödsmulor">
 		<a class="guide-link hover:underline" href="/guider">Guider</a>
 	</nav>
+
+	{#if pillarRoute}
+		<section class="guide-entry guide-surface mt-4 rounded-xl p-4" aria-label="Guide-nivå">
+			<p class="guide-kicker">Fördjupning</p>
+			<p class="guide-copy leading-relaxed">
+				Det här är fördjupningen om {pillar.title.toLowerCase()}. Om du vill börja mer översiktligt
+				finns huvudsidan om {pillar.title.toLowerCase()} som första ingång.
+			</p>
+			<a class="guide-link mt-3 inline-flex hover:underline" href={pillarRoute}>
+				Gå till huvudsidan om {pillar.title.toLowerCase()}
+			</a>
+		</section>
+	{/if}
 
 	<h1 class="guide-title mt-3 text-3xl font-semibold tracking-tight">{landing?.h1 ?? pillar.title}</h1>
 	<p class="guide-copy mt-3 leading-relaxed">{landing?.intro ?? pillar.description}</p>
@@ -52,8 +79,10 @@
 
 	{#if guides.length}
 		<section class="mt-8" aria-label="Fördjupning">
-			<h2 class="guide-heading text-xl font-semibold">Fördjupa dig i området</h2>
-			<p class="guide-copy mt-2 leading-relaxed">Välj en guide som matchar det du behöver just nu.</p>
+			<h2 class="guide-heading text-xl font-semibold">Artiklar i guiden</h2>
+			<p class="guide-copy mt-2 leading-relaxed">
+				När du vill läsa vidare kan du välja en fördjupning som passar just nu.
+			</p>
 			<ul class="mt-4 grid gap-3 md:grid-cols-2">
 				{#each guides as guide}
 					<li class="guide-surface rounded-xl p-4">
@@ -116,9 +145,22 @@
 		color: rgba(15, 23, 42, 0.62);
 	}
 
+	.guide-kicker {
+		margin: 0 0 0.45rem;
+		font-size: 0.78rem;
+		text-transform: uppercase;
+		letter-spacing: 0.16em;
+		color: #0f766e;
+	}
+
 	.guide-title,
 	.guide-heading {
 		color: #0f172a;
+	}
+
+	.guide-entry {
+		display: grid;
+		gap: 0.25rem;
 	}
 
 	.guide-copy {
@@ -140,6 +182,10 @@
 
 	:global(.dark) .guide-breadcrumb {
 		color: rgba(226, 232, 240, 0.68);
+	}
+
+	:global(.dark) .guide-kicker {
+		color: #7dd3fc;
 	}
 
 	:global(.dark) .guide-title,

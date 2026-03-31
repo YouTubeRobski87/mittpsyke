@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PublicTrustPanel from '$lib/components/PublicTrustPanel.svelte';
+	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
 </script>
 
 <svelte:head>
@@ -58,16 +59,15 @@
 			<p>Att tala om stress – vad som faktiskt tynger dig – kan vara ett viktigt första steg mot att hitta balans igen. Du förtjänar stöd.</p>
 		</aside>
 
-		<!-- Guide links -->
-		<section class="guide-links" aria-label="Läs mer om stress">
-			<h2>Läs mer i våra guider</h2>
-			<ul>
-				<li><a href="/guider-seo/stress/stressymtom">Stressymtom – tecken på att kroppen bär för mycket</a></li>
-				<li><a href="/guider-seo/stress/utmattad-mentalt">Utmattad mentalt – när stressen tagit slut på resurserna</a></li>
-				<li><a href="/guider-seo/stress/kan-inte-varva-ner">Kan inte varva ner – kroppen som glömt hur</a></li>
-			</ul>
-			<a href="/guider-seo/stress" class="guide-link-all">Se alla guider om stress →</a>
-		</section>
+		<TopicGuideSection
+			topicTitle="Stress"
+			guideHref="/guider/stress"
+			articleLinks={[
+				{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider/stress/stressymtom' },
+				{ title: 'Utmattad mentalt – när stressen tagit slut på resurserna', href: '/guider/stress/utmattad-mentalt' },
+				{ title: 'Kan inte varva ner – kroppen som glömt hur', href: '/guider/stress/kan-inte-varva-ner' }
+			]}
+		/>
 		<PublicTrustPanel
 			updatedDate="14 mars 2026"
 			sources={[
@@ -195,53 +195,6 @@
 		line-height: 1.65;
 	}
 
-	.guide-links {
-		max-width: 720px;
-	}
-
-	.guide-links h2 {
-		font-size: 1.1rem;
-		font-weight: 700;
-		letter-spacing: -0.02em;
-		margin-bottom: 0.75rem;
-		color: var(--primary);
-	}
-
-	.guide-links ul {
-		list-style: none;
-		padding: 0;
-		margin: 0 0 0.85rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.45rem;
-	}
-
-	.guide-links ul li a {
-		font-family: var(--font-body);
-		font-size: clamp(0.95rem, 0.92rem + 0.25vw, 1.05rem);
-		color: var(--primary);
-		text-decoration: underline;
-		text-decoration-color: rgba(15, 118, 110, 0.35);
-		text-underline-offset: 3px;
-	}
-
-	.guide-links ul li a:hover {
-		text-decoration-color: var(--primary);
-	}
-
-	.guide-link-all {
-		font-family: var(--font-heading);
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--primary);
-		text-decoration: none;
-		opacity: 0.8;
-	}
-
-	.guide-link-all:hover {
-		opacity: 1;
-	}
-
 	@media (max-width: 640px) {
 		.page {
 			padding: 2rem 1rem 2.8rem;
@@ -278,15 +231,6 @@
 
 	:global(.dark) .cta-button:hover {
 		box-shadow: 0 6px 20px rgba(134, 223, 214, 0.3);
-	}
-
-	:global(.dark) .guide-links h2 {
-		color: #86dfd6;
-	}
-
-	:global(.dark) .guide-links ul li a,
-	:global(.dark) .guide-link-all {
-		color: #86dfd6;
 	}
 
 </style>
