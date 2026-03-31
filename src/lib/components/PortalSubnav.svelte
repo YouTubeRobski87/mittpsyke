@@ -1,5 +1,5 @@
 <script lang="ts">
-	type PortalTab = 'dashboard' | 'dagbok' | 'framsteg' | 'gemenskap' | 'forum' | 'installningar';
+	type PortalTab = 'dashboard' | 'dagbok' | 'framsteg' | 'gemenskap' | 'installningar';
 
 	interface TabItem {
 		key: PortalTab;
@@ -12,7 +12,6 @@
 		{ key: 'dagbok', label: 'Dagbok', href: '/dagbok' },
 		{ key: 'framsteg', label: 'Framsteg', href: '/framsteg' },
 		{ key: 'gemenskap', label: 'Gemenskap', href: '/dashboard/gemenskap' },
-		{ key: 'forum', label: 'Forum', href: '/forum' },
 		{ key: 'installningar', label: 'Inställningar', href: '/dashboard/installningar' }
 	];
 

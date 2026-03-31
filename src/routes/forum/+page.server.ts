@@ -61,6 +61,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	return {
 		title: 'Forum – Samtalsrum för psykisk hälsa',
 		description: 'Dela tankar och hitta igenkänning i MittPsykes forum. Lugna samtalsrum om ångest, stress, sömn, relationer och mer. Skriv anonymt eller med namn.',
+		noindex: true,
 		categories,
 		threadCounts
 	};
