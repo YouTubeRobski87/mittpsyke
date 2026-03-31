@@ -66,6 +66,7 @@
 			<p class="portal-status-note">{continuityText}</p>
 			<div class="portal-status-actions">
 				<a href="/dagbok" class="auth-button primary">{primaryDiaryCtaLabel}</a>
+				<a href="/chat" class="auth-button">Eller starta ett samtal</a>
 				<p class="portal-subtle">{nextStepText}</p>
 			</div>
 		</section>
@@ -78,7 +79,7 @@
 						<span class="portal-meta">{diaryPreview.dateLabel}</span>
 					{/if}
 				</div>
-				<h2>Fortsätt där du var</h2>
+				<h2>{diaryPreview.hasEntry ? 'Fortsätt där du var' : 'Börja med ett par ord'}</h2>
 				<p class="portal-copy">{diaryPreview.snippet}</p>
 				{#if diaryPreview.hasEntry}
 					<p class="portal-subtle">Din dagbok sparar det viktigaste, så att du kan plocka upp tråden senare.</p>
