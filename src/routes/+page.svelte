@@ -152,9 +152,15 @@
 			<h2 id="review-section-title">Ett lugnt första steg när kvällarna blir för tunga</h2>
 			<div class="review-grid">
 				<blockquote class="review-card">
-					<p>&ldquo;Jag testade MittPsyke när jag behövde en plats att skriva av mig i lugn takt &ndash; utan att behöva börja med allt på en gång. För mig hjälpte det att tonen kändes lugn och att jag kunde ta små steg i min egen takt. Det blev lättare att sätta ord på det som snurrade, särskilt under kvällar när tankarna tog mycket plats.&rdquo;</p>
-					<p class="mt-4">&ldquo;Jag uppskattade också att det kändes enkelt att komma igång. Jag behövde inte prestera eller formulera allt perfekt, utan kunde bara börja där jag var. För mig blev MittPsyke ett sätt att få lite mer överblick, sortera tankar och märka mönster i hur jag mådde.&rdquo;</p>
-					<p class="mt-4">&ldquo;Det här var inte vård för mig, utan ett komplement när jag behövde något lugnt och tillgängligt i vardagen. Jag tror att det kan passa den som vill ta ett första steg, skriva av sig eller få lite mer struktur i det som känns rörigt.&rdquo;</p>
+					<p>&ldquo;Jag behövde en plats att skriva av mig i lugn takt &ndash; utan att behöva börja med allt på en gång.&rdquo;</p>
+					<cite>Anonym användare</cite>
+				</blockquote>
+				<blockquote class="review-card">
+					<p>&ldquo;Det hjälpte mig att ta små steg i min egen takt och få lite mer överblick när tankarna snurrade.&rdquo;</p>
+					<cite>Anonym användare</cite>
+				</blockquote>
+				<blockquote class="review-card">
+					<p>&ldquo;För mig blev det ett lugnt komplement i vardagen &ndash; inte vård, men ett sätt att landa.&rdquo;</p>
 					<cite>Anonym användare</cite>
 				</blockquote>
 			</div>
