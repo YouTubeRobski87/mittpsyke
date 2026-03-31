@@ -341,7 +341,7 @@
 </script>
 
 <svelte:head>
-	<title>Dagbok med röster | MittPsyke</title>
+	<title>Dagbok med olika stilar | MittPsyke</title>
 	<meta name="description" content="Välj en röst som Grubblaren, Filosofen, Psykologen eller Quest log och låt en guidad intervju bli ett dagboksinlägg." />
 </svelte:head>
 
@@ -350,7 +350,7 @@
 
 		<!-- Sidhuvud -->
 		<div class="auth-panel page-header">
-			<h1 class="page-title">Dagbok med röster</h1>
+			<h1 class="page-title">Dagbok med olika stilar</h1>
 			<p class="auth-muted header-desc">
 				Välj en röst, svara i lugn takt och låt intervjun bli ett personligt dagboksinlägg.
 			</p>

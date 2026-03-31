@@ -666,7 +666,7 @@
 						<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
 					</div>
 					<div class="diary-path-card diary-path-card--preview">
-						<span class="diary-path-title">Dagbok med röster</span>
+						<span class="diary-path-title">Dagbok med olika stilar</span>
 						<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
 					</div>
 				</div>
@@ -704,7 +704,7 @@
 								<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
 							</a>
 							<a href="/dagars-avtryck" class="diary-path-card">
-								<span class="diary-path-title">Dagbok med röster</span>
+								<span class="diary-path-title">Dagbok med olika stilar</span>
 								<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
 							</a>
 						</div>

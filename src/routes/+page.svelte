@@ -74,7 +74,7 @@
 			href: '/skriv'
 		},
 		{
-			title: 'Dagbok med röster',
+			title: 'Dagbok med olika stilar',
 			description: 'Skriv dagbok och reflektera vidare med frågor och röster som hjälper dig sätta ord på dagen.',
 			href: '/dagbok'
 		},
