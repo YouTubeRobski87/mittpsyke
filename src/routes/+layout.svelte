@@ -30,7 +30,6 @@
 	};
 
 	const signedInPrimaryNavItems: NavItem[] = [
-		{ href: '/forum', label: 'Forum' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' }
 	];
@@ -53,7 +52,6 @@
 		{ href: '/dagbok', label: 'Dagbok' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' },
-		{ href: '/forum', label: 'Forum' },
 		{ href: '/blogg', label: 'Blogg' },
 		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
 		{ href: 'https://stodlinjer.se', label: 'Akut hjälp (Stödlinjer)', external: true }
