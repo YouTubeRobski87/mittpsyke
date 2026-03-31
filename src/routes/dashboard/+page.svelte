@@ -66,7 +66,7 @@
 			<p class="portal-status-note">{continuityText}</p>
 			<div class="portal-status-actions">
 				<a href="/dagbok" class="auth-button primary">{primaryDiaryCtaLabel}</a>
-				<a href="/chat" class="auth-button">Vill du prata istället?</a>
+				<a href="/chat" class="auth-button">Vill du hellre chatta?</a>
 				<p class="portal-subtle">{nextStepText}</p>
 			</div>
 		</section>
