@@ -137,4 +137,18 @@
 	:global(.dark) .emergency {
 		color: rgba(255, 255, 255, 0.76);
 	}
+
+	:global(.dark) h2 {
+		color: rgba(241, 245, 249, 0.94);
+	}
+
+	:global(.dark) .note,
+	:global(.dark) .more,
+	:global(.dark) li {
+		color: rgba(241, 245, 249, 0.82);
+	}
+
+	:global(.dark) a {
+		color: rgba(241, 245, 249, 0.82);
+	}
 </style>
