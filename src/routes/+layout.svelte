@@ -311,10 +311,10 @@
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
 				<a
 					href="/"
-					class="flex shrink-0 self-center items-center leading-none opacity-95 hover:opacity-100 transition-opacity"
+					class="brand-link shrink-0 self-center opacity-95 hover:opacity-100 transition-opacity"
 					aria-label="MittPsyke"
 				>
-					<img src="/frontlogga.ico" alt="MittPsyke" class="block h-10 w-auto sm:h-11" />
+					<span class="brand-wordmark">MittPsyke</span>
 				</a>
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
@@ -569,6 +569,24 @@
 
 	.mobile-menu-help {
 		margin: 0.5rem 0 0;
+	}
+
+	.brand-link {
+		display: flex;
+		align-items: center;
+		min-height: 2.75rem;
+		padding: 0.125rem 0;
+		line-height: 1;
+	}
+
+	.brand-wordmark {
+		display: block;
+		font-family: var(--font-heading);
+		font-size: clamp(1.32rem, 1.16rem + 0.42vw, 1.52rem);
+		font-weight: 760;
+		letter-spacing: -0.04em;
+		line-height: 1;
+		white-space: nowrap;
 	}
 
 </style>
