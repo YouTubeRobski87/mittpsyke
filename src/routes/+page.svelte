@@ -146,6 +146,33 @@
 		</div>
 	</section>
 
+	<!-- Social proof -->
+	<section class="review-section" aria-labelledby="review-section-title">
+		<div class="cards-narrow review-inner">
+			<p class="review-kicker">Så upplevs MittPsyke</p>
+			<h2 id="review-section-title">Ett lugnt första steg när kvällarna blir för tunga</h2>
+			<div class="review-grid">
+				<blockquote class="review-card">
+					<p>&ldquo;Jag behövde en plats att skriva av mig i lugn takt &ndash; utan att behöva börja med allt på en gång.&rdquo;</p>
+					<cite>Anonym användare</cite>
+				</blockquote>
+				<blockquote class="review-card">
+					<p>&ldquo;Det hjälpte mig att ta små steg i min egen takt och få lite mer överblick när tankarna snurrade.&rdquo;</p>
+					<cite>Anonym användare</cite>
+				</blockquote>
+				<blockquote class="review-card">
+					<p>&ldquo;För mig blev det ett lugnt komplement i vardagen &ndash; inte vård, men ett sätt att landa.&rdquo;</p>
+					<cite>Anonym användare</cite>
+				</blockquote>
+			</div>
+			<ul class="review-highlights" aria-label="Korta omdömen">
+				<li>Lugn ton</li>
+				<li>Små steg i egen takt</li>
+				<li>Ett komplement i vardagen</li>
+			</ul>
+		</div>
+	</section>
+
 	<!-- 2. Ett första steg, i din egen takt -->
 	<section class="first-step" aria-labelledby="first-step-title">
 		<div class="cards-narrow first-step-inner">
@@ -180,29 +207,6 @@
 					</a>
 				{/each}
 			</div>
-		</div>
-	</section>
-
-	<!-- Omdöme -->
-	<section class="review-section" aria-labelledby="review-section-title">
-		<div class="cards-narrow review-inner">
-			<h2 id="review-section-title">Ett lugnt första steg när kvällarna blir för tunga</h2>
-			<blockquote class="review-quote">
-				<p>
-					&ldquo;Jag testade MittPsyke när jag behövde en plats att skriva av mig i lugn takt &ndash; utan att behöva börja med allt på en gång. För mig hjälpte det att tonen kändes lugn och att jag kunde ta små steg i min egen takt. Det blev lättare att sätta ord på det som snurrade, särskilt under kvällar när tankarna tog mycket plats.
-				</p>
-				<p>
-					Jag uppskattade också att det kändes enkelt att komma igång. Jag behövde inte prestera eller formulera allt perfekt, utan kunde bara börja där jag var. För mig blev MittPsyke ett sätt att få lite mer överblick, sortera tankar och märka mönster i hur jag mådde.
-				</p>
-				<p>
-					Det här var inte vård för mig, utan ett komplement när jag behövde något lugnt och tillgängligt i vardagen. Jag tror att det kan passa den som vill ta ett första steg, skriva av sig eller få lite mer struktur i det som känns rörigt.&rdquo;
-				</p>
-			</blockquote>
-			<ul class="review-highlights" aria-label="Korta omdömen">
-				<li>Lugn ton</li>
-				<li>Små steg i egen takt</li>
-				<li>Ett komplement i vardagen</li>
-			</ul>
 		</div>
 	</section>
 
@@ -738,7 +742,7 @@
 		font-size: 0.88rem;
 	}
 
-	/* ── Sektion 6: Omdöme ── */
+	/* ── Social proof ── */
 	.review-section {
 		padding: clamp(2.8rem, 7vw, 5rem) 1.25rem;
 		background: #1b2b3a;
@@ -746,8 +750,17 @@
 	}
 
 	.review-inner {
-		max-width: 720px;
+		max-width: 1080px;
 		margin: 0 auto;
+	}
+
+	.review-kicker {
+		margin: 0 0 0.4rem;
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.6);
 	}
 
 	.review-inner h2 {
@@ -758,19 +771,36 @@
 		color: #f3f8fd;
 	}
 
-	.review-quote {
-		margin: 1.4rem 0 0;
-		padding: 0;
-		border: none;
+	.review-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.85rem;
+		margin-top: 1.4rem;
 	}
 
-	.review-quote p {
+	.review-card {
+		margin: 0;
+		padding: 1rem 1.1rem;
+		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: var(--radius-card);
+	}
+
+	.review-card p {
 		margin: 0;
 		font-family: var(--font-body);
-		font-size: 1.05rem;
-		line-height: 1.75;
+		font-size: 0.97rem;
+		line-height: 1.7;
 		color: rgba(255, 255, 255, 0.88);
 		font-style: italic;
+	}
+
+	.review-card cite {
+		display: block;
+		margin-top: 0.55rem;
+		font-size: 0.82rem;
+		font-style: normal;
+		color: rgba(255, 255, 255, 0.5);
 	}
 
 	.review-highlights {
@@ -938,6 +968,10 @@
 			gap: 0.9rem;
 		}
 
+		.review-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 1rem;
+		}
 	}
 
 	@media (min-width: 700px) {
