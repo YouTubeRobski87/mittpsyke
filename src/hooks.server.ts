@@ -14,7 +14,7 @@ const canonicalHostRedirect: Handle = async ({ event, resolve }) => {
 	if (requestHost === 'mittpsyke.se') {
 		const canonicalUrl = new URL(event.url)
 		canonicalUrl.host = 'www.mittpsyke.se'
-		throw redirect(308, canonicalUrl.toString())
+		throw redirect(301, canonicalUrl.toString())
 	}
 
 	return resolve(event)

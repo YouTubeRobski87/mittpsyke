@@ -296,7 +296,7 @@
 				</label>
 				<label>
 					<span>Slug</span>
-					<input type="text" name="slug" placeholder="/angst" required />
+					<input type="text" name="slug" placeholder="/angest" required />
 				</label>
 				<label>
 					<span>Status</span>

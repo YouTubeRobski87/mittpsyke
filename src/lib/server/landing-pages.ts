@@ -33,8 +33,9 @@ export type PublicLandingPageData = {
 };
 
 function normalizeSlug(slug: string | null | undefined) {
-	if (!slug) return '/angst';
-	return slug.startsWith('/') ? slug : `/${slug}`;
+	if (!slug) return '/angest';
+	const normalizedSlug = slug.startsWith('/') ? slug : `/${slug}`;
+	return normalizedSlug === '/angst' ? '/angest' : normalizedSlug;
 }
 
 function splitKeywords(value: string | null | undefined) {
@@ -52,7 +53,7 @@ function getFallbackLandingPage(pageId: string): PublicLandingPageData {
 		pageId,
 		pageRecordId: null,
 		name: 'Ångest',
-		slug: '/angst',
+		slug: '/angest',
 		description:
 			'Stöd för ångest i din egen takt med lugna övningar, skrivyta och anonymt samtalsstöd.',
 		seoTitle: 'Hjälp vid ångest online | MittPsyke',
@@ -62,7 +63,7 @@ function getFallbackLandingPage(pageId: string): PublicLandingPageData {
 		ctaText: 'Starta ett lugnt samtal',
 		keywords: ['ångest', 'oro', 'stöd vid ångest', 'prata anonymt', 'övningar mot ångest'],
 		htmlContent: null,
-		canonicalUrl: 'https://www.mittpsyke.se/angst'
+		canonicalUrl: 'https://www.mittpsyke.se/angest'
 	};
 }
 
