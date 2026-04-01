@@ -465,8 +465,8 @@
 	/* ── Sektion 2: Första steget ── */
 	.first-step {
 		padding: clamp(2.5rem, 7vw, 4rem) 1.25rem;
-		background: #f5f8fc;
-		color: #1e2d3d;
+		background: #141e2e;
+		color: #e0e4ea;
 	}
 
 	.first-step-inner {
@@ -476,7 +476,7 @@
 
 	.first-step-inner h2 {
 		margin: 0;
-		color: #1e2d3d;
+		color: #eef1f6;
 		font-family: var(--font-heading);
 		font-weight: 700;
 		font-size: clamp(1.5rem, 3vw, 2rem);
@@ -485,7 +485,7 @@
 	.first-step-body {
 		margin: 0.75rem 0 0;
 		max-width: 58ch;
-		color: #4f6070;
+		color: rgba(220, 225, 235, 0.78);
 		font-family: var(--font-body);
 		line-height: 1.7;
 	}
@@ -499,8 +499,8 @@
 
 	.support-point {
 		padding: 0.9rem 1rem;
-		background: #ffffff;
-		border: 1px solid #d5dfe8;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: var(--radius-card);
 	}
 
@@ -511,21 +511,21 @@
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		color: #3a6090;
+		color: rgba(160, 185, 220, 0.9);
 	}
 
 	.support-text {
 		margin: 0.3rem 0 0;
 		font-size: 0.95rem;
 		line-height: 1.65;
-		color: #4f6070;
+		color: rgba(220, 225, 235, 0.72);
 	}
 
 	/* ── Sektion 3: Ingångar ── */
 	.entry-paths {
 		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
-		background: #edf2f9;
-		color: #1e2d3d;
+		background: #111a28;
+		color: #e0e4ea;
 	}
 
 	.cards-narrow {
@@ -535,14 +535,14 @@
 
 	.entry-inner h2 {
 		margin: 0;
-		color: #1e2d3d;
+		color: #eef1f6;
 		font-size: clamp(1.55rem, 3vw, 2.1rem);
 	}
 
 	.entry-intro {
 		margin: 0.75rem 0 0;
 		max-width: 58ch;
-		color: #4f6070;
+		color: rgba(220, 225, 235, 0.78);
 	}
 
 	.entry-grid {
@@ -556,9 +556,9 @@
 		display: block;
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		background: #ffffff;
-		border: 1px solid #d5dfe8;
-		color: #1e2d3d;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		color: #e0e4ea;
 		transition:
 			transform 180ms ease,
 			background-color 180ms ease,
@@ -567,13 +567,13 @@
 
 	.entry-card:hover {
 		transform: translateY(-2px);
-		background: #f8fbff;
-		border-color: #bfcfe0;
+		background: rgba(255, 255, 255, 0.08);
+		border-color: rgba(255, 255, 255, 0.14);
 	}
 
 	.entry-card h3 {
 		margin: 0;
-		color: #1e2b38;
+		color: #eef1f6;
 		font-size: 1.08rem;
 		line-height: 1.3;
 	}
@@ -582,7 +582,7 @@
 		margin: 0.55rem 0 0;
 		font-size: 0.95rem;
 		line-height: 1.65;
-		color: #4f6070;
+		color: rgba(220, 225, 235, 0.72);
 	}
 
 	.entry-card-cta {
@@ -591,8 +591,8 @@
 		margin-top: 0.9rem;
 		padding: 0.42rem 0.78rem;
 		border-radius: var(--radius-pill);
-		background: #dceefa;
-		color: #1e4a7a;
+		background: rgba(58, 123, 213, 0.15);
+		color: #7db4e8;
 		font-family: var(--font-heading);
 		font-size: 0.83rem;
 		font-weight: 600;
@@ -602,8 +602,8 @@
 	/* ── Sektion 4: Så fungerar det ── */
 	.how-it-works {
 		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
-		background: #ffffff;
-		color: #2c3338;
+		background: #162236;
+		color: #e0e4ea;
 	}
 
 	.how-eyebrow {
@@ -613,12 +613,12 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: #3a6090;
+		color: rgba(160, 185, 220, 0.9);
 	}
 
 	.how-inner h2 {
 		margin: 0;
-		color: #1e2d3d;
+		color: #eef1f6;
 		font-size: clamp(1.55rem, 3vw, 2.05rem);
 	}
 
@@ -632,8 +632,8 @@
 	.how-card {
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		background: #f5f8fc;
-		border: 1px solid #d5e2ee;
+		background: rgba(255, 255, 255, 0.04);
+		border: 1px solid rgba(255, 255, 255, 0.07);
 	}
 
 	.how-step {
@@ -643,8 +643,8 @@
 		min-width: 2.3rem;
 		padding: 0.2rem 0.5rem;
 		border-radius: var(--radius-pill);
-		background: #dae8f5;
-		color: #2a5080;
+		background: rgba(58, 123, 213, 0.15);
+		color: #7db4e8;
 		font-family: var(--font-heading);
 		font-size: 0.8rem;
 		font-weight: 700;
@@ -653,14 +653,14 @@
 
 	.how-card h3 {
 		margin: 0.8rem 0 0;
-		color: #1e2b38;
+		color: #eef1f6;
 		font-size: 1.06rem;
 		line-height: 1.3;
 	}
 
 	.how-card p {
 		margin: 0.55rem 0 0;
-		color: #4f6070;
+		color: rgba(220, 225, 235, 0.72);
 		font-size: 0.95rem;
 		line-height: 1.65;
 	}
@@ -671,8 +671,8 @@
 		margin-top: 0.9rem;
 		padding: 0.42rem 0.78rem;
 		border-radius: var(--radius-pill);
-		background: #dceefa;
-		color: #1e4a7a;
+		background: rgba(58, 123, 213, 0.15);
+		color: #7db4e8;
 		font-family: var(--font-heading);
 		font-size: 0.83rem;
 		font-weight: 600;
@@ -683,13 +683,13 @@
 	/* ── Sektion 5: Funktioner ── */
 	.features-section {
 		padding: clamp(2.5rem, 7vw, 3.9rem) 1.25rem;
-		background: #f0f4f9;
-		color: #1e2d3d;
+		background: #111a28;
+		color: #e0e4ea;
 	}
 
 	.features-inner h2 {
 		margin: 0;
-		color: #1e2d3d;
+		color: #eef1f6;
 		font-size: clamp(1.5rem, 3vw, 2rem);
 	}
 
@@ -704,20 +704,20 @@
 		display: block;
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		background: rgba(255, 255, 255, 0.72);
-		border: 1px solid rgba(18, 40, 70, 0.08);
-		color: #1e2d3d;
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		color: #e0e4ea;
 		transition: transform 180ms ease, background-color 180ms ease;
 	}
 
 	.feature-card:hover {
 		transform: translateY(-2px);
-		background: rgba(255, 255, 255, 0.9);
+		background: rgba(255, 255, 255, 0.08);
 	}
 
 	.feature-card h3 {
 		margin: 0;
-		color: #0f1a2e;
+		color: #eef1f6;
 		font-size: 1.08rem;
 		line-height: 1.35;
 	}
@@ -726,7 +726,7 @@
 		margin: 0.55rem 0 0;
 		font-size: 0.95rem;
 		line-height: 1.65;
-		color: rgba(18, 40, 70, 0.75);
+		color: rgba(220, 225, 235, 0.72);
 	}
 
 	.feature-card-cta {
@@ -737,7 +737,7 @@
 		font-weight: 600;
 		text-decoration: underline;
 		text-underline-offset: 3px;
-		color: #1e4080;
+		color: #7db4e8;
 		font-size: 0.88rem;
 	}
 
@@ -880,8 +880,8 @@
 	/* ── Sektion 9: Avslutande CTA ── */
 	.final-cta-section {
 		padding: clamp(3rem, 8vw, 5.5rem) 1.25rem;
-		background: #edf2f9;
-		color: #1e2d3d;
+		background: #141e2e;
+		color: #e0e4ea;
 		text-align: center;
 	}
 
@@ -895,14 +895,14 @@
 		font-family: var(--font-heading);
 		font-weight: 700;
 		font-size: clamp(1.6rem, 3vw, 2.3rem);
-		color: #1e2d3d;
+		color: #eef1f6;
 	}
 
 	.final-cta-inner p {
 		margin: 0.75rem 0 0;
 		font-family: var(--font-body);
 		line-height: 1.7;
-		color: #4f6070;
+		color: rgba(220, 225, 235, 0.78);
 	}
 
 	.final-cta-actions {
@@ -919,7 +919,9 @@
 	}
 
 	.final-cta-actions .hero-cta-link {
-		color: #1e4a7a;
+		color: rgba(220, 225, 235, 0.82);
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 
 	/* ── Gemensamma typografi ── */
@@ -999,160 +1001,13 @@
 
 	}
 
-	/* ── Dark mode ── */
-	:global(.dark) .first-step {
-		background: #111827;
-		color: #e8e8f0;
-	}
-
-	:global(.dark) .first-step-inner h2 {
-		color: #f0f2fa;
-	}
-
-	:global(.dark) .first-step-body {
-		color: rgba(220, 228, 245, 0.72);
-	}
-
-	:global(.dark) .support-point {
-		background: #1a2235;
-		border-color: rgba(120, 160, 220, 0.12);
-	}
-
-	:global(.dark) .support-label {
-		color: #7eb0d8;
-	}
-
-	:global(.dark) .support-text {
-		color: rgba(220, 228, 245, 0.72);
-	}
-
-	:global(.dark) .entry-paths {
-		background: #101825;
-		color: #e8e8f0;
-	}
-
-	:global(.dark) .entry-inner h2 {
-		color: #f0f2fa;
-	}
-
-	:global(.dark) .entry-intro,
-	:global(.dark) .entry-card p {
-		color: rgba(220, 228, 245, 0.72);
-	}
-
-	:global(.dark) .entry-card {
-		background: #1a2235;
-		border-color: rgba(120, 160, 220, 0.12);
-		color: #e8e8f0;
-	}
-
-	:global(.dark) .entry-card:hover {
-		background: #1f2a40;
-		border-color: rgba(120, 160, 220, 0.2);
-	}
-
-	:global(.dark) .entry-card h3 {
-		color: #f0f2fa;
-	}
-
-	:global(.dark) .entry-card-cta {
-		background: rgba(125, 211, 252, 0.12);
-		color: #7dd3fc;
-	}
-
-	:global(.dark) .how-it-works {
-		background: #0d1520;
-		color: #e8e8f0;
-	}
-
-	:global(.dark) .how-eyebrow {
-		color: #7eb0d8;
-	}
-
-	:global(.dark) .how-inner h2 {
-		color: #f0f2fa;
-	}
-
-	:global(.dark) .how-card p {
-		color: rgba(220, 228, 245, 0.72);
-	}
-
-	:global(.dark) .how-card {
-		background: #162030;
-		border-color: rgba(120, 160, 220, 0.12);
-	}
-
-	:global(.dark) .how-step {
-		background: rgba(125, 211, 252, 0.1);
-		color: #b8d8f0;
-	}
-
-	:global(.dark) .how-card h3 {
-		color: #f0f2fa;
-	}
-
-	:global(.dark) .how-card-cta {
-		background: rgba(125, 211, 252, 0.12);
-		color: #7dd3fc;
-	}
-
-	:global(.dark) .features-section {
-		background: #0d1520;
-		color: #e8e8f0;
-	}
-
-	:global(.dark) .features-inner h2 {
-		color: #f0f2fa;
-	}
-
-	:global(.dark) .feature-card {
-		background: #1a2235;
-		border-color: rgba(120, 160, 220, 0.12);
-		color: #e8e8f0;
-	}
-
-	:global(.dark) .feature-card:hover {
-		background: #1f2a40;
-	}
-
-	:global(.dark) .feature-card h3 {
-		color: #f0f2fa;
-	}
-
-	:global(.dark) .feature-card p {
-		color: rgba(220, 228, 245, 0.72);
-	}
-
-	:global(.dark) .feature-card-cta {
-		color: #7dd3fc;
-	}
-
-	:global(.dark) .review-section {
-		background: #0f1a24;
-	}
-
-	:global(.dark) .trust-section {
-		background: #0f1a24;
-	}
-
-	:global(.dark) .important-section {
-		background: #0d151e;
-	}
-
-	:global(.dark) .final-cta-section {
-		background: #101825;
-		color: #e8e8f0;
-	}
-
-	:global(.dark) .final-cta-inner h2 {
-		color: #f0f2fa;
-	}
-
-	:global(.dark) .final-cta-inner p {
-		color: rgba(220, 228, 245, 0.72);
-	}
-
-	:global(.dark) .final-cta-actions .hero-cta-link {
-		color: rgba(220, 228, 245, 0.85);
-	}
+	/* ── Dark mode — base is already dark, just deepen slightly ── */
+	:global(.dark) .first-step { background: #0d1520; }
+	:global(.dark) .entry-paths { background: #0b1320; }
+	:global(.dark) .how-it-works { background: #0e1826; }
+	:global(.dark) .features-section { background: #0b1320; }
+	:global(.dark) .final-cta-section { background: #0d1520; }
+	:global(.dark) .review-section { background: #0a1018; }
+	:global(.dark) .trust-section { background: #0a1018; }
+	:global(.dark) .important-section { background: #080e16; }
 </style>
