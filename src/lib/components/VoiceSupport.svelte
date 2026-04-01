@@ -12,6 +12,13 @@
 	let retell;
 	let active = false;
 	let hasSensitiveDataConsent = false;
+	let copied = $state(false);
+
+	function copyNumber() {
+		navigator.clipboard.writeText('+1 (567) 292-1889');
+		copied = true;
+		setTimeout(() => { copied = false; }, 2000);
+	}
 
 	onMount(() => {
 		hasSensitiveDataConsent = hasSensitiveConsent();
@@ -50,7 +57,7 @@
 		Om du hellre vill prata med en människa finns <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Stödlinjer</a>. Vid akut fara, ring 112.
 	</p>
 	{#if hasSensitiveDataConsent}
-		<button on:click={startCall} aria-label="Starta röstsamtal med MittPsyke">
+		<button onclick={startCall} aria-label="Starta röstsamtal med MittPsyke">
 			{active ? 'Samtal igång...' : 'Starta samtalsstöd i text'}
 		</button>
 	{:else}
@@ -66,6 +73,12 @@
 	<a class="voice-support-call-button" href="tel:+15672921889" aria-label="Ring AI-samtalsstöd på +15672921889">
 		Ring AI-samtalsstöd
 	</a>
+	<div class="voice-support-number">
+		<p class="phone-number">+1 (567) 292-1889</p>
+		<button class="copy-btn" onclick={copyNumber} aria-label="Kopiera telefonnummer">
+			{copied ? 'Kopierat!' : 'Kopiera nummer'}
+		</button>
+	</div>
 </section>
 
 <style>
@@ -131,6 +144,39 @@
 	.voice-support-call-button:hover {
 		background: #2e66b8;
 		transform: translateY(-2px);
+	}
+
+	.voice-support-number {
+		margin-top: 1rem;
+	}
+
+	.phone-number {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: 1.15rem;
+		font-weight: 600;
+		letter-spacing: 0.03em;
+		color: #eef1f6;
+		user-select: all;
+	}
+
+	.copy-btn {
+		background: transparent;
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		color: rgba(220, 225, 235, 0.7);
+		padding: 0.3rem 0.7rem;
+		border-radius: 6px;
+		font-size: 0.78rem;
+		cursor: pointer;
+		margin-top: 0.35rem;
+		transition: border-color 0.15s ease, color 0.15s ease;
+	}
+
+	.copy-btn:hover {
+		border-color: rgba(148, 163, 184, 0.4);
+		color: #eef1f6;
+		background: transparent;
+		transform: none;
 	}
 
 	:global(.dark) .voice-support {
