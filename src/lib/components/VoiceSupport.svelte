@@ -72,9 +72,9 @@
 	.voice-support {
 		padding: clamp(1.8rem, 4vw, 2.8rem) 1.25rem;
 		text-align: center;
-		background: #eef2f0;
-		color: #2c3338;
-		border-top: 1px solid #dde5e1;
+		background: #141e2e;
+		color: #e0e4ea;
+		border-top: 1px solid rgba(148, 163, 184, 0.12);
 	}
 
 	.voice-support h2 {
@@ -83,13 +83,13 @@
 		font-weight: 700;
 		font-size: clamp(1.15rem, 2vw, 1.4rem);
 		letter-spacing: -0.015em;
-		color: #263036;
+		color: #eef1f6;
 	}
 
 	.voice-support p {
 		margin: 0 auto 0.9rem;
 		max-width: 52ch;
-		color: #516069;
+		color: rgba(220, 225, 235, 0.78);
 		font-family: var(--font-body);
 		font-weight: 400;
 		line-height: 1.65;
@@ -101,7 +101,7 @@
 	}
 
 	.voice-support-note a {
-		color: #0f766e;
+		color: #7db4e8;
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
@@ -114,7 +114,7 @@
 
 	button,
 	.voice-support-call-button {
-		background: #6b8e7a;
+		background: #3a7bd5;
 		color: white;
 		border: none;
 		padding: 10px 20px;
@@ -129,24 +129,11 @@
 
 	button:hover,
 	.voice-support-call-button:hover {
-		background: #557a66;
+		background: #2e66b8;
 		transform: translateY(-2px);
 	}
 
 	:global(.dark) .voice-support {
-		background: #1e2422;
-		color: #e8e6e2;
-	}
-
-	:global(.dark) .voice-support h2 {
-		color: #f0eeea;
-	}
-
-	:global(.dark) .voice-support p {
-		color: rgba(255, 255, 255, 0.65);
-	}
-
-	:global(.dark) .voice-support-note a {
-		color: #9ad7ce;
+		background: #0d1520;
 	}
 </style>
