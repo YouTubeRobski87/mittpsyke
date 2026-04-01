@@ -10,8 +10,8 @@
 	} from '$lib/consent';
 
 	let retell;
-	let active = false;
-	let hasSensitiveDataConsent = false;
+	let active = $state(false);
+	let hasSensitiveDataConsent = $state(false);
 	let copied = $state(false);
 
 	function copyNumber() {
