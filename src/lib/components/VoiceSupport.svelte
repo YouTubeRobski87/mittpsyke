@@ -51,7 +51,7 @@
 	</p>
 	{#if hasSensitiveDataConsent}
 		<button on:click={startCall} aria-label="Starta röstsamtal med MittPsyke">
-			{active ? 'Samtal igång...' : 'Prata med MittPsyke'}
+			{active ? 'Samtal igång...' : 'Starta samtalsstöd i text'}
 		</button>
 	{:else}
 		<div class="voice-support-consent">
