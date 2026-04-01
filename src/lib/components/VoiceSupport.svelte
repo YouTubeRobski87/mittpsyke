@@ -50,15 +50,15 @@
 </script>
 
 <section id="roststod" class="voice-support">
-	<h2>Prata direkt här</h2>
-	<p>Du kan också prata direkt med MittPsykes AI-baserade samtalsstöd här på sidan.</p>
-	<p>Det är till för reflektion och stöd i vardagen. Det ersätter inte vård eller ställer diagnos.</p>
+	<h2>Prata med AI-stöd direkt här</h2>
+	<p>Om det känns lättare kan du också prata direkt med MittPsykes AI-baserade röststöd här på sidan.</p>
+	<p>Du väljer själv om du vill skriva eller prata. Det är till för reflektion och stöd i vardagen. Det ersätter inte vård eller ställer diagnos.</p>
 	<p class="voice-support-note">
 		Om du hellre vill prata med en människa finns <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Stödlinjer</a>. Vid akut fara, ring 112.
 	</p>
 	{#if hasSensitiveDataConsent}
 		<button onclick={startCall} aria-label="Starta röstsamtal med MittPsyke">
-			{active ? 'Samtal igång...' : 'Starta samtalsstöd i text'}
+			{active ? 'AI-röstsamtal igång...' : 'Starta AI-röstsamtal'}
 		</button>
 	{:else}
 		<div class="voice-support-consent">

@@ -136,7 +136,7 @@
 			<div class="hero-content">
 				<p class="hero-eyebrow">När tankarna tynger och du inte vet var du ska börja</p>
 				<h1>Skriv av dig anonymt och få lugnt stöd i text.</h1>
-				<p>MittPsyke är ett verktyg för reflektion och självhjälp. Börja direkt, utan konto — spara när du vill.</p>
+				<p>MittPsyke är ett verktyg för reflektion och självhjälp. Du kan välja att skriva eller prata med AI-stöd, utan konto, och spara när du vill.</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Skriv anonymt — börja nu</a>
 					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Eller skapa ett gratis konto</a>
@@ -195,7 +195,7 @@
 		<div class="cards-narrow entry-inner">
 			<h2 id="entry-paths-title">Välj var du vill börja</h2>
 			<p class="entry-intro">
-				Du behöver inte göra allt. Välj det som passar dig just nu.
+				Du behöver inte göra allt. Välj om du vill skriva eller prata med AI-stöd just nu.
 			</p>
 			<div class="entry-grid">
 				{#each entryPaths as path}
