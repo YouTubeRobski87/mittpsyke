@@ -10,65 +10,65 @@
 
 	const entryPaths = [
 		{
-			title: 'Skriv av dig',
-			description: 'Börja direkt med anonymt samtalsstöd i text.',
+			title: 'Skriv av dig i text',
+			description: 'Berätta hur du mår och få lugnt stöd direkt — anonymt, utan konto.',
 			href: '/skriv',
 			cta: 'Börja skriva'
 		},
 		{
 			title: 'Läs guider',
-			description: 'Förstå ångest, stress, trauma och andra vanliga tillstånd.',
+			description: 'Korta guider om ångest, stress, sömn och andra vanliga tillstånd.',
 			href: '/guider',
-			cta: 'Läs guider'
+			cta: 'Utforska guider'
 		},
 		{
-			title: 'Prova övningar',
-			description: 'Enkla övningar och små handlingar du kan göra idag.',
+			title: 'Prova en övning',
+			description: 'Andning, grounding och andra övningar du kan göra just nu.',
 			href: '/ovningar',
 			cta: 'Se övningar'
 		},
 		{
 			title: 'Följ ditt mående',
-			description: 'Dagbok, humörspårning och framsteg — över tid.',
+			description: 'Dagbok och humörspårning som hjälper dig se mönster över tid.',
 			href: '/register',
-			cta: 'Skapa konto'
+			cta: 'Skapa konto gratis'
 		}
 	];
 
 	const supportPoints = [
 		{
-			label: 'Anonymt',
-			text: 'Skriv och få stöd direkt utan konto. Ingen profil skapas.'
+			label: 'Helt anonymt',
+			text: 'Inget konto behövs. Ingen data kopplas till dig som person.'
 		},
 		{
-			label: 'I din takt',
-			text: 'Chatta, skriv och bygg vidare i din egen takt när du är redo.'
+			label: 'I din egen takt',
+			text: 'Skriv när du vill, så lite eller mycket du vill. Inget schema, inga krav.'
 		},
 		{
 			label: 'Inte vård',
-			text: 'Självhjälp och reflektion i vardagen — inte ersättning för professionell hjälp.'
+			text: 'Ett stöd för reflektion i vardagen — inte ersättning för professionell hjälp.'
 		}
 	];
 
 	const features = [
 		{
 			title: 'Samtalsstöd i text',
-			description: 'Chatta om det du bär på och få lugna, stödjande svar i din egen takt.',
+			description: 'Beskriv hur du mår och få lugna, stödjande svar. Anonymt och utan tidspress.',
 			href: '/skriv'
 		},
 		{
-			title: 'Dagbok med olika stilar',
-			description: 'Skriv dagbok och reflektera vidare med frågor och röster som hjälper dig sätta ord på dagen.',
+			title: 'Dagbok med reflektion',
+			description: 'Skriv av dig och få följdfrågor som hjälper dig sätta ord på det du känner.',
 			href: '/dagbok'
 		},
 		{
 			title: 'Humörspårning',
-			description: 'Se hur ditt psykiska mående rör sig över tid. Mönster blir tydligare när du har något att gå tillbaka till.',
+			description: 'Logga hur du mår varje dag. Se mönster och förändringar över tid.',
 			href: '/humorsparning'
 		},
 		{
 			title: 'Guider och övningar',
-			description: 'Läs om ångest, stress och andra vanliga tillstånd, och hitta varsam självhjälp att börja med idag.',
+			description: 'Korta, lättlästa guider om ångest, stress och sömn — med övningar du kan prova direkt.',
 			href: '/guider'
 		}
 	];
@@ -105,15 +105,15 @@
 </script>
 
 <svelte:head>
-	<title>MittPsyke – anonymt stöd online, chatt och dagbok för psykiskt mående</title>
+	<title>MittPsyke – skriv av dig anonymt och få stöd i text</title>
 	<meta
 		name="description"
-		content="MittPsyke är en lugn plats för anonymt stöd online. Chatta, skriv dagbok och få stöd för reflektion, självhjälp och bättre förståelse för ditt psykiska mående i din egen takt."
+		content="MittPsyke är ett gratis verktyg för reflektion och självhjälp. Skriv av dig anonymt, för dagbok och förstå ditt mående bättre — utan konto, i din egen takt."
 	/>
-	<meta property="og:title" content="MittPsyke – anonymt stöd online, chatt och dagbok för psykiskt mående" />
+	<meta property="og:title" content="MittPsyke – skriv av dig anonymt och få stöd i text" />
 	<meta
 		property="og:description"
-		content="MittPsyke är en lugn plats för anonymt stöd online. Chatta, skriv dagbok och få stöd för reflektion, självhjälp och bättre förståelse för ditt psykiska mående i din egen takt."
+		content="MittPsyke är ett gratis verktyg för reflektion och självhjälp. Skriv av dig anonymt, för dagbok och förstå ditt mående bättre — utan konto, i din egen takt."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
@@ -134,14 +134,14 @@
 		/>
 		<div class="hero-shell">
 			<div class="hero-content">
-				<p class="hero-eyebrow">Om du mår dåligt och inte vet var du ska börja</p>
-				<h1>MittPsyke är en lugn plats för anonymt stöd online.</h1>
-				<p>Skriv av dig, chatta i text och reflektera i lugn takt, utan konto. Om du vill kan du spara det senare.</p>
+				<p class="hero-eyebrow">När tankarna tynger och du inte vet var du ska börja</p>
+				<h1>Skriv av dig anonymt och få lugnt stöd i text.</h1>
+				<p>MittPsyke är ett verktyg för reflektion och självhjälp. Börja direkt, utan konto — spara när du vill.</p>
 				<div class="hero-actions">
-					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
-					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Skapa konto senare</a>
+					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Skriv anonymt — börja nu</a>
+					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Eller skapa ett gratis konto</a>
 				</div>
-				<p class="hero-trust-note">Anonymt stöd online. Ingen registrering krävs.</p>
+				<p class="hero-trust-note">Gratis. Anonymt. Ingen registrering krävs.</p>
 			</div>
 		</div>
 	</section>
@@ -149,7 +149,7 @@
 	<!-- Social proof -->
 	<section class="review-section" aria-labelledby="review-section-title">
 		<div class="cards-narrow review-inner">
-			<h2 id="review-section-title">Ett lugnt första steg när kvällarna blir för tunga</h2>
+			<h2 id="review-section-title">Så beskriver andra sin upplevelse</h2>
 			<div class="review-grid">
 				<blockquote class="review-card">
 					<p>&ldquo;Jag behövde en plats att skriva av mig i lugn takt &ndash; utan att behöva börja med allt på en gång.&rdquo;</p>
@@ -175,9 +175,9 @@
 	<!-- 2. Ett första steg, i din egen takt -->
 	<section class="first-step" aria-labelledby="first-step-title">
 		<div class="cards-narrow first-step-inner">
-			<h2 id="first-step-title">Ett första steg, i din egen takt</h2>
+			<h2 id="first-step-title">Vad MittPsyke är</h2>
 			<p class="first-step-body">
-				AI-dagboken hjälper dig att skriva av dig, reflektera och sätta ord på hur du mår. Med lugnt stöd i text kan du förstå ditt mående bättre över tid, i din egen takt.
+				Ett digitalt verktyg där du kan skriva av dig, reflektera och förstå ditt mående bättre. Du får stöd i text — i din egen takt, helt anonymt om du vill.
 			</p>
 			<div class="support-points">
 				{#each supportPoints as point}
@@ -193,9 +193,9 @@
 	<!-- 3. Välj det som hjälper mest just nu -->
 	<section class="entry-paths" aria-labelledby="entry-paths-title">
 		<div class="cards-narrow entry-inner">
-			<h2 id="entry-paths-title">Välj det som hjälper mest just nu</h2>
+			<h2 id="entry-paths-title">Välj var du vill börja</h2>
 			<p class="entry-intro">
-				Välj det som känns närmast just nu.
+				Du behöver inte göra allt. Välj det som passar dig just nu.
 			</p>
 			<div class="entry-grid">
 				{#each entryPaths as path}
@@ -213,31 +213,31 @@
 	<section class="how-it-works" aria-labelledby="how-it-works-title">
 		<div class="cards-narrow how-inner">
 			<p class="how-eyebrow">Så fungerar det</p>
-			<h2 id="how-it-works-title">Du kan börja enkelt och spara först när du vill.</h2>
+			<h2 id="how-it-works-title">Fyra steg — börja utan konto, spara när du vill.</h2>
 			<div class="how-grid">
 				<article class="how-card">
 					<span class="how-step">01</span>
-					<h3>Börja anonymt</h3>
-					<p>Välj ett tema och skriv fritt. Du får lugnt samtalsstöd i text, i din takt — utan konto.</p>
-					<a class="how-card-cta" href="/skriv">Börja skriva</a>
+					<h3>Skriv av dig</h3>
+					<p>Välj ett ämne och börja skriva. Du får stödjande svar i text, direkt — utan konto.</p>
+					<a class="how-card-cta" href="/skriv">Börja nu</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">02</span>
-					<h3>Skapa konto</h3>
-					<p>Spara dagbok och historik, och fortsätt där du slutade nästa gång.</p>
+					<h3>Skapa konto gratis</h3>
+					<p>Vill du spara din historik? Skapa ett konto och fortsätt där du slutade.</p>
 					<a class="how-card-cta" href="/register">Skapa konto</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">03</span>
-					<h3>Följ ditt mående</h3>
-					<p>Se hur du mår över tid med grafer och stämningslogg — mönster blir tydliga.</p>
-					<a class="how-card-cta" href="/dagbok">Se dagboken</a>
+					<h3>Se mönster över tid</h3>
+					<p>Logga ditt mående och se hur det förändras med humörspårning och dagbok.</p>
+					<a class="how-card-cta" href="/dagbok">Öppna dagboken</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">04</span>
-					<h3>Vidare stöd</h3>
-					<p>Röstsamtal finns på sidan. Vid akut fara: ring 112 eller kontakta 1177.</p>
-					<a class="how-card-cta" href="#roststod">Se stödvägar</a>
+					<h3>Hitta vidare stöd</h3>
+					<p>Behöver du mer hjälp? Här finns stödlinjer och kontaktvägar till vård.</p>
+					<a class="how-card-cta" href="#roststod">Visa stödvägar</a>
 				</article>
 			</div>
 		</div>
@@ -246,13 +246,13 @@
 	<!-- 5. Vad du kan använda MittPsyke till -->
 	<section class="features-section" aria-labelledby="features-title">
 		<div class="cards-narrow features-inner">
-			<h2 id="features-title">Vad du kan använda MittPsyke till</h2>
+			<h2 id="features-title">Verktyg som ingår</h2>
 			<div class="features-grid">
 				{#each features as feature}
 					<a class="feature-card" href={feature.href}>
 						<h3>{feature.title}</h3>
 						<p>{feature.description}</p>
-						<span class="feature-card-cta">Läs mer</span>
+						<span class="feature-card-cta">Prova {feature.title.toLowerCase()}</span>
 					</a>
 				{/each}
 			</div>
@@ -266,12 +266,12 @@
 		<div class="cards-narrow trust-inner">
 			<img src="/assets/home/Tryggplats.png" alt="Illustration av en trygg plats i naturen" loading="lazy" class="trust-image" />
 			<div class="trust-copy">
-				<h2 id="trust-title">Tryggt, varsamt och tydligt avgränsat</h2>
+				<h2 id="trust-title">Byggt för trygghet, inte för vård</h2>
 				<p>
-					MittPsyke är byggt för lugn reflektion i egen takt. Det är inte vård eller behandling, men kan vara en första plats att landa innan du tar nästa steg.
+					MittPsyke är ett verktyg för reflektion och självhjälp — inte vård, behandling eller diagnos. Det kan vara ett första steg innan du söker professionell hjälp.
 				</p>
 				<p class="trust-privacy">
-					Vill du läsa mer om vad som sparas?
+					Anonyma samtal sparas inte kopplat till dig.
 					<a href="/integritet">Läs integritetspolicyn</a>.
 				</p>
 				<p class="trust-research">
@@ -292,11 +292,11 @@
 	<!-- 9. Avslutande CTA -->
 	<section class="final-cta-section" aria-label="Kom igång">
 		<div class="final-cta-inner">
-			<h2>Redo att ta ett första steg?</h2>
-			<p>Du behöver inte veta exakt vad du vill säga. Börja skriva, chatta i text och reflektera i din egen takt.</p>
+			<h2>Du behöver inte veta vad du ska säga.</h2>
+			<p>Börja skriv, så möter vi dig där du är. Anonymt, i text, i din egen takt.</p>
 			<div class="final-cta-actions">
-				<a href="/skriv" class="hero-cta hero-cta-primary">Börja skriva anonymt</a>
-				<a href="/register" class="hero-cta-link">Skapa konto</a>
+				<a href="/skriv" class="hero-cta hero-cta-primary">Börja skriva nu</a>
+				<a href="/register" class="hero-cta-link">Skapa konto gratis</a>
 			</div>
 		</div>
 	</section>
