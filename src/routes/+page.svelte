@@ -499,8 +499,10 @@
 
 	.support-point {
 		padding: 0.9rem 1rem;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+		border: 1px solid rgba(148, 163, 184, 0.12);
 		border-radius: var(--radius-card);
 	}
 
@@ -556,19 +558,19 @@
 		display: block;
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+		border: 1px solid rgba(148, 163, 184, 0.12);
 		color: #e0e4ea;
 		transition:
 			transform 180ms ease,
-			background-color 180ms ease,
 			border-color 180ms ease;
 	}
 
 	.entry-card:hover {
 		transform: translateY(-2px);
-		background: rgba(255, 255, 255, 0.08);
-		border-color: rgba(255, 255, 255, 0.14);
+		border-color: rgba(148, 163, 184, 0.22);
 	}
 
 	.entry-card h3 {
@@ -632,8 +634,10 @@
 	.how-card {
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		background: rgba(255, 255, 255, 0.04);
-		border: 1px solid rgba(255, 255, 255, 0.07);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+		border: 1px solid rgba(148, 163, 184, 0.12);
 	}
 
 	.how-step {
@@ -704,15 +708,17 @@
 		display: block;
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+		border: 1px solid rgba(148, 163, 184, 0.12);
 		color: #e0e4ea;
-		transition: transform 180ms ease, background-color 180ms ease;
+		transition: transform 180ms ease, border-color 180ms ease;
 	}
 
 	.feature-card:hover {
 		transform: translateY(-2px);
-		background: rgba(255, 255, 255, 0.08);
+		border-color: rgba(148, 163, 184, 0.22);
 	}
 
 	.feature-card h3 {
@@ -771,8 +777,10 @@
 	.review-card {
 		margin: 0;
 		padding: 1rem 1.1rem;
-		background: rgba(255, 255, 255, 0.06);
-		border: 1px solid rgba(255, 255, 255, 0.1);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+		border: 1px solid rgba(148, 163, 184, 0.12);
 		border-radius: var(--radius-card);
 	}
 
