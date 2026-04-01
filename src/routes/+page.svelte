@@ -407,8 +407,8 @@
 		font-size: 0.85rem;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		background: #8ca36a;
-		color: #182016;
+		background: #3a7bd5;
+		color: #ffffff;
 		font-weight: 700;
 		border-radius: var(--radius-pill);
 	}
@@ -437,8 +437,8 @@
 	}
 
 	.hero-cta-primary {
-		background: #8ca36a;
-		color: #182016;
+		background: #3a7bd5;
+		color: #ffffff;
 	}
 
 	.hero-cta-link {
@@ -465,8 +465,8 @@
 	/* ── Sektion 2: Första steget ── */
 	.first-step {
 		padding: clamp(2.5rem, 7vw, 4rem) 1.25rem;
-		background: #f7f9f8;
-		color: #2c3338;
+		background: #f5f8fc;
+		color: #1e2d3d;
 	}
 
 	.first-step-inner {
@@ -476,7 +476,7 @@
 
 	.first-step-inner h2 {
 		margin: 0;
-		color: #263036;
+		color: #1e2d3d;
 		font-family: var(--font-heading);
 		font-weight: 700;
 		font-size: clamp(1.5rem, 3vw, 2rem);
@@ -485,7 +485,7 @@
 	.first-step-body {
 		margin: 0.75rem 0 0;
 		max-width: 58ch;
-		color: #54626b;
+		color: #4f6070;
 		font-family: var(--font-body);
 		line-height: 1.7;
 	}
@@ -500,7 +500,7 @@
 	.support-point {
 		padding: 0.9rem 1rem;
 		background: #ffffff;
-		border: 1px solid #dde5e1;
+		border: 1px solid #d5dfe8;
 		border-radius: var(--radius-card);
 	}
 
@@ -511,21 +511,21 @@
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		color: #5f7067;
+		color: #3a6090;
 	}
 
 	.support-text {
 		margin: 0.3rem 0 0;
 		font-size: 0.95rem;
 		line-height: 1.65;
-		color: #5a686f;
+		color: #4f6070;
 	}
 
 	/* ── Sektion 3: Ingångar ── */
 	.entry-paths {
 		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
-		background: #eef2f0;
-		color: #2c3338;
+		background: #edf2f9;
+		color: #1e2d3d;
 	}
 
 	.cards-narrow {
@@ -535,14 +535,14 @@
 
 	.entry-inner h2 {
 		margin: 0;
-		color: #263036;
+		color: #1e2d3d;
 		font-size: clamp(1.55rem, 3vw, 2.1rem);
 	}
 
 	.entry-intro {
 		margin: 0.75rem 0 0;
 		max-width: 58ch;
-		color: #54626b;
+		color: #4f6070;
 	}
 
 	.entry-grid {
@@ -557,8 +557,8 @@
 		padding: 1rem;
 		border-radius: var(--radius-card);
 		background: #ffffff;
-		border: 1px solid #dde5e1;
-		color: #2c3338;
+		border: 1px solid #d5dfe8;
+		color: #1e2d3d;
 		transition:
 			transform 180ms ease,
 			background-color 180ms ease,
@@ -567,13 +567,13 @@
 
 	.entry-card:hover {
 		transform: translateY(-2px);
-		background: #fbfcfb;
-		border-color: #cfd8d4;
+		background: #f8fbff;
+		border-color: #bfcfe0;
 	}
 
 	.entry-card h3 {
 		margin: 0;
-		color: #273237;
+		color: #1e2b38;
 		font-size: 1.08rem;
 		line-height: 1.3;
 	}
@@ -582,7 +582,7 @@
 		margin: 0.55rem 0 0;
 		font-size: 0.95rem;
 		line-height: 1.65;
-		color: #5a686f;
+		color: #4f6070;
 	}
 
 	.entry-card-cta {
@@ -591,8 +591,8 @@
 		margin-top: 0.9rem;
 		padding: 0.42rem 0.78rem;
 		border-radius: var(--radius-pill);
-		background: #e7f1ee;
-		color: #2e5850;
+		background: #dceefa;
+		color: #1e4a7a;
 		font-family: var(--font-heading);
 		font-size: 0.83rem;
 		font-weight: 600;
@@ -613,12 +613,12 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: #5f7067;
+		color: #3a6090;
 	}
 
 	.how-inner h2 {
 		margin: 0;
-		color: #263036;
+		color: #1e2d3d;
 		font-size: clamp(1.55rem, 3vw, 2.05rem);
 	}
 
@@ -632,8 +632,8 @@
 	.how-card {
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		background: #f7f8f6;
-		border: 1px solid #e2e8e3;
+		background: #f5f8fc;
+		border: 1px solid #d5e2ee;
 	}
 
 	.how-step {
@@ -643,8 +643,8 @@
 		min-width: 2.3rem;
 		padding: 0.2rem 0.5rem;
 		border-radius: var(--radius-pill);
-		background: #e5ece7;
-		color: #4e6259;
+		background: #dae8f5;
+		color: #2a5080;
 		font-family: var(--font-heading);
 		font-size: 0.8rem;
 		font-weight: 700;
@@ -653,14 +653,14 @@
 
 	.how-card h3 {
 		margin: 0.8rem 0 0;
-		color: #273237;
+		color: #1e2b38;
 		font-size: 1.06rem;
 		line-height: 1.3;
 	}
 
 	.how-card p {
 		margin: 0.55rem 0 0;
-		color: #5a686f;
+		color: #4f6070;
 		font-size: 0.95rem;
 		line-height: 1.65;
 	}
@@ -671,8 +671,8 @@
 		margin-top: 0.9rem;
 		padding: 0.42rem 0.78rem;
 		border-radius: var(--radius-pill);
-		background: #e7f1ee;
-		color: #2e5850;
+		background: #dceefa;
+		color: #1e4a7a;
 		font-family: var(--font-heading);
 		font-size: 0.83rem;
 		font-weight: 600;
@@ -683,13 +683,13 @@
 	/* ── Sektion 5: Funktioner ── */
 	.features-section {
 		padding: clamp(2.5rem, 7vw, 3.9rem) 1.25rem;
-		background: #f3f0e8;
-		color: #2c3338;
+		background: #f0f4f9;
+		color: #1e2d3d;
 	}
 
 	.features-inner h2 {
 		margin: 0;
-		color: #263036;
+		color: #1e2d3d;
 		font-size: clamp(1.5rem, 3vw, 2rem);
 	}
 
@@ -705,8 +705,8 @@
 		padding: 1rem;
 		border-radius: var(--radius-card);
 		background: rgba(255, 255, 255, 0.72);
-		border: 1px solid rgba(24, 32, 22, 0.08);
-		color: #2c3338;
+		border: 1px solid rgba(18, 40, 70, 0.08);
+		color: #1e2d3d;
 		transition: transform 180ms ease, background-color 180ms ease;
 	}
 
@@ -717,7 +717,7 @@
 
 	.feature-card h3 {
 		margin: 0;
-		color: #182016;
+		color: #0f1a2e;
 		font-size: 1.08rem;
 		line-height: 1.35;
 	}
@@ -726,7 +726,7 @@
 		margin: 0.55rem 0 0;
 		font-size: 0.95rem;
 		line-height: 1.65;
-		color: rgba(24, 32, 22, 0.82);
+		color: rgba(18, 40, 70, 0.75);
 	}
 
 	.feature-card-cta {
@@ -737,7 +737,7 @@
 		font-weight: 600;
 		text-decoration: underline;
 		text-underline-offset: 3px;
-		color: #234235;
+		color: #1e4080;
 		font-size: 0.88rem;
 	}
 
@@ -855,7 +855,7 @@
 
 	.trust-privacy a,
 	.trust-research a {
-		color: #9ad7ce;
+		color: #93c5fd;
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
@@ -880,8 +880,8 @@
 	/* ── Sektion 9: Avslutande CTA ── */
 	.final-cta-section {
 		padding: clamp(3rem, 8vw, 5.5rem) 1.25rem;
-		background: #eef2f0;
-		color: #2c3338;
+		background: #edf2f9;
+		color: #1e2d3d;
 		text-align: center;
 	}
 
@@ -895,14 +895,14 @@
 		font-family: var(--font-heading);
 		font-weight: 700;
 		font-size: clamp(1.6rem, 3vw, 2.3rem);
-		color: #263036;
+		color: #1e2d3d;
 	}
 
 	.final-cta-inner p {
 		margin: 0.75rem 0 0;
 		font-family: var(--font-body);
 		line-height: 1.7;
-		color: #54626b;
+		color: #4f6070;
 	}
 
 	.final-cta-actions {
@@ -914,12 +914,12 @@
 	}
 
 	.final-cta-actions .hero-cta {
-		background: #8ca36a;
-		color: #182016;
+		background: #3a7bd5;
+		color: #ffffff;
 	}
 
 	.final-cta-actions .hero-cta-link {
-		color: #3a5a4a;
+		color: #1e4a7a;
 	}
 
 	/* ── Gemensamma typografi ── */
@@ -1001,130 +1001,130 @@
 
 	/* ── Dark mode ── */
 	:global(.dark) .first-step {
-		background: #131918;
-		color: #e8e6e2;
+		background: #111827;
+		color: #e8e8f0;
 	}
 
 	:global(.dark) .first-step-inner h2 {
-		color: #f0eeea;
+		color: #f0f2fa;
 	}
 
 	:global(.dark) .first-step-body {
-		color: rgba(255, 255, 255, 0.68);
+		color: rgba(220, 228, 245, 0.72);
 	}
 
 	:global(.dark) .support-point {
-		background: #202624;
-		border-color: rgba(255, 255, 255, 0.08);
+		background: #1a2235;
+		border-color: rgba(120, 160, 220, 0.12);
 	}
 
 	:global(.dark) .support-label {
-		color: #9cb0a6;
+		color: #7eb0d8;
 	}
 
 	:global(.dark) .support-text {
-		color: rgba(255, 255, 255, 0.68);
+		color: rgba(220, 228, 245, 0.72);
 	}
 
 	:global(.dark) .entry-paths {
-		background: #151b19;
-		color: #e8e6e2;
+		background: #101825;
+		color: #e8e8f0;
 	}
 
 	:global(.dark) .entry-inner h2 {
-		color: #f0eeea;
+		color: #f0f2fa;
 	}
 
 	:global(.dark) .entry-intro,
 	:global(.dark) .entry-card p {
-		color: rgba(255, 255, 255, 0.68);
+		color: rgba(220, 228, 245, 0.72);
 	}
 
 	:global(.dark) .entry-card {
-		background: #202624;
-		border-color: rgba(255, 255, 255, 0.08);
-		color: #e8e6e2;
+		background: #1a2235;
+		border-color: rgba(120, 160, 220, 0.12);
+		color: #e8e8f0;
 	}
 
 	:global(.dark) .entry-card:hover {
-		background: #252c29;
-		border-color: rgba(255, 255, 255, 0.14);
+		background: #1f2a40;
+		border-color: rgba(120, 160, 220, 0.2);
 	}
 
 	:global(.dark) .entry-card h3 {
-		color: #f0eeea;
+		color: #f0f2fa;
 	}
 
 	:global(.dark) .entry-card-cta {
-		background: rgba(134, 223, 214, 0.12);
-		color: #86dfd6;
+		background: rgba(125, 211, 252, 0.12);
+		color: #7dd3fc;
 	}
 
 	:global(.dark) .how-it-works {
-		background: #121414;
-		color: #e8e6e2;
+		background: #0d1520;
+		color: #e8e8f0;
 	}
 
 	:global(.dark) .how-eyebrow {
-		color: #99afa4;
+		color: #7eb0d8;
 	}
 
 	:global(.dark) .how-inner h2 {
-		color: #f0eeea;
+		color: #f0f2fa;
 	}
 
 	:global(.dark) .how-card p {
-		color: rgba(255, 255, 255, 0.68);
+		color: rgba(220, 228, 245, 0.72);
 	}
 
 	:global(.dark) .how-card {
-		background: #1d2221;
-		border-color: rgba(255, 255, 255, 0.08);
+		background: #162030;
+		border-color: rgba(120, 160, 220, 0.12);
 	}
 
 	:global(.dark) .how-step {
-		background: rgba(255, 255, 255, 0.08);
-		color: #c9d8d0;
+		background: rgba(125, 211, 252, 0.1);
+		color: #b8d8f0;
 	}
 
 	:global(.dark) .how-card h3 {
-		color: #f0eeea;
+		color: #f0f2fa;
 	}
 
 	:global(.dark) .how-card-cta {
-		background: rgba(134, 223, 214, 0.12);
-		color: #86dfd6;
+		background: rgba(125, 211, 252, 0.12);
+		color: #7dd3fc;
 	}
 
 	:global(.dark) .features-section {
-		background: #131918;
-		color: #e8e6e2;
+		background: #0d1520;
+		color: #e8e8f0;
 	}
 
 	:global(.dark) .features-inner h2 {
-		color: #f0eeea;
+		color: #f0f2fa;
 	}
 
 	:global(.dark) .feature-card {
-		background: #202624;
-		border-color: rgba(255, 255, 255, 0.08);
-		color: #e8e6e2;
+		background: #1a2235;
+		border-color: rgba(120, 160, 220, 0.12);
+		color: #e8e8f0;
 	}
 
 	:global(.dark) .feature-card:hover {
-		background: #252c29;
+		background: #1f2a40;
 	}
 
 	:global(.dark) .feature-card h3 {
-		color: #f0eeea;
+		color: #f0f2fa;
 	}
 
 	:global(.dark) .feature-card p {
-		color: rgba(255, 255, 255, 0.68);
+		color: rgba(220, 228, 245, 0.72);
 	}
 
 	:global(.dark) .feature-card-cta {
-		color: #86dfd6;
+		color: #7dd3fc;
 	}
 
 	:global(.dark) .review-section {
@@ -1140,19 +1140,19 @@
 	}
 
 	:global(.dark) .final-cta-section {
-		background: #151b19;
-		color: #e8e6e2;
+		background: #101825;
+		color: #e8e8f0;
 	}
 
 	:global(.dark) .final-cta-inner h2 {
-		color: #f0eeea;
+		color: #f0f2fa;
 	}
 
 	:global(.dark) .final-cta-inner p {
-		color: rgba(255, 255, 255, 0.68);
+		color: rgba(220, 228, 245, 0.72);
 	}
 
 	:global(.dark) .final-cta-actions .hero-cta-link {
-		color: rgba(255, 255, 255, 0.82);
+		color: rgba(220, 228, 245, 0.85);
 	}
 </style>
