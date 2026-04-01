@@ -266,7 +266,7 @@
 		<div class="cards-narrow trust-inner">
 			<img src="/assets/home/Tryggplats.png" alt="Illustration av en trygg plats i naturen" loading="lazy" class="trust-image" />
 			<div class="trust-copy">
-				<h2 id="trust-title">Byggt för trygghet, inte för vård</h2>
+				<h2 id="trust-title">För stöd och reflektion — inte för vård eller diagnos</h2>
 				<p>
 					MittPsyke är ett verktyg för reflektion och självhjälp — inte vård, behandling eller diagnos. Det kan vara ett första steg innan du söker professionell hjälp.
 				</p>
