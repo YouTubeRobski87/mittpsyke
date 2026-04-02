@@ -2934,6 +2934,10 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 		],
 		relatedArticles: [
 			{
+				title: 'När bruk blir ett sätt att stå ut',
+				href: '/guider-seo/beroende/nar-bruk-blir-ett-satt-att-sta-ut'
+			},
+			{
 				title: 'Första steg när man vet att något inte är bra',
 				href: '/guider-seo/beroende/forsta-steg-nar-man-vet-att-nagot-inte-ar-bra'
 			},
@@ -3067,12 +3071,131 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 		],
 		relatedArticles: [
 			{
+				title: 'När bruk blir ett sätt att stå ut',
+				href: '/guider-seo/beroende/nar-bruk-blir-ett-satt-att-sta-ut'
+			},
+			{
 				title: 'Att vilja sluta och inte vilja samtidigt',
 				href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
 			},
 			{
 				title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper',
 				href: '/guider-seo/stress/varfor-orkar-jag-ingenting'
+			},
+			{
+				title: 'Nedstämdhet eller depression',
+				href: '/guider-seo/depression/nedstamdhet'
+			}
+		]
+	},
+	{
+		pillarSlug: 'beroende',
+		slug: 'nar-bruk-blir-ett-satt-att-sta-ut',
+		nextStepTool: 'daglig-reflektionsmall',
+		title: 'När bruk blir ett sätt att stå ut',
+		description:
+			'Ibland börjar det inte som ett tydligt problem, utan som något som hjälper dig igenom dagen. Något som lindrar, dämpar eller gör det lättare att stå ut en stund.',
+		seoTitle: 'När bruk blir ett sätt att stå ut | MittPsyke',
+		seoDescription:
+			'Om när bruk blir ett sätt att stå ut med ångest, tomhet eller stress. Om gradvis normalisering, kontrollförlust, små tecken och stöd innan allt känns allvarligt.',
+		updatedAt: '2026-04-02',
+		sources: [
+			{
+				label: '1177 Vårdguiden – Beroende och skadligt bruk',
+				url: 'https://www.1177.se/sjukdomar--besvar/beroende-och-skadligt-bruk/'
+			},
+			{
+				label: 'Socialstyrelsen – Skadligt bruk och beroende',
+				url: 'https://www.socialstyrelsen.se/stod-i-livet/skadligt-bruk-och-beroende/'
+			}
+		],
+		content: `Ibland börjar det inte som ett tydligt problem. Det börjar som något som hjälper. Något som dämpar oro, skapar paus, gör kvällen lite tystare eller dagen lite mer uthärdlig. När man mår psykiskt dåligt kan det som ger lättnad i stunden snabbt få en större plats än man först tänkt.
+
+Det betyder inte att man från början ser vart det är på väg. Ofta känns det tvärtom ganska rimligt. Som ett sätt att klara sig. Som något tillfälligt. Just därför kan det vara svårt att märka när ett sätt att stå ut långsamt börjar bli ett mönster som kostar mer än det ger.
+
+## Det börjar inte alltid som ett tydligt problem
+
+Många tänker att destruktiva mönster borde kännas allvarliga direkt. Men så ser det sällan ut. När något först fungerar som lindring är det lätt att förstå det som en lösning, inte som ett varningstecken.
+
+Kanske märker man bara att det blir lättare att andas för en stund. Att tankarna tystnar lite. Att tomheten backar. Att man får en paus från sig själv. Om man redan bär på ångest, nedstämdhet, stress eller inre oro kan den sortens lättnad kännas väldigt betydelsefull.
+
+Det är därför många inte reagerar direkt. Det som senare känns självklart att ifrågasätta kunde tidigare kännas som det enda som hjälpte.
+
+## När något blir en strategi för att orka
+
+När livet känns tungt letar människor ofta efter sätt att hålla ihop. Ibland blir bruk en sådan strategi. Inte för att man vill tappa kontrollen, utan för att man försöker klara vardagen med det man har tillgång till just då.
+
+Det kan finnas något sorgligt i det, men också något mänskligt. Man försöker lindra det som gör ont. Man försöker fungera, sova, stå ut, slippa tänka eller få lite avstånd till det som trycker inifrån.
+
+Problemet är att en strategi som hjälper i stunden också kan börja styra mer än man vill. Inte över en natt, utan gradvis. Det som först kändes som ett val kan efter hand börja kännas som något man behöver för att orka med sådant som tidigare gick ändå.
+
+## Hur psykiskt mående och bruk kan hänga ihop
+
+Psykiskt mående och bruk går ofta in i varandra på sätt som är svåra att reda ut. Det är inte alltid lätt att veta vad som kom först. Kanske fanns ångest, sömnsvårigheter, skam eller nedstämdhet redan innan. Kanske har det blivit värre efterhand. Ofta pågår båda sakerna samtidigt och förstärker varandra.
+
+Det kan skapa mycket förvirring. Man kanske märker att man mår dåligt utan lindringen, men också att man mår dåligt av hur allt har blivit. Då är det lätt att fastna i känslan av att det inte finns något riktigt bra alternativ.
+
+Just den känslan gör ofta ambivalensen stark. En del av dig kanske vet att något inte håller. En annan del är rädd för vad som händer om du släpper det som ändå gett någon form av lättnad.
+
+## När lindring börjar kosta mer än den ger
+
+Förändringen känns inte alltid dramatisk. Ofta märks den i små förskjutningar. Att tankarna kretsar mer kring nästa tillfälle. Att man planerar dagen eller kvällen utifrån det. Att man lovar sig själv att hålla igen, men flyttar gränsen lite till. Att man behöver återhämta sig från något som från början skulle hjälpa.
+
+Det går också att fungera utåt samtidigt som mycket inuti börjar kretsa kring att få det att gå ihop. Många döljer mer än andra ser. Man fortsätter svara på jobbmejl, sköta vardagen och verka okej, samtidigt som skammen, upptagenheten eller tröttheten växer på insidan.
+
+Det är ofta först när kostnaden blivit större som man stannar upp. Inte alltid för att något rasat, utan för att man märker hur mycket kraft som går åt. Hur mycket tankar, energi och självrespekt som långsamt förbrukas.
+
+## Det är vanligt att vänja sig stegvis
+
+Människor vänjer sig vid mycket. Det gäller också sådant som egentligen inte känns bra. När något sker stegvis hinner man ofta normalisera det. Man anpassar rutiner. Man förklarar. Man jämför sig med värre bilder och tänker att det nog inte är så farligt.
+
+Det betyder inte att man är blind eller oärlig. Ofta betyder det bara att förändringen varit så gradvis att den inte känts tydlig medan den pågått. Man flyttar sina gränser lite i taget och märker först senare hur långt man kommit från det som en gång kändes rimligt.
+
+Just därför kan insikten komma sent. Inte för att man inte brytt sig, utan för att man hunnit vänja sig vid att leva nära något som långsamt tagit mer makt.
+
+## Små tecken att vara uppmärksam på
+
+Ibland finns det inga stora larm. Bara små tecken som återkommer. Att du tänker mer på bruket än du vill erkänna. Att du döljer mer än du trodde att du skulle. Att du förhandlar med dig själv. Att du känner skam, men samtidigt fortsätter. Att du märker att ditt psykiska mående blir svårare att förstå eftersom så mycket kretsar kring att lindra, återhämta sig eller hålla ihop.
+
+Ett annat tecken kan vara att du börjar tona ner din egen oro. Att du tänker att det inte räknas eftersom du fortfarande fungerar. Eller att du väntar på ett tydligare bevis för att få ta det på allvar.
+
+Men många problem ser länge ganska vanliga ut från utsidan. Det som gör ont syns inte alltid. Därför är det viktigt att inte bara lyssna på hur det ser ut, utan också på hur det faktiskt känns att leva i det.
+
+## Det går att söka stöd innan allt känns allvarligt
+
+Du behöver inte vänta tills allt blivit tydligt för alla andra. Du behöver inte heller vara helt säker på vad du vill göra. Det räcker att du märker att något har börjat ta mer plats än du mår bra av.
+
+Stöd kan börja mycket stilla. Med en ärlig tanke. Med att du slutar förminska det som skaver. Med att du berättar för någon att du inte riktigt litar på hur det här påverkar dig längre. Med att du söker professionellt stöd för att förstå vad som händer, innan du känner dig redo att fatta stora beslut.
+
+Det finns ingen rak väg här. För vissa börjar förändring med tydlig handling. För andra börjar den med att man vågar se sitt mönster utan att vända bort blicken direkt. Båda vägarna kan vara verkliga.
+
+Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig själv och ta ett första litet steg.`,
+		faqs: [
+			{
+				question: 'Är det vanligt att bruk börjar som ett sätt att stå ut?',
+				answer: 'Ja. För många börjar det som något som lindrar oro, tomhet eller stress i stunden, inte som ett tydligt problem.'
+			},
+			{
+				question: 'Varför märker man inte alltid att ett mönster blir destruktivt?',
+				answer: 'Ofta sker förändringen stegvis. Man vänjer sig, anpassar sig och flyttar sina gränser lite i taget, vilket gör det svårare att se helheten medan den pågår.'
+			},
+			{
+				question: 'Kan jag fungera utåt och ändå ha ett problem?',
+				answer: 'Ja. Många fungerar utåt samtidigt som mycket inuti kretsar kring skam, kontrollförlust, oro och att dölja hur mycket plats mönstret har tagit.'
+			},
+			{
+				question: 'Behöver allt kännas allvarligt innan jag söker stöd?',
+				answer: 'Nej. Du kan söka stöd så snart du märker att något påverkar ditt mående, din energi eller din vardag mer än du vill erkänna.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Att vilja sluta och inte vilja samtidigt',
+				href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
+			},
+			{
+				title: 'Första steg när man vet att något inte är bra',
+				href: '/guider-seo/beroende/forsta-steg-nar-man-vet-att-nagot-inte-ar-bra'
 			},
 			{
 				title: 'Nedstämdhet eller depression',
@@ -3737,6 +3860,10 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Det sker ofta gradvis',
 				body: 'Det som senare känns tydligt börjar ofta mycket stilla. Många vänjer sig, anpassar sig och märker först i efterhand hur mycket plats ett mönster har tagit.',
 				links: [
+					{
+						title: 'När bruk blir ett sätt att stå ut',
+						href: '/guider-seo/beroende/nar-bruk-blir-ett-satt-att-sta-ut'
+					},
 					{
 						title: 'Att vilja sluta och inte vilja samtidigt',
 						href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
