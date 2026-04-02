@@ -2934,6 +2934,10 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 		],
 		relatedArticles: [
 			{
+				title: 'Första steg när man vet att något inte är bra',
+				href: '/guider-seo/beroende/forsta-steg-nar-man-vet-att-nagot-inte-ar-bra'
+			},
+			{
 				title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper',
 				href: '/guider-seo/stress/varfor-orkar-jag-ingenting'
 			},
@@ -2944,6 +2948,135 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 			{
 				title: 'Orostankar som snurrar - när hjärnan inte kan stänga av',
 				href: '/guider-seo/angest/orostankar'
+			}
+		]
+	},
+	{
+		pillarSlug: 'beroende',
+		slug: 'forsta-steg-nar-man-vet-att-nagot-inte-ar-bra',
+		nextStepTool: 'daglig-reflektionsmall',
+		title: 'Första steg när man vet att något inte är bra',
+		description:
+			'Ibland räcker det att en ärlig tanke stannar kvar lite längre än vanligt. Att något inte känns hållbart längre, även om du ännu inte vet vad du ska göra åt det.',
+		seoTitle: 'Första steg när man vet att något inte är bra | MittPsyke',
+		seoDescription:
+			'Om de första stegen när du märker att något inte är bra: skam, ambivalens, trötthet, ärlighet och hur stöd kan sökas innan allt har rasat.',
+		updatedAt: '2026-04-02',
+		sources: [
+			{
+				label: '1177 Vårdguiden – Beroende och skadligt bruk',
+				url: 'https://www.1177.se/sjukdomar--besvar/beroende-och-skadligt-bruk/'
+			},
+			{
+				label: 'Socialstyrelsen – Skadligt bruk och beroende',
+				url: 'https://www.socialstyrelsen.se/stod-i-livet/skadligt-bruk-och-beroende/'
+			}
+		],
+		content: `Ibland börjar det med något väldigt litet. Inte ett beslut. Inte en stor vändpunkt. Bara en stilla känsla av att något inte längre känns riktigt hållbart. Att det som varit ett sätt att stå ut också har börjat kosta. Att du kanske tänker mer på det än du vill erkänna. Att du anpassar mer än du vill se.
+
+Det kan vara ett svårt läge att befinna sig i. Särskilt om du samtidigt är trött, skamsen eller rädd för vad det skulle innebära att ta situationen på allvar. Många väntar länge just där. Inte för att de inte förstår, utan för att första steget ofta känns större än det egentligen behöver vara.
+
+## Det första steget är sällan dramatiskt
+
+När man tänker på förändring är det lätt att föreställa sig något tydligt: att man bestämmer sig, säger allt högt, ändrar livet och aldrig ser tillbaka. Men för de flesta ser det inte ut så.
+
+Det första steget är ofta mycket mindre. Det kan vara att sluta avfärda sin egen oro. Att erkänna att något tar mer plats än man vill ge det. Att märka hur mycket kraft som går åt till att tänka runt det, planera runt det eller dölja hur det faktiskt känns.
+
+Det kan låta obetydligt. Men det är ofta där något börjar förändras på riktigt. Inte i prestationen, utan i ärligheten.
+
+## Man kan veta och ändå skjuta upp
+
+Det är vanligt att veta att något inte är bra och ändå inte göra något direkt. Många tror då att de bara saknar vilja. Men ofta handlar det om något mer komplicerat än så.
+
+Kanske finns en rädsla för att behöva ge upp det som trots allt hjälpt i stunden. Kanske finns en oro för vem man är utan det mönster man lutat sig mot. Kanske känns vardagen redan så tung att tanken på ytterligare kamp blir övermäktig.
+
+Så uppskjutandet betyder inte alltid att man inte bryr sig. Ibland betyder det att man är rädd, utmattad eller ännu inte redo att möta allt som kan komma upp till ytan. Det är mänskligt. Men det är också viktigt att inte fastna för länge i att bara vänta på rätt känsla.
+
+## Börja där sanningen är som minst hotfull
+
+Första steg behöver inte börja med att du berättar allt för någon annan. Om det känns för stort kan det börja mycket närmare dig själv.
+
+Det kan vara att skriva en enda ärlig mening. Att säga till dig själv att det här påverkar mig mer än jag vill erkänna. Att lägga märke till när skammen kommer in och försöker få dig att tona ner det. Att våga stanna kvar i tanken utan att direkt springa vidare.
+
+Ibland är det just det som gör att nästa steg alls blir möjligt. Inte att pressa fram mod, utan att göra sanningen lite mindre ensam.
+
+## Små steg är inte små om de är ärliga
+
+När man mår dåligt är det lätt att förakta små steg. De kan kännas otillräckliga, nästan löjliga. Särskilt om man jämför sig med en idé om hur förändring borde se ut.
+
+Men ett litet steg som är verkligt betyder ofta mer än ett stort löfte man inte orkar bära. Att läsa om stöd. Att spara ett nummer. Att skriva ner vad du faktiskt märker hos dig själv. Att säga till en person du litar på att något inte känns bra, utan att behöva ha en färdig förklaring.
+
+Den sortens steg förändrar kanske inte allt på en dag. Men de bryter ofta det mest nedbrytande i situationen: ensamheten, förnekelsen och känslan av att allt måste lösas på en gång.
+
+## Skammen vill gärna göra första steget senare
+
+Skam säger ofta att du ska vänta. Att du först borde förstå mer, skärpa dig mer, ha bättre kontroll eller bli säkrare på att det verkligen är ett problem. Den säger att det inte är illa nog än. Att andra har det värre. Att du bara överdriver.
+
+Det är därför många söker stöd sent, trots att de känt länge att något inte stämmer.
+
+Men att ta ett första steg tidigt är inte att göra en stor sak av ingenting. Det är att visa respekt för sitt eget mående innan allt blivit ännu tyngre. Du behöver inte bevisa sammanbrott för att få börja ta dig själv på allvar.
+
+## Stöd kan börja långt innan behandling känns möjligt
+
+För en del känns ord som behandling, beroendevård eller förändring så stora att de nästan stänger dörren direkt. Då kan det hjälpa att tänka mindre definitivt.
+
+Stöd kan i början bara betyda att du inte längre bär allt helt själv. Det kan vara ett första samtal med någon du har förtroende för. Det kan vara att kontakta vårdcentral, beroendemottagning eller socialtjänst för att höra vilka möjligheter som finns, utan att du måste ha bestämt allt i förväg. Det kan också vara att börja följa ditt eget mående och se sambanden tydligare.
+
+För många blir det lättare att röra sig framåt när de märker att stöd inte alltid kräver total säkerhet. Man får söka hjälp även mitt i tvekan.
+
+## Försök att inte kräva full klarhet av dig själv
+
+Många väntar på ett ögonblick av total övertygelse. En punkt där allt blir glasklart och viljan känns stark nog att bära hela vägen. Men så ser det sällan ut.
+
+Ofta kommer förändring medan man fortfarande tvivlar. Medan man fortfarande sörjer det man vill släppa. Medan man fortfarande skäms. Medan man fortfarande inte vet exakt hur livet ska bli i stället.
+
+Om du kräver full klarhet innan du får börja, finns risken att du blir kvar i samma cirkel länge. Det kan räcka att något i dig vet att detta inte känns bra längre. Det kan räcka som början.
+
+## Ett första steg kan vara att låta någon annan veta
+
+Det behöver inte vara ett långt samtal. Det behöver inte vara välformulerat. Ibland räcker en mening som: jag tror inte att det här är bra för mig längre. Eller: jag märker att jag försöker dölja mer än jag vill. Eller: jag vet inte vad jag ska göra, men jag vill inte fortsätta som om allt är vanligt.
+
+När något sägs högt händer ofta något viktigt. Inte för att allt blir lättare direkt, utan för att tystnaden tappar lite av sitt grepp. Det som varit instängt får en liten öppning.
+
+Och där, i något så enkelt som en ärlig mening, kan ett verkligt första steg börja.
+
+## Du behöver inte gå hela vägen i dag
+
+Om du vet att något inte är bra, men inte riktigt vet hur du ska börja, betyder det inte att det är för sent. Det betyder bara att du står i början av något som kan behöva få vara varsamt.
+
+Du behöver inte lösa allt nu. Du behöver inte lova mer än du kan bära. Du behöver inte vänta tills allt rasat. Ibland räcker det att sluta springa ifrån det du redan vet, och låta det bli sant en stund.
+
+Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig själv och ta ett första litet steg.`,
+		faqs: [
+			{
+				question: 'Vad kan ett första steg vara när jag vet att något inte är bra?',
+				answer: 'Ofta något mindre än man tror: en ärlig mening till dig själv, att skriva ner vad du märker, eller att låta någon du litar på veta att något inte känns hållbart.'
+			},
+			{
+				question: 'Måste jag vara helt säker innan jag söker stöd?',
+				answer: 'Nej. Många söker hjälp mitt i tvekan. Du behöver inte vara färdig med alla beslut för att få börja prata om det som känns svårt.'
+			},
+			{
+				question: 'Varför väntar så många så länge?',
+				answer: 'Skam, rädsla, trötthet och ambivalens gör ofta att människor skjuter upp första steget. Det betyder inte att problemet är oviktigt, bara att det är svårt att närma sig.'
+			},
+			{
+				question: 'Kan jag söka stöd innan allt blivit väldigt allvarligt?',
+				answer: 'Ja. Det är ofta klokt att söka stöd tidigt, innan mönstret hunnit ta ännu mer kraft och plats i livet.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Att vilja sluta och inte vilja samtidigt',
+				href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
+			},
+			{
+				title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper',
+				href: '/guider-seo/stress/varfor-orkar-jag-ingenting'
+			},
+			{
+				title: 'Nedstämdhet eller depression',
+				href: '/guider-seo/depression/nedstamdhet'
 			}
 		]
 	},
