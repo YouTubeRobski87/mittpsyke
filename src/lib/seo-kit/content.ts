@@ -3753,7 +3753,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			},
 			{
 				heading: 'Stöd kan sökas innan allt rasat',
-				body: 'Du behöver inte vänta på ett tydligt sammanbrott för att ta din situation på allvar. MittPsyke kan vara en lugn första ingång för reflektion, men ersätter inte vård.'
+				body: 'Du behöver inte vänta på ett tydligt sammanbrott för att ta din situation på allvar. MittPsyke kan vara en lugn första plats för reflektion, men ersätter inte vård.'
 			}
 		],
 		primaryLinks: [
@@ -3762,7 +3762,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
 			},
 			{ title: 'Börja skriva i dagboken', href: '/dagbok' },
-			{ title: 'Starta en lugn chatt', href: '/chat/b' }
+			{ title: 'Hitta vidare stöd', href: 'https://www.stodlinjer.se/' }
 		]
 	},
 

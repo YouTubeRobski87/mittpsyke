@@ -40,6 +40,7 @@
 				]
 	);
 	const faqs = $derived(landing?.faqs ?? []);
+	const hasSingleGuide = $derived(guides.length === 1);
 </script>
 
 <main class="guide-page mx-auto max-w-3xl px-4 py-10">
@@ -63,8 +64,8 @@
 	<h1 class="guide-title mt-3 text-3xl font-semibold tracking-tight">{landing?.h1 ?? pillar.title}</h1>
 	<p class="guide-copy mt-3 leading-relaxed">{landing?.intro ?? pillar.description}</p>
 
-	{#each contentSections as section}
-		<section class="guide-surface mt-6 rounded-xl p-4">
+	{#each contentSections as section, index}
+		<section class={`guide-surface rounded-xl p-4 ${index === 0 ? 'mt-8' : 'mt-6'}`}>
 			<h2 class="guide-heading text-xl font-semibold">{section.heading}</h2>
 			<p class="guide-copy mt-2 leading-relaxed">{section.body}</p>
 			{#if section.links?.length}
@@ -83,14 +84,21 @@
 			<p class="guide-copy mt-2 leading-relaxed">
 				När du vill läsa vidare kan du välja en fördjupning som passar just nu.
 			</p>
-			<ul class="mt-4 grid gap-3 md:grid-cols-2">
+			<ul class={`guide-card-grid mt-4 grid gap-3 ${hasSingleGuide ? 'single' : 'md:grid-cols-2'}`}>
 				{#each guides as guide}
-					<li class="guide-surface rounded-xl p-4">
+					<li class={`guide-surface rounded-xl p-4 ${hasSingleGuide ? 'guide-card-feature' : 'guide-card'}`}>
 						<a
-							class="guide-link block leading-relaxed hover:underline"
+							class="guide-link guide-card-link block leading-relaxed hover:underline"
 							href={`/guider/${guide.pillarSlug}/${guide.slug}`}
 						>
 							{guide.title}
+						</a>
+						<p class="guide-copy mt-2 leading-relaxed">{guide.description}</p>
+						<a
+							class="guide-card-cta mt-3 inline-flex hover:underline"
+							href={`/guider/${guide.pillarSlug}/${guide.slug}`}
+						>
+							Läs artikeln
 						</a>
 					</li>
 				{/each}
@@ -174,6 +182,27 @@
 			linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 252, 0.98));
 	}
 
+	.guide-card,
+	.guide-card-feature {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.guide-card-feature {
+		padding: 1.1rem 1.1rem 1rem;
+	}
+
+	.guide-card-link {
+		font-size: 1.02rem;
+		font-weight: 600;
+	}
+
+	.guide-card-cta {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: #0f766e;
+	}
+
 	.guide-link {
 		color: #0f766e;
 		text-decoration: underline;
@@ -205,6 +234,10 @@
 	}
 
 	:global(.dark) .guide-link {
+		color: #7dd3fc;
+	}
+
+	:global(.dark) .guide-card-cta {
 		color: #7dd3fc;
 	}
 </style>
