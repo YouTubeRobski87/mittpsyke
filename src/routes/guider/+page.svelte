@@ -14,7 +14,7 @@
 
 <SeoHead
 	title="Guider om psykisk hälsa – ångest, stress och mer | MittPsyke"
-	description="Samlade guider om ångest, stress, nedstämdhet, sömn och självkänsla. Skrivet för reflektion och förståelse i lugn takt."
+	description="Samlade guider om ångest, stress, nedstämdhet, sömn, självkänsla och beroende. Skrivet för reflektion och förståelse i lugn takt."
 	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
 />
 <BreadcrumbSchema crumbs={[{ name: 'Guider', url: '/guider' }]} />

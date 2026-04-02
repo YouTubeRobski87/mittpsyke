@@ -7,7 +7,7 @@
 
 <svelte:head>
 	<title>{buildTitle('Guider')}</title>
-	<meta name="description" content="Utforska guider inom ångest, depression, stress och trauma." />
+	<meta name="description" content="Utforska guider inom ångest, depression, stress, trauma och beroende." />
 	<meta name="robots" content="noindex, follow" />
 </svelte:head>
 

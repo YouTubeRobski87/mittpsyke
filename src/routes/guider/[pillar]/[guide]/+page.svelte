@@ -19,7 +19,8 @@
 		stress: '/stress',
 		ensamhet: '/ensamhet',
 		overtankande: '/oro',
-		kbt: '/kbt'
+		kbt: '/kbt',
+		beroende: '/guider/beroende'
 	};
 
 	const pillarRoute = $derived(pillarRoutes[data.pillar.slug] ?? null);
@@ -32,7 +33,7 @@
 		'@context': 'https://schema.org',
 		'@type': 'Article',
 		headline: data.guide.title,
-		description: data.guide.description,
+		description: data.guide.seoDescription ?? data.guide.description,
 		url: `https://www.mittpsyke.se${$page.url.pathname}`,
 		publisher: {
 			'@type': 'Organization',
@@ -78,8 +79,8 @@
 </script>
 
 <SeoHead
-	title={buildTitle(data.guide.title)}
-	description={data.guide.description}
+	title={data.guide.seoTitle ?? buildTitle(data.guide.title)}
+	description={data.guide.seoDescription ?? data.guide.description}
 	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
 />
 <BreadcrumbSchema

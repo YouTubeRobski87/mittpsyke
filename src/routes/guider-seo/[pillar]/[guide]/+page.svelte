@@ -16,7 +16,8 @@
 		stress: '/stress',
 		ensamhet: '/ensamhet',
 		overtankande: '/oro',
-		kbt: '/kbt'
+		kbt: '/kbt',
+		beroende: '/guider-seo/beroende'
 	};
 
 	const pillarRoute = $derived(pillarRoutes[data.pillar.slug] ?? null);
@@ -25,7 +26,7 @@
 		'@context': 'https://schema.org',
 		'@type': 'Article',
 		headline: data.guide.title,
-		description: data.guide.description,
+		description: data.guide.seoDescription ?? data.guide.description,
 		url: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`,
 		dateModified: data.guide.updatedAt ?? undefined,
 		author: [
@@ -106,8 +107,8 @@
 </script>
 
 <svelte:head>
-	<title>{buildTitle(data.guide.title)}</title>
-	<meta name="description" content={data.guide.description} />
+	<title>{data.guide.seoTitle ?? buildTitle(data.guide.title)}</title>
+	<meta name="description" content={data.guide.seoDescription ?? data.guide.description} />
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdArticle)}<\/script>`}
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdBreadcrumb)}<\/script>`}
 	{#if jsonLdFaq}

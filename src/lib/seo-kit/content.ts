@@ -26,6 +26,8 @@ export type Guide = {
 	nextStepTool?: string;
 	title: string;
 	description: string;
+	seoTitle?: string;
+	seoDescription?: string;
 	faqs: FaqItem[];
 	relatedArticles?: RelatedArticle[];
 	updatedAt?: string;
@@ -114,6 +116,12 @@ export const pillars: Pillar[] = [
 		title: 'KBT – Kognitiv beteendeterapi',
 		description: 'Förstå KBT-principer och prova tekniker du kan använda hemma för att hantera tankar, känslor och beteenden.',
 		chatPath: '/chat/a'
+	},
+	{
+		slug: 'beroende',
+		title: 'Beroende och missbruk',
+		description: 'Om skam, ambivalens, kontrollförlust och små steg mot stöd när något har börjat ta för stor plats.',
+		chatPath: '/chat/b'
 	}
 ];
 
@@ -2814,6 +2822,132 @@ Om de kroppsliga signalerna är ihållande — om du sover dåligt i månader, h
 		],
 	},
 
+	{
+		pillarSlug: 'beroende',
+		slug: 'att-vilja-sluta-och-inte-vilja-samtidigt',
+		nextStepTool: 'daglig-reflektionsmall',
+		title: 'Att vilja sluta och inte vilja samtidigt',
+		description:
+			'Det är inte ovanligt att förstå att något inte är bra för en, men ändå fortsätta. En del av dig kanske är trött, rädd eller less på hur det blivit.',
+		seoTitle: 'Att vilja sluta och inte vilja samtidigt | MittPsyke',
+		seoDescription:
+			'Det är vanligt att vilja sluta och ändå hålla fast. Om skam, ambivalens, kontrollförlust och första steg mot stöd när något tagit större plats än man vill erkänna.',
+		updatedAt: '2026-04-02',
+		sources: [
+			{
+				label: '1177 Vårdguiden – Beroende och skadligt bruk',
+				url: 'https://www.1177.se/sjukdomar--besvar/beroende-och-skadligt-bruk/'
+			},
+			{
+				label: 'Socialstyrelsen – Skadligt bruk och beroende',
+				url: 'https://www.socialstyrelsen.se/stod-i-livet/skadligt-bruk-och-beroende/'
+			}
+		],
+		content: `Det är inte ovanligt att förstå att något inte är bra för en, men ändå fortsätta. En del av dig kanske är trött, rädd eller less på hur det blivit. En annan del vill bara orka dagen, få tyst i huvudet eller slippa känna så mycket för en stund. Den där dragkampen kan vara svår att sätta ord på. Särskilt när skammen redan ligger nära.
+
+För många ser det heller inte allvarligt ut i början. Det som senare känns destruktivt kan först kännas som något man har kontroll över. Något tillfälligt. Något som hjälper. Just därför kan det ta tid att förstå vad som håller på att hända.
+
+## Det börjar ofta stilla
+
+Det är sällan ett tydligt ögonblick där allt plötsligt förändras. Ofta sker det stegvis. Något blir ett sätt att varva ner, stå ut, dämpa oro, stänga av eller få en liten paus från det som gör ont. Först kanske det känns som ett undantag. Sedan som en vana. Till slut som något man nästan räknar med för att klara av vardagen.
+
+Det är en av anledningarna till att många inte reagerar direkt. När förändringen sker långsamt hinner man vänja sig. Man anpassar sig efter det som blivit, flyttar sina gränser lite i taget och förklarar för sig själv att det fortfarande är under kontroll. Inte för att man ljuger medvetet, utan för att det mänskliga ofta fungerar så. Man vänjer sig också vid sådant som egentligen skaver.
+
+Det som senare känns självklart var kanske inte alls tydligt från början.
+
+## När det destruktiva blir normalt
+
+Normalisering händer ofta i det tysta. Det som först kändes ovant börjar kännas bekant. Det som först väckte en liten oro får efter hand mindre uppmärksamhet. Man kanske märker att tankarna kretsar mer kring nästa tillfälle, nästa paus eller nästa chans att slippa sig själv för en stund. Men eftersom det inte kom över en natt kan det vara svårt att se mönstret klart.
+
+Många beskriver att de länge levde i något som inte kändes bra, men som ändå blev vardag. Man vänjer sig vid att planera runt det. Vid att återhämta sig från det. Vid att lova sig själv att det ska bli annorlunda senare. Och när något blir vardag är det lätt att börja behandla det som normalt, även när det tar mer än det ger.
+
+Det är ofta först efteråt man ser hur mycket man har anpassat sig.
+
+## Kontrollförlust känns inte alltid dramatiskt
+
+När man hör ord som kontrollförlust tänker många på något tydligt och snabbt. Men i verkligheten ser det ofta mer lågmält ut. Man skjuter upp beslut. Man gör undantag oftare än man tänkt. Man märker att gränserna man satte för sig själv inte riktigt håller. Man tänker mer på det än man vill erkänna. Man förhandlar med sig själv. Börjar om. Backar. Lovar. Förminskar.
+
+Det kan pågå länge utan att omgivningen märker särskilt mycket.
+
+Just därför tvivlar många på sig själva. De tänker att om det vore ett riktigt problem skulle det synas mer. Men mycket kan pågå under ytan. Kontrollförlust behöver inte se dramatisk ut för att vara smärtsam. Ibland märks den mest i det inre livet: i stressen, skammen, upptagenheten, tröttheten och känslan av att inte riktigt lita på sig själv längre.
+
+## Många ser mindre än du bär på
+
+Det går att fungera utåt och samtidigt må väldigt dåligt. Man kan gå till jobbet, svara på meddelanden, sköta det viktigaste och ändå känna att mycket inuti kretsar kring att hålla ihop, dölja, skjuta undan och försöka verka som vanligt.
+
+För andra kanske det ser ut som att livet rullar på. Men det som inte syns är ofta allt arbete bakom. Alla små justeringar. All energi som går åt till att få saker att se vanliga ut. Alla tankar som aldrig sägs högt.
+
+Det kan göra ensamheten större. Inte bara för att man är ensam med det man kämpar med, utan för att man samtidigt får höra, direkt eller indirekt, att man verkar må ganska bra. Då blir avståndet mellan utsidan och insidan ännu större.
+
+## Skammen håller ofta mönstret vid liv
+
+Skam gör sällan något lättare. Den får många att tiga, gömma och vänta. Den säger att man borde ha bättre kontroll, att man borde ha stoppat det tidigare, att man inte borde känna så här om man verkligen ville förändras.
+
+Men skam gör ofta att problemet får mer makt, inte mindre. När man skäms blir det svårare att vara ärlig, både med andra och med sig själv. Man kanske jämför sig med andras värre situationer och tänker att ens eget läge inte räknas. Man kanske säger att man överdriver, fast man innerst inne vet att något inte känns hållbart.
+
+Om man redan kämpar med ångest, nedstämdhet eller energilöshet kan skammen bli ännu tyngre. Då blir det lätt att dra sig undan just när man skulle behöva stöd som mest.
+
+## Insikten kommer ofta före orken
+
+Att inse att något håller på att ta över kan vara viktigt. Ibland är det första gången man slutar förklara bort det som känns. Men insikt betyder inte automatiskt att man är redo, eller orkar, att förändra allt.
+
+För många kommer insikten tillsammans med stark ångest, sorg eller trötthet. När man väl slutar springa ifrån sanningen kan mycket annat komma ikapp. Då är det inte konstigt om man backar. Inte för att man inte menar allvar, utan för att det gör ont att se klart. Och för att det man vill bort från fortfarande kan kännas som det enda som hjälper för stunden.
+
+Det här mellanläget är vanligt. Man vet, men tvekar. Man längtar efter förändring, men är rädd för tomrummet, rastlösheten eller det som ska komma upp till ytan om man släpper taget. Det gör inte din vilja mindre verklig. Det visar bara hur svårt det kan vara.
+
+## Ambivalens är en del av verkligheten
+
+Många tror att man måste vara helt säker för att få söka hjälp. Som att man först måste bestämma sig till hundra procent. Men så ser det sällan ut när något har fått växa fram stegvis och blivit invävt i hur man klarar livet.
+
+Ambivalens är inte ett tecken på att du inte menar allvar. Det är ofta ett tecken på att något både hjälper och skadar på samma gång. En del av dig kanske vill vara fri. En annan är rädd för hur det ska gå utan det som blivit ett sätt att stå ut.
+
+Därför behöver första steget inte vara ett stort löfte. Ibland räcker det att tänka en ärlig tanke hela vägen ut: det här har fått större plats än jag vill erkänna. Jag har börjat anpassa mitt liv efter något som tagit mer makt än jag vill erkänna. Jag orkar inte fortsätta låtsas att det här inte tar plats.
+
+Sådana meningar kan verka små. Men de bryter ofta något viktigt: tystnaden.
+
+## Stöd kan sökas innan allt rasat
+
+Man behöver inte vänta tills allt blivit synligt för andra. Man behöver inte bevisa att det gått långt nog. Det räcker att du märker att något håller på att ta mer kraft, mer tankeutrymme och mer plats i livet än du vill ge det.
+
+Stöd kan börja i något litet. Ett ärligt samtal. Några ord i en anteckning. Att säga till någon man litar på att man inte riktigt har kontroll längre, även om man fortfarande fungerar utåt. Att söka professionellt stöd utan att ha hela bilden klar.
+
+Förändring går sällan rakt. Det betyder inte att den är omöjlig. Ofta börjar den inte med styrka, utan med trötthet. Med sanningen. Med att man orkar sluta låtsas för en stund.
+
+Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig själv och ta ett första litet steg.`,
+		faqs: [
+			{
+				question: 'Är det vanligt att vilja sluta och inte vilja samtidigt?',
+				answer: 'Ja. Ambivalens är vanligt när något både lindrar för stunden och samtidigt skapar problem. Det betyder inte att du inte menar allvar.'
+			},
+			{
+				question: 'Kan ett destruktivt mönster bli normalt utan att man märker det direkt?',
+				answer: 'Ja. Många vänjer sig stegvis, flyttar sina gränser och anpassar vardagen innan de riktigt ser hur stor plats mönstret har tagit.'
+			},
+			{
+				question: 'Behöver allt ha rasat innan jag söker stöd?',
+				answer: 'Nej. Du kan söka stöd så fort du märker att något tar mer kraft, skam eller tankeutrymme än du vill ge det. Hjälp får sökas tidigt.'
+			},
+			{
+				question: 'Betyder ett bakslag att förändring är omöjlig?',
+				answer: 'Nej. Vägen bort från ett destruktivt mönster är sällan rak. Ett bakslag säger oftast mer om att något är svårt än om din förmåga att förändras.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper',
+				href: '/guider-seo/stress/varfor-orkar-jag-ingenting'
+			},
+			{
+				title: 'Nedstämdhet eller depression',
+				href: '/guider-seo/depression/nedstamdhet'
+			},
+			{
+				title: 'Orostankar som snurrar - när hjärnan inte kan stänga av',
+				href: '/guider-seo/angest/orostankar'
+			}
+		]
+	},
+
 	// KBT-guider
 	{
 		pillarSlug: 'kbt',
@@ -3455,6 +3589,47 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			{ title: 'Se alla artiklar om självkänsla', href: '/guider-seo/sjalvkansla' },
 			{ title: 'Gränser och självkänsla', href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla' },
 			{ title: 'Utforska övningar', href: '/ovningar' }
+		]
+	},
+	beroende: {
+		pillarSlug: 'beroende',
+		seoTitle: 'Beroende och missbruk – skam, ambivalens och första steg | MittPsyke',
+		seoDescription:
+			'Läs om beroende, skam, ambivalens och gradvis kontrollförlust i en varm och icke-dömande guide. Stöd för dig som vill förstå vad som händer och ta ett första steg.',
+		h1: 'Stöd när något har börjat ta för stor plats',
+		intro:
+			'Beroende och destruktiva mönster växer ofta fram stegvis. Här finns en lugn ingång för att förstå skam, ambivalens och varför det kan vara så svårt att både vilja förändras och hålla fast.',
+		sections: [
+			{
+				heading: 'Det sker ofta gradvis',
+				body: 'Det som senare känns tydligt börjar ofta mycket stilla. Många vänjer sig, anpassar sig och märker först i efterhand hur mycket plats ett mönster har tagit.',
+				links: [
+					{
+						title: 'Att vilja sluta och inte vilja samtidigt',
+						href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
+					}
+				]
+			},
+			{
+				heading: 'Skam och tystnad gör det ofta tyngre',
+				body: 'Det är vanligt att fungera utåt och samtidigt bära mycket ensam. Skam kan göra det svårare att vara ärlig, söka stöd och ta små steg i tid.',
+				links: [
+					{ title: 'Nedstämdhet eller depression', href: '/guider-seo/depression/nedstamdhet' },
+					{ title: 'Orostankar som snurrar - när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' }
+				]
+			},
+			{
+				heading: 'Stöd kan sökas innan allt rasat',
+				body: 'Du behöver inte vänta på ett tydligt sammanbrott för att ta din situation på allvar. MittPsyke kan vara en lugn första ingång för reflektion, men ersätter inte vård.'
+			}
+		],
+		primaryLinks: [
+			{
+				title: 'Läs artikeln om ambivalens och kontrollförlust',
+				href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
+			},
+			{ title: 'Börja skriva i dagboken', href: '/dagbok' },
+			{ title: 'Starta en lugn chatt', href: '/chat/b' }
 		]
 	},
 
