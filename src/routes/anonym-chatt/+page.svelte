@@ -2,7 +2,7 @@
 	import SeoSupportPage from '$lib/components/SeoSupportPage.svelte';
 	import { seoSupportPages } from '$lib/data/seo-support-pages';
 
-	const config = seoSupportPages['chatta-anonymt-med-nagon'];
+	const config = seoSupportPages['anonym-chatt'];
 </script>
 
 <SeoSupportPage {config} />

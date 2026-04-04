@@ -264,18 +264,17 @@
 		insightsLoading = true;
 		insightsError = '';
 
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
-
-		if (!session?.access_token) {
-			insightsError = 'Du behöver vara inloggad för att se AI-insikter.';
-			insightsData = null;
-			insightsLoading = false;
-			return;
-		}
-
 		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+
+			if (!session?.access_token) {
+				insightsError = 'Du behöver vara inloggad för att se AI-insikter.';
+				insightsData = null;
+				return;
+			}
+
 			const response = await fetch('/api/diary/insights', {
 				headers: {
 					Authorization: `Bearer ${session.access_token}`,
@@ -304,9 +303,7 @@
 			insightsData = null;
 		} finally {
 			insightsLoading = false;
-			if (!insightsData) {
-				insightsLoadScheduled = false;
-			}
+			insightsLoadScheduled = false;
 		}
 	}
 

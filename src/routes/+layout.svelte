@@ -111,6 +111,7 @@
 	let analyticsEnabled = $state(false);
 	let lastTrackedPagePath = $state('');
 	let profileRequestVersion = 0;
+	let seededSessionAccessToken = '';
 
 	async function syncUser(sessionUser: User | null) {
 		user = sessionUser;
@@ -142,8 +143,12 @@
 		// Seed klienten med server-side session direkt (undviker flash vid login/redirect)
 		if (data?.session) {
 			void syncUser(data.session.user);
-			void supabase.auth.setSession(data.session);
+			if (seededSessionAccessToken !== data.session.access_token) {
+				seededSessionAccessToken = data.session.access_token;
+				void supabase.auth.setSession(data.session);
+			}
 		} else {
+			seededSessionAccessToken = '';
 			supabase.auth.getSession().then(({ data: sessionData }) => {
 				void syncUser(sessionData.session?.user ?? null);
 			});
@@ -233,6 +238,7 @@
 	});
 
 	afterNavigate(({ to }) => {
+		mobileMenuOpen = false;
 		if (to?.url) {
 			trackCurrentPage(to.url);
 		}
@@ -304,13 +310,14 @@
 	</main>
 {:else}
 	<a href="#main-content" class="skip-link">Hoppa till innehåll</a>
-	<header class="sticky top-0 z-30 border-b border-black/8 bg-white/75 dark:bg-black/35 backdrop-blur">
+	<header class="sticky top-0 z-30 bg-[hsl(var(--background)/0.94)] supports-[backdrop-filter]:backdrop-blur">
 		<div class="flex items-center justify-between gap-3 px-5 py-3.5">
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
 				<a
 					href="/"
 					class="brand-link shrink-0 self-center opacity-95 hover:opacity-100 transition-opacity"
-					aria-label="MittPsyke"
+					aria-label="MittPsyke startsida"
+					data-sveltekit-reload
 				>
 					<span class="brand-wordmark">MittPsyke</span>
 				</a>

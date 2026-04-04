@@ -1,6 +1,7 @@
 import { guides, pillars } from '$lib/seo-kit/content';
 import { canonical } from '$lib/seo-kit/seo';
 import { tools } from '$lib/data/seo-architecture';
+import { seoSupportPagePaths } from '$lib/data/seo-support-pages';
 import type { RequestHandler } from './$types';
 
 // Den dynamiska route-versionen är källan för sitemap.xml.
@@ -33,6 +34,12 @@ export const GET: RequestHandler = async () => {
 		{ path: '/ovningar', changefreq: 'yearly', priority: '0.5' }
 	];
 
+	const seoSupportEntries: SitemapEntry[] = seoSupportPagePaths.map((path) => ({
+		path,
+		changefreq: 'monthly',
+		priority: '0.7'
+	}));
+
 	const pillarPages: SitemapEntry[] = pillars.map((pillar) => ({
 		path: `/guider/${pillar.slug}`,
 		changefreq: 'weekly',
@@ -51,7 +58,7 @@ export const GET: RequestHandler = async () => {
 		priority: '0.7'
 	}));
 
-	const urls = [...staticPages, ...pillarPages, ...clusterPages, ...toolPages]
+	const urls = [...staticPages, ...seoSupportEntries, ...pillarPages, ...clusterPages, ...toolPages]
 		.map((entry) => renderUrl(entry, LASTMOD))
 		.join('');
 
