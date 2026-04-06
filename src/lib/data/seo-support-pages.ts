@@ -784,6 +784,70 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
 		]
 	},
+	'chatta-anonymt': {
+		title: 'Chatta anonymt utan konto – Psykiskt stöd online | MittPsyke',
+		description:
+			'Chatta anonymt utan att skapa konto. Få psykiskt stöd online för ångest, stress och nedstämdhet – direkt i webbläsaren, gratis och utan registrering.',
+		canonical: 'https://www.mittpsyke.se/chatta-anonymt',
+		ogTitle: 'Chatta anonymt utan konto – Psykiskt stöd online | MittPsyke',
+		ogDescription:
+			'Få psykiskt stöd online utan konto. Börja skriva direkt i webbläsaren, gratis och utan registrering.',
+		h1: 'Chatta anonymt – utan konto',
+		lead:
+			'Du behöver inte registrera dig eller uppge några uppgifter. Börja skriva direkt om det som känns tungt – ångest, stress, nedstämdhet eller något annat. MittPsyke är ett AI-baserat samtalsstöd som finns här när du behöver det.',
+		primaryCta: { href: '/skriv', label: 'Börja chatta anonymt' },
+		sections: [
+			{
+				title: 'En lugn start utan registrering',
+				paragraphs: [
+					'Ibland är det lättare att börja skriva än att förklara allt för någon annan. Här kan du ta första steget direkt, utan konto och utan att först lämna några uppgifter. Det gör tröskeln lägre när du bara behöver få ur dig något eller sortera det som känns svårt.'
+				]
+			},
+			{
+				title: 'Stöd för ångest, stress och nedstämdhet',
+				paragraphs: [
+					'Du kan använda sidan när tankarna snurrar, när kroppen går på högvarv eller när allt känns tungt och oklart. MittPsyke är byggt för låg tröskel och lugn reflektion i text. Det är ett digitalt stöd för att börja formulera dig, inte en ersättning för vård eller akut hjälp.'
+				]
+			}
+		],
+		resourceListTitle: 'Du kan också fortsätta här',
+		resourceListItems: [
+			{ href: '/prata-anonymt-online', label: 'Prata anonymt online', description: 'om du vill läsa mer om hur anonymt samtalsstöd fungerar.' },
+			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför låg tröskel kan göra det lättare att börja.' },
+			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill få en tydligare bild av hur själva samtalet brukar gå till.' },
+			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva vidare över tid när du känner dig redo.' }
+		],
+		nextStepTitle: 'Nästa steg i din takt',
+		nextStepParagraphs: [
+			'Om det känns lättare att börja direkt kan du gå vidare till skrivytan nu. Du kan också läsa mer först och komma tillbaka när du vill.',
+			'Vid akut fara ska du ringa 112. För vårdråd finns 1177 och för vidare stöd finns stodlinjer.se.'
+		],
+		nextStepLinks: [
+			{ href: '/skriv', label: 'Börja skriva direkt' },
+			{ href: '/chat', label: 'Öppna chatten' },
+			{ href: '/om-mittpsyke', label: 'Läs om MittPsyke' }
+		],
+		faq: [
+			{
+				question: 'Måste jag skapa konto för att börja?',
+				answer: 'Nej. Du kan börja skriva direkt utan att registrera dig eller uppge några uppgifter.'
+			},
+			{
+				question: 'Vad kan jag skriva om?',
+				answer: 'Du kan skriva om ångest, stress, nedstämdhet eller något annat som känns tungt och svårt att bära själv.'
+			},
+			{
+				question: 'Är detta samma sak som vård?',
+				answer: 'Nej. MittPsyke är ett AI-baserat samtalsstöd för reflektion och nästa steg, inte vård, diagnos eller akut hjälp.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Psykisk hÃ¤lsa â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
 	'anonym-chatt': {
 		title: 'Chatta anonymt om din psykiska hälsa | Låg tröskel online | MittPsyke',
 		description:

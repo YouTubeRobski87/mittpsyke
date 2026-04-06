@@ -62,12 +62,19 @@
 </script>
 
 <svelte:head>
-	<title>Skriv | MittPsyke</title>
+	<title>Chatta anonymt utan konto – Skriv av dig | MittPsyke</title>
+	<meta
+		name="description"
+		content="Skriv av dig anonymt utan att skapa konto. MittPsyke erbjuder gratis AI-samtalsstöd för ångest, stress och nedstämdhet – börja direkt, inga uppgifter krävs."
+	/>
 </svelte:head>
 
 <main class="container py-12">
-	<h1 class="text-2xl font-bold mb-4">Skriv av dig</h1>
-	<p class="mb-6 opacity-70">Börja där du är. Det räcker med några ord.</p>
+	<h1 class="text-2xl font-bold mb-4">Skriv av dig anonymt – inget konto behövs</h1>
+	<p class="mb-6 opacity-70">
+		Chatta anonymt med vår AI utan att registrera dig. Börja med några ord – om ångest,
+		stress eller något annat som känns tungt.
+	</p>
 
 	<textarea
 		bind:value={note}
