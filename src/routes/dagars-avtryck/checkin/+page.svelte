@@ -272,7 +272,7 @@
 				return;
 			}
 
-			await goto('/dagbok');
+			await goto('/dagbok/checkin');
 		} catch (error) {
 			saveError = error instanceof Error ? error.message : 'Kunde inte spara incheckningen just nu.';
 		} finally {
@@ -282,7 +282,7 @@
 
 	function continueToDiaryWriting() {
 		const prefill = (reflection || reflectionFallback).trim();
-		void goto(`/dagbok?prefill=${encodeURIComponent(prefill)}`);
+		void goto(`/dagbok/checkin?prefill=${encodeURIComponent(prefill)}`);
 	}
 
 	onMount(async () => {

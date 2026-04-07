@@ -359,7 +359,7 @@
 			</p>
 			<p class="auth-muted header-context">
 				En del av <a href="/dagbok" class="header-link">Dagbok</a>. Vill du skriva fritt i stället? Välj
-				<a href="/dagbok#skriv-sjalv" class="header-link">Skriv själv</a>.
+				<a href="/dagbok/checkin#skriv-sjalv" class="header-link">Skriv själv</a>.
 			</p>
 		</div>
 

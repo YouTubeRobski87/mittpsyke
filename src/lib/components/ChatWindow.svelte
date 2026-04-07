@@ -561,7 +561,7 @@
 			return;
 		}
 
-		void goto(`/dagbok?prefill=${encodeURIComponent(content)}`);
+		void goto(`/dagbok/checkin?prefill=${encodeURIComponent(content)}`);
 	}
 
 	function acceptSensitiveConsent() {

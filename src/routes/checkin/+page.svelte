@@ -30,7 +30,7 @@
             answer3.trim() || '–'
         ];
         const combined = parts.join('\n');
-        goto('/dagbok?prefill=' + encodeURIComponent(combined));
+        goto('/dagbok/checkin?prefill=' + encodeURIComponent(combined));
     }
     
     $: canSubmit = answer1.trim() || answer2.trim() || answer3.trim();
