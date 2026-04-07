@@ -1,6 +1,9 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/kbt" />
 
 <svelte:head>
 	<title>KBT – Kognitiv beteendeterapi | Tekniker och guider | MittPsyke</title>
@@ -9,7 +12,7 @@
 	<meta property="og:description" content="Lär dig hur KBT fungerar och prova konkreta tekniker hemma." />
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/kbt" />
+
 </svelte:head>
 
 <main class="page">

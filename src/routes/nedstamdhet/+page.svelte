@@ -1,3 +1,9 @@
+<script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
+</script>
+
+<SEO canonical="https://www.mittpsyke.se/nedstamdhet" />
+
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',

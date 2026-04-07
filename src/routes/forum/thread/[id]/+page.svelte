@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
 
@@ -361,10 +362,11 @@
 	const REPLY_MAX = 2000;
 </script>
 
+<SEO canonical={`https://www.mittpsyke.se/forum/thread/${data.thread.id}`} />
+
 <svelte:head>
 	<title>{data.thread.title} – {data.category.name} | MittPsyke Forum</title>
 	<meta name="description" content={data.description} />
-	<link rel="canonical" href="https://www.mittpsyke.se/forum/thread/{data.thread.id}" />
 	<meta property="og:title" content="{data.thread.title} – {data.category.name} | MittPsyke Forum" />
 	<meta property="og:description" content={data.description} />
 	<meta property="og:url" content="https://www.mittpsyke.se/forum/thread/{data.thread.id}" />

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { goto } from '$app/navigation';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import { supabase } from '$lib/supabase';
@@ -241,6 +242,8 @@
 		}, 1200);
 	}
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/dashboard/installningar" />
 
 <svelte:head>
 	<title>Kontoinställningar - MittPsyke</title>

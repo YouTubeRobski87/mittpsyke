@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
+	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import SeoPillarLanding from '$lib/components/SeoPillarLanding.svelte';
 	import { buildTitle } from '$lib/seo-kit/seo';
@@ -45,6 +46,8 @@
 			: null
 	);
 </script>
+
+<SEO canonical={`https://www.mittpsyke.se${$page.url.pathname}`} />
 
 <SeoHead
 	title={pageTitle}

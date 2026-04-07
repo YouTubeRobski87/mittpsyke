@@ -3,12 +3,12 @@ import { redirect } from '@sveltejs/kit';
 
 type HeatmapData = Record<string, number>;
 
-function getGrowthLevel(growthScore: number) {
+function getGrowthLevel(entryCount: number) {
 	let growthLevel = 0;
-	if (growthScore >= 5) growthLevel = 1;
-	if (growthScore >= 15) growthLevel = 2;
-	if (growthScore >= 30) growthLevel = 3;
-	if (growthScore >= 60) growthLevel = 4;
+	if (entryCount >= 1) growthLevel = 1;
+	if (entryCount >= 6) growthLevel = 2;
+	if (entryCount >= 16) growthLevel = 3;
+	if (entryCount >= 31) growthLevel = 4;
 	return growthLevel;
 }
 
@@ -91,7 +91,7 @@ export const load: PageServerLoad = async ({ locals, fetch }) => {
 
 			activeDays = activeDaySet.size;
 			growthScore = entryCount + activeDays * 3;
-			growthLevel = getGrowthLevel(growthScore);
+			growthLevel = getGrowthLevel(entryCount);
 		}
 
 		return {

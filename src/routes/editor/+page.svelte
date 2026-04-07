@@ -1,3 +1,9 @@
+<script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
+</script>
+
+<SEO canonical="https://www.mittpsyke.se/editor" />
+
 <svelte:head>
 
 <title>Editor | MittPsyke</title>

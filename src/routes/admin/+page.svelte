@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { enhance } from '$app/forms';
 	import { supabase } from '$lib/supabase';
 	import type { ActionData, PageData } from './$types';
@@ -104,6 +105,8 @@
 		reports = reports.filter((entry) => entry.id !== report.id);
 	}
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/admin" />
 
 <svelte:head>
 	<title>Admin och SEO | MittPsyke</title>

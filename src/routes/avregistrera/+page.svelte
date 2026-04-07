@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	let { data, form } = $props();
 
 	const hasTokenMessage = $derived(data.tokenStatus !== 'none');
@@ -7,6 +8,8 @@
 	const formSuccess = $derived(Boolean(form?.success));
 	const formMessage = $derived(typeof form?.message === 'string' ? form.message : '');
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/avregistrera" />
 
 <svelte:head>
 	<title>Avregistrera - MittPsyke</title>

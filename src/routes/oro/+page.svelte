@@ -1,6 +1,9 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/oro" />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({

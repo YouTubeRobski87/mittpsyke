@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
@@ -104,6 +105,8 @@
 	});
 </script>
 
+<SEO canonical="https://www.mittpsyke.se/" />
+
 <svelte:head>
 	<title>MittPsyke – skriv av dig anonymt och få stöd i text</title>
 	<meta
@@ -117,7 +120,7 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/" />
+
 </svelte:head>
 
 <main class="staging-look">

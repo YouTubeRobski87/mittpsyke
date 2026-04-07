@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import { supabase } from '$lib/supabase';
 
@@ -54,6 +55,8 @@
 		phase = 'success';
 	}
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/aterstall-losenord" />
 
 <svelte:head>
 	<title>Återställ lösenord - MittPsyke</title>

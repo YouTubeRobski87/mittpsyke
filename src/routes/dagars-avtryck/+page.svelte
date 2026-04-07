@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
 	import { supabase } from '$lib/supabase';
 	import { activeStorifyTones, storifyTones } from '$lib/data/storifyTones';
@@ -339,6 +340,8 @@
 		return storifyTones.find((t) => t.id === toneId)?.label ?? toneId;
 	}
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/dagars-avtryck" />
 
 <svelte:head>
 	<title>Dagbok med olika stilar | MittPsyke</title>

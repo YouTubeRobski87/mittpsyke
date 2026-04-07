@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { hasSensitiveConsentHeader } from '$lib/consent';
+import { CHAT_CONTEXT_LIMIT, getChatContextMessages } from '$lib/state/chat-memory';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 import type { RequestHandler } from './$types';
@@ -216,10 +217,36 @@ type StoredMessageRow = {
 	content: string | null;
 };
 
+type PromptHistoryMessage = {
+	role: 'user' | 'assistant';
+	content: string;
+};
+
 const GUEST_CONVERSATIONS_TABLE = 'guest_conversations';
 const GUEST_MESSAGES_TABLE = 'guest_messages';
 const MAX_CHAT_MESSAGE_LENGTH = 2000;
 const CHAT_MESSAGE_TOO_LONG_ERROR = 'Din text blev lite för lång att skicka på en gång. Dela gärna upp den i två delar.';
+
+function buildDynamicSystemPrompt(category: SupportCategory, history: PromptHistoryMessage[]) {
+	const basePrompt = systemByCategory[category] || SYSTEM_PROMPT;
+
+	if (history.length === 0) {
+		return `${basePrompt}
+
+Det här är första gången du pratar med den här användaren. Välkomna dem varmt.`.trim();
+	}
+
+	const formattedHistory = history
+		.map((entry) => `${entry.role === 'user' ? 'Användare' : 'MittPsyke'}: ${entry.content}`)
+		.join('\n');
+
+	return `${basePrompt}
+
+Du har tidigare pratat med den här användaren. Här är era tidigare meddelanden:
+${formattedHistory}
+
+Börja med att på ett naturligt och varmt sätt bekräfta att du minns dem, till exempel "Hej igen, jag minns att vi pratade senast om..." eller liknande.`.trim();
+}
 
 function errorResponse(message: string, status: number, details: Record<string, unknown> = {}) {
 	return json({ error: message, ...details }, { status });
@@ -303,12 +330,15 @@ export const POST: RequestHandler = async ({ request }) => {
 		category?: unknown;
 		conversationId?: unknown;
 		guestId?: unknown;
+		contextMessages?: unknown;
 	};
 
 	const message = typeof body.message === 'string' ? body.message.trim() : '';
 	if (!message) {
 		return errorResponse('No message provided', 400);
 	}
+
+	const contextMessages = getChatContextMessages(body.contextMessages, CHAT_CONTEXT_LIMIT);
 
 	if (message.length > MAX_CHAT_MESSAGE_LENGTH) {
 		return errorResponse(CHAT_MESSAGE_TOO_LONG_ERROR, 413, {
@@ -510,9 +540,18 @@ export const POST: RequestHandler = async ({ request }) => {
 				.map((row) => ({
 					role: row.role as 'user' | 'assistant',
 					content: row.content as string
-				}));
+				}))
+				.slice(-CHAT_CONTEXT_LIMIT);
 
-			const systemPrompt = systemByCategory[category] || SYSTEM_PROMPT;
+			const modelContext =
+				contextMessages.length > 0
+					? contextMessages.map((row) => ({
+							role: row.role,
+							content: row.content
+						}))
+					: promptHistory;
+
+			const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
 			let completion;
 			try {
 				completion = await openai.chat.completions.create({
@@ -523,7 +562,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					presence_penalty: 0.2,
 					messages: [
 						{ role: 'system', content: systemPrompt },
-						...promptHistory,
+						...modelContext,
 						{ role: 'user', content: message }
 					]
 				});
@@ -668,9 +707,18 @@ export const POST: RequestHandler = async ({ request }) => {
 			.map((row) => ({
 				role: row.role as 'user' | 'assistant',
 				content: row.content as string
-			}));
+			}))
+			.slice(-CHAT_CONTEXT_LIMIT);
 
-		const systemPrompt = systemByCategory[category] || SYSTEM_PROMPT;
+		const modelContext =
+			contextMessages.length > 0
+				? contextMessages.map((row) => ({
+						role: row.role,
+						content: row.content
+					}))
+				: promptHistory;
+
+		const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
 		let completion;
 		try {
 			completion = await openai.chat.completions.create({
@@ -681,7 +729,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				presence_penalty: 0.2,
 				messages: [
 					{ role: 'system', content: systemPrompt },
-					...promptHistory,
+					...modelContext,
 					{ role: 'user', content: message }
 				]
 			});

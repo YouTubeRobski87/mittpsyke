@@ -1,3 +1,9 @@
+<script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
+</script>
+
+<SEO canonical="https://www.mittpsyke.se/4-7-8-andning-ovning" />
+
 <svelte:head>
 	<title>4-7-8 andning övning | Lugna andetag i egen takt | MittPsyke</title>
 	<meta
@@ -11,7 +17,6 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/4-7-8-andning-ovning" />
 </svelte:head>
 
 <main class="page">

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ContentTrustBlock from '$lib/components/ContentTrustBlock.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
+	import SEO from '$lib/components/SEO.svelte';
 	import { buildTitle } from '$lib/seo-kit/seo';
 	import type { PageData } from './$types';
 
@@ -105,6 +106,8 @@
 		]
 	});
 </script>
+
+<SEO canonical={`https://www.mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`} />
 
 <svelte:head>
 	<title>{data.guide.seoTitle ?? buildTitle(data.guide.title)}</title>

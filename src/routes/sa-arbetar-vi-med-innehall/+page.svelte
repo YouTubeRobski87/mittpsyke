@@ -1,11 +1,14 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/sa-arbetar-vi-med-innehall" />
 
 <svelte:head>
     <title>Så arbetar vi med innehåll | MittPsyke</title>
     <meta name="description" content="Läs om hur MittPsyke skapar, granskar och uppdaterar sitt innehåll om psykisk hälsa." />
-    <link rel="canonical" href="https://www.mittpsyke.se/sa-arbetar-vi-med-innehall" />
+
 </svelte:head>
 
 <main class="mx-auto max-w-3xl px-4 py-10">

@@ -3,6 +3,7 @@
 	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 	import ContentTrustBlock from '$lib/components/ContentTrustBlock.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
+	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { buildTitle } from '$lib/seo-kit/seo';
 	import type { PageData } from './$types';
@@ -77,6 +78,8 @@
 			: null
 	);
 </script>
+
+<SEO canonical={`https://www.mittpsyke.se${$page.url.pathname}`} />
 
 <SeoHead
 	title={data.guide.seoTitle ?? buildTitle(data.guide.title)}

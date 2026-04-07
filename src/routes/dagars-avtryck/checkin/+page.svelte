@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
@@ -299,6 +300,8 @@
 		authLoading = false;
 	});
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/dagars-avtryck/checkin" />
 
 <svelte:head>
 	<title>Guidad incheckning – MittPsyke</title>

@@ -1,6 +1,9 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/integritet" />
 
 <svelte:head>
 	<title>Integritetspolicy | MittPsyke</title>

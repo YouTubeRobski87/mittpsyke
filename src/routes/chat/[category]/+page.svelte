@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import ChatWindow from '$lib/components/ChatWindow.svelte';
+	import SEO from '$lib/components/SEO.svelte';
 	import { getPortalByKey } from '$lib/data/portals';
 	import { supabase } from '$lib/supabase';
 	import type { ChatMessage } from '$lib/types';
@@ -74,9 +75,6 @@
 			}
 
 			if (!conversation) {
-				if (window.localStorage.getItem('mittpsyke:last-conversation-id') === id) {
-					window.localStorage.removeItem('mittpsyke:last-conversation-id');
-				}
 				return;
 			}
 
@@ -102,7 +100,6 @@
 
 			initialMessages = nextMessages;
 			initialConversationId = id;
-			window.localStorage.setItem('mittpsyke:last-conversation-id', id);
 		}
 
 		void loadHistory();
@@ -113,13 +110,14 @@
 	});
 </script>
 
+<SEO canonical={`https://www.mittpsyke.se${page.url.pathname}`} />
+
 <svelte:head>
 	<title>{pageMeta.title}</title>
 	<meta name="description" content={pageMeta.description} />
 	<meta property="og:title" content={pageMeta.title} />
 	<meta property="og:description" content={pageMeta.description} />
 	<meta property="og:type" content="website" />
-	<link rel="canonical" href="https://www.mittpsyke.se/chat/{category}" />
 </svelte:head>
 
 <div class="container py-6" data-page="chat">

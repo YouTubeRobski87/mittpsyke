@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import {
 		trackWritePageView,
@@ -60,6 +61,8 @@
 
 	// Rest of component...
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/skriv" />
 
 <svelte:head>
 	<title>Chatta anonymt utan konto – Skriv av dig | MittPsyke</title>

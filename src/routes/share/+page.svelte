@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	let { data } = $props();
 	const streak = $derived(data.streak);
 	const total = $derived(data.total);
@@ -7,6 +8,8 @@
 	const ogDescription = $derived(data.ogDescription);
 
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/share" />
 
 <svelte:head>
 	<title>{ogTitle}</title>

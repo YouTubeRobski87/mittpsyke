@@ -1,3 +1,9 @@
+<script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
+</script>
+
+<SEO canonical="https://www.mittpsyke.se/samtalsstod-utan-vantetid/samtalsstod-vid-trauma" />
+
 <svelte:head>
 	<title>Samtalsstöd vid trauma | Lugn reflektion och nästa steg | MittPsyke</title>
 	<meta
@@ -11,7 +17,6 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/samtalsstod-utan-vantetid/samtalsstod-vid-trauma" />
 </svelte:head>
 
 <main class="page">

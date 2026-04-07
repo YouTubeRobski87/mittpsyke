@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { trackSignupCompleted, trackDiaryPageOpenedFromHoroscope } from '$lib/analytics';
@@ -631,6 +632,8 @@
 		return () => subscription.unsubscribe();
 	});
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/dagbok" />
 
 <main class="auth-page">
 	{#if loading}

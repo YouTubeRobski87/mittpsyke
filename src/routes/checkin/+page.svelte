@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
     import { goto } from '$app/navigation';
     import { getCachedTheme, THEMES } from '$lib/theme';
     
@@ -34,6 +35,8 @@
     
     $: canSubmit = answer1.trim() || answer2.trim() || answer3.trim();
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/checkin" />
 
 <svelte:head>
     <title>Snabb check-in – MittPsyke</title>

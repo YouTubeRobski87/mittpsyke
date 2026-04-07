@@ -1,3 +1,9 @@
+<script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
+</script>
+
+<SEO canonical="https://www.mittpsyke.se/digital-dagbok-for-maende" />
+
 <svelte:head>
 	<title>Digital dagbok för mående | Skriv, följ och förstå över tid | MittPsyke</title>
 	<meta
@@ -11,7 +17,6 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/digital-dagbok-for-maende" />
 </svelte:head>
 
 <main class="page">

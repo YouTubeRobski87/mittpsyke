@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	import { trackRegisterPageView, trackTempEntryPreviewShown } from '$lib/analytics';
@@ -61,6 +62,8 @@
 		}
 	}
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/register" />
 
 <svelte:head>
 	<title>Skapa konto | MittPsyke</title>

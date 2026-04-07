@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import type { PageData } from './$types';
 	import AnxietyLandingPage from '$lib/components/landing/AnxietyLandingPage.svelte';
 
@@ -23,5 +24,7 @@
 		return data as unknown as LandingPageData;
 	}
 </script>
+
+<SEO canonical={getLandingData().canonicalUrl} />
 
 <AnxietyLandingPage data={getLandingData()} />

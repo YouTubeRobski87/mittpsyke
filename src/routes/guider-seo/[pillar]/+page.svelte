@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import SeoPillarLanding from '$lib/components/SeoPillarLanding.svelte';
 	import { buildTitle } from '$lib/seo-kit/seo';
 	import type { PageData } from './$types';
@@ -59,6 +60,8 @@
 		]
 	});
 </script>
+
+<SEO canonical={`https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`} />
 
 <svelte:head>
 	<title>{buildTitle(pageTitle)}</title>

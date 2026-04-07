@@ -90,7 +90,6 @@
 <svelte:head>
 	<title>{data.seoTitle}</title>
 	<meta name="description" content={data.seoMeta} />
-	<link rel="canonical" href={data.canonicalUrl} />
 	<meta property="og:title" content={data.seoTitle} />
 	<meta property="og:description" content={data.seoMeta} />
 	<meta property="og:type" content="website" />

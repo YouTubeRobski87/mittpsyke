@@ -1,7 +1,10 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import PublicTrustPanel from '$lib/components/PublicTrustPanel.svelte';
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/stress" />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({

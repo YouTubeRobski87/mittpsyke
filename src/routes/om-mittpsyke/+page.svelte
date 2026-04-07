@@ -1,7 +1,10 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import ResearchEvidenceCard from '$lib/components/ResearchEvidenceCard.svelte';
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/om-mittpsyke" />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({

@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
+	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
 </script>
+
+<SEO canonical={`https://www.mittpsyke.se${$page.url.pathname}`} />
 
 <SeoHead
 	title={`${data.tool.title} | Övningar | MittPsyke`}

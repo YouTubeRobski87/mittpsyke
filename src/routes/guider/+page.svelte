@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { page } from '$app/stores';
 	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
@@ -11,6 +12,8 @@
 		])
 	);
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/guider" />
 
 <SeoHead
 	title="Guider om psykisk hälsa – ångest, stress och mer | MittPsyke"

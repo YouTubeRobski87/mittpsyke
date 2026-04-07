@@ -5,6 +5,9 @@ export function buildTitle(pageTitle: string): string {
 }
 
 export function canonical(path: string): string {
-	const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+	const normalizedPath = (path.startsWith('/') ? path : `/${path}`)
+		.replace(/[?#].*$/, '')
+		.replace(/\/+$/, '') || '/';
+
 	return `${SITE_URL}${normalizedPath}`;
 }

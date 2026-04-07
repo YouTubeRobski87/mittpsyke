@@ -1,8 +1,11 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/forum" />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({

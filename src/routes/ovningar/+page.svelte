@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { page } from '$app/stores';
 	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
@@ -6,6 +7,8 @@
 
 	const pillarLabelBySlug = Object.fromEntries(pillars.map((pillar) => [pillar.slug, pillar.title]));
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/ovningar" />
 
 <SeoHead
 	title="Övningar mot ångest och stress – steg för steg | MittPsyke"

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	import type { ActionData } from './$types';
@@ -54,6 +55,8 @@
 		}
 	}
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/login" />
 
 <svelte:head>
 	<title>Logga in - MittPsyke</title>

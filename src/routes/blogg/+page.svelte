@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { blogPosts } from '$lib/data/blogg';
 
 	const blogJsonLd = {
@@ -17,6 +18,8 @@
 	};
 </script>
 
+<SEO canonical="https://www.mittpsyke.se/blogg" />
+
 <svelte:head>
 	<title>Blogg om mental hälsa och journalföring | MittPsyke</title>
 	<meta
@@ -29,7 +32,6 @@
 		content="Artiklar om journalföring, mental hälsa och självreflektion. Skrivet för att vara lätt att ta till sig i en vardag som redan kan kännas full."
 	/>
 	<meta property="og:type" content="website" />
-	<link rel="canonical" href="https://www.mittpsyke.se/blogg" />
 	{@html `<script type="application/ld+json">${JSON.stringify(blogJsonLd)}<\/script>`}
 </svelte:head>
 

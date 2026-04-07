@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
 
@@ -84,10 +85,11 @@
 	const relatedLinks = $derived(categoryLinks[data.category.id] ?? []);
 </script>
 
+<SEO canonical={`https://www.mittpsyke.se/forum/${data.category.id}`} />
+
 <svelte:head>
 	<title>{data.category.name} – Samtalsrum | MittPsyke Forum</title>
 	<meta name="description" content={data.category.description} />
-	<link rel="canonical" href="https://www.mittpsyke.se/forum/{data.category.id}" />
 	<meta property="og:title" content="{data.category.name} – Samtalsrum | MittPsyke Forum" />
 	<meta property="og:description" content={data.category.description} />
 	<meta property="og:url" content="https://www.mittpsyke.se/forum/{data.category.id}" />

@@ -47,6 +47,30 @@
 					<stop offset="0%" stop-color="var(--garden-trunk-top)" />
 					<stop offset="100%" stop-color="var(--garden-trunk-bottom)" />
 				</linearGradient>
+				<linearGradient id="gardenBlossom" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stop-color="var(--garden-blossom-top)" />
+					<stop offset="100%" stop-color="var(--garden-blossom-bottom)" />
+				</linearGradient>
+				<linearGradient id="gardenBlossomSoft" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stop-color="var(--garden-blossom-soft-top)" />
+					<stop offset="100%" stop-color="var(--garden-blossom-soft-bottom)" />
+				</linearGradient>
+				<linearGradient id="gardenEggShell" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stop-color="var(--garden-egg-top)" />
+					<stop offset="100%" stop-color="var(--garden-egg-bottom)" />
+				</linearGradient>
+				<linearGradient id="gardenEggShade" x1="0%" y1="0%" x2="100%" y2="100%">
+					<stop offset="0%" stop-color="var(--garden-egg-shade-top)" />
+					<stop offset="100%" stop-color="var(--garden-egg-shade-bottom)" />
+				</linearGradient>
+				<linearGradient id="gardenDinoBody" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stop-color="var(--garden-dino-top)" />
+					<stop offset="100%" stop-color="var(--garden-dino-bottom)" />
+				</linearGradient>
+				<linearGradient id="gardenDinoBelly" x1="0%" y1="0%" x2="0%" y2="100%">
+					<stop offset="0%" stop-color="var(--garden-dino-belly-top)" />
+					<stop offset="100%" stop-color="var(--garden-dino-belly-bottom)" />
+				</linearGradient>
 			</defs>
 
 			<rect x="0" y="0" width="520" height="248" rx="30" fill="url(#gardenSky)" />
@@ -70,6 +94,26 @@
 				d="M0 198 C76 186 162 188 244 202 S406 220 520 194 L520 248 L0 248 Z"
 				fill="url(#gardenFrontGround)"
 			/>
+
+			{#if growthLevel === 0}
+				<g class="layer egg-stage">
+					<ellipse cx="260" cy="214" rx="54" ry="12" class="egg-shadow" />
+					<path
+						d="M260 68 C226 68 206 106 206 150 C206 184 228 206 260 206 C292 206 314 184 314 150 C314 106 294 68 260 68 Z"
+						class="egg-shell"
+					/>
+					<path
+						d="M261 76 C236 84 224 114 224 152 C224 176 238 194 258 200 C248 183 244 162 244 134 C244 112 250 91 261 76 Z"
+						class="egg-shell-shade"
+					/>
+					<circle cx="236" cy="124" r="4.2" class="egg-speck" />
+					<circle cx="280" cy="142" r="3.4" class="egg-speck" />
+					<circle cx="254" cy="168" r="3.8" class="egg-speck" />
+					<path d="M246 140 L254 150 L246 160 L259 170 L252 183" class="crack-line" />
+					<path d="M270 132 L276 141 L270 150" class="crack-line crack-line-soft" />
+					<path d="M284 154 L290 164 L284 173" class="crack-line crack-line-soft" />
+				</g>
+			{/if}
 
 			{#if growthLevel >= 1}
 				<g class="layer grass-back">
@@ -101,108 +145,112 @@
 				</g>
 			{/if}
 
-			{#if growthLevel >= 2}
-				<g class="layer flowers">
-					<g transform="translate(160 200)">
-						<path d="M0 0 C0 -10 0 -19 1 -26" class="stem" />
-						<ellipse cx="-4.5" cy="-28" rx="4.3" ry="3.2" class="petal-soft" />
-						<ellipse cx="4.5" cy="-28" rx="4.3" ry="3.2" class="petal-soft" />
-						<ellipse cx="0" cy="-33" rx="3.6" ry="4.2" class="petal-soft" />
-						<ellipse cx="0" cy="-23" rx="3.6" ry="4.2" class="petal-soft" />
-						<circle cx="0" cy="-28" r="2.8" class="flower-core" />
-					</g>
-					<g transform="translate(230 208)">
-						<path d="M0 0 C0 -8 0 -16 0 -22" class="stem" />
-						<ellipse cx="-4" cy="-24" rx="3.8" ry="2.9" class="petal-muted" />
-						<ellipse cx="4" cy="-24" rx="3.8" ry="2.9" class="petal-muted" />
-						<ellipse cx="0" cy="-28.5" rx="3.1" ry="3.8" class="petal-muted" />
-						<ellipse cx="0" cy="-19.5" rx="3.1" ry="3.8" class="petal-muted" />
-						<circle cx="0" cy="-24" r="2.4" class="flower-core" />
-					</g>
-					<g transform="translate(338 198)">
-						<path d="M0 0 C0 -9 0 -18 1 -25" class="stem" />
-						<ellipse cx="-4.5" cy="-27" rx="4.1" ry="3" class="petal-soft" />
-						<ellipse cx="4.5" cy="-27" rx="4.1" ry="3" class="petal-soft" />
-						<ellipse cx="0" cy="-31.5" rx="3.3" ry="3.9" class="petal-soft" />
-						<ellipse cx="0" cy="-22.5" rx="3.3" ry="3.9" class="petal-soft" />
-						<circle cx="0" cy="-27" r="2.6" class="flower-core" />
-					</g>
+			{#if growthLevel === 1}
+				<g class="layer dino-stage">
+					<ellipse cx="260" cy="214" rx="56" ry="12" class="egg-shadow" />
+					<path
+						d="M214 160 L228 144 L246 154 L260 136 L278 152 L298 144 L308 160 L308 206 L214 206 Z"
+						class="egg-shell"
+					/>
+					<path
+						d="M228 146 L240 120 L258 132 L272 110 L292 122 L300 148 L228 146 Z"
+						class="egg-shell-piece"
+					/>
+					<path d="M268 156 C273 146 281 138 292 132" class="dino-neck neck-small" />
+					<ellipse cx="302" cy="128" rx="16" ry="13" class="dino-head" />
+					<circle cx="307" cy="124" r="2.2" class="dino-eye" />
+					<circle cx="296" cy="131" r="3.8" class="dino-cheek" />
+					<path d="M298 134 C301 137 306 137 309 134" class="dino-smile" />
+					<path d="M314 128 C318 124 320 122 323 120" class="dino-crest" />
+					<path d="M230 166 L238 175 L230 184" class="crack-line crack-line-soft" />
+					<path d="M292 166 L300 175 L292 184" class="crack-line crack-line-soft" />
 				</g>
 			{/if}
 
-			{#if growthLevel >= 3}
-				<g class="layer bush">
+			{#if growthLevel === 2}
+				<g class="layer dino-stage">
+					<ellipse cx="260" cy="214" rx="62" ry="12" class="dino-shadow" />
+					<path d="M212 186 L224 170 L240 182 L238 206 L212 206 Z" class="egg-shell-piece" />
+					<path d="M284 182 L300 168 L312 184 L308 206 L284 206 Z" class="egg-shell-piece" />
+					<path d="M229 174 C215 170 205 164 198 156" class="dino-tail tail-small" />
+					<ellipse cx="264" cy="174" rx="36" ry="24" class="dino-body" />
+					<ellipse cx="272" cy="182" rx="20" ry="12" class="dino-belly" />
+					<path d="M289 156 C296 144 304 136 314 129" class="dino-neck neck-small" />
+					<ellipse cx="324" cy="124" rx="14" ry="11" class="dino-head" />
+					<path d="M248 188 L246 206" class="dino-leg leg-small" />
+					<path d="M276 188 L278 206" class="dino-leg leg-small" />
+					<path d="M288 169 C296 171 301 175 304 181" class="dino-arm arm-small" />
+					<circle cx="252" cy="166" r="4" class="dino-spot" />
+					<circle cx="274" cy="160" r="3.4" class="dino-spot" />
+					<circle cx="291" cy="171" r="3.2" class="dino-spot" />
+					<circle cx="329" cy="120" r="2" class="dino-eye" />
+					<circle cx="319" cy="127" r="3.4" class="dino-cheek" />
+					<path d="M319 130 C322 132 326 132 328 130" class="dino-smile" />
+				</g>
+			{/if}
+
+			{#if growthLevel === 3}
+				<g class="layer dino-stage">
 					<path
-						d="M94 206 C98 186 114 176 130 180 C132 164 146 154 162 158 C170 144 188 142 201 150 C218 148 230 162 230 178 C246 180 256 192 256 206 Z"
-						fill="url(#gardenBush)"
+						d="M168 206 C184 194 204 190 226 192 C238 182 254 178 270 180 C284 174 300 176 314 184 C332 184 348 192 356 206 Z"
+						class="level-three-meadow"
 					/>
-					<path
-						d="M100 206 C106 194 118 188 130 190 C138 180 150 176 162 178 C172 168 186 168 196 174 C208 172 220 180 224 192 C236 194 244 198 248 206 Z"
-						class="bush-shadow"
-					/>
-					<path
-						d="M110 206 C114 196 122 190 130 192 C136 186 144 182 154 184 C160 176 170 174 180 178 C190 176 202 180 208 188 C218 188 228 194 232 206 Z"
-						class="bush-highlight"
-					/>
+					<ellipse cx="264" cy="216" rx="76" ry="13" class="dino-shadow" />
+					<path d="M214 172 C194 166 179 157 166 144" class="dino-tail tail-medium" />
+					<ellipse cx="266" cy="170" rx="52" ry="34" class="dino-body" />
+					<ellipse cx="276" cy="182" rx="28" ry="16" class="dino-belly" />
+					<path d="M306 152 C318 130 331 112 347 100" class="dino-neck neck-medium" />
+					<ellipse cx="358" cy="94" rx="17" ry="13" class="dino-head" />
+					<path d="M240 190 L238 206" class="dino-leg leg-medium" />
+					<path d="M268 192 L268 206" class="dino-leg leg-medium" />
+					<path d="M293 190 L294 206" class="dino-leg leg-medium" />
+					<path d="M320 186 L322 206" class="dino-leg leg-medium" />
+					<path d="M309 168 C317 171 323 176 327 183" class="dino-arm arm-medium" />
+					<circle cx="244" cy="162" r="5.2" class="dino-spot" />
+					<circle cx="272" cy="155" r="4.6" class="dino-spot" />
+					<circle cx="294" cy="165" r="4.4" class="dino-spot" />
+					<circle cx="316" cy="174" r="4.2" class="dino-spot" />
+					<path d="M346 198 L360 186 L370 198 L366 206 L346 206 Z" class="egg-shell-piece shell-fragment" />
+					<circle cx="363" cy="90" r="2.2" class="dino-eye" />
+					<circle cx="352" cy="98" r="3.8" class="dino-cheek" />
+					<path d="M352 101 C355 104 360 104 363 101" class="dino-smile" />
+					<path d="M369 93 C372 91 374 90 377 90" class="dino-crest" />
 				</g>
 			{/if}
 
 			{#if growthLevel >= 4}
-				<g class="layer tree level-four">
+				<g class="layer dino-stage level-four">
 					<path
 						d="M270 206 C286 194 304 190 324 192 C336 182 352 178 368 180 C382 170 398 170 414 176 C430 172 446 178 456 188 C474 188 490 194 498 206 Z"
 						class="level-four-meadow"
 					/>
-					<g class="level-four-balance">
-						<path
-							d="M430 206 C434 192 444 184 456 186 C460 174 470 168 482 170 C492 170 500 178 502 188 C510 190 516 196 518 206 Z"
-							fill="url(#gardenBush)"
-						/>
-						<path
-							d="M438 206 C442 198 450 194 458 194 C464 188 472 186 480 188 C488 188 494 192 498 198 C506 198 510 202 512 206 Z"
-							class="level-four-balance-shadow"
-						/>
-					</g>
-					<g class="level-four-blooms">
-						<g transform="translate(296 210)">
-							<path d="M0 0 C0 -8 1 -16 2 -24" class="stem" />
-							<ellipse cx="-4" cy="-26" rx="3.8" ry="2.9" class="petal-soft" />
-							<ellipse cx="4" cy="-26" rx="3.8" ry="2.9" class="petal-soft" />
-							<ellipse cx="0" cy="-30.5" rx="3.1" ry="3.7" class="petal-soft" />
-							<ellipse cx="0" cy="-21.5" rx="3.1" ry="3.7" class="petal-soft" />
-							<circle cx="0" cy="-26" r="2.4" class="flower-core" />
-						</g>
-						<g transform="translate(452 212)">
-							<path d="M0 0 C0 -7 0 -14 1 -20" class="stem" />
-							<ellipse cx="-3.6" cy="-22" rx="3.4" ry="2.6" class="petal-muted" />
-							<ellipse cx="3.6" cy="-22" rx="3.4" ry="2.6" class="petal-muted" />
-							<ellipse cx="0" cy="-26" rx="2.8" ry="3.4" class="petal-muted" />
-							<ellipse cx="0" cy="-18" rx="2.8" ry="3.4" class="petal-muted" />
-							<circle cx="0" cy="-22" r="2.2" class="flower-core" />
-						</g>
-					</g>
 					<g class="level-four-grass">
 						<path d="M286 214 C294 192 300 182 306 214" />
 						<path d="M320 218 C326 196 332 186 338 218" />
 						<path d="M416 216 C422 194 428 184 434 216" />
 						<path d="M470 214 C476 194 480 184 486 214" />
 					</g>
-					<path
-						d="M360 206 C360 184 362 166 366 150 C370 136 374 122 380 106 C384 94 390 88 396 88 C402 88 406 92 408 102 C412 118 416 134 420 152 C424 170 426 186 426 206 Z"
-						fill="url(#gardenTrunk)"
-					/>
-					<path
-						d="M396 82 C380 84 366 92 358 104 C342 106 330 116 324 128 C312 134 304 146 304 160 C304 182 322 194 346 196 H432 C454 194 472 182 474 160 C476 146 470 134 460 126 C456 112 444 100 428 94 C420 86 410 82 396 82 Z"
-						fill="url(#gardenTreeFoliage)"
-					/>
-					<path
-						d="M396 96 C382 98 372 104 364 114 C350 116 340 124 336 136 C328 142 324 150 324 160 C324 176 338 186 358 188 H420 C440 186 452 176 454 160 C456 150 452 142 444 136 C440 124 430 116 418 110 C412 102 404 98 396 96 Z"
-						class="tree-inner"
-					/>
-					<path
-						d="M368 198 C378 194 390 194 400 198"
-						class="root-shadow"
-					/>
+					<ellipse cx="300" cy="218" rx="100" ry="14" class="dino-shadow" />
+					<path d="M228 168 C198 164 174 154 154 136" class="dino-tail tail-large" />
+					<ellipse cx="294" cy="166" rx="74" ry="44" class="dino-body" />
+					<ellipse cx="306" cy="178" rx="40" ry="20" class="dino-belly" />
+					<path d="M340 146 C356 114 375 88 398 74" class="dino-neck neck-large" />
+					<ellipse cx="418" cy="68" rx="22" ry="17" class="dino-head" />
+					<path d="M266 190 L264 206" class="dino-leg leg-large" />
+					<path d="M292 192 L292 206" class="dino-leg leg-large" />
+					<path d="M322 190 L324 206" class="dino-leg leg-large" />
+					<path d="M346 188 L348 206" class="dino-leg leg-large" />
+					<path d="M338 168 C347 170 354 176 359 184" class="dino-arm arm-large" />
+					<path d="M410 70 C414 65 419 63 424 62" class="dino-crest" />
+					<circle cx="250" cy="154" r="6.2" class="dino-spot" />
+					<circle cx="282" cy="146" r="5.8" class="dino-spot" />
+					<circle cx="314" cy="154" r="5.4" class="dino-spot" />
+					<circle cx="340" cy="168" r="5.1" class="dino-spot" />
+					<circle cx="361" cy="181" r="4.6" class="dino-spot" />
+					<circle cx="425" cy="63" r="2.6" class="dino-eye" />
+					<circle cx="411" cy="74" r="4.6" class="dino-cheek" />
+					<path d="M410 78 C414 82 421 82 425 78" class="dino-smile" />
+					<path d="M433 68 C436 66 438 66 441 66" class="dino-nostril" />
 				</g>
 			{/if}
 		</svg>
@@ -233,6 +281,24 @@
 		--garden-leaf-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 60%, #50634d 40%);
 		--garden-trunk-top: color-mix(in srgb, #7d6857 76%, #5f4d40 24%);
 		--garden-trunk-bottom: color-mix(in srgb, #5c493b 82%, #3d3028 18%);
+		--garden-blossom-top: color-mix(in srgb, #f8e8ef 78%, #f1bfd4 22%);
+		--garden-blossom-bottom: color-mix(in srgb, #efc4d9 74%, #f7f2f4 26%);
+		--garden-blossom-soft-top: color-mix(in srgb, #fff8fb 70%, #f6d9e5 30%);
+		--garden-blossom-soft-bottom: color-mix(in srgb, #f3d5df 76%, #ffffff 24%);
+		--garden-egg-top: color-mix(in srgb, #f7f0e4 84%, #efe3cd 16%);
+		--garden-egg-bottom: color-mix(in srgb, #e9dbc0 78%, #f7f1e7 22%);
+		--garden-egg-shade-top: rgba(233, 218, 191, 0.68);
+		--garden-egg-shade-bottom: rgba(217, 198, 162, 0.12);
+		--garden-egg-speck: rgba(188, 164, 127, 0.72);
+		--garden-dino-top: color-mix(in srgb, var(--theme-accent, #0f766e) 16%, #c6d6ab 84%);
+		--garden-dino-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 34%, #7e976d 66%);
+		--garden-dino-belly-top: color-mix(in srgb, #f8f0db 84%, #e9dcbb 16%);
+		--garden-dino-belly-bottom: color-mix(in srgb, #e8d8b2 76%, #f7efe0 24%);
+		--garden-dino-spot: color-mix(in srgb, var(--theme-accent, #0f766e) 34%, #70835f 66%);
+		--garden-dino-line: color-mix(in srgb, var(--garden-dino-bottom) 74%, #58664f 26%);
+		--garden-dino-eye: #243328;
+		--garden-dino-cheek: rgba(244, 198, 186, 0.72);
+		--garden-ground-shadow: rgba(44, 60, 51, 0.14);
 		padding: 2rem;
 		border-radius: var(--radius-card);
 		border: 1px solid hsl(var(--border));
@@ -332,56 +398,144 @@
 		stroke-linecap: round;
 	}
 
-	.stem {
-		fill: none;
-		stroke: color-mix(in srgb, var(--theme-accent, #0f766e) 40%, #74846d 60%);
-		stroke-width: 1.8;
-		stroke-linecap: round;
-	}
-
-	.flower-core {
-		fill: color-mix(in srgb, #efe0bc 84%, white 16%);
-	}
-
-	.petal-soft {
-		fill: color-mix(in srgb, #ded7cf 82%, white 18%);
-	}
-
-	.petal-muted {
-		fill: color-mix(in srgb, #d9d8e1 80%, white 20%);
-	}
-
-	.bush-shadow {
-		fill: rgba(45, 60, 49, 0.22);
-	}
-
-	.bush-highlight {
-		fill: rgba(196, 214, 196, 0.18);
-	}
-
-	.tree-inner {
-		fill: rgba(210, 224, 197, 0.18);
-	}
-
 	.level-four-meadow {
 		fill: rgba(178, 196, 168, 0.16);
 	}
 
-	.level-four-balance-shadow {
-		fill: rgba(42, 57, 46, 0.2);
+	.level-three-meadow {
+		fill: rgba(178, 196, 168, 0.14);
+	}
+
+	.egg-stage,
+	.dino-stage {
+		transform-box: fill-box;
+		transform-origin: center bottom;
+		animation: gardenBloom 520ms ease-out both;
+	}
+
+	.egg-shadow,
+	.dino-shadow {
+		fill: var(--garden-ground-shadow);
+	}
+
+	.egg-shell,
+	.egg-shell-piece {
+		fill: url(#gardenEggShell);
+	}
+
+	.egg-shell-shade {
+		fill: url(#gardenEggShade);
+	}
+
+	.egg-speck {
+		fill: var(--garden-egg-speck);
+	}
+
+	.crack-line {
+		fill: none;
+		stroke: rgba(141, 120, 88, 0.72);
+		stroke-width: 2.6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.crack-line-soft {
+		opacity: 0.72;
+		stroke-width: 2.2;
+	}
+
+	.dino-body,
+	.dino-head {
+		fill: url(#gardenDinoBody);
+	}
+
+	.dino-belly {
+		fill: url(#gardenDinoBelly);
+	}
+
+	.dino-neck,
+	.dino-tail,
+	.dino-leg,
+	.dino-arm,
+	.dino-smile,
+	.dino-crest,
+	.dino-nostril {
+		fill: none;
+		stroke: var(--garden-dino-line);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.neck-small,
+	.tail-small {
+		stroke-width: 18;
+	}
+
+	.neck-medium,
+	.tail-medium {
+		stroke-width: 24;
+	}
+
+	.neck-large,
+	.tail-large {
+		stroke-width: 30;
+	}
+
+	.leg-small {
+		stroke-width: 10;
+	}
+
+	.leg-medium {
+		stroke-width: 12;
+	}
+
+	.leg-large {
+		stroke-width: 14;
+	}
+
+	.arm-small {
+		stroke-width: 7;
+	}
+
+	.arm-medium {
+		stroke-width: 8;
+	}
+
+	.arm-large {
+		stroke-width: 9;
+	}
+
+	.dino-spot {
+		fill: var(--garden-dino-spot);
+		opacity: 0.95;
+	}
+
+	.dino-eye {
+		fill: var(--garden-dino-eye);
+	}
+
+	.dino-cheek {
+		fill: var(--garden-dino-cheek);
+	}
+
+	.dino-smile,
+	.dino-nostril {
+		stroke-width: 2.2;
+	}
+
+	.dino-crest {
+		stroke-width: 3;
+		opacity: 0.68;
+	}
+
+	.shell-fragment {
+		opacity: 0.92;
 	}
 
 	.level-four-grass path {
 		fill: none;
 		stroke: color-mix(in srgb, var(--theme-accent, #0f766e) 42%, #617a63 58%);
 		stroke-width: 2.6;
-		stroke-linecap: round;
-	}
-
-	.root-shadow {
-		fill: none;
-		stroke: rgba(58, 45, 36, 0.22);
-		stroke-width: 3;
 		stroke-linecap: round;
 	}
 
@@ -415,6 +569,17 @@
 		}
 	}
 
+	@keyframes gardenBloom {
+		from {
+			opacity: 0;
+			transform: translateY(8px) scale(0.9);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+
 	:global(.dark) .garden-card {
 		--garden-sky-top: color-mix(in srgb, hsl(var(--surface)) 84%, #16212a 16%);
 		--garden-sky-mid: color-mix(in srgb, hsl(var(--surface-soft)) 82%, #13202a 18%);
@@ -433,6 +598,24 @@
 		--garden-leaf-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 56%, #405240 44%);
 		--garden-trunk-top: color-mix(in srgb, #715d4d 70%, #4a3d33 30%);
 		--garden-trunk-bottom: color-mix(in srgb, #4a3b31 78%, #302620 22%);
+		--garden-blossom-top: color-mix(in srgb, #f3dae6 58%, #c796b1 42%);
+		--garden-blossom-bottom: color-mix(in srgb, #d6a4bd 60%, #f1d9e4 40%);
+		--garden-blossom-soft-top: color-mix(in srgb, #fdeff5 52%, #d7b2c5 48%);
+		--garden-blossom-soft-bottom: color-mix(in srgb, #d8afc0 60%, #fff6fa 40%);
+		--garden-egg-top: color-mix(in srgb, #ede6d8 70%, #cfc2a6 30%);
+		--garden-egg-bottom: color-mix(in srgb, #b5aa8d 58%, #f0e8d8 42%);
+		--garden-egg-shade-top: rgba(103, 92, 73, 0.42);
+		--garden-egg-shade-bottom: rgba(40, 35, 28, 0.06);
+		--garden-egg-speck: rgba(148, 130, 100, 0.74);
+		--garden-dino-top: color-mix(in srgb, var(--theme-accent, #0f766e) 20%, #97b28e 80%);
+		--garden-dino-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 40%, #547154 60%);
+		--garden-dino-belly-top: color-mix(in srgb, #e6dbc0 70%, #b8ae8b 30%);
+		--garden-dino-belly-bottom: color-mix(in srgb, #b9ad85 62%, #ece3cd 38%);
+		--garden-dino-spot: color-mix(in srgb, var(--theme-accent, #0f766e) 30%, #45563f 70%);
+		--garden-dino-line: color-mix(in srgb, var(--garden-dino-bottom) 72%, #2a372d 28%);
+		--garden-dino-eye: #eaf4e8;
+		--garden-dino-cheek: rgba(224, 172, 163, 0.44);
+		--garden-ground-shadow: rgba(6, 10, 12, 0.26);
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.015) 0%, rgba(255, 255, 255, 0) 100%),
 			hsl(var(--surface));
@@ -459,25 +642,12 @@
 		fill: rgba(224, 232, 235, 0.08);
 	}
 
-	:global(.dark) .bush-shadow {
-		fill: rgba(10, 16, 13, 0.28);
-	}
-
-	:global(.dark) .bush-highlight,
-	:global(.dark) .tree-inner {
-		fill: rgba(203, 216, 195, 0.1);
-	}
-
 	:global(.dark) .level-four-meadow {
 		fill: rgba(178, 196, 168, 0.08);
 	}
 
-	:global(.dark) .level-four-balance-shadow {
-		fill: rgba(8, 14, 11, 0.24);
-	}
-
-	:global(.dark) .root-shadow {
-		stroke: rgba(12, 10, 8, 0.28);
+	:global(.dark) .crack-line {
+		stroke: rgba(164, 145, 114, 0.68);
 	}
 
 	@media (max-width: 640px) {

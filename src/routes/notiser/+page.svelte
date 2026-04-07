@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
 
@@ -73,6 +74,8 @@
 
 	const unread = $derived(notifications.filter((n) => !n.is_read).length);
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/notiser" />
 
 <svelte:head>
 	<title>Notiser | MittPsyke</title>

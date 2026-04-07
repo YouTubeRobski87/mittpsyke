@@ -1,5 +1,17 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "mittpsyke.se"
+        }
+      ],
+      "destination": "https://www.mittpsyke.se/$1",
+      "statusCode": 301
+    },
     {
       "source": "/samtalsstod-vid-trauma",
       "destination": "/samtalsstod-utan-vantetid/samtalsstod-vid-trauma",

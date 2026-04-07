@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
@@ -352,6 +353,8 @@
 		}
 	}
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/framsteg" />
 
 <main class="auth-page" style={themeStyle}>
 	<PortalSubnav

@@ -1,6 +1,9 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import PublicTrustPanel from '$lib/components/PublicTrustPanel.svelte';
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/hjalp-vid-angest-online" />
 
 <svelte:head>
 	<title>Hjälp vid ångest online | Samtal, dagbok och övningar | MittPsyke</title>
@@ -15,7 +18,7 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/hjalp-vid-angest-online" />
+
 </svelte:head>
 
 <main class="page">

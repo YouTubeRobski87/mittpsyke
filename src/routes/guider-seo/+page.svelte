@@ -1,9 +1,12 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { buildTitle } from '$lib/seo-kit/seo';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/guider-seo" />
 
 <svelte:head>
 	<title>{buildTitle('Guider')}</title>

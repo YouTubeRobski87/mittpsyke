@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
@@ -42,6 +43,8 @@
 	}
 </script>
 
+<SEO canonical="https://www.mittpsyke.se/humorsparning" />
+
 <svelte:head>
 	<title>Humörspårning & aktivitetsheatmap – MittPsyke</title>
 	<meta
@@ -55,7 +58,7 @@
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
-	<link rel="canonical" href="https://www.mittpsyke.se/humorsparning" />
+
 </svelte:head>
 
 <main class="page">

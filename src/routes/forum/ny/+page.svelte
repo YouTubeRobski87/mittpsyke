@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
 
@@ -21,6 +22,8 @@
 		isAnonymous = (form as { isAnonymous?: boolean } | null)?.isAnonymous ?? false;
 	});
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/forum/ny" />
 
 <svelte:head>
 	<title>Nytt inlägg – Forum – MittPsyke</title>

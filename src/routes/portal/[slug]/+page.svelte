@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import { getPortalByKey } from '$lib/data/portals';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
@@ -12,6 +13,8 @@
 		}
 	});
 </script>
+
+<SEO canonical={`https://www.mittpsyke.se${page.url.pathname}`} />
 
 <svelte:head>
 	<title>{portal ? portal.title : 'Portal'} – MittPsyke</title>

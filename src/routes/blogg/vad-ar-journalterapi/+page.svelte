@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import BlogArticle from '$lib/components/BlogArticle.svelte';
 
 	const title = 'Vad är journalterapi – och fungerar det egentligen?';
@@ -26,10 +27,11 @@
 	};
 </script>
 
+<SEO canonical="https://www.mittpsyke.se/blogg/vad-ar-journalterapi" />
+
 <svelte:head>
 	<title>{title}</title>
 	<meta name="description" content={description} />
-	<link rel="canonical" href={canonical} />
 	{@html `<script type="application/ld+json">${JSON.stringify(blogPostingJsonLd)}<\/script>`}
 </svelte:head>
 

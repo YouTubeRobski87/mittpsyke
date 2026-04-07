@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 
 	type DashboardData = {
@@ -48,6 +49,8 @@
 	);
 	const primaryDiaryCtaLabel = $derived(diaryPreview.hasEntry ? 'Fortsätt i dagboken' : 'Börja i dagboken');
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/dashboard" />
 
 <main class="auth-page">
 	<PortalSubnav

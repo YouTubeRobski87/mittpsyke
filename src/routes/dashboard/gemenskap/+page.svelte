@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SEO from '$lib/components/SEO.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import { supabase } from '$lib/supabase';
 	import type {
@@ -395,6 +396,8 @@
 		}
 	}
 </script>
+
+<SEO canonical="https://www.mittpsyke.se/dashboard/gemenskap" />
 
 <main class="auth-page">
 	<PortalSubnav
