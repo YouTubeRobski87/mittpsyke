@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { afterNavigate } from '$app/navigation';
 	import {
-		GA_MEASUREMENT_ID,
+		ANALYTICS_ENABLED,
 		initializeAnalytics,
 		trackPageView
 	} from '$lib/analytics';
@@ -185,7 +185,7 @@
 	function syncAnalyticsConsent() {
 		if (!browser) return;
 
-		analyticsEnabled = hasAnalyticsConsent();
+		analyticsEnabled = ANALYTICS_ENABLED && hasAnalyticsConsent();
 		if (!analyticsEnabled) {
 			lastTrackedPagePath = '';
 			return;
@@ -246,7 +246,7 @@
 
 	// Initiera Vercel Analytics och Speed Insights en gång vid mount
 	$effect(() => {
-		if (!browser) return;
+		if (!browser || !ANALYTICS_ENABLED) return;
 		injectAnalytics();
 		injectSpeedInsights();
 	});

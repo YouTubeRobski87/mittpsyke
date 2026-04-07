@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { initializeAnalytics, trackPageView } from '$lib/analytics';
+	import { ANALYTICS_ENABLED, initializeAnalytics, trackPageView } from '$lib/analytics';
 	import {
 		getAnalyticsConsent,
 		grantAnalyticsConsent,
@@ -10,12 +10,17 @@
 	let visible = $state(false);
 
 	$effect(() => {
-		if (browser && getAnalyticsConsent() === null) {
+		if (browser && ANALYTICS_ENABLED && getAnalyticsConsent() === null) {
 			visible = true;
 		}
 	});
 
 	function accept() {
+		if (!ANALYTICS_ENABLED) {
+			visible = false;
+			return;
+		}
+
 		grantAnalyticsConsent();
 		initializeAnalytics();
 		trackPageView(new URL(window.location.href));

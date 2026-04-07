@@ -21,7 +21,9 @@ type EventName =
 	| 'horoscope_cta_clicked'
 	| 'diary_page_opened_from_horoscope'
 	| 'hero_cta_primary_click'
-	| 'hero_cta_secondary_click';
+	| 'hero_cta_secondary_click'
+	| 'view_chat_nudge'
+	| 'click_chat_nudge';
 
 type EventParams = Record<string, string | number | boolean>;
 type LandingPageEventParams = Record<string, string | number | boolean | null>;
@@ -35,12 +37,14 @@ type LandingPageEventPayload = {
 };
 
 export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || '';
+export const PUBLIC_VERCEL_ENV = env.PUBLIC_VERCEL_ENV || '';
+export const ANALYTICS_ENABLED = PUBLIC_VERCEL_ENV === 'production';
 const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
 
 let analyticsInitialized = false;
 
 function ensureGtag() {
-	if (!browser) return null;
+	if (!browser || !ANALYTICS_ENABLED) return null;
 
 	const windowWithGtag = window as any;
 	windowWithGtag.dataLayer = windowWithGtag.dataLayer || [];
@@ -55,7 +59,7 @@ function ensureGtag() {
 }
 
 export function initializeAnalytics() {
-	if (!browser || !hasAnalyticsConsent() || analyticsInitialized || !GA_MEASUREMENT_ID) return;
+	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent() || analyticsInitialized || !GA_MEASUREMENT_ID) return;
 
 	const gtag = ensureGtag();
 	if (!gtag) return;
@@ -69,7 +73,7 @@ export function initializeAnalytics() {
 }
 
 export function trackPageView(url: URL) {
-	if (!browser || !hasAnalyticsConsent()) return;
+	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent()) return;
 
 	if (!analyticsInitialized) initializeAnalytics();
 
@@ -86,8 +90,8 @@ export function trackPageView(url: URL) {
 	});
 }
 
-function trackEvent(eventName: EventName, params: EventParams = {}) {
-	if (!browser || !hasAnalyticsConsent()) return;
+export function trackEvent(eventName: EventName, params: EventParams = {}) {
+	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent()) return;
 
 	if (!analyticsInitialized) initializeAnalytics();
 
@@ -203,7 +207,7 @@ function getLandingSessionId() {
 }
 
 export async function saveLandingPageEvent(payload: LandingPageEventPayload) {
-	if (!browser || !hasAnalyticsConsent()) {
+	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent()) {
 		return { ok: false, skipped: true as const };
 	}
 

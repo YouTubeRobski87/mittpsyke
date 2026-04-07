@@ -11,6 +11,9 @@
 		hasSensitiveConsent
 	} from '$lib/consent';
 	import {
+		ANALYTICS_ENABLED
+	} from '$lib/analytics';
+	import {
 		CHAT_CONTEXT_LIMIT,
 		getChatHistoryStorageKey,
 		getChatTopic,
@@ -162,7 +165,7 @@
 	let currentSupportLevel = $derived(supportLevel());
 
 	async function trackEvent(eventName: string, data: Record<string, string | number> = {}) {
-		if (!browser) return;
+		if (!browser || !ANALYTICS_ENABLED) return;
 		try {
 			await fetch('/api/events', {
 				method: 'POST',
@@ -418,9 +421,7 @@
 		const assistantCount = messages.filter((message) => message.role === 'assistant').length;
 		if (assistantCount >= 3 && isAnonymous && !nudgeDismissed) {
 			showAccountNudge = true;
-			if (browser && typeof window.gtag === 'function') {
-				window.gtag('event', 'view_chat_nudge');
-			}
+			void trackEvent('view_chat_nudge');
 		}
 	});
 
@@ -659,7 +660,7 @@
 					href="/register"
 					class="underline hover:opacity-100"
 					onclick={() => {
-						if (typeof window.gtag === 'function') window.gtag('event', 'click_chat_nudge');
+						void trackEvent('click_chat_nudge');
 					}}
 				>
 					Skapa konto
