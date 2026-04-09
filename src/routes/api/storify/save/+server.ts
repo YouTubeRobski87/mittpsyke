@@ -69,7 +69,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		entry.length
 	);
 
-	const { error } = await supabase.from('storify_entries').insert({
+	// Spara till storify_entries (eget format med ton m.m.)
+	const { error: storifyError } = await supabase.from('storify_entries').insert({
 		user_id: user.id,
 		content: entry,
 		tone,
@@ -77,21 +78,37 @@ export const POST: RequestHandler = async ({ request }) => {
 		energy_score: energyScore ?? null
 	});
 
-	if (error) {
+	if (storifyError) {
 		console.error(
-			'[storify/save] Supabase insert fel:',
-			error.message,
-			'| details:',
-			error.details,
-			'| hint:',
-			error.hint,
-			'| code:',
-			error.code
+			'[storify/save] storify_entries insert fel:',
+			storifyError.message,
+			'| code:', storifyError.code,
+			'| details:', storifyError.details,
+			'| hint:', storifyError.hint
 		);
-		return new Response(JSON.stringify({ error: error.message }), {
+		return new Response(JSON.stringify({ error: storifyError.message }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' }
 		});
+	}
+
+	// Dual-write till diary-tabellen så inlägget syns i /dagbok/checkin.
+	// diary.text = innehållet, mood = tonens id, tags = ['dagars-avtryck'] för filtrering.
+	const { error: diaryError } = await supabase.from('diary').insert({
+		user_id: user.id,
+		text: entry,
+		mood: tone ?? null,
+		tags: ['dagars-avtryck']
+	});
+
+	if (diaryError) {
+		// Logga men returnera inte fel — storify-inlägget sparades korrekt.
+		console.error(
+			'[storify/save] diary insert fel:',
+			diaryError.message,
+			'| code:', diaryError.code,
+			'| details:', diaryError.details
+		);
 	}
 
 	console.log('[storify/save] Sparat OK för user:', user.id);
