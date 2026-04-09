@@ -668,11 +668,17 @@
 			<section class="auth-panel">
 				<h2 class="text-base font-semibold">Två sätt att skriva</h2>
 				<div class="diary-path-grid mt-3">
-					<div class="diary-path-card diary-path-card--preview">
+					<div class="diary-path-card diary-path-card--preview diary-path-card--write">
+						<span class="path-icon-wrap path-icon-wrap--write" aria-hidden="true">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+						</span>
 						<span class="diary-path-title">Skriv själv</span>
 						<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
 					</div>
-					<div class="diary-path-card diary-path-card--preview">
+					<div class="diary-path-card diary-path-card--preview diary-path-card--guided">
+						<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+						</span>
 						<span class="diary-path-title">Dagbok med olika stilar</span>
 						<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
 					</div>
@@ -706,11 +712,17 @@
 							Du kan skriva fritt i din personliga dagbok eller välja en röst som guidar dig genom dagen.
 						</p>
 						<div class="diary-path-grid mt-3">
-					<a href="/dagbok/checkin#skriv-sjalv" class="diary-path-card">
+							<a href="/dagbok/checkin#skriv-sjalv" class="diary-path-card diary-path-card--write">
+								<span class="path-icon-wrap path-icon-wrap--write" aria-hidden="true">
+									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+								</span>
 								<span class="diary-path-title">Skriv själv</span>
 								<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
 							</a>
-							<a href="/dagars-avtryck" class="diary-path-card">
+							<a href="/dagars-avtryck" class="diary-path-card diary-path-card--guided">
+								<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
+									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+								</span>
 								<span class="diary-path-title">Dagbok med olika stilar</span>
 								<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
 							</a>
@@ -1181,33 +1193,76 @@
 	}
 
 	.diary-path-card {
-		display: grid;
-		gap: 0.2rem;
-		padding: 0.8rem 0.9rem;
-		border: 1px solid hsl(var(--border));
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+		padding: 1.1rem 1rem;
 		border-radius: var(--radius-input);
-		background: hsl(var(--surface-soft));
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
 		text-decoration: none;
-		transition: border-color 150ms ease, box-shadow 150ms ease;
+		transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+	}
+
+	/* Amber — Skriv själv */
+	.diary-path-card--write {
+		background: hsl(35 55% 97%);
+		border-color: hsl(35 45% 83%);
+		border-left: 3px solid hsl(35 70% 55%);
+	}
+
+	/* Blå — Dagbok med olika stilar */
+	.diary-path-card--guided {
+		background: hsl(220 55% 97%);
+		border-color: hsl(220 50% 83%);
+		border-left: 3px solid hsl(220 65% 52%);
 	}
 
 	.diary-path-card--preview {
 		cursor: default;
-		opacity: 0.85;
 	}
 
-	.diary-path-card:hover:not(.diary-path-card--preview) {
-		border-color: hsl(var(--foreground) / 0.18);
-		box-shadow: 0 5px 14px rgba(0, 0, 0, 0.05);
+	.diary-path-card--write:hover:not(.diary-path-card--preview) {
+		border-color: hsl(35 55% 70%);
+		box-shadow: 0 4px 14px hsl(35 60% 55% / 0.18);
+		transform: translateY(-1px);
+	}
+
+	.diary-path-card--guided:hover:not(.diary-path-card--preview) {
+		border-color: hsl(220 55% 65%);
+		box-shadow: 0 4px 14px hsl(220 60% 52% / 0.18);
+		transform: translateY(-1px);
 	}
 
 	.diary-path-card:focus-visible {
-		outline: 2px solid hsl(var(--foreground) / 0.18);
+		outline: 2px solid hsl(var(--foreground) / 0.22);
 		outline-offset: 2px;
 	}
 
+	/* Ikonbubblor */
+	.path-icon-wrap {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.2rem;
+		height: 2.2rem;
+		border-radius: 0.5rem;
+		margin-bottom: 0.35rem;
+		flex-shrink: 0;
+	}
+
+	.path-icon-wrap--write {
+		background: hsl(35 65% 90%);
+		color: hsl(35 72% 38%);
+	}
+
+	.path-icon-wrap--guided {
+		background: hsl(220 60% 92%);
+		color: hsl(220 68% 42%);
+	}
+
 	.diary-path-title {
-		font-size: 0.92rem;
+		font-size: 0.95rem;
 		font-weight: 600;
 		color: hsl(var(--foreground));
 	}
@@ -1216,6 +1271,29 @@
 		font-size: 0.82rem;
 		line-height: 1.55;
 		color: hsl(var(--muted-foreground));
+	}
+
+	/* Mörkt läge */
+	:global(.dark) .diary-path-card--write {
+		background: hsl(35 18% 12%);
+		border-color: hsl(35 22% 22%);
+		border-left: 3px solid hsl(35 62% 48%);
+	}
+
+	:global(.dark) .diary-path-card--guided {
+		background: hsl(222 22% 13%);
+		border-color: hsl(220 20% 24%);
+		border-left: 3px solid hsl(220 58% 52%);
+	}
+
+	:global(.dark) .path-icon-wrap--write {
+		background: hsl(35 28% 18%);
+		color: hsl(35 68% 60%);
+	}
+
+	:global(.dark) .path-icon-wrap--guided {
+		background: hsl(220 26% 20%);
+		color: hsl(220 62% 64%);
 	}
 
 	.diary-path-voices {
