@@ -38,6 +38,7 @@
 	let isStreaming = $state(false);
 	let streamError = $state('');
 	let inputValue = $state('');
+	let hasSelectedVoice = $state(false);
 
 	// --- Tonval ---
 
@@ -138,6 +139,7 @@
 		inputValue = '';
 		streamError = '';
 		selectedTone = DEFAULT_TONE_ID;
+		hasSelectedVoice = false;
 		draftColor = '';
 		draftColorName = '';
 		draftColorMeaning = '';
@@ -293,7 +295,17 @@
 
 	async function autoSave(existingToken?: string) {
 		const token = existingToken ?? (await getToken());
-		if (!token || !generatedEntry) return;
+		if (!token) {
+			console.error('[autoSave] Ingen token – sessionen har gått ut.');
+			saveError = 'Inlägget genererades men kunde inte sparas (session utgången). Kopiera texten manuellt.';
+			return;
+		}
+		if (!generatedEntry) {
+			console.error('[autoSave] generatedEntry är tomt – inget att spara.');
+			return;
+		}
+
+		console.log('[autoSave] Skickar till /api/storify/save, tone:', generatedTone, '| length:', generatedEntry.length);
 
 		const res = await fetch('/api/storify/save', {
 			method: 'POST',
@@ -309,7 +321,10 @@
 			})
 		});
 
+		const resBody = await res.json().catch(() => ({})) as { ok?: boolean; error?: string };
+
 		if (res.ok) {
+			console.log('[autoSave] Sparat OK.');
 			isSaved = true;
 			const newEntry: StorifyEntry = {
 				id: uid(),
@@ -320,6 +335,7 @@
 			};
 			entries = [newEntry, ...entries];
 		} else {
+			console.error('[autoSave] Misslyckades. Status:', res.status, '| Fel:', resBody.error);
 			saveError = 'Inlägget genererades men kunde inte sparas. Kopiera texten manuellt.';
 		}
 	}
@@ -395,7 +411,7 @@
 									type="button"
 									class="tone-btn voice-btn"
 									class:selected={selectedTone === tone.id}
-									onclick={() => (selectedTone = tone.id)}
+									onclick={() => { selectedTone = tone.id; hasSelectedVoice = true; }}
 									aria-pressed={selectedTone === tone.id}
 									title={tone.description}
 								>
@@ -424,16 +440,17 @@
 					<div class="input-row">
 						<textarea
 							class="chat-input"
-							placeholder="Skriv något och tryck Enter..."
+							placeholder={hasSelectedVoice ? 'Skriv något och tryck Enter...' : 'Välj en röst ovan för att börja...'}
 							bind:value={inputValue}
 							onkeydown={handleKeydown}
+							disabled={!hasSelectedVoice}
 							rows={2}
 							aria-label="Berätta om din dag"
 						></textarea>
 						<button
 							class="send-btn"
 							onclick={handleSend}
-							disabled={!inputValue.trim()}
+							disabled={!inputValue.trim() || !hasSelectedVoice}
 							aria-label="Skicka"
 						>
 							→
