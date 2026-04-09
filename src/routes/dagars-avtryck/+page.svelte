@@ -516,8 +516,8 @@
 					<!-- Avsluta-knapp (synlig efter minst 3 användarmeddelanden) -->
 					{#if userMessageCount() >= 3}
 						<div class="finish-row">
-							<button class="auth-button primary finish-btn" onclick={proceedToToneSelection} disabled={isStreaming}>
-								Välj ton och skapa dagbok →
+							<button class="auth-button primary finish-btn" onclick={handleGenerate} disabled={isStreaming}>
+								Skapa dagboksinlägg →
 							</button>
 						</div>
 					{/if}
