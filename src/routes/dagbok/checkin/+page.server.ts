@@ -7,6 +7,7 @@ type DiaryEntry = {
 	created_at: string | null;
 	tags: string[];
 	mood: string | null;
+	image_url: string | null;
 };
 
 function normalizeTags(value: unknown) {
@@ -53,7 +54,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const diaryQuery = await locals.supabase
 		.from('diary')
-		.select('id, text, created_at, tags, mood')
+		.select('id, text, created_at, tags, mood, image_url')
 		.eq('user_id', user.id)
 		.order('created_at', { ascending: false });
 
@@ -70,7 +71,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				content: typeof row.content === 'string' ? row.content : '',
 				created_at: typeof row.created_at === 'string' ? row.created_at : null,
 				tags: normalizeTags(row.tags),
-				mood: typeof row.mood === 'string' ? row.mood : null
+				mood: typeof row.mood === 'string' ? row.mood : null,
+				image_url: null // Äldre tabell saknar bildkolumn
 			}));
 		}
 	} else if (!diaryQuery.error) {
@@ -79,7 +81,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			content: typeof row.text === 'string' ? row.text : '',
 			created_at: typeof row.created_at === 'string' ? row.created_at : null,
 			tags: normalizeTags(row.tags),
-			mood: typeof row.mood === 'string' ? row.mood : null
+			mood: typeof row.mood === 'string' ? row.mood : null,
+			image_url: typeof row.image_url === 'string' ? row.image_url : null
 		}));
 	}
 
