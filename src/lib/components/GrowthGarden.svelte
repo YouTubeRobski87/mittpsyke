@@ -218,6 +218,25 @@
 				</g>
 			{/if}
 
+			{#if entryCount >= 100}
+				<!-- Mysterie-ägg: visas när användaren nått 100 inlägg, oavsett growthLevel -->
+				<g class="mystery-egg-stage">
+					<ellipse cx="78" cy="169" rx="30" ry="34" class="mystery-egg-glow" />
+					<ellipse cx="78" cy="188" rx="19" ry="5" class="egg-shadow" />
+					<path
+						d="M78 150 C69 150 62 164 62 174 C62 184 69 188 78 188 C87 188 94 184 94 174 C94 164 87 150 78 150 Z"
+						class="egg-shell"
+					/>
+					<path
+						d="M79 153 C73 157 68 166 68 174 C68 181 71 185 75 187 C71 181 69 174 69 168 C69 162 73 156 79 153 Z"
+						class="egg-shell-shade"
+					/>
+					<circle cx="70" cy="161" r="2.1" class="egg-speck" />
+					<circle cx="84" cy="170" r="1.8" class="egg-speck" />
+					<circle cx="73" cy="177" r="1.6" class="egg-speck" />
+				</g>
+			{/if}
+
 			{#if growthLevel >= 4}
 				<g class="layer dino-stage level-four">
 					<path
@@ -260,6 +279,10 @@
 		<p class="garden-note">Formad av det du skrivit och de gånger du kommit tillbaka.</p>
 		<p class="garden-stats">{entryCount} inlägg och {activeDays} aktiva dagar totalt.</p>
 	</div>
+
+	{#if entryCount >= 100}
+		<p class="mystery-hint">Något nytt håller på att hända...</p>
+	{/if}
 </section>
 
 <style>
@@ -556,6 +579,37 @@
 
 	.garden-stats {
 		white-space: nowrap;
+	}
+
+	/* ── Mysterie-ägg (100 inlägg) ── */
+	.mystery-egg-stage {
+		animation: gardenFade 500ms ease-out both;
+	}
+
+	.mystery-egg-glow {
+		fill: color-mix(in srgb, var(--theme-accent, #0f766e) 32%, transparent 68%);
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: mysteryPulse 2.8s ease-in-out infinite;
+	}
+
+	@keyframes mysteryPulse {
+		0%, 100% {
+			opacity: 0.18;
+			transform: scale(0.88);
+		}
+		50% {
+			opacity: 0.52;
+			transform: scale(1.14);
+		}
+	}
+
+	.mystery-hint {
+		margin: 0;
+		font-size: 0.82rem;
+		font-style: italic;
+		color: color-mix(in srgb, var(--theme-accent, #0f766e) 55%, hsl(var(--muted-foreground)) 45%);
+		animation: gardenFade 600ms ease-out both;
 	}
 
 	@keyframes gardenFade {
