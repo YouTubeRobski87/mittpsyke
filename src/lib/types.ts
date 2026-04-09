@@ -17,6 +17,7 @@ export interface CreateDiaryRequestBody {
 	text: string;
 	mood?: string | null;
 	tags?: string[] | null;
+	image_url?: string | null;
 }
 
 export interface DiaryRecord {
@@ -25,6 +26,7 @@ export interface DiaryRecord {
 	text: string;
 	mood: string | null;
 	tags: string[] | null;
+	image_url: string | null;
 	created_at: string;
 }
 
@@ -43,6 +45,7 @@ export interface UpdateDiaryRequestBody {
 	text: string;
 	mood?: string | null;
 	tags?: string[] | null;
+	image_url?: string | null;
 }
 
 export interface UpdateDiarySuccessResponse {

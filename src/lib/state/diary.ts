@@ -6,6 +6,7 @@ export type DiaryEntry = {
 	created_at: string | null;
 	tags: string[];
 	mood: string | null;
+	image_url: string | null;
 };
 
 type DiaryRow = {
@@ -14,6 +15,7 @@ type DiaryRow = {
 	created_at: unknown;
 	tags: unknown;
 	mood: unknown;
+	image_url: unknown;
 };
 
 type LegacyDiaryRow = {
@@ -50,7 +52,8 @@ function mapDiaryRow(row: DiaryRow): DiaryEntry {
 		content: typeof row.text === 'string' ? row.text : '',
 		created_at: typeof row.created_at === 'string' ? row.created_at : null,
 		tags: normalizeTags(row.tags),
-		mood: typeof row.mood === 'string' ? row.mood : null
+		mood: typeof row.mood === 'string' ? row.mood : null,
+		image_url: typeof row.image_url === 'string' ? row.image_url : null
 	};
 }
 
@@ -60,7 +63,8 @@ function mapLegacyDiaryRow(row: LegacyDiaryRow): DiaryEntry {
 		content: typeof row.content === 'string' ? row.content : '',
 		created_at: typeof row.created_at === 'string' ? row.created_at : null,
 		tags: normalizeTags(row.tags),
-		mood: typeof row.mood === 'string' ? row.mood : null
+		mood: typeof row.mood === 'string' ? row.mood : null,
+		image_url: null // Äldre tabell saknar bildkolumn
 	};
 }
 
@@ -79,7 +83,7 @@ function isMissingTableError(
 async function fetchDiaryEntries(userId: string): Promise<DiaryEntry[]> {
 	const { data, error: loadError } = await supabase
 		.from('diary')
-		.select('id, text, created_at, tags, mood')
+		.select('id, text, created_at, tags, mood, image_url')
 		.eq('user_id', userId)
 		.order('created_at', { ascending: false });
 

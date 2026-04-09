@@ -56,12 +56,17 @@ function validateBody(input: unknown): { ok: true; data: CreateDiaryRequestBody 
 		}
 	}
 
+	if (body.image_url !== undefined && body.image_url !== null && typeof body.image_url !== 'string') {
+		return { ok: false, error: 'Field "image_url" must be a string or null.' };
+	}
+
 	return {
 		ok: true,
 		data: {
 			text: body.text.trim(),
 			mood: body.mood ?? null,
-			tags: body.tags ?? null
+			tags: body.tags ?? null,
+			image_url: body.image_url ?? null
 		}
 	};
 }
@@ -112,9 +117,10 @@ export const POST: RequestHandler = async ({ request }) => {
 			user_id: user.id,
 			text: validated.data.text,
 			mood: validated.data.mood,
-			tags: validated.data.tags
+			tags: validated.data.tags,
+			image_url: validated.data.image_url
 		})
-		.select('id, user_id, text, mood, tags, created_at')
+		.select('id, user_id, text, mood, tags, image_url, created_at')
 		.single();
 
 	if (!insertError && inserted) {

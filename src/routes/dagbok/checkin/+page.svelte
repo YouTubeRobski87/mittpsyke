@@ -5,6 +5,7 @@
 	import { trackSignupCompleted, trackDiaryPageOpenedFromHoroscope } from '$lib/analytics';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
+	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import { supabase } from '$lib/supabase';
 	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
 	import type { Session, User } from '@supabase/supabase-js';
@@ -38,7 +39,27 @@
 	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
 	let hasSavedEntries = $derived(entries.length > 0);
+
+	// Filtrerade inlägg baserat på valt kalenderdatum
+	let filteredEntries = $derived.by(() => {
+		if (!calendarFilterDate) return entries;
+		return entries.filter((entry) => {
+			if (!entry.created_at) return false;
+			const d = new Date(entry.created_at);
+			if (Number.isNaN(d.getTime())) return false;
+			const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+			return key === calendarFilterDate;
+		});
+	});
 	let sharedEntryIds = $state(new Set<string>());
+	// Kalenderfilter: YYYY-MM-DD eller null för att visa alla inlägg
+	let calendarFilterDate = $state<string | null>(null);
+
+	// Bilduppladdning för nytt inlägg
+	let draftImageUrl = $state<string | null>(null);
+	let uploadingImage = $state(false);
+	let uploadImageError = $state('');
+
 	let confirmingShareEntryId = $state('');
 	let confirmingUnshareEntryId = $state('');
 	let sharingEntryId = $state('');
@@ -517,6 +538,76 @@
 		}
 	}
 
+	// Hanterar val av bild — laddar upp till Supabase Storage direkt
+	async function handleImageSelect(event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		const file = input.files?.[0] ?? null;
+		if (!file) return;
+
+		const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+		if (!allowedTypes.includes(file.type)) {
+			uploadImageError = 'Endast JPEG, PNG, WebP och GIF stöds.';
+			return;
+		}
+		if (file.size > 5 * 1024 * 1024) {
+			uploadImageError = 'Bilden får vara max 5 MB.';
+			return;
+		}
+
+		uploadImageError = '';
+		uploadingImage = true;
+
+		try {
+			const { data: sessionData } = await supabase.auth.getSession();
+			const userId = sessionData.session?.user?.id;
+			if (!userId) {
+				uploadImageError = 'Logga in för att ladda upp bilder.';
+				return;
+			}
+
+			const timestamp = Date.now();
+			const safeFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+			const storagePath = `${userId}/${timestamp}-${safeFilename}`;
+
+			const { error: uploadError } = await supabase.storage
+				.from('diary-images')
+				.upload(storagePath, file, { upsert: false });
+
+			if (uploadError) {
+				console.error('[handleImageSelect] Storage-fel:', uploadError.message);
+				uploadImageError = 'Kunde inte ladda upp bilden just nu.';
+				return;
+			}
+
+			// getPublicUrl är synkron i Supabase JS v2
+			const { data: urlData } = supabase.storage
+				.from('diary-images')
+				.getPublicUrl(storagePath);
+
+			draftImageUrl = urlData.publicUrl;
+		} catch (err) {
+			console.error('[handleImageSelect] Oväntat fel:', err);
+			uploadImageError = 'Kunde inte ladda upp bilden just nu.';
+		} finally {
+			uploadingImage = false;
+			// Återställ input så samma fil kan väljas igen
+			input.value = '';
+		}
+	}
+
+	function clearDraftImage() {
+		draftImageUrl = null;
+		uploadImageError = '';
+	}
+
+	// Kallas från DiaryCalendar när användaren klickar ett datum
+	function handleCalendarDaySelect(dateKey: string | null) {
+		calendarFilterDate = dateKey;
+		if (dateKey && typeof document !== 'undefined') {
+			document.getElementById('senaste-inlagg')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
+	}
+
 	async function saveDraftToDiary() {
 		if (!draftText.trim() || savingDraft) return;
 		draftError = '';
@@ -540,7 +631,8 @@
 				},
 				body: JSON.stringify({
 					text: draftText.trim(),
-					mood: draftMood || null
+					mood: draftMood || null,
+					image_url: draftImageUrl
 				})
 			});
 
@@ -564,6 +656,8 @@
 			draftText = '';
 			draftMood = '';
 			draftMoodPreview = 5;
+			draftImageUrl = null;
+			uploadImageError = '';
 			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true });
 		} catch (error) {
@@ -785,6 +879,42 @@
 							class="diary-input diary-input--editor"
 							placeholder="Skriv några ord..."
 						></textarea>
+
+						<!-- Bilduppladdning (valfritt) -->
+						<div class="image-upload-row">
+							{#if draftImageUrl}
+								<div class="image-preview-wrap">
+									<img
+										src={draftImageUrl}
+										alt="Vald bild för inlägget"
+										class="image-preview"
+									/>
+									<button
+										type="button"
+										class="image-remove-btn"
+										onclick={clearDraftImage}
+									>
+										Ta bort bild
+									</button>
+								</div>
+							{:else}
+								<label class="image-upload-label" for="draft-image-input">
+									<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+									{uploadingImage ? 'Laddar upp...' : 'Lägg till bild (valfritt)'}
+									<input
+										id="draft-image-input"
+										type="file"
+										accept="image/jpeg,image/png,image/webp,image/gif"
+										class="image-input-hidden"
+										onchange={handleImageSelect}
+										disabled={uploadingImage}
+									/>
+								</label>
+							{/if}
+							{#if uploadImageError}
+								<p class="image-upload-error">{uploadImageError}</p>
+							{/if}
+						</div>
 							</div>
 
 						<p class="editor-note auth-muted">
@@ -836,6 +966,8 @@
 
 					<DiaryMoodTimeline entries={entries} />
 
+					<DiaryCalendar entries={entries} onDaySelect={handleCalendarDaySelect} />
+
 					{#if entries.length === 0}
 						<section class="auth-panel">
 							<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
@@ -846,9 +978,18 @@
 						</section>
 					{:else}
 						<div class="diary-flow" id="senaste-inlagg">
-							<p class="flow-heading auth-muted">Senaste och äldre inlägg</p>
+							<p class="flow-heading auth-muted">
+								{#if calendarFilterDate}
+									Inlägg för {new Date(calendarFilterDate + 'T00:00:00').toLocaleDateString('sv-SE', { day: 'numeric', month: 'long' })}
+									<button type="button" class="cal-inline-clear" onclick={() => { calendarFilterDate = null; }}>
+										× Visa alla
+									</button>
+								{:else}
+									Senaste och äldre inlägg
+								{/if}
+							</p>
 							<div class="diary-entries">
-								{#each entries as entry (entry.id)}
+								{#each filteredEntries as entry (entry.id)}
 									<article class="auth-panel diary-entry">
 										<p class="text-xs auth-muted">{formatDate(entry.created_at)}</p>
 										{#if entry.mood && editingEntryId !== entry.id}
@@ -913,6 +1054,14 @@
 											</div>
 										{:else}
 											<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
+											{#if entry.image_url}
+												<img
+													src={entry.image_url}
+													alt="Bild till dagboksinlägg"
+													class="entry-image"
+													loading="lazy"
+												/>
+											{/if}
 											<div class="share-row">
 												{#if isEntryShared(entry.id)}
 													<p class="share-status auth-muted">Redan delat i Gemenskap.</p>
@@ -1507,6 +1656,107 @@
 	.diary-flow {
 		display: grid;
 		gap: 0.5rem;
+	}
+
+	/* ── Kalenderfilter-knapp i flow-heading ── */
+	.cal-inline-clear {
+		border: none;
+		background: transparent;
+		padding: 0 0 0 0.4rem;
+		font-size: inherit;
+		color: hsl(var(--muted-foreground));
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		cursor: pointer;
+	}
+
+	.cal-inline-clear:hover {
+		color: hsl(var(--foreground));
+	}
+
+	/* ── Bilduppladdning i editor ── */
+	.image-upload-row {
+		padding: 0.65rem 1rem 0.75rem;
+		border-top: 1px solid hsl(var(--border) / 0.5);
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.image-upload-label {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.83rem;
+		color: hsl(var(--muted-foreground));
+		cursor: pointer;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		width: fit-content;
+		transition: color 130ms ease;
+	}
+
+	.image-upload-label:hover {
+		color: hsl(var(--foreground));
+	}
+
+	.image-input-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
+
+	.image-preview-wrap {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	.image-preview {
+		max-width: 100%;
+		max-height: 10rem;
+		border-radius: var(--radius-input);
+		object-fit: cover;
+		border: 1px solid hsl(var(--border));
+	}
+
+	.image-remove-btn {
+		border: none;
+		background: transparent;
+		padding: 0;
+		font-size: 0.82rem;
+		color: hsl(var(--muted-foreground));
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		cursor: pointer;
+		align-self: flex-end;
+	}
+
+	.image-remove-btn:hover {
+		color: hsl(var(--foreground));
+	}
+
+	.image-upload-error {
+		margin: 0;
+		font-size: 0.82rem;
+		color: hsl(var(--error-foreground));
+	}
+
+	/* ── Bild i inläggskort ── */
+	.entry-image {
+		display: block;
+		max-width: 100%;
+		max-height: 22rem;
+		border-radius: var(--radius-input);
+		object-fit: cover;
+		margin-top: 0.6rem;
+		border: 1px solid hsl(var(--border));
 	}
 
 	.flow-heading {
