@@ -538,12 +538,13 @@
 		}
 	}
 
-	// Hanterar val av bild — laddar upp till Supabase Storage direkt
+	// Hanterar val av bild — skickar till /api/diary/upload (server-side, service role)
 	async function handleImageSelect(event: Event) {
 		const input = event.currentTarget as HTMLInputElement;
 		const file = input.files?.[0] ?? null;
 		if (!file) return;
 
+		// Klientvalidering innan nätverksanrop
 		const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 		if (!allowedTypes.includes(file.type)) {
 			uploadImageError = 'Endast JPEG, PNG, WebP och GIF stöds.';
@@ -559,38 +560,37 @@
 
 		try {
 			const { data: sessionData } = await supabase.auth.getSession();
-			const userId = sessionData.session?.user?.id;
-			if (!userId) {
+			const token = sessionData.session?.access_token;
+			if (!token) {
 				uploadImageError = 'Logga in för att ladda upp bilder.';
 				return;
 			}
 
-			const timestamp = Date.now();
-			const safeFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-			const storagePath = `${userId}/${timestamp}-${safeFilename}`;
+			const formData = new FormData();
+			formData.append('file', file);
 
-			const { error: uploadError } = await supabase.storage
-				.from('diary-images')
-				.upload(storagePath, file, { upsert: false });
+			const res = await fetch('/api/diary/upload', {
+				method: 'POST',
+				headers: { Authorization: `Bearer ${token}` },
+				body: formData
+			});
 
-			if (uploadError) {
-				console.error('[handleImageSelect] Storage-fel:', uploadError.message);
-				uploadImageError = 'Kunde inte ladda upp bilden just nu.';
+			const payload = await res.json().catch(() => ({})) as { url?: string; error?: string };
+
+			if (!res.ok) {
+				const msg = payload.error ?? `Uppladdning misslyckades (HTTP ${res.status}).`;
+				console.error('[handleImageSelect] Fel från server:', msg);
+				uploadImageError = msg;
 				return;
 			}
 
-			// getPublicUrl är synkron i Supabase JS v2
-			const { data: urlData } = supabase.storage
-				.from('diary-images')
-				.getPublicUrl(storagePath);
-
-			draftImageUrl = urlData.publicUrl;
+			draftImageUrl = payload.url ?? null;
 		} catch (err) {
-			console.error('[handleImageSelect] Oväntat fel:', err);
-			uploadImageError = 'Kunde inte ladda upp bilden just nu.';
+			const msg = err instanceof Error ? err.message : 'Okänt fel vid bilduppladdning.';
+			console.error('[handleImageSelect] Nätverksfel:', msg);
+			uploadImageError = 'Nätverksfel – kunde inte nå servern.';
 		} finally {
 			uploadingImage = false;
-			// Återställ input så samma fil kan väljas igen
 			input.value = '';
 		}
 	}
