@@ -163,11 +163,20 @@
 		messages = [...newMessages, assistantMsg];
 
 		try {
-			const response = await fetch('/api/storify/chat', {
+			// Injicera ett syntetiskt öppningsmeddelande från assistenten så att AI:n
+		// alltid ser [assistant_open, user_svar, ...] och hoppar direkt till uppföljning.
+		// Matchar den statiska texten som visas i empty-fasen.
+		const OPENING_MSG = { role: 'assistant' as const, content: 'Hur var din dag?' };
+		const apiMessages = [
+			OPENING_MSG,
+			...newMessages.map((m) => ({ role: m.role, content: m.content }))
+		];
+
+		const response = await fetch('/api/storify/chat', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					messages: newMessages.map((m) => ({ role: m.role, content: m.content })),
+					messages: apiMessages,
 					selectedTone,
 					colorTone
 				})
