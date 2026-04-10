@@ -119,10 +119,12 @@
 		const width = svgWidth - chartPadding.left - chartPadding.right;
 		const height = svgHeight - chartPadding.top - chartPadding.bottom;
 		const safeMax = Math.max(...source.map((point) => point.count), 0);
+		const yMin = safeMax > 0 ? -0.5 : 0;
+		const valueRange = Math.max(safeMax - yMin, 1);
 
 		const nextChartPoints = source.map((point, index) => {
 			const x = chartPadding.left + (index / Math.max(source.length - 1, 1)) * width;
-			const normalized = safeMax > 0 ? point.count / safeMax : 0;
+			const normalized = safeMax > 0 ? (point.count - yMin) / valueRange : 0;
 			const y = chartPadding.top + height - normalized * height * 0.82;
 
 			return { x, y };
@@ -338,7 +340,6 @@
 				</div>
 			{/if}
 		</div>
-		<p class="chart-note">Visar din aktivitet vecka för vecka, i din egen takt.</p>
 	{/if}
 </div>
 
@@ -362,8 +363,7 @@
 	}
 
 	.loading,
-	.empty-copy,
-	.chart-note {
+	.empty-copy {
 		color: hsl(var(--muted-foreground));
 	}
 
@@ -377,8 +377,7 @@
 	}
 
 	.empty-title,
-	.empty-copy,
-	.chart-note {
+	.empty-copy {
 		margin: 0;
 	}
 
@@ -493,12 +492,6 @@
 		transform: translate(-50%, calc(-100% - 0.8rem));
 	}
 
-	.chart-note {
-		padding-top: 0.85rem;
-		font-size: 0.84rem;
-		line-height: 1.55;
-	}
-
 	@keyframes lineDraw {
 		from {
 			stroke-dashoffset: 1;
@@ -577,10 +570,6 @@
 	@media (max-width: 640px) {
 		.rhythm-container {
 			min-block-size: 15rem;
-		}
-
-		.chart-note {
-			font-size: 0.8rem;
 		}
 
 		.axis-label {
