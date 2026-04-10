@@ -220,9 +220,8 @@
 	}
 
 	function buildLabelPoints(source: RhythmPoint[]) {
-		if (source.length <= 3) return source;
-		const middleIndex = Math.floor((source.length - 1) / 2);
-		return [source[0], source[middleIndex], source[source.length - 1]];
+		if (source.length === 0) return [];
+		return [source[source.length - 1]];
 	}
 
 	function handleMouseMove(event: MouseEvent) {
