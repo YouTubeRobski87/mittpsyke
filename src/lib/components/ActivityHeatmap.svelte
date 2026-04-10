@@ -87,9 +87,13 @@
 		return getIsoWeekNumber(addDays(firstWeekStart, index * 7));
 	}
 
-	function buildWeeklyPoints(source: HeatmapData): RhythmPoint[] {
+	function getFirstWeekStart() {
 		const currentWeekStart = startOfWeek(new Date());
-		const firstWeekStart = addDays(currentWeekStart, -(WEEKS_TO_SHOW - 1) * 7);
+		return addDays(currentWeekStart, -(WEEKS_TO_SHOW - 1) * 7);
+	}
+
+	function buildWeeklyPoints(source: HeatmapData): RhythmPoint[] {
+		const firstWeekStart = getFirstWeekStart();
 		const built = Array.from({ length: WEEKS_TO_SHOW }, (_, index) => {
 			const weekStart = addDays(firstWeekStart, index * 7);
 			return {
@@ -221,7 +225,46 @@
 
 	function buildLabelPoints(source: RhythmPoint[]) {
 		if (source.length === 0) return [];
-		return [source[source.length - 1]];
+
+		const firstWeekStart = getFirstWeekStart();
+		const monthsWithData = Object.entries(data)
+			.filter(([, count]) => Boolean(count))
+			.map(([dateStr]) => {
+				const date = new Date(`${dateStr}T00:00:00`);
+				if (Number.isNaN(date.getTime())) return null;
+				return {
+					monthKey: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+					date
+				};
+			})
+			.filter((value): value is { monthKey: string; date: Date } => value !== null);
+
+		const latestDateByMonth = new Map<string, Date>();
+		for (const entry of monthsWithData) {
+			const existing = latestDateByMonth.get(entry.monthKey);
+			if (!existing || entry.date.getTime() > existing.getTime()) {
+				latestDateByMonth.set(entry.monthKey, entry.date);
+			}
+		}
+
+		const lastThreeMonths = [...latestDateByMonth.entries()]
+			.sort((left, right) => left[1].getTime() - right[1].getTime())
+			.slice(-3);
+
+		const labelsByIndex = new Map<number, RhythmPoint>();
+		for (const [, date] of lastThreeMonths) {
+			const weekStart = startOfWeek(date);
+			const weekIndex = Math.floor((weekStart.getTime() - firstWeekStart.getTime()) / (7 * DAY_MS));
+			if (weekIndex < 0 || weekIndex >= source.length) continue;
+
+			labelsByIndex.set(weekIndex, {
+				index: weekIndex,
+				label: formatWeekLabel(date),
+				count: source[weekIndex]?.count ?? 0
+			});
+		}
+
+		return [...labelsByIndex.values()].sort((left, right) => left.index - right.index);
 	}
 
 	function handleMouseMove(event: MouseEvent) {
