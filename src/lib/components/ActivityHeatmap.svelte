@@ -272,11 +272,11 @@
 	{#if loading}
 		<div class="loading">Laddar grafen...</div>
 	{:else if error}
-		<div class="error">{error} FÃ¶rsÃ¶k igen om en stund.</div>
+		<div class="error">{error} Försök igen om en stund.</div>
 	{:else if maxCount === 0}
 		<div class="empty-state">
-			<p class="empty-title">Din rytm syns hÃ¤r nÃ¤r du har bÃ¶rjat skriva.</p>
-			<p class="empty-copy">Den fÃ¥r vÃ¤xa fram i lugn takt, utan att nÃ¥got behÃ¶ver se ut pÃ¥ ett visst sÃ¤tt.</p>
+			<p class="empty-title">Din rytm syns här när du har börjat skriva.</p>
+			<p class="empty-copy">Den får växa fram i lugn takt, utan att något behöver se ut på ett visst sätt.</p>
 		</div>
 	{:else}
 		<div class="chart-panel">
@@ -284,7 +284,7 @@
 				class="rhythm-graphic"
 				viewBox={`0 0 ${svgWidth} ${svgHeight}`}
 				role="img"
-				aria-label="Veckovis aktivitet Ã¶ver tid"
+				aria-label="Veckovis aktivitet över tid"
 				onmousemove={handleMouseMove}
 				onmouseleave={handleMouseLeave}
 			>
@@ -338,7 +338,7 @@
 				</div>
 			{/if}
 		</div>
-		<p class="chart-note">Visar din aktivitet vecka fÃ¶r vecka, i din egen takt.</p>
+		<p class="chart-note">Visar din aktivitet vecka för vecka, i din egen takt.</p>
 	{/if}
 </div>
 
