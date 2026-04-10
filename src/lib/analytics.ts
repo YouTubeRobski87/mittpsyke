@@ -61,6 +61,14 @@ function ensureGtag() {
 export function initializeAnalytics() {
 	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent() || analyticsInitialized || !GA_MEASUREMENT_ID) return;
 
+	const scriptSrc = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+	if (!document.querySelector(`script[src="${scriptSrc}"]`)) {
+		const script = document.createElement('script');
+		script.async = true;
+		script.src = scriptSrc;
+		document.head.appendChild(script);
+	}
+
 	const gtag = ensureGtag();
 	if (!gtag) return;
 
