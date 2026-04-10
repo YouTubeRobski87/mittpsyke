@@ -24,6 +24,17 @@ const EMOTION_KEYWORDS: { [key: string]: string[] } = {
 	calm: ['lugn', 'avslappnad', 'fridfull', 'harmonisk', 'trygg']
 };
 
+const AI_SUMMARY_TIMEOUT_MS = 8000;
+
+function parseMood(value: unknown): number | null {
+	if (typeof value === 'number' && Number.isFinite(value)) return value;
+	if (typeof value === 'string') {
+		const parsed = Number.parseFloat(value);
+		return Number.isFinite(parsed) ? parsed : null;
+	}
+	return null;
+}
+
 export const GET: RequestHandler = async ({ request }) => {
 	try {
 		if (!hasSensitiveConsentHeader(request)) {
@@ -67,8 +78,9 @@ export const GET: RequestHandler = async ({ request }) => {
 
 		for (const entry of entries) {
 			const date = new Date(entry.created_at);
+			if (Number.isNaN(date.getTime())) continue;
 			const dayName = WEEKDAYS[date.getDay()];
-			const moodNum = entry.mood ? parseFloat(entry.mood) : null;
+			const moodNum = parseMood(entry.mood);
 			if (moodNum !== null && !isNaN(moodNum)) weekdayMoods[dayName].push(moodNum);
 
 			if (entry.text) {
@@ -101,7 +113,7 @@ export const GET: RequestHandler = async ({ request }) => {
 			});
 		}
 
-		const moods = entries.map((e) => parseFloat(e.mood)).filter((m) => !isNaN(m));
+		const moods = entries.map((e) => parseMood(e.mood)).filter((m): m is number => m !== null);
 		if (moods.length >= 5) {
 			const firstHalf = moods.slice(0, Math.floor(moods.length / 2));
 			const secondHalf = moods.slice(Math.floor(moods.length / 2));
@@ -158,15 +170,21 @@ export const GET: RequestHandler = async ({ request }) => {
 				});
 			}
 
-			const completion = await openai.chat.completions.create({
-				model: 'gpt-4-turbo',
-				messages: [{
-					role: 'user',
-					content: `Du är en empatisk psykolog. Analysera dessa dagboksinlägg och ge EN kort insikt (max 2 meningar) om ett intressant mönster du ser. Var specifik och uppmuntrande. Skriv på svenska:\n\n${recentText}`
-				}],
-				max_tokens: 150,
-				temperature: 0.7
+			const timeoutPromise = new Promise<never>((_, reject) => {
+				setTimeout(() => reject(new Error('AI summary timeout')), AI_SUMMARY_TIMEOUT_MS);
 			});
+			const completion = await Promise.race([
+				openai.chat.completions.create({
+					model: 'gpt-5.4',
+					messages: [{
+						role: 'user',
+						content: `Du är en empatisk psykolog. Analysera dessa dagboksinlägg och ge EN kort insikt (max 2 meningar) om ett intressant mönster du ser. Var specifik och uppmuntrande. Skriv på svenska:\n\n${recentText}`
+					}],
+					max_tokens: 150,
+					temperature: 0.7
+				}),
+				timeoutPromise
+			]);
 			aiSummary = completion.choices[0]?.message?.content?.trim() || null;
 		} catch {
 			aiSummary = null;

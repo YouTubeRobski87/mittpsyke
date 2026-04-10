@@ -70,14 +70,6 @@
 		aiSummary: string | null;
 	}
 
-	type IdleWindow = Window & {
-		requestIdleCallback?: (
-			callback: IdleRequestCallback,
-			options?: IdleRequestOptions
-		) => number;
-		cancelIdleCallback?: (handle: number) => void;
-	};
-
 	interface PageData {
 		streak: StreakData | null;
 		milestones: MilestonesResponse | null;
@@ -125,9 +117,6 @@
 	let heatmapVisible = $state(false);
 	let insightsCardEl = $state<HTMLElement | null>(null);
 	let heatmapCardEl = $state<HTMLElement | null>(null);
-	let insightsLoadScheduled = $state(false);
-	let idleInsightsHandle = $state<ReturnType<typeof setTimeout> | number | null>(null);
-	let idleInsightsMode = $state<'idle' | 'timeout' | null>(null);
 	let loading = false;
 	let error = $derived(
 		data.streak === null && data.milestones === null
@@ -179,28 +168,12 @@
 			!hasSensitiveDataConsent ||
 			!insightsVisible ||
 			insightsLoading ||
-			insightsData ||
-			insightsLoadScheduled
+			insightsData
 		) {
 			return;
 		}
 
-		insightsLoadScheduled = true;
-		const onIdle = () => {
-			idleInsightsHandle = null;
-			idleInsightsMode = null;
-			void loadInsights();
-		};
-
-		const idleWindow = window as IdleWindow;
-		if (typeof idleWindow.requestIdleCallback === 'function') {
-			idleInsightsMode = 'idle';
-			idleInsightsHandle = idleWindow.requestIdleCallback(onIdle, { timeout: 1200 });
-			return;
-		}
-
-		idleInsightsMode = 'timeout';
-		idleInsightsHandle = setTimeout(onIdle, 280);
+		void loadInsights();
 	}
 
 	onMount(() => {
@@ -241,15 +214,6 @@
 
 		return () => {
 			observer.disconnect();
-			if (idleInsightsHandle !== null) {
-				const idleWindow = window as IdleWindow;
-				if (idleInsightsMode === 'idle' && typeof idleWindow.cancelIdleCallback === 'function') {
-					idleWindow.cancelIdleCallback(idleInsightsHandle as number);
-				}
-				if (idleInsightsMode === 'timeout') {
-					clearTimeout(idleInsightsHandle);
-				}
-			}
 		};
 	});
 
@@ -276,11 +240,19 @@
 				return;
 			}
 
+			const insightsFetchController = new AbortController();
+			const insightsFetchTimeout = setTimeout(() => {
+				insightsFetchController.abort();
+			}, 12000);
+
 			const response = await fetch('/api/diary/insights', {
 				headers: {
 					Authorization: `Bearer ${session.access_token}`,
 					[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION
-				}
+				},
+				signal: insightsFetchController.signal
+			}).finally(() => {
+				clearTimeout(insightsFetchTimeout);
 			});
 
 			const result = (await response.json().catch(() => null)) as
@@ -294,7 +266,6 @@
 						? result.error
 						: 'Kunde inte ladda AI-insikter just nu.';
 				insightsData = null;
-				insightsLoading = false;
 				return;
 			}
 
@@ -304,13 +275,20 @@
 			insightsData = null;
 		} finally {
 			insightsLoading = false;
-			insightsLoadScheduled = false;
 		}
 	}
 
 	function acceptSensitiveDataConsent() {
-		grantSensitiveConsent();
+		try {
+			grantSensitiveConsent();
+		} catch (error) {
+			console.error('Could not persist sensitive consent in localStorage:', error);
+		}
 		hasSensitiveDataConsent = true;
+		if (insightsVisible) {
+			void loadInsights();
+			return;
+		}
 		maybeLoadInsights();
 	}
 
