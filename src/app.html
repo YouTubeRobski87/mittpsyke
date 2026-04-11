@@ -37,25 +37,12 @@
         } catch(e) {}
       })();
     </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8XG01VCB5N"></script>
     <script>
-      (function () {
-        var vercelEnv = '%sveltekit.env.PUBLIC_VERCEL_ENV%';
-        var measurementId = '%sveltekit.env.PUBLIC_GA_MEASUREMENT_ID%';
-
-        if (vercelEnv !== 'production' || !measurementId) return;
-
-        // GA4 consent bootstrap: must run before gtag.js loads.
-        window.dataLayer = window.dataLayer || [];
-        window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-        window.gtag('consent', 'default', {
-          analytics_storage: 'denied'
-        });
-
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(measurementId);
-        document.head.appendChild(script);
-      })();
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-8XG01VCB5N');
     </script>
     %sveltekit.head%
   </head>
