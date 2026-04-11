@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { ANALYTICS_ENABLED, initializeAnalytics, trackPageView } from '$lib/analytics';
+	import { ANALYTICS_ENABLED } from '$lib/analytics';
 	import {
 		getAnalyticsConsent,
 		grantAnalyticsConsent,
@@ -22,8 +22,6 @@
 		}
 
 		grantAnalyticsConsent();
-		initializeAnalytics();
-		trackPageView(new URL(window.location.href));
 		visible = false;
 	}
 

@@ -36,7 +36,7 @@ type LandingPageEventPayload = {
 	metadata?: LandingPageEventParams;
 };
 
-export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || '';
+export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || 'G-8XG01VCB5N';
 export const PUBLIC_VERCEL_ENV = env.PUBLIC_VERCEL_ENV || '';
 export const ANALYTICS_ENABLED = PUBLIC_VERCEL_ENV === 'production';
 const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
