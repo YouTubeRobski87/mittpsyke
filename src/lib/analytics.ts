@@ -2,6 +2,10 @@ import { browser, dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { hasAnalyticsConsent } from '$lib/consent';
 
+// Obs: Vercel sätter automatiskt VERCEL_ENV men inte PUBLIC_VERCEL_ENV.
+// Vi använder !dev: blockerar lokal devserver, aktiverar alla Vercel-miljöer.
+// Samtyckes-gaten (hasAnalyticsConsent) säkerställer att GA aldrig laddas utan medgivande.
+
 type EventName =
 	| 'page_view'
 	| 'write_page_view'
@@ -37,8 +41,7 @@ type LandingPageEventPayload = {
 };
 
 export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || 'G-8XG01VCB5N';
-export const PUBLIC_VERCEL_ENV = env.PUBLIC_VERCEL_ENV || '';
-export const ANALYTICS_ENABLED = PUBLIC_VERCEL_ENV === 'production';
+export const ANALYTICS_ENABLED = !dev;
 const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
 
 let analyticsInitialized = false;
