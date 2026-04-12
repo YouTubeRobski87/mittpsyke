@@ -3407,11 +3407,11 @@ Om panikattackerna kommer ofta, om du börjar undvika saker i vardagen på grund
 
 ## Relaterat
 
-Relaterade guider: /guider/angest (artikeln "vad händer i kroppen")
+Relaterade guider: <a href="/guider/angest">/guider/angest</a> (artikeln "vad händer i kroppen")
 
 ## Prova en övning
 
-Övningslänkar: /ovningar/4-7-8-andning, /ovningar/grounding-5-4-3-2-1`,
+Övningslänkar: <a href="/ovningar/4-7-8-andning">/ovningar/4-7-8-andning</a>, <a href="/ovningar/grounding-5-4-3-2-1">/ovningar/grounding-5-4-3-2-1</a>`,
 		updatedAt: '2026-04-12',
 		faqs: [
 			{
@@ -3473,11 +3473,11 @@ Om du behöver hjälp att hantera återkommande attacker finns det effektiv beha
 
 ## Relaterat
 
-Relaterade artiklar: vad-hander-i-kroppen (i samma kategori)
+Relaterade artiklar: <a href="/guider/panikattack/vad-hander-i-kroppen">vad-hander-i-kroppen</a> (i samma kategori)
 
 ## Prova en övning
 
-Övningslänkar: /ovningar/4-7-8-andning, /ovningar/grounding-5-4-3-2-1`,
+Övningslänkar: <a href="/ovningar/4-7-8-andning">/ovningar/4-7-8-andning</a>, <a href="/ovningar/grounding-5-4-3-2-1">/ovningar/grounding-5-4-3-2-1</a>`,
 		updatedAt: '2026-04-12',
 		faqs: [
 			{
@@ -3532,11 +3532,11 @@ Om oron för hjärtat har blivit en del av din vardag, om du undviker fysisk akt
 
 ## Relaterat
 
-Relaterade artiklar: ta-dig-igenom-en-panikattack (i samma kategori)
+Relaterade artiklar: <a href="/guider/panikattack/ta-dig-igenom-en-panikattack">ta-dig-igenom-en-panikattack</a> (i samma kategori)
 
 ## Prova en övning
 
-Övningslänkar: /ovningar/4-7-8-andning, /ovningar/body-scan`,
+Övningslänkar: <a href="/ovningar/4-7-8-andning">/ovningar/4-7-8-andning</a>, <a href="/ovningar/body-scan">/ovningar/body-scan</a>`,
 		updatedAt: '2026-04-12',
 		faqs: [
 			{
@@ -3598,11 +3598,11 @@ Om nattliga panikattacker händer regelbundet, om du utvecklar sömnångest elle
 
 ## Relaterat
 
-Relaterade guider: /guider/sovproblem
+Relaterade guider: <a href="/guider/sovproblem">/guider/sovproblem</a>
 
 ## Prova en övning
 
-Övningslänkar: /ovningar/body-scan, /ovningar/4-7-8-andning`,
+Övningslänkar: <a href="/ovningar/body-scan">/ovningar/body-scan</a>, <a href="/ovningar/4-7-8-andning">/ovningar/4-7-8-andning</a>`,
 		updatedAt: '2026-04-12',
 		faqs: [
 			{
@@ -3661,11 +3661,11 @@ Exponering på egen hand fungerar för många, men om ditt undvikande är utbret
 
 ## Relaterat
 
-Relaterade guider: /guider/angest (artikeln om exponering och undvikande)
+Relaterade guider: <a href="/guider/angest">/guider/angest</a> (artikeln om exponering och undvikande)
 
 ## Prova en övning
 
-Övningslänkar: /ovningar/trygghetscirkel-exponering, /ovningar/cbt-katastroftankar`,
+Övningslänkar: <a href="/ovningar/trygghetscirkel-exponering">/ovningar/trygghetscirkel-exponering</a>, <a href="/ovningar/cbt-katastroftankar">/ovningar/cbt-katastroftankar</a>`,
 		updatedAt: '2026-04-12',
 		faqs: [
 			{
@@ -3724,11 +3724,11 @@ Om grubblandet upptar stora delar av din dag, om det påverkar din sömn eller d
 
 ## Relaterat
 
-Relaterade guider: /guider/depression
+Relaterade guider: <a href="/guider/depression">/guider/depression</a>
 
 ## Prova en övning
 
-Övningslänkar: /ovningar/daglig-reflektionsmall, /ovningar/tankefallor-kartlaggning`,
+Övningslänkar: <a href="/ovningar/daglig-reflektionsmall">/ovningar/daglig-reflektionsmall</a>, <a href="/ovningar/tankefallor-kartlaggning">/ovningar/tankefallor-kartlaggning</a>`,
 		updatedAt: '2026-04-12',
 		faqs: [
 			{
@@ -3783,11 +3783,11 @@ Om sömnproblemen är ihållande, om du sover under sex timmar regelbundet eller
 
 ## Relaterat
 
-Relaterade guider: /guider/sovproblem
+Relaterade guider: <a href="/guider/sovproblem">/guider/sovproblem</a>
 
 ## Prova en övning
 
-Övningslänkar: /ovningar/dagens-avslut-reflektion, /ovningar/4-7-8-andning`,
+Övningslänkar: <a href="/ovningar/dagens-avslut-reflektion">/ovningar/dagens-avslut-reflektion</a>, <a href="/ovningar/4-7-8-andning">/ovningar/4-7-8-andning</a>`,
 		updatedAt: '2026-04-12',
 		faqs: [
 			{
@@ -3844,11 +3844,11 @@ Långvarigt ältande är starkt kopplat till depression. Kronisk oro kan vara ge
 
 ## Relaterat
 
-Relaterade guider: /guider/angest, /guider/depression
+Relaterade guider: <a href="/guider/angest">/guider/angest</a>, <a href="/guider/depression">/guider/depression</a>
 
 ## Prova en övning
 
-Övningslänkar: /ovningar/cbt-katastroftankar, /ovningar/sju-fragor-vid-oro`,
+Övningslänkar: <a href="/ovningar/cbt-katastroftankar">/ovningar/cbt-katastroftankar</a>, <a href="/ovningar/sju-fragor-vid-oro">/ovningar/sju-fragor-vid-oro</a>`,
 		updatedAt: '2026-04-12',
 		faqs: [
 			{
@@ -3860,6 +3860,127 @@ Relaterade guider: /guider/angest, /guider/depression
 		relatedArticles: [
 			{ title: 'Ångest', href: '/guider/angest' },
 			{ title: 'Nedstämdhet och depression', href: '/guider/depression' }
+		]
+	},
+	{
+		pillarSlug: 'overtankande',
+		slug: 'mindfulness-mot-overtankande',
+		nextStepTool: 'grounding-5-4-3-2-1',
+		title: 'Mindfulness mot övertänkande – enkla övningar som bryter loopen',
+		description:
+			'Mindfulness handlar inte om att sluta tänka. Det handlar om att sluta följa varje tanke. Lär dig hur det kan hjälpa mot grubblande.',
+		seoTitle: 'Mindfulness mot övertänkande – enkla övningar som bryter loopen | MittPsyke',
+		seoDescription:
+			'Mindfulness handlar inte om att sluta tänka. Det handlar om att sluta följa varje tanke. Lär dig hur det kan hjälpa mot grubblande.',
+		content: `## Snabbt svar
+
+Mindfulness handlar inte om att tömma huvudet på tankar — det handlar om att ändra din relation till dem. Istället för att följa varje tanke till dess slutsats lär du dig att se den komma, låta den vara och låta den gå. Det bryter grubblarmönstret inte genom kraft, utan genom att du slutar mata det med uppmärksamhet.
+
+## Varför händer det här?
+
+Övertänkande drivs av att du tar varje tanke på allvar. En tanke dyker upp och du börjar analysera, utvärdera, döma. Tanken får energi och växer. Mindfulness bryter den kedjan vid det första steget. Den lär dig att en tanke bara är en tanke — inte en sanning, inte ett krav på handling, inte du.
+
+Forskning visar att mindfulnessbaserade interventioner minskar ältande och grubblande, och att effekten verkar vara kopplad just till förmågan att inte reagera automatiskt på varje tanke.
+
+## Vad du kan göra steg för steg
+
+Börja med andningen. Sätt dig i en minut och lägg märke till din andning. Inte ändra den — bara observera. När en tanke kommer, märk det och gå tillbaka till andningen.
+
+Namnge tanken. Säg tyst: "Där är grubblandet." Att namnge aktiverar prefrontala cortex och minskar amygdalas reaktivitet.
+
+Använd en ankare. Välj en vardagsaktivitet och bestäm att under den ska du bara vara i det du gör.
+
+Prova "tanke som moln"-metaforen. Föreställ dig att dina tankar är moln som driver förbi. Du behöver inte följa dem, stoppa dem eller bedöma dem.
+
+Bygg på gradvis. En minut om dagen är en bra start. Det är en färdighet som stärks av upprepning, inte av intensitet.
+
+## Vanliga misstag att undvika
+
+Att tro att mindfulness betyder att sluta tänka. Att bedöma dig själv när du tappar fokus. Att använda mindfulness som ytterligare ett prestandakrav.
+
+## När du bör söka mer stöd
+
+Mindfulness är ett verktyg, inte en behandling. Om ditt grubblande är kopplat till depression, ångest eller trauma, behöver du fler verktyg. MBKT eller KBT kan ge den strukturen.
+
+## Relaterat
+
+Relaterade guider: <a href="/guider/angest">/guider/angest</a>
+
+## Prova en övning
+
+Övningslänkar: <a href="/ovningar/grounding-5-4-3-2-1">/ovningar/grounding-5-4-3-2-1</a>, <a href="/ovningar/body-scan">/ovningar/body-scan</a>`,
+		updatedAt: '2026-04-12',
+		faqs: [
+			{
+				question: 'Mindfulness mot övertänkande – enkla övningar som bryter loopen',
+				answer:
+					'Mindfulness handlar inte om att tömma huvudet på tankar — det handlar om att ändra din relation till dem. Istället för att följa varje tanke till dess slutsats lär du dig att se den komma, låta den vara och låta den gå. Det bryter grubblarmönstret inte genom kraft, utan genom att du slutar mata det med uppmärksamhet.'
+			}
+		],
+		relatedArticles: [{ title: 'Ångest', href: '/guider/angest' }]
+	},
+	{
+		pillarSlug: 'overtankande',
+		slug: 'nar-overtankande-blir-ett-problem',
+		nextStepTool: 'daglig-reflektionsmall',
+		title: 'När övertänkande blir ett problem – tecken och vad du kan göra',
+		description:
+			'Alla övertänker ibland. Men när det tar över din dag, din sömn och din energi kan det vara dags att ta det på allvar.',
+		seoTitle: 'När övertänkande blir ett problem – tecken och vad du kan göra | MittPsyke',
+		seoDescription:
+			'Alla övertänker ibland. Men när det tar över din dag, din sömn och din energi kan det vara dags att ta det på allvar.',
+		content: `## Snabbt svar
+
+Alla grubblar ibland — det är normalt. Men det finns en punkt där övertänkande slutar vara en tillfällig reaktion och blir ett mönster som äter av din energi, din sömn och ditt dagliga fungerande. Om du befinner dig där är det inte ett tecken på svaghet — det är ett tecken på att hjärnan fastnat i ett spår som du kan behöva hjälp att ta dig ur.
+
+## Varför händer det här?
+
+Övertänkande som mönster utvecklas ofta gradvis. Det börjar med en stressig period, en förlust eller osäkerhet. Hjärnan gör det den kan: den tänker. Men när tänkandet inte löser problemet, fortsätter den ändå — och med tiden blir grubblandet ett standardläge.
+
+Forskningen visar att ältande och kronisk oro har starka kopplingar till depression och ångestsyndrom. De förstärker varandra.
+
+## Tecken att känna igen
+
+Grubblandet upptar flera timmar per dag. Svårt att fokusera. Sover sämre. Mentalt uttömd utan fysisk ansträngning. Undviker situationer som triggar grubblande. Ihållande nedstämdhet, irritation, hopplöshet.
+
+## Vad du kan göra steg för steg
+
+Kartlägg ditt mönster. Skriv ner när du grubblar mest, vad som triggar det och hur länge det pågår.
+
+Testa en strategi från de andra artiklarna i guiden. Börja med en sak och ge det en vecka.
+
+Prata med någon du litar på. Att sätta ord på det muntligt kan bryta isoleringen.
+
+Överväg professionell hjälp. Om du har provat själv och det inte räcker — sök hjälp. Det är exakt vad hjälpen finns till för.
+
+## Vanliga misstag att undvika
+
+Att vänta tills det "blir tillräckligt illa". Att tro att du bara behöver "tänka rätt". Att isolera dig — grubblande trivs i ensamhet.
+
+## När du bör söka mer stöd
+
+Sök professionell hjälp om du känner ihållande nedstämdhet eller hopplöshet, om grubblandet har pågått i flera veckor utan förbättring, om du har svårt att arbeta, sova eller upprätthålla relationer, eller om du har tankar om att skada dig själv. Ring 112 vid akut fara. Vårdråd: 1177. Samtalsstöd: Mind-linjen.
+
+MittPsyke är inte vård — men det kan vara ett verktyg vid sidan av: att skriva, reflektera och börja se mönster.
+
+## Relaterat
+
+Relaterade guider: <a href="/guider/depression">/guider/depression</a>, <a href="/guider/stress">/guider/stress</a>
+
+## Prova en övning
+
+Övningslänkar: <a href="/ovningar/daglig-reflektionsmall">/ovningar/daglig-reflektionsmall</a>, <a href="/ovningar/sjalvmedkansla-ovning">/ovningar/sjalvmedkansla-ovning</a>`,
+		updatedAt: '2026-04-12',
+		faqs: [
+			{
+				question: 'När övertänkande blir ett problem – tecken och vad du kan göra',
+				answer:
+					'Alla grubblar ibland — det är normalt. Men det finns en punkt där övertänkande slutar vara en tillfällig reaktion och blir ett mönster som äter av din energi, din sömn och ditt dagliga fungerande. Om du befinner dig där är det inte ett tecken på svaghet — det är ett tecken på att hjärnan fastnat i ett spår som du kan behöva hjälp att ta dig ur.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Nedstämdhet och depression', href: '/guider/depression' },
+			{ title: 'Stress och överbelastning', href: '/guider/stress' }
 		]
 	}
 ];
