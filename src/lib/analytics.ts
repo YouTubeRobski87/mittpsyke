@@ -53,8 +53,8 @@ function ensureGtag() {
 	windowWithGtag.dataLayer = windowWithGtag.dataLayer || [];
 
 	if (typeof windowWithGtag.gtag !== 'function') {
-		windowWithGtag.gtag = (...args: any[]) => {
-			windowWithGtag.dataLayer.push(args);
+		windowWithGtag.gtag = function () {
+			windowWithGtag.dataLayer.push(arguments);
 		};
 	}
 
