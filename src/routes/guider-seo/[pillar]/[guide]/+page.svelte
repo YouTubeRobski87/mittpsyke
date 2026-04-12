@@ -94,13 +94,13 @@
 			{
 				'@type': 'ListItem',
 				position: 3,
-				name: data.pillar.title,
+				name: data.pillar.title || data.pillar.slug || 'Sida',
 				item: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`
 			},
 			{
 				'@type': 'ListItem',
 				position: 4,
-				name: data.guide.title,
+				name: data.guide.title || data.guide.slug || 'Artikel',
 				item: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`
 			}
 		]

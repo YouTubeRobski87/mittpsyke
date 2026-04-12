@@ -33,7 +33,7 @@
 		return [
 			{ name: 'Hem', item: `${SITE_URL}/` },
 			...remainingCrumbs.map((crumb) => ({
-				name: crumb.name,
+				name: crumb.name || crumb.url.split('/').filter(Boolean).pop() || 'Sida',
 				item: toAbsoluteUrl(crumb.url)
 			}))
 		];

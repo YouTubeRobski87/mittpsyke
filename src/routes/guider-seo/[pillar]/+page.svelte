@@ -52,7 +52,7 @@
 					{
 						'@type': 'ListItem',
 						position: 3,
-						name: data.pillar.title,
+						name: data.pillar.title || data.pillar.slug || 'Sida',
 						item: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`
 					}
 				]
