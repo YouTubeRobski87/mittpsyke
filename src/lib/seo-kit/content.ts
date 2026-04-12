@@ -76,7 +76,7 @@ export const pillars: Pillar[] = [
 	{
 		slug: 'trauma',
 		title: 'Trauma och trygghet',
-		description: 'Om stressreaktioner efter svaira handelser och sätt att bygga mer trygghet.',
+		description: 'Om stressreaktioner efter svåra händelser och sätt att bygga mer trygghet.',
 		chatPath: '/chat/e'
 	},
 	{
@@ -3355,6 +3355,511 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
 			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
 			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider-seo/kbt/kbt-tekniker-hemma' }
+		]
+	},
+	{
+		pillarSlug: 'panikattack',
+		slug: 'vad-hander-i-kroppen',
+		nextStepTool: '4-7-8-andning',
+		title: 'Vad händer i kroppen vid en panikattack?',
+		description:
+			'Förstå varför en panikattack känns så skrämmande — och varför den inte är farlig. Lär dig om fight-or-flight, adrenalin och vad kroppen faktiskt gör.',
+		seoTitle: 'Vad händer i kroppen vid en panikattack? | MittPsyke',
+		seoDescription:
+			'Förstå varför en panikattack känns så skrämmande — och varför den inte är farlig. Lär dig om fight-or-flight, adrenalin och vad kroppen faktiskt gör.',
+		content: `## Snabbt svar
+
+En panikattack är kroppens alarmsystem som slår på med full kraft — utan att det finns någon verklig fara. Hjärtat slår hårt, andningen blir snabb och det kan kännas som att du håller på att dö. Men det är inte farligt, även om det känns så. Kroppen gör exakt det den är byggd för att göra vid fara — problemet är bara att larmet går utan anledning.
+
+## Varför händer det här?
+
+Djupt inne i hjärnan sitter amygdala — en liten struktur som fungerar som kroppens vakthund. Dess uppgift är att upptäcka hot och starta en kedjereaktion som förbereder dig för att fly eller slåss. Det kallas fight-or-flight-responsen.
+
+Vid en panikattack aktiveras det här systemet utan att det finns ett faktiskt hot. Stresshormoner som adrenalin och kortisol släpps ut i blodet, och på bara några sekunder händer flera saker samtidigt: hjärtat pumpar snabbare för att skicka blod till musklerna, andningen ökar för att ta in mer syre, matsmältningen stängs ner och musklerna spänns.
+
+Allt det här är normala, friska reaktioner — de är bara påslagna vid fel tillfälle. Det är därför en panikattack kan kännas så överväldigande trots att inget farligt händer.
+
+## Tecken att känna igen
+
+En panikattack brukar komma plötsligt och nå sin topp inom tio minuter. Vanliga upplevelser är hjärtklappning eller bultande hjärta, svårighet att andas eller en känsla av att inte få luft, yrsel eller overklighetskänsla, svettningar, skakningar, illamående, domningar eller stickningar i händer och fötter, och en stark känsla av att något hemskt ska hända — som att dö, tappa kontrollen eller "bli galen".
+
+Det är vanligt att förväxla det med hjärtproblem, och det är helt okej att söka vård om du är osäker. Men om du känner igen mönstret från tidigare kan det hjälpa att veta vad det är.
+
+## Vad du kan göra steg för steg
+
+Påminn dig själv om vad det är. Säg tyst eller högt: "Det här är en panikattack. Den går över. Jag är inte i fara." Det bryter den skrämmande tolkningen av det som händer.
+
+Sakta ner andningen. Andas in genom näsan i fyra sekunder, håll i fyra sekunder, andas ut genom munnen i sex sekunder. Långsam utandning aktiverar det parasympatiska nervsystemet och hjälper kroppen lugna sig.
+
+Förankra dig i nuet. Använd dina sinnen: vad ser du, hör du, känner du mot huden? Det här flyttar uppmärksamheten bort från de inre larmsignalerna.
+
+Rör dig inte bort. Om du är på en plats som känns obehaglig, försök stanna kvar tills attacken klingar av. Att fly förstärker hjärnans uppfattning att platsen var farlig.
+
+Var snäll mot dig själv efteråt. En panikattack tar energi. Det är normalt att känna sig trött, skakig eller känslomässigt tom efteråt. Ge dig själv tid.
+
+## Vanliga misstag att undvika
+
+Att börja undvika platser eller situationer där du fått en attack. Det minskar ångesten kortsiktigt men gör den starkare på sikt. Att googla symtom mitt i attacken. Det förstärker ofta rädslan istället för att lugna. Att kämpa emot eller försöka "tvinga bort" attacken. Motstånd ökar spänningen. Att låta den passera fungerar bättre.
+
+## När du bör söka mer stöd
+
+Om panikattackerna kommer ofta, om du börjar undvika saker i vardagen på grund av rädslan för att få en attack, eller om du känner att det påverkar ditt liv — då är det klokt att prata med någon. En vårdcentral är en bra start, och KBT har starkt stöd som behandling vid panikångest. MittPsyke ersätter inte vård, men kan vara ett steg på vägen: att skriva av dig, sortera tankar och hitta mönster.
+
+## Relaterat
+
+Relaterade guider: /guider/angest (artikeln "vad händer i kroppen")
+
+## Prova en övning
+
+Övningslänkar: /ovningar/4-7-8-andning, /ovningar/grounding-5-4-3-2-1`,
+		updatedAt: '2026-04-12',
+		faqs: [
+			{
+				question: 'Vad händer i kroppen vid en panikattack?',
+				answer:
+					'En panikattack är kroppens alarmsystem som slår på med full kraft — utan att det finns någon verklig fara. Hjärtat slår hårt, andningen blir snabb och det kan kännas som att du håller på att dö. Men det är inte farligt, även om det känns så. Kroppen gör exakt det den är byggd för att göra vid fara — problemet är bara att larmet går utan anledning.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det',
+				href: '/guider/angest/panikangest-och-kroppen'
+			}
+		]
+	},
+	{
+		pillarSlug: 'panikattack',
+		slug: 'ta-dig-igenom-en-panikattack',
+		nextStepTool: 'grounding-5-4-3-2-1',
+		title: 'Hur du tar dig igenom en panikattack – steg för steg',
+		description:
+			'Praktiska steg du kan använda mitt i en panikattack. Andning, grounding och hur du hjälper kroppen lugna sig.',
+		seoTitle: 'Hur du tar dig igenom en panikattack – steg för steg | MittPsyke',
+		seoDescription:
+			'Praktiska steg du kan använda mitt i en panikattack. Andning, grounding och hur du hjälper kroppen lugna sig.',
+		content: `## Snabbt svar
+
+Du kan inte stoppa en panikattack med vilja, men du kan hjälpa kroppen ta sig igenom den snabbare och med mindre lidande. Nyckeln är att inte kämpa emot — utan att möta det som händer med lugna, enkla steg.
+
+## Varför händer det här?
+
+När kroppen går in i panikläge kopplas det rationella tänkandet delvis bort. Amygdala har tagit över och kroppen agerar som om du är i livsfara. Det betyder att komplicerade strategier inte fungerar — du behöver enkla, konkreta saker att göra med kroppen. Det är därför andning och sinnesförankring fungerar: de ger nervsystemet en signal att faran inte är verklig.
+
+## Vad du kan göra steg för steg
+
+Steg 1 — Stanna där du är. Sätt dig ner om du kan. Att fly från platsen lär hjärnan att platsen var farlig, vilket ökar risken för nästa attack.
+
+Steg 2 — Namnge det. Säg för dig själv: "Det här är en panikattack. Den är obehaglig men inte farlig. Den kommer gå över." Att sätta ord på upplevelsen aktiverar prefrontala cortex och dämpar amygdalas larm.
+
+Steg 3 — Andas med magen. Lägg en hand på magen. Andas in genom näsan så att magen höjer sig — inte bröstet. Andas in i fyra sekunder, ut genom munnen i sex sekunder. Fokusera bara på utandningen. Upprepa i minst en minut.
+
+Steg 4 — Använd 5-4-3-2-1. Namnge fem saker du ser, fyra du kan röra vid, tre du hör, två du kan lukta och en du kan smaka. Det tvingar hjärnan att bearbeta sinnesintryck istället för hotbilder.
+
+Steg 5 — Vänta ut den. De flesta panikattacker varar mellan fem och tjugo minuter. Det känns längre, men det går över. Du behöver inte göra något mer — bara låta kroppen varva ner.
+
+Steg 6 — Efteråt: vila. Drick vatten, sätt dig bekvämt, gör något lugnt. Undvik att direkt analysera vad som hände — det kan starta en ny ångestcykel. Ge det lite tid.
+
+## Tecken att känna igen
+
+Du vet att det är en panikattack och inte något annat om du känner igen mönstret: plötslig start, topp inom minuter, kombination av hjärtklappning, andnöd och overklighetskänsla, och att det går över av sig självt. Om du är osäker — särskilt första gången — sök vård för att utesluta andra orsaker.
+
+## Vanliga misstag att undvika
+
+Att hyperventilera medvetet för att "få mer luft". Det förvärrar symptomen. Fokusera på långsam utandning istället. Att ringa någon och prata snabbt och intensivt. Om du ringer någon, be dem prata lugnt. Att ta till alkohol eller lugnande medel som standardlösning. Det fungerar kortsiktigt men bygger beroende och undvikande.
+
+## När du bör söka mer stöd
+
+Om du behöver hjälp att hantera återkommande attacker finns det effektiv behandling. KBT vid panikångest har starkt forskningsstöd och fokuserar på att bryta kopplingen mellan kroppsliga sensationer och katastroftankar.
+
+## Relaterat
+
+Relaterade artiklar: vad-hander-i-kroppen (i samma kategori)
+
+## Prova en övning
+
+Övningslänkar: /ovningar/4-7-8-andning, /ovningar/grounding-5-4-3-2-1`,
+		updatedAt: '2026-04-12',
+		faqs: [
+			{
+				question: 'Hur du tar dig igenom en panikattack – steg för steg',
+				answer:
+					'Du kan inte stoppa en panikattack med vilja, men du kan hjälpa kroppen ta sig igenom den snabbare och med mindre lidande. Nyckeln är att inte kämpa emot — utan att möta det som händer med lugna, enkla steg.'
+			}
+		],
+		relatedArticles: [{ title: 'Vad händer i kroppen vid en panikattack?', href: '/guider/panikattack/vad-hander-i-kroppen' }]
+	},
+	{
+		pillarSlug: 'panikattack',
+		slug: 'panikattack-eller-hjartinfarkt',
+		nextStepTool: 'body-scan',
+		title: 'Panikattack eller hjärtinfarkt – hur vet jag skillnaden?',
+		description:
+			'Hjärtklappning, bröstsmärta och andnöd — är det panik eller hjärtat? Lär dig skilja på symtomen och när du ska söka vård.',
+		seoTitle: 'Panikattack eller hjärtinfarkt – hur vet jag skillnaden? | MittPsyke',
+		seoDescription:
+			'Hjärtklappning, bröstsmärta och andnöd — är det panik eller hjärtat? Lär dig skilja på symtomen och när du ska söka vård.',
+		content: `## Snabbt svar
+
+Panikattacker och hjärtproblem kan kännas förvillande lika — särskilt bröstsmärta, hjärtklappning och andnöd förekommer i båda. Men det finns skillnader i hur symtomen beter sig. Om du är osäker ska du alltid söka vård. Det är aldrig fel att låta sig undersökas.
+
+## Varför händer det här?
+
+Rädslan för hjärtinfarkt under en panikattack är en av de vanligaste upplevelserna. Det beror på att panikattacken faktiskt påverkar hjärtat — det slår snabbare och hårdare på grund av adrenalin. Bröstsmärtan vid panik kommer oftast från spända muskler i bröstkorgen och ändrad andning, inte från hjärtat självt. Men det är omöjligt att veta säkert bara genom att känna efter — det är därför vården finns.
+
+## Tecken att känna igen
+
+Vid en panikattack brukar smärtan vara skarp eller stickande, lokaliserad till ett litet område, och förvärras av andning eller rörelse. Den kommer plötsligt, når en topp snabbt och klingar av inom 10–20 minuter. Ofta följer den av starka känslor av rädsla, overklighetskänsla och stickningar i händerna.
+
+Vid hjärtproblem beskrivs smärtan ofta som tryckande, tung eller kramande, spridd över ett större område — ibland med utstrålning till arm, käke eller rygg. Den kan komma gradvis och vara kopplad till fysisk ansträngning. Illamående, kallsvett och andfåddhet utan tydlig ångestkomponent kan förekomma.
+
+Det finns överlapp, och listor som dessa är förenklingar. De ersätter inte medicinsk bedömning.
+
+## Vad du kan göra steg för steg
+
+Om du tror att det kan vara hjärtat: ring 112. Det är alltid rätt att söka akut hjälp om du är osäker. Sjukvården föredrar att undersöka en panikattack framför att missa ett hjärtproblem.
+
+Om du känner igen mönstret som panik: använd andning och grounding enligt de andra artiklarna i den här guiden. Påminn dig om att du har klarat det förut.
+
+Om det är första gången: sök vård. Inte för att det är farligt — utan för att det ger trygghet att veta vad det är. Många som får sin första panikattack tror genuint att de ska dö. Att få en medicinsk bedömning minskar rädslan inför nästa gång.
+
+## Vanliga misstag att undvika
+
+Att aldrig söka vård och bara anta att det är panik. Särskilt om mönstret ändrar sig — kontrollera med vården. Att hamna i en loop av akutbesök utan uppföljning. Be om remiss till psykolog eller psykiatri.
+
+## När du bör söka mer stöd
+
+Om oron för hjärtat har blivit en del av din vardag, om du undviker fysisk aktivitet av rädsla eller om du ofta kollar pulsen — då har ångesten tagit sig ett nytt uttryck. KBT med fokus på hälsoångest kan hjälpa.
+
+## Relaterat
+
+Relaterade artiklar: ta-dig-igenom-en-panikattack (i samma kategori)
+
+## Prova en övning
+
+Övningslänkar: /ovningar/4-7-8-andning, /ovningar/body-scan`,
+		updatedAt: '2026-04-12',
+		faqs: [
+			{
+				question: 'Panikattack eller hjärtinfarkt – hur vet jag skillnaden?',
+				answer:
+					'Panikattacker och hjärtproblem kan kännas förvillande lika — särskilt bröstsmärta, hjärtklappning och andnöd förekommer i båda. Men det finns skillnader i hur symtomen beter sig. Om du är osäker ska du alltid söka vård. Det är aldrig fel att låta sig undersökas.'
+			}
+		],
+		relatedArticles: [
+			{
+				title: 'Hur du tar dig igenom en panikattack – steg för steg',
+				href: '/guider/panikattack/ta-dig-igenom-en-panikattack'
+			}
+		]
+	},
+	{
+		pillarSlug: 'panikattack',
+		slug: 'panikattacker-pa-natten',
+		nextStepTool: 'body-scan',
+		title: 'Panikattacker på natten – varför händer det och vad du kan göra',
+		description:
+			'Vaknar du med hjärtklappning och ångest? Förstå nattliga panikattacker och få konkreta tips för att hantera dem.',
+		seoTitle: 'Panikattacker på natten – varför händer det och vad du kan göra | MittPsyke',
+		seoDescription:
+			'Vaknar du med hjärtklappning och ångest? Förstå nattliga panikattacker och få konkreta tips för att hantera dem.',
+		content: `## Snabbt svar
+
+Panikattacker kan komma mitt i natten, helt utan förvarning. Du vaknar med hjärtklappning, svettningar och en intensiv känsla av fara — ofta utan att ha haft en mardröm. Det är skrämmande, men det är samma mekanism som dagtid: kroppen startar ett falskt alarm. Att det händer på natten gör det inte farligare.
+
+## Varför händer det här?
+
+Under sömnen bearbetar hjärnan stress och intryck från dagen. Ibland aktiveras amygdala i den processen — särskilt om du bär på underliggande stress, har gått och lagt dig med hög ångestnivå, eller har en period med mycket press.
+
+Det kan också kopplas till rent fysiska faktorer: refluks, sömnapné eller att kroppen skiftar mellan sömnfaser. Övergången mellan djupsömn och lättare sömn är ett sårbart fönster där kroppen kan misstolka interna signaler som hot.
+
+En nattlig panikattack är inte ett tecken på att något är mer allvarligt — men den upplevs ofta som värre eftersom du vaknar desorienterad.
+
+## Vad du kan göra steg för steg
+
+Tänd en dämpad lampa. Mörker förstärker overklighetskänslan. Mjukt ljus hjälper hjärnan orientera sig.
+
+Sätt dig upp i sängen. Det ändrar kroppens läge och ger en fysisk signal om att du är vaken och trygg.
+
+Andas långsamt. Samma teknik som dagtid: in genom näsan, ut genom munnen, fokusera på att utandningen är längre än inandningen.
+
+Förankra dig. Känn lakanet, madrassen, kudden. Säg för dig själv var du är. "Jag ligger i min säng. Klockan är halv tre. Jag är trygg."
+
+Stå inte upp och börja göra saker direkt. Stanna i sängen tills kroppen har varvar ner.
+
+Om du inte kan somna om efter 20–30 minuter, gå upp och gör något stillsamt i dämpad belysning tills du känner dig sömnig igen.
+
+## Vanliga misstag att undvika
+
+Att börja vara rädd för att somna — det skapar en ond cirkel. Att kolla telefonen direkt — starkt ljus aktiverar hjärnan. Att dricka alkohol som sömnhjälp — det stör sömnkvaliteten och kan öka risken.
+
+## När du bör söka mer stöd
+
+Om nattliga panikattacker händer regelbundet, om du utvecklar sömnångest eller om din sömn påverkas så mycket att det märks på dagen — prata med en läkare. KBT vid panikångest och sömnproblem har god effekt.
+
+## Relaterat
+
+Relaterade guider: /guider/sovproblem
+
+## Prova en övning
+
+Övningslänkar: /ovningar/body-scan, /ovningar/4-7-8-andning`,
+		updatedAt: '2026-04-12',
+		faqs: [
+			{
+				question: 'Panikattacker på natten – varför händer det och vad du kan göra',
+				answer:
+					'Panikattacker kan komma mitt i natten, helt utan förvarning. Du vaknar med hjärtklappning, svettningar och en intensiv känsla av fara — ofta utan att ha haft en mardröm. Det är skrämmande, men det är samma mekanism som dagtid: kroppen startar ett falskt alarm. Att det händer på natten gör det inte farligare.'
+			}
+		],
+		relatedArticles: [{ title: 'Sömnproblem', href: '/guider/sovproblem' }]
+	},
+	{
+		pillarSlug: 'panikattack',
+		slug: 'sluta-vara-radd-for-panikattacker',
+		nextStepTool: 'trygghetscirkel-exponering',
+		title: 'Sluta vara rädd för panikattacker – bryt undvikandet',
+		description:
+			'Rädslan för nästa panikattack kan bli värre än attacken själv. Lär dig hur undvikande håller ångesten vid liv och hur du bryter mönstret.',
+		seoTitle: 'Sluta vara rädd för panikattacker – bryt undvikandet | MittPsyke',
+		seoDescription:
+			'Rädslan för nästa panikattack kan bli värre än attacken själv. Lär dig hur undvikande håller ångesten vid liv och hur du bryter mönstret.',
+		content: `## Snabbt svar
+
+Det värsta med panikattacker är ofta inte själva attacken — utan rädslan för att den ska komma igen. Den rädslan kan sakta krympa ditt liv: du undviker platser, situationer och upplevelser för att slippa riskera det. Men just undvikandet är det som håller panikångesten vid liv. Att våga närma sig det obehagliga — i din egen takt — är vägen ut.
+
+## Varför händer det här?
+
+Efter en eller flera panikattacker börjar hjärnan leta efter mönster. "Var var jag? Vad gjorde jag? Hur kan jag undvika att det händer igen?" Det är logiskt tänkande — men det leder fel. Hjärnan kopplar ihop attacken med platsen eller situationen, och du börjar undvika.
+
+Problemet är att undvikande bekräftar hotet. Varje gång du undviker en plats och inte får en attack tänker hjärnan: "Vi undvek och det gick bra — alltså var platsen farlig." Rädslan förstärks, och nästa gång behöver du undvika ännu mer.
+
+Det här kallas vidmakthållande genom undvikande, och det är kärnan i panikångest som diagnos — inte själva attackerna, utan rädslan för dem och anpassningarna du gör.
+
+## Tecken att känna igen
+
+Du planerar aktiviteter utifrån "vad om jag får panik där?". Du har slutat göra saker du brukade göra. Du känner dig säkrare hemma och vill helst inte gå ut ensam. Du scannar kroppen efter tidiga tecken på panik.
+
+## Vad du kan göra steg för steg
+
+Förstå mekanismen. Undvikande = kortsiktig lättnad + långsiktig förstärkning.
+
+Börja med det minst skrämmande. Gör en lista över situationer du undviker, rangordna dem från "lite obehagligt" till "omöjligt". Börja i den milda änden. Det här kallas exponering.
+
+Stanna kvar i situationen. Gå inte därifrån när ångesten stiger. Vänta tills den når sin topp och sedan börjar sjunka. Det är den erfarenheten som lär hjärnan: "Det var obehagligt, men det gick."
+
+Upprepa. Varje gång du stannar kvar och överlever den obehagliga känslan försvagas kopplingen.
+
+Fira det du gör, inte hur det känns. Målet är inte att det ska kännas bra — det är att du gör det trots att det känns jobbigt.
+
+## Vanliga misstag att undvika
+
+Att göra för mycket för snabbt. Exponering ska vara gradvis. Att använda "säkerhetsbeteenden" som krycka — alltid ha med en viss person, sitta närmast utgången. Att ge upp efter en dålig dag. Bakslag ingår.
+
+## När du bör söka mer stöd
+
+Exponering på egen hand fungerar för många, men om ditt undvikande är utbrett kan en psykolog med KBT-inriktning göra stor skillnad. Guidad exponering med professionellt stöd är en av de mest effektiva behandlingarna som finns för panikångest.
+
+## Relaterat
+
+Relaterade guider: /guider/angest (artikeln om exponering och undvikande)
+
+## Prova en övning
+
+Övningslänkar: /ovningar/trygghetscirkel-exponering, /ovningar/cbt-katastroftankar`,
+		updatedAt: '2026-04-12',
+		faqs: [
+			{
+				question: 'Sluta vara rädd för panikattacker – bryt undvikandet',
+				answer:
+					'Det värsta med panikattacker är ofta inte själva attacken — utan rädslan för att den ska komma igen. Den rädslan kan sakta krympa ditt liv: du undviker platser, situationer och upplevelser för att slippa riskera det. Men just undvikandet är det som håller panikångesten vid liv. Att våga närma sig det obehagliga — i din egen takt — är vägen ut.'
+			}
+		],
+		relatedArticles: [{ title: 'Ångest', href: '/guider/angest' }]
+	},
+	{
+		pillarSlug: 'overtankande',
+		slug: 'varfor-hjarnan-fastnar-i-loopar',
+		nextStepTool: 'daglig-reflektionsmall',
+		title: 'Varför hjärnan fastnar i loopar – om grubblande och ältande',
+		description:
+			'Förstå varför du tänker samma tankar om och om igen. Lär dig skillnaden mellan grubblande och problemlösning — och hur du bryter loopen.',
+		seoTitle: 'Varför hjärnan fastnar i loopar – om grubblande och ältande | MittPsyke',
+		seoDescription:
+			'Förstå varför du tänker samma tankar om och om igen. Lär dig skillnaden mellan grubblande och problemlösning — och hur du bryter loopen.',
+		content: `## Snabbt svar
+
+Grubblande känns som tänkande — men det är det inte. Riktigt tänkande leder någonstans: du analyserar, drar slutsatser, fattar beslut. Grubblande snurrar runt samma punkt utan att komma vidare. Hjärnan fastnar i en loop för att den tror att den löser ett problem — men i verkligheten bearbetar den en känsla, och känslor löser man inte genom att tänka hårdare.
+
+## Varför händer det här?
+
+Hjärnan är byggd för att upptäcka och lösa problem. Det är en av dess viktigaste funktioner. Men ibland stöter den på något den inte kan lösa med logik: en relation som tog slut, en kommentar som gjorde ont, en framtid som är osäker. Då fortsätter den ändå att "jobba" — inte för att det hjälper, utan för att det är det enda verktyg den har.
+
+Forskningen skiljer på två typer av repetitivt tänkande. Oro handlar om framtiden: "Tänk om det går fel?" Ältande (rumination) handlar om det förflutna: "Varför sa jag så? Vad är fel på mig?" Båda skapar en illusion av kontroll. Men effekten är den motsatta: ju mer du grubblar, desto mer fastnar du.
+
+Ältande har i forskning visat sig vara en av de starkaste vidmakthållandefaktorerna vid depression. Det är inte bara ett symptom — det är en motor som håller måendet nere.
+
+## Tecken att känna igen
+
+Du tänker på samma sak upprepade gånger utan att komma fram till något nytt. Du ställer dig frågor du inte kan svara på. Du känner dig mer utmattad ju mer du tänker. Du kan ha svårt att vara närvarande.
+
+## Vad du kan göra steg för steg
+
+Märk att du grubblar. Det första steget är att se det som händer: "Jag löser inte ett problem just nu — jag snurrar." Ingen kritik, bara observation.
+
+Fråga dig: leder det här mig framåt? Om svaret är nej, ge dig själv tillåtelse att släppa det för nu.
+
+Bryt med kroppen. Ältande sitter i huvudet. Att göra något fysiskt — gå en promenad, diska, stretcha — ger hjärnan något annat att bearbeta.
+
+Skriv ner det. Ibland behöver tankarna ta sig ut ur huvudet för att sluta snurra.
+
+Schemalägg din oro. Sätt av 15 minuter per dag till "grubbeltid". När tankar dyker upp utanför den tiden, säg: "Det tar jag under min grubbeltid." Forskning visar att det minskar den totala tiden du lägger på oro.
+
+## Vanliga misstag att undvika
+
+Att försöka tänka dig ur grubblandet. Att vara hård mot dig själv för att du grubblar. Att tro att alla tankar är värda att följa.
+
+## När du bör söka mer stöd
+
+Om grubblandet upptar stora delar av din dag, om det påverkar din sömn eller din förmåga att fungera, eller om det är kopplat till ihållande nedstämdhet — prata med någon. KBT och metakognitiv terapi har båda starkt stöd.
+
+## Relaterat
+
+Relaterade guider: /guider/depression
+
+## Prova en övning
+
+Övningslänkar: /ovningar/daglig-reflektionsmall, /ovningar/tankefallor-kartlaggning`,
+		updatedAt: '2026-04-12',
+		faqs: [
+			{
+				question: 'Varför hjärnan fastnar i loopar – om grubblande och ältande',
+				answer:
+					'Grubblande känns som tänkande — men det är det inte. Riktigt tänkande leder någonstans: du analyserar, drar slutsatser, fattar beslut. Grubblande snurrar runt samma punkt utan att komma vidare. Hjärnan fastnar i en loop för att den tror att den löser ett problem — men i verkligheten bearbetar den en känsla, och känslor löser man inte genom att tänka hårdare.'
+			}
+		],
+		relatedArticles: [{ title: 'Nedstämdhet och depression', href: '/guider/depression' }]
+	},
+	{
+		pillarSlug: 'overtankande',
+		slug: 'sluta-overtanka-pa-kvallen',
+		nextStepTool: 'dagens-avslut-reflektion',
+		title: 'Sluta övertänka på kvällen – tips för lugna kvällar',
+		description:
+			'Tankarna som exploderar när du lägger dig. Förstå varför kvällen är värst och få praktiska tips för att bryta mönstret.',
+		seoTitle: 'Sluta övertänka på kvällen – tips för lugna kvällar | MittPsyke',
+		seoDescription:
+			'Tankarna som exploderar när du lägger dig. Förstå varför kvällen är värst och få praktiska tips för att bryta mönstret.',
+		content: `## Snabbt svar
+
+Kvällen är hjärnans bästa tid för grubblande. Under dagen har du distraktioner. Men när du lägger dig och det blir tyst finns det inget som konkurrerar med tankarna. Allt du tryckt undan under dagen bubblar upp. Det är inte ett tecken på att något är fel med dig — det är ett tecken på att din hjärna äntligen har utrymme att bearbeta.
+
+## Varför händer det här?
+
+Under dagen använder du din arbetsminneskapacitet till att hantera uppgifter. Obearbetade tankar läggs åt sidan. På kvällen frigörs kapaciteten — och de obearbetade sakerna tar plats.
+
+Dessutom påverkar dygnsrytmen hur du mår. Kortisolnivåerna sjunker naturligt på kvällen, vilket gör dig mindre "skyddad" mot negativa tankar. Tröttheten i sig gör också att du har sämre impulskontroll.
+
+Det är en kombination av tre saker: tysta omgivningar, frigjord mental kapacitet och lågt kortisol.
+
+## Vad du kan göra steg för steg
+
+Skapa en "stängningsrutin" på kvällen. Minst 30 minuter före sängen: inga skärmar med starkt ljus, inget jobbigt innehåll, inga beslut.
+
+Gör en "tankedump" innan du lägger dig. Skriv ner allt som snurrar i huvudet. Syftet är att flytta tankarna från huvudet till något utanför dig.
+
+Använd schemalagd grubbeltid. Om du vet att du har 15 minuter mitt på dagen för att grubbla, blir det lättare att säga "inte nu" på kvällen.
+
+Andas dig till sömn. 4-7-8-tekniken: andas in i 4 sekunder, håll i 7, andas ut i 8.
+
+Lyssna på något. Podd, ljudbok eller bakgrundsljud med låg intensitet kan ge hjärnan precis tillräckligt med input för att sluta producera egna tankar.
+
+## Vanliga misstag att undvika
+
+Att använda telefonen i sängen. Att ligga kvar och "försöka somna" i timmar. Att dricka alkohol för att slappna av.
+
+## När du bör söka mer stöd
+
+Om sömnproblemen är ihållande, om du sover under sex timmar regelbundet eller om det börjar påverka ditt dagliga fungerande. KBT för insomni (KBT-i) har god effekt.
+
+## Relaterat
+
+Relaterade guider: /guider/sovproblem
+
+## Prova en övning
+
+Övningslänkar: /ovningar/dagens-avslut-reflektion, /ovningar/4-7-8-andning`,
+		updatedAt: '2026-04-12',
+		faqs: [
+			{
+				question: 'Sluta övertänka på kvällen – tips för lugna kvällar',
+				answer:
+					'Kvällen är hjärnans bästa tid för grubblande. Under dagen har du distraktioner. Men när du lägger dig och det blir tyst finns det inget som konkurrerar med tankarna. Allt du tryckt undan under dagen bubblar upp. Det är inte ett tecken på att något är fel med dig — det är ett tecken på att din hjärna äntligen har utrymme att bearbeta.'
+			}
+		],
+		relatedArticles: [{ title: 'Sömnproblem', href: '/guider/sovproblem' }]
+	},
+	{
+		pillarSlug: 'overtankande',
+		slug: 'skillnaden-mellan-oro-och-altande',
+		nextStepTool: 'cbt-katastroftankar',
+		title: 'Oro vs ältande – vad är skillnaden och varför spelar det roll?',
+		description:
+			'Oro riktar sig framåt, ältande bakåt. Förstå skillnaden och varför det avgör vilka strategier som fungerar.',
+		seoTitle: 'Oro vs ältande – vad är skillnaden och varför spelar det roll? | MittPsyke',
+		seoDescription:
+			'Oro riktar sig framåt, ältande bakåt. Förstå skillnaden och varför det avgör vilka strategier som fungerar.',
+		content: `## Snabbt svar
+
+Oro och ältande känns lika — båda är repetitiva, påträngande och energikrävande. Men de pekar åt olika håll. Oro handlar om framtiden: "Tänk om det går fel?" Ältande handlar om det förflutna: "Varför blev det så?" Skillnaden spelar roll eftersom de drivs av olika mekanismer och bäst hanteras med delvis olika strategier.
+
+## Varför händer det här?
+
+Oro är hjärnans försök att förbereda sig för hot. Ältande är hjärnans försök att förstå vad som gick fel. Gemensamt är att båda ger en illusion av kontroll. Men forskningen visar att varken oro eller ältande leder till bättre problemlösning — tvärtom försämrar de förmågan att tänka klart.
+
+## Tecken att känna igen
+
+Oro: du tänker i "tänk om"-termer, kroppen är spänd, du söker ständigt bekräftelse.
+Ältande: du tänker i "varför"-termer, du känner skuld eller skam, du återupplever situationer.
+Ofta har man båda — de kan mata varandra.
+
+## Vad du kan göra steg för steg
+
+Identifiera vilken typ det är. Fråga dig: tänker jag framåt eller bakåt?
+
+Vid oro — testa katastroftänk-övningen. Skriv ner det värsta, det bästa och det mest sannolika.
+
+Vid ältande — ställ dig frågan: finns det något jag kan göra åt det här just nu? Om ja: gör det. Om nej: öva på att släppa.
+
+Externalisera. Skriv ner det du tänker. Tankar ser ofta mindre hotfulla ut i skrift.
+
+Byt kanal medvetet. Att göra något som kräver koncentration slår av hjärnans "standardnätverk" som driver grubblande.
+
+## Vanliga misstag att undvika
+
+Att behandla all oro som ältande eller tvärtom. Att försöka "tänka positivt". Att tro att grubblande = djupt tänkande.
+
+## När du bör söka mer stöd
+
+Långvarigt ältande är starkt kopplat till depression. Kronisk oro kan vara generaliserat ångestsyndrom (GAD). Sök hjälp om det upptar stora delar av dagen.
+
+## Relaterat
+
+Relaterade guider: /guider/angest, /guider/depression
+
+## Prova en övning
+
+Övningslänkar: /ovningar/cbt-katastroftankar, /ovningar/sju-fragor-vid-oro`,
+		updatedAt: '2026-04-12',
+		faqs: [
+			{
+				question: 'Oro vs ältande – vad är skillnaden och varför spelar det roll?',
+				answer:
+					'Oro och ältande känns lika — båda är repetitiva, påträngande och energikrävande. Men de pekar åt olika håll. Oro handlar om framtiden: "Tänk om det går fel?" Ältande handlar om det förflutna: "Varför blev det så?" Skillnaden spelar roll eftersom de drivs av olika mekanismer och bäst hanteras med delvis olika strategier.'
+			}
+		],
+		relatedArticles: [
+			{ title: 'Ångest', href: '/guider/angest' },
+			{ title: 'Nedstämdhet och depression', href: '/guider/depression' }
 		]
 	}
 ];
