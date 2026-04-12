@@ -24,27 +24,6 @@ const REASON_LABELS: Record<string, string> = {
 	other: 'Annat'
 };
 
-type Report = {
-	id: string;
-	reason: string;
-	details: string | null;
-	created_at: string;
-	thread_id: string | null;
-	reply_id: string | null;
-	thread: {
-		id: string;
-		title: string;
-		body: string;
-		deleted_at: string | null;
-	} | null;
-	reply: {
-		id: string;
-		body: string;
-		thread_id: string;
-		deleted_at: string | null;
-	} | null;
-};
-
 type DashboardSeoPrompt = SeoPromptRecord & {
 	landing_page_name: string;
 };
