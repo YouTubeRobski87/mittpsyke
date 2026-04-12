@@ -93,7 +93,7 @@ export function initializeAnalytics() {
 	if (!gtag) return;
 
 	gtag('consent', 'default', {
-		analytics_storage: 'denied'
+		analytics_storage: 'granted'
 	});
 
 	const scriptSrc = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
@@ -104,9 +104,6 @@ export function initializeAnalytics() {
 		document.head.appendChild(script);
 	}
 
-	gtag('consent', 'update', {
-		analytics_storage: 'granted'
-	});
 	gtag('js', new Date());
 	gtag('config', GA_MEASUREMENT_ID);
 	analyticsInitialized = true;
