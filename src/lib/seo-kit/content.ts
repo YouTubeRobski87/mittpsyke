@@ -4378,16 +4378,28 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Varför hjärnan fastnar i loopar',
 				body: 'Övertänkande är ofta ett försök att skapa kontroll. Men när tankarna går runt utan att leda till beslut ökar stressen i stället. Det går att träna på ett annat förhållningssätt.',
 				links: [
-					{ title: 'Övertänkande - hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
-					{ title: 'Orostankar som snurrar', href: '/guider-seo/angest/orostankar' }
+					{
+						title: 'Varför hjärnan fastnar i loopar – om grubblande och ältande',
+						href: '/guider/overtankande/varfor-hjarnan-fastnar-i-loopar'
+					},
+					{
+						title: 'Oro vs ältande – vad är skillnaden och varför spelar det roll?',
+						href: '/guider/overtankande/skillnaden-mellan-oro-och-altande'
+					}
 				]
 			},
 			{
 				heading: 'Ältande blir ofta starkare på kvällen',
 				body: 'När tempot sjunker får oron mer plats. Det kan göra det svårt att somna eller koppla av. Tydliga kvällsrutiner och avgränsad orostid kan göra stor skillnad.',
 				links: [
-					{ title: 'Ältande på kvällen - varför tankarna blir starkare i sängen', href: '/guider-seo/sovproblem/altande-pa-kvallen' },
-					{ title: 'Nattlig oro - att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' }
+					{
+						title: 'Sluta övertänka på kvällen – tips för lugna kvällar',
+						href: '/guider/overtankande/sluta-overtanka-pa-kvallen'
+					},
+					{
+						title: 'Mindfulness mot övertänkande – enkla övningar som bryter loopen',
+						href: '/guider/overtankande/mindfulness-mot-overtankande'
+					}
 				]
 			},
 			{
