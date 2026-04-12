@@ -547,6 +547,12 @@ export const POST: RequestHandler = async ({ request }) => {
 					: promptHistory;
 
 			const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
+			const finalMessages = [
+				{ role: 'system' as const, content: systemPrompt },
+				...modelContext,
+				{ role: 'user' as const, content: message }
+			];
+			console.log('[DEBUG-PAYLOAD]', JSON.stringify(finalMessages.map(m => ({ role: m.role, content: m.content.slice(0, 120) })), null, 2));
 			let completion;
 			try {
 				completion = await openai.chat.completions.create({
@@ -555,11 +561,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					max_completion_tokens: 500,
 					frequency_penalty: 0.3,
 					presence_penalty: 0.2,
-					messages: [
-						{ role: 'system', content: systemPrompt },
-						...modelContext,
-						{ role: 'user', content: message }
-					]
+					messages: finalMessages
 				});
 			} catch (openaiError) {
 				logOpenAIError({ guest: false, category, conversationId }, openaiError);
