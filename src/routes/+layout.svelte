@@ -32,6 +32,7 @@
 	};
 
 	const signedInPrimaryNavItems: NavItem[] = [
+		{ href: '/chat', label: 'Chat' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' }
 	];
@@ -50,7 +51,7 @@
 	];
 
 	const guestPrimaryNavItems: NavItem[] = [
-		{ href: '/chat', label: 'Chatta' },
+		{ href: '/chat', label: 'Chat' },
 		{ href: '/dagbok', label: 'Dagbok' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' },
