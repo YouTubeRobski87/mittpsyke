@@ -3,6 +3,7 @@ import { writable } from 'svelte/store';
 export const cookieBannerOpen = writable(false);
 
 export const ANALYTICS_CONSENT_STORAGE_KEY = 'cookie-consent';
+export const ANALYTICS_CONSENT_COOKIE_KEY = 'cookie_consent';
 export const ANALYTICS_CONSENT_EVENT = 'mittpsyke:analytics-consent-change';
 export const ANALYTICS_CONSENT_ACCEPTED = 'accepted';
 export const ANALYTICS_CONSENT_DECLINED = 'declined';
@@ -26,6 +27,27 @@ function dispatchAnalyticsConsentChange(state: AnalyticsConsentState) {
 	);
 }
 
+function getAnalyticsConsentFromCookie(): AnalyticsConsentState {
+	if (typeof document === 'undefined') return null;
+
+	const cookieValue = document.cookie
+		.split(';')
+		.map((cookie) => cookie.trim())
+		.find((cookie) => cookie.startsWith(`${ANALYTICS_CONSENT_COOKIE_KEY}=`))
+		?.split('=')
+		.slice(1)
+		.join('=');
+
+	if (
+		cookieValue !== ANALYTICS_CONSENT_ACCEPTED &&
+		cookieValue !== ANALYTICS_CONSENT_DECLINED
+	) {
+		return null;
+	}
+
+	return cookieValue;
+}
+
 export function getAnalyticsConsent(): AnalyticsConsentState {
 	if (typeof window === 'undefined') return null;
 
@@ -34,7 +56,12 @@ export function getAnalyticsConsent(): AnalyticsConsentState {
 		stored !== ANALYTICS_CONSENT_ACCEPTED &&
 		stored !== ANALYTICS_CONSENT_DECLINED
 	) {
-		return null;
+		const cookieConsent = getAnalyticsConsentFromCookie();
+		if (cookieConsent) {
+			window.localStorage.setItem(ANALYTICS_CONSENT_STORAGE_KEY, cookieConsent);
+		}
+
+		return cookieConsent;
 	}
 
 	return stored;

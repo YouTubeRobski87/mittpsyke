@@ -13,6 +13,7 @@
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
 	import {
 		ANALYTICS_CONSENT_EVENT,
+		getAnalyticsConsent,
 		hasAnalyticsConsent,
 		cookieBannerOpen
 	} from '$lib/consent';
@@ -192,6 +193,9 @@
 
 	function syncAnalyticsConsent() {
 		if (!browser) return;
+
+		const consentStatus = getAnalyticsConsent();
+		console.log('[Analytics] consent status:', consentStatus);
 
 		analyticsEnabled = ANALYTICS_ENABLED && hasAnalyticsConsent();
 		if (!analyticsEnabled) {
