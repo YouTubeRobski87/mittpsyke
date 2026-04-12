@@ -1,3 +1,7 @@
+import { writable } from 'svelte/store';
+
+export const cookieBannerOpen = writable(false);
+
 export const ANALYTICS_CONSENT_STORAGE_KEY = 'cookie-consent';
 export const ANALYTICS_CONSENT_EVENT = 'mittpsyke:analytics-consent-change';
 export const ANALYTICS_CONSENT_ACCEPTED = 'accepted';

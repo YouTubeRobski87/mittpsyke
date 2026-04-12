@@ -5,14 +5,16 @@
 	import {
 		ANALYTICS_ENABLED,
 		initializeAnalytics,
-		trackPageView
+		trackPageView,
+		disableAnalytics
 	} from '$lib/analytics';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
 	import {
 		ANALYTICS_CONSENT_EVENT,
-		hasAnalyticsConsent
+		hasAnalyticsConsent,
+		cookieBannerOpen
 	} from '$lib/consent';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import { supabase } from '$lib/supabase';
@@ -188,6 +190,7 @@
 		analyticsEnabled = ANALYTICS_ENABLED && hasAnalyticsConsent();
 		if (!analyticsEnabled) {
 			lastTrackedPagePath = '';
+			disableAnalytics();
 			return;
 		}
 
@@ -454,7 +457,7 @@
 			Akut hjälp (Stödlinjer)
 			</a>
 			<span class="mx-2">&middot;</span>
-			<span class="text-xs opacity-50">Analys aktiveras bara med samtycke.</span>
+			<button onclick={() => cookieBannerOpen.set(true)} class="text-sm opacity-70 hover:opacity-100 transition-opacity">Cookieinställningar</button>
 			<div class="footer-features mt-2 text-xs opacity-70" aria-label="Funktioner">
 				<span class="font-medium">Funktioner:</span>
 				<a href="/journalforing" class="hover:opacity-100 transition-opacity">Journalföring</a>

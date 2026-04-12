@@ -58,6 +58,31 @@ function ensureGtag() {
 	return windowWithGtag.gtag as (...args: any[]) => void;
 }
 
+export function disableAnalytics() {
+	if (!browser) return;
+
+	// Meddela GA att analytics-lagring nekas
+	const gtag = ensureGtag();
+	if (gtag) {
+		gtag('consent', 'update', { analytics_storage: 'denied' });
+	}
+
+	// Rensa GA-cookies (_ga, _gid, _ga_XXXXX, _gat_*)
+	const hostname = window.location.hostname;
+	const domainParts = hostname.split('.');
+	const rootDomain = domainParts.length > 1 ? '.' + domainParts.slice(-2).join('.') : hostname;
+
+	document.cookie.split(';').forEach((cookie) => {
+		const name = cookie.split('=')[0].trim();
+		if (name === '_ga' || name === '_gid' || name.startsWith('_ga_') || name.startsWith('_gat_')) {
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${rootDomain}`;
+			document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+		}
+	});
+
+	analyticsInitialized = false;
+}
+
 export function initializeAnalytics() {
 	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent() || analyticsInitialized || !GA_MEASUREMENT_ID) return;
 
