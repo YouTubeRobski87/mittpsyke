@@ -15,7 +15,6 @@ import {
 	type LandingPageRecord,
 	type SeoPromptRecord
 } from '$lib/server/admin-system';
-import { createServiceClient } from '$lib/server/supabase-admin';
 
 const REASON_LABELS: Record<string, string> = {
 	offensive: 'Olämpligt innehåll',
