@@ -536,7 +536,6 @@
 	.hero,
 	.panel,
 	.schema-warning,
-	.report-card,
 	.stat-card {
 		background:
 			radial-gradient(circle at top right, rgba(96, 165, 250, 0.18), transparent 42%),
@@ -575,8 +574,7 @@
 	.hero-note p,
 	.panel-header p,
 	.page-description,
-	.prompt-card p,
-	.report-card p {
+	.prompt-card p {
 		color: rgba(226, 232, 240, 0.82);
 	}
 
@@ -677,11 +675,6 @@
 		border: 1px solid rgba(248, 113, 113, 0.28);
 	}
 
-	.message.compact {
-		padding: 0.55rem 0.7rem;
-		font-size: 0.88rem;
-	}
-
 	.schema-warning {
 		padding: 1rem 1.15rem;
 	}
@@ -765,7 +758,6 @@
 
 	.generated-output,
 	.prompt-card,
-	.report-details,
 	.hero-note {
 		border-radius: 18px;
 	}
@@ -843,44 +835,10 @@
 		min-width: 160px;
 	}
 
-	.inline-form.danger button,
-	.danger-button {
+	.inline-form.danger button {
 		background: rgba(127, 29, 29, 0.7);
 		border-color: rgba(248, 113, 113, 0.28);
 		color: #fee2e2;
-	}
-
-	.moderation {
-		display: grid;
-		gap: 0.9rem;
-	}
-
-	.report-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: grid;
-		gap: 0.9rem;
-	}
-
-	.report-card {
-		padding: 1rem;
-		display: grid;
-		gap: 0.7rem;
-	}
-
-	.report-title a,
-	.report-link {
-		color: #bfdbfe;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	.report-details {
-		margin: 0;
-		padding: 0.75rem 0.85rem;
-		background: rgba(15, 23, 42, 0.5);
-		border: 1px solid rgba(148, 163, 184, 0.16);
 	}
 
 	@media (max-width: 960px) {
