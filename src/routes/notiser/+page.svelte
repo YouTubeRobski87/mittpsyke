@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
@@ -34,7 +34,7 @@
 		if (diffMins < 1) return 'just nu';
 		if (diffMins < 60) return `${diffMins} min sedan`;
 		if (diffHours < 24) return `${diffHours} tim sedan`;
-		if (diffDays === 1) return 'igår';
+		if (diffDays === 1) return 'igÃ¥r';
 		if (diffDays < 7) return `${diffDays} dagar sedan`;
 		return date.toLocaleDateString('sv-SE', { day: 'numeric', month: 'short', year: 'numeric' });
 	}
@@ -87,14 +87,14 @@
 		<div class="auth-panel page-header">
 			<h1 class="page-title">Notiser</h1>
 			{#if unread > 0}
-				<p class="auth-muted">{unread} olästa</p>
+				<p class="auth-muted">{unread} olÃ¤sta</p>
 			{/if}
 		</div>
 
 		{#if notifications.length === 0}
 			<div class="auth-panel">
 				<p class="auth-muted" style="text-align:center; padding: 2rem 0;">
-					Inga notiser än. Följ en tråd eller kategori för att få meddelanden.
+					Inga notiser Ã¤n.
 				</p>
 			</div>
 		{:else}
@@ -105,7 +105,7 @@
 						onclick={markAllAsRead}
 						disabled={markingAll}
 					>
-						{markingAll ? 'Markerar…' : markAllDone ? 'Klart' : 'Markera alla som lästa'}
+						{markingAll ? 'Markerarâ€¦' : markAllDone ? 'Klart' : 'Markera alla som lÃ¤sta'}
 					</button>
 				</div>
 			{/if}
@@ -114,7 +114,7 @@
 				{#each notifications as n (n.id)}
 					<li class="notif-item" class:notif-unread={!n.is_read}>
 						<a
-							href={n.link || '/forum'}
+							href={n.link || '/notiser'}
 							class="notif-link"
 							onclick={() => { if (!n.is_read) markAsRead(n.id); }}
 						>
@@ -125,9 +125,9 @@
 						{#if !n.is_read}
 							<button
 								class="notif-read-btn"
-								aria-label="Markera som läst"
+								aria-label="Markera som lÃ¤st"
 								onclick={() => markAsRead(n.id)}
-							>✓</button>
+							>âœ“</button>
 						{/if}
 					</li>
 				{/each}
@@ -230,3 +230,4 @@
 		padding: 0.35rem 0.75rem;
 	}
 </style>
+

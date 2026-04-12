@@ -1,4 +1,4 @@
-export interface Portal {
+﻿export interface Portal {
 	key: string;
 	title: string;
 	description: string;
@@ -169,5 +169,5 @@ export interface CreateCommunityCommentErrorResponse {
 	error: string;
 }
 
-// ─── Forum ────────────────────────────────────────────────────────────────────
+
 

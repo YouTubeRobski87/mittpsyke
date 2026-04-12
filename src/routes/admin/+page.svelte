@@ -1,7 +1,6 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import { enhance } from '$app/forms';
-	import { supabase } from '$lib/supabase';
 	import type { ActionData, PageData } from './$types';
 
 	type TabId = 'prompts' | 'pages' | 'ab';
@@ -10,13 +9,9 @@
 
 	let activeTab = $state<TabId>('prompts');
 	let pendingForm = $state<string | null>(null);
-	let deletingId = $state<string | null>(null);
-	let reportErrors = $state<Record<string, string>>({});
-	let reports = $state<PageData['reports']>([]);
 
 	$effect(() => {
 		activeTab = (form?.activeTab as TabId | undefined) ?? activeTab;
-		reports = data.reports;
 	});
 
 	function enhanceForm(formKey: string, tab: TabId) {
@@ -29,80 +24,6 @@
 				pendingForm = null;
 			};
 		};
-	}
-
-	async function getToken(): Promise<string | null> {
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
-		return session?.access_token ?? null;
-	}
-
-	function formatDate(dateStr: string | null) {
-		if (!dateStr) return 'Nyss';
-
-		return new Date(dateStr).toLocaleString('sv-SE', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit'
-		});
-	}
-
-	function truncate(text: string, max = 220) {
-		return text.length > max ? `${text.slice(0, max).trimEnd()}…` : text;
-	}
-
-	function conversionRate(conversions: number, views: number) {
-		if (!views) return '0%';
-		return `${((conversions / views) * 100).toFixed(1)}%`;
-	}
-
-	async function deleteReport(report: PageData['reports'][number]) {
-		if (
-			!confirm(
-				`Radera ${report.thread_id ? 'tråden' : 'svaret'} och arkivera rapporten? Det går inte att ångra.`
-			)
-		) {
-			return;
-		}
-
-		deletingId = report.id;
-		reportErrors = { ...reportErrors, [report.id]: '' };
-
-		const token = await getToken();
-		if (!token) {
-			reportErrors = { ...reportErrors, [report.id]: 'Inte inloggad.' };
-			deletingId = null;
-			return;
-		}
-
-		const response = await fetch('/api/admin/delete-report', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${token}`
-			},
-			body: JSON.stringify({
-				reportId: report.id,
-				threadId: report.thread_id ?? undefined,
-				replyId: report.reply_id ?? undefined
-			})
-		});
-
-		const payload = await response.json();
-		deletingId = null;
-
-		if (!response.ok || !payload.success) {
-			reportErrors = {
-				...reportErrors,
-				[report.id]: payload.error ?? 'Kunde inte utföra åtgärden.'
-			};
-			return;
-		}
-
-		reports = reports.filter((entry) => entry.id !== report.id);
 	}
 </script>
 
@@ -119,25 +40,25 @@
 			<p class="eyebrow">MittPsyke Admin</p>
 			<h1>Landningssidor, SEO och A/B-test</h1>
 			<p class="intro">
-				Här kan du skapa lugna landningssidor, generera svensk SEO-copy och följa vilka
-				varianter som faktiskt hjälper besökare vidare.
+				HÃ¤r kan du skapa lugna landningssidor, generera svensk SEO-copy och fÃ¶lja vilka
+				varianter som faktiskt hjÃ¤lper besÃ¶kare vidare.
 			</p>
 		</div>
 		<div class="hero-note">
-			<p>Datat kommer från Supabase och analytics kan uppdatera visningar och konverteringar automatiskt när SQL-funktionen är installerad.</p>
+			<p>Datat kommer frÃ¥n Supabase och analytics kan uppdatera visningar och konverteringar automatiskt nÃ¤r SQL-funktionen Ã¤r installerad.</p>
 		</div>
 	</header>
 
-	<section class="stats-grid" aria-label="Översikt">
+	<section class="stats-grid" aria-label="Ã–versikt">
 		<article class="stat-card">
 			<span>Landningssidor</span>
 			<strong>{data.stats.pageCount}</strong>
 			<small>{data.stats.publishedCount} publicerade</small>
 		</article>
 		<article class="stat-card">
-			<span>SEO-förslag</span>
+			<span>SEO-fÃ¶rslag</span>
 			<strong>{data.stats.promptCount}</strong>
-			<small>senaste sparade förslagen</small>
+			<small>senaste sparade fÃ¶rslagen</small>
 		</article>
 		<article class="stat-card">
 			<span>A/B-test</span>
@@ -205,14 +126,14 @@
 				class="panel generator-panel"
 			>
 				<div class="panel-header">
-					<h2>Generera SEO-förslag</h2>
+					<h2>Generera SEO-fÃ¶rslag</h2>
 					<p>Skapa titel, meta, rubrik eller CTA med Claude och spara allt direkt i Supabase.</p>
 				</div>
 
 				<label>
 					<span>Landningssida</span>
 					<select name="landingPageId" required>
-						<option value="">Välj sida</option>
+						<option value="">VÃ¤lj sida</option>
 						{#each data.landingPages as page}
 							<option value={page.id}>{page.name} ({page.slug})</option>
 						{/each}
@@ -220,9 +141,9 @@
 				</label>
 
 				<label>
-					<span>Typ av förslag</span>
+					<span>Typ av fÃ¶rslag</span>
 					<select name="promptType" required>
-						<option value="">Välj typ</option>
+						<option value="">VÃ¤lj typ</option>
 						{#each data.seoPromptTypes as promptType}
 							<option value={promptType}>{promptType}</option>
 						{/each}
@@ -234,12 +155,12 @@
 					<textarea
 						name="context"
 						rows="5"
-						placeholder="Exempel: fokusera på låg tröskel, enkel svenska och sökord kring ångesthjälp."
+						placeholder="Exempel: fokusera pÃ¥ lÃ¥g trÃ¶skel, enkel svenska och sÃ¶kord kring Ã¥ngesthjÃ¤lp."
 					></textarea>
 				</label>
 
 				<button type="submit" class="primary" disabled={pendingForm === 'generatePrompt'}>
-					{pendingForm === 'generatePrompt' ? 'Genererar…' : 'Generera förslag'}
+					{pendingForm === 'generatePrompt' ? 'Genererarâ€¦' : 'Generera fÃ¶rslag'}
 				</button>
 
 				{#if form?.generatedPrompt}
@@ -252,12 +173,12 @@
 
 			<section class="panel prompt-list-panel">
 				<div class="panel-header">
-					<h2>Senaste sparade förslag</h2>
-					<p>Överblick över vad som redan har tagits fram för varje sida.</p>
+					<h2>Senaste sparade fÃ¶rslag</h2>
+					<p>Ã–verblick Ã¶ver vad som redan har tagits fram fÃ¶r varje sida.</p>
 				</div>
 
 				{#if data.seoPrompts.length === 0}
-					<p class="empty">Inga promptförslag finns sparade än.</p>
+					<p class="empty">Inga promptfÃ¶rslag finns sparade Ã¤n.</p>
 				{:else}
 					<div class="stack">
 						{#each data.seoPrompts as prompt}
@@ -280,7 +201,7 @@
 		<section class="panel stack-lg">
 			<div class="panel-header">
 				<h2>Skapa ny landningssida</h2>
-				<p>Varje sida får en post i `landing_pages` och ett första innehållsblock i `landing_page_content`.</p>
+				<p>Varje sida fÃ¥r en post i `landing_pages` och ett fÃ¶rsta innehÃ¥llsblock i `landing_page_content`.</p>
 			</div>
 
 			<form
@@ -291,7 +212,7 @@
 			>
 				<label>
 					<span>Namn</span>
-					<input type="text" name="name" placeholder="Ångest" required />
+					<input type="text" name="name" placeholder="Ã…ngest" required />
 				</label>
 				<label>
 					<span>Page ID</span>
@@ -314,11 +235,11 @@
 					<textarea
 						name="description"
 						rows="3"
-						placeholder="Kort förklaring av sidans syfte och vad besökaren ska få hjälp med."
+						placeholder="Kort fÃ¶rklaring av sidans syfte och vad besÃ¶karen ska fÃ¥ hjÃ¤lp med."
 					></textarea>
 				</label>
 				<button type="submit" class="primary fit" disabled={pendingForm === 'addLandingPage'}>
-					{pendingForm === 'addLandingPage' ? 'Skapar…' : 'Skapa sida'}
+					{pendingForm === 'addLandingPage' ? 'Skaparâ€¦' : 'Skapa sida'}
 				</button>
 			</form>
 		</section>
@@ -326,7 +247,7 @@
 		<section class="stack-lg">
 			{#if data.landingPages.length === 0}
 				<section class="panel">
-					<p class="empty">Det finns inga landningssidor än.</p>
+					<p class="empty">Det finns inga landningssidor Ã¤n.</p>
 				</section>
 			{:else}
 				{#each data.landingPages as page}
@@ -335,7 +256,7 @@
 							<div>
 								<p class="page-kicker">{page.page_id}</p>
 								<h2>{page.name}</h2>
-								<p class="page-description">{page.description ?? 'Ingen beskrivning sparad än.'}</p>
+								<p class="page-description">{page.description ?? 'Ingen beskrivning sparad Ã¤n.'}</p>
 							</div>
 							<div class="page-metrics">
 								<div>
@@ -394,7 +315,7 @@
 									type="text"
 									name="seoTitle"
 									value={page.content?.seo_title ?? ''}
-									placeholder="Hjälp vid ångest | MittPsyke"
+									placeholder="HjÃ¤lp vid Ã¥ngest | MittPsyke"
 								/>
 							</label>
 
@@ -404,7 +325,7 @@
 									type="text"
 									name="h1Heading"
 									value={page.content?.h1_heading ?? ''}
-									placeholder="Hjälp vid ångest i din egen takt"
+									placeholder="HjÃ¤lp vid Ã¥ngest i din egen takt"
 								/>
 							</label>
 
@@ -413,7 +334,7 @@
 								<textarea
 									name="seoMeta"
 									rows="3"
-									placeholder="Kort meta-beskrivning som känns lugn, tydlig och relevant."
+									placeholder="Kort meta-beskrivning som kÃ¤nns lugn, tydlig och relevant."
 								>{page.content?.seo_meta ?? ''}</textarea>
 							</label>
 
@@ -433,21 +354,21 @@
 									type="text"
 									name="keywords"
 									value={page.content?.keywords ?? ''}
-									placeholder="ångest, stöd online, prata anonymt"
+									placeholder="Ã¥ngest, stÃ¶d online, prata anonymt"
 								/>
 							</label>
 
 							<label class="full-span">
-								<span>Huvudinnehåll (HTML)</span>
+								<span>HuvudinnehÃ¥ll (HTML)</span>
 								<textarea
 									name="htmlContent"
 									rows="8"
-									placeholder="<p>Beskriv innehållet här.</p>"
+									placeholder="<p>Beskriv innehÃ¥llet hÃ¤r.</p>"
 								>{page.content?.html_content ?? ''}</textarea>
 							</label>
 
 							<button type="submit" class="primary fit" disabled={pendingForm === `content-${page.id}`}>
-								{pendingForm === `content-${page.id}` ? 'Sparar…' : 'Spara innehåll'}
+								{pendingForm === `content-${page.id}` ? 'Spararâ€¦' : 'Spara innehÃ¥ll'}
 							</button>
 						</form>
 					</article>
@@ -460,7 +381,7 @@
 		<section class="panel stack-lg">
 			<div class="panel-header">
 				<h2>Skapa nytt A/B-test</h2>
-				<p>Använd testet för att jämföra två rubriker eller CTA-varianter på samma landningssida.</p>
+				<p>AnvÃ¤nd testet fÃ¶r att jÃ¤mfÃ¶ra tvÃ¥ rubriker eller CTA-varianter pÃ¥ samma landningssida.</p>
 			</div>
 
 			<form
@@ -472,7 +393,7 @@
 				<label>
 					<span>Landningssida</span>
 					<select name="landingPageId" required>
-						<option value="">Välj sida</option>
+						<option value="">VÃ¤lj sida</option>
 						{#each data.landingPages as page}
 							<option value={page.id}>{page.name}</option>
 						{/each}
@@ -484,7 +405,7 @@
 				</label>
 				<label>
 					<span>Variant B</span>
-					<input type="text" name="variantBName" placeholder="Prata lugnt med stöd" required />
+					<input type="text" name="variantBName" placeholder="Prata lugnt med stÃ¶d" required />
 				</label>
 				<input type="hidden" name="conversionsA" value="0" />
 				<input type="hidden" name="conversionsB" value="0" />
@@ -492,7 +413,7 @@
 				<input type="hidden" name="viewsB" value="0" />
 				<input type="hidden" name="isActive" value="true" />
 				<button type="submit" class="primary fit" disabled={pendingForm === 'create-ab'}>
-					{pendingForm === 'create-ab' ? 'Skapar…' : 'Skapa test'}
+					{pendingForm === 'create-ab' ? 'Skaparâ€¦' : 'Skapa test'}
 				</button>
 			</form>
 		</section>
@@ -500,7 +421,7 @@
 		<section class="stack-lg">
 			{#if data.abTests.length === 0}
 				<section class="panel">
-					<p class="empty">Det finns inga A/B-test än.</p>
+					<p class="empty">Det finns inga A/B-test Ã¤n.</p>
 				</section>
 			{:else}
 				{#each data.abTests as test}
@@ -512,7 +433,7 @@
 								<p class="page-description">
 									Status: {test.is_active ? 'aktivt' : 'avslutat'}
 									{#if test.winner}
-										· Vinnare: {test.winner}
+										Â· Vinnare: {test.winner}
 									{/if}
 								</p>
 							</div>
@@ -573,7 +494,7 @@
 								</select>
 							</label>
 							<button type="submit" class="primary fit" disabled={pendingForm === `ab-${test.id}`}>
-								{pendingForm === `ab-${test.id}` ? 'Sparar…' : 'Spara test'}
+								{pendingForm === `ab-${test.id}` ? 'Spararâ€¦' : 'Spara test'}
 							</button>
 						</form>
 
@@ -585,7 +506,7 @@
 						>
 							<input type="hidden" name="abTestId" value={test.id} />
 							<button type="submit" disabled={pendingForm === `winner-${test.id}`}>
-								{pendingForm === `winner-${test.id}` ? 'Räknar…' : 'Beräkna vinnare'}
+								{pendingForm === `winner-${test.id}` ? 'RÃ¤knarâ€¦' : 'BerÃ¤kna vinnare'}
 							</button>
 						</form>
 					</article>
@@ -594,57 +515,6 @@
 		</section>
 	{/if}
 
-	{#if reports.length > 0}
-		<section class="moderation">
-			<div class="panel-header">
-				<h2>Rapporter att hantera</h2>
-				<p>Det tidigare modereringsflödet finns kvar här så att befintliga adminrutiner inte bryts.</p>
-			</div>
-
-			<ol class="report-list" role="list">
-				{#each reports as report (report.id)}
-					<li class="report-card">
-						<div class="prompt-meta">
-							<span>{report.reason}</span>
-							<span>{report.thread_id ? 'Tråd' : 'Svar'}</span>
-							<time datetime={report.created_at}>{formatDate(report.created_at)}</time>
-						</div>
-
-						{#if report.thread}
-							<h3 class="report-title">
-								<a href="/forum/thread/{report.thread.id}" target="_blank" rel="noopener noreferrer">
-									{report.thread.title}
-								</a>
-							</h3>
-							<p>{truncate(report.thread.body)}</p>
-						{:else if report.reply}
-							<p>{truncate(report.reply.body)}</p>
-							<a class="report-link" href="/forum/thread/{report.reply.thread_id}" target="_blank" rel="noopener noreferrer">
-								Visa tråden →
-							</a>
-						{/if}
-
-						{#if report.details}
-							<p class="report-details">"{report.details}"</p>
-						{/if}
-
-						{#if reportErrors[report.id]}
-							<p class="message error compact">{reportErrors[report.id]}</p>
-						{/if}
-
-						<button
-							type="button"
-							class="danger-button"
-							disabled={deletingId === report.id}
-							onclick={() => deleteReport(report)}
-						>
-							{deletingId === report.id ? 'Raderar…' : 'Radera inlägg'}
-						</button>
-					</li>
-				{/each}
-			</ol>
-		</section>
-	{/if}
 </div>
 
 <style>
@@ -1054,3 +924,4 @@
 		}
 	}
 </style>
+
