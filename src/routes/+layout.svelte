@@ -60,6 +60,11 @@
 		{ href: 'https://stodlinjer.se', label: 'Akut hjälp (Stödlinjer)', external: true }
 	];
 
+	function isActive(href: string): boolean {
+		const path = page.url.pathname;
+		return href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+	}
+
 	let { children, data } = $props();
 	const organizationJsonLd = {
 		'@context': 'https://schema.org',
@@ -326,18 +331,19 @@
 				</a>
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
-						<a href="/dagbok" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Dagbok</a>
+						<a href="/dagbok" class="text-sm transition-opacity {isActive('/dagbok') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive('/dagbok') ? 'page' : undefined}>Dagbok</a>
 						{#each signedInPrimaryNavItems as item}
-							<a href={item.href} class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">{item.label}</a>
+							<a href={item.href} class="text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 						{/each}
-						<a href="/dashboard" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Min portal</a>
+						<a href="/dashboard" class="text-sm transition-opacity {isActive('/dashboard') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive('/dashboard') ? 'page' : undefined}>Min portal</a>
 					{:else}
 						{#each guestPrimaryNavItems as item}
 							<a
 								href={item.href}
-								class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+								class="text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
 								target={item.external ? '_blank' : undefined}
 								rel={item.external ? 'noopener noreferrer' : undefined}
+								aria-current={isActive(item.href) ? 'page' : undefined}
 							>
 								{item.label}
 							</a>
@@ -386,15 +392,15 @@
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
 					<p class="mobile-menu-section-title text-xs opacity-55">Dagbok</p>
 					{#each signedInDiaryNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>{item.label}</a>
+						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
 					<p class="mobile-menu-section-title text-xs opacity-55">Utforska</p>
 					{#each signedInPrimaryNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>{item.label}</a>
+						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
 					<p class="mobile-menu-section-title text-xs opacity-55">Min portal</p>
 					{#each signedInPortalNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>{item.label}</a>
+						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
 					<a href="/om-mittpsyke" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
 					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
@@ -406,10 +412,11 @@
 					{#each guestPrimaryNavItems as item}
 						<a
 							href={item.href}
-							class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity"
+							class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
 							target={item.external ? '_blank' : undefined}
 							rel={item.external ? 'noopener noreferrer' : undefined}
 							onclick={() => (mobileMenuOpen = false)}
+							aria-current={isActive(item.href) ? 'page' : undefined}
 						>
 							{item.label}
 						</a>
