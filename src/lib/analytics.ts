@@ -89,6 +89,13 @@ export function disableAnalytics() {
 export function initializeAnalytics() {
 	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent() || analyticsInitialized || !GA_MEASUREMENT_ID) return;
 
+	const gtag = ensureGtag();
+	if (!gtag) return;
+
+	gtag('consent', 'default', {
+		analytics_storage: 'denied'
+	});
+
 	const scriptSrc = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
 	if (!document.querySelector(`script[src="${scriptSrc}"]`)) {
 		const script = document.createElement('script');
@@ -96,9 +103,6 @@ export function initializeAnalytics() {
 		script.src = scriptSrc;
 		document.head.appendChild(script);
 	}
-
-	const gtag = ensureGtag();
-	if (!gtag) return;
 
 	gtag('consent', 'update', {
 		analytics_storage: 'granted'
