@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import { trackHeroCtaPrimaryClick, trackHeroCtaSecondaryClick } from '$lib/analytics';
 
 	let { data }: { data: Record<string, unknown> } = $props();
@@ -11,32 +12,37 @@
 
 	const entryPaths = [
 		{
-			title: 'Skriv av dig i text',
-			description: 'Berätta hur du mår och få lugnt stöd direkt — anonymt, utan konto.',
+			title: 'Börja skriva',
+			description: 'Skriv av dig anonymt och få lugnt stöd direkt.',
 			href: '/skriv',
-			cta: 'Börja skriva'
+			cta: 'Börja skriva anonymt',
+			featured: true
 		},
 		{
 			title: 'Läs guider',
-			description: 'Korta guider om ångest, stress, sömn och andra vanliga tillstånd.',
+			description: 'Få hjälp att förstå känslor, stress, ångest och återhämtning.',
 			href: '/guider',
-			cta: 'Utforska guider'
+			cta: 'Läs guider'
 		},
 		{
 			title: 'Prova en övning',
-			description: 'Andning, grounding och andra övningar du kan göra just nu.',
+			description: 'Ta ett litet steg här och nu.',
 			href: '/ovningar',
-			cta: 'Se övningar'
+			cta: 'Prova en övning'
 		},
 		{
 			title: 'Följ ditt mående',
-			description: 'Dagbok och humörspårning som hjälper dig se mönster över tid.',
+			description: 'Skriv dagbok och se mönster över tid.',
 			href: '/register',
 			cta: 'Skapa konto gratis'
 		}
 	];
 
 	const supportPoints = [
+		{
+			label: 'Direkt stöd',
+			text: 'Du får lugna svar, hjälp att sätta ord på det du känner och små nästa steg.'
+		},
 		{
 			label: 'Helt anonymt',
 			text: 'Inget konto behövs. Ingen data kopplas till dig som person.'
@@ -53,23 +59,23 @@
 
 	const features = [
 		{
-			title: 'Samtalsstöd i text',
-			description: 'Beskriv hur du mår och få lugna, stödjande svar. Anonymt och utan tidspress.',
+			title: 'Skrivstöd i text',
+			description: 'Skriv av dig anonymt och få hjälp att sortera tankar, känslor och nästa steg.',
 			href: '/skriv'
 		},
 		{
 			title: 'Dagbok med reflektion',
-			description: 'Skriv av dig och få följdfrågor som hjälper dig sätta ord på det du känner.',
+			description: 'Skriv om dagen, följ upp det som återkommer och bygg förståelse över tid.',
 			href: '/dagbok'
 		},
 		{
 			title: 'Humörspårning',
-			description: 'Logga hur du mår varje dag. Se mönster och förändringar över tid.',
+			description: 'Följ psykiskt mående över tid och upptäck mönster som annars är lätta att missa.',
 			href: '/humorsparning'
 		},
 		{
 			title: 'Guider och övningar',
-			description: 'Korta, lättlästa guider om ångest, stress och sömn — med övningar du kan prova direkt.',
+			description: 'Läs guider och prova övningar för stress, ångest, sömn och återhämtning.',
 			href: '/guider'
 		}
 	];
@@ -108,15 +114,15 @@
 <SEO canonical="https://www.mittpsyke.se/" />
 
 <svelte:head>
-	<title>MittPsyke – skriv av dig anonymt och få stöd i text</title>
+	<title>MittPsyke – skriv av dig anonymt och få lugnt stöd direkt</title>
 	<meta
 		name="description"
-		content="MittPsyke är ett gratis verktyg för reflektion och självhjälp. Skriv av dig anonymt, för dagbok och förstå ditt mående bättre — utan konto, i din egen takt."
+		content="Skriv av dig anonymt och få lugnt stöd direkt. MittPsyke hjälper dig att förstå psykiskt mående med dagbok, övningar och guider i din egen takt."
 	/>
-	<meta property="og:title" content="MittPsyke – skriv av dig anonymt och få stöd i text" />
+	<meta property="og:title" content="MittPsyke – skriv av dig anonymt och få lugnt stöd direkt" />
 	<meta
 		property="og:description"
-		content="MittPsyke är ett gratis verktyg för reflektion och självhjälp. Skriv av dig anonymt, för dagbok och förstå ditt mående bättre — utan konto, i din egen takt."
+		content="Skriv av dig anonymt och få lugnt stöd direkt. MittPsyke hjälper dig att förstå psykiskt mående med dagbok, övningar och guider i din egen takt."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
@@ -137,50 +143,43 @@
 		/>
 		<div class="hero-shell">
 			<div class="hero-content">
-				<p class="hero-eyebrow">När tankarna tynger och du inte vet var du ska börja</p>
-				<h1>Skriv av dig anonymt och få lugnt stöd i text.</h1>
-				<p>MittPsyke är ett verktyg för reflektion och självhjälp. Du kan välja att skriva eller prata med AI-stöd, utan konto, och spara när du vill.</p>
+				<p class="hero-eyebrow">Anonymt stöd i text</p>
+				<h1>Skriv av dig anonymt och få lugnt stöd direkt</h1>
+				<p>Sätt ord på det som känns svårt. Få ett lugnt svar, hjälp att sortera tankarna och små nästa steg — utan konto.</p>
 				<div class="hero-actions">
-					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Skriv anonymt — börja nu</a>
-					<a href="/register" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Eller skapa ett gratis konto</a>
+					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
+					<a href="#sa-fungerar-det" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Se hur det fungerar</a>
 				</div>
-				<p class="hero-trust-note">Gratis. Anonymt. Ingen registrering krävs.</p>
+				<p class="hero-trust-note">Utan konto. I din egen takt. Inte vård eller akuttjänst.</p>
 			</div>
 		</div>
 	</section>
 
-	<!-- Social proof -->
-	<section class="review-section" aria-labelledby="review-section-title">
-		<div class="cards-narrow review-inner">
-			<h2 id="review-section-title">Så beskriver andra sin upplevelse</h2>
-			<div class="review-grid">
-				<blockquote class="review-card">
-					<p>&ldquo;Jag behövde en plats att skriva av mig i lugn takt &ndash; utan att behöva börja med allt på en gång.&rdquo;</p>
-					<cite>Anonym användare</cite>
-				</blockquote>
-				<blockquote class="review-card">
-					<p>&ldquo;Det hjälpte mig att ta små steg i min egen takt och få lite mer överblick när tankarna snurrade.&rdquo;</p>
-					<cite>Anonym användare</cite>
-				</blockquote>
-				<blockquote class="review-card">
-					<p>&ldquo;För mig blev det ett lugnt komplement i vardagen &ndash; inte vård, men ett sätt att landa.&rdquo;</p>
-					<cite>Anonym användare</cite>
-				</blockquote>
+	<!-- 2. Börja där det känns lättast -->
+	<section class="entry-paths" aria-labelledby="entry-paths-title">
+		<div class="cards-narrow entry-inner">
+			<h2 id="entry-paths-title">Börja där det känns lättast</h2>
+			<p class="entry-intro">
+				Du behöver inte veta exakt vad du behöver. Börja med det som känns enklast just nu.
+			</p>
+			<div class="entry-grid">
+				{#each entryPaths as path}
+					<a class:entry-card-primary={path.featured} class="entry-card" href={path.href}>
+						<h3>{path.title}</h3>
+						<p>{path.description}</p>
+						<span class="entry-card-cta">{path.cta}</span>
+					</a>
+				{/each}
 			</div>
-			<ul class="review-highlights" aria-label="Korta omdömen">
-				<li>Lugn ton</li>
-				<li>Små steg i egen takt</li>
-				<li>Ett komplement i vardagen</li>
-			</ul>
 		</div>
 	</section>
 
-	<!-- 2. Ett första steg, i din egen takt -->
+	<!-- 3. Ett första steg, i din egen takt -->
 	<section class="first-step" aria-labelledby="first-step-title">
 		<div class="cards-narrow first-step-inner">
 			<h2 id="first-step-title">Vad MittPsyke är</h2>
 			<p class="first-step-body">
-				Ett digitalt verktyg där du kan skriva av dig, reflektera och förstå ditt mående bättre. Du får stöd i text — i din egen takt, helt anonymt om du vill.
+				Ett digitalt verktyg där du kan skriva av dig, reflektera och förstå ditt psykiska mående bättre. Du får stöd i text i din egen takt, helt anonymt om du vill. MittPsyke är inte vård eller behandling.
 			</p>
 			<div class="support-points">
 				{#each supportPoints as point}
@@ -193,54 +192,35 @@
 		</div>
 	</section>
 
-	<!-- 3. Välj det som hjälper mest just nu -->
-	<section class="entry-paths" aria-labelledby="entry-paths-title">
-		<div class="cards-narrow entry-inner">
-			<h2 id="entry-paths-title">Välj var du vill börja</h2>
-			<p class="entry-intro">
-				Du behöver inte göra allt. Välj om du vill skriva eller prata med AI-stöd just nu.
-			</p>
-			<div class="entry-grid">
-				{#each entryPaths as path}
-					<a class="entry-card" href={path.href}>
-						<h3>{path.title}</h3>
-						<p>{path.description}</p>
-						<span class="entry-card-cta">{path.cta}</span>
-					</a>
-				{/each}
-			</div>
-		</div>
-	</section>
-
 	<!-- 4. Så fungerar det -->
-	<section class="how-it-works" aria-labelledby="how-it-works-title">
+	<section id="sa-fungerar-det" class="how-it-works" aria-labelledby="how-it-works-title">
 		<div class="cards-narrow how-inner">
 			<p class="how-eyebrow">Så fungerar det</p>
-			<h2 id="how-it-works-title">Fyra steg — börja utan konto, spara när du vill.</h2>
+			<h2 id="how-it-works-title">Fyra steg från första tanke till bättre överblick</h2>
 			<div class="how-grid">
 				<article class="how-card">
 					<span class="how-step">01</span>
-					<h3>Skriv av dig</h3>
-					<p>Välj ett ämne och börja skriva. Du får stödjande svar i text, direkt — utan konto.</p>
-					<a class="how-card-cta" href="/skriv">Börja nu</a>
+					<h3>Skriv av dig anonymt</h3>
+					<p>Börja där du är, med egna ord.</p>
+					<a class="how-card-cta" href="/skriv">Börja skriva</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">02</span>
-					<h3>Skapa konto gratis</h3>
-					<p>Vill du spara din historik? Skapa ett konto och fortsätt där du slutade.</p>
-					<a class="how-card-cta" href="/register">Skapa konto</a>
+					<h3>Få lugnt stöd direkt</h3>
+					<p>Du får svar, följdfrågor och hjälp att sortera tankarna.</p>
+					<a class="how-card-cta" href="/skriv">Prova i text</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">03</span>
-					<h3>Se mönster över tid</h3>
-					<p>Logga ditt mående och se hur det förändras med humörspårning och dagbok.</p>
-					<a class="how-card-cta" href="/dagbok">Öppna dagboken</a>
+					<h3>Spara om du vill</h3>
+					<p>Fortsätt senare om du vill komma tillbaka.</p>
+					<a class="how-card-cta" href="/register">Skapa konto gratis</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">04</span>
-					<h3>Hitta vidare stöd</h3>
-					<p>Behöver du mer hjälp? Här finns stödlinjer och kontaktvägar till vård.</p>
-					<a class="how-card-cta" href="#roststod">Visa stödvägar</a>
+					<h3>Följ ditt mående över tid</h3>
+					<p>Se mönster med dagbok, reflektion och uppföljning.</p>
+					<a class="how-card-cta" href="/dagbok">Öppna dagboken</a>
 				</article>
 			</div>
 		</div>
@@ -249,15 +229,37 @@
 	<!-- 5. Vad du kan använda MittPsyke till -->
 	<section class="features-section" aria-labelledby="features-title">
 		<div class="cards-narrow features-inner">
-			<h2 id="features-title">Verktyg som ingår</h2>
+			<h2 id="features-title">Verktyg som hjälper dig att förstå hur du mår</h2>
+			<p class="features-intro">Skriv, reflektera, följ ditt mående och ta små steg i din egen takt.</p>
 			<div class="features-grid">
 				{#each features as feature}
 					<a class="feature-card" href={feature.href}>
 						<h3>{feature.title}</h3>
 						<p>{feature.description}</p>
-						<span class="feature-card-cta">Prova {feature.title.toLowerCase()}</span>
+						<span class="feature-card-cta">Öppna verktyget</span>
 					</a>
 				{/each}
+			</div>
+		</div>
+	</section>
+
+	<!-- 6. Social proof -->
+	<section class="review-section" aria-labelledby="review-section-title">
+		<div class="cards-narrow review-inner">
+			<h2 id="review-section-title">Så beskriver andra sin upplevelse</h2>
+			<div class="review-grid">
+				<blockquote class="review-card">
+					<p>&ldquo;Jag kunde skriva utan att behöva formulera allt perfekt.&rdquo;</p>
+					<cite>Anonym användare</cite>
+				</blockquote>
+				<blockquote class="review-card">
+					<p>&ldquo;Det hjälpte mig att lugna ner tankarna och börja i rätt ände.&rdquo;</p>
+					<cite>Anonym användare</cite>
+				</blockquote>
+				<blockquote class="review-card">
+					<p>&ldquo;Jag började se mönster i hur jag mådde under veckan.&rdquo;</p>
+					<cite>Anonym användare</cite>
+				</blockquote>
 			</div>
 		</div>
 	</section>
@@ -271,7 +273,7 @@
 			<div class="trust-copy">
 				<h2 id="trust-title">För stöd och reflektion — inte för vård eller diagnos</h2>
 				<p>
-					MittPsyke är ett verktyg för reflektion och självhjälp — inte vård, behandling eller diagnos. Det kan vara ett första steg innan du söker professionell hjälp.
+					MittPsyke är ett verktyg för reflektion och självhjälp. Du kan skriva av dig anonymt, få lugnt stöd i text och använda dagbok, övningar och guider i din egen takt.
 				</p>
 				<p class="trust-privacy">
 					Anonyma samtal sparas inte kopplat till dig.
@@ -281,12 +283,17 @@
 					Forskning visar att strukturerat digitalt stöd kan ha positiva effekter på psykisk hälsa.
 					<a href="https://www.jmir.org/2024/1/e51268" target="_blank" rel="noopener noreferrer">Källa: Yeo et al., JMIR 2024</a>.
 				</p>
+				<div class="trust-facts" aria-label="Avsändare och ansvar">
+					<p><strong>Drivs i Sverige av:</strong> Robert Claesson</p>
+					<p><strong>Kontakt:</strong> <a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a></p>
+					<p><strong>Viktigt:</strong> Inte vård, behandling eller akuttjänst</p>
+				</div>
 			</div>
 		</div>
 	</section>
 
 	<!-- 8. Viktigt att veta -->
-	<section class="important-section" aria-labelledby="important-title">
+	<section class="important-section" aria-label="Viktigt att veta">
 		<div class="cards-narrow important-inner">
 			<HomeSafetyStrip />
 		</div>
@@ -296,10 +303,10 @@
 	<section class="final-cta-section" aria-label="Kom igång">
 		<div class="final-cta-inner">
 			<h2>Du behöver inte veta vad du ska säga.</h2>
-			<p>Börja skriv, så möter vi dig där du är. Anonymt, i text, i din egen takt.</p>
+			<p>Börja skriva, så möter vi dig där du är. Anonymt, i text och i din egen takt.</p>
 			<div class="final-cta-actions">
 				<a href="/skriv" class="hero-cta hero-cta-primary">Börja skriva nu</a>
-				<a href="/register" class="hero-cta-link">Skapa konto gratis</a>
+				<a href="/guider" class="hero-cta-link">Läs guider</a>
 			</div>
 		</div>
 	</section>
@@ -376,11 +383,9 @@
 	.hero-content {
 		justify-self: center;
 		align-self: start;
-		width: min(560px, 100%);
+		width: min(640px, 100%);
 		text-align: center;
-		padding: 1.3rem 1.6rem 1.6rem;
-		background: rgba(39, 45, 53, 0.56);
-		border: 1px solid rgba(255, 255, 255, 0.18);
+		padding: 0;
 	}
 
 	h1 {
@@ -425,9 +430,9 @@
 	}
 
 	.hero-trust-note {
-		margin-top: 0.75rem;
-		font-size: 0.82rem;
-		color: rgba(255, 255, 255, 0.5);
+		margin-top: 0.85rem;
+		font-size: 0.88rem;
+		color: rgba(255, 255, 255, 0.72);
 		letter-spacing: 0.01em;
 	}
 
@@ -576,6 +581,13 @@
 		border-color: rgba(148, 163, 184, 0.22);
 	}
 
+	.entry-card-primary {
+		border-color: rgba(125, 180, 232, 0.32);
+		background:
+			radial-gradient(circle at top left, rgba(58, 123, 213, 0.18), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+	}
+
 	.entry-card h3 {
 		margin: 0;
 		color: #eef1f6;
@@ -700,6 +712,12 @@
 		font-size: clamp(1.5rem, 3vw, 2rem);
 	}
 
+	.features-intro {
+		margin: 0.75rem 0 0;
+		max-width: 58ch;
+		color: rgba(220, 225, 235, 0.78);
+	}
+
 	.features-grid {
 		margin-top: 1.1rem;
 		display: grid;
@@ -804,25 +822,6 @@
 		color: rgba(255, 255, 255, 0.5);
 	}
 
-	.review-highlights {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.6rem;
-		margin: 1.4rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.review-highlights li {
-		padding: 0.4rem 0.85rem;
-		font-size: 0.88rem;
-		font-weight: 600;
-		color: rgba(255, 255, 255, 0.92);
-		background: rgba(255, 255, 255, 0.08);
-		border: 1px solid rgba(255, 255, 255, 0.12);
-		border-radius: var(--radius-card);
-	}
-
 	/* ── Sektion 7: Trygghet ── */
 	.trust-section {
 		padding: clamp(3rem, 8vw, 6rem) 1.25rem;
@@ -874,6 +873,26 @@
 	.trust-research {
 		font-size: 0.88rem;
 		opacity: 0.72;
+	}
+
+	.trust-facts {
+		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid rgba(255, 255, 255, 0.12);
+		display: grid;
+		gap: 0.45rem;
+	}
+
+	.trust-facts p {
+		margin: 0;
+		font-size: 0.94rem;
+		color: rgba(255, 255, 255, 0.84);
+	}
+
+	.trust-facts a {
+		color: #d7e7ff;
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 
 	/* ── Sektion 8: Viktigt att veta ── */
@@ -952,7 +971,7 @@
 		}
 
 		.hero-content {
-			padding: 1.1rem 1rem 1.2rem;
+			padding: 0;
 		}
 
 		.hero-actions {
@@ -967,7 +986,7 @@
 
 	@media (min-width: 680px) {
 		.support-points {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 0.9rem;
 		}
 
@@ -995,6 +1014,10 @@
 	}
 
 	@media (min-width: 1040px) {
+		.support-points {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
 		.entry-grid {
 			grid-template-columns: repeat(4, minmax(0, 1fr));
 			gap: 1.1rem;

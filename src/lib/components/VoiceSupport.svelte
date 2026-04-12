@@ -50,9 +50,16 @@
 </script>
 
 <section id="roststod" class="voice-support">
-	<h2>Prata med AI-stöd direkt här</h2>
-	<p>Om det känns lättare kan du också prata direkt med MittPsykes AI-baserade röststöd här på sidan.</p>
-	<p>Du väljer själv om du vill skriva eller prata. Det är till för reflektion och stöd i vardagen. Det ersätter inte vård eller ställer diagnos.</p>
+	<h2>Röststöd för reflektion</h2>
+	<p>Du kan prata med AI-baserat röststöd för att sätta ord på tankar och känslor. Tjänsten är till för reflektion och självhjälp — inte vård eller akuthjälp.</p>
+	<p class="voice-support-note">
+		Samtalet hanteras via externa röst- och AI-tjänster från OpenAI och Retell. Läs
+		<a href="/integritet">hur det fungerar och vad som sparas</a>
+		innan du ringer eller startar ett röstsamtal här.
+	</p>
+	<p class="voice-support-meta">
+		Telefonnumret är internationellt (+1), så eventuell samtalskostnad beror på ditt abonnemang.
+	</p>
 	<p class="voice-support-note">
 		Om du hellre vill prata med en människa finns <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">Stödlinjer</a>. Vid akut fara, ring 112.
 	</p>
@@ -111,6 +118,11 @@
 
 	.voice-support-note {
 		font-size: 0.95rem;
+	}
+
+	.voice-support-meta {
+		font-size: 0.88rem;
+		opacity: 0.72;
 	}
 
 	.voice-support-note a {
