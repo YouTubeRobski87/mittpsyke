@@ -236,16 +236,11 @@ function buildDynamicSystemPrompt(category: SupportCategory, history: PromptHist
 Det här är första gången du pratar med den här användaren. Välkomna dem varmt.`.trim();
 	}
 
-	const formattedHistory = history
-		.map((entry) => `${entry.role === 'user' ? 'Användare' : 'MittPsyke'}: ${entry.content}`)
-		.join('\n');
-
 	return `${basePrompt}
 
-Du har tidigare pratat med den här användaren. Här är era tidigare meddelanden:
-${formattedHistory}
-
-Börja med att på ett naturligt och varmt sätt bekräfta att du minns dem, till exempel "Hej igen, jag minns att vi pratade senast om..." eller liknande.`.trim();
+Konversationen pågår redan – användaren har skickat meddelanden tidigare i denna session.
+Svara direkt på det senaste meddelandet utan att hälsa, presentera dig eller sammanfatta vad ni pratat om.
+Använd ALDRIG fraser som "Hej igen", "Jag minns att vi pratade om...", "Vill du att vi börjar om?" eller liknande återöppningsfraser mitt i en pågående konversation.`.trim();
 }
 
 function errorResponse(message: string, status: number, details: Record<string, unknown> = {}) {
