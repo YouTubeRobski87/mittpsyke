@@ -1,66 +1,31 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import SEO from '$lib/components/SEO.svelte';
+	import type { ActionData } from './$types';
 
-	type FeedbackForm = {
-		experience: string;
-		whatWorked: string;
-		unclear: string;
-		missing: string;
-		useAgain: string;
-		other: string;
-	};
-
-	type ValidationErrors = {
+	type FieldErrors = {
 		experience?: string;
 		useAgain?: string;
+	};
+
+	type FormValues = {
+		experience?: string;
+		whatWorked?: string;
+		unclear?: string;
+		missing?: string;
+		useAgain?: string;
+		other?: string;
 	};
 
 	const experienceOptions = ['Väldigt bra', 'Bra', 'Okej', 'Inte så bra'];
 	const useAgainOptions = ['Ja', 'Kanske', 'Nej'];
 
-	function createInitialForm(): FeedbackForm {
-		return {
-			experience: '',
-			whatWorked: '',
-			unclear: '',
-			missing: '',
-			useAgain: '',
-			other: ''
-		};
-	}
+	let { form }: { form?: ActionData } = $props();
 
-	let form = $state<FeedbackForm>(createInitialForm());
-	let errors = $state<ValidationErrors>({});
-	let isSubmitted = $state(false);
-
-	function clearError(field: keyof ValidationErrors) {
-		if (errors[field]) {
-			errors = { ...errors, [field]: undefined };
-		}
-	}
-
-	function handleSubmit(event: SubmitEvent) {
-		event.preventDefault();
-
-		const nextErrors: ValidationErrors = {};
-
-		if (!form.experience) {
-			nextErrors.experience = 'Välj det alternativ som passar bäst.';
-		}
-
-		if (!form.useAgain) {
-			nextErrors.useAgain = 'Välj om du skulle använda MittPsyke igen.';
-		}
-
-		errors = nextErrors;
-
-		if (Object.keys(nextErrors).length > 0) {
-			return;
-		}
-
-		isSubmitted = true;
-		form = createInitialForm();
-	}
+	const submitted = $derived(Boolean(form?.success));
+	const message = $derived(typeof form?.message === 'string' ? form.message : '');
+	const fieldErrors = $derived((form?.fieldErrors ?? {}) as FieldErrors);
+	const values = $derived((form?.values ?? {}) as FormValues);
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/feedback" />
@@ -81,22 +46,23 @@
 		</header>
 
 		<section class="feedback-card" aria-labelledby="feedback-form-title">
-			{#if isSubmitted}
+			{#if submitted}
 				<div class="success-state" role="status" aria-live="polite">
 					<h2 id="feedback-form-title">Tack</h2>
-					<p>Tack för att du hjälper oss förbättra MittPsyke.</p>
-					<button type="button" class="secondary-button" onclick={() => (isSubmitted = false)}>
-						Skicka mer feedback
-					</button>
+					<p>{message || 'Tack för att du hjälper oss förbättra MittPsyke.'}</p>
 				</div>
 			{:else}
-				<form class="feedback-form" novalidate onsubmit={handleSubmit}>
+				<form method="POST" class="feedback-form" novalidate use:enhance>
 					<div class="form-heading">
 						<h2 id="feedback-form-title">Berätta gärna hur det kändes</h2>
 						<p>Du kan svara kort. Några ord räcker.</p>
 					</div>
 
-					<fieldset class="field-group" aria-describedby={errors.experience ? 'experience-error' : undefined}>
+					{#if message}
+						<p class="submit-feedback error" role="alert">{message}</p>
+					{/if}
+
+					<fieldset class="field-group" aria-describedby={fieldErrors.experience ? 'experience-error' : undefined}>
 						<legend>Hur upplevde du sidan?</legend>
 						<div class="radio-group">
 							{#each experienceOptions as option}
@@ -105,15 +71,14 @@
 										type="radio"
 										name="experience"
 										value={option}
-										bind:group={form.experience}
-										onchange={() => clearError('experience')}
+										checked={values.experience === option}
 									/>
 									<span>{option}</span>
 								</label>
 							{/each}
 						</div>
-						{#if errors.experience}
-							<p id="experience-error" class="field-error" role="alert">{errors.experience}</p>
+						{#if fieldErrors.experience}
+							<p id="experience-error" class="field-error" role="alert">{fieldErrors.experience}</p>
 						{/if}
 					</fieldset>
 
@@ -123,9 +88,8 @@
 							id="what-worked"
 							name="whatWorked"
 							rows="4"
-							bind:value={form.whatWorked}
 							placeholder="Det kan vara något som kändes tydligt, lugnt eller hjälpsamt."
-						></textarea>
+						>{values.whatWorked ?? ''}</textarea>
 					</div>
 
 					<div class="field-group">
@@ -134,9 +98,8 @@
 							id="unclear"
 							name="unclear"
 							rows="4"
-							bind:value={form.unclear}
 							placeholder="Berätta gärna om något som kändes rörigt eller svårt."
-						></textarea>
+						>{values.unclear ?? ''}</textarea>
 					</div>
 
 					<div class="field-group">
@@ -145,12 +108,11 @@
 							id="missing"
 							name="missing"
 							rows="4"
-							bind:value={form.missing}
 							placeholder="Det kan vara en funktion, en förklaring eller ett stöd du hade velat hitta."
-						></textarea>
+						>{values.missing ?? ''}</textarea>
 					</div>
 
-					<fieldset class="field-group" aria-describedby={errors.useAgain ? 'use-again-error' : undefined}>
+					<fieldset class="field-group" aria-describedby={fieldErrors.useAgain ? 'use-again-error' : undefined}>
 						<legend>Skulle du använda MittPsyke igen?</legend>
 						<div class="radio-group radio-group-compact">
 							{#each useAgainOptions as option}
@@ -159,15 +121,14 @@
 										type="radio"
 										name="useAgain"
 										value={option}
-										bind:group={form.useAgain}
-										onchange={() => clearError('useAgain')}
+										checked={values.useAgain === option}
 									/>
 									<span>{option}</span>
 								</label>
 							{/each}
 						</div>
-						{#if errors.useAgain}
-							<p id="use-again-error" class="field-error" role="alert">{errors.useAgain}</p>
+						{#if fieldErrors.useAgain}
+							<p id="use-again-error" class="field-error" role="alert">{fieldErrors.useAgain}</p>
 						{/if}
 					</fieldset>
 
@@ -177,9 +138,8 @@
 							id="other"
 							name="other"
 							rows="4"
-							bind:value={form.other}
 							placeholder="Något mer du vill skicka med."
-						></textarea>
+						>{values.other ?? ''}</textarea>
 					</div>
 
 					<p class="privacy-note">
@@ -245,6 +205,20 @@
 		font-size: 1.18rem;
 		font-weight: 700;
 		line-height: 1.2;
+	}
+
+	.submit-feedback {
+		margin: 0;
+		padding: 0.8rem 0.9rem;
+		border-radius: var(--radius-input);
+		font-size: 0.94rem;
+		line-height: 1.55;
+	}
+
+	.submit-feedback.error {
+		background: #fff1f1;
+		border: 1px solid #f6cccc;
+		color: #9c1f1f;
 	}
 
 	.field-group {
@@ -340,8 +314,7 @@
 		line-height: 1.6;
 	}
 
-	.submit-button,
-	.secondary-button {
+	.submit-button {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -353,26 +326,15 @@
 		font-weight: 600;
 		cursor: pointer;
 		transition: opacity 160ms ease, box-shadow 160ms ease;
-	}
-
-	.submit-button {
 		background: var(--primary);
 		color: #ffffff;
 	}
 
-	.secondary-button {
-		margin-top: 1rem;
-		background: rgba(255, 255, 255, 0.9);
-		border-color: rgba(15, 23, 42, 0.1);
-	}
-
-	.submit-button:hover,
-	.secondary-button:hover {
+	.submit-button:hover {
 		opacity: 0.92;
 	}
 
-	.submit-button:focus-visible,
-	.secondary-button:focus-visible {
+	.submit-button:focus-visible {
 		outline: 2px solid rgba(15, 118, 110, 0.45);
 		outline-offset: 3px;
 	}
@@ -401,9 +363,14 @@
 		background: rgba(18, 25, 31, 0.94);
 	}
 
+	:global(.dark) .submit-feedback.error {
+		background: rgba(220, 38, 38, 0.16);
+		border-color: rgba(248, 113, 113, 0.32);
+		color: #fee2e2;
+	}
+
 	:global(.dark) textarea,
-	:global(.dark) .radio-option,
-	:global(.dark) .secondary-button {
+	:global(.dark) .radio-option {
 		background: rgba(255, 255, 255, 0.04);
 		border-color: rgba(255, 255, 255, 0.12);
 		color: #f8fafc;
