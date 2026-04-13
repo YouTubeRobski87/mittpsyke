@@ -463,7 +463,16 @@
 		</a>
 		<span class="mx-2">&middot;</span>
 		<a href="/ansvar" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Villkor
+			Ansvar
+		</a>
+		<span class="mx-2">&middot;</span>
+		<a
+			href="https://stodlinjer.se"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="text-sm font-medium text-teal-700/90 dark:text-teal-300/90 opacity-90 hover:opacity-100 transition-opacity"
+		>
+			Akut hjälp (Stödlinjer)
 		</a>
 		<span class="mx-2">&middot;</span>
 		<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
