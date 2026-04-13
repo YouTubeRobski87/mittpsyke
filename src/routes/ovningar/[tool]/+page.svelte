@@ -141,7 +141,7 @@
 		padding: 0.95rem 1rem;
 		border-radius: var(--radius-card);
 		border: 1px solid rgba(0, 0, 0, 0.08);
-		background: #f4f8f6;
+		background: #f4f7fb;
 	}
 
 	.info-box p {
@@ -201,8 +201,8 @@
 		width: 1.7rem;
 		height: 1.7rem;
 		border-radius: 999px;
-		background: #e7f1ee;
-		color: #2e5850;
+		background: #e3edf5;
+		color: #2e4a64;
 		font-size: 0.88rem;
 		font-weight: 700;
 	}
@@ -246,7 +246,7 @@
 	}
 
 	:global(.dark) .info-box {
-		background: #1a2320;
+		background: #1a2028;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
@@ -258,8 +258,8 @@
 	}
 
 	:global(.dark) .step-list li::before {
-		background: rgba(134, 223, 214, 0.12);
-		color: #86dfd6;
+		background: rgba(125, 170, 210, 0.14);
+		color: #7daad2;
 	}
 
 	@media (max-width: 640px) {
