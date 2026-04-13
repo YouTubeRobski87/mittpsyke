@@ -25,6 +25,35 @@
 			};
 		};
 	}
+
+	function conversionRate(conversions: number | null | undefined, views: number | null | undefined) {
+		const safeConversions = conversions ?? 0;
+		const safeViews = views ?? 0;
+
+		if (safeViews <= 0) return '0 %';
+
+		return `${((safeConversions / safeViews) * 100).toFixed(1)} %`;
+	}
+
+	function formatDate(value: string | null | undefined) {
+		if (!value) return '-';
+
+		const date = new Date(value);
+		if (Number.isNaN(date.getTime())) return '-';
+
+		return new Intl.DateTimeFormat('sv-SE', {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric'
+		}).format(date);
+	}
+
+	function truncate(value: string | null | undefined, maxLength: number) {
+		const text = value?.trim() ?? '';
+		if (text.length <= maxLength) return text;
+
+		return `${text.slice(0, maxLength).trimEnd()}…`;
+	}
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/admin" />
