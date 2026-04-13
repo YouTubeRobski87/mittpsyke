@@ -35,7 +35,8 @@
 	const signedInPrimaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chat' },
 		{ href: '/guider', label: 'Guider' },
-		{ href: '/ovningar', label: 'Övningar' }
+		{ href: '/ovningar', label: 'Övningar' },
+		{ href: '/feedback', label: 'Feedback' }
 	];
 
 	const signedInDiaryNavItems: NavItem[] = [
@@ -56,6 +57,7 @@
 		{ href: '/dagbok', label: 'Dagbok' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' },
+		{ href: '/feedback', label: 'Feedback' },
 		{ href: '/blogg', label: 'Blogg' },
 		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
 		{ href: 'https://stodlinjer.se', label: 'Akut hjälp (Stödlinjer)', external: true }
@@ -448,28 +450,27 @@
 	<footer class="site-footer border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
 		© {new Date().getFullYear()} MittPsyke. Alla rättigheter förbehållna.
 		<span class="mx-2">&middot;</span>
+		<a href={PUBLIC_CONTACT_MAILTO} class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Kontakt
+		</a>
+		<span class="mx-2">&middot;</span>
+		<a href="/feedback" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Feedback
+		</a>
+		<span class="mx-2">&middot;</span>
+		<a href="/integritet" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Integritet
+		</a>
+		<span class="mx-2">&middot;</span>
+		<a href="/ansvar" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Villkor
+		</a>
+		<span class="mx-2">&middot;</span>
 		<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
 			Om MittPsyke
 		</a>
 		<span class="mx-2">&middot;</span>
-		<a href="/integritet" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Integritetspolicy
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/ansvar" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Ansvarsinfo
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a
-			href="https://stodlinjer.se"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="text-sm font-medium text-teal-700/90 dark:text-teal-300/90 opacity-90 hover:opacity-100 transition-opacity"
-		>
-			Akut hjälp (Stödlinjer)
-			</a>
-			<span class="mx-2">&middot;</span>
-			<button onclick={() => cookieBannerOpen.set(true)} class="text-sm opacity-70 hover:opacity-100 transition-opacity">Cookieinställningar</button>
+		<button onclick={() => cookieBannerOpen.set(true)} class="text-sm opacity-70 hover:opacity-100 transition-opacity">Cookieinställningar</button>
 			<div class="footer-features mt-2 text-xs opacity-70" aria-label="Funktioner">
 				<span class="font-medium">Funktioner:</span>
 				<a href="/journalforing" class="hover:opacity-100 transition-opacity">Journalföring</a>
