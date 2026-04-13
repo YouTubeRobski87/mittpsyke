@@ -16,15 +16,15 @@
 	--background: 48 38% 98%;
 	--surface: 0 0% 100%;
 	--surface-muted: 38 30% 95%;
-	--surface-soft: 160 26% 96%;
+	--surface-soft: 210 32% 96%;
 	--foreground: 240 10% 4%;
 	--muted-foreground: 240 4% 46%;
 	--border: 240 6% 90%;
-	--success-surface: 148 45% 94%;
-	--success-foreground: 148 52% 25%;
+	--success-surface: 211 62% 95%;
+	--success-foreground: 214 47% 32%;
 	--error-surface: 0 70% 96%;
 	--error-foreground: 0 58% 40%;
-	--primary: #0f766e;
+	--primary: #436e8f;
 	--radius-card: 14px;
 	--radius-input: 12px;
 	--radius-pill: 999px;
@@ -35,12 +35,12 @@
 	--background: 222 26% 9%;
 	--surface: 222 18% 13%;
 	--surface-muted: 222 14% 16%;
-	--surface-soft: 220 15% 18%;
+	--surface-soft: 217 26% 16%;
 	--foreground: 0 0% 95%;
 	--muted-foreground: 240 5% 65%;
 	--border: 220 10% 24%;
-	--success-surface: 153 30% 20%;
-	--success-foreground: 153 45% 80%;
+	--success-surface: 214 34% 20%;
+	--success-foreground: 203 88% 80%;
 	--error-surface: 0 26% 19%;
 	--error-foreground: 0 60% 83%;
 }
@@ -124,7 +124,7 @@ button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-	outline: 3px solid rgba(15, 118, 110, 0.35);
+	outline: 3px solid rgba(67, 110, 143, 0.35);
 	outline-offset: 2px;
 	border-radius: 12px;
 }
@@ -184,8 +184,8 @@ a {
 
 .auth-subnav-link.active {
 	color: hsl(var(--foreground));
-	background: hsl(var(--surface));
-	border-color: hsl(var(--border));
+	background: color-mix(in srgb, var(--theme-bg, hsl(var(--surface-soft))) 72%, hsl(var(--surface)) 28%);
+	border-color: color-mix(in srgb, var(--primary) 18%, hsl(var(--border)) 82%);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
@@ -263,7 +263,7 @@ a {
 
 .auth-button.primary {
 	background: var(--theme-bg, hsl(var(--surface-soft)));
-	border-color: hsl(var(--border));
+	border-color: color-mix(in srgb, var(--primary) 18%, hsl(var(--border)) 82%);
 }
 
 .auth-button.primary:hover {
@@ -289,19 +289,19 @@ a {
 	display: inline-block;
 	padding: 0.5rem 1rem;
 	border-radius: 12px;
-	background-color: var(--teal-50, #f0fdfa);
-	color: #0d9488;
+	background-color: rgba(67, 110, 143, 0.08);
+	color: #436e8f;
 	font-size: 0.875rem;
 	font-weight: 500;
-	border: 1px solid #99f6e4;
+	border: 1px solid rgba(67, 110, 143, 0.22);
 	text-decoration: none;
 	transition: all 0.3s ease;
 	cursor: pointer;
 }
 
 .contact-button:hover {
-	background-color: var(--teal-100, #ccfbf1);
-	color: #0d9488;
+	background-color: rgba(67, 110, 143, 0.14);
+	color: #436e8f;
 	text-decoration: none;
 }
 
@@ -310,14 +310,14 @@ a {
 }
 
 .dark .contact-button {
-	background-color: rgba(20, 184, 166, 0.1);
-	color: #5eead4;
-	border-color: rgba(20, 184, 166, 0.3);
+	background-color: rgba(125, 211, 252, 0.1);
+	color: #7dd3fc;
+	border-color: rgba(125, 211, 252, 0.28);
 }
 
 .dark .contact-button:hover {
-	background-color: rgba(20, 184, 166, 0.2);
-	color: #5eead4;
+	background-color: rgba(125, 211, 252, 0.16);
+	color: #7dd3fc;
 }
 
 /* Chat layout base styles */
@@ -413,7 +413,7 @@ a {
 
 /* ===== WCAG Focus Indicators ===== */
 *:focus-visible {
-  outline: 2px solid var(--primary, #0d9488) !important;
+  outline: 2px solid var(--primary, #436e8f) !important;
   outline-offset: 2px !important;
   border-radius: 4px;
 }
@@ -424,13 +424,13 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid var(--primary, #0d9488) !important;
+  outline: 2px solid var(--primary, #436e8f) !important;
   outline-offset: 2px !important;
 }
 
 /* Ensure high contrast for focus in dark mode */
 .dark *:focus-visible {
-  outline-color: #5eead4 !important;
+  outline-color: #7dd3fc !important;
 }
 
 /* Minimum touch target size for mobile accessibility */
@@ -461,6 +461,6 @@ select:focus-visible,
 
 /* Skip-link enhancement */
 .skip-link:focus-visible {
-  outline: 3px solid var(--primary, #0d9488);
+  outline: 3px solid var(--primary, #436e8f);
   outline-offset: 4px;
 }

@@ -257,7 +257,7 @@
 
 	textarea:focus-visible {
 		border-color: var(--primary);
-		box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+		box-shadow: 0 0 0 3px rgba(67, 110, 143, 0.16);
 	}
 
 	.radio-group {
@@ -283,13 +283,13 @@
 	}
 
 	.radio-option:has(input:checked) {
-		border-color: rgba(15, 118, 110, 0.35);
-		background: rgba(226, 240, 236, 0.72);
+		border-color: rgba(67, 110, 143, 0.35);
+		background: rgba(227, 236, 244, 0.78);
 	}
 
 	.radio-option:has(input:focus-visible) {
 		border-color: var(--primary);
-		box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+		box-shadow: 0 0 0 3px rgba(67, 110, 143, 0.16);
 	}
 
 	.radio-option input {
@@ -308,8 +308,8 @@
 		margin: 0;
 		padding: 0.9rem 1rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(15, 118, 110, 0.14);
-		background: rgba(226, 240, 236, 0.68);
+		border: 1px solid rgba(67, 110, 143, 0.14);
+		background: rgba(227, 236, 244, 0.72);
 		font-size: 0.95rem;
 		line-height: 1.6;
 	}
@@ -335,7 +335,7 @@
 	}
 
 	.submit-button:focus-visible {
-		outline: 2px solid rgba(15, 118, 110, 0.45);
+		outline: 2px solid rgba(67, 110, 143, 0.45);
 		outline-offset: 3px;
 	}
 
@@ -381,12 +381,12 @@
 	}
 
 	:global(.dark) .radio-option:has(input:checked) {
-		background: rgba(15, 118, 110, 0.18);
+		background: rgba(67, 110, 143, 0.2);
 	}
 
 	:global(.dark) .privacy-note {
-		background: rgba(15, 118, 110, 0.14);
-		border-color: rgba(134, 223, 214, 0.18);
+		background: rgba(67, 110, 143, 0.16);
+		border-color: rgba(125, 211, 252, 0.18);
 	}
 
 	:global(.dark) .field-error {

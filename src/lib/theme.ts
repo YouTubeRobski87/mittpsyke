@@ -1,4 +1,4 @@
-/** Shared theme definitions for MittPsyke — single source of truth */
+/** Shared theme definitions for MittPsyke â€” single source of truth */
 
 export const THEME_STORAGE_KEY = 'mittpsyke:theme';
 
@@ -9,12 +9,12 @@ export interface ThemeColors {
 }
 
 export const THEMES: Record<string, ThemeColors> = {
-	neutral:   { label: 'Neutral',    accent: '#0f766e', bg: 'rgba(15, 118, 110, 0.07)' },
-	salvia:    { label: 'Salvia',     accent: '#7a9e7e', bg: 'rgba(122, 158, 126, 0.09)' },
-	havsblå:   { label: 'Havsblå',   accent: '#5b8db8', bg: 'rgba(91, 141, 184, 0.09)' },
+	neutral:   { label: 'Neutral',    accent: '#436e8f', bg: 'rgba(67, 110, 143, 0.08)' },
+	salvia:    { label: 'Salvia',     accent: '#5f7fa5', bg: 'rgba(95, 127, 165, 0.09)' },
+	havsblÃ¥:   { label: 'HavsblÃ¥',   accent: '#5b8db8', bg: 'rgba(91, 141, 184, 0.09)' },
 	lavendel:  { label: 'Lavendel',  accent: '#8b7ab8', bg: 'rgba(139, 122, 184, 0.09)' },
 	sand:      { label: 'Sand',       accent: '#b8956a', bg: 'rgba(184, 149, 106, 0.09)' },
-	skogsgrön: { label: 'Skogsgrön', accent: '#4a7c59', bg: 'rgba(74, 124, 89, 0.09)' },
+	skogsgrÃ¶n: { label: 'SkogsgrÃ¶n', accent: '#395d84', bg: 'rgba(57, 93, 132, 0.09)' },
 };
 
 export const DEFAULT_THEME = 'neutral';
