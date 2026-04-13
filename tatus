@@ -569,3 +569,18 @@ Date:   Mon Feb 9 04:27:56 2026 +0000
     - Pre-existing TypeScript errors in other files are unrelated to Speed Insights
     
     Co-authored-by: Vercel <vercel[bot]@users.noreply.github.com>
+  chore/chat-prompt-variation   [m e394999 [[34morigin/chore/chat-prompt-variation[m] Tune chat system prompt for calmer varied responses
++ [36mclaude/amazing-bose           [m b2e7cc8 ([36mE:/mittpsyke-main/.claude/worktrees/amazing-bose[m) Fix brand name casing in layout title: Mittpsyke → MittPsyke
++ [36mclaude/charming-swirles       [m 3506894 ([36mE:/mittpsyke-main/.claude/worktrees/charming-swirles[m) Fix guide article text contrast
++ [36mclaude/great-shockley         [m 8c8a9fa ([36mE:/mittpsyke-main/.claude/worktrees/great-shockley[m) [[34morigin/main[m: behind 36] Update ActivityHeatmap.svelte
++ [36mclaude/hardcore-cray          [m 6f273cf ([36mE:/mittpsyke-main/.claude/worktrees/hardcore-cray[m) [[34morigin/claude/hardcore-cray[m] fix: GA4 analytics aktiveras nu korrekt på Vercel
++ [36mclaude/jovial-matsumoto       [m 5dd4413 ([36mE:/mittpsyke-main/.claude/worktrees/jovial-matsumoto[m) [[34morigin/claude/jovial-matsumoto[m] Fix consent flow: make reactive state with $state()
++ [36mclaude/mystifying-hodgkin     [m d5f626e ([36mE:/mittpsyke-main/.claude/worktrees/mystifying-hodgkin[m) Restore diary voice flow
+  claude/relaxed-agnesi         [m 2b9188a [[34morigin/main[m: behind 44] Merge claude/zealous-rosalind: fix bilduppladdning med server-side endpoint
++ [36mclaude/sad-solomon            [m 27e080d ([36mE:/mittpsyke-main/.claude/worktrees/sad-solomon[m) [[34morigin/main[m] Update theme.ts
++ [36mclaude/sweet-mccarthy         [m b04ab85 ([36mE:/mittpsyke-main/.claude/worktrees/sweet-mccarthy[m) [[34morigin/main[m: behind 23] Implementera lagstadgat cookiesamtycke (GDPR/svenska krav)
++ [36mclaude/zealous-rosalind       [m c3d9b0d ([36mE:/mittpsyke-main/.claude/worktrees/zealous-rosalind[m) Fix bilduppladdning: server-side endpoint med service role + visa exakt felmeddelande
++ [36mcodex/arbeta-i-emittpsykemain [m ee21690 ([36mC:/Users/rbsth/.codex/worktrees/6d60/mittpsyke-main[m) [[34morigin/codex/arbeta-i-emittpsykemain[m: ahead 4] fix: disable google oauth on preview domains
+  codex/homepage-voice-awareness[m 5325f96 [[34morigin/codex/homepage-voice-awareness[m] Clarify AI voice support option on homepage
+* [32mmain                          [m 27e080d [[34morigin/main[m] Update theme.ts
+  prompt-improvement            [m f2df0c2 [[34morigin/prompt-improvement[m] a
