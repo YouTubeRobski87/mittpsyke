@@ -69,25 +69,25 @@
 			<p class="eyebrow">MittPsyke Admin</p>
 			<h1>Landningssidor, SEO och A/B-test</h1>
 			<p class="intro">
-				HÃ¤r kan du skapa lugna landningssidor, generera svensk SEO-copy och fÃ¶lja vilka
-				varianter som faktiskt hjÃ¤lper besÃ¶kare vidare.
+				Här kan du skapa lugna landningssidor, generera svensk SEO-copy och följa vilka
+				varianter som faktiskt hjälper besökare vidare.
 			</p>
 		</div>
 		<div class="hero-note">
-			<p>Datat kommer frÃ¥n Supabase och analytics kan uppdatera visningar och konverteringar automatiskt nÃ¤r SQL-funktionen Ã¤r installerad.</p>
+			<p>Datat kommer från Supabase och analytics kan uppdatera visningar och konverteringar automatiskt när SQL-funktionen är installerad.</p>
 		</div>
 	</header>
 
-	<section class="stats-grid" aria-label="Ã–versikt">
+	<section class="stats-grid" aria-label="Översikt">
 		<article class="stat-card">
 			<span>Landningssidor</span>
 			<strong>{data.stats.pageCount}</strong>
 			<small>{data.stats.publishedCount} publicerade</small>
 		</article>
 		<article class="stat-card">
-			<span>SEO-fÃ¶rslag</span>
+			<span>SEO-förslag</span>
 			<strong>{data.stats.promptCount}</strong>
-			<small>senaste sparade fÃ¶rslagen</small>
+			<small>senaste sparade förslagen</small>
 		</article>
 		<article class="stat-card">
 			<span>A/B-test</span>
@@ -200,14 +200,14 @@
 				class="panel generator-panel"
 			>
 				<div class="panel-header">
-					<h2>Generera SEO-fÃ¶rslag</h2>
+					<h2>Generera SEO-förslag</h2>
 					<p>Skapa titel, meta, rubrik eller CTA med Claude och spara allt direkt i Supabase.</p>
 				</div>
 
 				<label>
 					<span>Landningssida</span>
 					<select name="landingPageId" required>
-						<option value="">VÃ¤lj sida</option>
+						<option value="">Välj sida</option>
 						{#each data.landingPages as page}
 							<option value={page.id}>{page.name} ({page.slug})</option>
 						{/each}
@@ -215,9 +215,9 @@
 				</label>
 
 				<label>
-					<span>Typ av fÃ¶rslag</span>
+					<span>Typ av förslag</span>
 					<select name="promptType" required>
-						<option value="">VÃ¤lj typ</option>
+						<option value="">Välj typ</option>
 						{#each data.seoPromptTypes as promptType}
 							<option value={promptType}>{promptType}</option>
 						{/each}
@@ -229,12 +229,12 @@
 					<textarea
 						name="context"
 						rows="5"
-						placeholder="Exempel: fokusera pÃ¥ lÃ¥g trÃ¶skel, enkel svenska och sÃ¶kord kring Ã¥ngesthjÃ¤lp."
+						placeholder="Exempel: fokusera på låg tröskel, enkel svenska och sökord kring ångesthjälp."
 					></textarea>
 				</label>
 
 				<button type="submit" class="primary" disabled={pendingForm === 'generatePrompt'}>
-					{pendingForm === 'generatePrompt' ? 'Genererarâ€¦' : 'Generera fÃ¶rslag'}
+					{pendingForm === 'generatePrompt' ? 'Genererar…' : 'Generera förslag'}
 				</button>
 
 				{#if form?.generatedPrompt}
@@ -247,12 +247,12 @@
 
 			<section class="panel prompt-list-panel">
 				<div class="panel-header">
-					<h2>Senaste sparade fÃ¶rslag</h2>
-					<p>Ã–verblick Ã¶ver vad som redan har tagits fram fÃ¶r varje sida.</p>
+					<h2>Senaste sparade förslag</h2>
+					<p>Överblick över vad som redan har tagits fram för varje sida.</p>
 				</div>
 
 				{#if data.seoPrompts.length === 0}
-					<p class="empty">Inga promptfÃ¶rslag finns sparade Ã¤n.</p>
+					<p class="empty">Inga promptförslag finns sparade än.</p>
 				{:else}
 					<div class="stack">
 						{#each data.seoPrompts as prompt}
@@ -275,7 +275,7 @@
 		<section class="panel stack-lg">
 			<div class="panel-header">
 				<h2>Skapa ny landningssida</h2>
-				<p>Varje sida fÃ¥r en post i `landing_pages` och ett fÃ¶rsta innehÃ¥llsblock i `landing_page_content`.</p>
+				<p>Varje sida får en post i `landing_pages` och ett första innehållsblock i `landing_page_content`.</p>
 			</div>
 
 			<form
@@ -286,7 +286,7 @@
 			>
 				<label>
 					<span>Namn</span>
-					<input type="text" name="name" placeholder="Ã…ngest" required />
+					<input type="text" name="name" placeholder="Ångest" required />
 				</label>
 				<label>
 					<span>Page ID</span>
@@ -309,11 +309,11 @@
 					<textarea
 						name="description"
 						rows="3"
-						placeholder="Kort fÃ¶rklaring av sidans syfte och vad besÃ¶karen ska fÃ¥ hjÃ¤lp med."
+						placeholder="Kort förklaring av sidans syfte och vad besökaren ska få hjälp med."
 					></textarea>
 				</label>
 				<button type="submit" class="primary fit" disabled={pendingForm === 'addLandingPage'}>
-					{pendingForm === 'addLandingPage' ? 'Skaparâ€¦' : 'Skapa sida'}
+					{pendingForm === 'addLandingPage' ? 'Skapar…' : 'Skapa sida'}
 				</button>
 			</form>
 		</section>
@@ -321,7 +321,7 @@
 		<section class="stack-lg">
 			{#if data.landingPages.length === 0}
 				<section class="panel">
-					<p class="empty">Det finns inga landningssidor Ã¤n.</p>
+					<p class="empty">Det finns inga landningssidor än.</p>
 				</section>
 			{:else}
 				{#each data.landingPages as page}
@@ -330,7 +330,7 @@
 							<div>
 								<p class="page-kicker">{page.page_id}</p>
 								<h2>{page.name}</h2>
-								<p class="page-description">{page.description ?? 'Ingen beskrivning sparad Ã¤n.'}</p>
+								<p class="page-description">{page.description ?? 'Ingen beskrivning sparad än.'}</p>
 							</div>
 							<div class="page-metrics">
 								<div>
@@ -389,7 +389,7 @@
 									type="text"
 									name="seoTitle"
 									value={page.content?.seo_title ?? ''}
-									placeholder="HjÃ¤lp vid Ã¥ngest | MittPsyke"
+									placeholder="Hjälp vid ångest | MittPsyke"
 								/>
 							</label>
 
@@ -399,7 +399,7 @@
 									type="text"
 									name="h1Heading"
 									value={page.content?.h1_heading ?? ''}
-									placeholder="HjÃ¤lp vid Ã¥ngest i din egen takt"
+									placeholder="Hjälp vid ångest i din egen takt"
 								/>
 							</label>
 
@@ -408,7 +408,7 @@
 								<textarea
 									name="seoMeta"
 									rows="3"
-									placeholder="Kort meta-beskrivning som kÃ¤nns lugn, tydlig och relevant."
+									placeholder="Kort meta-beskrivning som känns lugn, tydlig och relevant."
 								>{page.content?.seo_meta ?? ''}</textarea>
 							</label>
 
@@ -428,21 +428,21 @@
 									type="text"
 									name="keywords"
 									value={page.content?.keywords ?? ''}
-									placeholder="Ã¥ngest, stÃ¶d online, prata anonymt"
+									placeholder="ångest, stöd online, prata anonymt"
 								/>
 							</label>
 
 							<label class="full-span">
-								<span>HuvudinnehÃ¥ll (HTML)</span>
+								<span>Huvudinnehåll (HTML)</span>
 								<textarea
 									name="htmlContent"
 									rows="8"
-									placeholder="<p>Beskriv innehÃ¥llet hÃ¤r.</p>"
+									placeholder="<p>Beskriv innehållet här.</p>"
 								>{page.content?.html_content ?? ''}</textarea>
 							</label>
 
 							<button type="submit" class="primary fit" disabled={pendingForm === `content-${page.id}`}>
-								{pendingForm === `content-${page.id}` ? 'Spararâ€¦' : 'Spara innehÃ¥ll'}
+								{pendingForm === `content-${page.id}` ? 'Sparar…' : 'Spara innehåll'}
 							</button>
 						</form>
 					</article>
@@ -455,7 +455,7 @@
 		<section class="panel stack-lg">
 			<div class="panel-header">
 				<h2>Skapa nytt A/B-test</h2>
-				<p>AnvÃ¤nd testet fÃ¶r att jÃ¤mfÃ¶ra tvÃ¥ rubriker eller CTA-varianter pÃ¥ samma landningssida.</p>
+				<p>Använd testet för att jämföra två rubriker eller CTA-varianter på samma landningssida.</p>
 			</div>
 
 			<form
@@ -467,7 +467,7 @@
 				<label>
 					<span>Landningssida</span>
 					<select name="landingPageId" required>
-						<option value="">VÃ¤lj sida</option>
+						<option value="">Välj sida</option>
 						{#each data.landingPages as page}
 							<option value={page.id}>{page.name}</option>
 						{/each}
@@ -479,7 +479,7 @@
 				</label>
 				<label>
 					<span>Variant B</span>
-					<input type="text" name="variantBName" placeholder="Prata lugnt med stÃ¶d" required />
+					<input type="text" name="variantBName" placeholder="Prata lugnt med stöd" required />
 				</label>
 				<input type="hidden" name="conversionsA" value="0" />
 				<input type="hidden" name="conversionsB" value="0" />
@@ -487,7 +487,7 @@
 				<input type="hidden" name="viewsB" value="0" />
 				<input type="hidden" name="isActive" value="true" />
 				<button type="submit" class="primary fit" disabled={pendingForm === 'create-ab'}>
-					{pendingForm === 'create-ab' ? 'Skaparâ€¦' : 'Skapa test'}
+					{pendingForm === 'create-ab' ? 'Skapar…' : 'Skapa test'}
 				</button>
 			</form>
 		</section>
@@ -495,7 +495,7 @@
 		<section class="stack-lg">
 			{#if data.abTests.length === 0}
 				<section class="panel">
-					<p class="empty">Det finns inga A/B-test Ã¤n.</p>
+					<p class="empty">Det finns inga A/B-test än.</p>
 				</section>
 			{:else}
 				{#each data.abTests as test}
@@ -507,7 +507,7 @@
 								<p class="page-description">
 									Status: {test.is_active ? 'aktivt' : 'avslutat'}
 									{#if test.winner}
-										Â· Vinnare: {test.winner}
+										· Vinnare: {test.winner}
 									{/if}
 								</p>
 							</div>
@@ -568,7 +568,7 @@
 								</select>
 							</label>
 							<button type="submit" class="primary fit" disabled={pendingForm === `ab-${test.id}`}>
-								{pendingForm === `ab-${test.id}` ? 'Spararâ€¦' : 'Spara test'}
+								{pendingForm === `ab-${test.id}` ? 'Sparar…' : 'Spara test'}
 							</button>
 						</form>
 
@@ -580,7 +580,7 @@
 						>
 							<input type="hidden" name="abTestId" value={test.id} />
 							<button type="submit" disabled={pendingForm === `winner-${test.id}`}>
-								{pendingForm === `winner-${test.id}` ? 'RÃ¤knarâ€¦' : 'BerÃ¤kna vinnare'}
+								{pendingForm === `winner-${test.id}` ? 'Räknar…' : 'Beräkna vinnare'}
 							</button>
 						</form>
 					</article>

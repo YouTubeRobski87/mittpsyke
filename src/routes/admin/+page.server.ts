@@ -1,5 +1,6 @@
 ﻿import { env } from '$env/dynamic/private';
 import { fail, redirect } from '@sveltejs/kit';
+import { createServiceClient } from '$lib/server/supabase-admin';
 import type { Actions, PageServerLoad } from './$types';
 import {
 	AB_VARIANTS,
@@ -57,6 +58,7 @@ async function ensureAdminAction(locals: App.Locals, activeTab: 'prompts' | 'pag
 }
 
 async function loadDashboardData(locals: App.Locals) {
+	const serviceClient = createServiceClient();
 	const [pagesResult, contentResult, promptResult, abTestResult, feedbackResult] = await Promise.all([
 		locals.supabase
 			.from('landing_pages')
@@ -79,7 +81,7 @@ async function loadDashboardData(locals: App.Locals) {
 				'id, created_at, updated_at, ended_at, landing_page_id, variant_a_name, variant_b_name, conversions_a, conversions_b, views_a, views_b, winner, is_active'
 			)
 			.order('created_at', { ascending: false }),
-		locals.supabase
+		(serviceClient ?? locals.supabase)
 			.from('feedback_submissions')
 			.select('id, created_at, user_id, experience, what_worked, unclear, missing, use_again, other')
 			.order('created_at', { ascending: false })
