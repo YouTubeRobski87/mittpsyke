@@ -77,13 +77,13 @@
 		padding: 1.1rem 1rem 1rem;
 		border-radius: var(--radius-card);
 		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #f8fbfa;
+		background: #f8fafb;
 		transition: transform 160ms ease, background-color 160ms ease;
 	}
 
 	.card:hover {
 		transform: translateY(-2px);
-		background: #eef6f4;
+		background: #eef3f8;
 	}
 
 	.card h2 {
@@ -110,22 +110,22 @@
 		margin-top: 0.9rem;
 		padding: 0.34rem 0.58rem;
 		border-radius: 999px;
-		background: rgba(95, 129, 112, 0.1);
+		background: rgba(67, 110, 143, 0.1);
 		font-size: 0.82rem;
 		opacity: 0.8;
 	}
 
 	:global(.dark) .card {
-		background: #1a2221;
+		background: #1a2128;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
 	:global(.dark) .card:hover {
-		background: #1f2b29;
+		background: #1f2530;
 	}
 
 	:global(.dark) .meta {
-		background: rgba(140, 163, 106, 0.16);
+		background: rgba(67, 110, 143, 0.16);
 	}
 
 	@media (max-width: 640px) {

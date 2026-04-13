@@ -25,23 +25,23 @@
 	const THEMES = [
 		{ value: 'neutral',   label: 'Neutral',    color: '#436e8f' },
 		{ value: 'salvia',    label: 'Salvia',      color: '#5f7fa5' },
-		{ value: 'havsblÃ¥',   label: 'HavsblÃ¥',    color: '#5b8db8' },
+		{ value: 'havsblå',   label: 'Havsblå',    color: '#5b8db8' },
 		{ value: 'lavendel',  label: 'Lavendel',   color: '#8b7ab8' },
 		{ value: 'sand',      label: 'Sand',        color: '#b8956a' },
-		{ value: 'skogsgrÃ¶n', label: 'SkogsgrÃ¶n',  color: '#395d84' },
+		{ value: 'skogsgrön', label: 'Skogsgrön',  color: '#395d84' },
 	];
 
 	const GOALS = [
-		{ value: 'diary_3_week',     label: 'Skriva i dagboken 3 gÃ¥nger i veckan' },
-		{ value: 'mood_daily',       label: 'Checka in mitt humÃ¶r varje dag' },
-		{ value: 'write_when_needed', label: 'Skriva nÃ¤r tankarna blir mycket' },
-		{ value: 'calm_moments',     label: 'Skapa en lugn stund fÃ¶r mig sjÃ¤lv nÃ¥gra gÃ¥nger i veckan' },
-		{ value: 'none',             label: 'Inget mÃ¥l just nu' },
+		{ value: 'diary_3_week',     label: 'Skriva i dagboken 3 gånger i veckan' },
+		{ value: 'mood_daily',       label: 'Checka in mitt humör varje dag' },
+		{ value: 'write_when_needed', label: 'Skriva när tankarna blir mycket' },
+		{ value: 'calm_moments',     label: 'Skapa en lugn stund för mig själv några gånger i veckan' },
+		{ value: 'none',             label: 'Inget mål just nu' },
 	];
 
 	const WIDGETS = [
 		{ value: 'dagbok', label: 'Dagboken' },
-		{ value: 'mood',   label: 'Senaste humÃ¶r' },
+		{ value: 'mood',   label: 'Senaste humör' },
 		{ value: 'guide',  label: 'Guider' },
 		{ value: 'chat',   label: 'Chatten' },
 	];
@@ -129,7 +129,7 @@
 		prefSaving = false;
 
 		if (error) {
-			prefMessage = 'NÃ¥got gick fel. FÃ¶rsÃ¶k igen.';
+			prefMessage = 'Något gick fel. Försök igen.';
 			prefMessageType = 'error';
 		} else {
 			prefMessage = 'Dina val har sparats âœ“';
@@ -246,19 +246,19 @@
 <SEO canonical="https://www.mittpsyke.se/dashboard/installningar" />
 
 <svelte:head>
-	<title>KontoinstÃ¤llningar - MittPsyke</title>
+	<title>Kontoinställningar - MittPsyke</title>
 </svelte:head>
 
 <main class="auth-page">
 	<PortalSubnav
 		active="installningar"
-		title="KontoinstÃ¤llningar"
+		title="Kontoinställningar"
 		description="Hantera konto, tema och personliga val i lugn takt."
 	/>
 
 	<div class="settings-page auth-shell">
 		{#if loading}
-			<p class="loading-copy">Laddar instÃ¤llningar...</p>
+			<p class="loading-copy">Laddar inställningar...</p>
 		{:else}
 
 		<!-- Display Name Section -->
@@ -279,7 +279,7 @@
 				</button>
 			</div>
 
-			<label class="field-label" for="birthday">FÃ¶delsedag</label>
+			<label class="field-label" for="birthday">Födelsedag</label>
 			<input
 				id="birthday"
 				type="date"
@@ -287,7 +287,7 @@
 				class="text-input"
 				max={new Date().toISOString().slice(0, 10)}
 			/>
-			<p class="field-hint birthday-hint">AnvÃ¤nds fÃ¶r ditt dagliga horoskop ðŸ”®</p>
+			<p class="field-hint birthday-hint">Används för ditt dagliga horoskop ðŸ”®</p>
 
 			{#if nameMessage}
 				<p class="feedback {nameMessageType}">{nameMessage}</p>
@@ -297,11 +297,11 @@
 		<!-- Personalization Section -->
 		<section class="auth-panel section-block">
 			<h2>Personalisera portalen</h2>
-			<p class="field-hint">VÃ¤lj tema, mÃ¥l och vilket kort du vill se pÃ¥ startsidan. Du kan Ã¤ndra nÃ¤r du vill.</p>
+			<p class="field-hint">Välj tema, mål och vilket kort du vill se på startsidan. Du kan ändra när du vill.</p>
 
 			<!-- Theme picker -->
 			<p class="pref-label">Ditt tema</p>
-			<div class="theme-row" role="group" aria-label="VÃ¤lj tema">
+			<div class="theme-row" role="group" aria-label="Välj tema">
 				{#each THEMES as t}
 					<button
 						class="theme-dot {profileTheme === t.value ? 'selected' : ''}"
@@ -316,8 +316,8 @@
 			</div>
 
 			<!-- Goal picker -->
-			<p class="pref-label">Ditt veckliga mÃ¥l</p>
-			<div class="option-list" role="radiogroup" aria-label="VÃ¤lj veckomÃ¥l">
+			<p class="pref-label">Ditt veckliga mål</p>
+			<div class="option-list" role="radiogroup" aria-label="Välj veckomål">
 				{#each GOALS as g}
 					<label class="option-row {weeklyGoalType === g.value ? 'selected' : ''}">
 						<input
@@ -334,8 +334,8 @@
 			</div>
 
 			<!-- Widget picker -->
-			<p class="pref-label">Ditt valda kort pÃ¥ startsidan</p>
-			<div class="option-list widget-row" role="radiogroup" aria-label="VÃ¤lj widget">
+			<p class="pref-label">Ditt valda kort på startsidan</p>
+			<div class="option-list widget-row" role="radiogroup" aria-label="Välj widget">
 				{#each WIDGETS as w}
 					<label class="option-chip {dashboardWidget === w.value ? 'selected' : ''}">
 						<input
@@ -361,9 +361,9 @@
 
 		<!-- Password Section -->
 		<section class="auth-panel section-block">
-			<h2>Byt lÃ¶senord</h2>
+			<h2>Byt lösenord</h2>
 
-			<label class="field-label" for="new-password">Nytt lÃ¶senord</label>
+			<label class="field-label" for="new-password">Nytt lösenord</label>
 			<input
 				id="new-password"
 				type="password"
@@ -373,17 +373,17 @@
 				autocomplete="new-password"
 			/>
 
-			<label class="field-label" for="confirm-password">BekrÃ¤fta lÃ¶senord</label>
+			<label class="field-label" for="confirm-password">Bekräfta lösenord</label>
 			<input
 				id="confirm-password"
 				type="password"
 				bind:value={confirmPassword}
-				placeholder="Upprepa lÃ¶senordet"
+				placeholder="Upprepa lösenordet"
 				class="text-input"
 				autocomplete="new-password"
 			/>
 
-			<button class="save-btn" onclick={savePassword} aria-label="Spara lÃ¶senord" disabled={passwordSaving}>
+			<button class="save-btn" onclick={savePassword} aria-label="Spara lösenord" disabled={passwordSaving}>
 				{passwordSaving ? 'Sparar...' : 'Byt l\u00f6senord'}
 			</button>
 
@@ -396,18 +396,18 @@
 			<h2>Mejlutskick</h2>
 			<p class="field-hint">Hantera avregistrering och stoppa framtida utskick.</p>
 			<a class="save-btn link-btn" href="/avregistrera">Hantera avregistrering</a>
-			<p class="field-hint">LÃ¤s mer om radering, export och hur uppgifter hanteras i <a href="/integritet">integritetspolicyn</a>.</p>
+			<p class="field-hint">Läs mer om radering, export och hur uppgifter hanteras i <a href="/integritet">integritetspolicyn</a>.</p>
 		</section>
 
 		<!-- Delete Account Section -->
 		<section id="radera-konto" class="auth-panel section-block danger-zone">
 			<h2>Radera konto</h2>
 			<p class="field-hint danger-copy">
-				Detta raderar din dagbok, chatthistorik och profil permanent. Ã…tgÃ¤rden gÃ¥r inte att Ã¥ngra.
+				Detta raderar din dagbok, chatthistorik och profil permanent. Åtgärden går inte att ångra.
 			</p>
 
 			<label class="field-label" for="delete-confirm">
-				Skriv <span class="confirm-token">RADERA</span> fÃ¶r att bekrÃ¤fta
+				Skriv <span class="confirm-token">RADERA</span> för att bekräfta
 			</label>
 			<input
 				id="delete-confirm"

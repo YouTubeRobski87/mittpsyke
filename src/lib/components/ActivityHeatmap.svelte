@@ -334,8 +334,8 @@
 			>
 				<defs>
 					<linearGradient id="areaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-						<stop offset="0%" stop-color="var(--theme-accent, #0f766e)" stop-opacity="0.35" />
-						<stop offset="100%" stop-color="var(--theme-accent, #0f766e)" stop-opacity="0" />
+						<stop offset="0%" stop-color="var(--theme-accent, #436e8f)" stop-opacity="0.35" />
+						<stop offset="100%" stop-color="var(--theme-accent, #436e8f)" stop-opacity="0" />
 					</linearGradient>
 					<linearGradient id="rhythmLineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
 						<stop offset="0%" stop-color="var(--rhythm-line-soft)" />
@@ -387,8 +387,8 @@
 
 <style>
 	.rhythm-container {
-		--rhythm-line-soft: color-mix(in srgb, var(--theme-accent, #0f766e) 52%, #8ba89c 48%);
-		--rhythm-line-strong: color-mix(in srgb, var(--theme-accent, #0f766e) 74%, #6c877a 26%);
+		--rhythm-line-soft: color-mix(in srgb, var(--theme-accent, #436e8f) 52%, #8ba89c 48%);
+		--rhythm-line-strong: color-mix(in srgb, var(--theme-accent, #436e8f) 74%, #6c877a 26%);
 		width: 100%;
 		padding: 0.4rem 0 0.2rem;
 		min-block-size: clamp(18rem, 40vw, 24rem);
@@ -494,7 +494,7 @@
 
 	.line-end-glow {
 		fill: none;
-		stroke: color-mix(in srgb, var(--theme-accent, #0f766e) 70%, white 30%);
+		stroke: color-mix(in srgb, var(--theme-accent, #436e8f) 70%, white 30%);
 		stroke-width: 2;
 		opacity: 0;
 		transform-box: fill-box;
@@ -505,7 +505,7 @@
 	}
 
 	.line-end-dot {
-		fill: color-mix(in srgb, var(--theme-accent, #0f766e) 72%, white 28%);
+		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 72%, white 28%);
 		stroke: rgba(255, 255, 255, 0.9);
 		stroke-width: 2;
 		opacity: 0;

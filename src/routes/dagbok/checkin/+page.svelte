@@ -1468,7 +1468,7 @@
 	}
 
 	.diary-input:focus {
-		border-color: var(--primary, #0f766e);
+		border-color: var(--primary, #436e8f);
 		outline: none;
 	}
 
@@ -1544,7 +1544,7 @@
 		height: 1rem;
 		margin-top: -0.34rem;
 		border-radius: 999px;
-		background: var(--primary, #0f766e);
+		background: var(--primary, #436e8f);
 		border: 2px solid hsl(var(--surface));
 		box-shadow: 0 0 0 1px hsl(var(--border));
 		cursor: pointer;
@@ -1561,7 +1561,7 @@
 		width: 1rem;
 		height: 1rem;
 		border-radius: 999px;
-		background: var(--primary, #0f766e);
+		background: var(--primary, #436e8f);
 		border: 2px solid hsl(var(--surface));
 		box-shadow: 0 0 0 1px hsl(var(--border));
 		cursor: pointer;
@@ -1806,14 +1806,14 @@
 
 	.mood-chart-line {
 		fill: none;
-		stroke: var(--primary, #0f766e);
+		stroke: var(--primary, #436e8f);
 		stroke-width: 1.2;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
 
 	.mood-chart-dot {
-		fill: var(--primary, #0f766e);
+		fill: var(--primary, #436e8f);
 		stroke: hsl(var(--surface));
 		stroke-width: 0.6;
 	}
@@ -1981,7 +1981,7 @@
 	}
 
 	.entry-edit-textarea:focus {
-		border-color: var(--primary, #0f766e);
+		border-color: var(--primary, #436e8f);
 		outline: none;
 	}
 

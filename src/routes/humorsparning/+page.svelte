@@ -279,7 +279,7 @@
 
 	.secondary-link {
 		display: inline-block;
-		color: var(--theme-accent, #0f766e);
+		color: var(--theme-accent, #436e8f);
 		text-decoration: underline;
 		font-size: 0.95rem;
 		font-weight: 500;

@@ -158,7 +158,7 @@
 		font-size: 0.78rem;
 		text-transform: uppercase;
 		letter-spacing: 0.16em;
-		color: #0f766e;
+		color: #436e8f;
 	}
 
 	.guide-title,
@@ -200,11 +200,11 @@
 	.guide-card-cta {
 		font-size: 0.9rem;
 		font-weight: 600;
-		color: #0f766e;
+		color: #436e8f;
 	}
 
 	.guide-link {
-		color: #0f766e;
+		color: #436e8f;
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}

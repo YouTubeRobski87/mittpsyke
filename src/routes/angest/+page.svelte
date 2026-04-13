@@ -288,7 +288,7 @@
 		font-size: 0.78rem;
 		text-transform: uppercase;
 		letter-spacing: 0.16em;
-		color: #0f766e;
+		color: #436e8f;
 	}
 
 	h1,
@@ -341,7 +341,7 @@
 	}
 
 	.primary-cta {
-		background: #0f766e;
+		background: #436e8f;
 		color: #fff;
 		box-shadow: 0 14px 28px rgba(15, 118, 110, 0.18);
 	}
@@ -432,7 +432,7 @@
 
 	.guide-links a,
 	.sources a {
-		color: #0f766e;
+		color: #436e8f;
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}

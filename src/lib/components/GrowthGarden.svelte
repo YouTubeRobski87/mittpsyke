@@ -292,16 +292,16 @@
 		--garden-sky-bottom: color-mix(in srgb, hsl(var(--surface-soft)) 90%, #dde6df 10%);
 		--garden-glow-start: rgba(240, 238, 228, 0.42);
 		--garden-glow-end: rgba(240, 238, 228, 0);
-		--garden-back-ground-top: color-mix(in srgb, var(--theme-accent, #0f766e) 12%, #8fa099 88%);
-		--garden-back-ground-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 18%, #6e8079 82%);
-		--garden-ground-top: color-mix(in srgb, var(--theme-accent, #0f766e) 26%, #657970 74%);
-		--garden-ground-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 38%, #4f625a 62%);
-		--garden-front-ground-top: color-mix(in srgb, var(--theme-accent, #0f766e) 34%, #53665c 66%);
-		--garden-front-ground-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 48%, #3e5048 52%);
-		--garden-bush-top: color-mix(in srgb, var(--theme-accent, #0f766e) 42%, #7f957f 58%);
-		--garden-bush-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 56%, #536a58 44%);
-		--garden-leaf-top: color-mix(in srgb, var(--theme-accent, #0f766e) 38%, #91a47c 62%);
-		--garden-leaf-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 60%, #50634d 40%);
+		--garden-back-ground-top: color-mix(in srgb, var(--theme-accent, #436e8f) 12%, #8fa099 88%);
+		--garden-back-ground-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 18%, #6e8079 82%);
+		--garden-ground-top: color-mix(in srgb, var(--theme-accent, #436e8f) 26%, #657970 74%);
+		--garden-ground-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 38%, #4f625a 62%);
+		--garden-front-ground-top: color-mix(in srgb, var(--theme-accent, #436e8f) 34%, #53665c 66%);
+		--garden-front-ground-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 48%, #3e5048 52%);
+		--garden-bush-top: color-mix(in srgb, var(--theme-accent, #436e8f) 42%, #7f957f 58%);
+		--garden-bush-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 56%, #536a58 44%);
+		--garden-leaf-top: color-mix(in srgb, var(--theme-accent, #436e8f) 38%, #91a47c 62%);
+		--garden-leaf-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 60%, #50634d 40%);
 		--garden-trunk-top: color-mix(in srgb, #7d6857 76%, #5f4d40 24%);
 		--garden-trunk-bottom: color-mix(in srgb, #5c493b 82%, #3d3028 18%);
 		--garden-blossom-top: color-mix(in srgb, #f8e8ef 78%, #f1bfd4 22%);
@@ -313,11 +313,11 @@
 		--garden-egg-shade-top: rgba(233, 218, 191, 0.68);
 		--garden-egg-shade-bottom: rgba(217, 198, 162, 0.12);
 		--garden-egg-speck: rgba(188, 164, 127, 0.72);
-		--garden-dino-top: color-mix(in srgb, var(--theme-accent, #0f766e) 16%, #c6d6ab 84%);
-		--garden-dino-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 34%, #7e976d 66%);
+		--garden-dino-top: color-mix(in srgb, var(--theme-accent, #436e8f) 16%, #c6d6ab 84%);
+		--garden-dino-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 34%, #7e976d 66%);
 		--garden-dino-belly-top: color-mix(in srgb, #f8f0db 84%, #e9dcbb 16%);
 		--garden-dino-belly-bottom: color-mix(in srgb, #e8d8b2 76%, #f7efe0 24%);
-		--garden-dino-spot: color-mix(in srgb, var(--theme-accent, #0f766e) 34%, #70835f 66%);
+		--garden-dino-spot: color-mix(in srgb, var(--theme-accent, #436e8f) 34%, #70835f 66%);
 		--garden-dino-line: color-mix(in srgb, var(--garden-dino-bottom) 74%, #58664f 26%);
 		--garden-dino-eye: #243328;
 		--garden-dino-cheek: rgba(244, 198, 186, 0.72);
@@ -408,7 +408,7 @@
 
 	.grass-back path {
 		fill: none;
-		stroke: color-mix(in srgb, var(--theme-accent, #0f766e) 34%, #728975 66%);
+		stroke: color-mix(in srgb, var(--theme-accent, #436e8f) 34%, #728975 66%);
 		stroke-width: 2.2;
 		stroke-linecap: round;
 		opacity: 0.78;
@@ -416,7 +416,7 @@
 
 	.grass-front path {
 		fill: none;
-		stroke: color-mix(in srgb, var(--theme-accent, #0f766e) 46%, #607862 54%);
+		stroke: color-mix(in srgb, var(--theme-accent, #436e8f) 46%, #607862 54%);
 		stroke-width: 2.8;
 		stroke-linecap: round;
 	}
@@ -557,7 +557,7 @@
 
 	.level-four-grass path {
 		fill: none;
-		stroke: color-mix(in srgb, var(--theme-accent, #0f766e) 42%, #617a63 58%);
+		stroke: color-mix(in srgb, var(--theme-accent, #436e8f) 42%, #617a63 58%);
 		stroke-width: 2.6;
 		stroke-linecap: round;
 	}
@@ -587,7 +587,7 @@
 	}
 
 	.mystery-egg-glow {
-		fill: color-mix(in srgb, var(--theme-accent, #0f766e) 32%, transparent 68%);
+		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 32%, transparent 68%);
 		transform-box: fill-box;
 		transform-origin: center;
 		animation: mysteryPulse 2.8s ease-in-out infinite;
@@ -608,7 +608,7 @@
 		margin: 0;
 		font-size: 0.82rem;
 		font-style: italic;
-		color: color-mix(in srgb, var(--theme-accent, #0f766e) 55%, hsl(var(--muted-foreground)) 45%);
+		color: color-mix(in srgb, var(--theme-accent, #436e8f) 55%, hsl(var(--muted-foreground)) 45%);
 		animation: gardenFade 600ms ease-out both;
 	}
 
@@ -640,16 +640,16 @@
 		--garden-sky-bottom: color-mix(in srgb, hsl(var(--surface-soft)) 88%, #101a22 12%);
 		--garden-glow-start: rgba(174, 182, 166, 0.12);
 		--garden-glow-end: rgba(174, 182, 166, 0);
-		--garden-back-ground-top: color-mix(in srgb, var(--theme-accent, #0f766e) 16%, #33423f 84%);
-		--garden-back-ground-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 22%, #273632 78%);
-		--garden-ground-top: color-mix(in srgb, var(--theme-accent, #0f766e) 26%, #2d4038 74%);
-		--garden-ground-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 36%, #21312d 64%);
-		--garden-front-ground-top: color-mix(in srgb, var(--theme-accent, #0f766e) 34%, #22322d 66%);
-		--garden-front-ground-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 44%, #17251f 56%);
-		--garden-bush-top: color-mix(in srgb, var(--theme-accent, #0f766e) 34%, #5d745f 66%);
-		--garden-bush-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 50%, #374c3d 50%);
-		--garden-leaf-top: color-mix(in srgb, var(--theme-accent, #0f766e) 32%, #7c8c6d 68%);
-		--garden-leaf-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 56%, #405240 44%);
+		--garden-back-ground-top: color-mix(in srgb, var(--theme-accent, #436e8f) 16%, #33423f 84%);
+		--garden-back-ground-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 22%, #273632 78%);
+		--garden-ground-top: color-mix(in srgb, var(--theme-accent, #436e8f) 26%, #2d4038 74%);
+		--garden-ground-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 36%, #21312d 64%);
+		--garden-front-ground-top: color-mix(in srgb, var(--theme-accent, #436e8f) 34%, #22322d 66%);
+		--garden-front-ground-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 44%, #17251f 56%);
+		--garden-bush-top: color-mix(in srgb, var(--theme-accent, #436e8f) 34%, #5d745f 66%);
+		--garden-bush-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 50%, #374c3d 50%);
+		--garden-leaf-top: color-mix(in srgb, var(--theme-accent, #436e8f) 32%, #7c8c6d 68%);
+		--garden-leaf-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 56%, #405240 44%);
 		--garden-trunk-top: color-mix(in srgb, #715d4d 70%, #4a3d33 30%);
 		--garden-trunk-bottom: color-mix(in srgb, #4a3b31 78%, #302620 22%);
 		--garden-blossom-top: color-mix(in srgb, #f3dae6 58%, #c796b1 42%);
@@ -661,11 +661,11 @@
 		--garden-egg-shade-top: rgba(103, 92, 73, 0.42);
 		--garden-egg-shade-bottom: rgba(40, 35, 28, 0.06);
 		--garden-egg-speck: rgba(148, 130, 100, 0.74);
-		--garden-dino-top: color-mix(in srgb, var(--theme-accent, #0f766e) 20%, #97b28e 80%);
-		--garden-dino-bottom: color-mix(in srgb, var(--theme-accent, #0f766e) 40%, #547154 60%);
+		--garden-dino-top: color-mix(in srgb, var(--theme-accent, #436e8f) 20%, #97b28e 80%);
+		--garden-dino-bottom: color-mix(in srgb, var(--theme-accent, #436e8f) 40%, #547154 60%);
 		--garden-dino-belly-top: color-mix(in srgb, #e6dbc0 70%, #b8ae8b 30%);
 		--garden-dino-belly-bottom: color-mix(in srgb, #b9ad85 62%, #ece3cd 38%);
-		--garden-dino-spot: color-mix(in srgb, var(--theme-accent, #0f766e) 30%, #45563f 70%);
+		--garden-dino-spot: color-mix(in srgb, var(--theme-accent, #436e8f) 30%, #45563f 70%);
 		--garden-dino-line: color-mix(in srgb, var(--garden-dino-bottom) 72%, #2a372d 28%);
 		--garden-dino-eye: #eaf4e8;
 		--garden-dino-cheek: rgba(224, 172, 163, 0.44);

@@ -624,7 +624,7 @@
 	}
 
 	/* Badge colors */
-	.icon-badge.week { background: var(--theme-accent, #0f766e); }
+	.icon-badge.week { background: var(--theme-accent, #436e8f); }
 	.icon-badge.trophy { background: linear-gradient(135deg, #ffd93d, #ffb347); }
 	.icon-badge.heat { background: linear-gradient(135deg, #6bcf7f, #4caf50); }
 	.icon-badge.insight { background: linear-gradient(135deg, #667eea, #764ba2); }
@@ -638,7 +638,7 @@
 	.overview-heading { font-size: 1.2rem; margin: 0 0 1.5rem 0; color: hsl(var(--foreground)); }
 	.overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1.2rem; margin-bottom: 1rem; }
 	.overview-item { text-align: center; padding: 1rem 0.5rem; border-radius: 0.5rem; background: var(--theme-bg, hsl(var(--surface-soft))); }
-	.overview-number { font-size: 2.2rem; font-weight: 700; color: var(--theme-accent, #0f766e); }
+	.overview-number { font-size: 2.2rem; font-weight: 700; color: var(--theme-accent, #436e8f); }
 	.overview-label { font-size: 0.85rem; color: hsl(var(--muted-foreground)); margin-top: 0.3rem; }
 	.overview-note { font-size: 0.9rem; color: hsl(var(--muted-foreground)); text-align: center; font-style: italic; margin: 0.5rem 0 0 0; }
 

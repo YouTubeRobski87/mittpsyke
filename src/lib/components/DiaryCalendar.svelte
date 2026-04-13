@@ -336,7 +336,7 @@
 
 	/* Dagar med inlägg: subtil grön bakgrundston */
 	.cal-day--has-entry:not(.cal-day--selected) {
-		background: color-mix(in srgb, var(--primary, #0f766e) 9%, transparent);
+		background: color-mix(in srgb, var(--primary, #436e8f) 9%, transparent);
 	}
 
 	/* Grön prick-markör under siffran */
@@ -345,19 +345,19 @@
 		width: 4px;
 		height: 4px;
 		border-radius: 50%;
-		background: var(--primary, #0f766e);
+		background: var(--primary, #436e8f);
 		opacity: 0.85;
 	}
 
 	/* Valt datum */
 	.cal-day--selected {
-		background: color-mix(in srgb, var(--primary, #0f766e) 20%, hsl(var(--surface)));
-		border-color: color-mix(in srgb, var(--primary, #0f766e) 50%, hsl(var(--border)));
+		background: color-mix(in srgb, var(--primary, #436e8f) 20%, hsl(var(--surface)));
+		border-color: color-mix(in srgb, var(--primary, #436e8f) 50%, hsl(var(--border)));
 	}
 
 	.cal-day--selected .cal-day-num {
 		font-weight: 700;
-		color: color-mix(in srgb, var(--primary, #0f766e) 80%, hsl(var(--foreground)));
+		color: color-mix(in srgb, var(--primary, #436e8f) 80%, hsl(var(--foreground)));
 	}
 
 	.cal-day--selected .cal-dot {

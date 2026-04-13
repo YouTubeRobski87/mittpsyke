@@ -48,7 +48,7 @@
 	}
 
 	function getAccentWithAlpha(alpha: number): string {
-		const accent = readCssColor('--primary', '#0f766e');
+		const accent = readCssColor('--primary', '#436e8f');
 		if (accent.startsWith('#')) return hexToRgba(accent, alpha);
 		if (accent.startsWith('rgb(')) return accent.replace('rgb(', 'rgba(').replace(')', `, ${alpha})`);
 		return `rgba(15, 118, 110, ${alpha})`;
