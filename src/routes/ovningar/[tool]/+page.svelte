@@ -241,19 +241,19 @@
 	}
 
 	:global(.dark) .block {
-		background: #1b2024;
+		background: #1a1f2a;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
 	:global(.dark) .info-box {
-		background: #1a2028;
+		background: #191e29;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
 	:global(.dark) .step-list li,
 	:global(.dark) .link-list li,
 	:global(.dark) .reflect-list li {
-		background: #232a2e;
+		background: #21262f;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
