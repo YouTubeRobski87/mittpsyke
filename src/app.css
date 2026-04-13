@@ -155,6 +155,8 @@ a {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.3rem;
+	position: relative;
+	z-index: 1;
 	padding: 0.28rem;
 	border-radius: var(--radius-card);
 	background: hsl(var(--surface-muted));
