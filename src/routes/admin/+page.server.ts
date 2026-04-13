@@ -24,6 +24,18 @@ type DashboardAbTest = AbTestRecord & {
 	landing_page_name: string;
 };
 
+type FeedbackSubmissionRecord = {
+	id: string;
+	created_at: string | null;
+	user_id: string | null;
+	experience: string;
+	what_worked: string | null;
+	unclear: string | null;
+	missing: string | null;
+	use_again: string;
+	other: string | null;
+};
+
 async function requireAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
 
@@ -45,7 +57,7 @@ async function ensureAdminAction(locals: App.Locals, activeTab: 'prompts' | 'pag
 }
 
 async function loadDashboardData(locals: App.Locals) {
-	const [pagesResult, contentResult, promptResult, abTestResult] = await Promise.all([
+	const [pagesResult, contentResult, promptResult, abTestResult, feedbackResult] = await Promise.all([
 		locals.supabase
 			.from('landing_pages')
 			.select('id, created_at, updated_at, page_id, name, slug, status, conversions, views, description')
@@ -66,7 +78,12 @@ async function loadDashboardData(locals: App.Locals) {
 			.select(
 				'id, created_at, updated_at, ended_at, landing_page_id, variant_a_name, variant_b_name, conversions_a, conversions_b, views_a, views_b, winner, is_active'
 			)
+			.order('created_at', { ascending: false }),
+		locals.supabase
+			.from('feedback_submissions')
+			.select('id, created_at, user_id, experience, what_worked, unclear, missing, use_again, other')
 			.order('created_at', { ascending: false })
+			.limit(50)
 	]);
 
 	const schemaErrorSource =
@@ -88,6 +105,9 @@ async function loadDashboardData(locals: App.Locals) {
 	const pageContent = (contentResult.data ?? []) as LandingPageContentRecord[];
 	const seoPrompts = (promptResult.data ?? []) as SeoPromptRecord[];
 	const abTests = (abTestResult.data ?? []) as AbTestRecord[];
+	const feedbackSubmissions = isMissingSupabaseResourceError(feedbackResult.error)
+		? []
+		: ((feedbackResult.data ?? []) as FeedbackSubmissionRecord[]);
 
 	const contentByLandingPageId = new Map<string, LandingPageContentRecord>();
 	for (const content of pageContent) {
@@ -117,6 +137,7 @@ async function loadDashboardData(locals: App.Locals) {
 			...test,
 			landing_page_name: landingPageNameById.get(test.landing_page_id) ?? 'OkÃ¤nd sida'
 		})) satisfies DashboardAbTest[],
+		feedbackSubmissions,
 		stats: {
 			pageCount: landingPages.length,
 			publishedCount: landingPages.filter((page) => page.status === 'published').length,

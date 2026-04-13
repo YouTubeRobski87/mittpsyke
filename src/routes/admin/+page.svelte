@@ -101,6 +101,51 @@
 		</article>
 	</section>
 
+	<section class="panel stack-lg">
+		<div class="panel-header">
+			<h2>Feedback</h2>
+			<p>Senaste inskickade svaren från feedbacksidan.</p>
+		</div>
+
+		{#if data.feedbackSubmissions.length === 0}
+			<p class="empty">Ingen feedback har kommit in ännu.</p>
+		{:else}
+			<div class="stack">
+				{#each data.feedbackSubmissions as submission}
+					<article class="prompt-card">
+						<div class="prompt-meta">
+							<span>{formatDate(submission.created_at)}</span>
+							<span>{submission.user_id ? 'Inloggad användare' : 'Anonym / utloggad'}</span>
+						</div>
+						<div class="feedback-meta-grid">
+							<div>
+								<span>Upplevelse</span>
+								<strong>{submission.experience}</strong>
+							</div>
+							<div>
+								<span>Använda igen</span>
+								<strong>{submission.use_again}</strong>
+							</div>
+						</div>
+
+						{#if submission.what_worked}
+							<p><strong>Fungerade bra:</strong> {truncate(submission.what_worked, 220)}</p>
+						{/if}
+						{#if submission.unclear}
+							<p><strong>Otydligt eller svårt:</strong> {truncate(submission.unclear, 220)}</p>
+						{/if}
+						{#if submission.missing}
+							<p><strong>Saknar:</strong> {truncate(submission.missing, 220)}</p>
+						{/if}
+						{#if submission.other}
+							<p><strong>Övrigt:</strong> {truncate(submission.other, 220)}</p>
+						{/if}
+					</article>
+				{/each}
+			</div>
+		{/if}
+	</section>
+
 	<div class="tab-bar" role="tablist" aria-label="Admin-flikar">
 		<button
 			type="button"
@@ -815,6 +860,21 @@
 		color: rgba(226, 232, 240, 0.52);
 	}
 
+	.feedback-meta-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.75rem;
+		margin-top: 0.8rem;
+		margin-bottom: 0.8rem;
+	}
+
+	.feedback-meta-grid strong {
+		display: block;
+		margin-top: 0.3rem;
+		font-size: 1rem;
+		color: #fff;
+	}
+
 	.empty {
 		margin: 0;
 		color: rgba(226, 232, 240, 0.66);
@@ -893,7 +953,8 @@
 
 		.stats-grid,
 		.create-grid,
-		.content-grid {
+		.content-grid,
+		.feedback-meta-grid {
 			grid-template-columns: 1fr;
 		}
 
