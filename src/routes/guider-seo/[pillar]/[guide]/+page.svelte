@@ -107,11 +107,12 @@
 	});
 </script>
 
-<SEO canonical={`https://www.mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`} />
+<SEO canonical={`https://www.mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`} />
 
 <svelte:head>
 	<title>{data.guide.seoTitle ?? buildTitle(data.guide.title)}</title>
 	<meta name="description" content={data.guide.seoDescription ?? data.guide.description} />
+	<meta name="robots" content="noindex, follow" />
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdArticle)}<\/script>`}
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdBreadcrumb)}<\/script>`}
 	{#if jsonLdFaq}

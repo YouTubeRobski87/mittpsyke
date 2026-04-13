@@ -61,11 +61,12 @@
 	});
 </script>
 
-<SEO canonical={`https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`} />
+<SEO canonical={`https://www.mittpsyke.se/guider/${data.pillar.slug}`} />
 
 <svelte:head>
 	<title>{buildTitle(pageTitle)}</title>
 	<meta name="description" content={pageDescription} />
+	<meta name="robots" content="noindex, follow" />
 	<meta property="og:title" content={buildTitle(pageTitle)} />
 	<meta property="og:description" content={pageDescription} />
 	{@html `<script type="application/ld+json">${JSON.stringify(jsonLd)}<\/script>`}

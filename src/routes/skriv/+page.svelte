@@ -65,6 +65,7 @@
 <SEO canonical="https://www.mittpsyke.se/skriv" />
 
 <svelte:head>
+	<meta name="robots" content="noindex, nofollow" />
 	<title>Chatta anonymt utan konto – Skriv av dig | MittPsyke</title>
 	<meta
 		name="description"

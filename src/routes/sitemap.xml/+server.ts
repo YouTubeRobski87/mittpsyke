@@ -78,10 +78,6 @@ function dedupeEntries(entries: SitemapEntry[]): SitemapEntry[] {
 export const GET: RequestHandler = async () => {
 	const standalonePages: SitemapEntry[] = [
 		{ path: '/', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '1.0' },
-		{ path: '/chat', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '0.9' },
-		{ path: '/chat/a', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '0.8' },
-		{ path: '/chat/b', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '0.8' },
-		{ path: '/chat/e', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '0.8' },
 		{ path: '/dagbok', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '0.9' },
 		{ path: '/guider', lastmod: latestGuideLastmod, changefreq: 'weekly', priority: '0.8' },
 		{ path: '/ovningar', lastmod: TOOL_LASTMOD, changefreq: 'monthly', priority: '0.7' },
@@ -189,12 +185,14 @@ export const GET: RequestHandler = async () => {
 		}
 	];
 
-	const seoSupportEntries: SitemapEntry[] = seoSupportPagePaths.map((path) => ({
-		path,
-		lastmod: SEO_SUPPORT_LASTMOD,
-		changefreq: 'monthly',
-		priority: '0.7'
-	}));
+	const seoSupportEntries: SitemapEntry[] = seoSupportPagePaths
+		.filter((path) => path !== '/anonym-chatt')
+		.map((path) => ({
+			path,
+			lastmod: SEO_SUPPORT_LASTMOD,
+			changefreq: 'monthly',
+			priority: '0.7'
+		}));
 
 	const guidePillarPages: SitemapEntry[] = pillars.map((pillar) => ({
 		path: `/guider/${pillar.slug}`,
@@ -205,20 +203,6 @@ export const GET: RequestHandler = async () => {
 
 	const guidePages: SitemapEntry[] = guides.map((guide) => ({
 		path: `/guider/${guide.pillarSlug}/${guide.slug}`,
-		lastmod: guide.updatedAt ?? latestGuideLastmod,
-		changefreq: 'monthly',
-		priority: '0.7'
-	}));
-
-	const guiderSeoPillarPages: SitemapEntry[] = pillars.map((pillar) => ({
-		path: `/guider-seo/${pillar.slug}`,
-		lastmod: getPillarLastmod(pillar.slug),
-		changefreq: 'weekly',
-		priority: '0.8'
-	}));
-
-	const guiderSeoGuidePages: SitemapEntry[] = guides.map((guide) => ({
-		path: `/guider-seo/${guide.pillarSlug}/${guide.slug}`,
 		lastmod: guide.updatedAt ?? latestGuideLastmod,
 		changefreq: 'monthly',
 		priority: '0.7'
@@ -257,8 +241,6 @@ export const GET: RequestHandler = async () => {
 		...seoSupportEntries,
 		...guidePillarPages,
 		...guidePages,
-		...guiderSeoPillarPages,
-		...guiderSeoGuidePages,
 		...toolPages,
 		...blogPages
 	])

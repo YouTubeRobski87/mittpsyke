@@ -5,6 +5,7 @@
 <SEO canonical="https://www.mittpsyke.se/chat" />
 
 <svelte:head>
+	<meta name="robots" content="noindex, nofollow" />
 	<title>AI-samtalsstöd för ångest och stress – chatta anonymt | MittPsyke</title>
 	<meta
 		name="description"
@@ -148,4 +149,3 @@
 		background: #1f2a28;
 	}
 </style>
-

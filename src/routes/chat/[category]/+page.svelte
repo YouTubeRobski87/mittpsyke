@@ -113,6 +113,7 @@
 <SEO canonical={`https://www.mittpsyke.se${page.url.pathname}`} />
 
 <svelte:head>
+	<meta name="robots" content="noindex, nofollow" />
 	<title>{pageMeta.title}</title>
 	<meta name="description" content={pageMeta.description} />
 	<meta property="og:title" content={pageMeta.title} />
