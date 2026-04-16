@@ -141,11 +141,11 @@
 	}
 
 	:global(.dark) .choice-card {
-		background: #1a2128;
+		background: #171d24;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
 	:global(.dark) .choice-card:hover {
-		background: #1f2530;
+		background: #1c2230;
 	}
 </style>
