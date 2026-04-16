@@ -118,7 +118,7 @@
 		padding: 1rem;
 		border-radius: var(--radius-card);
 		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #f9fcfb;
+		background: #f8fafc;
 		color: inherit;
 		text-decoration: none;
 		transition: transform 0.18s ease, background-color 0.18s ease;
@@ -126,7 +126,7 @@
 
 	.choice-card:hover {
 		transform: translateY(-2px);
-		background: #f1f8f5;
+		background: #f1f5f9;
 	}
 
 	.choice-card p {
@@ -141,11 +141,11 @@
 	}
 
 	:global(.dark) .choice-card {
-		background: #1a2221;
+		background: #1a2128;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
 	:global(.dark) .choice-card:hover {
-		background: #1f2a28;
+		background: #1f2530;
 	}
 </style>
