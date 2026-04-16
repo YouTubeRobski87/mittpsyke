@@ -1,4 +1,4 @@
-﻿import { env } from '$env/dynamic/private';
+?import { env } from '$env/dynamic/private';
 import { fail, redirect } from '@sveltejs/kit';
 import { createServiceClient } from '$lib/server/supabase-admin';
 import type { Actions, PageServerLoad } from './$types';
@@ -51,7 +51,7 @@ async function ensureAdminAction(locals: App.Locals, activeTab: 'prompts' | 'pag
 	const user = await locals.getSession();
 
 	if (!user?.is_super_admin) {
-		return fail(403, { activeTab, error: 'Ã…tkomst nekad.' });
+		return fail(403, { activeTab, error: 'Åtkomst nekad.' });
 	}
 
 	return user;
@@ -100,7 +100,7 @@ async function loadDashboardData(locals: App.Locals) {
 		null;
 
 	const schemaError = isMissingSupabaseResourceError(schemaErrorSource)
-		? 'Admin-tabellerna saknas Ã¤nnu. KÃ¶r `supabase/admin_system.sql` i Supabase SQL Editor fÃ¶rst.'
+		? 'Admin-tabellerna saknas ännu. Kör `supabase/admin_system.sql` i Supabase SQL Editor först.'
 		: null;
 
 	if (schemaErrorSource && !schemaError) {
@@ -137,11 +137,11 @@ async function loadDashboardData(locals: App.Locals) {
 		})),
 		seoPrompts: seoPrompts.map((prompt) => ({
 			...prompt,
-			landing_page_name: landingPageNameById.get(prompt.landing_page_id) ?? 'OkÃ¤nd sida'
+			landing_page_name: landingPageNameById.get(prompt.landing_page_id) ?? 'Okänd sida'
 		})) satisfies DashboardSeoPrompt[],
 		abTests: abTests.map((test) => ({
 			...test,
-			landing_page_name: landingPageNameById.get(test.landing_page_id) ?? 'OkÃ¤nd sida'
+			landing_page_name: landingPageNameById.get(test.landing_page_id) ?? 'Okänd sida'
 		})) satisfies DashboardAbTest[],
 		feedbackSubmissions,
 		stats: {
@@ -173,7 +173,7 @@ async function generateSeoPrompt(input: {
 			model: env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001',
 			max_tokens: 500,
 			system:
-				'Du Ã¤r en svensk SEO-redaktÃ¶r fÃ¶r MittPsyke, en lugn mental wellbeing-plattform. Skriv alltid pÃ¥ enkel, varm svenska. Undvik alarmism. PÃ¥minn inte om vÃ¥rd om inte det Ã¤r relevant fÃ¶r texttypen. Svara bara med det fÃ¤rdiga textfÃ¶rslaget, utan rubriker eller fÃ¶rklaring.',
+				'Du är en svensk SEO-redaktör för MittPsyke, en lugn mental wellbeing-plattform. Skriv alltid på enkel, varm svenska. Undvik alarmism. Påminn inte om vård om inte det är relevant för texttypen. Svara bara med det färdiga textförslaget, utan rubriker eller förklaring.',
 			messages: [
 				{
 					role: 'user',
@@ -181,8 +181,8 @@ async function generateSeoPrompt(input: {
 						`Landningssida: ${input.pageName}`,
 						input.pageDescription ? `Nuvarande beskrivning: ${input.pageDescription}` : '',
 						`Typ av SEO-text: ${input.promptType}`,
-						input.context ? `Ã–nskat fokus: ${input.context}` : '',
-						'GÃ¶r texten tydlig, trygg och sÃ¶kvÃ¤nlig fÃ¶r svenska anvÃ¤ndare.'
+						input.context ? `Önskat fokus: ${input.context}` : '',
+						'Gör texten tydlig, trygg och sökvänlig för svenska användare.'
 					]
 						.filter(Boolean)
 						.join('\n')
@@ -204,7 +204,7 @@ async function generateSeoPrompt(input: {
 	const text = payload.content?.find((item) => item.type === 'text')?.text?.trim() ?? '';
 
 	if (!text) {
-		throw new Error('Claude API svarade utan textinnehÃ¥ll.');
+		throw new Error('Claude API svarade utan textinnehåll.');
 	}
 
 	return text;
@@ -217,7 +217,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		title: 'Admin och SEO',
-		description: 'Intern vy fÃ¶r landningssidor, SEO-fÃ¶rslag, A/B-test.',
+		description: 'Intern vy för landningssidor, SEO-förslag, A/B-test.',
 		landingPageStatuses: LANDING_PAGE_STATUSES,
 		seoPromptTypes: SEO_PROMPT_TYPES,
 		abVariants: AB_VARIANTS,
@@ -237,7 +237,7 @@ export const actions: Actions = {
 		const context = asNullableString(formData.get('context'));
 
 		if (!landingPageId || !promptType || !SEO_PROMPT_TYPES.includes(promptType as (typeof SEO_PROMPT_TYPES)[number])) {
-			return fail(400, { activeTab: 'prompts', error: 'VÃ¤lj sida och prompttyp fÃ¶rst.' });
+			return fail(400, { activeTab: 'prompts', error: 'Välj sida och prompttyp först.' });
 		}
 
 		const { data: page, error: pageError } = await adminClient
@@ -250,12 +250,12 @@ export const actions: Actions = {
 			if (isMissingSupabaseResourceError(pageError)) {
 				return fail(500, {
 					activeTab: 'prompts',
-					error: 'Admin-tabellerna saknas Ã¤nnu. KÃ¶r `supabase/admin_system.sql` fÃ¶rst.'
+					error: 'Admin-tabellerna saknas ännu. Kör `supabase/admin_system.sql` först.'
 				});
 			}
 
 			console.error('Admin load landing page for prompt error:', pageError);
-			return fail(500, { activeTab: 'prompts', error: 'Kunde inte lÃ¤sa landningssidan.' });
+			return fail(500, { activeTab: 'prompts', error: 'Kunde inte läsa landningssidan.' });
 		}
 
 		if (!page) {
@@ -266,7 +266,7 @@ export const actions: Actions = {
 		if (!apiKey) {
 			return fail(500, {
 				activeTab: 'prompts',
-				error: 'ANTHROPIC_API_KEY saknas pÃ¥ servern.'
+				error: 'ANTHROPIC_API_KEY saknas på servern.'
 			});
 		}
 
@@ -290,7 +290,7 @@ export const actions: Actions = {
 				if (isMissingSupabaseResourceError(insertError)) {
 					return fail(500, {
 						activeTab: 'prompts',
-						error: 'SEO-prompttabellen saknas Ã¤nnu. KÃ¶r `supabase/admin_system.sql` fÃ¶rst.'
+						error: 'SEO-prompttabellen saknas ännu. Kör `supabase/admin_system.sql` först.'
 					});
 				}
 
@@ -300,7 +300,7 @@ export const actions: Actions = {
 
 			return {
 				activeTab: 'prompts',
-				success: 'SEO-fÃ¶rslaget har genererats och sparats.',
+				success: 'SEO-förslaget har genererats och sparats.',
 				generatedPrompt: generatedContent
 			};
 		} catch (promptError) {
@@ -330,7 +330,7 @@ export const actions: Actions = {
 		if (!pageId || !name || !rawSlug) {
 			return fail(400, {
 				activeTab: 'pages',
-				error: 'Namn, page_id och slug behÃ¶ver fyllas i.'
+				error: 'Namn, page_id och slug behöver fyllas i.'
 			});
 		}
 
@@ -359,7 +359,7 @@ export const actions: Actions = {
 			if (isMissingSupabaseResourceError(insertError)) {
 				return fail(500, {
 					activeTab: 'pages',
-					error: 'Admin-tabellerna saknas Ã¤nnu. KÃ¶r `supabase/admin_system.sql` fÃ¶rst.'
+					error: 'Admin-tabellerna saknas ännu. Kör `supabase/admin_system.sql` först.'
 				});
 			}
 
@@ -375,8 +375,8 @@ export const actions: Actions = {
 		}
 
 		if (insertedPage?.id) {
-			const defaultHeading = name.toLowerCase() === 'Ã¥ngest' ? 'HjÃ¤lp vid Ã¥ngest i din egen takt' : name;
-			const defaultMeta = description ?? `StÃ¶d och vÃ¤gledning om ${name.toLowerCase()} pÃ¥ enkel svenska.`;
+			const defaultHeading = name.toLowerCase() === 'ångest' ? 'Hjälp vid ångest i din egen takt' : name;
+			const defaultMeta = description ?? `Stöd och vägledning om ${name.toLowerCase()} på enkel svenska.`;
 
 			const { error: contentError } = await adminClient.from('landing_page_content').upsert(
 				{
@@ -423,7 +423,7 @@ export const actions: Actions = {
 			if (isMissingSupabaseResourceError(updateError)) {
 				return fail(500, {
 					activeTab: 'pages',
-					error: 'Admin-tabellerna saknas Ã¤nnu. KÃ¶r `supabase/admin_system.sql` fÃ¶rst.'
+					error: 'Admin-tabellerna saknas ännu. Kör `supabase/admin_system.sql` först.'
 				});
 			}
 
@@ -458,7 +458,7 @@ export const actions: Actions = {
 			if (isMissingSupabaseResourceError(deleteError)) {
 				return fail(500, {
 					activeTab: 'pages',
-					error: 'Admin-tabellerna saknas Ã¤nnu. KÃ¶r `supabase/admin_system.sql` fÃ¶rst.'
+					error: 'Admin-tabellerna saknas ännu. Kör `supabase/admin_system.sql` först.'
 				});
 			}
 
@@ -502,17 +502,17 @@ export const actions: Actions = {
 			if (isMissingSupabaseResourceError(contentError)) {
 				return fail(500, {
 					activeTab: 'pages',
-					error: 'InnehÃ¥llstabellen saknas Ã¤nnu. KÃ¶r `supabase/admin_system.sql` fÃ¶rst.'
+					error: 'Innehållstabellen saknas ännu. Kör `supabase/admin_system.sql` först.'
 				});
 			}
 
 			console.error('Admin landing page content upsert error:', contentError);
-			return fail(500, { activeTab: 'pages', error: 'Kunde inte spara sidinnehÃ¥llet.' });
+			return fail(500, { activeTab: 'pages', error: 'Kunde inte spara sidinnehållet.' });
 		}
 
 		return {
 			activeTab: 'pages',
-			success: 'SidinnehÃ¥llet sparades.'
+			success: 'Sidinnehållet sparades.'
 		};
 	},
 
@@ -526,7 +526,7 @@ export const actions: Actions = {
 		const landingPageId = asNullableString(formData.get('landingPageId'));
 
 		if (!abTestId && !landingPageId) {
-			return fail(400, { activeTab: 'ab', error: 'VÃ¤lj en landningssida fÃ¶r testet.' });
+			return fail(400, { activeTab: 'ab', error: 'Välj en landningssida för testet.' });
 		}
 
 		const isActive = formData.get('isActive') === 'true';
@@ -544,7 +544,7 @@ export const actions: Actions = {
 		};
 
 		if (!payload.variant_a_name || !payload.variant_b_name) {
-			return fail(400, { activeTab: 'ab', error: 'BÃ¥da varianterna behÃ¶ver ett namn.' });
+			return fail(400, { activeTab: 'ab', error: 'Båda varianterna behöver ett namn.' });
 		}
 
 		const query = abTestId
@@ -557,7 +557,7 @@ export const actions: Actions = {
 			if (isMissingSupabaseResourceError(abTestError)) {
 				return fail(500, {
 					activeTab: 'ab',
-					error: 'A/B-tabellerna saknas Ã¤nnu. KÃ¶r `supabase/admin_system.sql` fÃ¶rst.'
+					error: 'A/B-tabellerna saknas ännu. Kör `supabase/admin_system.sql` först.'
 				});
 			}
 
@@ -595,12 +595,12 @@ export const actions: Actions = {
 			if (isMissingSupabaseResourceError(loadError)) {
 				return fail(500, {
 					activeTab: 'ab',
-					error: 'A/B-tabellerna saknas Ã¤nnu. KÃ¶r `supabase/admin_system.sql` fÃ¶rst.'
+					error: 'A/B-tabellerna saknas ännu. Kör `supabase/admin_system.sql` först.'
 				});
 			}
 
 			console.error('Admin A/B test load error:', loadError);
-			return fail(500, { activeTab: 'ab', error: 'Kunde inte lÃ¤sa in testet.' });
+			return fail(500, { activeTab: 'ab', error: 'Kunde inte läsa in testet.' });
 		}
 
 		const result = calculateAbTestWinner(abTest);
