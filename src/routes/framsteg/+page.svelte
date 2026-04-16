@@ -359,6 +359,26 @@
 			activeDays={activeDays}
 		/>
 
+		<!-- ── Aktivitetskarta ── -->
+		<section class="card heatmap-card" bind:this={heatmapCardEl}>
+			<div class="card-header">
+				<div class="icon-badge heat"><TrendingUp size={24} /></div>
+				<h2>Din aktivitetskarta</h2>
+			</div>
+			<p class="heatmap-description">Varje ruta motsvarar en dag. Mörkare färg betyder fler inlägg.</p>
+			{#if heatmapVisible}
+				{#await import('$lib/components/ActivityHeatmap.svelte')}
+					<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
+				{:then module}
+					<module.default data={heatmapData} error={heatmapError} />
+				{:catch}
+					<p class="heatmap-description">Aktivitetskartan kunde inte laddas just nu.</p>
+				{/await}
+			{:else}
+				<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
+			{/if}
+		</section>
+
 		<!-- ── AI-insikter ── -->
 		<section class="card insights-card" bind:this={insightsCardEl}>
 			<div class="card-header">
@@ -465,26 +485,6 @@
 			</div>
 			<p class="summary-text">{weeklySummaryText}</p>
 			<p class="encouragement">{weeklyEncouragement}</p>
-		</section>
-
-		<!-- ── Aktivitetskarta ── -->
-		<section class="card heatmap-card" bind:this={heatmapCardEl}>
-			<div class="card-header">
-				<div class="icon-badge heat"><TrendingUp size={24} /></div>
-				<h2>Din rytm över tid</h2>
-			</div>
-			<p class="heatmap-description">En lugn överblick över hur du har kommit tillbaka och skrivit över tid.</p>
-			{#if heatmapVisible}
-				{#await import('$lib/components/ActivityHeatmap.svelte')}
-					<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
-				{:then module}
-					<module.default data={heatmapData} error={heatmapError} />
-				{:catch}
-					<p class="heatmap-description">Grafen kunde inte laddas just nu.</p>
-				{/await}
-			{:else}
-				<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
-			{/if}
 		</section>
 
 		<!-- ── Milstolpar ── -->
