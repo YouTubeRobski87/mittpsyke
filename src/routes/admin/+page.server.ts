@@ -57,31 +57,35 @@ async function ensureAdminAction(locals: App.Locals, activeTab: 'prompts' | 'pag
 	return user;
 }
 
+function getAdminClient(locals: App.Locals) {
+	return createServiceClient() ?? locals.supabase;
+}
+
 async function loadDashboardData(locals: App.Locals) {
-	const serviceClient = createServiceClient();
+	const adminClient = getAdminClient(locals);
 	const [pagesResult, contentResult, promptResult, abTestResult, feedbackResult] = await Promise.all([
-		locals.supabase
+		adminClient
 			.from('landing_pages')
 			.select('id, created_at, updated_at, page_id, name, slug, status, conversions, views, description')
 			.order('created_at', { ascending: false }),
-		locals.supabase
+		adminClient
 			.from('landing_page_content')
 			.select(
 				'id, created_at, updated_at, landing_page_id, html_content, seo_title, seo_meta, h1_heading, cta_text, keywords'
 			)
 			.order('created_at', { ascending: false }),
-		locals.supabase
+		adminClient
 			.from('seo_prompts')
 			.select('id, created_at, updated_at, landing_page_id, prompt_type, generated_content, used')
 			.order('created_at', { ascending: false })
 			.limit(24),
-		locals.supabase
+		adminClient
 			.from('ab_tests')
 			.select(
 				'id, created_at, updated_at, ended_at, landing_page_id, variant_a_name, variant_b_name, conversions_a, conversions_b, views_a, views_b, winner, is_active'
 			)
 			.order('created_at', { ascending: false }),
-		(serviceClient ?? locals.supabase)
+		adminClient
 			.from('feedback_submissions')
 			.select('id, created_at, user_id, experience, what_worked, unclear, missing, use_again, other')
 			.order('created_at', { ascending: false })
@@ -225,6 +229,7 @@ export const actions: Actions = {
 	generatePrompt: async ({ request, locals }) => {
 		const adminUser = await ensureAdminAction(locals, 'prompts');
 		if ('status' in adminUser) return adminUser;
+		const adminClient = getAdminClient(locals);
 
 		const formData = await request.formData();
 		const landingPageId = asNullableString(formData.get('landingPageId'));
@@ -235,7 +240,7 @@ export const actions: Actions = {
 			return fail(400, { activeTab: 'prompts', error: 'VÃ¤lj sida och prompttyp fÃ¶rst.' });
 		}
 
-		const { data: page, error: pageError } = await locals.supabase
+		const { data: page, error: pageError } = await adminClient
 			.from('landing_pages')
 			.select('id, name, description')
 			.eq('id', landingPageId)
@@ -274,7 +279,7 @@ export const actions: Actions = {
 				context
 			});
 
-			const { error: insertError } = await locals.supabase.from('seo_prompts').insert({
+			const { error: insertError } = await adminClient.from('seo_prompts').insert({
 				landing_page_id: landingPageId,
 				prompt_type: promptType,
 				generated_content: generatedContent,
@@ -313,6 +318,7 @@ export const actions: Actions = {
 	addLandingPage: async ({ request, locals }) => {
 		const adminUser = await ensureAdminAction(locals, 'pages');
 		if ('status' in adminUser) return adminUser;
+		const adminClient = getAdminClient(locals);
 
 		const formData = await request.formData();
 		const pageId = asNullableString(formData.get('pageId'));
@@ -337,7 +343,7 @@ export const actions: Actions = {
 
 		const slug = normalizeLandingPageSlug(rawSlug);
 
-		const { data: insertedPage, error: insertError } = await locals.supabase
+		const { data: insertedPage, error: insertError } = await adminClient
 			.from('landing_pages')
 			.insert({
 				page_id: pageId,
@@ -372,7 +378,7 @@ export const actions: Actions = {
 			const defaultHeading = name.toLowerCase() === 'Ã¥ngest' ? 'HjÃ¤lp vid Ã¥ngest i din egen takt' : name;
 			const defaultMeta = description ?? `StÃ¶d och vÃ¤gledning om ${name.toLowerCase()} pÃ¥ enkel svenska.`;
 
-			const { error: contentError } = await locals.supabase.from('landing_page_content').upsert(
+			const { error: contentError } = await adminClient.from('landing_page_content').upsert(
 				{
 					landing_page_id: insertedPage.id,
 					h1_heading: defaultHeading,
@@ -398,6 +404,7 @@ export const actions: Actions = {
 	updatePageStatus: async ({ request, locals }) => {
 		const adminUser = await ensureAdminAction(locals, 'pages');
 		if ('status' in adminUser) return adminUser;
+		const adminClient = getAdminClient(locals);
 
 		const formData = await request.formData();
 		const landingPageId = asNullableString(formData.get('landingPageId'));
@@ -407,7 +414,7 @@ export const actions: Actions = {
 			return fail(400, { activeTab: 'pages', error: 'Ogiltig sida eller status.' });
 		}
 
-		const { error: updateError } = await locals.supabase
+		const { error: updateError } = await adminClient
 			.from('landing_pages')
 			.update({ status })
 			.eq('id', landingPageId);
@@ -433,6 +440,7 @@ export const actions: Actions = {
 	deleteLandingPage: async ({ request, locals }) => {
 		const adminUser = await ensureAdminAction(locals, 'pages');
 		if ('status' in adminUser) return adminUser;
+		const adminClient = getAdminClient(locals);
 
 		const formData = await request.formData();
 		const landingPageId = asNullableString(formData.get('landingPageId'));
@@ -441,7 +449,7 @@ export const actions: Actions = {
 			return fail(400, { activeTab: 'pages', error: 'Sidan kunde inte identifieras.' });
 		}
 
-		const { error: deleteError } = await locals.supabase
+		const { error: deleteError } = await adminClient
 			.from('landing_pages')
 			.delete()
 			.eq('id', landingPageId);
@@ -467,6 +475,7 @@ export const actions: Actions = {
 	saveLandingPageContent: async ({ request, locals }) => {
 		const adminUser = await ensureAdminAction(locals, 'pages');
 		if ('status' in adminUser) return adminUser;
+		const adminClient = getAdminClient(locals);
 
 		const formData = await request.formData();
 		const landingPageId = asNullableString(formData.get('landingPageId'));
@@ -485,7 +494,7 @@ export const actions: Actions = {
 			keywords: asNullableString(formData.get('keywords'))
 		};
 
-		const { error: contentError } = await locals.supabase
+		const { error: contentError } = await adminClient
 			.from('landing_page_content')
 			.upsert(payload, { onConflict: 'landing_page_id' });
 
@@ -510,6 +519,7 @@ export const actions: Actions = {
 	updateABTest: async ({ request, locals }) => {
 		const adminUser = await ensureAdminAction(locals, 'ab');
 		if ('status' in adminUser) return adminUser;
+		const adminClient = getAdminClient(locals);
 
 		const formData = await request.formData();
 		const abTestId = asNullableString(formData.get('abTestId'));
@@ -538,8 +548,8 @@ export const actions: Actions = {
 		}
 
 		const query = abTestId
-			? locals.supabase.from('ab_tests').update(payload).eq('id', abTestId)
-			: locals.supabase.from('ab_tests').insert(payload);
+			? adminClient.from('ab_tests').update(payload).eq('id', abTestId)
+			: adminClient.from('ab_tests').insert(payload);
 
 		const { error: abTestError } = await query;
 
@@ -564,6 +574,7 @@ export const actions: Actions = {
 	calculateWinner: async ({ request, locals }) => {
 		const adminUser = await ensureAdminAction(locals, 'ab');
 		if ('status' in adminUser) return adminUser;
+		const adminClient = getAdminClient(locals);
 
 		const formData = await request.formData();
 		const abTestId = asNullableString(formData.get('abTestId'));
@@ -572,7 +583,7 @@ export const actions: Actions = {
 			return fail(400, { activeTab: 'ab', error: 'Testet kunde inte identifieras.' });
 		}
 
-		const { data: abTest, error: loadError } = await locals.supabase
+		const { data: abTest, error: loadError } = await adminClient
 			.from('ab_tests')
 			.select(
 				'id, created_at, updated_at, ended_at, landing_page_id, variant_a_name, variant_b_name, conversions_a, conversions_b, views_a, views_b, winner, is_active'
@@ -593,7 +604,7 @@ export const actions: Actions = {
 		}
 
 		const result = calculateAbTestWinner(abTest);
-		const { error: updateError } = await locals.supabase
+		const { error: updateError } = await adminClient
 			.from('ab_tests')
 			.update({
 				winner: result.winner,
