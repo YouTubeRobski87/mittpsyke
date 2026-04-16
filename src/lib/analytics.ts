@@ -26,6 +26,9 @@ type EventName =
 	| 'diary_page_opened_from_horoscope'
 	| 'hero_cta_primary_click'
 	| 'hero_cta_secondary_click'
+	| 'qr_landing_view'
+	| 'qr_cta_primary_click'
+	| 'qr_cta_secondary_click'
 	| 'view_chat_nudge'
 	| 'click_chat_nudge';
 
@@ -223,6 +226,18 @@ export function trackHeroCtaPrimaryClick() {
 
 export function trackHeroCtaSecondaryClick() {
 	trackHeroCTASecondaryClick();
+}
+
+export function trackQrLandingView(src?: string | null) {
+	trackEvent('qr_landing_view', src ? { src } : {});
+}
+
+export function trackQrCtaPrimaryClick(src?: string | null) {
+	trackEvent('qr_cta_primary_click', src ? { src } : {});
+}
+
+export function trackQrCtaSecondaryClick(src?: string | null) {
+	trackEvent('qr_cta_secondary_click', src ? { src } : {});
 }
 
 function getLandingSessionId() {
