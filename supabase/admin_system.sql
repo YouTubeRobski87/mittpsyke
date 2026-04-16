@@ -355,6 +355,6 @@ grant execute on function public.record_landing_page_event(uuid, text, text, uui
 insert into public.landing_pages (page_id, name, slug, status, description)
 values
 	('angst', 'Ångest', '/angest', 'draft', 'Landningssida för ångestrelaterat stöd'),
-	('social-angst', 'Social ångest', '/social-angst', 'planned', 'Landningssida för social ångest'),
+	('social-angst', 'Social ångest', '/social-angest', 'planned', 'Landningssida för social ångest'),
 	('stress', 'Stress och utmattning', '/stress', 'planned', 'Landningssida för stress och utmattning')
 on conflict (page_id) do nothing;

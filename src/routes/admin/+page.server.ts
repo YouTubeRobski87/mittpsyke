@@ -129,7 +129,12 @@ async function loadDashboardData(locals: App.Locals) {
 	const landingPageNameById = new Map(landingPages.map((page) => [page.id, page.name]));
 	const normalizedLandingPages = landingPages.map((page) => ({
 		...page,
-		slug: page.page_id === 'angst' && page.slug === '/angst' ? '/angest' : page.slug
+		slug:
+			page.page_id === 'angst' && page.slug === '/angst'
+				? '/angest'
+				: page.page_id === 'social-angst' && page.slug === '/social-angst'
+					? '/social-angest'
+					: page.slug
 	}));
 
 	return {
