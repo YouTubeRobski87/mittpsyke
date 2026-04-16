@@ -127,10 +127,14 @@ async function loadDashboardData(locals: App.Locals) {
 	}
 
 	const landingPageNameById = new Map(landingPages.map((page) => [page.id, page.name]));
+	const normalizedLandingPages = landingPages.map((page) => ({
+		...page,
+		slug: page.page_id === 'angst' && page.slug === '/angst' ? '/angest' : page.slug
+	}));
 
 	return {
 		schemaError,
-		landingPages: landingPages.map((page) => ({
+		landingPages: normalizedLandingPages.map((page) => ({
 			...page,
 			content: contentByLandingPageId.get(page.id) ?? null,
 			activeAbTest: activeAbTestByLandingPageId.get(page.id) ?? null
