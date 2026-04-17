@@ -173,14 +173,25 @@
 	let lastTrackedPagePath = $state('');
 	let profileRequestVersion = 0;
 	let seededSessionAccessToken = '';
+	let avatarImageLoadFailed = $state(false);
 	let profileButtonRef = $state<HTMLButtonElement | null>(null);
 	let profilePanelRef = $state<HTMLDivElement | null>(null);
 
 	const profilePanelData = $derived((data?.profilePanel ?? null) as ProfilePanelData);
 	const profileName = $derived(getProfileName(displayName, user));
 	const avatarImageUrl = $derived(getAvatarImageUrl(user));
+	const showAvatarImage = $derived(Boolean(avatarImageUrl && !avatarImageLoadFailed));
 	const avatarInitial = $derived(getAvatarInitial(profileName, user?.email));
 	const memberSinceLabel = $derived(getMemberSinceLabel(user?.created_at));
+
+	function handleAvatarImageError() {
+		avatarImageLoadFailed = true;
+	}
+
+	$effect(() => {
+		avatarImageUrl;
+		avatarImageLoadFailed = false;
+	});
 
 	async function syncUser(sessionUser: User | null) {
 		user = sessionUser;
@@ -474,8 +485,14 @@
 						<div class="relative">
 							<div class="profile-trigger">
 								<a href="/dashboard" class="profile-avatar-link" aria-label="Gå till Min portal">
-									{#if avatarImageUrl}
-										<img src={avatarImageUrl} alt="" class="profile-avatar-image" loading="lazy" />
+									{#if showAvatarImage}
+										<img
+											src={avatarImageUrl}
+											alt=""
+											class="profile-avatar-image"
+											loading="lazy"
+											onerror={handleAvatarImageError}
+										/>
 									{:else}
 										<span class="profile-avatar-fallback" aria-hidden="true">{avatarInitial}</span>
 									{/if}
@@ -503,11 +520,17 @@
 									class="profile-panel"
 								>
 									<div class="profile-panel-header">
-										{#if avatarImageUrl}
-											<img src={avatarImageUrl} alt="" class="profile-panel-avatar-image" loading="lazy" />
-										{:else}
-											<span class="profile-panel-avatar-fallback" aria-hidden="true">{avatarInitial}</span>
-										{/if}
+											{#if showAvatarImage}
+												<img
+													src={avatarImageUrl}
+													alt=""
+													class="profile-panel-avatar-image"
+													loading="lazy"
+													onerror={handleAvatarImageError}
+												/>
+											{:else}
+												<span class="profile-panel-avatar-fallback" aria-hidden="true">{avatarInitial}</span>
+											{/if}
 										<div class="min-w-0">
 											<p class="text-sm font-medium leading-tight">{profileName}</p>
 											<p class="text-xs opacity-65">Medlem sedan {memberSinceLabel}</p>

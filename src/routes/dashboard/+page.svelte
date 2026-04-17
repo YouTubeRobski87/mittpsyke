@@ -186,6 +186,7 @@
 		align-content: start;
 		min-height: 100%;
 		min-width: 0;
+		overflow: hidden;
 	}
 
 	.portal-card-head {
@@ -205,6 +206,8 @@
 	.portal-copy {
 		margin: 0;
 		line-height: 1.6;
+		max-width: 100%;
+		white-space: normal;
 		overflow-wrap: anywhere;
 		word-break: break-word;
 	}
