@@ -173,8 +173,8 @@
 	let lastTrackedPagePath = $state('');
 	let profileRequestVersion = 0;
 	let seededSessionAccessToken = '';
-	let profileButtonRef: HTMLButtonElement | null = null;
-	let profilePanelRef: HTMLDivElement | null = null;
+	let profileButtonRef = $state<HTMLButtonElement | null>(null);
+	let profilePanelRef = $state<HTMLDivElement | null>(null);
 
 	const profilePanelData = $derived((data?.profilePanel ?? null) as ProfilePanelData);
 	const profileName = $derived(getProfileName(displayName, user));
@@ -470,7 +470,67 @@
 					{/if}
 				</div>
 
-				<ThemeToggle />
+					{#if user}
+						<div class="relative">
+							<button
+								type="button"
+								bind:this={profileButtonRef}
+								class="profile-avatar-button"
+								aria-label="Öppna profilpanel"
+								aria-haspopup="dialog"
+								aria-expanded={profilePanelOpen}
+								aria-controls="header-profile-panel"
+								onclick={toggleProfilePanel}
+							>
+								{#if avatarImageUrl}
+									<img src={avatarImageUrl} alt="" class="profile-avatar-image" loading="lazy" />
+								{:else}
+									<span class="profile-avatar-fallback" aria-hidden="true">{avatarInitial}</span>
+								{/if}
+							</button>
+
+							{#if profilePanelOpen}
+								<div
+									id="header-profile-panel"
+									bind:this={profilePanelRef}
+									role="dialog"
+									aria-label="Din profil"
+									class="profile-panel"
+								>
+									<div class="profile-panel-header">
+										{#if avatarImageUrl}
+											<img src={avatarImageUrl} alt="" class="profile-panel-avatar-image" loading="lazy" />
+										{:else}
+											<span class="profile-panel-avatar-fallback" aria-hidden="true">{avatarInitial}</span>
+										{/if}
+										<div class="min-w-0">
+											<p class="text-sm font-medium leading-tight">{profileName}</p>
+											<p class="text-xs opacity-65">Medlem sedan {memberSinceLabel}</p>
+										</div>
+									</div>
+
+									<div class="profile-panel-stats" aria-label="Din statistik">
+										<p class="profile-panel-stat">
+											<span>Dagboksinlägg</span>
+											<strong>{profilePanelData?.diaryEntryCount ?? 0}</strong>
+										</p>
+										<p class="profile-panel-stat">
+											<span>Chattsessioner</span>
+											<strong>{profilePanelData?.chatSessionCount ?? 0}</strong>
+										</p>
+									</div>
+
+									<div class="profile-panel-links" aria-label="Snabbval">
+										<a href="/dagbok/checkin#skriv-sjalv" class="profile-panel-link" onclick={closeProfilePanel}>Skriv nytt dagboksinlägg</a>
+										<a href="/chat" class="profile-panel-link" onclick={closeProfilePanel}>Starta chat</a>
+										<a href="/dashboard/installningar" class="profile-panel-link" onclick={closeProfilePanel}>Inställningar</a>
+									</div>
+								</div>
+							{/if}
+						</div>
+					{/if}
+
+					<ThemeToggle />
 
 				<button
 					type="button"
@@ -478,7 +538,10 @@
 					aria-label="Öppna meny"
 					aria-expanded={mobileMenuOpen}
 					aria-controls="mobile-menu"
-					onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
+						onclick={() => {
+							profilePanelOpen = false;
+							mobileMenuOpen = !mobileMenuOpen;
+						}}
 				>
 					&#9776;
 				</button>
@@ -709,6 +772,144 @@
 		letter-spacing: -0.04em;
 		line-height: 1;
 		white-space: nowrap;
+	}
+
+	.profile-avatar-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: 9999px;
+		border: 1px solid rgba(0, 0, 0, 0.12);
+		background: rgba(255, 255, 255, 0.7);
+		transition: opacity 0.15s ease;
+	}
+
+	:global(.dark) .profile-avatar-button {
+		border-color: rgba(255, 255, 255, 0.14);
+		background: rgba(15, 23, 42, 0.65);
+	}
+
+	.profile-avatar-button:hover {
+		opacity: 1;
+	}
+
+	.profile-avatar-button:focus-visible {
+		outline: 2px solid hsl(var(--primary));
+		outline-offset: 2px;
+	}
+
+	.profile-avatar-image,
+	.profile-avatar-fallback,
+	.profile-panel-avatar-image,
+	.profile-panel-avatar-fallback {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 9999px;
+	}
+
+	.profile-avatar-image,
+	.profile-panel-avatar-image {
+		object-fit: cover;
+		background: rgba(148, 163, 184, 0.28);
+	}
+
+	.profile-avatar-image,
+	.profile-avatar-fallback {
+		width: 1.9rem;
+		height: 1.9rem;
+	}
+
+	.profile-panel-avatar-image,
+	.profile-panel-avatar-fallback {
+		width: 2.25rem;
+		height: 2.25rem;
+	}
+
+	.profile-avatar-fallback,
+	.profile-panel-avatar-fallback {
+		font-size: 0.8rem;
+		font-weight: 650;
+		color: hsl(var(--foreground));
+		background: rgba(15, 118, 110, 0.16);
+	}
+
+	.profile-panel {
+		position: absolute;
+		right: 0;
+		top: calc(100% + 0.55rem);
+		z-index: 40;
+		width: min(88vw, 19rem);
+		padding: 0.75rem;
+		border-radius: 0.95rem;
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		background: hsl(var(--background));
+		box-shadow: 0 10px 28px rgba(2, 6, 23, 0.16);
+	}
+
+	:global(.dark) .profile-panel {
+		border-color: rgba(255, 255, 255, 0.12);
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+	}
+
+	.profile-panel-header {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		margin-bottom: 0.6rem;
+	}
+
+	.profile-panel-stats {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.45rem;
+		margin-bottom: 0.65rem;
+	}
+
+	.profile-panel-stat {
+		margin: 0;
+		padding: 0.48rem 0.55rem;
+		border-radius: 0.72rem;
+		background: rgba(148, 163, 184, 0.12);
+		display: grid;
+		gap: 0.12rem;
+	}
+
+	.profile-panel-stat span {
+		font-size: 0.72rem;
+		opacity: 0.72;
+		line-height: 1.25;
+	}
+
+	.profile-panel-stat strong {
+		font-size: 1rem;
+		font-weight: 620;
+		line-height: 1.15;
+	}
+
+	.profile-panel-links {
+		display: grid;
+		gap: 0.38rem;
+	}
+
+	.profile-panel-link {
+		display: block;
+		padding: 0.45rem 0.55rem;
+		border-radius: 0.68rem;
+		font-size: 0.84rem;
+		line-height: 1.35;
+		text-decoration: none;
+		color: inherit;
+		background: rgba(148, 163, 184, 0.1);
+		transition: background-color 0.15s ease;
+	}
+
+	.profile-panel-link:hover,
+	.profile-panel-link:focus-visible {
+		background: rgba(15, 118, 110, 0.15);
+		outline: none;
 	}
 
 </style>
