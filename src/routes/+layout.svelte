@@ -98,8 +98,13 @@
 	function getAvatarImageUrl(sessionUser: User | null) {
 		if (!sessionUser) return null;
 		const metadata = sessionUser.user_metadata as Record<string, unknown> | undefined;
-		const candidate = normalizeText(metadata?.avatar_url);
-		return candidate && /^https?:\/\//i.test(candidate) ? candidate : null;
+		const candidates = [
+			normalizeText(metadata?.avatar_url),
+			normalizeText(metadata?.picture),
+			normalizeText(metadata?.profile_image_url)
+		];
+		const candidate = candidates.find((value) => Boolean(value && /^https?:\/\//i.test(value)));
+		return candidate ?? null;
 	}
 
 	function getAvatarInitial(name: string, email: string | undefined) {
