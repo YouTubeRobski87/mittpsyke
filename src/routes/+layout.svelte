@@ -472,22 +472,27 @@
 
 					{#if user}
 						<div class="relative">
-							<button
-								type="button"
-								bind:this={profileButtonRef}
-								class="profile-avatar-button"
-								aria-label="Öppna profilpanel"
-								aria-haspopup="dialog"
-								aria-expanded={profilePanelOpen}
-								aria-controls="header-profile-panel"
-								onclick={toggleProfilePanel}
-							>
-								{#if avatarImageUrl}
-									<img src={avatarImageUrl} alt="" class="profile-avatar-image" loading="lazy" />
-								{:else}
-									<span class="profile-avatar-fallback" aria-hidden="true">{avatarInitial}</span>
-								{/if}
-							</button>
+							<div class="profile-trigger">
+								<a href="/dashboard" class="profile-avatar-link" aria-label="Gå till Min portal">
+									{#if avatarImageUrl}
+										<img src={avatarImageUrl} alt="" class="profile-avatar-image" loading="lazy" />
+									{:else}
+										<span class="profile-avatar-fallback" aria-hidden="true">{avatarInitial}</span>
+									{/if}
+								</a>
+								<button
+									type="button"
+									bind:this={profileButtonRef}
+									class="profile-panel-toggle"
+									aria-label="Öppna profilpanel"
+									aria-haspopup="dialog"
+									aria-expanded={profilePanelOpen}
+									aria-controls="header-profile-panel"
+									onclick={toggleProfilePanel}
+								>
+									<span aria-hidden="true">{profilePanelOpen ? '▴' : '▾'}</span>
+								</button>
+							</div>
 
 							{#if profilePanelOpen}
 								<div
@@ -774,28 +779,50 @@
 		white-space: nowrap;
 	}
 
-	.profile-avatar-button {
+	.profile-trigger {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+
+	.profile-avatar-link,
+	.profile-panel-toggle {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 2.25rem;
-		height: 2.25rem;
 		border-radius: 9999px;
 		border: 1px solid rgba(0, 0, 0, 0.12);
 		background: rgba(255, 255, 255, 0.7);
 		transition: opacity 0.15s ease;
+		color: inherit;
+		text-decoration: none;
 	}
 
-	:global(.dark) .profile-avatar-button {
+	.profile-avatar-link {
+		width: 2.25rem;
+		height: 2.25rem;
+	}
+
+	.profile-panel-toggle {
+		width: 1.65rem;
+		height: 1.65rem;
+		font-size: 0.78rem;
+		line-height: 1;
+	}
+
+	:global(.dark) .profile-avatar-link,
+	:global(.dark) .profile-panel-toggle {
 		border-color: rgba(255, 255, 255, 0.14);
 		background: rgba(15, 23, 42, 0.65);
 	}
 
-	.profile-avatar-button:hover {
+	.profile-avatar-link:hover,
+	.profile-panel-toggle:hover {
 		opacity: 1;
 	}
 
-	.profile-avatar-button:focus-visible {
+	.profile-avatar-link:focus-visible,
+	.profile-panel-toggle:focus-visible {
 		outline: 2px solid hsl(var(--primary));
 		outline-offset: 2px;
 	}
