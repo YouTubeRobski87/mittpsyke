@@ -98,10 +98,34 @@
 	function getAvatarImageUrl(sessionUser: User | null) {
 		if (!sessionUser) return null;
 		const metadata = sessionUser.user_metadata as Record<string, unknown> | undefined;
+		const identityCandidates =
+			Array.isArray((sessionUser as unknown as { identities?: unknown[] }).identities)
+				? ((sessionUser as unknown as { identities?: unknown[] }).identities ?? []).flatMap((identity) => {
+						const identityRecord =
+							identity && typeof identity === 'object'
+								? (identity as Record<string, unknown>)
+								: undefined;
+						const identityData =
+							identityRecord?.identity_data &&
+							typeof identityRecord.identity_data === 'object'
+								? (identityRecord.identity_data as Record<string, unknown>)
+								: undefined;
+
+						return [
+							normalizeText(identityData?.avatar_url),
+							normalizeText(identityData?.picture),
+							normalizeText(identityData?.profile_image_url),
+							normalizeText(identityData?.photoURL)
+						];
+					})
+				: [];
+
 		const candidates = [
 			normalizeText(metadata?.avatar_url),
 			normalizeText(metadata?.picture),
-			normalizeText(metadata?.profile_image_url)
+			normalizeText(metadata?.profile_image_url),
+			normalizeText(metadata?.photoURL),
+			...identityCandidates
 		];
 		const candidate = candidates.find((value) => Boolean(value && /^https?:\/\//i.test(value)));
 		return candidate ?? null;
