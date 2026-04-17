@@ -521,7 +521,7 @@
 									</div>
 
 									<div class="profile-panel-links" aria-label="Snabbval">
-										<a href="/dagbok/checkin#skriv-sjalv" class="profile-panel-link" onclick={closeProfilePanel}>Skriv nytt dagboksinlägg</a>
+										<a href="/dagbok" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
 										<a href="/chat" class="profile-panel-link" onclick={closeProfilePanel}>Starta chat</a>
 										<a href="/dashboard/installningar" class="profile-panel-link" onclick={closeProfilePanel}>Inställningar</a>
 									</div>
