@@ -131,14 +131,6 @@
 		return candidate ?? null;
 	}
 
-	function getAvatarInitial(name: string, email: string | undefined) {
-		const fromName = normalizeText(name)?.charAt(0);
-		if (fromName) return fromName.toUpperCase();
-		const fromEmail = normalizeText(email)?.charAt(0);
-		if (fromEmail) return fromEmail.toUpperCase();
-		return 'M';
-	}
-
 	function getMemberSinceLabel(createdAt: string | undefined) {
 		if (!createdAt) return 'okänd';
 		const parsed = new Date(createdAt);
@@ -210,7 +202,6 @@
 	const profileName = $derived(getProfileName(displayName, user));
 	const avatarImageUrl = $derived(getAvatarImageUrl(user));
 	const showAvatarImage = $derived(Boolean(avatarImageUrl && !avatarImageLoadFailed));
-	const avatarInitial = $derived(getAvatarInitial(profileName, user?.email));
 	const memberSinceLabel = $derived(getMemberSinceLabel(user?.created_at));
 
 	function handleAvatarImageError() {
@@ -522,9 +513,22 @@
 											loading="lazy"
 											onerror={handleAvatarImageError}
 										/>
-									{:else}
-										<span class="profile-avatar-fallback" aria-hidden="true">{avatarInitial}</span>
-									{/if}
+										{:else}
+											<span class="profile-avatar-fallback" aria-hidden="true">
+												<svg
+													viewBox="0 0 24 24"
+													class="profile-avatar-icon"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="1.8"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+												>
+													<circle cx="12" cy="8.2" r="3.3"></circle>
+													<path d="M5.4 18.5c1.5-2.9 3.8-4.7 6.6-4.7 2.8 0 5.1 1.8 6.6 4.7"></path>
+												</svg>
+											</span>
+										{/if}
 								</a>
 								<button
 									type="button"
@@ -558,7 +562,20 @@
 													onerror={handleAvatarImageError}
 												/>
 											{:else}
-												<span class="profile-panel-avatar-fallback" aria-hidden="true">{avatarInitial}</span>
+												<span class="profile-panel-avatar-fallback" aria-hidden="true">
+													<svg
+														viewBox="0 0 24 24"
+														class="profile-avatar-icon"
+														fill="none"
+														stroke="currentColor"
+														stroke-width="1.8"
+														stroke-linecap="round"
+														stroke-linejoin="round"
+													>
+														<circle cx="12" cy="8.2" r="3.3"></circle>
+														<path d="M5.4 18.5c1.5-2.9 3.8-4.7 6.6-4.7 2.8 0 5.1 1.8 6.6 4.7"></path>
+													</svg>
+												</span>
 											{/if}
 										<div class="min-w-0">
 											<p class="text-sm font-medium leading-tight">{profileName}</p>
@@ -909,10 +926,18 @@
 
 	.profile-avatar-fallback,
 	.profile-panel-avatar-fallback {
-		font-size: 0.8rem;
-		font-weight: 650;
-		color: hsl(var(--foreground));
+		color: hsl(var(--foreground) / 0.82);
 		background: rgba(15, 118, 110, 0.16);
+	}
+
+	.profile-avatar-icon {
+		width: 65%;
+		height: 65%;
+	}
+
+	:global(.dark) .profile-avatar-fallback,
+	:global(.dark) .profile-panel-avatar-fallback {
+		color: hsl(var(--foreground) / 0.88);
 	}
 
 	.profile-panel {
