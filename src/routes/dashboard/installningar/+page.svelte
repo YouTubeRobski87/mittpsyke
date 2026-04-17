@@ -47,6 +47,18 @@
 		{ value: 'guide',  label: 'Guider' },
 		{ value: 'chat',   label: 'Chatten' },
 	];
+	const AVATAR_OPTIONS: { value: AvatarPresetKey; label: string; src: string }[] = [
+		{ value: 'sol', label: 'Sol', src: AVATAR_PRESETS.sol },
+		{ value: 'himmel', label: 'Himmel', src: AVATAR_PRESETS.himmel },
+		{ value: 'skog', label: 'Skog', src: AVATAR_PRESETS.skog },
+		{ value: 'natt', label: 'Natt', src: AVATAR_PRESETS.natt }
+	];
+
+	function toAvatarKey(value: unknown): AvatarPresetKey | '' {
+		if (typeof value !== 'string' || !(value in AVATAR_PRESETS)) return '';
+		return value as AvatarPresetKey;
+	}
+
 	let nameMessageType = $state<'success' | 'error'>('success');
 
 	// Password
@@ -81,6 +93,7 @@
 			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
 			displayName = typeof meta.display_name === 'string' ? meta.display_name : '';
 			birthday = typeof meta.birthday === 'string' ? meta.birthday : '';
+			avatarKey = toAvatarKey(meta.avatar_key);
 			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
@@ -122,6 +135,7 @@
 
 		const { error } = await supabase.auth.updateUser({
 			data: {
+				avatar_key: avatarKey || null,
 				profile_theme: profileTheme,
 				weekly_goal_type: weeklyGoalType,
 				dashboard_widget: dashboardWidget
@@ -302,6 +316,47 @@
 			<p class="field-hint">Välj tema, mål och vilket kort du vill se på startsidan. Du kan ändra när du vill.</p>
 
 			<!-- Theme picker -->
+			<p class="pref-label">Din avatar</p>
+			<div class="avatar-row" role="radiogroup" aria-label="Valj avatar">
+				<label class="avatar-option {avatarKey === '' ? 'selected' : ''}">
+					<input
+						type="radio"
+						name="avatarKey"
+						value=""
+						bind:group={avatarKey}
+						class="sr-only"
+					/>
+					<span class="avatar-preview avatar-fallback-icon" aria-hidden="true">
+						<svg
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.8"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<circle cx="12" cy="8.2" r="3.3"></circle>
+							<path d="M5.4 18.5c1.5-2.9 3.8-4.7 6.6-4.7 2.8 0 5.1 1.8 6.6 4.7"></path>
+						</svg>
+					</span>
+					<span class="option-text">Standard</span>
+				</label>
+
+				{#each AVATAR_OPTIONS as avatar}
+					<label class="avatar-option {avatarKey === avatar.value ? 'selected' : ''}">
+						<input
+							type="radio"
+							name="avatarKey"
+							value={avatar.value}
+							bind:group={avatarKey}
+							class="sr-only"
+						/>
+						<img src={avatar.src} alt="" class="avatar-preview" loading="lazy" />
+						<span class="option-text">{avatar.label}</span>
+					</label>
+				{/each}
+			</div>
+
 			<p class="pref-label">Ditt tema</p>
 			<div class="theme-row" role="group" aria-label="Välj tema">
 				{#each THEMES as t}
@@ -577,6 +632,57 @@
 		font-weight: 600;
 		opacity: 0.75;
 		margin: 1rem 0 0.4rem;
+	}
+
+	.avatar-row {
+		display: flex;
+		align-items: center;
+		gap: 0.45rem;
+		flex-wrap: wrap;
+		margin-bottom: 0.25rem;
+	}
+
+	.avatar-option {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.35rem 0.45rem;
+		border-radius: 9999px;
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
+		cursor: pointer;
+		transition: border-color 120ms ease, background 120ms ease;
+	}
+
+	.avatar-option:hover {
+		border-color: hsl(var(--muted-foreground) / 0.35);
+		background: hsl(var(--surface-soft));
+	}
+
+	.avatar-option.selected {
+		border-color: var(--primary, #436e8f);
+		background: var(--theme-bg, hsl(var(--surface-soft)));
+	}
+
+	.avatar-preview {
+		width: 1.55rem;
+		height: 1.55rem;
+		border-radius: 9999px;
+		object-fit: cover;
+		flex-shrink: 0;
+	}
+
+	.avatar-fallback-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		color: hsl(var(--foreground) / 0.82);
+		background: rgba(15, 118, 110, 0.16);
+	}
+
+	.avatar-fallback-icon svg {
+		width: 65%;
+		height: 65%;
 	}
 
 	.theme-row {
