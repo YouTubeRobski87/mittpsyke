@@ -18,6 +18,7 @@
 		cookieBannerOpen
 	} from '$lib/consent';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import { resolveAvatarPresetUrl } from '$lib/avatar';
 	import { supabase } from '$lib/supabase';
 	import { page } from '$app/state';
 	import type { User } from '@supabase/supabase-js';
@@ -98,6 +99,7 @@
 	function getAvatarImageUrl(sessionUser: User | null) {
 		if (!sessionUser) return null;
 		const metadata = sessionUser.user_metadata as Record<string, unknown> | undefined;
+		const presetAvatar = resolveAvatarPresetUrl(metadata?.avatar_key);
 		const identityCandidates =
 			Array.isArray((sessionUser as unknown as { identities?: unknown[] }).identities)
 				? ((sessionUser as unknown as { identities?: unknown[] }).identities ?? []).flatMap((identity) => {
@@ -121,13 +123,16 @@
 				: [];
 
 		const candidates = [
+			presetAvatar,
 			normalizeText(metadata?.avatar_url),
 			normalizeText(metadata?.picture),
 			normalizeText(metadata?.profile_image_url),
 			normalizeText(metadata?.photoURL),
 			...identityCandidates
 		];
-		const candidate = candidates.find((value) => Boolean(value && /^https?:\/\//i.test(value)));
+		const candidate = candidates.find((value) =>
+			Boolean(value && (/^https?:\/\//i.test(value) || value.startsWith('/')))
+		);
 		return candidate ?? null;
 	}
 

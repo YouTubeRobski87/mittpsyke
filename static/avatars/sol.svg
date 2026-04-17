@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Avatar Sol">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#284a7a"/>
+      <stop offset="100%" stop-color="#1a2f52"/>
+    </linearGradient>
+    <linearGradient id="orb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f6d48a"/>
+      <stop offset="100%" stop-color="#d29b53"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="60" fill="url(#bg)"/>
+  <circle cx="60" cy="53" r="22" fill="url(#orb)"/>
+  <path d="M28 92c7-14 18-21 32-21s25 7 32 21" fill="#f5efe6" opacity=".92"/>
+  <circle cx="60" cy="53" r="5.2" fill="#f8f5ef" opacity=".9"/>
+</svg>
+

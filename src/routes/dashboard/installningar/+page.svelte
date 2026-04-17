@@ -5,6 +5,7 @@
 	import { supabase } from '$lib/supabase';
 	import type { DeleteAccountErrorResponse, DeleteAccountSuccessResponse } from '$lib/types';
 	import { THEME_STORAGE_KEY } from '$lib/theme';
+	import { AVATAR_PRESETS, type AvatarPresetKey } from '$lib/avatar';
 
 	let loading = $state(true);
 
@@ -15,6 +16,7 @@
 	let nameMessage = $state('');
 
 	// Personalization
+	let avatarKey = $state<AvatarPresetKey | ''>('');
 	let profileTheme = $state('neutral');
 	let weeklyGoalType = $state('diary_3_week');
 	let dashboardWidget = $state('dagbok');

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Avatar Skog">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2f5d46"/>
+      <stop offset="100%" stop-color="#1f3f31"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="60" fill="url(#bg)"/>
+  <circle cx="60" cy="51" r="22" fill="#c6d5bb"/>
+  <path d="M25 92c8-13 20-21 35-21s27 8 35 21" fill="#edf3e7" opacity=".92"/>
+  <path d="M45 43c3-4 8-6 15-6 7 0 12 2 15 6" fill="none" stroke="#f7fbf3" stroke-width="3" stroke-linecap="round"/>
+</svg>
+
