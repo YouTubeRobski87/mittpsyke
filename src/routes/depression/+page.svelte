@@ -62,7 +62,19 @@
 			<p>Depression är en sjukdom, inte en personlig misslyckad. Det finns vägar ut och fram, och du behöver inte finna dem ensam. MittPsyke kan vara en början.</p>
 		</aside>
 		<!-- Källor och uppdatering -->
-		<TopicGuideSection topicTitle="Depression" guideHref="/guider/depression" />
+		<TopicGuideSection
+			topicTitle="Depression"
+			guideHref="/guider/depression"
+			intro="Det här är översiktssidan om depression. Här är de viktigaste fördjupningarna om nedstämdhet, låg ork och nästa steg."
+			articleLinks={[
+				{ title: 'Nedstämdhet eller depression – vad är skillnaden?', href: '/guider/depression/nedstamdhet' },
+				{ title: 'Hur nedstämdhet påverkar relationer', href: '/guider/depression/nedstamdhet-och-relationer' },
+				{ title: 'Små steg vid nedstämdhet när energin tryter', href: '/guider/depression/sma-steg-vid-nedstamdhet' },
+				{ title: 'Skillnaden mellan sorg och depression', href: '/guider/depression/sorg-och-depression' },
+				{ title: 'Hjälp vid depression online', href: '/hjalp-vid-depression-online' },
+				{ title: 'Samtalsstöd vid nedstämdhet', href: '/nedstamdhet' }
+			]}
+		/>
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
 			<h2>Källor</h2>
@@ -262,4 +274,3 @@
 		opacity: 1;
 	}
 </style>
-

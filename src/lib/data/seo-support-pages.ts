@@ -299,7 +299,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		lead:
 			'När allt känns tyngre än vanligt kan även små saker bli svåra att få gjort. Den här sidan samlar lugn information om vanliga symtom vid depression, varför tidigt stöd spelar roll och hur du kan börja idag utan att pressa dig mer än du orkar.',
 		primaryCta: { href: '/chat/b', label: 'Starta samtal om nedstämdhet' },
-		secondaryCta: { href: '/guider/depression', label: 'Läs guide om depression' },
+		secondaryCta: { href: '/depression', label: 'Läs översikt om depression' },
 		sections: [
 			{
 				title: 'Vanliga symtom när depression tar plats',
@@ -335,7 +335,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		nextStepLinks: [
 			{ href: '/chat/b', label: 'Öppna samtalet' },
 			{ href: '/dagbok', label: 'Skriv några rader' },
-			{ href: '/guider/depression', label: 'Läs mer om depression' }
+			{ href: '/depression', label: 'Gå till översikt om depression' }
 		],
 		faq: [
 			{

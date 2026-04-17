@@ -62,7 +62,18 @@
 			<p>Även när det känns omöjligt och evigt, så passerar panikattacker – i regel inom 15-30 minuter. Du är inte i fara. Din kropp försöker skydda dig. MittPsyke kan guida dig genom det.</p>
 		</aside>
 		<!-- Källor och uppdatering -->
-		<TopicGuideSection topicTitle="Panikattack" guideHref="/guider/panikattack" />
+		<TopicGuideSection
+			topicTitle="Panikattack"
+			guideHref="/guider/panikattack"
+			intro="Det här är översiktssidan om panikattack. Här är de viktigaste fördjupningarna för panic-attack intent."
+			articleLinks={[
+				{ title: 'Panikattack eller hjärtinfarkt – hur vet jag skillnaden?', href: '/guider/panikattack/panikattack-eller-hjartinfarkt' },
+				{ title: 'Panikattacker på natten – varför det händer och vad du kan göra', href: '/guider/panikattack/panikattacker-pa-natten' },
+				{ title: 'Ta dig igenom en panikattack – steg för steg', href: '/guider/panikattack/ta-dig-igenom-en-panikattack' },
+				{ title: 'Vad händer i kroppen vid en panikattack?', href: '/guider/panikattack/vad-hander-i-kroppen' },
+				{ title: 'Lugna en panikattack – steg för steg', href: '/guider/angest/lugna-en-panikattack' }
+			]}
+		/>
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
 			<h2>Källor</h2>
@@ -262,4 +273,3 @@
 		opacity: 1;
 	}
 </style>
-

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/nedstamdhet" />
@@ -59,6 +60,17 @@
 			<h2>Dina känslor är verkliga</h2>
 			<p>Att sätta ord på nedstämdhet – även lite i taget – kan göra en stor skillnad. Du förtjänar att bli lyssnad på, utan att behöva minimera det du känner.</p>
 		</aside>
+		<TopicGuideSection
+			topicTitle="Depression"
+			guideHref="/depression"
+			guideTitle="depression"
+			intro="Det här är en fördjupning om nedstämdhet. Om du vill börja i huvudöversikten finns den på sidan om depression."
+			articleLinks={[
+				{ title: 'Översikt om depression', href: '/depression' },
+				{ title: 'Nedstämdhet eller depression – vad är skillnaden?', href: '/guider/depression/nedstamdhet' },
+				{ title: 'Små steg vid nedstämdhet när energin tryter', href: '/guider/depression/sma-steg-vid-nedstamdhet' }
+			]}
+		/>
 		<!-- Källor och uppdatering -->
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
@@ -258,4 +270,3 @@
 		opacity: 1;
 	}
 </style>
-
