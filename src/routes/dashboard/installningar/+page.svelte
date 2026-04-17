@@ -51,7 +51,9 @@
 		{ value: 'sol', label: 'Sol', src: AVATAR_PRESETS.sol },
 		{ value: 'himmel', label: 'Himmel', src: AVATAR_PRESETS.himmel },
 		{ value: 'skog', label: 'Skog', src: AVATAR_PRESETS.skog },
-		{ value: 'natt', label: 'Natt', src: AVATAR_PRESETS.natt }
+		{ value: 'natt', label: 'Natt', src: AVATAR_PRESETS.natt },
+		{ value: 'gryning', label: 'Gryning', src: AVATAR_PRESETS.gryning },
+		{ value: 'sten', label: 'Sten', src: AVATAR_PRESETS.sten }
 	];
 
 	function toAvatarKey(value: unknown): AvatarPresetKey | '' {
