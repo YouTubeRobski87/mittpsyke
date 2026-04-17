@@ -65,10 +65,13 @@
 		<TopicGuideSection
 			topicTitle="Stress"
 			guideHref="/guider/stress"
+			intro="Det här är översiktssidan om stress. När du vill gå vidare finns den viktigaste fördjupningen samlad i stressguiden."
 			articleLinks={[
 				{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider/stress/stressymtom' },
 				{ title: 'Utmattad mentalt – när stressen tagit slut på resurserna', href: '/guider/stress/utmattad-mentalt' },
-				{ title: 'Kan inte varva ner – kroppen som glömt hur', href: '/guider/stress/kan-inte-varva-ner' }
+				{ title: 'Kan inte varva ner – kroppen som glömt hur', href: '/guider/stress/kan-inte-varva-ner' },
+				{ title: 'Tecken på mental överbelastning – när det blivit för mycket', href: '/guider/stress/tecken-pa-mental-overbelastning' },
+				{ title: 'Hur återhämtar man sig mentalt? Lugna steg tillbaka', href: '/guider/stress/hur-aterhamtar-man-sig-mentalt' }
 			]}
 		/>
 		<PublicTrustPanel

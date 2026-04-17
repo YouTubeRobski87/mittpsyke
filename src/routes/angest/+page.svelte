@@ -190,7 +190,7 @@
 	<section class="guide-strip">
 		<div>
 			<p class="eyebrow">Fördjupning</p>
-			<h2>Det här är startsidan om ångest. När du vill läsa vidare finns guiden här.</h2>
+			<h2>Det här är översiktssidan om ångest. Här är de viktigaste fördjupningarna i klustret.</h2>
 		</div>
 		<div class="guide-links">
 			<a href="/guider/angest" onclick={() => trackCta('guide')}>
@@ -201,6 +201,12 @@
 			</a>
 			<a href="/guider/angest/panikattack-hjalp" onclick={() => trackCta('guide')}>
 				Hjälp vid panikattack när kroppen larmar
+			</a>
+			<a href="/guider/angest/orostankar" onclick={() => trackCta('guide')}>
+				Orostankar som snurrar och inte vill släppa
+			</a>
+			<a href="/guider/angest/lugna-en-panikattack" onclick={() => trackCta('guide')}>
+				Lugna en panikattack steg för steg
 			</a>
 			<a href="/ovningar-mot-angest-online" onclick={() => trackCta('guide')}>
 				Övningar mot ångest online

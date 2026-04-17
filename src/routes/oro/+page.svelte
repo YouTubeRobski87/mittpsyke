@@ -63,9 +63,15 @@
 		<!-- Källor och uppdatering -->
 		<TopicGuideSection
 			topicTitle="Oro"
-			guideHref="/guider/angest"
-			guideTitle="ångest och oro"
-			intro="Det här är startsidan för oro. När du vill läsa vidare finns fördjupning om oro, ältande och ångest i guiden."
+			guideHref="/guider/overtankande"
+			guideTitle="oro och övertänkande"
+			intro="Det här är översiktssidan om oro. När du vill läsa vidare finns de viktigaste fördjupningarna om oro och ältande i guiden."
+			articleLinks={[
+				{ title: 'Varför hjärnan fastnar i loopar – om grubblande och ältande', href: '/guider/overtankande/varfor-hjarnan-fastnar-i-loopar' },
+				{ title: 'Oro vs ältande – vad är skillnaden?', href: '/guider/overtankande/skillnaden-mellan-oro-och-altande' },
+				{ title: 'Sluta övertänka på kvällen – lugnare kvällar steg för steg', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' },
+				{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' }
+			]}
 		/>
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>

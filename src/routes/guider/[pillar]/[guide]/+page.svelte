@@ -152,11 +152,17 @@
 	</div>
 
 	{#if pillarRoute}
-		<section class="nasta-steg mt-6 rounded-xl border border-black/10 p-5" aria-label="Mer i samma tema">
-			<h2 class="text-base font-semibold">Mer i samma tema</h2>
+		<section class="nasta-steg mt-6 rounded-xl border border-black/10 p-5" aria-label="Huvudsida och fler guider">
+			<h2 class="text-base font-semibold">Börja på huvudsidan för ämnet</h2>
+			<p class="guide-copy mt-2 leading-relaxed">
+				Den här artikeln är en fördjupning. Översiktssidan samlar de viktigaste nästa stegen inom samma tema.
+			</p>
 			<ul class="mt-3 space-y-2">
 				<li>
-					<a class="next-link" href={pillarRoute}>Fortsätt läsa om {data.pillar.title.toLowerCase()}</a>
+					<a class="next-link" href={pillarRoute}>Gå till översiktssidan om {data.pillar.title.toLowerCase()}</a>
+				</li>
+				<li>
+					<a class="next-link" href={`/guider/${data.pillar.slug}`}>Se alla guider inom {data.pillar.title.toLowerCase()}</a>
 				</li>
 			</ul>
 		</section>
