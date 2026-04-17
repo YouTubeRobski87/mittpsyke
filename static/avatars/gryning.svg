@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Avatar Gryning">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#7b5d74"/>
-      <stop offset="100%" stop-color="#4c3d60"/>
+    <linearGradient id="gryning-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b19ea8"/>
+      <stop offset="100%" stop-color="#6e6f87"/>
     </linearGradient>
   </defs>
-  <rect width="120" height="120" rx="60" fill="url(#bg)"/>
-  <circle cx="60" cy="50" r="22" fill="#dbc6d8"/>
-  <path d="M24 92c8-14 20-21 36-21s28 7 36 21" fill="#f3ebf3" opacity=".92"/>
-  <path d="M47 48c3-2 5.8-3 13-3s10 1 13 3" fill="none" stroke="#f8f3f8" stroke-width="3" stroke-linecap="round"/>
+  <rect width="120" height="120" rx="60" fill="url(#gryning-bg)"/>
+  <circle cx="60" cy="52" r="10" fill="#f0dcc4" opacity=".9"/>
+  <path d="M0 78c13-8 25-10 37-8 8 2 15 5 23 7 11 3 23 1 35-4 8-4 16-6 25-5v52H0z" fill="#5f6179"/>
+  <path d="M0 90c13-5 24-6 36-5 8 2 15 4 22 5 11 2 23 0 35-4 8-3 17-4 27-3v37H0z" fill="#4f5167" opacity=".95"/>
+  <path d="M49 58c3-1.5 6.5-2.3 11-2.3s8 .8 11 2.3" fill="none" stroke="#f1e7da" stroke-width="2.3" stroke-linecap="round" opacity=".75"/>
 </svg>
-

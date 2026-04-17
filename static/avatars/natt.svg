@@ -1,13 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Avatar Natt">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Avatar Kväll">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#242f57"/>
-      <stop offset="100%" stop-color="#161f3d"/>
+    <linearGradient id="kvall-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4f5f80"/>
+      <stop offset="100%" stop-color="#323f5a"/>
     </linearGradient>
   </defs>
-  <rect width="120" height="120" rx="60" fill="url(#bg)"/>
-  <circle cx="60" cy="50" r="22" fill="#b8c0e5"/>
-  <path d="M24 92c8-14 20-21 36-21s28 7 36 21" fill="#eceef8" opacity=".92"/>
-  <path d="M52 55c2.4 2.1 4.9 3.2 8 3.2s5.6-1.1 8-3.2" fill="none" stroke="#f6f7ff" stroke-width="3" stroke-linecap="round"/>
+  <rect width="120" height="120" rx="60" fill="url(#kvall-bg)"/>
+  <path d="M0 78c12-7 24-9 36-7 9 2 17 6 26 7 12 2 24-2 35-7 7-3 14-4 23-4v53H0z" fill="#2f3b55"/>
+  <path d="M0 92c12-5 23-6 34-5 9 2 16 4 24 5 11 2 23 0 35-4 8-3 17-4 27-3v35H0z" fill="#263248" opacity=".96"/>
+  <circle cx="83" cy="31" r="8.5" fill="#d9deea" opacity=".82"/>
+  <circle cx="87" cy="28" r="8.5" fill="#4f5f80"/>
+  <circle cx="30" cy="37" r="1.3" fill="#dbe2ef" opacity=".8"/>
+  <circle cx="42" cy="29" r="1.1" fill="#dbe2ef" opacity=".7"/>
 </svg>
-
