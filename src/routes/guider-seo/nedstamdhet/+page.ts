@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
 
 export function load() {
-	throw redirect(308, '/guider-seo/depression');
+	throw redirect(308, '/guider/depression');
 }

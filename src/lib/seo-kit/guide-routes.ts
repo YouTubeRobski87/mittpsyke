@@ -1,6 +1,6 @@
 ﻿import type { Guide, Pillar } from '$lib/seo-kit/content';
 
-export const LEGACY_GUIDES_BASE_PATH = '/guider-seo';
+export const LEGACY_GUIDES_BASE_PATH = '/guider';
 export const PUBLIC_GUIDES_BASE_PATH = '/guider';
 
 export function getGuideIndexPath(): string {
@@ -18,6 +18,4 @@ export function getGuideArticlePath(
 	return `${getGuidePillarPath(pillarSlug)}/${guideSlug}`;
 }
 
-// Future migration note:
-// When /guider is ready to replace /guider-seo, update the base path helpers here
-// first and then review canonical tags, sitemap entries and redirects together.
+// Canonical guides base path.

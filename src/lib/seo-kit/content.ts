@@ -158,19 +158,19 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det',
-				href: '/guider-seo/angest/panikangest-och-kroppen'
+				href: '/guider/angest/panikangest-och-kroppen'
 			},
 			{
 				title: 'Orostankar som snurrar – när hjärnan inte kan stänga av',
-				href: '/guider-seo/angest/orostankar'
+				href: '/guider/angest/orostankar'
 			},
 			{
 				title: 'Ångest och sömn – varför natten kan bli svårare',
-				href: '/guider-seo/angest/angest-och-somn'
+				href: '/guider/angest/angest-och-somn'
 			},
 			{
 				title: 'Social ångest – rädslan för att bli bedömd av andra',
-				href: '/guider-seo/angest/social-angest'
+				href: '/guider/angest/social-angest'
 			}
 		],
 	},
@@ -206,15 +206,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Tecken på ångest',
-				href: '/guider-seo/angest/tecken'
+				href: '/guider/angest/tecken'
 			},
 			{
 				title: 'Orostankar som snurrar – när hjärnan inte kan stänga av',
-				href: '/guider-seo/angest/orostankar'
+				href: '/guider/angest/orostankar'
 			},
 			{
 				title: 'Ångest och sömn – varför natten kan bli svårare',
-				href: '/guider-seo/angest/angest-och-somn'
+				href: '/guider/angest/angest-och-somn'
 			}
 		],
 	},
@@ -250,15 +250,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Tecken på ångest',
-				href: '/guider-seo/angest/tecken'
+				href: '/guider/angest/tecken'
 			},
 			{
 				title: 'Panikångest - vad som händer i kroppen och hur du kan hantera det',
-				href: '/guider-seo/angest/panikangest-och-kroppen'
+				href: '/guider/angest/panikangest-och-kroppen'
 			},
 			{
 				title: 'Ångest och sömn - varför natten kan bli svårare',
-				href: '/guider-seo/angest/angest-och-somn'
+				href: '/guider/angest/angest-och-somn'
 			}
 		],
 	},
@@ -294,19 +294,19 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Tecken på ångest',
-				href: '/guider-seo/angest/tecken'
+				href: '/guider/angest/tecken'
 			},
 			{
 				title: 'Varför kan jag inte sova',
-				href: '/guider-seo/sovproblem/orsaker'
+				href: '/guider/sovproblem/orsaker'
 			},
 			{
 				title: 'Stress och sömn – när kroppen inte kan varva ner',
-				href: '/guider-seo/sovproblem/stress-och-somn'
+				href: '/guider/sovproblem/stress-och-somn'
 			},
 			{
 				title: 'Hjälp vid oro på kvällen – vad du kan göra just nu',
-				href: '/guider-seo/angest/hjalp-vid-oro-pa-kvallen'
+				href: '/guider/angest/hjalp-vid-oro-pa-kvallen'
 			}
 		],
 	},
@@ -342,15 +342,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Tecken på ångest',
-				href: '/guider-seo/angest/tecken'
+				href: '/guider/angest/tecken'
 			},
 			{
 				title: 'Orostankar som snurrar - när hjärnan inte kan stänga av',
-				href: '/guider-seo/angest/orostankar'
+				href: '/guider/angest/orostankar'
 			},
 			{
 				title: 'Låg självkänsla - vad det är och var det kommer ifrån',
-				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+				href: '/guider/sjalvkansla/lag-sjalvkansla'
 			}
 		],
 	},
@@ -386,19 +386,19 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Trötthet och meningslöshet – när ingenting känns värt att göra',
-				href: '/guider-seo/depression/trotthet-och-meningsloshet'
+				href: '/guider/depression/trotthet-och-meningsloshet'
 			},
 			{
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
-				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+				href: '/guider/depression/nedstamdhet-och-relationer'
 			},
 			{
 				title: 'Skillnaden mellan sorg och depression – och varför det spelar roll',
-				href: '/guider-seo/depression/sorg-och-depression'
+				href: '/guider/depression/sorg-och-depression'
 			},
 			{
 				title: 'Små steg när energin tryter – vad som faktiskt kan hjälpa',
-				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
+				href: '/guider/depression/sma-steg-vid-nedstamdhet'
 			}
 		],
 	},
@@ -434,15 +434,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Nedstämdhet eller depression',
-				href: '/guider-seo/depression/nedstamdhet'
+				href: '/guider/depression/nedstamdhet'
 			},
 			{
 				title: 'Små steg när energin tryter - vad som faktiskt kan hjälpa',
-				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
+				href: '/guider/depression/sma-steg-vid-nedstamdhet'
 			},
 			{
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
-				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+				href: '/guider/depression/nedstamdhet-och-relationer'
 			}
 		],
 	},
@@ -478,15 +478,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Nedstämdhet eller depression',
-				href: '/guider-seo/depression/nedstamdhet'
+				href: '/guider/depression/nedstamdhet'
 			},
 			{
 				title: 'Låg självkänsla - vad det är och var det kommer ifrån',
-				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+				href: '/guider/sjalvkansla/lag-sjalvkansla'
 			},
 			{
 				title: 'Jämförelsetrasket - sociala medier och din självbild',
-				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
+				href: '/guider/sjalvkansla/jamforelse-och-sjalvbild'
 			}
 		],
 	},
@@ -522,15 +522,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Nedstämdhet eller depression',
-				href: '/guider-seo/depression/nedstamdhet'
+				href: '/guider/depression/nedstamdhet'
 			},
 			{
 				title: 'Trötthet och meningslöshet - när ingenting känns värt att göra',
-				href: '/guider-seo/depression/trotthet-och-meningsloshet'
+				href: '/guider/depression/trotthet-och-meningsloshet'
 			},
 			{
 				title: 'Små steg när energin tryter - vad som faktiskt kan hjälpa',
-				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
+				href: '/guider/depression/sma-steg-vid-nedstamdhet'
 			}
 		],
 	},
@@ -566,15 +566,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Nedstämdhet eller depression',
-				href: '/guider-seo/depression/nedstamdhet'
+				href: '/guider/depression/nedstamdhet'
 			},
 			{
 				title: 'Trötthet och meningslöshet - när ingenting känns värt att göra',
-				href: '/guider-seo/depression/trotthet-och-meningsloshet'
+				href: '/guider/depression/trotthet-och-meningsloshet'
 			},
 			{
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
-				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+				href: '/guider/depression/nedstamdhet-och-relationer'
 			}
 		],
 	},
@@ -610,19 +610,19 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Vad händer i nervsystemet vid trauma – fight, flight och freeze',
-				href: '/guider-seo/trauma/nervsystemet-och-trauma'
+				href: '/guider/trauma/nervsystemet-och-trauma'
 			},
 			{
 				title: 'Grounding – enkla övningar för att landa i kroppen igen',
-				href: '/guider-seo/trauma/grounding-ovningar'
+				href: '/guider/trauma/grounding-ovningar'
 			},
 			{
 				title: 'Undvikande efter trauma – varför vi gör det och vad det kostar',
-				href: '/guider-seo/trauma/undvikande-efter-trauma'
+				href: '/guider/trauma/undvikande-efter-trauma'
 			},
 			{
 				title: 'Tillit och trygghet i relationer efter svåra upplevelser',
-				href: '/guider-seo/trauma/tillit-efter-trauma'
+				href: '/guider/trauma/tillit-efter-trauma'
 			}
 		],
 	},
@@ -658,15 +658,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Trygghet efter trauma',
-				href: '/guider-seo/trauma/trygghet'
+				href: '/guider/trauma/trygghet'
 			},
 			{
 				title: 'Grounding - enkla övningar för att landa i kroppen igen',
-				href: '/guider-seo/trauma/grounding-ovningar'
+				href: '/guider/trauma/grounding-ovningar'
 			},
 			{
 				title: 'Stress och sömn – när kroppen inte kan varva ner',
-				href: '/guider-seo/sovproblem/stress-och-somn'
+				href: '/guider/sovproblem/stress-och-somn'
 			}
 		],
 	},
@@ -702,15 +702,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Trygghet efter trauma',
-				href: '/guider-seo/trauma/trygghet'
+				href: '/guider/trauma/trygghet'
 			},
 			{
 				title: 'Vad händer i nervsystemet vid trauma - fight, flight och freeze',
-				href: '/guider-seo/trauma/nervsystemet-och-trauma'
+				href: '/guider/trauma/nervsystemet-och-trauma'
 			},
 			{
 				title: 'Undvikande efter trauma - varför vi gör det och vad det kostar',
-				href: '/guider-seo/trauma/undvikande-efter-trauma'
+				href: '/guider/trauma/undvikande-efter-trauma'
 			}
 		],
 	},
@@ -746,15 +746,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Trygghet efter trauma',
-				href: '/guider-seo/trauma/trygghet'
+				href: '/guider/trauma/trygghet'
 			},
 			{
 				title: 'Grounding - enkla övningar för att landa i kroppen igen',
-				href: '/guider-seo/trauma/grounding-ovningar'
+				href: '/guider/trauma/grounding-ovningar'
 			},
 			{
 				title: 'Tillit och trygghet i relationer efter svara upplevelser',
-				href: '/guider-seo/trauma/tillit-efter-trauma'
+				href: '/guider/trauma/tillit-efter-trauma'
 			}
 		],
 	},
@@ -790,15 +790,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Trygghet efter trauma',
-				href: '/guider-seo/trauma/trygghet'
+				href: '/guider/trauma/trygghet'
 			},
 			{
 				title: 'Undvikande efter trauma - varför vi gör det och vad det kostar',
-				href: '/guider-seo/trauma/undvikande-efter-trauma'
+				href: '/guider/trauma/undvikande-efter-trauma'
 			},
 			{
 				title: 'Grounding - enkla övningar för att landa i kroppen igen',
-				href: '/guider-seo/trauma/grounding-ovningar'
+				href: '/guider/trauma/grounding-ovningar'
 			}
 		],
 	},
@@ -834,19 +834,19 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Stress och sömn – när kroppen inte kan varva ner',
-				href: '/guider-seo/sovproblem/stress-och-somn'
+				href: '/guider/sovproblem/stress-och-somn'
 			},
 			{
 				title: 'Ältande på kvällen – varför tankarna blir starkare i sängen',
-				href: '/guider-seo/sovproblem/altande-pa-kvallen'
+				href: '/guider/sovproblem/altande-pa-kvallen'
 			},
 			{
 				title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget',
-				href: '/guider-seo/sovproblem/trott-men-uppvarvad'
+				href: '/guider/sovproblem/trott-men-uppvarvad'
 			},
 			{
 				title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet',
-				href: '/guider-seo/sovproblem/somnbrist-och-maendet'
+				href: '/guider/sovproblem/somnbrist-och-maendet'
 			}
 		],
 	},
@@ -1002,19 +1002,19 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Den inre kritikern – varför rösten finns och vad den egentligen vill',
-				href: '/guider-seo/sjalvkansla/inre-kritikern'
+				href: '/guider/sjalvkansla/inre-kritikern'
 			},
 			{
 				title: 'Perfektionism och självkänsla – när ingenting känns tillräckligt bra',
-				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
+				href: '/guider/sjalvkansla/perfektionism-och-sjalvkansla'
 			},
 			{
 				title: 'Att sätta gränser när självkänslan är låg – varför det är svårt',
-				href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla'
+				href: '/guider/sjalvkansla/gransen-och-sjalvkansla'
 			},
 			{
 				title: 'Jämförelseträsket – sociala medier och din självbild',
-				href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild'
+				href: '/guider/sjalvkansla/jamforelse-och-sjalvbild'
 			}
 		],
 	},
@@ -1050,15 +1050,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Låg självkänsla - vad det är och var det kommer ifrån',
-				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+				href: '/guider/sjalvkansla/lag-sjalvkansla'
 			},
 			{
 				title: 'Perfektionism och självkänsla - när ingenting känns tillräckligt bra',
-				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
+				href: '/guider/sjalvkansla/perfektionism-och-sjalvkansla'
 			},
 			{
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
-				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+				href: '/guider/depression/nedstamdhet-och-relationer'
 			}
 		],
 	},
@@ -1094,15 +1094,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Låg självkänsla - vad det är och var det kommer ifrån',
-				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+				href: '/guider/sjalvkansla/lag-sjalvkansla'
 			},
 			{
 				title: 'Den inre kritikern - varför rosten finns och vad den egentligen vill',
-				href: '/guider-seo/sjalvkansla/inre-kritikern'
+				href: '/guider/sjalvkansla/inre-kritikern'
 			},
 			{
 				title: 'Små steg när energin tryter - vad som faktiskt kan hjälpa',
-				href: '/guider-seo/depression/sma-steg-vid-nedstamdhet'
+				href: '/guider/depression/sma-steg-vid-nedstamdhet'
 			}
 		],
 	},
@@ -1138,15 +1138,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Låg självkänsla - vad det är och var det kommer ifrån',
-				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+				href: '/guider/sjalvkansla/lag-sjalvkansla'
 			},
 			{
 				title: 'Den inre kritikern - varför rosten finns och vad den egentligen vill',
-				href: '/guider-seo/sjalvkansla/inre-kritikern'
+				href: '/guider/sjalvkansla/inre-kritikern'
 			},
 			{
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
-				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+				href: '/guider/depression/nedstamdhet-och-relationer'
 			}
 		],
 	},
@@ -1182,15 +1182,15 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{
 				title: 'Låg självkänsla - vad det är och var det kommer ifrån',
-				href: '/guider-seo/sjalvkansla/lag-sjalvkansla'
+				href: '/guider/sjalvkansla/lag-sjalvkansla'
 			},
 			{
 				title: 'Perfektionism och självkänsla - när ingenting känns tillräckligt bra',
-				href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla'
+				href: '/guider/sjalvkansla/perfektionism-och-sjalvkansla'
 			},
 			{
 				title: 'Hur nedstämdhet påverkar relationer och närheten till andra',
-				href: '/guider-seo/depression/nedstamdhet-och-relationer'
+				href: '/guider/depression/nedstamdhet-och-relationer'
 			}
 		],
 	},
@@ -1227,9 +1227,9 @@ export const guides: Guide[] = [
 			}
 		],
 		relatedArticles: [
-			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
-			{ title: 'Ångest i kroppen – vad som händer och vad som hjälper', href: '/guider-seo/angest/angest-i-kroppen' },
-			{ title: 'Lugna en panikattack – steg för steg', href: '/guider-seo/angest/lugna-en-panikattack' }
+			{ title: 'Tecken på ångest', href: '/guider/angest/tecken' },
+			{ title: 'Ångest i kroppen – vad som händer och vad som hjälper', href: '/guider/angest/angest-i-kroppen' },
+			{ title: 'Lugna en panikattack – steg för steg', href: '/guider/angest/lugna-en-panikattack' }
 		],
 	},
 	{
@@ -1262,10 +1262,10 @@ export const guides: Guide[] = [
 			}
 		],
 		relatedArticles: [
-			{ title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det', href: '/guider-seo/angest/panikangest-och-kroppen' },
-			{ title: 'Lugna en panikattack – steg för steg', href: '/guider-seo/angest/lugna-en-panikattack' },
-			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' },
-			{ title: 'Grounding-övning vid stress – 5-4-3-2-1-tekniken', href: '/guider-seo/stress/grounding-ovning-vid-stress' }
+			{ title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det', href: '/guider/angest/panikangest-och-kroppen' },
+			{ title: 'Lugna en panikattack – steg för steg', href: '/guider/angest/lugna-en-panikattack' },
+			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider/angest/angest-hjalp' },
+			{ title: 'Grounding-övning vid stress – 5-4-3-2-1-tekniken', href: '/guider/stress/grounding-ovning-vid-stress' }
 		],
 	},
 	{
@@ -1299,10 +1299,10 @@ export const guides: Guide[] = [
 			}
 		],
 		relatedArticles: [
-			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' },
-			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
-			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider-seo/angest/nar-tankarna-inte-stannar' },
-			{ title: 'Varför orkar jag ingenting? – om utmattning och energibrist', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' }
+			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' },
+			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider/angest/overtankande-hjalp' },
+			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider/angest/nar-tankarna-inte-stannar' },
+			{ title: 'Varför orkar jag ingenting? – om utmattning och energibrist', href: '/guider/stress/varfor-orkar-jag-ingenting' }
 		],
 	},
 	{
@@ -1401,11 +1401,11 @@ När det snurrar mycket på kvällen kan det hjälpa att skriva av sig. Börja l
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider-seo/angest/angest-och-somn' },
-			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider-seo/angest/hjalp-vid-oro-pa-kvallen' },
-			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' },
-			{ title: 'Vaknar med ångest – när morgonen börjar tungt', href: '/guider-seo/angest/vaknar-med-angest' },
-			{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider-seo/sovproblem/stress-och-somn' }
+			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider/angest/angest-och-somn' },
+			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider/angest/hjalp-vid-oro-pa-kvallen' },
+			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' },
+			{ title: 'Vaknar med ångest – när morgonen börjar tungt', href: '/guider/angest/vaknar-med-angest' },
+			{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider/sovproblem/stress-och-somn' }
 		],
 	},
 	{
@@ -1464,9 +1464,9 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' },
-			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' },
-			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' }
+			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider/angest/angest-pa-kvallen' },
+			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider/sovproblem/nattlig-oro' },
+			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' }
 		],
 	},
 	{
@@ -1499,9 +1499,9 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider-seo/angest/angest-och-somn' },
-			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' },
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' }
+			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider/angest/angest-och-somn' },
+			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider/angest/angest-hjalp' },
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider/stress/stressymtom' }
 		],
 	},
 	{
@@ -1534,9 +1534,9 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ångest i kroppen – vad som händer och vad som hjälper', href: '/guider-seo/angest/angest-i-kroppen' },
-			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' }
+			{ title: 'Ångest i kroppen – vad som händer och vad som hjälper', href: '/guider/angest/angest-i-kroppen' },
+			{ title: 'Tecken på ångest', href: '/guider/angest/tecken' },
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider/stress/stressymtom' }
 		],
 	},
 	{
@@ -1569,9 +1569,9 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 			}
 		],
 		relatedArticles: [
-			{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider-seo/angest/panikattack-hjalp' },
-			{ title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det', href: '/guider-seo/angest/panikangest-och-kroppen' },
-			{ title: 'Ångest i kroppen – vad som händer och vad som hjälper', href: '/guider-seo/angest/angest-i-kroppen' }
+			{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider/angest/panikattack-hjalp' },
+			{ title: 'Panikångest – vad som händer i kroppen och hur du kan hantera det', href: '/guider/angest/panikangest-och-kroppen' },
+			{ title: 'Ångest i kroppen – vad som händer och vad som hjälper', href: '/guider/angest/angest-i-kroppen' }
 		],
 	},
 	{
@@ -1604,10 +1604,10 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 			}
 		],
 		relatedArticles: [
-			{ title: 'Oro i kroppen – när ångesten sitter fysiskt', href: '/guider-seo/angest/oro-i-kroppen' },
-			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' },
-			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
-			{ title: 'Grounding-övning vid stress – 5-4-3-2-1-tekniken', href: '/guider-seo/stress/grounding-ovning-vid-stress' }
+			{ title: 'Oro i kroppen – när ångesten sitter fysiskt', href: '/guider/angest/oro-i-kroppen' },
+			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider/angest/angest-hjalp' },
+			{ title: 'Tecken på ångest', href: '/guider/angest/tecken' },
+			{ title: 'Grounding-övning vid stress – 5-4-3-2-1-tekniken', href: '/guider/stress/grounding-ovning-vid-stress' }
 		],
 	},
 	{
@@ -1640,9 +1640,9 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 			}
 		],
 		relatedArticles: [
-			{ title: 'Kan inte sluta tänka – när tankarna bara snurrar', href: '/guider-seo/angest/kan-inte-sluta-tanka' },
-			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider-seo/angest/nar-tankarna-inte-stannar' },
-			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' }
+			{ title: 'Kan inte sluta tänka – när tankarna bara snurrar', href: '/guider/angest/kan-inte-sluta-tanka' },
+			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider/angest/nar-tankarna-inte-stannar' },
+			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' }
 		],
 	},
 	{
@@ -1675,9 +1675,9 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 			}
 		],
 		relatedArticles: [
-			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
-			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' },
-			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' }
+			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider/angest/overtankande-hjalp' },
+			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider/angest/angest-pa-kvallen' },
+			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider/sovproblem/nattlig-oro' }
 		],
 	},
 
@@ -1771,10 +1771,10 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Varför orkar jag ingenting? – när energin tar slut', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' },
-			{ title: 'Stressymtom – så märker du att kroppen är under press', href: '/guider-seo/stress/stressymtom' },
-			{ title: 'Grounding-övning vid stress – 5-4-3-2-1', href: '/guider-seo/stress/grounding-ovning-vid-stress' },
-			{ title: 'Hur återhämtar man sig mentalt?', href: '/guider-seo/stress/hur-aterhamtar-man-sig-mentalt' }
+			{ title: 'Varför orkar jag ingenting? – när energin tar slut', href: '/guider/stress/varfor-orkar-jag-ingenting' },
+			{ title: 'Stressymtom – så märker du att kroppen är under press', href: '/guider/stress/stressymtom' },
+			{ title: 'Grounding-övning vid stress – 5-4-3-2-1', href: '/guider/stress/grounding-ovning-vid-stress' },
+			{ title: 'Hur återhämtar man sig mentalt?', href: '/guider/stress/hur-aterhamtar-man-sig-mentalt' }
 		],
 	},
 	{
@@ -1808,10 +1808,10 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider-seo/stress/inre-stress' },
-			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
-			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
-			{ title: 'Grounding-övning vid stress – 5-4-3-2-1-tekniken', href: '/guider-seo/stress/grounding-ovning-vid-stress' }
+			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider/stress/inre-stress' },
+			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider/stress/stressad-hela-tiden' },
+			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider/stress/utmattad-mentalt' },
+			{ title: 'Grounding-övning vid stress – 5-4-3-2-1-tekniken', href: '/guider/stress/grounding-ovning-vid-stress' }
 		],
 	},
 	{
@@ -1844,9 +1844,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' },
-			{ title: 'Känner mig överväldigad – när allt är för mycket', href: '/guider-seo/stress/kanner-mig-overvaldigad' },
-			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' }
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider/stress/stressymtom' },
+			{ title: 'Känner mig överväldigad – när allt är för mycket', href: '/guider/stress/kanner-mig-overvaldigad' },
+			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider/stress/kan-inte-varva-ner' }
 		],
 	},
 	{
@@ -1880,10 +1880,10 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
-			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' },
-			{ title: 'Varför orkar jag ingenting? – om utmattning och energibrist', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' }
+			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider/stress/utmattad-mentalt' },
+			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider/stress/stressad-hela-tiden' },
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider/stress/stressymtom' },
+			{ title: 'Varför orkar jag ingenting? – om utmattning och energibrist', href: '/guider/stress/varfor-orkar-jag-ingenting' }
 		],
 	},
 	{
@@ -1917,9 +1917,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider-seo/stress/inre-stress' },
-			{ title: 'Hjärntrötthet – när hjärnan inte orkar bearbeta mer', href: '/guider-seo/stress/hjarntrotthet-hjalp' },
-			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider-seo/ensamhet/orkar-ingenting' }
+			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider/stress/inre-stress' },
+			{ title: 'Hjärntrötthet – när hjärnan inte orkar bearbeta mer', href: '/guider/stress/hjarntrotthet-hjalp' },
+			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider/ensamhet/orkar-ingenting' }
 		],
 	},
 	{
@@ -1953,9 +1953,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' },
-			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider-seo/stress/inre-stress' },
-			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' }
+			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider/stress/stressymtom' },
+			{ title: 'Inre stress – när det är stressigt inombords trots lugn yta', href: '/guider/stress/inre-stress' },
+			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider/stress/kan-inte-varva-ner' }
 		],
 	},
 	{
@@ -1989,9 +1989,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Hjärntrötthet – när hjärnan inte orkar bearbeta mer', href: '/guider-seo/stress/hjarntrotthet-hjalp' },
-			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
-			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider-seo/ensamhet/orkar-ingenting' }
+			{ title: 'Hjärntrötthet – när hjärnan inte orkar bearbeta mer', href: '/guider/stress/hjarntrotthet-hjalp' },
+			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider/stress/stressad-hela-tiden' },
+			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider/ensamhet/orkar-ingenting' }
 		],
 	},
 	{
@@ -2025,10 +2025,10 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' },
-			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' },
-			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider-seo/sovproblem/kan-inte-sova-stress' },
-			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider-seo/angest/hjalp-vid-oro-pa-kvallen' }
+			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider/stress/stressad-hela-tiden' },
+			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider/angest/angest-pa-kvallen' },
+			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider/sovproblem/kan-inte-sova-stress' },
+			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider/angest/hjalp-vid-oro-pa-kvallen' }
 		],
 	},
 	{
@@ -2062,9 +2062,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' },
-			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider-seo/angest/nar-tankarna-inte-stannar' },
-			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' }
+			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider/stress/kan-inte-varva-ner' },
+			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider/angest/nar-tankarna-inte-stannar' },
+			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider/sovproblem/nattlig-oro' }
 		],
 	},
 
@@ -2100,9 +2100,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ensamhet – hjälp att förstå och hantera känslan', href: '/guider-seo/ensamhet/ensamhet-hjalp' },
-			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider-seo/ensamhet/orkar-ingenting' },
-			{ title: 'Tomhetskänsla – när inget riktigt känns', href: '/guider-seo/ensamhet/tomhetskansla' }
+			{ title: 'Ensamhet – hjälp att förstå och hantera känslan', href: '/guider/ensamhet/ensamhet-hjalp' },
+			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider/ensamhet/orkar-ingenting' },
+			{ title: 'Tomhetskänsla – när inget riktigt känns', href: '/guider/ensamhet/tomhetskansla' }
 		],
 	},
 	{
@@ -2136,9 +2136,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Känner mig ensam – när ensamheten gör ont', href: '/guider-seo/ensamhet/kanner-mig-ensam' },
-			{ title: 'Tomhetskänsla – när inget riktigt känns', href: '/guider-seo/ensamhet/tomhetskansla' },
-			{ title: 'Hur nedstämdhet påverkar relationer och närheten till andra', href: '/guider-seo/depression/nedstamdhet-och-relationer' }
+			{ title: 'Känner mig ensam – när ensamheten gör ont', href: '/guider/ensamhet/kanner-mig-ensam' },
+			{ title: 'Tomhetskänsla – när inget riktigt känns', href: '/guider/ensamhet/tomhetskansla' },
+			{ title: 'Hur nedstämdhet påverkar relationer och närheten till andra', href: '/guider/depression/nedstamdhet-och-relationer' }
 		],
 	},
 	{
@@ -2172,10 +2172,10 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Trötthet och meningslöshet – när ingenting känns värt att göra', href: '/guider-seo/depression/trotthet-och-meningsloshet' },
-			{ title: 'Tomhetskänsla – när inget riktigt känns', href: '/guider-seo/ensamhet/tomhetskansla' },
-			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
-			{ title: 'Varför orkar jag ingenting? – om utmattning och energibrist', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' }
+			{ title: 'Trötthet och meningslöshet – när ingenting känns värt att göra', href: '/guider/depression/trotthet-och-meningsloshet' },
+			{ title: 'Tomhetskänsla – när inget riktigt känns', href: '/guider/ensamhet/tomhetskansla' },
+			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider/stress/utmattad-mentalt' },
+			{ title: 'Varför orkar jag ingenting? – om utmattning och energibrist', href: '/guider/stress/varfor-orkar-jag-ingenting' }
 		],
 	},
 	{
@@ -2209,9 +2209,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider-seo/ensamhet/orkar-ingenting' },
-			{ title: 'Känner mig ensam – när ensamheten gör ont', href: '/guider-seo/ensamhet/kanner-mig-ensam' },
-			{ title: 'Trötthet och meningslöshet – när ingenting känns värt att göra', href: '/guider-seo/depression/trotthet-och-meningsloshet' }
+			{ title: 'Orkar ingenting – om tomhet och tyngd som inte släpper', href: '/guider/ensamhet/orkar-ingenting' },
+			{ title: 'Känner mig ensam – när ensamheten gör ont', href: '/guider/ensamhet/kanner-mig-ensam' },
+			{ title: 'Trötthet och meningslöshet – när ingenting känns värt att göra', href: '/guider/depression/trotthet-och-meningsloshet' }
 		],
 	},
 
@@ -2246,9 +2246,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' },
-			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider-seo/sovproblem/svart-att-somna-angest' },
-			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider-seo/stress/stressad-hela-tiden' }
+			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider/stress/kan-inte-varva-ner' },
+			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider/sovproblem/svart-att-somna-angest' },
+			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider/stress/stressad-hela-tiden' }
 		],
 	},
 	{
@@ -2282,9 +2282,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider-seo/angest/angest-och-somn' },
-			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider-seo/sovproblem/kan-inte-sova-stress' },
-			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider-seo/sovproblem/nattlig-oro' }
+			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider/angest/angest-och-somn' },
+			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider/sovproblem/kan-inte-sova-stress' },
+			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider/sovproblem/nattlig-oro' }
 		],
 	},
 	{
@@ -2317,10 +2317,10 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider-seo/sovproblem/svart-att-somna-angest' },
-			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider-seo/sovproblem/kan-inte-sova-stress' },
-			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider-seo/angest/angest-pa-kvallen' },
-			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider-seo/angest/hjalp-vid-oro-pa-kvallen' }
+			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider/sovproblem/svart-att-somna-angest' },
+			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider/sovproblem/kan-inte-sova-stress' },
+			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider/angest/angest-pa-kvallen' },
+			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider/angest/hjalp-vid-oro-pa-kvallen' }
 		],
 	},
 
@@ -2356,9 +2356,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Låg självkänsla – vad det är och var det kommer ifrån', href: '/guider-seo/sjalvkansla/lag-sjalvkansla' },
-			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider-seo/sjalvkansla/sjalvkritiska-tankar' },
-			{ title: 'Hur får man bättre självkänsla – ett praktiskt perspektiv', href: '/guider-seo/sjalvkansla/hur-far-man-battre-sjalvkansla' }
+			{ title: 'Låg självkänsla – vad det är och var det kommer ifrån', href: '/guider/sjalvkansla/lag-sjalvkansla' },
+			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider/sjalvkansla/sjalvkritiska-tankar' },
+			{ title: 'Hur får man bättre självkänsla – ett praktiskt perspektiv', href: '/guider/sjalvkansla/hur-far-man-battre-sjalvkansla' }
 		],
 	},
 	{
@@ -2391,9 +2391,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Den inre kritikern – varför rösten finns och vad den egentligen vill', href: '/guider-seo/sjalvkansla/inre-kritikern' },
-			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider-seo/sjalvkansla/dalig-sjalvkansla' },
-			{ title: 'Känner mig värdelös – om tankar som ljuger om vem du är', href: '/guider-seo/sjalvkansla/kanner-mig-vardelos' }
+			{ title: 'Den inre kritikern – varför rösten finns och vad den egentligen vill', href: '/guider/sjalvkansla/inre-kritikern' },
+			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider/sjalvkansla/dalig-sjalvkansla' },
+			{ title: 'Känner mig värdelös – om tankar som ljuger om vem du är', href: '/guider/sjalvkansla/kanner-mig-vardelos' }
 		],
 	},
 	{
@@ -2426,9 +2426,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider-seo/sjalvkansla/sjalvkritiska-tankar' },
-			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider-seo/sjalvkansla/dalig-sjalvkansla' },
-			{ title: 'Hur får man bättre självkänsla – ett praktiskt perspektiv', href: '/guider-seo/sjalvkansla/hur-far-man-battre-sjalvkansla' }
+			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider/sjalvkansla/sjalvkritiska-tankar' },
+			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider/sjalvkansla/dalig-sjalvkansla' },
+			{ title: 'Hur får man bättre självkänsla – ett praktiskt perspektiv', href: '/guider/sjalvkansla/hur-far-man-battre-sjalvkansla' }
 		],
 	},
 	{
@@ -2461,9 +2461,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Jämförelsetrasket – sociala medier och din självbild', href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild' },
-			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider-seo/sjalvkansla/dalig-sjalvkansla' },
-			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider-seo/sjalvkansla/sjalvkritiska-tankar' }
+			{ title: 'Jämförelsetrasket – sociala medier och din självbild', href: '/guider/sjalvkansla/jamforelse-och-sjalvbild' },
+			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider/sjalvkansla/dalig-sjalvkansla' },
+			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider/sjalvkansla/sjalvkritiska-tankar' }
 		],
 	},
 	{
@@ -2496,9 +2496,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider-seo/sjalvkansla/dalig-sjalvkansla' },
-			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider-seo/sjalvkansla/sjalvkritiska-tankar' },
-			{ title: 'Låg självkänsla – vad det är och var det kommer ifrån', href: '/guider-seo/sjalvkansla/lag-sjalvkansla' }
+			{ title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det', href: '/guider/sjalvkansla/dalig-sjalvkansla' },
+			{ title: 'Självkritiska tankar – den röst som aldrig är nöjd', href: '/guider/sjalvkansla/sjalvkritiska-tankar' },
+			{ title: 'Låg självkänsla – vad det är och var det kommer ifrån', href: '/guider/sjalvkansla/lag-sjalvkansla' }
 		],
 	},
 	{
@@ -2512,9 +2512,9 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			{ label: 'Folkhälsomyndigheten – Psykisk hälsa och välbefinnande', url: 'https://www.folkhalsomyndigheten.se/livsvillkor-levnadsvanor/psykisk-halsa-och-suicidprevention/psykisk-halsa-och-valbefinnande/' }
 		],
 		relatedArticles: [
-			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
-			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' },
-			{ title: 'Kan inte sluta tänka – när tankarna bara snurrar', href: '/guider-seo/angest/kan-inte-sluta-tanka' }
+			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider/angest/overtankande-hjalp' },
+			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' },
+			{ title: 'Kan inte sluta tänka – när tankarna bara snurrar', href: '/guider/angest/kan-inte-sluta-tanka' }
 		],
 		faqs: [
 			{
@@ -2668,9 +2668,9 @@ Vid akuta tankar på att skada dig själv: ring 112 eller gå till närmaste aku
 			}
 		],
 		relatedArticles: [
-			{ title: 'Stressymtom – vad kroppen försöker säga', href: '/guider-seo/stress/stressymtom' },
-			{ title: 'Hjärntrötthet – när hjärnan stänger av', href: '/guider-seo/stress/hjarntrotthet-hjalp' },
-			{ title: 'Svårt att sova när oron tar över', href: '/guider-seo/sovproblem/svart-att-somna-angest' }
+			{ title: 'Stressymtom – vad kroppen försöker säga', href: '/guider/stress/stressymtom' },
+			{ title: 'Hjärntrötthet – när hjärnan stänger av', href: '/guider/stress/hjarntrotthet-hjalp' },
+			{ title: 'Svårt att sova när oron tar över', href: '/guider/sovproblem/svart-att-somna-angest' }
 		]
 	},
 	{
@@ -2755,19 +2755,19 @@ Om de kroppsliga signalerna är ihållande — om du sover dåligt i månader, h
 		relatedArticles: [
 			{
 				title: 'Tecken på mental överbelastning',
-				href: '/guider-seo/stress/tecken-pa-mental-overbelastning'
+				href: '/guider/stress/tecken-pa-mental-overbelastning'
 			},
 			{
 				title: 'Stressymtom – hur stress visar sig i kropp och tankar',
-				href: '/guider-seo/stress/stressymtom'
+				href: '/guider/stress/stressymtom'
 			},
 			{
 				title: 'Grounding-övning vid stress',
-				href: '/guider-seo/stress/grounding-ovning-vid-stress'
+				href: '/guider/stress/grounding-ovning-vid-stress'
 			},
 			{
 				title: 'Hur återhämtar man sig mentalt?',
-				href: '/guider-seo/stress/hur-aterhamtar-man-sig-mentalt'
+				href: '/guider/stress/hur-aterhamtar-man-sig-mentalt'
 			}
 		]
 	},
@@ -2805,19 +2805,19 @@ Om de kroppsliga signalerna är ihållande — om du sover dåligt i månader, h
 		relatedArticles: [
 			{
 				title: 'Tecken på mental överbelastning',
-				href: '/guider-seo/stress/tecken-pa-mental-overbelastning'
+				href: '/guider/stress/tecken-pa-mental-overbelastning'
 			},
 			{
 				title: 'När kroppen säger ifrån av stress',
-				href: '/guider-seo/stress/nar-kroppen-sager-ifran-stress'
+				href: '/guider/stress/nar-kroppen-sager-ifran-stress'
 			},
 			{
 				title: 'Grounding-övning vid stress',
-				href: '/guider-seo/stress/grounding-ovning-vid-stress'
+				href: '/guider/stress/grounding-ovning-vid-stress'
 			},
 			{
 				title: 'Varför orkar jag ingenting?',
-				href: '/guider-seo/stress/varfor-orkar-jag-ingenting'
+				href: '/guider/stress/varfor-orkar-jag-ingenting'
 			}
 		],
 	},
@@ -2935,23 +2935,23 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 		relatedArticles: [
 			{
 				title: 'När bruk blir ett sätt att stå ut',
-				href: '/guider-seo/beroende/nar-bruk-blir-ett-satt-att-sta-ut'
+				href: '/guider/beroende/nar-bruk-blir-ett-satt-att-sta-ut'
 			},
 			{
 				title: 'Första steg när man vet att något inte är bra',
-				href: '/guider-seo/beroende/forsta-steg-nar-man-vet-att-nagot-inte-ar-bra'
+				href: '/guider/beroende/forsta-steg-nar-man-vet-att-nagot-inte-ar-bra'
 			},
 			{
 				title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper',
-				href: '/guider-seo/stress/varfor-orkar-jag-ingenting'
+				href: '/guider/stress/varfor-orkar-jag-ingenting'
 			},
 			{
 				title: 'Nedstämdhet eller depression',
-				href: '/guider-seo/depression/nedstamdhet'
+				href: '/guider/depression/nedstamdhet'
 			},
 			{
 				title: 'Orostankar som snurrar - när hjärnan inte kan stänga av',
-				href: '/guider-seo/angest/orostankar'
+				href: '/guider/angest/orostankar'
 			}
 		]
 	},
@@ -3072,19 +3072,19 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 		relatedArticles: [
 			{
 				title: 'När bruk blir ett sätt att stå ut',
-				href: '/guider-seo/beroende/nar-bruk-blir-ett-satt-att-sta-ut'
+				href: '/guider/beroende/nar-bruk-blir-ett-satt-att-sta-ut'
 			},
 			{
 				title: 'Att vilja sluta och inte vilja samtidigt',
-				href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
+				href: '/guider/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
 			},
 			{
 				title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper',
-				href: '/guider-seo/stress/varfor-orkar-jag-ingenting'
+				href: '/guider/stress/varfor-orkar-jag-ingenting'
 			},
 			{
 				title: 'Nedstämdhet eller depression',
-				href: '/guider-seo/depression/nedstamdhet'
+				href: '/guider/depression/nedstamdhet'
 			}
 		]
 	},
@@ -3191,15 +3191,15 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 		relatedArticles: [
 			{
 				title: 'Att vilja sluta och inte vilja samtidigt',
-				href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
+				href: '/guider/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
 			},
 			{
 				title: 'Första steg när man vet att något inte är bra',
-				href: '/guider-seo/beroende/forsta-steg-nar-man-vet-att-nagot-inte-ar-bra'
+				href: '/guider/beroende/forsta-steg-nar-man-vet-att-nagot-inte-ar-bra'
 			},
 			{
 				title: 'Nedstämdhet eller depression',
-				href: '/guider-seo/depression/nedstamdhet'
+				href: '/guider/depression/nedstamdhet'
 			}
 		]
 	},
@@ -3234,9 +3234,9 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 			}
 		],
 		relatedArticles: [
-			{ title: 'Tankeomstrukturering – utmana negativa tankar', href: '/guider-seo/kbt/tankeomstrukturering' },
-			{ title: 'Beteendeaktivering vid nedstämdhet', href: '/guider-seo/kbt/beteendeaktivering' },
-			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider-seo/kbt/kbt-tekniker-hemma' }
+			{ title: 'Tankeomstrukturering – utmana negativa tankar', href: '/guider/kbt/tankeomstrukturering' },
+			{ title: 'Beteendeaktivering vid nedstämdhet', href: '/guider/kbt/beteendeaktivering' },
+			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider/kbt/kbt-tekniker-hemma' }
 		]
 	},
 	{
@@ -3263,9 +3263,9 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 			}
 		],
 		relatedArticles: [
-			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
-			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider-seo/kbt/kbt-tekniker-hemma' },
-			{ title: 'Övertänkande – när hjärnan inte stannar', href: '/guider-seo/overtankande/nar-hjarnan-inte-stannar' }
+			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider/kbt/vad-ar-kbt' },
+			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider/kbt/kbt-tekniker-hemma' },
+			{ title: 'Övertänkande – när hjärnan inte stannar', href: '/guider/overtankande/nar-hjarnan-inte-stannar' }
 		]
 	},
 	{
@@ -3293,8 +3293,8 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 			}
 		],
 		relatedArticles: [
-			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
-			{ title: 'Nedstämdhet – varför orkar jag ingenting?', href: '/guider-seo/depression/varfor-orkar-jag-ingenting' }
+			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider/kbt/vad-ar-kbt' },
+			{ title: 'Nedstämdhet – varför orkar jag ingenting?', href: '/guider/depression/varfor-orkar-jag-ingenting' }
 		]
 	},
 	{
@@ -3322,9 +3322,9 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 			}
 		],
 		relatedArticles: [
-			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
-			{ title: 'Tankeomstrukturering – utmana negativa tankar', href: '/guider-seo/kbt/tankeomstrukturering' },
-			{ title: 'Beteendeaktivering – ta ett steg ur passiviteten', href: '/guider-seo/kbt/beteendeaktivering' }
+			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider/kbt/vad-ar-kbt' },
+			{ title: 'Tankeomstrukturering – utmana negativa tankar', href: '/guider/kbt/tankeomstrukturering' },
+			{ title: 'Beteendeaktivering – ta ett steg ur passiviteten', href: '/guider/kbt/beteendeaktivering' }
 		]
 	},
 	{
@@ -3352,9 +3352,9 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 			}
 		],
 		relatedArticles: [
-			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
-			{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
-			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider-seo/kbt/kbt-tekniker-hemma' }
+			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider/kbt/vad-ar-kbt' },
+			{ title: 'Tecken på ångest', href: '/guider/angest/tecken' },
+			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider/kbt/kbt-tekniker-hemma' }
 		]
 	},
 	{
@@ -4026,10 +4026,10 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Vad ångest är',
 				body: 'Ångest är kroppens sätt att slå larm när något känns hotfullt, osäkert eller svårt att överblicka. Reaktionen kan vara stark även när du egentligen är trygg. Det betyder inte att det är något fel på dig, utan att nervsystemet har gått upp i beredskap.',
 				links: [
-					{ title: 'Tecken på ångest', href: '/guider-seo/angest/tecken' },
+					{ title: 'Tecken på ångest', href: '/guider/angest/tecken' },
 					{
 						title: 'Ångest i kroppen – vad som händer och vad som hjälper',
-						href: '/guider-seo/angest/angest-i-kroppen'
+						href: '/guider/angest/angest-i-kroppen'
 					}
 				]
 			},
@@ -4039,11 +4039,11 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				links: [
 					{
 						title: 'Orostankar som snurrar - när hjärnan inte kan stänga av',
-						href: '/guider-seo/angest/orostankar'
+						href: '/guider/angest/orostankar'
 					},
 					{
 						title: 'Oro i kroppen – när ångesten sitter fysiskt',
-						href: '/guider-seo/angest/oro-i-kroppen'
+						href: '/guider/angest/oro-i-kroppen'
 					}
 				]
 			},
@@ -4051,9 +4051,9 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Vanliga situationer där ångest märks',
 				body: 'Ångest kan märkas inför sociala situationer, när du ska sova, när något är oklart eller när kroppen redan är trött och stressad. För vissa kommer den i tydliga toppar, som vid panikattack. För andra ligger den mer som en ständig vaksamhet i bakgrunden.',
 				links: [
-					{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider-seo/angest/panikattack-hjalp' },
-					{ title: 'Ångest och sömn - varför natten kan bli svårare', href: '/guider-seo/angest/angest-och-somn' },
-					{ title: 'Social ångest - rädslan för att bli bedömd av andra', href: '/guider-seo/angest/social-angest' }
+					{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider/angest/panikattack-hjalp' },
+					{ title: 'Ångest och sömn - varför natten kan bli svårare', href: '/guider/angest/angest-och-somn' },
+					{ title: 'Social ångest - rädslan för att bli bedömd av andra', href: '/guider/angest/social-angest' }
 				]
 			},
 			{
@@ -4062,7 +4062,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				links: [
 					{ title: 'Andningsövningar mot ångest', href: '/andningsovningar-mot-angest' },
 					{ title: 'Övningar mot ångest online', href: '/ovningar-mot-angest-online' },
-					{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider-seo/angest/angest-hjalp' }
+					{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider/angest/angest-hjalp' }
 				]
 			},
 			{
@@ -4079,16 +4079,16 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				body: 'Om du vill läsa vidare finns fördjupning om panikattack, grubblande, fysisk ångest, stress och sömn. Du kan också prova en andningsövning, skriva i dagboken eller fortsätta med en lugn guide i egen takt.',
 				links: [
 					{ title: 'Panikattack', href: '/panikattack' },
-					{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
-					{ title: 'Stress och sömn - när kroppen inte kan varva ner', href: '/guider-seo/stress' },
-					{ title: 'Stöd vid sömnproblem i lugn takt', href: '/guider-seo/sovproblem' },
+					{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider/angest/overtankande-hjalp' },
+					{ title: 'Stress och sömn - när kroppen inte kan varva ner', href: '/guider/stress' },
+					{ title: 'Stöd vid sömnproblem i lugn takt', href: '/guider/sovproblem' },
 					{ title: 'Skriv i dagboken', href: '/dagbok' }
 				]
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om ångest', href: '/guider-seo/angest' },
-			{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider-seo/angest/panikattack-hjalp' },
+			{ title: 'Se alla artiklar om ångest', href: '/guider/angest' },
+			{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider/angest/panikattack-hjalp' },
 			{ title: 'Läs om hjälp vid ångest online', href: '/hjalp-vid-angest-online' }
 		],
 		faqs: [
@@ -4142,32 +4142,32 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Vad stress och utmattning är',
 				body: 'Stress är kroppens sätt att mobilisera kraft när kraven känns höga eller något behöver hanteras snabbt. Utmattning handlar oftare om vad som händer när belastningen pågår länge utan tillräcklig återhämtning. De hör ihop, men är inte samma sak. Många märker först stresspåslaget och senare att orken inte längre kommer tillbaka som den brukade.',
 				links: [
-					{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider-seo/stress/stressymtom' },
-					{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' }
+					{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider/stress/stressymtom' },
+					{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider/stress/utmattad-mentalt' }
 				]
 			},
 			{
 				heading: 'Hur stress kan kännas i tankar, kropp och beteenden',
 				body: 'I tankarna kan stress märkas som rastlöshet, irritation, tunnelseende, grubblande eller en känsla av att aldrig riktigt bli klar. I kroppen kan det kännas som spända muskler, hjärtklappning, trötthet, huvudvärk, magbesvär eller att det är svårt att varva ner. I beteenden syns stress ofta som att man kör på fast man är slut, skjuter upp återhämtning eller blir mer kort i tonen än man egentligen vill.',
 				links: [
-					{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider-seo/stress/kan-inte-varva-ner' },
-					{ title: 'Mycket tankar på kvällen – när hjärnan inte vill stänga av', href: '/guider-seo/stress/mycket-tankar-pa-kvallen' }
+					{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider/stress/kan-inte-varva-ner' },
+					{ title: 'Mycket tankar på kvällen – när hjärnan inte vill stänga av', href: '/guider/stress/mycket-tankar-pa-kvallen' }
 				]
 			},
 			{
 				heading: 'Vanliga situationer där stress märks',
 				body: 'Stress kan märkas i arbete eller studier när tempot varit högt länge, i relationer när man bär mycket ansvar eller i livssituationer där flera saker pågår samtidigt. Ibland syns den tydligast först på kvällen eller i kroppen, när det egentligen borde finnas plats för vila.',
 				links: [
-					{ title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper', href: '/guider-seo/stress/varfor-orkar-jag-ingenting' },
-					{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider-seo/sovproblem/stress-och-somn' },
-					{ title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget', href: '/guider-seo/sovproblem/trott-men-uppvarvad' }
+					{ title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper', href: '/guider/stress/varfor-orkar-jag-ingenting' },
+					{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider/sovproblem/stress-och-somn' },
+					{ title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget', href: '/guider/sovproblem/trott-men-uppvarvad' }
 				]
 			},
 			{
 				heading: 'Vad som ibland kan hjälpa i stunden',
 				body: 'När stressen känns överväldigande hjälper det ofta mer att sänka tempot lite än att försöka pressa igenom allt. En kort grounding-övning, några lugna andetag, en paus från intryck eller att välja bort en enda sak kan göra skillnad. Små signaler om trygghet och stopp är ofta mer hjälpsamma än stora planer mitt i belastningen.',
 				links: [
-					{ title: 'Grounding-övning vid stress – landa i nuet på 5 minuter', href: '/guider-seo/stress/grounding-ovning-vid-stress' },
+					{ title: 'Grounding-övning vid stress – landa i nuet på 5 minuter', href: '/guider/stress/grounding-ovning-vid-stress' },
 					{ title: 'Stöd vid stress online', href: '/stod-vid-stress-online' },
 					{ title: 'Skriv i dagboken', href: '/dagbok' }
 				]
@@ -4185,17 +4185,17 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Vidare läsning i MittPsyke',
 				body: 'Om du vill läsa vidare finns guider om utmattning, sömnproblem, gränssättning, ångest och grubblande. Du kan också fortsätta varsamt med en övning eller skriva av dig för att se mönstren tydligare.',
 				links: [
-					{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
-					{ title: 'Att sätta gränser när självkänslan är låg - varför det är svårt', href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla' },
-					{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider-seo/angest/overtankande-hjalp' },
-					{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' },
-					{ title: 'Stöd vid sömnproblem i lugn takt', href: '/guider-seo/sovproblem' }
+					{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider/stress/utmattad-mentalt' },
+					{ title: 'Att sätta gränser när självkänslan är låg - varför det är svårt', href: '/guider/sjalvkansla/gransen-och-sjalvkansla' },
+					{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider/angest/overtankande-hjalp' },
+					{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' },
+					{ title: 'Stöd vid sömnproblem i lugn takt', href: '/guider/sovproblem' }
 				]
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om stress', href: '/guider-seo/stress' },
-			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider-seo/stress/utmattad-mentalt' },
+			{ title: 'Se alla artiklar om stress', href: '/guider/stress' },
+			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider/stress/utmattad-mentalt' },
 			{ title: 'Stöd vid stress online', href: '/stod-vid-stress-online' }
 		],
 		faqs: [
@@ -4234,16 +4234,16 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'När kroppen fortsätter vara i beredskap',
 				body: 'Det är vanligt med spänning, oro, sömnsvårigheter eller starka minnesbilder efter trauma. Reaktionerna kan kännas skrämmande, men de är ofta kroppens sätt att försöka skydda dig.',
 				links: [
-					{ title: 'Nervsystemet och trauma - varför kroppen reagerar starkt', href: '/guider-seo/trauma/nervsystemet-och-trauma' },
-					{ title: 'Trygghet efter trauma - små steg som hjälper', href: '/guider-seo/trauma/trygghet' }
+					{ title: 'Nervsystemet och trauma - varför kroppen reagerar starkt', href: '/guider/trauma/nervsystemet-och-trauma' },
+					{ title: 'Trygghet efter trauma - små steg som hjälper', href: '/guider/trauma/trygghet' }
 				]
 			},
 			{
 				heading: 'Varsam stabilisering i vardagen',
 				body: 'Många behöver börja med stabilisering innan fördjupad bearbetning. Små, trygga rutiner och enkla grounding-övningar kan hjälpa nervsystemet att hitta mer lugn.',
 				links: [
-					{ title: 'Grounding-övningar vid trauma', href: '/guider-seo/trauma/grounding-ovningar' },
-					{ title: 'Undvikande efter trauma - varför det händer', href: '/guider-seo/trauma/undvikande-efter-trauma' }
+					{ title: 'Grounding-övningar vid trauma', href: '/guider/trauma/grounding-ovningar' },
+					{ title: 'Undvikande efter trauma - varför det händer', href: '/guider/trauma/undvikande-efter-trauma' }
 				]
 			},
 			{
@@ -4252,7 +4252,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om trauma', href: '/guider-seo/trauma' },
+			{ title: 'Se alla artiklar om trauma', href: '/guider/trauma' },
 			{ title: 'Läs om samtalsstöd vid trauma', href: '/trauma' },
 			{ title: 'Stöd vid PTSD online', href: '/stod-vid-ptsd-online' }
 		]
@@ -4270,16 +4270,16 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Olika sorters ensamhet',
 				body: 'Du kan känna dig ensam socialt, känslomässigt eller existentiellt. Att sätta ord på vilken sorts ensamhet du bär på kan göra nästa steg mer hanterbart.',
 				links: [
-					{ title: 'Känner mig ensam - varför det gör så ont', href: '/guider-seo/ensamhet/kanner-mig-ensam' },
-					{ title: 'Tomhetskänsla - när allt känns långt bort', href: '/guider-seo/ensamhet/tomhetskansla' }
+					{ title: 'Känner mig ensam - varför det gör så ont', href: '/guider/ensamhet/kanner-mig-ensam' },
+					{ title: 'Tomhetskänsla - när allt känns långt bort', href: '/guider/ensamhet/tomhetskansla' }
 				]
 			},
 			{
 				heading: 'Små vägar tillbaka till kontakt',
 				body: 'När orken är låg hjälper det ofta att börja mycket smått. En kort hälsning, ett lugnt samtal eller några rader i dagboken kan vara tillräckligt som start.',
 				links: [
-					{ title: 'Ensamhet - hjälp när du fastnat i isolering', href: '/guider-seo/ensamhet/ensamhet-hjalp' },
-					{ title: 'Orkar ingenting - när ensamheten tar energi', href: '/guider-seo/ensamhet/orkar-ingenting' }
+					{ title: 'Ensamhet - hjälp när du fastnat i isolering', href: '/guider/ensamhet/ensamhet-hjalp' },
+					{ title: 'Orkar ingenting - när ensamheten tar energi', href: '/guider/ensamhet/orkar-ingenting' }
 				]
 			},
 			{
@@ -4288,7 +4288,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om ensamhet', href: '/guider-seo/ensamhet' },
+			{ title: 'Se alla artiklar om ensamhet', href: '/guider/ensamhet' },
 			{ title: 'Läs mer om ensamhet hos MittPsyke', href: '/ensamhet' },
 			{ title: 'Prata anonymt om ensamhet', href: '/chat/b' }
 		]
@@ -4306,16 +4306,16 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Nedstämdhet eller depression?',
 				body: 'Många undrar var gränsen går. Det viktigaste är hur länge måendet håller i sig och hur mycket vardagen påverkas. Du behöver inte vänta på "rätt ord" för att söka stöd.',
 				links: [
-					{ title: 'Nedstämdhet eller depression', href: '/guider-seo/depression/nedstamdhet' },
-					{ title: 'Skillnaden mellan sorg och depression', href: '/guider-seo/depression/sorg-och-depression' }
+					{ title: 'Nedstämdhet eller depression', href: '/guider/depression/nedstamdhet' },
+					{ title: 'Skillnaden mellan sorg och depression', href: '/guider/depression/sorg-och-depression' }
 				]
 			},
 			{
 				heading: 'När energin inte räcker',
 				body: 'Trötthet, tomhet och låg motivation är vanliga delar av nedstämdhet. Små steg och vardagsstruktur kan vara mer hjälpsamt än att försöka prestera sig ur läget.',
 				links: [
-					{ title: 'Trötthet och meningslöshet', href: '/guider-seo/depression/trotthet-och-meningsloshet' },
-					{ title: 'Små steg vid nedstämdhet', href: '/guider-seo/depression/sma-steg-vid-nedstamdhet' }
+					{ title: 'Trötthet och meningslöshet', href: '/guider/depression/trotthet-och-meningsloshet' },
+					{ title: 'Små steg vid nedstämdhet', href: '/guider/depression/sma-steg-vid-nedstamdhet' }
 				]
 			},
 			{
@@ -4324,7 +4324,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om nedstämdhet', href: '/guider-seo/depression' },
+			{ title: 'Se alla artiklar om nedstämdhet', href: '/guider/depression' },
 			{ title: 'Läs mer på sidan Nedstämdhet', href: '/nedstamdhet' },
 			{ title: 'Hjälp vid depression online', href: '/hjalp-vid-depression-online' }
 		]
@@ -4342,16 +4342,16 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'När kroppen går i full alarmberedskap',
 				body: 'Vid panik slår kroppens larmsystem på med hög intensitet. Hjärtklappning, yrsel och andningspåverkan är vanliga reaktioner. Det känns starkt, men går över.',
 				links: [
-					{ title: 'Panikattack - hjälp direkt när kroppen larmar', href: '/guider-seo/angest/panikattack-hjalp' },
-					{ title: 'Panikångest - vad som händer i kroppen', href: '/guider-seo/angest/panikangest-och-kroppen' }
+					{ title: 'Panikattack - hjälp direkt när kroppen larmar', href: '/guider/angest/panikattack-hjalp' },
+					{ title: 'Panikångest - vad som händer i kroppen', href: '/guider/angest/panikangest-och-kroppen' }
 				]
 			},
 			{
 				heading: 'Vad du kan göra när paniken stiger',
 				body: 'Små, tydliga steg kan hjälpa kroppen att landa: långsam andning, grounding och att påminna dig om att reaktionen klingar av. Du behöver inte prestera för att få effekt.',
 				links: [
-					{ title: 'Lugna en panikattack - steg för steg', href: '/guider-seo/angest/lugna-en-panikattack' },
-					{ title: 'Grounding-övning vid stress', href: '/guider-seo/stress/grounding-ovning-vid-stress' }
+					{ title: 'Lugna en panikattack - steg för steg', href: '/guider/angest/lugna-en-panikattack' },
+					{ title: 'Grounding-övning vid stress', href: '/guider/stress/grounding-ovning-vid-stress' }
 				]
 			},
 			{
@@ -4361,7 +4361,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 		],
 		primaryLinks: [
 			{ title: 'Läs mer om panikattack på MittPsyke', href: '/panikattack' },
-			{ title: 'Se guider om ångest', href: '/guider-seo/angest' },
+			{ title: 'Se guider om ångest', href: '/guider/angest' },
 			{ title: 'Starta chatt om panik och ångest', href: '/chat/a' }
 		]
 	},
@@ -4409,7 +4409,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 		],
 		primaryLinks: [
 			{ title: 'Läs mer om oro och övertänkande', href: '/oro' },
-			{ title: 'Se guider om ångest', href: '/guider-seo/angest' },
+			{ title: 'Se guider om ångest', href: '/guider/angest' },
 			{ title: 'Starta chatt om oro', href: '/chat/e' }
 		]
 	},
@@ -4426,16 +4426,16 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Varför sömnen kan bli svår',
 				body: 'Sömnproblem beror sällan på en enda sak. Stress, ångest och oro är vanliga orsaker, liksom ett nervsystem som inte hunnit varva ner. Det är ett vanligare problem än du kanske tror.',
 				links: [
-					{ title: 'Orsaker till sömnproblem', href: '/guider-seo/sovproblem/orsaker' },
-					{ title: 'Stress och sömn – sambandet som stör natten', href: '/guider-seo/sovproblem/stress-och-somn' }
+					{ title: 'Orsaker till sömnproblem', href: '/guider/sovproblem/orsaker' },
+					{ title: 'Stress och sömn – sambandet som stör natten', href: '/guider/sovproblem/stress-och-somn' }
 				]
 			},
 			{
 				heading: 'Trött men uppvarvad',
 				body: 'Att vara utmattad men ändå inte kunna somna är ett vanligt mönster. Det beror ofta på ett aktiverat nervsystem som inte fått signal om att det är tryggt att vila.',
 				links: [
-					{ title: 'Trött men uppvarvad – vad det beror på', href: '/guider-seo/sovproblem/trott-men-uppvarvad' },
-					{ title: 'Ältande på kvällen – när tankarna tar över', href: '/guider-seo/sovproblem/altande-pa-kvallen' }
+					{ title: 'Trött men uppvarvad – vad det beror på', href: '/guider/sovproblem/trott-men-uppvarvad' },
+					{ title: 'Ältande på kvällen – när tankarna tar över', href: '/guider/sovproblem/altande-pa-kvallen' }
 				]
 			},
 			{
@@ -4444,8 +4444,8 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om sömnproblem', href: '/guider-seo/sovproblem' },
-			{ title: 'Sömnbrist och mående – vad det gör med dig', href: '/guider-seo/sovproblem/somnbrist-och-maendet' },
+			{ title: 'Se alla artiklar om sömnproblem', href: '/guider/sovproblem' },
+			{ title: 'Sömnbrist och mående – vad det gör med dig', href: '/guider/sovproblem/somnbrist-och-maendet' },
 			{ title: 'Utforska övningar', href: '/ovningar' }
 		]
 	},
@@ -4462,16 +4462,16 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Vad låg självkänsla handlar om',
 				body: 'Låg självkänsla visar sig ofta som en inre röst som ifrågasätter, jämför och kritiserar. Det är inte en karaktärsbrist, utan ett inlärt mönster som går att förändra steg för steg.',
 				links: [
-					{ title: 'Låg självkänsla – vad det är och vad som hjälper', href: '/guider-seo/sjalvkansla/lag-sjalvkansla' },
-					{ title: 'Inre kritikern – rösten som alltid hittar fel', href: '/guider-seo/sjalvkansla/inre-kritikern' }
+					{ title: 'Låg självkänsla – vad det är och vad som hjälper', href: '/guider/sjalvkansla/lag-sjalvkansla' },
+					{ title: 'Inre kritikern – rösten som alltid hittar fel', href: '/guider/sjalvkansla/inre-kritikern' }
 				]
 			},
 			{
 				heading: 'Jämförelse och självbild',
 				body: 'Att jämföra sig med andra kan förstärka känslan av att inte räcka till. Det finns sätt att se sig själv med lite mer rättvisa och värme, och det börjar ofta med ökad medvetenhet.',
 				links: [
-					{ title: 'Jämförelse och självbild – att se sig själv rättvist', href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild' },
-					{ title: 'Perfektionism och självkänsla', href: '/guider-seo/sjalvkansla/perfektionism-och-sjalvkansla' }
+					{ title: 'Jämförelse och självbild – att se sig själv rättvist', href: '/guider/sjalvkansla/jamforelse-och-sjalvbild' },
+					{ title: 'Perfektionism och självkänsla', href: '/guider/sjalvkansla/perfektionism-och-sjalvkansla' }
 				]
 			},
 			{
@@ -4480,8 +4480,8 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om självkänsla', href: '/guider-seo/sjalvkansla' },
-			{ title: 'Gränser och självkänsla', href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla' },
+			{ title: 'Se alla artiklar om självkänsla', href: '/guider/sjalvkansla' },
+			{ title: 'Gränser och självkänsla', href: '/guider/sjalvkansla/gransen-och-sjalvkansla' },
 			{ title: 'Utforska övningar', href: '/ovningar' }
 		]
 	},
@@ -4500,11 +4500,11 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				links: [
 					{
 						title: 'När bruk blir ett sätt att stå ut',
-						href: '/guider-seo/beroende/nar-bruk-blir-ett-satt-att-sta-ut'
+						href: '/guider/beroende/nar-bruk-blir-ett-satt-att-sta-ut'
 					},
 					{
 						title: 'Att vilja sluta och inte vilja samtidigt',
-						href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
+						href: '/guider/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
 					}
 				]
 			},
@@ -4512,8 +4512,8 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Skam och tystnad gör det ofta tyngre',
 				body: 'Det är vanligt att fungera utåt och samtidigt bära mycket ensam. Skam kan göra det svårare att vara ärlig, söka stöd och ta små steg i tid.',
 				links: [
-					{ title: 'Nedstämdhet eller depression', href: '/guider-seo/depression/nedstamdhet' },
-					{ title: 'Orostankar som snurrar - när hjärnan inte kan stänga av', href: '/guider-seo/angest/orostankar' }
+					{ title: 'Nedstämdhet eller depression', href: '/guider/depression/nedstamdhet' },
+					{ title: 'Orostankar som snurrar - när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' }
 				]
 			},
 			{
@@ -4524,7 +4524,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 		primaryLinks: [
 			{
 				title: 'Läs artikeln om ambivalens och kontrollförlust',
-				href: '/guider-seo/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
+				href: '/guider/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
 			},
 			{ title: 'Börja skriva i dagboken', href: '/dagbok' },
 			{ title: 'Hitta vidare stöd', href: 'https://www.stodlinjer.se/' }
@@ -4542,17 +4542,17 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				heading: 'Förstå grunderna i KBT',
 				body: 'KBT bygger på sambandet mellan tankar, känslor och beteenden. Genom att förändra ett led kan du påverka de andra. Det kräver inte en terapeut för att komma igång.',
 				links: [
-					{ title: 'Vad är KBT och hur fungerar det?', href: '/guider-seo/kbt/vad-ar-kbt' },
-					{ title: 'KBT vid ångest – hur det fungerar steg för steg', href: '/guider-seo/kbt/kbt-vid-angest' }
+					{ title: 'Vad är KBT och hur fungerar det?', href: '/guider/kbt/vad-ar-kbt' },
+					{ title: 'KBT vid ångest – hur det fungerar steg för steg', href: '/guider/kbt/kbt-vid-angest' }
 				]
 			},
 			{
 				heading: 'Tekniker du kan testa hemma',
 				body: 'Många KBT-tekniker passar utmärkt som självhjälp. Tankeomstrukturering och beteendeaktivering är bra startpunkter som du kan öva på utan förkunskaper.',
 				links: [
-					{ title: 'Tankeomstrukturering – utmana dina negativa tankar', href: '/guider-seo/kbt/tankeomstrukturering' },
-					{ title: 'Beteendeaktivering – ta ett steg ut ur passiviteten', href: '/guider-seo/kbt/beteendeaktivering' },
-					{ title: 'KBT-tekniker du kan använda hemma', href: '/guider-seo/kbt/kbt-tekniker-hemma' }
+					{ title: 'Tankeomstrukturering – utmana dina negativa tankar', href: '/guider/kbt/tankeomstrukturering' },
+					{ title: 'Beteendeaktivering – ta ett steg ut ur passiviteten', href: '/guider/kbt/beteendeaktivering' },
+					{ title: 'KBT-tekniker du kan använda hemma', href: '/guider/kbt/kbt-tekniker-hemma' }
 				]
 			},
 			{
@@ -4561,7 +4561,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla KBT-guider', href: '/guider-seo/kbt' },
+			{ title: 'Se alla KBT-guider', href: '/guider/kbt' },
 			{ title: 'Börja reflektera i dagboken', href: '/dagbok' }
 		]
 	}
@@ -4573,14 +4573,14 @@ export function getPillarLandingBySlug(slug: string): SeoLandingPage | null {
 }
 
 export function getGuiderSeoPaths(): string[] {
-	const paths: string[] = ['/guider-seo'];
+	const paths: string[] = ['/guider'];
 
 		for (const pillar of pillars) {
-		paths.push(`/guider-seo/${pillar.slug}`);
+		paths.push(`/guider/${pillar.slug}`);
 	}
 
 	for (const guide of guides) {
-		paths.push(`/guider-seo/${guide.pillarSlug}/${guide.slug}`);
+		paths.push(`/guider/${guide.pillarSlug}/${guide.slug}`);
 	}
 
 	return paths;

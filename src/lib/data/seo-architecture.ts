@@ -39,10 +39,10 @@ export const pillars: Pillar[] = [
 		],
 		toolSlugs: ['grounding-5-4-3-2-1', '4-7-8-andning', 'cbt-katastroftankar'],
 		relatedArticles: [
-			{ title: 'Panikattack eller ångest – vad är skillnaden?', href: '/guider-seo/angest/panikangest-och-kroppen' },
-			{ title: 'Ångest på kvällen – varför det ofta blir värre', href: '/guider-seo/angest/angest-och-somn' },
-			{ title: 'Undvikande och hur det håller ångesten vid liv', href: '/guider-seo/trauma/undvikande-efter-trauma' },
-			{ title: 'Kroppen vid ångest – symtom du kan lära dig förstå', href: '/guider-seo/angest/panikangest-och-kroppen' }
+			{ title: 'Panikattack eller ångest – vad är skillnaden?', href: '/guider/angest/panikangest-och-kroppen' },
+			{ title: 'Ångest på kvällen – varför det ofta blir värre', href: '/guider/angest/angest-och-somn' },
+			{ title: 'Undvikande och hur det håller ångesten vid liv', href: '/guider/trauma/undvikande-efter-trauma' },
+			{ title: 'Kroppen vid ångest – symtom du kan lära dig förstå', href: '/guider/angest/panikangest-och-kroppen' }
 		]
 	},
 	{
@@ -61,7 +61,7 @@ export const pillars: Pillar[] = [
 		],
 		toolSlugs: ['dagens-avslut-reflektion', 'tacksamhetsovning', 'daglig-reflektionsmall'],
 		relatedArticles: [
-			{ title: 'Gränssättning – varför det är svårt och hur du börjar', href: '/guider-seo/sjalvkansla/gransen-och-sjalvkansla' }
+			{ title: 'Gränssättning – varför det är svårt och hur du börjar', href: '/guider/sjalvkansla/gransen-och-sjalvkansla' }
 		]
 	},
 	{
@@ -79,8 +79,8 @@ export const pillars: Pillar[] = [
 		],
 		toolSlugs: ['skrivovningar-sjalvkansla', 'sjalvmedkansla-ovning', 'vardekartlaggning'],
 		relatedArticles: [
-			{ title: 'Den inre kritikern – vad den säger och hur du svarar', href: '/guider-seo/sjalvkansla/inre-kritikern' },
-			{ title: 'Jämförelse och sociala medier – varför det sår tvivel', href: '/guider-seo/sjalvkansla/jamforelse-och-sjalvbild' }
+			{ title: 'Den inre kritikern – vad den säger och hur du svarar', href: '/guider/sjalvkansla/inre-kritikern' },
+			{ title: 'Jämförelse och sociala medier – varför det sår tvivel', href: '/guider/sjalvkansla/jamforelse-och-sjalvbild' }
 		]
 	},
 	{
@@ -98,10 +98,10 @@ export const pillars: Pillar[] = [
 		],
 		toolSlugs: ['4-7-8-andning', 'body-scan', 'dagens-avslut-reflektion'],
 		relatedArticles: [
-			{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider-seo/sovproblem/stress-och-somn' },
-			{ title: 'Ältande på kvällen – varför tankarna blir starkare i sängen', href: '/guider-seo/sovproblem/altande-pa-kvallen' },
-			{ title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget', href: '/guider-seo/sovproblem/trott-men-uppvarvad' },
-			{ title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet', href: '/guider-seo/sovproblem/somnbrist-och-maendet' }
+			{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider/sovproblem/stress-och-somn' },
+			{ title: 'Ältande på kvällen – varför tankarna blir starkare i sängen', href: '/guider/sovproblem/altande-pa-kvallen' },
+			{ title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget', href: '/guider/sovproblem/trott-men-uppvarvad' },
+			{ title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet', href: '/guider/sovproblem/somnbrist-och-maendet' }
 		]
 	},
 	{
@@ -119,8 +119,8 @@ export const pillars: Pillar[] = [
 		],
 		toolSlugs: ['daglig-reflektionsmall', 'tacksamhetsovning', 'body-scan'],
 		relatedArticles: [
-			{ title: 'Energi och depression – varför det känns omöjligt att göra saker', href: '/guider-seo/depression/trotthet-och-meningsloshet' },
-			{ title: 'Aktivering – rörelse och rutiner som faktiskt hjälper', href: '/guider-seo/depression/sma-steg-vid-nedstamdhet' }
+			{ title: 'Energi och depression – varför det känns omöjligt att göra saker', href: '/guider/depression/trotthet-och-meningsloshet' },
+			{ title: 'Aktivering – rörelse och rutiner som faktiskt hjälper', href: '/guider/depression/sma-steg-vid-nedstamdhet' }
 		]
 	},
 	{

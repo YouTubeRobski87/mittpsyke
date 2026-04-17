@@ -18,7 +18,7 @@
 		ensamhet: '/ensamhet',
 		overtankande: '/oro',
 		kbt: '/kbt',
-		beroende: '/guider-seo/beroende'
+		beroende: '/guider/beroende'
 	};
 
 	const pillarRoute = $derived(pillarRoutes[data.pillar.slug] ?? null);
@@ -28,7 +28,7 @@
 		'@type': 'Article',
 		headline: data.guide.title,
 		description: data.guide.seoDescription ?? data.guide.description,
-		url: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`,
+		url: `https://www.mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`,
 		dateModified: data.guide.updatedAt ?? undefined,
 		author: [
 			{
@@ -95,13 +95,13 @@
 				'@type': 'ListItem',
 				position: 3,
 				name: data.pillar.title || data.pillar.slug || 'Sida',
-				item: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`
+				item: `https://www.mittpsyke.se/guider/${data.pillar.slug}`
 			},
 			{
 				'@type': 'ListItem',
 				position: 4,
 				name: data.guide.title || data.guide.slug || 'Artikel',
-				item: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}/${data.guide.slug}`
+				item: `https://www.mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`
 			}
 		]
 	});
@@ -124,7 +124,7 @@
 	<nav class="mb-5 text-sm opacity-75" aria-label="Brödsmulor">
 		<a class="hover:underline" href="/guider">Guider</a>
 		<span> / </span>
-		<a class="hover:underline" href={`/guider-seo/${data.pillar.slug}`}>{data.pillar.title}</a>
+		<a class="hover:underline" href={`/guider/${data.pillar.slug}`}>{data.pillar.title}</a>
 	</nav>
 
 	<h1 class="text-3xl font-semibold tracking-tight">{data.guide.title}</h1>

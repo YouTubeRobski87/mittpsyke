@@ -5,7 +5,7 @@ export function load({ params }) {
 	const pillarSlug = params.pillar === 'stress-och-overbelastning' ? 'stress' : params.pillar;
 
 	if (pillarSlug !== params.pillar) {
-		throw redirect(308, `/guider-seo/${pillarSlug}`);
+		throw redirect(308, `/guider/${pillarSlug}`);
 	}
 
 	const pillar = getPillarBySlug(pillarSlug);

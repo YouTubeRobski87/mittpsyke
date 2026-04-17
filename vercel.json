@@ -13,6 +13,21 @@
       "statusCode": 301
     },
     {
+      "source": "/guider-seo/nedstamdhet",
+      "destination": "/guider/depression",
+      "permanent": true
+    },
+    {
+      "source": "/guider-seo",
+      "destination": "/guider",
+      "permanent": true
+    },
+    {
+      "source": "/guider-seo/:path*",
+      "destination": "/guider/:path*",
+      "permanent": true
+    },
+    {
       "source": "/samtalsstod-vid-trauma",
       "destination": "/samtalsstod-utan-vantetid/samtalsstod-vid-trauma",
       "permanent": true

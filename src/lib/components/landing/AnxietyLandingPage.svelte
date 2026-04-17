@@ -179,7 +179,7 @@
 				<h3>Gör en övning</h3>
 				<p>När kroppen behöver hjälp att komma ned i varv här och nu.</p>
 			</a>
-			<a class="path-card" href="/guider-seo/angest">
+			<a class="path-card" href="/guider/angest">
 				<h3>Läs guider om ångest</h3>
 				<p>För dig som vill förstå mer och hitta steg som går att prova i vardagen.</p>
 			</a>

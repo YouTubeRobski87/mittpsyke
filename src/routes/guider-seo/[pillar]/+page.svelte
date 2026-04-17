@@ -32,7 +32,7 @@
 				'@type': 'CollectionPage',
 				headline: data.landing?.h1 ?? data.pillar.title,
 				description: pageDescription,
-				url: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`,
+				url: `https://www.mittpsyke.se/guider/${data.pillar.slug}`,
 				author: [
 					{ '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' },
 					{
@@ -53,7 +53,7 @@
 						'@type': 'ListItem',
 						position: 3,
 						name: data.pillar.title || data.pillar.slug || 'Sida',
-						item: `https://www.mittpsyke.se/guider-seo/${data.pillar.slug}`
+						item: `https://www.mittpsyke.se/guider/${data.pillar.slug}`
 					}
 				]
 			}

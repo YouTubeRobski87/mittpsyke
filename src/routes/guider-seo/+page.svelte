@@ -19,7 +19,7 @@
 	<ul>
 		{#each data.pillars as pillar}
 			<li>
-				<a href={`/guider-seo/${pillar.slug}`}>{pillar.title}</a>
+				<a href={`/guider/${pillar.slug}`}>{pillar.title}</a>
 			</li>
 		{/each}
 	</ul>
