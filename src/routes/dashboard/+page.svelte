@@ -185,6 +185,7 @@
 		gap: 0.85rem;
 		align-content: start;
 		min-height: 100%;
+		min-width: 0;
 	}
 
 	.portal-card-head {
@@ -204,6 +205,8 @@
 	.portal-copy {
 		margin: 0;
 		line-height: 1.6;
+		overflow-wrap: anywhere;
+		word-break: break-word;
 	}
 
 	.portal-subtle {
