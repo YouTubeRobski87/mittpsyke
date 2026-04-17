@@ -228,13 +228,13 @@
 			return;
 		}
 
-		const { data, error } = await supabase
-			.from('profiles')
-			.select('display_name')
-			.eq('id', sessionUser.id)
-			.maybeSingle();
+		const [{ data, error }, { data: authUserData }] = await Promise.all([
+			supabase.from('profiles').select('display_name').eq('id', sessionUser.id).maybeSingle(),
+			supabase.auth.getUser()
+		]);
 
 		if (requestVersion !== profileRequestVersion) return;
+		user = authUserData.user ?? sessionUser;
 
 		if (error) {
 			displayName = null;
