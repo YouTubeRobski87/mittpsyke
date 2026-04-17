@@ -32,6 +32,16 @@
 		external?: boolean;
 	};
 
+	type ProfilePanelData = {
+		diaryEntryCount: number;
+		chatSessionCount: number;
+	} | null;
+
+	const memberSinceFormatter = new Intl.DateTimeFormat('sv-SE', {
+		month: 'long',
+		year: 'numeric'
+	});
+
 	const signedInPrimaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chat' },
 		{ href: '/guider', label: 'Guider' },
@@ -66,6 +76,45 @@
 	function isActive(href: string): boolean {
 		const path = page.url.pathname;
 		return href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+	}
+
+	function normalizeText(value: unknown): string | null {
+		if (typeof value !== 'string') return null;
+		const trimmed = value.trim();
+		return trimmed.length > 0 ? trimmed : null;
+	}
+
+	function getProfileName(profileDisplayName: string | null, sessionUser: User | null) {
+		const metadata = sessionUser?.user_metadata as Record<string, unknown> | undefined;
+		return (
+			profileDisplayName ??
+			normalizeText(metadata?.display_name) ??
+			normalizeText(metadata?.full_name) ??
+			normalizeText(metadata?.name) ??
+			'Du'
+		);
+	}
+
+	function getAvatarImageUrl(sessionUser: User | null) {
+		if (!sessionUser) return null;
+		const metadata = sessionUser.user_metadata as Record<string, unknown> | undefined;
+		const candidate = normalizeText(metadata?.avatar_url);
+		return candidate && /^https?:\/\//i.test(candidate) ? candidate : null;
+	}
+
+	function getAvatarInitial(name: string, email: string | undefined) {
+		const fromName = normalizeText(name)?.charAt(0);
+		if (fromName) return fromName.toUpperCase();
+		const fromEmail = normalizeText(email)?.charAt(0);
+		if (fromEmail) return fromEmail.toUpperCase();
+		return 'M';
+	}
+
+	function getMemberSinceLabel(createdAt: string | undefined) {
+		if (!createdAt) return 'okänd';
+		const parsed = new Date(createdAt);
+		if (Number.isNaN(parsed.getTime())) return 'okänd';
+		return memberSinceFormatter.format(parsed);
 	}
 
 	let { children, data } = $props();
@@ -119,10 +168,19 @@
 	let user = $state<User | null>(null);
 	let displayName = $state<string | null>(null);
 	let mobileMenuOpen = $state(false);
+	let profilePanelOpen = $state(false);
 	let analyticsEnabled = $state(false);
 	let lastTrackedPagePath = $state('');
 	let profileRequestVersion = 0;
 	let seededSessionAccessToken = '';
+	let profileButtonRef: HTMLButtonElement | null = null;
+	let profilePanelRef: HTMLDivElement | null = null;
+
+	const profilePanelData = $derived((data?.profilePanel ?? null) as ProfilePanelData);
+	const profileName = $derived(getProfileName(displayName, user));
+	const avatarImageUrl = $derived(getAvatarImageUrl(user));
+	const avatarInitial = $derived(getAvatarInitial(profileName, user?.email));
+	const memberSinceLabel = $derived(getMemberSinceLabel(user?.created_at));
 
 	async function syncUser(sessionUser: User | null) {
 		user = sessionUser;
@@ -130,6 +188,7 @@
 
 		if (!sessionUser) {
 			displayName = null;
+			profilePanelOpen = false;
 			return;
 		}
 
@@ -175,8 +234,18 @@
 	});
 
 	async function logout() {
+		profilePanelOpen = false;
 		await supabase.auth.signOut();
 		window.location.href = '/login';
+	}
+
+	function toggleProfilePanel() {
+		profilePanelOpen = !profilePanelOpen;
+		if (profilePanelOpen) mobileMenuOpen = false;
+	}
+
+	function closeProfilePanel() {
+		profilePanelOpen = false;
 	}
 
 	function pageKey(url: URL) {
@@ -254,9 +323,33 @@
 
 	afterNavigate(({ to }) => {
 		mobileMenuOpen = false;
+		profilePanelOpen = false;
 		if (to?.url) {
 			trackCurrentPage(to.url);
 		}
+	});
+
+	$effect(() => {
+		if (!browser || !profilePanelOpen) return;
+
+		const onPointerDown = (event: PointerEvent) => {
+			const target = event.target;
+			if (!(target instanceof Node)) return;
+			if (profilePanelRef?.contains(target) || profileButtonRef?.contains(target)) return;
+			profilePanelOpen = false;
+		};
+
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') profilePanelOpen = false;
+		};
+
+		document.addEventListener('pointerdown', onPointerDown);
+		document.addEventListener('keydown', onKeyDown);
+
+		return () => {
+			document.removeEventListener('pointerdown', onPointerDown);
+			document.removeEventListener('keydown', onKeyDown);
+		};
 	});
 
 	// Initiera Vercel Analytics och Speed Insights en gång vid mount
