@@ -71,13 +71,18 @@
 </svelte:head>
 
 <main class="container max-w-sm py-12">
-	<h1 class="text-2xl font-bold mb-4">Skapa konto</h1>
+	<h1 class="text-2xl font-bold mb-3">
+		{showPreview ? 'Spara och fortsätt där du var' : 'Skapa konto för att spara och följa över tid'}
+	</h1>
+	<p class="text-sm opacity-70 mb-6">
+		Konto är valfritt, men gör det lättare att spara historik, följa ditt mående och komma tillbaka i din egen takt.
+	</p>
 
 	{#if showPreview && tempEntryPreview}
 		<div class="mb-6 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-700/40 p-4">
-			<p class="text-sm font-medium mb-2">📓 Du har redan börjat på ett inlägg</p>
+			<p class="text-sm font-medium mb-2">Du har redan börjat skriva</p>
 			<p class="text-sm opacity-80 mb-2 line-clamp-3">{tempEntryPreview.content || 'Tomt utkast'}</p>
-			<p class="text-xs opacity-60">Skapa konto så finns utkastet kvar i dagboken när du fortsätter.</p>
+			<p class="text-xs opacity-60">Skapa konto så finns texten kvar när du fortsätter.</p>
 		</div>
 	{/if}
 
@@ -93,7 +98,7 @@
 		}}
 		class="space-y-4"
 	>
-		<label class="block text-sm" for="register-email">E-post</label>
+		<label class="block text-sm" for="register-email">E-postadress</label>
 		<input
 			id="register-email"
 			type="email"
@@ -129,7 +134,7 @@
 			disabled={loading}
 			class="w-full px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium disabled:opacity-60 transition-opacity"
 		>
-			{loading ? 'Skapar konto...' : 'Skapa konto'}
+			{loading ? 'Skapar konto...' : 'Skapa konto och fortsätt'}
 		</button>
 
 		<div class="flex items-center gap-3 py-1" aria-hidden="true">
@@ -161,5 +166,8 @@
 
 	<p class="text-center text-sm mt-4 opacity-70">
 		Har du redan konto? <a href="/login" class="underline">Logga in</a>
+	</p>
+	<p class="text-center text-xs mt-3 opacity-60">
+		Läs hur integritet och data hanteras i <a href="/integritet" class="underline">integritetspolicyn</a>.
 	</p>
 </main>
