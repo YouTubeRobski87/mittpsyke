@@ -10,53 +10,6 @@
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
 
-	const entryPaths = [
-		{
-			title: 'Börja skriva',
-			description: 'Skriv av dig anonymt och få lugnt stöd direkt.',
-			href: '/skriv',
-			cta: 'Börja skriva nu',
-			featured: true
-		},
-		{
-			title: 'Följ ditt mående',
-			description: 'Spara och följ mönster över tid.',
-			href: '/register',
-			cta: 'Skapa konto för att spara'
-		},
-		{
-			title: 'Prova en övning',
-			description: 'Ta ett konkret steg här och nu.',
-			href: '/ovningar',
-			cta: 'Starta en övning'
-		},
-		{
-			title: 'Läs guider',
-			description: 'Få mer förståelse i din egen takt.',
-			href: '/guider',
-			cta: 'Läs guider'
-		}
-	];
-
-	const supportPoints = [
-		{
-			label: 'Direkt stöd',
-			text: 'Du får lugna svar, hjälp att sätta ord på det du känner och små nästa steg.'
-		},
-		{
-			label: 'Helt anonymt',
-			text: 'Inget konto behövs. Ingen data kopplas till dig som person.'
-		},
-		{
-			label: 'I din egen takt',
-			text: 'Skriv när du vill, så lite eller mycket du vill. Inget schema, inga krav.'
-		},
-		{
-			label: 'Inte vård',
-			text: 'Ett stöd för reflektion i vardagen — inte ersättning för professionell hjälp.'
-		}
-	];
-
 	const trustHighlights = [
 		'Börja anonymt: Skriv direkt utan registrering.',
 		'Tydliga gränser: MittPsyke är stöd i text, inte vård, diagnos eller akuttjänst.',
@@ -73,56 +26,8 @@
 			text: 'Sätt ord på det som känns svårt, rörigt eller tungt.'
 		},
 		{
-			title: 'Spara om du vill fortsätta',
+			title: 'Fortsätt över tid om du vill',
 			text: 'Med konto kan du spara historik, använda dagbok och följa ditt mående över tid.'
-		},
-		{
-			title: 'Använd det som hjälper mest',
-			text: 'Fortsätt med guider, övningar och verktyg när du vill ha mer struktur.'
-		}
-	];
-
-	const usageModes = [
-		{
-			title: 'Anonymt utan konto',
-			points: [
-				'Börja skriva direkt',
-				'Låg tröskel att testa',
-				'Passar när du bara vill få ur dig det som känns tungt',
-				'Ingen registrering för att komma igång'
-			]
-		},
-		{
-			title: 'Med konto',
-			points: [
-				'Spara historik och fortsätt senare',
-				'Använd dagbok och uppföljning',
-				'Få bättre överblick över ditt mående över tid',
-				'Samla det som hjälper dig på ett ställe'
-			]
-		}
-	];
-
-	const features = [
-		{
-			title: 'Skrivstöd i text',
-			description: 'Skriv av dig anonymt och få hjälp att sortera tankar, känslor och nästa steg.',
-			href: '/skriv'
-		},
-		{
-			title: 'Dagbok med reflektion',
-			description: 'Skriv om dagen, följ upp det som återkommer och bygg förståelse över tid.',
-			href: '/dagbok'
-		},
-		{
-			title: 'Humörspårning',
-			description: 'Följ psykiskt mående över tid och upptäck mönster som annars är lätta att missa.',
-			href: '/humorsparning'
-		},
-		{
-			title: 'Guider och övningar',
-			description: 'Läs guider och prova övningar för stress, ångest, sömn och återhämtning.',
-			href: '/guider'
 		}
 	];
 
@@ -245,7 +150,7 @@
 		<div class="cards-narrow quick-flow-inner">
 			<h2 id="quick-flow-title">Så fungerar MittPsyke</h2>
 			<p class="quick-flow-intro">
-				Börja anonymt om du vill. Fortsätt med konto om du vill spara, följa ditt mående och komma tillbaka över tid.
+				Börja anonymt utan konto, få lugnt stöd i text och fortsätt med konto när du vill spara och följa ditt mående över tid.
 			</p>
 			<ol class="quick-flow-grid">
 				{#each quickFlowSteps as step, index}
@@ -256,68 +161,6 @@
 					</li>
 				{/each}
 			</ol>
-		</div>
-	</section>
-
-	<section class="usage-compare" aria-labelledby="usage-compare-title">
-		<div class="cards-narrow usage-compare-inner">
-			<h2 id="usage-compare-title">Börja anonymt — fortsätt med konto om du vill</h2>
-			<p class="usage-compare-intro">
-				Du kan börja direkt utan konto. Om du vill spara, följa ditt mående och komma tillbaka över tid kan du skapa konto senare.
-			</p>
-			<div class="usage-compare-grid">
-				{#each usageModes as mode}
-					<article class="usage-compare-card">
-						<h3>{mode.title}</h3>
-						<ul>
-							{#each mode.points as point}
-								<li>{point}</li>
-							{/each}
-						</ul>
-					</article>
-				{/each}
-			</div>
-		</div>
-	</section>
-
-	<section class="entry-paths" aria-labelledby="entry-paths-title">
-		<div class="cards-narrow entry-inner">
-			<h2 id="entry-paths-title">Börja där det känns lättast</h2>
-			<p class="entry-intro">
-				Välj det som hjälper mest just nu.
-			</p>
-			<div class="entry-grid">
-				{#each entryPaths as path}
-					<a
-						class:entry-card-primary={path.featured}
-						class="entry-card"
-						href={path.href}
-						onclick={() => trackHomeCta('entry_paths', path.title, path.href)}
-					>
-						<h3>{path.title}</h3>
-						<p>{path.description}</p>
-						<span class="entry-card-cta">{path.cta}</span>
-					</a>
-				{/each}
-			</div>
-		</div>
-	</section>
-
-	<!-- 3. Ett första steg, i din egen takt -->
-	<section class="first-step" aria-labelledby="first-step-title">
-		<div class="cards-narrow first-step-inner">
-			<h2 id="first-step-title">Vad MittPsyke är</h2>
-			<p class="first-step-body">
-				Ett digitalt verktyg där du kan skriva av dig, reflektera och förstå ditt psykiska mående bättre. Du får stöd i text i din egen takt, helt anonymt om du vill. MittPsyke är inte vård eller behandling.
-			</p>
-			<div class="support-points">
-				{#each supportPoints as point}
-					<div class="support-point">
-						<p class="support-label">{point.label}</p>
-						<p class="support-text">{point.text}</p>
-					</div>
-				{/each}
-			</div>
 		</div>
 	</section>
 
@@ -350,23 +193,6 @@
 					<p>Samla det som hjälper dig så att du lätt kan fortsätta där du var.</p>
 					<a class="how-card-cta" href="/register" onclick={() => trackHomeCta('how_it_works', 'fortsatt_over_tid', '/register')}>Fortsätt över tid</a>
 				</article>
-			</div>
-		</div>
-	</section>
-
-	<!-- 5. Vad du kan använda MittPsyke till -->
-	<section class="features-section" aria-labelledby="features-title">
-		<div class="cards-narrow features-inner">
-			<h2 id="features-title">Verktyg som hjälper dig att förstå hur du mår</h2>
-			<p class="features-intro">Skriv, reflektera, följ ditt mående och ta små steg i din egen takt.</p>
-			<div class="features-grid">
-				{#each features as feature}
-					<a class="feature-card" href={feature.href} onclick={() => trackHomeCta('features', feature.title, feature.href)}>
-						<h3>{feature.title}</h3>
-						<p>{feature.description}</p>
-						<span class="feature-card-cta">Öppna verktyget</span>
-					</a>
-				{/each}
 			</div>
 		</div>
 	</section>
