@@ -6,23 +6,23 @@
 
 <svelte:head>
 	<meta name="robots" content="noindex, follow" />
-	<title>AI-samtalsstöd för ångest och stress – chatta anonymt | MittPsyke</title>
+	<title>AI-samtalsstöd för ångest, nedstämdhet och trauma – chatta anonymt | MittPsyke</title>
 	<meta
 		name="description"
-		content="Anonymt AI-samtalsstöd för ångest, nedstämdhet och stress. Välj en ingång och börja i din egen takt – utan konto och utan väntetid."
+		content="Anonymt AI-samtalsstöd för ångest, nedstämdhet och trauma. Välj en ingång och börja i din egen takt – utan konto och utan väntetid."
 	/>
 	<meta property="og:title" content="AI-samtalsstöd – chatta anonymt | MittPsyke" />
 	<meta
 		property="og:description"
-		content="Anonymt AI-samtalsstöd för ångest, nedstämdhet och stress. Välj en ingång och börja i din egen takt – utan konto och utan väntetid."
+		content="Anonymt AI-samtalsstöd för ångest, nedstämdhet och trauma. Välj en ingång och börja i din egen takt – utan konto och utan väntetid."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		"@context": "https://schema.org",
 		"@type": "WebPage",
-		"name": "AI-samtalsstöd för ångest och stress – chatta anonymt | MittPsyke",
-		"description": "Anonymt AI-samtalsstöd för ångest, nedstämdhet och stress. Välj en ingång och börja i din egen takt – utan konto och utan väntetid.",
+		"name": "AI-samtalsstöd för ångest, nedstämdhet och trauma – chatta anonymt | MittPsyke",
+		"description": "Anonymt AI-samtalsstöd för ångest, nedstämdhet och trauma. Välj en ingång och börja i din egen takt – utan konto och utan väntetid.",
 		"url": "https://www.mittpsyke.se/chat",
 		"about": { "@type": "Thing", "name": "Psykisk hälsa och samtalsstöd" },
 		"inLanguage": "sv-SE",
@@ -52,8 +52,8 @@
 				<p>För tunga dagar, låg ork och sådant som känns mörkt.</p>
 			</a>
 			<a class="choice-card" href="/chat/e">
-				<h2>Stress och oro</h2>
-				<p>För hög belastning, inre tryck och behov av att landa.</p>
+				<h2>Trauma</h2>
+				<p>För svåra upplevelser, behov av trygghet och att ta det i egen takt.</p>
 			</a>
 		</section>
 

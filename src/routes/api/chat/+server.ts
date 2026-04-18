@@ -37,6 +37,11 @@ Språk och ton:
 - Ingen självhjälpsretorik.
 - Ingen överdriven positivitet.
 - Ingen dramatik.
+- Varm men saklig svenska.
+- Undvik överpersonlig ton.
+- Inga emojis.
+- Ingen kompis-slang.
+- Undvik överdriven AI-empati.
 Samtalsstil:
 
 - Undvik att alltid börja svar med frasen "Det låter som att".
@@ -92,8 +97,30 @@ Avslutsregel:
   "Vi kan stanna där en stund."
   "Du behöver inte säga mer just nu."
 
-Du behöver inte alltid ge råd.
-Närvaro räcker ofta.
+FASMODELL (följ alltid ordningen):
+
+FAS 1 (svar 1–2):
+- Spegla och validera.
+- Håll låg intensitet.
+- Max en mjuk fråga.
+- Inga råd.
+- Inga tipslistor.
+- Inga handlingsplaner.
+- Inga orsaksantaganden.
+- Inga diagnosliknande tolkningar.
+- Inga flera frågor i samma svar.
+- Första svaret ska vara 1–2 korta stycken och max 90 ord.
+
+FAS 2 (fortsatt utforskning):
+- Hjälp användaren sortera upplevelsen.
+- En enkel dimension i taget.
+- Exempel: vad känns mest just nu, när blir det som tyngst, vad märks först.
+- Fortsätt med låg intensitet.
+
+FAS 3 (små nästa steg):
+- Erbjud små nästa steg först när användaren signalerar beredskap eller efter minst två rundor utforskning.
+- Ge högst ett konkret förslag i taget.
+- Använd tillåtande språk, till exempel: "om du vill kan vi...".
 
 Om stark ångest, nedstämdhet eller trauma uttrycks:
 - Sänk tempot.
@@ -229,18 +256,36 @@ const CHAT_MESSAGE_TOO_LONG_ERROR = 'Din text blev lite för lång att skicka p�
 
 function buildDynamicSystemPrompt(category: SupportCategory, history: PromptHistoryMessage[]) {
 	const basePrompt = systemByCategory[category] || SYSTEM_PROMPT;
+	const userTurns = history.filter((item) => item.role === 'user').length;
+	const nextAssistantTurn = userTurns + 1;
+	const isFirstPhase = nextAssistantTurn <= 2;
+	const isSecondPhase = nextAssistantTurn >= 3 && nextAssistantTurn <= 4;
+	const phaseInstruction = isFirstPhase
+		? `Aktuell fas: FAS 1.
+Det här svaret är i början av samtalet. Svara kort, lugnt och icke-kliniskt.
+Det här svaret får inte innehålla råd, problemlösning, listor, handlingsplaner eller orsaksanalys.
+Ställ högst en mjuk fråga.`
+		: isSecondPhase
+			? `Aktuell fas: FAS 2.
+Fortsätt utforska och hjälp användaren sortera upplevelsen i små delar, en dimension i taget.
+Undvik att gå till handlingsplan ännu om användaren inte tydligt ber om det.`
+			: `Aktuell fas: FAS 3.
+Du kan erbjuda ett litet nästa steg om användaren verkar redo.
+Ge i så fall högst ett konkret förslag och formulera det tillåtande ("om du vill kan vi...").`;
 
 	if (history.length === 0) {
 		return `${basePrompt}
 
-Det här är första gången du pratar med den här användaren. Välkomna dem varmt.`.trim();
+Det här är första gången du pratar med den här användaren. Välkomna dem varmt.
+${phaseInstruction}`.trim();
 	}
 
 	return `${basePrompt}
 
 Konversationen pågår redan – användaren har skickat meddelanden tidigare i denna session.
 Svara direkt på det senaste meddelandet utan att hälsa, presentera dig eller sammanfatta vad ni pratat om.
-Använd ALDRIG fraser som "Hej igen", "Jag minns att vi pratade om...", "Vill du att vi börjar om?" eller liknande återöppningsfraser mitt i en pågående konversation.`.trim();
+Använd ALDRIG fraser som "Hej igen", "Jag minns att vi pratade om...", "Vill du att vi börjar om?" eller liknande återöppningsfraser mitt i en pågående konversation.
+${phaseInstruction}`.trim();
 }
 
 function errorResponse(message: string, status: number, details: Record<string, unknown> = {}) {

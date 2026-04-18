@@ -786,7 +786,7 @@
 					}}
 					onkeydown={handleKeydown}
 					aria-label="Skriv ditt meddelande"
-					placeholder="Skriv här..."
+					placeholder="Skriv det som är i huvudet just nu..."
 					aria-describedby={chatError ? 'chat-help-text chat-error-text' : 'chat-help-text'}
 					aria-invalid={chatError.length > 0}
 					rows={1}
