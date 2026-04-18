@@ -791,11 +791,11 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		canonical: 'https://www.mittpsyke.se/chatta-anonymt',
 		ogTitle: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
 		ogDescription:
-			'FÃ¥ psykiskt stÃ¶d online utan konto. BÃ¶rja skriva direkt i webblÃ¤saren, gratis och utan registrering.',
-		h1: 'Chatta anonymt â€“ utan konto',
+			'Börja chatta anonymt utan konto. Få lugnt stöd i text direkt i webbläsaren.',
+		h1: 'Chatta anonymt utan konto',
 		lead:
-			'Du behÃ¶ver inte registrera dig eller uppge nÃ¥gra uppgifter. BÃ¶rja skriva direkt om det som kÃ¤nns tungt â€“ Ã¥ngest, stress, nedstÃ¤mdhet eller nÃ¥got annat. MittPsyke Ã¤r ett AI-baserat samtalsstÃ¶d som finns hÃ¤r nÃ¤r du behÃ¶ver det.',
-		primaryCta: { href: '/skriv', label: 'BÃ¶rja chatta anonymt' },
+			'Du kan börja direkt utan registrering. Skriv några rader om det som känns tungt och få lugnt stöd i text i din egen takt. MittPsyke är ett samtalsstöd, inte vård eller akuthjälp.',
+		primaryCta: { href: '/skriv', label: 'Börja skriva anonymt' },
 		sections: [
 			{
 				title: 'En lugn start utan registrering',
