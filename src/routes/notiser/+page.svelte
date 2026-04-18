@@ -1,4 +1,4 @@
-﻿<script lang="ts">
+<script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
@@ -34,7 +34,7 @@
 		if (diffMins < 1) return 'just nu';
 		if (diffMins < 60) return `${diffMins} min sedan`;
 		if (diffHours < 24) return `${diffHours} tim sedan`;
-		if (diffDays === 1) return 'igÃ¥r';
+		if (diffDays === 1) return 'igår';
 		if (diffDays < 7) return `${diffDays} dagar sedan`;
 		return date.toLocaleDateString('sv-SE', { day: 'numeric', month: 'short', year: 'numeric' });
 	}
@@ -87,14 +87,14 @@
 		<div class="auth-panel page-header">
 			<h1 class="page-title">Notiser</h1>
 			{#if unread > 0}
-				<p class="auth-muted">{unread} olÃ¤sta</p>
+				<p class="auth-muted">{unread} olästa</p>
 			{/if}
 		</div>
 
 		{#if notifications.length === 0}
 			<div class="auth-panel">
 				<p class="auth-muted" style="text-align:center; padding: 2rem 0;">
-					Inga notiser Ã¤n.
+					Inga notiser än.
 				</p>
 			</div>
 		{:else}
@@ -105,7 +105,7 @@
 						onclick={markAllAsRead}
 						disabled={markingAll}
 					>
-						{markingAll ? 'Markerarâ€¦' : markAllDone ? 'Klart' : 'Markera alla som lÃ¤sta'}
+						{markingAll ? 'Markerar…' : markAllDone ? 'Klart' : 'Markera alla som lästa'}
 					</button>
 				</div>
 			{/if}
@@ -125,9 +125,9 @@
 						{#if !n.is_read}
 							<button
 								class="notif-read-btn"
-								aria-label="Markera som lÃ¤st"
+								aria-label="Markera som läst"
 								onclick={() => markAsRead(n.id)}
-							>âœ“</button>
+							>✓</button>
 						{/if}
 					</li>
 				{/each}
