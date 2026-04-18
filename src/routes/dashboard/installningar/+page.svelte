@@ -508,6 +508,7 @@
 		padding-bottom: 2.75rem;
 		display: grid;
 		gap: 1rem;
+		min-width: 0;
 	}
 
 	.loading-copy {
@@ -518,6 +519,7 @@
 
 	.section-block {
 		padding: 1.05rem;
+		min-width: 0;
 	}
 
 	.section-block h2 {
@@ -784,6 +786,7 @@
 	.option-text {
 		font-family: var(--font-body);
 		font-size: 0.9rem;
+		min-width: 0;
 	}
 
 	.option-chip {
@@ -852,7 +855,65 @@
 		cursor: not-allowed;
 	}
 
-@media (min-width: 740px) {
+	@media (max-width: 739px) {
+		.section-block {
+			padding: 0.95rem;
+		}
+
+		.section-block h2 {
+			font-size: 1rem;
+		}
+
+		.field-row {
+			flex-direction: column;
+			gap: 0.5rem;
+		}
+
+		.field-row .save-btn,
+		.section-block .save-btn,
+		.section-block .danger-btn {
+			width: 100%;
+		}
+
+		.avatar-row {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 0.4rem;
+		}
+
+		.avatar-option {
+			width: 100%;
+			border-radius: 12px;
+			padding: 0.45rem 0.55rem;
+			min-width: 0;
+		}
+
+		.avatar-preview {
+			width: 1.45rem;
+			height: 1.45rem;
+		}
+
+		.option-list.widget-row {
+			flex-direction: column;
+			flex-wrap: nowrap;
+		}
+
+		.option-row,
+		.option-chip {
+			min-width: 0;
+		}
+
+		.option-chip {
+			width: 100%;
+			text-align: left;
+		}
+
+		.option-text {
+			overflow-wrap: anywhere;
+		}
+	}
+
+	@media (min-width: 740px) {
 		.settings-page {
 			gap: 1.2rem;
 			padding-top: 1.5rem;
