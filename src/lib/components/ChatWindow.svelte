@@ -163,6 +163,7 @@
 	}
 
 	let currentSupportLevel = $derived(supportLevel());
+	const tempEntryStorageKey = 'mittpsyke_temp_entry';
 
 	async function trackEvent(eventName: string, data: Record<string, string | number> = {}) {
 		if (!browser || !ANALYTICS_ENABLED) return;
@@ -382,6 +383,15 @@
 				messages = persisted.messages;
 				conversationId = null;
 				historyNoticeVisible = persisted.loadedFromMemory;
+
+				// Carry first draft text from /skriv into chat input when no history exists yet.
+				if (messages.length === 0) {
+					const tempEntry = window.localStorage.getItem(tempEntryStorageKey)?.trim() ?? '';
+					if (tempEntry.length > 0) {
+						input = tempEntry;
+						window.localStorage.removeItem(tempEntryStorageKey);
+					}
+				}
 			}
 
 			window.localStorage.setItem('mittpsyke:last-chat-category', category);

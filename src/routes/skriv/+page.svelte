@@ -9,14 +9,12 @@
 		trackRegisterCtaClicked,
 		trackContinueAnonymousClicked
 	} from '$lib/analytics';
-	import { hasAnalyticsConsent } from '$lib/consent';
-	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
-	import { dev } from '$app/environment';
 
 	let note = $state('');
 	let saving = $state(false);
 	let error = $state('');
+	let hasTrackedWriteStart = $state(false);
 
 	onMount(() => {
 		// Track write page view
@@ -32,6 +30,8 @@
 	});
 
 	function handleInput() {
+		if (hasTrackedWriteStart) return;
+		hasTrackedWriteStart = true;
 		trackWriteStarted();
 	}
 
@@ -42,6 +42,7 @@
 			trackTempEntrySaved();
 		}
 
+		trackContinueFromWrite();
 		trackContinueAnonymousClicked();
 		goto('/chat');
 	}
@@ -74,10 +75,9 @@
 </svelte:head>
 
 <main class="container py-12">
-	<h1 class="text-2xl font-bold mb-4">Skriv av dig anonymt – inget konto behövs</h1>
+	<h1 class="text-2xl font-bold mb-4">Börja skriva anonymt i din egen takt</h1>
 	<p class="mb-6 opacity-70">
-		Chatta anonymt med vår AI utan att registrera dig. Börja med några ord – om ångest,
-		stress eller något annat som känns tungt.
+		Börja med några ord om det som känns tungt. Du kan fortsätta utan konto och få stöd i text direkt.
 	</p>
 
 	<textarea
@@ -85,7 +85,7 @@
 		onchange={handleInput}
 		onkeydown={handleInput}
 		rows={10}
-		placeholder="Skriv dina tankar här..."
+		placeholder="Skriv några ord om hur du har det just nu..."
 		class="w-full p-4 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 mb-4"
 	></textarea>
 
@@ -99,7 +99,7 @@
 			onclick={handleContinueAnonymous}
 			class="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700"
 		>
-			Fortsätta anonymt
+			Starta chatten anonymt
 		</button>
 		<button
 			type="button"
@@ -107,7 +107,11 @@
 			disabled={!note.trim() || saving}
 			class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
 		>
-			{saving ? 'Sparar...' : 'Skapa konto'}
+			{saving ? 'Sparar...' : 'Skapa konto och spara'}
 		</button>
 	</div>
+
+	<p class="mt-4 text-sm opacity-70">
+		Du kan börja utan konto. MittPsyke är stöd i text, inte vård eller akuthjälp.
+	</p>
 </main>
