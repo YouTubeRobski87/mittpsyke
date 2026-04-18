@@ -198,7 +198,7 @@
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 					<a href="#sa-fungerar-det" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Se hur det fungerar</a>
 				</div>
-				<p class="hero-trust-note">Utan konto. I din egen takt. Inte vård eller akuttjänst.</p>
+				<p class="hero-trust-note">Börja utan konto. I din egen takt. Inte vård eller akuttjänst.</p>
 			</div>
 		</div>
 	</section>
@@ -353,15 +353,15 @@
 			<h2 id="review-section-title">Så beskriver andra sin upplevelse</h2>
 			<div class="review-grid">
 				<blockquote class="review-card">
-					<p>&ldquo;Jag kunde skriva utan att behöva formulera allt perfekt.&rdquo;</p>
+					<p>&ldquo;Jag skrev i några minuter och kände mig mindre uppjagad.&rdquo;</p>
 					<cite>Anonym användare</cite>
 				</blockquote>
 				<blockquote class="review-card">
-					<p>&ldquo;Det hjälpte mig att lugna ner tankarna och börja i rätt ände.&rdquo;</p>
+					<p>&ldquo;Frågorna hjälpte mig sortera vad som var viktigast just då.&rdquo;</p>
 					<cite>Anonym användare</cite>
 				</blockquote>
 				<blockquote class="review-card">
-					<p>&ldquo;Jag började se mönster i hur jag mådde under veckan.&rdquo;</p>
+					<p>&ldquo;När jag kom tillbaka såg jag mönster i sömn och stress.&rdquo;</p>
 					<cite>Anonym användare</cite>
 				</blockquote>
 			</div>
@@ -407,7 +407,7 @@
 	<section class="final-cta-section" aria-label="Kom igång">
 		<div class="final-cta-inner">
 			<h2>Du behöver inte veta vad du ska säga.</h2>
-			<p>Börja skriva, så möter vi dig där du är. Anonymt, i text och i din egen takt.</p>
+			<p>Börja skriva direkt utan konto. Få stöd i text och fortsätt i din egen takt.</p>
 			<div class="final-cta-actions">
 				<a href="/skriv" class="hero-cta hero-cta-primary">Börja skriva nu</a>
 				<a href="/guider" class="hero-cta-link">Läs guider</a>
