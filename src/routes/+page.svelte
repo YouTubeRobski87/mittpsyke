@@ -377,20 +377,21 @@
 			<div class="trust-copy">
 				<h2 id="trust-title">För stöd och reflektion — inte för vård eller diagnos</h2>
 				<p>
-					MittPsyke är ett verktyg för reflektion och självhjälp. Du kan skriva av dig anonymt, få lugnt stöd i text och använda dagbok, övningar och guider i din egen takt.
+					Du kan börja anonymt utan konto och få lugnt stöd i text direkt. När du vill fortsätta finns dagbok, övningar och guider för mer struktur över tid.
 				</p>
 				<p class="trust-privacy">
-					Anonyma samtal sparas inte kopplat till dig.
+					Du kan läsa hur integritet och data fungerar innan du delar något. Med konto kan du begära export och radering.
 					<a href="/integritet">Läs integritetspolicyn</a>.
 				</p>
 				<p class="trust-research">
-					Forskning visar att strukturerat digitalt stöd kan ha positiva effekter på psykisk hälsa.
-					<a href="https://www.jmir.org/2024/1/e51268" target="_blank" rel="noopener noreferrer">Källa: Yeo et al., JMIR 2024</a>.
+					Vid akut fara, ring <a href="tel:112">112</a>. För vårdråd, kontakta
+					<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. För vidare stöd finns
+					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
 				</p>
 				<div class="trust-facts" aria-label="Avsändare och ansvar">
 					<p><strong>Drivs i Sverige av:</strong> Robert Claesson</p>
 					<p><strong>Kontakt:</strong> <a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a></p>
-					<p><strong>Viktigt:</strong> Inte vård, behandling eller akuttjänst</p>
+					<p><strong>Viktigt:</strong> Inte vård, diagnos, behandling eller akuttjänst</p>
 				</div>
 			</div>
 		</div>

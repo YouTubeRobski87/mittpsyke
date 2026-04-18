@@ -2,14 +2,20 @@
 	<ul class="safety-list">
 		<li class="safety-item">
 			<p class="safety-label">Inte vård</p>
-			<p class="safety-copy">För stöd och reflektion i vardagen, inte vård eller akuthjälp.</p>
+			<p class="safety-copy">Stöd för reflektion i vardagen, inte vård, diagnos eller akuthjälp.</p>
 		</li>
 		<li class="safety-item">
 			<p class="safety-label">Börja anonymt</p>
-			<p class="safety-copy">Du kan skriva direkt utan konto och ta ett steg i taget, i din egen takt.</p>
+			<p class="safety-copy">Du kan skriva direkt utan konto och komma igång i din egen takt.</p>
 		</li>
 		<li class="safety-item">
-			<p class="safety-label">Akut fara?</p>
+			<p class="safety-label">Integritet</p>
+			<p class="safety-copy">
+				Läs hur data hanteras innan du börjar. Med konto kan du begära export och radering.
+			</p>
+		</li>
+		<li class="safety-item">
+			<p class="safety-label">Vid akut läge</p>
 			<p class="safety-copy">
 				<a href="tel:112">Ring 112</a>, kontakta
 				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>
