@@ -67,7 +67,7 @@
 		<button
 			type="button"
 			onclick={handleStartChat}
-			class="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700"
+			class="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 cursor-pointer"
 		>
 			{isLoggedIn ? 'Starta chatten' : 'Starta chatten anonymt'}
 		</button>
@@ -75,7 +75,7 @@
 			<button
 				type="button"
 				onclick={handleOpenDiary}
-				class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+				class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
 			>
 				Öppna dagboken
 			</button>
@@ -83,7 +83,7 @@
 			<button
 				type="button"
 				onclick={handleSaveAccount}
-				class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+				class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
 			>
 				Skapa konto och spara
 			</button>
