@@ -65,6 +65,25 @@
 		'Vid akut läge hänvisas du vidare till rätt hjälp'
 	];
 
+	const quickFlowSteps = [
+		{
+			title: 'Börja skriva direkt',
+			text: 'Du kan skriva anonymt utan konto och komma igång i lugn takt.'
+		},
+		{
+			title: 'Få stöd i text',
+			text: 'Sätt ord på det som känns svårt, rörigt eller tungt.'
+		},
+		{
+			title: 'Spara om du vill fortsätta',
+			text: 'Med konto kan du spara historik, använda dagbok och följa ditt mående över tid.'
+		},
+		{
+			title: 'Använd det som hjälper mest',
+			text: 'Fortsätt med guider, övningar och verktyg när du vill ha mer struktur.'
+		}
+	];
+
 	const features = [
 		{
 			title: 'Skrivstöd i text',
@@ -182,6 +201,24 @@
 		</div>
 	</section>
 
+	<section id="sa-fungerar-det" class="quick-flow" aria-labelledby="quick-flow-title">
+		<div class="cards-narrow quick-flow-inner">
+			<h2 id="quick-flow-title">Så fungerar MittPsyke</h2>
+			<p class="quick-flow-intro">
+				Börja anonymt om du vill. Fortsätt med konto om du vill spara, följa ditt mående och komma tillbaka över tid.
+			</p>
+			<ol class="quick-flow-grid">
+				{#each quickFlowSteps as step, index}
+					<li class="quick-flow-item">
+						<p class="quick-flow-step">Steg {index + 1}</p>
+						<h3>{step.title}</h3>
+						<p>{step.text}</p>
+					</li>
+				{/each}
+			</ol>
+		</div>
+	</section>
+
 	<section class="entry-paths" aria-labelledby="entry-paths-title">
 		<div class="cards-narrow entry-inner">
 			<h2 id="entry-paths-title">Börja där det känns lättast</h2>
@@ -219,7 +256,7 @@
 	</section>
 
 	<!-- 4. Så fungerar det -->
-	<section id="sa-fungerar-det" class="how-it-works" aria-labelledby="how-it-works-title">
+	<section id="sa-fungerar-det-fordjupning" class="how-it-works" aria-labelledby="how-it-works-title">
 		<div class="cards-narrow how-inner">
 			<p class="how-eyebrow">Så fungerar det</p>
 			<h2 id="how-it-works-title">Fyra steg från första tanke till bättre överblick</h2>
@@ -559,6 +596,68 @@
 	.early-trust-link {
 		margin: 0.55rem 0 0;
 		font-size: 0.9rem;
+	}
+
+	.quick-flow {
+		padding: clamp(2.3rem, 6vw, 3.6rem) 1.25rem;
+		background: #141e2e;
+		color: #e0e4ea;
+	}
+
+	.quick-flow-inner h2 {
+		margin: 0;
+		color: #eef1f6;
+		font-size: clamp(1.45rem, 2.9vw, 2rem);
+	}
+
+	.quick-flow-intro {
+		margin: 0.7rem 0 0;
+		max-width: 66ch;
+		font-size: 0.96rem;
+		line-height: 1.65;
+		color: rgba(220, 225, 235, 0.78);
+	}
+
+	.quick-flow-grid {
+		margin: 1rem 0 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.85rem;
+	}
+
+	.quick-flow-item {
+		padding: 0.95rem 1rem;
+		border-radius: var(--radius-card);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+		border: 1px solid rgba(148, 163, 184, 0.12);
+	}
+
+	.quick-flow-step {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: 0.81rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: rgba(160, 185, 220, 0.92);
+	}
+
+	.quick-flow-item h3 {
+		margin: 0.45rem 0 0;
+		font-size: 1.02rem;
+		line-height: 1.35;
+		color: #eef1f6;
+	}
+
+	.quick-flow-item p {
+		margin: 0.5rem 0 0;
+		font-size: 0.94rem;
+		line-height: 1.62;
+		color: rgba(220, 225, 235, 0.74);
 	}
 
 	.first-step {
@@ -1087,6 +1186,10 @@
 	}
 
 	@media (min-width: 700px) {
+		.quick-flow-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
 		.early-trust-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
@@ -1137,6 +1240,7 @@
 	/* ── Dark mode — base is already dark, just deepen slightly ── */
 	:global(.dark) .first-step { background: #0d1520; }
 	:global(.dark) .early-trust { background: #0e1826; }
+	:global(.dark) .quick-flow { background: #0d1520; }
 	:global(.dark) .entry-paths { background: #0b1320; }
 	:global(.dark) .how-it-works { background: #0e1826; }
 	:global(.dark) .features-section { background: #0b1320; }
