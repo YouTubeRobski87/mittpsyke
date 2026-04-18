@@ -48,12 +48,18 @@
 		{ value: 'chat',   label: 'Chatten' },
 	];
 	const AVATAR_OPTIONS: { value: AvatarPresetKey; label: string; src: string }[] = [
-		{ value: 'sol', label: 'Lugn', src: AVATAR_PRESETS.sol },
-		{ value: 'himmel', label: 'Himmel', src: AVATAR_PRESETS.himmel },
-		{ value: 'skog', label: 'Skog', src: AVATAR_PRESETS.skog },
-		{ value: 'natt', label: 'Kväll', src: AVATAR_PRESETS.natt },
-		{ value: 'gryning', label: 'Gryning', src: AVATAR_PRESETS.gryning },
-		{ value: 'sten', label: 'Hav', src: AVATAR_PRESETS.sten }
+		{ value: 'sol', label: 'Lugn 1', src: AVATAR_PRESETS.sol },
+		{ value: 'himmel', label: 'Lugn 2', src: AVATAR_PRESETS.himmel },
+		{ value: 'skog', label: 'Lugn 3', src: AVATAR_PRESETS.skog },
+		{ value: 'natt', label: 'Lugn 4', src: AVATAR_PRESETS.natt },
+		{ value: 'gryning', label: 'Lugn 5', src: AVATAR_PRESETS.gryning },
+		{ value: 'sten', label: 'Lugn 6', src: AVATAR_PRESETS.sten },
+		{ value: 'nord7', label: 'Lugn 7', src: AVATAR_PRESETS.nord7 },
+		{ value: 'nord8', label: 'Lugn 8', src: AVATAR_PRESETS.nord8 },
+		{ value: 'nord9', label: 'Lugn 9', src: AVATAR_PRESETS.nord9 },
+		{ value: 'nord10', label: 'Lugn 10', src: AVATAR_PRESETS.nord10 },
+		{ value: 'nord11', label: 'Lugn 11', src: AVATAR_PRESETS.nord11 },
+		{ value: 'nord12', label: 'Lugn 12', src: AVATAR_PRESETS.nord12 }
 	];
 
 	function toAvatarKey(value: unknown): AvatarPresetKey | '' {
