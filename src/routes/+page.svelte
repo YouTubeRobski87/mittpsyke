@@ -4,7 +4,7 @@
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
-	import { trackHeroCtaPrimaryClick, trackHeroCtaSecondaryClick } from '$lib/analytics';
+	import { trackHeroCtaPrimaryClick, trackHeroCtaSecondaryClick, trackHomeCtaClick } from '$lib/analytics';
 
 	let { data }: { data: Record<string, unknown> } = $props();
 	let heroEl: HTMLElement | null = null;
@@ -128,6 +128,10 @@
 		}
 	];
 
+	function trackHomeCta(section: string, cta: string, href: string) {
+		trackHomeCtaClick({ section, cta, href });
+	}
+
 	onMount(() => {
 		if (!heroEl || !bgEl) return;
 		if (window.innerWidth < 768) return;
@@ -218,7 +222,11 @@
 				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
 			</p>
-			<p class="early-trust-link"><a href="/integritet">Läs om hur vi hanterar integritet och data</a></p>
+			<p class="early-trust-link">
+				<a href="/integritet" onclick={() => trackHomeCta('early_trust', 'integritet', '/integritet')}>
+					Läs om hur vi hanterar integritet och data
+				</a>
+			</p>
 		</div>
 	</section>
 
@@ -269,7 +277,12 @@
 			</p>
 			<div class="entry-grid">
 				{#each entryPaths as path}
-					<a class:entry-card-primary={path.featured} class="entry-card" href={path.href}>
+					<a
+						class:entry-card-primary={path.featured}
+						class="entry-card"
+						href={path.href}
+						onclick={() => trackHomeCta('entry_paths', path.title, path.href)}
+					>
 						<h3>{path.title}</h3>
 						<p>{path.description}</p>
 						<span class="entry-card-cta">{path.cta}</span>
@@ -309,22 +322,22 @@
 				<article class="how-card">
 					<h3>Dagbok och reflektion</h3>
 					<p>Skriv mer sammanhängande och sätt ord på det som återkommer.</p>
-					<a class="how-card-cta" href="/dagbok">Öppna dagboken</a>
+					<a class="how-card-cta" href="/dagbok" onclick={() => trackHomeCta('how_it_works', 'oppna_dagboken', '/dagbok')}>Öppna dagboken</a>
 				</article>
 				<article class="how-card">
 					<h3>Uppföljning över tid</h3>
 					<p>Se mönster i hur du mår och få bättre överblick över perioder.</p>
-					<a class="how-card-cta" href="/humorsparning">Följ måendet</a>
+					<a class="how-card-cta" href="/humorsparning" onclick={() => trackHomeCta('how_it_works', 'folj_maendet', '/humorsparning')}>Följ måendet</a>
 				</article>
 				<article class="how-card">
 					<h3>Guider och övningar</h3>
 					<p>Få tydliga förklaringar och konkreta övningar för vardagens utmaningar.</p>
-					<a class="how-card-cta" href="/guider">Utforska stöd</a>
+					<a class="how-card-cta" href="/guider" onclick={() => trackHomeCta('how_it_works', 'utforska_stod', '/guider')}>Utforska stöd</a>
 				</article>
 				<article class="how-card">
 					<h3>Stöd att återvända till</h3>
 					<p>Samla det som hjälper dig så att du lätt kan fortsätta där du var.</p>
-					<a class="how-card-cta" href="/register">Fortsätt över tid</a>
+					<a class="how-card-cta" href="/register" onclick={() => trackHomeCta('how_it_works', 'fortsatt_over_tid', '/register')}>Fortsätt över tid</a>
 				</article>
 			</div>
 		</div>
@@ -337,7 +350,7 @@
 			<p class="features-intro">Skriv, reflektera, följ ditt mående och ta små steg i din egen takt.</p>
 			<div class="features-grid">
 				{#each features as feature}
-					<a class="feature-card" href={feature.href}>
+					<a class="feature-card" href={feature.href} onclick={() => trackHomeCta('features', feature.title, feature.href)}>
 						<h3>{feature.title}</h3>
 						<p>{feature.description}</p>
 						<span class="feature-card-cta">Öppna verktyget</span>
@@ -381,7 +394,7 @@
 				</p>
 				<p class="trust-privacy">
 					Du kan läsa hur integritet och data fungerar innan du delar något. Med konto kan du begära export och radering.
-					<a href="/integritet">Läs integritetspolicyn</a>.
+					<a href="/integritet" onclick={() => trackHomeCta('trust_section', 'integritetspolicy', '/integritet')}>Läs integritetspolicyn</a>.
 				</p>
 				<p class="trust-research">
 					Vid akut fara, ring <a href="tel:112">112</a>. För vårdråd, kontakta
@@ -410,8 +423,8 @@
 			<h2>Du behöver inte veta vad du ska säga.</h2>
 			<p>Börja skriva direkt utan konto. Få stöd i text och fortsätt i din egen takt.</p>
 			<div class="final-cta-actions">
-				<a href="/skriv" class="hero-cta hero-cta-primary">Börja skriva nu</a>
-				<a href="/guider" class="hero-cta-link">Läs guider</a>
+				<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('final_cta', 'borja_skriva_nu', '/skriv')}>Börja skriva nu</a>
+				<a href="/guider" class="hero-cta-link" onclick={() => trackHomeCta('final_cta', 'las_guider', '/guider')}>Läs guider</a>
 			</div>
 		</div>
 	</section>
