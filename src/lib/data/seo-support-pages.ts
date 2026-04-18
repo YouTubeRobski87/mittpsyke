@@ -1,844 +1,70 @@
-import type { SeoSupportPageConfig } from '$lib/components/SeoSupportPage.svelte';
+﻿import type { SeoSupportPageConfig } from '$lib/components/SeoSupportPage.svelte';
 
 const updatedDate = '4 april 2026';
 
 export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 	'anonymt-samtalsstod-online': {
-		title: 'Anonymt samtalsstöd online | Låg tröskel och trygg start | MittPsyke',
+		title: 'Anonymt samtalsstÃ¶d online | LÃ¥g trÃ¶skel och trygg start | MittPsyke',
 		description:
-			'Utforska anonymt samtalsstöd online när du vill börja varsamt. Läs om varför anonymitet sänker tröskeln, hur stödet skiljer sig från vård och när det kan passa.',
+			'Utforska anonymt samtalsstÃ¶d online nÃ¤r du vill bÃ¶rja varsamt. LÃ¤s om varfÃ¶r anonymitet sÃ¤nker trÃ¶skeln, hur stÃ¶det skiljer sig frÃ¥n vÃ¥rd och nÃ¤r det kan passa.',
 		canonical: 'https://www.mittpsyke.se/anonymt-samtalsstod-online',
-		ogTitle: 'Anonymt samtalsstöd online | MittPsyke',
+		ogTitle: 'Anonymt samtalsstÃ¶d online | MittPsyke',
 		ogDescription:
-			'När du inte orkar förklara allt direkt kan anonymt samtalsstöd vara en trygg första ingång.',
-		h1: 'Anonymt samtalsstöd online',
+			'NÃ¤r du inte orkar fÃ¶rklara allt direkt kan anonymt samtalsstÃ¶d vara en trygg fÃ¶rsta ingÃ¥ng.',
+		h1: 'Anonymt samtalsstÃ¶d online',
 		lead:
-			'Ibland är det lättare att börja utan att först behöva presentera sig, boka tid eller veta exakt vad man vill säga. Här kan du läsa om hur anonymt samtalsstöd online kan fungera som ett lugnt första steg när något känns tungt.',
+			'Ibland Ã¤r det lÃ¤ttare att bÃ¶rja utan att fÃ¶rst behÃ¶va presentera sig, boka tid eller veta exakt vad man vill sÃ¤ga. HÃ¤r kan du lÃ¤sa om hur anonymt samtalsstÃ¶d online kan fungera som ett lugnt fÃ¶rsta steg nÃ¤r nÃ¥got kÃ¤nns tungt.',
 		primaryCta: { href: '/chat', label: 'Prata anonymt nu' },
 		secondaryCta: { href: '/dagbok', label: 'Skriv i dagboken' },
 		sections: [
 			{
-				title: 'Varför anonymitet kan sänka tröskeln',
+				title: 'VarfÃ¶r anonymitet kan sÃ¤nka trÃ¶skeln',
 				paragraphs: [
-					'Anonymitet kan göra det lättare att börja när skam, osäkerhet eller rädsla för att bli missförstådd står i vägen. Många drar sig för att söka stöd för att de inte vill bli bedömda, inte vet om deras mående är “tillräckligt allvarligt” eller inte orkar ta kontakt i ett formellt system. När du kan börja i text och utan att först lämna ifrån dig hela din berättelse blir tröskeln lägre. Det betyder inte att det du känner är litet, utan att ingången får vara enkel nog för att faktiskt bli av.'
+					'Anonymitet kan gÃ¶ra det lÃ¤ttare att bÃ¶rja nÃ¤r skam, osÃ¤kerhet eller rÃ¤dsla fÃ¶r att bli missfÃ¶rstÃ¥dd stÃ¥r i vÃ¤gen. MÃ¥nga drar sig fÃ¶r att sÃ¶ka stÃ¶d fÃ¶r att de inte vill bli bedÃ¶mda, inte vet om deras mÃ¥ende Ã¤r â€œtillrÃ¤ckligt allvarligtâ€ eller inte orkar ta kontakt i ett formellt system. NÃ¤r du kan bÃ¶rja i text och utan att fÃ¶rst lÃ¤mna ifrÃ¥n dig hela din berÃ¤ttelse blir trÃ¶skeln lÃ¤gre. Det betyder inte att det du kÃ¤nner Ã¤r litet, utan att ingÃ¥ngen fÃ¥r vara enkel nog fÃ¶r att faktiskt bli av.'
 				]
 			},
 			{
-				title: 'Skillnaden mellan digitalt samtalsstöd och traditionell vård',
+				title: 'Skillnaden mellan digitalt samtalsstÃ¶d och traditionell vÃ¥rd',
 				paragraphs: [
-					'Anonymt samtalsstöd online är inte samma sak som bedömning, diagnos eller behandling i vården. Det är snarare ett stöd för att sortera tankar, sätta ord på det som händer och hitta nästa steg medan du fortfarande försöker förstå ditt eget läge. I traditionell vård finns journalföring, kliniska bedömningar och behandlingsansvar. Här handlar det i stället om låg tröskel, tillgänglighet och möjlighet att börja i liten skala. För många kan det vara ett komplement före, mellan eller vid sidan av annan hjälp, men inte en ersättning när behovet är medicinskt eller akut.'
+					'Anonymt samtalsstÃ¶d online Ã¤r inte samma sak som bedÃ¶mning, diagnos eller behandling i vÃ¥rden. Det Ã¤r snarare ett stÃ¶d fÃ¶r att sortera tankar, sÃ¤tta ord pÃ¥ det som hÃ¤nder och hitta nÃ¤sta steg medan du fortfarande fÃ¶rsÃ¶ker fÃ¶rstÃ¥ ditt eget lÃ¤ge. I traditionell vÃ¥rd finns journalfÃ¶ring, kliniska bedÃ¶mningar och behandlingsansvar. HÃ¤r handlar det i stÃ¤llet om lÃ¥g trÃ¶skel, tillgÃ¤nglighet och mÃ¶jlighet att bÃ¶rja i liten skala. FÃ¶r mÃ¥nga kan det vara ett komplement fÃ¶re, mellan eller vid sidan av annan hjÃ¤lp, men inte en ersÃ¤ttning nÃ¤r behovet Ã¤r medicinskt eller akut.'
 				]
 			},
 			{
-				title: 'När anonymt samtalsstöd kan passa bäst',
+				title: 'NÃ¤r anonymt samtalsstÃ¶d kan passa bÃ¤st',
 				paragraphs: [
-					'Den här typen av stöd kan passa när du känner oro, nedstämdhet, stress eller ensamhet men ännu inte vet vad du behöver. Det kan också passa om du vill prova att uttrycka dig i text innan du pratar med någon människa, eller om du vill reflektera i lugn takt mellan andra insatser. Det passar sämre när du behöver snabb medicinsk bedömning, är i akut fara eller har symtom som kräver professionell behandling. Då är 1177, vårdcentral, psykiatri eller akuta stödlinjer viktigare vägar vidare.'
+					'Den hÃ¤r typen av stÃ¶d kan passa nÃ¤r du kÃ¤nner oro, nedstÃ¤mdhet, stress eller ensamhet men Ã¤nnu inte vet vad du behÃ¶ver. Det kan ocksÃ¥ passa om du vill prova att uttrycka dig i text innan du pratar med nÃ¥gon mÃ¤nniska, eller om du vill reflektera i lugn takt mellan andra insatser. Det passar sÃ¤mre nÃ¤r du behÃ¶ver snabb medicinsk bedÃ¶mning, Ã¤r i akut fara eller har symtom som krÃ¤ver professionell behandling. DÃ¥ Ã¤r 1177, vÃ¥rdcentral, psykiatri eller akuta stÃ¶dlinjer viktigare vÃ¤gar vidare.'
 				]
 			}
 		],
-		resourceListTitle: 'Det här kan du göra vidare på MittPsyke',
+		resourceListTitle: 'Det hÃ¤r kan du gÃ¶ra vidare pÃ¥ MittPsyke',
 		resourceListItems: [
-			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill förstå hur ett anonymt samtal brukar börja.' },
-			{ href: '/chattstod-psykisk-ohalsa', label: 'Läs om chattstöd vid psykisk ohälsa', description: 'för att få en bredare bild av hur textbaserat stöd kan hjälpa tidigt.' },
-			{ href: '/prata-anonymt-online', label: 'Prata anonymt online', description: 'om du vill läsa mer om vad du kan ta upp och hur du kommer igång.' },
-			{ href: '/dagbok', label: 'Använd dagboken', description: 'när det känns lättare att skriva för dig själv först.' }
+			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med nÃ¥gon', description: 'om du vill fÃ¶rstÃ¥ hur ett anonymt samtal brukar bÃ¶rja.' },
+			{ href: '/chattstod-psykisk-ohalsa', label: 'LÃ¤s om chattstÃ¶d vid psykisk ohÃ¤lsa', description: 'fÃ¶r att fÃ¥ en bredare bild av hur textbaserat stÃ¶d kan hjÃ¤lpa tidigt.' },
+			{ href: '/prata-anonymt-online', label: 'Prata anonymt online', description: 'om du vill lÃ¤sa mer om vad du kan ta upp och hur du kommer igÃ¥ng.' },
+			{ href: '/dagbok', label: 'AnvÃ¤nd dagboken', description: 'nÃ¤r det kÃ¤nns lÃ¤ttare att skriva fÃ¶r dig sjÃ¤lv fÃ¶rst.' }
 		],
-		nextStepTitle: 'Välj nästa steg i lugn takt',
+		nextStepTitle: 'VÃ¤lj nÃ¤sta steg i lugn takt',
 		nextStepParagraphs: [
-			'Om du märker att det hjälper att formulera dig i små delar kan du fortsätta i chatten, skriva i dagboken eller läsa en guide som matchar det du går igenom. Om du i stället känner att du behöver mänsklig kontakt eller tydligare vårdråd finns 1177 och stodlinjer.se som viktiga vägar vidare.',
-			'Vid akut fara eller om du inte känner att du kan hålla dig själv eller någon annan säker ska du inte vänta i ett digitalt stödflöde. Ring 112 direkt.'
+			'Om du mÃ¤rker att det hjÃ¤lper att formulera dig i smÃ¥ delar kan du fortsÃ¤tta i chatten, skriva i dagboken eller lÃ¤sa en guide som matchar det du gÃ¥r igenom. Om du i stÃ¤llet kÃ¤nner att du behÃ¶ver mÃ¤nsklig kontakt eller tydligare vÃ¥rdrÃ¥d finns 1177 och stodlinjer.se som viktiga vÃ¤gar vidare.',
+			'Vid akut fara eller om du inte kÃ¤nner att du kan hÃ¥lla dig sjÃ¤lv eller nÃ¥gon annan sÃ¤ker ska du inte vÃ¤nta i ett digitalt stÃ¶dflÃ¶de. Ring 112 direkt.'
 		],
 		nextStepLinks: [
-			{ href: '/chat', label: 'Öppna chatten' },
-			{ href: '/prata-anonymt-online', label: 'Läs om att prata anonymt' },
-			{ href: '/om-mittpsyke', label: 'Så fungerar MittPsyke' }
+			{ href: '/chat', label: 'Ã–ppna chatten' },
+			{ href: '/prata-anonymt-online', label: 'LÃ¤s om att prata anonymt' },
+			{ href: '/om-mittpsyke', label: 'SÃ¥ fungerar MittPsyke' }
 		],
 		faq: [
 			{
-				question: 'Måste jag logga in för att börja?',
-				answer: 'Nej. Du kan börja med låg tröskel och skapa konto först om du senare vill spara innehåll över tid.'
+				question: 'MÃ¥ste jag logga in fÃ¶r att bÃ¶rja?',
+				answer: 'Nej. Du kan bÃ¶rja med lÃ¥g trÃ¶skel och skapa konto fÃ¶rst om du senare vill spara innehÃ¥ll Ã¶ver tid.'
 			},
 			{
-				question: 'Är anonymt samtalsstöd samma sak som vård?',
-				answer: 'Nej. Det är ett digitalt stöd för reflektion och nästa steg, inte diagnos, behandling eller akut hjälp.'
+				question: 'Ã„r anonymt samtalsstÃ¶d samma sak som vÃ¥rd?',
+				answer: 'Nej. Det Ã¤r ett digitalt stÃ¶d fÃ¶r reflektion och nÃ¤sta steg, inte diagnos, behandling eller akut hjÃ¤lp.'
 			},
 			{
-				question: 'När ska jag söka mer hjälp än detta?',
-				answer: 'Om du är i akut fara, mår snabbt sämre eller behöver medicinsk bedömning ska du kontakta 112, 1177 eller annan professionell vård.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Psykisk hälsa – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		]
-	},
-	'chatta-anonymt-med-nagon': {
-		title: 'Chatta anonymt med någon | Så fungerar stödet online | MittPsyke',
-		description:
-			'Lär dig vad som händer i en anonym chatt, hur AI-stöd fungerar och vad du kan förvänta dig när du vill chatta anonymt om psykisk hälsa.',
-		canonical: 'https://www.mittpsyke.se/chatta-anonymt-med-nagon',
-		ogTitle: 'Chatta anonymt med någon | MittPsyke',
-		ogDescription:
-			'En genomgång av hur anonym chatt kan fungera när du behöver börja enkelt och utan press.',
-		h1: 'Chatta anonymt med någon',
-		lead:
-			'När något känns svårt kan text vara en enklare start än att prata högt. Den här sidan förklarar hur en anonym chatt brukar fungera, vad AI-stöd faktiskt gör och vad som är rimligt att förvänta sig innan du öppnar samtalet.',
-		primaryCta: { href: '/chat', label: 'Öppna chatten' },
-		secondaryCta: { href: '/prata-anonymt-online', label: 'Läs om att prata anonymt' },
-		sections: [
-			{
-				title: 'Vad som brukar hända i en anonym chatt',
-				paragraphs: [
-					'En anonym chatt börjar ofta enklare än man tror. Du behöver inte skriva en full bakgrund eller formulera allt perfekt. Många börjar med något kort som “jag känner mig stressad”, “jag vet inte varför jag mår så här” eller “jag behöver bara få ur mig något”. Därifrån kan samtalet hjälpas fram steg för steg genom frågor, speglingar och struktur. Tempot är ditt. Du kan stanna upp, skriva om, byta ämne eller avsluta när du behöver. För vissa blir chatten ett sätt att tänka klart, för andra ett sätt att våga börja alls.'
-				]
-			},
-			{
-				title: 'Hur AI-stöd fungerar i praktiken',
-				paragraphs: [
-					'AI-stöd i den här typen av chatt fungerar inte som en människa med eget behandlingsansvar. Det är snarare ett verktyg som hjälper dig att sätta ord på känslor, se mönster, bryta upp stora tankeknutar och föreslå lugna nästa steg. Det kan till exempel hjälpa dig att skilja mellan oro, stress och nedstämdhet, föreslå en övning eller sammanfatta det du själv redan har beskrivit. Det viktiga är att använda stödet som en reflekterande yta, inte som ett medicinskt besked. Vid akut fara eller behov av vård räcker inte AI-stöd.'
-				]
-			},
-			{
-				title: 'Vad du kan förvänta dig och vad du inte ska förvänta dig',
-				paragraphs: [
-					'Det är rimligt att förvänta sig ett lugnt samtalsutrymme där du kan börja sortera det som känns svårt. Du kan ofta få hjälp att hitta språk för känslor, komma vidare när tankarna fastnar och välja ett första steg som känns möjligt idag. Däremot ska du inte förvänta dig diagnos, krishantering i realtid eller att en chatt löser allt på en gång. För många är värdet i stället att det blir lättare att förstå sitt läge, fortsätta skriva i dagboken eller söka mer stöd med lite mer klarhet.'
-				]
-			}
-		],
-		resourceListTitle: 'Fortsätt i rätt riktning',
-		resourceListItems: [
-			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför anonymitet ofta gör första steget lättare.' },
-			{ href: '/chattstod-psykisk-ohalsa', label: 'Chattstöd vid psykisk ohälsa', description: 'för en bredare bild av hur tidigt stöd i text kan fungera.' },
-			{ href: '/dagbok', label: 'Skriv i dagboken', description: 'om du vill formulera mer i lugn och ro efter chatten.' },
-			{ href: '/om-mittpsyke', label: 'Läs om MittPsyke', description: 'för att förstå tjänstens roll, gränser och nästa steg.' }
-		],
-		nextStepTitle: 'Om du vill börja nu',
-		nextStepParagraphs: [
-			'Du behöver inte vänta tills du vet exakt vad du ska säga. Ett enkelt första meddelande räcker ofta för att samtalet ska börja röra sig framåt. Om det känns lättare kan du också skriva några rader i dagboken först och sedan fortsätta därifrån.',
-			'Behöver du mänsklig kontakt eller mer akut vägledning finns stodlinjer.se och 1177. Vid akut fara ska du alltid ringa 112.'
-		],
-		nextStepLinks: [
-			{ href: '/chat', label: 'Starta chatten' },
-			{ href: '/dagbok', label: 'Börja i dagboken' },
-			{ href: '/anonymt-samtalsstod-online', label: 'Läs mer om anonymt stöd' }
-		],
-		faq: [
-			{
-				question: 'Måste jag ha konto för att chatta anonymt?',
-				answer: 'Nej. Du kan börja utan konto och först senare välja om du vill spara något över tid.'
-			},
-			{
-				question: 'Är AI-stöd samma sak som att prata med en behandlare?',
-				answer: 'Nej. AI-stöd kan hjälpa dig att reflektera och strukturera, men det ersätter inte vård, diagnos eller behandling.'
-			},
-			{
-				question: 'Vad gör jag om det blir akut?',
-				answer: 'Vid akut fara eller om någon riskerar att skadas ska du lämna chatten och ringa 112 direkt.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Psykisk hälsa – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
-		]
-	},
-	'chattstod-psykisk-ohalsa': {
-		title: 'Chattstöd vid psykisk ohälsa | Tidigt stöd online | MittPsyke',
-		description:
-			'Förstå vad psykisk ohälsa kan innebära i vardagen och hur chattstöd kan hjälpa tidigt när du vill sätta ord på det som känns tungt.',
-		canonical: 'https://www.mittpsyke.se/chattstod-psykisk-ohalsa',
-		ogTitle: 'Chattstöd vid psykisk ohälsa | MittPsyke',
-		ogDescription:
-			'En lugn genomgång av hur textbaserat stöd kan hjälpa dig att börja tidigt när måendet skaver.',
-		h1: 'Chattstöd vid psykisk ohälsa',
-		lead:
-			'Psykisk ohälsa kan synas på många olika sätt i vardagen. Här kan du läsa om hur textbaserat stöd online kan hjälpa tidigt, innan allt hunnit bli större eller mer låst.',
-		primaryCta: { href: '/chat', label: 'Öppna chatten' },
-		secondaryCta: { href: '/psykiskt-stod-online', label: 'Läs om psykiskt stöd online' },
-		sections: [
-			{
-				title: 'Vad psykisk ohälsa kan innebära i vardagen',
-				paragraphs: [
-					'Psykisk ohälsa är ett brett begrepp och behöver inte se likadant ut från person till person. För någon märks det som sömnsvårigheter, irritation, trötthet eller att allt känns tyngre än vanligt. För någon annan handlar det om stark oro, undvikande, känslor av hopplöshet eller svårigheter att fokusera på det vardagliga. Just därför kan det vara svårt att veta om det “räcker” att söka stöd. Ofta är det klokare att lyssna på om måendet påverkar vardagen än att försöka avgöra om man får kalla det något särskilt.'
-				]
-			},
-			{
-				title: 'Hur chattstöd kan hjälpa tidigt',
-				paragraphs: [
-					'Textbaserat stöd kan vara hjälpsamt tidigt eftersom det inte kräver att du är helt säker på vad som händer. Du kan börja mitt i det röriga och få hjälp att sortera om det mest liknar stress, oro, nedstämdhet, ensamhet eller överbelastning. När du sätter ord på det som pågår blir det ofta lättare att se mönster och nästa steg. För en del räcker det som en första avlastning. För andra blir det ett sätt att samla tankarna innan de pratar med vård, stödlinje eller någon i sin närhet.'
-				]
-			},
-			{
-				title: 'När textstöd räcker och när mer stöd behövs',
-				paragraphs: [
-					'Chattstöd kan vara en god början när du behöver reflektera, få struktur eller minska ensamhetskänslan i det du bär på. Men om du har återkommande självmordstankar, snabbt försämrat mående, svåra sömnproblem, stark ångest som inte går över eller andra symtom som tydligt påverkar säkerhet och funktion behöver du mer än ett digitalt reflektionsstöd. Då är det viktigt att söka professionell hjälp. Låg tröskel ska göra det lättare att börja, inte göra att du stannar för länge på en nivå som inte räcker.'
-				]
-			}
-		],
-		resourceListTitle: 'Stöd som kan passa beroende på vad som känns närmast',
-		resourceListItems: [
-			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill läsa mer om hur själva samtalet brukar fungera.' },
-			{ href: '/hjalp-mot-oro-online', label: 'Hjälp mot oro online', description: 'om det framför allt är grubbel, rastlöshet eller framtidstankar som tar plats.' },
-			{ href: '/hjalp-vid-depression-online', label: 'Hjälp vid depression online', description: 'om tyngd, låg ork och nedstämdhet är det som dominerar.' },
-			{ href: '/stod-vid-stress-online', label: 'Stöd vid stress online', description: 'om kroppen och vardagen känns överbelastade.' }
-		],
-		nextStepTitle: 'Börja smått och följ upp',
-		nextStepParagraphs: [
-			'Om du inte vet var du ska börja kan du välja den känsla eller situation som är lättast att beskriva just idag. Det räcker ofta för att få syn på ett första mönster. När du vill kan du följa upp i dagboken eller läsa mer i en guide som passar det du går igenom.',
-			'Behöver du vårdråd ska du kontakta 1177. Vid akut fara eller om någon riskerar att skadas ska du ringa 112 direkt.'
-		],
-		nextStepLinks: [
-			{ href: '/chat', label: 'Starta samtal' },
-			{ href: '/dagbok', label: 'Skriv i dagboken' },
-			{ href: '/guider', label: 'Läs guider' }
-		],
-		faq: [
-			{
-				question: 'Måste jag veta exakt vad jag mår dåligt av?',
-				answer: 'Nej. Chattstöd kan vara användbart just när du fortfarande försöker förstå vad som händer.'
-			},
-			{
-				question: 'Kan chattstöd hjälpa innan problemen blivit stora?',
-				answer: 'Ja. Många använder textstöd tidigt för att få ordning på tankar och känslor innan läget hinner växa.'
-			},
-			{
-				question: 'Ersätter detta professionell vård?',
-				answer: 'Nej. Det är ett lågtröskelstöd och ett komplement, inte medicinsk eller psykiatrisk behandling.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Psykisk hälsa – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' }
-		]
-	},
-	'hjalp-mot-oro-online': {
-		title: 'Hjälp mot oro online | Skillnaden mellan oro och ångest | MittPsyke',
-		description:
-			'Läs om skillnaden mellan oro och ångest, vilka tekniker som kan hjälpa och när oron har börjat ta för mycket plats i vardagen.',
-		canonical: 'https://www.mittpsyke.se/hjalp-mot-oro-online',
-		ogTitle: 'Hjälp mot oro online | MittPsyke',
-		ogDescription:
-			'När tankarna fastnar i framtiden kan det hjälpa att förstå oron och välja lugna nästa steg.',
-		h1: 'Hjälp mot oro online',
-		lead:
-			'Oro kan handla om allt från ekonomi och relationer till hälsa, framtid och vardagsbeslut. Här kan du läsa om vad som skiljer oro från ångest, vad som kan hjälpa i stunden och när det är dags att ta oron på större allvar.',
-		primaryCta: { href: '/chat/e', label: 'Starta samtal om oro' },
-		secondaryCta: { href: '/guider/overtankande', label: 'Läs guide om övertänkande' },
-		sections: [
-			{
-				title: 'Skillnaden mellan oro och ångest',
-				paragraphs: [
-					'Oro handlar ofta om tankar som går framåt i tiden: tänk om något går fel, tänk om jag missar något, tänk om jag inte klarar det. Ångest kan också innehålla sådana tankar men märks ofta starkare i kroppen, med till exempel tryck över bröstet, hjärtklappning, yrsel eller en känsla av att tappa kontrollen. Skillnaden är inte alltid knivskarp, och många upplever båda samtidigt. Men det kan ändå vara hjälpsamt att fråga sig om det främst är grubbel och scenarier, eller om kroppen också går upp i tydligt alarm.'
-				]
-			},
-			{
-				title: 'Konkreta tekniker som kan göra oron mindre styrande',
-				paragraphs: [
-					'När oro tar fart hjälper det sällan att bara säga åt sig själv att sluta tänka. Ofta fungerar det bättre att ge tankarna en tydlig form. Du kan skriva ner exakt vad du oroar dig för, sortera vad du kan påverka idag och vad som bara är hypotetiska scenarier, eller sätta en kort “orostid” senare på dagen så att grubblandet inte tar över allt. Kroppen kan också behöva hjälp att varva ner genom andning, kort promenad eller att rikta uppmärksamheten mot något konkret i rummet just nu.'
-				]
-			},
-			{
-				title: 'När oron har börjat ta för mycket plats',
-				paragraphs: [
-					'Oron är värd att ta på allvar när den påverkar sömn, koncentration, relationer, arbete eller din förmåga att vara närvarande i vardagen. Det gäller också om du märker att du undviker situationer, söker ständig försäkran från andra eller känner att tankarna fortsätter trots att du försöker vila. Då kan det vara hjälpsamt att inte bara stå ut, utan att aktivt söka stöd. Ett första steg kan vara att skriva av dig, prata i chatten eller läsa en guide. I vissa lägen behövs också professionell vård.'
-				]
-			}
-		],
-		resourceListTitle: 'Stöd som kan hjälpa när tankarna snurrar',
-		resourceListItems: [
-			{ href: '/4-7-8-andning-ovning', label: '4-7-8-andning', description: 'när du vill ge kroppen ett konkret lugnare tempo.' },
-			{ href: '/andningsovningar-mot-angest', label: 'Andningsövningar mot ångest', description: 'om oron går över i stark kroppslig anspänning.' },
-			{ href: '/ovningar/daglig-reflektionsmall', label: 'Daglig reflektionsmall', description: 'för att få ut grubbel ur huvudet och ner i ord.' },
-			{ href: '/dagbok', label: 'Dagbok', description: 'om du vill följa återkommande mönster i det som oroar dig.' }
-		],
-		nextStepTitle: 'När du vill ta nästa steg',
-		nextStepParagraphs: [
-			'Om oron mest snurrar i tankarna kan en övning eller kort skrivstund räcka som första hjälp. Om du märker att kroppen går upp i starkt alarm kan du läsa mer om ångest och andningsövningar. Om allt fortsätter att växa trots att du försöker hantera det själv är det klokt att prata med vården.',
-			'För vårdråd kan du kontakta 1177. Vid akut fara ska du ringa 112.'
-		],
-		nextStepLinks: [
-			{ href: '/hjalp-vid-angest-online', label: 'Läs om ångest' },
-			{ href: '/ovningar', label: 'Se övningar' },
-			{ href: '/dagbok', label: 'Skriv i dagboken' }
-		],
-		faq: [
-			{
-				question: 'Är oro och ångest samma sak?',
-				answer: 'De kan överlappa, men oro märks ofta mest i tankarna medan ångest ofta känns starkare i kroppen också.'
-			},
-			{
-				question: 'Vad kan jag göra när jag fastnar i grubbel?',
-				answer: 'Det kan hjälpa att skriva ner oron, sortera vad du kan påverka och använda en enkel övning eller andning för att bryta spiralen.'
-			},
-			{
-				question: 'När bör jag söka mer hjälp?',
-				answer: 'När oron påverkar sömn, funktion eller relationer tydligt, eller när du inte kommer ur den på egen hand, är det bra att söka mer stöd.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Ångest – 1177 Vårdguiden', href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		]
-	},
-	'hjalp-vid-depression-online': {
-		title: 'Hjälp vid depression online | Symtom, stöd och nästa steg | MittPsyke',
-		description:
-			'Läs om vanliga depressionssymtom, varför tidig hjälp spelar roll och vad du kan göra idag om nedstämdheten tar mycket plats.',
-		canonical: 'https://www.mittpsyke.se/hjalp-vid-depression-online',
-		ogTitle: 'Hjälp vid depression online | MittPsyke',
-		ogDescription:
-			'När orken är låg kan det hjälpa att börja varsamt och förstå vad som faktiskt händer.',
-		h1: 'Hjälp vid depression online',
-		lead:
-			'När allt känns tyngre än vanligt kan även små saker bli svåra att få gjort. Den här sidan samlar lugn information om vanliga symtom vid depression, varför tidigt stöd spelar roll och hur du kan börja idag utan att pressa dig mer än du orkar.',
-		primaryCta: { href: '/chat/b', label: 'Starta samtal om nedstämdhet' },
-		secondaryCta: { href: '/depression', label: 'Läs översikt om depression' },
-		sections: [
-			{
-				title: 'Vanliga symtom när depression tar plats',
-				paragraphs: [
-					'Depression handlar inte bara om att känna sig ledsen. För många märks det lika mycket som låg energi, tappad lust, svårigheter att koncentrera sig, sömnförändringar eller att sådant som brukade kännas meningsfullt plötsligt blir tomt. En del känner mer irritation än sorg. Andra upplever skuld, hopplöshet eller att vardagliga beslut blir övermäktiga. Det viktiga är inte att alla symtom stämmer in, utan att du märker om måendet håller i sig och påverkar hur du fungerar och orkar i vardagen.'
-				]
-			},
-			{
-				title: 'Varför tidig hjälp spelar roll',
-				paragraphs: [
-					'När nedstämdhet får fortsätta i tysthet blir det ofta svårare att bryta mönster av isolering, passivitet och självkritik. Tidig hjälp behöver inte betyda att allt måste lösas direkt. Det kan handla om att du får syn på hur du mår, börjar följa dina dagar, sätter ord på det som känns tungt eller vågar be om mer stöd i tid. Små steg tidigt kan göra stor skillnad eftersom de minskar risken att allt låser sig ytterligare. Att söka stöd tidigt är inte att överdriva, utan att ta sitt mående på allvar.'
-				]
-			},
-			{
-				title: 'Vad du kan göra idag om orken är låg',
-				paragraphs: [
-					'Om du har låg ork är det sällan hjälpsamt att lägga en stor plan. Börja hellre med något mycket litet: skriv några rader om hur dagen känns, öppna ett samtal och beskriv nuläget, ät något enkelt, gå ut en kort stund eller skicka ett meddelande till någon du litar på. Målet är inte att känna dig bra direkt, utan att minska ensamheten och skapa en liten rörelse framåt. Om du har tankar på att inte vilja leva eller svårt att hålla dig säker ska du söka akut hjälp direkt.'
-				]
-			}
-		],
-		resourceListTitle: 'Stöd att använda i din takt',
-		resourceListItems: [
-			{ href: '/dagbok', label: 'Dagbok', description: 'för att skriva av dig när tankarna känns tröga eller otydliga.' },
-			{ href: '/framsteg', label: 'Framsteg', description: 'om du vill kunna följa små förändringar över tid när du har konto.' },
-			{ href: '/chat/b', label: 'Samtal om nedstämdhet', description: 'när du vill börja i text i stället för att bära allt själv.' },
-			{ href: '/om-mittpsyke', label: 'Om MittPsyke', description: 'om du vill förstå vad tjänsten är och inte är innan du använder den.' }
-		],
-		nextStepTitle: 'Om du behöver mer än ett första steg',
-		nextStepParagraphs: [
-			'Digitalt stöd kan hjälpa dig att börja, men ibland behöver låg ork, stark hopplöshet eller långvarig nedstämdhet mötas med professionell vård. Om du känner att symtomen håller i sig eller blir djupare är det klokt att kontakta vården tidigare hellre än senare.',
-			'Vid vårdråd kan du vända dig till 1177. Vid akut fara eller om du inte kan hålla dig själv säker ska du ringa 112 direkt.'
-		],
-		nextStepLinks: [
-			{ href: '/chat/b', label: 'Öppna samtalet' },
-			{ href: '/dagbok', label: 'Skriv några rader' },
-			{ href: '/depression', label: 'Gå till översikt om depression' }
-		],
-		faq: [
-			{
-				question: 'Är depression samma sak som att vara tillfälligt nere?',
-				answer: 'Inte alltid. Depression brukar påverka ork, lust och vardagsfunktion mer ihållande än en vanlig tillfällig svacka.'
-			},
-			{
-				question: 'Vad kan jag göra om jag inte orkar så mycket?',
-				answer: 'Börja mycket smått. Några ord i chatten eller dagboken kan vara ett rimligt första steg när orken är låg.'
-			},
-			{
-				question: 'När behöver jag söka mer hjälp?',
-				answer: 'Om nedstämdheten håller i sig, blir djupare eller om du har tankar på att inte vilja leva behöver du mer stöd än ett digitalt första steg.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Depression – 1177 Vårdguiden', href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/depression/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Om psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' }
-		]
-	},
-	'ovningar-mot-angest-online': {
-		title: 'Övningar mot ångest online | KBT, andning och exponering | MittPsyke',
-		description:
-			'Utforska KBT-baserade övningar mot ångest online. Läs om andning, exponering och varför praktiska övningar ofta hjälper mer än att bara försöka tänka bort ångesten.',
-		canonical: 'https://www.mittpsyke.se/ovningar-mot-angest-online',
-		ogTitle: 'Övningar mot ångest online | MittPsyke',
-		ogDescription:
-			'När ångest tar plats kan övningar ge kroppen och tankarna något konkret att hålla i.',
-		h1: 'Övningar mot ångest online',
-		lead:
-			'När ångest är starkt känns det ofta som att kroppen och tankarna springer före dig. Övningar kan hjälpa just för att de gör något konkret av ett annars diffust och överväldigande läge.',
-		primaryCta: { href: '/ovningar', label: 'Se övningar' },
-		secondaryCta: { href: '/hjalp-vid-angest-online', label: 'Läs om hjälp vid ångest' },
-		sections: [
-			{
-				title: 'Varför KBT-baserade övningar ofta fungerar',
-				paragraphs: [
-					'Många övningar mot ångest bygger på principer från KBT, där fokus ligger på sambandet mellan tankar, känslor, kroppsliga reaktioner och beteenden. När du blir ångestfylld är det vanligt att börja undvika, kontrollera eller försöka tänka bort obehaget snabbt. Det kan hjälpa kortsiktigt men håller ofta igång problemet längre. Övningar fungerar därför inte för att de magiskt tar bort ångest, utan för att de tränar något nytt: att stanna kvar, reglera kroppen, observera tankar och stegvis bygga mer handlingsutrymme.'
-				]
-			},
-			{
-				title: 'Andning och kroppslig nedvarvning',
-				paragraphs: [
-					'När kroppen går upp i alarm kan det vara svårt att tänka klart. Då kan andningsövningar vara ett rimligt första steg, inte för att “andas rätt” perfekt utan för att ge nervsystemet en tydlig signal om att tempot kan sjunka något. Långsammare utandning, rytmisk andning eller att räkna andetag kan hjälpa dig att komma tillbaka till nuet. Det betyder inte att allt blir bra på en gång, men ofta att intensiteten sjunker tillräckligt för att du ska kunna välja nästa steg i stället för att bara reagera på ångesten.'
-				]
-			},
-			{
-				title: 'Exponering och varför undvikande ofta stärker ångest',
-				paragraphs: [
-					'Exponering handlar om att närma sig sådant som väcker ångest i små, planerade steg i stället för att fortsätta backa undan. När vi undviker får hjärnan aldrig chans att lära om. Det som kändes farligt fortsätter därför att verka farligt. Exponering behöver vara varsam och genomtänkt, inte brutal. Målet är att bygga tolerans, inte att pressa sig över gränsen. För vissa går det bra att börja med enkla vardagssituationer på egen hand. För svårare problem kan det vara klokt att få professionell hjälp.'
-				]
-			}
-		],
-		resourceListTitle: 'Övningar och vägar vidare',
-		resourceListItems: [
-			{ href: '/andningsovningar-mot-angest', label: 'Andningsövningar mot ångest', description: 'när du behöver börja i kroppen och sakta ner tempot.' },
-			{ href: '/4-7-8-andning-ovning', label: '4-7-8-andning', description: 'om du vill testa en enkel, tydlig övning direkt.' },
-			{ href: '/exponering-ovningar-mot-angest', label: 'Exponeringsövningar mot ångest', description: 'om undvikande har blivit ett återkommande mönster.' },
-			{ href: '/chat/a', label: 'Samtal om ångest', description: 'när du vill kombinera övningar med reflektion i text.' }
-		],
-		nextStepTitle: 'Välj en nivå som känns möjlig',
-		nextStepParagraphs: [
-			'Om ångesten är stark i stunden är det ofta bäst att börja med en enkel andnings- eller jordningsövning. Om du i stället märker att problemet sitter i undvikande över tid kan exponering vara mer hjälpsamt. Du kan också använda dagboken för att se vilka situationer som triggar mest.',
-			'Om ångesten blir så stark att du har svårt att fungera eller känna dig trygg behöver du mer stöd än övningar på egen hand. Kontakta då vården eller 1177.'
-		],
-		nextStepLinks: [
-			{ href: '/andningsovningar-mot-angest', label: 'Börja med andning' },
-			{ href: '/exponering-ovningar-mot-angest', label: 'Läs om exponering' },
-			{ href: '/dagbok', label: 'Följ mönster i dagboken' }
-		],
-		faq: [
-			{
-				question: 'Hjälper övningar verkligen mot ångest?',
-				answer: 'Ja, ofta som ett sätt att träna nya reaktioner och skapa mer handlingsutrymme, även om de sällan löser allt på en gång.'
-			},
-			{
-				question: 'Ska jag börja med andning eller exponering?',
-				answer: 'Börja ofta med andning när ångesten är stark i kroppen just nu, och titta på exponering när undvikande blivit ett större mönster över tid.'
-			},
-			{
-				question: 'När behöver jag professionell hjälp?',
-				answer: 'Om ångesten är återkommande, mycket stark eller begränsar vardagen tydligt är det klokt att söka mer stöd än övningar på egen hand.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Ångest – 1177 Vårdguiden', href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		]
-	},
-	'psykiskt-stod-online': {
-		title: 'Psykiskt stöd online | Vad digitalt stöd är och inte är | MittPsyke',
-		description:
-			'Läs vad digitalt psykiskt stöd online kan vara, vilka fördelar och begränsningar som finns och när det fungerar som en bra första ingång.',
-		canonical: 'https://www.mittpsyke.se/psykiskt-stod-online',
-		ogTitle: 'Psykiskt stöd online | MittPsyke',
-		ogDescription:
-			'Digitalt stöd kan vara ett lugnt första steg, men det är inte samma sak som vård.',
-		h1: 'Psykiskt stöd online',
-		lead:
-			'Digitalt psykiskt stöd kan fylla olika roller beroende på vad du behöver. Här går vi igenom vad stödet faktiskt kan hjälpa med, vad det inte ska blandas ihop med och vilka styrkor och begränsningar som är viktiga att känna till.',
-		primaryCta: { href: '/chat/a', label: 'Börja anonymt' },
-		secondaryCta: { href: '/register', label: 'Skapa din egen plats' },
-		sections: [
-			{
-				title: 'Vad digitalt psykiskt stöd faktiskt är',
-				paragraphs: [
-					'Digitalt psykiskt stöd kan vara en plats för reflektion, struktur och första hjälp när något skaver men det känns svårt att börja i vården direkt. För många innebär det att skriva i chatten, få ordning på tankar, testa övningar eller använda en dagbok för att se mönster. Det kan minska känslan av kaos och ge ett första språk för det som känns svårt. Just därför passar det ofta bra när du vill börja i liten skala eller behöver något tillgängligt här och nu snarare än att vänta på rätt tillfälle.'
-				]
-			},
-			{
-				title: 'Vad det inte är och varför den skillnaden spelar roll',
-				paragraphs: [
-					'Digitalt stöd är inte detsamma som vård, psykologisk behandling eller medicinsk bedömning. Den skillnaden är viktig eftersom den hjälper dig att välja rätt nivå av hjälp. Ett stöd som MittPsyke kan hjälpa dig att reflektera, följa ditt mående och hitta nästa steg, men det tar inte över vårdens ansvar. Om du behöver diagnostik, behandling, läkemedelsbedömning eller stöd i akuta situationer ska du söka professionell hjälp. Att förstå gränsen gör att digitalt stöd blir ett användbart komplement i stället för en otydlig ersättning.'
-				]
-			},
-			{
-				title: 'Fördelar och begränsningar med stöd online',
-				paragraphs: [
-					'De tydligaste fördelarna är låg tröskel, tillgänglighet och att du kan börja i din egen takt. Du behöver inte boka en lång process för att få syn på hur du mår idag. För vissa är textformatet också lättare än att prata högt. Samtidigt finns begränsningar. Det är svårare att fånga hela din situation digitalt, och det finns lägen där du behöver mer än reflektion och självstöd. Därför fungerar stöd online bäst när det används ärligt: som första ingång, komplement eller mellanrum, inte som lösning på allt.'
-				]
-			}
-		],
-		resourceListTitle: 'Välj det format som passar dig bäst',
-		resourceListItems: [
-			{ href: '/chat', label: 'Chatten', description: 'om du vill börja i samtal direkt och sätta ord på det som känns närmast.' },
-			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva i lugn takt och återkomma över tid.' },
-			{ href: '/ovningar', label: 'Övningar', description: 'om du vill börja konkret med något som går att göra här och nu.' },
-			{ href: '/guider', label: 'Guider', description: 'om du först vill läsa och förstå mer om det du går igenom.' }
-		],
-		nextStepTitle: 'När du vill använda stödet klokt',
-		nextStepParagraphs: [
-			'Det kan vara hjälpsamt att börja med en fråga: behöver du någonstans att sortera, eller behöver du vård och bedömning? Om du främst behöver struktur och lugn start kan digitalt stöd passa bra. Om du märker att symtomen är svåra, långvariga eller akuta behöver du söka mer hjälp.',
-			'Vid vårdråd kan du kontakta 1177. Vid akut fara ska du ringa 112 direkt.'
-		],
-		nextStepLinks: [
-			{ href: '/chat', label: 'Öppna chatten' },
-			{ href: '/dagbok', label: 'Skriv i dagboken' },
-			{ href: '/om-mittpsyke', label: 'Läs om MittPsyke' }
-		],
-		faq: [
-			{
-				question: 'Är psykiskt stöd online anonymt?',
-				answer: 'Du kan börja utan konto i flera delar av tjänsten. Konto behövs först när du vill spara mer över tid.'
-			},
-			{
-				question: 'Är detta samma sak som terapi?',
-				answer: 'Nej. Det är ett digitalt stöd för reflektion och nästa steg, inte terapi eller medicinsk vård.'
-			},
-			{
-				question: 'När passar stöd online bäst?',
-				answer: 'Det passar ofta bäst som lågtröskelstöd när du vill börja enkelt, få struktur eller komplettera annan hjälp.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Psykisk hälsa – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
-		]
-	},
-	'prata-anonymt-online': {
-		title: 'Prata anonymt online | Hur du börjar och vad du kan ta upp | MittPsyke',
-		description:
-			'Läs varför anonymitet kan hjälpa, vad du kan prata om i ett anonymt stöd och hur du kommer igång när du vill börja utan press.',
-		canonical: 'https://www.mittpsyke.se/prata-anonymt-online',
-		ogTitle: 'Prata anonymt online | MittPsyke',
-		ogDescription:
-			'När du vill börja utan press kan anonymitet göra det lättare att sätta ord på det som känns svårt.',
-		h1: 'Prata anonymt online',
-		lead:
-			'Att prata anonymt online kan vara ett första steg när du vill uttrycka något svårt utan att först behöva förklara allt om dig själv. Den här sidan går igenom varför anonymitet kan hjälpa, vad du kan ta upp och hur du kan komma igång i lugn takt.',
-		primaryCta: { href: '/chat', label: 'Öppna chatten' },
-		secondaryCta: { href: '/om-mittpsyke', label: 'Så fungerar MittPsyke' },
-		sections: [
-			{
-				title: 'Varför anonymitet hjälper många att börja',
-				paragraphs: [
-					'Anonymitet kan minska flera hinder på samma gång. Du slipper fundera över hur du uppfattas, om du formulerar dig rätt eller om någon kommer tycka att dina problem inte är tillräckligt stora. För personer som bär mycket skam, är ovana vid att prata om känslor eller bara är utmattade av att hålla ihop vardagen kan det vara avgörande. När ingången är enklare blir det också lättare att vara ärlig. Det betyder inte att det du känner är mindre viktigt, utan att formen gör det mer möjligt att faktiskt börja.'
-				]
-			},
-			{
-				title: 'Vad du kan prata om här',
-				paragraphs: [
-					'Du behöver inte komma med ett färdigt ämne. Många börjar med något brett som oro, stress, ångest, nedstämdhet, ensamhet eller bara en känsla av att något inte står rätt till. Du kan också prata om relationer, press, sömn, skuldkänslor, tomhet eller att du har svårt att förstå dina reaktioner. Om du inte vet vad det “handlar om” ännu går det bra att börja just där. Det viktiga är inte att sätta rätt etikett direkt, utan att ge det som känns svårt lite mer form och riktning.'
-				]
-			},
-			{
-				title: 'Hur du börjar när allt känns diffust',
-				paragraphs: [
-					'Det enklaste sättet att börja är ofta att skriva det mest konkreta du vet just nu. Det kan vara en kroppslig känsla, en situation från idag eller en tanke som går runt. Du behöver inte skriva långt. En eller två meningar räcker för att samtalet ska kunna ta form. Om du hellre vill skriva först för dig själv kan dagboken vara ett bra mellanled. När du väl börjar märker många att det blir lättare att fortsätta, just för att de inte längre behöver bära allt ensam i huvudet.'
-				]
-			}
-		],
-		resourceListTitle: 'Sidor som kan hjälpa dig vidare',
-		resourceListItems: [
-			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill läsa mer om hur ett anonymt samtal brukar fungera.' },
-			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'för en djupare genomgång av varför låg tröskel kan spela stor roll.' },
-			{ href: '/chattstod-psykisk-ohalsa', label: 'Chattstöd vid psykisk ohälsa', description: 'om du vill förstå hur stöd i text kan hjälpa tidigt.' },
-			{ href: '/dagbok', label: 'Dagbok', description: 'om du vill börja skriva för dig själv innan du öppnar ett samtal.' }
-		],
-		nextStepTitle: 'Börja med det som känns möjligt',
-		nextStepParagraphs: [
-			'Det finns inget rätt sätt att ta första steget. För vissa passar ett kort anonymt meddelande bäst. För andra känns det bättre att skriva i dagboken först eller läsa en sida som sätter ord på det man upplever. Huvudsaken är att steget är tillräckligt litet för att bli taget idag.',
-			'Om du behöver mänsklig kontakt finns stodlinjer.se. Vid akut fara ska du ringa 112 direkt.'
-		],
-		nextStepLinks: [
-			{ href: '/chat', label: 'Starta chatten' },
-			{ href: '/dagbok', label: 'Skriv i dagboken' },
-			{ href: '/chatta-anonymt-med-nagon', label: 'Läs om anonym chatt' }
-		],
-		faq: [
-			{
-				question: 'Måste jag veta vad jag vill prata om innan jag börjar?',
-				answer: 'Nej. Du kan börja med något litet och oklart. Samtalet kan hjälpa dig att sortera vidare.'
-			},
-			{
-				question: 'Vad kan jag ta upp i ett anonymt samtal?',
-				answer: 'Du kan ta upp allt från oro och ångest till stress, relationer, ensamhet eller att du bara känner dig låg utan att veta varför.'
-			},
-			{
-				question: 'Är detta akut hjälp?',
-				answer: 'Nej. Vid akut fara eller om någon riskerar att skadas ska du ringa 112.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Psykisk hälsa – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
-		]
-	},
-	'samtalsstod-utan-vantetid': {
-		title: 'Samtalsstöd utan väntetid | När du behöver börja nu | MittPsyke',
-		description:
-			'Läs om hur digitalt samtalsstöd kan fylla ett gap när vårdköer eller trösklar gör att hjälpen känns långt bort, och vad som skiljer det från traditionell vård.',
-		canonical: 'https://www.mittpsyke.se/samtalsstod-utan-vantetid',
-		ogTitle: 'Samtalsstöd utan väntetid | MittPsyke',
-		ogDescription:
-			'När du behöver börja nu kan digitalt stöd vara en första ingång, men det är inte samma sak som vård.',
-		h1: 'Samtalsstöd utan väntetid',
-		lead:
-			'Ibland är det inte brist på vilja som gör att stöd dröjer, utan att vägarna dit känns för långa eller för tunga. Här går vi igenom varför väntan blir ett problem, hur digitalt stöd kan fylla ett mellanrum och vad som skiljer det från vård.',
-		primaryCta: { href: '/chat', label: 'Öppna chatten' },
-		secondaryCta: { href: '/prata-anonymt-online', label: 'Läs om att prata anonymt' },
-		sections: [
-			{
-				title: 'Problemet med att vänta när måendet redan skaver',
-				paragraphs: [
-					'När du mår dåligt kan även kort väntan kännas lång. Det är svårt att samla kraft till att söka hjälp när sömn, oro, nedstämdhet eller stress redan tar mycket energi. För vissa handlar väntan om vårdköer. För andra handlar den om att det känns för stort att boka, ringa eller förklara sig. Under tiden riskerar problemen att växa, inte alltid för att något dramatiskt händer utan för att du blir mer ensam med det som pågår. Därför kan en tillgänglig första ingång vara viktig även när den inte löser allt.'
-				]
-			},
-			{
-				title: 'Hur digitalt stöd kan fylla gapet',
-				paragraphs: [
-					'Digitalt samtalsstöd kan fylla ett mellanrum mellan att bära allt själv och att få mer omfattande hjälp. Det ger möjlighet att börja samma dag, sätta ord på läget medan det fortfarande är färskt och hitta en liten riktning i stället för att fastna i passiv väntan. För vissa blir det ett sätt att hålla ihop vardagen medan de söker mer hjälp. För andra räcker det som lågtröskelstöd i en period. Värdet ligger ofta i att något faktiskt kan börja nu, inte först när du orkar perfekt.'
-				]
-			},
-			{
-				title: 'Vad som skiljer digitalt stöd från vård',
-				paragraphs: [
-					'Det viktiga är att inte blanda ihop tillgänglighet med behandlingsansvar. Digitalt samtalsstöd utan väntetid kan hjälpa dig att reflektera, skriva, få struktur och ta nästa steg, men det ersätter inte utredning, behandling eller akut stöd. Om du behöver medicinsk bedömning, riskbedömning eller långsiktig behandling behöver du fortfarande professionell vård. Det ena utesluter inte det andra. För många fungerar det bäst när digitalt stöd används som en bro: något som gör väntan mindre passiv och nästa vårdkontakt mer möjlig.'
-				]
-			}
-		],
-		resourceListTitle: 'Bra nästa steg beroende på behov',
-		resourceListItems: [
-			{ href: '/chat/a', label: 'Samtal om ångest', description: 'om oron eller kroppslig ångest är det som känns mest akut just nu.' },
-			{ href: '/chat/b', label: 'Samtal om nedstämdhet', description: 'om orken är låg och du vill börja varsamt i text.' },
-			{ href: '/chat/e', label: 'Samtal om stress och oro', description: 'om du främst känner överbelastning eller grubbel.' },
-			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva först och återkomma när du behöver.' }
-		],
-		nextStepTitle: 'När du behöver något nu och något mer senare',
-		nextStepParagraphs: [
-			'Det går att använda digitalt stöd som ett första steg redan idag och samtidigt planera för mer hjälp om du behöver det. Att börja nu behöver inte betyda att du nöjer dig med mindre än du behöver. Det kan i stället vara ett sätt att orka ta nästa kontakt med lite mer tydlighet.',
-			'För vårdråd kan du kontakta 1177. Vid akut fara ska du ringa 112.'
-		],
-		nextStepLinks: [
-			{ href: '/chat', label: 'Börja nu' },
-			{ href: '/dagbok', label: 'Skriv först' },
-			{ href: '/om-mittpsyke', label: 'Läs om tjänsten' }
-		],
-		faq: [
-			{
-				question: 'Är samtalsstöd utan väntetid samma sak som vård?',
-				answer: 'Nej. Det är ett snabbt tillgängligt lågtröskelstöd, inte medicinsk bedömning eller behandling.'
-			},
-			{
-				question: 'När kan det vara hjälpsamt?',
-				answer: 'När du behöver börja nu, få ordning på tankar eller minska passiv väntan innan eller vid sidan av annan hjälp.'
-			},
-			{
-				question: 'Vad gör jag om jag behöver akut hjälp?',
-				answer: 'Vid akut fara eller om någon riskerar att skadas ska du ringa 112 direkt.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Psykisk hälsa – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		]
-	},
-	'stod-vid-stress-online': {
-		title: 'Stöd vid stress online | Kronisk stress, symtom och hjälp | MittPsyke',
-		description:
-			'Läs om kronisk stress, vanliga stressymtom och vad som kan hjälpa när belastningen blivit långvarig eller svår att återhämta sig från.',
-		canonical: 'https://www.mittpsyke.se/stod-vid-stress-online',
-		ogTitle: 'Stöd vid stress online | MittPsyke',
-		ogDescription:
-			'När kroppen går länge på högvarv kan det hjälpa att förstå stressymtom och börja sänka tempot stegvis.',
-		h1: 'Stöd vid stress online',
-		lead:
-			'Stress blir lätt ett ord för allt, men långvarig stress sätter sig ofta tydligt i både kropp, tankar och vardag. Här kan du läsa om hur kronisk stress kan märkas och vad som kan hjälpa när återhämtningen inte längre kommer av sig själv.',
-		primaryCta: { href: '/chat/e', label: 'Starta samtal om stress' },
-		secondaryCta: { href: '/guider/stress-utmattning', label: 'Läs guide om stress' },
-		sections: [
-			{
-				title: 'När stress blir långvarig',
-				paragraphs: [
-					'Kortvarig stress är en normal reaktion när något kräver mycket av dig. Problemet uppstår när belastningen fortsätter utan att kroppen får tillräcklig återhämtning. Då kan stressen bli mer kronisk och börja kännas som ett grundläge snarare än en tillfällig topp. Många beskriver att de hela tiden ligger ett steg efter sig själva, blir lättare irriterade eller känner att det är svårt att varva ner även när det egentligen är lugnt. Då handlar det inte bara om att “ha mycket”, utan om att systemet gått länge på för hög belastning.'
-				]
-			},
-			{
-				title: 'Vanliga stressymtom i kropp och vardag',
-				paragraphs: [
-					'Stress märks ofta både fysiskt och mentalt. Du kan känna muskelspänning, hjärtklappning, huvudvärk, sömnsvårigheter, magbesvär eller ett ständigt inre tryck. Samtidigt blir tankarna ofta mer splittrade, tålamodet kortare och minnet sämre. Det är också vanligt att man tappar kontakt med vad man själv behöver eftersom all energi går åt till att hålla ihop dagen. När stressen pågår länge kan även sådant du tidigare klarade utan problem börja kännas tungt. Det betyder inte att du blivit svag, utan att belastningen fått pågå för länge.'
-				]
-			},
-			{
-				title: 'Vad som brukar hjälpa när allt går för fort',
-				paragraphs: [
-					'Det som hjälper mest är sällan ytterligare prestation, utan att skapa små pauser där kroppen och tankarna hinner ikapp. Det kan handla om att skriva ner vad som faktiskt belastar dig, skala bort något, sänka kraven för dagen, använda en kort reflektionsövning eller återinföra rutiner för sömn, mat och återhämtning. För vissa är nästa steg att prata i chatten och få mer överblick. För andra handlar det om att inse att den långvariga stressen blivit så tydlig att vård eller arbetsanpassning behöver bli en del av lösningen.'
-				]
-			}
-		],
-		resourceListTitle: 'Stöd som kan passa vid stress',
-		resourceListItems: [
-			{ href: '/ovningar/daglig-reflektionsmall', label: 'Daglig reflektionsmall', description: 'för att stanna upp och få syn på vad som faktiskt belastar dig.' },
-			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill följa återkommande stressmönster över tid.' },
-			{ href: '/framsteg', label: 'Framsteg', description: 'för att kunna se små förändringar när du använder dagboken regelbundet.' },
-			{ href: '/guider/stress-utmattning', label: 'Guide om stress och utmattning', description: 'om du vill läsa mer om långvarig belastning.' }
-		],
-		nextStepTitle: 'När det är dags att söka mer hjälp',
-		nextStepParagraphs: [
-			'Om stressen påverkar sömn, minne, arbetsförmåga eller återhämtning tydligt under längre tid kan det vara klokt att söka professionell hjälp och inte bara försöka kompensera med mer disciplin. Kroppen brukar till slut säga ifrån tydligare när den inte får återhämtning.',
-			'För vårdråd kan du kontakta 1177. Vid akut fara ska du ringa 112.'
-		],
-		nextStepLinks: [
-			{ href: '/chat/e', label: 'Prata om stress' },
-			{ href: '/dagbok', label: 'Skriv av dig' },
-			{ href: '/guider/stress-utmattning', label: 'Läs mer om stress' }
-		],
-		faq: [
-			{
-				question: 'Hur vet jag om stressen blivit långvarig?',
-				answer: 'Om återhämtningen uteblir, symtomen håller i sig och vardagen påverkas tydligt är stressen värd att ta på allvar som mer än en tillfällig topp.'
-			},
-			{
-				question: 'Vilka symtom är vanliga vid hög stress?',
-				answer: 'Det kan handla om sömnsvårigheter, spänningar, hjärtklappning, irritabilitet, minnessvårigheter och känslan av att aldrig riktigt komma ner i varv.'
-			},
-			{
-				question: 'När behöver jag söka vård för stress?',
-				answer: 'När stressen är långvarig, påverkar funktion och återhämtning tydligt eller när du känner att du inte längre kommer tillbaka på egen hand.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Stress – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
-		]
-	},
-	'stod-vid-ptsd-online': {
-		title: 'Stöd vid PTSD online | Symtom, vardagsstöd och nästa steg | MittPsyke',
-		description:
-			'Läs om vanliga PTSD-symtom, vad som kan hjälpa i vardagen och när det är viktigt att söka professionell hjälp utöver digitalt stöd.',
-		canonical: 'https://www.mittpsyke.se/stod-vid-ptsd-online',
-		ogTitle: 'Stöd vid PTSD online | MittPsyke',
-		ogDescription:
-			'När svåra minnen och reaktioner tar plats kan varsamt stöd hjälpa dig att börja förstå ditt läge.',
-		h1: 'Stöd vid PTSD online',
-		lead:
-			'Traumarelaterade symtom kan vara svåra att beskriva och ännu svårare att leva med. Den här sidan samlar varsam information om vanliga PTSD-symtom, vad som kan hjälpa i vardagen och när digitalt stöd behöver kompletteras med professionell hjälp.',
-		primaryCta: { href: '/chat/a', label: 'Starta ett lugnt samtal' },
-		secondaryCta: { href: '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma', label: 'Läs om samtalsstöd vid trauma' },
-		sections: [
-			{
-				title: 'Vanliga symtom vid PTSD',
-				paragraphs: [
-					'PTSD kan visa sig som påträngande minnen, flashbacks, mardrömmar, stark vaksamhet eller kroppsliga reaktioner som kommer snabbt och känns svåra att stoppa. Det är också vanligt att försöka undvika platser, personer, tankar eller situationer som påminner om det som hänt. För vissa märks det mest som avstängdhet, irritabilitet eller svårigheter att känna sig trygg även i vanliga vardagssituationer. Symtomen handlar inte om svaghet utan om att nervsystemet fortsatt reagera som om faran fortfarande pågår, trots att situationen kan vara över.'
-				]
-			},
-			{
-				title: 'Vad som kan hjälpa i vardagen',
-				paragraphs: [
-					'Vardagsstöd vid traumarelaterade symtom behöver ofta vara varsamt och stabiliserande. Målet är inte att pressa fram minnen eller förstå allt på en gång, utan att skapa lite mer trygghet i nuet. Det kan handla om att lägga märke till vad som triggar starka reaktioner, använda jordningsövningar, skriva kort om nuläget i stället för om själva traumat och försöka bygga rutiner som gör dagen mer förutsägbar. För vissa är det också hjälpsamt att följa mönster i dagboken för att se vad som lugnar och vad som ökar anspänningen.'
-				]
-			},
-			{
-				title: 'När du bör söka professionell hjälp',
-				paragraphs: [
-					'Om symtomen är återkommande, starka eller påverkar din sömn, trygghet och funktion tydligt behöver du ofta mer än ett digitalt reflektionsstöd. Det gäller särskilt om du har kraftiga flashbacks, dissociation, svårt att känna dig säker eller om vardagen krymper på grund av undvikande. Då är det viktigt att få professionell bedömning och behandling. Digitalt stöd kan fortfarande vara ett komplement, men det ska inte bära hela ansvaret när traumarelaterade symtom blivit omfattande eller akuta.'
-				]
-			}
-		],
-		resourceListTitle: 'Varsamma vägar vidare',
-		resourceListItems: [
-			{ href: '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma', label: 'Samtalsstöd vid trauma', description: 'om du vill läsa mer om en lugn första ingång kring trauma och reaktioner.' },
-			{ href: '/dagbok', label: 'Dagboken', description: 'för att notera nuläge, triggers och sådant som hjälper utan att pressa fram mer än du orkar.' },
-			{ href: '/framsteg', label: 'Framsteg', description: 'om du vill följa små skiften över tid när du använder dagboken.' },
-			{ href: '/om-mittpsyke', label: 'Om MittPsyke', description: 'för att förstå tjänstens gränser och när annan hjälp behövs.' }
-		],
-		nextStepTitle: 'Börja varsamt och ta symtomen på allvar',
-		nextStepParagraphs: [
-			'Det kan vara klokt att börja med att beskriva nuläget snarare än att försöka återberätta allt som hänt. Om du märker att symtomen snabbt blir starka är det viktigt att sakta ner och söka mer stöd, inte pressa dig igenom på egen hand.',
-			'Vid akut fara eller om du inte känner dig säker ska du ringa 112. För vårdråd kan du kontakta 1177.'
-		],
-		nextStepLinks: [
-			{ href: '/chat/a', label: 'Börja försiktigt i chatten' },
-			{ href: '/dagbok', label: 'Skriv om nuläget' },
-			{ href: '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma', label: 'Läs mer om trauma' }
-		],
-		faq: [
-			{
-				question: 'Måste jag berätta hela traumat för att få stöd?',
-				answer: 'Nej. Det kan vara bättre att börja med nuläget, symtomen och vad som triggar dig än att pressa fram hela berättelsen direkt.'
-			},
-			{
-				question: 'Kan digitalt stöd hjälpa vid PTSD?',
-				answer: 'Det kan hjälpa som varsam reflektion och struktur i vardagen, men det ersätter inte professionell behandling när symtomen är tydliga.'
-			},
-			{
-				question: 'När behöver jag professionell hjälp?',
-				answer: 'När symtomen är starka, återkommande eller påverkar trygghet, sömn och funktion tydligt behöver du professionell bedömning och stöd.'
-			}
-		],
-		updatedDate,
-		sources: [
-			{ label: 'Posttraumatiskt stressyndrom (PTSD) – 1177 Vårdguiden', href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		]
-	},
-	'chatta-anonymt': {
-		title: 'Chatta anonymt utan konto – Psykiskt stöd online | MittPsyke',
-		description:
-			'Chatta anonymt utan att skapa konto. Få psykiskt stöd online för ångest, stress och nedstämdhet – direkt i webbläsaren, gratis och utan registrering.',
-		canonical: 'https://www.mittpsyke.se/chatta-anonymt',
-		ogTitle: 'Chatta anonymt utan konto – Psykiskt stöd online | MittPsyke',
-		ogDescription:
-			'Få psykiskt stöd online utan konto. Börja skriva direkt i webbläsaren, gratis och utan registrering.',
-		h1: 'Chatta anonymt – utan konto',
-		lead:
-			'Du behöver inte registrera dig eller uppge några uppgifter. Börja skriva direkt om det som känns tungt – ångest, stress, nedstämdhet eller något annat. MittPsyke är ett AI-baserat samtalsstöd som finns här när du behöver det.',
-		primaryCta: { href: '/skriv', label: 'Börja chatta anonymt' },
-		sections: [
-			{
-				title: 'En lugn start utan registrering',
-				paragraphs: [
-					'Ibland är det lättare att börja skriva än att förklara allt för någon annan. Här kan du ta första steget direkt, utan konto och utan att först lämna några uppgifter. Det gör tröskeln lägre när du bara behöver få ur dig något eller sortera det som känns svårt.'
-				]
-			},
-			{
-				title: 'Stöd för ångest, stress och nedstämdhet',
-				paragraphs: [
-					'Du kan använda sidan när tankarna snurrar, när kroppen går på högvarv eller när allt känns tungt och oklart. MittPsyke är byggt för låg tröskel och lugn reflektion i text. Det är ett digitalt stöd för att börja formulera dig, inte en ersättning för vård eller akut hjälp.'
-				]
-			}
-		],
-		resourceListTitle: 'Du kan också fortsätta här',
-		resourceListItems: [
-			{ href: '/prata-anonymt-online', label: 'Prata anonymt online', description: 'om du vill läsa mer om hur anonymt samtalsstöd fungerar.' },
-			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför låg tröskel kan göra det lättare att börja.' },
-			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill få en tydligare bild av hur själva samtalet brukar gå till.' },
-			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva vidare över tid när du känner dig redo.' }
-		],
-		nextStepTitle: 'Nästa steg i din takt',
-		nextStepParagraphs: [
-			'Om det känns lättare att börja direkt kan du gå vidare till skrivytan nu. Du kan också läsa mer först och komma tillbaka när du vill.',
-			'Vid akut fara ska du ringa 112. För vårdråd finns 1177 och för vidare stöd finns stodlinjer.se.'
-		],
-		nextStepLinks: [
-			{ href: '/skriv', label: 'Börja skriva direkt' },
-			{ href: '/chat', label: 'Öppna chatten' },
-			{ href: '/om-mittpsyke', label: 'Läs om MittPsyke' }
-		],
-		faq: [
-			{
-				question: 'Måste jag skapa konto för att börja?',
-				answer: 'Nej. Du kan börja skriva direkt utan att registrera dig eller uppge några uppgifter.'
-			},
-			{
-				question: 'Vad kan jag skriva om?',
-				answer: 'Du kan skriva om ångest, stress, nedstämdhet eller något annat som känns tungt och svårt att bära själv.'
-			},
-			{
-				question: 'Är detta samma sak som vård?',
-				answer: 'Nej. MittPsyke är ett AI-baserat samtalsstöd för reflektion och nästa steg, inte vård, diagnos eller akut hjälp.'
+				question: 'NÃ¤r ska jag sÃ¶ka mer hjÃ¤lp Ã¤n detta?',
+				answer: 'Om du Ã¤r i akut fara, mÃ¥r snabbt sÃ¤mre eller behÃ¶ver medicinsk bedÃ¶mning ska du kontakta 112, 1177 eller annan professionell vÃ¥rd.'
 			}
 		],
 		updatedDate,
@@ -848,75 +74,849 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
 		]
 	},
-	'anonym-chatt': {
-		title: 'Chatta anonymt om din psykiska hälsa | Låg tröskel online | MittPsyke',
+	'chatta-anonymt-med-nagon': {
+		title: 'Chatta anonymt med nÃ¥gon | SÃ¥ fungerar stÃ¶det online | MittPsyke',
 		description:
-			'Chatta anonymt om din psykiska hälsa på svenska. Läs hur anonym chatt fungerar, vad du kan ta upp, vad AI-stöd kan hjälpa med och när du bör söka mer hjälp.',
-		canonical: 'https://www.mittpsyke.se/anonym-chatt',
-		ogTitle: 'Chatta anonymt om din psykiska hälsa | MittPsyke',
+			'LÃ¤r dig vad som hÃ¤nder i en anonym chatt, hur AI-stÃ¶d fungerar och vad du kan fÃ¶rvÃ¤nta dig nÃ¤r du vill chatta anonymt om psykisk hÃ¤lsa.',
+		canonical: 'https://www.mittpsyke.se/chatta-anonymt-med-nagon',
+		ogTitle: 'Chatta anonymt med nÃ¥gon | MittPsyke',
 		ogDescription:
-			'En lågtröskelsida om anonym chatt för psykisk hälsa, med FAQ och tydliga nästa steg.',
-		h1: 'Chatta anonymt om din psykiska hälsa',
+			'En genomgÃ¥ng av hur anonym chatt kan fungera nÃ¤r du behÃ¶ver bÃ¶rja enkelt och utan press.',
+		h1: 'Chatta anonymt med nÃ¥gon',
 		lead:
-			'Att börja prata om sitt mående kan vara svårt, särskilt när man inte riktigt vet vad man känner eller hur mycket man vill säga. En anonym chatt kan då vara ett första steg som känns mer hanterbart. Du kan börja i text, i din egen takt, utan att först behöva boka tid eller formulera en hel livsberättelse.',
-		primaryCta: { href: '/chat', label: 'Starta anonym chatt' },
-		secondaryCta: { href: '/prata-anonymt-online', label: 'Läs mer om att prata anonymt' },
+			'NÃ¤r nÃ¥got kÃ¤nns svÃ¥rt kan text vara en enklare start Ã¤n att prata hÃ¶gt. Den hÃ¤r sidan fÃ¶rklarar hur en anonym chatt brukar fungera, vad AI-stÃ¶d faktiskt gÃ¶r och vad som Ã¤r rimligt att fÃ¶rvÃ¤nta sig innan du Ã¶ppnar samtalet.',
+		primaryCta: { href: '/chat', label: 'Ã–ppna chatten' },
+		secondaryCta: { href: '/prata-anonymt-online', label: 'LÃ¤s om att prata anonymt' },
 		sections: [
 			{
-				title: 'När anonym chatt kan vara en bra början',
+				title: 'Vad som brukar hÃ¤nda i en anonym chatt',
 				paragraphs: [
-					'För många är det svåraste inte att prata, utan att börja. Du kanske oroar dig för att bli missförstådd, känner skam över hur du mår eller är för trött för att ta dig igenom ännu en kontaktväg som kräver energi. Då kan anonym chatt vara ett mer realistiskt första steg. Du behöver inte ha alla svar, inte veta exakt om det handlar om ångest, stress eller nedstämdhet, och inte känna dig “tillräckligt dålig” för att få ta plats. Det räcker att något känns tungt nog för att du ska vilja sätta ord på det.'
+					'En anonym chatt bÃ¶rjar ofta enklare Ã¤n man tror. Du behÃ¶ver inte skriva en full bakgrund eller formulera allt perfekt. MÃ¥nga bÃ¶rjar med nÃ¥got kort som â€œjag kÃ¤nner mig stressadâ€, â€œjag vet inte varfÃ¶r jag mÃ¥r sÃ¥ hÃ¤râ€ eller â€œjag behÃ¶ver bara fÃ¥ ur mig nÃ¥gotâ€. DÃ¤rifrÃ¥n kan samtalet hjÃ¤lpas fram steg fÃ¶r steg genom frÃ¥gor, speglingar och struktur. Tempot Ã¤r ditt. Du kan stanna upp, skriva om, byta Ã¤mne eller avsluta nÃ¤r du behÃ¶ver. FÃ¶r vissa blir chatten ett sÃ¤tt att tÃ¤nka klart, fÃ¶r andra ett sÃ¤tt att vÃ¥ga bÃ¶rja alls.'
 				]
 			},
 			{
-				title: 'Vad du kan ta upp i en anonym chatt om psykisk hälsa',
+				title: 'Hur AI-stÃ¶d fungerar i praktiken',
 				paragraphs: [
-					'Du kan prata om mycket mer än tydliga diagnoser eller stora kriser. Många använder anonym chatt när de känner oro som aldrig riktigt släpper, stark stress, tomhet, ensamhet, relationsproblem eller en låg känsla i kroppen som är svår att beskriva. Du kan också skriva om sömn, självkritik, överbelastning eller att du bara vill få ur dig sådant du inte orkar bära själv just nu. Om orden inte kommer går det bra att börja med en enda mening om hur dagen känns. Samtalet kan hjälpa dig vidare därifrån.'
+					'AI-stÃ¶d i den hÃ¤r typen av chatt fungerar inte som en mÃ¤nniska med eget behandlingsansvar. Det Ã¤r snarare ett verktyg som hjÃ¤lper dig att sÃ¤tta ord pÃ¥ kÃ¤nslor, se mÃ¶nster, bryta upp stora tankeknutar och fÃ¶reslÃ¥ lugna nÃ¤sta steg. Det kan till exempel hjÃ¤lpa dig att skilja mellan oro, stress och nedstÃ¤mdhet, fÃ¶reslÃ¥ en Ã¶vning eller sammanfatta det du sjÃ¤lv redan har beskrivit. Det viktiga Ã¤r att anvÃ¤nda stÃ¶det som en reflekterande yta, inte som ett medicinskt besked. Vid akut fara eller behov av vÃ¥rd rÃ¤cker inte AI-stÃ¶d.'
 				]
 			},
 			{
-				title: 'Hur AI-stöd kan hjälpa och var gränsen går',
+				title: 'Vad du kan fÃ¶rvÃ¤nta dig och vad du inte ska fÃ¶rvÃ¤nta dig',
 				paragraphs: [
-					'AI-stöd kan hjälpa genom att spegla det du skriver, ställa lugna frågor, hjälpa dig sortera tankar och föreslå ett nästa steg som känns möjligt. Det kan också vara ett sätt att känna mindre ensamhet i stunden när du behöver formulera något svårt. Men AI är inte vård, terapi eller akut hjälp. Det gör ingen medicinsk bedömning och kan inte ersätta professionellt ansvar. Därför fungerar anonym chatt bäst som en första ingång eller ett komplement, särskilt när du vill börja enkelt men fortfarande behöver vara uppmärksam på om mer hjälp behövs.'
+					'Det Ã¤r rimligt att fÃ¶rvÃ¤nta sig ett lugnt samtalsutrymme dÃ¤r du kan bÃ¶rja sortera det som kÃ¤nns svÃ¥rt. Du kan ofta fÃ¥ hjÃ¤lp att hitta sprÃ¥k fÃ¶r kÃ¤nslor, komma vidare nÃ¤r tankarna fastnar och vÃ¤lja ett fÃ¶rsta steg som kÃ¤nns mÃ¶jligt idag. DÃ¤remot ska du inte fÃ¶rvÃ¤nta dig diagnos, krishantering i realtid eller att en chatt lÃ¶ser allt pÃ¥ en gÃ¥ng. FÃ¶r mÃ¥nga Ã¤r vÃ¤rdet i stÃ¤llet att det blir lÃ¤ttare att fÃ¶rstÃ¥ sitt lÃ¤ge, fortsÃ¤tta skriva i dagboken eller sÃ¶ka mer stÃ¶d med lite mer klarhet.'
+				]
+			}
+		],
+		resourceListTitle: 'FortsÃ¤tt i rÃ¤tt riktning',
+		resourceListItems: [
+			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstÃ¶d online', description: 'om du vill fÃ¶rstÃ¥ varfÃ¶r anonymitet ofta gÃ¶r fÃ¶rsta steget lÃ¤ttare.' },
+			{ href: '/chattstod-psykisk-ohalsa', label: 'ChattstÃ¶d vid psykisk ohÃ¤lsa', description: 'fÃ¶r en bredare bild av hur tidigt stÃ¶d i text kan fungera.' },
+			{ href: '/dagbok', label: 'Skriv i dagboken', description: 'om du vill formulera mer i lugn och ro efter chatten.' },
+			{ href: '/om-mittpsyke', label: 'LÃ¤s om MittPsyke', description: 'fÃ¶r att fÃ¶rstÃ¥ tjÃ¤nstens roll, grÃ¤nser och nÃ¤sta steg.' }
+		],
+		nextStepTitle: 'Om du vill bÃ¶rja nu',
+		nextStepParagraphs: [
+			'Du behÃ¶ver inte vÃ¤nta tills du vet exakt vad du ska sÃ¤ga. Ett enkelt fÃ¶rsta meddelande rÃ¤cker ofta fÃ¶r att samtalet ska bÃ¶rja rÃ¶ra sig framÃ¥t. Om det kÃ¤nns lÃ¤ttare kan du ocksÃ¥ skriva nÃ¥gra rader i dagboken fÃ¶rst och sedan fortsÃ¤tta dÃ¤rifrÃ¥n.',
+			'BehÃ¶ver du mÃ¤nsklig kontakt eller mer akut vÃ¤gledning finns stodlinjer.se och 1177. Vid akut fara ska du alltid ringa 112.'
+		],
+		nextStepLinks: [
+			{ href: '/chat', label: 'Starta chatten' },
+			{ href: '/dagbok', label: 'BÃ¶rja i dagboken' },
+			{ href: '/anonymt-samtalsstod-online', label: 'LÃ¤s mer om anonymt stÃ¶d' }
+		],
+		faq: [
+			{
+				question: 'MÃ¥ste jag ha konto fÃ¶r att chatta anonymt?',
+				answer: 'Nej. Du kan bÃ¶rja utan konto och fÃ¶rst senare vÃ¤lja om du vill spara nÃ¥got Ã¶ver tid.'
+			},
+			{
+				question: 'Ã„r AI-stÃ¶d samma sak som att prata med en behandlare?',
+				answer: 'Nej. AI-stÃ¶d kan hjÃ¤lpa dig att reflektera och strukturera, men det ersÃ¤tter inte vÃ¥rd, diagnos eller behandling.'
+			},
+			{
+				question: 'Vad gÃ¶r jag om det blir akut?',
+				answer: 'Vid akut fara eller om nÃ¥gon riskerar att skadas ska du lÃ¤mna chatten och ringa 112 direkt.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Psykisk hÃ¤lsa â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		]
+	},
+	'chattstod-psykisk-ohalsa': {
+		title: 'ChattstÃ¶d vid psykisk ohÃ¤lsa | Tidigt stÃ¶d online | MittPsyke',
+		description:
+			'FÃ¶rstÃ¥ vad psykisk ohÃ¤lsa kan innebÃ¤ra i vardagen och hur chattstÃ¶d kan hjÃ¤lpa tidigt nÃ¤r du vill sÃ¤tta ord pÃ¥ det som kÃ¤nns tungt.',
+		canonical: 'https://www.mittpsyke.se/chattstod-psykisk-ohalsa',
+		ogTitle: 'ChattstÃ¶d vid psykisk ohÃ¤lsa | MittPsyke',
+		ogDescription:
+			'En lugn genomgÃ¥ng av hur textbaserat stÃ¶d kan hjÃ¤lpa dig att bÃ¶rja tidigt nÃ¤r mÃ¥endet skaver.',
+		h1: 'ChattstÃ¶d vid psykisk ohÃ¤lsa',
+		lead:
+			'Psykisk ohÃ¤lsa kan synas pÃ¥ mÃ¥nga olika sÃ¤tt i vardagen. HÃ¤r kan du lÃ¤sa om hur textbaserat stÃ¶d online kan hjÃ¤lpa tidigt, innan allt hunnit bli stÃ¶rre eller mer lÃ¥st.',
+		primaryCta: { href: '/chat', label: 'Ã–ppna chatten' },
+		secondaryCta: { href: '/psykiskt-stod-online', label: 'LÃ¤s om psykiskt stÃ¶d online' },
+		sections: [
+			{
+				title: 'Vad psykisk ohÃ¤lsa kan innebÃ¤ra i vardagen',
+				paragraphs: [
+					'Psykisk ohÃ¤lsa Ã¤r ett brett begrepp och behÃ¶ver inte se likadant ut frÃ¥n person till person. FÃ¶r nÃ¥gon mÃ¤rks det som sÃ¶mnsvÃ¥righeter, irritation, trÃ¶tthet eller att allt kÃ¤nns tyngre Ã¤n vanligt. FÃ¶r nÃ¥gon annan handlar det om stark oro, undvikande, kÃ¤nslor av hopplÃ¶shet eller svÃ¥righeter att fokusera pÃ¥ det vardagliga. Just dÃ¤rfÃ¶r kan det vara svÃ¥rt att veta om det â€œrÃ¤ckerâ€ att sÃ¶ka stÃ¶d. Ofta Ã¤r det klokare att lyssna pÃ¥ om mÃ¥endet pÃ¥verkar vardagen Ã¤n att fÃ¶rsÃ¶ka avgÃ¶ra om man fÃ¥r kalla det nÃ¥got sÃ¤rskilt.'
+				]
+			},
+			{
+				title: 'Hur chattstÃ¶d kan hjÃ¤lpa tidigt',
+				paragraphs: [
+					'Textbaserat stÃ¶d kan vara hjÃ¤lpsamt tidigt eftersom det inte krÃ¤ver att du Ã¤r helt sÃ¤ker pÃ¥ vad som hÃ¤nder. Du kan bÃ¶rja mitt i det rÃ¶riga och fÃ¥ hjÃ¤lp att sortera om det mest liknar stress, oro, nedstÃ¤mdhet, ensamhet eller Ã¶verbelastning. NÃ¤r du sÃ¤tter ord pÃ¥ det som pÃ¥gÃ¥r blir det ofta lÃ¤ttare att se mÃ¶nster och nÃ¤sta steg. FÃ¶r en del rÃ¤cker det som en fÃ¶rsta avlastning. FÃ¶r andra blir det ett sÃ¤tt att samla tankarna innan de pratar med vÃ¥rd, stÃ¶dlinje eller nÃ¥gon i sin nÃ¤rhet.'
+				]
+			},
+			{
+				title: 'NÃ¤r textstÃ¶d rÃ¤cker och nÃ¤r mer stÃ¶d behÃ¶vs',
+				paragraphs: [
+					'ChattstÃ¶d kan vara en god bÃ¶rjan nÃ¤r du behÃ¶ver reflektera, fÃ¥ struktur eller minska ensamhetskÃ¤nslan i det du bÃ¤r pÃ¥. Men om du har Ã¥terkommande sjÃ¤lvmordstankar, snabbt fÃ¶rsÃ¤mrat mÃ¥ende, svÃ¥ra sÃ¶mnproblem, stark Ã¥ngest som inte gÃ¥r Ã¶ver eller andra symtom som tydligt pÃ¥verkar sÃ¤kerhet och funktion behÃ¶ver du mer Ã¤n ett digitalt reflektionsstÃ¶d. DÃ¥ Ã¤r det viktigt att sÃ¶ka professionell hjÃ¤lp. LÃ¥g trÃ¶skel ska gÃ¶ra det lÃ¤ttare att bÃ¶rja, inte gÃ¶ra att du stannar fÃ¶r lÃ¤nge pÃ¥ en nivÃ¥ som inte rÃ¤cker.'
+				]
+			}
+		],
+		resourceListTitle: 'StÃ¶d som kan passa beroende pÃ¥ vad som kÃ¤nns nÃ¤rmast',
+		resourceListItems: [
+			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med nÃ¥gon', description: 'om du vill lÃ¤sa mer om hur sjÃ¤lva samtalet brukar fungera.' },
+			{ href: '/hjalp-mot-oro-online', label: 'HjÃ¤lp mot oro online', description: 'om det framfÃ¶r allt Ã¤r grubbel, rastlÃ¶shet eller framtidstankar som tar plats.' },
+			{ href: '/hjalp-vid-depression-online', label: 'HjÃ¤lp vid depression online', description: 'om tyngd, lÃ¥g ork och nedstÃ¤mdhet Ã¤r det som dominerar.' },
+			{ href: '/stod-vid-stress-online', label: 'StÃ¶d vid stress online', description: 'om kroppen och vardagen kÃ¤nns Ã¶verbelastade.' }
+		],
+		nextStepTitle: 'BÃ¶rja smÃ¥tt och fÃ¶lj upp',
+		nextStepParagraphs: [
+			'Om du inte vet var du ska bÃ¶rja kan du vÃ¤lja den kÃ¤nsla eller situation som Ã¤r lÃ¤ttast att beskriva just idag. Det rÃ¤cker ofta fÃ¶r att fÃ¥ syn pÃ¥ ett fÃ¶rsta mÃ¶nster. NÃ¤r du vill kan du fÃ¶lja upp i dagboken eller lÃ¤sa mer i en guide som passar det du gÃ¥r igenom.',
+			'BehÃ¶ver du vÃ¥rdrÃ¥d ska du kontakta 1177. Vid akut fara eller om nÃ¥gon riskerar att skadas ska du ringa 112 direkt.'
+		],
+		nextStepLinks: [
+			{ href: '/chat', label: 'Starta samtal' },
+			{ href: '/dagbok', label: 'Skriv i dagboken' },
+			{ href: '/guider', label: 'LÃ¤s guider' }
+		],
+		faq: [
+			{
+				question: 'MÃ¥ste jag veta exakt vad jag mÃ¥r dÃ¥ligt av?',
+				answer: 'Nej. ChattstÃ¶d kan vara anvÃ¤ndbart just nÃ¤r du fortfarande fÃ¶rsÃ¶ker fÃ¶rstÃ¥ vad som hÃ¤nder.'
+			},
+			{
+				question: 'Kan chattstÃ¶d hjÃ¤lpa innan problemen blivit stora?',
+				answer: 'Ja. MÃ¥nga anvÃ¤nder textstÃ¶d tidigt fÃ¶r att fÃ¥ ordning pÃ¥ tankar och kÃ¤nslor innan lÃ¤get hinner vÃ¤xa.'
+			},
+			{
+				question: 'ErsÃ¤tter detta professionell vÃ¥rd?',
+				answer: 'Nej. Det Ã¤r ett lÃ¥gtrÃ¶skelstÃ¶d och ett komplement, inte medicinsk eller psykiatrisk behandling.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Psykisk hÃ¤lsa â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Om psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' }
+		]
+	},
+	'hjalp-mot-oro-online': {
+		title: 'HjÃ¤lp mot oro online | Skillnaden mellan oro och Ã¥ngest | MittPsyke',
+		description:
+			'LÃ¤s om skillnaden mellan oro och Ã¥ngest, vilka tekniker som kan hjÃ¤lpa och nÃ¤r oron har bÃ¶rjat ta fÃ¶r mycket plats i vardagen.',
+		canonical: 'https://www.mittpsyke.se/hjalp-mot-oro-online',
+		ogTitle: 'HjÃ¤lp mot oro online | MittPsyke',
+		ogDescription:
+			'NÃ¤r tankarna fastnar i framtiden kan det hjÃ¤lpa att fÃ¶rstÃ¥ oron och vÃ¤lja lugna nÃ¤sta steg.',
+		h1: 'HjÃ¤lp mot oro online',
+		lead:
+			'Oro kan handla om allt frÃ¥n ekonomi och relationer till hÃ¤lsa, framtid och vardagsbeslut. HÃ¤r kan du lÃ¤sa om vad som skiljer oro frÃ¥n Ã¥ngest, vad som kan hjÃ¤lpa i stunden och nÃ¤r det Ã¤r dags att ta oron pÃ¥ stÃ¶rre allvar.',
+		primaryCta: { href: '/chat/e', label: 'Starta samtal om oro' },
+		secondaryCta: { href: '/guider/overtankande', label: 'LÃ¤s guide om Ã¶vertÃ¤nkande' },
+		sections: [
+			{
+				title: 'Skillnaden mellan oro och Ã¥ngest',
+				paragraphs: [
+					'Oro handlar ofta om tankar som gÃ¥r framÃ¥t i tiden: tÃ¤nk om nÃ¥got gÃ¥r fel, tÃ¤nk om jag missar nÃ¥got, tÃ¤nk om jag inte klarar det. Ã…ngest kan ocksÃ¥ innehÃ¥lla sÃ¥dana tankar men mÃ¤rks ofta starkare i kroppen, med till exempel tryck Ã¶ver brÃ¶stet, hjÃ¤rtklappning, yrsel eller en kÃ¤nsla av att tappa kontrollen. Skillnaden Ã¤r inte alltid knivskarp, och mÃ¥nga upplever bÃ¥da samtidigt. Men det kan Ã¤ndÃ¥ vara hjÃ¤lpsamt att frÃ¥ga sig om det frÃ¤mst Ã¤r grubbel och scenarier, eller om kroppen ocksÃ¥ gÃ¥r upp i tydligt alarm.'
+				]
+			},
+			{
+				title: 'Konkreta tekniker som kan gÃ¶ra oron mindre styrande',
+				paragraphs: [
+					'NÃ¤r oro tar fart hjÃ¤lper det sÃ¤llan att bara sÃ¤ga Ã¥t sig sjÃ¤lv att sluta tÃ¤nka. Ofta fungerar det bÃ¤ttre att ge tankarna en tydlig form. Du kan skriva ner exakt vad du oroar dig fÃ¶r, sortera vad du kan pÃ¥verka idag och vad som bara Ã¤r hypotetiska scenarier, eller sÃ¤tta en kort â€œorostidâ€ senare pÃ¥ dagen sÃ¥ att grubblandet inte tar Ã¶ver allt. Kroppen kan ocksÃ¥ behÃ¶va hjÃ¤lp att varva ner genom andning, kort promenad eller att rikta uppmÃ¤rksamheten mot nÃ¥got konkret i rummet just nu.'
+				]
+			},
+			{
+				title: 'NÃ¤r oron har bÃ¶rjat ta fÃ¶r mycket plats',
+				paragraphs: [
+					'Oron Ã¤r vÃ¤rd att ta pÃ¥ allvar nÃ¤r den pÃ¥verkar sÃ¶mn, koncentration, relationer, arbete eller din fÃ¶rmÃ¥ga att vara nÃ¤rvarande i vardagen. Det gÃ¤ller ocksÃ¥ om du mÃ¤rker att du undviker situationer, sÃ¶ker stÃ¤ndig fÃ¶rsÃ¤kran frÃ¥n andra eller kÃ¤nner att tankarna fortsÃ¤tter trots att du fÃ¶rsÃ¶ker vila. DÃ¥ kan det vara hjÃ¤lpsamt att inte bara stÃ¥ ut, utan att aktivt sÃ¶ka stÃ¶d. Ett fÃ¶rsta steg kan vara att skriva av dig, prata i chatten eller lÃ¤sa en guide. I vissa lÃ¤gen behÃ¶vs ocksÃ¥ professionell vÃ¥rd.'
+				]
+			}
+		],
+		resourceListTitle: 'StÃ¶d som kan hjÃ¤lpa nÃ¤r tankarna snurrar',
+		resourceListItems: [
+			{ href: '/4-7-8-andning-ovning', label: '4-7-8-andning', description: 'nÃ¤r du vill ge kroppen ett konkret lugnare tempo.' },
+			{ href: '/andningsovningar-mot-angest', label: 'AndningsÃ¶vningar mot Ã¥ngest', description: 'om oron gÃ¥r Ã¶ver i stark kroppslig anspÃ¤nning.' },
+			{ href: '/ovningar/daglig-reflektionsmall', label: 'Daglig reflektionsmall', description: 'fÃ¶r att fÃ¥ ut grubbel ur huvudet och ner i ord.' },
+			{ href: '/dagbok', label: 'Dagbok', description: 'om du vill fÃ¶lja Ã¥terkommande mÃ¶nster i det som oroar dig.' }
+		],
+		nextStepTitle: 'NÃ¤r du vill ta nÃ¤sta steg',
+		nextStepParagraphs: [
+			'Om oron mest snurrar i tankarna kan en Ã¶vning eller kort skrivstund rÃ¤cka som fÃ¶rsta hjÃ¤lp. Om du mÃ¤rker att kroppen gÃ¥r upp i starkt alarm kan du lÃ¤sa mer om Ã¥ngest och andningsÃ¶vningar. Om allt fortsÃ¤tter att vÃ¤xa trots att du fÃ¶rsÃ¶ker hantera det sjÃ¤lv Ã¤r det klokt att prata med vÃ¥rden.',
+			'FÃ¶r vÃ¥rdrÃ¥d kan du kontakta 1177. Vid akut fara ska du ringa 112.'
+		],
+		nextStepLinks: [
+			{ href: '/hjalp-vid-angest-online', label: 'LÃ¤s om Ã¥ngest' },
+			{ href: '/ovningar', label: 'Se Ã¶vningar' },
+			{ href: '/dagbok', label: 'Skriv i dagboken' }
+		],
+		faq: [
+			{
+				question: 'Ã„r oro och Ã¥ngest samma sak?',
+				answer: 'De kan Ã¶verlappa, men oro mÃ¤rks ofta mest i tankarna medan Ã¥ngest ofta kÃ¤nns starkare i kroppen ocksÃ¥.'
+			},
+			{
+				question: 'Vad kan jag gÃ¶ra nÃ¤r jag fastnar i grubbel?',
+				answer: 'Det kan hjÃ¤lpa att skriva ner oron, sortera vad du kan pÃ¥verka och anvÃ¤nda en enkel Ã¶vning eller andning fÃ¶r att bryta spiralen.'
+			},
+			{
+				question: 'NÃ¤r bÃ¶r jag sÃ¶ka mer hjÃ¤lp?',
+				answer: 'NÃ¤r oron pÃ¥verkar sÃ¶mn, funktion eller relationer tydligt, eller nÃ¤r du inte kommer ur den pÃ¥ egen hand, Ã¤r det bra att sÃ¶ka mer stÃ¶d.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Ã…ngest â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	'hjalp-vid-depression-online': {
+		title: 'HjÃ¤lp vid depression online | Symtom, stÃ¶d och nÃ¤sta steg | MittPsyke',
+		description:
+			'LÃ¤s om vanliga depressionssymtom, varfÃ¶r tidig hjÃ¤lp spelar roll och vad du kan gÃ¶ra idag om nedstÃ¤mdheten tar mycket plats.',
+		canonical: 'https://www.mittpsyke.se/hjalp-vid-depression-online',
+		ogTitle: 'HjÃ¤lp vid depression online | MittPsyke',
+		ogDescription:
+			'NÃ¤r orken Ã¤r lÃ¥g kan det hjÃ¤lpa att bÃ¶rja varsamt och fÃ¶rstÃ¥ vad som faktiskt hÃ¤nder.',
+		h1: 'HjÃ¤lp vid depression online',
+		lead:
+			'NÃ¤r allt kÃ¤nns tyngre Ã¤n vanligt kan Ã¤ven smÃ¥ saker bli svÃ¥ra att fÃ¥ gjort. Den hÃ¤r sidan samlar lugn information om vanliga symtom vid depression, varfÃ¶r tidigt stÃ¶d spelar roll och hur du kan bÃ¶rja idag utan att pressa dig mer Ã¤n du orkar.',
+		primaryCta: { href: '/chat/b', label: 'Starta samtal om nedstÃ¤mdhet' },
+		secondaryCta: { href: '/depression', label: 'LÃ¤s Ã¶versikt om depression' },
+		sections: [
+			{
+				title: 'Vanliga symtom nÃ¤r depression tar plats',
+				paragraphs: [
+					'Depression handlar inte bara om att kÃ¤nna sig ledsen. FÃ¶r mÃ¥nga mÃ¤rks det lika mycket som lÃ¥g energi, tappad lust, svÃ¥righeter att koncentrera sig, sÃ¶mnfÃ¶rÃ¤ndringar eller att sÃ¥dant som brukade kÃ¤nnas meningsfullt plÃ¶tsligt blir tomt. En del kÃ¤nner mer irritation Ã¤n sorg. Andra upplever skuld, hopplÃ¶shet eller att vardagliga beslut blir Ã¶vermÃ¤ktiga. Det viktiga Ã¤r inte att alla symtom stÃ¤mmer in, utan att du mÃ¤rker om mÃ¥endet hÃ¥ller i sig och pÃ¥verkar hur du fungerar och orkar i vardagen.'
+				]
+			},
+			{
+				title: 'VarfÃ¶r tidig hjÃ¤lp spelar roll',
+				paragraphs: [
+					'NÃ¤r nedstÃ¤mdhet fÃ¥r fortsÃ¤tta i tysthet blir det ofta svÃ¥rare att bryta mÃ¶nster av isolering, passivitet och sjÃ¤lvkritik. Tidig hjÃ¤lp behÃ¶ver inte betyda att allt mÃ¥ste lÃ¶sas direkt. Det kan handla om att du fÃ¥r syn pÃ¥ hur du mÃ¥r, bÃ¶rjar fÃ¶lja dina dagar, sÃ¤tter ord pÃ¥ det som kÃ¤nns tungt eller vÃ¥gar be om mer stÃ¶d i tid. SmÃ¥ steg tidigt kan gÃ¶ra stor skillnad eftersom de minskar risken att allt lÃ¥ser sig ytterligare. Att sÃ¶ka stÃ¶d tidigt Ã¤r inte att Ã¶verdriva, utan att ta sitt mÃ¥ende pÃ¥ allvar.'
+				]
+			},
+			{
+				title: 'Vad du kan gÃ¶ra idag om orken Ã¤r lÃ¥g',
+				paragraphs: [
+					'Om du har lÃ¥g ork Ã¤r det sÃ¤llan hjÃ¤lpsamt att lÃ¤gga en stor plan. BÃ¶rja hellre med nÃ¥got mycket litet: skriv nÃ¥gra rader om hur dagen kÃ¤nns, Ã¶ppna ett samtal och beskriv nulÃ¤get, Ã¤t nÃ¥got enkelt, gÃ¥ ut en kort stund eller skicka ett meddelande till nÃ¥gon du litar pÃ¥. MÃ¥let Ã¤r inte att kÃ¤nna dig bra direkt, utan att minska ensamheten och skapa en liten rÃ¶relse framÃ¥t. Om du har tankar pÃ¥ att inte vilja leva eller svÃ¥rt att hÃ¥lla dig sÃ¤ker ska du sÃ¶ka akut hjÃ¤lp direkt.'
+				]
+			}
+		],
+		resourceListTitle: 'StÃ¶d att anvÃ¤nda i din takt',
+		resourceListItems: [
+			{ href: '/dagbok', label: 'Dagbok', description: 'fÃ¶r att skriva av dig nÃ¤r tankarna kÃ¤nns trÃ¶ga eller otydliga.' },
+			{ href: '/framsteg', label: 'Framsteg', description: 'om du vill kunna fÃ¶lja smÃ¥ fÃ¶rÃ¤ndringar Ã¶ver tid nÃ¤r du har konto.' },
+			{ href: '/chat/b', label: 'Samtal om nedstÃ¤mdhet', description: 'nÃ¤r du vill bÃ¶rja i text i stÃ¤llet fÃ¶r att bÃ¤ra allt sjÃ¤lv.' },
+			{ href: '/om-mittpsyke', label: 'Om MittPsyke', description: 'om du vill fÃ¶rstÃ¥ vad tjÃ¤nsten Ã¤r och inte Ã¤r innan du anvÃ¤nder den.' }
+		],
+		nextStepTitle: 'Om du behÃ¶ver mer Ã¤n ett fÃ¶rsta steg',
+		nextStepParagraphs: [
+			'Digitalt stÃ¶d kan hjÃ¤lpa dig att bÃ¶rja, men ibland behÃ¶ver lÃ¥g ork, stark hopplÃ¶shet eller lÃ¥ngvarig nedstÃ¤mdhet mÃ¶tas med professionell vÃ¥rd. Om du kÃ¤nner att symtomen hÃ¥ller i sig eller blir djupare Ã¤r det klokt att kontakta vÃ¥rden tidigare hellre Ã¤n senare.',
+			'Vid vÃ¥rdrÃ¥d kan du vÃ¤nda dig till 1177. Vid akut fara eller om du inte kan hÃ¥lla dig sjÃ¤lv sÃ¤ker ska du ringa 112 direkt.'
+		],
+		nextStepLinks: [
+			{ href: '/chat/b', label: 'Ã–ppna samtalet' },
+			{ href: '/dagbok', label: 'Skriv nÃ¥gra rader' },
+			{ href: '/depression', label: 'GÃ¥ till Ã¶versikt om depression' }
+		],
+		faq: [
+			{
+				question: 'Ã„r depression samma sak som att vara tillfÃ¤lligt nere?',
+				answer: 'Inte alltid. Depression brukar pÃ¥verka ork, lust och vardagsfunktion mer ihÃ¥llande Ã¤n en vanlig tillfÃ¤llig svacka.'
+			},
+			{
+				question: 'Vad kan jag gÃ¶ra om jag inte orkar sÃ¥ mycket?',
+				answer: 'BÃ¶rja mycket smÃ¥tt. NÃ¥gra ord i chatten eller dagboken kan vara ett rimligt fÃ¶rsta steg nÃ¤r orken Ã¤r lÃ¥g.'
+			},
+			{
+				question: 'NÃ¤r behÃ¶ver jag sÃ¶ka mer hjÃ¤lp?',
+				answer: 'Om nedstÃ¤mdheten hÃ¥ller i sig, blir djupare eller om du har tankar pÃ¥ att inte vilja leva behÃ¶ver du mer stÃ¶d Ã¤n ett digitalt fÃ¶rsta steg.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Depression â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/depression/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Om psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/om-psykisk-halsa/' }
+		]
+	},
+	'ovningar-mot-angest-online': {
+		title: 'Ã–vningar mot Ã¥ngest online | KBT, andning och exponering | MittPsyke',
+		description:
+			'Utforska KBT-baserade Ã¶vningar mot Ã¥ngest online. LÃ¤s om andning, exponering och varfÃ¶r praktiska Ã¶vningar ofta hjÃ¤lper mer Ã¤n att bara fÃ¶rsÃ¶ka tÃ¤nka bort Ã¥ngesten.',
+		canonical: 'https://www.mittpsyke.se/ovningar-mot-angest-online',
+		ogTitle: 'Ã–vningar mot Ã¥ngest online | MittPsyke',
+		ogDescription:
+			'NÃ¤r Ã¥ngest tar plats kan Ã¶vningar ge kroppen och tankarna nÃ¥got konkret att hÃ¥lla i.',
+		h1: 'Ã–vningar mot Ã¥ngest online',
+		lead:
+			'NÃ¤r Ã¥ngest Ã¤r starkt kÃ¤nns det ofta som att kroppen och tankarna springer fÃ¶re dig. Ã–vningar kan hjÃ¤lpa just fÃ¶r att de gÃ¶r nÃ¥got konkret av ett annars diffust och Ã¶vervÃ¤ldigande lÃ¤ge.',
+		primaryCta: { href: '/ovningar', label: 'Se Ã¶vningar' },
+		secondaryCta: { href: '/hjalp-vid-angest-online', label: 'LÃ¤s om hjÃ¤lp vid Ã¥ngest' },
+		sections: [
+			{
+				title: 'VarfÃ¶r KBT-baserade Ã¶vningar ofta fungerar',
+				paragraphs: [
+					'MÃ¥nga Ã¶vningar mot Ã¥ngest bygger pÃ¥ principer frÃ¥n KBT, dÃ¤r fokus ligger pÃ¥ sambandet mellan tankar, kÃ¤nslor, kroppsliga reaktioner och beteenden. NÃ¤r du blir Ã¥ngestfylld Ã¤r det vanligt att bÃ¶rja undvika, kontrollera eller fÃ¶rsÃ¶ka tÃ¤nka bort obehaget snabbt. Det kan hjÃ¤lpa kortsiktigt men hÃ¥ller ofta igÃ¥ng problemet lÃ¤ngre. Ã–vningar fungerar dÃ¤rfÃ¶r inte fÃ¶r att de magiskt tar bort Ã¥ngest, utan fÃ¶r att de trÃ¤nar nÃ¥got nytt: att stanna kvar, reglera kroppen, observera tankar och stegvis bygga mer handlingsutrymme.'
+				]
+			},
+			{
+				title: 'Andning och kroppslig nedvarvning',
+				paragraphs: [
+					'NÃ¤r kroppen gÃ¥r upp i alarm kan det vara svÃ¥rt att tÃ¤nka klart. DÃ¥ kan andningsÃ¶vningar vara ett rimligt fÃ¶rsta steg, inte fÃ¶r att â€œandas rÃ¤ttâ€ perfekt utan fÃ¶r att ge nervsystemet en tydlig signal om att tempot kan sjunka nÃ¥got. LÃ¥ngsammare utandning, rytmisk andning eller att rÃ¤kna andetag kan hjÃ¤lpa dig att komma tillbaka till nuet. Det betyder inte att allt blir bra pÃ¥ en gÃ¥ng, men ofta att intensiteten sjunker tillrÃ¤ckligt fÃ¶r att du ska kunna vÃ¤lja nÃ¤sta steg i stÃ¤llet fÃ¶r att bara reagera pÃ¥ Ã¥ngesten.'
+				]
+			},
+			{
+				title: 'Exponering och varfÃ¶r undvikande ofta stÃ¤rker Ã¥ngest',
+				paragraphs: [
+					'Exponering handlar om att nÃ¤rma sig sÃ¥dant som vÃ¤cker Ã¥ngest i smÃ¥, planerade steg i stÃ¤llet fÃ¶r att fortsÃ¤tta backa undan. NÃ¤r vi undviker fÃ¥r hjÃ¤rnan aldrig chans att lÃ¤ra om. Det som kÃ¤ndes farligt fortsÃ¤tter dÃ¤rfÃ¶r att verka farligt. Exponering behÃ¶ver vara varsam och genomtÃ¤nkt, inte brutal. MÃ¥let Ã¤r att bygga tolerans, inte att pressa sig Ã¶ver grÃ¤nsen. FÃ¶r vissa gÃ¥r det bra att bÃ¶rja med enkla vardagssituationer pÃ¥ egen hand. FÃ¶r svÃ¥rare problem kan det vara klokt att fÃ¥ professionell hjÃ¤lp.'
+				]
+			}
+		],
+		resourceListTitle: 'Ã–vningar och vÃ¤gar vidare',
+		resourceListItems: [
+			{ href: '/andningsovningar-mot-angest', label: 'AndningsÃ¶vningar mot Ã¥ngest', description: 'nÃ¤r du behÃ¶ver bÃ¶rja i kroppen och sakta ner tempot.' },
+			{ href: '/4-7-8-andning-ovning', label: '4-7-8-andning', description: 'om du vill testa en enkel, tydlig Ã¶vning direkt.' },
+			{ href: '/exponering-ovningar-mot-angest', label: 'ExponeringsÃ¶vningar mot Ã¥ngest', description: 'om undvikande har blivit ett Ã¥terkommande mÃ¶nster.' },
+			{ href: '/chat/a', label: 'Samtal om Ã¥ngest', description: 'nÃ¤r du vill kombinera Ã¶vningar med reflektion i text.' }
+		],
+		nextStepTitle: 'VÃ¤lj en nivÃ¥ som kÃ¤nns mÃ¶jlig',
+		nextStepParagraphs: [
+			'Om Ã¥ngesten Ã¤r stark i stunden Ã¤r det ofta bÃ¤st att bÃ¶rja med en enkel andnings- eller jordningsÃ¶vning. Om du i stÃ¤llet mÃ¤rker att problemet sitter i undvikande Ã¶ver tid kan exponering vara mer hjÃ¤lpsamt. Du kan ocksÃ¥ anvÃ¤nda dagboken fÃ¶r att se vilka situationer som triggar mest.',
+			'Om Ã¥ngesten blir sÃ¥ stark att du har svÃ¥rt att fungera eller kÃ¤nna dig trygg behÃ¶ver du mer stÃ¶d Ã¤n Ã¶vningar pÃ¥ egen hand. Kontakta dÃ¥ vÃ¥rden eller 1177.'
+		],
+		nextStepLinks: [
+			{ href: '/andningsovningar-mot-angest', label: 'BÃ¶rja med andning' },
+			{ href: '/exponering-ovningar-mot-angest', label: 'LÃ¤s om exponering' },
+			{ href: '/dagbok', label: 'FÃ¶lj mÃ¶nster i dagboken' }
+		],
+		faq: [
+			{
+				question: 'HjÃ¤lper Ã¶vningar verkligen mot Ã¥ngest?',
+				answer: 'Ja, ofta som ett sÃ¤tt att trÃ¤na nya reaktioner och skapa mer handlingsutrymme, Ã¤ven om de sÃ¤llan lÃ¶ser allt pÃ¥ en gÃ¥ng.'
+			},
+			{
+				question: 'Ska jag bÃ¶rja med andning eller exponering?',
+				answer: 'BÃ¶rja ofta med andning nÃ¤r Ã¥ngesten Ã¤r stark i kroppen just nu, och titta pÃ¥ exponering nÃ¤r undvikande blivit ett stÃ¶rre mÃ¶nster Ã¶ver tid.'
+			},
+			{
+				question: 'NÃ¤r behÃ¶ver jag professionell hjÃ¤lp?',
+				answer: 'Om Ã¥ngesten Ã¤r Ã¥terkommande, mycket stark eller begrÃ¤nsar vardagen tydligt Ã¤r det klokt att sÃ¶ka mer stÃ¶d Ã¤n Ã¶vningar pÃ¥ egen hand.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Ã…ngest â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	'psykiskt-stod-online': {
+		title: 'Psykiskt stÃ¶d online | Vad digitalt stÃ¶d Ã¤r och inte Ã¤r | MittPsyke',
+		description:
+			'LÃ¤s vad digitalt psykiskt stÃ¶d online kan vara, vilka fÃ¶rdelar och begrÃ¤nsningar som finns och nÃ¤r det fungerar som en bra fÃ¶rsta ingÃ¥ng.',
+		canonical: 'https://www.mittpsyke.se/psykiskt-stod-online',
+		ogTitle: 'Psykiskt stÃ¶d online | MittPsyke',
+		ogDescription:
+			'Digitalt stÃ¶d kan vara ett lugnt fÃ¶rsta steg, men det Ã¤r inte samma sak som vÃ¥rd.',
+		h1: 'Psykiskt stÃ¶d online',
+		lead:
+			'Digitalt psykiskt stÃ¶d kan fylla olika roller beroende pÃ¥ vad du behÃ¶ver. HÃ¤r gÃ¥r vi igenom vad stÃ¶det faktiskt kan hjÃ¤lpa med, vad det inte ska blandas ihop med och vilka styrkor och begrÃ¤nsningar som Ã¤r viktiga att kÃ¤nna till.',
+		primaryCta: { href: '/chat/a', label: 'BÃ¶rja anonymt' },
+		secondaryCta: { href: '/register', label: 'Skapa din egen plats' },
+		sections: [
+			{
+				title: 'Vad digitalt psykiskt stÃ¶d faktiskt Ã¤r',
+				paragraphs: [
+					'Digitalt psykiskt stÃ¶d kan vara en plats fÃ¶r reflektion, struktur och fÃ¶rsta hjÃ¤lp nÃ¤r nÃ¥got skaver men det kÃ¤nns svÃ¥rt att bÃ¶rja i vÃ¥rden direkt. FÃ¶r mÃ¥nga innebÃ¤r det att skriva i chatten, fÃ¥ ordning pÃ¥ tankar, testa Ã¶vningar eller anvÃ¤nda en dagbok fÃ¶r att se mÃ¶nster. Det kan minska kÃ¤nslan av kaos och ge ett fÃ¶rsta sprÃ¥k fÃ¶r det som kÃ¤nns svÃ¥rt. Just dÃ¤rfÃ¶r passar det ofta bra nÃ¤r du vill bÃ¶rja i liten skala eller behÃ¶ver nÃ¥got tillgÃ¤ngligt hÃ¤r och nu snarare Ã¤n att vÃ¤nta pÃ¥ rÃ¤tt tillfÃ¤lle.'
+				]
+			},
+			{
+				title: 'Vad det inte Ã¤r och varfÃ¶r den skillnaden spelar roll',
+				paragraphs: [
+					'Digitalt stÃ¶d Ã¤r inte detsamma som vÃ¥rd, psykologisk behandling eller medicinsk bedÃ¶mning. Den skillnaden Ã¤r viktig eftersom den hjÃ¤lper dig att vÃ¤lja rÃ¤tt nivÃ¥ av hjÃ¤lp. Ett stÃ¶d som MittPsyke kan hjÃ¤lpa dig att reflektera, fÃ¶lja ditt mÃ¥ende och hitta nÃ¤sta steg, men det tar inte Ã¶ver vÃ¥rdens ansvar. Om du behÃ¶ver diagnostik, behandling, lÃ¤kemedelsbedÃ¶mning eller stÃ¶d i akuta situationer ska du sÃ¶ka professionell hjÃ¤lp. Att fÃ¶rstÃ¥ grÃ¤nsen gÃ¶r att digitalt stÃ¶d blir ett anvÃ¤ndbart komplement i stÃ¤llet fÃ¶r en otydlig ersÃ¤ttning.'
+				]
+			},
+			{
+				title: 'FÃ¶rdelar och begrÃ¤nsningar med stÃ¶d online',
+				paragraphs: [
+					'De tydligaste fÃ¶rdelarna Ã¤r lÃ¥g trÃ¶skel, tillgÃ¤nglighet och att du kan bÃ¶rja i din egen takt. Du behÃ¶ver inte boka en lÃ¥ng process fÃ¶r att fÃ¥ syn pÃ¥ hur du mÃ¥r idag. FÃ¶r vissa Ã¤r textformatet ocksÃ¥ lÃ¤ttare Ã¤n att prata hÃ¶gt. Samtidigt finns begrÃ¤nsningar. Det Ã¤r svÃ¥rare att fÃ¥nga hela din situation digitalt, och det finns lÃ¤gen dÃ¤r du behÃ¶ver mer Ã¤n reflektion och sjÃ¤lvstÃ¶d. DÃ¤rfÃ¶r fungerar stÃ¶d online bÃ¤st nÃ¤r det anvÃ¤nds Ã¤rligt: som fÃ¶rsta ingÃ¥ng, komplement eller mellanrum, inte som lÃ¶sning pÃ¥ allt.'
+				]
+			}
+		],
+		resourceListTitle: 'VÃ¤lj det format som passar dig bÃ¤st',
+		resourceListItems: [
+			{ href: '/chat', label: 'Chatten', description: 'om du vill bÃ¶rja i samtal direkt och sÃ¤tta ord pÃ¥ det som kÃ¤nns nÃ¤rmast.' },
+			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva i lugn takt och Ã¥terkomma Ã¶ver tid.' },
+			{ href: '/ovningar', label: 'Ã–vningar', description: 'om du vill bÃ¶rja konkret med nÃ¥got som gÃ¥r att gÃ¶ra hÃ¤r och nu.' },
+			{ href: '/guider', label: 'Guider', description: 'om du fÃ¶rst vill lÃ¤sa och fÃ¶rstÃ¥ mer om det du gÃ¥r igenom.' }
+		],
+		nextStepTitle: 'NÃ¤r du vill anvÃ¤nda stÃ¶det klokt',
+		nextStepParagraphs: [
+			'Det kan vara hjÃ¤lpsamt att bÃ¶rja med en frÃ¥ga: behÃ¶ver du nÃ¥gonstans att sortera, eller behÃ¶ver du vÃ¥rd och bedÃ¶mning? Om du frÃ¤mst behÃ¶ver struktur och lugn start kan digitalt stÃ¶d passa bra. Om du mÃ¤rker att symtomen Ã¤r svÃ¥ra, lÃ¥ngvariga eller akuta behÃ¶ver du sÃ¶ka mer hjÃ¤lp.',
+			'Vid vÃ¥rdrÃ¥d kan du kontakta 1177. Vid akut fara ska du ringa 112 direkt.'
+		],
+		nextStepLinks: [
+			{ href: '/chat', label: 'Ã–ppna chatten' },
+			{ href: '/dagbok', label: 'Skriv i dagboken' },
+			{ href: '/om-mittpsyke', label: 'LÃ¤s om MittPsyke' }
+		],
+		faq: [
+			{
+				question: 'Ã„r psykiskt stÃ¶d online anonymt?',
+				answer: 'Du kan bÃ¶rja utan konto i flera delar av tjÃ¤nsten. Konto behÃ¶vs fÃ¶rst nÃ¤r du vill spara mer Ã¶ver tid.'
+			},
+			{
+				question: 'Ã„r detta samma sak som terapi?',
+				answer: 'Nej. Det Ã¤r ett digitalt stÃ¶d fÃ¶r reflektion och nÃ¤sta steg, inte terapi eller medicinsk vÃ¥rd.'
+			},
+			{
+				question: 'NÃ¤r passar stÃ¶d online bÃ¤st?',
+				answer: 'Det passar ofta bÃ¤st som lÃ¥gtrÃ¶skelstÃ¶d nÃ¤r du vill bÃ¶rja enkelt, fÃ¥ struktur eller komplettera annan hjÃ¤lp.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Psykisk hÃ¤lsa â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		]
+	},
+	'prata-anonymt-online': {
+		title: 'Prata anonymt online | Hur du bÃ¶rjar och vad du kan ta upp | MittPsyke',
+		description:
+			'LÃ¤s varfÃ¶r anonymitet kan hjÃ¤lpa, vad du kan prata om i ett anonymt stÃ¶d och hur du kommer igÃ¥ng nÃ¤r du vill bÃ¶rja utan press.',
+		canonical: 'https://www.mittpsyke.se/prata-anonymt-online',
+		ogTitle: 'Prata anonymt online | MittPsyke',
+		ogDescription:
+			'NÃ¤r du vill bÃ¶rja utan press kan anonymitet gÃ¶ra det lÃ¤ttare att sÃ¤tta ord pÃ¥ det som kÃ¤nns svÃ¥rt.',
+		h1: 'Prata anonymt online',
+		lead:
+			'Att prata anonymt online kan vara ett fÃ¶rsta steg nÃ¤r du vill uttrycka nÃ¥got svÃ¥rt utan att fÃ¶rst behÃ¶va fÃ¶rklara allt om dig sjÃ¤lv. Den hÃ¤r sidan gÃ¥r igenom varfÃ¶r anonymitet kan hjÃ¤lpa, vad du kan ta upp och hur du kan komma igÃ¥ng i lugn takt.',
+		primaryCta: { href: '/chat', label: 'Ã–ppna chatten' },
+		secondaryCta: { href: '/om-mittpsyke', label: 'SÃ¥ fungerar MittPsyke' },
+		sections: [
+			{
+				title: 'VarfÃ¶r anonymitet hjÃ¤lper mÃ¥nga att bÃ¶rja',
+				paragraphs: [
+					'Anonymitet kan minska flera hinder pÃ¥ samma gÃ¥ng. Du slipper fundera Ã¶ver hur du uppfattas, om du formulerar dig rÃ¤tt eller om nÃ¥gon kommer tycka att dina problem inte Ã¤r tillrÃ¤ckligt stora. FÃ¶r personer som bÃ¤r mycket skam, Ã¤r ovana vid att prata om kÃ¤nslor eller bara Ã¤r utmattade av att hÃ¥lla ihop vardagen kan det vara avgÃ¶rande. NÃ¤r ingÃ¥ngen Ã¤r enklare blir det ocksÃ¥ lÃ¤ttare att vara Ã¤rlig. Det betyder inte att det du kÃ¤nner Ã¤r mindre viktigt, utan att formen gÃ¶r det mer mÃ¶jligt att faktiskt bÃ¶rja.'
+				]
+			},
+			{
+				title: 'Vad du kan prata om hÃ¤r',
+				paragraphs: [
+					'Du behÃ¶ver inte komma med ett fÃ¤rdigt Ã¤mne. MÃ¥nga bÃ¶rjar med nÃ¥got brett som oro, stress, Ã¥ngest, nedstÃ¤mdhet, ensamhet eller bara en kÃ¤nsla av att nÃ¥got inte stÃ¥r rÃ¤tt till. Du kan ocksÃ¥ prata om relationer, press, sÃ¶mn, skuldkÃ¤nslor, tomhet eller att du har svÃ¥rt att fÃ¶rstÃ¥ dina reaktioner. Om du inte vet vad det â€œhandlar omâ€ Ã¤nnu gÃ¥r det bra att bÃ¶rja just dÃ¤r. Det viktiga Ã¤r inte att sÃ¤tta rÃ¤tt etikett direkt, utan att ge det som kÃ¤nns svÃ¥rt lite mer form och riktning.'
+				]
+			},
+			{
+				title: 'Hur du bÃ¶rjar nÃ¤r allt kÃ¤nns diffust',
+				paragraphs: [
+					'Det enklaste sÃ¤ttet att bÃ¶rja Ã¤r ofta att skriva det mest konkreta du vet just nu. Det kan vara en kroppslig kÃ¤nsla, en situation frÃ¥n idag eller en tanke som gÃ¥r runt. Du behÃ¶ver inte skriva lÃ¥ngt. En eller tvÃ¥ meningar rÃ¤cker fÃ¶r att samtalet ska kunna ta form. Om du hellre vill skriva fÃ¶rst fÃ¶r dig sjÃ¤lv kan dagboken vara ett bra mellanled. NÃ¤r du vÃ¤l bÃ¶rjar mÃ¤rker mÃ¥nga att det blir lÃ¤ttare att fortsÃ¤tta, just fÃ¶r att de inte lÃ¤ngre behÃ¶ver bÃ¤ra allt ensam i huvudet.'
+				]
+			}
+		],
+		resourceListTitle: 'Sidor som kan hjÃ¤lpa dig vidare',
+		resourceListItems: [
+			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med nÃ¥gon', description: 'om du vill lÃ¤sa mer om hur ett anonymt samtal brukar fungera.' },
+			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstÃ¶d online', description: 'fÃ¶r en djupare genomgÃ¥ng av varfÃ¶r lÃ¥g trÃ¶skel kan spela stor roll.' },
+			{ href: '/chattstod-psykisk-ohalsa', label: 'ChattstÃ¶d vid psykisk ohÃ¤lsa', description: 'om du vill fÃ¶rstÃ¥ hur stÃ¶d i text kan hjÃ¤lpa tidigt.' },
+			{ href: '/dagbok', label: 'Dagbok', description: 'om du vill bÃ¶rja skriva fÃ¶r dig sjÃ¤lv innan du Ã¶ppnar ett samtal.' }
+		],
+		nextStepTitle: 'BÃ¶rja med det som kÃ¤nns mÃ¶jligt',
+		nextStepParagraphs: [
+			'Det finns inget rÃ¤tt sÃ¤tt att ta fÃ¶rsta steget. FÃ¶r vissa passar ett kort anonymt meddelande bÃ¤st. FÃ¶r andra kÃ¤nns det bÃ¤ttre att skriva i dagboken fÃ¶rst eller lÃ¤sa en sida som sÃ¤tter ord pÃ¥ det man upplever. Huvudsaken Ã¤r att steget Ã¤r tillrÃ¤ckligt litet fÃ¶r att bli taget idag.',
+			'Om du behÃ¶ver mÃ¤nsklig kontakt finns stodlinjer.se. Vid akut fara ska du ringa 112 direkt.'
+		],
+		nextStepLinks: [
+			{ href: '/chat', label: 'Starta chatten' },
+			{ href: '/dagbok', label: 'Skriv i dagboken' },
+			{ href: '/chatta-anonymt-med-nagon', label: 'LÃ¤s om anonym chatt' }
+		],
+		faq: [
+			{
+				question: 'MÃ¥ste jag veta vad jag vill prata om innan jag bÃ¶rjar?',
+				answer: 'Nej. Du kan bÃ¶rja med nÃ¥got litet och oklart. Samtalet kan hjÃ¤lpa dig att sortera vidare.'
+			},
+			{
+				question: 'Vad kan jag ta upp i ett anonymt samtal?',
+				answer: 'Du kan ta upp allt frÃ¥n oro och Ã¥ngest till stress, relationer, ensamhet eller att du bara kÃ¤nner dig lÃ¥g utan att veta varfÃ¶r.'
+			},
+			{
+				question: 'Ã„r detta akut hjÃ¤lp?',
+				answer: 'Nej. Vid akut fara eller om nÃ¥gon riskerar att skadas ska du ringa 112.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Psykisk hÃ¤lsa â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		]
+	},
+	'samtalsstod-utan-vantetid': {
+		title: 'SamtalsstÃ¶d utan vÃ¤ntetid | NÃ¤r du behÃ¶ver bÃ¶rja nu | MittPsyke',
+		description:
+			'LÃ¤s om hur digitalt samtalsstÃ¶d kan fylla ett gap nÃ¤r vÃ¥rdkÃ¶er eller trÃ¶sklar gÃ¶r att hjÃ¤lpen kÃ¤nns lÃ¥ngt bort, och vad som skiljer det frÃ¥n traditionell vÃ¥rd.',
+		canonical: 'https://www.mittpsyke.se/samtalsstod-utan-vantetid',
+		ogTitle: 'SamtalsstÃ¶d utan vÃ¤ntetid | MittPsyke',
+		ogDescription:
+			'NÃ¤r du behÃ¶ver bÃ¶rja nu kan digitalt stÃ¶d vara en fÃ¶rsta ingÃ¥ng, men det Ã¤r inte samma sak som vÃ¥rd.',
+		h1: 'SamtalsstÃ¶d utan vÃ¤ntetid',
+		lead:
+			'Ibland Ã¤r det inte brist pÃ¥ vilja som gÃ¶r att stÃ¶d drÃ¶jer, utan att vÃ¤garna dit kÃ¤nns fÃ¶r lÃ¥nga eller fÃ¶r tunga. HÃ¤r gÃ¥r vi igenom varfÃ¶r vÃ¤ntan blir ett problem, hur digitalt stÃ¶d kan fylla ett mellanrum och vad som skiljer det frÃ¥n vÃ¥rd.',
+		primaryCta: { href: '/chat', label: 'Ã–ppna chatten' },
+		secondaryCta: { href: '/prata-anonymt-online', label: 'LÃ¤s om att prata anonymt' },
+		sections: [
+			{
+				title: 'Problemet med att vÃ¤nta nÃ¤r mÃ¥endet redan skaver',
+				paragraphs: [
+					'NÃ¤r du mÃ¥r dÃ¥ligt kan Ã¤ven kort vÃ¤ntan kÃ¤nnas lÃ¥ng. Det Ã¤r svÃ¥rt att samla kraft till att sÃ¶ka hjÃ¤lp nÃ¤r sÃ¶mn, oro, nedstÃ¤mdhet eller stress redan tar mycket energi. FÃ¶r vissa handlar vÃ¤ntan om vÃ¥rdkÃ¶er. FÃ¶r andra handlar den om att det kÃ¤nns fÃ¶r stort att boka, ringa eller fÃ¶rklara sig. Under tiden riskerar problemen att vÃ¤xa, inte alltid fÃ¶r att nÃ¥got dramatiskt hÃ¤nder utan fÃ¶r att du blir mer ensam med det som pÃ¥gÃ¥r. DÃ¤rfÃ¶r kan en tillgÃ¤nglig fÃ¶rsta ingÃ¥ng vara viktig Ã¤ven nÃ¤r den inte lÃ¶ser allt.'
+				]
+			},
+			{
+				title: 'Hur digitalt stÃ¶d kan fylla gapet',
+				paragraphs: [
+					'Digitalt samtalsstÃ¶d kan fylla ett mellanrum mellan att bÃ¤ra allt sjÃ¤lv och att fÃ¥ mer omfattande hjÃ¤lp. Det ger mÃ¶jlighet att bÃ¶rja samma dag, sÃ¤tta ord pÃ¥ lÃ¤get medan det fortfarande Ã¤r fÃ¤rskt och hitta en liten riktning i stÃ¤llet fÃ¶r att fastna i passiv vÃ¤ntan. FÃ¶r vissa blir det ett sÃ¤tt att hÃ¥lla ihop vardagen medan de sÃ¶ker mer hjÃ¤lp. FÃ¶r andra rÃ¤cker det som lÃ¥gtrÃ¶skelstÃ¶d i en period. VÃ¤rdet ligger ofta i att nÃ¥got faktiskt kan bÃ¶rja nu, inte fÃ¶rst nÃ¤r du orkar perfekt.'
+				]
+			},
+			{
+				title: 'Vad som skiljer digitalt stÃ¶d frÃ¥n vÃ¥rd',
+				paragraphs: [
+					'Det viktiga Ã¤r att inte blanda ihop tillgÃ¤nglighet med behandlingsansvar. Digitalt samtalsstÃ¶d utan vÃ¤ntetid kan hjÃ¤lpa dig att reflektera, skriva, fÃ¥ struktur och ta nÃ¤sta steg, men det ersÃ¤tter inte utredning, behandling eller akut stÃ¶d. Om du behÃ¶ver medicinsk bedÃ¶mning, riskbedÃ¶mning eller lÃ¥ngsiktig behandling behÃ¶ver du fortfarande professionell vÃ¥rd. Det ena utesluter inte det andra. FÃ¶r mÃ¥nga fungerar det bÃ¤st nÃ¤r digitalt stÃ¶d anvÃ¤nds som en bro: nÃ¥got som gÃ¶r vÃ¤ntan mindre passiv och nÃ¤sta vÃ¥rdkontakt mer mÃ¶jlig.'
+				]
+			}
+		],
+		resourceListTitle: 'Bra nÃ¤sta steg beroende pÃ¥ behov',
+		resourceListItems: [
+			{ href: '/chat/a', label: 'Samtal om Ã¥ngest', description: 'om oron eller kroppslig Ã¥ngest Ã¤r det som kÃ¤nns mest akut just nu.' },
+			{ href: '/chat/b', label: 'Samtal om nedstÃ¤mdhet', description: 'om orken Ã¤r lÃ¥g och du vill bÃ¶rja varsamt i text.' },
+			{ href: '/chat/e', label: 'Samtal om stress och oro', description: 'om du frÃ¤mst kÃ¤nner Ã¶verbelastning eller grubbel.' },
+			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva fÃ¶rst och Ã¥terkomma nÃ¤r du behÃ¶ver.' }
+		],
+		nextStepTitle: 'NÃ¤r du behÃ¶ver nÃ¥got nu och nÃ¥got mer senare',
+		nextStepParagraphs: [
+			'Det gÃ¥r att anvÃ¤nda digitalt stÃ¶d som ett fÃ¶rsta steg redan idag och samtidigt planera fÃ¶r mer hjÃ¤lp om du behÃ¶ver det. Att bÃ¶rja nu behÃ¶ver inte betyda att du nÃ¶jer dig med mindre Ã¤n du behÃ¶ver. Det kan i stÃ¤llet vara ett sÃ¤tt att orka ta nÃ¤sta kontakt med lite mer tydlighet.',
+			'FÃ¶r vÃ¥rdrÃ¥d kan du kontakta 1177. Vid akut fara ska du ringa 112.'
+		],
+		nextStepLinks: [
+			{ href: '/chat', label: 'BÃ¶rja nu' },
+			{ href: '/dagbok', label: 'Skriv fÃ¶rst' },
+			{ href: '/om-mittpsyke', label: 'LÃ¤s om tjÃ¤nsten' }
+		],
+		faq: [
+			{
+				question: 'Ã„r samtalsstÃ¶d utan vÃ¤ntetid samma sak som vÃ¥rd?',
+				answer: 'Nej. Det Ã¤r ett snabbt tillgÃ¤ngligt lÃ¥gtrÃ¶skelstÃ¶d, inte medicinsk bedÃ¶mning eller behandling.'
+			},
+			{
+				question: 'NÃ¤r kan det vara hjÃ¤lpsamt?',
+				answer: 'NÃ¤r du behÃ¶ver bÃ¶rja nu, fÃ¥ ordning pÃ¥ tankar eller minska passiv vÃ¤ntan innan eller vid sidan av annan hjÃ¤lp.'
+			},
+			{
+				question: 'Vad gÃ¶r jag om jag behÃ¶ver akut hjÃ¤lp?',
+				answer: 'Vid akut fara eller om nÃ¥gon riskerar att skadas ska du ringa 112 direkt.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Psykisk hÃ¤lsa â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	'stod-vid-stress-online': {
+		title: 'StÃ¶d vid stress online | Kronisk stress, symtom och hjÃ¤lp | MittPsyke',
+		description:
+			'LÃ¤s om kronisk stress, vanliga stressymtom och vad som kan hjÃ¤lpa nÃ¤r belastningen blivit lÃ¥ngvarig eller svÃ¥r att Ã¥terhÃ¤mta sig frÃ¥n.',
+		canonical: 'https://www.mittpsyke.se/stod-vid-stress-online',
+		ogTitle: 'StÃ¶d vid stress online | MittPsyke',
+		ogDescription:
+			'NÃ¤r kroppen gÃ¥r lÃ¤nge pÃ¥ hÃ¶gvarv kan det hjÃ¤lpa att fÃ¶rstÃ¥ stressymtom och bÃ¶rja sÃ¤nka tempot stegvis.',
+		h1: 'StÃ¶d vid stress online',
+		lead:
+			'Stress blir lÃ¤tt ett ord fÃ¶r allt, men lÃ¥ngvarig stress sÃ¤tter sig ofta tydligt i bÃ¥de kropp, tankar och vardag. HÃ¤r kan du lÃ¤sa om hur kronisk stress kan mÃ¤rkas och vad som kan hjÃ¤lpa nÃ¤r Ã¥terhÃ¤mtningen inte lÃ¤ngre kommer av sig sjÃ¤lv.',
+		primaryCta: { href: '/chat/e', label: 'Starta samtal om stress' },
+		secondaryCta: { href: '/guider/stress-utmattning', label: 'LÃ¤s guide om stress' },
+		sections: [
+			{
+				title: 'NÃ¤r stress blir lÃ¥ngvarig',
+				paragraphs: [
+					'Kortvarig stress Ã¤r en normal reaktion nÃ¤r nÃ¥got krÃ¤ver mycket av dig. Problemet uppstÃ¥r nÃ¤r belastningen fortsÃ¤tter utan att kroppen fÃ¥r tillrÃ¤cklig Ã¥terhÃ¤mtning. DÃ¥ kan stressen bli mer kronisk och bÃ¶rja kÃ¤nnas som ett grundlÃ¤ge snarare Ã¤n en tillfÃ¤llig topp. MÃ¥nga beskriver att de hela tiden ligger ett steg efter sig sjÃ¤lva, blir lÃ¤ttare irriterade eller kÃ¤nner att det Ã¤r svÃ¥rt att varva ner Ã¤ven nÃ¤r det egentligen Ã¤r lugnt. DÃ¥ handlar det inte bara om att â€œha mycketâ€, utan om att systemet gÃ¥tt lÃ¤nge pÃ¥ fÃ¶r hÃ¶g belastning.'
+				]
+			},
+			{
+				title: 'Vanliga stressymtom i kropp och vardag',
+				paragraphs: [
+					'Stress mÃ¤rks ofta bÃ¥de fysiskt och mentalt. Du kan kÃ¤nna muskelspÃ¤nning, hjÃ¤rtklappning, huvudvÃ¤rk, sÃ¶mnsvÃ¥righeter, magbesvÃ¤r eller ett stÃ¤ndigt inre tryck. Samtidigt blir tankarna ofta mer splittrade, tÃ¥lamodet kortare och minnet sÃ¤mre. Det Ã¤r ocksÃ¥ vanligt att man tappar kontakt med vad man sjÃ¤lv behÃ¶ver eftersom all energi gÃ¥r Ã¥t till att hÃ¥lla ihop dagen. NÃ¤r stressen pÃ¥gÃ¥r lÃ¤nge kan Ã¤ven sÃ¥dant du tidigare klarade utan problem bÃ¶rja kÃ¤nnas tungt. Det betyder inte att du blivit svag, utan att belastningen fÃ¥tt pÃ¥gÃ¥ fÃ¶r lÃ¤nge.'
+				]
+			},
+			{
+				title: 'Vad som brukar hjÃ¤lpa nÃ¤r allt gÃ¥r fÃ¶r fort',
+				paragraphs: [
+					'Det som hjÃ¤lper mest Ã¤r sÃ¤llan ytterligare prestation, utan att skapa smÃ¥ pauser dÃ¤r kroppen och tankarna hinner ikapp. Det kan handla om att skriva ner vad som faktiskt belastar dig, skala bort nÃ¥got, sÃ¤nka kraven fÃ¶r dagen, anvÃ¤nda en kort reflektionsÃ¶vning eller Ã¥terinfÃ¶ra rutiner fÃ¶r sÃ¶mn, mat och Ã¥terhÃ¤mtning. FÃ¶r vissa Ã¤r nÃ¤sta steg att prata i chatten och fÃ¥ mer Ã¶verblick. FÃ¶r andra handlar det om att inse att den lÃ¥ngvariga stressen blivit sÃ¥ tydlig att vÃ¥rd eller arbetsanpassning behÃ¶ver bli en del av lÃ¶sningen.'
+				]
+			}
+		],
+		resourceListTitle: 'StÃ¶d som kan passa vid stress',
+		resourceListItems: [
+			{ href: '/ovningar/daglig-reflektionsmall', label: 'Daglig reflektionsmall', description: 'fÃ¶r att stanna upp och fÃ¥ syn pÃ¥ vad som faktiskt belastar dig.' },
+			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill fÃ¶lja Ã¥terkommande stressmÃ¶nster Ã¶ver tid.' },
+			{ href: '/framsteg', label: 'Framsteg', description: 'fÃ¶r att kunna se smÃ¥ fÃ¶rÃ¤ndringar nÃ¤r du anvÃ¤nder dagboken regelbundet.' },
+			{ href: '/guider/stress-utmattning', label: 'Guide om stress och utmattning', description: 'om du vill lÃ¤sa mer om lÃ¥ngvarig belastning.' }
+		],
+		nextStepTitle: 'NÃ¤r det Ã¤r dags att sÃ¶ka mer hjÃ¤lp',
+		nextStepParagraphs: [
+			'Om stressen pÃ¥verkar sÃ¶mn, minne, arbetsfÃ¶rmÃ¥ga eller Ã¥terhÃ¤mtning tydligt under lÃ¤ngre tid kan det vara klokt att sÃ¶ka professionell hjÃ¤lp och inte bara fÃ¶rsÃ¶ka kompensera med mer disciplin. Kroppen brukar till slut sÃ¤ga ifrÃ¥n tydligare nÃ¤r den inte fÃ¥r Ã¥terhÃ¤mtning.',
+			'FÃ¶r vÃ¥rdrÃ¥d kan du kontakta 1177. Vid akut fara ska du ringa 112.'
+		],
+		nextStepLinks: [
+			{ href: '/chat/e', label: 'Prata om stress' },
+			{ href: '/dagbok', label: 'Skriv av dig' },
+			{ href: '/guider/stress-utmattning', label: 'LÃ¤s mer om stress' }
+		],
+		faq: [
+			{
+				question: 'Hur vet jag om stressen blivit lÃ¥ngvarig?',
+				answer: 'Om Ã¥terhÃ¤mtningen uteblir, symtomen hÃ¥ller i sig och vardagen pÃ¥verkas tydligt Ã¤r stressen vÃ¤rd att ta pÃ¥ allvar som mer Ã¤n en tillfÃ¤llig topp.'
+			},
+			{
+				question: 'Vilka symtom Ã¤r vanliga vid hÃ¶g stress?',
+				answer: 'Det kan handla om sÃ¶mnsvÃ¥righeter, spÃ¤nningar, hjÃ¤rtklappning, irritabilitet, minnessvÃ¥righeter och kÃ¤nslan av att aldrig riktigt komma ner i varv.'
+			},
+			{
+				question: 'NÃ¤r behÃ¶ver jag sÃ¶ka vÃ¥rd fÃ¶r stress?',
+				answer: 'NÃ¤r stressen Ã¤r lÃ¥ngvarig, pÃ¥verkar funktion och Ã¥terhÃ¤mtning tydligt eller nÃ¤r du kÃ¤nner att du inte lÃ¤ngre kommer tillbaka pÃ¥ egen hand.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Stress â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
+			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		]
+	},
+	'stod-vid-ptsd-online': {
+		title: 'StÃ¶d vid PTSD online | Symtom, vardagsstÃ¶d och nÃ¤sta steg | MittPsyke',
+		description:
+			'LÃ¤s om vanliga PTSD-symtom, vad som kan hjÃ¤lpa i vardagen och nÃ¤r det Ã¤r viktigt att sÃ¶ka professionell hjÃ¤lp utÃ¶ver digitalt stÃ¶d.',
+		canonical: 'https://www.mittpsyke.se/stod-vid-ptsd-online',
+		ogTitle: 'StÃ¶d vid PTSD online | MittPsyke',
+		ogDescription:
+			'NÃ¤r svÃ¥ra minnen och reaktioner tar plats kan varsamt stÃ¶d hjÃ¤lpa dig att bÃ¶rja fÃ¶rstÃ¥ ditt lÃ¤ge.',
+		h1: 'StÃ¶d vid PTSD online',
+		lead:
+			'Traumarelaterade symtom kan vara svÃ¥ra att beskriva och Ã¤nnu svÃ¥rare att leva med. Den hÃ¤r sidan samlar varsam information om vanliga PTSD-symtom, vad som kan hjÃ¤lpa i vardagen och nÃ¤r digitalt stÃ¶d behÃ¶ver kompletteras med professionell hjÃ¤lp.',
+		primaryCta: { href: '/chat/a', label: 'Starta ett lugnt samtal' },
+		secondaryCta: { href: '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma', label: 'LÃ¤s om samtalsstÃ¶d vid trauma' },
+		sections: [
+			{
+				title: 'Vanliga symtom vid PTSD',
+				paragraphs: [
+					'PTSD kan visa sig som pÃ¥trÃ¤ngande minnen, flashbacks, mardrÃ¶mmar, stark vaksamhet eller kroppsliga reaktioner som kommer snabbt och kÃ¤nns svÃ¥ra att stoppa. Det Ã¤r ocksÃ¥ vanligt att fÃ¶rsÃ¶ka undvika platser, personer, tankar eller situationer som pÃ¥minner om det som hÃ¤nt. FÃ¶r vissa mÃ¤rks det mest som avstÃ¤ngdhet, irritabilitet eller svÃ¥righeter att kÃ¤nna sig trygg Ã¤ven i vanliga vardagssituationer. Symtomen handlar inte om svaghet utan om att nervsystemet fortsatt reagera som om faran fortfarande pÃ¥gÃ¥r, trots att situationen kan vara Ã¶ver.'
+				]
+			},
+			{
+				title: 'Vad som kan hjÃ¤lpa i vardagen',
+				paragraphs: [
+					'VardagsstÃ¶d vid traumarelaterade symtom behÃ¶ver ofta vara varsamt och stabiliserande. MÃ¥let Ã¤r inte att pressa fram minnen eller fÃ¶rstÃ¥ allt pÃ¥ en gÃ¥ng, utan att skapa lite mer trygghet i nuet. Det kan handla om att lÃ¤gga mÃ¤rke till vad som triggar starka reaktioner, anvÃ¤nda jordningsÃ¶vningar, skriva kort om nulÃ¤get i stÃ¤llet fÃ¶r om sjÃ¤lva traumat och fÃ¶rsÃ¶ka bygga rutiner som gÃ¶r dagen mer fÃ¶rutsÃ¤gbar. FÃ¶r vissa Ã¤r det ocksÃ¥ hjÃ¤lpsamt att fÃ¶lja mÃ¶nster i dagboken fÃ¶r att se vad som lugnar och vad som Ã¶kar anspÃ¤nningen.'
+				]
+			},
+			{
+				title: 'NÃ¤r du bÃ¶r sÃ¶ka professionell hjÃ¤lp',
+				paragraphs: [
+					'Om symtomen Ã¤r Ã¥terkommande, starka eller pÃ¥verkar din sÃ¶mn, trygghet och funktion tydligt behÃ¶ver du ofta mer Ã¤n ett digitalt reflektionsstÃ¶d. Det gÃ¤ller sÃ¤rskilt om du har kraftiga flashbacks, dissociation, svÃ¥rt att kÃ¤nna dig sÃ¤ker eller om vardagen krymper pÃ¥ grund av undvikande. DÃ¥ Ã¤r det viktigt att fÃ¥ professionell bedÃ¶mning och behandling. Digitalt stÃ¶d kan fortfarande vara ett komplement, men det ska inte bÃ¤ra hela ansvaret nÃ¤r traumarelaterade symtom blivit omfattande eller akuta.'
+				]
+			}
+		],
+		resourceListTitle: 'Varsamma vÃ¤gar vidare',
+		resourceListItems: [
+			{ href: '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma', label: 'SamtalsstÃ¶d vid trauma', description: 'om du vill lÃ¤sa mer om en lugn fÃ¶rsta ingÃ¥ng kring trauma och reaktioner.' },
+			{ href: '/dagbok', label: 'Dagboken', description: 'fÃ¶r att notera nulÃ¤ge, triggers och sÃ¥dant som hjÃ¤lper utan att pressa fram mer Ã¤n du orkar.' },
+			{ href: '/framsteg', label: 'Framsteg', description: 'om du vill fÃ¶lja smÃ¥ skiften Ã¶ver tid nÃ¤r du anvÃ¤nder dagboken.' },
+			{ href: '/om-mittpsyke', label: 'Om MittPsyke', description: 'fÃ¶r att fÃ¶rstÃ¥ tjÃ¤nstens grÃ¤nser och nÃ¤r annan hjÃ¤lp behÃ¶vs.' }
+		],
+		nextStepTitle: 'BÃ¶rja varsamt och ta symtomen pÃ¥ allvar',
+		nextStepParagraphs: [
+			'Det kan vara klokt att bÃ¶rja med att beskriva nulÃ¤get snarare Ã¤n att fÃ¶rsÃ¶ka Ã¥terberÃ¤tta allt som hÃ¤nt. Om du mÃ¤rker att symtomen snabbt blir starka Ã¤r det viktigt att sakta ner och sÃ¶ka mer stÃ¶d, inte pressa dig igenom pÃ¥ egen hand.',
+			'Vid akut fara eller om du inte kÃ¤nner dig sÃ¤ker ska du ringa 112. FÃ¶r vÃ¥rdrÃ¥d kan du kontakta 1177.'
+		],
+		nextStepLinks: [
+			{ href: '/chat/a', label: 'BÃ¶rja fÃ¶rsiktigt i chatten' },
+			{ href: '/dagbok', label: 'Skriv om nulÃ¤get' },
+			{ href: '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma', label: 'LÃ¤s mer om trauma' }
+		],
+		faq: [
+			{
+				question: 'MÃ¥ste jag berÃ¤tta hela traumat fÃ¶r att fÃ¥ stÃ¶d?',
+				answer: 'Nej. Det kan vara bÃ¤ttre att bÃ¶rja med nulÃ¤get, symtomen och vad som triggar dig Ã¤n att pressa fram hela berÃ¤ttelsen direkt.'
+			},
+			{
+				question: 'Kan digitalt stÃ¶d hjÃ¤lpa vid PTSD?',
+				answer: 'Det kan hjÃ¤lpa som varsam reflektion och struktur i vardagen, men det ersÃ¤tter inte professionell behandling nÃ¤r symtomen Ã¤r tydliga.'
+			},
+			{
+				question: 'NÃ¤r behÃ¶ver jag professionell hjÃ¤lp?',
+				answer: 'NÃ¤r symtomen Ã¤r starka, Ã¥terkommande eller pÃ¥verkar trygghet, sÃ¶mn och funktion tydligt behÃ¶ver du professionell bedÃ¶mning och stÃ¶d.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Posttraumatiskt stressyndrom (PTSD) â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/posttraumatiskt-stressyndrom-ptsd/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	'chatta-anonymt': {
+		title: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
+		description:
+			'Chatta anonymt utan konto direkt i webbläsaren. Få lugnt stöd i text för oro, stress och nedstämdhet. Ingen registrering krävs för att börja.',
+		canonical: 'https://www.mittpsyke.se/chatta-anonymt',
+		ogTitle: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
+		ogDescription:
+			'FÃ¥ psykiskt stÃ¶d online utan konto. BÃ¶rja skriva direkt i webblÃ¤saren, gratis och utan registrering.',
+		h1: 'Chatta anonymt â€“ utan konto',
+		lead:
+			'Du behÃ¶ver inte registrera dig eller uppge nÃ¥gra uppgifter. BÃ¶rja skriva direkt om det som kÃ¤nns tungt â€“ Ã¥ngest, stress, nedstÃ¤mdhet eller nÃ¥got annat. MittPsyke Ã¤r ett AI-baserat samtalsstÃ¶d som finns hÃ¤r nÃ¤r du behÃ¶ver det.',
+		primaryCta: { href: '/skriv', label: 'BÃ¶rja chatta anonymt' },
+		sections: [
+			{
+				title: 'En lugn start utan registrering',
+				paragraphs: [
+					'Ibland Ã¤r det lÃ¤ttare att bÃ¶rja skriva Ã¤n att fÃ¶rklara allt fÃ¶r nÃ¥gon annan. HÃ¤r kan du ta fÃ¶rsta steget direkt, utan konto och utan att fÃ¶rst lÃ¤mna nÃ¥gra uppgifter. Det gÃ¶r trÃ¶skeln lÃ¤gre nÃ¤r du bara behÃ¶ver fÃ¥ ur dig nÃ¥got eller sortera det som kÃ¤nns svÃ¥rt.'
+				]
+			},
+			{
+				title: 'StÃ¶d fÃ¶r Ã¥ngest, stress och nedstÃ¤mdhet',
+				paragraphs: [
+					'Du kan anvÃ¤nda sidan nÃ¤r tankarna snurrar, nÃ¤r kroppen gÃ¥r pÃ¥ hÃ¶gvarv eller nÃ¤r allt kÃ¤nns tungt och oklart. MittPsyke Ã¤r byggt fÃ¶r lÃ¥g trÃ¶skel och lugn reflektion i text. Det Ã¤r ett digitalt stÃ¶d fÃ¶r att bÃ¶rja formulera dig, inte en ersÃ¤ttning fÃ¶r vÃ¥rd eller akut hjÃ¤lp.'
+				]
+			}
+		],
+		resourceListTitle: 'Du kan ocksÃ¥ fortsÃ¤tta hÃ¤r',
+		resourceListItems: [
+			{ href: '/prata-anonymt-online', label: 'Prata anonymt online', description: 'om du vill lÃ¤sa mer om hur anonymt samtalsstÃ¶d fungerar.' },
+			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstÃ¶d online', description: 'om du vill fÃ¶rstÃ¥ varfÃ¶r lÃ¥g trÃ¶skel kan gÃ¶ra det lÃ¤ttare att bÃ¶rja.' },
+			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med nÃ¥gon', description: 'om du vill fÃ¥ en tydligare bild av hur sjÃ¤lva samtalet brukar gÃ¥ till.' },
+			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva vidare Ã¶ver tid nÃ¤r du kÃ¤nner dig redo.' }
+		],
+		nextStepTitle: 'NÃ¤sta steg i din takt',
+		nextStepParagraphs: [
+			'Om det kÃ¤nns lÃ¤ttare att bÃ¶rja direkt kan du gÃ¥ vidare till skrivytan nu. Du kan ocksÃ¥ lÃ¤sa mer fÃ¶rst och komma tillbaka nÃ¤r du vill.',
+			'Vid akut fara ska du ringa 112. FÃ¶r vÃ¥rdrÃ¥d finns 1177 och fÃ¶r vidare stÃ¶d finns stodlinjer.se.'
+		],
+		nextStepLinks: [
+			{ href: '/skriv', label: 'BÃ¶rja skriva direkt' },
+			{ href: '/chat', label: 'Ã–ppna chatten' },
+			{ href: '/om-mittpsyke', label: 'LÃ¤s om MittPsyke' }
+		],
+		faq: [
+			{
+				question: 'MÃ¥ste jag skapa konto fÃ¶r att bÃ¶rja?',
+				answer: 'Nej. Du kan bÃ¶rja skriva direkt utan att registrera dig eller uppge nÃ¥gra uppgifter.'
+			},
+			{
+				question: 'Vad kan jag skriva om?',
+				answer: 'Du kan skriva om Ã¥ngest, stress, nedstÃ¤mdhet eller nÃ¥got annat som kÃ¤nns tungt och svÃ¥rt att bÃ¤ra sjÃ¤lv.'
+			},
+			{
+				question: 'Ã„r detta samma sak som vÃ¥rd?',
+				answer: 'Nej. MittPsyke Ã¤r ett AI-baserat samtalsstÃ¶d fÃ¶r reflektion och nÃ¤sta steg, inte vÃ¥rd, diagnos eller akut hjÃ¤lp.'
+			}
+		],
+		updatedDate,
+		sources: [
+			{ label: 'Psykisk hÃƒÂ¤lsa Ã¢â‚¬â€œ 1177 VÃƒÂ¥rdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Psykisk hÃƒÂ¤lsa och suicidprevention Ã¢â‚¬â€œ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hÃƒÂ¤lsa Ã¢â‚¬â€œ FolkhÃƒÂ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		]
+	},
+	'anonym-chatt': {
+		title: 'Chatta anonymt om din psykiska hÃ¤lsa | LÃ¥g trÃ¶skel online | MittPsyke',
+		description:
+			'Chatta anonymt om din psykiska hÃ¤lsa pÃ¥ svenska. LÃ¤s hur anonym chatt fungerar, vad du kan ta upp, vad AI-stÃ¶d kan hjÃ¤lpa med och nÃ¤r du bÃ¶r sÃ¶ka mer hjÃ¤lp.',
+		canonical: 'https://www.mittpsyke.se/anonym-chatt',
+		ogTitle: 'Chatta anonymt om din psykiska hÃ¤lsa | MittPsyke',
+		ogDescription:
+			'En lÃ¥gtrÃ¶skelsida om anonym chatt fÃ¶r psykisk hÃ¤lsa, med FAQ och tydliga nÃ¤sta steg.',
+		h1: 'Chatta anonymt om din psykiska hÃ¤lsa',
+		lead:
+			'Att bÃ¶rja prata om sitt mÃ¥ende kan vara svÃ¥rt, sÃ¤rskilt nÃ¤r man inte riktigt vet vad man kÃ¤nner eller hur mycket man vill sÃ¤ga. En anonym chatt kan dÃ¥ vara ett fÃ¶rsta steg som kÃ¤nns mer hanterbart. Du kan bÃ¶rja i text, i din egen takt, utan att fÃ¶rst behÃ¶va boka tid eller formulera en hel livsberÃ¤ttelse.',
+		primaryCta: { href: '/chat', label: 'Starta anonym chatt' },
+		secondaryCta: { href: '/prata-anonymt-online', label: 'LÃ¤s mer om att prata anonymt' },
+		sections: [
+			{
+				title: 'NÃ¤r anonym chatt kan vara en bra bÃ¶rjan',
+				paragraphs: [
+					'FÃ¶r mÃ¥nga Ã¤r det svÃ¥raste inte att prata, utan att bÃ¶rja. Du kanske oroar dig fÃ¶r att bli missfÃ¶rstÃ¥dd, kÃ¤nner skam Ã¶ver hur du mÃ¥r eller Ã¤r fÃ¶r trÃ¶tt fÃ¶r att ta dig igenom Ã¤nnu en kontaktvÃ¤g som krÃ¤ver energi. DÃ¥ kan anonym chatt vara ett mer realistiskt fÃ¶rsta steg. Du behÃ¶ver inte ha alla svar, inte veta exakt om det handlar om Ã¥ngest, stress eller nedstÃ¤mdhet, och inte kÃ¤nna dig â€œtillrÃ¤ckligt dÃ¥ligâ€ fÃ¶r att fÃ¥ ta plats. Det rÃ¤cker att nÃ¥got kÃ¤nns tungt nog fÃ¶r att du ska vilja sÃ¤tta ord pÃ¥ det.'
+				]
+			},
+			{
+				title: 'Vad du kan ta upp i en anonym chatt om psykisk hÃ¤lsa',
+				paragraphs: [
+					'Du kan prata om mycket mer Ã¤n tydliga diagnoser eller stora kriser. MÃ¥nga anvÃ¤nder anonym chatt nÃ¤r de kÃ¤nner oro som aldrig riktigt slÃ¤pper, stark stress, tomhet, ensamhet, relationsproblem eller en lÃ¥g kÃ¤nsla i kroppen som Ã¤r svÃ¥r att beskriva. Du kan ocksÃ¥ skriva om sÃ¶mn, sjÃ¤lvkritik, Ã¶verbelastning eller att du bara vill fÃ¥ ur dig sÃ¥dant du inte orkar bÃ¤ra sjÃ¤lv just nu. Om orden inte kommer gÃ¥r det bra att bÃ¶rja med en enda mening om hur dagen kÃ¤nns. Samtalet kan hjÃ¤lpa dig vidare dÃ¤rifrÃ¥n.'
+				]
+			},
+			{
+				title: 'Hur AI-stÃ¶d kan hjÃ¤lpa och var grÃ¤nsen gÃ¥r',
+				paragraphs: [
+					'AI-stÃ¶d kan hjÃ¤lpa genom att spegla det du skriver, stÃ¤lla lugna frÃ¥gor, hjÃ¤lpa dig sortera tankar och fÃ¶reslÃ¥ ett nÃ¤sta steg som kÃ¤nns mÃ¶jligt. Det kan ocksÃ¥ vara ett sÃ¤tt att kÃ¤nna mindre ensamhet i stunden nÃ¤r du behÃ¶ver formulera nÃ¥got svÃ¥rt. Men AI Ã¤r inte vÃ¥rd, terapi eller akut hjÃ¤lp. Det gÃ¶r ingen medicinsk bedÃ¶mning och kan inte ersÃ¤tta professionellt ansvar. DÃ¤rfÃ¶r fungerar anonym chatt bÃ¤st som en fÃ¶rsta ingÃ¥ng eller ett komplement, sÃ¤rskilt nÃ¤r du vill bÃ¶rja enkelt men fortfarande behÃ¶ver vara uppmÃ¤rksam pÃ¥ om mer hjÃ¤lp behÃ¶vs.'
 				]
 			}
 		],
 		resourceListTitle: 'Sidor som passar bra tillsammans med anonym chatt',
 		resourceListItems: [
-			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill läsa mer om hur själva samtalet brukar gå till.' },
-			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'för en bredare bild av varför låg tröskel kan göra stor skillnad.' },
-			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva vidare efter chatten och få mer kontinuitet.' },
-			{ href: '/guider', label: 'Guider', description: 'om du vill förstå mer om det du känner efter att du har börjat sätta ord på det.' }
+			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med nÃ¥gon', description: 'om du vill lÃ¤sa mer om hur sjÃ¤lva samtalet brukar gÃ¥ till.' },
+			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstÃ¶d online', description: 'fÃ¶r en bredare bild av varfÃ¶r lÃ¥g trÃ¶skel kan gÃ¶ra stor skillnad.' },
+			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva vidare efter chatten och fÃ¥ mer kontinuitet.' },
+			{ href: '/guider', label: 'Guider', description: 'om du vill fÃ¶rstÃ¥ mer om det du kÃ¤nner efter att du har bÃ¶rjat sÃ¤tta ord pÃ¥ det.' }
 		],
-		nextStepTitle: 'Om du vill fortsätta efter första samtalet',
+		nextStepTitle: 'Om du vill fortsÃ¤tta efter fÃ¶rsta samtalet',
 		nextStepParagraphs: [
-			'För vissa räcker ett första samtal för att få mer luft. För andra blir det tydligt att man behöver fortsätta följa sitt mående i dagboken, prova en övning eller ta kontakt med vården. Det viktiga är att du inte behöver bestämma allt från början. Ett första steg får just vara ett första steg.',
-			'Vid vårdråd kan du kontakta 1177. Vid akut fara eller om du inte kan hålla dig själv eller någon annan säker ska du ringa 112 direkt.'
+			'FÃ¶r vissa rÃ¤cker ett fÃ¶rsta samtal fÃ¶r att fÃ¥ mer luft. FÃ¶r andra blir det tydligt att man behÃ¶ver fortsÃ¤tta fÃ¶lja sitt mÃ¥ende i dagboken, prova en Ã¶vning eller ta kontakt med vÃ¥rden. Det viktiga Ã¤r att du inte behÃ¶ver bestÃ¤mma allt frÃ¥n bÃ¶rjan. Ett fÃ¶rsta steg fÃ¥r just vara ett fÃ¶rsta steg.',
+			'Vid vÃ¥rdrÃ¥d kan du kontakta 1177. Vid akut fara eller om du inte kan hÃ¥lla dig sjÃ¤lv eller nÃ¥gon annan sÃ¤ker ska du ringa 112 direkt.'
 		],
 		nextStepLinks: [
-			{ href: '/chat', label: 'Öppna chatten' },
+			{ href: '/chat', label: 'Ã–ppna chatten' },
 			{ href: '/dagbok', label: 'Skriv vidare i dagboken' },
-			{ href: '/guider', label: 'Läs vidare i guider' }
+			{ href: '/guider', label: 'LÃ¤s vidare i guider' }
 		],
 		faq: [
 			{
-				question: 'Måste jag veta exakt vad jag mår dåligt av för att börja chatta?',
-				answer: 'Nej. Du kan börja med en känsla, en situation eller bara att något känns fel. Chatten kan hjälpa dig att sortera vidare.'
+				question: 'MÃ¥ste jag veta exakt vad jag mÃ¥r dÃ¥ligt av fÃ¶r att bÃ¶rja chatta?',
+				answer: 'Nej. Du kan bÃ¶rja med en kÃ¤nsla, en situation eller bara att nÃ¥got kÃ¤nns fel. Chatten kan hjÃ¤lpa dig att sortera vidare.'
 			},
 			{
-				question: 'Är anonym chatt samma sak som terapi eller vård?',
-				answer: 'Nej. Det är ett lågtröskelstöd för reflektion och nästa steg, inte diagnos, behandling eller akut vård.'
+				question: 'Ã„r anonym chatt samma sak som terapi eller vÃ¥rd?',
+				answer: 'Nej. Det Ã¤r ett lÃ¥gtrÃ¶skelstÃ¶d fÃ¶r reflektion och nÃ¤sta steg, inte diagnos, behandling eller akut vÃ¥rd.'
 			},
 			{
-				question: 'När ska jag söka mer hjälp än en anonym chatt?',
-				answer: 'Om du är i akut fara, har svårt att hålla dig säker eller behöver medicinsk bedömning ska du söka professionell hjälp direkt via 112 eller 1177 beroende på läget.'
+				question: 'NÃ¤r ska jag sÃ¶ka mer hjÃ¤lp Ã¤n en anonym chatt?',
+				answer: 'Om du Ã¤r i akut fara, har svÃ¥rt att hÃ¥lla dig sÃ¤ker eller behÃ¶ver medicinsk bedÃ¶mning ska du sÃ¶ka professionell hjÃ¤lp direkt via 112 eller 1177 beroende pÃ¥ lÃ¤get.'
 			}
 		],
 		updatedDate,
 		sources: [
-			{ label: 'Psykisk hälsa – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+			{ label: 'Psykisk hÃ¤lsa â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
 		],
 		faqSchema: true
 	}
@@ -925,3 +925,4 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 export const seoSupportPagePaths = Object.values(seoSupportPages).map((page) =>
 	page.canonical.replace('https://www.mittpsyke.se', '')
 );
+
