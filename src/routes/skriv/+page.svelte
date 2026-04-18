@@ -3,59 +3,24 @@
 	import { onMount } from 'svelte';
 	import {
 		trackWritePageView,
-		trackWriteStarted,
 		trackContinueFromWrite,
-		trackTempEntrySaved,
 		trackRegisterCtaClicked,
 		trackContinueAnonymousClicked
 	} from '$lib/analytics';
 	import { goto } from '$app/navigation';
 
-	let note = $state('');
-	let saving = $state(false);
-	let error = $state('');
-	let hasTrackedWriteStart = $state(false);
-
 	onMount(() => {
 		// Track write page view
 		trackWritePageView();
-
-		// Load any saved draft
-		if (typeof window !== 'undefined') {
-			const draft = localStorage.getItem('mittpsyke:draft');
-			if (draft) {
-				note = draft;
-			}
-		}
 	});
 
-	function handleInput() {
-		if (hasTrackedWriteStart) return;
-		hasTrackedWriteStart = true;
-		trackWriteStarted();
-	}
-
 	async function handleContinueAnonymous() {
-		// Save draft
-		if (note.trim() && typeof window !== 'undefined') {
-			localStorage.setItem('mittpsyke_temp_entry', note.trim());
-			trackTempEntrySaved();
-		}
-
 		trackContinueFromWrite();
 		trackContinueAnonymousClicked();
 		goto('/chat');
 	}
 
 	async function handleSaveAccount() {
-		if (!note.trim()) return;
-
-		// Save draft before redirect
-		if (typeof window !== 'undefined') {
-			localStorage.setItem('mittpsyke_temp_entry', note.trim());
-			trackTempEntrySaved();
-		}
-
 		trackRegisterCtaClicked();
 		goto('/register');
 	}
@@ -77,21 +42,8 @@
 <main class="container py-12">
 	<h1 class="text-2xl font-bold mb-4">Börja skriva anonymt i din egen takt</h1>
 	<p class="mb-6 opacity-70">
-		Börja med några ord om det som känns tungt. Du kan fortsätta utan konto och få stöd i text direkt.
+		Du kan börja direkt utan konto och få stöd i text i lugn takt.
 	</p>
-
-	<textarea
-		bind:value={note}
-		onchange={handleInput}
-		onkeydown={handleInput}
-		rows={10}
-		placeholder="Skriv några ord om hur du har det just nu..."
-		class="w-full p-4 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 mb-4"
-	></textarea>
-
-	{#if error}
-		<p class="text-red-600 text-sm mb-4">{error}</p>
-	{/if}
 
 	<div class="flex gap-3">
 		<button
@@ -104,14 +56,16 @@
 		<button
 			type="button"
 			onclick={handleSaveAccount}
-			disabled={!note.trim() || saving}
-			class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
+			class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
 		>
-			{saving ? 'Sparar...' : 'Skapa konto och spara'}
+			Skapa konto och spara
 		</button>
 	</div>
 
 	<p class="mt-4 text-sm opacity-70">
 		Du kan börja utan konto. MittPsyke är stöd i text, inte vård eller akuthjälp.
+	</p>
+	<p class="mt-2 text-sm opacity-70">
+		Vid akut fara: 112. För vårdråd: 1177. För vidare stöd: Stödlinjer.se.
 	</p>
 </main>
