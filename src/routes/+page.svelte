@@ -84,6 +84,27 @@
 		}
 	];
 
+	const usageModes = [
+		{
+			title: 'Anonymt utan konto',
+			points: [
+				'Börja skriva direkt',
+				'Låg tröskel att testa',
+				'Passar när du bara vill få ur dig det som känns tungt',
+				'Ingen registrering för att komma igång'
+			]
+		},
+		{
+			title: 'Med konto',
+			points: [
+				'Spara historik och fortsätt senare',
+				'Använd dagbok och uppföljning',
+				'Få bättre överblick över ditt mående över tid',
+				'Samla det som hjälper dig på ett ställe'
+			]
+		}
+	];
+
 	const features = [
 		{
 			title: 'Skrivstöd i text',
@@ -216,6 +237,27 @@
 					</li>
 				{/each}
 			</ol>
+		</div>
+	</section>
+
+	<section class="usage-compare" aria-labelledby="usage-compare-title">
+		<div class="cards-narrow usage-compare-inner">
+			<h2 id="usage-compare-title">Börja anonymt — fortsätt med konto om du vill</h2>
+			<p class="usage-compare-intro">
+				Du kan börja direkt utan konto. Om du vill spara, följa ditt mående och komma tillbaka över tid kan du skapa konto senare.
+			</p>
+			<div class="usage-compare-grid">
+				{#each usageModes as mode}
+					<article class="usage-compare-card">
+						<h3>{mode.title}</h3>
+						<ul>
+							{#each mode.points as point}
+								<li>{point}</li>
+							{/each}
+						</ul>
+					</article>
+				{/each}
+			</div>
 		</div>
 	</section>
 
@@ -658,6 +700,76 @@
 		font-size: 0.94rem;
 		line-height: 1.62;
 		color: rgba(220, 225, 235, 0.74);
+	}
+
+	.usage-compare {
+		padding: clamp(2.3rem, 6vw, 3.6rem) 1.25rem;
+		background: #111a28;
+		color: #e0e4ea;
+	}
+
+	.usage-compare-inner h2 {
+		margin: 0;
+		color: #eef1f6;
+		font-size: clamp(1.45rem, 2.9vw, 2rem);
+	}
+
+	.usage-compare-intro {
+		margin: 0.72rem 0 0;
+		max-width: 68ch;
+		font-size: 0.96rem;
+		line-height: 1.64;
+		color: rgba(220, 225, 235, 0.78);
+	}
+
+	.usage-compare-grid {
+		margin-top: 1rem;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.9rem;
+	}
+
+	.usage-compare-card {
+		padding: 0.95rem 1rem;
+		border-radius: var(--radius-card);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+		border: 1px solid rgba(148, 163, 184, 0.12);
+	}
+
+	.usage-compare-card h3 {
+		margin: 0;
+		font-size: 1.02rem;
+		line-height: 1.3;
+		color: #eef1f6;
+	}
+
+	.usage-compare-card ul {
+		margin: 0.65rem 0 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		gap: 0.42rem;
+	}
+
+	.usage-compare-card li {
+		position: relative;
+		padding-left: 0.95rem;
+		font-size: 0.93rem;
+		line-height: 1.56;
+		color: rgba(220, 225, 235, 0.74);
+	}
+
+	.usage-compare-card li::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0.6em;
+		width: 0.35rem;
+		height: 0.35rem;
+		border-radius: 999px;
+		background: rgba(125, 180, 232, 0.86);
 	}
 
 	.first-step {
@@ -1186,6 +1298,10 @@
 	}
 
 	@media (min-width: 700px) {
+		.usage-compare-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
 		.quick-flow-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
@@ -1241,6 +1357,7 @@
 	:global(.dark) .first-step { background: #0d1520; }
 	:global(.dark) .early-trust { background: #0e1826; }
 	:global(.dark) .quick-flow { background: #0d1520; }
+	:global(.dark) .usage-compare { background: #0b1320; }
 	:global(.dark) .entry-paths { background: #0b1320; }
 	:global(.dark) .how-it-works { background: #0e1826; }
 	:global(.dark) .features-section { background: #0b1320; }
