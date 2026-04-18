@@ -60,7 +60,7 @@
 	const trustHighlights = [
 		'Börja skriva anonymt utan konto',
 		'MittPsyke är stöd för reflektion, inte vård eller akuthjälp',
-		'Läs hur data hanteras innan du delar något',
+		'Se hur data hanteras innan du börjar',
 		'Med konto finns möjlighet till export och radering',
 		'Vid akut läge hänvisas du vidare till rätt hjälp'
 	];
@@ -1109,7 +1109,7 @@
 
 	@media (min-width: 1040px) {
 		.early-trust-grid {
-			grid-template-columns: repeat(5, minmax(0, 1fr));
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 			gap: 0.8rem;
 		}
 
