@@ -1021,5 +1021,20 @@
 		outline: none;
 	}
 
+	@media (max-width: 739px) {
+		.profile-panel {
+			position: fixed;
+			left: 0.75rem;
+			right: 0.75rem;
+			top: 4.8rem;
+			width: auto;
+			max-width: none;
+		}
+
+		.profile-panel-stats {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
 </style>
 
