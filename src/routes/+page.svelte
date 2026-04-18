@@ -255,35 +255,35 @@
 		</div>
 	</section>
 
-	<!-- 4. Så fungerar det -->
+	<!-- 4. Fördjupa när du vill -->
 	<section id="sa-fungerar-det-fordjupning" class="how-it-works" aria-labelledby="how-it-works-title">
 		<div class="cards-narrow how-inner">
-			<p class="how-eyebrow">Så fungerar det</p>
-			<h2 id="how-it-works-title">Fyra steg från första tanke till bättre överblick</h2>
+			<p class="how-eyebrow">Fortsätt i din takt</p>
+			<h2 id="how-it-works-title">När du vill gå vidare finns fler sätt att få stöd</h2>
 			<div class="how-grid">
 				<article class="how-card">
 					<span class="how-step">01</span>
-					<h3>Skriv av dig anonymt</h3>
-					<p>Börja där du är, med egna ord.</p>
-					<a class="how-card-cta" href="/skriv">Börja skriva</a>
+					<h3>Fördjupa i dagboken</h3>
+					<p>Skriv mer sammanhängande och se vad som återkommer över tid.</p>
+					<a class="how-card-cta" href="/dagbok">Öppna dagboken</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">02</span>
-					<h3>Få lugnt stöd direkt</h3>
-					<p>Du får svar, följdfrågor och hjälp att sortera tankarna.</p>
-					<a class="how-card-cta" href="/skriv">Prova i text</a>
+					<h3>Läs guider för mer förståelse</h3>
+					<p>Få tydliga förklaringar och råd om stress, ångest, sömn och mående.</p>
+					<a class="how-card-cta" href="/guider">Läs guider</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">03</span>
-					<h3>Spara om du vill</h3>
-					<p>Fortsätt senare om du vill komma tillbaka.</p>
-					<a class="how-card-cta" href="/register">Skapa konto gratis</a>
+					<h3>Prova övningar när det behövs</h3>
+					<p>Ta ett litet steg här och nu med konkreta övningar.</p>
+					<a class="how-card-cta" href="/ovningar">Prova en övning</a>
 				</article>
 				<article class="how-card">
 					<span class="how-step">04</span>
 					<h3>Följ ditt mående över tid</h3>
-					<p>Se mönster med dagbok, reflektion och uppföljning.</p>
-					<a class="how-card-cta" href="/dagbok">Öppna dagboken</a>
+					<p>Med konto kan du spara historik och få mer kontinuitet.</p>
+					<a class="how-card-cta" href="/register">Skapa konto gratis</a>
 				</article>
 			</div>
 		</div>
