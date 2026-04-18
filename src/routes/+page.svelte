@@ -57,6 +57,14 @@
 		}
 	];
 
+	const trustHighlights = [
+		'Börja skriva anonymt utan konto',
+		'MittPsyke är stöd för reflektion, inte vård eller akuthjälp',
+		'Läs hur data hanteras innan du delar något',
+		'Med konto finns möjlighet till export och radering',
+		'Vid akut läge hänvisas du vidare till rätt hjälp'
+	];
+
 	const features = [
 		{
 			title: 'Skrivstöd i text',
@@ -156,6 +164,24 @@
 	</section>
 
 	<!-- 2. Börja där det känns lättast -->
+	<section class="early-trust" aria-labelledby="early-trust-title">
+		<div class="cards-narrow early-trust-inner">
+			<p class="early-trust-eyebrow">Trygg start</p>
+			<h2 id="early-trust-title">Känn dig trygg innan du börjar</h2>
+			<ul class="early-trust-grid">
+				{#each trustHighlights as item}
+					<li class="early-trust-item">{item}</li>
+				{/each}
+			</ul>
+			<p class="early-trust-note">
+				Vid akut fara: <a href="tel:112">112</a>. För vårdråd:
+				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
+				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
+			</p>
+			<p class="early-trust-link"><a href="/integritet">Läs om hur vi hanterar integritet och data</a></p>
+		</div>
+	</section>
+
 	<section class="entry-paths" aria-labelledby="entry-paths-title">
 		<div class="cards-narrow entry-inner">
 			<h2 id="entry-paths-title">Börja där det känns lättast</h2>
@@ -471,6 +497,70 @@
 	}
 
 	/* ── Sektion 2: Första steget ── */
+	.early-trust {
+		padding: clamp(2.2rem, 6vw, 3.4rem) 1.25rem;
+		background: #162236;
+		color: #e0e4ea;
+	}
+
+	.early-trust-inner h2 {
+		margin: 0;
+		color: #eef1f6;
+		font-size: clamp(1.45rem, 2.8vw, 1.95rem);
+	}
+
+	.early-trust-eyebrow {
+		margin: 0 0 0.45rem;
+		font-family: var(--font-heading);
+		font-size: 0.82rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: rgba(160, 185, 220, 0.9);
+	}
+
+	.early-trust-grid {
+		margin: 1rem 0 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.75rem;
+	}
+
+	.early-trust-item {
+		margin: 0;
+		padding: 0.75rem 0.85rem;
+		border-radius: var(--radius-card);
+		border: 1px solid rgba(148, 163, 184, 0.12);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.1), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+		color: rgba(220, 225, 235, 0.9);
+		font-size: 0.94rem;
+		line-height: 1.55;
+	}
+
+	.early-trust-note {
+		margin: 0.9rem 0 0;
+		max-width: 72ch;
+		font-size: 0.9rem;
+		line-height: 1.6;
+		color: rgba(220, 225, 235, 0.78);
+	}
+
+	.early-trust-note a,
+	.early-trust-link a {
+		color: #d7e7ff;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.early-trust-link {
+		margin: 0.55rem 0 0;
+		font-size: 0.9rem;
+	}
+
 	.first-step {
 		padding: clamp(2.5rem, 7vw, 4rem) 1.25rem;
 		background: #141e2e;
@@ -997,6 +1087,10 @@
 	}
 
 	@media (min-width: 700px) {
+		.early-trust-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
 		.entry-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 1.05rem;
@@ -1014,6 +1108,11 @@
 	}
 
 	@media (min-width: 1040px) {
+		.early-trust-grid {
+			grid-template-columns: repeat(5, minmax(0, 1fr));
+			gap: 0.8rem;
+		}
+
 		.support-points {
 			grid-template-columns: repeat(4, minmax(0, 1fr));
 		}
@@ -1037,6 +1136,7 @@
 
 	/* ── Dark mode — base is already dark, just deepen slightly ── */
 	:global(.dark) .first-step { background: #0d1520; }
+	:global(.dark) .early-trust { background: #0e1826; }
 	:global(.dark) .entry-paths { background: #0b1320; }
 	:global(.dark) .how-it-works { background: #0e1826; }
 	:global(.dark) .features-section { background: #0b1320; }
