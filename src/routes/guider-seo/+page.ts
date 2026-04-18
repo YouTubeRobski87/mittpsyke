@@ -1,5 +1,5 @@
-import { pillars } from '$lib/seo-kit/content';
+import { redirect } from '@sveltejs/kit';
 
 export function load() {
-	return { pillars };
+	throw redirect(308, '/guider');
 }
