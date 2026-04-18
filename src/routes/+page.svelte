@@ -15,26 +15,26 @@
 			title: 'Börja skriva',
 			description: 'Skriv av dig anonymt och få lugnt stöd direkt.',
 			href: '/skriv',
-			cta: 'Börja skriva anonymt',
+			cta: 'Skriv nu',
 			featured: true
 		},
 		{
-			title: 'Läs guider',
-			description: 'Få hjälp att förstå känslor, stress, ångest och återhämtning.',
-			href: '/guider',
-			cta: 'Läs guider'
+			title: 'Följ ditt mående',
+			description: 'Spara och följ mönster över tid.',
+			href: '/register',
+			cta: 'Skapa konto och spara'
 		},
 		{
 			title: 'Prova en övning',
-			description: 'Ta ett litet steg här och nu.',
+			description: 'Ta ett konkret steg här och nu.',
 			href: '/ovningar',
-			cta: 'Prova en övning'
+			cta: 'Starta en övning'
 		},
 		{
-			title: 'Följ ditt mående',
-			description: 'Skriv dagbok och se mönster över tid.',
-			href: '/register',
-			cta: 'Skapa konto gratis'
+			title: 'Läs guider',
+			description: 'Få mer förståelse i din egen takt.',
+			href: '/guider',
+			cta: 'Utforska guider'
 		}
 	];
 
@@ -265,7 +265,7 @@
 		<div class="cards-narrow entry-inner">
 			<h2 id="entry-paths-title">Börja där det känns lättast</h2>
 			<p class="entry-intro">
-				Du behöver inte veta exakt vad du behöver. Börja med det som känns enklast just nu.
+				Välj det som hjälper mest just nu.
 			</p>
 			<div class="entry-grid">
 				{#each entryPaths as path}
