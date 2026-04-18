@@ -19,6 +19,16 @@
 		MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen. Här förklarar vi i enkel svenska
 		vilka uppgifter som kan behandlas, varför de används och vilka val du har.
 	</p>
+	<p class="opacity-70 leading-relaxed text-sm mb-4">
+		Snabbt svar: du kan börja anonymt utan konto. Med konto kan du spara historik, exportera data och radera konto när du vill.
+	</p>
+	<p class="opacity-70 leading-relaxed text-sm">
+		Hoppa direkt till:
+		<a href="#snabb-oversikt" class="underline hover:no-underline">snabb överblick</a>,
+		<a href="#anonymt-lage" class="underline hover:no-underline">anonymt läge</a>,
+		<a href="#med-konto" class="underline hover:no-underline">med konto</a>,
+		<a href="#sa-gor-du" class="underline hover:no-underline">export och radering</a>.
+	</p>
 
 	<!-- PERSONUPPGIFTSANSVARIG -->
 	<section class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 sm:p-5 mt-6" aria-label="Personuppgiftsansvarig">
@@ -32,11 +42,11 @@
 	</section>
 
 	<!-- SNABB ÖVERBLICK -->
-	<section class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 sm:p-5 mt-6" aria-label="Snabb överblick">
+	<section id="snabb-oversikt" class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 sm:p-5 mt-6" aria-label="Snabb överblick">
 		<h2 class="text-lg font-semibold mt-0 mb-2">Snabb överblick</h2>
 		<ul class="opacity-80 leading-relaxed list-disc pl-6 space-y-2.5">
 			<li><strong>Är detta vård?</strong> Nej. MittPsyke är ett samtalsstöd, inte vård eller behandling.</li>
-			<li><strong>Kan man använda tjänsten anonymt?</strong> Ja. Du kan chatta utan att skapa konto — inga personuppgifter sparas då.</li>
+			<li><strong>Kan man använda tjänsten anonymt?</strong> Ja. Du kan chatta utan konto.</li>
 			<li><strong>Vad sparas med konto?</strong> E-post, dagbok, chatthistorik och inställningar — du väljer själv vad du skriver.</li>
 			<li><strong>Kan jag radera allt?</strong> Ja. Du kan radera ditt konto och all data via inställningar eller genom att kontakta oss.</li>
 			<li><strong>Kan jag exportera min data?</strong> Ja. Kontakta oss så får du en kopia inom 30 dagar.</li>
@@ -45,20 +55,29 @@
 	</section>
 
 	<!-- ANONYMT LÄGE -->
-	<section class="rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/30 p-4 sm:p-5 mt-6 mb-6" aria-label="Anonymt läge">
-		<h2 class="text-lg font-semibold mt-0 mb-2">🔒 Anonymt läge — så funkar det</h2>
+	<section id="anonymt-lage" class="rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/30 p-4 sm:p-5 mt-6 mb-6" aria-label="Anonymt läge">
+		<h2 class="text-lg font-semibold mt-0 mb-2">Anonymt läge — så fungerar det</h2>
 		<p class="opacity-80 leading-relaxed text-sm mb-3">
 			Du kan använda MittPsyke utan att skapa konto. Då gäller:
 		</p>
 		<ul class="opacity-80 leading-relaxed text-sm list-disc pl-6 space-y-2">
-			<li><strong>Ingen profil skapas</strong> — vi vet inte vem du är.</li>
-			<li><strong>Inget sparas</strong> — chattinnehåll finns bara under din session och försvinner när du stänger sidan.</li>
+			<li><strong>Ingen profil skapas</strong> — du använder tjänsten utan konto.</li>
+			<li><strong>Ingen historik i konto</strong> — om du inte skapar konto finns ingen sparad historik kopplad till ett konto i MittPsyke.</li>
 			<li><strong>Ingen e-post krävs</strong> — du behöver inte registrera dig.</li>
 			<li><strong>Inga kakor utöver funktionella</strong> — om du inte godkänner analytics i cookie-bannern.</li>
 		</ul>
 		<p class="opacity-70 leading-relaxed text-sm mt-3">
 			Tips: Om du vill använda dagbok, se historik eller spara framsteg behöver du skapa ett konto.
 		</p>
+	</section>
+
+	<section id="med-konto" class="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-950/30 p-4 sm:p-5 mt-2 mb-6" aria-label="Med konto">
+		<h2 class="text-lg font-semibold mt-0 mb-2">Med konto — vad du får</h2>
+		<ul class="opacity-80 leading-relaxed text-sm list-disc pl-6 space-y-2">
+			<li><strong>Spara och fortsätt</strong> — behåll dagbok, chatt och inställningar över tid.</li>
+			<li><strong>Följ ditt mående</strong> — se mönster och kom tillbaka där du var.</li>
+			<li><strong>Export och radering</strong> — du kan begära en kopia av din data eller radera konto och innehåll.</li>
+		</ul>
 	</section>
 
 	<!-- NÄR SAMTYCKE KRÄVS -->
@@ -249,8 +268,8 @@
 	</ul>
 
 	<!-- SÅ HÄR GÖR DU -->
-	<section class="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-950/30 p-4 sm:p-5 mt-4 mb-6" aria-label="Så gör du">
-		<h3 class="text-base font-semibold mt-0 mb-2">📋 Så här begär du radering eller export</h3>
+	<section id="sa-gor-du" class="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-950/30 p-4 sm:p-5 mt-4 mb-6" aria-label="Så gör du">
+		<h3 class="text-base font-semibold mt-0 mb-2">Så här begär du radering eller export</h3>
 		<ol class="opacity-80 leading-relaxed text-sm list-decimal pl-6 space-y-2">
 			<li><strong>Via inställningar</strong> — logga in och gå till kontoinställningar för att radera ditt konto direkt.</li>
 				<li><strong>Via e-post</strong> — skicka ett mejl till <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a> och ange vad du vill (radering, export, eller båda).</li>
@@ -272,8 +291,8 @@
 		Har du frågor om hur vi hanterar dina uppgifter? Kontakta oss:
 	</p>
 	<ul class="opacity-80 leading-relaxed mb-3 list-none space-y-1.5">
-			<li>📧 <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a></li>
-		<li>🏢 MittPsyke, Org.nr: 198712284895</li>
+			<li><a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a></li>
+		<li>MittPsyke, Org.nr: 198712284895</li>
 	</ul>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Vi strävar efter att svara inom 30 dagar.
