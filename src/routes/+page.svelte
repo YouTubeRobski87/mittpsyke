@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
@@ -12,75 +12,75 @@
 
 	const entryPaths = [
 		{
-			title: 'Börja skriva',
-			description: 'Skriv av dig anonymt och få lugnt stöd direkt.',
+			title: 'BÃ¶rja skriva',
+			description: 'Skriv av dig anonymt och fÃ¥ lugnt stÃ¶d direkt.',
 			href: '/skriv',
-			cta: 'Börja skriva nu',
+			cta: 'BÃ¶rja skriva nu',
 			featured: true
 		},
 		{
-			title: 'Följ ditt mående',
-			description: 'Spara och följ mönster över tid.',
+			title: 'FÃ¶lj ditt mÃ¥ende',
+			description: 'Spara och fÃ¶lj mÃ¶nster Ã¶ver tid.',
 			href: '/register',
-			cta: 'Skapa konto för att spara'
+			cta: 'Skapa konto fÃ¶r att spara'
 		},
 		{
-			title: 'Prova en övning',
-			description: 'Ta ett konkret steg här och nu.',
+			title: 'Prova en Ã¶vning',
+			description: 'Ta ett konkret steg hÃ¤r och nu.',
 			href: '/ovningar',
-			cta: 'Starta en övning'
+			cta: 'Starta en Ã¶vning'
 		},
 		{
-			title: 'Läs guider',
-			description: 'Få mer förståelse i din egen takt.',
+			title: 'LÃ¤s guider',
+			description: 'FÃ¥ mer fÃ¶rstÃ¥else i din egen takt.',
 			href: '/guider',
-			cta: 'Läs guider'
+			cta: 'LÃ¤s guider'
 		}
 	];
 
 	const supportPoints = [
 		{
-			label: 'Direkt stöd',
-			text: 'Du får lugna svar, hjälp att sätta ord på det du känner och små nästa steg.'
+			label: 'Direkt stÃ¶d',
+			text: 'Du fÃ¥r lugna svar, hjÃ¤lp att sÃ¤tta ord pÃ¥ det du kÃ¤nner och smÃ¥ nÃ¤sta steg.'
 		},
 		{
 			label: 'Helt anonymt',
-			text: 'Inget konto behövs. Ingen data kopplas till dig som person.'
+			text: 'Inget konto behÃ¶vs. Ingen data kopplas till dig som person.'
 		},
 		{
 			label: 'I din egen takt',
-			text: 'Skriv när du vill, så lite eller mycket du vill. Inget schema, inga krav.'
+			text: 'Skriv nÃ¤r du vill, sÃ¥ lite eller mycket du vill. Inget schema, inga krav.'
 		},
 		{
-			label: 'Inte vård',
-			text: 'Ett stöd för reflektion i vardagen — inte ersättning för professionell hjälp.'
+			label: 'Inte vÃ¥rd',
+			text: 'Ett stÃ¶d fÃ¶r reflektion i vardagen â€” inte ersÃ¤ttning fÃ¶r professionell hjÃ¤lp.'
 		}
 	];
 
 	const trustHighlights = [
-		'Börja skriva anonymt utan konto',
-		'MittPsyke är stöd för reflektion, inte vård eller akuthjälp',
-		'Se hur data hanteras innan du börjar',
-		'Med konto finns möjlighet till export och radering',
-		'Vid akut läge hänvisas du vidare till rätt hjälp'
+		'BÃ¶rja skriva anonymt utan konto',
+		'MittPsyke Ã¤r stÃ¶d fÃ¶r reflektion, inte vÃ¥rd eller akuthjÃ¤lp',
+		'Se hur data hanteras innan du bÃ¶rjar',
+		'Med konto finns mÃ¶jlighet till export och radering',
+		'Vid akut lÃ¤ge hÃ¤nvisas du vidare till rÃ¤tt hjÃ¤lp'
 	];
 
 	const quickFlowSteps = [
 		{
-			title: 'Börja skriva direkt',
-			text: 'Du kan skriva anonymt utan konto och komma igång i lugn takt.'
+			title: 'BÃ¶rja skriva direkt',
+			text: 'Du kan skriva anonymt utan konto och komma igÃ¥ng i lugn takt.'
 		},
 		{
-			title: 'Få stöd i text',
-			text: 'Sätt ord på det som känns svårt, rörigt eller tungt.'
+			title: 'FÃ¥ stÃ¶d i text',
+			text: 'SÃ¤tt ord pÃ¥ det som kÃ¤nns svÃ¥rt, rÃ¶rigt eller tungt.'
 		},
 		{
-			title: 'Spara om du vill fortsätta',
-			text: 'Med konto kan du spara historik, använda dagbok och följa ditt mående över tid.'
+			title: 'Spara om du vill fortsÃ¤tta',
+			text: 'Med konto kan du spara historik, anvÃ¤nda dagbok och fÃ¶lja ditt mÃ¥ende Ã¶ver tid.'
 		},
 		{
-			title: 'Använd det som hjälper mest',
-			text: 'Fortsätt med guider, övningar och verktyg när du vill ha mer struktur.'
+			title: 'AnvÃ¤nd det som hjÃ¤lper mest',
+			text: 'FortsÃ¤tt med guider, Ã¶vningar och verktyg nÃ¤r du vill ha mer struktur.'
 		}
 	];
 
@@ -88,42 +88,42 @@
 		{
 			title: 'Anonymt utan konto',
 			points: [
-				'Börja skriva direkt',
-				'Låg tröskel att testa',
-				'Passar när du bara vill få ur dig det som känns tungt',
-				'Ingen registrering för att komma igång'
+				'BÃ¶rja skriva direkt',
+				'LÃ¥g trÃ¶skel att testa',
+				'Passar nÃ¤r du bara vill fÃ¥ ur dig det som kÃ¤nns tungt',
+				'Ingen registrering fÃ¶r att komma igÃ¥ng'
 			]
 		},
 		{
 			title: 'Med konto',
 			points: [
-				'Spara historik och fortsätt senare',
-				'Använd dagbok och uppföljning',
-				'Få bättre överblick över ditt mående över tid',
-				'Samla det som hjälper dig på ett ställe'
+				'Spara historik och fortsÃ¤tt senare',
+				'AnvÃ¤nd dagbok och uppfÃ¶ljning',
+				'FÃ¥ bÃ¤ttre Ã¶verblick Ã¶ver ditt mÃ¥ende Ã¶ver tid',
+				'Samla det som hjÃ¤lper dig pÃ¥ ett stÃ¤lle'
 			]
 		}
 	];
 
 	const features = [
 		{
-			title: 'Skrivstöd i text',
-			description: 'Skriv av dig anonymt och få hjälp att sortera tankar, känslor och nästa steg.',
+			title: 'SkrivstÃ¶d i text',
+			description: 'Skriv av dig anonymt och fÃ¥ hjÃ¤lp att sortera tankar, kÃ¤nslor och nÃ¤sta steg.',
 			href: '/skriv'
 		},
 		{
 			title: 'Dagbok med reflektion',
-			description: 'Skriv om dagen, följ upp det som återkommer och bygg förståelse över tid.',
+			description: 'Skriv om dagen, fÃ¶lj upp det som Ã¥terkommer och bygg fÃ¶rstÃ¥else Ã¶ver tid.',
 			href: '/dagbok'
 		},
 		{
-			title: 'Humörspårning',
-			description: 'Följ psykiskt mående över tid och upptäck mönster som annars är lätta att missa.',
+			title: 'HumÃ¶rspÃ¥rning',
+			description: 'FÃ¶lj psykiskt mÃ¥ende Ã¶ver tid och upptÃ¤ck mÃ¶nster som annars Ã¤r lÃ¤tta att missa.',
 			href: '/humorsparning'
 		},
 		{
-			title: 'Guider och övningar',
-			description: 'Läs guider och prova övningar för stress, ångest, sömn och återhämtning.',
+			title: 'Guider och Ã¶vningar',
+			description: 'LÃ¤s guider och prova Ã¶vningar fÃ¶r stress, Ã¥ngest, sÃ¶mn och Ã¥terhÃ¤mtning.',
 			href: '/guider'
 		}
 	];
@@ -166,15 +166,15 @@
 <SEO canonical="https://www.mittpsyke.se/" />
 
 <svelte:head>
-	<title>MittPsyke – skriv av dig anonymt och få lugnt stöd direkt</title>
+	<title>MittPsyke â€“ skriv av dig anonymt och fÃ¥ lugnt stÃ¶d direkt</title>
 	<meta
 		name="description"
-		content="Skriv av dig anonymt och få lugnt stöd direkt. MittPsyke hjälper dig att förstå psykiskt mående med dagbok, övningar och guider i din egen takt."
+		content="Skriv av dig anonymt och fÃ¥ lugnt stÃ¶d direkt. MittPsyke hjÃ¤lper dig att fÃ¶rstÃ¥ psykiskt mÃ¥ende med dagbok, Ã¶vningar och guider i din egen takt."
 	/>
-	<meta property="og:title" content="MittPsyke – skriv av dig anonymt och få lugnt stöd direkt" />
+	<meta property="og:title" content="MittPsyke â€“ skriv av dig anonymt och fÃ¥ lugnt stÃ¶d direkt" />
 	<meta
 		property="og:description"
-		content="Skriv av dig anonymt och få lugnt stöd direkt. MittPsyke hjälper dig att förstå psykiskt mående med dagbok, övningar och guider i din egen takt."
+		content="Skriv av dig anonymt och fÃ¥ lugnt stÃ¶d direkt. MittPsyke hjÃ¤lper dig att fÃ¶rstÃ¥ psykiskt mÃ¥ende med dagbok, Ã¶vningar och guider i din egen takt."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
@@ -195,36 +195,40 @@
 		/>
 		<div class="hero-shell">
 			<div class="hero-content">
-				<p class="hero-eyebrow">Anonymt stöd i text</p>
-				<h1>Skriv av dig anonymt och få lugnt stöd direkt</h1>
-				<p>Sätt ord på det som känns svårt. Få ett lugnt svar, hjälp att sortera tankarna och små nästa steg — utan konto.</p>
+				<p class="hero-eyebrow">Anonymt stÃ¶d i text</p>
+				<h1>Skriv av dig anonymt och fÃ¥ lugnt stÃ¶d direkt</h1>
+				<p>SÃ¤tt ord pÃ¥ det som kÃ¤nns svÃ¥rt. FÃ¥ ett lugnt svar, hjÃ¤lp att sortera tankarna och smÃ¥ nÃ¤sta steg â€” utan konto.</p>
 				<div class="hero-actions">
-					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
+					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>BÃ¶rja skriva anonymt</a>
 					<a href="#sa-fungerar-det" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Se hur det fungerar</a>
 				</div>
-				<p class="hero-trust-note">Börja utan konto. I din egen takt. Inte vård eller akuttjänst.</p>
+				<p class="hero-trust-note">BÃ¶rja utan konto. I din egen takt. Inte vÃ¥rd eller akuttjÃ¤nst.</p>
 			</div>
 		</div>
 	</section>
 
-	<!-- 2. Börja där det känns lättast -->
+	<!-- 2. BÃ¶rja dÃ¤r det kÃ¤nns lÃ¤ttast -->
 	<section class="early-trust" aria-labelledby="early-trust-title">
 		<div class="cards-narrow early-trust-inner">
 			<p class="early-trust-eyebrow">Trygg start</p>
-			<h2 id="early-trust-title">Känn dig trygg innan du börjar</h2>
+			<h2 id="early-trust-title">KÃ¤nn dig trygg innan du bÃ¶rjar</h2>
 			<ul class="early-trust-grid">
 				{#each trustHighlights as item}
 					<li class="early-trust-item">{item}</li>
 				{/each}
 			</ul>
 			<p class="early-trust-note">
-				Vid akut fara: <a href="tel:112">112</a>. För vårdråd:
-				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
+				Vid akut fara: <a href="tel:112">112</a>. FÃ¶r vÃ¥rdrÃ¥d:
+				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stÃ¶d:
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
 			</p>
-			<p class="early-trust-link">
+						<p class="early-trust-link">
 				<a href="/integritet" onclick={() => trackHomeCta('early_trust', 'integritet', '/integritet')}>
 					Läs om hur vi hanterar integritet och data
+				</a>
+				<span aria-hidden="true"> · </span>
+				<a href="/chatta-anonymt" onclick={() => trackHomeCta('early_trust', 'chatta_anonymt_utan_konto', '/chatta-anonymt')}>
+					Läs om att chatta anonymt utan konto
 				</a>
 			</p>
 		</div>
@@ -232,9 +236,9 @@
 
 	<section id="sa-fungerar-det" class="quick-flow" aria-labelledby="quick-flow-title">
 		<div class="cards-narrow quick-flow-inner">
-			<h2 id="quick-flow-title">Så fungerar MittPsyke</h2>
+			<h2 id="quick-flow-title">SÃ¥ fungerar MittPsyke</h2>
 			<p class="quick-flow-intro">
-				Börja anonymt om du vill. Fortsätt med konto om du vill spara, följa ditt mående och komma tillbaka över tid.
+				BÃ¶rja anonymt om du vill. FortsÃ¤tt med konto om du vill spara, fÃ¶lja ditt mÃ¥ende och komma tillbaka Ã¶ver tid.
 			</p>
 			<ol class="quick-flow-grid">
 				{#each quickFlowSteps as step, index}
@@ -250,9 +254,9 @@
 
 	<section class="usage-compare" aria-labelledby="usage-compare-title">
 		<div class="cards-narrow usage-compare-inner">
-			<h2 id="usage-compare-title">Börja anonymt — fortsätt med konto om du vill</h2>
+			<h2 id="usage-compare-title">BÃ¶rja anonymt â€” fortsÃ¤tt med konto om du vill</h2>
 			<p class="usage-compare-intro">
-				Du kan börja direkt utan konto. Om du vill spara, följa ditt mående och komma tillbaka över tid kan du skapa konto senare.
+				Du kan bÃ¶rja direkt utan konto. Om du vill spara, fÃ¶lja ditt mÃ¥ende och komma tillbaka Ã¶ver tid kan du skapa konto senare.
 			</p>
 			<div class="usage-compare-grid">
 				{#each usageModes as mode}
@@ -271,9 +275,9 @@
 
 	<section class="entry-paths" aria-labelledby="entry-paths-title">
 		<div class="cards-narrow entry-inner">
-			<h2 id="entry-paths-title">Börja där det känns lättast</h2>
+			<h2 id="entry-paths-title">BÃ¶rja dÃ¤r det kÃ¤nns lÃ¤ttast</h2>
 			<p class="entry-intro">
-				Välj det som hjälper mest just nu.
+				VÃ¤lj det som hjÃ¤lper mest just nu.
 			</p>
 			<div class="entry-grid">
 				{#each entryPaths as path}
@@ -292,12 +296,12 @@
 		</div>
 	</section>
 
-	<!-- 3. Ett första steg, i din egen takt -->
+	<!-- 3. Ett fÃ¶rsta steg, i din egen takt -->
 	<section class="first-step" aria-labelledby="first-step-title">
 		<div class="cards-narrow first-step-inner">
-			<h2 id="first-step-title">Vad MittPsyke är</h2>
+			<h2 id="first-step-title">Vad MittPsyke Ã¤r</h2>
 			<p class="first-step-body">
-				Ett digitalt verktyg där du kan skriva av dig, reflektera och förstå ditt psykiska mående bättre. Du får stöd i text i din egen takt, helt anonymt om du vill. MittPsyke är inte vård eller behandling.
+				Ett digitalt verktyg dÃ¤r du kan skriva av dig, reflektera och fÃ¶rstÃ¥ ditt psykiska mÃ¥ende bÃ¤ttre. Du fÃ¥r stÃ¶d i text i din egen takt, helt anonymt om du vill. MittPsyke Ã¤r inte vÃ¥rd eller behandling.
 			</p>
 			<div class="support-points">
 				{#each supportPoints as point}
@@ -310,50 +314,50 @@
 		</div>
 	</section>
 
-	<!-- 4. Mer än en chatt -->
+	<!-- 4. Mer Ã¤n en chatt -->
 	<section id="sa-fungerar-det-fordjupning" class="how-it-works" aria-labelledby="how-it-works-title">
 		<div class="cards-narrow how-inner">
-			<p class="how-eyebrow">Fördjupning</p>
-			<h2 id="how-it-works-title">Mer än en chatt</h2>
+			<p class="how-eyebrow">FÃ¶rdjupning</p>
+			<h2 id="how-it-works-title">Mer Ã¤n en chatt</h2>
 			<p class="how-intro">
-				När du vill fortsätta finns fler sätt att få struktur, följa ditt mående och hitta sådant som hjälper i vardagen.
+				NÃ¤r du vill fortsÃ¤tta finns fler sÃ¤tt att fÃ¥ struktur, fÃ¶lja ditt mÃ¥ende och hitta sÃ¥dant som hjÃ¤lper i vardagen.
 			</p>
 			<div class="how-grid">
 				<article class="how-card">
 					<h3>Dagbok och reflektion</h3>
-					<p>Skriv mer sammanhängande och sätt ord på det som återkommer.</p>
-					<a class="how-card-cta" href="/dagbok" onclick={() => trackHomeCta('how_it_works', 'oppna_dagboken', '/dagbok')}>Öppna dagboken</a>
+					<p>Skriv mer sammanhÃ¤ngande och sÃ¤tt ord pÃ¥ det som Ã¥terkommer.</p>
+					<a class="how-card-cta" href="/dagbok" onclick={() => trackHomeCta('how_it_works', 'oppna_dagboken', '/dagbok')}>Ã–ppna dagboken</a>
 				</article>
 				<article class="how-card">
-					<h3>Uppföljning över tid</h3>
-					<p>Se mönster i hur du mår och få bättre överblick över perioder.</p>
-					<a class="how-card-cta" href="/humorsparning" onclick={() => trackHomeCta('how_it_works', 'folj_maendet', '/humorsparning')}>Följ måendet</a>
+					<h3>UppfÃ¶ljning Ã¶ver tid</h3>
+					<p>Se mÃ¶nster i hur du mÃ¥r och fÃ¥ bÃ¤ttre Ã¶verblick Ã¶ver perioder.</p>
+					<a class="how-card-cta" href="/humorsparning" onclick={() => trackHomeCta('how_it_works', 'folj_maendet', '/humorsparning')}>FÃ¶lj mÃ¥endet</a>
 				</article>
 				<article class="how-card">
-					<h3>Guider och övningar</h3>
-					<p>Få tydliga förklaringar och konkreta övningar för vardagens utmaningar.</p>
-					<a class="how-card-cta" href="/guider" onclick={() => trackHomeCta('how_it_works', 'utforska_stod', '/guider')}>Utforska stöd</a>
+					<h3>Guider och Ã¶vningar</h3>
+					<p>FÃ¥ tydliga fÃ¶rklaringar och konkreta Ã¶vningar fÃ¶r vardagens utmaningar.</p>
+					<a class="how-card-cta" href="/guider" onclick={() => trackHomeCta('how_it_works', 'utforska_stod', '/guider')}>Utforska stÃ¶d</a>
 				</article>
 				<article class="how-card">
-					<h3>Stöd att återvända till</h3>
-					<p>Samla det som hjälper dig så att du lätt kan fortsätta där du var.</p>
-					<a class="how-card-cta" href="/register" onclick={() => trackHomeCta('how_it_works', 'fortsatt_over_tid', '/register')}>Fortsätt över tid</a>
+					<h3>StÃ¶d att Ã¥tervÃ¤nda till</h3>
+					<p>Samla det som hjÃ¤lper dig sÃ¥ att du lÃ¤tt kan fortsÃ¤tta dÃ¤r du var.</p>
+					<a class="how-card-cta" href="/register" onclick={() => trackHomeCta('how_it_works', 'fortsatt_over_tid', '/register')}>FortsÃ¤tt Ã¶ver tid</a>
 				</article>
 			</div>
 		</div>
 	</section>
 
-	<!-- 5. Vad du kan använda MittPsyke till -->
+	<!-- 5. Vad du kan anvÃ¤nda MittPsyke till -->
 	<section class="features-section" aria-labelledby="features-title">
 		<div class="cards-narrow features-inner">
-			<h2 id="features-title">Verktyg som hjälper dig att förstå hur du mår</h2>
-			<p class="features-intro">Skriv, reflektera, följ ditt mående och ta små steg i din egen takt.</p>
+			<h2 id="features-title">Verktyg som hjÃ¤lper dig att fÃ¶rstÃ¥ hur du mÃ¥r</h2>
+			<p class="features-intro">Skriv, reflektera, fÃ¶lj ditt mÃ¥ende och ta smÃ¥ steg i din egen takt.</p>
 			<div class="features-grid">
 				{#each features as feature}
 					<a class="feature-card" href={feature.href} onclick={() => trackHomeCta('features', feature.title, feature.href)}>
 						<h3>{feature.title}</h3>
 						<p>{feature.description}</p>
-						<span class="feature-card-cta">Öppna verktyget</span>
+						<span class="feature-card-cta">Ã–ppna verktyget</span>
 					</a>
 				{/each}
 			</div>
@@ -363,19 +367,19 @@
 	<!-- 6. Social proof -->
 	<section class="review-section" aria-labelledby="review-section-title">
 		<div class="cards-narrow review-inner">
-			<h2 id="review-section-title">Så beskriver andra sin upplevelse</h2>
+			<h2 id="review-section-title">SÃ¥ beskriver andra sin upplevelse</h2>
 			<div class="review-grid">
 				<blockquote class="review-card">
-					<p>&ldquo;Jag skrev i några minuter och kände mig mindre uppjagad.&rdquo;</p>
-					<cite>Anonym användare</cite>
+					<p>&ldquo;Jag skrev i nÃ¥gra minuter och kÃ¤nde mig mindre uppjagad.&rdquo;</p>
+					<cite>Anonym anvÃ¤ndare</cite>
 				</blockquote>
 				<blockquote class="review-card">
-					<p>&ldquo;Frågorna hjälpte mig sortera vad som var viktigast just då.&rdquo;</p>
-					<cite>Anonym användare</cite>
+					<p>&ldquo;FrÃ¥gorna hjÃ¤lpte mig sortera vad som var viktigast just dÃ¥.&rdquo;</p>
+					<cite>Anonym anvÃ¤ndare</cite>
 				</blockquote>
 				<blockquote class="review-card">
-					<p>&ldquo;När jag kom tillbaka såg jag mönster i sömn och stress.&rdquo;</p>
-					<cite>Anonym användare</cite>
+					<p>&ldquo;NÃ¤r jag kom tillbaka sÃ¥g jag mÃ¶nster i sÃ¶mn och stress.&rdquo;</p>
+					<cite>Anonym anvÃ¤ndare</cite>
 				</blockquote>
 			</div>
 		</div>
@@ -383,28 +387,28 @@
 
 	<VoiceSupport />
 
-	<!-- 7. Trygghet och avgränsning -->
+	<!-- 7. Trygghet och avgrÃ¤nsning -->
 	<section class="trust-section" aria-labelledby="trust-title">
 		<div class="cards-narrow trust-inner">
 			<img src="/assets/home/Tryggplats.png" alt="Illustration av en trygg plats i naturen" loading="lazy" class="trust-image" />
 			<div class="trust-copy">
-				<h2 id="trust-title">För stöd och reflektion — inte för vård eller diagnos</h2>
+				<h2 id="trust-title">FÃ¶r stÃ¶d och reflektion â€” inte fÃ¶r vÃ¥rd eller diagnos</h2>
 				<p>
-					Du kan börja anonymt utan konto och få lugnt stöd i text direkt. När du vill fortsätta finns dagbok, övningar och guider för mer struktur över tid.
+					Du kan bÃ¶rja anonymt utan konto och fÃ¥ lugnt stÃ¶d i text direkt. NÃ¤r du vill fortsÃ¤tta finns dagbok, Ã¶vningar och guider fÃ¶r mer struktur Ã¶ver tid.
 				</p>
 				<p class="trust-privacy">
-					Du kan läsa hur integritet och data fungerar innan du delar något. Med konto kan du begära export och radering.
-					<a href="/integritet" onclick={() => trackHomeCta('trust_section', 'integritetspolicy', '/integritet')}>Läs integritetspolicyn</a>.
+					Du kan lÃ¤sa hur integritet och data fungerar innan du delar nÃ¥got. Med konto kan du begÃ¤ra export och radering.
+					<a href="/integritet" onclick={() => trackHomeCta('trust_section', 'integritetspolicy', '/integritet')}>LÃ¤s integritetspolicyn</a>.
 				</p>
 				<p class="trust-research">
-					Vid akut fara, ring <a href="tel:112">112</a>. För vårdråd, kontakta
-					<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. För vidare stöd finns
+					Vid akut fara, ring <a href="tel:112">112</a>. FÃ¶r vÃ¥rdrÃ¥d, kontakta
+					<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. FÃ¶r vidare stÃ¶d finns
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
 				</p>
-				<div class="trust-facts" aria-label="Avsändare och ansvar">
+				<div class="trust-facts" aria-label="AvsÃ¤ndare och ansvar">
 					<p><strong>Drivs i Sverige av:</strong> Robert Claesson</p>
 					<p><strong>Kontakt:</strong> <a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a></p>
-					<p><strong>Viktigt:</strong> Inte vård, diagnos, behandling eller akuttjänst</p>
+					<p><strong>Viktigt:</strong> Inte vÃ¥rd, diagnos, behandling eller akuttjÃ¤nst</p>
 				</div>
 			</div>
 		</div>
@@ -418,13 +422,13 @@
 	</section>
 
 	<!-- 9. Avslutande CTA -->
-	<section class="final-cta-section" aria-label="Kom igång">
+	<section class="final-cta-section" aria-label="Kom igÃ¥ng">
 		<div class="final-cta-inner">
-			<h2>Du behöver inte veta vad du ska säga.</h2>
-			<p>Börja skriva direkt utan konto. Få stöd i text och fortsätt i din egen takt.</p>
+			<h2>Du behÃ¶ver inte veta vad du ska sÃ¤ga.</h2>
+			<p>BÃ¶rja skriva direkt utan konto. FÃ¥ stÃ¶d i text och fortsÃ¤tt i din egen takt.</p>
 			<div class="final-cta-actions">
-				<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('final_cta', 'borja_skriva_nu', '/skriv')}>Börja skriva nu</a>
-				<a href="/guider" class="hero-cta-link" onclick={() => trackHomeCta('final_cta', 'las_guider', '/guider')}>Läs guider</a>
+				<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('final_cta', 'borja_skriva_nu', '/skriv')}>BÃ¶rja skriva nu</a>
+				<a href="/guider" class="hero-cta-link" onclick={() => trackHomeCta('final_cta', 'las_guider', '/guider')}>LÃ¤s guider</a>
 			</div>
 		</div>
 	</section>
@@ -436,7 +440,7 @@
 		color: #f5f5f2;
 	}
 
-	/* ── Hero ── */
+	/* â”€â”€ Hero â”€â”€ */
 	.hero-section {
 		min-height: 65vh;
 		display: grid;
@@ -588,7 +592,7 @@
 		opacity: 1;
 	}
 
-	/* ── Sektion 2: Första steget ── */
+	/* â”€â”€ Sektion 2: FÃ¶rsta steget â”€â”€ */
 	.early-trust {
 		padding: clamp(2.2rem, 6vw, 3.4rem) 1.25rem;
 		background: #162236;
@@ -845,7 +849,7 @@
 		color: rgba(220, 225, 235, 0.72);
 	}
 
-	/* ── Sektion 3: Ingångar ── */
+	/* â”€â”€ Sektion 3: IngÃ¥ngar â”€â”€ */
 	.entry-paths {
 		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
 		background: #111a28;
@@ -930,7 +934,7 @@
 		letter-spacing: 0.005em;
 	}
 
-	/* ── Sektion 4: Så fungerar det ── */
+	/* â”€â”€ Sektion 4: SÃ¥ fungerar det â”€â”€ */
 	.how-it-works {
 		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
 		background: #162236;
@@ -1006,7 +1010,7 @@
 	}
 
 
-	/* ── Sektion 5: Funktioner ── */
+	/* â”€â”€ Sektion 5: Funktioner â”€â”€ */
 	.features-section {
 		padding: clamp(2.5rem, 7vw, 3.9rem) 1.25rem;
 		background: #111a28;
@@ -1075,7 +1079,7 @@
 		font-size: 0.88rem;
 	}
 
-	/* ── Social proof ── */
+	/* â”€â”€ Social proof â”€â”€ */
 	.review-section {
 		padding: clamp(2.8rem, 7vw, 5rem) 1.25rem;
 		background: #1b2b3a;
@@ -1129,7 +1133,7 @@
 		color: rgba(255, 255, 255, 0.5);
 	}
 
-	/* ── Sektion 7: Trygghet ── */
+	/* â”€â”€ Sektion 7: Trygghet â”€â”€ */
 	.trust-section {
 		padding: clamp(3rem, 8vw, 6rem) 1.25rem;
 		background: #1b2b3a;
@@ -1202,7 +1206,7 @@
 		text-underline-offset: 3px;
 	}
 
-	/* ── Sektion 8: Viktigt att veta ── */
+	/* â”€â”€ Sektion 8: Viktigt att veta â”€â”€ */
 	.important-section {
 		padding: clamp(2rem, 5vw, 3.5rem) 1.25rem;
 		background: #1a2530;
@@ -1214,7 +1218,7 @@
 		margin: 0 auto;
 	}
 
-	/* ── Sektion 9: Avslutande CTA ── */
+	/* â”€â”€ Sektion 9: Avslutande CTA â”€â”€ */
 	.final-cta-section {
 		padding: clamp(3rem, 8vw, 5.5rem) 1.25rem;
 		background: #141e2e;
@@ -1261,7 +1265,7 @@
 		text-underline-offset: 3px;
 	}
 
-	/* ── Gemensamma typografi ── */
+	/* â”€â”€ Gemensamma typografi â”€â”€ */
 	h2 {
 		margin: 0;
 		font-family: var(--font-heading);
@@ -1271,7 +1275,7 @@
 		letter-spacing: -0.02em;
 	}
 
-	/* ── Responsivt ── */
+	/* â”€â”€ Responsivt â”€â”€ */
 	@media (max-width: 900px) {
 		.trust-inner {
 			grid-template-columns: 1fr;
@@ -1359,7 +1363,7 @@
 
 	}
 
-	/* ── Dark mode — base is already dark, just deepen slightly ── */
+	/* â”€â”€ Dark mode â€” base is already dark, just deepen slightly â”€â”€ */
 	:global(.dark) .first-step { background: #0d1520; }
 	:global(.dark) .early-trust { background: #0e1826; }
 	:global(.dark) .quick-flow { background: #0d1520; }
@@ -1372,3 +1376,4 @@
 	:global(.dark) .trust-section { background: #0a1018; }
 	:global(.dark) .important-section { background: #080e16; }
 </style>
+
