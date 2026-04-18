@@ -15,14 +15,14 @@
 			title: 'Börja skriva',
 			description: 'Skriv av dig anonymt och få lugnt stöd direkt.',
 			href: '/skriv',
-			cta: 'Skriv nu',
+			cta: 'Börja skriva nu',
 			featured: true
 		},
 		{
 			title: 'Följ ditt mående',
 			description: 'Spara och följ mönster över tid.',
 			href: '/register',
-			cta: 'Skapa konto och spara'
+			cta: 'Skapa konto för att spara'
 		},
 		{
 			title: 'Prova en övning',
@@ -34,7 +34,7 @@
 			title: 'Läs guider',
 			description: 'Få mer förståelse i din egen takt.',
 			href: '/guider',
-			cta: 'Utforska guider'
+			cta: 'Läs guider'
 		}
 	];
 
