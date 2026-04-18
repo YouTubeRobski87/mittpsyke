@@ -58,11 +58,9 @@
 	];
 
 	const trustHighlights = [
-		'Börja skriva anonymt utan konto',
-		'MittPsyke är stöd för reflektion, inte vård eller akuthjälp',
-		'Se hur data hanteras innan du börjar',
-		'Med konto finns möjlighet till export och radering',
-		'Vid akut läge hänvisas du vidare till rätt hjälp'
+		'Börja anonymt: Skriv direkt utan registrering.',
+		'Tydliga gränser: MittPsyke är stöd i text, inte vård, diagnos eller akuttjänst.',
+		'Integritet och kontroll: Läs hur data hanteras innan du börjar. Med konto finns export och radering.'
 	];
 
 	const quickFlowSteps = [
@@ -196,13 +194,19 @@
 		<div class="hero-shell">
 			<div class="hero-content">
 				<p class="hero-eyebrow">Anonymt stöd i text</p>
-				<h1>Skriv av dig anonymt och få lugnt stöd direkt</h1>
-				<p>Sätt ord på det som känns svårt. Få ett lugnt svar, hjälp att sortera tankarna och små nästa steg — utan konto.</p>
+				<h1>Skriv av dig anonymt och få hjälp att sortera det som snurrar</h1>
+				<p>När tankarna snurrar kan det hjälpa att börja någonstans. MittPsyke ger lugnt stöd i text, hjälper dig att sätta ord på det svåra och visar små nästa steg — utan konto.</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 					<a href="#sa-fungerar-det" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Se hur det fungerar</a>
 				</div>
-				<p class="hero-trust-note">Börja utan konto. I din egen takt. Inte vård eller akuttjänst.</p>
+				<p class="hero-trust-note">Utan konto. I din egen takt. Inte vård — men ett första steg.</p>
+				<p class="hero-origin-note">
+					Drivs i Sverige av MittPsyke.
+					<a href="/om-mittpsyke" onclick={() => trackHomeCta('hero', 'om_oss', '/om-mittpsyke')}>Läs mer om oss</a>
+					och
+					<a href="#sa-fungerar-det" onclick={() => trackHomeCta('hero', 'sa_fungerar_det', '#sa-fungerar-det')}>hur tjänsten fungerar</a>.
+				</p>
 			</div>
 		</div>
 	</section>
@@ -212,6 +216,9 @@
 		<div class="cards-narrow early-trust-inner">
 			<p class="early-trust-eyebrow">Trygg start</p>
 			<h2 id="early-trust-title">Känn dig trygg innan du börjar</h2>
+			<p class="early-trust-intro">
+				Du kan börja anonymt utan konto. MittPsyke är till för reflektion och första steg — inte för vård eller akuthjälp.
+			</p>
 			<ul class="early-trust-grid">
 				{#each trustHighlights as item}
 					<li class="early-trust-item">{item}</li>
@@ -220,7 +227,7 @@
 			<p class="early-trust-note">
 				Vid akut fara: <a href="tel:112">112</a>. För vårdråd:
 				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
-				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
+				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
 			</p>
 						<p class="early-trust-link">
 				<a href="/integritet" onclick={() => trackHomeCta('early_trust', 'integritet', '/integritet')}>
@@ -558,6 +565,18 @@
 		letter-spacing: 0.01em;
 	}
 
+	.hero-origin-note {
+		margin: 0.5rem 0 0;
+		font-size: 0.86rem;
+		color: rgba(220, 225, 235, 0.72);
+	}
+
+	.hero-origin-note a {
+		color: #d7e7ff;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
 	.hero-actions {
 		margin-top: 1.2rem;
 		display: flex;
@@ -643,6 +662,14 @@
 		font-size: 0.9rem;
 		line-height: 1.6;
 		color: rgba(220, 225, 235, 0.78);
+	}
+
+	.early-trust-intro {
+		margin: 0.55rem 0 0;
+		max-width: 66ch;
+		font-size: 0.96rem;
+		line-height: 1.6;
+		color: rgba(220, 225, 235, 0.86);
 	}
 
 	.early-trust-note a,
