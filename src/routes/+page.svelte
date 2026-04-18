@@ -224,11 +224,11 @@
 			</p>
 						<p class="early-trust-link">
 				<a href="/integritet" onclick={() => trackHomeCta('early_trust', 'integritet', '/integritet')}>
-					L�s om hur vi hanterar integritet och data
+					Läs om hur vi hanterar integritet och data
 				</a>
-				<span aria-hidden="true"> � </span>
+				<span aria-hidden="true"> • </span>
 				<a href="/chatta-anonymt" onclick={() => trackHomeCta('early_trust', 'chatta_anonymt_utan_konto', '/chatta-anonymt')}>
-					L�s om att chatta anonymt utan konto
+					Läs om att chatta anonymt utan konto
 				</a>
 			</p>
 		</div>

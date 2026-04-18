@@ -785,17 +785,17 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'chatta-anonymt': {
-		title: 'Chatta anonymt utan konto | B�rja direkt i webbl�saren | MittPsyke',
+		title: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
 		description:
-			'Chatta anonymt utan konto direkt i webbl�saren. F� lugnt st�d i text f�r oro, stress och nedst�mdhet. Ingen registrering kr�vs f�r att b�rja.',
+			'Chatta anonymt utan konto direkt i webbläsaren. Få lugnt stöd i text för oro, stress och nedstämdhet. Ingen registrering krävs för att börja.',
 		canonical: 'https://www.mittpsyke.se/chatta-anonymt',
-		ogTitle: 'Chatta anonymt utan konto | B�rja direkt i webbl�saren | MittPsyke',
+		ogTitle: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
 		ogDescription:
-			'B�rja chatta anonymt utan konto. F� lugnt st�d i text direkt i webbl�saren.',
+			'Börja chatta anonymt utan konto. Få lugnt stöd i text direkt i webbläsaren.',
 		h1: 'Chatta anonymt utan konto',
 		lead:
-			'Du kan b�rja direkt utan registrering. Skriv n�gra rader om det som k�nns tungt och f� lugnt st�d i text i din egen takt. MittPsyke �r ett samtalsst�d, inte v�rd eller akuthj�lp.',
-		primaryCta: { href: '/skriv', label: 'B�rja skriva anonymt' },
+			'Du kan börja direkt utan registrering. Skriv några rader om det som känns tungt och få lugnt stöd i text i din egen takt. MittPsyke är ett samtalsstöd, inte vård eller akuthjälp.',
+		primaryCta: { href: '/skriv', label: 'Börja skriva anonymt' },
 		sections: [
 			{
 				title: 'En lugn start utan registrering',
@@ -843,9 +843,9 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		],
 		updatedDate,
 		sources: [
-			{ label: 'Psykisk hÃ¤lsa â€“ 1177 VÃ¥rdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
-			{ label: 'Psykisk hÃ¤lsa och suicidprevention â€“ Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Psykisk hÃ¤lsa â€“ FolkhÃ¤lsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+			{ label: 'Psykisk hälsa – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
+			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
 		]
 	},
 	'anonym-chatt': {
