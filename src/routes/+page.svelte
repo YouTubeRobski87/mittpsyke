@@ -297,35 +297,34 @@
 		</div>
 	</section>
 
-	<!-- 4. Fördjupa när du vill -->
+	<!-- 4. Mer än en chatt -->
 	<section id="sa-fungerar-det-fordjupning" class="how-it-works" aria-labelledby="how-it-works-title">
 		<div class="cards-narrow how-inner">
-			<p class="how-eyebrow">Fortsätt i din takt</p>
-			<h2 id="how-it-works-title">När du vill gå vidare finns fler sätt att få stöd</h2>
+			<p class="how-eyebrow">Fördjupning</p>
+			<h2 id="how-it-works-title">Mer än en chatt</h2>
+			<p class="how-intro">
+				När du vill fortsätta finns fler sätt att få struktur, följa ditt mående och hitta sådant som hjälper i vardagen.
+			</p>
 			<div class="how-grid">
 				<article class="how-card">
-					<span class="how-step">01</span>
-					<h3>Fördjupa i dagboken</h3>
-					<p>Skriv mer sammanhängande och se vad som återkommer över tid.</p>
+					<h3>Dagbok och reflektion</h3>
+					<p>Skriv mer sammanhängande och sätt ord på det som återkommer.</p>
 					<a class="how-card-cta" href="/dagbok">Öppna dagboken</a>
 				</article>
 				<article class="how-card">
-					<span class="how-step">02</span>
-					<h3>Läs guider för mer förståelse</h3>
-					<p>Få tydliga förklaringar och råd om stress, ångest, sömn och mående.</p>
-					<a class="how-card-cta" href="/guider">Läs guider</a>
+					<h3>Uppföljning över tid</h3>
+					<p>Se mönster i hur du mår och få bättre överblick över perioder.</p>
+					<a class="how-card-cta" href="/humorsparning">Följ måendet</a>
 				</article>
 				<article class="how-card">
-					<span class="how-step">03</span>
-					<h3>Prova övningar när det behövs</h3>
-					<p>Ta ett litet steg här och nu med konkreta övningar.</p>
-					<a class="how-card-cta" href="/ovningar">Prova en övning</a>
+					<h3>Guider och övningar</h3>
+					<p>Få tydliga förklaringar och konkreta övningar för vardagens utmaningar.</p>
+					<a class="how-card-cta" href="/guider">Utforska stöd</a>
 				</article>
 				<article class="how-card">
-					<span class="how-step">04</span>
-					<h3>Följ ditt mående över tid</h3>
-					<p>Med konto kan du spara historik och få mer kontinuitet.</p>
-					<a class="how-card-cta" href="/register">Skapa konto gratis</a>
+					<h3>Stöd att återvända till</h3>
+					<p>Samla det som hjälper dig så att du lätt kan fortsätta där du var.</p>
+					<a class="how-card-cta" href="/register">Fortsätt över tid</a>
 				</article>
 			</div>
 		</div>
@@ -940,6 +939,14 @@
 		font-size: clamp(1.55rem, 3vw, 2.05rem);
 	}
 
+	.how-intro {
+		margin: 0.75rem 0 0;
+		max-width: 66ch;
+		color: rgba(220, 225, 235, 0.78);
+		font-size: 0.96rem;
+		line-height: 1.65;
+	}
+
 	.how-grid {
 		margin-top: 1.2rem;
 		display: grid;
@@ -954,21 +961,6 @@
 			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
 			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
 		border: 1px solid rgba(148, 163, 184, 0.12);
-	}
-
-	.how-step {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-width: 2.3rem;
-		padding: 0.2rem 0.5rem;
-		border-radius: var(--radius-pill);
-		background: rgba(58, 123, 213, 0.15);
-		color: #7db4e8;
-		font-family: var(--font-heading);
-		font-size: 0.8rem;
-		font-weight: 700;
-		letter-spacing: 0.04em;
 	}
 
 	.how-card h3 {
