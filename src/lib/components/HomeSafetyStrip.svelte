@@ -58,6 +58,25 @@
 		display: block;
 		color: inherit;
 		text-decoration: none;
+		cursor: pointer;
+		border-radius: 0.4rem;
+		padding: 0.2rem 0.25rem;
+		transition:
+			background-color 0.18s ease,
+			box-shadow 0.18s ease;
+	}
+
+	.safety-item-link:hover,
+	.safety-item-link:focus-visible {
+		background: rgba(255, 255, 255, 0.06);
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+	}
+
+	.safety-item-link:hover .safety-label,
+	.safety-item-link:focus-visible .safety-label {
+		color: rgba(255, 255, 255, 0.9);
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 
 	.safety-label {
