@@ -4,7 +4,7 @@
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
-	import { trackHeroCtaPrimaryClick, trackHeroCtaSecondaryClick, trackHomeCtaClick } from '$lib/analytics';
+	import { trackHeroCtaPrimaryClick, trackHomeCtaClick } from '$lib/analytics';
 
 	let { data }: { data: Record<string, unknown> } = $props();
 	let heroEl: HTMLElement | null = null;
@@ -18,7 +18,7 @@
 
 	const quickFlowSteps = [
 		{
-			title: 'Börja skriva direkt',
+			title: 'Börja skriva anonymt',
 			text: 'Du kan skriva anonymt utan konto och komma igång i lugn takt.'
 		},
 		{
@@ -103,8 +103,10 @@
 				<p>När tankarna snurrar kan det hjälpa att börja någonstans. MittPsyke ger lugnt stöd i text, hjälper dig att sätta ord på det svåra och visar små nästa steg — utan konto.</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
-					<a href="#sa-fungerar-det" class="hero-cta-link" onclick={() => trackHeroCtaSecondaryClick()}>Se hur det fungerar</a>
 				</div>
+				<p class="hero-secondary-link">
+					<a href="/guider" class="hero-cta-link" onclick={() => trackHomeCta('hero', 'las_guider', '/guider')}>Läs guider</a>
+				</p>
 				<p class="hero-trust-note">Utan konto. I din egen takt. Inte vård — men ett första steg.</p>
 				<p class="hero-origin-note">
 					Skapat av samma person som står bakom
@@ -403,6 +405,7 @@
 	.hero-cta-primary {
 		background: #3a7bd5;
 		color: #ffffff;
+		box-shadow: 0 8px 20px rgba(58, 123, 213, 0.35);
 	}
 
 	.hero-cta-link {
@@ -424,6 +427,10 @@
 	.hero-cta-link:hover,
 	.hero-cta-link:focus-visible {
 		opacity: 1;
+	}
+
+	.hero-secondary-link {
+		margin: 0.45rem 0 0;
 	}
 
 	/* ── Sektion 2: Första steget ── */
