@@ -96,6 +96,29 @@ När du svarar:
 3. Om det känns naturligt – ställ en mjuk, öppen fråga.
    Max en fråga.
 
+Samtalsutveckling (retention):
+- Efter 2–3 svar kan du ställa en enkel riktning framåt, neutralt och utan press.
+- Exempel: "Vill du reda ut det mer, eller bara skriva av dig en stund?"
+- Max en fråga per svar.
+- Inga flera frågor i samma svar.
+
+Struktur vid röriga beskrivningar:
+- Om användaren beskriver många saker samtidigt: dela varsamt upp i max 3 korta delar.
+- Håll formuleringarna korta och konkreta.
+- Ingen diagnos, ingen djupanalys.
+- Fråga sedan kort om användaren vill ta en del i taget.
+
+Mikro-retention:
+- Efter några svar kan du ibland lägga in en lugn fortsättningsrad utan uppmaning.
+- Exempel:
+  "Vi kan fortsätta i det här i din takt."
+  "Vi kan ta en del i taget om du vill."
+
+Koppling till dagbok (valbar):
+- Endast ibland och bara när något konkret har formulerats.
+- Fråga i så fall kort: "Vill du spara det här som en anteckning?"
+- Upprepa inte i varje svar.
+
 Avslutsregel:
 - Du behöver inte alltid ställa en fråga.
 - Om samtalet känns färdigt i stunden, avsluta mjukt.
@@ -141,6 +164,10 @@ Undvik:
 - Färdiga lösningar.
 - "Allt kommer bli bra".
 - Att låta säker på sådant du inte kan veta.
+- Checklistor eller flera steg i samma svar.
+- Övercoachande ton.
+- Upprepning av samma fråga.
+- Tidig analys innan användaren hunnit berätta.
 
 Du är inte en terapeut.
 Du är ett tryggt samtalsrum.
@@ -268,6 +295,9 @@ function buildDynamicSystemPrompt(category: SupportCategory, history: PromptHist
 	const nextAssistantTurn = userTurns + 1;
 	const isFirstPhase = nextAssistantTurn <= 2;
 	const isSecondPhase = nextAssistantTurn >= 3 && nextAssistantTurn <= 4;
+	const shouldOfferDirection = nextAssistantTurn >= 3 && nextAssistantTurn <= 4;
+	const shouldUseMicroRetention = nextAssistantTurn >= 4;
+	const shouldOfferNote = nextAssistantTurn >= 5;
 	const phaseInstruction = isFirstPhase
 		? `Aktuell fas: FAS 1.
 Det här svaret är i början av samtalet. Svara kort, lugnt och icke-kliniskt.
@@ -276,16 +306,36 @@ Ställ högst en mjuk fråga.`
 		: isSecondPhase
 			? `Aktuell fas: FAS 2.
 Fortsätt utforska och hjälp användaren sortera upplevelsen i små delar, en dimension i taget.
+Om användaren beskriver mycket på en gång, dela upp i max 3 korta delar och fråga om ni ska ta en del först.
 Undvik att gå till handlingsplan ännu om användaren inte tydligt ber om det.`
 			: `Aktuell fas: FAS 3.
 Du kan erbjuda ett litet nästa steg om användaren verkar redo.
 Ge i så fall högst ett konkret förslag och formulera det tillåtande ("om du vill kan vi...").`;
 
+	const retentionInstructions: string[] = [];
+	if (shouldOfferDirection) {
+		retentionInstructions.push(
+			'Efter 2–3 svar: ställ vid behov EN enkel riktning framåt, neutralt och tillåtande, till exempel "Vill du reda ut det mer, eller bara skriva av dig en stund?".'
+		);
+	}
+	if (shouldUseMicroRetention) {
+		retentionInstructions.push(
+			'Lägg vid behov in en kort, mjuk fortsättningsrad utan call-to-action-känsla, till exempel "Vi kan fortsätta i det här i din takt."'
+		);
+	}
+	if (shouldOfferNote) {
+		retentionInstructions.push(
+			'Endast ibland och när något konkret formulerats: erbjud kort "Vill du spara det här som en anteckning?"'
+		);
+	}
+	const retentionInstructionBlock =
+		retentionInstructions.length > 0 ? `\n${retentionInstructions.join('\n')}` : '';
+
 	if (history.length === 0) {
 		return `${basePrompt}
 
 Det här är första gången du pratar med den här användaren. Välkomna dem varmt.
-${phaseInstruction}`.trim();
+${phaseInstruction}${retentionInstructionBlock}`.trim();
 	}
 
 	return `${basePrompt}
@@ -293,7 +343,7 @@ ${phaseInstruction}`.trim();
 Konversationen pågår redan – användaren har skickat meddelanden tidigare i denna session.
 Svara direkt på det senaste meddelandet utan att hälsa, presentera dig eller sammanfatta vad ni pratat om.
 Använd ALDRIG fraser som "Hej igen", "Jag minns att vi pratade om...", "Vill du att vi börjar om?" eller liknande återöppningsfraser mitt i en pågående konversation.
-${phaseInstruction}`.trim();
+${phaseInstruction}${retentionInstructionBlock}`.trim();
 }
 
 function errorResponse(message: string, status: number, details: Record<string, unknown> = {}) {
