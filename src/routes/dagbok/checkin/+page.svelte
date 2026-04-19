@@ -617,6 +617,21 @@
 		}
 	}
 
+	async function openLatestEntries() {
+		calendarFilterDate = null;
+		await tick();
+		if (typeof document !== 'undefined') {
+			document.getElementById('senaste-inlagg')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
+	}
+
+	async function openShareForLatestEntry() {
+		await openLatestEntries();
+		const latestEntry = entries[0];
+		if (!latestEntry?.id || isEntryShared(latestEntry.id)) return;
+		openShareConfirmation(latestEntry.id);
+	}
+
 	async function saveDraftToDiary() {
 		if (!draftText.trim() || savingDraft) return;
 		draftError = '';
@@ -965,9 +980,18 @@
 								Ditt inlägg finns kvar här. Nästa lilla steg kan vara att skriva några ord till nu,
 								eller komma tillbaka senare och fortsätta där du slutade.
 							</p>
+							<p class="mt-2 text-sm auth-muted">
+								Vill du behålla det privat eller dela anonymt med andra i Gemenskapen?
+							</p>
 							<div class="actions-row mt-3">
 								<button type="button" class="auth-button primary" onclick={openWriteEditor}>
 									Skriv några ord till
+								</button>
+								<button type="button" class="auth-button" onclick={openLatestEntries}>
+									Behåll privat
+								</button>
+								<button type="button" class="auth-button" onclick={openShareForLatestEntry}>
+									Dela i Gemenskapen
 								</button>
 								{#if hasSavedEntries}
 					<a href="/dagbok/checkin#senaste-inlagg" class="auth-button">Se dina senaste inlägg</a>

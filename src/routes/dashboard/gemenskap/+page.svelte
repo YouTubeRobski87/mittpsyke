@@ -48,6 +48,7 @@
 	let reportingTargetKey = $state('');
 	let feedNotice = $state('');
 	let feedNoticeType = $state<'success' | 'error' | 'info'>('info');
+	let latestActivityLabel = $derived(posts.length > 0 ? formatPublishedAt(posts[0]?.created_at ?? null) : '');
 
 	$effect(() => {
 		posts = [...initialPosts];
@@ -426,7 +427,11 @@
 
 		{#if posts.length > 0}
 			<section class="auth-panel feed-panel">
-				<h2>Delningar i lugn takt</h2>
+				<h2>Senaste från Gemenskapen</h2>
+				<p class="feed-intro">
+					{posts.length} anonyma delningar i Gemenskapen. Senaste aktivitet: {latestActivityLabel}.
+				</p>
+				<a href="/dagbok/checkin#senaste-inlagg" class="feed-cta">Skriv i Dagbok och dela anonymt</a>
 				<div class="community-feed">
 					{#each posts as post (post.id)}
 						<article class="community-post post-variant-{postVariant(post.id)}">
@@ -667,19 +672,19 @@
 			</section>
 		{:else}
 			<section class="auth-panel empty-panel">
-				<h2>Här kommer gemenskapens inlägg att visas</h2>
+				<h2>Här kommer delningar i Gemenskapen att visas</h2>
 				<p>
-					Här kan anonyma delningar från användare samlas i lugn takt. Du kommer senare kunna dela en
-					egen tanke eller välja att dela ett dagboksinlägg anonymt.
+					Här samlas anonyma delningar i lugn takt. Du kan läsa andras tankar och, om du vill, dela något eget anonymt från Dagbok.
 				</p>
 
 				<div class="empty-actions">
-					<a href="/dagbok" class="auth-button primary">Dela en tanke</a>
-					<a href="/dagbok" class="auth-button">Öppna dagboken</a>
+					<a href="/dagbok/checkin" class="auth-button primary">Skriv i Dagbok</a>
+					<a href="/dagbok/checkin#senaste-inlagg" class="auth-button">Förbered en anonym delning</a>
 				</div>
 			</section>
 		{/if}
 
+		{#if posts.length === 0}
 			<section class="auth-panel future-panel">
 				<h2>Kommer i nästa steg</h2>
 				<div class="future-list" role="list">
@@ -689,10 +694,8 @@
 					<p role="listitem">Rapportera innehåll</p>
 				</div>
 			</section>
-
-		{#if posts.length === 0}
 			<section class="auth-panel sample-panel">
-				<h2>Exempel från gemenskapen</h2>
+				<h2>Exempel från Gemenskapen</h2>
 				<div class="sample-list">
 					<article class="sample-card">
 						<p class="sample-label">Anonym röst</p>
@@ -741,6 +744,21 @@
 	.feed-panel h2 {
 		margin: 0;
 		font-size: 1.03rem;
+	}
+
+	.feed-intro {
+		margin: 0.45rem 0 0;
+		font-size: 0.85rem;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.feed-cta {
+		display: inline-flex;
+		margin-top: 0.6rem;
+		font-size: 0.83rem;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		color: hsl(var(--foreground));
 	}
 
 	.feed-notice {

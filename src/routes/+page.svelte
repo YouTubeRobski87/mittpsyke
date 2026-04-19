@@ -221,6 +221,22 @@
 		</div>
 	</section>
 
+	<section class="community-highlight" aria-labelledby="community-highlight-title">
+		<div class="cards-narrow community-highlight-inner">
+			<h2 id="community-highlight-title">Gemenskapen är igång</h2>
+			<p>
+				Läs andras tankar eller dela något eget. Se vad andra har delat anonymt i Gemenskapen och känn att du inte är ensam.
+			</p>
+			<a
+				class="community-highlight-cta"
+				href="/dashboard/gemenskap"
+				onclick={() => trackHomeCta('community_highlight', 'oppna_gemenskapen', '/dashboard/gemenskap')}
+			>
+				Öppna Gemenskapen
+			</a>
+		</div>
+	</section>
+
 	<VoiceSupport />
 
 	<!-- 7. Trygghet och avgränsning -->
@@ -701,6 +717,49 @@
 		font-size: 0.82rem;
 		font-style: normal;
 		color: rgba(255, 255, 255, 0.5);
+	}
+
+	.community-highlight {
+		padding: clamp(2.1rem, 5.5vw, 3.4rem) 1.25rem;
+		background: #162236;
+		color: #e0e4ea;
+	}
+
+	.community-highlight-inner {
+		padding: 1rem;
+		border-radius: var(--radius-card);
+		border: 1px solid rgba(148, 163, 184, 0.12);
+		background:
+			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+	}
+
+	.community-highlight-inner h2 {
+		margin: 0;
+		color: #eef1f6;
+		font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+	}
+
+	.community-highlight-inner p {
+		margin: 0.65rem 0 0;
+		max-width: 68ch;
+		color: rgba(220, 225, 235, 0.82);
+		font-size: 0.95rem;
+		line-height: 1.62;
+	}
+
+	.community-highlight-cta {
+		display: inline-flex;
+		align-items: center;
+		margin-top: 0.8rem;
+		padding: 0.42rem 0.78rem;
+		border-radius: var(--radius-pill);
+		background: rgba(58, 123, 213, 0.15);
+		color: #7db4e8;
+		font-family: var(--font-heading);
+		font-size: 0.83rem;
+		font-weight: 600;
+		letter-spacing: 0.005em;
 	}
 
 	/* ── Sektion 7: Trygghet ── */
