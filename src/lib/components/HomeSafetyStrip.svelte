@@ -5,14 +5,18 @@
 			<p class="safety-copy">Stöd för reflektion i vardagen, inte vård, diagnos eller akuthjälp.</p>
 		</li>
 		<li class="safety-item">
-			<p class="safety-label">Börja anonymt</p>
-			<p class="safety-copy">Du kan skriva direkt utan konto och komma igång i din egen takt.</p>
+			<a class="safety-item-link" href="/skriv">
+				<p class="safety-label">Börja anonymt</p>
+				<p class="safety-copy">Du kan skriva direkt utan konto och komma igång i din egen takt.</p>
+			</a>
 		</li>
 		<li class="safety-item">
-			<p class="safety-label">Integritet</p>
-			<p class="safety-copy">
-				Läs hur data hanteras innan du börjar. Med konto kan du begära export och radering.
-			</p>
+			<a class="safety-item-link" href="/integritet">
+				<p class="safety-label">Integritet</p>
+				<p class="safety-copy">
+					Läs hur data hanteras innan du börjar. Med konto kan du begära export och radering.
+				</p>
+			</a>
 		</li>
 		<li class="safety-item">
 			<p class="safety-label">Vid akut läge</p>
@@ -48,6 +52,12 @@
 	.safety-item {
 		margin: 0;
 		padding: 0;
+	}
+
+	.safety-item-link {
+		display: block;
+		color: inherit;
+		text-decoration: none;
 	}
 
 	.safety-label {
