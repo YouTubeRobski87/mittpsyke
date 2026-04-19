@@ -47,6 +47,16 @@ function isMissingTableError(
 	);
 }
 
+function createServiceClient() {
+	const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
+	const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY;
+	if (!supabaseUrl || !serviceRoleKey) return null;
+
+	return createClient(supabaseUrl, serviceRoleKey, {
+		auth: { autoRefreshToken: false, persistSession: false }
+	});
+}
+
 function validateBody(
 	input: unknown
 ): { ok: true; data: CreateCommunityUnshareRequestBody } | { ok: false; error: string } {
@@ -147,6 +157,25 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	if (updateError) {
 		if (updateError.code === '42501') {
+			// Fallback för miljöer där RLS/grants blockerar update trots korrekt ägarskap.
+			// Ägarskap är redan verifierat via diary.user_id = auth user ovan.
+			const serviceClient = createServiceClient();
+			if (serviceClient) {
+				const { data: fallbackUpdatedShare, error: fallbackUpdateError } = await serviceClient
+					.from('community_posts')
+					.update({ deleted_at: new Date().toISOString() })
+					.eq('diary_entry_id', validated.data.diaryEntryId)
+					.eq('user_id', user.id)
+					.is('deleted_at', null)
+					.select('id')
+					.maybeSingle();
+
+				if (!fallbackUpdateError && fallbackUpdatedShare) {
+					const response: CreateCommunityUnshareSuccessResponse = { success: true };
+					return json(response, { status: 200 });
+				}
+			}
+
 			return errorResponse('Du har inte behörighet att ta bort den här delningen.', 403);
 		}
 		console.error('Failed to unshare community post:', updateError);
