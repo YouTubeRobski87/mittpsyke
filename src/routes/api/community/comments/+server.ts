@@ -45,7 +45,7 @@ function isMissingTableError(
 
 function createServiceClient() {
 	const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
-	const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY;
+	const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SERVICE_ROLE_KEY;
 	if (!supabaseUrl || !serviceRoleKey) return null;
 
 	return createClient(supabaseUrl, serviceRoleKey, {
@@ -201,9 +201,16 @@ export const POST: RequestHandler = async ({ request }) => {
 				actor_user_id: user.id
 			});
 
-			if (notificationError && !isMissingTableError(notificationError, 'notifications')) {
+			if (notificationError) {
+				if (isMissingTableError(notificationError, 'notifications')) {
+					console.error('Notifications table missing while creating community reply notification.');
+				}
 				console.error('Failed to create community reply notification:', notificationError);
 			}
+		} else {
+			console.error(
+				'Skipped community reply notification: missing SUPABASE_SERVICE_ROLE_KEY/SERVICE_ROLE_KEY or Supabase URL.'
+			);
 		}
 	}
 
