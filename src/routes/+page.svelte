@@ -254,18 +254,6 @@
 			<HomeSafetyStrip />
 		</div>
 	</section>
-
-	<!-- 9. Avslutande CTA -->
-	<section class="final-cta-section" aria-label="Kom igång">
-		<div class="final-cta-inner">
-			<h2>Du behöver inte veta vad du ska säga.</h2>
-			<p>Börja skriva direkt utan konto. Få stöd i text och fortsätt i din egen takt.</p>
-			<div class="final-cta-actions">
-				<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('final_cta', 'borja_skriva_nu', '/skriv')}>Börja skriva nu</a>
-				<a href="/guider" class="hero-cta-link" onclick={() => trackHomeCta('final_cta', 'las_guider', '/guider')}>Läs guider</a>
-			</div>
-		</div>
-	</section>
 </main>
 
 <style>
@@ -793,53 +781,6 @@
 		margin: 0 auto;
 	}
 
-	/* ── Sektion 9: Avslutande CTA ── */
-	.final-cta-section {
-		padding: clamp(3rem, 8vw, 5.5rem) 1.25rem;
-		background: #141e2e;
-		color: #e0e4ea;
-		text-align: center;
-	}
-
-	.final-cta-inner {
-		max-width: 560px;
-		margin: 0 auto;
-	}
-
-	.final-cta-inner h2 {
-		margin: 0;
-		font-family: var(--font-heading);
-		font-weight: 700;
-		font-size: clamp(1.6rem, 3vw, 2.3rem);
-		color: #eef1f6;
-	}
-
-	.final-cta-inner p {
-		margin: 0.75rem 0 0;
-		font-family: var(--font-body);
-		line-height: 1.7;
-		color: rgba(220, 225, 235, 0.78);
-	}
-
-	.final-cta-actions {
-		margin-top: 1.4rem;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.65rem;
-		justify-content: center;
-	}
-
-	.final-cta-actions .hero-cta {
-		background: #3a7bd5;
-		color: #ffffff;
-	}
-
-	.final-cta-actions .hero-cta-link {
-		color: rgba(220, 225, 235, 0.82);
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
 	/* ── Gemensamma typografi ── */
 	h2 {
 		margin: 0;
@@ -909,7 +850,6 @@
 	:global(.dark) .early-trust { background: #0e1826; }
 	:global(.dark) .quick-flow { background: #0d1520; }
 	:global(.dark) .how-it-works { background: #0e1826; }
-	:global(.dark) .final-cta-section { background: #0d1520; }
 	:global(.dark) .review-section { background: #0a1018; }
 	:global(.dark) .trust-section { background: #0a1018; }
 	:global(.dark) .important-section { background: #080e16; }
