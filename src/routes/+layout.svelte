@@ -204,6 +204,7 @@
 	let profilePanelRef = $state<HTMLDivElement | null>(null);
 
 	const profilePanelData = $derived((data?.profilePanel ?? null) as ProfilePanelData);
+	const unreadNotificationCount = $derived((data?.unreadNotificationCount as number | undefined) ?? 0);
 	const profileName = $derived(getProfileName(displayName, user));
 	const avatarImageUrl = $derived(getAvatarImageUrl(user));
 	const showAvatarImage = $derived(Boolean(avatarImageUrl && !avatarImageLoadFailed));
@@ -534,6 +535,9 @@
 												</svg>
 											</span>
 										{/if}
+									{#if unreadNotificationCount > 0}
+										<span class="profile-avatar-badge" aria-hidden="true"></span>
+									{/if}
 								</a>
 								<button
 									type="button"
@@ -602,6 +606,9 @@
 									<div class="profile-panel-links" aria-label="Snabbval">
 										<a href="/dagbok" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
 										<a href="/chat" class="profile-panel-link" onclick={closeProfilePanel}>Starta chat</a>
+										<a href="/notiser" class="profile-panel-link" onclick={closeProfilePanel}>
+											Notiser{#if unreadNotificationCount > 0} ({unreadNotificationCount}){/if}
+										</a>
 										<a href="/dashboard/installningar" class="profile-panel-link" onclick={closeProfilePanel}>Inställningar</a>
 									</div>
 								</div>
@@ -641,7 +648,9 @@
 					{/each}
 					<p class="mobile-menu-section-title text-xs opacity-55">Min portal</p>
 					{#each signedInPortalNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>
+							{item.label}{#if item.href === '/notiser' && unreadNotificationCount > 0} ({unreadNotificationCount}){/if}
+						</a>
 					{/each}
 					<a href="/om-mittpsyke" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
 					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
@@ -875,6 +884,18 @@
 	.profile-avatar-link {
 		width: 2.25rem;
 		height: 2.25rem;
+		position: relative;
+	}
+
+	.profile-avatar-badge {
+		position: absolute;
+		top: 0.14rem;
+		right: 0.14rem;
+		width: 0.52rem;
+		height: 0.52rem;
+		border-radius: 9999px;
+		background: hsl(var(--primary));
+		box-shadow: 0 0 0 2px hsl(var(--background));
 	}
 
 	.profile-panel-toggle {

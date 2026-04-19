@@ -43,6 +43,16 @@ function isMissingTableError(
 	);
 }
 
+function createServiceClient() {
+	const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
+	const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY;
+	if (!supabaseUrl || !serviceRoleKey) return null;
+
+	return createClient(supabaseUrl, serviceRoleKey, {
+		auth: { autoRefreshToken: false, persistSession: false }
+	});
+}
+
 function validateBody(
 	input: unknown
 ): { ok: true; data: CreateCommunityCommentRequestBody } | { ok: false; error: string } {
@@ -175,6 +185,27 @@ export const POST: RequestHandler = async ({ request }) => {
 			created_at: insertedComment.created_at
 		}
 	};
+
+	// Lågmäld notis till ägaren av det delade inlägget.
+	// Notis är extra funktionalitet: kommentaren ska ändå lyckas om notis-insert fallerar.
+	if (post.user_id && post.user_id !== user.id) {
+		const serviceClient = createServiceClient();
+		if (serviceClient) {
+			const { error: notificationError } = await serviceClient.from('notifications').insert({
+				user_id: post.user_id,
+				type: 'community_reply',
+				title: 'Du har fått ett svar i Gemenskapen',
+				body: 'Någon har svarat på ditt inlägg.',
+				link: `/dashboard/gemenskap#post-${validated.data.postId}`,
+				is_read: false,
+				actor_user_id: user.id
+			});
+
+			if (notificationError && !isMissingTableError(notificationError, 'notifications')) {
+				console.error('Failed to create community reply notification:', notificationError);
+			}
+		}
+	}
 
 	return json(response, { status: 200 });
 };

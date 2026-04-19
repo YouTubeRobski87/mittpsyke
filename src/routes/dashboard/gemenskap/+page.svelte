@@ -434,7 +434,7 @@
 				<a href="/dagbok/checkin#senaste-inlagg" class="feed-cta">Skriv i Dagbok och dela anonymt</a>
 				<div class="community-feed">
 					{#each posts as post (post.id)}
-						<article class="community-post post-variant-{postVariant(post.id)}">
+						<article id={`post-${post.id}`} class="community-post post-variant-{postVariant(post.id)}">
 							<div class="community-post-head">
 								<p class="voice">Anonym röst</p>
 								{#if formatMoodLabel(post.mood)}
