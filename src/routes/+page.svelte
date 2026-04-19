@@ -137,7 +137,7 @@
 				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
 			</p>
-						<p class="early-trust-link">
+			<p class="early-trust-link">
 				<a href="/integritet" onclick={() => trackHomeCta('early_trust', 'integritet', '/integritet')}>
 					Läs om hur vi hanterar integritet och data
 				</a>
@@ -146,6 +146,17 @@
 					Läs om att chatta anonymt utan konto
 				</a>
 			</p>
+			<div class="community-highlight-inner" aria-labelledby="community-highlight-title">
+				<h3 id="community-highlight-title">Gemenskapen är igång</h3>
+				<p>Läs andras anonyma tankar eller dela något eget i lugn takt.</p>
+				<a
+					class="community-highlight-cta"
+					href="/dashboard/gemenskap"
+					onclick={() => trackHomeCta('community_highlight', 'oppna_gemenskapen', '/dashboard/gemenskap')}
+				>
+					Öppna Gemenskapen
+				</a>
+			</div>
 		</div>
 	</section>
 
@@ -218,22 +229,6 @@
 					<cite>Anonym användare</cite>
 				</blockquote>
 			</div>
-		</div>
-	</section>
-
-	<section class="community-highlight" aria-labelledby="community-highlight-title">
-		<div class="cards-narrow community-highlight-inner">
-			<h2 id="community-highlight-title">Gemenskapen är igång</h2>
-			<p>
-				Läs andras tankar eller dela något eget. Se vad andra har delat anonymt i Gemenskapen och känn att du inte är ensam.
-			</p>
-			<a
-				class="community-highlight-cta"
-				href="/dashboard/gemenskap"
-				onclick={() => trackHomeCta('community_highlight', 'oppna_gemenskapen', '/dashboard/gemenskap')}
-			>
-				Öppna Gemenskapen
-			</a>
 		</div>
 	</section>
 
@@ -719,14 +714,10 @@
 		color: rgba(255, 255, 255, 0.5);
 	}
 
-	.community-highlight {
-		padding: clamp(2.1rem, 5.5vw, 3.4rem) 1.25rem;
-		background: #162236;
-		color: #e0e4ea;
-	}
-
 	.community-highlight-inner {
-		padding: 1rem;
+		margin-top: 0.75rem;
+		max-width: 560px;
+		padding: 0.75rem 0.85rem;
 		border-radius: var(--radius-card);
 		border: 1px solid rgba(148, 163, 184, 0.12);
 		background:
@@ -734,30 +725,29 @@
 			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
 	}
 
-	.community-highlight-inner h2 {
+	.community-highlight-inner h3 {
 		margin: 0;
 		color: #eef1f6;
-		font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+		font-size: 1rem;
 	}
 
 	.community-highlight-inner p {
-		margin: 0.65rem 0 0;
-		max-width: 68ch;
+		margin: 0.45rem 0 0;
 		color: rgba(220, 225, 235, 0.82);
-		font-size: 0.95rem;
-		line-height: 1.62;
+		font-size: 0.9rem;
+		line-height: 1.58;
 	}
 
 	.community-highlight-cta {
 		display: inline-flex;
 		align-items: center;
-		margin-top: 0.8rem;
-		padding: 0.42rem 0.78rem;
+		margin-top: 0.55rem;
+		padding: 0.34rem 0.68rem;
 		border-radius: var(--radius-pill);
 		background: rgba(58, 123, 213, 0.15);
 		color: #7db4e8;
 		font-family: var(--font-heading);
-		font-size: 0.83rem;
+		font-size: 0.8rem;
 		font-weight: 600;
 		letter-spacing: 0.005em;
 	}
