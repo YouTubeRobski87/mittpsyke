@@ -34,8 +34,8 @@
 		<section class="trust-overview" aria-label="Snabbt om MittPsyke">
 			<h2>Snabbt om MittPsyke</h2>
 			<ul>
-				<li><strong>Är detta vård?</strong> Nej. MittPsyke är ett AI-baserat samtalsstöd, inte vård eller behandling.</li>
-				<li><strong>Vad används tjänsten till?</strong> Reflektion, samtalsstöd, dagbok och struktur i vardagen.</li>
+				<li><strong>Är detta vård?</strong> Nej. MittPsyke är ett AI-baserat samtalsstöd i text, inte vård, diagnos, behandling eller akuthjälp.</li>
+				<li><strong>Vad används tjänsten till?</strong> Ett första steg för reflektion och struktur i vardagen när du vill börja någonstans.</li>
 				<li><strong>Vad gäller i akut läge?</strong> Ring 112 vid akut fara. För vårdråd, kontakta 1177.</li>
 				<li><strong>Vem står bakom?</strong> MittPsyke drivs av Robert Claesson som enskild näringsverksamhet (org.nr 198712284895).</li>
 					<li><strong>Hur kontaktar man er?</strong> <a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a></li>

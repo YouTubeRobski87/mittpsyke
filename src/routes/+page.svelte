@@ -112,16 +112,16 @@
 			<div class="hero-content">
 				<p class="hero-eyebrow">Anonymt stöd i text</p>
 				<h1>Skriv av dig anonymt och få hjälp att sortera det som snurrar</h1>
-				<p>När tankarna snurrar kan det hjälpa att börja någonstans. MittPsyke ger lugnt stöd i text, hjälper dig att sätta ord på det svåra och visar små nästa steg — utan konto.</p>
+				<p>När tankarna snurrar kan det hjälpa att börja någonstans. MittPsyke ger lugnt stöd i text, hjälper dig att sätta ord på det svåra, för reflektion och struktur, och visar små nästa steg — utan konto.</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 				</div>
 				<p class="hero-secondary-link">
 					<a href="/guider" class="hero-cta-link" onclick={() => trackHomeCta('hero', 'las_guider', '/guider')}>Läs guider</a>
 				</p>
-				<p class="hero-trust-note">Utan konto. I din egen takt. Inte vård — men ett första steg.</p>
+				<p class="hero-trust-note">Utan konto. I din egen takt. Inte vård eller akuthjälp — men ett första steg.</p>
 				<p class="hero-origin-note">
-					Skapat av samma person som står bakom
+					MittPsyke drivs av Robert Claesson, samma person som står bakom
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
 					<a href="/om-mittpsyke" onclick={() => trackHomeCta('hero', 'om_oss', '/om-mittpsyke')}>Läs mer om oss</a>
 					och
@@ -137,7 +137,7 @@
 			<p class="early-trust-eyebrow">Trygg start</p>
 			<h2 id="early-trust-title">Känn dig trygg innan du börjar</h2>
 			<p class="early-trust-intro">
-				Här ser du ramarna innan du börjar. MittPsyke är ett första steg i text.
+				Här ser du ramarna innan du börjar. MittPsyke är ett första steg i text när du vill börja någonstans.
 			</p>
 			<ul class="early-trust-grid">
 				{#each trustHighlights as item}
@@ -173,7 +173,7 @@
 		<div class="cards-narrow quick-flow-inner">
 			<h2 id="quick-flow-title">Så fungerar MittPsyke</h2>
 			<p class="quick-flow-intro">
-				Tre steg: skriv, få stöd i text och fortsätt med konto om du vill spara över tid.
+				Tre steg: skriv, få stöd i text och fortsätt med konto om du vill spara över tid. Inte vård, diagnos eller akuthjälp.
 			</p>
 			<ol class="quick-flow-grid">
 				{#each quickFlowSteps as step, index}
@@ -258,9 +258,9 @@
 		<div class="cards-narrow trust-inner">
 			<img src="/assets/home/Tryggplats.png" alt="Illustration av en trygg plats i naturen" loading="lazy" class="trust-image" />
 			<div class="trust-copy">
-				<h2 id="trust-title">För stöd och reflektion — inte för vård eller diagnos</h2>
+				<h2 id="trust-title">För stöd i text, reflektion och struktur — inte vård eller akuthjälp</h2>
 				<p>
-					MittPsyke är för stöd och reflektion här och nu. När du vill gå vidare finns dagbok, övningar och guider.
+					MittPsyke är tänkt som ett första steg när du vill börja någonstans. Här kan du skriva av dig, sortera tankar och få struktur i text. När du vill gå vidare finns dagbok, övningar och guider.
 				</p>
 				<p class="trust-privacy">
 					Du kan läsa hur integritet och data fungerar innan du delar något. Med konto kan du begära export och radering.
@@ -274,7 +274,7 @@
 				<div class="trust-facts" aria-label="Avsändare och ansvar">
 					<p><strong>Drivs i Sverige av:</strong> Robert Claesson</p>
 					<p><strong>Kontakt:</strong> <a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a></p>
-					<p><strong>Viktigt:</strong> Inte vård, diagnos, behandling eller akuttjänst</p>
+					<p><strong>Viktigt:</strong> Inte vård, diagnos, behandling eller akuthjälp</p>
 				</div>
 			</div>
 		</div>
@@ -951,4 +951,3 @@
 	:global(.dark) .trust-section { background: #0a1018; }
 	:global(.dark) .important-section { background: #080e16; }
 </style>
-
