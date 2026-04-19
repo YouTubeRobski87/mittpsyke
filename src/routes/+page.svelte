@@ -123,7 +123,7 @@
 			<p class="early-trust-eyebrow">Trygg start</p>
 			<h2 id="early-trust-title">Känn dig trygg innan du börjar</h2>
 			<p class="early-trust-intro">
-				Du kan börja anonymt utan konto. MittPsyke är till för reflektion och första steg — inte för vård eller akuthjälp.
+				Här ser du ramarna innan du börjar. MittPsyke är ett första steg i text.
 			</p>
 			<ul class="early-trust-grid">
 				{#each trustHighlights as item}
@@ -151,7 +151,7 @@
 		<div class="cards-narrow quick-flow-inner">
 			<h2 id="quick-flow-title">Så fungerar MittPsyke</h2>
 			<p class="quick-flow-intro">
-				Börja anonymt utan konto, få lugnt stöd i text och fortsätt med konto när du vill spara och följa ditt mående över tid.
+				Tre steg: skriv, få stöd i text och fortsätt med konto om du vill spara över tid.
 			</p>
 			<ol class="quick-flow-grid">
 				{#each quickFlowSteps as step, index}
@@ -171,7 +171,7 @@
 			<p class="how-eyebrow">Fördjupning</p>
 			<h2 id="how-it-works-title">Mer än en chatt</h2>
 			<p class="how-intro">
-				När du vill fortsätta finns fler sätt att få struktur, följa ditt mående och hitta sådant som hjälper i vardagen.
+				Här finns verktygen för att få struktur, följa ditt mående och hitta det som hjälper i vardagen.
 			</p>
 			<div class="how-grid">
 				<article class="how-card">
@@ -228,7 +228,7 @@
 			<div class="trust-copy">
 				<h2 id="trust-title">För stöd och reflektion — inte för vård eller diagnos</h2>
 				<p>
-					Du kan börja anonymt utan konto och få lugnt stöd i text direkt. När du vill fortsätta finns dagbok, övningar och guider för mer struktur över tid.
+					MittPsyke är för stöd och reflektion här och nu. När du vill gå vidare finns dagbok, övningar och guider.
 				</p>
 				<p class="trust-privacy">
 					Du kan läsa hur integritet och data fungerar innan du delar något. Med konto kan du begära export och radering.
