@@ -547,6 +547,7 @@
 
 	.quick-flow {
 		padding: clamp(2.3rem, 6vw, 3.6rem) 1.25rem;
+		padding-bottom: clamp(2.9rem, 7.5vw, 4.4rem);
 		background: #141e2e;
 		color: #e0e4ea;
 	}
