@@ -107,7 +107,8 @@
 				</div>
 				<p class="hero-trust-note">Utan konto. I din egen takt. Inte vård — men ett första steg.</p>
 				<p class="hero-origin-note">
-					Drivs i Sverige av MittPsyke.
+					Skapat av samma person som står bakom
+					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
 					<a href="/om-mittpsyke" onclick={() => trackHomeCta('hero', 'om_oss', '/om-mittpsyke')}>Läs mer om oss</a>
 					och
 					<a href="#sa-fungerar-det" onclick={() => trackHomeCta('hero', 'sa_fungerar_det', '#sa-fungerar-det')}>hur tjänsten fungerar</a>.
