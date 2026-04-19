@@ -185,6 +185,7 @@
 				{/each}
 			</ol>
 			<p class="quick-flow-cta-row">
+				<span class="quick-flow-cta-label">Nästa steg:</span>
 				<a href="/skriv" onclick={() => trackHomeCta('quick_flow', 'borja_skriva_anonymt', '/skriv')}>
 					Börja skriva anonymt
 				</a>
@@ -607,9 +608,13 @@
 	}
 
 	.quick-flow-cta-row {
-		margin: 0.8rem 0 0;
+		margin: 1.15rem 0 0;
 		font-size: 0.9rem;
 		color: rgba(220, 225, 235, 0.82);
+	}
+
+	.quick-flow-cta-label {
+		color: rgba(220, 225, 235, 0.72);
 	}
 
 	.quick-flow-cta-row a {
