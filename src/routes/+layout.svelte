@@ -551,6 +551,11 @@
 									onclick={toggleProfilePanel}
 								>
 									<span aria-hidden="true">{profilePanelOpen ? '▴' : '▾'}</span>
+									{#if unreadNotificationCount > 0}
+										<span class="profile-toggle-badge" aria-label={`${unreadNotificationCount} olästa notiser`}>
+											{unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
+										</span>
+									{/if}
 								</button>
 							</div>
 
@@ -905,6 +910,26 @@
 		height: 1.65rem;
 		font-size: 0.78rem;
 		line-height: 1;
+		position: relative;
+	}
+
+	.profile-toggle-badge {
+		position: absolute;
+		top: -0.4rem;
+		right: -0.44rem;
+		min-width: 1rem;
+		height: 1rem;
+		padding: 0 0.2rem;
+		border-radius: 9999px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 0.62rem;
+		font-weight: 700;
+		line-height: 1;
+		color: #1f2937;
+		background: #fbbf24;
+		box-shadow: 0 0 0 2px hsl(var(--background));
 	}
 
 	:global(.dark) .profile-avatar-link,
