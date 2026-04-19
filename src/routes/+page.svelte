@@ -11,9 +11,21 @@
 	let bgEl: HTMLImageElement | null = null;
 
 	const trustHighlights = [
-		'Börja anonymt: Skriv direkt utan registrering.',
-		'Tydliga gränser: MittPsyke är stöd i text, inte vård, diagnos eller akuttjänst.',
-		'Integritet och kontroll: Läs hur data hanteras innan du börjar. Med konto finns export och radering.'
+		{
+			text: 'Börja anonymt: Skriv direkt utan registrering.',
+			href: '/chatta-anonymt',
+			trackCta: 'chatta_anonymt_utan_konto'
+		},
+		{
+			text: 'Tydliga gränser: MittPsyke är stöd i text, inte vård, diagnos eller akuttjänst.',
+			href: '/om-mittpsyke',
+			trackCta: 'tydliga_granser'
+		},
+		{
+			text: 'Integritet och kontroll: Läs hur data hanteras innan du börjar. Med konto finns export och radering.',
+			href: '/integritet',
+			trackCta: 'integritet'
+		}
 	];
 
 	const quickFlowSteps = [
@@ -129,22 +141,21 @@
 			</p>
 			<ul class="early-trust-grid">
 				{#each trustHighlights as item}
-					<li class="early-trust-item">{item}</li>
+					<li>
+						<a
+							class="early-trust-item"
+							href={item.href}
+							onclick={() => trackHomeCta('early_trust', item.trackCta, item.href)}
+						>
+							{item.text}
+						</a>
+					</li>
 				{/each}
 			</ul>
 			<p class="early-trust-note">
 				Vid akut fara: <a href="tel:112">112</a>. För vårdråd:
 				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
-			</p>
-			<p class="early-trust-link">
-				<a href="/integritet" onclick={() => trackHomeCta('early_trust', 'integritet', '/integritet')}>
-					Läs om hur vi hanterar integritet och data
-				</a>
-				<span aria-hidden="true"> • </span>
-				<a href="/chatta-anonymt" onclick={() => trackHomeCta('early_trust', 'chatta_anonymt_utan_konto', '/chatta-anonymt')}>
-					Läs om att chatta anonymt utan konto
-				</a>
 			</p>
 			<div class="community-highlight-inner" aria-labelledby="community-highlight-title">
 				<h3 id="community-highlight-title">Gemenskapen är igång</h3>
@@ -477,6 +488,7 @@
 	}
 
 	.early-trust-item {
+		display: block;
 		margin: 0;
 		padding: 0.75rem 0.85rem;
 		border-radius: var(--radius-card);
@@ -487,6 +499,15 @@
 		color: rgba(220, 225, 235, 0.9);
 		font-size: 0.94rem;
 		line-height: 1.55;
+		text-decoration: none;
+		transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+	}
+
+	.early-trust-item:hover,
+	.early-trust-item:focus-visible {
+		border-color: rgba(148, 163, 184, 0.28);
+		box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
+		transform: translateY(-1px);
 	}
 
 	.early-trust-note {
@@ -505,16 +526,10 @@
 		color: rgba(220, 225, 235, 0.86);
 	}
 
-	.early-trust-note a,
-	.early-trust-link a {
+	.early-trust-note a {
 		color: #d7e7ff;
 		text-decoration: underline;
 		text-underline-offset: 3px;
-	}
-
-	.early-trust-link {
-		margin: 0.55rem 0 0;
-		font-size: 0.9rem;
 	}
 
 	.quick-flow {
