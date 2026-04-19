@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { createServiceClient as createAdminServiceClient } from '$lib/server/supabase-admin';
 import type { RequestHandler } from './$types';
 import type {
 	CreateCommunityCommentErrorResponse,
@@ -41,16 +42,6 @@ function isMissingTableError(
 		error.code === '42P01' ||
 		(error.message ?? '').includes(`Could not find the table 'public.${tableName}'`)
 	);
-}
-
-function createServiceClient() {
-	const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
-	const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SERVICE_ROLE_KEY;
-	if (!supabaseUrl || !serviceRoleKey) return null;
-
-	return createClient(supabaseUrl, serviceRoleKey, {
-		auth: { autoRefreshToken: false, persistSession: false }
-	});
 }
 
 function validateBody(
@@ -189,7 +180,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	// Lågmäld notis till ägaren av det delade inlägget.
 	// Notis är extra funktionalitet: kommentaren ska ändå lyckas om notis-insert fallerar.
 	if (post.user_id && post.user_id !== user.id) {
-		const serviceClient = createServiceClient();
+		const serviceClient = createAdminServiceClient();
 		if (serviceClient) {
 			const { error: notificationError } = await serviceClient.from('notifications').insert({
 				user_id: post.user_id,
