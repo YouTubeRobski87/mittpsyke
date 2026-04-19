@@ -76,7 +76,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'chatta-anonymt-med-nagon': {
-		title: 'Chatta anonymt med någon | Chatta anonymt utan konto | MittPsyke',
+		title: 'Chatta anonymt med någon | Utan konto | MittPsyke',
 		description:
 			'Chatta anonymt med någon utan konto och prata anonymt i text. Läs hur samtalet fungerar, vad AI-stöd kan hjälpa med och vad du kan förvänta dig.',
 		canonical: 'https://www.mittpsyke.se/chatta-anonymt-med-nagon',
