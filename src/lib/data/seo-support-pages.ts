@@ -76,16 +76,16 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'chatta-anonymt-med-nagon': {
-		title: 'Chatta anonymt med någon | Så fungerar stödet online | MittPsyke',
+		title: 'Chatta anonymt med någon | Chatta anonymt utan konto | MittPsyke',
 		description:
-			'Lär dig vad som händer i en anonym chatt, hur AI-stöd fungerar och vad du kan förvänta dig när du vill chatta anonymt om psykisk hälsa.',
+			'Chatta anonymt med någon utan konto och prata anonymt i text. Läs hur samtalet fungerar, vad AI-stöd kan hjälpa med och vad du kan förvänta dig.',
 		canonical: 'https://www.mittpsyke.se/chatta-anonymt-med-nagon',
 		ogTitle: 'Chatta anonymt med någon | MittPsyke',
 		ogDescription:
 			'En genomgång av hur anonym chatt kan fungera när du behöver börja enkelt och utan press.',
-		h1: 'Chatta anonymt med någon',
+		h1: 'Chatta anonymt med någon i text',
 		lead:
-			'När något känns svårt kan text vara en enklare start än att prata högt. Den här sidan förklarar hur en anonym chatt brukar fungera, vad AI-stöd faktiskt gör och vad som är rimligt att förvänta sig innan du öppnar samtalet.',
+			'När något känns svårt kan text vara en enklare start än att prata högt. Här kan du chatta anonymt utan konto och få en tydlig bild av hur samtalet fungerar, vad AI-stöd faktiskt gör och vad som är rimligt att förvänta sig innan du börjar.',
 		primaryCta: { href: '/chat', label: 'Öppna chatten' },
 		secondaryCta: { href: '/prata-anonymt-online', label: 'Läs om att prata anonymt' },
 		sections: [
@@ -121,7 +121,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			'Behöver du mänsklig kontakt eller mer akut vägledning finns stodlinjer.se och 1177. Vid akut fara ska du alltid ringa 112.'
 		],
 		nextStepLinks: [
-			{ href: '/chat', label: 'Starta chatten' },
+			{ href: '/chat', label: 'Chatta anonymt nu' },
 			{ href: '/dagbok', label: 'Börja i dagboken' },
 			{ href: '/anonymt-samtalsstod-online', label: 'Läs mer om anonymt stöd' }
 		],
@@ -129,6 +129,10 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			{
 				question: 'Måste jag ha konto för att chatta anonymt?',
 				answer: 'Nej. Du kan börja utan konto och först senare välja om du vill spara något över tid.'
+			},
+			{
+				question: 'Är MittPsyke anonymt?',
+				answer: 'Du kan börja utan konto och chatta anonymt i text. Om du senare vill spara innehåll över tid kan du välja att skapa konto.'
 			},
 			{
 				question: 'Är AI-stöd samma sak som att prata med en behandlare?',
