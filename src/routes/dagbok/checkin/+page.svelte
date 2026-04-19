@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import { trackSignupCompleted, trackDiaryPageOpenedFromHoroscope } from '$lib/analytics';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
@@ -39,6 +39,7 @@
 	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
 	let hasSavedEntries = $derived(entries.length > 0);
+	let showWriteEditor = $state(false);
 
 	// Filtrerade inlägg baserat på valt kalenderdatum
 	let filteredEntries = $derived.by(() => {
@@ -608,6 +609,14 @@
 		}
 	}
 
+	async function openWriteEditor() {
+		showWriteEditor = true;
+		await tick();
+		if (typeof document !== 'undefined') {
+			document.getElementById('skriv-sjalv')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
+	}
+
 	async function saveDraftToDiary() {
 		if (!draftText.trim() || savingDraft) return;
 		draftError = '';
@@ -688,8 +697,13 @@
 		const prefill = $page.url.searchParams.get('prefill')?.trim();
 		if (prefill) {
 			draftText = prefill;
+			showWriteEditor = true;
 		} else if (typeof window !== 'undefined') {
 			draftText = parseStoredDraft(localStorage.getItem('mittpsyke_temp_entry'));
+		}
+
+		if (typeof window !== 'undefined' && window.location.hash === '#skriv-sjalv') {
+			showWriteEditor = true;
 		}
 
 		try {
@@ -806,13 +820,13 @@
 							Du kan skriva fritt i din personliga dagbok eller välja en röst som guidar dig genom dagen.
 						</p>
 						<div class="diary-path-grid mt-3">
-							<a href="/dagbok/checkin#skriv-sjalv" class="diary-path-card diary-path-card--write">
+							<button type="button" class="diary-path-card diary-path-card--write" onclick={openWriteEditor}>
 								<span class="path-icon-wrap path-icon-wrap--write" aria-hidden="true">
 									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 								</span>
 								<span class="diary-path-title">Skriv själv</span>
 								<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
-							</a>
+							</button>
 							<a href="/dagars-avtryck" class="diary-path-card diary-path-card--guided">
 								<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
 									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -823,6 +837,7 @@
 						</div>
 					</section>
 
+					{#if showWriteEditor}
 					<section class="auth-panel auth-panel-accent diary-editor-panel" id="skriv-sjalv">
 						<div class="editor-shell">
 							<header class="editor-head">
@@ -941,6 +956,7 @@
 						</div>
 						</div>
 					</section>
+					{/if}
 
 					{#if draftSuccess && !draftText}
 						<section class="auth-panel auth-panel-success">
@@ -950,7 +966,9 @@
 								eller komma tillbaka senare och fortsätta där du slutade.
 							</p>
 							<div class="actions-row mt-3">
-					<a href="/dagbok/checkin#skriv-sjalv" class="auth-button primary">Skriv några ord till</a>
+								<button type="button" class="auth-button primary" onclick={openWriteEditor}>
+									Skriv några ord till
+								</button>
 								{#if hasSavedEntries}
 					<a href="/dagbok/checkin#senaste-inlagg" class="auth-button">Se dina senaste inlägg</a>
 								{/if}
