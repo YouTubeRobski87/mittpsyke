@@ -152,17 +152,15 @@
 					</li>
 				{/each}
 			</ul>
-			<div class="community-highlight-inner" aria-labelledby="community-highlight-title">
+			<a
+				class="community-highlight-inner"
+				aria-labelledby="community-highlight-title"
+				href="/dashboard/gemenskap"
+				onclick={() => trackHomeCta('community_highlight', 'oppna_gemenskapen', '/dashboard/gemenskap')}
+			>
 				<h3 id="community-highlight-title">Gemenskapen är igång</h3>
 				<p>Läs andras anonyma tankar eller dela något eget i lugn takt.</p>
-				<a
-					class="community-highlight-cta"
-					href="/dashboard/gemenskap"
-					onclick={() => trackHomeCta('community_highlight', 'oppna_gemenskapen', '/dashboard/gemenskap')}
-				>
-					Öppna Gemenskapen
-				</a>
-			</div>
+			</a>
 			<p class="early-trust-note">
 				Vid akut fara: <a href="tel:112">112</a>. För vårdråd:
 				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
@@ -735,6 +733,7 @@
 	}
 
 	.community-highlight-inner {
+		display: block;
 		margin-top: 0.75rem;
 		max-width: 740px;
 		padding: 0.75rem 0.85rem;
@@ -743,6 +742,15 @@
 		background:
 			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
 			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
+		text-decoration: none;
+		transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+	}
+
+	.community-highlight-inner:hover,
+	.community-highlight-inner:focus-visible {
+		border-color: rgba(148, 163, 184, 0.28);
+		box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
+		transform: translateY(-1px);
 	}
 
 	.community-highlight-inner h3 {
@@ -756,20 +764,6 @@
 		color: rgba(220, 225, 235, 0.82);
 		font-size: 0.9rem;
 		line-height: 1.58;
-	}
-
-	.community-highlight-cta {
-		display: inline-flex;
-		align-items: center;
-		margin-top: 0.55rem;
-		padding: 0.34rem 0.68rem;
-		border-radius: var(--radius-pill);
-		background: rgba(58, 123, 213, 0.15);
-		color: #7db4e8;
-		font-family: var(--font-heading);
-		font-size: 0.8rem;
-		font-weight: 600;
-		letter-spacing: 0.005em;
 	}
 
 	/* ── Sektion 7: Trygghet ── */
