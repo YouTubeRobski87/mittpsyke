@@ -736,7 +736,7 @@
 
 	.community-highlight-inner {
 		margin-top: 0.75rem;
-		max-width: 100%;
+		max-width: 740px;
 		padding: 0.75rem 0.85rem;
 		border-radius: var(--radius-card);
 		border: 1px solid rgba(148, 163, 184, 0.12);
