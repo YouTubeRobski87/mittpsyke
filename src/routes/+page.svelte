@@ -152,11 +152,6 @@
 					</li>
 				{/each}
 			</ul>
-			<p class="early-trust-note">
-				Vid akut fara: <a href="tel:112">112</a>. För vårdråd:
-				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
-				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
-			</p>
 			<div class="community-highlight-inner" aria-labelledby="community-highlight-title">
 				<h3 id="community-highlight-title">Gemenskapen är igång</h3>
 				<p>Läs andras anonyma tankar eller dela något eget i lugn takt.</p>
@@ -168,6 +163,11 @@
 					Öppna Gemenskapen
 				</a>
 			</div>
+			<p class="early-trust-note">
+				Vid akut fara: <a href="tel:112">112</a>. För vårdråd:
+				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
+				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
+			</p>
 		</div>
 	</section>
 
@@ -487,8 +487,13 @@
 		gap: 0.75rem;
 	}
 
+	.early-trust-grid li {
+		display: flex;
+	}
+
 	.early-trust-item {
 		display: block;
+		height: 100%;
 		margin: 0;
 		padding: 0.75rem 0.85rem;
 		border-radius: var(--radius-card);
@@ -731,7 +736,7 @@
 
 	.community-highlight-inner {
 		margin-top: 0.75rem;
-		max-width: 560px;
+		max-width: 100%;
 		padding: 0.75rem 0.85rem;
 		border-radius: var(--radius-card);
 		border: 1px solid rgba(148, 163, 184, 0.12);
