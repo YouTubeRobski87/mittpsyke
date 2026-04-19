@@ -184,6 +184,15 @@
 					</li>
 				{/each}
 			</ol>
+			<p class="quick-flow-cta-row">
+				<a href="/skriv" onclick={() => trackHomeCta('quick_flow', 'borja_skriva_anonymt', '/skriv')}>
+					Börja skriva anonymt
+				</a>
+				<span aria-hidden="true"> • </span>
+				<a href="/register" onclick={() => trackHomeCta('quick_flow', 'fortsatt_over_tid', '/register')}>
+					Fortsätt över tid
+				</a>
+			</p>
 		</div>
 	</section>
 
@@ -595,6 +604,18 @@
 		font-size: 0.94rem;
 		line-height: 1.62;
 		color: rgba(220, 225, 235, 0.74);
+	}
+
+	.quick-flow-cta-row {
+		margin: 0.8rem 0 0;
+		font-size: 0.9rem;
+		color: rgba(220, 225, 235, 0.82);
+	}
+
+	.quick-flow-cta-row a {
+		color: #d7e7ff;
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 
 	.cards-narrow {
