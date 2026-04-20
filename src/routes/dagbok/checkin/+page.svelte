@@ -1488,8 +1488,8 @@
 						<div class="movement-week">
 							<h4 class="text-sm font-semibold">Rörelse senaste 7 dagarna</h4>
 							<div class="movement-week-stats">
-								<span>{movementWeekLoggedDays} dagar noterade</span>
-								<span>{movementWeekCyclingDays} cykeldagar</span>
+								<span>{movementWeekLoggedDays} {movementWeekLoggedDays === 1 ? 'dag' : 'dagar'} noterade</span>
+								<span>{movementWeekCyclingDays} {movementWeekCyclingDays === 1 ? 'cykeldag' : 'cykeldagar'}</span>
 								<span>{movementWeekTotalKm} km cyklat</span>
 								<span>{movementWeekTotalSteps} steg totalt</span>
 							</div>
