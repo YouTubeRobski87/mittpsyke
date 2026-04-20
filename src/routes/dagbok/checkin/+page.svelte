@@ -55,6 +55,7 @@
 	let savingMovement = $state(false);
 	let movementError = $state('');
 	let movementSuccess = $state('');
+	let movementDebug = $state('Väntar på klick');
 	let movementWeekLoggedDays = $derived.by(() =>
 		movementWeek.filter((item) => item.stepCount !== null || item.cycledToday).length
 	);
@@ -687,6 +688,7 @@
 
 	async function saveMovementToday() {
 		if (savingMovement) return;
+		movementDebug = 'Klick registrerat';
 
 		movementError = '';
 		movementSuccess = '';
@@ -725,9 +727,11 @@
 			const session = data.session;
 			if (!session?.access_token) {
 				movementError = 'Logga in för att spara din rörelse.';
+				movementDebug = 'Ingen session/token i klienten';
 				return;
 			}
 
+			movementDebug = 'Request skickad till /api/movement/daily';
 			const response = await fetch('/api/movement/daily', {
 				method: 'POST',
 				headers: {
@@ -749,9 +753,11 @@
 						error?: string;
 				  }
 				| null;
+			movementDebug = `API svar ${response.status}${payload?.error ? `: ${payload.error}` : ''}`;
 
 			if (!response.ok || !payload?.success || !payload.entry) {
 				movementError = payload?.error ?? 'Kunde inte spara rörelse just nu.';
+				movementDebug = 'API-fel';
 				return;
 			}
 
@@ -759,8 +765,10 @@
 			movementToday = saved;
 			upsertMovementEntry(saved);
 			movementSuccess = 'Rörelsen för idag är sparad.';
+			movementDebug = 'Sparat';
 		} catch (error) {
 			movementError = error instanceof Error ? error.message : 'Kunde inte spara rörelse just nu.';
+			movementDebug = 'Nätverksfel/exception i saveMovementToday';
 		} finally {
 			savingMovement = false;
 		}
@@ -1459,6 +1467,7 @@
 						{#if movementSuccess}
 							<p class="text-xs auth-muted">{movementSuccess}</p>
 						{/if}
+						<p class="movement-debug">{movementDebug}</p>
 
 						<p class="text-xs auth-muted">
 							Det här är bara för att hjälpa dig se samband över tid.
@@ -2119,6 +2128,16 @@
 	.movement-week-list li {
 		display: grid;
 		gap: 0.1rem;
+	}
+
+	.movement-debug {
+		margin: 0.15rem 0 0;
+		padding: 0.35rem 0.45rem;
+		border-radius: 0.45rem;
+		border: 1px dashed hsl(var(--border));
+		background: hsl(var(--surface-soft));
+		color: hsl(var(--foreground));
+		font-size: 0.76rem;
 	}
 
 	.week-head h3,
