@@ -22,7 +22,7 @@
 		Vid akut fara, ring <a href="tel:112">112</a>. För vårdråd, kontakta
 		<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. För vidare
 		stöd finns
-		<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
+		<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
 	</p>
 
 	<div class="help-box" aria-label="Vidare hjälp och kontakt">

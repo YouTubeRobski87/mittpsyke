@@ -74,7 +74,7 @@
 			Om du behöver medicinsk bedömning eller mer stöd än egenvård: kontakta
 			<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>.
 			För stödlinjer finns
-			<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
+			<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
 		</p>
 		<p class="note">
 			Läs mer om avgränsningar i <a href="/ansvar">ansvarsinfo</a> och hur data hanteras i
