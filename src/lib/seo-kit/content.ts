@@ -307,6 +307,10 @@ export const guides: Guide[] = [
 			{
 				title: 'Hjälp vid oro på kvällen – vad du kan göra just nu',
 				href: '/guider/angest/hjalp-vid-oro-pa-kvallen'
+			},
+			{
+				title: 'Kvällsångest – varför får jag ångest på kvällen?',
+				href: '/guider/angest/angest-pa-kvallen'
 			}
 		],
 	},
@@ -1309,8 +1313,12 @@ export const guides: Guide[] = [
 		pillarSlug: 'angest',
 		slug: 'angest-pa-kvallen',
 		nextStepTool: '4-7-8-andning',
-		title: 'Varför får jag ångest på kvällen?',
-		description: 'Många upplever att ångest blir starkare på kvällen. Här går vi igenom vanliga orsaker, vad som kan hjälpa i stunden och när det kan vara bra att söka mer stöd.',
+		title: 'Kvällsångest – varför får jag ångest på kvällen?',
+		description:
+			'Många upplever kvällsångest och oro på kvällen. Här går vi igenom vanliga orsaker, lugn hjälp i stunden och kopplingen till sömn och nattlig oro.',
+		seoTitle: 'Kvällsångest: varför får jag ångest på kvällen? | MittPsyke',
+		seoDescription:
+			'Kvällsångest och ångest på kvällen är vanligt. Förstå varför det ofta blir värre när det blir tyst, hur nattlig oro påverkar sömnen och vad som kan hjälpa i stunden.',
 		content: `Många märker att ångest, oro eller inre stress blir starkare just på kvällen. När dagen saktar ner blir det ofta mindre som distraherar, och då kan tankar, känslor och kroppslig spänning komma ikapp. Det betyder inte att något är fel på dig. För många är kvällsångest en reaktion på stress, trötthet, grubblande eller att kroppen först då får utrymme att känna efter.
 
 **Därför kan ångest kännas värre på kvällen:**
@@ -1345,9 +1353,11 @@ Tomhet, sorg eller ensamhet kan bli tydligare när dagen tar slut. Kontakten med
 
 Många beskriver det som att allt "landar" på kvällen. Det är inte ovanligt och det säger ingenting om ditt värde.
 
-## Oro inför sömn eller nästa dag kan trigga ångest
+## Oro inför sömn, natten eller nästa dag kan trigga ångest
 
 Vetskapen om att man borde sova men inte kan det skapar lätt en ond cirkel. Oron för att inte somna gör kroppen mer vaken. Kroppen som är vaken gör det svårare att somna. Och ju längre natten drar ut, desto mer stress byggs upp inför morgondagen.
+
+En del vaknar också med ångest mitt i natten. Det kan kännas skrämmande, men är ofta samma stressystem som fortfarande är aktiverat.
 
 Det kan också handla om oro för vad nästa dag innebär – möten, krav, sociala situationer eller helt enkelt känslan av att inte orka. Den oron kan i sig räcka för att aktivera ångesten.
 
@@ -1394,6 +1404,10 @@ När det snurrar mycket på kvällen kan det hjälpa att skriva av sig. Börja l
 			{
 				question: 'Hjälper meditation mot kvällsångest?',
 				answer: 'För många kan kort meditation eller guidad nedvarvning hjälpa kroppen att varva ner. Det behöver inte vara långt – redan fem minuter kan göra skillnad.'
+			},
+			{
+				question: 'Varför kan dödsångest kännas starkare på kvällen?',
+				answer: 'När det blir tyst och du är trött får existentiella tankar ofta mer utrymme. Det betyder inte att du är i fara, men det kan kännas väldigt starkt i stunden.'
 			},
 			{
 				question: 'När bör jag söka hjälp för kvällsångest?',
