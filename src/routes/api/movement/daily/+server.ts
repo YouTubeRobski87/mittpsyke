@@ -97,6 +97,9 @@ function validateBody(
 	if (cycledKm !== null && (cycledKm < 0 || cycledKm > 500)) {
 		return { ok: false, error: 'Field "cycledKm" must be between 0 and 500.' };
 	}
+	if (stepCount === null && !cycledToday) {
+		return { ok: false, error: 'At least one movement field is required.' };
+	}
 
 	return {
 		ok: true,

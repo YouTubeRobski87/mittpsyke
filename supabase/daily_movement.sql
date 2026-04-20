@@ -17,16 +17,16 @@ create table if not exists public.daily_movement (
 	step_count integer null check (step_count is null or step_count >= 0),
 	cycled_today boolean not null default false,
 	cycled_km numeric(6, 1) null check (cycled_km is null or cycled_km >= 0),
-	created_at timestamptz not null default now(),
-	updated_at timestamptz not null default now(),
+	created_at timestamptz not null default timezone('utc', now()),
+	updated_at timestamptz not null default timezone('utc', now()),
 	constraint daily_movement_user_date_unique unique (user_id, entry_date)
 );
 
 create index if not exists daily_movement_user_date_idx
 	on public.daily_movement (user_id, entry_date desc);
 
-drop trigger if exists daily_movement_set_updated_at on public.daily_movement;
-create trigger daily_movement_set_updated_at
+drop trigger if exists update_daily_movement_updated_at on public.daily_movement;
+create trigger update_daily_movement_updated_at
 	before update on public.daily_movement
 	for each row
 	execute function public.update_updated_at_column();
