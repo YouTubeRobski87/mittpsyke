@@ -68,6 +68,20 @@
 		</p>
 	{/if}
 
+	<div class="help-box" aria-label="Vidare hjälp och kontakt">
+		<p class="help-title">Vidare hjälp</p>
+		<p class="note">
+			Om du behöver medicinsk bedömning eller mer stöd än egenvård: kontakta
+			<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>.
+			För stödlinjer finns
+			<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
+		</p>
+		<p class="note">
+			Läs mer om avgränsningar i <a href="/ansvar">ansvarsinfo</a> och hur data hanteras i
+			<a href="/integritet">integritetspolicyn</a>.
+		</p>
+	</div>
+
 	<p class="more">
 		<a href={contentLinkHref}>Läs mer om hur vi arbetar med innehåll</a>
 	</p>
@@ -115,6 +129,22 @@
 		margin: 0.8rem 0 0;
 	}
 
+	.help-box {
+		margin-top: 0.95rem;
+		padding: 0.8rem 0.9rem;
+		border-radius: 0.8rem;
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+	}
+
+	.help-title {
+		margin: 0;
+		font-size: 0.86rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+		color: rgba(0, 0, 0, 0.72);
+	}
+
 	a {
 		color: inherit;
 		text-decoration: underline;
@@ -136,6 +166,15 @@
 
 	:global(.dark) .emergency {
 		color: rgba(255, 255, 255, 0.76);
+	}
+
+	:global(.dark) .help-box {
+		border-color: rgba(255, 255, 255, 0.12);
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	:global(.dark) .help-title {
+		color: rgba(241, 245, 249, 0.88);
 	}
 
 	:global(.dark) h2 {

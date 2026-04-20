@@ -25,6 +25,14 @@
 		<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
 	</p>
 
+	<div class="help-box" aria-label="Vidare hjälp och kontakt">
+		<p class="help-title">Vidare hjälp</p>
+		<p class="trust-copy">
+			Behöver du mer stöd än egenvård kan du vända dig till 1177 eller stödlinjer. För frågor om
+			MittPsykes avgränsning och ansvar kan du läsa <a href="/ansvar">ansvarsinfo</a>.
+		</p>
+	</div>
+
 	{#if sources.length}
 		<h2>Källor</h2>
 		<ul>
@@ -69,6 +77,22 @@
 		margin-top: 0.65rem;
 	}
 
+	.help-box {
+		margin-top: 0.75rem;
+		padding: 0.75rem 0.9rem;
+		border-radius: 0.8rem;
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		background: rgba(0, 0, 0, 0.02);
+	}
+
+	.help-title {
+		margin: 0 0 0.3rem;
+		font-size: 0.86rem;
+		font-weight: 600;
+		letter-spacing: 0.01em;
+		color: rgba(0, 0, 0, 0.72);
+	}
+
 	ul {
 		margin: 0;
 		padding-left: 1.1rem;
@@ -88,5 +112,14 @@
 
 	:global(.dark) .updated-date {
 		color: rgba(255, 255, 255, 0.56);
+	}
+
+	:global(.dark) .help-box {
+		border-color: rgba(255, 255, 255, 0.12);
+		background: rgba(255, 255, 255, 0.03);
+	}
+
+	:global(.dark) .help-title {
+		color: rgba(241, 245, 249, 0.88);
 	}
 </style>
