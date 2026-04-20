@@ -76,16 +76,16 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'chatta-anonymt-med-nagon': {
-		title: 'Chatta anonymt med någon | Utan konto | MittPsyke',
+		title: 'Chatta anonymt med någon utan konto | Anonym chatt | MittPsyke',
 		description:
-			'Chatta anonymt med någon utan konto och prata anonymt i text. Läs hur samtalet fungerar, vad AI-stöd kan hjälpa med och vad du kan förvänta dig.',
+			'Chatta anonymt med någon utan konto och börja direkt i anonym chatt. Läs hur samtalet fungerar, vad AI-stöd kan hjälpa med och vad du kan förvänta dig.',
 		canonical: 'https://www.mittpsyke.se/chatta-anonymt-med-nagon',
 		ogTitle: 'Chatta anonymt med någon | MittPsyke',
 		ogDescription:
 			'En genomgång av hur anonym chatt kan fungera när du behöver börja enkelt och utan press.',
-		h1: 'Chatta anonymt med någon i text',
+		h1: 'Chatta anonymt med någon utan konto',
 		lead:
-			'När något känns svårt kan text vara en enklare start än att prata högt. Här kan du chatta anonymt utan konto och få en tydlig bild av hur samtalet fungerar, vad AI-stöd faktiskt gör och vad som är rimligt att förvänta sig innan du börjar.',
+			'När något känns svårt kan text vara en enklare start än att prata högt. Här kan du chatta anonymt med någon utan konto, börja direkt och få en tydlig bild av hur samtalet fungerar. Du behöver inte formulera allt perfekt från start.',
 		primaryCta: { href: '/chat', label: 'Öppna chatten' },
 		secondaryCta: { href: '/prata-anonymt-online', label: 'Läs om att prata anonymt' },
 		sections: [
@@ -110,6 +110,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		],
 		resourceListTitle: 'Fortsätt i rätt riktning',
 		resourceListItems: [
+			{ href: '/chatta-anonymt', label: 'Chatta anonymt utan konto', description: 'om du vill ta en extra lågtröskelstart direkt i text.' },
 			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför anonymitet ofta gör första steget lättare.' },
 			{ href: '/chattstod-psykisk-ohalsa', label: 'Chattstöd vid psykisk ohälsa', description: 'för en bredare bild av hur tidigt stöd i text kan fungera.' },
 			{ href: '/dagbok', label: 'Skriv i dagboken', description: 'om du vill formulera mer i lugn och ro efter chatten.' },
@@ -930,4 +931,3 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 export const seoSupportPagePaths = Object.values(seoSupportPages).map((page) =>
 	page.canonical.replace('https://www.mittpsyke.se', '')
 );
-
