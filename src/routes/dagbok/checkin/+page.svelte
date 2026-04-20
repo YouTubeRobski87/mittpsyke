@@ -657,16 +657,22 @@
 		return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 	}
 
-	function parseIntegerInput(value: string): number | null {
-		const trimmed = value.trim();
+	function normalizeInputValue(value: unknown): string {
+		if (typeof value === 'string') return value;
+		if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+		return '';
+	}
+
+	function parseIntegerInput(value: unknown): number | null {
+		const trimmed = normalizeInputValue(value).trim();
 		if (!trimmed) return null;
 		const parsed = Number(trimmed);
 		if (!Number.isFinite(parsed)) return null;
 		return Math.round(parsed);
 	}
 
-	function parseDecimalInput(value: string): number | null {
-		const trimmed = value.trim().replace(',', '.');
+	function parseDecimalInput(value: unknown): number | null {
+		const trimmed = normalizeInputValue(value).trim().replace(',', '.');
 		if (!trimmed) return null;
 		const parsed = Number(trimmed);
 		if (!Number.isFinite(parsed)) return null;
@@ -693,8 +699,11 @@
 		movementError = '';
 		movementSuccess = '';
 
-		const stepCount = parseIntegerInput(movementStepsInput);
-		if (movementStepsInput.trim().length > 0 && stepCount === null) {
+		const stepsRaw = normalizeInputValue(movementStepsInput);
+		const cycledKmRaw = normalizeInputValue(movementCycledKmInput);
+
+		const stepCount = parseIntegerInput(stepsRaw);
+		if (stepsRaw.trim().length > 0 && stepCount === null) {
 			movementError = 'Skriv steg som ett helt tal, till exempel 4200.';
 			return;
 		}
@@ -703,8 +712,8 @@
 			return;
 		}
 
-		let cycledKm = parseDecimalInput(movementCycledKmInput);
-		if (movementCycledKmInput.trim().length > 0 && cycledKm === null) {
+		let cycledKm = parseDecimalInput(cycledKmRaw);
+		if (cycledKmRaw.trim().length > 0 && cycledKm === null) {
 			movementError = 'Skriv ungefärlig sträcka i km, till exempel 6,5.';
 			return;
 		}
@@ -723,15 +732,17 @@
 
 		savingMovement = true;
 		try {
+			movementDebug = 'Före getSession';
 			const { data } = await supabase.auth.getSession();
 			const session = data.session;
+			movementDebug = 'Efter getSession';
 			if (!session?.access_token) {
 				movementError = 'Logga in för att spara din rörelse.';
 				movementDebug = 'Ingen session/token i klienten';
 				return;
 			}
 
-			movementDebug = 'Request skickad till /api/movement/daily';
+			movementDebug = 'Före fetch /api/movement/daily';
 			const response = await fetch('/api/movement/daily', {
 				method: 'POST',
 				headers: {
@@ -745,6 +756,7 @@
 					cycledKm
 				})
 			});
+			movementDebug = `Efter fetch /api/movement/daily (${response.status})`;
 
 			const payload = (await response.json().catch(() => null)) as
 				| {
