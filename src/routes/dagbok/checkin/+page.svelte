@@ -1759,6 +1759,7 @@
 	.diary-side {
 		display: grid;
 		gap: 0.85rem;
+		order: -1;
 	}
 
 	.diary-input {
@@ -2438,6 +2439,7 @@
 		}
 
 		.diary-side {
+			order: 0;
 			position: sticky;
 			top: 0.7rem;
 		}
