@@ -5,10 +5,10 @@
 <SEO canonical="https://www.mittpsyke.se/anonym-dagbok-online" />
 
 <svelte:head>
-	<title>Anonym dagbok online | Skriv och följ ditt mående | MittPsyke</title>
+	<title>Anonym dagbok online utan konto | Reflektion i text | MittPsyke</title>
 	<meta
 		name="description"
-		content="Använd en anonym dagbok online för att skriva av dig, se mönster och följa ditt mående i lugn takt."
+		content="Skriv i en anonym dagbok online utan konto. Börja med reflektion i text, sortera tankar i lugn takt och gå vidare till anonym chatt om du vill."
 	/>
 	<meta property="og:title" content="Anonym dagbok online | MittPsyke" />
 	<meta
@@ -22,10 +22,10 @@
 <main class="page">
 	<div class="page-container">
 		<header class="hero">
-			<h1>Anonym dagbok online</h1>
+			<h1>Anonym dagbok online utan konto</h1>
 			<p>
 				Ibland är det enklaste första steget att skriva några rader för dig själv. Här kan du använda en
-				lugn digital dagbok för att sortera tankar och följa ditt mående över tid.
+				lugn digital dagbok för reflektion i text, sortera tankar och följa ditt mående över tid.
 			</p>
 		</header>
 
@@ -47,7 +47,7 @@
 			<ul>
 				<li><a href="/digital-dagbok-for-maende">Digital dagbok för mående</a> när du vill ha mer struktur.</li>
 				<li><a href="/framsteg">Framsteg</a> för att se återkommande mönster över tid.</li>
-				<li><a href="/chat">Chatten</a> när du vill reflektera vidare i samtal.</li>
+				<li><a href="/chatta-anonymt">Chatta anonymt utan konto</a> när du vill reflektera vidare i samtal.</li>
 				<li><a href="/hjalp-vid-angest-online">Hjälp vid ångest online</a> och <a href="/om-mittpsyke">Om MittPsyke</a> om du vill läsa vidare.</li>
 			</ul>
 		</section>

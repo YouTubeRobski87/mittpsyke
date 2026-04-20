@@ -36,10 +36,10 @@
 <SEO canonical="https://www.mittpsyke.se/dagbok" />
 
 <svelte:head>
-	<title>Digital dagbok för psykisk hälsa | MittPsyke</title>
+	<title>Digital dagbok för mående | Reflektion i text | MittPsyke</title>
 	<meta
 		name="description"
-		content="Skriv dagbok online och få AI-genererade reflektioner om ditt mående. Gratis och säkert."
+		content="Skriv dagbok online och få AI-reflektioner i text om ditt mående. För dig som vill följa mönster över tid i en egen dagbok."
 	/>
 	{@html `<script type="application/ld+json">${JSON.stringify(faqSchema)}<\/script>`}
 </svelte:head>
@@ -57,7 +57,8 @@
 			</p>
 			<p class="support-copy">
 				Du kan använda dagboken när du vill skriva dagbok vid ångest, samla tankar från dagen och
-				se små framsteg som annars är lätta att missa.
+				se små framsteg som annars är lätta att missa. Om du vill börja utan konto kan du använda
+				<a href="/anonym-dagbok-online">anonym dagbok online</a> först.
 			</p>
 			<div class="cta-row">
 				<a class="primary-cta" href="/registrera">Börja skriva gratis</a>

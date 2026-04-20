@@ -6,7 +6,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 	'anonymt-samtalsstod-online': {
 		title: 'Anonymt samtalsstöd online | Låg tröskel och trygg start | MittPsyke',
 		description:
-			'Utforska anonymt samtalsstöd online när du vill börja varsamt. Läs om varför anonymitet sänker tröskeln, hur stödet skiljer sig från vård och när det kan passa.',
+			'Utforska anonymt samtalsstöd online när du vill börja varsamt. Läs om låg tröskel, reflektion i text, vad stödet kan hjälpa med och hur det skiljer sig från vård.',
 		canonical: 'https://www.mittpsyke.se/anonymt-samtalsstod-online',
 		ogTitle: 'Anonymt samtalsstöd online | MittPsyke',
 		ogDescription:
@@ -51,6 +51,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		],
 		nextStepLinks: [
 			{ href: '/chat', label: 'Öppna chatten' },
+			{ href: '/chatta-anonymt', label: 'Chatta anonymt utan konto' },
 			{ href: '/prata-anonymt-online', label: 'Läs om att prata anonymt' },
 			{ href: '/om-mittpsyke', label: 'Så fungerar MittPsyke' }
 		],
@@ -76,7 +77,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'chatta-anonymt-med-nagon': {
-		title: 'Chatta anonymt med någon utan konto | Anonym chatt | MittPsyke',
+		title: 'Chatta anonymt med någon | Hur anonym chatt fungerar | MittPsyke',
 		description:
 			'Chatta anonymt med någon utan konto och börja direkt i anonym chatt. Läs hur samtalet fungerar, vad AI-stöd kan hjälpa med och vad du kan förvänta dig.',
 		canonical: 'https://www.mittpsyke.se/chatta-anonymt-med-nagon',
@@ -793,7 +794,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 	'chatta-anonymt': {
 		title: 'Chatta anonymt utan konto | Prata anonymt i text | MittPsyke',
 		description:
-			'Chatta anonymt utan konto direkt i webbläsaren. Prata anonymt i text, chatta med någon och få lugnt stöd för oro, stress och nedstämdhet.',
+			'Chatta anonymt utan konto direkt i webbläsaren. Börja anonym chatt med låg tröskel och få lugnt stöd i reflektion i text för oro, stress och nedstämdhet.',
 		canonical: 'https://www.mittpsyke.se/chatta-anonymt',
 		ogTitle: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
 		ogDescription:
@@ -821,6 +822,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			{ href: '/prata-anonymt-online', label: 'Prata anonymt online', description: 'om du vill läsa mer om hur anonymt samtalsstöd fungerar.' },
 			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför låg tröskel kan göra det lättare att börja.' },
 			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill få en tydligare bild av hur själva samtalet brukar gå till.' },
+			{ href: '/anonym-dagbok-online', label: 'Anonym dagbok online', description: 'om du vill börja med egen reflektion i text innan eller efter chatten.' },
 			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva vidare över tid när du känner dig redo.' }
 		],
 		nextStepTitle: 'Nästa steg i din takt',
@@ -836,7 +838,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		faq: [
 			{
 				question: 'Kan jag chatta anonymt utan konto?',
-				answer: 'Nej. Du kan börja skriva direkt utan att registrera dig eller uppge några uppgifter.'
+				answer: 'Ja. Du kan börja direkt utan att registrera dig eller uppge några uppgifter.'
 			},
 			{
 				question: 'Kan jag chatta med någon om det som känns tungt?',
