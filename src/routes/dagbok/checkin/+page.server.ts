@@ -10,6 +10,14 @@ type DiaryEntry = {
 	image_url: string | null;
 };
 
+type DailyMovementEntry = {
+	entryDate: string;
+	stepCount: number | null;
+	cycledToday: boolean;
+	cycledKm: number | null;
+	updatedAt: string | null;
+};
+
 function normalizeTags(value: unknown) {
 	if (Array.isArray(value)) {
 		return value
@@ -51,6 +59,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	let entries: DiaryEntry[] = [];
 	let sharedEntryIds: string[] = [];
+	let movementToday: DailyMovementEntry | null = null;
+	let movementWeek: DailyMovementEntry[] = [];
 
 	const diaryQuery = await locals.supabase
 		.from('diary')
@@ -98,12 +108,59 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.filter(Boolean);
 	}
 
+	const today = new Date();
+	const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+	const weekStart = new Date(today);
+	weekStart.setDate(today.getDate() - 6);
+	const weekStartKey = `${weekStart.getFullYear()}-${String(weekStart.getMonth() + 1).padStart(2, '0')}-${String(weekStart.getDate()).padStart(2, '0')}`;
+
+	const movementTodayQuery = await locals.supabase
+		.from('daily_movement')
+		.select('entry_date, step_count, cycled_today, cycled_km, updated_at')
+		.eq('user_id', user.id)
+		.eq('entry_date', todayKey)
+		.maybeSingle();
+
+	if (!movementTodayQuery.error) {
+		const row = movementTodayQuery.data;
+		if (row) {
+			movementToday = {
+				entryDate: typeof row.entry_date === 'string' ? row.entry_date : todayKey,
+				stepCount: typeof row.step_count === 'number' ? row.step_count : null,
+				cycledToday: row.cycled_today === true,
+				cycledKm: typeof row.cycled_km === 'number' ? row.cycled_km : null,
+				updatedAt: typeof row.updated_at === 'string' ? row.updated_at : null
+			};
+		}
+	}
+
+	const movementWeekQuery = await locals.supabase
+		.from('daily_movement')
+		.select('entry_date, step_count, cycled_today, cycled_km, updated_at')
+		.eq('user_id', user.id)
+		.gte('entry_date', weekStartKey)
+		.order('entry_date', { ascending: false });
+
+	if (!movementWeekQuery.error || isMissingTableError(movementWeekQuery.error, 'daily_movement')) {
+		movementWeek = (movementWeekQuery.data ?? [])
+			.map((row) => ({
+				entryDate: typeof row.entry_date === 'string' ? row.entry_date : '',
+				stepCount: typeof row.step_count === 'number' ? row.step_count : null,
+				cycledToday: row.cycled_today === true,
+				cycledKm: typeof row.cycled_km === 'number' ? row.cycled_km : null,
+				updatedAt: typeof row.updated_at === 'string' ? row.updated_at : null
+			}))
+			.filter((row) => row.entryDate.length > 0);
+	}
+
 	return {
 		title: 'Dagbok',
 		description: 'Skriv i din dagbok, följ ditt mående och spara dina tankar i lugn takt.',
 		noindex: true,
 		isLoggedIn: true,
 		entries,
-		sharedEntryIds
+		sharedEntryIds,
+		movementToday,
+		movementWeek
 	};
 };
