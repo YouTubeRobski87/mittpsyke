@@ -51,6 +51,18 @@ function parseDecimalOrNull(value: unknown): number | null {
 	return Math.round(parsed * 10) / 10;
 }
 
+function isMissingTableError(
+	error: { code?: string | null; message?: string | null } | null | undefined,
+	tableName: string
+) {
+	if (!error) return false;
+	return (
+		error.code === 'PGRST205' ||
+		error.code === '42P01' ||
+		(error.message ?? '').includes(`Could not find the table 'public.${tableName}'`)
+	);
+}
+
 function validateBody(
 	input: unknown
 ):
@@ -168,6 +180,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	if (upsertError || !upserted) {
 		console.error('Failed to save daily movement:', upsertError);
+		if (isMissingTableError(upsertError, 'daily_movement')) {
+			return errorResponse(
+				'Tabellen "daily_movement" saknas i Supabase. Kör SQL-filen supabase/daily_movement.sql i databasen först.',
+				500
+			);
+		}
 		if (upsertError?.code === '42501') {
 			return errorResponse('Not allowed to save daily movement.', 403);
 		}
