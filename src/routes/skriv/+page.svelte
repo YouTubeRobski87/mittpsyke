@@ -45,18 +45,15 @@
 <SEO canonical="https://www.mittpsyke.se/skriv" />
 
 <svelte:head>
-	<meta name="robots" content="noindex, follow" />
-	<title>Chatta anonymt utan konto – Skriv av dig | MittPsyke</title>
+	<title>Skriv av dig anonymt – digital dagbok & samtalsstöd online | MittPsyke</title>
 	<meta
 		name="description"
-		content="Skriv av dig anonymt utan att skapa konto. MittPsyke erbjuder gratis AI-samtalsstöd för ångest, stress och nedstämdhet – börja direkt, inga uppgifter krävs."
+		content="Skriv av dig anonymt i en digital dagbok och få lugnt samtalsstöd online. Reflektera i din egen takt – utan konto och utan press."
 	/>
 </svelte:head>
 
 <main class="container py-12">
-	<h1 class="text-2xl font-bold mb-4">
-		{isLoggedIn ? 'Skriv av dig i din egen takt' : 'Börja skriva anonymt i din egen takt'}
-	</h1>
+	<h1 class="text-2xl font-bold mb-4">Skriv av dig anonymt</h1>
 	<p class="mb-6 opacity-70">
 		{isLoggedIn
 			? 'Du kan börja direkt i chatten eller skriva vidare i dagboken.'
