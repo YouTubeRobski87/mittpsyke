@@ -10,10 +10,10 @@
 		name="description"
 		content="Få anonymt samtalsstöd online i lugn takt. Skriv dagbok, reflektera och chatta utan press. Börja direkt – helt anonymt."
 	/>
-	<meta property="og:title" content="AI samtalsstöd online | MittPsyke" />
+	<meta property="og:title" content="Anonymt samtalsstöd online med dagbok | MittPsyke" />
 	<meta
 		property="og:description"
-		content="Ett lugnt digitalt samtalsstöd där du kan börja anonymt, reflektera och hitta nästa steg i din egen takt."
+		content="Få anonymt samtalsstöd online i lugn takt. Skriv dagbok, reflektera och chatta utan press. Börja direkt – helt anonymt."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
@@ -32,7 +32,7 @@
 			</p>
 			<p>
 				<a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a> eller
-				<a href="/skriv">Skriva av dig i en digital dagbok</a>.
+				<a href="/skriv">skriva av dig i en digital dagbok</a>.
 			</p>
 		</header>
 
