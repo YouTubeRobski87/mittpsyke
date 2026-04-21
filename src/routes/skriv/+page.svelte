@@ -42,11 +42,7 @@
 	// Rest of component...
 </script>
 
-<SEO
-	title="Skriv av dig anonymt – digital dagbok & samtalsstöd online | MittPsyke"
-	description="Skriv av dig anonymt i en digital dagbok och få lugnt samtalsstöd online. Reflektera i din egen takt – utan konto och utan press."
-	canonical="https://www.mittpsyke.se/skriv"
-/>
+<SEO canonical="https://www.mittpsyke.se/skriv" />
 
 <main class="container py-12">
 	<h1 class="text-2xl font-bold mb-4">Skriv av dig anonymt</h1>

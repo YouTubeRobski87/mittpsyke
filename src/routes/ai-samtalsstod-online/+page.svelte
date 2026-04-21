@@ -4,22 +4,6 @@
 
 <SEO canonical="https://www.mittpsyke.se/ai-samtalsstod-online" />
 
-<svelte:head>
-	<title>Anonymt samtalsstöd online med dagbok | MittPsyke</title>
-	<meta
-		name="description"
-		content="Få anonymt samtalsstöd online i lugn takt. Skriv dagbok, reflektera och chatta utan press. Börja direkt – helt anonymt."
-	/>
-	<meta property="og:title" content="Anonymt samtalsstöd online med dagbok | MittPsyke" />
-	<meta
-		property="og:description"
-		content="Få anonymt samtalsstöd online i lugn takt. Skriv dagbok, reflektera och chatta utan press. Börja direkt – helt anonymt."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary" />
-
-</svelte:head>
-
 <main class="page">
 	<div class="page-container">
 		<header class="hero">
