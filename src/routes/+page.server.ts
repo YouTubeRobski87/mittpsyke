@@ -2,8 +2,8 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
 	return {
-		title: 'MittPsyke — skriv av dig anonymt och få lugnt stöd direkt',
+		title: 'Skriv av dig anonymt – digital dagbok & samtalsstöd online',
 		description:
-			'Skriv av dig anonymt och få lugnt stöd direkt. MittPsyke hjälper dig att förstå psykiskt mående med dagbok, övningar och guider i din egen takt.'
+			'Skriv av dig anonymt och få lugnt samtalsstöd online. Reflektera i din egen takt – utan konto och utan press.'
 	};
 };
