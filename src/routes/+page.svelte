@@ -80,22 +80,6 @@
 
 <SEO canonical="https://www.mittpsyke.se/" />
 
-<svelte:head>
-	<title>MittPsyke – skriv av dig anonymt och få lugnt stöd direkt</title>
-	<meta
-		name="description"
-		content="Skriv av dig anonymt och få lugnt stöd direkt. MittPsyke hjälper dig att förstå psykiskt mående med dagbok, övningar och guider i din egen takt."
-	/>
-	<meta property="og:title" content="MittPsyke – skriv av dig anonymt och få lugnt stöd direkt" />
-	<meta
-		property="og:description"
-		content="Skriv av dig anonymt och få lugnt stöd direkt. MittPsyke hjälper dig att förstå psykiskt mående med dagbok, övningar och guider i din egen takt."
-	/>
-	<meta property="og:type" content="website" />
-	<meta name="twitter:card" content="summary" />
-
-</svelte:head>
-
 <main class="staging-look">
 	<!-- 1. Hero -->
 	<section class="hero-section hero" aria-label="Introduktion till MittPsyke" bind:this={heroEl}>
