@@ -5,10 +5,10 @@
 <SEO canonical="https://www.mittpsyke.se/ai-samtalsstod-online" />
 
 <svelte:head>
-	<title>AI samtalsstöd online | Reflektion i lugn takt | MittPsyke</title>
+	<title>Anonymt samtalsstöd online med dagbok | MittPsyke</title>
 	<meta
 		name="description"
-		content="Använd AI samtalsstöd online för att skriva av dig, få struktur och ta små steg när något känns tungt."
+		content="Få anonymt samtalsstöd online i lugn takt. Skriv dagbok, reflektera och chatta utan press. Börja direkt – helt anonymt."
 	/>
 	<meta property="og:title" content="AI samtalsstöd online | MittPsyke" />
 	<meta
@@ -23,10 +23,16 @@
 <main class="page">
 	<div class="page-container">
 		<header class="hero">
-			<h1>AI samtalsstöd online</h1>
+			<h1>Anonymt samtalsstöd online med dagbok</h1>
 			<p>
-				När du behöver börja någonstans kan ett lugnt digitalt samtal vara ett första steg. Här kan du
-				reflektera, skriva av dig och hitta mer struktur i det som pågår.
+				MittPsyke är en plats för anonymt samtalsstöd online där du kan skriva av dig, reflektera och ta det i din egen takt. Du behöver inte förklara allt direkt – ibland räcker det att börja med några ord.
+			</p>
+			<p>
+				Här kan du använda en digital dagbok, få stöd i dina tankar eller bara vara i det som känns, utan press.
+			</p>
+			<p>
+				<a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a> eller
+				<a href="/skriv">Skriva av dig i en digital dagbok</a>.
 			</p>
 		</header>
 
@@ -234,4 +240,3 @@
 		opacity: 1;
 	}
 </style>
-
