@@ -590,6 +590,22 @@
 		await shareDiaryEntry(entry, 'text');
 	}
 
+	function applyTextFallbackFeedback(
+		entryId: string,
+		result: 'shared' | 'copied' | 'cancelled' | 'failed',
+		messages: { shared: string; copied: string }
+	): boolean {
+		if (result === 'shared') {
+			setDeviceShareFeedback(entryId, messages.shared, 'info');
+			return true;
+		}
+		if (result === 'copied') {
+			setDeviceShareFeedback(entryId, messages.copied, 'info');
+			return true;
+		}
+		return false;
+	}
+
 	async function shareDiaryEntry(entry: DiaryEntry, mode: 'text' | 'text_with_image') {
 		if (!entry.id || sharingDeviceEntryId) return;
 		sharingDeviceEntryId = entry.id;
@@ -597,47 +613,83 @@
 
 		try {
 			if (mode === 'text_with_image' && entry.image_url) {
+				const canUseShareApi =
+					typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+				const hasFileShareCapability =
+					typeof navigator !== 'undefined' && typeof navigator.canShare === 'function';
+
+				if (!canUseShareApi || !hasFileShareCapability) {
+					const fallbackResult = await shareTextOrCopy(entry);
+					if (
+						applyTextFallbackFeedback(entry.id, fallbackResult, {
+							shared:
+								'Den här enheten eller appen verkar inte stödja bilddelning här. Texten delades i stället.',
+							copied:
+								'Den här enheten eller appen verkar inte stödja bilddelning här. Texten kopierades i stället.'
+						})
+					) {
+						return;
+					}
+					if (fallbackResult === 'cancelled') return;
+					setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
+					return;
+				}
+
 				try {
 					const imageFile = await fetchShareImageFile(entry);
 					const files = imageFile ? [imageFile] : [];
-					if (
-						typeof navigator !== 'undefined' &&
-						typeof navigator.share === 'function' &&
-						files.length > 0 &&
-						canShareFiles(files)
-					) {
-						try {
-							await navigator.share(buildDiarySharePayload(entry, files));
-							setDeviceShareFeedback(entry.id, 'Inlägget delades med text och bild.', 'success');
+					const supportsFileShare = files.length > 0 && canShareFiles(files);
+
+					if (!supportsFileShare) {
+						const fallbackResult = await shareTextOrCopy(entry);
+						if (
+							applyTextFallbackFeedback(entry.id, fallbackResult, {
+								shared:
+									'Den här enheten eller appen verkar inte stödja bilddelning här. Texten delades i stället.',
+								copied:
+									'Den här enheten eller appen verkar inte stödja bilddelning här. Texten kopierades i stället.'
+							})
+						) {
 							return;
-						} catch (error) {
-							if (error instanceof DOMException && error.name === 'AbortError') return;
 						}
+						if (fallbackResult === 'cancelled') return;
+						setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
+						return;
+					}
+
+					try {
+						await navigator.share(buildDiarySharePayload(entry, files));
+						setDeviceShareFeedback(entry.id, 'Inlägget delades med text och bild.', 'success');
+						return;
+					} catch (error) {
+						if (error instanceof DOMException && error.name === 'AbortError') return;
+						const fallbackResult = await shareTextOrCopy(entry);
+						if (
+							applyTextFallbackFeedback(entry.id, fallbackResult, {
+								shared: 'Den valda appen tog bara text. Texten delades i stället.',
+								copied: 'Den valda appen tog bara text. Texten kopierades i stället.'
+							})
+						) {
+							return;
+						}
+						if (fallbackResult === 'cancelled') return;
+						setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
+						return;
 					}
 				} catch {
-					// Fallback to text-only sharing.
-				}
-
-				const fallbackResult = await shareTextOrCopy(entry);
-				if (fallbackResult === 'shared') {
-					setDeviceShareFeedback(
-						entry.id,
-						'Bilden kunde inte delas här. Delade endast texten.',
-						'info'
-					);
+					const fallbackResult = await shareTextOrCopy(entry);
+					if (
+						applyTextFallbackFeedback(entry.id, fallbackResult, {
+							shared: 'Kunde inte hämta den sparade bilden. Texten delades i stället.',
+							copied: 'Kunde inte hämta den sparade bilden. Texten kopierades i stället.'
+						})
+					) {
+						return;
+					}
+					if (fallbackResult === 'cancelled') return;
+					setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
 					return;
 				}
-				if (fallbackResult === 'copied') {
-					setDeviceShareFeedback(
-						entry.id,
-						'Bilden kunde inte delas här. Texten kopierades i stället.',
-						'info'
-					);
-					return;
-				}
-				if (fallbackResult === 'cancelled') return;
-				setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
-				return;
 			}
 
 			const result = await shareTextOrCopy(entry);
