@@ -102,6 +102,11 @@
 	let shareFeedbackMessage = $state('');
 	let shareFeedbackType = $state<'success' | 'error' | 'info'>('info');
 	let shareFeedbackShowCommunityLink = $state(false);
+	let confirmingDeviceShareEntryId = $state('');
+	let sharingDeviceEntryId = $state('');
+	let deviceShareFeedbackEntryId = $state('');
+	let deviceShareFeedbackMessage = $state('');
+	let deviceShareFeedbackType = $state<'success' | 'error' | 'info'>('info');
 	let editingEntryId = $state('');
 	let editingText = $state('');
 	let editingMood = $state('');
@@ -283,6 +288,7 @@
 	function openShareConfirmation(entryId: string) {
 		confirmingShareEntryId = entryId;
 		confirmingUnshareEntryId = '';
+		confirmingDeviceShareEntryId = '';
 		shareFeedbackEntryId = '';
 		shareFeedbackMessage = '';
 		shareFeedbackShowCommunityLink = false;
@@ -296,6 +302,7 @@
 	function openUnshareConfirmation(entryId: string) {
 		confirmingUnshareEntryId = entryId;
 		confirmingShareEntryId = '';
+		confirmingDeviceShareEntryId = '';
 		shareFeedbackEntryId = '';
 		shareFeedbackMessage = '';
 		shareFeedbackShowCommunityLink = false;
@@ -446,9 +453,213 @@
 		}
 	}
 
+	function setDeviceShareFeedback(
+		entryId: string,
+		message: string,
+		type: 'success' | 'error' | 'info'
+	) {
+		deviceShareFeedbackEntryId = entryId;
+		deviceShareFeedbackMessage = message;
+		deviceShareFeedbackType = type;
+	}
+
+	function buildDiarySharePayload(entry: DiaryEntry, files?: File[]): ShareData {
+		const text = entry.content.trim();
+		const payload: ShareData = {
+			title: 'DagboksinlÃ¤gg frÃ¥n MittPsyke',
+			text: text || 'DagboksinlÃ¤gg frÃ¥n MittPsyke'
+		};
+		if (files && files.length > 0) {
+			payload.files = files;
+		}
+		return payload;
+	}
+
+	function extensionFromMimeType(mimeType: string): string {
+		if (mimeType === 'image/jpeg') return 'jpg';
+		if (mimeType === 'image/png') return 'png';
+		if (mimeType === 'image/webp') return 'webp';
+		if (mimeType === 'image/gif') return 'gif';
+		return 'jpg';
+	}
+
+	function inferMimeTypeFromUrl(url: string): string {
+		const cleanUrl = url.split('?')[0]?.toLowerCase() ?? '';
+		if (cleanUrl.endsWith('.png')) return 'image/png';
+		if (cleanUrl.endsWith('.webp')) return 'image/webp';
+		if (cleanUrl.endsWith('.gif')) return 'image/gif';
+		return 'image/jpeg';
+	}
+
+	function buildImageFileName(entry: DiaryEntry, mimeType: string): string {
+		const extension = extensionFromMimeType(mimeType);
+		if (entry.created_at) {
+			const date = new Date(entry.created_at);
+			if (!Number.isNaN(date.getTime())) {
+				const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+				return `dagbok-${dateKey}.${extension}`;
+			}
+		}
+		return `dagbok-bild.${extension}`;
+	}
+
+	async function fetchShareImageFile(entry: DiaryEntry): Promise<File | null> {
+		if (!entry.image_url) return null;
+
+		const response = await fetch(entry.image_url, {
+			credentials: 'include'
+		});
+
+		if (!response.ok) {
+			throw new Error('Kunde inte hÃ¤mta bilden fÃ¶r delning.');
+		}
+
+		const blob = await response.blob();
+		const mimeType = blob.type || inferMimeTypeFromUrl(entry.image_url);
+		const normalizedBlob =
+			blob.type === mimeType
+				? blob
+				: new Blob([blob], {
+						type: mimeType
+					});
+		const fileName = buildImageFileName(entry, mimeType);
+		return new File([normalizedBlob], fileName, {
+			type: mimeType,
+			lastModified: Date.now()
+		});
+	}
+
+	function canShareFiles(files: File[]): boolean {
+		if (typeof navigator === 'undefined') return false;
+		if (typeof navigator.canShare !== 'function') return false;
+		try {
+			return navigator.canShare({ files });
+		} catch {
+			return false;
+		}
+	}
+
+	async function shareTextOrCopy(entry: DiaryEntry): Promise<'shared' | 'copied' | 'cancelled' | 'failed'> {
+		const payload = buildDiarySharePayload(entry);
+
+		if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+			try {
+				await navigator.share(payload);
+				return 'shared';
+			} catch (error) {
+				if (error instanceof DOMException && error.name === 'AbortError') {
+					return 'cancelled';
+				}
+			}
+		}
+
+		if (
+			typeof navigator !== 'undefined' &&
+			navigator.clipboard &&
+			typeof navigator.clipboard.writeText === 'function'
+		) {
+			try {
+				await navigator.clipboard.writeText(payload.text ?? '');
+				return 'copied';
+			} catch {
+				return 'failed';
+			}
+		}
+
+		return 'failed';
+	}
+
+	function closeDeviceShareChoice() {
+		if (sharingDeviceEntryId) return;
+		confirmingDeviceShareEntryId = '';
+	}
+
+	async function openDeviceShare(entry: DiaryEntry) {
+		if (!entry.id || sharingDeviceEntryId) return;
+
+		deviceShareFeedbackEntryId = '';
+		deviceShareFeedbackMessage = '';
+		confirmingShareEntryId = '';
+		confirmingUnshareEntryId = '';
+
+		if (entry.image_url) {
+			confirmingDeviceShareEntryId = entry.id;
+			return;
+		}
+
+		await shareDiaryEntry(entry, 'text');
+	}
+
+	async function shareDiaryEntry(entry: DiaryEntry, mode: 'text' | 'text_with_image') {
+		if (!entry.id || sharingDeviceEntryId) return;
+		sharingDeviceEntryId = entry.id;
+		confirmingDeviceShareEntryId = '';
+
+		try {
+			if (mode === 'text_with_image' && entry.image_url) {
+				try {
+					const imageFile = await fetchShareImageFile(entry);
+					const files = imageFile ? [imageFile] : [];
+					if (
+						typeof navigator !== 'undefined' &&
+						typeof navigator.share === 'function' &&
+						files.length > 0 &&
+						canShareFiles(files)
+					) {
+						try {
+							await navigator.share(buildDiarySharePayload(entry, files));
+							setDeviceShareFeedback(entry.id, 'InlÃ¤gget delades med text och bild.', 'success');
+							return;
+						} catch (error) {
+							if (error instanceof DOMException && error.name === 'AbortError') return;
+						}
+					}
+				} catch {
+					// Fallback to text-only sharing.
+				}
+
+				const fallbackResult = await shareTextOrCopy(entry);
+				if (fallbackResult === 'shared') {
+					setDeviceShareFeedback(
+						entry.id,
+						'Bilden kunde inte delas hÃ¤r. Delade endast texten.',
+						'info'
+					);
+					return;
+				}
+				if (fallbackResult === 'copied') {
+					setDeviceShareFeedback(
+						entry.id,
+						'Bilden kunde inte delas hÃ¤r. Texten kopierades i stÃ¤llet.',
+						'info'
+					);
+					return;
+				}
+				if (fallbackResult === 'cancelled') return;
+				setDeviceShareFeedback(entry.id, 'Kunde inte dela inlÃ¤gget just nu.', 'error');
+				return;
+			}
+
+			const result = await shareTextOrCopy(entry);
+			if (result === 'shared') {
+				setDeviceShareFeedback(entry.id, 'InlÃ¤gget delades.', 'success');
+				return;
+			}
+			if (result === 'copied') {
+				setDeviceShareFeedback(entry.id, 'Texten kopierades.', 'info');
+				return;
+			}
+			if (result === 'cancelled') return;
+			setDeviceShareFeedback(entry.id, 'Kunde inte dela inlÃ¤gget just nu.', 'error');
+		} finally {
+			sharingDeviceEntryId = '';
+		}
+	}
+
 	function openEditMode(entry: DiaryEntry) {
 		confirmingShareEntryId = '';
 		confirmingUnshareEntryId = '';
+		confirmingDeviceShareEntryId = '';
 		confirmingDeleteEntryId = '';
 		deleteErrorEntryId = '';
 		deleteErrorMessage = '';
@@ -522,6 +733,7 @@
 		confirmingDeleteEntryId = entryId;
 		confirmingShareEntryId = '';
 		confirmingUnshareEntryId = '';
+		confirmingDeviceShareEntryId = '';
 		editingEntryId = '';
 		deleteErrorEntryId = '';
 		deleteErrorMessage = '';
@@ -1384,12 +1596,60 @@
 												<button
 													type="button"
 													class="entry-action-btn"
+													onclick={() => openDeviceShare(entry)}
+													disabled={sharingDeviceEntryId === entry.id}
+												>
+													{sharingDeviceEntryId === entry.id ? 'Delar...' : 'Dela'}
+												</button>
+												<span class="entry-action-sep" aria-hidden="true">·</span>
+												<button
+													type="button"
+													class="entry-action-btn"
 													onclick={() => openDeleteConfirmation(entry.id)}
 													disabled={Boolean(deletingEntryId)}
 												>
 													Ta bort
 												</button>
 											</div>
+
+											{#if confirmingDeviceShareEntryId === entry.id}
+												<div class="share-confirmation" role="dialog" aria-modal="false">
+													<h3>VÃ¤lj delning</h3>
+													<p>InlÃ¤gget har en bild. Vad vill du dela?</p>
+													<div class="share-confirmation-actions">
+														<button
+															type="button"
+															class="auth-button primary"
+															onclick={() => shareDiaryEntry(entry, 'text')}
+															disabled={sharingDeviceEntryId === entry.id}
+														>
+															Dela endast text
+														</button>
+														<button
+															type="button"
+															class="auth-button"
+															onclick={() => shareDiaryEntry(entry, 'text_with_image')}
+															disabled={sharingDeviceEntryId === entry.id}
+														>
+															Dela text och bild
+														</button>
+														<button
+															type="button"
+															class="auth-button"
+															onclick={closeDeviceShareChoice}
+															disabled={sharingDeviceEntryId === entry.id}
+														>
+															Avbryt
+														</button>
+													</div>
+												</div>
+											{/if}
+
+											{#if deviceShareFeedbackEntryId === entry.id && deviceShareFeedbackMessage}
+												<p class="share-feedback {deviceShareFeedbackType}">
+													{deviceShareFeedbackMessage}
+												</p>
+											{/if}
 
 											{#if confirmingDeleteEntryId === entry.id}
 												<div class="entry-delete-confirm" role="status">
