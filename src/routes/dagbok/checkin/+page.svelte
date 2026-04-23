@@ -466,8 +466,8 @@
 	function buildDiarySharePayload(entry: DiaryEntry, files?: File[]): ShareData {
 		const text = entry.content.trim();
 		const payload: ShareData = {
-			title: 'DagboksinlÃ¤gg frÃ¥n MittPsyke',
-			text: text || 'DagboksinlÃ¤gg frÃ¥n MittPsyke'
+			title: 'Dagboksinlägg från MittPsyke',
+			text: text || 'Dagboksinlägg från MittPsyke'
 		};
 		if (files && files.length > 0) {
 			payload.files = files;
@@ -511,7 +511,7 @@
 		});
 
 		if (!response.ok) {
-			throw new Error('Kunde inte hÃ¤mta bilden fÃ¶r delning.');
+			throw new Error('Kunde inte hämta bilden för delning.');
 		}
 
 		const blob = await response.blob();
@@ -608,7 +608,7 @@
 					) {
 						try {
 							await navigator.share(buildDiarySharePayload(entry, files));
-							setDeviceShareFeedback(entry.id, 'InlÃ¤gget delades med text och bild.', 'success');
+							setDeviceShareFeedback(entry.id, 'Inlägget delades med text och bild.', 'success');
 							return;
 						} catch (error) {
 							if (error instanceof DOMException && error.name === 'AbortError') return;
@@ -622,7 +622,7 @@
 				if (fallbackResult === 'shared') {
 					setDeviceShareFeedback(
 						entry.id,
-						'Bilden kunde inte delas hÃ¤r. Delade endast texten.',
+						'Bilden kunde inte delas här. Delade endast texten.',
 						'info'
 					);
 					return;
@@ -630,19 +630,19 @@
 				if (fallbackResult === 'copied') {
 					setDeviceShareFeedback(
 						entry.id,
-						'Bilden kunde inte delas hÃ¤r. Texten kopierades i stÃ¤llet.',
+						'Bilden kunde inte delas här. Texten kopierades i stället.',
 						'info'
 					);
 					return;
 				}
 				if (fallbackResult === 'cancelled') return;
-				setDeviceShareFeedback(entry.id, 'Kunde inte dela inlÃ¤gget just nu.', 'error');
+				setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
 				return;
 			}
 
 			const result = await shareTextOrCopy(entry);
 			if (result === 'shared') {
-				setDeviceShareFeedback(entry.id, 'InlÃ¤gget delades.', 'success');
+				setDeviceShareFeedback(entry.id, 'Inlägget delades.', 'success');
 				return;
 			}
 			if (result === 'copied') {
@@ -650,7 +650,7 @@
 				return;
 			}
 			if (result === 'cancelled') return;
-			setDeviceShareFeedback(entry.id, 'Kunde inte dela inlÃ¤gget just nu.', 'error');
+			setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
 		} finally {
 			sharingDeviceEntryId = '';
 		}
@@ -1614,8 +1614,8 @@
 
 											{#if confirmingDeviceShareEntryId === entry.id}
 												<div class="share-confirmation" role="dialog" aria-modal="false">
-													<h3>VÃ¤lj delning</h3>
-													<p>InlÃ¤gget har en bild. Vad vill du dela?</p>
+													<h3>Välj delning</h3>
+													<p>Inlägget har en bild. Vad vill du dela?</p>
 													<div class="share-confirmation-actions">
 														<button
 															type="button"
