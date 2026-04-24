@@ -1591,7 +1591,7 @@
 													<button
 														type="button"
 														class="share-trigger"
-														onclick={() => openShareConfirmation(entry.id)}
+														onclick={() => shareEntryAnonymously(entry)}
 													>
 														Dela anonymt i Gemenskapen
 													</button>
