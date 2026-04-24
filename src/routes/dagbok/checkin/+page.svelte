@@ -506,11 +506,42 @@
 	async function fetchShareImageFile(entry: DiaryEntry): Promise<File | null> {
 		if (!entry.image_url) return null;
 
-		const response = await fetch(entry.image_url, {
-			credentials: 'include'
-		});
+		let includeCredentials = false;
+		if (typeof window !== 'undefined') {
+			try {
+				const resolvedUrl = new URL(entry.image_url, window.location.origin);
+				includeCredentials = resolvedUrl.origin === window.location.origin;
+			} catch {
+				includeCredentials = false;
+			}
+		}
+
+		let response: Response;
+		try {
+			response = await fetch(
+				entry.image_url,
+				includeCredentials
+					? {
+							credentials: 'include'
+						}
+					: undefined
+			);
+		} catch (error) {
+			console.warn('[diary/share] Fetch av sparad bild misslyckades.', {
+				imageUrl: entry.image_url,
+				includeCredentials,
+				error
+			});
+			throw new Error('Kunde inte hämta bilden för delning.');
+		}
 
 		if (!response.ok) {
+			console.warn('[diary/share] Kunde inte hämta sparad bild för delning.', {
+				imageUrl: entry.image_url,
+				includeCredentials,
+				status: response.status,
+				contentType: response.headers.get('content-type')
+			});
 			throw new Error('Kunde inte hämta bilden för delning.');
 		}
 
