@@ -207,3 +207,52 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	return json(response, { status: 200 });
 };
+
+export const GET: RequestHandler = async ({ url, request, locals }) => {
+	const postId = url.searchParams.get('postId')?.trim() ?? '';
+	if (!postId || !UUID_REGEX.test(postId)) {
+		return json({ success: false, error: 'Ogiltigt postId.' }, { status: 400 });
+	}
+
+	const token = getAccessToken(request.headers.get('authorization'));
+	if (!token) {
+		return json({ success: false, error: 'Saknar giltig inloggning.' }, { status: 401 });
+	}
+
+	const {
+		data: { user },
+		error: userError
+	} = await locals.supabase.auth.getUser(token);
+
+	if (userError || !user) {
+		return json({ success: false, error: 'Saknar giltig inloggning.' }, { status: 401 });
+	}
+
+	const { data: commentsData, error: commentsError } = await locals.supabase
+		.from('community_comments')
+		.select('id, post_id, body, created_at')
+		.eq('post_id', postId)
+		.is('deleted_at', null)
+		.order('created_at', { ascending: true })
+		.limit(200);
+
+	if (isMissingTableError(commentsError, 'community_comments')) {
+		return json({ success: true, comments: [] }, { status: 200 });
+	}
+
+	if (commentsError) {
+		console.error('Failed to load community comments:', commentsError);
+		return json({ success: false, error: 'Kunde inte läsa svar just nu.' }, { status: 500 });
+	}
+
+	const comments = (commentsData ?? [])
+		.map((row) => ({
+			id: typeof row.id === 'string' ? row.id : '',
+			post_id: typeof row.post_id === 'string' ? row.post_id : '',
+			body: typeof row.body === 'string' ? row.body.trim() : '',
+			created_at: typeof row.created_at === 'string' ? row.created_at : null
+		}))
+		.filter((row) => row.id && row.post_id && row.body);
+
+	return json({ success: true, comments }, { status: 200 });
+};

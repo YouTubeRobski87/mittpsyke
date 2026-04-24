@@ -5,6 +5,15 @@ type ProfilePanelStats = {
 	chatSessionCount: number;
 };
 
+type CachedLayoutData = {
+	profilePanel: ProfilePanelStats;
+	unreadNotificationCount: number;
+	expiresAt: number;
+};
+
+const LAYOUT_DATA_CACHE_TTL_MS = 30_000;
+const layoutDataCache = new Map<string, CachedLayoutData>();
+
 async function loadProfilePanelStats(
 	supabase: App.Locals['supabase'],
 	userId: string
@@ -60,10 +69,26 @@ export const load: LayoutServerLoad = async ({ locals: { supabase } }) => {
 		return { session, profilePanel: null, unreadNotificationCount: 0 };
 	}
 
+	const now = Date.now();
+	const cached = layoutDataCache.get(session.user.id);
+	if (cached && cached.expiresAt > now) {
+		return {
+			session,
+			profilePanel: cached.profilePanel,
+			unreadNotificationCount: cached.unreadNotificationCount
+		};
+	}
+
 	const [profilePanel, unreadNotificationCount] = await Promise.all([
 		loadProfilePanelStats(supabase, session.user.id),
 		loadUnreadNotificationCount(supabase, session.user.id)
 	]);
+
+	layoutDataCache.set(session.user.id, {
+		profilePanel,
+		unreadNotificationCount,
+		expiresAt: now + LAYOUT_DATA_CACHE_TTL_MS
+	});
 
 	return { session, profilePanel, unreadNotificationCount };
 };

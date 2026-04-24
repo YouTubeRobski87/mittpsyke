@@ -9,6 +9,7 @@ type CommunityPost = {
 	isOwnPost: boolean;
 	diaryEntryId: string | null;
 	comments: CommunityComment[];
+	commentsLoaded: boolean;
 };
 
 type CommunityComment = {
@@ -45,7 +46,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.select('id, content, mood, created_at, diary_entry_id, user_id')
 		.is('deleted_at', null)
 		.order('created_at', { ascending: false })
-		.limit(40);
+		.limit(20);
 
 	let posts: CommunityPost[] = [];
 
@@ -63,49 +64,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 					row.user_id === user.id && typeof row.diary_entry_id === 'string'
 						? row.diary_entry_id
 						: null,
-				comments: []
+				comments: [],
+				commentsLoaded: false
 			}))
 			.filter((row) => row.id.length > 0 && row.content.trim().length > 0);
 	}
-
-	const postIds = posts.map((post) => post.id);
-	const commentsByPostId = new Map<string, CommunityComment[]>();
-
-	if (postIds.length > 0) {
-		const { data: commentsData, error: commentsError } = await locals.supabase
-			.from('community_comments')
-			.select('id, post_id, body, created_at')
-			.in('post_id', postIds)
-			.is('deleted_at', null)
-			.order('created_at', { ascending: true });
-
-		if (commentsError && !isMissingTableError(commentsError, 'community_comments')) {
-			console.error('Gemenskap comments load error:', commentsError);
-		} else if (commentsData) {
-			for (const row of commentsData) {
-				const postId = typeof row.post_id === 'string' ? row.post_id : '';
-				const body = typeof row.body === 'string' ? row.body.trim() : '';
-				const id = typeof row.id === 'string' ? row.id : '';
-				if (!postId || !id || !body) continue;
-
-				const comment: CommunityComment = {
-					id,
-					postId,
-					body,
-					created_at: typeof row.created_at === 'string' ? row.created_at : null
-				};
-
-				const existingComments = commentsByPostId.get(postId) ?? [];
-				existingComments.push(comment);
-				commentsByPostId.set(postId, existingComments);
-			}
-		}
-	}
-
-	posts = posts.map((post) => ({
-		...post,
-		comments: commentsByPostId.get(post.id) ?? []
-	}));
 
 	return {
 		title: 'Gemenskap',

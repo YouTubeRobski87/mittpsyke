@@ -27,6 +27,7 @@
 		isOwnPost: boolean;
 		diaryEntryId: string | null;
 		comments: CommunityComment[];
+		commentsLoaded: boolean;
 	};
 
 	let { data }: { data: { posts?: CommunityPost[] } } = $props();
@@ -35,6 +36,7 @@
 	let confirmingUnsharePostId = $state('');
 	let unsharingPostId = $state('');
 	let openCommentsByPostId = $state<Record<string, boolean>>({});
+	let commentsLoadingByPostId = $state<Record<string, boolean>>({});
 	let commentDraftByPostId = $state<Record<string, string>>({});
 	let commentFeedbackByPostId = $state<
 		Record<string, { message: string; type: 'success' | 'error' | 'info' }>
@@ -108,12 +110,89 @@
 		return openCommentsByPostId[postId] === true;
 	}
 
-	function toggleComments(postId: string) {
+	async function loadCommentsForPost(postId: string) {
+		if (commentsLoadingByPostId[postId]) return;
+
+		commentsLoadingByPostId = {
+			...commentsLoadingByPostId,
+			[postId]: true
+		};
+
+		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+
+			if (!session?.access_token) {
+				setCommentFeedback(postId, 'Logga in för att läsa svar.', 'error');
+				return;
+			}
+
+			const response = await fetch(`/api/community/comments?postId=${encodeURIComponent(postId)}`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${session.access_token}`
+				}
+			});
+
+			const payload = (await response.json().catch(() => null)) as
+				| {
+						success?: boolean;
+						error?: string;
+						comments?: Array<{ id: string; post_id: string; body: string; created_at: string | null }>;
+				  }
+				| null;
+
+			if (!response.ok || !payload || payload.success !== true || !Array.isArray(payload.comments)) {
+				setCommentFeedback(
+					postId,
+					payload?.error ?? 'Kunde inte läsa svar just nu. Försök igen om en stund.',
+					'error'
+				);
+				return;
+			}
+
+			const nextComments: CommunityComment[] = payload.comments
+				.map((comment) => ({
+					id: comment.id,
+					postId: comment.post_id,
+					body: comment.body,
+					created_at: comment.created_at
+				}))
+				.filter((comment) => comment.id && comment.postId && comment.body);
+
+			posts = posts.map((post) =>
+				post.id === postId ? { ...post, comments: nextComments, commentsLoaded: true } : post
+			);
+		} catch (error) {
+			setCommentFeedback(
+				postId,
+				error instanceof Error
+					? error.message
+					: 'Kunde inte läsa svar just nu. Försök igen om en stund.',
+				'error'
+			);
+		} finally {
+			commentsLoadingByPostId = {
+				...commentsLoadingByPostId,
+				[postId]: false
+			};
+		}
+	}
+
+	async function toggleComments(postId: string) {
 		const nextIsOpen = !isCommentsOpen(postId);
 		openCommentsByPostId = {
 			...openCommentsByPostId,
 			[postId]: nextIsOpen
 		};
+
+		if (!nextIsOpen) return;
+
+		const post = posts.find((item) => item.id === postId);
+		if (!post || post.commentsLoaded) return;
+
+		await loadCommentsForPost(postId);
 	}
 
 	function getCommentDraft(postId: string): string {
@@ -305,7 +384,7 @@
 
 			posts = posts.map((item) =>
 				item.id === post.id
-					? { ...item, comments: [...item.comments, nextComment] }
+					? { ...item, comments: [...item.comments, nextComment], commentsLoaded: true }
 					: item
 			);
 
@@ -502,7 +581,7 @@
 										class="comment-toggle-btn"
 										onclick={() => {
 											clearCommentFeedback(post.id);
-											toggleComments(post.id);
+											void toggleComments(post.id);
 										}}
 									>
 										{#if isCommentsOpen(post.id)}
@@ -519,7 +598,9 @@
 								</div>
 								{#if isCommentsOpen(post.id)}
 									<div class="comments-panel">
-										{#if post.comments.length > 0}
+										{#if commentsLoadingByPostId[post.id]}
+											<p class="comments-empty">Laddar svar...</p>
+										{:else if post.comments.length > 0}
 											<ul class="comments-list">
 												{#each post.comments as comment (comment.id)}
 													<li class="comments-item">
