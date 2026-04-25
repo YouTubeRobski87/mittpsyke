@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
-	import { onMount, tick } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import { trackSignupCompleted, trackDiaryPageOpenedFromHoroscope } from '$lib/analytics';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
@@ -30,6 +30,9 @@
 		cycledKm: number | null;
 		updatedAt?: string | null;
 	};
+
+	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+	const DIARY_IMAGE_ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -91,8 +94,10 @@
 
 	// Bilduppladdning för nytt inlägg
 	let draftImageUrl = $state<string | null>(null);
+	let draftImagePreviewUrl = $state<string | null>(null);
 	let uploadingImage = $state(false);
 	let uploadImageError = $state('');
+	let draftImageUploadId = 0;
 
 	let confirmingShareEntryId = $state('');
 	let confirmingUnshareEntryId = $state('');
@@ -878,31 +883,43 @@
 		}
 	}
 
-	// Hanterar val av bild — skickar till /api/diary/upload (server-side, service role)
+	function setDraftImagePreview(file: File) {
+		if (draftImagePreviewUrl) {
+			URL.revokeObjectURL(draftImagePreviewUrl);
+		}
+		draftImagePreviewUrl = URL.createObjectURL(file);
+	}
+
+	// Hanterar val av bild — visar lokal förhandsvisning och skickar till /api/diary/upload
 	async function handleImageSelect(event: Event) {
 		const input = event.currentTarget as HTMLInputElement;
 		const file = input.files?.[0] ?? null;
 		if (!file) return;
 
 		// Klientvalidering innan nätverksanrop
-		const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-		if (!allowedTypes.includes(file.type)) {
+		if (!DIARY_IMAGE_ALLOWED_TYPES.has(file.type)) {
 			uploadImageError = 'Endast JPEG, PNG, WebP och GIF stöds.';
+			input.value = '';
 			return;
 		}
-		if (file.size > 5 * 1024 * 1024) {
+		if (file.size > DIARY_IMAGE_MAX_BYTES) {
 			uploadImageError = 'Bilden får vara max 5 MB.';
+			input.value = '';
 			return;
 		}
 
 		uploadImageError = '';
+		draftImageUrl = null;
+		setDraftImagePreview(file);
 		uploadingImage = true;
+		const uploadId = ++draftImageUploadId;
 
 		try {
 			const { data: sessionData } = await supabase.auth.getSession();
 			const token = sessionData.session?.access_token;
 			if (!token) {
 				uploadImageError = 'Logga in för att ladda upp bilder.';
+				clearDraftImage({ clearError: false });
 				return;
 			}
 
@@ -918,26 +935,45 @@
 			const payload = await res.json().catch(() => ({})) as { url?: string; error?: string };
 
 			if (!res.ok) {
+				if (uploadId !== draftImageUploadId) return;
 				const msg = payload.error ?? `Uppladdning misslyckades (HTTP ${res.status}).`;
 				console.error('[handleImageSelect] Fel från server:', msg);
 				uploadImageError = msg;
+				clearDraftImage({ clearError: false });
 				return;
 			}
 
+			if (uploadId !== draftImageUploadId) return;
 			draftImageUrl = payload.url ?? null;
+			if (!draftImageUrl) {
+				uploadImageError = 'Uppladdningen saknade bildlänk.';
+				clearDraftImage({ clearError: false });
+			}
 		} catch (err) {
+			if (uploadId !== draftImageUploadId) return;
 			const msg = err instanceof Error ? err.message : 'Okänt fel vid bilduppladdning.';
 			console.error('[handleImageSelect] Nätverksfel:', msg);
 			uploadImageError = 'Nätverksfel – kunde inte nå servern.';
+			clearDraftImage({ clearError: false });
 		} finally {
-			uploadingImage = false;
+			if (uploadId === draftImageUploadId) {
+				uploadingImage = false;
+			}
 			input.value = '';
 		}
 	}
 
-	function clearDraftImage() {
+	function clearDraftImage(options: { clearError?: boolean } = {}) {
+		draftImageUploadId += 1;
+		uploadingImage = false;
+		if (draftImagePreviewUrl) {
+			URL.revokeObjectURL(draftImagePreviewUrl);
+		}
+		draftImagePreviewUrl = null;
 		draftImageUrl = null;
-		uploadImageError = '';
+		if (options.clearError ?? true) {
+			uploadImageError = '';
+		}
 	}
 
 	// Kallas från DiaryCalendar när användaren klickar ett datum
@@ -1108,6 +1144,10 @@
 		if (!draftText.trim() || savingDraft) return;
 		draftError = '';
 		draftSuccess = '';
+		if (uploadingImage) {
+			draftError = 'Vänta tills bilden har laddats upp innan du sparar.';
+			return;
+		}
 		savingDraft = true;
 
 		try {
@@ -1152,7 +1192,7 @@
 			draftText = '';
 			draftMood = '';
 			draftMoodPreview = 5;
-			draftImageUrl = null;
+			clearDraftImage();
 			uploadImageError = '';
 			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true });
@@ -1225,6 +1265,12 @@
 		});
 
 		return () => subscription.unsubscribe();
+	});
+
+	onDestroy(() => {
+		if (draftImagePreviewUrl) {
+			URL.revokeObjectURL(draftImagePreviewUrl);
+		}
 	});
 </script>
 
@@ -1384,20 +1430,23 @@
 
 						<!-- Bilduppladdning (valfritt) -->
 						<div class="image-upload-row">
-							{#if draftImageUrl}
+							{#if draftImagePreviewUrl || draftImageUrl}
 								<div class="image-preview-wrap">
 									<img
-										src={draftImageUrl}
+										src={draftImagePreviewUrl ?? draftImageUrl}
 										alt="Vald bild för inlägget"
 										class="image-preview"
 									/>
 									<button
 										type="button"
 										class="image-remove-btn"
-										onclick={clearDraftImage}
+										onclick={() => clearDraftImage()}
 									>
 										Ta bort bild
 									</button>
+									{#if uploadingImage}
+										<p class="image-upload-status auth-muted">Laddar upp bilden...</p>
+									{/if}
 								</div>
 							{:else}
 								<label class="image-upload-label" for="draft-image-input">
@@ -1406,7 +1455,8 @@
 									<input
 										id="draft-image-input"
 										type="file"
-										accept="image/jpeg,image/png,image/webp,image/gif"
+										accept="image/*"
+										capture="environment"
 										class="image-input-hidden"
 										onchange={handleImageSelect}
 										disabled={uploadingImage}
@@ -1432,9 +1482,9 @@
 								type="button"
 								class="auth-button primary editor-primary"
 								onclick={saveDraftToDiary}
-								disabled={savingDraft || !draftText.trim()}
+								disabled={savingDraft || uploadingImage || !draftText.trim()}
 							>
-								{savingDraft ? 'Sparar...' : 'Spara inlägg'}
+								{savingDraft ? 'Sparar...' : uploadingImage ? 'Väntar på bild...' : 'Spara inlägg'}
 							</button>
 
 							<a href="/skriv" class="auth-button editor-secondary">
@@ -2389,6 +2439,12 @@
 
 	.image-remove-btn:hover {
 		color: hsl(var(--foreground));
+	}
+
+	.image-upload-status {
+		margin: 0;
+		font-size: 0.82rem;
+		align-self: flex-end;
 	}
 
 	.image-upload-error {
