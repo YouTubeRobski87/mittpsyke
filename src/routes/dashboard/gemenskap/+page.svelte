@@ -1260,4 +1260,125 @@
 		color: hsl(var(--foreground));
 		line-height: 1.6;
 	}
+
+	@media (max-width: 760px) {
+		:global(.auth-page:has(.community-page)) {
+			padding-inline: 0.55rem;
+		}
+
+		:global(.auth-page:has(.community-page) .auth-shell) {
+			gap: 0.6rem;
+		}
+
+		:global(.auth-page:has(.community-page) .auth-hero p) {
+			display: none;
+		}
+
+		:global(.auth-page:has(.community-page) .auth-subnav) {
+			gap: 0.2rem;
+			padding: 0.2rem;
+			overflow-x: auto;
+			flex-wrap: nowrap;
+		}
+
+		:global(.auth-page:has(.community-page) .auth-subnav-link) {
+			flex: 0 0 auto;
+			min-width: 5.8rem;
+			padding: 0.42rem 0.55rem;
+			font-size: 0.8rem;
+		}
+
+		.community-page {
+			gap: 0.6rem;
+			padding-top: 0;
+		}
+
+		.info-panel,
+		.feed-panel,
+		.empty-panel,
+		.future-panel,
+		.sample-panel {
+			padding: 0.75rem;
+		}
+
+		.info-panel ul {
+			margin-top: 0.45rem;
+			gap: 0.28rem;
+		}
+
+		.info-panel li:nth-child(2),
+		.info-panel li:nth-child(3),
+		.feed-intro,
+		.empty-panel p,
+		.future-panel,
+		.sample-panel,
+		.comments-help {
+			display: none;
+		}
+
+		.feed-cta {
+			margin-top: 0.45rem;
+			min-height: 2.6rem;
+			width: 100%;
+			align-items: center;
+			justify-content: center;
+			border: 1px solid hsl(var(--border));
+			border-radius: var(--radius-input);
+			background: hsl(var(--surface-soft));
+			text-decoration: none;
+			font-weight: 600;
+		}
+
+		.community-feed {
+			margin-top: 0.55rem;
+			gap: 0.5rem;
+		}
+
+		.community-post {
+			padding: 0.68rem;
+		}
+
+		.content {
+			margin-top: 0.35rem;
+			line-height: 1.5;
+		}
+
+		.post-meta-row,
+		.comment-meta-row,
+		.comment-toggle-row {
+			margin-top: 0.4rem;
+		}
+
+		.comments-panel {
+			margin-top: 0.5rem;
+			padding: 0.6rem;
+		}
+
+		.comments-item {
+			padding: 0.55rem;
+		}
+
+		.comment-form {
+			margin-top: 0.55rem;
+		}
+
+		.comment-input {
+			min-height: 3.6rem;
+			padding: 0.55rem;
+		}
+
+		.comment-form-footer {
+			align-items: stretch;
+		}
+
+		.comment-form-footer .auth-button,
+		.empty-actions .auth-button,
+		.post-confirmation-actions .auth-button {
+			width: 100%;
+		}
+
+		.post-confirmation {
+			padding: 0.6rem;
+		}
+	}
 </style>

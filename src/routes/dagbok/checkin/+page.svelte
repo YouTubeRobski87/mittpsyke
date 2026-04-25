@@ -2152,7 +2152,7 @@
 	.diary-side {
 		display: grid;
 		gap: 0.85rem;
-		order: -1;
+		order: 0;
 	}
 
 	.diary-input {
@@ -2825,6 +2825,222 @@
 		margin: 0.5rem 0 0;
 		font-size: 0.82rem;
 		color: hsl(var(--error-foreground));
+	}
+
+	@media (max-width: 760px) {
+		:global(.auth-page:has(.diary-layout)) {
+			padding-inline: 0.55rem;
+		}
+
+		:global(.auth-page:has(.diary-layout) .auth-shell) {
+			gap: 0.6rem;
+		}
+
+		:global(.auth-page:has(.diary-layout) .auth-hero p) {
+			display: none;
+		}
+
+		:global(.auth-page:has(.diary-layout) .auth-subnav) {
+			gap: 0.2rem;
+			padding: 0.2rem;
+			overflow-x: auto;
+			flex-wrap: nowrap;
+		}
+
+		:global(.auth-page:has(.diary-layout) .auth-subnav-link) {
+			flex: 0 0 auto;
+			min-width: 5.8rem;
+			padding: 0.42rem 0.55rem;
+			font-size: 0.8rem;
+		}
+
+		.diary-layout,
+		.diary-main,
+		.diary-side {
+			gap: 0.55rem;
+		}
+
+		.diary-paths {
+			padding: 0.75rem;
+			gap: 0.35rem;
+		}
+
+		.diary-paths h2 {
+			font-size: 0.98rem;
+		}
+
+		.diary-paths > p,
+		.diary-path-copy,
+		.editor-kicker,
+		.editor-intro,
+		.editor-support,
+		.editor-note,
+		.mood-meaning,
+		.mood-anchors,
+		.week-head p,
+		.movement-intro,
+		.movement-debug,
+		.movement-panel > p.text-xs,
+		.mood-graph-header p {
+			display: none;
+		}
+
+		.diary-path-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.45rem;
+			margin-top: 0.35rem !important;
+		}
+
+		.diary-path-card {
+			padding: 0.7rem;
+			min-height: 4.5rem;
+		}
+
+		.path-icon-wrap {
+			width: 1.85rem;
+			height: 1.85rem;
+			margin-bottom: 0.15rem;
+		}
+
+		.diary-path-title {
+			font-size: 0.86rem;
+			line-height: 1.25;
+		}
+
+		.diary-editor-panel {
+			padding: 0.65rem;
+		}
+
+		.editor-shell {
+			gap: 0.55rem;
+		}
+
+		.editor-head {
+			text-align: left;
+			gap: 0.3rem;
+		}
+
+		.editor-title {
+			font-size: 1.22rem;
+		}
+
+		.editor-date {
+			justify-self: start;
+			padding: 0;
+			border: 0;
+			background: transparent;
+			font-size: 0.74rem;
+		}
+
+		.editor-mood-field {
+			padding: 0.68rem 0.75rem;
+			gap: 0.35rem;
+		}
+
+		.mood-current {
+			font-size: 0.78rem;
+		}
+
+		.diary-input--editor {
+			min-height: 11.5rem;
+			padding: 0.85rem;
+			font-size: 0.95rem;
+			line-height: 1.65;
+		}
+
+		.image-upload-row {
+			padding: 0.55rem 0.75rem;
+		}
+
+		.image-preview {
+			max-height: 7rem;
+		}
+
+		.editor-actions {
+			margin-top: 0.55rem;
+			gap: 0.45rem;
+		}
+
+		.editor-primary,
+		.editor-secondary,
+		.entry-edit-actions .auth-button,
+		.entry-delete-actions .auth-button,
+		.share-confirmation-actions .auth-button {
+			width: 100%;
+			min-width: 0;
+		}
+
+		:global(.mood-timeline-panel) {
+			gap: 0.55rem;
+		}
+
+		:global(.mood-timeline-panel .timeline-copy p),
+		:global(.mood-timeline-panel .timeline-summary),
+		:global(.mood-timeline-panel .timeline-note),
+		:global(.mood-timeline-panel .timeline-supportive),
+		:global(.mood-timeline-panel .timeline-empty p + p) {
+			display: none;
+		}
+
+		:global(.mood-timeline-panel .timeline-filter-button) {
+			padding: 0.32rem 0.58rem;
+			font-size: 0.78rem;
+		}
+
+		:global(.diary-calendar) {
+			gap: 0.45rem;
+		}
+
+		.diary-side .auth-panel {
+			padding: 0.72rem;
+		}
+
+		.movement-panel {
+			gap: 0.45rem;
+		}
+
+		.movement-label {
+			font-size: 0.76rem;
+		}
+
+		.movement-input {
+			min-height: 2.65rem;
+			font-size: 1rem;
+		}
+
+		.movement-week {
+			margin-top: 0;
+		}
+
+		.movement-week-stats {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.25rem 0.5rem;
+		}
+
+		.movement-week-list {
+			display: none;
+		}
+
+		.week-count {
+			font-size: 1.45rem;
+		}
+
+		.mood-chart {
+			height: 64px;
+		}
+
+		.diary-entries {
+			gap: 0.55rem;
+		}
+
+		.diary-entry {
+			padding: 0.75rem;
+		}
+
+		.share-row,
+		.entry-actions {
+			gap: 0.35rem 0.55rem;
+		}
 	}
 
 	@media (min-width: 980px) {

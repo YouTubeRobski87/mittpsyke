@@ -454,8 +454,8 @@
 	</main>
 {:else}
 	<a href="#main-content" class="skip-link">Hoppa till innehåll</a>
-	<header class="sticky top-0 z-30 bg-[hsl(var(--background)/0.94)] supports-[backdrop-filter]:backdrop-blur">
-		<div class="flex items-center justify-between gap-3 px-5 py-3.5">
+	<header class="site-header sticky top-0 z-30 bg-[hsl(var(--background)/0.94)] supports-[backdrop-filter]:backdrop-blur">
+		<div class="site-header-inner flex items-center justify-between gap-3 px-5 py-3.5">
 			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
 				<a
 					href="/"
@@ -1070,11 +1070,75 @@
 	}
 
 	@media (max-width: 739px) {
+		.site-header-inner {
+			padding: 0.48rem 0.75rem;
+			gap: 0.55rem;
+		}
+
+		:global(#main-content) {
+			margin-top: 0.75rem !important;
+		}
+
+		:global(.site-disclaimer) {
+			margin-top: 1.5rem !important;
+		}
+
+		:global(.site-footer) {
+			margin-top: 1.75rem !important;
+			padding-block: 0.9rem !important;
+		}
+
+		.brand-link {
+			min-height: 2.2rem;
+		}
+
+		.brand-wordmark {
+			font-size: 1.22rem;
+		}
+
+		.profile-avatar-link {
+			width: 2rem;
+			height: 2rem;
+		}
+
+		.profile-avatar-image,
+		.profile-avatar-fallback {
+			width: 1.68rem;
+			height: 1.68rem;
+		}
+
+		.profile-panel-toggle {
+			width: 1.45rem;
+			height: 1.45rem;
+		}
+
+		:global(.site-header .lg\:hidden) {
+			padding: 0.4rem 0.55rem;
+		}
+
+		.mobile-menu-panel {
+			max-height: calc(100svh - 3.4rem);
+			padding: 0.65rem 0.75rem !important;
+		}
+
+		.mobile-menu-greeting,
+		.mobile-menu-help {
+			display: none;
+		}
+
+		.mobile-menu-section-title {
+			margin-top: 0.35rem;
+		}
+
+		.mobile-menu-link {
+			padding: 0.42rem 0;
+		}
+
 		.profile-panel {
 			position: fixed;
 			left: 0.75rem;
 			right: 0.75rem;
-			top: 4.8rem;
+			top: 3.6rem;
 			width: auto;
 			max-width: none;
 		}

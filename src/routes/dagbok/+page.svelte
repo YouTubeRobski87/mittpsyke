@@ -308,6 +308,82 @@
 		font-size: 1rem;
 	}
 
+	@media (max-width: 760px) {
+		.seo-diary-page {
+			padding: 0 0.65rem 2.5rem;
+			gap: 0.75rem;
+		}
+
+		.hero {
+			gap: 0.6rem;
+			padding-top: 0;
+		}
+
+		.hero-copy,
+		.hero-panel,
+		.body-card,
+		.benefit-card,
+		.faq-item {
+			border-radius: var(--radius-input);
+		}
+
+		.hero-copy {
+			padding: 1rem;
+			gap: 0.65rem;
+		}
+
+		h1 {
+			font-size: 1.75rem;
+			line-height: 1.08;
+		}
+
+		.lead {
+			font-size: 0.95rem;
+			line-height: 1.55;
+		}
+
+		.support-copy,
+		.hero-panel,
+		.content-grid,
+		.section-heading .eyebrow,
+		.benefit-card p,
+		.faq-item p {
+			display: none;
+		}
+
+		.cta-row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 0.5rem;
+			padding-top: 0.1rem;
+		}
+
+		.primary-cta,
+		.secondary-cta {
+			min-height: 2.65rem;
+			padding: 0.65rem 0.75rem;
+			font-size: 0.9rem;
+		}
+
+		.support-note {
+			font-size: 0.78rem;
+			line-height: 1.45;
+		}
+
+		.benefits-section,
+		.faq-section,
+		.benefit-grid,
+		.faq-list {
+			gap: 0.55rem;
+		}
+
+		.body-card,
+		.benefit-card,
+		.faq-item {
+			padding: 0.8rem;
+		}
+	}
+
 	@media (min-width: 900px) {
 		.hero {
 			grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
