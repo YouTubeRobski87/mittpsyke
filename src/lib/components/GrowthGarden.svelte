@@ -3,6 +3,10 @@
 	export let growthLevel: number;
 	export let entryCount: number = 0;
 	export let activeDays: number = 0;
+
+	const MYSTERY_EGG_VISIBLE_ENTRIES = 100;
+	const MYSTERY_EGG_CRACKED_ENTRIES = 125;
+	const MYSTERY_EGG_HATCHED_ENTRIES = 150;
 </script>
 
 <section class="garden-card card" aria-labelledby="growth-garden-title" data-growth-score={growthScore}>
@@ -218,23 +222,57 @@
 				</g>
 			{/if}
 
-			{#if entryCount >= 100}
-				<!-- Mysterie-ägg: visas när användaren nått 100 inlägg, oavsett growthLevel -->
-				<g class="mystery-egg-stage">
-					<ellipse cx="78" cy="169" rx="30" ry="34" class="mystery-egg-glow" />
-					<ellipse cx="78" cy="188" rx="19" ry="5" class="egg-shadow" />
+			{#if entryCount < MYSTERY_EGG_VISIBLE_ENTRIES}
+				<!-- Andra ägget: låst -->
+				<g class="mystery-egg-locked" aria-hidden="true">
+					<ellipse cx="78" cy="188" rx="16" ry="4" class="egg-shadow" />
 					<path
-						d="M78 150 C69 150 62 164 62 174 C62 184 69 188 78 188 C87 188 94 184 94 174 C94 164 87 150 78 150 Z"
+						d="M78 154 C70 154 64 166 64 176 C64 185 70 188 78 188 C86 188 92 185 92 176 C92 166 86 154 78 154 Z"
 						class="egg-shell"
 					/>
-					<path
-						d="M79 153 C73 157 68 166 68 174 C68 181 71 185 75 187 C71 181 69 174 69 168 C69 162 73 156 79 153 Z"
-						class="egg-shell-shade"
-					/>
-					<circle cx="70" cy="161" r="2.1" class="egg-speck" />
-					<circle cx="84" cy="170" r="1.8" class="egg-speck" />
-					<circle cx="73" cy="177" r="1.6" class="egg-speck" />
+					<path d="M72 171 H84 M78 165 V177" class="mystery-lock-mark" />
 				</g>
+			{:else}
+				{#if entryCount >= MYSTERY_EGG_HATCHED_ENTRIES}
+					<!-- Andra ägget: kläckt -->
+					<g class="mystery-hatch-stage">
+						<ellipse cx="78" cy="188" rx="22" ry="5" class="egg-shadow" />
+						<path d="M56 184 L62 177 L70 183 L68 189 L56 189 Z" class="egg-shell-piece mystery-shell-fragment" />
+						<path d="M86 183 L95 176 L101 184 L98 189 L86 189 Z" class="egg-shell-piece mystery-shell-fragment" />
+						<path d="M63 175 C57 173 53 170 50 166" class="dino-tail mystery-tail" />
+						<ellipse cx="76" cy="174" rx="16" ry="11" class="dino-body" />
+						<ellipse cx="80" cy="179" rx="8" ry="5" class="dino-belly" />
+						<path d="M88 166 C92 160 96 156 101 153" class="dino-neck mystery-neck" />
+						<ellipse cx="106" cy="151" rx="7" ry="5.6" class="dino-head" />
+						<path d="M71 181 L70 189" class="dino-leg mystery-leg" />
+						<path d="M82 181 L83 189" class="dino-leg mystery-leg" />
+						<circle cx="72" cy="171" r="1.8" class="dino-spot" />
+						<circle cx="82" cy="169" r="1.6" class="dino-spot" />
+						<circle cx="108" cy="149" r="1" class="dino-eye" />
+						<path d="M103 154 C105 155 107 155 109 154" class="dino-smile mystery-smile" />
+					</g>
+				{:else}
+					<!-- Mysterie-ägg: visas när användaren nått 100 inlägg, oavsett growthLevel -->
+					<g class="mystery-egg-stage">
+						<ellipse cx="78" cy="169" rx="30" ry="34" class="mystery-egg-glow" />
+						<ellipse cx="78" cy="188" rx="19" ry="5" class="egg-shadow" />
+						<path
+							d="M78 150 C69 150 62 164 62 174 C62 184 69 188 78 188 C87 188 94 184 94 174 C94 164 87 150 78 150 Z"
+							class="egg-shell"
+						/>
+						<path
+							d="M79 153 C73 157 68 166 68 174 C68 181 71 185 75 187 C71 181 69 174 69 168 C69 162 73 156 79 153 Z"
+							class="egg-shell-shade"
+						/>
+						<circle cx="70" cy="161" r="2.1" class="egg-speck" />
+						<circle cx="84" cy="170" r="1.8" class="egg-speck" />
+						<circle cx="73" cy="177" r="1.6" class="egg-speck" />
+						{#if entryCount >= MYSTERY_EGG_CRACKED_ENTRIES}
+							<path d="M77 160 L82 166 L76 172 L83 179" class="crack-line mystery-crack-line" />
+							<path d="M69 169 L73 174 L69 179" class="crack-line mystery-crack-line-soft" />
+						{/if}
+					</g>
+				{/if}
 			{/if}
 
 			{#if growthLevel >= 4}
@@ -280,8 +318,12 @@
 		<p class="garden-stats">{entryCount} inlägg och {activeDays} aktiva dagar totalt.</p>
 	</div>
 
-	{#if entryCount >= 100}
-		<p class="mystery-hint">Något nytt håller på att hända...</p>
+	{#if entryCount >= MYSTERY_EGG_VISIBLE_ENTRIES}
+		<p class="mystery-hint">
+			{entryCount >= MYSTERY_EGG_HATCHED_ENTRIES
+				? 'Något nytt har kläckts.'
+				: 'Något nytt håller på att hända...'}
+		</p>
 	{/if}
 </section>
 
@@ -586,11 +628,52 @@
 		animation: gardenFade 500ms ease-out both;
 	}
 
+	.mystery-hatch-stage {
+		animation: gardenBloom 520ms ease-out both;
+	}
+
+	.mystery-egg-locked {
+		opacity: 0.42;
+	}
+
 	.mystery-egg-glow {
 		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 32%, transparent 68%);
 		transform-box: fill-box;
 		transform-origin: center;
 		animation: mysteryPulse 2.8s ease-in-out infinite;
+	}
+
+	.mystery-lock-mark {
+		fill: none;
+		stroke: color-mix(in srgb, var(--theme-text, #26343d) 62%, transparent 38%);
+		stroke-linecap: round;
+		stroke-width: 2;
+	}
+
+	.mystery-crack-line {
+		stroke-width: 1.55;
+	}
+
+	.mystery-crack-line-soft {
+		opacity: 0.74;
+		stroke-width: 1.25;
+	}
+
+	.mystery-tail,
+	.mystery-neck {
+		stroke-width: 7;
+	}
+
+	.mystery-leg {
+		stroke-width: 4;
+	}
+
+	.mystery-smile {
+		stroke-width: 1.1;
+	}
+
+	.mystery-shell-fragment {
+		opacity: 0.94;
 	}
 
 	@keyframes mysteryPulse {
