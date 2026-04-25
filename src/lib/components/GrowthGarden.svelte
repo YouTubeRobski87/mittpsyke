@@ -7,6 +7,15 @@
 	const MYSTERY_EGG_VISIBLE_ENTRIES = 100;
 	const MYSTERY_EGG_CRACKED_ENTRIES = 125;
 	const MYSTERY_EGG_HATCHED_ENTRIES = 150;
+	const EXTRA_EGGS = [
+		{ id: 2, x: 78, y: 176, visible: 100, cracked: 125, hatched: 150 },
+		{ id: 3, x: 142, y: 166, visible: 200, cracked: 250, hatched: 300 },
+		{ id: 4, x: 202, y: 158, visible: 400, cracked: 500, hatched: 600 },
+		{ id: 5, x: 462, y: 160, visible: 800, cracked: 1000, hatched: 1200 }
+	];
+
+	$: nextEgg = EXTRA_EGGS.find((egg) => entryCount < egg.visible);
+	$: hatchingEgg = EXTRA_EGGS.find((egg) => entryCount >= egg.visible && entryCount < egg.hatched);
 </script>
 
 <section class="garden-card card" aria-labelledby="growth-garden-title" data-growth-score={growthScore}>
@@ -222,58 +231,49 @@
 				</g>
 			{/if}
 
-			{#if entryCount < MYSTERY_EGG_VISIBLE_ENTRIES}
-				<!-- Andra ägget: låst -->
-				<g class="mystery-egg-locked" aria-hidden="true">
-					<ellipse cx="78" cy="188" rx="16" ry="4" class="egg-shadow" />
-					<path
-						d="M78 154 C70 154 64 166 64 176 C64 185 70 188 78 188 C86 188 92 185 92 176 C92 166 86 154 78 154 Z"
-						class="egg-shell"
-					/>
-					<path d="M72 171 H84 M78 165 V177" class="mystery-lock-mark" />
-				</g>
-			{:else}
-				{#if entryCount >= MYSTERY_EGG_HATCHED_ENTRIES}
-					<!-- Andra ägget: kläckt -->
+			{#each EXTRA_EGGS as egg}
+				{#if entryCount >= egg.hatched}
+					<!-- Extraägg: kläckt -->
 					<g class="mystery-hatch-stage">
-						<ellipse cx="78" cy="188" rx="22" ry="5" class="egg-shadow" />
-						<path d="M56 184 L62 177 L70 183 L68 189 L56 189 Z" class="egg-shell-piece mystery-shell-fragment" />
-						<path d="M86 183 L95 176 L101 184 L98 189 L86 189 Z" class="egg-shell-piece mystery-shell-fragment" />
-						<path d="M63 175 C57 173 53 170 50 166" class="dino-tail mystery-tail" />
-						<ellipse cx="76" cy="174" rx="16" ry="11" class="dino-body" />
-						<ellipse cx="80" cy="179" rx="8" ry="5" class="dino-belly" />
-						<path d="M88 166 C92 160 96 156 101 153" class="dino-neck mystery-neck" />
-						<ellipse cx="106" cy="151" rx="7" ry="5.6" class="dino-head" />
-						<path d="M71 181 L70 189" class="dino-leg mystery-leg" />
-						<path d="M82 181 L83 189" class="dino-leg mystery-leg" />
-						<circle cx="72" cy="171" r="1.8" class="dino-spot" />
-						<circle cx="82" cy="169" r="1.6" class="dino-spot" />
-						<circle cx="108" cy="149" r="1" class="dino-eye" />
-						<path d="M103 154 C105 155 107 155 109 154" class="dino-smile mystery-smile" />
+						<ellipse cx={egg.x} cy={egg.y + 12} rx="22" ry="5" class="egg-shadow" />
+						<path d={`M${egg.x - 22} ${egg.y + 8} L${egg.x - 16} ${egg.y + 1} L${egg.x - 8} ${egg.y + 7} L${egg.x - 10} ${egg.y + 13} L${egg.x - 22} ${egg.y + 13} Z`} class="egg-shell-piece mystery-shell-fragment" />
+						<path d={`M${egg.x + 8} ${egg.y + 7} L${egg.x + 17} ${egg.y} L${egg.x + 23} ${egg.y + 8} L${egg.x + 20} ${egg.y + 13} L${egg.x + 8} ${egg.y + 13} Z`} class="egg-shell-piece mystery-shell-fragment" />
+						<path d={`M${egg.x - 15} ${egg.y - 1} C${egg.x - 21} ${egg.y - 3} ${egg.x - 25} ${egg.y - 6} ${egg.x - 28} ${egg.y - 10}`} class="dino-tail mystery-tail" />
+						<ellipse cx={egg.x - 2} cy={egg.y - 2} rx="16" ry="11" class="dino-body" />
+						<ellipse cx={egg.x + 2} cy={egg.y + 3} rx="8" ry="5" class="dino-belly" />
+						<path d={`M${egg.x + 10} ${egg.y - 10} C${egg.x + 14} ${egg.y - 16} ${egg.x + 18} ${egg.y - 20} ${egg.x + 23} ${egg.y - 23}`} class="dino-neck mystery-neck" />
+						<ellipse cx={egg.x + 28} cy={egg.y - 25} rx="7" ry="5.6" class="dino-head" />
+						<path d={`M${egg.x - 7} ${egg.y + 5} L${egg.x - 8} ${egg.y + 13}`} class="dino-leg mystery-leg" />
+						<path d={`M${egg.x + 4} ${egg.y + 5} L${egg.x + 5} ${egg.y + 13}`} class="dino-leg mystery-leg" />
+						<circle cx={egg.x - 6} cy={egg.y - 5} r="1.8" class="dino-spot" />
+						<circle cx={egg.x + 4} cy={egg.y - 7} r="1.6" class="dino-spot" />
+						<circle cx={egg.x + 30} cy={egg.y - 27} r="1" class="dino-eye" />
+						<path d={`M${egg.x + 25} ${egg.y - 22} C${egg.x + 27} ${egg.y - 21} ${egg.x + 29} ${egg.y - 21} ${egg.x + 31} ${egg.y - 22}`} class="dino-smile mystery-smile" />
 					</g>
-				{:else}
-					<!-- Mysterie-ägg: visas när användaren nått 100 inlägg, oavsett growthLevel -->
+				{:else if entryCount >= egg.visible}
+					<!-- Extraägg: aktivt -->
 					<g class="mystery-egg-stage">
-						<ellipse cx="78" cy="169" rx="30" ry="34" class="mystery-egg-glow" />
-						<ellipse cx="78" cy="188" rx="19" ry="5" class="egg-shadow" />
-						<path
-							d="M78 150 C69 150 62 164 62 174 C62 184 69 188 78 188 C87 188 94 184 94 174 C94 164 87 150 78 150 Z"
-							class="egg-shell"
-						/>
-						<path
-							d="M79 153 C73 157 68 166 68 174 C68 181 71 185 75 187 C71 181 69 174 69 168 C69 162 73 156 79 153 Z"
-							class="egg-shell-shade"
-						/>
-						<circle cx="70" cy="161" r="2.1" class="egg-speck" />
-						<circle cx="84" cy="170" r="1.8" class="egg-speck" />
-						<circle cx="73" cy="177" r="1.6" class="egg-speck" />
-						{#if entryCount >= MYSTERY_EGG_CRACKED_ENTRIES}
-							<path d="M77 160 L82 166 L76 172 L83 179" class="crack-line mystery-crack-line" />
-							<path d="M69 169 L73 174 L69 179" class="crack-line mystery-crack-line-soft" />
+						<ellipse cx={egg.x} cy={egg.y - 7} rx="30" ry="34" class="mystery-egg-glow" />
+						<ellipse cx={egg.x} cy={egg.y + 12} rx="19" ry="5" class="egg-shadow" />
+						<path d={`M${egg.x} ${egg.y - 26} C${egg.x - 9} ${egg.y - 26} ${egg.x - 16} ${egg.y - 12} ${egg.x - 16} ${egg.y - 2} C${egg.x - 16} ${egg.y + 8} ${egg.x - 9} ${egg.y + 12} ${egg.x} ${egg.y + 12} C${egg.x + 9} ${egg.y + 12} ${egg.x + 16} ${egg.y + 8} ${egg.x + 16} ${egg.y - 2} C${egg.x + 16} ${egg.y - 12} ${egg.x + 9} ${egg.y - 26} ${egg.x} ${egg.y - 26} Z`} class="egg-shell" />
+						<path d={`M${egg.x + 1} ${egg.y - 23} C${egg.x - 5} ${egg.y - 19} ${egg.x - 10} ${egg.y - 10} ${egg.x - 10} ${egg.y - 2} C${egg.x - 10} ${egg.y + 5} ${egg.x - 7} ${egg.y + 9} ${egg.x - 3} ${egg.y + 11} C${egg.x - 7} ${egg.y + 5} ${egg.x - 9} ${egg.y - 2} ${egg.x - 9} ${egg.y - 8} C${egg.x - 9} ${egg.y - 14} ${egg.x - 5} ${egg.y - 20} ${egg.x + 1} ${egg.y - 23} Z`} class="egg-shell-shade" />
+						<circle cx={egg.x - 8} cy={egg.y - 15} r="2.1" class="egg-speck" />
+						<circle cx={egg.x + 6} cy={egg.y - 6} r="1.8" class="egg-speck" />
+						<circle cx={egg.x - 5} cy={egg.y + 1} r="1.6" class="egg-speck" />
+						{#if entryCount >= egg.cracked}
+							<path d={`M${egg.x - 1} ${egg.y - 16} L${egg.x + 4} ${egg.y - 10} L${egg.x - 2} ${egg.y - 4} L${egg.x + 5} ${egg.y + 3}`} class="crack-line mystery-crack-line" />
+							<path d={`M${egg.x - 9} ${egg.y - 7} L${egg.x - 5} ${egg.y - 2} L${egg.x - 9} ${egg.y + 3}`} class="crack-line mystery-crack-line-soft" />
 						{/if}
 					</g>
+				{:else}
+					<!-- Extraägg: låst -->
+					<g class="mystery-egg-locked" aria-hidden="true">
+						<ellipse cx={egg.x} cy={egg.y + 12} rx="16" ry="4" class="egg-shadow" />
+						<path d={`M${egg.x} ${egg.y - 22} C${egg.x - 8} ${egg.y - 22} ${egg.x - 14} ${egg.y - 10} ${egg.x - 14} ${egg.y} C${egg.x - 14} ${egg.y + 9} ${egg.x - 8} ${egg.y + 12} ${egg.x} ${egg.y + 12} C${egg.x + 8} ${egg.y + 12} ${egg.x + 14} ${egg.y + 9} ${egg.x + 14} ${egg.y} C${egg.x + 14} ${egg.y - 10} ${egg.x + 8} ${egg.y - 22} ${egg.x} ${egg.y - 22} Z`} class="egg-shell" />
+						<path d={`M${egg.x - 6} ${egg.y - 5} H${egg.x + 6} M${egg.x} ${egg.y - 11} V${egg.y + 1}`} class="mystery-lock-mark" />
+					</g>
 				{/if}
-			{/if}
+			{/each}
 
 			{#if growthLevel >= 4}
 				<g class="layer dino-stage level-four">
@@ -320,9 +320,13 @@
 
 	{#if entryCount >= MYSTERY_EGG_VISIBLE_ENTRIES}
 		<p class="mystery-hint">
-			{entryCount >= MYSTERY_EGG_HATCHED_ENTRIES
-				? 'Något nytt har kläckts.'
-				: 'Något nytt håller på att hända...'}
+			{#if hatchingEgg}
+				Något nytt håller på att hända...
+			{:else if nextEgg}
+				Nästa ägg börjar röra sig vid {nextEgg.visible} inlägg.
+			{:else}
+				Alla synliga ägg har kläckts.
+			{/if}
 		</p>
 	{/if}
 </section>
