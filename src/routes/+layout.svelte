@@ -198,13 +198,18 @@
 	let analyticsEnabled = $state(false);
 	let lastTrackedPagePath = $state('');
 	let profileRequestVersion = 0;
+	let layoutSummaryRequestVersion = 0;
 	let seededSessionAccessToken = '';
+	let syncedProfileUserId = '';
+	let loadedLayoutSummaryUserId = '';
 	let avatarImageLoadFailed = $state(false);
 	let profileButtonRef = $state<HTMLButtonElement | null>(null);
 	let profilePanelRef = $state<HTMLDivElement | null>(null);
+	let profilePanelData = $state<ProfilePanelData>(null);
+	let unreadNotificationCount = $state(0);
+	let layoutSummaryLoading = $state(false);
+	let layoutSummaryError = $state<string | null>(null);
 
-	const profilePanelData = $derived((data?.profilePanel ?? null) as ProfilePanelData);
-	const unreadNotificationCount = $derived((data?.unreadNotificationCount as number | undefined) ?? 0);
 	const profileName = $derived(getProfileName(displayName, user));
 	const avatarImageUrl = $derived(getAvatarImageUrl(user));
 	const showAvatarImage = $derived(Boolean(avatarImageUrl && !avatarImageLoadFailed));
@@ -226,16 +231,27 @@
 		if (!sessionUser) {
 			displayName = null;
 			profilePanelOpen = false;
+			profilePanelData = null;
+			unreadNotificationCount = 0;
+			syncedProfileUserId = '';
+			loadedLayoutSummaryUserId = '';
 			return;
 		}
 
-		const [{ data, error }, { data: authUserData }] = await Promise.all([
-			supabase.from('profiles').select('display_name').eq('id', sessionUser.id).maybeSingle(),
-			supabase.auth.getUser()
-		]);
+		if (loadedLayoutSummaryUserId !== sessionUser.id) {
+			loadedLayoutSummaryUserId = sessionUser.id;
+			void loadLayoutSummary();
+		}
+		if (syncedProfileUserId === sessionUser.id) return;
+		syncedProfileUserId = sessionUser.id;
+
+		const { data, error } = await supabase
+			.from('profiles')
+			.select('display_name')
+			.eq('id', sessionUser.id)
+			.maybeSingle();
 
 		if (requestVersion !== profileRequestVersion) return;
-		user = authUserData.user ?? sessionUser;
 
 		if (error) {
 			displayName = null;
@@ -246,13 +262,39 @@
 		displayName = nextName.length > 0 ? nextName : null;
 	}
 
+	async function loadLayoutSummary() {
+		if (!browser) return;
+		const requestVersion = ++layoutSummaryRequestVersion;
+		layoutSummaryLoading = true;
+		layoutSummaryError = null;
+
+		try {
+			const response = await fetch('/api/layout-summary');
+			if (!response.ok) throw new Error('Kunde inte hämta profilöversikt.');
+			const summary = (await response.json()) as {
+				profilePanel: ProfilePanelData;
+				unreadNotificationCount?: number;
+			};
+			if (requestVersion !== layoutSummaryRequestVersion) return;
+			profilePanelData = summary.profilePanel ?? null;
+			unreadNotificationCount = summary.unreadNotificationCount ?? 0;
+		} catch (error) {
+			if (requestVersion !== layoutSummaryRequestVersion) return;
+			layoutSummaryError = error instanceof Error ? error.message : 'Kunde inte hämta profilöversikt.';
+		} finally {
+			if (requestVersion === layoutSummaryRequestVersion) layoutSummaryLoading = false;
+		}
+	}
+
 	$effect(() => {
 		// Seed klienten med server-side session direkt (undviker flash vid login/redirect)
 		if (data?.session) {
-			void syncUser(data.session.user);
 			if (seededSessionAccessToken !== data.session.access_token) {
 				seededSessionAccessToken = data.session.access_token;
+				void syncUser(data.session.user);
 				void supabase.auth.setSession(data.session);
+			} else if (user?.id !== data.session.user.id) {
+				void syncUser(data.session.user);
 			}
 		} else {
 			seededSessionAccessToken = '';
@@ -601,13 +643,16 @@
 									<div class="profile-panel-stats" aria-label="Din statistik">
 										<p class="profile-panel-stat">
 											<span>Dagboksinlägg</span>
-											<strong>{profilePanelData?.diaryEntryCount ?? 0}</strong>
+											<strong>{layoutSummaryLoading ? '...' : (profilePanelData?.diaryEntryCount ?? 0)}</strong>
 										</p>
 										<p class="profile-panel-stat">
 											<span>Chattsessioner</span>
-											<strong>{profilePanelData?.chatSessionCount ?? 0}</strong>
+											<strong>{layoutSummaryLoading ? '...' : (profilePanelData?.chatSessionCount ?? 0)}</strong>
 										</p>
 									</div>
+									{#if layoutSummaryError}
+										<p class="profile-panel-error">{layoutSummaryError}</p>
+									{/if}
 
 									<div class="profile-panel-links" aria-label="Snabbval">
 										<a href="/dagbok" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
@@ -1049,6 +1094,13 @@
 	.profile-panel-links {
 		display: grid;
 		gap: 0.38rem;
+	}
+
+	.profile-panel-error {
+		margin: -0.25rem 0 0.55rem;
+		font-size: 0.73rem;
+		line-height: 1.35;
+		color: hsl(var(--muted-foreground));
 	}
 
 	.profile-panel-link {
