@@ -41,7 +41,7 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		// Standard
 		"default-src 'self'",
 		// Scripts: self + Google Analytics + inline för gtag
-		`script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com`,
+		`script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://app.trysoro.com`,
 		// Styles: self + unsafe-inline (Tailwind/Svelte)
 		"style-src 'self' 'unsafe-inline'",
 		// Images
