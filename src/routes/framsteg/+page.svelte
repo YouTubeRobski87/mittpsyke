@@ -70,6 +70,12 @@
 		aiSummary: string | null;
 	}
 
+	interface HeatmapResponse {
+		data?: Record<string, number>;
+		error?: string;
+		totalEntries?: number;
+	}
+
 	interface PageData {
 		streak: StreakData | null;
 		milestones: MilestonesResponse | null;
@@ -100,15 +106,28 @@
 	});
 
 	// ── Props + State ──
-	let streakData: StreakData | null = $derived(data.streak ?? null);
-	let milestonesData: MilestonesResponse | null = $derived(data.milestones ?? null);
-	let weeklyEntries: number = $derived(data.weeklyEntries ?? 0);
-	let entryCount: number = $derived(data.entryCount ?? 0);
-	let activeDays: number = $derived(data.activeDays ?? 0);
-	let growthScore: number = $derived(data.growthScore ?? 0);
-	let growthLevel: number = $derived(data.growthLevel ?? 0);
-	let heatmapData = $derived(data.heatmapData ?? {});
-	let heatmapError = $derived(data.heatmapError ?? '');
+	let streakData = $state<StreakData | null>({
+		currentStreak: 0,
+		longestStreak: 0,
+		lastEntryDate: null,
+		lastEntryDaysAgo: 0
+	});
+	let milestonesData = $state<MilestonesResponse | null>({
+		achieved: [],
+		sections: [],
+		nextMilestone: null,
+		totalEntries: 0
+	});
+	let weeklyEntries = $state(0);
+	let entryCount = $state(0);
+	let activeDays = $state(0);
+	let growthScore = $state(0);
+	let growthLevel = $state(0);
+	let heatmapData = $state<Record<string, number>>({});
+	let heatmapError = $state('');
+	let progressLoading = $state(false);
+	let progressLoaded = $state(false);
+	let progressError = $state('');
 	let insightsData = $state<InsightsResponse | null>(null);
 	let insightsLoading = $state(false);
 	let insightsError = $state('');
@@ -162,6 +181,78 @@
 	];
 	const todayReflection = reflections[new Date().getDay()];
 
+	function getGrowthLevel(entryCountValue: number) {
+		let level = 0;
+		if (entryCountValue >= 1) level = 1;
+		if (entryCountValue >= 6) level = 2;
+		if (entryCountValue >= 16) level = 3;
+		if (entryCountValue >= 31) level = 4;
+		return level;
+	}
+
+	function startOfWeekKey() {
+		const now = new Date();
+		const dayOfWeek = now.getDay();
+		const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+		const monday = new Date(now);
+		monday.setDate(now.getDate() + mondayOffset);
+		monday.setHours(0, 0, 0, 0);
+		return monday.toISOString().split('T')[0];
+	}
+
+	async function loadProgressData() {
+		if (progressLoading || progressLoaded) return;
+
+		progressLoading = true;
+		progressError = '';
+
+		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+
+			if (!session?.access_token) {
+				progressError = 'Du behöver vara inloggad för att se framsteg.';
+				return;
+			}
+
+			const headers = { Authorization: `Bearer ${session.access_token}` };
+			const [streakRes, milestonesRes, heatmapRes] = await Promise.all([
+				fetch('/api/diary/streak', { headers }),
+				fetch('/api/diary/milestones', { headers }),
+				fetch('/api/diary/heatmap', { headers })
+			]);
+
+			const [streakPayload, milestonesPayload, heatmapPayload] = await Promise.all([
+				streakRes.ok ? streakRes.json() : null,
+				milestonesRes.ok ? milestonesRes.json() : null,
+				heatmapRes.ok ? heatmapRes.json() : null
+			]);
+
+			streakData = streakPayload as StreakData | null;
+			milestonesData = milestonesPayload as MilestonesResponse | null;
+
+			const heatmap = heatmapPayload as HeatmapResponse | null;
+			heatmapData = heatmap?.data ?? {};
+			heatmapError = heatmap?.error ?? '';
+
+			const weekStart = startOfWeekKey();
+			weeklyEntries = Object.entries(heatmapData).reduce(
+				(sum, [day, count]) => (day >= weekStart ? sum + count : sum),
+				0
+			);
+			entryCount = milestonesData?.totalEntries ?? heatmap?.totalEntries ?? 0;
+			activeDays = Object.keys(heatmapData).length;
+			growthScore = entryCount + activeDays * 3;
+			growthLevel = getGrowthLevel(entryCount);
+			progressLoaded = true;
+		} catch {
+			progressError = 'Kunde inte ladda framsteg just nu.';
+		} finally {
+			progressLoading = false;
+		}
+	}
+
 	function maybeLoadInsights() {
 		if (
 			!browser ||
@@ -177,6 +268,7 @@
 	}
 
 	onMount(() => {
+		void loadProgressData();
 		hasSensitiveDataConsent = hasSensitiveConsent();
 		if (browser) {
 			localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
@@ -537,7 +629,7 @@
 			<section class="card empty-state">
 				<h2>Börja där du är</h2>
 				<p>Inga framsteg visas ännu — och det är helt okej. När du börjar använda dagboken kan du följa din resa här.</p>
-				<a href="/dagbok" class="auth-button primary">Skriv ett inlägg</a>
+				<a href="/dagbok/checkin" class="auth-button primary">Skriv ett inlägg</a>
 			</section>
 		{/if}
 			{/if}
@@ -704,4 +796,5 @@
 		.icon-badge { width: 2.3rem; height: 2.3rem; }
 	}
 </style>
+
 

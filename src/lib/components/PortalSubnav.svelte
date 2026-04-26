@@ -9,7 +9,7 @@
 
 	const tabs: TabItem[] = [
 		{ key: 'dashboard', label: 'Min portal', href: '/dashboard' },
-		{ key: 'dagbok', label: 'Dagbok', href: '/dagbok' },
+		{ key: 'dagbok', label: 'Dagbok', href: '/dagbok/checkin' },
 		{ key: 'framsteg', label: 'Framsteg', href: '/framsteg' },
 		{ key: 'gemenskap', label: 'Gemenskap', href: '/dashboard/gemenskap' },
 		{ key: 'installningar', label: 'Inställningar', href: '/dashboard/installningar' }
