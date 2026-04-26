@@ -12,6 +12,18 @@ const stockholmDateFormatter = new Intl.DateTimeFormat('sv-CA', {
 	month: '2-digit',
 	day: '2-digit'
 });
+const STREAK_CACHE_TTL_MS = 60 * 1000;
+const STREAK_LOOKBACK_DAYS = 370;
+const STREAK_ROW_LIMIT = 500;
+
+type StreakResponse = {
+	currentStreak: number;
+	longestStreak: number;
+	lastEntryDate: string | null;
+	lastEntryDaysAgo: number;
+};
+
+const streakCache = new Map<string, { expiresAt: number; value: StreakResponse }>();
 
 function toStockholmDateKey(value: string) {
 	return stockholmDateFormatter.format(new Date(value));
@@ -39,17 +51,27 @@ export const GET: RequestHandler = async ({ request }) => {
 		const { data, error: authError } = await supabase.auth.getUser(token);
 		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
 		const user = data.user;
+		const cached = streakCache.get(user.id);
+		if (cached && cached.expiresAt > Date.now()) {
+			return json(cached.value);
+		}
+
+		const since = new Date(Date.now() - STREAK_LOOKBACK_DAYS * DAY_MS).toISOString();
 
 		const { data: entries, error } = await supabase
 			.from('diary')
 			.select('created_at')
 			.eq('user_id', user.id)
-			.order('created_at', { ascending: false });
+			.gte('created_at', since)
+			.order('created_at', { ascending: false })
+			.limit(STREAK_ROW_LIMIT);
 
 		if (error) return json({ error: error.message }, { status: 500 });
 
 		if (!entries || entries.length === 0) {
-			return json({ currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 });
+			const emptyValue = { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 };
+			streakCache.set(user.id, { expiresAt: Date.now() + STREAK_CACHE_TTL_MS, value: emptyValue });
+			return json(emptyValue);
 		}
 
 		// Normalize all entry timestamps to Swedish local day before streak math.
@@ -90,7 +112,9 @@ export const GET: RequestHandler = async ({ request }) => {
 		const lastEntryUtcMs = dateKeyToUtcMs(entryDates[0]);
 		const lastEntryDaysAgo = Math.floor((todayUtcMs - lastEntryUtcMs) / DAY_MS);
 
-		return json({ currentStreak, longestStreak, lastEntryDate: entryDates[0], lastEntryDaysAgo });
+		const value = { currentStreak, longestStreak, lastEntryDate: entryDates[0], lastEntryDaysAgo };
+		streakCache.set(user.id, { expiresAt: Date.now() + STREAK_CACHE_TTL_MS, value });
+		return json(value);
 	} catch (err) {
 		console.error('Streak error:', err);
 		return json({ error: 'Internal server error' }, { status: 500 });

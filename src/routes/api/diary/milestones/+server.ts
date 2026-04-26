@@ -12,6 +12,9 @@ const stockholmDateFormatter = new Intl.DateTimeFormat('sv-CA', {
 	month: '2-digit',
 	day: '2-digit'
 });
+const MILESTONES_CACHE_TTL_MS = 60 * 1000;
+const MILESTONES_LOOKBACK_DAYS = 365;
+const MILESTONES_ROW_LIMIT = 500;
 
 type MilestoneCategory = 'entries' | 'streak' | 'time' | 'quality';
 type MilestoneMetric =
@@ -44,6 +47,19 @@ type DiaryRow = {
 	created_at: string | null;
 	text: string | null;
 };
+
+type MilestonesResponse = {
+	achieved: ReturnType<typeof resolveMilestones>;
+	sections: Array<{
+		id: MilestoneCategory;
+		title: string;
+		milestones: ReturnType<typeof resolveMilestones>;
+	}>;
+	nextMilestone: ReturnType<typeof resolveMilestones>[number] | null;
+	totalEntries: number;
+};
+
+const milestonesCache = new Map<string, { expiresAt: number; value: MilestonesResponse }>();
 
 const CATEGORY_TITLES: Record<MilestoneCategory, string> = {
 	entries: 'Antal inlägg',
@@ -155,16 +171,28 @@ export const GET: RequestHandler = async ({ request }) => {
 		const { data, error: authError } = await supabase.auth.getUser(token);
 		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
 		const user = data.user;
+		const cached = milestonesCache.get(user.id);
+		if (cached && cached.expiresAt > Date.now()) {
+			return json(cached.value);
+		}
 
-		const { data: entries, error } = await supabase
-			.from('diary')
-			.select('created_at, text')
-			.eq('user_id', user.id);
+		const since = new Date(Date.now() - MILESTONES_LOOKBACK_DAYS * DAY_MS).toISOString();
+		const [totalEntriesQuery, entriesQuery] = await Promise.all([
+			supabase.from('diary').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+			supabase
+				.from('diary')
+				.select('created_at, text')
+				.eq('user_id', user.id)
+				.gte('created_at', since)
+				.order('created_at', { ascending: false })
+				.limit(MILESTONES_ROW_LIMIT)
+		]);
 
-		if (error) return json({ error: error.message }, { status: 500 });
+		if (totalEntriesQuery.error) return json({ error: totalEntriesQuery.error.message }, { status: 500 });
+		if (entriesQuery.error) return json({ error: entriesQuery.error.message }, { status: 500 });
 
-		const rows = (entries ?? []) as DiaryRow[];
-		const totalEntries = rows.length;
+		const rows = (entriesQuery.data ?? []) as DiaryRow[];
+		const totalEntries = totalEntriesQuery.count ?? 0;
 		const uniqueDateKeys = Array.from(
 			new Set(
 				rows
@@ -214,12 +242,14 @@ export const GET: RequestHandler = async ({ request }) => {
 			milestones: milestones.filter((milestone) => milestone.category === category)
 		}));
 
-		return json({
+		const value = {
 			achieved,
 			sections,
 			nextMilestone,
 			totalEntries
-		});
+		};
+		milestonesCache.set(user.id, { expiresAt: Date.now() + MILESTONES_CACHE_TTL_MS, value });
+		return json(value);
 	} catch (err) {
 		console.error('Milestones error:', err);
 		return json({ error: 'Internal server error' }, { status: 500 });

@@ -4,6 +4,18 @@ import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/public';
 import type { RequestHandler } from '@sveltejs/kit';
 
+const HEATMAP_CACHE_TTL_MS = 60 * 1000;
+const HEATMAP_ROW_LIMIT = 1000;
+
+type HeatmapResponse = {
+	data: { [date: string]: number };
+	startDate: string;
+	endDate: string;
+	totalEntries: number;
+};
+
+const heatmapCache = new Map<string, { expiresAt: number; value: HeatmapResponse }>();
+
 export const GET: RequestHandler = async ({ request }) => {
 	try {
 		const authHeader = request.headers.get('Authorization');
@@ -17,6 +29,10 @@ export const GET: RequestHandler = async ({ request }) => {
 		const { data, error: authError } = await supabase.auth.getUser(token);
 		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
 		const user = data.user;
+		const cached = heatmapCache.get(user.id);
+		if (cached && cached.expiresAt > Date.now()) {
+			return json(cached.value);
+		}
 
 		const endDate = new Date();
 		const startDate = new Date();
@@ -31,7 +47,8 @@ export const GET: RequestHandler = async ({ request }) => {
 			.eq('user_id', user.id)
 			.gte('created_at', startDateISO)
 			.lte('created_at', endDateISO + 'T23:59:59Z')
-			.order('created_at', { ascending: true });
+			.order('created_at', { ascending: true })
+			.limit(HEATMAP_ROW_LIMIT);
 
 		// Fallback to journal_entries if diary table doesn't exist
 		const tableMissing =
@@ -46,7 +63,8 @@ export const GET: RequestHandler = async ({ request }) => {
 				.eq('user_id', user.id)
 				.gte('created_at', startDateISO)
 				.lte('created_at', endDateISO + 'T23:59:59Z')
-				.order('created_at', { ascending: true });
+				.order('created_at', { ascending: true })
+				.limit(HEATMAP_ROW_LIMIT);
 			entries = fallback.data;
 			error = fallback.error;
 		}
@@ -61,7 +79,14 @@ export const GET: RequestHandler = async ({ request }) => {
 			});
 		}
 
-		return json({ data: heatmapData, startDate: startDateISO, endDate: endDateISO, totalEntries: entries ? entries.length : 0 });
+		const value = {
+			data: heatmapData,
+			startDate: startDateISO,
+			endDate: endDateISO,
+			totalEntries: entries ? entries.length : 0
+		};
+		heatmapCache.set(user.id, { expiresAt: Date.now() + HEATMAP_CACHE_TTL_MS, value });
+		return json(value);
 	} catch (err) {
 		console.error('Heatmap error:', err);
 		return json({ error: 'Internal server error' }, { status: 500 });

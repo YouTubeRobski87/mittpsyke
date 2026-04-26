@@ -220,11 +220,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.limit(120),
 		locals.supabase
 			.from('diary')
-			.select('*', { count: 'exact', head: true })
+			.select('id', { count: 'exact', head: true })
 			.eq('user_id', user.id),
 		locals.supabase
 			.from('diary')
-			.select('*', { count: 'exact', head: true })
+			.select('id', { count: 'exact', head: true })
 			.eq('user_id', user.id)
 			.gte('created_at', weeklyStart),
 		locals.supabase
@@ -297,7 +297,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.select('post_id, created_at')
 			.in('post_id', postIds)
 			.is('deleted_at', null)
-			.order('created_at', { ascending: false });
+			.order('created_at', { ascending: false })
+			.limit(60);
 
 		if (communityCommentsError && !isMissingTableError(communityCommentsError, 'community_comments')) {
 			console.error('Dashboard community comment load error:', communityCommentsError);

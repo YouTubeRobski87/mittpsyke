@@ -152,7 +152,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.select('entry_date, step_count, cycled_today, cycled_km, updated_at')
 		.eq('user_id', user.id)
 		.gte('entry_date', weekStartKey)
-		.order('entry_date', { ascending: false });
+		.order('entry_date', { ascending: false })
+		.limit(7);
 
 	if (!movementWeekQuery.error || isMissingTableError(movementWeekQuery.error, 'daily_movement')) {
 		movementWeek = (movementWeekQuery.data ?? [])

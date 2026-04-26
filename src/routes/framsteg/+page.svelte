@@ -76,6 +76,13 @@
 		totalEntries?: number;
 	}
 
+	interface ProgressCachePayload {
+		streak: StreakData | null;
+		milestones: MilestonesResponse | null;
+		heatmap: HeatmapResponse | null;
+		cachedAt: number;
+	}
+
 	interface PageData {
 		streak: StreakData | null;
 		milestones: MilestonesResponse | null;
@@ -137,11 +144,7 @@
 	let insightsCardEl = $state<HTMLElement | null>(null);
 	let heatmapCardEl = $state<HTMLElement | null>(null);
 	let loading = false;
-	let error = $derived(
-		data.streak === null && data.milestones === null
-			? 'Kunde inte ladda data. Försök ladda om sidan.'
-			: ''
-	);
+	let error = $derived(progressError);
 	let hasInsightsContent = $derived(
 		Boolean(
 			insightsData &&
@@ -180,6 +183,7 @@
 		'Vad är du tacksam för just nu?'
 	];
 	const todayReflection = reflections[new Date().getDay()];
+	const PROGRESS_CACHE_TTL_MS = 60 * 1000;
 
 	function getGrowthLevel(entryCountValue: number) {
 		let level = 0;
@@ -200,6 +204,24 @@
 		return monday.toISOString().split('T')[0];
 	}
 
+	function applyProgressPayload(payload: ProgressCachePayload) {
+		streakData = payload.streak;
+		milestonesData = payload.milestones;
+		heatmapData = payload.heatmap?.data ?? {};
+		heatmapError = payload.heatmap?.error ?? '';
+
+		const weekStart = startOfWeekKey();
+		weeklyEntries = Object.entries(heatmapData).reduce(
+			(sum, [day, count]) => (day >= weekStart ? sum + count : sum),
+			0
+		);
+		entryCount = milestonesData?.totalEntries ?? payload.heatmap?.totalEntries ?? 0;
+		activeDays = Object.keys(heatmapData).length;
+		growthScore = entryCount + activeDays * 3;
+		growthLevel = getGrowthLevel(entryCount);
+		progressLoaded = true;
+	}
+
 	async function loadProgressData() {
 		if (progressLoading || progressLoaded) return;
 
@@ -216,6 +238,22 @@
 				return;
 			}
 
+			const cacheKey = `mittpsyke:progress:${session.user.id}`;
+			if (browser) {
+				const cached = sessionStorage.getItem(cacheKey);
+				if (cached) {
+					try {
+						const cachedPayload = JSON.parse(cached) as ProgressCachePayload;
+						if (Date.now() - cachedPayload.cachedAt < PROGRESS_CACHE_TTL_MS) {
+							applyProgressPayload(cachedPayload);
+							return;
+						}
+					} catch {
+						sessionStorage.removeItem(cacheKey);
+					}
+				}
+			}
+
 			const headers = { Authorization: `Bearer ${session.access_token}` };
 			const [streakRes, milestonesRes, heatmapRes] = await Promise.all([
 				fetch('/api/diary/streak', { headers }),
@@ -229,23 +267,16 @@
 				heatmapRes.ok ? heatmapRes.json() : null
 			]);
 
-			streakData = streakPayload as StreakData | null;
-			milestonesData = milestonesPayload as MilestonesResponse | null;
-
-			const heatmap = heatmapPayload as HeatmapResponse | null;
-			heatmapData = heatmap?.data ?? {};
-			heatmapError = heatmap?.error ?? '';
-
-			const weekStart = startOfWeekKey();
-			weeklyEntries = Object.entries(heatmapData).reduce(
-				(sum, [day, count]) => (day >= weekStart ? sum + count : sum),
-				0
-			);
-			entryCount = milestonesData?.totalEntries ?? heatmap?.totalEntries ?? 0;
-			activeDays = Object.keys(heatmapData).length;
-			growthScore = entryCount + activeDays * 3;
-			growthLevel = getGrowthLevel(entryCount);
-			progressLoaded = true;
+			const payload = {
+				streak: streakPayload as StreakData | null,
+				milestones: milestonesPayload as MilestonesResponse | null,
+				heatmap: heatmapPayload as HeatmapResponse | null,
+				cachedAt: Date.now()
+			};
+			applyProgressPayload(payload);
+			if (browser) {
+				sessionStorage.setItem(cacheKey, JSON.stringify(payload));
+			}
 		} catch {
 			progressError = 'Kunde inte ladda framsteg just nu.';
 		} finally {
