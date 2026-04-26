@@ -6,3 +6,7 @@
   [32m[1mVITE[22m v6.4.1[39m  [2mready in [0m[1m1792[22m[2m[0m ms[22m
 
   [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5177[22m/[39m
+[2m01:52:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32m✨ new dependencies optimized: [33m@vercel/analytics/sveltekit, @vercel/speed-insights/sveltekit, @supabase/ssr[32m[39m
+[2m01:52:35[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32m✨ optimized dependencies changed. reloading[39m
+[2m01:53:03[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/hooks.server.ts[22m
+[2m01:53:03[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/hooks.server.ts[22m
