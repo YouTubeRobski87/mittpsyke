@@ -304,6 +304,9 @@
 		if (browser) {
 			localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
 		}
+		insightsVisible = true;
+		heatmapVisible = true;
+		maybeLoadInsights();
 
 		if (typeof IntersectionObserver === 'undefined') {
 			insightsVisible = true;
