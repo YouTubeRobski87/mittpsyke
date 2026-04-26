@@ -309,9 +309,6 @@
 		maybeLoadInsights();
 
 		if (typeof IntersectionObserver === 'undefined') {
-			insightsVisible = true;
-			heatmapVisible = true;
-			maybeLoadInsights();
 			return;
 		}
 
