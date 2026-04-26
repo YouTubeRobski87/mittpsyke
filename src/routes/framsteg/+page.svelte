@@ -143,7 +143,7 @@
 	let heatmapVisible = $state(false);
 	let insightsCardEl = $state<HTMLElement | null>(null);
 	let heatmapCardEl = $state<HTMLElement | null>(null);
-	let loading = false;
+	let loading = $derived(progressLoading && !progressLoaded);
 	let error = $derived(progressError);
 	let hasInsightsContent = $derived(
 		Boolean(
