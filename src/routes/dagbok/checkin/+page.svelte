@@ -7,7 +7,11 @@
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import { supabase } from '$lib/supabase';
-	import { loadDiaryEntries, type DiaryEntry } from '$lib/state/diary';
+	import {
+		DIARY_ENTRY_PAGE_SIZE,
+		loadDiaryEntriesPage,
+		type DiaryEntry
+	} from '$lib/state/diary';
 	import type { Session, User } from '@supabase/supabase-js';
 	import type {
 		CommunityMySharesSuccessResponse,
@@ -17,6 +21,7 @@
 
 	type PageData = {
 		entries?: DiaryEntry[];
+		hasMoreEntries?: boolean;
 		sharedEntryIds?: string[];
 		session?: Session | null;
 		movementToday?: MovementEntry | null;
@@ -38,6 +43,8 @@
 
 	let entries = $state<DiaryEntry[]>([]);
 	let loading = $state(false);
+	let loadingMoreEntries = $state(false);
+	let hasMoreEntries = $state(false);
 	let sessionUser = $state<User | null>(null);
 	let isLoggedIn = $derived(Boolean(sessionUser));
 	let loadError = $state('');
@@ -125,6 +132,7 @@
 
 	$effect(() => {
 		entries = data.entries ?? [];
+		hasMoreEntries = data.hasMoreEntries ?? false;
 		sessionUser = data.session?.user ?? null;
 		sharedEntryIds = new Set<string>(data.sharedEntryIds ?? []);
 		movementToday = data.movementToday ?? null;
@@ -246,16 +254,38 @@
 		shareFeedbackShowCommunityLink = false;
 	}
 
-	async function loadEntries(options: { force?: boolean } = {}) {
+	async function loadEntries(options: { force?: boolean; limit?: number } = {}) {
 		const { data } = await supabase.auth.getSession();
 		const userId = data.session?.user?.id;
 		if (!userId) {
 			entries = [];
+			hasMoreEntries = false;
 			sharedEntryIds = new Set();
 			return;
 		}
 
-		entries = await loadDiaryEntries(userId, options);
+		const page = await loadDiaryEntriesPage(userId, options);
+		entries = page.entries;
+		hasMoreEntries = page.hasMore;
+	}
+
+	async function loadMoreEntries() {
+		if (loadingMoreEntries || !hasMoreEntries) return;
+
+		loadingMoreEntries = true;
+		loadError = '';
+
+		try {
+			await loadEntries({
+				force: true,
+				limit: entries.length + DIARY_ENTRY_PAGE_SIZE
+			});
+			await loadSharedEntryIds();
+		} catch (error) {
+			loadError = error instanceof Error ? error.message : 'Kunde inte hämta fler inlägg just nu.';
+		} finally {
+			loadingMoreEntries = false;
+		}
 	}
 
 	async function loadSharedEntryIds() {
@@ -808,7 +838,7 @@
 			editingEntryId = '';
 			editingText = '';
 			editingMood = '';
-			await loadEntries({ force: true });
+			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
 		} catch (error) {
 			editError = error instanceof Error ? error.message : 'Kunde inte spara ändringen just nu.';
 		} finally {
@@ -863,7 +893,7 @@
 				if (response.status === 404) {
 					entries = entries.filter((e) => e.id !== entry.id);
 					confirmingDeleteEntryId = '';
-					await loadEntries({ force: true });
+					await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
 					return;
 				}
 				deleteErrorEntryId = entry.id;
@@ -873,7 +903,7 @@
 
 			entries = entries.filter((e) => e.id !== entry.id);
 			confirmingDeleteEntryId = '';
-			await loadEntries({ force: true });
+			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
 		} catch (error) {
 			deleteErrorEntryId = entry.id;
 			deleteErrorMessage =
@@ -1195,7 +1225,7 @@
 			clearDraftImage();
 			uploadImageError = '';
 			draftSuccess = 'Inlägget är sparat';
-			await loadEntries({ force: true });
+			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
 		} catch (error) {
 			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
 		} finally {
@@ -1206,6 +1236,7 @@
 	async function initializeDiary() {
 		if (!sessionUser) {
 			entries = [];
+			hasMoreEntries = false;
 			sharedEntryIds = new Set();
 			loading = false;
 			return;
@@ -1815,6 +1846,16 @@
 									</article>
 								{/each}
 							</div>
+							{#if hasMoreEntries && !calendarFilterDate}
+								<button
+									type="button"
+									class="auth-button load-more-entries"
+									onclick={loadMoreEntries}
+									disabled={loadingMoreEntries}
+								>
+									{loadingMoreEntries ? 'Hämtar fler...' : 'Visa fler inlägg'}
+								</button>
+							{/if}
 						</div>
 					{/if}
 				</div>
@@ -2610,6 +2651,12 @@
 	.diary-entries {
 		display: grid;
 		gap: 0.75rem;
+	}
+
+	.load-more-entries {
+		margin-top: 0.85rem;
+		width: 100%;
+		justify-content: center;
 	}
 
 	.diary-entry {

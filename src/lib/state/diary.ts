@@ -26,8 +26,22 @@ type LegacyDiaryRow = {
 	mood: unknown;
 };
 
-const cachedEntriesByUserId = new Map<string, DiaryEntry[]>();
-const inFlightByUserId = new Map<string, Promise<DiaryEntry[]>>();
+export const DIARY_ENTRY_PAGE_SIZE = 20;
+const MAX_DIARY_ENTRY_LIMIT = 100;
+
+export type DiaryEntriesPage = {
+	entries: DiaryEntry[];
+	hasMore: boolean;
+	limit: number;
+};
+
+type DiaryLoadOptions = {
+	force?: boolean;
+	limit?: number;
+};
+
+const cachedEntriesByUserId = new Map<string, DiaryEntriesPage>();
+const inFlightByUserId = new Map<string, Promise<DiaryEntriesPage>>();
 
 function normalizeTags(value: unknown) {
 	if (Array.isArray(value)) {
@@ -80,19 +94,37 @@ function isMissingTableError(
 	);
 }
 
-async function fetchDiaryEntries(userId: string): Promise<DiaryEntry[]> {
+function normalizeLimit(limit?: number) {
+	return Math.max(
+		DIARY_ENTRY_PAGE_SIZE,
+		Math.min(MAX_DIARY_ENTRY_LIMIT, Math.trunc(limit ?? DIARY_ENTRY_PAGE_SIZE))
+	);
+}
+
+function toDiaryEntriesPage(entries: DiaryEntry[], limit: number): DiaryEntriesPage {
+	return {
+		entries: entries.slice(0, limit),
+		hasMore: entries.length > limit,
+		limit
+	};
+}
+
+async function fetchDiaryEntries(userId: string, limit: number): Promise<DiaryEntriesPage> {
+	const queryLimit = limit + 1;
 	const { data, error: loadError } = await supabase
 		.from('diary')
 		.select('id, text, created_at, tags, mood, image_url')
 		.eq('user_id', userId)
-		.order('created_at', { ascending: false });
+		.order('created_at', { ascending: false })
+		.limit(queryLimit);
 
 	if (isMissingTableError(loadError, 'diary')) {
 		const { data: legacyData, error: legacyLoadError } = await supabase
 			.from('journal_entries')
 			.select('id, content, created_at, tags, mood')
 			.eq('user_id', userId)
-			.order('created_at', { ascending: false });
+			.order('created_at', { ascending: false })
+			.limit(queryLimit);
 
 		if (isMissingTableError(legacyLoadError, 'journal_entries')) {
 			throw new Error('Databastabell saknas. Be administratören köra supabase/diary.sql i Supabase.');
@@ -102,54 +134,84 @@ async function fetchDiaryEntries(userId: string): Promise<DiaryEntry[]> {
 			throw new Error('Kunde inte hämta anteckningar just nu.');
 		}
 
-		return (legacyData ?? []).map((row) => mapLegacyDiaryRow(row as LegacyDiaryRow));
+		return toDiaryEntriesPage(
+			(legacyData ?? []).map((row) => mapLegacyDiaryRow(row as LegacyDiaryRow)),
+			limit
+		);
 	}
 
 	if (loadError) {
 		throw new Error('Kunde inte hämta anteckningar just nu.');
 	}
 
-	return (data ?? []).map((row) => mapDiaryRow(row as DiaryRow));
+	return toDiaryEntriesPage(
+		(data ?? []).map((row) => mapDiaryRow(row as DiaryRow)),
+		limit
+	);
 }
 
 export function getDiaryEntries(userId: string): DiaryEntry[] | null {
 	const cached = cachedEntriesByUserId.get(userId);
-	return cached ? [...cached] : null;
+	return cached ? [...cached.entries] : null;
 }
 
 export function setDiaryEntries(userId: string, entries: DiaryEntry[]) {
-	cachedEntriesByUserId.set(userId, [...entries]);
+	cachedEntriesByUserId.set(userId, {
+		entries: [...entries],
+		hasMore: false,
+		limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE)
+	});
 }
 
-export async function loadDiaryEntries(userId: string, options: { force?: boolean } = {}) {
-	if (!userId) return [];
+export async function loadDiaryEntriesPage(
+	userId: string,
+	options: DiaryLoadOptions = {}
+): Promise<DiaryEntriesPage> {
+	if (!userId) {
+		return { entries: [], hasMore: false, limit: DIARY_ENTRY_PAGE_SIZE };
+	}
 
 	const force = options.force ?? false;
+	const limit = normalizeLimit(options.limit);
 	const cached = cachedEntriesByUserId.get(userId);
-	if (cached && !force) {
-		return [...cached];
+	if (cached && cached.limit >= limit && !force) {
+		return {
+			entries: cached.entries.slice(0, limit),
+			hasMore: cached.hasMore || cached.entries.length > limit,
+			limit
+		};
 	}
 
-	const inFlight = inFlightByUserId.get(userId);
+	const cacheKey = `${userId}:${limit}`;
+	const inFlight = inFlightByUserId.get(cacheKey);
 	if (inFlight && !force) {
-		const entries = await inFlight;
-		return [...entries];
+		const page = await inFlight;
+		return { entries: [...page.entries], hasMore: page.hasMore, limit: page.limit };
 	}
 
-	const request = fetchDiaryEntries(userId)
-		.then((entries) => {
-			cachedEntriesByUserId.set(userId, entries);
-			return entries;
+	const request = fetchDiaryEntries(userId, limit)
+		.then((page) => {
+			cachedEntriesByUserId.set(userId, {
+				entries: [...page.entries],
+				hasMore: page.hasMore,
+				limit: page.limit
+			});
+			return page;
 		})
 		.finally(() => {
-			if (inFlightByUserId.get(userId) === request) {
-				inFlightByUserId.delete(userId);
+			if (inFlightByUserId.get(cacheKey) === request) {
+				inFlightByUserId.delete(cacheKey);
 			}
 		});
 
-	inFlightByUserId.set(userId, request);
-	const entries = await request;
-	return [...entries];
+	inFlightByUserId.set(cacheKey, request);
+	const page = await request;
+	return { entries: [...page.entries], hasMore: page.hasMore, limit: page.limit };
+}
+
+export async function loadDiaryEntries(userId: string, options: DiaryLoadOptions = {}) {
+	const page = await loadDiaryEntriesPage(userId, options);
+	return page.entries;
 }
 
 export function clearDiaryEntries(userId?: string) {
@@ -160,5 +222,9 @@ export function clearDiaryEntries(userId?: string) {
 	}
 
 	cachedEntriesByUserId.delete(userId);
-	inFlightByUserId.delete(userId);
+	for (const key of inFlightByUserId.keys()) {
+		if (key.startsWith(`${userId}:`)) {
+			inFlightByUserId.delete(key);
+		}
+	}
 }

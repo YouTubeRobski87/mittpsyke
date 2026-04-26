@@ -18,6 +18,8 @@ type DailyMovementEntry = {
 	updatedAt: string | null;
 };
 
+const INITIAL_DIARY_ENTRY_LIMIT = 20;
+
 function normalizeTags(value: unknown) {
 	if (Array.isArray(value)) {
 		return value
@@ -61,22 +63,25 @@ export const load: PageServerLoad = async ({ locals }) => {
 	let sharedEntryIds: string[] = [];
 	let movementToday: DailyMovementEntry | null = null;
 	let movementWeek: DailyMovementEntry[] = [];
+	let hasMoreEntries = false;
 
 	const diaryQuery = await locals.supabase
 		.from('diary')
 		.select('id, text, created_at, tags, mood, image_url')
 		.eq('user_id', user.id)
-		.order('created_at', { ascending: false });
+		.order('created_at', { ascending: false })
+		.limit(INITIAL_DIARY_ENTRY_LIMIT + 1);
 
 	if (isMissingTableError(diaryQuery.error, 'diary')) {
 		const legacyQuery = await locals.supabase
 			.from('journal_entries')
 			.select('id, content, created_at, tags, mood')
 			.eq('user_id', user.id)
-			.order('created_at', { ascending: false });
+			.order('created_at', { ascending: false })
+			.limit(INITIAL_DIARY_ENTRY_LIMIT + 1);
 
 		if (!legacyQuery.error) {
-			entries = (legacyQuery.data ?? []).map((row) => ({
+			const mappedEntries = (legacyQuery.data ?? []).map((row) => ({
 				id: typeof row.id === 'string' ? row.id : '',
 				content: typeof row.content === 'string' ? row.content : '',
 				created_at: typeof row.created_at === 'string' ? row.created_at : null,
@@ -84,9 +89,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 				mood: typeof row.mood === 'string' ? row.mood : null,
 				image_url: null // Äldre tabell saknar bildkolumn
 			}));
+			hasMoreEntries = mappedEntries.length > INITIAL_DIARY_ENTRY_LIMIT;
+			entries = mappedEntries.slice(0, INITIAL_DIARY_ENTRY_LIMIT);
 		}
 	} else if (!diaryQuery.error) {
-		entries = (diaryQuery.data ?? []).map((row) => ({
+		const mappedEntries = (diaryQuery.data ?? []).map((row) => ({
 			id: typeof row.id === 'string' ? row.id : '',
 			content: typeof row.text === 'string' ? row.text : '',
 			created_at: typeof row.created_at === 'string' ? row.created_at : null,
@@ -94,18 +101,24 @@ export const load: PageServerLoad = async ({ locals }) => {
 			mood: typeof row.mood === 'string' ? row.mood : null,
 			image_url: typeof row.image_url === 'string' ? row.image_url : null
 		}));
+		hasMoreEntries = mappedEntries.length > INITIAL_DIARY_ENTRY_LIMIT;
+		entries = mappedEntries.slice(0, INITIAL_DIARY_ENTRY_LIMIT);
 	}
 
-	const sharesQuery = await locals.supabase
-		.from('community_posts')
-		.select('diary_entry_id')
-		.eq('user_id', user.id)
-		.is('deleted_at', null);
+	const visibleEntryIds = entries.map((entry) => entry.id).filter(Boolean);
+	if (visibleEntryIds.length > 0) {
+		const sharesQuery = await locals.supabase
+			.from('community_posts')
+			.select('diary_entry_id')
+			.eq('user_id', user.id)
+			.in('diary_entry_id', visibleEntryIds)
+			.is('deleted_at', null);
 
-	if (!sharesQuery.error || isMissingTableError(sharesQuery.error, 'community_posts')) {
-		sharedEntryIds = (sharesQuery.data ?? [])
-			.map((row) => (typeof row.diary_entry_id === 'string' ? row.diary_entry_id : ''))
-			.filter(Boolean);
+		if (!sharesQuery.error || isMissingTableError(sharesQuery.error, 'community_posts')) {
+			sharedEntryIds = (sharesQuery.data ?? [])
+				.map((row) => (typeof row.diary_entry_id === 'string' ? row.diary_entry_id : ''))
+				.filter(Boolean);
+		}
 	}
 
 	const today = new Date();
@@ -159,6 +172,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		noindex: true,
 		isLoggedIn: true,
 		entries,
+		hasMoreEntries,
 		sharedEntryIds,
 		movementToday,
 		movementWeek

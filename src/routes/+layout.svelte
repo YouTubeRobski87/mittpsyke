@@ -51,7 +51,7 @@
 	];
 
 	const signedInDiaryNavItems: NavItem[] = [
-		{ href: '/dagbok', label: 'Skriv själv' },
+		{ href: '/dagbok/checkin', label: 'Skriv själv' },
 		{ href: '/dagars-avtryck', label: 'Dagbok med olika stilar' }
 	];
 
@@ -509,7 +509,7 @@
 				</a>
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
-						<a href="/dagbok" class="text-sm transition-opacity {isActive('/dagbok') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive('/dagbok') ? 'page' : undefined}>Dagbok</a>
+						<a href="/dagbok/checkin" class="text-sm transition-opacity {isActive('/dagbok') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive('/dagbok') ? 'page' : undefined}>Dagbok</a>
 						<a href="/dashboard/gemenskap" class="text-sm transition-opacity {isActive('/dashboard/gemenskap') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive('/dashboard/gemenskap') ? 'page' : undefined}>Gemenskap</a>
 						{#each signedInPrimaryNavItems as item}
 							<a href={item.href} class="text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
@@ -655,7 +655,7 @@
 									{/if}
 
 									<div class="profile-panel-links" aria-label="Snabbval">
-										<a href="/dagbok" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
+										<a href="/dagbok/checkin" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
 										<a href="/dashboard/gemenskap" class="profile-panel-link" onclick={closeProfilePanel}>Öppna Gemenskapen</a>
 										<a href="/chat" class="profile-panel-link" onclick={closeProfilePanel}>Starta chat</a>
 										<a href="/notiser" class="profile-panel-link" onclick={closeProfilePanel}>
