@@ -58,7 +58,7 @@
 			const script =
 				document.querySelector<HTMLScriptElement>('script[data-soro-blog-script="true"]') ??
 				document.createElement('script');
-			script.src = SORO_EMBED_SRC;
+			script.src = `${SORO_EMBED_SRC}&cb=${Date.now()}`;
 			script.defer = true;
 			script.dataset.soroBlogScript = 'true';
 			script.dataset.soroPost = postSlug;
