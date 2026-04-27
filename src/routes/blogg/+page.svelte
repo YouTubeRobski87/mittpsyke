@@ -217,7 +217,7 @@
 			font-size: 1rem;
 		}
 
-		.blog-item-link {
+		.blog-item-link.has-image {
 			grid-template-columns: minmax(0, 1fr);
 		}
 
