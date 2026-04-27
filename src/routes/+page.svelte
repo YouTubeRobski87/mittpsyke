@@ -12,17 +12,17 @@
 
 	const trustHighlights = [
 		{
-			text: 'Börja anonymt: Skriv direkt utan registrering.',
+			text: 'Börja anonymt: Du kan skriva direkt utan konto.',
 			href: '/chatta-anonymt',
 			trackCta: 'chatta_anonymt_utan_konto'
 		},
 		{
-			text: 'Tydliga gränser: MittPsyke är stöd i text, inte vård, diagnos eller akuttjänst.',
+			text: 'Tydliga gränser: MittPsyke är ett första steg i text, inte vård, behandling, diagnos eller akuthjälp.',
 			href: '/om-mittpsyke',
 			trackCta: 'tydliga_granser'
 		},
 		{
-			text: 'Integritet och kontroll: Läs hur data hanteras innan du börjar. Med konto finns export och radering.',
+			text: 'Spara om du vill: Skapa konto senare om du vill spara historik och följa ditt mående över tid.',
 			href: '/integritet',
 			trackCta: 'integritet'
 		}
@@ -30,16 +30,16 @@
 
 	const quickFlowSteps = [
 		{
-			title: 'Börja skriva anonymt',
-			text: 'Du kan skriva anonymt utan konto och komma igång i lugn takt.'
+			title: 'Skriv det som känns',
+			text: 'Du behöver inte formulera dig perfekt. Börja med det som snurrar just nu.'
 		},
 		{
-			title: 'Få stöd i text',
-			text: 'Sätt ord på det som känns svårt, rörigt eller tungt.'
+			title: 'Få svar och struktur',
+			text: 'MittPsyke hjälper dig att sortera tankar, se mönster och hitta små nästa steg.'
 		},
 		{
-			title: 'Fortsätt över tid om du vill',
-			text: 'Med konto kan du spara historik, använda dagbok och följa ditt mående över tid.'
+			title: 'Spara om du vill',
+			text: 'Du kan börja utan konto. Skapa konto senare om du vill spara historik, följa ditt mående över tid och återvända till tidigare reflektioner.'
 		}
 	];
 
@@ -95,15 +95,15 @@
 		<div class="hero-shell">
 			<div class="hero-content">
 				<p class="hero-eyebrow">Anonymt stöd i text</p>
-				<h1>Skriv av dig anonymt och få hjälp att sortera det som snurrar</h1>
-				<p>När tankarna snurrar kan det hjälpa att börja någonstans. MittPsyke ger lugnt stöd i text, hjälper dig att sätta ord på det svåra, för reflektion och struktur, och visar små nästa steg — utan konto.</p>
+				<h1>När tankarna snurrar – skriv av dig anonymt direkt</h1>
+				<p>Få hjälp att sortera, förstå och sätta ord på det som känns. MittPsyke är ett lugnt första steg för reflektion och stöd i text – inte vård, diagnos eller akuthjälp. Inget konto krävs för att börja.</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
 				</div>
 				<p class="hero-secondary-link">
-					<a href="/guider" class="hero-cta-link" onclick={() => trackHomeCta('hero', 'las_guider', '/guider')}>Läs guider</a>
+					<a href="#sa-fungerar-det" class="hero-cta-link" onclick={() => trackHomeCta('hero', 'sa_fungerar_det', '#sa-fungerar-det')}>Så fungerar det</a>
 				</p>
-				<p class="hero-trust-note">Utan konto. I din egen takt. Inte vård eller akuthjälp — men ett första steg.</p>
+				<p class="hero-trust-note">Du kan börja helt anonymt utan konto. Vill du spara, följa ditt mående över tid eller återvända till tidigare reflektioner kan du skapa konto senare.</p>
 				<p class="hero-origin-note">
 					MittPsyke drivs av Robert Claesson, samma person som står bakom
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
@@ -121,7 +121,7 @@
 			<p class="early-trust-eyebrow">Trygg start</p>
 			<h2 id="early-trust-title">Känn dig trygg innan du börjar</h2>
 			<p class="early-trust-intro">
-				Här ser du ramarna innan du börjar. MittPsyke är ett första steg i text när du vill börja någonstans.
+				Här ser du ramarna innan du börjar. Du kan starta anonymt direkt och skapa konto senare bara om du vill spara och följa över tid.
 			</p>
 			<ul class="early-trust-grid">
 				{#each trustHighlights as item}
@@ -157,7 +157,7 @@
 		<div class="cards-narrow quick-flow-inner">
 			<h2 id="quick-flow-title">Så fungerar MittPsyke</h2>
 			<p class="quick-flow-intro">
-				Tre steg: skriv, få stöd i text och fortsätt med konto om du vill spara över tid. Inte vård, diagnos eller akuthjälp.
+				Skriv först. Få struktur i text. Spara bara om du vill komma tillbaka senare. Inte vård, diagnos eller akuthjälp.
 			</p>
 			<ol class="quick-flow-grid">
 				{#each quickFlowSteps as step, index}
@@ -175,7 +175,7 @@
 				</a>
 				<span aria-hidden="true"> • </span>
 				<a href="/register" onclick={() => trackHomeCta('quick_flow', 'fortsatt_over_tid', '/register')}>
-					Fortsätt över tid
+					Skapa konto senare
 				</a>
 			</p>
 		</div>
@@ -244,10 +244,10 @@
 			<div class="trust-copy">
 				<h2 id="trust-title">För stöd i text, reflektion och struktur — inte vård eller akuthjälp</h2>
 				<p>
-					MittPsyke är tänkt som ett första steg när du vill börja någonstans. Här kan du skriva av dig, sortera tankar och få struktur i text. När du vill gå vidare finns dagbok, övningar och guider.
+					MittPsyke är tänkt som ett första steg när du vill börja någonstans. Här kan du skriva av dig, sortera tankar och få struktur i text. Det är inte vård, behandling, diagnos eller akuthjälp.
 				</p>
 				<p class="trust-privacy">
-					Du kan läsa hur integritet och data fungerar innan du delar något. Med konto kan du begära export och radering.
+					Du kan börja helt anonymt utan konto. Vill du spara historik, följa ditt mående över tid eller återvända till tidigare reflektioner kan du skapa konto senare. Du kan också läsa hur integritet och data fungerar innan du delar något.
 					<a href="/integritet" onclick={() => trackHomeCta('trust_section', 'integritetspolicy', '/integritet')}>Läs integritetspolicyn</a>.
 				</p>
 				<p class="trust-research">
