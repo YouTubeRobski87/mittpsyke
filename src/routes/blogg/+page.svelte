@@ -47,13 +47,14 @@
 	});
 </script>
 
-<SEO
-	title="Blogg – artiklar om psykiskt mående | MittPsyke"
-	description="Läs artiklar om att skriva av sig, psykiskt mående, oro, stress och återhämtning i din egen takt."
-	canonical="https://www.mittpsyke.se/blogg"
-/>
+<SEO canonical="https://www.mittpsyke.se/blogg" />
 
 <svelte:head>
+	<title>Blogg – artiklar om psykiskt mående | MittPsyke</title>
+	<meta
+		name="description"
+		content="Läs artiklar om att skriva av sig, psykiskt mående, oro, stress och återhämtning i din egen takt."
+	/>
 	<meta property="og:type" content="website" />
 </svelte:head>
 
