@@ -26,9 +26,6 @@
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
 	const UNDER_CONSTRUCTION = false;
-	const SORO_SCRIPT_TAG = 'script';
-	const SORO_EMBED_SRC =
-		'https://app.trysoro.com/api/embed/7741c36b-abe9-4f95-8557-3430345576e4?theme=dark';
 
 	type NavItem = {
 		href: string;
@@ -740,11 +737,6 @@
 			{@render children()}
 		</main>
 
-		{#if browser}
-			<div id="soro-blog" class="soro-global-embed"></div>
-			<svelte:element this={SORO_SCRIPT_TAG} src={SORO_EMBED_SRC} defer></svelte:element>
-		{/if}
-
 		<section class="site-disclaimer mt-10 px-5">
 			<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
 				MittPsyke ersätter inte vård. Vid akut fara ring 112 &middot; Vårdråd 1177.
@@ -983,12 +975,6 @@
 		color: #1f2937;
 		background: #fbbf24;
 		box-shadow: 0 0 0 2px hsl(var(--background));
-	}
-
-	.soro-global-embed {
-		max-width: 1040px;
-		margin: 2rem auto 0;
-		padding: 0 1rem;
 	}
 
 	:global(.dark) .profile-avatar-link,
