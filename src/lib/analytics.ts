@@ -27,6 +27,8 @@ type EventName =
 	| 'hero_cta_primary_click'
 	| 'hero_cta_secondary_click'
 	| 'home_cta_click'
+	| 'click_start_anonymous'
+	| 'scroll_to_how_it_works'
 	| 'qr_landing_view'
 	| 'qr_cta_primary_click'
 	| 'qr_cta_secondary_click'
@@ -235,6 +237,14 @@ export function trackHomeCtaClick(params: { section: string; cta: string; href: 
 		cta: params.cta,
 		href: params.href
 	});
+}
+
+export function trackClickStartAnonymous() {
+	trackEvent('click_start_anonymous');
+}
+
+export function trackScrollToHowItWorks() {
+	trackEvent('scroll_to_how_it_works');
 }
 
 export function trackQrLandingView(src?: string | null) {

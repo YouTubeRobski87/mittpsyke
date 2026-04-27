@@ -4,11 +4,17 @@
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
-	import { trackHeroCtaPrimaryClick, trackHomeCtaClick } from '$lib/analytics';
+	import {
+		trackClickStartAnonymous,
+		trackHeroCtaPrimaryClick,
+		trackHomeCtaClick,
+		trackScrollToHowItWorks
+	} from '$lib/analytics';
 
 	let { data }: { data: Record<string, unknown> } = $props();
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
+	let quickFlowEl: HTMLElement | null = null;
 
 	const trustHighlights = [
 		{
@@ -47,10 +53,34 @@
 		trackHomeCtaClick({ section, cta, href });
 	}
 
+	function trackStartAnonymous() {
+		trackHeroCtaPrimaryClick();
+		trackClickStartAnonymous();
+	}
+
 	onMount(() => {
-		if (!heroEl || !bgEl) return;
-		if (window.innerWidth < 768) return;
-		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		let observer: IntersectionObserver | null = null;
+		let hasTrackedHowItWorks = false;
+
+		if (quickFlowEl) {
+			observer = new IntersectionObserver(
+				(entries) => {
+					if (hasTrackedHowItWorks || !entries.some((entry) => entry.isIntersecting)) return;
+					hasTrackedHowItWorks = true;
+					trackScrollToHowItWorks();
+					observer?.disconnect();
+				},
+				{ threshold: 0.35 }
+			);
+			observer.observe(quickFlowEl);
+		}
+
+		if (!heroEl || !bgEl) {
+			return () => observer?.disconnect();
+		}
+		if (window.innerWidth < 768 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			return () => observer?.disconnect();
+		}
 
 		const speed = 0.14;
 		const maxOffset = 24;
@@ -73,6 +103,7 @@
 		window.addEventListener('scroll', onScroll, { passive: true });
 
 		return () => {
+			observer?.disconnect();
 			window.removeEventListener('scroll', onScroll);
 		};
 	});
@@ -98,7 +129,7 @@
 				<h1>När tankarna snurrar – skriv av dig anonymt direkt</h1>
 				<p>Få hjälp att sortera, förstå och sätta ord på det som känns. MittPsyke är ett lugnt första steg för reflektion och stöd i text – inte vård, diagnos eller akuthjälp. Inget konto krävs för att börja.</p>
 				<div class="hero-actions">
-					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackHeroCtaPrimaryClick()}>Börja skriva anonymt</a>
+					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackStartAnonymous()}>Börja skriva anonymt</a>
 				</div>
 				<p class="hero-secondary-link">
 					<a href="#sa-fungerar-det" class="hero-cta-link" onclick={() => trackHomeCta('hero', 'sa_fungerar_det', '#sa-fungerar-det')}>Så fungerar det</a>
@@ -153,7 +184,7 @@
 		</div>
 	</section>
 
-	<section id="sa-fungerar-det" class="quick-flow" aria-labelledby="quick-flow-title">
+	<section id="sa-fungerar-det" class="quick-flow" aria-labelledby="quick-flow-title" bind:this={quickFlowEl}>
 		<div class="cards-narrow quick-flow-inner">
 			<h2 id="quick-flow-title">Så fungerar MittPsyke</h2>
 			<p class="quick-flow-intro">
@@ -530,6 +561,7 @@
 	}
 
 	.quick-flow {
+		scroll-margin-top: 80px;
 		padding: clamp(2.3rem, 6vw, 3.6rem) 1.25rem;
 		padding-bottom: clamp(2.9rem, 7.5vw, 4.4rem);
 		background: #141e2e;
