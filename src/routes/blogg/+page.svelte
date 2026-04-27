@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	import { page } from '$app/state';
 	import SEO from '$lib/components/SEO.svelte';
 
 	const SORO_EMBED_SRC =
@@ -8,21 +10,39 @@
 	let widgetRoot: HTMLDivElement | null = null;
 	let loading = $state(true);
 	let errorText = $state<string | null>(null);
+	let lastPostSlug = $state<string>('');
+
+	const postSlug = $derived(page.url.searchParams.get('post') ?? '');
+
+	function resetWidget() {
+		if (!widgetRoot) return;
+		widgetRoot.replaceChildren();
+		loading = true;
+		errorText = null;
+	}
 
 	onMount(() => {
 		if (!widgetRoot) return;
+		lastPostSlug = postSlug;
 
-		if (document.querySelector('script[data-soro-blog-script="true"]')) return;
+		const existingScript = document.querySelector<HTMLScriptElement>(
+			'script[data-soro-blog-script="true"]'
+		);
+		const existingForPost = existingScript?.dataset.soroPost ?? '';
+		if (existingScript && existingForPost !== postSlug) existingScript.remove();
 
-		const script = document.createElement('script');
+		const script =
+			document.querySelector<HTMLScriptElement>('script[data-soro-blog-script="true"]') ??
+			document.createElement('script');
 		script.src = SORO_EMBED_SRC;
 		script.defer = true;
 		script.dataset.soroBlogScript = 'true';
+		script.dataset.soroPost = postSlug;
 		script.onerror = () => {
 			errorText = 'Artiklarna kunde inte laddas just nu. Försök igen om en stund.';
 			loading = false;
 		};
-		document.body.appendChild(script);
+		if (!script.isConnected) document.body.appendChild(script);
 
 		const observer = new MutationObserver(() => {
 			if (widgetRoot?.childNodes.length) loading = false;
@@ -44,6 +64,34 @@
 			script.remove();
 			widgetRoot?.replaceChildren();
 		};
+	});
+
+	$effect(() => {
+		if (!browser) return;
+		postSlug;
+		if (postSlug === lastPostSlug) return;
+		lastPostSlug = postSlug;
+
+		const existingScript = document.querySelector<HTMLScriptElement>(
+			'script[data-soro-blog-script="true"]'
+		);
+		const existingForPost = existingScript?.dataset.soroPost ?? '';
+		if (existingScript && existingForPost !== postSlug) existingScript.remove();
+
+		const script =
+			document.querySelector<HTMLScriptElement>('script[data-soro-blog-script="true"]') ??
+			document.createElement('script');
+		script.src = SORO_EMBED_SRC;
+		script.defer = true;
+		script.dataset.soroBlogScript = 'true';
+		script.dataset.soroPost = postSlug;
+		script.onerror = () => {
+			errorText = 'Artiklarna kunde inte laddas just nu. Försök igen om en stund.';
+			loading = false;
+		};
+		if (!script.isConnected) document.body.appendChild(script);
+
+		resetWidget();
 	});
 </script>
 
