@@ -47,7 +47,8 @@
 		{ href: '/chat', label: 'Chat' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' },
-		{ href: '/feedback', label: 'Feedback' }
+		{ href: '/feedback', label: 'Feedback' },
+		{ href: '/blogg', label: 'Blogg' }
 	];
 
 	const signedInDiaryNavItems: NavItem[] = [
