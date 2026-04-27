@@ -21,6 +21,30 @@
 		errorText = null;
 	}
 
+	function normalizeSoroSlug(value: string | null) {
+		if (!value) return '';
+		try {
+			const decoded = decodeURIComponent(value);
+			const url = decoded.startsWith('http') ? new URL(decoded) : null;
+			const path = (url?.pathname ?? decoded).replace(/^\/+|\/+$/g, '');
+			return path.startsWith('blogg/') ? path.slice('blogg/'.length) : path;
+		} catch {
+			const path = value.replace(/^\/+|\/+$/g, '');
+			return path.startsWith('blogg/') ? path.slice('blogg/'.length) : path;
+		}
+	}
+
+	function rewriteSoroArticleLinks() {
+		if (!widgetRoot) return;
+		for (const link of widgetRoot.querySelectorAll<HTMLAnchorElement>('a[href]')) {
+			const url = new URL(link.href, window.location.origin);
+			const requestedPost = url.searchParams.get('post');
+			const slug = normalizeSoroSlug(requestedPost);
+			if (!slug) continue;
+			link.href = `/blogg/${encodeURIComponent(slug)}`;
+		}
+	}
+
 	function warmupSoroOrigin() {
 		return new Promise<void>((resolve) => {
 			const iframe = document.createElement('iframe');
@@ -89,7 +113,10 @@
 		lastPostSlug = postSlug;
 
 		const observer = new MutationObserver(() => {
-			if (widgetRoot?.childNodes.length) loading = false;
+			if (widgetRoot?.childNodes.length) {
+				rewriteSoroArticleLinks();
+				loading = false;
+			}
 		});
 		observer.observe(widgetRoot, { childList: true, subtree: true });
 
