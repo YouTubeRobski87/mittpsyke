@@ -26,6 +26,7 @@
 	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
 
 	const UNDER_CONSTRUCTION = false;
+	const SORO_SCRIPT_TAG = 'script';
 	const SORO_EMBED_SRC =
 		'https://app.trysoro.com/api/embed/7741c36b-abe9-4f95-8557-3430345576e4?theme=dark';
 
@@ -741,7 +742,7 @@
 
 		{#if browser}
 			<div id="soro-blog" class="soro-global-embed"></div>
-			<svelte:element this="script" src={SORO_EMBED_SRC} defer></svelte:element>
+			<svelte:element this={SORO_SCRIPT_TAG} src={SORO_EMBED_SRC} defer></svelte:element>
 		{/if}
 
 		<section class="site-disclaimer mt-10 px-5">

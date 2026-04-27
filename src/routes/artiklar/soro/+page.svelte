@@ -43,8 +43,7 @@
 
 	.eyebrow,
 	.soro-header h1,
-	.soro-header p,
-	.soro-fallback {
+	.soro-header p {
 		margin: 0;
 	}
 
