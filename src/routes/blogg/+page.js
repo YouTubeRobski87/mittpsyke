@@ -1,7 +1,3 @@
-export const load = () => {
-	return {
-		title: 'Blogg',
-		description:
-			'Artiklar om journalföring, mental hälsa och självreflektion. Lär dig mer om hur skrivande kan förbättra ditt mående.'
-	};
-};
+// Datan hämtas i +page.server.ts. Denna fil behålls bara för bakåtkompatibilitet
+// och låter server-laddningen passera igenom oförändrad.
+export const load = ({ data }) => data;
