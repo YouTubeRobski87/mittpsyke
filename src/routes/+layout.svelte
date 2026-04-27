@@ -48,7 +48,7 @@
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' },
 		{ href: '/feedback', label: 'Feedback' },
-		{ href: '/blogg', label: 'Blogg' }
+		{ href: '/blogg', label: 'Artiklar' }
 	];
 
 	const signedInDiaryNavItems: NavItem[] = [
@@ -70,7 +70,7 @@
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' },
 		{ href: '/feedback', label: 'Feedback' },
-		{ href: '/blogg', label: 'Blogg' },
+		{ href: '/blogg', label: 'Artiklar' },
 		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
 		{ href: 'https://stodlinjer.se', label: 'Akut hjälp (Stödlinjer)', external: true }
 	];

@@ -31,7 +31,7 @@
 
 <article class="blog-article">
 	<header class="article-header">
-		<p class="article-eyebrow">MittPsyke Blogg</p>
+		<p class="article-eyebrow">MittPsyke artiklar</p>
 		<h1>{title}</h1>
 		<p class="article-lead">{lead}</p>
 		<p class="article-meta">Publicerad {publishedLabel} · Lästid {readTime}</p>

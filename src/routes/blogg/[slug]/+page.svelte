@@ -21,10 +21,10 @@
 </svelte:head>
 
 <article class="soro-article">
-	<a class="back-link" href="/blogg">Tillbaka till bloggen</a>
+	<a class="back-link" href="/blogg">Tillbaka till artiklarna</a>
 
 	<header class="article-header">
-		<p class="eyebrow">MittPsyke blogg</p>
+		<p class="eyebrow">MittPsyke artiklar</p>
 		<h1>{article.title}</h1>
 		<p class="lead">{article.excerpt}</p>
 		<p class="meta">Publicerad {article.date}</p>

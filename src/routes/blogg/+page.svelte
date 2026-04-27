@@ -20,14 +20,14 @@
 
 <main class="blog-page">
 	<section class="blog-hero">
-		<p class="eyebrow">MittPsyke blogg</p>
-		<h1>Blogg</h1>
+		<p class="eyebrow">MittPsyke artiklar</p>
+		<h1>Artiklar om psykisk hälsa</h1>
 		<p>
 			Läs lugna och konkreta texter om att skriva av sig, förstå tankar och hitta små steg framåt.
 		</p>
 	</section>
 
-	<section class="blog-widget" aria-label="Bloggartiklar">
+	<section class="blog-widget" aria-label="Artiklar">
 		<div class="blog-widget-card">
 			{#if articles.length}
 				<ul class="blog-list">
