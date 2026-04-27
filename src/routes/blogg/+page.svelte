@@ -21,16 +21,22 @@
 		errorText = null;
 	}
 
-	function normalizeSoroSlug(value: string | null) {
-		if (!value) return '';
+	function toBlogPath(input: string | null) {
+		if (!input) return '/blogg';
 		try {
-			const decoded = decodeURIComponent(value);
-			const url = decoded.startsWith('http') ? new URL(decoded) : null;
-			const path = (url?.pathname ?? decoded).replace(/^\/+|\/+$/g, '');
-			return path.startsWith('blogg/') ? path.slice('blogg/'.length) : path;
+			const decoded = decodeURIComponent(input);
+			const url =
+				decoded.startsWith('http') || decoded.startsWith('/')
+					? new URL(decoded, 'https://www.mittpsyke.se')
+					: null;
+			const postParam = url?.searchParams.get('post') ?? null;
+			const path = (postParam ?? url?.pathname ?? decoded).replace(/^\/+|\/+$/g, '');
+			const slug = path.startsWith('blogg/') ? path.slice('blogg/'.length) : path;
+			return slug ? `/blogg/${encodeURIComponent(slug)}` : '/blogg';
 		} catch {
-			const path = value.replace(/^\/+|\/+$/g, '');
-			return path.startsWith('blogg/') ? path.slice('blogg/'.length) : path;
+			const path = input.replace(/^\/+|\/+$/g, '');
+			const slug = path.startsWith('blogg/') ? path.slice('blogg/'.length) : path;
+			return slug ? `/blogg/${encodeURIComponent(slug)}` : '/blogg';
 		}
 	}
 
@@ -38,11 +44,25 @@
 		if (!widgetRoot) return;
 		for (const link of widgetRoot.querySelectorAll<HTMLAnchorElement>('a[href]')) {
 			const url = new URL(link.href, window.location.origin);
-			const requestedPost = url.searchParams.get('post');
-			const slug = normalizeSoroSlug(requestedPost);
-			if (!slug) continue;
-			link.href = `/blogg/${encodeURIComponent(slug)}`;
+			const candidate = link.dataset.slug ?? url.searchParams.get('post');
+			if (!candidate) continue;
+			link.href = toBlogPath(candidate);
 		}
+	}
+
+	function handleSoroArticleClick(event: MouseEvent) {
+		if (!widgetRoot) return;
+		const target = event.target instanceof Element ? event.target : null;
+		const link = target?.closest<HTMLAnchorElement>('a[href]');
+		if (!link || !widgetRoot.contains(link)) return;
+
+		const url = new URL(link.href, window.location.origin);
+		const candidate = link.dataset.slug ?? url.searchParams.get('post');
+		if (!candidate) return;
+
+		event.preventDefault();
+		event.stopImmediatePropagation();
+		window.location.assign(toBlogPath(candidate));
 	}
 
 	function warmupSoroOrigin() {
@@ -110,7 +130,12 @@
 
 	onMount(() => {
 		if (!widgetRoot) return;
+		if (postSlug) {
+			window.location.replace(toBlogPath(postSlug));
+			return;
+		}
 		lastPostSlug = postSlug;
+		widgetRoot.addEventListener('click', handleSoroArticleClick, true);
 
 		const observer = new MutationObserver(() => {
 			if (widgetRoot?.childNodes.length) {
@@ -118,7 +143,7 @@
 				loading = false;
 			}
 		});
-		observer.observe(widgetRoot, { childList: true, subtree: true });
+		observer.observe(widgetRoot, { attributes: true, childList: true, subtree: true });
 
 		const timeout = window.setTimeout(() => {
 			if (widgetRoot?.childNodes.length) {
@@ -137,6 +162,7 @@
 		return () => {
 			window.clearTimeout(timeout);
 			observer.disconnect();
+			widgetRoot?.removeEventListener('click', handleSoroArticleClick, true);
 			widgetRoot?.replaceChildren();
 			const script = document.querySelector<HTMLScriptElement>(
 				'script[data-soro-blog-script="true"]'
@@ -148,6 +174,10 @@
 	$effect(() => {
 		if (!browser) return;
 		postSlug;
+		if (postSlug) {
+			window.location.replace(toBlogPath(postSlug));
+			return;
+		}
 		if (postSlug === lastPostSlug) return;
 		lastPostSlug = postSlug;
 
