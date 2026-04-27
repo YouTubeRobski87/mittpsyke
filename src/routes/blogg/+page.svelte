@@ -33,9 +33,18 @@
 				<ul class="blog-list">
 					{#each articles as article (article.id)}
 						<li class="blog-item">
-							<a class="blog-item-link" href={`/blogg/${encodeURIComponent(article.slug)}`}>
-								{#if article.image}
-									<img class="blog-item-image" src={article.image} alt="" loading="lazy" />
+							<a
+								class="blog-item-link"
+								class:has-image={Boolean(article.imageUrl)}
+								href={`/blogg/${encodeURIComponent(article.slug)}`}
+							>
+								{#if article.imageUrl}
+									<img
+										class="blog-item-image"
+										src={article.imageUrl}
+										alt=""
+										loading="lazy"
+									/>
 								{/if}
 								<div class="blog-item-body">
 									<h2 class="blog-item-title">{article.title}</h2>
@@ -136,7 +145,7 @@
 
 	.blog-item-link {
 		display: grid;
-		grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+		grid-template-columns: minmax(0, 1fr);
 		gap: 1rem;
 		padding: 0.85rem;
 		border-radius: var(--radius-card);
@@ -145,6 +154,10 @@
 		text-decoration: none;
 		color: inherit;
 		transition: transform 0.15s ease, box-shadow 0.15s ease;
+	}
+
+	.blog-item-link.has-image {
+		grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
 	}
 
 	.blog-item-link:hover,

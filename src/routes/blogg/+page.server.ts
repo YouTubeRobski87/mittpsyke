@@ -4,6 +4,23 @@ import type { PageServerLoad } from './$types';
 const SORO_TOKEN = '7741c36b-abe9-4f95-8557-3430345576e4';
 const SORO_EMBED_SRC = `https://app.trysoro.com/api/embed/${SORO_TOKEN}?theme=dark`;
 
+// Bildfält Soro använder/har använt för olika artiklar. Ordningen är prioritetsordning.
+const IMAGE_FIELD_CANDIDATES = [
+	'image',
+	'imageUrl',
+	'image_url',
+	'featuredImage',
+	'featured_image',
+	'coverImage',
+	'cover_image',
+	'thumbnail',
+	'thumbnailUrl',
+	'thumbnail_url',
+	'ogImage',
+	'og_image',
+	'media'
+] as const;
+
 type SoroArticleListItem = {
 	id: string;
 	title: string;
@@ -11,8 +28,10 @@ type SoroArticleListItem = {
 	excerpt: string;
 	date: string;
 	isoDate: string;
-	image: string | null;
+	imageUrl: string | null;
 };
+
+type SoroRawArticle = Record<string, unknown>;
 
 // Normaliserar en slug-sträng oavsett om det är full URL, query-värde eller ren slug.
 function normalizeSlug(value: string) {
@@ -27,15 +46,68 @@ function normalizeSlug(value: string) {
 	}
 }
 
+function asString(value: unknown): string {
+	return typeof value === 'string' ? value : value == null ? '' : String(value);
+}
+
+// Plockar ut första giltiga bild-URL från en artikelpost. Soro varierar fältnamn
+// per artikel (vissa har "image", andra "featuredImage", "coverImage" osv) och
+// kan dessutom slå in värdet som ett objekt med "url"/"src" eller en array.
+function extractImageUrl(article: SoroRawArticle): string | null {
+	for (const field of IMAGE_FIELD_CANDIDATES) {
+		const raw = article[field];
+		const url = coerceImageValue(raw);
+		if (url) return url;
+	}
+	return null;
+}
+
+function coerceImageValue(value: unknown): string | null {
+	if (!value) return null;
+	if (typeof value === 'string') {
+		const trimmed = value.trim();
+		return trimmed ? trimmed : null;
+	}
+	if (Array.isArray(value)) {
+		for (const entry of value) {
+			const url = coerceImageValue(entry);
+			if (url) return url;
+		}
+		return null;
+	}
+	if (typeof value === 'object') {
+		const obj = value as Record<string, unknown>;
+		for (const key of ['url', 'src', 'href', 'secure_url', 'large', 'medium', 'small', 'original']) {
+			const url = coerceImageValue(obj[key]);
+			if (url) return url;
+		}
+	}
+	return null;
+}
+
 // Plockar ut artikellistan från Soro:s embed-script.
 function extractArticles(embedScript: string): SoroArticleListItem[] {
 	const match = embedScript.match(/var SORO_ARTICLES = (\[[\s\S]*?\]);/);
 	if (!match) return [];
+	let parsed: unknown;
 	try {
-		return JSON.parse(match[1]) as SoroArticleListItem[];
+		parsed = JSON.parse(match[1]);
 	} catch {
 		return [];
 	}
+	if (!Array.isArray(parsed)) return [];
+
+	return parsed
+		.filter((item): item is SoroRawArticle => typeof item === 'object' && item !== null)
+		.map((article) => ({
+			id: asString(article.id),
+			title: asString(article.title),
+			slug: normalizeSlug(asString(article.slug)),
+			excerpt: asString(article.excerpt),
+			date: asString(article.date),
+			isoDate: asString(article.isoDate),
+			imageUrl: extractImageUrl(article)
+		}));
 }
 
 export const load: PageServerLoad = async ({ fetch, url, setHeaders }) => {
@@ -62,10 +134,7 @@ export const load: PageServerLoad = async ({ fetch, url, setHeaders }) => {
 
 		if (embedResponse.ok) {
 			const embedScript = await embedResponse.text();
-			articles = extractArticles(embedScript).map((article) => ({
-				...article,
-				slug: normalizeSlug(article.slug)
-			}));
+			articles = extractArticles(embedScript);
 		} else {
 			loadError = true;
 		}
