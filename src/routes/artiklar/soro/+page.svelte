@@ -1,33 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
-
-	const soroScriptSrc =
-		'https://app.trysoro.com/api/embed/7741c36b-abe9-4f95-8557-3430345576e4?theme=dark';
-
-	let widgetEl: HTMLDivElement | null = null;
-	let showFallback = $state(false);
-
-	onMount(() => {
-		const script = document.createElement('script');
-		const fallbackTimer = window.setTimeout(() => {
-			if (!widgetEl?.hasChildNodes()) showFallback = true;
-		}, 7000);
-
-		script.src = soroScriptSrc;
-		script.defer = true;
-		script.onerror = () => {
-			showFallback = true;
-		};
-
-		document.body.appendChild(script);
-
-		return () => {
-			window.clearTimeout(fallbackTimer);
-			script.remove();
-			widgetEl?.replaceChildren();
-		};
-	});
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/artiklar/soro" />
@@ -46,15 +18,6 @@
 			<p class="eyebrow">MittPsyke</p>
 			<h1 id="soro-heading">Artiklar från MittPsyke</h1>
 			<p>Fördjupande texter om psykiskt välmående, reflektion och stöd i vardagen.</p>
-		</div>
-
-		<div class="soro-widget-shell">
-			<div id="soro-blog" bind:this={widgetEl}></div>
-			{#if showFallback}
-				<p class="soro-fallback">
-					Artiklarna kunde inte laddas just nu. Försök att uppdatera sidan om en stund.
-				</p>
-			{/if}
 		</div>
 	</section>
 </main>
@@ -101,8 +64,7 @@
 		line-height: 1.08;
 	}
 
-	.soro-header p,
-	.soro-fallback {
+	.soro-header p {
 		margin-top: 0.75rem;
 		font-family: var(--font-body);
 		font-size: 1rem;
@@ -110,20 +72,12 @@
 		color: rgba(22, 33, 28, 0.76);
 	}
 
-	.soro-widget-shell {
-		min-height: 260px;
-		border-radius: calc(var(--radius-card) - 4px);
-		background: #101615;
-		padding: clamp(0.75rem, 2vw, 1rem);
-	}
-
 	:global(.dark) .soro-panel {
 		background: #1a2320;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
-	:global(.dark) .soro-header p,
-	:global(.dark) .soro-fallback {
+	:global(.dark) .soro-header p {
 		color: rgba(245, 247, 245, 0.76);
 	}
 </style>
