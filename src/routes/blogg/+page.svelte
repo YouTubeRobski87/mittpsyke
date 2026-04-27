@@ -1,191 +1,10 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { page } from '$app/state';
 	import SEO from '$lib/components/SEO.svelte';
 
-	const SORO_EMBED_SRC =
-		'https://app.trysoro.com/api/embed/7741c36b-abe9-4f95-8557-3430345576e4?theme=dark';
+	let { data } = $props();
 
-	let widgetRoot: HTMLDivElement | null = null;
-	let loading = $state(true);
-	let errorText = $state<string | null>(null);
-	let lastPostSlug = $state<string>('');
-
-	const postSlug = $derived(page.url.searchParams.get('post') ?? '');
-
-	function resetWidget() {
-		if (!widgetRoot) return;
-		widgetRoot.replaceChildren();
-		loading = true;
-		errorText = null;
-	}
-
-	function toBlogPath(input: string | null) {
-		if (!input) return '/blogg';
-		try {
-			const decoded = decodeURIComponent(input);
-			const url =
-				decoded.startsWith('http') || decoded.startsWith('/')
-					? new URL(decoded, 'https://www.mittpsyke.se')
-					: null;
-			const postParam = url?.searchParams.get('post') ?? null;
-			const path = (postParam ?? url?.pathname ?? decoded).replace(/^\/+|\/+$/g, '');
-			const slug = path.startsWith('blogg/') ? path.slice('blogg/'.length) : path;
-			return slug ? `/blogg/${encodeURIComponent(slug)}` : '/blogg';
-		} catch {
-			const path = input.replace(/^\/+|\/+$/g, '');
-			const slug = path.startsWith('blogg/') ? path.slice('blogg/'.length) : path;
-			return slug ? `/blogg/${encodeURIComponent(slug)}` : '/blogg';
-		}
-	}
-
-	function rewriteSoroArticleLinks() {
-		if (!widgetRoot) return;
-		for (const link of widgetRoot.querySelectorAll<HTMLAnchorElement>('a[href]')) {
-			const url = new URL(link.href, window.location.origin);
-			const candidate = link.dataset.slug ?? url.searchParams.get('post');
-			if (!candidate) continue;
-			link.href = toBlogPath(candidate);
-		}
-	}
-
-	function handleSoroArticleClick(event: MouseEvent) {
-		if (!widgetRoot) return;
-		const target = event.target instanceof Element ? event.target : null;
-		const link = target?.closest<HTMLAnchorElement>('a[href]');
-		if (!link || !widgetRoot.contains(link)) return;
-
-		const url = new URL(link.href, window.location.origin);
-		const candidate = link.dataset.slug ?? url.searchParams.get('post');
-		if (!candidate) return;
-
-		event.preventDefault();
-		event.stopImmediatePropagation();
-		window.location.assign(toBlogPath(candidate));
-	}
-
-	function warmupSoroOrigin() {
-		return new Promise<void>((resolve) => {
-			const iframe = document.createElement('iframe');
-			iframe.src = 'https://app.trysoro.com/';
-			iframe.style.position = 'absolute';
-			iframe.style.width = '1px';
-			iframe.style.height = '1px';
-			iframe.style.opacity = '0';
-			iframe.style.pointerEvents = 'none';
-			iframe.setAttribute('aria-hidden', 'true');
-
-			const timeout = window.setTimeout(() => {
-				iframe.remove();
-				resolve();
-			}, 2500);
-
-			iframe.onload = () => {
-				window.clearTimeout(timeout);
-				iframe.remove();
-				resolve();
-			};
-
-			document.body.appendChild(iframe);
-		});
-	}
-
-	function loadSoroScript() {
-		return new Promise<void>((resolve, reject) => {
-			const existingScript = document.querySelector<HTMLScriptElement>(
-				'script[data-soro-blog-script="true"]'
-			);
-			const existingForPost = existingScript?.dataset.soroPost ?? '';
-			if (existingScript && existingForPost !== postSlug) existingScript.remove();
-
-			const script =
-				document.querySelector<HTMLScriptElement>('script[data-soro-blog-script="true"]') ??
-				document.createElement('script');
-			script.src = `${SORO_EMBED_SRC}&cb=${Date.now()}`;
-			script.defer = true;
-			script.dataset.soroBlogScript = 'true';
-			script.dataset.soroPost = postSlug;
-			script.onload = () => resolve();
-			script.onerror = () => reject(new Error('SORO_SCRIPT_LOAD_FAILED'));
-			if (!script.isConnected) document.body.appendChild(script);
-		});
-	}
-
-	async function initSoroEmbed({ retryAfterWarmup }: { retryAfterWarmup: boolean }) {
-		resetWidget();
-
-		try {
-			await loadSoroScript();
-			return;
-		} catch {
-			// Soro kan svara med en Vercel "Security checkpoint" HTML som ger ORB-block i webbläsaren.
-			// Warmup via iframe kan sätta cookies så att embed-scriptet kan laddas på nästa försök.
-			if (!retryAfterWarmup) throw new Error('SORO_SCRIPT_LOAD_FAILED');
-		}
-
-		await warmupSoroOrigin();
-		await loadSoroScript();
-	}
-
-	onMount(() => {
-		if (!widgetRoot) return;
-		if (postSlug) {
-			window.location.replace(toBlogPath(postSlug));
-			return;
-		}
-		lastPostSlug = postSlug;
-		widgetRoot.addEventListener('click', handleSoroArticleClick, true);
-
-		const observer = new MutationObserver(() => {
-			if (widgetRoot?.childNodes.length) {
-				rewriteSoroArticleLinks();
-				loading = false;
-			}
-		});
-		observer.observe(widgetRoot, { attributes: true, childList: true, subtree: true });
-
-		const timeout = window.setTimeout(() => {
-			if (widgetRoot?.childNodes.length) {
-				loading = false;
-				return;
-			}
-			errorText = 'Artiklarna tar längre tid att ladda. Prova att uppdatera sidan.';
-			loading = false;
-		}, 12000);
-
-		initSoroEmbed({ retryAfterWarmup: true }).catch(() => {
-			errorText = 'Artiklarna kunde inte laddas just nu. Försök igen om en stund.';
-			loading = false;
-		});
-
-		return () => {
-			window.clearTimeout(timeout);
-			observer.disconnect();
-			widgetRoot?.removeEventListener('click', handleSoroArticleClick, true);
-			widgetRoot?.replaceChildren();
-			const script = document.querySelector<HTMLScriptElement>(
-				'script[data-soro-blog-script="true"]'
-			);
-			script?.remove();
-		};
-	});
-
-	$effect(() => {
-		if (!browser) return;
-		postSlug;
-		if (postSlug) {
-			window.location.replace(toBlogPath(postSlug));
-			return;
-		}
-		if (postSlug === lastPostSlug) return;
-		lastPostSlug = postSlug;
-
-		initSoroEmbed({ retryAfterWarmup: true }).catch(() => {
-			errorText = 'Artiklarna kunde inte laddas just nu. Försök igen om en stund.';
-			loading = false;
-		});
-	});
+	const articles = $derived(data.articles ?? []);
+	const loadError = $derived(Boolean(data.loadError));
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/blogg" />
@@ -210,11 +29,31 @@
 
 	<section class="blog-widget" aria-label="Bloggartiklar">
 		<div class="blog-widget-card">
-			<div id="soro-blog" bind:this={widgetRoot}></div>
-			{#if loading}
-				<p class="blog-fallback">Artiklarna laddas...</p>
-			{:else if errorText}
-				<p class="blog-fallback">{errorText}</p>
+			{#if articles.length}
+				<ul class="blog-list">
+					{#each articles as article (article.id)}
+						<li class="blog-item">
+							<a class="blog-item-link" href={`/blogg/${encodeURIComponent(article.slug)}`}>
+								{#if article.image}
+									<img class="blog-item-image" src={article.image} alt="" loading="lazy" />
+								{/if}
+								<div class="blog-item-body">
+									<h2 class="blog-item-title">{article.title}</h2>
+									{#if article.excerpt}
+										<p class="blog-item-excerpt">{article.excerpt}</p>
+									{/if}
+									{#if article.date}
+										<p class="blog-item-meta">Publicerad {article.date}</p>
+									{/if}
+								</div>
+							</a>
+						</li>
+					{/each}
+				</ul>
+			{:else if loadError}
+				<p class="blog-fallback">Artiklarna kunde inte laddas just nu. Försök igen om en stund.</p>
+			{:else}
+				<p class="blog-fallback">Inga artiklar hittades just nu.</p>
 			{/if}
 		</div>
 	</section>
@@ -283,14 +122,94 @@
 		opacity: 0.78;
 	}
 
+	.blog-list {
+		display: grid;
+		gap: 0.9rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.blog-item {
+		margin: 0;
+	}
+
+	.blog-item-link {
+		display: grid;
+		grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+		gap: 1rem;
+		padding: 0.85rem;
+		border-radius: var(--radius-card);
+		background: #ffffff;
+		border: 1px solid rgba(77, 95, 86, 0.14);
+		text-decoration: none;
+		color: inherit;
+		transition: transform 0.15s ease, box-shadow 0.15s ease;
+	}
+
+	.blog-item-link:hover,
+	.blog-item-link:focus-visible {
+		transform: translateY(-1px);
+		box-shadow: 0 6px 18px rgba(24, 79, 74, 0.08);
+	}
+
+	.blog-item-image {
+		width: 100%;
+		height: 100%;
+		max-height: 160px;
+		object-fit: cover;
+		border-radius: calc(var(--radius-card) - 4px);
+	}
+
+	.blog-item-body {
+		display: grid;
+		gap: 0.4rem;
+		align-content: start;
+	}
+
+	.blog-item-title {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: clamp(1.1rem, 1rem + 0.6vw, 1.3rem);
+		line-height: 1.2;
+	}
+
+	.blog-item-excerpt {
+		margin: 0;
+		font-family: var(--font-body);
+		font-size: 0.98rem;
+		line-height: 1.6;
+		opacity: 0.85;
+	}
+
+	.blog-item-meta {
+		margin: 0;
+		font-family: var(--font-body);
+		font-size: 0.85rem;
+		opacity: 0.62;
+	}
+
 	:global(.dark) .blog-widget-card {
 		background: #1a2320;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
+	:global(.dark) .blog-item-link {
+		background: #1f2a27;
+		border-color: rgba(255, 255, 255, 0.1);
+	}
+
 	@media (max-width: 640px) {
 		.blog-hero p {
 			font-size: 1rem;
+		}
+
+		.blog-item-link {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.blog-item-image {
+			max-height: 200px;
 		}
 	}
 </style>
