@@ -36,9 +36,10 @@ function extractArticles(embedScript: string) {
 	return JSON.parse(match[1]) as SoroArticleListItem[];
 }
 
-export const load: PageServerLoad = async ({ fetch, params }) => {
+export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
+	const cacheBuster = Date.now();
 	const requestedSlug = normalizeSlug(params.slug).toLowerCase();
-	const embedResponse = await fetch(`${SORO_EMBED_SRC}&cb=${Date.now()}`, {
+	const embedResponse = await fetch(`${SORO_EMBED_SRC}&cb=${cacheBuster}`, {
 		headers: {
 			accept: 'application/javascript,*/*',
 			'user-agent': 'Mozilla/5.0'
@@ -58,10 +59,12 @@ export const load: PageServerLoad = async ({ fetch, params }) => {
 	}
 
 	const contentResponse = await fetch(
-		`https://app.trysoro.com/api/embed/${SORO_TOKEN}/article/${article.id}`,
+		`https://app.trysoro.com/api/embed/${SORO_TOKEN}/article/${article.id}?cb=${cacheBuster}`,
 		{
+			cache: 'no-store',
 			headers: {
 				accept: 'application/json,*/*',
+				'cache-control': 'no-cache',
 				'user-agent': 'Mozilla/5.0'
 			}
 		}
@@ -76,6 +79,10 @@ export const load: PageServerLoad = async ({ fetch, params }) => {
 	if (!contentPayload.content) {
 		throw error(404, 'Artikeln saknar innehåll.');
 	}
+
+	setHeaders({
+		'cache-control': 'no-store'
+	});
 
 	return {
 		article: {
