@@ -3279,7 +3279,7 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 		relatedArticles: [
 			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider/kbt/vad-ar-kbt' },
 			{ title: 'KBT-tekniker du kan använda hemma', href: '/guider/kbt/kbt-tekniker-hemma' },
-			{ title: 'Övertänkande – när hjärnan inte stannar', href: '/guider/overtankande/nar-hjarnan-inte-stannar' }
+			{ title: 'Övertänkande – när hjärnan inte stannar', href: '/guider/overtankande/varfor-hjarnan-fastnar-i-loopar' }
 		]
 	},
 	{
@@ -3308,7 +3308,7 @@ Du behöver inte ha alla svar nu. Det kan räcka att börja vara ärlig mot dig 
 		],
 		relatedArticles: [
 			{ title: 'Vad är KBT och hur fungerar det?', href: '/guider/kbt/vad-ar-kbt' },
-			{ title: 'Nedstämdhet – varför orkar jag ingenting?', href: '/guider/depression/varfor-orkar-jag-ingenting' }
+			{ title: 'Nedstämdhet – varför orkar jag ingenting?', href: '/guider/stress/varfor-orkar-jag-ingenting' }
 		]
 	},
 	{
