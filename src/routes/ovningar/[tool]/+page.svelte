@@ -6,6 +6,18 @@
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
+
+	const guideHrefByPillar: Record<string, string | null> = {
+		'existentiell-oro': null,
+		relationsproblem: null,
+		'social-angest': '/guider/angest/social-angest'
+	};
+
+	const guideHref = $derived(
+		data.pillar.slug in guideHrefByPillar
+			? guideHrefByPillar[data.pillar.slug]
+			: `/guider/${data.pillar.slug}`
+	);
 </script>
 
 <SEO canonical={`https://www.mittpsyke.se${$page.url.pathname}`} />
@@ -42,14 +54,16 @@
 		<p>Den ersätter inte vård, diagnos eller behandling. Om något känns för starkt kan du pausa och välja ett mindre steg.</p>
 	</section>
 
-	<section class="block">
-		<h2>Guide i samma område</h2>
-		<p>
-			Övningen hör ihop med guiden
-			<a href={`/guider/${data.pillar.slug}`}>{data.pillar.title}</a>
-			om du vill ha mer bakgrund och fler steg.
-		</p>
-	</section>
+	{#if guideHref}
+		<section class="block">
+			<h2>Guide i samma område</h2>
+			<p>
+				Övningen hör ihop med guiden
+				<a href={guideHref}>{data.pillar.title}</a>
+				om du vill ha mer bakgrund och fler steg.
+			</p>
+		</section>
+	{/if}
 
 	{#if data.tool.purpose}
 		<section class="block">
