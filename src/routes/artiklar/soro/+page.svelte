@@ -5,7 +5,7 @@
 <SEO canonical="https://www.mittpsyke.se/artiklar/soro" />
 
 <svelte:head>
-	<title>Artiklar från MittPsyke | MittPsyke</title>
+	<title>Artiklar | Fördjupande texter om välmående | MittPsyke</title>
 	<meta
 		name="description"
 		content="Artiklar från MittPsyke om psykiskt välmående, reflektion och stöd i vardagen."
