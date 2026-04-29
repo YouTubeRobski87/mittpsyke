@@ -1,28 +1,51 @@
 ﻿<script lang="ts">
 	import { browser } from '$app/environment';
-	import { goto } from '$app/navigation';
 	import ChatWindow from '$lib/components/ChatWindow.svelte';
+	import HealthConsent from '$lib/components/HealthConsent.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { getPortalByKey } from '$lib/data/portals';
 	import { supabase } from '$lib/supabase';
 	import type { ChatMessage } from '$lib/types';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
+
+	const STORAGE_KEY = 'mittpsyke.healthConsent';
+	const VERSION = '2026-04-29';
 
 	const category = $derived(page.params.category ?? '');
 	const portal = $derived(getPortalByKey(category));
 
+	let hasConsent = $state(false);
+
+	onMount(() => {
+		try {
+			const stored = localStorage.getItem(STORAGE_KEY);
+			if (!stored) return;
+
+			const parsed = JSON.parse(stored);
+			if (parsed?.accepted && parsed?.policy_version === VERSION) {
+				hasConsent = true;
+			}
+		} catch {
+			hasConsent = false;
+		}
+	});
+
 	const seoMeta: Record<string, { title: string; description: string }> = {
 		a: {
 			title: 'Samtalsstöd för ångest – chatta anonymt | MittPsyke',
-			description: 'Prata anonymt om ångest, oro och tankar som snurrar. AI-samtalsstöd utan väntetid – börja i din egen takt.'
+			description:
+				'Prata anonymt om ångest, oro och tankar som snurrar. AI-samtalsstöd utan väntetid – börja i din egen takt.'
 		},
 		b: {
 			title: 'Samtalsstöd vid depression – chatta anonymt | MittPsyke',
-			description: 'Varsamt stöd för tunga dagar och låg ork. Prata anonymt om nedstämdhet med AI-baserat samtalsstöd.'
+			description:
+				'Varsamt stöd för tunga dagar och låg ork. Prata anonymt om nedstämdhet med AI-baserat samtalsstöd.'
 		},
 		e: {
 			title: 'Samtalsstöd vid trauma – chatta anonymt | MittPsyke',
-			description: 'Varsamt AI-samtalsstöd för dig som bär på svåra upplevelser. Prata anonymt i din takt och på dina villkor.'
+			description:
+				'Varsamt AI-samtalsstöd för dig som bär på svåra upplevelser. Prata anonymt i din takt och på dina villkor.'
 		}
 	};
 
@@ -32,6 +55,7 @@
 			description: 'Anonymt AI-samtalsstöd för psykisk hälsa. Börja i din egen takt utan konto.'
 		}
 	);
+
 	const conversationIdFromUrl = $derived(page.url.searchParams.get('id'));
 
 	let initialMessages = $state<ChatMessage[]>([]);
@@ -56,9 +80,8 @@
 			const {
 				data: { session }
 			} = await supabase.auth.getSession();
-			if (!session) {
-				return;
-			}
+
+			if (!session) return;
 
 			const { data: conversation, error: conversationError } = await supabase
 				.from('conversations')
@@ -74,9 +97,7 @@
 				return;
 			}
 
-			if (!conversation) {
-				return;
-			}
+			if (!conversation) return;
 
 			const { data: historyRows, error: historyError } = await supabase
 				.from('messages')
@@ -121,18 +142,22 @@
 	<meta property="og:type" content="website" />
 </svelte:head>
 
-<div class="container py-6" data-page="chat">
-	{#if portal}
-		<div class="portal-header text-center mb-4">
-			<span class="text-2xl">{portal.icon}</span>
-			<h1 class="text-xl font-semibold mt-1">{portal.title}</h1>
-			<p class="text-sm opacity-70">{portal.description}</p>
-		</div>
-	{/if}
+{#if !hasConsent}
+	<HealthConsent onAccept={() => (hasConsent = true)} />
+{:else}
+	<div class="container py-6" data-page="chat">
+		{#if portal}
+			<div class="portal-header text-center mb-4">
+				<span class="text-2xl">{portal.icon}</span>
+				<h1 class="text-xl font-semibold mt-1">{portal.title}</h1>
+				<p class="text-sm opacity-70">{portal.description}</p>
+			</div>
+		{/if}
 
-	<ChatWindow
-		category={category}
-		initialMessages={initialMessages}
-		initialConversationId={initialConversationId}
-	/>
-</div>
+		<ChatWindow
+			category={category}
+			initialMessages={initialMessages}
+			initialConversationId={initialConversationId}
+		/>
+	</div>
+{/if}
