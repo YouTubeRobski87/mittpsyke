@@ -85,6 +85,7 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	});
 
 	return {
+		description: article.excerpt,
 		article: {
 			...article,
 			slug: normalizeSlug(article.slug),

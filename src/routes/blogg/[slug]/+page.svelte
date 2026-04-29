@@ -11,7 +11,6 @@
 
 <svelte:head>
 	<title>{article.title} | MittPsyke</title>
-	<meta name="description" content={article.excerpt} />
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content={article.title} />
 	<meta property="og:description" content={article.excerpt} />
