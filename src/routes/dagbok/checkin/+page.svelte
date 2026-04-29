@@ -1536,7 +1536,6 @@
 										id="draft-image-input"
 										type="file"
 										accept="image/*"
-										capture="environment"
 										class="image-input-hidden"
 										onchange={handleImageSelect}
 										disabled={uploadingImage}
