@@ -1,8 +1,12 @@
 import { guides, pillars } from '$lib/seo-kit/content';
 import { canonical } from '$lib/seo-kit/seo';
 import { tools } from '$lib/data/seo-architecture';
+import { portals } from '$lib/data/portals';
 import { seoSupportPagePaths } from '$lib/data/seo-support-pages';
 import type { RequestHandler } from './$types';
+
+const SORO_TOKEN = '7741c36b-abe9-4f95-8557-3430345576e4';
+const SORO_EMBED_SRC = `https://app.trysoro.com/api/embed/${SORO_TOKEN}?theme=dark`;
 
 const STATIC_CONTENT_LASTMOD = '2026-03-29';
 const SEO_SUPPORT_LASTMOD = '2026-04-04';
@@ -20,6 +24,12 @@ type SitemapEntry = {
 	priority: '1.0' | '0.9' | '0.8' | '0.7' | '0.6' | '0.5' | '0.3';
 };
 
+type SoroArticleListItem = {
+	slug?: string;
+	isoDate?: string;
+	date?: string;
+};
+
 function xmlEscape(value: string): string {
 	return value
 		.replaceAll('&', '&amp;')
@@ -32,6 +42,66 @@ function xmlEscape(value: string): string {
 function getLatestLastmod(values: Array<string | undefined>, fallback: string): string {
 	const sortedValues = values.filter((value): value is string => Boolean(value)).sort();
 	return sortedValues.at(-1) ?? fallback;
+}
+
+function normalizeBlogSlug(value: string): string {
+	try {
+		const decoded = decodeURIComponent(value);
+		const url = decoded.startsWith('http') ? new URL(decoded) : null;
+		const path = (url?.pathname ?? decoded).replace(/^\/+|\/+$/g, '');
+		return (path.startsWith('blogg/') ? path.slice('blogg/'.length) : path).toLowerCase();
+	} catch {
+		const path = value.replace(/^\/+|\/+$/g, '');
+		return (path.startsWith('blogg/') ? path.slice('blogg/'.length) : path).toLowerCase();
+	}
+}
+
+function asLastmod(value: string | undefined): string {
+	if (!value) return BLOG_LASTMOD;
+	const parsed = new Date(value);
+	if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+	return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : BLOG_LASTMOD;
+}
+
+function extractSoroArticles(embedScript: string): SoroArticleListItem[] {
+	const match = embedScript.match(/var SORO_ARTICLES = (\[[\s\S]*?\]);/);
+	if (!match) return [];
+
+	try {
+		const parsed = JSON.parse(match[1]) as unknown;
+		return Array.isArray(parsed) ? (parsed as SoroArticleListItem[]) : [];
+	} catch {
+		return [];
+	}
+}
+
+async function loadSoroBlogEntries(fetch: typeof globalThis.fetch): Promise<SitemapEntry[]> {
+	try {
+		const embedResponse = await fetch(`${SORO_EMBED_SRC}&cb=${Date.now()}`, {
+			headers: {
+				accept: 'application/javascript,*/*',
+				'user-agent': 'Mozilla/5.0'
+			}
+		});
+
+		if (!embedResponse.ok) return [];
+
+		const embedScript = await embedResponse.text();
+		return extractSoroArticles(embedScript)
+			.map((article) => {
+				const slug = normalizeBlogSlug(article.slug ?? '');
+				if (!slug) return null;
+				return {
+					path: `/blogg/${slug}`,
+					lastmod: asLastmod(article?.isoDate ?? article?.date),
+					changefreq: 'monthly',
+					priority: '0.6'
+				};
+			})
+			.filter((entry): entry is SitemapEntry => Boolean(entry));
+	} catch {
+		return [];
+	}
 }
 
 const latestGuideLastmod = getLatestLastmod(
@@ -75,18 +145,20 @@ function dedupeEntries(entries: SitemapEntry[]): SitemapEntry[] {
 	});
 }
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ fetch }) => {
 	const standalonePages: SitemapEntry[] = [
 		{ path: '/', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '1.0' },
 		{ path: '/dagbok', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '0.9' },
 		{ path: '/guider', lastmod: latestGuideLastmod, changefreq: 'weekly', priority: '0.8' },
 		{ path: '/ovningar', lastmod: TOOL_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{ path: '/blogg', lastmod: BLOG_LASTMOD, changefreq: 'monthly', priority: '0.7' },
+		{ path: '/artiklar/soro', lastmod: BLOG_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/om-mittpsyke', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/feedback', lastmod: FEEDBACK_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/ansvar', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/integritet', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/sa-arbetar-vi-med-innehall', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
+		{ path: '/skriv', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{
 			path: '/4-7-8-andning-ovning',
 			lastmod: STATIC_CONTENT_LASTMOD,
@@ -215,7 +287,14 @@ export const GET: RequestHandler = async () => {
 		priority: '0.6'
 	}));
 
-	const blogPages: SitemapEntry[] = [
+	const portalPages: SitemapEntry[] = portals.map((portal) => ({
+		path: `/portal/${portal.key}`,
+		lastmod: STATIC_CONTENT_LASTMOD,
+		changefreq: 'monthly',
+		priority: '0.5'
+	}));
+
+	const fallbackBlogPages: SitemapEntry[] = [
 		{
 			path: '/blogg/ai-hjalper-dig-bearbeta-kanslor',
 			lastmod: BLOG_LASTMOD,
@@ -236,12 +315,15 @@ export const GET: RequestHandler = async () => {
 		}
 	];
 
+	const blogPages = [...fallbackBlogPages, ...(await loadSoroBlogEntries(fetch))];
+
 	const urls = dedupeEntries([
 		...standalonePages,
 		...seoSupportEntries,
 		...guidePillarPages,
 		...guidePages,
 		...toolPages,
+		...portalPages,
 		...blogPages
 	])
 		.map((entry) => renderUrl(entry))

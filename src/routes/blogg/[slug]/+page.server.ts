@@ -23,10 +23,10 @@ function normalizeSlug(value: string) {
 		const decoded = decodeURIComponent(value);
 		const url = decoded.startsWith('http') ? new URL(decoded) : null;
 		const path = (url?.pathname ?? decoded).replace(/^\/+|\/+$/g, '');
-		return path.startsWith('blogg/') ? path.slice('blogg/'.length) : path;
+		return (path.startsWith('blogg/') ? path.slice('blogg/'.length) : path).toLowerCase();
 	} catch {
 		const path = value.replace(/^\/+|\/+$/g, '');
-		return path.startsWith('blogg/') ? path.slice('blogg/'.length) : path;
+		return (path.startsWith('blogg/') ? path.slice('blogg/'.length) : path).toLowerCase();
 	}
 }
 
