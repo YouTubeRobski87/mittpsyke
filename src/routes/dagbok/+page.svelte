@@ -57,13 +57,16 @@
 <SEO canonical="https://www.mittpsyke.se/dagbok" />
 
 <svelte:head>
-	<title>Digital dagbok för mående | Reflektion i text | MittPsyke</title>
-	<meta
-		name="description"
-		content="Skriv dagbok online och få AI-reflektioner i text om ditt mående. För dig som vill följa mönster över tid i en egen dagbok."
-	/>
 	{@html `<script type="application/ld+json">${JSON.stringify(faqSchema)}<\/script>`}
 </svelte:head>
+
+<header class="seo-prehero">
+	<h1>Skriv dagbok online – sortera tankar i lugn takt</h1>
+	<p>
+		Att skriva av sig kan göra tankar tydligare och mer hanterbara.
+		Här kan du börja direkt – utan konto och i din egen takt.
+	</p>
+</header>
 
 {#if !hasConsent}
 	<HealthConsent onAccept={() => (hasConsent = true)} />
@@ -168,6 +171,14 @@
 {/if}
 
 <style>
+	.seo-prehero {
+		max-width: 1080px;
+		margin: 0 auto 1rem;
+		padding: 0 1.25rem;
+		display: grid;
+		gap: 0.55rem;
+	}
+
 	.seo-diary-page {
 		max-width: 1080px;
 		margin: 0 auto;
