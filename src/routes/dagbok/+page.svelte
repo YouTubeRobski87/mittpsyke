@@ -1,5 +1,26 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
+	import HealthConsent from '$lib/components/HealthConsent.svelte';
+
+	const STORAGE_KEY = 'mittpsyke.healthConsent';
+	const VERSION = '2026-04-29';
+
+	let hasConsent = false;
+
+	onMount(() => {
+		try {
+			const stored = localStorage.getItem(STORAGE_KEY);
+			if (!stored) return;
+
+			const parsed = JSON.parse(stored);
+			if (parsed?.accepted && parsed?.policy_version === VERSION) {
+				hasConsent = true;
+			}
+		} catch {
+			hasConsent = false;
+		}
+	});
 
 	const faqItems = [
 		{
@@ -44,105 +65,107 @@
 	{@html `<script type="application/ld+json">${JSON.stringify(faqSchema)}<\/script>`}
 </svelte:head>
 
-<main class="seo-diary-page">
-	<section class="hero">
-		<div class="hero-copy">
-			<p class="eyebrow">Dagbok för vardagen</p>
-			<h1>Digital dagbok för ditt mående</h1>
-			<p class="lead">
-				MittPsyke är en digital dagbok för mående där du kan skriva i lugn takt, få
-				AI-reflektioner och följa hur ditt mående skiftar över tid. Det är en online dagbok för
-				psykisk hälsa för dig som vill förstå dig själv lite tydligare utan att allt behöver bli så
-				stort på en gång.
-			</p>
-			<p class="support-copy">
-				Du kan använda dagboken när du vill skriva dagbok vid ångest, samla tankar från dagen och
-				se små framsteg som annars är lätta att missa. Om du vill börja utan konto kan du använda
-				<a href="/anonym-dagbok-online">anonym dagbok online</a> först.
-			</p>
-			<div class="cta-row">
-				<a class="primary-cta" href="/registrera">Börja skriva gratis</a>
-				<a class="secondary-cta" href="/login">Logga in</a>
+{#if !hasConsent}
+	<HealthConsent onAccept={() => (hasConsent = true)} />
+{:else}
+	<main class="seo-diary-page">
+		<section class="hero">
+			<div class="hero-copy">
+				<p class="eyebrow">Dagbok för vardagen</p>
+				<h1>Digital dagbok för ditt mående</h1>
+				<p class="lead">
+					MittPsyke är en digital dagbok för mående där du kan skriva i lugn takt, få
+					AI-reflektioner och följa hur ditt mående skiftar över tid.
+				</p>
+				<p class="support-copy">
+					Du kan använda dagboken när du vill skriva dagbok vid ångest, samla tankar från dagen och
+					se små framsteg som annars är lätta att missa. Om du vill börja utan konto kan du använda
+					<a href="/anonym-dagbok-online">anonym dagbok online</a> först.
+				</p>
+				<div class="cta-row">
+					<a class="primary-cta" href="/registrera">Börja skriva gratis</a>
+					<a class="secondary-cta" href="/login">Logga in</a>
+				</div>
+				<p class="support-note">MittPsyke ersätter inte vård. Vid akut fara: 112. För vårdråd: 1177.</p>
 			</div>
-			<p class="support-note">MittPsyke ersätter inte vård. Vid akut fara: 112. För vårdråd: 1177.</p>
-		</div>
 
-		<aside class="hero-panel" aria-label="Det här får du">
-			<h2>Vad dagboken hjälper med</h2>
-			<ul>
-				<li>AI-reflektioner som hjälper dig se det tydligare</li>
-				<li>Stämningslogg för att fånga små skiften</li>
-				<li>Framsteg över tid i lugn och egen takt</li>
-			</ul>
-		</aside>
-	</section>
+			<aside class="hero-panel" aria-label="Det här får du">
+				<h2>Vad dagboken hjälper med</h2>
+				<ul>
+					<li>AI-reflektioner som hjälper dig se det tydligare</li>
+					<li>Stämningslogg för att fånga små skiften</li>
+					<li>Framsteg över tid i lugn och egen takt</li>
+				</ul>
+			</aside>
+		</section>
 
-	<section class="content-grid">
-		<article class="body-card">
-			<h2>En dagbok som gör mer än att bara spara text</h2>
-			<p>
-				När du skriver får du en plats där tankar, känslor och återkommande mönster kan landa.
-				Dagboken hjälper dig att stanna upp, sätta ord på det som känns och få AI-genererade
-				reflektioner som ger lite mer riktning.
-			</p>
-			<p>
-				Du kan också följa en enkel stämningslogg och se framsteg över tid. Det gör det lättare att
-				upptäcka vad som återkommer, vad som hjälper och hur ditt mående faktiskt förändras.
-			</p>
-		</article>
-
-		<article class="body-card accent-card">
-			<h2>Börja litet, fortsätt i din takt</h2>
-			<p>
-				Du behöver inte skriva långt eller hitta rätt ord direkt. Några rader räcker. MittPsyke är
-				gjort för att kännas lugnt, tydligt och mänskligt även de dagar då det är svårt att samla
-				tankarna.
-			</p>
-		</article>
-	</section>
-
-	<section class="benefits-section" aria-label="Fördelar med dagboken">
-		<div class="section-heading">
-			<p class="eyebrow">Fyra fördelar</p>
-			<h2>Det här får du i dagboken</h2>
-		</div>
-
-		<div class="benefit-grid">
-			<article class="benefit-card">
-				<h3>AI-reflektioner</h3>
-				<p>Få en lugn sammanfattning som hjälper dig att förstå det du precis har skrivit.</p>
+		<section class="content-grid">
+			<article class="body-card">
+				<h2>En dagbok som gör mer än att bara spara text</h2>
+				<p>
+					När du skriver får du en plats där tankar, känslor och återkommande mönster kan landa.
+					Dagboken hjälper dig att stanna upp, sätta ord på det som känns och få AI-genererade
+					reflektioner som ger lite mer riktning.
+				</p>
+				<p>
+					Du kan också följa en enkel stämningslogg och se framsteg över tid. Det gör det lättare att
+					upptäcka vad som återkommer, vad som hjälper och hur ditt mående faktiskt förändras.
+				</p>
 			</article>
-			<article class="benefit-card">
-				<h3>Stämningslogg</h3>
-				<p>Se hur dagar skiljer sig åt och få bättre grepp om hur du mår över tid.</p>
-			</article>
-			<article class="benefit-card">
-				<h3>Framsteg</h3>
-				<p>Upptäck små steg framåt, återkommande mönster och det som faktiskt hjälper.</p>
-			</article>
-			<article class="benefit-card">
-				<h3>Låg tröskel</h3>
-				<p>Börja med några få ord och skriv i din egen takt, utan press att prestera.</p>
-			</article>
-		</div>
-	</section>
 
-	<section class="faq-section" aria-label="Vanliga frågor om dagboken">
-		<div class="section-heading">
-			<p class="eyebrow">Vanliga frågor</p>
-			<h2>Det här undrar många</h2>
-		</div>
+			<article class="body-card accent-card">
+				<h2>Börja litet, fortsätt i din takt</h2>
+				<p>
+					Du behöver inte skriva långt eller hitta rätt ord direkt. Några rader räcker. MittPsyke är
+					gjort för att kännas lugnt, tydligt och mänskligt även de dagar då det är svårt att samla
+					tankarna.
+				</p>
+			</article>
+		</section>
 
-		<div class="faq-list">
-			{#each faqItems as item}
-				<article class="faq-item">
-					<h3>{item.question}</h3>
-					<p>{item.answer}</p>
+		<section class="benefits-section" aria-label="Fördelar med dagboken">
+			<div class="section-heading">
+				<p class="eyebrow">Fyra fördelar</p>
+				<h2>Det här får du i dagboken</h2>
+			</div>
+
+			<div class="benefit-grid">
+				<article class="benefit-card">
+					<h3>AI-reflektioner</h3>
+					<p>Få en lugn sammanfattning som hjälper dig att förstå det du precis har skrivit.</p>
 				</article>
-			{/each}
-		</div>
-	</section>
-</main>
+				<article class="benefit-card">
+					<h3>Stämningslogg</h3>
+					<p>Se hur dagar skiljer sig åt och få bättre grepp om hur du mår över tid.</p>
+				</article>
+				<article class="benefit-card">
+					<h3>Framsteg</h3>
+					<p>Upptäck små steg framåt, återkommande mönster och det som faktiskt hjälper.</p>
+				</article>
+				<article class="benefit-card">
+					<h3>Låg tröskel</h3>
+					<p>Börja med några få ord och skriv i din egen takt, utan press att prestera.</p>
+				</article>
+			</div>
+		</section>
+
+		<section class="faq-section" aria-label="Vanliga frågor om dagboken">
+			<div class="section-heading">
+				<p class="eyebrow">Vanliga frågor</p>
+				<h2>Det här undrar många</h2>
+			</div>
+
+			<div class="faq-list">
+				{#each faqItems as item}
+					<article class="faq-item">
+						<h3>{item.question}</h3>
+						<p>{item.answer}</p>
+					</article>
+				{/each}
+			</div>
+		</section>
+	</main>
+{/if}
 
 <style>
 	.seo-diary-page {
@@ -231,7 +254,10 @@
 		border-radius: var(--radius-pill);
 		text-decoration: none;
 		font-weight: 600;
-		transition: transform 150ms ease, opacity 150ms ease, border-color 150ms ease;
+		transition:
+			transform 150ms ease,
+			opacity 150ms ease,
+			border-color 150ms ease;
 	}
 
 	.primary-cta {
