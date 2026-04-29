@@ -441,6 +441,7 @@
 </script>
 
 <svelte:head>
+    <meta name="seobility" content="071531d0f6c0c987d277990fe526c5d4" />
 	{#if UNDER_CONSTRUCTION}
 		<title>MittPsyke - Under konstruktion</title>
 		<meta
