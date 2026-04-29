@@ -83,7 +83,7 @@
 						{/each}
 					</ul>
 				{:else}
-					<p class="empty">Bloggartiklar ingår inte i sökningen just nu.</p>
+					<p class="empty">Artikelsök kommer senare. Just nu söker du i guider och fördjupningar.</p>
 				{/if}
 			</section>
 		</div>
