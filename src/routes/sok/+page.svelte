@@ -6,7 +6,18 @@
 		title: string;
 		description: string;
 	};
+	type ArticleResult = {
+		slug: string;
+		title: string;
+		excerpt: string;
+	};
 
+	let { data } = $props<{
+		data: {
+			articles?: ArticleResult[];
+			loadError?: boolean;
+		};
+	}>();
 	let query = $state('');
 
 	const guideResults: SearchResult[] = [
@@ -21,7 +32,13 @@
 			description: guide.description
 		}))
 	];
-	const articleResults: SearchResult[] = [];
+	const articleResults: SearchResult[] = $derived(
+		(data.articles ?? []).map((article: ArticleResult) => ({
+			href: `/blogg/${encodeURIComponent(article.slug)}`,
+			title: article.title,
+			description: article.excerpt
+		}))
+	);
 
 	const normalizedQuery = $derived(query.trim().toLowerCase());
 	const showResults = $derived(normalizedQuery.length > 0);
@@ -82,8 +99,10 @@
 							</li>
 						{/each}
 					</ul>
+				{:else if data.loadError}
+					<p class="empty">Artiklarna kunde inte laddas just nu.</p>
 				{:else}
-					<p class="empty">Artikelsök kommer senare. Just nu söker du i guider och fördjupningar.</p>
+					<p class="empty">Inga artiklar hittades.</p>
 				{/if}
 			</section>
 		</div>
