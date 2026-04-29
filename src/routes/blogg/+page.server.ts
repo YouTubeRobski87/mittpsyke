@@ -3,6 +3,7 @@ import type { PageServerLoad } from './$types';
 
 const SORO_TOKEN = '7741c36b-abe9-4f95-8557-3430345576e4';
 const SORO_EMBED_SRC = `https://app.trysoro.com/api/embed/${SORO_TOKEN}?theme=dark`;
+const ARTICLES_PER_PAGE = 10;
 
 // Bildfält Soro använder/har använt för olika artiklar. Ordningen är prioritetsordning.
 const IMAGE_FIELD_CANDIDATES = [
@@ -48,6 +49,13 @@ function normalizeSlug(value: string) {
 
 function asString(value: unknown): string {
 	return typeof value === 'string' ? value : value == null ? '' : String(value);
+}
+
+function getRequestedPage(url: URL): number {
+	const rawPage = url.searchParams.get('page');
+	if (!rawPage) return 1;
+	const page = Number(rawPage);
+	return Number.isInteger(page) && page > 0 ? page : 1;
 }
 
 // Plockar ut första giltiga bild-URL från en artikelpost. Soro varierar fältnamn
@@ -143,6 +151,12 @@ export const load: PageServerLoad = async ({ fetch, url, setHeaders }) => {
 	}
 
 	// Cacha listan en kort stund så vi inte hamrar Soro vid varje request.
+	const totalArticles = articles.length;
+	const totalPages = Math.max(1, Math.ceil(totalArticles / ARTICLES_PER_PAGE));
+	const currentPage = Math.min(getRequestedPage(url), totalPages);
+	const pageStart = (currentPage - 1) * ARTICLES_PER_PAGE;
+	const paginatedArticles = articles.slice(pageStart, pageStart + ARTICLES_PER_PAGE);
+
 	setHeaders({
 		'cache-control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600'
 	});
@@ -151,7 +165,14 @@ export const load: PageServerLoad = async ({ fetch, url, setHeaders }) => {
 		title: 'Blogg',
 		description:
 			'Artiklar om journalföring, mental hälsa och självreflektion. Lär dig mer om hur skrivande kan förbättra ditt mående.',
-		articles,
+		articles: paginatedArticles,
+		pagination: {
+			currentPage,
+			totalPages,
+			totalArticles,
+			hasPrevious: currentPage > 1,
+			hasNext: currentPage < totalPages
+		},
 		loadError
 	};
 };

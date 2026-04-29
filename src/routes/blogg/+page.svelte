@@ -5,6 +5,22 @@
 
 	const articles = $derived(data.articles ?? []);
 	const loadError = $derived(Boolean(data.loadError));
+	const pagination = $derived(
+		data.pagination ?? {
+			currentPage: 1,
+			totalPages: 1,
+			totalArticles: 0,
+			hasPrevious: false,
+			hasNext: false
+		}
+	);
+	const pageNumbers = $derived(
+		Array.from({ length: pagination.totalPages }, (_, index) => index + 1)
+	);
+
+	function pageHref(page: number): string {
+		return page <= 1 ? '/blogg' : `/blogg?page=${page}`;
+	}
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/blogg" />
@@ -16,6 +32,12 @@
 		content="Läs artiklar om att skriva av sig, psykiskt mående, oro, stress och återhämtning i din egen takt."
 	/>
 	<meta property="og:type" content="website" />
+	{#if pagination.hasPrevious}
+		<link rel="prev" href={`https://www.mittpsyke.se${pageHref(pagination.currentPage - 1)}`} />
+	{/if}
+	{#if pagination.hasNext}
+		<link rel="next" href={`https://www.mittpsyke.se${pageHref(pagination.currentPage + 1)}`} />
+	{/if}
 </svelte:head>
 
 <main class="blog-page">
@@ -59,6 +81,40 @@
 						</li>
 					{/each}
 				</ul>
+				{#if pagination.totalPages > 1}
+					<nav class="blog-pagination" aria-label="Sidnavigering för artiklar">
+						{#if pagination.hasPrevious}
+							<a class="pagination-link pagination-edge" href={pageHref(pagination.currentPage - 1)}>
+								Föregående
+							</a>
+						{:else}
+							<span class="pagination-link pagination-edge is-disabled" aria-disabled="true">
+								Föregående
+							</span>
+						{/if}
+
+						{#each pageNumbers as pageNumber}
+							<a
+								class="pagination-link"
+								class:is-current={pageNumber === pagination.currentPage}
+								href={pageHref(pageNumber)}
+								aria-current={pageNumber === pagination.currentPage ? 'page' : undefined}
+							>
+								{pageNumber}
+							</a>
+						{/each}
+
+						{#if pagination.hasNext}
+							<a class="pagination-link pagination-edge" href={pageHref(pagination.currentPage + 1)}>
+								Nästa
+							</a>
+						{:else}
+							<span class="pagination-link pagination-edge is-disabled" aria-disabled="true">
+								Nästa
+							</span>
+						{/if}
+					</nav>
+				{/if}
 			{:else if loadError}
 				<p class="blog-fallback">Artiklarna kunde inte laddas just nu. Försök igen om en stund.</p>
 			{:else}
@@ -202,6 +258,55 @@
 		opacity: 0.62;
 	}
 
+	.blog-pagination {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 0.45rem;
+		margin-top: 1rem;
+	}
+
+	.pagination-link {
+		display: inline-flex;
+		min-width: 2.25rem;
+		min-height: 2.25rem;
+		align-items: center;
+		justify-content: center;
+		padding: 0.45rem 0.7rem;
+		border-radius: var(--radius-input);
+		border: 1px solid rgba(77, 95, 86, 0.16);
+		background: #ffffff;
+		color: inherit;
+		font-family: var(--font-heading);
+		font-size: 0.9rem;
+		font-weight: 600;
+		line-height: 1;
+		text-decoration: none;
+	}
+
+	.pagination-link:hover,
+	.pagination-link:focus-visible {
+		border-color: rgba(24, 79, 74, 0.32);
+		background: #ecf5f2;
+		outline: none;
+	}
+
+	.pagination-link.is-current {
+		background: #184f4a;
+		border-color: #184f4a;
+		color: #ffffff;
+	}
+
+	.pagination-link.is-disabled {
+		pointer-events: none;
+		opacity: 0.45;
+	}
+
+	.pagination-edge {
+		min-width: 5.8rem;
+	}
+
 	:global(.dark) .blog-widget-card {
 		background: #1a2320;
 		border-color: rgba(255, 255, 255, 0.12);
@@ -210,6 +315,23 @@
 	:global(.dark) .blog-item-link {
 		background: #1f2a27;
 		border-color: rgba(255, 255, 255, 0.1);
+	}
+
+	:global(.dark) .pagination-link {
+		background: #1f2a27;
+		border-color: rgba(255, 255, 255, 0.12);
+	}
+
+	:global(.dark) .pagination-link:hover,
+	:global(.dark) .pagination-link:focus-visible {
+		background: #253631;
+		border-color: rgba(154, 215, 206, 0.34);
+	}
+
+	:global(.dark) .pagination-link.is-current {
+		background: #9ad7ce;
+		border-color: #9ad7ce;
+		color: #12201d;
 	}
 
 	@media (max-width: 640px) {
@@ -223,6 +345,22 @@
 
 		.blog-item-image {
 			max-height: 200px;
+		}
+
+		.blog-pagination {
+			justify-content: flex-start;
+			gap: 0.38rem;
+		}
+
+		.pagination-link {
+			min-width: 2.15rem;
+			min-height: 2.15rem;
+			padding: 0.42rem 0.62rem;
+		}
+
+		.pagination-edge {
+			min-width: auto;
+			flex: 1 1 calc(50% - 0.4rem);
 		}
 	}
 </style>
