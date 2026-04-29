@@ -12,14 +12,6 @@
 		])
 	);
 
-	let query = $state('');
-	const filteredPillars = $derived.by(() => {
-		const q = query.trim().toLowerCase();
-		if (!q) return pillars;
-		return pillars.filter(
-			(p) => p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)
-		);
-	});
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/guider" />
@@ -41,16 +33,8 @@
 		</p>
 	</header>
 
-	<input
-		type="search"
-		bind:value={query}
-		placeholder="Sök guider..."
-		aria-label="Sök bland guider"
-		class="guide-search"
-	/>
-
 	<section class="grid" aria-label="Alla guider">
-		{#each filteredPillars as pillar}
+		{#each pillars as pillar}
 			<a class="card" href={`/guider/${pillar.slug}`}>
 				<h2>{pillar.title}</h2>
 				<p>{pillar.description}</p>
@@ -79,23 +63,6 @@
 
 	.intro-note {
 		font-size: 0.94rem;
-	}
-
-	.guide-search {
-		width: 100%;
-		max-width: 420px;
-		margin-top: 1.4rem;
-		padding: 0.62rem 0.85rem;
-		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #f8fafb;
-		font: inherit;
-	}
-
-	:global(.dark) .guide-search {
-		background: #1a2128;
-		border-color: rgba(255, 255, 255, 0.12);
-		color: inherit;
 	}
 
 	.grid {

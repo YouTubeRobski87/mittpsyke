@@ -48,6 +48,7 @@
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' },
 		{ href: '/feedback', label: 'Feedback' },
+		{ href: '/sok', label: 'Sök' },
 		{ href: '/blogg', label: 'Artiklar' }
 	];
 
@@ -70,6 +71,7 @@
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/ovningar', label: 'Övningar' },
 		{ href: '/feedback', label: 'Feedback' },
+		{ href: '/sok', label: 'Sök' },
 		{ href: '/blogg', label: 'Artiklar' },
 		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
 		{ href: 'https://stodlinjer.se', label: 'Akut hjälp (Stödlinjer)', external: true }
