@@ -1,5 +1,26 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
+	import HealthConsent from '$lib/components/HealthConsent.svelte';
+
+	const STORAGE_KEY = 'mittpsyke.healthConsent';
+	const VERSION = '2026-04-29';
+
+	let hasConsent = false;
+
+	onMount(() => {
+		try {
+			const stored = localStorage.getItem(STORAGE_KEY);
+			if (!stored) return;
+
+			const parsed = JSON.parse(stored);
+			if (parsed?.accepted && parsed?.policy_version === VERSION) {
+				hasConsent = true;
+			}
+		} catch {
+			hasConsent = false;
+		}
+	});
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/chat" />
@@ -30,15 +51,18 @@
 	})}<\/script>`}
 </svelte:head>
 
+{#if !hasConsent}
+	<HealthConsent onAccept={() => (hasConsent = true)} />
+{/if}
+
 <main class="page">
 	<div class="page-container">
 		<header class="hero">
 			<h1>Välj en lugn väg in i chatten</h1>
 			<p>
 				Du behöver inte veta exakt hur du ska börja. Välj det som känns närmast just nu och låt samtalet
-				ta form i din egen takt.
-				MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen. Det ersätter inte vård
-				eller kontakt med psykolog, läkare eller annan legitimerad vårdpersonal.
+				ta form i din egen takt. MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen.
+				Det ersätter inte vård eller kontakt med psykolog, läkare eller annan legitimerad vårdpersonal.
 			</p>
 		</header>
 
@@ -59,8 +83,10 @@
 
 		<section class="section">
 			<p>
-				Du kan börja utan konto. Vissa tekniska uppgifter hanteras enligt <a href="/integritet">integritetspolicyn</a>.
-				Om du vill läsa mer först finns <a href="/prata-anonymt-online">prata anonymt online</a>. Vid akut fara, ring 112. För vårdråd, kontakta 1177. Behöver du mänsklig kontakt finns
+				Du kan börja utan konto. Vissa tekniska uppgifter hanteras enligt
+				<a href="/integritet">integritetspolicyn</a>. Om du vill läsa mer först finns
+				<a href="/prata-anonymt-online">prata anonymt online</a>. Vid akut fara, ring 112.
+				För vårdråd, kontakta 1177. Behöver du mänsklig kontakt finns
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer</a>.
 			</p>
 		</section>
@@ -121,7 +147,9 @@
 		background: #f8fafc;
 		color: inherit;
 		text-decoration: none;
-		transition: transform 0.18s ease, background-color 0.18s ease;
+		transition:
+			transform 0.18s ease,
+			background-color 0.18s ease;
 	}
 
 	.choice-card:hover {

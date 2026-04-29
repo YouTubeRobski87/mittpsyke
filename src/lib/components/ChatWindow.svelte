@@ -8,7 +8,8 @@
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
 		grantSensitiveConsent,
-		hasSensitiveConsent
+		hasSensitiveConsent,
+		type HealthConsentRecord
 	} from '$lib/consent';
 	import {
 		ANALYTICS_ENABLED
@@ -408,13 +409,18 @@
 	});
 
 	onMount(() => {
-		hasSensitiveDataConsent = hasSensitiveConsent();
-
 		const {
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			isAnonymous = !session;
 			persistenceUserId = session?.user.id ?? null;
+			if (hasSensitiveConsent(session?.user.user_metadata)) {
+				hasSensitiveDataConsent = true;
+			}
+		});
+
+		void supabase.auth.getSession().then(({ data }) => {
+			hasSensitiveDataConsent = hasSensitiveConsent(data.session?.user.user_metadata);
 		});
 
 		if (!hasTrackedOpen) {
@@ -575,9 +581,28 @@
 		void goto(`/dagbok/checkin?prefill=${encodeURIComponent(content)}`);
 	}
 
+	async function persistUserConsent(consent: HealthConsentRecord) {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		if (!session) return;
+
+		const { error } = await supabase.auth.updateUser({
+			data: {
+				health_data_processing_consent: consent
+			}
+		});
+
+		if (!error) {
+			await supabase.auth.refreshSession();
+		}
+	}
+
 	function acceptSensitiveConsent() {
-		grantSensitiveConsent();
+		const consent = grantSensitiveConsent();
 		hasSensitiveDataConsent = true;
+		void persistUserConsent(consent);
 	}
 </script>
 
@@ -693,12 +718,7 @@
 	<div class="chat-input-area border-t border-black/8 dark:border-white/10 p-4">
 		{#if !hasSensitiveDataConsent}
 			<div class="mb-3">
-				<ConsentGate
-					title="Samtycke innan chatt"
-					dataLabel="Det du skriver i chatten"
-					serviceLabel="AI- och tredjepartstjänster"
-					onAccept={acceptSensitiveConsent}
-				/>
+				<ConsentGate onAccept={acceptSensitiveConsent} />
 			</div>
 		{/if}
 

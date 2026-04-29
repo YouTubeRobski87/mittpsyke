@@ -3,9 +3,17 @@
 	import { onDestroy, onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import { trackSignupCompleted, trackDiaryPageOpenedFromHoroscope } from '$lib/analytics';
+	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
+	import {
+		SENSITIVE_CONSENT_HEADER,
+		SENSITIVE_CONSENT_VERSION,
+		grantSensitiveConsent,
+		hasSensitiveConsent,
+		type HealthConsentRecord
+	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import {
 		DIARY_ENTRY_PAGE_SIZE,
@@ -83,6 +91,7 @@
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
 	let hasSavedEntries = $derived(entries.length > 0);
 	let showWriteEditor = $state(false);
+	let hasHealthDataConsent = $state(false);
 
 	// Filtrerade inlägg baserat på valt kalenderdatum
 	let filteredEntries = $derived.by(() => {
@@ -1147,6 +1156,31 @@
 		}
 	}
 
+	async function persistUserConsent(consent: HealthConsentRecord) {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		if (!session) return;
+
+		const { error } = await supabase.auth.updateUser({
+			data: {
+				health_data_processing_consent: consent
+			}
+		});
+
+		if (!error) {
+			await supabase.auth.refreshSession();
+			sessionUser = (await supabase.auth.getSession()).data.session?.user ?? sessionUser;
+		}
+	}
+
+	function acceptHealthConsent() {
+		const consent = grantSensitiveConsent();
+		hasHealthDataConsent = true;
+		void persistUserConsent(consent);
+	}
+
 	async function openWriteEditor() {
 		showWriteEditor = true;
 		await tick();
@@ -1174,6 +1208,10 @@
 		if (!draftText.trim() || savingDraft) return;
 		draftError = '';
 		draftSuccess = '';
+		if (!hasHealthDataConsent) {
+			draftError = 'Du behöver samtycka innan du kan spara i dagboken.';
+			return;
+		}
 		if (uploadingImage) {
 			draftError = 'Vänta tills bilden har laddats upp innan du sparar.';
 			return;
@@ -1193,6 +1231,7 @@
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION,
 					Authorization: `Bearer ${session.access_token}`
 				},
 				body: JSON.stringify({
@@ -1283,9 +1322,11 @@
 		if (!data.session) {
 			supabase.auth.getSession().then(({ data: sessionData }) => {
 				sessionUser = sessionData.session?.user ?? null;
+				hasHealthDataConsent = hasSensitiveConsent(sessionData.session?.user.user_metadata);
 				void initializeDiary();
 			});
 		} else {
+			hasHealthDataConsent = hasSensitiveConsent(data.session.user.user_metadata);
 			void initializeDiary();
 		}
 
@@ -1293,6 +1334,9 @@
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			sessionUser = session?.user ?? null;
+			if (hasSensitiveConsent(session?.user.user_metadata)) {
+				hasHealthDataConsent = true;
+			}
 		});
 
 		return () => subscription.unsubscribe();
@@ -1375,6 +1419,11 @@
 			description="Dagbok är din plats för dagen. Välj mellan att skriva själv eller låta en röst guida dig vidare."
 		/>
 
+		{#if !hasHealthDataConsent}
+			<div class="auth-shell">
+				<ConsentGate onAccept={acceptHealthConsent} />
+			</div>
+		{:else}
 		<div class="auth-shell">
 			<div class="diary-layout">
 				<div class="diary-main">
@@ -1981,6 +2030,7 @@
 				</aside>
 			</div>
 		</div>
+		{/if}
 	{/if}
 </main>
 

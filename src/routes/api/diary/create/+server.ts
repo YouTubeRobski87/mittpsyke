@@ -2,6 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { hasSensitiveConsentHeader } from '$lib/consent';
 import type { RequestHandler } from './$types';
 import type {
 	CreateDiaryErrorResponse,
@@ -72,6 +73,10 @@ function validateBody(input: unknown): { ok: true; data: CreateDiaryRequestBody 
 }
 
 export const POST: RequestHandler = async ({ request }) => {
+	if (!hasSensitiveConsentHeader(request)) {
+		return errorResponse('Consent required for sensitive diary features.', 403);
+	}
+
 	let parsedBody: unknown;
 	try {
 		parsedBody = await request.json();

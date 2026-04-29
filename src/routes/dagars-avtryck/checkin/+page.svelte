@@ -2,7 +2,15 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
+	import {
+		SENSITIVE_CONSENT_HEADER,
+		SENSITIVE_CONSENT_VERSION,
+		grantSensitiveConsent,
+		hasSensitiveConsent,
+		type HealthConsentRecord
+	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 
 	const moodOptions = [
@@ -66,6 +74,7 @@
 	let authLoading = true;
 	let authError = '';
 	let sessionToken = '';
+	let hasHealthDataConsent = false;
 
 	function toggleOption(list: string[], value: string): string[] {
 		if (list.includes(value)) {
@@ -249,7 +258,7 @@
 	}
 
 	async function saveToDiary() {
-		if (savingToDiary || !sessionToken) return;
+		if (savingToDiary || !sessionToken || !hasHealthDataConsent) return;
 		savingToDiary = true;
 		saveError = '';
 
@@ -258,6 +267,7 @@
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION,
 					Authorization: `Bearer ${sessionToken}`
 				},
 				body: JSON.stringify({
@@ -285,6 +295,24 @@
 		void goto(`/dagbok/checkin?prefill=${encodeURIComponent(prefill)}`);
 	}
 
+	async function persistUserConsent(consent: HealthConsentRecord) {
+		const { error } = await supabase.auth.updateUser({
+			data: {
+				health_data_processing_consent: consent
+			}
+		});
+
+		if (!error) {
+			await supabase.auth.refreshSession();
+		}
+	}
+
+	function acceptHealthConsent() {
+		const consent = grantSensitiveConsent();
+		hasHealthDataConsent = true;
+		void persistUserConsent(consent);
+	}
+
 	onMount(async () => {
 		const {
 			data: { session }
@@ -297,6 +325,7 @@
 		}
 
 		sessionToken = session.access_token;
+		hasHealthDataConsent = hasSensitiveConsent(session.user.user_metadata);
 		authLoading = false;
 	});
 </script>
@@ -325,6 +354,8 @@
 				<p>{authError}</p>
 				<a href="/login" class="auth-button mt-3">Logga in</a>
 			</section>
+		{:else if !hasHealthDataConsent}
+			<ConsentGate onAccept={acceptHealthConsent} />
 		{:else}
 			<section class="auth-panel auth-panel-accent checkin-panel">
 				<div class="progress-wrap" aria-label={`Steg ${step} av 6`}>

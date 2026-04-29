@@ -8,9 +8,19 @@ export const ANALYTICS_CONSENT_EVENT = 'mittpsyke:analytics-consent-change';
 export const ANALYTICS_CONSENT_ACCEPTED = 'accepted';
 export const ANALYTICS_CONSENT_DECLINED = 'declined';
 
-export const SENSITIVE_CONSENT_STORAGE_KEY = 'mittpsyke:consent:sensitive-ai';
+export const HEALTH_CONSENT_VERSION = '2026-04-29';
+export const HEALTH_CONSENT_TYPE = 'health_data_processing';
+export const HEALTH_CONSENT_STORAGE_KEY = 'mittpsyke.healthConsent';
+export const SENSITIVE_CONSENT_STORAGE_KEY = HEALTH_CONSENT_STORAGE_KEY;
 export const SENSITIVE_CONSENT_HEADER = 'x-mittpsyke-sensitive-consent';
-export const SENSITIVE_CONSENT_VERSION = '2026-03-sensitive-ai-v1';
+export const SENSITIVE_CONSENT_VERSION = HEALTH_CONSENT_VERSION;
+
+export type HealthConsentRecord = {
+	accepted: true;
+	type: typeof HEALTH_CONSENT_TYPE;
+	timestamp: string;
+	policy_version: typeof HEALTH_CONSENT_VERSION;
+};
 
 type AnalyticsConsentState =
 	| typeof ANALYTICS_CONSENT_ACCEPTED
@@ -89,16 +99,62 @@ export function declineAnalyticsConsent() {
 // TODO(consent-audit): If legal/compliance review requires proof, record grant events server-side with timestamp and policy version.
 // TODO(consent-withdrawal): Add a settings flow to withdraw consent and re-block affected AI/röstfunktioner until renewed consent.
 
-export function hasSensitiveConsent(): boolean {
-	if (typeof window === 'undefined') return false;
-
-	return window.localStorage.getItem(SENSITIVE_CONSENT_STORAGE_KEY) === SENSITIVE_CONSENT_VERSION;
+export function createHealthConsentRecord(timestamp = new Date().toISOString()): HealthConsentRecord {
+	return {
+		accepted: true,
+		type: HEALTH_CONSENT_TYPE,
+		timestamp,
+		policy_version: HEALTH_CONSENT_VERSION
+	};
 }
 
-export function grantSensitiveConsent() {
-	if (typeof window === 'undefined') return;
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return Boolean(value && typeof value === 'object' && !Array.isArray(value));
+}
 
-	window.localStorage.setItem(SENSITIVE_CONSENT_STORAGE_KEY, SENSITIVE_CONSENT_VERSION);
+export function hasHealthConsentRecord(value: unknown): boolean {
+	return (
+		isRecord(value) &&
+		value.accepted === true &&
+		value.type === HEALTH_CONSENT_TYPE &&
+		value.policy_version === HEALTH_CONSENT_VERSION &&
+		typeof value.timestamp === 'string'
+	);
+}
+
+export function hasHealthConsentInMetadata(metadata: unknown): boolean {
+	if (!isRecord(metadata)) return false;
+
+	return hasHealthConsentRecord(metadata.health_data_processing_consent);
+}
+
+function getStoredHealthConsent(): unknown {
+	if (typeof window === 'undefined') return null;
+
+	try {
+		const stored = window.localStorage.getItem(HEALTH_CONSENT_STORAGE_KEY);
+		return stored ? JSON.parse(stored) : null;
+	} catch {
+		return null;
+	}
+}
+
+export function hasSensitiveConsent(metadata?: unknown): boolean {
+	return hasHealthConsentRecord(getStoredHealthConsent()) || hasHealthConsentInMetadata(metadata);
+}
+
+export function grantSensitiveConsent(): HealthConsentRecord {
+	const consent = createHealthConsentRecord();
+
+	if (typeof window !== 'undefined') {
+		try {
+			window.localStorage.setItem(HEALTH_CONSENT_STORAGE_KEY, JSON.stringify(consent));
+		} catch {
+			// Om localStorage inte är tillgängligt visar UI:t samtycket igen nästa gång.
+		}
+	}
+
+	return consent;
 }
 
 export function hasSensitiveConsentHeader(request: Request): boolean {

@@ -1,6 +1,13 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import { onMount } from 'svelte';
+	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
+	import {
+		grantSensitiveConsent,
+		hasSensitiveConsent,
+		type HealthConsentRecord
+	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import { activeStorifyTones, storifyTones } from '$lib/data/storifyTones';
 
@@ -39,6 +46,7 @@
 	let streamError = $state('');
 	let inputValue = $state('');
 	let hasSelectedVoice = $state(false);
+	let hasHealthDataConsent = $state(false);
 
 	// --- Tonval ---
 
@@ -232,7 +240,7 @@
 
 	function handleSend() {
 		const text = inputValue.trim();
-		if (!text || isStreaming) return;
+		if (!hasHealthDataConsent || !text || isStreaming) return;
 
 		inputValue = '';
 
@@ -364,6 +372,38 @@
 	function getToneLabel(toneId: string): string {
 		return storifyTones.find((t) => t.id === toneId)?.label ?? toneId;
 	}
+
+	async function persistUserConsent(consent: HealthConsentRecord) {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		if (!session) return;
+
+		const { error } = await supabase.auth.updateUser({
+			data: {
+				health_data_processing_consent: consent
+			}
+		});
+
+		if (!error) {
+			await supabase.auth.refreshSession();
+		}
+	}
+
+	function acceptHealthConsent() {
+		const consent = grantSensitiveConsent();
+		hasHealthDataConsent = true;
+		void persistUserConsent(consent);
+	}
+
+	onMount(async () => {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		hasHealthDataConsent = hasSensitiveConsent(session?.user.user_metadata);
+	});
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/dagars-avtryck" />
@@ -408,6 +448,9 @@
 
 		<!-- ===== SKRIV-FLIKEN ===== -->
 		{#if activeTab === 'skriv'}
+			{#if !hasHealthDataConsent}
+				<ConsentGate onAccept={acceptHealthConsent} />
+			{:else}
 
 			<!-- FAS: Tom start -->
 			{#if phase === 'empty'}
@@ -595,6 +638,7 @@
 						</button>
 					</div>
 				</section>
+			{/if}
 			{/if}
 
 		<!-- ===== MINA INLÄGG-FLIKEN ===== -->
