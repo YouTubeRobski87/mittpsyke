@@ -30,7 +30,7 @@
 	</header>
 
 	{#if article.image}
-		<img class="featured-image" src={article.image} alt="" loading="eager" />
+		<img class="featured-image" src={article.image} alt={article.title} loading="eager" />
 	{/if}
 
 	<div class="article-content">
