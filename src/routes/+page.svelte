@@ -118,7 +118,7 @@
 			class="hero-bg"
 			bind:this={bgEl}
 			src="/assets/home/MittpsykeTree.jpg"
-			alt=""
+			alt="Stilla träd i mjukt ljus"
 			aria-hidden="true"
 			decoding="async"
 			fetchpriority="high"

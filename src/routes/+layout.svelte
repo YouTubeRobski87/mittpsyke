@@ -460,7 +460,6 @@
 			<meta name="robots" content="noindex, nofollow" />
 		{/if}
 		<meta name="author" content="MittPsyke" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 		<meta property="og:title" content={page.data?.title ? `${page.data.title} | MittPsyke` : 'MittPsyke – Psykiskt stöd online'} />
 		<meta
