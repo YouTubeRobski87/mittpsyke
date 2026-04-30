@@ -35,13 +35,37 @@
 			description: guide.description
 		}))
 	];
-	const articleResults: SearchResult[] = $derived(
-		(data.articles ?? []).map((article: ArticleResult) => ({
+
+	// Statiska bloggartiklar som inte ingår i Soro-flödet – alltid sökbara
+	const localBlogArticles: SearchResult[] = [
+		{
+			href: '/blogg/ai-hjalper-dig-bearbeta-kanslor',
+			title: 'Hur AI kan hjälpa dig bearbeta känslor – utan att ersätta terapi',
+			description:
+				'AI kan stötta med reflektion, frågor och mönster över tid. Vi går igenom vad AI kan göra för mental hälsa, vad det inte kan ersätta och hur MittPsyke arbetar ansvarsfullt.'
+		},
+		{
+			href: '/blogg/kbt-dagbok-vs-fri-journalforing',
+			title: 'KBT-dagbok eller fri journalföring – vad passar dig?',
+			description:
+				'KBT-dagbok är strukturerad, fri journalföring är öppen. Här jämför vi fördelar och nackdelar och visar hur AI kan hjälpa dig kombinera båda.'
+		},
+		{
+			href: '/blogg/vad-ar-journalterapi',
+			title: 'Vad är journalterapi – och fungerar det egentligen?',
+			description:
+				'Journalterapi kan hjälpa dig sortera tankar, minska stress och förstå ditt mående bättre. Vi går igenom forskning, praktiska tips och hur MittPsyke kan stötta.'
+		}
+	];
+
+	const articleResults: SearchResult[] = $derived([
+		...localBlogArticles,
+		...(data.articles ?? []).map((article: ArticleResult) => ({
 			href: `/blogg/${encodeURIComponent(article.slug)}`,
 			title: article.title,
 			description: article.excerpt
 		}))
-	);
+	]);
 
 	const normalizedQuery = $derived(query.trim().toLowerCase());
 	const showResults = $derived(normalizedQuery.length > 0);
@@ -68,7 +92,7 @@
 	function filterResults(results: SearchResult[], q: string) {
 		if (!q) return [];
 		return results.filter((result) =>
-			`${result.title} ${result.description}`.toLowerCase().includes(q)
+			`${result.href} ${result.title} ${result.description}`.toLowerCase().includes(q)
 		);
 	}
 
