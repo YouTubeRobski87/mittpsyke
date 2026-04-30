@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { page } from '$app/state';
+	import { trackEvent } from '$lib/analytics';
 	import { guides, pillars } from '$lib/seo-kit/content';
 
 	type SearchResult = {
@@ -18,7 +20,8 @@
 			loadError?: boolean;
 		};
 	}>();
-	let query = $state('');
+	let query = $state(page.url.searchParams.get('q') ?? '');
+	let lastTrackedSearchQuery = '';
 
 	const guideResults: SearchResult[] = [
 		...pillars.map((pillar) => ({
@@ -44,6 +47,23 @@
 	const showResults = $derived(normalizedQuery.length > 0);
 	const filteredGuides = $derived.by(() => filterResults(guideResults, normalizedQuery));
 	const filteredArticles = $derived.by(() => filterResults(articleResults, normalizedQuery));
+
+	$effect(() => {
+		if (normalizedQuery.length < 2) return;
+
+		const timeout = window.setTimeout(() => {
+			if (normalizedQuery === lastTrackedSearchQuery) return;
+			lastTrackedSearchQuery = normalizedQuery;
+			const resultCount = filteredGuides.length + filteredArticles.length;
+			trackEvent('search_performed', {
+				query: normalizedQuery.slice(0, 120),
+				resultCount,
+				hasResults: resultCount > 0
+			});
+		}, 800);
+
+		return () => window.clearTimeout(timeout);
+	});
 
 	function filterResults(results: SearchResult[], q: string) {
 		if (!q) return [];

@@ -197,6 +197,7 @@
 	let user = $state<User | null>(null);
 	let displayName = $state<string | null>(null);
 	let mobileMenuOpen = $state(false);
+	let mobileSearchOpen = $state(false);
 	let profilePanelOpen = $state(false);
 	let analyticsEnabled = $state(false);
 	let lastTrackedPagePath = $state('');
@@ -208,6 +209,7 @@
 	let avatarImageLoadFailed = $state(false);
 	let profileButtonRef = $state<HTMLButtonElement | null>(null);
 	let profilePanelRef = $state<HTMLDivElement | null>(null);
+	let mobileSearchInputRef = $state<HTMLInputElement | null>(null);
 	let profilePanelData = $state<ProfilePanelData>(null);
 	let unreadNotificationCount = $state(0);
 	let layoutSummaryLoading = $state(false);
@@ -330,6 +332,16 @@
 		profilePanelOpen = false;
 	}
 
+	function openMobileSearch() {
+		mobileSearchOpen = true;
+		mobileMenuOpen = false;
+		profilePanelOpen = false;
+	}
+
+	function closeMobileSearch() {
+		mobileSearchOpen = false;
+	}
+
 	function pageKey(url: URL) {
 		return `${url.pathname}${url.search}`;
 	}
@@ -405,6 +417,7 @@
 
 	afterNavigate(({ to }) => {
 		mobileMenuOpen = false;
+		mobileSearchOpen = false;
 		profilePanelOpen = false;
 		if (to?.url) {
 			trackCurrentPage(to.url);
@@ -430,6 +443,25 @@
 
 		return () => {
 			document.removeEventListener('pointerdown', onPointerDown);
+			document.removeEventListener('keydown', onKeyDown);
+		};
+	});
+
+	$effect(() => {
+		if (!browser || !mobileSearchOpen) return;
+
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+		const focusFrame = requestAnimationFrame(() => mobileSearchInputRef?.focus());
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') closeMobileSearch();
+		};
+
+		document.addEventListener('keydown', onKeyDown);
+
+		return () => {
+			cancelAnimationFrame(focusFrame);
+			document.body.style.overflow = previousOverflow;
 			document.removeEventListener('keydown', onKeyDown);
 		};
 	});
@@ -671,6 +703,10 @@
 						</div>
 					{/if}
 
+					<button type="button" class="mobile-search-trigger" aria-label="Sök" onclick={openMobileSearch}>
+						<span aria-hidden="true">🔍</span>
+					</button>
+
 					<ThemeToggle />
 
 				<button
@@ -688,6 +724,37 @@
 				</button>
 			</div>
 		</div>
+
+		{#if mobileSearchOpen}
+			<div
+				class="mobile-search-overlay"
+				role="dialog"
+				aria-modal="true"
+				aria-label="Sök"
+				tabindex="-1"
+				onclick={(event) => {
+					if (event.target === event.currentTarget) closeMobileSearch();
+				}}
+				onkeydown={(event) => {
+					if (event.key === 'Escape') closeMobileSearch();
+				}}
+			>
+				<form class="mobile-search-panel" action="/sok" method="GET" onsubmit={closeMobileSearch}>
+					<input
+						bind:this={mobileSearchInputRef}
+						class="mobile-search-input"
+						type="search"
+						name="q"
+						autocomplete="off"
+						placeholder="Sök guider, artiklar..."
+						aria-label="Sök guider och artiklar"
+					/>
+					<button type="button" class="mobile-search-close" aria-label="Stäng sök" onclick={closeMobileSearch}>
+						×
+					</button>
+				</form>
+			</div>
+		{/if}
 
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3" role="navigation" aria-label="Mobilmeny">
@@ -862,6 +929,60 @@
 
 	.skip-link:focus-visible {
 		top: 1rem;
+	}
+
+	.mobile-search-trigger {
+		display: none;
+	}
+
+	.mobile-search-overlay {
+		position: fixed;
+		inset: 0;
+		z-index: 70;
+		padding: 0.85rem;
+		background: hsl(var(--background) / 0.98);
+		overscroll-behavior: contain;
+	}
+
+	.mobile-search-panel {
+		display: flex;
+		gap: 0.6rem;
+		width: 100%;
+	}
+
+	.mobile-search-input {
+		min-height: 2.75rem;
+		min-width: 0;
+		flex: 1;
+		border: 1px solid hsl(var(--border));
+		border-radius: 999px;
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+		padding: 0.7rem 0.95rem;
+		font: inherit;
+	}
+
+	.mobile-search-close {
+		min-height: 2.75rem;
+		min-width: 2.75rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: 999px;
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+		font-weight: 700;
+	}
+
+	@media (max-width: 767px) {
+		.mobile-search-trigger {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 2.5rem;
+			height: 2.5rem;
+			border-radius: 999px;
+			color: hsl(var(--foreground));
+			font-size: 1.1rem;
+		}
 	}
 
 	.mobile-menu-panel {
