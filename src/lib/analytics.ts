@@ -34,7 +34,8 @@ type EventName =
 	| 'qr_cta_secondary_click'
 	| 'view_chat_nudge'
 	| 'click_chat_nudge'
-	| 'search_performed';
+	| 'search_performed'
+	| 'search_result_click';
 
 type EventParams = Record<string, string | number | boolean>;
 type LandingPageEventParams = Record<string, string | number | boolean | null>;

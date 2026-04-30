@@ -71,6 +71,16 @@
 			`${result.title} ${result.description}`.toLowerCase().includes(q)
 		);
 	}
+
+	function trackSearchResultClick(result: SearchResult, resultType: 'guide' | 'article', position: number) {
+		if (!normalizedQuery) return;
+		trackEvent('search_result_click', {
+			query: normalizedQuery.slice(0, 120),
+			resultType,
+			href: result.href,
+			position
+		});
+	}
 </script>
 
 <main class="search-page">
@@ -92,9 +102,9 @@
 				<h2 id="guide-results">Guider</h2>
 				{#if filteredGuides.length}
 					<ul class="result-list">
-						{#each filteredGuides as result}
+						{#each filteredGuides as result, index}
 							<li>
-								<a class="result-link" href={result.href}>
+								<a class="result-link" href={result.href} onclick={() => trackSearchResultClick(result, 'guide', index + 1)}>
 									<strong>{result.title}</strong>
 									<span>{result.description}</span>
 								</a>
@@ -110,9 +120,9 @@
 				<h2 id="article-results">Artiklar</h2>
 				{#if filteredArticles.length}
 					<ul class="result-list">
-						{#each filteredArticles as result}
+						{#each filteredArticles as result, index}
 							<li>
-								<a class="result-link" href={result.href}>
+								<a class="result-link" href={result.href} onclick={() => trackSearchResultClick(result, 'article', index + 1)}>
 									<strong>{result.title}</strong>
 									<span>{result.description}</span>
 								</a>
