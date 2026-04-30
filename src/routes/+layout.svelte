@@ -741,7 +741,7 @@
 					if (event.key === 'Escape') closeMobileSearch();
 				}}
 			>
-				<form class="mobile-search-panel" action="/sok" method="GET" onsubmit={closeMobileSearch}>
+				<form class="mobile-search-panel" action="/sok" method="GET">
 					<input
 						bind:this={mobileSearchInputRef}
 						class="mobile-search-input"
