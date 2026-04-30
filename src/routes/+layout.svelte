@@ -713,7 +713,7 @@
 
 				<button
 					type="button"
-					class="lg:hidden inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/10 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
+					class="mobile-menu-button lg:hidden inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/10 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
 					aria-label="Öppna meny"
 					aria-expanded={mobileMenuOpen}
 					aria-controls="mobile-menu"
@@ -1331,6 +1331,12 @@
 
 		.mobile-menu-link {
 			padding: 0.42rem 0;
+		}
+
+		.mobile-menu-button .mobile-menu-icon {
+			font-size: 1.85rem;
+			line-height: 1;
+			display: block;
 		}
 
 		.profile-panel {
