@@ -1351,6 +1351,18 @@
 		.profile-panel-stats {
 			grid-template-columns: minmax(0, 1fr);
 		}
+
+		:global(.footer-features) {
+			margin-top: 0.3rem !important;
+		}
+
+		:global(.footer-company) {
+			margin-top: 0.3rem !important;
+		}
+
+		.footer-company p {
+			margin-block: 0.04rem;
+		}
 	}
 
 </style>
