@@ -68,21 +68,16 @@
 	const normalizedQuery = $derived(query.trim().toLowerCase());
 	const showResults = $derived(normalizedQuery.length > 0);
 	const filteredGuides = $derived.by(() => filterResults(guideResults, normalizedQuery));
+	const articleResults = $derived.by(() => [
+		...localBlogArticles,
+		...(data.articles ?? []).map((article: ArticleResult) => ({
+			href: `/blogg/${encodeURIComponent(article.slug)}`,
+			title: article.title,
+			description: article.excerpt
+		}))
+	]);
 
-	// Bygg artikellistan och filtrera i ett enda $derived.by-scope.
-	// Att dela upp i $derived + $derived.by (signal i signal) kan orsaka att Svelte 5:s
-	// kompilator missar getter-tracking för det yttre derived-värdet i closuren.
-	const filteredArticles = $derived.by(() => {
-		const allArticles: SearchResult[] = [
-			...localBlogArticles,
-			...(data.articles ?? []).map((article: ArticleResult) => ({
-				href: `/blogg/${encodeURIComponent(article.slug)}`,
-				title: article.title,
-				description: article.excerpt
-			}))
-		];
-		return filterResults(allArticles, normalizedQuery);
-	});
+	const filteredArticles = $derived.by(() => filterResults(articleResults, normalizedQuery));
 
 	$effect(() => {
 		if (normalizedQuery.length < 2) return;
