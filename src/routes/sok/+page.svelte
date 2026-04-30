@@ -23,6 +23,13 @@
 	let query = $state(page.url.searchParams.get('q') ?? '');
 	let lastTrackedSearchQuery = '';
 
+	// Håll query synkad med URL vid SvelteKit client-side navigation (GET-formulär utan use:enhance).
+	// $state()-initialvärdet evalueras bara en gång vid mount – om komponenten redan är monterad
+	// (samma rutt, ny sökning) uppdateras inte query automatiskt. Denna effekt fångar URL-ändringar.
+	$effect(() => {
+		query = page.url.searchParams.get('q') ?? '';
+	});
+
 	const guideResults: SearchResult[] = [
 		...pillars.map((pillar) => ({
 			href: `/guider/${pillar.slug}`,
