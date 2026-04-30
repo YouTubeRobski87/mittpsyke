@@ -532,8 +532,8 @@
 {:else}
 	<a href="#main-content" class="skip-link">Hoppa till innehåll</a>
 	<header class="site-header sticky top-0 z-30 bg-[hsl(var(--background)/0.94)] supports-[backdrop-filter]:backdrop-blur">
-		<div class="site-header-inner flex items-center justify-between gap-3 px-5 py-3.5">
-			<div class="flex min-w-0 flex-1 items-center gap-3 sm:gap-4 lg:flex-none">
+		<div class="site-header-inner flex items-center justify-between gap-2 px-5 py-3.5 md:gap-3">
+			<div class="flex min-w-0 flex-1 items-center gap-2 md:gap-4 lg:flex-none">
 				<a
 					href="/"
 					class="brand-link min-w-0 self-center opacity-95 hover:opacity-100 transition-opacity"
@@ -566,7 +566,7 @@
 				</nav>
 			</div>
 
-			<div class="flex shrink-0 items-center gap-3">
+			<div class="flex shrink-0 items-center gap-1 md:gap-3">
 				<div class="hidden lg:flex items-center gap-3">
 					{#if user}
 						<span class="text-sm opacity-60">
@@ -707,7 +707,9 @@
 						<span aria-hidden="true">🔍</span>
 					</button>
 
-					<ThemeToggle />
+					<div class="hidden md:block">
+						<ThemeToggle />
+					</div>
 
 				<button
 					type="button"
@@ -720,7 +722,7 @@
 							mobileMenuOpen = !mobileMenuOpen;
 						}}
 				>
-					&#9776;
+					<span class="mobile-menu-icon" aria-hidden="true">&#9776;</span>
 				</button>
 			</div>
 		</div>
@@ -797,6 +799,9 @@
 					<a href="/login" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Logga in</a>
 					<a href="/register" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Registrera</a>
 				{/if}
+				<div class="mobile-menu-theme md:hidden">
+					<ThemeToggle />
+				</div>
 				<p class="mobile-menu-help pt-1 text-xs opacity-60">Vid akut fara: ring 112</p>
 			</div>
 		{/if}
@@ -977,11 +982,17 @@
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
-			width: 2.5rem;
-			height: 2.5rem;
+			width: 2rem;
+			height: 2rem;
 			border-radius: 999px;
 			color: hsl(var(--foreground));
-			font-size: 1.1rem;
+			font-size: 1rem;
+		}
+
+		:global(.site-header button[aria-label="Växla tema"]) {
+			min-width: 2rem;
+			min-height: 2rem;
+			padding: 0.35rem;
 		}
 	}
 
@@ -1018,6 +1029,16 @@
 
 	.mobile-menu-help {
 		margin: 0.5rem 0 0;
+	}
+
+	.mobile-menu-icon {
+		display: block;
+		font-size: 1.6rem;
+		line-height: 1;
+	}
+
+	.mobile-menu-theme {
+		margin-top: 0.45rem;
 	}
 
 	.brand-link {
@@ -1247,7 +1268,7 @@
 		outline: none;
 	}
 
-	@media (max-width: 739px) {
+	@media (max-width: 767px) {
 		.site-header-inner {
 			padding: 0.48rem 0.75rem;
 			gap: 0.55rem;
