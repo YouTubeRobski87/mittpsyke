@@ -533,10 +533,10 @@
 	<a href="#main-content" class="skip-link">Hoppa till innehåll</a>
 	<header class="site-header sticky top-0 z-30 bg-[hsl(var(--background)/0.94)] supports-[backdrop-filter]:backdrop-blur">
 		<div class="site-header-inner flex items-center justify-between gap-3 px-5 py-3.5">
-			<div class="flex items-center gap-3 sm:gap-4 min-w-0">
+			<div class="flex min-w-0 flex-1 items-center gap-3 sm:gap-4 lg:flex-none">
 				<a
 					href="/"
-					class="brand-link shrink-0 self-center opacity-95 hover:opacity-100 transition-opacity"
+					class="brand-link min-w-0 self-center opacity-95 hover:opacity-100 transition-opacity"
 					aria-label="MittPsyke startsida"
 					data-sveltekit-reload
 				>
@@ -566,7 +566,7 @@
 				</nav>
 			</div>
 
-			<div class="flex items-center gap-3">
+			<div class="flex shrink-0 items-center gap-3">
 				<div class="hidden lg:flex items-center gap-3">
 					{#if user}
 						<span class="text-sm opacity-60">
@@ -1030,6 +1030,8 @@
 
 	.brand-wordmark {
 		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		font-family: var(--font-heading);
 		font-size: clamp(1.32rem, 1.16rem + 0.42vw, 1.52rem);
 		font-weight: 760;
