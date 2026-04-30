@@ -78,6 +78,7 @@
 	]);
 
 	const filteredArticles = $derived.by(() => filterResults(articleResults, normalizedQuery));
+	const hasResults = $derived(filteredGuides.length > 0 || filteredArticles.length > 0);
 
 	$effect(() => {
 		if (normalizedQuery.length < 2) return;
@@ -129,43 +130,41 @@
 
 	{#if showResults}
 		<div class="results">
-			<section aria-labelledby="guide-results">
-				<h2 id="guide-results">Guider</h2>
+			{#if hasResults}
 				{#if filteredGuides.length}
-					<ul class="result-list">
-						{#each filteredGuides as result, index}
-							<li>
-								<a class="result-link" href={result.href} onclick={() => trackSearchResultClick(result, 'guide', index + 1)}>
-									<strong>{result.title}</strong>
-									<span>{result.description}</span>
-								</a>
-							</li>
-						{/each}
-					</ul>
-				{:else}
-					<p class="empty">Inga guider hittades.</p>
+					<section aria-labelledby="guide-results">
+						<h2 id="guide-results">Guider</h2>
+						<ul class="result-list">
+							{#each filteredGuides as result, index}
+								<li>
+									<a class="result-link" href={result.href} onclick={() => trackSearchResultClick(result, 'guide', index + 1)}>
+										<strong>{result.title}</strong>
+										<span>{result.description}</span>
+									</a>
+								</li>
+							{/each}
+						</ul>
+					</section>
 				{/if}
-			</section>
 
-			<section aria-labelledby="article-results">
-				<h2 id="article-results">Artiklar</h2>
 				{#if filteredArticles.length}
-					<ul class="result-list">
-						{#each filteredArticles as result, index}
-							<li>
-								<a class="result-link" href={result.href} onclick={() => trackSearchResultClick(result, 'article', index + 1)}>
-									<strong>{result.title}</strong>
-									<span>{result.description}</span>
-								</a>
-							</li>
-						{/each}
-					</ul>
-				{:else if data.loadError}
-					<p class="empty">Artiklarna kunde inte laddas just nu.</p>
-				{:else}
-					<p class="empty">Inga artiklar hittades.</p>
+					<section aria-labelledby="article-results">
+						<h2 id="article-results">Artiklar</h2>
+						<ul class="result-list">
+							{#each filteredArticles as result, index}
+								<li>
+									<a class="result-link" href={result.href} onclick={() => trackSearchResultClick(result, 'article', index + 1)}>
+										<strong>{result.title}</strong>
+										<span>{result.description}</span>
+									</a>
+								</li>
+							{/each}
+						</ul>
+					</section>
 				{/if}
-			</section>
+			{:else}
+				<p class="empty">Inga resultat hittades.</p>
+			{/if}
 		</div>
 	{:else}
 		<p class="hint">Skriv ett ord eller en fras för att börja söka.</p>
