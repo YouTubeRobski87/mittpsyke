@@ -812,7 +812,7 @@
 			{@render children()}
 		</main>
 
-		<section class="site-disclaimer mt-10 px-5">
+		<section class="site-disclaimer mt-6 px-5">
 			<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
 				MittPsyke ersätter inte vård. Vid akut fara ring 112 &middot; Vårdråd 1177.
 			</p>
