@@ -19,11 +19,8 @@
 	} from '$lib/consent';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import { resolveAvatarPresetUrl } from '$lib/avatar';
-	import { supabase } from '$lib/supabase';
 	import { page } from '$app/state';
-	import type { User } from '@supabase/supabase-js';
-	import { injectAnalytics } from '@vercel/analytics/sveltekit';
-	import { injectSpeedInsights } from '@vercel/speed-insights/sveltekit';
+	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
 	const UNDER_CONSTRUCTION = false;
 
@@ -214,11 +211,19 @@
 	let unreadNotificationCount = $state(0);
 	let layoutSummaryLoading = $state(false);
 	let layoutSummaryError = $state<string | null>(null);
+	let supabaseClientPromise: Promise<SupabaseClient> | null = null;
 
 	const profileName = $derived(getProfileName(displayName, user));
 	const avatarImageUrl = $derived(getAvatarImageUrl(user));
 	const showAvatarImage = $derived(Boolean(avatarImageUrl && !avatarImageLoadFailed));
 	const memberSinceLabel = $derived(getMemberSinceLabel(user?.created_at));
+	const shouldUseClientAuth = $derived(Boolean(data?.session || isPrivateOrUtilityPage));
+
+	function getSupabaseClient() {
+		if (!browser) return null;
+		supabaseClientPromise ??= import('$lib/supabase').then(({ supabase }) => supabase);
+		return supabaseClientPromise;
+	}
 
 	function handleAvatarImageError() {
 		avatarImageLoadFailed = true;
@@ -249,6 +254,9 @@
 		}
 		if (syncedProfileUserId === sessionUser.id) return;
 		syncedProfileUserId = sessionUser.id;
+
+		const supabase = await getSupabaseClient();
+		if (!supabase) return;
 
 		const { data, error } = await supabase
 			.from('profiles')
@@ -292,32 +300,47 @@
 	}
 
 	$effect(() => {
-		// Seed klienten med server-side session direkt (undviker flash vid login/redirect)
-		if (data?.session) {
-			if (seededSessionAccessToken !== data.session.access_token) {
-				seededSessionAccessToken = data.session.access_token;
-				void syncUser(data.session.user);
-				void supabase.auth.setSession(data.session);
-			} else if (user?.id !== data.session.user.id) {
-				void syncUser(data.session.user);
-			}
-		} else {
-			seededSessionAccessToken = '';
-			supabase.auth.getSession().then(({ data: sessionData }) => {
-				void syncUser(sessionData.session?.user ?? null);
-			});
-		}
+		if (!browser || !shouldUseClientAuth) return;
 
-		const {
-			data: { subscription }
-		} = supabase.auth.onAuthStateChange((_event, session) => {
-			void syncUser(session?.user ?? null);
+		let cancelled = false;
+		let unsubscribe: (() => void) | undefined;
+
+		void getSupabaseClient()?.then((supabase) => {
+			if (cancelled) return;
+
+			// Seed klienten med server-side session direkt (undviker flash vid login/redirect)
+			if (data?.session) {
+				if (seededSessionAccessToken !== data.session.access_token) {
+					seededSessionAccessToken = data.session.access_token;
+					void syncUser(data.session.user);
+					void supabase.auth.setSession(data.session);
+				} else if (user?.id !== data.session.user.id) {
+					void syncUser(data.session.user);
+				}
+			} else {
+				seededSessionAccessToken = '';
+				supabase.auth.getSession().then(({ data: sessionData }) => {
+					void syncUser(sessionData.session?.user ?? null);
+				});
+			}
+
+			const {
+				data: { subscription }
+			} = supabase.auth.onAuthStateChange((_event, session) => {
+				void syncUser(session?.user ?? null);
+			});
+			unsubscribe = () => subscription.unsubscribe();
 		});
 
-		return () => subscription.unsubscribe();
+		return () => {
+			cancelled = true;
+			unsubscribe?.();
+		};
 	});
 
 	async function logout() {
+		const supabase = await getSupabaseClient();
+		if (!supabase) return;
 		profilePanelOpen = false;
 		await supabase.auth.signOut();
 		window.location.href = '/login';
@@ -469,8 +492,17 @@
 	// Initiera Vercel Analytics och Speed Insights en gång vid mount
 	$effect(() => {
 		if (!browser || !ANALYTICS_ENABLED) return;
-		injectAnalytics();
-		injectSpeedInsights();
+		const timeout = window.setTimeout(() => {
+			void Promise.all([
+				import('@vercel/analytics/sveltekit'),
+				import('@vercel/speed-insights/sveltekit')
+			]).then(([analytics, speedInsights]) => {
+				analytics.injectAnalytics();
+				speedInsights.injectSpeedInsights();
+			});
+		}, 2500);
+
+		return () => window.clearTimeout(timeout);
 	});
 </script>
 

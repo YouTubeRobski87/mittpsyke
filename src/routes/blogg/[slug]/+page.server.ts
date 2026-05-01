@@ -3,6 +3,7 @@ import type { PageServerLoad } from './$types';
 
 const SORO_TOKEN = '7741c36b-abe9-4f95-8557-3430345576e4';
 const SORO_EMBED_SRC = `https://app.trysoro.com/api/embed/${SORO_TOKEN}?theme=dark`;
+const CACHE_CONTROL = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
 
 type SoroArticleListItem = {
 	id: string;
@@ -37,9 +38,8 @@ function extractArticles(embedScript: string) {
 }
 
 export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
-	const cacheBuster = Date.now();
 	const requestedSlug = normalizeSlug(params.slug).toLowerCase();
-	const embedResponse = await fetch(`${SORO_EMBED_SRC}&cb=${cacheBuster}`, {
+	const embedResponse = await fetch(SORO_EMBED_SRC, {
 		headers: {
 			accept: 'application/javascript,*/*',
 			'user-agent': 'Mozilla/5.0'
@@ -59,12 +59,10 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	}
 
 	const contentResponse = await fetch(
-		`https://app.trysoro.com/api/embed/${SORO_TOKEN}/article/${article.id}?cb=${cacheBuster}`,
+		`https://app.trysoro.com/api/embed/${SORO_TOKEN}/article/${article.id}`,
 		{
-			cache: 'no-store',
 			headers: {
 				accept: 'application/json,*/*',
-				'cache-control': 'no-cache',
 				'user-agent': 'Mozilla/5.0'
 			}
 		}
@@ -81,7 +79,7 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	}
 
 	setHeaders({
-		'cache-control': 'no-store'
+		'cache-control': CACHE_CONTROL
 	});
 
 	return {
