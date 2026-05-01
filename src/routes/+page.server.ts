@@ -1,6 +1,17 @@
+import { redirect } from '@sveltejs/kit';
+import { normalizeSoroArticleSlug } from '$lib/server/soro-articles';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ url }) => {
+	const legacyPost = url.searchParams.get('post');
+	if (legacyPost) {
+		const slug = normalizeSoroArticleSlug(legacyPost);
+		if (slug) {
+			throw redirect(308, `/blogg/${encodeURIComponent(slug)}`);
+		}
+		throw redirect(308, '/blogg');
+	}
+
 	return {
 		title: 'När tankarna snurrar – skriv av dig anonymt direkt',
 		description:

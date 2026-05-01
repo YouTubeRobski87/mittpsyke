@@ -37,9 +37,8 @@ function extractArticles(embedScript: string) {
 	return JSON.parse(match[1]) as SoroArticleListItem[];
 }
 
-export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
-	const requestedSlug = normalizeSlug(params.slug).toLowerCase();
-	const embedResponse = await fetch(SORO_EMBED_SRC, {
+async function fetchArticleList(fetcher: typeof fetch, fresh = false) {
+	const embedResponse = await fetcher(fresh ? `${SORO_EMBED_SRC}&cb=${Date.now()}` : SORO_EMBED_SRC, {
 		headers: {
 			accept: 'application/javascript,*/*',
 			'user-agent': 'Mozilla/5.0'
@@ -50,9 +49,18 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 		throw error(502, 'Kunde inte hämta artikeln just nu.');
 	}
 
-	const embedScript = await embedResponse.text();
-	const articles = extractArticles(embedScript);
-	const article = articles.find((item) => normalizeSlug(item.slug).toLowerCase() === requestedSlug);
+	return extractArticles(await embedResponse.text());
+}
+
+export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
+	const requestedSlug = normalizeSlug(params.slug).toLowerCase();
+	let articles = await fetchArticleList(fetch);
+	let article = articles.find((item) => normalizeSlug(item.slug).toLowerCase() === requestedSlug);
+
+	if (!article) {
+		articles = await fetchArticleList(fetch, true);
+		article = articles.find((item) => normalizeSlug(item.slug).toLowerCase() === requestedSlug);
+	}
 
 	if (!article) {
 		throw error(404, 'Artikeln kunde inte hittas.');
