@@ -1,6 +1,5 @@
 <script>
 	import { onMount } from 'svelte';
-	import { RetellWebClient } from 'retell-client-js-sdk';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import {
 		SENSITIVE_CONSENT_HEADER,
@@ -33,6 +32,7 @@
 			}
 		});
 		const data = await res.json();
+		const { RetellWebClient } = await import('retell-client-js-sdk');
 
 		retell = new RetellWebClient();
 
