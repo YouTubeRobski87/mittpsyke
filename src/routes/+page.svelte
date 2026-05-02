@@ -119,6 +119,8 @@
 			bind:this={bgEl}
 			src="/assets/home/MittpsykeTree.webp"
 			alt="Stilla träd i mjukt ljus"
+			width="3379"
+			height="1843"
 			aria-hidden="true"
 			decoding="async"
 			fetchpriority="high"
@@ -271,7 +273,7 @@
 	<!-- 7. Trygghet och avgränsning -->
 	<section class="trust-section" aria-labelledby="trust-title">
 		<div class="cards-narrow trust-inner">
-			<img src="/assets/home/Tryggplats.webp" alt="Illustration av en trygg plats i naturen" loading="lazy" decoding="async" class="trust-image" />
+			<img src="/assets/home/Tryggplats.webp" alt="Illustration av en trygg plats i naturen" width="492" height="531" loading="lazy" decoding="async" class="trust-image" />
 			<div class="trust-copy">
 				<h2 id="trust-title">För stöd i text, reflektion och struktur — inte vård eller akuthjälp</h2>
 				<p>

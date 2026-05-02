@@ -66,6 +66,7 @@
 										src={article.imageUrl}
 										alt=""
 										loading="lazy"
+										decoding="async"
 									/>
 								{/if}
 								<div class="blog-item-body">

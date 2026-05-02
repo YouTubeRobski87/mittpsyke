@@ -625,7 +625,10 @@
 										<img
 											src={avatarImageUrl}
 											alt=""
+											width="96"
+											height="96"
 											class="profile-avatar-image"
+											decoding="async"
 											loading="lazy"
 											onerror={handleAvatarImageError}
 										/>
@@ -681,7 +684,10 @@
 												<img
 													src={avatarImageUrl}
 													alt=""
+													width="96"
+													height="96"
 													class="profile-panel-avatar-image"
+													decoding="async"
 													loading="lazy"
 													onerror={handleAvatarImageError}
 												/>
