@@ -142,16 +142,20 @@
 	let deleteErrorMessage = $state('');
 
 	$effect(() => {
+		const initialMovementToday = data.movementToday ?? null;
+
 		entries = data.entries ?? [];
 		hasMoreEntries = data.hasMoreEntries ?? false;
 		sessionUser = data.session?.user ?? null;
 		sharedEntryIds = new Set<string>(data.sharedEntryIds ?? []);
-		movementToday = data.movementToday ?? null;
+		movementToday = initialMovementToday;
 		movementWeek = data.movementWeek ?? [];
-		if (movementToday) {
-			movementStepsInput = movementToday.stepCount !== null ? String(movementToday.stepCount) : '';
-			movementCycledToday = movementToday.cycledToday;
-			movementCycledKmInput = movementToday.cycledKm !== null ? String(movementToday.cycledKm) : '';
+		if (initialMovementToday) {
+			movementStepsInput =
+				initialMovementToday.stepCount !== null ? String(initialMovementToday.stepCount) : '';
+			movementCycledToday = initialMovementToday.cycledToday;
+			movementCycledKmInput =
+				initialMovementToday.cycledKm !== null ? String(initialMovementToday.cycledKm) : '';
 		} else {
 			movementStepsInput = '';
 			movementCycledToday = false;
