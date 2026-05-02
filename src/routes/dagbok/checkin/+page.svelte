@@ -92,6 +92,7 @@
 	let hasSavedEntries = $derived(entries.length > 0);
 	let showWriteEditor = $state(false);
 	let draftTextarea = $state<HTMLTextAreaElement | null>(null);
+	let writeEditorPanel = $state<HTMLElement | null>(null);
 	let hasHealthDataConsent = $state(false);
 
 	// Filtrerade inlägg baserat på valt kalenderdatum
@@ -1185,9 +1186,10 @@
 	async function openWriteEditor() {
 		showWriteEditor = true;
 		await tick();
-		if (typeof document !== 'undefined') {
-			document.getElementById('skriv-sjalv')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		if (typeof requestAnimationFrame === 'function') {
+			await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 		}
+		writeEditorPanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		draftTextarea?.focus({ preventScroll: true });
 	}
 
@@ -1453,7 +1455,11 @@
 					</section>
 
 					{#if showWriteEditor}
-					<section class="auth-panel auth-panel-accent diary-editor-panel" id="skriv-sjalv">
+					<section
+						bind:this={writeEditorPanel}
+						class="auth-panel auth-panel-accent diary-editor-panel"
+						id="skriv-sjalv"
+					>
 						<div class="editor-shell">
 							<header class="editor-head">
 								<p class="editor-kicker">Skriv själv</p>
