@@ -91,6 +91,7 @@
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
 	let hasSavedEntries = $derived(entries.length > 0);
 	let showWriteEditor = $state(false);
+	let draftTextarea = $state<HTMLTextAreaElement | null>(null);
 	let hasHealthDataConsent = $state(false);
 
 	// Filtrerade inlägg baserat på valt kalenderdatum
@@ -1187,6 +1188,7 @@
 		if (typeof document !== 'undefined') {
 			document.getElementById('skriv-sjalv')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
+		draftTextarea?.focus({ preventScroll: true });
 	}
 
 	async function openLatestEntries() {
@@ -1502,6 +1504,7 @@
 							</button>
 								</div>
 						<textarea
+							bind:this={draftTextarea}
 							bind:value={draftText}
 							rows={8}
 							class="diary-input diary-input--editor"
@@ -3151,8 +3154,6 @@
 
 		.diary-side {
 			order: 0;
-			position: sticky;
-			top: 0.7rem;
 		}
 	}
 </style>
