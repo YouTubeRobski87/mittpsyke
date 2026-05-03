@@ -4,8 +4,6 @@
 	const STORAGE_KEY = 'mittpsyke.healthConsent';
 	const VERSION = '2026-04-29';
 
-	let accepted = false;
-
 	function saveConsent() {
 		try {
 			localStorage.setItem(
@@ -23,7 +21,6 @@
 	}
 
 	function handleStart() {
-		if (!accepted) return;
 		saveConsent();
 		onAccept();
 	}
@@ -33,26 +30,18 @@
 	<div class="consent-box" role="dialog" aria-modal="true">
 		<h2>Innan du börjar</h2>
 
-		<p>Det du skriver här kan innehålla känsliga uppgifter om hur du mår.</p>
-
 		<p>
-			För att kunna ge stöd behöver MittPsyke behandla innehållet enligt
-			<a href="/integritet">integritetspolicyn</a>.
+			MittPsyke är ett stöd i egen takt, inte vård. Det du skriver kan handla om mående och
+			andra känsliga uppgifter. Texten behandlas för att kunna ge dig stöd här.
 		</p>
 
-		<p class="warning">
-			Tjänsten är inte vård, diagnos eller behandling. Vid akuta lägen – ring 112.
-			För vårdråd – kontakta 1177.
+		<p class="links">
+			Läs mer i <a href="/integritet">integritetspolicyn</a> och
+			<a href="/ansvar">ansvarsinformationen</a>.
 		</p>
-
-		<label class="checkbox">
-			<input type="checkbox" bind:checked={accepted} />
-			Jag förstår och samtycker till att mitt innehåll behandlas enligt integritetspolicyn
-		</label>
 
 		<div class="actions">
-			<button on:click={handleStart} disabled={!accepted}>Börja skriva</button>
-			<a href="/">Avbryt</a>
+			<button on:click={handleStart}>Jag förstår och vill fortsätta</button>
 		</div>
 	</div>
 </div>
@@ -78,27 +67,14 @@
 		box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
 	}
 
-	.warning {
+	.links {
 		font-size: 0.9rem;
 		opacity: 0.8;
-	}
-
-	.checkbox {
-		display: flex;
-		gap: 0.55rem;
-		margin-top: 1rem;
-		line-height: 1.5;
 	}
 
 	.actions {
 		margin-top: 1rem;
 		display: flex;
-		gap: 1rem;
-		align-items: center;
-	}
-
-	button:disabled {
-		opacity: 0.5;
 	}
 
 	:global(.dark) .consent-box {
@@ -111,7 +87,7 @@
 		color: #9ad7ce;
 	}
 
-	:global(.dark) .warning {
+	:global(.dark) .links {
 		opacity: 0.9;
 		color: #cbd5f5;
 	}
