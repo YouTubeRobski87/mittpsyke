@@ -5,7 +5,6 @@
 	import {
 		trackWritePageView,
 		trackContinueFromWrite,
-		trackRegisterCtaClicked,
 		trackContinueAnonymousClicked
 	} from '$lib/analytics';
 	import { goto } from '$app/navigation';
@@ -30,11 +29,6 @@
 		goto('/chat');
 	}
 
-	async function handleSaveAccount() {
-		trackRegisterCtaClicked();
-		goto('/register');
-	}
-
 	async function handleOpenDiary() {
 		goto('/dagbok');
 	}
@@ -52,32 +46,37 @@
 			: 'Du kan börja direkt utan konto och få stöd i text i lugn takt.'}
 	</p>
 
-	<div class="flex gap-3">
+	<div class="flex flex-wrap gap-3">
 		<button
 			type="button"
 			onclick={handleStartChat}
 			class="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 cursor-pointer"
 		>
-			{isLoggedIn ? 'Starta chatten' : 'Starta chatten anonymt'}
+			Starta chatten
 		</button>
-		{#if isLoggedIn}
-			<button
-				type="button"
-				onclick={handleOpenDiary}
-				class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-			>
-				Öppna dagboken
-			</button>
-		{:else}
-			<button
-				type="button"
-				onclick={handleSaveAccount}
-				class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
-			>
-				Skapa konto och spara
-			</button>
-		{/if}
+		<button
+			type="button"
+			onclick={handleOpenDiary}
+			class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+		>
+			Öppna dagboken
+		</button>
 	</div>
+
+	<section class="mt-7 grid gap-3 sm:grid-cols-3">
+		<article class="rounded-lg border border-gray-200 bg-white/70 p-4 dark:border-gray-700 dark:bg-gray-900/50">
+			<h2 class="text-base font-semibold mb-1">Börja utan konto</h2>
+			<p class="text-sm leading-relaxed opacity-75">Du kan skriva direkt och välja senare om du vill spara.</p>
+		</article>
+		<article class="rounded-lg border border-gray-200 bg-white/70 p-4 dark:border-gray-700 dark:bg-gray-900/50">
+			<h2 class="text-base font-semibold mb-1">Skriv i din egen takt</h2>
+			<p class="text-sm leading-relaxed opacity-75">Du behöver inte formulera dig perfekt.</p>
+		</article>
+		<article class="rounded-lg border border-gray-200 bg-white/70 p-4 dark:border-gray-700 dark:bg-gray-900/50">
+			<h2 class="text-base font-semibold mb-1">Inte vård eller diagnos</h2>
+			<p class="text-sm leading-relaxed opacity-75">MittPsyke är stöd i text och ersätter inte vårdkontakt.</p>
+		</article>
+	</section>
 
 	<p class="mt-4 text-sm opacity-70">
 		{isLoggedIn
