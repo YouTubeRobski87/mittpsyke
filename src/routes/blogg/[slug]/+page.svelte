@@ -35,6 +35,9 @@
 
 	<div class="article-content">
 		{@html article.content}
+		{#if article.slug === 'chatta-anonymt-utan-konto'}
+			<p>Vill du börja direkt kan du <a href="/chatta-anonymt">chatta anonymt utan konto</a> i lugn takt hos MittPsyke.</p>
+		{/if}
 	</div>
 </article>
 

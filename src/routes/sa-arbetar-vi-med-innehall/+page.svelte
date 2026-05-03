@@ -20,10 +20,10 @@
     <section class="mt-8">
         <h2 class="text-xl font-semibold">Vem skriver innehållet?</h2>
         <p class="mt-3 leading-relaxed text-black/80">
-            Allt innehåll på MittPsyke skapas och redigeras av MittPsyke-redaktionen under ledning av grundaren Robert Claesson. Vi kombinerar mänsklig redigering med AI-assisterad textgenerering för att kunna erbjuda ett brett och tillgängligt stöd.
+            Innehållet på MittPsyke tas fram och underhålls av Robert Claesson, grundare av MittPsyke. När vi skriver “MittPsyke-redaktionen” syftar det i nuläget på arbetet med att planera, skriva, uppdatera och kvalitetssäkra innehåll.
         </p>
         <p class="mt-3 leading-relaxed text-black/80">
-            Varje text granskas manuellt innan publicering för att säkerställa att tonen är varm, trygg och korrekt.
+            MittPsyke har i nuläget ingen namngiven medicinsk granskare eller klinisk redaktion. Därför beskriver vi inte innehållet som medicinskt granskat.
         </p>
     </section>
 
@@ -46,7 +46,7 @@
     <section class="mt-8">
         <h2 class="text-xl font-semibold">Hur granskas och uppdateras innehållet?</h2>
         <p class="mt-3 leading-relaxed text-black/80">
-            Vårt innehåll granskas löpande mot de källor vi använder. Vi kontrollerar att informationen stämmer överens med aktuella riktlinjer och rekommendationer. Varje sida visar datum för senaste uppdatering.
+            Vårt innehåll källkontrolleras löpande mot de offentliga och etablerade källor vi använder. Vi kontrollerar att symptomnära texter håller en försiktig gräns mot vård. Varje sida visar datum för senaste uppdatering.
         </p>
         <p class="mt-3 leading-relaxed text-black/80">
             Om en källa uppdateras eller ny forskning publiceras anpassar vi vårt innehåll. Vi strävar efter att hålla all information relevant och aktuell.
@@ -59,7 +59,7 @@
             MittPsyke använder AI på två sätt:
         </p>
         <ul class="mt-3 list-disc pl-6 space-y-2 text-black/80">
-            <li><strong>AI-assisterad textgenerering</strong> – Delar av våra guider skapas med hjälp av AI, men varje text granskas och redigeras manuellt av redaktionen.</li>
+            <li><strong>AI-assisterad textgenerering</strong> – Delar av våra guider skapas med hjälp av AI, men varje text kontrolleras och redigeras manuellt före publicering.</li>
             <li><strong>AI-driven samtalsfunktion</strong> – Vår chattfunktion använder AI för att ge reflekterande, empatiskt stöd. Den ger aldrig diagnoser och ersätter inte professionell vård.</li>
         </ul>
         <p class="mt-3 leading-relaxed text-black/80">

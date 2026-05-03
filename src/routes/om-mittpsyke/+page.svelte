@@ -73,6 +73,11 @@
 				MittPsykes guider och texter är skrivna för att vara begripliga, lugna och stödjande –
 				utan medicinsk jargong eller onödig komplexitet.
 			</p>
+			<p>
+				Innehållet tas fram och underhålls av Robert Claesson, grundare av MittPsyke. Det
+				beskrivs inte som medicinskt granskat eftersom MittPsyke i nuläget inte har en namngiven
+				medicinsk granskare eller klinisk redaktion.
+			</p>
 			<ul>
 				<li>
 					<strong>Hur tas innehållet fram?</strong><br />

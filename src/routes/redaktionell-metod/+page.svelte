@@ -29,6 +29,20 @@
 		</ul>
 	</section>
 
+	<h2 class="text-lg font-semibold mt-8 mb-2">Redaktionellt ansvar</h2>
+	<p class="opacity-80 leading-relaxed mb-3">
+		MittPsykes innehåll tas fram och underhålls av Robert Claesson, grundare av MittPsyke.
+		När vi skriver “MittPsyke-redaktionen” syftar det i nuläget på det redaktionella arbetet
+		bakom MittPsyke: att planera, skriva, uppdatera och kvalitetssäkra innehåll utifrån
+		tydliga källor, enkel svenska och en försiktig gräns mot vård.
+	</p>
+	<p class="opacity-80 leading-relaxed mb-3">
+		MittPsyke har i nuläget ingen namngiven medicinsk granskare eller klinisk redaktion.
+		Därför beskriver vi inte innehållet som medicinskt granskat. När en text berör psykisk
+		ohälsa, vård eller säkerhet utgår vi från etablerade offentliga källor som 1177,
+		Socialstyrelsen och Folkhälsomyndigheten, och hänvisar vidare till vården när det behövs.
+	</p>
+
 	<h2 class="text-lg font-semibold mt-8 mb-2">Gränsen mot vård</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
 		MittPsyke kan ge struktur, frågor och lugnt stöd när du vill sätta ord på något. Det är inte
