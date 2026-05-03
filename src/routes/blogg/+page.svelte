@@ -26,7 +26,7 @@
 <SEO canonical="https://www.mittpsyke.se/blogg" />
 
 <svelte:head>
-	<title>Blogg – artiklar om psykiskt mående | MittPsyke</title>
+	<title>Artiklar om psykiskt mående | MittPsyke</title>
 	<meta
 		name="description"
 		content="Läs artiklar om att skriva av sig, psykiskt mående, oro, stress och återhämtning i din egen takt."

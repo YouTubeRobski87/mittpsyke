@@ -37,7 +37,7 @@
 	async function continueWithGoogle() {
 		oauthError = '';
 		if (!googleOAuthAvailable) {
-			oauthError = 'Google-inloggning finns bara på www.mittpsyke.se. Använd den sidan för att fortsätta.';
+			oauthError = 'Google-inloggning är tillgänglig på den publika MittPsyke-sidan.';
 			return;
 		}
 		oauthLoading = true;
@@ -164,7 +164,7 @@
 
 		{#if !googleOAuthAvailable}
 			<p class="text-sm opacity-70">
-				Google-inloggning finns bara på <a href="https://www.mittpsyke.se/login" class="underline">www.mittpsyke.se</a>.
+				Google-inloggning är tillgänglig på <a href="https://www.mittpsyke.se/login" class="underline">www.mittpsyke.se</a>.
 			</p>
 		{/if}
 

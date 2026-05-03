@@ -43,7 +43,7 @@
 		}))
 	];
 
-	// Statiska bloggartiklar som inte ingår i Soro-flödet – alltid sökbara
+	// Statiska artiklar som inte ingår i Soro-flödet – alltid sökbara
 	const localBlogArticles: SearchResult[] = [
 		{
 			href: '/blogg/ai-hjalper-dig-bearbeta-kanslor',

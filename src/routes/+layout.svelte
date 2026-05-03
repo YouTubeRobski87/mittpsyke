@@ -879,6 +879,10 @@
 			Redaktionell metod
 		</a>
 		<span class="mx-2">&middot;</span>
+		<a href="/tillganglighet" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Tillgänglighet
+		</a>
+		<span class="mx-2">&middot;</span>
 		<a
 			href="https://stodlinjer.se"
 			target="_blank"

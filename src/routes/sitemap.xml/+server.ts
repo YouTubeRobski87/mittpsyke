@@ -157,7 +157,9 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		{ path: '/feedback', lastmod: FEEDBACK_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/ansvar', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/integritet', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
+		{ path: '/redaktionell-metod', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/sa-arbetar-vi-med-innehall', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
+		{ path: '/tillganglighet', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/skriv', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{
 			path: '/4-7-8-andning-ovning',
