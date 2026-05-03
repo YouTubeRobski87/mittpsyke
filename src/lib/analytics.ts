@@ -217,16 +217,16 @@ export function trackHoroscopeCTAClick() {
 	trackEvent('horoscope_cta_clicked');
 }
 
-export function trackHeroCTAPrimaryClick() {
-	trackEvent('hero_cta_primary_click');
+export function trackHeroCTAPrimaryClick(params: EventParams = {}) {
+	trackEvent('hero_cta_primary_click', params);
 }
 
 export function trackHeroCTASecondaryClick() {
 	trackEvent('hero_cta_secondary_click');
 }
 
-export function trackHeroCtaPrimaryClick() {
-	trackHeroCTAPrimaryClick();
+export function trackHeroCtaPrimaryClick(params: EventParams = {}) {
+	trackHeroCTAPrimaryClick(params);
 }
 
 export function trackHeroCtaSecondaryClick() {

@@ -5,7 +5,6 @@
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import {
-		trackClickStartAnonymous,
 		trackHeroCtaPrimaryClick,
 		trackHomeCtaClick,
 		trackScrollToHowItWorks
@@ -54,8 +53,11 @@
 	}
 
 	function trackStartAnonymous() {
-		trackHeroCtaPrimaryClick();
-		trackClickStartAnonymous();
+		trackHeroCtaPrimaryClick({
+			location: 'home_hero',
+			target: '/skriv',
+			cta_text: 'Börja skriva anonymt'
+		});
 	}
 
 	onMount(() => {
@@ -128,15 +130,15 @@
 		<div class="hero-shell">
 			<div class="hero-content">
 				<p class="hero-eyebrow">Anonymt stöd i text</p>
-				<h1>När tankarna snurrar – skriv av dig anonymt direkt</h1>
-				<p>Få hjälp att sortera, förstå och sätta ord på det som känns. MittPsyke är ett lugnt första steg för reflektion och stöd i text – inte vård, diagnos eller akuthjälp. Inget konto krävs för att börja.</p>
+				<h1>Livet pågår nu.</h1>
+				<p>Du kan skriva precis det som är i huvudet — det behöver inte vara tydligt.</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackStartAnonymous()}>Börja skriva anonymt</a>
 				</div>
+				<p class="hero-trust-note">Din text sparas inte.</p>
 				<p class="hero-secondary-link">
 					<a href="#sa-fungerar-det" class="hero-cta-link" onclick={() => trackHomeCta('hero', 'sa_fungerar_det', '#sa-fungerar-det')}>Så fungerar det</a>
 				</p>
-				<p class="hero-trust-note">Du kan börja helt anonymt utan konto. Vill du spara, följa ditt mående över tid eller återvända till tidigare reflektioner kan du skapa konto senare.</p>
 				<p class="hero-origin-note">
 					MittPsyke drivs av Robert Claesson, samma person som står bakom
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
