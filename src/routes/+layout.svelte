@@ -1361,8 +1361,9 @@
 		}
 
 		.profile-panel-toggle {
-			width: 1.45rem;
-			height: 1.45rem;
+			width: 2.25rem;
+			height: 2.25rem;
+			font-size: 0.95rem;
 		}
 
 		:global(.site-header .lg\:hidden) {
