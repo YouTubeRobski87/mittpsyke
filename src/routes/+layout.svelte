@@ -875,6 +875,10 @@
 			Ansvar
 		</a>
 		<span class="mx-2">&middot;</span>
+		<a href="/redaktionell-metod" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Redaktionell metod
+		</a>
+		<span class="mx-2">&middot;</span>
 		<a
 			href="https://stodlinjer.se"
 			target="_blank"
