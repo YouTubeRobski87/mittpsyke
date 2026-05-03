@@ -1110,7 +1110,7 @@
 	.profile-trigger {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.3rem;
+		gap: 0.45rem;
 	}
 
 	.profile-avatar-link,
@@ -1121,7 +1121,7 @@
 		border-radius: 9999px;
 		border: 1px solid rgba(0, 0, 0, 0.12);
 		background: rgba(255, 255, 255, 0.7);
-		transition: opacity 0.15s ease;
+		transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 		color: inherit;
 		text-decoration: none;
 	}
@@ -1144,9 +1144,9 @@
 	}
 
 	.profile-panel-toggle {
-		width: 1.65rem;
-		height: 1.65rem;
-		font-size: 0.78rem;
+		width: 2.25rem;
+		height: 2.25rem;
+		font-size: 0.95rem;
 		line-height: 1;
 		position: relative;
 	}
@@ -1179,6 +1179,14 @@
 	.profile-avatar-link:hover,
 	.profile-panel-toggle:hover {
 		opacity: 1;
+		border-color: rgba(15, 118, 110, 0.28);
+		background: rgba(255, 255, 255, 0.88);
+	}
+
+	:global(.dark) .profile-avatar-link:hover,
+	:global(.dark) .profile-panel-toggle:hover {
+		border-color: rgba(134, 223, 214, 0.28);
+		background: rgba(15, 23, 42, 0.82);
 	}
 
 	.profile-avatar-link:focus-visible,
