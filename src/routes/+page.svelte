@@ -414,6 +414,7 @@
 		color: #ffffff;
 		font-weight: 700;
 		border-radius: var(--radius-pill);
+		transition: transform 0.15s ease, box-shadow 0.15s ease;
 	}
 
 	.hero-eyebrow {
@@ -425,7 +426,7 @@
 	}
 
 	.hero-trust-note {
-		margin-top: 0.85rem;
+		margin-top: 0.9rem;
 		font-size: 0.88rem;
 		color: rgba(255, 255, 255, 0.72);
 		letter-spacing: 0.01em;
@@ -444,7 +445,7 @@
 	}
 
 	.hero-actions {
-		margin-top: 1.2rem;
+		margin-top: 1.7rem;
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.65rem;
@@ -454,7 +455,13 @@
 	.hero-cta-primary {
 		background: #3a7bd5;
 		color: #ffffff;
-		box-shadow: 0 8px 20px rgba(58, 123, 213, 0.35);
+		box-shadow: 0 6px 18px rgba(30, 58, 138, 0.18);
+	}
+
+	.hero-cta-primary:hover,
+	.hero-cta-primary:focus-visible {
+		transform: translateY(-1px);
+		box-shadow: 0 8px 22px rgba(30, 58, 138, 0.22);
 	}
 
 	.hero-cta-link {
