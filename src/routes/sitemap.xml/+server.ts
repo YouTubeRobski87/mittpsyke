@@ -152,13 +152,11 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		{ path: '/guider', lastmod: latestGuideLastmod, changefreq: 'weekly', priority: '0.8' },
 		{ path: '/ovningar', lastmod: TOOL_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{ path: '/blogg', lastmod: BLOG_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{ path: '/artiklar/soro', lastmod: BLOG_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/om-mittpsyke', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/feedback', lastmod: FEEDBACK_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/ansvar', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/integritet', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/redaktionell-metod', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
-		{ path: '/sa-arbetar-vi-med-innehall', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/tillganglighet', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/skriv', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{

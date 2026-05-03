@@ -155,7 +155,8 @@
 
 		{#if !googleOAuthAvailable}
 			<p class="text-sm opacity-70">
-				Google-inloggning är tillgänglig på <a href="https://www.mittpsyke.se/register" class="underline">www.mittpsyke.se</a>.
+				Öppna den publika MittPsyke-sidan för att fortsätta med Google:
+				<a href="https://www.mittpsyke.se/register" class="underline">gå till registreringen</a>.
 			</p>
 		{/if}
 
