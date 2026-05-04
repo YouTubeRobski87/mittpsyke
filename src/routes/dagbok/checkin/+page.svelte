@@ -7,6 +7,7 @@
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
+	import { renderDiaryMarkdown } from '$lib/markdown';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -140,6 +141,7 @@
 	let deletingEntryId = $state('');
 	let deleteErrorEntryId = $state('');
 	let deleteErrorMessage = $state('');
+	let canRenderMarkdown = $state(false);
 
 	$effect(() => {
 		const initialMovementToday = data.movementToday ?? null;
@@ -1327,6 +1329,8 @@
 	}
 
 	onMount(() => {
+		canRenderMarkdown = true;
+
 		if (!data.session) {
 			supabase.auth.getSession().then(({ data: sessionData }) => {
 				sessionUser = sessionData.session?.user ?? null;
@@ -1709,7 +1713,13 @@
 												</div>
 											</div>
 										{:else}
-											<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
+											{#if canRenderMarkdown}
+												<div class="entry-markdown text-sm">
+													{@html renderDiaryMarkdown(entry.content)}
+												</div>
+											{:else}
+												<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
+											{/if}
 											{#if entry.image_url}
 												<img
 													src={entry.image_url}
@@ -2727,6 +2737,80 @@
 
 	.diary-entry:hover {
 		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+	}
+
+	.entry-markdown {
+		margin-top: 0.5rem;
+		line-height: 1.65;
+		overflow-wrap: anywhere;
+	}
+
+	.entry-markdown :global(p),
+	.entry-markdown :global(ul),
+	.entry-markdown :global(ol),
+	.entry-markdown :global(blockquote),
+	.entry-markdown :global(pre) {
+		margin: 0.55rem 0 0;
+	}
+
+	.entry-markdown :global(p:first-child),
+	.entry-markdown :global(ul:first-child),
+	.entry-markdown :global(ol:first-child),
+	.entry-markdown :global(blockquote:first-child),
+	.entry-markdown :global(pre:first-child),
+	.entry-markdown :global(h2:first-child),
+	.entry-markdown :global(h3:first-child) {
+		margin-top: 0;
+	}
+
+	.entry-markdown :global(ul),
+	.entry-markdown :global(ol) {
+		padding-left: 1.1rem;
+	}
+
+	.entry-markdown :global(li + li) {
+		margin-top: 0.2rem;
+	}
+
+	.entry-markdown :global(strong) {
+		font-weight: 700;
+	}
+
+	.entry-markdown :global(em) {
+		font-style: italic;
+	}
+
+	.entry-markdown :global(h2),
+	.entry-markdown :global(h3) {
+		margin: 0.75rem 0 0;
+		font-size: 0.98rem;
+		line-height: 1.35;
+	}
+
+	.entry-markdown :global(blockquote) {
+		padding-left: 0.8rem;
+		border-left: 3px solid hsl(var(--border));
+		color: hsl(var(--muted-foreground));
+	}
+
+	.entry-markdown :global(code) {
+		padding: 0.08rem 0.25rem;
+		border-radius: 0.35rem;
+		background: hsl(var(--surface-soft));
+		font-size: 0.9em;
+	}
+
+	.entry-markdown :global(pre) {
+		max-width: 100%;
+		overflow-x: auto;
+		padding: 0.65rem;
+		border-radius: var(--radius-input);
+		background: hsl(var(--surface-soft));
+	}
+
+	.entry-markdown :global(pre code) {
+		padding: 0;
+		background: transparent;
 	}
 
 	.share-row {
