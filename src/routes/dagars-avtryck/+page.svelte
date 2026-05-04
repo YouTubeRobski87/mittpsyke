@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
 	import {
@@ -94,6 +94,7 @@
 	// --- Scrollreferens för chattfönstret ---
 
 	let messageListEl = $state<HTMLElement | null>(null);
+	let answerInputEl = $state<HTMLTextAreaElement | null>(null);
 
 	// Scrolla till botten efter nya meddelanden
 	$effect(() => {
@@ -130,6 +131,11 @@
 
 	function userMessageCount(): number {
 		return messages.filter((m) => m.role === 'user').length;
+	}
+
+	async function focusAnswerInput() {
+		await tick();
+		answerInputEl?.focus();
 	}
 
 	async function getToken(): Promise<string | null> {
@@ -235,6 +241,9 @@
 			messages = messages.filter((m) => !(m.role === 'assistant' && m.content === ''));
 		} finally {
 			isStreaming = false;
+			if (activeTab === 'skriv' && phase === 'chatting') {
+				void focusAnswerInput();
+			}
 		}
 	}
 
@@ -491,6 +500,7 @@
 					</p>
 					<div class="input-row">
 						<textarea
+							bind:this={answerInputEl}
 							class="chat-input"
 							placeholder={hasSelectedVoice ? 'Skriv något och tryck Enter...' : 'Välj en röst ovan för att börja...'}
 							bind:value={inputValue}
@@ -538,6 +548,7 @@
 					<!-- Inmatningsfält -->
 					<div class="input-area">
 						<textarea
+							bind:this={answerInputEl}
 							class="chat-input"
 							placeholder="Skriv ditt svar..."
 							bind:value={inputValue}
