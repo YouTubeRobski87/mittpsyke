@@ -5,6 +5,14 @@ export const CHAT_CONTEXT_LIMIT = 10;
 
 export type ChatTopic = 'angest' | 'nedstamdhet' | 'stress-oro' | 'allmant';
 
+const UI_ONLY_MESSAGES = new Set([
+	'Jag minns vårt tidigare samtal.',
+	'Tidigare samtal är laddat.',
+	'Vill du spara detta som anteckning?',
+	'Vill du spara det här som en anteckning?',
+	'Skriver...'
+]);
+
 const CATEGORY_TO_TOPIC: Record<string, ChatTopic> = {
 	a: 'angest',
 	b: 'nedstamdhet',
@@ -23,23 +31,26 @@ export function sanitizeChatMessages(input: unknown, limit = CHAT_HISTORY_LIMIT)
 	if (!Array.isArray(input)) return [];
 
 	const normalized = input
-		.flatMap((value) => {
-			if (!value || typeof value !== 'object') return [];
+		.reduce<ChatMessage[]>((acc, value) => {
+			if (!value || typeof value !== 'object') return acc;
 
 			const record = value as Record<string, unknown>;
 			const role = record.role === 'user' || record.role === 'assistant' ? record.role : null;
 			const content = typeof record.content === 'string' ? record.content.trim() : '';
 
-			if (!role || !content) return [];
+			if (!role || !content || UI_ONLY_MESSAGES.has(content)) return acc;
 
-			return [
-				{
-					role,
-					content,
-					...(record.crisis === true ? { crisis: true } : {})
-				} satisfies ChatMessage
-			];
-		})
+			const previous = acc.at(-1);
+			if (previous?.role === role && previous.content === content) return acc;
+
+			acc.push({
+				role,
+				content,
+				...(record.crisis === true ? { crisis: true } : {})
+			});
+
+			return acc;
+		}, [])
 		.slice(-Math.max(limit, 0));
 
 	return normalized;

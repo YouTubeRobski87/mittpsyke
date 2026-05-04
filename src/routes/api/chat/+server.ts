@@ -289,11 +289,6 @@ type GuestConversationRow = {
 	category: string | null;
 };
 
-type StoredMessageRow = {
-	role: string | null;
-	content: string | null;
-};
-
 type PromptHistoryMessage = {
 	role: 'user' | 'assistant';
 	content: string;
@@ -359,6 +354,27 @@ Konversationen pågår redan – användaren har skickat meddelanden tidigare i 
 Svara direkt på det senaste meddelandet utan att hälsa, presentera dig eller sammanfatta vad ni pratat om.
 Använd ALDRIG fraser som "Hej igen", "Jag minns att vi pratade om...", "Vill du att vi börjar om?" eller liknande återöppningsfraser mitt i en pågående konversation.
 ${phaseInstruction}${retentionInstructionBlock}`.trim();
+}
+
+function logChatPayloadStructure(context: {
+	guest: boolean;
+	category: SupportCategory;
+	conversationId: string;
+	contextSource: 'client' | 'database';
+	messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[];
+}) {
+	console.info('[chat] OpenAI payload structure', {
+		model: CHAT_MODEL,
+		guest: context.guest,
+		category: context.category,
+		conversationId: context.conversationId,
+		contextSource: context.contextSource,
+		messageCount: context.messages.length,
+		roles: context.messages.map((message) => message.role),
+		contentLengths: context.messages.map((message) =>
+			typeof message.content === 'string' ? message.content.length : null
+		)
+	});
 }
 
 function errorResponse(message: string, status: number, details: Record<string, unknown> = {}) {
@@ -643,19 +659,9 @@ export const POST: RequestHandler = async ({ request }) => {
 				return errorResponse('Could not save message.', 500);
 			}
 
-			const promptHistory = (previousMessages ?? [])
-				.filter(
-					(row): row is StoredMessageRow =>
-						(row.role === 'user' || row.role === 'assistant') &&
-						typeof row.content === 'string' &&
-						row.content.trim().length > 0
-				)
-				.map((row) => ({
-					role: row.role as 'user' | 'assistant',
-					content: row.content as string
-				}))
-				.slice(-CHAT_CONTEXT_LIMIT);
+			const promptHistory = getChatContextMessages(previousMessages, CHAT_CONTEXT_LIMIT);
 
+			const contextSource = contextMessages.length > 0 ? 'client' : 'database';
 			const modelContext =
 				contextMessages.length > 0
 					? contextMessages.map((row) => ({
@@ -665,6 +671,18 @@ export const POST: RequestHandler = async ({ request }) => {
 					: promptHistory;
 
 			const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
+			const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+				{ role: 'system', content: systemPrompt },
+				...modelContext,
+				{ role: 'user', content: message }
+			];
+			logChatPayloadStructure({
+				guest: false,
+				category,
+				conversationId,
+				contextSource,
+				messages: completionMessages
+			});
 			let completion;
 			try {
 				completion = await openai.chat.completions.create({
@@ -673,11 +691,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					max_completion_tokens: 500,
 					frequency_penalty: 0.3,
 					presence_penalty: 0.2,
-					messages: [
-						{ role: 'system', content: systemPrompt },
-						...modelContext,
-						{ role: 'user', content: message }
-					]
+					messages: completionMessages
 				});
 			} catch (openaiError) {
 				logOpenAIError({ guest: false, category, conversationId }, openaiError);
@@ -810,19 +824,9 @@ export const POST: RequestHandler = async ({ request }) => {
 			return errorResponse('Could not save guest message.', 500);
 		}
 
-		const promptHistory = (previousMessages ?? [])
-			.filter(
-				(row): row is StoredMessageRow =>
-					(row.role === 'user' || row.role === 'assistant') &&
-					typeof row.content === 'string' &&
-					row.content.trim().length > 0
-			)
-			.map((row) => ({
-				role: row.role as 'user' | 'assistant',
-				content: row.content as string
-			}))
-			.slice(-CHAT_CONTEXT_LIMIT);
+		const promptHistory = getChatContextMessages(previousMessages, CHAT_CONTEXT_LIMIT);
 
+		const contextSource = contextMessages.length > 0 ? 'client' : 'database';
 		const modelContext =
 			contextMessages.length > 0
 				? contextMessages.map((row) => ({
@@ -832,6 +836,18 @@ export const POST: RequestHandler = async ({ request }) => {
 				: promptHistory;
 
 		const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
+		const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+			{ role: 'system', content: systemPrompt },
+			...modelContext,
+			{ role: 'user', content: message }
+		];
+		logChatPayloadStructure({
+			guest: true,
+			category,
+			conversationId,
+			contextSource,
+			messages: completionMessages
+		});
 		let completion;
 		try {
 			completion = await openai.chat.completions.create({
@@ -840,11 +856,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				max_completion_tokens: 500,
 				frequency_penalty: 0.3,
 				presence_penalty: 0.2,
-				messages: [
-					{ role: 'system', content: systemPrompt },
-					...modelContext,
-					{ role: 'user', content: message }
-				]
+				messages: completionMessages
 			});
 		} catch (openaiError) {
 			logOpenAIError({ guest: true, category, conversationId }, openaiError);

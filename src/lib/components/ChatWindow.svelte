@@ -65,7 +65,7 @@
 	const LONG_MESSAGE_ERROR =
 		'Din text blev lite för lång att skicka på en gång. Dela gärna upp den i två delar.';
 	const GENERIC_CHAT_ERROR = 'Något gick fel. Försök igen om en stund.';
-	const HISTORY_NOTICE = 'Jag minns vårt tidigare samtal.';
+	const HISTORY_NOTICE = 'Tidigare samtal är laddat.';
 	const guestIdStorageKey = 'mittpsyke:guest-id';
 	const starterSuggestions = ['Jag känner mig orolig', 'Hjälp mig sortera mina tankar'];
 	const extraSuggestions = [
