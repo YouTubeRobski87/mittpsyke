@@ -21,12 +21,14 @@
 	import { resolveAvatarPresetUrl } from '$lib/avatar';
 	import { page } from '$app/state';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
+	import { Search } from 'lucide-svelte';
 
 	const UNDER_CONSTRUCTION = false;
 
 	type NavItem = {
 		href: string;
 		label: string;
+		description?: string;
 		external?: boolean;
 	};
 
@@ -42,11 +44,13 @@
 
 	const signedInPrimaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chat' },
-		{ href: '/guider', label: 'Guider' },
-		{ href: '/ovningar', label: 'Övningar' },
-		{ href: '/feedback', label: 'Feedback' },
-		{ href: '/sok', label: 'Sök' },
-		{ href: '/blogg', label: 'Artiklar' }
+		{ href: '/feedback', label: 'Feedback' }
+	];
+
+	const resourceNavItems: NavItem[] = [
+		{ href: '/blogg', label: 'Artiklar', description: 'Läs mer om psykisk hälsa' },
+		{ href: '/guider', label: 'Guider', description: 'Förstå vanliga besvär' },
+		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' }
 	];
 
 	const signedInDiaryNavItems: NavItem[] = [
@@ -55,7 +59,6 @@
 	];
 
 	const signedInPortalNavItems: NavItem[] = [
-		{ href: '/dashboard', label: 'Översikt' },
 		{ href: '/framsteg', label: 'Framsteg' },
 		{ href: '/dashboard/gemenskap', label: 'Gemenskap' },
 		{ href: '/notiser', label: 'Notiser' },
@@ -64,14 +67,12 @@
 
 	const guestPrimaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chat' },
-		{ href: '/dagbok', label: 'Dagbok' },
-		{ href: '/guider', label: 'Guider' },
-		{ href: '/ovningar', label: 'Övningar' },
-		{ href: '/feedback', label: 'Feedback' },
-		{ href: '/sok', label: 'Sök' },
-		{ href: '/blogg', label: 'Artiklar' },
+		{ href: '/dagbok', label: 'Dagbok' }
+	];
+
+	const guestSecondaryNavItems: NavItem[] = [
 		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
-		{ href: 'https://stodlinjer.se', label: 'Akut hjälp (Stödlinjer)', external: true }
+		{ href: 'https://stodlinjer.se', label: 'Akut hjälp', external: true }
 	];
 
 	function isActive(href: string): boolean {
@@ -217,6 +218,11 @@
 	const avatarImageUrl = $derived(getAvatarImageUrl(user));
 	const showAvatarImage = $derived(Boolean(avatarImageUrl && !avatarImageLoadFailed));
 	const memberSinceLabel = $derived(getMemberSinceLabel(user?.created_at));
+	const diaryEntryTooltip = $derived(
+		layoutSummaryLoading
+			? 'Hämtar dagboksinlägg'
+			: `${profilePanelData?.diaryEntryCount ?? 0} dagboksinlägg`
+	);
 	const shouldUseClientAuth = $derived(Boolean(data?.session || isPrivateOrUtilityPage));
 
 	function getSupabaseClient() {
@@ -581,7 +587,6 @@
 						{#each signedInPrimaryNavItems as item}
 							<a href={item.href} class="text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 						{/each}
-						<a href="/dashboard" class="text-sm transition-opacity {isActive('/dashboard') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive('/dashboard') ? 'page' : undefined}>Min portal</a>
 					{:else}
 						{#each guestPrimaryNavItems as item}
 							<a
@@ -594,12 +599,37 @@
 								{item.label}
 							</a>
 						{/each}
+						{#each guestSecondaryNavItems as item}
+							<a
+								href={item.href}
+								class="text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
+								target={item.external ? '_blank' : undefined}
+								rel={item.external ? 'noopener noreferrer' : undefined}
+								aria-current={isActive(item.href) ? 'page' : undefined}
+							>
+								{item.label}
+							</a>
+						{/each}
 					{/if}
+					<details class="resources-dropdown">
+						<summary class="text-sm transition-opacity {resourceNavItems.some((item) => isActive(item.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">Resurser</summary>
+						<div class="resources-dropdown-menu">
+							{#each resourceNavItems as item}
+								<a href={item.href} class="resources-dropdown-link" aria-current={isActive(item.href) ? 'page' : undefined}>
+									<span class="resources-dropdown-label">{item.label}</span>
+									<span class="resources-dropdown-description">{item.description}</span>
+								</a>
+							{/each}
+						</div>
+					</details>
 				</nav>
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
 				<div class="hidden lg:flex items-center gap-3">
+					<a href="/sok" class="nav-search-link" aria-label="Sök" aria-current={isActive('/sok') ? 'page' : undefined}>
+						<Search size={18} aria-hidden="true" />
+					</a>
 					{#if user}
 						<span class="text-sm opacity-60">
 							{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}
@@ -620,7 +650,7 @@
 					{#if user}
 						<div class="relative">
 							<div class="profile-trigger">
-								<a href="/dashboard" class="profile-avatar-link" aria-label="Gå till Min portal">
+								<a href="/dashboard" class="profile-avatar-link" aria-label="Gå till Min portal" aria-describedby="diary-count-tooltip">
 									{#if showAvatarImage}
 										<img
 											src={avatarImageUrl}
@@ -651,6 +681,9 @@
 									{#if unreadNotificationCount > 0}
 										<span class="profile-avatar-badge" aria-hidden="true"></span>
 									{/if}
+									<span id="diary-count-tooltip" class="profile-avatar-tooltip" role="tooltip">
+										{diaryEntryTooltip}
+									</span>
 								</a>
 								<button
 									type="button"
@@ -742,7 +775,7 @@
 					{/if}
 
 					<button type="button" class="mobile-search-trigger" aria-label="Sök" onclick={openMobileSearch}>
-						<span aria-hidden="true">🔍</span>
+						<Search size={18} aria-hidden="true" />
 					</button>
 
 					<div class="hidden md:block">
@@ -808,7 +841,12 @@
 					{#each signedInPrimaryNavItems as item}
 						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
-					<p class="mobile-menu-section-title text-xs opacity-55">Min portal</p>
+					<button type="button" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={openMobileSearch}>Sök</button>
+					<p class="mobile-menu-section-title text-xs opacity-55">Resurser</p>
+					{#each resourceNavItems as item}
+						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+					{/each}
+					<p class="mobile-menu-section-title text-xs opacity-55">Profil</p>
 					{#each signedInPortalNavItems as item}
 						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>
 							{item.label}{#if item.href === '/notiser' && unreadNotificationCount > 0} ({unreadNotificationCount}){/if}
@@ -822,6 +860,23 @@
 					>Logga ut</button>
 				{:else}
 					{#each guestPrimaryNavItems as item}
+						<a
+							href={item.href}
+							class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
+							target={item.external ? '_blank' : undefined}
+							rel={item.external ? 'noopener noreferrer' : undefined}
+							onclick={() => (mobileMenuOpen = false)}
+							aria-current={isActive(item.href) ? 'page' : undefined}
+						>
+							{item.label}
+						</a>
+					{/each}
+					<button type="button" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={openMobileSearch}>Sök</button>
+					<p class="mobile-menu-section-title text-xs opacity-55">Resurser</p>
+					{#each resourceNavItems as item}
+						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+					{/each}
+					{#each guestSecondaryNavItems as item}
 						<a
 							href={item.href}
 							class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
@@ -986,6 +1041,95 @@
 		display: none;
 	}
 
+	.resources-dropdown {
+		position: relative;
+	}
+
+	.resources-dropdown summary {
+		list-style: none;
+		cursor: pointer;
+	}
+
+	.resources-dropdown summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.resources-dropdown summary::after {
+		content: ' ▾';
+		font-size: 0.72rem;
+	}
+
+	.resources-dropdown-menu {
+		position: absolute;
+		left: 0;
+		top: calc(100% + 0.5rem);
+		z-index: 45;
+		min-width: 15rem;
+		padding: 0.4rem;
+		border: 1px solid rgba(15, 23, 42, 0.08);
+		border-radius: 12px;
+		background: rgba(255, 255, 255, 0.96);
+		box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+		backdrop-filter: blur(10px);
+	}
+
+	:global(.dark) .resources-dropdown-menu {
+		border-color: rgba(255, 255, 255, 0.1);
+		background: rgba(15, 23, 42, 0.96);
+		box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34);
+	}
+
+	.resources-dropdown-link {
+		display: grid;
+		gap: 0.08rem;
+		padding: 0.58rem 0.65rem;
+		border-radius: 10px;
+		font-size: 0.86rem;
+		line-height: 1.25;
+		transition: background-color 0.15s ease, color 0.15s ease;
+	}
+
+	.resources-dropdown-label {
+		font-weight: 650;
+	}
+
+	.resources-dropdown-description {
+		color: hsl(var(--muted-foreground));
+		font-family: var(--font-body);
+		font-size: 0.75rem;
+		font-weight: 400;
+		line-height: 1.25;
+	}
+
+	.resources-dropdown-link:hover,
+	.resources-dropdown-link:focus-visible {
+		background: rgba(15, 118, 110, 0.1);
+	}
+
+	:global(.dark) .resources-dropdown-link:hover,
+	:global(.dark) .resources-dropdown-link:focus-visible {
+		background: rgba(45, 212, 191, 0.12);
+	}
+
+	.nav-search-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 999px;
+		color: inherit;
+		opacity: 0.82;
+		transition: background-color 0.15s ease, opacity 0.15s ease;
+	}
+
+	.nav-search-link:hover,
+	.nav-search-link:focus-visible,
+	.nav-search-link[aria-current='page'] {
+		background: rgba(15, 118, 110, 0.1);
+		opacity: 1;
+	}
+
 	.mobile-search-overlay {
 		position: fixed;
 		inset: 0;
@@ -1028,8 +1172,8 @@
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
-			width: 2rem;
-			height: 2rem;
+			width: 2.5rem;
+			height: 2.5rem;
 			border-radius: 999px;
 			color: hsl(var(--foreground));
 			font-size: 1rem;
@@ -1130,6 +1274,32 @@
 		width: 2.25rem;
 		height: 2.25rem;
 		position: relative;
+	}
+
+	.profile-avatar-tooltip {
+		position: absolute;
+		right: 50%;
+		top: calc(100% + 0.5rem);
+		z-index: 50;
+		width: max-content;
+		max-width: 12rem;
+		padding: 0.35rem 0.5rem;
+		border-radius: 0.55rem;
+		background: hsl(var(--foreground));
+		color: hsl(var(--background));
+		font-size: 0.72rem;
+		line-height: 1.2;
+		opacity: 0;
+		pointer-events: none;
+		transform: translate(50%, -0.15rem);
+		transition: opacity 0.15s ease, transform 0.15s ease;
+		white-space: nowrap;
+	}
+
+	.profile-avatar-link:hover .profile-avatar-tooltip,
+	.profile-avatar-link:focus-visible .profile-avatar-tooltip {
+		opacity: 1;
+		transform: translate(50%, 0);
 	}
 
 	.profile-avatar-badge {
