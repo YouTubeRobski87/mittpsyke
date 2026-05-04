@@ -1,5 +1,6 @@
 const SORO_TOKEN = '7741c36b-abe9-4f95-8557-3430345576e4';
 const SORO_EMBED_SRC = `https://app.trysoro.com/api/embed/${SORO_TOKEN}?theme=dark`;
+const LOCAL_FEATURED_IMAGE_BY_SLUG = new Map([['ai-dagbok', '/storify-og-image.png']]);
 
 // Bildfält Soro använder/har använt för olika artiklar. Ordningen är prioritetsordning.
 const IMAGE_FIELD_CANDIDATES = [
@@ -59,6 +60,11 @@ function extractImageUrl(article: SoroRawArticle): string | null {
 	return null;
 }
 
+function getArticleImageUrl(article: SoroRawArticle): string | null {
+	const slug = normalizeSoroArticleSlug(asString(article.slug));
+	return LOCAL_FEATURED_IMAGE_BY_SLUG.get(slug) ?? extractImageUrl(article);
+}
+
 function coerceImageValue(value: unknown): string | null {
 	if (!value) return null;
 	if (typeof value === 'string') {
@@ -103,7 +109,7 @@ function extractArticles(embedScript: string): SoroArticleListItem[] {
 			excerpt: asString(article.excerpt),
 			date: asString(article.date),
 			isoDate: asString(article.isoDate),
-			imageUrl: extractImageUrl(article)
+			imageUrl: getArticleImageUrl(article)
 		}));
 }
 

@@ -4,6 +4,7 @@ import type { PageServerLoad } from './$types';
 const SORO_TOKEN = '7741c36b-abe9-4f95-8557-3430345576e4';
 const SORO_EMBED_SRC = `https://app.trysoro.com/api/embed/${SORO_TOKEN}?theme=dark`;
 const CACHE_CONTROL = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
+const LOCAL_FEATURED_IMAGE_BY_SLUG = new Map([['ai-dagbok', '/storify-og-image.png']]);
 
 type SoroArticleListItem = {
 	id: string;
@@ -95,6 +96,7 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 		article: {
 			...article,
 			slug: normalizeSlug(article.slug),
+			image: LOCAL_FEATURED_IMAGE_BY_SLUG.get(normalizeSlug(article.slug)) ?? article.image,
 			content: contentPayload.content
 		}
 	};
