@@ -647,6 +647,10 @@
 
 		{#each messages as msg, i}
 			<div class="space-y-1">
+				{#if msg.role === 'assistant'}
+					<div class="text-xs opacity-55 px-1 text-left">✦ Mitt stöd</div>
+				{/if}
+
 				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'}">
 					<div
 						class="max-w-[80%] px-4 py-3 rounded-[var(--radius-card)] text-sm leading-relaxed
