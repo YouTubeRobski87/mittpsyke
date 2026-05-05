@@ -126,22 +126,12 @@
 		<div class="hero-shell">
 			<div class="hero-content">
 				<p class="hero-eyebrow">Anonymt stöd i text</p>
-				<h1>Livet pågår nu.</h1>
-				<p>Du kan skriva precis det som är i huvudet — det behöver inte vara tydligt.</p>
+				<h1>Få hjälp att sortera tankar i lugn takt</h1>
+				<p>Skriv anonymt och få stöd att förstå det som känns – utan konto, utan press och i din egen takt.</p>
 				<div class="hero-actions">
 					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackStartAnonymous()}>Börja skriva anonymt</a>
 				</div>
 				<p class="hero-trust-note">Din text sparas inte.</p>
-				<p class="hero-secondary-link">
-					<a href="#sa-fungerar-det" class="hero-cta-link" onclick={() => trackHomeCta('hero', 'sa_fungerar_det', '#sa-fungerar-det')}>Så fungerar det</a>
-				</p>
-				<p class="hero-origin-note">
-					MittPsyke drivs av Robert Claesson, samma person som står bakom
-					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
-					<a href="/om-mittpsyke" onclick={() => trackHomeCta('hero', 'om_oss', '/om-mittpsyke')}>Läs mer om oss</a>
-					och
-					<a href="#sa-fungerar-det" onclick={() => trackHomeCta('hero', 'sa_fungerar_det', '#sa-fungerar-det')}>hur tjänsten fungerar</a>.
-				</p>
 			</div>
 		</div>
 	</section>
@@ -428,18 +418,6 @@
 		letter-spacing: 0.01em;
 	}
 
-	.hero-origin-note {
-		margin: 0.5rem 0 0;
-		font-size: 0.86rem;
-		color: rgba(220, 225, 235, 0.72);
-	}
-
-	.hero-origin-note a {
-		color: #d7e7ff;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
 	.hero-actions {
 		margin-top: 1.7rem;
 		display: flex;
@@ -458,31 +436,6 @@
 	.hero-cta-primary:focus-visible {
 		transform: translateY(-1px);
 		box-shadow: 0 8px 22px rgba(30, 58, 138, 0.22);
-	}
-
-	.hero-cta-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		align-self: center;
-		padding: 0.35rem 0.15rem;
-		font-family: var(--font-body);
-		font-size: 0.92rem;
-		font-weight: 500;
-		letter-spacing: 0;
-		color: rgba(255, 255, 255, 0.82);
-		text-decoration: underline;
-		text-underline-offset: 3px;
-		opacity: 0.9;
-	}
-
-	.hero-cta-link:hover,
-	.hero-cta-link:focus-visible {
-		opacity: 1;
-	}
-
-	.hero-secondary-link {
-		margin: 0.45rem 0 0;
 	}
 
 	/* ── Sektion 2: Första steget ── */
