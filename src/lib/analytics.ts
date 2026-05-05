@@ -2,10 +2,6 @@ import { browser, dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { hasAnalyticsConsent } from '$lib/consent';
 
-// Obs: Vercel sätter automatiskt VERCEL_ENV men inte PUBLIC_VERCEL_ENV.
-// Vi använder !dev: blockerar lokal devserver, aktiverar alla Vercel-miljöer.
-// Samtyckes-gaten (hasAnalyticsConsent) säkerställer att GA aldrig laddas utan medgivande.
-
 type EventName =
 	| 'page_view'
 	| 'write_page_view'
@@ -26,16 +22,19 @@ type EventName =
 	| 'diary_page_opened_from_horoscope'
 	| 'hero_cta_primary_click'
 	| 'hero_cta_secondary_click'
+	| 'view_chat_nudge'
+	| 'click_chat_nudge'
 	| 'home_cta_click'
 	| 'click_start_anonymous'
 	| 'scroll_to_how_it_works'
 	| 'qr_landing_view'
 	| 'qr_cta_primary_click'
 	| 'qr_cta_secondary_click'
-	| 'view_chat_nudge'
-	| 'click_chat_nudge'
 	| 'search_performed'
-	| 'search_result_click';
+	| 'search_result_click'
+	| 'diary_cta_click'
+	| 'diary_guest_entry_started'
+	| 'diary_guest_entry_saved';
 
 type EventParams = Record<string, string | number | boolean>;
 type LandingPageEventParams = Record<string, string | number | boolean | null>;
@@ -48,8 +47,9 @@ type LandingPageEventPayload = {
 	metadata?: LandingPageEventParams;
 };
 
-export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || 'G-8XG01VCB5N';
-export const ANALYTICS_ENABLED = !dev;
+export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || '';
+export const PUBLIC_VERCEL_ENV = env.PUBLIC_VERCEL_ENV || '';
+export const ANALYTICS_ENABLED = PUBLIC_VERCEL_ENV === 'production';
 const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
 
 let analyticsInitialized = false;
@@ -61,8 +61,8 @@ function ensureGtag() {
 	windowWithGtag.dataLayer = windowWithGtag.dataLayer || [];
 
 	if (typeof windowWithGtag.gtag !== 'function') {
-		windowWithGtag.gtag = function () {
-			windowWithGtag.dataLayer.push(arguments);
+		windowWithGtag.gtag = (...args: any[]) => {
+			windowWithGtag.dataLayer.push(args);
 		};
 	}
 
@@ -100,17 +100,11 @@ export function initializeAnalytics() {
 	const gtag = ensureGtag();
 	if (!gtag) return;
 
+	gtag('consent', 'update', {
+		analytics_storage: 'granted'
+	});
 	gtag('js', new Date());
 	gtag('config', GA_MEASUREMENT_ID);
-
-	const scriptSrc = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-	if (!document.querySelector(`script[src="${scriptSrc}"]`)) {
-		const script = document.createElement('script');
-		script.async = true;
-		script.src = scriptSrc;
-		document.head.appendChild(script);
-	}
-
 	analyticsInitialized = true;
 }
 
@@ -120,10 +114,10 @@ export function trackPageView(url: URL) {
 	if (!analyticsInitialized) initializeAnalytics();
 
 	const gtag = ensureGtag();
-	if (!gtag) {
-		if (dev) console.warn('gtag not found');
-		return;
-	}
+if (!gtag) {
+  if (dev) console.warn('gtag not found');
+  return;
+}
 
 	gtag('event', 'page_view', {
 		page_path: `${url.pathname}${url.search}`,
@@ -217,16 +211,16 @@ export function trackHoroscopeCTAClick() {
 	trackEvent('horoscope_cta_clicked');
 }
 
-export function trackHeroCTAPrimaryClick(params: EventParams = {}) {
-	trackEvent('hero_cta_primary_click', params);
+export function trackHeroCTAPrimaryClick() {
+	trackEvent('hero_cta_primary_click');
 }
 
 export function trackHeroCTASecondaryClick() {
 	trackEvent('hero_cta_secondary_click');
 }
 
-export function trackHeroCtaPrimaryClick(params: EventParams = {}) {
-	trackHeroCTAPrimaryClick(params);
+export function trackHeroCtaPrimaryClick() {
+	trackHeroCTAPrimaryClick();
 }
 
 export function trackHeroCtaSecondaryClick() {
@@ -259,6 +253,18 @@ export function trackQrCtaPrimaryClick(src?: string | null) {
 
 export function trackQrCtaSecondaryClick(src?: string | null) {
 	trackEvent('qr_cta_secondary_click', src ? { src } : {});
+}
+
+export function trackDiaryCtaClick(variant: string) {
+	trackEvent('diary_cta_click', { variant });
+}
+
+export function trackDiaryGuestEntryStarted() {
+	trackEvent('diary_guest_entry_started');
+}
+
+export function trackDiaryGuestEntrySaved(length: number) {
+	trackEvent('diary_guest_entry_saved', { length });
 }
 
 function getLandingSessionId() {

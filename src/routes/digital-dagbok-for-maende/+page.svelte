@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import DiaryHero from '$lib/components/DiaryHero.svelte';
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/digital-dagbok-for-maende" />
@@ -19,20 +20,16 @@
 	<meta name="twitter:card" content="summary" />
 </svelte:head>
 
+<DiaryHero
+	variant="diary-landing"
+	title="Skriv anonymt och följ ditt mående"
+	subtitle="Din text sparas lokalt. Inget konto krävs."
+	secondaryHref="/register"
+	secondaryLabel="Skapa din egen plats"
+/>
+
 <main class="page">
 	<div class="page-container">
-		<header class="hero">
-			<h1>Digital dagbok för mående</h1>
-			<p>
-				När mycket pågår samtidigt kan det vara svårt att se mönster. En digital dagbok kan hjälpa dig att
-				skriva av dig, följa små förändringar och få en lugnare överblick över tid.
-			</p>
-		</header>
-
-		<div class="cta-container">
-			<a class="cta-button" href="/dagbok">Öppna dagboken</a>
-			<a class="cta-button ghost" href="/register">Skapa din egen plats</a>
-		</div>
 
 		<section class="section">
 			<h2>När skrivande hjälper dig att landa</h2>
@@ -80,7 +77,7 @@
 
 <style>
 	.page {
-		padding: clamp(2.2rem, 6vw, 3rem) clamp(1.25rem, 4vw, 1.5rem) clamp(3.2rem, 8vw, 4rem);
+		padding: clamp(1.5rem, 4vw, 2rem) clamp(1.25rem, 4vw, 1.5rem) clamp(3.2rem, 8vw, 4rem);
 	}
 
 	.page-container {

@@ -1,12 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import SEO from '$lib/components/SEO.svelte';
 	import HealthConsent from '$lib/components/HealthConsent.svelte';
+	import DiaryHero from '$lib/components/DiaryHero.svelte';
+	import GuestQuickEntry from '$lib/components/GuestQuickEntry.svelte';
 
 	const STORAGE_KEY = 'mittpsyke.healthConsent';
 	const VERSION = '2026-04-29';
 
-	let hasConsent = false;
+	let hasConsent = $state(false);
+
+	// Visa snabbantecknings-yta direkt om användaren kommer in via CTA
+	const showQuickEntry = $derived($page.url.searchParams.get('action') === 'new');
 
 	onMount(() => {
 		try {
@@ -60,48 +66,18 @@
 	{@html `<script type="application/ld+json">${JSON.stringify(faqSchema)}<\/script>`}
 </svelte:head>
 
-<header class="seo-prehero">
-	<h1>Skriv dagbok online – sortera tankar i lugn takt</h1>
-	<p>
-		Att skriva av sig kan göra tankar tydligare och mer hanterbara.
-		Här kan du börja direkt – utan konto och i din egen takt.
-	</p>
-</header>
+<DiaryHero variant="diary-main" />
+
+{#if showQuickEntry}
+	<GuestQuickEntry />
+{/if}
 
 {#if !hasConsent}
-	<HealthConsent onAccept={() => (hasConsent = true)} />
+	<div class="consent-wrap">
+		<HealthConsent onAccept={() => (hasConsent = true)} />
+	</div>
 {:else}
 	<main class="seo-diary-page">
-		<section class="hero">
-			<div class="hero-copy">
-				<p class="eyebrow">Dagbok för vardagen</p>
-				<h1>Digital dagbok för ditt mående</h1>
-				<p class="lead">
-					MittPsyke är en digital dagbok för mående där du kan skriva i lugn takt, få
-					AI-reflektioner och följa hur ditt mående skiftar över tid.
-				</p>
-				<p class="support-copy">
-					Du kan använda dagboken när du vill skriva dagbok vid ångest, samla tankar från dagen och
-					se små framsteg som annars är lätta att missa. Om du vill börja utan konto kan du använda
-					<a href="/anonym-dagbok-online">anonym dagbok online</a> först.
-				</p>
-				<div class="cta-row">
-					<a class="primary-cta" href="/registrera">Börja skriva gratis</a>
-					<a class="secondary-cta" href="/login">Logga in</a>
-				</div>
-				<p class="support-note">MittPsyke ersätter inte vård. Vid akut fara: 112. För vårdråd: 1177.</p>
-			</div>
-
-			<aside class="hero-panel" aria-label="Det här får du">
-				<h2>Vad dagboken hjälper med</h2>
-				<ul>
-					<li>AI-reflektioner som hjälper dig se det tydligare</li>
-					<li>Stämningslogg för att fånga små skiften</li>
-					<li>Framsteg över tid i lugn och egen takt</li>
-				</ul>
-			</aside>
-		</section>
-
 		<section class="content-grid">
 			<article class="body-card">
 				<h2>En dagbok som gör mer än att bara spara text</h2>
@@ -167,34 +143,28 @@
 				{/each}
 			</div>
 		</section>
+
+		<p class="support-note">
+			MittPsyke ersätter inte vård. Vid akut fara: 112. För vårdråd: 1177.
+		</p>
 	</main>
 {/if}
 
 <style>
-	.seo-prehero {
+	.consent-wrap {
 		max-width: 1080px;
-		margin: 0 auto 1rem;
+		margin: 1.25rem auto 0;
 		padding: 0 1.25rem;
-		display: grid;
-		gap: 0.55rem;
 	}
 
 	.seo-diary-page {
 		max-width: 1080px;
-		margin: 0 auto;
+		margin: 1.25rem auto 0;
 		padding: 0 1.25rem 4rem;
 		display: grid;
 		gap: 1.25rem;
 	}
 
-	.hero {
-		display: grid;
-		gap: 1rem;
-		padding-top: 0.5rem;
-	}
-
-	.hero-copy,
-	.hero-panel,
 	.body-card,
 	.benefit-card,
 	.faq-item {
@@ -204,108 +174,17 @@
 		box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
 	}
 
-	.hero-copy {
-		padding: clamp(1.4rem, 3vw, 2.4rem);
-		display: grid;
-		gap: 0.9rem;
-		background:
-			radial-gradient(circle at top left, rgba(20, 184, 166, 0.14), transparent 40%),
-			linear-gradient(180deg, hsl(var(--surface)) 0%, hsl(var(--surface-soft)) 100%);
-	}
-
-	.eyebrow {
-		margin: 0;
-		font-size: 0.78rem;
-		font-weight: 700;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
-		color: hsl(var(--muted-foreground));
-	}
-
-	h1,
 	h2,
 	h3 {
 		margin: 0;
 	}
 
-	h1 {
-		font-size: clamp(2rem, 1.5rem + 2vw, 3.2rem);
-		line-height: 1.05;
-		letter-spacing: -0.04em;
-	}
-
-	.lead,
-	.support-copy,
 	.body-card p,
 	.benefit-card p,
 	.faq-item p {
 		margin: 0;
 		line-height: 1.7;
 		color: hsl(var(--foreground) / 0.84);
-	}
-
-	.lead {
-		font-size: 1.02rem;
-	}
-
-	.cta-row {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem;
-		padding-top: 0.35rem;
-	}
-
-	.primary-cta,
-	.secondary-cta {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		min-height: 2.95rem;
-		padding: 0.78rem 1.15rem;
-		border-radius: var(--radius-pill);
-		text-decoration: none;
-		font-weight: 600;
-		transition:
-			transform 150ms ease,
-			opacity 150ms ease,
-			border-color 150ms ease;
-	}
-
-	.primary-cta {
-		background: var(--theme-accent, var(--primary));
-		color: #fff;
-		box-shadow: 0 12px 24px rgba(15, 118, 110, 0.18);
-	}
-
-	.secondary-cta {
-		border: 1px solid hsl(var(--border));
-		color: hsl(var(--foreground));
-		background: hsl(var(--surface-soft));
-	}
-
-	.primary-cta:hover,
-	.secondary-cta:hover {
-		transform: translateY(-1px);
-	}
-
-	.support-note {
-		margin: 0;
-		font-size: 0.85rem;
-		color: hsl(var(--muted-foreground));
-	}
-
-	.hero-panel {
-		padding: 1.2rem 1.15rem;
-		display: grid;
-		gap: 0.8rem;
-	}
-
-	.hero-panel ul {
-		margin: 0;
-		padding-left: 1.1rem;
-		display: grid;
-		gap: 0.55rem;
-		color: hsl(var(--foreground) / 0.82);
 	}
 
 	.content-grid,
@@ -340,9 +219,24 @@
 		gap: 1rem;
 	}
 
+	.eyebrow {
+		margin: 0;
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: hsl(var(--muted-foreground));
+	}
+
 	.benefit-card h3,
 	.faq-item h3 {
 		font-size: 1rem;
+	}
+
+	.support-note {
+		margin: 0.5rem 0 0;
+		font-size: 0.85rem;
+		color: hsl(var(--muted-foreground));
 	}
 
 	@media (max-width: 760px) {
@@ -351,60 +245,11 @@
 			gap: 0.75rem;
 		}
 
-		.hero {
-			gap: 0.6rem;
-			padding-top: 0;
-		}
-
-		.hero-copy,
-		.hero-panel,
 		.body-card,
 		.benefit-card,
 		.faq-item {
 			border-radius: var(--radius-input);
-		}
-
-		.hero-copy {
-			padding: 1rem;
-			gap: 0.65rem;
-		}
-
-		h1 {
-			font-size: 1.75rem;
-			line-height: 1.08;
-		}
-
-		.lead {
-			font-size: 0.95rem;
-			line-height: 1.55;
-		}
-
-		.support-copy,
-		.hero-panel,
-		.content-grid,
-		.section-heading .eyebrow,
-		.benefit-card p,
-		.faq-item p {
-			display: none;
-		}
-
-		.cta-row {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 0.5rem;
-			padding-top: 0.1rem;
-		}
-
-		.primary-cta,
-		.secondary-cta {
-			min-height: 2.65rem;
-			padding: 0.65rem 0.75rem;
-			font-size: 0.9rem;
-		}
-
-		.support-note {
-			font-size: 0.78rem;
-			line-height: 1.45;
+			padding: 0.8rem;
 		}
 
 		.benefits-section,
@@ -413,20 +258,9 @@
 		.faq-list {
 			gap: 0.55rem;
 		}
-
-		.body-card,
-		.benefit-card,
-		.faq-item {
-			padding: 0.8rem;
-		}
 	}
 
 	@media (min-width: 900px) {
-		.hero {
-			grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
-			align-items: stretch;
-		}
-
 		.content-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
