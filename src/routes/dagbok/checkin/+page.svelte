@@ -47,6 +47,7 @@
 
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 	const DIARY_IMAGE_ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+	const entriesPerPage = 10;
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -95,6 +96,7 @@
 	let draftTextarea = $state<HTMLTextAreaElement | null>(null);
 	let writeEditorPanel = $state<HTMLElement | null>(null);
 	let hasHealthDataConsent = $state(false);
+	let currentPage = $state(1);
 
 	// Filtrerade inlägg baserat på valt kalenderdatum
 	let filteredEntries = $derived.by(() => {
@@ -107,6 +109,11 @@
 			return key === calendarFilterDate;
 		});
 	});
+	let totalEntries = $derived(filteredEntries.length);
+	let totalPages = $derived(Math.ceil(totalEntries / entriesPerPage));
+	let startIndex = $derived((currentPage - 1) * entriesPerPage);
+	let endIndex = $derived(Math.min(startIndex + entriesPerPage, totalEntries));
+	let paginatedEntries = $derived(filteredEntries.slice(startIndex, endIndex));
 	let sharedEntryIds = $state(new Set<string>());
 	// Kalenderfilter: YYYY-MM-DD eller null för att visa alla inlägg
 	let calendarFilterDate = $state<string | null>(null);
@@ -303,6 +310,14 @@
 		} finally {
 			loadingMoreEntries = false;
 		}
+	}
+
+	function goToPreviousEntriesPage() {
+		if (currentPage > 1) currentPage -= 1;
+	}
+
+	function goToNextEntriesPage() {
+		if (currentPage < totalPages) currentPage += 1;
 	}
 
 	async function loadSharedEntryIds() {
@@ -1026,6 +1041,7 @@
 	// Kallas från DiaryCalendar när användaren klickar ett datum
 	function handleCalendarDaySelect(dateKey: string | null) {
 		calendarFilterDate = dateKey;
+		currentPage = 1;
 		if (dateKey && typeof document !== 'undefined') {
 			document.getElementById('senaste-inlagg')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		}
@@ -1201,6 +1217,7 @@
 
 	async function openLatestEntries() {
 		calendarFilterDate = null;
+		currentPage = 1;
 		await tick();
 		if (typeof document !== 'undefined') {
 			document.getElementById('senaste-inlagg')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1275,6 +1292,7 @@
 			uploadImageError = '';
 			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
+			currentPage = 1;
 		} catch (error) {
 			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
 		} finally {
@@ -1352,6 +1370,10 @@
 		});
 
 		return () => subscription.unsubscribe();
+	});
+
+	$effect(() => {
+		if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
 	});
 
 	onDestroy(() => {
@@ -1641,7 +1663,7 @@
 							<p class="flow-heading auth-muted">
 								{#if calendarFilterDate}
 									Inlägg för {new Date(calendarFilterDate + 'T00:00:00').toLocaleDateString('sv-SE', { day: 'numeric', month: 'long' })}
-									<button type="button" class="cal-inline-clear" onclick={() => { calendarFilterDate = null; }}>
+									<button type="button" class="cal-inline-clear" onclick={() => { calendarFilterDate = null; currentPage = 1; }}>
 										× Visa alla
 									</button>
 								{:else}
@@ -1649,7 +1671,7 @@
 								{/if}
 							</p>
 							<div class="diary-entries">
-								{#each filteredEntries as entry (entry.id)}
+								{#each paginatedEntries as entry (entry.id)}
 									<article class="auth-panel diary-entry">
 										<p class="text-xs auth-muted">{formatDate(entry.created_at)}</p>
 										{#if entry.mood && editingEntryId !== entry.id}
@@ -1917,6 +1939,32 @@
 									</article>
 								{/each}
 							</div>
+							{#if totalPages > 1}
+								<div class="diary-pagination" aria-label="Paginering för dagboksinlägg">
+									<p class="diary-pagination-count auth-muted">
+										Visar {startIndex + 1}-{endIndex} av {totalEntries} inlägg
+									</p>
+									<div class="diary-pagination-controls">
+										<button
+											type="button"
+											class="auth-button"
+											onclick={goToPreviousEntriesPage}
+											disabled={currentPage === 1}
+										>
+											Föregående
+										</button>
+										<span class="diary-pagination-page auth-muted">Sida {currentPage} av {totalPages}</span>
+										<button
+											type="button"
+											class="auth-button"
+											onclick={goToNextEntriesPage}
+											disabled={currentPage === totalPages}
+										>
+											Nästa
+										</button>
+									</div>
+								</div>
+							{/if}
 							{#if hasMoreEntries && !calendarFilterDate}
 								<button
 									type="button"
@@ -2729,6 +2777,30 @@
 		margin-top: 0.85rem;
 		width: 100%;
 		justify-content: center;
+	}
+
+	.diary-pagination {
+		margin-top: 0.85rem;
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.diary-pagination-count {
+		margin: 0;
+		font-size: 0.82rem;
+		text-align: center;
+	}
+
+	.diary-pagination-controls {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.65rem;
+		flex-wrap: wrap;
+	}
+
+	.diary-pagination-page {
+		font-size: 0.86rem;
 	}
 
 	.diary-entry {
