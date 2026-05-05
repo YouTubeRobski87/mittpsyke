@@ -1843,6 +1843,15 @@
 		gap: 1rem;
 	}
 
+	:global(.auth-page:has(.diary-layout) .auth-hero) {
+		border-color: rgba(129, 140, 248, 0.2);
+		background:
+			radial-gradient(circle at top left, rgba(245, 158, 11, 0.1), transparent 38%),
+			radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 42%),
+			hsl(var(--surface));
+		box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+	}
+
 	.diary-main {
 		display: grid;
 		gap: 0.85rem;
@@ -1851,6 +1860,10 @@
 	.diary-paths {
 		display: grid;
 		gap: 0.55rem;
+		border-color: rgba(245, 158, 11, 0.18);
+		background:
+			linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(99, 102, 241, 0.06)),
+			hsl(var(--surface));
 	}
 
 	.diary-path-grid {
@@ -1947,15 +1960,19 @@
 
 	/* Amber — Skriv själv */
 	.diary-path-card--write {
-		background: hsl(35 55% 97%);
-		border-color: hsl(35 45% 83%);
+		background:
+			linear-gradient(135deg, rgba(245, 158, 11, 0.16), rgba(245, 158, 11, 0.05)),
+			hsl(35 55% 97%);
+		border-color: rgba(245, 158, 11, 0.35);
 		border-left: 3px solid hsl(35 70% 55%);
 	}
 
 	/* Blå — Dagbok med olika stilar */
 	.diary-path-card--guided {
-		background: hsl(220 55% 97%);
-		border-color: hsl(220 50% 83%);
+		background:
+			linear-gradient(135deg, rgba(99, 102, 241, 0.13), rgba(129, 140, 248, 0.04)),
+			hsl(220 55% 97%);
+		border-color: rgba(129, 140, 248, 0.3);
 		border-left: 3px solid hsl(220 65% 52%);
 	}
 
@@ -2016,14 +2033,18 @@
 
 	/* Mörkt läge */
 	:global(.dark) .diary-path-card--write {
-		background: hsl(35 18% 12%);
-		border-color: hsl(35 22% 22%);
+		background:
+			linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(245, 158, 11, 0.04)),
+			hsl(35 18% 12%);
+		border-color: rgba(245, 158, 11, 0.35);
 		border-left: 3px solid hsl(35 62% 48%);
 	}
 
 	:global(.dark) .diary-path-card--guided {
-		background: hsl(222 22% 13%);
-		border-color: hsl(220 20% 24%);
+		background:
+			linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(129, 140, 248, 0.04)),
+			hsl(222 22% 13%);
+		border-color: rgba(129, 140, 248, 0.3);
 		border-left: 3px solid hsl(220 58% 52%);
 	}
 
@@ -2366,6 +2387,10 @@
 	.diary-week-panel {
 		display: grid;
 		gap: 0.65rem;
+		border-color: rgba(129, 140, 248, 0.22);
+		background:
+			linear-gradient(145deg, rgba(99, 102, 241, 0.09), rgba(143, 227, 166, 0.06)),
+			hsl(var(--surface));
 	}
 
 	.week-head h3,
@@ -2384,6 +2409,8 @@
 	.mood-graph-panel {
 		display: grid;
 		gap: 0.55rem;
+		border-radius: var(--radius-input);
+		background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(143, 227, 166, 0.06));
 	}
 
 	.mood-graph-header h3,
