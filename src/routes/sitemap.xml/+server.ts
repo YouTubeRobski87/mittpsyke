@@ -184,6 +184,18 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			priority: '0.7'
 		},
 		{
+			path: '/guider/anonym-dagbok-online',
+			lastmod: STATIC_CONTENT_LASTMOD,
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/guider/dagbok-och-reflektion',
+			lastmod: STATIC_CONTENT_LASTMOD,
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
 			path: '/digital-dagbok-for-maende',
 			lastmod: STATIC_CONTENT_LASTMOD,
 			changefreq: 'monthly',
