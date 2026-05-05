@@ -53,11 +53,7 @@
 	}
 
 	function trackStartAnonymous() {
-		trackHeroCtaPrimaryClick({
-			location: 'home_hero',
-			target: '/skriv',
-			cta_text: 'Börja skriva anonymt'
-		});
+		trackHeroCtaPrimaryClick();
 	}
 
 	onMount(() => {

@@ -22,10 +22,11 @@
 
 <DiaryHero
 	variant="diary-landing"
-	title="Skriv anonymt och följ ditt mående"
-	subtitle="Din text sparas lokalt. Inget konto krävs."
+	title="Anonym dagbok online"
+	subtitle="Du kan börja skriva direkt och välja senare om du vill spara."
+	ctaLabel="Börja skriva anonym dagbok"
 	secondaryHref="/digital-dagbok-for-maende"
-	secondaryLabel="Läs om digital dagbok"
+	secondaryLabel="Så fungerar dagboken"
 />
 
 <main class="page">
@@ -53,10 +54,10 @@
 			<h2>Nästa steg</h2>
 			<p>
 				Om du vill spara historik och få en egen plats över tid kan du <a href="/register">skapa konto</a>.
-				Du kan också börja skriva direkt eller öppna chatten om du vill ta nästa steg i samtal.
+				Du kan också börja skriva direkt och välja senare om du vill spara.
 			</p>
 			<p class="links-row">
-				<a href="/dagbok">Skriv i dagboken</a>
+				<a href="/dagbok?action=new">Börja skriva anonym dagbok</a>
 				<a href="/framsteg">Se framsteg</a>
 				<a href="/register">Skapa konto</a>
 			</p>

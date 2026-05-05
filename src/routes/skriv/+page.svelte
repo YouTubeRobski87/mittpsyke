@@ -30,7 +30,7 @@
 	}
 
 	async function handleOpenDiary() {
-		goto('/dagbok');
+		goto('/dagbok?action=new');
 	}
 
 	// Rest of component...
@@ -42,24 +42,24 @@
 	<h1 class="text-2xl font-bold mb-4">Skriv av dig anonymt</h1>
 	<p class="mb-6 opacity-70">
 		{isLoggedIn
-			? 'Du kan börja direkt i chatten eller skriva vidare i dagboken.'
-			: 'Du kan börja direkt utan konto och få stöd i text i lugn takt.'}
+			? 'Du kan börja direkt i dagboken eller skriva vidare i chatten.'
+			: 'Du kan börja skriva direkt utan konto och välja senare om du vill spara.'}
 	</p>
 
 	<div class="flex flex-wrap gap-3">
 		<button
 			type="button"
-			onclick={handleStartChat}
+			onclick={handleOpenDiary}
 			class="px-6 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 cursor-pointer"
 		>
-			Starta chatten
+			Börja skriva anonymt nu
 		</button>
 		<button
 			type="button"
-			onclick={handleOpenDiary}
+			onclick={handleStartChat}
 			class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
 		>
-			Öppna dagboken
+			Starta chatten
 		</button>
 	</div>
 

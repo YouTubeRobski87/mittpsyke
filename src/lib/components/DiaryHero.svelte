@@ -18,7 +18,7 @@
 		title = 'Skriv anonymt och följ ditt mående',
 		subtitle,
 		ctaHref = '/dagbok?action=new',
-		ctaLabel = 'Börja skriva nu',
+		ctaLabel = 'Börja skriva anonymt nu',
 		secondaryHref,
 		secondaryLabel
 	}: Props = $props();
@@ -40,7 +40,7 @@
 	<div class="diary-hero-inner">
 		<p class="eyebrow">Anonym dagbok</p>
 		<h1>{title}</h1>
-		<p class="lead">AI-reflektion på dina tankar – när du vill ha lite mer riktning.</p>
+		<p class="lead">Skriv några rader direkt och välj senare om du vill spara.</p>
 		<div class="cta-row">
 			<a class="primary-cta" href={ctaHref} onclick={handleCtaClick}>{ctaLabel}</a>
 			{#if secondaryHref && secondaryLabel}
