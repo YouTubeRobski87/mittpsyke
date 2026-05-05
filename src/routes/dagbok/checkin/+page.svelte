@@ -33,16 +33,6 @@
 		hasMoreEntries?: boolean;
 		sharedEntryIds?: string[];
 		session?: Session | null;
-		movementToday?: MovementEntry | null;
-		movementWeek?: MovementEntry[];
-	};
-
-	type MovementEntry = {
-		entryDate: string;
-		stepCount: number | null;
-		cycledToday: boolean;
-		cycledKm: number | null;
-		updatedAt?: string | null;
 	};
 
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
@@ -67,29 +57,6 @@
 	type MoodGraphPoint = { mood: number };
 	let moodGraphPoints = $derived.by(() => buildMoodGraphPoints(entries));
 	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
-	let movementToday = $state<MovementEntry | null>(null);
-	let movementWeek = $state<MovementEntry[]>([]);
-	let movementStepsInput = $state('');
-	let movementCycledToday = $state(false);
-	let movementCycledKmInput = $state('');
-	let savingMovement = $state(false);
-	let movementError = $state('');
-	let movementSuccess = $state('');
-	let movementDebug = $state('Väntar på klick');
-	let movementWeekLoggedDays = $derived.by(() =>
-		movementWeek.filter((item) => item.stepCount !== null || item.cycledToday).length
-	);
-	let movementWeekCyclingDays = $derived.by(() =>
-		movementWeek.filter((item) => item.cycledToday).length
-	);
-	let movementWeekTotalKm = $derived.by(() =>
-		Math.round(
-			movementWeek.reduce((sum, item) => sum + (item.cycledKm ?? 0), 0) * 10
-		) / 10
-	);
-	let movementWeekTotalSteps = $derived.by(() =>
-		movementWeek.reduce((sum, item) => sum + (item.stepCount ?? 0), 0)
-	);
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
 	let hasSavedEntries = $derived(entries.length > 0);
 	let showWriteEditor = $state(false);
@@ -151,25 +118,10 @@
 	let canRenderMarkdown = $state(false);
 
 	$effect(() => {
-		const initialMovementToday = data.movementToday ?? null;
-
 		entries = data.entries ?? [];
 		hasMoreEntries = data.hasMoreEntries ?? false;
 		sessionUser = data.session?.user ?? null;
 		sharedEntryIds = new Set<string>(data.sharedEntryIds ?? []);
-		movementToday = initialMovementToday;
-		movementWeek = data.movementWeek ?? [];
-		if (initialMovementToday) {
-			movementStepsInput =
-				initialMovementToday.stepCount !== null ? String(initialMovementToday.stepCount) : '';
-			movementCycledToday = initialMovementToday.cycledToday;
-			movementCycledKmInput =
-				initialMovementToday.cycledKm !== null ? String(initialMovementToday.cycledKm) : '';
-		} else {
-			movementStepsInput = '';
-			movementCycledToday = false;
-			movementCycledKmInput = '';
-		}
 	});
 
 	function parseStoredDraft(value: string | null): string {
@@ -1047,139 +999,6 @@
 		}
 	}
 
-	function getLocalDateKey(date = new Date()): string {
-		return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-	}
-
-	function normalizeInputValue(value: unknown): string {
-		if (typeof value === 'string') return value;
-		if (typeof value === 'number' && Number.isFinite(value)) return String(value);
-		return '';
-	}
-
-	function parseIntegerInput(value: unknown): number | null {
-		const trimmed = normalizeInputValue(value).trim();
-		if (!trimmed) return null;
-		const parsed = Number(trimmed);
-		if (!Number.isFinite(parsed)) return null;
-		return Math.round(parsed);
-	}
-
-	function parseDecimalInput(value: unknown): number | null {
-		const trimmed = normalizeInputValue(value).trim().replace(',', '.');
-		if (!trimmed) return null;
-		const parsed = Number(trimmed);
-		if (!Number.isFinite(parsed)) return null;
-		return Math.round(parsed * 10) / 10;
-	}
-
-	function formatMovementDate(value: string): string {
-		const date = new Date(`${value}T00:00:00`);
-		if (Number.isNaN(date.getTime())) return value;
-		return date.toLocaleDateString('sv-SE', { weekday: 'short', day: 'numeric', month: 'short' });
-	}
-
-	function upsertMovementEntry(entry: MovementEntry) {
-		const next = movementWeek.filter((item) => item.entryDate !== entry.entryDate);
-		next.push(entry);
-		next.sort((a, b) => b.entryDate.localeCompare(a.entryDate));
-		movementWeek = next.slice(0, 7);
-	}
-
-	async function saveMovementToday() {
-		if (savingMovement) return;
-		movementDebug = 'Klick registrerat';
-
-		movementError = '';
-		movementSuccess = '';
-
-		const stepsRaw = normalizeInputValue(movementStepsInput);
-		const cycledKmRaw = normalizeInputValue(movementCycledKmInput);
-
-		const stepCount = parseIntegerInput(stepsRaw);
-		if (stepsRaw.trim().length > 0 && stepCount === null) {
-			movementError = 'Skriv steg som ett helt tal, till exempel 4200.';
-			return;
-		}
-		if (stepCount !== null && (stepCount < 0 || stepCount > 200000)) {
-			movementError = 'Steg behöver vara mellan 0 och 200000.';
-			return;
-		}
-
-		let cycledKm = parseDecimalInput(cycledKmRaw);
-		if (cycledKmRaw.trim().length > 0 && cycledKm === null) {
-			movementError = 'Skriv ungefärlig sträcka i km, till exempel 6,5.';
-			return;
-		}
-		if (!movementCycledToday) {
-			cycledKm = null;
-		}
-		if (cycledKm !== null && (cycledKm < 0 || cycledKm > 500)) {
-			movementError = 'Distans behöver vara mellan 0 och 500 km.';
-			return;
-		}
-
-		if (stepCount === null && !movementCycledToday) {
-			movementError = 'Fyll i steg eller markera om du har cyklat idag.';
-			return;
-		}
-
-		savingMovement = true;
-		try {
-			movementDebug = 'Före getSession';
-			const { data } = await supabase.auth.getSession();
-			const session = data.session;
-			movementDebug = 'Efter getSession';
-			if (!session?.access_token) {
-				movementError = 'Logga in för att spara din rörelse.';
-				movementDebug = 'Ingen session/token i klienten';
-				return;
-			}
-
-			movementDebug = 'Före fetch /api/movement/daily';
-			const response = await fetch('/api/movement/daily', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.access_token}`
-				},
-				body: JSON.stringify({
-					entryDate: getLocalDateKey(),
-					stepCount,
-					cycledToday: movementCycledToday,
-					cycledKm
-				})
-			});
-			movementDebug = `Efter fetch /api/movement/daily (${response.status})`;
-
-			const payload = (await response.json().catch(() => null)) as
-				| {
-						success?: boolean;
-						entry?: MovementEntry;
-						error?: string;
-				  }
-				| null;
-			movementDebug = `API svar ${response.status}${payload?.error ? `: ${payload.error}` : ''}`;
-
-			if (!response.ok || !payload?.success || !payload.entry) {
-				movementError = payload?.error ?? 'Kunde inte spara rörelse just nu.';
-				movementDebug = 'API-fel';
-				return;
-			}
-
-			const saved = payload.entry;
-			movementToday = saved;
-			upsertMovementEntry(saved);
-			movementSuccess = 'Rörelsen för idag är sparad.';
-			movementDebug = 'Sparat';
-		} catch (error) {
-			movementError = error instanceof Error ? error.message : 'Kunde inte spara rörelse just nu.';
-			movementDebug = 'Nätverksfel/exception i saveMovementToday';
-		} finally {
-			savingMovement = false;
-		}
-	}
-
 	async function persistUserConsent(consent: HealthConsentRecord) {
 		const {
 			data: { session }
@@ -1980,92 +1799,6 @@
 				</div>
 
 				<aside class="diary-side">
-					<section class="auth-panel movement-panel" aria-label="Daglig rörelse">
-						<div class="week-head">
-							<h3 class="text-sm font-semibold">Rörelse idag</h3>
-							<p class="text-xs auth-muted">Lugn check-in för vardagsrörelse</p>
-						</div>
-						<p class="movement-intro">Hur har du rört dig idag?</p>
-
-						<label class="movement-label" for="movement-steps">Ungefär hur många steg blev det?</label>
-						<input
-							id="movement-steps"
-							class="movement-input"
-							type="number"
-							min="0"
-							step="1"
-							inputmode="numeric"
-							placeholder="t.ex. 4200"
-							bind:value={movementStepsInput}
-						/>
-
-						<label class="movement-check">
-							<input type="checkbox" bind:checked={movementCycledToday} />
-							<span>Har du cyklat idag?</span>
-						</label>
-
-						<label class="movement-label" for="movement-cycled-km">Ungefär hur långt? (km)</label>
-						<input
-							id="movement-cycled-km"
-							class="movement-input"
-							type="number"
-							min="0"
-							step="0.1"
-							inputmode="decimal"
-							placeholder="t.ex. 6,5"
-							bind:value={movementCycledKmInput}
-							disabled={!movementCycledToday}
-						/>
-
-						<button
-							type="button"
-							class="auth-button"
-							onclick={saveMovementToday}
-							disabled={savingMovement}
-						>
-							{savingMovement ? 'Sparar...' : 'Spara rörelse idag'}
-						</button>
-
-						{#if movementError}
-							<p class="text-xs error-copy">{movementError}</p>
-						{/if}
-						{#if movementSuccess}
-							<p class="text-xs auth-muted">{movementSuccess}</p>
-						{/if}
-						<p class="movement-debug">{movementDebug}</p>
-
-						<p class="text-xs auth-muted">
-							Det här är bara för att hjälpa dig se samband över tid.
-						</p>
-
-						<div class="movement-week">
-							<h4 class="text-sm font-semibold">Rörelse senaste 7 dagarna</h4>
-							<div class="movement-week-stats">
-								<span>{movementWeekLoggedDays} {movementWeekLoggedDays === 1 ? 'dag' : 'dagar'} noterade</span>
-								<span>{movementWeekCyclingDays} {movementWeekCyclingDays === 1 ? 'cykeldag' : 'cykeldagar'}</span>
-								<span>{movementWeekTotalKm} km cyklat</span>
-								<span>{movementWeekTotalSteps} steg totalt</span>
-							</div>
-							{#if movementWeek.length > 0}
-								<ul class="movement-week-list">
-									{#each movementWeek as item}
-										<li>
-											<strong>{formatMovementDate(item.entryDate)}</strong>
-											<span>
-												{item.stepCount !== null ? `${item.stepCount} steg` : 'Inga steg noterade'}
-												{item.cycledToday
-													? ` · cyklat${item.cycledKm !== null ? ` ca ${item.cycledKm} km` : ''}`
-													: ''}
-											</span>
-										</li>
-									{/each}
-								</ul>
-							{:else}
-								<p class="text-xs auth-muted">Här kommer en enkel veckovis översikt när du har fyllt i första dagen.</p>
-							{/if}
-						</div>
-					</section>
-
 					<section class="auth-panel diary-week-panel">
 						<div class="week-head">
 							<h3 class="text-sm font-semibold">Denna vecka</h3>
@@ -2635,84 +2368,6 @@
 		gap: 0.65rem;
 	}
 
-	.movement-panel {
-		display: grid;
-		gap: 0.55rem;
-	}
-
-	.movement-intro {
-		margin: 0;
-		font-size: 0.92rem;
-		color: hsl(var(--foreground));
-	}
-
-	.movement-label {
-		font-size: 0.8rem;
-		color: hsl(var(--muted-foreground));
-	}
-
-	.movement-input {
-		width: 100%;
-		padding: 0.55rem 0.65rem;
-		border-radius: var(--radius-input);
-		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface));
-		color: hsl(var(--foreground));
-	}
-
-	.movement-input:disabled {
-		opacity: 0.55;
-		cursor: not-allowed;
-	}
-
-	.movement-check {
-		display: flex;
-		align-items: center;
-		gap: 0.45rem;
-		font-size: 0.86rem;
-		color: hsl(var(--foreground));
-	}
-
-	.movement-week {
-		margin-top: 0.2rem;
-		display: grid;
-		gap: 0.4rem;
-	}
-
-	.movement-week h4 {
-		margin: 0;
-	}
-
-	.movement-week-stats {
-		display: grid;
-		gap: 0.25rem;
-		font-size: 0.78rem;
-		color: hsl(var(--muted-foreground));
-	}
-
-	.movement-week-list {
-		margin: 0;
-		padding-left: 1rem;
-		display: grid;
-		gap: 0.3rem;
-		font-size: 0.78rem;
-	}
-
-	.movement-week-list li {
-		display: grid;
-		gap: 0.1rem;
-	}
-
-	.movement-debug {
-		margin: 0.15rem 0 0;
-		padding: 0.35rem 0.45rem;
-		border-radius: 0.45rem;
-		border: 1px dashed hsl(var(--border));
-		background: hsl(var(--surface-soft));
-		color: hsl(var(--foreground));
-		font-size: 0.76rem;
-	}
-
 	.week-head h3,
 	.week-head p {
 		margin: 0;
@@ -3143,9 +2798,6 @@
 		.mood-meaning,
 		.mood-anchors,
 		.week-head p,
-		.movement-intro,
-		.movement-debug,
-		.movement-panel > p.text-xs,
 		.mood-graph-header p {
 			display: none;
 		}
@@ -3258,32 +2910,6 @@
 
 		.diary-side .auth-panel {
 			padding: 0.72rem;
-		}
-
-		.movement-panel {
-			gap: 0.45rem;
-		}
-
-		.movement-label {
-			font-size: 0.76rem;
-		}
-
-		.movement-input {
-			min-height: 2.65rem;
-			font-size: 1rem;
-		}
-
-		.movement-week {
-			margin-top: 0;
-		}
-
-		.movement-week-stats {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 0.25rem 0.5rem;
-		}
-
-		.movement-week-list {
-			display: none;
 		}
 
 		.week-count {
