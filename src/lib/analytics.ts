@@ -97,9 +97,24 @@ export function disableAnalytics() {
 export function initializeAnalytics() {
 	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent() || analyticsInitialized || !GA_MEASUREMENT_ID) return;
 
-	const gtag = ensureGtag();
-	if (!gtag) return;
+	// Ladda Google Analytics gtag-script från CDN
+	const script = document.createElement('script');
+	script.async = true;
+	script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+	document.head.appendChild(script);
 
+	// Initiera window.dataLayer och window.gtag
+	const windowWithGtag = window as any;
+	windowWithGtag.dataLayer = windowWithGtag.dataLayer || [];
+	
+	if (typeof windowWithGtag.gtag !== 'function') {
+		windowWithGtag.gtag = (...args: any[]) => {
+			windowWithGtag.dataLayer.push(args);
+		};
+	}
+
+	// Initiera GA4
+	const gtag = windowWithGtag.gtag;
 	gtag('consent', 'update', {
 		analytics_storage: 'granted'
 	});
