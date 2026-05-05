@@ -49,8 +49,12 @@ type LandingPageEventPayload = {
 
 export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || '';
 export const PUBLIC_VERCEL_ENV = env.PUBLIC_VERCEL_ENV || '';
-export const ANALYTICS_ENABLED = PUBLIC_VERCEL_ENV === 'production';
+const PRODUCTION_HOSTS = new Set(['mittpsyke.se', 'www.mittpsyke.se']);
+export const ANALYTICS_ENABLED =
+	Boolean(GA_MEASUREMENT_ID) &&
+	(browser ? PRODUCTION_HOSTS.has(window.location.hostname) : PUBLIC_VERCEL_ENV === 'production');
 const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
+const GTAG_SCRIPT_ID = 'mittpsyke-gtag';
 
 let analyticsInitialized = false;
 
@@ -67,6 +71,16 @@ function ensureGtag() {
 	}
 
 	return windowWithGtag.gtag as (...args: any[]) => void;
+}
+
+function loadGtagScript() {
+	if (!browser || !ANALYTICS_ENABLED || document.getElementById(GTAG_SCRIPT_ID)) return;
+
+	const script = document.createElement('script');
+	script.id = GTAG_SCRIPT_ID;
+	script.async = true;
+	script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
+	document.head.appendChild(script);
 }
 
 export function disableAnalytics() {
@@ -103,6 +117,7 @@ export function initializeAnalytics() {
 	script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
 	document.head.appendChild(script);
 
+<<<<<<< Updated upstream
 	// Initiera window.dataLayer och window.gtag
 	const windowWithGtag = window as any;
 	windowWithGtag.dataLayer = windowWithGtag.dataLayer || [];
@@ -115,11 +130,14 @@ export function initializeAnalytics() {
 
 	// Initiera GA4
 	const gtag = windowWithGtag.gtag;
+=======
+	loadGtagScript();
+>>>>>>> Stashed changes
 	gtag('consent', 'update', {
 		analytics_storage: 'granted'
 	});
 	gtag('js', new Date());
-	gtag('config', GA_MEASUREMENT_ID);
+	gtag('config', GA_MEASUREMENT_ID, { send_page_view: false });
 	analyticsInitialized = true;
 }
 
