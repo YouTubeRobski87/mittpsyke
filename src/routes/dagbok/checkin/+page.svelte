@@ -2405,14 +2405,14 @@
 
 	.mood-chart-line {
 		fill: none;
-		stroke: var(--primary, #436e8f);
+		stroke: #8FE3A6;
 		stroke-width: 1.2;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
 
 	.mood-chart-dot {
-		fill: var(--primary, #436e8f);
+		fill: #8FE3A6;
 		stroke: hsl(var(--surface));
 		stroke-width: 0.6;
 	}
