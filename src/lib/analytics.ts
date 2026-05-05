@@ -47,7 +47,8 @@ type LandingPageEventPayload = {
 	metadata?: LandingPageEventParams;
 };
 
-export const GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID || '';
+const PUBLIC_GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID;
+export const GA_MEASUREMENT_ID = PUBLIC_GA_MEASUREMENT_ID;
 export const PUBLIC_VERCEL_ENV = env.PUBLIC_VERCEL_ENV || '';
 const PRODUCTION_HOSTS = new Set(['mittpsyke.se', 'www.mittpsyke.se']);
 export const ANALYTICS_ENABLED =
@@ -57,6 +58,8 @@ const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
 const GTAG_SCRIPT_ID = 'mittpsyke-gtag';
 
 let analyticsInitialized = false;
+let analyticsInitPromise: Promise<boolean> | null = null;
+let gtagScriptPromise: Promise<void> | null = null;
 
 function ensureGtag() {
 	if (!browser || !ANALYTICS_ENABLED) return null;
@@ -73,14 +76,27 @@ function ensureGtag() {
 	return windowWithGtag.gtag as (...args: any[]) => void;
 }
 
-function loadGtagScript() {
-	if (!browser || !ANALYTICS_ENABLED || document.getElementById(GTAG_SCRIPT_ID)) return;
+function loadGtagScript(): Promise<void> {
+	if (!browser || !ANALYTICS_ENABLED || !GA_MEASUREMENT_ID) return Promise.resolve();
+	if (gtagScriptPromise) return gtagScriptPromise;
+
+	const existingScript = document.getElementById(GTAG_SCRIPT_ID);
+	if (existingScript) return Promise.resolve();
 
 	const script = document.createElement('script');
 	script.id = GTAG_SCRIPT_ID;
 	script.async = true;
 	script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
+
+	gtagScriptPromise = new Promise((resolve, reject) => {
+		script.addEventListener('load', () => resolve(), { once: true });
+		script.addEventListener('error', () => reject(new Error('Google Analytics gtag script failed to load')), {
+			once: true
+		});
+	});
+
 	document.head.appendChild(script);
+	return gtagScriptPromise;
 }
 
 export function disableAnalytics() {
@@ -106,27 +122,44 @@ export function disableAnalytics() {
 	});
 
 	analyticsInitialized = false;
+	analyticsInitPromise = null;
 }
 
-export function initializeAnalytics() {
-	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent() || analyticsInitialized || !GA_MEASUREMENT_ID) return;
+export async function initializeAnalytics() {
+	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent() || !GA_MEASUREMENT_ID) return false;
+	if (analyticsInitialized) return true;
+	if (analyticsInitPromise) return analyticsInitPromise;
 
 	const gtag = ensureGtag();
-	if (!gtag) return;
+	if (!gtag) return false;
 
-	loadGtagScript();
-	gtag('consent', 'update', {
-		analytics_storage: 'granted'
-	});
-	gtag('js', new Date());
-	gtag('config', GA_MEASUREMENT_ID, { send_page_view: false });
-	analyticsInitialized = true;
+	analyticsInitPromise = loadGtagScript()
+		.then(() => {
+			gtag('consent', 'update', {
+				analytics_storage: 'granted'
+			});
+			gtag('js', new Date());
+			gtag('config', GA_MEASUREMENT_ID, { send_page_view: false });
+			analyticsInitialized = true;
+			return true;
+		})
+		.catch((error) => {
+			analyticsInitPromise = null;
+			if (dev) console.warn('Google Analytics init failed:', error);
+			return false;
+		});
+
+	return analyticsInitPromise;
 }
 
 export function trackPageView(url: URL) {
 	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent()) return;
 
-	if (!analyticsInitialized) initializeAnalytics();
+	void sendPageView(url);
+}
+
+async function sendPageView(url: URL) {
+	if (!(await initializeAnalytics()) || !hasAnalyticsConsent()) return;
 
 	const gtag = ensureGtag();
 	if (!gtag) {
@@ -144,7 +177,11 @@ export function trackPageView(url: URL) {
 export function trackEvent(eventName: EventName, params: EventParams = {}) {
 	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent()) return;
 
-	if (!analyticsInitialized) initializeAnalytics();
+	void sendEvent(eventName, params);
+}
+
+async function sendEvent(eventName: EventName, params: EventParams) {
+	if (!(await initializeAnalytics()) || !hasAnalyticsConsent()) return;
 
 	const gtag = ensureGtag();
 	if (!gtag) {
