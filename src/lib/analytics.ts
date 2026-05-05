@@ -60,6 +60,7 @@ const GTAG_SCRIPT_ID = 'mittpsyke-gtag';
 let analyticsInitialized = false;
 let analyticsInitPromise: Promise<boolean> | null = null;
 let gtagScriptPromise: Promise<void> | null = null;
+let consentDefaultSet = false;
 
 function ensureGtag() {
 	if (!browser || !ANALYTICS_ENABLED) return null;
@@ -68,12 +69,24 @@ function ensureGtag() {
 	windowWithGtag.dataLayer = windowWithGtag.dataLayer || [];
 
 	if (typeof windowWithGtag.gtag !== 'function') {
-		windowWithGtag.gtag = (...args: any[]) => {
-			windowWithGtag.dataLayer.push(args);
+		windowWithGtag.gtag = function gtag() {
+			windowWithGtag.dataLayer.push(arguments);
 		};
 	}
 
 	return windowWithGtag.gtag as (...args: any[]) => void;
+}
+
+function setDefaultConsent(gtag: (...args: any[]) => void) {
+	if (consentDefaultSet) return;
+
+	gtag('consent', 'default', {
+		analytics_storage: 'denied',
+		ad_storage: 'denied',
+		ad_user_data: 'denied',
+		ad_personalization: 'denied'
+	});
+	consentDefaultSet = true;
 }
 
 function loadGtagScript(): Promise<void> {
@@ -132,6 +145,8 @@ export async function initializeAnalytics() {
 
 	const gtag = ensureGtag();
 	if (!gtag) return false;
+
+	setDefaultConsent(gtag);
 
 	analyticsInitPromise = loadGtagScript()
 		.then(() => {
