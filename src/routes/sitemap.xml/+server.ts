@@ -14,7 +14,6 @@ const GUIDE_FALLBACK_LASTMOD = '2026-03-14';
 const TOOL_LASTMOD = '2026-03-29';
 const BLOG_LASTMOD = '2026-03-29';
 const LEGAL_LASTMOD = '2026-03-22';
-const KBT_LASTMOD = '2026-03-21';
 const FEEDBACK_LASTMOD = '2026-04-13';
 
 type SitemapEntry = {
@@ -233,7 +232,6 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			priority: '0.8'
 		},
 		{ path: '/ensamhet', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
-		{ path: '/kbt', lastmod: KBT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{
 			path: '/nedstamdhet',
 			lastmod: GUIDE_FALLBACK_LASTMOD,

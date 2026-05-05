@@ -1,6 +1,7 @@
 export function GET() {
 	const body = `User-agent: *
 Allow: /
+Disallow: /guider-seo/
 
 Sitemap: https://www.mittpsyke.se/sitemap.xml
 `;

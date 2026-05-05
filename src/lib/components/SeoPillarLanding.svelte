@@ -21,14 +21,20 @@
 		stress: '/stress',
 		ensamhet: '/ensamhet',
 		overtankande: '/oro',
-		kbt: '/kbt'
+		kbt: '/guider/kbt'
 	};
 
-	function normalizeGuideHref(href: string): string {
-		return href.startsWith('/guider-seo/') ? href.replace('/guider-seo/', '/guider/') : href;
-	}
-
 	const pillarRoute = $derived(pillarRoutes[pillar.slug] ?? null);
+	const publishedAt = $derived(landing?.publishedAt ?? '2026-03-21');
+	const updatedAt = $derived(
+		landing?.updatedAt ??
+			guides
+				.map((guide) => guide.updatedAt)
+				.filter((value): value is string => Boolean(value))
+				.sort()
+				.at(-1) ??
+			publishedAt
+	);
 	const contentSections = $derived(
 		landing?.sections?.length
 			? landing.sections
@@ -63,6 +69,13 @@
 
 	<h1 class="guide-title mt-3 text-3xl font-semibold tracking-tight">{landing?.h1 ?? pillar.title}</h1>
 	<p class="guide-copy mt-3 leading-relaxed">{landing?.intro ?? pillar.description}</p>
+	<div class="article-meta mt-4" aria-label="Artikelinformation">
+		<p>Publicerad: {publishedAt}</p>
+		<p>Senast uppdaterad: {updatedAt}</p>
+		<p>Författare: MittPsyke</p>
+		<!-- TODO: Lägg till namngiven legitimerad psykolog när granskare är verifierad. -->
+		<p>Granskad av: Ska kompletteras med legitimerad psykolog</p>
+	</div>
 
 	{#each contentSections as section, index}
 		<section class={`guide-surface rounded-xl p-4 ${index === 0 ? 'mt-8' : 'mt-6'}`}>
@@ -71,7 +84,7 @@
 			{#if section.links?.length}
 				<ul class="mt-3 space-y-2">
 					{#each section.links as link}
-						<li><a class="guide-link hover:underline" href={normalizeGuideHref(link.href)}>{link.title}</a></li>
+						<li><a class="guide-link hover:underline" href={link.href}>{link.title}</a></li>
 					{/each}
 				</ul>
 			{/if}
@@ -111,7 +124,7 @@
 			<h2 class="guide-heading text-xl font-semibold">Relaterade ämnen</h2>
 			<ul class="mt-3 space-y-2">
 				{#each landing.primaryLinks as link}
-					<li><a class="guide-link hover:underline" href={normalizeGuideHref(link.href)}>{link.title}</a></li>
+					<li><a class="guide-link hover:underline" href={link.href}>{link.title}</a></li>
 				{/each}
 			</ul>
 		</section>
@@ -139,9 +152,7 @@
 		</section>
 	{/if}
 
-	{#if landing?.sources?.length || landing?.updatedAt}
-		<ContentTrustBlock updatedAt={landing?.updatedAt} sources={landing?.sources} />
-	{/if}
+	<ContentTrustBlock updatedAt={updatedAt} sources={landing?.sources} />
 </main>
 
 <style>
@@ -173,6 +184,18 @@
 
 	.guide-copy {
 		color: rgba(15, 23, 42, 0.82);
+	}
+
+	.article-meta {
+		display: grid;
+		gap: 0.25rem;
+		font-size: 0.9rem;
+		line-height: 1.55;
+		color: rgba(15, 23, 42, 0.66);
+	}
+
+	.article-meta p {
+		margin: 0;
 	}
 
 	.guide-surface {
@@ -224,6 +247,10 @@
 
 	:global(.dark) .guide-copy {
 		color: rgba(226, 232, 240, 0.82);
+	}
+
+	:global(.dark) .article-meta {
+		color: rgba(226, 232, 240, 0.68);
 	}
 
 	:global(.dark) .guide-surface {

@@ -20,17 +20,6 @@
 		articleLinks = []
 	}: TopicGuideSectionProps = $props();
 
-	function normalizeGuideHref(href: string): string {
-		return href.startsWith('/guider-seo/') ? href.replace('/guider-seo/', '/guider/') : href;
-	}
-
-	const normalizedGuideHref = $derived(normalizeGuideHref(guideHref));
-	const normalizedArticleLinks = $derived(
-		articleLinks.map((link) => ({
-			...link,
-			href: normalizeGuideHref(link.href)
-		}))
-	);
 	const displayedGuideTitle = $derived(guideTitle ?? topicTitle.toLowerCase());
 	const displayedIntro = $derived(
 		intro ??
@@ -42,11 +31,11 @@
 	<p class="eyebrow">Fördjupning</p>
 	<h2>Läs vidare i guiden om {displayedGuideTitle}</h2>
 	<p class="intro">{displayedIntro}</p>
-	<a class="guide-entry" href={normalizedGuideHref}>Öppna guiden om {displayedGuideTitle}</a>
+	<a class="guide-entry" href={guideHref}>Öppna guiden om {displayedGuideTitle}</a>
 
-	{#if normalizedArticleLinks.length}
+	{#if articleLinks.length}
 		<ul class="article-list">
-			{#each normalizedArticleLinks as article}
+			{#each articleLinks as article}
 				<li><a href={article.href}>{article.title}</a></li>
 			{/each}
 		</ul>

@@ -7,6 +7,24 @@ import { getSessionUser } from '$lib/server/admin-auth'
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''
 
+const legacyPathRedirects: Handle = async ({ event, resolve }) => {
+	const { url } = event
+
+	if (url.pathname === '/guider-seo') {
+		throw redirect(301, '/guider')
+	}
+
+	if (url.pathname.startsWith('/guider-seo/')) {
+		throw redirect(301, url.pathname.replace('/guider-seo/', '/guider/'))
+	}
+
+	if (url.pathname === '/kbt') {
+		throw redirect(301, '/guider/kbt')
+	}
+
+	return resolve(event)
+}
+
 const canonicalHostRedirect: Handle = async ({ event, resolve }) => {
 	const forwardedHost = event.request.headers.get('x-forwarded-host')?.split(',')[0]?.trim() ?? ''
 	const requestHost = (forwardedHost || event.url.host).replace(/:\d+$/, '')
@@ -116,4 +134,4 @@ const supabaseAuth: Handle = async ({ event, resolve }) => {
 }
 
 // Kör säkerhetsheaders först, sedan Supabase auth
-export const handle = sequence(canonicalHostRedirect, securityHeaders, supabaseAuth)
+export const handle = sequence(legacyPathRedirects, canonicalHostRedirect, securityHeaders, supabaseAuth)

@@ -20,15 +20,13 @@
 		stress: '/stress',
 		ensamhet: '/ensamhet',
 		overtankande: '/oro',
-		kbt: '/kbt',
+		kbt: '/guider/kbt',
 		beroende: '/guider/beroende'
 	};
 
 	const pillarRoute = $derived(pillarRoutes[data.pillar.slug] ?? null);
-
-	function normalizeGuideHref(href: string): string {
-		return href.startsWith('/guider-seo/') ? href.replace('/guider-seo/', '/guider/') : href;
-	}
+	const publishedAt = $derived(data.guide.publishedAt ?? '2026-03-21');
+	const updatedAt = $derived(data.guide.updatedAt ?? publishedAt);
 
 	const articleSchema = $derived({
 		'@context': 'https://schema.org',
@@ -113,6 +111,13 @@
 
 	<h1 class="text-3xl font-semibold tracking-tight">{data.guide.title}</h1>
 	<p class="guide-ingress mt-3 leading-relaxed">{data.guide.description}</p>
+	<div class="article-meta mt-4" aria-label="Artikelinformation">
+		<p>Publicerad: {publishedAt}</p>
+		<p>Senast uppdaterad: {updatedAt}</p>
+		<p>Författare: MittPsyke</p>
+		<!-- TODO: Lägg till namngiven legitimerad psykolog när granskare är verifierad. -->
+		<p>Granskad av: Ska kompletteras med legitimerad psykolog</p>
+	</div>
 
 	{#if data.guide.content}
 		<div class="guide-content mt-8">
@@ -136,7 +141,7 @@
 		<ul class="mt-3 space-y-2">
 			{#each data.guide.relatedArticles as article}
 				<li>
-					<a class="hover:underline" href={normalizeGuideHref(article.href)}>{article.title}</a>
+					<a class="hover:underline" href={article.href}>{article.title}</a>
 				</li>
 			{/each}
 		</ul>
@@ -168,9 +173,7 @@
 		</section>
 	{/if}
 
-	{#if data.guide.sources?.length || data.guide.updatedAt}
-		<ContentTrustBlock updatedAt={data.guide.updatedAt} sources={data.guide.sources} />
-	{/if}
+	<ContentTrustBlock updatedAt={updatedAt} sources={data.guide.sources} />
 </main>
 
 <style>
@@ -185,6 +188,18 @@
 
 	.guide-content :global(strong) {
 		color: rgba(17, 24, 39, 0.92);
+	}
+
+	.article-meta {
+		display: grid;
+		gap: 0.25rem;
+		font-size: 0.9rem;
+		line-height: 1.55;
+		color: rgba(17, 24, 39, 0.66);
+	}
+
+	.article-meta p {
+		margin: 0;
 	}
 
 	.next-link {
@@ -212,5 +227,9 @@
 
 	:global(.dark) .guide-content :global(strong) {
 		color: rgba(248, 250, 252, 0.94);
+	}
+
+	:global(.dark) .article-meta {
+		color: rgba(241, 245, 249, 0.68);
 	}
 </style>

@@ -23,9 +23,12 @@ export function load({ params }) {
 		throw error(404, 'Guiden hittades inte');
 	}
 
+	const landing = getPillarLandingBySlug(pillar.slug);
+
 	return {
 		pillar,
 		guides: getGuidesForPillar(pillar.slug),
-		landing: getPillarLandingBySlug(pillar.slug)
+		landing,
+		description: landing?.seoDescription ?? pillar.description
 	};
 }

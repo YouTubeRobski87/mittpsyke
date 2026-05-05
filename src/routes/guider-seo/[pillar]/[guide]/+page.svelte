@@ -17,7 +17,7 @@
 		stress: '/stress',
 		ensamhet: '/ensamhet',
 		overtankande: '/oro',
-		kbt: '/kbt',
+		kbt: '/guider/kbt',
 		beroende: '/guider/beroende'
 	};
 

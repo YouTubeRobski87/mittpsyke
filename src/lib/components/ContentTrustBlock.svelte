@@ -17,6 +17,31 @@
 		contentLinkHref = '/sa-arbetar-vi-med-innehall'
 	}: Props = $props();
 
+	const requiredReferences: SourceItem[] = [
+		{
+			label: 'Socialtjänstlagen (2001:453)',
+			url: 'https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/socialtjanstlag-2001453_sfs-2001-453/'
+		},
+		{
+			label: 'LVM (1988:870)',
+			url: 'https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/lag-1988870-om-vard-av-missbrukare-i-vissa_sfs-1988-870/'
+		},
+		{
+			label: 'Socialstyrelsen riktlinjer',
+			url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/regler-och-riktlinjer/'
+		}
+	];
+
+	const references = $derived.by(() => {
+		const seen = new Set<string>();
+		return [...sources, ...requiredReferences].filter((source) => {
+			const key = source.label.toLowerCase();
+			if (seen.has(key)) return false;
+			seen.add(key);
+			return true;
+		});
+	});
+
 	function formatDate(iso: string): string {
 		const formatter = new Intl.DateTimeFormat('sv-SE', {
 			day: 'numeric',
@@ -39,9 +64,10 @@
 		Folkhälsomyndigheten, Socialstyrelsen och andra offentliga kunskapskällor.
 	</p>
 
-	{#if sources.length}
+	{#if references.length}
+		<h3>Referenser</h3>
 		<ul>
-			{#each sources as source}
+			{#each references as source}
 				<li>
 					<a href={source.url} target="_blank" rel="noopener noreferrer">{source.label}</a>
 				</li>
@@ -103,6 +129,13 @@
 
 	h2 {
 		margin: 0;
+		font-size: 1rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+	}
+
+	h3 {
+		margin: 1rem 0 0;
 		font-size: 1rem;
 		font-weight: 600;
 		letter-spacing: -0.01em;
@@ -178,6 +211,10 @@
 	}
 
 	:global(.dark) h2 {
+		color: rgba(241, 245, 249, 0.94);
+	}
+
+	:global(.dark) h3 {
 		color: rgba(241, 245, 249, 0.94);
 	}
 

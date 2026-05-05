@@ -86,6 +86,10 @@
 		return trimmed.length > 0 ? trimmed : null;
 	}
 
+	const fallbackDescription =
+		'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.';
+	const ogDescription = $derived(page.data?.description || fallbackDescription);
+
 	function getProfileName(profileDisplayName: string | null, sessionUser: User | null) {
 		const metadata = sessionUser?.user_metadata as Record<string, unknown> | undefined;
 		return (
@@ -554,7 +558,7 @@
 
 		<meta
 			name="description"
-			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
+			content={ogDescription}
 		/>
 
 		{#if isPrivateOrUtilityPage || page.data?.noindex}
@@ -565,7 +569,7 @@
 		<meta property="og:title" content={page.data?.title ? `${page.data.title} | MittPsyke` : 'MittPsyke – Psykiskt stöd online'} />
 		<meta
 			property="og:description"
-			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
+			content={ogDescription}
 		/>
 		<meta property="og:type" content="website" />
 		<meta property="og:site_name" content="MittPsyke" />
@@ -579,7 +583,7 @@
 		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | MittPsyke` : 'MittPsyke – Psykiskt stöd online'} />
 		<meta
 			name="twitter:description"
-			content={page.data?.description || 'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.'}
+			content={ogDescription}
 		/>
 		{@html `<script type="application/ld+json">${JSON.stringify(organizationJsonLd)}<\/script>`}
 		{@html `<script type="application/ld+json">${JSON.stringify(webApplicationJsonLd)}<\/script>`}

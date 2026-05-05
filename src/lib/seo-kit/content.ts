@@ -26,6 +26,7 @@ export type Guide = {
 	nextStepTool?: string;
 	title: string;
 	description: string;
+	publishedAt?: string;
 	seoTitle?: string;
 	seoDescription?: string;
 	faqs: FaqItem[];
@@ -50,6 +51,7 @@ export type SeoLandingPage = {
 	sections: SeoLandingSection[];
 	primaryLinks?: RelatedArticle[];
 	faqs?: FaqItem[];
+	publishedAt?: string;
 	updatedAt?: string;
 	sources?: SourceItem[];
 };
@@ -4551,27 +4553,32 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 		seoDescription: 'Lär dig hur KBT fungerar och prova konkreta tekniker hemma. Guider om tankeomstrukturering, beteendeaktivering och mer – i lugn takt.',
 		h1: 'KBT – verktyg för tankar, känslor och beteenden',
 		intro: 'Kognitiv beteendeterapi är en av de mest välstuderade metoderna för psykisk hälsa. Här hittar du förklaringar och övningar du kan använda i din vardag.',
+		publishedAt: '2026-03-21',
+		updatedAt: '2026-05-05',
+		sources: [
+			{ label: 'KBT – 1177 Vårdguiden', url: 'https://www.1177.se/behandlingar--hjalpmedel/behandlingar-vid-psykiska-besvar/kognitiv-beteendeterapi-kbt/' },
+			{ label: 'Psykisk hälsa – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
+		],
 		sections: [
 			{
-				heading: 'Förstå grunderna i KBT',
-				body: 'KBT bygger på sambandet mellan tankar, känslor och beteenden. Genom att förändra ett led kan du påverka de andra. Det kräver inte en terapeut för att komma igång.',
-				links: [
-					{ title: 'Vad är KBT och hur fungerar det?', href: '/guider/kbt/vad-ar-kbt' },
-					{ title: 'KBT vid ångest – hur det fungerar steg för steg', href: '/guider/kbt/kbt-vid-angest' }
-				]
+				heading: 'Vad är KBT',
+				body: 'KBT betyder kognitiv beteendeterapi. Det är ett arbetssätt som utgår från att tankar, känslor, kroppsliga reaktioner och beteenden påverkar varandra. När du mår dåligt kan de här delarna börja förstärka varandra: en tanke kan väcka oro, oron kan göra kroppen spänd och spänningen kan leda till att du undviker något som egentligen är viktigt för dig. I KBT försöker man förstå sådana mönster på ett konkret sätt. Fokus ligger inte på att pressa bort känslor eller tänka positivt till varje pris, utan på att undersöka vad som händer och pröva små förändringar i vardagen. KBT kan användas i terapi, men flera grundprinciper kan också hjälpa som självhjälp och reflektion. MittPsyke ersätter inte vård, men kan vara en lugn plats för att börja se samband och formulera nästa steg.'
 			},
 			{
-				heading: 'Tekniker du kan testa hemma',
-				body: 'Många KBT-tekniker passar utmärkt som självhjälp. Tankeomstrukturering och beteendeaktivering är bra startpunkter som du kan öva på utan förkunskaper.',
-				links: [
-					{ title: 'Tankeomstrukturering – utmana dina negativa tankar', href: '/guider/kbt/tankeomstrukturering' },
-					{ title: 'Beteendeaktivering – ta ett steg ut ur passiviteten', href: '/guider/kbt/beteendeaktivering' },
-					{ title: 'KBT-tekniker du kan använda hemma', href: '/guider/kbt/kbt-tekniker-hemma' }
-				]
+				heading: 'Hur fungerar KBT',
+				body: 'KBT börjar ofta med att göra en situation mer synlig. Du kan till exempel skriva ner vad som hände, vilken tanke som dök upp, vilken känsla som följde, vad du märkte i kroppen och vad du gjorde sedan. När kedjan blir tydligare går det att pröva en förändring på rätt ställe. Ibland handlar det om att undersöka en automatisk tanke: Finns det andra sätt att förstå situationen? Ibland handlar det om beteende: Vad händer om jag tar ett litet steg i stället för att undvika helt? Arbetet sker stegvis och praktiskt. Målet är inte att du ska bli felfri eller alltid lugn, utan att du får fler valmöjligheter när något känns svårt. Därför passar KBT ofta bra ihop med dagbok, övningar och korta reflektioner över tid.'
 			},
 			{
-				heading: 'Nästa steg',
-				body: 'Du kan reflektera kring dina tankar och beteenden i MittPsykes dagbok, eller börja ett samtal för att utforska vad som känns svårt just nu.'
+				heading: 'När används KBT',
+				body: 'KBT används vid flera vanliga besvär, bland annat ångest, nedstämdhet, stress, sömnproblem, oro och undvikandebeteenden. Metoden kan se olika ut beroende på vad du behöver stöd med. Vid ångest kan KBT innehålla gradvis exponering, alltså att närma sig det som väcker rädsla i små, hanterbara steg. Vid nedstämdhet kan fokus ligga på beteendeaktivering, där du långsamt bygger in handlingar som ger struktur, kontakt eller mening även när motivationen är låg. Vid sömnproblem kan arbetet handla om rutiner, oro på kvällen och kroppens koppling mellan säng och vakenhet. I vården anpassas KBT efter personens situation. På egen hand är det klokt att hålla övningarna små, följa upp varsamt och söka professionell hjälp om besvären är svåra, långvariga eller påverkar säkerheten.'
+			},
+			{
+				heading: 'Vad kan KBT hjälpa med',
+				body: 'KBT kan hjälpa dig att få syn på mönster som annars går snabbt och automatiskt. Det kan vara tankar som alltid tolkar något som farligt, beteenden som ger lättnad för stunden men gör livet mindre på sikt, eller rutiner som gör återhämtning svårare. För många blir den största hjälpen att problemet blir mer konkret. I stället för att allt känns som ett enda stort mående kan du börja se delar: en viss situation, en återkommande tanke, ett sätt att dra dig undan, ett behov som inte får plats. Då blir nästa steg mindre. KBT kan också hjälpa dig att öva på självmedkänsla i praktiken, eftersom du lär dig se reaktioner som mönster snarare än personliga misslyckanden. Det är viktigt att komma ihåg att KBT inte passar alla i alla lägen, och att egenvård inte ska ersätta vård när vård behövs.'
+			},
+			{
+				heading: 'KBT-övningar i praktiken',
+				body: 'En enkel start är att välja en konkret situation från dagen och skriva några rader om den. Vad hände? Vad tänkte du? Vilken känsla kom? Vad gjorde du? Därefter kan du lägga till en fråga: Finns det ett litet steg som skulle hjälpa mig nästa gång? Det kan vara att formulera en mer nyanserad tanke, ta en kort promenad, skicka ett meddelande, pausa skärmtid före sömn eller öva på att stanna kvar i en mild känsla utan att genast fly från den. KBT-övningar fungerar bäst när de är realistiska och upprepas över tid. Börja därför hellre litet än ambitiöst. I artiklarna nedan hittar du fördjupningar om tankeomstrukturering, beteendeaktivering, KBT vid ångest och tekniker du kan använda hemma. Du kan också använda MittPsykes dagbok eller chat för att reflektera i lugn takt.'
 			}
 		],
 		primaryLinks: [

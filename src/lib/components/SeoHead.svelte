@@ -26,5 +26,8 @@
 	<meta property="og:description" content={ogDescription} />
 	<meta property="og:url" content={ogUrl} />
 	<meta property="og:type" content="website" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content={ogTitle} />
+	<meta name="twitter:description" content={ogDescription} />
 	<meta name="robots" content="index, follow" />
 </svelte:head>

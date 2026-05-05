@@ -27,5 +27,10 @@ export function load({ params }) {
 
 	const nextTool = guide.nextStepTool ? getToolBySlug(guide.nextStepTool) : null;
 
-	return { pillar, guide, nextTool };
+	return {
+		pillar,
+		guide,
+		nextTool,
+		description: guide.seoDescription ?? guide.description
+	};
 }
