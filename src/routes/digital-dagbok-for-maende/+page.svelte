@@ -130,32 +130,6 @@
 		gap: 0.35rem;
 	}
 
-	.cta-container {
-		max-width: 720px;
-		display: flex;
-		gap: 0.7rem;
-		flex-wrap: wrap;
-	}
-
-	.cta-button {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.7rem 1.35rem;
-		border-radius: var(--radius-pill);
-		background: var(--primary);
-		border: 2px solid var(--primary);
-		color: white;
-		font-family: var(--font-heading);
-		font-weight: 600;
-		text-decoration: none;
-	}
-
-	.cta-button.ghost {
-		background: transparent;
-		color: var(--primary);
-	}
-
 	.links-row {
 		margin-top: 0.75rem;
 		display: flex;
@@ -167,15 +141,5 @@
 		margin-top: 1rem;
 	}
 
-	@media (max-width: 640px) {
-		.cta-button {
-			width: 100%;
-		}
-	}
-
-	:global(.dark) .cta-button.ghost {
-		color: #86dfd6;
-		border-color: #86dfd6;
-	}
 </style>
 
