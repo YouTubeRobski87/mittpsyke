@@ -207,6 +207,7 @@
 	let avatarImageLoadFailed = $state(false);
 	let profileButtonRef = $state<HTMLButtonElement | null>(null);
 	let profilePanelRef = $state<HTMLDivElement | null>(null);
+	let resourcesMenuRef = $state<HTMLDetailsElement | null>(null);
 	let mobileSearchInputRef = $state<HTMLInputElement | null>(null);
 	let profilePanelData = $state<ProfilePanelData>(null);
 	let unreadNotificationCount = $state(0);
@@ -371,6 +372,10 @@
 		mobileSearchOpen = false;
 	}
 
+	function closeResourcesMenu() {
+		if (resourcesMenuRef) resourcesMenuRef.open = false;
+	}
+
 	function pageKey(url: URL) {
 		return `${url.pathname}${url.search}`;
 	}
@@ -448,9 +453,33 @@
 		mobileMenuOpen = false;
 		mobileSearchOpen = false;
 		profilePanelOpen = false;
+		closeResourcesMenu();
 		if (to?.url) {
 			trackCurrentPage(to.url);
 		}
+	});
+
+	$effect(() => {
+		if (!browser) return;
+
+		const onPointerDown = (event: PointerEvent) => {
+			const target = event.target;
+			if (!resourcesMenuRef?.open || !(target instanceof Node)) return;
+			if (resourcesMenuRef.contains(target)) return;
+			closeResourcesMenu();
+		};
+
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key === 'Escape') closeResourcesMenu();
+		};
+
+		document.addEventListener('pointerdown', onPointerDown);
+		document.addEventListener('keydown', onKeyDown);
+
+		return () => {
+			document.removeEventListener('pointerdown', onPointerDown);
+			document.removeEventListener('keydown', onKeyDown);
+		};
 	});
 
 	$effect(() => {
@@ -611,11 +640,11 @@
 							</a>
 						{/each}
 					{/if}
-					<details class="resources-dropdown">
+					<details bind:this={resourcesMenuRef} class="resources-dropdown">
 						<summary class="text-sm transition-opacity {resourceNavItems.some((item) => isActive(item.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">Resurser</summary>
 						<div class="resources-dropdown-menu">
 							{#each resourceNavItems as item}
-								<a href={item.href} class="resources-dropdown-link" aria-current={isActive(item.href) ? 'page' : undefined}>
+								<a href={item.href} class="resources-dropdown-link" onclick={closeResourcesMenu} aria-current={isActive(item.href) ? 'page' : undefined}>
 									<span class="resources-dropdown-label">{item.label}</span>
 									<span class="resources-dropdown-description">{item.description}</span>
 								</a>
