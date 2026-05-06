@@ -177,8 +177,4 @@
 	<p class="text-center text-sm mt-4 opacity-70">
 		Inget konto? <a href="/register" class="underline">Registrera dig</a>
 	</p>
-
-	<p class="text-center text-xs mt-8 opacity-60">
-		MittPsyke ersätter inte vård. Vid akut fara ring 112 · Vårdråd 1177.
-	</p>
 </section>
