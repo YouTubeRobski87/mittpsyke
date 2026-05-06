@@ -1844,12 +1844,18 @@
 	}
 
 	:global(.auth-page:has(.diary-layout) .auth-hero) {
-		border-color: rgba(129, 140, 248, 0.2);
+		padding: 1rem;
+		border: 1px solid rgba(129, 140, 248, 0.2);
+		border-radius: var(--radius-card);
 		background:
-			radial-gradient(circle at top left, rgba(245, 158, 11, 0.1), transparent 38%),
+			radial-gradient(circle at top left, rgba(99, 102, 241, 0.1), transparent 38%),
 			radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 42%),
 			hsl(var(--surface));
 		box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+	}
+
+	:global(.auth-page:has(.diary-layout) .auth-shell + .auth-shell) {
+		margin-top: clamp(1rem, 3vw, 1.6rem);
 	}
 
 	.diary-main {
@@ -1958,13 +1964,13 @@
 		transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 	}
 
-	/* Amber — Skriv själv */
+	/* Indigo — Skriv själv */
 	.diary-path-card--write {
 		background:
-			linear-gradient(135deg, rgba(245, 158, 11, 0.16), rgba(245, 158, 11, 0.05)),
-			hsl(35 55% 97%);
-		border-color: rgba(245, 158, 11, 0.35);
-		border-left: 3px solid hsl(35 70% 55%);
+			linear-gradient(135deg, rgba(99, 102, 241, 0.13), rgba(67, 110, 143, 0.05)),
+			hsl(220 55% 97%);
+		border-color: rgba(99, 102, 241, 0.28);
+		border-left: 3px solid hsl(230 58% 56%);
 	}
 
 	/* Blå — Dagbok med olika stilar */
@@ -1981,8 +1987,8 @@
 	}
 
 	.diary-path-card--write:hover:not(.diary-path-card--preview) {
-		border-color: hsl(35 55% 70%);
-		box-shadow: 0 4px 14px hsl(35 60% 55% / 0.18);
+		border-color: hsl(230 55% 70%);
+		box-shadow: 0 4px 14px hsl(230 58% 56% / 0.16);
 		transform: translateY(-1px);
 	}
 
@@ -2010,8 +2016,8 @@
 	}
 
 	.path-icon-wrap--write {
-		background: hsl(35 65% 90%);
-		color: hsl(35 72% 38%);
+		background: hsl(230 60% 93%);
+		color: hsl(230 58% 42%);
 	}
 
 	.path-icon-wrap--guided {
@@ -2034,10 +2040,10 @@
 	/* Mörkt läge */
 	:global(.dark) .diary-path-card--write {
 		background:
-			linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(245, 158, 11, 0.04)),
-			hsl(35 18% 12%);
-		border-color: rgba(245, 158, 11, 0.35);
-		border-left: 3px solid hsl(35 62% 48%);
+			linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(67, 110, 143, 0.05)),
+			hsl(222 22% 13%);
+		border-color: rgba(129, 140, 248, 0.3);
+		border-left: 3px solid hsl(230 58% 58%);
 	}
 
 	:global(.dark) .diary-path-card--guided {
@@ -2049,8 +2055,8 @@
 	}
 
 	:global(.dark) .path-icon-wrap--write {
-		background: hsl(35 28% 18%);
-		color: hsl(35 68% 60%);
+		background: hsl(230 26% 20%);
+		color: hsl(230 62% 68%);
 	}
 
 	:global(.dark) .path-icon-wrap--guided {
