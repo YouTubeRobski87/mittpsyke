@@ -52,7 +52,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	let entries: DiaryEntry[] = [];
-	let sharedEntryIds: string[] = [];
 	let hasMoreEntries = false;
 
 	const diaryQuery = await locals.supabase
@@ -95,29 +94,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 		entries = mappedEntries.slice(0, INITIAL_DIARY_ENTRY_LIMIT);
 	}
 
-	const visibleEntryIds = entries.map((entry) => entry.id).filter(Boolean);
-	if (visibleEntryIds.length > 0) {
-		const sharesQuery = await locals.supabase
-			.from('community_posts')
-			.select('diary_entry_id')
-			.eq('user_id', user.id)
-			.in('diary_entry_id', visibleEntryIds)
-			.is('deleted_at', null);
-
-		if (!sharesQuery.error || isMissingTableError(sharesQuery.error, 'community_posts')) {
-			sharedEntryIds = (sharesQuery.data ?? [])
-				.map((row) => (typeof row.diary_entry_id === 'string' ? row.diary_entry_id : ''))
-				.filter(Boolean);
-		}
-	}
-
 	return {
 		title: 'Dagbok',
 		description: 'Skriv i din dagbok, följ ditt mående och spara dina tankar i lugn takt.',
 		noindex: true,
 		isLoggedIn: true,
 		entries,
-		hasMoreEntries,
-		sharedEntryIds
+		hasMoreEntries
 	};
 };

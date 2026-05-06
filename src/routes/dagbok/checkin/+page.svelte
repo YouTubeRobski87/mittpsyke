@@ -22,16 +22,10 @@
 		type DiaryEntry
 	} from '$lib/state/diary';
 	import type { Session, User } from '@supabase/supabase-js';
-	import type {
-		CommunityMySharesSuccessResponse,
-		CreateCommunityShareSuccessResponse,
-		CreateCommunityUnshareSuccessResponse
-	} from '$lib/types';
 
 	type PageData = {
 		entries?: DiaryEntry[];
 		hasMoreEntries?: boolean;
-		sharedEntryIds?: string[];
 		session?: Session | null;
 	};
 
@@ -81,7 +75,6 @@
 	let startIndex = $derived((currentPage - 1) * entriesPerPage);
 	let endIndex = $derived(Math.min(startIndex + entriesPerPage, totalEntries));
 	let paginatedEntries = $derived(filteredEntries.slice(startIndex, endIndex));
-	let sharedEntryIds = $state(new Set<string>());
 	// Kalenderfilter: YYYY-MM-DD eller null för att visa alla inlägg
 	let calendarFilterDate = $state<string | null>(null);
 
@@ -92,19 +85,6 @@
 	let uploadImageError = $state('');
 	let draftImageUploadId = 0;
 
-	let confirmingShareEntryId = $state('');
-	let confirmingUnshareEntryId = $state('');
-	let sharingEntryId = $state('');
-	let unsharingEntryId = $state('');
-	let shareFeedbackEntryId = $state('');
-	let shareFeedbackMessage = $state('');
-	let shareFeedbackType = $state<'success' | 'error' | 'info'>('info');
-	let shareFeedbackShowCommunityLink = $state(false);
-	let confirmingDeviceShareEntryId = $state('');
-	let sharingDeviceEntryId = $state('');
-	let deviceShareFeedbackEntryId = $state('');
-	let deviceShareFeedbackMessage = $state('');
-	let deviceShareFeedbackType = $state<'success' | 'error' | 'info'>('info');
 	let editingEntryId = $state('');
 	let editingText = $state('');
 	let editingMood = $state('');
@@ -121,7 +101,6 @@
 		entries = data.entries ?? [];
 		hasMoreEntries = data.hasMoreEntries ?? false;
 		sessionUser = data.session?.user ?? null;
-		sharedEntryIds = new Set<string>(data.sharedEntryIds ?? []);
 	});
 
 	function parseStoredDraft(value: string | null): string {
@@ -219,24 +198,12 @@
 		}).length;
 	}
 
-	function isEntryShared(entryId: string): boolean {
-		return sharedEntryIds.has(entryId);
-	}
-
-	function setShareFeedback(entryId: string, message: string, type: 'success' | 'error' | 'info') {
-		shareFeedbackEntryId = entryId;
-		shareFeedbackMessage = message;
-		shareFeedbackType = type;
-		shareFeedbackShowCommunityLink = false;
-	}
-
 	async function loadEntries(options: { force?: boolean; limit?: number } = {}) {
 		const { data } = await supabase.auth.getSession();
 		const userId = data.session?.user?.id;
 		if (!userId) {
 			entries = [];
 			hasMoreEntries = false;
-			sharedEntryIds = new Set();
 			return;
 		}
 
@@ -256,7 +223,6 @@
 				force: true,
 				limit: entries.length + DIARY_ENTRY_PAGE_SIZE
 			});
-			await loadSharedEntryIds();
 		} catch (error) {
 			loadError = error instanceof Error ? error.message : 'Kunde inte hämta fler inlägg just nu.';
 		} finally {
@@ -272,496 +238,7 @@
 		if (currentPage < totalPages) currentPage += 1;
 	}
 
-	async function loadSharedEntryIds() {
-		const { data } = await supabase.auth.getSession();
-		const session = data.session;
-
-		if (!session?.access_token) {
-			sharedEntryIds = new Set();
-			return;
-		}
-
-		try {
-			const response = await fetch('/api/community/my-shares', {
-				method: 'GET',
-				headers: {
-					Authorization: `Bearer ${session.access_token}`
-				}
-			});
-
-			if (!response.ok) {
-				return;
-			}
-
-			const payload = (await response.json().catch(() => null)) as CommunityMySharesSuccessResponse | null;
-			if (!payload?.success || !Array.isArray(payload.diaryEntryIds)) {
-				return;
-			}
-
-			sharedEntryIds = new Set(payload.diaryEntryIds.filter((id) => typeof id === 'string' && id.length > 0));
-		} catch {
-			// Silent fallback: sharing status can load later without blocking the diary.
-		}
-	}
-
-	function openShareConfirmation(entryId: string) {
-		confirmingShareEntryId = entryId;
-		confirmingUnshareEntryId = '';
-		confirmingDeviceShareEntryId = '';
-		shareFeedbackEntryId = '';
-		shareFeedbackMessage = '';
-		shareFeedbackShowCommunityLink = false;
-	}
-
-	function closeShareConfirmation() {
-		if (sharingEntryId) return;
-		confirmingShareEntryId = '';
-	}
-
-	function openUnshareConfirmation(entryId: string) {
-		confirmingUnshareEntryId = entryId;
-		confirmingShareEntryId = '';
-		confirmingDeviceShareEntryId = '';
-		shareFeedbackEntryId = '';
-		shareFeedbackMessage = '';
-		shareFeedbackShowCommunityLink = false;
-	}
-
-	function closeUnshareConfirmation() {
-		if (unsharingEntryId) return;
-		confirmingUnshareEntryId = '';
-	}
-
-	async function shareEntryAnonymously(entry: DiaryEntry) {
-		if (sharingEntryId || unsharingEntryId || !entry.id) return;
-
-		if (isEntryShared(entry.id)) {
-			setShareFeedback(entry.id, 'Det här inlägget är redan delat i Gemenskap.', 'info');
-			confirmingShareEntryId = '';
-			return;
-		}
-
-		sharingEntryId = entry.id;
-
-		try {
-			const { data } = await supabase.auth.getSession();
-			const session = data.session;
-
-			if (!session?.access_token) {
-				setShareFeedback(entry.id, 'Logga in för att dela inlägget anonymt.', 'error');
-				return;
-			}
-
-			const response = await fetch('/api/community/share', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.access_token}`
-				},
-				body: JSON.stringify({ diaryEntryId: entry.id })
-			});
-
-			const payload = (await response.json().catch(() => null)) as
-				| CreateCommunityShareSuccessResponse
-				| { success?: boolean; error?: string; alreadyShared?: boolean }
-				| null;
-
-			if (!response.ok || !payload) {
-				const errorPayload = payload as { error?: string; alreadyShared?: boolean } | null;
-				const alreadyShared = response.status === 409 && Boolean(errorPayload?.alreadyShared);
-				if (alreadyShared) {
-					sharedEntryIds = new Set([...sharedEntryIds, entry.id]);
-					setShareFeedback(entry.id, 'Det här inlägget är redan delat i Gemenskap.', 'info');
-				} else {
-					setShareFeedback(entry.id, errorPayload?.error || 'Kunde inte dela inlägget just nu.', 'error');
-				}
-				return;
-			}
-
-			if (!payload.success) {
-				setShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
-				return;
-			}
-
-			sharedEntryIds = new Set([...sharedEntryIds, entry.id]);
-			setShareFeedback(entry.id, 'Inlägget har delats anonymt i Gemenskap.', 'success');
-			shareFeedbackShowCommunityLink = true;
-			confirmingShareEntryId = '';
-		} catch (error) {
-			setShareFeedback(
-				entry.id,
-				error instanceof Error ? error.message : 'Kunde inte dela inlägget just nu.',
-				'error'
-			);
-		} finally {
-			sharingEntryId = '';
-		}
-	}
-
-	async function unshareEntry(entry: DiaryEntry) {
-		if (sharingEntryId || unsharingEntryId || !entry.id) return;
-
-		if (!isEntryShared(entry.id)) {
-			setShareFeedback(entry.id, 'Det finns ingen aktiv delning att ta bort.', 'info');
-			confirmingUnshareEntryId = '';
-			return;
-		}
-
-		unsharingEntryId = entry.id;
-
-		try {
-			const { data } = await supabase.auth.getSession();
-			const session = data.session;
-
-			if (!session?.access_token) {
-				setShareFeedback(entry.id, 'Logga in för att ta bort delningen.', 'error');
-				return;
-			}
-
-			const response = await fetch('/api/community/unshare', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${session.access_token}`
-				},
-				body: JSON.stringify({ diaryEntryId: entry.id })
-			});
-
-			const payload = (await response.json().catch(() => null)) as
-				| CreateCommunityUnshareSuccessResponse
-				| { success?: boolean; error?: string; alreadyUnshared?: boolean }
-				| null;
-
-			if (!response.ok || !payload) {
-				const errorPayload = payload as { error?: string; alreadyUnshared?: boolean } | null;
-				const alreadyUnshared = response.status === 409 && Boolean(errorPayload?.alreadyUnshared);
-
-				if (alreadyUnshared || response.status === 404) {
-					const nextSharedIds = new Set(sharedEntryIds);
-					nextSharedIds.delete(entry.id);
-					sharedEntryIds = nextSharedIds;
-					setShareFeedback(entry.id, 'Delningen är redan borttagen från Gemenskap.', 'info');
-				} else {
-					setShareFeedback(
-						entry.id,
-						errorPayload?.error || 'Kunde inte ta bort delningen just nu.',
-						'error'
-					);
-				}
-				return;
-			}
-
-			if (!payload.success) {
-				setShareFeedback(entry.id, 'Kunde inte ta bort delningen just nu.', 'error');
-				return;
-			}
-
-			const nextSharedIds = new Set(sharedEntryIds);
-			nextSharedIds.delete(entry.id);
-			sharedEntryIds = nextSharedIds;
-			setShareFeedback(entry.id, 'Delningen har tagits bort från Gemenskap.', 'success');
-			confirmingUnshareEntryId = '';
-		} catch (error) {
-			setShareFeedback(
-				entry.id,
-				error instanceof Error ? error.message : 'Kunde inte ta bort delningen just nu.',
-				'error'
-			);
-		} finally {
-			unsharingEntryId = '';
-		}
-	}
-
-	function setDeviceShareFeedback(
-		entryId: string,
-		message: string,
-		type: 'success' | 'error' | 'info'
-	) {
-		deviceShareFeedbackEntryId = entryId;
-		deviceShareFeedbackMessage = message;
-		deviceShareFeedbackType = type;
-	}
-
-	function buildDiarySharePayload(entry: DiaryEntry, files?: File[]): ShareData {
-		const text = entry.content.trim();
-		const payload: ShareData = {
-			title: 'Dagboksinlägg från MittPsyke',
-			text: text || 'Dagboksinlägg från MittPsyke'
-		};
-		if (files && files.length > 0) {
-			payload.files = files;
-		}
-		return payload;
-	}
-
-	function extensionFromMimeType(mimeType: string): string {
-		if (mimeType === 'image/jpeg') return 'jpg';
-		if (mimeType === 'image/png') return 'png';
-		if (mimeType === 'image/webp') return 'webp';
-		if (mimeType === 'image/gif') return 'gif';
-		return 'jpg';
-	}
-
-	function inferMimeTypeFromUrl(url: string): string {
-		const cleanUrl = url.split('?')[0]?.toLowerCase() ?? '';
-		if (cleanUrl.endsWith('.png')) return 'image/png';
-		if (cleanUrl.endsWith('.webp')) return 'image/webp';
-		if (cleanUrl.endsWith('.gif')) return 'image/gif';
-		return 'image/jpeg';
-	}
-
-	function buildImageFileName(entry: DiaryEntry, mimeType: string): string {
-		const extension = extensionFromMimeType(mimeType);
-		if (entry.created_at) {
-			const date = new Date(entry.created_at);
-			if (!Number.isNaN(date.getTime())) {
-				const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-				return `dagbok-${dateKey}.${extension}`;
-			}
-		}
-		return `dagbok-bild.${extension}`;
-	}
-
-	async function fetchShareImageFile(entry: DiaryEntry): Promise<File | null> {
-		if (!entry.image_url) return null;
-
-		let includeCredentials = false;
-		if (typeof window !== 'undefined') {
-			try {
-				const resolvedUrl = new URL(entry.image_url, window.location.origin);
-				includeCredentials = resolvedUrl.origin === window.location.origin;
-			} catch {
-				includeCredentials = false;
-			}
-		}
-
-		let response: Response;
-		try {
-			response = await fetch(
-				entry.image_url,
-				includeCredentials
-					? {
-							credentials: 'include'
-						}
-					: undefined
-			);
-		} catch (error) {
-			console.warn('[diary/share] Fetch av sparad bild misslyckades.', {
-				imageUrl: entry.image_url,
-				includeCredentials,
-				error
-			});
-			throw new Error('Kunde inte hämta bilden för delning.');
-		}
-
-		if (!response.ok) {
-			console.warn('[diary/share] Kunde inte hämta sparad bild för delning.', {
-				imageUrl: entry.image_url,
-				includeCredentials,
-				status: response.status,
-				contentType: response.headers.get('content-type')
-			});
-			throw new Error('Kunde inte hämta bilden för delning.');
-		}
-
-		const blob = await response.blob();
-		const mimeType = blob.type || inferMimeTypeFromUrl(entry.image_url);
-		const normalizedBlob =
-			blob.type === mimeType
-				? blob
-				: new Blob([blob], {
-						type: mimeType
-					});
-		const fileName = buildImageFileName(entry, mimeType);
-		return new File([normalizedBlob], fileName, {
-			type: mimeType,
-			lastModified: Date.now()
-		});
-	}
-
-	function canShareFiles(files: File[]): boolean {
-		if (typeof navigator === 'undefined') return false;
-		if (typeof navigator.canShare !== 'function') return false;
-		try {
-			return navigator.canShare({ files });
-		} catch {
-			return false;
-		}
-	}
-
-	async function shareTextOrCopy(entry: DiaryEntry): Promise<'shared' | 'copied' | 'cancelled' | 'failed'> {
-		const payload = buildDiarySharePayload(entry);
-
-		if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-			try {
-				await navigator.share(payload);
-				return 'shared';
-			} catch (error) {
-				if (error instanceof DOMException && error.name === 'AbortError') {
-					return 'cancelled';
-				}
-			}
-		}
-
-		if (
-			typeof navigator !== 'undefined' &&
-			navigator.clipboard &&
-			typeof navigator.clipboard.writeText === 'function'
-		) {
-			try {
-				await navigator.clipboard.writeText(payload.text ?? '');
-				return 'copied';
-			} catch {
-				return 'failed';
-			}
-		}
-
-		return 'failed';
-	}
-
-	function closeDeviceShareChoice() {
-		if (sharingDeviceEntryId) return;
-		confirmingDeviceShareEntryId = '';
-	}
-
-	async function openDeviceShare(entry: DiaryEntry) {
-		if (!entry.id || sharingDeviceEntryId) return;
-
-		deviceShareFeedbackEntryId = '';
-		deviceShareFeedbackMessage = '';
-		confirmingShareEntryId = '';
-		confirmingUnshareEntryId = '';
-
-		if (entry.image_url) {
-			confirmingDeviceShareEntryId = entry.id;
-			return;
-		}
-
-		await shareDiaryEntry(entry, 'text');
-	}
-
-	function applyTextFallbackFeedback(
-		entryId: string,
-		result: 'shared' | 'copied' | 'cancelled' | 'failed',
-		messages: { shared: string; copied: string }
-	): boolean {
-		if (result === 'shared') {
-			setDeviceShareFeedback(entryId, messages.shared, 'info');
-			return true;
-		}
-		if (result === 'copied') {
-			setDeviceShareFeedback(entryId, messages.copied, 'info');
-			return true;
-		}
-		return false;
-	}
-
-	async function shareDiaryEntry(entry: DiaryEntry, mode: 'text' | 'text_with_image') {
-		if (!entry.id || sharingDeviceEntryId) return;
-		sharingDeviceEntryId = entry.id;
-		confirmingDeviceShareEntryId = '';
-
-		try {
-			if (mode === 'text_with_image' && entry.image_url) {
-				const canUseShareApi =
-					typeof navigator !== 'undefined' && typeof navigator.share === 'function';
-				const hasFileShareCapability =
-					typeof navigator !== 'undefined' && typeof navigator.canShare === 'function';
-
-				if (!canUseShareApi || !hasFileShareCapability) {
-					const fallbackResult = await shareTextOrCopy(entry);
-					if (
-						applyTextFallbackFeedback(entry.id, fallbackResult, {
-							shared:
-								'Den här enheten eller appen verkar inte stödja bilddelning här. Texten delades i stället.',
-							copied:
-								'Den här enheten eller appen verkar inte stödja bilddelning här. Texten kopierades i stället.'
-						})
-					) {
-						return;
-					}
-					if (fallbackResult === 'cancelled') return;
-					setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
-					return;
-				}
-
-				try {
-					const imageFile = await fetchShareImageFile(entry);
-					const files = imageFile ? [imageFile] : [];
-					const supportsFileShare = files.length > 0 && canShareFiles(files);
-
-					if (!supportsFileShare) {
-						const fallbackResult = await shareTextOrCopy(entry);
-						if (
-							applyTextFallbackFeedback(entry.id, fallbackResult, {
-								shared:
-									'Den här enheten eller appen verkar inte stödja bilddelning här. Texten delades i stället.',
-								copied:
-									'Den här enheten eller appen verkar inte stödja bilddelning här. Texten kopierades i stället.'
-							})
-						) {
-							return;
-						}
-						if (fallbackResult === 'cancelled') return;
-						setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
-						return;
-					}
-
-					try {
-						await navigator.share(buildDiarySharePayload(entry, files));
-						setDeviceShareFeedback(entry.id, 'Inlägget delades med text och bild.', 'success');
-						return;
-					} catch (error) {
-						if (error instanceof DOMException && error.name === 'AbortError') return;
-						const fallbackResult = await shareTextOrCopy(entry);
-						if (
-							applyTextFallbackFeedback(entry.id, fallbackResult, {
-								shared: 'Den valda appen tog bara text. Texten delades i stället.',
-								copied: 'Den valda appen tog bara text. Texten kopierades i stället.'
-							})
-						) {
-							return;
-						}
-						if (fallbackResult === 'cancelled') return;
-						setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
-						return;
-					}
-				} catch {
-					const fallbackResult = await shareTextOrCopy(entry);
-					if (
-						applyTextFallbackFeedback(entry.id, fallbackResult, {
-							shared: 'Kunde inte hämta den sparade bilden. Texten delades i stället.',
-							copied: 'Kunde inte hämta den sparade bilden. Texten kopierades i stället.'
-						})
-					) {
-						return;
-					}
-					if (fallbackResult === 'cancelled') return;
-					setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
-					return;
-				}
-			}
-
-			const result = await shareTextOrCopy(entry);
-			if (result === 'shared') {
-				setDeviceShareFeedback(entry.id, 'Inlägget delades.', 'success');
-				return;
-			}
-			if (result === 'copied') {
-				setDeviceShareFeedback(entry.id, 'Texten kopierades.', 'info');
-				return;
-			}
-			if (result === 'cancelled') return;
-			setDeviceShareFeedback(entry.id, 'Kunde inte dela inlägget just nu.', 'error');
-		} finally {
-			sharingDeviceEntryId = '';
-		}
-	}
-
 	function openEditMode(entry: DiaryEntry) {
-		confirmingShareEntryId = '';
-		confirmingUnshareEntryId = '';
-		confirmingDeviceShareEntryId = '';
 		confirmingDeleteEntryId = '';
 		deleteErrorEntryId = '';
 		deleteErrorMessage = '';
@@ -833,9 +310,6 @@
 	function openDeleteConfirmation(entryId: string) {
 		if (deletingEntryId) return;
 		confirmingDeleteEntryId = entryId;
-		confirmingShareEntryId = '';
-		confirmingUnshareEntryId = '';
-		confirmingDeviceShareEntryId = '';
 		editingEntryId = '';
 		deleteErrorEntryId = '';
 		deleteErrorMessage = '';
@@ -1043,13 +517,6 @@
 		}
 	}
 
-	async function openShareForLatestEntry() {
-		await openLatestEntries();
-		const latestEntry = entries[0];
-		if (!latestEntry?.id || isEntryShared(latestEntry.id)) return;
-		openShareConfirmation(latestEntry.id);
-	}
-
 	async function saveDraftToDiary() {
 		if (!draftText.trim() || savingDraft) return;
 		draftError = '';
@@ -1123,7 +590,6 @@
 		if (!sessionUser) {
 			entries = [];
 			hasMoreEntries = false;
-			sharedEntryIds = new Set();
 			loading = false;
 			return;
 		}
@@ -1153,10 +619,6 @@
 		try {
 			if (entries.length === 0) {
 				await loadEntries();
-			}
-
-			if (sharedEntryIds.size === 0) {
-				await loadSharedEntryIds();
 			}
 		} catch (error) {
 			loadError = error instanceof Error ? error.message : 'Kunde inte ladda dagboken just nu.';
@@ -1440,17 +902,14 @@
 								eller komma tillbaka senare och fortsätta där du slutade.
 							</p>
 							<p class="mt-2 text-sm auth-muted">
-								Vill du behålla det privat eller dela anonymt med andra i Gemenskapen?
+								Det här är din privata plats för tankar.
 							</p>
 							<div class="actions-row mt-3">
 								<button type="button" class="auth-button primary" onclick={openWriteEditor}>
 									Skriv några ord till
 								</button>
 								<button type="button" class="auth-button" onclick={openLatestEntries}>
-									Behåll privat
-								</button>
-								<button type="button" class="auth-button" onclick={openShareForLatestEntry}>
-									Dela i Gemenskapen
+									Se inlägget
 								</button>
 								{#if hasSavedEntries}
 					<a href="/dagbok/checkin#senaste-inlagg" class="auth-button">Se dina senaste inlägg</a>
@@ -1569,96 +1028,6 @@
 													loading="lazy"
 												/>
 											{/if}
-											<div class="share-row">
-												{#if isEntryShared(entry.id)}
-													<p class="share-status auth-muted">Redan delat i Gemenskap.</p>
-													<button
-														type="button"
-														class="share-trigger"
-														onclick={() => openUnshareConfirmation(entry.id)}
-													>
-														Ta bort delning
-													</button>
-													<a href="/dashboard/gemenskap" class="share-link">Öppna Gemenskap</a>
-												{:else}
-													<button
-														type="button"
-														class="share-trigger"
-														onclick={() => shareEntryAnonymously(entry)}
-													>
-														Dela anonymt i Gemenskapen
-													</button>
-												{/if}
-											</div>
-
-											{#if confirmingShareEntryId === entry.id}
-												<div class="share-confirmation" role="status">
-													<h3>Dela anonymt?</h3>
-													<p>
-														Det här publicerar en anonym version av ditt inlägg i Gemenskap.
-														Ditt namn visas aldrig för andra. Kontrollera att inlägget inte
-														innehåller namn, adresser, telefonnummer eller andra
-														personuppgifter.
-													</p>
-													<div class="share-confirmation-actions">
-														<button
-															type="button"
-															class="auth-button"
-															onclick={closeShareConfirmation}
-															disabled={sharingEntryId === entry.id}
-														>
-															Avbryt
-														</button>
-														<button
-															type="button"
-															class="auth-button primary"
-															onclick={() => shareEntryAnonymously(entry)}
-															disabled={sharingEntryId === entry.id}
-														>
-															{sharingEntryId === entry.id ? 'Delar...' : 'Dela anonymt'}
-														</button>
-													</div>
-												</div>
-											{/if}
-
-											{#if confirmingUnshareEntryId === entry.id}
-												<div class="share-confirmation" role="status">
-													<h3>Ta bort delning?</h3>
-													<p>
-														Det här tar bort den anonyma versionen från Gemenskap. Ditt
-														privata dagboksinlägg finns kvar i Dagbok.
-													</p>
-													<div class="share-confirmation-actions">
-														<button
-															type="button"
-															class="auth-button"
-															onclick={closeUnshareConfirmation}
-															disabled={unsharingEntryId === entry.id}
-														>
-															Avbryt
-														</button>
-														<button
-															type="button"
-															class="auth-button primary"
-															onclick={() => unshareEntry(entry)}
-															disabled={unsharingEntryId === entry.id}
-														>
-															{unsharingEntryId === entry.id ? 'Tar bort...' : 'Ta bort delning'}
-														</button>
-													</div>
-												</div>
-											{/if}
-
-											{#if shareFeedbackEntryId === entry.id && shareFeedbackMessage}
-												<p class="share-feedback {shareFeedbackType}">
-													{shareFeedbackMessage}
-													{#if shareFeedbackType === 'success' && shareFeedbackShowCommunityLink}
-														<a href="/dashboard/gemenskap" class="share-feedback-link">
-															Öppna Gemenskap
-														</a>
-													{/if}
-												</p>
-											{/if}
 
 											<div class="entry-actions">
 												<button
@@ -1672,60 +1041,12 @@
 												<button
 													type="button"
 													class="entry-action-btn"
-													onclick={() => openDeviceShare(entry)}
-													disabled={sharingDeviceEntryId === entry.id}
-												>
-													{sharingDeviceEntryId === entry.id ? 'Delar...' : 'Dela'}
-												</button>
-												<span class="entry-action-sep" aria-hidden="true">·</span>
-												<button
-													type="button"
-													class="entry-action-btn"
 													onclick={() => openDeleteConfirmation(entry.id)}
 													disabled={Boolean(deletingEntryId)}
 												>
 													Ta bort
 												</button>
 											</div>
-
-											{#if confirmingDeviceShareEntryId === entry.id}
-												<div class="share-confirmation" role="dialog" aria-modal="false">
-													<h3>Välj delning</h3>
-													<p>Inlägget har en bild. Vad vill du dela?</p>
-													<div class="share-confirmation-actions">
-														<button
-															type="button"
-															class="auth-button primary"
-															onclick={() => shareDiaryEntry(entry, 'text')}
-															disabled={sharingDeviceEntryId === entry.id}
-														>
-															Dela endast text
-														</button>
-														<button
-															type="button"
-															class="auth-button"
-															onclick={() => shareDiaryEntry(entry, 'text_with_image')}
-															disabled={sharingDeviceEntryId === entry.id}
-														>
-															Dela text och bild
-														</button>
-														<button
-															type="button"
-															class="auth-button"
-															onclick={closeDeviceShareChoice}
-															disabled={sharingDeviceEntryId === entry.id}
-														>
-															Avbryt
-														</button>
-													</div>
-												</div>
-											{/if}
-
-											{#if deviceShareFeedbackEntryId === entry.id && deviceShareFeedbackMessage}
-												<p class="share-feedback {deviceShareFeedbackType}">
-													{deviceShareFeedbackMessage}
-												</p>
-											{/if}
 
 											{#if confirmingDeleteEntryId === entry.id}
 												<div class="entry-delete-confirm" role="status">
@@ -2573,92 +1894,6 @@
 		background: transparent;
 	}
 
-	.share-row {
-		margin-top: 0.8rem;
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.45rem 0.65rem;
-	}
-
-	.share-trigger {
-		border: 0;
-		background: transparent;
-		padding: 0;
-		font-size: 0.84rem;
-		color: hsl(var(--muted-foreground));
-		text-decoration: underline;
-		text-underline-offset: 2px;
-		cursor: pointer;
-	}
-
-	.share-trigger:hover {
-		color: hsl(var(--foreground));
-	}
-
-	.share-status {
-		margin: 0;
-		font-size: 0.82rem;
-	}
-
-	.share-link {
-		font-size: 0.82rem;
-		color: hsl(var(--muted-foreground));
-		text-decoration: underline;
-		text-underline-offset: 2px;
-	}
-
-	.share-confirmation {
-		margin-top: 0.75rem;
-		padding: 0.75rem 0.8rem;
-		border: 1px solid hsl(var(--border));
-		border-radius: var(--radius-input);
-		background: hsl(var(--surface-soft));
-	}
-
-	.share-confirmation h3 {
-		margin: 0;
-		font-size: 0.94rem;
-	}
-
-	.share-confirmation p {
-		margin: 0.45rem 0 0;
-		font-size: 0.85rem;
-		color: hsl(var(--muted-foreground));
-		line-height: 1.55;
-	}
-
-	.share-confirmation-actions {
-		margin-top: 0.75rem;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-
-	.share-feedback {
-		margin: 0.65rem 0 0;
-		font-size: 0.82rem;
-	}
-
-	.share-feedback.success {
-		color: hsl(var(--success-foreground));
-	}
-
-	.share-feedback.error {
-		color: hsl(var(--error-foreground));
-	}
-
-	.share-feedback.info {
-		color: hsl(var(--muted-foreground));
-	}
-
-	.share-feedback-link {
-		margin-left: 0.35rem;
-		text-decoration: underline;
-		text-underline-offset: 2px;
-		color: inherit;
-	}
-
 	:global(.dark) .diary-entry:hover {
 		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
 	}
@@ -2914,8 +2149,7 @@
 		.editor-primary,
 		.editor-secondary,
 		.entry-edit-actions .auth-button,
-		.entry-delete-actions .auth-button,
-		.share-confirmation-actions .auth-button {
+		.entry-delete-actions .auth-button {
 			width: 100%;
 			min-width: 0;
 		}
@@ -2961,7 +2195,6 @@
 			padding: 0.75rem;
 		}
 
-		.share-row,
 		.entry-actions {
 			gap: 0.35rem 0.55rem;
 		}
