@@ -415,44 +415,6 @@
 		maybeLoadInsights();
 	}
 
-	// ── Share feature ──
-	let shareConfirm = $state('');
-	let shareConfirmTimer: ReturnType<typeof setTimeout> | null = null;
-
-	function buildShareUrl(): string {
-		const params = new URLSearchParams();
-		if (streakData?.currentStreak) params.set('streak', String(streakData.currentStreak));
-		if (milestonesData?.totalEntries) params.set('total', String(milestonesData.totalEntries));
-		if (weeklyEntries) params.set('weekly', String(weeklyEntries));
-		return `https://www.mittpsyke.se/share?${params.toString()}`;
-	}
-
-	async function handleShare() {
-		const url = buildShareUrl();
-		const streakNum = streakData?.currentStreak ?? 0;
-		const text =
-			streakNum >= 1
-				? `Jag har checkat in med mig själv ${streakNum} dagar i rad 🌱`
-				: `Jag tar hand om mitt psyke med MittPsyke 🌱`;
-
-		if (navigator.share) {
-			try {
-				await navigator.share({ title: 'Min resa på MittPsyke', text, url });
-				return;
-			} catch {
-				// User cancelled — fall through to clipboard
-			}
-		}
-		// Fallback: copy to clipboard
-		try {
-			await navigator.clipboard.writeText(`${text}\n\n${url}`);
-			if (shareConfirmTimer) clearTimeout(shareConfirmTimer);
-			shareConfirm = 'Länk kopierad! ✓';
-			shareConfirmTimer = setTimeout(() => (shareConfirm = ''), 2800);
-		} catch {
-			shareConfirm = url;
-		}
-	}
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/framsteg" />
@@ -668,14 +630,6 @@
 			<section class="journey-header auth-panel">
 				<h2>Din resa</h2>
 				<p>Så har det gått, i din takt.</p>
-				{#if streakData || milestonesData}
-					<button class="share-btn" onclick={handleShare} aria-label="Dela din framstegssida">
-						🌱 Dela min resa
-					</button>
-					{#if shareConfirm}
-						<p class="share-confirm" role="status">{shareConfirm}</p>
-					{/if}
-				{/if}
 			</section>
 		</div>
 	</div>
@@ -687,30 +641,6 @@
 	.journey-header h2 { font-size: 1.35rem; margin: 0; color: hsl(var(--foreground)); }
 	.journey-header p { margin: 0.45rem 0 0; font-size: 1rem; color: hsl(var(--muted-foreground)); font-style: italic; }
 
-	.share-btn {
-		margin-top: 1rem;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4rem;
-		padding: 0.55rem 1.2rem;
-		border-radius: 999px;
-		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface));
-		color: hsl(var(--foreground));
-		font-size: 0.88rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: background-color 150ms ease, border-color 150ms ease;
-	}
-	.share-btn:hover { background: hsl(var(--surface-soft)); border-color: hsl(var(--muted-foreground) / 0.45); }
-
-	.share-confirm {
-		margin-top: 0.5rem;
-		font-size: 0.82rem;
-		color: hsl(var(--muted-foreground));
-		animation: fadeIn 0.2s ease;
-	}
-	@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 	.loading-state, .error-state { text-align: center; padding: 2rem 1rem; font-size: 1.05rem; }
 	.loading-state { color: hsl(var(--muted-foreground)); }
 	.error-state small { display: block; margin-top: 0.5rem; opacity: 0.9; font-size: 0.9rem; }
