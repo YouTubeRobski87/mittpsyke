@@ -165,11 +165,15 @@
 	});
 
 	const weeklyEncouragement = $derived.by(() => {
-		if (!streakData) return 'Det finns inget som måste vara perfekt för att räknas.';
-		if (streakData.currentStreak >= 7) return 'En vecka i rad — det visar att du prioriterar dig själv. Fint.';
-		if (streakData.currentStreak >= 3) return 'Flera dagar i rad. Små steg som gör skillnad.';
-		if (streakData.currentStreak >= 1) return 'Att du är här räcker. Börja där du är.';
+		if (weeklyEntries >= 1) return 'Varje rad räknas, även när den är kort.';
 		return 'Det finns inget som måste vara perfekt för att räknas.';
+	});
+
+	const latestEntryText = $derived.by(() => {
+		if (!streakData?.lastEntryDate) return 'Inte ännu';
+		if (streakData.lastEntryDaysAgo <= 0) return 'Idag';
+		if (streakData.lastEntryDaysAgo === 1) return 'Igår';
+		return `${streakData.lastEntryDaysAgo} dagar sedan`;
 	});
 
 	// ── Reflection prompts (rotate based on day) ──
@@ -533,32 +537,23 @@
 			<section class="card overview-card">
 				<h2 class="overview-heading">Lugn överblick</h2>
 				<div class="overview-grid">
-					{#if streakData}
-						<div class="overview-item">
-							<div class="overview-number">{streakData.currentStreak}</div>
-							<div class="overview-label">dagar i rad</div>
-						</div>
-						<div class="overview-item">
-							<div class="overview-number">{streakData.longestStreak}</div>
-							<div class="overview-label">längsta streak</div>
-						</div>
-					{/if}
 					{#if milestonesData}
 						<div class="overview-item">
 							<div class="overview-number">{milestonesData.totalEntries}</div>
-							<div class="overview-label">totalt inlägg</div>
+							<div class="overview-label">Texter skrivna</div>
 						</div>
+					{/if}
+					<div class="overview-item">
+						<div class="overview-number">{activeDays}</div>
+						<div class="overview-label">Dagar med avtryck</div>
+					</div>
+					{#if streakData}
 						<div class="overview-item">
-							<div class="overview-number">{weeklyEntries}</div>
-							<div class="overview-label">den här veckan</div>
+							<div class="overview-number overview-number--text">{latestEntryText}</div>
+							<div class="overview-label">Senaste gången du skrev</div>
 						</div>
 					{/if}
 				</div>
-				{#if streakData && streakData.lastEntryDaysAgo <= 1}
-					<p class="overview-note">Fint att du fortsätter komma tillbaka.</p>
-				{:else if streakData && streakData.lastEntryDaysAgo > 1}
-					<p class="overview-note">Senaste inlägget var {streakData.lastEntryDaysAgo} dagar sedan. Det går bra att börja om.</p>
-				{/if}
 			</section>
 		{/if}
 
@@ -618,28 +613,20 @@
 		{/if}
 
 		<!-- ── Tom state ── -->
-		{#if !streakData || streakData.currentStreak === 0}
+		{#if entryCount === 0}
 			<section class="card empty-state">
 				<h2>Börja där du är</h2>
-				<p>Inga framsteg visas ännu — och det är helt okej. När du börjar använda dagboken kan du följa din resa här.</p>
+				<p>Du behöver inte ha gjort framsteg för att börja se mönster. Skriv en rad idag, så bygger MittPsyke långsamt upp din överblick.</p>
 				<a href="/dagbok/checkin" class="auth-button primary">Skriv ett inlägg</a>
 			</section>
 		{/if}
 			{/if}
-
-			<section class="journey-header auth-panel">
-				<h2>Din resa</h2>
-				<p>Så har det gått, i din takt.</p>
-			</section>
 		</div>
 	</div>
 </main>
 
 <style>
 	.journey-container { display: grid; gap: 1rem; }
-	.journey-header { text-align: center; margin: 0; }
-	.journey-header h2 { font-size: 1.35rem; margin: 0; color: hsl(var(--foreground)); }
-	.journey-header p { margin: 0.45rem 0 0; font-size: 1rem; color: hsl(var(--muted-foreground)); font-style: italic; }
 
 	.loading-state, .error-state { text-align: center; padding: 2rem 1rem; font-size: 1.05rem; }
 	.loading-state { color: hsl(var(--muted-foreground)); }
@@ -692,8 +679,8 @@
 	.overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1.2rem; margin-bottom: 1rem; }
 	.overview-item { text-align: center; padding: 1rem 0.5rem; border-radius: 0.5rem; background: var(--theme-bg, hsl(var(--surface-soft))); }
 	.overview-number { font-size: 2.2rem; font-weight: 700; color: var(--theme-accent, #436e8f); }
+	.overview-number--text { font-size: 1.25rem; line-height: 1.2; }
 	.overview-label { font-size: 0.85rem; color: hsl(var(--muted-foreground)); margin-top: 0.3rem; }
-	.overview-note { font-size: 0.9rem; color: hsl(var(--muted-foreground)); text-align: center; font-style: italic; margin: 0.5rem 0 0 0; }
 
 	/* Milestones */
 	.milestones-section + .milestones-section { margin-top: 1.2rem; }
@@ -744,7 +731,6 @@
 	.empty-state .auth-button { margin-top: 0.25rem; }
 
 	@media (max-width: 640px) {
-		.journey-header h2 { font-size: 1.2rem; }
 		.card { padding: 1.5rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.insights-card,
