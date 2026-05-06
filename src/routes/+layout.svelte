@@ -21,7 +21,6 @@
 	import { resolveAvatarPresetUrl } from '$lib/avatar';
 	import { page } from '$app/state';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
-	import { Search } from 'lucide-svelte';
 
 	const UNDER_CONSTRUCTION = false;
 
@@ -43,30 +42,25 @@
 	});
 
 	const signedInPrimaryNavItems: NavItem[] = [
-		{ href: '/chat', label: 'Chat' },
-		{ href: '/feedback', label: 'Feedback' }
+		{ href: '/chat', label: 'Chatta' },
+		{ href: '/dagbok', label: 'Dagbok' }
 	];
 
-	const resourceNavItems: NavItem[] = [
-		{ href: '/blogg', label: 'Artiklar', description: 'Läs mer om psykisk hälsa' },
+	const guideNavItems: NavItem[] = [
 		{ href: '/guider', label: 'Guider', description: 'Förstå vanliga besvär' },
-		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' }
-	];
-
-	const signedInDiaryNavItems: NavItem[] = [
-		{ href: '/dagbok/checkin', label: 'Skriv själv' },
-		{ href: '/dagars-avtryck', label: 'Dagbok med olika stilar' }
+		{ href: '/blogg', label: 'Artiklar', description: 'Läs mer om psykisk hälsa' },
+		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' },
+		{ href: '/sok', label: 'Sök', description: 'Hitta guider och artiklar' }
 	];
 
 	const signedInPortalNavItems: NavItem[] = [
 		{ href: '/framsteg', label: 'Framsteg' },
-		{ href: '/dashboard/gemenskap', label: 'Gemenskap' },
 		{ href: '/notiser', label: 'Notiser' },
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
 
 	const guestPrimaryNavItems: NavItem[] = [
-		{ href: '/chat', label: 'Chat' },
+		{ href: '/chat', label: 'Chatta' },
 		{ href: '/dagbok', label: 'Dagbok' }
 	];
 
@@ -615,8 +609,6 @@
 				</a>
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
 					{#if user}
-						<a href="/dagbok/checkin" class="text-sm transition-opacity {isActive('/dagbok') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive('/dagbok') ? 'page' : undefined}>Dagbok</a>
-						<a href="/dashboard/gemenskap" class="text-sm transition-opacity {isActive('/dashboard/gemenskap') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive('/dashboard/gemenskap') ? 'page' : undefined}>Gemenskap</a>
 						{#each signedInPrimaryNavItems as item}
 							<a href={item.href} class="text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 						{/each}
@@ -632,37 +624,29 @@
 								{item.label}
 							</a>
 						{/each}
-						{#each guestSecondaryNavItems as item}
-							<a
-								href={item.href}
-								class="text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
-								target={item.external ? '_blank' : undefined}
-								rel={item.external ? 'noopener noreferrer' : undefined}
-								aria-current={isActive(item.href) ? 'page' : undefined}
-							>
-								{item.label}
-							</a>
-						{/each}
 					{/if}
-					<details bind:this={resourcesMenuRef} class="resources-dropdown">
-						<summary class="text-sm transition-opacity {resourceNavItems.some((item) => isActive(item.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">Resurser</summary>
-						<div class="resources-dropdown-menu">
-							{#each resourceNavItems as item}
-								<a href={item.href} class="resources-dropdown-link" onclick={closeResourcesMenu} aria-current={isActive(item.href) ? 'page' : undefined}>
-									<span class="resources-dropdown-label">{item.label}</span>
-									<span class="resources-dropdown-description">{item.description}</span>
-								</a>
-							{/each}
+					<div class="resources-dropdown">
+						<div class="resources-dropdown-trigger text-sm transition-opacity {guideNavItems.some((item) => isActive(item.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">
+							<a href="/guider">Guider</a>
+							<details bind:this={resourcesMenuRef}>
+								<summary aria-label="Visa guider-menyn"></summary>
+								<div class="resources-dropdown-menu">
+									{#each guideNavItems as item}
+										<a href={item.href} class="resources-dropdown-link" onclick={closeResourcesMenu} aria-current={isActive(item.href) ? 'page' : undefined}>
+											<span class="resources-dropdown-label">{item.label}</span>
+											<span class="resources-dropdown-description">{item.description}</span>
+										</a>
+									{/each}
+								</div>
+							</details>
 						</div>
-					</details>
+					</div>
+					<a href="/dashboard/gemenskap" class="text-sm transition-opacity {isActive('/dashboard/gemenskap') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" aria-current={isActive('/dashboard/gemenskap') ? 'page' : undefined}>Gemenskap</a>
 				</nav>
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
 				<div class="hidden lg:flex items-center gap-3">
-					<a href="/sok" class="nav-search-link" aria-label="Sök" aria-current={isActive('/sok') ? 'page' : undefined}>
-						<Search size={18} aria-hidden="true" />
-					</a>
 					{#if user}
 						<span class="text-sm opacity-60">
 							{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}
@@ -807,10 +791,6 @@
 						</div>
 					{/if}
 
-					<button type="button" class="mobile-search-trigger" aria-label="Sök" onclick={openMobileSearch}>
-						<Search size={18} aria-hidden="true" />
-					</button>
-
 					<div class="hidden md:block">
 						<ThemeToggle />
 					</div>
@@ -866,19 +846,14 @@
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3" role="navigation" aria-label="Mobilmeny">
 				{#if user}
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
-					<p class="mobile-menu-section-title text-xs opacity-55">Dagbok</p>
-					{#each signedInDiaryNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
-					{/each}
-					<p class="mobile-menu-section-title text-xs opacity-55">Utforska</p>
 					{#each signedInPrimaryNavItems as item}
 						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
-					<button type="button" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={openMobileSearch}>Sök</button>
-					<p class="mobile-menu-section-title text-xs opacity-55">Resurser</p>
-					{#each resourceNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+					<a href="/guider" class="mobile-menu-link text-sm transition-opacity {isActive('/guider') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive('/guider') ? 'page' : undefined}>Guider</a>
+					{#each guideNavItems as item}
+						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
+					<a href="/dashboard/gemenskap" class="mobile-menu-link text-sm transition-opacity {isActive('/dashboard/gemenskap') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive('/dashboard/gemenskap') ? 'page' : undefined}>Gemenskap</a>
 					<p class="mobile-menu-section-title text-xs opacity-55">Profil</p>
 					{#each signedInPortalNavItems as item}
 						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>
@@ -904,11 +879,11 @@
 							{item.label}
 						</a>
 					{/each}
-					<button type="button" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={openMobileSearch}>Sök</button>
-					<p class="mobile-menu-section-title text-xs opacity-55">Resurser</p>
-					{#each resourceNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+					<a href="/guider" class="mobile-menu-link text-sm transition-opacity {isActive('/guider') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive('/guider') ? 'page' : undefined}>Guider</a>
+					{#each guideNavItems as item}
+						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
+					<a href="/dashboard/gemenskap" class="mobile-menu-link text-sm transition-opacity {isActive('/dashboard/gemenskap') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive('/dashboard/gemenskap') ? 'page' : undefined}>Gemenskap</a>
 					{#each guestSecondaryNavItems as item}
 						<a
 							href={item.href}
@@ -953,6 +928,18 @@
 		<span class="mx-2">&middot;</span>
 		<a href="/feedback" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
 			Feedback
+		</a>
+		<span class="mx-2">&middot;</span>
+		<a href="/blogg" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Artiklar
+		</a>
+		<span class="mx-2">&middot;</span>
+		<a href="/ovningar" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Övningar
+		</a>
+		<span class="mx-2">&middot;</span>
+		<a href="/sok" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Sök
 		</a>
 		<span class="mx-2">&middot;</span>
 		<a href="/integritet" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
@@ -1070,12 +1057,18 @@
 		top: 1rem;
 	}
 
-	.mobile-search-trigger {
-		display: none;
-	}
-
 	.resources-dropdown {
 		position: relative;
+	}
+
+	.resources-dropdown-trigger {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.2rem;
+	}
+
+	.resources-dropdown details {
+		display: inline-flex;
 	}
 
 	.resources-dropdown summary {
@@ -1088,7 +1081,7 @@
 	}
 
 	.resources-dropdown summary::after {
-		content: ' ▾';
+		content: '▾';
 		font-size: 0.72rem;
 	}
 
@@ -1144,25 +1137,6 @@
 		background: rgba(45, 212, 191, 0.12);
 	}
 
-	.nav-search-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 999px;
-		color: inherit;
-		opacity: 0.82;
-		transition: background-color 0.15s ease, opacity 0.15s ease;
-	}
-
-	.nav-search-link:hover,
-	.nav-search-link:focus-visible,
-	.nav-search-link[aria-current='page'] {
-		background: rgba(15, 118, 110, 0.1);
-		opacity: 1;
-	}
-
 	.mobile-search-overlay {
 		position: fixed;
 		inset: 0;
@@ -1201,17 +1175,6 @@
 	}
 
 	@media (max-width: 767px) {
-		.mobile-search-trigger {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			width: 2.5rem;
-			height: 2.5rem;
-			border-radius: 999px;
-			color: hsl(var(--foreground));
-			font-size: 1rem;
-		}
-
 		:global(.site-header button[aria-label="Växla tema"]) {
 			min-width: 2rem;
 			min-height: 2rem;
@@ -1243,6 +1206,11 @@
 		text-align: left;
 		background: transparent;
 		border: 0;
+	}
+
+	.mobile-menu-sub-link {
+		padding-left: 0.9rem;
+		opacity: 0.78;
 	}
 
 		.mobile-menu-link + .mobile-menu-link {
