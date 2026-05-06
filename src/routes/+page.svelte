@@ -6,6 +6,7 @@
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import {
 		trackHeroCtaPrimaryClick,
+		trackHeroCtaSecondaryClick,
 		trackHomeCtaClick,
 		trackScrollToHowItWorks
 	} from '$lib/analytics';
@@ -54,6 +55,10 @@
 
 	function trackStartAnonymous() {
 		trackHeroCtaPrimaryClick();
+	}
+
+	function trackStartDiary() {
+		trackHeroCtaSecondaryClick();
 	}
 
 	onMount(() => {
@@ -129,7 +134,8 @@
 				<h1>Få hjälp att sortera tankar i lugn takt</h1>
 				<p>Skriv anonymt och få stöd att förstå det som känns – utan konto, utan press och i din egen takt.</p>
 				<div class="hero-actions">
-					<a href="/skriv" class="hero-cta hero-cta-primary" onclick={() => trackStartAnonymous()}>Börja skriva anonymt</a>
+					<a href="/chat" class="hero-cta hero-cta-primary" onclick={() => trackStartAnonymous()}>Chatta anonymt</a>
+					<a href="/dagbok" class="hero-cta hero-cta-primary" onclick={() => trackStartDiary()}>Skriv dagbok</a>
 				</div>
 				<p class="hero-trust-note">Din text sparas inte.</p>
 			</div>
