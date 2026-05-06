@@ -30,8 +30,24 @@
 		commentsLoaded: boolean;
 	};
 
-	let { data }: { data: { posts?: CommunityPost[] } } = $props();
-	const initialPosts = $derived(data.posts ?? []);
+	let {
+		data
+	}: {
+		data: {
+			items?: CommunityPost[];
+			currentPage?: number;
+			totalPages?: number;
+			totalItems?: number;
+			hasPreviousPage?: boolean;
+			hasNextPage?: boolean;
+		};
+	} = $props();
+	const initialPosts = $derived(data.items ?? []);
+	const currentPage = $derived(data.currentPage ?? 1);
+	const totalPages = $derived(data.totalPages ?? 1);
+	const totalItems = $derived(data.totalItems ?? initialPosts.length);
+	const hasPreviousPage = $derived(data.hasPreviousPage ?? false);
+	const hasNextPage = $derived(data.hasNextPage ?? false);
 	let posts = $state<CommunityPost[]>([]);
 	let confirmingUnsharePostId = $state('');
 	let unsharingPostId = $state('');
@@ -94,6 +110,10 @@
 			return `Humör ${Math.round(mood)}/10`;
 		}
 		return '';
+	}
+
+	function pageHref(page: number): string {
+		return `?page=${page}`;
 	}
 
 	function setFeedNotice(message: string, type: 'success' | 'error' | 'info') {
@@ -508,7 +528,7 @@
 			<section class="auth-panel feed-panel">
 				<h2>Senaste från Gemenskapen</h2>
 				<p class="feed-intro">
-					{posts.length} anonyma delningar i Gemenskapen. Senaste aktivitet: {latestActivityLabel}.
+					{totalItems} anonyma delningar i Gemenskapen. Senaste aktivitet: {latestActivityLabel}.
 				</p>
 				<a href="/dagbok/checkin#senaste-inlagg" class="feed-cta">Skriv i Dagbok och dela anonymt</a>
 				<div class="community-feed">
@@ -750,6 +770,19 @@
 						</article>
 					{/each}
 				</div>
+				<nav class="pagination" aria-label="Paginering för Gemenskapen">
+					{#if hasPreviousPage}
+						<a class="pagination-link" href={pageHref(currentPage - 1)}>Föregående</a>
+					{:else}
+						<span class="pagination-link disabled" aria-disabled="true">Föregående</span>
+					{/if}
+					<span class="pagination-status">Sida {currentPage} av {totalPages}</span>
+					{#if hasNextPage}
+						<a class="pagination-link" href={pageHref(currentPage + 1)}>Nästa</a>
+					{:else}
+						<span class="pagination-link disabled" aria-disabled="true">Nästa</span>
+					{/if}
+				</nav>
 			</section>
 		{:else}
 			<section class="auth-panel empty-panel">
@@ -867,6 +900,39 @@
 		margin-top: 0.75rem;
 		display: grid;
 		gap: 0.65rem;
+	}
+
+	.pagination {
+		margin-top: 0.9rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 0.55rem;
+	}
+
+	.pagination-link,
+	.pagination-status {
+		font-size: 0.83rem;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.pagination-link {
+		padding: 0.42rem 0.65rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: var(--radius-input);
+		background: hsl(var(--surface));
+		text-decoration: none;
+	}
+
+	.pagination-link:hover {
+		color: hsl(var(--foreground));
+		border-color: hsl(var(--muted-foreground) / 0.45);
+	}
+
+	.pagination-link.disabled {
+		opacity: 0.45;
+		pointer-events: none;
 	}
 
 	.community-post {

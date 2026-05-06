@@ -1,6 +1,8 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
+const PAGE_SIZE = 10;
+
 type CommunityPost = {
 	id: string;
 	content: string;
@@ -31,7 +33,13 @@ function isMissingTableError(
 	);
 }
 
-export const load: PageServerLoad = async ({ locals }) => {
+function parsePageParam(value: string | null) {
+	const page = Number(value ?? '1');
+	if (!Number.isFinite(page) || page < 1) return 1;
+	return Math.floor(page);
+}
+
+export const load: PageServerLoad = async ({ locals, url }) => {
 	const {
 		data: { session }
 	} = await locals.supabase.auth.getSession();
@@ -41,19 +49,35 @@ export const load: PageServerLoad = async ({ locals }) => {
 		throw redirect(303, '/login');
 	}
 
+	const requestedPage = parsePageParam(url.searchParams.get('page'));
+	const { count, error: countError } = await locals.supabase
+		.from('community_posts')
+		.select('id', { count: 'exact', head: true })
+		.is('deleted_at', null);
+
+	if (countError && !isMissingTableError(countError, 'community_posts')) {
+		console.error('Gemenskap count error:', countError);
+	}
+
+	const totalItems = countError ? 0 : count ?? 0;
+	const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
+	const currentPage = Math.min(requestedPage, totalPages);
+	const from = (currentPage - 1) * PAGE_SIZE;
+	const to = from + PAGE_SIZE - 1;
+
 	const { data: postsData, error: postsError } = await locals.supabase
 		.from('community_posts')
 		.select('id, content, mood, created_at, diary_entry_id, user_id')
 		.is('deleted_at', null)
 		.order('created_at', { ascending: false })
-		.limit(20);
+		.range(from, to);
 
-	let posts: CommunityPost[] = [];
+	let items: CommunityPost[] = [];
 
 	if (postsError && !isMissingTableError(postsError, 'community_posts')) {
 		console.error('Gemenskap load error:', postsError);
 	} else if (postsData) {
-		posts = postsData
+		items = postsData
 			.map((row) => ({
 				id: typeof row.id === 'string' ? row.id : '',
 				content: typeof row.content === 'string' ? row.content : '',
@@ -73,6 +97,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 	return {
 		title: 'Gemenskap',
 		description: 'En lugn och anonym plats för igenkänning, stöd och varsam bekräftelse.',
-		posts
+		items,
+		currentPage,
+		totalPages,
+		totalItems,
+		hasPreviousPage: currentPage > 1,
+		hasNextPage: currentPage < totalPages
 	};
 };
