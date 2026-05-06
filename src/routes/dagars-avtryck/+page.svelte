@@ -81,7 +81,6 @@
 
 	let isSaved = $state(false);
 	let saveError = $state('');
-	let isCopied = $state(false);
 
 	// --- Inläggslist ---
 
@@ -163,7 +162,6 @@
 		generateError = '';
 		isSaved = false;
 		saveError = '';
-		isCopied = false;
 	}
 
 	// --- Streaming-chatt ---
@@ -323,7 +321,7 @@
 		const token = existingToken ?? (await getToken());
 		if (!token) {
 			console.error('[autoSave] Ingen token – sessionen har gått ut.');
-			saveError = 'Inlägget genererades men kunde inte sparas (session utgången). Kopiera texten manuellt.';
+			saveError = 'Inlägget genererades men kunde inte sparas eftersom sessionen har gått ut.';
 			return;
 		}
 		if (!generatedEntry) {
@@ -362,18 +360,7 @@
 			entries = [newEntry, ...entries];
 		} else {
 			console.error('[autoSave] Misslyckades. Status:', res.status, '| Fel:', resBody.error);
-			saveError = 'Inlägget genererades men kunde inte sparas. Kopiera texten manuellt.';
-		}
-	}
-
-	async function copyToClipboard() {
-		if (!generatedEntry || isCopied) return;
-		try {
-			await navigator.clipboard.writeText(generatedEntry);
-			isCopied = true;
-			setTimeout(() => (isCopied = false), 2000);
-		} catch {
-			// Tyst fel — kopiera stöds inte i alla miljöer
+			saveError = 'Inlägget genererades men kunde inte sparas.';
 		}
 	}
 
@@ -641,9 +628,6 @@
 					</div>
 
 					<div class="result-actions">
-						<button class="auth-button" onclick={copyToClipboard} disabled={isCopied}>
-							{isCopied ? 'Kopierat ✓' : 'Kopiera text'}
-						</button>
 						<button class="auth-button primary" onclick={resetInterview}>
 							Ny intervju
 						</button>

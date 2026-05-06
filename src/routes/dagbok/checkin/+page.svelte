@@ -1385,12 +1385,6 @@
 		color: hsl(220 62% 64%);
 	}
 
-	.diary-path-voices {
-		font-size: 0.78rem;
-		line-height: 1.5;
-		color: hsl(var(--foreground) / 0.74);
-	}
-
 	.diary-side {
 		display: grid;
 		gap: 0.85rem;

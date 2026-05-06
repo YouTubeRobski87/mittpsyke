@@ -280,7 +280,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	let communityPreview: PortalCommunityPreview = {
 		id: null,
-		snippet: 'Gemenskapen fylls på steg för steg. Du kan läsa i lugn takt eller dela något när det känns rätt.',
+		snippet: 'Gemenskapen fylls på steg för steg. Du kan läsa i lugn takt när det känns rätt.',
 		dateLabel: '',
 		replyCount: null,
 		hasActivity: false

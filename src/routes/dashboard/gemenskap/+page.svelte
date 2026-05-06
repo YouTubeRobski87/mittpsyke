@@ -528,9 +528,9 @@
 			<section class="auth-panel feed-panel">
 				<h2>Senaste från Gemenskapen</h2>
 				<p class="feed-intro">
-					{totalItems} anonyma delningar i Gemenskapen. Senaste aktivitet: {latestActivityLabel}.
+					{totalItems} anonyma inlägg i Gemenskapen. Senaste aktivitet: {latestActivityLabel}.
 				</p>
-				<a href="/dagbok/checkin#senaste-inlagg" class="feed-cta">Skriv i Dagbok och dela anonymt</a>
+				<a href="/dagbok/checkin" class="feed-cta">Skriv i Dagbok</a>
 				<div class="community-feed">
 					{#each posts as post (post.id)}
 						<article id={`post-${post.id}`} class="community-post post-variant-{postVariant(post.id)}">
@@ -786,14 +786,13 @@
 			</section>
 		{:else}
 			<section class="auth-panel empty-panel">
-				<h2>Här kommer delningar i Gemenskapen att visas</h2>
+				<h2>Här kommer inlägg i Gemenskapen att visas</h2>
 				<p>
-					Här samlas anonyma delningar i lugn takt. Du kan läsa andras tankar och, om du vill, dela något eget anonymt från Dagbok.
+					Här samlas anonyma tankar i lugn takt. Din dagbok fortsätter vara din privata plats.
 				</p>
 
 				<div class="empty-actions">
 					<a href="/dagbok/checkin" class="auth-button primary">Skriv i Dagbok</a>
-					<a href="/dagbok/checkin#senaste-inlagg" class="auth-button">Förbered en anonym delning</a>
 				</div>
 			</section>
 		{/if}
@@ -802,7 +801,7 @@
 			<section class="auth-panel future-panel">
 				<h2>Kommer i nästa steg</h2>
 				<div class="future-list" role="list">
-					<p role="listitem">Dela anonymt från dagboken</p>
+					<p role="listitem">Anonyma inlägg i lugn takt</p>
 					<p role="listitem">Mjuka stödreaktioner</p>
 					<p role="listitem">Mjuk rapportering av svar</p>
 					<p role="listitem">Rapportera innehåll</p>
