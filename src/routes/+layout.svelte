@@ -625,22 +625,17 @@
 							</a>
 						{/each}
 					{/if}
-					<div class="resources-dropdown">
-						<div class="resources-dropdown-trigger text-sm transition-opacity {guideNavItems.some((item) => isActive(item.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">
-							<a href="/guider">Guider</a>
-							<details bind:this={resourcesMenuRef}>
-								<summary aria-label="Visa guider-menyn"></summary>
-								<div class="resources-dropdown-menu">
-									{#each guideNavItems as item}
-										<a href={item.href} class="resources-dropdown-link" onclick={closeResourcesMenu} aria-current={isActive(item.href) ? 'page' : undefined}>
-											<span class="resources-dropdown-label">{item.label}</span>
-											<span class="resources-dropdown-description">{item.description}</span>
-										</a>
-									{/each}
-								</div>
-							</details>
+					<details bind:this={resourcesMenuRef} class="resources-dropdown">
+						<summary class="text-sm transition-opacity {guideNavItems.some((item) => isActive(item.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">Guider</summary>
+						<div class="resources-dropdown-menu">
+							{#each guideNavItems as item}
+								<a href={item.href} class="resources-dropdown-link" onclick={closeResourcesMenu} aria-current={isActive(item.href) ? 'page' : undefined}>
+									<span class="resources-dropdown-label">{item.label}</span>
+									<span class="resources-dropdown-description">{item.description}</span>
+								</a>
+							{/each}
 						</div>
-					</div>
+					</details>
 					<a href="/dashboard/gemenskap" class="text-sm transition-opacity {isActive('/dashboard/gemenskap') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" aria-current={isActive('/dashboard/gemenskap') ? 'page' : undefined}>Gemenskap</a>
 				</nav>
 			</div>
@@ -1059,16 +1054,6 @@
 
 	.resources-dropdown {
 		position: relative;
-	}
-
-	.resources-dropdown-trigger {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.2rem;
-	}
-
-	.resources-dropdown details {
-		display: inline-flex;
 	}
 
 	.resources-dropdown summary {
