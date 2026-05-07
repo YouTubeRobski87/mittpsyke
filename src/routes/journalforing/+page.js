@@ -1,6 +1,6 @@
 export const load = () => {
 	return {
 		description:
-			'Forskning visar att regelbunden journalföring förbättrar mental hälsa. MittPsyke gör det enkelt med AI-guidat skrivande på svenska.'
+			'Journalföring kan vara ett enkelt sätt att reflektera, sortera tankar och se mönster över tid. MittPsyke gör det lätt att börja skriva på svenska.'
 	};
 };

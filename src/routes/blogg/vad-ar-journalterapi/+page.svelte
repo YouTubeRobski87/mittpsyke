@@ -4,7 +4,7 @@
 
 	const title = 'Vad är journalterapi – och fungerar det egentligen?';
 	const description =
-		'Journalterapi kan hjälpa dig sortera tankar, minska stress och förstå ditt mående bättre. Vi går igenom forskning, praktiska tips och hur MittPsyke kan stötta.';
+		'Journalterapi kan vara ett sätt att sortera tankar och förstå ditt mående bättre. Vi går igenom forskning, praktiska tips och hur MittPsyke kan stötta.';
 	const canonical = 'https://www.mittpsyke.se/blogg/vad-ar-journalterapi';
 	const datePublished = '2026-03-19';
 
@@ -44,7 +44,7 @@
 	<section>
 		<h2>Journalterapi i korthet</h2>
 		<p>
-			Journalterapi handlar i grunden om att använda skrivande som ett sätt att bearbeta känslor, tankar och
+			Journalterapi handlar i grunden om att använda skrivande som ett sätt att utforska känslor, tankar och
 			händelser. Det är inte samma sak som att skriva “fint”, vara produktiv eller leverera rätt svar. Fokus ligger
 			på att skapa kontakt med det som pågår inuti, i stället för att trycka undan det.
 		</p>

@@ -46,8 +46,8 @@
 			<h2>Metod och förhållningssätt</h2>
 			<p>
 				MittPsyke använder ett lugnt, stödjande och reflekterande samtalsupplägg. Svaren är utformade
-				för att hjälpa användaren att sätta ord på det som känns svårt, sortera tankar, minska
-				överväldigande och hitta nästa lilla steg.
+				för att hjälpa användaren att sätta ord på det som känns svårt, sortera tankar, göra
+				överväldigande mer greppbart och hitta nästa lilla steg.
 			</p>
 			<p>
 				Samtalsstödet kan innehålla inslag som påminner om psykoedukation, grounding, mindfulnessnära
@@ -55,7 +55,7 @@
 			</p>
 			<ul>
 				<li><strong>Traumamedvetet och lågtröskligt bemötande</strong> – möta dig utan krav på förklaring eller prestation.</li>
-				<li><strong>Stöd för reflektion och känsloreglering</strong> – hjälpa dig att sätta ord på det som känns och sortera tankar.</li>
+				<li><strong>Stöd för reflektion och lugn</strong> – hjälpa dig att sätta ord på det som känns och sortera tankar.</li>
 				<li><strong>Grounding och struktur</strong> – lugnande samtalsstöd med fokus på nästa lilla steg.</li>
 				<li><strong>Inte vård, diagnos eller behandling</strong> – tjänsten följer inte ett specifikt terapeutiskt protokoll och är inte evidensbaserad behandling i klinisk mening.</li>
 			</ul>
@@ -166,8 +166,8 @@
 			<section class="section">
 				<h2>Vad är MittPsyke?</h2>
 				<p>
-					Plattformen fungerar som ett kompletterande stöd — mellan, före eller efter kontakt med
-					vården. I centrum finns ett AI-baserat samtalsstöd som är utformat för att svara med
+					Plattformen fungerar som vardagsnära stöd för reflektion — också för dig som har, väntar på
+					eller har haft kontakt med vården. I centrum finns ett AI-baserat samtalsstöd som är utformat för att svara med
 					lugn, respekt och empati.
 				</p>
 				<p>

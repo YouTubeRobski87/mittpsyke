@@ -47,7 +47,7 @@
 	const localBlogArticles: SearchResult[] = [
 		{
 			href: '/blogg/ai-hjalper-dig-bearbeta-kanslor',
-			title: 'Hur AI kan hjälpa dig bearbeta känslor – utan att ersätta terapi',
+			title: 'Hur AI kan hjälpa dig sortera känslor – utan att ersätta terapi',
 			description:
 				'AI kan stötta med reflektion, frågor och mönster över tid. Vi går igenom vad AI kan göra för mental hälsa, vad det inte kan ersätta och hur MittPsyke arbetar ansvarsfullt.'
 		},
@@ -61,7 +61,7 @@
 			href: '/blogg/vad-ar-journalterapi',
 			title: 'Vad är journalterapi – och fungerar det egentligen?',
 			description:
-				'Journalterapi kan hjälpa dig sortera tankar, minska stress och förstå ditt mående bättre. Vi går igenom forskning, praktiska tips och hur MittPsyke kan stötta.'
+				'Journalterapi kan vara ett sätt att sortera tankar och förstå ditt mående bättre. Vi går igenom forskning, praktiska tips och hur MittPsyke kan stötta.'
 		}
 	];
 

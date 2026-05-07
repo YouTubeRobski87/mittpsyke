@@ -11,7 +11,7 @@ export const blogPosts: BlogPostCard[] = [
 		slug: 'vad-ar-journalterapi',
 		title: 'Vad är journalterapi – och fungerar det egentligen?',
 		excerpt:
-			'Lär dig vad journalterapi är, vad forskningen säger och hur du kan börja skriva på ett sätt som faktiskt håller i vardagen.',
+			'Lär dig vad journalterapi är, vad forskningen säger och hur du kan börja skriva på ett hållbart sätt i vardagen.',
 		readTime: '8 min',
 		publishedLabel: '19 mars 2026'
 	},
@@ -25,7 +25,7 @@ export const blogPosts: BlogPostCard[] = [
 	},
 	{
 		slug: 'ai-hjalper-dig-bearbeta-kanslor',
-		title: 'Hur AI kan hjälpa dig bearbeta känslor – utan att ersätta terapi',
+		title: 'Hur AI kan hjälpa dig sortera känslor – utan att ersätta terapi',
 		excerpt:
 			'En trygg genomgång av vad AI kan hjälpa med i vardagen, vad som fortfarande kräver mänskligt stöd och hur integritet kan hanteras ansvarsfullt.',
 		readTime: '9 min',

@@ -2,7 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import BlogArticle from '$lib/components/BlogArticle.svelte';
 
-	const title = 'Hur AI kan hjälpa dig bearbeta känslor – utan att ersätta terapi';
+	const title = 'Hur AI kan hjälpa dig sortera känslor – utan att ersätta terapi';
 	const description =
 		'AI kan stötta med reflektion, frågor och mönster över tid. Vi går igenom vad AI kan göra för mental hälsa, vad det inte kan ersätta och hur MittPsyke arbetar ansvarsfullt.';
 	const canonical = 'https://www.mittpsyke.se/blogg/ai-hjalper-dig-bearbeta-kanslor';
@@ -195,7 +195,7 @@
 	<section>
 		<h2>Sammanfattning</h2>
 		<p>
-			AI kan hjälpa dig bearbeta känslor genom att skapa struktur, ställa frågor och synliggöra mönster. Det är
+			AI kan hjälpa dig sortera känslor genom att skapa struktur, ställa frågor och synliggöra mönster. Det är
 			exakt där AI ofta gör störst nytta i vardagen. Men AI är inte terapi, och ska inte ersätta professionell vård
 			när läget är allvarligt.
 		</p>

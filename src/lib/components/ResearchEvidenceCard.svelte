@@ -1,9 +1,9 @@
-<section class="research-evidence" aria-label="Forskning och evidens">
-	<h2>Forskning &amp; evidens</h2>
+<section class="research-evidence" aria-label="Forskning och källor">
+	<h2>Forskning och källor</h2>
 	<p>
-		Forskning visar att digitalt stöd för psykisk hälsa kan ha positiva effekter, särskilt när
-		stödet är strukturerat och används aktivt över tid. MittPsyke är byggt i linje med forskning
-		om digitala stödinsatser för psykisk hälsa.
+		Forskning om digitalt stöd och skrivande kan ge användbar kunskap om struktur,
+		reflektion och egen förståelse. MittPsyke är inspirerat av etablerade principer för
+		lågtröskligt stöd, men är inte vård eller behandling.
 	</p>
 	<p class="research-source">Källa: Yeo et al., Journal of Medical Internet Research, 2024</p>
 	<p class="research-study-link">
