@@ -139,7 +139,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	if (post.user_id === user.id) {
-		return errorResponse('Du kan inte svara på din egen delning i den här versionen.', 403);
+		return errorResponse('Du kan inte svara på ditt eget inlägg i den här versionen.', 403);
 	}
 
 	const { data: insertedComment, error: insertError } = await supabase
@@ -177,7 +177,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 	};
 
-	// Lågmäld notis till ägaren av det delade inlägget.
+	// Lågmäld notis till ägaren av inlägget.
 	// Notis är extra funktionalitet: kommentaren ska ändå lyckas om notis-insert fallerar.
 	if (post.user_id && post.user_id !== user.id) {
 		const serviceClient = createAdminServiceClient();

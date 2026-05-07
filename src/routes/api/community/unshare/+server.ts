@@ -176,10 +176,10 @@ export const POST: RequestHandler = async ({ request }) => {
 				}
 			}
 
-			return errorResponse('Du har inte behörighet att ta bort den här delningen.', 403);
+			return errorResponse('Du har inte behörighet att ta bort det här inlägget.', 403);
 		}
 		console.error('Failed to unshare community post:', updateError);
-		return errorResponse(updateError.message ?? 'Kunde inte ta bort delningen just nu.', 500);
+		return errorResponse(updateError.message ?? 'Kunde inte ta bort inlägget just nu.', 500);
 	}
 
 	if (!updatedShare) {
@@ -201,16 +201,16 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		if (existingShareError) {
 			console.error('Failed to verify unshare state:', existingShareError);
-			return errorResponse(existingShareError.message ?? 'Kunde inte läsa delningen just nu.', 500);
+			return errorResponse(existingShareError.message ?? 'Kunde inte läsa inlägget just nu.', 500);
 		}
 
 		if (existingShare && existingShare.deleted_at) {
-			return errorResponse('Delningen är redan borttagen från Gemenskap.', 409, {
+			return errorResponse('Inlägget är redan borttaget från Gemenskap.', 409, {
 				alreadyUnshared: true
 			});
 		}
 
-		return errorResponse('Det finns ingen aktiv delning att ta bort.', 404);
+		return errorResponse('Det finns inget aktivt inlägg att ta bort.', 404);
 	}
 
 	const response: CreateCommunityUnshareSuccessResponse = { success: true };

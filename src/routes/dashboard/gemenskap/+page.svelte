@@ -506,21 +506,22 @@
 	<PortalSubnav
 		active="gemenskap"
 		title="Du är inte ensam"
-		description="En lugn plats där du kan dela tankar anonymt, känna igen dig i andra och ge eller få mjuk bekräftelse."
+		description="En lugn plats där du kan skriva anonymt, känna igen dig i andra och ge eller få mjuk bekräftelse."
 	/>
 
 	<div class="auth-shell community-page">
 		<section class="auth-panel auth-panel-accent info-panel" aria-label="Viktig information">
-			<h2>Innan du delar</h2>
-			<ul>
-				<li>Det du delar här ska vara anonymt.</li>
-				<li>Skriv inte ut namn, personnummer, adresser eller andra personuppgifter.</li>
-				<li>Gemenskapen är ett stöd mellan människor, inte vård eller akut hjälp.</li>
-				<li>
-					Vid akut fara: ring 112 eller kontakta 1177. Vidare stöd finns på
-					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
-				</li>
-			</ul>
+			<h2>Innan du skriver i Gemenskapen</h2>
+			<p>
+				Skriv anonymt och undvik namn, personnummer, adresser eller andra uppgifter som kan
+				identifiera dig eller någon annan.
+			</p>
+			<p>Gemenskapen är ett stöd mellan människor, inte vård eller akut hjälp.</p>
+			<p>
+				Vid akut fara: ring 112. För sjukvårdsrådgivning kan du kontakta 1177. Fler stödvägar
+				finns på
+				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>.
+			</p>
 		</section>
 
 		{#if feedNotice}
