@@ -926,8 +926,6 @@
 
 					<DiaryMoodTimeline entries={entries} />
 
-					<DiaryCalendar entries={entries} onDaySelect={handleCalendarDaySelect} />
-
 					{#if entries.length === 0}
 						<section class="auth-panel">
 							<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
@@ -1151,6 +1149,10 @@
 							{/if}
 						</div>
 					</section>
+
+					<div class="diary-side-calendar">
+						<DiaryCalendar entries={entries} onDaySelect={handleCalendarDaySelect} />
+					</div>
 				</aside>
 			</div>
 		</div>
@@ -1743,6 +1745,66 @@
 		background:
 			linear-gradient(145deg, rgba(99, 102, 241, 0.09), rgba(143, 227, 166, 0.06)),
 			hsl(var(--surface));
+	}
+
+	/* ── Kompakt kalender i sidebaren ── */
+	.diary-side-calendar :global(.diary-calendar) {
+		padding: 0.75rem;
+		gap: 0.5rem;
+	}
+
+	.diary-side-calendar :global(.cal-header) {
+		gap: 0.35rem;
+	}
+
+	.diary-side-calendar :global(.cal-month-label) {
+		font-size: 0.84rem;
+	}
+
+	.diary-side-calendar :global(.cal-month-count) {
+		font-size: 0.66rem;
+		padding: 0.08rem 0.38rem;
+	}
+
+	.diary-side-calendar :global(.cal-nav-btn) {
+		width: 1.7rem;
+		height: 1.7rem;
+	}
+
+	.diary-side-calendar :global(.cal-weekdays) {
+		gap: 0.1rem;
+	}
+
+	.diary-side-calendar :global(.cal-wd) {
+		font-size: 0.62rem;
+		padding-bottom: 0.1rem;
+	}
+
+	.diary-side-calendar :global(.cal-grid) {
+		gap: 0.12rem;
+	}
+
+	.diary-side-calendar :global(.cal-day) {
+		min-height: 1.7rem;
+		border-radius: 6px;
+	}
+
+	.diary-side-calendar :global(.cal-day-num) {
+		font-size: 0.72rem;
+	}
+
+	.diary-side-calendar :global(.cal-dot) {
+		width: 3px;
+		height: 3px;
+	}
+
+	.diary-side-calendar :global(.cal-filter-hint) {
+		font-size: 0.74rem;
+		gap: 0.3rem;
+	}
+
+	.diary-side-calendar :global(.cal-clear-btn) {
+		font-size: 0.74rem;
 	}
 
 	.week-head h3,
