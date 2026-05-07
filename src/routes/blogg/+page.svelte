@@ -149,7 +149,7 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: #5f8170;
+		color: #60a5fa;
 	}
 
 	.blog-hero h1 {
@@ -173,11 +173,15 @@
 	}
 
 	.blog-widget-card {
-		border: 1px solid rgba(77, 95, 86, 0.16);
+		border: 1px solid rgba(96, 165, 250, 0.22);
 		border-radius: var(--radius-card);
-		background: #f6fbf9;
+		background:
+			radial-gradient(circle at 88% 8%, rgba(129, 140, 248, 0.16), transparent 32%),
+			linear-gradient(135deg, #0f172a, #111827 58%, #17182f);
 		padding: clamp(0.75rem, 2vw, 1rem);
 		min-height: 280px;
+		color: #f8fafc;
+		box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
 	}
 
 	.blog-fallback {
@@ -206,11 +210,11 @@
 		gap: 1rem;
 		padding: 0.85rem;
 		border-radius: var(--radius-card);
-		background: #ffffff;
-		border: 1px solid rgba(77, 95, 86, 0.14);
+		background: rgba(15, 23, 42, 0.64);
+		border: 1px solid rgba(147, 197, 253, 0.18);
 		text-decoration: none;
 		color: inherit;
-		transition: transform 0.15s ease, box-shadow 0.15s ease;
+		transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 	}
 
 	.blog-item-link.has-image {
@@ -220,7 +224,8 @@
 	.blog-item-link:hover,
 	.blog-item-link:focus-visible {
 		transform: translateY(-1px);
-		box-shadow: 0 6px 18px rgba(24, 79, 74, 0.08);
+		border-color: rgba(147, 197, 253, 0.34);
+		box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
 	}
 
 	.blog-item-image {
@@ -276,8 +281,8 @@
 		justify-content: center;
 		padding: 0.45rem 0.7rem;
 		border-radius: var(--radius-input);
-		border: 1px solid rgba(77, 95, 86, 0.16);
-		background: #ffffff;
+		border: 1px solid rgba(147, 197, 253, 0.2);
+		background: rgba(15, 23, 42, 0.58);
 		color: inherit;
 		font-family: var(--font-heading);
 		font-size: 0.9rem;
@@ -288,14 +293,14 @@
 
 	.pagination-link:hover,
 	.pagination-link:focus-visible {
-		border-color: rgba(24, 79, 74, 0.32);
-		background: #ecf5f2;
+		border-color: rgba(147, 197, 253, 0.38);
+		background: rgba(30, 41, 59, 0.78);
 		outline: none;
 	}
 
 	.pagination-link.is-current {
-		background: #184f4a;
-		border-color: #184f4a;
+		background: #2563eb;
+		border-color: #60a5fa;
 		color: #ffffff;
 	}
 
@@ -309,30 +314,32 @@
 	}
 
 	:global(.dark) .blog-widget-card {
-		background: #1a2320;
-		border-color: rgba(255, 255, 255, 0.12);
+		background:
+			radial-gradient(circle at 88% 8%, rgba(129, 140, 248, 0.16), transparent 32%),
+			linear-gradient(135deg, #0f172a, #111827 58%, #17182f);
+		border-color: rgba(96, 165, 250, 0.22);
 	}
 
 	:global(.dark) .blog-item-link {
-		background: #1f2a27;
-		border-color: rgba(255, 255, 255, 0.1);
+		background: rgba(15, 23, 42, 0.64);
+		border-color: rgba(147, 197, 253, 0.18);
 	}
 
 	:global(.dark) .pagination-link {
-		background: #1f2a27;
-		border-color: rgba(255, 255, 255, 0.12);
+		background: rgba(15, 23, 42, 0.58);
+		border-color: rgba(147, 197, 253, 0.2);
 	}
 
 	:global(.dark) .pagination-link:hover,
 	:global(.dark) .pagination-link:focus-visible {
-		background: #253631;
-		border-color: rgba(154, 215, 206, 0.34);
+		background: rgba(30, 41, 59, 0.78);
+		border-color: rgba(147, 197, 253, 0.38);
 	}
 
 	:global(.dark) .pagination-link.is-current {
-		background: #9ad7ce;
-		border-color: #9ad7ce;
-		color: #12201d;
+		background: #60a5fa;
+		border-color: #bfdbfe;
+		color: #0f172a;
 	}
 
 	@media (max-width: 640px) {

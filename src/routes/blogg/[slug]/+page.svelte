@@ -76,7 +76,7 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: #5f8170;
+		color: #60a5fa;
 	}
 
 	.article-header h1 {
@@ -119,7 +119,7 @@
 		font-family: var(--font-heading);
 		font-size: clamp(1.38rem, 1.2rem + 0.7vw, 1.62rem);
 		line-height: 1.2;
-		color: #184f4a;
+		color: #2563eb;
 	}
 
 	.article-content :global(p),
@@ -144,6 +144,6 @@
 	}
 
 	:global(.dark) .article-content :global(h2) {
-		color: #9ad7ce;
+		color: #93c5fd;
 	}
 </style>
