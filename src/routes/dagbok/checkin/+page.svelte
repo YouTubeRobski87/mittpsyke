@@ -731,7 +731,7 @@
 		<PortalSubnav
 			active="dagbok"
 			title="Din dagbok"
-			description="Dagbok är din plats för dagen. Välj mellan att skriva själv eller låta en röst guida dig vidare."
+			description="Din dagbok är en privat plats för dagen. Skriv själv, eller låt en lugn röst hjälpa dig att börja."
 		/>
 
 		{#if !hasHealthDataConsent}
@@ -745,7 +745,7 @@
 					<section class="auth-panel diary-paths">
 						<h2 class="text-base font-semibold">Välj hur du vill börja</h2>
 						<p class="mt-2 text-sm auth-muted">
-							Du kan skriva fritt i din personliga dagbok eller välja en röst som guidar dig genom dagen.
+							En stilla plats för det som vill få form. Skriv fritt, eller börja med en varsam guidning.
 						</p>
 						<div class="diary-path-grid mt-3">
 							<button type="button" class="diary-path-card diary-path-card--write" onclick={openWriteEditor}>
@@ -1185,12 +1185,39 @@
 	}
 
 	.diary-paths {
+		position: relative;
 		display: grid;
 		gap: 0.55rem;
-		border-color: rgba(245, 158, 11, 0.18);
+		overflow: hidden;
+		border-color: rgba(96, 165, 250, 0.28);
 		background:
-			linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(99, 102, 241, 0.06)),
-			hsl(var(--surface));
+			radial-gradient(circle at 92% 18%, rgba(96, 165, 250, 0.18), transparent 34%),
+			linear-gradient(135deg, hsl(222 47% 13%), hsl(224 36% 18%) 58%, hsl(230 30% 16%));
+		color: hsl(210 40% 98%);
+		box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+	}
+
+	.diary-paths::before {
+		content: '✎';
+		position: absolute;
+		top: 0.8rem;
+		right: 1rem;
+		font-size: 1.15rem;
+		line-height: 1;
+		color: rgba(191, 219, 254, 0.64);
+		pointer-events: none;
+	}
+
+	.diary-paths h2 {
+		position: relative;
+		margin-right: 2rem;
+		color: hsl(210 40% 98%);
+	}
+
+	.diary-paths > p {
+		position: relative;
+		max-width: 58ch;
+		color: hsl(214 32% 86% / 0.86);
 	}
 
 	.diary-path-grid {
@@ -1274,33 +1301,37 @@
 	}
 
 	.diary-path-card {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		gap: 0.3rem;
 		padding: 1.1rem 1rem;
 		border-radius: var(--radius-input);
-		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface));
+		border: 1px solid rgba(147, 197, 253, 0.24);
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.94)),
+			hsl(var(--surface));
 		text-decoration: none;
-		transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+		box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+		transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease, background-color 160ms ease;
 	}
 
 	/* Indigo — Skriv själv */
 	.diary-path-card--write {
 		background:
-			linear-gradient(135deg, rgba(99, 102, 241, 0.13), rgba(67, 110, 143, 0.05)),
-			hsl(220 55% 97%);
-		border-color: rgba(99, 102, 241, 0.28);
-		border-left: 3px solid hsl(230 58% 56%);
+			linear-gradient(135deg, rgba(219, 234, 254, 0.96), rgba(248, 250, 252, 0.96)),
+			hsl(220 55% 98%);
+		border-color: rgba(96, 165, 250, 0.38);
+		border-left: 3px solid hsl(214 72% 58%);
 	}
 
 	/* Blå — Dagbok med olika stilar */
 	.diary-path-card--guided {
 		background:
-			linear-gradient(135deg, rgba(99, 102, 241, 0.13), rgba(129, 140, 248, 0.04)),
-			hsl(220 55% 97%);
-		border-color: rgba(129, 140, 248, 0.3);
-		border-left: 3px solid hsl(220 65% 52%);
+			linear-gradient(135deg, rgba(224, 231, 255, 0.95), rgba(248, 250, 252, 0.96)),
+			hsl(222 55% 98%);
+		border-color: rgba(129, 140, 248, 0.34);
+		border-left: 3px solid hsl(230 66% 62%);
 	}
 
 	.diary-path-card--preview {
@@ -1308,19 +1339,19 @@
 	}
 
 	.diary-path-card--write:hover:not(.diary-path-card--preview) {
-		border-color: hsl(230 55% 70%);
-		box-shadow: 0 4px 14px hsl(230 58% 56% / 0.16);
+		border-color: hsl(214 78% 68%);
+		box-shadow: 0 14px 30px hsl(214 72% 44% / 0.18);
 		transform: translateY(-1px);
 	}
 
 	.diary-path-card--guided:hover:not(.diary-path-card--preview) {
-		border-color: hsl(220 55% 65%);
-		box-shadow: 0 4px 14px hsl(220 60% 52% / 0.18);
+		border-color: hsl(230 70% 72%);
+		box-shadow: 0 14px 30px hsl(230 66% 46% / 0.18);
 		transform: translateY(-1px);
 	}
 
 	.diary-path-card:focus-visible {
-		outline: 2px solid hsl(var(--foreground) / 0.22);
+		outline: 2px solid rgba(191, 219, 254, 0.9);
 		outline-offset: 2px;
 	}
 
@@ -1337,13 +1368,13 @@
 	}
 
 	.path-icon-wrap--write {
-		background: hsl(230 60% 93%);
-		color: hsl(230 58% 42%);
+		background: hsl(214 82% 92%);
+		color: hsl(214 68% 36%);
 	}
 
 	.path-icon-wrap--guided {
-		background: hsl(220 60% 92%);
-		color: hsl(220 68% 42%);
+		background: hsl(232 78% 93%);
+		color: hsl(230 58% 40%);
 	}
 
 	.diary-path-title {
@@ -1361,28 +1392,28 @@
 	/* Mörkt läge */
 	:global(.dark) .diary-path-card--write {
 		background:
-			linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(67, 110, 143, 0.05)),
-			hsl(222 22% 13%);
-		border-color: rgba(129, 140, 248, 0.3);
-		border-left: 3px solid hsl(230 58% 58%);
+			linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(15, 23, 42, 0.92)),
+			hsl(222 24% 13%);
+		border-color: rgba(96, 165, 250, 0.34);
+		border-left: 3px solid hsl(214 72% 62%);
 	}
 
 	:global(.dark) .diary-path-card--guided {
 		background:
-			linear-gradient(135deg, rgba(99, 102, 241, 0.14), rgba(129, 140, 248, 0.04)),
-			hsl(222 22% 13%);
+			linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(15, 23, 42, 0.92)),
+			hsl(222 24% 13%);
 		border-color: rgba(129, 140, 248, 0.3);
-		border-left: 3px solid hsl(220 58% 52%);
+		border-left: 3px solid hsl(230 66% 64%);
 	}
 
 	:global(.dark) .path-icon-wrap--write {
-		background: hsl(230 26% 20%);
-		color: hsl(230 62% 68%);
+		background: hsl(214 34% 22%);
+		color: hsl(214 78% 72%);
 	}
 
 	:global(.dark) .path-icon-wrap--guided {
-		background: hsl(220 26% 20%);
-		color: hsl(220 62% 64%);
+		background: hsl(232 34% 22%);
+		color: hsl(232 78% 74%);
 	}
 
 	.diary-side {
@@ -2007,6 +2038,47 @@
 		margin: 0.5rem 0 0;
 		font-size: 0.82rem;
 		color: hsl(var(--error-foreground));
+	}
+
+	:global(.auth-page:has(.diary-layout) .auth-subnav) {
+		border-color: rgba(96, 165, 250, 0.18);
+		background:
+			linear-gradient(135deg, rgba(219, 234, 254, 0.55), rgba(238, 242, 255, 0.5)),
+			hsl(var(--surface));
+		box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+	}
+
+	:global(.auth-page:has(.diary-layout) .auth-subnav-link) {
+		color: hsl(var(--foreground) / 0.68);
+	}
+
+	:global(.auth-page:has(.diary-layout) .auth-subnav-link:hover) {
+		color: hsl(var(--foreground));
+		background: rgba(255, 255, 255, 0.62);
+	}
+
+	:global(.auth-page:has(.diary-layout) .auth-subnav-link.active) {
+		color: hsl(222 47% 20%);
+		background:
+			linear-gradient(135deg, rgba(219, 234, 254, 0.96), rgba(255, 255, 255, 0.86));
+		border-color: rgba(96, 165, 250, 0.38);
+		box-shadow:
+			0 8px 18px rgba(37, 99, 235, 0.1),
+			inset 0 1px 0 rgba(255, 255, 255, 0.7);
+	}
+
+	:global(.dark .auth-page:has(.diary-layout) .auth-subnav) {
+		border-color: rgba(96, 165, 250, 0.22);
+		background:
+			linear-gradient(135deg, rgba(30, 41, 59, 0.88), rgba(15, 23, 42, 0.92)),
+			hsl(var(--surface));
+	}
+
+	:global(.dark .auth-page:has(.diary-layout) .auth-subnav-link.active) {
+		color: hsl(210 40% 96%);
+		background:
+			linear-gradient(135deg, rgba(37, 99, 235, 0.34), rgba(79, 70, 229, 0.24));
+		border-color: rgba(96, 165, 250, 0.38);
 	}
 
 	@media (max-width: 760px) {
