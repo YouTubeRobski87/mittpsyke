@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import SEO from '$lib/components/SEO.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import { supabase } from '$lib/supabase';
@@ -112,8 +113,10 @@
 		return '';
 	}
 
-	function pageHref(page: number): string {
-		return `?page=${page}`;
+	function pageHref(pageNumber: number): string {
+		const params = new URLSearchParams(page.url.searchParams);
+		params.set('page', String(pageNumber));
+		return `?${params.toString()}`;
 	}
 
 	function setFeedNotice(message: string, type: 'success' | 'error' | 'info') {
@@ -442,7 +445,7 @@
 			} = await supabase.auth.getSession();
 
 			if (!session?.access_token) {
-				setFeedNotice('Logga in för att ta bort delningen.', 'error');
+				setFeedNotice('Logga in för att ta bort inlägget.', 'error');
 				return;
 			}
 
@@ -464,31 +467,31 @@
 				const errorPayload = payload as { error?: string; alreadyUnshared?: boolean } | null;
 				if (response.status === 409 && errorPayload?.alreadyUnshared) {
 					posts = posts.filter((item) => item.id !== post.id);
-					setFeedNotice('Delningen är redan borttagen från Gemenskap.', 'info');
+					setFeedNotice('Inlägget är redan borttaget från Gemenskap.', 'info');
 					confirmingUnsharePostId = '';
 					return;
 				}
 				if (response.status === 404) {
 					posts = posts.filter((item) => item.id !== post.id);
-					setFeedNotice('Delningen finns inte längre i Gemenskap.', 'info');
+					setFeedNotice('Inlägget finns inte längre i Gemenskap.', 'info');
 					confirmingUnsharePostId = '';
 					return;
 				}
-				setFeedNotice(errorPayload?.error ?? 'Kunde inte ta bort delningen just nu.', 'error');
+				setFeedNotice(errorPayload?.error ?? 'Kunde inte ta bort inlägget just nu.', 'error');
 				return;
 			}
 
 			if (!payload.success) {
-				setFeedNotice('Kunde inte ta bort delningen just nu.', 'error');
+				setFeedNotice('Kunde inte ta bort inlägget just nu.', 'error');
 				return;
 			}
 
 			posts = posts.filter((item) => item.id !== post.id);
-			setFeedNotice('Delningen har tagits bort från Gemenskap.', 'success');
+			setFeedNotice('Inlägget har tagits bort från Gemenskap.', 'success');
 			confirmingUnsharePostId = '';
 		} catch (error) {
 			setFeedNotice(
-				error instanceof Error ? error.message : 'Kunde inte ta bort delningen just nu.',
+				error instanceof Error ? error.message : 'Kunde inte ta bort inlägget just nu.',
 				'error'
 			);
 		} finally {
@@ -530,7 +533,6 @@
 				<p class="feed-intro">
 					{totalItems} anonyma inlägg i Gemenskapen. Senaste aktivitet: {latestActivityLabel}.
 				</p>
-				<a href="/dagbok/checkin" class="feed-cta">Skriv i Dagbok</a>
 				<div class="community-feed">
 					{#each posts as post (post.id)}
 						<article id={`post-${post.id}`} class="community-post post-variant-{postVariant(post.id)}">
@@ -729,22 +731,21 @@
 								{/if}
 								{#if post.isOwnPost}
 									<div class="post-actions">
-										<p class="own-post-label">Din delning</p>
+										<p class="own-post-label">Ditt inlägg</p>
 									<button
 										type="button"
 										class="post-action-btn"
 										onclick={() => openUnshareConfirmation(post.id)}
 									>
-										Ta bort delning
+										Ta bort från Gemenskap
 									</button>
 								</div>
 
 								{#if confirmingUnsharePostId === post.id}
 									<div class="post-confirmation" role="status">
-										<h3>Ta bort delning?</h3>
+										<h3>Ta bort från Gemenskap?</h3>
 										<p>
-											Det här tar bort den anonyma versionen från Gemenskap.
-											Ditt privata dagboksinlägg finns kvar i Dagbok.
+											Det här tar bort inlägget från Gemenskap.
 										</p>
 										<div class="post-confirmation-actions">
 											<button
@@ -761,7 +762,7 @@
 												onclick={() => unsharePost(post)}
 												disabled={unsharingPostId === post.id}
 											>
-												{unsharingPostId === post.id ? 'Tar bort...' : 'Ta bort delning'}
+												{unsharingPostId === post.id ? 'Tar bort...' : 'Ta bort'}
 											</button>
 										</div>
 									</div>
@@ -770,30 +771,28 @@
 						</article>
 					{/each}
 				</div>
-				<nav class="pagination" aria-label="Paginering för Gemenskapen">
-					{#if hasPreviousPage}
-						<a class="pagination-link" href={pageHref(currentPage - 1)}>Föregående</a>
-					{:else}
-						<span class="pagination-link disabled" aria-disabled="true">Föregående</span>
-					{/if}
-					<span class="pagination-status">Sida {currentPage} av {totalPages}</span>
-					{#if hasNextPage}
-						<a class="pagination-link" href={pageHref(currentPage + 1)}>Nästa</a>
-					{:else}
-						<span class="pagination-link disabled" aria-disabled="true">Nästa</span>
-					{/if}
-				</nav>
+				{#if totalPages > 1}
+					<nav class="pagination" aria-label="Paginering för Gemenskapen">
+						{#if hasPreviousPage}
+							<a class="pagination-link" href={pageHref(currentPage - 1)}>Föregående</a>
+						{:else}
+							<span class="pagination-link disabled" aria-disabled="true">Föregående</span>
+						{/if}
+						<span class="pagination-status">Sida {currentPage} av {totalPages}</span>
+						{#if hasNextPage}
+							<a class="pagination-link" href={pageHref(currentPage + 1)}>Nästa</a>
+						{:else}
+							<span class="pagination-link disabled" aria-disabled="true">Nästa</span>
+						{/if}
+					</nav>
+				{/if}
 			</section>
 		{:else}
 			<section class="auth-panel empty-panel">
 				<h2>Här kommer inlägg i Gemenskapen att visas</h2>
 				<p>
-					Här samlas anonyma tankar i lugn takt. Din dagbok fortsätter vara din privata plats.
+					Här samlas anonyma tankar i lugn takt när Gemenskapen fylls på.
 				</p>
-
-				<div class="empty-actions">
-					<a href="/dagbok/checkin" class="auth-button primary">Skriv i Dagbok</a>
-				</div>
 			</section>
 		{/if}
 
@@ -863,15 +862,6 @@
 		margin: 0.45rem 0 0;
 		font-size: 0.85rem;
 		color: hsl(var(--muted-foreground));
-	}
-
-	.feed-cta {
-		display: inline-flex;
-		margin-top: 0.6rem;
-		font-size: 0.83rem;
-		text-decoration: underline;
-		text-underline-offset: 2px;
-		color: hsl(var(--foreground));
 	}
 
 	.feed-notice {
@@ -1274,13 +1264,6 @@
 		max-width: 66ch;
 	}
 
-	.empty-actions {
-		margin-top: 1rem;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.6rem;
-	}
-
 	.future-list {
 		margin-top: 0.75rem;
 		display: grid;
@@ -1381,19 +1364,6 @@
 			display: none;
 		}
 
-		.feed-cta {
-			margin-top: 0.45rem;
-			min-height: 2.6rem;
-			width: 100%;
-			align-items: center;
-			justify-content: center;
-			border: 1px solid hsl(var(--border));
-			border-radius: var(--radius-input);
-			background: hsl(var(--surface-soft));
-			text-decoration: none;
-			font-weight: 600;
-		}
-
 		.community-feed {
 			margin-top: 0.55rem;
 			gap: 0.5rem;
@@ -1437,7 +1407,6 @@
 		}
 
 		.comment-form-footer .auth-button,
-		.empty-actions .auth-button,
 		.post-confirmation-actions .auth-button {
 			width: 100%;
 		}
