@@ -977,7 +977,10 @@
 							</p>
 							<div class="diary-entries">
 								{#each paginatedEntries as entry (entry.id)}
-									<article class="auth-panel diary-entry">
+									<article
+										class="auth-panel diary-entry"
+										class:diary-entry--expanded={expandedEntryId === entry.id}
+									>
 										<div class="entry-teaser-meta">
 											<p class="entry-date">{formatDate(entry.created_at)}</p>
 											{#if entry.mood && editingEntryId !== entry.id}
@@ -2485,6 +2488,14 @@
 
 		.diary-path-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.diary-entries {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.diary-entry--expanded {
+			grid-column: 1 / -1;
 		}
 
 		.diary-side {
