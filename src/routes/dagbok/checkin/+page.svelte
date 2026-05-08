@@ -1941,7 +1941,7 @@
 
 	.diary-entries {
 		display: grid;
-		gap: 0.75rem;
+		gap: 1rem;
 	}
 
 	.load-more-entries {
@@ -1976,12 +1976,18 @@
 
 	.diary-entry {
 		display: grid;
-		gap: 0.55rem;
+		gap: 0.65rem;
+		padding: 1rem;
+		border: 1px solid hsl(var(--border) / 0.72);
+		border-radius: 0.95rem;
+		background: hsl(var(--surface) / 0.92);
+		box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
 		transition: border-color 160ms ease, box-shadow 160ms ease;
 	}
 
 	.diary-entry:hover {
-		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+		border-color: hsl(var(--primary) / 0.28);
+		box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
 	}
 
 	.entry-teaser-meta {
@@ -1998,13 +2004,16 @@
 	}
 
 	.entry-date {
+		letter-spacing: 0.01em;
+		text-transform: uppercase;
 		font-weight: 700;
-		color: hsl(var(--foreground));
+		color: hsl(var(--muted-foreground));
 	}
 
 	.entry-title {
 		margin: 0;
-		font-size: 1rem;
+		font-size: 1.04rem;
+		font-weight: 700;
 		line-height: 1.35;
 		color: hsl(var(--foreground));
 	}
@@ -2025,19 +2034,20 @@
 	.entry-read-more {
 		justify-self: start;
 		border: 0;
-		background: transparent;
-		padding: 0;
+		border-radius: 999px;
+		background: hsl(var(--primary) / 0.1);
+		padding: 0.28rem 0.62rem;
 		font-family: var(--font-heading);
 		font-size: 0.86rem;
 		font-weight: 700;
 		color: hsl(var(--primary));
-		text-decoration: underline;
-		text-underline-offset: 3px;
+		text-decoration: none;
 		cursor: pointer;
 	}
 
 	.entry-read-more:hover,
 	.entry-read-more:focus-visible {
+		background: hsl(var(--primary) / 0.16);
 		color: hsl(var(--foreground));
 	}
 
@@ -2115,7 +2125,7 @@
 	}
 
 	:global(.dark) .diary-entry:hover {
-		box-shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
+		box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
 	}
 
 	.entry-actions {
@@ -2454,11 +2464,11 @@
 		}
 
 		.diary-entries {
-			gap: 0.55rem;
+			gap: 0.8rem;
 		}
 
 		.diary-entry {
-			padding: 0.75rem;
+			padding: 0.85rem;
 		}
 
 		.entry-actions {
