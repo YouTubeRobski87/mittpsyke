@@ -1176,10 +1176,10 @@
 		z-index: 0;
 		pointer-events: none;
 		background:
-			linear-gradient(180deg, rgba(8, 13, 23, 0.78), rgba(8, 13, 23, 0.94)),
+			linear-gradient(180deg, rgba(8, 13, 23, 0.66), rgba(8, 13, 23, 0.88)),
 			url('/assets/diary/dagboken-background.png') center top / cover no-repeat;
 		opacity: 0.22;
-		filter: blur(1px);
+		filter: none;
 		transform: scale(1.02);
 	}
 
@@ -2173,7 +2173,7 @@
 	@media (max-width: 760px) {
 		:global(.auth-page:has(.diary-layout)::before) {
 			background-position: 42% top;
-			opacity: 0.16;
+			opacity: 0.2;
 		}
 
 		:global(.auth-page:has(.diary-layout)) {
