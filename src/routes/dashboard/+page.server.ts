@@ -8,17 +8,6 @@ type DiaryRow = {
 	created_at: string | null;
 };
 
-type CommunityPostRow = {
-	id: string;
-	content: string | null;
-	created_at: string | null;
-};
-
-type CommunityCommentRow = {
-	post_id: string;
-	created_at: string | null;
-};
-
 type PortalDiaryPreview = {
 	id: string | null;
 	snippet: string;
@@ -31,14 +20,6 @@ type PortalProgressPreview = {
 	weeklyEntries: number;
 	totalEntries: number;
 	summary: string;
-};
-
-type PortalCommunityPreview = {
-	id: string | null;
-	snippet: string;
-	dateLabel: string;
-	replyCount: number | null;
-	hasActivity: boolean;
 };
 
 type PortalSettingsPreview = {
@@ -202,8 +183,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		latestDiaryEntryResult,
 		streakEntriesResult,
 		totalEntriesResult,
-		weeklyEntriesResult,
-		communityPostsResult
+		weeklyEntriesResult
 	] = await Promise.all([
 		locals.supabase
 			.from('diary')
@@ -226,13 +206,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.from('diary')
 			.select('id', { count: 'exact', head: true })
 			.eq('user_id', user.id)
-			.gte('created_at', weeklyStart),
-		locals.supabase
-			.from('community_posts')
-			.select('id, content, created_at')
-			.is('deleted_at', null)
-			.order('created_at', { ascending: false })
-			.limit(6)
+			.gte('created_at', weeklyStart)
 	]);
 
 	if (latestDiaryEntryResult.error && !isMissingTableError(latestDiaryEntryResult.error, 'diary')) {
@@ -247,10 +221,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (weeklyEntriesResult.error && !isMissingTableError(weeklyEntriesResult.error, 'diary')) {
 		console.error('Dashboard weekly entries load error:', weeklyEntriesResult.error);
 	}
-	if (communityPostsResult.error && !isMissingTableError(communityPostsResult.error, 'community_posts')) {
-		console.error('Dashboard community post load error:', communityPostsResult.error);
-	}
-
 	const latestDiaryEntry = latestDiaryEntryResult.data ?? null;
 	const streakEntries = streakEntriesResult.data ?? [];
 	const totalEntries = totalEntriesResult.count ?? 0;
@@ -278,75 +248,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		summary: buildProgressSummary(currentStreak, weeklyEntries, totalEntries)
 	};
 
-	let communityPreview: PortalCommunityPreview = {
-		id: null,
-		snippet: 'Gemenskapen fylls på steg för steg. Du kan läsa i lugn takt när det känns rätt.',
-		dateLabel: '',
-		replyCount: null,
-		hasActivity: false
-	};
-
-	const communityPosts = (communityPostsResult.data ?? []) as CommunityPostRow[];
-	const postIds = communityPosts
-		.map((post) => post.id)
-		.filter((postId): postId is string => typeof postId === 'string' && postId.length > 0);
-
-	if (postIds.length > 0) {
-		const { data: communityComments, error: communityCommentsError } = await locals.supabase
-			.from('community_comments')
-			.select('post_id, created_at')
-			.in('post_id', postIds)
-			.is('deleted_at', null)
-			.order('created_at', { ascending: false })
-			.limit(60);
-
-		if (communityCommentsError && !isMissingTableError(communityCommentsError, 'community_comments')) {
-			console.error('Dashboard community comment load error:', communityCommentsError);
-		}
-
-		const commentRows = ((communityComments ?? []) as CommunityCommentRow[]).filter(
-			(row) => typeof row.post_id === 'string' && row.post_id.length > 0
-		);
-		const activityByPostId = new Map<string, { latestActivity: string | null; replyCount: number }>();
-
-		for (const post of communityPosts) {
-			activityByPostId.set(post.id, {
-				latestActivity: post.created_at,
-				replyCount: 0
-			});
-		}
-
-		for (const comment of commentRows) {
-			const existing = activityByPostId.get(comment.post_id);
-			if (!existing) continue;
-			existing.replyCount += 1;
-			if (
-				comment.created_at &&
-				(!existing.latestActivity || new Date(comment.created_at).getTime() > new Date(existing.latestActivity).getTime())
-			) {
-				existing.latestActivity = comment.created_at;
-			}
-		}
-
-		const rankedPosts = [...communityPosts].sort((left, right) => {
-			const leftActivity = activityByPostId.get(left.id)?.latestActivity ?? left.created_at ?? '';
-			const rightActivity = activityByPostId.get(right.id)?.latestActivity ?? right.created_at ?? '';
-			return new Date(rightActivity).getTime() - new Date(leftActivity).getTime();
-		});
-
-		const selectedPost = rankedPosts[0];
-		if (selectedPost) {
-			const activity = activityByPostId.get(selectedPost.id);
-			communityPreview = {
-				id: selectedPost.id,
-				snippet: toSnippet(selectedPost.content, 150),
-				dateLabel: formatDateLabel(activity?.latestActivity ?? selectedPost.created_at),
-				replyCount: activity?.replyCount ?? 0,
-				hasActivity: true
-			};
-		}
-	}
-
 	const settingsPreview: PortalSettingsPreview = {
 		displayName: cleanName(metadata.display_name) ?? cleanName(metadata.full_name) ?? cleanName(metadata.name),
 		themeLabel,
@@ -362,10 +263,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		title: 'Min portal',
-		description: 'En lugn översikt över dagbok, framsteg, gemenskap och inställningar.',
+		description: 'En lugn översikt över dagbok, framsteg och inställningar.',
 		diaryPreview,
 		progressPreview,
-		communityPreview,
 		settingsPreview
 	};
 };

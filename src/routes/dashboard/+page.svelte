@@ -15,13 +15,6 @@
 			totalEntries: number;
 			summary: string;
 		};
-		communityPreview: {
-			id: string | null;
-			snippet: string;
-			dateLabel: string;
-			replyCount: number | null;
-			hasActivity: boolean;
-		};
 		settingsPreview: {
 			displayName: string | null;
 			themeLabel: string;
@@ -34,7 +27,6 @@
 
 	const diaryPreview = $derived(data.diaryPreview);
 	const progressPreview = $derived(data.progressPreview);
-	const communityPreview = $derived(data.communityPreview);
 	const settingsPreview = $derived(data.settingsPreview);
 	const primaryDiaryCtaLabel = $derived(diaryPreview.hasEntry ? 'Fortsätt från senast' : 'Börja i dagboken');
 </script>
@@ -120,23 +112,6 @@
 					<span>{progressPreview.totalEntries} totalt</span>
 				</div>
 				<a href="/framsteg" class="auth-button">Se framsteg</a>
-			</article>
-
-			<article class="auth-panel portal-card">
-				<div class="portal-card-head">
-					<p class="portal-card-kicker">Gemenskap</p>
-					{#if communityPreview.hasActivity && communityPreview.dateLabel}
-						<span class="portal-meta">{communityPreview.dateLabel}</span>
-					{/if}
-				</div>
-				<h2>Det rör sig stilla</h2>
-				<p class="portal-copy">{communityPreview.snippet}</p>
-				{#if communityPreview.hasActivity && communityPreview.replyCount !== null}
-					<p class="portal-subtle">
-						{communityPreview.replyCount} svar i tråden just nu
-					</p>
-				{/if}
-				<a href="/dashboard/gemenskap" class="auth-button">Till gemenskapen</a>
 			</article>
 
 			<article class="auth-panel portal-card">
