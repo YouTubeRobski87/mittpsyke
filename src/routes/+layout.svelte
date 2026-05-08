@@ -636,7 +636,6 @@
 							{/each}
 						</div>
 					</details>
-					<a href="/dashboard/gemenskap" class="text-sm transition-opacity {isActive('/dashboard/gemenskap') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" aria-current={isActive('/dashboard/gemenskap') ? 'page' : undefined}>Gemenskap</a>
 				</nav>
 			</div>
 
@@ -774,7 +773,6 @@
 
 									<div class="profile-panel-links" aria-label="Snabbval">
 										<a href="/dagbok/checkin" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
-										<a href="/dashboard/gemenskap" class="profile-panel-link" onclick={closeProfilePanel}>Öppna Gemenskapen</a>
 										<a href="/chat" class="profile-panel-link" onclick={closeProfilePanel}>Starta chat</a>
 										<a href="/notiser" class="profile-panel-link" onclick={closeProfilePanel}>
 											Notiser{#if unreadNotificationCount > 0} ({unreadNotificationCount}){/if}
@@ -848,7 +846,6 @@
 					{#each guideNavItems as item}
 						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
-					<a href="/dashboard/gemenskap" class="mobile-menu-link text-sm transition-opacity {isActive('/dashboard/gemenskap') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive('/dashboard/gemenskap') ? 'page' : undefined}>Gemenskap</a>
 					<p class="mobile-menu-section-title text-xs opacity-55">Profil</p>
 					{#each signedInPortalNavItems as item}
 						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>
@@ -878,7 +875,6 @@
 					{#each guideNavItems as item}
 						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
-					<a href="/dashboard/gemenskap" class="mobile-menu-link text-sm transition-opacity {isActive('/dashboard/gemenskap') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive('/dashboard/gemenskap') ? 'page' : undefined}>Gemenskap</a>
 					{#each guestSecondaryNavItems as item}
 						<a
 							href={item.href}
