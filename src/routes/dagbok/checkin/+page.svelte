@@ -96,6 +96,7 @@
 	let deleteErrorEntryId = $state('');
 	let deleteErrorMessage = $state('');
 	let canRenderMarkdown = $state(false);
+	let expandedEntryId = $state('');
 
 	$effect(() => {
 		entries = data.entries ?? [];
@@ -128,6 +129,34 @@
 			month: 'short',
 			day: 'numeric'
 		});
+	}
+
+	function plainDiaryText(value: string | null | undefined): string {
+		return (value ?? '')
+			.replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+			.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+			.replace(/[`*_>#-]/g, ' ')
+			.replace(/\s+/g, ' ')
+			.trim();
+	}
+
+	function getEntryTitle(entry: DiaryEntry): string {
+		const firstLine = entry.content
+			.split(/\r?\n/)
+			.map((line) => plainDiaryText(line))
+			.find(Boolean);
+		if (!firstLine) return 'Dagboksinlägg';
+		return firstLine.length > 72 ? `${firstLine.slice(0, 69).trim()}...` : firstLine;
+	}
+
+	function getEntryExcerpt(entry: DiaryEntry): string {
+		const text = plainDiaryText(entry.content);
+		if (!text) return 'Inget textinnehåll ännu.';
+		return text.length > 180 ? `${text.slice(0, 177).trim()}...` : text;
+	}
+
+	function toggleEntryExpanded(entryId: string) {
+		expandedEntryId = expandedEntryId === entryId ? '' : entryId;
 	}
 
 	function parseMoodValue(value: string | null): number | null {
@@ -949,10 +978,12 @@
 							<div class="diary-entries">
 								{#each paginatedEntries as entry (entry.id)}
 									<article class="auth-panel diary-entry">
-										<p class="text-xs auth-muted">{formatDate(entry.created_at)}</p>
-										{#if entry.mood && editingEntryId !== entry.id}
-											<p class="mt-1 text-xs auth-muted">Humör: {entry.mood}/10</p>
-										{/if}
+										<div class="entry-teaser-meta">
+											<p class="entry-date">{formatDate(entry.created_at)}</p>
+											{#if entry.mood && editingEntryId !== entry.id}
+												<p class="entry-mood auth-muted">Humör: {entry.mood}/10</p>
+											{/if}
+										</div>
 
 										{#if editingEntryId === entry.id}
 											<div class="entry-edit-form">
@@ -1011,21 +1042,34 @@
 												</div>
 											</div>
 										{:else}
-											{#if canRenderMarkdown}
-												<div class="entry-markdown text-sm">
-													{@html renderDiaryMarkdown(entry.content)}
-												</div>
+											<h3 class="entry-title">{getEntryTitle(entry)}</h3>
+											{#if expandedEntryId === entry.id}
+												{#if canRenderMarkdown}
+													<div class="entry-markdown text-sm">
+														{@html renderDiaryMarkdown(entry.content)}
+													</div>
+												{:else}
+													<p class="entry-fulltext">{entry.content}</p>
+												{/if}
+												{#if entry.image_url}
+													<img
+														src={entry.image_url}
+														alt="Bild till dagboksinlägg"
+														class="entry-image"
+														loading="lazy"
+													/>
+												{/if}
 											{:else}
-												<p class="mt-2 whitespace-pre-wrap text-sm">{entry.content}</p>
+												<p class="entry-excerpt">{getEntryExcerpt(entry)}</p>
 											{/if}
-											{#if entry.image_url}
-												<img
-													src={entry.image_url}
-													alt="Bild till dagboksinlägg"
-													class="entry-image"
-													loading="lazy"
-												/>
-											{/if}
+											<button
+												type="button"
+												class="entry-read-more"
+												aria-expanded={expandedEntryId === entry.id}
+												onclick={() => toggleEntryExpanded(entry.id)}
+											>
+												{expandedEntryId === entry.id ? 'Visa mindre' : 'Läs vidare'}
+											</button>
 
 											<div class="entry-actions">
 												<button
@@ -1931,6 +1975,8 @@
 	}
 
 	.diary-entry {
+		display: grid;
+		gap: 0.55rem;
 		transition: border-color 160ms ease, box-shadow 160ms ease;
 	}
 
@@ -1938,8 +1984,64 @@
 		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
 	}
 
+	.entry-teaser-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem 0.65rem;
+		flex-wrap: wrap;
+	}
+
+	.entry-date,
+	.entry-mood {
+		margin: 0;
+		font-size: 0.78rem;
+	}
+
+	.entry-date {
+		font-weight: 700;
+		color: hsl(var(--foreground));
+	}
+
+	.entry-title {
+		margin: 0;
+		font-size: 1rem;
+		line-height: 1.35;
+		color: hsl(var(--foreground));
+	}
+
+	.entry-excerpt,
+	.entry-fulltext {
+		margin: 0;
+		font-size: 0.92rem;
+		line-height: 1.65;
+		overflow-wrap: anywhere;
+		white-space: pre-wrap;
+	}
+
+	.entry-excerpt {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.entry-read-more {
+		justify-self: start;
+		border: 0;
+		background: transparent;
+		padding: 0;
+		font-family: var(--font-heading);
+		font-size: 0.86rem;
+		font-weight: 700;
+		color: hsl(var(--primary));
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		cursor: pointer;
+	}
+
+	.entry-read-more:hover,
+	.entry-read-more:focus-visible {
+		color: hsl(var(--foreground));
+	}
+
 	.entry-markdown {
-		margin-top: 0.5rem;
 		line-height: 1.65;
 		overflow-wrap: anywhere;
 	}
