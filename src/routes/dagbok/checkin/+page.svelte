@@ -1236,7 +1236,7 @@
 	}
 
 	:global(.auth-page:has(.diary-layout) .auth-shell) {
-		max-width: min(1180px, calc(100vw - 2rem));
+		max-width: min(1440px, calc(100vw - 2rem));
 	}
 
 	.diary-layout {
@@ -1981,16 +1981,16 @@
 		display: grid;
 		gap: 0.65rem;
 		padding: 1rem;
-		border: 1px solid hsl(var(--border) / 0.72);
+		border: 1px solid rgba(129, 140, 248, 0.22);
 		border-radius: 0.95rem;
-		background: hsl(var(--surface) / 0.92);
-		box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+		background: linear-gradient(145deg, rgba(30, 41, 59, 0.94), rgba(17, 24, 39, 0.95));
+		box-shadow: 0 8px 22px rgba(2, 6, 23, 0.14);
 		transition: border-color 160ms ease, box-shadow 160ms ease;
 	}
 
 	.diary-entry:hover {
-		border-color: hsl(var(--primary) / 0.28);
-		box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+		border-color: rgba(165, 180, 252, 0.34);
+		box-shadow: 0 12px 28px rgba(2, 6, 23, 0.2);
 	}
 
 	.entry-teaser-meta {
@@ -2128,7 +2128,7 @@
 	}
 
 	:global(.dark) .diary-entry:hover {
-		box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
 	}
 
 	.entry-actions {
@@ -2502,6 +2502,12 @@
 			order: 0;
 			position: sticky;
 			top: 1rem;
+		}
+	}
+
+	@media (min-width: 1400px) {
+		.diary-entries {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 	}
 </style>
