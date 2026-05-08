@@ -130,9 +130,8 @@
 		/>
 		<div class="hero-shell">
 			<div class="hero-content">
-				<p class="hero-eyebrow">Anonymt stöd i text</p>
 				<h1>Få hjälp att sortera tankar i lugn takt</h1>
-				<p>Skriv anonymt och få stöd att förstå det som känns – utan konto, utan press och i din egen takt.</p>
+				<p>Anonymt stöd när tankarna snurrar. Börja direkt i chatten eller skriv i dagboken i din egen takt.</p>
 				<div class="hero-actions">
 					<a href="/chat" class="hero-cta hero-cta-primary" onclick={() => trackStartAnonymous()}>Chatta anonymt</a>
 					<a href="/dagbok" class="hero-cta hero-cta-primary" onclick={() => trackStartDiary()}>Skriv dagbok</a>
@@ -407,14 +406,6 @@
 		font-weight: 700;
 		border-radius: var(--radius-pill);
 		transition: transform 0.15s ease, box-shadow 0.15s ease;
-	}
-
-	.hero-eyebrow {
-		font-size: 1rem;
-		color: rgba(255, 255, 255, 0.75);
-		font-weight: 400;
-		margin-bottom: 0.4rem;
-		letter-spacing: 0.01em;
 	}
 
 	.hero-trust-note {
