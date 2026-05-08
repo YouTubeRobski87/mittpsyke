@@ -1161,6 +1161,33 @@
 </main>
 
 <style>
+	:global(.auth-page:has(.diary-layout)) {
+		position: relative;
+		overflow: hidden;
+		background:
+			radial-gradient(circle at top left, rgba(30, 64, 175, 0.1), transparent 34%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(8, 13, 23, 0.98));
+	}
+
+	:global(.auth-page:has(.diary-layout)::before) {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
+		background:
+			linear-gradient(180deg, rgba(8, 13, 23, 0.78), rgba(8, 13, 23, 0.94)),
+			url('/assets/diary/dagboken-background.png') center top / cover no-repeat;
+		opacity: 0.22;
+		filter: blur(1px);
+		transform: scale(1.02);
+	}
+
+	:global(.auth-page:has(.diary-layout) > *) {
+		position: relative;
+		z-index: 1;
+	}
+
 	.diary-layout {
 		display: grid;
 		gap: 1rem;
@@ -2144,6 +2171,11 @@
 	}
 
 	@media (max-width: 760px) {
+		:global(.auth-page:has(.diary-layout)::before) {
+			background-position: 42% top;
+			opacity: 0.16;
+		}
+
 		:global(.auth-page:has(.diary-layout)) {
 			padding-inline: 0.55rem;
 		}
@@ -2343,4 +2375,3 @@
 		}
 	}
 </style>
-
