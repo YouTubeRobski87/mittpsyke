@@ -1188,6 +1188,10 @@
 		z-index: 1;
 	}
 
+	:global(.auth-page:has(.diary-layout) .auth-shell) {
+		max-width: min(1180px, calc(100vw - 2rem));
+	}
+
 	.diary-layout {
 		display: grid;
 		gap: 1rem;
@@ -2362,8 +2366,9 @@
 
 	@media (min-width: 980px) {
 		.diary-layout {
-			grid-template-columns: minmax(0, 1fr) 300px;
+			grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
 			align-items: start;
+			gap: 1.35rem;
 		}
 
 		.diary-path-grid {
@@ -2372,6 +2377,8 @@
 
 		.diary-side {
 			order: 0;
+			position: sticky;
+			top: 1rem;
 		}
 	}
 </style>
