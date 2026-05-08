@@ -1257,8 +1257,8 @@
 	}
 
 	.profile-avatar-link {
-		width: 2.25rem;
-		height: 2.25rem;
+		width: 2.5rem;
+		height: 2.5rem;
 		position: relative;
 	}
 
@@ -1369,14 +1369,14 @@
 
 	.profile-avatar-image,
 	.profile-avatar-fallback {
-		width: 1.9rem;
-		height: 1.9rem;
+		width: 2.15rem;
+		height: 2.15rem;
 	}
 
 	.profile-panel-avatar-image,
 	.profile-panel-avatar-fallback {
-		width: 2.25rem;
-		height: 2.25rem;
+		width: 2.75rem;
+		height: 2.75rem;
 	}
 
 	.profile-avatar-fallback,
@@ -1506,14 +1506,14 @@
 		}
 
 		.profile-avatar-link {
-			width: 2rem;
-			height: 2rem;
+			width: 2.5rem;
+			height: 2.5rem;
 		}
 
 		.profile-avatar-image,
 		.profile-avatar-fallback {
-			width: 1.68rem;
-			height: 1.68rem;
+			width: 2.15rem;
+			height: 2.15rem;
 		}
 
 		.profile-panel-toggle {
