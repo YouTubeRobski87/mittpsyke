@@ -49,6 +49,17 @@
 		}
 	];
 
+	const needNowLinks = [
+		{ text: 'Jag vill skriva av mig', href: '/chat', trackCta: 'need_now_write_off' },
+		{ text: 'Jag vill lugna tankarna', href: '/ovningar', trackCta: 'need_now_calm_thoughts' },
+		{
+			text: 'Jag vill förstå vad jag känner',
+			href: '/dagbok',
+			trackCta: 'need_now_understand_feelings'
+		},
+		{ text: 'Jag vill läsa själv', href: '/guider', trackCta: 'need_now_read_self' }
+	];
+
 	function trackHomeCta(section: string, cta: string, href: string) {
 		trackHomeCtaClick({ section, cta, href });
 	}
@@ -167,6 +178,23 @@
 				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
 			</p>
+		</div>
+	</section>
+
+	<section class="need-now" aria-labelledby="need-now-title">
+		<div class="cards-narrow need-now-inner">
+			<h2 id="need-now-title">Vad behöver du just nu?</h2>
+			<div class="need-now-grid">
+				{#each needNowLinks as item}
+					<a
+						class="need-now-card"
+						href={item.href}
+						onclick={() => trackHomeCta('need_now', item.trackCta, item.href)}
+					>
+						{item.text}
+					</a>
+				{/each}
+			</div>
 		</div>
 	</section>
 
@@ -508,6 +536,48 @@
 		text-underline-offset: 3px;
 	}
 
+	.need-now {
+		padding: clamp(2.2rem, 6vw, 3.4rem) 1.25rem;
+		background: #141e2e;
+		color: #e0e4ea;
+	}
+
+	.need-now-inner h2 {
+		margin: 0;
+		color: #eef1f6;
+		font-size: clamp(1.45rem, 2.8vw, 1.95rem);
+	}
+
+	.need-now-grid {
+		margin-top: 1rem;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.75rem;
+	}
+
+	.need-now-card {
+		display: block;
+		padding: 0.95rem 1rem;
+		border-radius: var(--radius-card);
+		border: 1px solid rgba(148, 163, 184, 0.14);
+		background:
+			radial-gradient(circle at top left, rgba(99, 102, 241, 0.12), transparent 44%),
+			linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
+		color: rgba(238, 241, 246, 0.92);
+		font-family: var(--font-heading);
+		font-size: 0.98rem;
+		font-weight: 600;
+		line-height: 1.4;
+		transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+	}
+
+	.need-now-card:hover,
+	.need-now-card:focus-visible {
+		border-color: rgba(147, 197, 253, 0.34);
+		box-shadow: 0 6px 18px rgba(15, 23, 42, 0.22);
+		transform: translateY(-1px);
+	}
+
 	.quick-flow {
 		scroll-margin-top: 80px;
 		padding: clamp(2.3rem, 6vw, 3.6rem) 1.25rem;
@@ -846,6 +916,10 @@
 	}
 
 	@media (min-width: 700px) {
+		.need-now-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
 		.quick-flow-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
@@ -875,6 +949,7 @@
 
 	/* ── Dark mode — base is already dark, just deepen slightly ── */
 	:global(.dark) .early-trust { background: #0e1826; }
+	:global(.dark) .need-now { background: #0d1520; }
 	:global(.dark) .quick-flow { background: #0d1520; }
 	:global(.dark) .how-it-works { background: #0e1826; }
 	:global(.dark) .review-section { background: #0a1018; }
