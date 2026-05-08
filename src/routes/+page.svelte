@@ -50,14 +50,30 @@
 	];
 
 	const needNowLinks = [
-		{ text: 'Jag vill skriva av mig', href: '/chat', trackCta: 'need_now_write_off' },
-		{ text: 'Jag vill lugna tankarna', href: '/ovningar', trackCta: 'need_now_calm_thoughts' },
+		{
+			text: 'Jag vill skriva av mig',
+			description: 'Börja direkt i chatten.',
+			href: '/chat',
+			trackCta: 'need_now_write_off'
+		},
+		{
+			text: 'Jag vill lugna tankarna',
+			description: 'Prova en enkel övning.',
+			href: '/ovningar',
+			trackCta: 'need_now_calm_thoughts'
+		},
 		{
 			text: 'Jag vill förstå vad jag känner',
+			description: 'Skriv i dagboken.',
 			href: '/dagbok',
 			trackCta: 'need_now_understand_feelings'
 		},
-		{ text: 'Jag vill läsa själv', href: '/guider', trackCta: 'need_now_read_self' }
+		{
+			text: 'Jag vill läsa själv',
+			description: 'Hitta guider och artiklar.',
+			href: '/guider',
+			trackCta: 'need_now_read_self'
+		}
 	];
 
 	function trackHomeCta(section: string, cta: string, href: string) {
@@ -191,7 +207,8 @@
 						href={item.href}
 						onclick={() => trackHomeCta('need_now', item.trackCta, item.href)}
 					>
-						{item.text}
+						<span>{item.text}</span>
+						<small>{item.description}</small>
 					</a>
 				{/each}
 			</div>
@@ -556,8 +573,10 @@
 	}
 
 	.need-now-card {
-		display: block;
-		padding: 0.95rem 1rem;
+		display: grid;
+		gap: 0.35rem;
+		min-height: 7rem;
+		padding: 1.15rem 1.2rem;
 		border-radius: var(--radius-card);
 		border: 1px solid rgba(148, 163, 184, 0.14);
 		background:
@@ -565,10 +584,20 @@
 			linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
 		color: rgba(238, 241, 246, 0.92);
 		font-family: var(--font-heading);
-		font-size: 0.98rem;
-		font-weight: 600;
 		line-height: 1.4;
 		transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+	}
+
+	.need-now-card span {
+		font-size: 1.05rem;
+		font-weight: 650;
+	}
+
+	.need-now-card small {
+		font-family: var(--font-body);
+		font-size: 0.92rem;
+		line-height: 1.55;
+		color: rgba(220, 225, 235, 0.7);
 	}
 
 	.need-now-card:hover,
