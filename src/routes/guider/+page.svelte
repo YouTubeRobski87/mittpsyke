@@ -77,14 +77,22 @@
 		flex-direction: column;
 		padding: 1.1rem 1rem 1rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.1);
+		border: 1px solid rgba(37, 99, 235, 0.14);
 		background: #f8fafb;
-		transition: transform 160ms ease, background-color 160ms ease;
+		transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease,
+			box-shadow 160ms ease;
 	}
 
 	.card:hover {
 		transform: translateY(-2px);
-		background: #eef3f8;
+		border-color: rgba(29, 78, 216, 0.32);
+		background: #eef4ff;
+		box-shadow: 0 12px 26px rgba(30, 64, 175, 0.08);
+	}
+
+	.card:focus-visible {
+		outline: 3px solid rgba(37, 99, 235, 0.28);
+		outline-offset: 3px;
 	}
 
 	.card h2 {
@@ -111,22 +119,27 @@
 		margin-top: 0.9rem;
 		padding: 0.34rem 0.58rem;
 		border-radius: 999px;
-		background: rgba(67, 110, 143, 0.1);
+		border: 1px solid rgba(37, 99, 235, 0.16);
+		background: rgba(37, 99, 235, 0.1);
+		color: #1d4ed8;
 		font-size: 0.82rem;
-		opacity: 0.8;
 	}
 
 	:global(.dark) .card {
-		background: #1a2128;
-		border-color: rgba(255, 255, 255, 0.12);
+		background: #111827;
+		border-color: rgba(96, 165, 250, 0.18);
 	}
 
 	:global(.dark) .card:hover {
-		background: #1f2530;
+		border-color: rgba(147, 197, 253, 0.34);
+		background: #172033;
+		box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
 	}
 
 	:global(.dark) .meta {
-		background: rgba(67, 110, 143, 0.16);
+		border-color: rgba(147, 197, 253, 0.22);
+		background: rgba(37, 99, 235, 0.18);
+		color: #bfdbfe;
 	}
 
 	@media (max-width: 640px) {

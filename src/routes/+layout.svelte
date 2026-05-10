@@ -47,7 +47,7 @@
 	];
 
 	const guideNavItems: NavItem[] = [
-		{ href: '/guider', label: 'Guider', description: 'Förstå vanliga besvär' },
+		{ href: '/guider', label: 'Besvär & känslor', description: 'Förstå vanliga besvär' },
 		{ href: '/blogg', label: 'Artiklar', description: 'Läs mer om psykisk hälsa' },
 		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' },
 		{ href: '/sok', label: 'Sök', description: 'Hitta guider och artiklar' }
@@ -1110,12 +1110,12 @@
 
 	.resources-dropdown-link:hover,
 	.resources-dropdown-link:focus-visible {
-		background: rgba(15, 118, 110, 0.1);
+		background: rgba(37, 99, 235, 0.1);
 	}
 
 	:global(.dark) .resources-dropdown-link:hover,
 	:global(.dark) .resources-dropdown-link:focus-visible {
-		background: rgba(45, 212, 191, 0.12);
+		background: rgba(96, 165, 250, 0.14);
 	}
 
 	.mobile-search-overlay {
