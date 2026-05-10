@@ -585,6 +585,10 @@
 				<span>Jag vill få frivilliga SMS-uppdateringar från MittPsyke.</span>
 			</label>
 
+			<p class="sms-info">
+				SMS-utskick är ännu inte aktiverade. Inställningen sparas redan nu för framtida frivilliga uppdateringar.
+			</p>
+
 			<div class="sms-actions">
 				<button class="save-btn" onclick={() => saveSmsPreference()} disabled={smsSaving}>
 					{smsSaving ? 'Sparar...' : 'Spara'}
@@ -787,6 +791,24 @@
 
 	.sms-off-btn {
 		background: transparent;
+	}
+
+	.sms-info {
+		margin: 0.7rem 0 0;
+		padding: 0.7rem 0.8rem;
+		border-radius: var(--radius-input);
+		border: 1px solid rgba(37, 99, 235, 0.14);
+		background: rgba(37, 99, 235, 0.06);
+		color: #1e3a8a;
+		font-family: var(--font-body);
+		font-size: 0.86rem;
+		line-height: 1.55;
+	}
+
+	:global(.dark) .sms-info {
+		border-color: rgba(147, 197, 253, 0.2);
+		background: rgba(37, 99, 235, 0.14);
+		color: #bfdbfe;
 	}
 
 	.feedback {
