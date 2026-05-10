@@ -74,8 +74,8 @@
 		max-width: 62ch;
 		padding: 0.95rem 1rem;
 		border-radius: var(--radius-card);
-		background: #f5f8fb;
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		background: #f4f7ff;
+		border: 1px solid rgba(37, 99, 235, 0.14);
 	}
 
 	.links-title {
@@ -97,9 +97,18 @@
 		padding: 0.7rem 0.8rem;
 		border-radius: 12px;
 		background: #ffffff;
-		border: 1px solid rgba(0, 0, 0, 0.06);
+		border: 1px solid rgba(37, 99, 235, 0.12);
+		color: #1d4ed8;
 		text-decoration: underline;
 		text-underline-offset: 2px;
+		transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+	}
+
+	.links-list a:hover,
+	.links-list a:focus-visible {
+		background: #eff6ff;
+		border-color: rgba(29, 78, 216, 0.28);
+		color: #1e40af;
 	}
 
 	.grid {
@@ -114,14 +123,22 @@
 		flex-direction: column;
 		padding: 1.1rem 1rem 1rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.1);
+		border: 1px solid rgba(37, 99, 235, 0.14);
 		background: #f7fbff;
-		transition: transform 160ms ease, background-color 160ms ease;
+		transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease,
+			box-shadow 160ms ease;
 	}
 
 	.card:hover {
 		transform: translateY(-2px);
-		background: #eef5fb;
+		border-color: rgba(29, 78, 216, 0.32);
+		background: #eef4ff;
+		box-shadow: 0 12px 26px rgba(30, 64, 175, 0.08);
+	}
+
+	.card:focus-visible {
+		outline: 3px solid rgba(37, 99, 235, 0.28);
+		outline-offset: 3px;
 	}
 
 	.card h2 {
@@ -148,32 +165,45 @@
 		margin-top: 0.9rem;
 		padding: 0.34rem 0.58rem;
 		border-radius: 999px;
-		background: rgba(67, 110, 143, 0.1);
+		border: 1px solid rgba(37, 99, 235, 0.16);
+		background: rgba(37, 99, 235, 0.1);
+		color: #1d4ed8;
 		font-size: 0.82rem;
-		opacity: 0.8;
 	}
 
 	:global(.dark) .links-block {
-		background: #1b2329;
-		border-color: rgba(255, 255, 255, 0.1);
+		background: #111827;
+		border-color: rgba(96, 165, 250, 0.18);
 	}
 
 	:global(.dark) .links-list a {
-		background: #202a31;
-		border-color: rgba(255, 255, 255, 0.1);
+		background: #172033;
+		border-color: rgba(147, 197, 253, 0.18);
+		color: #bfdbfe;
+	}
+
+	:global(.dark) .links-list a:hover,
+	:global(.dark) .links-list a:focus-visible {
+		background: #1e293b;
+		border-color: rgba(147, 197, 253, 0.34);
+		color: #dbeafe;
 	}
 
 	:global(.dark) .card {
-		background: #192127;
-		border-color: rgba(255, 255, 255, 0.12);
+		background: #111827;
+		border-color: rgba(96, 165, 250, 0.18);
 	}
 
 	:global(.dark) .card:hover {
-		background: #1f2a31;
+		border-color: rgba(147, 197, 253, 0.34);
+		background: #172033;
+		box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
 	}
 
 	:global(.dark) .meta {
-		background: rgba(86, 148, 201, 0.16);
+		border-color: rgba(147, 197, 253, 0.22);
+		background: rgba(37, 99, 235, 0.18);
+		color: #bfdbfe;
 	}
 
 	@media (max-width: 640px) {

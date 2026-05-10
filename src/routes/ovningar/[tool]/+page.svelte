@@ -146,7 +146,7 @@
 		margin-top: 1.4rem;
 		padding: 1rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.1);
+		border: 1px solid rgba(37, 99, 235, 0.14);
 		background: #fbfcfd;
 	}
 
@@ -154,8 +154,8 @@
 		margin-top: 1rem;
 		padding: 0.95rem 1rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.08);
-		background: #f4f7fb;
+		border: 1px solid rgba(37, 99, 235, 0.14);
+		background: #f4f7ff;
 	}
 
 	.info-box p {
@@ -201,7 +201,7 @@
 		align-items: start;
 		padding: 0.85rem 0.9rem;
 		border-radius: 12px;
-		border: 1px solid rgba(0, 0, 0, 0.08);
+		border: 1px solid rgba(37, 99, 235, 0.12);
 		background: #ffffff;
 		line-height: 1.6;
 	}
@@ -215,8 +215,8 @@
 		width: 1.7rem;
 		height: 1.7rem;
 		border-radius: 999px;
-		background: #e3edf5;
-		color: #2e4a64;
+		background: #dbeafe;
+		color: #1d4ed8;
 		font-size: 0.88rem;
 		font-weight: 700;
 	}
@@ -233,7 +233,7 @@
 	.link-list li {
 		padding: 0.8rem 0.9rem;
 		border-radius: 12px;
-		border: 1px solid rgba(0, 0, 0, 0.08);
+		border: 1px solid rgba(37, 99, 235, 0.12);
 		background: #ffffff;
 		line-height: 1.55;
 	}
@@ -249,31 +249,31 @@
 	.reflect-list li {
 		padding: 0.8rem 0.9rem;
 		border-radius: 12px;
-		border: 1px solid rgba(0, 0, 0, 0.08);
+		border: 1px solid rgba(37, 99, 235, 0.12);
 		background: #ffffff;
 		line-height: 1.55;
 	}
 
 	:global(.dark) .block {
-		background: #1a1f2a;
-		border-color: rgba(255, 255, 255, 0.12);
+		background: #111827;
+		border-color: rgba(96, 165, 250, 0.18);
 	}
 
 	:global(.dark) .info-box {
-		background: #191e29;
-		border-color: rgba(255, 255, 255, 0.12);
+		background: #172033;
+		border-color: rgba(96, 165, 250, 0.18);
 	}
 
 	:global(.dark) .step-list li,
 	:global(.dark) .link-list li,
 	:global(.dark) .reflect-list li {
-		background: #21262f;
-		border-color: rgba(255, 255, 255, 0.12);
+		background: #172033;
+		border-color: rgba(147, 197, 253, 0.18);
 	}
 
 	:global(.dark) .step-list li::before {
-		background: rgba(125, 170, 210, 0.14);
-		color: #7daad2;
+		background: rgba(37, 99, 235, 0.22);
+		color: #bfdbfe;
 	}
 
 	@media (max-width: 640px) {

@@ -80,6 +80,24 @@ export interface DeleteAccountErrorResponse {
 	error: string;
 }
 
+export interface SmsPreferenceRecord {
+	phone_number: string | null;
+	sms_opt_in: boolean;
+	sms_opt_in_at: string | null;
+	sms_opt_out_at: string | null;
+	phone_verified: boolean;
+}
+
+export interface SmsPreferenceSuccessResponse {
+	success: true;
+	preference: SmsPreferenceRecord;
+}
+
+export interface SmsPreferenceErrorResponse {
+	success: false;
+	error: string;
+}
+
 export interface DiaryStatsTimelinePoint {
 	date: string;
 	mood: string;

@@ -3,7 +3,12 @@
 	import { goto } from '$app/navigation';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import { supabase } from '$lib/supabase';
-	import type { DeleteAccountErrorResponse, DeleteAccountSuccessResponse } from '$lib/types';
+	import type {
+		DeleteAccountErrorResponse,
+		DeleteAccountSuccessResponse,
+		SmsPreferenceErrorResponse,
+		SmsPreferenceSuccessResponse
+	} from '$lib/types';
 	import { THEME_STORAGE_KEY } from '$lib/theme';
 	import { AVATAR_PRESETS, type AvatarPresetKey } from '$lib/avatar';
 
@@ -23,6 +28,13 @@
 	let prefSaving = $state(false);
 	let prefMessage = $state('');
 	let prefMessageType = $state<'success' | 'error'>('success');
+
+	// SMS updates
+	let smsPhoneNumber = $state('');
+	let smsOptIn = $state(false);
+	let smsSaving = $state(false);
+	let smsMessage = $state('');
+	let smsMessageType = $state<'success' | 'error'>('success');
 
 	const THEMES = [
 		{ value: 'neutral',   label: 'Neutral',    color: '#436e8f' },
@@ -67,6 +79,22 @@
 		return value as AvatarPresetKey;
 	}
 
+	function normalizeSwedishMobileNumber(value: string): string | null {
+		const compact = value.trim().replace(/[\s().-]/g, '');
+		if (!compact) return null;
+
+		const international = compact.startsWith('00') ? `+${compact.slice(2)}` : compact;
+		if (/^07\d{8}$/.test(international)) return `+46${international.slice(1)}`;
+		if (/^\+467\d{8}$/.test(international)) return international;
+
+		return null;
+	}
+
+	function applySmsPreference(payload: SmsPreferenceSuccessResponse['preference']) {
+		smsPhoneNumber = payload.phone_number ?? '';
+		smsOptIn = payload.sms_opt_in;
+	}
+
 	let nameMessageType = $state<'success' | 'error'>('success');
 
 	// Password
@@ -105,6 +133,7 @@
 			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
+			await loadSmsPreference();
 			loading = false;
 		}
 
@@ -114,6 +143,75 @@
 			alive = false;
 		};
 	});
+
+	async function loadSmsPreference() {
+		smsMessage = '';
+
+		try {
+			const response = await fetch('/api/account/sms-preferences');
+			const payload = (await response.json()) as SmsPreferenceSuccessResponse | SmsPreferenceErrorResponse;
+
+			if (!response.ok || payload.success !== true) {
+				smsMessage = 'Kunde inte hämta SMS-inställningen just nu.';
+				smsMessageType = 'error';
+				return;
+			}
+
+			applySmsPreference(payload.preference);
+		} catch {
+			smsMessage = 'Kunde inte hämta SMS-inställningen just nu.';
+			smsMessageType = 'error';
+		}
+	}
+
+	async function saveSmsPreference(nextOptIn = smsOptIn) {
+		smsMessage = '';
+
+		const normalizedPhone = normalizeSwedishMobileNumber(smsPhoneNumber);
+		if (nextOptIn && !normalizedPhone) {
+			smsMessage = 'Ange ett svenskt mobilnummer, till exempel 0701234567.';
+			smsMessageType = 'error';
+			return;
+		}
+
+		smsSaving = true;
+
+		try {
+			const response = await fetch('/api/account/sms-preferences', {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					phoneNumber: nextOptIn ? normalizedPhone : '',
+					smsOptIn: nextOptIn
+				})
+			});
+			const payload = (await response.json()) as SmsPreferenceSuccessResponse | SmsPreferenceErrorResponse;
+
+			smsSaving = false;
+
+			if (!response.ok || payload.success !== true) {
+				smsMessage =
+					payload.success === false ? payload.error : 'Kunde inte spara SMS-inställningen just nu.';
+				smsMessageType = 'error';
+				return;
+			}
+
+			applySmsPreference(payload.preference);
+			smsMessage = payload.preference.sms_opt_in
+				? 'SMS-inställningen har sparats.'
+				: 'SMS-uppdateringar är avstängda.';
+			smsMessageType = 'success';
+		} catch {
+			smsSaving = false;
+			smsMessage = 'Kunde inte nå servern. Försök igen.';
+			smsMessageType = 'error';
+		}
+	}
+
+	async function disableSmsUpdates() {
+		smsOptIn = false;
+		await saveSmsPreference(false);
+	}
 
 	async function saveDisplayName() {
 		nameMessage = '';
@@ -465,6 +563,42 @@
 			<p class="field-hint">Läs mer om radering, export och hur uppgifter hanteras i <a href="/integritet">integritetspolicyn</a>.</p>
 		</section>
 
+		<section class="auth-panel section-block">
+			<h2>SMS-uppdateringar</h2>
+			<p class="field-hint">
+				Få ett SMS när MittPsyke får nya funktioner eller viktiga förbättringar. Du kan stänga av detta när som helst.
+			</p>
+
+			<label class="field-label" for="sms-phone">Telefonnummer</label>
+			<input
+				id="sms-phone"
+				type="tel"
+				bind:value={smsPhoneNumber}
+				placeholder="0701234567"
+				class="text-input"
+				autocomplete="tel"
+				inputmode="tel"
+			/>
+
+			<label class="sms-consent-row">
+				<input type="checkbox" bind:checked={smsOptIn} />
+				<span>Jag vill få frivilliga SMS-uppdateringar från MittPsyke.</span>
+			</label>
+
+			<div class="sms-actions">
+				<button class="save-btn" onclick={() => saveSmsPreference()} disabled={smsSaving}>
+					{smsSaving ? 'Sparar...' : 'Spara'}
+				</button>
+				<button class="save-btn sms-off-btn" onclick={disableSmsUpdates} disabled={smsSaving || (!smsOptIn && !smsPhoneNumber)}>
+					Stäng av SMS
+				</button>
+			</div>
+
+			{#if smsMessage}
+				<p class="feedback {smsMessageType}">{smsMessage}</p>
+			{/if}
+		</section>
+
 		<!-- Delete Account Section -->
 		<section id="radera-konto" class="auth-panel section-block danger-zone">
 			<h2>Radera konto</h2>
@@ -618,6 +752,41 @@
 
 	.link-btn {
 		text-decoration: none;
+	}
+
+	.sms-consent-row {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.55rem;
+		margin-top: 0.75rem;
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		line-height: 1.45;
+		color: hsl(var(--foreground));
+		cursor: pointer;
+	}
+
+	.sms-consent-row input {
+		width: 1rem;
+		height: 1rem;
+		margin-top: 0.15rem;
+		accent-color: var(--primary, #2563eb);
+		flex-shrink: 0;
+	}
+
+	.sms-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.55rem;
+		align-items: center;
+	}
+
+	.sms-actions .save-btn {
+		margin-top: 0.75rem;
+	}
+
+	.sms-off-btn {
+		background: transparent;
 	}
 
 	.feedback {
@@ -873,6 +1042,11 @@
 		.section-block .save-btn,
 		.section-block .danger-btn {
 			width: 100%;
+		}
+
+		.sms-actions {
+			flex-direction: column;
+			align-items: stretch;
 		}
 
 		.avatar-row {
