@@ -86,7 +86,7 @@
 		MittPsyke ber om ditt samtycke i följande situationer:
 	</p>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
-		<li><strong>Cookie-bannern</strong> — innan analysverktyg (Vercel Analytics) aktiveras.</li>
+		<li><strong>Cookie-bannern</strong> — innan analysverktyg aktiveras.</li>
 		<li><strong>Kontoskapande</strong> — när du registrerar dig godkänner du att kontouppgifter sparas.</li>
 		<li><strong>AI-chatt och dagbok</strong> — genom att använda dessa funktioner samtycker du till att innehåll som kan röra psykisk hälsa behandlas (artikel 9 GDPR).</li>
 		<li><strong>Röstsamtal</strong> — genom att starta ett samtal samtycker du till att röstdata behandlas i realtid.</li>
@@ -171,7 +171,7 @@
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
 					<td class="px-4 py-3">Analyskakor</td>
-					<td class="px-4 py-3">Vercel Analytics</td>
+					<td class="px-4 py-3">Google Analytics</td>
 					<td class="px-4 py-3">USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
 					<td class="px-4 py-3">Samtycke</td>
 					<td class="px-4 py-3">Sessionbaserat</td>
@@ -207,7 +207,7 @@
 	<!-- KAKOR -->
 	<h2 class="text-lg font-semibold mt-8 mb-2">Kakor och analyser</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		MittPsyke använder Vercel Analytics för att förstå hur sajten används och förbättra upplevelsen.
+		MittPsyke använder analysverktyg för att förstå hur sajten används och förbättra upplevelsen.
 		Dessa analysverktyg aktiveras <strong>endast om du godkänner</strong> det i cookie-bannern som visas
 		vid ditt första besök. Du kan när som helst ändra ditt val genom att rensa cookies i din webbläsare.
 	</p>

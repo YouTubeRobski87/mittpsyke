@@ -522,21 +522,6 @@
 		};
 	});
 
-	// Initiera Vercel Analytics och Speed Insights en gång vid mount
-	$effect(() => {
-		if (!browser || !ANALYTICS_ENABLED) return;
-		const timeout = window.setTimeout(() => {
-			void Promise.all([
-				import('@vercel/analytics/sveltekit'),
-				import('@vercel/speed-insights/sveltekit')
-			]).then(([analytics, speedInsights]) => {
-				analytics.injectAnalytics();
-				speedInsights.injectSpeedInsights();
-			});
-		}, 2500);
-
-		return () => window.clearTimeout(timeout);
-	});
 </script>
 
 <svelte:head>
