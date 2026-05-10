@@ -792,14 +792,14 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'chatta-anonymt': {
-		title: 'Chatta anonymt utan konto – skriv av dig direkt | MittPsyke',
+		title: 'Chatta anonymt utan konto – börja direkt | MittPsyke',
 		description:
-			'Chatta anonymt utan konto och skriv av dig i lugn takt. MittPsyke ger stöd i text när du vill börja varsamt, men är inte vård eller diagnos.',
+			'Chatta anonymt utan konto hos MittPsyke. Skriv av dig, sortera tankar och få stöd i lugn takt – utan registrering eller krav.',
 		canonical: 'https://www.mittpsyke.se/chatta-anonymt',
 		ogTitle: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
 		ogDescription:
 			'Börja chatta anonymt utan konto. Få lugnt stöd i text direkt i webbläsaren.',
-		h1: 'Chatta anonymt utan konto i text',
+		h1: 'Chatta anonymt utan konto',
 		lead:
 			'Du kan chatta anonymt utan konto och börja direkt i text. Skriv några rader om det som känns tungt och få lugnt stöd i din egen takt. MittPsyke är ett samtalsstöd, inte vård eller akuthjälp.',
 		primaryCta: { href: '/skriv', label: 'Börja skriva anonymt' },
