@@ -43,7 +43,8 @@
 
 	const signedInPrimaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chatta' },
-		{ href: '/dagbok', label: 'Dagbok' }
+		{ href: '/dagbok', label: 'Dagbok' },
+		{ href: '/anonyma-berattelser', label: 'Berättelser' }
 	];
 
 	const guideNavItems: NavItem[] = [
@@ -65,7 +66,8 @@
 
 	const guestPrimaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chatta' },
-		{ href: '/dagbok', label: 'Dagbok' }
+		{ href: '/dagbok', label: 'Dagbok' },
+		{ href: '/anonyma-berattelser', label: 'Berättelser' }
 	];
 
 	const guestSecondaryNavItems: NavItem[] = [
@@ -896,10 +898,6 @@
 		<span class="mx-2">&middot;</span>
 		<a href="/sa-fungerar-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
 			Så fungerar MittPsyke
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/anonyma-berattelser" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Anonyma berättelser
 		</a>
 		<span class="mx-2">&middot;</span>
 		<a href="/feedback" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
