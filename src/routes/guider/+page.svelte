@@ -33,7 +33,7 @@
 		</p>
 	</header>
 
-	<section class="grid" aria-label="Alla guider">
+	<section id="besvar-och-kanslor" class="grid" aria-label="Alla guider">
 		{#each pillars as pillar}
 			<a class="card" href={`/guider/${pillar.slug}`}>
 				<h2>{pillar.title}</h2>

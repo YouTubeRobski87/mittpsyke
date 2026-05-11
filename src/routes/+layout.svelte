@@ -47,7 +47,11 @@
 	];
 
 	const guideNavItems: NavItem[] = [
-		{ href: '/guider', label: 'Besvär & känslor', description: 'Förstå vanliga besvär' },
+		{
+			href: '/guider#besvar-och-kanslor',
+			label: 'Besvär & känslor',
+			description: 'Förstå vanliga besvär'
+		},
 		{ href: '/blogg', label: 'Artiklar', description: 'Läs mer om psykisk hälsa' },
 		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' },
 		{ href: '/sok', label: 'Sök', description: 'Hitta guider och artiklar' }
@@ -71,7 +75,10 @@
 
 	function isActive(href: string): boolean {
 		const path = page.url.pathname;
-		return href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+		const normalizedHref = href.split('#')[0].split('?')[0];
+		return normalizedHref === '/'
+			? path === '/'
+			: path === normalizedHref || path.startsWith(normalizedHref + '/');
 	}
 
 	function normalizeText(value: unknown): string | null {
