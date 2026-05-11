@@ -148,6 +148,12 @@ export const GET: RequestHandler = async ({ fetch }) => {
 	const standalonePages: SitemapEntry[] = [
 		{ path: '/', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '1.0' },
 		{ path: '/dagbok', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '0.9' },
+		{
+			path: '/anonyma-berattelser',
+			lastmod: STATIC_CONTENT_LASTMOD,
+			changefreq: 'monthly',
+			priority: '0.6'
+		},
 		{ path: '/guider', lastmod: latestGuideLastmod, changefreq: 'weekly', priority: '0.8' },
 		{ path: '/ovningar', lastmod: TOOL_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{ path: '/blogg', lastmod: BLOG_LASTMOD, changefreq: 'monthly', priority: '0.7' },
