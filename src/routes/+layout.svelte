@@ -926,6 +926,10 @@
 			Tillgänglighet
 		</a>
 		<span class="mx-2">&middot;</span>
+		<a href="/cookies-och-leverantorer" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Cookies och leverantörer
+		</a>
+		<span class="mx-2">&middot;</span>
 		<a
 			href="https://stodlinjer.se"
 			target="_blank"
