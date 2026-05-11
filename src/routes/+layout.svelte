@@ -625,28 +625,28 @@
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
-				<div class="hidden lg:flex items-center gap-3">
-					{#if user}
-						<span class="text-sm opacity-60">
-							{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}
-						</span>
-						<button
-							onclick={logout}
-							class="text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
-						>
-							Logga ut
-						</button>
-					{:else}
+				{#if !user}
+					<div class="hidden lg:flex items-center gap-3">
 						<a href={PUBLIC_CONTACT_MAILTO} class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Kontakt</a>
 						<a href="/login" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Logga in</a>
 						<a href="/register" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Registrera</a>
-					{/if}
-				</div>
+					</div>
+				{/if}
 
 					{#if user}
 						<div class="relative">
 							<div class="profile-trigger">
-								<a href="/dashboard" class="profile-avatar-link" aria-label="Gå till Min portal" aria-describedby="diary-count-tooltip">
+								<button
+									type="button"
+									bind:this={profileButtonRef}
+									class="profile-avatar-link"
+									aria-label="Öppna profilmeny"
+									aria-haspopup="dialog"
+									aria-expanded={profilePanelOpen}
+									aria-controls="header-profile-panel"
+									aria-describedby="diary-count-tooltip"
+									onclick={toggleProfilePanel}
+								>
 									{#if showAvatarImage}
 										<img
 											src={avatarImageUrl}
@@ -680,23 +680,6 @@
 									<span id="diary-count-tooltip" class="profile-avatar-tooltip" role="tooltip">
 										{diaryEntryTooltip}
 									</span>
-								</a>
-								<button
-									type="button"
-									bind:this={profileButtonRef}
-									class="profile-panel-toggle"
-									aria-label="Öppna profilpanel"
-									aria-haspopup="dialog"
-									aria-expanded={profilePanelOpen}
-									aria-controls="header-profile-panel"
-									onclick={toggleProfilePanel}
-								>
-									<span aria-hidden="true">{profilePanelOpen ? '▴' : '▾'}</span>
-									{#if unreadNotificationCount > 0}
-										<span class="profile-toggle-badge" aria-label={`${unreadNotificationCount} olästa notiser`}>
-											{unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
-										</span>
-									{/if}
 								</button>
 							</div>
 
@@ -757,12 +740,14 @@
 									{/if}
 
 									<div class="profile-panel-links" aria-label="Snabbval">
+										<a href="/dashboard" class="profile-panel-link" onclick={closeProfilePanel}>Min portal</a>
 										<a href="/dagbok/checkin" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
 										<a href="/chat" class="profile-panel-link" onclick={closeProfilePanel}>Starta chat</a>
 										<a href="/notiser" class="profile-panel-link" onclick={closeProfilePanel}>
 											Notiser{#if unreadNotificationCount > 0} ({unreadNotificationCount}){/if}
 										</a>
 										<a href="/dashboard/installningar" class="profile-panel-link" onclick={closeProfilePanel}>Inställningar</a>
+										<button type="button" class="profile-panel-link" onclick={logout}>Logga ut</button>
 									</div>
 								</div>
 							{/if}
@@ -1224,8 +1209,7 @@
 		gap: 0.45rem;
 	}
 
-	.profile-avatar-link,
-	.profile-panel-toggle {
+	.profile-avatar-link {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -1240,6 +1224,7 @@
 	.profile-avatar-link {
 		width: 2.5rem;
 		height: 2.5rem;
+		padding: 0;
 		position: relative;
 	}
 
@@ -1280,54 +1265,23 @@
 		box-shadow: 0 0 0 2px hsl(var(--background));
 	}
 
-	.profile-panel-toggle {
-		width: 2.25rem;
-		height: 2.25rem;
-		font-size: 0.95rem;
-		line-height: 1;
-		position: relative;
-	}
-
-	.profile-toggle-badge {
-		position: absolute;
-		top: -0.4rem;
-		right: -0.44rem;
-		min-width: 1rem;
-		height: 1rem;
-		padding: 0 0.2rem;
-		border-radius: 9999px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 0.62rem;
-		font-weight: 700;
-		line-height: 1;
-		color: #1f2937;
-		background: #fbbf24;
-		box-shadow: 0 0 0 2px hsl(var(--background));
-	}
-
-	:global(.dark) .profile-avatar-link,
-	:global(.dark) .profile-panel-toggle {
+	:global(.dark) .profile-avatar-link {
 		border-color: rgba(255, 255, 255, 0.14);
 		background: rgba(15, 23, 42, 0.65);
 	}
 
-	.profile-avatar-link:hover,
-	.profile-panel-toggle:hover {
+	.profile-avatar-link:hover {
 		opacity: 1;
 		border-color: rgba(15, 118, 110, 0.28);
 		background: rgba(255, 255, 255, 0.88);
 	}
 
-	:global(.dark) .profile-avatar-link:hover,
-	:global(.dark) .profile-panel-toggle:hover {
+	:global(.dark) .profile-avatar-link:hover {
 		border-color: rgba(134, 223, 214, 0.28);
 		background: rgba(15, 23, 42, 0.82);
 	}
 
-	.profile-avatar-link:focus-visible,
-	.profile-panel-toggle:focus-visible {
+	.profile-avatar-link:focus-visible {
 		outline: 2px solid hsl(var(--primary));
 		outline-offset: 2px;
 	}
@@ -1443,14 +1397,18 @@
 
 	.profile-panel-link {
 		display: block;
+		width: 100%;
 		padding: 0.45rem 0.55rem;
+		border: 0;
 		border-radius: 0.68rem;
 		font-size: 0.84rem;
 		line-height: 1.35;
+		text-align: left;
 		text-decoration: none;
 		color: inherit;
 		background: rgba(148, 163, 184, 0.1);
 		transition: background-color 0.15s ease;
+		cursor: pointer;
 	}
 
 	.profile-panel-link:hover,
@@ -1495,12 +1453,6 @@
 		.profile-avatar-fallback {
 			width: 2.15rem;
 			height: 2.15rem;
-		}
-
-		.profile-panel-toggle {
-			width: 2.25rem;
-			height: 2.25rem;
-			font-size: 0.95rem;
 		}
 
 		:global(.site-header .lg\:hidden) {
