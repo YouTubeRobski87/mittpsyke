@@ -62,7 +62,7 @@
 	--color-dashboard-bg: var(--dashboard-bg-end);
 	--color-dashboard-surface: rgba(15, 23, 42, 0.72);
 	--color-dashboard-surface-strong: rgba(15, 23, 42, 0.92);
-	--color-dashboard-border: rgba(148, 163, 184, 0.18);
+	--color-dashboard-border: rgba(96, 165, 250, 0.28);
 	--color-dashboard-text: #f8fafc;
 	--color-dashboard-text-muted: #cbd5e1;
 	--layout-maintenance-bg: #0f172a;
@@ -246,6 +246,17 @@ a {
 .auth-page:has(.auth-subnav[aria-label='Portalnavigering']) > * {
 	position: relative;
 	z-index: 1;
+}
+
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-subnav,
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-panel,
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .card {
+	border-color: var(--color-dashboard-border);
+}
+
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-panel:hover,
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .card:hover {
+	border-color: color-mix(in srgb, var(--color-dashboard-border) 76%, var(--primary) 24%);
 }
 
 .auth-shell {

@@ -244,7 +244,7 @@
 		font-size: 0.72rem;
 		color: hsl(var(--muted-foreground));
 		background: hsl(var(--surface-muted));
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-dashboard-border);
 		border-radius: var(--radius-pill);
 		padding: 0.1rem 0.45rem;
 		white-space: nowrap;
@@ -256,7 +256,7 @@
 		justify-content: center;
 		width: 2rem;
 		height: 2rem;
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-dashboard-border);
 		border-radius: var(--radius-input);
 		background: hsl(var(--surface));
 		color: hsl(var(--muted-foreground));
@@ -267,7 +267,7 @@
 
 	.cal-nav-btn:hover {
 		color: hsl(var(--foreground));
-		border-color: hsl(var(--muted-foreground) / 0.5);
+		border-color: color-mix(in srgb, var(--color-dashboard-border) 72%, var(--primary) 28%);
 		background: hsl(var(--surface-soft));
 	}
 
@@ -326,7 +326,7 @@
 
 	/* Dagens datum */
 	.cal-day--today {
-		border-color: hsl(var(--border));
+		border-color: var(--color-dashboard-border);
 		background: hsl(var(--surface-soft));
 	}
 
@@ -352,7 +352,7 @@
 	/* Valt datum */
 	.cal-day--selected {
 		background: color-mix(in srgb, var(--primary, #436e8f) 20%, hsl(var(--surface)));
-		border-color: color-mix(in srgb, var(--primary, #436e8f) 50%, hsl(var(--border)));
+		border-color: color-mix(in srgb, var(--color-dashboard-border) 72%, var(--primary) 28%);
 	}
 
 	.cal-day--selected .cal-day-num {
@@ -367,7 +367,7 @@
 	/* Hover på ej valda dagar */
 	.cal-day:not(:disabled):not(.cal-day--selected):hover {
 		background: hsl(var(--surface-soft));
-		border-color: hsl(var(--border));
+		border-color: var(--color-dashboard-border);
 	}
 
 	/* ── Filtertext ── */

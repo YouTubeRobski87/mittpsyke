@@ -1215,7 +1215,7 @@
 
 	:global(.auth-page:has(.diary-layout) .auth-hero) {
 		padding: 1rem;
-		border: 1px solid rgba(129, 140, 248, 0.2);
+		border: 1px solid var(--color-dashboard-border);
 		border-radius: var(--radius-card);
 		background:
 			radial-gradient(circle at top left, rgba(99, 102, 241, 0.1), transparent 38%),
@@ -1240,7 +1240,7 @@
 		display: grid;
 		gap: 0.55rem;
 		overflow: hidden;
-		border-color: rgba(96, 165, 250, 0.28);
+		border-color: var(--color-dashboard-border);
 		background:
 			radial-gradient(circle at 92% 18%, rgba(96, 165, 250, 0.18), transparent 34%),
 			linear-gradient(135deg, hsl(222 47% 13%), hsl(224 36% 18%) 58%, hsl(230 30% 16%));
@@ -1358,7 +1358,7 @@
 		gap: 0.3rem;
 		padding: 1.1rem 1rem;
 		border-radius: var(--radius-input);
-		border: 1px solid rgba(147, 197, 253, 0.24);
+		border: 1px solid var(--color-dashboard-border);
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.94)),
 			hsl(var(--surface));
@@ -1970,7 +1970,7 @@
 		display: grid;
 		gap: 0.65rem;
 		padding: 1rem;
-		border: 1px solid rgba(129, 140, 248, 0.22);
+		border: 1px solid var(--color-dashboard-border);
 		border-radius: 0.95rem;
 		background: linear-gradient(145deg, rgba(30, 41, 59, 0.94), rgba(17, 24, 39, 0.95));
 		box-shadow: 0 8px 22px rgba(2, 6, 23, 0.14);
@@ -1978,7 +1978,7 @@
 	}
 
 	.diary-entry:hover {
-		border-color: rgba(165, 180, 252, 0.34);
+		border-color: color-mix(in srgb, var(--color-dashboard-border) 76%, #bfdbfe 24%);
 		box-shadow: 0 12px 28px rgba(2, 6, 23, 0.2);
 	}
 
