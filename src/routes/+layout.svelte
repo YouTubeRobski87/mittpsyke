@@ -890,8 +890,8 @@
 	<footer class="site-footer py-5 px-5 text-sm opacity-60 text-center mt-12">
 		© {new Date().getFullYear()} MittPsyke. Alla rättigheter förbehållna.
 		<span class="mx-2">&middot;</span>
-		<a href={PUBLIC_CONTACT_MAILTO} class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Kontakt
+		<a href="/kontakt-och-villkor" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Kontakt och villkor
 		</a>
 		<span class="mx-2">&middot;</span>
 		<a href="/feedback" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
