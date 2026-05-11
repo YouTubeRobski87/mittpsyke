@@ -1235,10 +1235,6 @@
 		z-index: 1;
 	}
 
-	:global(.auth-page:has(.diary-layout) .auth-shell) {
-		max-width: min(1440px, calc(100vw - 2rem));
-	}
-
 	.diary-layout {
 		display: grid;
 		gap: 1rem;
