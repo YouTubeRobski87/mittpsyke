@@ -6,26 +6,7 @@
 	let { data }: { data: PageData } = $props();
 
 	const totalPages = $derived(Math.max(1, Math.ceil(data.total / data.pageSize)));
-	const jsonLd = $derived(
-		JSON.stringify({
-			'@context': 'https://schema.org',
-			'@type': 'ItemList',
-			itemListElement: data.stories.map((story, index) => ({
-				'@type': 'ListItem',
-				position: (data.page - 1) * data.pageSize + index + 1,
-				item: {
-					'@type': 'Article',
-					headline: 'Anonym berättelse om psykisk hälsa',
-					articleBody: story.content,
-					datePublished: story.approved_at ?? story.created_at,
-					author: {
-						'@type': 'Organization',
-						name: 'Anonym'
-					}
-				}
-			}))
-		}).replaceAll('<', '\\u003c')
-	);
+	const jsonLdScript = $derived(JSON.stringify(data.jsonLd).replaceAll('<', '\\u003c'));
 
 	function storyMeta(gender: string | null, ageRange: string | null) {
 		return [getGenderLabel(gender), getAgeRangeLabel(ageRange)].filter(Boolean).join(', ');
@@ -44,7 +25,7 @@
 		name="description"
 		content="Läs anonyma berättelser om psykisk hälsa hos MittPsyke, eller dela din egen berättelse i lugn takt."
 	/>
-	<script type="application/ld+json">{jsonLd}</script>
+	{@html `<script type="application/ld+json">${jsonLdScript}</script>`}
 </svelte:head>
 
 <main class="stories-page mx-auto w-full px-5 py-10">
