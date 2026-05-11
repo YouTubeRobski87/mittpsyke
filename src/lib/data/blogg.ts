@@ -17,9 +17,9 @@ export const blogPosts: BlogPostCard[] = [
 	},
 	{
 		slug: 'kbt-dagbok-vs-fri-journalforing',
-		title: 'KBT-dagbok eller fri journalföring – vad passar dig?',
+		title: 'KBT-dagbok eller fritt skrivande – vad passar dig?',
 		excerpt:
-			'Vi jämför två vanliga sätt att skriva: strukturerad tankdagbok och fri journalföring, med praktiska tips för att hitta rätt balans.',
+			'Vi jämför två vanliga sätt att skriva: strukturerad tankdagbok och fritt skrivande, med praktiska tips för att hitta rätt balans.',
 		readTime: '9 min',
 		publishedLabel: '19 mars 2026'
 	},

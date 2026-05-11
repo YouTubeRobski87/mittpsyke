@@ -72,7 +72,7 @@
 			höra sina egna ord tillbaka i en mer sorterad form. Det kan minska känslan av kaos och göra nästa steg tydligare.
 		</p>
 		<p>
-			I praktiken kan <strong>AI journalföring</strong> betyda att du skriver fritt i fem minuter och sedan får tre
+			I praktiken kan <strong>AI-stött dagboksskrivande</strong> betyda att du skriver fritt i fem minuter och sedan får tre
 			följdfrågor: “Vad triggade känslan?”, “Vad behöver du just nu?”, “Vilket litet steg är rimligt i kväll?”
 			Den typen av guidning räcker ofta långt i vardagen.
 		</p>
@@ -148,11 +148,11 @@
 	</section>
 
 	<section>
-		<h2>Vanliga missförstånd om AI journalföring</h2>
+		<h2>Vanliga missförstånd om AI-stött skrivande</h2>
 		<p>
 			Ett missförstånd är att AI “vet” hur du mår. I verkligheten tolkar AI det du skriver här och nu. Det betyder
 			att kvaliteten på stödet påverkas av hur tydligt du själv kan beskriva din situation. Därför är följdfrågor och
-			sammandrag viktiga delar i en bra AI journalföring.
+			sammandrag viktiga delar i ett varsamt AI-stött skrivande.
 		</p>
 		<p>
 			Ett annat missförstånd är att AI alltid ska ge svar. I emotionellt arbete är bra frågor ofta mer värdefulla än
@@ -200,8 +200,8 @@
 			när läget är allvarligt.
 		</p>
 		<p>
-			Om du vill testa AI mental hälsa på ett tryggt sätt, börja litet och håll fokus på din egen rytm. En varm och
-			tydlig AI journalföring kan vara den där första stabila platsen där du får syn på dig själv, en anteckning i taget.
+			Om du vill testa AI mental hälsa på ett tryggt sätt, börja litet och håll fokus på din egen rytm. Ett varmt och
+			tydligt AI-stött skrivande kan vara den där första stabila platsen där du får syn på dig själv, en anteckning i taget.
 		</p>
 	</section>
 </BlogArticle>

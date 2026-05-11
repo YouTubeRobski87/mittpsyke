@@ -117,7 +117,7 @@
 			<p class="links-row">
 				<a class="secondary-link" href="/dagbok">Öppna dagboken</a>
 				<a class="secondary-link" href="/framsteg">Se framsteg</a>
-				<a class="secondary-link" href="/journalforing">Läs om journalföring</a>
+				<a class="secondary-link" href="/journalforing">Läs om dagboksskrivande</a>
 			</p>
 		</section>
 

@@ -942,7 +942,7 @@
 		<button onclick={() => cookieBannerOpen.set(true)} class="text-sm opacity-70 hover:opacity-100 transition-opacity">Cookieinställningar</button>
 			<div class="footer-features mt-2 text-xs opacity-70" aria-label="Funktioner">
 				<span class="font-medium">Funktioner:</span>
-				<a href="/journalforing" class="hover:opacity-100 transition-opacity">Journalföring</a>
+				<a href="/journalforing" class="hover:opacity-100 transition-opacity">Dagboksskrivande</a>
 				<span class="mx-1">&middot;</span>
 				<a href="/humorsparning" class="hover:opacity-100 transition-opacity">Humörspårning</a>
 			</div>

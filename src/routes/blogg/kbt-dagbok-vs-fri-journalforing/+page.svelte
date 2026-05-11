@@ -2,9 +2,9 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import BlogArticle from '$lib/components/BlogArticle.svelte';
 
-	const title = 'KBT-dagbok eller fri journalföring – vad passar dig?';
+	const title = 'KBT-dagbok eller fritt skrivande – vad passar dig?';
 	const description =
-		'KBT-dagbok är strukturerad, fri journalföring är öppen. Här jämför vi fördelar och nackdelar och visar hur AI kan hjälpa dig kombinera båda.';
+		'KBT-dagbok är strukturerad, fritt skrivande är öppet. Här jämför vi fördelar och nackdelar och visar hur AI kan hjälpa dig kombinera båda.';
 	const canonical = 'https://www.mittpsyke.se/blogg/kbt-dagbok-vs-fri-journalforing';
 	const datePublished = '2026-03-19';
 
@@ -37,14 +37,14 @@
 
 <BlogArticle
 	title={title}
-	lead="Du kanske har hört att en KBT-dagbok är bäst. Eller att fri journalföring är mer äkta. Sanningen är att båda kan hjälpa, men på olika sätt. Här får du en tydlig jämförelse så att du kan välja det som faktiskt fungerar för dig, inte det som låter mest rätt i teorin."
+	lead="Du kanske har hört att en KBT-dagbok är bäst. Eller att fritt skrivande är mer äkta. Sanningen är att båda kan hjälpa, men på olika sätt. Här får du en tydlig jämförelse så att du kan välja det som faktiskt fungerar för dig, inte det som låter mest rätt i teorin."
 	publishedLabel="19 mars 2026"
 	readTime="9 min"
 >
 	<section>
 		<h2>Två vägar till samma mål: mer självförståelse</h2>
 		<p>
-			Både <strong>KBT dagbok</strong> och fri journalföring handlar om samma grundsak: att förstå vad som händer i
+			Både <strong>KBT dagbok</strong> och fritt skrivande handlar om samma grundsak: att förstå vad som händer i
 			tankar, känslor och beteenden. Skillnaden ligger i formen. Den strukturerade varianten ger ramar och tydliga
 			frågor, medan den fria varianten ger utrymme för spontanitet och djup.
 		</p>
@@ -54,7 +54,7 @@
 			kan ett öppet skrivflöde kännas mer hjälpsamt.
 		</p>
 		<p>
-			Om du ser journalföring som en del av <strong>journalföring självreflektion</strong> i vardagen blir frågan mer:
+			Om du ser skrivande som en del av <strong>självreflektion i vardagen</strong> blir frågan mer:
 			“Vilken metod hjälper mig just idag?” Det är ofta en bättre fråga än “Vilken metod är bäst i allmänhet?”
 		</p>
 	</section>
@@ -105,9 +105,9 @@
 	</section>
 
 	<section>
-		<h2>Vad är fri journalföring?</h2>
+		<h2>Vad är fritt skrivande?</h2>
 		<p>
-			Fri journalföring är motsatsen till mallstyrt skrivande. Du börjar där du är, följer det som kommer och låter
+			Fritt skrivande är motsatsen till mallstyrt skrivande. Du börjar där du är, följer det som kommer och låter
 			tankar, minnen och känslor få plats utan att sortera allt direkt. Det kan kännas mer levande, särskilt när du
 			behöver få ur dig mycket på en gång.
 		</p>
@@ -117,13 +117,13 @@
 			svår att planera fram, men den dyker ofta upp när du ger dig själv utrymme.
 		</p>
 		<p>
-			För den som använder journalföring självreflektion som långsiktig vana kan fri text bli en plats där identitet,
+			För den som använder skrivande som långsiktig vana kan fri text bli en plats där identitet,
 			värderingar och relationer får ta plats på ett mer nyanserat sätt.
 		</p>
 	</section>
 
 	<section>
-		<h2>Fördelar och nackdelar med fri journalföring</h2>
+		<h2>Fördelar och nackdelar med fritt skrivande</h2>
 		<p>
 			Den största fördelen är friheten. Du kan skriva exakt som du tänker och känna dig mindre bedömd. Många
 			upplever att det ökar närvaron och självmedkänslan. Samtidigt kan friheten bli utmanande när du är trött,
@@ -141,7 +141,7 @@
 		<p>
 			Ett praktiskt sätt är att välja utifrån energi och tydlighet. Om du känner dig splittrad och behöver ordning,
 			börja med KBT dagbok eller tankdagbok. Om du är känslomässigt överfull och behöver ventilera, börja med fri
-			journalföring och sammanfatta i slutet.
+			fritt skrivande och sammanfatta i slutet.
 		</p>
 		<p>
 			Du kan också dela upp veckan. Exempel: måndag, onsdag och fredag strukturerad form; tisdag och söndag fri
@@ -159,7 +159,7 @@
 		<p>
 			I MittPsyke används AI som ett stöd för reflektion, inte som en domare. Den kan hjälpa dig att hitta mönster,
 			påminna om tidigare insikter och ställa lugna frågor när du fastnar. Det kan göra både KBT dagbok och fri
-			journalföring mer tillgängligt i en stressig vardag.
+			fritt skrivande mer tillgängligt i en stressig vardag.
 		</p>
 		<p>
 			Det viktiga är att AI inte ersätter professionell vård. Men som vardagsverktyg kan det sänka tröskeln till att
@@ -183,7 +183,7 @@
 	<section>
 		<h2>När du behöver mer än egen skrivtid</h2>
 		<p>
-			Både KBT dagbok och fri journalföring kan ge stöd, men de ersätter inte vård vid allvarlig psykisk ohälsa.
+			Både KBT dagbok och fritt skrivande kan ge stöd, men de ersätter inte vård vid allvarlig psykisk ohälsa.
 			Om du känner dig i akut kris eller inte är säker, sök hjälp direkt. Vid akut fara: ring 112. För vårdråd: 1177.
 		</p>
 		<p>
@@ -195,8 +195,8 @@
 	<section>
 		<h2>Sammanfattning</h2>
 		<p>
-			KBT-dagbok passar ofta dig som vill ha tydlig struktur och uppföljning. Fri journalföring passar ofta dig som
-			behöver mer utrymme och spontanitet. Båda kan vara starka verktyg för journalföring självreflektion, särskilt
+			KBT-dagbok passar ofta dig som vill ha tydlig struktur och uppföljning. Fritt skrivande passar ofta dig som
+			behöver mer utrymme och spontanitet. Båda kan vara starka verktyg för självreflektion, särskilt
 			när du anpassar metoden efter dagsform.
 		</p>
 		<p>

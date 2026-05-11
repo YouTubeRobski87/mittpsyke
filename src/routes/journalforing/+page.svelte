@@ -30,15 +30,15 @@
 <SEO canonical="https://www.mittpsyke.se/journalforing" />
 
 <svelte:head>
-	<title>Journalföring för psykisk hälsa – MittPsyke</title>
+	<title>Dagboksskrivande för psykisk hälsa – MittPsyke</title>
 	<meta
 		name="description"
-		content="Journalföring kan vara ett enkelt sätt att reflektera, sortera tankar och se mönster över tid. MittPsyke gör det lätt att börja skriva på svenska."
+		content="Att skriva dagbok kan vara ett enkelt sätt att reflektera, sortera tankar och se mönster över tid. MittPsyke gör det lätt att börja skriva på svenska."
 	/>
-	<meta property="og:title" content="Journalföring för psykisk hälsa – MittPsyke" />
+	<meta property="og:title" content="Dagboksskrivande för psykisk hälsa – MittPsyke" />
 	<meta
 		property="og:description"
-		content="Journalföring kan vara ett enkelt sätt att reflektera, sortera tankar och se mönster över tid. MittPsyke gör det lätt att börja skriva på svenska."
+		content="Att skriva dagbok kan vara ett enkelt sätt att reflektera, sortera tankar och se mönster över tid. MittPsyke gör det lätt att börja skriva på svenska."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
@@ -48,9 +48,9 @@
 <main class="page">
 	<div class="page-container">
 		<header class="hero">
-			<h1>Journalföring för reflektion och bättre överblick</h1>
+			<h1>Dagboksskrivande för reflektion och bättre överblick</h1>
 			<p>
-				Regelbunden journalföring kan göra känslor tydligare och hjälpa dig att se vad som
+				Regelbundet dagboksskrivande kan göra känslor tydligare och hjälpa dig att se vad som
 				påverkar ditt mående. När tankar får ord blir det ofta lättare att sortera det som känns rörigt.
 			</p>
 			<p>
@@ -64,7 +64,7 @@
 			</p>
 		</header>
 
-		<div class="cta-container" aria-label="Starta med journalföring">
+		<div class="cta-container" aria-label="Starta med dagboksskrivande">
 			{#if loggedIn}
 				<a class="cta-button" href="/dagbok">Öppna dagboken</a>
 			{:else}

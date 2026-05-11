@@ -54,7 +54,7 @@
 			skaver. Båda delarna kan vara värdefulla.
 		</p>
 		<p>
-			Om du har sökt på fraser som <strong>journalföring mental hälsa</strong> eller
+			Om du har sökt på fraser som <strong>dagboksskrivande och psykisk hälsa</strong> eller
 			<strong>skriva dagbok psykisk hälsa</strong> är du långt ifrån ensam. Många letar efter enkla sätt att förstå
 			sitt mående utan att behöva ta allt på en gång.
 		</p>
@@ -99,7 +99,7 @@
 	</section>
 
 	<section>
-		<h2>Så kan du börja med journalföring för mental hälsa</h2>
+		<h2>Så kan du börja skriva för ditt mående</h2>
 		<p>
 			Det vanligaste misstaget är att börja för stort. Du behöver inte skriva en halv bok varje kväll. Prova i stället
 			en enkel struktur i 5 till 10 minuter:
@@ -148,7 +148,7 @@
 		</p>
 		<p>
 			Om du vill kan du också kombinera skrivandet med humörspårning. Då blir det lättare att se samband mellan
-			din vardag och ditt mående, vilket gör att journalföring mental hälsa blir något mer än bara enskilda anteckningar.
+			din vardag och ditt mående, vilket gör att skrivandet blir något mer än bara enskilda anteckningar.
 		</p>
 	</section>
 

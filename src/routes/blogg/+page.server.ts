@@ -41,7 +41,7 @@ export const load: PageServerLoad = async ({ fetch, url, setHeaders }) => {
 	return {
 		title: 'Artiklar',
 		description:
-			'Artiklar om journalföring, mental hälsa och självreflektion. Lär dig mer om hur skrivande kan förbättra ditt mående.',
+			'Artiklar om dagboksskrivande, mental hälsa och självreflektion. Lär dig mer om hur skrivande kan förbättra ditt mående.',
 		articles: paginatedArticles,
 		pagination: {
 			currentPage,
