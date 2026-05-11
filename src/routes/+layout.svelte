@@ -760,7 +760,7 @@
 
 				<button
 					type="button"
-					class="mobile-menu-button lg:hidden inline-flex items-center justify-center rounded-md border border-black/10 dark:border-white/10 px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
+					class="mobile-menu-button lg:hidden inline-flex items-center justify-center rounded-md px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
 					aria-label="Öppna meny"
 					aria-expanded={mobileMenuOpen}
 					aria-controls="mobile-menu"
@@ -806,7 +806,7 @@
 		{/if}
 
 		{#if mobileMenuOpen}
-			<div id="mobile-menu" class="mobile-menu-panel lg:hidden border-t border-black/8 dark:border-white/10 px-5 py-3" role="navigation" aria-label="Mobilmeny">
+			<div id="mobile-menu" class="mobile-menu-panel lg:hidden px-5 py-3" role="navigation" aria-label="Mobilmeny">
 				{#if user}
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
 					{#each signedInPrimaryNavItems as item}
@@ -880,7 +880,7 @@
 			</p>
 		</section>
 
-	<footer class="site-footer border-t border-black/8 py-5 px-5 text-sm opacity-60 text-center mt-12">
+	<footer class="site-footer py-5 px-5 text-sm opacity-60 text-center mt-12">
 		© {new Date().getFullYear()} MittPsyke. Alla rättigheter förbehållna.
 		<span class="mx-2">&middot;</span>
 		<a href={PUBLIC_CONTACT_MAILTO} class="text-sm opacity-70 hover:opacity-100 transition-opacity">
@@ -923,7 +923,7 @@
 			href="https://stodlinjer.se"
 			target="_blank"
 			rel="noopener noreferrer"
-			class="text-sm font-medium text-teal-700/90 dark:text-teal-300/90 opacity-90 hover:opacity-100 transition-opacity"
+			class="footer-emergency-link text-sm font-medium opacity-90 hover:opacity-100 transition-opacity"
 		>
 			Akut hjälp (Stödlinjer)
 		</a>
@@ -986,6 +986,9 @@
 		--layout-panel-stat-bg: rgba(148, 163, 184, 0.12);
 		--layout-panel-link-bg: rgba(148, 163, 184, 0.1);
 		--layout-panel-link-hover: rgba(15, 118, 110, 0.15);
+		--layout-footer-border: rgba(0, 0, 0, 0.08);
+		--layout-footer-emergency: rgba(15, 118, 110, 0.9);
+		--layout-footer-emergency-dark: rgba(94, 234, 212, 0.9);
 	}
 
 	.maintenance-screen {
@@ -1036,6 +1039,18 @@
 
 	.footer-company p {
 		margin: 0.1rem 0;
+	}
+
+	.site-footer {
+		border-top: 1px solid var(--layout-footer-border);
+	}
+
+	.footer-emergency-link {
+		color: var(--layout-footer-emergency);
+	}
+
+	:global(.dark) .footer-emergency-link {
+		color: var(--layout-footer-emergency-dark);
 	}
 
 	.skip-link {
@@ -1174,6 +1189,7 @@
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		-webkit-overflow-scrolling: touch;
+		border-top: 1px solid var(--layout-footer-border);
 	}
 
 
@@ -1213,6 +1229,15 @@
 		display: block;
 		font-size: 1.6rem;
 		line-height: 1;
+	}
+
+	.mobile-menu-button {
+		border: 1px solid var(--layout-border-soft);
+	}
+
+	:global(.dark) .mobile-menu-button,
+	:global(.dark) .mobile-menu-panel {
+		border-color: var(--layout-menu-dark-border);
 	}
 
 	.mobile-menu-theme {
