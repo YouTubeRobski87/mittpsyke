@@ -144,6 +144,34 @@ a {
 	padding: 0 1rem 2.75rem;
 }
 
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) {
+	position: relative;
+	overflow: hidden;
+	padding-top: 0.35rem;
+	background:
+		radial-gradient(circle at top left, rgba(30, 64, 175, 0.1), transparent 34%),
+		linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(8, 13, 23, 0.98));
+}
+
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering'])::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background:
+		linear-gradient(180deg, rgba(8, 13, 23, 0.66), rgba(8, 13, 23, 0.88)),
+		url('/assets/diary/dagboken-background.png') center top / cover no-repeat;
+	opacity: 0.22;
+	filter: none;
+	transform: scale(1.02);
+}
+
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) > * {
+	position: relative;
+	z-index: 1;
+}
+
 .auth-shell {
 	max-width: 920px;
 	margin: 0 auto;
@@ -273,6 +301,11 @@ a {
 @media (max-width: 760px) {
 	.auth-page {
 		padding-inline: 0.75rem;
+	}
+
+	.auth-page:has(.auth-subnav[aria-label='Portalnavigering'])::before {
+		background-position: 42% top;
+		opacity: 0.2;
 	}
 
 	.auth-panel {
