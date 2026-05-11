@@ -258,6 +258,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		],
 		resourceListTitle: 'Stöd som kan hjälpa när tankarna snurrar',
 		resourceListItems: [
+			{ href: '/oro', label: 'Samlade sidan om oro', description: 'om oro och ältande är det som tar mest plats.' },
 			{ href: '/4-7-8-andning-ovning', label: '4-7-8-andning', description: 'när du vill ge kroppen ett konkret lugnare tempo.' },
 			{ href: '/andningsovningar-mot-angest', label: 'Andningsövningar mot ångest', description: 'om oron går över i stark kroppslig anspänning.' },
 			{ href: '/ovningar/daglig-reflektionsmall', label: 'Daglig reflektionsmall', description: 'för att få ut grubbel ur huvudet och ner i ord.' },
@@ -400,6 +401,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		],
 		resourceListTitle: 'Övningar och vägar vidare',
 		resourceListItems: [
+			{ href: '/angest', label: 'Samlade sidan om ångest', description: 'om du vill läsa bredare innan du väljer övning.' },
 			{ href: '/andningsovningar-mot-angest', label: 'Andningsövningar mot ångest', description: 'när du behöver börja i kroppen och sakta ner tempot.' },
 			{ href: '/4-7-8-andning-ovning', label: '4-7-8-andning', description: 'om du vill testa en enkel, tydlig övning direkt.' },
 			{ href: '/exponering-ovningar-mot-angest', label: 'Exponeringsövningar mot ångest', description: 'om undvikande har blivit ett återkommande mönster.' },

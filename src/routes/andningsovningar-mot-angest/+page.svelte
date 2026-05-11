@@ -47,7 +47,7 @@
 			<h2>Vad MittPsyke erbjuder</h2>
 			<ul>
 				<li><a href="/hjalp-vid-angest-online">Stöd vid ångest online</a> när du behöver börja i samtal.</li>
-				<li><a href="/guider/angest">Guide om ångest</a> och <a href="/guider/overtankande">guide om övertänkande</a>.</li>
+				<li><a href="/angest">Samlade sidan om ångest</a> och <a href="/guider/overtankande">guide om övertänkande</a>.</li>
 				<li><a href="/ovningar/daglig-reflektionsmall">Daglig reflektionsmall</a> och fler <a href="/ovningar">övningar</a>.</li>
 				<li><a href="/dagbok">Dagbok</a> för att skriva av dig efter övningen.</li>
 			</ul>

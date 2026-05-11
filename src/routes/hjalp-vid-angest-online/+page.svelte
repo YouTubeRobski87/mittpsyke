@@ -66,6 +66,7 @@
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer</a>.
 			</p>
 			<p class="links-row">
+				<a href="/angest">Läs samlat om ångest</a>
 				<a href="/register">Skapa konto</a>
 				<a href="/framsteg">Se framsteg</a>
 				<a href="/ovningar">Fler övningar</a>

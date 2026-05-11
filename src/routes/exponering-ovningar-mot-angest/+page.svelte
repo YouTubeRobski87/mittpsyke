@@ -47,7 +47,7 @@
 			<h2>Vad MittPsyke erbjuder</h2>
 			<ul>
 				<li><a href="/ovningar-mot-angest-online">Övningar mot ångest online</a> när du vill börja konkret.</li>
-				<li><a href="/guider/angest">Guide om ångest</a> och <a href="/guider/overtankande">guide om övertänkande</a>.</li>
+				<li><a href="/angest">Samlade sidan om ångest</a> och <a href="/guider/overtankande">guide om övertänkande</a>.</li>
 				<li><a href="/chat/a">Samtal om ångest</a> när du vill reflektera vidare.</li>
 				<li><a href="/dagbok">Dagbok</a> för att följa hur stegen känns över tid.</li>
 			</ul>

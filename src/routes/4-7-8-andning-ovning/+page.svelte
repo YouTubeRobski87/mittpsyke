@@ -47,7 +47,7 @@
 			<ul>
 				<li><a href="/andningsovningar-mot-angest">Andningsövningar mot ångest</a> för att komma igång varsamt.</li>
 				<li><a href="/ovningar-mot-angest-online">Övningar mot ångest online</a> när du vill prova fler verktyg.</li>
-				<li><a href="/hjalp-vid-angest-online">Hjälp vid ångest online</a> om du vill fortsätta i samtal.</li>
+				<li><a href="/angest">Samlade sidan om ångest</a> om du vill läsa bredare.</li>
 				<li><a href="/dagbok">Dagbok</a> för att skriva ner hur det känns före och efter.</li>
 			</ul>
 		</section>
