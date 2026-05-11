@@ -952,45 +952,6 @@
 {/if}
 
 <style>
-	:global(:root) {
-		--layout-maintenance-bg: #0f172a;
-		--layout-maintenance-surface: rgba(255, 255, 255, 0.03);
-		--layout-maintenance-border: rgba(255, 255, 255, 0.06);
-		--layout-maintenance-text: #f8fafc;
-		--layout-maintenance-muted: #cbd5e1;
-		--layout-maintenance-subtle: rgba(255, 255, 255, 0.65);
-		--layout-skip-bg: #ffffff;
-		--layout-skip-text: #0f172a;
-		--layout-border-soft: rgba(0, 0, 0, 0.12);
-		--layout-menu-border: rgba(15, 23, 42, 0.08);
-		--layout-menu-bg: rgba(255, 255, 255, 0.96);
-		--layout-menu-shadow: rgba(15, 23, 42, 0.12);
-		--layout-menu-hover: rgba(37, 99, 235, 0.1);
-		--layout-menu-dark-border: rgba(255, 255, 255, 0.1);
-		--layout-menu-dark-bg: rgba(15, 23, 42, 0.96);
-		--layout-menu-dark-shadow: rgba(0, 0, 0, 0.34);
-		--layout-menu-dark-hover: rgba(96, 165, 250, 0.14);
-		--layout-avatar-bg: rgba(255, 255, 255, 0.7);
-		--layout-avatar-dark-border: rgba(255, 255, 255, 0.14);
-		--layout-avatar-dark-bg: rgba(15, 23, 42, 0.65);
-		--layout-avatar-hover-border: rgba(15, 118, 110, 0.28);
-		--layout-avatar-hover-bg: rgba(255, 255, 255, 0.88);
-		--layout-avatar-dark-hover-border: rgba(134, 223, 214, 0.28);
-		--layout-avatar-dark-hover-bg: rgba(15, 23, 42, 0.82);
-		--layout-avatar-placeholder: rgba(148, 163, 184, 0.28);
-		--layout-avatar-fallback-bg: rgba(15, 118, 110, 0.16);
-		--layout-panel-border: rgba(0, 0, 0, 0.1);
-		--layout-panel-shadow: rgba(2, 6, 23, 0.16);
-		--layout-panel-dark-border: rgba(255, 255, 255, 0.12);
-		--layout-panel-dark-shadow: rgba(0, 0, 0, 0.35);
-		--layout-panel-stat-bg: rgba(148, 163, 184, 0.12);
-		--layout-panel-link-bg: rgba(148, 163, 184, 0.1);
-		--layout-panel-link-hover: rgba(15, 118, 110, 0.15);
-		--layout-footer-border: rgba(0, 0, 0, 0.08);
-		--layout-footer-emergency: rgba(15, 118, 110, 0.9);
-		--layout-footer-emergency-dark: rgba(94, 234, 212, 0.9);
-	}
-
 	.maintenance-screen {
 		min-height: 100vh;
 		display: grid;
