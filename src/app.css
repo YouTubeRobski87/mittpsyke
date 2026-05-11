@@ -25,6 +25,25 @@
 	--error-surface: 0 70% 96%;
 	--error-foreground: 0 58% 40%;
 	--primary: #436e8f;
+	--primary-rgb: 67, 110, 143;
+	--focus-ring: rgba(var(--primary-rgb), 0.35);
+	--primary-soft: rgba(var(--primary-rgb), 0.08);
+	--primary-soft-hover: rgba(var(--primary-rgb), 0.14);
+	--primary-border-soft: rgba(var(--primary-rgb), 0.22);
+	--primary-dark: #7dd3fc;
+	--primary-dark-rgb: 125, 211, 252;
+	--primary-dark-soft: rgba(var(--primary-dark-rgb), 0.1);
+	--primary-dark-soft-hover: rgba(var(--primary-dark-rgb), 0.16);
+	--primary-dark-border-soft: rgba(var(--primary-dark-rgb), 0.28);
+	--shadow-color: rgba(0, 0, 0, 0.06);
+	--border-subtle: rgba(0, 0, 0, 0.08);
+	--border-subtle-inverted: rgba(255, 255, 255, 0.1);
+	--dashboard-bg-accent: rgba(30, 64, 175, 0.1);
+	--dashboard-bg-start: rgba(15, 23, 42, 0.96);
+	--dashboard-bg-end: rgba(8, 13, 23, 0.98);
+	--dashboard-bg-overlay-start: rgba(8, 13, 23, 0.66);
+	--dashboard-bg-overlay-end: rgba(8, 13, 23, 0.88);
+	--chat-input-bg-dark: #0f0f0f;
 	--radius-card: 14px;
 	--radius-input: 12px;
 	--radius-pill: 999px;
@@ -124,7 +143,7 @@ button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-	outline: 3px solid rgba(67, 110, 143, 0.35);
+	outline: 3px solid var(--focus-ring);
 	outline-offset: 2px;
 	border-radius: 12px;
 }
@@ -149,8 +168,8 @@ a {
 	overflow: hidden;
 	padding-top: 0.35rem;
 	background:
-		radial-gradient(circle at top left, rgba(30, 64, 175, 0.1), transparent 34%),
-		linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(8, 13, 23, 0.98));
+		radial-gradient(circle at top left, var(--dashboard-bg-accent), transparent 34%),
+		linear-gradient(180deg, var(--dashboard-bg-start), var(--dashboard-bg-end));
 }
 
 .auth-page:has(.auth-subnav[aria-label='Portalnavigering'])::before {
@@ -160,7 +179,7 @@ a {
 	z-index: 0;
 	pointer-events: none;
 	background:
-		linear-gradient(180deg, rgba(8, 13, 23, 0.66), rgba(8, 13, 23, 0.88)),
+		linear-gradient(180deg, var(--dashboard-bg-overlay-start), var(--dashboard-bg-overlay-end)),
 		url('/assets/diary/dagboken-background.png') center top / cover no-repeat;
 	opacity: 0.22;
 	filter: none;
@@ -214,7 +233,7 @@ a {
 	color: hsl(var(--foreground));
 	background: color-mix(in srgb, var(--theme-bg, hsl(var(--surface-soft))) 72%, hsl(var(--surface)) 28%);
 	border-color: color-mix(in srgb, var(--primary) 18%, hsl(var(--border)) 82%);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+	box-shadow: 0 1px 2px var(--shadow-color);
 }
 
 .auth-hero {
@@ -322,19 +341,19 @@ a {
 	display: inline-block;
 	padding: 0.5rem 1rem;
 	border-radius: 12px;
-	background-color: rgba(67, 110, 143, 0.08);
-	color: #436e8f;
+	background-color: var(--primary-soft);
+	color: var(--primary);
 	font-size: 0.875rem;
 	font-weight: 500;
-	border: 1px solid rgba(67, 110, 143, 0.22);
+	border: 1px solid var(--primary-border-soft);
 	text-decoration: none;
 	transition: all 0.3s ease;
 	cursor: pointer;
 }
 
 .contact-button:hover {
-	background-color: rgba(67, 110, 143, 0.14);
-	color: #436e8f;
+	background-color: var(--primary-soft-hover);
+	color: var(--primary);
 	text-decoration: none;
 }
 
@@ -343,14 +362,14 @@ a {
 }
 
 .dark .contact-button {
-	background-color: rgba(125, 211, 252, 0.1);
-	color: #7dd3fc;
-	border-color: rgba(125, 211, 252, 0.28);
+	background-color: var(--primary-dark-soft);
+	color: var(--primary-dark);
+	border-color: var(--primary-dark-border-soft);
 }
 
 .dark .contact-button:hover {
-	background-color: rgba(125, 211, 252, 0.16);
-	color: #7dd3fc;
+	background-color: var(--primary-dark-soft-hover);
+	color: var(--primary-dark);
 }
 
 /* Chat layout base styles */
@@ -429,8 +448,8 @@ a {
 		bottom: env(safe-area-inset-bottom);
 		left: 0;
 		right: 0;
-		background: var(--background, #ffffff);
-		border-top: 1px solid rgba(0, 0, 0, 0.08);
+		background: hsl(var(--background));
+		border-top: 1px solid var(--border-subtle);
 		padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
 		z-index: 30;
 		flex-shrink: 0;
@@ -439,14 +458,14 @@ a {
 	}
 	
 	.dark .chat-input-area {
-		background: #0f0f0f;
-		border-top-color: rgba(255, 255, 255, 0.1);
+		background: var(--chat-input-bg-dark);
+		border-top-color: var(--border-subtle-inverted);
 	}
 }
 
 /* ===== WCAG Focus Indicators ===== */
 *:focus-visible {
-  outline: 2px solid var(--primary, #436e8f) !important;
+  outline: 2px solid var(--primary) !important;
   outline-offset: 2px !important;
   border-radius: 4px;
 }
@@ -457,13 +476,13 @@ input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid var(--primary, #436e8f) !important;
+  outline: 2px solid var(--primary) !important;
   outline-offset: 2px !important;
 }
 
 /* Ensure high contrast for focus in dark mode */
 .dark *:focus-visible {
-  outline-color: #7dd3fc !important;
+  outline-color: var(--primary-dark) !important;
 }
 
 /* Minimum touch target size for mobile accessibility */
@@ -494,6 +513,6 @@ select:focus-visible,
 
 /* Skip-link enhancement */
 .skip-link:focus-visible {
-  outline: 3px solid var(--primary, #436e8f);
+  outline: 3px solid var(--primary);
   outline-offset: 4px;
 }
