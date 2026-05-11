@@ -2455,7 +2455,7 @@
 		}
 
 		.diary-entries {
-			grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+			grid-template-columns: repeat(2, minmax(14rem, 1fr));
 		}
 
 		.diary-entry--expanded {
@@ -2471,7 +2471,7 @@
 
 	@media (min-width: 1400px) {
 		.diary-entries {
-			grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+			grid-template-columns: repeat(3, minmax(14rem, 1fr));
 		}
 	}
 </style>
