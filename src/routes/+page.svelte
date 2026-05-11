@@ -335,9 +335,65 @@
 </main>
 
 <style>
+	:global(:root) {
+		--home-text-inverted: #f5f5f2;
+		--home-text-strong: #eef1f6;
+		--home-text-soft: #e0e4ea;
+		--home-text-cool: #d7e7ff;
+		--home-text-review: #f3f8fd;
+		--home-text-on-primary: #ffffff;
+		--home-text-muted: rgba(220, 225, 235, 0.78);
+		--home-text-muted-bright: rgba(220, 225, 235, 0.9);
+		--home-text-muted-strong: rgba(220, 225, 235, 0.86);
+		--home-text-muted-mid: rgba(220, 225, 235, 0.82);
+		--home-text-muted-body: rgba(220, 225, 235, 0.74);
+		--home-text-muted-soft: rgba(220, 225, 235, 0.72);
+		--home-text-muted-faint: rgba(220, 225, 235, 0.7);
+		--home-text-blue-muted: rgba(160, 185, 220, 0.9);
+		--home-text-blue-muted-strong: rgba(160, 185, 220, 0.92);
+		--home-section-bg: #162236;
+		--home-section-bg-soft: #141e2e;
+		--home-section-bg-alt: #1b2b3a;
+		--home-section-bg-important: #1a2530;
+		--home-dark-bg: #0e1826;
+		--home-dark-bg-soft: #0d1520;
+		--home-dark-bg-alt: #0a1018;
+		--home-dark-bg-important: #080e16;
+		--home-primary: #3a7bd5;
+		--home-primary-rgb: 58, 123, 213;
+		--home-primary-soft: rgba(var(--home-primary-rgb), 0.15);
+		--home-primary-text: #7db4e8;
+		--home-link: #93c5fd;
+		--home-card-border: rgba(148, 163, 184, 0.12);
+		--home-card-border-soft: rgba(148, 163, 184, 0.14);
+		--home-card-border-hover: rgba(148, 163, 184, 0.28);
+		--home-card-border-blue: rgba(147, 197, 253, 0.34);
+		--home-card-bg-accent: rgba(15, 118, 110, 0.12);
+		--home-card-bg-accent-soft: rgba(15, 118, 110, 0.1);
+		--home-card-bg-accent-alt: rgba(99, 102, 241, 0.12);
+		--home-card-bg-start: rgba(15, 23, 42, 0.98);
+		--home-card-bg-start-soft: rgba(15, 23, 42, 0.96);
+		--home-card-bg-end: rgba(2, 6, 23, 0.98);
+		--home-card-shadow: rgba(15, 23, 42, 0.22);
+		--home-card-text: rgba(238, 241, 246, 0.92);
+		--home-hero-accent: rgba(76, 122, 150, 0.18);
+		--home-hero-overlay-start: rgba(14, 22, 33, 0.65);
+		--home-hero-overlay-mid: rgba(14, 22, 33, 0.85);
+		--home-hero-overlay-end: rgba(14, 22, 33, 0.95);
+		--home-hero-text: rgba(255, 255, 255, 0.9);
+		--home-hero-note: rgba(255, 255, 255, 0.72);
+		--home-quote-text: rgba(255, 255, 255, 0.88);
+		--home-quote-cite: rgba(255, 255, 255, 0.5);
+		--home-trust-border: rgba(255, 255, 255, 0.25);
+		--home-trust-divider: rgba(255, 255, 255, 0.12);
+		--home-trust-fact: rgba(255, 255, 255, 0.84);
+		--home-cta-shadow: rgba(30, 58, 138, 0.18);
+		--home-cta-shadow-hover: rgba(30, 58, 138, 0.22);
+	}
+
 	.staging-look {
 		width: 100%;
-		color: #f5f5f2;
+		color: var(--home-text-inverted);
 	}
 
 	/* ── Hero ── */
@@ -379,14 +435,14 @@
 		background:
 			radial-gradient(
 				800px 400px at 50% 20%,
-				rgba(76, 122, 150, 0.18),
+				var(--home-hero-accent),
 				transparent 60%
 			),
 			linear-gradient(
 				180deg,
-				rgba(14, 22, 33, 0.65) 0%,
-				rgba(14, 22, 33, 0.85) 60%,
-				rgba(14, 22, 33, 0.95) 100%
+				var(--home-hero-overlay-start) 0%,
+				var(--home-hero-overlay-mid) 60%,
+				var(--home-hero-overlay-end) 100%
 			);
 		pointer-events: none;
 		z-index: 1;
@@ -427,7 +483,7 @@
 		font-size: clamp(1rem, 1.7vw, 1.15rem);
 		line-height: 1.65;
 		letter-spacing: -0.005em;
-		color: rgba(255, 255, 255, 0.9);
+		color: var(--home-hero-text);
 	}
 
 	.hero-cta {
@@ -437,8 +493,8 @@
 		font-size: 0.85rem;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		background: #3a7bd5;
-		color: #ffffff;
+		background: var(--home-primary);
+		color: var(--home-text-on-primary);
 		font-weight: 700;
 		border-radius: var(--radius-pill);
 		transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -447,7 +503,7 @@
 	.hero-trust-note {
 		margin-top: 0.9rem;
 		font-size: 0.88rem;
-		color: rgba(255, 255, 255, 0.72);
+		color: var(--home-hero-note);
 		letter-spacing: 0.01em;
 	}
 
@@ -460,27 +516,27 @@
 	}
 
 	.hero-cta-primary {
-		background: #3a7bd5;
-		color: #ffffff;
-		box-shadow: 0 6px 18px rgba(30, 58, 138, 0.18);
+		background: var(--home-primary);
+		color: var(--home-text-on-primary);
+		box-shadow: 0 6px 18px var(--home-cta-shadow);
 	}
 
 	.hero-cta-primary:hover,
 	.hero-cta-primary:focus-visible {
 		transform: translateY(-1px);
-		box-shadow: 0 8px 22px rgba(30, 58, 138, 0.22);
+		box-shadow: 0 8px 22px var(--home-cta-shadow-hover);
 	}
 
 	/* ── Sektion 2: Första steget ── */
 	.early-trust {
 		padding: clamp(2.2rem, 6vw, 3.4rem) 1.25rem;
-		background: #162236;
-		color: #e0e4ea;
+		background: var(--home-section-bg);
+		color: var(--home-text-soft);
 	}
 
 	.early-trust-inner h2 {
 		margin: 0;
-		color: #eef1f6;
+		color: var(--home-text-strong);
 		font-size: clamp(1.45rem, 2.8vw, 1.95rem);
 	}
 
@@ -491,7 +547,7 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: rgba(160, 185, 220, 0.9);
+		color: var(--home-text-blue-muted);
 	}
 
 	.early-trust-grid {
@@ -513,11 +569,11 @@
 		margin: 0;
 		padding: 0.75rem 0.85rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(148, 163, 184, 0.12);
+		border: 1px solid var(--home-card-border);
 		background:
-			radial-gradient(circle at top left, rgba(15, 118, 110, 0.1), transparent 42%),
-			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
-		color: rgba(220, 225, 235, 0.9);
+			radial-gradient(circle at top left, var(--home-card-bg-accent-soft), transparent 42%),
+			linear-gradient(180deg, var(--home-card-bg-start), var(--home-card-bg-end));
+		color: var(--home-text-muted-bright);
 		font-size: 0.94rem;
 		line-height: 1.55;
 		text-decoration: none;
@@ -526,8 +582,8 @@
 
 	.early-trust-item:hover,
 	.early-trust-item:focus-visible {
-		border-color: rgba(148, 163, 184, 0.28);
-		box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22);
+		border-color: var(--home-card-border-hover);
+		box-shadow: 0 4px 14px var(--home-card-shadow);
 		transform: translateY(-1px);
 	}
 
@@ -536,7 +592,7 @@
 		max-width: 72ch;
 		font-size: 0.9rem;
 		line-height: 1.6;
-		color: rgba(220, 225, 235, 0.78);
+		color: var(--home-text-muted);
 	}
 
 	.early-trust-intro {
@@ -544,24 +600,24 @@
 		max-width: 66ch;
 		font-size: 0.96rem;
 		line-height: 1.6;
-		color: rgba(220, 225, 235, 0.86);
+		color: var(--home-text-muted-strong);
 	}
 
 	.early-trust-note a {
-		color: #d7e7ff;
+		color: var(--home-text-cool);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
 
 	.need-now {
 		padding: clamp(2.2rem, 6vw, 3.4rem) 1.25rem;
-		background: #141e2e;
-		color: #e0e4ea;
+		background: var(--home-section-bg-soft);
+		color: var(--home-text-soft);
 	}
 
 	.need-now-inner h2 {
 		margin: 0;
-		color: #eef1f6;
+		color: var(--home-text-strong);
 		font-size: clamp(1.45rem, 2.8vw, 1.95rem);
 	}
 
@@ -578,11 +634,11 @@
 		min-height: 7rem;
 		padding: 1.15rem 1.2rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(148, 163, 184, 0.14);
+		border: 1px solid var(--home-card-border-soft);
 		background:
-			radial-gradient(circle at top left, rgba(99, 102, 241, 0.12), transparent 44%),
-			linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
-		color: rgba(238, 241, 246, 0.92);
+			radial-gradient(circle at top left, var(--home-card-bg-accent-alt), transparent 44%),
+			linear-gradient(180deg, var(--home-card-bg-start-soft), var(--home-card-bg-end));
+		color: var(--home-card-text);
 		font-family: var(--font-heading);
 		line-height: 1.4;
 		transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
@@ -597,13 +653,13 @@
 		font-family: var(--font-body);
 		font-size: 0.92rem;
 		line-height: 1.55;
-		color: rgba(220, 225, 235, 0.7);
+		color: var(--home-text-muted-faint);
 	}
 
 	.need-now-card:hover,
 	.need-now-card:focus-visible {
-		border-color: rgba(147, 197, 253, 0.34);
-		box-shadow: 0 6px 18px rgba(15, 23, 42, 0.22);
+		border-color: var(--home-card-border-blue);
+		box-shadow: 0 6px 18px var(--home-card-shadow);
 		transform: translateY(-1px);
 	}
 
@@ -611,13 +667,13 @@
 		scroll-margin-top: 80px;
 		padding: clamp(2.3rem, 6vw, 3.6rem) 1.25rem;
 		padding-bottom: clamp(2.9rem, 7.5vw, 4.4rem);
-		background: #141e2e;
-		color: #e0e4ea;
+		background: var(--home-section-bg-soft);
+		color: var(--home-text-soft);
 	}
 
 	.quick-flow-inner h2 {
 		margin: 0;
-		color: #eef1f6;
+		color: var(--home-text-strong);
 		font-size: clamp(1.45rem, 2.9vw, 2rem);
 	}
 
@@ -626,7 +682,7 @@
 		max-width: 66ch;
 		font-size: 0.96rem;
 		line-height: 1.65;
-		color: rgba(220, 225, 235, 0.78);
+		color: var(--home-text-muted);
 	}
 
 	.quick-flow-grid {
@@ -642,9 +698,9 @@
 		padding: 0.95rem 1rem;
 		border-radius: var(--radius-card);
 		background:
-			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
-			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
-		border: 1px solid rgba(148, 163, 184, 0.12);
+			radial-gradient(circle at top left, var(--home-card-bg-accent), transparent 42%),
+			linear-gradient(180deg, var(--home-card-bg-start), var(--home-card-bg-end));
+		border: 1px solid var(--home-card-border);
 	}
 
 	.quick-flow-step {
@@ -654,35 +710,35 @@
 		font-weight: 700;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: rgba(160, 185, 220, 0.92);
+		color: var(--home-text-blue-muted-strong);
 	}
 
 	.quick-flow-item h3 {
 		margin: 0.45rem 0 0;
 		font-size: 1.02rem;
 		line-height: 1.35;
-		color: #eef1f6;
+		color: var(--home-text-strong);
 	}
 
 	.quick-flow-item p {
 		margin: 0.5rem 0 0;
 		font-size: 0.94rem;
 		line-height: 1.62;
-		color: rgba(220, 225, 235, 0.74);
+		color: var(--home-text-muted-body);
 	}
 
 	.quick-flow-cta-row {
 		margin: 1.15rem 0 0;
 		font-size: 0.9rem;
-		color: rgba(220, 225, 235, 0.82);
+		color: var(--home-text-muted-mid);
 	}
 
 	.quick-flow-cta-label {
-		color: rgba(220, 225, 235, 0.72);
+		color: var(--home-text-muted-soft);
 	}
 
 	.quick-flow-cta-row a {
-		color: #d7e7ff;
+		color: var(--home-text-cool);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
@@ -695,8 +751,8 @@
 	/* ── Sektion 4: Så fungerar det ── */
 	.how-it-works {
 		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
-		background: #162236;
-		color: #e0e4ea;
+		background: var(--home-section-bg);
+		color: var(--home-text-soft);
 	}
 
 	.how-eyebrow {
@@ -706,19 +762,19 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: rgba(160, 185, 220, 0.9);
+		color: var(--home-text-blue-muted);
 	}
 
 	.how-inner h2 {
 		margin: 0;
-		color: #eef1f6;
+		color: var(--home-text-strong);
 		font-size: clamp(1.55rem, 3vw, 2.05rem);
 	}
 
 	.how-intro {
 		margin: 0.75rem 0 0;
 		max-width: 66ch;
-		color: rgba(220, 225, 235, 0.78);
+		color: var(--home-text-muted);
 		font-size: 0.96rem;
 		line-height: 1.65;
 	}
@@ -734,21 +790,21 @@
 		padding: 1rem;
 		border-radius: var(--radius-card);
 		background:
-			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
-			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
-		border: 1px solid rgba(148, 163, 184, 0.12);
+			radial-gradient(circle at top left, var(--home-card-bg-accent), transparent 42%),
+			linear-gradient(180deg, var(--home-card-bg-start), var(--home-card-bg-end));
+		border: 1px solid var(--home-card-border);
 	}
 
 	.how-card h3 {
 		margin: 0.8rem 0 0;
-		color: #eef1f6;
+		color: var(--home-text-strong);
 		font-size: 1.06rem;
 		line-height: 1.3;
 	}
 
 	.how-card p {
 		margin: 0.55rem 0 0;
-		color: rgba(220, 225, 235, 0.72);
+		color: var(--home-text-muted-soft);
 		font-size: 0.95rem;
 		line-height: 1.65;
 	}
@@ -759,8 +815,8 @@
 		margin-top: 0.9rem;
 		padding: 0.42rem 0.78rem;
 		border-radius: var(--radius-pill);
-		background: rgba(58, 123, 213, 0.15);
-		color: #7db4e8;
+		background: var(--home-primary-soft);
+		color: var(--home-primary-text);
 		font-family: var(--font-heading);
 		font-size: 0.83rem;
 		font-weight: 600;
@@ -771,8 +827,8 @@
 	/* ── Social proof ── */
 	.review-section {
 		padding: clamp(2.8rem, 7vw, 5rem) 1.25rem;
-		background: #1b2b3a;
-		color: #f5f5f2;
+		background: var(--home-section-bg-alt);
+		color: var(--home-text-inverted);
 	}
 
 	.review-inner {
@@ -785,7 +841,7 @@
 		font-family: var(--font-heading);
 		font-weight: 700;
 		font-size: clamp(1.55rem, 3vw, 2.2rem);
-		color: #f3f8fd;
+		color: var(--home-text-review);
 	}
 
 	.review-grid {
@@ -799,9 +855,9 @@
 		margin: 0;
 		padding: 1rem 1.1rem;
 		background:
-			radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 42%),
-			linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.98));
-		border: 1px solid rgba(148, 163, 184, 0.12);
+			radial-gradient(circle at top left, var(--home-card-bg-accent), transparent 42%),
+			linear-gradient(180deg, var(--home-card-bg-start), var(--home-card-bg-end));
+		border: 1px solid var(--home-card-border);
 		border-radius: var(--radius-card);
 	}
 
@@ -810,7 +866,7 @@
 		font-family: var(--font-body);
 		font-size: 0.97rem;
 		line-height: 1.7;
-		color: rgba(255, 255, 255, 0.88);
+		color: var(--home-quote-text);
 		font-style: italic;
 	}
 
@@ -819,14 +875,14 @@
 		margin-top: 0.55rem;
 		font-size: 0.82rem;
 		font-style: normal;
-		color: rgba(255, 255, 255, 0.5);
+		color: var(--home-quote-cite);
 	}
 
 	/* ── Sektion 7: Trygghet ── */
 	.trust-section {
 		padding: clamp(3rem, 8vw, 6rem) 1.25rem;
-		background: #1b2b3a;
-		color: #f5f5f2;
+		background: var(--home-section-bg-alt);
+		color: var(--home-text-inverted);
 	}
 
 	.trust-inner {
@@ -842,7 +898,7 @@
 		width: 100%;
 		height: clamp(220px, 30vw, 340px);
 		object-fit: cover;
-		border: 1px solid rgba(255, 255, 255, 0.25);
+		border: 1px solid var(--home-trust-border);
 	}
 
 	.trust-copy h2 {
@@ -860,12 +916,12 @@
 		font-weight: 400;
 		line-height: 1.7;
 		font-size: 1rem;
-		color: rgba(255, 255, 255, 0.9);
+		color: var(--home-hero-text);
 	}
 
 	.trust-privacy a,
 	.trust-research a {
-		color: #93c5fd;
+		color: var(--home-link);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
@@ -878,7 +934,7 @@
 	.trust-facts {
 		margin-top: 1rem;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(255, 255, 255, 0.12);
+		border-top: 1px solid var(--home-trust-divider);
 		display: grid;
 		gap: 0.45rem;
 	}
@@ -886,11 +942,11 @@
 	.trust-facts p {
 		margin: 0;
 		font-size: 0.94rem;
-		color: rgba(255, 255, 255, 0.84);
+		color: var(--home-trust-fact);
 	}
 
 	.trust-facts a {
-		color: #d7e7ff;
+		color: var(--home-text-cool);
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
@@ -898,8 +954,8 @@
 	/* ── Sektion 8: Viktigt att veta ── */
 	.important-section {
 		padding: clamp(2rem, 5vw, 3.5rem) 1.25rem;
-		background: #1a2530;
-		color: #f5f5f2;
+		background: var(--home-section-bg-important);
+		color: var(--home-text-inverted);
 	}
 
 	.important-inner {
@@ -977,11 +1033,11 @@
 	}
 
 	/* ── Dark mode — base is already dark, just deepen slightly ── */
-	:global(.dark) .early-trust { background: #0e1826; }
-	:global(.dark) .need-now { background: #0d1520; }
-	:global(.dark) .quick-flow { background: #0d1520; }
-	:global(.dark) .how-it-works { background: #0e1826; }
-	:global(.dark) .review-section { background: #0a1018; }
-	:global(.dark) .trust-section { background: #0a1018; }
-	:global(.dark) .important-section { background: #080e16; }
+	:global(.dark) .early-trust { background: var(--home-dark-bg); }
+	:global(.dark) .need-now { background: var(--home-dark-bg-soft); }
+	:global(.dark) .quick-flow { background: var(--home-dark-bg-soft); }
+	:global(.dark) .how-it-works { background: var(--home-dark-bg); }
+	:global(.dark) .review-section { background: var(--home-dark-bg-alt); }
+	:global(.dark) .trust-section { background: var(--home-dark-bg-alt); }
+	:global(.dark) .important-section { background: var(--home-dark-bg-important); }
 </style>
