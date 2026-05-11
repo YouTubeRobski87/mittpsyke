@@ -1926,6 +1926,7 @@
 
 	.diary-entries {
 		display: grid;
+		grid-template-columns: 1fr;
 		gap: 1rem;
 	}
 
@@ -2468,8 +2469,7 @@
 		}
 
 		.diary-entries {
-			grid-template-columns: repeat(auto-fit, minmax(16.25rem, 20rem));
-			justify-content: start;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 
 		.diary-entry--expanded {
@@ -2485,7 +2485,7 @@
 
 	@media (min-width: 1400px) {
 		.diary-entries {
-			grid-template-columns: repeat(auto-fit, minmax(16.25rem, 20rem));
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 </style>
