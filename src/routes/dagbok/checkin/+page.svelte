@@ -1231,6 +1231,8 @@
 	.diary-main {
 		display: grid;
 		gap: 0.85rem;
+		min-width: 0;
+		width: 100%;
 	}
 
 	.diary-paths {
@@ -1672,6 +1674,8 @@
 	.diary-flow {
 		display: grid;
 		gap: 0.5rem;
+		min-width: 0;
+		width: 100%;
 	}
 
 	/* ── Kalenderfilter-knapp i flow-heading ── */
@@ -1928,6 +1932,8 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		gap: 1rem;
+		min-width: 0;
+		width: 100%;
 	}
 
 	.load-more-entries {
@@ -2457,7 +2463,7 @@
 		}
 	}
 
-	@media (min-width: 980px) {
+	@media (min-width: 900px) {
 		.diary-layout {
 			grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
 			align-items: start;
