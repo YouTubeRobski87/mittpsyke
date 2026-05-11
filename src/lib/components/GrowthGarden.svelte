@@ -370,7 +370,7 @@
 		--garden-ground-shadow: rgba(44, 60, 51, 0.14);
 		padding: 2rem;
 		border-radius: var(--radius-card);
-		border: 1px solid hsl(var(--border));
+		border: 1px solid var(--color-dashboard-border);
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%),
 			hsl(var(--surface));
