@@ -1468,6 +1468,7 @@
 	.diary-side {
 		display: grid;
 		gap: 0.85rem;
+		min-width: 0;
 		order: 0;
 	}
 
@@ -1795,7 +1796,19 @@
 	}
 
 	/* ── Kompakt kalender i sidebaren ── */
+	.diary-side-calendar {
+		position: relative;
+		width: 100%;
+		min-width: 0;
+		max-width: 100%;
+	}
+
 	.diary-side-calendar :global(.diary-calendar) {
+		position: static;
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+		overflow: hidden;
 		padding: 0.75rem;
 		gap: 0.5rem;
 	}
@@ -2455,7 +2468,8 @@
 		}
 
 		.diary-entries {
-			grid-template-columns: repeat(2, minmax(14rem, 1fr));
+			grid-template-columns: repeat(auto-fit, minmax(16.25rem, 20rem));
+			justify-content: start;
 		}
 
 		.diary-entry--expanded {
@@ -2471,7 +2485,7 @@
 
 	@media (min-width: 1400px) {
 		.diary-entries {
-			grid-template-columns: repeat(3, minmax(14rem, 1fr));
+			grid-template-columns: repeat(auto-fit, minmax(16.25rem, 20rem));
 		}
 	}
 </style>
