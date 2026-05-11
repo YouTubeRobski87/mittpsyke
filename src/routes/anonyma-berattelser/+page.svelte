@@ -15,6 +15,18 @@
 	function pageHref(page: number) {
 		return page <= 1 ? '/anonyma-berattelser' : `/anonyma-berattelser?page=${page}`;
 	}
+
+	function publishedLabel(value: string | null | undefined) {
+		if (!value) return 'Publicerad anonymt';
+		const date = new Date(value);
+		if (Number.isNaN(date.getTime())) return 'Publicerad anonymt';
+
+		return `Publicerad ${new Intl.DateTimeFormat('sv-SE', {
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric'
+		}).format(date)}`;
+	}
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/anonyma-berattelser" />
@@ -49,10 +61,19 @@
 		<section class="story-grid" aria-label="Anonyma berättelser">
 			{#each data.stories as story}
 				<article class="story-card">
-					{#if story.emotion_emoji}
-						<p class="emoji" aria-hidden="true">{story.emotion_emoji}</p>
-					{/if}
-					<p class="content">{story.content}</p>
+					<header class="story-card-header">
+						<div>
+							<p class="story-card-kicker">Anonym berättelse</p>
+							<p class="story-card-theme">Oro, stress och att skriva av sig</p>
+						</div>
+						<p class="story-card-date">{publishedLabel(story.approved_at)}</p>
+					</header>
+					<div class="story-card-body">
+						{#if story.emotion_emoji}
+							<p class="emoji" aria-hidden="true">{story.emotion_emoji}</p>
+						{/if}
+						<p class="content">{story.content}</p>
+					</div>
 					{#if storyMeta(story.gender, story.age_range)}
 						<p class="meta">{storyMeta(story.gender, story.age_range)}</p>
 					{/if}
@@ -124,11 +145,45 @@
 	}
 
 	.story-card {
-		border: 1px solid var(--color-border);
-		border-radius: 1rem;
-		background: var(--color-surface);
-		padding: 1rem;
-		box-shadow: 0 18px 55px rgba(15, 23, 42, 0.08);
+		border: 1px solid color-mix(in srgb, var(--color-border) 72%, transparent);
+		border-radius: 1.15rem;
+		background: linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 96%, white), var(--color-surface));
+		padding: 1.15rem;
+		box-shadow: 0 22px 70px rgba(15, 23, 42, 0.1);
+	}
+
+	.story-card-header {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		align-items: flex-start;
+		justify-content: space-between;
+		border-bottom: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
+		padding-bottom: 0.9rem;
+	}
+
+	.story-card-kicker {
+		color: var(--color-text);
+		font-size: 0.95rem;
+		font-weight: 780;
+	}
+
+	.story-card-theme,
+	.story-card-date {
+		color: var(--color-text-muted);
+		font-size: 0.86rem;
+		line-height: 1.45;
+	}
+
+	.story-card-date {
+		border: 1px solid color-mix(in srgb, var(--color-border) 58%, transparent);
+		border-radius: 999px;
+		padding: 0.35rem 0.65rem;
+		background: color-mix(in srgb, var(--color-bg-soft) 72%, transparent);
+	}
+
+	.story-card-body {
+		margin-top: 1rem;
 	}
 
 	.emoji {
