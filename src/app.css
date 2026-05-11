@@ -304,6 +304,27 @@ a {
 	box-shadow: 0 1px 2px var(--shadow-color);
 }
 
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-subnav {
+	background: var(--color-dashboard-surface);
+	border-color: var(--color-dashboard-border);
+}
+
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-subnav-link {
+	color: var(--color-dashboard-text-muted);
+}
+
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-subnav-link:hover,
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-subnav-link:focus-visible {
+	color: var(--color-dashboard-text);
+	background: color-mix(in srgb, var(--color-dashboard-surface-strong) 82%, transparent);
+}
+
+.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-subnav-link.active {
+	color: var(--color-dashboard-text);
+	background: var(--color-dashboard-surface-strong);
+	border-color: color-mix(in srgb, var(--color-dashboard-border) 76%, var(--primary) 24%);
+}
+
 .auth-hero {
 	display: flex;
 	gap: 0.8rem;
