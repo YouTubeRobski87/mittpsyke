@@ -145,7 +145,7 @@
 		gap: 1rem;
 		overflow: hidden;
 		padding: clamp(1.15rem, 2.5vw, 1.7rem);
-		border-color: rgba(96, 165, 250, 0.28);
+		border-color: var(--color-dashboard-border);
 		background:
 			radial-gradient(circle at 86% 10%, rgba(96, 165, 250, 0.18), transparent 34%),
 			linear-gradient(135deg, hsl(222 47% 13%), hsl(224 36% 18%) 62%, hsl(230 30% 16%));
@@ -210,7 +210,7 @@
 		gap: 0.7rem;
 		align-content: start;
 		padding: 0.9rem;
-		border: 1px solid rgba(147, 197, 253, 0.24);
+		border: 1px solid var(--color-dashboard-border);
 		border-radius: var(--radius-input);
 		background: rgba(15, 23, 42, 0.42);
 		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -232,13 +232,13 @@
 
 	.dashboard-return .auth-button:not(.primary) {
 		background: rgba(255, 255, 255, 0.08);
-		border-color: rgba(191, 219, 254, 0.24);
+		border-color: var(--color-dashboard-border);
 		color: hsl(210 40% 96%);
 	}
 
 	.dashboard-return .auth-button:not(.primary):hover {
 		background: rgba(255, 255, 255, 0.12);
-		border-color: rgba(191, 219, 254, 0.38);
+		border-color: color-mix(in srgb, var(--color-dashboard-border) 72%, #bfdbfe 28%);
 	}
 
 	.portal-grid {
