@@ -42,7 +42,7 @@
 		name="description"
 		content="Läs anonyma berättelser om psykisk hälsa hos MittPsyke, eller dela din egen berättelse i lugn takt."
 	/>
-	{@html `<script type="application/ld+json">${jsonLdScript}</script>`}
+	{@html `<script type="application/ld+json">${jsonLdScript}<\/script>`}
 </svelte:head>
 
 <main class="stories-page mx-auto w-full px-5 py-10">
