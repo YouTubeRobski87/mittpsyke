@@ -6,7 +6,12 @@
 	let { data }: { data: PageData } = $props();
 
 	const totalPages = $derived(Math.max(1, Math.ceil(data.total / data.pageSize)));
-	const jsonLdScript = $derived(JSON.stringify(data.jsonLd).replaceAll('<', '\\u003c'));
+	const jsonLdScript = $derived(
+		JSON.stringify(data.jsonLd)
+			.replace(/</g, '\\u003c')
+			.replace(/\u2028/g, '\\u2028')
+			.replace(/\u2029/g, '\\u2029')
+	);
 
 	function storyMeta(gender: string | null, ageRange: string | null) {
 		return [getGenderLabel(gender), getAgeRangeLabel(ageRange)].filter(Boolean).join(', ');
