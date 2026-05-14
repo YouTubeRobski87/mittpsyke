@@ -60,15 +60,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	}
 
-	console.log(
-		'[storify/save] Sparar för user:',
-		user.id,
-		'| tone:',
-		tone,
-		'| content length:',
-		entry.length
-	);
-
 	// Spara till storify_entries (eget format med ton m.m.)
 	const { error: storifyError } = await supabase.from('storify_entries').insert({
 		user_id: user.id,
@@ -111,7 +102,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		);
 	}
 
-	console.log('[storify/save] Sparat OK för user:', user.id);
 	return new Response(JSON.stringify({ ok: true }), {
 		headers: { 'Content-Type': 'application/json' }
 	});

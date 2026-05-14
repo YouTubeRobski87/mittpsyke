@@ -145,8 +145,6 @@ export const POST: RequestHandler = async ({ request }) => {
 	const helpNeeded = selectedHelp;
 	const freeText = ownWords;
 
-	console.log('Check-in data:', { moods, factors, duration, selfCare, helpNeeded, freeText });
-
 	if (
 		selectedMoods.length === 0 &&
 		selectedFactors.length === 0 &&

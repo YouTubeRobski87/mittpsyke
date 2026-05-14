@@ -192,7 +192,6 @@
 					? `${day.dayOfMonth} ${monthLabel}${day.hasEntry ? ', har inlägg' : ''}`
 					: undefined}
 				aria-selected={selectedDateKey === day.dateKey ? true : undefined}
-				aria-pressed={day.isCurrentMonth ? selectedDateKey === day.dateKey : undefined}
 			>
 				<span class="cal-day-num">{day.dayOfMonth}</span>
 				{#if day.hasEntry && day.isCurrentMonth}

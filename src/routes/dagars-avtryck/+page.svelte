@@ -329,8 +329,6 @@
 			return;
 		}
 
-		console.log('[autoSave] Skickar till /api/storify/save, tone:', generatedTone, '| length:', generatedEntry.length);
-
 		const res = await fetch('/api/storify/save', {
 			method: 'POST',
 			headers: {
@@ -348,7 +346,6 @@
 		const resBody = await res.json().catch(() => ({})) as { ok?: boolean; error?: string };
 
 		if (res.ok) {
-			console.log('[autoSave] Sparat OK.');
 			isSaved = true;
 			const newEntry: StorifyEntry = {
 				id: uid(),

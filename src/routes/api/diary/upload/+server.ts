@@ -109,6 +109,5 @@ export const POST: RequestHandler = async ({ request }) => {
 	// getPublicUrl är synkron i supabase-js v2
 	const { data: urlData } = serviceClient.storage.from(BUCKET).getPublicUrl(storagePath);
 
-	console.log('[diary/upload] OK | user:', user.id, '| path:', storagePath);
 	return json({ url: urlData.publicUrl });
 };

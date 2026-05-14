@@ -87,22 +87,15 @@
 		gap: clamp(1.3rem, 3vw, 1.8rem);
 	}
 
-	.hero,
 	.section {
 		max-width: 720px;
 	}
 
-	h1,
 	h2,
 	h3 {
 		font-family: var(--font-heading);
 		margin: 0;
 		letter-spacing: -0.02em;
-	}
-
-	h1 {
-		font-size: clamp(1.8rem, 1.45rem + 1.8vw, 2.2rem);
-		line-height: 1.08;
 	}
 
 	h2 {

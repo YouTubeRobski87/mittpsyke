@@ -401,7 +401,6 @@
 		if (!browser) return;
 
 		const consentStatus = getAnalyticsConsent();
-		console.log('[Analytics] consent status:', consentStatus);
 
 		analyticsEnabled = ANALYTICS_ENABLED && hasAnalyticsConsent();
 		if (!analyticsEnabled) {

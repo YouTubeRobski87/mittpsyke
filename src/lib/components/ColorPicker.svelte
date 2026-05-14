@@ -158,31 +158,6 @@
 		background-color: var(--cd);
 	}
 
-	.cp-keywords {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 0.375rem;
-		margin: 0.25rem 0 0;
-		font-size: 0.95rem;
-		font-weight: 300;
-		color: #5f5f5f;
-		letter-spacing: 0.025em;
-	}
-
-	:global(.dark) .cp-keywords {
-		color: #a7a7ad;
-	}
-
-	.cp-tag {
-		font-size: 0.87rem;
-		color: #5f5f5f;
-	}
-
-	:global(.dark) .cp-tag {
-		color: #a7a7ad;
-	}
-
 	.cp-meaning {
 		margin: 0.375rem 0 0;
 		font-size: 0.87rem;
