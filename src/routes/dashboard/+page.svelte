@@ -41,6 +41,16 @@
 		error?: string;
 	};
 
+	type SpegelvattnetPayload = {
+		reflection?: {
+			id: string;
+			week_start: string;
+			status: 'ready' | 'paused';
+			paused_reason: string | null;
+		};
+		error?: string;
+	};
+
 	let dailyQuestion = $state('');
 	let dailyQuestionDate = $state('');
 	let dailyQuestionRegenerations = $state(0);
@@ -49,6 +59,8 @@
 	let dailyQuestionLoading = $state(true);
 	let dailyQuestionRegenerating = $state(false);
 	let dailyQuestionError = $state('');
+	let spegelReflection = $state<SpegelvattnetPayload['reflection'] | null>(null);
+	let spegelLoading = $state(false);
 	const dailyQuestionPrefill = $derived(
 		`Dagens fråga: ${dailyQuestion || fallbackDailyQuestion}\n\n`
 	);
@@ -58,6 +70,7 @@
 	const canRegenerateDailyQuestion = $derived(
 		!dailyQuestionSafety && dailyQuestionRegenerations < dailyQuestionMaxRegenerations
 	);
+	const shouldShowSpegelvattnet = $derived(Boolean(spegelReflection) && !spegelLoading);
 
 	function todayKey() {
 		return new Intl.DateTimeFormat('sv-CA', {
@@ -95,6 +108,28 @@
 	function cacheDailyQuestion(payload: DailyQuestionPayload) {
 		if (typeof localStorage === 'undefined' || !payload.question || payload.safety) return;
 		localStorage.setItem(cacheKey(payload.date), JSON.stringify(payload));
+	}
+
+	function isSundayOrMonday() {
+		const weekday = new Intl.DateTimeFormat('sv-SE', {
+			timeZone: 'Europe/Stockholm',
+			weekday: 'short'
+		}).format(new Date()).toLowerCase();
+		return weekday.startsWith('sön') || weekday.startsWith('mån');
+	}
+
+	async function loadSpegelvattnet() {
+		if (!isSundayOrMonday()) return;
+		spegelLoading = true;
+		try {
+			const response = await fetch('/api/spegelvattnet/latest');
+			const payload = (await response.json().catch(() => ({}))) as SpegelvattnetPayload;
+			if (response.ok && payload.reflection) {
+				spegelReflection = payload.reflection;
+			}
+		} finally {
+			spegelLoading = false;
+		}
 	}
 
 	async function loadDailyQuestion() {
@@ -148,6 +183,7 @@
 
 	onMount(() => {
 		void loadDailyQuestion();
+		void loadSpegelvattnet();
 	});
 </script>
 
@@ -190,6 +226,22 @@
 						<a href="/dagbok/checkin#skriv-sjalv" class="auth-button">Börja skriva</a>
 					{/if}
 				</article>
+
+				{#if shouldShowSpegelvattnet && spegelReflection}
+					<article class="return-card spegel-card">
+						<p class="portal-card-kicker">Spegelvattnet</p>
+						{#if spegelReflection.status === 'paused'}
+							<h3>Spegelvattnet är stilla den här veckan.</h3>
+							<p class="portal-subtle">
+								Om något känns tungt, finns Stödlinjer alltid där: stodlinjer.se. Vid akut fara, ring 112.
+							</p>
+							<a href="https://stodlinjer.se" class="auth-button" rel="noreferrer">Öppna stödlinjer</a>
+						{:else}
+							<h3>Spegelvattnet är stilla den här söndagen. Vill du titta?</h3>
+							<a href="/spegelvattnet" class="auth-button">Öppna →</a>
+						{/if}
+					</article>
+				{/if}
 
 				<article class="return-card daily-question">
 					<p class="portal-card-kicker">Dagens fråga</p>
