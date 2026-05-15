@@ -969,6 +969,12 @@
 {/if}
 
 <style>
+	.site-header {
+		top: 0;
+		z-index: 60;
+		padding-top: env(safe-area-inset-top, 0px);
+	}
+
 	.maintenance-screen {
 		min-height: 100vh;
 		display: grid;
