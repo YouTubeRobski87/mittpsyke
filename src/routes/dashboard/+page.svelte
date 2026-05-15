@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 
@@ -29,6 +30,125 @@
 	const progressPreview = $derived(data.progressPreview);
 	const settingsPreview = $derived(data.settingsPreview);
 	const primaryDiaryCtaLabel = $derived(diaryPreview.hasEntry ? 'Fortsätt från senast' : 'Börja i dagboken');
+	const fallbackDailyQuestion = 'Vad behöver få lite mer plats hos dig idag?';
+
+	type DailyQuestionPayload = {
+		question?: string;
+		date?: string;
+		regenerations?: number;
+		maxRegenerations?: number;
+		safety?: boolean;
+		error?: string;
+	};
+
+	let dailyQuestion = $state('');
+	let dailyQuestionDate = $state('');
+	let dailyQuestionRegenerations = $state(0);
+	let dailyQuestionMaxRegenerations = $state(2);
+	let dailyQuestionSafety = $state(false);
+	let dailyQuestionLoading = $state(true);
+	let dailyQuestionRegenerating = $state(false);
+	let dailyQuestionError = $state('');
+	const dailyQuestionPrefill = $derived(
+		`Dagens fråga: ${dailyQuestion || fallbackDailyQuestion}\n\n`
+	);
+	const dailyQuestionDiaryHref = $derived(
+		`/dagbok/checkin?prefill=${encodeURIComponent(dailyQuestionPrefill)}#skriv-sjalv`
+	);
+	const canRegenerateDailyQuestion = $derived(
+		!dailyQuestionSafety && dailyQuestionRegenerations < dailyQuestionMaxRegenerations
+	);
+
+	function todayKey() {
+		return new Intl.DateTimeFormat('sv-CA', {
+			timeZone: 'Europe/Stockholm',
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit'
+		}).format(new Date());
+	}
+
+	function cacheKey(date = todayKey()) {
+		return `mittpsyke_daily_question_${date}`;
+	}
+
+	function readCachedDailyQuestion() {
+		if (typeof localStorage === 'undefined') return null;
+		try {
+			const cached = JSON.parse(localStorage.getItem(cacheKey()) ?? 'null') as DailyQuestionPayload | null;
+			if (!cached?.question || cached.date !== todayKey()) return null;
+			return cached;
+		} catch {
+			return null;
+		}
+	}
+
+	function applyDailyQuestion(payload: DailyQuestionPayload) {
+		dailyQuestion = payload.question?.trim() || fallbackDailyQuestion;
+		dailyQuestionDate = payload.date || todayKey();
+		dailyQuestionRegenerations = payload.regenerations ?? 0;
+		dailyQuestionMaxRegenerations = payload.maxRegenerations ?? 2;
+		dailyQuestionSafety = Boolean(payload.safety);
+		dailyQuestionError = '';
+	}
+
+	function cacheDailyQuestion(payload: DailyQuestionPayload) {
+		if (typeof localStorage === 'undefined' || !payload.question || payload.safety) return;
+		localStorage.setItem(cacheKey(payload.date), JSON.stringify(payload));
+	}
+
+	async function loadDailyQuestion() {
+		const cached = readCachedDailyQuestion();
+		if (cached) {
+			applyDailyQuestion(cached);
+			dailyQuestionLoading = false;
+			return;
+		}
+
+		dailyQuestionLoading = true;
+		try {
+			const response = await fetch('/api/daily-question');
+			const payload = (await response.json().catch(() => ({}))) as DailyQuestionPayload;
+			if (!response.ok) {
+				dailyQuestionError = payload.error ?? 'Kunde inte hämta dagens fråga just nu.';
+				dailyQuestion = fallbackDailyQuestion;
+				return;
+			}
+			applyDailyQuestion(payload);
+			cacheDailyQuestion(payload);
+		} catch {
+			dailyQuestion = fallbackDailyQuestion;
+			dailyQuestionError = 'Kunde inte hämta dagens fråga just nu.';
+		} finally {
+			dailyQuestionLoading = false;
+		}
+	}
+
+	async function regenerateDailyQuestion() {
+		if (!canRegenerateDailyQuestion || dailyQuestionRegenerating) return;
+		dailyQuestionRegenerating = true;
+		dailyQuestionError = '';
+
+		try {
+			const response = await fetch('/api/daily-question/regenerate', { method: 'POST' });
+			const payload = (await response.json().catch(() => ({}))) as DailyQuestionPayload;
+			if (!response.ok) {
+				dailyQuestionError = payload.error ?? 'Kunde inte byta fråga just nu.';
+				if (payload.question) applyDailyQuestion(payload);
+				return;
+			}
+			applyDailyQuestion(payload);
+			cacheDailyQuestion(payload);
+		} catch {
+			dailyQuestionError = 'Kunde inte byta fråga just nu.';
+		} finally {
+			dailyQuestionRegenerating = false;
+		}
+	}
+
+	onMount(() => {
+		void loadDailyQuestion();
+	});
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/dashboard" />
@@ -73,11 +193,37 @@
 
 				<article class="return-card daily-question">
 					<p class="portal-card-kicker">Dagens fråga</p>
-					<h3>Vad har tagit mest energi från dig idag?</h3>
-					<p class="portal-subtle">
-						Svara kort eller långt. Det räcker att börja där du är.
-					</p>
-					<a href="/dagbok/checkin#skriv-sjalv" class="auth-button">Svara i dagboken</a>
+					{#if dailyQuestionLoading && !dailyQuestion}
+						<div class="daily-question-skeleton" aria-label="Hämtar dagens fråga"></div>
+					{:else}
+						<h3>{dailyQuestion || fallbackDailyQuestion}</h3>
+					{/if}
+					{#if dailyQuestionSafety}
+						<p class="portal-subtle">
+							Om det känns akut, ring 112. För vårdråd finns 1177, och fler stödlinjer finns på stodlinjer.se.
+						</p>
+					{:else}
+						<p class="portal-subtle">
+							Svara kort eller långt. Det räcker att börja där du är.
+						</p>
+					{/if}
+					<div class="daily-question-actions">
+						<a href={dailyQuestionDiaryHref} class="auth-button">Svara i dagboken</a>
+						{#if !dailyQuestionSafety}
+							<button
+								type="button"
+								class="daily-question-refresh"
+								onclick={regenerateDailyQuestion}
+								disabled={!canRegenerateDailyQuestion || dailyQuestionRegenerating || dailyQuestionLoading}
+								title={!canRegenerateDailyQuestion ? 'Du kan byta fråga två gånger per dag.' : 'Byt fråga'}
+							>
+								{dailyQuestionRegenerating ? 'Byter...' : 'Byt fråga'}
+							</button>
+						{/if}
+					</div>
+					{#if dailyQuestionError}
+						<p class="portal-subtle daily-question-error">{dailyQuestionError}</p>
+					{/if}
 				</article>
 			</div>
 		</section>
@@ -222,6 +368,63 @@
 		line-height: 1.35;
 	}
 
+	.daily-question-actions {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.55rem;
+	}
+
+	.daily-question-refresh {
+		border: 0;
+		background: transparent;
+		padding: 0.2rem 0;
+		color: hsl(214 32% 86% / 0.78);
+		font: inherit;
+		font-size: 0.88rem;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		cursor: pointer;
+	}
+
+	.daily-question-refresh:hover:not(:disabled) {
+		color: hsl(210 40% 98%);
+	}
+
+	.daily-question-refresh:disabled {
+		opacity: 0.52;
+		cursor: default;
+		text-decoration: none;
+	}
+
+	.daily-question-skeleton {
+		width: min(100%, 18rem);
+		height: 1.35rem;
+		border-radius: var(--radius-input);
+		background: linear-gradient(
+			90deg,
+			rgba(255, 255, 255, 0.08),
+			rgba(255, 255, 255, 0.16),
+			rgba(255, 255, 255, 0.08)
+		);
+		background-size: 200% 100%;
+		animation: question-loading 1.2s ease-in-out infinite;
+	}
+
+	.daily-question-error {
+		color: hsl(39 92% 82% / 0.92);
+	}
+
+	@keyframes question-loading {
+		from {
+			background-position: 100% 0;
+		}
+
+		to {
+			background-position: -100% 0;
+		}
+	}
+
 	.return-preview {
 		margin: 0;
 		line-height: 1.65;
@@ -297,6 +500,16 @@
 		.return-actions .auth-button,
 		.return-card .auth-button {
 			width: 100%;
+		}
+
+		.daily-question-actions {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.daily-question-refresh {
+			justify-self: start;
+			text-align: left;
 		}
 
 		.portal-grid {
