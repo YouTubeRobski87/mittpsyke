@@ -8,6 +8,7 @@ type DiaryEntry = {
 	tags: string[];
 	mood: string | null;
 	image_url: string | null;
+	prompt_question: string | null;
 };
 
 const INITIAL_DIARY_ENTRY_LIMIT = 20;
@@ -56,7 +57,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const diaryQuery = await locals.supabase
 		.from('diary')
-		.select('id, text, created_at, tags, mood, image_url')
+		.select('id, text, created_at, tags, mood, image_url, prompt_question')
 		.eq('user_id', user.id)
 		.order('created_at', { ascending: false })
 		.limit(INITIAL_DIARY_ENTRY_LIMIT + 1);
@@ -76,7 +77,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				created_at: typeof row.created_at === 'string' ? row.created_at : null,
 				tags: normalizeTags(row.tags),
 				mood: typeof row.mood === 'string' ? row.mood : null,
-				image_url: null // Äldre tabell saknar bildkolumn
+				image_url: null, // Äldre tabell saknar bildkolumn
+				prompt_question: null
 			}));
 			hasMoreEntries = mappedEntries.length > INITIAL_DIARY_ENTRY_LIMIT;
 			entries = mappedEntries.slice(0, INITIAL_DIARY_ENTRY_LIMIT);
@@ -88,7 +90,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			created_at: typeof row.created_at === 'string' ? row.created_at : null,
 			tags: normalizeTags(row.tags),
 			mood: typeof row.mood === 'string' ? row.mood : null,
-			image_url: typeof row.image_url === 'string' ? row.image_url : null
+			image_url: typeof row.image_url === 'string' ? row.image_url : null,
+			prompt_question: typeof row.prompt_question === 'string' ? row.prompt_question : null
 		}));
 		hasMoreEntries = mappedEntries.length > INITIAL_DIARY_ENTRY_LIMIT;
 		entries = mappedEntries.slice(0, INITIAL_DIARY_ENTRY_LIMIT);

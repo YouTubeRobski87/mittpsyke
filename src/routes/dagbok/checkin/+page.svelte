@@ -143,8 +143,30 @@
 			.trim();
 	}
 
+	function escapeRegExp(value: string): string {
+		return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	}
+
+	function getEntryPromptQuestion(entry: DiaryEntry): string {
+		return entry.prompt_question?.trim() ?? '';
+	}
+
+	function getEntryDisplayContent(entry: DiaryEntry): string {
+		const content = entry.content.trim();
+		const promptQuestion = getEntryPromptQuestion(entry);
+		if (!content || !promptQuestion) return content;
+
+		const escapedPrompt = escapeRegExp(promptQuestion);
+		const prefixedPromptPattern = new RegExp(
+			`^(?:Dagens fråga:\\s*)?${escapedPrompt}\\s*(?:\\r?\\n){0,2}`,
+			'i'
+		);
+
+		return content.replace(prefixedPromptPattern, '').trimStart();
+	}
+
 	function getEntryTitle(entry: DiaryEntry): string {
-		const firstLine = entry.content
+		const firstLine = getEntryDisplayContent(entry)
 			.split(/\r?\n/)
 			.map((line) => plainDiaryText(line))
 			.find(Boolean);
@@ -153,7 +175,7 @@
 	}
 
 	function getEntryExcerpt(entry: DiaryEntry): string {
-		const text = plainDiaryText(entry.content);
+		const text = plainDiaryText(getEntryDisplayContent(entry));
 		if (!text) return 'Inget textinnehåll ännu.';
 		return text.length > 180 ? `${text.slice(0, 177).trim()}...` : text;
 	}
@@ -1078,13 +1100,19 @@
 											</div>
 										{:else}
 											<h3 class="entry-title">{getEntryTitle(entry)}</h3>
+											{#if getEntryPromptQuestion(entry)}
+												<div class="entry-prompt-question">
+													<p>Dagens fråga:</p>
+													<blockquote>{getEntryPromptQuestion(entry)}</blockquote>
+												</div>
+											{/if}
 											{#if expandedEntryId === entry.id}
 												{#if canRenderMarkdown}
 													<div class="entry-markdown text-sm">
-														{@html renderDiaryMarkdown(entry.content)}
+														{@html renderDiaryMarkdown(getEntryDisplayContent(entry))}
 													</div>
 												{:else}
-													<p class="entry-fulltext">{entry.content}</p>
+													<p class="entry-fulltext">{getEntryDisplayContent(entry)}</p>
 												{/if}
 												{#if entry.image_url}
 													<img
@@ -2064,6 +2092,31 @@
 		font-weight: 700;
 		line-height: 1.35;
 		color: hsl(var(--foreground));
+	}
+
+	.entry-prompt-question {
+		display: grid;
+		gap: 0.25rem;
+		padding: 0.65rem 0.75rem;
+		border-left: 2px solid rgba(191, 219, 254, 0.28);
+		border-radius: 0.55rem;
+		background: rgba(255, 255, 255, 0.025);
+	}
+
+	.entry-prompt-question p {
+		margin: 0;
+		font-size: 0.74rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.entry-prompt-question blockquote {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.88rem;
+		line-height: 1.55;
 	}
 
 	.entry-excerpt,

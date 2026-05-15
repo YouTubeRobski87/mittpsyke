@@ -7,6 +7,7 @@ export type DiaryEntry = {
 	tags: string[];
 	mood: string | null;
 	image_url: string | null;
+	prompt_question: string | null;
 };
 
 type DiaryRow = {
@@ -16,6 +17,7 @@ type DiaryRow = {
 	tags: unknown;
 	mood: unknown;
 	image_url: unknown;
+	prompt_question: unknown;
 };
 
 type LegacyDiaryRow = {
@@ -67,7 +69,8 @@ function mapDiaryRow(row: DiaryRow): DiaryEntry {
 		created_at: typeof row.created_at === 'string' ? row.created_at : null,
 		tags: normalizeTags(row.tags),
 		mood: typeof row.mood === 'string' ? row.mood : null,
-		image_url: typeof row.image_url === 'string' ? row.image_url : null
+		image_url: typeof row.image_url === 'string' ? row.image_url : null,
+		prompt_question: typeof row.prompt_question === 'string' ? row.prompt_question : null
 	};
 }
 
@@ -78,7 +81,8 @@ function mapLegacyDiaryRow(row: LegacyDiaryRow): DiaryEntry {
 		created_at: typeof row.created_at === 'string' ? row.created_at : null,
 		tags: normalizeTags(row.tags),
 		mood: typeof row.mood === 'string' ? row.mood : null,
-		image_url: null // Äldre tabell saknar bildkolumn
+		image_url: null, // Äldre tabell saknar bildkolumn
+		prompt_question: null
 	};
 }
 
@@ -113,7 +117,7 @@ async function fetchDiaryEntries(userId: string, limit: number): Promise<DiaryEn
 	const queryLimit = limit + 1;
 	const { data, error: loadError } = await supabase
 		.from('diary')
-		.select('id, text, created_at, tags, mood, image_url')
+		.select('id, text, created_at, tags, mood, image_url, prompt_question')
 		.eq('user_id', userId)
 		.order('created_at', { ascending: false })
 		.limit(queryLimit);
