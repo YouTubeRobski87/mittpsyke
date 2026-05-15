@@ -44,6 +44,7 @@
 	const signedInPrimaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chatta' },
 		{ href: '/dagbok', label: 'Dagbok' },
+		{ href: '/spegelvattnet', label: 'Spegelvattnet' },
 		{ href: '/anonyma-berattelser', label: 'Berättelser' }
 	];
 

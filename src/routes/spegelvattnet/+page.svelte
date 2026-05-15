@@ -65,8 +65,8 @@
 		{#if !reflection}
 			<section class="spegel-shell spegel-empty">
 				<p class="spegel-kicker">Spegelvattnet</p>
-				<h2>Inget vatten att titta i just nu</h2>
-				<p>Spegelvattnet visas bara när det finns en färdig veckospegling.</p>
+				<h2>Spegelvattnet är stilla.</h2>
+				<p>Det fylls på när du skrivit lite mer.</p>
 				<a href="/dashboard" class="auth-button">Till Min portal</a>
 			</section>
 		{:else if reflection.status === 'paused'}
