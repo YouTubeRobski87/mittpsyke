@@ -127,6 +127,7 @@
 
 html {
 	font-size: 17px;
+	scroll-padding-top: calc(4.75rem + env(safe-area-inset-top, 0px));
 }
 
 html,
@@ -222,7 +223,8 @@ a {
 
 .auth-page:has(.auth-subnav[aria-label='Portalnavigering']) {
 	position: relative;
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: visible;
 	padding-top: 0.35rem;
 	background:
 		radial-gradient(circle at top left, var(--dashboard-bg-accent), transparent 34%),
