@@ -36,6 +36,10 @@ function getAccessToken(authorizationHeader: string | null): string | null {
 	return token.trim();
 }
 
+function isUuid(value: string): boolean {
+	return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
 function validateBody(input: unknown): { ok: true; data: CreateDiaryRequestBody } | { ok: false; error: string } {
 	if (!input || typeof input !== 'object' || Array.isArray(input)) {
 		return { ok: false, error: 'Invalid request body.' };
@@ -61,13 +65,36 @@ function validateBody(input: unknown): { ok: true; data: CreateDiaryRequestBody 
 		return { ok: false, error: 'Field "image_url" must be a string or null.' };
 	}
 
+	if (
+		body.prompt_question !== undefined &&
+		body.prompt_question !== null &&
+		typeof body.prompt_question !== 'string'
+	) {
+		return { ok: false, error: 'Field "prompt_question" must be a string or null.' };
+	}
+
+	if (
+		body.daily_question_id !== undefined &&
+		body.daily_question_id !== null &&
+		typeof body.daily_question_id !== 'string'
+	) {
+		return { ok: false, error: 'Field "daily_question_id" must be a string or null.' };
+	}
+
+	const dailyQuestionId = body.daily_question_id?.trim() || null;
+	if (dailyQuestionId && !isUuid(dailyQuestionId)) {
+		return { ok: false, error: 'Field "daily_question_id" must be a valid UUID or null.' };
+	}
+
 	return {
 		ok: true,
 		data: {
 			text: body.text.trim(),
 			mood: body.mood ?? null,
 			tags: body.tags ?? null,
-			image_url: body.image_url ?? null
+			image_url: body.image_url ?? null,
+			prompt_question: body.prompt_question?.trim() || null,
+			daily_question_id: dailyQuestionId
 		}
 	};
 }
@@ -116,6 +143,25 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('Unauthorized.', 401);
 	}
 
+	let dailyQuestionId = validated.data.daily_question_id;
+	if (dailyQuestionId) {
+		const { data: question, error: questionError } = await supabase
+			.from('daily_questions')
+			.select('id')
+			.eq('id', dailyQuestionId)
+			.eq('user_id', user.id)
+			.maybeSingle();
+
+		if (questionError) {
+			console.error('Failed to validate daily question ownership:', questionError);
+			return errorResponse('Could not validate daily question.', 500);
+		}
+
+		if (!question) {
+			return errorResponse('Invalid daily_question_id.', 400);
+		}
+	}
+
 	const { data: inserted, error: insertError } = await supabase
 		.from('diary')
 		.insert({
@@ -123,9 +169,11 @@ export const POST: RequestHandler = async ({ request }) => {
 			text: validated.data.text,
 			mood: validated.data.mood,
 			tags: validated.data.tags,
-			image_url: validated.data.image_url
+			image_url: validated.data.image_url,
+			prompt_question: validated.data.prompt_question,
+			daily_question_id: dailyQuestionId
 		})
-		.select('id, user_id, text, mood, tags, image_url, created_at')
+		.select('id, user_id, text, mood, tags, image_url, prompt_question, daily_question_id, created_at')
 		.single();
 
 	if (!insertError && inserted) {

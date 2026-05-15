@@ -18,6 +18,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 		return json(
 			{
 				error: 'Du kan byta fråga två gånger per dag.',
+				id: result.question.id || null,
 				question: result.question.question_text,
 				date: result.question.date,
 				regenerations: result.question.regenerations,
@@ -28,6 +29,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 	}
 
 	return json({
+		id: result.question.id || null,
 		question: result.question.question_text,
 		date: result.question.date,
 		regenerations: result.question.regenerations,

@@ -43,6 +43,8 @@
 	let isLoggedIn = $derived(Boolean(sessionUser));
 	let loadError = $state('');
 	let draftText = $state('');
+	let draftPromptQuestion = $state('');
+	let draftDailyQuestionId = $state<string | null>(null);
 	let draftMood = $state('');
 	let draftMoodPreview = $state(5);
 	let draftError = $state('');
@@ -52,6 +54,7 @@
 	let moodGraphPoints = $derived.by(() => buildMoodGraphPoints(entries));
 	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
+	let hasPromptQuestion = $derived(draftPromptQuestion.trim().length > 0);
 	let hasSavedEntries = $derived(entries.length > 0);
 	let showWriteEditor = $state(false);
 	let draftTextarea = $state<HTMLTextAreaElement | null>(null);
@@ -579,7 +582,9 @@
 				body: JSON.stringify({
 					text: draftText.trim(),
 					mood: draftMood || null,
-					image_url: draftImageUrl
+					image_url: draftImageUrl,
+					prompt_question: draftPromptQuestion || null,
+					daily_question_id: draftDailyQuestionId
 				})
 			});
 
@@ -595,12 +600,22 @@
 				const url = new URL(window.location.href);
 				if (url.searchParams.has('prefill')) {
 					url.searchParams.delete('prefill');
+					url.searchParams.delete('prompt');
+					url.searchParams.delete('daily_question_id');
+					const query = url.searchParams.toString();
+					window.history.replaceState({}, '', `${url.pathname}${query ? `?${query}` : ''}${url.hash}`);
+				}
+				if (url.searchParams.has('prompt') || url.searchParams.has('daily_question_id')) {
+					url.searchParams.delete('prompt');
+					url.searchParams.delete('daily_question_id');
 					const query = url.searchParams.toString();
 					window.history.replaceState({}, '', `${url.pathname}${query ? `?${query}` : ''}${url.hash}`);
 				}
 			}
 
 			draftText = '';
+			draftPromptQuestion = '';
+			draftDailyQuestionId = null;
 			draftMood = '';
 			draftMoodPreview = 5;
 			clearDraftImage();
@@ -634,8 +649,15 @@
 		}
 
 		const prefill = $page.url.searchParams.get('prefill')?.trim();
+		const promptQuestion = $page.url.searchParams.get('prompt')?.trim();
+		const dailyQuestionId = $page.url.searchParams.get('daily_question_id')?.trim();
 		if (prefill) {
 			draftText = prefill;
+			showWriteEditor = true;
+		} else if (promptQuestion) {
+			draftPromptQuestion = promptQuestion;
+			draftDailyQuestionId = dailyQuestionId || null;
+			draftText = '';
 			showWriteEditor = true;
 		} else if (typeof window !== 'undefined') {
 			draftText = parseStoredDraft(localStorage.getItem('mittpsyke_temp_entry'));
@@ -807,7 +829,11 @@
 								<p class="editor-intro auth-muted">
 									Läs igenom i lugn och ro. Du kan justera texten innan du sparar.
 								</p>
-								{#if hasDraftToResume}
+								{#if hasPromptQuestion}
+									<p class="editor-support auth-muted">
+										Svara fritt. Frågan sparas bara som koppling, inte som text i ditt inlägg.
+									</p>
+								{:else if hasDraftToResume}
 									<p class="editor-support auth-muted">
 										Fortsätt där du var. Du kan spara när du känner dig klar.
 									</p>
@@ -821,6 +847,12 @@
 								</p>
 							</header>
 							<div class="editor-card">
+								{#if hasPromptQuestion}
+									<div class="editor-prompt-question">
+										<p class="editor-prompt-label">Dagens fråga</p>
+										<blockquote>{draftPromptQuestion}</blockquote>
+									</div>
+								{/if}
 								<div class="mood-field editor-mood-field">
 							<p class="text-sm">Humör just nu (valfritt)</p>
 							<p class="mood-current">
@@ -854,7 +886,7 @@
 							bind:value={draftText}
 							rows={8}
 							class="diary-input diary-input--editor"
-							placeholder="Skriv några ord..."
+							placeholder={hasPromptQuestion ? 'Skriv ditt svar här...' : 'Skriv några ord...'}
 						></textarea>
 
 						<!-- Bilduppladdning (valfritt) -->
@@ -1349,6 +1381,30 @@
 			0 18px 40px rgba(15, 23, 42, 0.18),
 			inset 0 1px 0 rgba(255, 255, 255, 0.03);
 		overflow: hidden;
+	}
+
+	.editor-prompt-question {
+		padding: 1rem 1.2rem;
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		background: rgba(255, 255, 255, 0.025);
+	}
+
+	.editor-prompt-label {
+		margin: 0 0 0.35rem;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: rgba(226, 232, 240, 0.52);
+	}
+
+	.editor-prompt-question blockquote {
+		margin: 0;
+		padding-left: 0.75rem;
+		border-left: 2px solid rgba(191, 219, 254, 0.35);
+		color: rgba(226, 232, 240, 0.76);
+		font-size: 0.93rem;
+		line-height: 1.65;
 	}
 
 	.diary-path-card {

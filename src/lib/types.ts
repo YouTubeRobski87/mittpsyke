@@ -18,6 +18,8 @@ export interface CreateDiaryRequestBody {
 	mood?: string | null;
 	tags?: string[] | null;
 	image_url?: string | null;
+	prompt_question?: string | null;
+	daily_question_id?: string | null;
 }
 
 export interface DiaryRecord {
@@ -27,6 +29,8 @@ export interface DiaryRecord {
 	mood: string | null;
 	tags: string[] | null;
 	image_url: string | null;
+	prompt_question: string | null;
+	daily_question_id: string | null;
 	created_at: string;
 }
 

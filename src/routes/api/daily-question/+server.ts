@@ -15,6 +15,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 	const result = await getOrCreateDailyQuestion(locals.supabase, user);
 
 	return json({
+		id: result.question.id || null,
 		question: result.question.question_text,
 		date: result.question.date,
 		regenerations: result.question.regenerations,

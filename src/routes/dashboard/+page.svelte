@@ -33,6 +33,7 @@
 	const fallbackDailyQuestion = 'Vad behöver få lite mer plats hos dig idag?';
 
 	type DailyQuestionPayload = {
+		id?: string | null;
 		question?: string;
 		date?: string;
 		regenerations?: number;
@@ -52,6 +53,7 @@
 	};
 
 	let dailyQuestion = $state('');
+	let dailyQuestionId = $state<string | null>(null);
 	let dailyQuestionDate = $state('');
 	let dailyQuestionRegenerations = $state(0);
 	let dailyQuestionMaxRegenerations = $state(2);
@@ -61,11 +63,8 @@
 	let dailyQuestionError = $state('');
 	let spegelReflection = $state<SpegelvattnetPayload['reflection'] | null>(null);
 	let spegelLoading = $state(false);
-	const dailyQuestionPrefill = $derived(
-		`Dagens fråga: ${dailyQuestion || fallbackDailyQuestion}\n\n`
-	);
 	const dailyQuestionDiaryHref = $derived(
-		`/dagbok/checkin?prefill=${encodeURIComponent(dailyQuestionPrefill)}#skriv-sjalv`
+		`/dagbok/checkin?prompt=${encodeURIComponent(dailyQuestion || fallbackDailyQuestion)}${dailyQuestionId ? `&daily_question_id=${encodeURIComponent(dailyQuestionId)}` : ''}#skriv-sjalv`
 	);
 	const canRegenerateDailyQuestion = $derived(
 		!dailyQuestionSafety && dailyQuestionRegenerations < dailyQuestionMaxRegenerations
@@ -98,6 +97,7 @@
 
 	function applyDailyQuestion(payload: DailyQuestionPayload) {
 		dailyQuestion = payload.question?.trim() || fallbackDailyQuestion;
+		dailyQuestionId = payload.id ?? null;
 		dailyQuestionDate = payload.date || todayKey();
 		dailyQuestionRegenerations = payload.regenerations ?? 0;
 		dailyQuestionMaxRegenerations = payload.maxRegenerations ?? 2;
