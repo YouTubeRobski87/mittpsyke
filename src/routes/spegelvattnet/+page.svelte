@@ -55,68 +55,70 @@
 <SEO canonical="https://www.mittpsyke.se/spegelvattnet" />
 
 <main class="auth-page spegel-page">
-	<PortalSubnav
-		active="dashboard"
-		title="Spegelvattnet"
-		description="En stilla veckospegling av det du själv har skrivit."
-	/>
+	<div class="spegel-column">
+		<PortalSubnav
+			active="dashboard"
+			title="Spegelvattnet"
+			description="En stilla veckospegling av det du själv har skrivit."
+		/>
 
-	<div class="auth-shell">
-		{#if !reflection}
-			<section class="spegel-shell spegel-empty">
-				<p class="spegel-kicker">Spegelvattnet</p>
-				<h2>Spegelvattnet är stilla.</h2>
-				<p>Det fylls på när du skrivit lite mer.</p>
-				<a href="/dashboard" class="auth-button">Till Min portal</a>
-			</section>
-		{:else if reflection.status === 'paused'}
-			<section class="spegel-shell spegel-empty">
-				<p class="spegel-kicker">Spegelvattnet</p>
-				<h2>Spegelvattnet är stilla den här veckan.</h2>
-				<p>
-					Om något känns tungt, finns Stödlinjer alltid där: stodlinjer.se. Vid akut fara, ring 112.
-				</p>
-				<a href="https://stodlinjer.se" class="auth-button" rel="noreferrer">Öppna stödlinjer</a>
-			</section>
-		{:else}
-			<article class="spegel-shell">
-				<header class="spegel-head">
+		<div class="spegel-content">
+			{#if !reflection}
+				<section class="spegel-shell spegel-empty">
 					<p class="spegel-kicker">Spegelvattnet</p>
-					<h2>{weekLabel}</h2>
-				</header>
-
-				{#if words.length > 0}
-					<section class="spegel-section">
-						<h3>Ord du återkommit till</h3>
-						<p class="word-line">{words.join(' · ')}</p>
-					</section>
-				{/if}
-
-				{#if reflection.quoted_sentence}
-					<section class="spegel-section">
-						<h3>En mening från dig</h3>
-						<blockquote>{reflection.quoted_sentence}</blockquote>
-					</section>
-				{/if}
-
-				{#if reflection.movement}
-					<section class="spegel-section">
-						<h3>Något har rört sig</h3>
-						<p>{reflection.movement}</p>
-					</section>
-				{/if}
-
-				<section class="spegel-section">
-					<h3>En fråga att ta med</h3>
-					<p class="open-question">{openQuestion}</p>
+					<h2>Spegelvattnet är stilla.</h2>
+					<p>Det fylls på när du skrivit lite mer.</p>
+					<a href="/dashboard" class="auth-button">Till Min portal</a>
 				</section>
+			{:else if reflection.status === 'paused'}
+				<section class="spegel-shell spegel-empty">
+					<p class="spegel-kicker">Spegelvattnet</p>
+					<h2>Spegelvattnet är stilla den här veckan.</h2>
+					<p>
+						Om något känns tungt, finns Stödlinjer alltid där: stodlinjer.se. Vid akut fara, ring 112.
+					</p>
+					<a href="https://stodlinjer.se" class="auth-button" rel="noreferrer">Öppna stödlinjer</a>
+				</section>
+			{:else}
+				<article class="spegel-shell">
+					<header class="spegel-head">
+						<p class="spegel-kicker">Spegelvattnet</p>
+						<h2>{weekLabel}</h2>
+					</header>
 
-				<div class="spegel-actions">
-					<a href={diaryHref} class="auth-button primary">Skriv om det här</a>
-					<a href="/dashboard" class="auth-button">Stäng</a>
-				</div>
-			</article>
-		{/if}
+					{#if words.length > 0}
+						<section class="spegel-section">
+							<h3>Ord du återkommit till</h3>
+							<p class="word-line">{words.join(' · ')}</p>
+						</section>
+					{/if}
+
+					{#if reflection.quoted_sentence}
+						<section class="spegel-section">
+							<h3>En mening från dig</h3>
+							<blockquote>{reflection.quoted_sentence}</blockquote>
+						</section>
+					{/if}
+
+					{#if reflection.movement}
+						<section class="spegel-section">
+							<h3>Något har rört sig</h3>
+							<p>{reflection.movement}</p>
+						</section>
+					{/if}
+
+					<section class="spegel-section">
+						<h3>En fråga att ta med</h3>
+						<p class="open-question">{openQuestion}</p>
+					</section>
+
+					<div class="spegel-actions">
+						<a href={diaryHref} class="auth-button primary">Skriv om det här</a>
+						<a href="/dashboard" class="auth-button">Stäng</a>
+					</div>
+				</article>
+			{/if}
+		</div>
 	</div>
 </main>
 
@@ -127,9 +129,27 @@
 			hsl(var(--background));
 	}
 
+	.spegel-column {
+		width: min(100%, 48rem);
+		margin-inline: auto;
+		display: grid;
+		gap: 1rem;
+	}
+
+	.spegel-column :global(.auth-shell) {
+		width: 100%;
+		max-width: none;
+		margin-inline: 0;
+		padding-inline: 0;
+	}
+
+	.spegel-content {
+		width: 100%;
+	}
+
 	.spegel-shell {
-		max-width: 48rem;
-		margin: 0 auto;
+		width: 100%;
+		margin: 0;
 		padding: clamp(1.5rem, 5vw, 4rem);
 		border: 1px solid rgba(148, 163, 184, 0.22);
 		border-radius: var(--radius-card);
