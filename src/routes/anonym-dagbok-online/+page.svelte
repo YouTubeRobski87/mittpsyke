@@ -6,15 +6,15 @@
 <SEO canonical="https://www.mittpsyke.se/anonym-dagbok-online" />
 
 <svelte:head>
-	<title>Anonym dagbok online utan konto | Reflektion i text | MittPsyke</title>
+	<title>Anonym dagbok online utan konto | Skriv direkt | MittPsyke</title>
 	<meta
 		name="description"
-		content="Skriv i en anonym dagbok online utan konto. Börja med reflektion i text, sortera tankar i lugn takt och gå vidare till anonym chatt om du vill."
+		content="Skriv av dig anonymt direkt i webbläsaren. Inget konto behövs. Texten sparas lokalt tills du själv väljer att spara."
 	/>
 	<meta property="og:title" content="Anonym dagbok online | MittPsyke" />
 	<meta
 		property="og:description"
-		content="När du bara vill skriva av dig kan en lugn digital dagbok ge mer struktur, reflektion och kontinuitet."
+		content="Skriv av dig anonymt direkt i webbläsaren. Inget konto behövs och texten sparas lokalt."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
@@ -55,6 +55,10 @@
 			<p>
 				Om du vill spara historik och få en egen plats över tid kan du <a href="/register">skapa konto</a>.
 				Du kan också börja skriva direkt och välja senare om du vill spara.
+			</p>
+			<p>
+				Vill du läsa mer om varför det här kan hjälpa? Läs guiden
+				<a href="/guider/anonym-dagbok-online">Så kan anonym dagbok online hjälpa dig att sortera tankar</a>.
 			</p>
 			<p class="links-row">
 				<a href="/dagbok?action=new">Börja skriva anonym dagbok</a>
