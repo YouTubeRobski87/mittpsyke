@@ -10,6 +10,8 @@
 	const AUTOSAVE_INTERVAL_MS = 3000;
 
 	let entry = $state('');
+	let savedEntryFromPreviousVisit = $state('');
+	let showSavedEntryPrompt = $state(false);
 	let saveStatus = $state<'idle' | 'saved'>('idle');
 	let containerEl = $state<HTMLElement | null>(null);
 	let textareaEl = $state<HTMLTextAreaElement | null>(null);
@@ -36,6 +38,9 @@
 	}
 
 	function handleInput() {
+		if (showSavedEntryPrompt) {
+			clearSavedEntry({ keepCurrentText: true });
+		}
 		if (!hasStartedTracking && entry.trim().length > 0) {
 			hasStartedTracking = true;
 			trackDiaryGuestEntryStarted();
@@ -45,16 +50,43 @@
 		}
 	}
 
+	function continuePreviousEntry() {
+		entry = savedEntryFromPreviousVisit;
+		lastSavedValue = savedEntryFromPreviousVisit;
+		savedEntryFromPreviousVisit = '';
+		showSavedEntryPrompt = false;
+		saveStatus = entry.trim().length > 0 ? 'saved' : 'idle';
+		textareaEl?.focus();
+	}
+
+	function clearSavedEntry(options: { keepCurrentText?: boolean } = {}) {
+		if (!browser) return;
+
+		try {
+			window.localStorage.removeItem(STORAGE_KEY);
+		} catch {
+			// Ignorera storage-fel
+		}
+
+		if (!options.keepCurrentText) {
+			entry = '';
+		}
+		savedEntryFromPreviousVisit = '';
+		showSavedEntryPrompt = false;
+		lastSavedValue = options.keepCurrentText ? '' : entry;
+		saveStatus = 'idle';
+		textareaEl?.focus();
+	}
+
 	onMount(() => {
 		if (!browser) return;
 
-		// Ladda eventuell befintlig text
+		// Håll tidigare text dold tills användaren själv väljer att fortsätta.
 		try {
 			const stored = window.localStorage.getItem(STORAGE_KEY);
 			if (stored) {
-				entry = stored;
-				lastSavedValue = stored;
-				saveStatus = 'saved';
+				savedEntryFromPreviousVisit = stored;
+				showSavedEntryPrompt = true;
 			}
 		} catch {
 			// Ignorera storage-fel
@@ -100,6 +132,20 @@
 			</p>
 		</header>
 
+		{#if showSavedEntryPrompt}
+			<div class="saved-entry-prompt" role="status" aria-live="polite">
+				<p>Du skrev något senast. Vill du fortsätta där du var eller börja på nytt?</p>
+				<div class="saved-entry-actions">
+					<button type="button" class="prompt-primary-action" onclick={continuePreviousEntry}>
+						Fortsätt där jag var
+					</button>
+					<button type="button" class="prompt-secondary-action" onclick={() => clearSavedEntry()}>
+						Börja på nytt
+					</button>
+				</div>
+			</div>
+		{/if}
+
 		<textarea
 			bind:this={textareaEl}
 			bind:value={entry}
@@ -108,6 +154,10 @@
 			rows="8"
 			aria-label="Din snabbanteckning"
 		></textarea>
+
+		<button type="button" class="clear-entry-link" onclick={() => clearSavedEntry()}>
+			Rensa texten
+		</button>
 
 		<footer class="guest-entry-footer">
 			<span class="char-count" aria-hidden="true">{charCount} tecken</span>
@@ -171,6 +221,54 @@
 		font-weight: 600;
 	}
 
+	.saved-entry-prompt {
+		border: 1px solid hsl(var(--border));
+		border-radius: 16px;
+		background: hsl(var(--surface-soft));
+		padding: 0.95rem;
+		display: grid;
+		gap: 0.85rem;
+	}
+
+	.saved-entry-prompt p {
+		margin: 0;
+		color: hsl(var(--foreground) / 0.86);
+		font-size: 0.95rem;
+		line-height: 1.55;
+	}
+
+	.saved-entry-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.55rem;
+	}
+
+	.prompt-primary-action,
+	.prompt-secondary-action {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 2.4rem;
+		padding: 0.55rem 0.9rem;
+		border-radius: var(--radius-pill);
+		font-family: var(--font-heading);
+		font-size: 0.9rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.prompt-primary-action {
+		border: 1px solid var(--theme-accent, var(--primary));
+		background: var(--theme-accent, var(--primary));
+		color: #fff;
+	}
+
+	.prompt-secondary-action {
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+	}
+
 	textarea {
 		width: 100%;
 		min-height: 180px;
@@ -189,6 +287,30 @@
 	textarea:focus {
 		outline: 2px solid var(--primary);
 		outline-offset: 2px;
+	}
+
+	.clear-entry-link {
+		justify-self: start;
+		border: 0;
+		background: transparent;
+		padding: 0;
+		color: hsl(var(--muted-foreground));
+		font: inherit;
+		font-size: 0.86rem;
+		text-decoration: underline;
+		text-underline-offset: 0.18em;
+		cursor: pointer;
+	}
+
+	.clear-entry-link:hover,
+	.clear-entry-link:focus-visible {
+		color: hsl(var(--foreground));
+	}
+
+	.clear-entry-link:focus-visible {
+		outline: 2px solid var(--primary);
+		outline-offset: 3px;
+		border-radius: 4px;
 	}
 
 	.guest-entry-footer {
@@ -269,6 +391,11 @@
 		.primary-action,
 		.secondary-action {
 			width: 100%;
+		}
+
+		.saved-entry-actions {
+			display: grid;
+			grid-template-columns: 1fr;
 		}
 	}
 </style>
