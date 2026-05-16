@@ -11,6 +11,7 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
+	import { Search } from 'lucide-svelte';
 	import {
 		ANALYTICS_CONSENT_EVENT,
 		getAnalyticsConsent,
@@ -55,8 +56,7 @@
 			description: 'Förstå vanliga besvär'
 		},
 		{ href: '/blogg', label: 'Artiklar', description: 'Läs mer om psykisk hälsa' },
-		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' },
-		{ href: '/sok', label: 'Sök', description: 'Hitta guider och artiklar' }
+		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' }
 	];
 
 	const signedInPortalNavItems: NavItem[] = [
@@ -634,6 +634,15 @@
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
+				<a
+					href="/sok"
+					class="search-nav-link hidden lg:inline-flex text-sm transition-opacity {isActive('/sok') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}"
+					aria-label="Sök på MittPsyke"
+					aria-current={isActive('/sok') ? 'page' : undefined}
+				>
+					<Search size={16} aria-hidden="true" />
+					<span>Sök</span>
+				</a>
 				{#if !user}
 					<div class="hidden lg:flex items-center gap-3">
 						<a href={PUBLIC_CONTACT_MAILTO} class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Kontakt</a>
@@ -822,6 +831,10 @@
 						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
 					<a href="/guider" class="mobile-menu-link text-sm transition-opacity {isActive('/guider') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive('/guider') ? 'page' : undefined}>Guider</a>
+					<a href="/sok" class="mobile-menu-link mobile-menu-search-link text-sm transition-opacity {isActive('/sok') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-label="Sök på MittPsyke" aria-current={isActive('/sok') ? 'page' : undefined}>
+						<Search size={16} aria-hidden="true" />
+						<span>Sök</span>
+					</a>
 					{#each guideNavItems as item}
 						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
@@ -851,6 +864,10 @@
 						</a>
 					{/each}
 					<a href="/guider" class="mobile-menu-link text-sm transition-opacity {isActive('/guider') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive('/guider') ? 'page' : undefined}>Guider</a>
+					<a href="/sok" class="mobile-menu-link mobile-menu-search-link text-sm transition-opacity {isActive('/sok') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-label="Sök på MittPsyke" aria-current={isActive('/sok') ? 'page' : undefined}>
+						<Search size={16} aria-hidden="true" />
+						<span>Sök</span>
+					</a>
 					{#each guideNavItems as item}
 						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
@@ -1057,6 +1074,11 @@
 		position: relative;
 	}
 
+	.search-nav-link {
+		align-items: center;
+		gap: 0.35rem;
+	}
+
 	.resources-dropdown summary {
 		list-style: none;
 		cursor: pointer;
@@ -1198,6 +1220,12 @@
 	.mobile-menu-sub-link {
 		padding-left: 0.9rem;
 		opacity: 0.78;
+	}
+
+	.mobile-menu-search-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
 	}
 
 		.mobile-menu-link + .mobile-menu-link {
