@@ -223,12 +223,18 @@ a {
 
 .auth-page:has(.auth-subnav[aria-label='Portalnavigering']) {
 	position: relative;
-	overflow-x: hidden;
+	overflow-x: clip;
 	overflow-y: visible;
 	padding-top: 0.35rem;
 	background:
 		radial-gradient(circle at top left, var(--dashboard-bg-accent), transparent 34%),
 		linear-gradient(180deg, var(--dashboard-bg-start), var(--dashboard-bg-end));
+}
+
+@supports not (overflow: clip) {
+	.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) {
+		overflow-x: hidden;
+	}
 }
 
 .auth-page:has(.auth-subnav[aria-label='Portalnavigering'])::before {
