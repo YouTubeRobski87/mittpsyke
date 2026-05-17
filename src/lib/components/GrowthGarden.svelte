@@ -4,6 +4,12 @@
 	export let entryCount: number = 0;
 	export let activeDays: number = 0;
 
+	type CompanionStat = {
+		label: string;
+		value: string;
+		progress: number;
+	};
+
 	const MYSTERY_EGG_VISIBLE_ENTRIES = 100;
 	const MYSTERY_EGG_CRACKED_ENTRIES = 125;
 	const MYSTERY_EGG_HATCHED_ENTRIES = 150;
@@ -16,6 +22,24 @@
 
 	$: nextEgg = EXTRA_EGGS.find((egg) => entryCount < egg.visible);
 	$: hatchingEgg = EXTRA_EGGS.find((egg) => entryCount >= egg.visible && entryCount < egg.hatched);
+	$: energyValue = Math.min(100, 48 + growthLevel * 10 + Math.min(entryCount, 12));
+	$: calmValue = Math.min(100, 62 + Math.min(activeDays, 10) * 3);
+	$: presenceValue = Math.min(100, entryCount === 0 ? 40 : 60 + Math.min(activeDays, 8) * 4);
+	$: companionStats = [
+		{ label: 'Energi', value: `${energyValue}%`, progress: energyValue },
+		{ label: 'Lugn', value: `${calmValue}%`, progress: calmValue },
+		{ label: 'Närvaro', value: `${presenceValue}%`, progress: presenceValue },
+		{ label: 'Dagens steg', value: entryCount > 0 ? 'Redo' : 'Väntar', progress: entryCount > 0 ? 72 : 38 }
+	] satisfies CompanionStat[];
+
+	let careCount = 0;
+	let companionMessage = 'Jag är här med dig.';
+
+	function giveCalm() {
+		careCount += 1;
+		companionMessage =
+			careCount % 2 === 0 ? 'Jag är här med dig.' : 'Ett litet steg räcker idag.';
+	}
 </script>
 
 <section class="garden-card card" aria-labelledby="growth-garden-title" data-growth-score={growthScore}>
@@ -311,6 +335,25 @@
 				</g>
 			{/if}
 		</svg>
+		<p class="dino-bubble" aria-live="polite">{companionMessage}</p>
+	</div>
+
+	<div class="companion-panel" aria-label="Dinosauriens status">
+		<div class="companion-stats">
+			{#each companionStats as stat}
+				<div class="companion-stat">
+					<span>{stat.label}</span>
+					<strong>{stat.value}</strong>
+					<div class="companion-meter" aria-hidden="true">
+						<span style={`width: ${stat.progress}%`}></span>
+					</div>
+				</div>
+			{/each}
+		</div>
+		<div class="companion-care">
+			<p>Din lilla följeslagare hänger med i din takt.</p>
+			<button type="button" onclick={giveCalm}>Ge lite lugn</button>
+		</div>
 	</div>
 
 	<div class="garden-meta">
@@ -479,6 +522,12 @@
 	.dino-stage {
 		transform-box: fill-box;
 		transform-origin: center bottom;
+		animation:
+			gardenBloom 520ms ease-out both,
+			dinoBreathe 5.2s ease-in-out 700ms infinite;
+	}
+
+	.egg-stage {
 		animation: gardenBloom 520ms ease-out both;
 	}
 
@@ -581,10 +630,14 @@
 
 	.dino-eye {
 		fill: var(--garden-dino-eye);
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: dinoBlink 6.8s ease-in-out 1.2s infinite;
 	}
 
 	.dino-cheek {
 		fill: var(--garden-dino-cheek);
+		animation: dinoCheek 5.2s ease-in-out 900ms infinite;
 	}
 
 	.dino-smile,
@@ -625,6 +678,123 @@
 
 	.garden-stats {
 		white-space: nowrap;
+	}
+
+	.dino-bubble {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+		max-width: min(14rem, calc(100% - 2rem));
+		margin: 0;
+		padding: 0.7rem 0.85rem;
+		border-radius: 1rem 1rem 0.35rem 1rem;
+		background: color-mix(in srgb, hsl(var(--surface)) 88%, white 12%);
+		border: 1px solid color-mix(in srgb, var(--theme-accent, #436e8f) 18%, var(--color-dashboard-border) 82%);
+		box-shadow: 0 10px 24px rgba(28, 40, 36, 0.1);
+		color: hsl(var(--foreground));
+		font-size: 0.9rem;
+		line-height: 1.45;
+		animation: bubbleFloat 5.6s ease-in-out infinite;
+	}
+
+	.dino-bubble::after {
+		content: '';
+		position: absolute;
+		right: 1.15rem;
+		bottom: -0.42rem;
+		width: 0.72rem;
+		height: 0.72rem;
+		background: inherit;
+		border-right: inherit;
+		border-bottom: inherit;
+		transform: rotate(45deg);
+	}
+
+	.companion-panel {
+		display: grid;
+		gap: 0.9rem;
+		padding: 1rem;
+		border-radius: 1rem;
+		background: color-mix(in srgb, var(--theme-bg, hsl(var(--surface-soft))) 68%, hsl(var(--surface)) 32%);
+		border: 1px solid color-mix(in srgb, var(--color-dashboard-border) 82%, var(--theme-accent, #436e8f) 18%);
+	}
+
+	.companion-stats {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 0.75rem;
+	}
+
+	.companion-stat {
+		display: grid;
+		gap: 0.38rem;
+		min-width: 0;
+	}
+
+	.companion-stat span,
+	.companion-care p {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.companion-stat span {
+		font-size: 0.78rem;
+	}
+
+	.companion-stat strong {
+		color: hsl(var(--foreground));
+		font-size: 0.95rem;
+		line-height: 1.2;
+		white-space: nowrap;
+	}
+
+	.companion-meter {
+		height: 0.36rem;
+		overflow: hidden;
+		border-radius: 999px;
+		background: color-mix(in srgb, hsl(var(--surface-muted)) 78%, white 22%);
+	}
+
+	.companion-meter span {
+		display: block;
+		height: 100%;
+		border-radius: inherit;
+		background: color-mix(in srgb, var(--theme-accent, #436e8f) 68%, #a8bf92 32%);
+		transition: width 220ms ease;
+	}
+
+	.companion-care {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.companion-care p {
+		margin: 0;
+		font-size: 0.9rem;
+		line-height: 1.55;
+	}
+
+	.companion-care button {
+		border: 1px solid color-mix(in srgb, var(--theme-accent, #436e8f) 24%, var(--color-dashboard-border) 76%);
+		border-radius: 999px;
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+		padding: 0.62rem 0.9rem;
+		font: inherit;
+		font-size: 0.9rem;
+		cursor: pointer;
+		transition:
+			transform 160ms ease,
+			border-color 160ms ease,
+			background 160ms ease;
+	}
+
+	.companion-care button:hover {
+		transform: translateY(-1px);
+		border-color: color-mix(in srgb, var(--theme-accent, #436e8f) 42%, var(--color-dashboard-border) 58%);
+		background: color-mix(in srgb, var(--theme-bg, hsl(var(--surface-soft))) 72%, hsl(var(--surface)) 28%);
 	}
 
 	/* ── Mysterie-ägg (100 inlägg) ── */
@@ -688,6 +858,42 @@
 		50% {
 			opacity: 0.52;
 			transform: scale(1.14);
+		}
+	}
+
+	@keyframes dinoBreathe {
+		0%, 100% {
+			transform: translateY(0) scale(1);
+		}
+		50% {
+			transform: translateY(-1.5px) scale(1.012);
+		}
+	}
+
+	@keyframes dinoBlink {
+		0%, 92%, 100% {
+			transform: scaleY(1);
+		}
+		95% {
+			transform: scaleY(0.12);
+		}
+	}
+
+	@keyframes dinoCheek {
+		0%, 100% {
+			opacity: 0.72;
+		}
+		50% {
+			opacity: 0.9;
+		}
+	}
+
+	@keyframes bubbleFloat {
+		0%, 100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-2px);
 		}
 	}
 
@@ -783,6 +989,11 @@
 		fill: rgba(224, 232, 235, 0.08);
 	}
 
+	:global(.dark) .dino-bubble {
+		background: color-mix(in srgb, hsl(var(--surface)) 90%, #23323b 10%);
+		box-shadow: 0 12px 28px rgba(4, 9, 12, 0.28);
+	}
+
 	:global(.dark) .level-four-meadow {
 		fill: rgba(178, 196, 168, 0.08);
 	}
@@ -815,8 +1026,42 @@
 			align-items: flex-start;
 		}
 
+		.dino-bubble {
+			top: 0.75rem;
+			right: 0.75rem;
+			max-width: min(12rem, calc(100% - 1.5rem));
+			font-size: 0.84rem;
+		}
+
+		.companion-panel {
+			padding: 0.9rem;
+		}
+
+		.companion-stats {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.companion-care {
+			align-items: stretch;
+			flex-direction: column;
+		}
+
+		.companion-care button {
+			width: 100%;
+		}
+
 		.garden-stats {
 			white-space: normal;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.dino-stage,
+		.dino-eye,
+		.dino-cheek,
+		.dino-bubble,
+		.mystery-egg-glow {
+			animation: none;
 		}
 	}
 </style>
