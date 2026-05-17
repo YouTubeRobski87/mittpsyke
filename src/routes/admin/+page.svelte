@@ -174,6 +174,7 @@
 		>
 			A/B-testing
 		</button>
+		<a href="/admin/stories">Stories</a>
 	</div>
 
 	{#if form?.error}
@@ -714,7 +715,8 @@
 		border-radius: 14px;
 	}
 
-	.tab-bar button {
+	.tab-bar button,
+	.tab-bar a {
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		background: rgba(15, 23, 42, 0.84);
 		color: rgba(226, 232, 240, 0.76);
@@ -723,8 +725,13 @@
 		transition: 160ms ease;
 	}
 
+	.tab-bar a {
+		text-decoration: none;
+	}
+
 	.tab-bar button.active,
-	.tab-bar button:hover {
+	.tab-bar button:hover,
+	.tab-bar a:hover {
 		color: #fff;
 		border-color: rgba(96, 165, 250, 0.45);
 		background: linear-gradient(135deg, rgba(37, 99, 235, 0.28), rgba(76, 29, 149, 0.25));
