@@ -470,7 +470,7 @@
 	</div>
 
 	<div class="garden-meta">
-		<p class="garden-note">Formad av det du skrivit och de gånger du kommit tillbaka.</p>
+		<p class="garden-note">Fint att du kom tillbaka.</p>
 		<p class="garden-stats">Här får små avtryck finnas kvar.</p>
 	</div>
 
