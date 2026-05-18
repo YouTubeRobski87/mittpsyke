@@ -245,7 +245,7 @@ a {
 	pointer-events: none;
 	background:
 		linear-gradient(180deg, var(--dashboard-bg-overlay-start), var(--dashboard-bg-overlay-end)),
-		url('/assets/diary/dagboken-background.png') center top / cover no-repeat;
+		url('/assets/diary/dagboken-background.jpg') center top / cover no-repeat;
 	opacity: 0.22;
 	filter: none;
 	transform: scale(1.02);

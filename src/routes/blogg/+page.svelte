@@ -65,6 +65,8 @@
 										class="blog-item-image"
 										src={article.imageUrl}
 										alt=""
+										width="200"
+										height="160"
 										loading="lazy"
 										decoding="async"
 									/>
