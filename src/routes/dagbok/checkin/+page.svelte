@@ -29,8 +29,17 @@
 		session?: Session | null;
 	};
 
+	type DailyQuestionPayload = {
+		id?: string | null;
+		question?: string;
+		date?: string;
+		safety?: boolean;
+		error?: string;
+	};
+
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 	const DIARY_IMAGE_ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+	const fallbackDailyQuestion = 'Vad behöver få lite mer plats hos dig idag?';
 	const entriesPerPage = 10;
 
 	let { data } = $props<{ data: PageData }>();
@@ -45,6 +54,11 @@
 	let draftText = $state('');
 	let draftPromptQuestion = $state('');
 	let draftDailyQuestionId = $state<string | null>(null);
+	let dailyQuestion = $state('');
+	let dailyQuestionId = $state<string | null>(null);
+	let dailyQuestionSafety = $state(false);
+	let dailyQuestionLoading = $state(false);
+	let dailyQuestionError = $state('');
 	let draftMood = $state('');
 	let draftMoodPreview = $state(5);
 	let draftError = $state('');
@@ -55,6 +69,10 @@
 	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
 	let hasPromptQuestion = $derived(draftPromptQuestion.trim().length > 0);
+	let dailyQuestionPanelQuestion = $derived(
+		draftPromptQuestion || dailyQuestion || fallbackDailyQuestion
+	);
+	let dailyQuestionCtaLabel = $derived(draftPromptQuestion ? 'Fortsätt svara' : 'Svara i dagboken');
 	let hasSavedEntries = $derived(entries.length > 0);
 	let showWriteEditor = $state(false);
 	let draftTextarea = $state<HTMLTextAreaElement | null>(null);
@@ -552,14 +570,53 @@
 		void persistUserConsent(consent);
 	}
 
-	async function openWriteEditor() {
-		showWriteEditor = true;
-		await tick();
+	async function focusWriteEditor() {
 		if (typeof requestAnimationFrame === 'function') {
 			await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 		}
 		writeEditorPanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 		draftTextarea?.focus({ preventScroll: true });
+	}
+
+	async function openWriteEditor() {
+		showWriteEditor = true;
+		await tick();
+		await focusWriteEditor();
+	}
+
+	function applyDailyQuestion(payload: DailyQuestionPayload) {
+		dailyQuestion = payload.question?.trim() || fallbackDailyQuestion;
+		dailyQuestionId = payload.id ?? null;
+		dailyQuestionSafety = Boolean(payload.safety);
+		dailyQuestionError = '';
+	}
+
+	async function loadDailyQuestion() {
+		if (dailyQuestionLoading || dailyQuestion) return;
+		dailyQuestionLoading = true;
+		dailyQuestionError = '';
+
+		try {
+			const response = await fetch('/api/daily-question');
+			const payload = (await response.json().catch(() => ({}))) as DailyQuestionPayload;
+			if (!response.ok) {
+				dailyQuestion = fallbackDailyQuestion;
+				dailyQuestionError = payload.error ?? 'Kunde inte hämta dagens fråga just nu.';
+				return;
+			}
+			applyDailyQuestion(payload);
+		} catch {
+			dailyQuestion = fallbackDailyQuestion;
+			dailyQuestionError = 'Kunde inte hämta dagens fråga just nu.';
+		} finally {
+			dailyQuestionLoading = false;
+		}
+	}
+
+	async function answerDailyQuestion() {
+		draftPromptQuestion = dailyQuestionPanelQuestion;
+		draftDailyQuestionId = dailyQuestionId;
+		await openWriteEditor();
 	}
 
 	async function openLatestEntries() {
@@ -672,21 +729,32 @@
 
 		const prefill = $page.url.searchParams.get('prefill')?.trim();
 		const promptQuestion = $page.url.searchParams.get('prompt')?.trim();
-		const dailyQuestionId = $page.url.searchParams.get('daily_question_id')?.trim();
+		const promptDailyQuestionId = $page.url.searchParams.get('daily_question_id')?.trim();
+		let shouldOpenWriteEditor = false;
 		if (prefill) {
 			draftText = prefill;
-			showWriteEditor = true;
+			shouldOpenWriteEditor = true;
 		} else if (promptQuestion) {
 			draftPromptQuestion = promptQuestion;
-			draftDailyQuestionId = dailyQuestionId || null;
+			draftDailyQuestionId = promptDailyQuestionId || null;
+			dailyQuestion = promptQuestion;
+			dailyQuestionId = promptDailyQuestionId || null;
 			draftText = '';
-			showWriteEditor = true;
+			shouldOpenWriteEditor = true;
 		} else if (typeof window !== 'undefined') {
 			draftText = parseStoredDraft(localStorage.getItem('mittpsyke_temp_entry'));
 		}
 
 		if (typeof window !== 'undefined' && window.location.hash === '#skriv-sjalv') {
-			showWriteEditor = true;
+			shouldOpenWriteEditor = true;
+		}
+
+		if (!promptQuestion) {
+			void loadDailyQuestion();
+		}
+
+		if (shouldOpenWriteEditor) {
+			await openWriteEditor();
 		}
 
 		try {
@@ -836,6 +904,35 @@
 								<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
 							</a>
 						</div>
+					</section>
+
+					<section class="auth-panel daily-question-panel" aria-label="Dagens fråga">
+						<div>
+							<p class="daily-question-kicker">Dagens fråga</p>
+							{#if dailyQuestionLoading && !dailyQuestion && !draftPromptQuestion}
+								<div class="daily-question-skeleton" aria-label="Hämtar dagens fråga"></div>
+							{:else}
+								<h2>{dailyQuestionPanelQuestion}</h2>
+							{/if}
+							{#if dailyQuestionSafety}
+								<p class="auth-muted">
+									Om det känns akut, ring 112. För vårdråd finns 1177, och fler stödlinjer finns på stodlinjer.se.
+								</p>
+							{:else}
+								<p class="auth-muted">Du kan svara med en rad eller skriva längre, i din egen takt.</p>
+							{/if}
+							{#if dailyQuestionError}
+								<p class="daily-question-error">{dailyQuestionError}</p>
+							{/if}
+						</div>
+						<button
+							type="button"
+							class="auth-button primary"
+							onclick={answerDailyQuestion}
+							disabled={dailyQuestionLoading && !dailyQuestion && !draftPromptQuestion}
+						>
+							{dailyQuestionCtaLabel}
+						</button>
 					</section>
 
 					{#if showWriteEditor}
@@ -1336,6 +1433,73 @@
 		gap: 0.65rem;
 	}
 
+	.daily-question-panel {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		border-color: rgba(96, 165, 250, 0.2);
+		background:
+			linear-gradient(135deg, rgba(219, 234, 254, 0.64), rgba(255, 255, 255, 0.86)),
+			hsl(var(--surface));
+	}
+
+	.daily-question-panel h2,
+	.daily-question-panel p {
+		margin: 0;
+	}
+
+	.daily-question-panel h2 {
+		margin-top: 0.32rem;
+		font-size: 1.08rem;
+		line-height: 1.45;
+	}
+
+	.daily-question-panel .auth-muted {
+		margin-top: 0.28rem;
+		font-size: 0.88rem;
+		line-height: 1.55;
+	}
+
+	.daily-question-kicker {
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.daily-question-skeleton {
+		margin-top: 0.4rem;
+		width: min(100%, 20rem);
+		height: 1.5rem;
+		border-radius: var(--radius-input);
+		background: linear-gradient(
+			90deg,
+			hsl(var(--surface-muted)),
+			rgba(96, 165, 250, 0.16),
+			hsl(var(--surface-muted))
+		);
+		background-size: 200% 100%;
+		animation: daily-question-loading 1.2s ease-in-out infinite;
+	}
+
+	.daily-question-error {
+		margin-top: 0.35rem;
+		font-size: 0.84rem;
+		color: hsl(var(--error-foreground));
+	}
+
+	@keyframes daily-question-loading {
+		from {
+			background-position: 100% 0;
+		}
+
+		to {
+			background-position: -100% 0;
+		}
+	}
+
 	.diary-editor-panel {
 		padding: clamp(1.15rem, 2vw, 1.65rem);
 	}
@@ -1539,6 +1703,13 @@
 			hsl(222 24% 13%);
 		border-color: rgba(129, 140, 248, 0.3);
 		border-left: 3px solid hsl(230 66% 64%);
+	}
+
+	:global(.dark) .daily-question-panel {
+		border-color: rgba(96, 165, 250, 0.2);
+		background:
+			linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.94)),
+			hsl(var(--surface));
 	}
 
 	:global(.dark) .path-icon-wrap--write {
@@ -2466,6 +2637,17 @@
 
 		.diary-editor-panel {
 			padding: 0.65rem;
+		}
+
+		.daily-question-panel {
+			align-items: stretch;
+			flex-direction: column;
+			gap: 0.7rem;
+			padding: 0.8rem;
+		}
+
+		.daily-question-panel .auth-button {
+			width: 100%;
 		}
 
 		.editor-shell {
