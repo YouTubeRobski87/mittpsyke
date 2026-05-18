@@ -40,22 +40,28 @@
 	$: energyValue = Math.min(100, 48 + growthLevel * 10 + Math.min(entryCount, 12));
 	$: calmValue = Math.min(100, 62 + Math.min(activeDays, 10) * 3);
 	$: presenceValue = Math.min(100, entryCount === 0 ? 40 : 60 + Math.min(activeDays, 8) * 4);
+	$: continuitySignals = entryCount + activeDays;
+	$: continuityState = continuitySignals >= 10 ? 'settled' : continuitySignals >= 3 ? 'soft' : 'quiet';
+	$: companionPresence =
+		continuityState === 'settled'
+			? 'Mer liv i platsen'
+			: continuityState === 'soft'
+				? 'Varsam rytm'
+				: 'Stilla närvaro';
 	$: companionStats = [
-		{ label: 'Energi', value: `${energyValue}%`, progress: energyValue },
-		{ label: 'Lugn', value: `${calmValue}%`, progress: calmValue },
-		{ label: 'Närvaro', value: `${presenceValue}%`, progress: presenceValue },
-		{ label: 'Dagens steg', value: entryCount > 0 ? 'Redo' : 'Väntar', progress: entryCount > 0 ? 72 : 38 }
+		{ label: 'Energi', value: energyValue > 72 ? 'Vaken' : 'Mjuk', progress: energyValue },
+		{ label: 'Lugn', value: calmValue > 78 ? 'Djup' : 'Stadig', progress: calmValue },
+		{ label: 'Närvaro', value: presenceValue > 76 ? 'Nära' : 'Här', progress: presenceValue },
+		{ label: 'Dagens steg', value: entryCount > 0 ? 'Landat' : 'Väntar', progress: entryCount > 0 ? 72 : 38 }
 	] satisfies CompanionStat[];
-	$: companionLevel =
-		growthLevel >= 4 ? 'Trygg följeslagare' : growthLevel >= 2 ? 'Nyfiken kompis' : 'Liten början';
 	$: selectedCompanion = COMPANION_ANIMALS.find((animal) => animal.id === selectedAnimalId) ?? null;
 	$: companionName = selectedCompanion?.name ?? 'Din följeslagare';
 	$: nextStepText =
 		entryCount === 0
 			? 'Nästa lilla steg: skriv en rad när du vill.'
-			: growthLevel >= 4
-				? 'Nästa lilla steg: fortsätt i din egen takt.'
-				: `Nästa lilla steg: ${Math.max(1, [1, 6, 16, 31].find((limit) => entryCount < limit) ?? 31) - entryCount} inlägg kvar till nästa nivå.`;
+			: activeDays > 1
+				? 'Platsen blir långsamt mer bekant när du återvänder.'
+				: 'Nästa lilla steg: återvänd när det passar.';
 
 	let careCount = 0;
 	let selectedAnimalId: CompanionAnimal['id'] | null = null;
@@ -71,7 +77,7 @@
 			if (animal) {
 				selectedAnimalId = savedAnimal;
 				companionStage = 'chosen';
-				companionMessage = `${animal.name} håller varsamt koll på dina steg.`;
+				companionMessage = activeDays > 1 ? 'Fint att du kom tillbaka.' : 'Vi tar det i lugn takt.';
 			}
 		} catch {
 			// Companion-valet är bara lokal komfort; sidan ska fungera även om lagring blockeras.
@@ -86,7 +92,7 @@
 	function chooseCompanion(animal: CompanionAnimal) {
 		selectedAnimalId = animal.id;
 		companionStage = 'chosen';
-		companionMessage = `${animal.name} håller varsamt koll på dina steg.`;
+		companionMessage = 'Vi tar det i lugn takt.';
 		if (browser) {
 			try {
 				localStorage.setItem(COMPANION_STORAGE_KEY, animal.id);
@@ -103,14 +109,11 @@
 
 	function giveCalm() {
 		careCount += 1;
-		companionMessage =
-			careCount % 2 === 0
-				? `${companionName} håller varsamt koll på dina steg.`
-				: 'Ett litet steg räcker idag.';
+		companionMessage = ['Fint att du kom tillbaka.', 'Vi tar det i lugn takt.', 'Små steg räcker.', 'Jag är här med dig.'][careCount % 4];
 	}
 </script>
 
-<section class="garden-card card" aria-labelledby="growth-garden-title" data-growth-score={growthScore}>
+<section class="garden-card card" aria-labelledby="growth-garden-title" data-growth-score={growthScore} data-continuity={continuityState}>
 	<div class="garden-copy">
 		<h2 id="growth-garden-title">Din följeslagare i Framsteg</h2>
 		<p class="garden-intro">En liten lugn companion som följer dina inlägg och de dagar du återvänder.</p>
@@ -405,6 +408,16 @@
 				</g>
 			{/if}
 		</svg>
+		{#if companionStage === 'chosen'}
+			<span class="companion-orb" aria-hidden="true"></span>
+			<span class="ambient-detail detail-one" aria-hidden="true"></span>
+			{#if continuityState !== 'quiet'}
+				<span class="ambient-detail detail-two" aria-hidden="true"></span>
+			{/if}
+			{#if continuityState === 'settled'}
+				<span class="ambient-detail detail-three" aria-hidden="true"></span>
+			{/if}
+		{/if}
 		{#if companionStage === 'egg'}
 			<button class="companion-egg-button" type="button" onclick={hatchCompanionEgg}>
 				<span aria-hidden="true">🥚</span>
@@ -420,8 +433,8 @@
 
 	<div class="companion-panel" aria-label="Följeslagarens status">
 		<div class="companion-summary">
-			<span>{companionLevel}</span>
-			<strong>{companionName} har varit här med dig {activeDays} {activeDays === 1 ? 'dag' : 'dagar'}.</strong>
+			<span>{companionPresence}</span>
+			<strong>{companionName} följer din plats i lugn takt.</strong>
 			<p>{nextStepText}</p>
 		</div>
 		{#if companionStage === 'choose'}
@@ -458,7 +471,7 @@
 
 	<div class="garden-meta">
 		<p class="garden-note">Formad av det du skrivit och de gånger du kommit tillbaka.</p>
-		<p class="garden-stats">{entryCount} inlägg och {activeDays} aktiva dagar totalt.</p>
+		<p class="garden-stats">Här får små avtryck finnas kvar.</p>
 	</div>
 
 	{#if companionStage === 'chosen' && selectedCompanion?.id === 'dino' && entryCount >= MYSTERY_EGG_VISIBLE_ENTRIES}
@@ -466,7 +479,7 @@
 			{#if hatchingEgg}
 				Något nytt håller på att hända...
 			{:else if nextEgg}
-				Nästa ägg börjar röra sig vid {nextEgg.visible} inlägg.
+				Något nytt kan börja röra sig längre fram.
 			{:else}
 				Alla synliga ägg har kläckts.
 			{/if}
@@ -511,6 +524,8 @@
 		--garden-dino-eye: #243328;
 		--garden-dino-cheek: rgba(244, 198, 186, 0.72);
 		--garden-ground-shadow: rgba(44, 60, 51, 0.14);
+		--garden-life-glow: rgba(248, 235, 190, 0.22);
+		--garden-life-detail: rgba(248, 235, 190, 0.5);
 		padding: 2rem;
 		border-radius: var(--radius-card);
 		border: 1px solid var(--color-dashboard-border);
@@ -573,6 +588,15 @@
 
 	.glow {
 		opacity: 0.88;
+		transition: opacity 220ms ease;
+	}
+
+	.garden-card[data-continuity='soft'] .glow {
+		opacity: 0.95;
+	}
+
+	.garden-card[data-continuity='settled'] .glow {
+		opacity: 1;
 	}
 
 	.horizon {
@@ -581,6 +605,7 @@
 
 	.mist {
 		fill: rgba(255, 255, 255, 0.26);
+		transition: opacity 220ms ease;
 	}
 
 	.mist-left {
@@ -589,6 +614,15 @@
 
 	.mist-right {
 		opacity: 0.46;
+	}
+
+	.garden-card[data-continuity='soft'] .mist-left,
+	.garden-card[data-continuity='settled'] .mist-left {
+		opacity: 0.76;
+	}
+
+	.garden-card[data-continuity='settled'] .mist-right {
+		opacity: 0.56;
 	}
 
 	.layer {
@@ -810,11 +844,58 @@
 		transform: rotate(45deg);
 	}
 
+	.companion-orb {
+		position: absolute;
+		left: 58%;
+		top: 43%;
+		z-index: 2;
+		width: 0.72rem;
+		height: 0.72rem;
+		border-radius: 999px;
+		background:
+			radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.96), var(--garden-life-detail) 58%, transparent 70%);
+		box-shadow:
+			0 0 18px var(--garden-life-glow),
+			0 0 34px color-mix(in srgb, var(--theme-accent, #436e8f) 18%, transparent 82%);
+		opacity: 0.78;
+		animation: companionOrbDrift 14s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+	}
+
+	.ambient-detail {
+		position: absolute;
+		z-index: 1;
+		width: 0.32rem;
+		height: 0.32rem;
+		border-radius: 999px;
+		background: var(--garden-life-detail);
+		box-shadow: 0 0 18px var(--garden-life-glow);
+		opacity: 0.34;
+		animation: ambientGlow 9s ease-in-out infinite;
+	}
+
+	.detail-one {
+		left: 22%;
+		top: 38%;
+	}
+
+	.detail-two {
+		left: 68%;
+		top: 30%;
+		animation-delay: 1.8s;
+	}
+
+	.detail-three {
+		left: 42%;
+		top: 22%;
+		animation-delay: 3.4s;
+	}
+
 	.companion-egg-button,
 	.chosen-companion {
 		position: absolute;
 		left: 50%;
 		top: 58%;
+		z-index: 3;
 		transform: translate(-50%, -50%);
 	}
 
@@ -1093,10 +1174,10 @@
 
 	@keyframes dinoBreathe {
 		0%, 100% {
-			transform: translateY(0) scale(1);
+			transform: translate(0, 0) scale(1);
 		}
 		50% {
-			transform: translateY(-1.5px) scale(1.012);
+			transform: translate(1px, -2px) scale(1.012);
 		}
 	}
 
@@ -1140,8 +1221,37 @@
 		0%, 100% {
 			transform: translate(-50%, -50%) scale(1);
 		}
+		45% {
+			transform: translate(calc(-50% + 3px), calc(-50% - 3px)) scale(1.01);
+		}
+		72% {
+			transform: translate(calc(-50% - 2px), calc(-50% - 1px)) scale(1.004);
+		}
+	}
+
+	@keyframes companionOrbDrift {
+		0%, 100% {
+			transform: translate3d(0, 0, 0) scale(1);
+			opacity: 0.72;
+		}
+		38% {
+			transform: translate3d(-14px, 10px, 0) scale(0.94);
+			opacity: 0.86;
+		}
+		68% {
+			transform: translate3d(10px, -8px, 0) scale(1.04);
+			opacity: 0.78;
+		}
+	}
+
+	@keyframes ambientGlow {
+		0%, 100% {
+			transform: translateY(0) scale(1);
+			opacity: 0.22;
+		}
 		50% {
-			transform: translate(-50%, calc(-50% - 2px)) scale(1.01);
+			transform: translateY(-3px) scale(1.2);
+			opacity: 0.48;
 		}
 	}
 
@@ -1211,6 +1321,8 @@
 		--garden-dino-eye: #eaf4e8;
 		--garden-dino-cheek: rgba(224, 172, 163, 0.44);
 		--garden-ground-shadow: rgba(6, 10, 12, 0.26);
+		--garden-life-glow: rgba(180, 200, 170, 0.14);
+		--garden-life-detail: rgba(222, 231, 206, 0.46);
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.015) 0%, rgba(255, 255, 255, 0) 100%),
 			hsl(var(--surface));
@@ -1332,6 +1444,8 @@
 		.dino-eye,
 		.dino-cheek,
 		.dino-bubble,
+		.companion-orb,
+		.ambient-detail,
 		.companion-egg-button,
 		.chosen-companion,
 		.mystery-egg-glow {
