@@ -38,11 +38,11 @@
 	--shadow-color: rgba(0, 0, 0, 0.06);
 	--border-subtle: rgba(0, 0, 0, 0.08);
 	--border-subtle-inverted: rgba(255, 255, 255, 0.1);
-	--dashboard-bg-accent: rgba(30, 64, 175, 0.1);
-	--dashboard-bg-start: rgba(15, 23, 42, 0.96);
-	--dashboard-bg-end: rgba(8, 13, 23, 0.98);
-	--dashboard-bg-overlay-start: rgba(8, 13, 23, 0.66);
-	--dashboard-bg-overlay-end: rgba(8, 13, 23, 0.88);
+	--dashboard-bg-accent: rgba(var(--primary-rgb), 0.1);
+	--dashboard-bg-start: hsl(var(--background));
+	--dashboard-bg-end: hsl(var(--surface-soft));
+	--dashboard-bg-overlay-start: hsl(var(--background) / 0.76);
+	--dashboard-bg-overlay-end: hsl(var(--surface-soft) / 0.86);
 	--chat-input-bg-dark: #0f0f0f;
 	--color-bg: hsl(var(--background));
 	--color-bg-soft: hsl(var(--surface-soft));
@@ -60,11 +60,11 @@
 	--color-warning: #b45309;
 	--color-focus: var(--focus-ring);
 	--color-dashboard-bg: var(--dashboard-bg-end);
-	--color-dashboard-surface: rgba(15, 23, 42, 0.72);
-	--color-dashboard-surface-strong: rgba(15, 23, 42, 0.92);
-	--color-dashboard-border: rgba(96, 165, 250, 0.28);
-	--color-dashboard-text: #f8fafc;
-	--color-dashboard-text-muted: #cbd5e1;
+	--color-dashboard-surface: hsl(var(--surface) / 0.78);
+	--color-dashboard-surface-strong: hsl(var(--surface));
+	--color-dashboard-border: color-mix(in srgb, hsl(var(--border)) 72%, var(--primary) 28%);
+	--color-dashboard-text: hsl(var(--foreground));
+	--color-dashboard-text-muted: hsl(var(--muted-foreground));
 	--layout-maintenance-bg: #0f172a;
 	--layout-maintenance-surface: rgba(255, 255, 255, 0.03);
 	--layout-maintenance-border: rgba(255, 255, 255, 0.06);
@@ -119,6 +119,16 @@
 	--success-foreground: 203 88% 80%;
 	--error-surface: 0 26% 19%;
 	--error-foreground: 0 60% 83%;
+	--dashboard-bg-accent: rgba(30, 64, 175, 0.1);
+	--dashboard-bg-start: rgba(15, 23, 42, 0.96);
+	--dashboard-bg-end: rgba(8, 13, 23, 0.98);
+	--dashboard-bg-overlay-start: rgba(8, 13, 23, 0.66);
+	--dashboard-bg-overlay-end: rgba(8, 13, 23, 0.88);
+	--color-dashboard-surface: rgba(15, 23, 42, 0.72);
+	--color-dashboard-surface-strong: rgba(15, 23, 42, 0.92);
+	--color-dashboard-border: rgba(96, 165, 250, 0.28);
+	--color-dashboard-text: #f8fafc;
+	--color-dashboard-text-muted: #cbd5e1;
 }
 
 * {

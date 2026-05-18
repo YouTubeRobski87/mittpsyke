@@ -175,15 +175,13 @@
 	}
 
 	.blog-widget-card {
-		border: 1px solid rgba(96, 165, 250, 0.22);
+		border: 1px solid hsl(var(--border));
 		border-radius: var(--radius-card);
-		background:
-			radial-gradient(circle at 88% 8%, rgba(129, 140, 248, 0.16), transparent 32%),
-			linear-gradient(135deg, #0f172a, #111827 58%, #17182f);
+		background: hsl(var(--surface));
 		padding: clamp(0.75rem, 2vw, 1rem);
 		min-height: 280px;
-		color: #f8fafc;
-		box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+		color: hsl(var(--foreground));
+		box-shadow: 0 18px 42px var(--shadow-color);
 	}
 
 	.blog-fallback {
@@ -212,8 +210,8 @@
 		gap: 1rem;
 		padding: 0.85rem;
 		border-radius: var(--radius-card);
-		background: rgba(15, 23, 42, 0.64);
-		border: 1px solid rgba(147, 197, 253, 0.18);
+		background: hsl(var(--surface-soft));
+		border: 1px solid hsl(var(--border));
 		text-decoration: none;
 		color: inherit;
 		transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
@@ -226,8 +224,8 @@
 	.blog-item-link:hover,
 	.blog-item-link:focus-visible {
 		transform: translateY(-1px);
-		border-color: rgba(147, 197, 253, 0.34);
-		box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+		border-color: var(--primary-border-soft);
+		box-shadow: 0 12px 24px var(--shadow-color);
 	}
 
 	.blog-item-image {
@@ -283,8 +281,8 @@
 		justify-content: center;
 		padding: 0.45rem 0.7rem;
 		border-radius: var(--radius-input);
-		border: 1px solid rgba(147, 197, 253, 0.2);
-		background: rgba(15, 23, 42, 0.58);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-soft));
 		color: inherit;
 		font-family: var(--font-heading);
 		font-size: 0.9rem;
@@ -295,14 +293,14 @@
 
 	.pagination-link:hover,
 	.pagination-link:focus-visible {
-		border-color: rgba(147, 197, 253, 0.38);
-		background: rgba(30, 41, 59, 0.78);
+		border-color: var(--primary-border-soft);
+		background: hsl(var(--surface));
 		outline: none;
 	}
 
 	.pagination-link.is-current {
-		background: #2563eb;
-		border-color: #60a5fa;
+		background: var(--primary);
+		border-color: var(--primary);
 		color: #ffffff;
 	}
 
@@ -320,6 +318,7 @@
 			radial-gradient(circle at 88% 8%, rgba(129, 140, 248, 0.16), transparent 32%),
 			linear-gradient(135deg, #0f172a, #111827 58%, #17182f);
 		border-color: rgba(96, 165, 250, 0.22);
+		color: #f8fafc;
 	}
 
 	:global(.dark) .blog-item-link {
