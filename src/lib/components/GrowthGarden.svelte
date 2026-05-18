@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+
 	export let growthScore: number;
 	export let growthLevel: number;
 	export let entryCount: number = 0;
@@ -10,9 +13,21 @@
 		progress: number;
 	};
 
+	type CompanionAnimal = {
+		id: 'dino' | 'fox' | 'turtle';
+		name: string;
+		icon: string;
+	};
+
+	const COMPANION_STORAGE_KEY = 'mittpsyke:progress-companion';
 	const MYSTERY_EGG_VISIBLE_ENTRIES = 100;
 	const MYSTERY_EGG_CRACKED_ENTRIES = 125;
 	const MYSTERY_EGG_HATCHED_ENTRIES = 150;
+	const COMPANION_ANIMALS: CompanionAnimal[] = [
+		{ id: 'dino', name: 'Dino', icon: '🦕' },
+		{ id: 'fox', name: 'Räv', icon: '🦊' },
+		{ id: 'turtle', name: 'Sköldpadda', icon: '🐢' }
+	];
 	const EXTRA_EGGS = [
 		{ id: 2, x: 78, y: 176, visible: 100, cracked: 125, hatched: 150 },
 		{ id: 3, x: 142, y: 166, visible: 200, cracked: 250, hatched: 300 },
@@ -31,24 +46,64 @@
 		{ label: 'Närvaro', value: `${presenceValue}%`, progress: presenceValue },
 		{ label: 'Dagens steg', value: entryCount > 0 ? 'Redo' : 'Väntar', progress: entryCount > 0 ? 72 : 38 }
 	] satisfies CompanionStat[];
+	$: companionLevel =
+		growthLevel >= 4 ? 'Trygg följeslagare' : growthLevel >= 2 ? 'Nyfiken kompis' : 'Liten början';
+	$: selectedCompanion = COMPANION_ANIMALS.find((animal) => animal.id === selectedAnimalId) ?? null;
+	$: companionName = selectedCompanion?.name ?? 'Din följeslagare';
+	$: nextStepText =
+		entryCount === 0
+			? 'Nästa lilla steg: skriv en rad när du vill.'
+			: growthLevel >= 4
+				? 'Nästa lilla steg: fortsätt i din egen takt.'
+				: `Nästa lilla steg: ${Math.max(1, [1, 6, 16, 31].find((limit) => entryCount < limit) ?? 31) - entryCount} inlägg kvar till nästa nivå.`;
 
 	let careCount = 0;
-	let companionMessage = 'Jag är här med dig.';
+	let selectedAnimalId: CompanionAnimal['id'] | null = null;
+	let companionStage: 'egg' | 'choose' | 'chosen' = 'egg';
+	let companionMessage = 'Ett litet steg räcker idag.';
+
+	onMount(() => {
+		if (!browser) return;
+
+		const savedAnimal = localStorage.getItem(COMPANION_STORAGE_KEY) as CompanionAnimal['id'] | null;
+		const animal = COMPANION_ANIMALS.find((option) => option.id === savedAnimal);
+		if (animal) {
+			selectedAnimalId = savedAnimal;
+			companionStage = 'chosen';
+			companionMessage = `${animal.name} håller varsamt koll på dina steg.`;
+		}
+	});
+
+	function hatchCompanionEgg() {
+		companionStage = 'choose';
+		companionMessage = 'Välj en lugn följeslagare som kan hålla dig sällskap här.';
+	}
+
+	function chooseCompanion(animal: CompanionAnimal) {
+		selectedAnimalId = animal.id;
+		companionStage = 'chosen';
+		companionMessage = `${animal.name} håller varsamt koll på dina steg.`;
+		if (browser) {
+			localStorage.setItem(COMPANION_STORAGE_KEY, animal.id);
+		}
+	}
 
 	function giveCalm() {
 		careCount += 1;
 		companionMessage =
-			careCount % 2 === 0 ? 'Jag är här med dig.' : 'Ett litet steg räcker idag.';
+			careCount % 2 === 0
+				? `${companionName} håller varsamt koll på dina steg.`
+				: 'Ett litet steg räcker idag.';
 	}
 </script>
 
 <section class="garden-card card" aria-labelledby="growth-garden-title" data-growth-score={growthScore}>
 	<div class="garden-copy">
-		<h2 id="growth-garden-title">Din plats</h2>
-		<p class="garden-intro">Här syns det som vuxit fram över tid. Små steg får också ta plats.</p>
+		<h2 id="growth-garden-title">Din följeslagare i Framsteg</h2>
+		<p class="garden-intro">En liten lugn companion som följer dina inlägg och de dagar du återvänder.</p>
 	</div>
 
-	<div class="garden-scene" aria-hidden="true">
+	<div class="garden-scene">
 		<svg viewBox="0 0 520 248" role="presentation" focusable="false">
 			<defs>
 				<linearGradient id="gardenSky" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -132,7 +187,7 @@
 				fill="url(#gardenFrontGround)"
 			/>
 
-			{#if growthLevel === 0}
+			{#if companionStage === 'chosen' && selectedCompanion?.id === 'dino' && growthLevel === 0}
 				<g class="layer egg-stage">
 					<ellipse cx="260" cy="214" rx="54" ry="12" class="egg-shadow" />
 					<path
@@ -152,7 +207,7 @@
 				</g>
 			{/if}
 
-			{#if growthLevel >= 1}
+			{#if companionStage === 'chosen' && selectedCompanion?.id === 'dino' && growthLevel >= 1}
 				<g class="layer grass-back">
 					<path d="M42 197 C48 182 50 174 54 197" />
 					<path d="M66 193 C72 176 76 168 80 193" />
@@ -182,7 +237,7 @@
 				</g>
 			{/if}
 
-			{#if growthLevel === 1}
+			{#if companionStage === 'chosen' && selectedCompanion?.id === 'dino' && growthLevel === 1}
 				<g class="layer dino-stage">
 					<ellipse cx="260" cy="214" rx="56" ry="12" class="egg-shadow" />
 					<path
@@ -204,7 +259,7 @@
 				</g>
 			{/if}
 
-			{#if growthLevel === 2}
+			{#if companionStage === 'chosen' && selectedCompanion?.id === 'dino' && growthLevel === 2}
 				<g class="layer dino-stage">
 					<ellipse cx="260" cy="214" rx="62" ry="12" class="dino-shadow" />
 					<path d="M212 186 L224 170 L240 182 L238 206 L212 206 Z" class="egg-shell-piece" />
@@ -226,7 +281,7 @@
 				</g>
 			{/if}
 
-			{#if growthLevel === 3}
+			{#if companionStage === 'chosen' && selectedCompanion?.id === 'dino' && growthLevel === 3}
 				<g class="layer dino-stage">
 					<path
 						d="M168 206 C184 194 204 190 226 192 C238 182 254 178 270 180 C284 174 300 176 314 184 C332 184 348 192 356 206 Z"
@@ -255,7 +310,8 @@
 				</g>
 			{/if}
 
-			{#each EXTRA_EGGS as egg}
+			{#if companionStage === 'chosen' && selectedCompanion?.id === 'dino'}
+				{#each EXTRA_EGGS as egg}
 				{#if entryCount >= egg.hatched}
 					<!-- Extraägg: kläckt -->
 					<g class="mystery-hatch-stage">
@@ -297,9 +353,10 @@
 						<path d={`M${egg.x - 6} ${egg.y - 5} H${egg.x + 6} M${egg.x} ${egg.y - 11} V${egg.y + 1}`} class="mystery-lock-mark" />
 					</g>
 				{/if}
-			{/each}
+				{/each}
+			{/if}
 
-			{#if growthLevel >= 4}
+			{#if companionStage === 'chosen' && selectedCompanion?.id === 'dino' && growthLevel >= 4}
 				<g class="layer dino-stage level-four">
 					<path
 						d="M270 206 C286 194 304 190 324 192 C336 182 352 178 368 180 C382 170 398 170 414 176 C430 172 446 178 456 188 C474 188 490 194 498 206 Z"
@@ -335,10 +392,35 @@
 				</g>
 			{/if}
 		</svg>
+		{#if companionStage === 'egg'}
+			<button class="companion-egg-button" type="button" onclick={hatchCompanionEgg}>
+				<span aria-hidden="true">🥚</span>
+				<strong>Kläck din följeslagare</strong>
+			</button>
+		{:else if companionStage === 'chosen' && selectedCompanion && selectedCompanion.id !== 'dino'}
+			<div class="chosen-companion" aria-hidden="true">
+				<span>{selectedCompanion.icon}</span>
+			</div>
+		{/if}
 		<p class="dino-bubble" aria-live="polite">{companionMessage}</p>
 	</div>
 
-	<div class="companion-panel" aria-label="Dinosauriens status">
+	<div class="companion-panel" aria-label="Följeslagarens status">
+		<div class="companion-summary">
+			<span>{companionLevel}</span>
+			<strong>{companionName} har varit här med dig {activeDays} {activeDays === 1 ? 'dag' : 'dagar'}.</strong>
+			<p>{nextStepText}</p>
+		</div>
+		{#if companionStage === 'choose'}
+			<div class="animal-chooser" aria-label="Välj följeslagare">
+				{#each COMPANION_ANIMALS as animal}
+					<button type="button" onclick={() => chooseCompanion(animal)}>
+						<span aria-hidden="true">{animal.icon}</span>
+						{animal.name}
+					</button>
+				{/each}
+			</div>
+		{/if}
 		<div class="companion-stats">
 			{#each companionStats as stat}
 				<div class="companion-stat">
@@ -351,7 +433,7 @@
 			{/each}
 		</div>
 		<div class="companion-care">
-			<p>Din lilla följeslagare hänger med i din takt.</p>
+			<p>{companionName} hänger med i din takt och räknar även de små stegen.</p>
 			<button type="button" onclick={giveCalm}>Ge lite lugn</button>
 		</div>
 	</div>
@@ -361,7 +443,7 @@
 		<p class="garden-stats">{entryCount} inlägg och {activeDays} aktiva dagar totalt.</p>
 	</div>
 
-	{#if entryCount >= MYSTERY_EGG_VISIBLE_ENTRIES}
+	{#if companionStage === 'chosen' && selectedCompanion?.id === 'dino' && entryCount >= MYSTERY_EGG_VISIBLE_ENTRIES}
 		<p class="mystery-hint">
 			{#if hatchingEgg}
 				Något nytt håller på att hända...
@@ -710,6 +792,69 @@
 		transform: rotate(45deg);
 	}
 
+	.companion-egg-button,
+	.chosen-companion {
+		position: absolute;
+		left: 50%;
+		top: 58%;
+		transform: translate(-50%, -50%);
+	}
+
+	.companion-egg-button {
+		display: grid;
+		gap: 0.45rem;
+		justify-items: center;
+		min-width: 11rem;
+		border: 1px solid color-mix(in srgb, var(--theme-accent, #436e8f) 22%, var(--color-dashboard-border) 78%);
+		border-radius: 1.2rem;
+		background: color-mix(in srgb, hsl(var(--surface)) 84%, white 16%);
+		box-shadow: 0 14px 34px rgba(28, 40, 36, 0.12);
+		color: hsl(var(--foreground));
+		padding: 1rem 1.1rem;
+		font: inherit;
+		cursor: pointer;
+		transition:
+			transform 180ms ease,
+			border-color 180ms ease,
+			box-shadow 180ms ease;
+		animation: companionEggBreathe 4.8s ease-in-out infinite;
+	}
+
+	.companion-egg-button:hover {
+		border-color: color-mix(in srgb, var(--theme-accent, #436e8f) 42%, var(--color-dashboard-border) 58%);
+		box-shadow: 0 16px 38px rgba(28, 40, 36, 0.16);
+	}
+
+	.companion-egg-button span {
+		font-size: 3rem;
+		line-height: 1;
+	}
+
+	.companion-egg-button strong {
+		font-size: 0.9rem;
+		font-weight: 700;
+		line-height: 1.25;
+	}
+
+	.chosen-companion {
+		display: grid;
+		place-items: center;
+		width: 7rem;
+		height: 7rem;
+		border-radius: 999px;
+		background:
+			radial-gradient(circle at 45% 36%, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.18) 52%, transparent 70%),
+			color-mix(in srgb, var(--theme-bg, hsl(var(--surface-soft))) 78%, hsl(var(--surface)) 22%);
+		border: 1px solid color-mix(in srgb, var(--theme-accent, #436e8f) 18%, transparent 82%);
+		box-shadow: 0 16px 34px rgba(28, 40, 36, 0.1);
+		animation: companionIdle 5.4s ease-in-out infinite;
+	}
+
+	.chosen-companion span {
+		font-size: 3.4rem;
+		line-height: 1;
+	}
+
 	.companion-panel {
 		display: grid;
 		gap: 0.9rem;
@@ -717,6 +862,62 @@
 		border-radius: 1rem;
 		background: color-mix(in srgb, var(--theme-bg, hsl(var(--surface-soft))) 68%, hsl(var(--surface)) 32%);
 		border: 1px solid color-mix(in srgb, var(--color-dashboard-border) 82%, var(--theme-accent, #436e8f) 18%);
+	}
+
+	.companion-summary {
+		display: grid;
+		gap: 0.24rem;
+	}
+
+	.companion-summary span {
+		color: color-mix(in srgb, var(--theme-accent, #436e8f) 68%, hsl(var(--muted-foreground)) 32%);
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.03em;
+		text-transform: uppercase;
+	}
+
+	.companion-summary strong {
+		color: hsl(var(--foreground));
+		font-size: 1rem;
+		line-height: 1.35;
+	}
+
+	.companion-summary p {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.9rem;
+		line-height: 1.55;
+	}
+
+	.animal-chooser {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.55rem;
+	}
+
+	.animal-chooser button {
+		display: inline-flex;
+		gap: 0.4rem;
+		align-items: center;
+		border: 1px solid color-mix(in srgb, var(--theme-accent, #436e8f) 18%, var(--color-dashboard-border) 82%);
+		border-radius: 999px;
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+		padding: 0.55rem 0.78rem;
+		font: inherit;
+		font-size: 0.9rem;
+		cursor: pointer;
+		transition:
+			transform 160ms ease,
+			border-color 160ms ease,
+			background 160ms ease;
+	}
+
+	.animal-chooser button:hover {
+		transform: translateY(-1px);
+		border-color: color-mix(in srgb, var(--theme-accent, #436e8f) 38%, var(--color-dashboard-border) 62%);
+		background: color-mix(in srgb, var(--theme-bg, hsl(var(--surface-soft))) 72%, hsl(var(--surface)) 28%);
 	}
 
 	.companion-stats {
@@ -897,6 +1098,24 @@
 		}
 	}
 
+	@keyframes companionEggBreathe {
+		0%, 100% {
+			transform: translate(-50%, -50%) scale(1);
+		}
+		50% {
+			transform: translate(-50%, calc(-50% - 2px)) scale(1.018);
+		}
+	}
+
+	@keyframes companionIdle {
+		0%, 100% {
+			transform: translate(-50%, -50%) scale(1);
+		}
+		50% {
+			transform: translate(-50%, calc(-50% - 2px)) scale(1.01);
+		}
+	}
+
 	.mystery-hint {
 		margin: 0;
 		font-size: 0.82rem;
@@ -994,6 +1213,11 @@
 		box-shadow: 0 12px 28px rgba(4, 9, 12, 0.28);
 	}
 
+	:global(.dark) .companion-egg-button,
+	:global(.dark) .chosen-companion {
+		box-shadow: 0 16px 34px rgba(4, 9, 12, 0.32);
+	}
+
 	:global(.dark) .level-four-meadow {
 		fill: rgba(178, 196, 168, 0.08);
 	}
@@ -1037,6 +1261,21 @@
 			padding: 0.9rem;
 		}
 
+		.companion-egg-button {
+			min-width: 9.5rem;
+			padding: 0.9rem;
+		}
+
+		.companion-egg-button span,
+		.chosen-companion span {
+			font-size: 2.7rem;
+		}
+
+		.chosen-companion {
+			width: 5.8rem;
+			height: 5.8rem;
+		}
+
 		.companion-stats {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
@@ -1060,6 +1299,8 @@
 		.dino-eye,
 		.dino-cheek,
 		.dino-bubble,
+		.companion-egg-button,
+		.chosen-companion,
 		.mystery-egg-glow {
 			animation: none;
 		}
