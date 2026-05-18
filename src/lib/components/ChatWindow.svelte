@@ -607,7 +607,7 @@
 </script>
 
 <div class="chat-container flex flex-col h-[calc(100vh-200px)] max-w-2xl mx-auto">
-	<div class="px-4 pb-2 text-right">
+	<div class="chat-support-link px-4 pb-2 text-right">
 		<a
 			href="https://stodlinjer.se"
 			target="_blank"
@@ -727,7 +727,7 @@
 		{/if}
 
 		{#if currentSupportLevel === 'acute'}
-			<div class="mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
+			<div class="support-panel support-panel-acute mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
 				<p class="font-medium text-rose-900 dark:text-rose-100">
 					Om du är i akut fara eller riskerar att skada dig själv eller någon annan, ring 112 direkt.
 				</p>
@@ -742,7 +742,7 @@
 				</p>
 			</div>
 		{:else if currentSupportLevel === 'elevated'}
-			<div class="mb-3 rounded-[var(--radius-card)] border border-amber-300/70 bg-amber-50 dark:bg-amber-900/20 px-3 py-3 text-sm">
+			<div class="support-panel support-panel-elevated mb-3 rounded-[var(--radius-card)] border border-amber-300/70 bg-amber-50 dark:bg-amber-900/20 px-3 py-3 text-sm">
 				<p class="text-amber-900 dark:text-amber-100">
 					Du behöver inte bära allt ensam. Här finns stödlinjer om du vill prata med någon.
 				</p>
@@ -752,7 +752,7 @@
 				</div>
 			</div>
 		{:else}
-			<div class="mb-3 rounded-[var(--radius-card)] border border-black/10 dark:border-white/12 bg-black/[0.02] dark:bg-white/[0.03] px-3 py-3 text-sm">
+			<div class="support-panel support-panel-standard mb-3 rounded-[var(--radius-card)] border border-black/10 dark:border-white/12 bg-black/[0.02] dark:bg-white/[0.03] px-3 py-3 text-sm">
 				<p class="opacity-85">
 					Behöver du mänsklig kontakt? Här finns stödlinjer med chatt och telefon.
 				</p>
@@ -829,12 +829,12 @@
 				</button>
 			</div>
 
-			<p id="chat-help-text" class="mt-2 text-xs opacity-60">
+			<p id="chat-help-text" class="chat-help-text mt-2 text-xs opacity-60">
 				Max {MAX_MESSAGE_LENGTH} tecken ({inputLength}/{MAX_MESSAGE_LENGTH}). Skriv i din egen takt. Vid akut fara, ring 112. För vårdråd, kontakta 1177.
 			</p>
 		{/if}
 
-		<div class="mt-3 text-center">
+		<div class="chat-contact-link mt-3 text-center">
 			<a
 				href={PUBLIC_CONTACT_MAILTO}
 				class="inline-block px-4 py-2 rounded-[12px] bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-200 text-sm font-medium
@@ -986,5 +986,58 @@
 
 	:global(.crisis-message) {
 		white-space: pre-line;
+	}
+
+	@media (max-width: 768px) {
+		.chat-container {
+			height: calc(100dvh - 3.4rem);
+			min-height: calc(100dvh - 3.4rem);
+			max-height: calc(100dvh - 3.4rem);
+		}
+
+		.chat-support-link,
+		.support-panel-standard,
+		.chat-help-text,
+		.chat-contact-link {
+			display: none;
+		}
+
+		.chat-toolbar {
+			padding: 0.35rem 0.75rem 0.45rem;
+			gap: 0.45rem;
+		}
+
+		.clear-history-button {
+			padding: 0.36rem 0.7rem;
+			font-size: 0.74rem;
+		}
+
+		.chat-messages {
+			padding: 0.75rem;
+		}
+
+		.chat-input-area {
+			padding: 0.65rem 0.75rem calc(0.65rem + env(safe-area-inset-bottom));
+		}
+
+		.support-panel {
+			margin-bottom: 0.55rem;
+			padding: 0.7rem;
+			font-size: 0.86rem;
+		}
+
+		.starter-chips {
+			flex-wrap: nowrap;
+			overflow-x: auto;
+			padding-bottom: 0.1rem;
+		}
+
+		.starter-chip {
+			flex: 0 0 auto;
+			max-width: 72vw;
+			padding: 0.42rem 0.7rem;
+			font-size: 0.78rem;
+			white-space: nowrap;
+		}
 	}
 </style>
