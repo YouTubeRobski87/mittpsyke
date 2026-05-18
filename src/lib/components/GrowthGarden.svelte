@@ -65,12 +65,16 @@
 	onMount(() => {
 		if (!browser) return;
 
-		const savedAnimal = localStorage.getItem(COMPANION_STORAGE_KEY) as CompanionAnimal['id'] | null;
-		const animal = COMPANION_ANIMALS.find((option) => option.id === savedAnimal);
-		if (animal) {
-			selectedAnimalId = savedAnimal;
-			companionStage = 'chosen';
-			companionMessage = `${animal.name} håller varsamt koll på dina steg.`;
+		try {
+			const savedAnimal = localStorage.getItem(COMPANION_STORAGE_KEY) as CompanionAnimal['id'] | null;
+			const animal = COMPANION_ANIMALS.find((option) => option.id === savedAnimal);
+			if (animal) {
+				selectedAnimalId = savedAnimal;
+				companionStage = 'chosen';
+				companionMessage = `${animal.name} håller varsamt koll på dina steg.`;
+			}
+		} catch {
+			// Companion-valet är bara lokal komfort; sidan ska fungera även om lagring blockeras.
 		}
 	});
 
@@ -84,8 +88,17 @@
 		companionStage = 'chosen';
 		companionMessage = `${animal.name} håller varsamt koll på dina steg.`;
 		if (browser) {
-			localStorage.setItem(COMPANION_STORAGE_KEY, animal.id);
+			try {
+				localStorage.setItem(COMPANION_STORAGE_KEY, animal.id);
+			} catch {
+				// Se kommentaren i onMount.
+			}
 		}
+	}
+
+	function changeCompanion() {
+		companionStage = 'choose';
+		companionMessage = 'Välj den följeslagare som känns rätt idag.';
 	}
 
 	function giveCalm() {
@@ -434,7 +447,12 @@
 		</div>
 		<div class="companion-care">
 			<p>{companionName} hänger med i din takt och räknar även de små stegen.</p>
-			<button type="button" onclick={giveCalm}>Ge lite lugn</button>
+			<div class="companion-actions">
+				<button type="button" onclick={giveCalm}>Ge lite lugn</button>
+				{#if companionStage === 'chosen'}
+					<button class="secondary" type="button" onclick={changeCompanion}>Byt följeslagare</button>
+				{/if}
+			</div>
 		</div>
 	</div>
 
@@ -977,7 +995,14 @@
 		line-height: 1.55;
 	}
 
-	.companion-care button {
+	.companion-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		justify-content: flex-end;
+	}
+
+	.companion-actions button {
 		border: 1px solid color-mix(in srgb, var(--theme-accent, #436e8f) 24%, var(--color-dashboard-border) 76%);
 		border-radius: 999px;
 		background: hsl(var(--surface));
@@ -992,10 +1017,14 @@
 			background 160ms ease;
 	}
 
-	.companion-care button:hover {
+	.companion-actions button:hover {
 		transform: translateY(-1px);
 		border-color: color-mix(in srgb, var(--theme-accent, #436e8f) 42%, var(--color-dashboard-border) 58%);
 		background: color-mix(in srgb, var(--theme-bg, hsl(var(--surface-soft))) 72%, hsl(var(--surface)) 28%);
+	}
+
+	.companion-actions .secondary {
+		color: hsl(var(--muted-foreground));
 	}
 
 	/* ── Mysterie-ägg (100 inlägg) ── */
@@ -1285,7 +1314,11 @@
 			flex-direction: column;
 		}
 
-		.companion-care button {
+		.companion-actions {
+			justify-content: stretch;
+		}
+
+		.companion-actions button {
 			width: 100%;
 		}
 
