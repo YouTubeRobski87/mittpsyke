@@ -45,10 +45,10 @@
 <style>
 	.topic-guide {
 		max-width: 720px;
-		border: 1px solid rgba(15, 23, 42, 0.12);
+		border: 1px solid rgba(15, 23, 42, 0.1);
 		border-radius: var(--radius-card);
 		padding: 1.05rem;
-		background: rgba(226, 240, 236, 0.6);
+		background: #f5f6f8;
 	}
 
 	.eyebrow {
@@ -56,7 +56,7 @@
 		font-size: 0.78rem;
 		text-transform: uppercase;
 		letter-spacing: 0.16em;
-		color: var(--primary);
+		color: #475569;
 	}
 
 	h2 {
@@ -81,7 +81,7 @@
 		font-family: var(--font-heading);
 		font-size: 0.95rem;
 		font-weight: 600;
-		color: var(--primary);
+		color: #334155;
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
@@ -98,9 +98,9 @@
 	.article-list a {
 		font-family: var(--font-body);
 		font-size: clamp(0.95rem, 0.92rem + 0.25vw, 1.05rem);
-		color: var(--primary);
+		color: #334155;
 		text-decoration: underline;
-		text-decoration-color: rgba(15, 118, 110, 0.35);
+		text-decoration-color: rgba(51, 65, 85, 0.35);
 		text-underline-offset: 3px;
 	}
 
@@ -110,15 +110,15 @@
 	}
 
 	:global(.dark) .topic-guide {
-		background: #1a1a1a;
+		background: #111827;
 		color: #f5f5f5;
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.12);
 	}
 
 	:global(.dark) .eyebrow,
 	:global(.dark) .guide-entry,
 	:global(.dark) .article-list a {
-		color: #86dfd6;
+		color: #cbd5e1;
 	}
 
 	:global(.dark) .intro {

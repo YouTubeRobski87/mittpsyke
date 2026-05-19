@@ -225,8 +225,8 @@
 		justify-content: center;
 		padding: 0.7rem 1.35rem;
 		border-radius: var(--radius-pill);
-		background: var(--primary);
-		border: 2px solid var(--primary);
+		background: #1f2937;
+		border: 1px solid rgba(15, 23, 42, 0.22);
 		color: white;
 		font-family: var(--font-heading);
 		font-weight: 600;
@@ -235,7 +235,8 @@
 
 	.cta-button.ghost {
 		background: transparent;
-		color: var(--primary);
+		border-color: rgba(15, 23, 42, 0.18);
+		color: hsl(var(--foreground));
 	}
 
 	.links-row {
@@ -256,7 +257,12 @@
 	}
 
 	:global(.dark) .cta-button.ghost {
-		color: #86dfd6;
-		border-color: #86dfd6;
+		color: #f8fafc;
+		border-color: rgba(255, 255, 255, 0.18);
+	}
+
+	:global(.dark) .cta-button {
+		background: rgba(255, 255, 255, 0.12);
+		border-color: rgba(255, 255, 255, 0.18);
 	}
 </style>

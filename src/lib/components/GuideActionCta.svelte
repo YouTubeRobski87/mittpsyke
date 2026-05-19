@@ -164,8 +164,8 @@
 		margin-top: 1.9rem;
 		padding: 1.2rem 1rem 1rem;
 		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #f2f7f4;
+		border: 1px solid rgba(15, 23, 42, 0.1);
+		background: #f5f6f8;
 	}
 
 	.guide-cta-compact {
@@ -225,9 +225,9 @@
 		margin-top: 0.75rem;
 		padding: 0.32rem 0.58rem;
 		border-radius: 999px;
-		background: rgba(95, 129, 112, 0.1);
+		background: rgba(15, 23, 42, 0.06);
 		font-size: 0.82rem;
-		color: #304a3f;
+		color: #334155;
 	}
 
 	.guide-cta-note {
@@ -243,7 +243,7 @@
 	}
 
 	:global(.dark) .guide-cta {
-		background: #1a2320;
+		background: #111827;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
@@ -257,7 +257,7 @@
 	}
 
 	:global(.dark) .guide-cta-card {
-		background: #232c2a;
+		background: #171f2d;
 		border-color: rgba(255, 255, 255, 0.12);
 	}
 
@@ -270,8 +270,8 @@
 	}
 
 	:global(.dark) .guide-cta-card span {
-		background: rgba(140, 163, 106, 0.16);
-		color: #d5e6dc;
+		background: rgba(255, 255, 255, 0.1);
+		color: #e5e7eb;
 	}
 
 	@media (min-width: 760px) {

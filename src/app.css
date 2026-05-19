@@ -618,6 +618,55 @@ select:focus-visible,
   border-width: 0;
 }
 
+main.page .callout,
+main.page .topic-guide {
+  background: #f5f6f8;
+  border-color: rgba(15, 23, 42, 0.1);
+}
+
+main.page .callout h2 {
+  color: #1f2937;
+}
+
+main.page .cta-button {
+  background: #1f2937;
+  border-color: rgba(15, 23, 42, 0.22);
+}
+
+main.page .cta-button:hover {
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.18);
+}
+
+main.page .cta-button.ghost {
+  background: transparent;
+  border-color: rgba(15, 23, 42, 0.18);
+  color: hsl(var(--foreground));
+}
+
+.dark main.page .callout,
+.dark main.page .topic-guide {
+  background: #111827;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark main.page .callout h2 {
+  color: #f8fafc;
+}
+
+.dark main.page .cta-button {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.dark main.page .cta-button:hover {
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.3);
+}
+
+.dark main.page .cta-button.ghost {
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
 /* Skip-link enhancement */
 .skip-link:focus-visible {
   outline: 3px solid var(--primary);
