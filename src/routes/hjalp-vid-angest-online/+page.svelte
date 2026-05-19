@@ -64,6 +64,8 @@
 				Om du vill behålla kontinuitet kan du skapa konto och spara dagbok, historik och framsteg.
 				Behöver du mänsklig kontakt finns
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer</a>.
+				Om du är orolig för någon i din närhet kan du också läsa guiden om
+				<a href="/blogg/nar-en-van-mar-daligt-vad-kan-du-saga">vad du kan säga när en vän mår dåligt</a>.
 			</p>
 			<p class="links-row">
 				<a href="/angest">Läs samlat om ångest</a>

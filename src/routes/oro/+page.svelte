@@ -46,6 +46,9 @@
 				<p>
 					På MittPsyke kan du prata anonymt om din oro, utan att behöva motivera varför du mår
 					som du gör. Stödet finns tillgängligt dygnet runt och möter dig precis där du är just nu.
+					Om oron gäller någon i din närhet kan guiden om
+					<a href="/blogg/nar-en-van-mar-daligt-vad-kan-du-saga">vad du kan säga när en vän mår dåligt</a>
+					vara ett lugnt nästa steg.
 				</p>
 			</section>
 		</div>

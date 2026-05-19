@@ -47,6 +47,8 @@
 					Här kan du ha ett samtal precis som du behöver. Du behöver inte förklara varför du är ensam eller försvara dina känslor.
 					Du kan prata om saknad, om längtan, eller bara om hur det känns att inte höra hemma. Samtalsstödet är designat för att
 					möta dig genuint, och du kan vara helt anonym medan du sätter ord på det som är svårt.
+					Om ensamheten också rymmer oro för någon annan finns en guide om
+					<a href="/blogg/nar-en-van-mar-daligt-vad-kan-du-saga">vad du kan säga när en vän mår dåligt</a>.
 				</p>
 			</section>
 		</div>

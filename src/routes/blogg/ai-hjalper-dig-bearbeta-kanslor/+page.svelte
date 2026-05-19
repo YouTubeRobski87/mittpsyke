@@ -185,6 +185,8 @@
 		<p>
 			Om du upplever djup nedstämdhet, stark ångest, självskadeimpulser eller känslan av att inte vara säker ska du
 			inte stanna i egenvård ensam. AI kan inte ta ansvar i akuta lägen. Vid akut fara: ring 112. För vårdråd: 1177.
+			Om du i stället är orolig för någon i din närhet kan du läsa guiden om
+			<a href="/blogg/nar-en-van-mar-daligt-vad-kan-du-saga">vad du kan säga när en vän mår dåligt</a>.
 		</p>
 		<p>
 			Att söka mänskligt stöd är inte ett misslyckande för AI-verktyg. Det är tvärtom ett tecken på att du lyssnar på

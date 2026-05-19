@@ -38,7 +38,9 @@
 				<p>
 					Långvarig stress kan påverka allt från sömn och koncentration till relationer och
 					självkänsla. Det är vanligt att känna sig trött, irriterad eller omotiverad – utan att
-					riktigt förstå varför. Kroppen och sinnet håller på att berätta något viktigt.
+					riktigt förstå varför. Om stressen också handlar om oro för någon annan kan du läsa om
+					<a href="/blogg/nar-en-van-mar-daligt-vad-kan-du-saga">vad du kan säga när en vän mår dåligt</a>.
+					Kroppen och sinnet håller på att berätta något viktigt.
 				</p>
 			</section>
 
