@@ -144,17 +144,29 @@
 <main class="staging-look">
 	<!-- 1. Hero -->
 	<section class="hero-section hero" aria-label="Introduktion till MittPsyke" bind:this={heroEl}>
-		<img
-			class="hero-bg"
-			bind:this={bgEl}
-			src="/assets/home/MittpsykeTree.webp"
-			alt="Stilla träd i mjukt ljus"
-			width="3379"
-			height="1843"
-			aria-hidden="true"
-			decoding="async"
-			fetchpriority="high"
-		/>
+		<picture class="hero-picture">
+			<source
+				type="image/avif"
+				srcset="/assets/home/MittpsykeTree-720.avif 720w, /assets/home/MittpsykeTree-1200.avif 1200w, /assets/home/MittpsykeTree-1920.avif 1920w"
+				sizes="100vw"
+			/>
+			<source
+				type="image/webp"
+				srcset="/assets/home/MittpsykeTree-720.webp 720w, /assets/home/MittpsykeTree-1200.webp 1200w, /assets/home/MittpsykeTree-1920.webp 1920w"
+				sizes="100vw"
+			/>
+			<img
+				class="hero-bg"
+				bind:this={bgEl}
+				src="/assets/home/MittpsykeTree-1200.webp"
+				alt="Stilla träd i mjukt ljus"
+				width="1200"
+				height="654"
+				aria-hidden="true"
+				decoding="async"
+				fetchpriority="high"
+			/>
+		</picture>
 		<div class="hero-shell">
 			<div class="hero-content">
 				<h1>Få hjälp att sortera tankar i lugn takt</h1>
@@ -407,6 +419,13 @@
 	.hero {
 		position: relative;
 		overflow: hidden;
+	}
+
+	.hero-picture {
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		pointer-events: none;
 	}
 
 	.hero img {
