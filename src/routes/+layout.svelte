@@ -328,7 +328,6 @@
 				if (seededSessionAccessToken !== data.session.access_token) {
 					seededSessionAccessToken = data.session.access_token;
 					void syncUser(data.session.user);
-					void supabase.auth.setSession(data.session);
 				} else if (user?.id !== data.session.user.id) {
 					void syncUser(data.session.user);
 				}
