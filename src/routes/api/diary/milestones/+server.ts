@@ -12,7 +12,6 @@ const stockholmDateFormatter = new Intl.DateTimeFormat('sv-CA', {
 	month: '2-digit',
 	day: '2-digit'
 });
-const MILESTONES_CACHE_TTL_MS = 60 * 1000;
 const MILESTONES_LOOKBACK_DAYS = 365;
 const MILESTONES_ROW_LIMIT = 500;
 
@@ -58,8 +57,6 @@ type MilestonesResponse = {
 	nextMilestone: ReturnType<typeof resolveMilestones>[number] | null;
 	totalEntries: number;
 };
-
-const milestonesCache = new Map<string, { expiresAt: number; value: MilestonesResponse }>();
 
 const CATEGORY_TITLES: Record<MilestoneCategory, string> = {
 	entries: 'Antal inlägg',
@@ -171,10 +168,6 @@ export const GET: RequestHandler = async ({ request }) => {
 		const { data, error: authError } = await supabase.auth.getUser(token);
 		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
 		const user = data.user;
-		const cached = milestonesCache.get(user.id);
-		if (cached && cached.expiresAt > Date.now()) {
-			return json(cached.value);
-		}
 
 		const since = new Date(Date.now() - MILESTONES_LOOKBACK_DAYS * DAY_MS).toISOString();
 		const [totalEntriesQuery, entriesQuery] = await Promise.all([
@@ -248,7 +241,6 @@ export const GET: RequestHandler = async ({ request }) => {
 			nextMilestone,
 			totalEntries
 		};
-		milestonesCache.set(user.id, { expiresAt: Date.now() + MILESTONES_CACHE_TTL_MS, value });
 		return json(value);
 	} catch (err) {
 		console.error('Milestones error:', err);

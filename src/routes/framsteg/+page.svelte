@@ -80,7 +80,6 @@
 		streak: StreakData | null;
 		milestones: MilestonesResponse | null;
 		heatmap: HeatmapResponse | null;
-		cachedAt: number;
 	}
 
 	interface PageData {
@@ -94,6 +93,7 @@
 		heatmapData?: Record<string, number>;
 		heatmapError?: string;
 		profileTheme?: keyof typeof THEMES | null;
+		progressCompanion?: 'dino' | 'fox' | 'turtle' | null;
 	}
 
 	// ── Theme ──
@@ -187,7 +187,6 @@
 		'Vad är du tacksam för just nu?'
 	];
 	const todayReflection = reflections[new Date().getDay()];
-	const PROGRESS_CACHE_TTL_MS = 60 * 1000;
 
 	function getGrowthLevel(entryCountValue: number) {
 		let level = 0;
@@ -242,22 +241,6 @@
 				return;
 			}
 
-			const cacheKey = `mittpsyke:progress:${session.user.id}`;
-			if (browser) {
-				const cached = sessionStorage.getItem(cacheKey);
-				if (cached) {
-					try {
-						const cachedPayload = JSON.parse(cached) as ProgressCachePayload;
-						if (Date.now() - cachedPayload.cachedAt < PROGRESS_CACHE_TTL_MS) {
-							applyProgressPayload(cachedPayload);
-							return;
-						}
-					} catch {
-						sessionStorage.removeItem(cacheKey);
-					}
-				}
-			}
-
 			const headers = { Authorization: `Bearer ${session.access_token}` };
 			const [streakRes, milestonesRes, heatmapRes] = await Promise.all([
 				fetch('/api/diary/streak', { headers }),
@@ -274,13 +257,9 @@
 			const payload = {
 				streak: streakPayload as StreakData | null,
 				milestones: milestonesPayload as MilestonesResponse | null,
-				heatmap: heatmapPayload as HeatmapResponse | null,
-				cachedAt: Date.now()
+				heatmap: heatmapPayload as HeatmapResponse | null
 			};
 			applyProgressPayload(payload);
-			if (browser) {
-				sessionStorage.setItem(cacheKey, JSON.stringify(payload));
-			}
 		} catch {
 			progressError = 'Kunde inte ladda framsteg just nu.';
 		} finally {
@@ -446,6 +425,7 @@
 			growthLevel={growthLevel}
 			entryCount={entryCount}
 			activeDays={activeDays}
+			progressCompanion={data.progressCompanion ?? null}
 		/>
 
 		<!-- ── Aktivitetskarta ── -->

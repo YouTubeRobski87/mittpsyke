@@ -2,6 +2,16 @@ import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { THEMES } from '$lib/theme';
 
+type ProgressCompanion = 'dino' | 'fox' | 'turtle';
+
+const PROGRESS_COMPANIONS = new Set<ProgressCompanion>(['dino', 'fox', 'turtle']);
+
+function toProgressCompanion(value: unknown): ProgressCompanion | null {
+	return typeof value === 'string' && PROGRESS_COMPANIONS.has(value as ProgressCompanion)
+		? (value as ProgressCompanion)
+		: null;
+}
+
 export const load: PageServerLoad = async ({ locals }) => {
 	const {
 		data: { session }
@@ -11,6 +21,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (!user) {
 		throw redirect(303, '/login');
 	}
+
+	const userMetadata = user.user_metadata ?? {};
 
 	return {
 		streak: { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 },
@@ -23,9 +35,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		heatmapData: {},
 		heatmapError: '',
 		profileTheme:
-			typeof user.user_metadata?.profile_theme === 'string' &&
-			user.user_metadata.profile_theme in THEMES
-				? user.user_metadata.profile_theme
-				: null
+			typeof userMetadata.profile_theme === 'string' && userMetadata.profile_theme in THEMES
+				? userMetadata.profile_theme
+				: null,
+		progressCompanion: toProgressCompanion(userMetadata.progress_companion)
 	};
 };

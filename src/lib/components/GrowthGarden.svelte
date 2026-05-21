@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
+
+	type CompanionAnimalId = 'dino' | 'fox' | 'turtle';
 
 	export let growthScore: number;
 	export let growthLevel: number;
 	export let entryCount: number = 0;
 	export let activeDays: number = 0;
+	export let progressCompanion: CompanionAnimalId | null = null;
 
 	type CompanionStat = {
 		label: string;
@@ -14,7 +18,7 @@
 	};
 
 	type CompanionAnimal = {
-		id: 'dino' | 'fox' | 'turtle';
+		id: CompanionAnimalId;
 		name: string;
 		icon: string;
 	};
@@ -68,21 +72,78 @@
 	let companionStage: 'egg' | 'choose' | 'chosen' = 'egg';
 	let companionMessage = 'Ett litet steg räcker idag.';
 
-	onMount(() => {
+	$: if (progressCompanion) {
+		const animal = getCompanionAnimal(progressCompanion);
+		if (animal && selectedAnimalId !== animal.id) {
+			applyCompanion(animal, activeDays > 1 ? 'Fint att du kom tillbaka.' : 'Vi tar det i lugn takt.');
+		}
+	}
+
+	onMount(async () => {
 		if (!browser) return;
 
 		try {
-			const savedAnimal = localStorage.getItem(COMPANION_STORAGE_KEY) as CompanionAnimal['id'] | null;
-			const animal = COMPANION_ANIMALS.find((option) => option.id === savedAnimal);
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+			const remoteAnimal = getCompanionAnimal(session?.user.user_metadata?.progress_companion);
+			if (remoteAnimal) {
+				applyCompanion(
+					remoteAnimal,
+					activeDays > 1 ? 'Fint att du kom tillbaka.' : 'Vi tar det i lugn takt.'
+				);
+				cacheCompanion(remoteAnimal.id);
+				return;
+			}
+		} catch (error) {
+			console.error('Could not load progress companion from Supabase:', error);
+		}
+
+		try {
+			const savedAnimal = localStorage.getItem(COMPANION_STORAGE_KEY);
+			const animal = getCompanionAnimal(savedAnimal);
 			if (animal) {
-				selectedAnimalId = savedAnimal;
-				companionStage = 'chosen';
-				companionMessage = activeDays > 1 ? 'Fint att du kom tillbaka.' : 'Vi tar det i lugn takt.';
+				applyCompanion(animal, activeDays > 1 ? 'Fint att du kom tillbaka.' : 'Vi tar det i lugn takt.');
 			}
 		} catch {
-			// Companion-valet är bara lokal komfort; sidan ska fungera även om lagring blockeras.
+			// Local cache is only a fallback; Supabase metadata is the source for logged-in users.
 		}
 	});
+
+	function getCompanionAnimal(value: unknown): CompanionAnimal | null {
+		return typeof value === 'string'
+			? (COMPANION_ANIMALS.find((option) => option.id === value) ?? null)
+			: null;
+	}
+
+	function applyCompanion(animal: CompanionAnimal, message: string) {
+		selectedAnimalId = animal.id;
+		companionStage = 'chosen';
+		companionMessage = message;
+	}
+
+	function cacheCompanion(animalId: CompanionAnimalId) {
+		if (!browser) return;
+		try {
+			localStorage.setItem(COMPANION_STORAGE_KEY, animalId);
+		} catch {
+			// Local cache is optional.
+		}
+	}
+
+	async function persistCompanion(animal: CompanionAnimal) {
+		cacheCompanion(animal.id);
+		try {
+			const { error } = await supabase.auth.updateUser({
+				data: { progress_companion: animal.id }
+			});
+			if (error) {
+				console.error('Could not save progress companion:', error);
+			}
+		} catch (error) {
+			console.error('Could not save progress companion:', error);
+		}
+	}
 
 	function hatchCompanionEgg() {
 		companionStage = 'choose';
@@ -90,16 +151,8 @@
 	}
 
 	function chooseCompanion(animal: CompanionAnimal) {
-		selectedAnimalId = animal.id;
-		companionStage = 'chosen';
-		companionMessage = 'Vi tar det i lugn takt.';
-		if (browser) {
-			try {
-				localStorage.setItem(COMPANION_STORAGE_KEY, animal.id);
-			} catch {
-				// Se kommentaren i onMount.
-			}
-		}
+		applyCompanion(animal, 'Vi tar det i lugn takt.');
+		void persistCompanion(animal);
 	}
 
 	function changeCompanion() {
