@@ -634,6 +634,30 @@
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
+				<nav class="mobile-quick-nav" aria-label="Snabbnavigering">
+					<a
+						href="/blogg"
+						class="mobile-quick-link mobile-quick-link-articles"
+						onclick={() => {
+							mobileMenuOpen = false;
+							profilePanelOpen = false;
+						}}
+						aria-current={isActive('/blogg') ? 'page' : undefined}
+					>
+						Artiklar
+					</a>
+					<a
+						href="/chat"
+						class="mobile-quick-link mobile-quick-link-chat"
+						onclick={() => {
+							mobileMenuOpen = false;
+							profilePanelOpen = false;
+						}}
+						aria-current={isActive('/chat') ? 'page' : undefined}
+					>
+						Chatta
+					</a>
+				</nav>
 				<a
 					href="/sok"
 					class="search-nav-link hidden lg:inline-flex text-sm transition-opacity {isActive('/sok') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}"
@@ -1247,6 +1271,54 @@
 		border: 1px solid var(--layout-border-soft);
 	}
 
+	.mobile-quick-nav {
+		display: none;
+		align-items: center;
+		gap: 0.18rem;
+	}
+
+	.mobile-quick-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 2.5rem;
+		padding: 0 0.48rem;
+		border-radius: 999px;
+		color: hsl(var(--foreground) / 0.82);
+		font-family: var(--font-heading);
+		font-size: 0.78rem;
+		font-weight: 560;
+		line-height: 1;
+		text-decoration: none;
+		white-space: nowrap;
+		transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+	}
+
+	.mobile-quick-link:hover,
+	.mobile-quick-link:focus-visible,
+	.mobile-quick-link[aria-current='page'] {
+		background: var(--layout-menu-hover);
+		color: hsl(var(--foreground) / 0.96);
+	}
+
+	.mobile-quick-link-chat {
+		flex-shrink: 0;
+		font-weight: 650;
+	}
+
+	.mobile-quick-link-articles {
+		min-width: 0;
+		flex-shrink: 1;
+		font-size: 0.74rem;
+		opacity: 0.86;
+	}
+
+	:global(.dark) .mobile-quick-link:hover,
+	:global(.dark) .mobile-quick-link:focus-visible,
+	:global(.dark) .mobile-quick-link[aria-current='page'] {
+		background: var(--layout-menu-dark-hover);
+	}
+
 	:global(.dark) .mobile-menu-button,
 	:global(.dark) .mobile-menu-panel {
 		border-color: var(--layout-menu-dark-border);
@@ -1517,6 +1589,10 @@
 			font-size: 1.22rem;
 		}
 
+		.mobile-quick-nav {
+			display: inline-flex;
+		}
+
 		.profile-avatar-link {
 			width: 2.5rem;
 			height: 2.5rem;
@@ -1579,6 +1655,29 @@
 
 		.footer-company p {
 			margin-block: 0.04rem;
+		}
+	}
+
+	@media (max-width: 370px) {
+		.site-header-inner {
+			padding-inline: 0.55rem;
+			gap: 0.35rem;
+		}
+
+		.brand-wordmark {
+			font-size: 1.08rem;
+		}
+
+		.mobile-quick-nav {
+			gap: 0.05rem;
+		}
+
+		.mobile-quick-link {
+			padding-inline: 0.34rem;
+		}
+
+		.mobile-quick-link-articles {
+			font-size: 0.68rem;
 		}
 	}
 

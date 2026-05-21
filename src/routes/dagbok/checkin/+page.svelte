@@ -39,6 +39,9 @@
 
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
 	const DIARY_IMAGE_ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+	const DIARY_IMAGE_MAX_DIMENSION = 1600;
+	const DIARY_IMAGE_COMPRESSION_QUALITIES = [0.82, 0.78, 0.75];
+	const DIARY_IMAGE_COMPRESSED_TYPE = 'image/jpeg';
 	const fallbackDailyQuestion = 'Vad behöver få lite mer plats hos dig idag?';
 	const entriesPerPage = 10;
 
@@ -450,6 +453,78 @@
 		draftImagePreviewUrl = URL.createObjectURL(file);
 	}
 
+	function getCompressedImageName(filename: string) {
+		const baseName = filename.replace(/\.[^.]*$/, '') || 'dagboksbild';
+		return `${baseName}.jpg`;
+	}
+
+	function canvasToBlob(canvas: HTMLCanvasElement, type: string, quality: number) {
+		return new Promise<Blob | null>((resolve) => {
+			canvas.toBlob((blob) => resolve(blob), type, quality);
+		});
+	}
+
+	async function loadImageForCompression(file: File) {
+		const url = URL.createObjectURL(file);
+		try {
+			const image = new Image();
+			image.decoding = 'async';
+			const loaded = new Promise<HTMLImageElement>((resolve, reject) => {
+				image.onload = () => resolve(image);
+				image.onerror = () => reject(new Error('Bilden kunde inte läsas i webbläsaren.'));
+			});
+			image.src = url;
+			return await loaded;
+		} finally {
+			URL.revokeObjectURL(url);
+		}
+	}
+
+	async function compressDiaryImage(file: File) {
+		const image = await loadImageForCompression(file);
+		const originalWidth = image.naturalWidth || image.width;
+		const originalHeight = image.naturalHeight || image.height;
+
+		if (!originalWidth || !originalHeight) {
+			throw new Error('Bilden kunde inte läsas i webbläsaren.');
+		}
+
+		const scale = Math.min(1, DIARY_IMAGE_MAX_DIMENSION / Math.max(originalWidth, originalHeight));
+		const targetWidth = Math.max(1, Math.round(originalWidth * scale));
+		const targetHeight = Math.max(1, Math.round(originalHeight * scale));
+		const canvas = document.createElement('canvas');
+		canvas.width = targetWidth;
+		canvas.height = targetHeight;
+		const context = canvas.getContext('2d');
+
+		if (!context) {
+			throw new Error('Bilden kunde inte förberedas i webbläsaren.');
+		}
+
+		context.drawImage(image, 0, 0, targetWidth, targetHeight);
+
+		let smallestFile: File | null = null;
+		for (const quality of DIARY_IMAGE_COMPRESSION_QUALITIES) {
+			const blob = await canvasToBlob(canvas, DIARY_IMAGE_COMPRESSED_TYPE, quality);
+			if (!blob) continue;
+
+			const compressedFile = new File([blob], getCompressedImageName(file.name), {
+				type: DIARY_IMAGE_COMPRESSED_TYPE,
+				lastModified: file.lastModified
+			});
+
+			if (!smallestFile || compressedFile.size < smallestFile.size) {
+				smallestFile = compressedFile;
+			}
+
+			if (compressedFile.size <= DIARY_IMAGE_MAX_BYTES) {
+				return compressedFile;
+			}
+		}
+
+		return smallestFile ?? file;
+	}
+
 	// Hanterar val av bild — visar lokal förhandsvisning och skickar till /api/diary/upload
 	async function handleImageSelect(event: Event) {
 		const input = event.currentTarget as HTMLInputElement;
@@ -462,19 +537,27 @@
 			input.value = '';
 			return;
 		}
-		if (file.size > DIARY_IMAGE_MAX_BYTES) {
-			uploadImageError = 'Bilden får vara max 5 MB.';
-			input.value = '';
-			return;
-		}
 
 		uploadImageError = '';
 		draftImageUrl = null;
-		setDraftImagePreview(file);
 		uploadingImage = true;
 		const uploadId = ++draftImageUploadId;
+		let imagePrepared = false;
 
 		try {
+			const imageFile = await compressDiaryImage(file);
+			if (uploadId !== draftImageUploadId) return;
+
+			if (imageFile.size > DIARY_IMAGE_MAX_BYTES) {
+				uploadImageError =
+					'Bilden blev fortfarande för stor efter komprimering. Prova att välja en mindre bild eller beskära den först.';
+				clearDraftImage({ clearError: false });
+				return;
+			}
+
+			setDraftImagePreview(imageFile);
+			imagePrepared = true;
+
 			const { data: sessionData } = await supabase.auth.getSession();
 			const token = sessionData.session?.access_token;
 			if (!token) {
@@ -484,7 +567,7 @@
 			}
 
 			const formData = new FormData();
-			formData.append('file', file);
+			formData.append('file', imageFile);
 
 			const res = await fetch('/api/diary/upload', {
 				method: 'POST',
@@ -513,7 +596,9 @@
 			if (uploadId !== draftImageUploadId) return;
 			const msg = err instanceof Error ? err.message : 'Okänt fel vid bilduppladdning.';
 			console.error('[handleImageSelect] Nätverksfel:', msg);
-			uploadImageError = 'Nätverksfel – kunde inte nå servern.';
+			uploadImageError = imagePrepared
+				? 'Nätverksfel – kunde inte nå servern.'
+				: 'Bilden kunde inte förberedas i webbläsaren. Prova en annan JPEG-, PNG-, WebP- eller GIF-bild.';
 			clearDraftImage({ clearError: false });
 		} finally {
 			if (uploadId === draftImageUploadId) {
