@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
+	import FakeLiveChat from '$lib/components/home/FakeLiveChat.svelte';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
@@ -177,6 +178,7 @@
 				</div>
 				<p class="hero-trust-note">Din text sparas inte.</p>
 			</div>
+			<FakeLiveChat />
 		</div>
 	</section>
 
@@ -474,7 +476,8 @@
 		display: grid;
 		grid-template-columns: 1fr;
 		justify-items: center;
-		align-items: start;
+		align-items: center;
+		gap: clamp(1.5rem, 5vw, 3.5rem);
 	}
 
 	.hero-content {
@@ -1039,6 +1042,10 @@
 	}
 
 	@media (min-width: 1040px) {
+		.hero-shell {
+			grid-template-columns: minmax(0, 1fr) minmax(20rem, 23rem);
+		}
+
 		.early-trust-grid {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 			gap: 0.8rem;
