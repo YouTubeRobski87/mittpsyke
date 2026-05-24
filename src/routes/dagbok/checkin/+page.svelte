@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import { dev } from '$app/environment';
 	import { onDestroy, onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import { trackSignupCompleted, trackDiaryPageOpenedFromHoroscope } from '$lib/analytics';
@@ -488,6 +489,11 @@
 		});
 	}
 
+	function logDiaryImageUploadDebug(message: string, details?: unknown) {
+		if (!dev) return;
+		console.debug(`[dagbok/bilduppladdning] ${message}`, details ?? '');
+	}
+
 	async function loadImageForCompression(file: File) {
 		const url = URL.createObjectURL(file);
 		try {
@@ -601,7 +607,10 @@
 			if (!res.ok) {
 				if (uploadId !== draftImageUploadId) return;
 				const msg = payload.error ?? `Uppladdning misslyckades (HTTP ${res.status}).`;
-				console.error('[handleImageSelect] Fel från server:', msg);
+				logDiaryImageUploadDebug('Fel från server vid uppladdning.', {
+					status: res.status,
+					error: msg
+				});
 				uploadImageError = msg;
 				clearDraftImage({ clearError: false });
 				return;
@@ -616,7 +625,11 @@
 		} catch (err) {
 			if (uploadId !== draftImageUploadId) return;
 			const msg = err instanceof Error ? err.message : 'Okänt fel vid bilduppladdning.';
-			console.error('[handleImageSelect] Nätverksfel:', msg);
+			logDiaryImageUploadDebug('Bilden kunde inte förberedas eller laddas upp.', {
+				error: msg,
+				fileType: file.type,
+				fileSize: file.size
+			});
 			uploadImageError = imagePrepared
 				? 'Nätverksfel – kunde inte nå servern.'
 				: 'Bilden kunde inte förberedas i webbläsaren. Prova en annan JPEG-, PNG-, WebP-, GIF-, HEIC- eller HEIF-bild.';

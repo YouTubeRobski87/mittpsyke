@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
@@ -7,6 +8,11 @@ import type { RequestHandler } from './$types';
 const BUCKET = 'diary-images';
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+
+function logUploadDebug(message: string, details?: unknown) {
+	if (!dev) return;
+	console.debug(`[diary/upload] ${message}`, details ?? '');
+}
 
 function getAccessToken(header: string | null): string | null {
 	if (!header) return null;
@@ -43,7 +49,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	} = await anonClient.auth.getUser();
 
 	if (authError || !user) {
-		console.error('[diary/upload] Auth fel:', authError?.message ?? 'ingen user');
+		logUploadDebug('Auth fel.', authError?.message ?? 'ingen user');
 		return json({ error: 'Obehörig.' }, { status: 401 });
 	}
 
@@ -52,7 +58,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	try {
 		formData = await request.formData();
 	} catch (err) {
-		console.error('[diary/upload] Kunde inte läsa formdata:', err);
+		logUploadDebug('Kunde inte läsa formdata.', err);
 		return json({ error: 'Ogiltig request – skicka multipart/form-data.' }, { status: 400 });
 	}
 
@@ -93,15 +99,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 
 	if (uploadError) {
-		console.error(
-			'[diary/upload] Storage-fel:',
-			uploadError.message,
-			'| status:', (uploadError as { statusCode?: string }).statusCode ?? '–',
-			'| user:', user.id,
-			'| path:', storagePath
-		);
+		logUploadDebug('Storage-fel.', {
+			message: uploadError.message,
+			status: (uploadError as { statusCode?: string }).statusCode ?? null,
+			userId: user.id,
+			path: storagePath
+		});
 		return json(
-			{ error: `Storage-fel: ${uploadError.message}` },
+			{ error: 'Bilden kunde inte sparas just nu. Försök igen om en stund.' },
 			{ status: 500 }
 		);
 	}

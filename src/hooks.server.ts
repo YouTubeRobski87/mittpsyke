@@ -63,7 +63,7 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		// Styles: self + unsafe-inline (Tailwind/Svelte)
 		"style-src 'self' 'unsafe-inline'",
 		// Images
-		`img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com https://www.google.se https://*.google.com https://app.trysoro.com https://${supabaseHost} https://*.supabase.co`,
+		`img-src 'self' data: blob: https://www.google-analytics.com https://*.google-analytics.com https://www.google.se https://*.google.com https://app.trysoro.com https://${supabaseHost} https://*.supabase.co https://*.storage.supabase.co`,
 		// Fonts (lokala)
 		"font-src 'self'",
 		// API-anrop
