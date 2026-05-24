@@ -30,7 +30,7 @@
 
 	const articleSchema = $derived({
 		'@context': 'https://schema.org',
-		'@type': 'Article',
+		'@type': 'WebPage',
 		headline: data.guide.title,
 		description: data.guide.seoDescription ?? data.guide.description,
 		url: `https://www.mittpsyke.se${$page.url.pathname}`,
@@ -111,7 +111,7 @@
 
 	<h1 class="text-3xl font-semibold tracking-tight">{data.guide.title}</h1>
 	<p class="guide-ingress mt-3 leading-relaxed">{data.guide.description}</p>
-	<div class="article-meta mt-4" aria-label="Artikelinformation">
+	<div class="article-meta mt-4" aria-label="Guideinformation">
 		<p>Publicerad: {publishedAt}</p>
 		<p>Senast uppdaterad: {updatedAt}</p>
 		<p>Författare: MittPsyke</p>
@@ -136,7 +136,7 @@
 	</ul>
 
 	{#if data.guide.relatedArticles?.length}
-		<h2 class="mt-8 text-xl font-semibold">Relaterade artiklar</h2>
+		<h2 class="mt-8 text-xl font-semibold">Relaterade guider</h2>
 		<p class="guide-copy mt-2 leading-relaxed">Fördjupning och vidare läsning inom samma område.</p>
 		<ul class="mt-3 space-y-2">
 			{#each data.guide.relatedArticles as article}
@@ -160,7 +160,7 @@
 		<section class="nasta-steg mt-6 rounded-xl border border-black/10 p-5" aria-label="Huvudsida och fler guider">
 			<h2 class="text-base font-semibold">Börja på huvudsidan för ämnet</h2>
 			<p class="guide-copy mt-2 leading-relaxed">
-				Den här artikeln är en fördjupning. Översiktssidan samlar de viktigaste nästa stegen inom samma tema.
+				Den här guiden är en fördjupning. Översiktssidan samlar de viktigaste nästa stegen inom samma tema.
 			</p>
 			<ul class="mt-3 space-y-2">
 				<li>

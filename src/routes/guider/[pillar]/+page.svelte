@@ -18,7 +18,7 @@
 	const pageTitle = $derived(withBrand(data.landing?.seoTitle ?? data.pillar.title));
 	const articleSchema = $derived({
 		'@context': 'https://schema.org',
-		'@type': 'Article',
+		'@type': 'CollectionPage',
 		headline,
 		description: pageDescription,
 		url: `https://www.mittpsyke.se${$page.url.pathname}`,

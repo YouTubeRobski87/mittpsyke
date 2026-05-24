@@ -3423,7 +3423,7 @@ Om panikattackerna kommer ofta, om du börjar undvika saker i vardagen på grund
 
 ## Relaterat
 
-Relaterade guider: <a href="/guider/angest">/guider/angest</a> (artikeln "vad händer i kroppen")
+Relaterade guider: <a href="/guider/angest">/guider/angest</a> (guiden "vad händer i kroppen")
 
 ## Prova en övning
 
@@ -3489,7 +3489,7 @@ Om du behöver hjälp att hantera återkommande attacker finns det effektiv beha
 
 ## Relaterat
 
-Relaterade artiklar: <a href="/guider/panikattack/vad-hander-i-kroppen">vad-hander-i-kroppen</a> (i samma kategori)
+Relaterade guider: <a href="/guider/panikattack/vad-hander-i-kroppen">vad-hander-i-kroppen</a> (i samma kategori)
 
 ## Prova en övning
 
@@ -3534,7 +3534,7 @@ Det finns överlapp, och listor som dessa är förenklingar. De ersätter inte m
 
 Om du tror att det kan vara hjärtat: ring 112. Det är alltid rätt att söka akut hjälp om du är osäker. Sjukvården föredrar att undersöka en panikattack framför att missa ett hjärtproblem.
 
-Om du känner igen mönstret som panik: använd andning och grounding enligt de andra artiklarna i den här guiden. Påminn dig om att du har klarat det förut.
+Om du känner igen mönstret som panik: använd andning och grounding enligt de andra guiderna i den här delen. Påminn dig om att du har klarat det förut.
 
 Om det är första gången: sök vård. Inte för att det är farligt — utan för att det ger trygghet att veta vad det är. Många som får sin första panikattack tror genuint att de ska dö. Att få en medicinsk bedömning minskar rädslan inför nästa gång.
 
@@ -3548,7 +3548,7 @@ Om oron för hjärtat har blivit en del av din vardag, om du undviker fysisk akt
 
 ## Relaterat
 
-Relaterade artiklar: <a href="/guider/panikattack/ta-dig-igenom-en-panikattack">ta-dig-igenom-en-panikattack</a> (i samma kategori)
+Relaterade guider: <a href="/guider/panikattack/ta-dig-igenom-en-panikattack">ta-dig-igenom-en-panikattack</a> (i samma kategori)
 
 ## Prova en övning
 
@@ -3677,7 +3677,7 @@ Exponering på egen hand fungerar för många, men om ditt undvikande är utbret
 
 ## Relaterat
 
-Relaterade guider: <a href="/guider/angest">/guider/angest</a> (artikeln om exponering och undvikande)
+Relaterade guider: <a href="/guider/angest">/guider/angest</a> (guiden om exponering och undvikande)
 
 ## Prova en övning
 
@@ -3963,7 +3963,7 @@ Grubblandet upptar flera timmar per dag. Svårt att fokusera. Sover sämre. Ment
 
 Kartlägg ditt mönster. Skriv ner när du grubblar mest, vad som triggar det och hur länge det pågår.
 
-Testa en strategi från de andra artiklarna i guiden. Börja med en sak och ge det en vecka.
+Testa en strategi från de andra guiderna i ämnet. Börja med en sak och ge det en vecka.
 
 Prata med någon du litar på. Att sätta ord på det muntligt kan bryta isoleringen.
 
@@ -4103,7 +4103,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om ångest', href: '/guider/angest' },
+			{ title: 'Se alla guider om ångest', href: '/guider/angest' },
 			{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider/angest/panikattack-hjalp' },
 			{ title: 'Läs om hjälp vid ångest online', href: '/hjalp-vid-angest-online' }
 		],
@@ -4210,7 +4210,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om stress', href: '/guider/stress' },
+			{ title: 'Se alla guider om stress', href: '/guider/stress' },
 			{ title: 'Utmattad mentalt – när hjärnan inte orkar mer', href: '/guider/stress/utmattad-mentalt' },
 			{ title: 'Stöd vid stress online', href: '/stod-vid-stress-online' }
 		],
@@ -4268,7 +4268,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om trauma', href: '/guider/trauma' },
+			{ title: 'Se alla guider om trauma', href: '/guider/trauma' },
 			{ title: 'Läs om samtalsstöd vid trauma', href: '/trauma' },
 			{ title: 'Stöd vid PTSD online', href: '/stod-vid-ptsd-online' }
 		]
@@ -4304,7 +4304,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om ensamhet', href: '/guider/ensamhet' },
+			{ title: 'Se alla guider om ensamhet', href: '/guider/ensamhet' },
 			{ title: 'Läs mer om ensamhet hos MittPsyke', href: '/ensamhet' },
 			{ title: 'Prata anonymt om ensamhet', href: '/chat/b' }
 		]
@@ -4340,7 +4340,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om nedstämdhet', href: '/guider/depression' },
+			{ title: 'Se alla guider om nedstämdhet', href: '/guider/depression' },
 			{ title: 'Läs mer på sidan Nedstämdhet', href: '/nedstamdhet' },
 			{ title: 'Hjälp vid depression online', href: '/hjalp-vid-depression-online' }
 		]
@@ -4460,7 +4460,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om sömnproblem', href: '/guider/sovproblem' },
+			{ title: 'Se alla guider om sömnproblem', href: '/guider/sovproblem' },
 			{ title: 'Sömnbrist och mående – vad det gör med dig', href: '/guider/sovproblem/somnbrist-och-maendet' },
 			{ title: 'Utforska övningar', href: '/ovningar' }
 		]
@@ -4496,7 +4496,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			}
 		],
 		primaryLinks: [
-			{ title: 'Se alla artiklar om självkänsla', href: '/guider/sjalvkansla' },
+			{ title: 'Se alla guider om självkänsla', href: '/guider/sjalvkansla' },
 			{ title: 'Gränser och självkänsla', href: '/guider/sjalvkansla/gransen-och-sjalvkansla' },
 			{ title: 'Utforska övningar', href: '/ovningar' }
 		]
@@ -4539,7 +4539,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 		],
 		primaryLinks: [
 			{
-				title: 'Läs artikeln om ambivalens och kontrollförlust',
+				title: 'Läs guiden om ambivalens och kontrollförlust',
 				href: '/guider/beroende/att-vilja-sluta-och-inte-vilja-samtidigt'
 			},
 			{ title: 'Börja skriva i dagboken', href: '/dagbok' },
@@ -4578,7 +4578,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			},
 			{
 				heading: 'KBT-övningar i praktiken',
-				body: 'En enkel start är att välja en konkret situation från dagen och skriva några rader om den. Vad hände? Vad tänkte du? Vilken känsla kom? Vad gjorde du? Därefter kan du lägga till en fråga: Finns det ett litet steg som skulle hjälpa mig nästa gång? Det kan vara att formulera en mer nyanserad tanke, ta en kort promenad, skicka ett meddelande, pausa skärmtid före sömn eller öva på att stanna kvar i en mild känsla utan att genast fly från den. KBT-övningar fungerar bäst när de är realistiska och upprepas över tid. Börja därför hellre litet än ambitiöst. I artiklarna nedan hittar du fördjupningar om tankeomstrukturering, beteendeaktivering, KBT vid ångest och tekniker du kan använda hemma. Du kan också använda MittPsykes dagbok eller chat för att reflektera i lugn takt.'
+				body: 'En enkel start är att välja en konkret situation från dagen och skriva några rader om den. Vad hände? Vad tänkte du? Vilken känsla kom? Vad gjorde du? Därefter kan du lägga till en fråga: Finns det ett litet steg som skulle hjälpa mig nästa gång? Det kan vara att formulera en mer nyanserad tanke, ta en kort promenad, skicka ett meddelande, pausa skärmtid före sömn eller öva på att stanna kvar i en mild känsla utan att genast fly från den. KBT-övningar fungerar bäst när de är realistiska och upprepas över tid. Börja därför hellre litet än ambitiöst. I guiderna nedan hittar du fördjupningar om tankeomstrukturering, beteendeaktivering, KBT vid ångest och tekniker du kan använda hemma. Du kan också använda MittPsykes dagbok eller chat för att reflektera i lugn takt.'
 			}
 		],
 		primaryLinks: [

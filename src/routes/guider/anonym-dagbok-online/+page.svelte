@@ -44,7 +44,7 @@
 
 	const articleSchema = {
 		'@context': 'https://schema.org',
-		'@type': 'Article',
+		'@type': 'WebPage',
 		headline: 'Så kan anonym dagbok online hjälpa dig att sortera tankar',
 		description:
 			'Anonym dagbok kan hjälpa dig sortera tankar när allt känns rörigt. Läs om hur skrivandet fungerar och när det hjälper mest.',
@@ -74,7 +74,7 @@
 		property="og:description"
 		content="Anonym dagbok kan hjälpa dig sortera tankar när allt känns rörigt. Läs om hur skrivandet fungerar och när det hjälper mest."
 	/>
-	<meta property="og:type" content="article" />
+	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	{@html `<script type="application/ld+json">${JSON.stringify(articleSchema)}<\/script>`}
 	{@html `<script type="application/ld+json">${JSON.stringify(faqSchema)}<\/script>`}

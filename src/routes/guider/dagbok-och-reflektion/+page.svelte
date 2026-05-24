@@ -35,7 +35,7 @@
 
 	const articleSchema = {
 		'@context': 'https://schema.org',
-		'@type': 'Article',
+		'@type': 'WebPage',
 		headline: 'Dagbok och reflektion – skriv dig till klarhet',
 		description:
 			'Dagbok och reflektion hjälper dig att bearbeta tankar, se mönster och förstå ditt mående. Börja skriva anonymt direkt – inget konto krävs.',
@@ -62,7 +62,7 @@
 		property="og:description"
 		content="Skriv av dig, bearbeta tankar och följ ditt mående med dagbok och reflektion på MittPsyke."
 	/>
-	<meta property="og:type" content="article" />
+	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	{@html `<script type="application/ld+json">${JSON.stringify(articleSchema)}<\/script>`}
 	{@html `<script type="application/ld+json">${JSON.stringify(faqSchema)}<\/script>`}

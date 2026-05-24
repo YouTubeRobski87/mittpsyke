@@ -42,11 +42,12 @@
 		year: 'numeric'
 	});
 
-	const signedInPrimaryNavItems: NavItem[] = [
+	const desktopPrimaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chatta' },
-		{ href: '/dagbok', label: 'Dagbok' },
-		{ href: '/spegelvattnet', label: 'Spegelvattnet' },
-		{ href: '/anonyma-berattelser', label: 'Berättelser' }
+		{ href: '/blogg', label: 'Artiklar' },
+		{ href: '/guider', label: 'Guider' },
+		{ href: '/anonyma-berattelser', label: 'Forum' },
+		{ href: '/om-mittpsyke', label: 'Om MittPsyke' }
 	];
 
 	const guideNavItems: NavItem[] = [
@@ -55,8 +56,19 @@
 			label: 'Besvär & känslor',
 			description: 'Förstå vanliga besvär'
 		},
-		{ href: '/blogg', label: 'Artiklar', description: 'Läs mer om psykisk hälsa' },
 		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' }
+	];
+
+	const mobilePrimaryNavItems: NavItem[] = [
+		{ href: '/blogg', label: 'Artiklar' },
+		{ href: '/chat', label: 'Chatta' },
+		{ href: '/guider', label: 'Guider' },
+		{ href: '/anonyma-berattelser', label: 'Forum' },
+		{ href: '/om-mittpsyke', label: 'Om MittPsyke' }
+	];
+
+	const mobileSupplementalNavItems: NavItem[] = [
+		{ href: '/ovningar', label: 'Övningar' }
 	];
 
 	const signedInPortalNavItems: NavItem[] = [
@@ -65,14 +77,7 @@
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
 
-	const guestPrimaryNavItems: NavItem[] = [
-		{ href: '/chat', label: 'Chatta' },
-		{ href: '/dagbok', label: 'Dagbok' },
-		{ href: '/anonyma-berattelser', label: 'Berättelser' }
-	];
-
 	const guestSecondaryNavItems: NavItem[] = [
-		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
 		{ href: 'https://stodlinjer.se', label: 'Akut hjälp', external: true }
 	];
 
@@ -601,12 +606,20 @@
 					<span class="brand-wordmark">MittPsyke</span>
 				</a>
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
-					{#if user}
-						{#each signedInPrimaryNavItems as item}
-							<a href={item.href} class="text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
-						{/each}
-					{:else}
-						{#each guestPrimaryNavItems as item}
+					{#each desktopPrimaryNavItems as item}
+						{#if item.href === '/guider'}
+							<details bind:this={resourcesMenuRef} class="resources-dropdown">
+								<summary class="text-sm transition-opacity {isActive(item.href) || guideNavItems.some((guideItem) => isActive(guideItem.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">{item.label}</summary>
+								<div class="resources-dropdown-menu">
+									{#each guideNavItems as guideItem}
+										<a href={guideItem.href} class="resources-dropdown-link" onclick={closeResourcesMenu} aria-current={isActive(guideItem.href) ? 'page' : undefined}>
+											<span class="resources-dropdown-label">{guideItem.label}</span>
+											<span class="resources-dropdown-description">{guideItem.description}</span>
+										</a>
+									{/each}
+								</div>
+							</details>
+						{:else}
 							<a
 								href={item.href}
 								class="text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
@@ -616,46 +629,28 @@
 							>
 								{item.label}
 							</a>
-						{/each}
-					{/if}
-					<details bind:this={resourcesMenuRef} class="resources-dropdown">
-						<summary class="text-sm transition-opacity {guideNavItems.some((item) => isActive(item.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">Guider</summary>
-						<div class="resources-dropdown-menu">
-							{#each guideNavItems as item}
-								<a href={item.href} class="resources-dropdown-link" onclick={closeResourcesMenu} aria-current={isActive(item.href) ? 'page' : undefined}>
-									<span class="resources-dropdown-label">{item.label}</span>
-									<span class="resources-dropdown-description">{item.description}</span>
-								</a>
-							{/each}
-						</div>
-					</details>
+						{/if}
+					{/each}
 				</nav>
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
 				<nav class="mobile-quick-nav" aria-label="Snabbnavigering">
-					<a
-						href="/blogg"
-						class="mobile-quick-link mobile-quick-link-articles"
-						onclick={() => {
-							mobileMenuOpen = false;
-							profilePanelOpen = false;
-						}}
-						aria-current={isActive('/blogg') ? 'page' : undefined}
-					>
-						Artiklar
-					</a>
-					<a
-						href="/chat"
-						class="mobile-quick-link mobile-quick-link-chat"
-						onclick={() => {
-							mobileMenuOpen = false;
-							profilePanelOpen = false;
-						}}
-						aria-current={isActive('/chat') ? 'page' : undefined}
-					>
-						Chatta
-					</a>
+					{#each mobilePrimaryNavItems.slice(0, 3) as item}
+						<a
+							href={item.href}
+							class="mobile-quick-link"
+							class:mobile-quick-link-articles={item.href === '/blogg'}
+							class:mobile-quick-link-chat={item.href === '/chat'}
+							onclick={() => {
+								mobileMenuOpen = false;
+								profilePanelOpen = false;
+							}}
+							aria-current={isActive(item.href) ? 'page' : undefined}
+						>
+							{item.label}
+						</a>
+					{/each}
 				</nav>
 				<a
 					href="/sok"
@@ -664,7 +659,6 @@
 					aria-current={isActive('/sok') ? 'page' : undefined}
 				>
 					<Search size={16} aria-hidden="true" />
-					<span>Sök</span>
 				</a>
 				{#if !user}
 					<div class="hidden lg:flex items-center gap-3">
@@ -848,52 +842,37 @@
 
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden px-5 py-3" role="navigation" aria-label="Mobilmeny">
+				{#each mobilePrimaryNavItems as item}
+					<a
+						href={item.href}
+						class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
+						onclick={() => (mobileMenuOpen = false)}
+						aria-current={isActive(item.href) ? 'page' : undefined}
+					>
+						{item.label}
+					</a>
+				{/each}
+				<a href="/sok" class="mobile-menu-link mobile-menu-search-link text-sm transition-opacity {isActive('/sok') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-label="Sök på MittPsyke" aria-current={isActive('/sok') ? 'page' : undefined}>
+					<Search size={16} aria-hidden="true" />
+					<span>Sök</span>
+				</a>
+				{#each mobileSupplementalNavItems as item}
+					<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+				{/each}
 				{#if user}
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
-					{#each signedInPrimaryNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
-					{/each}
-					<a href="/guider" class="mobile-menu-link text-sm transition-opacity {isActive('/guider') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive('/guider') ? 'page' : undefined}>Guider</a>
-					<a href="/sok" class="mobile-menu-link mobile-menu-search-link text-sm transition-opacity {isActive('/sok') ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-label="Sök på MittPsyke" aria-current={isActive('/sok') ? 'page' : undefined}>
-						<Search size={16} aria-hidden="true" />
-						<span>Sök</span>
-					</a>
-					{#each guideNavItems as item}
-						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
-					{/each}
 					<p class="mobile-menu-section-title text-xs opacity-55">Profil</p>
 					{#each signedInPortalNavItems as item}
 						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>
 							{item.label}{#if item.href === '/notiser' && unreadNotificationCount > 0} ({unreadNotificationCount}){/if}
 						</a>
 					{/each}
-					<a href="/om-mittpsyke" class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Om MittPsyke</a>
 					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
 						class="mobile-menu-link text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
 					>Logga ut</button>
 				{:else}
-					{#each guestPrimaryNavItems as item}
-						<a
-							href={item.href}
-							class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
-							target={item.external ? '_blank' : undefined}
-							rel={item.external ? 'noopener noreferrer' : undefined}
-							onclick={() => (mobileMenuOpen = false)}
-							aria-current={isActive(item.href) ? 'page' : undefined}
-						>
-							{item.label}
-						</a>
-					{/each}
-					<a href="/guider" class="mobile-menu-link text-sm transition-opacity {isActive('/guider') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive('/guider') ? 'page' : undefined}>Guider</a>
-					<a href="/sok" class="mobile-menu-link mobile-menu-search-link text-sm transition-opacity {isActive('/sok') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-label="Sök på MittPsyke" aria-current={isActive('/sok') ? 'page' : undefined}>
-						<Search size={16} aria-hidden="true" />
-						<span>Sök</span>
-					</a>
-					{#each guideNavItems as item}
-						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
-					{/each}
 					{#each guestSecondaryNavItems as item}
 						<a
 							href={item.href}

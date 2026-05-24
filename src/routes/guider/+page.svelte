@@ -26,7 +26,7 @@
 <main class="container guides-page">
 	<header class="intro">
 		<h1>Guider om psykisk hälsa</h1>
-		<p>Välj ett område och läs en samlad guide med artiklar och övningar i lugn takt.</p>
+		<p>Välj ett område och läs samlade guider och övningar i lugn takt.</p>
 		<p class="intro-note">
 			Innehållet är sammanställt av MittPsyke som stöd för reflektion och ökad förståelse.
 			Det ersätter inte vård eller behandling.
@@ -38,7 +38,7 @@
 			<a class="card" href={`/guider/${pillar.slug}`}>
 				<h2>{pillar.title}</h2>
 				<p>{pillar.description}</p>
-				<span class="meta">{guideCountByPillar[pillar.slug] ?? 0} artiklar att utforska</span>
+				<span class="meta">{guideCountByPillar[pillar.slug] ?? 0} guider att utforska</span>
 			</a>
 		{/each}
 	</section>

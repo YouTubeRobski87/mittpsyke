@@ -69,7 +69,7 @@
 
 	<h1 class="guide-title mt-3 text-3xl font-semibold tracking-tight">{landing?.h1 ?? pillar.title}</h1>
 	<p class="guide-copy mt-3 leading-relaxed">{landing?.intro ?? pillar.description}</p>
-	<div class="article-meta mt-4" aria-label="Artikelinformation">
+	<div class="article-meta mt-4" aria-label="Guideinformation">
 		<p>Publicerad: {publishedAt}</p>
 		<p>Senast uppdaterad: {updatedAt}</p>
 		<p>Författare: MittPsyke</p>
@@ -93,7 +93,7 @@
 
 	{#if guides.length}
 		<section class="mt-8" aria-label="Fördjupning">
-			<h2 class="guide-heading text-xl font-semibold">Artiklar i guiden</h2>
+			<h2 class="guide-heading text-xl font-semibold">Guider i ämnet</h2>
 			<p class="guide-copy mt-2 leading-relaxed">
 				När du vill läsa vidare kan du välja en fördjupning som passar just nu.
 			</p>
@@ -111,7 +111,7 @@
 							class="guide-card-cta mt-3 inline-flex hover:underline"
 							href={`/guider/${guide.pillarSlug}/${guide.slug}`}
 						>
-							Läs artikeln
+							Läs guiden
 						</a>
 					</li>
 				{/each}
