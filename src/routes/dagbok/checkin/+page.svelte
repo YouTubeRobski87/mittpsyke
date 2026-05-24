@@ -38,9 +38,18 @@
 	};
 
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
-	const DIARY_IMAGE_ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
-	const DIARY_IMAGE_MAX_DIMENSION = 1600;
-	const DIARY_IMAGE_COMPRESSION_QUALITIES = [0.82, 0.78, 0.75];
+	const DIARY_IMAGE_UPLOAD_TARGET_BYTES = Math.floor(DIARY_IMAGE_MAX_BYTES * 0.9);
+	const DIARY_IMAGE_ALLOWED_TYPES = new Set([
+		'image/jpeg',
+		'image/pjpeg',
+		'image/png',
+		'image/webp',
+		'image/gif',
+		'image/heic',
+		'image/heif'
+	]);
+	const DIARY_IMAGE_MAX_DIMENSIONS = [1600, 1400, 1200, 1000, 850];
+	const DIARY_IMAGE_COMPRESSION_QUALITIES = [0.82, 0.74, 0.66, 0.58, 0.5, 0.42];
 	const DIARY_IMAGE_COMPRESSED_TYPE = 'image/jpeg';
 	const fallbackDailyQuestion = 'Vad behöver få lite mer plats hos dig idag?';
 	const entriesPerPage = 10;
@@ -464,6 +473,21 @@
 		});
 	}
 
+	function getScaledImageSize(width: number, height: number, maxDimension: number) {
+		const scale = Math.min(1, maxDimension / Math.max(width, height));
+		return {
+			width: Math.max(1, Math.round(width * scale)),
+			height: Math.max(1, Math.round(height * scale))
+		};
+	}
+
+	function createCompressedDiaryImageFile(file: File, blob: Blob) {
+		return new File([blob], getCompressedImageName(file.name), {
+			type: DIARY_IMAGE_COMPRESSED_TYPE,
+			lastModified: file.lastModified
+		});
+	}
+
 	async function loadImageForCompression(file: File) {
 		const url = URL.createObjectURL(file);
 		try {
@@ -489,36 +513,33 @@
 			throw new Error('Bilden kunde inte läsas i webbläsaren.');
 		}
 
-		const scale = Math.min(1, DIARY_IMAGE_MAX_DIMENSION / Math.max(originalWidth, originalHeight));
-		const targetWidth = Math.max(1, Math.round(originalWidth * scale));
-		const targetHeight = Math.max(1, Math.round(originalHeight * scale));
 		const canvas = document.createElement('canvas');
-		canvas.width = targetWidth;
-		canvas.height = targetHeight;
 		const context = canvas.getContext('2d');
 
 		if (!context) {
 			throw new Error('Bilden kunde inte förberedas i webbläsaren.');
 		}
 
-		context.drawImage(image, 0, 0, targetWidth, targetHeight);
-
 		let smallestFile: File | null = null;
-		for (const quality of DIARY_IMAGE_COMPRESSION_QUALITIES) {
-			const blob = await canvasToBlob(canvas, DIARY_IMAGE_COMPRESSED_TYPE, quality);
-			if (!blob) continue;
+		for (const maxDimension of DIARY_IMAGE_MAX_DIMENSIONS) {
+			const { width, height } = getScaledImageSize(originalWidth, originalHeight, maxDimension);
+			canvas.width = width;
+			canvas.height = height;
+			context.drawImage(image, 0, 0, width, height);
 
-			const compressedFile = new File([blob], getCompressedImageName(file.name), {
-				type: DIARY_IMAGE_COMPRESSED_TYPE,
-				lastModified: file.lastModified
-			});
+			for (const quality of DIARY_IMAGE_COMPRESSION_QUALITIES) {
+				const blob = await canvasToBlob(canvas, DIARY_IMAGE_COMPRESSED_TYPE, quality);
+				if (!blob) continue;
 
-			if (!smallestFile || compressedFile.size < smallestFile.size) {
-				smallestFile = compressedFile;
-			}
+				const compressedFile = createCompressedDiaryImageFile(file, blob);
 
-			if (compressedFile.size <= DIARY_IMAGE_MAX_BYTES) {
-				return compressedFile;
+				if (!smallestFile || compressedFile.size < smallestFile.size) {
+					smallestFile = compressedFile;
+				}
+
+				if (compressedFile.size <= DIARY_IMAGE_UPLOAD_TARGET_BYTES) {
+					return compressedFile;
+				}
 			}
 		}
 
@@ -533,7 +554,7 @@
 
 		// Klientvalidering innan nätverksanrop
 		if (!DIARY_IMAGE_ALLOWED_TYPES.has(file.type)) {
-			uploadImageError = 'Endast JPEG, PNG, WebP och GIF stöds.';
+			uploadImageError = 'Endast JPEG, PNG, WebP, GIF, HEIC och HEIF stöds.';
 			input.value = '';
 			return;
 		}
@@ -598,7 +619,7 @@
 			console.error('[handleImageSelect] Nätverksfel:', msg);
 			uploadImageError = imagePrepared
 				? 'Nätverksfel – kunde inte nå servern.'
-				: 'Bilden kunde inte förberedas i webbläsaren. Prova en annan JPEG-, PNG-, WebP- eller GIF-bild.';
+				: 'Bilden kunde inte förberedas i webbläsaren. Prova en annan JPEG-, PNG-, WebP-, GIF-, HEIC- eller HEIF-bild.';
 			clearDraftImage({ clearError: false });
 		} finally {
 			if (uploadId === draftImageUploadId) {
