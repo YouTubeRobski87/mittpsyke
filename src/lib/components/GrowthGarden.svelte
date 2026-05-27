@@ -1,15 +1,20 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import {
+		normalizeProgressCompanion,
+		readProgressCompanionFromMetadata,
+		type ProgressCompanionSelection
+	} from '$lib/progressCompanion';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 
-	type CompanionAnimalId = 'dino' | 'fox' | 'turtle';
+	type CompanionAnimalId = string;
 
 	export let growthScore: number;
 	export let growthLevel: number;
 	export let entryCount: number = 0;
 	export let activeDays: number = 0;
-	export let progressCompanion: CompanionAnimalId | null = null;
+	export let progressCompanion: ProgressCompanionSelection | string | null = null;
 
 	type CompanionStat = {
 		label: string;
@@ -20,18 +25,18 @@
 	type CompanionAnimal = {
 		id: CompanionAnimalId;
 		name: string;
-		icon: string;
+		icon?: string;
 	};
 
 	const COMPANION_STORAGE_KEY = 'mittpsyke:progress-companion';
 	const MYSTERY_EGG_VISIBLE_ENTRIES = 100;
 	const MYSTERY_EGG_CRACKED_ENTRIES = 125;
 	const MYSTERY_EGG_HATCHED_ENTRIES = 150;
-	const COMPANION_ANIMALS: CompanionAnimal[] = [
+	const COMPANION_ANIMALS = [
 		{ id: 'dino', name: 'Dino', icon: '🦕' },
 		{ id: 'fox', name: 'Räv', icon: '🦊' },
 		{ id: 'turtle', name: 'Sköldpadda', icon: '🐢' }
-	];
+	] satisfies CompanionAnimal[];
 	const EXTRA_EGGS = [
 		{ id: 2, x: 78, y: 176, visible: 100, cracked: 125, hatched: 150 },
 		{ id: 3, x: 142, y: 166, visible: 200, cracked: 250, hatched: 300 },
@@ -58,7 +63,11 @@
 		{ label: 'Närvaro', value: presenceValue > 76 ? 'Nära' : 'Här', progress: presenceValue },
 		{ label: 'Dagens steg', value: entryCount > 0 ? 'Landat' : 'Väntar', progress: entryCount > 0 ? 72 : 38 }
 	] satisfies CompanionStat[];
-	$: selectedCompanion = COMPANION_ANIMALS.find((animal) => animal.id === selectedAnimalId) ?? null;
+	$: selectedCompanion = selectedAnimalId
+		? selectedAnimal?.id === selectedAnimalId
+			? selectedAnimal
+			: (COMPANION_ANIMALS.find((animal) => animal.id === selectedAnimalId) ?? null)
+		: null;
 	$: companionName = selectedCompanion?.name ?? 'Din följeslagare';
 	$: nextStepText =
 		entryCount === 0
@@ -69,14 +78,15 @@
 
 	let careCount = 0;
 	let selectedAnimalId: CompanionAnimal['id'] | null = null;
-	let appliedProgressCompanion: CompanionAnimalId | null = null;
+	let selectedAnimal: CompanionAnimal | null = null;
+	let appliedProgressCompanion: string | null = null;
 	let companionStage: 'egg' | 'choose' | 'chosen' = 'egg';
 	let companionMessage = 'Ett litet steg räcker idag.';
 
 	$: {
-		const nextProgressCompanion = progressCompanion;
-		if (nextProgressCompanion !== appliedProgressCompanion) {
-			appliedProgressCompanion = nextProgressCompanion;
+		const nextProgressCompanion = normalizeProgressCompanion(progressCompanion);
+		if (nextProgressCompanion?.id !== appliedProgressCompanion) {
+			appliedProgressCompanion = nextProgressCompanion?.id ?? null;
 			const animal = getCompanionAnimal(nextProgressCompanion);
 			if (animal) {
 				applyCompanion(animal, activeDays > 1 ? 'Fint att du kom tillbaka.' : 'Vi tar det i lugn takt.');
@@ -98,7 +108,10 @@
 			}
 
 			authenticatedUserFound = Boolean(user);
-			const remoteAnimal = getCompanionAnimal(user?.user_metadata?.progress_companion);
+			const remoteSelection = readProgressCompanionFromMetadata(
+				(user?.user_metadata ?? null) as Record<string, unknown> | null
+			);
+			const remoteAnimal = getCompanionAnimal(remoteSelection);
 			if (remoteAnimal) {
 				applyCompanion(
 					remoteAnimal,
@@ -124,13 +137,31 @@
 	});
 
 	function getCompanionAnimal(value: unknown): CompanionAnimal | null {
-		return typeof value === 'string'
-			? (COMPANION_ANIMALS.find((option) => option.id === value) ?? null)
-			: null;
+		const selection = normalizeProgressCompanion(value);
+		if (!selection) return null;
+
+		const builtInAnimal = COMPANION_ANIMALS.find((option) => option.id === selection.id);
+		if (builtInAnimal) return builtInAnimal;
+
+		return {
+			id: selection.id,
+			name: selection.name ?? formatCompanionName(selection.id),
+			icon: selection.icon
+		};
+	}
+
+	function formatCompanionName(id: string) {
+		const normalized = id
+			.replace(/[_-]+/g, ' ')
+			.replace(/\s+/g, ' ')
+			.trim();
+		if (!normalized) return 'Din följeslagare';
+		return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 	}
 
 	function applyCompanion(animal: CompanionAnimal, message: string) {
 		selectedAnimalId = animal.id;
+		selectedAnimal = animal;
 		companionStage = 'chosen';
 		companionMessage = message;
 	}
@@ -154,7 +185,10 @@
 				return;
 			}
 
-			const savedAnimal = getCompanionAnimal(data.user?.user_metadata?.progress_companion) ?? animal;
+			const savedSelection = readProgressCompanionFromMetadata(
+				(data.user?.user_metadata ?? null) as Record<string, unknown> | null
+			);
+			const savedAnimal = getCompanionAnimal(savedSelection) ?? animal;
 			applyCompanion(savedAnimal, 'Vi tar det i lugn takt.');
 			cacheCompanion(savedAnimal.id);
 
@@ -500,7 +534,7 @@
 			</button>
 		{:else if companionStage === 'chosen' && selectedCompanion && selectedCompanion.id !== 'dino'}
 			<div class="chosen-companion" aria-hidden="true">
-				<span>{selectedCompanion.icon}</span>
+				<span>{selectedCompanion.icon ?? selectedCompanion.name.slice(0, 1)}</span>
 			</div>
 		{/if}
 		<p class="dino-bubble" aria-live="polite">{companionMessage}</p>

@@ -18,6 +18,16 @@ const COMPANION_METADATA_KEYS = [
 	'gardenCompanion'
 ] as const;
 
+const COMPANION_CONTAINER_KEYS = [
+	'preferences',
+	'settings',
+	'user_preferences',
+	'userPreferences',
+	'user_settings',
+	'userSettings',
+	'profile'
+] as const;
+
 const COMPANION_ID_KEYS = ['id', 'slug', 'key', 'value', 'companionId', 'companion_id'] as const;
 const COMPANION_NESTED_KEYS = [
 	'companion',
@@ -95,6 +105,17 @@ export function readProgressCompanionFromMetadata(
 	for (const key of COMPANION_METADATA_KEYS) {
 		const selection = normalizeProgressCompanion(metadata[key]);
 		if (selection) return selection;
+	}
+
+	for (const containerKey of COMPANION_CONTAINER_KEYS) {
+		const container = metadata[containerKey];
+		if (!container || typeof container !== 'object' || Array.isArray(container)) continue;
+		const record = container as Record<string, unknown>;
+
+		for (const key of COMPANION_METADATA_KEYS) {
+			const selection = normalizeProgressCompanion(record[key]);
+			if (selection) return selection;
+		}
 	}
 
 	return null;

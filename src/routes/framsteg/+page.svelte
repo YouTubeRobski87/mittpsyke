@@ -6,6 +6,7 @@
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import GrowthGarden from '$lib/components/GrowthGarden.svelte';
+	import type { ProgressCompanionSelection } from '$lib/progressCompanion';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -93,7 +94,7 @@
 		heatmapData?: Record<string, number>;
 		heatmapError?: string;
 		profileTheme?: keyof typeof THEMES | null;
-		progressCompanion?: 'dino' | 'fox' | 'turtle' | null;
+		progressCompanion?: ProgressCompanionSelection | string | null;
 	}
 
 	// ── Theme ──
