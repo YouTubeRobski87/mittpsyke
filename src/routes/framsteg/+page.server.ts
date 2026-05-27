@@ -14,9 +14,8 @@ function toProgressCompanion(value: unknown): ProgressCompanion | null {
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const {
-		data: { session }
-	} = await locals.supabase.auth.getSession();
-	const user = session?.user ?? null;
+		data: { user }
+	} = await locals.supabase.auth.getUser();
 
 	if (!user) {
 		throw redirect(303, '/login');

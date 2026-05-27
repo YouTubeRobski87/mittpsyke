@@ -69,24 +69,36 @@
 
 	let careCount = 0;
 	let selectedAnimalId: CompanionAnimal['id'] | null = null;
+	let appliedProgressCompanion: CompanionAnimalId | null = null;
 	let companionStage: 'egg' | 'choose' | 'chosen' = 'egg';
 	let companionMessage = 'Ett litet steg räcker idag.';
 
-	$: if (progressCompanion) {
-		const animal = getCompanionAnimal(progressCompanion);
-		if (animal && selectedAnimalId !== animal.id) {
-			applyCompanion(animal, activeDays > 1 ? 'Fint att du kom tillbaka.' : 'Vi tar det i lugn takt.');
+	$: {
+		const nextProgressCompanion = progressCompanion;
+		if (nextProgressCompanion !== appliedProgressCompanion) {
+			appliedProgressCompanion = nextProgressCompanion;
+			const animal = getCompanionAnimal(nextProgressCompanion);
+			if (animal) {
+				applyCompanion(animal, activeDays > 1 ? 'Fint att du kom tillbaka.' : 'Vi tar det i lugn takt.');
+			}
 		}
 	}
 
 	onMount(async () => {
 		if (!browser) return;
+		let authenticatedUserFound = false;
 
 		try {
 			const {
-				data: { session }
-			} = await supabase.auth.getSession();
-			const remoteAnimal = getCompanionAnimal(session?.user.user_metadata?.progress_companion);
+				data: { user },
+				error
+			} = await supabase.auth.getUser();
+			if (error) {
+				console.error('Could not load progress companion from Supabase:', error);
+			}
+
+			authenticatedUserFound = Boolean(user);
+			const remoteAnimal = getCompanionAnimal(user?.user_metadata?.progress_companion);
 			if (remoteAnimal) {
 				applyCompanion(
 					remoteAnimal,
@@ -100,6 +112,7 @@
 		}
 
 		try {
+			if (authenticatedUserFound || selectedAnimalId) return;
 			const savedAnimal = localStorage.getItem(COMPANION_STORAGE_KEY);
 			const animal = getCompanionAnimal(savedAnimal);
 			if (animal) {
@@ -132,13 +145,22 @@
 	}
 
 	async function persistCompanion(animal: CompanionAnimal) {
-		cacheCompanion(animal.id);
 		try {
-			const { error } = await supabase.auth.updateUser({
+			const { data, error } = await supabase.auth.updateUser({
 				data: { progress_companion: animal.id }
 			});
 			if (error) {
 				console.error('Could not save progress companion:', error);
+				return;
+			}
+
+			const savedAnimal = getCompanionAnimal(data.user?.user_metadata?.progress_companion) ?? animal;
+			applyCompanion(savedAnimal, 'Vi tar det i lugn takt.');
+			cacheCompanion(savedAnimal.id);
+
+			const { error: refreshError } = await supabase.auth.refreshSession();
+			if (refreshError) {
+				console.error('Could not refresh progress companion session:', refreshError);
 			}
 		} catch (error) {
 			console.error('Could not save progress companion:', error);
