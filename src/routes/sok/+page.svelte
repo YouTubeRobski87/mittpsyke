@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { trackEvent } from '$lib/analytics';
+	import { trackEvent, trackSearchUsed } from '$lib/analytics';
 	import { guides, pillars } from '$lib/seo-kit/content';
 
 	type SearchResult = {
@@ -86,12 +86,7 @@
 		const timeout = window.setTimeout(() => {
 			if (normalizedQuery === lastTrackedSearchQuery) return;
 			lastTrackedSearchQuery = normalizedQuery;
-			const resultCount = filteredGuides.length + filteredArticles.length;
-			trackEvent('search_performed', {
-				query: normalizedQuery.slice(0, 120),
-				resultCount,
-				hasResults: resultCount > 0
-			});
+			trackSearchUsed({ query_length: normalizedQuery.length });
 		}, 800);
 
 		return () => window.clearTimeout(timeout);

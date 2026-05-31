@@ -5,7 +5,9 @@
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
+	import { trackGuideView } from '$lib/analytics';
 	import { buildTitle } from '$lib/seo-kit/seo';
+	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
@@ -75,6 +77,13 @@
 				}
 			: null
 	);
+
+	onMount(() => {
+		trackGuideView({
+			guide_slug: data.guide.slug,
+			category: data.pillar.slug
+		});
+	});
 </script>
 
 <SEO canonical={`https://www.mittpsyke.se${$page.url.pathname}`} />

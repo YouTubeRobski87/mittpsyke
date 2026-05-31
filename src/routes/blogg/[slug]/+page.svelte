@@ -1,5 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import { onMount } from 'svelte';
+	import { trackArticleView } from '$lib/analytics';
 
 	let { data } = $props();
 
@@ -36,6 +38,13 @@
 			.replace(/\u2028/g, '\\u2028')
 			.replace(/\u2029/g, '\\u2029')
 	);
+
+	onMount(() => {
+		trackArticleView({
+			article_slug: article.slug,
+			category: 'blogg'
+		});
+	});
 </script>
 
 <SEO {canonical} />
