@@ -4,7 +4,11 @@
 	import { afterNavigate } from '$app/navigation';
 	import {
 		ANALYTICS_ENABLED,
+		trackAuthCompletedFromPendingState,
+		trackInternalLinkClicked,
+		trackLandingPageViewOnce,
 		initializeAnalytics,
+		trackReturnVisitIfNeeded,
 		trackPageView,
 		disableAnalytics
 	} from '$lib/analytics';
@@ -272,6 +276,7 @@
 			loadedLayoutSummaryUserId = sessionUser.id;
 			void loadLayoutSummary();
 		}
+		trackAuthCompletedFromPendingState();
 		if (syncedProfileUserId === sessionUser.id) return;
 		syncedProfileUserId = sessionUser.id;
 
@@ -399,7 +404,35 @@
 		if (lastTrackedPagePath === nextPageKey) return;
 
 		trackPageView(url);
+		trackLandingPageViewOnce(url);
+		trackReturnVisitIfNeeded();
 		lastTrackedPagePath = nextPageKey;
+	}
+
+	function handleInternalLinkClick(event: MouseEvent) {
+		if (!analyticsEnabled || !browser) return;
+
+		const target = event.target;
+		if (!(target instanceof Element)) return;
+
+		const anchor = target.closest('a[href]');
+		if (!(anchor instanceof HTMLAnchorElement)) return;
+
+		const href = anchor.getAttribute('href');
+		if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+
+		let destination: URL;
+		try {
+			destination = new URL(href, window.location.href);
+		} catch {
+			return;
+		}
+
+		if (destination.origin !== window.location.origin) return;
+
+		trackInternalLinkClicked({
+			destination: `${destination.pathname}${destination.search}${destination.hash}`
+		});
 	}
 
 	function syncAnalyticsConsent() {
@@ -428,9 +461,11 @@
 		};
 
 		window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+		document.addEventListener('click', handleInternalLinkClick);
 
 		return () => {
 			window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+			document.removeEventListener('click', handleInternalLinkClick);
 		};
 	});
 
