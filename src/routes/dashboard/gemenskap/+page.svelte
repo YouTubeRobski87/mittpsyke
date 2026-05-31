@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import SEO from '$lib/components/SEO.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
+	import { trackForumReplyCreated } from '$lib/analytics';
 	import { supabase } from '$lib/supabase';
 	import type {
 		CreateCommunityCommentSuccessResponse,
@@ -416,6 +417,7 @@
 				[post.id]: ''
 			};
 
+			trackForumReplyCreated();
 			setCommentFeedback(post.id, 'Tack för att du skriver med omtanke.', 'success');
 		} catch (error) {
 			setCommentFeedback(

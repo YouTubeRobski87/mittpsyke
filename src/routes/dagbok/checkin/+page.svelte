@@ -3,7 +3,14 @@
 	import { dev } from '$app/environment';
 	import { onDestroy, onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
-	import { trackSignupCompleted, trackDiaryPageOpenedFromHoroscope } from '$lib/analytics';
+	import {
+		countWords,
+		trackDiaryEntryCreated,
+		trackDiaryEntryDeleted,
+		trackDiaryEntryUpdated,
+		trackDiaryPageOpenedFromHoroscope,
+		trackSignupCompleted
+	} from '$lib/analytics';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
@@ -381,6 +388,7 @@
 					? { ...e, content: editingText.trim(), mood: editingMood || null }
 					: e
 			);
+			trackDiaryEntryUpdated();
 			editingEntryId = '';
 			editingText = '';
 			editingMood = '';
@@ -445,6 +453,7 @@
 			}
 
 			entries = entries.filter((e) => e.id !== entry.id);
+			trackDiaryEntryDeleted();
 			confirmingDeleteEntryId = '';
 			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
 		} catch (error) {
@@ -810,6 +819,9 @@
 					window.history.replaceState({}, '', `${url.pathname}${query ? `?${query}` : ''}${url.hash}`);
 				}
 			}
+
+			const savedDraftText = draftText.trim();
+			trackDiaryEntryCreated({ word_count: countWords(savedDraftText) });
 
 			draftText = '';
 			draftPromptQuestion = '';
