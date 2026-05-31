@@ -12,7 +12,9 @@
 		type HealthConsentRecord
 	} from '$lib/consent';
 	import {
-		ANALYTICS_ENABLED
+		trackChatMessageSent,
+		trackChatStarted,
+		trackEvent
 	} from '$lib/analytics';
 	import {
 		CHAT_CONTEXT_LIMIT,
@@ -165,24 +167,6 @@
 
 	let currentSupportLevel = $derived(supportLevel());
 	const tempEntryStorageKey = 'mittpsyke_temp_entry';
-
-	async function trackEvent(eventName: string, data: Record<string, string | number> = {}) {
-		if (!browser || !ANALYTICS_ENABLED) return;
-		try {
-			await fetch('/api/events', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					event: eventName,
-					category: category || null,
-					timestamp: new Date().toISOString(),
-					...data
-				})
-			});
-		} catch {
-			// Best effort: analytics must never affect chat flow.
-		}
-	}
 
 	function scrollToBottom() {
 		if (chatLog) {
@@ -513,7 +497,9 @@
 				window.localStorage.setItem('mittpsyke:last-chat-category', category);
 			}
 
+			trackChatMessageSent();
 			if (!hasTrackedFirstMessage) {
+				trackChatStarted();
 				void trackEvent('first_message_sent', {
 					source: firstMessageSource,
 					textLength: text.length
