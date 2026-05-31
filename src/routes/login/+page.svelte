@@ -5,6 +5,7 @@
 	import type { ActionData } from './$types';
 	import { supabase } from '$lib/supabase';
 	import { canUseGoogleOAuth, getStableOAuthCallbackUrl } from '$lib/auth-redirect';
+	import { clearPendingAuthFunnel, markLoginStarted } from '$lib/analytics';
 
 	let { form }: { form: ActionData } = $props();
 	let loading = $state(false);
@@ -41,6 +42,7 @@
 			return;
 		}
 		oauthLoading = true;
+		markLoginStarted();
 
 		const { error } = await supabase.auth.signInWithOAuth({
 			provider: 'google',
@@ -52,6 +54,7 @@
 		if (error) {
 			oauthError = 'Det gick inte att starta Google-inloggningen. Försök igen om en liten stund.';
 			oauthLoading = false;
+			clearPendingAuthFunnel();
 		}
 	}
 </script>
@@ -68,8 +71,12 @@
 
 	<form method="POST" novalidate use:enhance={() => {
 		loading = true;
-		return async ({ update }) => {
+		markLoginStarted();
+		return async ({ result, update }) => {
 			loading = false;
+			if (result.type === 'failure' || result.type === 'error') {
+				clearPendingAuthFunnel();
+			}
 			await update();
 		};
 	}} class="space-y-4">
