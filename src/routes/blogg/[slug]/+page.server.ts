@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { SORO_EMBED_SRC, SORO_TOKEN } from '$lib/server/soro-articles';
+import { SORO_EMBED_SRC, SORO_TOKEN } from '$lib/soro';
 import type { PageServerLoad } from './$types';
 
 const CACHE_CONTROL = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';

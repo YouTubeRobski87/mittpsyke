@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import SoroBlogEmbed from '$lib/components/SoroBlogEmbed.svelte';
 
 	let { data } = $props();
 
@@ -119,7 +120,7 @@
 					</nav>
 				{/if}
 			{:else if loadError}
-				<p class="blog-fallback">Artiklarna kunde inte laddas just nu. Försök igen om en stund.</p>
+				<SoroBlogEmbed />
 			{:else}
 				<p class="blog-fallback">Inga artiklar hittades just nu.</p>
 			{/if}

@@ -1,28 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
-
-	const soroEmbedSrc =
-		'https://app.trysoro.com/api/embed/8ddf4490-ef9e-45aa-998d-adfb8114dd7f?theme=dark';
-	const soroScriptId = 'soro-blog-embed-script';
-
-	onMount(() => {
-		const container = document.getElementById('soro-blog');
-		container?.replaceChildren();
-		document.getElementById(soroScriptId)?.remove();
-
-		const script = document.createElement('script');
-		script.id = soroScriptId;
-		script.src = soroEmbedSrc;
-		script.defer = true;
-		document.body.appendChild(script);
-	});
+	import SoroBlogEmbed from '$lib/components/SoroBlogEmbed.svelte';
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/artiklar/soro" />
 
 <svelte:head>
-		<title>Artiklar från Stödlinjer.se | MittPsyke</title>
+	<title>Artiklar från Stödlinjer.se | MittPsyke</title>
 	<meta
 		name="description"
 		content="Artiklar från Stödlinjer.se om stödvägar, psykiskt mående och hjälp i vardagen."
@@ -36,7 +20,7 @@
 			<h1 id="soro-heading">Artiklar från Stödlinjer.se</h1>
 			<p>Fördjupande texter om stödvägar, psykiskt mående och hjälp i vardagen.</p>
 		</div>
-		<div id="soro-blog"></div>
+		<SoroBlogEmbed />
 	</section>
 </main>
 
@@ -57,10 +41,6 @@
 	.soro-header {
 		max-width: 680px;
 		margin-bottom: 1.2rem;
-	}
-
-	#soro-blog {
-		min-height: 260px;
 	}
 
 	.eyebrow,

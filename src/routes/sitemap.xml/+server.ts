@@ -3,7 +3,7 @@ import { canonical } from '$lib/seo-kit/seo';
 import { tools } from '$lib/data/seo-architecture';
 import { portals } from '$lib/data/portals';
 import { seoSupportPagePaths } from '$lib/data/seo-support-pages';
-import { SORO_EMBED_SRC } from '$lib/server/soro-articles';
+import { SORO_EMBED_SRC } from '$lib/soro';
 import type { RequestHandler } from './$types';
 
 const STATIC_CONTENT_LASTMOD = '2026-03-29';
