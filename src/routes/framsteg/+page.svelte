@@ -7,6 +7,7 @@
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import GrowthGarden from '$lib/components/GrowthGarden.svelte';
 	import type { ProgressCompanionSelection } from '$lib/progressCompanion';
+	import { trackMilestoneReachedOnce, trackStreakDayReachedOnce } from '$lib/analytics';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -232,6 +233,13 @@
 		growthScore = entryCount + activeDays * 3;
 		growthLevel = getGrowthLevel(entryCount);
 		progressLoaded = true;
+
+		if (streakData?.currentStreak) {
+			trackStreakDayReachedOnce(streakData.currentStreak);
+		}
+		for (const milestone of milestonesData?.achieved ?? []) {
+			trackMilestoneReachedOnce(milestone.title ?? milestone.text);
+		}
 	}
 
 	async function loadProgressData() {
