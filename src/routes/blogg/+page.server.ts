@@ -6,35 +6,6 @@ import {
 import type { PageServerLoad } from './$types';
 
 const ARTICLES_PER_PAGE = 10;
-const FALLBACK_ARTICLES = [
-	{
-		id: 'fallback-ai-hjalper-dig-bearbeta-kanslor',
-		title: 'AI hjälper dig bearbeta känslor',
-		slug: 'ai-hjalper-dig-bearbeta-kanslor',
-		excerpt: 'Om hur AI-stöd kan hjälpa dig sätta ord på det som känns svårt i lugn takt.',
-		date: '29 mars 2026',
-		isoDate: '2026-03-29',
-		imageUrl: null
-	},
-	{
-		id: 'fallback-kbt-dagbok-vs-fri-journalforing',
-		title: 'KBT-dagbok eller fri journalföring?',
-		slug: 'kbt-dagbok-vs-fri-journalforing',
-		excerpt: 'Skillnaden mellan strukturerade tankestöd och friare skrivande när du vill förstå dig själv bättre.',
-		date: '29 mars 2026',
-		isoDate: '2026-03-29',
-		imageUrl: null
-	},
-	{
-		id: 'fallback-vad-ar-journalterapi',
-		title: 'Vad är journalterapi?',
-		slug: 'vad-ar-journalterapi',
-		excerpt: 'En enkel introduktion till hur skrivande kan bli ett stöd för reflektion och återhämtning.',
-		date: '29 mars 2026',
-		isoDate: '2026-03-29',
-		imageUrl: null
-	}
-];
 
 function getRequestedPage(url: URL): number {
 	const rawPage = url.searchParams.get('page');
@@ -54,8 +25,7 @@ export const load: PageServerLoad = async ({ fetch, url, setHeaders }) => {
 		throw redirect(308, '/blogg');
 	}
 
-	const { articles: fetchedArticles, loadError } = await fetchSoroArticles(fetch);
-	const articles = fetchedArticles.length ? fetchedArticles : FALLBACK_ARTICLES;
+	const { articles, loadError } = await fetchSoroArticles(fetch);
 
 	// Cacha listan en kort stund så vi inte hamrar Soro vid varje request.
 	const totalArticles = articles.length;

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import { SORO_EMBED_SRC } from '$lib/soro';
 
 	let { data } = $props();
 
@@ -17,6 +18,7 @@
 	const pageNumbers = $derived(
 		Array.from({ length: pagination.totalPages }, (_, index) => index + 1)
 	);
+	const shouldUseSoroEmbed = $derived(loadError || !articles.length);
 
 	function pageHref(page: number): string {
 		return page <= 1 ? '/blogg' : `/blogg?page=${page}`;
@@ -32,6 +34,9 @@
 		content="Läs artiklar om att skriva av sig, psykiskt mående, oro, stress och återhämtning i din egen takt."
 	/>
 	<meta property="og:type" content="website" />
+	{#if shouldUseSoroEmbed}
+		<script src={SORO_EMBED_SRC} defer></script>
+	{/if}
 	{#if pagination.hasPrevious}
 		<link rel="prev" href={`https://www.mittpsyke.se${pageHref(pagination.currentPage - 1)}`} />
 	{/if}
@@ -118,8 +123,10 @@
 						{/if}
 					</nav>
 				{/if}
-			{:else if loadError}
-				<p class="blog-fallback">Artiklarna kunde inte laddas just nu. Försök igen om en stund.</p>
+			{:else if shouldUseSoroEmbed}
+				<div id="soro-blog" class="soro-embed" aria-label="Artiklar från Soro">
+					<p class="blog-fallback">Artiklarna laddas. Om inget syns behöver Soro-embedden vara aktiverad för mittpsyke.se.</p>
+				</div>
 			{:else}
 				<p class="blog-fallback">Inga artiklar hittades just nu.</p>
 			{/if}
@@ -190,6 +197,10 @@
 		font-size: 0.95rem;
 		line-height: 1.6;
 		opacity: 0.78;
+	}
+
+	.soro-embed {
+		min-height: 260px;
 	}
 
 	.blog-list {
