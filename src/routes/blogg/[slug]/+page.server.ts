@@ -92,13 +92,17 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 		'cache-control': CACHE_CONTROL
 	});
 
+	const normalizedSlug = normalizeSlug(article.slug);
+	const title = LOCAL_TITLE_BY_SLUG.get(normalizedSlug) ?? article.title;
+
 	return {
+		title,
 		description: article.excerpt,
 		article: {
 			...article,
-			slug: normalizeSlug(article.slug),
-			title: LOCAL_TITLE_BY_SLUG.get(normalizeSlug(article.slug)) ?? article.title,
-			image: LOCAL_FEATURED_IMAGE_BY_SLUG.get(normalizeSlug(article.slug)) ?? article.image,
+			slug: normalizedSlug,
+			title,
+			image: LOCAL_FEATURED_IMAGE_BY_SLUG.get(normalizedSlug) ?? article.image,
 			content: contentPayload.content
 		}
 	};
