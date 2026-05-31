@@ -5,6 +5,37 @@
 
 	const article = $derived(data.article);
 	const canonical = $derived(`https://www.mittpsyke.se/blogg/${article.slug}`);
+	const ogImage = $derived(article.image ?? 'https://www.mittpsyke.se/og-image.png');
+	const schema = $derived({
+		'@context': 'https://schema.org',
+		'@type': 'BlogPosting',
+		headline: article.title,
+		description: article.excerpt,
+		image: ogImage,
+		datePublished: article.isoDate,
+		dateModified: article.isoDate,
+		inLanguage: 'sv-SE',
+		author: {
+			'@type': 'Person',
+			name: 'Robert Claesson',
+			url: 'https://www.mittpsyke.se/om-mittpsyke'
+		},
+		publisher: {
+			'@type': 'Organization',
+			name: 'MittPsyke',
+			logo: {
+				'@type': 'ImageObject',
+				url: 'https://www.mittpsyke.se/og-image.png'
+			}
+		},
+		mainEntityOfPage: canonical
+	});
+	const jsonLd = $derived(
+		JSON.stringify(schema)
+			.replace(/</g, '\\u003c')
+			.replace(/\u2028/g, '\\u2028')
+			.replace(/\u2029/g, '\\u2029')
+	);
 </script>
 
 <SEO {canonical} />
@@ -14,9 +45,8 @@
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content={article.title} />
 	<meta property="og:description" content={article.excerpt} />
-	{#if article.image}
-		<meta property="og:image" content={article.image} />
-	{/if}
+	<meta property="og:image" content={ogImage} />
+	{@html `<script type="application/ld+json">${jsonLd}<\/script>`}
 </svelte:head>
 
 <article class="soro-article">
