@@ -1,6 +1,6 @@
 // src/routes/api/diary/milestones/+server.ts
 import { json } from '@sveltejs/kit';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/public';
 import type { RequestHandler } from '@sveltejs/kit';
 
@@ -14,14 +14,17 @@ const stockholmDateFormatter = new Intl.DateTimeFormat('sv-CA', {
 });
 const MILESTONES_LOOKBACK_DAYS = 365;
 const MILESTONES_ROW_LIMIT = 500;
+const TOTAL_WORDS_PAGE_SIZE = 1000;
+const HIGHEST_TOTAL_WORDS_THRESHOLD = 50000;
 
-type MilestoneCategory = 'entries' | 'streak' | 'time' | 'quality';
+type MilestoneCategory = 'firstSteps' | 'diary' | 'consistency' | 'time' | 'writingDepth';
 type MilestoneMetric =
 	| 'totalEntries'
 	| 'longestStreak'
 	| 'daysSinceJoined'
 	| 'maxWordsInEntry'
-	| 'maxWordsInDay';
+	| 'maxWordsInDay'
+	| 'totalWords';
 type MilestoneUnit = 'inlägg' | 'dagar' | 'ord';
 
 type MilestoneDefinition = {
@@ -30,6 +33,8 @@ type MilestoneDefinition = {
 	metric: MilestoneMetric;
 	threshold: number;
 	emoji: string;
+	title: string;
+	description: string;
 	text: string;
 	unit: MilestoneUnit;
 };
@@ -40,10 +45,15 @@ type MilestoneMetrics = {
 	daysSinceJoined: number;
 	maxWordsInEntry: number;
 	maxWordsInDay: number;
+	totalWords: number;
 };
 
 type DiaryRow = {
 	created_at: string | null;
+	text: string | null;
+};
+
+type DiaryTextRow = {
 	text: string | null;
 };
 
@@ -59,36 +69,302 @@ type MilestonesResponse = {
 };
 
 const CATEGORY_TITLES: Record<MilestoneCategory, string> = {
-	entries: 'Antal inlägg',
-	streak: 'Streak i följd',
+	firstSteps: 'Första steg',
+	diary: 'Dagbokens milstolpar',
+	consistency: 'Närvaro över tid',
 	time: 'Tid med MittPsyke',
-	quality: 'Skrivdjup'
+	writingDepth: 'Skrivdjup'
 };
 
-const CATEGORY_ORDER: MilestoneCategory[] = ['entries', 'streak', 'time', 'quality'];
+const CATEGORY_ORDER: MilestoneCategory[] = ['firstSteps', 'consistency', 'writingDepth', 'time', 'diary'];
 
 const MILESTONE_DEFINITIONS: MilestoneDefinition[] = [
-	{ id: 'entries-1', category: 'entries', metric: 'totalEntries', threshold: 1, emoji: '📝', text: 'Din första dagboksanteckning', unit: 'inlägg' },
-	{ id: 'entries-3', category: 'entries', metric: 'totalEntries', threshold: 3, emoji: '🎵', text: 'Du börjar hitta en rytm', unit: 'inlägg' },
-	{ id: 'entries-5', category: 'entries', metric: 'totalEntries', threshold: 5, emoji: '🚀', text: '5 inlägg – Du är på vägen!', unit: 'inlägg' },
-	{ id: 'entries-10', category: 'entries', metric: 'totalEntries', threshold: 10, emoji: '💪', text: '10 inlägg – Stark början', unit: 'inlägg' },
-	{ id: 'entries-25', category: 'entries', metric: 'totalEntries', threshold: 25, emoji: '📖', text: '25 inlägg – En vanlig journalist!', unit: 'inlägg' },
-	{ id: 'entries-50', category: 'entries', metric: 'totalEntries', threshold: 50, emoji: '🔥', text: '50 inlägg – Hälften till 100!', unit: 'inlägg' },
-	{ id: 'entries-100', category: 'entries', metric: 'totalEntries', threshold: 100, emoji: '🌟', text: '100 inlägg – Miljon tankar sparade', unit: 'inlägg' },
-	{ id: 'entries-150', category: 'entries', metric: 'totalEntries', threshold: 150, emoji: '📚', text: '150 inlägg – Du skriver på riktigt', unit: 'inlägg' },
-	{ id: 'entries-200', category: 'entries', metric: 'totalEntries', threshold: 200, emoji: '🏅', text: '200 inlägg – Dedikerad dagboksskrivare', unit: 'inlägg' },
-	{ id: 'entries-365', category: 'entries', metric: 'totalEntries', threshold: 365, emoji: '🗓️', text: '365 inlägg – Ett inlägg för varje dag', unit: 'inlägg' },
-	{ id: 'entries-500', category: 'entries', metric: 'totalEntries', threshold: 500, emoji: '💎', text: '500 inlägg – Halvvägs till tusen', unit: 'inlägg' },
-	{ id: 'entries-1000', category: 'entries', metric: 'totalEntries', threshold: 1000, emoji: '🏆', text: '1000 inlägg – Legendarisk', unit: 'inlägg' },
-	{ id: 'streak-7', category: 'streak', metric: 'longestStreak', threshold: 7, emoji: '🔥', text: '7 dagar i rad – En veckas styrka', unit: 'dagar' },
-	{ id: 'streak-30', category: 'streak', metric: 'longestStreak', threshold: 30, emoji: '⚡', text: '30 dagar i rad – En månads momentum', unit: 'dagar' },
-	{ id: 'streak-100', category: 'streak', metric: 'longestStreak', threshold: 100, emoji: '🌟', text: '100 dagar i rad – Oövervinnerlig', unit: 'dagar' },
-	{ id: 'time-90', category: 'time', metric: 'daysSinceJoined', threshold: 90, emoji: '🌱', text: '3 månader – Du har slagit rot', unit: 'dagar' },
-	{ id: 'time-180', category: 'time', metric: 'daysSinceJoined', threshold: 180, emoji: '🌿', text: '6 månader – Du blommar ut', unit: 'dagar' },
-	{ id: 'time-365', category: 'time', metric: 'daysSinceJoined', threshold: 365, emoji: '🌳', text: '1 år – Ett helt år med MittPsyke', unit: 'dagar' },
-	{ id: 'quality-500', category: 'quality', metric: 'maxWordsInEntry', threshold: 500, emoji: '📖', text: 'Djupdykning – Över 500 ord i ett inlägg', unit: 'ord' },
-	{ id: 'quality-1000', category: 'quality', metric: 'maxWordsInEntry', threshold: 1000, emoji: '🖊️', text: 'Romanförfattaren – Över 1000 ord', unit: 'ord' },
-	{ id: 'quality-1500-day', category: 'quality', metric: 'maxWordsInDay', threshold: 1500, emoji: '🎯', text: 'Ordflödet – 1500 ord på en dag', unit: 'ord' }
+	{
+		id: 'first-word',
+		category: 'firstSteps',
+		metric: 'totalEntries',
+		threshold: 1,
+		emoji: '✍️',
+		title: 'Första ordet',
+		description: 'Du lät något få en plats utanför huvudet. Det kan vara litet och ändå betyda mycket.',
+		text: 'Första ordet – du lät något få en plats utanför huvudet.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-1',
+		category: 'firstSteps',
+		metric: 'totalEntries',
+		threshold: 1,
+		emoji: '📝',
+		title: 'Första anteckningen',
+		description: 'Din första sparade reflektion finns här när du vill återvända till den.',
+		text: 'Första anteckningen – din första sparade reflektion.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-3',
+		category: 'firstSteps',
+		metric: 'totalEntries',
+		threshold: 3,
+		emoji: '🌤️',
+		title: 'Du började',
+		description: 'Du har kommit tillbaka mer än en gång. Det säger något om att du gör plats för dig själv.',
+		text: 'Du började – du har kommit tillbaka mer än en gång.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-5',
+		category: 'firstSteps',
+		metric: 'totalEntries',
+		threshold: 5,
+		emoji: '👣',
+		title: 'Fem steg framåt',
+		description: 'Fem tillfällen där du stannade upp och skrev ner något från insidan.',
+		text: 'Fem steg framåt – fem tillfällen där du stannade upp.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-10',
+		category: 'firstSteps',
+		metric: 'totalEntries',
+		threshold: 10,
+		emoji: '💛',
+		title: 'Stark början',
+		description: 'Du har börjat bygga en vana som får vara mjuk, ojämn och din egen.',
+		text: 'Stark början – du har börjat bygga en egen skrivplats.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-25',
+		category: 'diary',
+		metric: 'totalEntries',
+		threshold: 25,
+		emoji: '📖',
+		title: 'Du fortsätter',
+		description: '25 inlägg. Du har återvänt till dina tankar även när dagarna sett olika ut.',
+		text: '25 inlägg – Du fortsätter.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-50',
+		category: 'diary',
+		metric: 'totalEntries',
+		threshold: 50,
+		emoji: '🌿',
+		title: 'Femtio stunder sparade',
+		description: 'En samling små och stora ögonblick som tillsammans visar att du varit här.',
+		text: 'Femtio stunder sparade – små och stora ögonblick har fått plats.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-100',
+		category: 'diary',
+		metric: 'totalEntries',
+		threshold: 100,
+		emoji: '🌟',
+		title: 'Hundra tankar sparade',
+		description: '100 inlägg. Du har gett många tankar en trygg plats att landa på.',
+		text: '100 inlägg – Hundra tankar sparade.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-150',
+		category: 'diary',
+		metric: 'totalEntries',
+		threshold: 150,
+		emoji: '📚',
+		title: 'En stadig skrivplats',
+		description: 'Skrivandet har blivit något du kan återvända till, utan att behöva prestera.',
+		text: 'En stadig skrivplats – du kan återvända hit utan krav.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-200',
+		category: 'diary',
+		metric: 'totalEntries',
+		threshold: 200,
+		emoji: '🧭',
+		title: 'Många sidor av dig',
+		description: 'Fler dagar har fått nyanser, minnen och ord. Det gör din resa lättare att se.',
+		text: 'Många sidor av dig – fler dagar har fått nyanser och ord.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-250',
+		category: 'diary',
+		metric: 'totalEntries',
+		threshold: 250,
+		emoji: '🌱',
+		title: 'Din berättelse växer',
+		description: '250 inlägg. Det du skriver börjar bilda en tydligare bild av vad du burit och behövt.',
+		text: '250 inlägg – Din berättelse växer.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-365',
+		category: 'diary',
+		metric: 'totalEntries',
+		threshold: 365,
+		emoji: '🗓️',
+		title: 'Många dagar fick plats',
+		description: 'Du har sparat ett helt års värde av avtryck, i den takt som varit möjlig för dig.',
+		text: 'Många dagar fick plats – ett helt års värde av avtryck.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-500',
+		category: 'diary',
+		metric: 'totalEntries',
+		threshold: 500,
+		emoji: '💎',
+		title: 'En del av MittPsyke',
+		description: '500 inlägg. Din plats här har blivit något återkommande och betydelsefullt.',
+		text: '500 inlägg – En del av MittPsyke.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'entries-1000',
+		category: 'diary',
+		metric: 'totalEntries',
+		threshold: 1000,
+		emoji: '🏆',
+		title: 'Legendarisk berättare',
+		description: '1000 inlägg. En ovanligt rik berättelse om dagar, känslor och fortsättning.',
+		text: '1000 inlägg – Legendarisk berättare.',
+		unit: 'inlägg'
+	},
+	{
+		id: 'streak-7',
+		category: 'consistency',
+		metric: 'longestStreak',
+		threshold: 7,
+		emoji: '🕯️',
+		title: 'En vecka av närvaro',
+		description: '7 dagar i rad. Du har gett dig själv en liten stund av uppmärksamhet varje dag.',
+		text: '7 dagar i rad – En vecka av närvaro.',
+		unit: 'dagar'
+	},
+	{
+		id: 'streak-30',
+		category: 'consistency',
+		metric: 'longestStreak',
+		threshold: 30,
+		emoji: '🌙',
+		title: 'Du fortsatte',
+		description: '30 dagar i rad. Det handlar inte om perfektion, utan om att du återvände.',
+		text: '30 dagar i rad – Du fortsatte.',
+		unit: 'dagar'
+	},
+	{
+		id: 'streak-100',
+		category: 'consistency',
+		metric: 'longestStreak',
+		threshold: 100,
+		emoji: '🌟',
+		title: 'Ovanligt uthållig',
+		description: '100 dagar i rad. Du har visat en varsam uthållighet som förtjänar att få synas.',
+		text: '100 dagar i rad – Ovanligt uthållig.',
+		unit: 'dagar'
+	},
+	{
+		id: 'streak-365',
+		category: 'consistency',
+		metric: 'longestStreak',
+		threshold: 365,
+		emoji: '🌳',
+		title: 'Ett år av närvaro',
+		description: '365 dagar i rad. Ett helt år där du återkommit till dig själv, dag för dag.',
+		text: '365 dagar i rad – Ett år av närvaro.',
+		unit: 'dagar'
+	},
+	{
+		id: 'quality-500',
+		category: 'writingDepth',
+		metric: 'maxWordsInEntry',
+		threshold: 500,
+		emoji: '📖',
+		title: 'Djupdykning',
+		description: 'Över 500 ord i ett inlägg. Du stannade kvar länge nog för att låta tankarna veckla ut sig.',
+		text: 'Djupdykning – Över 500 ord i ett inlägg.',
+		unit: 'ord'
+	},
+	{
+		id: 'quality-1000',
+		category: 'writingDepth',
+		metric: 'maxWordsInEntry',
+		threshold: 1000,
+		emoji: '🖊️',
+		title: 'Långt in i tanken',
+		description: 'Över 1000 ord i ett inlägg. Du gav en tanke tid att bli tydligare.',
+		text: 'Långt in i tanken – Över 1000 ord i ett inlägg.',
+		unit: 'ord'
+	},
+	{
+		id: 'quality-1500-day',
+		category: 'writingDepth',
+		metric: 'maxWordsInDay',
+		threshold: 1500,
+		emoji: '🌊',
+		title: 'Ordflödet',
+		description: '1500 ord på en dag. Mycket fick röra sig från insidan och ut i text.',
+		text: 'Ordflödet – 1500 ord på en dag.',
+		unit: 'ord'
+	},
+	{
+		id: 'quality-10000-total',
+		category: 'writingDepth',
+		metric: 'totalWords',
+		threshold: 10000,
+		emoji: '🧺',
+		title: 'Tankesamlaren',
+		description: '10 000 skrivna ord. Du har samlat många skiftningar, frågor och små insikter över tid.',
+		text: 'Tankesamlaren – 10 000 skrivna ord.',
+		unit: 'ord'
+	},
+	{
+		id: 'quality-50000-total',
+		category: 'writingDepth',
+		metric: 'totalWords',
+		threshold: 50000,
+		emoji: '✨',
+		title: 'Berättaren',
+		description: '50 000 skrivna ord. Din dagbok rymmer en stor och levande berättelse.',
+		text: 'Berättaren – 50 000 skrivna ord.',
+		unit: 'ord'
+	},
+	{
+		id: 'time-90',
+		category: 'time',
+		metric: 'daysSinceJoined',
+		threshold: 90,
+		emoji: '🌱',
+		title: 'Du har slagit rot',
+		description: 'Tre månader med MittPsyke. Du har låtit platsen finnas kvar över tid.',
+		text: 'Du har slagit rot – tre månader med MittPsyke.',
+		unit: 'dagar'
+	},
+	{
+		id: 'time-180',
+		category: 'time',
+		metric: 'daysSinceJoined',
+		threshold: 180,
+		emoji: '🌿',
+		title: 'Du blommar ut',
+		description: 'Sex månader med MittPsyke. Ditt sätt att återvända hit har fått växa i sin egen takt.',
+		text: 'Du blommar ut – sex månader med MittPsyke.',
+		unit: 'dagar'
+	},
+	{
+		id: 'time-365',
+		category: 'time',
+		metric: 'daysSinceJoined',
+		threshold: 365,
+		emoji: '🌳',
+		title: 'Ett helt år tillsammans',
+		description: 'Ett år med MittPsyke. Mycket kan förändras på ett år, och du har haft en plats att återvända till.',
+		text: 'Ett helt år tillsammans – ett år med MittPsyke.',
+		unit: 'dagar'
+	}
 ];
 
 function toStockholmDateKey(value: string): string {
@@ -155,6 +431,38 @@ function resolveMilestones(metrics: MilestoneMetrics) {
 	});
 }
 
+async function calculateTotalWords(supabase: SupabaseClient, userId: string): Promise<number> {
+	let totalWords = 0;
+	let from = 0;
+
+	while (totalWords < HIGHEST_TOTAL_WORDS_THRESHOLD) {
+		const to = from + TOTAL_WORDS_PAGE_SIZE - 1;
+		const { data, error } = await supabase
+			.from('diary')
+			.select('text')
+			.eq('user_id', userId)
+			.range(from, to);
+
+		if (error) throw error;
+
+		const rows = (data ?? []) as DiaryTextRow[];
+		for (const row of rows) {
+			totalWords += countWords(row.text);
+			if (totalWords >= HIGHEST_TOTAL_WORDS_THRESHOLD) {
+				return totalWords;
+			}
+		}
+
+		if (rows.length < TOTAL_WORDS_PAGE_SIZE) {
+			return totalWords;
+		}
+
+		from += TOTAL_WORDS_PAGE_SIZE;
+	}
+
+	return totalWords;
+}
+
 export const GET: RequestHandler = async ({ request }) => {
 	try {
 		const authHeader = request.headers.get('Authorization');
@@ -170,7 +478,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		const user = data.user;
 
 		const since = new Date(Date.now() - MILESTONES_LOOKBACK_DAYS * DAY_MS).toISOString();
-		const [totalEntriesQuery, entriesQuery] = await Promise.all([
+		const [totalEntriesQuery, entriesQuery, totalWords] = await Promise.all([
 			supabase.from('diary').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
 			supabase
 				.from('diary')
@@ -178,7 +486,8 @@ export const GET: RequestHandler = async ({ request }) => {
 				.eq('user_id', user.id)
 				.gte('created_at', since)
 				.order('created_at', { ascending: false })
-				.limit(MILESTONES_ROW_LIMIT)
+				.limit(MILESTONES_ROW_LIMIT),
+			calculateTotalWords(supabase, user.id)
 		]);
 
 		if (totalEntriesQuery.error) return json({ error: totalEntriesQuery.error.message }, { status: 500 });
@@ -211,7 +520,8 @@ export const GET: RequestHandler = async ({ request }) => {
 			longestStreak: calculateLongestStreak(uniqueDateKeys),
 			daysSinceJoined: calculateDaysSinceJoined(user.created_at ?? null),
 			maxWordsInEntry,
-			maxWordsInDay
+			maxWordsInDay,
+			totalWords
 		};
 
 		const milestones = resolveMilestones(metrics);

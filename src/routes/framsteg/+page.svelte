@@ -25,9 +25,17 @@
 
 	interface Milestone {
 		id: string;
-		category: 'entries' | 'streak' | 'time' | 'quality';
-		metric: 'totalEntries' | 'longestStreak' | 'daysSinceJoined' | 'maxWordsInEntry' | 'maxWordsInDay';
+		category: 'firstSteps' | 'diary' | 'consistency' | 'time' | 'writingDepth';
+		metric:
+			| 'totalEntries'
+			| 'longestStreak'
+			| 'daysSinceJoined'
+			| 'maxWordsInEntry'
+			| 'maxWordsInDay'
+			| 'totalWords';
 		threshold: number;
+		title?: string;
+		description?: string;
 		text: string;
 		achieved: boolean;
 		emoji: string;
@@ -38,7 +46,7 @@
 	}
 
 	interface MilestoneSection {
-		id: 'entries' | 'streak' | 'time' | 'quality';
+		id: 'firstSteps' | 'diary' | 'consistency' | 'time' | 'writingDepth';
 		title: string;
 		milestones: Milestone[];
 	}
@@ -553,7 +561,10 @@
 			<section class="card milestones-card">
 				<div class="card-header">
 					<div class="icon-badge trophy"><Trophy size={24} /></div>
-					<h2>Dina milstolpar</h2>
+					<div>
+						<h2>Dina milstolpar</h2>
+						<p class="card-intro">Små tecken på att du har återvänt, reflekterat och gett dig själv plats över tid.</p>
+					</div>
 				</div>
 				{#each milestonesData.sections as section}
 					<div class="milestones-section">
@@ -562,7 +573,12 @@
 							{#each section.milestones as milestone}
 								<div class="milestone {milestone.achieved ? 'achieved' : 'locked'}">
 									<div class="milestone-emoji">{milestone.emoji}</div>
-									<div class="milestone-text">{milestone.text}</div>
+									<div class="milestone-copy">
+										<h4>{milestone.title ?? milestone.text}</h4>
+										{#if milestone.description}
+											<p>{milestone.description}</p>
+										{/if}
+									</div>
 								</div>
 							{/each}
 						</div>
@@ -570,8 +586,11 @@
 				{/each}
 				{#if milestonesData.nextMilestone}
 					<div class="next-milestone">
-						<div class="next-header"><Calendar size={18} /><span>Nästa mål</span></div>
-						<p>{milestonesData.nextMilestone.text}</p>
+						<div class="next-header"><Calendar size={18} /><span>Nästa varsamma steg</span></div>
+						<h3>{milestonesData.nextMilestone.title ?? milestonesData.nextMilestone.text}</h3>
+						{#if milestonesData.nextMilestone.description}
+							<p>{milestonesData.nextMilestone.description}</p>
+						{/if}
 						<div class="progress-bar">
 							<div
 								class="progress-fill"
@@ -580,14 +599,14 @@
 						</div>
 						<small>
 							{milestonesData.nextMilestone.current} / {milestonesData.nextMilestone.threshold}
-							{milestonesData.nextMilestone.unit}
-							({milestonesData.nextMilestone.remaining} kvar)
+							{milestonesData.nextMilestone.unit}. {milestonesData.nextMilestone.remaining}
+							{milestonesData.nextMilestone.unit} kvar till den här milstolpen.
 						</small>
 					</div>
 				{:else}
 					<div class="next-milestone">
-						<div class="next-header"><Calendar size={18} /><span>Nästa mål</span></div>
-						<p>Du har låst upp alla milstolpar just nu. Fantastiskt fint jobbat.</p>
+						<div class="next-header"><Calendar size={18} /><span>Nästa varsamma steg</span></div>
+						<p>Du har nått alla milstolpar som finns just nu. Fortsätt i den takt som känns möjlig.</p>
 					</div>
 				{/if}
 			</section>
@@ -626,6 +645,13 @@
 	.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: color-mix(in srgb, var(--color-dashboard-border) 76%, var(--primary) 24%); }
 	.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
 	.card-header h2 { font-size: 1.3rem; margin: 0; color: hsl(var(--foreground)); }
+	.card-intro {
+		max-width: 42rem;
+		margin: 0.35rem 0 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.95rem;
+		line-height: 1.6;
+	}
 	.icon-badge { width: 2.8rem; height: 2.8rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
 	.insights-card,
 	.heatmap-card { min-height: 22rem; }
@@ -667,21 +693,23 @@
 	.milestones-section + .milestones-section { margin-top: 1.2rem; }
 	.milestones-section-title {
 		margin: 0 0 0.65rem;
-		font-size: 0.95rem;
+		font-size: 1rem;
 		font-weight: 600;
-		letter-spacing: 0.01em;
-		color: hsl(var(--muted-foreground));
+		letter-spacing: 0;
+		color: hsl(var(--foreground));
 	}
-	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
-	.milestone { padding: 1rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; background: hsl(var(--surface-muted)); border: 1px solid var(--color-dashboard-border); transition: all 0.2s ease; }
+	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+	.milestone { min-height: 8.75rem; padding: 1rem; border-radius: 0.5rem; display: flex; align-items: flex-start; gap: 1rem; background: hsl(var(--surface-muted)); border: 1px solid var(--color-dashboard-border); transition: all 0.2s ease; }
 	.milestone.achieved { background: var(--theme-bg, hsl(var(--success-surface))); border-color: var(--color-dashboard-border); }
 	.milestone.locked { opacity: 0.62; filter: saturate(0.6); }
 	.milestone:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-	.milestone-emoji { font-size: 2rem; }
-	.milestone-text { font-size: 0.9rem; font-weight: 500; color: hsl(var(--foreground)); }
+	.milestone-emoji { font-size: 1.8rem; line-height: 1; }
+	.milestone-copy h4 { margin: 0 0 0.35rem; color: hsl(var(--foreground)); font-size: 0.98rem; font-weight: 650; }
+	.milestone-copy p { margin: 0; color: hsl(var(--muted-foreground)); font-size: 0.86rem; line-height: 1.5; }
 	.next-milestone { background: hsl(var(--surface-soft)); border: 1px solid var(--color-dashboard-border); padding: 1.5rem; border-radius: 0.5rem; margin-top: 1.5rem; }
 	.next-header { display: flex; align-items: center; gap: 0.5rem; color: var(--theme-accent, #667eea); font-weight: 600; margin-bottom: 0.75rem; }
-	.next-milestone p { font-size: 1rem; color: hsl(var(--foreground)); margin: 0.5rem 0 1rem 0; }
+	.next-milestone h3 { margin: 0 0 0.45rem; color: hsl(var(--foreground)); font-size: 1.05rem; }
+	.next-milestone p { font-size: 1rem; color: hsl(var(--muted-foreground)); margin: 0.5rem 0 1rem 0; line-height: 1.6; }
 	.progress-bar { height: 0.5rem; background: hsl(var(--surface-muted)); border-radius: 0.25rem; overflow: hidden; margin-bottom: 0.5rem; }
 	.progress-fill { height: 100%; background: var(--theme-accent, linear-gradient(90deg, #667eea, #764ba2)); border-radius: 0.25rem; transition: width 0.3s ease; }
 	.next-milestone small { color: hsl(var(--muted-foreground)); display: block; }
