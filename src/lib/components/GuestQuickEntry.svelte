@@ -2,8 +2,8 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
-		trackDiaryGuestEntryStarted,
-		trackDiaryGuestEntrySaved
+		trackAnonymousWriteCompletedFromText,
+		trackAnonymousWriteStarted
 	} from '$lib/analytics';
 
 	const STORAGE_KEY = 'mittpsyke_guest_entry';
@@ -18,6 +18,7 @@
 	let lastSavedValue = '';
 	let saveTimer: ReturnType<typeof setInterval> | null = null;
 	let hasStartedTracking = false;
+	let hasCompletedTracking = false;
 
 	function persistIfDirty() {
 		if (!browser) return;
@@ -28,7 +29,10 @@
 				window.localStorage.removeItem(STORAGE_KEY);
 			} else {
 				window.localStorage.setItem(STORAGE_KEY, entry);
-				trackDiaryGuestEntrySaved(entry.length);
+				if (!hasCompletedTracking) {
+					hasCompletedTracking = true;
+					trackAnonymousWriteCompletedFromText(entry);
+				}
 			}
 			lastSavedValue = entry;
 			saveStatus = 'saved';
@@ -43,7 +47,7 @@
 		}
 		if (!hasStartedTracking && entry.trim().length > 0) {
 			hasStartedTracking = true;
-			trackDiaryGuestEntryStarted();
+			trackAnonymousWriteStarted();
 		}
 		if (saveStatus === 'saved') {
 			saveStatus = 'idle';

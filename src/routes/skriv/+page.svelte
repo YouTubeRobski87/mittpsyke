@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import type { Session } from '@supabase/supabase-js';
 	import {
+		trackAnonymousWriteStarted,
 		trackWritePageView,
 		trackContinueFromWrite,
 		trackContinueAnonymousClicked
@@ -30,6 +31,9 @@
 	}
 
 	async function handleOpenDiary() {
+		if (!isLoggedIn) {
+			trackAnonymousWriteStarted();
+		}
 		goto('/dagbok?action=new');
 	}
 
