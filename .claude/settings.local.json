@@ -13,7 +13,9 @@
       "Bash(winget upgrade:*)",
       "PowerShell($bytes = [System.IO.File]::ReadAllBytes\\(\"E:\\\\mittpsyke-main\\\\static\\\\sitemap.xml\"\\); \"Storlek: $\\($bytes.Length\\) bytes\"; \"Första 4 bytes \\(hex\\): $\\($bytes[0..3] | ForEach-Object { $_.ToString\\('X2'\\) }\\)\"; $text = [System.IO.File]::ReadAllText\\(\"E:\\\\mittpsyke-main\\\\static\\\\sitemap.xml\"\\); \"Antal tecken: $\\($text.Length\\)\"; \"Antal <url>: $\\(\\([regex]::Matches\\($text,'<url>'\\)\\).Count\\)\"; \"Antal /blogg/: $\\(\\([regex]::Matches\\($text,'/blogg/'\\)\\).Count\\)\")",
       "PowerShell($t = [System.IO.File]::ReadAllText\\(\"E:\\\\mittpsyke-main\\\\static\\\\sitemap.xml\"\\); Write-Output \\(\"urls=\" + \\([regex]::Matches\\($t,'<url>'\\)\\).Count\\); Write-Output \\(\"blogg_slash=\" + \\([regex]::Matches\\($t,'/blogg/'\\)\\).Count\\); Write-Output \\(\"blogg_root=\" + \\([regex]::Matches\\($t,'/blogg<'\\)\\).Count\\))",
-      "Bash(if [ -d \"E:/stodlinjer\" ]; then echo \"FINNS: E:/stodlinjer\"; echo \"--- innehåll ---\"; ls -la \"E:/stodlinjer\" | head -40; else echo \"FINNS INTE: E:/stodlinjer\"; echo \"--- letar liknande på E: ---\"; ls \"E:/\" | grep -i stod; fi)"
+      "Bash(if [ -d \"E:/stodlinjer\" ]; then echo \"FINNS: E:/stodlinjer\"; echo \"--- innehåll ---\"; ls -la \"E:/stodlinjer\" | head -40; else echo \"FINNS INTE: E:/stodlinjer\"; echo \"--- letar liknande på E: ---\"; ls \"E:/\" | grep -i stod; fi)",
+      "PowerShell(\"---PACKAGE---\")",
+      "Bash(git -C \"E:/stodlinjer\" ls-files)"
     ]
   }
 }
