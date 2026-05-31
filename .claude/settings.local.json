@@ -10,7 +10,9 @@
       "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''src/routes/sitemap.xml/+server.ts'',''utf-8''\\);console.log\\(c.includes\\(\"\"''guider''\"\"\\)\\);console.log\\(c.length\\);\")",
       "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''src/routes/sitemap.xml/+server.ts'',''utf-8''\\);fs.writeFileSync\\(''tmp_check.txt'',c.slice\\(700,900\\)\\);\")",
       "Bash(node -e \"const fs=require\\(''fs''\\);const c=fs.readFileSync\\(''src/routes/sitemap.xml/+server.ts'',''utf-8''\\);fs.writeFileSync\\(''tmp_check.txt'',c.slice\\(550,750\\)\\);\")",
-      "Bash(winget upgrade:*)"
+      "Bash(winget upgrade:*)",
+      "PowerShell($bytes = [System.IO.File]::ReadAllBytes\\(\"E:\\\\mittpsyke-main\\\\static\\\\sitemap.xml\"\\); \"Storlek: $\\($bytes.Length\\) bytes\"; \"Första 4 bytes \\(hex\\): $\\($bytes[0..3] | ForEach-Object { $_.ToString\\('X2'\\) }\\)\"; $text = [System.IO.File]::ReadAllText\\(\"E:\\\\mittpsyke-main\\\\static\\\\sitemap.xml\"\\); \"Antal tecken: $\\($text.Length\\)\"; \"Antal <url>: $\\(\\([regex]::Matches\\($text,'<url>'\\)\\).Count\\)\"; \"Antal /blogg/: $\\(\\([regex]::Matches\\($text,'/blogg/'\\)\\).Count\\)\")",
+      "PowerShell($t = [System.IO.File]::ReadAllText\\(\"E:\\\\mittpsyke-main\\\\static\\\\sitemap.xml\"\\); Write-Output \\(\"urls=\" + \\([regex]::Matches\\($t,'<url>'\\)\\).Count\\); Write-Output \\(\"blogg_slash=\" + \\([regex]::Matches\\($t,'/blogg/'\\)\\).Count\\); Write-Output \\(\"blogg_root=\" + \\([regex]::Matches\\($t,'/blogg<'\\)\\).Count\\))"
     ]
   }
 }
