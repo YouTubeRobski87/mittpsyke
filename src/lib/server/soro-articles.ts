@@ -1,5 +1,5 @@
-const SORO_TOKEN = '7741c36b-abe9-4f95-8557-3430345576e4';
-const SORO_EMBED_SRC = `https://app.trysoro.com/api/embed/${SORO_TOKEN}?theme=dark`;
+export const SORO_TOKEN = '8ddf4490-ef9e-45aa-998d-adfb8114dd7f';
+export const SORO_EMBED_SRC = `https://app.trysoro.com/api/embed/${SORO_TOKEN}?theme=dark`;
 const LOCAL_FEATURED_IMAGE_BY_SLUG = new Map([['ai-dagbok', '/storify-og-image.png']]);
 
 // Bildfält Soro använder/har använt för olika artiklar. Ordningen är prioritetsordning.
