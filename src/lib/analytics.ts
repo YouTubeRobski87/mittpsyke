@@ -4,6 +4,27 @@ import { hasAnalyticsConsent } from '$lib/consent';
 
 type EventName =
 	| 'page_view'
+	| 'landing_page_view'
+	| 'article_view'
+	| 'guide_view'
+	| 'sign_up_started'
+	| 'sign_up_completed'
+	| 'login_completed'
+	| 'anonymous_write_started'
+	| 'anonymous_write_completed'
+	| 'diary_entry_created'
+	| 'diary_entry_updated'
+	| 'diary_entry_deleted'
+	| 'forum_thread_created'
+	| 'forum_reply_created'
+	| 'chat_started'
+	| 'chat_message_sent'
+	| 'return_visit'
+	| 'streak_day_reached'
+	| 'milestone_reached'
+	| 'hero_cta_clicked'
+	| 'internal_link_clicked'
+	| 'search_used'
 	| 'write_page_view'
 	| 'write_started'
 	| 'continue_from_write'
@@ -34,9 +55,20 @@ type EventName =
 	| 'search_result_click'
 	| 'diary_cta_click'
 	| 'diary_guest_entry_started'
-	| 'diary_guest_entry_saved';
+	| 'diary_guest_entry_saved'
+	| 'chat_open'
+	| 'first_message_sent'
+	| 'starter_chip_clicked';
 
 type EventParams = Record<string, string | number | boolean>;
+type ArticleViewParams = { article_slug: string; category: string };
+type GuideViewParams = { guide_slug: string; category: string };
+type LandingPageViewParams = { page_path: string; page_title: string };
+type WordCountParams = { word_count: number };
+type StreakDayReachedParams = { streak_length: number };
+type MilestoneReachedParams = { milestone_name: string };
+type InternalLinkClickedParams = { destination: string };
+type SearchUsedParams = { query_length: number };
 type LandingPageEventParams = Record<string, string | number | boolean | null>;
 type LandingPageEventPayload = {
 	landingPageId: string;
@@ -55,6 +87,13 @@ export const ANALYTICS_ENABLED =
 	Boolean(GA_MEASUREMENT_ID) &&
 	(browser ? PRODUCTION_HOSTS.has(window.location.hostname) : PUBLIC_VERCEL_ENV === 'production');
 const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
+const FUNNEL_LANDING_VIEW_SESSION_KEY = 'mittpsyke:funnel-landing-page-viewed';
+const AUTH_FUNNEL_SESSION_KEY = 'mittpsyke:auth-funnel-started';
+const RETURN_VISIT_STORAGE_KEY = 'mittpsyke:last-analytics-visit-at';
+const TRACKED_STREAKS_STORAGE_KEY = 'mittpsyke:tracked-streak-days';
+const TRACKED_MILESTONES_STORAGE_KEY = 'mittpsyke:tracked-milestones';
+const DAY_MS = 24 * 60 * 60 * 1000;
+const AUTH_FUNNEL_MAX_AGE_MS = 60 * 60 * 1000;
 const GTAG_SCRIPT_ID = 'mittpsyke-gtag';
 
 let analyticsInitialized = false;
@@ -195,6 +234,239 @@ export function trackEvent(eventName: EventName, params: EventParams = {}) {
 	void sendEvent(eventName, params);
 }
 
+export function countWords(value: string) {
+	const normalized = value.trim();
+	if (!normalized) return 0;
+	return normalized.split(/\s+/).filter(Boolean).length;
+}
+
+function readSessionValue(key: string) {
+	if (!browser) return null;
+
+	try {
+		return window.sessionStorage.getItem(key);
+	} catch {
+		return null;
+	}
+}
+
+function writeSessionValue(key: string, value: string) {
+	if (!browser) return;
+
+	try {
+		window.sessionStorage.setItem(key, value);
+	} catch {
+		// Storage can fail in private mode. Analytics must stay best effort.
+	}
+}
+
+function removeSessionValue(key: string) {
+	if (!browser) return;
+
+	try {
+		window.sessionStorage.removeItem(key);
+	} catch {
+		// Storage can fail in private mode. Analytics must stay best effort.
+	}
+}
+
+function readStorageSet(key: string) {
+	if (!browser) return new Set<string>();
+
+	try {
+		const raw = window.localStorage.getItem(key);
+		const parsed = raw ? JSON.parse(raw) : [];
+		return new Set(Array.isArray(parsed) ? parsed.filter((value) => typeof value === 'string') : []);
+	} catch {
+		return new Set<string>();
+	}
+}
+
+function writeStorageSet(key: string, values: Set<string>) {
+	if (!browser) return;
+
+	try {
+		window.localStorage.setItem(key, JSON.stringify([...values]));
+	} catch {
+		// Storage can fail in private mode. Analytics must stay best effort.
+	}
+}
+
+function markAuthFunnelStarted(type: 'signup' | 'login') {
+	writeSessionValue(AUTH_FUNNEL_SESSION_KEY, JSON.stringify({ type, at: Date.now() }));
+}
+
+export function clearPendingAuthFunnel() {
+	removeSessionValue(AUTH_FUNNEL_SESSION_KEY);
+}
+
+export function trackLandingPageViewOnce(url: URL, pageTitle = browser ? document.title : '') {
+	if (!browser || readSessionValue(FUNNEL_LANDING_VIEW_SESSION_KEY)) return;
+
+	writeSessionValue(FUNNEL_LANDING_VIEW_SESSION_KEY, '1');
+	trackLandingPageView({
+		page_path: `${url.pathname}${url.search}`,
+		page_title: pageTitle
+	});
+}
+
+export function trackReturnVisitIfNeeded(now = Date.now()) {
+	if (!browser) return;
+
+	let lastVisitAt = 0;
+	try {
+		lastVisitAt = Number(window.localStorage.getItem(RETURN_VISIT_STORAGE_KEY) ?? '0');
+		window.localStorage.setItem(RETURN_VISIT_STORAGE_KEY, String(now));
+	} catch {
+		return;
+	}
+
+	if (Number.isFinite(lastVisitAt) && lastVisitAt > 0 && now - lastVisitAt >= DAY_MS) {
+		trackReturnVisit();
+	}
+}
+
+export function trackAuthCompletedFromPendingState() {
+	if (!browser) return;
+
+	const raw = readSessionValue(AUTH_FUNNEL_SESSION_KEY);
+	if (!raw) return;
+
+	removeSessionValue(AUTH_FUNNEL_SESSION_KEY);
+
+	try {
+		const parsed = JSON.parse(raw) as { type?: unknown; at?: unknown };
+		const age = Date.now() - Number(parsed.at);
+		if (!Number.isFinite(age) || age < 0 || age > AUTH_FUNNEL_MAX_AGE_MS) return;
+
+		if (parsed.type === 'signup') {
+			trackSignUpCompleted();
+		} else if (parsed.type === 'login') {
+			trackLoginCompleted();
+		}
+	} catch {
+		// Ignore malformed funnel markers.
+	}
+}
+
+export function trackLandingPageView(params: LandingPageViewParams) {
+	trackEvent('landing_page_view', params);
+}
+
+export function trackArticleView(params: ArticleViewParams) {
+	trackEvent('article_view', params);
+}
+
+export function trackGuideView(params: GuideViewParams) {
+	trackEvent('guide_view', params);
+}
+
+export function trackSignUpStarted() {
+	markAuthFunnelStarted('signup');
+	trackEvent('sign_up_started');
+}
+
+export function markLoginStarted() {
+	markAuthFunnelStarted('login');
+}
+
+export function trackSignUpCompleted() {
+	trackEvent('sign_up_completed');
+}
+
+export function trackLoginCompleted() {
+	trackEvent('login_completed');
+}
+
+export function trackAnonymousWriteStarted() {
+	trackEvent('anonymous_write_started');
+}
+
+export function trackAnonymousWriteCompleted(params: WordCountParams) {
+	trackEvent('anonymous_write_completed', params);
+}
+
+export function trackAnonymousWriteCompletedFromText(text: string) {
+	trackAnonymousWriteCompleted({ word_count: countWords(text) });
+}
+
+export function trackDiaryEntryCreated(params: WordCountParams) {
+	trackEvent('diary_entry_created', params);
+}
+
+export function trackDiaryEntryUpdated() {
+	trackEvent('diary_entry_updated');
+}
+
+export function trackDiaryEntryDeleted() {
+	trackEvent('diary_entry_deleted');
+}
+
+export function trackForumThreadCreated() {
+	trackEvent('forum_thread_created');
+}
+
+export function trackForumReplyCreated() {
+	trackEvent('forum_reply_created');
+}
+
+export function trackChatStarted() {
+	trackEvent('chat_started');
+}
+
+export function trackChatMessageSent() {
+	trackEvent('chat_message_sent');
+}
+
+export function trackReturnVisit() {
+	trackEvent('return_visit');
+}
+
+export function trackStreakDayReached(params: StreakDayReachedParams) {
+	trackEvent('streak_day_reached', params);
+}
+
+export function trackStreakDayReachedOnce(streakLength: number) {
+	if (!Number.isFinite(streakLength) || streakLength < 1) return;
+
+	const normalized = Math.floor(streakLength);
+	const key = String(normalized);
+	const tracked = readStorageSet(TRACKED_STREAKS_STORAGE_KEY);
+	if (tracked.has(key)) return;
+
+	tracked.add(key);
+	writeStorageSet(TRACKED_STREAKS_STORAGE_KEY, tracked);
+	trackStreakDayReached({ streak_length: normalized });
+}
+
+export function trackMilestoneReached(params: MilestoneReachedParams) {
+	trackEvent('milestone_reached', params);
+}
+
+export function trackMilestoneReachedOnce(milestoneName: string) {
+	const normalized = milestoneName.trim();
+	if (!normalized) return;
+
+	const tracked = readStorageSet(TRACKED_MILESTONES_STORAGE_KEY);
+	if (tracked.has(normalized)) return;
+
+	tracked.add(normalized);
+	writeStorageSet(TRACKED_MILESTONES_STORAGE_KEY, tracked);
+	trackMilestoneReached({ milestone_name: normalized });
+}
+
+export function trackHeroCtaClicked() {
+	trackEvent('hero_cta_clicked');
+}
+
+export function trackInternalLinkClicked(params: InternalLinkClickedParams) {
+	trackEvent('internal_link_clicked', params);
+}
+
+export function trackSearchUsed(params: SearchUsedParams) {
+	trackEvent('search_used', params);
+}
+
 async function sendEvent(eventName: EventName, params: EventParams) {
 	if (!(await initializeAnalytics()) || !hasAnalyticsConsent()) return;
 
@@ -216,7 +488,7 @@ export function trackWritePageView() {
 }
 
 export function trackWriteStarted() {
-	trackEvent('write_started');
+	trackAnonymousWriteStarted();
 }
 
 export function trackContinueFromWrite() {
@@ -252,11 +524,11 @@ export function trackViewRegisterPage() {
 }
 
 export function trackSignupCompleted() {
-	trackEvent('signup_completed');
+	trackSignUpCompleted();
 }
 
 export function trackRegistrationComplete() {
-	trackEvent('registration_complete');
+	trackSignUpCompleted();
 }
 
 export function trackFirstDiaryEntry(params?: { hasMood?: boolean; tagCount?: number }) {
@@ -279,11 +551,11 @@ export function trackHoroscopeCTAClick() {
 }
 
 export function trackHeroCTAPrimaryClick() {
-	trackEvent('hero_cta_primary_click');
+	trackHeroCtaClicked();
 }
 
 export function trackHeroCTASecondaryClick() {
-	trackEvent('hero_cta_secondary_click');
+	trackHeroCtaClicked();
 }
 
 export function trackHeroCtaPrimaryClick() {
@@ -303,7 +575,7 @@ export function trackHomeCtaClick(params: { section: string; cta: string; href: 
 }
 
 export function trackClickStartAnonymous() {
-	trackEvent('click_start_anonymous');
+	trackAnonymousWriteStarted();
 }
 
 export function trackScrollToHowItWorks() {
@@ -327,11 +599,11 @@ export function trackDiaryCtaClick(variant: string) {
 }
 
 export function trackDiaryGuestEntryStarted() {
-	trackEvent('diary_guest_entry_started');
+	trackAnonymousWriteStarted();
 }
 
-export function trackDiaryGuestEntrySaved(length: number) {
-	trackEvent('diary_guest_entry_saved', { length });
+export function trackDiaryGuestEntrySaved(wordCount: number) {
+	trackAnonymousWriteCompleted({ word_count: wordCount });
 }
 
 function getLandingSessionId() {
