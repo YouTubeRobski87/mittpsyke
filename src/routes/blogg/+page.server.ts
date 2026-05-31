@@ -1,8 +1,10 @@
 import { redirect } from '@sveltejs/kit';
-import { normalizeSoroArticleSlug } from '$lib/server/soro-articles';
+import { normalizeSoroArticleSlug, fetchSoroArticles } from '$lib/server/soro-articles';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url }) => {
+const CACHE_CONTROL = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
+
+export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 	// Bevarar den gamla ?post=-länken: redirecta direkt till /blogg/[slug] istället.
 	const legacyPost = url.searchParams.get('post');
 	if (legacyPost) {
@@ -13,9 +15,17 @@ export const load: PageServerLoad = async ({ url }) => {
 		throw redirect(308, '/blogg');
 	}
 
+	const { articles, loadError } = await fetchSoroArticles(fetch);
+
+	if (!loadError) {
+		setHeaders({ 'cache-control': CACHE_CONTROL });
+	}
+
 	return {
 		title: 'Artiklar',
 		description:
-			'Artiklar om dagboksskrivande, mental hälsa och självreflektion. Lär dig mer om hur skrivande kan förbättra ditt mående.'
+			'Artiklar om dagboksskrivande, mental hälsa och självreflektion. Lär dig mer om hur skrivande kan förbättra ditt mående.',
+		articles,
+		loadError
 	};
 };
