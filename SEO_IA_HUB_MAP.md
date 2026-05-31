@@ -432,6 +432,6 @@ Syfte: identifiera vilken sida som bör vara huvudhubb per tema, vilka sidor som
 2. Guide-pillars och guideartiklar i `src/lib/seo-kit/content.ts`.
 3. Övningar och äldre SEO-arkitektur i `src/lib/data/seo-architecture.ts`.
 4. SEO-supportsidor i `src/lib/data/seo-support-pages.ts`.
-5. Bloggkort i `src/lib/data/blogg.ts`.
+5. Bloggkort/artiklar hämtas dynamiskt från Soro via `src/routes/blogg/+page.server.ts`.
 6. Sitemapprioritering och indexbara grupper i `src/routes/sitemap.xml/+server.ts`.
 7. Layout/navigation i `src/routes/+layout.svelte`.
