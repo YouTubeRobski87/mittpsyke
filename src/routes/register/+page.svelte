@@ -2,7 +2,12 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
-	import { trackRegisterPageView, trackTempEntryPreviewShown } from '$lib/analytics';
+	import {
+		clearPendingAuthFunnel,
+		trackRegisterPageView,
+		trackSignUpStarted,
+		trackTempEntryPreviewShown
+	} from '$lib/analytics';
 	import { supabase } from '$lib/supabase';
 	import { canUseGoogleOAuth, getStableOAuthCallbackUrl } from '$lib/auth-redirect';
 	import type { ActionData } from './$types';
@@ -48,6 +53,7 @@
 			return;
 		}
 		oauthLoading = true;
+		trackSignUpStarted();
 
 		const { error } = await supabase.auth.signInWithOAuth({
 			provider: 'google',
@@ -59,6 +65,7 @@
 		if (error) {
 			oauthError = 'Det gick inte att starta Google-inloggningen. Försök igen om en liten stund.';
 			oauthLoading = false;
+			clearPendingAuthFunnel();
 		}
 	}
 </script>
@@ -91,8 +98,12 @@
 		novalidate
 		use:enhance={() => {
 			loading = true;
-			return async ({ update }) => {
+			trackSignUpStarted();
+			return async ({ result, update }) => {
 				loading = false;
+				if (result.type === 'failure' || result.type === 'error') {
+					clearPendingAuthFunnel();
+				}
 				await update();
 			};
 		}}
