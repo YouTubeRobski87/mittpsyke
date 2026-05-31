@@ -3,8 +3,10 @@ import { canonical } from '$lib/seo-kit/seo';
 import { tools } from '$lib/data/seo-architecture';
 import { portals } from '$lib/data/portals';
 import { seoSupportPagePaths } from '$lib/data/seo-support-pages';
-import { SORO_EMBED_SRC } from '$lib/soro';
 import type { RequestHandler } from './$types';
+
+const SORO_TOKEN = '7741c36b-abe9-4f95-8557-3430345576e4';
+const SORO_EMBED_SRC = `https://app.trysoro.com/api/embed/${SORO_TOKEN}?theme=dark`;
 
 const STATIC_CONTENT_LASTMOD = '2026-03-29';
 const SEO_SUPPORT_LASTMOD = '2026-04-04';

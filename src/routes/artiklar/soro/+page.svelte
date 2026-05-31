@@ -1,26 +1,24 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
-	import SoroBlogEmbed from '$lib/components/SoroBlogEmbed.svelte';
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/artiklar/soro" />
 
 <svelte:head>
-	<title>Artiklar från Stödlinjer.se | MittPsyke</title>
+	<title>Artiklar | Fördjupande texter om välmående | MittPsyke</title>
 	<meta
 		name="description"
-		content="Artiklar från Stödlinjer.se om stödvägar, psykiskt mående och hjälp i vardagen."
+		content="Artiklar från MittPsyke om psykiskt välmående, reflektion och stöd i vardagen."
 	/>
 </svelte:head>
 
 <main class="soro-page">
 	<section class="soro-panel" aria-labelledby="soro-heading">
 		<div class="soro-header">
-			<p class="eyebrow">Stödlinjer.se</p>
-			<h1 id="soro-heading">Artiklar från Stödlinjer.se</h1>
-			<p>Fördjupande texter om stödvägar, psykiskt mående och hjälp i vardagen.</p>
+			<p class="eyebrow">MittPsyke</p>
+			<h1 id="soro-heading">Artiklar från MittPsyke</h1>
+			<p>Fördjupande texter om psykiskt välmående, reflektion och stöd i vardagen.</p>
 		</div>
-		<SoroBlogEmbed />
 	</section>
 </main>
 
