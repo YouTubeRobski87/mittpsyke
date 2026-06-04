@@ -605,9 +605,12 @@
 			const formData = new FormData();
 			formData.append('file', imageFile);
 
+			const uploadHeaders = new Headers();
+			uploadHeaders.set('Authorization', `Bearer ${token}`);
+
 			const res = await fetch('/api/diary/upload', {
 				method: 'POST',
-				headers: { Authorization: `Bearer ${token}` },
+				headers: uploadHeaders,
 				body: formData
 			});
 

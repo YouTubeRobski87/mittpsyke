@@ -21,6 +21,10 @@ function getAccessToken(header: string | null): string | null {
 	return token.trim();
 }
 
+function isMultipartFormData(contentType: string | null): boolean {
+	return contentType?.toLowerCase().startsWith('multipart/form-data') ?? false;
+}
+
 export const POST: RequestHandler = async ({ request }) => {
 	// 1. Verifiera Bearer-token
 	const token = getAccessToken(request.headers.get('authorization'));
@@ -54,11 +58,22 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	// 3. Läs multipart-formuläret
+	const contentType = request.headers.get('content-type');
+	if (!isMultipartFormData(contentType)) {
+		logUploadDebug('Fel Content-Type för bilduppladdning.', {
+			contentType: contentType ?? '(saknas)'
+		});
+		return json({ error: 'Ogiltig request – skicka multipart/form-data.' }, { status: 400 });
+	}
+
 	let formData: FormData;
 	try {
 		formData = await request.formData();
 	} catch (err) {
-		logUploadDebug('Kunde inte läsa formdata.', err);
+		logUploadDebug('Kunde inte läsa formdata.', {
+			contentType,
+			error: err
+		});
 		return json({ error: 'Ogiltig request – skicka multipart/form-data.' }, { status: 400 });
 	}
 
