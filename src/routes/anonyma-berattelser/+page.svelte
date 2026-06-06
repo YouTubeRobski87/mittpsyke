@@ -5,6 +5,10 @@
 
 	let { data }: { data: PageData } = $props();
 
+	const STORY_EXCERPT_LENGTH = 420;
+
+	let expandedStoryIds = $state<Set<string>>(new Set());
+
 	const totalPages = $derived(Math.max(1, Math.ceil(data.total / data.pageSize)));
 	const jsonLdScript = $derived(
 		JSON.stringify(data.jsonLd)
@@ -31,6 +35,36 @@
 			month: 'long',
 			year: 'numeric'
 		}).format(date)}`;
+	}
+
+	function storyExcerpt(value: string) {
+		const normalized = value.replace(/\s+/g, ' ').trim();
+		if (normalized.length <= STORY_EXCERPT_LENGTH) return normalized;
+
+		const excerpt = normalized.slice(0, STORY_EXCERPT_LENGTH);
+		const lastSpace = excerpt.lastIndexOf(' ');
+
+		return `${excerpt.slice(0, lastSpace > 300 ? lastSpace : STORY_EXCERPT_LENGTH).trimEnd()}...`;
+	}
+
+	function hasLongContent(value: string) {
+		return value.replace(/\s+/g, ' ').trim().length > STORY_EXCERPT_LENGTH;
+	}
+
+	function isStoryExpanded(id: string) {
+		return expandedStoryIds.has(id);
+	}
+
+	function toggleStory(id: string) {
+		const next = new Set(expandedStoryIds);
+
+		if (next.has(id)) {
+			next.delete(id);
+		} else {
+			next.add(id);
+		}
+
+		expandedStoryIds = next;
 	}
 </script>
 
@@ -77,7 +111,12 @@
 						{#if story.emotion_emoji}
 							<p class="emoji" aria-hidden="true">{story.emotion_emoji}</p>
 						{/if}
-						<p class="content">{story.content}</p>
+						<p class="content">{isStoryExpanded(story.id) ? story.content : storyExcerpt(story.content)}</p>
+						{#if hasLongContent(story.content)}
+							<button class="read-more" type="button" onclick={() => toggleStory(story.id)}>
+								{isStoryExpanded(story.id) ? 'Visa mindre' : 'Läs vidare'}
+							</button>
+						{/if}
 					</div>
 					{#if storyMeta(story.gender, story.age_range)}
 						<p class="meta">{storyMeta(story.gender, story.age_range)}</p>
@@ -200,6 +239,19 @@
 		white-space: pre-wrap;
 		color: var(--color-text);
 		line-height: 1.7;
+	}
+
+	.read-more {
+		margin-top: 0.75rem;
+		color: var(--color-text);
+		font-size: 0.95rem;
+		font-weight: 750;
+		text-decoration: underline;
+		text-underline-offset: 0.22em;
+	}
+
+	.read-more:hover {
+		color: var(--color-primary);
 	}
 
 	.meta {
