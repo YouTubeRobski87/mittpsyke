@@ -7,6 +7,13 @@
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	let pendingForm = $state<string | null>(null);
 
+	const statusFilters = [
+		{ value: 'all', label: 'Alla', href: '/admin/stories?status=all' },
+		{ value: 'pending', label: 'Väntar', href: '/admin/stories' },
+		{ value: 'approved', label: 'Publicerade', href: '/admin/stories?status=approved' },
+		{ value: 'rejected', label: 'Nekade', href: '/admin/stories?status=rejected' }
+	];
+
 	function enhanceForm(id: string, action: string) {
 		return ({ cancel }: { cancel: () => void }) => {
 			if (
@@ -45,6 +52,13 @@
 			minute: '2-digit'
 		}).format(date);
 	}
+
+	function statusLabel(status: string) {
+		if (status === 'approved') return 'Publicerad';
+		if (status === 'rejected') return 'Nekad';
+		if (status === 'deleted') return 'Raderad';
+		return 'Väntar';
+	}
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/admin/stories" />
@@ -74,6 +88,18 @@
 		<p class="notice success">{form.success}</p>
 	{/if}
 
+	<nav class="status-filters" aria-label="Filtrera berättelser">
+		{#each statusFilters as filter}
+			<a
+				class:active={data.statusFilter === filter.value}
+				href={filter.href}
+				aria-current={data.statusFilter === filter.value ? 'page' : undefined}
+			>
+				{filter.label}
+			</a>
+		{/each}
+	</nav>
+
 	{#if data.stories.length === 0 && !data.schemaError}
 		<p class="notice">Det finns inga berättelser att granska just nu.</p>
 	{:else}
@@ -89,6 +115,7 @@
 								</p>
 							{/if}
 						</div>
+						<span class="status-badge">{statusLabel(story.status)}</span>
 					</div>
 
 					<p class="content">{story.content}</p>
@@ -98,14 +125,18 @@
 					{/if}
 
 					<div class="actions">
-						<form method="POST" action="?/approve" use:enhance={enhanceForm(story.id, 'approve')}>
-							<input type="hidden" name="id" value={story.id} />
-							<button disabled={pendingForm === `approve:${story.id}`}>Godkänn</button>
-						</form>
-						<form method="POST" action="?/reject" use:enhance={enhanceForm(story.id, 'reject')}>
-							<input type="hidden" name="id" value={story.id} />
-							<button class="secondary" disabled={pendingForm === `reject:${story.id}`}>Avvisa</button>
-						</form>
+						{#if story.status !== 'approved'}
+							<form method="POST" action="?/approve" use:enhance={enhanceForm(story.id, 'approve')}>
+								<input type="hidden" name="id" value={story.id} />
+								<button disabled={pendingForm === `approve:${story.id}`}>Godkänn</button>
+							</form>
+						{/if}
+						{#if story.status !== 'rejected'}
+							<form method="POST" action="?/reject" use:enhance={enhanceForm(story.id, 'reject')}>
+								<input type="hidden" name="id" value={story.id} />
+								<button class="secondary" disabled={pendingForm === `reject:${story.id}`}>Avvisa</button>
+							</form>
+						{/if}
 						<form
 							method="POST"
 							action="?/delete"
@@ -174,6 +205,29 @@
 		color: var(--color-danger);
 	}
 
+	.status-filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin: 0 0 1rem;
+	}
+
+	.status-filters a {
+		border: 1px solid var(--color-border);
+		border-radius: 999px;
+		padding: 0.45rem 0.75rem;
+		color: var(--color-text-muted);
+		font-size: 0.9rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.status-filters a.active {
+		background: var(--color-primary);
+		color: white;
+		border-color: var(--color-primary);
+	}
+
 	.story-list {
 		display: grid;
 		gap: 1rem;
@@ -190,6 +244,15 @@
 	.meta {
 		color: var(--color-text-muted);
 		font-size: 0.9rem;
+	}
+
+	.status-badge {
+		border: 1px solid var(--color-border);
+		border-radius: 999px;
+		padding: 0.35rem 0.65rem;
+		color: var(--color-text-muted);
+		font-size: 0.85rem;
+		font-weight: 750;
 	}
 
 	.content {

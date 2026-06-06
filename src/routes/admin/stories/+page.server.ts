@@ -9,8 +9,18 @@ export type PendingStory = {
 	gender: string | null;
 	emotion_emoji: string | null;
 	ai_flag_reason: string | null;
+	status: 'pending' | 'approved' | 'rejected' | 'deleted';
 	created_at: string | null;
 };
+
+const VISIBLE_STATUSES = ['pending', 'approved', 'rejected'] as const;
+const STATUS_FILTERS = ['all', ...VISIBLE_STATUSES] as const;
+
+type StatusFilter = (typeof STATUS_FILTERS)[number];
+
+function getStatusFilter(value: string | null): StatusFilter {
+	return STATUS_FILTERS.includes(value as StatusFilter) ? (value as StatusFilter) : 'pending';
+}
 
 async function requireAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
@@ -36,28 +46,32 @@ function getAdminClient(locals: App.Locals) {
 	return createServiceClient() ?? locals.supabase;
 }
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
 	await requireAdmin(locals);
 
-	const { data, error } = await getAdminClient(locals)
+	const statusFilter = getStatusFilter(url.searchParams.get('status'));
+	const query = getAdminClient(locals)
 		.from('anonymous_stories')
-		.select('id, content, age_range, gender, emotion_emoji, ai_flag_reason, created_at')
-		.eq('status', 'pending')
+		.select('id, content, age_range, gender, emotion_emoji, ai_flag_reason, status, created_at')
 		.order('created_at', { ascending: true });
+
+	const { data, error } =
+		statusFilter === 'all' ? await query.in('status', VISIBLE_STATUSES) : await query.eq('status', statusFilter);
 
 	if (error) {
 		if (isMissingTableError(error, 'anonymous_stories')) {
 			return {
 				stories: [],
+				statusFilter,
 				schemaError: 'Tabellen anonymous_stories saknas. Kör migrationen i Supabase först.'
 			};
 		}
 
 		console.error('Admin stories load error:', error);
-		return { stories: [], schemaError: 'Berättelser kunde inte hämtas just nu.' };
+		return { stories: [], statusFilter, schemaError: 'Berättelser kunde inte hämtas just nu.' };
 	}
 
-	return { stories: (data ?? []) as PendingStory[], schemaError: null };
+	return { stories: (data ?? []) as PendingStory[], statusFilter, schemaError: null };
 };
 
 export const actions: Actions = {
