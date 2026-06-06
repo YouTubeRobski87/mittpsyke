@@ -106,5 +106,34 @@ export const actions: Actions = {
 		}
 
 		return { success: 'Berättelsen avvisades.' };
+	},
+	delete: async ({ locals, request }) => {
+		const admin = await ensureAdmin(locals);
+		if ('error' in admin) return admin;
+
+		const form = await request.formData();
+		const id = String(form.get('id') ?? '');
+
+		if (!isUuid(id)) {
+			return fail(400, { error: 'Ogiltigt id.' });
+		}
+
+		const { data, error } = await getAdminClient(locals)
+			.from('anonymous_stories')
+			.delete()
+			.eq('id', id)
+			.select('id')
+			.maybeSingle();
+
+		if (error) {
+			console.error('Delete story error:', error);
+			return fail(500, { error: 'Berättelsen kunde inte raderas.' });
+		}
+
+		if (!data) {
+			return fail(404, { error: 'Berättelsen finns inte längre.' });
+		}
+
+		return { success: 'Berättelsen raderades.' };
 	}
 };

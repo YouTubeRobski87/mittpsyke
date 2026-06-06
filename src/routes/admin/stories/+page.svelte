@@ -8,7 +8,17 @@
 	let pendingForm = $state<string | null>(null);
 
 	function enhanceForm(id: string, action: string) {
-		return () => {
+		return ({ cancel }: { cancel: () => void }) => {
+			if (
+				action === 'delete' &&
+				!confirm(
+					'Är du säker på att du vill radera den här berättelsen? Detta går inte att ångra.'
+				)
+			) {
+				cancel();
+				return;
+			}
+
 			pendingForm = `${action}:${id}`;
 
 			return async ({ update }: { update: () => Promise<void> }) => {
@@ -95,6 +105,14 @@
 						<form method="POST" action="?/reject" use:enhance={enhanceForm(story.id, 'reject')}>
 							<input type="hidden" name="id" value={story.id} />
 							<button class="secondary" disabled={pendingForm === `reject:${story.id}`}>Avvisa</button>
+						</form>
+						<form
+							method="POST"
+							action="?/delete"
+							use:enhance={enhanceForm(story.id, 'delete')}
+						>
+							<input type="hidden" name="id" value={story.id} />
+							<button class="danger-ghost" disabled={pendingForm === `delete:${story.id}`}>Radera</button>
 						</form>
 					</div>
 				</article>
@@ -206,6 +224,12 @@
 
 	button.secondary {
 		background: var(--color-danger);
+	}
+
+	button.danger-ghost {
+		border: 1px solid var(--color-danger);
+		background: transparent;
+		color: var(--color-danger);
 	}
 
 	button:disabled {
