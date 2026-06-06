@@ -120,7 +120,7 @@ export const actions: Actions = {
 
 		const { data, error } = await getAdminClient(locals)
 			.from('anonymous_stories')
-			.delete()
+			.update({ status: 'deleted', approved_at: null })
 			.eq('id', id)
 			.select('id')
 			.maybeSingle();
