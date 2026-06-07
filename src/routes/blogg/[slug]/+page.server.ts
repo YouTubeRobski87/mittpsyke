@@ -38,6 +38,27 @@ function extractArticles(embedScript: string) {
 	return JSON.parse(match[1]) as SoroArticleListItem[];
 }
 
+function normalizeYoungMentalHealthArticleContent(content: string) {
+	return content
+		.replace(/^<h1>[\s\S]*?<\/h1>\s*/, '')
+		.replace(
+			'<p>Men om du mår så dåligt att skolan, sömnen, relationerna eller vardagen påverkas under längre tid är det klokt att ta kontakt med någon vuxen eller vården. 1177 beskriver att vårdcentralen kan vara en väg in vid psykiska besvär som oro, sömnsvårigheter, stress, ångest och nedstämdhet, särskilt när besvären påverkat vardagen under några veckor eller längre (1177, u.å.-b).</p>',
+			'<p>Men om du mår så dåligt att skolan, sömnen, relationerna eller vardagen påverkas under längre tid är det klokt att ta kontakt med någon vuxen eller vården. 1177 beskriver att vårdcentralen kan vara en väg in vid psykiska besvär som oro, sömnsvårigheter, stress, ångest och nedstämdhet, särskilt när besvären påverkat vardagen under några veckor eller längre (1177, u.å.-b). Socialstyrelsen betonar också behovet av tidig och enkel kontakt med vården för barn och unga med psykisk ohälsa (Socialstyrelsen, 2026).</p>'
+		)
+		.replace(
+			'<ol><li>(u.å.-a). <em>När barn och unga mår dåligt – stöd och vård vid psykisk ohälsa</em>. 1177 Vårdguiden. Hämtad 7 juni 2026, från https://www.1177.se/liv--halsa/psykisk-halsa/att-soka-stod-och-hjalp/stod-och-vard-vid-psykisk-ohalsa--nar-barn-och-unga-mar-daligt/</li></ol>',
+			'<p>1177. (u.å.-a). <em>När barn och unga mår dåligt – stöd och vård vid psykisk ohälsa</em>. 1177 Vårdguiden. Hämtad 7 juni 2026, från https://www.1177.se/liv--halsa/psykisk-halsa/att-soka-stod-och-hjalp/stod-och-vard-vid-psykisk-ohalsa--nar-barn-och-unga-mar-daligt/</p>'
+		)
+		.replace(
+			'<ol><li>(u.å.-b). <em>Söka vård för psykiska besvär</em>. 1177 Vårdguiden. Hämtad 7 juni 2026, från https://www.1177.se/liv--halsa/psykisk-halsa/att-soka-stod-och-hjalp/soka-psykiatrisk-vard/</li></ol>',
+			'<p>1177. (u.å.-b). <em>Söka vård för psykiska besvär</em>. 1177 Vårdguiden. Hämtad 7 juni 2026, från https://www.1177.se/liv--halsa/psykisk-halsa/att-soka-stod-och-hjalp/soka-psykiatrisk-vard/</p>'
+		)
+		.replace(
+			'<p>Socialstyrelsen. (2026). <em>Psykisk ohälsa: fler barn och unga behöver tidig och enkel kontakt med vården</em>. https://www.socialstyrelsen.se/aktuellt/psykisk-ohalsa-fler-barn-och-unga-behover-tidig-och-enkel-kontakt-med-varden/ ```</p>',
+			'<p>Socialstyrelsen. (2026). <em>Psykisk ohälsa: fler barn och unga behöver tidig och enkel kontakt med vården</em>. https://www.socialstyrelsen.se/aktuellt/psykisk-ohalsa-fler-barn-och-unga-behover-tidig-och-enkel-kontakt-med-varden/</p>'
+		);
+}
+
 async function fetchArticleList(fetcher: typeof fetch, fresh = false) {
 	const embedResponse = await fetcher(fresh ? `${SORO_EMBED_SRC}&cb=${Date.now()}` : SORO_EMBED_SRC, {
 		headers: {
@@ -93,6 +114,10 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 
 	const normalizedSlug = normalizeSlug(article.slug);
 	const title = LOCAL_TITLE_BY_SLUG.get(normalizedSlug) ?? article.title;
+	const content =
+		normalizedSlug === 'psykisk-ohalsa-unga'
+			? normalizeYoungMentalHealthArticleContent(contentPayload.content)
+			: contentPayload.content;
 
 	return {
 		title,
@@ -102,7 +127,7 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 			slug: normalizedSlug,
 			title,
 			image: LOCAL_FEATURED_IMAGE_BY_SLUG.get(normalizedSlug) ?? article.image,
-			content: contentPayload.content
+			content
 		}
 	};
 };
