@@ -20,8 +20,11 @@
 	import {
 		consumePendingMilestone,
 		getMilestoneStorageKey,
+		getMilestones,
 		hasSeenMilestone,
 		markMilestoneSeen,
+		unlockMilestone,
+		type UnlockedMilestone,
 		type MilestoneId
 	} from '$lib/milestone-state';
 	import {
@@ -64,6 +67,12 @@
 		id: 'first_diary_entry',
 		title: 'Första steget',
 		text: 'Du skrev ett inlägg. Ett litet steg räcker.'
+	};
+
+	const firstDiaryEntryMilestoneRecord = {
+		id: 'first-diary-entry',
+		title: 'Första steget',
+		description: 'Du skrev ett inlägg. Ett litet steg räcker.'
 	};
 
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
@@ -160,6 +169,7 @@
 	let canRenderMarkdown = $state(false);
 	let expandedEntryId = $state('');
 	let activeMilestoneToast = $state<ActiveMilestoneToast | null>(null);
+	let unlockedMilestones = $state<UnlockedMilestone[]>([]);
 
 	$effect(() => {
 		entries = data.entries ?? [];
@@ -302,6 +312,25 @@
 		console.info('[MittPsyke milestone]', details);
 	}
 
+	function refreshUnlockedMilestones(userId: string | null | undefined = sessionUser?.id) {
+		if (!browser) return;
+		unlockedMilestones = getMilestones(userId);
+	}
+
+	function saveUnlockedMilestone(userId: string | null | undefined) {
+		unlockedMilestones = unlockMilestone(userId, firstDiaryEntryMilestoneRecord);
+	}
+
+	function formatMilestoneDate(value: string): string {
+		const date = new Date(value);
+		if (Number.isNaN(date.getTime())) return 'Upplåst nyligen';
+		return `Upplåst ${date.toLocaleDateString('sv-SE', {
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric'
+		})}`;
+	}
+
 	function showMilestoneOnce(
 		milestone: ActiveMilestoneToast,
 		userId: string | null | undefined,
@@ -333,6 +362,9 @@
 		}
 
 		activeMilestoneToast = milestone;
+		if (milestone.id === 'first_diary_entry') {
+			saveUnlockedMilestone(userId);
+		}
 		markMilestoneSeen(milestone.id, userId);
 		logMilestoneDebug({
 			...context,
@@ -374,6 +406,7 @@
 			console.debug('[milestone] triggering toast');
 		}
 		activeMilestoneToast = firstDiaryEntryMilestone;
+		saveUnlockedMilestone(userId);
 		markMilestoneSeen(firstDiaryEntryMilestone.id, userId);
 		logMilestoneDebug({
 			milestoneKey,
@@ -1051,10 +1084,12 @@
 			supabase.auth.getSession().then(({ data: sessionData }) => {
 				sessionUser = sessionData.session?.user ?? null;
 				hasHealthDataConsent = hasSensitiveConsent(sessionData.session?.user.user_metadata);
+				refreshUnlockedMilestones(sessionData.session?.user.id);
 				void initializeDiary();
 			});
 		} else {
 			hasHealthDataConsent = hasSensitiveConsent(data.session.user.user_metadata);
+			refreshUnlockedMilestones(data.session.user.id);
 			void initializeDiary();
 		}
 
@@ -1062,6 +1097,7 @@
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			sessionUser = session?.user ?? null;
+			refreshUnlockedMilestones(session?.user.id);
 			if (hasSensitiveConsent(session?.user.user_metadata)) {
 				hasHealthDataConsent = true;
 			}
@@ -1637,6 +1673,28 @@
 								<p class="text-sm auth-muted">Lägg till humör i minst två inlägg för att se en trend.</p>
 							{/if}
 						</div>
+					</section>
+
+					<section class="auth-panel diary-milestones-panel" aria-labelledby="diary-milestones-title">
+						<div class="milestones-head">
+							<h3 id="diary-milestones-title" class="text-sm font-semibold">Milstolpar</h3>
+							<p class="text-xs auth-muted">Små steg du redan har tagit</p>
+						</div>
+						{#if unlockedMilestones.length === 0}
+							<p class="milestones-empty auth-muted">
+								Dina milstolpar visas här när du börjar använda dagboken.
+							</p>
+						{:else}
+							<div class="milestones-list">
+								{#each unlockedMilestones as milestone (milestone.id)}
+									<article class="milestone-card">
+										<h4>{milestone.title}</h4>
+										<p>{milestone.description}</p>
+										<time datetime={milestone.unlockedAt}>{formatMilestoneDate(milestone.unlockedAt)}</time>
+									</article>
+								{/each}
+							</div>
+						{/if}
 					</section>
 
 					<div class="diary-side-calendar">
@@ -2340,6 +2398,60 @@
 	}
 
 	/* ── Kompakt kalender i sidebaren ── */
+	.diary-milestones-panel {
+		display: grid;
+		gap: 0.7rem;
+		border-color: rgba(143, 227, 166, 0.18);
+		background:
+			linear-gradient(145deg, rgba(143, 227, 166, 0.07), rgba(96, 165, 250, 0.05)),
+			hsl(var(--surface));
+	}
+
+	.milestones-head h3,
+	.milestones-head p,
+	.milestones-empty {
+		margin: 0;
+	}
+
+	.milestones-list {
+		display: grid;
+		gap: 0.55rem;
+	}
+
+	.milestone-card {
+		display: grid;
+		gap: 0.2rem;
+		padding: 0.72rem;
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		border-radius: var(--radius-input);
+		background: rgba(255, 255, 255, 0.035);
+	}
+
+	.milestone-card h4,
+	.milestone-card p {
+		margin: 0;
+	}
+
+	.milestone-card h4 {
+		font-size: 0.95rem;
+		font-weight: 700;
+		line-height: 1.3;
+		color: hsl(var(--foreground));
+	}
+
+	.milestone-card p {
+		font-size: 0.84rem;
+		line-height: 1.5;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.milestone-card time {
+		margin-top: 0.1rem;
+		font-size: 0.74rem;
+		font-weight: 700;
+		color: hsl(var(--muted-foreground));
+	}
+
 	.diary-side-calendar {
 		position: relative;
 		width: 100%;
