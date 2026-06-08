@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { dev } from '$app/environment';
+	import { onDestroy, onMount } from 'svelte';
 
 	let {
 		visible = false,
@@ -30,6 +31,10 @@
 		}
 
 		return clearDismissTimer;
+	});
+
+	onMount(() => {
+		if (dev) console.debug('[milestone] toast mounted');
 	});
 
 	onDestroy(clearDismissTimer);
@@ -63,7 +68,7 @@
 		position: fixed;
 		right: clamp(0.85rem, 3vw, 1.5rem);
 		bottom: max(clamp(0.85rem, 3vw, 1.5rem), env(safe-area-inset-bottom));
-		z-index: 1000;
+		z-index: 9999;
 		width: min(100% - 1.5rem, 360px);
 		pointer-events: none;
 	}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
-	import { dev } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 	import { onDestroy, onMount, tick } from 'svelte';
 	import { page } from '$app/stores';
 	import {
@@ -342,16 +342,46 @@
 		});
 	}
 
-	function maybeShowFirstDiaryMilestone(context: {
-		previousCount: number;
-		savedEntryId?: string | null;
-		userId?: string | null;
-		source: string;
-	}) {
-		showMilestoneOnce(firstDiaryEntryMilestone, context.userId, {
-			previousCount: context.previousCount,
-			savedEntryId: context.savedEntryId,
-			source: context.source
+	function showManualDiaryMilestoneToast(userId: string | null | undefined, savedEntryId?: string | null) {
+		const milestoneKey = getMilestoneStorageKey(firstDiaryEntryMilestone.id, userId);
+
+		if (dev) {
+			console.debug('[milestone] manual diary save success');
+			console.debug('[milestone] key', milestoneKey);
+		}
+
+		if (!browser) {
+			if (dev) {
+				console.debug('[milestone] alreadyShown', false);
+				console.debug('[milestone] toast triggered', false, 'reason', 'no user/browser');
+			}
+			return;
+		}
+
+		const alreadyShown = hasSeenMilestone(firstDiaryEntryMilestone.id, userId);
+		if (dev) {
+			console.debug('[milestone] alreadyShown', alreadyShown);
+		}
+
+		if (alreadyShown) {
+			if (dev) {
+				console.debug('[milestone] toast triggered', false, 'reason', 'already shown');
+			}
+			return;
+		}
+
+		if (dev) {
+			console.debug('[milestone] triggering toast');
+		}
+		activeMilestoneToast = firstDiaryEntryMilestone;
+		markMilestoneSeen(firstDiaryEntryMilestone.id, userId);
+		logMilestoneDebug({
+			milestoneKey,
+			alreadyShown,
+			previousCount: null,
+			savedEntryId,
+			toastTriggered: true,
+			source: 'manual diary save success'
 		});
 	}
 
@@ -391,26 +421,6 @@
 		const page = await loadDiaryEntriesPage(userId, options);
 		entries = page.entries;
 		hasMoreEntries = page.hasMore;
-	}
-
-	async function loadDiaryEntryCount(userId: string): Promise<number | null> {
-		const { count, error } = await supabase
-			.from('diary')
-			.select('id', { count: 'exact', head: true })
-			.eq('user_id', userId);
-
-		if (error) {
-			logMilestoneDebug({
-				previousCount: null,
-				savedEntryId: null,
-				toastTriggered: false,
-				reason: 'count unavailable',
-				source: 'dagbok/checkin count failed'
-			});
-			return null;
-		}
-
-		return count ?? 0;
 	}
 
 	async function loadMoreEntries() {
@@ -881,7 +891,6 @@
 			return;
 		}
 		savingDraft = true;
-		let previousEntryCount = entries.length;
 
 		try {
 			const { data } = await supabase.auth.getSession();
@@ -891,17 +900,6 @@
 				draftError = 'Logga in eller skapa konto för att spara i dagboken.';
 				return;
 			}
-
-			const serverPreviousEntryCount = await loadDiaryEntryCount(session.user.id);
-			previousEntryCount = serverPreviousEntryCount ?? previousEntryCount;
-			logMilestoneDebug({
-				milestoneKey: getMilestoneStorageKey('first_diary_entry', session.user.id),
-				alreadyShown: hasSeenMilestone('first_diary_entry', session.user.id),
-				previousCount: previousEntryCount,
-				savedEntryId: null,
-				toastTriggered: false,
-				source: 'manual save path reached'
-			});
 
 			const response = await fetch('/api/diary/create', {
 				method: 'POST',
@@ -927,7 +925,7 @@
 				logMilestoneDebug({
 					milestoneKey: getMilestoneStorageKey('first_diary_entry', session.user.id),
 					alreadyShown: hasSeenMilestone('first_diary_entry', session.user.id),
-					previousCount: previousEntryCount,
+					previousCount: null,
 					savedEntryId: null,
 					toastTriggered: false,
 					reason: 'save failed',
@@ -936,6 +934,8 @@
 				draftError = payload?.error || 'Kunde inte spara inlägget just nu.';
 				return;
 			}
+
+			showManualDiaryMilestoneToast(session.user.id, payload?.diary?.id ?? null);
 
 			if (typeof window !== 'undefined') {
 				localStorage.removeItem('mittpsyke_temp_entry');
@@ -969,12 +969,6 @@
 			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
 			notifyDiaryEntriesChanged();
-			maybeShowFirstDiaryMilestone({
-				previousCount: previousEntryCount,
-				savedEntryId: payload?.diary?.id ?? null,
-				userId: session.user.id,
-				source: 'dagbok/checkin'
-			});
 			currentPage = 1;
 		} catch (error) {
 			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';

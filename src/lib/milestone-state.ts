@@ -12,7 +12,7 @@ export type MilestoneId =
 const STORAGE_PREFIX = 'mittpsyke:milestone';
 const PENDING_STORAGE_PREFIX = 'mittpsyke:pending-milestone';
 const GUEST_SCOPE = 'guest';
-const MILESTONE_VERSION = 'v2';
+const MILESTONE_VERSION = 'v3';
 
 function normalizeMilestoneId(id: MilestoneId) {
 	return id.replaceAll('_', '-');
