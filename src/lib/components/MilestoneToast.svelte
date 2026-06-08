@@ -62,8 +62,8 @@
 	.milestone-toast-wrap {
 		position: fixed;
 		right: clamp(0.85rem, 3vw, 1.5rem);
-		bottom: clamp(0.85rem, 3vw, 1.5rem);
-		z-index: 80;
+		bottom: max(clamp(0.85rem, 3vw, 1.5rem), env(safe-area-inset-bottom));
+		z-index: 1000;
 		width: min(100% - 1.5rem, 360px);
 		pointer-events: none;
 	}

@@ -17,7 +17,12 @@
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
-	import { hasSeenMilestone, markMilestoneSeen, type MilestoneId } from '$lib/milestone-state';
+	import {
+		consumePendingMilestone,
+		hasSeenMilestone,
+		markMilestoneSeen,
+		type MilestoneId
+	} from '$lib/milestone-state';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -52,6 +57,12 @@
 		id: MilestoneId;
 		title: string;
 		text: string;
+	};
+
+	const firstDiaryEntryMilestone: ActiveMilestoneToast = {
+		id: 'first_diary_entry',
+		title: 'Första steget',
+		text: 'Du skrev ditt första inlägg. Ett litet steg räcker.'
 	};
 
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
@@ -276,10 +287,70 @@
 		draftMoodPreview = 5;
 	}
 
-	function showMilestoneOnce(milestone: ActiveMilestoneToast, userId?: string | null) {
-		if (hasSeenMilestone(milestone.id, userId)) return;
-		markMilestoneSeen(milestone.id, userId);
+	function logMilestoneDebug(details: {
+		previousCount: number | null;
+		savedEntryId?: string | null;
+		shouldShowMilestone: boolean;
+		reason?: string;
+		source: string;
+	}) {
+		if (!dev) return;
+		console.info('[MittPsyke milestone]', details);
+	}
+
+	function showMilestoneOnce(
+		milestone: ActiveMilestoneToast,
+		userId: string | null | undefined,
+		context: { previousCount: number | null; savedEntryId?: string | null; source: string }
+	) {
+		if (!userId) {
+			logMilestoneDebug({
+				...context,
+				shouldShowMilestone: false,
+				reason: 'no user/browser'
+			});
+			return;
+		}
+
+		if (hasSeenMilestone(milestone.id, userId)) {
+			logMilestoneDebug({
+				...context,
+				shouldShowMilestone: false,
+				reason: 'already shown'
+			});
+			return;
+		}
+
 		activeMilestoneToast = milestone;
+		markMilestoneSeen(milestone.id, userId);
+		logMilestoneDebug({
+			...context,
+			shouldShowMilestone: true
+		});
+	}
+
+	function maybeShowFirstDiaryMilestone(context: {
+		previousCount: number;
+		savedEntryId?: string | null;
+		userId?: string | null;
+		source: string;
+	}) {
+		if (context.previousCount !== 0) {
+			logMilestoneDebug({
+				previousCount: context.previousCount,
+				savedEntryId: context.savedEntryId,
+				shouldShowMilestone: false,
+				reason: 'previousCount not zero',
+				source: context.source
+			});
+			return;
+		}
+
+		showMilestoneOnce(firstDiaryEntryMilestone, context.userId, {
+			previousCount: context.previousCount,
+			savedEntryId: context.savedEntryId,
+			source: context.source
+		});
 	}
 
 	function buildMoodGraphPoints(source: DiaryEntry[]): MoodGraphPoint[] {
@@ -788,7 +859,7 @@
 			return;
 		}
 		savingDraft = true;
-		const wasFirstDiaryEntry = entries.length === 0;
+		const previousEntryCount = entries.length;
 
 		try {
 			const { data } = await supabase.auth.getSession();
@@ -815,8 +886,18 @@
 				})
 			});
 
-			const payload = await response.json().catch(() => null);
+			const payload = (await response.json().catch(() => null)) as {
+				error?: string;
+				diary?: { id?: string | null };
+			} | null;
 			if (!response.ok) {
+				logMilestoneDebug({
+					previousCount: previousEntryCount,
+					savedEntryId: null,
+					shouldShowMilestone: false,
+					reason: 'save failed',
+					source: 'dagbok/checkin'
+				});
 				draftError = payload?.error || 'Kunde inte spara inlägget just nu.';
 				return;
 			}
@@ -853,16 +934,12 @@
 			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
 			notifyDiaryEntriesChanged();
-			if (wasFirstDiaryEntry) {
-				showMilestoneOnce(
-					{
-						id: 'first_diary_entry',
-						title: 'Första steget',
-						text: 'Du skrev ditt första inlägg. Ett litet steg räcker.'
-					},
-					session.user.id
-				);
-			}
+			maybeShowFirstDiaryMilestone({
+				previousCount: previousEntryCount,
+				savedEntryId: payload?.diary?.id ?? null,
+				userId: session.user.id,
+				source: 'dagbok/checkin'
+			});
 			currentPage = 1;
 		} catch (error) {
 			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
@@ -922,6 +999,14 @@
 		try {
 			if (entries.length === 0) {
 				await loadEntries();
+			}
+			const pendingMilestone = consumePendingMilestone(sessionUser.id);
+			if (pendingMilestone === 'first_diary_entry') {
+				showMilestoneOnce(firstDiaryEntryMilestone, sessionUser.id, {
+					previousCount: 0,
+					savedEntryId: null,
+					source: 'pending redirect'
+				});
 			}
 		} catch (error) {
 			loadError = error instanceof Error ? error.message : 'Kunde inte ladda dagboken just nu.';

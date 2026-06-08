@@ -1,9 +1,11 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
+	import { hasSeenMilestone, queuePendingMilestone } from '$lib/milestone-state';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -75,7 +77,19 @@
 	let authLoading = true;
 	let authError = '';
 	let sessionToken = '';
+	let sessionUserId = '';
 	let hasHealthDataConsent = false;
+
+	function logMilestoneDebug(details: {
+		previousCount: number | null;
+		savedEntryId?: string | null;
+		shouldShowMilestone: boolean;
+		reason?: string;
+		source: string;
+	}) {
+		if (!dev) return;
+		console.info('[MittPsyke milestone]', details);
+	}
 
 	function toggleOption(list: string[], value: string): string[] {
 		if (list.includes(value)) {
@@ -264,6 +278,21 @@
 		saveError = '';
 
 		try {
+			const { count: previousCount, error: countError } = await supabase
+				.from('diary')
+				.select('id', { count: 'exact', head: true })
+				.eq('user_id', sessionUserId);
+
+			if (countError) {
+				logMilestoneDebug({
+					previousCount: null,
+					savedEntryId: null,
+					shouldShowMilestone: false,
+					reason: 'previousCount not zero',
+					source: 'dagars-avtryck/checkin count failed'
+				});
+			}
+
 			const response = await fetch('/api/diary/create', {
 				method: 'POST',
 				headers: {
@@ -277,13 +306,56 @@
 				})
 			});
 
-			const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+			const payload = (await response.json().catch(() => null)) as {
+				error?: string;
+				diary?: { id?: string | null };
+			} | null;
 			if (!response.ok) {
+				logMilestoneDebug({
+					previousCount: previousCount ?? null,
+					savedEntryId: null,
+					shouldShowMilestone: false,
+					reason: 'save failed',
+					source: 'dagars-avtryck/checkin'
+				});
 				saveError = payload?.error || 'Kunde inte spara incheckningen just nu.';
 				return;
 			}
 
 			notifyDiaryEntriesChanged();
+			if (!sessionUserId) {
+				logMilestoneDebug({
+					previousCount: previousCount ?? null,
+					savedEntryId: payload?.diary?.id ?? null,
+					shouldShowMilestone: false,
+					reason: 'no user/browser',
+					source: 'dagars-avtryck/checkin'
+				});
+			} else if (hasSeenMilestone('first_diary_entry', sessionUserId)) {
+				logMilestoneDebug({
+					previousCount: previousCount ?? null,
+					savedEntryId: payload?.diary?.id ?? null,
+					shouldShowMilestone: false,
+					reason: 'already shown',
+					source: 'dagars-avtryck/checkin'
+				});
+			} else if (previousCount === 0) {
+				queuePendingMilestone('first_diary_entry', sessionUserId);
+				logMilestoneDebug({
+					previousCount,
+					savedEntryId: payload?.diary?.id ?? null,
+					shouldShowMilestone: true,
+					source: 'dagars-avtryck/checkin queued'
+				});
+			} else {
+				logMilestoneDebug({
+					previousCount: previousCount ?? null,
+					savedEntryId: payload?.diary?.id ?? null,
+					shouldShowMilestone: false,
+					reason: 'previousCount not zero',
+					source: 'dagars-avtryck/checkin'
+				});
+			}
 			await goto('/dagbok/checkin');
 		} catch (error) {
 			saveError = error instanceof Error ? error.message : 'Kunde inte spara incheckningen just nu.';
@@ -327,6 +399,7 @@
 		}
 
 		sessionToken = session.access_token;
+		sessionUserId = session.user.id;
 		hasHealthDataConsent = hasSensitiveConsent(session.user.user_metadata);
 		authLoading = false;
 	});

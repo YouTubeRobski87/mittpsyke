@@ -9,38 +9,73 @@ export type MilestoneId =
 	| 'first_checkin'
 	| 'first_saved_insight';
 
-const STORAGE_PREFIX = 'mittpsyke_milestones_seen:v1';
+const STORAGE_PREFIX = 'mittpsyke:milestone';
+const PENDING_STORAGE_PREFIX = 'mittpsyke:pending-milestone';
 const GUEST_SCOPE = 'guest';
 
-function getStorageKey(userId?: string | null) {
-	return `${STORAGE_PREFIX}:${userId || GUEST_SCOPE}`;
+function normalizeMilestoneId(id: MilestoneId) {
+	return id.replaceAll('_', '-');
 }
 
-function readSeenMilestones(userId?: string | null): Set<MilestoneId> {
-	if (!browser) return new Set();
+export function getMilestoneStorageKey(id: MilestoneId, userId?: string | null) {
+	return `${STORAGE_PREFIX}:${normalizeMilestoneId(id)}:${userId || GUEST_SCOPE}`;
+}
 
-	try {
-		const raw = window.localStorage.getItem(getStorageKey(userId));
-		const parsed = raw ? JSON.parse(raw) : [];
-		if (!Array.isArray(parsed)) return new Set();
-		return new Set(parsed.filter((item): item is MilestoneId => typeof item === 'string'));
-	} catch {
-		return new Set();
-	}
+function getPendingMilestoneStorageKey(userId?: string | null) {
+	return `${PENDING_STORAGE_PREFIX}:${userId || GUEST_SCOPE}`;
+}
+
+function isMilestoneId(value: unknown): value is MilestoneId {
+	return (
+		value === 'first_diary_entry' ||
+		value === 'diary_entries_3' ||
+		value === 'diary_entries_7' ||
+		value === 'diary_streak_3' ||
+		value === 'diary_streak_7' ||
+		value === 'first_checkin' ||
+		value === 'first_saved_insight'
+	);
 }
 
 export function hasSeenMilestone(id: MilestoneId, userId?: string | null): boolean {
-	return readSeenMilestones(userId).has(id);
+	if (!browser) return false;
+
+	try {
+		return window.localStorage.getItem(getMilestoneStorageKey(id, userId)) === '1';
+	} catch {
+		return false;
+	}
 }
 
 export function markMilestoneSeen(id: MilestoneId, userId?: string | null): void {
 	if (!browser) return;
 
 	try {
-		const seen = readSeenMilestones(userId);
-		seen.add(id);
-		window.localStorage.setItem(getStorageKey(userId), JSON.stringify([...seen]));
+		window.localStorage.setItem(getMilestoneStorageKey(id, userId), '1');
 	} catch {
 		// Local storage can be unavailable in private mode; milestone UI should not block saving.
+	}
+}
+
+export function queuePendingMilestone(id: MilestoneId, userId?: string | null): void {
+	if (!browser) return;
+
+	try {
+		window.sessionStorage.setItem(getPendingMilestoneStorageKey(userId), id);
+	} catch {
+		// If session storage is unavailable, the save flow should continue without blocking.
+	}
+}
+
+export function consumePendingMilestone(userId?: string | null): MilestoneId | null {
+	if (!browser) return null;
+
+	try {
+		const key = getPendingMilestoneStorageKey(userId);
+		const value = window.sessionStorage.getItem(key);
+		window.sessionStorage.removeItem(key);
+		return isMilestoneId(value) ? value : null;
+	} catch {
+		return null;
 	}
 }
