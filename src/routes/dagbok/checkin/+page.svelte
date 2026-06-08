@@ -12,10 +12,12 @@
 		trackSignupCompleted
 	} from '$lib/analytics';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import MilestoneToast from '$lib/components/MilestoneToast.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
+	import { hasSeenMilestone, markMilestoneSeen, type MilestoneId } from '$lib/milestone-state';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -44,6 +46,12 @@
 		date?: string;
 		safety?: boolean;
 		error?: string;
+	};
+
+	type ActiveMilestoneToast = {
+		id: MilestoneId;
+		title: string;
+		text: string;
 	};
 
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
@@ -139,6 +147,7 @@
 	let deleteErrorMessage = $state('');
 	let canRenderMarkdown = $state(false);
 	let expandedEntryId = $state('');
+	let activeMilestoneToast = $state<ActiveMilestoneToast | null>(null);
 
 	$effect(() => {
 		entries = data.entries ?? [];
@@ -265,6 +274,12 @@
 	function clearMoodSelection() {
 		draftMood = '';
 		draftMoodPreview = 5;
+	}
+
+	function showMilestoneOnce(milestone: ActiveMilestoneToast, userId?: string | null) {
+		if (hasSeenMilestone(milestone.id, userId)) return;
+		markMilestoneSeen(milestone.id, userId);
+		activeMilestoneToast = milestone;
 	}
 
 	function buildMoodGraphPoints(source: DiaryEntry[]): MoodGraphPoint[] {
@@ -773,6 +788,7 @@
 			return;
 		}
 		savingDraft = true;
+		const wasFirstDiaryEntry = entries.length === 0;
 
 		try {
 			const { data } = await supabase.auth.getSession();
@@ -837,6 +853,16 @@
 			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
 			notifyDiaryEntriesChanged();
+			if (wasFirstDiaryEntry) {
+				showMilestoneOnce(
+					{
+						id: 'first_diary_entry',
+						title: 'Första steget',
+						text: 'Du skrev ditt första inlägg. Ett litet steg räcker.'
+					},
+					session.user.id
+				);
+			}
 			currentPage = 1;
 		} catch (error) {
 			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
@@ -948,6 +974,15 @@
 </svelte:head>
 
 <main class="auth-page">
+	<MilestoneToast
+		visible={Boolean(activeMilestoneToast)}
+		title={activeMilestoneToast?.title ?? ''}
+		text={activeMilestoneToast?.text ?? ''}
+		onclose={() => {
+			activeMilestoneToast = null;
+		}}
+	/>
+
 	{#if loading}
 		<div class="auth-shell">
 			<section class="auth-panel">
