@@ -16,6 +16,7 @@
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
 	import { Search } from 'lucide-svelte';
+	import { DIARY_ENTRIES_CHANGED_EVENT } from '$lib/diary-events';
 	import {
 		ANALYTICS_CONSENT_EVENT,
 		getAnalyticsConsent,
@@ -307,7 +308,7 @@
 		layoutSummaryError = null;
 
 		try {
-			const response = await fetch('/api/layout-summary');
+			const response = await fetch('/api/layout-summary', { cache: 'no-store' });
 			if (!response.ok) throw new Error('Kunde inte hämta profilöversikt.');
 			const summary = (await response.json()) as {
 				profilePanel: ProfilePanelData;
@@ -466,6 +467,20 @@
 		return () => {
 			window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
 			document.removeEventListener('click', handleInternalLinkClick);
+		};
+	});
+
+	$effect(() => {
+		if (!browser) return;
+
+		const handleDiaryEntriesChanged = () => {
+			if (user) void loadLayoutSummary();
+		};
+
+		window.addEventListener(DIARY_ENTRIES_CHANGED_EVENT, handleDiaryEntriesChanged);
+
+		return () => {
+			window.removeEventListener(DIARY_ENTRIES_CHANGED_EVENT, handleDiaryEntriesChanged);
 		};
 	});
 

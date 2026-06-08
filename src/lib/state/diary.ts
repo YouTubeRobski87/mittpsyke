@@ -1,4 +1,5 @@
 import { supabase } from '$lib/supabase';
+export { notifyDiaryEntriesChanged } from '$lib/diary-events';
 
 export type DiaryEntry = {
 	id: string;

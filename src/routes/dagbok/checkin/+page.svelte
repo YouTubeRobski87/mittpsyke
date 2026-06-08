@@ -27,6 +27,7 @@
 	import {
 		DIARY_ENTRY_PAGE_SIZE,
 		loadDiaryEntriesPage,
+		notifyDiaryEntriesChanged,
 		type DiaryEntry
 	} from '$lib/state/diary';
 	import type { Session, User } from '@supabase/supabase-js';
@@ -835,6 +836,7 @@
 			uploadImageError = '';
 			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
+			notifyDiaryEntriesChanged();
 			currentPage = 1;
 		} catch (error) {
 			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';

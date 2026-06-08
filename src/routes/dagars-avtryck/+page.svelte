@@ -10,6 +10,7 @@
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import { activeStorifyTones, storifyTones } from '$lib/data/storifyTones';
+	import { notifyDiaryEntriesChanged } from '$lib/diary-events';
 
 	// --- Typer ---
 
@@ -347,6 +348,7 @@
 
 		if (res.ok) {
 			isSaved = true;
+			notifyDiaryEntriesChanged();
 			const newEntry: StorifyEntry = {
 				id: uid(),
 				content: generatedEntry,

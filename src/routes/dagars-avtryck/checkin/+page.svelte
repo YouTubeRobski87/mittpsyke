@@ -12,6 +12,7 @@
 		type HealthConsentRecord
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
+	import { notifyDiaryEntriesChanged } from '$lib/diary-events';
 
 	const moodOptions = [
 		'Orolig i kroppen',
@@ -282,6 +283,7 @@
 				return;
 			}
 
+			notifyDiaryEntriesChanged();
 			await goto('/dagbok/checkin');
 		} catch (error) {
 			saveError = error instanceof Error ? error.message : 'Kunde inte spara incheckningen just nu.';
