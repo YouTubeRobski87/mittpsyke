@@ -55,6 +55,23 @@
 					</li>
 				{/each}
 			</ul>
+			{#if data.pagination.totalPages > 1}
+				<nav class="blog-pagination" aria-label="Paginering för artiklar">
+					{#if data.pagination.hasPreviousPage && data.pagination.previousPageHref}
+						<a class="pagination-link" href={data.pagination.previousPageHref}>Föregående</a>
+					{:else}
+						<span class="pagination-link pagination-link--disabled" aria-disabled="true">Föregående</span>
+					{/if}
+					<span class="pagination-status">
+						Sida {data.pagination.currentPage} av {data.pagination.totalPages}
+					</span>
+					{#if data.pagination.hasNextPage && data.pagination.nextPageHref}
+						<a class="pagination-link" href={data.pagination.nextPageHref}>Nästa</a>
+					{:else}
+						<span class="pagination-link pagination-link--disabled" aria-disabled="true">Nästa</span>
+					{/if}
+				</nav>
+			{/if}
 		{:else}
 			<div class="blog-widget-card">
 				<SoroBlogEmbed />
@@ -181,6 +198,53 @@
 		opacity: 0.55;
 	}
 
+	.blog-pagination {
+		margin-top: 1.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.85rem;
+		flex-wrap: wrap;
+	}
+
+	.pagination-link,
+	.pagination-status {
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		line-height: 1;
+	}
+
+	.pagination-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 2.35rem;
+		padding: 0.7rem 0.95rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: 999px;
+		background: hsl(var(--surface));
+		color: inherit;
+		text-decoration: none;
+		transition:
+			border-color 0.18s ease,
+			box-shadow 0.18s ease,
+			opacity 0.18s ease;
+	}
+
+	.pagination-link:hover {
+		border-color: rgba(96, 165, 250, 0.45);
+		box-shadow: 0 12px 28px var(--shadow-color);
+	}
+
+	.pagination-link--disabled {
+		opacity: 0.45;
+		pointer-events: none;
+	}
+
+	.pagination-status {
+		opacity: 0.75;
+	}
+
 	.blog-widget-card {
 		border: 1px solid hsl(var(--border));
 		border-radius: var(--radius-card);
@@ -203,6 +267,16 @@
 		border-color: rgba(96, 165, 250, 0.42);
 	}
 
+	:global(.dark) .pagination-link {
+		background: rgba(15, 23, 42, 0.78);
+		border-color: rgba(96, 165, 250, 0.2);
+		color: #f8fafc;
+	}
+
+	:global(.dark) .pagination-link:hover {
+		border-color: rgba(96, 165, 250, 0.44);
+	}
+
 	:global(.dark) .blog-widget-card {
 		background:
 			radial-gradient(circle at 88% 8%, rgba(129, 140, 248, 0.16), transparent 32%),
@@ -214,6 +288,21 @@
 	@media (max-width: 640px) {
 		.blog-hero p {
 			font-size: 1rem;
+		}
+
+		.blog-pagination {
+			justify-content: stretch;
+			gap: 0.65rem;
+		}
+
+		.pagination-link {
+			flex: 1 1 7rem;
+		}
+
+		.pagination-status {
+			flex: 1 0 100%;
+			order: -1;
+			text-align: center;
 		}
 	}
 </style>
