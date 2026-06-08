@@ -20,6 +20,7 @@
 	import {
 		awardMilestone,
 		consumePendingMilestone,
+		getEarnedMilestonesStorageKey,
 		getMilestoneStorageKey,
 		hasEarnedMilestone,
 		hasSeenMilestone,
@@ -314,13 +315,19 @@
 		console.info('[MittPsyke milestone]', details);
 	}
 
+	function getMilestoneUserId() {
+		return sessionUser?.id ?? null;
+	}
+
 	function refreshEarnedMilestones(userId: string | null | undefined = sessionUser?.id) {
 		if (!browser) return;
 		earnedMilestones = loadEarnedMilestones(userId);
 	}
 
-	function saveEarnedDiaryMilestone(userId: string | null | undefined) {
-		earnedMilestones = awardMilestone(firstDiaryEntryMilestoneRecord, userId);
+	function awardFirstDiaryEntryMilestone(userId: string | null | undefined = getMilestoneUserId()) {
+		const nextMilestones = awardMilestone(firstDiaryEntryMilestoneRecord, userId);
+		earnedMilestones = [...nextMilestones];
+		return nextMilestones;
 	}
 
 	function formatMilestoneDate(value: string): string {
@@ -365,7 +372,7 @@
 
 		activeMilestoneToast = milestone;
 		if (milestone.id === 'first_diary_entry') {
-			saveEarnedDiaryMilestone(userId);
+			awardFirstDiaryEntryMilestone(userId);
 		}
 		markMilestoneSeen(milestone.id, userId);
 		logMilestoneDebug({
@@ -378,10 +385,12 @@
 
 	function showManualDiaryMilestoneToast(userId: string | null | undefined, savedEntryId?: string | null) {
 		const milestoneKey = getMilestoneStorageKey(firstDiaryEntryMilestone.id, userId);
+		const earnedMilestonesKey = getEarnedMilestonesStorageKey(userId);
 
 		if (dev) {
 			console.debug('[milestone] manual diary save success');
 			console.debug('[milestone] key', milestoneKey);
+			console.debug('[milestone] userId', userId ?? 'guest');
 		}
 
 		if (!browser) {
@@ -399,7 +408,14 @@
 
 		if (alreadyShown) {
 			if (!hasEarnedMilestone(firstDiaryEntryMilestoneRecord.id, userId)) {
-				saveEarnedDiaryMilestone(userId);
+				if (dev) {
+					console.debug('[milestone] earned before', loadEarnedMilestones(userId));
+				}
+				const nextMilestones = awardFirstDiaryEntryMilestone(userId);
+				if (dev) {
+					console.debug('[milestone] earned after', nextMilestones);
+					console.debug('[milestone] localStorage raw', window.localStorage.getItem(earnedMilestonesKey));
+				}
 			}
 			if (dev) {
 				console.debug('[milestone] toast triggered', false, 'reason', 'already shown');
@@ -408,10 +424,16 @@
 		}
 
 		if (dev) {
+			console.debug('[milestone] toast branch reached');
+			console.debug('[milestone] earned before', loadEarnedMilestones(userId));
 			console.debug('[milestone] triggering toast');
 		}
+		const nextMilestones = awardFirstDiaryEntryMilestone(userId);
+		if (dev) {
+			console.debug('[milestone] earned after', nextMilestones);
+			console.debug('[milestone] localStorage raw', window.localStorage.getItem(earnedMilestonesKey));
+		}
 		activeMilestoneToast = firstDiaryEntryMilestone;
-		saveEarnedDiaryMilestone(userId);
 		markMilestoneSeen(firstDiaryEntryMilestone.id, userId);
 		logMilestoneDebug({
 			milestoneKey,
@@ -939,6 +961,8 @@
 				return;
 			}
 
+			sessionUser = session.user;
+
 			const response = await fetch('/api/diary/create', {
 				method: 'POST',
 				headers: {
@@ -973,7 +997,7 @@
 				return;
 			}
 
-			showManualDiaryMilestoneToast(session.user.id, payload?.diary?.id ?? null);
+			showManualDiaryMilestoneToast(getMilestoneUserId(), payload?.diary?.id ?? null);
 
 			if (typeof window !== 'undefined') {
 				localStorage.removeItem('mittpsyke_temp_entry');
@@ -1067,9 +1091,10 @@
 			if (entries.length === 0) {
 				await loadEntries();
 			}
-			const pendingMilestone = consumePendingMilestone(sessionUser.id);
+			const milestoneUserId = getMilestoneUserId();
+			const pendingMilestone = consumePendingMilestone(milestoneUserId);
 			if (pendingMilestone === 'first_diary_entry') {
-				showMilestoneOnce(firstDiaryEntryMilestone, sessionUser.id, {
+				showMilestoneOnce(firstDiaryEntryMilestone, milestoneUserId, {
 					previousCount: 0,
 					savedEntryId: null,
 					source: 'pending redirect'
@@ -1089,12 +1114,13 @@
 			supabase.auth.getSession().then(({ data: sessionData }) => {
 				sessionUser = sessionData.session?.user ?? null;
 				hasHealthDataConsent = hasSensitiveConsent(sessionData.session?.user.user_metadata);
-				refreshEarnedMilestones(sessionData.session?.user.id);
+				refreshEarnedMilestones(getMilestoneUserId());
 				void initializeDiary();
 			});
 		} else {
+			sessionUser = data.session.user;
 			hasHealthDataConsent = hasSensitiveConsent(data.session.user.user_metadata);
-			refreshEarnedMilestones(data.session.user.id);
+			refreshEarnedMilestones(getMilestoneUserId());
 			void initializeDiary();
 		}
 
@@ -1102,7 +1128,7 @@
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			sessionUser = session?.user ?? null;
-			refreshEarnedMilestones(session?.user.id);
+			refreshEarnedMilestones(getMilestoneUserId());
 			if (hasSensitiveConsent(session?.user.user_metadata)) {
 				hasHealthDataConsent = true;
 			}

@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
 
 export type MilestoneId =
 	| 'first_diary_entry'
@@ -31,7 +31,7 @@ export function getMilestoneStorageKey(id: MilestoneId, userId?: string | null) 
 	return `${STORAGE_PREFIX}:${normalizeMilestoneId(id)}:${MILESTONE_VERSION}:${userId || GUEST_SCOPE}`;
 }
 
-function getEarnedMilestonesStorageKey(userId?: string | null) {
+export function getEarnedMilestonesStorageKey(userId?: string | null) {
 	return `${EARNED_MILESTONES_STORAGE_PREFIX}:${userId || GUEST_SCOPE}`;
 }
 
@@ -111,9 +111,15 @@ export function saveEarnedMilestones(
 	if (!browser) return;
 
 	try {
-		window.localStorage.setItem(getEarnedMilestonesStorageKey(userId), JSON.stringify(milestones));
-	} catch {
-		// Local storage can be unavailable in private mode; milestone UI should not block saving.
+		const key = getEarnedMilestonesStorageKey(userId);
+		window.localStorage.setItem(key, JSON.stringify(milestones));
+		if (dev) {
+			console.debug('[milestone] earned localStorage write', window.localStorage.getItem(key));
+		}
+	} catch (error) {
+		if (dev) {
+			console.warn('[milestone] earned localStorage write failed', error);
+		}
 	}
 }
 
