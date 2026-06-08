@@ -18,13 +18,14 @@
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
 	import {
+		awardMilestone,
 		consumePendingMilestone,
 		getMilestoneStorageKey,
-		getMilestones,
+		hasEarnedMilestone,
 		hasSeenMilestone,
+		loadEarnedMilestones,
 		markMilestoneSeen,
-		unlockMilestone,
-		type UnlockedMilestone,
+		type EarnedMilestone,
 		type MilestoneId
 	} from '$lib/milestone-state';
 	import {
@@ -70,9 +71,10 @@
 	};
 
 	const firstDiaryEntryMilestoneRecord = {
-		id: 'first-diary-entry',
+		id: 'first-diary-entry-v4',
 		title: 'Första steget',
-		description: 'Du skrev ett inlägg. Ett litet steg räcker.'
+		description: 'Du skrev ett inlägg. Ett litet steg räcker.',
+		category: 'diary'
 	};
 
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
@@ -169,7 +171,7 @@
 	let canRenderMarkdown = $state(false);
 	let expandedEntryId = $state('');
 	let activeMilestoneToast = $state<ActiveMilestoneToast | null>(null);
-	let unlockedMilestones = $state<UnlockedMilestone[]>([]);
+	let earnedMilestones = $state<EarnedMilestone[]>([]);
 
 	$effect(() => {
 		entries = data.entries ?? [];
@@ -312,19 +314,19 @@
 		console.info('[MittPsyke milestone]', details);
 	}
 
-	function refreshUnlockedMilestones(userId: string | null | undefined = sessionUser?.id) {
+	function refreshEarnedMilestones(userId: string | null | undefined = sessionUser?.id) {
 		if (!browser) return;
-		unlockedMilestones = getMilestones(userId);
+		earnedMilestones = loadEarnedMilestones(userId);
 	}
 
-	function saveUnlockedMilestone(userId: string | null | undefined) {
-		unlockedMilestones = unlockMilestone(userId, firstDiaryEntryMilestoneRecord);
+	function saveEarnedDiaryMilestone(userId: string | null | undefined) {
+		earnedMilestones = awardMilestone(firstDiaryEntryMilestoneRecord, userId);
 	}
 
 	function formatMilestoneDate(value: string): string {
 		const date = new Date(value);
-		if (Number.isNaN(date.getTime())) return 'Upplåst nyligen';
-		return `Upplåst ${date.toLocaleDateString('sv-SE', {
+		if (Number.isNaN(date.getTime())) return 'Intjänad nyligen';
+		return `Intjänad ${date.toLocaleDateString('sv-SE', {
 			day: 'numeric',
 			month: 'long',
 			year: 'numeric'
@@ -363,7 +365,7 @@
 
 		activeMilestoneToast = milestone;
 		if (milestone.id === 'first_diary_entry') {
-			saveUnlockedMilestone(userId);
+			saveEarnedDiaryMilestone(userId);
 		}
 		markMilestoneSeen(milestone.id, userId);
 		logMilestoneDebug({
@@ -396,6 +398,9 @@
 		}
 
 		if (alreadyShown) {
+			if (!hasEarnedMilestone(firstDiaryEntryMilestoneRecord.id, userId)) {
+				saveEarnedDiaryMilestone(userId);
+			}
 			if (dev) {
 				console.debug('[milestone] toast triggered', false, 'reason', 'already shown');
 			}
@@ -406,7 +411,7 @@
 			console.debug('[milestone] triggering toast');
 		}
 		activeMilestoneToast = firstDiaryEntryMilestone;
-		saveUnlockedMilestone(userId);
+		saveEarnedDiaryMilestone(userId);
 		markMilestoneSeen(firstDiaryEntryMilestone.id, userId);
 		logMilestoneDebug({
 			milestoneKey,
@@ -1084,12 +1089,12 @@
 			supabase.auth.getSession().then(({ data: sessionData }) => {
 				sessionUser = sessionData.session?.user ?? null;
 				hasHealthDataConsent = hasSensitiveConsent(sessionData.session?.user.user_metadata);
-				refreshUnlockedMilestones(sessionData.session?.user.id);
+				refreshEarnedMilestones(sessionData.session?.user.id);
 				void initializeDiary();
 			});
 		} else {
 			hasHealthDataConsent = hasSensitiveConsent(data.session.user.user_metadata);
-			refreshUnlockedMilestones(data.session.user.id);
+			refreshEarnedMilestones(data.session.user.id);
 			void initializeDiary();
 		}
 
@@ -1097,7 +1102,7 @@
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			sessionUser = session?.user ?? null;
-			refreshUnlockedMilestones(session?.user.id);
+			refreshEarnedMilestones(session?.user.id);
 			if (hasSensitiveConsent(session?.user.user_metadata)) {
 				hasHealthDataConsent = true;
 			}
@@ -1680,17 +1685,17 @@
 							<h3 id="diary-milestones-title" class="text-sm font-semibold">Milstolpar</h3>
 							<p class="text-xs auth-muted">Små steg du redan har tagit</p>
 						</div>
-						{#if unlockedMilestones.length === 0}
+						{#if earnedMilestones.length === 0}
 							<p class="milestones-empty auth-muted">
-								Dina milstolpar visas här när du börjar använda dagboken.
+								Dina framsteg visas här när du använder dagboken.
 							</p>
 						{:else}
 							<div class="milestones-list">
-								{#each unlockedMilestones as milestone (milestone.id)}
+								{#each earnedMilestones as milestone (milestone.id)}
 									<article class="milestone-card">
 										<h4>{milestone.title}</h4>
 										<p>{milestone.description}</p>
-										<time datetime={milestone.unlockedAt}>{formatMilestoneDate(milestone.unlockedAt)}</time>
+										<time datetime={milestone.earnedAt}>{formatMilestoneDate(milestone.earnedAt)}</time>
 									</article>
 								{/each}
 							</div>

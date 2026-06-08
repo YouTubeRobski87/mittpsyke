@@ -9,16 +9,16 @@ export type MilestoneId =
 	| 'first_checkin'
 	| 'first_saved_insight';
 
-export type UnlockedMilestone = {
+export type EarnedMilestone = {
 	id: string;
 	title: string;
 	description: string;
-	unlockedAt: string;
-	version: string;
+	category: string;
+	earnedAt: string;
 };
 
 const STORAGE_PREFIX = 'mittpsyke:milestone';
-const MILESTONES_STORAGE_PREFIX = 'mittpsyke:milestones';
+const EARNED_MILESTONES_STORAGE_PREFIX = 'mittpsyke:earned-milestones';
 const PENDING_STORAGE_PREFIX = 'mittpsyke:pending-milestone';
 const GUEST_SCOPE = 'guest';
 export const MILESTONE_VERSION = 'v3';
@@ -31,8 +31,8 @@ export function getMilestoneStorageKey(id: MilestoneId, userId?: string | null) 
 	return `${STORAGE_PREFIX}:${normalizeMilestoneId(id)}:${MILESTONE_VERSION}:${userId || GUEST_SCOPE}`;
 }
 
-function getMilestonesStorageKey(userId?: string | null) {
-	return `${MILESTONES_STORAGE_PREFIX}:${userId || GUEST_SCOPE}`;
+function getEarnedMilestonesStorageKey(userId?: string | null) {
+	return `${EARNED_MILESTONES_STORAGE_PREFIX}:${userId || GUEST_SCOPE}`;
 }
 
 function getPendingMilestoneStorageKey(userId?: string | null) {
@@ -71,22 +71,22 @@ export function markMilestoneSeen(id: MilestoneId, userId?: string | null): void
 	}
 }
 
-function parseMilestones(value: string | null): UnlockedMilestone[] {
+function parseEarnedMilestones(value: string | null): EarnedMilestone[] {
 	if (!value) return [];
 
 	try {
 		const parsed = JSON.parse(value);
 		if (!Array.isArray(parsed)) return [];
 
-		return parsed.filter((milestone): milestone is UnlockedMilestone => {
+		return parsed.filter((milestone): milestone is EarnedMilestone => {
 			return (
 				milestone &&
 				typeof milestone === 'object' &&
 				typeof milestone.id === 'string' &&
 				typeof milestone.title === 'string' &&
 				typeof milestone.description === 'string' &&
-				typeof milestone.unlockedAt === 'string' &&
-				typeof milestone.version === 'string'
+				typeof milestone.category === 'string' &&
+				typeof milestone.earnedAt === 'string'
 			);
 		});
 	} catch {
@@ -94,30 +94,40 @@ function parseMilestones(value: string | null): UnlockedMilestone[] {
 	}
 }
 
-export function getMilestones(userId?: string | null): UnlockedMilestone[] {
+export function loadEarnedMilestones(userId?: string | null): EarnedMilestone[] {
 	if (!browser) return [];
 
 	try {
-		return parseMilestones(window.localStorage.getItem(getMilestonesStorageKey(userId)));
+		return parseEarnedMilestones(window.localStorage.getItem(getEarnedMilestonesStorageKey(userId)));
 	} catch {
 		return [];
 	}
 }
 
-export function hasMilestone(userId: string | null | undefined, milestoneId: string): boolean {
-	return getMilestones(userId).some((milestone) => milestone.id === milestoneId);
+export function saveEarnedMilestones(
+	userId: string | null | undefined,
+	milestones: EarnedMilestone[]
+): void {
+	if (!browser) return;
+
+	try {
+		window.localStorage.setItem(getEarnedMilestonesStorageKey(userId), JSON.stringify(milestones));
+	} catch {
+		// Local storage can be unavailable in private mode; milestone UI should not block saving.
+	}
 }
 
-export function unlockMilestone(
+export function hasEarnedMilestone(milestoneId: string, userId?: string | null): boolean {
+	return loadEarnedMilestones(userId).some((milestone) => milestone.id === milestoneId);
+}
+
+export function awardMilestone(
+	milestone: Omit<EarnedMilestone, 'earnedAt'> & { earnedAt?: string },
 	userId: string | null | undefined,
-	milestone: Omit<UnlockedMilestone, 'unlockedAt' | 'version'> & {
-		unlockedAt?: string;
-		version?: string;
-	}
-): UnlockedMilestone[] {
+): EarnedMilestone[] {
 	if (!browser) return [];
 
-	const milestones = getMilestones(userId);
+	const milestones = loadEarnedMilestones(userId);
 	if (milestones.some((storedMilestone) => storedMilestone.id === milestone.id)) {
 		return milestones;
 	}
@@ -127,18 +137,13 @@ export function unlockMilestone(
 			id: milestone.id,
 			title: milestone.title,
 			description: milestone.description,
-			unlockedAt: milestone.unlockedAt ?? new Date().toISOString(),
-			version: milestone.version ?? MILESTONE_VERSION
+			category: milestone.category,
+			earnedAt: milestone.earnedAt ?? new Date().toISOString()
 		},
 		...milestones
 	];
 
-	try {
-		window.localStorage.setItem(getMilestonesStorageKey(userId), JSON.stringify(nextMilestones));
-	} catch {
-		return milestones;
-	}
-
+	saveEarnedMilestones(userId, nextMilestones);
 	return nextMilestones;
 }
 
