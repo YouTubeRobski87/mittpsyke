@@ -25,6 +25,49 @@ function buildPagePath(url: URL, page: number) {
 	return `${url.pathname}${query ? `?${query}` : ''}`;
 }
 
+function buildPageItems(url: URL, currentPage: number, totalPages: number) {
+	const visiblePages = new Set<number>();
+	visiblePages.add(1);
+	visiblePages.add(totalPages);
+
+	for (let page = currentPage - 1; page <= currentPage + 1; page += 1) {
+		if (page >= 1 && page <= totalPages) visiblePages.add(page);
+	}
+
+	if (currentPage <= 3) {
+		for (let page = 1; page <= Math.min(4, totalPages); page += 1) {
+			visiblePages.add(page);
+		}
+	}
+
+	if (currentPage >= totalPages - 2) {
+		for (let page = Math.max(1, totalPages - 3); page <= totalPages; page += 1) {
+			visiblePages.add(page);
+		}
+	}
+
+	const pages = [...visiblePages].sort((a, b) => a - b);
+	const items: Array<
+		| { type: 'page'; page: number; href: string; isCurrent: boolean }
+		| { type: 'ellipsis'; key: string }
+	> = [];
+
+	pages.forEach((page, index) => {
+		const previousPage = pages[index - 1];
+		if (previousPage && page - previousPage > 1) {
+			items.push({ type: 'ellipsis', key: `ellipsis-${previousPage}-${page}` });
+		}
+		items.push({
+			type: 'page',
+			page,
+			href: buildPagePath(url, page),
+			isCurrent: page === currentPage
+		});
+	});
+
+	return items;
+}
+
 export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 	// Bevarar den gamla ?post=-länken: redirecta direkt till /blogg/[slug] istället.
 	const legacyPost = url.searchParams.get('post');
@@ -69,7 +112,8 @@ export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 			hasPreviousPage: currentPage > 1,
 			hasNextPage: currentPage < totalPages,
 			previousPageHref: currentPage > 1 ? buildPagePath(url, currentPage - 1) : null,
-			nextPageHref: currentPage < totalPages ? buildPagePath(url, currentPage + 1) : null
+			nextPageHref: currentPage < totalPages ? buildPagePath(url, currentPage + 1) : null,
+			pageItems: buildPageItems(url, currentPage, totalPages)
 		},
 		loadError
 	};

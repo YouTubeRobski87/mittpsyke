@@ -62,9 +62,24 @@
 					{:else}
 						<span class="pagination-link pagination-link--disabled" aria-disabled="true">Föregående</span>
 					{/if}
-					<span class="pagination-status">
-						Sida {data.pagination.currentPage} av {data.pagination.totalPages}
-					</span>
+					<div class="pagination-pages" aria-label="Sidor">
+						{#each data.pagination.pageItems as item (item.type === 'page' ? `page-${item.page}` : item.key)}
+							{#if item.type === 'page'}
+								<a
+									class="pagination-link pagination-link--number"
+									class:pagination-link--current={item.isCurrent}
+									href={item.href}
+									aria-label={`Sida ${item.page}`}
+									aria-current={item.isCurrent ? 'page' : undefined}
+								>
+									{item.page}
+								</a>
+							{:else}
+								<span class="pagination-ellipsis" aria-hidden="true">...</span>
+							{/if}
+						{/each}
+					</div>
+					<span class="pagination-status">Sida {data.pagination.currentPage} av {data.pagination.totalPages}</span>
 					{#if data.pagination.hasNextPage && data.pagination.nextPageHref}
 						<a class="pagination-link" href={data.pagination.nextPageHref}>Nästa</a>
 					{:else}
@@ -208,10 +223,19 @@
 	}
 
 	.pagination-link,
-	.pagination-status {
+	.pagination-status,
+	.pagination-ellipsis {
 		font-family: var(--font-body);
 		font-size: 0.9rem;
 		line-height: 1;
+	}
+
+	.pagination-pages {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.45rem;
+		flex-wrap: wrap;
 	}
 
 	.pagination-link {
@@ -236,12 +260,33 @@
 		box-shadow: 0 12px 28px var(--shadow-color);
 	}
 
+	.pagination-link--number {
+		min-width: 2.35rem;
+		padding-inline: 0.75rem;
+	}
+
+	.pagination-link--current {
+		border-color: rgba(96, 165, 250, 0.58);
+		background: rgba(96, 165, 250, 0.14);
+		font-weight: 700;
+	}
+
 	.pagination-link--disabled {
 		opacity: 0.45;
 		pointer-events: none;
 	}
 
+	.pagination-ellipsis {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 1.25rem;
+		opacity: 0.62;
+	}
+
 	.pagination-status {
+		flex-basis: 100%;
+		text-align: center;
 		opacity: 0.75;
 	}
 
@@ -277,6 +322,11 @@
 		border-color: rgba(96, 165, 250, 0.44);
 	}
 
+	:global(.dark) .pagination-link--current {
+		background: rgba(96, 165, 250, 0.2);
+		border-color: rgba(96, 165, 250, 0.62);
+	}
+
 	:global(.dark) .blog-widget-card {
 		background:
 			radial-gradient(circle at 88% 8%, rgba(129, 140, 248, 0.16), transparent 32%),
@@ -299,9 +349,17 @@
 			flex: 1 1 7rem;
 		}
 
-		.pagination-status {
+		.pagination-pages {
 			flex: 1 0 100%;
 			order: -1;
+		}
+
+		.pagination-link--number {
+			flex: 0 0 auto;
+		}
+
+		.pagination-status {
+			flex: 1 0 100%;
 			text-align: center;
 		}
 	}
