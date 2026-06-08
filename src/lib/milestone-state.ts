@@ -12,13 +12,14 @@ export type MilestoneId =
 const STORAGE_PREFIX = 'mittpsyke:milestone';
 const PENDING_STORAGE_PREFIX = 'mittpsyke:pending-milestone';
 const GUEST_SCOPE = 'guest';
+const MILESTONE_VERSION = 'v2';
 
 function normalizeMilestoneId(id: MilestoneId) {
 	return id.replaceAll('_', '-');
 }
 
 export function getMilestoneStorageKey(id: MilestoneId, userId?: string | null) {
-	return `${STORAGE_PREFIX}:${normalizeMilestoneId(id)}:${userId || GUEST_SCOPE}`;
+	return `${STORAGE_PREFIX}:${normalizeMilestoneId(id)}:${MILESTONE_VERSION}:${userId || GUEST_SCOPE}`;
 }
 
 function getPendingMilestoneStorageKey(userId?: string | null) {

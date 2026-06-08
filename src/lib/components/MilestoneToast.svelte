@@ -177,8 +177,10 @@
 
 	@media (max-width: 640px) {
 		.milestone-toast-wrap {
-			right: 0.75rem;
-			bottom: 0.75rem;
+			right: auto;
+			left: 50%;
+			bottom: max(0.75rem, env(safe-area-inset-bottom));
+			transform: translateX(-50%);
 			width: calc(100% - 1.5rem);
 		}
 

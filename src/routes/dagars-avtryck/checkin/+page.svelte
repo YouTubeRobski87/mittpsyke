@@ -5,7 +5,11 @@
 	import { onMount } from 'svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
-	import { hasSeenMilestone, queuePendingMilestone } from '$lib/milestone-state';
+	import {
+		getMilestoneStorageKey,
+		hasSeenMilestone,
+		queuePendingMilestone
+	} from '$lib/milestone-state';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -81,9 +85,12 @@
 	let hasHealthDataConsent = false;
 
 	function logMilestoneDebug(details: {
+		milestoneKey?: string;
+		alreadyShown?: boolean;
 		previousCount: number | null;
 		savedEntryId?: string | null;
-		shouldShowMilestone: boolean;
+		toastTriggered?: boolean;
+		shouldShowMilestone?: boolean;
 		reason?: string;
 		source: string;
 	}) {
@@ -287,8 +294,8 @@
 				logMilestoneDebug({
 					previousCount: null,
 					savedEntryId: null,
-					shouldShowMilestone: false,
-					reason: 'previousCount not zero',
+					toastTriggered: false,
+					reason: 'count unavailable',
 					source: 'dagars-avtryck/checkin count failed'
 				});
 			}
@@ -312,9 +319,11 @@
 			} | null;
 			if (!response.ok) {
 				logMilestoneDebug({
+					milestoneKey: getMilestoneStorageKey('first_diary_entry', sessionUserId),
+					alreadyShown: hasSeenMilestone('first_diary_entry', sessionUserId),
 					previousCount: previousCount ?? null,
 					savedEntryId: null,
-					shouldShowMilestone: false,
+					toastTriggered: false,
 					reason: 'save failed',
 					source: 'dagars-avtryck/checkin'
 				});
@@ -325,35 +334,33 @@
 			notifyDiaryEntriesChanged();
 			if (!sessionUserId) {
 				logMilestoneDebug({
+					milestoneKey: getMilestoneStorageKey('first_diary_entry', sessionUserId),
+					alreadyShown: false,
 					previousCount: previousCount ?? null,
 					savedEntryId: payload?.diary?.id ?? null,
-					shouldShowMilestone: false,
+					toastTriggered: false,
 					reason: 'no user/browser',
 					source: 'dagars-avtryck/checkin'
 				});
 			} else if (hasSeenMilestone('first_diary_entry', sessionUserId)) {
 				logMilestoneDebug({
+					milestoneKey: getMilestoneStorageKey('first_diary_entry', sessionUserId),
+					alreadyShown: true,
 					previousCount: previousCount ?? null,
 					savedEntryId: payload?.diary?.id ?? null,
-					shouldShowMilestone: false,
+					toastTriggered: false,
 					reason: 'already shown',
 					source: 'dagars-avtryck/checkin'
 				});
-			} else if (previousCount === 0) {
+			} else {
 				queuePendingMilestone('first_diary_entry', sessionUserId);
 				logMilestoneDebug({
-					previousCount,
-					savedEntryId: payload?.diary?.id ?? null,
-					shouldShowMilestone: true,
-					source: 'dagars-avtryck/checkin queued'
-				});
-			} else {
-				logMilestoneDebug({
+					milestoneKey: getMilestoneStorageKey('first_diary_entry', sessionUserId),
+					alreadyShown: false,
 					previousCount: previousCount ?? null,
 					savedEntryId: payload?.diary?.id ?? null,
-					shouldShowMilestone: false,
-					reason: 'previousCount not zero',
-					source: 'dagars-avtryck/checkin'
+					toastTriggered: true,
+					source: 'dagars-avtryck/checkin queued'
 				});
 			}
 			await goto('/dagbok/checkin');

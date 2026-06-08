@@ -19,6 +19,7 @@
 	import { renderDiaryMarkdown } from '$lib/markdown';
 	import {
 		consumePendingMilestone,
+		getMilestoneStorageKey,
 		hasSeenMilestone,
 		markMilestoneSeen,
 		type MilestoneId
@@ -62,7 +63,7 @@
 	const firstDiaryEntryMilestone: ActiveMilestoneToast = {
 		id: 'first_diary_entry',
 		title: 'Första steget',
-		text: 'Du skrev ditt första inlägg. Ett litet steg räcker.'
+		text: 'Du skrev ett inlägg. Ett litet steg räcker.'
 	};
 
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
@@ -288,9 +289,12 @@
 	}
 
 	function logMilestoneDebug(details: {
+		milestoneKey?: string;
+		alreadyShown?: boolean;
 		previousCount: number | null;
 		savedEntryId?: string | null;
-		shouldShowMilestone: boolean;
+		toastTriggered?: boolean;
+		shouldShowMilestone?: boolean;
 		reason?: string;
 		source: string;
 	}) {
@@ -303,19 +307,26 @@
 		userId: string | null | undefined,
 		context: { previousCount: number | null; savedEntryId?: string | null; source: string }
 	) {
+		const milestoneKey = getMilestoneStorageKey(milestone.id, userId);
+
 		if (!userId) {
 			logMilestoneDebug({
 				...context,
-				shouldShowMilestone: false,
+				milestoneKey,
+				alreadyShown: false,
+				toastTriggered: false,
 				reason: 'no user/browser'
 			});
 			return;
 		}
 
-		if (hasSeenMilestone(milestone.id, userId)) {
+		const alreadyShown = hasSeenMilestone(milestone.id, userId);
+		if (alreadyShown) {
 			logMilestoneDebug({
 				...context,
-				shouldShowMilestone: false,
+				milestoneKey,
+				alreadyShown,
+				toastTriggered: false,
 				reason: 'already shown'
 			});
 			return;
@@ -325,7 +336,9 @@
 		markMilestoneSeen(milestone.id, userId);
 		logMilestoneDebug({
 			...context,
-			shouldShowMilestone: true
+			milestoneKey,
+			alreadyShown,
+			toastTriggered: true
 		});
 	}
 
@@ -335,17 +348,6 @@
 		userId?: string | null;
 		source: string;
 	}) {
-		if (context.previousCount !== 0) {
-			logMilestoneDebug({
-				previousCount: context.previousCount,
-				savedEntryId: context.savedEntryId,
-				shouldShowMilestone: false,
-				reason: 'previousCount not zero',
-				source: context.source
-			});
-			return;
-		}
-
 		showMilestoneOnce(firstDiaryEntryMilestone, context.userId, {
 			previousCount: context.previousCount,
 			savedEntryId: context.savedEntryId,
@@ -389,6 +391,26 @@
 		const page = await loadDiaryEntriesPage(userId, options);
 		entries = page.entries;
 		hasMoreEntries = page.hasMore;
+	}
+
+	async function loadDiaryEntryCount(userId: string): Promise<number | null> {
+		const { count, error } = await supabase
+			.from('diary')
+			.select('id', { count: 'exact', head: true })
+			.eq('user_id', userId);
+
+		if (error) {
+			logMilestoneDebug({
+				previousCount: null,
+				savedEntryId: null,
+				toastTriggered: false,
+				reason: 'count unavailable',
+				source: 'dagbok/checkin count failed'
+			});
+			return null;
+		}
+
+		return count ?? 0;
 	}
 
 	async function loadMoreEntries() {
@@ -859,7 +881,7 @@
 			return;
 		}
 		savingDraft = true;
-		const previousEntryCount = entries.length;
+		let previousEntryCount = entries.length;
 
 		try {
 			const { data } = await supabase.auth.getSession();
@@ -869,6 +891,17 @@
 				draftError = 'Logga in eller skapa konto för att spara i dagboken.';
 				return;
 			}
+
+			const serverPreviousEntryCount = await loadDiaryEntryCount(session.user.id);
+			previousEntryCount = serverPreviousEntryCount ?? previousEntryCount;
+			logMilestoneDebug({
+				milestoneKey: getMilestoneStorageKey('first_diary_entry', session.user.id),
+				alreadyShown: hasSeenMilestone('first_diary_entry', session.user.id),
+				previousCount: previousEntryCount,
+				savedEntryId: null,
+				toastTriggered: false,
+				source: 'manual save path reached'
+			});
 
 			const response = await fetch('/api/diary/create', {
 				method: 'POST',
@@ -892,9 +925,11 @@
 			} | null;
 			if (!response.ok) {
 				logMilestoneDebug({
+					milestoneKey: getMilestoneStorageKey('first_diary_entry', session.user.id),
+					alreadyShown: hasSeenMilestone('first_diary_entry', session.user.id),
 					previousCount: previousEntryCount,
 					savedEntryId: null,
-					shouldShowMilestone: false,
+					toastTriggered: false,
 					reason: 'save failed',
 					source: 'dagbok/checkin'
 				});
@@ -1058,16 +1093,16 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="auth-page">
-	<MilestoneToast
-		visible={Boolean(activeMilestoneToast)}
-		title={activeMilestoneToast?.title ?? ''}
-		text={activeMilestoneToast?.text ?? ''}
-		onclose={() => {
-			activeMilestoneToast = null;
-		}}
-	/>
+<MilestoneToast
+	visible={Boolean(activeMilestoneToast)}
+	title={activeMilestoneToast?.title ?? ''}
+	text={activeMilestoneToast?.text ?? ''}
+	onclose={() => {
+		activeMilestoneToast = null;
+	}}
+/>
 
+<main class="auth-page">
 	{#if loading}
 		<div class="auth-shell">
 			<section class="auth-panel">
