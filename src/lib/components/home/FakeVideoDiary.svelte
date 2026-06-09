@@ -144,13 +144,13 @@
 		width: min(100%, 23rem);
 		margin: clamp(1.35rem, 4vw, 2rem) auto 0;
 		opacity: 0;
-		transform: translateY(1.5rem);
+		transform: translateX(-2.5rem);
 		transition: opacity 620ms ease, transform 620ms ease;
 	}
 
 	.fake-video.is-visible {
 		opacity: 1;
-		transform: translateY(0);
+		transform: translateX(0);
 	}
 
 	.video-surface {
