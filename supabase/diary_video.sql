@@ -6,7 +6,9 @@ insert into storage.buckets (id, name, public)
 values ('diary-videos', 'diary-videos', false)
 on conflict (id) do nothing;
 
--- RLS: användare får bara ladda upp sina egna videor
+-- RLS: användare får bara ladda upp sina egna videor.
+-- Postgres saknar "create policy if not exists", så vi droppar först för idempotens.
+drop policy if exists "Users upload own diary videos" on storage.objects;
 create policy "Users upload own diary videos"
 on storage.objects for insert
 with check (
@@ -15,6 +17,7 @@ with check (
 );
 
 -- RLS: användare får bara läsa sina egna videor
+drop policy if exists "Users read own diary videos" on storage.objects;
 create policy "Users read own diary videos"
 on storage.objects for select
 using (
@@ -23,6 +26,7 @@ using (
 );
 
 -- RLS: användare får ta bort sina egna videor
+drop policy if exists "Users delete own diary videos" on storage.objects;
 create policy "Users delete own diary videos"
 on storage.objects for delete
 using (

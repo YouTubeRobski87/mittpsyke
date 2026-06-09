@@ -1017,10 +1017,6 @@
 			draftError = 'Vänta tills bilden har laddats upp innan du sparar.';
 			return;
 		}
-		if (uploadingVideo) {
-			draftError = 'Vänta tills videon har laddats upp innan du sparar.';
-			return;
-		}
 		savingDraft = true;
 
 		try {
@@ -1034,6 +1030,22 @@
 
 			sessionUser = session.user;
 
+			// Ladda upp videon (om någon spelats in) precis innan inlägget skapas.
+			// Misslyckas uppladdningen avbryter vi sparandet och inget föräldralöst skapas.
+			let videoPath: string | null = null;
+			if (draftVideoBlob) {
+				uploadingVideo = true;
+				try {
+					videoPath = await uploadDraftVideo(session.user.id);
+				} catch (err) {
+					draftError =
+						err instanceof Error ? err.message : 'Kunde inte ladda upp videon. Försök igen.';
+					return;
+				} finally {
+					uploadingVideo = false;
+				}
+			}
+
 			const response = await fetch('/api/diary/create', {
 				method: 'POST',
 				headers: {
@@ -1045,7 +1057,7 @@
 					text: draftText.trim(),
 					mood: draftMood || null,
 					image_url: draftImageUrl,
-					video_path: draftVideoPath,
+					video_path: videoPath,
 					prompt_question: draftPromptQuestion || null,
 					daily_question_id: draftDailyQuestionId
 				})
@@ -1056,6 +1068,10 @@
 				diary?: { id?: string | null };
 			} | null;
 			if (!response.ok) {
+				// Inlägget kunde inte sparas — städa bort videon vi just laddade upp.
+				if (videoPath) {
+					supabase.storage.from('diary-videos').remove([videoPath]).catch(() => {});
+				}
 				logMilestoneDebug({
 					milestoneKey: getMilestoneStorageKey('first_diary_entry', session.user.id),
 					alreadyShown: hasSeenMilestone('first_diary_entry', session.user.id),
@@ -1487,7 +1503,7 @@
 								<VideoRecorder onrecorded={handleVideoRecorded} onreset={handleVideoReset} />
 								{#if uploadingVideo}
 									<p class="image-upload-status auth-muted">Laddar upp videon...</p>
-								{:else if draftVideoPath}
+								{:else if draftVideoBlob}
 									<p class="image-upload-status auth-muted">Video klar att sparas med inlägget.</p>
 								{/if}
 								{#if uploadVideoError}
