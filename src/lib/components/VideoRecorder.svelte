@@ -9,11 +9,21 @@
 	let { onrecorded, onreset }: Props = $props();
 
 	const MAX_SECONDS = 180;
-	const supported =
+	const VIDEO_MAX_BYTES = 50 * 1024 * 1024; // 50 MB
+
+	const hasGetUserMedia =
+		typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia;
+	const hasMediaRecorder = typeof MediaRecorder !== 'undefined';
+	// Grova pekdon (mobil/surfplatta) → använd OS:ets kamera-app via file input.
+	// MediaRecorder + getUserMedia är opålitligt i mobila webbläsare (särskilt iOS),
+	// medan en file input med capture lämnar över till den inbyggda kameran.
+	const isCoarsePointer =
 		typeof window !== 'undefined' &&
-		typeof MediaRecorder !== 'undefined' &&
-		typeof navigator !== 'undefined' &&
-		!!navigator.mediaDevices?.getUserMedia;
+		typeof window.matchMedia === 'function' &&
+		window.matchMedia('(pointer: coarse)').matches;
+
+	// Live-inspelning i webbläsaren används bara på desktop där det fungerar bra.
+	const useLiveRecorder = hasGetUserMedia && hasMediaRecorder && !isCoarsePointer;
 
 	let stream = $state<MediaStream | null>(null);
 	let recorder: MediaRecorder | null = null;
@@ -23,15 +33,22 @@
 	let recording = $state(false);
 	let seconds = $state(0);
 	let timer: ReturnType<typeof setInterval> | null = null;
-	let cameraError = $state('');
+	let errorMessage = $state('');
 
 	function getMimeType(): string {
 		const types = ['video/webm;codecs=vp9', 'video/webm', 'video/mp4'];
 		return types.find((t) => MediaRecorder.isTypeSupported(t)) ?? '';
 	}
 
+	function setPlayback(blob: Blob) {
+		if (playbackUrl) URL.revokeObjectURL(playbackUrl);
+		playbackUrl = URL.createObjectURL(blob);
+		onrecorded?.(blob);
+	}
+
+	// ── Live-inspelning (desktop) ──
 	async function startCamera() {
-		cameraError = '';
+		errorMessage = '';
 		try {
 			stream = await navigator.mediaDevices.getUserMedia({
 				video: { facingMode: 'user', width: { ideal: 1280 } },
@@ -43,7 +60,7 @@
 				await previewEl.play();
 			}
 		} catch (e) {
-			cameraError =
+			errorMessage =
 				'Kunde inte starta kameran. Kontrollera att webbläsaren har tillgång till kamera och mikrofon.';
 			console.error('Kamerafel:', e);
 		}
@@ -58,9 +75,7 @@
 			if (e.data.size) chunks.push(e.data);
 		};
 		recorder.onstop = () => {
-			const blob = new Blob(chunks, { type: recorder!.mimeType });
-			playbackUrl = URL.createObjectURL(blob);
-			onrecorded?.(blob);
+			setPlayback(new Blob(chunks, { type: recorder!.mimeType }));
 		};
 		recorder.start();
 		recording = true;
@@ -81,11 +96,38 @@
 		stream = null;
 	}
 
-	function reset() {
+	function resetLive() {
 		if (playbackUrl) URL.revokeObjectURL(playbackUrl);
 		playbackUrl = null;
+		errorMessage = '';
 		onreset?.();
-		startCamera();
+		void startCamera();
+	}
+
+	// ── Native kamera-app (mobil) ──
+	function handleFileSelect(event: Event) {
+		const input = event.currentTarget as HTMLInputElement;
+		const file = input.files?.[0] ?? null;
+		input.value = ''; // tillåt att välja samma fil igen
+		if (!file) return;
+
+		if (!file.type.startsWith('video/')) {
+			errorMessage = 'Välj en videofil.';
+			return;
+		}
+		if (file.size > VIDEO_MAX_BYTES) {
+			errorMessage = 'Videon är för stor (max 50 MB). Spela in en kortare video.';
+			return;
+		}
+		errorMessage = '';
+		setPlayback(file);
+	}
+
+	function resetFile() {
+		if (playbackUrl) URL.revokeObjectURL(playbackUrl);
+		playbackUrl = null;
+		errorMessage = '';
+		onreset?.();
 	}
 
 	onDestroy(() => {
@@ -95,41 +137,65 @@
 	});
 </script>
 
-{#if !supported}
-	<p class="video-unsupported">Videoinspelning stöds inte i den här webbläsaren.</p>
-{:else if !playbackUrl}
-	<div class="video-camera-wrap">
-		<video bind:this={previewEl} playsinline autoplay muted class="video-preview"></video>
-	</div>
-	{#if cameraError}
-		<p class="video-error">{cameraError}</p>
-	{/if}
-	{#if !stream}
-		<button type="button" class="video-action-btn" onclick={startCamera}> Starta kamera </button>
-	{:else if !recording}
-		<button type="button" class="video-action-btn video-action-btn--record" onclick={startRecording}>
-			● Spela in
-		</button>
+{#if useLiveRecorder}
+	{#if !playbackUrl}
+		<div class="video-camera-wrap">
+			<video bind:this={previewEl} playsinline autoplay muted class="video-preview"></video>
+		</div>
+		{#if errorMessage}
+			<p class="video-error">{errorMessage}</p>
+		{/if}
+		{#if !stream}
+			<button type="button" class="video-action-btn" onclick={startCamera}> Starta kamera </button>
+		{:else if !recording}
+			<button
+				type="button"
+				class="video-action-btn video-action-btn--record"
+				onclick={startRecording}
+			>
+				● Spela in
+			</button>
+		{:else}
+			<button type="button" class="video-action-btn video-action-btn--stop" onclick={stopRecording}>
+				■ Stoppa ({MAX_SECONDS - seconds}s kvar)
+			</button>
+		{/if}
 	{:else}
-		<button type="button" class="video-action-btn video-action-btn--stop" onclick={stopRecording}>
-			■ Stoppa ({MAX_SECONDS - seconds}s kvar)
-		</button>
+		<div class="video-playback-wrap">
+			<!-- svelte-ignore a11y_media_has_caption -->
+			<video src={playbackUrl} controls playsinline class="video-playback"></video>
+		</div>
+		<button type="button" class="video-action-btn" onclick={resetLive}> Spela in igen </button>
 	{/if}
 {:else}
-	<div class="video-playback-wrap">
-		<!-- svelte-ignore a11y_media_has_caption -->
-		<video src={playbackUrl} controls playsinline class="video-playback"></video>
-	</div>
-	<button type="button" class="video-action-btn" onclick={reset}> Spela in igen </button>
+	<!-- Mobil / webbläsare utan live-inspelning: använd den inbyggda kameran -->
+	{#if !playbackUrl}
+		<label class="video-action-btn video-action-btn--record">
+			● Spela in video
+			<input
+				type="file"
+				accept="video/*"
+				capture="user"
+				class="video-file-input"
+				onchange={handleFileSelect}
+			/>
+		</label>
+		{#if errorMessage}
+			<p class="video-error">{errorMessage}</p>
+		{/if}
+	{:else}
+		<div class="video-playback-wrap">
+			<!-- svelte-ignore a11y_media_has_caption -->
+			<video src={playbackUrl} controls playsinline class="video-playback"></video>
+		</div>
+		{#if errorMessage}
+			<p class="video-error">{errorMessage}</p>
+		{/if}
+		<button type="button" class="video-action-btn" onclick={resetFile}> Spela in igen </button>
+	{/if}
 {/if}
 
 <style>
-	.video-unsupported {
-		margin: 0;
-		font-size: 0.83rem;
-		color: hsl(var(--muted-foreground));
-	}
-
 	.video-camera-wrap,
 	.video-playback-wrap {
 		width: 100%;
@@ -143,6 +209,7 @@
 	.video-playback {
 		display: block;
 		width: 100%;
+		min-height: 9rem;
 		max-height: 14rem;
 		object-fit: cover;
 	}
@@ -154,6 +221,7 @@
 	}
 
 	.video-action-btn {
+		display: inline-block;
 		margin-top: 0.4rem;
 		border: none;
 		background: transparent;
@@ -177,5 +245,17 @@
 
 	.video-action-btn--stop {
 		color: hsl(var(--error-foreground, 0 80% 45%));
+	}
+
+	.video-file-input {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
 	}
 </style>
