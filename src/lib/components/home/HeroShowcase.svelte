@@ -31,6 +31,43 @@
 	let timers: number[] = [];
 	let cancelled = false;
 
+	// Slumpad, tydligt illustrerad avatar — ingen riktig kamera, inget riktigt ansikte.
+	// Gör det uppenbart att rutan är ett exempel och inte filmar betraktaren.
+	type Avatar = {
+		skin: string;
+		hair: string;
+		shirt: string;
+		longHair: boolean;
+		glasses: boolean;
+	};
+
+	const avatarSkins = ['#f3cba6', '#e7b78e', '#cf9468', '#a76b44', '#f7d9bb'];
+	const avatarHairs = ['#2f2a26', '#4b3526', '#6b4a2a', '#b9b3ad', '#d98427', '#222a36'];
+	const avatarShirts = ['#3a7bd5', '#5bb3a0', '#9f7aea', '#ef8a72', '#6b8cce'];
+
+	function randomFrom<T>(arr: T[]): T {
+		return arr[Math.floor(Math.random() * arr.length)];
+	}
+
+	function randomAvatar(): Avatar {
+		return {
+			skin: randomFrom(avatarSkins),
+			hair: randomFrom(avatarHairs),
+			shirt: randomFrom(avatarShirts),
+			longHair: Math.random() < 0.5,
+			glasses: Math.random() < 0.4
+		};
+	}
+
+	// Fast startvärde (undviker SSR/klient-mismatch); slumpas i onMount/playVideo
+	let avatar = $state<Avatar>({
+		skin: '#f3cba6',
+		hair: '#2f2a26',
+		shirt: '#3a7bd5',
+		longHair: false,
+		glasses: false
+	});
+
 	function clearTimers() {
 		timers.forEach((t) => window.clearTimeout(t));
 		timers = [];
@@ -70,6 +107,7 @@
 	}
 
 	async function playVideo() {
+		avatar = randomAvatar();
 		phase = 'idle';
 		seconds = 0;
 
@@ -161,7 +199,45 @@
 			<!-- Video-scen -->
 			<div class="scene scene-video" class:active={scene === 'video'}>
 				<div class="viewport" class:recording={phase === 'recording'}>
-					<div class="silhouette"></div>
+					<svg
+						class="avatar"
+						viewBox="0 0 100 100"
+						xmlns="http://www.w3.org/2000/svg"
+						role="img"
+						aria-hidden="true"
+					>
+						<!-- axlar -->
+						<path d="M16 100 C16 76 33 67 50 67 C67 67 84 76 84 100 Z" fill={avatar.shirt} />
+						<!-- hals -->
+						<rect x="44" y="50" width="12" height="16" rx="5" fill={avatar.skin} />
+						<!-- huvud -->
+						<circle cx="50" cy="40" r="17" fill={avatar.skin} />
+						<!-- hår (cap) -->
+						<path d="M32 40 C32 23 68 23 68 40 C68 30 60 25 50 25 C40 25 32 30 32 40 Z" fill={avatar.hair} />
+						{#if avatar.longHair}
+							<!-- längre hår som ramar in ansiktet -->
+							<rect x="31" y="38" width="6" height="22" rx="3" fill={avatar.hair} />
+							<rect x="63" y="38" width="6" height="22" rx="3" fill={avatar.hair} />
+						{/if}
+						<!-- ögon -->
+						<circle cx="43.5" cy="40" r="1.7" fill="#1f2937" />
+						<circle cx="56.5" cy="40" r="1.7" fill="#1f2937" />
+						<!-- mun -->
+						<path
+							d="M44 46.5 Q50 51 56 46.5"
+							stroke="#1f2937"
+							stroke-width="1.5"
+							fill="none"
+							stroke-linecap="round"
+						/>
+						{#if avatar.glasses}
+							<g fill="none" stroke="#1f2937" stroke-width="1.4">
+								<circle cx="43.5" cy="40" r="4.6" />
+								<circle cx="56.5" cy="40" r="4.6" />
+								<line x1="48.1" y1="40" x2="51.9" y2="40" />
+							</g>
+						{/if}
+					</svg>
 
 					{#if phase === 'recording'}
 						<div class="rec-badge"><span class="rec-dot"></span> REC</div>
@@ -305,17 +381,14 @@
 		border: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
-	.silhouette {
+	.avatar {
 		position: absolute;
 		left: 50%;
-		bottom: -2.6rem;
-		width: 7.5rem;
-		height: 9rem;
+		bottom: 0;
+		width: 8.4rem;
+		height: 8.4rem;
 		transform: translateX(-50%);
-		background:
-			radial-gradient(circle at 50% 22%, rgba(226, 232, 240, 0.32) 0 18%, transparent 19%),
-			radial-gradient(ellipse 60% 55% at 50% 100%, rgba(226, 232, 240, 0.26) 0 60%, transparent 62%);
-		filter: blur(1px);
+		transform-origin: 50% 100%;
 		animation: breathe 5.5s ease-in-out infinite;
 	}
 
@@ -475,7 +548,7 @@
 		}
 
 		.bubble-answer,
-		.silhouette,
+		.avatar,
 		.rec-dot,
 		.saved-badge,
 		.cursor,
