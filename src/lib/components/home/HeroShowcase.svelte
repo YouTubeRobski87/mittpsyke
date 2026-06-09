@@ -6,7 +6,7 @@
 	const answerText =
 		'Det är okej. Du behöver inte förklara allt perfekt. Vi tar det i din takt.';
 	// ── Video-scenen ──
-	const caption = 'Inloggad: privat inspelning i dagboken.';
+	const caption = 'Inloggad: privat dagbok.';
 
 	const typeSpeed = 56;
 	const answerDelay = 520;
