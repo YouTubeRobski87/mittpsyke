@@ -860,51 +860,40 @@
 	}
 
 	function clearVideoState() {
-		draftVideoPath = null;
+		draftVideoBlob = null;
 		uploadVideoError = '';
 		uploadingVideo = false;
 		showVideoRecorder = false;
 	}
 
 	function clearDraftVideo() {
-		if (draftVideoPath) {
-			supabase.storage.from('diary-videos').remove([draftVideoPath]).catch(() => {});
-		}
 		clearVideoState();
 	}
 
+	// Anropas när användaren klickar "Spela in igen" i inspelaren
 	function handleVideoReset() {
-		if (draftVideoPath) {
-			supabase.storage.from('diary-videos').remove([draftVideoPath]).catch(() => {});
-		}
-		draftVideoPath = null;
+		draftVideoBlob = null;
 		uploadVideoError = '';
 	}
 
-	async function handleVideoRecorded(blob: Blob) {
+	// Inspelaren skickar den färdiga videon hit — vi sparar bara blobben i minnet.
+	// Själva uppladdningen sker i uploadDraftVideo() när inlägget sparas.
+	function handleVideoRecorded(blob: Blob) {
 		uploadVideoError = '';
-		uploadingVideo = true;
-		try {
-			const { data: sessionData } = await supabase.auth.getSession();
-			const userId = sessionData.session?.user.id;
-			if (!userId) {
-				uploadVideoError = 'Logga in för att spara video.';
-				return;
-			}
-			const ext = blob.type.includes('mp4') ? 'mp4' : 'webm';
-			const path = `${userId}/${crypto.randomUUID()}.${ext}`;
-			const { error } = await supabase.storage
-				.from('diary-videos')
-				.upload(path, blob, { contentType: blob.type });
-			if (error) throw error;
-			draftVideoPath = path;
-		} catch (err) {
-			uploadVideoError =
-				err instanceof Error ? err.message : 'Kunde inte ladda upp videon. Försök igen.';
-			draftVideoPath = null;
-		} finally {
-			uploadingVideo = false;
-		}
+		draftVideoBlob = blob;
+	}
+
+	// Laddar upp den inspelade videon och returnerar storage-sökvägen.
+	// Kastar vid fel så att anroparen kan avbryta sparandet.
+	async function uploadDraftVideo(userId: string): Promise<string> {
+		if (!draftVideoBlob) throw new Error('Ingen video att ladda upp.');
+		const ext = draftVideoBlob.type.includes('mp4') ? 'mp4' : 'webm';
+		const path = `${userId}/${crypto.randomUUID()}.${ext}`;
+		const { error } = await supabase.storage
+			.from('diary-videos')
+			.upload(path, draftVideoBlob, { contentType: draftVideoBlob.type });
+		if (error) throw error;
+		return path;
 	}
 
 	async function loadVideoUrl(entryId: string, videoPath: string) {
