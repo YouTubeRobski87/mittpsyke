@@ -65,6 +65,10 @@ function validateBody(input: unknown): { ok: true; data: CreateDiaryRequestBody 
 		return { ok: false, error: 'Field "image_url" must be a string or null.' };
 	}
 
+	if (body.video_path !== undefined && body.video_path !== null && typeof body.video_path !== 'string') {
+		return { ok: false, error: 'Field "video_path" must be a string or null.' };
+	}
+
 	if (
 		body.prompt_question !== undefined &&
 		body.prompt_question !== null &&
@@ -93,6 +97,7 @@ function validateBody(input: unknown): { ok: true; data: CreateDiaryRequestBody 
 			mood: body.mood ?? null,
 			tags: body.tags ?? null,
 			image_url: body.image_url ?? null,
+			video_path: body.video_path ?? null,
 			prompt_question: body.prompt_question?.trim() || null,
 			daily_question_id: dailyQuestionId
 		}
@@ -170,10 +175,11 @@ export const POST: RequestHandler = async ({ request }) => {
 			mood: validated.data.mood,
 			tags: validated.data.tags,
 			image_url: validated.data.image_url,
+			video_path: validated.data.video_path,
 			prompt_question: validated.data.prompt_question,
 			daily_question_id: dailyQuestionId
 		})
-		.select('id, user_id, text, mood, tags, image_url, prompt_question, daily_question_id, created_at')
+		.select('id, user_id, text, mood, tags, image_url, video_path, prompt_question, daily_question_id, created_at')
 		.single();
 
 	if (!insertError && inserted) {

@@ -8,6 +8,7 @@ export type DiaryEntry = {
 	tags: string[];
 	mood: string | null;
 	image_url: string | null;
+	video_path: string | null;
 	prompt_question: string | null;
 };
 
@@ -18,6 +19,7 @@ type DiaryRow = {
 	tags: unknown;
 	mood: unknown;
 	image_url: unknown;
+	video_path: unknown;
 	prompt_question: unknown;
 };
 
@@ -71,6 +73,7 @@ function mapDiaryRow(row: DiaryRow): DiaryEntry {
 		tags: normalizeTags(row.tags),
 		mood: typeof row.mood === 'string' ? row.mood : null,
 		image_url: typeof row.image_url === 'string' ? row.image_url : null,
+		video_path: typeof row.video_path === 'string' ? row.video_path : null,
 		prompt_question: typeof row.prompt_question === 'string' ? row.prompt_question : null
 	};
 }
@@ -83,6 +86,7 @@ function mapLegacyDiaryRow(row: LegacyDiaryRow): DiaryEntry {
 		tags: normalizeTags(row.tags),
 		mood: typeof row.mood === 'string' ? row.mood : null,
 		image_url: null, // Äldre tabell saknar bildkolumn
+		video_path: null,
 		prompt_question: null
 	};
 }
@@ -118,7 +122,7 @@ async function fetchDiaryEntries(userId: string, limit: number): Promise<DiaryEn
 	const queryLimit = limit + 1;
 	const { data, error: loadError } = await supabase
 		.from('diary')
-		.select('id, text, created_at, tags, mood, image_url, prompt_question')
+		.select('id, text, created_at, tags, mood, image_url, video_path, prompt_question')
 		.eq('user_id', userId)
 		.order('created_at', { ascending: false })
 		.limit(queryLimit);

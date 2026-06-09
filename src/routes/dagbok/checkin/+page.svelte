@@ -16,6 +16,7 @@
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
+	import VideoRecorder from '$lib/components/VideoRecorder.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
 	import {
 		awardMilestone,
@@ -159,6 +160,17 @@
 	let uploadingImage = $state(false);
 	let uploadImageError = $state('');
 	let draftImageUploadId = 0;
+
+	// Videoinspelning för nytt inlägg.
+	// Den inspelade videon hålls i minnet (blob) och laddas upp först när inlägget
+	// sparas — på så vis blir inga föräldralösa filer kvar om användaren lämnar sidan.
+	let showVideoRecorder = $state(false);
+	let draftVideoBlob = $state<Blob | null>(null);
+	let uploadingVideo = $state(false);
+	let uploadVideoError = $state('');
+	// Signerade videolänkar per inlägg-id (laddas vid expand)
+	let videoSignedUrls = $state<Record<string, string>>({});
+	let loadingVideoUrls = $state<Record<string, boolean>>({});
 
 	let editingEntryId = $state('');
 	let editingText = $state('');
@@ -847,6 +859,71 @@
 		}
 	}
 
+	function clearVideoState() {
+		draftVideoPath = null;
+		uploadVideoError = '';
+		uploadingVideo = false;
+		showVideoRecorder = false;
+	}
+
+	function clearDraftVideo() {
+		if (draftVideoPath) {
+			supabase.storage.from('diary-videos').remove([draftVideoPath]).catch(() => {});
+		}
+		clearVideoState();
+	}
+
+	function handleVideoReset() {
+		if (draftVideoPath) {
+			supabase.storage.from('diary-videos').remove([draftVideoPath]).catch(() => {});
+		}
+		draftVideoPath = null;
+		uploadVideoError = '';
+	}
+
+	async function handleVideoRecorded(blob: Blob) {
+		uploadVideoError = '';
+		uploadingVideo = true;
+		try {
+			const { data: sessionData } = await supabase.auth.getSession();
+			const userId = sessionData.session?.user.id;
+			if (!userId) {
+				uploadVideoError = 'Logga in för att spara video.';
+				return;
+			}
+			const ext = blob.type.includes('mp4') ? 'mp4' : 'webm';
+			const path = `${userId}/${crypto.randomUUID()}.${ext}`;
+			const { error } = await supabase.storage
+				.from('diary-videos')
+				.upload(path, blob, { contentType: blob.type });
+			if (error) throw error;
+			draftVideoPath = path;
+		} catch (err) {
+			uploadVideoError =
+				err instanceof Error ? err.message : 'Kunde inte ladda upp videon. Försök igen.';
+			draftVideoPath = null;
+		} finally {
+			uploadingVideo = false;
+		}
+	}
+
+	async function loadVideoUrl(entryId: string, videoPath: string) {
+		if (videoSignedUrls[entryId]) return;
+		loadingVideoUrls = { ...loadingVideoUrls, [entryId]: true };
+		try {
+			const { data } = await supabase.storage
+				.from('diary-videos')
+				.createSignedUrl(videoPath, 3600);
+			if (data?.signedUrl) {
+				videoSignedUrls = { ...videoSignedUrls, [entryId]: data.signedUrl };
+			}
+		} catch {
+			// ignorera fel vid signering
+		} finally {
+			loadingVideoUrls = { ...loadingVideoUrls, [entryId]: false };
+		}
+	}
+
 	// Kallas från DiaryCalendar när användaren klickar ett datum
 	function handleCalendarDaySelect(dateKey: string | null) {
 		calendarFilterDate = dateKey;
@@ -951,6 +1028,10 @@
 			draftError = 'Vänta tills bilden har laddats upp innan du sparar.';
 			return;
 		}
+		if (uploadingVideo) {
+			draftError = 'Vänta tills videon har laddats upp innan du sparar.';
+			return;
+		}
 		savingDraft = true;
 
 		try {
@@ -975,6 +1056,7 @@
 					text: draftText.trim(),
 					mood: draftMood || null,
 					image_url: draftImageUrl,
+					video_path: draftVideoPath,
 					prompt_question: draftPromptQuestion || null,
 					daily_question_id: draftDailyQuestionId
 				})
@@ -1029,6 +1111,7 @@
 			draftMoodPreview = 5;
 			clearDraftImage();
 			uploadImageError = '';
+			clearVideoState();
 			draftSuccess = 'Inlägget är sparat';
 			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
 			notifyDiaryEntriesChanged();
@@ -1399,6 +1482,33 @@
 								<p class="image-upload-error">{uploadImageError}</p>
 							{/if}
 						</div>
+
+						<!-- Videoinspelning (valfritt) -->
+						<div class="image-upload-row">
+							{#if !showVideoRecorder}
+								<button
+									type="button"
+									class="image-upload-label"
+									onclick={() => { showVideoRecorder = true; }}
+								>
+									<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+									Lägg till video (valfritt)
+								</button>
+							{:else}
+								<VideoRecorder onrecorded={handleVideoRecorded} onreset={handleVideoReset} />
+								{#if uploadingVideo}
+									<p class="image-upload-status auth-muted">Laddar upp videon...</p>
+								{:else if draftVideoPath}
+									<p class="image-upload-status auth-muted">Video klar att sparas med inlägget.</p>
+								{/if}
+								{#if uploadVideoError}
+									<p class="image-upload-error">{uploadVideoError}</p>
+								{/if}
+								<button type="button" class="image-remove-btn" onclick={clearDraftVideo}>
+									Avbryt video
+								</button>
+							{/if}
+						</div>
 							</div>
 
 						<p class="editor-note auth-muted">
@@ -1414,9 +1524,9 @@
 								type="button"
 								class="auth-button primary editor-primary"
 								onclick={saveDraftToDiary}
-								disabled={savingDraft || uploadingImage || !draftText.trim()}
+								disabled={savingDraft || uploadingImage || uploadingVideo || !draftText.trim()}
 							>
-								{savingDraft ? 'Sparar...' : uploadingImage ? 'Väntar på bild...' : 'Spara inlägg'}
+								{savingDraft ? 'Sparar...' : uploadingImage ? 'Väntar på bild...' : uploadingVideo ? 'Väntar på video...' : 'Spara inlägg'}
 							</button>
 
 							<a href="/skriv" class="auth-button editor-secondary">
@@ -1571,6 +1681,26 @@
 														class="entry-image"
 														loading="lazy"
 													/>
+												{/if}
+												{#if entry.video_path}
+													{#if videoSignedUrls[entry.id]}
+														<!-- svelte-ignore a11y_media_has_caption -->
+														<video
+															src={videoSignedUrls[entry.id]}
+															controls
+															playsinline
+															class="entry-image"
+														></video>
+													{:else}
+														<button
+															type="button"
+															class="entry-action-btn"
+															onclick={() => loadVideoUrl(entry.id, entry.video_path!)}
+															disabled={loadingVideoUrls[entry.id]}
+														>
+															{loadingVideoUrls[entry.id] ? 'Laddar video...' : 'Visa video'}
+														</button>
+													{/if}
 												{/if}
 											{:else}
 												<p class="entry-excerpt">{getEntryExcerpt(entry)}</p>
