@@ -521,7 +521,7 @@
 
 	@media (max-width: 420px) {
 		.stage {
-			min-height: 14.5rem;
+			min-height: 16rem;
 		}
 
 		.viewport {
