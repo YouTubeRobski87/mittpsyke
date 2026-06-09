@@ -268,7 +268,7 @@
 			<div class="how-grid">
 				<article class="how-card">
 					<h3>Dagbok och reflektion</h3>
-					<p>Skriv mer sammanhängande och sätt ord på det som återkommer.</p>
+					<p>Skriv, lägg till bild eller spara en privat inspelning när du är inloggad.</p>
 					<a class="how-card-cta" href="/dagbok" onclick={() => trackHomeCta('how_it_works', 'oppna_dagboken', '/dagbok')}>Öppna dagboken</a>
 				</article>
 				<article class="how-card">

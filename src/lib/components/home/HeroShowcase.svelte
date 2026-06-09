@@ -6,7 +6,8 @@
 	const answerText =
 		'Det är okej. Du behöver inte förklara allt perfekt. Vi tar det i din takt.';
 	// ── Video-scenen ──
-	const caption = 'Vissa dagar är det lättare att prata än att skriva.';
+	const caption =
+		'Som inloggad kan du prata en kort stund och spara inspelningen privat i din dagbok.';
 
 	const typeSpeed = 56;
 	const answerDelay = 520;
@@ -171,7 +172,7 @@
 <aside class="hero-showcase" aria-label="Exempel på hur det kan vara att använda MittPsyke">
 	<p class="sr-only">
 		Exempel i chatten: {userText} Svar: {answerText}. Exempel på videodagbok: spela in en kort
-		video i dagboken. {caption}
+		stund och spara den privat i dagboken när du är inloggad. {caption}
 	</p>
 
 	<div class="surface" aria-hidden="true">
@@ -252,7 +253,7 @@
 				<div class="controls">
 					<span class="rec-btn" class:active={phase === 'recording'}></span>
 					<span class="controls-label">
-						{#if phase === 'idle'}Tryck för att spela in{:else if phase === 'recording'}Spelar in…{:else}Sparat i din dagbok{/if}
+						{#if phase === 'idle'}Tryck för att spela in{:else if phase === 'recording'}Spelar in…{:else}Privat i din dagbok{/if}
 					</span>
 				</div>
 			</div>
