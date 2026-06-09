@@ -2,6 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import FakeLiveChat from '$lib/components/home/FakeLiveChat.svelte';
+	import FakeVideoDiary from '$lib/components/home/FakeVideoDiary.svelte';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
@@ -179,6 +180,24 @@
 				<p class="hero-trust-note">Din text sparas inte.</p>
 			</div>
 			<FakeLiveChat />
+		</div>
+	</section>
+
+	<!-- 1b. Nytt: videodagbok -->
+	<section class="video-intro" aria-labelledby="video-intro-title">
+		<div class="cards-narrow video-intro-inner">
+			<p class="video-intro-eyebrow">Nytt</p>
+			<h2 id="video-intro-title">Säg det högt — bara för dig själv</h2>
+			<p class="video-intro-text">
+				Vissa dagar är orden svåra att hitta. Nu kan du spela in en kort video i dagboken i stället
+				för att skriva — i din egen takt, helt privat. Bara du ser den.
+			</p>
+			<FakeVideoDiary />
+			<p class="video-intro-note">
+				<a href="/dagbok" onclick={() => trackHomeCta('video_intro', 'oppna_dagbok_video', '/dagbok')}>
+					Öppna dagboken
+				</a>
+			</p>
 		</div>
 	</section>
 
@@ -626,6 +645,52 @@
 	}
 
 	.early-trust-note a {
+		color: var(--home-text-cool);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	/* ── Sektion 1b: Videodagbok ── */
+	.video-intro {
+		padding: clamp(2.2rem, 6vw, 3.4rem) 1.25rem;
+		background: var(--home-section-bg-soft);
+		color: var(--home-text-soft);
+	}
+
+	.video-intro-inner {
+		text-align: center;
+	}
+
+	.video-intro-eyebrow {
+		margin: 0 0 0.45rem;
+		font-family: var(--font-heading);
+		font-size: 0.82rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--home-text-blue-muted);
+	}
+
+	.video-intro-inner h2 {
+		margin: 0;
+		color: var(--home-text-strong);
+		font-size: clamp(1.45rem, 2.8vw, 1.95rem);
+	}
+
+	.video-intro-text {
+		margin: 0.55rem auto 0;
+		max-width: 56ch;
+		font-size: 0.96rem;
+		line-height: 1.6;
+		color: var(--home-text-muted-strong);
+	}
+
+	.video-intro-note {
+		margin: 1rem 0 0;
+		font-size: 0.92rem;
+	}
+
+	.video-intro-note a {
 		color: var(--home-text-cool);
 		text-decoration: underline;
 		text-underline-offset: 3px;
