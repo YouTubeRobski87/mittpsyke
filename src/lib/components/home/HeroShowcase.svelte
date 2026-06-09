@@ -302,7 +302,7 @@
 	/* Scenerna ligger ovanpå varandra i samma ruta och korsfadar */
 	.stage {
 		position: relative;
-		min-height: 15rem;
+		min-height: 17rem;
 	}
 
 	.scene {
@@ -521,7 +521,7 @@
 
 	@media (max-width: 420px) {
 		.stage {
-			min-height: 16rem;
+			min-height: 16.75rem;
 		}
 
 		.viewport {
