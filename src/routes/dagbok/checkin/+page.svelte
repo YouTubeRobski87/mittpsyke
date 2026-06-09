@@ -65,17 +65,18 @@
 		text: string;
 	};
 
-	const firstDiaryEntryMilestone: ActiveMilestoneToast = {
-		id: 'first_diary_entry',
-		title: 'Första steget',
-		text: 'Du skrev ett inlägg. Ett litet steg räcker.'
-	};
-
 	const firstDiaryEntryMilestoneRecord = {
 		id: 'first-diary-entry-v4',
-		title: 'Första steget',
-		description: 'Du skrev ett inlägg. Ett litet steg räcker.',
+		title: 'Första ordet',
+		description:
+			'Du lät något få en plats utanför huvudet. Det kan vara litet och ändå betyda mycket.',
 		category: 'diary'
+	};
+
+	const firstDiaryEntryMilestone: ActiveMilestoneToast = {
+		id: 'first_diary_entry',
+		title: firstDiaryEntryMilestoneRecord.title,
+		text: firstDiaryEntryMilestoneRecord.description
 	};
 
 	const DIARY_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
@@ -1711,6 +1712,9 @@
 							<h3 id="diary-milestones-title" class="text-sm font-semibold">Milstolpar</h3>
 							<p class="text-xs auth-muted">Små steg du redan har tagit</p>
 						</div>
+						{#if dev}
+							<p class="milestones-debug auth-muted">earnedMilestones.length: {earnedMilestones.length}</p>
+						{/if}
 						{#if earnedMilestones.length === 0}
 							<p class="milestones-empty auth-muted">
 								Dina framsteg visas här när du använder dagboken.
@@ -2440,8 +2444,13 @@
 
 	.milestones-head h3,
 	.milestones-head p,
+	.milestones-debug,
 	.milestones-empty {
 		margin: 0;
+	}
+
+	.milestones-debug {
+		font-size: 0.72rem;
 	}
 
 	.milestones-list {

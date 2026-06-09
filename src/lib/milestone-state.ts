@@ -134,8 +134,21 @@ export function awardMilestone(
 	if (!browser) return [];
 
 	const milestones = loadEarnedMilestones(userId);
-	if (milestones.some((storedMilestone) => storedMilestone.id === milestone.id)) {
-		return milestones;
+	const existingIndex = milestones.findIndex((storedMilestone) => storedMilestone.id === milestone.id);
+	if (existingIndex >= 0) {
+		const existingMilestone = milestones[existingIndex];
+		const nextMilestones = milestones.map((storedMilestone, index) =>
+			index === existingIndex
+				? {
+						...existingMilestone,
+						title: milestone.title,
+						description: milestone.description,
+						category: milestone.category
+					}
+				: storedMilestone
+		);
+		saveEarnedMilestones(userId, nextMilestones);
+		return nextMilestones;
 	}
 
 	const nextMilestones = [
