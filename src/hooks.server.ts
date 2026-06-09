@@ -66,6 +66,8 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		`img-src 'self' data: blob: https://www.google-analytics.com https://*.google-analytics.com https://www.google.se https://*.google.com https://app.trysoro.com https://${supabaseHost} https://*.supabase.co https://*.storage.supabase.co`,
 		// Fonts (lokala)
 		"font-src 'self'",
+		// Media (video): self + blob för inspelad förhandsvisning + Supabase storage för sparade videor
+		`media-src 'self' blob: https://${supabaseHost} https://*.supabase.co https://*.storage.supabase.co`,
 		// API-anrop
 		`connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://www.google-analytics.com https://*.google-analytics.com https://region1.analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://api.retellai.com https://app.trysoro.com`,
 		// Frames
@@ -91,9 +93,10 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 	response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
 
 	// Permissions-Policy
+	// camera + microphone tillåts för egen origin (self) — krävs för videodagboken.
 	response.headers.set(
 		'Permissions-Policy',
-		'camera=(), microphone=(self), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
+		'camera=(self), microphone=(self), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
 	)
 
 	// X-Frame-Options (backup för äldre webbläsare)
