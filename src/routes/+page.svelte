@@ -268,7 +268,7 @@
 			<div class="how-grid">
 				<article class="how-card">
 					<h3>Dagbok och reflektion</h3>
-					<p>Skriv, lägg till bild eller spara en privat inspelning när du är inloggad.</p>
+					<p>Privat dagbok för inloggade: skriv, lägg till bild eller spela in en tanke med röst eller video. Allt sparas privat och kan hjälpa dig följa ditt mående över tid.</p>
 					<a class="how-card-cta" href="/dagbok" onclick={() => trackHomeCta('how_it_works', 'oppna_dagboken', '/dagbok')}>Öppna dagboken</a>
 				</article>
 				<article class="how-card">
