@@ -14,16 +14,10 @@
 	const hasGetUserMedia =
 		typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia;
 	const hasMediaRecorder = typeof MediaRecorder !== 'undefined';
-	// Grova pekdon (mobil/surfplatta) → använd OS:ets kamera-app via file input.
-	// MediaRecorder + getUserMedia är opålitligt i mobila webbläsare (särskilt iOS),
-	// medan en file input med capture lämnar över till den inbyggda kameran.
-	const isCoarsePointer =
-		typeof window !== 'undefined' &&
-		typeof window.matchMedia === 'function' &&
-		window.matchMedia('(pointer: coarse)').matches;
 
-	// Live-inspelning i webbläsaren används bara på desktop där det fungerar bra.
-	const useLiveRecorder = hasGetUserMedia && hasMediaRecorder && !isCoarsePointer;
+	// Live-inspelning används överallt där webbläsaren stöder det (även mobil).
+	// File input med capture finns kvar som fallback för webbläsare utan stöd.
+	const useLiveRecorder = hasGetUserMedia && hasMediaRecorder;
 
 	let stream = $state<MediaStream | null>(null);
 	let recorder: MediaRecorder | null = null;
@@ -35,9 +29,25 @@
 	let timer: ReturnType<typeof setInterval> | null = null;
 	let errorMessage = $state('');
 
-	function getMimeType(): string {
+	// Väljer ett mime-format webbläsaren faktiskt stöder. iOS Safari stöder inte
+	// webm utan bara mp4, och returnerar ibland inget från isTypeSupported alls —
+	// då skapar vi MediaRecorder utan mimeType och låter webbläsaren välja själv.
+	function createRecorder(mediaStream: MediaStream): MediaRecorder {
 		const types = ['video/webm;codecs=vp9', 'video/webm', 'video/mp4'];
-		return types.find((t) => MediaRecorder.isTypeSupported(t)) ?? '';
+		const mimeType = types.find((t) => {
+			try {
+				return MediaRecorder.isTypeSupported(t);
+			} catch {
+				return false;
+			}
+		});
+		try {
+			return mimeType
+				? new MediaRecorder(mediaStream, { mimeType })
+				: new MediaRecorder(mediaStream);
+		} catch {
+			return new MediaRecorder(mediaStream);
+		}
 	}
 
 	function setPlayback(blob: Blob) {
@@ -70,12 +80,12 @@
 		if (!stream) return;
 		chunks = [];
 		seconds = 0;
-		recorder = new MediaRecorder(stream, { mimeType: getMimeType() });
+		recorder = createRecorder(stream);
 		recorder.ondataavailable = (e) => {
 			if (e.data.size) chunks.push(e.data);
 		};
 		recorder.onstop = () => {
-			setPlayback(new Blob(chunks, { type: recorder!.mimeType }));
+			setPlayback(new Blob(chunks, { type: recorder!.mimeType || 'video/mp4' }));
 		};
 		recorder.start();
 		recording = true;
