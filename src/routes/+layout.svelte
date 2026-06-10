@@ -969,6 +969,10 @@
 			Så fungerar MittPsyke
 		</a>
 		<span class="mx-2">&middot;</span>
+		<a href="/premium" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Premium
+		</a>
+		<span class="mx-2">&middot;</span>
 		<a href="/feedback" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
 			Feedback
 		</a>
