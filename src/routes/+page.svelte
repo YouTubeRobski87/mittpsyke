@@ -7,7 +7,6 @@
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import {
 		trackHeroCtaPrimaryClick,
-		trackHeroCtaSecondaryClick,
 		trackHomeCtaClick,
 		trackScrollToHowItWorks
 	} from '$lib/analytics';
@@ -83,10 +82,6 @@
 
 	function trackStartAnonymous() {
 		trackHeroCtaPrimaryClick();
-	}
-
-	function trackStartDiary() {
-		trackHeroCtaSecondaryClick();
 	}
 
 	onMount(() => {
@@ -174,7 +169,6 @@
 				<p>Anonymt stöd när tankarna snurrar. Börja direkt i chatten eller skriv i dagboken i din egen takt.</p>
 				<div class="hero-actions">
 					<a href="/chat" class="hero-cta hero-cta-primary" onclick={() => trackStartAnonymous()}>Chatta anonymt</a>
-					<a href="/dagbok" class="hero-cta hero-cta-primary" onclick={() => trackStartDiary()}>Skriv dagbok</a>
 				</div>
 				<p class="hero-trust-note">Din text sparas inte.</p>
 			</div>
@@ -182,7 +176,26 @@
 		</div>
 	</section>
 
-	<!-- 2. Börja där det känns lättast -->
+	<!-- 2. Vad behöver du just nu? -->
+	<section class="need-now" aria-labelledby="need-now-title">
+		<div class="cards-narrow need-now-inner">
+			<h2 id="need-now-title">Vad behöver du just nu?</h2>
+			<div class="need-now-grid">
+				{#each needNowLinks as item}
+					<a
+						class="need-now-card"
+						href={item.href}
+						onclick={() => trackHomeCta('need_now', item.trackCta, item.href)}
+					>
+						<span>{item.text}</span>
+						<small>{item.description}</small>
+					</a>
+				{/each}
+			</div>
+		</div>
+	</section>
+
+	<!-- 3. Börja där det känns lättast -->
 	<section class="early-trust" aria-labelledby="early-trust-title">
 		<div class="cards-narrow early-trust-inner">
 			<p class="early-trust-eyebrow">Trygg start</p>
@@ -211,24 +224,6 @@
 		</div>
 	</section>
 
-	<section class="need-now" aria-labelledby="need-now-title">
-		<div class="cards-narrow need-now-inner">
-			<h2 id="need-now-title">Vad behöver du just nu?</h2>
-			<div class="need-now-grid">
-				{#each needNowLinks as item}
-					<a
-						class="need-now-card"
-						href={item.href}
-						onclick={() => trackHomeCta('need_now', item.trackCta, item.href)}
-					>
-						<span>{item.text}</span>
-						<small>{item.description}</small>
-					</a>
-				{/each}
-			</div>
-		</div>
-	</section>
-
 	<section id="sa-fungerar-det" class="quick-flow" aria-labelledby="quick-flow-title" bind:this={quickFlowEl}>
 		<div class="cards-narrow quick-flow-inner">
 			<h2 id="quick-flow-title">Så fungerar MittPsyke</h2>
@@ -244,16 +239,6 @@
 					</li>
 				{/each}
 			</ol>
-			<p class="quick-flow-cta-row">
-				<span class="quick-flow-cta-label">Nästa steg:</span>
-				<a href="/skriv" onclick={() => trackHomeCta('quick_flow', 'borja_skriva_anonymt', '/skriv')}>
-					Börja skriva anonymt
-				</a>
-				<span aria-hidden="true"> • </span>
-				<a href="/register" onclick={() => trackHomeCta('quick_flow', 'fortsatt_over_tid', '/register')}>
-					Skapa konto senare
-				</a>
-			</p>
 		</div>
 	</section>
 
@@ -747,22 +732,6 @@
 		font-size: 0.94rem;
 		line-height: 1.62;
 		color: var(--home-text-muted-body);
-	}
-
-	.quick-flow-cta-row {
-		margin: 1.15rem 0 0;
-		font-size: 0.9rem;
-		color: var(--home-text-muted-mid);
-	}
-
-	.quick-flow-cta-label {
-		color: var(--home-text-muted-soft);
-	}
-
-	.quick-flow-cta-row a {
-		color: var(--home-text-cool);
-		text-decoration: underline;
-		text-underline-offset: 3px;
 	}
 
 	.cards-narrow {
