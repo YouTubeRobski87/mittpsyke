@@ -2,7 +2,8 @@ import { error, redirect } from '@sveltejs/kit';
 import { getGuidesForPillar, getPillarBySlug, getPillarLandingBySlug } from '$lib/seo-kit/content';
 
 const pillarRedirects: Record<string, string> = {
-	'social-angest': '/guider/angest/social-angest'
+	'social-angest': '/guider/angest/social-angest',
+	'stress-utmattning': '/guider/stress'
 };
 
 export function load({ params }) {

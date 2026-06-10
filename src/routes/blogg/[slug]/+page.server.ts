@@ -38,6 +38,12 @@ function extractArticles(embedScript: string) {
 	return JSON.parse(match[1]) as SoroArticleListItem[];
 }
 
+// Soro-innehåll kan innehålla länkar utan protokoll (t.ex. href="www.1177.se").
+// Utan https:// tolkas de relativt och blir /blogg/www.1177.se (404). Lägg på https://.
+function fixProtocolLessLinks(html: string): string {
+	return html.replace(/(href=["'])(www\.)/gi, '$1https://$2');
+}
+
 function normalizeYoungMentalHealthArticleContent(content: string) {
 	return content
 		.replace(/^<h1>[\s\S]*?<\/h1>\s*/, '')
@@ -114,10 +120,11 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 
 	const normalizedSlug = normalizeSlug(article.slug);
 	const title = LOCAL_TITLE_BY_SLUG.get(normalizedSlug) ?? article.title;
-	const content =
+	const content = fixProtocolLessLinks(
 		normalizedSlug === 'psykisk-ohalsa-unga'
 			? normalizeYoungMentalHealthArticleContent(contentPayload.content)
-			: contentPayload.content;
+			: contentPayload.content
+	);
 
 	return {
 		title,

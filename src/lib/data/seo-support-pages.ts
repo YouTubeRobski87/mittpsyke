@@ -663,7 +663,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		lead:
 			'Stress blir lätt ett ord för allt, men långvarig stress sätter sig ofta tydligt i både kropp, tankar och vardag. Här kan du läsa om hur kronisk stress kan märkas och vad som kan hjälpa när återhämtningen inte längre kommer av sig själv.',
 		primaryCta: { href: '/chat/e', label: 'Starta samtal om stress' },
-		secondaryCta: { href: '/guider/stress-utmattning', label: 'Läs guide om stress' },
+		secondaryCta: { href: '/guider/stress', label: 'Läs guide om stress' },
 		sections: [
 			{
 				title: 'När stress blir långvarig',
@@ -689,7 +689,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			{ href: '/ovningar/daglig-reflektionsmall', label: 'Daglig reflektionsmall', description: 'för att stanna upp och få syn på vad som faktiskt belastar dig.' },
 			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill följa återkommande stressmönster över tid.' },
 			{ href: '/framsteg', label: 'Framsteg', description: 'för att kunna se små förändringar när du använder dagboken regelbundet.' },
-			{ href: '/guider/stress-utmattning', label: 'Guide om stress och utmattning', description: 'om du vill läsa mer om långvarig belastning.' }
+			{ href: '/guider/stress', label: 'Guide om stress och utmattning', description: 'om du vill läsa mer om långvarig belastning.' }
 		],
 		nextStepTitle: 'När det är dags att söka mer hjälp',
 		nextStepParagraphs: [
@@ -699,7 +699,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		nextStepLinks: [
 			{ href: '/chat/e', label: 'Prata om stress' },
 			{ href: '/dagbok', label: 'Skriv av dig' },
-			{ href: '/guider/stress-utmattning', label: 'Läs mer om stress' }
+			{ href: '/guider/stress', label: 'Läs mer om stress' }
 		],
 		faq: [
 			{

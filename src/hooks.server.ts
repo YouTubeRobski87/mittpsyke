@@ -7,8 +7,26 @@ import { getSessionUser } from '$lib/server/admin-auth'
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''
 
+// Gamla bloggslugg som flyttats till egna sidor (eller saknar Soro-artikel) → 301
+const legacyBlogRedirects: Record<string, string> = {
+	'/blogg/digital-dagbok-for-maende': '/digital-dagbok-for-maende',
+	'/blogg/psykiskt-stod-online': '/psykiskt-stod-online',
+	'/blogg/humorsparning-app-psykisk-halsa': '/humorsparning',
+	'/blogg/skriva-dagbok-online': '/dagbok',
+	'/blogg/att-skriva-av-sig-anonymt-online': '/anonym-dagbok-online',
+	'/blogg/ovningar-for-att-lugna-tankarna': '/ovningar',
+	'/blogg/stod-utan-konto-online': '/chatta-anonymt',
+	'/blogg/textbaserat-samtalsstod-vid-oro': '/hjalp-mot-oro-online',
+	'/blogg/hur-sortera-tankar-vid-stress': '/stod-vid-stress-online'
+}
+
 const legacyPathRedirects: Handle = async ({ event, resolve }) => {
 	const { url } = event
+
+	const legacyBlogTarget = legacyBlogRedirects[url.pathname]
+	if (legacyBlogTarget) {
+		throw redirect(301, legacyBlogTarget)
+	}
 
 	if (url.pathname === '/guider-seo') {
 		throw redirect(301, '/guider')
