@@ -3,7 +3,6 @@
 	import { onMount } from 'svelte';
 	import HeroShowcase from '$lib/components/home/HeroShowcase.svelte';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
-	import VoiceSupport from '$lib/components/VoiceSupport.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import {
 		trackHeroCtaPrimaryClick,
@@ -228,7 +227,7 @@
 		<div class="cards-narrow quick-flow-inner">
 			<h2 id="quick-flow-title">Så fungerar MittPsyke</h2>
 			<p class="quick-flow-intro">
-				Skriv först. Få struktur i text. Spara bara om du vill komma tillbaka senare. Inte vård, diagnos eller akuthjälp.
+				Skriv först. Få struktur i text. Spara bara om du vill komma tillbaka senare.
 			</p>
 			<ol class="quick-flow-grid">
 				{#each quickFlowSteps as step, index}
@@ -296,14 +295,12 @@
 		</div>
 	</section>
 
-	<VoiceSupport />
-
 	<!-- 7. Trygghet och avgränsning -->
 	<section class="trust-section" aria-labelledby="trust-title">
 		<div class="cards-narrow trust-inner">
 			<img src="/assets/home/Tryggplats.webp" alt="Illustration av en trygg plats i naturen" width="492" height="531" loading="lazy" decoding="async" class="trust-image" />
 			<div class="trust-copy">
-				<h2 id="trust-title">För stöd i text, reflektion och struktur — inte vård eller akuthjälp</h2>
+				<h2 id="trust-title">Ett första steg i din egen takt</h2>
 				<p>
 					MittPsyke är tänkt som ett första steg när du vill börja någonstans. Här kan du skriva av dig, sortera tankar och få struktur i text. Det är inte vård, behandling, diagnos eller akuthjälp.
 				</p>
@@ -319,7 +316,6 @@
 				<div class="trust-facts" aria-label="Avsändare och ansvar">
 					<p><strong>Drivs i Sverige av:</strong> Robert Claesson</p>
 					<p><strong>Kontakt:</strong> <a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a></p>
-					<p><strong>Viktigt:</strong> Inte vård, diagnos, behandling eller akuthjälp</p>
 				</div>
 			</div>
 		</div>

@@ -1,10 +1,6 @@
 <section class="safety-strip" aria-label="Trygghetsinformation">
 	<ul class="safety-list">
 		<li class="safety-item">
-			<p class="safety-label">Inte vård</p>
-			<p class="safety-copy">Stöd för reflektion i vardagen, inte vård, diagnos eller akuthjälp.</p>
-		</li>
-		<li class="safety-item">
 			<a class="safety-item-link" href="/skriv">
 				<p class="safety-label">Börja anonymt</p>
 				<p class="safety-copy">Du kan skriva direkt utan konto och komma igång i din egen takt.</p>
