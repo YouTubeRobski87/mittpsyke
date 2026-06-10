@@ -56,16 +56,16 @@
 			trackCta: 'need_now_write_off'
 		},
 		{
-			text: 'Jag vill lugna tankarna',
-			description: 'Prova en enkel övning.',
-			href: '/ovningar',
-			trackCta: 'need_now_calm_thoughts'
-		},
-		{
 			text: 'Jag vill förstå vad jag känner',
 			description: 'Skriv i dagboken.',
 			href: '/dagbok',
 			trackCta: 'need_now_understand_feelings'
+		},
+		{
+			text: 'Jag vill lugna tankarna',
+			description: 'Prova en enkel övning.',
+			href: '/ovningar',
+			trackCta: 'need_now_calm_thoughts'
 		},
 		{
 			text: 'Jag vill läsa själv',
@@ -164,12 +164,13 @@
 		</picture>
 		<div class="hero-shell">
 			<div class="hero-content">
-				<h1>Få hjälp att sortera tankar i lugn takt</h1>
-				<p>Anonymt stöd när tankarna snurrar. Börja direkt i chatten eller skriv i dagboken i din egen takt.</p>
+				<h1>Skriv anonymt och följ ditt mående</h1>
+				<p>Skriv några rader direkt och välj senare om du vill spara.</p>
 				<div class="hero-actions">
+					<a href="/dagbok" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('hero', 'borja_skriva_anonymt_nu', '/dagbok')}>Börja skriva anonymt nu</a>
 					<a href="/chat" class="hero-cta hero-cta-primary" onclick={() => trackStartAnonymous()}>Chatta anonymt</a>
 				</div>
-				<p class="hero-trust-note">Din text sparas inte.</p>
+				<p class="hero-trust-note">Inget konto krävs för att börja. Skapa konto senare om du vill spara och följa över tid.</p>
 			</div>
 			<HeroShowcase />
 		</div>
@@ -251,7 +252,7 @@
 			</p>
 			<div class="how-grid">
 				<article class="how-card">
-					<h3>Dagbok och reflektion</h3>
+					<h3>Anonym dagbok och reflektion</h3>
 					<p>Privat dagbok för inloggade: skriv, lägg till bild eller spela in en tanke med röst eller video. Allt sparas privat och kan hjälpa dig följa ditt mående över tid.</p>
 					<a class="how-card-cta" href="/dagbok" onclick={() => trackHomeCta('how_it_works', 'oppna_dagboken', '/dagbok')}>Öppna dagboken</a>
 				</article>
