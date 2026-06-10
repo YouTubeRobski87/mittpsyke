@@ -89,7 +89,6 @@
 		<li><strong>Cookie-bannern</strong> — innan analysverktyg aktiveras.</li>
 		<li><strong>Kontoskapande</strong> — när du registrerar dig godkänner du att kontouppgifter sparas.</li>
 		<li><strong>AI-chatt och dagbok</strong> — genom att använda dessa funktioner samtycker du till att innehåll som kan röra psykisk hälsa behandlas (artikel 9 GDPR).</li>
-		<li><strong>Röstsamtal</strong> — genom att starta ett samtal samtycker du till att röstdata behandlas i realtid.</li>
 	</ul>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Du kan <strong>när som helst återkalla</strong> ditt samtycke genom att radera ditt konto, rensa cookies, eller kontakta oss.
@@ -102,14 +101,14 @@
 		<li>Innehåll som du själv väljer att skriva eller spara, till exempel i dagbok, chatt eller andra fält i tjänsten.</li>
 		<li>Uppgifter i kontoinställningar, till exempel tilltalsnamn och val kring påminnelser eller utskick.</li>
 		<li>Tekniska uppgifter som behövs för funktion, säkerhet, missbruksförebyggande arbete och stabil drift.</li>
-		<li>Uppgifter om användning av webbsamtal eller AI-funktioner när du aktivt väljer att använda dem.</li>
+		<li>Uppgifter om användning av AI-funktioner när du aktivt väljer att använda dem.</li>
 	</ul>
 
 	<!-- KÄNSLIGA UPPGIFTER -->
 	<section class="rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-950/30 p-4 sm:p-5 mt-2 mb-6" aria-label="Känsliga uppgifter">
 		<h3 class="text-base font-semibold mt-0 mb-2">⚠️ Känsliga uppgifter (artikel 9 GDPR)</h3>
 		<p class="opacity-80 leading-relaxed text-sm">
-			Innehåll som du delar i chatt, dagbok eller röstsamtal kan röra psykisk hälsa och betraktas som
+			Innehåll som du delar i chatt eller dagbok kan röra psykisk hälsa och betraktas som
 			<strong>känsliga personuppgifter</strong> enligt GDPR artikel 9. Sådana uppgifter behandlas enbart
 			med ditt <strong>uttryckliga samtycke</strong>, vilket du lämnar i samband med att du börjar använda
 			tjänstens AI-funktioner. Du kan när som helst återkalla samtycket genom att radera ditt konto eller
@@ -156,20 +155,13 @@
 					<td class="px-4 py-3">Enbart i realtid, sparas ej</td>
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
-					<td class="px-4 py-3">Röstsamtal</td>
-					<td class="px-4 py-3">OpenAI + Retell</td>
-					<td class="px-4 py-3">USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
-					<td class="px-4 py-3">Samtycke</td>
-					<td class="px-4 py-3">Bearbetas i realtid, sparas ej</td>
-				</tr>
-				<tr>
 					<td class="px-4 py-3">Tekniska loggar</td>
 					<td class="px-4 py-3">Supabase / Vercel</td>
 					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
 					<td class="px-4 py-3">Berättigat intresse</td>
 					<td class="px-4 py-3">Upp till 90 dagar</td>
 				</tr>
-				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
+				<tr>
 					<td class="px-4 py-3">Analyskakor</td>
 					<td class="px-4 py-3">Google Analytics</td>
 					<td class="px-4 py-3">USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
@@ -230,15 +222,14 @@
 	</p>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll. Data lagras inom EU (Frankfurt).</li>
-		<li><strong>OpenAI:</strong> AI-funktioner som chatt och röstsamtal. OpenAI använder inte API-data för att träna sina modeller. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
-		<li><strong>Retell:</strong> röstsamtalsfunktionen. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
+		<li><strong>OpenAI:</strong> AI-funktioner som chatt. OpenAI använder inte API-data för att träna sina modeller. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
 		<li><strong>Vercel:</strong> hosting och leverans av webbplatsen. Analytics aktiveras endast med ditt samtycke. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
 	</ul>
 
 	<section class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 sm:p-5 mt-2 mb-6" aria-label="Tredjelandsöverföring">
 		<h3 class="text-base font-semibold mt-0 mb-2">Överföring utanför EU/EES</h3>
 		<p class="opacity-80 leading-relaxed text-sm">
-			Flera av våra leverantörer (OpenAI, Retell, Vercel) är baserade i USA. Överföring av personuppgifter
+			Flera av våra leverantörer (OpenAI, Vercel) är baserade i USA. Överföring av personuppgifter
 			till dessa sker med stöd av EU-kommissionens <strong>standardavtalsklausuler (SCCs)</strong>, vilket
 			säkerställer ett adekvat skydd för dina uppgifter i enlighet med GDPR.
 		</p>
@@ -298,5 +289,5 @@
 		Vi strävar efter att svara inom 30 dagar.
 	</p>
 
-	<p class="opacity-60 text-sm mt-10">Senast uppdaterad: 14 mars 2026</p>
+	<p class="opacity-60 text-sm mt-10">Senast uppdaterad: 10 juni 2026</p>
 </main>

@@ -73,11 +73,6 @@
 			<p>AI-funktioner som chatt, reflektioner och vissa dagboksrelaterade svar.</p>
 			<p>Kan behandla text du skickar till AI-funktioner. API-data används inte för modellträning enligt integritetspolicyn.</p>
 		</section>
-		<section class="provider-card" aria-label="Retell">
-			<h3 class="text-base font-semibold mt-0 mb-2">Retell</h3>
-			<p>Röstsamtalsfunktionen, om du väljer att använda den.</p>
-			<p>Kan behandla röstdata i samband med samtalet.</p>
-		</section>
 		<section class="provider-card" aria-label="Vercel">
 			<h3 class="text-base font-semibold mt-0 mb-2">Vercel</h3>
 			<p>Hosting, leverans av webbplatsen och tekniska loggar för drift och felsökning.</p>
