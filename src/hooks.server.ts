@@ -17,7 +17,8 @@ const legacyBlogRedirects: Record<string, string> = {
 	'/blogg/ovningar-for-att-lugna-tankarna': '/ovningar',
 	'/blogg/stod-utan-konto-online': '/chatta-anonymt',
 	'/blogg/textbaserat-samtalsstod-vid-oro': '/hjalp-mot-oro-online',
-	'/blogg/hur-sortera-tankar-vid-stress': '/stod-vid-stress-online'
+	'/blogg/hur-sortera-tankar-vid-stress': '/stod-vid-stress-online',
+	'/blogg/mans-psykiska-halsa': '/blogg/varfor-syns-inte-man-i-samtalet-om-psykisk-ohalsa'
 }
 
 const legacyPathRedirects: Handle = async ({ event, resolve }) => {
