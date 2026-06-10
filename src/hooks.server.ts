@@ -88,7 +88,7 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		// Media (video): self + blob för inspelad förhandsvisning + Supabase storage för sparade videor
 		`media-src 'self' blob: https://${supabaseHost} https://*.supabase.co https://*.storage.supabase.co`,
 		// API-anrop
-		`connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://www.google-analytics.com https://*.google-analytics.com https://region1.analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://api.retellai.com https://app.trysoro.com`,
+		`connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://www.google-analytics.com https://*.google-analytics.com https://region1.analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://app.trysoro.com`,
 		// Frames
 		"frame-src 'none'",
 		// Objects

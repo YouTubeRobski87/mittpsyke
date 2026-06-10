@@ -734,7 +734,7 @@
 				</p>
 				<div class="mt-2 flex flex-wrap gap-2">
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip">Se stödlinjer</a>
-					<a href="tel:+15672921889" class="support-chip">Prata med någon</a>
+					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip">Prata med någon</a>
 				</div>
 			</div>
 		{:else}
