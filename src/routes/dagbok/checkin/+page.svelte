@@ -1285,6 +1285,7 @@
 						<span class="path-icon-wrap path-icon-wrap--write" aria-hidden="true">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 						</span>
+						<span class="diary-path-badge">Snabbast att börja</span>
 						<span class="diary-path-title">Skriv själv</span>
 						<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
 					</div>
@@ -1334,8 +1335,10 @@
 								<span class="path-icon-wrap path-icon-wrap--write" aria-hidden="true">
 									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 								</span>
+								<span class="diary-path-badge">Snabbast att börja</span>
 								<span class="diary-path-title">Skriv själv</span>
 								<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
+								<span class="diary-path-action">Börja skriva</span>
 							</button>
 							<a href="/dagars-avtryck" class="diary-path-card diary-path-card--guided">
 								<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
@@ -2131,19 +2134,21 @@
 	/* Indigo — Skriv själv */
 	.diary-path-card--write {
 		background:
-			linear-gradient(135deg, rgba(219, 234, 254, 0.96), rgba(248, 250, 252, 0.96)),
+			linear-gradient(135deg, rgba(219, 234, 254, 0.98), rgba(239, 246, 255, 0.96)),
 			hsl(220 55% 98%);
-		border-color: rgba(96, 165, 250, 0.38);
-		border-left: 3px solid hsl(214 72% 58%);
+		border-color: rgba(59, 130, 246, 0.58);
+		border-left: 4px solid hsl(214 72% 52%);
+		box-shadow: 0 16px 34px rgba(37, 99, 235, 0.16);
 	}
 
 	/* Blå — Dagbok med olika stilar */
 	.diary-path-card--guided {
 		background:
-			linear-gradient(135deg, rgba(224, 231, 255, 0.95), rgba(248, 250, 252, 0.96)),
-			hsl(222 55% 98%);
-		border-color: rgba(129, 140, 248, 0.34);
-		border-left: 3px solid hsl(230 66% 62%);
+			linear-gradient(135deg, rgba(248, 250, 252, 0.92), rgba(241, 245, 249, 0.88)),
+			hsl(222 32% 97%);
+		border-color: rgba(148, 163, 184, 0.32);
+		border-left: 3px solid rgba(129, 140, 248, 0.42);
+		box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
 	}
 
 	.diary-path-card--preview {
@@ -2157,8 +2162,8 @@
 	}
 
 	.diary-path-card--guided:hover:not(.diary-path-card--preview) {
-		border-color: hsl(230 70% 72%);
-		box-shadow: 0 14px 30px hsl(230 66% 46% / 0.18);
+		border-color: rgba(129, 140, 248, 0.5);
+		box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
 		transform: translateY(-1px);
 	}
 
@@ -2185,8 +2190,28 @@
 	}
 
 	.path-icon-wrap--guided {
-		background: hsl(232 78% 93%);
-		color: hsl(230 58% 40%);
+		background: hsl(232 34% 94%);
+		color: hsl(230 34% 42%);
+	}
+
+	.diary-path-badge {
+		align-self: flex-start;
+		margin-bottom: 0.1rem;
+		padding: 0.18rem 0.48rem;
+		border-radius: var(--radius-pill);
+		background: rgba(29, 78, 216, 0.1);
+		color: hsl(214 68% 34%);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.02em;
+	}
+
+	.diary-path-action {
+		align-self: flex-start;
+		margin-top: 0.35rem;
+		color: hsl(214 68% 34%);
+		font-size: 0.82rem;
+		font-weight: 700;
 	}
 
 	.diary-path-title {
@@ -2204,18 +2229,20 @@
 	/* Mörkt läge */
 	:global(.dark) .diary-path-card--write {
 		background:
-			linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(15, 23, 42, 0.92)),
+			linear-gradient(135deg, rgba(37, 99, 235, 0.28), rgba(15, 23, 42, 0.94)),
 			hsl(222 24% 13%);
-		border-color: rgba(96, 165, 250, 0.34);
+		border-color: rgba(96, 165, 250, 0.52);
 		border-left: 3px solid hsl(214 72% 62%);
+		box-shadow: 0 16px 34px rgba(37, 99, 235, 0.22);
 	}
 
 	:global(.dark) .diary-path-card--guided {
 		background:
-			linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(15, 23, 42, 0.92)),
+			linear-gradient(135deg, rgba(30, 41, 59, 0.78), rgba(15, 23, 42, 0.9)),
 			hsl(222 24% 13%);
-		border-color: rgba(129, 140, 248, 0.3);
-		border-left: 3px solid hsl(230 66% 64%);
+		border-color: rgba(148, 163, 184, 0.22);
+		border-left: 3px solid rgba(129, 140, 248, 0.45);
+		box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
 	}
 
 	:global(.dark) .daily-question-panel {
@@ -2231,8 +2258,17 @@
 	}
 
 	:global(.dark) .path-icon-wrap--guided {
-		background: hsl(232 34% 22%);
-		color: hsl(232 78% 74%);
+		background: hsl(232 22% 20%);
+		color: hsl(232 48% 76%);
+	}
+
+	:global(.dark) .diary-path-badge {
+		background: rgba(147, 197, 253, 0.16);
+		color: hsl(214 88% 80%);
+	}
+
+	:global(.dark) .diary-path-action {
+		color: hsl(214 88% 80%);
 	}
 
 	.diary-side {
@@ -3205,6 +3241,16 @@
 		.diary-path-title {
 			font-size: 0.86rem;
 			line-height: 1.25;
+		}
+
+		.diary-path-badge {
+			padding: 0.14rem 0.36rem;
+			font-size: 0.62rem;
+		}
+
+		.diary-path-action {
+			margin-top: 0.15rem;
+			font-size: 0.74rem;
 		}
 
 		.diary-editor-panel {
