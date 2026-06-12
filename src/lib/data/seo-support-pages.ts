@@ -4,7 +4,7 @@ const updatedDate = '4 april 2026';
 
 export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 	'anonymt-samtalsstod-online': {
-		title: 'Anonymt samtalsstöd online | Låg tröskel och trygg start | MittPsyke',
+		title: 'Anonymt samtalsstöd online – trygg start | MittPsyke',
 		description:
 			'Utforska anonymt samtalsstöd online när du vill börja varsamt. Läs om låg tröskel, reflektion i text, vad stödet kan hjälpa med och hur det skiljer sig från vård.',
 		canonical: 'https://www.mittpsyke.se/anonymt-samtalsstod-online',
@@ -77,7 +77,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'chatta-anonymt-med-nagon': {
-		title: 'Chatta anonymt med någon | Hur anonym chatt fungerar | MittPsyke',
+		title: 'Chatta anonymt online – så fungerar det | MittPsyke',
 		description:
 			'Chatta anonymt med någon utan konto och börja direkt i anonym chatt. Läs hur samtalet fungerar, vad AI-stöd kan hjälpa med och vad du kan förvänta dig.',
 		canonical: 'https://www.mittpsyke.se/chatta-anonymt-med-nagon',
@@ -367,7 +367,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'ovningar-mot-angest-online': {
-		title: 'Övningar mot ångest online | KBT, andning och exponering | MittPsyke',
+		title: 'Övningar mot ångest – KBT, andning och exponering | MittPsyke',
 		description:
 			'Utforska KBT-baserade övningar mot ångest online. Läs om andning, exponering och varför praktiska övningar ofta hjälper mer än att bara försöka tänka bort ångesten.',
 		canonical: 'https://www.mittpsyke.se/ovningar-mot-angest-online',

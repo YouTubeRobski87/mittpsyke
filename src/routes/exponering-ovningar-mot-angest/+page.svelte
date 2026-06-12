@@ -5,7 +5,7 @@
 <SEO canonical="https://www.mittpsyke.se/exponering-ovningar-mot-angest" />
 
 <svelte:head>
-	<title>Exponering övningar mot ångest | Varsamma steg online | MittPsyke</title>
+	<title>Exponeringsövningar mot ångest | MittPsyke</title>
 	<meta
 		name="description"
 		content="Utforska exponering övningar mot ångest i lugn takt med stödjande verktyg, reflektion och nästa steg."

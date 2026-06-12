@@ -636,6 +636,7 @@ export const guides: Guide[] = [
 		pillarSlug: 'trauma',
 		slug: 'nervsystemet-och-trauma',
 		title: 'Vad händer i nervsystemet vid trauma - fight, flight och freeze',
+		seoTitle: 'Nervsystemet vid trauma – fight, flight och freeze | MittPsyke',
 		description: 'Om hur nervsystemet kan fastna i stark beredskap efter svara upplevelser.',
 		updatedAt: '2026-03-14',
 		sources: [
@@ -920,6 +921,7 @@ export const guides: Guide[] = [
 		pillarSlug: 'sovproblem',
 		slug: 'trott-men-uppvarvad',
 		title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget',
+		seoTitle: 'Trött men uppvarvad – när hjärnan inte varvar ner | MittPsyke',
 		description: 'Om den vanliga konflikten mellan trött kropp och överaktiv hjärna vid sömnproblem.',
 		updatedAt: '2026-03-14',
 		sources: [
@@ -950,6 +952,7 @@ export const guides: Guide[] = [
 		pillarSlug: 'sovproblem',
 		slug: 'somnbrist-och-maendet',
 		title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet',
+		seoTitle: 'Sömnbrist och psykiskt mående – oro och nedstämdhet | MittPsyke',
 		description: 'Om hur för lite sömn kan påverka känsloläget, tankarna och orken i vardagen.',
 		updatedAt: '2026-03-14',
 		sources: [
@@ -1028,6 +1031,7 @@ export const guides: Guide[] = [
 		pillarSlug: 'sjalvkansla',
 		slug: 'inre-kritikern',
 		title: 'Den inre kritikern - varför rosten finns och vad den egentligen vill',
+		seoTitle: 'Den inre kritikern – varför den finns och påverkar | MittPsyke',
 		description: 'Om den självkritiska rosten, var den kan komma fran och hur du kan förstå den utan att styras av den.',
 		updatedAt: '2026-03-14',
 		sources: [
@@ -1072,6 +1076,7 @@ export const guides: Guide[] = [
 		pillarSlug: 'sjalvkansla',
 		slug: 'perfektionism-och-sjalvkansla',
 		title: 'Perfektionism och självkänsla - när ingenting känns tillräckligt bra',
+		seoTitle: 'Perfektionism och självkänsla – när inget känns tillräckligt | MittPsyke',
 		description: 'Om hur perfektionism och låg självkänsla ofta hänger ihop och skapar hård press inifrån.',
 		updatedAt: '2026-03-14',
 		sources: [
@@ -1703,6 +1708,7 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 		slug: 'tecken-pa-mental-overbelastning',
 		nextStepTool: 'grounding-5-4-3-2-1',
 		title: 'Tecken på mental överbelastning – när kroppen och hjärnan säger ifrån',
+		seoTitle: 'Tecken på mental överbelastning | MittPsyke',
 		description: 'Hur vet man att man är mentalt överbelastad? Vanliga tecken som är lätta att missa – och vad du kan göra redan idag.',
 		content: `## Det märks inte alltid direkt
 
@@ -2346,6 +2352,7 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		slug: 'dalig-sjalvkansla',
 		nextStepTool: 'sjalvmedkansla-ovning',
 		title: 'Dålig självkänsla – vad det beror på och hur du kan börja förändra det',
+		seoTitle: 'Dålig självkänsla – orsaker och vägar framåt | MittPsyke',
 		description: 'Om låg självkänsla, varifrån den kommer och konkreta sätt att börja bygga en mjukare relation till dig själv.',
 		updatedAt: '2026-03-14',
 		sources: [
@@ -2587,6 +2594,7 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		slug: 'varfor-orkar-jag-ingenting',
 		nextStepTool: 'body-scan',
 		title: 'Varför orkar jag ingenting? – Vad det kan bero på och vad som hjälper',
+		seoTitle: 'Varför orkar jag ingenting? Orsaker och hjälp | MittPsyke',
 		description: 'Att inte orka är inte detsamma som att vara svag eller lat. Förstå vad som händer i kroppen och hjärnan – och vad du kan göra i små steg.',
 		updatedAt: '2026-03-13',
 		sources: [
@@ -4132,7 +4140,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 	},
 	stress: {
 		pillarSlug: 'stress',
-		seoTitle: 'Stress och utmattning - förstå belastningen och hitta lugna nästa steg',
+		seoTitle: 'Stress och utmattning – symtom och nästa steg | MittPsyke',
 		seoDescription:
 			'Läs om skillnaden mellan stress och utmattning, hur belastning kan märkas i kropp och tankar, vad som ibland hjälper i stunden och när mer stöd kan vara bra.',
 		h1: 'Stöd vid stress och utmattning i lugn takt',
@@ -4431,7 +4439,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 	},
 	sovproblem: {
 		pillarSlug: 'sovproblem',
-		seoTitle: 'Sömnproblem – förstå vad som stör sömnen och ta lugna steg framåt',
+		seoTitle: 'Sömnproblem – orsaker, symtom och stöd | MittPsyke',
 		seoDescription:
 			'Läs om vanliga orsaker till sömnproblem, varför kroppen ibland inte kan varva ner och vilka små steg som kan hjälpa. Guider och varsamma nästa steg.',
 		h1: 'Stöd vid sömnproblem i lugn takt',
@@ -4467,7 +4475,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 	},
 	sjalvkansla: {
 		pillarSlug: 'sjalvkansla',
-		seoTitle: 'Låg självkänsla – förstå mönstren och hitta en varsam väg framåt',
+		seoTitle: 'Låg självkänsla – förstå mönster och få stöd | MittPsyke',
 		seoDescription:
 			'Läs om vad låg självkänsla handlar om, hur den inre kritikern påverkar dig och vilka steg du kan ta i din egen takt. Guider och trygga nästa steg.',
 		h1: 'Stöd vid låg självkänsla i varsam takt',

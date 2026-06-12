@@ -6,7 +6,7 @@
 <SEO canonical="https://www.mittpsyke.se/digital-dagbok-for-maende" />
 
 <svelte:head>
-	<title>Digital dagbok för mående | Skriv, följ och förstå över tid | MittPsyke</title>
+	<title>Digital dagbok för mående – skriv och följ över tid | MittPsyke</title>
 	<meta
 		name="description"
 		content="Använd en digital dagbok för mående för att skriva av dig, se mönster och följa små steg över tid."
