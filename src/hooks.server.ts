@@ -7,6 +7,19 @@ import { getSessionUser } from '$lib/server/admin-auth'
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''
 
+const metaDescriptionPattern = /<meta\s+name=(["'])description\1[^>]*>/gi
+
+function dedupeMetaDescriptions(html: string): string {
+	const matches = [...html.matchAll(metaDescriptionPattern)]
+	if (matches.length <= 1) return html
+
+	const keepIndex = matches[matches.length - 1].index
+	return html.replace(metaDescriptionPattern, (match: string, ...args: unknown[]) => {
+		const offset = args[args.length - 2]
+		return offset === keepIndex ? match : ''
+	})
+}
+
 // Gamla bloggslugg som flyttats till egna sidor (eller saknar Soro-artikel) → 301
 const legacyBlogRedirects: Record<string, string> = {
 	'/blogg/digital-dagbok-for-maende': '/digital-dagbok-for-maende',
@@ -61,6 +74,12 @@ const canonicalHostRedirect: Handle = async ({ event, resolve }) => {
 	}
 
 	return resolve(event)
+}
+
+const seoHeadCleanup: Handle = async ({ event, resolve }) => {
+	return resolve(event, {
+		transformPageChunk: ({ html }) => dedupeMetaDescriptions(html)
+	})
 }
 
 // --- Säkerhetsheaders ---
@@ -162,4 +181,10 @@ const supabaseAuth: Handle = async ({ event, resolve }) => {
 }
 
 // Kör säkerhetsheaders först, sedan Supabase auth
-export const handle = sequence(legacyPathRedirects, canonicalHostRedirect, securityHeaders, supabaseAuth)
+export const handle = sequence(
+	legacyPathRedirects,
+	canonicalHostRedirect,
+	seoHeadCleanup,
+	securityHeaders,
+	supabaseAuth
+)
