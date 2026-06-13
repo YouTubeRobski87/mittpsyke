@@ -83,7 +83,7 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		// Standard
 		"default-src 'self'",
 		// Scripts: self + Google Analytics + inline för gtag
-		`script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://app.trysoro.com`,
+		`script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://analytics.ahrefs.com https://app.trysoro.com`,
 		// Styles: self + unsafe-inline (Tailwind/Svelte)
 		"style-src 'self' 'unsafe-inline'",
 		// Images
@@ -93,7 +93,7 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		// Media (video): self + blob för inspelad förhandsvisning + Supabase storage för sparade videor
 		`media-src 'self' blob: https://${supabaseHost} https://*.supabase.co https://*.storage.supabase.co`,
 		// API-anrop
-		`connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://www.google-analytics.com https://*.google-analytics.com https://region1.analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://app.trysoro.com`,
+		`connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://www.google-analytics.com https://*.google-analytics.com https://region1.analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://analytics.ahrefs.com https://app.trysoro.com`,
 		// Frames
 		"frame-src 'none'",
 		// Objects
