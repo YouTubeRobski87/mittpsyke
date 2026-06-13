@@ -19,9 +19,9 @@ No test or lint commands are configured.
 
 ## Architecture
 
-**Stack:** SvelteKit 2 + Svelte 5, TailwindCSS 4, TypeScript, Supabase (PostgreSQL + Auth), OpenAI API (gpt-4o-mini), Vercel deployment, Capacitor (Android).
+**Stack:** SvelteKit 2 + Svelte 5, TailwindCSS 4, TypeScript, Supabase (PostgreSQL + Auth), OpenAI API (gpt-4o-mini), Render deployment, Capacitor (Android).
 
-**Adapter selection** (`svelte.config.js`): Uses `@sveltejs/adapter-vercel` in production (Node.js 22.x) and `adapter-node` on Windows locally.
+**Adapter** (`svelte.config.js`): Uses `@sveltejs/adapter-node`. Production runs on Render as a Node web service (`node build`).
 
 ### Auth Flow
 

@@ -5,7 +5,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![SvelteKit](https://img.shields.io/badge/SvelteKit-framework-orange)
 ![Supabase](https://img.shields.io/badge/Supabase-backend-green)
-![Vercel](https://img.shields.io/badge/Vercel-deploy-black)
+![Render](https://img.shields.io/badge/Render-deploy-46E3B7)
 
 **MittPsyke** är en svensk digital plattform för psykiskt välmående där människor kan
 skriva av sig, reflektera och prata anonymt.
@@ -139,7 +139,7 @@ AI
 
 Deployment
 
-- Vercel
+- Render (Node web service via `@sveltejs/adapter-node`, `node build`)
 
 ---
 
@@ -195,7 +195,7 @@ MittPsyke använder:
 
 - Supabase authentication
 - Row Level Security (RLS)
-- krypterad HTTPS via Vercel
+- krypterad HTTPS via Render
 
 Användardata är skyddad och isolerad per konto.
 
