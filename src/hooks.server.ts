@@ -42,6 +42,10 @@ const legacyPathRedirects: Handle = async ({ event, resolve }) => {
 		throw redirect(301, '/guider/kbt')
 	}
 
+	if (url.pathname === '/guider/relationsproblem') {
+		throw redirect(301, '/guider/sjalvkansla/gransen-och-sjalvkansla')
+	}
+
 	return resolve(event)
 }
 
