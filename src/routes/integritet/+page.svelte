@@ -171,7 +171,7 @@
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
 					<td class="px-4 py-3">Cookie-fri webbstatistik</td>
 					<td class="px-4 py-3">Ahrefs Web Analytics</td>
-					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<td class="px-4 py-3">Singapore&thinsp;<span class="opacity-60 text-xs">(SCC vid tillämplig överföring)</span></td>
 					<td class="px-4 py-3">Berättigat intresse</td>
 					<td class="px-4 py-3">Aggregerad statistik</td>
 				</tr>
