@@ -6,6 +6,6 @@
 	const config = seoSupportPages['anonym-chatt'];
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/anonym-chatt" />
+<SEO canonical="https://www.mittpsyke.se/chatta-anonymt" />
 
 <SeoSupportPage {config} />

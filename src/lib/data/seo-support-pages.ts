@@ -857,7 +857,8 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			{ label: 'Psykisk hälsa – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
 			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
 			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		]
+		],
+		faqSchema: true
 	},
 	'anonym-chatt': {
 		title: 'Chatta anonymt om din psykiska hälsa | Låg tröskel online | MittPsyke',
@@ -928,8 +929,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			{ label: 'Psykisk hälsa – 1177 Vårdguiden', href: 'https://www.1177.se/liv--halsa/psykisk-halsa/' },
 			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', href: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
 			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', href: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		],
-		faqSchema: true
+		]
 	}
 };
 
