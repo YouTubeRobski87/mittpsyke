@@ -1,0 +1,19 @@
+name: Guest chat cleanup
+
+on:
+  schedule:
+    # Rensar anonym gästdata varje timme (retention 24h).
+    # Endpointen kontrollerar CRON_SECRET och raderar guest_messages + guest_conversations.
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger guest data cleanup
+        run: |
+          curl --fail --show-error --silent \
+            --request POST \
+            --header "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            "${{ vars.MITTPSYKE_SITE_URL || 'https://www.mittpsyke.se' }}/api/cron/guest-cleanup"

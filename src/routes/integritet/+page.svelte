@@ -149,10 +149,10 @@
 				</tr>
 				<tr>
 					<td class="px-4 py-3">Anonyma chattsamtal (gäst)</td>
-					<td class="px-4 py-3">OpenAI</td>
-					<td class="px-4 py-3">USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<td class="px-4 py-3">Supabase + OpenAI</td>
+					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
 					<td class="px-4 py-3">Samtycke</td>
-					<td class="px-4 py-3">Enbart i realtid, sparas ej</td>
+					<td class="px-4 py-3">Rensas automatiskt inom 24 timmar</td>
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
 					<td class="px-4 py-3">Tekniska loggar</td>
@@ -210,7 +210,7 @@
 		<li>Kontorelaterade uppgifter sparas så länge kontot är aktivt eller tills du begär radering.</li>
 		<li>Chatt- och dagboksinnehåll sparas så länge du har ett aktivt konto och inte raderar innehållet själv.</li>
 		<li>Tekniska loggar och säkerhetsuppgifter sparas normalt i upp till 90 dagar.</li>
-		<li>Anonyma sessioner sparas inte alls — data försvinner när sessionen avslutas.</li>
+		<li>Anonym chatt sparas inte i någon historik. Innehållet kan ligga tekniskt tillfälligt under kort tid för att tjänsten ska fungera, och rensas automatiskt senast inom 24 timmar.</li>
 		<li>När uppgifter inte längre behövs raderas eller anonymiseras de.</li>
 	</ul>
 
