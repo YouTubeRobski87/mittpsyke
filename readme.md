@@ -3,7 +3,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![SvelteKit](https://img.shields.io/badge/SvelteKit-1.x-ff3e00)
 ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ecf8e)
-![Vercel](https://img.shields.io/badge/Vercel-Deployed-black)
+![Render](https://img.shields.io/badge/Render-Deployed-46E3B7)
 ![Status](https://img.shields.io/badge/status-active-success)
 
 MittPsyke is a Swedish mental wellbeing platform where users can talk anonymously with AI, write a personal diary, track emotional progress, and find support lines.
@@ -72,7 +72,7 @@ https://www.mittpsyke.se
 - OpenAI API
 
 ### Deployment
-- Vercel
+- Render (Node web service via `@sveltejs/adapter-node`, `node build`)
 
 ---
 
