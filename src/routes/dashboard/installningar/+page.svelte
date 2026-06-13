@@ -2,6 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import { goto } from '$app/navigation';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { supabase } from '$lib/supabase';
 	import type {
 		DeleteAccountErrorResponse,
@@ -10,7 +11,7 @@
 		SmsPreferenceSuccessResponse
 	} from '$lib/types';
 	import { THEME_STORAGE_KEY } from '$lib/theme';
-	import { AVATAR_PRESETS, type AvatarPresetKey } from '$lib/avatar';
+	import { AVATAR_OPTIONS, isAvatarPresetKey, type AvatarPresetKey } from '$lib/avatar';
 
 	let loading = $state(true);
 
@@ -59,24 +60,8 @@
 		{ value: 'guide',  label: 'Guider' },
 		{ value: 'chat',   label: 'Chatten' },
 	];
-	const AVATAR_OPTIONS: { value: AvatarPresetKey; label: string; src: string }[] = [
-		{ value: 'sol', label: 'Lugn 1', src: AVATAR_PRESETS.sol },
-		{ value: 'himmel', label: 'Lugn 2', src: AVATAR_PRESETS.himmel },
-		{ value: 'skog', label: 'Lugn 3', src: AVATAR_PRESETS.skog },
-		{ value: 'natt', label: 'Lugn 4', src: AVATAR_PRESETS.natt },
-		{ value: 'gryning', label: 'Lugn 5', src: AVATAR_PRESETS.gryning },
-		{ value: 'sten', label: 'Lugn 6', src: AVATAR_PRESETS.sten },
-		{ value: 'nord7', label: 'Lugn 7', src: AVATAR_PRESETS.nord7 },
-		{ value: 'nord8', label: 'Lugn 8', src: AVATAR_PRESETS.nord8 },
-		{ value: 'nord9', label: 'Lugn 9', src: AVATAR_PRESETS.nord9 },
-		{ value: 'nord10', label: 'Lugn 10', src: AVATAR_PRESETS.nord10 },
-		{ value: 'nord11', label: 'Lugn 11', src: AVATAR_PRESETS.nord11 },
-		{ value: 'nord12', label: 'Lugn 12', src: AVATAR_PRESETS.nord12 }
-	];
-
 	function toAvatarKey(value: unknown): AvatarPresetKey | '' {
-		if (typeof value !== 'string' || !(value in AVATAR_PRESETS)) return '';
-		return value as AvatarPresetKey;
+		return isAvatarPresetKey(value) ? value : '';
 	}
 
 	function normalizeSwedishMobileNumber(value: string): string | null {
@@ -433,19 +418,7 @@
 						bind:group={avatarKey}
 						class="sr-only"
 					/>
-					<span class="avatar-preview avatar-fallback-icon" aria-hidden="true">
-						<svg
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.8"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-						>
-							<circle cx="12" cy="8.2" r="3.3"></circle>
-							<path d="M5.4 18.5c1.5-2.9 3.8-4.7 6.6-4.7 2.8 0 5.1 1.8 6.6 4.7"></path>
-						</svg>
-					</span>
+					<UserAvatar seed="settings-default" size="sm" decorative />
 					<span class="option-text">Standard</span>
 				</label>
 
@@ -458,7 +431,7 @@
 							bind:group={avatarKey}
 							class="sr-only"
 						/>
-						<img src={avatar.src} alt="" class="avatar-preview" loading="lazy" />
+						<UserAvatar avatarKey={avatar.value} size="sm" decorative animated={false} />
 						<span class="option-text">{avatar.label}</span>
 					</label>
 				{/each}
@@ -866,27 +839,6 @@
 		background: var(--theme-bg, hsl(var(--surface-soft)));
 	}
 
-	.avatar-preview {
-		width: 1.55rem;
-		height: 1.55rem;
-		border-radius: 9999px;
-		object-fit: cover;
-		flex-shrink: 0;
-	}
-
-	.avatar-fallback-icon {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		color: hsl(var(--foreground) / 0.82);
-		background: rgba(15, 118, 110, 0.16);
-	}
-
-	.avatar-fallback-icon svg {
-		width: 65%;
-		height: 65%;
-	}
-
 	.theme-row {
 		display: flex;
 		align-items: center;
@@ -1082,11 +1034,6 @@
 			border-radius: 12px;
 			padding: 0.45rem 0.55rem;
 			min-width: 0;
-		}
-
-		.avatar-preview {
-			width: 1.45rem;
-			height: 1.45rem;
 		}
 
 		.option-list.widget-row {

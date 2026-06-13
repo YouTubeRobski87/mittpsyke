@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 	import SEO from '$lib/components/SEO.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { trackForumReplyCreated } from '$lib/analytics';
 	import { supabase } from '$lib/supabase';
 	import type {
@@ -540,11 +541,14 @@
 					{#each posts as post (post.id)}
 						<article id={`post-${post.id}`} class="community-post post-variant-{postVariant(post.id)}">
 							<div class="community-post-head">
-								<p class="voice">Anonym röst</p>
-								{#if formatMoodLabel(post.mood)}
-									<p class="mood-tag">{formatMoodLabel(post.mood)}</p>
-								{/if}
+								<UserAvatar seed={post.id} size="sm" decorative />
+								<div class="community-post-title">
+									<p class="voice">Anonym röst</p>
+									{#if formatMoodLabel(post.mood)}
+										<p class="mood-tag">{formatMoodLabel(post.mood)}</p>
+									{/if}
 								</div>
+							</div>
 								<p class="content">{post.content}</p>
 								<div class="post-meta-row">
 									<p class="published">{formatPublishedAt(post.created_at)}</p>
@@ -629,7 +633,10 @@
 											<ul class="comments-list">
 												{#each post.comments as comment (comment.id)}
 													<li class="comments-item">
-														<p class="comment-author">Anonym medlem</p>
+														<div class="comment-head">
+															<UserAvatar seed={comment.id} size="xs" decorative />
+															<p class="comment-author">Anonym medlem</p>
+														</div>
 														<p class="comment-body">{comment.body}</p>
 														<div class="comment-meta-row">
 															<p class="comment-time">{formatPublishedAt(comment.created_at)}</p>
@@ -945,9 +952,16 @@
 
 	.community-post-head {
 		display: flex;
-		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.45rem;
+	}
+
+	.community-post-title {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.38rem;
+		min-width: 0;
 	}
 
 	.voice {
@@ -1111,6 +1125,12 @@
 			border: 1px solid hsl(var(--border));
 			border-radius: var(--radius-input);
 			background: hsl(var(--surface));
+		}
+
+		.comment-head {
+			display: flex;
+			align-items: center;
+			gap: 0.4rem;
 		}
 
 		.comment-author {

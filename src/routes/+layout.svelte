@@ -15,6 +15,7 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Search } from 'lucide-svelte';
 	import { DIARY_ENTRIES_CHANGED_EVENT } from '$lib/diary-events';
 	import {
@@ -24,7 +25,7 @@
 		cookieBannerOpen
 	} from '$lib/consent';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
-	import { resolveAvatarPresetUrl } from '$lib/avatar';
+	import { isAvatarPresetKey, type AvatarPresetKey } from '$lib/avatar';
 	import { page } from '$app/state';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
@@ -115,44 +116,10 @@
 		);
 	}
 
-	function getAvatarImageUrl(sessionUser: User | null) {
+	function getUserAvatarKey(sessionUser: User | null): AvatarPresetKey | null {
 		if (!sessionUser) return null;
 		const metadata = sessionUser.user_metadata as Record<string, unknown> | undefined;
-		const presetAvatar = resolveAvatarPresetUrl(metadata?.avatar_key);
-		const identityCandidates =
-			Array.isArray((sessionUser as unknown as { identities?: unknown[] }).identities)
-				? ((sessionUser as unknown as { identities?: unknown[] }).identities ?? []).flatMap((identity) => {
-						const identityRecord =
-							identity && typeof identity === 'object'
-								? (identity as Record<string, unknown>)
-								: undefined;
-						const identityData =
-							identityRecord?.identity_data &&
-							typeof identityRecord.identity_data === 'object'
-								? (identityRecord.identity_data as Record<string, unknown>)
-								: undefined;
-
-						return [
-							normalizeText(identityData?.avatar_url),
-							normalizeText(identityData?.picture),
-							normalizeText(identityData?.profile_image_url),
-							normalizeText(identityData?.photoURL)
-						];
-					})
-				: [];
-
-		const candidates = [
-			presetAvatar,
-			normalizeText(metadata?.avatar_url),
-			normalizeText(metadata?.picture),
-			normalizeText(metadata?.profile_image_url),
-			normalizeText(metadata?.photoURL),
-			...identityCandidates
-		];
-		const candidate = candidates.find((value) =>
-			Boolean(value && (/^https?:\/\//i.test(value) || value.startsWith('/')))
-		);
-		return candidate ?? null;
+		return isAvatarPresetKey(metadata?.avatar_key) ? metadata.avatar_key : null;
 	}
 
 	function getMemberSinceLabel(createdAt: string | undefined) {
@@ -222,7 +189,6 @@
 	let seededSessionAccessToken = '';
 	let syncedProfileUserId = '';
 	let loadedLayoutSummaryUserId = '';
-	let avatarImageLoadFailed = $state(false);
 	let profileButtonRef = $state<HTMLButtonElement | null>(null);
 	let profilePanelRef = $state<HTMLDivElement | null>(null);
 	let resourcesMenuRef = $state<HTMLDetailsElement | null>(null);
@@ -234,8 +200,7 @@
 	let supabaseClientPromise: Promise<SupabaseClient> | null = null;
 
 	const profileName = $derived(getProfileName(displayName, user));
-	const avatarImageUrl = $derived(getAvatarImageUrl(user));
-	const showAvatarImage = $derived(Boolean(avatarImageUrl && !avatarImageLoadFailed));
+	const avatarKey = $derived(getUserAvatarKey(user));
 	const memberSinceLabel = $derived(getMemberSinceLabel(user?.created_at));
 	const diaryEntryTooltip = $derived(
 		layoutSummaryLoading
@@ -249,15 +214,6 @@
 		supabaseClientPromise ??= import('$lib/supabase').then(({ supabase }) => supabase);
 		return supabaseClientPromise;
 	}
-
-	function handleAvatarImageError() {
-		avatarImageLoadFailed = true;
-	}
-
-	$effect(() => {
-		avatarImageUrl;
-		avatarImageLoadFailed = false;
-	});
 
 	async function syncUser(sessionUser: User | null) {
 		user = sessionUser;
@@ -732,33 +688,7 @@
 									aria-describedby="diary-count-tooltip"
 									onclick={toggleProfilePanel}
 								>
-									{#if showAvatarImage}
-										<img
-											src={avatarImageUrl}
-											alt=""
-											width="96"
-											height="96"
-											class="profile-avatar-image"
-											decoding="async"
-											loading="lazy"
-											onerror={handleAvatarImageError}
-										/>
-										{:else}
-											<span class="profile-avatar-fallback" aria-hidden="true">
-												<svg
-													viewBox="0 0 24 24"
-													class="profile-avatar-icon"
-													fill="none"
-													stroke="currentColor"
-													stroke-width="1.8"
-													stroke-linecap="round"
-													stroke-linejoin="round"
-												>
-													<circle cx="12" cy="8.2" r="3.3"></circle>
-													<path d="M5.4 18.5c1.5-2.9 3.8-4.7 6.6-4.7 2.8 0 5.1 1.8 6.6 4.7"></path>
-												</svg>
-											</span>
-										{/if}
+									<UserAvatar avatarKey={avatarKey} seed={user.id} size="md" decorative />
 									{#if unreadNotificationCount > 0}
 										<span class="profile-avatar-badge" aria-hidden="true"></span>
 									{/if}
@@ -777,33 +707,7 @@
 									class="profile-panel"
 								>
 									<div class="profile-panel-header">
-											{#if showAvatarImage}
-												<img
-													src={avatarImageUrl}
-													alt=""
-													width="96"
-													height="96"
-													class="profile-panel-avatar-image"
-													decoding="async"
-													loading="lazy"
-													onerror={handleAvatarImageError}
-												/>
-											{:else}
-												<span class="profile-panel-avatar-fallback" aria-hidden="true">
-													<svg
-														viewBox="0 0 24 24"
-														class="profile-avatar-icon"
-														fill="none"
-														stroke="currentColor"
-														stroke-width="1.8"
-														stroke-linecap="round"
-														stroke-linejoin="round"
-													>
-														<circle cx="12" cy="8.2" r="3.3"></circle>
-														<path d="M5.4 18.5c1.5-2.9 3.8-4.7 6.6-4.7 2.8 0 5.1 1.8 6.6 4.7"></path>
-													</svg>
-												</span>
-											{/if}
+										<UserAvatar avatarKey={avatarKey} seed={user.id} size="lg" decorative />
 										<div class="min-w-0">
 											<p class="text-sm font-medium leading-tight">{profileName}</p>
 											<p class="text-xs opacity-65">Medlem sedan {memberSinceLabel}</p>
@@ -1463,50 +1367,6 @@
 		outline-offset: 2px;
 	}
 
-	.profile-avatar-image,
-	.profile-avatar-fallback,
-	.profile-panel-avatar-image,
-	.profile-panel-avatar-fallback {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 9999px;
-	}
-
-	.profile-avatar-image,
-	.profile-panel-avatar-image {
-		object-fit: cover;
-		background: var(--layout-avatar-placeholder);
-	}
-
-	.profile-avatar-image,
-	.profile-avatar-fallback {
-		width: 2.15rem;
-		height: 2.15rem;
-	}
-
-	.profile-panel-avatar-image,
-	.profile-panel-avatar-fallback {
-		width: 2.75rem;
-		height: 2.75rem;
-	}
-
-	.profile-avatar-fallback,
-	.profile-panel-avatar-fallback {
-		color: hsl(var(--foreground) / 0.82);
-		background: var(--layout-avatar-fallback-bg);
-	}
-
-	.profile-avatar-icon {
-		width: 65%;
-		height: 65%;
-	}
-
-	:global(.dark) .profile-avatar-fallback,
-	:global(.dark) .profile-panel-avatar-fallback {
-		color: hsl(var(--foreground) / 0.88);
-	}
-
 	.profile-panel {
 		position: absolute;
 		right: 0;
@@ -1630,12 +1490,6 @@
 			height: 2.5rem;
 		}
 
-		.profile-avatar-image,
-		.profile-avatar-fallback {
-			width: 2.15rem;
-			height: 2.15rem;
-		}
-
 		:global(.site-header .lg\:hidden) {
 			padding: 0.4rem 0.55rem;
 		}
@@ -1714,4 +1568,3 @@
 	}
 
 </style>
-
