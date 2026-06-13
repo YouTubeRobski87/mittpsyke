@@ -168,6 +168,13 @@
 					<td class="px-4 py-3">Samtycke</td>
 					<td class="px-4 py-3">Sessionbaserat</td>
 				</tr>
+				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
+					<td class="px-4 py-3">Cookie-fri webbstatistik</td>
+					<td class="px-4 py-3">Ahrefs Web Analytics</td>
+					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<td class="px-4 py-3">Berättigat intresse</td>
+					<td class="px-4 py-3">Aggregerad statistik</td>
+				</tr>
 			</tbody>
 		</table>
 	</div>
@@ -200,8 +207,9 @@
 	<h2 class="text-lg font-semibold mt-8 mb-2">Kakor och analyser</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
 		MittPsyke använder analysverktyg för att förstå hur sajten används och förbättra upplevelsen.
-		Dessa analysverktyg aktiveras <strong>endast om du godkänner</strong> det i cookie-bannern som visas
-		vid ditt första besök. Du kan när som helst ändra ditt val genom att rensa cookies i din webbläsare.
+		Google Analytics aktiveras <strong>endast om du godkänner</strong> det i cookie-bannern som visas
+		vid ditt första besök. Ahrefs Web Analytics används för cookie-fri, samlad webbstatistik enligt
+		verktygets standardinställning. Du kan när som helst ändra ditt val genom att rensa cookies i din webbläsare.
 	</p>
 
 	<!-- LAGRINGSTID -->
@@ -224,6 +232,7 @@
 		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll. Data lagras inom EU (Frankfurt).</li>
 		<li><strong>OpenAI:</strong> AI-funktioner som chatt. OpenAI använder inte API-data för att träna sina modeller. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
 		<li><strong>Vercel:</strong> hosting och leverans av webbplatsen. Analytics aktiveras endast med ditt samtycke. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
+		<li><strong>Ahrefs:</strong> cookie-fri webbstatistik om trafik och sidvisningar.</li>
 	</ul>
 
 	<section class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 sm:p-5 mt-2 mb-6" aria-label="Tredjelandsöverföring">
