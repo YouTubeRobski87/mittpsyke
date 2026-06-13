@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import {
+		getProgressCompanionCarePhrases,
+		getProgressCompanionStatusMessage,
 		normalizeProgressCompanion,
 		readProgressCompanionFromMetadata,
 		type ProgressCompanionSelection
@@ -74,6 +76,17 @@
 		{ id: 'l10', x: 510, y: 200, delay: '1.35s' }
 	];
 
+	const SPROUT_POINTS: GardenPoint[] = [
+		{ id: 's1', x: 42, y: 218 },
+		{ id: 's2', x: 96, y: 224, delay: '0.25s' },
+		{ id: 's3', x: 156, y: 222, delay: '0.5s' },
+		{ id: 's4', x: 216, y: 228, delay: '0.75s' },
+		{ id: 's5', x: 304, y: 226, delay: '1s' },
+		{ id: 's6', x: 374, y: 220, delay: '1.25s' },
+		{ id: 's7', x: 446, y: 226, delay: '1.5s' },
+		{ id: 's8', x: 494, y: 216, delay: '1.75s' }
+	];
+
 	const FIREFLY_POINTS: GardenPoint[] = [
 		{ id: 'g1', x: 92, y: 88 },
 		{ id: 'g2', x: 202, y: 76, delay: '1.5s' },
@@ -86,12 +99,14 @@
 	$: continuitySignals = entryCount + activeDays;
 	$: continuityState = continuitySignals >= 16 ? 'settled' : continuitySignals >= 4 ? 'soft' : 'quiet';
 	$: careIntensity = Math.min(4, Math.max(growthLevel, Math.floor(growthScore / 24)));
-	$: flowerCount = entryCount <= 0 ? 0 : Math.min(FLOWER_POINTS.length, 2 + Math.floor(entryCount / 5));
-	$: leafCount = Math.min(LEAF_POINTS.length, 2 + Math.max(growthLevel, Math.floor(activeDays / 2)));
+	$: flowerCount = entryCount <= 0 ? 0 : Math.min(FLOWER_POINTS.length, 2 + Math.floor(entryCount / 4));
+	$: leafCount = Math.min(LEAF_POINTS.length, 3 + Math.max(growthLevel, Math.floor(activeDays / 2)));
+	$: sproutCount = entryCount <= 0 ? 1 : Math.min(SPROUT_POINTS.length, 2 + Math.floor(continuitySignals / 4));
 	$: fireflyCount =
-		continuityState === 'settled' ? FIREFLY_POINTS.length : continuityState === 'soft' ? 3 : 1;
+		entryCount <= 0 ? 0 : continuityState === 'settled' ? FIREFLY_POINTS.length : continuityState === 'soft' ? 3 : 1;
 	$: flowers = FLOWER_POINTS.slice(0, flowerCount);
 	$: leaves = LEAF_POINTS.slice(0, leafCount);
+	$: sprouts = SPROUT_POINTS.slice(0, sproutCount);
 	$: fireflies = FIREFLY_POINTS.slice(0, fireflyCount);
 	$: selectedCompanion = selectedAnimalId
 		? selectedAnimal?.id === selectedAnimalId
@@ -115,6 +130,7 @@
 	let appliedProgressCompanion: string | null = null;
 	let companionStage: CompanionStage = 'choose';
 	let companionMessage = 'Jag är här när du vill börja.';
+	let statusMessageKey: string | null = null;
 
 	$: {
 		const nextProgressCompanion = normalizeProgressCompanion(progressCompanion);
@@ -133,6 +149,14 @@
 		} else if (entryCount > observedEntryCount) {
 			observedEntryCount = entryCount;
 			companionMessage = 'Du har gett trädgården lite mer ljus.';
+		}
+	}
+
+	$: {
+		const nextStatusMessageKey = `${lastEntryDaysAgo ?? 'none'}:${entryCount > 0 ? 'has' : 'empty'}`;
+		if (companionStage === 'chosen' && careCount === 0 && statusMessageKey !== nextStatusMessageKey) {
+			statusMessageKey = nextStatusMessageKey;
+			companionMessage = getReturnMessage();
 		}
 	}
 
@@ -225,6 +249,7 @@
 		selectedAnimal = animal;
 		companionStage = 'chosen';
 		companionMessage = message;
+		statusMessageKey = `${lastEntryDaysAgo ?? 'none'}:${entryCount > 0 ? 'has' : 'empty'}`;
 	}
 
 	function cacheCompanion(animalId: CompanionAnimalId) {
@@ -274,17 +299,19 @@
 
 	function giveCalm() {
 		careCount += 1;
-		companionMessage = [
-			'Fint att du kom tillbaka.',
-			'Skönt att se dig igen.',
-			'Du har gett trädgården lite mer ljus.',
-			'Jag finns kvar här med dig.'
-		][careCount % 4];
+		const phrases = getProgressCompanionCarePhrases({
+			lastEntryDaysAgo,
+			hasEntries: entryCount > 0
+		});
+		companionMessage = phrases[careCount % phrases.length];
 	}
 
 	function getReturnMessage() {
-		if (lastEntryDaysAgo !== null && lastEntryDaysAgo >= 3) return 'Skönt att se dig igen.';
-		if (entryCount > 0) return 'Fint att du kom tillbaka.';
+		const statusMessage = getProgressCompanionStatusMessage({
+			lastEntryDaysAgo,
+			hasEntries: entryCount > 0
+		});
+		if (entryCount > 0 || lastEntryDaysAgo !== null) return statusMessage;
 
 		if (!browser) return 'Jag är här när du vill börja.';
 
@@ -294,7 +321,12 @@
 
 			const last = new Date(lastVisit);
 			const daysAway = Math.floor((Date.now() - last.getTime()) / 86_400_000);
-			if (Number.isFinite(daysAway) && daysAway >= 3) return 'Skönt att se dig igen.';
+			if (Number.isFinite(daysAway) && daysAway >= 3) {
+				return getProgressCompanionStatusMessage({
+					lastEntryDaysAgo: daysAway,
+					hasEntries: true
+				});
+			}
 		} catch {
 			// Visit memory is optional.
 		}
@@ -390,6 +422,16 @@
 				d="M0 202 C78 186 164 190 250 204 S410 226 520 196 L520 260 L0 260 Z"
 			/>
 
+			<g class="garden-sprouts">
+				{#each sprouts as sprout}
+					<g style={`animation-delay: ${sprout.delay ?? '0s'}`}>
+						<path d={`M${sprout.x} ${sprout.y} C${sprout.x - 2} ${sprout.y - 9} ${sprout.x + 1} ${sprout.y - 15} ${sprout.x + 5} ${sprout.y - 21}`} />
+						<path d={`M${sprout.x + 4} ${sprout.y - 13} C${sprout.x - 4} ${sprout.y - 17} ${sprout.x - 8} ${sprout.y - 11} ${sprout.x - 3} ${sprout.y - 7}`} />
+						<path d={`M${sprout.x + 6} ${sprout.y - 17} C${sprout.x + 15} ${sprout.y - 20} ${sprout.x + 17} ${sprout.y - 12} ${sprout.x + 9} ${sprout.y - 9}`} />
+					</g>
+				{/each}
+			</g>
+
 			<g class="garden-leaves">
 				{#each leaves as leaf}
 					<path
@@ -461,28 +503,31 @@
 							<path class="wing left-wing" d="M236 174 C220 188 220 206 242 214" />
 							<path class="wing right-wing" d="M304 174 C320 188 320 206 298 214" />
 						{:else if companionArtId === 'turtle'}
-							<circle class="head-fill" cx="326" cy="176" r="18" />
 							<path class="leg" d="M232 210 C226 220 218 222 210 216" />
 							<path class="leg" d="M300 214 C308 222 318 222 324 214" />
 						{:else}
 							<ellipse class="belly-fill" cx="270" cy="194" rx="25" ry="28" />
 						{/if}
-						{#if companionArtId !== 'turtle'}
-							<ellipse class="face-fill" cx="270" cy="156" rx="36" ry="34" />
-						{/if}
-						{#if companionArtId === 'owl'}
-							<circle class="eye-ring" cx="257" cy="154" r="12" />
-							<circle class="eye-ring" cx="283" cy="154" r="12" />
-							<path class="beak" d="M270 158 L264 168 H276 Z" />
-						{/if}
-						<ellipse class="eye companion-eye left-eye" cx={companionArtId === 'turtle' ? 331 : 258} cy={companionArtId === 'turtle' ? 172 : 154} rx="2.8" ry="3.6" />
-						<ellipse class="eye companion-eye right-eye" cx={companionArtId === 'turtle' ? 342 : 282} cy={companionArtId === 'turtle' ? 172 : 154} rx="2.8" ry="3.6" />
-						{#if companionArtId !== 'owl'}
-							<path class="mouth" d={companionArtId === 'turtle' ? 'M330 182 C334 185 340 185 344 182' : 'M262 170 C266 174 274 174 278 170'} />
-						{/if}
-						{#if companionArtId === 'fox'}
-							<path class="muzzle" d="M250 164 C258 154 282 154 290 164 C284 176 256 176 250 164 Z" />
-						{/if}
+						<g class="companion-head">
+							{#if companionArtId === 'turtle'}
+								<circle class="head-fill" cx="326" cy="176" r="18" />
+							{:else}
+								<ellipse class="face-fill" cx="270" cy="156" rx="36" ry="34" />
+							{/if}
+							{#if companionArtId === 'owl'}
+								<circle class="eye-ring" cx="257" cy="154" r="12" />
+								<circle class="eye-ring" cx="283" cy="154" r="12" />
+								<path class="beak" d="M270 158 L264 168 H276 Z" />
+							{/if}
+							<ellipse class="eye companion-eye left-eye" cx={companionArtId === 'turtle' ? 331 : 258} cy={companionArtId === 'turtle' ? 172 : 154} rx="2.8" ry="3.6" />
+							<ellipse class="eye companion-eye right-eye" cx={companionArtId === 'turtle' ? 342 : 282} cy={companionArtId === 'turtle' ? 172 : 154} rx="2.8" ry="3.6" />
+							{#if companionArtId !== 'owl'}
+								<path class="mouth" d={companionArtId === 'turtle' ? 'M330 182 C334 185 340 185 344 182' : 'M262 170 C266 174 274 174 278 170'} />
+							{/if}
+							{#if companionArtId === 'fox'}
+								<path class="muzzle" d="M250 164 C258 154 282 154 290 164 C284 176 256 176 250 164 Z" />
+							{/if}
+						</g>
 					</g>
 				</g>
 			{/if}
@@ -652,6 +697,21 @@
 		fill: rgba(255, 255, 255, 0.09);
 	}
 
+	.garden-sprouts g {
+		transform-box: fill-box;
+		transform-origin: center bottom;
+		animation: plant-arrive 520ms ease-out both, sprout-sway 9s ease-in-out infinite;
+	}
+
+	.garden-sprouts path {
+		fill: none;
+		stroke: var(--garden-leaf-dark);
+		stroke-width: 2.1;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		opacity: 0.72;
+	}
+
 	.garden-leaves path {
 		fill: var(--garden-leaf);
 		opacity: 0.72;
@@ -708,6 +768,11 @@
 		animation: companion-breathe 6s ease-in-out infinite;
 	}
 
+	.companion-head {
+		transform-box: fill-box;
+		transform-origin: center bottom;
+	}
+
 	.companion-fox {
 		--companion-body: #c87948;
 		--companion-body-dark: #9c5838;
@@ -720,6 +785,10 @@
 		--companion-body-dark: #765443;
 		--companion-belly: #d7baa0;
 		--companion-face: #a67c64;
+	}
+
+	.companion-bear .companion-breath {
+		animation-duration: 8.5s;
 	}
 
 	.companion-owl {
@@ -821,6 +890,44 @@
 
 	.companion-owl .eye {
 		animation-duration: 6.2s;
+	}
+
+	.companion-fox .companion-head {
+		animation: fox-listen 9.5s ease-in-out infinite;
+	}
+
+	.companion-owl .companion-head {
+		animation: owl-look 10.5s ease-in-out infinite;
+	}
+
+	.companion-rabbit .companion-head {
+		animation: rabbit-listen 8.8s ease-in-out infinite;
+	}
+
+	.companion-squirrel .companion-head {
+		animation: squirrel-attend 7.8s ease-in-out infinite;
+	}
+
+	.companion-turtle .companion-head {
+		animation: turtle-peek 11s ease-in-out infinite;
+	}
+
+	.companion-dino .companion-head {
+		animation: dino-nod 10.8s ease-in-out infinite;
+	}
+
+	.companion-fox .ear,
+	.companion-squirrel .ear,
+	.companion-dino .ear {
+		transform-box: fill-box;
+		transform-origin: center bottom;
+		animation: ear-listen 9.8s ease-in-out infinite;
+	}
+
+	.companion-fox .right-ear,
+	.companion-squirrel .right-ear,
+	.companion-dino .right-ear {
+		animation-delay: 0.35s;
 	}
 
 	.rabbit-ear {
@@ -1098,6 +1205,19 @@
 		}
 	}
 
+	@keyframes sprout-sway {
+		0%,
+		100% {
+			transform: rotate(0deg);
+		}
+		48% {
+			transform: rotate(-1.2deg);
+		}
+		72% {
+			transform: rotate(0.8deg);
+		}
+	}
+
 	@keyframes firefly-drift {
 		0%,
 		100% {
@@ -1125,6 +1245,75 @@
 		}
 	}
 
+	@keyframes fox-listen {
+		0%,
+		100% {
+			transform: translateY(0) rotate(0deg);
+		}
+		46% {
+			transform: translateY(-0.5px) rotate(-1.8deg);
+		}
+		62% {
+			transform: translateY(0) rotate(0.8deg);
+		}
+	}
+
+	@keyframes owl-look {
+		0%,
+		100% {
+			transform: translateX(0) rotate(0deg);
+		}
+		34% {
+			transform: translateX(-1.5px) rotate(-1.2deg);
+		}
+		68% {
+			transform: translateX(1.5px) rotate(1.2deg);
+		}
+	}
+
+	@keyframes rabbit-listen {
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		55% {
+			transform: translateY(-1px);
+		}
+	}
+
+	@keyframes squirrel-attend {
+		0%,
+		100% {
+			transform: rotate(0deg);
+		}
+		42% {
+			transform: rotate(1.4deg);
+		}
+		66% {
+			transform: rotate(-0.8deg);
+		}
+	}
+
+	@keyframes turtle-peek {
+		0%,
+		100% {
+			transform: translateX(0);
+		}
+		50% {
+			transform: translateX(2px);
+		}
+	}
+
+	@keyframes dino-nod {
+		0%,
+		100% {
+			transform: rotate(0deg);
+		}
+		52% {
+			transform: rotate(-1deg);
+		}
+	}
+
 	@keyframes companion-breathe {
 		0%,
 		100% {
@@ -1143,6 +1332,19 @@
 		}
 		95% {
 			transform: scaleY(0.08);
+		}
+	}
+
+	@keyframes ear-listen {
+		0%,
+		100% {
+			transform: rotate(0deg);
+		}
+		47% {
+			transform: rotate(-2deg);
+		}
+		58% {
+			transform: rotate(1deg);
 		}
 	}
 
@@ -1269,12 +1471,15 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+		.garden-sprouts g,
 		.garden-leaves path,
 		.garden-flowers g,
 		.fireflies circle,
 		.companion-figure,
 		.companion-breath,
+		.companion-head,
 		.eye,
+		.ear,
 		.rabbit-ear,
 		.companion-tail,
 		.companion-bubble {

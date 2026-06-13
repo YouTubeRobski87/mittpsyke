@@ -4,6 +4,11 @@ export type ProgressCompanionSelection = {
 	icon?: string;
 };
 
+type ProgressCompanionPresenceInput = {
+	lastEntryDaysAgo?: number | null;
+	hasEntries?: boolean;
+};
+
 const COMPANION_METADATA_KEYS = [
 	'progress_companion',
 	'progressCompanion',
@@ -119,4 +124,47 @@ export function readProgressCompanionFromMetadata(
 	}
 
 	return null;
+}
+
+export function getProgressCompanionStatusMessage({
+	lastEntryDaysAgo = null,
+	hasEntries = false
+}: ProgressCompanionPresenceInput): string {
+	if (!hasEntries) return 'Jag är här när du vill börja.';
+	if (lastEntryDaysAgo === null) return 'Fint att du kom tillbaka.';
+	if (lastEntryDaysAgo <= 0) return 'Du är här idag. Det räcker fint.';
+	if (lastEntryDaysAgo === 1) return 'Fint att du kom tillbaka igen.';
+	if (lastEntryDaysAgo <= 6) return 'Skönt att se dig igen. Platsen har väntat lugnt.';
+	if (lastEntryDaysAgo <= 21) return 'Det var ett tag sedan. Vi tar det varsamt härifrån.';
+	return 'Välkommen tillbaka. Trädgården finns kvar, precis som den är.';
+}
+
+export function getProgressCompanionCarePhrases(
+	input: ProgressCompanionPresenceInput = {}
+): string[] {
+	const { lastEntryDaysAgo = null, hasEntries = false } = input;
+
+	if (!hasEntries) {
+		return [
+			'Jag är här när du vill börja.',
+			'En liten stund räcker.',
+			'Platsen kan växa långsamt.'
+		];
+	}
+
+	if (lastEntryDaysAgo !== null && lastEntryDaysAgo >= 7) {
+		return [
+			'Välkommen tillbaka.',
+			'Vi börjar mjukt igen.',
+			'Trädgården finns kvar här.',
+			'Det går bra att ta en rad i taget.'
+		];
+	}
+
+	return [
+		'Fint att du kom tillbaka.',
+		'Skönt att se dig igen.',
+		'Du har gett trädgården lite mer ljus.',
+		'Jag finns kvar här med dig.'
+	];
 }
