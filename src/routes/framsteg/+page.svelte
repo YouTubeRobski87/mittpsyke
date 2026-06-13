@@ -15,7 +15,7 @@
 		hasSensitiveConsent
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
-	import { Trophy, TrendingUp, Lightbulb, Calendar, Heart } from 'lucide-svelte';
+	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart } from 'lucide-svelte';
 
 	interface StreakData {
 		currentStreak: number;
@@ -185,6 +185,41 @@
 		if (streakData.lastEntryDaysAgo === 1) return 'Igår';
 		return `${streakData.lastEntryDaysAgo} dagar sedan`;
 	});
+
+	function softMilestoneTitle(milestone: Milestone) {
+		if (!milestone.achieved) return 'Får växa fram senare';
+
+		if (milestone.metric === 'longestStreak') return 'Du har återvänt hit';
+		if (milestone.metric === 'daysSinceJoined') return 'Platsen finns kvar över tid';
+		if (milestone.metric === 'maxWordsInEntry' || milestone.metric === 'maxWordsInDay') {
+			return 'En tanke fick ta mer plats';
+		}
+		if (milestone.metric === 'totalWords') return 'Många ord har fått landa';
+		if (milestone.metric === 'totalEntries' && milestone.threshold <= 10) return 'Ett varsamt avtryck';
+		if (milestone.metric === 'totalEntries' && milestone.threshold < 100) return 'Fler stunder fick plats';
+		return 'Din trädgård har vuxit lite till';
+	}
+
+	function softMilestoneDescription(milestone: Milestone) {
+		if (!milestone.achieved) {
+			return 'Det här får vila tills det blir en naturlig del av din plats.';
+		}
+
+		const source = milestone.description ?? milestone.text;
+		const softened = source
+			.replace(/^\d+\s+(inlägg|dagar i rad|dagar|ord)\.?\s*/i, '')
+			.replace(/^Över\s+\d+\s+ord\s+i\s+ett\s+inlägg\.?\s*/i, '')
+			.replace(/^\d+\s+ord\s+på\s+en\s+dag\.?\s*/i, '')
+			.replace(/^\d+\s+skrivna\s+ord\.?\s*/i, '')
+			.trim();
+
+		return softened || 'Din trädgård har vuxit lite till.';
+	}
+
+	function nextMilestoneCopy(milestone: Milestone) {
+		const softened = softMilestoneDescription({ ...milestone, achieved: true });
+		return softened === milestone.text ? 'Din trädgård kan växa lite till när du återvänder.' : softened;
+	}
 
 	// ── Reflection prompts (rotate based on day) ──
 	const reflections = [
@@ -442,6 +477,7 @@
 			growthLevel={growthLevel}
 			entryCount={entryCount}
 			activeDays={activeDays}
+			lastEntryDaysAgo={streakData?.lastEntryDaysAgo ?? null}
 			progressCompanion={data.progressCompanion ?? null}
 		/>
 
@@ -568,9 +604,9 @@
 		{#if milestonesData}
 			<section class="card milestones-card">
 				<div class="card-header">
-					<div class="icon-badge trophy"><Trophy size={24} /></div>
+					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
 					<div>
-						<h2>Dina milstolpar</h2>
+						<h2>Små tecken på omsorg</h2>
 						<p class="card-intro">Små tecken på att du har återvänt, reflekterat och gett dig själv plats över tid.</p>
 					</div>
 				</div>
@@ -580,12 +616,10 @@
 						<div class="milestones-grid">
 							{#each section.milestones as milestone}
 								<div class="milestone {milestone.achieved ? 'achieved' : 'locked'}">
-									<div class="milestone-emoji">{milestone.emoji}</div>
+									<div class="milestone-mark" aria-hidden="true"></div>
 									<div class="milestone-copy">
-										<h4>{milestone.title ?? milestone.text}</h4>
-										{#if milestone.description}
-											<p>{milestone.description}</p>
-										{/if}
+										<h4>{softMilestoneTitle(milestone)}</h4>
+										<p>{softMilestoneDescription(milestone)}</p>
 									</div>
 								</div>
 							{/each}
@@ -594,27 +628,15 @@
 				{/each}
 				{#if milestonesData.nextMilestone}
 					<div class="next-milestone">
-						<div class="next-header"><Calendar size={18} /><span>Nästa varsamma steg</span></div>
-						<h3>{milestonesData.nextMilestone.title ?? milestonesData.nextMilestone.text}</h3>
-						{#if milestonesData.nextMilestone.description}
-							<p>{milestonesData.nextMilestone.description}</p>
-						{/if}
-						<div class="progress-bar">
-							<div
-								class="progress-fill"
-								style="width: {milestonesData.nextMilestone.progressPercent}%"
-							></div>
-						</div>
-						<small>
-							{milestonesData.nextMilestone.current} / {milestonesData.nextMilestone.threshold}
-							{milestonesData.nextMilestone.unit}. {milestonesData.nextMilestone.remaining}
-							{milestonesData.nextMilestone.unit} kvar till den här milstolpen.
-						</small>
+						<div class="next-header"><Calendar size={18} /><span>Det som långsamt kan växa fram</span></div>
+						<h3>Din trädgård har plats för mer ljus.</h3>
+						<p>{nextMilestoneCopy(milestonesData.nextMilestone)}</p>
+						<small>Ingen brådska. Den här platsen växer när du återvänder.</small>
 					</div>
 				{:else}
 					<div class="next-milestone">
-						<div class="next-header"><Calendar size={18} /><span>Nästa varsamma steg</span></div>
-						<p>Du har nått alla milstolpar som finns just nu. Fortsätt i den takt som känns möjlig.</p>
+						<div class="next-header"><Calendar size={18} /><span>Det som långsamt kan växa fram</span></div>
+						<p>Det finns inget mer du behöver jaga. Fortsätt återvända när det hjälper dig.</p>
 					</div>
 				{/if}
 			</section>
@@ -624,8 +646,8 @@
 		{#if entryCount === 0}
 			<section class="card empty-state">
 				<h2>Börja där du är</h2>
-				<p>Du behöver inte ha gjort framsteg för att börja se mönster. Skriv en rad idag, så bygger MittPsyke långsamt upp din överblick.</p>
-				<a href="/dagbok/checkin" class="auth-button primary">Skriv ett inlägg</a>
+				<p>Du behöver inte ha kommit någonstans för att börja se mönster. Skriv en rad idag, så får platsen sitt första lilla ljus.</p>
+				<a href="/dagbok/checkin" class="auth-button primary">Skriv en rad</a>
 			</section>
 		{/if}
 			{/if}
@@ -680,7 +702,7 @@
 
 	/* Badge colors */
 	.icon-badge.week { background: var(--theme-accent, #436e8f); }
-	.icon-badge.trophy { background: linear-gradient(135deg, #ffd93d, #ffb347); }
+	.icon-badge.milestone-leaf { background: linear-gradient(135deg, #7ea47c, #557c68); }
 	.icon-badge.heat { background: linear-gradient(135deg, #6bcf7f, #4caf50); }
 	.icon-badge.insight { background: linear-gradient(135deg, #667eea, #764ba2); }
 
@@ -707,20 +729,28 @@
 		color: hsl(var(--foreground));
 	}
 	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
-	.milestone { min-height: 8.75rem; padding: 1rem; border-radius: 0.5rem; display: flex; align-items: flex-start; gap: 1rem; background: hsl(var(--surface-muted)); border: 1px solid var(--color-dashboard-border); transition: all 0.2s ease; }
+	.milestone { min-height: 8.75rem; padding: 1rem; border-radius: 0.5rem; display: flex; align-items: flex-start; gap: 1rem; background: hsl(var(--surface-muted)); border: 1px solid var(--color-dashboard-border); transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
 	.milestone.achieved { background: var(--theme-bg, hsl(var(--success-surface))); border-color: var(--color-dashboard-border); }
-	.milestone.locked { opacity: 0.62; filter: saturate(0.6); }
-	.milestone:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-	.milestone-emoji { font-size: 1.8rem; line-height: 1; }
+	.milestone.locked { opacity: 0.78; }
+	.milestone:hover { border-color: color-mix(in srgb, var(--color-dashboard-border) 72%, var(--theme-accent, #557c68) 28%); box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
+	.milestone-mark {
+		width: 1.65rem;
+		height: 1.65rem;
+		border-radius: 999px;
+		flex: 0 0 auto;
+		margin-top: 0.1rem;
+		background:
+			radial-gradient(circle at 35% 35%, rgba(255,255,255,0.55), transparent 38%),
+			linear-gradient(135deg, #b8c9a7, #6f8f73);
+		box-shadow: inset 0 -2px 5px rgba(38, 62, 42, 0.18);
+	}
 	.milestone-copy h4 { margin: 0 0 0.35rem; color: hsl(var(--foreground)); font-size: 0.98rem; font-weight: 650; }
 	.milestone-copy p { margin: 0; color: hsl(var(--muted-foreground)); font-size: 0.86rem; line-height: 1.5; }
 	.next-milestone { background: hsl(var(--surface-soft)); border: 1px solid var(--color-dashboard-border); padding: 1.5rem; border-radius: 0.5rem; margin-top: 1.5rem; }
-	.next-header { display: flex; align-items: center; gap: 0.5rem; color: var(--theme-accent, #667eea); font-weight: 600; margin-bottom: 0.75rem; }
+	.next-header { display: flex; align-items: center; gap: 0.5rem; color: var(--theme-accent, #557c68); font-weight: 600; margin-bottom: 0.75rem; }
 	.next-milestone h3 { margin: 0 0 0.45rem; color: hsl(var(--foreground)); font-size: 1.05rem; }
-	.next-milestone p { font-size: 1rem; color: hsl(var(--muted-foreground)); margin: 0.5rem 0 1rem 0; line-height: 1.6; }
-	.progress-bar { height: 0.5rem; background: hsl(var(--surface-muted)); border-radius: 0.25rem; overflow: hidden; margin-bottom: 0.5rem; }
-	.progress-fill { height: 100%; background: var(--theme-accent, linear-gradient(90deg, #667eea, #764ba2)); border-radius: 0.25rem; transition: width 0.3s ease; }
-	.next-milestone small { color: hsl(var(--muted-foreground)); display: block; }
+	.next-milestone p { font-size: 1rem; color: hsl(var(--muted-foreground)); margin: 0.5rem 0 0.75rem 0; line-height: 1.6; }
+	.next-milestone small { color: hsl(var(--muted-foreground)); display: block; line-height: 1.5; }
 
 	/* Heatmap */
 	.heatmap-card { overflow-x: auto; }
