@@ -26,24 +26,23 @@
 <SEO canonical="https://www.mittpsyke.se/chat" />
 
 <svelte:head>
-	<meta name="robots" content="noindex, follow" />
-	<title>AI-samtalsstöd för ångest, nedstämdhet och trauma – chatta anonymt | MittPsyke</title>
+	<title>AI-chat för psykisk hälsa | MittPsyke</title>
 	<meta
 		name="description"
-		content="Anonymt AI-samtalsstöd för ångest, nedstämdhet och trauma. Välj en ingång och börja i din egen takt – utan konto och utan väntetid."
+		content="Prata anonymt med MittPsykes AI-chat om ångest, stress, nedstämdhet och psykiskt mående."
 	/>
-	<meta property="og:title" content="AI-samtalsstöd – chatta anonymt | MittPsyke" />
+	<meta property="og:title" content="AI-chat för psykisk hälsa | MittPsyke" />
 	<meta
 		property="og:description"
-		content="Anonymt AI-samtalsstöd för ångest, nedstämdhet och trauma. Välj en ingång och börja i din egen takt – utan konto och utan väntetid."
+		content="Prata anonymt om hur du mår och få hjälp att sortera tankar i lugn takt."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		"@context": "https://schema.org",
 		"@type": "WebPage",
-		"name": "AI-samtalsstöd för ångest, nedstämdhet och trauma – chatta anonymt | MittPsyke",
-		"description": "Anonymt AI-samtalsstöd för ångest, nedstämdhet och trauma. Välj en ingång och börja i din egen takt – utan konto och utan väntetid.",
+		"name": "AI-chat för psykisk hälsa | MittPsyke",
+		"description": "Prata anonymt med MittPsykes AI-chat om ångest, stress, nedstämdhet och psykiskt mående.",
 		"url": "https://www.mittpsyke.se/chat",
 		"about": { "@type": "Thing", "name": "Psykisk hälsa och samtalsstöd" },
 		"inLanguage": "sv-SE",
@@ -58,7 +57,7 @@
 <main class="page">
 	<div class="page-container">
 		<header class="hero">
-			<h1>Välj en lugn väg in i chatten</h1>
+			<h1>AI-chat för psykisk hälsa</h1>
 			<p>
 				Du behöver inte veta exakt hur du ska börja. Välj det som känns närmast just nu och låt samtalet
 				ta form i din egen takt. MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen.
@@ -82,8 +81,10 @@
 		</section>
 
 		<section class="section">
+			<h2>Vad kan du få hjälp med?</h2>
 			<p>
-				Du kan börja utan konto. Vissa tekniska uppgifter hanteras enligt
+				AI-chatten kan hjälpa dig att reflektera kring ångest, stress, sömnproblem, relationer
+				och psykiskt mående. Du kan börja utan konto. Vissa tekniska uppgifter hanteras enligt
 				<a href="/integritet">integritetspolicyn</a>. Om du vill läsa mer först finns
 				<a href="/prata-anonymt-online">prata anonymt online</a>. Vid akut fara, ring 112.
 				För vårdråd, kontakta 1177. Behöver du mänsklig kontakt finns
@@ -124,6 +125,10 @@
 
 	h2 {
 		font-size: 1.2rem;
+	}
+
+	.section h2 {
+		margin-bottom: 0.65rem;
 	}
 
 	p {
