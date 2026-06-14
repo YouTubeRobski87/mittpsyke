@@ -10,6 +10,7 @@
 
 	const MAX_SECONDS = 180;
 	const VIDEO_MAX_BYTES = 50 * 1024 * 1024; // 50 MB
+	type CameraFacingMode = 'user' | 'environment';
 
 	const hasGetUserMedia =
 		typeof navigator !== 'undefined' && !!navigator.mediaDevices?.getUserMedia;
@@ -28,6 +29,7 @@
 	let seconds = $state(0);
 	let timer: ReturnType<typeof setInterval> | null = null;
 	let errorMessage = $state('');
+	let activeFacingMode = $state<CameraFacingMode>('environment');
 
 	// Väljer ett mime-format webbläsaren faktiskt stöder. iOS Safari stöder inte
 	// webm utan bara mp4, och returnerar ibland inget från isTypeSupported alls —
@@ -56,12 +58,22 @@
 		onrecorded?.(blob);
 	}
 
+	function getVideoConstraints(facingMode: CameraFacingMode): MediaTrackConstraints {
+		return {
+			facingMode: facingMode === 'environment' ? { ideal: 'environment' } : 'user',
+			width: { ideal: 1280 }
+		};
+	}
+
 	// ── Live-inspelning (desktop) ──
-	async function startCamera() {
+	async function startCamera(facingMode: CameraFacingMode = activeFacingMode) {
 		errorMessage = '';
+		activeFacingMode = facingMode;
+		stream?.getTracks().forEach((t) => t.stop());
+		stream = null;
 		try {
 			stream = await navigator.mediaDevices.getUserMedia({
-				video: { facingMode: 'user', width: { ideal: 1280 } },
+				video: getVideoConstraints(facingMode),
 				audio: true
 			});
 			if (previewEl) {
@@ -74,6 +86,10 @@
 				'Kunde inte starta kameran. Kontrollera att webbläsaren har tillgång till kamera och mikrofon.';
 			console.error('Kamerafel:', e);
 		}
+	}
+
+	function switchCamera() {
+		void startCamera(activeFacingMode === 'environment' ? 'user' : 'environment');
 	}
 
 	function startRecording() {
@@ -111,7 +127,7 @@
 		playbackUrl = null;
 		errorMessage = '';
 		onreset?.();
-		void startCamera();
+		void startCamera(activeFacingMode);
 	}
 
 	// ── Native kamera-app (mobil) ──
@@ -156,7 +172,7 @@
 			<p class="video-error">{errorMessage}</p>
 		{/if}
 		{#if !stream}
-			<button type="button" class="video-action-btn" onclick={startCamera}> Starta kamera </button>
+			<button type="button" class="video-action-btn" onclick={() => startCamera()}> Starta kamera </button>
 		{:else if !recording}
 			<button
 				type="button"
@@ -164,6 +180,13 @@
 				onclick={startRecording}
 			>
 				● Spela in
+			</button>
+			<button
+				type="button"
+				class="video-action-btn"
+				onclick={switchCamera}
+			>
+				Byt kamera
 			</button>
 		{:else}
 			<button type="button" class="video-action-btn video-action-btn--stop" onclick={stopRecording}>
