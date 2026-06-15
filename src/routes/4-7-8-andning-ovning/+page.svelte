@@ -6,10 +6,6 @@
 
 <svelte:head>
 	<title>4-7-8 andning övning | Lugna andetag i egen takt | MittPsyke</title>
-	<meta
-		name="description"
-		content="Prova en 4-7-8 andning övning för att landa lite lugnare när tankarna snurrar eller kroppen är spänd."
-	/>
 	<meta property="og:title" content="4-7-8 andning övning | MittPsyke" />
 	<meta
 		property="og:description"
