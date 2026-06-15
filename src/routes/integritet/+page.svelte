@@ -123,53 +123,54 @@
 	</p>
 	<div class="overflow-x-auto rounded-2xl border border-black/10 dark:border-white/10 mb-6">
 		<table class="w-full text-sm leading-relaxed border-collapse">
+			<caption class="sr-only">Översikt över personuppgifter, system, region, rättslig grund och lagringstid</caption>
 			<thead>
 				<tr class="bg-black/[0.04] dark:bg-white/[0.04] text-left">
-					<th class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Datatyp</th>
-					<th class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">System / leverantör</th>
-					<th class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Region</th>
-					<th class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Rättslig grund</th>
-					<th class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Lagringstid</th>
+					<th scope="col" class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Datatyp</th>
+					<th scope="col" class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">System / leverantör</th>
+					<th scope="col" class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Region</th>
+					<th scope="col" class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Rättslig grund</th>
+					<th scope="col" class="px-4 py-3 font-semibold opacity-80 whitespace-nowrap">Lagringstid</th>
 				</tr>
 			</thead>
 			<tbody class="opacity-80 divide-y divide-black/[0.06] dark:divide-white/[0.06]">
 				<tr>
-					<td class="px-4 py-3">Kontouppgifter (e-post, namn)</td>
+					<th scope="row" class="px-4 py-3 font-normal text-left">Kontouppgifter (e-post, namn)</th>
 					<td class="px-4 py-3">Supabase</td>
 					<td class="px-4 py-3">EU (Frankfurt)</td>
 					<td class="px-4 py-3">Avtal</td>
 					<td class="px-4 py-3">Tills kontot raderas</td>
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
-					<td class="px-4 py-3">Chatt och dagboksinnehåll</td>
+					<th scope="row" class="px-4 py-3 font-normal text-left">Chatt och dagboksinnehåll</th>
 					<td class="px-4 py-3">Supabase + OpenAI</td>
 					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
 					<td class="px-4 py-3">Samtycke</td>
 					<td class="px-4 py-3">Tills du raderar</td>
 				</tr>
 				<tr>
-					<td class="px-4 py-3">Anonyma chattsamtal (gäst)</td>
+					<th scope="row" class="px-4 py-3 font-normal text-left">Anonyma chattsamtal (gäst)</th>
 					<td class="px-4 py-3">Supabase + OpenAI</td>
 					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
 					<td class="px-4 py-3">Samtycke</td>
 					<td class="px-4 py-3">Rensas automatiskt inom 24 timmar</td>
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
-					<td class="px-4 py-3">Tekniska loggar</td>
+					<th scope="row" class="px-4 py-3 font-normal text-left">Tekniska loggar</th>
 					<td class="px-4 py-3">Supabase / Vercel</td>
 					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
 					<td class="px-4 py-3">Berättigat intresse</td>
 					<td class="px-4 py-3">Upp till 90 dagar</td>
 				</tr>
 				<tr>
-					<td class="px-4 py-3">Analyskakor</td>
+					<th scope="row" class="px-4 py-3 font-normal text-left">Analyskakor</th>
 					<td class="px-4 py-3">Google Analytics</td>
 					<td class="px-4 py-3">USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
 					<td class="px-4 py-3">Samtycke</td>
 					<td class="px-4 py-3">Sessionbaserat</td>
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
-					<td class="px-4 py-3">Cookie-fri webbstatistik</td>
+					<th scope="row" class="px-4 py-3 font-normal text-left">Cookie-fri webbstatistik</th>
 					<td class="px-4 py-3">Ahrefs Web Analytics</td>
 					<td class="px-4 py-3">Singapore&thinsp;<span class="opacity-60 text-xs">(SCC vid tillämplig överföring)</span></td>
 					<td class="px-4 py-3">Berättigat intresse</td>
