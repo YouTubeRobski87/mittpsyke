@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 </script>
 
@@ -13,6 +14,8 @@
 </svelte:head>
 
 <main class="how-content mx-auto w-full px-5 py-10">
+	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Så fungerar MittPsyke' }]} />
+
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Så fungerar MittPsyke</h1>
 	<p class="opacity-80 leading-relaxed mb-4">
 		MittPsyke är en lugn plats för att skriva av sig, sortera tankar och reflektera i

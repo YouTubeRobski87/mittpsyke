@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import { supabase } from '$lib/supabase';
@@ -63,6 +64,8 @@
 
 <main class="page">
 	<div class="page-container">
+		<Breadcrumbs items={[{ label: 'Funktioner', href: '/#sa-fungerar-det-fordjupning' }, { label: 'Humörspårning' }]} />
+
 		<header class="hero">
 			<h1>Spåra ditt humör över tid</h1>
 			<p>

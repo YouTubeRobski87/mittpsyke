@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { cookieBannerOpen } from '$lib/consent';
 </script>
@@ -14,6 +15,8 @@
 </svelte:head>
 
 <main class="cookies-content mx-auto w-full px-5 py-10">
+	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Cookies och leverantörer' }]} />
+
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Cookies och leverantörer</h1>
 	<p class="opacity-80 leading-relaxed mb-4">
 		Här förklarar vi kort hur MittPsyke använder cookies, lokal lagring, analysverktyg

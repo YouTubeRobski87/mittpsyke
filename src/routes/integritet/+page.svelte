@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 </script>
@@ -14,6 +15,8 @@
 </svelte:head>
 
 <main class="mx-auto w-full max-w-3xl px-5 py-10">
+	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Integritet' }]} />
+
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Integritetspolicy</h1>
 	<p class="opacity-80 leading-relaxed mb-4">
 		MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen. Här förklarar vi i enkel svenska

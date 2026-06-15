@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 
@@ -16,6 +17,8 @@
 </svelte:head>
 
 <main class="terms-content mx-auto w-full px-5 py-10">
+	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Kontakt och villkor' }]} />
+
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Kontakt och villkor</h1>
 	<p class="opacity-80 leading-relaxed mb-4">
 		Här hittar du kontaktuppgifter, grundläggande användarvillkor och viktiga gränser för

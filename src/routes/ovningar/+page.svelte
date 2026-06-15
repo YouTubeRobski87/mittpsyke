@@ -1,7 +1,7 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { page } from '$app/stores';
-	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { pillars, tools } from '$lib/data/seo-architecture';
 
@@ -15,9 +15,10 @@
 	description="Steg-för-steg-övningar mot ångest, stress, sömn och självkänsla. Konkreta verktyg för vardagen i lugn takt."
 	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
 />
-<BreadcrumbSchema crumbs={[{ name: 'Övningar', url: '/ovningar' }]} />
 
 <main class="container tools-page">
+	<Breadcrumbs items={[{ label: 'Övningar' }]} />
+
 	<header class="intro">
 		<h1>Övningar mot ångest och stress</h1>
 		<p>Steg-för-steg-övningar som hjälper dig att landa, sortera tankar och ta små steg i vardagen.</p>

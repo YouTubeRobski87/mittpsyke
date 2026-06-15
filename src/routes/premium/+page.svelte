@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL } from '$lib/contact';
 
@@ -20,6 +21,8 @@
 <SEO canonical="https://www.mittpsyke.se/premium" />
 
 <main class="premium-page">
+	<Breadcrumbs items={[{ label: 'Premium' }]} />
+
 	<header class="premium-hero">
 		<p class="eyebrow">Under utveckling</p>
 		<h1>Premium för mer kontinuitet över tid</h1>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { getAgeRangeLabel, getGenderLabel } from '$lib/data/anonymous-stories';
 	import type { PageData } from './$types';
@@ -80,6 +81,8 @@
 </svelte:head>
 
 <main class="stories-page mx-auto w-full px-5 py-10">
+	<Breadcrumbs items={[{ label: 'Berättelser' }]} />
+
 	<section class="stories-hero">
 		<div>
 			<p class="eyebrow">Anonyma berättelser</p>

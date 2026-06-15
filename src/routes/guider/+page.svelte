@@ -1,7 +1,7 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { page } from '$app/stores';
-	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { guides, pillars } from '$lib/seo-kit/content';
 
@@ -21,9 +21,10 @@
 	description="Samlade guider om ångest, stress, nedstämdhet, sömn, självkänsla och beroende. Skrivet för reflektion och förståelse i lugn takt."
 	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
 />
-<BreadcrumbSchema crumbs={[{ name: 'Guider', url: '/guider' }]} />
 
 <main class="container guides-page">
+	<Breadcrumbs items={[{ label: 'Guider' }]} />
+
 	<header class="intro">
 		<h1>Guider om psykisk hälsa</h1>
 		<p>Välj ett område och läs samlade guider och övningar i lugn takt.</p>

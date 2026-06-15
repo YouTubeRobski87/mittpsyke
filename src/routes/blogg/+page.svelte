@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import SoroBlogEmbed from '$lib/components/SoroBlogEmbed.svelte';
 	import type { PageData } from './$types';
@@ -18,6 +19,8 @@
 </svelte:head>
 
 <main class="blog-page">
+	<Breadcrumbs items={[{ label: 'Artiklar' }]} />
+
 	<section class="blog-hero">
 		<p class="eyebrow">MittPsyke artiklar</p>
 		<h1>Artiklar om psykisk hälsa</h1>

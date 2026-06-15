@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import ResearchEvidenceCard from '$lib/components/ResearchEvidenceCard.svelte';
@@ -19,6 +20,7 @@
 
 <main class="page">
 	<div class="page-container">
+		<Breadcrumbs items={[{ label: 'Om MittPsyke' }]} />
 
 		<!-- 1) Hero -->
 		<header class="hero">
