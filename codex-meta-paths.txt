@@ -5,7 +5,7 @@
 /angest
 /anonym-dagbok-online
 /anonyma-berattelser
-/anonymt-samtalsstod-online
+/anonymt-samtalstod-online
 /ansvar
 /blogg
 /blogg/30-och-40-arsaldern

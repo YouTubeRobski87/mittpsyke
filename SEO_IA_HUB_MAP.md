@@ -344,13 +344,13 @@ Syfte: identifiera vilken sida som bör vara huvudhubb per tema, vilka sidor som
    - `/chat`
    - `/anonym-chatt`
    - `/chatta-anonymt-med-nagon`
-   - `/anonymt-samtalsstod-online`
+   - `/anonymt-samtalstod-online`
    - `/prata-anonymt-online`
    - `/psykiskt-stod-online`
    - `/chattstod-psykisk-ohalsa`
    - `/samtalsstod-utan-vantetid`
    - `/ai-samtalsstod-online`
-   - `/anonymt-samtalsstod-online`
+   - `/anonymt-samtalstod-online`
 3. Guidesidor:
    - Ämnesguider länkar ofta till `/chat/a`, `/chat/b` eller `/chat/e`.
 4. Övningar:
@@ -392,7 +392,7 @@ Syfte: identifiera vilken sida som bör vara huvudhubb per tema, vilka sidor som
 4. Dagbok/skriva:
    - `/dagbok`, `/skriv`, `/anonym-dagbok-online`, `/digital-dagbok-for-maende`, `/guider/anonym-dagbok-online`, `/guider/dagbok-och-reflektion` och `/journalforing` har flera närliggande sökintentioner.
 5. Anonym chatt:
-   - `/chatta-anonymt`, `/chatta-anonymt-med-nagon`, `/anonym-chatt`, `/anonymt-samtalsstod-online`, `/prata-anonymt-online`, `/chattstod-psykisk-ohalsa`, `/samtalsstod-utan-vantetid` och `/ai-samtalsstod-online` behöver hållas isär med tydliga primärkeywords.
+   - `/chatta-anonymt`, `/chatta-anonymt-med-nagon`, `/anonym-chatt`, `/anonymt-samtalstod-online`, `/prata-anonymt-online`, `/chattstod-psykisk-ohalsa`, `/samtalsstod-utan-vantetid` och `/ai-samtalsstod-online` behöver hållas isär med tydliga primärkeywords.
 6. Självkänsla:
    - `/guider/sjalvkansla/lag-sjalvkansla` och `/guider/sjalvkansla/dalig-sjalvkansla` har hög semantisk likhet.
 7. Panikattack:

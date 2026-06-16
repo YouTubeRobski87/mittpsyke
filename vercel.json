@@ -13,6 +13,16 @@
       "statusCode": 301
     },
     {
+      "source": "/anonymt-samtalsstod-online",
+      "destination": "/anonymt-samtalstod-online",
+      "permanent": true
+    },
+    {
+      "source": "/blogg/humorsparning",
+      "destination": "/humorsparning",
+      "permanent": true
+    },
+    {
       "source": "/guider-seo/nedstamdhet",
       "destination": "/guider/depression",
       "permanent": true

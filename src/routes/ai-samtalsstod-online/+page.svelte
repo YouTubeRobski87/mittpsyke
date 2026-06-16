@@ -36,7 +36,7 @@
 		<section class="section">
 			<h2>Vad MittPsyke erbjuder</h2>
 			<ul>
-				<li><a href="/anonymt-samtalsstod-online">Anonymt samtalsstöd online</a> när du vill börja utan press.</li>
+				<li><a href="/anonymt-samtalstod-online">Anonymt samtalsstöd online</a> när du vill börja utan press.</li>
 				<li><a href="/dagbok">Dagbok</a> för att skriva av dig och få mer kontinuitet.</li>
 				<li><a href="/guider">Guider</a> när du vill läsa mer i lugn takt.</li>
 				<li><a href="/om-mittpsyke">Om MittPsyke</a> om du vill förstå tjänsten bättre innan du börjar.</li>

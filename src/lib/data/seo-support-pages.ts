@@ -3,11 +3,11 @@ import type { SeoSupportPageConfig } from '$lib/components/SeoSupportPage.svelte
 const updatedDate = '4 april 2026';
 
 export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
-	'anonymt-samtalsstod-online': {
+	'anonymt-samtalstod-online': {
 		title: 'Anonymt samtalsstöd online – trygg start | MittPsyke',
 		description:
 			'Utforska anonymt samtalsstöd online när du vill börja varsamt. Läs om låg tröskel, reflektion i text, vad stödet kan hjälpa med och hur det skiljer sig från vård.',
-		canonical: 'https://www.mittpsyke.se/anonymt-samtalsstod-online',
+		canonical: 'https://www.mittpsyke.se/anonymt-samtalstod-online',
 		ogTitle: 'Anonymt samtalsstöd online | MittPsyke',
 		ogDescription:
 			'När du inte orkar förklara allt direkt kan anonymt samtalsstöd vara en trygg första ingång.',
@@ -112,7 +112,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		resourceListTitle: 'Fortsätt i rätt riktning',
 		resourceListItems: [
 			{ href: '/chatta-anonymt', label: 'Chatta anonymt utan konto', description: 'om du vill ta en extra lågtröskelstart direkt i text.' },
-			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför anonymitet ofta gör första steget lättare.' },
+			{ href: '/anonymt-samtalstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför anonymitet ofta gör första steget lättare.' },
 			{ href: '/chattstod-psykisk-ohalsa', label: 'Chattstöd vid psykisk ohälsa', description: 'för en bredare bild av hur tidigt stöd i text kan fungera.' },
 			{ href: '/dagbok', label: 'Skriv i dagboken', description: 'om du vill formulera mer i lugn och ro efter chatten.' },
 			{ href: '/om-mittpsyke', label: 'Läs om MittPsyke', description: 'för att förstå tjänstens roll, gränser och nästa steg.' }
@@ -125,7 +125,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		nextStepLinks: [
 			{ href: '/chat', label: 'Chatta anonymt nu' },
 			{ href: '/dagbok', label: 'Börja i dagboken' },
-			{ href: '/anonymt-samtalsstod-online', label: 'Läs mer om anonymt stöd' }
+			{ href: '/anonymt-samtalstod-online', label: 'Läs mer om anonymt stöd' }
 		],
 		faq: [
 			{
@@ -545,7 +545,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		resourceListTitle: 'Sidor som kan hjälpa dig vidare',
 		resourceListItems: [
 			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill läsa mer om hur ett anonymt samtal brukar fungera.' },
-			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'för en djupare genomgång av varför låg tröskel kan spela stor roll.' },
+			{ href: '/anonymt-samtalstod-online', label: 'Anonymt samtalsstöd online', description: 'för en djupare genomgång av varför låg tröskel kan spela stor roll.' },
 			{ href: '/chattstod-psykisk-ohalsa', label: 'Chattstöd vid psykisk ohälsa', description: 'om du vill förstå hur stöd i text kan hjälpa tidigt.' },
 			{ href: '/dagbok', label: 'Dagbok', description: 'om du vill börja skriva för dig själv innan du öppnar ett samtal.' }
 		],
@@ -822,7 +822,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		resourceListTitle: 'Du kan också fortsätta här',
 		resourceListItems: [
 			{ href: '/prata-anonymt-online', label: 'Prata anonymt online', description: 'om du vill läsa mer om hur anonymt samtalsstöd fungerar.' },
-			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför låg tröskel kan göra det lättare att börja.' },
+			{ href: '/anonymt-samtalstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför låg tröskel kan göra det lättare att börja.' },
 			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill få en tydligare bild av hur själva samtalet brukar gå till.' },
 			{ href: '/blogg/chatta-anonymt-utan-konto', label: 'Läs mer om att chatta anonymt utan konto', description: 'om du vill förstå upplägget innan du börjar.' },
 			{ href: '/anonym-dagbok-online', label: 'Anonym dagbok online', description: 'om du vill börja med egen reflektion i text innan eller efter chatten.' },
@@ -896,7 +896,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		resourceListTitle: 'Sidor som passar bra tillsammans med anonym chatt',
 		resourceListItems: [
 			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill läsa mer om hur själva samtalet brukar gå till.' },
-			{ href: '/anonymt-samtalsstod-online', label: 'Anonymt samtalsstöd online', description: 'för en bredare bild av varför låg tröskel kan göra stor skillnad.' },
+			{ href: '/anonymt-samtalstod-online', label: 'Anonymt samtalsstöd online', description: 'för en bredare bild av varför låg tröskel kan göra stor skillnad.' },
 			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva vidare efter chatten och få mer kontinuitet.' },
 			{ href: '/guider', label: 'Guider', description: 'om du vill förstå mer om det du känner efter att du har börjat sätta ord på det.' }
 		],

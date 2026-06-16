@@ -24,6 +24,7 @@ function dedupeMetaDescriptions(html: string): string {
 const legacyBlogRedirects: Record<string, string> = {
 	'/blogg/digital-dagbok-for-maende': '/digital-dagbok-for-maende',
 	'/blogg/psykiskt-stod-online': '/psykiskt-stod-online',
+	'/blogg/humorsparning': '/humorsparning',
 	'/blogg/humorsparning-app-psykisk-halsa': '/humorsparning',
 	'/blogg/skriva-dagbok-online': '/dagbok',
 	'/blogg/att-skriva-av-sig-anonymt-online': '/anonym-dagbok-online',
@@ -36,8 +37,17 @@ const legacyBlogRedirects: Record<string, string> = {
 	'/blogg/integritet-i-appar-for-mental-halsa': '/blogg/s%C3%A4kra-maendedata-tjanster'
 }
 
+const legacyPageRedirects: Record<string, string> = {
+	'/anonymt-samtalsstod-online': '/anonymt-samtalstod-online'
+}
+
 const legacyPathRedirects: Handle = async ({ event, resolve }) => {
 	const { url } = event
+
+	const legacyPageTarget = legacyPageRedirects[url.pathname]
+	if (legacyPageTarget) {
+		throw redirect(301, legacyPageTarget)
+	}
 
 	const legacyBlogTarget = legacyBlogRedirects[url.pathname]
 	if (legacyBlogTarget) {
