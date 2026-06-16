@@ -292,6 +292,10 @@
 					<p>&ldquo;När jag kom tillbaka såg jag mönster i sömn och stress.&rdquo;</p>
 					<cite>Anonym användare</cite>
 				</blockquote>
+				<blockquote class="review-card">
+					<p>&ldquo;Jag ville bara säga hur imponerad jag är av MittPsyke. Det är ett fantastiskt fint initiativ som gör skillnad. Jag har haft, och har fortfarande, stor nytta av sidan. Det märks att mycket arbete ligger bakom, och både MittPsyke och Stodlinjer.se har varit guld värda för mig.&rdquo;</p>
+					<cite>Anonym användare</cite>
+				</blockquote>
 			</div>
 		</div>
 	</section>
