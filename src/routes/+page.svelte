@@ -166,6 +166,11 @@
 			<div class="hero-content">
 				<h1>Skriv anonymt och följ ditt mående</h1>
 				<p>Skriv några rader direkt och välj senare om du vill spara.</p>
+				<div class="hero-positioning">
+					<p>MittPsyke är ett digitalt lågtröskelstöd för dig som behöver skriva av dig, reflektera och få struktur på tankar och mående.</p>
+					<p>Du kan börja anonymt, använda dagbok, chatta med ett AI-baserat stöd och hitta guider och övningar för vardaglig psykisk hälsa.</p>
+					<p>MittPsyke är inte vård, terapi eller akutstöd, men kan vara ett första steg när du behöver sortera det som känns svårt.</p>
+				</div>
 				<div class="hero-actions">
 					<a href="/dagbok" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('hero', 'borja_skriva_anonymt_nu', '/dagbok')}>Börja skriva anonymt nu</a>
 					<a href="/chat" class="hero-cta hero-cta-primary" onclick={() => trackStartAnonymous()}>Chatta anonymt</a>
@@ -239,6 +244,14 @@
 					</li>
 				{/each}
 			</ol>
+		</div>
+	</section>
+
+	<section class="organization-note" aria-labelledby="organization-note-title">
+		<div class="cards-narrow organization-note-inner">
+			<p class="organization-note-eyebrow">För organisationer</p>
+			<h2 id="organization-note-title">Ett tidigt digitalt stöd med tydliga gränser</h2>
+			<p>För organisationer kan MittPsyke fungera som ett tidigt, digitalt stöd i väntan på annan hjälp eller som ett komplement till befintliga insatser — alltid med tydliga gränser mot vård och behandling.</p>
 		</div>
 	</section>
 
@@ -494,6 +507,19 @@
 		color: var(--home-hero-text);
 	}
 
+	.hero-positioning {
+		margin: 1rem auto 0;
+		max-width: 58ch;
+	}
+
+	.hero-positioning p {
+		margin-top: 0.55rem;
+		max-width: 58ch;
+		font-size: clamp(0.95rem, 1.35vw, 1.02rem);
+		line-height: 1.6;
+		color: var(--home-hero-note);
+	}
+
 	.hero-cta {
 		display: inline-block;
 		padding: 0.62rem 1rem;
@@ -669,6 +695,46 @@
 		border-color: var(--home-card-border-blue);
 		box-shadow: 0 6px 18px var(--home-card-shadow);
 		transform: translateY(-1px);
+	}
+
+	.organization-note {
+		padding: clamp(2rem, 5vw, 3.1rem) 1.25rem;
+		background: var(--home-section-bg);
+		color: var(--home-text-soft);
+	}
+
+	.organization-note-inner {
+		padding: 1.2rem;
+		border: 1px solid var(--home-card-border);
+		border-radius: var(--radius-card);
+		background:
+			radial-gradient(circle at top left, var(--home-card-bg-accent-soft), transparent 42%),
+			linear-gradient(180deg, var(--home-card-bg-start), var(--home-card-bg-end));
+	}
+
+	.organization-note-eyebrow {
+		margin: 0 0 0.45rem;
+		font-family: var(--font-heading);
+		font-size: 0.82rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--home-text-blue-muted);
+	}
+
+	.organization-note-inner h2 {
+		margin: 0;
+		max-width: 62ch;
+		color: var(--home-text-strong);
+		font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+	}
+
+	.organization-note-inner p:not(.organization-note-eyebrow) {
+		margin: 0.65rem 0 0;
+		max-width: 74ch;
+		font-size: 0.96rem;
+		line-height: 1.65;
+		color: var(--home-text-muted-strong);
 	}
 
 	.quick-flow {
