@@ -96,9 +96,17 @@
 		{ id: 'g6', x: 388, y: 122, delay: '3.4s' }
 	];
 
+	const COMPANION_ACCENT_POINTS: GardenPoint[] = [
+		{ id: 'a1', x: 232, y: 132 },
+		{ id: 'a2', x: 306, y: 128, delay: '0.7s' },
+		{ id: 'a3', x: 226, y: 198, delay: '1.2s' },
+		{ id: 'a4', x: 322, y: 188, delay: '1.7s' }
+	];
+
 	$: continuitySignals = entryCount + activeDays;
 	$: continuityState = continuitySignals >= 16 ? 'settled' : continuitySignals >= 4 ? 'soft' : 'quiet';
 	$: careIntensity = Math.min(4, Math.max(growthLevel, Math.floor(growthScore / 24)));
+	$: companionLevel = getCompanionLevel(entryCount);
 	$: flowerCount = entryCount <= 0 ? 0 : Math.min(FLOWER_POINTS.length, 2 + Math.floor(entryCount / 4));
 	$: leafCount = Math.min(LEAF_POINTS.length, 3 + Math.max(growthLevel, Math.floor(activeDays / 2)));
 	$: sproutCount = entryCount <= 0 ? 1 : Math.min(SPROUT_POINTS.length, 2 + Math.floor(continuitySignals / 4));
@@ -108,6 +116,7 @@
 	$: leaves = LEAF_POINTS.slice(0, leafCount);
 	$: sprouts = SPROUT_POINTS.slice(0, sproutCount);
 	$: fireflies = FIREFLY_POINTS.slice(0, fireflyCount);
+	$: companionAccents = COMPANION_ACCENT_POINTS.slice(0, Math.max(0, companionLevel - 1));
 	$: selectedCompanion = selectedAnimalId
 		? selectedAnimal?.id === selectedAnimalId
 			? selectedAnimal
@@ -115,6 +124,7 @@
 		: null;
 	$: companionName = selectedCompanion?.name ?? 'Din följeslagare';
 	$: companionArtId = getCompanionArtId(selectedCompanion?.id);
+	$: companionLevelText = getCompanionLevelText(companionLevel);
 	$: careSignals = getCareSignals();
 	$: placeCopy =
 		entryCount === 0
@@ -242,6 +252,22 @@
 			return id;
 		}
 		return 'bear';
+	}
+
+	function getCompanionLevel(entryCountValue: number) {
+		if (entryCountValue >= 60) return 5;
+		if (entryCountValue >= 30) return 4;
+		if (entryCountValue >= 15) return 3;
+		if (entryCountValue >= 5) return 2;
+		return 1;
+	}
+
+	function getCompanionLevelText(level: number) {
+		if (level >= 5) return 'Följeslagaren känns tryggare i platsen och bär mer ljus.';
+		if (level === 4) return 'Följeslagaren har blivit mer stadig när du återvänder.';
+		if (level === 3) return 'Följeslagaren börjar ta mer plats, lugnt och diskret.';
+		if (level === 2) return 'Följeslagaren har börjat växa med din rytm.';
+		return 'Följeslagaren väntar stilla medan platsen tar form.';
 	}
 
 	function applyCompanion(animal: CompanionAnimal, message: string) {
@@ -378,12 +404,13 @@
 	aria-labelledby="growth-garden-title"
 	data-continuity={continuityState}
 	data-care-intensity={careIntensity}
+	data-companion-level={companionLevel}
 >
 	<div class="garden-copy">
 		<h2 id="growth-garden-title">Din växande plats</h2>
 		<p class="garden-intro">
-			En lugn trädgård där dina reflektioner får lämna spår. Din följeslagare finns kvar när du
-			kommer tillbaka.
+			Trädgården växer när du skriver. Din följeslagare finns kvar när du kommer tillbaka och
+			utvecklas varsamt när du fortsätter använda dagboken.
 		</p>
 	</div>
 
@@ -464,6 +491,16 @@
 			</g>
 
 			{#if companionStage === 'chosen' && selectedCompanion}
+				<g class="companion-aura" aria-hidden="true">
+					{#each companionAccents as accent}
+						<circle
+							style={`animation-delay: ${accent.delay ?? '0s'}`}
+							cx={accent.x}
+							cy={accent.y}
+							r={2.4 + companionLevel * 0.35}
+						/>
+					{/each}
+				</g>
 				<g class={`companion-figure companion-${companionArtId}`} aria-hidden="true">
 					<ellipse class="companion-shadow" cx="270" cy="224" rx="58" ry="10" />
 
@@ -546,6 +583,12 @@
 			<span>{continuityState === 'settled' ? 'Mer liv i platsen' : continuityState === 'soft' ? 'Varsam rytm' : 'Stilla början'}</span>
 			<strong>{companionName} håller platsen sällskap.</strong>
 			<p>{placeCopy}</p>
+			{#if companionStage === 'chosen'}
+				<p class="companion-level-text">
+					<span>Nivå {companionLevel}</span>
+					{companionLevelText}
+				</p>
+			{/if}
 		</div>
 
 		{#if companionStage === 'choose'}
@@ -757,9 +800,39 @@
 		--companion-body-dark: #93583b;
 		--companion-belly: #f0d9c3;
 		--companion-face: #d9905f;
+		--companion-scale: 1;
+		--companion-glow: 0px;
 		transform-box: fill-box;
 		transform-origin: center bottom;
+		filter: drop-shadow(0 0 var(--companion-glow) rgba(246, 234, 190, 0.34));
 		animation: companion-presence 420ms ease-out both;
+	}
+
+	.garden-card[data-companion-level='2'] .companion-figure {
+		--companion-scale: 1.025;
+		--companion-glow: 3px;
+	}
+
+	.garden-card[data-companion-level='3'] .companion-figure {
+		--companion-scale: 1.05;
+		--companion-glow: 5px;
+	}
+
+	.garden-card[data-companion-level='4'] .companion-figure {
+		--companion-scale: 1.075;
+		--companion-glow: 7px;
+	}
+
+	.garden-card[data-companion-level='5'] .companion-figure {
+		--companion-scale: 1.1;
+		--companion-glow: 9px;
+	}
+
+	.companion-aura circle {
+		fill: rgba(248, 235, 190, 0.64);
+		filter: drop-shadow(0 0 6px rgba(248, 235, 190, 0.44));
+		opacity: 0.44;
+		animation: companion-accent-drift 7s ease-in-out infinite;
 	}
 
 	.companion-breath {
@@ -1041,6 +1114,22 @@
 		line-height: 1.55;
 	}
 
+	.companion-summary .companion-level-text {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem 0.55rem;
+		align-items: baseline;
+		margin-top: 0.15rem;
+	}
+
+	.companion-summary .companion-level-text span {
+		color: color-mix(in srgb, var(--theme-accent, #436e8f) 74%, hsl(var(--foreground)) 26%);
+		font-size: 0.82rem;
+		font-weight: 700;
+		letter-spacing: 0;
+		text-transform: none;
+	}
+
 	.animal-chooser {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
@@ -1237,11 +1326,23 @@
 	@keyframes companion-presence {
 		from {
 			opacity: 0;
-			transform: translateY(8px);
+			transform: translateY(8px) scale(var(--companion-scale, 1));
 		}
 		to {
 			opacity: 1;
-			transform: translateY(0);
+			transform: translateY(0) scale(var(--companion-scale, 1));
+		}
+	}
+
+	@keyframes companion-accent-drift {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0);
+			opacity: 0.32;
+		}
+		48% {
+			transform: translate3d(0, -4px, 0);
+			opacity: 0.62;
 		}
 	}
 
@@ -1475,6 +1576,7 @@
 		.garden-leaves path,
 		.garden-flowers g,
 		.fireflies circle,
+		.companion-aura circle,
 		.companion-figure,
 		.companion-breath,
 		.companion-head,
