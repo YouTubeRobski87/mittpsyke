@@ -66,7 +66,14 @@
 	{@html `<script type="application/ld+json">${JSON.stringify(faqSchema)}<\/script>`}
 </svelte:head>
 
-<DiaryHero variant="diary-main" />
+<DiaryHero
+	variant="diary-main"
+	title="Dagbok för tankar, känslor och mönster"
+	lead="Skriv av dig, följ hur måendet skiftar och kom tillbaka när du vill förstå mer."
+	ctaLabel="Börja skriva"
+	secondaryHref="/framsteg"
+	secondaryLabel="Se framsteg"
+/>
 
 {#if showQuickEntry}
 	<GuestQuickEntry />
@@ -80,7 +87,8 @@
 	<main class="seo-diary-page">
 		<section class="content-grid">
 			<article class="body-card">
-				<h2>En dagbok som gör mer än att bara spara text</h2>
+				<p class="eyebrow">Vad dagboken är</p>
+				<h2>En privat plats där tankar får landa</h2>
 				<p>
 					När du skriver får du en plats där tankar, känslor och återkommande mönster kan landa.
 					Dagboken hjälper dig att stanna upp, sätta ord på det som känns och få AI-genererade
@@ -93,12 +101,14 @@
 			</article>
 
 			<article class="body-card accent-card">
+				<p class="eyebrow">Låg tröskel</p>
 				<h2>Börja litet, fortsätt i din takt</h2>
 				<p>
 					Du behöver inte skriva långt eller hitta rätt ord direkt. Några rader räcker. MittPsyke är
 					gjort för att kännas lugnt, tydligt och mänskligt även de dagar då det är svårt att samla
 					tankarna.
 				</p>
+				<a class="inline-cta" href="/dagbok?action=new">Börja skriva</a>
 			</article>
 		</section>
 
@@ -110,20 +120,20 @@
 
 			<div class="benefit-grid">
 				<article class="benefit-card">
-					<h3>AI-reflektioner</h3>
-					<p>Få en lugn sammanfattning som hjälper dig att förstå det du precis har skrivit.</p>
+					<h3>Skriv av dig</h3>
+					<p>Ge plats åt det som snurrar, utan krav på att formulera allt perfekt.</p>
 				</article>
 				<article class="benefit-card">
-					<h3>Stämningslogg</h3>
-					<p>Se hur dagar skiljer sig åt och få bättre grepp om hur du mår över tid.</p>
+					<h3>Följ ditt mående</h3>
+					<p>Lägg märke till hur dagar skiftar och vad som påverkar dig i vardagen.</p>
 				</article>
 				<article class="benefit-card">
-					<h3>Framsteg</h3>
-					<p>Upptäck små steg framåt, återkommande mönster och det som faktiskt hjälper.</p>
+					<h3>Se mönster över tid</h3>
+					<p>Upptäck återkommande teman, små framsteg och sådant som hjälper.</p>
 				</article>
 				<article class="benefit-card">
-					<h3>Låg tröskel</h3>
-					<p>Börja med några få ord och skriv i din egen takt, utan press att prestera.</p>
+					<h3>Privat och tryggt</h3>
+					<p>Dina inlägg är privata för dig och du väljer själv vad du vill skriva.</p>
 				</article>
 			</div>
 		</section>
@@ -145,7 +155,8 @@
 		</section>
 
 		<p class="support-note">
-			MittPsyke ersätter inte vård. Vid akut fara: 112. För vårdråd: 1177.
+			Dagboken är ett stöd för reflektion, inte vård eller behandling. Vid akut fara: 112.
+			För vårdråd: 1177.
 		</p>
 	</main>
 {/if}
@@ -168,7 +179,7 @@
 	.body-card,
 	.benefit-card,
 	.faq-item {
-		border-radius: 24px;
+		border-radius: 18px;
 		border: 1px solid hsl(var(--border));
 		background: hsl(var(--surface));
 		box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
@@ -185,6 +196,32 @@
 		margin: 0;
 		line-height: 1.7;
 		color: hsl(var(--foreground) / 0.84);
+	}
+
+	.inline-cta {
+		justify-self: start;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 2.55rem;
+		margin-top: 0.25rem;
+		padding: 0.62rem 1rem;
+		border-radius: var(--radius-pill);
+		background: var(--theme-accent, var(--primary));
+		color: #fff;
+		font-family: var(--font-heading);
+		font-size: 0.92rem;
+		font-weight: 650;
+		text-decoration: none;
+		box-shadow: 0 10px 20px rgba(15, 118, 110, 0.14);
+		transition:
+			transform 150ms ease,
+			box-shadow 150ms ease;
+	}
+
+	.inline-cta:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 14px 24px rgba(15, 118, 110, 0.18);
 	}
 
 	.content-grid,
@@ -233,8 +270,26 @@
 		font-size: 1rem;
 	}
 
+	.benefit-card {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.benefit-card::before {
+		content: '';
+		width: 1.8rem;
+		height: 0.18rem;
+		border-radius: var(--radius-pill);
+		background: var(--theme-accent, var(--primary));
+		opacity: 0.65;
+	}
+
 	.support-note {
 		margin: 0.5rem 0 0;
+		padding: 0.9rem 1rem;
+		border-radius: var(--radius-input);
+		background: hsl(var(--surface-soft));
+		border: 1px solid hsl(var(--border));
 		font-size: 0.85rem;
 		color: hsl(var(--muted-foreground));
 	}
