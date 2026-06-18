@@ -926,6 +926,10 @@
 			Om MittPsyke
 		</a>
 		<span class="mx-2">&middot;</span>
+		<a href="/om-skaparen" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
+			Om skaparen
+		</a>
+		<span class="mx-2">&middot;</span>
 		<button onclick={() => cookieBannerOpen.set(true)} class="text-sm opacity-70 hover:opacity-100 transition-opacity">Cookieinställningar</button>
 			<div class="footer-features mt-2 text-xs opacity-70" aria-label="Funktioner">
 				<span class="font-medium">Funktioner:</span>

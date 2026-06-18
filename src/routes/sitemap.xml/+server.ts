@@ -14,6 +14,7 @@ const BLOG_LASTMOD = '2026-03-29';
 const LEGAL_LASTMOD = '2026-03-22';
 const FEEDBACK_LASTMOD = '2026-04-13';
 const PREMIUM_LASTMOD = '2026-06-10';
+const CREATOR_LASTMOD = '2026-06-18';
 
 type SitemapEntry = {
 	path: string;
@@ -157,6 +158,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		{ path: '/ovningar', lastmod: TOOL_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{ path: '/blogg', lastmod: BLOG_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{ path: '/om-mittpsyke', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.5' },
+		{ path: '/om-skaparen', lastmod: CREATOR_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/premium', lastmod: PREMIUM_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/feedback', lastmod: FEEDBACK_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/ansvar', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
