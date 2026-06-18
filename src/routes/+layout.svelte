@@ -53,7 +53,8 @@
 		{ href: '/blogg', label: 'Artiklar' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/anonyma-berattelser', label: 'Berättelser' },
-		{ href: '/om-mittpsyke', label: 'Om MittPsyke' }
+		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
+		{ href: '/om-skaparen', label: 'Om skaparen' }
 	];
 
 	const guideNavItems: NavItem[] = [
@@ -70,7 +71,8 @@
 		{ href: '/chat', label: 'Chatta' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/anonyma-berattelser', label: 'Berättelser' },
-		{ href: '/om-mittpsyke', label: 'Om MittPsyke' }
+		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
+		{ href: '/om-skaparen', label: 'Om skaparen' }
 	];
 
 	const mobileSupplementalNavItems: NavItem[] = [
