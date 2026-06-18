@@ -38,7 +38,12 @@ const legacyBlogRedirects: Record<string, string> = {
 }
 
 const legacyPageRedirects: Record<string, string> = {
-	'/anonymt-samtalsstod-online': '/anonymt-samtalstod-online'
+	'/anonymt-samtalsstod-online': '/anonymt-samtalstod-online',
+	'/guider-seo/nedstamdhet': '/guider/depression',
+	'/samtalsstod-vid-trauma': '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma',
+	'/ai': '/skriv',
+	'/b': '/chat/b',
+	'/e': '/chat/e'
 }
 
 const legacyPathRedirects: Handle = async ({ event, resolve }) => {
