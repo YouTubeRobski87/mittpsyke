@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { browser, dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { containsCrisisSignal } from '$lib/ai/safety';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
@@ -221,6 +221,57 @@
 		window.localStorage.setItem(storageKey, JSON.stringify(nextMessages));
 	}
 
+	function logChatCleanupError(context: string, error: unknown) {
+		if (dev) {
+			console.error(`[chat] cleanup failed (${context}):`, error);
+		}
+	}
+
+	async function getActiveChatHistoryUserId(expectedUserId: string | null, context: string) {
+		if (!expectedUserId) return null;
+
+		try {
+			const {
+				data: { session },
+				error
+			} = await supabase.auth.getSession();
+
+			if (error) {
+				logChatCleanupError(context, error);
+				return null;
+			}
+
+			const sessionUserId = session?.user?.id?.trim();
+			if (!session?.access_token || !sessionUserId || sessionUserId !== expectedUserId) {
+				return null;
+			}
+
+			return sessionUserId;
+		} catch (error) {
+			logChatCleanupError(context, error);
+			return null;
+		}
+	}
+
+	async function deletePersistedChatHistory(userId: string | null, context: string) {
+		const activeUserId = await getActiveChatHistoryUserId(userId, context);
+		if (!activeUserId) return;
+
+		try {
+			const { error } = await supabase
+				.from('chat_history')
+				.delete()
+				.eq('user_id', activeUserId)
+				.eq('topic', chatTopic);
+
+			if (error) {
+				logChatCleanupError(context, error);
+			}
+		} catch (error) {
+			logChatCleanupError(context, error);
+		}
+	}
+
 	async function loadPersistedHistory(userId: string | null) {
 		const localMessages = readLocalHistory(userId);
 		if (!userId) {
@@ -272,13 +323,7 @@
 
 		try {
 			if (normalized.length === 0) {
-				const { error } = await supabase
-					.from('chat_history')
-					.delete()
-					.eq('user_id', userId)
-					.eq('topic', chatTopic);
-
-				if (error) throw error;
+				await deletePersistedChatHistory(userId, 'persist-empty-history');
 				return;
 			}
 
@@ -311,17 +356,7 @@
 		writeLocalHistory([], null);
 		if (persistenceUserId) {
 			writeLocalHistory([], persistenceUserId);
-			try {
-				const { error } = await supabase
-					.from('chat_history')
-					.delete()
-					.eq('user_id', persistenceUserId)
-					.eq('topic', chatTopic);
-
-				if (error) throw error;
-			} catch (error) {
-				console.error('Could not clear Supabase chat history:', error);
-			}
+			await deletePersistedChatHistory(persistenceUserId, 'clear-history');
 		}
 
 		await goto(`/chat/${category}`, {
