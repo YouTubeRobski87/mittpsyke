@@ -1325,6 +1325,8 @@
 		<div class="auth-shell">
 			<div class="diary-layout">
 				<div class="diary-main">
+					<DiaryMoodTimeline entries={entries} />
+
 					<section class="auth-panel diary-paths">
 						<h2 class="text-base font-semibold">Välj hur du vill börja</h2>
 						<p class="mt-2 text-sm auth-muted">
@@ -1574,8 +1576,6 @@
 							<p class="text-sm">{loadError}</p>
 						</section>
 					{/if}
-
-					<DiaryMoodTimeline entries={entries} />
 
 					{#if entries.length === 0}
 						<section class="auth-panel">
