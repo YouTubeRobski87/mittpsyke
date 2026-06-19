@@ -122,7 +122,7 @@
 
 	<section>
 		<h2>Frågor?</h2>
-		<p>Har du funderingar kring hur vi hanterar data? Kontakta oss på <a href="mailto:johanna@mystorify.se">johanna@mystorify.se</a>.</p>
+		<p>Har du funderingar kring hur vi hanterar data? Kontakta oss på <a href="mailto:support@mittpsyke.se">support@mittpsyke.se</a>.</p>
 	</section>
 
 	<LegalFooter />

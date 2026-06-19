@@ -2,7 +2,7 @@
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 
-	const creatorEmail = 'rbsthh@gmail.com';
+	const creatorEmail = 'support@mittpsyke.se';
 	const creatorMailto = `mailto:${creatorEmail}`;
 	const githubUrl = 'https://github.com/YouTubeRobski87';
 

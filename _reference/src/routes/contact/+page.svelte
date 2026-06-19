@@ -87,7 +87,7 @@
 	function handleEmailClick(e: MouseEvent) {
 		e.preventDefault();
 		if (confirm('Vill du öppna din e-postklient?')) {
-			window.location.href = 'mailto:johanna@mystorify.se';
+			window.location.href = 'mailto:support@mittpsyke.se';
 		}
 	}
 </script>
@@ -208,7 +208,7 @@
 			</li>
 			<li>
 				<strong>E-post:</strong>
-				<a href="mailto:johanna@mystorify.se" onclick={handleEmailClick}>johanna@mystorify.se</a>
+				<a href="mailto:support@mittpsyke.se" onclick={handleEmailClick}>support@mittpsyke.se</a>
 			</li>
 			<li>
 				<strong>Telefon:</strong>
