@@ -75,6 +75,10 @@
 		'Tankarna snurrar och jag får ingen ro',
 		'Jag vet inte varför jag mår dåligt'
 	];
+	const followUpSuggestions = [
+		'Hjälp mig förstå det här lite bättre',
+		'Vad kan vara ett litet nästa steg?'
+	];
 	let showMoreSuggestions = $state(false);
 
 	const elevatedSupportKeywords = [
@@ -144,6 +148,12 @@
 	let inputLength = $derived(input.length);
 	let showStarterSuggestions = $derived(
 		hasSensitiveDataConsent && messages.length === 0 && input.trim().length === 0
+	);
+	let showFollowUpSuggestions = $derived(
+		hasSensitiveDataConsent &&
+		!sending &&
+		input.trim().length === 0 &&
+		messages[messages.length - 1]?.role === 'assistant'
 	);
 
 	function latestUserMessageContent() {
@@ -600,6 +610,12 @@
 		input = input.trim() ? `${input.trim()} ${normalized}` : normalized;
 	}
 
+	function useFollowUpSuggestion(text: string) {
+		chatError = '';
+		input = text;
+		void trackEvent('starter_chip_clicked', { source: 'follow_up' });
+	}
+
 	async function saveAsJournalNote(content: string, index: number) {
 		savePromptHidden[index] = true;
 
@@ -819,6 +835,19 @@
 							Visa fler...
 						</button>
 					{/if}
+				</div>
+			</div>
+		{/if}
+
+		{#if showFollowUpSuggestions}
+			<div class="follow-up-block mb-4">
+				<p class="text-xs opacity-55 mb-2">Vill du följa upp något?</p>
+				<div class="starter-chips">
+					{#each followUpSuggestions as suggestion}
+						<button type="button" class="starter-chip" onclick={() => useFollowUpSuggestion(suggestion)}>
+							{suggestion}
+						</button>
+					{/each}
 				</div>
 			</div>
 		{/if}

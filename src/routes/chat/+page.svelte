@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import HealthConsent from '$lib/components/HealthConsent.svelte';
+	import RecentConversations from '$lib/components/RecentConversations.svelte';
 
 	const STORAGE_KEY = 'mittpsyke.healthConsent';
 	const VERSION = '2026-04-29';
@@ -79,6 +80,8 @@
 				<p>För svåra upplevelser, behov av trygghet och att ta det i egen takt.</p>
 			</a>
 		</section>
+
+		<RecentConversations />
 
 		<section class="section">
 			<h2>Vad kan du få hjälp med?</h2>
