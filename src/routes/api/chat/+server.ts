@@ -3,6 +3,13 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { CHAT_CONTEXT_LIMIT, getChatContextMessages } from '$lib/state/chat-memory';
+import {
+	formatMemoriesForPrompt,
+	loadUserMemories,
+	refreshUserMemories,
+	shouldRefreshUserMemories,
+	type MemoryHistoryMessage
+} from '$lib/server/user-memory';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 import type { RequestHandler } from './$types';
@@ -670,9 +677,16 @@ export const POST: RequestHandler = async ({ request }) => {
 						}))
 					: promptHistory;
 
+			// Hämta relevanta minnen och väv in dem i systemprompten för kontinuitet.
+			const memories = await loadUserMemories(authClient, user.id);
+			const memoryBlock = formatMemoriesForPrompt(memories);
+
 			const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
+			const systemPromptWithMemory = memoryBlock
+				? `${systemPrompt}\n\n${memoryBlock}`
+				: systemPrompt;
 			const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-				{ role: 'system', content: systemPrompt },
+				{ role: 'system', content: systemPromptWithMemory },
 				...modelContext,
 				{ role: 'user', content: message }
 			];
@@ -712,6 +726,28 @@ export const POST: RequestHandler = async ({ request }) => {
 					return errorResponse('Not allowed to save message.', 403);
 				}
 				return errorResponse('Could not save message.', 500);
+			}
+
+			// Uppdatera användarminnet i bakgrunden (best effort, blockerar inte svaret).
+			const priorRows = (previousMessages ?? []) as Array<{ role: string; content: string }>;
+			const memoryHistory: MemoryHistoryMessage[] = [
+				...priorRows
+					.filter((row) => row.role === 'user' || row.role === 'assistant')
+					.map((row) => ({ role: row.role as 'user' | 'assistant', content: row.content })),
+				{ role: 'user', content: message },
+				{ role: 'assistant', content: reply }
+			];
+			const memoryTurns = memoryHistory.filter((item) => item.role === 'user').length;
+			if (shouldRefreshUserMemories(memoryTurns)) {
+				void refreshUserMemories({
+					openai,
+					client: authClient,
+					userId: user.id,
+					history: memoryHistory,
+					model: CHAT_MODEL
+				}).catch((err) =>
+					console.error('[chat] bakgrundsuppdatering av minne misslyckades', err)
+				);
 			}
 
 			return json({
