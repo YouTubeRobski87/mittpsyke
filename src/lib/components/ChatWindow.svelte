@@ -62,6 +62,7 @@
 	let persistenceReady = $state(false);
 	let persistenceUserId = $state<string | null>(null);
 	let clearingHistory = $state(false);
+	let voiceBusy = $state(false);
 	let chatLog: HTMLDivElement;
 
 	const MAX_MESSAGE_LENGTH = 2000;
@@ -74,10 +75,6 @@
 	const extraSuggestions = [
 		'Tankarna snurrar och jag får ingen ro',
 		'Jag vet inte varför jag mår dåligt'
-	];
-	const followUpSuggestions = [
-		'Hjälp mig förstå det här lite bättre',
-		'Vad kan vara ett litet nästa steg?'
 	];
 	let showMoreSuggestions = $state(false);
 
@@ -177,6 +174,17 @@
 	}
 
 	let currentSupportLevel = $derived(supportLevel());
+	let followUpSuggestions = $derived(
+		currentSupportLevel === 'acute' || currentSupportLevel === 'elevated'
+			? ['Jag vill stanna kvar i det här en stund', 'Hjälp mig hitta ett tryggt nästa steg']
+			: category === 'a'
+				? ['Kan vi ta en sak i taget?', 'Hjälp mig lugna tankarna lite']
+				: category === 'b'
+					? ['Hjälp mig sätta ord på det här', 'Kan vi börja med något väldigt litet?']
+					: category === 'e'
+						? ['Kan vi ta det långsamt?', 'Hjälp mig hitta något som känns tryggt nu']
+						: ['Jag vill stanna kvar i det här en stund', 'Vad kan vara ett litet nästa steg?']
+	);
 	const tempEntryStorageKey = 'mittpsyke_temp_entry';
 
 	function scrollToBottom() {
@@ -610,6 +618,12 @@
 		input = input.trim() ? `${input.trim()} ${normalized}` : normalized;
 	}
 
+	function clearDraft() {
+		input = '';
+		chatError = '';
+		firstMessageSource = 'manual';
+	}
+
 	function useFollowUpSuggestion(text: string) {
 		chatError = '';
 		input = text;
@@ -859,7 +873,13 @@
 				</div>
 			{/if}
 
-			<VoiceInput disabled={sending} onTranscript={useVoiceTranscript} />
+			<VoiceInput
+				disabled={sending}
+				hasDraft={input.trim().length > 0}
+				onTranscript={useVoiceTranscript}
+				onClear={clearDraft}
+				onBusyChange={(busy) => (voiceBusy = busy)}
+			/>
 
 			<div class="flex gap-2">
 				<label class="sr-only" for="chat-message">Skriv ditt meddelande</label>
@@ -883,7 +903,7 @@
 				<button
 					type="button"
 					onclick={send}
-					disabled={sending || !input.trim()}
+					disabled={sending || voiceBusy || !input.trim()}
 					class="px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white text-sm font-medium
 						disabled:opacity-40 transition-opacity"
 				>

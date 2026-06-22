@@ -23,12 +23,17 @@
 	function formatDate(value: string) {
 		const date = new Date(value);
 		if (Number.isNaN(date.getTime())) return '';
+		const now = new Date();
+		const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+		const startOfDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+		const dayDifference = Math.round((startOfToday - startOfDate) / 86_400_000);
+
+		if (dayDifference === 0) return 'Idag';
+		if (dayDifference === 1) return 'Igår';
 
 		return new Intl.DateTimeFormat('sv-SE', {
 			day: 'numeric',
-			month: 'short',
-			hour: '2-digit',
-			minute: '2-digit'
+			month: 'short'
 		}).format(date);
 	}
 
@@ -81,8 +86,9 @@
 	<section class="recent-conversations" aria-labelledby="recent-conversations-title">
 		<div class="section-heading">
 			<div>
-				<h2 id="recent-conversations-title">Senaste samtal</h2>
-				<p>Fortsätt där du slutade, när det känns rätt.</p>
+				<p class="eyebrow">En lugn väg tillbaka</p>
+				<h2 id="recent-conversations-title">Fortsätt i din takt</h2>
+				<p>Dina senaste samtal finns kvar när du vill återvända. Du behöver inte börja om.</p>
 			</div>
 		</div>
 
@@ -91,7 +97,7 @@
 		{:else if errorMessage}
 			<p class="state-message" role="status">{errorMessage}</p>
 		{:else if conversations.length === 0}
-			<p class="state-message">När du har startat ett samtal visas det här.</p>
+			<p class="state-message">När du har startat ett samtal kan du varsamt hitta tillbaka hit.</p>
 		{:else}
 			<ul>
 				{#each conversations as conversation}
@@ -106,7 +112,7 @@
 									{/if}
 								</span>
 							</span>
-							<span class="continue-label">Fortsätt</span>
+							<span class="continue-label">Fortsätt samtalet <span aria-hidden="true">→</span></span>
 						</a>
 					</li>
 				{/each}
@@ -134,6 +140,15 @@
 		font-family: var(--font-heading);
 		font-size: 1.15rem;
 		letter-spacing: -0.02em;
+	}
+
+	.section-heading .eyebrow {
+		margin: 0 0 0.22rem;
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		opacity: 0.56;
+		text-transform: uppercase;
 	}
 
 	.section-heading p,
