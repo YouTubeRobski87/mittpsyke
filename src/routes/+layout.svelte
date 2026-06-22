@@ -1470,6 +1470,10 @@
 			margin-top: 0.75rem !important;
 		}
 
+		.mobile-quick-nav {
+			display: inline-flex;
+		}
+
 		:global(.site-disclaimer) {
 			margin-top: 1.5rem !important;
 		}
@@ -1550,6 +1554,22 @@
 		}
 	}
 
+	@media (max-width: 640px) {
+		/* Dölj snabbnavlänkarna — hamburgermenyn räcker på smal skärm */
+		.mobile-quick-nav {
+			display: none;
+		}
+
+		.site-header-inner {
+			padding: 0.4rem 0.65rem;
+			gap: 0.4rem;
+		}
+
+		.brand-wordmark {
+			font-size: 1.18rem;
+		}
+	}
+
 	@media (max-width: 370px) {
 		.site-header-inner {
 			padding-inline: 0.55rem;
@@ -1557,19 +1577,7 @@
 		}
 
 		.brand-wordmark {
-			font-size: 1.08rem;
-		}
-
-		.mobile-quick-nav {
-			gap: 0.05rem;
-		}
-
-		.mobile-quick-link {
-			padding-inline: 0.34rem;
-		}
-
-		.mobile-quick-link-articles {
-			font-size: 0.68rem;
+			font-size: 1.05rem;
 		}
 	}
 

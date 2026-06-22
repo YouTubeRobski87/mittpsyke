@@ -146,6 +146,8 @@
 		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 		gap: 0.85rem;
 		max-width: 720px;
+		width: 100%;
+		min-width: 0;
 	}
 
 	.choice-card {
@@ -183,5 +185,46 @@
 
 	:global(.dark) .choice-card:hover {
 		background: #1c2230;
+	}
+
+	@media (max-width: 640px) {
+		.page {
+			padding: 1rem 0.9rem 2rem;
+		}
+
+		.page-container {
+			gap: 0.9rem;
+			width: 100%;
+			min-width: 0;
+		}
+
+		h1 {
+			font-size: 1.45rem;
+			line-height: 1.12;
+		}
+
+		p {
+			font-size: 0.95rem;
+		}
+
+		.hero,
+		.section {
+			max-width: 100%;
+			min-width: 0;
+		}
+
+		.choices {
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
+		}
+
+		.choice-card {
+			padding: 0.75rem 0.9rem;
+		}
+
+		.choice-card p {
+			font-size: 0.9rem;
+			margin-top: 0.3rem;
+		}
 	}
 </style>
