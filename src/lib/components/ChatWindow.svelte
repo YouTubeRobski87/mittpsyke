@@ -798,8 +798,7 @@
 		void persistUserConsent(consent);
 	}
 
-	// saveAsJournalNote undviker TypeScript-varning om oanvänd variabel
-	void saveAsJournalNote;
+
 </script>
 
 <div class="chat-container flex flex-col h-[calc(100vh-200px)] max-w-2xl mx-auto">
