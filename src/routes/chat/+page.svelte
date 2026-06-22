@@ -187,24 +187,25 @@
 		background: #1c2230;
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 768px) {
 		.page {
-			padding: 1rem 0.9rem 2rem;
+			padding: 0.65rem 0.75rem 1.25rem;
 		}
 
 		.page-container {
-			gap: 0.9rem;
+			gap: 0.65rem;
 			width: 100%;
 			min-width: 0;
 		}
 
 		h1 {
-			font-size: 1.45rem;
+			font-size: 1.35rem;
 			line-height: 1.12;
 		}
 
-		p {
-			font-size: 0.95rem;
+		.hero p,
+		.section {
+			display: none;
 		}
 
 		.hero,
@@ -214,17 +215,25 @@
 		}
 
 		.choices {
-			grid-template-columns: 1fr;
-			gap: 0.5rem;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.4rem;
 		}
 
 		.choice-card {
-			padding: 0.75rem 0.9rem;
+			display: grid;
+			place-items: center;
+			min-height: 3.25rem;
+			padding: 0.55rem 0.35rem;
+			text-align: center;
 		}
 
 		.choice-card p {
-			font-size: 0.9rem;
-			margin-top: 0.3rem;
+			display: none;
+		}
+
+		.choice-card h2 {
+			font-size: 0.8rem;
+			line-height: 1.2;
 		}
 	}
 </style>

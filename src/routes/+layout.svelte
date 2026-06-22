@@ -602,7 +602,10 @@
 	</main>
 {:else}
 	<a href="#main-content" class="skip-link">Hoppa till innehåll</a>
-	<header class="site-header sticky top-0 z-30 bg-[hsl(var(--background)/0.94)] supports-[backdrop-filter]:backdrop-blur">
+	<header
+		class="site-header sticky top-0 z-30 bg-[hsl(var(--background)/0.94)] supports-[backdrop-filter]:backdrop-blur"
+		class:chat-header={isChat}
+	>
 		<div class="site-header-inner flex items-center justify-between gap-2 px-5 py-3.5 md:gap-3">
 			<div class="flex min-w-0 flex-1 items-center gap-2 md:gap-4 lg:flex-none">
 				<a
@@ -854,7 +857,7 @@
 	</header>
 
 	<div class:is-chat-page={isChat}>
-		<main id="main-content" class="mt-6">
+		<main id="main-content" class="mt-6" class:chat-main={isChat}>
 			{@render children()}
 		</main>
 
@@ -1149,6 +1152,19 @@
 	}
 
 	@media (max-width: 767px) {
+		.chat-main {
+			margin-top: 0 !important;
+		}
+
+		.chat-header .site-header-inner {
+			height: 3.5rem;
+			padding-block: 0.3rem;
+		}
+
+		.chat-header .brand-link {
+			min-height: 2rem;
+		}
+
 		:global(.site-header button[aria-label="Växla tema"]) {
 			min-width: 2rem;
 			min-height: 2rem;
@@ -1468,6 +1484,10 @@
 
 		:global(#main-content) {
 			margin-top: 0.75rem !important;
+		}
+
+		:global(#main-content.chat-main) {
+			margin-top: 0 !important;
 		}
 
 		.mobile-quick-nav {
