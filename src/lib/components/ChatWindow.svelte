@@ -801,10 +801,10 @@
 
 </script>
 
-<div class="chat-container flex flex-col h-[calc(100vh-200px)] max-w-2xl mx-auto">
-	<div class="chat-toolbar px-4 pb-2">
+<div class="chat-container flex flex-col h-[calc(100vh-175px)] max-w-2xl mx-auto">
+	<div class="chat-toolbar px-4 pb-1">
 		{#if historyNoticeVisible && messages.length > 0}
-			<p class="history-notice">{HISTORY_NOTICE}</p>
+			<span class="history-notice">{HISTORY_NOTICE}</span>
 		{/if}
 
 		<button
@@ -820,12 +820,12 @@
 
 	<div
 		bind:this={chatLog}
-		class="chat-messages flex-1 overflow-y-auto p-4 space-y-3"
+		class="chat-messages flex-1 overflow-y-auto px-4 pt-2 pb-3 space-y-2"
 		aria-live="polite"
 		aria-busy={sending}
 	>
 		{#if messages.length === 0}
-			<div class="text-center mt-4">
+			<div class="text-center mt-2">
 				<p class="text-sm opacity-60">Skriv något så börjar vi prata. Allt sker utan dömande.</p>
 			</div>
 		{/if}
@@ -917,7 +917,7 @@
 		</div>
 	{/if}
 
-	<div class="chat-input-area border-t border-black/8 dark:border-white/10 p-3">
+	<div class="chat-input-area border-t border-black/8 dark:border-white/10 px-3 pt-2 pb-3">
 		{#if !hasSensitiveDataConsent}
 			<div class="mb-3">
 				<ConsentGate onAccept={acceptSensitiveConsent} />
@@ -980,7 +980,7 @@
 
 		<!-- Snabbförslag: starter-chips eller uppföljningschips, inga rubriker -->
 		{#if showStarterSuggestions}
-			<div class="chips-row mb-2">
+			<div class="chips-row mb-1">
 				{#each starterSuggestions as suggestion}
 					<button
 						type="button"
@@ -993,7 +993,7 @@
 				{/each}
 			</div>
 		{:else if showFollowUpSuggestions}
-			<div class="chips-row mb-2">
+			<div class="chips-row mb-1">
 				{#each followUpSuggestions as suggestion}
 					<button
 						type="button"
@@ -1123,15 +1123,14 @@
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		gap: 0.5rem;
-		padding-top: 0.35rem;
+		gap: 0.4rem;
+		padding-top: 0.18rem;
 	}
 
 	.history-notice {
-		margin: 0;
-		font-size: 0.78rem;
-		line-height: 1.4;
-		color: rgba(15, 23, 42, 0.68);
+		font-size: 0.7rem;
+		line-height: 1.3;
+		color: rgba(15, 23, 42, 0.52);
 	}
 
 	.clear-history-button {
@@ -1229,7 +1228,7 @@
 
 	/* Diskret stödlänk (standardnivå) */
 	.human-support-link {
-		margin: 0 0 0.55rem;
+		margin: 0 0 0.3rem;
 	}
 
 	.human-support-button {
@@ -1277,7 +1276,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-top: 0.45rem;
+		margin-top: 0.25rem;
 	}
 
 	.char-count {
@@ -1468,7 +1467,7 @@
 		}
 
 		.chat-toolbar {
-			padding: 0.3rem 0.75rem 0.35rem;
+			padding: 0.15rem 0.75rem 0.25rem;
 			gap: 0.4rem;
 		}
 
@@ -1482,7 +1481,7 @@
 		}
 
 		.chat-input-area {
-			padding: 0.55rem 0.75rem calc(0.55rem + env(safe-area-inset-bottom));
+			padding: 0.4rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom));
 		}
 
 		.support-panel {

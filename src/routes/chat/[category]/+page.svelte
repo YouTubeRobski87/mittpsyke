@@ -151,7 +151,7 @@
 {:else}
 	<div class="container py-2 sm:py-4" data-page="chat">
 		{#if portal}
-			<div class="portal-header text-center mb-2">
+			<div class="portal-header text-center mb-1">
 				<span class="text-xl">{portal.icon}</span>
 				<h1 class="text-base sm:text-lg font-semibold mt-0.5">{portal.title}</h1>
 				<p class="text-xs opacity-60 hidden sm:block">{portal.description}</p>
