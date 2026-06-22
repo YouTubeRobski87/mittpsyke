@@ -38,12 +38,14 @@
 	let {
 		disabled = false,
 		hasDraft = false,
+		showPrivacyNote = true,
 		onTranscript,
 		onClear,
 		onBusyChange = () => undefined
 	}: {
 		disabled?: boolean;
 		hasDraft?: boolean;
+		showPrivacyNote?: boolean;
 		onTranscript: (transcript: string) => void;
 		onClear: () => void;
 		onBusyChange?: (busy: boolean) => void;
@@ -278,16 +280,18 @@
 	</div>
 </div>
 
-<p id="voice-input-privacy" class="privacy-note">
-	Du väljer själv vad du skickar. Texten sparas bara när du skickar.
-</p>
+{#if showPrivacyNote}
+	<p id="voice-input-privacy" class="privacy-note">
+		Du väljer själv vad du skickar. Texten sparas bara när du skickar.
+	</p>
+{/if}
 
 <style>
 	.voice-card {
 		display: grid;
-		gap: 0.62rem;
-		margin-bottom: 0.55rem;
-		padding: 0.72rem;
+		gap: 0.5rem;
+		margin-bottom: 0.4rem;
+		padding: 0.6rem 0.72rem;
 		border: 1px solid rgba(15, 118, 110, 0.16);
 		border-radius: 14px;
 		background: rgba(15, 118, 110, 0.035);
@@ -468,21 +472,21 @@
 
 	@media (max-width: 768px) {
 		.voice-card {
-			gap: 0.55rem;
-			padding: 0.66rem;
+			gap: 0.45rem;
+			padding: 0.55rem 0.62rem;
 		}
 
 		.voice-controls {
-			align-items: stretch;
+			align-items: center;
 		}
 
 		.microphone-button,
 		.clear-button {
-			min-height: 2.75rem;
+			min-height: 2.4rem;
 		}
 
 		.microphone-button {
-			flex: 1 1 auto;
+			flex: 0 0 auto;
 		}
 
 		.clear-button {

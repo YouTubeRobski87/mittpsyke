@@ -71,6 +71,8 @@
 	let swedishVoice: SpeechSynthesisVoice | null = null;
 	let activeUtterance: SpeechSynthesisUtterance | null = null;
 	let chatLog: HTMLDivElement;
+	let showHumanSupport = $state(false);
+	let showSettings = $state(false);
 
 	const MAX_MESSAGE_LENGTH = 2000;
 	const LONG_MESSAGE_ERROR =
@@ -79,12 +81,7 @@
 	const HISTORY_NOTICE = 'Tidigare samtal är laddat.';
 	const guestIdStorageKey = 'mittpsyke:guest-id';
 	const autoReadStorageKey = 'mittpsyke:chat-auto-read-replies';
-	const starterSuggestions = ['Jag känner mig orolig', 'Hjälp mig sortera mina tankar'];
-	const extraSuggestions = [
-		'Tankarna snurrar och jag får ingen ro',
-		'Jag vet inte varför jag mår dåligt'
-	];
-	let showMoreSuggestions = $state(false);
+	const starterSuggestions = ['En sak i taget', 'Lugna tankarna', 'Skriv av dig'];
 
 	const elevatedSupportKeywords = [
 		'för mycket',
@@ -505,7 +502,6 @@
 			chatError = '';
 			savePromptHidden = {};
 			historyNoticeVisible = false;
-			showMoreSuggestions = false;
 
 			const seededMessages = sanitizeChatMessages(initialMessages);
 			const {
@@ -801,21 +797,13 @@
 		hasSensitiveDataConsent = true;
 		void persistUserConsent(consent);
 	}
+
+	// saveAsJournalNote undviker TypeScript-varning om oanvänd variabel
+	void saveAsJournalNote;
 </script>
 
 <div class="chat-container flex flex-col h-[calc(100vh-200px)] max-w-2xl mx-auto">
-	<div class="chat-support-link px-4 pb-2 text-right">
-		<a
-			href="https://stodlinjer.se"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="text-xs underline opacity-70 hover:opacity-100 transition-opacity"
-		>
-			Behöver du mänsklig kontakt? Se stödlinjer
-		</a>
-	</div>
-
-	<div class="chat-toolbar px-4 pb-3">
+	<div class="chat-toolbar px-4 pb-2">
 		{#if historyNoticeVisible && messages.length > 0}
 			<p class="history-notice">{HISTORY_NOTICE}</p>
 		{/if}
@@ -889,20 +877,6 @@
 						</button>
 					</div>
 				{/if}
-
-				{#if msg.role === 'assistant' && !savePromptHidden[i]}
-					<div class="text-xs opacity-55 px-1 text-left">
-						Vill du spara detta som anteckning?
-						<button
-							type="button"
-							class="journal-save-button ml-1 underline hover:opacity-100 transition-opacity"
-							onclick={() => saveAsJournalNote(msg.content, i)}
-							aria-label="Spara AI-svaret som anteckning"
-						>
-							Ja
-						</button>
-					</div>
-				{/if}
 			</div>
 		{/each}
 
@@ -944,33 +918,14 @@
 		</div>
 	{/if}
 
-	<div class="chat-input-area border-t border-black/8 dark:border-white/10 p-4">
+	<div class="chat-input-area border-t border-black/8 dark:border-white/10 p-3">
 		{#if !hasSensitiveDataConsent}
 			<div class="mb-3">
 				<ConsentGate onAccept={acceptSensitiveConsent} />
 			</div>
 		{/if}
 
-		<div class="speech-setting" class:unsupported={!speechSupported}>
-			<label>
-				<input
-					type="checkbox"
-					checked={autoReadReplies}
-					disabled={!speechSupported}
-					onchange={(event) =>
-						setAutoReadReplies((event.currentTarget as HTMLInputElement).checked)}
-				/>
-				<span>Läs upp AI-svar automatiskt</span>
-			</label>
-			{#if !speechSupported}
-				<p role="status">Uppläsning stöds inte i den här webbläsaren. AI-svaret visas alltid i text.</p>
-			{:else if autoReadReplies}
-				<p>Nya AI-svar läses upp tills du stänger av. Svaret visas alltid i text.</p>
-			{:else}
-				<p>Av som standard. Du kan också välja Lyssna vid ett enskilt svar.</p>
-			{/if}
-		</div>
-
+		<!-- Stödpaneler: akut och förhöjd visas alltid; standardnivå är diskret tills användaren klickar -->
 		{#if currentSupportLevel === 'acute'}
 			<div class="support-panel support-panel-acute mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
 				<p class="font-medium text-rose-900 dark:text-rose-100">
@@ -996,79 +951,66 @@
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip">Prata med någon</a>
 				</div>
 			</div>
-		{:else}
-			<div class="support-panel support-panel-standard mb-3 rounded-[var(--radius-card)] border border-black/10 dark:border-white/12 bg-black/[0.02] dark:bg-white/[0.03] px-3 py-3 text-sm">
+		{:else if showHumanSupport}
+			<div class="support-panel support-panel-standard mb-2 rounded-[var(--radius-card)] border border-black/10 dark:border-white/12 bg-black/[0.02] dark:bg-white/[0.03] px-3 py-3 text-sm">
 				<p class="opacity-85">
 					Behöver du mänsklig kontakt? Här finns stödlinjer med chatt och telefon.
 				</p>
-				<div class="mt-2">
+				<div class="mt-2 flex gap-3 items-center flex-wrap">
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="support-chip">Se stödlinjer</a>
+					<button
+						type="button"
+						class="text-xs opacity-45 hover:opacity-75 transition-opacity"
+						onclick={() => (showHumanSupport = false)}
+					>
+						Stäng
+					</button>
 				</div>
 			</div>
+		{:else}
+			<p class="human-support-link">
+				<button
+					type="button"
+					class="human-support-button"
+					onclick={() => (showHumanSupport = true)}
+				>
+					Behöver du mänskligt stöd?
+				</button>
+			</p>
 		{/if}
 
+		<!-- Snabbförslag: starter-chips eller uppföljningschips, inga rubriker -->
 		{#if showStarterSuggestions}
-			<div class="mb-4">
-				<p class="text-xs opacity-55 mb-2">Eller börja med ett förslag:</p>
-				<div class="starter-chips">
-					{#each starterSuggestions as suggestion}
-						<button
-							type="button"
-							class="starter-chip"
-							onclick={() => useStarterSuggestion(suggestion)}
-							aria-label={`Använd förslaget: ${suggestion}`}
-						>
-							{suggestion}
-						</button>
-					{/each}
-					{#if showMoreSuggestions}
-						{#each extraSuggestions as suggestion}
-							<button
-								type="button"
-								class="starter-chip"
-								onclick={() => useStarterSuggestion(suggestion)}
-								aria-label={`Använd förslaget: ${suggestion}`}
-							>
-								{suggestion}
-							</button>
-						{/each}
-					{:else}
-						<button
-							type="button"
-							class="starter-chip starter-chip-more"
-							onclick={() => {
-								showMoreSuggestions = true;
-							}}
-							aria-label="Visa fler lugna startförslag"
-						>
-							Visa fler...
-						</button>
-					{/if}
-				</div>
+			<div class="chips-row mb-2">
+				{#each starterSuggestions as suggestion}
+					<button
+						type="button"
+						class="starter-chip"
+						onclick={() => useStarterSuggestion(suggestion)}
+						aria-label={`Använd förslaget: ${suggestion}`}
+					>
+						{suggestion}
+					</button>
+				{/each}
 			</div>
-		{/if}
-
-		{#if showFollowUpSuggestions}
-			<div class="follow-up-block mb-4">
-				<p class="text-xs opacity-55 mb-2">Vill du följa upp något?</p>
-				<div class="starter-chips">
-					{#each followUpSuggestions as suggestion}
-						<button
-							type="button"
-							class="starter-chip"
-							onclick={() => useFollowUpSuggestion(suggestion)}
-							aria-label={`Använd uppföljningen: ${suggestion}`}
-						>
-							{suggestion}
-						</button>
-					{/each}
-				</div>
+		{:else if showFollowUpSuggestions}
+			<div class="chips-row mb-2">
+				{#each followUpSuggestions as suggestion}
+					<button
+						type="button"
+						class="starter-chip"
+						onclick={() => useFollowUpSuggestion(suggestion)}
+						aria-label={`Använd uppföljningen: ${suggestion}`}
+					>
+						{suggestion}
+					</button>
+				{/each}
 			</div>
 		{/if}
 
 		{#if hasSensitiveDataConsent}
 			{#if chatError}
-				<div class="mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
+				<div class="mb-2 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-2 text-sm">
 					<p id="chat-error-text" class="text-rose-900 dark:text-rose-100">{chatError}</p>
 				</div>
 			{/if}
@@ -1079,6 +1021,7 @@
 				onTranscript={useVoiceTranscript}
 				onClear={clearDraft}
 				onBusyChange={(busy) => (voiceBusy = busy)}
+				showPrivacyNote={false}
 			/>
 
 			<div class="flex gap-2">
@@ -1093,7 +1036,7 @@
 					onkeydown={handleKeydown}
 					aria-label="Skriv ditt meddelande"
 					placeholder={sending ? 'Väntar lugnt på svar…' : 'Skriv det som är i huvudet just nu...'}
-					aria-describedby={chatError ? 'chat-help-text chat-error-text' : 'chat-help-text'}
+					aria-describedby={chatError ? 'chat-safety-note chat-error-text' : 'chat-safety-note'}
 					aria-invalid={chatError.length > 0}
 					aria-busy={sending}
 					disabled={sending}
@@ -1114,21 +1057,64 @@
 				</button>
 			</div>
 
-			<p id="chat-help-text" class="chat-help-text mt-2 text-xs opacity-60">
-				Max {MAX_MESSAGE_LENGTH} tecken ({inputLength}/{MAX_MESSAGE_LENGTH}). Skriv i din egen takt. Vid akut fara, ring 112. För vårdråd, kontakta 1177.
-			</p>
-		{/if}
+			<!-- Tillgänglighet: akut säkerhetsinformation för skärmläsare -->
+			<span id="chat-safety-note" class="sr-only">Vid akut fara, ring 112. För vårdråd, kontakta 1177.</span>
 
-		<div class="chat-contact-link mt-3 text-center">
-			<a
-				href={PUBLIC_CONTACT_MAILTO}
-				class="inline-block px-4 py-2 rounded-[12px] bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-200 text-sm font-medium
-					hover:bg-teal-100 dark:hover:bg-teal-900/30 transition-colors border border-teal-200 dark:border-teal-800/50"
-				title="Skicka e-post till support"
-			>
-				Kontakta oss
-			</a>
-		</div>
+			<!-- Inställningar & hjälp: kollapsbar sektion längst ned -->
+			<div class="settings-footer">
+				<span class="char-count" aria-live="off">{inputLength}/{MAX_MESSAGE_LENGTH}</span>
+				<button
+					type="button"
+					class="settings-toggle"
+					onclick={() => (showSettings = !showSettings)}
+					aria-expanded={showSettings}
+				>
+					{showSettings ? 'Stäng' : 'Inställningar & hjälp'}
+				</button>
+			</div>
+
+			{#if showSettings}
+				<div class="settings-panel">
+					<div class="speech-setting" class:unsupported={!speechSupported}>
+						<label>
+							<input
+								type="checkbox"
+								checked={autoReadReplies}
+								disabled={!speechSupported}
+								onchange={(event) =>
+									setAutoReadReplies((event.currentTarget as HTMLInputElement).checked)}
+							/>
+							<span>Läs upp AI-svar automatiskt</span>
+						</label>
+						{#if !speechSupported}
+							<p role="status">Uppläsning stöds inte i den här webbläsaren. AI-svaret visas alltid i text.</p>
+						{:else if autoReadReplies}
+							<p>Nya AI-svar läses upp tills du stänger av. Svaret visas alltid i text.</p>
+						{:else}
+							<p>Av som standard. Du kan också välja Lyssna vid ett enskilt svar.</p>
+						{/if}
+					</div>
+					<p class="privacy-note-inline">Du väljer själv vad du skickar. Texten sparas bara när du skickar.</p>
+					<div class="settings-links">
+						<a
+							href="https://stodlinjer.se"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="settings-link"
+						>
+							Se stödlinjer
+						</a>
+						<a
+							href={PUBLIC_CONTACT_MAILTO}
+							class="settings-link"
+							title="Skicka e-post till support"
+						>
+							Kontakta oss
+						</a>
+					</div>
+				</div>
+			{/if}
+		{/if}
 	</div>
 </div>
 
@@ -1138,7 +1124,8 @@
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		gap: 0.75rem;
+		gap: 0.5rem;
+		padding-top: 0.35rem;
 	}
 
 	.history-notice {
@@ -1149,11 +1136,11 @@
 	}
 
 	.clear-history-button {
-		padding: 0.42rem 0.78rem;
+		padding: 0.38rem 0.72rem;
 		border-radius: 999px;
 		border: 1px solid rgba(15, 23, 42, 0.12);
 		background: rgba(15, 23, 42, 0.03);
-		font-size: 0.78rem;
+		font-size: 0.76rem;
 		line-height: 1;
 		color: rgba(15, 23, 42, 0.76);
 		transition: opacity 0.18s ease, background 0.18s ease;
@@ -1170,24 +1157,25 @@
 
 	.clear-history-button:focus-visible,
 	.starter-chip:focus-visible,
-	.journal-save-button:focus-visible,
 	.account-nudge-close:focus-visible,
 	.send-button:focus-visible,
+	.settings-toggle:focus-visible,
+	.human-support-button:focus-visible,
 	.speech-setting input:focus-visible {
 		outline: 2px solid var(--primary);
 		outline-offset: 2px;
 	}
 
 	.speech-message-actions {
-		margin-top: 0.28rem;
+		margin-top: 0.22rem;
 	}
 
 	.speech-button {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.32rem;
-		min-height: 1.9rem;
-		padding: 0.3rem 0.54rem;
+		min-height: 1.8rem;
+		padding: 0.26rem 0.5rem;
 		border: 1px solid rgba(15, 23, 42, 0.1);
 		border-radius: 999px;
 		background: transparent;
@@ -1213,13 +1201,122 @@
 		outline-offset: 2px;
 	}
 
+	/* Stödlinjer-chips */
+	.support-chip {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.36rem 0.65rem;
+		border-radius: 999px;
+		border: 1px solid rgba(15, 23, 42, 0.18);
+		background: rgba(255, 255, 255, 0.85);
+		font-size: 0.76rem;
+		font-weight: 600;
+		color: #1e293b;
+		text-decoration: none;
+	}
+
+	.support-chip-urgent {
+		background: #b91c1c;
+		border-color: #b91c1c;
+		color: #fff;
+	}
+
+	.support-chip-mind {
+		background: #7c3aed;
+		border-color: #7c3aed;
+		color: #fff;
+	}
+
+	/* Diskret stödlänk (standardnivå) */
+	.human-support-link {
+		margin: 0 0 0.55rem;
+	}
+
+	.human-support-button {
+		font-size: 0.74rem;
+		color: rgba(15, 23, 42, 0.48);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		transition: color 0.15s;
+	}
+
+	.human-support-button:hover {
+		color: rgba(15, 23, 42, 0.78);
+	}
+
+	/* Snabbförslagschips */
+	.chips-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+	}
+
+	.starter-chip {
+		padding: 0.38rem 0.72rem;
+		border-radius: 999px;
+		border: 1px solid rgba(15, 23, 42, 0.1);
+		background: rgba(15, 23, 42, 0.02);
+		font-size: 0.78rem;
+		line-height: 1.3;
+		text-align: left;
+		color: rgba(15, 23, 42, 0.75);
+		transition: background 0.15s, opacity 0.15s;
+	}
+
+	.starter-chip:hover {
+		background: rgba(15, 23, 42, 0.06);
+		color: rgba(15, 23, 42, 0.9);
+	}
+
+	/* Inställningar-footer */
+	.settings-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: 0.45rem;
+	}
+
+	.char-count {
+		font-size: 0.68rem;
+		opacity: 0.42;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.settings-toggle {
+		font-size: 0.72rem;
+		color: rgba(15, 23, 42, 0.45);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		transition: color 0.15s;
+	}
+
+	.settings-toggle:hover {
+		color: rgba(15, 23, 42, 0.72);
+	}
+
+	/* Inställningspanel */
+	.settings-panel {
+		margin-top: 0.6rem;
+		padding: 0.7rem 0.8rem;
+		border-radius: 12px;
+		border: 1px solid rgba(15, 23, 42, 0.07);
+		background: rgba(15, 23, 42, 0.02);
+		display: grid;
+		gap: 0.55rem;
+	}
+
 	.speech-setting {
 		display: grid;
-		gap: 0.18rem;
-		margin-bottom: 0.68rem;
-		padding: 0.58rem 0.68rem;
-		border-radius: 12px;
-		background: rgba(15, 23, 42, 0.025);
+		gap: 0.14rem;
 	}
 
 	.speech-setting label {
@@ -1251,63 +1348,29 @@
 		opacity: 0.55;
 	}
 
-	.support-chip {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.4rem 0.7rem;
-		border-radius: 999px;
-		border: 1px solid rgba(15, 23, 42, 0.18);
-		background: rgba(255, 255, 255, 0.85);
-		font-size: 0.78rem;
-		font-weight: 600;
-		color: #1e293b;
-		text-decoration: none;
+	.privacy-note-inline {
+		margin: 0;
+		font-size: 0.69rem;
+		line-height: 1.4;
+		opacity: 0.52;
 	}
 
-	.support-chip-urgent {
-		background: #b91c1c;
-		border-color: #b91c1c;
-		color: #fff;
-	}
-
-	.support-chip-mind {
-		background: #7c3aed;
-		border-color: #7c3aed;
-		color: #fff;
-	}
-
-	.starter-chips {
+	.settings-links {
 		display: flex;
+		gap: 0.8rem;
 		flex-wrap: wrap;
-		gap: 0.5rem;
 	}
 
-	.starter-chip {
-		padding: 0.45rem 0.8rem;
-		border-radius: 999px;
-		border: 1px solid rgba(15, 23, 42, 0.1);
-		background: rgba(15, 23, 42, 0.02);
-		font-size: 0.8rem;
-		line-height: 1.3;
-		text-align: left;
-		color: rgba(15, 23, 42, 0.75);
-		transition: background 0.15s, opacity 0.15s;
+	.settings-link {
+		font-size: 0.72rem;
+		color: rgba(15, 23, 42, 0.55);
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		transition: color 0.15s;
 	}
 
-	.starter-chip:hover {
-		background: rgba(15, 23, 42, 0.06);
-		color: rgba(15, 23, 42, 0.9);
-	}
-
-	.starter-chip-more {
-		border-style: dashed;
-		opacity: 0.55;
-		font-size: 0.75rem;
-	}
-
-	.starter-chip-more:hover {
-		opacity: 0.8;
+	.settings-link:hover {
+		color: rgba(15, 23, 42, 0.82);
 	}
 
 	:global(.dark) .history-notice {
@@ -1335,10 +1398,6 @@
 		color: rgba(153, 246, 228, 0.9);
 	}
 
-	:global(.dark) .speech-setting {
-		background: rgba(255, 255, 255, 0.035);
-	}
-
 	:global(.dark) .support-chip {
 		border-color: rgba(255, 255, 255, 0.18);
 		background: rgba(255, 255, 255, 0.08);
@@ -1357,14 +1416,45 @@
 		color: #fff;
 	}
 
+	:global(.dark) .human-support-button {
+		color: rgba(226, 232, 240, 0.38);
+	}
+
+	:global(.dark) .human-support-button:hover {
+		color: rgba(226, 232, 240, 0.68);
+	}
+
 	:global(.dark) .starter-chip {
 		border-color: rgba(255, 255, 255, 0.12);
 		background: rgba(255, 255, 255, 0.04);
 		color: rgba(255, 255, 255, 0.8);
 	}
 
-	:global(.dark) .starter-chip-more {
-		opacity: 0.45;
+	:global(.dark) .settings-toggle,
+	:global(.dark) .settings-link {
+		color: rgba(226, 232, 240, 0.42);
+	}
+
+	:global(.dark) .settings-toggle:hover,
+	:global(.dark) .settings-link:hover {
+		color: rgba(226, 232, 240, 0.72);
+	}
+
+	:global(.dark) .settings-panel {
+		border-color: rgba(255, 255, 255, 0.07);
+		background: rgba(255, 255, 255, 0.025);
+	}
+
+	:global(.dark) .speech-setting label {
+		color: rgba(226, 232, 240, 0.86);
+	}
+
+	:global(.dark) .privacy-note-inline {
+		color: rgba(226, 232, 240, 0.48);
+	}
+
+	:global(.dark) .char-count {
+		color: rgba(226, 232, 240, 0.38);
 	}
 
 	:global(.crisis-message) {
@@ -1378,21 +1468,14 @@
 			max-height: calc(100dvh - 3.4rem);
 		}
 
-		.chat-support-link,
-		.support-panel-standard,
-		.chat-help-text,
-		.chat-contact-link {
-			display: none;
-		}
-
 		.chat-toolbar {
-			padding: 0.35rem 0.75rem 0.45rem;
-			gap: 0.45rem;
+			padding: 0.3rem 0.75rem 0.35rem;
+			gap: 0.4rem;
 		}
 
 		.clear-history-button {
-			padding: 0.36rem 0.7rem;
-			font-size: 0.74rem;
+			padding: 0.32rem 0.65rem;
+			font-size: 0.73rem;
 		}
 
 		.chat-messages {
@@ -1400,26 +1483,16 @@
 		}
 
 		.chat-input-area {
-			padding: 0.65rem 0.75rem calc(0.65rem + env(safe-area-inset-bottom));
-		}
-
-		.speech-setting {
-			margin-bottom: 0.55rem;
-			padding: 0.52rem 0.6rem;
-		}
-
-		.speech-setting label {
-			min-height: 1.5rem;
-			font-size: 0.76rem;
+			padding: 0.55rem 0.75rem calc(0.55rem + env(safe-area-inset-bottom));
 		}
 
 		.support-panel {
-			margin-bottom: 0.55rem;
-			padding: 0.7rem;
-			font-size: 0.86rem;
+			margin-bottom: 0.45rem;
+			padding: 0.62rem;
+			font-size: 0.85rem;
 		}
 
-		.starter-chips {
+		.chips-row {
 			flex-wrap: nowrap;
 			overflow-x: auto;
 			padding-bottom: 0.1rem;
@@ -1428,9 +1501,13 @@
 		.starter-chip {
 			flex: 0 0 auto;
 			max-width: 72vw;
-			padding: 0.42rem 0.7rem;
-			font-size: 0.78rem;
+			padding: 0.36rem 0.65rem;
+			font-size: 0.76rem;
 			white-space: nowrap;
+		}
+
+		.settings-footer {
+			margin-top: 0.35rem;
 		}
 	}
 </style>
