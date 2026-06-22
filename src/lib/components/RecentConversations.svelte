@@ -124,10 +124,13 @@
 <style>
 	.recent-conversations {
 		max-width: 720px;
+		width: 100%;
+		min-width: 0;
 		padding: 1rem;
 		border: 1px solid rgba(15, 23, 42, 0.1);
 		border-radius: var(--radius-card);
 		background: rgba(248, 250, 252, 0.72);
+		box-sizing: border-box;
 	}
 
 	.section-heading h2,
@@ -228,5 +231,29 @@
 	:global(.dark) a:hover,
 	:global(.dark) a:focus-visible {
 		background: rgba(255, 255, 255, 0.09);
+	}
+
+	@media (max-width: 640px) {
+		.recent-conversations {
+			padding: 0.75rem;
+		}
+
+		a {
+			gap: 0.5rem;
+			padding: 0.6rem 0.7rem;
+		}
+
+		.continue-label {
+			display: none;
+		}
+
+		.section-heading h2 {
+			font-size: 1.05rem;
+		}
+
+		.section-heading p,
+		.state-message {
+			font-size: 0.8rem;
+		}
 	}
 </style>

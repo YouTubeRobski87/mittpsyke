@@ -838,7 +838,7 @@
 
 				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'}">
 					<div
-						class="max-w-[80%] px-4 py-3 rounded-[var(--radius-card)] text-sm leading-relaxed
+						class="message-bubble max-w-[80%] px-4 py-3 rounded-[var(--radius-card)] text-sm leading-relaxed
 							{msg.role === 'user'
 								? 'bg-[var(--primary)] text-white rounded-br-md'
 								: msg.crisis
@@ -1459,6 +1459,11 @@
 		white-space: pre-line;
 	}
 
+	:global(.message-bubble) {
+		min-width: 0;
+		word-break: break-word;
+	}
+
 	@media (max-width: 768px) {
 		.chat-container {
 			height: calc(100dvh - 3.4rem);
@@ -1472,12 +1477,17 @@
 		}
 
 		.clear-history-button {
-			padding: 0.32rem 0.65rem;
-			font-size: 0.73rem;
+			padding: 0.26rem 0.55rem;
+			font-size: 0.7rem;
 		}
 
 		.chat-messages {
-			padding: 0.75rem;
+			padding: 0.6rem 0.65rem 1rem;
+		}
+
+		:global(.message-bubble) {
+			max-width: 90%;
+			padding: 0.6rem 0.85rem;
 		}
 
 		.chat-input-area {
