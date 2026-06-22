@@ -918,6 +918,7 @@
 	{/if}
 
 	<div class="chat-input-area border-t border-black/8 dark:border-white/10 px-3 pt-2 pb-3">
+		<div class="chat-input-extras">
 		{#if !hasSensitiveDataConsent}
 			<div class="mb-3">
 				<ConsentGate onAccept={acceptSensitiveConsent} />
@@ -1022,8 +1023,11 @@
 				onBusyChange={(busy) => (voiceBusy = busy)}
 				showPrivacyNote={false}
 			/>
+		{/if}
+		</div>
 
-			<div class="flex gap-2">
+		{#if hasSensitiveDataConsent}
+			<div class="composer-row flex gap-2">
 				<label class="sr-only" for="chat-message">Skriv ditt meddelande</label>
 				<textarea
 					id="chat-message"
@@ -1466,9 +1470,18 @@
 
 	@media (max-width: 768px) {
 		.chat-container {
-			height: calc(100dvh - 3.4rem);
-			min-height: calc(100dvh - 3.4rem);
-			max-height: calc(100dvh - 3.4rem);
+			height: calc(100svh - 3.5rem - env(safe-area-inset-top));
+			min-height: calc(100svh - 3.5rem - env(safe-area-inset-top));
+			max-height: calc(100svh - 3.5rem - env(safe-area-inset-top));
+			overflow: hidden;
+		}
+
+		@supports (height: 100dvh) {
+			.chat-container {
+				height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
+				min-height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
+				max-height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
+			}
 		}
 
 		.chat-toolbar {
@@ -1482,7 +1495,19 @@
 		}
 
 		.chat-messages {
+			flex: 1 0 65svh;
+			min-height: 65svh;
 			padding: 0.6rem 0.65rem 1rem;
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		@supports (height: 100dvh) {
+			.chat-messages {
+				flex-basis: 65dvh;
+				min-height: 65dvh;
+			}
 		}
 
 		:global(.message-bubble) {
@@ -1491,7 +1516,33 @@
 		}
 
 		.chat-input-area {
+			display: flex;
+			flex: 0 1 auto;
+			flex-direction: column;
+			min-height: 0;
+			overflow: hidden;
 			padding: 0.4rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom));
+		}
+
+		.chat-input-extras {
+			min-height: 0;
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.composer-row,
+		.settings-footer {
+			flex: 0 0 auto;
+		}
+
+		.composer-row {
+			padding-top: 0.25rem;
+			background: hsl(var(--background));
+		}
+
+		:global(.dark) .composer-row {
+			background: var(--chat-input-bg-dark);
 		}
 
 		.support-panel {
