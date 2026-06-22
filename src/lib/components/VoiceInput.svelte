@@ -199,8 +199,20 @@
 	onDestroy(() => {
 		shouldUseTranscript = false;
 		onBusyChange(false);
-		if (completionTimer) clearTimeout(completionTimer);
-		recognition?.abort();
+		if (completionTimer) {
+			clearTimeout(completionTimer);
+			completionTimer = null;
+		}
+
+		const activeRecognition = recognition;
+		recognition = null;
+		if (activeRecognition) {
+			activeRecognition.onstart = null;
+			activeRecognition.onresult = null;
+			activeRecognition.onerror = null;
+			activeRecognition.onend = null;
+			activeRecognition.abort();
+		}
 	});
 </script>
 
@@ -218,6 +230,11 @@
 			disabled={disabled || status === 'unsupported' || status === 'transcribing'}
 			aria-pressed={isListening}
 			aria-describedby="voice-input-status voice-input-privacy"
+			aria-label={isListening
+				? 'Stoppa röstinmatning'
+				: status === 'unsupported'
+					? 'Röstinmatning stöds inte. Skriv ditt meddelande i textfältet.'
+					: 'Starta röstinmatning'}
 		>
 			{#if isListening}
 				<Square size={15} aria-hidden="true" />
@@ -232,7 +249,13 @@
 		</button>
 
 		{#if hasDraft}
-			<button type="button" class="clear-button" onclick={clearDraft} disabled={disabled || isListening}>
+			<button
+				type="button"
+				class="clear-button"
+				onclick={clearDraft}
+				disabled={disabled || isListening}
+				aria-label="Rensa meddelandetexten"
+			>
 				<Trash2 size={15} aria-hidden="true" />
 				<span>Rensa text</span>
 			</button>

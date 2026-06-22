@@ -63,7 +63,11 @@
 
 	$effect(() => {
 		if (!browser || !category) return;
-		window.localStorage.setItem('mittpsyke:last-chat-category', category);
+		try {
+			window.localStorage.setItem('mittpsyke:last-chat-category', category);
+		} catch {
+			// Chatten fungerar även när webbläsaren blockerar lokal lagring.
+		}
 	});
 
 	$effect(() => {

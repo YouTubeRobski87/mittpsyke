@@ -64,6 +64,7 @@
 	let persistenceUserId = $state<string | null>(null);
 	let clearingHistory = $state(false);
 	let voiceBusy = $state(false);
+	let sendInFlight = false;
 	let speechSupported = $state(true);
 	let autoReadReplies = $state(false);
 	let speakingMessageIndex = $state<number | null>(null);
@@ -200,6 +201,33 @@
 		}
 	}
 
+	function readStorageValue(key: string) {
+		if (!browser) return null;
+		try {
+			return window.localStorage.getItem(key);
+		} catch {
+			return null;
+		}
+	}
+
+	function writeStorageValue(key: string, value: string) {
+		if (!browser) return;
+		try {
+			window.localStorage.setItem(key, value);
+		} catch {
+			// Lokal lagring är bäst möjliga fallback och får inte blockera chatten.
+		}
+	}
+
+	function removeStorageValue(key: string) {
+		if (!browser) return;
+		try {
+			window.localStorage.removeItem(key);
+		} catch {
+			// Chatten fortsätter utan lokal lagring.
+		}
+	}
+
 	function loadSpeechVoices() {
 		if (!browser || !speechSupported) return;
 
@@ -211,8 +239,12 @@
 	}
 
 	function stopSpeaking() {
-		if (!browser || !speechSupported) return;
+		if (!browser || typeof window.speechSynthesis === 'undefined') return;
 
+		if (activeUtterance) {
+			activeUtterance.onend = null;
+			activeUtterance.onerror = null;
+		}
 		activeUtterance = null;
 		speakingMessageIndex = null;
 		window.speechSynthesis.cancel();
@@ -260,11 +292,7 @@
 		if (!browser || !speechSupported) return;
 
 		autoReadReplies = enabled;
-		try {
-			window.localStorage.setItem(autoReadStorageKey, String(enabled));
-		} catch {
-			// Inställningen är frivillig och får falla tillbaka till aktuell session.
-		}
+		writeStorageValue(autoReadStorageKey, String(enabled));
 
 		if (!enabled) stopSpeaking();
 	}
@@ -272,11 +300,11 @@
 	function getOrCreateGuestId() {
 		if (!browser) return null;
 
-		const existingGuestId = window.localStorage.getItem(guestIdStorageKey)?.trim();
+		const existingGuestId = readStorageValue(guestIdStorageKey)?.trim();
 		if (existingGuestId) return existingGuestId;
 
 		const guestId = crypto.randomUUID();
-		window.localStorage.setItem(guestIdStorageKey, guestId);
+		writeStorageValue(guestIdStorageKey, guestId);
 		return guestId;
 	}
 
@@ -290,7 +318,7 @@
 			if (!key) continue;
 
 			try {
-				const raw = window.localStorage.getItem(key);
+				const raw = readStorageValue(key);
 				if (!raw) continue;
 
 				const parsed = JSON.parse(raw);
@@ -309,11 +337,11 @@
 
 		const storageKey = getChatHistoryStorageKey(chatTopic, userId);
 		if (nextMessages.length === 0) {
-			window.localStorage.removeItem(storageKey);
+			removeStorageValue(storageKey);
 			return;
 		}
 
-		window.localStorage.setItem(storageKey, JSON.stringify(nextMessages));
+		writeStorageValue(storageKey, JSON.stringify(nextMessages));
 	}
 
 	function logChatCleanupError(context: string, error: unknown) {
@@ -472,6 +500,7 @@
 		let cancelled = false;
 
 		async function bootstrapHistory() {
+			stopSpeaking();
 			persistenceReady = false;
 			chatError = '';
 			savePromptHidden = {};
@@ -502,15 +531,15 @@
 
 				// Carry first draft text from /skriv into chat input when no history exists yet.
 				if (messages.length === 0) {
-					const tempEntry = window.localStorage.getItem(tempEntryStorageKey)?.trim() ?? '';
+					const tempEntry = readStorageValue(tempEntryStorageKey)?.trim() ?? '';
 					if (tempEntry.length > 0) {
 						input = tempEntry;
-						window.localStorage.removeItem(tempEntryStorageKey);
+						removeStorageValue(tempEntryStorageKey);
 					}
 				}
 			}
 
-			window.localStorage.setItem('mittpsyke:last-chat-category', category);
+			writeStorageValue('mittpsyke:last-chat-category', category);
 			persistenceReady = true;
 			await tick();
 			scrollToBottom();
@@ -529,11 +558,7 @@
 			typeof window.SpeechSynthesisUtterance !== 'undefined';
 
 		if (speechSupported) {
-			try {
-				autoReadReplies = window.localStorage.getItem(autoReadStorageKey) === 'true';
-			} catch {
-				autoReadReplies = false;
-			}
+			autoReadReplies = readStorageValue(autoReadStorageKey) === 'true';
 
 			loadSpeechVoices();
 			window.speechSynthesis.addEventListener('voiceschanged', loadSpeechVoices);
@@ -584,7 +609,7 @@
 
 	async function send() {
 		const text = input.trim();
-		if (!hasSensitiveDataConsent || !text || sending) return;
+		if (!hasSensitiveDataConsent || !text || sendInFlight) return;
 
 		chatError = '';
 		if (text.length > MAX_MESSAGE_LENGTH) {
@@ -592,21 +617,24 @@
 			return;
 		}
 
-		stopSpeaking();
-
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
-		const guestId = session ? null : getOrCreateGuestId();
-		const contextMessages = sanitizeChatMessages(messages, CHAT_CONTEXT_LIMIT);
-
-		messages.push({ role: 'user', content: text });
-		input = '';
+		sendInFlight = true;
 		sending = true;
-		await tick();
-		scrollToBottom();
+		stopSpeaking();
+		let userMessageAdded = false;
 
 		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+			const guestId = session ? null : getOrCreateGuestId();
+			const contextMessages = sanitizeChatMessages(messages, CHAT_CONTEXT_LIMIT);
+
+			messages.push({ role: 'user', content: text });
+			userMessageAdded = true;
+			input = '';
+			await tick();
+			scrollToBottom();
+
 			const res = await fetch('/api/chat', {
 				method: 'POST',
 				headers: {
@@ -647,9 +675,7 @@
 				conversationId = data.conversationId;
 			}
 
-			if (browser) {
-				window.localStorage.setItem('mittpsyke:last-chat-category', category);
-			}
+			writeStorageValue('mittpsyke:last-chat-category', category);
 
 			trackChatMessageSent();
 			if (!hasTrackedFirstMessage) {
@@ -674,11 +700,12 @@
 			await tick();
 			scrollToBottom();
 			if (autoReadReplies) {
+				// Autouppläsning sker bara här efter ett nytt, lyckat API-svar – aldrig vid historikladdning.
 				speakReply(assistantReply, assistantMessageIndex);
 			}
 		} catch (error) {
 			const lastMessage = messages[messages.length - 1];
-			if (lastMessage?.role === 'user' && lastMessage.content === text) {
+			if (userMessageAdded && lastMessage?.role === 'user' && lastMessage.content === text) {
 				messages = messages.slice(0, -1);
 			}
 
@@ -686,11 +713,12 @@
 				error instanceof Error && error.message.trim().length > 0
 					? error.message
 					: GENERIC_CHAT_ERROR;
-			input = text;
+			if (!input.trim()) input = text;
 
 			await tick();
 			scrollToBottom();
 		} finally {
+			sendInFlight = false;
 			sending = false;
 			await tick();
 			scrollToBottom();
@@ -698,6 +726,7 @@
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
+		if (event.isComposing) return;
 		if (event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
 			void send();
@@ -796,6 +825,7 @@
 			class="clear-history-button"
 			onclick={clearHistory}
 			disabled={sending || clearingHistory || messages.length === 0}
+			aria-label="Rensa den laddade chatthistoriken"
 		>
 			Rensa historik
 		</button>
@@ -844,6 +874,9 @@
 							onclick={() => toggleReplySpeech(msg.content, i)}
 							disabled={!speechSupported}
 							aria-pressed={speakingMessageIndex === i}
+							aria-label={speakingMessageIndex === i
+								? 'Stoppa uppläsning av AI-svaret'
+								: 'Läs upp AI-svaret'}
 							title={!speechSupported ? 'Uppläsning stöds inte i den här webbläsaren.' : undefined}
 						>
 							{#if speakingMessageIndex === i}
@@ -862,8 +895,9 @@
 						Vill du spara detta som anteckning?
 						<button
 							type="button"
-							class="ml-1 underline hover:opacity-100 transition-opacity"
+							class="journal-save-button ml-1 underline hover:opacity-100 transition-opacity"
 							onclick={() => saveAsJournalNote(msg.content, i)}
+							aria-label="Spara AI-svaret som anteckning"
 						>
 							Ja
 						</button>
@@ -873,9 +907,9 @@
 		{/each}
 
 		{#if sending}
-			<div class="flex justify-start" role="status" aria-live="polite">
+			<div class="flex justify-start" role="status" aria-live="polite" aria-label="Väntar på AI-svar">
 				<div class="bg-black/5 dark:bg-white/10 px-4 py-3 rounded-[var(--radius-card)] rounded-bl-md text-sm opacity-60">
-					Skriver...
+					Mitt stöd tar en stund och formulerar ett svar…
 				</div>
 			</div>
 		{/if}
@@ -898,11 +932,12 @@
 			</p>
 			<button
 				type="button"
-				class="shrink-0 opacity-70 hover:opacity-100 transition-opacity"
+				class="account-nudge-close shrink-0 opacity-70 hover:opacity-100 transition-opacity"
 				onclick={() => {
 					showAccountNudge = false;
 					nudgeDismissed = true;
 				}}
+				aria-label="Stäng förslaget om att skapa konto"
 			>
 				Stäng
 			</button>
@@ -977,13 +1012,23 @@
 				<p class="text-xs opacity-55 mb-2">Eller börja med ett förslag:</p>
 				<div class="starter-chips">
 					{#each starterSuggestions as suggestion}
-						<button type="button" class="starter-chip" onclick={() => useStarterSuggestion(suggestion)}>
+						<button
+							type="button"
+							class="starter-chip"
+							onclick={() => useStarterSuggestion(suggestion)}
+							aria-label={`Använd förslaget: ${suggestion}`}
+						>
 							{suggestion}
 						</button>
 					{/each}
 					{#if showMoreSuggestions}
 						{#each extraSuggestions as suggestion}
-							<button type="button" class="starter-chip" onclick={() => useStarterSuggestion(suggestion)}>
+							<button
+								type="button"
+								class="starter-chip"
+								onclick={() => useStarterSuggestion(suggestion)}
+								aria-label={`Använd förslaget: ${suggestion}`}
+							>
 								{suggestion}
 							</button>
 						{/each}
@@ -994,6 +1039,7 @@
 							onclick={() => {
 								showMoreSuggestions = true;
 							}}
+							aria-label="Visa fler lugna startförslag"
 						>
 							Visa fler...
 						</button>
@@ -1007,7 +1053,12 @@
 				<p class="text-xs opacity-55 mb-2">Vill du följa upp något?</p>
 				<div class="starter-chips">
 					{#each followUpSuggestions as suggestion}
-						<button type="button" class="starter-chip" onclick={() => useFollowUpSuggestion(suggestion)}>
+						<button
+							type="button"
+							class="starter-chip"
+							onclick={() => useFollowUpSuggestion(suggestion)}
+							aria-label={`Använd uppföljningen: ${suggestion}`}
+						>
 							{suggestion}
 						</button>
 					{/each}
@@ -1041,9 +1092,11 @@
 					}}
 					onkeydown={handleKeydown}
 					aria-label="Skriv ditt meddelande"
-					placeholder="Skriv det som är i huvudet just nu..."
+					placeholder={sending ? 'Väntar lugnt på svar…' : 'Skriv det som är i huvudet just nu...'}
 					aria-describedby={chatError ? 'chat-help-text chat-error-text' : 'chat-help-text'}
 					aria-invalid={chatError.length > 0}
+					aria-busy={sending}
+					disabled={sending}
 					rows={1}
 					class="flex-1 resize-none rounded-[var(--radius-input)] border border-black/12 dark:border-white/12
 						bg-white dark:bg-white/5 px-4 py-3 text-sm outline-none focus-visible:outline-2 focus-visible:outline-[var(--primary)] focus-visible:outline-offset-2
@@ -1053,10 +1106,11 @@
 					type="button"
 					onclick={send}
 					disabled={sending || voiceBusy || !input.trim()}
-					class="px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white text-sm font-medium
+					class="send-button px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white text-sm font-medium
 						disabled:opacity-40 transition-opacity"
+					aria-label={sending ? 'Väntar på AI-svar' : 'Skicka meddelandet'}
 				>
-					Skicka
+					{sending ? 'Väntar…' : 'Skicka'}
 				</button>
 			</div>
 
@@ -1112,6 +1166,16 @@
 	.clear-history-button:disabled {
 		opacity: 0.45;
 		cursor: not-allowed;
+	}
+
+	.clear-history-button:focus-visible,
+	.starter-chip:focus-visible,
+	.journal-save-button:focus-visible,
+	.account-nudge-close:focus-visible,
+	.send-button:focus-visible,
+	.speech-setting input:focus-visible {
+		outline: 2px solid var(--primary);
+		outline-offset: 2px;
 	}
 
 	.speech-message-actions {
