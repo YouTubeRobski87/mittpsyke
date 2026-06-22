@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { containsCrisisSignal } from '$lib/ai/safety';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import VoiceInput from '$lib/components/VoiceInput.svelte';
 	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import {
 		SENSITIVE_CONSENT_HEADER,
@@ -54,7 +55,7 @@
 	let showAccountNudge = $state(false);
 	let nudgeDismissed = $state(false);
 	let isAnonymous = $state(true);
-	let firstMessageSource = $state<'manual' | 'chip'>('manual');
+	let firstMessageSource = $state<'manual' | 'chip' | 'voice'>('manual');
 	let hasSensitiveDataConsent = $state(false);
 	let conversationId = $state<string | null>(null);
 	let historyNoticeVisible = $state(false);
@@ -590,6 +591,15 @@
 		input = text;
 	}
 
+	function useVoiceTranscript(transcript: string) {
+		const normalized = transcript.trim();
+		if (!normalized) return;
+
+		chatError = '';
+		firstMessageSource = 'voice';
+		input = input.trim() ? `${input.trim()} ${normalized}` : normalized;
+	}
+
 	async function saveAsJournalNote(content: string, index: number) {
 		savePromptHidden[index] = true;
 
@@ -819,6 +829,8 @@
 					<p id="chat-error-text" class="text-rose-900 dark:text-rose-100">{chatError}</p>
 				</div>
 			{/if}
+
+			<VoiceInput disabled={sending} onTranscript={useVoiceTranscript} />
 
 			<div class="flex gap-2">
 				<label class="sr-only" for="chat-message">Skriv ditt meddelande</label>
