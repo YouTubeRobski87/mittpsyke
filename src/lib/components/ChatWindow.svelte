@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser, dev } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { Square, Volume2 } from 'lucide-svelte';
 	import { containsCrisisSignal } from '$lib/ai/safety';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
@@ -63,6 +64,11 @@
 	let persistenceUserId = $state<string | null>(null);
 	let clearingHistory = $state(false);
 	let voiceBusy = $state(false);
+	let speechSupported = $state(true);
+	let autoReadReplies = $state(false);
+	let speakingMessageIndex = $state<number | null>(null);
+	let swedishVoice: SpeechSynthesisVoice | null = null;
+	let activeUtterance: SpeechSynthesisUtterance | null = null;
 	let chatLog: HTMLDivElement;
 
 	const MAX_MESSAGE_LENGTH = 2000;
@@ -71,6 +77,7 @@
 	const GENERIC_CHAT_ERROR = 'Något gick fel. Försök igen om en stund.';
 	const HISTORY_NOTICE = 'Tidigare samtal är laddat.';
 	const guestIdStorageKey = 'mittpsyke:guest-id';
+	const autoReadStorageKey = 'mittpsyke:chat-auto-read-replies';
 	const starterSuggestions = ['Jag känner mig orolig', 'Hjälp mig sortera mina tankar'];
 	const extraSuggestions = [
 		'Tankarna snurrar och jag får ingen ro',
@@ -191,6 +198,75 @@
 		if (chatLog) {
 			chatLog.scrollTop = chatLog.scrollHeight;
 		}
+	}
+
+	function loadSpeechVoices() {
+		if (!browser || !speechSupported) return;
+
+		const voices = window.speechSynthesis.getVoices();
+		swedishVoice =
+			voices.find((voice) => voice.lang.toLowerCase() === 'sv-se') ??
+			voices.find((voice) => voice.lang.toLowerCase().startsWith('sv')) ??
+			null;
+	}
+
+	function stopSpeaking() {
+		if (!browser || !speechSupported) return;
+
+		activeUtterance = null;
+		speakingMessageIndex = null;
+		window.speechSynthesis.cancel();
+	}
+
+	function speakReply(content: string, messageIndex: number) {
+		const normalized = content.trim();
+		if (!browser || !speechSupported || !normalized) return;
+
+		stopSpeaking();
+		loadSpeechVoices();
+
+		const utterance = new SpeechSynthesisUtterance(normalized);
+		utterance.lang = swedishVoice?.lang ?? 'sv-SE';
+		utterance.voice = swedishVoice;
+		utterance.rate = 0.92;
+		utterance.pitch = 1;
+		utterance.volume = 1;
+		utterance.onend = () => {
+			if (activeUtterance !== utterance) return;
+			activeUtterance = null;
+			speakingMessageIndex = null;
+		};
+		utterance.onerror = () => {
+			if (activeUtterance !== utterance) return;
+			activeUtterance = null;
+			speakingMessageIndex = null;
+		};
+
+		activeUtterance = utterance;
+		speakingMessageIndex = messageIndex;
+		window.speechSynthesis.speak(utterance);
+	}
+
+	function toggleReplySpeech(content: string, messageIndex: number) {
+		if (speakingMessageIndex === messageIndex) {
+			stopSpeaking();
+			return;
+		}
+
+		speakReply(content, messageIndex);
+	}
+
+	function setAutoReadReplies(enabled: boolean) {
+		if (!browser || !speechSupported) return;
+
+		autoReadReplies = enabled;
+		try {
+			window.localStorage.setItem(autoReadStorageKey, String(enabled));
+		} catch {
+			// Inställningen är frivillig och får falla tillbaka till aktuell session.
+		}
+
+		if (!enabled) stopSpeaking();
 	}
 
 	function getOrCreateGuestId() {
@@ -364,6 +440,7 @@
 	}
 
 	async function clearHistory() {
+		stopSpeaking();
 		clearingHistory = true;
 		chatError = '';
 		input = '';
@@ -447,6 +524,23 @@
 	});
 
 	onMount(() => {
+		speechSupported =
+			typeof window.speechSynthesis !== 'undefined' &&
+			typeof window.SpeechSynthesisUtterance !== 'undefined';
+
+		if (speechSupported) {
+			try {
+				autoReadReplies = window.localStorage.getItem(autoReadStorageKey) === 'true';
+			} catch {
+				autoReadReplies = false;
+			}
+
+			loadSpeechVoices();
+			window.speechSynthesis.addEventListener('voiceschanged', loadSpeechVoices);
+		} else {
+			autoReadReplies = false;
+		}
+
 		const {
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, session) => {
@@ -467,6 +561,10 @@
 		}
 
 		return () => {
+			stopSpeaking();
+			if (speechSupported) {
+				window.speechSynthesis.removeEventListener('voiceschanged', loadSpeechVoices);
+			}
 			subscription.unsubscribe();
 		};
 	});
@@ -493,6 +591,8 @@
 			chatError = LONG_MESSAGE_ERROR;
 			return;
 		}
+
+		stopSpeaking();
 
 		const {
 			data: { session }
@@ -561,14 +661,21 @@
 				hasTrackedFirstMessage = true;
 			}
 
+			const assistantReply =
+				data?.reply && data.reply.trim() ? data.reply : GENERIC_CHAT_ERROR;
+			const assistantMessageIndex = messages.length;
+
 			messages.push({
 				role: 'assistant',
-				content: data?.reply && data.reply.trim() ? data.reply : GENERIC_CHAT_ERROR,
+				content: assistantReply,
 				crisis: data?.crisis ?? false
 			});
 
 			await tick();
 			scrollToBottom();
+			if (autoReadReplies) {
+				speakReply(assistantReply, assistantMessageIndex);
+			}
 		} catch (error) {
 			const lastMessage = messages[messages.length - 1];
 			if (lastMessage?.role === 'user' && lastMessage.content === text) {
@@ -728,6 +835,28 @@
 					</div>
 				</div>
 
+				{#if msg.role === 'assistant'}
+					<div class="speech-message-actions px-1 text-left">
+						<button
+							type="button"
+							class="speech-button"
+							class:speaking={speakingMessageIndex === i}
+							onclick={() => toggleReplySpeech(msg.content, i)}
+							disabled={!speechSupported}
+							aria-pressed={speakingMessageIndex === i}
+							title={!speechSupported ? 'Uppläsning stöds inte i den här webbläsaren.' : undefined}
+						>
+							{#if speakingMessageIndex === i}
+								<Square size={13} aria-hidden="true" />
+								<span>Stoppa uppläsning</span>
+							{:else}
+								<Volume2 size={14} aria-hidden="true" />
+								<span>Lyssna</span>
+							{/if}
+						</button>
+					</div>
+				{/if}
+
 				{#if msg.role === 'assistant' && !savePromptHidden[i]}
 					<div class="text-xs opacity-55 px-1 text-left">
 						Vill du spara detta som anteckning?
@@ -786,6 +915,26 @@
 				<ConsentGate onAccept={acceptSensitiveConsent} />
 			</div>
 		{/if}
+
+		<div class="speech-setting" class:unsupported={!speechSupported}>
+			<label>
+				<input
+					type="checkbox"
+					checked={autoReadReplies}
+					disabled={!speechSupported}
+					onchange={(event) =>
+						setAutoReadReplies((event.currentTarget as HTMLInputElement).checked)}
+				/>
+				<span>Läs upp AI-svar automatiskt</span>
+			</label>
+			{#if !speechSupported}
+				<p role="status">Uppläsning stöds inte i den här webbläsaren. AI-svaret visas alltid i text.</p>
+			{:else if autoReadReplies}
+				<p>Nya AI-svar läses upp tills du stänger av. Svaret visas alltid i text.</p>
+			{:else}
+				<p>Av som standard. Du kan också välja Lyssna vid ett enskilt svar.</p>
+			{/if}
+		</div>
 
 		{#if currentSupportLevel === 'acute'}
 			<div class="support-panel support-panel-acute mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
@@ -965,6 +1114,79 @@
 		cursor: not-allowed;
 	}
 
+	.speech-message-actions {
+		margin-top: 0.28rem;
+	}
+
+	.speech-button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.32rem;
+		min-height: 1.9rem;
+		padding: 0.3rem 0.54rem;
+		border: 1px solid rgba(15, 23, 42, 0.1);
+		border-radius: 999px;
+		background: transparent;
+		color: rgba(15, 23, 42, 0.64);
+		font-size: 0.72rem;
+		font-weight: 600;
+		transition: background-color 0.16s ease, color 0.16s ease, opacity 0.16s ease;
+	}
+
+	.speech-button:hover:not(:disabled),
+	.speech-button.speaking {
+		background: rgba(15, 118, 110, 0.07);
+		color: rgba(15, 118, 110, 0.9);
+	}
+
+	.speech-button:disabled {
+		cursor: not-allowed;
+		opacity: 0.42;
+	}
+
+	.speech-button:focus-visible {
+		outline: 2px solid var(--primary);
+		outline-offset: 2px;
+	}
+
+	.speech-setting {
+		display: grid;
+		gap: 0.18rem;
+		margin-bottom: 0.68rem;
+		padding: 0.58rem 0.68rem;
+		border-radius: 12px;
+		background: rgba(15, 23, 42, 0.025);
+	}
+
+	.speech-setting label {
+		display: flex;
+		align-items: center;
+		gap: 0.48rem;
+		font-size: 0.78rem;
+		font-weight: 650;
+		line-height: 1.35;
+		cursor: pointer;
+	}
+
+	.speech-setting input {
+		width: 1rem;
+		height: 1rem;
+		margin: 0;
+		accent-color: var(--primary);
+	}
+
+	.speech-setting p {
+		margin: 0 0 0 1.48rem;
+		font-size: 0.69rem;
+		line-height: 1.4;
+		opacity: 0.58;
+	}
+
+	.speech-setting.unsupported label {
+		cursor: not-allowed;
+		opacity: 0.55;
+	}
+
 	.support-chip {
 		display: inline-flex;
 		align-items: center;
@@ -1038,6 +1260,21 @@
 		background: rgba(255, 255, 255, 0.1);
 	}
 
+	:global(.dark) .speech-button {
+		border-color: rgba(255, 255, 255, 0.11);
+		color: rgba(226, 232, 240, 0.68);
+	}
+
+	:global(.dark) .speech-button:hover:not(:disabled),
+	:global(.dark) .speech-button.speaking {
+		background: rgba(45, 212, 191, 0.08);
+		color: rgba(153, 246, 228, 0.9);
+	}
+
+	:global(.dark) .speech-setting {
+		background: rgba(255, 255, 255, 0.035);
+	}
+
 	:global(.dark) .support-chip {
 		border-color: rgba(255, 255, 255, 0.18);
 		background: rgba(255, 255, 255, 0.08);
@@ -1100,6 +1337,16 @@
 
 		.chat-input-area {
 			padding: 0.65rem 0.75rem calc(0.65rem + env(safe-area-inset-bottom));
+		}
+
+		.speech-setting {
+			margin-bottom: 0.55rem;
+			padding: 0.52rem 0.6rem;
+		}
+
+		.speech-setting label {
+			min-height: 1.5rem;
+			font-size: 0.76rem;
 		}
 
 		.support-panel {
