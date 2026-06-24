@@ -173,6 +173,13 @@
 					<td class="px-4 py-3">Sessionbaserat</td>
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
+					<th scope="row" class="px-4 py-3 font-normal text-left">Pixelanalys</th>
+					<td class="px-4 py-3">TikTok Pixel</td>
+					<td class="px-4 py-3"><a class="underline" href="https://ads.tiktok.com/i18n/official/policy/business-products-terms">Se TikToks villkor</a></td>
+					<td class="px-4 py-3">Samtycke</td>
+					<td class="px-4 py-3"><a class="underline" href="https://www.tiktok.com/legal/page/eea/privacy-policy/sv">Se TikToks integritetspolicy</a></td>
+				</tr>
+				<tr>
 					<th scope="row" class="px-4 py-3 font-normal text-left">Cookie-fri webbstatistik</th>
 					<td class="px-4 py-3">Ahrefs Web Analytics</td>
 					<td class="px-4 py-3">Singapore&thinsp;<span class="opacity-60 text-xs">(SCC vid tillämplig överföring)</span></td>
@@ -211,8 +218,9 @@
 	<h2 class="text-lg font-semibold mt-8 mb-2">Kakor och analyser</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
 		MittPsyke använder analysverktyg för att förstå hur sajten används och förbättra upplevelsen.
-		Google Analytics aktiveras <strong>endast om du godkänner</strong> det i cookie-bannern som visas
-		vid ditt första besök. Ahrefs Web Analytics används för cookie-fri, samlad webbstatistik enligt
+		Google Analytics och TikTok Pixel aktiveras <strong>endast om du godkänner</strong> det i cookie-bannern
+		som visas vid ditt första besök. TikTok-integrationen skickar sidvisningar och fasta eventnamn,
+		men ingen dagbokstext. Ahrefs Web Analytics används för cookie-fri, samlad webbstatistik enligt
 		verktygets standardinställning. Du kan när som helst ändra ditt val genom att rensa cookies i din webbläsare.
 	</p>
 
@@ -236,6 +244,7 @@
 		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll. Data lagras inom EU (Frankfurt).</li>
 		<li><strong>OpenAI:</strong> AI-funktioner som chatt. OpenAI använder inte API-data för att träna sina modeller. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
 		<li><strong>Vercel:</strong> hosting och leverans av webbplatsen. Analytics aktiveras endast med ditt samtycke. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
+		<li><strong>TikTok:</strong> pixelanalys av sidvisningar och utvalda interaktioner, endast efter ditt samtycke. Integrationen skickar ingen dagbokstext.</li>
 		<li><strong>Ahrefs:</strong> cookie-fri webbstatistik om trafik och sidvisningar.</li>
 	</ul>
 

@@ -28,7 +28,7 @@
 		<h2 class="text-lg font-semibold mt-0 mb-2">Kort sammanfattning</h2>
 		<ul>
 			<li>Vissa tekniska funktioner behövs för att sidan, konto och inställningar ska fungera.</li>
-			<li>Google Analytics används bara när du har godkänt analys i cookieinställningarna.</li>
+			<li>Google Analytics och TikTok Pixel används bara när du har godkänt analys i cookieinställningarna.</li>
 			<li>Ahrefs Web Analytics används för cookie-fri, samlad webbstatistik.</li>
 			<li>Du kan ändra ditt val genom att öppna cookieinställningarna igen.</li>
 		</ul>
@@ -48,7 +48,7 @@
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Analysverktyg</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		Kodbasen använder Google Analytics via gtag när analys är aktiverat och du har samtyckt.
+		Kodbasen använder Google Analytics och TikTok Pixel när analys är aktiverat och du har samtyckt.
 		Ahrefs Web Analytics ligger i sidans head och används för cookie-fri, samlad webbstatistik.
 		Vi hittar ingen aktiv Vercel Analytics-klientkod i projektet.
 	</p>
@@ -58,6 +58,15 @@
 			<li><strong>Syfte:</strong> förstå hur webbplatsen används och förbättra upplevelsen.</li>
 			<li><strong>När det aktiveras:</strong> endast efter att du godkänt analys.</li>
 			<li><strong>Typ av data:</strong> sidvisningar, händelser och teknisk användningsdata.</li>
+			<li><strong>Samtycke:</strong> krävs.</li>
+		</ul>
+	</section>
+	<section class="provider-card mt-3" aria-label="TikTok Pixel">
+		<h3 class="text-base font-semibold mt-0 mb-2">TikTok Pixel</h3>
+		<ul>
+			<li><strong>Syfte:</strong> mäta sidvisningar och utvalda interaktioner.</li>
+			<li><strong>När det aktiveras:</strong> endast efter att du godkänt analys.</li>
+			<li><strong>Typ av data:</strong> sidvisningar, fasta eventnamn och teknisk användningsdata. Dagbokstext skickas inte av integrationen.</li>
 			<li><strong>Samtycke:</strong> krävs.</li>
 		</ul>
 	</section>
@@ -102,6 +111,11 @@
 			<p>Analys och statistik om hur webbplatsen används, om du samtycker.</p>
 			<p>Kan behandla teknisk användningsdata och sidvisningar.</p>
 		</section>
+		<section class="provider-card" aria-label="TikTok Pixel">
+			<h3 class="text-base font-semibold mt-0 mb-2">TikTok Pixel</h3>
+			<p>Analys av sidvisningar och utvalda interaktioner, om du samtycker.</p>
+			<p>Integrationen skickar fasta eventnamn och ingen dagbokstext.</p>
+		</section>
 		<section class="provider-card" aria-label="Ahrefs Web Analytics">
 			<h3 class="text-base font-semibold mt-0 mb-2">Ahrefs Web Analytics</h3>
 			<p>Cookie-fri, samlad statistik om trafik och sidvisningar.</p>
@@ -111,8 +125,8 @@
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Hur du ändrar samtycke</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		Du kan öppna cookieinställningarna igen och ändra ditt val. Om du väljer bort Google Analytics
-		försöker MittPsyke också rensa Google Analytics-cookies från webbläsaren.
+		Du kan öppna cookieinställningarna igen och ändra ditt val. Om du väljer bort analys
+		meddelas analysverktygen, och MittPsyke försöker också rensa Google Analytics-cookies från webbläsaren.
 	</p>
 	<button
 		type="button"

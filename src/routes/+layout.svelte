@@ -12,6 +12,12 @@
 		trackPageView,
 		disableAnalytics
 	} from '$lib/analytics';
+	import {
+		TIKTOK_PIXEL_ENABLED,
+		disableTikTokPixel,
+		initializeTikTokPixel,
+		trackTikTokPageView
+	} from '$lib/analytics/tiktokPixel';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
@@ -177,6 +183,8 @@
 	let profilePanelOpen = $state(false);
 	let analyticsEnabled = $state(false);
 	let lastTrackedPagePath = $state('');
+	let tiktokPixelEnabled = $state(false);
+	let lastTikTokPagePath = $state('');
 	let profileRequestVersion = 0;
 	let layoutSummaryRequestVersion = 0;
 	let seededSessionAccessToken = '';
@@ -348,15 +356,21 @@
 	}
 
 	function trackCurrentPage(url?: URL) {
-		if (!analyticsEnabled || !url) return;
+		if (!url) return;
 
 		const nextPageKey = pageKey(url);
-		if (lastTrackedPagePath === nextPageKey) return;
+		if (analyticsEnabled && lastTrackedPagePath !== nextPageKey) {
+			trackPageView(url);
+			trackLandingPageViewOnce(url);
+			trackReturnVisitIfNeeded();
+			lastTrackedPagePath = nextPageKey;
+		}
 
-		trackPageView(url);
-		trackLandingPageViewOnce(url);
-		trackReturnVisitIfNeeded();
-		lastTrackedPagePath = nextPageKey;
+		if (tiktokPixelEnabled && lastTikTokPagePath !== nextPageKey) {
+			// TikTok: SvelteKit-navigationer får exakt en manuell PageView per URL.
+			trackTikTokPageView(url);
+			lastTikTokPagePath = nextPageKey;
+		}
 	}
 
 	function handleInternalLinkClick(event: MouseEvent) {
@@ -390,14 +404,24 @@
 
 		const consentStatus = getAnalyticsConsent();
 
-		analyticsEnabled = ANALYTICS_ENABLED && hasAnalyticsConsent();
+		const hasConsent = hasAnalyticsConsent();
+		analyticsEnabled = ANALYTICS_ENABLED && hasConsent;
+		tiktokPixelEnabled = TIKTOK_PIXEL_ENABLED && hasConsent;
+
 		if (!analyticsEnabled) {
 			lastTrackedPagePath = '';
 			disableAnalytics();
-			return;
+		} else {
+			initializeAnalytics();
 		}
 
-		initializeAnalytics();
+		if (!tiktokPixelEnabled) {
+			lastTikTokPagePath = '';
+			disableTikTokPixel();
+		} else {
+			initializeTikTokPixel();
+		}
+
 		trackCurrentPage(new URL(window.location.href));
 	}
 

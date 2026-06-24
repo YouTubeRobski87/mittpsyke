@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { ANALYTICS_ENABLED } from '$lib/analytics';
+	import { TIKTOK_PIXEL_ENABLED } from '$lib/analytics/tiktokPixel';
 	import {
 		getAnalyticsConsent,
 		grantAnalyticsConsent,
@@ -9,13 +10,13 @@
 	} from '$lib/consent';
 
 	$effect(() => {
-		if (browser && ANALYTICS_ENABLED && getAnalyticsConsent() === null) {
+		if (browser && (ANALYTICS_ENABLED || TIKTOK_PIXEL_ENABLED) && getAnalyticsConsent() === null) {
 			cookieBannerOpen.set(true);
 		}
 	});
 
 	function accept() {
-		if (!ANALYTICS_ENABLED) {
+		if (!ANALYTICS_ENABLED && !TIKTOK_PIXEL_ENABLED) {
 			cookieBannerOpen.set(false);
 			return;
 		}
@@ -38,8 +39,8 @@
 		class="fixed bottom-3 left-1/2 z-50 flex w-[min(520px,calc(100vw-1rem))] -translate-x-1/2 flex-col gap-2 rounded-xl border border-black/10 bg-white px-4 py-3 text-sm shadow-lg dark:border-white/10 dark:bg-zinc-900 sm:bottom-4 sm:w-[min(520px,calc(100vw-2rem))] sm:gap-3 sm:px-5 sm:py-4"
 	>
 		<p class="opacity-80 leading-relaxed">
-			Vi använder analys för att förstå hur sajten används och göra den bättre. Inga personuppgifter
-			delas med tredje part.
+			Vi använder analys för att förstå hur sajten används och göra den bättre. Analysdata kan
+			behandlas av leverantörerna som beskrivs i vår integritetsinformation.
 			<a href="/integritet" class="text-blue-600 underline hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Läs mer</a>.
 		</p>
 		<div class="flex flex-col sm:flex-row gap-2">

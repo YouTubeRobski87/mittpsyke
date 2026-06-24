@@ -5,6 +5,7 @@
 		trackAnonymousWriteCompletedFromText,
 		trackAnonymousWriteStarted
 	} from '$lib/analytics';
+	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
 
 	const STORAGE_KEY = 'mittpsyke_guest_entry';
 	const AUTOSAVE_INTERVAL_MS = 3000;
@@ -61,6 +62,17 @@
 		showSavedEntryPrompt = false;
 		saveStatus = entry.trim().length > 0 ? 'saved' : 'idle';
 		textareaEl?.focus();
+	}
+
+	function continueWriting() {
+		// TikTok: fast knappnamn, ingen dagbokstext skickas.
+		trackTikTokButtonClick('continue_writing');
+		persistIfDirty();
+	}
+
+	function saveAndCreateAccount() {
+		// TikTok: registrerings-CTA klickad; registreringen är inte slutförd här.
+		trackTikTokButtonClick('save_create_account');
 	}
 
 	function clearSavedEntry(options: { keepCurrentText?: boolean } = {}) {
@@ -166,8 +178,10 @@
 		<footer class="guest-entry-footer">
 			<span class="char-count" aria-hidden="true">{charCount} tecken</span>
 			<div class="actions">
-				<a class="primary-action" href="/register?fromDiary=true">Spara och skapa konto</a>
-				<button type="button" class="secondary-action" onclick={persistIfDirty}>
+				<a class="primary-action" href="/register?fromDiary=true" onclick={saveAndCreateAccount}
+					>Spara och skapa konto</a
+				>
+				<button type="button" class="secondary-action" onclick={continueWriting}>
 					Fortsätt skriva
 				</button>
 			</div>
