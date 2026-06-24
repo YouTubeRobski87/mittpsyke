@@ -326,7 +326,7 @@ export function trackReturnVisitIfNeeded(now = Date.now()) {
 	}
 }
 
-export function trackAuthCompletedFromPendingState() {
+export function trackAuthCompletedFromPendingState(onSignUpCompleted?: () => void) {
 	if (!browser) return;
 
 	const raw = readSessionValue(AUTH_FUNNEL_SESSION_KEY);
@@ -341,6 +341,7 @@ export function trackAuthCompletedFromPendingState() {
 
 		if (parsed.type === 'signup') {
 			trackSignUpCompleted();
+			onSignUpCompleted?.();
 		} else if (parsed.type === 'login') {
 			trackLoginCompleted();
 		}

@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { hasAnalyticsConsent } from '$lib/consent';
 
-type TikTokEventName = 'ViewContent' | 'ClickButton';
+type TikTokEventName = 'ViewContent' | 'ClickButton' | 'CompleteRegistration';
 type TikTokEventParams = Record<string, string | number | boolean>;
 type TikTokMethod = (...args: unknown[]) => void;
 
@@ -153,4 +153,11 @@ export function trackTikTokButtonClick(buttonName: 'continue_writing' | 'save_cr
 	if (!initializeTikTokPixel() || !hasAnalyticsConsent()) return;
 
 	(window as TikTokWindow).ttq?.track?.('ClickButton', { button_name: buttonName });
+}
+
+export function trackTikTokRegistrationCompleted() {
+	if (!initializeTikTokPixel() || !hasAnalyticsConsent()) return;
+
+	// TikTok: faktisk slutförd registrering, utan PII eller andra eventparametrar.
+	(window as TikTokWindow).ttq?.track?.('CompleteRegistration');
 }

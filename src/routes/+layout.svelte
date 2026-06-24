@@ -16,7 +16,8 @@
 		TIKTOK_PIXEL_ENABLED,
 		disableTikTokPixel,
 		initializeTikTokPixel,
-		trackTikTokPageView
+		trackTikTokPageView,
+		trackTikTokRegistrationCompleted
 	} from '$lib/analytics/tiktokPixel';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
@@ -234,7 +235,8 @@
 			loadedLayoutSummaryUserId = sessionUser.id;
 			void loadLayoutSummary();
 		}
-		trackAuthCompletedFromPendingState();
+		// TikTok CompleteRegistration triggas först när registreringen gett en faktisk användarsession.
+		trackAuthCompletedFromPendingState(trackTikTokRegistrationCompleted);
 		if (syncedProfileUserId === sessionUser.id) return;
 		syncedProfileUserId = sessionUser.id;
 
