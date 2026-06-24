@@ -48,7 +48,7 @@
 		year: 'numeric'
 	});
 
-	const desktopPrimaryNavItems: NavItem[] = [
+	const primaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chatta' },
 		{ href: '/blogg', label: 'Artiklar' },
 		{ href: '/guider', label: 'Guider' },
@@ -64,15 +64,6 @@
 			description: 'Förstå vanliga besvär'
 		},
 		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' }
-	];
-
-	const mobilePrimaryNavItems: NavItem[] = [
-		{ href: '/blogg', label: 'Artiklar' },
-		{ href: '/chat', label: 'Chatta' },
-		{ href: '/guider', label: 'Guider' },
-		{ href: '/anonyma-berattelser', label: 'Berättelser' },
-		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
-		{ href: '/om-skaparen', label: 'Om skaparen' }
 	];
 
 	const mobileSupplementalNavItems: NavItem[] = [
@@ -617,7 +608,7 @@
 					<span class="brand-wordmark">MittPsyke</span>
 				</a>
 				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
-					{#each desktopPrimaryNavItems as item}
+					{#each primaryNavItems as item}
 						{#if item.href === '/guider'}
 							<details bind:this={resourcesMenuRef} class="resources-dropdown">
 								<summary class="text-sm transition-opacity {isActive(item.href) || guideNavItems.some((guideItem) => isActive(guideItem.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">{item.label}</summary>
@@ -647,7 +638,7 @@
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
 				<nav class="mobile-quick-nav" aria-label="Snabbnavigering">
-					{#each mobilePrimaryNavItems.slice(0, 3) as item}
+					{#each primaryNavItems.slice(0, 3) as item}
 						<a
 							href={item.href}
 							class="mobile-quick-link"
@@ -801,7 +792,7 @@
 
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden px-5 py-3" role="navigation" aria-label="Mobilmeny">
-				{#each mobilePrimaryNavItems as item}
+				{#each primaryNavItems as item}
 					<a
 						href={item.href}
 						class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
