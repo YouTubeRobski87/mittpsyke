@@ -9,6 +9,7 @@
 		trackHomeCtaClick,
 		trackScrollToHowItWorks
 	} from '$lib/analytics';
+	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
 
 	let { data }: { data: Record<string, unknown> } = $props();
 	let heroEl: HTMLElement | null = null;
@@ -77,6 +78,9 @@
 
 	function trackHomeCta(section: string, cta: string, href: string) {
 		trackHomeCtaClick({ section, cta, href });
+		if (cta === 'borja_skriva_anonymt_nu') {
+			trackTikTokButtonClick('start_writing_anonymously');
+		}
 	}
 
 	function trackStartAnonymous() {

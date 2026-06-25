@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { trackDiaryCtaClick } from '$lib/analytics';
+	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
 
 	type Variant = 'diary-main' | 'diary-landing';
 
@@ -41,6 +42,9 @@
 
 	function handleCtaClick() {
 		trackDiaryCtaClick(variant);
+		if (ctaLabel === 'Börja skriva anonymt nu') {
+			trackTikTokButtonClick('start_writing_anonymously');
+		}
 	}
 </script>
 

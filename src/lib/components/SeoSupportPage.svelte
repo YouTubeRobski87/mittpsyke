@@ -1,6 +1,7 @@
 <script lang="ts">
 	import PublicTrustPanel from '$lib/components/PublicTrustPanel.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
+	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
 
 	type TextLink = {
 		href: string;
@@ -50,6 +51,18 @@
 
 	let { config }: { config: SeoSupportPageConfig } = $props();
 
+	function trackNamedTikTokCta(label: string) {
+		if (label === 'Starta chatten') {
+			trackTikTokButtonClick('start_chat');
+		} else if (label === 'Börja skriva anonymt nu') {
+			trackTikTokButtonClick('start_writing_anonymously');
+		} else if (label === 'Fortsätt skriva') {
+			trackTikTokButtonClick('continue_writing');
+		} else if (label === 'Spara och skapa konto') {
+			trackTikTokButtonClick('save_create_account');
+		}
+	}
+
 	const faqJsonLd = $derived(
 		config.faqSchema
 			? {
@@ -97,9 +110,9 @@
 		</header>
 
 		<div class="cta-container">
-			<a class="cta-button" href={config.primaryCta.href}>{config.primaryCta.label}</a>
+			<a class="cta-button" href={config.primaryCta.href} onclick={() => trackNamedTikTokCta(config.primaryCta.label)}>{config.primaryCta.label}</a>
 			{#if config.secondaryCta}
-				<a class="cta-button ghost" href={config.secondaryCta.href}>{config.secondaryCta.label}</a>
+				<a class="cta-button ghost" href={config.secondaryCta.href} onclick={() => trackNamedTikTokCta(config.secondaryCta!.label)}>{config.secondaryCta.label}</a>
 			{/if}
 		</div>
 
@@ -130,7 +143,7 @@
 			{/each}
 			<p class="links-row">
 				{#each config.nextStepLinks as link}
-					<a href={link.href}>{link.label}</a>
+					<a href={link.href} onclick={() => trackNamedTikTokCta(link.label)}>{link.label}</a>
 				{/each}
 			</p>
 		</section>

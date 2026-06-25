@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
+	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
 
 	type DashboardData = {
 		diaryPreview: {
@@ -205,7 +206,11 @@
 					Du behöver inte veta exakt vad du känner. Börja med en rad, eller fortsätt där du slutade.
 				</p>
 				<div class="return-actions">
-					<a href="/dagbok/checkin#senaste-inlagg" class="auth-button primary">Fortsätt skriva</a>
+					<a
+						href="/dagbok/checkin#senaste-inlagg"
+						class="auth-button primary"
+						onclick={() => trackTikTokButtonClick('continue_writing')}>Fortsätt skriva</a
+					>
 					<a href="/dagbok/checkin#skriv-sjalv" class="auth-button">Skriv nytt avtryck</a>
 				</div>
 			</div>

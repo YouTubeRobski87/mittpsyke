@@ -149,7 +149,9 @@ export function trackTikTokPageView(url: URL) {
 	}
 }
 
-export function trackTikTokButtonClick(buttonName: 'continue_writing' | 'save_create_account') {
+export function trackTikTokButtonClick(
+	buttonName: 'start_writing_anonymously' | 'start_chat' | 'continue_writing' | 'save_create_account'
+) {
 	if (!initializeTikTokPixel() || !hasAnalyticsConsent()) return;
 
 	(window as TikTokWindow).ttq?.track?.('ClickButton', { button_name: buttonName });
