@@ -1,582 +1,497 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import SEO from '$lib/components/SEO.svelte';
-	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
-	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
+  import { onMount } from 'svelte';
+  import SEO from '$lib/components/SEO.svelte';
+  import Sidebar from '$lib/components/Sidebar.svelte';
+  import StatCard from '$lib/components/StatCard.svelte';
+  import EntryCard from '$lib/components/EntryCard.svelte';
+  import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
 
-	type DashboardData = {
-		diaryPreview: {
-			id: string | null;
-			snippet: string;
-			dateLabel: string;
-			hasEntry: boolean;
-		};
-		progressPreview: {
-			currentStreak: number;
-			weeklyEntries: number;
-			totalEntries: number;
-			summary: string;
-		};
-		settingsPreview: {
-			displayName: string | null;
-			themeLabel: string;
-			weeklyGoalLabel: string;
-			dashboardFocusLabel: string;
-		};
-	};
+  type DashboardData = {
+    diaryPreview: {
+      id: string | null;
+      snippet: string;
+      dateLabel: string;
+      hasEntry: boolean;
+    };
+    progressPreview: {
+      currentStreak: number;
+      weeklyEntries: number;
+      totalEntries: number;
+      summary: string;
+    };
+    settingsPreview: {
+      displayName: string | null;
+      themeLabel: string;
+      weeklyGoalLabel: string;
+      dashboardFocusLabel: string;
+    };
+  };
 
-	let { data } = $props<{ data: DashboardData }>();
+  let { data } = $props<{ data: DashboardData }>();
 
-	const diaryPreview = $derived(data.diaryPreview);
-	const progressPreview = $derived(data.progressPreview);
-	const settingsPreview = $derived(data.settingsPreview);
-	const primaryDiaryCtaLabel = $derived(diaryPreview.hasEntry ? 'Fortsätt från senast' : 'Börja i dagboken');
-	const fallbackDailyQuestion = 'Vad behöver få lite mer plats hos dig idag?';
+  const diaryPreview    = $derived(data.diaryPreview);
+  const progressPreview = $derived(data.progressPreview);
+  const settingsPreview = $derived(data.settingsPreview);
+  const primaryDiaryCtaLabel = $derived(diaryPreview.hasEntry ? 'Fortsätt från senast' : 'Börja i dagboken');
+  const fallbackDailyQuestion = 'Vad behöver få lite mer plats hos dig idag?';
 
-	type DailyQuestionPayload = {
-		id?: string | null;
-		question?: string;
-		date?: string;
-		regenerations?: number;
-		maxRegenerations?: number;
-		safety?: boolean;
-		error?: string;
-	};
+  // StatCard-data baserad på riktig progressPreview
+  const stats = $derived([
+    {
+      label: 'Inlägg denna vecka',
+      value: String(progressPreview.weeklyEntries),
+      sub: progressPreview.summary,
+      points: [4, 6, 3, 7, 5, progressPreview.weeklyEntries, progressPreview.weeklyEntries]
+    },
+    {
+      label: 'Streak',
+      value: `${progressPreview.currentStreak} dag${progressPreview.currentStreak === 1 ? '' : 'ar'}`,
+      sub: 'i följd',
+      points: [1, 2, 3, 4, 5, 6, progressPreview.currentStreak]
+    },
+    {
+      label: 'Totalt',
+      value: String(progressPreview.totalEntries),
+      sub: 'inlägg',
+      points: [10, 14, 18, 22, 26, 30, progressPreview.totalEntries]
+    }
+  ]);
 
-	type SpegelvattnetPayload = {
-		reflection?: {
-			id: string;
-			week_start: string;
-			status: 'ready' | 'paused';
-			paused_reason: string | null;
-		};
-		error?: string;
-	};
+  type DailyQuestionPayload = {
+    id?: string | null;
+    question?: string;
+    date?: string;
+    regenerations?: number;
+    maxRegenerations?: number;
+    safety?: boolean;
+    error?: string;
+  };
 
-	let dailyQuestion = $state('');
-	let dailyQuestionId = $state<string | null>(null);
-	let dailyQuestionDate = $state('');
-	let dailyQuestionRegenerations = $state(0);
-	let dailyQuestionMaxRegenerations = $state(2);
-	let dailyQuestionSafety = $state(false);
-	let dailyQuestionLoading = $state(true);
-	let dailyQuestionRegenerating = $state(false);
-	let dailyQuestionError = $state('');
-	let spegelReflection = $state<SpegelvattnetPayload['reflection'] | null>(null);
-	let spegelLoading = $state(false);
-	const dailyQuestionDiaryHref = $derived(
-		`/dagbok/checkin?prompt=${encodeURIComponent(dailyQuestion || fallbackDailyQuestion)}${dailyQuestionId ? `&daily_question_id=${encodeURIComponent(dailyQuestionId)}` : ''}#skriv-sjalv`
-	);
-	const canRegenerateDailyQuestion = $derived(
-		!dailyQuestionSafety && dailyQuestionRegenerations < dailyQuestionMaxRegenerations
-	);
-	const shouldShowSpegelvattnet = $derived(Boolean(spegelReflection) && !spegelLoading);
+  type SpegelvattnetPayload = {
+    reflection?: {
+      id: string;
+      week_start: string;
+      status: 'ready' | 'paused';
+      paused_reason: string | null;
+    };
+    error?: string;
+  };
 
-	function todayKey() {
-		return new Intl.DateTimeFormat('sv-CA', {
-			timeZone: 'Europe/Stockholm',
-			year: 'numeric',
-			month: '2-digit',
-			day: '2-digit'
-		}).format(new Date());
-	}
+  let dailyQuestion              = $state('');
+  let dailyQuestionId            = $state<string | null>(null);
+  let dailyQuestionDate          = $state('');
+  let dailyQuestionRegenerations = $state(0);
+  let dailyQuestionMaxRegenerations = $state(2);
+  let dailyQuestionSafety        = $state(false);
+  let dailyQuestionLoading       = $state(true);
+  let dailyQuestionRegenerating  = $state(false);
+  let dailyQuestionError         = $state('');
+  let spegelReflection           = $state<SpegelvattnetPayload['reflection'] | null>(null);
+  let spegelLoading              = $state(false);
 
-	function cacheKey(date = todayKey()) {
-		return `mittpsyke_daily_question_${date}`;
-	}
+  const dailyQuestionDiaryHref = $derived(
+    `/dagbok/checkin?prompt=${encodeURIComponent(dailyQuestion || fallbackDailyQuestion)}${dailyQuestionId ? `&daily_question_id=${encodeURIComponent(dailyQuestionId)}` : ''}#skriv-sjalv`
+  );
+  const canRegenerateDailyQuestion = $derived(
+    !dailyQuestionSafety && dailyQuestionRegenerations < dailyQuestionMaxRegenerations
+  );
+  const shouldShowSpegelvattnet = $derived(Boolean(spegelReflection) && !spegelLoading);
 
-	function readCachedDailyQuestion() {
-		if (typeof localStorage === 'undefined') return null;
-		try {
-			const cached = JSON.parse(localStorage.getItem(cacheKey()) ?? 'null') as DailyQuestionPayload | null;
-			if (!cached?.question || cached.date !== todayKey()) return null;
-			return cached;
-		} catch {
-			return null;
-		}
-	}
+  function todayKey() {
+    return new Intl.DateTimeFormat('sv-CA', {
+      timeZone: 'Europe/Stockholm',
+      year: 'numeric', month: '2-digit', day: '2-digit'
+    }).format(new Date());
+  }
+  function cacheKey(date = todayKey()) {
+    return `mittpsyke_daily_question_${date}`;
+  }
+  function readCachedDailyQuestion() {
+    if (typeof localStorage === 'undefined') return null;
+    try {
+      const cached = JSON.parse(localStorage.getItem(cacheKey()) ?? 'null') as DailyQuestionPayload | null;
+      if (!cached?.question || cached.date !== todayKey()) return null;
+      return cached;
+    } catch { return null; }
+  }
+  function applyDailyQuestion(payload: DailyQuestionPayload) {
+    dailyQuestion = payload.question?.trim() || fallbackDailyQuestion;
+    dailyQuestionId = payload.id ?? null;
+    dailyQuestionDate = payload.date || todayKey();
+    dailyQuestionRegenerations = payload.regenerations ?? 0;
+    dailyQuestionMaxRegenerations = payload.maxRegenerations ?? 2;
+    dailyQuestionSafety = Boolean(payload.safety);
+    dailyQuestionError = '';
+  }
+  function cacheDailyQuestion(payload: DailyQuestionPayload) {
+    if (typeof localStorage === 'undefined' || !payload.question || payload.safety) return;
+    localStorage.setItem(cacheKey(payload.date), JSON.stringify(payload));
+  }
+  function isSundayOrMonday() {
+    const weekday = new Intl.DateTimeFormat('sv-SE', {
+      timeZone: 'Europe/Stockholm', weekday: 'short'
+    }).format(new Date()).toLowerCase();
+    return weekday.startsWith('sön') || weekday.startsWith('mån');
+  }
 
-	function applyDailyQuestion(payload: DailyQuestionPayload) {
-		dailyQuestion = payload.question?.trim() || fallbackDailyQuestion;
-		dailyQuestionId = payload.id ?? null;
-		dailyQuestionDate = payload.date || todayKey();
-		dailyQuestionRegenerations = payload.regenerations ?? 0;
-		dailyQuestionMaxRegenerations = payload.maxRegenerations ?? 2;
-		dailyQuestionSafety = Boolean(payload.safety);
-		dailyQuestionError = '';
-	}
+  async function loadSpegelvattnet() {
+    if (!isSundayOrMonday()) return;
+    spegelLoading = true;
+    try {
+      const response = await fetch('/api/spegelvattnet/latest');
+      const payload = (await response.json().catch(() => ({}))) as SpegelvattnetPayload;
+      if (response.ok && payload.reflection) spegelReflection = payload.reflection;
+    } finally {
+      spegelLoading = false;
+    }
+  }
 
-	function cacheDailyQuestion(payload: DailyQuestionPayload) {
-		if (typeof localStorage === 'undefined' || !payload.question || payload.safety) return;
-		localStorage.setItem(cacheKey(payload.date), JSON.stringify(payload));
-	}
+  async function loadDailyQuestion() {
+    const cached = readCachedDailyQuestion();
+    if (cached) {
+      applyDailyQuestion(cached);
+      dailyQuestionLoading = false;
+      return;
+    }
+    dailyQuestionLoading = true;
+    try {
+      const response = await fetch('/api/daily-question');
+      const payload = (await response.json().catch(() => ({}))) as DailyQuestionPayload;
+      if (!response.ok) {
+        dailyQuestionError = payload.error ?? 'Kunde inte hämta dagens fråga just nu.';
+        dailyQuestion = fallbackDailyQuestion;
+        return;
+      }
+      applyDailyQuestion(payload);
+      cacheDailyQuestion(payload);
+    } catch {
+      dailyQuestion = fallbackDailyQuestion;
+      dailyQuestionError = 'Kunde inte hämta dagens fråga just nu.';
+    } finally {
+      dailyQuestionLoading = false;
+    }
+  }
 
-	function isSundayOrMonday() {
-		const weekday = new Intl.DateTimeFormat('sv-SE', {
-			timeZone: 'Europe/Stockholm',
-			weekday: 'short'
-		}).format(new Date()).toLowerCase();
-		return weekday.startsWith('sön') || weekday.startsWith('mån');
-	}
+  async function regenerateDailyQuestion() {
+    if (!canRegenerateDailyQuestion || dailyQuestionRegenerating) return;
+    dailyQuestionRegenerating = true;
+    dailyQuestionError = '';
+    try {
+      const response = await fetch('/api/daily-question/regenerate', { method: 'POST' });
+      const payload = (await response.json().catch(() => ({}))) as DailyQuestionPayload;
+      if (!response.ok) {
+        dailyQuestionError = payload.error ?? 'Kunde inte byta fråga just nu.';
+        if (payload.question) applyDailyQuestion(payload);
+        return;
+      }
+      applyDailyQuestion(payload);
+      cacheDailyQuestion(payload);
+    } catch {
+      dailyQuestionError = 'Kunde inte byta fråga just nu.';
+    } finally {
+      dailyQuestionRegenerating = false;
+    }
+  }
 
-	async function loadSpegelvattnet() {
-		if (!isSundayOrMonday()) return;
-		spegelLoading = true;
-		try {
-			const response = await fetch('/api/spegelvattnet/latest');
-			const payload = (await response.json().catch(() => ({}))) as SpegelvattnetPayload;
-			if (response.ok && payload.reflection) {
-				spegelReflection = payload.reflection;
-			}
-		} finally {
-			spegelLoading = false;
-		}
-	}
-
-	async function loadDailyQuestion() {
-		const cached = readCachedDailyQuestion();
-		if (cached) {
-			applyDailyQuestion(cached);
-			dailyQuestionLoading = false;
-			return;
-		}
-
-		dailyQuestionLoading = true;
-		try {
-			const response = await fetch('/api/daily-question');
-			const payload = (await response.json().catch(() => ({}))) as DailyQuestionPayload;
-			if (!response.ok) {
-				dailyQuestionError = payload.error ?? 'Kunde inte hämta dagens fråga just nu.';
-				dailyQuestion = fallbackDailyQuestion;
-				return;
-			}
-			applyDailyQuestion(payload);
-			cacheDailyQuestion(payload);
-		} catch {
-			dailyQuestion = fallbackDailyQuestion;
-			dailyQuestionError = 'Kunde inte hämta dagens fråga just nu.';
-		} finally {
-			dailyQuestionLoading = false;
-		}
-	}
-
-	async function regenerateDailyQuestion() {
-		if (!canRegenerateDailyQuestion || dailyQuestionRegenerating) return;
-		dailyQuestionRegenerating = true;
-		dailyQuestionError = '';
-
-		try {
-			const response = await fetch('/api/daily-question/regenerate', { method: 'POST' });
-			const payload = (await response.json().catch(() => ({}))) as DailyQuestionPayload;
-			if (!response.ok) {
-				dailyQuestionError = payload.error ?? 'Kunde inte byta fråga just nu.';
-				if (payload.question) applyDailyQuestion(payload);
-				return;
-			}
-			applyDailyQuestion(payload);
-			cacheDailyQuestion(payload);
-		} catch {
-			dailyQuestionError = 'Kunde inte byta fråga just nu.';
-		} finally {
-			dailyQuestionRegenerating = false;
-		}
-	}
-
-	onMount(() => {
-		void loadDailyQuestion();
-		void loadSpegelvattnet();
-	});
+  onMount(() => {
+    void loadDailyQuestion();
+    void loadSpegelvattnet();
+  });
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/dashboard" />
 
-<main class="auth-page">
-	<PortalSubnav
-		active="dashboard"
-		title="Min portal"
-		description="Här finns dina viktigaste delar samlade i en lugn och tydlig översikt."
-	/>
+<div class="mp-dashboard">
+  <div class="shell">
+    <Sidebar active="hem" />
 
-	<div class="auth-shell">
-		<section class="auth-panel dashboard-return" aria-label="Fortsätt där du var">
-			<div class="return-intro">
-				<p class="portal-status-kicker">Din plats just nu</p>
-				<h2>Välkommen tillbaka</h2>
-				<p>
-					Du behöver inte veta exakt vad du känner. Börja med en rad, eller fortsätt där du slutade.
-				</p>
-				<div class="return-actions">
-					<a
-						href="/dagbok/checkin#senaste-inlagg"
-						class="auth-button primary"
-						onclick={() => trackTikTokButtonClick('continue_writing')}>Fortsätt skriva</a
-					>
-					<a href="/dagbok/checkin#skriv-sjalv" class="auth-button">Skriv nytt avtryck</a>
-				</div>
-			</div>
+    <main class="main">
 
-			<div class="return-panels">
-				<article class="return-card latest-entry">
-					<p class="portal-card-kicker">Senaste dagboksrad</p>
-					{#if diaryPreview.hasEntry}
-						{#if diaryPreview.dateLabel}
-							<p class="portal-meta">{diaryPreview.dateLabel}</p>
-						{/if}
-						<p class="return-preview">{diaryPreview.snippet}</p>
-						<a href="/dagbok/checkin#senaste-inlagg" class="auth-button">Fortsätt från senast</a>
-					{:else}
-						<p class="return-preview">
-							Din dagbok väntar stilla. Ett första avtryck kan vara en enda rad.
-						</p>
-						<a href="/dagbok/checkin#skriv-sjalv" class="auth-button">Börja skriva</a>
-					{/if}
-				</article>
+      <!-- ── Hero ── -->
+      <section class="hero-card">
+        <div class="hero-left">
+          <div class="kicker">Din plats just nu</div>
+          <h1>Välkommen tillbaka{settingsPreview.displayName ? ', ' + settingsPreview.displayName : ''}</h1>
+          <p class="hero-lead">Du behöver inte veta exakt vad du känner. Börja med en rad, eller fortsätt där du slutade.</p>
+          <div class="hero-actions">
+            <a
+              href="/dagbok/checkin#senaste-inlagg"
+              class="btn btn-primary"
+              onclick={() => trackTikTokButtonClick('continue_writing')}>Fortsätt skriva</a>
+            <a href="/dagbok/checkin#skriv-sjalv" class="btn btn-ghost">Skriv nytt avtryck</a>
+          </div>
+        </div>
+        <div class="hero-reminder">
+          <small>Fokus just nu</small>
+          <blockquote>{settingsPreview.dashboardFocusLabel}</blockquote>
+          <span>💜</span>
+        </div>
+      </section>
 
-				{#if shouldShowSpegelvattnet && spegelReflection}
-					<article class="return-card spegel-card">
-						<p class="portal-card-kicker">Spegelvattnet</p>
-						{#if spegelReflection.status === 'paused'}
-							<h3>Spegelvattnet är stilla den här veckan.</h3>
-							<p class="portal-subtle">
-								Om något känns tungt, finns Stödlinjer alltid där: stodlinjer.se. Vid akut fara, ring 112.
-							</p>
-							<a href="https://stodlinjer.se" class="auth-button" rel="noreferrer">Öppna stödlinjer</a>
-						{:else}
-							<h3>Spegelvattnet är stilla den här söndagen. Vill du titta?</h3>
-							<a href="/spegelvattnet" class="auth-button">Öppna →</a>
-						{/if}
-					</article>
-				{/if}
+      <!-- ── Statistik ── -->
+      <div class="section-title">Din utveckling</div>
+      <section class="stats">
+        {#each stats as s}
+          <StatCard label={s.label} value={s.value} sub={s.sub} points={s.points} />
+        {/each}
+      </section>
 
-				<article class="return-card daily-question">
-					<p class="portal-card-kicker">Dagens fråga</p>
-					{#if dailyQuestionLoading && !dailyQuestion}
-						<div class="daily-question-skeleton" aria-label="Hämtar dagens fråga"></div>
-					{:else}
-						<h3>{dailyQuestion || fallbackDailyQuestion}</h3>
-					{/if}
-					{#if dailyQuestionSafety}
-						<p class="portal-subtle">
-							Om det känns akut, ring 112. För vårdråd finns 1177, och fler stödlinjer finns på stodlinjer.se.
-						</p>
-					{:else}
-						<p class="portal-subtle">
-							Svara kort eller långt. Det räcker att börja där du är.
-						</p>
-					{/if}
-					<div class="daily-question-actions">
-						<a href={dailyQuestionDiaryHref} class="auth-button">Svara i dagboken</a>
-						{#if !dailyQuestionSafety}
-							<button
-								type="button"
-								class="daily-question-refresh"
-								onclick={regenerateDailyQuestion}
-								disabled={!canRegenerateDailyQuestion || dailyQuestionRegenerating || dailyQuestionLoading}
-								title={!canRegenerateDailyQuestion ? 'Du kan byta fråga två gånger per dag.' : 'Byt fråga'}
-							>
-								{dailyQuestionRegenerating ? 'Byter...' : 'Byt fråga'}
-							</button>
-						{/if}
-					</div>
-					{#if dailyQuestionError}
-						<p class="portal-subtle daily-question-error">{dailyQuestionError}</p>
-					{/if}
-				</article>
-			</div>
-		</section>
+      <!-- ── Dagboksrad + Daglig fråga ── -->
+      <div class="section-title">Dina kort</div>
+      <section class="cards-row">
 
-		<section class="portal-grid" aria-label="Snabb översikt">
-			<article class="auth-panel portal-card">
-				<div class="portal-card-head">
-					<p class="portal-card-kicker">Dagbok</p>
-					{#if diaryPreview.hasEntry && diaryPreview.dateLabel}
-						<span class="portal-meta">{diaryPreview.dateLabel}</span>
-					{/if}
-				</div>
-				<h2>{diaryPreview.hasEntry ? 'Fortsätt där du var' : 'Börja med ett par ord'}</h2>
-				<p class="portal-copy">{diaryPreview.snippet}</p>
-				{#if diaryPreview.hasEntry}
-					<p class="portal-subtle">Din dagbok sparar det viktigaste, så att du kan plocka upp tråden senare.</p>
-				{/if}
-				<a href="/dagbok/checkin" class="auth-button">{primaryDiaryCtaLabel}</a>
-			</article>
+        <!-- Senaste dagboksrad -->
+        {#if diaryPreview.hasEntry}
+          <EntryCard
+            title="Senaste avtryck"
+            body={diaryPreview.snippet}
+            time={diaryPreview.dateLabel}
+          />
+        {:else}
+          <article class="entry-placeholder">
+            <p>Din dagbok väntar stilla. Ett första avtryck kan vara en enda rad.</p>
+            <a href="/dagbok/checkin#skriv-sjalv" class="btn btn-ghost">Börja skriva</a>
+          </article>
+        {/if}
 
-			<article class="auth-panel portal-card">
-				<div class="portal-card-head">
-					<p class="portal-card-kicker">Framsteg</p>
-					<span class="portal-meta">
-						{progressPreview.currentStreak} dag{progressPreview.currentStreak === 1 ? '' : 'ar'} i följd
-					</span>
-				</div>
-				<h2>Små steg som syns</h2>
-				<p class="portal-copy">{progressPreview.summary}</p>
-				<div class="portal-stat-row" aria-label="Sammanfattning av framsteg">
-					<span>{progressPreview.weeklyEntries} denna vecka</span>
-					<span>{progressPreview.totalEntries} totalt</span>
-				</div>
-				<a href="/framsteg" class="auth-button">Se framsteg</a>
-			</article>
+        <!-- Daglig fråga -->
+        <article class="daily-card">
+          <p class="card-kicker">Dagens fråga</p>
+          {#if dailyQuestionLoading && !dailyQuestion}
+            <div class="skeleton" aria-label="Hämtar dagens fråga"></div>
+          {:else}
+            <h3>{dailyQuestion || fallbackDailyQuestion}</h3>
+          {/if}
+          {#if dailyQuestionSafety}
+            <p class="card-sub">Om det känns akut, ring 112. Fler stödlinjer på stodlinjer.se.</p>
+          {:else}
+            <p class="card-sub">Svara kort eller långt. Det räcker att börja där du är.</p>
+          {/if}
+          <div class="daily-actions">
+            <a href={dailyQuestionDiaryHref} class="btn btn-ghost">Svara i dagboken</a>
+            {#if !dailyQuestionSafety}
+              <button
+                type="button"
+                class="refresh-btn"
+                onclick={regenerateDailyQuestion}
+                disabled={!canRegenerateDailyQuestion || dailyQuestionRegenerating || dailyQuestionLoading}
+                title={!canRegenerateDailyQuestion ? 'Du kan byta fråga två gånger per dag.' : 'Byt fråga'}
+              >{dailyQuestionRegenerating ? 'Byter...' : 'Byt fråga'}</button>
+            {/if}
+          </div>
+          {#if dailyQuestionError}
+            <p class="card-warn">{dailyQuestionError}</p>
+          {/if}
+        </article>
 
-			<article class="auth-panel portal-card">
-				<div class="portal-card-head">
-					<p class="portal-card-kicker">Inställningar</p>
-					<span class="portal-meta">{settingsPreview.themeLabel}</span>
-				</div>
-				<h2>Det som formar din portal</h2>
-				<p class="portal-copy">
-					Mål: {settingsPreview.weeklyGoalLabel}. Fokus på startsidan: {settingsPreview.dashboardFocusLabel}.
-				</p>
-				<a href="/dashboard/installningar" class="auth-button">Öppna inställningar</a>
-			</article>
-		</section>
-	</div>
-</main>
+        <!-- Spegelvattnet (sön/mån) -->
+        {#if shouldShowSpegelvattnet && spegelReflection}
+          <article class="daily-card spegel">
+            <p class="card-kicker">Spegelvattnet</p>
+            {#if spegelReflection.status === 'paused'}
+              <h3>Spegelvattnet är stilla den här veckan.</h3>
+              <p class="card-sub">Om något känns tungt finns Stödlinjer alltid där: stodlinjer.se. Vid akut fara, ring 112.</p>
+              <a href="https://stodlinjer.se" class="btn btn-ghost" rel="noreferrer">Öppna stödlinjer</a>
+            {:else}
+              <h3>Spegelvattnet är stilla den här söndagen. Vill du titta?</h3>
+              <a href="/spegelvattnet" class="btn btn-ghost">Öppna →</a>
+            {/if}
+          </article>
+        {/if}
+
+      </section>
+
+      <!-- ── Portal-kort ── -->
+      <div class="section-title">Snabb översikt</div>
+      <section class="portal-grid">
+
+        <article class="portal-card">
+          <div class="portal-head">
+            <p class="card-kicker">Dagbok</p>
+            {#if diaryPreview.hasEntry && diaryPreview.dateLabel}
+              <span class="portal-meta">{diaryPreview.dateLabel}</span>
+            {/if}
+          </div>
+          <h2>{diaryPreview.hasEntry ? 'Fortsätt där du var' : 'Börja med ett par ord'}</h2>
+          <p class="portal-copy">{diaryPreview.snippet}</p>
+          {#if diaryPreview.hasEntry}
+            <p class="card-sub">Din dagbok sparar det viktigaste, så att du kan plocka upp tråden senare.</p>
+          {/if}
+          <a href="/dagbok/checkin" class="btn btn-ghost">{primaryDiaryCtaLabel}</a>
+        </article>
+
+        <article class="portal-card">
+          <div class="portal-head">
+            <p class="card-kicker">Framsteg</p>
+            <span class="portal-meta">
+              {progressPreview.currentStreak} dag{progressPreview.currentStreak === 1 ? '' : 'ar'} i följd
+            </span>
+          </div>
+          <h2>Små steg som syns</h2>
+          <p class="portal-copy">{progressPreview.summary}</p>
+          <div class="stat-row">
+            <span>{progressPreview.weeklyEntries} denna vecka</span>
+            <span>{progressPreview.totalEntries} totalt</span>
+          </div>
+          <a href="/framsteg" class="btn btn-ghost">Se framsteg</a>
+        </article>
+
+        <article class="portal-card">
+          <div class="portal-head">
+            <p class="card-kicker">Inställningar</p>
+            <span class="portal-meta">{settingsPreview.themeLabel}</span>
+          </div>
+          <h2>Det som formar din portal</h2>
+          <p class="portal-copy">
+            Mål: {settingsPreview.weeklyGoalLabel}. Fokus: {settingsPreview.dashboardFocusLabel}.
+          </p>
+          <a href="/dashboard/installningar" class="btn btn-ghost">Öppna inställningar</a>
+        </article>
+
+      </section>
+    </main>
+  </div>
+</div>
 
 <style>
-	.portal-status-kicker,
-	.portal-card-kicker {
-		margin: 0;
-		font-size: 0.76rem;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-		color: hsl(var(--muted-foreground));
-	}
+  /* ── Design-tokens (scopade till den här sidan) ── */
+  .mp-dashboard{
+    --mp-lila:        #a882ff;
+    --mp-lila-2:      #7c5cff;
+    --mp-card:        rgba(255,255,255,0.04);
+    --mp-card-border: rgba(168,130,255,0.14);
+    --mp-text:        #e8e6f0;
+    --mp-text-dim:    #9a98ad;
+    --mp-radius:      18px;
 
-	.dashboard-return {
-		position: relative;
-		display: grid;
-		gap: 1rem;
-		overflow: hidden;
-		padding: clamp(1.15rem, 2.5vw, 1.7rem);
-		border-color: var(--color-dashboard-border);
-		background:
-			radial-gradient(circle at 86% 10%, rgba(96, 165, 250, 0.18), transparent 34%),
-			linear-gradient(135deg, hsl(222 47% 13%), hsl(224 36% 18%) 62%, hsl(230 30% 16%));
-		color: hsl(210 40% 98%);
-		box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
-	}
+    color: var(--mp-text);
+    min-height: 100vh;
+    padding: 28px;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(124,92,255,0.18), transparent 60%),
+      radial-gradient(900px 500px at 10% 110%, rgba(168,130,255,0.14), transparent 55%),
+      linear-gradient(160deg, #0a0a14, #11101f 60%, #0d0b1a);
+  }
 
-	.dashboard-return::before {
-		content: '✎';
-		position: absolute;
-		top: 1rem;
-		right: 1.1rem;
-		font-size: 1.2rem;
-		color: rgba(191, 219, 254, 0.62);
-		pointer-events: none;
-	}
+  /* ── Grundlayout ── */
+  .shell{
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 248px 1fr; gap: 24px;
+  }
+  .main{ display: flex; flex-direction: column; gap: 24px; }
 
-	.return-intro {
-		position: relative;
-		max-width: 46rem;
-	}
+  .section-title{
+    font-size: 0.78rem; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--mp-text-dim); margin: 4px 2px;
+  }
 
-	.return-intro h2,
-	.portal-card h2 {
-		margin: 0.4rem 0 0;
-		font-size: 1.15rem;
-	}
+  /* ── Knappar ── */
+  .btn{
+    display: inline-flex; align-items: center;
+    padding: 10px 18px; border-radius: 11px;
+    font-size: 0.88rem; font-weight: 600;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: .15s;
+  }
+  .btn-primary{
+    background: linear-gradient(135deg, var(--mp-lila-2), var(--mp-lila)); color: #fff;
+  }
+  .btn-ghost{
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--mp-card-border); color: var(--mp-text);
+  }
+  .btn-ghost:hover{ background: rgba(255,255,255,0.1); }
 
-	.return-intro h2 {
-		font-size: clamp(1.45rem, 1.15rem + 1vw, 2rem);
-	}
+  /* ── Hero ── */
+  .hero-card{
+    display: grid; grid-template-columns: 1.5fr 1fr; gap: 22px;
+    background: var(--mp-card);
+    border: 1px solid var(--mp-card-border);
+    border-radius: var(--mp-radius); padding: 30px;
+    backdrop-filter: blur(14px);
+  }
+  .kicker{ font-size: 0.78rem; letter-spacing: .05em; text-transform: uppercase; color: var(--mp-lila); margin-bottom: 6px; }
+  .hero-card h1{ font-size: 1.65rem; margin: 0 0 10px; font-weight: 700; }
+  .hero-lead{ color: var(--mp-text-dim); line-height: 1.55; margin: 0 0 20px; }
+  .hero-actions{ display: flex; gap: 10px; flex-wrap: wrap; }
+  .hero-reminder{
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--mp-card-border);
+    border-radius: 14px; padding: 18px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .hero-reminder small{ color: var(--mp-lila); font-size: 0.75rem; letter-spacing: .04em; text-transform: uppercase; }
+  .hero-reminder blockquote{ font-size: 0.92rem; line-height: 1.5; font-style: italic; margin: 0; color: var(--mp-text); }
 
-	.return-intro p:not(.portal-status-kicker) {
-		margin: 0.45rem 0 0;
-		max-width: 44rem;
-		color: hsl(214 32% 86% / 0.9);
-	}
+  /* ── Statistikkort ── */
+  .stats{ display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
 
-	.dashboard-return .portal-status-kicker,
-	.dashboard-return .portal-card-kicker,
-	.dashboard-return .portal-meta,
-	.dashboard-return .portal-subtle {
-		color: hsl(214 32% 86% / 0.78);
-	}
+  /* ── Kort-rad (dagboksrad + daglig fråga + spegel) ── */
+  .cards-row{ display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 18px; }
 
-	.return-actions {
-		margin-top: 1rem;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
+  .entry-placeholder{
+    border: 1px solid var(--mp-card-border);
+    border-radius: 13px; padding: 20px 18px;
+    background: rgba(255,255,255,0.02);
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .entry-placeholder p{ font-size: 0.88rem; color: var(--mp-text-dim); line-height: 1.5; margin: 0; }
 
-	.return-panels {
-		position: relative;
-		display: grid;
-		grid-template-columns: minmax(0, 1.15fr) minmax(240px, 0.85fr);
-		gap: 0.75rem;
-	}
+  .daily-card{
+    border: 1px solid var(--mp-card-border);
+    border-radius: 13px; padding: 18px;
+    background: rgba(255,255,255,0.02);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .daily-card.spegel{
+    background: linear-gradient(135deg, rgba(124,92,255,0.1), rgba(168,130,255,0.04));
+    border-color: rgba(168,130,255,0.25);
+  }
+  .daily-card h3{ margin: 0; font-size: 1rem; line-height: 1.4; }
 
-	.return-card {
-		display: grid;
-		gap: 0.7rem;
-		align-content: start;
-		padding: 0.9rem;
-		border: 1px solid var(--color-dashboard-border);
-		border-radius: var(--radius-input);
-		background: rgba(15, 23, 42, 0.42);
-		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-	}
+  .card-kicker{ margin: 0; font-size: 0.75rem; letter-spacing: .05em; text-transform: uppercase; color: var(--mp-lila); }
+  .card-sub{ margin: 0; font-size: 0.82rem; color: var(--mp-text-dim); line-height: 1.5; }
+  .card-warn{ margin: 0; font-size: 0.82rem; color: hsl(39 92% 82% / 0.92); }
 
-	.return-card h3 {
-		margin: 0;
-		font-size: 1.02rem;
-		line-height: 1.35;
-	}
+  .daily-actions{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .refresh-btn{
+    border: 0; background: transparent; padding: 0;
+    color: var(--mp-text-dim); font: inherit; font-size: 0.85rem;
+    text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+  }
+  .refresh-btn:hover:not(:disabled){ color: var(--mp-text); }
+  .refresh-btn:disabled{ opacity: .45; cursor: default; text-decoration: none; }
 
-	.daily-question-actions {
-		display: flex;
-		align-items: center;
-		flex-wrap: wrap;
-		gap: 0.55rem;
-	}
+  .skeleton{
+    width: min(100%, 18rem); height: 1.35rem; border-radius: 8px;
+    background: linear-gradient(90deg, rgba(255,255,255,.07), rgba(255,255,255,.14), rgba(255,255,255,.07));
+    background-size: 200% 100%;
+    animation: shimmer 1.2s ease-in-out infinite;
+  }
+  @keyframes shimmer { from{ background-position:100% 0 } to{ background-position:-100% 0 } }
 
-	.daily-question-refresh {
-		border: 0;
-		background: transparent;
-		padding: 0.2rem 0;
-		color: hsl(214 32% 86% / 0.78);
-		font: inherit;
-		font-size: 0.88rem;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-		cursor: pointer;
-	}
+  /* ── Portal-grid ── */
+  .portal-grid{ display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+  .portal-card{
+    background: var(--mp-card); border: 1px solid var(--mp-card-border);
+    border-radius: var(--mp-radius); padding: 22px;
+    backdrop-filter: blur(14px);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .portal-card h2{ margin: 0; font-size: 1rem; font-weight: 700; }
+  .portal-head{ display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .portal-meta{ font-size: 0.8rem; color: var(--mp-text-dim); }
+  .portal-copy{ margin: 0; font-size: 0.87rem; color: var(--mp-text-dim); line-height: 1.55; }
+  .stat-row{ display: flex; gap: 14px; font-size: 0.82rem; color: var(--mp-text-dim); }
 
-	.daily-question-refresh:hover:not(:disabled) {
-		color: hsl(210 40% 98%);
-	}
-
-	.daily-question-refresh:disabled {
-		opacity: 0.52;
-		cursor: default;
-		text-decoration: none;
-	}
-
-	.daily-question-skeleton {
-		width: min(100%, 18rem);
-		height: 1.35rem;
-		border-radius: var(--radius-input);
-		background: linear-gradient(
-			90deg,
-			rgba(255, 255, 255, 0.08),
-			rgba(255, 255, 255, 0.16),
-			rgba(255, 255, 255, 0.08)
-		);
-		background-size: 200% 100%;
-		animation: question-loading 1.2s ease-in-out infinite;
-	}
-
-	.daily-question-error {
-		color: hsl(39 92% 82% / 0.92);
-	}
-
-	@keyframes question-loading {
-		from {
-			background-position: 100% 0;
-		}
-
-		to {
-			background-position: -100% 0;
-		}
-	}
-
-	.return-preview {
-		margin: 0;
-		line-height: 1.65;
-		color: hsl(210 40% 96%);
-		overflow-wrap: anywhere;
-		word-break: break-word;
-	}
-
-	.dashboard-return .auth-button:not(.primary) {
-		background: rgba(255, 255, 255, 0.08);
-		border-color: var(--color-dashboard-border);
-		color: hsl(210 40% 96%);
-	}
-
-	.dashboard-return .auth-button:not(.primary):hover {
-		background: rgba(255, 255, 255, 0.12);
-		border-color: color-mix(in srgb, var(--color-dashboard-border) 72%, #bfdbfe 28%);
-	}
-
-	.portal-grid {
-		display: grid;
-		gap: 1rem;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
-	.portal-card {
-		display: grid;
-		gap: 0.85rem;
-		align-content: start;
-		min-height: 100%;
-		min-width: 0;
-		overflow: hidden;
-	}
-
-	.portal-card-head {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.75rem;
-	}
-
-	.portal-meta,
-	.portal-subtle,
-	.portal-stat-row {
-		color: hsl(var(--muted-foreground));
-		font-size: 0.92rem;
-	}
-
-	.portal-copy {
-		margin: 0;
-		line-height: 1.6;
-		max-width: 100%;
-		white-space: normal;
-		overflow-wrap: anywhere;
-		word-break: break-word;
-	}
-
-	.portal-subtle {
-		margin: -0.35rem 0 0;
-	}
-
-	.portal-stat-row {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.85rem;
-	}
-
-	@media (max-width: 760px) {
-		.return-panels {
-			grid-template-columns: 1fr;
-		}
-
-		.return-actions .auth-button,
-		.return-card .auth-button {
-			width: 100%;
-		}
-
-		.daily-question-actions {
-			align-items: stretch;
-			flex-direction: column;
-		}
-
-		.daily-question-refresh {
-			justify-self: start;
-			text-align: left;
-		}
-
-		.portal-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.portal-card-head {
-			align-items: flex-start;
-			flex-direction: column;
-			gap: 0.25rem;
-		}
-	}
+  /* ── Responsiv ── */
+  @media (max-width: 1024px){
+    .portal-grid{ grid-template-columns: repeat(2,1fr); }
+  }
+  @media (max-width: 880px){
+    .shell{ grid-template-columns: 1fr; }
+    .stats{ grid-template-columns: 1fr; }
+    .hero-card{ grid-template-columns: 1fr; }
+    .portal-grid{ grid-template-columns: 1fr; }
+  }
 </style>
