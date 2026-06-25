@@ -73,8 +73,6 @@
 		<p>Publicerad: {publishedAt}</p>
 		<p>Senast uppdaterad: {updatedAt}</p>
 		<p>Författare: MittPsyke</p>
-		<!-- TODO: Lägg till namngiven legitimerad psykolog när granskare är verifierad. -->
-		<p>Granskad av: Ska kompletteras med legitimerad psykolog</p>
 	</div>
 
 	{#each contentSections as section, index}
@@ -152,7 +150,13 @@
 		</section>
 	{/if}
 
-	<ContentTrustBlock updatedAt={updatedAt} sources={landing?.sources} />
+	<ContentTrustBlock
+		updatedAt={updatedAt}
+		sources={landing?.sources}
+		excludeReferenceLabels={pillar.slug === 'panikattack'
+			? ['Socialtjänstlagen (2001:453)', 'LVM (1988:870)']
+			: []}
+	/>
 </main>
 
 <style>

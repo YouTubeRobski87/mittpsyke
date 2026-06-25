@@ -4,6 +4,7 @@
 	type Props = {
 		updatedAt?: string;
 		sources?: SourceItem[];
+		excludeReferenceLabels?: string[];
 		showEmergencyNote?: boolean;
 		showSupportLinks?: boolean;
 		contentLinkHref?: string;
@@ -12,6 +13,7 @@
 	let {
 		updatedAt,
 		sources = [],
+		excludeReferenceLabels = [],
 		showEmergencyNote = false,
 		showSupportLinks = false,
 		contentLinkHref = '/sa-arbetar-vi-med-innehall'
@@ -34,8 +36,10 @@
 
 	const references = $derived.by(() => {
 		const seen = new Set<string>();
+		const excluded = new Set(excludeReferenceLabels.map((label) => label.toLowerCase()));
 		return [...sources, ...requiredReferences].filter((source) => {
 			const key = source.label.toLowerCase();
+			if (excluded.has(key)) return false;
 			if (seen.has(key)) return false;
 			seen.add(key);
 			return true;
