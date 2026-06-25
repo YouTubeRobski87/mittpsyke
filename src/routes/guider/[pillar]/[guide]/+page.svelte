@@ -183,9 +183,6 @@
 	<ContentTrustBlock
 		updatedAt={updatedAt}
 		sources={data.guide.sources}
-		excludeReferenceLabels={data.pillar.slug === 'panikattack'
-			? ['Socialtjänstlagen (2001:453)', 'LVM (1988:870)']
-			: []}
 	/>
 </main>
 

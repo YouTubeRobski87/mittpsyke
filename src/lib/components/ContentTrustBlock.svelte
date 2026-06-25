@@ -4,7 +4,6 @@
 	type Props = {
 		updatedAt?: string;
 		sources?: SourceItem[];
-		excludeReferenceLabels?: string[];
 		showEmergencyNote?: boolean;
 		showSupportLinks?: boolean;
 		contentLinkHref?: string;
@@ -13,21 +12,12 @@
 	let {
 		updatedAt,
 		sources = [],
-		excludeReferenceLabels = [],
 		showEmergencyNote = false,
 		showSupportLinks = false,
 		contentLinkHref = '/sa-arbetar-vi-med-innehall'
 	}: Props = $props();
 
 	const requiredReferences: SourceItem[] = [
-		{
-			label: 'Socialtjänstlagen (2001:453)',
-			url: 'https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/socialtjanstlag-2001453_sfs-2001-453/'
-		},
-		{
-			label: 'LVM (1988:870)',
-			url: 'https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/lag-1988870-om-vard-av-missbrukare-i-vissa_sfs-1988-870/'
-		},
 		{
 			label: 'Socialstyrelsen riktlinjer',
 			url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/regler-och-riktlinjer/'
@@ -36,10 +26,8 @@
 
 	const references = $derived.by(() => {
 		const seen = new Set<string>();
-		const excluded = new Set(excludeReferenceLabels.map((label) => label.toLowerCase()));
 		return [...sources, ...requiredReferences].filter((source) => {
 			const key = source.label.toLowerCase();
-			if (excluded.has(key)) return false;
 			if (seen.has(key)) return false;
 			seen.add(key);
 			return true;
