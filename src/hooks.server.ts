@@ -42,7 +42,8 @@ const legacyBlogRedirects: Record<string, string> = {
 	'/blogg/textstod-eller-terapi-online-vad-passar-dig': '/blogg/ar-textstod-lika-hjalpsamt-som-samtal',
 	'/blogg/anonym-hjalp-for-oro': '/hjalp-mot-oro-online',
 	'/blogg/hur-fungerar-humordagbok': '/blogg/humorsparning-online',
-	'/blogg/psykisk-ohalsa-stod-hjalp-sverige': '/blogg/hjaelp-vid-psykisk-ohaelsa'
+	'/blogg/psykisk-ohalsa-stod-hjalp-sverige': '/blogg/hjaelp-vid-psykisk-ohaelsa',
+	'/blogg/kbt-vid-angest': '/guider/kbt/kbt-vid-angest'
 }
 
 const legacyPageRedirects: Record<string, string> = {
