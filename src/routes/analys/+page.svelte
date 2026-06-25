@@ -10,12 +10,12 @@
 	type StreakData = {
 		currentStreak: number;
 		longestStreak: number;
-		totalEntries: number;
 		lastEntryDaysAgo: number;
 	};
 
 	let moodData = $state<MoodPoint[]>([]);
 	let heatmapData = $state<Record<string, number>>({});
+	let totalEntries = $state(0);
 	let streak = $state<StreakData | null>(null);
 	let loading = $state(true);
 	let error = $state('');
@@ -31,9 +31,9 @@
 		},
 		{
 			label: 'Totalt antal inlägg',
-			value: streak ? String(streak.totalEntries) : '–',
+			value: totalEntries > 0 ? String(totalEntries) : '–',
 			sub: 'sedan du började',
-			points: [2, 4, 6, 8, 10, 12, streak?.totalEntries ?? 0]
+			points: [2, 4, 6, 8, 10, 12, totalEntries]
 		},
 		{
 			label: 'Senaste inlägg',
@@ -73,8 +73,9 @@
 				moodData = payload.points ?? [];
 			}
 			if (heatmapRes.ok) {
-				const payload = (await heatmapRes.json()) as { data?: Record<string, number> };
+				const payload = (await heatmapRes.json()) as { data?: Record<string, number>; totalEntries?: number };
 				heatmapData = payload.data ?? {};
+				totalEntries = payload.totalEntries ?? Object.values(payload.data ?? {}).reduce((a, b) => a + b, 0);
 			}
 			if (streakRes.ok) {
 				streak = (await streakRes.json()) as StreakData;

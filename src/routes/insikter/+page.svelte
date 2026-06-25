@@ -9,6 +9,16 @@
 		hasSensitiveConsent
 	} from '$lib/consent';
 	import { browser } from '$app/environment';
+	import { Calendar, TrendingUp, TrendingDown, Heart, Lightbulb } from 'lucide-svelte';
+	import type { ComponentType } from 'svelte';
+
+	const iconMap: Record<string, ComponentType> = {
+		calendar: Calendar,
+		'trending-up': TrendingUp,
+		'trending-down': TrendingDown,
+		heart: Heart,
+		lightbulb: Lightbulb
+	};
 
 	type InsightItem = { type: string; title: string; description: string; icon: string };
 	type InsightDay = { day: string; average: number; count: number };
@@ -131,7 +141,9 @@
 						<div class="grid">
 							{#each insights.insights as item}
 								<article class="insight-card">
-									<span class="ico">{item.icon}</span>
+									<span class="ico">
+									<svelte:component this={iconMap[item.icon] ?? Lightbulb} size={22} />
+								</span>
 									<h3>{item.title}</h3>
 									<p>{item.description}</p>
 								</article>
