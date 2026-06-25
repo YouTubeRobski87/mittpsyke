@@ -3,10 +3,10 @@ import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const {
-		data: { session }
-	} = await locals.supabase.auth.getSession();
+		data: { user }
+	} = await locals.supabase.auth.getUser();
 
-	if (session?.user) {
+	if (user) {
 		throw redirect(302, '/dagbok/checkin');
 	}
 

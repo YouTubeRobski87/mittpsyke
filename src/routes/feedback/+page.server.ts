@@ -59,11 +59,11 @@ export const actions: Actions = {
 		}
 
 		const {
-			data: { session }
-		} = await locals.supabase.auth.getSession();
+			data: { user }
+		} = await locals.supabase.auth.getUser();
 
 		const { error } = await serviceClient.from('feedback_submissions').insert({
-			user_id: session?.user?.id ?? null,
+			user_id: user?.id ?? null,
 			experience,
 			what_worked: whatWorked || null,
 			unclear: unclear || null,

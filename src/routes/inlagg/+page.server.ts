@@ -40,9 +40,9 @@ export type InlaggEntry = {
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const {
-		data: { session }
-	} = await locals.supabase.auth.getSession();
-	if (!session?.user) throw redirect(303, '/login');
+		data: { user }
+	} = await locals.supabase.auth.getUser();
+	if (!user) throw redirect(303, '/login');
 
 	const page = Math.max(1, parseInt(url.searchParams.get('page') ?? '1', 10));
 	const from = (page - 1) * PAGE_SIZE;
@@ -52,13 +52,13 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		locals.supabase
 			.from('diary')
 			.select('id, text, mood, tags, prompt_question, created_at')
-			.eq('user_id', session.user.id)
+			.eq('user_id', user.id)
 			.order('created_at', { ascending: false })
 			.range(from, to),
 		locals.supabase
 			.from('diary')
 			.select('id', { count: 'exact', head: true })
-			.eq('user_id', session.user.id)
+			.eq('user_id', user.id)
 	]);
 
 	if (entriesResult.error) {

@@ -59,9 +59,8 @@ async function markUserAsUnsubscribed(userId: string) {
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const {
-		data: { session }
-	} = await locals.supabase.auth.getSession();
-	const user = session?.user ?? null;
+		data: { user }
+	} = await locals.supabase.auth.getUser();
 
 	const token = url.searchParams.get('token');
 	let tokenStatus: TokenStatus = 'none';
@@ -98,9 +97,8 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 export const actions: Actions = {
 	unsubscribe: async ({ locals }) => {
 		const {
-			data: { session }
-		} = await locals.supabase.auth.getSession();
-		const user = session?.user ?? null;
+			data: { user }
+		} = await locals.supabase.auth.getUser();
 
 		if (!user) {
 			return fail(401, {

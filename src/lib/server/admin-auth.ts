@@ -50,15 +50,18 @@ async function hydrateSessionUser(supabase: SupabaseClient, user: User): Promise
 }
 
 export async function getSessionUser(supabase: SupabaseClient): Promise<SessionUser | null> {
+	// getUser() autentiserar mot Supabase Auth-servern, till skillnad från getSession()
+	// som bara läser cookien. Detta tar bort "insecure"-varningen och är säkrare.
 	const {
-		data: { session }
-	} = await supabase.auth.getSession();
+		data: { user },
+		error
+	} = await supabase.auth.getUser();
 
-	if (!session?.user) {
+	if (error || !user) {
 		return null;
 	}
 
-	return hydrateSessionUser(supabase, session.user);
+	return hydrateSessionUser(supabase, user);
 }
 
 export async function getUserFromAccessToken(accessToken: string): Promise<SessionUser | null> {
