@@ -96,6 +96,12 @@
 			något bättre? Just den typen av självinsikt är en stark grund för förändring, särskilt i kombination med stöd,
 			övningar eller professionell hjälp vid behov.
 		</p>
+		<p>
+			Om skrivandet ofta handlar om oro, belastning eller sömn kan du läsa vidare i
+			<a href="/guider/angest">guiderna om ångest</a>,
+			<a href="/guider/stress">fördjupningen om stress</a> eller
+			<a href="/guider/sovproblem">stödet vid sömnproblem</a>.
+		</p>
 	</section>
 
 	<section>
@@ -176,6 +182,7 @@
 		<p>
 			Om du vill börja med <strong>skriva dagbok psykisk hälsa</strong> i vardagen, börja litet, håll det enkelt och låt
 			det få ta tid. Små steg räcker ofta längre än du tror.
+			Du kan också <a href="/dagbok">börja skriva i dagboken</a> när du vill testa i liten skala.
 		</p>
 	</section>
 </BlogArticle>

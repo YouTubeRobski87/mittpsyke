@@ -4106,7 +4106,8 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 					{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider/angest/overtankande-hjalp' },
 					{ title: 'Stress och sömn - när kroppen inte kan varva ner', href: '/guider/stress' },
 					{ title: 'Stöd vid sömnproblem i lugn takt', href: '/guider/sovproblem' },
-					{ title: 'Skriv i dagboken', href: '/dagbok' }
+					{ title: 'Skriv i dagboken', href: '/dagbok' },
+					{ title: 'Hur AI kan hjälpa dig sortera känslor', href: '/blogg/ai-hjalper-dig-bearbeta-kanslor' }
 				]
 			}
 		],
@@ -4213,7 +4214,8 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 					{ title: 'Att sätta gränser när självkänslan är låg - varför det är svårt', href: '/guider/sjalvkansla/gransen-och-sjalvkansla' },
 					{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider/angest/overtankande-hjalp' },
 					{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' },
-					{ title: 'Stöd vid sömnproblem i lugn takt', href: '/guider/sovproblem' }
+					{ title: 'Stöd vid sömnproblem i lugn takt', href: '/guider/sovproblem' },
+					{ title: 'Vad journalterapi kan hjälpa med', href: '/blogg/vad-ar-journalterapi' }
 				]
 			}
 		],
@@ -4344,7 +4346,12 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			},
 			{
 				heading: 'Lugn väg vidare',
-				body: 'MittPsyke kan ge stöd för reflektion, men ersätter inte vård. Vid akut fara ringer du 112. För vårdråd finns 1177.'
+				body: 'MittPsyke kan ge stöd för reflektion, men ersätter inte vård. Vid akut fara ringer du 112. För vårdråd finns 1177.',
+				links: [
+					{ title: 'Skriv av dig i dagboken', href: '/dagbok' },
+					{ title: 'Chatta anonymt i lugn takt', href: '/chat/b' },
+					{ title: 'Vad journalterapi kan hjälpa med', href: '/blogg/vad-ar-journalterapi' }
+				]
 			}
 		],
 		primaryLinks: [
@@ -4380,7 +4387,12 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			},
 			{
 				heading: 'Trygga nästa steg',
-				body: 'Om panikattacker återkommer kan det hjälpa att prata med någon och följa mönster över tid. MittPsyke är ett komplement för stöd och reflektion, inte en ersättning för vård.'
+				body: 'Om panikattacker återkommer kan det hjälpa att prata med någon och följa mönster över tid. MittPsyke är ett komplement för stöd och reflektion, inte en ersättning för vård.',
+				links: [
+					{ title: 'Vad händer i kroppen vid en panikattack?', href: '/guider/panikattack/vad-hander-i-kroppen' },
+					{ title: 'Ta dig igenom en panikattack steg för steg', href: '/guider/panikattack/ta-dig-igenom-en-panikattack' },
+					{ title: 'Skriv ned mönster i dagboken', href: '/dagbok' }
+				]
 			}
 		],
 		primaryLinks: [
@@ -4428,7 +4440,12 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			},
 			{
 				heading: 'Lugn väg vidare',
-				body: 'Du kan börja med ett litet steg: chatta anonymt, skriv i dagboken eller prova en övning. MittPsyke ersätter inte vård men kan vara en trygg första ingång.'
+				body: 'Du kan börja med ett litet steg: chatta anonymt, skriv i dagboken eller prova en övning. MittPsyke ersätter inte vård men kan vara en trygg första ingång.',
+				links: [
+					{ title: 'Skriv ned tankarna i dagboken', href: '/dagbok' },
+					{ title: 'KBT-dagbok eller fritt skrivande', href: '/blogg/kbt-dagbok-vs-fri-journalforing' },
+					{ title: 'Ältande på kvällen', href: '/guider/sovproblem/altande-pa-kvallen' }
+				]
 			}
 		],
 		primaryLinks: [
@@ -4464,7 +4481,12 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			},
 			{
 				heading: 'Lugn väg framåt',
-				body: 'Du behöver inte hitta perfekt sömn direkt. Små justeringar i rutiner och tankemönster kan göra stor skillnad över tid. MittPsyke är ett komplement för stöd och reflektion, inte en ersättning för vård.'
+				body: 'Du behöver inte hitta perfekt sömn direkt. Små justeringar i rutiner och tankemönster kan göra stor skillnad över tid. MittPsyke är ett komplement för stöd och reflektion, inte en ersättning för vård.',
+				links: [
+					{ title: 'Skriv av dig kvällstankarna', href: '/dagbok' },
+					{ title: 'Chatta när tankarna håller dig vaken', href: '/chat/a' },
+					{ title: 'Sluta övertänka på kvällen', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' }
+				]
 			}
 		],
 		primaryLinks: [
@@ -4500,7 +4522,12 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 			},
 			{
 				heading: 'Varsam väg vidare',
-				body: 'Förändring i självkänsla sker sällan snabbt, men varje litet steg räknas. Du kan börja med att sätta ord på det som känns svårt, skriva i dagboken eller prova en enkel övning.'
+				body: 'Förändring i självkänsla sker sällan snabbt, men varje litet steg räknas. Du kan börja med att sätta ord på det som känns svårt, skriva i dagboken eller prova en enkel övning.',
+				links: [
+					{ title: 'Skriv om självbilden i dagboken', href: '/dagbok' },
+					{ title: 'Chatta anonymt om det som känns svårt', href: '/chat/a' },
+					{ title: 'Vad journalterapi kan hjälpa med', href: '/blogg/vad-ar-journalterapi' }
+				]
 			}
 		],
 		primaryLinks: [

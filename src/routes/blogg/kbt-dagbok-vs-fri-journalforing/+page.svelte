@@ -162,6 +162,11 @@
 			fritt skrivande mer tillgängligt i en stressig vardag.
 		</p>
 		<p>
+			Vill du läsa vidare om metoden finns en samlad <a href="/guider/kbt">guide om KBT</a>.
+			Om det du skriver ofta kretsar kring oro kan du också läsa mer om
+			<a href="/guider/angest">ångest i vardagen</a>.
+		</p>
+		<p>
 			Det viktiga är att AI inte ersätter professionell vård. Men som vardagsverktyg kan det sänka tröskeln till att
 			faktiskt skriva, och därmed öka chansen att du fortsätter över tid.
 		</p>
@@ -202,6 +207,7 @@
 		<p>
 			Om du vill få det bästa från båda världar kan AI-stöd vara ett mjukt mellanläge. Det hjälper dig hålla riktning
 			utan att stänga ner det personliga djupet. I längden är den bästa metoden den du faktiskt orkar använda.
+			Du kan börja direkt genom att <a href="/dagbok">skriva några rader i dagboken</a>.
 		</p>
 	</section>
 </BlogArticle>

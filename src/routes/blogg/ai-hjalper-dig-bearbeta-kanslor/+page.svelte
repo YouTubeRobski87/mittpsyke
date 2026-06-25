@@ -145,6 +145,12 @@
 			För många blir kombinationen av <strong>AI dagbok svenska</strong>, humörspårning och personligt tempo ett
 			sätt att orka vara kvar i sin egen process, i stället för att ge upp efter några dagar.
 		</p>
+		<p>
+			Om du vill börja i liten skala kan du <a href="/dagbok">skriva av dig i dagboken</a>
+			eller <a href="/chat">sortera tankarna i chatten</a>. För mer bakgrund finns också
+			<a href="/guider/angest">guider om ångest</a> och
+			<a href="/guider/stress">fördjupning om stress</a>.
+		</p>
 	</section>
 
 	<section>
