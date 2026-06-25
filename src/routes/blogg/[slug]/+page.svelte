@@ -25,10 +25,7 @@
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			logo: {
-				'@type': 'ImageObject',
-				url: 'https://www.mittpsyke.se/og-image.png'
-			}
+			logo: 'https://www.mittpsyke.se/logo.png'
 		},
 		mainEntityOfPage: canonical
 	});

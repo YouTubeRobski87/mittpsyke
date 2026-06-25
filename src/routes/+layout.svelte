@@ -137,10 +137,7 @@
 		url: 'https://www.mittpsyke.se',
 		email: PUBLIC_CONTACT_EMAIL,
 		description: 'Svensk plattform för AI-baserat samtalsstöd och mental hälsa.',
-		logo: {
-			'@type': 'ImageObject',
-			url: 'https://www.mittpsyke.se/apple-touch-icon.png'
-		},
+		logo: 'https://www.mittpsyke.se/logo.png',
 		founder: {
 			'@type': 'Person',
 			name: 'Robert Claesson'
