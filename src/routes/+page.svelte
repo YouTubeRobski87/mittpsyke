@@ -169,15 +169,10 @@
 		<div class="hero-shell">
 			<div class="hero-content">
 				<h1>Skriv anonymt och följ ditt mående</h1>
-				<p>Skriv några rader direkt och välj senare om du vill spara.</p>
-				<div class="hero-positioning">
-					<p>MittPsyke är ett digitalt lågtröskelstöd för dig som behöver skriva av dig, reflektera och få struktur på tankar och mående.</p>
-					<p>Du kan börja anonymt, använda dagbok, chatta med ett AI-baserat stöd och hitta guider och övningar för vardaglig psykisk hälsa.</p>
-					<p>MittPsyke är inte vård, terapi eller akutstöd, men kan vara ett första steg när du behöver sortera det som känns svårt.</p>
-				</div>
+				<p>Skriv några rader direkt — inget konto, ingen förklaring. Ett första steg när det känns svårt att börja.</p>
 				<div class="hero-actions">
 					<a href="/dagbok" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('hero', 'borja_skriva_anonymt_nu', '/dagbok')}>Börja skriva anonymt nu</a>
-					<a href="/chat" class="hero-cta hero-cta-primary" onclick={() => trackStartAnonymous()}>Chatta anonymt</a>
+					<a href="/chat" class="hero-cta hero-cta-secondary" onclick={() => trackStartAnonymous()}>Chatta anonymt</a>
 				</div>
 				<p class="hero-trust-note">Inget konto krävs för att börja. Skapa konto senare om du vill spara och följa över tid.</p>
 			</div>
@@ -511,31 +506,29 @@
 		color: var(--home-hero-text);
 	}
 
-	.hero-positioning {
-		margin: 1rem auto 0;
-		max-width: 58ch;
-	}
-
-	.hero-positioning p {
-		margin-top: 0.55rem;
-		max-width: 58ch;
-		font-size: clamp(0.95rem, 1.35vw, 1.02rem);
-		line-height: 1.6;
-		color: var(--home-hero-note);
-	}
-
-	.hero-cta {
+.hero-cta {
 		display: inline-block;
-		padding: 0.62rem 1rem;
+		padding: 0.7rem 1.3rem;
 		font-family: var(--font-heading);
-		font-size: 0.85rem;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-		background: var(--home-primary);
-		color: var(--home-text-on-primary);
+		font-size: 0.9rem;
+		letter-spacing: 0.01em;
 		font-weight: 700;
 		border-radius: var(--radius-pill);
 		transition: transform 0.15s ease, box-shadow 0.15s ease;
+	}
+
+	.hero-cta-secondary {
+		background: transparent;
+		color: rgba(255, 255, 255, 0.88);
+		border: 1.5px solid rgba(255, 255, 255, 0.32);
+		box-shadow: none;
+	}
+
+	.hero-cta-secondary:hover,
+	.hero-cta-secondary:focus-visible {
+		background: rgba(255, 255, 255, 0.08);
+		border-color: rgba(255, 255, 255, 0.55);
+		transform: translateY(-1px);
 	}
 
 	.hero-trust-note {

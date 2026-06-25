@@ -38,8 +38,26 @@
 		}).format(date)}`;
 	}
 
+	// Strippar vanliga markdown-tecken ur text för säker plaintext-visning
+	function stripMarkdown(text: string): string {
+		return text
+			.replace(/^#{1,6}\s+/gm, '')         // # Rubriker
+			.replace(/\*\*(.+?)\*\*/gs, '$1')    // **fetstil**
+			.replace(/__(.+?)__/gs, '$1')         // __fetstil__
+			.replace(/\*(.+?)\*/gs, '$1')         // *kursiv*
+			.replace(/_(.+?)_/gs, '$1')           // _kursiv_
+			.replace(/`(.+?)`/gs, '$1')           // `kod`
+			.replace(/^>\s+/gm, '')               // > blockquote
+			.replace(/^[-*+]\s+/gm, '')           // - lista
+			.replace(/^\d+\.\s+/gm, '')           // 1. numrerad lista
+			.replace(/^[-*_]{3,}\s*$/gm, '')      // --- horisontella linjer
+			.replace(/\[(.+?)\]\(.+?\)/g, '$1')   // [länktext](url)
+			.trim();
+	}
+
 	function storyExcerpt(value: string) {
-		const normalized = value.replace(/\s+/g, ' ').trim();
+		const cleaned = stripMarkdown(value);
+		const normalized = cleaned.replace(/\s+/g, ' ').trim();
 		if (normalized.length <= STORY_EXCERPT_LENGTH) return normalized;
 
 		const excerpt = normalized.slice(0, STORY_EXCERPT_LENGTH);
@@ -49,7 +67,7 @@
 	}
 
 	function hasLongContent(value: string) {
-		return value.replace(/\s+/g, ' ').trim().length > STORY_EXCERPT_LENGTH;
+		return stripMarkdown(value).replace(/\s+/g, ' ').trim().length > STORY_EXCERPT_LENGTH;
 	}
 
 	function isStoryExpanded(id: string) {
@@ -114,7 +132,7 @@
 						{#if story.emotion_emoji}
 							<p class="emoji" aria-hidden="true">{story.emotion_emoji}</p>
 						{/if}
-						<p class="content">{isStoryExpanded(story.id) ? story.content : storyExcerpt(story.content)}</p>
+						<p class="content">{isStoryExpanded(story.id) ? stripMarkdown(story.content) : storyExcerpt(story.content)}</p>
 						{#if hasLongContent(story.content)}
 							<button class="read-more" type="button" onclick={() => toggleStory(story.id)}>
 								{isStoryExpanded(story.id) ? 'Visa mindre' : 'Läs vidare'}

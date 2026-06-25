@@ -884,88 +884,64 @@
 			</p>
 		</section>
 
-	<footer class="site-footer py-5 px-5 text-sm opacity-60 text-center mt-12">
-		© {new Date().getFullYear()} MittPsyke. Alla rättigheter förbehållna.
-		<span class="mx-2">&middot;</span>
-		<a href="/kontakt-och-villkor" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Kontakt och villkor
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/sa-fungerar-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Så fungerar MittPsyke
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/premium" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Premium
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/feedback" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Feedback
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/blogg" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Artiklar
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/ovningar" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Övningar
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/sok" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Sök
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/integritet" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Integritet
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/ansvar" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Ansvar
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/redaktionell-metod" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Redaktionell metod
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/tillganglighet" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Tillgänglighet
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/cookies-och-leverantorer" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Cookies och leverantörer
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a
-			href="https://stodlinjer.se"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="footer-emergency-link text-sm font-medium opacity-90 hover:opacity-100 transition-opacity"
-		>
-			Akut hjälp (Stödlinjer)
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/om-mittpsyke" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Om MittPsyke
-		</a>
-		<span class="mx-2">&middot;</span>
-		<a href="/om-skaparen" class="text-sm opacity-70 hover:opacity-100 transition-opacity">
-			Om skaparen
-		</a>
-		<span class="mx-2">&middot;</span>
-		<button onclick={() => cookieBannerOpen.set(true)} class="text-sm opacity-70 hover:opacity-100 transition-opacity">Cookieinställningar</button>
-			<div class="footer-features mt-2 text-xs opacity-70" aria-label="Funktioner">
-				<span class="font-medium">Funktioner:</span>
-				<a href="/journalforing" class="hover:opacity-100 transition-opacity">Dagboksskrivande</a>
-				<span class="mx-1">&middot;</span>
-				<a href="/humorsparning" class="hover:opacity-100 transition-opacity">Humörspårning</a>
+	<footer class="site-footer mt-12">
+		<div class="footer-inner">
+			<div class="footer-grid">
+				<!-- Kolumn 1: Tjänsten -->
+				<div class="footer-col">
+					<p class="footer-col-heading">Tjänsten</p>
+					<a href="/chat" class="footer-link">Chatta anonymt</a>
+					<a href="/dagbok" class="footer-link">Dagbok</a>
+					<a href="/ovningar" class="footer-link">Övningar</a>
+					<a href="/guider" class="footer-link">Guider</a>
+					<a href="/blogg" class="footer-link">Artiklar</a>
+					<a href="/anonyma-berattelser" class="footer-link">Berättelser</a>
+					<a href="/humorsparning" class="footer-link">Humörspårning</a>
+					<a href="/premium" class="footer-link">Premium</a>
+				</div>
+
+				<!-- Kolumn 2: Om MittPsyke -->
+				<div class="footer-col">
+					<p class="footer-col-heading">Om MittPsyke</p>
+					<a href="/om-mittpsyke" class="footer-link">Om tjänsten</a>
+					<a href="/om-skaparen" class="footer-link">Om skaparen</a>
+					<a href="/sa-fungerar-mittpsyke" class="footer-link">Så fungerar det</a>
+					<a href="/redaktionell-metod" class="footer-link">Redaktionell metod</a>
+					<a href="/ansvar" class="footer-link">Ansvar</a>
+					<a href="/feedback" class="footer-link">Feedback</a>
+					<a href="/kontakt-och-villkor" class="footer-link">Kontakt och villkor</a>
+				</div>
+
+				<!-- Kolumn 3: Juridiskt & säkerhet -->
+				<div class="footer-col">
+					<p class="footer-col-heading">Integritet & tillgänglighet</p>
+					<a href="/integritet" class="footer-link">Integritetspolicy</a>
+					<a href="/cookies-och-leverantorer" class="footer-link">Cookies och leverantörer</a>
+					<a href="/tillganglighet" class="footer-link">Tillgänglighet</a>
+					<button onclick={() => cookieBannerOpen.set(true)} class="footer-link footer-link-btn">Cookieinställningar</button>
+					<a href="/sok" class="footer-link">Sök</a>
+				</div>
+
+				<!-- Kolumn 4: Akut hjälp + info -->
+				<div class="footer-col">
+					<p class="footer-col-heading footer-col-heading--emergency">Vid akut läge</p>
+					<a href="tel:112" class="footer-link footer-emergency-link">Ring 112</a>
+					<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer" class="footer-link">Vårdråd 1177</a>
+					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="footer-link footer-emergency-link">Stödlinjer.se</a>
+					<div class="footer-company">
+						<p>© {new Date().getFullYear()} MittPsyke</p>
+						<p>Enskild näringsverksamhet</p>
+						<p>Org.nr: 198712284895</p>
+						<p><a href={PUBLIC_CONTACT_MAILTO} class="footer-link">{PUBLIC_CONTACT_EMAIL}</a></p>
+					</div>
+				</div>
 			</div>
-			<div class="footer-company mt-2 text-xs opacity-70">
-				<p>© MittPsyke</p>
-				<p>Enskild näringsverksamhet</p>
-				<p>Org.nr: 198712284895</p>
-				<p><a href={PUBLIC_CONTACT_MAILTO} class="hover:opacity-100 transition-opacity">{PUBLIC_CONTACT_EMAIL}</a></p>
-			</div>
-		</footer>
+
+			<p class="footer-disclaimer">
+				MittPsyke ersätter inte vård. Vid akut fara ring 112 · Vårdråd 1177.
+			</p>
+		</div>
+	</footer>
 	</div>
 
 	<CookieBanner />
@@ -1030,6 +1006,98 @@
 
 	.site-footer {
 		border-top: 1px solid var(--layout-footer-border);
+		padding: 2.5rem 1.25rem 2rem;
+	}
+
+	.footer-inner {
+		max-width: 1080px;
+		margin: 0 auto;
+	}
+
+	.footer-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 2rem 1.5rem;
+	}
+
+	@media (min-width: 680px) {
+		.footer-grid {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	.footer-col {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+	}
+
+	.footer-col-heading {
+		margin: 0 0 0.35rem;
+		font-family: var(--font-heading);
+		font-size: 0.75rem;
+		font-weight: 700;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+		opacity: 0.5;
+	}
+
+	.footer-col-heading--emergency {
+		color: var(--layout-footer-emergency);
+		opacity: 0.75;
+	}
+
+	:global(.dark) .footer-col-heading--emergency {
+		color: var(--layout-footer-emergency-dark);
+	}
+
+	.footer-link {
+		display: block;
+		font-size: 0.84rem;
+		line-height: 1.5;
+		opacity: 0.65;
+		text-decoration: none;
+		color: inherit;
+		transition: opacity 0.15s ease;
+	}
+
+	.footer-link:hover {
+		opacity: 1;
+	}
+
+	.footer-link-btn {
+		background: none;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		text-align: left;
+		font: inherit;
+	}
+
+	.footer-company {
+		margin-top: 1rem;
+		font-size: 0.78rem;
+		opacity: 0.5;
+		line-height: 1.7;
+	}
+
+	.footer-company a {
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.footer-company a:hover {
+		opacity: 1;
+		text-decoration: underline;
+	}
+
+	.footer-disclaimer {
+		margin: 2rem 0 0;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--layout-footer-border);
+		text-align: center;
+		font-size: 0.78rem;
+		opacity: 0.45;
 	}
 
 	.footer-emergency-link {
@@ -1578,16 +1646,8 @@
 			grid-template-columns: minmax(0, 1fr);
 		}
 
-		:global(.footer-features) {
-			margin-top: 0.3rem !important;
-		}
-
-		:global(.footer-company) {
-			margin-top: 0.3rem !important;
-		}
-
-		.footer-company p {
-			margin-block: 0.04rem;
+		:global(.site-footer) {
+			padding: 1.75rem 1rem 1.5rem !important;
 		}
 	}
 

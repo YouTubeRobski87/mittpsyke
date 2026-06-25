@@ -44,6 +44,8 @@
 									width="400"
 									height="220"
 								/>
+							{:else}
+								<div class="article-img-placeholder" aria-hidden="true"></div>
 							{/if}
 							<div class="article-body">
 								<h2 class="article-title">{article.title}</h2>
@@ -176,6 +178,18 @@
 		height: 180px;
 		object-fit: cover;
 		display: block;
+	}
+
+	.article-img-placeholder {
+		width: 100%;
+		height: 100px;
+		background: linear-gradient(135deg, rgba(58, 123, 213, 0.18) 0%, rgba(99, 102, 241, 0.12) 100%);
+		border-bottom: 1px solid rgba(96, 165, 250, 0.15);
+	}
+
+	:global(.dark) .article-img-placeholder {
+		background: linear-gradient(135deg, rgba(58, 123, 213, 0.22) 0%, rgba(99, 102, 241, 0.18) 100%);
+		border-bottom-color: rgba(96, 165, 250, 0.2);
 	}
 
 	.article-body {
