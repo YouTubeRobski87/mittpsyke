@@ -2,13 +2,13 @@
   export let active = 'hem';
 
   const items = [
-    { id: 'hem',           label: 'Hem',               ico: '⌂' },
-    { id: 'inlagg',        label: 'Inlägg',            ico: '✎' },
-    { id: 'analys',        label: 'Analys',            ico: '📊' },
-    { id: 'insikter',      label: 'Insiktsgenerering', ico: '💡' },
-    { id: 'akademin',      label: 'Kreatörsakademin',  ico: '🎓' },
-    { id: 'ovningar',      label: 'Övningar',          ico: '🧩' },
-    { id: 'installningar', label: 'Inställningar',      ico: '⚙' }
+    { id: 'hem',           label: 'Hem',               ico: '⌂', href: '/dashboard' },
+    { id: 'inlagg',        label: 'Inlägg',            ico: '✎', href: '/inlagg' },
+    { id: 'analys',        label: 'Analys',            ico: '📊', href: '/analys' },
+    { id: 'insikter',      label: 'Insiktsgenerering', ico: '💡', href: '/insikter' },
+    { id: 'akademin',      label: 'Kreatörsakademin',  ico: '🎓', href: '/akademin' },
+    { id: 'ovningar',      label: 'Övningar',          ico: '🧩', href: '/ovningar' },
+    { id: 'installningar', label: 'Inställningar',      ico: '⚙', href: '/dashboard/installningar' }
   ];
 </script>
 
@@ -18,7 +18,7 @@
   <nav class="nav">
     {#each items as item}
       <a
-        href={'/' + item.id}
+        href={item.href}
         class:active={active === item.id}
         aria-current={active === item.id ? 'page' : undefined}
       >
