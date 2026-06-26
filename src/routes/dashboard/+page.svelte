@@ -1,10 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import SEO from '$lib/components/SEO.svelte';
   import Sidebar from '$lib/components/Sidebar.svelte';
   import StatCard from '$lib/components/StatCard.svelte';
   import EntryCard from '$lib/components/EntryCard.svelte';
   import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
+  import { supabase } from '$lib/supabase';
+  import {
+    SENSITIVE_CONSENT_HEADER,
+    SENSITIVE_CONSENT_VERSION,
+    hasSensitiveConsent
+  } from '$lib/consent';
 
   type DashboardData = {
     diaryPreview: {
@@ -57,7 +64,7 @@
     }
   ]);
 
-  // Growth Garden — status baserad på streak
+  // Growth Garden — status + stadie (0–4) baserat på streak
   const gardenStatus = $derived.by(() => {
     const s = progressPreview.currentStreak;
     if (s === 0) return 'Din trädgård väntar på sitt första frö';
@@ -66,6 +73,56 @@
     if (s <= 13) return 'Blommar lite mer idag';
     return 'Står i full blom';
   });
+  const gardenStage = $derived.by(() => {
+    const s = progressPreview.currentStreak;
+    if (s === 0) return 0;
+    if (s <= 2) return 1;
+    if (s <= 6) return 2;
+    if (s <= 13) return 3;
+    return 4;
+  });
+  // Hur många växter som blommar (av 5) — växer med stadiet
+  const gardenPlants = $derived([0, 1, 2, 3, 4].map((i) => i < gardenStage + 1));
+
+  // ── AI-insikter (teaser på dashboarden) ──
+  type InsightItem = { title: string; description: string };
+  type InsightsResponse = {
+    insights: InsightItem[];
+    aiSummary: string | null;
+  };
+  let insightsConsent = $state(browser ? hasSensitiveConsent() : false);
+  let insightsLoading = $state(false);
+  let insightsLoaded = $state(false);
+  let topInsight = $state<InsightItem | null>(null);
+  let insightSummary = $state<string | null>(null);
+
+  async function loadInsightTeaser() {
+    if (!insightsConsent || insightsLoaded) return;
+    insightsLoading = true;
+    try {
+      const {
+        data: { session }
+      } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const res = await fetch('/api/diary/insights', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          [SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION
+        }
+      });
+      if (!res.ok) return;
+      const payload = (await res.json()) as InsightsResponse;
+      insightSummary = payload.aiSummary ?? null;
+      topInsight = payload.insights?.[0] ?? null;
+      insightsLoaded = true;
+    } catch {
+      // Tyst fallback — teaser visar inbjudan istället
+    } finally {
+      insightsLoading = false;
+    }
+  }
+  const hasInsightContent = $derived(Boolean(insightSummary || topInsight));
 
   type DailyQuestionPayload = {
     id?: string | null;
@@ -206,6 +263,7 @@
   onMount(() => {
     void loadDailyQuestion();
     void loadSpegelvattnet();
+    void loadInsightTeaser();
   });
 </script>
 
@@ -238,8 +296,80 @@
         </div>
       </section>
 
+      <!-- ── Featured: det som gör MittPsyke unikt ── -->
+      <section class="featured">
+
+        <!-- Growth Garden -->
+        <a href="/framsteg" class="feature-card garden-feature">
+          <div class="feature-head">
+            <p class="card-kicker">🌱 Din trädgård</p>
+            <span class="garden-streak">{progressPreview.currentStreak} dagars streak</span>
+          </div>
+
+          <!-- Mini-trädgård: växer med din streak -->
+          <svg class="garden-svg" viewBox="0 0 260 96" aria-hidden="true">
+            <defs>
+              <linearGradient id="garden-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="rgba(124,92,255,0.12)" />
+                <stop offset="1" stop-color="rgba(124,92,255,0)" />
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="260" height="96" fill="url(#garden-sky)" rx="12" />
+            <!-- mark -->
+            <path d="M0 80 Q130 70 260 80 L260 96 L0 96 Z" fill="rgba(110,231,168,0.14)" />
+            <line x1="12" y1="81" x2="248" y2="81" stroke="rgba(110,231,168,0.3)" stroke-width="1.5" />
+            {#each gardenPlants as bloom, i}
+              {@const cx = 36 + i * 48}
+              {#if bloom}
+                <g class="plant" style="--d:{i * 0.12}s">
+                  <line x1={cx} y1="81" x2={cx} y2={gardenStage >= 3 ? 52 : 60} stroke="#6ee7a8" stroke-width="2.5" stroke-linecap="round" />
+                  <path d={`M${cx} ${gardenStage >= 3 ? 60 : 66} q-12 -4 -14 -14 q12 0 14 14`} fill="rgba(110,231,168,0.55)" />
+                  <path d={`M${cx} ${gardenStage >= 3 ? 60 : 66} q12 -4 14 -14 q-12 0 -14 14`} fill="rgba(110,231,168,0.55)" />
+                  {#if gardenStage >= 3}
+                    <circle cx={cx} cy="48" r="6.5" fill="var(--mp-lila)" />
+                    <circle cx={cx} cy="48" r="2.5" fill="#fff" opacity="0.85" />
+                  {:else}
+                    <circle cx={cx} cy={gardenStage >= 2 ? 56 : 60} r="4" fill="#8ef0b6" />
+                  {/if}
+                </g>
+              {:else}
+                <circle cx={cx} cy="79" r="2.5" fill="rgba(255,255,255,0.12)" />
+              {/if}
+            {/each}
+          </svg>
+
+          <p class="garden-status">{gardenStatus}</p>
+          <span class="feature-link">Se din trädgård växa →</span>
+        </a>
+
+        <!-- AI-insikter -->
+        <a href="/insikter" class="feature-card insight-feature">
+          <div class="feature-head">
+            <p class="card-kicker">💡 AI-insikter</p>
+          </div>
+
+          {#if insightsLoading}
+            <div class="skeleton-block" aria-label="Hämtar insikter"></div>
+          {:else if hasInsightContent}
+            {#if insightSummary}
+              <p class="insight-summary">"{insightSummary}"</p>
+            {:else if topInsight}
+              <p class="insight-title">{topInsight.title}</p>
+              <p class="insight-desc">{topInsight.description}</p>
+            {/if}
+            <span class="feature-link">Se alla insikter →</span>
+          {:else}
+            <p class="insight-invite">
+              Låt AI hitta mönster, teman och utveckling i dina dagboksrader — helt privat.
+            </p>
+            <span class="feature-link">Generera dina insikter →</span>
+          {/if}
+        </a>
+
+      </section>
+
       <!-- ── Statistik ── -->
-      <div class="section-title">Din utveckling</div>
+      <div class="section-title section-title-spaced">Din resa över tid</div>
       <section class="stats">
         {#each stats as s}
           <StatCard label={s.label} value={s.value} sub={s.sub} points={s.points} />
@@ -293,16 +423,6 @@
             <a href="/dagbok/checkin#skriv-sjalv" class="btn btn-ghost">Börja skriva</a>
           </article>
         {/if}
-
-        <!-- Growth Garden (minikort) -->
-        <a href="/framsteg" class="garden-card">
-          <span class="garden-emoji">🌱</span>
-          <div class="garden-body">
-            <p class="garden-title">Din trädgård</p>
-            <p class="garden-status">{gardenStatus}</p>
-          </div>
-          <span class="garden-streak">{progressPreview.currentStreak} dagars streak</span>
-        </a>
 
         <!-- Spegelvattnet (sön/mån) -->
         {#if shouldShowSpegelvattnet && spegelReflection}
@@ -498,25 +618,56 @@
   .daily-hero-sub{ margin: 0; font-size: 0.95rem; color: var(--mp-text-dim); }
   .daily-hero-actions{ display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
 
-  /* ── Growth Garden minikort (punkt 2) ── */
-  .garden-card{
-    display: flex; align-items: center; gap: 16px;
-    border: 1px solid rgba(110,231,168,0.22);
-    border-radius: 13px; padding: 18px;
-    background: linear-gradient(135deg, rgba(110,231,168,0.08), rgba(124,92,255,0.04));
+  /* ── Featured-band (unika funktioner) ── */
+  .featured{ display: grid; grid-template-columns: 1.15fr 1fr; gap: 18px; }
+  .feature-card{
+    display: flex; flex-direction: column; gap: 12px;
+    border-radius: var(--mp-radius); padding: 22px 24px;
     text-decoration: none; color: var(--mp-text);
-    transition: .15s;
+    backdrop-filter: blur(14px); transition: .15s;
+    min-height: 210px;
   }
-  .garden-card:hover{ transform: translateY(-1px); border-color: rgba(110,231,168,0.4); }
-  .garden-emoji{ font-size: 2.1rem; line-height: 1; }
-  .garden-body{ flex: 1; min-width: 0; }
-  .garden-title{ margin: 0 0 3px; font-size: 0.95rem; font-weight: 700; }
-  .garden-status{ margin: 0; font-size: 0.83rem; color: var(--mp-text-dim); line-height: 1.4; }
+  .feature-card:hover{ transform: translateY(-2px); }
+  .feature-head{ display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+  .garden-feature{
+    background:
+      radial-gradient(500px 200px at 0% 100%, rgba(110,231,168,0.14), transparent 60%),
+      linear-gradient(135deg, rgba(110,231,168,0.08), rgba(124,92,255,0.05));
+    border: 1px solid rgba(110,231,168,0.24);
+  }
+  .garden-feature:hover{ border-color: rgba(110,231,168,0.42); }
+  .garden-svg{ width: 100%; height: auto; display: block; margin: 2px 0; }
+  .plant{ transform-origin: bottom center; animation: sprout .6s ease both; animation-delay: var(--d); }
+  @keyframes sprout { from{ transform: scaleY(0); opacity: 0 } to{ transform: scaleY(1); opacity: 1 } }
+  .garden-status{ margin: 0; font-size: 0.9rem; color: var(--mp-text); font-weight: 500; }
   .garden-streak{
     font-size: 0.78rem; font-weight: 600; white-space: nowrap;
     padding: 5px 12px; border-radius: 20px;
     background: rgba(110,231,168,0.12); color: #8ef0b6;
     border: 1px solid rgba(110,231,168,0.25);
+  }
+
+  .insight-feature{
+    background:
+      radial-gradient(500px 220px at 100% 0%, rgba(168,130,255,0.16), transparent 58%),
+      linear-gradient(135deg, rgba(124,92,255,0.1), rgba(168,130,255,0.04));
+    border: 1px solid rgba(168,130,255,0.26);
+  }
+  .insight-feature:hover{ border-color: rgba(168,130,255,0.45); }
+  .insight-summary{ margin: 0; font-size: 1.05rem; line-height: 1.55; font-style: italic; color: var(--mp-text); }
+  .insight-title{ margin: 0; font-size: 1rem; font-weight: 700; }
+  .insight-desc{ margin: 0; font-size: 0.88rem; color: var(--mp-text-dim); line-height: 1.5; }
+  .insight-invite{ margin: 0; font-size: 0.95rem; color: var(--mp-text-dim); line-height: 1.6; }
+
+  .feature-link{
+    margin-top: auto; font-size: 0.85rem; font-weight: 600; color: var(--mp-lila);
+  }
+  .skeleton-block{
+    flex: 1; min-height: 90px; border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.12), rgba(255,255,255,.05));
+    background-size: 200% 100%;
+    animation: shimmer 1.2s ease-in-out infinite;
   }
 
   /* Stor skeleton för dagens fråga */
@@ -560,5 +711,9 @@
     .stats{ grid-template-columns: 1fr; }
     .hero-card{ grid-template-columns: 1fr; }
     .portal-grid{ grid-template-columns: 1fr; }
+    .featured{ grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .plant{ animation: none; }
   }
 </style>
