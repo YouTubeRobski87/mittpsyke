@@ -57,6 +57,16 @@
     }
   ]);
 
+  // Growth Garden — status baserad på streak
+  const gardenStatus = $derived.by(() => {
+    const s = progressPreview.currentStreak;
+    if (s === 0) return 'Din trädgård väntar på sitt första frö';
+    if (s <= 2) return 'Ett litet skott tittar fram';
+    if (s <= 6) return 'Den börjar slå rot';
+    if (s <= 13) return 'Blommar lite mer idag';
+    return 'Står i full blom';
+  });
+
   type DailyQuestionPayload = {
     id?: string | null;
     question?: string;
@@ -236,8 +246,38 @@
         {/each}
       </section>
 
-      <!-- ── Dagboksrad + Daglig fråga ── -->
-      <div class="section-title">Dina kort</div>
+      <!-- ── Dagens fråga (prominent) ── -->
+      <section class="daily-hero">
+        <p class="daily-hero-kicker">❤️ Dagens fråga</p>
+        {#if dailyQuestionLoading && !dailyQuestion}
+          <div class="skeleton-lg" aria-label="Hämtar dagens fråga"></div>
+        {:else}
+          <h2 class="daily-hero-q">{dailyQuestion || fallbackDailyQuestion}</h2>
+        {/if}
+        {#if dailyQuestionSafety}
+          <p class="daily-hero-sub">Om det känns akut, ring 112. Fler stödlinjer på stodlinjer.se.</p>
+        {:else}
+          <p class="daily-hero-sub">Svara kort eller långt. Det räcker att börja där du är.</p>
+        {/if}
+        <div class="daily-hero-actions">
+          <a href={dailyQuestionDiaryHref} class="btn btn-primary btn-lg">Svara nu</a>
+          {#if !dailyQuestionSafety}
+            <button
+              type="button"
+              class="refresh-btn"
+              onclick={regenerateDailyQuestion}
+              disabled={!canRegenerateDailyQuestion || dailyQuestionRegenerating || dailyQuestionLoading}
+              title={!canRegenerateDailyQuestion ? 'Du kan byta fråga två gånger per dag.' : 'Byt fråga'}
+            >{dailyQuestionRegenerating ? 'Byter...' : 'Byt fråga'}</button>
+          {/if}
+        </div>
+        {#if dailyQuestionError}
+          <p class="card-warn">{dailyQuestionError}</p>
+        {/if}
+      </section>
+
+      <!-- ── Dina kort ── -->
+      <div class="section-title section-title-spaced">Dina kort</div>
       <section class="cards-row">
 
         <!-- Senaste dagboksrad -->
@@ -254,35 +294,15 @@
           </article>
         {/if}
 
-        <!-- Daglig fråga -->
-        <article class="daily-card">
-          <p class="card-kicker">Dagens fråga</p>
-          {#if dailyQuestionLoading && !dailyQuestion}
-            <div class="skeleton" aria-label="Hämtar dagens fråga"></div>
-          {:else}
-            <h3>{dailyQuestion || fallbackDailyQuestion}</h3>
-          {/if}
-          {#if dailyQuestionSafety}
-            <p class="card-sub">Om det känns akut, ring 112. Fler stödlinjer på stodlinjer.se.</p>
-          {:else}
-            <p class="card-sub">Svara kort eller långt. Det räcker att börja där du är.</p>
-          {/if}
-          <div class="daily-actions">
-            <a href={dailyQuestionDiaryHref} class="btn btn-ghost">Svara i dagboken</a>
-            {#if !dailyQuestionSafety}
-              <button
-                type="button"
-                class="refresh-btn"
-                onclick={regenerateDailyQuestion}
-                disabled={!canRegenerateDailyQuestion || dailyQuestionRegenerating || dailyQuestionLoading}
-                title={!canRegenerateDailyQuestion ? 'Du kan byta fråga två gånger per dag.' : 'Byt fråga'}
-              >{dailyQuestionRegenerating ? 'Byter...' : 'Byt fråga'}</button>
-            {/if}
+        <!-- Growth Garden (minikort) -->
+        <a href="/framsteg" class="garden-card">
+          <span class="garden-emoji">🌱</span>
+          <div class="garden-body">
+            <p class="garden-title">Din trädgård</p>
+            <p class="garden-status">{gardenStatus}</p>
           </div>
-          {#if dailyQuestionError}
-            <p class="card-warn">{dailyQuestionError}</p>
-          {/if}
-        </article>
+          <span class="garden-streak">{progressPreview.currentStreak} dagars streak</span>
+        </a>
 
         <!-- Spegelvattnet (sön/mån) -->
         {#if shouldShowSpegelvattnet && spegelReflection}
@@ -384,6 +404,8 @@
     font-size: 0.78rem; letter-spacing: .08em; text-transform: uppercase;
     color: var(--mp-text-dim); margin: 4px 2px;
   }
+  /* Mer luft före "Dina kort" (punkt 4) */
+  .section-title-spaced{ margin-top: 18px; }
 
   /* ── Knappar ── */
   .btn{
@@ -401,6 +423,11 @@
     border: 1px solid var(--mp-card-border); color: var(--mp-text);
   }
   .btn-ghost:hover{ background: rgba(255,255,255,0.1); }
+  .btn-lg{
+    padding: 14px 30px; font-size: 1rem; border-radius: 13px;
+    box-shadow: 0 10px 24px rgba(124,92,255,0.28);
+  }
+  .btn-lg:hover{ transform: translateY(-1px); }
 
   /* ── Hero ── */
   .hero-card{
@@ -453,7 +480,53 @@
   .card-sub{ margin: 0; font-size: 0.82rem; color: var(--mp-text-dim); line-height: 1.5; }
   .card-warn{ margin: 0; font-size: 0.82rem; color: hsl(39 92% 82% / 0.92); }
 
-  .daily-actions{ display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  /* ── Dagens fråga (prominent, punkt 6) ── */
+  .daily-hero{
+    border-radius: var(--mp-radius); padding: 32px 34px;
+    background:
+      radial-gradient(700px 300px at 100% 0%, rgba(124,92,255,0.18), transparent 55%),
+      linear-gradient(135deg, rgba(124,92,255,0.14), rgba(168,130,255,0.05));
+    border: 1px solid rgba(168,130,255,0.28);
+    display: flex; flex-direction: column; gap: 14px;
+    backdrop-filter: blur(14px);
+  }
+  .daily-hero-kicker{ margin: 0; font-size: 0.8rem; letter-spacing: .05em; text-transform: uppercase; color: var(--mp-lila); }
+  .daily-hero-q{
+    margin: 0; font-size: 1.7rem; font-weight: 700; line-height: 1.3;
+    max-width: 28ch; color: var(--mp-text);
+  }
+  .daily-hero-sub{ margin: 0; font-size: 0.95rem; color: var(--mp-text-dim); }
+  .daily-hero-actions{ display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+
+  /* ── Growth Garden minikort (punkt 2) ── */
+  .garden-card{
+    display: flex; align-items: center; gap: 16px;
+    border: 1px solid rgba(110,231,168,0.22);
+    border-radius: 13px; padding: 18px;
+    background: linear-gradient(135deg, rgba(110,231,168,0.08), rgba(124,92,255,0.04));
+    text-decoration: none; color: var(--mp-text);
+    transition: .15s;
+  }
+  .garden-card:hover{ transform: translateY(-1px); border-color: rgba(110,231,168,0.4); }
+  .garden-emoji{ font-size: 2.1rem; line-height: 1; }
+  .garden-body{ flex: 1; min-width: 0; }
+  .garden-title{ margin: 0 0 3px; font-size: 0.95rem; font-weight: 700; }
+  .garden-status{ margin: 0; font-size: 0.83rem; color: var(--mp-text-dim); line-height: 1.4; }
+  .garden-streak{
+    font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    padding: 5px 12px; border-radius: 20px;
+    background: rgba(110,231,168,0.12); color: #8ef0b6;
+    border: 1px solid rgba(110,231,168,0.25);
+  }
+
+  /* Stor skeleton för dagens fråga */
+  .skeleton-lg{
+    width: min(100%, 26rem); height: 2rem; border-radius: 10px;
+    background: linear-gradient(90deg, rgba(255,255,255,.07), rgba(255,255,255,.16), rgba(255,255,255,.07));
+    background-size: 200% 100%;
+    animation: shimmer 1.2s ease-in-out infinite;
+  }
+
   .refresh-btn{
     border: 0; background: transparent; padding: 0;
     color: var(--mp-text-dim); font: inherit; font-size: 0.85rem;
@@ -462,12 +535,6 @@
   .refresh-btn:hover:not(:disabled){ color: var(--mp-text); }
   .refresh-btn:disabled{ opacity: .45; cursor: default; text-decoration: none; }
 
-  .skeleton{
-    width: min(100%, 18rem); height: 1.35rem; border-radius: 8px;
-    background: linear-gradient(90deg, rgba(255,255,255,.07), rgba(255,255,255,.14), rgba(255,255,255,.07));
-    background-size: 200% 100%;
-    animation: shimmer 1.2s ease-in-out infinite;
-  }
   @keyframes shimmer { from{ background-position:100% 0 } to{ background-position:-100% 0 } }
 
   /* ── Portal-grid ── */
