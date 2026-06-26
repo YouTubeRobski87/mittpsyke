@@ -143,7 +143,6 @@
 			name: 'Robert Claesson'
 		},
 		areaServed: { '@type': 'Country', name: 'Sverige' },
-		inLanguage: 'sv',
 		identifier: '198712284895'
 	};
 
