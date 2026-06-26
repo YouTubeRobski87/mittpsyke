@@ -232,7 +232,7 @@ a {
 	padding: 0 1rem 2.75rem;
 }
 
-.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) {
+.auth-page:is(:has(.auth-subnav[aria-label='Portalnavigering']), .framsteg-page) {
 	position: relative;
 	overflow-x: clip;
 	overflow-y: visible;
@@ -243,12 +243,12 @@ a {
 }
 
 @supports not (overflow: clip) {
-	.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) {
+	.auth-page:is(:has(.auth-subnav[aria-label='Portalnavigering']), .framsteg-page) {
 		overflow-x: hidden;
 	}
 }
 
-.auth-page:has(.auth-subnav[aria-label='Portalnavigering'])::before {
+.auth-page:is(:has(.auth-subnav[aria-label='Portalnavigering']), .framsteg-page)::before {
 	content: '';
 	position: absolute;
 	inset: 0;
@@ -262,19 +262,19 @@ a {
 	transform: scale(1.02);
 }
 
-.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) > * {
+.auth-page:is(:has(.auth-subnav[aria-label='Portalnavigering']), .framsteg-page) > * {
 	position: relative;
 	z-index: 1;
 }
 
-.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-subnav,
-.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-panel,
-.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .card {
+.auth-page:is(:has(.auth-subnav[aria-label='Portalnavigering']), .framsteg-page) .auth-subnav,
+.auth-page:is(:has(.auth-subnav[aria-label='Portalnavigering']), .framsteg-page) .auth-panel,
+.auth-page:is(:has(.auth-subnav[aria-label='Portalnavigering']), .framsteg-page) .card {
 	border-color: var(--color-dashboard-border);
 }
 
-.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .auth-panel:hover,
-.auth-page:has(.auth-subnav[aria-label='Portalnavigering']) .card:hover {
+.auth-page:is(:has(.auth-subnav[aria-label='Portalnavigering']), .framsteg-page) .auth-panel:hover,
+.auth-page:is(:has(.auth-subnav[aria-label='Portalnavigering']), .framsteg-page) .card:hover {
 	border-color: color-mix(in srgb, var(--color-dashboard-border) 76%, var(--primary) 24%);
 }
 
@@ -430,7 +430,7 @@ a {
 		padding-inline: 0.75rem;
 	}
 
-	.auth-page:has(.auth-subnav[aria-label='Portalnavigering'])::before {
+	.auth-page:is(:has(.auth-subnav[aria-label='Portalnavigering']), .framsteg-page)::before {
 		background-position: 42% top;
 		opacity: 0.2;
 	}

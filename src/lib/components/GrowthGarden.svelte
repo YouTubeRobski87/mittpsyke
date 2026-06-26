@@ -400,6 +400,7 @@
 </script>
 
 <section
+	id="growth-garden"
 	class="garden-card card"
 	aria-labelledby="growth-garden-title"
 	data-continuity={continuityState}

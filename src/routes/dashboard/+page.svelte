@@ -300,7 +300,7 @@
       <section class="featured">
 
         <!-- Growth Garden -->
-        <a href="/framsteg" class="feature-card garden-feature">
+        <a href="/framsteg#growth-garden" class="feature-card garden-feature">
           <div class="feature-head">
             <p class="card-kicker">🌱 Din trädgård</p>
             <span class="garden-streak">{progressPreview.currentStreak} dagars streak</span>

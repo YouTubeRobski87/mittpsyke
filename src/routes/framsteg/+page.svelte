@@ -1,9 +1,8 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
-	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import GrowthGarden from '$lib/components/GrowthGarden.svelte';
 	import type { ProgressCompanionSelection } from '$lib/progressCompanion';
@@ -275,6 +274,15 @@
 		for (const milestone of milestonesData?.achieved ?? []) {
 			trackMilestoneReachedOnce(milestone.title ?? milestone.text);
 		}
+
+		void scrollToGrowthGardenAnchor();
+	}
+
+	async function scrollToGrowthGardenAnchor() {
+		if (!browser || window.location.hash !== '#growth-garden') return;
+
+		await tick();
+		document.getElementById('growth-garden')?.scrollIntoView({ block: 'start' });
 	}
 
 	async function loadProgressData() {
@@ -454,12 +462,15 @@
 
 <SEO canonical="https://www.mittpsyke.se/framsteg" />
 
-<main class="auth-page" style={themeStyle}>
-	<PortalSubnav
-		active="framsteg"
-		title="Framsteg"
-		description="En lugn överblick över din resa, i din egen takt."
-	/>
+<main class="auth-page framsteg-page" style={themeStyle}>
+	<div class="auth-shell">
+		<header class="auth-hero">
+			<div>
+				<h1>Framsteg</h1>
+				<p>En lugn överblick över din resa, i din egen takt.</p>
+			</div>
+		</header>
+	</div>
 
 	<div class="auth-shell">
 		<div class="journey-container">
