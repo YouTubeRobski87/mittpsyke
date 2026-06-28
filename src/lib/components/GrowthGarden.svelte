@@ -5,9 +5,11 @@
 		getProgressCompanionAnimal,
 		getProgressCompanionArtId,
 		getProgressCompanionCarePhrases,
+		getProgressCompanionDayState,
 		getProgressCompanionStatusMessage,
 		normalizeProgressCompanion,
 		readProgressCompanionFromMetadata,
+		type ProgressCompanionDayState,
 		type ProgressCompanionAnimal,
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
@@ -130,6 +132,7 @@
 	let companionStage: CompanionStage = 'choose';
 	let companionMessage = 'Jag är här när du vill börja.';
 	let statusMessageKey: string | null = null;
+	let companionDayState: ProgressCompanionDayState = getProgressCompanionDayState();
 
 	$: {
 		const nextProgressCompanion = normalizeProgressCompanion(progressCompanion);
@@ -161,6 +164,7 @@
 
 	onMount(async () => {
 		if (!browser) return;
+		companionDayState = getProgressCompanionDayState();
 		let authenticatedUserFound = false;
 		const returnMessage = getReturnMessage();
 
@@ -357,6 +361,7 @@
 	data-continuity={continuityState}
 	data-care-intensity={careIntensity}
 	data-companion-level={companionLevel}
+	data-day-state={companionDayState}
 >
 	<div class="garden-copy">
 		<h2 id="growth-garden-title">Din växande plats</h2>
@@ -508,8 +513,14 @@
 								<circle class="eye-ring" cx="283" cy="154" r="12" />
 								<path class="beak" d="M270 158 L264 168 H276 Z" />
 							{/if}
-							<ellipse class="eye companion-eye left-eye" cx={companionArtId === 'turtle' ? 331 : 258} cy={companionArtId === 'turtle' ? 172 : 154} rx="2.8" ry="3.6" />
-							<ellipse class="eye companion-eye right-eye" cx={companionArtId === 'turtle' ? 342 : 282} cy={companionArtId === 'turtle' ? 172 : 154} rx="2.8" ry="3.6" />
+							<g class="open-eyes">
+								<ellipse class="eye companion-eye left-eye" cx={companionArtId === 'turtle' ? 331 : 258} cy={companionArtId === 'turtle' ? 172 : 154} rx="2.8" ry="3.6" />
+								<ellipse class="eye companion-eye right-eye" cx={companionArtId === 'turtle' ? 342 : 282} cy={companionArtId === 'turtle' ? 172 : 154} rx="2.8" ry="3.6" />
+							</g>
+							<g class="sleep-eyes">
+								<path d={companionArtId === 'turtle' ? 'M326 172 C330 175 334 175 338 172' : 'M252 154 C256 157 260 157 264 154'} />
+								<path d={companionArtId === 'turtle' ? 'M338 172 C342 175 346 175 350 172' : 'M276 154 C280 157 284 157 288 154'} />
+							</g>
 							{#if companionArtId !== 'owl'}
 								<path class="mouth" d={companionArtId === 'turtle' ? 'M330 182 C334 185 340 185 344 182' : 'M262 170 C266 174 274 174 278 170'} />
 							{/if}
@@ -913,8 +924,65 @@
 		animation: companion-blink 7.2s ease-in-out infinite;
 	}
 
+	.sleep-eyes {
+		display: none;
+	}
+
+	.sleep-eyes path {
+		fill: none;
+		stroke: var(--companion-line);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2;
+		opacity: 0.78;
+	}
+
 	.companion-owl .eye {
 		animation-duration: 6.2s;
+	}
+
+	.garden-card[data-day-state='evening'] .companion-breath {
+		animation-duration: 10.5s;
+	}
+
+	.garden-card[data-day-state='evening'] .eye {
+		animation-duration: 11.5s;
+	}
+
+	.garden-card[data-day-state='evening'] .companion-head,
+	.garden-card[data-day-state='evening'] .ear,
+	.garden-card[data-day-state='evening'] .rabbit-ear,
+	.garden-card[data-day-state='evening'] .companion-tail,
+	.garden-card[data-day-state='evening'] .companion-bubble {
+		animation-duration: 13s;
+	}
+
+	.garden-card[data-day-state='night'] .companion-breath {
+		animation-duration: 12s;
+	}
+
+	.garden-card[data-day-state='night'] .companion-head,
+	.garden-card[data-day-state='night'] .ear,
+	.garden-card[data-day-state='night'] .rabbit-ear {
+		animation: none;
+	}
+
+	.garden-card[data-day-state='night'] .companion-tail,
+	.garden-card[data-day-state='night'] .companion-bubble {
+		animation-duration: 14s;
+	}
+
+	.garden-card[data-day-state='night'] .companion-aura circle {
+		opacity: 0.22;
+		animation-duration: 12s;
+	}
+
+	.garden-card[data-day-state='night'] .open-eyes {
+		display: none;
+	}
+
+	.garden-card[data-day-state='night'] .sleep-eyes {
+		display: block;
 	}
 
 	.companion-fox .companion-head {

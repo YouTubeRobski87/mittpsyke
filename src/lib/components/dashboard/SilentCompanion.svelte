@@ -15,7 +15,7 @@
 		progressCompanion?: ProgressCompanionSelection | string | null;
 	} = $props();
 
-	let dayState = $state<ProgressCompanionDayState>('day');
+	let dayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
 	const companion = $derived(getProgressCompanionAnimal(progressCompanion));
 	const companionName = $derived(companion?.name ?? 'Din följeslagare');
 	const companionArtId = $derived(getProgressCompanionArtId(companion?.id));
@@ -26,6 +26,7 @@
 		if (dayState === 'night') return 'Den vilar här medan natten är stilla.';
 		return 'Den håller platsen lugnt under dagen.';
 	});
+	const gardenLinkText = $derived(dayState === 'night' ? 'Se platsen den vilar i' : 'Se platsen den bor i');
 
 	onMount(() => {
 		dayState = getProgressCompanionDayState();
@@ -43,7 +44,7 @@
 		<h2 id="silent-companion-title">Den tysta följeslagaren</h2>
 		<p>{stateText}</p>
 		<p class="companion-note">Den finns kvar här när du återvänder.</p>
-		<a href="/framsteg#growth-garden">Se platsen den bor i</a>
+		<a href="/framsteg#growth-garden">{gardenLinkText}</a>
 	</div>
 
 	<div class="companion-scene" aria-hidden="true">
