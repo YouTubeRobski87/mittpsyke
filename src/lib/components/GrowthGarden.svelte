@@ -1,10 +1,14 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import {
+		PROGRESS_COMPANION_ANIMALS,
+		getProgressCompanionAnimal,
+		getProgressCompanionArtId,
 		getProgressCompanionCarePhrases,
 		getProgressCompanionStatusMessage,
 		normalizeProgressCompanion,
 		readProgressCompanionFromMetadata,
+		type ProgressCompanionAnimal,
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
 	import { supabase } from '$lib/supabase';
@@ -12,7 +16,6 @@
 
 	type CompanionAnimalId = string;
 	type CompanionStage = 'choose' | 'chosen';
-	type CompanionArtId = 'fox' | 'bear' | 'owl' | 'rabbit' | 'squirrel' | 'turtle' | 'dino';
 
 	export let growthScore: number;
 	export let growthLevel: number;
@@ -20,12 +23,6 @@
 	export let activeDays: number = 0;
 	export let lastEntryDaysAgo: number | null = null;
 	export let progressCompanion: ProgressCompanionSelection | string | null = null;
-
-	type CompanionAnimal = {
-		id: CompanionAnimalId;
-		name: string;
-		temperament: string;
-	};
 
 	type CareSignal = {
 		label: string;
@@ -42,15 +39,7 @@
 	const COMPANION_STORAGE_KEY = 'mittpsyke:progress-companion';
 	const LAST_VISIT_STORAGE_KEY = 'mittpsyke:garden-last-visit';
 
-	const COMPANION_ANIMALS = [
-		{ id: 'fox', name: 'Räv', temperament: 'Nyfiken och varsam' },
-		{ id: 'bear', name: 'Björn', temperament: 'Lugn och stadig' },
-		{ id: 'owl', name: 'Uggla', temperament: 'Vaken och stilla' },
-		{ id: 'rabbit', name: 'Kanin', temperament: 'Mjuk och uppmärksam' },
-		{ id: 'squirrel', name: 'Ekorre', temperament: 'Liten och närvarande' },
-		{ id: 'turtle', name: 'Sköldpadda', temperament: 'Långsam och trygg' },
-		{ id: 'dino', name: 'Liten dino', temperament: 'Vänlig och stillsam' }
-	] satisfies CompanionAnimal[];
+	const COMPANION_ANIMALS = PROGRESS_COMPANION_ANIMALS;
 
 	const FLOWER_POINTS: GardenPoint[] = [
 		{ id: 'f1', x: 78, y: 210 },
@@ -123,7 +112,7 @@
 			: (COMPANION_ANIMALS.find((animal) => animal.id === selectedAnimalId) ?? null)
 		: null;
 	$: companionName = selectedCompanion?.name ?? 'Din följeslagare';
-	$: companionArtId = getCompanionArtId(selectedCompanion?.id);
+	$: companionArtId = getProgressCompanionArtId(selectedCompanion?.id);
 	$: companionLevelText = getCompanionLevelText(companionLevel);
 	$: careSignals = getCareSignals();
 	$: placeCopy =
@@ -135,8 +124,8 @@
 
 	let careCount = 0;
 	let observedEntryCount: number | null = null;
-	let selectedAnimalId: CompanionAnimal['id'] | null = null;
-	let selectedAnimal: CompanionAnimal | null = null;
+	let selectedAnimalId: ProgressCompanionAnimal['id'] | null = null;
+	let selectedAnimal: ProgressCompanionAnimal | null = null;
 	let appliedProgressCompanion: string | null = null;
 	let companionStage: CompanionStage = 'choose';
 	let companionMessage = 'Jag är här när du vill börja.';
@@ -146,7 +135,7 @@
 		const nextProgressCompanion = normalizeProgressCompanion(progressCompanion);
 		if (nextProgressCompanion?.id !== appliedProgressCompanion) {
 			appliedProgressCompanion = nextProgressCompanion?.id ?? null;
-			const animal = getCompanionAnimal(nextProgressCompanion);
+			const animal = getProgressCompanionAnimal(nextProgressCompanion);
 			if (animal) {
 				applyCompanion(animal, getReturnMessage());
 			}
@@ -188,7 +177,7 @@
 			const remoteSelection = readProgressCompanionFromMetadata(
 				(user?.user_metadata ?? null) as Record<string, unknown> | null
 			);
-			const remoteAnimal = getCompanionAnimal(remoteSelection);
+			const remoteAnimal = getProgressCompanionAnimal(remoteSelection);
 			if (remoteAnimal) {
 				applyCompanion(remoteAnimal, returnMessage);
 				cacheCompanion(remoteAnimal.id);
@@ -205,7 +194,7 @@
 				return;
 			}
 			const savedAnimal = localStorage.getItem(COMPANION_STORAGE_KEY);
-			const animal = getCompanionAnimal(savedAnimal);
+			const animal = getProgressCompanionAnimal(savedAnimal);
 			if (animal) {
 				applyCompanion(animal, returnMessage);
 			}
@@ -215,44 +204,6 @@
 
 		rememberVisit();
 	});
-
-	function getCompanionAnimal(value: unknown): CompanionAnimal | null {
-		const selection = normalizeProgressCompanion(value);
-		if (!selection) return null;
-
-		const builtInAnimal = COMPANION_ANIMALS.find((option) => option.id === selection.id);
-		if (builtInAnimal) return builtInAnimal;
-
-		return {
-			id: selection.id,
-			name: selection.name ?? formatCompanionName(selection.id),
-			temperament: 'Din egen lilla närvaro'
-		};
-	}
-
-	function formatCompanionName(id: string) {
-		const normalized = id
-			.replace(/[_-]+/g, ' ')
-			.replace(/\s+/g, ' ')
-			.trim();
-		if (!normalized) return 'Din följeslagare';
-		return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-	}
-
-	function getCompanionArtId(id: string | null | undefined): CompanionArtId {
-		if (
-			id === 'fox' ||
-			id === 'bear' ||
-			id === 'owl' ||
-			id === 'rabbit' ||
-			id === 'squirrel' ||
-			id === 'turtle' ||
-			id === 'dino'
-		) {
-			return id;
-		}
-		return 'bear';
-	}
 
 	function getCompanionLevel(entryCountValue: number) {
 		if (entryCountValue >= 60) return 5;
@@ -270,7 +221,7 @@
 		return 'Följeslagaren väntar stilla medan platsen tar form.';
 	}
 
-	function applyCompanion(animal: CompanionAnimal, message: string) {
+	function applyCompanion(animal: ProgressCompanionAnimal, message: string) {
 		selectedAnimalId = animal.id;
 		selectedAnimal = animal;
 		companionStage = 'chosen';
@@ -287,7 +238,7 @@
 		}
 	}
 
-	async function persistCompanion(animal: CompanionAnimal) {
+	async function persistCompanion(animal: ProgressCompanionAnimal) {
 		try {
 			const { data, error } = await supabase.auth.updateUser({
 				data: { progress_companion: animal.id }
@@ -300,7 +251,7 @@
 			const savedSelection = readProgressCompanionFromMetadata(
 				(data.user?.user_metadata ?? null) as Record<string, unknown> | null
 			);
-			const savedAnimal = getCompanionAnimal(savedSelection) ?? animal;
+			const savedAnimal = getProgressCompanionAnimal(savedSelection) ?? animal;
 			applyCompanion(savedAnimal, 'Skönt att ha dig här.');
 			cacheCompanion(savedAnimal.id);
 
@@ -313,7 +264,7 @@
 		}
 	}
 
-	function chooseCompanion(animal: CompanionAnimal) {
+	function chooseCompanion(animal: ProgressCompanionAnimal) {
 		applyCompanion(animal, 'Nu finns jag kvar här med dig.');
 		void persistCompanion(animal);
 	}
@@ -586,7 +537,7 @@
 			<p>{placeCopy}</p>
 			{#if companionStage === 'chosen'}
 				<p class="companion-level-text">
-					<span>Nivå {companionLevel}</span>
+					<span>Varsam närvaro</span>
 					{companionLevelText}
 				</p>
 			{/if}
@@ -596,7 +547,7 @@
 			<div class="animal-chooser" aria-label="Välj följeslagare">
 				{#each COMPANION_ANIMALS as animal}
 					<button type="button" onclick={() => chooseCompanion(animal)}>
-						<span aria-hidden="true" class={`animal-mark animal-${getCompanionArtId(animal.id)}`}></span>
+						<span aria-hidden="true" class={`animal-mark animal-${getProgressCompanionArtId(animal.id)}`}></span>
 						<span>
 							<strong>{animal.name}</strong>
 							<small>{animal.temperament}</small>

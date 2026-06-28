@@ -4,10 +4,37 @@ export type ProgressCompanionSelection = {
 	icon?: string;
 };
 
+export type ProgressCompanionAnimal = {
+	id: string;
+	name: string;
+	temperament: string;
+};
+
+export type ProgressCompanionArtId =
+	| 'fox'
+	| 'bear'
+	| 'owl'
+	| 'rabbit'
+	| 'squirrel'
+	| 'turtle'
+	| 'dino';
+
+export type ProgressCompanionDayState = 'morning' | 'day' | 'evening' | 'night';
+
 type ProgressCompanionPresenceInput = {
 	lastEntryDaysAgo?: number | null;
 	hasEntries?: boolean;
 };
+
+export const PROGRESS_COMPANION_ANIMALS = [
+	{ id: 'fox', name: 'Räv', temperament: 'Nyfiken och varsam' },
+	{ id: 'bear', name: 'Björn', temperament: 'Lugn och stadig' },
+	{ id: 'owl', name: 'Uggla', temperament: 'Vaken och stilla' },
+	{ id: 'rabbit', name: 'Kanin', temperament: 'Mjuk och uppmärksam' },
+	{ id: 'squirrel', name: 'Ekorre', temperament: 'Liten och närvarande' },
+	{ id: 'turtle', name: 'Sköldpadda', temperament: 'Långsam och trygg' },
+	{ id: 'dino', name: 'Liten dino', temperament: 'Vänlig och stillsam' }
+] satisfies ProgressCompanionAnimal[];
 
 const COMPANION_METADATA_KEYS = [
 	'progress_companion',
@@ -124,6 +151,67 @@ export function readProgressCompanionFromMetadata(
 	}
 
 	return null;
+}
+
+export function formatProgressCompanionName(id: string) {
+	const normalized = id
+		.replace(/[_-]+/g, ' ')
+		.replace(/\s+/g, ' ')
+		.trim();
+	if (!normalized) return 'Din följeslagare';
+	return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
+export function getProgressCompanionAnimal(value: unknown): ProgressCompanionAnimal | null {
+	const selection = normalizeProgressCompanion(value);
+	if (!selection) return null;
+
+	const builtInAnimal = PROGRESS_COMPANION_ANIMALS.find((option) => option.id === selection.id);
+	if (builtInAnimal) return builtInAnimal;
+
+	return {
+		id: selection.id,
+		name: selection.name ?? formatProgressCompanionName(selection.id),
+		temperament: 'Din egen lilla närvaro'
+	};
+}
+
+export function getProgressCompanionArtId(id: string | null | undefined): ProgressCompanionArtId {
+	if (
+		id === 'fox' ||
+		id === 'bear' ||
+		id === 'owl' ||
+		id === 'rabbit' ||
+		id === 'squirrel' ||
+		id === 'turtle' ||
+		id === 'dino'
+	) {
+		return id;
+	}
+	return 'bear';
+}
+
+export function getProgressCompanionDayState(date = new Date()): ProgressCompanionDayState {
+	const hour = Number(
+		new Intl.DateTimeFormat('sv-SE', {
+			timeZone: 'Europe/Stockholm',
+			hour: 'numeric',
+			hour12: false
+		}).format(date)
+	);
+
+	if (!Number.isFinite(hour)) return 'day';
+	if (hour >= 5 && hour < 10) return 'morning';
+	if (hour >= 10 && hour < 17) return 'day';
+	if (hour >= 17 && hour < 22) return 'evening';
+	return 'night';
+}
+
+export function getProgressCompanionDayStateLabel(state: ProgressCompanionDayState): string {
+	if (state === 'morning') return 'Morgon';
+	if (state === 'evening') return 'Kväll';
+	if (state === 'night') return 'Natt';
+	return 'Dag';
 }
 
 export function getProgressCompanionStatusMessage({

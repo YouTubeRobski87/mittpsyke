@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { DEFAULT_THEME, THEMES } from '$lib/theme';
+import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
 
 type DiaryRow = {
 	id: string;
@@ -48,7 +49,7 @@ const WEEKLY_GOAL_LABELS: Record<string, string> = {
 	mood_daily: 'Checka in mitt humör varje dag',
 	write_when_needed: 'Skriva när tankarna blir mycket',
 	calm_moments: 'Skapa en lugn stund några gånger i veckan',
-	none: 'Inget mål just nu'
+	none: 'Ingen vald rytm just nu'
 };
 
 const DASHBOARD_WIDGET_LABELS: Record<string, string> = {
@@ -116,10 +117,10 @@ function startOfWeekIso() {
 
 function buildProgressSummary(currentStreak: number, weeklyEntries: number, totalEntries: number) {
 	if (currentStreak >= 7) {
-		return `${currentStreak} dagar i följd. Du har skapat en stadig rytm.`;
+		return `${currentStreak} dagar nära i tid. Du har hittat en rytm som verkar fungera just nu.`;
 	}
 	if (currentStreak >= 3) {
-		return `${currentStreak} dagar i följd och ${weeklyEntries} inlägg den här veckan.`;
+		return `${currentStreak} dagar nära i tid och ${weeklyEntries} inlägg den här veckan.`;
 	}
 	if (weeklyEntries >= 3) {
 		return `${weeklyEntries} inlägg den här veckan. Du håller kontakt med dig själv.`;
@@ -265,6 +266,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		description: 'En lugn översikt över dagbok, framsteg och inställningar.',
 		diaryPreview,
 		progressPreview,
-		settingsPreview
+		settingsPreview,
+		progressCompanion: readProgressCompanionFromMetadata(metadata)
 	};
 };

@@ -5,8 +5,10 @@
   import Sidebar from '$lib/components/Sidebar.svelte';
   import StatCard from '$lib/components/StatCard.svelte';
   import EntryCard from '$lib/components/EntryCard.svelte';
+  import SilentCompanion from '$lib/components/dashboard/SilentCompanion.svelte';
   import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
   import { supabase } from '$lib/supabase';
+  import type { ProgressCompanionSelection } from '$lib/progressCompanion';
   import {
     SENSITIVE_CONSENT_HEADER,
     SENSITIVE_CONSENT_VERSION,
@@ -32,6 +34,7 @@
       weeklyGoalLabel: string;
       dashboardFocusLabel: string;
     };
+    progressCompanion: ProgressCompanionSelection | string | null;
   };
 
   let { data } = $props<{ data: DashboardData }>();
@@ -51,9 +54,9 @@
       points: [4, 6, 3, 7, 5, progressPreview.weeklyEntries, progressPreview.weeklyEntries]
     },
     {
-      label: 'Streak',
+      label: 'Återvända dagar',
       value: `${progressPreview.currentStreak} dag${progressPreview.currentStreak === 1 ? '' : 'ar'}`,
-      sub: 'i följd',
+      sub: 'nära i tid',
       points: [1, 2, 3, 4, 5, 6, progressPreview.currentStreak]
     },
     {
@@ -64,7 +67,7 @@
     }
   ]);
 
-  // Growth Garden — status + stadie (0–4) baserat på streak
+  // Growth Garden — stilla status baserad på återkommande dagar
   const gardenStatus = $derived.by(() => {
     const s = progressPreview.currentStreak;
     if (s === 0) return 'Din trädgård väntar på sitt första frö';
@@ -296,6 +299,8 @@
         </div>
       </section>
 
+      <SilentCompanion progressCompanion={data.progressCompanion ?? null} />
+
       <!-- ── Featured: det som gör MittPsyke unikt ── -->
       <section class="featured">
 
@@ -303,10 +308,10 @@
         <a href="/framsteg#growth-garden" class="feature-card garden-feature">
           <div class="feature-head">
             <p class="card-kicker">🌱 Din trädgård</p>
-            <span class="garden-streak">{progressPreview.currentStreak} dagars streak</span>
+            <span class="garden-rhythm">{progressPreview.currentStreak} dag{progressPreview.currentStreak === 1 ? '' : 'ar'} nära i tid</span>
           </div>
 
-          <!-- Mini-trädgård: växer med din streak -->
+          <!-- Mini-trädgård: växer långsamt med återkommande dagar -->
           <svg class="garden-svg" viewBox="0 0 260 96" aria-hidden="true">
             <defs>
               <linearGradient id="garden-sky" x1="0" y1="0" x2="0" y2="1">
@@ -464,7 +469,7 @@
           <div class="portal-head">
             <p class="card-kicker">Framsteg</p>
             <span class="portal-meta">
-              {progressPreview.currentStreak} dag{progressPreview.currentStreak === 1 ? '' : 'ar'} i följd
+              {progressPreview.currentStreak} dag{progressPreview.currentStreak === 1 ? '' : 'ar'} nära i tid
             </span>
           </div>
           <h2>Små steg som syns</h2>
@@ -483,7 +488,7 @@
           </div>
           <h2>Det som formar din portal</h2>
           <p class="portal-copy">
-            Mål: {settingsPreview.weeklyGoalLabel}. Fokus: {settingsPreview.dashboardFocusLabel}.
+            Rytm: {settingsPreview.weeklyGoalLabel}. Fokus: {settingsPreview.dashboardFocusLabel}.
           </p>
           <a href="/dashboard/installningar" class="btn btn-ghost">Öppna inställningar</a>
         </article>
@@ -641,7 +646,7 @@
   .plant{ transform-origin: bottom center; animation: sprout .6s ease both; animation-delay: var(--d); }
   @keyframes sprout { from{ transform: scaleY(0); opacity: 0 } to{ transform: scaleY(1); opacity: 1 } }
   .garden-status{ margin: 0; font-size: 0.9rem; color: var(--mp-text); font-weight: 500; }
-  .garden-streak{
+  .garden-rhythm{
     font-size: 0.78rem; font-weight: 600; white-space: nowrap;
     padding: 5px 12px; border-radius: 20px;
     background: rgba(110,231,168,0.12); color: #8ef0b6;

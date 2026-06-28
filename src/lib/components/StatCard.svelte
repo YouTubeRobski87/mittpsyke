@@ -1,12 +1,20 @@
-<script>
+<script lang="ts">
   export let label = '';
   export let value = '';
   export let sub = '';
   /** Array med tal, t.ex. [28,24,26,16,18,8,12] — ritas som spark-linje */
-  export let points = [28, 24, 26, 16, 18, 8, 12];
+  export let points: number[] = [28, 24, 26, 16, 18, 8, 12];
+
+  type SparkPoint = {
+    x: number;
+    y: number;
+    value: number;
+  };
+
+  type Trend = 'up' | 'down' | 'flat';
 
   // Räkna fram koordinater i viewBox-enheter (120 x 34)
-  $: coords = (() => {
+  $: coords = ((): SparkPoint[] => {
     if (!points.length) return [];
     const max = Math.max(...points);
     const min = Math.min(...points);
@@ -26,7 +34,7 @@
   $: bestIdx = coords.reduce((best, c, i) => (c.value > coords[best].value ? i : best), 0);
 
   // Trend: jämför sista mot första punkten
-  $: trend = (() => {
+  $: trend = ((): Trend => {
     if (coords.length < 2) return 'flat';
     const diff = points[points.length - 1] - points[0];
     if (diff > 0) return 'up';
@@ -34,11 +42,11 @@
     return 'flat';
   })();
 
-  const trendIcon = { up: '↑', down: '↓', flat: '→' };
-  const trendLabel = { up: 'Uppåt', down: 'Nedåt', flat: 'Stabilt' };
+  const trendIcon: Record<Trend, string> = { up: '↑', down: '↓', flat: '→' };
+  const trendLabel: Record<Trend, string> = { up: 'Uppåt', down: 'Nedåt', flat: 'Stabilt' };
 
   // Procentposition för HTML-markörer (matchar den utstretchade SVG:n)
-  const pct = (c) => ({ left: (c.x / 120) * 100, top: (c.y / 34) * 100 });
+  const pct = (c: SparkPoint) => ({ left: (c.x / 120) * 100, top: (c.y / 34) * 100 });
 
   // Unikt gradient-id så flera kort på samma sida inte krockar
   const gid = 'mp-spark-' + Math.random().toString(36).slice(2, 9);
