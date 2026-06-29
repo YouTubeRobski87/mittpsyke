@@ -47,11 +47,8 @@
 <SEO {canonical} />
 
 <svelte:head>
-	<title>{article.title} | MittPsyke</title>
-	<meta property="og:type" content="article" />
-	<meta property="og:title" content={article.title} />
-	<meta property="og:description" content={article.excerpt} />
-	<meta property="og:image" content={ogImage} />
+	<!-- Titel, og:title/description/type/image och twitter-taggar sätts centralt i +layout.svelte
+	     via page.data (ogType='article', ogImage). Här lämnas bara artikelns JSON-LD. -->
 	{@html `<script type="application/ld+json">${jsonLd}<\/script>`}
 </svelte:head>
 

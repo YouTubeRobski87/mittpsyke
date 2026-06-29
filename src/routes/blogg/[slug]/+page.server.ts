@@ -44,6 +44,17 @@ function fixProtocolLessLinks(html: string): string {
 	return html.replace(/(href=["'])(www\.)/gi, '$1https://$2');
 }
 
+// Soro-innehållet inleds med en egen <h1> (artikelrubriken). Mallen renderar redan
+// <h1>{article.title}</h1> i headern, så den ledande H1:an i innehållet ger en dubbel H1.
+// Strippa den ledande H1:an för samtliga artiklar så att varje sida har exakt en H1.
+function stripLeadingH1(html: string): string {
+	return html.replace(/^\s*<h1\b[^>]*>[\s\S]*?<\/h1>\s*/i, '');
+}
+
+function toAbsoluteUrl(path: string): string {
+	return path.startsWith('http') ? path : `https://www.mittpsyke.se${path}`;
+}
+
 function normalizeYoungMentalHealthArticleContent(content: string) {
 	return content
 		.replace(/^<h1>[\s\S]*?<\/h1>\s*/, '')
@@ -121,19 +132,28 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	const normalizedSlug = normalizeSlug(article.slug);
 	const title = LOCAL_TITLE_BY_SLUG.get(normalizedSlug) ?? article.title;
 	const content = fixProtocolLessLinks(
-		normalizedSlug === 'psykisk-ohalsa-unga'
-			? normalizeYoungMentalHealthArticleContent(contentPayload.content)
-			: contentPayload.content
+		stripLeadingH1(
+			normalizedSlug === 'psykisk-ohalsa-unga'
+				? normalizeYoungMentalHealthArticleContent(contentPayload.content)
+				: contentPayload.content
+		)
 	);
+
+	const featuredImage = LOCAL_FEATURED_IMAGE_BY_SLUG.get(normalizedSlug) ?? article.image;
+	const ogImage = featuredImage
+		? toAbsoluteUrl(featuredImage)
+		: 'https://www.mittpsyke.se/og-image.png';
 
 	return {
 		title,
 		description: article.excerpt,
+		ogType: 'article',
+		ogImage,
 		article: {
 			...article,
 			slug: normalizedSlug,
 			title,
-			image: LOCAL_FEATURED_IMAGE_BY_SLUG.get(normalizedSlug) ?? article.image,
+			image: featuredImage,
 			content
 		}
 	};

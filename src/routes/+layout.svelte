@@ -584,11 +584,11 @@
 			property="og:description"
 			content={ogDescription}
 		/>
-		<meta property="og:type" content="website" />
+		<meta property="og:type" content={page.data?.ogType ?? 'website'} />
 		<meta property="og:site_name" content="MittPsyke" />
 
 		<meta property="og:url" content={`https://www.mittpsyke.se${page.url.pathname}`} />
-		<meta property="og:image" content="https://www.mittpsyke.se/og-image.png" />
+		<meta property="og:image" content={page.data?.ogImage ?? 'https://www.mittpsyke.se/og-image.png'} />
 
 		<link rel="alternate" hreflang="sv" href={`https://www.mittpsyke.se${page.url.pathname}`} />
 
