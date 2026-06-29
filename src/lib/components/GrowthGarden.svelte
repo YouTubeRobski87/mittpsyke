@@ -473,12 +473,12 @@
 					<g class="photo-resting-companion" aria-hidden="true">
 						<image
 							class="photo-resting-image"
-							href="/images/resting-bear-photo.png"
-							x="-4"
-							y="-4"
-							width="528"
-							height="268"
-							preserveAspectRatio="none"
+							href="/images/resting-bear-photo-fill.png"
+							x="0"
+							y="0"
+							width="520"
+							height="260"
+							preserveAspectRatio="xMidYMid slice"
 						/>
 					</g>
 				{:else}
@@ -681,11 +681,8 @@
 		min-height: 260px;
 		border-radius: 1.2rem;
 		overflow: hidden;
+		/* Bilden fyller hela rutan – ingen ram eller inre fade som ritar mörk kant */
 		background: color-mix(in srgb, hsl(var(--surface-soft)) 90%, white 10%);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.05),
-			inset 0 -22px 40px rgba(28, 40, 36, 0.06);
 	}
 
 	.garden-scene svg {
@@ -1770,10 +1767,6 @@
 
 	:global(.dark) .garden-scene {
 		background: color-mix(in srgb, hsl(var(--surface-soft)) 90%, #0f1720 10%);
-		border-color: rgba(255, 255, 255, 0.04);
-		box-shadow:
-			inset 0 1px 0 rgba(255, 255, 255, 0.02),
-			inset 0 -28px 44px rgba(4, 9, 12, 0.32);
 	}
 
 	:global(.dark) .scene-invitation,

@@ -140,7 +140,7 @@
 					<g class="photo-resting-companion" aria-hidden="true">
 						<image
 							class="photo-resting-image"
-							href="/images/resting-bear-photo.png"
+							href="/images/resting-bear-photo-fill.png"
 							x="10"
 							y="82"
 							width="310"
@@ -319,18 +319,8 @@
 		border-radius: 16px;
 		overflow: hidden;
 		background: #0c1627;
-		box-shadow:
-			inset 0 0 0 1px rgba(255, 255, 255, 0.07),
-			inset 0 -80px 90px rgba(2, 7, 14, 0.42);
-	}
-
-	.companion-scene::after {
-		content: '';
-		position: absolute;
-		inset: auto 0 0;
-		height: 46%;
-		background: linear-gradient(0deg, rgba(3, 8, 14, 0.68), transparent);
-		pointer-events: none;
+		/* Behåller bara en diskret kantlinje – ingen mörk botten-fade över björnen */
+		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
 	}
 
 	.companion-scene svg {
