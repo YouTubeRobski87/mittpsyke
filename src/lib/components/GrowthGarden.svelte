@@ -387,7 +387,7 @@
 	</div>
 
 	<div class="garden-scene">
-		<svg viewBox="0 0 520 260" role="presentation" focusable="false">
+		<svg viewBox="0 0 520 260" role="presentation" focusable="false" preserveAspectRatio="xMidYMid slice">
 			<defs>
 				<linearGradient id="gardenSky" x1="0%" y1="0%" x2="0%" y2="100%">
 					<stop offset="0%" stop-color="var(--garden-sky-top)" />
@@ -473,19 +473,7 @@
 						/>
 					{/each}
 				</g>
-				{#if companionArtId === 'bear'}
-					<g class="photo-resting-companion" aria-hidden="true">
-						<image
-							class="photo-resting-image"
-							href="/images/resting-bear-photo-fill.png"
-							x="0"
-							y="0"
-							width="520"
-							height="260"
-							preserveAspectRatio="xMidYMid slice"
-						/>
-					</g>
-				{:else}
+				{#if companionArtId !== 'bear'}
 				<g class={`companion-figure companion-${companionArtId}`} aria-hidden="true">
 					<ellipse class="companion-shadow" cx="270" cy="224" rx="58" ry="10" />
 
@@ -558,6 +546,10 @@
 				{/if}
 			{/if}
 		</svg>
+
+		{#if companionStage === 'chosen' && companionArtId === 'bear'}
+			<div class="garden-photo" aria-hidden="true"></div>
+		{/if}
 
 		<CompanionScene {timeOfDay} />
 
@@ -684,7 +676,8 @@
 	.garden-scene {
 		position: relative;
 		width: 100%;
-		min-height: 260px;
+		/* Rutan är mindre bred än björnbilden så fotot inte blir för inzoomat */
+		aspect-ratio: 4 / 3;
 		border-radius: 1.2rem;
 		overflow: hidden;
 		/* Bilden fyller hela rutan – ingen ram eller inre fade som ritar mörk kant */
@@ -692,10 +685,21 @@
 	}
 
 	.garden-scene svg {
+		position: absolute;
+		inset: 0;
 		display: block;
 		width: 100%;
-		height: auto;
-		min-height: 260px;
+		height: 100%;
+	}
+
+	/* Björnfotot som eget helbildslager (frikopplat från SVG-koordinaterna) */
+	.garden-photo {
+		position: absolute;
+		inset: 0;
+		background-image: url('/images/resting-bear-photo-fill.png');
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
 	}
 
 	.garden-light {
