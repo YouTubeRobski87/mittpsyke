@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import {
 		getProgressCompanionAnimal,
 		getProgressCompanionArtId,
@@ -16,10 +16,6 @@
 	} = $props();
 
 	let dayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
-	let placeOpen = $state(false);
-	let cameraArrived = $state(false);
-	let prefersReducedMotion = $state(false);
-	let arrivalTimer: ReturnType<typeof setTimeout> | null = null;
 
 	const companion = $derived(getProgressCompanionAnimal(progressCompanion));
 	const companionName = $derived(companion?.name ?? 'Din följeslagare');
@@ -35,54 +31,15 @@
 		dayState === 'night' ? 'Se platsen den vilar i' : 'Se platsen den bor i'
 	);
 
-	function clearArrivalTimer() {
-		if (!arrivalTimer) return;
-		clearTimeout(arrivalTimer);
-		arrivalTimer = null;
-	}
-
-	function openRestingPlace() {
-		if (placeOpen) return;
-		placeOpen = true;
-		cameraArrived = prefersReducedMotion;
-		clearArrivalTimer();
-		if (!prefersReducedMotion) {
-			arrivalTimer = setTimeout(() => {
-				cameraArrived = true;
-				arrivalTimer = null;
-			}, 2300);
-		}
-	}
-
-	function closeRestingPlace() {
-		placeOpen = false;
-		cameraArrived = false;
-		clearArrivalTimer();
-	}
-
 	onMount(() => {
 		dayState = getProgressCompanionDayState();
-		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-		prefersReducedMotion = motionQuery.matches;
-		const updateMotionPreference = (event: MediaQueryListEvent) => {
-			prefersReducedMotion = event.matches;
-		};
-		motionQuery.addEventListener('change', updateMotionPreference);
-
-		return () => {
-			motionQuery.removeEventListener('change', updateMotionPreference);
-		};
 	});
-
-	onDestroy(clearArrivalTimer);
 </script>
 
 <article
 	class="silent-companion"
-	class:place-open={placeOpen}
 	data-state={dayState}
 	data-companion={companionArtId}
-	data-camera-arrived={cameraArrived}
 	aria-labelledby="silent-companion-title"
 >
 	<div class="companion-copy">
@@ -91,18 +48,9 @@
 		<p>{stateText}</p>
 		<p class="companion-note">Den finns kvar här när du återvänder.</p>
 		<div class="companion-actions">
-			<button
-				type="button"
-				class="place-button"
-				aria-controls="companion-resting-place"
-				aria-expanded={placeOpen}
-				onclick={openRestingPlace}
-			>
+			<a class="place-link" href="/framsteg#growth-garden">
 				{restingPlaceLabel}
-			</button>
-			{#if placeOpen}
-				<button type="button" class="return-button" onclick={closeRestingPlace}>Tillbaka</button>
-			{/if}
+			</a>
 		</div>
 	</div>
 
@@ -240,14 +188,6 @@
 			radial-gradient(520px 260px at 100% 14%, rgba(154, 174, 210, 0.12), transparent 58%),
 			linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018));
 		backdrop-filter: blur(14px);
-		transition:
-			grid-template-columns 1.5s cubic-bezier(0.22, 1, 0.36, 1),
-			min-height 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-	}
-
-	.silent-companion.place-open {
-		grid-template-columns: minmax(15rem, 0.52fr) minmax(0, 1.48fr);
-		min-height: 24rem;
 	}
 
 	.silent-companion[data-companion='fox'] {
@@ -293,12 +233,6 @@
 		gap: 0.58rem;
 		padding: 0.45rem 0.25rem 0.45rem 0.25rem;
 		min-width: 0;
-		transition: opacity 1.1s ease, transform 1.3s cubic-bezier(0.22, 1, 0.36, 1);
-	}
-
-	.place-open .companion-copy {
-		opacity: 0.78;
-		transform: translateY(0.35rem);
 	}
 
 	.companion-kicker,
@@ -340,40 +274,27 @@
 		margin-top: 0.25rem;
 	}
 
-	.place-button,
-	.return-button {
-		border: 0;
+	.place-link {
 		border-radius: 999px;
-		font: inherit;
-		cursor: pointer;
-	}
-
-	.place-button {
+		display: inline-flex;
 		padding: 0.68rem 1rem;
 		background: rgba(255, 255, 255, 0.06);
 		color: var(--mp-text);
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+		font-size: 0.92rem;
+		text-decoration: none;
 		white-space: nowrap;
 		transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 	}
 
-	.place-button:hover {
+	.place-link:hover {
 		background: rgba(255, 255, 255, 0.095);
 		border-color: rgba(255, 255, 255, 0.18);
 		transform: translateY(-1px);
 	}
 
-	.return-button {
-		padding: 0;
-		background: transparent;
-		color: var(--mp-text-dim);
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	.place-button:focus-visible,
-	.return-button:focus-visible {
+	.place-link:focus-visible {
 		outline: 2px solid rgba(238, 211, 157, 0.62);
 		outline-offset: 3px;
 	}
@@ -409,11 +330,6 @@
 		transform-box: fill-box;
 		transform-origin: 43% 65%;
 		transform: translateX(18px) translateY(0) scale(1.035);
-		transition: transform 2.35s cubic-bezier(0.22, 1, 0.36, 1);
-	}
-
-	.place-open .camera-plane {
-		transform: translateX(52px) translateY(22px) scale(1.18);
 	}
 
 	.stars circle {
@@ -497,20 +413,10 @@
 	}
 
 	.resting-companion {
-		opacity: 0.055;
+		opacity: 0.18;
 		transform-box: fill-box;
 		transform-origin: center bottom;
-		transition: opacity 1.35s ease 0.55s;
-	}
-
-	.place-open .resting-companion {
-		opacity: 0.12;
-		transition-delay: 0.65s;
-	}
-
-	.silent-companion[data-camera-arrived='true'] .resting-companion {
-		opacity: 0.94;
-		transition-delay: 0s;
+		animation: companion-presence 8s ease 1s both;
 	}
 
 	.companion-shadow {
@@ -690,9 +596,17 @@
 		}
 	}
 
+	@keyframes companion-presence {
+		from {
+			opacity: 0.055;
+		}
+		to {
+			opacity: 0.18;
+		}
+	}
+
 	@media (max-width: 900px) {
-		.silent-companion,
-		.silent-companion.place-open {
+		.silent-companion {
 			grid-template-columns: 1fr;
 			min-height: auto;
 		}
@@ -704,10 +618,6 @@
 		.companion-scene,
 		.companion-scene svg {
 			min-height: 17rem;
-		}
-
-		.place-open .camera-plane {
-			transform: translateX(78px) translateY(28px) scale(1.27);
 		}
 	}
 
@@ -721,21 +631,13 @@
 			min-height: 14rem;
 		}
 
-		.place-open .camera-plane {
-			transform: translateX(104px) translateY(34px) scale(1.42);
-		}
-
-		.place-button {
+		.place-link {
 			white-space: normal;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.silent-companion,
-		.companion-copy,
-		.camera-plane,
-		.resting-companion,
-		.place-button {
+		.place-link {
 			transition: none;
 		}
 
@@ -746,7 +648,8 @@
 		.breathing-body,
 		.left-ear,
 		.moon-reflection,
-		.stars circle {
+		.stars circle,
+		.resting-companion {
 			animation: none;
 		}
 	}
