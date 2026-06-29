@@ -458,6 +458,35 @@
 						/>
 					{/each}
 				</g>
+				{#if companionArtId === 'bear'}
+					<g class="resting-tree" aria-hidden="true">
+						<ellipse class="resting-tree-shadow" cx="194" cy="225" rx="58" ry="10" />
+						<path
+							class="resting-tree-branch branch-left"
+							d="M198 118 C170 101 138 98 108 110"
+						/>
+						<path
+							class="resting-tree-branch branch-right"
+							d="M203 108 C234 86 266 80 306 78"
+						/>
+						<path
+							class="resting-tree-trunk"
+							d="M191 76 C181 118 182 168 170 226 C183 232 206 232 218 225 C207 170 211 118 201 76 Z"
+						/>
+						<path class="resting-tree-bark" d="M198 84 C195 122 202 166 189 219" />
+						<g class="resting-tree-canopy">
+							<ellipse cx="152" cy="84" rx="54" ry="30" />
+							<ellipse cx="202" cy="70" rx="60" ry="36" />
+							<ellipse cx="258" cy="86" rx="62" ry="34" />
+							<ellipse cx="210" cy="104" rx="84" ry="34" />
+						</g>
+						<g class="resting-tree-leaves">
+							<path d="M122 132 C134 124 146 124 154 132 C142 140 130 140 122 132 Z" />
+							<path d="M268 122 C282 114 296 116 304 126 C290 132 278 131 268 122 Z" />
+							<path d="M226 50 C238 42 252 44 260 54 C246 60 236 58 226 50 Z" />
+						</g>
+					</g>
+				{/if}
 				<g class={`companion-figure companion-${companionArtId}`} aria-hidden="true">
 					<ellipse class="companion-shadow" cx="270" cy="224" rx="58" ry="10" />
 
@@ -758,6 +787,54 @@
 		animation: firefly-drift 9s ease-in-out infinite;
 	}
 
+	.resting-tree {
+		--resting-tree-opacity: 0.72;
+		opacity: 0;
+		pointer-events: none;
+		transform-box: fill-box;
+		transform-origin: center bottom;
+		animation: tree-presence 720ms ease-out both;
+	}
+
+	.resting-tree-shadow {
+		fill: rgba(24, 31, 27, 0.2);
+	}
+
+	.resting-tree-trunk {
+		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 24%, #5a4638 76%);
+	}
+
+	.resting-tree-bark,
+	.resting-tree-branch {
+		fill: none;
+		stroke: color-mix(in srgb, var(--theme-accent, #436e8f) 14%, #3c3029 86%);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.resting-tree-bark {
+		opacity: 0.42;
+		stroke-width: 2.4;
+	}
+
+	.resting-tree-branch {
+		opacity: 0.46;
+		stroke-width: 7;
+	}
+
+	.resting-tree-canopy {
+		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 36%, #40543f 64%);
+		opacity: 0.72;
+	}
+
+	.resting-tree-leaves {
+		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 34%, #82916a 66%);
+		opacity: 0.52;
+		animation: tree-leaves-idle 15s ease-in-out infinite;
+		transform-box: fill-box;
+		transform-origin: center;
+	}
+
 	.companion-figure {
 		--companion-body: #bf7a4f;
 		--companion-body-dark: #93583b;
@@ -765,8 +842,13 @@
 		--companion-face: #d9905f;
 		--companion-scale: 1;
 		--companion-glow: 0px;
+		--companion-x: 0px;
+		--companion-y: 0px;
+		--companion-tilt: 0deg;
 		transform-box: fill-box;
 		transform-origin: center bottom;
+		transform: translate(var(--companion-x, 0px), var(--companion-y, 0px))
+			scale(var(--companion-scale, 1)) rotate(var(--companion-tilt, 0deg));
 		filter: drop-shadow(0 0 var(--companion-glow) rgba(246, 234, 190, 0.34));
 		animation: companion-presence 420ms ease-out both;
 	}
@@ -799,8 +881,10 @@
 	}
 
 	.companion-breath {
+		--companion-breath-tilt: 0deg;
 		transform-box: fill-box;
 		transform-origin: center bottom;
+		transform: rotate(var(--companion-breath-tilt, 0deg));
 		animation: companion-breathe 6s ease-in-out infinite;
 	}
 
@@ -821,9 +905,14 @@
 		--companion-body-dark: #765443;
 		--companion-belly: #d7baa0;
 		--companion-face: #a67c64;
+		--companion-x: -58px;
+		--companion-y: 8px;
+		--companion-tilt: -4deg;
 	}
 
 	.companion-bear .companion-breath {
+		--companion-breath-tilt: -1deg;
+		transform-origin: 38% 100%;
 		animation-duration: 8.5s;
 	}
 
@@ -959,6 +1048,23 @@
 
 	.garden-card[data-day-state='night'] .companion-breath {
 		animation-duration: 12s;
+	}
+
+	.garden-card[data-day-state='night'] .resting-tree {
+		--resting-tree-opacity: 0.86;
+	}
+
+	.garden-card[data-day-state='night'] .resting-tree-canopy {
+		opacity: 0.38;
+	}
+
+	.garden-card[data-day-state='night'] .companion-bear {
+		--companion-scale: 0.96;
+		--companion-glow: 0px;
+	}
+
+	.garden-card[data-day-state='night'] .companion-bear .companion-breath {
+		--companion-breath-tilt: -2deg;
 	}
 
 	.garden-card[data-day-state='night'] .companion-head,
@@ -1343,14 +1449,37 @@
 		}
 	}
 
+	@keyframes tree-presence {
+		from {
+			opacity: 0;
+			transform: translateY(6px);
+		}
+		to {
+			opacity: var(--resting-tree-opacity, 0.72);
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes tree-leaves-idle {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+		52% {
+			transform: translate3d(1px, 0, 0) rotate(0.6deg);
+		}
+	}
+
 	@keyframes companion-presence {
 		from {
 			opacity: 0;
-			transform: translateY(8px) scale(var(--companion-scale, 1));
+			transform: translate(var(--companion-x, 0px), calc(var(--companion-y, 0px) + 8px))
+				scale(var(--companion-scale, 1)) rotate(var(--companion-tilt, 0deg));
 		}
 		to {
 			opacity: 1;
-			transform: translateY(0) scale(var(--companion-scale, 1));
+			transform: translate(var(--companion-x, 0px), var(--companion-y, 0px))
+				scale(var(--companion-scale, 1)) rotate(var(--companion-tilt, 0deg));
 		}
 	}
 
@@ -1438,10 +1567,10 @@
 	@keyframes companion-breathe {
 		0%,
 		100% {
-			transform: translateY(0) scale(1);
+			transform: translateY(0) rotate(var(--companion-breath-tilt, 0deg)) scale(1);
 		}
 		50% {
-			transform: translateY(1px) scale(1.012);
+			transform: translateY(1px) rotate(var(--companion-breath-tilt, 0deg)) scale(1.012);
 		}
 	}
 
@@ -1596,6 +1725,8 @@
 		.garden-leaves path,
 		.garden-flowers g,
 		.fireflies circle,
+		.resting-tree,
+		.resting-tree-leaves,
 		.companion-aura circle,
 		.companion-figure,
 		.companion-breath,
@@ -1606,6 +1737,10 @@
 		.companion-tail,
 		.companion-bubble {
 			animation: none;
+		}
+
+		.resting-tree {
+			opacity: var(--resting-tree-opacity, 0.72);
 		}
 
 		.animal-chooser button,
