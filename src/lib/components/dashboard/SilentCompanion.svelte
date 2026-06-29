@@ -75,6 +75,11 @@
 				loading="lazy"
 				decoding="async"
 			/>
+			{#if dayState === 'day'}
+				<span class="passing-butterfly" aria-hidden="true">
+					<span></span>
+				</span>
+			{/if}
 		{:else}
 		<svg viewBox="0 0 720 420" role="img" focusable="false">
 			<title>{companionName} vilar vid en stilla sjö under månen</title>
@@ -361,6 +366,71 @@
 		min-height: 14.5rem;
 		object-fit: cover;
 		object-position: left center;
+	}
+
+	.passing-butterfly {
+		position: absolute;
+		left: 28%;
+		top: 46%;
+		z-index: 2;
+		width: 0.72rem;
+		height: 0.56rem;
+		pointer-events: none;
+		opacity: 0;
+		transform: translate3d(0, 0, 0);
+		animation: butterfly-pass 18s ease-in-out 2.5s infinite;
+	}
+
+	.passing-butterfly::before,
+	.passing-butterfly::after,
+	.passing-butterfly span::before,
+	.passing-butterfly span::after {
+		content: '';
+		position: absolute;
+		background: color-mix(in srgb, #d68a2c 82%, #352111 18%);
+		border: 1px solid rgba(48, 31, 16, 0.48);
+		box-shadow: 0 0 0.24rem rgba(246, 195, 86, 0.16);
+	}
+
+	.passing-butterfly::before {
+		left: 0;
+		top: 0.02rem;
+		width: 0.38rem;
+		height: 0.42rem;
+		border-radius: 80% 28% 72% 36%;
+		transform-origin: right center;
+		animation: butterfly-wing-left 780ms ease-in-out infinite;
+	}
+
+	.passing-butterfly::after {
+		right: 0;
+		top: 0.02rem;
+		width: 0.38rem;
+		height: 0.42rem;
+		border-radius: 28% 80% 36% 72%;
+		transform-origin: left center;
+		animation: butterfly-wing-right 780ms ease-in-out infinite;
+	}
+
+	.passing-butterfly span::before {
+		left: 50%;
+		top: 0.06rem;
+		width: 0.07rem;
+		height: 0.5rem;
+		border: 0;
+		border-radius: 999px;
+		background: rgba(37, 25, 16, 0.72);
+		transform: translateX(-50%);
+		box-shadow: none;
+	}
+
+	.passing-butterfly span::after {
+		left: 0.27rem;
+		top: 0.2rem;
+		width: 0.18rem;
+		height: 0.18rem;
+		border-radius: 999px;
+		opacity: 0.34;
 	}
 
 	.camera-plane {
@@ -684,6 +754,50 @@
 		}
 	}
 
+	@keyframes butterfly-pass {
+		0%,
+		18%,
+		100% {
+			opacity: 0;
+			transform: translate3d(0, 0, 0) scale(0.84) rotate(-4deg);
+		}
+		24% {
+			opacity: 0.72;
+		}
+		46% {
+			opacity: 0.82;
+			transform: translate3d(4.7rem, -0.9rem, 0) scale(0.94) rotate(6deg);
+		}
+		72% {
+			opacity: 0.62;
+			transform: translate3d(8.8rem, 0.35rem, 0) scale(0.88) rotate(-2deg);
+		}
+		86% {
+			opacity: 0;
+			transform: translate3d(11rem, -0.45rem, 0) scale(0.78) rotate(5deg);
+		}
+	}
+
+	@keyframes butterfly-wing-left {
+		0%,
+		100% {
+			transform: rotateY(0deg) rotate(-10deg);
+		}
+		50% {
+			transform: rotateY(58deg) rotate(-3deg);
+		}
+	}
+
+	@keyframes butterfly-wing-right {
+		0%,
+		100% {
+			transform: rotateY(0deg) rotate(10deg);
+		}
+		50% {
+			transform: rotateY(-58deg) rotate(3deg);
+		}
+	}
+
 	@media (max-width: 900px) {
 		.silent-companion {
 			grid-template-columns: 1fr;
@@ -732,8 +846,15 @@
 		.left-ear,
 		.moon-reflection,
 		.stars circle,
-		.resting-companion {
+		.resting-companion,
+		.passing-butterfly,
+		.passing-butterfly::before,
+		.passing-butterfly::after {
 			animation: none;
+		}
+
+		.passing-butterfly {
+			display: none;
 		}
 
 		.photo-resting-companion {

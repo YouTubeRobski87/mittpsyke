@@ -561,6 +561,11 @@
 				style={`--garden-photo-image: url('${companionDayStateImage}')`}
 				aria-hidden="true"
 			></div>
+			{#if companionDayState === 'day'}
+				<span class="garden-butterfly" aria-hidden="true">
+					<span></span>
+				</span>
+			{/if}
 		{/if}
 
 		<CompanionScene {timeOfDay} />
@@ -716,6 +721,71 @@
 
 	.garden-card:not([data-day-state='night']) .garden-photo {
 		background-position: left center;
+	}
+
+	.garden-butterfly {
+		position: absolute;
+		left: 26%;
+		top: 38%;
+		z-index: 2;
+		width: 0.66rem;
+		height: 0.52rem;
+		pointer-events: none;
+		opacity: 0;
+		transform: translate3d(0, 0, 0);
+		animation: garden-butterfly-pass 18s ease-in-out 2.5s infinite;
+	}
+
+	.garden-butterfly::before,
+	.garden-butterfly::after,
+	.garden-butterfly span::before,
+	.garden-butterfly span::after {
+		content: '';
+		position: absolute;
+		background: color-mix(in srgb, #d68a2c 82%, #352111 18%);
+		border: 1px solid rgba(48, 31, 16, 0.48);
+		box-shadow: 0 0 0.22rem rgba(246, 195, 86, 0.16);
+	}
+
+	.garden-butterfly::before {
+		left: 0;
+		top: 0.02rem;
+		width: 0.35rem;
+		height: 0.39rem;
+		border-radius: 80% 28% 72% 36%;
+		transform-origin: right center;
+		animation: garden-butterfly-wing-left 780ms ease-in-out infinite;
+	}
+
+	.garden-butterfly::after {
+		right: 0;
+		top: 0.02rem;
+		width: 0.35rem;
+		height: 0.39rem;
+		border-radius: 28% 80% 36% 72%;
+		transform-origin: left center;
+		animation: garden-butterfly-wing-right 780ms ease-in-out infinite;
+	}
+
+	.garden-butterfly span::before {
+		left: 50%;
+		top: 0.06rem;
+		width: 0.07rem;
+		height: 0.46rem;
+		border: 0;
+		border-radius: 999px;
+		background: rgba(37, 25, 16, 0.72);
+		transform: translateX(-50%);
+		box-shadow: none;
+	}
+
+	.garden-butterfly span::after {
+		left: 0.25rem;
+		top: 0.18rem;
+		width: 0.17rem;
+		height: 0.17rem;
+		border-radius: 999px;
+		opacity: 0.34;
 	}
 
 	.garden-light {
@@ -1564,6 +1634,50 @@
 		}
 	}
 
+	@keyframes garden-butterfly-pass {
+		0%,
+		18%,
+		100% {
+			opacity: 0;
+			transform: translate3d(0, 0, 0) scale(0.84) rotate(-4deg);
+		}
+		24% {
+			opacity: 0.72;
+		}
+		46% {
+			opacity: 0.82;
+			transform: translate3d(3.8rem, -0.7rem, 0) scale(0.94) rotate(6deg);
+		}
+		72% {
+			opacity: 0.62;
+			transform: translate3d(7.2rem, 0.28rem, 0) scale(0.88) rotate(-2deg);
+		}
+		86% {
+			opacity: 0;
+			transform: translate3d(9.2rem, -0.36rem, 0) scale(0.78) rotate(5deg);
+		}
+	}
+
+	@keyframes garden-butterfly-wing-left {
+		0%,
+		100% {
+			transform: rotateY(0deg) rotate(-10deg);
+		}
+		50% {
+			transform: rotateY(58deg) rotate(-3deg);
+		}
+	}
+
+	@keyframes garden-butterfly-wing-right {
+		0%,
+		100% {
+			transform: rotateY(0deg) rotate(10deg);
+		}
+		50% {
+			transform: rotateY(-58deg) rotate(3deg);
+		}
+	}
+
 	@keyframes photo-companion-arrive {
 		from {
 			opacity: 0;
@@ -1872,8 +1986,15 @@
 		.ear,
 		.rabbit-ear,
 		.companion-tail,
-		.companion-bubble {
+		.companion-bubble,
+		.garden-butterfly,
+		.garden-butterfly::before,
+		.garden-butterfly::after {
 			animation: none;
+		}
+
+		.garden-butterfly {
+			display: none;
 		}
 
 		.resting-tree {
