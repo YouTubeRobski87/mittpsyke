@@ -41,7 +41,10 @@
 	const COMPANION_STORAGE_KEY = 'mittpsyke:progress-companion';
 	const LAST_VISIT_STORAGE_KEY = 'mittpsyke:garden-last-visit';
 
-	const COMPANION_ANIMALS = PROGRESS_COMPANION_ANIMALS;
+	const AVAILABLE_COMPANION_IDS = new Set<CompanionAnimalId>(['bear']);
+	const COMPANION_ANIMALS = PROGRESS_COMPANION_ANIMALS.filter((animal) =>
+		AVAILABLE_COMPANION_IDS.has(animal.id)
+	);
 
 	const FLOWER_POINTS: GardenPoint[] = [
 		{ id: 'f1', x: 78, y: 210 },
@@ -138,7 +141,7 @@
 		const nextProgressCompanion = normalizeProgressCompanion(progressCompanion);
 		if (nextProgressCompanion?.id !== appliedProgressCompanion) {
 			appliedProgressCompanion = nextProgressCompanion?.id ?? null;
-			const animal = getProgressCompanionAnimal(nextProgressCompanion);
+			const animal = getAvailableCompanionAnimal(nextProgressCompanion);
 			if (animal) {
 				applyCompanion(animal, getReturnMessage());
 			}
@@ -181,7 +184,7 @@
 			const remoteSelection = readProgressCompanionFromMetadata(
 				(user?.user_metadata ?? null) as Record<string, unknown> | null
 			);
-			const remoteAnimal = getProgressCompanionAnimal(remoteSelection);
+			const remoteAnimal = getAvailableCompanionAnimal(remoteSelection);
 			if (remoteAnimal) {
 				applyCompanion(remoteAnimal, returnMessage);
 				cacheCompanion(remoteAnimal.id);
@@ -198,7 +201,7 @@
 				return;
 			}
 			const savedAnimal = localStorage.getItem(COMPANION_STORAGE_KEY);
-			const animal = getProgressCompanionAnimal(savedAnimal);
+			const animal = getAvailableCompanionAnimal(savedAnimal);
 			if (animal) {
 				applyCompanion(animal, returnMessage);
 			}
@@ -233,6 +236,14 @@
 		statusMessageKey = `${lastEntryDaysAgo ?? 'none'}:${entryCount > 0 ? 'has' : 'empty'}`;
 	}
 
+	function getAvailableCompanionAnimal(value: unknown): ProgressCompanionAnimal | null {
+		const selection = normalizeProgressCompanion(value);
+		if (!selection) return null;
+		const animal = getProgressCompanionAnimal(selection);
+		if (animal && AVAILABLE_COMPANION_IDS.has(animal.id)) return animal;
+		return COMPANION_ANIMALS[0] ?? null;
+	}
+
 	function cacheCompanion(animalId: CompanionAnimalId) {
 		if (!browser) return;
 		try {
@@ -255,7 +266,7 @@
 			const savedSelection = readProgressCompanionFromMetadata(
 				(data.user?.user_metadata ?? null) as Record<string, unknown> | null
 			);
-			const savedAnimal = getProgressCompanionAnimal(savedSelection) ?? animal;
+			const savedAnimal = getAvailableCompanionAnimal(savedSelection) ?? animal;
 			applyCompanion(savedAnimal, 'Skönt att ha dig här.');
 			cacheCompanion(savedAnimal.id);
 
