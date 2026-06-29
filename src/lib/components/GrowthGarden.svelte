@@ -121,6 +121,7 @@
 	$: companionName = selectedCompanion?.name ?? 'Din följeslagare';
 	$: companionArtId = getProgressCompanionArtId(selectedCompanion?.id);
 	$: companionLevelText = getCompanionLevelText(companionLevel);
+	$: companionDayStateImage = getCompanionDayStateImage(companionDayState);
 	$: careSignals = getCareSignals();
 	$: placeCopy =
 		entryCount === 0
@@ -339,6 +340,13 @@
 		}
 	}
 
+	function getCompanionDayStateImage(state: ProgressCompanionDayState): string {
+		if (state === 'morning') return '/images/companion-morgon.jpg';
+		if (state === 'day') return '/images/companion-dag.jpg';
+		if (state === 'evening') return '/images/companion-kvall.jpg';
+		return '/images/resting-bear-photo-fill.png';
+	}
+
 	function getCareSignals(): CareSignal[] {
 		const lightText =
 			entryCount === 0
@@ -548,7 +556,11 @@
 		</svg>
 
 		{#if companionStage === 'chosen' && companionArtId === 'bear'}
-			<div class="garden-photo" aria-hidden="true"></div>
+			<div
+				class="garden-photo"
+				style={`--garden-photo-image: url('${companionDayStateImage}')`}
+				aria-hidden="true"
+			></div>
 		{/if}
 
 		<CompanionScene {timeOfDay} />
@@ -696,7 +708,7 @@
 	.garden-photo {
 		position: absolute;
 		inset: 0;
-		background-image: url('/images/resting-bear-photo-fill.png');
+		background-image: var(--garden-photo-image, url('/images/resting-bear-photo-fill.png'));
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;

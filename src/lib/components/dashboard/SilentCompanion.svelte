@@ -24,6 +24,7 @@
 	const companionName = $derived(companion?.name ?? 'Din följeslagare');
 	const companionArtId = $derived(getProgressCompanionArtId(companion?.id));
 	const dayStateLabel = $derived(getProgressCompanionDayStateLabel(dayState));
+	const dayStateImage = $derived(getDayStateImage(dayState));
 	const stateText = $derived.by(() => {
 		if (dayState === 'morning') return 'Den vaknar mjukt med dagen.';
 		if (dayState === 'evening') return 'Den rör sig långsammare när kvällen landar.';
@@ -38,6 +39,13 @@
 		dayState = getProgressCompanionDayState();
 		timeOfDay = getTimeOfDay();
 	});
+
+	function getDayStateImage(state: ProgressCompanionDayState): string | null {
+		if (state === 'morning') return '/images/companion-morgon.jpg';
+		if (state === 'day') return '/images/companion-dag.jpg';
+		if (state === 'evening') return '/images/companion-kvall.jpg';
+		return null;
+	}
 </script>
 
 <article
@@ -59,6 +67,15 @@
 	</div>
 
 	<div id="companion-resting-place" class="companion-scene" aria-label={`${companionName} vilar vid sjön`}>
+		{#if dayStateImage}
+			<img
+				class="day-state-image"
+				src={dayStateImage}
+				alt={`${companionName} på sin lugna plats`}
+				loading="lazy"
+				decoding="async"
+			/>
+		{:else}
 		<svg viewBox="0 0 720 420" role="img" focusable="false">
 			<title>{companionName} vilar vid en stilla sjö under månen</title>
 			<defs>
@@ -185,6 +202,7 @@
 		</svg>
 
 		<CompanionScene {timeOfDay} />
+		{/if}
 	</div>
 </article>
 
@@ -334,6 +352,15 @@
 		height: 100%;
 		min-height: 14.5rem;
 		display: block;
+	}
+
+	.day-state-image {
+		display: block;
+		width: 100%;
+		height: 100%;
+		min-height: 14.5rem;
+		object-fit: cover;
+		object-position: center;
 	}
 
 	.camera-plane {
@@ -668,7 +695,8 @@
 		}
 
 		.companion-scene,
-		.companion-scene svg {
+		.companion-scene svg,
+		.day-state-image {
 			min-height: 17rem;
 		}
 	}
@@ -679,7 +707,8 @@
 		}
 
 		.companion-scene,
-		.companion-scene svg {
+		.companion-scene svg,
+		.day-state-image {
 			min-height: 14rem;
 		}
 
