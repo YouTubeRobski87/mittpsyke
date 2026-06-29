@@ -15,6 +15,8 @@
 	} from '$lib/progressCompanion';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
+	import CompanionScene from '$lib/components/CompanionScene.svelte';
+	import { getTimeOfDay, type TimeOfDay } from '$lib/utils/getTimeOfDay';
 
 	type CompanionAnimalId = string;
 	type CompanionStage = 'choose' | 'chosen';
@@ -136,6 +138,7 @@
 	let companionMessage = 'Jag är här när du vill börja.';
 	let statusMessageKey: string | null = null;
 	let companionDayState: ProgressCompanionDayState = getProgressCompanionDayState();
+	let timeOfDay: TimeOfDay = getTimeOfDay();
 
 	$: {
 		const nextProgressCompanion = normalizeProgressCompanion(progressCompanion);
@@ -168,6 +171,7 @@
 	onMount(async () => {
 		if (!browser) return;
 		companionDayState = getProgressCompanionDayState();
+		timeOfDay = getTimeOfDay();
 		let authenticatedUserFound = false;
 		const returnMessage = getReturnMessage();
 
@@ -554,6 +558,8 @@
 				{/if}
 			{/if}
 		</svg>
+
+		<CompanionScene {timeOfDay} />
 
 		{#if companionStage === 'choose'}
 			<div class="scene-invitation">

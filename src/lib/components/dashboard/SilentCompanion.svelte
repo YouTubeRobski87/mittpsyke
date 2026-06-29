@@ -8,6 +8,8 @@
 		type ProgressCompanionDayState,
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
+	import CompanionScene from '$lib/components/CompanionScene.svelte';
+	import { getTimeOfDay, type TimeOfDay } from '$lib/utils/getTimeOfDay';
 
 	let {
 		progressCompanion = null
@@ -16,6 +18,7 @@
 	} = $props();
 
 	let dayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
+	let timeOfDay = $state<TimeOfDay>(getTimeOfDay());
 
 	const companion = $derived(getProgressCompanionAnimal(progressCompanion));
 	const companionName = $derived(companion?.name ?? 'Din följeslagare');
@@ -33,6 +36,7 @@
 
 	onMount(() => {
 		dayState = getProgressCompanionDayState();
+		timeOfDay = getTimeOfDay();
 	});
 </script>
 
@@ -179,6 +183,8 @@
 				</g>
 			</g>
 		</svg>
+
+		<CompanionScene {timeOfDay} />
 	</div>
 </article>
 
