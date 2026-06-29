@@ -459,36 +459,18 @@
 					{/each}
 				</g>
 				{#if companionArtId === 'bear'}
-					<g class="resting-tree" aria-hidden="true">
-						<ellipse class="resting-tree-shadow" cx="142" cy="225" rx="76" ry="12" />
-						<path
-							class="resting-tree-branch branch-left"
-							d="M142 88 C112 66 72 58 28 70"
+					<g class="photo-resting-companion" aria-hidden="true">
+						<image
+							class="photo-resting-image"
+							href="/images/resting-bear-photo.png"
+							x="12"
+							y="-4"
+							width="300"
+							height="293"
+							preserveAspectRatio="xMidYMid slice"
 						/>
-						<path
-							class="resting-tree-branch branch-right"
-							d="M148 78 C186 48 232 36 284 42"
-						/>
-						<path
-							class="resting-tree-trunk"
-							d="M132 18 C118 72 124 142 106 228 C122 236 154 236 170 226 C154 142 162 72 148 18 Z"
-						/>
-						<path class="resting-tree-bark" d="M139 28 C134 82 144 154 126 220" />
-						<path class="resting-tree-bark secondary" d="M151 58 C143 106 153 164 142 224" />
-						<g class="resting-tree-canopy">
-							<ellipse cx="64" cy="42" rx="68" ry="34" />
-							<ellipse cx="132" cy="28" rx="78" ry="42" />
-							<ellipse cx="218" cy="48" rx="88" ry="42" />
-							<ellipse cx="132" cy="78" rx="116" ry="42" />
-							<ellipse cx="30" cy="94" rx="70" ry="32" />
-						</g>
-						<g class="resting-tree-leaves">
-							<path d="M58 116 C72 106 88 108 98 120 C82 128 68 127 58 116 Z" />
-							<path d="M208 96 C224 86 240 88 250 102 C232 110 218 108 208 96 Z" />
-							<path d="M158 18 C174 10 190 14 198 28 C180 34 168 30 158 18 Z" />
-						</g>
 					</g>
-				{/if}
+				{:else}
 				<g class={`companion-figure companion-${companionArtId}`} aria-hidden="true">
 					<ellipse class="companion-shadow" cx="270" cy="224" rx="58" ry="10" />
 
@@ -499,9 +481,6 @@
 						</g>
 						<path class="ear left-ear" d="M238 142 L250 112 L262 144 Z" />
 						<path class="ear right-ear" d="M284 144 L300 114 L306 148 Z" />
-					{:else if companionArtId === 'bear'}
-						<circle class="ear left-ear" cx="240" cy="138" r="15" />
-						<circle class="ear right-ear" cx="300" cy="138" r="15" />
 					{:else if companionArtId === 'owl'}
 						<path class="ear left-ear" d="M238 140 L244 116 L262 138 Z" />
 						<path class="ear right-ear" d="M282 138 L302 116 L306 140 Z" />
@@ -533,12 +512,6 @@
 						{:else}
 							<ellipse class="belly-fill" cx="270" cy="194" rx="25" ry="28" />
 						{/if}
-						{#if companionArtId === 'bear'}
-							<ellipse class="resting-bear-arm left-arm" cx="240" cy="196" rx="9" ry="26" />
-							<ellipse class="resting-bear-arm right-arm" cx="300" cy="196" rx="9" ry="26" />
-							<ellipse class="resting-bear-foot left-foot" cx="240" cy="226" rx="18" ry="10" />
-							<ellipse class="resting-bear-foot right-foot" cx="294" cy="226" rx="18" ry="10" />
-						{/if}
 						<g class="companion-head">
 							{#if companionArtId === 'turtle'}
 								<circle class="head-fill" cx="326" cy="176" r="18" />
@@ -567,6 +540,7 @@
 						</g>
 					</g>
 				</g>
+				{/if}
 			{/if}
 		</svg>
 
@@ -793,6 +767,35 @@
 		filter: drop-shadow(0 0 8px var(--garden-firefly));
 		opacity: 0.5;
 		animation: firefly-drift 9s ease-in-out infinite;
+	}
+
+	.photo-resting-companion {
+		opacity: 0;
+		pointer-events: none;
+		transform-box: fill-box;
+		transform-origin: 31% 92%;
+		filter:
+			drop-shadow(0 18px 20px rgba(7, 10, 12, 0.28)) saturate(0.92) contrast(1.06)
+			brightness(0.94);
+		animation: photo-companion-arrive 960ms ease-out both;
+	}
+
+	.photo-resting-image {
+		opacity: 0.94;
+		transform-box: fill-box;
+		transform-origin: 31% 88%;
+		animation: photo-companion-breathe 18s ease-in-out 1.2s infinite;
+	}
+
+	.garden-card[data-day-state='night'] .photo-resting-companion {
+		filter:
+			drop-shadow(0 20px 24px rgba(4, 7, 10, 0.34)) saturate(0.9) contrast(1.08)
+			brightness(0.86);
+	}
+
+	.garden-card[data-day-state='night'] .photo-resting-image {
+		opacity: 0.9;
+		animation-duration: 22s;
 	}
 
 	.resting-tree {
@@ -1527,6 +1530,30 @@
 		}
 	}
 
+	@keyframes photo-companion-arrive {
+		from {
+			opacity: 0;
+			transform: translate3d(-6px, 8px, 0) scale(0.985);
+		}
+		to {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+	}
+
+	@keyframes photo-companion-breathe {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+		46% {
+			transform: translate3d(0.4px, -0.7px, 0) scale(1.004);
+		}
+		62% {
+			transform: translate3d(0, -0.3px, 0) scale(1.002);
+		}
+	}
+
 	@keyframes tree-presence {
 		from {
 			opacity: 0;
@@ -1803,6 +1830,8 @@
 		.garden-leaves path,
 		.garden-flowers g,
 		.fireflies circle,
+		.photo-resting-companion,
+		.photo-resting-image,
 		.resting-tree,
 		.resting-tree-leaves,
 		.companion-aura circle,
@@ -1819,6 +1848,15 @@
 
 		.resting-tree {
 			opacity: var(--resting-tree-opacity, 0.72);
+		}
+
+		.photo-resting-companion {
+			opacity: 1;
+			transform: none;
+		}
+
+		.photo-resting-image {
+			transform: none;
 		}
 
 		.animal-chooser button,

@@ -136,21 +136,35 @@
 					<path d="M170 246 C241 231 286 240 348 229 C401 220 459 225 522 216" />
 				</g>
 
-				<g class="resting-companion" aria-hidden="true">
-					<ellipse class="companion-shadow" cx="154" cy="330" rx="48" ry="10" />
-					<circle class="ear left-ear" cx="121" cy="265" r="12" />
-					<circle class="ear right-ear" cx="163" cy="260" r="13" />
-					<g class="breathing-body">
-						<ellipse class="body" cx="154" cy="304" rx="45" ry="44" />
-						<ellipse class="belly" cx="156" cy="314" rx="25" ry="28" />
-						<ellipse class="head" cx="143" cy="269" rx="32" ry="29" />
-						<path class="sleep-eye" d="M127 265 C132 268 137 268 142 265" />
-						<path class="sleep-eye" d="M150 265 C155 268 160 268 165 265" />
-						<path class="mouth" d="M137 282 C143 287 151 287 157 282" />
+				{#if companionArtId === 'bear'}
+					<g class="photo-resting-companion" aria-hidden="true">
+						<image
+							class="photo-resting-image"
+							href="/images/resting-bear-photo.png"
+							x="10"
+							y="82"
+							width="310"
+							height="303"
+							preserveAspectRatio="xMidYMid slice"
+						/>
 					</g>
-					<path class="arm" d="M119 301 C103 310 97 326 108 335" />
-					<path class="arm" d="M185 301 C200 311 204 327 193 336" />
-				</g>
+				{:else}
+					<g class="resting-companion" aria-hidden="true">
+						<ellipse class="companion-shadow" cx="154" cy="330" rx="48" ry="10" />
+						<circle class="ear left-ear" cx="121" cy="265" r="12" />
+						<circle class="ear right-ear" cx="163" cy="260" r="13" />
+						<g class="breathing-body">
+							<ellipse class="body" cx="154" cy="304" rx="45" ry="44" />
+							<ellipse class="belly" cx="156" cy="314" rx="25" ry="28" />
+							<ellipse class="head" cx="143" cy="269" rx="32" ry="29" />
+							<path class="sleep-eye" d="M127 265 C132 268 137 268 142 265" />
+							<path class="sleep-eye" d="M150 265 C155 268 160 268 165 265" />
+							<path class="mouth" d="M137 282 C143 287 151 287 157 282" />
+						</g>
+						<path class="arm" d="M119 301 C103 310 97 326 108 335" />
+						<path class="arm" d="M185 301 C200 311 204 327 193 336" />
+					</g>
+				{/if}
 
 				<g class="fireflies">
 					<circle cx="214" cy="302" r="2.1" />
@@ -419,6 +433,24 @@
 		animation: companion-presence 8s ease 1s both;
 	}
 
+	.photo-resting-companion {
+		opacity: 0;
+		pointer-events: none;
+		transform-box: fill-box;
+		transform-origin: 28% 88%;
+		filter:
+			drop-shadow(0 18px 22px rgba(1, 6, 10, 0.34)) saturate(0.9) contrast(1.08)
+			brightness(0.86);
+		animation: photo-companion-arrive 1.1s ease-out both;
+	}
+
+	.photo-resting-image {
+		opacity: 0.9;
+		transform-box: fill-box;
+		transform-origin: 31% 86%;
+		animation: photo-companion-breathe 22s ease-in-out 1.3s infinite;
+	}
+
 	.companion-shadow {
 		fill: rgba(0, 0, 0, 0.28);
 	}
@@ -507,6 +539,30 @@
 		}
 		50% {
 			transform: translateY(1px) scaleY(1.018);
+		}
+	}
+
+	@keyframes photo-companion-arrive {
+		from {
+			opacity: 0;
+			transform: translate3d(-8px, 8px, 0) scale(0.985);
+		}
+		to {
+			opacity: 1;
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+	}
+
+	@keyframes photo-companion-breathe {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+		46% {
+			transform: translate3d(0.5px, -0.7px, 0) scale(1.004);
+		}
+		64% {
+			transform: translate3d(0.1px, -0.3px, 0) scale(1.002);
 		}
 	}
 
@@ -645,12 +701,23 @@
 		.leaves,
 		.mist path,
 		.fireflies circle,
+		.photo-resting-companion,
+		.photo-resting-image,
 		.breathing-body,
 		.left-ear,
 		.moon-reflection,
 		.stars circle,
 		.resting-companion {
 			animation: none;
+		}
+
+		.photo-resting-companion {
+			opacity: 1;
+			transform: none;
+		}
+
+		.photo-resting-image {
+			transform: none;
 		}
 	}
 </style>
