@@ -360,7 +360,7 @@
 		height: 100%;
 		min-height: 14.5rem;
 		object-fit: cover;
-		object-position: center;
+		object-position: left center;
 	}
 
 	.camera-plane {

@@ -714,6 +714,10 @@
 		background-repeat: no-repeat;
 	}
 
+	.garden-card:not([data-day-state='night']) .garden-photo {
+		background-position: left center;
+	}
+
 	.garden-light {
 		fill: var(--garden-light);
 		opacity: 0.78;
