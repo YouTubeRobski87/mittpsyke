@@ -460,30 +460,32 @@
 				</g>
 				{#if companionArtId === 'bear'}
 					<g class="resting-tree" aria-hidden="true">
-						<ellipse class="resting-tree-shadow" cx="194" cy="225" rx="58" ry="10" />
+						<ellipse class="resting-tree-shadow" cx="142" cy="225" rx="76" ry="12" />
 						<path
 							class="resting-tree-branch branch-left"
-							d="M198 118 C170 101 138 98 108 110"
+							d="M142 88 C112 66 72 58 28 70"
 						/>
 						<path
 							class="resting-tree-branch branch-right"
-							d="M203 108 C234 86 266 80 306 78"
+							d="M148 78 C186 48 232 36 284 42"
 						/>
 						<path
 							class="resting-tree-trunk"
-							d="M191 76 C181 118 182 168 170 226 C183 232 206 232 218 225 C207 170 211 118 201 76 Z"
+							d="M132 18 C118 72 124 142 106 228 C122 236 154 236 170 226 C154 142 162 72 148 18 Z"
 						/>
-						<path class="resting-tree-bark" d="M198 84 C195 122 202 166 189 219" />
+						<path class="resting-tree-bark" d="M139 28 C134 82 144 154 126 220" />
+						<path class="resting-tree-bark secondary" d="M151 58 C143 106 153 164 142 224" />
 						<g class="resting-tree-canopy">
-							<ellipse cx="152" cy="84" rx="54" ry="30" />
-							<ellipse cx="202" cy="70" rx="60" ry="36" />
-							<ellipse cx="258" cy="86" rx="62" ry="34" />
-							<ellipse cx="210" cy="104" rx="84" ry="34" />
+							<ellipse cx="64" cy="42" rx="68" ry="34" />
+							<ellipse cx="132" cy="28" rx="78" ry="42" />
+							<ellipse cx="218" cy="48" rx="88" ry="42" />
+							<ellipse cx="132" cy="78" rx="116" ry="42" />
+							<ellipse cx="30" cy="94" rx="70" ry="32" />
 						</g>
 						<g class="resting-tree-leaves">
-							<path d="M122 132 C134 124 146 124 154 132 C142 140 130 140 122 132 Z" />
-							<path d="M268 122 C282 114 296 116 304 126 C290 132 278 131 268 122 Z" />
-							<path d="M226 50 C238 42 252 44 260 54 C246 60 236 58 226 50 Z" />
+							<path d="M58 116 C72 106 88 108 98 120 C82 128 68 127 58 116 Z" />
+							<path d="M208 96 C224 86 240 88 250 102 C232 110 218 108 208 96 Z" />
+							<path d="M158 18 C174 10 190 14 198 28 C180 34 168 30 158 18 Z" />
 						</g>
 					</g>
 				{/if}
@@ -530,6 +532,12 @@
 							<path class="leg" d="M300 214 C308 222 318 222 324 214" />
 						{:else}
 							<ellipse class="belly-fill" cx="270" cy="194" rx="25" ry="28" />
+						{/if}
+						{#if companionArtId === 'bear'}
+							<ellipse class="resting-bear-arm left-arm" cx="240" cy="196" rx="9" ry="26" />
+							<ellipse class="resting-bear-arm right-arm" cx="300" cy="196" rx="9" ry="26" />
+							<ellipse class="resting-bear-foot left-foot" cx="240" cy="226" rx="18" ry="10" />
+							<ellipse class="resting-bear-foot right-foot" cx="294" cy="226" rx="18" ry="10" />
 						{/if}
 						<g class="companion-head">
 							{#if companionArtId === 'turtle'}
@@ -797,17 +805,17 @@
 	}
 
 	.resting-tree-shadow {
-		fill: rgba(24, 31, 27, 0.2);
+		fill: rgba(12, 17, 16, 0.34);
 	}
 
 	.resting-tree-trunk {
-		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 24%, #5a4638 76%);
+		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 18%, #34271f 82%);
 	}
 
 	.resting-tree-bark,
 	.resting-tree-branch {
 		fill: none;
-		stroke: color-mix(in srgb, var(--theme-accent, #436e8f) 14%, #3c3029 86%);
+		stroke: color-mix(in srgb, var(--theme-accent, #436e8f) 10%, #211a16 90%);
 		stroke-linecap: round;
 		stroke-linejoin: round;
 	}
@@ -823,13 +831,13 @@
 	}
 
 	.resting-tree-canopy {
-		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 36%, #40543f 64%);
-		opacity: 0.72;
+		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 28%, #172319 72%);
+		opacity: 0.78;
 	}
 
 	.resting-tree-leaves {
-		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 34%, #82916a 66%);
-		opacity: 0.52;
+		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 28%, #6f7f59 72%);
+		opacity: 0.42;
 		animation: tree-leaves-idle 15s ease-in-out infinite;
 		transform-box: fill-box;
 		transform-origin: center;
@@ -901,19 +909,89 @@
 	}
 
 	.companion-bear {
-		--companion-body: #9b735d;
-		--companion-body-dark: #765443;
-		--companion-belly: #d7baa0;
-		--companion-face: #a67c64;
-		--companion-x: -58px;
-		--companion-y: 8px;
-		--companion-tilt: -4deg;
+		--companion-body: #8c6750;
+		--companion-body-dark: #5e4234;
+		--companion-belly: #c8aa8c;
+		--companion-face: #96705a;
+		--companion-x: -118px;
+		--companion-y: 11px;
+		--companion-tilt: -9deg;
+		--companion-scale: 0.92;
 	}
 
 	.companion-bear .companion-breath {
-		--companion-breath-tilt: -1deg;
-		transform-origin: 38% 100%;
-		animation-duration: 8.5s;
+		--companion-breath-tilt: -2deg;
+		transform-origin: 32% 100%;
+		animation-duration: 11s;
+	}
+
+	.companion-bear .companion-shadow {
+		fill: rgba(13, 17, 16, 0.28);
+	}
+
+	.companion-bear .body-fill {
+		transform-box: fill-box;
+		transform-origin: center bottom;
+		transform: rotate(-8deg) translate(-2px, 2px);
+	}
+
+	.companion-bear .belly-fill {
+		opacity: 0.76;
+		transform-box: fill-box;
+		transform-origin: center;
+		transform: rotate(-8deg) translate(-4px, 4px);
+	}
+
+	.companion-bear .companion-head {
+		transform: translate(-8px, 8px) rotate(-8deg);
+	}
+
+	.companion-bear .left-ear {
+		transform-box: fill-box;
+		transform-origin: center;
+		transform: translate(-10px, 8px);
+	}
+
+	.companion-bear .right-ear {
+		transform-box: fill-box;
+		transform-origin: center;
+		transform: translate(-8px, 10px);
+	}
+
+	.companion-bear .open-eyes {
+		display: none;
+	}
+
+	.companion-bear .sleep-eyes {
+		display: block;
+	}
+
+	.resting-bear-arm,
+	.resting-bear-foot {
+		fill: var(--companion-body-dark);
+		opacity: 0.82;
+		transform-box: fill-box;
+		transform-origin: center;
+	}
+
+	.resting-bear-arm {
+		opacity: 0.56;
+	}
+
+	.resting-bear-arm.left-arm {
+		transform: rotate(22deg) translate(-7px, 5px);
+	}
+
+	.resting-bear-arm.right-arm {
+		transform: rotate(-22deg) translate(5px, 3px);
+	}
+
+	.resting-bear-foot.left-foot {
+		transform: rotate(12deg) translate(-4px, 0);
+	}
+
+	.resting-bear-foot.right-foot {
+		transform: rotate(-12deg) translate(4px, 0);
 	}
 
 	.companion-owl {
@@ -1059,7 +1137,7 @@
 	}
 
 	.garden-card[data-day-state='night'] .companion-bear {
-		--companion-scale: 0.96;
+		--companion-scale: 0.9;
 		--companion-glow: 0px;
 	}
 
