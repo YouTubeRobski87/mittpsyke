@@ -463,11 +463,11 @@
 						<image
 							class="photo-resting-image"
 							href="/images/resting-bear-photo.png"
-							x="12"
+							x="-4"
 							y="-4"
-							width="300"
-							height="293"
-							preserveAspectRatio="xMidYMid slice"
+							width="528"
+							height="268"
+							preserveAspectRatio="none"
 						/>
 					</g>
 				{:else}
@@ -1533,7 +1533,7 @@
 	@keyframes photo-companion-arrive {
 		from {
 			opacity: 0;
-			transform: translate3d(-6px, 8px, 0) scale(0.985);
+			transform: translate3d(0, 0, 0) scale(1);
 		}
 		to {
 			opacity: 1;
