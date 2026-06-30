@@ -6,6 +6,7 @@
 		getProgressCompanionArtId,
 		getProgressCompanionCarePhrases,
 		getProgressCompanionDayState,
+		getProgressCompanionDayStateImage,
 		getProgressCompanionStatusMessage,
 		normalizeProgressCompanion,
 		readProgressCompanionFromMetadata,
@@ -121,7 +122,7 @@
 	$: companionName = selectedCompanion?.name ?? 'Din följeslagare';
 	$: companionArtId = getProgressCompanionArtId(selectedCompanion?.id);
 	$: companionLevelText = getCompanionLevelText(companionLevel);
-	$: companionDayStateImage = getCompanionDayStateImage(companionDayState);
+	$: companionDayStateImage = getProgressCompanionDayStateImage(companionDayState);
 	$: careSignals = getCareSignals();
 	$: placeCopy =
 		entryCount === 0
@@ -338,13 +339,6 @@
 		} catch {
 			// Visit memory is optional.
 		}
-	}
-
-	function getCompanionDayStateImage(state: ProgressCompanionDayState): string {
-		if (state === 'morning') return '/images/companion-morgon.jpg';
-		if (state === 'day') return '/images/companion-dag.jpg';
-		if (state === 'evening') return '/images/companion-dag.jpg';
-		return '/images/resting-bear-photo-fill.png';
 	}
 
 	function getCareSignals(): CareSignal[] {

@@ -4,6 +4,7 @@
 		getProgressCompanionAnimal,
 		getProgressCompanionArtId,
 		getProgressCompanionDayState,
+		getProgressCompanionDayStateImage,
 		getProgressCompanionDayStateLabel,
 		type ProgressCompanionDayState,
 		type ProgressCompanionSelection
@@ -24,7 +25,7 @@
 	const companionName = $derived(companion?.name ?? 'Din följeslagare');
 	const companionArtId = $derived(getProgressCompanionArtId(companion?.id));
 	const dayStateLabel = $derived(getProgressCompanionDayStateLabel(dayState));
-	const dayStateImage = $derived(getDayStateImage(dayState));
+	const dayStateImage = $derived(getProgressCompanionDayStateImage(dayState));
 	const stateText = $derived.by(() => {
 		if (dayState === 'morning') return 'Den vaknar mjukt med dagen.';
 		if (dayState === 'evening') return 'Den rör sig långsammare när kvällen landar.';
@@ -39,13 +40,6 @@
 		dayState = getProgressCompanionDayState();
 		timeOfDay = getTimeOfDay();
 	});
-
-	function getDayStateImage(state: ProgressCompanionDayState): string | null {
-		if (state === 'morning') return '/images/companion-morgon.jpg';
-		if (state === 'day') return '/images/companion-dag.jpg';
-		if (state === 'evening') return '/images/companion-kvall.jpg';
-		return null;
-	}
 </script>
 
 <article
