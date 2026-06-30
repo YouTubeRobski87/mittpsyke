@@ -366,7 +366,7 @@
 			linear-gradient(115deg, rgba(255, 255, 255, 0) 24%, rgba(255, 247, 221, 0.055) 48%, rgba(255, 255, 255, 0) 72%);
 		mix-blend-mode: screen;
 		opacity: 0.58;
-		animation: sanctuary-light 28s ease-in-out infinite;
+		animation: sanctuary-light 24s ease-in-out infinite;
 	}
 
 	.companion-scene::after {
@@ -381,7 +381,7 @@
 			);
 		opacity: 0.34;
 		transform-origin: center;
-		animation: quiet-water-light 24s ease-in-out infinite;
+		animation: quiet-water-light 20s ease-in-out infinite;
 	}
 
 	.companion-scene svg {
@@ -399,7 +399,7 @@
 		object-fit: cover;
 		object-position: left center;
 		transform-origin: 42% 72%;
-		animation: scene-photo-breathe 34s ease-in-out 1s infinite;
+		animation: scene-photo-breathe 30s ease-in-out 1s infinite;
 	}
 
 	.passing-butterfly {
@@ -414,7 +414,7 @@
 		transform: translate3d(0, 0, 0);
 		filter: drop-shadow(0 0.1rem 0.12rem rgba(35, 24, 12, 0.18));
 		image-rendering: auto;
-		animation: butterfly-pass 56s ease-in-out 8s infinite;
+		animation: butterfly-pass 52s ease-in-out 5s infinite;
 	}
 
 	.camera-plane {
@@ -470,9 +470,6 @@
 
 	.leaves {
 		fill: rgba(99, 128, 92, 0.52);
-		transform-box: fill-box;
-		transform-origin: center bottom;
-		animation: leaf-listen 18s ease-in-out infinite;
 	}
 
 	.shoreline {
@@ -482,17 +479,11 @@
 	.lake {
 		fill: url(#lakeGlow);
 		opacity: 0.94;
-		transform-box: fill-box;
-		transform-origin: center;
-		animation: lake-drift 22s ease-in-out infinite;
 	}
 
 	.moon-reflection {
 		fill: rgba(229, 228, 211, 0.09);
 		filter: url(#softBlur);
-		transform-box: fill-box;
-		transform-origin: center;
-		animation: water-breathe 19s ease-in-out infinite;
 	}
 
 	.far-shore {
@@ -614,9 +605,6 @@
 		stroke: rgba(176, 166, 103, 0.28);
 		stroke-width: 2;
 		stroke-linecap: round;
-		transform-box: fill-box;
-		transform-origin: center bottom;
-		animation: grass-listen 17s ease-in-out infinite;
 	}
 
 	@keyframes companion-breathe {
@@ -660,8 +648,8 @@
 			filter: saturate(1) brightness(1);
 		}
 		50% {
-			transform: translate3d(0.2px, -0.3px, 0) scale(1.0015);
-			filter: saturate(1.01) brightness(1.006);
+			transform: translate3d(0.25px, -0.35px, 0) scale(1.002);
+			filter: saturate(1.012) brightness(1.008);
 		}
 	}
 
@@ -717,71 +705,27 @@
 		}
 	}
 
-	@keyframes leaf-listen {
-		0%,
-		100% {
-			transform: translate3d(0, 0, 0) rotate(0deg);
-			opacity: 0.5;
-		}
-		50% {
-			transform: translate3d(0.8px, 0.4px, 0) rotate(0.35deg);
-			opacity: 0.58;
-		}
-	}
-
-	@keyframes lake-drift {
-		0%,
-		100% {
-			transform: translate3d(0, 0, 0) scaleX(1);
-		}
-		50% {
-			transform: translate3d(0.8px, 0, 0) scaleX(1.006);
-		}
-	}
-
-	@keyframes water-breathe {
-		0%,
-		100% {
-			opacity: 0.085;
-			transform: scaleX(0.99);
-		}
-		50% {
-			opacity: 0.115;
-			transform: scaleX(1.015);
-		}
-	}
-
 	@keyframes sanctuary-light {
 		0%,
 		100% {
-			opacity: 0.5;
+			opacity: 0.52;
 			transform: translate3d(0, 0, 0);
 		}
 		50% {
-			opacity: 0.64;
-			transform: translate3d(0.7px, -0.4px, 0);
+			opacity: 0.68;
+			transform: translate3d(1px, -0.45px, 0);
 		}
 	}
 
 	@keyframes quiet-water-light {
 		0%,
 		100% {
-			opacity: 0.28;
+			opacity: 0.32;
 			transform: translate3d(0, 0, 0) scaleX(1);
 		}
 		50% {
-			opacity: 0.38;
-			transform: translate3d(0.9px, 0, 0) scaleX(1.006);
-		}
-	}
-
-	@keyframes grass-listen {
-		0%,
-		100% {
-			transform: rotate(0deg);
-		}
-		50% {
-			transform: rotate(0.45deg);
+			opacity: 0.44;
+			transform: translate3d(1.1px, 0, 0) scaleX(1.008);
 		}
 	}
 
@@ -870,16 +814,12 @@
 		.companion-scene::before,
 		.companion-scene::after,
 		.day-state-image,
-		.leaves,
-		.lake,
 		.mist path,
 		.fireflies circle,
 		.photo-resting-companion,
 		.photo-resting-image,
 		.breathing-body,
-		.grass,
 		.left-ear,
-		.moon-reflection,
 		.stars circle,
 		.resting-companion,
 		.passing-butterfly {
