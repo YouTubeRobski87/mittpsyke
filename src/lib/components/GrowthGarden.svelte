@@ -717,7 +717,7 @@
 		background-position: center;
 		background-repeat: no-repeat;
 		transform-origin: 42% 72%;
-		animation: garden-photo-breathe 34s ease-in-out 1s infinite;
+		animation: garden-photo-breathe 22s ease-in-out 1s infinite;
 	}
 
 	.garden-photo::before,
@@ -730,26 +730,29 @@
 
 	.garden-photo::before {
 		background:
-			radial-gradient(circle at 58% 28%, rgba(255, 239, 197, 0.12), rgba(255, 239, 197, 0) 36%),
-			linear-gradient(115deg, rgba(255, 255, 255, 0) 24%, rgba(255, 247, 221, 0.055) 48%, rgba(255, 255, 255, 0) 72%);
+			radial-gradient(circle at 58% 28%, rgba(255, 239, 197, 0.36), rgba(255, 239, 197, 0) 42%),
+			linear-gradient(115deg, rgba(255, 255, 255, 0) 8%, rgba(255, 247, 221, 0.28) 48%, rgba(255, 255, 255, 0) 88%);
 		mix-blend-mode: screen;
-		opacity: 0.58;
-		animation: garden-sanctuary-light 28s ease-in-out infinite;
+		opacity: 0.78;
+		animation: garden-sanctuary-light 18s ease-in-out infinite;
 	}
 
 	.garden-photo::after {
 		inset: 48% 0 0;
 		background:
-			radial-gradient(ellipse at 54% 34%, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 52%),
+			linear-gradient(100deg, rgba(255, 255, 255, 0) 4%, rgba(255, 255, 255, 0.22) 48%, rgba(255, 255, 255, 0) 88%),
+			radial-gradient(ellipse at 54% 34%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 58%),
 			repeating-linear-gradient(
 				174deg,
-				rgba(255, 255, 255, 0) 0 18px,
-				rgba(255, 255, 255, 0.035) 19px 21px,
-				rgba(255, 255, 255, 0) 22px 42px
+				rgba(255, 255, 255, 0) 0 14px,
+				rgba(255, 255, 255, 0.14) 15px 19px,
+				rgba(255, 255, 255, 0) 20px 36px
 			);
-		opacity: 0.34;
+		background-size: 180% 100%, 100% 100%, 116px 100%;
+		background-position: -42% 0, 0 0, 0 0;
+		opacity: 0.62;
 		transform-origin: center;
-		animation: garden-quiet-water-light 24s ease-in-out infinite;
+		animation: garden-quiet-water-light 14s ease-in-out infinite;
 	}
 
 	.garden-card:not([data-day-state='night']) .garden-photo {
@@ -1671,33 +1674,39 @@
 			transform: translate3d(0, 0, 0) scale(1);
 			filter: saturate(1) brightness(1);
 		}
-		50% {
-			transform: translate3d(0.2px, -0.3px, 0) scale(1.0015);
-			filter: saturate(1.01) brightness(1.006);
+		36% {
+			transform: translate3d(0.8px, -2.2px, 0) scale(1.012);
+			filter: saturate(1.025) brightness(1.018);
+		}
+		62% {
+			transform: translate3d(0.3px, -2.8px, 0) scale(1.015);
+			filter: saturate(1.03) brightness(1.022);
 		}
 	}
 
 	@keyframes garden-sanctuary-light {
 		0%,
 		100% {
-			opacity: 0.5;
-			transform: translate3d(0, 0, 0);
+			opacity: 0.68;
+			transform: translate3d(-18px, 7px, 0);
 		}
 		50% {
-			opacity: 0.64;
-			transform: translate3d(0.7px, -0.4px, 0);
+			opacity: 0.94;
+			transform: translate3d(20px, -8px, 0);
 		}
 	}
 
 	@keyframes garden-quiet-water-light {
 		0%,
 		100% {
-			opacity: 0.28;
-			transform: translate3d(0, 0, 0) scaleX(1);
+			opacity: 0.52;
+			transform: translate3d(-14px, 1px, 0) scaleX(1);
+			background-position: -42% 0, 0 0, 0 0;
 		}
 		50% {
-			opacity: 0.38;
-			transform: translate3d(0.9px, 0, 0) scaleX(1.006);
+			opacity: 0.82;
+			transform: translate3d(16px, 3px, 0) scaleX(1.035);
+			background-position: 82% 0, 0 0, 58px 0;
 		}
 	}
 
