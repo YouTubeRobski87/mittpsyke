@@ -362,26 +362,29 @@
 
 	.companion-scene::before {
 		background:
-			radial-gradient(circle at 58% 28%, rgba(255, 239, 197, 0.16), rgba(255, 239, 197, 0) 36%),
-			linear-gradient(115deg, rgba(255, 255, 255, 0) 24%, rgba(255, 247, 221, 0.085) 48%, rgba(255, 255, 255, 0) 72%);
+			radial-gradient(circle at 58% 28%, rgba(255, 239, 197, 0.36), rgba(255, 239, 197, 0) 42%),
+			linear-gradient(115deg, rgba(255, 255, 255, 0) 8%, rgba(255, 247, 221, 0.28) 48%, rgba(255, 255, 255, 0) 88%);
 		mix-blend-mode: screen;
-		opacity: 0.62;
-		animation: sanctuary-light 24s ease-in-out infinite;
+		opacity: 0.78;
+		animation: sanctuary-light 18s ease-in-out infinite;
 	}
 
 	.companion-scene::after {
 		inset: 48% 0 0;
 		background:
-			radial-gradient(ellipse at 54% 34%, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 52%),
+			linear-gradient(100deg, rgba(255, 255, 255, 0) 4%, rgba(255, 255, 255, 0.22) 48%, rgba(255, 255, 255, 0) 88%),
+			radial-gradient(ellipse at 54% 34%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 58%),
 			repeating-linear-gradient(
 				174deg,
-				rgba(255, 255, 255, 0) 0 18px,
-				rgba(255, 255, 255, 0.07) 19px 21px,
-				rgba(255, 255, 255, 0) 22px 42px
+				rgba(255, 255, 255, 0) 0 14px,
+				rgba(255, 255, 255, 0.14) 15px 19px,
+				rgba(255, 255, 255, 0) 20px 36px
 			);
-		opacity: 0.42;
+		background-size: 180% 100%, 100% 100%, 116px 100%;
+		background-position: -42% 0, 0 0, 0 0;
+		opacity: 0.62;
 		transform-origin: center;
-		animation: quiet-water-light 20s ease-in-out infinite;
+		animation: quiet-water-light 14s ease-in-out infinite;
 	}
 
 	.companion-scene svg {
@@ -647,9 +650,13 @@
 			transform: translate3d(0, 0, 0) scale(1);
 			filter: saturate(1) brightness(1);
 		}
-		50% {
-			transform: translate3d(0.35px, -0.45px, 0) scale(1.004);
-			filter: saturate(1.016) brightness(1.01);
+		36% {
+			transform: translate3d(0.8px, -2.2px, 0) scale(1.012);
+			filter: saturate(1.025) brightness(1.018);
+		}
+		62% {
+			transform: translate3d(0.3px, -2.8px, 0) scale(1.015);
+			filter: saturate(1.03) brightness(1.022);
 		}
 	}
 
@@ -708,24 +715,26 @@
 	@keyframes sanctuary-light {
 		0%,
 		100% {
-			opacity: 0.56;
-			transform: translate3d(0, 0, 0);
+			opacity: 0.68;
+			transform: translate3d(-18px, 7px, 0);
 		}
 		50% {
-			opacity: 0.76;
-			transform: translate3d(1.4px, -0.55px, 0);
+			opacity: 0.94;
+			transform: translate3d(20px, -8px, 0);
 		}
 	}
 
 	@keyframes quiet-water-light {
 		0%,
 		100% {
-			opacity: 0.4;
-			transform: translate3d(0, 0, 0) scaleX(1);
+			opacity: 0.52;
+			transform: translate3d(-14px, 1px, 0) scaleX(1);
+			background-position: -42% 0, 0 0, 0 0;
 		}
 		50% {
-			opacity: 0.56;
-			transform: translate3d(1.5px, 0, 0) scaleX(1.012);
+			opacity: 0.82;
+			transform: translate3d(16px, 3px, 0) scaleX(1.035);
+			background-position: 82% 0, 0 0, 58px 0;
 		}
 	}
 
