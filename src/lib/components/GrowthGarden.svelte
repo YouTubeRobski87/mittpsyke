@@ -716,6 +716,40 @@
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;
+		transform-origin: 42% 72%;
+		animation: garden-photo-breathe 34s ease-in-out 1s infinite;
+	}
+
+	.garden-photo::before,
+	.garden-photo::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.garden-photo::before {
+		background:
+			radial-gradient(circle at 58% 28%, rgba(255, 239, 197, 0.12), rgba(255, 239, 197, 0) 36%),
+			linear-gradient(115deg, rgba(255, 255, 255, 0) 24%, rgba(255, 247, 221, 0.055) 48%, rgba(255, 255, 255, 0) 72%);
+		mix-blend-mode: screen;
+		opacity: 0.58;
+		animation: garden-sanctuary-light 28s ease-in-out infinite;
+	}
+
+	.garden-photo::after {
+		inset: 48% 0 0;
+		background:
+			radial-gradient(ellipse at 54% 34%, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 52%),
+			repeating-linear-gradient(
+				174deg,
+				rgba(255, 255, 255, 0) 0 18px,
+				rgba(255, 255, 255, 0.035) 19px 21px,
+				rgba(255, 255, 255, 0) 22px 42px
+			);
+		opacity: 0.34;
+		transform-origin: center;
+		animation: garden-quiet-water-light 24s ease-in-out infinite;
 	}
 
 	.garden-card:not([data-day-state='night']) .garden-photo {
@@ -734,7 +768,7 @@
 		transform: translate3d(0, 0, 0);
 		filter: drop-shadow(0 0.1rem 0.12rem rgba(35, 24, 12, 0.18));
 		image-rendering: auto;
-		animation: garden-butterfly-pass 18s ease-in-out 2s infinite;
+		animation: garden-butterfly-pass 56s ease-in-out 8s infinite;
 	}
 
 	.garden-light {
@@ -770,7 +804,7 @@
 	.garden-sprouts g {
 		transform-box: fill-box;
 		transform-origin: center bottom;
-		animation: plant-arrive 520ms ease-out both, sprout-sway 9s ease-in-out infinite;
+		animation: plant-arrive 520ms ease-out both, sprout-sway 15s ease-in-out infinite;
 	}
 
 	.garden-sprouts path {
@@ -787,7 +821,7 @@
 		opacity: 0.72;
 		transform-box: fill-box;
 		transform-origin: center bottom;
-		animation: plant-arrive 480ms ease-out both, leaf-idle 8s ease-in-out infinite;
+		animation: plant-arrive 480ms ease-out both, leaf-idle 16s ease-in-out infinite;
 	}
 
 	.garden-leaves path:nth-child(even) {
@@ -1547,10 +1581,10 @@
 	@keyframes leaf-idle {
 		0%,
 		100% {
-			transform: rotate(0deg);
+			transform: translate3d(0, 0, 0) rotate(0deg);
 		}
 		50% {
-			transform: rotate(1.5deg);
+			transform: translate3d(0.6px, 0, 0) rotate(0.55deg);
 		}
 	}
 
@@ -1560,10 +1594,10 @@
 			transform: rotate(0deg);
 		}
 		48% {
-			transform: rotate(-1.2deg);
+			transform: rotate(-0.55deg);
 		}
 		72% {
-			transform: rotate(0.8deg);
+			transform: rotate(0.35deg);
 		}
 	}
 
@@ -1591,19 +1625,19 @@
 			transform: translate3d(0, 0, 0) scale(0.84) rotate(-4deg);
 		}
 		24% {
-			opacity: 0.92;
+			opacity: 0.42;
 		}
 		46% {
-			opacity: 0.98;
-			transform: translate3d(2.7rem, -0.7rem, 0) scale(0.96) rotate(5deg);
+			opacity: 0.48;
+			transform: translate3d(2rem, -0.35rem, 0) scale(0.9) rotate(2deg);
 		}
 		72% {
-			opacity: 0.78;
-			transform: translate3d(5.8rem, 0.22rem, 0) scale(0.88) rotate(-2deg);
+			opacity: 0.34;
+			transform: translate3d(4.5rem, 0.08rem, 0) scale(0.86) rotate(-1deg);
 		}
 		86% {
 			opacity: 0;
-			transform: translate3d(7.4rem, -0.36rem, 0) scale(0.8) rotate(4deg);
+			transform: translate3d(5.5rem, -0.18rem, 0) scale(0.78) rotate(1deg);
 		}
 	}
 
@@ -1631,6 +1665,42 @@
 		}
 	}
 
+	@keyframes garden-photo-breathe {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
+			filter: saturate(1) brightness(1);
+		}
+		50% {
+			transform: translate3d(0.2px, -0.3px, 0) scale(1.0015);
+			filter: saturate(1.01) brightness(1.006);
+		}
+	}
+
+	@keyframes garden-sanctuary-light {
+		0%,
+		100% {
+			opacity: 0.5;
+			transform: translate3d(0, 0, 0);
+		}
+		50% {
+			opacity: 0.64;
+			transform: translate3d(0.7px, -0.4px, 0);
+		}
+	}
+
+	@keyframes garden-quiet-water-light {
+		0%,
+		100% {
+			opacity: 0.28;
+			transform: translate3d(0, 0, 0) scaleX(1);
+		}
+		50% {
+			opacity: 0.38;
+			transform: translate3d(0.9px, 0, 0) scaleX(1.006);
+		}
+	}
+
 	@keyframes tree-presence {
 		from {
 			opacity: 0;
@@ -1648,7 +1718,7 @@
 			transform: translate3d(0, 0, 0) rotate(0deg);
 		}
 		52% {
-			transform: translate3d(1px, 0, 0) rotate(0.6deg);
+			transform: translate3d(0.7px, 0, 0) rotate(0.35deg);
 		}
 	}
 
@@ -1900,6 +1970,9 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.garden-sprouts g,
+		.garden-photo,
+		.garden-photo::before,
+		.garden-photo::after,
 		.garden-leaves path,
 		.garden-flowers g,
 		.fireflies circle,
