@@ -738,13 +738,29 @@
 	}
 
 	.garden-photo::after {
-		inset: 48% 0 0;
+		inset: 0;
 		background:
-			radial-gradient(ellipse at 28% 46%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08) 28%, rgba(255, 255, 255, 0) 62%),
-			radial-gradient(ellipse at 72% 34%, rgba(255, 247, 221, 0.18), rgba(255, 247, 221, 0.07) 30%, rgba(255, 247, 221, 0) 64%),
-			linear-gradient(104deg, rgba(255, 255, 255, 0) 12%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0) 82%);
+			radial-gradient(ellipse at 30% 72%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08) 28%, rgba(255, 255, 255, 0) 62%),
+			radial-gradient(ellipse at 74% 64%, rgba(255, 247, 221, 0.18), rgba(255, 247, 221, 0.07) 30%, rgba(255, 247, 221, 0) 64%),
+			linear-gradient(104deg, rgba(255, 255, 255, 0) 12%, rgba(255, 255, 255, 0.1) 52%, rgba(255, 255, 255, 0) 84%);
 		background-size: 138% 100%, 128% 100%, 170% 100%;
-		background-position: -24% 0, 112% 0, -36% 0;
+		background-position: -24% 2%, 112% 1%, -36% 0;
+		mask-image: linear-gradient(
+			to bottom,
+			transparent 0%,
+			transparent 32%,
+			rgba(0, 0, 0, 0.12) 48%,
+			rgba(0, 0, 0, 0.68) 72%,
+			black 100%
+		);
+		-webkit-mask-image: linear-gradient(
+			to bottom,
+			transparent 0%,
+			transparent 32%,
+			rgba(0, 0, 0, 0.12) 48%,
+			rgba(0, 0, 0, 0.68) 72%,
+			black 100%
+		);
 		opacity: 0.54;
 		transform-origin: center;
 		animation: garden-quiet-water-light 18s ease-in-out infinite;
@@ -1695,13 +1711,11 @@
 		0%,
 		100% {
 			opacity: 0.46;
-			transform: translate3d(-8px, 0.5px, 0) scaleX(1);
-			background-position: -24% 0, 112% 0, -36% 0;
+			background-position: -24% 2%, 112% 1%, -36% 0;
 		}
 		50% {
 			opacity: 0.66;
-			transform: translate3d(10px, 1.5px, 0) scaleX(1.018);
-			background-position: 34% 0, 54% 0, 42% 0;
+			background-position: 34% 4%, 54% 3%, 42% 0;
 		}
 	}
 
