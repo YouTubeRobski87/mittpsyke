@@ -740,30 +740,32 @@
 	.garden-photo::after {
 		inset: 0;
 		background:
-			radial-gradient(ellipse at 30% 72%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08) 28%, rgba(255, 255, 255, 0) 62%),
-			radial-gradient(ellipse at 74% 64%, rgba(255, 247, 221, 0.18), rgba(255, 247, 221, 0.07) 30%, rgba(255, 247, 221, 0) 64%),
-			linear-gradient(104deg, rgba(255, 255, 255, 0) 12%, rgba(255, 255, 255, 0.1) 52%, rgba(255, 255, 255, 0) 84%);
-		background-size: 138% 100%, 128% 100%, 170% 100%;
-		background-position: -24% 2%, 112% 1%, -36% 0;
+			radial-gradient(ellipse at 72% 72%, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.045) 26%, rgba(255, 255, 255, 0) 58%),
+			radial-gradient(ellipse at 88% 67%, rgba(255, 247, 221, 0.1), rgba(255, 247, 221, 0.04) 24%, rgba(255, 247, 221, 0) 56%),
+			radial-gradient(ellipse at 78% 88%, rgba(210, 229, 239, 0.1), rgba(210, 229, 239, 0.035) 30%, rgba(210, 229, 239, 0) 62%),
+			radial-gradient(ellipse at 94% 84%, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.03) 22%, rgba(255, 255, 255, 0) 54%);
+		background-size: 122% 100%, 118% 100%, 128% 100%, 114% 100%;
+		background-position: 2% 1%, -4% 0, 5% 2%, -2% 1%;
 		mask-image: linear-gradient(
 			to bottom,
 			transparent 0%,
-			transparent 32%,
-			rgba(0, 0, 0, 0.12) 48%,
-			rgba(0, 0, 0, 0.68) 72%,
-			black 100%
+			transparent 44%,
+			rgba(0, 0, 0, 0.08) 58%,
+			rgba(0, 0, 0, 0.42) 76%,
+			rgba(0, 0, 0, 0.72) 100%
 		);
 		-webkit-mask-image: linear-gradient(
 			to bottom,
 			transparent 0%,
-			transparent 32%,
-			rgba(0, 0, 0, 0.12) 48%,
-			rgba(0, 0, 0, 0.68) 72%,
-			black 100%
+			transparent 44%,
+			rgba(0, 0, 0, 0.08) 58%,
+			rgba(0, 0, 0, 0.42) 76%,
+			rgba(0, 0, 0, 0.72) 100%
 		);
-		opacity: 0.54;
+		filter: blur(7px);
+		opacity: 0.3;
 		transform-origin: center;
-		animation: garden-quiet-water-light 18s ease-in-out infinite;
+		animation: garden-quiet-water-light 24s ease-in-out infinite;
 	}
 
 	.garden-card:not([data-day-state='night']) .garden-photo {
@@ -1710,12 +1712,12 @@
 	@keyframes garden-quiet-water-light {
 		0%,
 		100% {
-			opacity: 0.46;
-			background-position: -24% 2%, 112% 1%, -36% 0;
+			opacity: 0.22;
+			background-position: 2% 1%, -4% 0, 5% 2%, -2% 1%;
 		}
 		50% {
-			opacity: 0.66;
-			background-position: 34% 4%, 54% 3%, 42% 0;
+			opacity: 0.34;
+			background-position: 6% 2%, -8% 1%, 1% 3%, 3% 2%;
 		}
 	}
 
