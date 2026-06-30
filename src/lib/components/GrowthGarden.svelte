@@ -343,7 +343,7 @@
 	function getCompanionDayStateImage(state: ProgressCompanionDayState): string {
 		if (state === 'morning') return '/images/companion-morgon.jpg';
 		if (state === 'day') return '/images/companion-dag.jpg';
-		if (state === 'evening') return '/images/companion-kvall.jpg';
+		if (state === 'evening') return '/images/companion-dag.jpg';
 		return '/images/resting-bear-photo-fill.png';
 	}
 
