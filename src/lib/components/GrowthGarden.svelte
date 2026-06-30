@@ -740,19 +740,14 @@
 	.garden-photo::after {
 		inset: 48% 0 0;
 		background:
-			linear-gradient(100deg, rgba(255, 255, 255, 0) 4%, rgba(255, 255, 255, 0.22) 48%, rgba(255, 255, 255, 0) 88%),
-			radial-gradient(ellipse at 54% 34%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 58%),
-			repeating-linear-gradient(
-				174deg,
-				rgba(255, 255, 255, 0) 0 14px,
-				rgba(255, 255, 255, 0.14) 15px 19px,
-				rgba(255, 255, 255, 0) 20px 36px
-			);
-		background-size: 180% 100%, 100% 100%, 116px 100%;
-		background-position: -42% 0, 0 0, 0 0;
-		opacity: 0.62;
+			radial-gradient(ellipse at 28% 46%, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08) 28%, rgba(255, 255, 255, 0) 62%),
+			radial-gradient(ellipse at 72% 34%, rgba(255, 247, 221, 0.18), rgba(255, 247, 221, 0.07) 30%, rgba(255, 247, 221, 0) 64%),
+			linear-gradient(104deg, rgba(255, 255, 255, 0) 12%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0) 82%);
+		background-size: 138% 100%, 128% 100%, 170% 100%;
+		background-position: -24% 0, 112% 0, -36% 0;
+		opacity: 0.54;
 		transform-origin: center;
-		animation: garden-quiet-water-light 14s ease-in-out infinite;
+		animation: garden-quiet-water-light 18s ease-in-out infinite;
 	}
 
 	.garden-card:not([data-day-state='night']) .garden-photo {
@@ -1699,14 +1694,14 @@
 	@keyframes garden-quiet-water-light {
 		0%,
 		100% {
-			opacity: 0.52;
-			transform: translate3d(-14px, 1px, 0) scaleX(1);
-			background-position: -42% 0, 0 0, 0 0;
+			opacity: 0.46;
+			transform: translate3d(-8px, 0.5px, 0) scaleX(1);
+			background-position: -24% 0, 112% 0, -36% 0;
 		}
 		50% {
-			opacity: 0.82;
-			transform: translate3d(16px, 3px, 0) scaleX(1.035);
-			background-position: 82% 0, 0 0, 58px 0;
+			opacity: 0.66;
+			transform: translate3d(10px, 1.5px, 0) scaleX(1.018);
+			background-position: 34% 0, 54% 0, 42% 0;
 		}
 	}
 
