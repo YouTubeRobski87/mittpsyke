@@ -738,34 +738,7 @@
 	}
 
 	.garden-photo::after {
-		inset: 0;
-		background:
-			radial-gradient(ellipse at 72% 72%, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.045) 26%, rgba(255, 255, 255, 0) 58%),
-			radial-gradient(ellipse at 88% 67%, rgba(255, 247, 221, 0.1), rgba(255, 247, 221, 0.04) 24%, rgba(255, 247, 221, 0) 56%),
-			radial-gradient(ellipse at 78% 88%, rgba(210, 229, 239, 0.1), rgba(210, 229, 239, 0.035) 30%, rgba(210, 229, 239, 0) 62%),
-			radial-gradient(ellipse at 94% 84%, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.03) 22%, rgba(255, 255, 255, 0) 54%);
-		background-size: 122% 100%, 118% 100%, 128% 100%, 114% 100%;
-		background-position: 2% 1%, -4% 0, 5% 2%, -2% 1%;
-		mask-image: linear-gradient(
-			to bottom,
-			transparent 0%,
-			transparent 44%,
-			rgba(0, 0, 0, 0.08) 58%,
-			rgba(0, 0, 0, 0.42) 76%,
-			rgba(0, 0, 0, 0.72) 100%
-		);
-		-webkit-mask-image: linear-gradient(
-			to bottom,
-			transparent 0%,
-			transparent 44%,
-			rgba(0, 0, 0, 0.08) 58%,
-			rgba(0, 0, 0, 0.42) 76%,
-			rgba(0, 0, 0, 0.72) 100%
-		);
-		filter: blur(7px);
-		opacity: 0.3;
-		transform-origin: center;
-		animation: garden-quiet-water-light 24s ease-in-out infinite;
+		display: none;
 	}
 
 	.garden-card:not([data-day-state='night']) .garden-photo {
@@ -1706,18 +1679,6 @@
 		50% {
 			opacity: 0.94;
 			transform: translate3d(20px, -8px, 0);
-		}
-	}
-
-	@keyframes garden-quiet-water-light {
-		0%,
-		100% {
-			opacity: 0.22;
-			background-position: 2% 1%, -4% 0, 5% 2%, -2% 1%;
-		}
-		50% {
-			opacity: 0.34;
-			background-position: 6% 2%, -8% 1%, 1% 3%, 3% 2%;
 		}
 	}
 
