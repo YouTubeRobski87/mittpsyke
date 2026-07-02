@@ -349,12 +349,12 @@
 		background: #0c1627;
 		/* Behåller bara en diskret kantlinje – ingen mörk botten-fade över björnen */
 		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-		--scene-light-opacity: 0.54;
-		--scene-light-mid-opacity: 0.62;
-		--scene-light-peak-opacity: 0.7;
-		--scene-air-opacity: 0.18;
-		--scene-air-mid-opacity: 0.23;
-		--scene-air-peak-opacity: 0.29;
+		--scene-light-opacity: 0.62;
+		--scene-light-mid-opacity: 0.74;
+		--scene-light-peak-opacity: 0.84;
+		--scene-air-opacity: 0.24;
+		--scene-air-mid-opacity: 0.34;
+		--scene-air-peak-opacity: 0.44;
 	}
 
 	.companion-scene::before,
@@ -368,15 +368,19 @@
 	}
 
 	.companion-scene::before {
-		background: radial-gradient(circle at 57% 29%, rgba(255, 239, 197, 0.32), rgba(255, 239, 197, 0) 44%);
+		background:
+			radial-gradient(circle at 57% 29%, rgba(255, 239, 197, 0.38), rgba(255, 239, 197, 0) 44%),
+			radial-gradient(ellipse at 48% 72%, rgba(238, 246, 221, 0.09), rgba(238, 246, 221, 0) 48%);
 		mix-blend-mode: screen;
 		opacity: var(--scene-light-opacity);
-		transform: translate3d(-4px, 2px, 0) scale(1);
-		animation: sanctuary-light 48s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		transform: translate3d(-6px, 2px, 0) scale(1);
+		animation: sanctuary-light 32s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-scene::after {
 		background:
+			radial-gradient(ellipse at 52% 74%, rgba(255, 250, 218, 0.14), rgba(255, 250, 218, 0.05) 18%, transparent 40%),
+			radial-gradient(ellipse at 62% 84%, rgba(198, 229, 219, 0.1), transparent 34%),
 			radial-gradient(circle at 18% 62%, rgba(255, 247, 221, 0.22) 0 1px, transparent 2.8px),
 			radial-gradient(circle at 39% 32%, rgba(255, 247, 221, 0.18) 0 1px, transparent 2.6px),
 			radial-gradient(circle at 62% 54%, rgba(255, 247, 221, 0.16) 0 1.1px, transparent 3px),
@@ -387,8 +391,8 @@
 		mix-blend-mode: screen;
 		opacity: var(--scene-air-opacity);
 		transform-origin: center;
-		transform: translate3d(-2px, 1px, 0);
-		animation: companion-air-breathe 68s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+		transform: translate3d(-3px, 1px, 0);
+		animation: companion-air-breathe 40s cubic-bezier(0.42, 0, 0.2, 1) infinite;
 	}
 
 	.companion-scene svg {
@@ -406,7 +410,7 @@
 		object-fit: cover;
 		object-position: left center;
 		transform-origin: 42% 72%;
-		animation: scene-photo-breathe 56s cubic-bezier(0.42, 0, 0.24, 1) 1s infinite;
+		animation: scene-photo-breathe 32s cubic-bezier(0.42, 0, 0.24, 1) 1s infinite;
 	}
 
 	.passing-butterfly {
@@ -655,12 +659,12 @@
 			filter: saturate(1) brightness(1);
 		}
 		38% {
-			transform: translate3d(0.25px, -0.5px, 0) scale(1.002);
-			filter: saturate(1.01) brightness(1.006);
+			transform: translate3d(0.65px, -0.85px, 0) scale(1.004);
+			filter: saturate(1.016) brightness(1.009);
 		}
 		71% {
-			transform: translate3d(-0.2px, -0.35px, 0) scale(1.003);
-			filter: saturate(1.012) brightness(1.007);
+			transform: translate3d(-0.38px, -0.58px, 0) scale(1.005);
+			filter: saturate(1.018) brightness(1.01);
 		}
 	}
 
@@ -720,15 +724,15 @@
 		0%,
 		100% {
 			opacity: var(--scene-light-opacity);
-			transform: translate3d(-4px, 2px, 0) scale(1);
+			transform: translate3d(-6px, 2px, 0) scale(1);
 		}
 		34% {
 			opacity: var(--scene-light-peak-opacity);
-			transform: translate3d(3px, -2px, 0) scale(1.008);
+			transform: translate3d(7px, -4px, 0) scale(1.022);
 		}
 		76% {
 			opacity: var(--scene-light-mid-opacity);
-			transform: translate3d(1px, 1px, 0) scale(1.004);
+			transform: translate3d(2px, 1px, 0) scale(1.01);
 		}
 	}
 
@@ -736,19 +740,19 @@
 		0%,
 		100% {
 			opacity: var(--scene-air-opacity);
-			transform: translate3d(-2px, 1px, 0);
+			transform: translate3d(-3px, 1px, 0);
 		}
 		29% {
 			opacity: var(--scene-air-mid-opacity);
-			transform: translate3d(2px, -3px, 0);
+			transform: translate3d(4px, -5px, 0);
 		}
 		64% {
 			opacity: var(--scene-air-peak-opacity);
-			transform: translate3d(4px, -5px, 0);
+			transform: translate3d(8px, -9px, 0);
 		}
 		82% {
 			opacity: var(--scene-air-mid-opacity);
-			transform: translate3d(0, -4px, 0);
+			transform: translate3d(1px, -7px, 0);
 		}
 	}
 

@@ -331,7 +331,7 @@
             {#each gardenPlants as bloom, i}
               {@const cx = 36 + i * 48}
               {#if bloom}
-                <g class="plant" style="--d:{i * 0.12}s; --plant-duration:{17 + i * 1.7}s; --plant-tilt-neg:{-(0.42 + i * 0.05)}deg; --plant-tilt-soft:{(0.42 + i * 0.05) * 0.55}deg">
+                <g class="plant" style="--d:{i * 0.12}s; --plant-duration:{14 + i * 1.45}s; --plant-tilt-neg:{-(0.82 + i * 0.07)}deg; --plant-tilt-soft:{(0.82 + i * 0.07) * 0.5}deg">
                   <line class="plant-stem" x1={cx} y1="81" x2={cx} y2={gardenStage >= 3 ? 52 : 60} stroke="#6ee7a8" stroke-width="2.5" stroke-linecap="round" />
                   <path class="plant-leaf" d={`M${cx} ${gardenStage >= 3 ? 60 : 66} q-12 -4 -14 -14 q12 0 14 14`} fill="rgba(110,231,168,0.55)" />
                   <path class="plant-leaf" d={`M${cx} ${gardenStage >= 3 ? 60 : 66} q12 -4 14 -14 q-12 0 -14 14`} fill="rgba(110,231,168,0.55)" />
@@ -651,26 +651,26 @@
   .garden-sky-glow{
     transform-box: fill-box;
     transform-origin: center;
-    animation: portal-garden-light 38s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+    animation: portal-garden-light 28s cubic-bezier(0.42, 0, 0.24, 1) infinite;
   }
   .garden-mini-ground{
     transform-box: fill-box;
     transform-origin: center bottom;
-    animation: portal-ground-breathe 44s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+    animation: portal-ground-breathe 36s cubic-bezier(0.42, 0, 0.24, 1) infinite;
   }
   .garden-mini-waterline{
     transform-box: fill-box;
     transform-origin: center;
-    animation: portal-water-rest 29s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+    animation: portal-water-rest 20s cubic-bezier(0.42, 0, 0.2, 1) infinite;
   }
   .garden-mini-motes circle{
-    fill: rgba(255,255,255,0.34);
+    fill: rgba(255,255,255,0.48);
     transform-box: fill-box;
     transform-origin: center;
-    animation: portal-mote-drift 31s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+    animation: portal-mote-drift 24s cubic-bezier(0.42, 0, 0.2, 1) infinite;
   }
-  .garden-mini-motes circle:nth-child(2){ animation-duration: 37s; animation-delay: -9s; opacity: 0.72; }
-  .garden-mini-motes circle:nth-child(3){ animation-duration: 43s; animation-delay: -16s; opacity: 0.62; }
+  .garden-mini-motes circle:nth-child(2){ animation-duration: 31s; animation-delay: -9s; opacity: 0.78; }
+  .garden-mini-motes circle:nth-child(3){ animation-duration: 37s; animation-delay: -16s; opacity: 0.68; }
   .plant{
     transform-box: fill-box;
     transform-origin: bottom center;
@@ -683,32 +683,32 @@
   .plant-bud{
     transform-box: fill-box;
     transform-origin: center;
-    animation: portal-flower-rest 23s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+    animation: portal-flower-rest 19s cubic-bezier(0.42, 0, 0.24, 1) infinite;
     animation-delay: calc(var(--d, 0s) + 2.4s);
   }
-  .plant-bud{ animation-duration: 27s; }
+  .plant-bud{ animation-duration: 23s; }
   .garden-seed{
-    animation: portal-seed-breathe 34s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+    animation: portal-seed-breathe 28s cubic-bezier(0.42, 0, 0.24, 1) infinite;
   }
   @keyframes sprout { from{ transform: scaleY(0); opacity: 0 } to{ transform: scaleY(1); opacity: 1 } }
   @keyframes portal-garden-light {
-    0%, 100% { opacity: 0.88; transform: translate3d(0, 0, 0) scale(1); }
-    41% { opacity: 1; transform: translate3d(0.4px, -0.3px, 0) scale(1.004); }
-    76% { opacity: 0.92; transform: translate3d(-0.2px, 0.2px, 0) scale(1.002); }
+    0%, 100% { opacity: 0.84; transform: translate3d(0, 0, 0) scale(1); }
+    41% { opacity: 1; transform: translate3d(1.1px, -0.7px, 0) scale(1.012); }
+    76% { opacity: 0.91; transform: translate3d(-0.6px, 0.35px, 0) scale(1.004); }
   }
   @keyframes portal-ground-breathe {
     0%, 100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    52% { opacity: 0.92; transform: translate3d(0.3px, -0.2px, 0); }
+    52% { opacity: 0.9; transform: translate3d(0.7px, -0.35px, 0); }
   }
   @keyframes portal-water-rest {
-    0%, 100% { opacity: 0.78; transform: translate3d(0, 0, 0); }
-    39% { opacity: 0.92; transform: translate3d(0.7px, -0.2px, 0); }
-    73% { opacity: 0.7; transform: translate3d(-0.4px, 0.1px, 0); }
+    0%, 100% { opacity: 0.62; transform: translate3d(0, 0, 0) scaleX(1); }
+    39% { opacity: 0.98; transform: translate3d(2.2px, -0.35px, 0) scaleX(1.006); }
+    73% { opacity: 0.74; transform: translate3d(-1.3px, 0.18px, 0) scaleX(0.998); }
   }
   @keyframes portal-mote-drift {
-    0%, 100% { opacity: 0.12; transform: translate3d(0, 0, 0); }
-    34% { opacity: 0.28; transform: translate3d(1.6px, -3px, 0); }
-    68% { opacity: 0.2; transform: translate3d(-1px, -5px, 0); }
+    0%, 100% { opacity: 0.18; transform: translate3d(0, 0, 0); }
+    34% { opacity: 0.42; transform: translate3d(3px, -5px, 0); }
+    68% { opacity: 0.3; transform: translate3d(-2px, -8px, 0); }
   }
   @keyframes portal-plant-sway {
     0%, 100% { transform: rotate(0deg); }
@@ -717,8 +717,8 @@
   }
   @keyframes portal-flower-rest {
     0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-    37% { transform: translate3d(0.15px, -0.25px, 0) scale(1.01); }
-    69% { transform: translate3d(-0.1px, 0.1px, 0) scale(0.996); }
+    37% { transform: translate3d(0.35px, -0.45px, 0) scale(1.015); }
+    69% { transform: translate3d(-0.24px, 0.16px, 0) scale(0.996); }
   }
   @keyframes portal-seed-breathe {
     0%, 100% { opacity: 0.72; }

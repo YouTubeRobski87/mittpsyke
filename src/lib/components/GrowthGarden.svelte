@@ -719,13 +719,13 @@
 		background-position: center;
 		background-repeat: no-repeat;
 		transform-origin: 42% 72%;
-		--garden-photo-light-opacity: 0.6;
-		--garden-photo-light-mid-opacity: 0.7;
-		--garden-photo-light-peak-opacity: 0.82;
-		--garden-photo-air-opacity: 0.22;
-		--garden-photo-air-mid-opacity: 0.29;
-		--garden-photo-air-peak-opacity: 0.36;
-		animation: garden-photo-breathe 58s cubic-bezier(0.42, 0, 0.24, 1) 1s infinite;
+		--garden-photo-light-opacity: 0.68;
+		--garden-photo-light-mid-opacity: 0.8;
+		--garden-photo-light-peak-opacity: 0.92;
+		--garden-photo-air-opacity: 0.3;
+		--garden-photo-air-mid-opacity: 0.42;
+		--garden-photo-air-peak-opacity: 0.52;
+		animation: garden-photo-breathe 30s cubic-bezier(0.42, 0, 0.24, 1) 1s infinite;
 	}
 
 	.garden-photo::before,
@@ -738,15 +738,19 @@
 	}
 
 	.garden-photo::before {
-		background: radial-gradient(circle at 57% 28%, rgba(255, 239, 197, 0.34), rgba(255, 239, 197, 0) 44%);
+		background:
+			radial-gradient(circle at 57% 28%, rgba(255, 239, 197, 0.4), rgba(255, 239, 197, 0) 44%),
+			radial-gradient(ellipse at 48% 70%, rgba(238, 246, 221, 0.1), rgba(238, 246, 221, 0) 48%);
 		mix-blend-mode: screen;
 		opacity: var(--garden-photo-light-opacity);
-		transform: translate3d(-5px, 2px, 0) scale(1);
-		animation: garden-sanctuary-light 52s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		transform: translate3d(-8px, 2px, 0) scale(1);
+		animation: garden-sanctuary-light 32s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.garden-photo::after {
 		background:
+			radial-gradient(ellipse at 52% 73%, rgba(255, 250, 218, 0.16), rgba(255, 250, 218, 0.05) 18%, transparent 40%),
+			radial-gradient(ellipse at 61% 82%, rgba(198, 229, 219, 0.12), transparent 34%),
 			radial-gradient(circle at 18% 62%, rgba(255, 247, 221, 0.2) 0 1px, transparent 2.8px),
 			radial-gradient(circle at 38% 30%, rgba(255, 247, 221, 0.16) 0 1px, transparent 2.6px),
 			radial-gradient(circle at 63% 52%, rgba(255, 247, 221, 0.15) 0 1.1px, transparent 3px),
@@ -756,8 +760,8 @@
 			radial-gradient(ellipse at 50% 105%, rgba(232, 237, 229, 0.1), transparent 50%);
 		mix-blend-mode: screen;
 		opacity: var(--garden-photo-air-opacity);
-		transform: translate3d(-3px, 1px, 0);
-		animation: garden-air-breathe 72s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+		transform: translate3d(-4px, 1px, 0);
+		animation: garden-air-breathe 38s cubic-bezier(0.42, 0, 0.2, 1) infinite;
 	}
 
 	.garden-card:not([data-day-state='night']) .garden-photo {
@@ -787,7 +791,7 @@
 		opacity: var(--garden-light-opacity);
 		transform-box: fill-box;
 		transform-origin: center;
-		animation: garden-light-breathe 48s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		animation: garden-light-breathe 32s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 		transition: opacity 220ms ease;
 	}
 
@@ -811,29 +815,29 @@
 
 	.mist-left {
 		opacity: 0.64;
-		animation: garden-mist-drift 56s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		animation: garden-mist-drift 42s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.mist-right {
 		opacity: 0.44;
-		animation: garden-mist-drift 68s cubic-bezier(0.42, 0, 0.24, 1) -8s infinite reverse;
+		animation: garden-mist-drift 52s cubic-bezier(0.42, 0, 0.24, 1) -8s infinite reverse;
 	}
 
 	.garden-horizon {
 		fill: rgba(255, 255, 255, 0.09);
 		transform-box: fill-box;
 		transform-origin: center;
-		animation: garden-water-rest 36s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+		animation: garden-water-rest 24s cubic-bezier(0.42, 0, 0.2, 1) infinite;
 	}
 
 	.garden-ground {
 		transform-box: fill-box;
 		transform-origin: center bottom;
-		animation: garden-shadow-rest 52s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		animation: garden-shadow-rest 42s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.garden-ground-front {
-		animation-duration: 61s;
+		animation-duration: 50s;
 		animation-delay: -14s;
 	}
 
@@ -841,15 +845,15 @@
 		transform-box: fill-box;
 		transform-origin: center bottom;
 		will-change: transform;
-		animation: plant-arrive 520ms ease-out both, sprout-sway 19s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		animation: plant-arrive 520ms ease-out both, sprout-sway 15s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.garden-sprouts g:nth-child(2n) {
-		animation-duration: 520ms, 23s;
+		animation-duration: 520ms, 18s;
 	}
 
 	.garden-sprouts g:nth-child(3n) {
-		animation-duration: 520ms, 27s;
+		animation-duration: 520ms, 22s;
 	}
 
 	.garden-sprouts path {
@@ -867,31 +871,31 @@
 		transform-box: fill-box;
 		transform-origin: center bottom;
 		will-change: transform;
-		animation: plant-arrive 480ms ease-out both, leaf-idle 24s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		animation: plant-arrive 480ms ease-out both, leaf-idle 18s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.garden-leaves path:nth-child(even) {
 		fill: var(--garden-leaf-dark);
-		animation-duration: 480ms, 29s;
+		animation-duration: 480ms, 22s;
 	}
 
 	.garden-leaves path:nth-child(3n) {
-		animation-duration: 480ms, 33s;
+		animation-duration: 480ms, 26s;
 	}
 
 	.garden-flowers g {
 		transform-box: fill-box;
 		transform-origin: center bottom;
 		will-change: transform;
-		animation: plant-arrive 520ms ease-out both, flower-idle 22s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		animation: plant-arrive 520ms ease-out both, flower-idle 17s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.garden-flowers g:nth-child(2n) {
-		animation-duration: 520ms, 27s;
+		animation-duration: 520ms, 21s;
 	}
 
 	.garden-flowers g:nth-child(3n) {
-		animation-duration: 520ms, 31s;
+		animation-duration: 520ms, 25s;
 	}
 
 	.garden-flowers path {
@@ -905,30 +909,30 @@
 		fill: var(--garden-flower);
 		transform-box: fill-box;
 		transform-origin: center;
-		animation: flower-petal-rest 26s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		animation: flower-petal-rest 21s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.garden-flowers circle:first-of-type {
 		fill: var(--garden-flower-center);
-		animation-duration: 30s;
+		animation-duration: 25s;
 	}
 
 	.fireflies circle {
 		fill: var(--garden-firefly);
 		filter: drop-shadow(0 0 4px var(--garden-firefly));
-		opacity: 0.34;
+		opacity: 0.42;
 		transform-box: fill-box;
 		transform-origin: center;
 		will-change: opacity, transform;
-		animation: firefly-drift 22s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+		animation: firefly-drift 18s cubic-bezier(0.42, 0, 0.2, 1) infinite;
 	}
 
 	.fireflies circle:nth-child(2n) {
-		animation-duration: 27s;
+		animation-duration: 22s;
 	}
 
 	.fireflies circle:nth-child(3n) {
-		animation-duration: 31s;
+		animation-duration: 26s;
 	}
 
 	.photo-resting-companion {
@@ -1066,7 +1070,7 @@
 		transform-box: fill-box;
 		transform-origin: center bottom;
 		transform: rotate(var(--companion-breath-tilt, 0deg));
-		animation: companion-breathe 9.5s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		animation: companion-breathe 8.5s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-head {
@@ -1673,10 +1677,10 @@
 			transform: translate3d(0, 0, 0) rotate(0deg);
 		}
 		36% {
-			transform: translate3d(0.45px, -0.2px, 0) rotate(0.32deg);
+			transform: translate3d(0.85px, -0.34px, 0) rotate(0.62deg);
 		}
 		73% {
-			transform: translate3d(-0.25px, 0.1px, 0) rotate(-0.18deg);
+			transform: translate3d(-0.48px, 0.16px, 0) rotate(-0.34deg);
 		}
 	}
 
@@ -1688,11 +1692,11 @@
 		}
 		37% {
 			opacity: var(--garden-light-peak-opacity);
-			transform: translate3d(0.6px, -0.4px, 0) scale(1.012);
+			transform: translate3d(1.6px, -1px, 0) scale(1.02);
 		}
 		72% {
 			opacity: var(--garden-light-mid-opacity);
-			transform: translate3d(-0.3px, 0.2px, 0) scale(1.004);
+			transform: translate3d(-0.8px, 0.45px, 0) scale(1.008);
 		}
 	}
 
@@ -1717,11 +1721,11 @@
 		}
 		43% {
 			opacity: 1;
-			transform: translate3d(1.8px, -0.35px, 0) scaleX(1.004);
+			transform: translate3d(4px, -0.55px, 0) scaleX(1.01);
 		}
 		78% {
 			opacity: 0.92;
-			transform: translate3d(-1px, 0.18px, 0) scaleX(0.998);
+			transform: translate3d(-2.2px, 0.3px, 0) scaleX(0.996);
 		}
 	}
 
@@ -1732,12 +1736,12 @@
 			transform: translate3d(0, 0, 0);
 		}
 		46% {
-			opacity: 0.96;
-			transform: translate3d(0.5px, -0.25px, 0);
+			opacity: 0.94;
+			transform: translate3d(0.9px, -0.42px, 0);
 		}
 		81% {
 			opacity: 0.98;
-			transform: translate3d(-0.35px, 0.12px, 0);
+			transform: translate3d(-0.55px, 0.18px, 0);
 		}
 	}
 
@@ -1745,19 +1749,19 @@
 		0%,
 		100% {
 			opacity: var(--garden-photo-air-opacity);
-			transform: translate3d(-3px, 1px, 0);
+			transform: translate3d(-4px, 1px, 0);
 		}
 		27% {
 			opacity: var(--garden-photo-air-mid-opacity);
-			transform: translate3d(2px, -3px, 0);
+			transform: translate3d(4px, -5px, 0);
 		}
 		63% {
 			opacity: var(--garden-photo-air-peak-opacity);
-			transform: translate3d(5px, -6px, 0);
+			transform: translate3d(9px, -10px, 0);
 		}
 		84% {
 			opacity: var(--garden-photo-air-mid-opacity);
-			transform: translate3d(1px, -4px, 0);
+			transform: translate3d(2px, -7px, 0);
 		}
 	}
 
@@ -1767,10 +1771,10 @@
 			transform: rotate(0deg);
 		}
 		41% {
-			transform: rotate(-0.42deg);
+			transform: rotate(-0.9deg);
 		}
 		76% {
-			transform: rotate(0.24deg);
+			transform: rotate(0.55deg);
 		}
 	}
 
@@ -1780,10 +1784,10 @@
 			transform: translate3d(0, 0, 0) rotate(0deg);
 		}
 		38% {
-			transform: translate3d(0.25px, -0.35px, 0) rotate(-0.3deg);
+			transform: translate3d(0.55px, -0.65px, 0) rotate(-0.58deg);
 		}
 		67% {
-			transform: translate3d(-0.18px, 0.08px, 0) rotate(0.2deg);
+			transform: translate3d(-0.38px, 0.16px, 0) rotate(0.34deg);
 		}
 	}
 
@@ -1794,8 +1798,8 @@
 			opacity: 1;
 		}
 		44% {
-			transform: scale(1.018);
-			opacity: 0.96;
+			transform: scale(1.026);
+			opacity: 0.94;
 		}
 		79% {
 			transform: scale(0.996);
@@ -1807,19 +1811,19 @@
 		0%,
 		100% {
 			transform: translate3d(0, 0, 0);
-			opacity: 0.16;
+			opacity: 0.2;
 		}
 		32% {
-			transform: translate3d(-4px, 3px, 0);
-			opacity: 0.34;
+			transform: translate3d(-7px, 5px, 0);
+			opacity: 0.54;
 		}
 		68% {
-			transform: translate3d(3px, -4px, 0);
-			opacity: 0.26;
+			transform: translate3d(6px, -7px, 0);
+			opacity: 0.38;
 		}
 		86% {
-			transform: translate3d(1px, -2px, 0);
-			opacity: 0.2;
+			transform: translate3d(2px, -4px, 0);
+			opacity: 0.28;
 		}
 	}
 
@@ -1878,12 +1882,12 @@
 			filter: saturate(1) brightness(1);
 		}
 		39% {
-			transform: translate3d(0.35px, -0.65px, 0) scale(1.003);
-			filter: saturate(1.012) brightness(1.007);
+			transform: translate3d(0.75px, -1px, 0) scale(1.005);
+			filter: saturate(1.018) brightness(1.011);
 		}
 		73% {
-			transform: translate3d(-0.25px, -0.45px, 0) scale(1.004);
-			filter: saturate(1.014) brightness(1.008);
+			transform: translate3d(-0.45px, -0.7px, 0) scale(1.006);
+			filter: saturate(1.02) brightness(1.012);
 		}
 	}
 
@@ -1891,15 +1895,15 @@
 		0%,
 		100% {
 			opacity: var(--garden-photo-light-opacity);
-			transform: translate3d(-5px, 2px, 0) scale(1);
+			transform: translate3d(-8px, 2px, 0) scale(1);
 		}
 		35% {
 			opacity: var(--garden-photo-light-peak-opacity);
-			transform: translate3d(4px, -2px, 0) scale(1.01);
+			transform: translate3d(8px, -4px, 0) scale(1.026);
 		}
 		78% {
 			opacity: var(--garden-photo-light-mid-opacity);
-			transform: translate3d(1px, 1px, 0) scale(1.005);
+			transform: translate3d(2px, 1px, 0) scale(1.012);
 		}
 	}
 
@@ -2031,7 +2035,7 @@
 			transform: translateY(0) rotate(var(--companion-breath-tilt, 0deg)) scale(1);
 		}
 		52% {
-			transform: translateY(0.45px) rotate(var(--companion-breath-tilt, 0deg)) scale(1.006);
+			transform: translateY(0.75px) rotate(var(--companion-breath-tilt, 0deg)) scale(1.01);
 		}
 	}
 
