@@ -349,6 +349,12 @@
 		background: #0c1627;
 		/* Behåller bara en diskret kantlinje – ingen mörk botten-fade över björnen */
 		box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+		--scene-light-opacity: 0.54;
+		--scene-light-mid-opacity: 0.62;
+		--scene-light-peak-opacity: 0.7;
+		--scene-air-opacity: 0.18;
+		--scene-air-mid-opacity: 0.23;
+		--scene-air-peak-opacity: 0.29;
 	}
 
 	.companion-scene::before,
@@ -358,13 +364,15 @@
 		inset: 0;
 		z-index: 1;
 		pointer-events: none;
+		will-change: opacity, transform;
 	}
 
 	.companion-scene::before {
-		background: radial-gradient(circle at 58% 28%, rgba(255, 239, 197, 0.36), rgba(255, 239, 197, 0) 42%);
+		background: radial-gradient(circle at 57% 29%, rgba(255, 239, 197, 0.32), rgba(255, 239, 197, 0) 44%);
 		mix-blend-mode: screen;
-		opacity: 0.78;
-		animation: sanctuary-light 18s ease-in-out infinite;
+		opacity: var(--scene-light-opacity);
+		transform: translate3d(-4px, 2px, 0) scale(1);
+		animation: sanctuary-light 48s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-scene::after {
@@ -372,11 +380,15 @@
 			radial-gradient(circle at 18% 62%, rgba(255, 247, 221, 0.22) 0 1px, transparent 2.8px),
 			radial-gradient(circle at 39% 32%, rgba(255, 247, 221, 0.18) 0 1px, transparent 2.6px),
 			radial-gradient(circle at 62% 54%, rgba(255, 247, 221, 0.16) 0 1.1px, transparent 3px),
-			radial-gradient(circle at 82% 42%, rgba(255, 247, 221, 0.2) 0 1px, transparent 2.8px);
+			radial-gradient(circle at 82% 42%, rgba(255, 247, 221, 0.2) 0 1px, transparent 2.8px),
+			radial-gradient(ellipse at 10% 94%, rgba(148, 170, 126, 0.12), rgba(148, 170, 126, 0.04) 30%, transparent 48%),
+			radial-gradient(ellipse at 92% 90%, rgba(115, 142, 111, 0.08), transparent 44%),
+			radial-gradient(ellipse at 50% 104%, rgba(232, 237, 229, 0.07), transparent 48%);
 		mix-blend-mode: screen;
-		opacity: 0.34;
+		opacity: var(--scene-air-opacity);
 		transform-origin: center;
-		animation: companion-air-breathe 28s ease-in-out infinite;
+		transform: translate3d(-2px, 1px, 0);
+		animation: companion-air-breathe 68s cubic-bezier(0.42, 0, 0.2, 1) infinite;
 	}
 
 	.companion-scene svg {
@@ -394,7 +406,7 @@
 		object-fit: cover;
 		object-position: left center;
 		transform-origin: 42% 72%;
-		animation: scene-photo-breathe 30s ease-in-out 1s infinite;
+		animation: scene-photo-breathe 56s cubic-bezier(0.42, 0, 0.24, 1) 1s infinite;
 	}
 
 	.passing-butterfly {
@@ -642,13 +654,13 @@
 			transform: translate3d(0, 0, 0) scale(1);
 			filter: saturate(1) brightness(1);
 		}
-		36% {
-			transform: translate3d(0.8px, -2.2px, 0) scale(1.012);
-			filter: saturate(1.025) brightness(1.018);
+		38% {
+			transform: translate3d(0.25px, -0.5px, 0) scale(1.002);
+			filter: saturate(1.01) brightness(1.006);
 		}
-		62% {
-			transform: translate3d(0.3px, -2.8px, 0) scale(1.015);
-			filter: saturate(1.03) brightness(1.022);
+		71% {
+			transform: translate3d(-0.2px, -0.35px, 0) scale(1.003);
+			filter: saturate(1.012) brightness(1.007);
 		}
 	}
 
@@ -707,24 +719,36 @@
 	@keyframes sanctuary-light {
 		0%,
 		100% {
-			opacity: 0.68;
-			transform: translate3d(-18px, 7px, 0);
+			opacity: var(--scene-light-opacity);
+			transform: translate3d(-4px, 2px, 0) scale(1);
 		}
-		50% {
-			opacity: 0.94;
-			transform: translate3d(20px, -8px, 0);
+		34% {
+			opacity: var(--scene-light-peak-opacity);
+			transform: translate3d(3px, -2px, 0) scale(1.008);
+		}
+		76% {
+			opacity: var(--scene-light-mid-opacity);
+			transform: translate3d(1px, 1px, 0) scale(1.004);
 		}
 	}
 
 	@keyframes companion-air-breathe {
 		0%,
 		100% {
-			opacity: 0.26;
-			transform: translate3d(0, 0, 0);
+			opacity: var(--scene-air-opacity);
+			transform: translate3d(-2px, 1px, 0);
 		}
-		50% {
-			opacity: 0.42;
-			transform: translate3d(0, -2px, 0);
+		29% {
+			opacity: var(--scene-air-mid-opacity);
+			transform: translate3d(2px, -3px, 0);
+		}
+		64% {
+			opacity: var(--scene-air-peak-opacity);
+			transform: translate3d(4px, -5px, 0);
+		}
+		82% {
+			opacity: var(--scene-air-mid-opacity);
+			transform: translate3d(0, -4px, 0);
 		}
 	}
 
