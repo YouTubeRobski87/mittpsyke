@@ -370,21 +370,15 @@
 	}
 
 	.companion-scene::after {
-		inset: 48% 0 0;
 		background:
-			linear-gradient(100deg, rgba(255, 255, 255, 0) 4%, rgba(255, 255, 255, 0.22) 48%, rgba(255, 255, 255, 0) 88%),
-			radial-gradient(ellipse at 54% 34%, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 58%),
-			repeating-linear-gradient(
-				174deg,
-				rgba(255, 255, 255, 0) 0 14px,
-				rgba(255, 255, 255, 0.14) 15px 19px,
-				rgba(255, 255, 255, 0) 20px 36px
-			);
-		background-size: 180% 100%, 100% 100%, 116px 100%;
-		background-position: -42% 0, 0 0, 0 0;
-		opacity: 0.62;
+			radial-gradient(circle at 18% 62%, rgba(255, 247, 221, 0.22) 0 1px, transparent 2.8px),
+			radial-gradient(circle at 39% 32%, rgba(255, 247, 221, 0.18) 0 1px, transparent 2.6px),
+			radial-gradient(circle at 62% 54%, rgba(255, 247, 221, 0.16) 0 1.1px, transparent 3px),
+			radial-gradient(circle at 82% 42%, rgba(255, 247, 221, 0.2) 0 1px, transparent 2.8px);
+		mix-blend-mode: screen;
+		opacity: 0.34;
 		transform-origin: center;
-		animation: quiet-water-light 14s ease-in-out infinite;
+		animation: companion-air-breathe 28s ease-in-out infinite;
 	}
 
 	.companion-scene svg {
@@ -724,17 +718,15 @@
 		}
 	}
 
-	@keyframes quiet-water-light {
+	@keyframes companion-air-breathe {
 		0%,
 		100% {
-			opacity: 0.52;
-			transform: translate3d(-14px, 1px, 0) scaleX(1);
-			background-position: -42% 0, 0 0, 0 0;
+			opacity: 0.26;
+			transform: translate3d(0, 0, 0);
 		}
 		50% {
-			opacity: 0.82;
-			transform: translate3d(16px, 3px, 0) scaleX(1.035);
-			background-position: 82% 0, 0 0, 58px 0;
+			opacity: 0.42;
+			transform: translate3d(0, -2px, 0);
 		}
 	}
 

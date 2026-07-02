@@ -738,7 +738,14 @@
 	}
 
 	.garden-photo::after {
-		display: none;
+		background:
+			radial-gradient(circle at 18% 62%, rgba(255, 247, 221, 0.2) 0 1px, transparent 2.8px),
+			radial-gradient(circle at 38% 30%, rgba(255, 247, 221, 0.16) 0 1px, transparent 2.6px),
+			radial-gradient(circle at 63% 52%, rgba(255, 247, 221, 0.15) 0 1.1px, transparent 3px),
+			radial-gradient(circle at 84% 42%, rgba(255, 247, 221, 0.18) 0 1px, transparent 2.8px);
+		mix-blend-mode: screen;
+		opacity: 0.3;
+		animation: garden-air-breathe 30s ease-in-out infinite;
 	}
 
 	.garden-card:not([data-day-state='night']) .garden-photo {
@@ -761,29 +768,40 @@
 	}
 
 	.garden-light {
+		--garden-light-opacity: 0.78;
+		--garden-light-peak-opacity: 0.88;
 		fill: var(--garden-light);
-		opacity: 0.78;
+		opacity: var(--garden-light-opacity);
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: garden-light-breathe 24s ease-in-out infinite;
 		transition: opacity 220ms ease;
 	}
 
 	.garden-card[data-continuity='soft'] .garden-light {
-		opacity: 0.9;
+		--garden-light-opacity: 0.86;
+		--garden-light-peak-opacity: 0.94;
 	}
 
 	.garden-card[data-continuity='settled'] .garden-light {
-		opacity: 1;
+		--garden-light-opacity: 0.92;
+		--garden-light-peak-opacity: 1;
 	}
 
 	.garden-mist {
 		fill: var(--garden-mist);
+		transform-box: fill-box;
+		transform-origin: center;
 	}
 
 	.mist-left {
 		opacity: 0.64;
+		animation: garden-mist-drift 34s ease-in-out infinite;
 	}
 
 	.mist-right {
 		opacity: 0.44;
+		animation: garden-mist-drift 42s ease-in-out -8s infinite reverse;
 	}
 
 	.garden-horizon {
@@ -1577,6 +1595,40 @@
 		}
 	}
 
+	@keyframes garden-light-breathe {
+		0%,
+		100% {
+			opacity: var(--garden-light-opacity);
+			transform: scale(1);
+		}
+		50% {
+			opacity: var(--garden-light-peak-opacity);
+			transform: scale(1.018);
+		}
+	}
+
+	@keyframes garden-mist-drift {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0);
+		}
+		50% {
+			transform: translate3d(10px, -1px, 0);
+		}
+	}
+
+	@keyframes garden-air-breathe {
+		0%,
+		100% {
+			opacity: 0.22;
+			transform: translate3d(0, 0, 0);
+		}
+		50% {
+			opacity: 0.34;
+			transform: translate3d(0, -2px, 0);
+		}
+	}
+
 	@keyframes sprout-sway {
 		0%,
 		100% {
@@ -1954,6 +2006,8 @@
 		.garden-photo,
 		.garden-photo::before,
 		.garden-photo::after,
+		.garden-light,
+		.garden-mist,
 		.garden-leaves path,
 		.garden-flowers g,
 		.fireflies circle,

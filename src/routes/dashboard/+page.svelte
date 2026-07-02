@@ -643,8 +643,19 @@
   }
   .garden-feature:hover{ border-color: rgba(110,231,168,0.42); }
   .garden-svg{ width: 100%; height: auto; display: block; margin: 2px 0; }
-  .plant{ transform-origin: bottom center; animation: sprout .6s ease both; animation-delay: var(--d); }
+  .plant{
+    transform-origin: bottom center;
+    animation:
+      sprout .6s ease both,
+      portal-plant-sway 18s ease-in-out infinite;
+    animation-delay: var(--d), calc(var(--d, 0s) + 1.2s);
+  }
   @keyframes sprout { from{ transform: scaleY(0); opacity: 0 } to{ transform: scaleY(1); opacity: 1 } }
+  @keyframes portal-plant-sway {
+    0%, 100% { transform: rotate(0deg); }
+    48% { transform: rotate(-0.7deg); }
+    72% { transform: rotate(0.4deg); }
+  }
   .garden-status{ margin: 0; font-size: 0.9rem; color: var(--mp-text); font-weight: 500; }
   .garden-rhythm{
     font-size: 0.78rem; font-weight: 600; white-space: nowrap;

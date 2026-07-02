@@ -366,15 +366,6 @@
 		ctx!.beginPath();
 		ctx!.arc(0, 0, s.r, 0, Math.PI * 2);
 		ctx!.fill();
-		// liten glimt-stråle
-		ctx!.strokeStyle = rgba(color, alpha * 0.8);
-		ctx!.lineWidth = 0.6;
-		ctx!.beginPath();
-		ctx!.moveTo(-s.r * 3, 0);
-		ctx!.lineTo(s.r * 3, 0);
-		ctx!.moveTo(0, -s.r * 3);
-		ctx!.lineTo(0, s.r * 3);
-		ctx!.stroke();
 		ctx!.restore();
 	}
 
