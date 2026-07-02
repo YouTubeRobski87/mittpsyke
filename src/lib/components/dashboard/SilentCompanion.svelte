@@ -361,9 +361,7 @@
 	}
 
 	.companion-scene::before {
-		background:
-			radial-gradient(circle at 58% 28%, rgba(255, 239, 197, 0.36), rgba(255, 239, 197, 0) 42%),
-			linear-gradient(115deg, rgba(255, 255, 255, 0) 8%, rgba(255, 247, 221, 0.28) 48%, rgba(255, 255, 255, 0) 88%);
+		background: radial-gradient(circle at 58% 28%, rgba(255, 239, 197, 0.36), rgba(255, 239, 197, 0) 42%);
 		mix-blend-mode: screen;
 		opacity: 0.78;
 		animation: sanctuary-light 18s ease-in-out infinite;
