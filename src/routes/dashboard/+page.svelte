@@ -319,26 +319,31 @@
                 <stop offset="1" stop-color="rgba(124,92,255,0)" />
               </linearGradient>
             </defs>
-            <rect x="0" y="0" width="260" height="96" fill="url(#garden-sky)" rx="12" />
+            <rect class="garden-sky-glow" x="0" y="0" width="260" height="96" fill="url(#garden-sky)" rx="12" />
             <!-- mark -->
-            <path d="M0 80 Q130 70 260 80 L260 96 L0 96 Z" fill="rgba(110,231,168,0.14)" />
-            <line x1="12" y1="81" x2="248" y2="81" stroke="rgba(110,231,168,0.3)" stroke-width="1.5" />
+            <path class="garden-mini-ground" d="M0 80 Q130 70 260 80 L260 96 L0 96 Z" fill="rgba(110,231,168,0.14)" />
+            <line class="garden-mini-waterline" x1="12" y1="81" x2="248" y2="81" stroke="rgba(110,231,168,0.3)" stroke-width="1.5" />
+            <g class="garden-mini-motes">
+              <circle cx="58" cy="34" r="1.1" />
+              <circle cx="136" cy="24" r="0.9" />
+              <circle cx="204" cy="42" r="1" />
+            </g>
             {#each gardenPlants as bloom, i}
               {@const cx = 36 + i * 48}
               {#if bloom}
-                <g class="plant" style="--d:{i * 0.12}s">
-                  <line x1={cx} y1="81" x2={cx} y2={gardenStage >= 3 ? 52 : 60} stroke="#6ee7a8" stroke-width="2.5" stroke-linecap="round" />
-                  <path d={`M${cx} ${gardenStage >= 3 ? 60 : 66} q-12 -4 -14 -14 q12 0 14 14`} fill="rgba(110,231,168,0.55)" />
-                  <path d={`M${cx} ${gardenStage >= 3 ? 60 : 66} q12 -4 14 -14 q-12 0 -14 14`} fill="rgba(110,231,168,0.55)" />
+                <g class="plant" style="--d:{i * 0.12}s; --plant-duration:{17 + i * 1.7}s; --plant-tilt-neg:{-(0.42 + i * 0.05)}deg; --plant-tilt-soft:{(0.42 + i * 0.05) * 0.55}deg">
+                  <line class="plant-stem" x1={cx} y1="81" x2={cx} y2={gardenStage >= 3 ? 52 : 60} stroke="#6ee7a8" stroke-width="2.5" stroke-linecap="round" />
+                  <path class="plant-leaf" d={`M${cx} ${gardenStage >= 3 ? 60 : 66} q-12 -4 -14 -14 q12 0 14 14`} fill="rgba(110,231,168,0.55)" />
+                  <path class="plant-leaf" d={`M${cx} ${gardenStage >= 3 ? 60 : 66} q12 -4 14 -14 q-12 0 -14 14`} fill="rgba(110,231,168,0.55)" />
                   {#if gardenStage >= 3}
-                    <circle cx={cx} cy="48" r="6.5" fill="var(--mp-lila)" />
-                    <circle cx={cx} cy="48" r="2.5" fill="#fff" opacity="0.85" />
+                    <circle class="plant-bloom" cx={cx} cy="48" r="6.5" fill="var(--mp-lila)" />
+                    <circle class="plant-center" cx={cx} cy="48" r="2.5" fill="#fff" opacity="0.85" />
                   {:else}
-                    <circle cx={cx} cy={gardenStage >= 2 ? 56 : 60} r="4" fill="#8ef0b6" />
+                    <circle class="plant-bud" cx={cx} cy={gardenStage >= 2 ? 56 : 60} r="4" fill="#8ef0b6" />
                   {/if}
                 </g>
               {:else}
-                <circle cx={cx} cy="79" r="2.5" fill="rgba(255,255,255,0.12)" />
+                <circle class="garden-seed" cx={cx} cy="79" r="2.5" fill="rgba(255,255,255,0.12)" />
               {/if}
             {/each}
           </svg>
@@ -643,18 +648,81 @@
   }
   .garden-feature:hover{ border-color: rgba(110,231,168,0.42); }
   .garden-svg{ width: 100%; height: auto; display: block; margin: 2px 0; }
+  .garden-sky-glow{
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: portal-garden-light 38s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+  }
+  .garden-mini-ground{
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: portal-ground-breathe 44s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+  }
+  .garden-mini-waterline{
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: portal-water-rest 29s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+  }
+  .garden-mini-motes circle{
+    fill: rgba(255,255,255,0.34);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: portal-mote-drift 31s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+  }
+  .garden-mini-motes circle:nth-child(2){ animation-duration: 37s; animation-delay: -9s; opacity: 0.72; }
+  .garden-mini-motes circle:nth-child(3){ animation-duration: 43s; animation-delay: -16s; opacity: 0.62; }
   .plant{
+    transform-box: fill-box;
     transform-origin: bottom center;
     animation:
       sprout .6s ease both,
-      portal-plant-sway 18s ease-in-out infinite;
+      portal-plant-sway var(--plant-duration, 18s) cubic-bezier(0.42, 0, 0.24, 1) infinite;
     animation-delay: var(--d), calc(var(--d, 0s) + 1.2s);
   }
+  .plant-bloom,
+  .plant-bud{
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: portal-flower-rest 23s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+    animation-delay: calc(var(--d, 0s) + 2.4s);
+  }
+  .plant-bud{ animation-duration: 27s; }
+  .garden-seed{
+    animation: portal-seed-breathe 34s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+  }
   @keyframes sprout { from{ transform: scaleY(0); opacity: 0 } to{ transform: scaleY(1); opacity: 1 } }
+  @keyframes portal-garden-light {
+    0%, 100% { opacity: 0.88; transform: translate3d(0, 0, 0) scale(1); }
+    41% { opacity: 1; transform: translate3d(0.4px, -0.3px, 0) scale(1.004); }
+    76% { opacity: 0.92; transform: translate3d(-0.2px, 0.2px, 0) scale(1.002); }
+  }
+  @keyframes portal-ground-breathe {
+    0%, 100% { opacity: 1; transform: translate3d(0, 0, 0); }
+    52% { opacity: 0.92; transform: translate3d(0.3px, -0.2px, 0); }
+  }
+  @keyframes portal-water-rest {
+    0%, 100% { opacity: 0.78; transform: translate3d(0, 0, 0); }
+    39% { opacity: 0.92; transform: translate3d(0.7px, -0.2px, 0); }
+    73% { opacity: 0.7; transform: translate3d(-0.4px, 0.1px, 0); }
+  }
+  @keyframes portal-mote-drift {
+    0%, 100% { opacity: 0.12; transform: translate3d(0, 0, 0); }
+    34% { opacity: 0.28; transform: translate3d(1.6px, -3px, 0); }
+    68% { opacity: 0.2; transform: translate3d(-1px, -5px, 0); }
+  }
   @keyframes portal-plant-sway {
     0%, 100% { transform: rotate(0deg); }
-    48% { transform: rotate(-0.7deg); }
-    72% { transform: rotate(0.4deg); }
+    43% { transform: rotate(var(--plant-tilt-neg, -0.55deg)); }
+    76% { transform: rotate(var(--plant-tilt-soft, 0.3deg)); }
+  }
+  @keyframes portal-flower-rest {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    37% { transform: translate3d(0.15px, -0.25px, 0) scale(1.01); }
+    69% { transform: translate3d(-0.1px, 0.1px, 0) scale(0.996); }
+  }
+  @keyframes portal-seed-breathe {
+    0%, 100% { opacity: 0.72; }
+    58% { opacity: 0.48; }
   }
   .garden-status{ margin: 0; font-size: 0.9rem; color: var(--mp-text); font-weight: 500; }
   .garden-rhythm{
@@ -730,6 +798,13 @@
     .featured{ grid-template-columns: 1fr; }
   }
   @media (prefers-reduced-motion: reduce){
-    .plant{ animation: none; }
+    .garden-sky-glow,
+    .garden-mini-ground,
+    .garden-mini-waterline,
+    .garden-mini-motes circle,
+    .plant,
+    .plant-bloom,
+    .plant-bud,
+    .garden-seed{ animation: none; }
   }
 </style>

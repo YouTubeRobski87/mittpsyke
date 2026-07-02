@@ -747,7 +747,7 @@
 									{/if}
 
 									<div class="profile-panel-links" aria-label="Snabbval">
-										<a href="/dashboard" class="profile-panel-link" onclick={closeProfilePanel}>Min portal</a>
+										<a href="/dashboard" class="profile-panel-link" onclick={closeProfilePanel}>Mitt rum</a>
 										<a href="/dagbok/checkin" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
 										<a href="/chat" class="profile-panel-link" onclick={closeProfilePanel}>Starta chat</a>
 										<a href="/notiser" class="profile-panel-link" onclick={closeProfilePanel}>

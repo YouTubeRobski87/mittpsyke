@@ -415,10 +415,12 @@
 				d="M0 148 C62 130 130 130 198 146 S330 170 410 150 S476 132 520 142 L520 260 L0 260 Z"
 			/>
 			<path
+				class="garden-ground garden-ground-back"
 				fill="url(#gardenGround)"
 				d="M0 178 C70 158 142 162 220 180 S374 206 520 176 L520 260 L0 260 Z"
 			/>
 			<path
+				class="garden-ground garden-ground-front"
 				fill="url(#gardenFrontGround)"
 				d="M0 202 C78 186 164 190 250 204 S410 226 520 196 L520 260 L0 260 Z"
 			/>
@@ -785,7 +787,7 @@
 		opacity: var(--garden-light-opacity);
 		transform-box: fill-box;
 		transform-origin: center;
-		animation: garden-light-breathe 44s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+		animation: garden-light-breathe 48s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 		transition: opacity 220ms ease;
 	}
 
@@ -819,12 +821,35 @@
 
 	.garden-horizon {
 		fill: rgba(255, 255, 255, 0.09);
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: garden-water-rest 36s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+	}
+
+	.garden-ground {
+		transform-box: fill-box;
+		transform-origin: center bottom;
+		animation: garden-shadow-rest 52s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+	}
+
+	.garden-ground-front {
+		animation-duration: 61s;
+		animation-delay: -14s;
 	}
 
 	.garden-sprouts g {
 		transform-box: fill-box;
 		transform-origin: center bottom;
-		animation: plant-arrive 520ms ease-out both, sprout-sway 15s ease-in-out infinite;
+		will-change: transform;
+		animation: plant-arrive 520ms ease-out both, sprout-sway 19s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+	}
+
+	.garden-sprouts g:nth-child(2n) {
+		animation-duration: 520ms, 23s;
+	}
+
+	.garden-sprouts g:nth-child(3n) {
+		animation-duration: 520ms, 27s;
 	}
 
 	.garden-sprouts path {
@@ -841,17 +866,32 @@
 		opacity: 0.72;
 		transform-box: fill-box;
 		transform-origin: center bottom;
-		animation: plant-arrive 480ms ease-out both, leaf-idle 16s ease-in-out infinite;
+		will-change: transform;
+		animation: plant-arrive 480ms ease-out both, leaf-idle 24s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.garden-leaves path:nth-child(even) {
 		fill: var(--garden-leaf-dark);
+		animation-duration: 480ms, 29s;
+	}
+
+	.garden-leaves path:nth-child(3n) {
+		animation-duration: 480ms, 33s;
 	}
 
 	.garden-flowers g {
 		transform-box: fill-box;
 		transform-origin: center bottom;
-		animation: plant-arrive 520ms ease-out both;
+		will-change: transform;
+		animation: plant-arrive 520ms ease-out both, flower-idle 22s cubic-bezier(0.42, 0, 0.24, 1) infinite;
+	}
+
+	.garden-flowers g:nth-child(2n) {
+		animation-duration: 520ms, 27s;
+	}
+
+	.garden-flowers g:nth-child(3n) {
+		animation-duration: 520ms, 31s;
 	}
 
 	.garden-flowers path {
@@ -863,17 +903,32 @@
 
 	.garden-flowers circle {
 		fill: var(--garden-flower);
+		transform-box: fill-box;
+		transform-origin: center;
+		animation: flower-petal-rest 26s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.garden-flowers circle:first-of-type {
 		fill: var(--garden-flower-center);
+		animation-duration: 30s;
 	}
 
 	.fireflies circle {
 		fill: var(--garden-firefly);
-		filter: drop-shadow(0 0 8px var(--garden-firefly));
-		opacity: 0.5;
-		animation: firefly-drift 9s ease-in-out infinite;
+		filter: drop-shadow(0 0 4px var(--garden-firefly));
+		opacity: 0.34;
+		transform-box: fill-box;
+		transform-origin: center;
+		will-change: opacity, transform;
+		animation: firefly-drift 22s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+	}
+
+	.fireflies circle:nth-child(2n) {
+		animation-duration: 27s;
+	}
+
+	.fireflies circle:nth-child(3n) {
+		animation-duration: 31s;
 	}
 
 	.photo-resting-companion {
@@ -948,7 +1003,7 @@
 	.resting-tree-leaves {
 		fill: color-mix(in srgb, var(--theme-accent, #436e8f) 28%, #6f7f59 72%);
 		opacity: 0.42;
-		animation: tree-leaves-idle 15s ease-in-out infinite;
+		animation: tree-leaves-idle 28s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 		transform-box: fill-box;
 		transform-origin: center;
 	}
@@ -993,9 +1048,17 @@
 
 	.companion-aura circle {
 		fill: rgba(248, 235, 190, 0.64);
-		filter: drop-shadow(0 0 6px rgba(248, 235, 190, 0.44));
-		opacity: 0.44;
-		animation: companion-accent-drift 7s ease-in-out infinite;
+		filter: drop-shadow(0 0 4px rgba(248, 235, 190, 0.34));
+		opacity: 0.32;
+		animation: companion-accent-drift 20s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+	}
+
+	.companion-aura circle:nth-child(2n) {
+		animation-duration: 25s;
+	}
+
+	.companion-aura circle:nth-child(3n) {
+		animation-duration: 29s;
 	}
 
 	.companion-breath {
@@ -1003,7 +1066,7 @@
 		transform-box: fill-box;
 		transform-origin: center bottom;
 		transform: rotate(var(--companion-breath-tilt, 0deg));
-		animation: companion-breathe 6s ease-in-out infinite;
+		animation: companion-breathe 9.5s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-head {
@@ -1229,9 +1292,12 @@
 	.garden-card[data-day-state='evening'] .companion-head,
 	.garden-card[data-day-state='evening'] .ear,
 	.garden-card[data-day-state='evening'] .rabbit-ear,
-	.garden-card[data-day-state='evening'] .companion-tail,
-	.garden-card[data-day-state='evening'] .companion-bubble {
+	.garden-card[data-day-state='evening'] .companion-tail {
 		animation-duration: 13s;
+	}
+
+	.garden-card[data-day-state='evening'] .companion-bubble {
+		animation-duration: 24s;
 	}
 
 	.garden-card[data-day-state='night'] .companion-breath {
@@ -1261,9 +1327,12 @@
 		animation: none;
 	}
 
-	.garden-card[data-day-state='night'] .companion-tail,
-	.garden-card[data-day-state='night'] .companion-bubble {
+	.garden-card[data-day-state='night'] .companion-tail {
 		animation-duration: 14s;
+	}
+
+	.garden-card[data-day-state='night'] .companion-bubble {
+		animation-duration: 26s;
 	}
 
 	.garden-card[data-day-state='night'] .companion-aura circle {
@@ -1280,27 +1349,27 @@
 	}
 
 	.companion-fox .companion-head {
-		animation: fox-listen 9.5s ease-in-out infinite;
+		animation: fox-listen 14s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-owl .companion-head {
-		animation: owl-look 10.5s ease-in-out infinite;
+		animation: owl-look 16s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-rabbit .companion-head {
-		animation: rabbit-listen 8.8s ease-in-out infinite;
+		animation: rabbit-listen 15s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-squirrel .companion-head {
-		animation: squirrel-attend 7.8s ease-in-out infinite;
+		animation: squirrel-attend 13.5s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-turtle .companion-head {
-		animation: turtle-peek 11s ease-in-out infinite;
+		animation: turtle-peek 18s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-dino .companion-head {
-		animation: dino-nod 10.8s ease-in-out infinite;
+		animation: dino-nod 17s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-fox .ear,
@@ -1308,7 +1377,7 @@
 	.companion-dino .ear {
 		transform-box: fill-box;
 		transform-origin: center bottom;
-		animation: ear-listen 9.8s ease-in-out infinite;
+		animation: ear-listen 15.5s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-fox .right-ear,
@@ -1320,7 +1389,7 @@
 	.rabbit-ear {
 		transform-box: fill-box;
 		transform-origin: center bottom;
-		animation: rabbit-ear-idle 7.4s ease-in-out infinite;
+		animation: rabbit-ear-idle 16s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-fox .right-eye,
@@ -1332,7 +1401,7 @@
 	.companion-squirrel .companion-tail {
 		transform-box: fill-box;
 		transform-origin: right bottom;
-		animation: tail-idle 8.8s ease-in-out infinite;
+		animation: tail-idle 17s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.beak {
@@ -1376,7 +1445,7 @@
 		color: hsl(var(--foreground));
 		font-size: 0.9rem;
 		line-height: 1.45;
-		animation: bubble-float 6.4s ease-in-out infinite;
+		animation: bubble-float 22s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-bubble::after {
@@ -1603,8 +1672,11 @@
 		100% {
 			transform: translate3d(0, 0, 0) rotate(0deg);
 		}
-		50% {
-			transform: translate3d(0.6px, 0, 0) rotate(0.55deg);
+		36% {
+			transform: translate3d(0.45px, -0.2px, 0) rotate(0.32deg);
+		}
+		73% {
+			transform: translate3d(-0.25px, 0.1px, 0) rotate(-0.18deg);
 		}
 	}
 
@@ -1637,6 +1709,38 @@
 		}
 	}
 
+	@keyframes garden-water-rest {
+		0%,
+		100% {
+			opacity: 0.88;
+			transform: translate3d(0, 0, 0) scaleX(1);
+		}
+		43% {
+			opacity: 1;
+			transform: translate3d(1.8px, -0.35px, 0) scaleX(1.004);
+		}
+		78% {
+			opacity: 0.92;
+			transform: translate3d(-1px, 0.18px, 0) scaleX(0.998);
+		}
+	}
+
+	@keyframes garden-shadow-rest {
+		0%,
+		100% {
+			opacity: 1;
+			transform: translate3d(0, 0, 0);
+		}
+		46% {
+			opacity: 0.96;
+			transform: translate3d(0.5px, -0.25px, 0);
+		}
+		81% {
+			opacity: 0.98;
+			transform: translate3d(-0.35px, 0.12px, 0);
+		}
+	}
+
 	@keyframes garden-air-breathe {
 		0%,
 		100% {
@@ -1662,11 +1766,40 @@
 		100% {
 			transform: rotate(0deg);
 		}
-		48% {
-			transform: rotate(-0.55deg);
+		41% {
+			transform: rotate(-0.42deg);
 		}
-		72% {
-			transform: rotate(0.35deg);
+		76% {
+			transform: rotate(0.24deg);
+		}
+	}
+
+	@keyframes flower-idle {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+		38% {
+			transform: translate3d(0.25px, -0.35px, 0) rotate(-0.3deg);
+		}
+		67% {
+			transform: translate3d(-0.18px, 0.08px, 0) rotate(0.2deg);
+		}
+	}
+
+	@keyframes flower-petal-rest {
+		0%,
+		100% {
+			transform: scale(1);
+			opacity: 1;
+		}
+		44% {
+			transform: scale(1.018);
+			opacity: 0.96;
+		}
+		79% {
+			transform: scale(0.996);
+			opacity: 0.98;
 		}
 	}
 
@@ -1674,15 +1807,19 @@
 		0%,
 		100% {
 			transform: translate3d(0, 0, 0);
-			opacity: 0.22;
+			opacity: 0.16;
 		}
-		45% {
-			transform: translate3d(-8px, 6px, 0);
-			opacity: 0.62;
+		32% {
+			transform: translate3d(-4px, 3px, 0);
+			opacity: 0.34;
 		}
-		72% {
-			transform: translate3d(7px, -5px, 0);
-			opacity: 0.42;
+		68% {
+			transform: translate3d(3px, -4px, 0);
+			opacity: 0.26;
+		}
+		86% {
+			transform: translate3d(1px, -2px, 0);
+			opacity: 0.2;
 		}
 	}
 
@@ -1782,8 +1919,11 @@
 		100% {
 			transform: translate3d(0, 0, 0) rotate(0deg);
 		}
-		52% {
-			transform: translate3d(0.7px, 0, 0) rotate(0.35deg);
+		39% {
+			transform: translate3d(0.55px, -0.2px, 0) rotate(0.24deg);
+		}
+		74% {
+			transform: translate3d(-0.3px, 0.08px, 0) rotate(-0.16deg);
 		}
 	}
 
@@ -1804,11 +1944,15 @@
 		0%,
 		100% {
 			transform: translate3d(0, 0, 0);
-			opacity: 0.32;
+			opacity: 0.18;
 		}
-		48% {
-			transform: translate3d(0, -4px, 0);
-			opacity: 0.62;
+		42% {
+			transform: translate3d(1px, -3px, 0);
+			opacity: 0.38;
+		}
+		76% {
+			transform: translate3d(-0.6px, -1.8px, 0);
+			opacity: 0.24;
 		}
 	}
 
@@ -1818,10 +1962,10 @@
 			transform: translateY(0) rotate(0deg);
 		}
 		46% {
-			transform: translateY(-0.5px) rotate(-1.8deg);
+			transform: translateY(-0.35px) rotate(-1deg);
 		}
 		62% {
-			transform: translateY(0) rotate(0.8deg);
+			transform: translateY(0) rotate(0.45deg);
 		}
 	}
 
@@ -1831,10 +1975,10 @@
 			transform: translateX(0) rotate(0deg);
 		}
 		34% {
-			transform: translateX(-1.5px) rotate(-1.2deg);
+			transform: translateX(-0.8px) rotate(-0.6deg);
 		}
 		68% {
-			transform: translateX(1.5px) rotate(1.2deg);
+			transform: translateX(0.8px) rotate(0.6deg);
 		}
 	}
 
@@ -1844,7 +1988,7 @@
 			transform: translateY(0);
 		}
 		55% {
-			transform: translateY(-1px);
+			transform: translateY(-0.55px);
 		}
 	}
 
@@ -1854,10 +1998,10 @@
 			transform: rotate(0deg);
 		}
 		42% {
-			transform: rotate(1.4deg);
+			transform: rotate(0.8deg);
 		}
 		66% {
-			transform: rotate(-0.8deg);
+			transform: rotate(-0.45deg);
 		}
 	}
 
@@ -1867,7 +2011,7 @@
 			transform: translateX(0);
 		}
 		50% {
-			transform: translateX(2px);
+			transform: translateX(1px);
 		}
 	}
 
@@ -1877,7 +2021,7 @@
 			transform: rotate(0deg);
 		}
 		52% {
-			transform: rotate(-1deg);
+			transform: rotate(-0.55deg);
 		}
 	}
 
@@ -1886,8 +2030,8 @@
 		100% {
 			transform: translateY(0) rotate(var(--companion-breath-tilt, 0deg)) scale(1);
 		}
-		50% {
-			transform: translateY(1px) rotate(var(--companion-breath-tilt, 0deg)) scale(1.012);
+		52% {
+			transform: translateY(0.45px) rotate(var(--companion-breath-tilt, 0deg)) scale(1.006);
 		}
 	}
 
@@ -1908,10 +2052,10 @@
 			transform: rotate(0deg);
 		}
 		47% {
-			transform: rotate(-2deg);
+			transform: rotate(-1.1deg);
 		}
 		58% {
-			transform: rotate(1deg);
+			transform: rotate(0.55deg);
 		}
 	}
 
@@ -1921,10 +2065,10 @@
 			transform: rotate(0deg);
 		}
 		54% {
-			transform: rotate(-2.5deg);
+			transform: rotate(-1.2deg);
 		}
 		64% {
-			transform: rotate(1.2deg);
+			transform: rotate(0.6deg);
 		}
 	}
 
@@ -1934,7 +2078,7 @@
 			transform: rotate(0deg);
 		}
 		50% {
-			transform: rotate(-2deg);
+			transform: rotate(-1deg);
 		}
 	}
 
@@ -1943,8 +2087,8 @@
 		100% {
 			transform: translateY(0);
 		}
-		50% {
-			transform: translateY(-2px);
+		56% {
+			transform: translateY(-0.55px);
 		}
 	}
 
@@ -2040,8 +2184,11 @@
 		.garden-photo::after,
 		.garden-light,
 		.garden-mist,
+		.garden-horizon,
+		.garden-ground,
 		.garden-leaves path,
 		.garden-flowers g,
+		.garden-flowers circle,
 		.fireflies circle,
 		.photo-resting-companion,
 		.photo-resting-image,

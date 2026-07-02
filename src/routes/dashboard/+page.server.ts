@@ -262,7 +262,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	};
 
 	return {
-		title: 'Min portal',
+		title: 'Mitt rum',
 		description: 'En lugn översikt över dagbok, framsteg och inställningar.',
 		diaryPreview,
 		progressPreview,
