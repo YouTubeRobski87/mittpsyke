@@ -1,7 +1,9 @@
 <script lang="ts">
 	export let variant: 'dashboard' | 'progress' = 'dashboard';
+	export let mode: 'standalone' | 'overlay' = 'standalone';
 
 	const titleId = `account-teaser-title-${variant}`;
+	const isOverlay = mode === 'overlay';
 	const openLinks = [
 		{
 			href: '/chat',
@@ -26,7 +28,7 @@
 	];
 </script>
 
-<section class="account-teaser" aria-labelledby={titleId}>
+<section class="account-teaser" class:account-teaser--overlay={isOverlay} aria-labelledby={titleId}>
 	<div class="teaser-copy">
 		<p class="eyebrow">När du vill spara platsen</p>
 		<h2 id={titleId}>Skapa ett konto för att ge din följeslagare ett hem.</h2>
@@ -38,14 +40,16 @@
 		<a class="secondary-action" href="/login">Jag har redan konto</a>
 	</div>
 
-	<nav class="open-links" aria-label="Öppna delar utan konto">
-		{#each openLinks as link}
-			<a href={link.href}>
-				<strong>{link.label}</strong>
-				<span>{link.description}</span>
-			</a>
-		{/each}
-	</nav>
+	{#if !isOverlay}
+		<nav class="open-links" aria-label="Öppna delar utan konto">
+			{#each openLinks as link}
+				<a href={link.href}>
+					<strong>{link.label}</strong>
+					<span>{link.description}</span>
+				</a>
+			{/each}
+		</nav>
+	{/if}
 </section>
 
 <style>
@@ -61,6 +65,17 @@
 		box-shadow: 0 16px 38px rgba(69, 83, 61, 0.08);
 		backdrop-filter: blur(18px);
 		color: hsl(var(--foreground));
+	}
+
+	.account-teaser--overlay {
+		gap: 0.85rem;
+		max-width: min(28rem, 100%);
+		padding: clamp(0.95rem, 2vw, 1.2rem);
+		border-color: rgba(85, 124, 104, 0.18);
+		background:
+			linear-gradient(135deg, rgba(255, 255, 255, 0.74), rgba(250, 246, 236, 0.58)),
+			rgba(255, 255, 255, 0.62);
+		box-shadow: 0 18px 44px rgba(54, 72, 52, 0.14);
 	}
 
 	.teaser-copy {
@@ -85,10 +100,19 @@
 		letter-spacing: 0;
 	}
 
+	.account-teaser--overlay h2 {
+		font-size: clamp(1rem, 1.45vw, 1.22rem);
+	}
+
 	p {
 		margin: 0;
 		color: hsl(var(--muted-foreground));
 		line-height: 1.65;
+	}
+
+	.account-teaser--overlay p {
+		font-size: 0.9rem;
+		line-height: 1.55;
 	}
 
 	.account-actions {
@@ -107,6 +131,13 @@
 		border-radius: 8px;
 		font-weight: 700;
 		text-decoration: none;
+	}
+
+	.account-teaser--overlay .primary-action,
+	.account-teaser--overlay .secondary-action {
+		min-height: 2.25rem;
+		padding: 0.5rem 0.78rem;
+		font-size: 0.86rem;
 	}
 
 	.primary-action {

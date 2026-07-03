@@ -4,6 +4,7 @@
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
+	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import GrowthGarden from '$lib/components/GrowthGarden.svelte';
 	import type { ProgressCompanionSelection } from '$lib/progressCompanion';
@@ -107,6 +108,141 @@
 		isAnonymous?: boolean;
 	}
 
+	const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'bear' };
+	const ANONYMOUS_PREVIEW_STREAK: StreakData = {
+		currentStreak: 3,
+		longestStreak: 6,
+		lastEntryDate: null,
+		lastEntryDaysAgo: 1
+	};
+	const ANONYMOUS_PREVIEW_INSIGHTS: InsightsResponse = {
+		insights: [
+			{
+				type: 'rhythm',
+				title: 'Varsam rytm',
+				description: 'Flera reflektioner verkar landa när dagen får börja lite långsamt.',
+				icon: 'leaf'
+			},
+			{
+				type: 'return',
+				title: 'Återkomst',
+				description: 'Små återkommande stunder gör platsen lättare att hitta tillbaka till.',
+				icon: 'garden'
+			}
+		],
+		bestDay: { day: 'Tisdag', average: 7.1, count: 3 },
+		worstDay: { day: 'Söndag', average: 5.4, count: 1 },
+		emotionDistribution: { lugn: 4, oro: 2, trötthet: 2 },
+		aiSummary:
+			'Här kan en mjuk sammanfattning växa fram ur dina egna ord. Den ska hjälpa dig se mönster utan att pressa fram svar.'
+	};
+
+	function previewDateKey(daysAgo: number) {
+		const date = new Date();
+		date.setDate(date.getDate() - daysAgo);
+		return date.toISOString().split('T')[0];
+	}
+
+	function buildAnonymousPreviewHeatmap() {
+		return [2, 3, 6, 9, 10, 15, 18, 22, 29, 36, 39, 45, 52, 58].reduce(
+			(map, daysAgo, index) => {
+				map[previewDateKey(daysAgo)] = (index % 3) + 1;
+				return map;
+			},
+			{} as Record<string, number>
+		);
+	}
+
+	function createPreviewMilestone(
+		milestone: Pick<Milestone, 'id' | 'category' | 'metric' | 'threshold' | 'text'> &
+			Partial<Milestone>
+	): Milestone {
+		return {
+			title: milestone.title,
+			description: milestone.description,
+			emoji: milestone.emoji ?? '',
+			achieved: milestone.achieved ?? false,
+			current: milestone.current ?? 0,
+			remaining: milestone.remaining ?? 0,
+			progressPercent: milestone.progressPercent ?? 0,
+			unit: milestone.unit ?? 'inlägg',
+			...milestone
+		};
+	}
+
+	const PREVIEW_FIRST_STEP = createPreviewMilestone({
+		id: 'preview-first-step',
+		category: 'firstSteps',
+		metric: 'totalEntries',
+		threshold: 1,
+		text: 'Ett första varsamt avtryck.',
+		description: 'En första rad fick finnas kvar.',
+		achieved: true,
+		current: 18,
+		progressPercent: 100,
+		unit: 'inlägg'
+	});
+	const PREVIEW_RETURNING = createPreviewMilestone({
+		id: 'preview-returning',
+		category: 'consistency',
+		metric: 'longestStreak',
+		threshold: 3,
+		text: 'Platsen fick känna igen dig igen.',
+		description: 'Flera små återkomster har börjat skapa rytm.',
+		achieved: true,
+		current: 6,
+		progressPercent: 100,
+		unit: 'dagar'
+	});
+	const PREVIEW_DEEPER_TEXT = createPreviewMilestone({
+		id: 'preview-deeper-text',
+		category: 'writingDepth',
+		metric: 'maxWordsInEntry',
+		threshold: 250,
+		text: 'En tanke fick ta mer plats.',
+		description: 'Ibland blir några rader lite mer sammanhängande.',
+		achieved: true,
+		current: 340,
+		progressPercent: 100,
+		unit: 'ord'
+	});
+	const PREVIEW_NEXT_STEP = createPreviewMilestone({
+		id: 'preview-next-step',
+		category: 'diary',
+		metric: 'totalEntries',
+		threshold: 25,
+		text: 'Fler små stunder kan få landa här.',
+		description: 'Trädgården får växa långsamt när du återvänder.',
+		achieved: false,
+		current: 18,
+		remaining: 7,
+		progressPercent: 72,
+		unit: 'inlägg'
+	});
+	const ANONYMOUS_PREVIEW_MILESTONES: MilestonesResponse = {
+		achieved: [PREVIEW_FIRST_STEP, PREVIEW_RETURNING, PREVIEW_DEEPER_TEXT],
+		sections: [
+			{
+				id: 'firstSteps',
+				title: 'Första avtryck',
+				milestones: [PREVIEW_FIRST_STEP, PREVIEW_NEXT_STEP]
+			},
+			{
+				id: 'consistency',
+				title: 'Återkomst',
+				milestones: [PREVIEW_RETURNING]
+			},
+			{
+				id: 'writingDepth',
+				title: 'Ord som fick plats',
+				milestones: [PREVIEW_DEEPER_TEXT]
+			}
+		],
+		nextMilestone: PREVIEW_NEXT_STEP,
+		totalEntries: 18
+	};
+	const ANONYMOUS_PREVIEW_HEATMAP = buildAnonymousPreviewHeatmap();
+
 	// ── Theme ──
 
 	let { data } = $props<{ data: PageData }>();
@@ -115,6 +251,9 @@
 	const currentTheme = $derived(THEMES[profileTheme] ?? THEMES.neutral);
 	const themeStyle = $derived(
 		`--theme-accent: ${currentTheme.accent}; --theme-bg: ${currentTheme.bg};`
+	);
+	const displayedProgressCompanion = $derived(
+		isAnonymous ? ANONYMOUS_PREVIEW_COMPANION : (data.progressCompanion ?? null)
 	);
 
 	$effect(() => {
@@ -125,29 +264,29 @@
 	});
 
 	// ── Props + State ──
-	let streakData = $state<StreakData | null>({
+	let loadedStreakData = $state<StreakData | null>({
 		currentStreak: 0,
 		longestStreak: 0,
 		lastEntryDate: null,
 		lastEntryDaysAgo: 0
 	});
-	let milestonesData = $state<MilestonesResponse | null>({
+	let loadedMilestonesData = $state<MilestonesResponse | null>({
 		achieved: [],
 		sections: [],
 		nextMilestone: null,
 		totalEntries: 0
 	});
-	let weeklyEntries = $state(0);
-	let entryCount = $state(0);
-	let activeDays = $state(0);
-	let growthScore = $state(0);
-	let growthLevel = $state(0);
-	let heatmapData = $state<Record<string, number>>({});
+	let loadedWeeklyEntries = $state(0);
+	let loadedEntryCount = $state(0);
+	let loadedActiveDays = $state(0);
+	let loadedGrowthScore = $state(0);
+	let loadedGrowthLevel = $state(0);
+	let loadedHeatmapData = $state<Record<string, number>>({});
 	let heatmapError = $state('');
 	let progressLoading = $state(false);
 	let progressLoaded = $state(false);
 	let progressError = $state('');
-	let insightsData = $state<InsightsResponse | null>(null);
+	let loadedInsightsData = $state<InsightsResponse | null>(null);
 	let insightsLoading = $state(false);
 	let insightsError = $state('');
 	let hasSensitiveDataConsent = $state(browser ? hasSensitiveConsent() : false);
@@ -155,6 +294,17 @@
 	let heatmapVisible = $state(false);
 	let insightsCardEl = $state<HTMLElement | null>(null);
 	let heatmapCardEl = $state<HTMLElement | null>(null);
+	const streakData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_STREAK : loadedStreakData);
+	const milestonesData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_MILESTONES : loadedMilestonesData);
+	const weeklyEntries = $derived(isAnonymous ? 3 : loadedWeeklyEntries);
+	const entryCount = $derived(isAnonymous ? 18 : loadedEntryCount);
+	const activeDays = $derived(isAnonymous ? 11 : loadedActiveDays);
+	const growthScore = $derived(isAnonymous ? 51 : loadedGrowthScore);
+	const growthLevel = $derived(isAnonymous ? 3 : loadedGrowthLevel);
+	const heatmapData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : loadedHeatmapData);
+	const insightsData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_INSIGHTS : loadedInsightsData);
+	const shouldShowInsights = $derived(isAnonymous || insightsVisible);
+	const shouldShowHeatmap = $derived(isAnonymous || heatmapVisible);
 	let loading = $derived(progressLoading && !progressLoaded);
 	let error = $derived(progressError);
 	let hasInsightsContent = $derived(
@@ -255,26 +405,26 @@
 	}
 
 	function applyProgressPayload(payload: ProgressCachePayload) {
-		streakData = payload.streak;
-		milestonesData = payload.milestones;
-		heatmapData = payload.heatmap?.data ?? {};
+		loadedStreakData = payload.streak;
+		loadedMilestonesData = payload.milestones;
+		loadedHeatmapData = payload.heatmap?.data ?? {};
 		heatmapError = payload.heatmap?.error ?? '';
 
 		const weekStart = startOfWeekKey();
-		weeklyEntries = Object.entries(heatmapData).reduce(
+		loadedWeeklyEntries = Object.entries(loadedHeatmapData).reduce(
 			(sum, [day, count]) => (day >= weekStart ? sum + count : sum),
 			0
 		);
-		entryCount = milestonesData?.totalEntries ?? payload.heatmap?.totalEntries ?? 0;
-		activeDays = Object.keys(heatmapData).length;
-		growthScore = entryCount + activeDays * 3;
-		growthLevel = getGrowthLevel(entryCount);
+		loadedEntryCount = loadedMilestonesData?.totalEntries ?? payload.heatmap?.totalEntries ?? 0;
+		loadedActiveDays = Object.keys(loadedHeatmapData).length;
+		loadedGrowthScore = loadedEntryCount + loadedActiveDays * 3;
+		loadedGrowthLevel = getGrowthLevel(loadedEntryCount);
 		progressLoaded = true;
 
-		if (streakData?.currentStreak) {
-			trackStreakDayReachedOnce(streakData.currentStreak);
+		if (loadedStreakData?.currentStreak) {
+			trackStreakDayReachedOnce(loadedStreakData.currentStreak);
 		}
-		for (const milestone of milestonesData?.achieved ?? []) {
+		for (const milestone of loadedMilestonesData?.achieved ?? []) {
 			trackMilestoneReachedOnce(milestone.title ?? milestone.text);
 		}
 
@@ -348,11 +498,12 @@
 	onMount(() => {
 		if (isAnonymous) {
 			progressLoaded = true;
-			insightsVisible = false;
-			heatmapVisible = false;
+			insightsVisible = true;
+			heatmapVisible = true;
 			if (browser) {
 				localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
 			}
+			void scrollToGrowthGardenAnchor();
 			return;
 		}
 
@@ -416,7 +567,7 @@
 
 			if (!session?.access_token) {
 				insightsError = 'Du behöver vara inloggad för att se AI-insikter.';
-				insightsData = null;
+				loadedInsightsData = null;
 				return;
 			}
 
@@ -445,14 +596,14 @@
 					result && 'error' in result && typeof result.error === 'string'
 						? result.error
 						: 'Kunde inte ladda AI-insikter just nu.';
-				insightsData = null;
+				loadedInsightsData = null;
 				return;
 			}
 
-			insightsData = result;
+			loadedInsightsData = result;
 		} catch {
 			insightsError = 'Kunde inte ladda AI-insikter just nu.';
-			insightsData = null;
+			loadedInsightsData = null;
 		} finally {
 			insightsLoading = false;
 		}
@@ -496,18 +647,19 @@
 					<small>Försök att ladda sidan igen</small>
 				</section>
 			{:else}
-				{#if isAnonymous}
-					<AccountTeaser variant="progress" />
-				{/if}
-
-				<div class="progress-content" class:account-preview-content={isAnonymous} inert={isAnonymous}>
+				<div class="progress-content" class:account-preview-content={isAnonymous}>
+					{#if isAnonymous}
+						<div class="progress-preview-note">
+							<AccountTeaser variant="progress" mode="overlay" />
+						</div>
+					{/if}
 		<GrowthGarden
 			growthScore={growthScore}
 			growthLevel={growthLevel}
 			entryCount={entryCount}
 			activeDays={activeDays}
 			lastEntryDaysAgo={streakData?.lastEntryDaysAgo ?? null}
-			progressCompanion={data.progressCompanion ?? null}
+			progressCompanion={displayedProgressCompanion}
 		/>
 
 		<!-- ── Aktivitetskarta ── -->
@@ -517,14 +669,8 @@
 				<h2>Din aktivitetskarta</h2>
 			</div>
 			<p class="heatmap-description">Varje ruta motsvarar en dag. Mörkare färg betyder fler inlägg.</p>
-			{#if heatmapVisible}
-				{#await import('$lib/components/ActivityHeatmap.svelte')}
-					<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
-				{:then module}
-					<module.default data={heatmapData} error={heatmapError} />
-				{:catch}
-					<p class="heatmap-description">Aktivitetskartan kunde inte laddas just nu.</p>
-				{/await}
+			{#if shouldShowHeatmap}
+				<ActivityHeatmap data={heatmapData} error={heatmapError} />
 			{:else}
 				<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
 			{/if}
@@ -537,14 +683,14 @@
 				<h2>Dina AI-insikter</h2>
 			</div>
 
-			{#if !hasSensitiveDataConsent}
+			{#if !isAnonymous && !hasSensitiveDataConsent}
 				<ConsentGate
 					title="Samtycke innan AI-insikter"
 					dataLabel="Din dagbok och dina mönster"
 					serviceLabel="AI- och tredjepartstjänster"
 					onAccept={acceptSensitiveDataConsent}
 				/>
-			{:else if !insightsVisible}
+			{:else if !shouldShowInsights}
 				<div class="card-placeholder card-placeholder--insights" aria-hidden="true"></div>
 			{:else if insightsLoading}
 				<p class="heatmap-description">Laddar AI-insikter...</p>
@@ -644,7 +790,7 @@
 						<h3 class="milestones-section-title">{section.title}</h3>
 						<div class="milestones-grid">
 							{#each section.milestones as milestone}
-								<div class="milestone {milestone.achieved ? 'achieved' : 'locked'}">
+								<div class="milestone {milestone.achieved ? 'achieved' : 'resting'}">
 									<div class="milestone-mark" aria-hidden="true"></div>
 									<div class="milestone-copy">
 										<h4>{softMilestoneTitle(milestone)}</h4>
@@ -701,15 +847,28 @@
 		content: '';
 		position: absolute;
 		inset: 0;
+		z-index: 3;
 		border-radius: 8px;
-		background: rgba(255, 255, 255, 0.22);
-		backdrop-filter: blur(2px);
+		background:
+			linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(248, 244, 232, 0.18)),
+			rgba(255, 255, 255, 0.14);
+		backdrop-filter: blur(2.5px);
 		pointer-events: none;
 	}
 
-	.account-preview-content > * {
+	.account-preview-content > :not(.progress-preview-note) {
 		opacity: 0.68;
 		filter: saturate(0.82);
+		pointer-events: none;
+		user-select: none;
+	}
+
+	.progress-preview-note {
+		position: absolute;
+		z-index: 4;
+		top: clamp(1rem, 2vw, 1.35rem);
+		right: clamp(1rem, 2vw, 1.35rem);
+		width: min(28rem, calc(100% - 2rem));
 	}
 
 	.loading-state, .error-state { text-align: center; padding: 2rem 1rem; font-size: 1.05rem; }
@@ -785,7 +944,7 @@
 	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
 	.milestone { min-height: 8.75rem; padding: 1rem; border-radius: 0.5rem; display: flex; align-items: flex-start; gap: 1rem; background: hsl(var(--surface-muted)); border: 1px solid var(--color-dashboard-border); transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
 	.milestone.achieved { background: var(--theme-bg, hsl(var(--success-surface))); border-color: var(--color-dashboard-border); }
-	.milestone.locked { opacity: 0.78; }
+	.milestone.resting { opacity: 0.78; }
 	.milestone:hover { border-color: color-mix(in srgb, var(--color-dashboard-border) 72%, var(--theme-accent, #557c68) 28%); box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
 	.milestone-mark {
 		width: 1.65rem;
@@ -832,6 +991,14 @@
 	.empty-state .auth-button { margin-top: 0.25rem; }
 
 	@media (max-width: 640px) {
+		.progress-preview-note {
+			position: relative;
+			top: auto;
+			right: auto;
+			width: 100%;
+			margin-bottom: 0.25rem;
+		}
+
 		.card { padding: 1.5rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.insights-card,

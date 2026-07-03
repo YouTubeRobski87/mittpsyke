@@ -23,6 +23,8 @@
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
 
+  const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'bear' };
+
   const GENERIC_COMPANION_HERO_IMAGE =
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 640%22%3E%3Cdefs%3E%3ClinearGradient id=%22sky%22 x1=%220%22 x2=%220%22 y1=%220%22 y2=%221%22%3E%3Cstop offset=%220%25%22 stop-color=%22%23f5edcf%22/%3E%3Cstop offset=%2258%25%22 stop-color=%22%23cfe2d2%22/%3E%3Cstop offset=%22100%25%22 stop-color=%22%23a8c69a%22/%3E%3C/linearGradient%3E%3ClinearGradient id=%22water%22 x1=%220%22 x2=%221%22 y1=%220%22 y2=%220%22%3E%3Cstop offset=%220%25%22 stop-color=%22%238fb6b2%22/%3E%3Cstop offset=%22100%25%22 stop-color=%22%23d7e9d6%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%221200%22 height=%22640%22 fill=%22url(%23sky)%22/%3E%3Cpath d=%22M0 310 C150 230 280 250 410 300 C560 360 690 260 830 285 C980 315 1060 245 1200 280 L1200 640 L0 640 Z%22 fill=%22%237fa071%22 opacity=%220.48%22/%3E%3Cpath d=%22M0 390 C190 335 350 360 520 395 C710 435 905 370 1200 400 L1200 640 L0 640 Z%22 fill=%22url(%23water)%22 opacity=%220.82%22/%3E%3Cpath d=%22M0 500 C190 450 360 470 520 510 C710 555 920 485 1200 515 L1200 640 L0 640 Z%22 fill=%22%238aaa76%22/%3E%3Ccircle cx=%22910%22 cy=%22132%22 r=%2276%22 fill=%22%23fff5cf%22 opacity=%220.82%22/%3E%3Cpath d=%22M160 0 C120 140 126 300 92 640 H250 C218 400 225 180 296 0 Z%22 fill=%22%235c4d37%22 opacity=%220.82%22/%3E%3Cpath d=%22M178 0 C152 152 158 300 134 640%22 fill=%22none%22 stroke=%22%23443627%22 stroke-width=%2210%22 opacity=%220.38%22/%3E%3Cg fill=%22%23799b62%22 opacity=%220.62%22%3E%3Ccircle cx=%22202%22 cy=%2280%22 r=%2274%22/%3E%3Ccircle cx=%22290%22 cy=%2254%22 r=%2265%22/%3E%3Ccircle cx=%22110%22 cy=%2252%22 r=%2260%22/%3E%3Ccircle cx=%22366%22 cy=%2290%22 r=%2254%22/%3E%3C/g%3E%3C/svg%3E';
 
@@ -65,7 +67,10 @@
   const greeting = $derived(
     isAnonymous ? 'Välkommen hit' : `Välkommen tillbaka${displayName ? `, ${displayName}` : ''}`
   );
-  const selectedCompanion = $derived(getProgressCompanionAnimal(data.progressCompanion));
+  const displayedCompanionSelection = $derived(
+    isAnonymous ? ANONYMOUS_PREVIEW_COMPANION : data.progressCompanion
+  );
+  const selectedCompanion = $derived(getProgressCompanionAnimal(displayedCompanionSelection));
   const hasSelectedCompanion = $derived(Boolean(selectedCompanion));
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
@@ -136,7 +141,7 @@
 
         <div class="topbar-actions" aria-label="Kontroller">
           {#if isAnonymous}
-            <a class="soft-account-link" href="/register">Skapa konto</a>
+            <a class="soft-account-link" href="/register">Spara platsen</a>
           {:else}
             <a class="icon-button" href="/notiser" aria-label="Öppna notiser">
               <Bell size={21} strokeWidth={1.9} />
@@ -148,7 +153,7 @@
         </div>
       </header>
 
-      <section class="companion-hero" class:personal-preview={isAnonymous} inert={isAnonymous} data-companion={companionArtId} aria-labelledby="companion-title">
+      <section class="companion-hero" class:personal-preview={isAnonymous} data-companion={companionArtId} aria-labelledby="companion-title">
         <img
           src={companionHeroImage}
           alt={companionHeroAlt}
@@ -156,7 +161,7 @@
         />
         {#if hasSelectedCompanion && companionArtId !== 'bear' && companionArtId !== 'fox'}
           <div class="selected-companion-mark" aria-hidden="true">
-            <CompanionAvatar selection={data.progressCompanion} size="xl" decorative animated={false} />
+            <CompanionAvatar selection={displayedCompanionSelection} size="xl" decorative animated={false} />
           </div>
         {/if}
         <div class="hero-copy">
@@ -173,11 +178,12 @@
             <small>En ny dag börjar.</small>
           </span>
         </div>
+        {#if isAnonymous}
+          <div class="preview-note hero-preview-note">
+            <AccountTeaser variant="dashboard" mode="overlay" />
+          </div>
+        {/if}
       </section>
-
-      {#if isAnonymous}
-        <AccountTeaser variant="dashboard" />
-      {/if}
 
       <section class="quick-grid" aria-label="Snabb översikt">
         <article class="quick-card mood-card">
@@ -218,7 +224,7 @@
           </a>
         </article>
 
-        <article class="quick-card insight-card" class:personal-preview={isAnonymous} inert={isAnonymous}>
+        <article class="quick-card insight-card" class:personal-preview={isAnonymous}>
           <div class="card-head">
             <div>
               <h2>Dina insikter</h2>
@@ -237,7 +243,7 @@
       </section>
 
       <section class="lower-grid">
-        <article class="activity-card" class:personal-preview={isAnonymous} inert={isAnonymous}>
+        <article class="activity-card" class:personal-preview={isAnonymous}>
           <header>
             <h2>Senaste aktivitet</h2>
           </header>
@@ -416,14 +422,27 @@
     position: absolute;
     inset: 0;
     z-index: 3;
-    background: rgba(255, 255, 255, 0.24);
-    backdrop-filter: blur(2px);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(248, 244, 232, 0.2)),
+      rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(2.5px);
     pointer-events: none;
   }
 
-  .personal-preview > * {
+  .personal-preview > :not(.preview-note) {
     opacity: 0.76;
     filter: saturate(0.82);
+  }
+
+  .preview-note {
+    position: absolute;
+    z-index: 4;
+  }
+
+  .hero-preview-note {
+    right: clamp(18px, 3vw, 34px);
+    bottom: clamp(18px, 3vw, 34px);
+    width: min(28rem, calc(100% - 36px));
   }
 
   .companion-hero img {
@@ -886,6 +905,17 @@
       right: auto;
       left: 16px;
       bottom: 16px;
+    }
+
+    .companion-hero.personal-preview .time-badge {
+      display: none;
+    }
+
+    .hero-preview-note {
+      right: 16px;
+      bottom: 16px;
+      left: 16px;
+      width: auto;
     }
 
     .quick-card,
