@@ -223,12 +223,18 @@
 		display: grid;
 		grid-template-columns: minmax(232px, 250px) minmax(0, 1fr);
 		gap: clamp(30px, 2.6vw, 36px);
+		min-width: 0;
 	}
 
 	.main {
 		display: flex;
 		flex-direction: column;
 		gap: 28px;
+		min-width: 0;
+	}
+
+	.main > * {
+		min-width: 0;
 	}
 
 	.page-header,
@@ -327,12 +333,14 @@
 
 	.stats {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 20px;
+		min-width: 0;
 	}
 
 	.chart-card {
 		padding: 26px;
+		min-width: 0;
 	}
 
 	.loading-grid {
@@ -389,6 +397,43 @@
 
 		.page-header {
 			padding: 26px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.mp-dashboard {
+			padding: 14px 12px calc(24px + env(safe-area-inset-bottom, 0px));
+		}
+
+		.main {
+			gap: 18px;
+		}
+
+		.page-header {
+			padding: 20px 18px;
+		}
+
+		.page-header h1 {
+			font-size: clamp(1.85rem, 10vw, 2.25rem);
+		}
+
+		.lead,
+		.section-heading p {
+			font-size: 0.94rem;
+			line-height: 1.55;
+			overflow-wrap: break-word;
+		}
+
+		.stats-section {
+			gap: 14px;
+		}
+
+		.stats {
+			gap: 12px;
+		}
+
+		.chart-card {
+			padding: 18px 14px;
 		}
 	}
 </style>

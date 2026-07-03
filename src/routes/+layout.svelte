@@ -1012,13 +1012,13 @@
 
 	.footer-grid {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 2rem 1.5rem;
 	}
 
 	@media (min-width: 680px) {
 		.footer-grid {
-			grid-template-columns: repeat(4, 1fr);
+			grid-template-columns: repeat(4, minmax(0, 1fr));
 		}
 	}
 
@@ -1026,6 +1026,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.45rem;
+		min-width: 0;
 	}
 
 	.footer-col-heading {
@@ -1054,6 +1055,7 @@
 		opacity: 0.65;
 		text-decoration: none;
 		color: inherit;
+		overflow-wrap: break-word;
 		transition: opacity 0.15s ease;
 	}
 

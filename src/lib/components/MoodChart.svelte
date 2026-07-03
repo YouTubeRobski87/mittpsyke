@@ -218,11 +218,32 @@
 	.chart-shell {
 		height: 220px;
 		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+		overflow: hidden;
+		position: relative;
+	}
+
+	canvas {
+		display: block;
+		max-width: 100%;
+		width: 100% !important;
 	}
 
 	.mood-empty {
 		margin: 0;
 		font-size: 0.94rem;
 		line-height: 1.6;
+	}
+
+	@media (max-width: 480px) {
+		.chart-shell {
+			height: 180px;
+		}
+
+		.mood-empty {
+			font-size: 0.9rem;
+			line-height: 1.5;
+		}
 	}
 </style>

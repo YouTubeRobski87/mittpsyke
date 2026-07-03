@@ -94,6 +94,7 @@
     border: 1px solid var(--mp-card-border);
     border-radius: var(--mp-radius);
     padding: 20px; backdrop-filter: blur(14px);
+    min-width: 0;
   }
   .stat-head{ display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
   .label{ font-size: 0.82rem; color: var(--mp-text-dim); }
@@ -111,7 +112,7 @@
   .trend-flat{ color: var(--mp-lila); background: rgba(168,130,255,0.12); }
 
   /* Sparkline + markörer */
-  .spark-wrap{ position: relative; margin-top: 14px; height: 34px; }
+  .spark-wrap{ position: relative; margin-top: 14px; height: 34px; max-width: 100%; overflow: clip; }
   .spark{ height: 34px; width: 100%; display: block; }
 
   .marker{
@@ -143,4 +144,37 @@
   .today-dot.trend-down{ background: #f5b97a; }
   .today-dot.trend-flat{ background: var(--mp-lila); }
   .best-dot{ background: transparent; border: 1.5px solid var(--mp-lila); }
+
+  @media (max-width: 480px) {
+    .stat {
+      padding: 16px;
+    }
+
+    .stat-head {
+      margin-bottom: 6px;
+    }
+
+    .label,
+    .sub,
+    .legend {
+      overflow-wrap: break-word;
+    }
+
+    .num {
+      font-size: 1.65rem;
+    }
+
+    .spark-wrap {
+      margin-top: 10px;
+      height: 30px;
+    }
+
+    .spark {
+      height: 30px;
+    }
+
+    .legend {
+      margin-top: 8px;
+    }
+  }
 </style>

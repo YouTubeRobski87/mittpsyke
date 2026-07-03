@@ -39,6 +39,7 @@
     border: 1px solid var(--mp-card-border);
     border-radius: var(--mp-radius);
     padding: 24px 18px;
+    min-width: 0;
     backdrop-filter: blur(14px);
     height: fit-content;
     position: sticky;
@@ -60,6 +61,8 @@
     padding: 11px 14px; border-radius: 11px;
     color: var(--mp-text-dim); text-decoration: none;
     font-size: 0.92rem; margin-bottom: 4px; transition: .15s;
+    min-width: 0;
+    overflow-wrap: break-word;
   }
   .nav a:hover{ color: var(--mp-text); background: rgba(168,130,255,0.06); }
   .nav a.active{
@@ -67,7 +70,7 @@
     background: linear-gradient(135deg, rgba(124,92,255,0.35), rgba(168,130,255,0.18));
     border: 1px solid rgba(168,130,255,0.3);
   }
-  .nav .ico{ width: 18px; text-align: center; opacity: .85; }
+  .nav .ico{ width: 18px; flex: 0 0 18px; text-align: center; opacity: .85; }
 
   .support-card{
     margin-top: 24px; padding: 16px; border-radius: 13px;
@@ -79,5 +82,11 @@
 
   @media (max-width: 880px){
     .mp-sidebar{ position: static; }
+  }
+
+  @media (max-width: 480px){
+    .mp-sidebar{
+      padding: 18px 14px;
+    }
   }
 </style>

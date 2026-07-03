@@ -156,6 +156,8 @@
 <style>
 	.heatmap-container {
 		width: 100%;
+		min-inline-size: 0;
+		max-inline-size: 100%;
 	}
 
 	.loading,
@@ -179,6 +181,8 @@
 	.heatmap-frame {
 		border-radius: 1rem;
 		padding: 1rem;
+		min-inline-size: 0;
+		max-inline-size: 100%;
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 100%),
 			#161d18;
@@ -187,6 +191,9 @@
 	}
 
 	.heatmap-wrapper {
+		width: 100%;
+		min-inline-size: 0;
+		max-inline-size: 100%;
 		overflow-x: auto;
 		overflow-y: hidden;
 		padding-bottom: 0.75rem;
@@ -212,6 +219,7 @@
 		display: flex;
 		gap: 0.28rem;
 		inline-size: max-content;
+		max-inline-size: none;
 	}
 
 	.week {
@@ -273,12 +281,19 @@
 	}
 
 	@media (max-width: 640px) {
+		.loading,
+		.error,
+		.empty-state {
+			min-block-size: 9rem;
+			padding: 1rem;
+		}
+
 		.heatmap-frame {
 			padding: 0.8rem;
 		}
 
 		.day-cell {
-			inline-size: 1.12rem;
+			inline-size: 1rem;
 		}
 
 		.legend {
