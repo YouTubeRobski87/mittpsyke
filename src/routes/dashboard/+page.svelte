@@ -530,8 +530,8 @@
 
   /* ── Grundlayout ── */
   .shell{
-    max-width: 1220px; margin: 0 auto;
-    display: grid; grid-template-columns: 248px 1fr; gap: 30px;
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: minmax(232px, 250px) minmax(0, 1fr); gap: clamp(30px, 2.6vw, 36px);
   }
   .main{ display: flex; flex-direction: column; gap: 30px; }
 
@@ -859,12 +859,36 @@
   }
 
   /* ── Responsiv ── */
+  @media (min-width: 901px){
+    .mp-dashboard :global(.silent-companion){
+      grid-template-columns: minmax(16rem, 0.52fr) minmax(0, 1.48fr);
+      gap: clamp(1.5rem, 2.2vw, 2.15rem);
+      min-height: clamp(21.5rem, 25vw, 24rem);
+      padding: clamp(1.5rem, 1.8vw, 1.75rem);
+    }
+    .mp-dashboard :global(.silent-companion .companion-copy){
+      padding: 0.65rem 0.2rem 0.65rem 0.35rem;
+    }
+    .mp-dashboard :global(.silent-companion .companion-copy p){
+      max-width: 31rem;
+    }
+    .mp-dashboard :global(.silent-companion .companion-scene){
+      aspect-ratio: 2.35 / 1;
+      min-width: 0;
+      width: 100%;
+    }
+    .mp-dashboard :global(.silent-companion .companion-scene),
+    .mp-dashboard :global(.silent-companion .companion-scene svg),
+    .mp-dashboard :global(.silent-companion .day-state-image){
+      min-height: clamp(19.5rem, 22vw, 21.25rem);
+    }
+  }
   @media (max-width: 1024px){
     .portal-grid{ grid-template-columns: repeat(2,1fr); }
   }
   @media (max-width: 880px){
     .mp-dashboard{ padding: 18px; }
-    .shell{ grid-template-columns: 1fr; }
+    .shell{ grid-template-columns: 1fr; gap: 30px; }
     .main{ gap: 24px; }
     .stats{ grid-template-columns: 1fr; }
     .hero-card{ grid-template-columns: 1fr; padding: 26px; }

@@ -1,38 +1,65 @@
-// src/routes/api/diary/insights/+server.ts
 import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
+import { buildDiaryNarrativeInsight, type DiaryInsightRow } from '$lib/server/diary-insight-analysis';
 import { createClient } from '@supabase/supabase-js';
-import { env } from '$env/dynamic/public';
+import { env as publicEnv } from '$env/dynamic/public';
 import { env as privateEnv } from '$env/dynamic/private';
 import type { RequestHandler } from '@sveltejs/kit';
 import OpenAI from 'openai';
+
+const INSIGHTS_ROW_LIMIT = 500;
+const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
 
 function getOpenAIClient() {
 	return privateEnv.OPENAI_API_KEY ? new OpenAI({ apiKey: privateEnv.OPENAI_API_KEY }) : null;
 }
 
-const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
-const WEEKDAY_EMOJIS: { [key: string]: string } = {
-	Söndag: 'Natt', Måndag: 'Måndag', Tisdag: 'Tisdag', Onsdag: 'Onsdag',
-	Torsdag: 'Torsdag', Fredag: 'Fredag', Lördag: 'Lördag'
-};
-const EMOTION_KEYWORDS: { [key: string]: string[] } = {
-	anxiety: ['orolig', 'angest', 'nervos', 'radd', 'panik', 'stressad'],
-	sadness: ['ledsen', 'sorgsen', 'deprimerad', 'tom', 'hopplös', 'ensam'],
-	joy: ['glad', 'lycklig', 'bra', 'fantastisk', 'positiv', 'energisk'],
-	anger: ['arg', 'frustrerad', 'irriterad', 'rasande', 'upprörd'],
-	calm: ['lugn', 'avslappnad', 'fridfull', 'harmonisk', 'trygg']
-};
+function getModel() {
+	return (privateEnv.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
+}
 
-const AI_SUMMARY_TIMEOUT_MS = 8000;
+function getAccessToken(authorizationHeader: string | null): string | null {
+	if (!authorizationHeader) return null;
+	const [scheme, token] = authorizationHeader.split(' ');
+	if (scheme?.toLowerCase() !== 'bearer' || !token?.trim()) return null;
+	return token.trim();
+}
 
 function parseMood(value: unknown): number | null {
 	if (typeof value === 'number' && Number.isFinite(value)) return value;
 	if (typeof value === 'string') {
-		const parsed = Number.parseFloat(value);
+		const parsed = Number.parseFloat(value.replace(',', '.'));
 		return Number.isFinite(parsed) ? parsed : null;
 	}
 	return null;
+}
+
+function getWeekdayExtremes(entries: DiaryInsightRow[]) {
+	const byDay = new Map<string, number[]>();
+	for (const day of WEEKDAYS) byDay.set(day, []);
+
+	for (const entry of entries) {
+		if (!entry.created_at) continue;
+		const date = new Date(entry.created_at);
+		if (Number.isNaN(date.getTime())) continue;
+		const mood = parseMood(entry.mood);
+		if (mood === null) continue;
+		byDay.get(WEEKDAYS[date.getDay()])?.push(mood);
+	}
+
+	const averages = [...byDay.entries()]
+		.filter(([, moods]) => moods.length > 0)
+		.map(([day, moods]) => ({
+			day,
+			average: Math.round((moods.reduce((sum, mood) => sum + mood, 0) / moods.length) * 10) / 10,
+			count: moods.length
+		}))
+		.sort((a, b) => b.average - a.average);
+
+	return {
+		bestDay: averages[0] ?? null,
+		worstDay: averages.at(-1) ?? null
+	};
 }
 
 export const GET: RequestHandler = async ({ request }) => {
@@ -41,164 +68,61 @@ export const GET: RequestHandler = async ({ request }) => {
 			return json({ error: 'Consent required for sensitive AI features.' }, { status: 403 });
 		}
 
-		const authHeader = request.headers.get('Authorization');
-		if (!authHeader) return json({ error: 'Unauthorized' }, { status: 401 });
+		const token = getAccessToken(request.headers.get('authorization'));
+		if (!token) return json({ error: 'Unauthorized' }, { status: 401 });
 
-		const token = authHeader.replace('Bearer ', '');
-		const supabase = createClient(env.PUBLIC_SUPABASE_URL ?? '', env.PUBLIC_SUPABASE_ANON_KEY ?? '', {
+		const supabaseUrl = privateEnv.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
+		const supabaseAnonKey = privateEnv.SUPABASE_ANON_KEY || publicEnv.PUBLIC_SUPABASE_ANON_KEY;
+		if (!supabaseUrl || !supabaseAnonKey) {
+			console.error('Missing Supabase configuration for diary insights.');
+			return json({ error: 'Server configuration error.' }, { status: 500 });
+		}
+
+		const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+			auth: { autoRefreshToken: false, persistSession: false },
 			global: { headers: { Authorization: `Bearer ${token}` } }
 		});
 
-		const { data, error: authError } = await supabase.auth.getUser(token);
-		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
-		const user = data.user;
+		const {
+			data: { user },
+			error: authError
+		} = await supabase.auth.getUser();
+		if (authError || !user) return json({ error: 'Unauthorized' }, { status: 401 });
 
-		const thirtyDaysAgo = new Date();
-		thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-		const startDate = thirtyDaysAgo.toISOString();
-
-		// Rätta kolumnnamn: created_at (inte date), text (inte content)
 		const { data: entries, error } = await supabase
 			.from('diary')
-			.select('created_at, mood, text')
+			.select('created_at, mood, text, tags')
 			.eq('user_id', user.id)
-			.gte('created_at', startDate)
-			.order('created_at', { ascending: true });
+			.order('created_at', { ascending: true })
+			.limit(INSIGHTS_ROW_LIMIT);
 
 		if (error) return json({ error: error.message }, { status: 500 });
-		if (!entries || entries.length < 3) {
-			return json({ insights: [], bestDay: null, worstDay: null, emotionDistribution: {}, aiSummary: null });
-		}
 
-		const weekdayMoods: { [key: string]: number[] } = {};
-		WEEKDAYS.forEach((day) => { weekdayMoods[day] = []; });
+		const rows = (entries ?? []) as DiaryInsightRow[];
+		const narrative = await buildDiaryNarrativeInsight(rows, {
+			openai: getOpenAIClient(),
+			model: getModel()
+		});
+		const { bestDay, worstDay } = getWeekdayExtremes(rows);
 
-		const emotionCounts: { [key: string]: number } = {};
-		Object.keys(EMOTION_KEYWORDS).forEach((e) => { emotionCounts[e] = 0; });
-
-		for (const entry of entries) {
-			const date = new Date(entry.created_at);
-			if (Number.isNaN(date.getTime())) continue;
-			const dayName = WEEKDAYS[date.getDay()];
-			const moodNum = parseMood(entry.mood);
-			if (moodNum !== null && !isNaN(moodNum)) weekdayMoods[dayName].push(moodNum);
-
-			if (entry.text) {
-				const contentLower = entry.text.toLowerCase();
-				for (const [emotion, keywords] of Object.entries(EMOTION_KEYWORDS)) {
-					if (keywords.some((k) => contentLower.includes(k))) emotionCounts[emotion]++;
-				}
-			}
-		}
-
-		const weekdayAverages = Object.entries(weekdayMoods)
-			.filter(([, moods]) => moods.length > 0)
-			.map(([day, moods]) => ({
-				day,
-				average: Math.round((moods.reduce((a, b) => a + b, 0) / moods.length) * 10) / 10,
-				count: moods.length
-			}))
-			.sort((a, b) => b.average - a.average);
-
-		const bestDay = weekdayAverages[0] || null;
-		const worstDay = weekdayAverages[weekdayAverages.length - 1] || null;
-
-		const insights = [];
-		if (bestDay && worstDay && bestDay.day !== worstDay.day) {
-			insights.push({
-				type: 'weekday_pattern',
-				title: 'Veckans mönster',
-				description: `Du mår bäst på ${bestDay.day} (snitt ${bestDay.average}/10) och har det tuffast på ${worstDay.day} (snitt ${worstDay.average}/10).`,
-				icon: 'calendar'
-			});
-		}
-
-		const moods = entries.map((e) => parseMood(e.mood)).filter((m): m is number => m !== null);
-		if (moods.length >= 5) {
-			const firstHalf = moods.slice(0, Math.floor(moods.length / 2));
-			const secondHalf = moods.slice(Math.floor(moods.length / 2));
-			const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
-			const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
-			const trend = secondAvg - firstAvg;
-			if (Math.abs(trend) > 0.5) {
-				insights.push({
-					type: 'mood_trend',
-					title: trend > 0 ? 'Positiv trend' : 'Utmanande period',
-					description: trend > 0
-						? `Ditt humör har förbättrats med ${Math.abs(trend).toFixed(1)} poäng de senaste 30 dagarna.`
-						: `Det har varit lite tuffare på sistone. Kom ihåg att det är okej att ha svåra perioder.`,
-					icon: trend > 0 ? 'trending-up' : 'trending-down'
-				});
-			}
-		}
-
-		const dominantEmotion = Object.entries(emotionCounts)
-			.filter(([, count]) => count > 0)
-			.sort(([, a], [, b]) => b - a)[0];
-
-		if (dominantEmotion) {
-			const emotionLabels: { [key: string]: string } = {
-				anxiety: 'oro och ångest',
-				sadness: 'ledsenhet',
-				joy: 'glädje och positivitet',
-				anger: 'frustration',
-				calm: 'lugn och harmoni'
-			};
-			insights.push({
-				type: 'emotion_pattern',
-				title: 'Vanligaste känslan',
-				description: `Dina inlägg handlar ofta om ${emotionLabels[dominantEmotion[0]] || dominantEmotion[0]}. Det är viktigt att känna igen sina känslomönster.`,
-				icon: 'heart'
-			});
-		}
-
-		const recentEntries = entries.slice(-7);
-		const recentText = recentEntries
-			.map((e) => `[${new Date(e.created_at).toISOString().split('T')[0]}] Humör: ${e.mood}/10\n${e.text || ''}`)
-			.join('\n\n');
-
-		let aiSummary = null;
-		try {
-			const openai = getOpenAIClient();
-			if (!openai) {
-				return json({
-					insights,
-					bestDay,
-					worstDay,
-					emotionDistribution: emotionCounts,
-					aiSummary: null
-				});
-			}
-
-			const timeoutPromise = new Promise<never>((_, reject) => {
-				setTimeout(() => reject(new Error('AI summary timeout')), AI_SUMMARY_TIMEOUT_MS);
-			});
-			const completion = await Promise.race([
-				openai.chat.completions.create({
-					model: 'gpt-5.4',
-					messages: [{
-						role: 'user',
-						content: `Du är en empatisk psykolog. Analysera dessa dagboksinlägg och ge EN kort insikt (max 2 meningar) om ett intressant mönster du ser. Var specifik och uppmuntrande. Skriv på svenska:\n\n${recentText}`
-					}],
-					max_tokens: 150,
-					temperature: 0.7
-				}),
-				timeoutPromise
-			]);
-			aiSummary = completion.choices[0]?.message?.content?.trim() || null;
-		} catch {
-			aiSummary = null;
-		}
+		const legacyInsights = [...narrative.overview, ...narrative.patterns].slice(0, 6).map((item) => ({
+			type: 'narrative_observation',
+			title: item.title,
+			description: item.description,
+			icon: 'lightbulb'
+		}));
 
 		return json({
-			insights,
+			insights: legacyInsights,
 			bestDay,
 			worstDay,
-			emotionDistribution: emotionCounts,
-			aiSummary
+			emotionDistribution: {},
+			aiSummary: narrative.storyParagraphs[0] ?? null,
+			narrative
 		});
 	} catch (err) {
 		console.error('Insights error:', err);
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
+
