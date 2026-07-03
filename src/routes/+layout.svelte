@@ -172,6 +172,7 @@
 			)
 		)
 	);
+	const isDashboardShell = $derived(page.url.pathname === '/dashboard' || page.url.pathname.startsWith('/dashboard/'));
 
 	let user = $state<User | null>(null);
 	let displayName = $state<string | null>(null);
@@ -615,10 +616,11 @@
 	</main>
 {:else}
 	<a href="#main-content" class="skip-link">Hoppa till innehåll</a>
-	<header
-		class="site-header sticky top-0 z-30 bg-[hsl(var(--background)/0.94)] supports-[backdrop-filter]:backdrop-blur"
-		class:chat-header={isChat}
-	>
+	{#if !isDashboardShell}
+		<header
+			class="site-header sticky top-0 z-30 bg-[hsl(var(--background)/0.94)] supports-[backdrop-filter]:backdrop-blur"
+			class:chat-header={isChat}
+		>
 		<div class="site-header-inner flex items-center justify-between gap-2 px-5 py-3.5 md:gap-3">
 			<div class="flex min-w-0 flex-1 items-center gap-2 md:gap-4 lg:flex-none">
 				<a
@@ -867,18 +869,20 @@
 				<p class="mobile-menu-help pt-1 text-xs opacity-60">Vid akut fara: ring 112</p>
 			</div>
 		{/if}
-	</header>
+		</header>
+	{/if}
 
 	<div class:is-chat-page={isChat}>
-		<main id="main-content" class="mt-6" class:chat-main={isChat}>
+		<main id="main-content" class={isDashboardShell ? 'app-shell-main' : 'mt-6'} class:chat-main={isChat}>
 			{@render children()}
 		</main>
 
-		<section class="site-disclaimer mt-6 px-5">
-			<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
-				MittPsyke ersätter inte vård. Vid akut fara ring 112 &middot; Vårdråd 1177.
-			</p>
-		</section>
+		{#if !isDashboardShell}
+			<section class="site-disclaimer mt-6 px-5">
+				<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
+					MittPsyke ersätter inte vård. Vid akut fara ring 112 &middot; Vårdråd 1177.
+				</p>
+			</section>
 
 	<footer class="site-footer mt-12">
 		<div class="footer-inner">
@@ -938,9 +942,12 @@
 			</p>
 		</div>
 	</footer>
+		{/if}
 	</div>
 
-	<CookieBanner />
+	{#if !isDashboardShell}
+		<CookieBanner />
+	{/if}
 {/if}
 
 <style>

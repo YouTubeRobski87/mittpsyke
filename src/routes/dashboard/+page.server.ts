@@ -179,35 +179,28 @@ export const load: PageServerLoad = async ({ locals }) => {
 			: DEFAULT_THEME;
 	const themeLabel = THEMES[themeKey]?.label ?? THEMES[DEFAULT_THEME].label;
 
-	const [
-		latestDiaryEntryResult,
-		streakEntriesResult,
-		totalEntriesResult,
-		weeklyEntriesResult
-	] = await Promise.all([
-		locals.supabase
-			.from('diary')
-			.select('id, text, created_at')
-			.eq('user_id', user.id)
-			.order('created_at', { ascending: false })
-			.limit(1)
-			.maybeSingle<DiaryRow>(),
-		locals.supabase
-			.from('diary')
-			.select('created_at')
-			.eq('user_id', user.id)
-			.order('created_at', { ascending: false })
-			.limit(120),
-		locals.supabase
-			.from('diary')
-			.select('id', { count: 'exact', head: true })
-			.eq('user_id', user.id),
-		locals.supabase
-			.from('diary')
-			.select('id', { count: 'exact', head: true })
-			.eq('user_id', user.id)
-			.gte('created_at', weeklyStart)
-	]);
+	const [latestDiaryEntryResult, streakEntriesResult, totalEntriesResult, weeklyEntriesResult] =
+		await Promise.all([
+			locals.supabase
+				.from('diary')
+				.select('id, text, created_at')
+				.eq('user_id', user.id)
+				.order('created_at', { ascending: false })
+				.limit(1)
+				.maybeSingle<DiaryRow>(),
+			locals.supabase
+				.from('diary')
+				.select('created_at')
+				.eq('user_id', user.id)
+				.order('created_at', { ascending: false })
+				.limit(120),
+			locals.supabase.from('diary').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+			locals.supabase
+				.from('diary')
+				.select('id', { count: 'exact', head: true })
+				.eq('user_id', user.id)
+				.gte('created_at', weeklyStart)
+		]);
 
 	if (latestDiaryEntryResult.error && !isMissingTableError(latestDiaryEntryResult.error, 'diary')) {
 		console.error('Dashboard latest diary load error:', latestDiaryEntryResult.error);
@@ -221,6 +214,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (weeklyEntriesResult.error && !isMissingTableError(weeklyEntriesResult.error, 'diary')) {
 		console.error('Dashboard weekly entries load error:', weeklyEntriesResult.error);
 	}
+
 	const latestDiaryEntry = latestDiaryEntryResult.data ?? null;
 	const streakEntries = streakEntriesResult.data ?? [];
 	const totalEntries = totalEntriesResult.count ?? 0;

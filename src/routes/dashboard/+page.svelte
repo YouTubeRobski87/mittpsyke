@@ -1,19 +1,20 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { browser } from '$app/environment';
   import SEO from '$lib/components/SEO.svelte';
   import Sidebar from '$lib/components/Sidebar.svelte';
-  import StatCard from '$lib/components/StatCard.svelte';
-  import EntryCard from '$lib/components/EntryCard.svelte';
-  import SilentCompanion from '$lib/components/dashboard/SilentCompanion.svelte';
-  import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
-  import { supabase } from '$lib/supabase';
-  import type { ProgressCompanionSelection } from '$lib/progressCompanion';
   import {
-    SENSITIVE_CONSENT_HEADER,
-    SENSITIVE_CONSENT_VERSION,
-    hasSensitiveConsent
-  } from '$lib/consent';
+    ArrowRight,
+    BarChart3,
+    Bell,
+    Heart,
+    Leaf,
+    PenLine,
+    Smile,
+    Sparkles,
+    SunMedium,
+    TrendingUp,
+    Wind
+  } from 'lucide-svelte';
+  import type { ProgressCompanionSelection } from '$lib/progressCompanion';
 
   type DashboardData = {
     diaryPreview: {
@@ -39,871 +40,723 @@
 
   let { data } = $props<{ data: DashboardData }>();
 
-  const diaryPreview    = $derived(data.diaryPreview);
+  const diaryPreview = $derived(data.diaryPreview);
   const progressPreview = $derived(data.progressPreview);
   const settingsPreview = $derived(data.settingsPreview);
-  const primaryDiaryCtaLabel = $derived(diaryPreview.hasEntry ? 'Fortsätt från senast' : 'Börja i dagboken');
-  const fallbackDailyQuestion = 'Vad behöver få lite mer plats hos dig idag?';
-
-  // StatCard-data baserad på riktig progressPreview
-  const stats = $derived([
+  const displayName = $derived(settingsPreview.displayName);
+  const greeting = $derived(`Välkommen tillbaka${displayName ? `, ${displayName}` : ''}`);
+  const avatarInitial = $derived((displayName || 'M').slice(0, 1).toUpperCase());
+  const moodLabel = $derived(progressPreview.weeklyEntries > 0 ? 'Bra' : 'Redo');
+  const latestActivity = $derived([
     {
-      label: 'Inlägg denna vecka',
-      value: String(progressPreview.weeklyEntries),
-      sub: progressPreview.summary,
-      points: [4, 6, 3, 7, 5, progressPreview.weeklyEntries, progressPreview.weeklyEntries]
+      icon: PenLine,
+      tone: 'green',
+      title: diaryPreview.hasEntry ? 'Du skrev i din dagbok' : 'Din dagbok väntar på dig',
+      time: diaryPreview.hasEntry ? diaryPreview.dateLabel || 'Senast' : 'När du vill'
     },
     {
-      label: 'Återvända dagar',
-      value: `${progressPreview.currentStreak} dag${progressPreview.currentStreak === 1 ? '' : 'ar'}`,
-      sub: 'nära i tid',
-      points: [1, 2, 3, 4, 5, 6, progressPreview.currentStreak]
+      icon: Wind,
+      tone: 'purple',
+      title: 'Du gjorde en andningsövning',
+      time: progressPreview.weeklyEntries > 0 ? 'Igår kl. 20:15' : 'Ett lugnt första steg'
     },
     {
-      label: 'Totalt',
-      value: String(progressPreview.totalEntries),
-      sub: 'inlägg',
-      points: [10, 14, 18, 22, 26, 30, progressPreview.totalEntries]
+      icon: Smile,
+      tone: 'mint',
+      title: 'Du uppdaterade ditt mående',
+      time: progressPreview.currentStreak > 0 ? `${progressPreview.currentStreak} dag nära i tid` : 'Idag'
     }
   ]);
-
-  // Growth Garden — stilla status baserad på återkommande dagar
-  const gardenStatus = $derived.by(() => {
-    const s = progressPreview.currentStreak;
-    if (s === 0) return 'Din trädgård väntar på sitt första frö';
-    if (s <= 2) return 'Ett litet skott tittar fram';
-    if (s <= 6) return 'Den börjar slå rot';
-    if (s <= 13) return 'Blommar lite mer idag';
-    return 'Står i full blom';
-  });
-  const gardenStage = $derived.by(() => {
-    const s = progressPreview.currentStreak;
-    if (s === 0) return 0;
-    if (s <= 2) return 1;
-    if (s <= 6) return 2;
-    if (s <= 13) return 3;
-    return 4;
-  });
-  // Hur många växter som blommar (av 5) — växer med stadiet
-  const gardenPlants = $derived([0, 1, 2, 3, 4].map((i) => i < gardenStage + 1));
-
-  // ── AI-insikter (teaser på dashboarden) ──
-  type InsightItem = { title: string; description: string };
-  type InsightsResponse = {
-    insights: InsightItem[];
-    aiSummary: string | null;
-  };
-  let insightsConsent = $state(browser ? hasSensitiveConsent() : false);
-  let insightsLoading = $state(false);
-  let insightsLoaded = $state(false);
-  let topInsight = $state<InsightItem | null>(null);
-  let insightSummary = $state<string | null>(null);
-
-  async function loadInsightTeaser() {
-    if (!insightsConsent || insightsLoaded) return;
-    insightsLoading = true;
-    try {
-      const {
-        data: { session }
-      } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const res = await fetch('/api/diary/insights', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          [SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION
-        }
-      });
-      if (!res.ok) return;
-      const payload = (await res.json()) as InsightsResponse;
-      insightSummary = payload.aiSummary ?? null;
-      topInsight = payload.insights?.[0] ?? null;
-      insightsLoaded = true;
-    } catch {
-      // Tyst fallback — teaser visar inbjudan istället
-    } finally {
-      insightsLoading = false;
-    }
-  }
-  const hasInsightContent = $derived(Boolean(insightSummary || topInsight));
-
-  type DailyQuestionPayload = {
-    id?: string | null;
-    question?: string;
-    date?: string;
-    regenerations?: number;
-    maxRegenerations?: number;
-    safety?: boolean;
-    error?: string;
-  };
-
-  type SpegelvattnetPayload = {
-    reflection?: {
-      id: string;
-      week_start: string;
-      status: 'ready' | 'paused';
-      paused_reason: string | null;
-    };
-    error?: string;
-  };
-
-  let dailyQuestion              = $state('');
-  let dailyQuestionId            = $state<string | null>(null);
-  let dailyQuestionDate          = $state('');
-  let dailyQuestionRegenerations = $state(0);
-  let dailyQuestionMaxRegenerations = $state(2);
-  let dailyQuestionSafety        = $state(false);
-  let dailyQuestionLoading       = $state(true);
-  let dailyQuestionRegenerating  = $state(false);
-  let dailyQuestionError         = $state('');
-  let spegelReflection           = $state<SpegelvattnetPayload['reflection'] | null>(null);
-  let spegelLoading              = $state(false);
-
-  const dailyQuestionDiaryHref = $derived(
-    `/dagbok/checkin?prompt=${encodeURIComponent(dailyQuestion || fallbackDailyQuestion)}${dailyQuestionId ? `&daily_question_id=${encodeURIComponent(dailyQuestionId)}` : ''}#skriv-sjalv`
-  );
-  const canRegenerateDailyQuestion = $derived(
-    !dailyQuestionSafety && dailyQuestionRegenerations < dailyQuestionMaxRegenerations
-  );
-  const shouldShowSpegelvattnet = $derived(Boolean(spegelReflection) && !spegelLoading);
-
-  function todayKey() {
-    return new Intl.DateTimeFormat('sv-CA', {
-      timeZone: 'Europe/Stockholm',
-      year: 'numeric', month: '2-digit', day: '2-digit'
-    }).format(new Date());
-  }
-  function cacheKey(date = todayKey()) {
-    return `mittpsyke_daily_question_${date}`;
-  }
-  function readCachedDailyQuestion() {
-    if (typeof localStorage === 'undefined') return null;
-    try {
-      const cached = JSON.parse(localStorage.getItem(cacheKey()) ?? 'null') as DailyQuestionPayload | null;
-      if (!cached?.question || cached.date !== todayKey()) return null;
-      return cached;
-    } catch { return null; }
-  }
-  function applyDailyQuestion(payload: DailyQuestionPayload) {
-    dailyQuestion = payload.question?.trim() || fallbackDailyQuestion;
-    dailyQuestionId = payload.id ?? null;
-    dailyQuestionDate = payload.date || todayKey();
-    dailyQuestionRegenerations = payload.regenerations ?? 0;
-    dailyQuestionMaxRegenerations = payload.maxRegenerations ?? 2;
-    dailyQuestionSafety = Boolean(payload.safety);
-    dailyQuestionError = '';
-  }
-  function cacheDailyQuestion(payload: DailyQuestionPayload) {
-    if (typeof localStorage === 'undefined' || !payload.question || payload.safety) return;
-    localStorage.setItem(cacheKey(payload.date), JSON.stringify(payload));
-  }
-  function isSundayOrMonday() {
-    const weekday = new Intl.DateTimeFormat('sv-SE', {
-      timeZone: 'Europe/Stockholm', weekday: 'short'
-    }).format(new Date()).toLowerCase();
-    return weekday.startsWith('sön') || weekday.startsWith('mån');
-  }
-
-  async function loadSpegelvattnet() {
-    if (!isSundayOrMonday()) return;
-    spegelLoading = true;
-    try {
-      const response = await fetch('/api/spegelvattnet/latest');
-      const payload = (await response.json().catch(() => ({}))) as SpegelvattnetPayload;
-      if (response.ok && payload.reflection) spegelReflection = payload.reflection;
-    } finally {
-      spegelLoading = false;
-    }
-  }
-
-  async function loadDailyQuestion() {
-    const cached = readCachedDailyQuestion();
-    if (cached) {
-      applyDailyQuestion(cached);
-      dailyQuestionLoading = false;
-      return;
-    }
-    dailyQuestionLoading = true;
-    try {
-      const response = await fetch('/api/daily-question');
-      const payload = (await response.json().catch(() => ({}))) as DailyQuestionPayload;
-      if (!response.ok) {
-        dailyQuestionError = payload.error ?? 'Kunde inte hämta dagens fråga just nu.';
-        dailyQuestion = fallbackDailyQuestion;
-        return;
-      }
-      applyDailyQuestion(payload);
-      cacheDailyQuestion(payload);
-    } catch {
-      dailyQuestion = fallbackDailyQuestion;
-      dailyQuestionError = 'Kunde inte hämta dagens fråga just nu.';
-    } finally {
-      dailyQuestionLoading = false;
-    }
-  }
-
-  async function regenerateDailyQuestion() {
-    if (!canRegenerateDailyQuestion || dailyQuestionRegenerating) return;
-    dailyQuestionRegenerating = true;
-    dailyQuestionError = '';
-    try {
-      const response = await fetch('/api/daily-question/regenerate', { method: 'POST' });
-      const payload = (await response.json().catch(() => ({}))) as DailyQuestionPayload;
-      if (!response.ok) {
-        dailyQuestionError = payload.error ?? 'Kunde inte byta fråga just nu.';
-        if (payload.question) applyDailyQuestion(payload);
-        return;
-      }
-      applyDailyQuestion(payload);
-      cacheDailyQuestion(payload);
-    } catch {
-      dailyQuestionError = 'Kunde inte byta fråga just nu.';
-    } finally {
-      dailyQuestionRegenerating = false;
-    }
-  }
-
-  onMount(() => {
-    void loadDailyQuestion();
-    void loadSpegelvattnet();
-    void loadInsightTeaser();
-  });
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/dashboard" />
 
 <div class="mp-dashboard">
-  <div class="shell">
+  <div class="dashboard-shell">
     <Sidebar active="hem" />
 
-    <main class="main">
-
-      <!-- ── Hero ── -->
-      <section class="hero-card">
-        <div class="hero-left">
-          <div class="kicker">Din plats just nu</div>
-          <h1>Välkommen tillbaka{settingsPreview.displayName ? ', ' + settingsPreview.displayName : ''}</h1>
-          <p class="hero-lead">Du behöver inte veta exakt vad du känner. Börja med en rad, eller fortsätt där du slutade.</p>
-          <div class="hero-actions">
-            <a
-              href="/dagbok/checkin#senaste-inlagg"
-              class="btn btn-primary"
-              onclick={() => trackTikTokButtonClick('continue_writing')}>Fortsätt skriva</a>
-            <a href="/dagbok/checkin#skriv-sjalv" class="btn btn-ghost">Skriv nytt avtryck</a>
-          </div>
+    <main class="dashboard-main" aria-labelledby="dashboard-title">
+      <header class="topbar">
+        <div>
+          <h1 id="dashboard-title">{greeting}</h1>
+          <p>Hur mår du idag?</p>
         </div>
-        <div class="hero-reminder">
-          <small>Fokus just nu</small>
-          <blockquote>{settingsPreview.dashboardFocusLabel}</blockquote>
-          <span>💜</span>
+
+        <div class="topbar-actions" aria-label="Kontroller">
+          <a class="icon-button" href="/notiser" aria-label="Öppna notiser">
+            <Bell size={21} strokeWidth={1.9} />
+          </a>
+          <a class="avatar-button" href="/dashboard/installningar" aria-label="Öppna inställningar">
+            {avatarInitial}
+          </a>
+        </div>
+      </header>
+
+      <section class="companion-hero" aria-labelledby="companion-title">
+        <img
+          src="/images/dashboard-companion-fox.webp"
+          alt="En lugn plats i naturen där din följeslagare vilar"
+          decoding="async"
+        />
+        <div class="hero-copy">
+          <h2 id="companion-title">Din följeslagare</h2>
+          <p>Den finns kvar här när du återvänder.</p>
+          <span class="soft-heart">
+            <Heart size={23} fill="currentColor" strokeWidth={0} aria-hidden="true" />
+          </span>
+        </div>
+        <div class="time-badge" aria-label="God morgon">
+          <SunMedium size={24} aria-hidden="true" />
+          <span>
+            <strong>God morgon</strong>
+            <small>En ny dag börjar.</small>
+          </span>
         </div>
       </section>
 
-      <SilentCompanion progressCompanion={data.progressCompanion ?? null} />
-
-      <!-- ── Featured: det som gör MittPsyke unikt ── -->
-      <section class="featured">
-
-        <!-- Growth Garden -->
-        <a href="/framsteg#growth-garden" class="feature-card garden-feature">
-          <div class="feature-head">
-            <p class="card-kicker">🌱 Din trädgård</p>
-            <span class="garden-rhythm">{progressPreview.currentStreak} dag{progressPreview.currentStreak === 1 ? '' : 'ar'} nära i tid</span>
+      <section class="quick-grid" aria-label="Snabb översikt">
+        <article class="quick-card mood-card">
+          <div class="card-head">
+            <div>
+              <h2>Ditt mående idag</h2>
+              <p>Hur känner du dig just nu?</p>
+            </div>
+            <TrendingUp size={20} aria-hidden="true" />
           </div>
+          <div class="mood-face" aria-label={`Mående: ${moodLabel}`}>
+            <span class="eye left"></span>
+            <span class="eye right"></span>
+            <span class="mouth"></span>
+          </div>
+          <strong class="mood-label">{moodLabel}</strong>
+          <a class="card-button" href="/humorsparning">
+            Uppdatera mående
+            <ArrowRight size={18} aria-hidden="true" />
+          </a>
+        </article>
 
-          <!-- Mini-trädgård: växer långsamt med återkommande dagar -->
-          <svg class="garden-svg" viewBox="0 0 260 96" aria-hidden="true">
-            <defs>
-              <linearGradient id="garden-sky" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="rgba(124,92,255,0.12)" />
-                <stop offset="1" stop-color="rgba(124,92,255,0)" />
-              </linearGradient>
-            </defs>
-            <rect class="garden-sky-glow" x="0" y="0" width="260" height="96" fill="url(#garden-sky)" rx="12" />
-            <!-- mark -->
-            <path class="garden-mini-ground" d="M0 80 Q130 70 260 80 L260 96 L0 96 Z" fill="rgba(110,231,168,0.14)" />
-            <line class="garden-mini-waterline" x1="12" y1="81" x2="248" y2="81" stroke="rgba(110,231,168,0.3)" stroke-width="1.5" />
-            <g class="garden-mini-motes">
-              <circle cx="58" cy="34" r="1.1" />
-              <circle cx="136" cy="24" r="0.9" />
-              <circle cx="204" cy="42" r="1" />
-            </g>
-            {#each gardenPlants as bloom, i}
-              {@const cx = 36 + i * 48}
-              {#if bloom}
-                <g class="plant" style="--d:{i * 0.12}s; --plant-duration:{14 + i * 1.45}s; --plant-tilt-neg:{-(0.82 + i * 0.07)}deg; --plant-tilt-soft:{(0.82 + i * 0.07) * 0.5}deg">
-                  <line class="plant-stem" x1={cx} y1="81" x2={cx} y2={gardenStage >= 3 ? 52 : 60} stroke="#6ee7a8" stroke-width="2.5" stroke-linecap="round" />
-                  <path class="plant-leaf" d={`M${cx} ${gardenStage >= 3 ? 60 : 66} q-12 -4 -14 -14 q12 0 14 14`} fill="rgba(110,231,168,0.55)" />
-                  <path class="plant-leaf" d={`M${cx} ${gardenStage >= 3 ? 60 : 66} q12 -4 14 -14 q-12 0 -14 14`} fill="rgba(110,231,168,0.55)" />
-                  {#if gardenStage >= 3}
-                    <circle class="plant-bloom" cx={cx} cy="48" r="6.5" fill="var(--mp-lila)" />
-                    <circle class="plant-center" cx={cx} cy="48" r="2.5" fill="#fff" opacity="0.85" />
-                  {:else}
-                    <circle class="plant-bud" cx={cx} cy={gardenStage >= 2 ? 56 : 60} r="4" fill="#8ef0b6" />
-                  {/if}
-                </g>
-              {:else}
-                <circle class="garden-seed" cx={cx} cy="79" r="2.5" fill="rgba(255,255,255,0.12)" />
-              {/if}
+        <article class="quick-card tools-card">
+          <div class="card-head">
+            <div>
+              <h2>Verktyg för dig</h2>
+              <p>Utforska övningar och verktyg som kan hjälpa dig.</p>
+            </div>
+            <Heart size={22} aria-hidden="true" />
+          </div>
+          <div class="leaf-mark" aria-hidden="true">
+            <Leaf size={66} strokeWidth={1.4} />
+            <Sparkles class="spark-mark" size={17} />
+          </div>
+          <a class="card-button" href="/ovningar">
+            Visa verktyg
+            <ArrowRight size={18} aria-hidden="true" />
+          </a>
+        </article>
+
+        <article class="quick-card insight-card">
+          <div class="card-head">
+            <div>
+              <h2>Dina insikter</h2>
+              <p>Små steg leder till stora förändringar.</p>
+            </div>
+          </div>
+          <div class="chart-mark" aria-hidden="true">
+            <BarChart3 size={72} strokeWidth={1.5} />
+            <Sparkles class="spark-mark" size={16} />
+          </div>
+          <a class="card-button" href="/framsteg">
+            Se statistik
+            <ArrowRight size={18} aria-hidden="true" />
+          </a>
+        </article>
+      </section>
+
+      <section class="lower-grid">
+        <article class="activity-card">
+          <header>
+            <h2>Senaste aktivitet</h2>
+          </header>
+
+          <div class="activity-list">
+            {#each latestActivity as activity}
+              {@const ActivityIcon = activity.icon}
+              <div class="activity-item">
+                <span class:green={activity.tone === 'green'} class:purple={activity.tone === 'purple'} class:mint={activity.tone === 'mint'} class="activity-icon">
+                  <ActivityIcon size={19} strokeWidth={2} />
+                </span>
+                <span>
+                  <strong>{activity.title}</strong>
+                  <small>{activity.time}</small>
+                </span>
+              </div>
             {/each}
-          </svg>
-
-          <p class="garden-status">{gardenStatus}</p>
-          <span class="feature-link">Se din trädgård växa →</span>
-        </a>
-
-        <!-- AI-insikter -->
-        <a href="/insikter" class="feature-card insight-feature">
-          <div class="feature-head">
-            <p class="card-kicker">💡 AI-insikter</p>
           </div>
 
-          {#if insightsLoading}
-            <div class="skeleton-block" aria-label="Hämtar insikter"></div>
-          {:else if hasInsightContent}
-            {#if insightSummary}
-              <p class="insight-summary">"{insightSummary}"</p>
-            {:else if topInsight}
-              <p class="insight-title">{topInsight.title}</p>
-              <p class="insight-desc">{topInsight.description}</p>
-            {/if}
-            <span class="feature-link">Se alla insikter →</span>
-          {:else}
-            <p class="insight-invite">
-              Låt AI hitta mönster, teman och utveckling i dina dagboksrader — helt privat.
-            </p>
-            <span class="feature-link">Generera dina insikter →</span>
-          {/if}
-        </a>
-
-      </section>
-
-      <!-- ── Statistik ── -->
-      <div class="section-title section-title-spaced">Din resa över tid</div>
-      <section class="stats">
-        {#each stats as s}
-          <StatCard label={s.label} value={s.value} sub={s.sub} points={s.points} />
-        {/each}
-      </section>
-
-      <!-- ── Dagens fråga (prominent) ── -->
-      <section class="daily-hero">
-        <p class="daily-hero-kicker">❤️ Dagens fråga</p>
-        {#if dailyQuestionLoading && !dailyQuestion}
-          <div class="skeleton-lg" aria-label="Hämtar dagens fråga"></div>
-        {:else}
-          <h2 class="daily-hero-q">{dailyQuestion || fallbackDailyQuestion}</h2>
-        {/if}
-        {#if dailyQuestionSafety}
-          <p class="daily-hero-sub">Om det känns akut, ring 112. Fler stödlinjer på stodlinjer.se.</p>
-        {:else}
-          <p class="daily-hero-sub">Svara kort eller långt. Det räcker att börja där du är.</p>
-        {/if}
-        <div class="daily-hero-actions">
-          <a href={dailyQuestionDiaryHref} class="btn btn-primary btn-lg">Svara nu</a>
-          {#if !dailyQuestionSafety}
-            <button
-              type="button"
-              class="refresh-btn"
-              onclick={regenerateDailyQuestion}
-              disabled={!canRegenerateDailyQuestion || dailyQuestionRegenerating || dailyQuestionLoading}
-              title={!canRegenerateDailyQuestion ? 'Du kan byta fråga två gånger per dag.' : 'Byt fråga'}
-            >{dailyQuestionRegenerating ? 'Byter...' : 'Byt fråga'}</button>
-          {/if}
-        </div>
-        {#if dailyQuestionError}
-          <p class="card-warn">{dailyQuestionError}</p>
-        {/if}
-      </section>
-
-      <!-- ── Dina kort ── -->
-      <div class="section-title section-title-spaced">Dina kort</div>
-      <section class="cards-row">
-
-        <!-- Senaste dagboksrad -->
-        {#if diaryPreview.hasEntry}
-          <EntryCard
-            title="Senaste avtryck"
-            body={diaryPreview.snippet}
-            time={diaryPreview.dateLabel}
-          />
-        {:else}
-          <article class="entry-placeholder">
-            <p>Din dagbok väntar stilla. Ett första avtryck kan vara en enda rad.</p>
-            <a href="/dagbok/checkin#skriv-sjalv" class="btn btn-ghost">Börja skriva</a>
-          </article>
-        {/if}
-
-        <!-- Spegelvattnet (sön/mån) -->
-        {#if shouldShowSpegelvattnet && spegelReflection}
-          <article class="daily-card spegel">
-            <p class="card-kicker">Spegelvattnet</p>
-            {#if spegelReflection.status === 'paused'}
-              <h3>Spegelvattnet är stilla den här veckan.</h3>
-              <p class="card-sub">Om något känns tungt finns Stödlinjer alltid där: stodlinjer.se. Vid akut fara, ring 112.</p>
-              <a href="https://stodlinjer.se" class="btn btn-ghost" rel="noreferrer">Öppna stödlinjer</a>
-            {:else}
-              <h3>Spegelvattnet är stilla den här söndagen. Vill du titta?</h3>
-              <a href="/spegelvattnet" class="btn btn-ghost">Öppna →</a>
-            {/if}
-          </article>
-        {/if}
-
-      </section>
-
-      <!-- ── Portal-kort ── -->
-      <div class="section-title">Snabb översikt</div>
-      <section class="portal-grid">
-
-        <article class="portal-card">
-          <div class="portal-head">
-            <p class="card-kicker">Dagbok</p>
-            {#if diaryPreview.hasEntry && diaryPreview.dateLabel}
-              <span class="portal-meta">{diaryPreview.dateLabel}</span>
-            {/if}
-          </div>
-          <h2>{diaryPreview.hasEntry ? 'Fortsätt där du var' : 'Börja med ett par ord'}</h2>
-          <p class="portal-copy">{diaryPreview.snippet}</p>
-          {#if diaryPreview.hasEntry}
-            <p class="card-sub">Din dagbok sparar det viktigaste, så att du kan plocka upp tråden senare.</p>
-          {/if}
-          <a href="/dagbok/checkin" class="btn btn-ghost">{primaryDiaryCtaLabel}</a>
+          <a class="text-link" href="/dagbok">
+            Visa all aktivitet
+            <ArrowRight size={18} aria-hidden="true" />
+          </a>
         </article>
 
-        <article class="portal-card">
-          <div class="portal-head">
-            <p class="card-kicker">Framsteg</p>
-            <span class="portal-meta">
-              {progressPreview.currentStreak} dag{progressPreview.currentStreak === 1 ? '' : 'ar'} nära i tid
-            </span>
+        <article class="quote-card">
+          <div class="quote-mark" aria-hidden="true">“</div>
+          <blockquote>
+            Det räcker att du är här.<br />
+            En liten stund i taget.
+          </blockquote>
+          <span class="quote-heart">
+            <Heart size={26} fill="currentColor" strokeWidth={0} aria-hidden="true" />
+          </span>
+          <div class="mountains" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
           </div>
-          <h2>Små steg som syns</h2>
-          <p class="portal-copy">{progressPreview.summary}</p>
-          <div class="stat-row">
-            <span>{progressPreview.weeklyEntries} denna vecka</span>
-            <span>{progressPreview.totalEntries} totalt</span>
-          </div>
-          <a href="/framsteg" class="btn btn-ghost">Se framsteg</a>
         </article>
-
-        <article class="portal-card">
-          <div class="portal-head">
-            <p class="card-kicker">Inställningar</p>
-            <span class="portal-meta">{settingsPreview.themeLabel}</span>
-          </div>
-          <h2>Det som formar din portal</h2>
-          <p class="portal-copy">
-            Rytm: {settingsPreview.weeklyGoalLabel}. Fokus: {settingsPreview.dashboardFocusLabel}.
-          </p>
-          <a href="/dashboard/installningar" class="btn btn-ghost">Öppna inställningar</a>
-        </article>
-
       </section>
+
+      <p class="dashboard-footer">
+        <Leaf size={14} aria-hidden="true" />
+        MittPsyke - för din mentala välmående resa
+      </p>
     </main>
   </div>
 </div>
 
 <style>
-  /* ── Design-tokens (scopade till den här sidan) ── */
-  .mp-dashboard{
-    --mp-lila:        #6f9f70;
-    --mp-lila-2:      #2f6f46;
-    --mp-card:        rgba(255, 255, 252, 0.82);
-    --mp-card-border: rgba(104, 132, 92, 0.16);
-    --mp-text:        #20251f;
-    --mp-text-dim:    #687163;
-    --mp-radius:      24px;
-    --mp-surface:     #fbfaf5;
-    --mp-surface-soft:#f2f6ec;
-    --mp-warm:        #f7eedc;
-    --mp-shadow:      0 18px 50px rgba(58, 75, 48, 0.09);
-    --mp-shadow-soft: 0 8px 26px rgba(58, 75, 48, 0.07);
-
+  .mp-dashboard {
+    --mp-card: rgba(255, 255, 255, 0.78);
+    --mp-card-solid: #fffdf8;
+    --mp-card-border: rgba(52, 91, 55, 0.12);
+    --mp-text: #20231f;
+    --mp-text-dim: #6a7168;
+    --mp-green: #2f6f46;
+    --mp-green-soft: #dcefdc;
+    --mp-blue: #2261c9;
+    --mp-blue-soft: #eaf3ff;
+    --mp-purple: #8444c6;
+    --mp-purple-soft: #f3eafe;
+    --mp-yellow: #f4c74c;
+    --mp-radius: 8px;
+    --mp-shadow: 0 18px 44px rgba(69, 83, 61, 0.09);
     color: var(--mp-text);
     min-height: 100vh;
-    padding: 34px;
     background:
-      radial-gradient(900px 520px at 84% -10%, rgba(222, 238, 206, 0.84), transparent 62%),
-      radial-gradient(760px 460px at 8% 110%, rgba(247, 226, 190, 0.46), transparent 58%),
-      linear-gradient(160deg, var(--mp-surface), #f7f4ec 58%, #eef4e8);
+      radial-gradient(780px 420px at 78% 2%, rgba(227, 241, 220, 0.68), transparent 62%),
+      radial-gradient(620px 340px at 8% 92%, rgba(247, 232, 198, 0.5), transparent 62%),
+      linear-gradient(135deg, #fffdf9 0%, #f7f4ed 46%, #eef5eb 100%);
   }
 
-  /* ── Grundlayout ── */
-  .shell{
-    max-width: 1400px; margin: 0 auto;
-    display: grid; grid-template-columns: minmax(232px, 250px) minmax(0, 1fr); gap: clamp(30px, 2.6vw, 36px);
+  .dashboard-shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    min-height: 100vh;
   }
-  .main{ display: flex; flex-direction: column; gap: 30px; }
 
-  .section-title{
-    font-size: 0.82rem; letter-spacing: .08em; text-transform: uppercase;
-    color: color-mix(in srgb, var(--mp-text-dim) 86%, var(--mp-lila-2) 14%);
-    margin: 8px 4px -6px;
+  .dashboard-main {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 40px 42px 18px;
+    min-width: 0;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .topbar h1 {
+    margin: 0;
+    font-size: clamp(1.9rem, 3.1vw, 2.3rem);
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  .topbar p {
+    margin: 0.6rem 0 0;
+    color: var(--mp-text-dim);
+    font-size: 1.05rem;
+  }
+
+  .topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 0 0 auto;
+  }
+
+  .icon-button,
+  .avatar-button {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 999px;
+    text-decoration: none;
+  }
+
+  .icon-button {
+    color: #2d302b;
+    background: rgba(255, 255, 255, 0.76);
+    border: 1px solid rgba(38, 60, 38, 0.11);
+    box-shadow: 0 10px 24px rgba(69, 83, 61, 0.07);
+  }
+
+  .avatar-button {
+    color: #1e5e32;
+    background: #d9f1d9;
     font-weight: 800;
   }
-  /* Mer luft före "Dina kort" (punkt 4) */
-  .section-title-spaced{ margin-top: 24px; }
 
-  /* ── Knappar ── */
-  .btn{
-    display: inline-flex; align-items: center;
-    padding: 11px 18px; border-radius: 999px;
-    font-size: 0.88rem; font-weight: 600;
-    text-decoration: none; border: none; cursor: pointer;
-    transition: .15s;
-  }
-  .btn-primary{
-    background: linear-gradient(135deg, var(--mp-lila-2), #72a76d);
-    color: #fff;
-    box-shadow: 0 10px 24px rgba(47, 111, 70, 0.18);
-  }
-  .btn-ghost{
-    background: rgba(255, 255, 252, 0.62);
-    border: 1px solid var(--mp-card-border); color: var(--mp-text);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68);
-  }
-  .btn-ghost:hover{ background: rgba(255,255,255,0.9); border-color: rgba(104, 132, 92, 0.26); }
-  .btn-lg{
-    padding: 14px 30px; font-size: 1rem;
-    box-shadow: 0 14px 30px rgba(47, 111, 70, 0.2);
-  }
-  .btn-lg:hover{ transform: translateY(-1px); }
-
-  /* ── Hero ── */
-  .hero-card{
-    display: grid; grid-template-columns: 1.5fr 1fr; gap: 26px;
-    background: var(--mp-card);
-    border: 1px solid var(--mp-card-border);
-    border-radius: var(--mp-radius); padding: 34px;
+  .companion-hero {
+    position: relative;
+    min-height: clamp(280px, 34vw, 420px);
+    overflow: hidden;
+    border-radius: 8px;
     box-shadow: var(--mp-shadow);
-    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    background: #edf3e6;
   }
-  .kicker{ font-size: 0.78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--mp-lila-2); margin-bottom: 8px; font-weight: 800; }
-  .hero-card h1{ font-size: clamp(1.85rem, 3vw, 2.45rem); line-height: 1.08; margin: 0 0 12px; font-weight: 800; letter-spacing: -0.02em; }
-  .hero-lead{ color: var(--mp-text-dim); line-height: 1.65; margin: 0 0 24px; max-width: 48rem; }
-  .hero-actions{ display: flex; gap: 12px; flex-wrap: wrap; }
-  .hero-reminder{
-    background: linear-gradient(145deg, rgba(246, 240, 225, 0.82), rgba(255, 255, 252, 0.76));
+
+  .companion-hero img {
+    width: 100%;
+    height: 100%;
+    min-height: inherit;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .companion-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255, 250, 236, 0.78), rgba(255, 250, 236, 0.24) 37%, rgba(255, 250, 236, 0.04));
+    pointer-events: none;
+  }
+
+  .hero-copy {
+    position: absolute;
+    z-index: 1;
+    left: clamp(26px, 4vw, 52px);
+    top: clamp(42px, 7vw, 90px);
+    max-width: min(28rem, 55%);
+  }
+
+  .hero-copy h2 {
+    margin: 0;
+    font-size: clamp(1.8rem, 3vw, 2.45rem);
+    line-height: 1.08;
+  }
+
+  .hero-copy p {
+    margin: 0.9rem 0 1.3rem;
+    color: #3f443d;
+    font-size: 1.08rem;
+  }
+
+  .soft-heart {
+    color: #8dcfa2;
+  }
+
+  .time-badge {
+    position: absolute;
+    z-index: 1;
+    top: 24px;
+    right: 22px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(66, 66, 45, 0.12);
+    box-shadow: 0 14px 34px rgba(65, 70, 54, 0.12);
+    color: #eead21;
+  }
+
+  .time-badge span {
+    display: grid;
+    gap: 0.15rem;
+    color: var(--mp-text);
+  }
+
+  .time-badge small {
+    color: var(--mp-text-dim);
+  }
+
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .quick-card,
+  .activity-card,
+  .quote-card {
+    border-radius: 8px;
     border: 1px solid var(--mp-card-border);
-    border-radius: 20px; padding: 20px;
-    display: flex; flex-direction: column; gap: 10px;
-    box-shadow: var(--mp-shadow-soft);
-  }
-  .hero-reminder small{ color: var(--mp-lila-2); font-size: 0.75rem; letter-spacing: .04em; text-transform: uppercase; font-weight: 800; }
-  .hero-reminder blockquote{ font-size: 0.92rem; line-height: 1.5; font-style: italic; margin: 0; color: var(--mp-text); }
-
-  /* ── Statistikkort ── */
-  .stats{ display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
-
-  /* ── Kort-rad (dagboksrad + daglig fråga + spegel) ── */
-  .cards-row{ display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 20px; }
-
-  .entry-placeholder{
-    border: 1px solid var(--mp-card-border);
-    border-radius: 20px; padding: 22px 20px;
     background: var(--mp-card);
-    display: flex; flex-direction: column; gap: 14px;
-    box-shadow: var(--mp-shadow-soft);
+    box-shadow: 0 12px 30px rgba(69, 83, 61, 0.07);
+    backdrop-filter: blur(16px);
   }
-  .entry-placeholder p{ font-size: 0.88rem; color: var(--mp-text-dim); line-height: 1.5; margin: 0; }
 
-  .daily-card{
-    border: 1px solid var(--mp-card-border);
-    border-radius: 20px; padding: 22px;
-    background: var(--mp-card);
-    display: flex; flex-direction: column; gap: 10px;
-    box-shadow: var(--mp-shadow-soft);
+  .quick-card {
+    min-height: 208px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
-  .daily-card.spegel{
-    background: linear-gradient(135deg, rgba(236, 245, 224, 0.88), rgba(255, 249, 237, 0.78));
-    border-color: rgba(126, 154, 109, 0.2);
+
+  .mood-card {
+    background: linear-gradient(135deg, rgba(241, 250, 237, 0.88), rgba(255, 255, 252, 0.78));
   }
-  .daily-card h3{ margin: 0; font-size: 1rem; line-height: 1.4; }
 
-  .card-kicker{ margin: 0; font-size: 0.76rem; letter-spacing: .06em; text-transform: uppercase; color: var(--mp-lila-2); font-weight: 800; }
-  .card-sub{ margin: 0; font-size: 0.82rem; color: var(--mp-text-dim); line-height: 1.5; }
-  .card-warn{ margin: 0; font-size: 0.82rem; color: #8a5f17; }
+  .tools-card {
+    background: linear-gradient(135deg, rgba(241, 247, 255, 0.9), rgba(252, 254, 255, 0.76));
+    --accent: var(--mp-blue);
+  }
 
-  /* ── Dagens fråga (prominent, punkt 6) ── */
-  .daily-hero{
-    border-radius: var(--mp-radius); padding: 36px 38px;
+  .insight-card {
+    background: linear-gradient(135deg, rgba(250, 244, 255, 0.9), rgba(255, 253, 255, 0.78));
+    --accent: var(--mp-purple);
+  }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--accent, var(--mp-green));
+  }
+
+  .card-head h2 {
+    margin: 0;
+    color: var(--mp-text);
+    font-size: 1.05rem;
+  }
+
+  .card-head p {
+    margin: 0.55rem 0 0;
+    color: var(--mp-text-dim);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .mood-face {
+    position: relative;
+    width: 68px;
+    height: 68px;
+    margin: auto auto 0;
+    border-radius: 50%;
+    background: #bfe6bd;
+    box-shadow: inset 0 0 0 9px rgba(91, 182, 98, 0.18);
+  }
+
+  .eye {
+    position: absolute;
+    top: 28px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #35974a;
+  }
+
+  .eye.left {
+    left: 24px;
+  }
+
+  .eye.right {
+    right: 24px;
+  }
+
+  .mouth {
+    position: absolute;
+    left: 23px;
+    top: 39px;
+    width: 22px;
+    height: 10px;
+    border-bottom: 4px solid #35974a;
+    border-radius: 0 0 999px 999px;
+  }
+
+  .mood-label {
+    text-align: center;
+    color: var(--mp-green);
+  }
+
+  .leaf-mark,
+  .chart-mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: 1;
+    color: var(--accent);
+    opacity: 0.72;
+  }
+
+  .leaf-mark :global(.spark-mark),
+  .chart-mark :global(.spark-mark) {
+    position: absolute;
+    transform: translate(2.2rem, -1.4rem);
+    color: #bba0ff;
+  }
+
+  .card-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 36px;
+    margin-top: auto;
+    border-radius: 7px;
+    border: 1px solid color-mix(in srgb, var(--accent, var(--mp-green)) 28%, transparent);
+    color: var(--accent, var(--mp-green));
+    background: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .lower-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: 20px;
+  }
+
+  .activity-card,
+  .quote-card {
+    min-height: 242px;
+    padding: 22px;
+  }
+
+  .activity-card h2 {
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .activity-list {
+    display: grid;
+    gap: 1rem;
+    margin: 1rem 0 1.25rem;
+  }
+
+  .activity-item {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .activity-icon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+  }
+
+  .activity-icon.green {
+    color: #23833d;
+    background: #dff1df;
+  }
+
+  .activity-icon.purple {
+    color: #7641bd;
+    background: #efe3ff;
+  }
+
+  .activity-icon.mint {
+    color: #2e9445;
+    background: #d9f4d9;
+  }
+
+  .activity-item strong,
+  .activity-item small {
+    display: block;
+  }
+
+  .activity-item strong {
+    font-size: 0.9rem;
+  }
+
+  .activity-item small {
+    margin-top: 0.2rem;
+    color: var(--mp-text-dim);
+    font-size: 0.84rem;
+  }
+
+  .text-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--mp-card-border);
+    color: var(--mp-green);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+
+  .quote-card {
+    position: relative;
+    overflow: hidden;
     background:
-      radial-gradient(680px 320px at 100% 0%, rgba(228, 241, 205, 0.78), transparent 56%),
-      linear-gradient(135deg, rgba(255, 249, 237, 0.92), rgba(235, 244, 224, 0.78));
-    border: 1px solid rgba(126, 154, 109, 0.2);
-    display: flex; flex-direction: column; gap: 16px;
-    box-shadow: var(--mp-shadow);
-    backdrop-filter: blur(18px);
-  }
-  .daily-hero-kicker{ margin: 0; font-size: 0.8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--mp-lila-2); font-weight: 800; }
-  .daily-hero-q{
-    margin: 0; font-size: clamp(1.55rem, 2.6vw, 2rem); font-weight: 800; line-height: 1.28;
-    max-width: 28ch; color: var(--mp-text);
-  }
-  .daily-hero-sub{ margin: 0; font-size: 0.95rem; color: var(--mp-text-dim); }
-  .daily-hero-actions{ display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
-
-  /* ── Featured-band (unika funktioner) ── */
-  .featured{ display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; }
-  .feature-card{
-    display: flex; flex-direction: column; gap: 14px;
-    border-radius: var(--mp-radius); padding: 26px;
-    text-decoration: none; color: var(--mp-text);
-    backdrop-filter: blur(18px); transition: .15s;
-    min-height: 210px;
-    box-shadow: var(--mp-shadow-soft);
-  }
-  .feature-card:hover{ transform: translateY(-2px); }
-  .feature-head{ display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-
-  .garden-feature{
-    background:
-      radial-gradient(500px 220px at 0% 100%, rgba(169, 207, 151, 0.24), transparent 62%),
-      linear-gradient(135deg, rgba(246, 251, 241, 0.92), rgba(236, 246, 226, 0.72));
-    border: 1px solid rgba(126, 154, 109, 0.22);
-  }
-  .garden-feature:hover{ border-color: rgba(99, 137, 82, 0.34); }
-  .garden-svg{ width: 100%; height: auto; display: block; margin: 2px 0; }
-  .garden-sky-glow{
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: portal-garden-light 28s cubic-bezier(0.42, 0, 0.24, 1) infinite;
-  }
-  .garden-mini-ground{
-    transform-box: fill-box;
-    transform-origin: center bottom;
-    animation: portal-ground-breathe 36s cubic-bezier(0.42, 0, 0.24, 1) infinite;
-  }
-  .garden-mini-waterline{
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: portal-water-rest 20s cubic-bezier(0.42, 0, 0.2, 1) infinite;
-  }
-  .garden-mini-motes circle{
-    fill: rgba(99, 137, 82, 0.34);
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: portal-mote-drift 24s cubic-bezier(0.42, 0, 0.2, 1) infinite;
-  }
-  .garden-mini-motes circle:nth-child(2){ animation-duration: 31s; animation-delay: -9s; opacity: 0.78; }
-  .garden-mini-motes circle:nth-child(3){ animation-duration: 37s; animation-delay: -16s; opacity: 0.68; }
-  .plant{
-    transform-box: fill-box;
-    transform-origin: bottom center;
-    animation:
-      sprout .6s ease both,
-      portal-plant-sway var(--plant-duration, 18s) cubic-bezier(0.42, 0, 0.24, 1) infinite;
-    animation-delay: var(--d), calc(var(--d, 0s) + 1.2s);
-  }
-  .plant-bloom,
-  .plant-bud{
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: portal-flower-rest 19s cubic-bezier(0.42, 0, 0.24, 1) infinite;
-    animation-delay: calc(var(--d, 0s) + 2.4s);
-  }
-  .plant-bud{ animation-duration: 23s; }
-  .garden-seed{
-    animation: portal-seed-breathe 28s cubic-bezier(0.42, 0, 0.24, 1) infinite;
-  }
-  @keyframes sprout { from{ transform: scaleY(0); opacity: 0 } to{ transform: scaleY(1); opacity: 1 } }
-  @keyframes portal-garden-light {
-    0%, 100% { opacity: 0.84; transform: translate3d(0, 0, 0) scale(1); }
-    41% { opacity: 1; transform: translate3d(1.1px, -0.7px, 0) scale(1.012); }
-    76% { opacity: 0.91; transform: translate3d(-0.6px, 0.35px, 0) scale(1.004); }
-  }
-  @keyframes portal-ground-breathe {
-    0%, 100% { opacity: 1; transform: translate3d(0, 0, 0); }
-    52% { opacity: 0.9; transform: translate3d(0.7px, -0.35px, 0); }
-  }
-  @keyframes portal-water-rest {
-    0%, 100% { opacity: 0.62; transform: translate3d(0, 0, 0) scaleX(1); }
-    39% { opacity: 0.98; transform: translate3d(2.2px, -0.35px, 0) scaleX(1.006); }
-    73% { opacity: 0.74; transform: translate3d(-1.3px, 0.18px, 0) scaleX(0.998); }
-  }
-  @keyframes portal-mote-drift {
-    0%, 100% { opacity: 0.18; transform: translate3d(0, 0, 0); }
-    34% { opacity: 0.42; transform: translate3d(3px, -5px, 0); }
-    68% { opacity: 0.3; transform: translate3d(-2px, -8px, 0); }
-  }
-  @keyframes portal-plant-sway {
-    0%, 100% { transform: rotate(0deg); }
-    43% { transform: rotate(var(--plant-tilt-neg, -0.55deg)); }
-    76% { transform: rotate(var(--plant-tilt-soft, 0.3deg)); }
-  }
-  @keyframes portal-flower-rest {
-    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-    37% { transform: translate3d(0.35px, -0.45px, 0) scale(1.015); }
-    69% { transform: translate3d(-0.24px, 0.16px, 0) scale(0.996); }
-  }
-  @keyframes portal-seed-breathe {
-    0%, 100% { opacity: 0.72; }
-    58% { opacity: 0.48; }
-  }
-  .garden-status{ margin: 0; font-size: 0.92rem; color: var(--mp-text); font-weight: 600; }
-  .garden-rhythm{
-    font-size: 0.78rem; font-weight: 600; white-space: nowrap;
-    padding: 5px 12px; border-radius: 20px;
-    background: rgba(116, 156, 92, 0.12); color: #386d3a;
-    border: 1px solid rgba(116, 156, 92, 0.2);
+      linear-gradient(180deg, rgba(255, 246, 222, 0.94), rgba(255, 252, 245, 0.72)),
+      var(--mp-card-solid);
   }
 
-  .insight-feature{
-    background:
-      radial-gradient(500px 220px at 100% 0%, rgba(236, 216, 238, 0.5), transparent 58%),
-      linear-gradient(135deg, rgba(255, 255, 252, 0.9), rgba(246, 240, 250, 0.76));
-    border: 1px solid rgba(147, 124, 157, 0.18);
-  }
-  .insight-feature:hover{ border-color: rgba(126, 154, 109, 0.28); }
-  .insight-summary{ margin: 0; font-size: 1.05rem; line-height: 1.55; font-style: italic; color: var(--mp-text); }
-  .insight-title{ margin: 0; font-size: 1rem; font-weight: 700; }
-  .insight-desc{ margin: 0; font-size: 0.88rem; color: var(--mp-text-dim); line-height: 1.5; }
-  .insight-invite{ margin: 0; font-size: 0.95rem; color: var(--mp-text-dim); line-height: 1.6; }
-
-  .feature-link{
-    margin-top: auto; font-size: 0.85rem; font-weight: 600; color: var(--mp-lila);
-  }
-  .skeleton-block{
-    flex: 1; min-height: 90px; border-radius: 18px;
-    background: linear-gradient(90deg, rgba(222,232,213,.48), rgba(255,255,255,.76), rgba(222,232,213,.48));
-    background-size: 200% 100%;
-    animation: shimmer 1.2s ease-in-out infinite;
+  .quote-mark {
+    color: var(--mp-yellow);
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 0.75;
   }
 
-  /* Stor skeleton för dagens fråga */
-  .skeleton-lg{
-    width: min(100%, 26rem); height: 2rem; border-radius: 999px;
-    background: linear-gradient(90deg, rgba(222,232,213,.5), rgba(255,255,255,.78), rgba(222,232,213,.5));
-    background-size: 200% 100%;
-    animation: shimmer 1.2s ease-in-out infinite;
+  .quote-card blockquote {
+    position: relative;
+    z-index: 1;
+    margin: 0.55rem 0 1.3rem;
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    line-height: 1.45;
+    font-weight: 700;
   }
 
-  .refresh-btn{
-    border: 0; background: transparent; padding: 0;
-    color: var(--mp-text-dim); font: inherit; font-size: 0.85rem;
-    text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
-  }
-  .refresh-btn:hover:not(:disabled){ color: var(--mp-text); }
-  .refresh-btn:disabled{ opacity: .45; cursor: default; text-decoration: none; }
-
-  @keyframes shimmer { from{ background-position:100% 0 } to{ background-position:-100% 0 } }
-
-  /* ── Portal-grid ── */
-  .portal-grid{ display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
-  .portal-card{
-    background: var(--mp-card); border: 1px solid var(--mp-card-border);
-    border-radius: var(--mp-radius); padding: 26px;
-    backdrop-filter: blur(18px);
-    display: flex; flex-direction: column; gap: 14px;
-    box-shadow: var(--mp-shadow-soft);
-  }
-  .portal-card h2{ margin: 0; font-size: 1.08rem; line-height: 1.3; font-weight: 800; }
-  .portal-head{ display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .portal-meta{ font-size: 0.8rem; color: var(--mp-text-dim); }
-  .portal-copy{ margin: 0; font-size: 0.87rem; color: var(--mp-text-dim); line-height: 1.55; }
-  .stat-row{ display: flex; gap: 14px; font-size: 0.82rem; color: var(--mp-text-dim); }
-
-  .mp-dashboard :global(.mp-sidebar){
-    background: rgba(255, 255, 252, 0.74);
-    border-color: var(--mp-card-border);
-    box-shadow: var(--mp-shadow-soft);
-    backdrop-filter: blur(18px);
-  }
-  .mp-dashboard :global(.mp-sidebar .brand .dot){
-    background: linear-gradient(135deg, #dfeedd, #9bc58b);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
-  }
-  .mp-dashboard :global(.mp-sidebar .nav a:hover){
-    background: rgba(219, 235, 207, 0.58);
-  }
-  .mp-dashboard :global(.mp-sidebar .nav a.active){
-    color: #23552f;
-    background: linear-gradient(135deg, rgba(216, 235, 204, 0.9), rgba(237, 245, 228, 0.72));
-    border-color: rgba(100, 145, 82, 0.22);
-  }
-  .mp-dashboard :global(.mp-sidebar .support-card){
-    background: linear-gradient(135deg, rgba(255, 249, 237, 0.86), rgba(232, 243, 222, 0.72));
-    border-color: rgba(126, 154, 109, 0.18);
+  .quote-heart {
+    position: relative;
+    z-index: 1;
+    color: var(--mp-yellow);
   }
 
-  .mp-dashboard :global(.stat),
-  .mp-dashboard :global(.entry){
-    background: var(--mp-card);
-    border-color: var(--mp-card-border);
-    border-radius: var(--mp-radius);
-    box-shadow: var(--mp-shadow-soft);
-    backdrop-filter: blur(18px);
-  }
-  .mp-dashboard :global(.stat){ padding: 24px; }
-  .mp-dashboard :global(.entry){ padding: 22px; }
-  .mp-dashboard :global(.stat .marker.today){ box-shadow: 0 0 0 3px rgba(251, 250, 245, 0.92); }
-  .mp-dashboard :global(.stat .marker.best){ box-shadow: 0 0 0 2px rgba(251, 250, 245, 0.92); }
-
-  .mp-dashboard :global(.silent-companion){
-    padding: 1.35rem;
-    border-color: rgba(104, 132, 92, 0.16);
-    background:
-      radial-gradient(520px 260px at 100% 14%, rgba(222, 238, 206, 0.56), transparent 58%),
-      linear-gradient(135deg, rgba(255, 255, 252, 0.86), rgba(244, 248, 238, 0.74));
-    box-shadow: var(--mp-shadow);
-    backdrop-filter: blur(18px);
-  }
-  .mp-dashboard :global(.silent-companion .place-link){
-    background: rgba(255, 255, 252, 0.66);
-    border-color: rgba(104, 132, 92, 0.18);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.78);
-  }
-  .mp-dashboard :global(.silent-companion .place-link:hover){
-    background: rgba(255,255,255,0.92);
-    border-color: rgba(104, 132, 92, 0.28);
+  .mountains {
+    position: absolute;
+    inset: auto 0 0;
+    height: 42%;
+    opacity: 0.65;
   }
 
-  /* ── Responsiv ── */
-  @media (min-width: 901px){
-    .mp-dashboard :global(.silent-companion){
-      grid-template-columns: minmax(16rem, 0.52fr) minmax(0, 1.48fr);
-      gap: clamp(1.5rem, 2.2vw, 2.15rem);
-      min-height: clamp(21.5rem, 25vw, 24rem);
-      padding: clamp(1.5rem, 1.8vw, 1.75rem);
+  .mountains span {
+    position: absolute;
+    inset: auto -4% 0;
+    height: 68%;
+    background: #9eb98f;
+    clip-path: polygon(0 100%, 13% 63%, 23% 80%, 35% 38%, 48% 76%, 59% 44%, 74% 78%, 86% 52%, 100% 82%, 100% 100%);
+  }
+
+  .mountains span:nth-child(2) {
+    height: 88%;
+    background: #c1cfac;
+    transform: translateY(16px);
+    opacity: 0.72;
+  }
+
+  .mountains span:nth-child(3) {
+    height: 55%;
+    background: #e2e6cc;
+    transform: translateY(8px);
+    opacity: 0.82;
+  }
+
+  .dashboard-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    margin: 0;
+    color: #7d8579;
+    font-size: 0.85rem;
+  }
+
+  .mp-dashboard :global(.mp-sidebar) {
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    border-width: 0 1px 0 0;
+    border-radius: 0;
+    padding: 34px 18px;
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: none;
+  }
+
+  @media (max-width: 980px) {
+    .dashboard-shell {
+      grid-template-columns: 1fr;
     }
-    .mp-dashboard :global(.silent-companion .companion-copy){
-      padding: 0.65rem 0.2rem 0.65rem 0.35rem;
+
+    .dashboard-main {
+      padding: 22px;
     }
-    .mp-dashboard :global(.silent-companion .companion-copy p){
-      max-width: 31rem;
+
+    .quick-grid,
+    .lower-grid {
+      grid-template-columns: 1fr;
     }
-    .mp-dashboard :global(.silent-companion .companion-scene){
-      aspect-ratio: 2.35 / 1;
-      min-width: 0;
-      width: 100%;
-    }
-    .mp-dashboard :global(.silent-companion .companion-scene),
-    .mp-dashboard :global(.silent-companion .companion-scene svg),
-    .mp-dashboard :global(.silent-companion .day-state-image){
-      min-height: clamp(19.5rem, 22vw, 21.25rem);
+
+    .mp-dashboard :global(.mp-sidebar) {
+      min-height: auto;
+      position: static;
+      border-width: 0 0 1px;
+      padding: 18px;
     }
   }
-  @media (max-width: 1024px){
-    .portal-grid{ grid-template-columns: repeat(2,1fr); }
-  }
-  @media (max-width: 880px){
-    .mp-dashboard{ padding: 18px; }
-    .shell{ grid-template-columns: 1fr; gap: 30px; }
-    .main{ gap: 24px; }
-    .stats{ grid-template-columns: 1fr; }
-    .hero-card{ grid-template-columns: 1fr; padding: 26px; }
-    .daily-hero{ padding: 28px 24px; }
-    .portal-grid{ grid-template-columns: 1fr; }
-    .featured{ grid-template-columns: 1fr; }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .garden-sky-glow,
-    .garden-mini-ground,
-    .garden-mini-waterline,
-    .garden-mini-motes circle,
-    .plant,
-    .plant-bloom,
-    .plant-bud,
-    .garden-seed{ animation: none; }
+
+  @media (max-width: 620px) {
+    .dashboard-main {
+      padding: 16px;
+      gap: 18px;
+    }
+
+    .topbar {
+      align-items: center;
+    }
+
+    .topbar h1 {
+      font-size: 1.55rem;
+    }
+
+    .topbar-actions {
+      gap: 0.55rem;
+    }
+
+    .icon-button,
+    .avatar-button {
+      width: 42px;
+      height: 42px;
+    }
+
+    .companion-hero {
+      min-height: 330px;
+    }
+
+    .companion-hero img {
+      object-position: 76% center;
+    }
+
+    .companion-hero::after {
+      background: linear-gradient(180deg, rgba(255, 250, 236, 0.78), rgba(255, 250, 236, 0.08) 64%);
+    }
+
+    .hero-copy {
+      left: 22px;
+      top: 28px;
+      max-width: calc(100% - 44px);
+    }
+
+    .time-badge {
+      top: auto;
+      right: auto;
+      left: 16px;
+      bottom: 16px;
+    }
+
+    .quick-card,
+    .activity-card,
+    .quote-card {
+      padding: 18px;
+    }
   }
 </style>
