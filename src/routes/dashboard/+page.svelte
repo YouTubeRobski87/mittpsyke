@@ -125,7 +125,7 @@
 
 <div class="mp-dashboard">
   <div class="dashboard-shell">
-    <Sidebar active="hem" />
+    <Sidebar active="hem" showLogout={!isAnonymous} />
 
     <main class="dashboard-main" aria-labelledby="dashboard-title">
       <header class="topbar">

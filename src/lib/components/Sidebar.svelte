@@ -6,12 +6,16 @@
     Home,
     Leaf,
     LifeBuoy,
+    LogOut,
     Settings,
     Smile,
     Wrench
   } from 'lucide-svelte';
 
   export let active = 'hem';
+  export let showLogout = false;
+
+  let signingOut = false;
 
   type IconComponent = typeof Home;
 
@@ -24,6 +28,17 @@
     { id: 'resurser', label: 'Resurser', icon: LifeBuoy, href: '/guider' },
     { id: 'installningar', label: 'Inställningar', icon: Settings, href: '/dashboard/installningar' }
   ];
+  async function handleLogout() {
+    if (signingOut) return;
+    signingOut = true;
+
+    try {
+      const { supabase } = await import('$lib/supabase');
+      await supabase.auth.signOut();
+    } finally {
+      window.location.href = '/login';
+    }
+  }
 </script>
 
 <aside class="mp-sidebar">
@@ -47,6 +62,15 @@
       </a>
     {/each}
   </nav>
+
+  {#if showLogout}
+    <button class="logout-button" type="button" onclick={handleLogout} disabled={signingOut}>
+      <span class="ico">
+        <LogOut size={20} strokeWidth={1.9} />
+      </span>
+      <span>{signingOut ? 'Loggar ut...' : 'Logga ut'}</span>
+    </button>
+  {/if}
 
   <div class="support-card">
     <div>
@@ -126,6 +150,38 @@
     color: #23552f;
   }
 
+  .logout-button {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    width: 100%;
+    min-height: 46px;
+    margin-top: 0;
+    padding: 0 0.8rem;
+    border: 1px solid rgba(104, 132, 92, 0.14);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--sidebar-dim);
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 650;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.16s ease, color 0.16s ease, opacity 0.16s ease;
+  }
+
+  .logout-button:hover,
+  .logout-button:focus-visible {
+    background: rgba(222, 239, 220, 0.52);
+    color: var(--sidebar-green);
+    outline: none;
+  }
+
+  .logout-button:disabled {
+    cursor: wait;
+    opacity: 0.68;
+  }
+
   .ico {
     display: grid;
     place-items: center;
@@ -183,6 +239,14 @@
     .support-card {
       display: none;
     }
+
+    .logout-button {
+      justify-content: center;
+      min-height: 44px;
+      margin-top: 0;
+      padding: 0 0.55rem;
+      font-size: 0.9rem;
+    }
   }
 
   @media (max-width: 620px) {
@@ -195,6 +259,10 @@
     }
 
     .nav a {
+      justify-content: flex-start;
+    }
+
+    .logout-button {
       justify-content: flex-start;
     }
   }
