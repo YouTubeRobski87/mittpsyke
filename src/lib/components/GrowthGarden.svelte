@@ -557,6 +557,11 @@
 				style={`--garden-photo-image: url('${companionDayStateImage}')`}
 				aria-hidden="true"
 			></div>
+			<div class="garden-water-layer" aria-hidden="true">
+				<span class="garden-water-effect garden-water-reflection"></span>
+				<span class="garden-water-effect garden-water-ripple"></span>
+				<span class="garden-water-effect garden-water-light"></span>
+			</div>
 			{#if companionDayState === 'day'}
 				<img
 					class="garden-butterfly"
@@ -708,12 +713,14 @@
 		display: block;
 		width: 100%;
 		height: 100%;
+		z-index: 0;
 	}
 
 	/* Björnfotot som eget helbildslager (frikopplat från SVG-koordinaterna) */
 	.garden-photo {
 		position: absolute;
 		inset: 0;
+		z-index: 1;
 		background-image: var(--garden-photo-image, url('/images/resting-bear-photo-fill.png'));
 		background-size: cover;
 		background-position: center;
@@ -768,11 +775,141 @@
 		background-position: left center;
 	}
 
+	.garden-water-layer {
+		--garden-water-left: 42%;
+		--garden-water-top: 49%;
+		--garden-water-width: 58%;
+		--garden-water-height: 34%;
+		--garden-water-clip: polygon(
+			0 24%,
+			18% 10%,
+			44% 0,
+			78% 5%,
+			100% 19%,
+			100% 72%,
+			88% 88%,
+			66% 100%,
+			45% 88%,
+			27% 94%,
+			8% 72%,
+			0 48%
+		);
+		--garden-water-reflection: rgba(142, 188, 186, 0.16);
+		--garden-water-shadow: rgba(45, 96, 119, 0.15);
+		--garden-water-light: rgba(198, 222, 210, 0.14);
+		position: absolute;
+		left: var(--garden-water-left);
+		top: var(--garden-water-top);
+		z-index: 2;
+		width: var(--garden-water-width);
+		height: var(--garden-water-height);
+		overflow: hidden;
+		pointer-events: none;
+		opacity: 0.62;
+		clip-path: var(--garden-water-clip);
+		mix-blend-mode: soft-light;
+		contain: paint;
+	}
+
+	/* Percent-based water mask follows .garden-photo's cover crop and background-position. */
+	.garden-card[data-day-state='morning'] .garden-water-layer {
+		--garden-water-left: 56%;
+		--garden-water-top: 43%;
+		--garden-water-width: 44%;
+		--garden-water-height: 38%;
+		opacity: 0.54;
+	}
+
+	.garden-card[data-day-state='evening'] .garden-water-layer {
+		--garden-water-reflection: rgba(168, 170, 154, 0.14);
+		--garden-water-shadow: rgba(54, 89, 111, 0.14);
+		--garden-water-light: rgba(214, 185, 142, 0.12);
+		opacity: 0.56;
+	}
+
+	.garden-card[data-day-state='night'] .garden-water-layer {
+		--garden-water-left: 48%;
+		--garden-water-top: 42%;
+		--garden-water-width: 52%;
+		--garden-water-height: 38%;
+		--garden-water-reflection: rgba(92, 132, 151, 0.16);
+		--garden-water-shadow: rgba(30, 60, 86, 0.2);
+		--garden-water-light: rgba(118, 151, 163, 0.12);
+		opacity: 0.48;
+	}
+
+	.garden-water-effect {
+		position: absolute;
+		inset: 0;
+		display: block;
+		will-change: transform, opacity, background-position;
+	}
+
+	.garden-water-reflection {
+		inset: -12% -24%;
+		background:
+			linear-gradient(
+				90deg,
+				transparent 0 9%,
+				var(--garden-water-reflection) 17%,
+				transparent 30%,
+				var(--garden-water-shadow) 44%,
+				transparent 59%,
+				var(--garden-water-light) 73%,
+				transparent 88%
+			),
+			repeating-linear-gradient(
+				0deg,
+				transparent 0 8px,
+				var(--garden-water-reflection) 9px 10px,
+				transparent 13px 19px
+			);
+		background-size:
+			160% 100%,
+			100% 24px;
+		background-position:
+			0 0,
+			0 0;
+		opacity: 0.3;
+		transform: translate3d(-6%, 0, 0);
+		animation: garden-water-reflection-drift 14s cubic-bezier(0.42, 0, 0.24, 1) -2.5s infinite;
+	}
+
+	.garden-water-ripple {
+		inset: -8% -6%;
+		background:
+			repeating-linear-gradient(
+				0deg,
+				transparent 0 9px,
+				var(--garden-water-shadow) 10px 11px,
+				var(--garden-water-light) 12px,
+				transparent 16px 25px
+			);
+		background-size: 100% 30px;
+		background-position: 0 0;
+		opacity: 0.2;
+		transform: translate3d(0, 0, 0) scaleY(1);
+		animation: garden-water-ripple-soft 8.5s cubic-bezier(0.42, 0, 0.24, 1) -1.2s infinite;
+	}
+
+	.garden-water-light {
+		inset: 4% -18% 2%;
+		background:
+			radial-gradient(ellipse 36% 12% at 24% 34%, var(--garden-water-light), transparent 72%),
+			radial-gradient(ellipse 30% 9% at 54% 58%, var(--garden-water-reflection), transparent 70%),
+			radial-gradient(ellipse 24% 8% at 78% 42%, var(--garden-water-light), transparent 72%);
+		background-size: 135% 100%;
+		background-position: 0 0;
+		opacity: 0.22;
+		transform: translate3d(-3%, 0, 0);
+		animation: garden-water-light-shift 18s cubic-bezier(0.42, 0, 0.24, 1) -5s infinite;
+	}
+
 	.garden-butterfly {
 		position: absolute;
 		left: 33%;
 		top: 35%;
-		z-index: 2;
+		z-index: 3;
 		width: clamp(1.25rem, 4.8vw, 2.15rem);
 		height: auto;
 		pointer-events: none;
@@ -1765,6 +1902,69 @@
 		}
 	}
 
+	@keyframes garden-water-reflection-drift {
+		0%,
+		100% {
+			background-position:
+				0 0,
+				0 0;
+			opacity: 0.24;
+			transform: translate3d(-6%, 0, 0);
+		}
+		43% {
+			background-position:
+				52% 0,
+				0 5px;
+			opacity: 0.36;
+			transform: translate3d(4%, 0, 0);
+		}
+		76% {
+			background-position:
+				88% 0,
+				0 10px;
+			opacity: 0.29;
+			transform: translate3d(8%, 0.4px, 0);
+		}
+	}
+
+	@keyframes garden-water-ripple-soft {
+		0%,
+		100% {
+			background-position: 0 0;
+			opacity: 0.17;
+			transform: translate3d(0, 0, 0) scaleY(1);
+		}
+		48% {
+			background-position: 11px 9px;
+			opacity: 0.25;
+			transform: translate3d(0, 1.2px, 0) scaleY(1.018);
+		}
+		78% {
+			background-position: -7px 16px;
+			opacity: 0.2;
+			transform: translate3d(0, -0.4px, 0) scaleY(0.992);
+		}
+	}
+
+	@keyframes garden-water-light-shift {
+		0%,
+		100% {
+			background-position: 0 0;
+			opacity: 0.16;
+			transform: translate3d(-3%, 0, 0);
+		}
+		34% {
+			background-position: 48% 0;
+			opacity: 0.27;
+			transform: translate3d(2%, -0.3px, 0);
+		}
+		68% {
+			background-position: 92% 0;
+			opacity: 0.2;
+			transform: translate3d(5%, 0.2px, 0);
+		}
+	}
+
 	@keyframes sprout-sway {
 		0%,
 		100% {
@@ -2186,6 +2386,7 @@
 		.garden-photo,
 		.garden-photo::before,
 		.garden-photo::after,
+		.garden-water-effect,
 		.garden-light,
 		.garden-mist,
 		.garden-horizon,
@@ -2209,6 +2410,10 @@
 		.companion-bubble,
 		.garden-butterfly {
 			animation: none;
+		}
+
+		.garden-water-layer {
+			opacity: 0;
 		}
 
 		.garden-butterfly {
