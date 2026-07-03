@@ -3,6 +3,7 @@
 	import { onMount, tick } from 'svelte';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
+	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import GrowthGarden from '$lib/components/GrowthGarden.svelte';
 	import type { ProgressCompanionSelection } from '$lib/progressCompanion';
@@ -103,12 +104,14 @@
 		heatmapError?: string;
 		profileTheme?: keyof typeof THEMES | null;
 		progressCompanion?: ProgressCompanionSelection | string | null;
+		isAnonymous?: boolean;
 	}
 
 	// ── Theme ──
 
 	let { data } = $props<{ data: PageData }>();
 	let profileTheme = $state<keyof typeof THEMES>(getCachedTheme());
+	const isAnonymous = $derived(Boolean(data.isAnonymous));
 	const currentTheme = $derived(THEMES[profileTheme] ?? THEMES.neutral);
 	const themeStyle = $derived(
 		`--theme-accent: ${currentTheme.accent}; --theme-bg: ${currentTheme.bg};`
@@ -286,7 +289,7 @@
 	}
 
 	async function loadProgressData() {
-		if (progressLoading || progressLoaded) return;
+		if (isAnonymous || progressLoading || progressLoaded) return;
 
 		progressLoading = true;
 		progressError = '';
@@ -329,6 +332,7 @@
 
 	function maybeLoadInsights() {
 		if (
+			isAnonymous ||
 			!browser ||
 			!hasSensitiveDataConsent ||
 			!insightsVisible ||
@@ -342,6 +346,16 @@
 	}
 
 	onMount(() => {
+		if (isAnonymous) {
+			progressLoaded = true;
+			insightsVisible = false;
+			heatmapVisible = false;
+			if (browser) {
+				localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
+			}
+			return;
+		}
+
 		void loadProgressData();
 		hasSensitiveDataConsent = hasSensitiveConsent();
 		if (browser) {
@@ -482,7 +496,11 @@
 					<small>Försök att ladda sidan igen</small>
 				</section>
 			{:else}
+				{#if isAnonymous}
+					<AccountTeaser variant="progress" />
+				{/if}
 
+				<div class="progress-content" class:account-preview-content={isAnonymous} inert={isAnonymous}>
 		<GrowthGarden
 			growthScore={growthScore}
 			growthLevel={growthLevel}
@@ -661,6 +679,7 @@
 				<a href="/dagbok/checkin" class="auth-button primary">Skriv en rad</a>
 			</section>
 		{/if}
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -668,6 +687,30 @@
 
 <style>
 	.journey-container { display: grid; gap: 1rem; }
+
+	.progress-content {
+		display: grid;
+		gap: 1rem;
+	}
+
+	.account-preview-content {
+		position: relative;
+	}
+
+	.account-preview-content::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.22);
+		backdrop-filter: blur(2px);
+		pointer-events: none;
+	}
+
+	.account-preview-content > * {
+		opacity: 0.68;
+		filter: saturate(0.82);
+	}
 
 	.loading-state, .error-state { text-align: center; padding: 2rem 1rem; font-size: 1.05rem; }
 	.loading-state { color: hsl(var(--muted-foreground)); }

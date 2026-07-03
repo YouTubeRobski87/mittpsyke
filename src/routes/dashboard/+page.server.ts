@@ -1,4 +1,3 @@
-import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { DEFAULT_THEME, THEMES } from '$lib/theme';
 import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
@@ -168,7 +167,30 @@ export const load: PageServerLoad = async ({ locals }) => {
 	} = await locals.supabase.auth.getUser();
 
 	if (!user) {
-		throw redirect(303, '/login');
+		return {
+			title: 'Mitt rum',
+			description: 'En lugn översikt över dagbok, framsteg och inställningar.',
+			isAnonymous: true,
+			diaryPreview: {
+				id: null,
+				snippet: 'Din dagbok kan få följa med dig när du vill skapa en egen plats.',
+				dateLabel: '',
+				hasEntry: false
+			},
+			progressPreview: {
+				currentStreak: 0,
+				weeklyEntries: 0,
+				totalEntries: 0,
+				summary: 'Här kan små tecken på din resa samlas när du vill spara dem.'
+			},
+			settingsPreview: {
+				displayName: null,
+				themeLabel: THEMES[DEFAULT_THEME].label,
+				weeklyGoalLabel: WEEKLY_GOAL_LABELS.none,
+				dashboardFocusLabel: DASHBOARD_WIDGET_LABELS.dagbok
+			},
+			progressCompanion: null
+		};
 	}
 
 	const weeklyStart = startOfWeekIso();
@@ -258,6 +280,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	return {
 		title: 'Mitt rum',
 		description: 'En lugn översikt över dagbok, framsteg och inställningar.',
+		isAnonymous: false,
 		diaryPreview,
 		progressPreview,
 		settingsPreview,

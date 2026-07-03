@@ -1,5 +1,6 @@
 <script lang="ts">
   import SEO from '$lib/components/SEO.svelte';
+  import AccountTeaser from '$lib/components/AccountTeaser.svelte';
   import CompanionAvatar from '$lib/components/CompanionAvatar.svelte';
   import Sidebar from '$lib/components/Sidebar.svelte';
   import {
@@ -51,6 +52,7 @@
       dashboardFocusLabel: string;
     };
     progressCompanion: ProgressCompanionSelection | string | null;
+    isAnonymous?: boolean;
   };
 
   let { data } = $props<{ data: DashboardData }>();
@@ -58,8 +60,11 @@
   const diaryPreview = $derived(data.diaryPreview);
   const progressPreview = $derived(data.progressPreview);
   const settingsPreview = $derived(data.settingsPreview);
+  const isAnonymous = $derived(Boolean(data.isAnonymous));
   const displayName = $derived(settingsPreview.displayName);
-  const greeting = $derived(`Välkommen tillbaka${displayName ? `, ${displayName}` : ''}`);
+  const greeting = $derived(
+    isAnonymous ? 'Välkommen hit' : `Välkommen tillbaka${displayName ? `, ${displayName}` : ''}`
+  );
   const selectedCompanion = $derived(getProgressCompanionAnimal(data.progressCompanion));
   const hasSelectedCompanion = $derived(Boolean(selectedCompanion));
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
@@ -71,26 +76,49 @@
       : 'En lugn plats i naturen där din följeslagare vilar'
   );
   const moodLabel = $derived(progressPreview.weeklyEntries > 0 ? 'Bra' : 'Redo');
-  const latestActivity = $derived([
-    {
-      icon: PenLine,
-      tone: 'green',
-      title: diaryPreview.hasEntry ? 'Du skrev i din dagbok' : 'Din dagbok väntar på dig',
-      time: diaryPreview.hasEntry ? diaryPreview.dateLabel || 'Senast' : 'När du vill'
-    },
-    {
-      icon: Wind,
-      tone: 'purple',
-      title: 'Du gjorde en andningsövning',
-      time: progressPreview.weeklyEntries > 0 ? 'Igår kl. 20:15' : 'Ett lugnt första steg'
-    },
-    {
-      icon: Smile,
-      tone: 'mint',
-      title: 'Du uppdaterade ditt mående',
-      time: progressPreview.currentStreak > 0 ? `${progressPreview.currentStreak} dag nära i tid` : 'Idag'
-    }
-  ]);
+  const latestActivity = $derived(
+    isAnonymous
+      ? [
+          {
+            icon: PenLine,
+            tone: 'green',
+            title: 'Din dagbok kan följa med dig',
+            time: 'När du vill spara'
+          },
+          {
+            icon: Wind,
+            tone: 'purple',
+            title: 'Dina små steg kan samlas här',
+            time: 'I din takt'
+          },
+          {
+            icon: Smile,
+            tone: 'mint',
+            title: 'Historiken väntar stilla',
+            time: 'Om du skapar konto'
+          }
+        ]
+      : [
+          {
+            icon: PenLine,
+            tone: 'green',
+            title: diaryPreview.hasEntry ? 'Du skrev i din dagbok' : 'Din dagbok väntar på dig',
+            time: diaryPreview.hasEntry ? diaryPreview.dateLabel || 'Senast' : 'När du vill'
+          },
+          {
+            icon: Wind,
+            tone: 'purple',
+            title: 'Du gjorde en andningsövning',
+            time: progressPreview.weeklyEntries > 0 ? 'Igår kl. 20:15' : 'Ett lugnt första steg'
+          },
+          {
+            icon: Smile,
+            tone: 'mint',
+            title: 'Du uppdaterade ditt mående',
+            time: progressPreview.currentStreak > 0 ? `${progressPreview.currentStreak} dag nära i tid` : 'Idag'
+          }
+        ]
+  );
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/dashboard" />
@@ -107,16 +135,20 @@
         </div>
 
         <div class="topbar-actions" aria-label="Kontroller">
-          <a class="icon-button" href="/notiser" aria-label="Öppna notiser">
-            <Bell size={21} strokeWidth={1.9} />
-          </a>
-          <a class="avatar-button" href="/dashboard/installningar" aria-label="Öppna inställningar">
-            <CompanionAvatar selection={data.progressCompanion} size="lg" decorative />
-          </a>
+          {#if isAnonymous}
+            <a class="soft-account-link" href="/register">Skapa konto</a>
+          {:else}
+            <a class="icon-button" href="/notiser" aria-label="Öppna notiser">
+              <Bell size={21} strokeWidth={1.9} />
+            </a>
+            <a class="avatar-button" href="/dashboard/installningar" aria-label="Öppna inställningar">
+              <CompanionAvatar selection={data.progressCompanion} size="lg" decorative />
+            </a>
+          {/if}
         </div>
       </header>
 
-      <section class="companion-hero" data-companion={companionArtId} aria-labelledby="companion-title">
+      <section class="companion-hero" class:personal-preview={isAnonymous} inert={isAnonymous} data-companion={companionArtId} aria-labelledby="companion-title">
         <img
           src={companionHeroImage}
           alt={companionHeroAlt}
@@ -142,6 +174,10 @@
           </span>
         </div>
       </section>
+
+      {#if isAnonymous}
+        <AccountTeaser variant="dashboard" />
+      {/if}
 
       <section class="quick-grid" aria-label="Snabb översikt">
         <article class="quick-card mood-card">
@@ -182,7 +218,7 @@
           </a>
         </article>
 
-        <article class="quick-card insight-card">
+        <article class="quick-card insight-card" class:personal-preview={isAnonymous} inert={isAnonymous}>
           <div class="card-head">
             <div>
               <h2>Dina insikter</h2>
@@ -201,7 +237,7 @@
       </section>
 
       <section class="lower-grid">
-        <article class="activity-card">
+        <article class="activity-card" class:personal-preview={isAnonymous} inert={isAnonymous}>
           <header>
             <h2>Senaste aktivitet</h2>
           </header>
@@ -345,6 +381,21 @@
     height: 44px;
   }
 
+  .soft-account-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0.62rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(85, 124, 104, 0.18);
+    background: rgba(255, 255, 255, 0.72);
+    color: #405b4e;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 24px rgba(69, 83, 61, 0.07);
+  }
+
   .companion-hero {
     position: relative;
     min-height: clamp(280px, 34vw, 420px);
@@ -353,6 +404,26 @@
     box-shadow: var(--mp-shadow);
     border: 1px solid rgba(255, 255, 255, 0.72);
     background: #edf3e6;
+  }
+
+  .personal-preview {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .personal-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: rgba(255, 255, 255, 0.24);
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+  }
+
+  .personal-preview > * {
+    opacity: 0.76;
+    filter: saturate(0.82);
   }
 
   .companion-hero img {

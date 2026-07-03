@@ -1,5 +1,4 @@
 import type { PageServerLoad } from './$types';
-import { redirect } from '@sveltejs/kit';
 import { THEMES } from '$lib/theme';
 import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
 
@@ -9,12 +8,26 @@ export const load: PageServerLoad = async ({ locals }) => {
 	} = await locals.supabase.auth.getUser();
 
 	if (!user) {
-		throw redirect(303, '/login');
+		return {
+			isAnonymous: true,
+			streak: { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 },
+			milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
+			weeklyEntries: 0,
+			entryCount: 0,
+			activeDays: 0,
+			growthScore: 0,
+			growthLevel: 0,
+			heatmapData: {},
+			heatmapError: '',
+			profileTheme: null,
+			progressCompanion: null
+		};
 	}
 
 	const userMetadata = (user.user_metadata ?? {}) as Record<string, unknown>;
 
 	return {
+		isAnonymous: false,
 		streak: { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 },
 		milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
 		weeklyEntries: 0,
