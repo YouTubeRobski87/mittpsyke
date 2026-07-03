@@ -2,7 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import { goto } from '$app/navigation';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
-	import UserAvatar from '$lib/components/UserAvatar.svelte';
+	import CompanionAvatar from '$lib/components/CompanionAvatar.svelte';
 	import { supabase } from '$lib/supabase';
 	import type {
 		DeleteAccountErrorResponse,
@@ -11,7 +11,11 @@
 		SmsPreferenceSuccessResponse
 	} from '$lib/types';
 	import { THEME_STORAGE_KEY } from '$lib/theme';
-	import { AVATAR_OPTIONS, isAvatarPresetKey, type AvatarPresetKey } from '$lib/avatar';
+	import {
+		getProgressCompanionAnimal,
+		readProgressCompanionFromMetadata,
+		type ProgressCompanionSelection
+	} from '$lib/progressCompanion';
 
 	let loading = $state(true);
 
@@ -22,7 +26,7 @@
 	let nameMessage = $state('');
 
 	// Personalization
-	let avatarKey = $state<AvatarPresetKey | ''>('');
+	let progressCompanion = $state<ProgressCompanionSelection | null>(null);
 	let profileTheme = $state('neutral');
 	let weeklyGoalType = $state('diary_3_week');
 	let dashboardWidget = $state('dagbok');
@@ -60,9 +64,7 @@
 		{ value: 'guide',  label: 'Guider' },
 		{ value: 'chat',   label: 'Chatten' },
 	];
-	function toAvatarKey(value: unknown): AvatarPresetKey | '' {
-		return isAvatarPresetKey(value) ? value : '';
-	}
+	const selectedCompanion = $derived(getProgressCompanionAnimal(progressCompanion));
 
 	function normalizeSwedishMobileNumber(value: string): string | null {
 		const compact = value.trim().replace(/[\s().-]/g, '');
@@ -114,7 +116,7 @@
 			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
 			displayName = typeof meta.display_name === 'string' ? meta.display_name : '';
 			birthday = typeof meta.birthday === 'string' ? meta.birthday : '';
-			avatarKey = toAvatarKey(meta.avatar_key);
+			progressCompanion = readProgressCompanionFromMetadata(meta);
 			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
@@ -226,7 +228,6 @@
 
 		const { error } = await supabase.auth.updateUser({
 			data: {
-				avatar_key: avatarKey || null,
 				profile_theme: profileTheme,
 				weekly_goal_type: weeklyGoalType,
 				dashboard_widget: dashboardWidget
@@ -407,34 +408,15 @@
 			<h2>Personalisera portalen</h2>
 			<p class="field-hint">Välj tema, mål och vilket kort du vill se på startsidan. Du kan ändra när du vill.</p>
 
-			<!-- Theme picker -->
-			<p class="pref-label">Din avatar</p>
-			<div class="avatar-row" role="radiogroup" aria-label="Välj avatar">
-				<label class="avatar-option {avatarKey === '' ? 'selected' : ''}">
-					<input
-						type="radio"
-						name="avatarKey"
-						value=""
-						bind:group={avatarKey}
-						class="sr-only"
-					/>
-					<UserAvatar seed="settings-default" size="sm" decorative />
-					<span class="option-text">Standard</span>
-				</label>
-
-				{#each AVATAR_OPTIONS as avatar}
-					<label class="avatar-option {avatarKey === avatar.value ? 'selected' : ''}">
-						<input
-							type="radio"
-							name="avatarKey"
-							value={avatar.value}
-							bind:group={avatarKey}
-							class="sr-only"
-						/>
-						<UserAvatar avatarKey={avatar.value} size="sm" decorative animated={false} />
-						<span class="option-text">{avatar.label}</span>
-					</label>
-				{/each}
+			<!-- Companion profile -->
+			<p class="pref-label">Din följeslagare</p>
+			<div class="companion-profile-card">
+				<CompanionAvatar selection={progressCompanion} size="xl" decorative animated={false} />
+				<div class="companion-profile-copy">
+					<strong>{selectedCompanion?.name ?? 'Din följeslagare'}</strong>
+					<span>Visas som din profilbild när du är inloggad.</span>
+					<a href="/framsteg#growth-garden">Byt följeslagare</a>
+				</div>
 			</div>
 
 			<p class="pref-label">Ditt tema</p>
@@ -809,34 +791,46 @@
 		margin: 1rem 0 0.4rem;
 	}
 
-	.avatar-row {
+	.companion-profile-card {
 		display: flex;
 		align-items: center;
-		gap: 0.45rem;
-		flex-wrap: wrap;
-		margin-bottom: 0.25rem;
-	}
-
-	.avatar-option {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		padding: 0.35rem 0.45rem;
-		border-radius: 9999px;
+		gap: 0.85rem;
+		max-width: 32rem;
+		padding: 0.75rem;
 		border: 1px solid hsl(var(--border));
+		border-radius: 14px;
 		background: hsl(var(--surface));
-		cursor: pointer;
-		transition: border-color 120ms ease, background 120ms ease;
 	}
 
-	.avatar-option:hover {
-		border-color: hsl(var(--muted-foreground) / 0.35);
-		background: hsl(var(--surface-soft));
+	.companion-profile-copy {
+		display: grid;
+		gap: 0.18rem;
+		min-width: 0;
+		font-family: var(--font-body);
 	}
 
-	.avatar-option.selected {
-		border-color: var(--primary, #436e8f);
-		background: var(--theme-bg, hsl(var(--surface-soft)));
+	.companion-profile-copy strong {
+		font-size: 0.95rem;
+		line-height: 1.25;
+	}
+
+	.companion-profile-copy span {
+		font-size: 0.86rem;
+		line-height: 1.45;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.companion-profile-copy a {
+		width: fit-content;
+		margin-top: 0.15rem;
+		font-size: 0.86rem;
+		font-weight: 650;
+		color: hsl(var(--primary));
+		text-decoration: none;
+	}
+
+	.companion-profile-copy a:hover {
+		text-decoration: underline;
 	}
 
 	.theme-row {
@@ -1023,17 +1017,10 @@
 			align-items: stretch;
 		}
 
-		.avatar-row {
-			display: grid;
-			grid-template-columns: 1fr;
-			gap: 0.4rem;
-		}
-
-		.avatar-option {
-			width: 100%;
+		.companion-profile-card {
+			align-items: flex-start;
 			border-radius: 12px;
-			padding: 0.45rem 0.55rem;
-			min-width: 0;
+			padding: 0.65rem;
 		}
 
 		.option-list.widget-row {
