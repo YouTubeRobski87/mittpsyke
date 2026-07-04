@@ -28,6 +28,7 @@
 	export let activeDays: number = 0;
 	export let lastEntryDaysAgo: number | null = null;
 	export let progressCompanion: ProgressCompanionSelection | string | null = null;
+	export let isAnonymousPreview = false;
 
 	type CareSignal = {
 		label: string;
@@ -124,12 +125,7 @@
 	$: companionLevelText = getCompanionLevelText(companionLevel);
 	$: companionDayStateImage = getProgressCompanionDayStateImage(companionDayState);
 	$: careSignals = getCareSignals();
-	$: placeCopy =
-		entryCount === 0
-			? 'Trädgården väntar lugnt. En rad räcker när du vill börja.'
-			: activeDays > 1
-				? 'Platsen känner igen att du återvänder i din egen takt.'
-				: 'Du har lämnat ett första avtryck här.';
+	$: placeCopy = getPlaceCopy();
 
 	let careCount = 0;
 	let observedEntryCount: number | null = null;
@@ -158,7 +154,9 @@
 			observedEntryCount = entryCount;
 		} else if (entryCount > observedEntryCount) {
 			observedEntryCount = entryCount;
-			companionMessage = 'Du har gett trädgården lite mer ljus.';
+			companionMessage = isAnonymousPreview
+				? 'Mer ljus kan växa fram när platsen får fler rader.'
+				: 'Du har gett trädgården lite mer ljus.';
 		}
 	}
 
@@ -227,11 +225,29 @@
 	}
 
 	function getCompanionLevelText(level: number) {
+		if (isAnonymousPreview) {
+			if (level >= 5) return 'Med tiden kan följeslagaren kännas tryggare i platsen och bära mer ljus.';
+			if (level === 4) return 'När platsen får återbesök kan följeslagaren bli mer stadig där.';
+			if (level === 3) return 'Följeslagaren kan börja ta mer plats, lugnt och diskret.';
+			if (level === 2) return 'Följeslagaren kan växa varsamt med platsens rytm.';
+			return 'Följeslagaren kan vänta stilla medan platsen tar form.';
+		}
+
 		if (level >= 5) return 'Följeslagaren känns tryggare i platsen och bär mer ljus.';
 		if (level === 4) return 'Följeslagaren har blivit mer stadig när du återvänder.';
 		if (level === 3) return 'Följeslagaren börjar ta mer plats, lugnt och diskret.';
 		if (level === 2) return 'Följeslagaren har börjat växa med din rytm.';
 		return 'Följeslagaren väntar stilla medan platsen tar form.';
+	}
+
+	function getPlaceCopy() {
+		if (isAnonymousPreview) {
+			return 'När ett konto skapas kan platsen börja minnas små avtryck och växa varsamt över tid.';
+		}
+
+		if (entryCount === 0) return 'Trädgården väntar lugnt. En rad räcker när du vill börja.';
+		if (activeDays > 1) return 'Platsen känner igen att du återvänder i din egen takt.';
+		return 'Du har lämnat ett första avtryck här.';
 	}
 
 	function applyCompanion(animal: ProgressCompanionAnimal, message: string) {
@@ -286,6 +302,11 @@
 	}
 
 	function chooseCompanion(animal: ProgressCompanionAnimal) {
+		if (isAnonymousPreview) {
+			applyCompanion(animal, getPreviewCompanionMessage());
+			return;
+		}
+
 		applyCompanion(animal, 'Nu finns jag kvar här med dig.');
 		void persistCompanion(animal);
 	}
@@ -297,6 +318,16 @@
 
 	function giveCalm() {
 		careCount += 1;
+		if (isAnonymousPreview) {
+			const phrases = [
+				'Här kan en lugn plats börja ta form.',
+				'En liten stund kan räcka för att börja.',
+				'Platsen kan växa långsamt, utan brådska.'
+			];
+			companionMessage = phrases[careCount % phrases.length];
+			return;
+		}
+
 		const phrases = getProgressCompanionCarePhrases({
 			lastEntryDaysAgo,
 			hasEntries: entryCount > 0
@@ -305,6 +336,8 @@
 	}
 
 	function getReturnMessage() {
+		if (isAnonymousPreview) return getPreviewCompanionMessage();
+
 		const statusMessage = getProgressCompanionStatusMessage({
 			lastEntryDaysAgo,
 			hasEntries: entryCount > 0
@@ -332,6 +365,10 @@
 		return 'Fint att du kom tillbaka.';
 	}
 
+	function getPreviewCompanionMessage() {
+		return 'Här kan en följeslagare få en lugn plats att återvända till.';
+	}
+
 	function rememberVisit() {
 		if (!browser) return;
 		try {
@@ -342,6 +379,14 @@
 	}
 
 	function getCareSignals(): CareSignal[] {
+		if (isAnonymousPreview) {
+			return [
+				{ label: 'Ljus', text: 'Mer ljus växer fram med tiden' },
+				{ label: 'Växtlighet', text: 'Fler små detaljer syns' },
+				{ label: 'Närvaro', text: 'Återbesök gör platsen mer levande' }
+			];
+		}
+
 		const lightText =
 			entryCount === 0
 				? 'Väntar stilla'
@@ -381,10 +426,11 @@
 	data-day-state={companionDayState}
 >
 	<div class="garden-copy">
-		<h2 id="growth-garden-title">Din växande plats</h2>
+		<h2 id="growth-garden-title">{isAnonymousPreview ? 'Ett hem som väntar' : 'Din växande plats'}</h2>
 		<p class="garden-intro">
-			Trädgården växer när du skriver. Din följeslagare finns kvar när du kommer tillbaka och
-			utvecklas varsamt när du fortsätter använda dagboken.
+			{isAnonymousPreview
+				? 'När du skapar ett konto får din följeslagare en lugn plats som finns kvar mellan dina besök. Med tiden växer platsen tillsammans med dina dagboksanteckningar.'
+				: 'Trädgården växer när du skriver. Din följeslagare finns kvar när du kommer tillbaka och utvecklas varsamt när du fortsätter använda dagboken.'}
 		</p>
 	</div>
 
@@ -586,8 +632,20 @@
 
 	<div class="companion-panel" aria-label="Följeslagarens plats">
 		<div class="companion-summary">
-			<span>{continuityState === 'settled' ? 'Mer liv i platsen' : continuityState === 'soft' ? 'Varsam rytm' : 'Stilla början'}</span>
-			<strong>{companionName} håller platsen sällskap.</strong>
+			<span>
+				{isAnonymousPreview
+					? 'Platsen förändras tillsammans med dig'
+					: continuityState === 'settled'
+						? 'Mer liv i platsen'
+						: continuityState === 'soft'
+							? 'Varsam rytm'
+							: 'Stilla början'}
+			</span>
+			<strong>
+				{isAnonymousPreview
+					? 'Med tiden får platsen mer ljus, fler detaljer och en historia som speglar din resa.'
+					: `${companionName} håller platsen sällskap.`}
+			</strong>
 			<p>{placeCopy}</p>
 			{#if companionStage === 'chosen'}
 				<p class="companion-level-text">
@@ -620,11 +678,17 @@
 			{/each}
 		</div>
 
-		<div class="companion-care">
-			<p>{companionStage === 'chosen' ? 'Du behöver inte hålla en takt. Platsen finns kvar ändå.' : 'Det går bra att börja stilla.'}</p>
+	<div class="companion-care">
+			<p>
+				{isAnonymousPreview
+					? 'Det går bra att börja stilla. Platsen kan växa utan press.'
+					: companionStage === 'chosen'
+						? 'Du behöver inte hålla en takt. Platsen finns kvar ändå.'
+						: 'Det går bra att börja stilla.'}
+			</p>
 			<div class="companion-actions">
 				<button type="button" onclick={giveCalm}>Säg hej</button>
-				{#if companionStage === 'chosen'}
+				{#if companionStage === 'chosen' && !isAnonymousPreview}
 					<button class="secondary" type="button" onclick={changeCompanion}>Byt följeslagare</button>
 				{/if}
 			</div>
@@ -632,8 +696,14 @@
 	</div>
 
 	<div class="garden-meta">
-		<p class="garden-note">Här får små avtryck finnas kvar.</p>
-		<p class="garden-stats">Trädgården förändras långsamt med dina reflektioner.</p>
+		<p class="garden-note">
+			{isAnonymousPreview ? 'Här kan små avtryck få finnas kvar.' : 'Här får små avtryck finnas kvar.'}
+		</p>
+		<p class="garden-stats">
+			{isAnonymousPreview
+				? 'Platsen förändras långsamt med reflektioner över tid.'
+				: 'Trädgården förändras långsamt med dina reflektioner.'}
+		</p>
 	</div>
 </section>
 

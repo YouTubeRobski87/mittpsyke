@@ -319,6 +319,10 @@
 
 	// ── Weekly summary copy (no AI, just warm text) ──
 	const weeklySummaryText = $derived.by(() => {
+		if (isAnonymous) {
+			return 'Här kan en mjuk veckosammanfattning visas när dagboken börjar få återkommande rader.';
+		}
+
 		if (weeklyEntries === 0) return 'Du har inte checkat in den här veckan än — och det är helt okej.';
 		if (weeklyEntries === 1) return 'Du har checkat in en gång den här veckan. Det räcker fint.';
 		if (weeklyEntries === 2) return 'Två incheckningar den här veckan — du tar hand om dig.';
@@ -327,6 +331,8 @@
 	});
 
 	const weeklyEncouragement = $derived.by(() => {
+		if (isAnonymous) return 'Varje rad kan räknas, även när den är kort.';
+
 		if (weeklyEntries >= 1) return 'Varje rad räknas, även när den är kort.';
 		return 'Det finns inget som måste vara perfekt för att räknas.';
 	});
@@ -341,7 +347,9 @@
 	function softMilestoneTitle(milestone: Milestone) {
 		if (!milestone.achieved) return 'Får växa fram senare';
 
-		if (milestone.metric === 'longestStreak') return 'Du har återvänt hit';
+		if (milestone.metric === 'longestStreak') {
+			return isAnonymous ? 'Återbesök gör platsen mer levande' : 'Du har återvänt hit';
+		}
 		if (milestone.metric === 'daysSinceJoined') return 'Platsen finns kvar över tid';
 		if (milestone.metric === 'maxWordsInEntry' || milestone.metric === 'maxWordsInDay') {
 			return 'En tanke fick ta mer plats';
@@ -349,7 +357,7 @@
 		if (milestone.metric === 'totalWords') return 'Många ord har fått landa';
 		if (milestone.metric === 'totalEntries' && milestone.threshold <= 10) return 'Ett varsamt avtryck';
 		if (milestone.metric === 'totalEntries' && milestone.threshold < 100) return 'Fler stunder fick plats';
-		return 'Din trädgård har vuxit lite till';
+		return isAnonymous ? 'Trädgården kan växa lite till' : 'Din trädgård har vuxit lite till';
 	}
 
 	function softMilestoneDescription(milestone: Milestone) {
@@ -370,7 +378,10 @@
 
 	function nextMilestoneCopy(milestone: Milestone) {
 		const softened = softMilestoneDescription({ ...milestone, achieved: true });
-		return softened === milestone.text ? 'Din trädgård kan växa lite till när du återvänder.' : softened;
+		if (softened !== milestone.text) return softened;
+		return isAnonymous
+			? 'Trädgården kan växa lite till när återbesöken blir fler.'
+			: 'Din trädgård kan växa lite till när du återvänder.';
 	}
 
 	// ── Reflection prompts (rotate based on day) ──
@@ -635,7 +646,11 @@
 					<a class="home-return-link" href="/">&larr; Till startsidan</a>
 				{/if}
 				<h1>Framsteg</h1>
-				<p>En lugn överblick över din resa, i din egen takt.</p>
+				<p>
+					{isAnonymous
+						? 'En förhandsvisning av hur små framsteg kan få synas över tid.'
+						: 'En lugn överblick över din resa, i din egen takt.'}
+				</p>
 			</div>
 		</header>
 	</div>
@@ -663,15 +678,20 @@
 			activeDays={activeDays}
 			lastEntryDaysAgo={streakData?.lastEntryDaysAgo ?? null}
 			progressCompanion={displayedProgressCompanion}
+			isAnonymousPreview={isAnonymous}
 		/>
 
 		<!-- ── Aktivitetskarta ── -->
 		<section class="card heatmap-card" bind:this={heatmapCardEl}>
 			<div class="card-header">
 				<div class="icon-badge heat"><TrendingUp size={24} /></div>
-				<h2>Din aktivitetskarta</h2>
+				<h2>{isAnonymous ? 'Exempel på aktivitetskarta' : 'Din aktivitetskarta'}</h2>
 			</div>
-			<p class="heatmap-description">Varje ruta motsvarar en dag. Mörkare färg betyder fler inlägg.</p>
+			<p class="heatmap-description">
+				{isAnonymous
+					? 'Varje ruta kan motsvara en dag. Mörkare färg visar hur fler inlägg kan synas.'
+					: 'Varje ruta motsvarar en dag. Mörkare färg betyder fler inlägg.'}
+			</p>
 			{#if shouldShowHeatmap}
 				<ActivityHeatmap data={heatmapData} error={heatmapError} />
 			{:else}
@@ -683,7 +703,7 @@
 		<section class="card insights-card" bind:this={insightsCardEl}>
 			<div class="card-header">
 				<div class="icon-badge insight"><Lightbulb size={24} /></div>
-				<h2>Dina AI-insikter</h2>
+				<h2>{isAnonymous ? 'Exempel på AI-insikter' : 'Dina AI-insikter'}</h2>
 			</div>
 
 			{#if !isAnonymous && !hasSensitiveDataConsent}
@@ -761,7 +781,9 @@
 					{#if streakData}
 						<div class="overview-item">
 							<div class="overview-number overview-number--text">{latestEntryText}</div>
-							<div class="overview-label">Senaste gången du skrev</div>
+							<div class="overview-label">
+								{isAnonymous ? 'Exempel på senaste anteckning' : 'Senaste gången du skrev'}
+							</div>
 						</div>
 					{/if}
 				</div>
@@ -785,7 +807,11 @@
 					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
 					<div>
 						<h2>Små tecken på omsorg</h2>
-						<p class="card-intro">Små tecken på att du har återvänt, reflekterat och gett dig själv plats över tid.</p>
+						<p class="card-intro">
+							{isAnonymous
+								? 'Små tecken på hur återbesök, reflektioner och tid kan få synas i platsen.'
+								: 'Små tecken på att du har återvänt, reflekterat och gett dig själv plats över tid.'}
+						</p>
 					</div>
 				</div>
 				{#each milestonesData.sections as section}
@@ -807,14 +833,22 @@
 				{#if milestonesData.nextMilestone}
 					<div class="next-milestone">
 						<div class="next-header"><Calendar size={18} /><span>Det som långsamt kan växa fram</span></div>
-						<h3>Din trädgård har plats för mer ljus.</h3>
+						<h3>{isAnonymous ? 'Trädgården kan få plats för mer ljus.' : 'Din trädgård har plats för mer ljus.'}</h3>
 						<p>{nextMilestoneCopy(milestonesData.nextMilestone)}</p>
-						<small>Ingen brådska. Den här platsen växer när du återvänder.</small>
+						<small>
+							{isAnonymous
+								? 'Ingen brådska. Platsen kan växa när återbesöken blir fler.'
+								: 'Ingen brådska. Den här platsen växer när du återvänder.'}
+						</small>
 					</div>
 				{:else}
 					<div class="next-milestone">
 						<div class="next-header"><Calendar size={18} /><span>Det som långsamt kan växa fram</span></div>
-						<p>Det finns inget mer du behöver jaga. Fortsätt återvända när det hjälper dig.</p>
+						<p>
+							{isAnonymous
+								? 'Här kan platsen visa att inget behöver jagas. Den får växa i lugn takt.'
+								: 'Det finns inget mer du behöver jaga. Fortsätt återvända när det hjälper dig.'}
+						</p>
 					</div>
 				{/if}
 			</section>
