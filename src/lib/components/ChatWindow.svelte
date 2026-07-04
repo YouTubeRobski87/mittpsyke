@@ -889,31 +889,31 @@
 	</div>
 
 	{#if showAccountNudge}
-		<div class="px-4 py-2 flex items-center justify-between gap-2 text-xs opacity-60 border-t border-black/5 dark:border-white/5">
-			<p>
-				Vill du kunna återvända hit?
+		<div class="account-nudge border-t border-black/5 px-4 py-2 text-xs dark:border-white/5">
+			<p class="account-nudge-copy">Vill du kunna återvända hit? Skapa konto för att spara dina reflektioner.</p>
+			<div class="account-nudge-actions" aria-label="Kontolänkar">
 				<a
 					href="/register"
-					class="underline hover:opacity-100"
+					class="account-nudge-link account-nudge-link-primary"
 					onclick={() => {
 						void trackEvent('click_chat_nudge');
 					}}
 				>
 					Skapa konto
 				</a>
-				för att spara dina reflektioner.
-			</p>
-			<button
-				type="button"
-				class="account-nudge-close shrink-0 opacity-70 hover:opacity-100 transition-opacity"
-				onclick={() => {
-					showAccountNudge = false;
-					nudgeDismissed = true;
-				}}
-				aria-label="Stäng förslaget om att skapa konto"
-			>
-				Stäng
-			</button>
+				<a href="/" class="account-nudge-link account-nudge-link-secondary">Till startsidan</a>
+				<button
+					type="button"
+					class="account-nudge-close"
+					onclick={() => {
+						showAccountNudge = false;
+						nudgeDismissed = true;
+					}}
+					aria-label="Stäng förslaget om att skapa konto"
+				>
+					Stäng
+				</button>
+			</div>
 		</div>
 	{/if}
 
@@ -1159,6 +1159,7 @@
 
 	.clear-history-button:focus-visible,
 	.starter-chip:focus-visible,
+	.account-nudge-link:focus-visible,
 	.account-nudge-close:focus-visible,
 	.send-button:focus-visible,
 	.settings-toggle:focus-visible,
@@ -1166,6 +1167,92 @@
 	.speech-setting input:focus-visible {
 		outline: 2px solid var(--primary);
 		outline-offset: 2px;
+	}
+
+	.account-nudge {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.65rem;
+		color: rgba(15, 23, 42, 0.66);
+	}
+
+	.account-nudge-copy {
+		margin: 0;
+		line-height: 1.45;
+	}
+
+	.account-nudge-actions {
+		display: flex;
+		flex: 0 0 auto;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 0.45rem;
+	}
+
+	.account-nudge-link,
+	.account-nudge-close {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 1.9rem;
+		padding: 0.34rem 0.58rem;
+		border-radius: 999px;
+		font-size: 0.72rem;
+		font-weight: 650;
+		line-height: 1;
+		text-decoration: none;
+		transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+	}
+
+	.account-nudge-link-primary {
+		border: 1px solid rgba(15, 118, 110, 0.18);
+		background: rgba(15, 118, 110, 0.08);
+		color: rgba(15, 92, 86, 0.96);
+	}
+
+	.account-nudge-link-secondary,
+	.account-nudge-close {
+		border: 1px solid rgba(15, 23, 42, 0.1);
+		background: transparent;
+		color: rgba(15, 23, 42, 0.58);
+	}
+
+	.account-nudge-link:hover,
+	.account-nudge-close:hover {
+		opacity: 1;
+	}
+
+	.account-nudge-close {
+		cursor: pointer;
+	}
+
+	:global(.dark) .account-nudge {
+		color: rgba(248, 250, 252, 0.68);
+	}
+
+	:global(.dark) .account-nudge-link-primary {
+		border-color: rgba(94, 234, 212, 0.16);
+		background: rgba(94, 234, 212, 0.08);
+		color: rgba(204, 251, 241, 0.92);
+	}
+
+	:global(.dark) .account-nudge-link-secondary,
+	:global(.dark) .account-nudge-close {
+		border-color: rgba(248, 250, 252, 0.12);
+		color: rgba(248, 250, 252, 0.58);
+	}
+
+	@media (max-width: 520px) {
+		.account-nudge {
+			display: grid;
+			gap: 0.5rem;
+		}
+
+		.account-nudge-actions {
+			justify-content: flex-start;
+		}
 	}
 
 	.speech-message-actions {
