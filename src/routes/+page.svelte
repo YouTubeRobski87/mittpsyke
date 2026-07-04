@@ -145,22 +145,17 @@
 	<section class="hero-section hero" aria-label="Introduktion till MittPsyke" bind:this={heroEl}>
 		<picture class="hero-picture">
 			<source
-				type="image/avif"
-				srcset="/assets/home/MittpsykeTree-720.avif 720w, /assets/home/MittpsykeTree-1200.avif 1200w, /assets/home/MittpsykeTree-1920.avif 1920w"
-				sizes="100vw"
-			/>
-			<source
-				type="image/webp"
-				srcset="/assets/home/MittpsykeTree-720.webp 720w, /assets/home/MittpsykeTree-1200.webp 1200w, /assets/home/MittpsykeTree-1920.webp 1920w"
+				type="image/jpeg"
+				srcset="/assets/home/Bjorn-tryggplats-hero-720.jpg 720w, /assets/home/Bjorn-tryggplats-hero-1200.jpg 1200w, /assets/home/Bjorn-tryggplats-hero-1695.jpg 1695w"
 				sizes="100vw"
 			/>
 			<img
 				class="hero-bg"
 				bind:this={bgEl}
-				src="/assets/home/MittpsykeTree-1200.webp"
-				alt="Stilla träd i mjukt ljus"
+				src="/assets/home/Bjorn-tryggplats-hero-1200.jpg"
+				alt=""
 				width="1200"
-				height="654"
+				height="657"
 				aria-hidden="true"
 				decoding="async"
 				fetchpriority="high"
@@ -428,9 +423,8 @@
 		pointer-events: none;
 	}
 
-	.hero img {
+	.hero-picture img {
 		width: 100%;
-		height: auto;
 		object-fit: cover;
 		filter: saturate(0.75) brightness(0.85) contrast(1.05);
 	}
