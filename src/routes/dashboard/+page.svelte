@@ -156,7 +156,13 @@
         </div>
       </header>
 
-      <section class="companion-hero" class:personal-preview={isAnonymous} data-companion={companionArtId} aria-labelledby="companion-title">
+      <section
+        class="companion-hero"
+        class:personal-preview={isAnonymous}
+        data-companion={companionArtId}
+        aria-labelledby="companion-title"
+        style={`--hero-image: url('${companionHeroImage}')`}
+      >
         <img
           src={companionHeroImage}
           alt={companionHeroAlt}
@@ -424,12 +430,15 @@
 
   .companion-hero {
     position: relative;
-    min-height: clamp(280px, 34vw, 420px);
+    height: clamp(300px, 25vw, 390px);
+    min-height: 300px;
     overflow: hidden;
     border-radius: 8px;
     box-shadow: var(--mp-shadow);
     border: 1px solid rgba(255, 255, 255, 0.72);
-    background: #101a15;
+    background:
+      linear-gradient(90deg, rgba(12, 23, 17, 0.94), rgba(25, 40, 29, 0.6)),
+      #101a15;
   }
 
   .personal-preview {
@@ -449,11 +458,31 @@
     pointer-events: none;
   }
 
+  .companion-hero::before {
+    content: '';
+    position: absolute;
+    inset: -18px;
+    z-index: 0;
+    background-image:
+      linear-gradient(90deg, rgba(6, 13, 10, 0.72), rgba(6, 13, 10, 0.14) 46%, rgba(6, 13, 10, 0.42)),
+      var(--hero-image);
+    background-size: cover;
+    background-position: center 56%;
+    filter: blur(14px) brightness(0.7) saturate(0.82);
+    transform: scale(1.04);
+    pointer-events: none;
+  }
+
   .companion-hero.personal-preview::before {
-    z-index: 1;
+    inset: -18px;
     background:
       radial-gradient(circle at 20% 52%, rgba(4, 10, 8, 0.24), transparent 36%),
-      linear-gradient(90deg, rgba(6, 14, 11, 0.36), rgba(8, 16, 13, 0.14) 44%, rgba(8, 16, 13, 0.3));
+      linear-gradient(90deg, rgba(6, 14, 11, 0.5), rgba(8, 16, 13, 0.18) 44%, rgba(8, 16, 13, 0.36)),
+      var(--hero-image);
+    background-size: cover;
+    background-position: center 56%;
+    filter: blur(14px) brightness(0.68) saturate(0.8);
+    transform: scale(1.04);
     backdrop-filter: none;
   }
 
@@ -478,17 +507,22 @@
   }
 
   .companion-hero img {
+    position: absolute;
+    inset: auto 0 0;
     width: 100%;
     height: 100%;
-    min-height: inherit;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center;
     display: block;
   }
 
   .companion-hero[data-companion='bear'] img {
-    object-position: center 52%;
-    filter: brightness(0.72) saturate(0.86) contrast(1.04);
+    width: min(74%, 960px);
+    right: clamp(14px, 3vw, 46px);
+    left: auto;
+    object-position: right bottom;
+    filter: brightness(0.74) saturate(0.86) contrast(1.03);
+    transform: scaleX(-1);
   }
 
   .companion-hero::after {
@@ -497,15 +531,15 @@
     inset: 0;
     z-index: 1;
     background:
-      radial-gradient(circle at 50% 50%, transparent 42%, rgba(3, 8, 7, 0.28) 100%),
-      linear-gradient(90deg, rgba(5, 14, 10, 0.68), rgba(6, 13, 10, 0.22) 38%, rgba(5, 11, 9, 0.18)),
-      linear-gradient(180deg, rgba(4, 10, 8, 0.12), rgba(4, 10, 8, 0.38));
+      radial-gradient(circle at 72% 52%, transparent 34%, rgba(3, 8, 7, 0.24) 100%),
+      linear-gradient(90deg, rgba(5, 14, 10, 0.58), rgba(6, 13, 10, 0.16) 42%, rgba(5, 11, 9, 0.2)),
+      linear-gradient(180deg, rgba(4, 10, 8, 0.04), rgba(4, 10, 8, 0.26));
     pointer-events: none;
   }
 
   .selected-companion-mark {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     right: clamp(34px, 8vw, 112px);
     bottom: clamp(34px, 7vw, 82px);
     width: clamp(96px, 13vw, 148px);
@@ -913,7 +947,8 @@
     }
 
     .companion-hero {
-      min-height: 330px;
+      height: 300px;
+      min-height: 300px;
     }
 
     .companion-hero img {
@@ -921,7 +956,9 @@
     }
 
     .companion-hero[data-companion='bear'] img {
-      object-position: 35% center;
+      width: 112%;
+      right: -34%;
+      object-position: right bottom;
     }
 
     .companion-hero::after {
