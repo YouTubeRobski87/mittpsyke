@@ -217,10 +217,7 @@ export function getProgressCompanionDayStateLabel(state: ProgressCompanionDaySta
 export function getProgressCompanionDayStateImage(
 	state: ProgressCompanionDayState
 ): string | null {
-	if (state === 'morning') return '/images/companion-morgon.jpg';
-	if (state === 'day') return '/images/companion-dag.jpg';
-	if (state === 'evening') return '/images/companion-dag.jpg';
-	return '/images/resting-bear-photo-fill.png';
+	return '/images/bear-growth-garden.jpg';
 }
 
 export function getProgressCompanionStatusMessage({

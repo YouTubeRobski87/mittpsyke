@@ -631,6 +631,9 @@
 	<div class="auth-shell">
 		<header class="auth-hero">
 			<div>
+				{#if isAnonymous}
+					<a class="home-return-link" href="/">&larr; Till startsidan</a>
+				{/if}
 				<h1>Framsteg</h1>
 				<p>En lugn överblick över din resa, i din egen takt.</p>
 			</div>
@@ -833,6 +836,24 @@
 
 <style>
 	.journey-container { display: grid; gap: 1rem; }
+
+	.home-return-link {
+		display: inline-flex;
+		align-items: center;
+		width: fit-content;
+		margin-bottom: 0.65rem;
+		color: var(--color-dashboard-text-muted);
+		font-size: 0.9rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.home-return-link:hover,
+	.home-return-link:focus-visible {
+		color: var(--color-dashboard-text);
+		text-decoration: underline;
+		text-underline-offset: 0.18em;
+	}
 
 	.progress-content {
 		display: grid;

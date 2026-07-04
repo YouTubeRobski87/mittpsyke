@@ -30,7 +30,7 @@
 
   function getDashboardCompanionHeroImage(artId: ProgressCompanionArtId, hasSelectedCompanion: boolean) {
     if (!hasSelectedCompanion || artId === 'fox') return '/images/home-companion-fox.webp';
-    if (artId === 'bear') return '/images/home-companion-bear.webp';
+    if (artId === 'bear') return '/images/bear-home-hero.jpg';
     return GENERIC_COMPANION_HERO_IMAGE;
   }
 
