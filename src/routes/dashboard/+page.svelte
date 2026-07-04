@@ -956,16 +956,16 @@
     }
 
     .companion-hero[data-companion='bear'] img {
-      width: 112%;
-      right: -34%;
-      object-position: right bottom;
+      width: 100%;
+      right: 0;
+      object-position: center bottom;
     }
 
     .companion-hero::after {
       background:
-        radial-gradient(circle at 52% 54%, transparent 38%, rgba(3, 8, 7, 0.28) 100%),
-        linear-gradient(180deg, rgba(5, 13, 10, 0.68), rgba(6, 13, 10, 0.18) 48%, rgba(4, 10, 8, 0.52)),
-        linear-gradient(90deg, rgba(5, 14, 10, 0.34), rgba(5, 14, 10, 0.12));
+        radial-gradient(circle at 60% 54%, transparent 36%, rgba(3, 8, 7, 0.22) 100%),
+        linear-gradient(180deg, rgba(5, 13, 10, 0.5), rgba(6, 13, 10, 0.12) 52%, rgba(4, 10, 8, 0.42)),
+        linear-gradient(90deg, rgba(5, 14, 10, 0.46), rgba(5, 14, 10, 0.08) 58%);
     }
 
     .hero-copy {
