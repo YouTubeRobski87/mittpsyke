@@ -721,7 +721,7 @@
 		position: absolute;
 		inset: 0;
 		z-index: 1;
-		background-image: var(--garden-photo-image, url('/images/resting-bear-photo-fill.png'));
+		background-image: var(--garden-photo-image, url('/images/bear-growth-garden.jpg'));
 		background-size: cover;
 		background-position: center;
 		background-repeat: no-repeat;

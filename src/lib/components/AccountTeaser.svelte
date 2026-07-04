@@ -5,7 +5,7 @@
 	const titleId = `account-teaser-title-${variant}`;
 	const isOverlay = mode === 'overlay';
 	const secondaryAction =
-		isOverlay && variant === 'dashboard'
+		isOverlay
 			? { href: '/', label: 'Till startsidan' }
 			: { href: '/login', label: 'Jag har redan konto' };
 	const openLinks = [

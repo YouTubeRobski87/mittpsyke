@@ -165,7 +165,7 @@
 					<g class="photo-resting-companion" aria-hidden="true">
 						<image
 							class="photo-resting-image"
-							href="/images/resting-bear-photo-fill.png"
+							href="/images/bear-growth-garden.jpg"
 							x="10"
 							y="82"
 							width="310"
