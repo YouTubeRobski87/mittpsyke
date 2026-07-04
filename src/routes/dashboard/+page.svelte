@@ -30,7 +30,7 @@
 
   function getDashboardCompanionHeroImage(artId: ProgressCompanionArtId, hasSelectedCompanion: boolean) {
     if (!hasSelectedCompanion || artId === 'fox') return '/images/home-companion-fox.webp';
-    if (artId === 'bear') return '/images/bear-home-hero.jpg';
+    if (artId === 'bear') return '/images/home-companion-bear.webp';
     return GENERIC_COMPANION_HERO_IMAGE;
   }
 
@@ -429,7 +429,7 @@
     border-radius: 8px;
     box-shadow: var(--mp-shadow);
     border: 1px solid rgba(255, 255, 255, 0.72);
-    background: #edf3e6;
+    background: #101a15;
   }
 
   .personal-preview {
@@ -449,9 +449,21 @@
     pointer-events: none;
   }
 
+  .companion-hero.personal-preview::before {
+    z-index: 1;
+    background:
+      radial-gradient(circle at 20% 52%, rgba(4, 10, 8, 0.24), transparent 36%),
+      linear-gradient(90deg, rgba(6, 14, 11, 0.36), rgba(8, 16, 13, 0.14) 44%, rgba(8, 16, 13, 0.3));
+    backdrop-filter: none;
+  }
+
   .personal-preview > :not(.preview-note) {
     opacity: 0.76;
     filter: saturate(0.82);
+  }
+
+  .companion-hero.personal-preview > :not(.preview-note) {
+    opacity: 1;
   }
 
   .preview-note {
@@ -475,14 +487,19 @@
   }
 
   .companion-hero[data-companion='bear'] img {
-    object-position: 28% center;
+    object-position: center 52%;
+    filter: brightness(0.72) saturate(0.86) contrast(1.04);
   }
 
   .companion-hero::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(255, 250, 236, 0.78), rgba(255, 250, 236, 0.24) 37%, rgba(255, 250, 236, 0.04));
+    z-index: 1;
+    background:
+      radial-gradient(circle at 50% 50%, transparent 42%, rgba(3, 8, 7, 0.28) 100%),
+      linear-gradient(90deg, rgba(5, 14, 10, 0.68), rgba(6, 13, 10, 0.22) 38%, rgba(5, 11, 9, 0.18)),
+      linear-gradient(180deg, rgba(4, 10, 8, 0.12), rgba(4, 10, 8, 0.38));
     pointer-events: none;
   }
 
@@ -503,7 +520,7 @@
 
   .hero-copy {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     left: clamp(26px, 4vw, 52px);
     top: clamp(42px, 7vw, 90px);
     max-width: min(28rem, 55%);
@@ -511,23 +528,27 @@
 
   .hero-copy h2 {
     margin: 0;
+    color: #fff8e8;
     font-size: clamp(1.8rem, 3vw, 2.45rem);
     line-height: 1.08;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.38);
   }
 
   .hero-copy p {
     margin: 0.9rem 0 1.3rem;
-    color: #3f443d;
+    color: rgba(255, 248, 232, 0.86);
     font-size: 1.08rem;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.34);
   }
 
   .soft-heart {
-    color: #8dcfa2;
+    color: #a6d5af;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.24));
   }
 
   .time-badge {
     position: absolute;
-    z-index: 1;
+    z-index: 2;
     top: 24px;
     right: 22px;
     display: flex;
@@ -535,9 +556,9 @@
     gap: 0.75rem;
     padding: 0.9rem 1rem;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.88);
-    border: 1px solid rgba(66, 66, 45, 0.12);
-    box-shadow: 0 14px 34px rgba(65, 70, 54, 0.12);
+    background: rgba(255, 251, 240, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow: 0 14px 34px rgba(11, 18, 14, 0.22);
     color: #eead21;
   }
 
@@ -896,15 +917,18 @@
     }
 
     .companion-hero img {
-      object-position: 24% center;
+      object-position: center;
     }
 
     .companion-hero[data-companion='bear'] img {
-      object-position: 22% center;
+      object-position: 35% center;
     }
 
     .companion-hero::after {
-      background: linear-gradient(180deg, rgba(255, 250, 236, 0.78), rgba(255, 250, 236, 0.08) 64%);
+      background:
+        radial-gradient(circle at 52% 54%, transparent 38%, rgba(3, 8, 7, 0.28) 100%),
+        linear-gradient(180deg, rgba(5, 13, 10, 0.68), rgba(6, 13, 10, 0.18) 48%, rgba(4, 10, 8, 0.52)),
+        linear-gradient(90deg, rgba(5, 14, 10, 0.34), rgba(5, 14, 10, 0.12));
     }
 
     .hero-copy {
