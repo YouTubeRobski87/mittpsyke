@@ -42,7 +42,7 @@
 </script>
 
 <aside class="mp-sidebar">
-  <a class="brand" href="/dashboard" aria-label="MittPsyke hem">
+  <a class="brand" href="/" aria-label="MittPsyke startsida">
     <span class="brand-mark"><Leaf size={26} strokeWidth={1.9} /></span>
     <span>MittPsyke</span>
   </a>

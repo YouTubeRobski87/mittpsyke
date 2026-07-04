@@ -4,6 +4,10 @@
 
 	const titleId = `account-teaser-title-${variant}`;
 	const isOverlay = mode === 'overlay';
+	const secondaryAction =
+		isOverlay && variant === 'dashboard'
+			? { href: '/', label: 'Till startsidan' }
+			: { href: '/login', label: 'Jag har redan konto' };
 	const openLinks = [
 		{
 			href: '/chat',
@@ -37,7 +41,7 @@
 
 	<div class="account-actions" aria-label="Kontolänkar">
 		<a class="primary-action" href="/register">Skapa konto</a>
-		<a class="secondary-action" href="/login">Jag har redan konto</a>
+		<a class="secondary-action" href={secondaryAction.href}>{secondaryAction.label}</a>
 	</div>
 
 	{#if !isOverlay}

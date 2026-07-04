@@ -135,6 +135,9 @@
     <main class="dashboard-main" aria-labelledby="dashboard-title">
       <header class="topbar">
         <div>
+          {#if isAnonymous}
+            <a class="home-return-link" href="/">&larr; Till startsidan</a>
+          {/if}
           <h1 id="dashboard-title">{greeting}</h1>
           <p>Hur mår du idag?</p>
         </div>
@@ -344,6 +347,23 @@
     font-size: clamp(1.9rem, 3.1vw, 2.3rem);
     line-height: 1.08;
     letter-spacing: 0;
+  }
+
+  .home-return-link {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin-bottom: 0.7rem;
+    color: var(--mp-green);
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .home-return-link:hover,
+  .home-return-link:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
   }
 
   .topbar p {
