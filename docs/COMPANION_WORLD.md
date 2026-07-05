@@ -1,69 +1,113 @@
-# Companion World
+# COMPANION WORLD
 
-Följeslagaren och platsen är hjärtat i MittPsyke. Det här dokumentet samlar
-visionen för den levande världen. Den långa filosofin finns i
-[`NORTH_STAR.md`](./NORTH_STAR.md); här är den praktiska sammanfattningen.
+This document describes the living world behind MittPsyke.
 
-Konst- och känsloreferenser: [`references/`](./references/)
-(`03-home-vision-bear.png`, `04-companion-world-reference.png`,
-`05-hero-bear-scene.png`).
+The world should feel alive through small, calm details — not through constant activity.
 
----
+## Core idea
 
-## Grundidé
+The world continues quietly while the user is away.
 
-MittPsyke är inte en app – det är en lugn plats som alltid finns kvar. När
-användaren återvänder känns platsen bekant, följeslagaren känner igen dem, och
-världen har förändrats lite – precis som de själva.
+The user should feel:
 
-Följeslagaren ska kännas som **sällskap utan krav**. Den behöver inte alltid
-prata. Ibland sitter den bara vid sjön och tittar ut över vattnet.
+> Platsen finns kvar.
 
-## Regler som aldrig bryts
+## Layer 1 — The place
 
-- **Platsen kommer först.** Samma glänta, samma träd, samma stig. Den förändras
-  långsamt och börjar aldrig om.
-- **Följeslagaren är identiteten.** Profilbilden är följeslagaren – inte en
-  bokstav, inte en selfie, inte en AI-avatar.
-- **Inga belöningar.** MittPsyke belönar inte, det uppmärksammar. Inte "+50 XP"
-  utan "🌼 En ny blomma har slagit ut."
-- **Ingenting får stressa.** Ingen röd badge, ingen "du missade igår", ingen
-  streak som skapar skuld. Efter 8 månaders frånvaro: "Vad fint att se dig igen."
-- **Framsteg upptäcks, annonseras inte.** "Hmm... var det verkligen blommor här
-  sist?" – inte "🎉 Ny blomma upplåst!".
-- Om två lösningar är lika bra tekniskt: välj den lugnaste.
+The place changes very slowly and should feel familiar.
 
-## Lager i världen
+Always the same foundation: glade, tree, lake, path and mountains in the distance.
 
-1. **Platsen** – förändras nästan aldrig. Glänta, träd, stig, berg. Det är "hem".
-2. **Följeslagaren** – användarens djur (björn, räv, uggla m.fl.). Rör sig lite,
-   gör platsen personlig.
-3. **Årstider** – vår / sommar / höst / vinter, automatiskt.
-4. **Tid på dygnet** – soluppgång (06), dagsljus (12), gyllene kväll (18),
-   stjärnhimmel (22).
-5. **Din resa** – små, tysta spår av tid: grässtrå efter en vecka, blommor efter
-   en månad, en sten vid en milstolpe, ett större träd efter ett år. Ingen text,
-   ingen "Level Up".
-6. **Väder** – regn, solsken, dimma, vind. Behöver inte påverka något; gör bara
-   världen levande.
-7. **Små händelser** – mycket sällsynta: en fågel landar, en fjäril, ett löv
-   faller, en igelkott. Inga belöningar. Bara liv.
+This is home.
 
-## Growth Garden som motor
+## Layer 2 — The companion
 
-Growth Garden är inte en separat funktion – den är motorn bakom hela världen. När
-användaren mår bättre, skriver dagbok eller återvänder regelbundet påverkar det
-hela platsen. AI, dagbok, forum och Garden blir olika sätt att vårda samma plats.
+The companion represents presence and identity.
 
-## Var det lever i koden (referens, inte spec)
+Examples:
 
-- `src/lib/components/dashboard/SilentCompanion.svelte` – "den tysta följeslagaren",
-  tid-på-dygnet-tillstånd, länk till `/framsteg#growth-garden`.
-- `src/lib/components/CompanionScene.svelte` – scenens ljus/atmosfär per tid.
-- `src/lib/components/CompanionAvatar.svelte` – följeslagaren som identitet/avatar.
-- `src/lib/progressCompanion.ts` – val av djur, dygns-tillstånd, konst-id:n.
-- `src/routes/framsteg/+page.svelte` – "Din resa" / milstolpar (host för Garden).
+- fox sitting calmly
+- bear resting by the tree
+- owl sitting in the tree
+- deer looking toward the lake
 
-> Känd avvikelse: nuvarande scen är mörk/natt-tonad medan referenserna
-> (`04`/`05`) är varma och ljusa. Bör föras in i det ljusa systemet – se
-> [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md).
+The companion should not demand attention. It should simply be there.
+
+## The bear
+
+The bear is warm, safe, grounded, a little philosophical, calm and friendly.
+
+The bear can sometimes sit by the lake, blink slowly, shift its weight, look up toward the sky, rest quietly or hold a grass straw like a farmer.
+
+## Layer 3 — Seasons
+
+Seasons can change automatically: spring, summer, autumn and winter.
+
+The user does not need to trigger this manually.
+
+## Layer 4 — Time of day
+
+Time of day should make the world feel alive:
+
+- 06:00 sunrise
+- 12:00 daylight
+- 18:00 golden evening
+- 22:00 night sky
+
+The user should barely notice why the place feels alive.
+
+## Layer 5 — The user's journey
+
+Growth should be subtle.
+
+Not XP. Not levels. Not rewards.
+
+Examples:
+
+- after the first week: a small grass straw
+- after the first month: a few flowers
+- after a milestone: a small stone
+- after a year: the tree feels slightly larger
+
+No announcement is required. The user discovers it.
+
+## Layer 6 — Weather
+
+Weather should appear occasionally: rain, sunshine, mist and wind.
+
+It does not need to affect functionality. It simply makes the world feel alive.
+
+## Layer 7 — Rare small events
+
+Small events should be rare:
+
+- a bird lands
+- a butterfly passes
+- a leaf falls
+- a hedgehog appears
+
+No badges. No reward sounds. No “event unlocked”. Just life.
+
+## Motion rules
+
+Motion should be slow, subtle, optional and respectful of `prefers-reduced-motion`.
+
+Avoid looping attention-grabbing movement, fast particles, constant bouncing, reward animations and game-like effects.
+
+## Growth Garden
+
+Growth Garden should not remain only a separate feature.
+
+Long-term, it should become the quiet engine behind the whole world.
+
+When the user writes, reflects, returns or takes care of themselves, the place can slowly change.
+
+The product should make this feel discovered, not announced.
+
+## Companion world references
+
+Always inspect:
+
+- `docs/references/03-companion-world-reference.png`
+- `docs/references/04-hero-bear-scene.png`
+- `docs/references/02-home-vision-bear.png`

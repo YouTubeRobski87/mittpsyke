@@ -1,27 +1,97 @@
-# MittPsyke – Docs
+# MittPsyke Documentation
 
-Produkt-, design- och vision-dokumentation för MittPsyke. Läs dessa innan du
-ändrar UI eller produktbeteende.
+Read these files before making UI or UX changes.
 
-## Innehåll
+Reading order:
 
-| Dokument | Vad det täcker |
-| -------- | -------------- |
-| [`NORTH_STAR.md`](./NORTH_STAR.md) | Produktfilosofin – känslan vi bygger och reglerna som aldrig bryts. Läs först. |
-| [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) | Färger, typografi, form, komponenter. Kompletterar `references/01-design-system.png`. |
-| [`COMPANION_WORLD.md`](./COMPANION_WORLD.md) | Följeslagaren, den levande världen och Growth Garden. |
-| [`AI_GUIDELINES.md`](./AI_GUIDELINES.md) | Arbetsregler för AI-agenter och människor: UX, copy, teknik, säkerhet. |
-| [`references/`](./references/) | Visuell sanningskälla – designbilder (se `references/README.md`). |
-| [`screenshots/`](./screenshots/) | Skärmbilder av nuvarande produktion (används av repo-README). |
+1. NORTH_STAR.md
+2. DESIGN_SYSTEM.md
+3. COMPANION_WORLD.md
+4. AI_GUIDELINES.md
+5. references/README.md
 
-## Sanningskälla
+The images inside `references/` are the visual source of truth.
 
-Vid konflikt gäller ordningen: **referensbild → NORTH_STAR → övriga dokument**.
-Bilderna i [`references/`](./references/) väger tyngst för visuella beslut.
+# Visual References
 
-## Se även
+These images are the visual source of truth for MittPsyke.
 
-- [`../AGENTS.md`](../AGENTS.md) och [`../CLAUDE.md`](../CLAUDE.md) i repo-roten –
-  operativa kommandon, arkitektur och tekniska detaljer.
-- [`mittpsyke-public-technical-measurement-2026-07-03.md`](./mittpsyke-public-technical-measurement-2026-07-03.md)
-  – teknisk mätning av publika sajten.
+---
+
+## 00-design-system.png
+
+Purpose
+
+Defines the complete visual language.
+
+Use for:
+- colors
+- typography
+- spacing
+- cards
+- buttons
+- icons
+- border radius
+
+Never introduce components that conflict with this reference.
+
+---
+
+## 01-dashboard-current-target.png
+
+Purpose
+
+Shows the desired layout for "Mitt Hem".
+
+Use for:
+- hero proportions
+- dashboard spacing
+- card hierarchy
+- balance
+- whitespace
+
+This image has priority over new design ideas.
+
+---
+
+## 02-home-vision-bear.png
+
+Purpose
+
+Long-term dashboard vision.
+
+Use for:
+- emotional feeling
+- illustration placement
+- composition
+- premium atmosphere
+
+---
+
+## 03-companion-world-reference.png
+
+Purpose
+
+Growth Garden design reference.
+
+Use for:
+- seasons
+- time of day
+- particles
+- nature growth
+- animations
+- environmental storytelling
+
+---
+
+## 04-hero-bear-scene.png
+
+Purpose
+
+Illustration art direction.
+
+Use for:
+- lighting
+- colors
+- framing
+- rendering style

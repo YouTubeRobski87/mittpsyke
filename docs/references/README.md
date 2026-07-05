@@ -1,38 +1,57 @@
 # Visual References
 
-Dessa bilder är den visuella sanningskällan för MittPsyke. Inspektera dem innan
-du ändrar UI. Vid konflikt mellan text-dokument och bild gäller bilden.
+These images are the visual source of truth for MittPsyke.
 
-Prioritetsordning:
+They are not assets for direct rendering unless explicitly requested.
 
-1. `01-design-system.png`
-2. `02-dashboard-current-target.png`
-3. `03-home-vision-bear.png`
-4. `04-companion-world-reference.png`
-5. `05-hero-bear-scene.png`
+They are design references for humans and AI agents.
 
----
+## Reading order
 
-## 01-design-system.png
+1. `00-design-system.png`
+2. `01-dashboard-current-target.png`
+3. `02-home-vision-bear.png`
+4. `03-companion-world-reference.png`
+5. `04-hero-bear-scene.png`
 
-Definierar hela det visuella språket: färger, typografi, spacing, kort, knappar,
-ikoner, border radius. Introducera aldrig komponenter som krockar med denna.
+The first two references are the strongest source of truth for interface work.
 
-## 02-dashboard-current-target.png
+## 00-design-system.png
 
-Önskad layout för "Mitt Hem": hero-proportioner, dashboard-spacing, kort-hierarki,
-balans, whitespace. Denna bild har prioritet över nya designidéer.
+Purpose: Defines the visual language of MittPsyke.
 
-## 03-home-vision-bear.png
+Use for colors, typography, spacing, cards, buttons, icons, border radius, shadows and mobile patterns.
 
-Långsiktig dashboard-vision: emotionell känsla, illustrationsplacering,
-komposition, premium-atmosfär. Visar även färg- och typografi-riktning.
+Rule: Never introduce UI that conflicts with this reference unless explicitly instructed.
 
-## 04-companion-world-reference.png
+## 01-dashboard-current-target.png
 
-Growth Garden / följeslagarens värld: årstider, tid på dygnet, partiklar,
-naturtillväxt, animationer, miljö-berättande.
+Purpose: Shows the desired layout and feel for “Mitt Hem”.
 
-## 05-hero-bear-scene.png
+Use for dashboard layout, hero proportions, card hierarchy, spacing, balance, calm visual density and sidebar treatment.
 
-Illustrationens konst-riktning: ljus, färger, framing, rendering-stil.
+Rule: This is the primary visual target for dashboard-related changes.
+
+## 02-home-vision-bear.png
+
+Purpose: Shows the long-term vision for the dashboard with the bear companion.
+
+Use for emotional tone, companion placement, hero composition, warm atmosphere and premium product feel.
+
+Rule: Use as vision, not as an exact implementation requirement.
+
+## 03-companion-world-reference.png
+
+Purpose: Design specification for the living companion world.
+
+Use for dynamic light, particles, tree and nature growth, weather, seasons, water reflection, subtle animation, depth, focus and companion mood.
+
+Rule: This reference defines how Growth Garden should eventually influence the whole place.
+
+## 04-hero-bear-scene.png
+
+Purpose: Art direction for companion scenes.
+
+Use for lighting, rendering style, colors, framing, atmosphere and warm scenic composition.
+
+Rule: Use when creating or adjusting illustrated hero scenes.

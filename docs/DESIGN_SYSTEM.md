@@ -1,79 +1,100 @@
-# Design System
+# DESIGN SYSTEM
 
-Det visuella språket för MittPsyke. Den bindande sanningskällan är bilderna i
-[`references/`](./references/) – särskilt `01-design-system.png`. Text här beskriver
-och kompletterar dem, men vid konflikt gäller referensbilden.
+MittPsyke ska kännas varmt, tryggt, enkelt och premium — aldrig kliniskt, stressigt eller speligt.
 
-> Grundkänsla: varm, ljus, stillsam och trygg. Aldrig kliniskt, aldrig ett
-> kontrollsystem. Se [`NORTH_STAR.md`](./NORTH_STAR.md).
+Always inspect:
 
----
+1. `docs/references/00-design-system.png`
+2. `docs/references/01-dashboard-current-target.png`
 
-## Färger
+## Core feeling
 
-Palett från `01-design-system.png`.
+The interface should feel like a calm sanctuary, a soft home base, a place to return to, nature-inspired, warm and emotionally safe.
 
-| Namn      | Hex       | Roll |
-| --------- | --------- | ---- |
-| Skog      | `#2E7D5A` | Primär grön: knappar, aktiva tillstånd, ikon-accent |
-| Ljus grön | `#E6F4EA` | Mjuk grön yta: aktiv nav, positiva kort |
-| Sage      | `#F3F7F2` | Neutral lugn bakgrundston |
-| Sand      | `#FFF7EC` | Varm ljus bakgrund / hero-toner |
-| Lavendel  | `#F2E9FF` | Insikter / statistik-accent |
-| Himmel    | `#E8F1FF` | Verktyg / lugn blå-accent |
+It should not feel like a clinical dashboard, productivity tool, game interface, noisy analytics product or generic SaaS admin panel.
 
-Principer:
-- Varmvit bakgrund som grund, mycket luft mellan element.
-- Pasteller används sparsamt som mjuka kort-toner, aldrig som mättade block.
-- Om två färgval är lika bra, välj det lugnaste (mindre mättnad, mer luft).
+## Layout principles
 
-## Typografi
+Use generous whitespace, large rounded cards, calm visual hierarchy, soft shadows, clear spacing, low visual density and few competing focal points.
 
-Enligt referensen (`03-home-vision-bear.png`):
+Avoid crowded sections, harsh contrast, dense tables, many small controls and bright warning colors unless truly necessary.
 
-- **Rubrik:** Inter SemiBold
-- **Brödtext:** Inter Regular
+## Color direction
 
-Ton i copy: kort, vänlig, lågtröskel. "Hur mår du idag? Det är okej att ta det
-steg för steg."
+Use forest green, light green, sage, sand, lavender, pale sky blue and warm off-white.
 
-> **Känd avvikelse:** Nuvarande implementation använder typsnittet **Recursive**
-> (`--font-heading: 'Recursive H'`, `--font-body: 'Recursive T'` i `src/app.css`),
-> inte Inter. Detta behöver stämmas av – antingen uppdatera referensen eller byt
-> typsnitt i koden. Ändra inte utan beslut.
+Avoid harsh red, neon colors, cold gray-heavy UI, dark clinical panels on the main dashboard and too many saturated accents.
 
-## Form och rum
+## Cards
 
-- **Rundade kort** med stor radie (~16px) och mjuk, subtil skugga.
-- **Generös whitespace** – luft är en feature, inte tomrum att fylla.
-- **Lugn hierarki** – en tydlig sak i taget, inget som skriker efter uppmärksamhet.
-- Paneler: mjuk yta med lätt skugga. Chip/etikett: lätta färger, mjuka former.
+Cards should be rounded, soft, lightly bordered, subtly shadowed, spacious and calm.
 
-## Komponenter
+Cards should feel like resting places, not widgets demanding attention.
 
-- **Primär knapp** – fylld Skog-grön, rundad.
-- **Sekundär knapp** – ljus yta, mjuk kant.
-- **Textfält** – ljus, rundad, låg kontrast-kant.
-- **Ikonstil** – linjeikoner (Home, Smile, BookOpen, Wrench, BarChart3, LifeBuoy,
-  Settings). Konsekvent stroke-vikt.
+## Buttons
 
-## Illustration
+Buttons should be clear, soft, friendly and low-pressure.
 
-Naturinspirerad, varm och verklig (Pixar/Disney-nära, hög detaljnivå, mjuka
-färger, atmosfäriskt ljus). Se `05-hero-bear-scene.png` för konst-riktning
-(ljus, färg, framing, rendering) och `04-companion-world-reference.png` för
-följeslagarens värld.
+Primary buttons should use calm green tones.
 
-## Var det lever i koden (referens, inte spec)
+Secondary buttons should feel quiet and supportive.
 
-Dashboarden (`src/routes/dashboard/+page.svelte` + `src/lib/components/Sidebar.svelte`)
-är närmast detta system idag. Publika sidor (`src/routes/+page.svelte`) och
-`/framsteg` använder andra, mörkare token-system och matchar ännu inte. Målet är
-**ett** gemensamt token-lager byggt från paletten ovan.
+## Typography
 
-## Regler
+Use calm, readable typography.
 
-- Bevara nuvarande designspråk. Redesigna inte befintliga komponenter utan att
-  bli ombedd.
-- Utveckla hellre gränssnittet stegvis än ersätt det.
-- Introducera aldrig komponenter som krockar med `01-design-system.png`.
+Headings should feel confident but not loud.
+
+Body copy should be short and human.
+
+Prefer copy like:
+
+- “Vad fint att du är här.”
+- “En liten stund i taget.”
+- “Den finns kvar här när du återvänder.”
+
+Avoid:
+
+- “Complete your task”
+- “You missed this”
+- “Level up”
+- “Boost your productivity”
+
+## Dashboard rules
+
+The dashboard is “Mitt Hem”.
+
+It should be the emotional center of the product.
+
+The hero scene is the soul of the page. Do not reduce it to a decorative banner.
+
+## Sidebar
+
+The sidebar should be quiet, clear, low contrast, easy to scan and consistent across dashboard-related areas.
+
+Active state should be visible but calm.
+
+## Mobile
+
+Mobile should feel like the same place, not a stripped-down fallback.
+
+Rules:
+
+- no horizontal scroll
+- cards stack cleanly
+- hero remains emotionally strong
+- text stays readable
+- no overcrowding
+- navigation remains usable
+
+## AI-agent implementation rules
+
+When editing UI:
+
+- preserve existing functionality
+- improve existing components before creating new ones
+- avoid large rewrites unless explicitly requested
+- keep diffs focused
+- do not change backend, auth, database or routing unless explicitly asked
+- run `npm run check`
+- run `npm run build`

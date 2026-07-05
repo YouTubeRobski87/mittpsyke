@@ -1,78 +1,62 @@
-# AI Guidelines
+# AI GUIDELINES
 
-Arbetsregler för AI-agenter (och människor) som ändrar MittPsyke. Läs alltid
-[`NORTH_STAR.md`](./NORTH_STAR.md), [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) och
-[`COMPANION_WORLD.md`](./COMPANION_WORLD.md) innan UI ändras.
+## Before doing anything
 
-De operativa filerna [`AGENTS.md`](../AGENTS.md) och [`CLAUDE.md`](../CLAUDE.md)
-i repo-roten gäller fortfarande för kommandon, arkitektur och tekniska detaljer.
-Det här dokumentet samlar produkt-, design- och copy-principerna.
+Always start by reading:
 
----
+docs/README.md
 
-## Den viktigaste frågan
+Do not begin implementing changes before reading the documentation hierarchy.
 
-Ställ alltid varje ändring mot: **"Känns det här som MittPsyke?"** Om svaret är
-nej spelar det ingen roll hur smart funktionen är. Om två lösningar är lika bra
-tekniskt – välj den lugnaste (mindre animation, mindre brus, mer luft, färre
-färger, enklare copy).
+## First rule
 
-## UX-principer
 
-- Håll tonen lugn, enkel och mänsklig.
-- Bygg mobil först; desktop är en tydlig förlängning.
-- Design ska kännas psykiskt trygg: tydlig struktur, god läsbarhet, inga
-  stressande element.
-- Undvik: överdrivna animationer, stressiga rörelser, för mycket text, ständiga
-  notifieringar, figurer som alltid kräver svar, känslan av ett spelgränssnitt.
+Read the relevant docs before making UI changes:
 
-## Copy-principer
+- `docs/NORTH_STAR.md`
+- `docs/DESIGN_SYSTEM.md`
+- `docs/COMPANION_WORLD.md`
+- `docs/references/README.md`
 
-- Skriv på enkel svenska med låg tröskel, varm och tydlig ton.
-- Var konsekvent: MittPsyke ersätter inte vård.
-- Inga belöningar eller skuld. Uppmärksamma i stället för att belöna. Aldrig
-  "din streak är bruten" – hellre "Vad fint att se dig igen."
-- Framsteg upptäcks, annonseras inte.
-- Akut hänvisning ska vara tydlig men inte alarmistisk:
-  - Vid akut fara: **112**
-  - Vårdråd: **1177**
-  - Vidare stöd: **stodlinjer.se**
+For dashboard or companion work, inspect all images in `docs/references/`.
 
-## Tekniska principer
+## Product principle
 
-- Följ befintlig komponentstruktur i `src/lib/components` och existerande
-  sidmönster. Återanvänd shared components före ny inline-markup.
-- Svelte 5 runes (`$state`, `$derived`, `$effect`). Undvik Svelte 4-mönster.
-- Kommentarer i koden skrivs på svenska.
-- Använd aldrig `any` i TypeScript – använd explicita typer eller `unknown`.
-- Kör validering: `npm run check` och `npm run build` innan en uppgift markeras
-  klar. Rapportera tydligt om fel är nya eller redan fanns.
-- Committa aldrig `.env.local` eller hemliga nycklar.
+We are not just building features.
 
-## SEO-principer
+We are building a place people want to return to.
 
-- Tydlig, relevant `H1` per sida; bra metadata (title, description, canonical).
-- Internlänka mellan guider, övningar, chat och dagbok där det är relevant.
-- Behåll och förbättra internlänkar vid refaktorering – tappa inte SEO-värde.
+If two solutions are equally good technically, choose the calmer one.
 
-## Säkerhet och integritet
+## Change discipline
 
-- **Säkerhetskritiskt:** kris-detektionen i `src/routes/api/chat/+server.ts` och
-  `src/lib/ai/safety.ts` hanterar verklig användarsäkerhet. Server-checken är
-  auktoritativ och måste alltid köra före anrop till AI-API. Ändra kris-mönster
-  eller säkerhetsflöde med extra omsorg.
-- Var försiktig med formuleringar om personuppgifter, samtycke och databehandling.
-  Vid juridisk precision: länka till integritetspolicy i stället för att förenkla.
-- Anta inte hur data lagras eller delas utan att kontrollera koden först. Ändra
-  inte integritetsrelaterad copy utan att verifiera faktisk implementation.
+Do:
 
-## Visuella referenser
+- make small focused diffs
+- preserve existing functionality
+- improve existing components before creating new ones
+- keep routing stable unless explicitly asked
+- preserve SEO unless explicitly asked
+- preserve Supabase logic unless explicitly asked
+- run `npm run check`
+- run `npm run build`
 
-Innan du ändrar UI, inspektera bilderna i [`references/`](./references/) i
-prioritetsordning (se [`references/README.md`](./references/README.md)):
+Do not:
 
-1. `01-design-system.png`
-2. `02-dashboard-current-target.png`
-3. `03-home-vision-bear.png`
-4. `04-companion-world-reference.png`
-5. `05-hero-bear-scene.png`
+- rewrite large parts of the app unnecessarily
+- change backend logic without explicit permission
+- change auth flows without explicit permission
+- add new dependencies without explicit permission
+- redesign components against the visual references
+- introduce gamified rewards, XP, levels or guilt-based streaks
+
+## Reporting
+
+After changes, report:
+
+- files read
+- files changed
+- summary of changes
+- result of `npm run check`
+- result of `npm run build`
+- risks or follow-up work
