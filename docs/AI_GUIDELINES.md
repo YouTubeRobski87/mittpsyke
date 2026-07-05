@@ -1,8 +1,15 @@
 # AI GUIDELINES
 
-These rules are for AI coding agents working on MittPsyke.
+## Before doing anything
+
+Always start by reading:
+
+docs/README.md
+
+Do not begin implementing changes before reading the documentation hierarchy.
 
 ## First rule
+
 
 Read the relevant docs before making UI changes:
 
