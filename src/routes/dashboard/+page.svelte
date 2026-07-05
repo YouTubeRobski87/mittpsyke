@@ -19,6 +19,8 @@
   import {
     getProgressCompanionAnimal,
     getProgressCompanionArtId,
+    getProgressCompanionHeroFocus,
+    type ProgressCompanionArtId,
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
 
@@ -68,6 +70,10 @@
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
   const companionHeroImage = $derived('/images/home-companion-fox-v2.webp');
+  // Följeslagaren som hero-scenen visar. Bilden är rävens tills fler följeslagare
+  // får egna scener — fokus hämtas ur konfigurationen så CSS aldrig behöver ändras.
+  const heroCompanionId: ProgressCompanionArtId = 'fox';
+  const heroFocus = $derived(getProgressCompanionHeroFocus(heroCompanionId));
   const companionHeroAlt = 
   'En lugn räv vilar vid ett träd i en varm och stillsam naturmiljö';
   const moodLabel = $derived(progressPreview.weeklyEntries > 0 ? 'Bra' : 'Redo');
@@ -149,9 +155,9 @@
       <section
         class="companion-hero"
         class:personal-preview={isAnonymous}
-        data-companion="fox"
+        data-companion={heroCompanionId}
         aria-labelledby="companion-title"
-        style={`--hero-image: url('${companionHeroImage}')`}
+        style={`--hero-image: url('${companionHeroImage}'); --hero-focus: ${heroFocus};`}
       >
         <img
           src={companionHeroImage}
@@ -449,7 +455,7 @@
     background-image: var(--hero-image);
     background-size: cover;
     /* Följ samma fokus som förgrundsbilden så den suddiga bakgrunden matchar */
-    background-position: 70% 64%;
+    background-position: var(--hero-focus, 70% 64%);
     opacity: 0.35;
     filter: blur(10px) saturate(1.04);
     transform: scale(1.03);
@@ -488,8 +494,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Fokusera nedre högra tredjedelen där följeslagaren sitter, så hela djuret alltid syns */
-    object-position: 70% 64%;
+    /* Fokus styrs per följeslagare via --hero-focus (standard: nedre högra tredjedelen där djuret sitter) */
+    object-position: var(--hero-focus, 70% 64%);
     display: block;
     z-index: 0;
   }
@@ -507,7 +513,7 @@
   .companion-hero[data-companion='fox'] img {
     object-fit: cover;
     /* Håll räven (nedre högra tredjedelen) helt i bild oavsett kortets bredd */
-    object-position: 70% 64%;
+    object-position: var(--hero-focus, 70% 64%);
   }
 
   .companion-hero::after {
