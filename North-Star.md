@@ -431,3 +431,27 @@ Jag tror faktiskt att det är den typen av dokument som om ett par år kommer f�
 "Nu fattar jag varför MittPsyke känns annorlunda."
 
 🌿💚
+
+# Visual references
+
+Before changing any UI, inspect every image inside docs/references.
+
+Priority order:
+
+1. 01-design-system.png
+2. 02-dashboard-current-target.png
+3. 03-home-vision-bear.png
+4. 04-companion-world-reference.png
+5. 05-hero-bear-scene.png
+
+Rules
+
+- Preserve the current design language.
+- Do not redesign existing components unless explicitly requested.
+- Prefer evolving the current interface instead of replacing it.
+- Use warm natural colours.
+- Large rounded cards.
+- Generous whitespace.
+- Calm visual hierarchy.
+- Nature-inspired illustrations.
+- Premium Scandinavian feel.
