@@ -176,6 +176,22 @@ export function getProgressCompanionAnimal(value: unknown): ProgressCompanionAni
 	};
 }
 
+// Standardfokus (object-position) för hero-bilden. Räven använder detta värde,
+// så det håller nuvarande komposition oförändrad om en följeslagare saknar eget värde.
+export const DEFAULT_COMPANION_HERO_FOCUS = '70% 64%';
+
+// Varje följeslagare kan ange sitt eget bildfokus för hero-scenen utan att röra CSS.
+// Lägg bara till en rad här när en ny följeslagare får en egen hero-bild.
+const PROGRESS_COMPANION_HERO_FOCUS: Partial<Record<ProgressCompanionArtId, string>> = {
+	fox: '70% 64%'
+};
+
+// Ger object-position för hero-bilden utifrån vald följeslagare, med räv/standard som fallback.
+export function getProgressCompanionHeroFocus(id: string | null | undefined): string {
+	const artId = getProgressCompanionArtId(id);
+	return PROGRESS_COMPANION_HERO_FOCUS[artId] ?? DEFAULT_COMPANION_HERO_FOCUS;
+}
+
 export function getProgressCompanionArtId(id: string | null | undefined): ProgressCompanionArtId {
 	if (
 		id === 'fox' ||
