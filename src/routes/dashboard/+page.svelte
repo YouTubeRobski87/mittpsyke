@@ -448,7 +448,8 @@
     z-index: 0;
     background-image: var(--hero-image);
     background-size: cover;
-    background-position: center 42%;
+    /* Följ samma fokus som förgrundsbilden så den suddiga bakgrunden matchar */
+    background-position: 70% 64%;
     opacity: 0.35;
     filter: blur(10px) saturate(1.04);
     transform: scale(1.03);
@@ -487,7 +488,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 38%;
+    /* Fokusera nedre högra tredjedelen där följeslagaren sitter, så hela djuret alltid syns */
+    object-position: 70% 64%;
     display: block;
     z-index: 0;
   }
@@ -504,7 +506,8 @@
 
   .companion-hero[data-companion='fox'] img {
     object-fit: cover;
-    object-position: center 40%;
+    /* Håll räven (nedre högra tredjedelen) helt i bild oavsett kortets bredd */
+    object-position: 70% 64%;
   }
 
   .companion-hero::after {
