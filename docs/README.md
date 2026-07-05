@@ -1,3 +1,17 @@
+# MittPsyke Documentation
+
+Read these files before making UI or UX changes.
+
+Reading order:
+
+1. NORTH_STAR.md
+2. DESIGN_SYSTEM.md
+3. COMPANION_WORLD.md
+4. AI_GUIDELINES.md
+5. references/README.md
+
+The images inside `references/` are the visual source of truth.
+
 # Visual References
 
 These images are the visual source of truth for MittPsyke.
