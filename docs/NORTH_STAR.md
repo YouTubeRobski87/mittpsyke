@@ -434,7 +434,8 @@ Jag tror faktiskt att det är den typen av dokument som om ett par år kommer f�
 
 # Visual references
 
-Before changing any UI, inspect every image inside docs/references.
+Before changing any UI, inspect every image inside [`references/`](./references/)
+(see [`references/README.md`](./references/README.md)).
 
 Priority order:
 
