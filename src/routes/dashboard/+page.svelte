@@ -74,7 +74,7 @@
   const hasSelectedCompanion = $derived(Boolean(selectedCompanion));
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
-  const companionHeroImage = $derived(getDashboardCompanionHeroImage(companionArtId, hasSelectedCompanion));
+  const companionHeroImage = $derived('/images/home-companion-fox.webp');
   const companionHeroAlt = $derived(
     hasSelectedCompanion
       ? `${companionName} vilar på sin lugna plats`
@@ -159,7 +159,7 @@
       <section
         class="companion-hero"
         class:personal-preview={isAnonymous}
-        data-companion={companionArtId}
+        data-companion="fox"
         aria-labelledby="companion-title"
         style={`--hero-image: url('${companionHeroImage}')`}
       >
@@ -174,7 +174,7 @@
           </div>
         {/if}
         <div class="hero-copy">
-          <h2 id="companion-title">{companionName}</h2>
+          <h2 id="companion-title">Din följeslagare</h2>
           <p>Den finns kvar här när du återvänder.</p>
           <span class="soft-heart">
             <Heart size={23} fill="currentColor" strokeWidth={0} aria-hidden="true" />
