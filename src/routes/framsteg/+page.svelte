@@ -1,12 +1,11 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
-	import GrowthGarden from '$lib/components/GrowthGarden.svelte';
 	import type { ProgressCompanionSelection } from '$lib/progressCompanion';
 	import { trackMilestoneReachedOnce, trackStreakDayReachedOnce } from '$lib/analytics';
 	import {
@@ -108,7 +107,6 @@
 		isAnonymous?: boolean;
 	}
 
-	const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'bear' };
 	const ANONYMOUS_PREVIEW_STREAK: StreakData = {
 		currentStreak: 3,
 		longestStreak: 6,
@@ -252,10 +250,6 @@
 	const themeStyle = $derived(
 		`--theme-accent: ${currentTheme.accent}; --theme-bg: ${currentTheme.bg};`
 	);
-	const displayedProgressCompanion = $derived(
-		isAnonymous ? ANONYMOUS_PREVIEW_COMPANION : (data.progressCompanion ?? null)
-	);
-
 	$effect(() => {
 		const nextProfileTheme = data.profileTheme;
 		if (nextProfileTheme && THEMES[nextProfileTheme]) {
@@ -299,7 +293,6 @@
 	const weeklyEntries = $derived(isAnonymous ? 3 : loadedWeeklyEntries);
 	const entryCount = $derived(isAnonymous ? 18 : loadedEntryCount);
 	const activeDays = $derived(isAnonymous ? 11 : loadedActiveDays);
-	const growthScore = $derived(isAnonymous ? 51 : loadedGrowthScore);
 	const growthLevel = $derived(isAnonymous ? 3 : loadedGrowthLevel);
 	const heatmapData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : loadedHeatmapData);
 	const insightsData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_INSIGHTS : loadedInsightsData);
@@ -438,15 +431,6 @@
 		for (const milestone of loadedMilestonesData?.achieved ?? []) {
 			trackMilestoneReachedOnce(milestone.title ?? milestone.text);
 		}
-
-		void scrollToGrowthGardenAnchor();
-	}
-
-	async function scrollToGrowthGardenAnchor() {
-		if (!browser || window.location.hash !== '#growth-garden') return;
-
-		await tick();
-		document.getElementById('growth-garden')?.scrollIntoView({ block: 'start' });
 	}
 
 	async function loadProgressData() {
@@ -514,7 +498,6 @@
 			if (browser) {
 				localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
 			}
-			void scrollToGrowthGardenAnchor();
 			return;
 		}
 
@@ -639,7 +622,7 @@
 <SEO canonical="https://www.mittpsyke.se/framsteg" />
 
 <main class="auth-page framsteg-page" style={themeStyle}>
-	<div class="auth-shell">
+	<div class="auth-shell framsteg-shell">
 		<header class="auth-hero">
 			<div>
 				{#if isAnonymous}
@@ -655,7 +638,7 @@
 		</header>
 	</div>
 
-	<div class="auth-shell">
+	<div class="auth-shell framsteg-shell">
 		<div class="journey-container">
 			{#if loading}
 				<section class="auth-panel loading-state">Laddar din sida med framsteg...</section>
@@ -671,16 +654,8 @@
 							<AccountTeaser variant="progress" mode="overlay" />
 						</div>
 					{/if}
-		<GrowthGarden
-			growthScore={growthScore}
-			growthLevel={growthLevel}
-			entryCount={entryCount}
-			activeDays={activeDays}
-			lastEntryDaysAgo={streakData?.lastEntryDaysAgo ?? null}
-			progressCompanion={displayedProgressCompanion}
-			isAnonymousPreview={isAnonymous}
-		/>
-
+		<div class="framsteg-layout">
+			<div class="framsteg-main">
 		<!-- ── Aktivitetskarta ── -->
 		<section class="card heatmap-card" bind:this={heatmapCardEl}>
 			<div class="card-header">
@@ -862,6 +837,60 @@
 				<a href="/dagbok/checkin" class="auth-button primary">Skriv en rad</a>
 			</section>
 		{/if}
+			</div>
+
+			<aside class="framsteg-column">
+				<section class="card companion-card">
+					<div class="companion-media">
+						<img
+							src="/images/home-companion-fox-awake.webp"
+							alt="En vaken, nyfiken räv som sitter vid ett träd i en varm naturmiljö vid en sjö"
+							loading="lazy"
+							decoding="async"
+						/>
+					</div>
+					<div class="companion-copy">
+						<h2>Din följeslagare</h2>
+						<p>
+							{isAnonymous
+								? 'Räven är vaken och håller platsen sällskap medan den växer fram.'
+								: 'Räven är vaken och håller dig sällskap på din resa.'}
+						</p>
+					</div>
+				</section>
+
+				<section class="card progress-summary-card">
+					<div class="card-header">
+						<div class="icon-badge week"><Leaf size={24} /></div>
+						<h2>Framsteg</h2>
+					</div>
+					<div class="summary-stats">
+						<div class="summary-stat">
+							<span class="summary-stat-number">{entryCount}</span>
+							<span class="summary-stat-label">Texter skrivna</span>
+						</div>
+						<div class="summary-stat">
+							<span class="summary-stat-number">{activeDays}</span>
+							<span class="summary-stat-label">Dagar med avtryck</span>
+						</div>
+						{#if streakData}
+							<div class="summary-stat">
+								<span class="summary-stat-number">{streakData.currentStreak}</span>
+								<span class="summary-stat-label">Dagars svit just nu</span>
+							</div>
+						{/if}
+						<div class="summary-stat">
+							<span class="summary-stat-number">{weeklyEntries}</span>
+							<span class="summary-stat-label">Den här veckan</span>
+						</div>
+						<div class="summary-stat">
+							<span class="summary-stat-number">{growthLevel}</span>
+							<span class="summary-stat-label">Nivå i trädgården</span>
+						</div>
+					</div>
+				</section>
+			</aside>
+		</div>
 				</div>
 			{/if}
 		</div>
@@ -892,6 +921,108 @@
 	.progress-content {
 		display: grid;
 		gap: 1rem;
+	}
+
+	.framsteg-shell {
+		max-width: 1080px;
+	}
+
+	.framsteg-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) clamp(300px, 32%, 360px);
+		gap: 1rem;
+		align-items: start;
+	}
+
+	.framsteg-main {
+		display: grid;
+		gap: 1rem;
+		min-width: 0;
+	}
+
+	.framsteg-column {
+		display: grid;
+		gap: 1rem;
+		align-content: start;
+		position: sticky;
+		top: 1rem;
+	}
+
+	.companion-card {
+		padding: 0;
+		overflow: hidden;
+	}
+
+	.companion-media {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 4 / 3;
+		overflow: hidden;
+	}
+
+	.companion-media img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 72% 58%;
+		display: block;
+	}
+
+	.companion-copy {
+		padding: 1rem 1.25rem 1.25rem;
+	}
+
+	.companion-copy h2 {
+		margin: 0 0 0.35rem;
+		font-size: 1.15rem;
+		color: var(--color-dashboard-text);
+	}
+
+	.companion-copy p {
+		margin: 0;
+		color: var(--color-dashboard-text-muted);
+		font-size: 0.95rem;
+		line-height: 1.5;
+	}
+
+	.summary-stats {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.75rem;
+		margin-top: 0.5rem;
+	}
+
+	.summary-stat {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		padding: 0.75rem 0.85rem;
+		border-radius: 12px;
+		background: color-mix(in srgb, var(--color-dashboard-surface-strong, #ffffff) 70%, transparent);
+		border: 1px solid var(--color-dashboard-border);
+	}
+
+	.summary-stat-number {
+		font-size: 1.4rem;
+		font-weight: 700;
+		line-height: 1.1;
+		color: var(--color-dashboard-text);
+	}
+
+	.summary-stat-label {
+		font-size: 0.8rem;
+		color: var(--color-dashboard-text-muted);
+	}
+
+	@media (max-width: 860px) {
+		.framsteg-layout {
+			grid-template-columns: 1fr;
+		}
+
+		.framsteg-column {
+			position: static;
+			order: -1;
+		}
 	}
 
 	.account-preview-content {

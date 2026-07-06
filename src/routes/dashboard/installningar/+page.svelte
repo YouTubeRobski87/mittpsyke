@@ -415,7 +415,6 @@
 				<div class="companion-profile-copy">
 					<strong>{selectedCompanion?.name ?? 'Din följeslagare'}</strong>
 					<span>Visas som din profilbild när du är inloggad.</span>
-					<a href="/framsteg#growth-garden">Byt följeslagare</a>
 				</div>
 			</div>
 
@@ -818,19 +817,6 @@
 		font-size: 0.86rem;
 		line-height: 1.45;
 		color: hsl(var(--muted-foreground));
-	}
-
-	.companion-profile-copy a {
-		width: fit-content;
-		margin-top: 0.15rem;
-		font-size: 0.86rem;
-		font-weight: 650;
-		color: hsl(var(--primary));
-		text-decoration: none;
-	}
-
-	.companion-profile-copy a:hover {
-		text-decoration: underline;
 	}
 
 	.theme-row {

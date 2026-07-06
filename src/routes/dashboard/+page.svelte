@@ -24,7 +24,7 @@
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
 
-  const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'bear' };
+  const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
   const GENERIC_COMPANION_HERO_IMAGE =
     'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1200 640%22%3E%3Cdefs%3E%3ClinearGradient id=%22sky%22 x1=%220%22 x2=%220%22 y1=%220%22 y2=%221%22%3E%3Cstop offset=%220%25%22 stop-color=%22%23f5edcf%22/%3E%3Cstop offset=%2258%25%22 stop-color=%22%23cfe2d2%22/%3E%3Cstop offset=%22100%25%22 stop-color=%22%23a8c69a%22/%3E%3C/linearGradient%3E%3ClinearGradient id=%22water%22 x1=%220%22 x2=%221%22 y1=%220%22 y2=%220%22%3E%3Cstop offset=%220%25%22 stop-color=%22%238fb6b2%22/%3E%3Cstop offset=%22100%25%22 stop-color=%22%23d7e9d6%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%221200%22 height=%22640%22 fill=%22url(%23sky)%22/%3E%3Cpath d=%22M0 310 C150 230 280 250 410 300 C560 360 690 260 830 285 C980 315 1060 245 1200 280 L1200 640 L0 640 Z%22 fill=%22%237fa071%22 opacity=%220.48%22/%3E%3Cpath d=%22M0 390 C190 335 350 360 520 395 C710 435 905 370 1200 400 L1200 640 L0 640 Z%22 fill=%22url(%23water)%22 opacity=%220.82%22/%3E%3Cpath d=%22M0 500 C190 450 360 470 520 510 C710 555 920 485 1200 515 L1200 640 L0 640 Z%22 fill=%22%238aaa76%22/%3E%3Ccircle cx=%22910%22 cy=%22132%22 r=%2276%22 fill=%22%23fff5cf%22 opacity=%220.82%22/%3E%3Cpath d=%22M160 0 C120 140 126 300 92 640 H250 C218 400 225 180 296 0 Z%22 fill=%22%235c4d37%22 opacity=%220.82%22/%3E%3Cpath d=%22M178 0 C152 152 158 300 134 640%22 fill=%22none%22 stroke=%22%23443627%22 stroke-width=%2210%22 opacity=%220.38%22/%3E%3Cg fill=%22%23799b62%22 opacity=%220.62%22%3E%3Ccircle cx=%22202%22 cy=%2280%22 r=%2274%22/%3E%3Ccircle cx=%22290%22 cy=%2254%22 r=%2265%22/%3E%3Ccircle cx=%22110%22 cy=%2252%22 r=%2260%22/%3E%3Ccircle cx=%22366%22 cy=%2290%22 r=%2254%22/%3E%3C/g%3E%3C/svg%3E';
@@ -69,13 +69,13 @@
   const hasSelectedCompanion = $derived(Boolean(selectedCompanion));
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
-  const companionHeroImage = $derived('/images/home-companion-fox-v2.webp');
-  // Följeslagaren som hero-scenen visar. Bilden är rävens tills fler följeslagare
-  // får egna scener — fokus hämtas ur konfigurationen så CSS aldrig behöver ändras.
+  const companionHeroImage = $derived('/images/home-companion-fox-awake.webp');
+  // Följeslagaren som hero-scenen visar. Räven är vaken och aktiv — fokus hämtas ur
+  // konfigurationen så CSS aldrig behöver ändras när bilden byts.
   const heroCompanionId: ProgressCompanionArtId = 'fox';
   const heroFocus = $derived(getProgressCompanionHeroFocus(heroCompanionId));
-  const companionHeroAlt = 
-  'En lugn räv vilar vid ett träd i en varm och stillsam naturmiljö';
+  const companionHeroAlt =
+  'En vaken, nyfiken räv sitter vid ett träd i en varm och stillsam naturmiljö vid en sjö';
   const moodLabel = $derived(progressPreview.weeklyEntries > 0 ? 'Bra' : 'Redo');
   const latestActivity = $derived(
     isAnonymous
@@ -185,6 +185,8 @@
         {/if}
       </section>
 
+      <div class="dashboard-body">
+        <div class="dashboard-content">
       <section class="quick-grid" aria-label="Snabb översikt">
         <article class="quick-card mood-card">
           <div class="card-head">
@@ -285,6 +287,38 @@
           </div>
         </article>
       </section>
+        </div>
+
+        <aside class="framsteg-aside" aria-label="Framsteg">
+          <section class="framsteg-panel" class:personal-preview={isAnonymous}>
+            <div class="framsteg-panel-head">
+              <span class="framsteg-panel-icon" aria-hidden="true">
+                <Leaf size={22} strokeWidth={1.8} />
+              </span>
+              <h2>Framsteg</h2>
+            </div>
+            <p class="framsteg-panel-lead">{progressPreview.summary}</p>
+            <div class="framsteg-panel-stats">
+              <div class="framsteg-stat">
+                <strong>{progressPreview.totalEntries}</strong>
+                <span>Texter skrivna</span>
+              </div>
+              <div class="framsteg-stat">
+                <strong>{progressPreview.currentStreak}</strong>
+                <span>Dagars svit</span>
+              </div>
+              <div class="framsteg-stat">
+                <strong>{progressPreview.weeklyEntries}</strong>
+                <span>Den här veckan</span>
+              </div>
+            </div>
+            <a class="card-button" href="/framsteg">
+              Se hela framsteg
+              <ArrowRight size={18} aria-hidden="true" />
+            </a>
+          </section>
+        </aside>
+      </div>
 
       <p class="dashboard-footer">
         <Leaf size={14} aria-hidden="true" />
@@ -330,6 +364,94 @@
     gap: 28px;
     padding: 44px 48px 24px;
     min-width: 0;
+  }
+
+  .dashboard-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) clamp(280px, 26%, 340px);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .dashboard-content {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    min-width: 0;
+  }
+
+  .framsteg-aside {
+    position: sticky;
+    top: 24px;
+    min-width: 0;
+  }
+
+  .framsteg-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 22px;
+    border-radius: var(--mp-radius);
+    border: 1px solid var(--mp-card-border);
+    background: linear-gradient(150deg, rgba(234, 248, 230, 0.9), rgba(255, 255, 253, 0.94));
+    box-shadow: 0 10px 28px rgba(69, 83, 61, 0.06);
+  }
+
+  .framsteg-panel-head {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .framsteg-panel-icon {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--mp-green-soft);
+    color: var(--mp-green);
+    flex: 0 0 auto;
+  }
+
+  .framsteg-panel-head h2 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .framsteg-panel-lead {
+    margin: 0;
+    color: var(--mp-text-dim);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .framsteg-panel-stats {
+    display: grid;
+    gap: 10px;
+  }
+
+  .framsteg-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--mp-card-border);
+  }
+
+  .framsteg-stat strong {
+    font-size: 1.35rem;
+    line-height: 1;
+    color: var(--mp-text);
+  }
+
+  .framsteg-stat span {
+    color: var(--mp-text-dim);
+    font-size: 0.85rem;
+    text-align: right;
   }
 
   .topbar {
@@ -936,6 +1058,15 @@
     .quick-grid,
     .lower-grid {
       grid-template-columns: 1fr;
+    }
+
+    .dashboard-body {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .framsteg-aside {
+      position: static;
     }
 
     .hero-copy {

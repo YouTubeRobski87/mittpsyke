@@ -204,7 +204,7 @@ export function getProgressCompanionArtId(id: string | null | undefined): Progre
 	) {
 		return id;
 	}
-	return 'bear';
+	return 'fox';
 }
 
 export function getProgressCompanionDayState(date = new Date()): ProgressCompanionDayState {
@@ -233,7 +233,7 @@ export function getProgressCompanionDayStateLabel(state: ProgressCompanionDaySta
 export function getProgressCompanionDayStateImage(
 	state: ProgressCompanionDayState
 ): string | null {
-	return '/images/bear-growth-garden.jpg';
+	return '/images/fox-growth-garden.jpg';
 }
 
 export function getProgressCompanionStatusMessage({

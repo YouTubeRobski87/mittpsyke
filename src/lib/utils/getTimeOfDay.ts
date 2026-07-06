@@ -1,5 +1,5 @@
 // Tidpunkt på dygnet för "följeslagaren" – styr vilka ambient-effekter
-// CompanionScene visar. Speglar getProgressCompanionDayState (Stockholm-tid)
+// som visas. Speglar getProgressCompanionDayState (Stockholm-tid)
 // men med egna intervall och svenska värden.
 
 export type TimeOfDay = 'morgon' | 'dag' | 'kvall' | 'natt';
