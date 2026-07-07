@@ -57,14 +57,12 @@ function normalizeBlogSlug(value: string): string {
 
 function asLastmod(value: string | undefined): string {
 	if (!value) return BLOG_LASTMOD;
+
 	const parsed = new Date(value);
-	if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
-	return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : BLOG_LASTMOD;
-}
-function asLastmod(value: string | undefined): string {
-	if (!value) return BLOG_LASTMOD;
-	const parsed = new Date(value);
-	if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+	if (!Number.isNaN(parsed.getTime())) {
+		return parsed.toISOString().slice(0, 10);
+	}
+
 	return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : BLOG_LASTMOD;
 }
 
@@ -77,6 +75,7 @@ const SITEMAP_REDIRECT_REPLACEMENTS: Record<string, string> = {
 function replaceRedirectedSitemapPath(path: string): string {
 	return SITEMAP_REDIRECT_REPLACEMENTS[path] ?? path;
 }
+
 function extractSoroArticles(embedScript: string): SoroArticleListItem[] {
 	const match = embedScript.match(/var SORO_ARTICLES = (\[[\s\S]*?\]);/);
 	if (!match) return [];
@@ -101,13 +100,15 @@ async function loadSoroBlogEntries(fetch: typeof globalThis.fetch): Promise<Site
 		if (!embedResponse.ok) return [];
 
 		const embedScript = await embedResponse.text();
+
 		return extractSoroArticles(embedScript)
 			.map((article) => {
 				const slug = normalizeBlogSlug(article.slug ?? '');
 				if (!slug) return null;
+
 				return {
 					path: replaceRedirectedSitemapPath(`/blogg/${slug}`),
-					lastmod: asLastmod(article?.isoDate ?? article?.date),
+					lastmod: asLastmod(article.isoDate ?? article.date),
 					changefreq: 'monthly',
 					priority: '0.6'
 				};
@@ -181,105 +182,25 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		{ path: '/redaktionell-metod', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/tillganglighet', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
 		{ path: '/skriv', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{
-			path: '/4-7-8-andning-ovning',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.6'
-		},
-		{
-			path: '/ai-samtalsstod-online',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.7'
-		},
-		{
-			path: '/andningsovningar-mot-angest',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.6'
-		},
-		{
-			path: '/anonym-dagbok-online',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.7'
-		},
-		{
-			path: '/guider/anonym-dagbok-online',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.7'
-		},
-		{
-			path: '/guider/dagbok-och-reflektion',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.7'
-		},
-		{
-			path: '/digital-dagbok-for-maende',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.7'
-		},
-		{
-			path: '/exponering-ovningar-mot-angest',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.6'
-		},
-		{
-			path: '/hjalp-vid-angest-online',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.7'
-		},
-		{
-			path: '/humorsparning',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.6'
-		},
-		{
-			path: '/journalforing',
-			lastmod: STATIC_CONTENT_LASTMOD,
-			changefreq: 'monthly',
-			priority: '0.6'
-		},
+		{ path: '/4-7-8-andning-ovning', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.6' },
+		{ path: '/ai-samtalsstod-online', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
+		{ path: '/andningsovningar-mot-angest', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.6' },
+		{ path: '/anonym-dagbok-online', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
+		{ path: '/guider/anonym-dagbok-online', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
+		{ path: '/guider/dagbok-och-reflektion', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
+		{ path: '/digital-dagbok-for-maende', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
+		{ path: '/exponering-ovningar-mot-angest', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.6' },
+		{ path: '/hjalp-vid-angest-online', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
+		{ path: '/humorsparning', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.6' },
+		{ path: '/journalforing', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.6' },
 		{ path: '/angest', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.8' },
-		{
-			path: '/depression',
-			lastmod: GUIDE_FALLBACK_LASTMOD,
-			changefreq: 'weekly',
-			priority: '0.8'
-		},
+		{ path: '/depression', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.8' },
 		{ path: '/ensamhet', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
-		{
-			path: '/nedstamdhet',
-			lastmod: GUIDE_FALLBACK_LASTMOD,
-			changefreq: 'weekly',
-			priority: '0.7'
-		},
+		{ path: '/nedstamdhet', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
 		{ path: '/oro', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
-		{
-			path: '/panikattack',
-			lastmod: GUIDE_FALLBACK_LASTMOD,
-			changefreq: 'weekly',
-			priority: '0.7'
-		},
-		{
-			path: '/sjalvkansla',
-			lastmod: GUIDE_FALLBACK_LASTMOD,
-			changefreq: 'weekly',
-			priority: '0.7'
-		},
-		{
-			path: '/sovproblem',
-			lastmod: GUIDE_FALLBACK_LASTMOD,
-			changefreq: 'weekly',
-			priority: '0.7'
-		},
+		{ path: '/panikattack', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
+		{ path: '/sjalvkansla', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
+		{ path: '/sovproblem', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
 		{ path: '/stress', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
 		{ path: '/trauma', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
 		{
