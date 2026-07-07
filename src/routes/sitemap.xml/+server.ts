@@ -61,7 +61,22 @@ function asLastmod(value: string | undefined): string {
 	if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
 	return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : BLOG_LASTMOD;
 }
+function asLastmod(value: string | undefined): string {
+	if (!value) return BLOG_LASTMOD;
+	const parsed = new Date(value);
+	if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
+	return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : BLOG_LASTMOD;
+}
 
+const SITEMAP_REDIRECT_REPLACEMENTS: Record<string, string> = {
+	'/blogg/nar-soka-vard-for-psykiskt-maende': '/ansvar',
+	'/blogg/anonym-hjalp-for-oro': '/hjalp-mot-oro-online',
+	'/blogg/integritet-i-appar-for-mental-halsa': '/blogg/säkra-maendedata-tjanster'
+};
+
+function replaceRedirectedSitemapPath(path: string): string {
+	return SITEMAP_REDIRECT_REPLACEMENTS[path] ?? path;
+}
 function extractSoroArticles(embedScript: string): SoroArticleListItem[] {
 	const match = embedScript.match(/var SORO_ARTICLES = (\[[\s\S]*?\]);/);
 	if (!match) return [];
@@ -91,7 +106,7 @@ async function loadSoroBlogEntries(fetch: typeof globalThis.fetch): Promise<Site
 				const slug = normalizeBlogSlug(article.slug ?? '');
 				if (!slug) return null;
 				return {
-					path: `/blogg/${slug}`,
+					path: replaceRedirectedSitemapPath(`/blogg/${slug}`),
 					lastmod: asLastmod(article?.isoDate ?? article?.date),
 					changefreq: 'monthly',
 					priority: '0.6'
