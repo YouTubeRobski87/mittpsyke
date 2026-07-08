@@ -3,8 +3,19 @@ const now = new Date();
 const hour = now.getHours();
 const month = now.getMonth() + 1;
 
-let companionImage = '/images/companion/fox-night.webp';
+let companionImage = '/images/avatars/presets/fox-night.webp';
 let companionText = 'Räven är vaken och håller dig sällskap på din resa.';
+
+if (month >= 12 || month <= 2) {
+	companionImage = '/images/avatars/presets/fox-winter.webp';
+	companionText = 'Även under vintern finns räven kvar vid din sida.';
+} else if (month >= 9 && month <= 11) {
+	companionImage = '/images/avatars/presets/fox-autumn.webp';
+	companionText = 'Årstider förändras, men räven finns kvar.';
+} else if (hour >= 6 && hour < 18) {
+	companionImage = '/images/avatars/presets/fox-morning.webp';
+	companionText = 'Du tog dig igenom natten. En ny dag börjar.';
+}
 
 if (month >= 12 || month <= 2) {
     companionImage = '/images/companion/fox-winter.webp';
