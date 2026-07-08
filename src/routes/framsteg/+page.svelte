@@ -1,4 +1,21 @@
 <script lang="ts">
+const now = new Date();
+const hour = now.getHours();
+const month = now.getMonth() + 1;
+
+let companionImage = '/images/companion/fox-night.webp';
+let companionText = 'Räven är vaken och håller dig sällskap på din resa.';
+
+if (month >= 12 || month <= 2) {
+    companionImage = '/images/companion/fox-winter.webp';
+    companionText = 'Även under vintern finns räven kvar vid din sida.';
+} else if (month >= 9 && month <= 11) {
+    companionImage = '/images/companion/fox-autumn.webp';
+    companionText = 'Årstider förändras, men räven finns kvar.';
+} else if (hour >= 6 && hour < 18) {
+    companionImage = '/images/companion/fox-morning.webp';
+    companionText = 'Du tog dig igenom natten. En ny dag börjar.';
+}
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
@@ -843,11 +860,11 @@
 				<section class="card companion-card">
 					<div class="companion-media">
 						<img
-							src="/images/home-companion-fox-awake.webp"
-							alt="En vaken, nyfiken räv som sitter vid ett träd i en varm naturmiljö vid en sjö"
-							loading="lazy"
-							decoding="async"
-						/>
+	              src={companionImage}
+	              alt="Din följeslagare – räven vid sjön"
+	              loading="lazy"
+	              decoding="async"
+                                  />
 					</div>
 					<div class="companion-copy">
 						<h2>Din följeslagare</h2>
