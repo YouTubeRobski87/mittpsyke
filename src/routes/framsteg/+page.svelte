@@ -1,32 +1,34 @@
 <script lang="ts">
-<script lang="ts">
-const now = new Date();
-const hour = now.getHours();
-const month = now.getMonth() + 1;
-
-const progressCompanion =
-	month >= 12 || month <= 2
-		? {
-				image: '/images/avatars/presets/fox-winter.webp',
-				text: 'Även under vintern finns räven kvar vid din sida.'
-			}
-		: month >= 9 && month <= 11
-			? {
-					image: '/images/avatars/presets/fox-autumn.webp',
-					text: 'Årstider förändras, men räven finns kvar.'
-				}
-			: hour >= 6 && hour < 18
-				? {
-						image: '/images/avatars/presets/fox-morning.webp',
-						text: 'Du tog dig igenom natten. En ny dag börjar.'
-					}
-				: {
-						image: '/images/avatars/presets/fox-night.webp',
-						text: 'Räven är vaken och håller dig sällskap på din resa.'
-					};
-</script>
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
+	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
+	import { browser } from '$app/environment';
+	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
+	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
+	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import type { ProgressCompanionSelection } from '$lib/progressCompanion';
+	import { trackMilestoneReachedOnce, trackStreakDayReachedOnce } from '$lib/analytics';
+	import {
+		SENSITIVE_CONSENT_HEADER,
+		SENSITIVE_CONSENT_VERSION,
+		grantSensitiveConsent,
+		hasSensitiveConsent
+	} from '$lib/consent';
+	import { supabase } from '$lib/supabase';
+	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart } from 'lucide-svelte';
+
+	const now = new Date();
+	const hour = now.getHours();
+	const month = now.getMonth() + 1;
+
+	const companionImage =
+		month >= 12 || month <= 2
+			? '/images/avatars/presets/fox-winter.webp'
+			: month >= 9 && month <= 11
+				? '/images/avatars/presets/fox-autumn.webp'
+				: hour >= 6 && hour < 18
+					? '/images/avatars/presets/fox-morning.webp'
+					: '/images/avatars/presets/fox-night.webp';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
