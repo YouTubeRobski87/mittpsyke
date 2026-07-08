@@ -1,0 +1,138 @@
+diff --git a/src/routes/framsteg/+page.svelte b/src/routes/framsteg/+page.svelte
+index cfbdb200..d69fa180 100644
+--- a/src/routes/framsteg/+page.svelte
++++ b/src/routes/framsteg/+page.svelte
+@@ -29,21 +29,6 @@
+ 				: hour >= 6 && hour < 18
+ 					? '/images/avatars/presets/fox-morning.webp'
+ 					: '/images/avatars/presets/fox-night.webp';
+-	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
+-	import { browser } from '$app/environment';
+-	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
+-	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
+-	import ConsentGate from '$lib/components/ConsentGate.svelte';
+-	import type { ProgressCompanionSelection } from '$lib/progressCompanion';
+-	import { trackMilestoneReachedOnce, trackStreakDayReachedOnce } from '$lib/analytics';
+-	import {
+-		SENSITIVE_CONSENT_HEADER,
+-		SENSITIVE_CONSENT_VERSION,
+-		grantSensitiveConsent,
+-		hasSensitiveConsent
+-	} from '$lib/consent';
+-	import { supabase } from '$lib/supabase';
+-	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart } from 'lucide-svelte';
+ 
+ 	interface StreakData {
+ 		currentStreak: number;
+@@ -952,13 +937,13 @@
+ 	}
+ 
+ 	.framsteg-shell {
+-		max-width: 1080px;
++		max-width: 1240px;
+ 	}
+ 
+ 	.framsteg-layout {
+ 		display: grid;
+-		grid-template-columns: minmax(0, 1fr) clamp(300px, 32%, 360px);
+-		gap: 1rem;
++		grid-template-columns: minmax(0, 2fr) clamp(300px, 28%, 340px);
++		gap: 1.2rem;
+ 		align-items: start;
+ 	}
+ 
+@@ -997,7 +982,7 @@
+ 	}
+ 
+ 	.companion-copy {
+-		padding: 1rem 1.25rem 1.25rem;
++		padding: 1.3rem 1.5rem 1.5rem;
+ 	}
+ 
+ 	.companion-copy h2 {
+@@ -1023,15 +1008,15 @@
+ 	.summary-stat {
+ 		display: flex;
+ 		flex-direction: column;
+-		gap: 0.15rem;
+-		padding: 0.75rem 0.85rem;
++		gap: 0.2rem;
++		padding: 1rem 1.1rem;
+ 		border-radius: 12px;
+ 		background: color-mix(in srgb, var(--color-dashboard-surface-strong, #ffffff) 70%, transparent);
+ 		border: 1px solid var(--color-dashboard-border);
+ 	}
+ 
+ 	.summary-stat-number {
+-		font-size: 1.4rem;
++		font-size: 1.6rem;
+ 		font-weight: 700;
+ 		line-height: 1.1;
+ 		color: var(--color-dashboard-text);
+@@ -1093,15 +1078,15 @@
+ 	.card {
+ 		background: hsl(var(--surface));
+ 		border-radius: var(--radius-card);
+-		padding: 2rem;
++		padding: 2.5rem;
+ 		margin: 0;
+ 		border: 1px solid var(--color-dashboard-border);
+ 		box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+ 		transition: border-color 160ms ease, box-shadow 160ms ease;
+ 	}
+ 	.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: color-mix(in srgb, var(--color-dashboard-border) 76%, var(--primary) 24%); }
+-	.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
+-	.card-header h2 { font-size: 1.3rem; margin: 0; color: hsl(var(--foreground)); }
++	.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.3rem; }
++	.card-header h2 { font-size: 1.45rem; margin: 0; color: hsl(var(--foreground)); }
+ 	.card-intro {
+ 		max-width: 42rem;
+ 		margin: 0.35rem 0 0;
+@@ -1109,9 +1094,9 @@
+ 		font-size: 0.95rem;
+ 		line-height: 1.6;
+ 	}
+-	.icon-badge { width: 2.8rem; height: 2.8rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
++	.icon-badge { width: 3.2rem; height: 3.2rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
+ 	.insights-card,
+-	.heatmap-card { min-height: 22rem; }
++	.heatmap-card { min-height: 25rem; }
+ 	.card-placeholder {
+ 		border-radius: 0.75rem;
+ 		background:
+@@ -1119,8 +1104,8 @@
+ 		background-size: 200% 100%;
+ 		animation: cardPlaceholderShimmer 1.6s ease-in-out infinite;
+ 	}
+-	.card-placeholder--insights { min-height: 11rem; }
+-	.card-placeholder--heatmap { min-height: 18rem; }
++	.card-placeholder--insights { min-height: 12rem; }
++	.card-placeholder--heatmap { min-height: 21rem; }
+ 
+ 	@keyframes cardPlaceholderShimmer {
+ 		0% { background-position: 200% 0; }
+@@ -1139,10 +1124,10 @@
+ 	.encouragement { font-size: 0.95rem; color: hsl(var(--muted-foreground)); font-style: italic; margin: 0; }
+ 
+ 	/* Overview */
+-	.overview-heading { font-size: 1.2rem; margin: 0 0 1.5rem 0; color: hsl(var(--foreground)); }
+-	.overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1.2rem; margin-bottom: 1rem; }
++	.overview-heading { font-size: 1.25rem; margin: 0 0 1.6rem 0; color: hsl(var(--foreground)); }
++	.overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.4rem; margin-bottom: 1rem; }
+ 	.overview-item { text-align: center; padding: 1rem 0.5rem; border-radius: 0.5rem; background: var(--theme-bg, hsl(var(--surface-soft))); }
+-	.overview-number { font-size: 2.2rem; font-weight: 700; color: var(--theme-accent, #436e8f); }
++	.overview-number { font-size: 2.6rem; font-weight: 700; color: var(--theme-accent, #436e8f); }
+ 	.overview-number--text { font-size: 1.25rem; line-height: 1.2; }
+ 	.overview-label { font-size: 0.85rem; color: hsl(var(--muted-foreground)); margin-top: 0.3rem; }
+ 
+@@ -1155,8 +1140,8 @@
+ 		letter-spacing: 0;
+ 		color: hsl(var(--foreground));
+ 	}
+-	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+-	.milestone { min-height: 8.75rem; padding: 1rem; border-radius: 0.5rem; display: flex; align-items: flex-start; gap: 1rem; background: hsl(var(--surface-muted)); border: 1px solid var(--color-dashboard-border); transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
++	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2rem; }
++	.milestone { min-height: 10rem; padding: 1.2rem; border-radius: 0.5rem; display: flex; align-items: flex-start; gap: 1rem; background: hsl(var(--surface-muted)); border: 1px solid var(--color-dashboard-border); transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
+ 	.milestone.achieved { background: var(--theme-bg, hsl(var(--success-surface))); border-color: var(--color-dashboard-border); }
+ 	.milestone.resting { opacity: 0.78; }
+ 	.milestone:hover { border-color: color-mix(in srgb, var(--color-dashboard-border) 72%, var(--theme-accent, #557c68) 28%); box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
