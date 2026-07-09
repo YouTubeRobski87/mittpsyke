@@ -20,11 +20,34 @@ export type ProgressCompanionArtId =
 	| 'dino';
 
 export type ProgressCompanionDayState = 'morning' | 'day' | 'evening' | 'night';
+export type ProgressCompanionSeason = 'spring' | 'summer' | 'autumn' | 'winter';
+
+export type DashboardCompanionGreeting = {
+	label: string;
+	note: string;
+};
+
+export type DashboardCompanionScene = {
+	greeting: DashboardCompanionGreeting;
+	imageSrc: string;
+	alt: string;
+	season: ProgressCompanionSeason;
+	light: 'day' | 'night';
+};
 
 type ProgressCompanionPresenceInput = {
 	lastEntryDaysAgo?: number | null;
 	hasEntries?: boolean;
 };
+
+const COMPANION_IMAGE_VERSION = 'v=2';
+
+const DASHBOARD_COMPANION_IMAGE_PATHS = {
+	day: '/images/avatars/presets/fox-morning.webp',
+	night: '/images/avatars/presets/fox-night.webp',
+	autumn: '/images/avatars/presets/fox-autumn.webp',
+	winter: '/images/avatars/presets/fox-winter.webp'
+} as const;
 
 export const PROGRESS_COMPANION_ANIMALS = [
 	{ id: 'fox', name: 'Räv', temperament: 'Nyfiken och varsam' },
@@ -205,6 +228,58 @@ export function getProgressCompanionArtId(id: string | null | undefined): Progre
 		return id;
 	}
 	return 'fox';
+}
+
+export function getProgressCompanionSeason(date = new Date()): ProgressCompanionSeason {
+	const month = date.getMonth() + 1;
+
+	if (month === 12 || month <= 2) return 'winter';
+	if (month >= 9 && month <= 11) return 'autumn';
+	if (month >= 3 && month <= 5) return 'spring';
+	return 'summer';
+}
+
+export function getDashboardCompanionGreeting(date = new Date()): DashboardCompanionGreeting {
+	const hour = date.getHours();
+
+	if (hour >= 5 && hour <= 10) return { label: 'God morgon', note: 'En ny dag börjar.' };
+	if (hour >= 11 && hour <= 16) return { label: 'God dag', note: 'En sak i taget.' };
+	if (hour >= 17 && hour <= 21) return { label: 'God kväll', note: 'Du får landa här.' };
+	return { label: 'God natt', note: 'Det får vara stilla nu.' };
+}
+
+function appendImageVersion(path: string): string {
+	return `${path}?${COMPANION_IMAGE_VERSION}`;
+}
+
+export function getDashboardCompanionScene(date = new Date()): DashboardCompanionScene {
+	const season = getProgressCompanionSeason(date);
+	const hour = date.getHours();
+	const light = hour >= 6 && hour <= 17 ? 'day' : 'night';
+
+	let imagePath =
+		light === 'day' ? DASHBOARD_COMPANION_IMAGE_PATHS.day : DASHBOARD_COMPANION_IMAGE_PATHS.night;
+
+	if (season === 'autumn') {
+		imagePath = DASHBOARD_COMPANION_IMAGE_PATHS.autumn;
+	} else if (season === 'winter') {
+		imagePath = DASHBOARD_COMPANION_IMAGE_PATHS.winter;
+	}
+
+	return {
+		greeting: getDashboardCompanionGreeting(date),
+		imageSrc: appendImageVersion(imagePath),
+		alt:
+			season === 'winter'
+				? 'Din följeslagare, räven, sitter vid sjön i en stilla vintermiljö.'
+				: season === 'autumn'
+					? 'Din följeslagare, räven, sitter vid sjön i ett mjukt höstljus.'
+					: light === 'night'
+						? 'Din följeslagare, räven, sitter vid sjön i kvälls- eller nattljus.'
+						: 'Din följeslagare, räven, sitter vid sjön i ett lugnt dagsljus.',
+		season,
+		light
+	};
 }
 
 export function getProgressCompanionDayState(date = new Date()): ProgressCompanionDayState {
