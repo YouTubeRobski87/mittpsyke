@@ -18,9 +18,11 @@
     Wind
   } from 'lucide-svelte';
   import {
+    getDashboardCompanionScene,
     getProgressCompanionAnimal,
     getProgressCompanionArtId,
     getProgressCompanionHeroFocus,
+    type DashboardCompanionScene,
     type ProgressCompanionArtId,
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
@@ -74,6 +76,7 @@
 
   let progressExpanded = $state(false);
   let localHour = $state<number | null>(null);
+  let localCompanionScene = $state<DashboardCompanionScene | null>(null);
 
   const diaryPreview = $derived(data.diaryPreview);
   const progressPreview = $derived(data.progressPreview);
@@ -90,7 +93,7 @@
   const hasSelectedCompanion = $derived(Boolean(selectedCompanion));
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
-  const companionHeroImage = $derived('/images/home-companion-fox-awake.webp');
+  const companionHeroImage = $derived(localCompanionScene?.imageSrc ?? null);
   // Följeslagaren som hero-scenen visar. Räven är vaken och aktiv — fokus hämtas ur
   // konfigurationen så CSS aldrig behöver ändras när bilden byts.
   const heroCompanionId: ProgressCompanionArtId = 'fox';
