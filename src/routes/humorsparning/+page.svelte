@@ -50,12 +50,12 @@
 	<title>Humörspårning & aktivitetsheatmap – MittPsyke</title>
 	<meta
 		name="description"
-		content="Följ dina känslor över tid med visuell humörspårning, streaks och insikter. Se mönster i ditt mående med MittPsyke."
+		content="Följ dina känslor över tid med visuell humörspårning och lugna insikter. Se mönster i ditt mående med MittPsyke."
 	/>
 	<meta property="og:title" content="Humörspårning & aktivitetsheatmap – MittPsyke" />
 	<meta
 		property="og:description"
-		content="Följ dina känslor över tid med visuell humörspårning, streaks och insikter. Se mönster i ditt mående med MittPsyke."
+		content="Följ dina känslor över tid med visuell humörspårning och lugna insikter. Se mönster i ditt mående med MittPsyke."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
@@ -84,10 +84,10 @@
 
 		<section class="preview-card" aria-label="Förhandsvisning av humörspårning">
 			<div class="preview-header">
-				<h2>Förhandsvisning: heatmap och streak</h2>
+				<h2>Förhandsvisning: heatmap och avtryck</h2>
 				<div class="streak-badge">
 					<span class="streak-number">14</span>
-					<span class="streak-label">dagars streak</span>
+					<span class="streak-label">dagar med avtryck</span>
 				</div>
 			</div>
 			<div class="heatmap">
