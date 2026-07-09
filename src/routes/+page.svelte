@@ -2,6 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import HeroShowcase from '$lib/components/home/HeroShowcase.svelte';
+	import MittHemTeaser from '$lib/components/home/MittHemTeaser.svelte';
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import {
@@ -240,6 +241,8 @@
 			</ol>
 		</div>
 	</section>
+
+	<MittHemTeaser />
 
 	<section class="organization-note" aria-labelledby="organization-note-title">
 		<div class="cards-narrow organization-note-inner">
