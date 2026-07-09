@@ -65,8 +65,9 @@
     return { label: 'God natt', note: 'Det får vara stilla nu.' };
   }
 
-  function getCompanionBadgeMessage(hour: number | null): CompanionBadgeMessage {
-    return getLocalGreeting(hour ?? new Date().getHours());
+  function getCompanionBadgeMessage(hour: number | null): CompanionBadgeMessage | null {
+    if (hour === null) return null;
+    return getLocalGreeting(hour);
   }
 
   let { data } = $props<{ data: DashboardData }>();
@@ -199,11 +200,11 @@
             <Heart size={23} fill="currentColor" strokeWidth={0} aria-hidden="true" />
           </span>
         </div>
-        <div class="time-badge" aria-label={companionBadgeMessage.label}>
+        <div class="time-badge" aria-label={companionBadgeMessage?.label ?? 'Hälsning'}>
           <SunMedium size={24} aria-hidden="true" />
           <span>
-            <strong>{companionBadgeMessage.label}</strong>
-            <small>{companionBadgeMessage.note}</small>
+            <strong>{companionBadgeMessage?.label ?? 'Välkommen'}</strong>
+            <small>{companionBadgeMessage?.note ?? 'Din plats finns här.'}</small>
           </span>
         </div>
         {#if isAnonymous}
