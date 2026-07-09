@@ -13,6 +13,9 @@ MittPsyke är en svensk mental-wellbeing-plattform där användare kan få AI-ba
 - Undvik hårda/kliniska formuleringar om de inte krävs.
 - Bygg mobil först; desktop ska vara en tydlig förlängning.
 - Design ska kännas psykiskt trygg: tydlig struktur, god läsbarhet, inga stressande element.
+- Följ `docs/NORTH_STAR.md`: vi bygger en plats människor vill återvända till, inte ett kontrollsystem.
+- Om två lösningar är lika bra tekniskt, välj alltid den lugnaste.
+- Undvik skuldskapande språk som brutna streaks, röda badges, "du missade" och prestationstänk.
 
 ## Tekniska principer
 - Följ befintlig komponentstruktur i `src/lib/components` och existerande sidmönster.
