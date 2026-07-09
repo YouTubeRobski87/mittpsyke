@@ -901,7 +901,7 @@
 						{#if streakData}
 							<div class="summary-stat">
 								<span class="summary-stat-number">{streakData.currentStreak}</span>
-								<span class="summary-stat-label">Dagars svit just nu</span>
+								<span class="summary-stat-label">Dagar i följd</span>
 							</div>
 						{/if}
 						<div class="summary-stat">
@@ -910,7 +910,7 @@
 						</div>
 						<div class="summary-stat">
 							<span class="summary-stat-number">{growthLevel}</span>
-							<span class="summary-stat-label">Nivå i trädgården</span>
+							<span class="summary-stat-label">Trädgården växer</span>
 						</div>
 					</div>
 				</section>
