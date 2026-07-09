@@ -58,13 +58,6 @@
     note: string;
   };
 
-  const companionPresenceMessages: CompanionBadgeMessage[] = [
-    { label: 'Skönt att se dig igen.', note: 'Platsen finns kvar.' },
-    { label: 'Vi tar en stund tillsammans.', note: 'I din takt.' },
-    { label: 'Du behöver inte bära allt själv.', note: 'En rad kan räcka.' },
-    { label: 'En ny sida börjar här.', note: 'Varsamt framåt.' }
-  ];
-
   function getLocalGreeting(hour: number): CompanionBadgeMessage {
     if (hour >= 5 && hour <= 10) return { label: 'God morgon', note: 'En ny dag börjar.' };
     if (hour >= 11 && hour <= 16) return { label: 'God dag', note: 'En sak i taget.' };
@@ -72,21 +65,14 @@
     return { label: 'God natt', note: 'Det får vara stilla nu.' };
   }
 
-  function getCompanionBadgeMessage(hour: number | null, seed: number): CompanionBadgeMessage {
-    if (hour === null) return companionPresenceMessages[0];
-
-    if ((seed + hour) % 3 === 0) {
-      return companionPresenceMessages[(seed + hour) % companionPresenceMessages.length];
-    }
-
-    return getLocalGreeting(hour);
+  function getCompanionBadgeMessage(hour: number | null): CompanionBadgeMessage {
+    return getLocalGreeting(hour ?? new Date().getHours());
   }
 
   let { data } = $props<{ data: DashboardData }>();
 
   let progressExpanded = $state(false);
   let localHour = $state<number | null>(null);
-  let localMessageSeed = $state(0);
 
   const diaryPreview = $derived(data.diaryPreview);
   const progressPreview = $derived(data.progressPreview);
@@ -110,7 +96,7 @@
   const heroFocus = $derived(getProgressCompanionHeroFocus(heroCompanionId));
   const companionHeroAlt =
   'En vaken, nyfiken räv sitter vid ett träd i en varm och stillsam naturmiljö vid en sjö';
-  const companionBadgeMessage = $derived(getCompanionBadgeMessage(localHour, localMessageSeed));
+  const companionBadgeMessage = $derived(getCompanionBadgeMessage(localHour));
   const moodLabel = $derived(progressPreview.weeklyEntries > 0 ? 'Bra' : 'Redo');
   const latestActivity = $derived(
     isAnonymous
@@ -158,10 +144,7 @@
 
   onMount(() => {
     const updateLocalTime = () => {
-      const now = new Date();
-      localHour = now.getHours();
-      localMessageSeed =
-        now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+      localHour = new Date().getHours();
     };
 
     updateLocalTime();
@@ -271,7 +254,12 @@
           </a>
         </article>
 
-        <article class="quick-card insight-card" class:personal-preview={isAnonymous}>
+        <a
+          class="quick-card insight-card quick-card-link"
+          class:personal-preview={isAnonymous}
+          href="/framsteg"
+          aria-label="Öppna Framsteg"
+        >
           <div class="card-head">
             <div>
               <h2>Dina insikter</h2>
@@ -282,15 +270,11 @@
             <BarChart3 size={72} strokeWidth={1.5} />
             <Sparkles class="spark-mark" size={16} />
           </div>
-          <a
-            class="card-button"
-            href="/framsteg"
-            aria-label="Öppna Framsteg"
-          >
+          <span class="card-button">
             Öppna framsteg
             <ArrowRight size={18} aria-hidden="true" />
-          </a>
-        </article>
+          </span>
+        </a>
       </section>
 
       <section class="lower-grid">
@@ -888,6 +872,23 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .quick-card-link {
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.16s ease,
+      box-shadow 0.16s ease,
+      transform 0.16s ease;
+  }
+
+  .quick-card-link:hover,
+  .quick-card-link:focus-visible {
+    border-color: color-mix(in srgb, var(--accent, var(--mp-green)) 28%, transparent);
+    box-shadow: 0 14px 34px rgba(69, 83, 61, 0.1);
+    transform: translateY(-1px);
+    outline: none;
   }
 
   .mood-card {
