@@ -23,7 +23,7 @@
 	});
 </script>
 
-<section class="mitt-hem-teaser" aria-labelledby="mitt-hem-title">
+<section id="mitt-hem" class="mitt-hem-teaser" aria-labelledby="mitt-hem-title">
 	<div class="cards-narrow mitt-hem-inner">
 		<div class="mitt-hem-copy">
 			<p class="mitt-hem-label">Din personliga plats</p>
