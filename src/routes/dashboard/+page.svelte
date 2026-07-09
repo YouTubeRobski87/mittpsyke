@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import SEO from '$lib/components/SEO.svelte';
   import AccountTeaser from '$lib/components/AccountTeaser.svelte';
   import CompanionAvatar from '$lib/components/CompanionAvatar.svelte';
@@ -52,9 +53,40 @@
     isAnonymous?: boolean;
   };
 
+  type CompanionBadgeMessage = {
+    label: string;
+    note: string;
+  };
+
+  const companionPresenceMessages: CompanionBadgeMessage[] = [
+    { label: 'Skönt att se dig igen.', note: 'Platsen finns kvar.' },
+    { label: 'Vi tar en stund tillsammans.', note: 'I din takt.' },
+    { label: 'Du behöver inte bära allt själv.', note: 'En rad kan räcka.' },
+    { label: 'En ny sida börjar här.', note: 'Varsamt framåt.' }
+  ];
+
+  function getLocalGreeting(hour: number): CompanionBadgeMessage {
+    if (hour >= 5 && hour <= 10) return { label: 'God morgon', note: 'En ny dag börjar.' };
+    if (hour >= 11 && hour <= 16) return { label: 'God dag', note: 'En sak i taget.' };
+    if (hour >= 17 && hour <= 21) return { label: 'God kväll', note: 'Du får landa här.' };
+    return { label: 'God natt', note: 'Det får vara stilla nu.' };
+  }
+
+  function getCompanionBadgeMessage(hour: number | null, seed: number): CompanionBadgeMessage {
+    if (hour === null) return companionPresenceMessages[0];
+
+    if ((seed + hour) % 3 === 0) {
+      return companionPresenceMessages[(seed + hour) % companionPresenceMessages.length];
+    }
+
+    return getLocalGreeting(hour);
+  }
+
   let { data } = $props<{ data: DashboardData }>();
 
   let progressExpanded = $state(false);
+  let localHour = $state<number | null>(null);
+  let localMessageSeed = $state(0);
 
   const diaryPreview = $derived(data.diaryPreview);
   const progressPreview = $derived(data.progressPreview);
@@ -78,6 +110,7 @@
   const heroFocus = $derived(getProgressCompanionHeroFocus(heroCompanionId));
   const companionHeroAlt =
   'En vaken, nyfiken räv sitter vid ett träd i en varm och stillsam naturmiljö vid en sjö';
+  const companionBadgeMessage = $derived(getCompanionBadgeMessage(localHour, localMessageSeed));
   const moodLabel = $derived(progressPreview.weeklyEntries > 0 ? 'Bra' : 'Redo');
   const latestActivity = $derived(
     isAnonymous
@@ -122,6 +155,19 @@
           }
         ]
   );
+
+  onMount(() => {
+    const updateLocalTime = () => {
+      const now = new Date();
+      localHour = now.getHours();
+      localMessageSeed =
+        now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+    };
+
+    updateLocalTime();
+    const interval = window.setInterval(updateLocalTime, 60 * 1000);
+    return () => window.clearInterval(interval);
+  });
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/dashboard" />
@@ -170,11 +216,11 @@
             <Heart size={23} fill="currentColor" strokeWidth={0} aria-hidden="true" />
           </span>
         </div>
-        <div class="time-badge" aria-label="God morgon">
+        <div class="time-badge" aria-label={companionBadgeMessage.label}>
           <SunMedium size={24} aria-hidden="true" />
           <span>
-            <strong>God morgon</strong>
-            <small>En ny dag börjar.</small>
+            <strong>{companionBadgeMessage.label}</strong>
+            <small>{companionBadgeMessage.note}</small>
           </span>
         </div>
         {#if isAnonymous}
@@ -236,16 +282,14 @@
             <BarChart3 size={72} strokeWidth={1.5} />
             <Sparkles class="spark-mark" size={16} />
           </div>
-          <button
+          <a
             class="card-button"
-            type="button"
-            aria-controls="dashboard-framsteg-details"
-            aria-expanded={progressExpanded}
-            onclick={() => (progressExpanded = true)}
+            href="/framsteg"
+            aria-label="Öppna Framsteg"
           >
-            Visa framsteg här
+            Öppna framsteg
             <ArrowRight size={18} aria-hidden="true" />
-          </button>
+          </a>
         </article>
       </section>
 
