@@ -21,14 +21,71 @@
 	const hour = now.getHours();
 	const month = now.getMonth() + 1;
 
-	const companionImage =
-		month >= 12 || month <= 2
-			? '/images/avatars/presets/fox-winter.webp'
-			: month >= 9 && month <= 11
-				? '/images/avatars/presets/fox-autumn.webp'
-				: hour >= 6 && hour < 18
-					? '/images/avatars/presets/fox-morning.webp'
-					: '/images/avatars/presets/fox-night.webp';
+	type CompanionSeason = 'spring' | 'summer' | 'autumn' | 'winter';
+	type CompanionTimeOfDay = 'morning' | 'day' | 'evening' | 'night';
+
+	interface CompanionScene {
+		image: string;
+		season: CompanionSeason;
+		timeOfDay: CompanionTimeOfDay;
+		alt: string;
+		copy: string;
+		anonymousCopy: string;
+	}
+
+	const getSeason = (value: number): CompanionSeason => {
+		if (value >= 12 || value <= 2) return 'winter';
+		if (value >= 3 && value <= 5) return 'spring';
+		if (value >= 9 && value <= 11) return 'autumn';
+		return 'summer';
+	};
+
+	const getTimeOfDay = (value: number): CompanionTimeOfDay => {
+		if (value >= 5 && value < 10) return 'morning';
+		if (value >= 10 && value < 17) return 'day';
+		if (value >= 17 && value < 21) return 'evening';
+		return 'night';
+	};
+
+	const season = getSeason(month);
+	const timeOfDay = getTimeOfDay(hour);
+	const sceneImages: Record<CompanionSeason, Partial<Record<CompanionTimeOfDay, string>> & { default: string }> = {
+		spring: {
+			default: '/images/avatars/presets/spring_meadow_fox.png',
+			morning: '/images/avatars/presets/fox_sunrise_dawn.png',
+			night: '/images/avatars/presets/fox-night.webp'
+		},
+		summer: {
+			default: '/images/avatars/presets/fox-morning.webp',
+			morning: '/images/avatars/presets/Morgon fox sjön.png',
+			night: '/images/avatars/presets/fox-night.webp'
+		},
+		autumn: {
+			default: '/images/avatars/presets/Autumn fox 2.png',
+			night: '/images/avatars/presets/fox-night.webp'
+		},
+		winter: {
+			default: '/images/avatars/presets/fox-winter.webp'
+		}
+	};
+	const companionScene: CompanionScene = {
+		image: sceneImages[season][timeOfDay] ?? sceneImages[season].default,
+		season,
+		timeOfDay,
+		alt: 'Din följeslagare, räven, vid sjön',
+		copy:
+			season === 'autumn'
+				? 'Räven vilar i höstljuset medan platsen rör sig stilla omkring dig.'
+				: season === 'winter'
+					? 'Räven håller platsen varm och stilla medan snön faller långsamt.'
+					: 'Räven är vaken och håller dig sällskap på din resa.',
+		anonymousCopy:
+			season === 'autumn'
+				? 'Räven vilar i höstljuset medan platsen växer fram i lugn takt.'
+				: season === 'winter'
+					? 'Räven håller platsen varm och stilla medan den växer fram.'
+					: 'Räven är vaken och håller platsen sällskap medan den växer fram.'
+	};
 
 	interface StreakData {
 		currentStreak: number;
@@ -670,20 +727,33 @@
 	<div class="framsteg-layout">
 	<div class="framsteg-main">
 		<section class="card companion-card">
-			<div class="companion-media">
+			<div
+				class="companion-media"
+				data-season={companionScene.season}
+				data-time={companionScene.timeOfDay}
+			>
 				<img
-					src={companionImage}
-					alt="Din följeslagare – räven vid sjön"
+					src={companionScene.image}
+					alt={companionScene.alt}
 					loading="lazy"
 					decoding="async"
 				/>
 				<div class="living-world" aria-hidden="true">
 					<span class="sky-glow"></span>
+					<span class="lake-mist mist-one"></span>
+					<span class="lake-mist mist-two"></span>
 					<span class="meteor meteor-one"></span>
 					<span class="meteor meteor-two"></span>
 					<span class="water-shimmer shimmer-one"></span>
 					<span class="water-shimmer shimmer-two"></span>
 					<span class="fox-breath"></span>
+					<span class="drifting-leaf leaf-one"></span>
+					<span class="drifting-leaf leaf-two"></span>
+					<span class="drifting-leaf leaf-three"></span>
+					<span class="snowflake snow-one"></span>
+					<span class="snowflake snow-two"></span>
+					<span class="snowflake snow-three"></span>
+					<span class="distant-bird bird-one"></span>
 					<span class="firefly firefly-one"></span>
 					<span class="firefly firefly-two"></span>
 					<span class="firefly firefly-three"></span>
@@ -693,8 +763,8 @@
 				<h2>Din följeslagare</h2>
 				<p>
 					{isAnonymous
-						? 'Räven är vaken och håller platsen sällskap medan den växer fram.'
-						: 'Räven är vaken och håller dig sällskap på din resa.'}
+						? companionScene.anonymousCopy
+						: companionScene.copy}
 				</p>
 			</div>
 		</section>
@@ -998,6 +1068,15 @@
 		will-change: transform, filter;
 	}
 
+	.companion-media[data-season='autumn'] img,
+	.companion-media[data-season='spring'] img {
+		object-position: 52% 50%;
+	}
+
+	.companion-media[data-time='night'] img {
+		filter: saturate(1.04) brightness(0.95);
+	}
+
 	.living-world,
 	.living-world span {
 		position: absolute;
@@ -1011,6 +1090,10 @@
 		mix-blend-mode: screen;
 	}
 
+	.living-world span {
+		will-change: transform, opacity;
+	}
+
 	.sky-glow {
 		inset: -18% -10% 48% -10%;
 		background:
@@ -1018,6 +1101,40 @@
 			radial-gradient(circle at 68% 10%, rgba(112, 190, 255, 0.16), transparent 28%);
 		opacity: 0.52;
 		animation: skyPulse 9s ease-in-out infinite;
+	}
+
+	.companion-media[data-season='autumn'] .sky-glow {
+		background:
+			radial-gradient(circle at 25% 16%, rgba(255, 219, 143, 0.42), transparent 36%),
+			radial-gradient(circle at 71% 12%, rgba(255, 146, 72, 0.18), transparent 30%);
+		mix-blend-mode: soft-light;
+	}
+
+	.companion-media[data-time='night'] .sky-glow {
+		background:
+			radial-gradient(circle at 18% 18%, rgba(117, 202, 255, 0.34), transparent 30%),
+			radial-gradient(circle at 64% 8%, rgba(142, 112, 255, 0.16), transparent 28%);
+	}
+
+	.lake-mist {
+		left: -8%;
+		right: -8%;
+		height: clamp(2.2rem, 8vw, 5.8rem);
+		border-radius: 999px;
+		background: linear-gradient(90deg, transparent, rgba(255, 251, 236, 0.26), rgba(226, 245, 255, 0.18), transparent);
+		filter: blur(10px);
+		opacity: 0;
+		mix-blend-mode: soft-light;
+	}
+
+	.mist-one {
+		top: 49%;
+		animation: lakeMistDrift 15s ease-in-out infinite;
+	}
+
+	.mist-two {
+		top: 57%;
+		animation: lakeMistDrift 19s ease-in-out 4s infinite reverse;
 	}
 
 	.meteor {
@@ -1028,6 +1145,10 @@
 		filter: drop-shadow(0 0 8px rgba(93, 191, 255, 0.75));
 		opacity: 0;
 		transform: rotate(-35deg);
+	}
+
+	.companion-media:not([data-time='night']) .meteor {
+		display: none;
 	}
 
 	.meteor-one {
@@ -1087,6 +1208,12 @@
 		opacity: 0;
 	}
 
+	.companion-media[data-season='winter'] .firefly,
+	.companion-media[data-time='morning'] .firefly,
+	.companion-media[data-time='day'] .firefly {
+		display: none;
+	}
+
 	.firefly-one {
 		right: 16%;
 		bottom: 30%;
@@ -1103,6 +1230,103 @@
 		right: 27%;
 		bottom: 22%;
 		animation: fireflyFloat 8s ease-in-out 3.1s infinite;
+	}
+
+	.drifting-leaf {
+		top: -8%;
+		width: clamp(0.85rem, 1.8vw, 1.25rem);
+		height: clamp(0.52rem, 1.1vw, 0.78rem);
+		border-radius: 90% 0 90% 0;
+		background: linear-gradient(135deg, rgba(255, 194, 85, 0.92), rgba(185, 91, 39, 0.78));
+		filter: drop-shadow(0 0 5px rgba(255, 178, 81, 0.28));
+		opacity: 0;
+		transform: rotate(20deg);
+	}
+
+	.leaf-one {
+		left: 25%;
+		animation: leafDrift 13s ease-in-out infinite;
+	}
+
+	.leaf-two {
+		left: 55%;
+		animation: leafDrift 17s ease-in-out 3.2s infinite;
+	}
+
+	.leaf-three {
+		left: 80%;
+		animation: leafDrift 15s ease-in-out 6.8s infinite;
+	}
+
+	.companion-media:not([data-season='autumn']) .drifting-leaf {
+		display: none;
+	}
+
+	.snowflake {
+		top: -8%;
+		width: 0.36rem;
+		height: 0.36rem;
+		border-radius: 999px;
+		background: rgba(245, 252, 255, 0.9);
+		box-shadow: 0 0 9px rgba(196, 232, 255, 0.64);
+		opacity: 0;
+	}
+
+	.snow-one {
+		left: 20%;
+		animation: snowFall 14s linear infinite;
+	}
+
+	.snow-two {
+		left: 52%;
+		animation: snowFall 18s linear 2.8s infinite;
+	}
+
+	.snow-three {
+		left: 82%;
+		animation: snowFall 16s linear 6s infinite;
+	}
+
+	.companion-media:not([data-season='winter']) .snowflake {
+		display: none;
+	}
+
+	.distant-bird {
+		top: 23%;
+		left: -8%;
+		width: 1.9rem;
+		height: 0.75rem;
+		opacity: 0;
+	}
+
+	.distant-bird::before,
+	.distant-bird::after {
+		content: '';
+		position: absolute;
+		top: 0.2rem;
+		width: 0.9rem;
+		height: 0.38rem;
+		border-top: 2px solid rgba(41, 63, 56, 0.38);
+		border-radius: 999px 999px 0 0;
+	}
+
+	.distant-bird::before {
+		left: 0;
+		transform: rotate(-12deg);
+	}
+
+	.distant-bird::after {
+		right: 0;
+		transform: rotate(12deg);
+	}
+
+	.bird-one {
+		animation: birdGlide 22s ease-in-out 5s infinite;
+	}
+
+	.companion-media[data-time='night'] .distant-bird,
+	.companion-media[data-season='winter'] .distant-bird {
+		display: none;
 	}
 
 	.companion-copy {
@@ -1182,9 +1406,13 @@
 	@media (prefers-reduced-motion: reduce) {
 		.companion-media img,
 		.sky-glow,
+		.lake-mist,
 		.meteor,
 		.water-shimmer,
 		.fox-breath,
+		.drifting-leaf,
+		.snowflake,
+		.distant-bird,
 		.firefly,
 		.card-placeholder {
 			animation: none !important;
@@ -1301,6 +1529,12 @@
 		100% { opacity: 0; transform: translate3d(-34vw, 22vw, 0) rotate(-35deg); }
 	}
 
+	@keyframes lakeMistDrift {
+		0%, 100% { opacity: 0.08; transform: translate3d(-4%, 0, 0) scaleX(0.95); }
+		42% { opacity: 0.32; }
+		70% { opacity: 0.18; transform: translate3d(5%, -4%, 0) scaleX(1.08); }
+	}
+
 	@keyframes waterShimmer {
 		0%, 100% { opacity: 0; transform: translate3d(-8%, 0, 0) scaleX(0.72); }
 		35% { opacity: 0.54; }
@@ -1317,6 +1551,27 @@
 		18% { opacity: 0.72; }
 		46% { opacity: 0.28; transform: translate3d(-1.4rem, -1.1rem, 0) scale(1); }
 		72% { opacity: 0.82; transform: translate3d(0.8rem, -2rem, 0) scale(0.9); }
+	}
+
+	@keyframes leafDrift {
+		0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(15deg); }
+		14% { opacity: 0.72; }
+		52% { opacity: 0.58; transform: translate3d(-2.4rem, 14rem, 0) rotate(96deg); }
+		100% { opacity: 0; transform: translate3d(1.8rem, 28rem, 0) rotate(176deg); }
+	}
+
+	@keyframes snowFall {
+		0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.8); }
+		12% { opacity: 0.62; }
+		88% { opacity: 0.48; }
+		100% { opacity: 0; transform: translate3d(2.2rem, 31rem, 0) scale(1.08); }
+	}
+
+	@keyframes birdGlide {
+		0%, 18% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.82); }
+		26% { opacity: 0.46; }
+		78% { opacity: 0.28; transform: translate3d(74vw, -2.8rem, 0) scale(0.92); }
+		100% { opacity: 0; transform: translate3d(82vw, -3rem, 0) scale(0.92); }
 	}
 
 	/* Badge colors */
