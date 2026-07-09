@@ -6,7 +6,7 @@
   import {
     ArrowRight,
     BarChart3,
-    Bell,
+    ChevronDown,
     Heart,
     Leaf,
     PenLine,
@@ -53,6 +53,8 @@
   };
 
   let { data } = $props<{ data: DashboardData }>();
+
+  let progressExpanded = $state(false);
 
   const diaryPreview = $derived(data.diaryPreview);
   const progressPreview = $derived(data.progressPreview);
@@ -142,9 +144,6 @@
           {#if isAnonymous}
             <a class="soft-account-link" href="/register">Spara platsen</a>
           {:else}
-            <a class="icon-button" href="/notiser" aria-label="Öppna notiser">
-              <Bell size={21} strokeWidth={1.9} />
-            </a>
             <a class="avatar-button" href="/dashboard/installningar" aria-label="Öppna inställningar">
               <CompanionAvatar selection={data.progressCompanion} size="lg" decorative />
             </a>
@@ -237,10 +236,16 @@
             <BarChart3 size={72} strokeWidth={1.5} />
             <Sparkles class="spark-mark" size={16} />
           </div>
-          <a class="card-button" href="/framsteg">
-            Se statistik
+          <button
+            class="card-button"
+            type="button"
+            aria-controls="dashboard-framsteg-details"
+            aria-expanded={progressExpanded}
+            onclick={() => (progressExpanded = true)}
+          >
+            Visa framsteg här
             <ArrowRight size={18} aria-hidden="true" />
-          </a>
+          </button>
         </article>
       </section>
 
@@ -291,12 +296,26 @@
 
         <aside class="framsteg-aside" aria-label="Framsteg">
           <section class="framsteg-panel" class:personal-preview={isAnonymous}>
-            <div class="framsteg-panel-head">
-              <span class="framsteg-panel-icon" aria-hidden="true">
-                <Leaf size={22} strokeWidth={1.8} />
+            <button
+              class="framsteg-panel-toggle"
+              type="button"
+              aria-controls="dashboard-framsteg-details"
+              aria-expanded={progressExpanded}
+              onclick={() => (progressExpanded = !progressExpanded)}
+            >
+              <span class="framsteg-panel-head">
+                <span class="framsteg-panel-icon" aria-hidden="true">
+                  <Leaf size={22} strokeWidth={1.8} />
+                </span>
+                <span class="framsteg-title-wrap">
+                  <span class="framsteg-title">Framsteg</span>
+                  <span class="framsteg-subtitle">{progressExpanded ? 'Dölj överblicken' : 'Visa mer här'}</span>
+                </span>
               </span>
-              <h2>Framsteg</h2>
-            </div>
+              <span class={`framsteg-expand-icon ${progressExpanded ? 'expanded' : ''}`} aria-hidden="true">
+                <ChevronDown size={20} />
+              </span>
+            </button>
             <p class="framsteg-panel-lead">{progressPreview.summary}</p>
             <div class="framsteg-panel-stats">
               <div class="framsteg-stat">
@@ -305,17 +324,27 @@
               </div>
               <div class="framsteg-stat">
                 <strong>{progressPreview.currentStreak}</strong>
-                <span>Dagars svit</span>
+                <span>Dagar i följd</span>
               </div>
               <div class="framsteg-stat">
                 <strong>{progressPreview.weeklyEntries}</strong>
                 <span>Den här veckan</span>
               </div>
             </div>
-            <a class="card-button" href="/framsteg">
-              Se hela framsteg
-              <ArrowRight size={18} aria-hidden="true" />
-            </a>
+            {#if progressExpanded}
+              <div id="dashboard-framsteg-details" class="framsteg-panel-details">
+                <h3>Din lugna överblick</h3>
+                <p>
+                  Här samlas dina små steg utan att du behöver lämna Mitt rum. Fortsätt i samma takt och låt mönster
+                  växa fram över tid.
+                </p>
+                <ul>
+                  <li>{progressPreview.totalEntries} texter finns sparade i din historik.</li>
+                  <li>{progressPreview.weeklyEntries} steg har lagts till den här veckan.</li>
+                  <li>{progressPreview.currentStreak} dagar i följd syns som små avtryck.</li>
+                </ul>
+              </div>
+            {/if}
           </section>
         </aside>
       </div>
@@ -397,10 +426,32 @@
     box-shadow: 0 10px 28px rgba(69, 83, 61, 0.06);
   }
 
+  .framsteg-panel-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .framsteg-panel-toggle:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--mp-green) 32%, transparent);
+    outline-offset: 5px;
+    border-radius: 12px;
+  }
+
   .framsteg-panel-head {
     display: flex;
     align-items: center;
     gap: 0.7rem;
+    min-width: 0;
   }
 
   .framsteg-panel-icon {
@@ -414,9 +465,33 @@
     flex: 0 0 auto;
   }
 
-  .framsteg-panel-head h2 {
-    margin: 0;
+  .framsteg-title-wrap {
+    display: grid;
+    gap: 0.12rem;
+    min-width: 0;
+  }
+
+  .framsteg-title {
     font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+
+  .framsteg-subtitle {
+    color: var(--mp-text-dim);
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .framsteg-expand-icon {
+    flex: 0 0 auto;
+    color: var(--mp-green);
+    transition: transform 0.18s ease;
+  }
+
+  .framsteg-expand-icon.expanded {
+    transform: rotate(180deg);
   }
 
   .framsteg-panel-lead {
@@ -452,6 +527,39 @@
     color: var(--mp-text-dim);
     font-size: 0.85rem;
     text-align: right;
+  }
+
+  .framsteg-panel-details {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.95rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.64);
+    border: 1px solid var(--mp-card-border);
+  }
+
+  .framsteg-panel-details h3,
+  .framsteg-panel-details p {
+    margin: 0;
+  }
+
+  .framsteg-panel-details h3 {
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+
+  .framsteg-panel-details p,
+  .framsteg-panel-details li {
+    color: var(--mp-text-dim);
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+
+  .framsteg-panel-details ul {
+    display: grid;
+    gap: 0.42rem;
+    margin: 0;
+    padding-left: 1.1rem;
   }
 
   .topbar {
@@ -499,7 +607,6 @@
     flex: 0 0 auto;
   }
 
-  .icon-button,
   .avatar-button {
     display: grid;
     place-items: center;
@@ -507,13 +614,6 @@
     height: 48px;
     border-radius: 999px;
     text-decoration: none;
-  }
-
-  .icon-button {
-    color: #2d302b;
-    background: rgba(255, 255, 255, 0.94);
-    border: 1px solid rgba(38, 60, 38, 0.08);
-    box-shadow: 0 6px 18px rgba(69, 83, 61, 0.05);
   }
 
   .avatar-button {
@@ -858,7 +958,9 @@
     text-decoration: none;
     font-weight: 700;
     font-size: 0.88rem;
+    font-family: inherit;
     transition: background 0.16s ease;
+    cursor: pointer;
   }
 
   .card-button:hover,
@@ -1105,7 +1207,6 @@
       padding-top: 0.15rem;
     }
 
-    .icon-button,
     .avatar-button {
       width: 40px;
       height: 40px;

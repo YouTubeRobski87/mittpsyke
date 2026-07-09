@@ -1,23 +1,31 @@
 # NORTH STAR
 
-> Vi bygger inte funktioner.  
+> Vi bygger inte funktioner.
 > Vi bygger en plats människor vill återvända till.
 
 North Star är vår kompass för världen vi bygger.
 
-Målet är inte att skapa en plats full av ständig aktivitet, utan en värld som känns levande genom små, lugna detaljer.
+MittPsyke är inte bara en app. Det är en lugn plats som alltid finns kvar. När användaren återvänder känns platsen bekant, följeslagaren känner igen dem och världen har förändrats lite - precis som de själva.
+
+AI, dagbok, forum och Growth Garden är inte separata funktioner. De är olika sätt att vårda samma plats.
 
 ## Grundkänsla
 
-MittPsyke ska kännas tryggt, levande, varmt, stillsamt, personligt och naturligt.
+Världen ska kännas trygg, levande, varm, stillsam, personlig och naturlig.
 
 Användaren ska känna att platsen fortsätter existera även när ingenting aktivt händer.
+
+Målet är inte en plats full av ständig aktivitet, utan en värld som känns levande genom små, lugna detaljer.
 
 ## Den viktigaste principen
 
 Om två lösningar är lika bra tekniskt väljer vi alltid den lugnaste.
 
 Det betyder oftast mindre animation, mindre brus, mer luft, färre färger, enklare copy, tydligare hierarki och mjukare övergångar.
+
+Vi frågar inte bara: "Vad ska hända här?"
+
+Vi frågar: "Vad får platsen att kännas levande och trygg?"
 
 ## Platsen kommer först
 
@@ -27,7 +35,7 @@ Den förändras långsamt.
 
 Den börjar aldrig om.
 
-MittPsyke ska kännas som ett hem, inte som ett kontrollsystem eller en klinisk portal.
+MittPsyke ska kännas som ett hem, inte som ett kontrollsystem, ett spelgränssnitt eller en klinisk portal.
 
 ## Följeslagaren är identiteten
 
@@ -43,11 +51,88 @@ Följeslagaren ska inte alltid prata eller kräva uppmärksamhet. Ibland sitter 
 
 Närvaron ska kännas som sällskap utan krav.
 
+## Björnen
+
+Björnen är varm, trygg, jordnära och lite småfilosofisk.
+
+Den kan ibland sitta vid sjön, blinka långsamt, flytta vikten, titta upp mot himlen eller ha ett grässtrå i munnen.
+
+Rörelsen ska vara lågmäld. Björnen är inte en maskot som uppträder. Den är någon som finns där.
+
+## Världens lager
+
+### Lager 1: Platsen
+
+Grunden förändras nästan aldrig: samma glänta, samma träd, samma stig och samma berg i bakgrunden.
+
+Det är hem.
+
+### Lager 2: Följeslagaren
+
+Följeslagaren gör platsen personlig.
+
+Den kan flytta sig lite, vila, sitta i trädet eller titta mot sjön.
+
+### Lager 3: Årstider
+
+Årstider sker automatiskt.
+
+Vår, sommar, höst och vinter ska märkas utan att användaren behöver göra något.
+
+### Lager 4: Tid på dygnet
+
+Ljus och stämning följer dagen: soluppgång, dagsljus, gyllene kväll och stjärnhimmel.
+
+Användaren behöver knappt märka varför platsen känns levande.
+
+### Lager 5: Din resa
+
+Growth Garden ska inte vara en separat funktion. Den ska vara motorn bakom hela världen.
+
+När användaren skriver, återvänder eller tar hand om sig själv påverkar det platsen långsamt.
+
+Inte XP.
+
+Inte nivåer.
+
+Inte prestation.
+
+Bara små tecken: ett grässtrå, några blommor, en sten, ett träd som vuxit lite.
+
+### Lager 6: Väder
+
+Väder kan finnas ibland: regn, solsken, dimma eller lite vind.
+
+Det behöver inte påverka något. Det gör bara världen levande.
+
+### Lager 7: Små händelser
+
+Små händelser ska vara sällsynta: en fågel långt bort, en fjäril som flyger förbi, ett löv som faller, små ringar på sjön.
+
+Inga belöningar. Bara liv.
+
+## En levande värld
+
+Små rörelser ska ge världen liv:
+
+- mjuka rörelser i vattnet
+- gräs som rör sig i vinden
+- löv som faller ibland
+- små ringar på sjön
+- fåglar långt bort
+- skiftningar i ljuset
+- dimma på morgonen
+- varm glöd på kvällen
+
+Ingenting får skrika efter uppmärksamhet.
+
+Allt ska kännas som om naturen bara fortsätter medan användaren är borta.
+
 ## Ingen skuld
 
 MittPsyke ska aldrig skapa skuld.
 
-Undvik röda badges, brutna streaks, “du missade igår”, stressiga notifieringar och krav på prestation.
+Undvik röda badges, brutna streaks, "du missade igår", stressiga notifieringar och krav på prestation.
 
 Om någon varit borta länge säger MittPsyke:
 
@@ -73,32 +158,47 @@ Utan:
 
 Framsteg ska upptäckas, inte annonseras.
 
-## Produktvision
+Vi berättar inte för användaren att något vuxit. Vi låter användaren upptäcka det.
 
-MittPsyke är inte en app.
+Inte:
 
-Det är en lugn plats som alltid finns kvar.
+> Ny blomma upplåst.
 
-När användaren återvänder känns platsen bekant, följeslagaren känner igen dem och världen har förändrats lite — precis som de själva.
+Utan känslan:
 
-AI, dagbok, forum och Growth Garden är inte separata funktioner.
+> Var det verkligen blommor här sist?
 
-De är olika sätt att vårda samma plats.
+## Vad vi vill undvika
+
+- överdrivna animationer
+- stressiga rörelser
+- för mycket text
+- konstanta notifieringar
+- figurer som alltid kräver svar
+- en värld som känns som ett spelgränssnitt
+- skuldskapande streaks
+- röda badges och "du har missat"-signaler
 
 ## Visuell riktning
 
-Gränssnittet ska kännas som en lugn fristad.
+Gränssnittet ska kännas som en lugn fristad, inte som ett traditionellt verktyg eller en klinisk hälsoplattform.
 
-Viktiga drag:
+Designen ska bygga på:
 
-- ljus och mjuk bakgrund
+- varmvit och mjuk bakgrund
 - mycket luft mellan elementen
+- tydlig men lågmäld sidonavigering
+- stora rundade kort
+- mjuka pastelltoner
 - varma naturtoner
-- rundade kort
+- naturinspirerade detaljer
+- låg visuell belastning
+- lugn typografi
 - följeslagaren som central trygg punkt
-- enkel navigering utan visuellt brus
 - korta, vänliga texter
 - naturmotiv som känns levande och verkliga
+
+Funktionerna ska vara tydliga, men sidan får aldrig kännas som ett kontrollsystem.
 
 ## Visual references
 

@@ -82,7 +82,6 @@
 
 	const signedInPortalNavItems: NavItem[] = [
 		{ href: '/framsteg', label: 'Framsteg' },
-		{ href: '/notiser', label: 'Notiser' },
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
 
@@ -196,7 +195,6 @@
 	let resourcesMenuRef = $state<HTMLDetailsElement | null>(null);
 	let mobileSearchInputRef = $state<HTMLInputElement | null>(null);
 	let profilePanelData = $state<ProfilePanelData>(null);
-	let unreadNotificationCount = $state(0);
 	let layoutSummaryLoading = $state(false);
 	let layoutSummaryError = $state<string | null>(null);
 	let supabaseClientPromise: Promise<SupabaseClient> | null = null;
@@ -225,7 +223,6 @@
 			displayName = null;
 			profilePanelOpen = false;
 			profilePanelData = null;
-			unreadNotificationCount = 0;
 			syncedProfileUserId = '';
 			loadedLayoutSummaryUserId = '';
 			return;
@@ -271,11 +268,9 @@
 			if (!response.ok) throw new Error('Kunde inte hämta profilöversikt.');
 			const summary = (await response.json()) as {
 				profilePanel: ProfilePanelData;
-				unreadNotificationCount?: number;
 			};
 			if (requestVersion !== layoutSummaryRequestVersion) return;
 			profilePanelData = summary.profilePanel ?? null;
-			unreadNotificationCount = summary.unreadNotificationCount ?? 0;
 		} catch (error) {
 			if (requestVersion !== layoutSummaryRequestVersion) return;
 			layoutSummaryError = error instanceof Error ? error.message : 'Kunde inte hämta profilöversikt.';
@@ -712,9 +707,6 @@
 									onclick={toggleProfilePanel}
 								>
 									<CompanionAvatar selection={progressCompanion} size="md" decorative />
-									{#if unreadNotificationCount > 0}
-										<span class="profile-avatar-badge" aria-hidden="true"></span>
-									{/if}
 									<span id="diary-count-tooltip" class="profile-avatar-tooltip" role="tooltip">
 										{diaryEntryTooltip}
 									</span>
@@ -755,9 +747,6 @@
 										<a href="/dashboard" class="profile-panel-link" onclick={closeProfilePanel}>Mitt rum</a>
 										<a href="/dagbok/checkin" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
 										<a href="/chat" class="profile-panel-link" onclick={closeProfilePanel}>Starta chat</a>
-										<a href="/notiser" class="profile-panel-link" onclick={closeProfilePanel}>
-											Notiser{#if unreadNotificationCount > 0} ({unreadNotificationCount}){/if}
-										</a>
 										<a href="/dashboard/installningar" class="profile-panel-link" onclick={closeProfilePanel}>Inställningar</a>
 										<button type="button" class="profile-panel-link" onclick={logout}>Logga ut</button>
 									</div>
@@ -841,7 +830,7 @@
 					<p class="mobile-menu-section-title text-xs opacity-55">Profil</p>
 					{#each signedInPortalNavItems as item}
 						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>
-							{item.label}{#if item.href === '/notiser' && unreadNotificationCount > 0} ({unreadNotificationCount}){/if}
+							{item.label}
 						</a>
 					{/each}
 					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
@@ -1448,17 +1437,6 @@
 	.profile-avatar-link:focus-visible .profile-avatar-tooltip {
 		opacity: 1;
 		transform: translate(50%, 0);
-	}
-
-	.profile-avatar-badge {
-		position: absolute;
-		top: 0.14rem;
-		right: 0.14rem;
-		width: 0.52rem;
-		height: 0.52rem;
-		border-radius: 9999px;
-		background: hsl(var(--primary));
-		box-shadow: 0 0 0 2px hsl(var(--background));
 	}
 
 	:global(.dark) .profile-avatar-link {

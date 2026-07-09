@@ -677,6 +677,17 @@
 					loading="lazy"
 					decoding="async"
 				/>
+				<div class="living-world" aria-hidden="true">
+					<span class="sky-glow"></span>
+					<span class="meteor meteor-one"></span>
+					<span class="meteor meteor-two"></span>
+					<span class="water-shimmer shimmer-one"></span>
+					<span class="water-shimmer shimmer-two"></span>
+					<span class="fox-breath"></span>
+					<span class="firefly firefly-one"></span>
+					<span class="firefly firefly-two"></span>
+					<span class="firefly firefly-three"></span>
+				</div>
 			</div>
 			<div class="companion-copy">
 				<h2>Din följeslagare</h2>
@@ -972,6 +983,8 @@
 		width: 100%;
 		aspect-ratio: 16 / 10;
 		overflow: hidden;
+		background: #0d1727;
+		isolation: isolate;
 	}
 
 	.companion-media img {
@@ -980,6 +993,116 @@
 		object-fit: cover;
 		object-position: 50% 50%;
 		display: block;
+		transform: scale(1.018);
+		animation: companionWorldDrift 18s ease-in-out infinite alternate;
+		will-change: transform, filter;
+	}
+
+	.living-world,
+	.living-world span {
+		position: absolute;
+		pointer-events: none;
+	}
+
+	.living-world {
+		inset: 0;
+		z-index: 1;
+		overflow: hidden;
+		mix-blend-mode: screen;
+	}
+
+	.sky-glow {
+		inset: -18% -10% 48% -10%;
+		background:
+			radial-gradient(circle at 30% 18%, rgba(180, 224, 255, 0.28), transparent 34%),
+			radial-gradient(circle at 68% 10%, rgba(112, 190, 255, 0.16), transparent 28%);
+		opacity: 0.52;
+		animation: skyPulse 9s ease-in-out infinite;
+	}
+
+	.meteor {
+		width: clamp(7rem, 18vw, 15rem);
+		height: 2px;
+		border-radius: 999px;
+		background: linear-gradient(90deg, transparent, rgba(175, 230, 255, 0.12), rgba(206, 244, 255, 0.9));
+		filter: drop-shadow(0 0 8px rgba(93, 191, 255, 0.75));
+		opacity: 0;
+		transform: rotate(-35deg);
+	}
+
+	.meteor-one {
+		top: 13%;
+		left: 22%;
+		animation: meteorDrift 8.5s ease-in-out infinite;
+	}
+
+	.meteor-two {
+		top: 24%;
+		left: 58%;
+		width: clamp(5rem, 14vw, 11rem);
+		animation: meteorDrift 12s ease-in-out 3.4s infinite;
+	}
+
+	.water-shimmer {
+		left: 6%;
+		right: 34%;
+		height: 1px;
+		border-radius: 999px;
+		background: linear-gradient(90deg, transparent, rgba(168, 228, 255, 0.42), transparent);
+		filter: blur(0.5px);
+		opacity: 0;
+	}
+
+	.shimmer-one {
+		top: 56%;
+		animation: waterShimmer 5.8s ease-in-out infinite;
+	}
+
+	.shimmer-two {
+		top: 63%;
+		left: 10%;
+		right: 44%;
+		animation: waterShimmer 7.5s ease-in-out 1.9s infinite;
+	}
+
+	.fox-breath {
+		right: clamp(5rem, 12vw, 9rem);
+		bottom: clamp(1.4rem, 4vw, 3.8rem);
+		width: clamp(7rem, 20vw, 15rem);
+		height: clamp(4rem, 11vw, 8rem);
+		border-radius: 999px;
+		background: radial-gradient(ellipse at center, rgba(255, 188, 106, 0.2), rgba(255, 148, 72, 0.08) 45%, transparent 72%);
+		filter: blur(10px);
+		opacity: 0.62;
+		mix-blend-mode: soft-light;
+		animation: foxBreath 5.4s ease-in-out infinite;
+	}
+
+	.firefly {
+		width: 0.42rem;
+		height: 0.42rem;
+		border-radius: 999px;
+		background: rgba(255, 239, 156, 0.92);
+		box-shadow: 0 0 12px rgba(255, 225, 125, 0.78);
+		opacity: 0;
+	}
+
+	.firefly-one {
+		right: 16%;
+		bottom: 30%;
+		animation: fireflyFloat 7s ease-in-out infinite;
+	}
+
+	.firefly-two {
+		right: 9%;
+		bottom: 44%;
+		animation: fireflyFloat 9s ease-in-out 1.6s infinite;
+	}
+
+	.firefly-three {
+		right: 27%;
+		bottom: 22%;
+		animation: fireflyFloat 8s ease-in-out 3.1s infinite;
 	}
 
 	.companion-copy {
@@ -1056,6 +1179,27 @@
 		}
 	}
 
+	@media (prefers-reduced-motion: reduce) {
+		.companion-media img,
+		.sky-glow,
+		.meteor,
+		.water-shimmer,
+		.fox-breath,
+		.firefly,
+		.card-placeholder {
+			animation: none !important;
+		}
+
+		.companion-media img {
+			transform: none;
+			filter: none;
+		}
+
+		.living-world {
+			display: none;
+		}
+	}
+
 	.account-preview-content {
 		position: relative;
 	}
@@ -1128,6 +1272,51 @@
 	@keyframes cardPlaceholderShimmer {
 		0% { background-position: 200% 0; }
 		100% { background-position: -200% 0; }
+	}
+
+	@keyframes companionWorldDrift {
+		0% {
+			transform: scale(1.018) translate3d(-0.4%, -0.25%, 0);
+			filter: saturate(1.02) brightness(0.98);
+		}
+		50% {
+			transform: scale(1.035) translate3d(0.35%, 0.18%, 0);
+			filter: saturate(1.07) brightness(1.04);
+		}
+		100% {
+			transform: scale(1.024) translate3d(0.7%, -0.18%, 0);
+			filter: saturate(1.03) brightness(1);
+		}
+	}
+
+	@keyframes skyPulse {
+		0%, 100% { opacity: 0.38; transform: translate3d(-1%, 0, 0) scale(1); }
+		50% { opacity: 0.68; transform: translate3d(1.2%, 1%, 0) scale(1.035); }
+	}
+
+	@keyframes meteorDrift {
+		0%, 58% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-35deg); }
+		64% { opacity: 0.95; }
+		78% { opacity: 0; transform: translate3d(-34vw, 22vw, 0) rotate(-35deg); }
+		100% { opacity: 0; transform: translate3d(-34vw, 22vw, 0) rotate(-35deg); }
+	}
+
+	@keyframes waterShimmer {
+		0%, 100% { opacity: 0; transform: translate3d(-8%, 0, 0) scaleX(0.72); }
+		35% { opacity: 0.54; }
+		68% { opacity: 0.12; transform: translate3d(18%, 0, 0) scaleX(1.08); }
+	}
+
+	@keyframes foxBreath {
+		0%, 100% { opacity: 0.38; transform: scale(0.96) translate3d(0, 0, 0); }
+		48% { opacity: 0.75; transform: scale(1.08) translate3d(-1.6%, -2%, 0); }
+	}
+
+	@keyframes fireflyFloat {
+		0%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.75); }
+		18% { opacity: 0.72; }
+		46% { opacity: 0.28; transform: translate3d(-1.4rem, -1.1rem, 0) scale(1); }
+		72% { opacity: 0.82; transform: translate3d(0.8rem, -2rem, 0) scale(0.9); }
 	}
 
 	/* Badge colors */
