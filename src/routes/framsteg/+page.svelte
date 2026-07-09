@@ -667,8 +667,27 @@
 							<AccountTeaser variant="progress" mode="overlay" />
 						</div>
 					{/if}
-		<div class="framsteg-layout">
-			<div class="framsteg-main">
+	<div class="framsteg-layout">
+	<div class="framsteg-main">
+		<section class="card companion-card">
+			<div class="companion-media">
+				<img
+					src={companionImage}
+					alt="Din följeslagare – räven vid sjön"
+					loading="lazy"
+					decoding="async"
+				/>
+			</div>
+			<div class="companion-copy">
+				<h2>Din följeslagare</h2>
+				<p>
+					{isAnonymous
+						? 'Räven är vaken och håller platsen sällskap medan den växer fram.'
+						: 'Räven är vaken och håller dig sällskap på din resa.'}
+				</p>
+			</div>
+		</section>
+
 		<!-- ── Aktivitetskarta ── -->
 		<section class="card heatmap-card" bind:this={heatmapCardEl}>
 			<div class="card-header">
@@ -853,25 +872,7 @@
 			</div>
 
 			<aside class="framsteg-column">
-				<section class="card companion-card">
-					<div class="companion-media">
-						<img
-	              src={companionImage}
-	              alt="Din följeslagare – räven vid sjön"
-	              loading="lazy"
-	              decoding="async"
-                                  />
-					</div>
-					<div class="companion-copy">
-						<h2>Din följeslagare</h2>
-						<p>
-							{isAnonymous
-								? 'Räven är vaken och håller platsen sällskap medan den växer fram.'
-								: 'Räven är vaken och håller dig sällskap på din resa.'}
-						</p>
-					</div>
-				</section>
-
+				
 				<section class="card progress-summary-card">
 					<div class="card-header">
 						<div class="icon-badge week"><Leaf size={24} /></div>
