@@ -977,7 +977,7 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		object-position: 72% 58%;
+		object-position: 50% 50%;
 		display: block;
 	}
 
@@ -1035,7 +1035,7 @@
 	}
 
 	.companion-media {
-		height: 290px;
+		height: 320px;
 		aspect-ratio: auto;
 	}
 
