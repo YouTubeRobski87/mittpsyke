@@ -100,7 +100,7 @@
   const heroFocus = $derived(getProgressCompanionHeroFocus(heroCompanionId));
   const companionHeroAlt =
   'En vaken, nyfiken räv sitter vid ett träd i en varm och stillsam naturmiljö vid en sjö';
-  const companionBadgeMessage = $derived(getCompanionBadgeMessage(localHour));
+  const companionBadgeMessage = $derived(localCompanionScene?.greeting ?? null);
   const moodLabel = $derived(progressPreview.weeklyEntries > 0 ? 'Bra' : 'Redo');
   const latestActivity = $derived(
     isAnonymous
@@ -149,6 +149,7 @@
   onMount(() => {
     const updateLocalTime = () => {
       localHour = new Date().getHours();
+      localCompanionScene = getDashboardCompanionScene(new Date());
     };
 
     updateLocalTime();
@@ -189,13 +190,15 @@
         class:personal-preview={isAnonymous}
         data-companion={heroCompanionId}
         aria-labelledby="companion-title"
-        style={`--hero-image: url('${companionHeroImage}'); --hero-focus: ${heroFocus};`}
+        style={`--hero-image: ${companionHeroImage ? `url('${companionHeroImage}')` : 'none'}; --hero-focus: ${heroFocus};`}
       >
-        <img
-          src={companionHeroImage}
-          alt={companionHeroAlt}
-          decoding="async"
-        />
+        {#if companionHeroImage}
+          <img
+            src={companionHeroImage}
+            alt={companionHeroAlt}
+            decoding="async"
+          />
+        {/if}
         <div class="ambient-scene" aria-hidden="true">
           <span class="ambient-sunlight"></span>
           <span class="ambient-ripple ripple-a"></span>

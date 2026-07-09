@@ -257,7 +257,7 @@ export function getDashboardCompanionScene(date = new Date()): DashboardCompanio
 	const hour = date.getHours();
 	const light = hour >= 6 && hour <= 17 ? 'day' : 'night';
 
-	let imagePath =
+	let imagePath: string =
 		light === 'day' ? DASHBOARD_COMPANION_IMAGE_PATHS.day : DASHBOARD_COMPANION_IMAGE_PATHS.night;
 
 	if (season === 'autumn') {
