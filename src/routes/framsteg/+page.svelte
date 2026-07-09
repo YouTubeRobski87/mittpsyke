@@ -1029,9 +1029,6 @@
     @media (min-width: 861px) {
 	.companion-card {
 		padding: 0;
-		border-width: 1.5px;
-		border-color: color-mix(in srgb, var(--color-dashboard-border) 60%, var(--theme-accent, #436e8f) 40%);
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 	}
 
 	.companion-media {
@@ -1039,8 +1036,12 @@
 		aspect-ratio: auto;
 	}
 
+	.companion-media img {
+		object-position: 50% 50%;
+	}
+
 	.companion-copy {
-		padding: 1.2rem 1.75rem 1.2rem;
+		padding: 1.2rem 1.75rem 1.4rem;
 	}
 }
 	@media (max-width: 860px) {
