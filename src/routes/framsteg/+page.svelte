@@ -1723,6 +1723,9 @@
 		}
 
 		.card { padding: 1.5rem; }
+		.companion-card { padding: 0; }
+		.companion-media { aspect-ratio: 4 / 3; }
+		.companion-copy { padding: 1rem 1.25rem 1.2rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.insights-card,
 		.heatmap-card { min-height: 18rem; }
