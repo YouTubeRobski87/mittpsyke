@@ -170,8 +170,8 @@
           {#if isAnonymous}
             <a class="home-return-link" href="/">&larr; Till startsidan</a>
           {/if}
-          <h1 id="dashboard-title">{greeting}</h1>
-          <p>Hur mår du idag?</p>
+          <h1 id="dashboard-title">Mitt Hem</h1>
+          <p>{greeting}. Din personliga plats för reflektion och små steg i din egen takt.</p>
         </div>
 
         <div class="topbar-actions" aria-label="Kontroller">
@@ -191,6 +191,7 @@
         </div>
       </header>
 
+      <div class="dashboard-body">
       <section
         class="companion-hero"
         class:personal-preview={isAnonymous}
@@ -218,8 +219,8 @@
           <span class="ambient-leaf leaf-b"></span>
         </div>
         <div class="hero-copy">
-          <h2 id="companion-title">Din följeslagare</h2>
-          <p>Den finns kvar här när du återvänder.</p>
+          <h2 id="companion-title">Välkommen tillbaka</h2>
+          <p>Din följeslagare finns kvar här när du återvänder.</p>
           <span class="soft-heart">
             <Heart size={23} fill="currentColor" strokeWidth={0} aria-hidden="true" />
           </span>
@@ -238,8 +239,12 @@
         {/if}
       </section>
 
-      <div class="dashboard-body">
+
         <div class="dashboard-content">
+		<div class="section-heading">
+			<h2>Dagens nästa steg</h2>
+			<p>Välj det som känns hjälpsamt just nu.</p>
+		</div>
       <section class="quick-grid" aria-label="Snabb översikt">
         <article class="quick-card mood-card">
           <div class="card-head">
@@ -361,7 +366,7 @@
                   <Leaf size={22} strokeWidth={1.8} />
                 </span>
                 <span class="framsteg-title-wrap">
-                  <span class="framsteg-title">Framsteg</span>
+                  <span class="framsteg-title">Ditt nuläge</span>
                   <span class="framsteg-subtitle">{progressExpanded ? 'Dölj överblicken' : 'Visa mer här'}</span>
                 </span>
               </span>
@@ -451,6 +456,9 @@
   .dashboard-body {
     display: grid;
     grid-template-columns: minmax(0, 1fr) clamp(280px, 26%, 340px);
+	grid-template-areas:
+	  'hero aside'
+	  'content aside';
     gap: 20px;
     align-items: start;
   }
@@ -460,9 +468,11 @@
     flex-direction: column;
     gap: 28px;
     min-width: 0;
+	grid-area: content;
   }
 
   .framsteg-aside {
+	grid-area: aside;
     position: sticky;
     top: 24px;
     min-width: 0;
@@ -556,6 +566,7 @@
 
   .framsteg-panel-stats {
     display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
@@ -581,6 +592,10 @@
     font-size: 0.85rem;
     text-align: right;
   }
+
+	.framsteg-stat:last-child {
+		grid-column: 1 / -1;
+	}
 
   .framsteg-panel-details {
     display: grid;
@@ -696,9 +711,10 @@
   }
 
   .companion-hero {
+	grid-area: hero;
     position: relative;
-    height: clamp(320px, 28vw, 420px);
-    min-height: 320px;
+	min-height: 300px;
+	height: clamp(300px, 24vw, 360px);
     overflow: hidden;
     border-radius: var(--mp-radius);
     box-shadow: var(--mp-shadow);
@@ -1455,6 +1471,10 @@
 
     .dashboard-body {
       grid-template-columns: 1fr;
+	  grid-template-areas:
+		'hero'
+		'aside'
+		'content';
       gap: 24px;
     }
 
@@ -1489,7 +1509,7 @@
       font-size: 1.5rem;
     }
 
-    .topbar p {
+  .topbar p {
       font-size: 0.98rem;
     }
 
@@ -1625,6 +1645,26 @@
       display: none;
     }
   }
+
+	.section-heading {
+		display: grid;
+		gap: 0.35rem;
+		margin-bottom: -0.65rem;
+	}
+
+	.section-heading h2,
+	.section-heading p {
+		margin: 0;
+	}
+
+	.section-heading h2 {
+		font-size: 1.2rem;
+	}
+
+	.section-heading p {
+		color: var(--mp-text-dim);
+		font-size: 0.94rem;
+	}
 
   @media (max-width: 320px) {
     .topbar h1 {
