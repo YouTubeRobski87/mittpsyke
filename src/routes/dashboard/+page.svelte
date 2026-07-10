@@ -3,7 +3,6 @@
   import SEO from '$lib/components/SEO.svelte';
   import AccountTeaser from '$lib/components/AccountTeaser.svelte';
   import UserAvatar from '$lib/components/UserAvatar.svelte';
-  import Sidebar from '$lib/components/Sidebar.svelte';
   import {
     ArrowRight,
     BarChart3,
@@ -162,7 +161,24 @@
 
 <div class="mp-dashboard">
   <div class="dashboard-shell">
-    <Sidebar active="hem" showLogout={!isAnonymous} />
+    <header class="home-nav">
+      <a class="home-brand" href="/" aria-label="MittPsyke startsida"><Leaf size={25} fill="currentColor" /> <span>MittPsyke</span></a>
+      <nav class="home-links" aria-label="Mitt Hem-navigering">
+        <a href="/chat">Chatta</a>
+        <a href="/guider">Guider</a>
+        <a href="/blogg">Artiklar</a>
+        <a href="/anonyma-berattelser">Berättelser</a>
+        <a href="/om-mittpsyke">Om MittPsyke</a>
+      </nav>
+      <div class="home-nav-actions">
+        <a href="/sok" aria-label="Sök">⌕</a>
+        {#if !isAnonymous}
+          <a class="avatar-button home-nav-avatar" href="/dashboard/installningar" aria-label="Öppna inställningar">
+            <UserAvatar name={displayName ?? 'MittPsyke'} seed={displayName ?? 'mittpsyke-profil'} size="sm" decorative />
+          </a>
+        {/if}
+      </div>
+    </header>
 
     <main class="dashboard-main" aria-labelledby="dashboard-title">
       <header class="topbar">
@@ -171,7 +187,7 @@
             <a class="home-return-link" href="/">&larr; Till startsidan</a>
           {/if}
           <h1 id="dashboard-title">Mitt Hem</h1>
-          <p>{greeting}. Din personliga plats för reflektion och små steg i din egen takt.</p>
+          <p>Din personliga plats för reflektion, närvaro och utveckling.</p>
         </div>
 
         <div class="topbar-actions" aria-label="Kontroller">
@@ -417,39 +433,58 @@
 
 <style>
   .mp-dashboard {
-    --mp-card: rgba(255, 255, 255, 0.92);
-    --mp-card-solid: #fffdf8;
-    --mp-card-border: rgba(52, 91, 55, 0.1);
-    --mp-text: #1f231c;
-    --mp-text-dim: #6d746a;
-    --mp-green: #3a7a52;
-    --mp-green-soft: #e4f3e0;
-    --mp-blue: #4a7fd4;
-    --mp-blue-soft: #edf4ff;
-    --mp-purple: #9b7ec8;
-    --mp-purple-soft: #f5f0fc;
-    --mp-yellow: #e8bc4a;
+    --mp-card: rgba(17, 27, 43, 0.88);
+    --mp-card-solid: #111b2b;
+    --mp-card-border: rgba(160, 188, 220, 0.2);
+    --mp-text: #f4f1e9;
+    --mp-text-dim: #c5cbd6;
+    --mp-green: #8fc97a;
+    --mp-green-soft: rgba(120, 174, 110, 0.18);
+    --mp-blue: #93b8f5;
+    --mp-blue-soft: rgba(91, 137, 214, 0.18);
+    --mp-purple: #ba9ee8;
+    --mp-purple-soft: rgba(141, 111, 202, 0.2);
+    --mp-yellow: #dfbb7e;
     --mp-radius: 16px;
     --mp-shadow: 0 14px 36px rgba(69, 83, 61, 0.07);
     color: var(--mp-text);
     min-height: 100vh;
     background:
-      radial-gradient(820px 440px at 82% 0%, rgba(232, 244, 224, 0.55), transparent 64%),
-      radial-gradient(680px 360px at 6% 96%, rgba(250, 238, 214, 0.42), transparent 62%),
-      linear-gradient(160deg, #fffefb 0%, #faf7f0 42%, #f2f7ee 100%);
+      radial-gradient(800px 420px at 64% 0%, rgba(35, 66, 100, 0.24), transparent 68%),
+      radial-gradient(680px 420px at 10% 80%, rgba(26, 63, 73, 0.18), transparent 70%),
+      linear-gradient(145deg, #07111f 0%, #0b1526 48%, #0c1728 100%);
   }
 
   .dashboard-shell {
-    display: grid;
-    grid-template-columns: 240px minmax(0, 1fr);
+    display: block;
     min-height: 100vh;
   }
+
+  .home-nav {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    min-height: 66px;
+    padding: 0 3rem;
+    border-bottom: 1px solid rgba(160, 188, 220, 0.14);
+    background: rgba(7, 14, 26, 0.8);
+  }
+
+  .home-brand { display: inline-flex; align-items: center; gap: 0.6rem; color: var(--mp-text); font-size: 1.35rem; font-weight: 800; text-decoration: none; }
+  .home-brand :global(svg) { color: var(--mp-green); }
+  .home-links { display: flex; align-items: center; gap: 2rem; }
+  .home-links a, .home-nav-actions > a { color: var(--mp-text); font-size: 0.92rem; text-decoration: none; opacity: 0.9; }
+  .home-links a:hover, .home-links a:focus-visible { color: var(--mp-green); }
+  .home-nav-actions { margin-left: auto; display: flex; align-items: center; gap: 1.25rem; }
+  .home-nav-avatar { width: 42px; height: 42px; background: transparent; border-color: rgba(160, 188, 220, 0.35); box-shadow: none; }
 
   .dashboard-main {
     display: flex;
     flex-direction: column;
     gap: 28px;
-    padding: 44px 48px 24px;
+    width: min(1440px, 100%);
+    margin: 0 auto;
+    padding: 30px 3rem 40px;
     min-width: 0;
   }
 
@@ -485,8 +520,8 @@
     padding: 22px;
     border-radius: var(--mp-radius);
     border: 1px solid var(--mp-card-border);
-    background: linear-gradient(150deg, rgba(234, 248, 230, 0.9), rgba(255, 255, 253, 0.94));
-    box-shadow: 0 10px 28px rgba(69, 83, 61, 0.06);
+    background: linear-gradient(150deg, rgba(19, 32, 50, 0.96), rgba(13, 23, 39, 0.96));
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
   }
 
   .framsteg-panel-toggle {
@@ -577,7 +612,7 @@
     gap: 0.75rem;
     padding: 0.7rem 0.9rem;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(17, 30, 49, 0.72);
     border: 1px solid var(--mp-card-border);
   }
 
@@ -718,9 +753,8 @@
     overflow: hidden;
     border-radius: var(--mp-radius);
     box-shadow: var(--mp-shadow);
-    border: 1px solid rgba(255, 255, 255, 0.88);
-    background:
-      linear-gradient(135deg, #f7f3e8 0%, #e8f0e4 52%, #dce8e2 100%);
+    border: 1px solid var(--mp-card-border);
+    background: linear-gradient(135deg, #16243a 0%, #0a1424 100%);
   }
 
   .personal-preview {
@@ -1453,6 +1487,29 @@
     min-height: 96px;
     color: #9fd4a8;
   }
+
+  .mp-dashboard .quick-card,
+  .mp-dashboard .activity-card,
+  .mp-dashboard .quote-card {
+    border-color: var(--mp-card-border);
+    background: linear-gradient(145deg, rgba(18, 30, 48, 0.96), rgba(13, 23, 39, 0.96));
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+  }
+
+  .mp-dashboard .quick-card p,
+  .mp-dashboard .activity-item small,
+  .mp-dashboard .quote-card blockquote { color: var(--mp-text-dim); }
+
+  .mp-dashboard .card-button,
+  .mp-dashboard .text-link {
+    border-color: rgba(160, 188, 220, 0.24);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--mp-text);
+  }
+
+  .mp-dashboard .mood-card { background: linear-gradient(145deg, rgba(24, 57, 52, 0.92), rgba(14, 31, 42, 0.96)); }
+  .mp-dashboard .tools-card { background: linear-gradient(145deg, rgba(28, 42, 66, 0.94), rgba(13, 23, 39, 0.96)); }
+  .mp-dashboard .insight-card { background: linear-gradient(145deg, rgba(51, 39, 77, 0.86), rgba(13, 23, 39, 0.96)); }
 
   @media (max-width: 980px) {
     .dashboard-shell {
