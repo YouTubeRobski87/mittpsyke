@@ -182,10 +182,11 @@
 <style>
 	.mitt-hem-teaser {
 		padding: clamp(2.7rem, 7vw, 4.7rem) 1.25rem;
+		background-color: #f3f0e7;
 		background:
-			radial-gradient(960px 420px at 8% 8%, rgba(227, 236, 218, 0.72), transparent 64%),
-			radial-gradient(840px 380px at 100% 100%, rgba(255, 241, 214, 0.5), transparent 62%),
-			linear-gradient(180deg, #f8f5ef 0%, #f6f1e7 100%);
+			radial-gradient(960px 420px at 8% 8%, rgba(200, 218, 190, 0.18), transparent 64%),
+			radial-gradient(840px 380px at 100% 100%, rgba(247, 241, 225, 0.48), transparent 62%),
+			linear-gradient(180deg, #f3f0e7 0%, #eee9dd 100%);
 		color: #1f2f22;
 	}
 
@@ -292,12 +293,12 @@
 		padding: clamp(0.6rem, 1.8vw, 1.15rem);
 		border-radius: clamp(28px, 3vw, 36px);
 		background:
-			radial-gradient(110% 95% at 0% 0%, rgba(238, 244, 232, 0.84), transparent 58%),
-			radial-gradient(95% 90% at 100% 100%, rgba(255, 245, 224, 0.9), transparent 54%),
-			linear-gradient(180deg, rgba(255, 251, 245, 0.96), rgba(244, 238, 227, 0.92));
+			radial-gradient(110% 95% at 0% 0%, rgba(218, 230, 210, 0.54), transparent 58%),
+			radial-gradient(95% 90% at 100% 100%, rgba(246, 236, 214, 0.64), transparent 54%),
+			linear-gradient(180deg, rgba(241, 235, 224, 0.98), rgba(233, 227, 214, 0.96));
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.72),
-			0 20px 44px rgba(91, 77, 53, 0.08);
+			0 20px 44px rgba(91, 77, 53, 0.1);
 		isolation: isolate;
 	}
 
@@ -336,7 +337,7 @@
 		overflow: hidden;
 		border-radius: clamp(24px, 2.8vw, 32px);
 		border: 1px solid rgba(88, 112, 78, 0.12);
-		background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(252, 250, 245, 0.98));
+		background: linear-gradient(180deg, #fffdf8, rgba(255, 251, 244, 0.98));
 		box-shadow:
 			0 36px 90px rgba(55, 68, 49, 0.16),
 			0 14px 32px rgba(55, 68, 49, 0.08),
