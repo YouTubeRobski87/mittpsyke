@@ -77,7 +77,7 @@
 		}
 	];
 
-	const SHOW_ORGANIZATION_NOTE = false;
+	const SHOW_ORGANIZATION_NOTE = true;
 
 	function trackHomeCta(section: string, cta: string, href: string) {
 		trackHomeCtaClick({ section, cta, href });
@@ -252,6 +252,7 @@
 			<p class="organization-note-eyebrow">För organisationer</p>
 			<h2 id="organization-note-title">Ett tidigt digitalt stöd med tydliga gränser</h2>
 			<p>För organisationer kan MittPsyke fungera som ett tidigt, digitalt stöd i väntan på annan hjälp eller som ett komplement till befintliga insatser — alltid med tydliga gränser mot vård och behandling.</p>
+			<a class="organization-note-cta" href="/for-organisationer">Läs mer för organisationer</a>
 		</div>
 	</section>
 	{/if}
@@ -734,6 +735,25 @@
 		font-size: 0.96rem;
 		line-height: 1.65;
 		color: var(--home-text-muted-strong);
+	}
+
+	.organization-note-cta {
+		display: inline-flex;
+		margin-top: 1rem;
+		padding: 0.45rem 0.8rem;
+		border-radius: var(--radius-pill);
+		background: var(--home-primary-soft);
+		color: var(--home-primary-text);
+		font-family: var(--font-heading);
+		font-size: 0.86rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.organization-note-cta:hover,
+	.organization-note-cta:focus-visible {
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 
 	.quick-flow {

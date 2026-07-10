@@ -174,6 +174,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		{ path: '/ovningar', lastmod: TOOL_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{ path: '/blogg', lastmod: BLOG_LASTMOD, changefreq: 'monthly', priority: '0.7' },
 		{ path: '/om-mittpsyke', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.5' },
+		{ path: '/for-organisationer', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/om-skaparen', lastmod: CREATOR_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/premium', lastmod: PREMIUM_LASTMOD, changefreq: 'monthly', priority: '0.5' },
 		{ path: '/feedback', lastmod: FEEDBACK_LASTMOD, changefreq: 'monthly', priority: '0.5' },

@@ -73,6 +73,33 @@
 			</p>
 		</header>
 
+		<section class="section how-chat-works" aria-labelledby="how-chat-works-title">
+			<h2 id="how-chat-works-title">Så går det till</h2>
+			<ol class="how-chat-steps">
+				<li>
+					<h3>✍️ Skriv i din egen takt</h3>
+					<p>Berätta det du vill. Du behöver inte formulera dig perfekt.</p>
+				</li>
+				<li>
+					<h3>🧭 Få hjälp att sortera tankarna</h3>
+					<p>
+						AI:n hjälper dig att strukturera det du beskriver genom lugna följdfrågor och
+						reflektion.
+					</p>
+				</li>
+				<li>
+					<h3>🌱 Du väljer själv</h3>
+					<p>
+						Du kan använda chatten anonymt. Om du senare vill spara din historik väljer du själv
+						det.
+					</p>
+				</li>
+			</ol>
+			<p class="how-chat-note">
+				MittPsyke är ett stödverktyg och ersätter inte vård eller behandling.
+			</p>
+		</section>
+
 		<section class="choices" aria-label="Välj ingång till chatten">
 			<a class="choice-card" href="/chat/a">
 				<h2>Ångest</h2>
@@ -86,15 +113,6 @@
 				<h2>Trauma</h2>
 				<p>För svåra upplevelser, behov av trygghet och att ta det i egen takt.</p>
 			</a>
-		</section>
-
-		<section class="section how-chat-works" aria-labelledby="how-chat-works-title">
-			<h2 id="how-chat-works-title">Så går det till</h2>
-			<ol class="how-chat-steps">
-				<li>Välj det spår som känns närmast just nu.</li>
-				<li>Skriv i din egen takt och få ett lugnt svar tillbaka.</li>
-				<li>Om du vill kan du senare skapa konto för att spara och återvända.</li>
-			</ol>
 		</section>
 
 		<RecentConversations />
@@ -198,9 +216,41 @@
 
 	.how-chat-steps {
 		margin: 0.8rem 0 0;
-		padding-left: 1.15rem;
+		padding: 0;
+		list-style: none;
 		display: grid;
-		gap: 0.45rem;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.75rem;
+	}
+
+	.how-chat-steps li {
+		min-width: 0;
+		padding: 0.85rem;
+		border-radius: var(--radius-card);
+		background: rgba(255, 255, 255, 0.62);
+		border: 1px solid rgba(52, 91, 55, 0.08);
+	}
+
+	.how-chat-steps h3 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: 0.98rem;
+		line-height: 1.35;
+	}
+
+	.how-chat-steps p {
+		margin-top: 0.45rem;
+		font-size: 0.9rem;
+		line-height: 1.55;
+	}
+
+	.how-chat-note {
+		margin-top: 0.85rem;
+		padding: 0.7rem 0.8rem;
+		border-left: 3px solid rgba(52, 91, 55, 0.48);
+		background: rgba(52, 91, 55, 0.07);
+		font-size: 0.9rem;
+		line-height: 1.55;
 	}
 
 	.section a {
@@ -220,6 +270,16 @@
 	:global(.dark) .how-chat-works {
 		background: rgba(23, 29, 36, 0.82);
 		border-color: rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .how-chat-steps li {
+		background: rgba(255, 255, 255, 0.04);
+		border-color: rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .how-chat-note {
+		border-left-color: rgba(147, 197, 253, 0.48);
+		background: rgba(147, 197, 253, 0.07);
 	}
 
 	@media (max-width: 768px) {
@@ -267,7 +327,8 @@
 		}
 
 		.how-chat-steps {
-			font-size: 0.95rem;
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
 		}
 	}
 </style>
