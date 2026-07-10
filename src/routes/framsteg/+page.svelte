@@ -981,7 +981,7 @@
 							<span class="summary-stat-number">{weeklyEntries}</span>
 							<span class="summary-stat-label">Den här veckan</span>
 						</div>
-						<div class="summary-stat">
+						<div class="summary-stat" class:summary-stat--growth={Boolean(streakData)}>
 							<span class="summary-stat-number">{growthLevel}</span>
 							<span class="summary-stat-label">Trädgården växer</span>
 						</div>
@@ -1027,8 +1027,8 @@
 
 	.framsteg-layout {
 		display: grid;
-		grid-template-columns: minmax(0, 2fr) clamp(300px, 28%, 340px);
-		gap: 1.2rem;
+		grid-template-columns: minmax(0, 1.7fr) minmax(380px, 0.95fr);
+		gap: 1.25rem;
 		align-items: start;
 	}
 
@@ -1420,13 +1420,18 @@
 		font-size: 0.8rem;
 		color: var(--color-dashboard-text-muted);
 	}
-    @media (min-width: 861px) {
+
+	.summary-stat--growth {
+		grid-column: 1 / -1;
+	}
+
+	@media (min-width: 981px) {
 	.companion-card {
 		padding: 0;
 	}
 
 	.companion-media {
-		height: 320px;
+		height: clamp(240px, 20vw, 280px);
 		aspect-ratio: auto;
 	}
 
@@ -1435,10 +1440,10 @@
 	}
 
 	.companion-copy {
-		padding: 1.2rem 1.75rem 1.4rem;
+		padding: 1rem 1.5rem 1.15rem;
 	}
 }
-	@media (max-width: 860px) {
+	@media (max-width: 980px) {
 		.framsteg-layout {
 			grid-template-columns: 1fr;
 		}
