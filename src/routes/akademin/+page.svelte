@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Sidebar from '$lib/components/Sidebar.svelte';
-
 	const sections = [
 		{
 			kicker: 'Grunderna',
@@ -37,8 +35,6 @@
 
 <div class="mp-dashboard">
 	<div class="shell">
-		<Sidebar active="akademin" />
-
 		<main class="main">
 			<header class="page-header">
 				<div>
@@ -91,8 +87,8 @@
 			linear-gradient(160deg, #0a0a14, #11101f 60%, #0d0b1a);
 	}
 	.shell {
-		max-width: 1200px; margin: 0 auto;
-		display: grid; grid-template-columns: 248px 1fr; gap: 24px;
+		max-width: 1040px; margin: 0 auto;
+		display: block;
 	}
 	.main { display: flex; flex-direction: column; gap: 28px; }
 

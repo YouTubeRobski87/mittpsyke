@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import Sidebar from '$lib/components/Sidebar.svelte';
 	import StatCard from '$lib/components/StatCard.svelte';
 	import MoodChart from '$lib/components/MoodChart.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
@@ -140,8 +139,6 @@
 
 <div class="mp-dashboard">
 	<div class="shell">
-		<Sidebar active="analys" />
-
 		<main class="main">
 			<header class="page-header">
 				<div>
@@ -218,11 +215,9 @@
 	}
 
 	.shell {
-		max-width: 1400px;
+		max-width: 1040px;
 		margin: 0 auto;
-		display: grid;
-		grid-template-columns: minmax(232px, 250px) minmax(0, 1fr);
-		gap: clamp(30px, 2.6vw, 36px);
+		display: block;
 		min-width: 0;
 	}
 
@@ -368,7 +363,6 @@
 		font-size: 0.9rem;
 	}
 
-	.mp-dashboard :global(.mp-sidebar),
 	.mp-dashboard :global(.stat) {
 		background: rgba(255, 255, 252, 0.74);
 		border-color: var(--mp-card-border);

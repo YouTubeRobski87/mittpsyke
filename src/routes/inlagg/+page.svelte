@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Sidebar from '$lib/components/Sidebar.svelte';
 	import EntryCard from '$lib/components/EntryCard.svelte';
 	import type { InlaggEntry } from './+page.server';
 
@@ -15,8 +14,6 @@
 
 <div class="mp-dashboard">
 	<div class="shell">
-		<Sidebar active="inlagg" />
-
 		<main class="main">
 			<header class="page-header">
 				<div>
@@ -82,11 +79,9 @@
 	}
 
 	.shell {
-		max-width: 1200px;
+		max-width: 1040px;
 		margin: 0 auto;
-		display: grid;
-		grid-template-columns: 248px 1fr;
-		gap: 24px;
+		display: block;
 	}
 	.main {
 		display: flex;

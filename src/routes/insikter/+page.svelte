@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import Sidebar from '$lib/components/Sidebar.svelte';
 	import DiaryNarrativeInsights, {
 		type DiaryNarrativeInsightViewModel
 	} from '$lib/components/DiaryNarrativeInsights.svelte';
@@ -64,8 +63,6 @@
 
 <div class="mp-dashboard">
 	<div class="shell">
-		<Sidebar active="insikter" />
-
 		<main class="main">
 			<header class="page-header">
 				<div>
@@ -121,11 +118,9 @@
 	}
 
 	.shell {
-		max-width: 1400px;
+		max-width: 1040px;
 		margin: 0 auto;
-		display: grid;
-		grid-template-columns: minmax(232px, 250px) minmax(0, 1fr);
-		gap: clamp(30px, 2.6vw, 36px);
+		display: block;
 	}
 
 	.main {
@@ -233,13 +228,6 @@
 	@keyframes shimmer {
 		from { background-position: 100% 0; }
 		to { background-position: -100% 0; }
-	}
-
-	.mp-dashboard :global(.mp-sidebar) {
-		background: rgba(255, 255, 252, 0.74);
-		border-color: var(--mp-card-border);
-		box-shadow: var(--mp-shadow-soft);
-		backdrop-filter: blur(18px);
 	}
 
 	@media (max-width: 880px) {
