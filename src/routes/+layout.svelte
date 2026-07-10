@@ -23,7 +23,7 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
-	import CompanionAvatar from '$lib/components/CompanionAvatar.svelte';
+	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Search } from 'lucide-svelte';
 	import { DIARY_ENTRIES_CHANGED_EVENT } from '$lib/diary-events';
 	import {
@@ -33,10 +33,6 @@
 		cookieBannerOpen
 	} from '$lib/consent';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
-	import {
-		readProgressCompanionFromMetadata,
-		type ProgressCompanionSelection
-	} from '$lib/progressCompanion';
 	import { page } from '$app/state';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
@@ -119,12 +115,6 @@
 		);
 	}
 
-	function getUserProgressCompanion(sessionUser: User | null): ProgressCompanionSelection | null {
-		if (!sessionUser) return null;
-		const metadata = sessionUser.user_metadata as Record<string, unknown> | undefined;
-		return readProgressCompanionFromMetadata(metadata);
-	}
-
 	function getMemberSinceLabel(createdAt: string | undefined) {
 		if (!createdAt) return 'okänd';
 		const parsed = new Date(createdAt);
@@ -201,7 +191,6 @@
 	let supabaseClientPromise: Promise<SupabaseClient> | null = null;
 
 	const profileName = $derived(getProfileName(displayName, user));
-	const progressCompanion = $derived(getUserProgressCompanion(user));
 	const memberSinceLabel = $derived(getMemberSinceLabel(user?.created_at));
 	const diaryEntryTooltip = $derived(
 		layoutSummaryLoading
@@ -709,7 +698,13 @@
 									aria-describedby="diary-count-tooltip"
 									onclick={toggleProfilePanel}
 								>
-									<CompanionAvatar selection={progressCompanion} size="md" decorative />
+									<UserAvatar
+										name={profileName}
+										seed={user?.id ?? profileName}
+										size="md"
+										label={`${profileName} profilbild`}
+										decorative
+									/>
 									<span id="diary-count-tooltip" class="profile-avatar-tooltip" role="tooltip">
 										{diaryEntryTooltip}
 									</span>
@@ -725,7 +720,13 @@
 									class="profile-panel"
 								>
 									<div class="profile-panel-header">
-										<CompanionAvatar selection={progressCompanion} size="lg" decorative />
+										<UserAvatar
+											name={profileName}
+											seed={user?.id ?? profileName}
+											size="lg"
+											label={`${profileName} profilbild`}
+											decorative
+										/>
 										<div class="min-w-0">
 											<p class="text-sm font-medium leading-tight">{profileName}</p>
 											<p class="text-xs opacity-65">Medlem sedan {memberSinceLabel}</p>

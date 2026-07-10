@@ -541,7 +541,7 @@
 					{#each posts as post (post.id)}
 						<article id={`post-${post.id}`} class="community-post post-variant-{postVariant(post.id)}">
 							<div class="community-post-head">
-								<UserAvatar seed={post.id} size="sm" decorative />
+								<UserAvatar seed={post.id} name="Anonym röst" size="sm" decorative />
 								<div class="community-post-title">
 									<p class="voice">Anonym röst</p>
 									{#if formatMoodLabel(post.mood)}
@@ -634,7 +634,7 @@
 												{#each post.comments as comment (comment.id)}
 													<li class="comments-item">
 														<div class="comment-head">
-															<UserAvatar seed={comment.id} size="xs" decorative />
+															<UserAvatar seed={comment.id} name="Anonym medlem" size="xs" decorative />
 															<p class="comment-author">Anonym medlem</p>
 														</div>
 														<p class="comment-body">{comment.body}</p>

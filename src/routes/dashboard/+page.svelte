@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import SEO from '$lib/components/SEO.svelte';
   import AccountTeaser from '$lib/components/AccountTeaser.svelte';
-  import CompanionAvatar from '$lib/components/CompanionAvatar.svelte';
+  import UserAvatar from '$lib/components/UserAvatar.svelte';
   import Sidebar from '$lib/components/Sidebar.svelte';
   import {
     ArrowRight,
@@ -179,7 +179,13 @@
             <a class="soft-account-link" href="/register">Spara platsen</a>
           {:else}
             <a class="avatar-button" href="/dashboard/installningar" aria-label="Öppna inställningar">
-              <CompanionAvatar selection={data.progressCompanion} size="lg" decorative />
+              <UserAvatar
+                name={displayName ?? 'MittPsyke'}
+                seed={displayName ?? 'mittpsyke-profil'}
+                size="lg"
+                label={`${displayName ?? 'Din'} profilbild`}
+                decorative
+              />
             </a>
           {/if}
         </div>
@@ -669,7 +675,7 @@
     box-shadow: 0 6px 18px rgba(69, 83, 61, 0.05);
   }
 
-  .avatar-button :global(.companion-avatar) {
+  .avatar-button :global(.user-avatar) {
     width: 44px;
     height: 44px;
   }

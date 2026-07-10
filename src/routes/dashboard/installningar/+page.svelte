@@ -460,7 +460,7 @@
 				<CompanionAvatar selection={progressCompanion} size="xl" decorative animated={false} />
 				<div class="companion-profile-copy">
 					<strong>{selectedCompanion?.name ?? 'Din följeslagare'}</strong>
-					<span>Visas som din profilbild när du är inloggad.</span>
+					<span>Finns kvar i din värld och möter dig när du återvänder.</span>
 				</div>
 			</div>
 
