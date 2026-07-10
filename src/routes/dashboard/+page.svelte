@@ -1048,10 +1048,11 @@
     gap: 0.65rem;
     padding: 0.72rem 0.95rem;
     border-radius: 12px;
-    background: rgba(255, 252, 245, 0.94);
-    border: 1px solid rgba(232, 220, 190, 0.45);
-    box-shadow: 0 8px 22px rgba(69, 83, 61, 0.08);
+    background: rgba(255, 253, 248, 0.94);
+    border: 1px solid rgba(49, 71, 58, 0.18);
+    box-shadow: 0 8px 24px rgba(10, 25, 45, 0.16);
     color: #d4a017;
+    opacity: 1;
   }
 
   .time-badge span {
@@ -1495,7 +1496,10 @@
   .mp-dashboard .text-link {
     border-color: rgba(160, 188, 220, 0.24);
     background: rgba(255, 255, 255, 0.03);
-    color: var(--mp-text);
+    color: #31473a;
+    font-size: 15px;
+    font-weight: 600;
+    opacity: 1;
   }
 
   .mp-dashboard .mood-card { background: linear-gradient(145deg, rgba(24, 57, 52, 0.92), rgba(14, 31, 42, 0.96)); }
@@ -1744,7 +1748,10 @@
 	}
 
 	.section-heading p {
-		color: var(--mp-text-dim);
+    color: #5f6f64;
+    font-size: 14px;
+    font-weight: 400;
+    opacity: 1;
 		font-size: 0.94rem;
 	}
 
