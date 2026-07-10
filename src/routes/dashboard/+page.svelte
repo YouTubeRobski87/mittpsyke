@@ -1058,11 +1058,17 @@
   .time-badge span {
     display: grid;
     gap: 0.15rem;
-    color: var(--mp-text);
+    color: #31473a;
+    font-size: 15px;
+    font-weight: 600;
+    opacity: 1;
   }
 
   .time-badge small {
-    color: var(--mp-text-dim);
+    color: #5f6f64;
+    font-size: 14px;
+    font-weight: 400;
+    opacity: 1;
   }
 
   @keyframes sunlightShift {
@@ -1675,11 +1681,11 @@
     }
 
     .time-badge strong {
-      font-size: 0.82rem;
+      font-size: 15px;
     }
 
     .time-badge small {
-      font-size: 0.72rem;
+      font-size: 14px;
     }
 
     .companion-hero.personal-preview .time-badge {
