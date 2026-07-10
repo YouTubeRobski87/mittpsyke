@@ -265,8 +265,8 @@
         <article class="quick-card mood-card">
           <div class="card-head">
             <div>
-              <h2>Ditt mående idag</h2>
-              <p>Hur känner du dig just nu?</p>
+              <h2>Dagens incheckning</h2>
+              <p>Hur har du det idag?</p>
             </div>
             <TrendingUp size={20} aria-hidden="true" />
           </div>
@@ -275,9 +275,9 @@
             <span class="eye right"></span>
             <span class="mouth"></span>
           </div>
-          <strong class="mood-label">{moodLabel}</strong>
-          <a class="card-button" href="/humorsparning">
-            Uppdatera mående
+          <strong class="mood-label">Sätt ord på det du känner.</strong>
+          <a class="card-button" href="/dagbok/checkin">
+            Skriv i dagboken
             <ArrowRight size={18} aria-hidden="true" />
           </a>
         </article>
@@ -285,42 +285,24 @@
         <article class="quick-card tools-card">
           <div class="card-head">
             <div>
-              <h2>Verktyg för dig</h2>
-              <p>Utforska övningar och verktyg som kan hjälpa dig.</p>
+              <h2>Growth Garden</h2>
+              <p>Din trädgård växer med din närvaro. Små steg, stor skillnad.</p>
             </div>
             <Heart size={22} aria-hidden="true" />
+          </div>
+          <div class="garden-progress" aria-label="Din trädgårds utveckling">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
           </div>
           <div class="leaf-mark" aria-hidden="true">
             <Leaf size={66} strokeWidth={1.4} />
             <Sparkles class="spark-mark" size={17} />
           </div>
-          <a class="card-button" href="/ovningar">
-            Visa verktyg
+          <a class="card-button" href="/framsteg">
+            Gå till trädgården
             <ArrowRight size={18} aria-hidden="true" />
           </a>
         </article>
 
-        <a
-          class="quick-card insight-card quick-card-link"
-          class:personal-preview={isAnonymous}
-          href="/framsteg"
-          aria-label="Öppna Framsteg"
-        >
-          <div class="card-head">
-            <div>
-              <h2>Dina insikter</h2>
-              <p>Små steg leder till stora förändringar.</p>
-            </div>
-          </div>
-          <div class="chart-mark" aria-hidden="true">
-            <BarChart3 size={72} strokeWidth={1.5} />
-            <Sparkles class="spark-mark" size={16} />
-          </div>
-          <span class="card-button">
-            Öppna framsteg
-            <ArrowRight size={18} aria-hidden="true" />
-          </span>
-        </a>
       </section>
 
       <section class="lower-grid">
@@ -420,13 +402,22 @@
               </div>
             {/if}
           </section>
+
+          <section class="explore-panel" aria-labelledby="explore-title">
+            <h2 id="explore-title">Utforska vidare</h2>
+            <a href="/framsteg"><span><strong>Framsteg</strong><small>Se din utveckling över tid</small></span><ArrowRight size={18} /></a>
+            <a href="/guider"><span><strong>Guider</strong><small>Praktiska övningar och stöd</small></span><ArrowRight size={18} /></a>
+            <a href="/chat"><span><strong>Chatta med AI</strong><small>Sortera tankar i lugn och ro</small></span><ArrowRight size={18} /></a>
+            <a href="/blogg"><span><strong>Artiklar</strong><small>Kunskap och inspiration</small></span><ArrowRight size={18} /></a>
+          </section>
         </aside>
       </div>
 
-      <p class="dashboard-footer">
-        <Leaf size={14} aria-hidden="true" />
-        MittPsyke - för din mentala välmående resa
-      </p>
+      <section class="privacy-row" aria-labelledby="privacy-title">
+        <span class="privacy-mark"><Heart size={20} aria-hidden="true" /></span>
+        <div><h2 id="privacy-title">Ditt innehåll är ditt</h2><p>Du bestämmer vad som sparas och vad som raderas. Läs mer om din integritet.</p></div>
+        <a href="/integritet">Integritet &amp; trygghet</a>
+      </section>
     </main>
   </div>
 </div>
@@ -1511,6 +1502,37 @@
   .mp-dashboard .tools-card { background: linear-gradient(145deg, rgba(28, 42, 66, 0.94), rgba(13, 23, 39, 0.96)); }
   .mp-dashboard .insight-card { background: linear-gradient(145deg, rgba(51, 39, 77, 0.86), rgba(13, 23, 39, 0.96)); }
 
+  .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mood-card, .tools-card { min-height: 288px; }
+  .mood-card { background: linear-gradient(135deg, rgba(17, 35, 52, 0.92), rgba(13, 23, 39, 0.96)) !important; }
+  .tools-card { background: linear-gradient(135deg, rgba(23, 42, 45, 0.92), rgba(13, 23, 39, 0.96)) !important; }
+  .garden-progress { display: flex; gap: 0.25rem; margin: auto 0 1rem; }
+  .garden-progress span { width: 0.85rem; height: 0.7rem; border-radius: 2px; background: linear-gradient(135deg, #4d9566, #a9dc7d); }
+  .garden-progress span:nth-last-child(-n+2) { background: rgba(237, 243, 225, 0.7); }
+
+  .explore-panel {
+    display: grid;
+    gap: 0;
+    margin-top: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--mp-card-border);
+    border-radius: var(--mp-radius);
+    background: rgba(17, 27, 43, 0.88);
+  }
+  .explore-panel h2 { margin: 0 0 0.7rem; font-size: 1.05rem; }
+  .explore-panel a { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.72rem 0; color:var(--mp-text); text-decoration:none; border-top:1px solid rgba(160,188,220,0.12); }
+  .explore-panel a:hover, .explore-panel a:focus-visible { color:var(--mp-green); }
+  .explore-panel span { display:grid; gap:0.15rem; }
+  .explore-panel small { color:var(--mp-text-dim); font-size:0.78rem; }
+
+  .privacy-row { display:flex; align-items:center; gap:1rem; margin-top:1.25rem; padding:1.25rem; border:1px solid var(--mp-card-border); border-radius:var(--mp-radius); background:rgba(13,23,39,0.84); }
+  .privacy-mark { display:grid; place-items:center; width:2.5rem; height:2.5rem; border-radius:10px; background:rgba(255,255,255,0.06); color:var(--mp-green); }
+  .privacy-row div { min-width:0; }
+  .privacy-row h2, .privacy-row p { margin:0; }
+  .privacy-row h2 { font-size:0.98rem; }
+  .privacy-row p { margin-top:0.25rem; color:var(--mp-text-dim); font-size:0.88rem; }
+  .privacy-row a { margin-left:auto; padding:0.65rem 0.9rem; border:1px solid var(--mp-card-border); border-radius:10px; color:var(--mp-text); text-decoration:none; white-space:nowrap; }
+
   @media (max-width: 980px) {
     .dashboard-shell {
       grid-template-columns: 1fr;
@@ -1534,6 +1556,9 @@
 		'content';
       gap: 24px;
     }
+
+    .privacy-row { align-items:flex-start; flex-wrap:wrap; }
+    .privacy-row a { margin-left:0; }
 
     .framsteg-aside {
       position: static;
