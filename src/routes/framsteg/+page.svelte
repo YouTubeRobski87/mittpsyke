@@ -747,6 +747,9 @@
 					<span class="water-shimmer shimmer-one"></span>
 					<span class="water-shimmer shimmer-two"></span>
 					<span class="fox-breath"></span>
+					<span class="tree-foliage foliage-left"></span>
+					<span class="tree-foliage foliage-centre"></span>
+					<span class="tree-foliage foliage-right"></span>
 					<span class="drifting-leaf leaf-one"></span>
 					<span class="drifting-leaf leaf-two"></span>
 					<span class="drifting-leaf leaf-three"></span>
@@ -1199,6 +1202,49 @@
 		animation: foxBreath 5.4s ease-in-out infinite;
 	}
 
+	.tree-foliage {
+		position: absolute;
+		top: -5%;
+		pointer-events: none;
+		will-change: transform;
+		background:
+			radial-gradient(ellipse at 18% 72%, rgba(91, 123, 45, 0.24) 0 7%, transparent 8%),
+			radial-gradient(ellipse at 34% 44%, rgba(128, 157, 57, 0.2) 0 8%, transparent 9%),
+			radial-gradient(ellipse at 51% 66%, rgba(74, 109, 38, 0.18) 0 7%, transparent 8%),
+			radial-gradient(ellipse at 68% 35%, rgba(147, 172, 65, 0.18) 0 8%, transparent 9%),
+			radial-gradient(ellipse at 84% 61%, rgba(75, 110, 39, 0.2) 0 7%, transparent 8%);
+		filter: blur(0.35px);
+		opacity: 0.28;
+	}
+
+	.foliage-left {
+		left: 17%;
+		width: 27%;
+		height: 38%;
+		transform-origin: 88% 95%;
+		animation: foliageSwayLeft 9.4s ease-in-out -2.1s infinite;
+	}
+
+	.foliage-centre {
+		left: 37%;
+		width: 29%;
+		height: 34%;
+		transform-origin: 58% 100%;
+		animation: foliageSwayCentre 11.2s ease-in-out -5.6s infinite;
+	}
+
+	.foliage-right {
+		right: 3%;
+		width: 30%;
+		height: 42%;
+		transform-origin: 92% 96%;
+		animation: foliageSwayRight 7.8s ease-in-out -1.4s infinite;
+	}
+
+	.companion-media[data-season='winter'] .tree-foliage {
+		display: none;
+	}
+
 	.firefly {
 		width: 0.42rem;
 		height: 0.42rem;
@@ -1410,6 +1456,7 @@
 		.meteor,
 		.water-shimmer,
 		.fox-breath,
+		.tree-foliage,
 		.drifting-leaf,
 		.snowflake,
 		.distant-bird,
@@ -1544,6 +1591,21 @@
 	@keyframes foxBreath {
 		0%, 100% { opacity: 0.38; transform: scale(0.96) translate3d(0, 0, 0); }
 		48% { opacity: 0.75; transform: scale(1.08) translate3d(-1.6%, -2%, 0); }
+	}
+
+	@keyframes foliageSwayLeft {
+		0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+		48% { transform: translate3d(1px, -1px, 0) rotate(0.7deg); }
+	}
+
+	@keyframes foliageSwayCentre {
+		0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+		52% { transform: translate3d(-1px, 0, 0) rotate(-0.5deg); }
+	}
+
+	@keyframes foliageSwayRight {
+		0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+		46% { transform: translate3d(2px, -1px, 0) rotate(1.1deg); }
 	}
 
 	@keyframes fireflyFloat {
