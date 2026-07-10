@@ -182,12 +182,8 @@
 <style>
 	.mitt-hem-teaser {
 		padding: clamp(2.7rem, 7vw, 4.7rem) 1.25rem;
-		background-color: #f3f0e7;
-		background:
-			radial-gradient(960px 420px at 8% 8%, rgba(200, 218, 190, 0.18), transparent 64%),
-			radial-gradient(840px 380px at 100% 100%, rgba(247, 241, 225, 0.48), transparent 62%),
-			linear-gradient(180deg, #f3f0e7 0%, #eee9dd 100%);
-		color: #1f2f22;
+		background: var(--home-section-bg-soft);
+		color: var(--home-text-soft);
 	}
 
 	.mitt-hem-inner {
@@ -208,12 +204,12 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
-		color: #54734e;
+		color: var(--home-text-blue-muted-strong);
 	}
 
 	.mitt-hem-copy h2 {
 		margin: 0;
-		color: #243726;
+		color: var(--home-text-strong);
 		font-size: clamp(1.65rem, 3.5vw, 2.4rem);
 		line-height: 1.08;
 	}
@@ -224,7 +220,7 @@
 		font-family: var(--font-body);
 		font-size: 1rem;
 		line-height: 1.72;
-		color: rgba(40, 54, 42, 0.84);
+		color: var(--home-text-muted-strong);
 	}
 
 	.mitt-hem-actions {
@@ -284,7 +280,7 @@
 		margin: 1rem 0 0;
 		font-size: 0.9rem;
 		line-height: 1.6;
-		color: rgba(49, 67, 52, 0.76);
+		color: var(--home-text-muted);
 	}
 
 	.mitt-hem-preview-wrap {
