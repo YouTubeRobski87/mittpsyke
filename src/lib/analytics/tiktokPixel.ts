@@ -47,11 +47,36 @@ const PIXEL_METHODS = [
 	'grantConsent'
 ] as const;
 
+const BLOCKED_TIKTOK_PATHS = [
+	/^\/chat(?:\/|$)/,
+	/^\/dagbok(?:\/|$)/,
+	/^\/dashboard(?:\/|$)/,
+	/^\/framsteg(?:\/|$)/,
+	/^\/analys(?:\/|$)/,
+	/^\/insikter(?:\/|$)/,
+	/^\/dagars-avtryck(?:\/|$)/,
+	/^\/spegelvattnet(?:\/|$)/,
+	/^\/skriv(?:\/|$)/,
+	/^\/login(?:\/|$)/,
+	/^\/register(?:\/|$)/
+] as const;
+
 export const TIKTOK_PIXEL_ID = env.PUBLIC_TIKTOK_PIXEL_ID?.trim() ?? '';
 export const TIKTOK_PIXEL_ENABLED = Boolean(TIKTOK_PIXEL_ID);
 
 let pixelInitialized = false;
 let pixelConsentGranted = false;
+
+export function isTikTokPixelAllowedPath(pathname?: string): boolean {
+	const currentPath =
+		typeof pathname === 'string' && pathname.trim().length > 0
+			? pathname
+			: browser
+				? window.location.pathname
+				: '/';
+
+	return !BLOCKED_TIKTOK_PATHS.some((pattern) => pattern.test(currentPath));
+}
 
 function deferMethod(target: TikTokQueue, method: string) {
 	const methods = target as unknown as Record<string, TikTokMethod>;
@@ -111,13 +136,14 @@ function ensureTikTokQueue(): TikTokQueue | null {
 }
 
 export function initializeTikTokPixel(): boolean {
-	if (!browser || !TIKTOK_PIXEL_ENABLED || !hasAnalyticsConsent()) return false;
+	if (!browser || !TIKTOK_PIXEL_ENABLED || !hasAnalyticsConsent() || !isTikTokPixelAllowedPath()) {
+		return false;
+	}
 
 	const ttq = ensureTikTokQueue();
 	if (!ttq) return false;
 
 	if (!pixelInitialized) {
-		// SvelteKit sköter PageView i afterNavigate; stäng av TikToks egna history-observer för att undvika dubletter.
 		ttq.load?.(TIKTOK_PIXEL_ID, { historyObserver: false });
 		pixelInitialized = true;
 	}
@@ -126,6 +152,7 @@ export function initializeTikTokPixel(): boolean {
 		ttq.grantConsent?.();
 		pixelConsentGranted = true;
 	}
+
 	return true;
 }
 
@@ -134,19 +161,18 @@ export function disableTikTokPixel() {
 
 	const ttq = (window as TikTokWindow).ttq;
 	ttq?.revokeConsent?.();
+	document.getElementById(PIXEL_SCRIPT_ID)?.remove();
 	pixelConsentGranted = false;
+	pixelInitialized = false;
 }
 
 export function trackTikTokPageView(url: URL) {
-	if (!initializeTikTokPixel() || !hasAnalyticsConsent()) return;
+	if (!isTikTokPixelAllowedPath(url.pathname) || !initializeTikTokPixel() || !hasAnalyticsConsent()) {
+		return;
+	}
 
 	const ttq = (window as TikTokWindow).ttq;
 	ttq?.page?.();
-
-	if (url.pathname === '/skriv') {
-		// TikTok: separat innehållsvisning för skrivsidan, utan sid- eller användardata.
-		ttq?.track?.('ViewContent');
-	}
 }
 
 export function trackTikTokButtonClick(
@@ -160,6 +186,5 @@ export function trackTikTokButtonClick(
 export function trackTikTokRegistrationCompleted() {
 	if (!initializeTikTokPixel() || !hasAnalyticsConsent()) return;
 
-	// TikTok: faktisk slutförd registrering, utan PII eller andra eventparametrar.
 	(window as TikTokWindow).ttq?.track?.('CompleteRegistration');
 }

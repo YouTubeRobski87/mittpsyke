@@ -81,7 +81,11 @@
 
 {#if !hasConsent}
 	<div class="consent-wrap">
-		<HealthConsent onAccept={() => (hasConsent = true)} />
+		<HealthConsent
+			onAccept={() => {
+				hasConsent = true;
+			}}
+		/>
 	</div>
 {:else}
 	<main class="seo-diary-page">

@@ -144,10 +144,23 @@
 	<meta property="og:title" content={pageMeta.title} />
 	<meta property="og:description" content={pageMeta.description} />
 	<meta property="og:type" content="website" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'WebPage',
+		name: pageMeta.title,
+		description: pageMeta.description,
+		url: `https://www.mittpsyke.se${page.url.pathname}`,
+		dateModified: '2026-07-10',
+		inLanguage: 'sv-SE'
+	})}<\/script>`}
 </svelte:head>
 
 {#if !hasConsent}
-	<HealthConsent onAccept={() => (hasConsent = true)} />
+	<HealthConsent
+		onAccept={() => {
+			hasConsent = true;
+		}}
+	/>
 {:else}
 	<div class="container py-2 sm:py-4" data-page="chat">
 		{#if portal}
@@ -158,6 +171,19 @@
 			</div>
 		{/if}
 
+		<section class="chat-intro-panel" aria-labelledby="chat-intro-title">
+			<h2 id="chat-intro-title">Så går det till här</h2>
+			<p>
+				Du skriver några rader. MittPsyke svarar lugnt och hjälper dig att sortera det som känns
+				mest nära just nu.
+			</p>
+			<ul>
+				<li>Du behöver inte formulera allt perfekt.</li>
+				<li>Du kan ta en sak i taget och pausa när du vill.</li>
+				<li>Vid akut fara ska du ringa 112 i stället för att använda chatten.</li>
+			</ul>
+		</section>
+
 		<ChatWindow
 			category={category}
 			initialMessages={initialMessages}
@@ -165,3 +191,41 @@
 		/>
 	</div>
 {/if}
+
+<style>
+	.chat-intro-panel {
+		max-width: 42rem;
+		margin: 0 auto 0.85rem;
+		padding: 0.95rem 1rem;
+		border-radius: var(--radius-card);
+		background: rgba(248, 245, 239, 0.9);
+		border: 1px solid rgba(52, 91, 55, 0.1);
+		color: inherit;
+	}
+
+	.chat-intro-panel h2 {
+		margin: 0 0 0.4rem;
+		font-size: 0.98rem;
+		font-weight: 700;
+	}
+
+	.chat-intro-panel p {
+		margin: 0;
+		font-size: 0.94rem;
+		line-height: 1.6;
+	}
+
+	.chat-intro-panel ul {
+		margin: 0.65rem 0 0;
+		padding-left: 1.1rem;
+		display: grid;
+		gap: 0.35rem;
+		font-size: 0.9rem;
+		line-height: 1.55;
+	}
+
+	:global(.dark) .chat-intro-panel {
+		background: rgba(23, 29, 36, 0.84);
+		border-color: rgba(255, 255, 255, 0.08);
+	}
+</style>

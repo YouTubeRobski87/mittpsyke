@@ -77,6 +77,8 @@
 		}
 	];
 
+	const SHOW_ORGANIZATION_NOTE = false;
+
 	function trackHomeCta(section: string, cta: string, href: string) {
 		trackHomeCtaClick({ section, cta, href });
 		if (cta === 'borja_skriva_anonymt_nu') {
@@ -244,6 +246,7 @@
 
 	<MittHemTeaser />
 
+	{#if SHOW_ORGANIZATION_NOTE}
 	<section class="organization-note" aria-labelledby="organization-note-title">
 		<div class="cards-narrow organization-note-inner">
 			<p class="organization-note-eyebrow">För organisationer</p>
@@ -251,6 +254,7 @@
 			<p>För organisationer kan MittPsyke fungera som ett tidigt, digitalt stöd i väntan på annan hjälp eller som ett komplement till befintliga insatser — alltid med tydliga gränser mot vård och behandling.</p>
 		</div>
 	</section>
+	{/if}
 
 	<!-- 4. Mer än en chatt -->
 	<section id="sa-fungerar-det-fordjupning" class="how-it-works" aria-labelledby="how-it-works-title">
@@ -288,6 +292,7 @@
 	<!-- 6. Social proof -->
 	<section class="review-section" aria-labelledby="review-section-title">
 		<div class="cards-narrow review-inner">
+			<p class="review-origin">Citaten kommer från frivillig feedback som delats direkt med MittPsyke och visas anonymiserat.</p>
 			<h2 id="review-section-title">Så beskriver andra sin upplevelse</h2>
 			<div class="review-grid">
 				<blockquote class="review-card">
@@ -886,6 +891,15 @@
 	.review-inner {
 		max-width: 1080px;
 		margin: 0 auto;
+	}
+
+	.review-origin {
+		margin: 0.7rem auto 0;
+		max-width: 42rem;
+		text-align: center;
+		font-size: 0.95rem;
+		line-height: 1.6;
+		color: var(--home-text-muted-mid);
 	}
 
 	.review-inner h2 {

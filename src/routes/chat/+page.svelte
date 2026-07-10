@@ -40,19 +40,25 @@
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 	{@html `<script type="application/ld+json">${JSON.stringify({
-		"@context": "https://schema.org",
-		"@type": "WebPage",
-		"name": "AI-chat för psykisk hälsa | MittPsyke",
-		"description": "Prata anonymt med MittPsykes AI-chat om ångest, stress, nedstämdhet och psykiskt mående.",
-		"url": "https://www.mittpsyke.se/chat",
-		"about": { "@type": "Thing", "name": "Psykisk hälsa och samtalsstöd" },
-		"inLanguage": "sv-SE",
-		"provider": { "@type": "Organization", "name": "MittPsyke", "url": "https://www.mittpsyke.se" }
+		'@context': 'https://schema.org',
+		'@type': 'WebPage',
+		name: 'AI-chat för psykisk hälsa | MittPsyke',
+		description:
+			'Prata anonymt med MittPsykes AI-chat om ångest, stress, nedstämdhet och psykiskt mående.',
+		url: 'https://www.mittpsyke.se/chat',
+		dateModified: '2026-07-10',
+		about: { '@type': 'Thing', name: 'Psykisk hälsa och samtalsstöd' },
+		inLanguage: 'sv-SE',
+		provider: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
 
 {#if !hasConsent}
-	<HealthConsent onAccept={() => (hasConsent = true)} />
+	<HealthConsent
+		onAccept={() => {
+			hasConsent = true;
+		}}
+	/>
 {/if}
 
 <main class="page">
@@ -60,9 +66,10 @@
 		<header class="hero">
 			<h1>AI-chat för psykisk hälsa</h1>
 			<p>
-				Du behöver inte veta exakt hur du ska börja. Välj det som känns närmast just nu och låt samtalet
-				ta form i din egen takt. MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen.
-				Det ersätter inte vård eller kontakt med psykolog, läkare eller annan legitimerad vårdpersonal.
+				Du behöver inte veta exakt hur du ska börja. Välj det som känns närmast just nu och låt
+				samtalet ta form i din egen takt. MittPsyke är ett AI-baserat samtalsstöd för reflektion
+				och stöd i vardagen. Det ersätter inte vård eller kontakt med psykolog, läkare eller annan
+				legitimerad vårdpersonal.
 			</p>
 		</header>
 
@@ -79,6 +86,15 @@
 				<h2>Trauma</h2>
 				<p>För svåra upplevelser, behov av trygghet och att ta det i egen takt.</p>
 			</a>
+		</section>
+
+		<section class="section how-chat-works" aria-labelledby="how-chat-works-title">
+			<h2 id="how-chat-works-title">Så går det till</h2>
+			<ol class="how-chat-steps">
+				<li>Välj det spår som känns närmast just nu.</li>
+				<li>Skriv i din egen takt och få ett lugnt svar tillbaka.</li>
+				<li>Om du vill kan du senare skapa konto för att spara och återvända.</li>
+			</ol>
 		</section>
 
 		<RecentConversations />
@@ -173,6 +189,20 @@
 		opacity: 0.82;
 	}
 
+	.how-chat-works {
+		padding: 1rem 1.1rem;
+		border-radius: var(--radius-card);
+		background: rgba(248, 245, 239, 0.88);
+		border: 1px solid rgba(52, 91, 55, 0.1);
+	}
+
+	.how-chat-steps {
+		margin: 0.8rem 0 0;
+		padding-left: 1.15rem;
+		display: grid;
+		gap: 0.45rem;
+	}
+
 	.section a {
 		text-decoration: underline;
 		text-underline-offset: 2px;
@@ -185,6 +215,11 @@
 
 	:global(.dark) .choice-card:hover {
 		background: #1c2230;
+	}
+
+	:global(.dark) .how-chat-works {
+		background: rgba(23, 29, 36, 0.82);
+		border-color: rgba(255, 255, 255, 0.08);
 	}
 
 	@media (max-width: 768px) {
@@ -201,11 +236,6 @@
 		h1 {
 			font-size: 1.35rem;
 			line-height: 1.12;
-		}
-
-		.hero p,
-		.section {
-			display: none;
 		}
 
 		.hero,
@@ -234,6 +264,10 @@
 		.choice-card h2 {
 			font-size: 0.8rem;
 			line-height: 1.2;
+		}
+
+		.how-chat-steps {
+			font-size: 0.95rem;
 		}
 	}
 </style>

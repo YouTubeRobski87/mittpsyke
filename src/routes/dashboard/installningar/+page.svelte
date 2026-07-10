@@ -4,6 +4,11 @@
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import CompanionAvatar from '$lib/components/CompanionAvatar.svelte';
 	import { supabase } from '$lib/supabase';
+	import {
+		getSensitiveConsentRecord,
+		revokeSensitiveConsent,
+		type HealthConsentRecord
+	} from '$lib/consent';
 	import type {
 		DeleteAccountErrorResponse,
 		DeleteAccountSuccessResponse,
@@ -40,6 +45,10 @@
 	let smsSaving = $state(false);
 	let smsMessage = $state('');
 	let smsMessageType = $state<'success' | 'error'>('success');
+	let healthConsentRecord = $state<HealthConsentRecord | null>(null);
+	let consentSaving = $state(false);
+	let consentMessage = $state('');
+	let consentMessageType = $state<'success' | 'error'>('success');
 
 	const THEMES = [
 		{ value: 'neutral',   label: 'Neutral',    color: '#436e8f' },
@@ -120,6 +129,7 @@
 			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
+			healthConsentRecord = getSensitiveConsentRecord(meta);
 			await loadSmsPreference();
 			loading = false;
 		}
@@ -198,6 +208,42 @@
 	async function disableSmsUpdates() {
 		smsOptIn = false;
 		await saveSmsPreference(false);
+	}
+
+	function formatConsentTimestamp(value: string) {
+		const parsed = new Date(value);
+		if (Number.isNaN(parsed.getTime())) return 'okänd tidpunkt';
+
+		return new Intl.DateTimeFormat('sv-SE', {
+			dateStyle: 'long',
+			timeStyle: 'short'
+		}).format(parsed);
+	}
+
+	async function withdrawHealthConsent() {
+		consentSaving = true;
+		consentMessage = '';
+
+		const { error } = await supabase.auth.updateUser({
+			data: {
+				health_data_processing_consent: null
+			}
+		});
+
+		consentSaving = false;
+
+		if (error) {
+			consentMessage = 'Kunde inte återkalla samtycket just nu.';
+			consentMessageType = 'error';
+			return;
+		}
+
+		revokeSensitiveConsent();
+		healthConsentRecord = null;
+		await supabase.auth.refreshSession();
+		consentMessage =
+			'Samtycket har återkallats. MittPsyke ber om nytt samtycke nästa gång känsliga uppgifter behöver behandlas.';
+		consentMessageType = 'success';
 	}
 
 	async function saveDisplayName() {
@@ -554,6 +600,33 @@
 
 			{#if smsMessage}
 				<p class="feedback {smsMessageType}">{smsMessage}</p>
+			{/if}
+		</section>
+
+		<section class="auth-panel section-block">
+			<h2>Samtycke för känsliga uppgifter</h2>
+			<p class="field-hint">
+				Det här samtycket gäller när MittPsyke behöver behandla sådant du skriver om mående, känslor
+				eller andra känsliga uppgifter för att kunna ge stöd i chatten, dagboken och liknande vyer.
+			</p>
+
+			{#if healthConsentRecord}
+				<p class="field-hint">
+					Aktivt samtycke registrerat {formatConsentTimestamp(healthConsentRecord.timestamp)}.
+					Version: {healthConsentRecord.policy_version}.
+				</p>
+				<button class="save-btn sms-off-btn" onclick={withdrawHealthConsent} disabled={consentSaving}>
+					{consentSaving ? 'Sparar...' : 'Återkalla samtycke'}
+				</button>
+			{:else}
+				<p class="field-hint">
+					Det finns inget aktivt samtycke sparat just nu. MittPsyke frågar igen när du öppnar ett
+					flöde där känsliga uppgifter behöver behandlas.
+				</p>
+			{/if}
+
+			{#if consentMessage}
+				<p class="feedback {consentMessageType}">{consentMessage}</p>
 			{/if}
 		</section>
 

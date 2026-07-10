@@ -16,6 +16,7 @@
 		TIKTOK_PIXEL_ENABLED,
 		disableTikTokPixel,
 		initializeTikTokPixel,
+		isTikTokPixelAllowedPath,
 		trackTikTokPageView,
 		trackTikTokRegistrationCompleted
 	} from '$lib/analytics/tiktokPixel';
@@ -400,10 +401,10 @@
 		if (!browser) return;
 
 		const consentStatus = getAnalyticsConsent();
-
+		const tiktokAllowedOnThisPage = isTikTokPixelAllowedPath(page.url.pathname);
 		const hasConsent = hasAnalyticsConsent();
 		analyticsEnabled = ANALYTICS_ENABLED && hasConsent;
-		tiktokPixelEnabled = TIKTOK_PIXEL_ENABLED && hasConsent;
+		tiktokPixelEnabled = TIKTOK_PIXEL_ENABLED && hasConsent && tiktokAllowedOnThisPage;
 
 		if (!analyticsEnabled) {
 			lastTrackedPagePath = '';
@@ -415,8 +416,10 @@
 		if (!tiktokPixelEnabled) {
 			lastTikTokPagePath = '';
 			disableTikTokPixel();
-		} else {
+		} else if (tiktokAllowedOnThisPage) {
 			initializeTikTokPixel();
+		} else {
+			disableTikTokPixel();
 		}
 
 		trackCurrentPage(new URL(window.location.href));

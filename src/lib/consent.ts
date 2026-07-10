@@ -143,6 +143,17 @@ export function hasSensitiveConsent(metadata?: unknown): boolean {
 	return hasHealthConsentRecord(getStoredHealthConsent()) || hasHealthConsentInMetadata(metadata);
 }
 
+export function getSensitiveConsentRecord(metadata?: unknown): HealthConsentRecord | null {
+	const stored = getStoredHealthConsent();
+	if (hasHealthConsentRecord(stored)) return stored as HealthConsentRecord;
+
+	if (isRecord(metadata) && hasHealthConsentRecord(metadata.health_data_processing_consent)) {
+		return metadata.health_data_processing_consent as HealthConsentRecord;
+	}
+
+	return null;
+}
+
 export function grantSensitiveConsent(): HealthConsentRecord {
 	const consent = createHealthConsentRecord();
 
@@ -155,6 +166,16 @@ export function grantSensitiveConsent(): HealthConsentRecord {
 	}
 
 	return consent;
+}
+
+export function revokeSensitiveConsent() {
+	if (typeof window === 'undefined') return;
+
+	try {
+		window.localStorage.removeItem(HEALTH_CONSENT_STORAGE_KEY);
+	} catch {
+		// Om localStorage inte går att nå gör vi vårt bästa och låter UI:t be om samtycke igen senare.
+	}
 }
 
 export function hasSensitiveConsentHeader(request: Request): boolean {
