@@ -47,7 +47,7 @@ const legacyBlogRedirects: Record<string, string> = {
 }
 
 const legacyPageRedirects: Record<string, string> = {
-	'/hem': '/dashboard',
+	'/hem': '/framsteg',
 	'/anonymt-samtalsstod-online': '/anonymt-samtalstod-online',
 	'/guider-seo/nedstamdhet': '/guider/depression',
 	'/samtalsstod-vid-trauma': '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma',

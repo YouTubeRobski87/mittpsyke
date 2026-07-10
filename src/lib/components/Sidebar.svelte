@@ -20,7 +20,7 @@
   type IconComponent = typeof Home;
 
   const items: Array<{ id: string; label: string; icon: IconComponent; href: string }> = [
-    { id: 'hem', label: 'Hem', icon: Home, href: '/dashboard' },
+    { id: 'hem', label: 'Hem', icon: Home, href: '/framsteg' },
     { id: 'maende', label: 'Mående', icon: Smile, href: '/humorsparning' },
     { id: 'dagbok', label: 'Dagbok', icon: BookOpen, href: '/dagbok' },
     { id: 'verktyg', label: 'Verktyg', icon: Wrench, href: '/ovningar' },

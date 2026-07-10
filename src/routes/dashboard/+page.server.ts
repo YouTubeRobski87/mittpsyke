@@ -1,3 +1,4 @@
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { DEFAULT_THEME, THEMES } from '$lib/theme';
 import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
@@ -57,6 +58,10 @@ const DASHBOARD_WIDGET_LABELS: Record<string, string> = {
 	guide: 'Guider',
 	chat: 'Chatten'
 };
+
+function shouldRedirectToProgress() {
+	return true;
+}
 
 function isMissingTableError(
 	error: { code?: string | null; message?: string | null } | null | undefined,
@@ -162,6 +167,10 @@ function buildCurrentStreak(entries: { created_at: string | null }[]) {
 }
 
 export const load: PageServerLoad = async ({ locals }) => {
+	if (shouldRedirectToProgress()) {
+		throw redirect(303, '/framsteg');
+	}
+
 	const {
 		data: { user }
 	} = await locals.supabase.auth.getUser();
