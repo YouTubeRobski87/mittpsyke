@@ -25,6 +25,6 @@ export const actions: Actions = {
 			throw redirect(303, '/login');
 		}
 
-		throw redirect(303, '/framsteg');
+		throw redirect(303, '/dashboard');
 	}
 };

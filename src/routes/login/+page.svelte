@@ -47,7 +47,7 @@
 		const { error } = await supabase.auth.signInWithOAuth({
 			provider: 'google',
 			options: {
-				redirectTo: getStableOAuthCallbackUrl('/framsteg')
+				redirectTo: getStableOAuthCallbackUrl('/dashboard')
 			}
 		});
 

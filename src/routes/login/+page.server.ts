@@ -17,6 +17,6 @@ export const actions: Actions = {
 			return fail(401, { error: 'Fel e-post eller lösenord.' });
 		}
 
-		throw redirect(303, '/framsteg');
+		throw redirect(303, '/dashboard');
 	}
 };

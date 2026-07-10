@@ -79,9 +79,9 @@
 		<h1 class="text-2xl font-bold text-center mb-4">Lösenordet är uppdaterat</h1>
 		<p class="text-center text-sm opacity-70 mb-6">Du kan nu logga in med ditt nya lösenord.</p>
 		<a
-			href="/framsteg"
+			href="/dashboard"
 			class="block w-full text-center px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium"
-		>Gå till Framsteg</a>
+		>Gå till Mitt Hem</a>
 
 	{:else}
 		<h1 class="text-2xl font-bold text-center mb-6">Välj nytt lösenord</h1>

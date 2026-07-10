@@ -68,7 +68,7 @@
 					<p class="spegel-kicker">Spegelvattnet</p>
 					<h2>Spegelvattnet är stilla.</h2>
 					<p>Det fylls på när du skrivit lite mer.</p>
-					<a href="/framsteg" class="auth-button">Till Mitt rum</a>
+					<a href="/dashboard" class="auth-button">Till Mitt rum</a>
 				</section>
 			{:else if reflection.status === 'paused'}
 				<section class="spegel-shell spegel-empty">
@@ -114,7 +114,7 @@
 
 					<div class="spegel-actions">
 						<a href={diaryHref} class="auth-button primary">Skriv om det här</a>
-						<a href="/framsteg" class="auth-button">Stäng</a>
+						<a href="/dashboard" class="auth-button">Stäng</a>
 					</div>
 				</article>
 			{/if}

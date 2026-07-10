@@ -3,7 +3,7 @@ import type { RequestHandler } from './$types';
 
 function normalizeNext(next: string | null) {
 	if (!next || !next.startsWith('/') || next.startsWith('//')) {
-		return '/framsteg';
+		return '/dashboard';
 	}
 
 	return next;

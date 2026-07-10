@@ -10,7 +10,7 @@ export function getStableOAuthBaseUrl() {
 	return normalizeBaseUrl(env.PUBLIC_SITE_URL || DEFAULT_PUBLIC_SITE_URL);
 }
 
-export function getStableOAuthCallbackUrl(next = '/framsteg') {
+export function getStableOAuthCallbackUrl(next = '/dashboard') {
 	const baseUrl = getStableOAuthBaseUrl();
 	const params = new URLSearchParams({ next });
 
