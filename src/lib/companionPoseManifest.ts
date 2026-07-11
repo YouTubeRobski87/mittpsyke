@@ -267,14 +267,14 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 	{
 		id: 'shore-near',
 		x: 66,
-		y: 73,
-		scale: 0.72,
+		y: 76,
+		scale: 0.64,
 		zIndex: 2,
 		shadow: {
-			width: 58,
-			height: 7,
-			blur: 7,
-			opacity: 0.16
+			width: 44,
+			height: 5,
+			blur: 4,
+			opacity: 0.22
 		},
 		allowedPoseIds: ['drink', 'sniff', 'sit', 'sit-look-up', 'look-left', 'look-right', 'evening-lake'],
 		dayparts: ['day', 'evening'],
@@ -284,13 +284,13 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 		id: 'shore-far',
 		x: 50,
 		y: 65,
-		scale: 0.46,
+		scale: 0.36,
 		zIndex: 1,
 		shadow: {
-			width: 46,
-			height: 5,
-			blur: 6,
-			opacity: 0.1
+			width: 34,
+			height: 4,
+			blur: 5,
+			opacity: 0.07
 		},
 		allowedPoseIds: ['idle', 'look-left', 'look-right', 'sit', 'sit-look-up', 'evening-lake'],
 		dayparts: ['day', 'evening'],

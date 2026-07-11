@@ -222,9 +222,31 @@
 		pointer-events: none;
 	}
 
+	.companion-pose:global(.hero-companion-pose)[data-position='shore-near']::after {
+		content: '';
+		position: absolute;
+		z-index: 3;
+		left: 18%;
+		right: 11%;
+		bottom: 5%;
+		height: 18%;
+		background:
+			radial-gradient(34% 18% at 26% 78%, rgb(74 78 52 / 0.42), transparent 70%),
+			radial-gradient(26% 14% at 68% 84%, rgb(96 93 66 / 0.28), transparent 72%),
+			linear-gradient(82deg, transparent 0 14%, rgb(86 103 61 / 0.48) 15% 16%, transparent 17%),
+			linear-gradient(98deg, transparent 0 30%, rgb(65 85 51 / 0.4) 31% 32%, transparent 33%),
+			linear-gradient(76deg, transparent 0 45%, rgb(91 109 65 / 0.42) 46% 47%, transparent 48%),
+			linear-gradient(104deg, transparent 0 58%, rgb(67 86 52 / 0.34) 59% 60%, transparent 61%);
+		filter: blur(0.1px);
+		opacity: 0.74;
+		transform: rotate(-3deg);
+		pointer-events: none;
+	}
+
 	.companion-pose-image {
 		position: absolute;
 		inset: 0;
+		z-index: 1;
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
