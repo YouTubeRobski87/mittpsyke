@@ -3,6 +3,7 @@
   import SEO from '$lib/components/SEO.svelte';
   import AccountTeaser from '$lib/components/AccountTeaser.svelte';
   import CompanionPose from '$lib/components/CompanionPose.svelte';
+  import LivingWorld from '$lib/components/LivingWorld.svelte';
   import UserAvatar from '$lib/components/UserAvatar.svelte';
   import {
     ArrowRight,
@@ -27,6 +28,7 @@
     type ProgressCompanionArtId,
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
+  import { getLivingWorldScene, type LivingWorldScene } from '$lib/worldScene';
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
@@ -77,6 +79,7 @@
   let progressExpanded = $state(false);
   let localHour = $state<number | null>(null);
   let localCompanionScene = $state<DashboardCompanionScene | null>(null);
+  let livingWorldScene = $state<LivingWorldScene>(getLivingWorldScene());
 
   const diaryPreview = $derived(data.diaryPreview);
   const progressPreview = $derived(data.progressPreview);
@@ -149,7 +152,9 @@
   onMount(() => {
     const updateLocalTime = () => {
       localHour = new Date().getHours();
-      localCompanionScene = getDashboardCompanionScene(new Date());
+      const now = new Date();
+      localCompanionScene = getDashboardCompanionScene(now);
+      livingWorldScene = getLivingWorldScene({ date: now });
     };
 
     updateLocalTime();
@@ -224,18 +229,7 @@
           decoding="async"
         />
         <CompanionPose class="hero-companion-pose" />
-        <div class="ambient-scene" aria-hidden="true">
-          <span class="ambient-sunlight"></span>
-          <span class="ambient-ripple ripple-a"></span>
-          <span class="ambient-ripple ripple-b"></span>
-          <span class="ambient-grass grass-a"></span>
-          <span class="ambient-grass grass-b"></span>
-          <span class="ambient-grass grass-c"></span>
-          <span class="ambient-bird bird-a"></span>
-          <span class="ambient-bird bird-b"></span>
-          <span class="ambient-leaf leaf-a"></span>
-          <span class="ambient-leaf leaf-b"></span>
-        </div>
+        <LivingWorld scene={livingWorldScene} class="hero-living-world" />
         <div class="hero-copy">
           <h2 id="companion-title">Välkommen tillbaka</h2>
           <p>Din följeslagare finns kvar här när du återvänder.</p>
@@ -851,153 +845,6 @@
     pointer-events: none;
   }
 
-  .ambient-scene {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .ambient-sunlight,
-  .ambient-ripple,
-  .ambient-grass,
-  .ambient-bird,
-  .ambient-leaf {
-    position: absolute;
-    pointer-events: none;
-  }
-
-  .ambient-sunlight {
-    inset: -12% auto auto -6%;
-    width: 58%;
-    height: 66%;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 243, 206, 0.24) 0%, rgba(255, 243, 206, 0.08) 42%, transparent 72%);
-    mix-blend-mode: screen;
-    opacity: 0.52;
-    animation: sunlightShift 46s ease-in-out infinite alternate;
-  }
-
-  .ambient-ripple {
-    left: 60%;
-    bottom: 17%;
-    width: clamp(90px, 12vw, 150px);
-    height: clamp(26px, 3.4vw, 42px);
-    border-radius: 50%;
-    border: 1px solid rgba(236, 246, 243, 0.42);
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent 62%);
-    opacity: 0;
-    filter: blur(0.2px);
-  }
-
-  .ripple-a {
-    animation: waterRipple 28s ease-out infinite;
-  }
-
-  .ripple-b {
-    left: 68%;
-    bottom: 14%;
-    width: clamp(72px, 10vw, 124px);
-    height: clamp(20px, 2.8vw, 34px);
-    animation: waterRipple 34s ease-out infinite 11s;
-  }
-
-  .ambient-grass {
-    bottom: -2%;
-    width: clamp(120px, 16vw, 210px);
-    height: clamp(72px, 9vw, 112px);
-    transform-origin: bottom center;
-    opacity: 0.2;
-    background: radial-gradient(ellipse at bottom, rgba(112, 146, 101, 0.34) 0%, rgba(112, 146, 101, 0.12) 38%, transparent 72%);
-  }
-
-  .grass-a {
-    left: 8%;
-    animation: grassSway 23s ease-in-out infinite alternate;
-  }
-
-  .grass-b {
-    left: 22%;
-    width: clamp(96px, 13vw, 172px);
-    opacity: 0.16;
-    animation: grassSway 29s ease-in-out infinite alternate-reverse;
-  }
-
-  .grass-c {
-    right: 10%;
-    width: clamp(132px, 17vw, 226px);
-    opacity: 0.14;
-    animation: grassSway 31s ease-in-out infinite alternate;
-  }
-
-  .ambient-bird {
-    top: 18%;
-    width: 16px;
-    height: 8px;
-    opacity: 0.22;
-    animation: birdDrift 42s linear infinite;
-  }
-
-  .ambient-bird::before,
-  .ambient-bird::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    width: 8px;
-    height: 3px;
-    border-top: 1.5px solid rgba(72, 88, 78, 0.42);
-    border-radius: 100% 100% 0 0;
-  }
-
-  .ambient-bird::before {
-    left: 0;
-    transform: rotate(-14deg);
-  }
-
-  .ambient-bird::after {
-    right: 0;
-    transform: rotate(14deg);
-  }
-
-  .bird-a {
-    left: 58%;
-    animation-delay: 6s;
-  }
-
-  .bird-b {
-    top: 24%;
-    left: 70%;
-    transform: scale(0.82);
-    opacity: 0.15;
-    animation-duration: 55s;
-    animation-delay: 19s;
-  }
-
-  .ambient-leaf {
-    top: 14%;
-    left: 72%;
-    width: 10px;
-    height: 7px;
-    border-radius: 70% 30% 70% 30%;
-    background: linear-gradient(135deg, rgba(154, 126, 82, 0.42), rgba(117, 148, 96, 0.28));
-    opacity: 0;
-    filter: blur(0.15px);
-  }
-
-  .leaf-a {
-    animation: leafDrift 36s linear infinite 9s;
-  }
-
-  .leaf-b {
-    left: 80%;
-    top: 20%;
-    width: 8px;
-    height: 6px;
-    opacity: 0;
-    animation: leafDrift 44s linear infinite 24s;
-  }
-
   .selected-companion-mark {
     position: absolute;
     z-index: 2;
@@ -1071,80 +918,6 @@
     font-size: 14px;
     font-weight: 400;
     opacity: 1;
-  }
-
-  @keyframes sunlightShift {
-    0% {
-      transform: translate3d(0, 0, 0) scale(1);
-      opacity: 0.46;
-    }
-    100% {
-      transform: translate3d(2%, 1.5%, 0) scale(1.04);
-      opacity: 0.6;
-    }
-  }
-
-  @keyframes waterRipple {
-    0%,
-    68%,
-    100% {
-      transform: translate3d(0, 0, 0) scale(0.92);
-      opacity: 0;
-    }
-    10% {
-      opacity: 0.16;
-    }
-    36% {
-      transform: translate3d(0, 2px, 0) scale(1.18);
-      opacity: 0.08;
-    }
-  }
-
-  @keyframes grassSway {
-    0% {
-      transform: skewX(0deg) translate3d(0, 0, 0);
-    }
-    100% {
-      transform: skewX(1.8deg) translate3d(0, -1px, 0);
-    }
-  }
-
-  @keyframes birdDrift {
-    0%,
-    14% {
-      transform: translate3d(0, 0, 0);
-      opacity: 0;
-    }
-    24% {
-      opacity: 0.16;
-    }
-    72% {
-      transform: translate3d(42px, -7px, 0);
-      opacity: 0.16;
-    }
-    100% {
-      transform: translate3d(56px, -11px, 0);
-      opacity: 0;
-    }
-  }
-
-  @keyframes leafDrift {
-    0%,
-    16% {
-      transform: translate3d(0, 0, 0) rotate(0deg);
-      opacity: 0;
-    }
-    22% {
-      opacity: 0.2;
-    }
-    74% {
-      transform: translate3d(-32px, 108px, 0) rotate(120deg);
-      opacity: 0.12;
-    }
-    100% {
-      transform: translate3d(-44px, 148px, 0) rotate(180deg);
-      opacity: 0;
-    }
   }
 
   .quick-grid {
@@ -1771,11 +1544,6 @@
       padding: 0.48rem 0.62rem;
     }
 
-    .bird-b,
-    .leaf-b,
-    .grass-c {
-      display: none;
-    }
   }
 
 	.section-heading {
@@ -1820,11 +1588,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .ambient-sunlight,
-    .ambient-ripple,
-    .ambient-grass,
-    .ambient-bird,
-    .ambient-leaf,
     .card-button,
     .text-link,
     .explore-panel a,
@@ -1832,12 +1595,6 @@
       transition: none;
       animation: none !important;
       transform: none !important;
-    }
-
-    .ambient-bird,
-    .ambient-leaf,
-    .ambient-ripple {
-      opacity: 0;
     }
   }
 </style>

@@ -21,6 +21,8 @@
 	let daypart = $state<CompanionPoseDaypart>('day');
 	let baseFrameIndex = $state(0);
 	let overlayFrameIndex = $state(0);
+	let isActive = $state(true);
+	let reducedMotion = $state(false);
 
 	const classes = $derived(`companion-pose ${className}`.trim());
 	const baseFrame = $derived(
@@ -38,7 +40,7 @@
 	}
 
 	function maybePlayOverlay() {
-		if (overlayPose) return;
+		if (overlayPose || !isActive || reducedMotion) return;
 
 		const nextOverlay = getCompanionOverlayPose(daypart);
 		if (!nextOverlay) return;
@@ -55,6 +57,18 @@
 		refreshBasePose();
 
 		let baseTimer: number | null = null;
+		let baseFrameTimer: number | null = null;
+		let overlayFrameTimer: number | null = null;
+		let overlayTimer: number | null = null;
+		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+		const updateMotionState = () => {
+			reducedMotion = motionQuery.matches;
+		};
+
+		const updateActiveState = () => {
+			isActive = document.visibilityState === 'visible';
+		};
 
 		const scheduleBaseCheck = () => {
 			baseTimer = window.setTimeout(() => {
@@ -63,27 +77,49 @@
 			}, getMsUntilNextCompanionPoseCheck(new Date(), window.localStorage));
 		};
 
+		const scheduleBaseFrame = () => {
+			baseFrameTimer = window.setTimeout(() => {
+				if (isActive && !reducedMotion && basePose && basePose.frames.length > 1) {
+					baseFrameIndex += 1;
+				}
+				scheduleBaseFrame();
+			}, basePose?.frameMs ?? 900);
+		};
+
+		const scheduleOverlayFrame = () => {
+			overlayFrameTimer = window.setTimeout(() => {
+				if (isActive && !reducedMotion && overlayPose && overlayPose.frames.length > 1) {
+					overlayFrameIndex += 1;
+				}
+				scheduleOverlayFrame();
+			}, overlayPose?.frameMs ?? 900);
+		};
+
+		const scheduleOverlay = (minDelay = 75_000, maxDelay = 155_000) => {
+			const delay = minDelay + Math.random() * (maxDelay - minDelay);
+			overlayTimer = window.setTimeout(() => {
+				maybePlayOverlay();
+				scheduleOverlay();
+			}, delay);
+		};
+
+		updateMotionState();
+		updateActiveState();
+		motionQuery.addEventListener('change', updateMotionState);
+		document.addEventListener('visibilitychange', updateActiveState);
+
 		scheduleBaseCheck();
-
-		const baseFrameTimer = window.setInterval(() => {
-			if (!basePose || basePose.frames.length <= 1) return;
-			baseFrameIndex += 1;
-		}, basePose?.frameMs ?? 700);
-
-		const overlayFrameTimer = window.setInterval(() => {
-			if (!overlayPose || overlayPose.frames.length <= 1) return;
-			overlayFrameIndex += 1;
-		}, overlayPose?.frameMs ?? 700);
-
-		const firstOverlayDelay = window.setTimeout(maybePlayOverlay, 15_000 + Math.random() * 40_000);
-		const overlayTimer = window.setInterval(maybePlayOverlay, 90_000);
+		scheduleBaseFrame();
+		scheduleOverlayFrame();
+		scheduleOverlay(22_000, 68_000);
 
 		return () => {
 			if (baseTimer !== null) window.clearTimeout(baseTimer);
-			window.clearInterval(baseFrameTimer);
-			window.clearInterval(overlayFrameTimer);
-			window.clearTimeout(firstOverlayDelay);
-			window.clearInterval(overlayTimer);
+			if (baseFrameTimer !== null) window.clearTimeout(baseFrameTimer);
+			if (overlayFrameTimer !== null) window.clearTimeout(overlayFrameTimer);
+			if (overlayTimer !== null) window.clearTimeout(overlayTimer);
+			motionQuery.removeEventListener('change', updateMotionState);
+			document.removeEventListener('visibilitychange', updateActiveState);
 		};
 	});
 </script>

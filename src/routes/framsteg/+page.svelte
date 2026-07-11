@@ -7,12 +7,16 @@
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import LivingWorld from '$lib/components/LivingWorld.svelte';
 	import {
 		COMPANION_WORLD_SCENE_IMAGE,
 		getProgressCompanionDayState,
+		getProgressCompanionSeason,
 		type ProgressCompanionDayState,
+		type ProgressCompanionSeason,
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
+	import { getLivingWorldScene } from '$lib/worldScene';
 	import { trackMilestoneReachedOnce, trackStreakDayReachedOnce } from '$lib/analytics';
 	import {
 		SENSITIVE_CONSENT_HEADER,
@@ -23,20 +27,20 @@
 	import { supabase } from '$lib/supabase';
 	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart } from 'lucide-svelte';
 
-	type CompanionSeason = 'spring' | 'summer' | 'autumn' | 'winter';
 	type CompanionTimeOfDay = ProgressCompanionDayState;
 
 	interface CompanionScene {
 		image: string;
-		season: CompanionSeason;
+		season: ProgressCompanionSeason;
 		timeOfDay: ProgressCompanionDayState;
 		alt: string;
 		copy: string;
 		anonymousCopy: string;
 	}
 
-	let season = $state<CompanionSeason>('summer');
+	let season = $state<ProgressCompanionSeason>(getProgressCompanionSeason());
 	let timeOfDay = $state<CompanionTimeOfDay>(getProgressCompanionDayState());
+	const livingWorldScene = $derived(getLivingWorldScene({ season, timeOfDay }));
 
 	const companionScene = $derived<CompanionScene>({
 		image: COMPANION_WORLD_SCENE_IMAGE,
@@ -532,7 +536,9 @@
 
 	onMount(() => {
 		const updateCompanionTimeOfDay = () => {
-			timeOfDay = getProgressCompanionDayState();
+			const now = new Date();
+			timeOfDay = getProgressCompanionDayState(now);
+			season = getProgressCompanionSeason(now);
 		};
 		updateCompanionTimeOfDay();
 		const companionTimeTimer = window.setInterval(updateCompanionTimeOfDay, 60 * 1000);
@@ -719,14 +725,7 @@
 					decoding="async"
 				/>
 				<CompanionPose class="progress-companion-pose" decorative />
-				<div class="living-world" aria-hidden="true">
-					<span class="sky-glow"></span>
-					<span class="lake-mist mist-one"></span>
-					<span class="lake-mist mist-two"></span>
-					<span class="water-shimmer shimmer-one"></span>
-					<span class="water-shimmer shimmer-two"></span>
-					<span class="distant-bird bird-one"></span>
-				</div>
+				<LivingWorld scene={livingWorldScene} class="progress-living-world" />
 			</div>
 			<div class="companion-copy">
 				<h2>Din följeslagare</h2>
@@ -1068,126 +1067,6 @@
 		pointer-events: none;
 	}
 
-	.living-world,
-	.living-world span {
-		position: absolute;
-		pointer-events: none;
-	}
-
-	.living-world {
-		inset: 0;
-		z-index: 1;
-		overflow: hidden;
-		mix-blend-mode: screen;
-	}
-
-	.living-world span {
-		will-change: transform, opacity;
-	}
-
-	.sky-glow {
-		inset: -18% -10% 48% -10%;
-		background:
-			radial-gradient(circle at 30% 18%, rgba(180, 224, 255, 0.28), transparent 34%),
-			radial-gradient(circle at 68% 10%, rgba(112, 190, 255, 0.16), transparent 28%);
-		opacity: 0.52;
-		animation: skyPulse 9s ease-in-out infinite;
-	}
-
-	.companion-media[data-season='autumn'] .sky-glow {
-		background:
-			radial-gradient(circle at 25% 16%, rgba(255, 219, 143, 0.42), transparent 36%),
-			radial-gradient(circle at 71% 12%, rgba(255, 146, 72, 0.18), transparent 30%);
-		mix-blend-mode: soft-light;
-	}
-
-	.companion-media[data-time='night'] .sky-glow {
-		background:
-			radial-gradient(circle at 18% 18%, rgba(117, 202, 255, 0.34), transparent 30%),
-			radial-gradient(circle at 64% 8%, rgba(142, 112, 255, 0.16), transparent 28%);
-	}
-
-	.lake-mist {
-		left: -8%;
-		right: -8%;
-		height: clamp(2.2rem, 8vw, 5.8rem);
-		border-radius: 999px;
-		background: linear-gradient(90deg, transparent, rgba(255, 251, 236, 0.26), rgba(226, 245, 255, 0.18), transparent);
-		filter: blur(10px);
-		opacity: 0;
-		mix-blend-mode: soft-light;
-	}
-
-	.mist-one {
-		top: 49%;
-		animation: lakeMistDrift 15s ease-in-out infinite;
-	}
-
-	.mist-two {
-		top: 57%;
-		animation: lakeMistDrift 19s ease-in-out 4s infinite reverse;
-	}
-
-	.water-shimmer {
-		left: 6%;
-		right: 34%;
-		height: 1px;
-		border-radius: 999px;
-		background: linear-gradient(90deg, transparent, rgba(168, 228, 255, 0.42), transparent);
-		filter: blur(0.5px);
-		opacity: 0;
-	}
-
-	.shimmer-one {
-		top: 56%;
-		animation: waterShimmer 5.8s ease-in-out infinite;
-	}
-
-	.shimmer-two {
-		top: 63%;
-		left: 10%;
-		right: 44%;
-		animation: waterShimmer 7.5s ease-in-out 1.9s infinite;
-	}
-
-	.distant-bird {
-		top: 23%;
-		left: -8%;
-		width: 1.9rem;
-		height: 0.75rem;
-		opacity: 0;
-	}
-
-	.distant-bird::before,
-	.distant-bird::after {
-		content: '';
-		position: absolute;
-		top: 0.2rem;
-		width: 0.9rem;
-		height: 0.38rem;
-		border-top: 2px solid rgba(41, 63, 56, 0.38);
-		border-radius: 999px 999px 0 0;
-	}
-
-	.distant-bird::before {
-		left: 0;
-		transform: rotate(-12deg);
-	}
-
-	.distant-bird::after {
-		right: 0;
-		transform: rotate(12deg);
-	}
-
-	.bird-one {
-		animation: birdGlide 22s ease-in-out 5s infinite;
-	}
-
-	.companion-media[data-time='night'] .distant-bird,
-	.companion-media[data-season='winter'] .distant-bird {
-		display: none;
-	}
-
 	.companion-copy {
 		padding: 1rem 1.5rem 1.2rem;
 	}
@@ -1269,10 +1148,6 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.companion-world-scene,
-		.sky-glow,
-		.lake-mist,
-		.water-shimmer,
-		.distant-bird,
 		.card-placeholder {
 			animation: none !important;
 		}
@@ -1282,9 +1157,6 @@
 			filter: none;
 		}
 
-		.living-world {
-			display: none;
-		}
 	}
 
 	.account-preview-content {
@@ -1374,30 +1246,6 @@
 			transform: scale(1.024) translate3d(0.7%, -0.18%, 0);
 			filter: saturate(1.03) brightness(1);
 		}
-	}
-
-	@keyframes skyPulse {
-		0%, 100% { opacity: 0.38; transform: translate3d(-1%, 0, 0) scale(1); }
-		50% { opacity: 0.68; transform: translate3d(1.2%, 1%, 0) scale(1.035); }
-	}
-
-	@keyframes lakeMistDrift {
-		0%, 100% { opacity: 0.08; transform: translate3d(-4%, 0, 0) scaleX(0.95); }
-		42% { opacity: 0.32; }
-		70% { opacity: 0.18; transform: translate3d(5%, -4%, 0) scaleX(1.08); }
-	}
-
-	@keyframes waterShimmer {
-		0%, 100% { opacity: 0; transform: translate3d(-8%, 0, 0) scaleX(0.72); }
-		35% { opacity: 0.54; }
-		68% { opacity: 0.12; transform: translate3d(18%, 0, 0) scaleX(1.08); }
-	}
-
-	@keyframes birdGlide {
-		0%, 18% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.82); }
-		26% { opacity: 0.46; }
-		78% { opacity: 0.28; transform: translate3d(74vw, -2.8rem, 0) scale(0.92); }
-		100% { opacity: 0; transform: translate3d(82vw, -3rem, 0) scale(0.92); }
 	}
 
 	/* Badge colors */
