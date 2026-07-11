@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import SEO from '$lib/components/SEO.svelte';
   import AccountTeaser from '$lib/components/AccountTeaser.svelte';
+  import CompanionPose from '$lib/components/CompanionPose.svelte';
   import UserAvatar from '$lib/components/UserAvatar.svelte';
   import {
     ArrowRight,
@@ -92,7 +93,7 @@
   const hasSelectedCompanion = $derived(Boolean(selectedCompanion));
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
-  const companionHeroImage = $derived(localCompanionScene?.imageSrc ?? null);
+  const companionHeroImage = GENERIC_COMPANION_HERO_IMAGE;
   // Följeslagaren som hero-scenen visar. Räven är vaken och aktiv — fokus hämtas ur
   // konfigurationen så CSS aldrig behöver ändras när bilden byts.
   const heroCompanionId: ProgressCompanionArtId = 'fox';
@@ -215,13 +216,14 @@
         aria-labelledby="companion-title"
         style={`--hero-image: ${companionHeroImage ? `url('${companionHeroImage}')` : 'none'}; --hero-focus: ${heroFocus};`}
       >
-        {#if companionHeroImage}
-          <img
-            src={companionHeroImage}
-            alt={companionHeroAlt}
-            decoding="async"
-          />
-        {/if}
+        <img
+          class="companion-hero-scene"
+          src={companionHeroImage}
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+        />
+        <CompanionPose class="hero-companion-pose" />
         <div class="ambient-scene" aria-hidden="true">
           <span class="ambient-sunlight"></span>
           <span class="ambient-ripple ripple-a"></span>
@@ -804,7 +806,7 @@
     width: min(28rem, calc(100% - 36px));
   }
 
-  .companion-hero img {
+  .companion-hero-scene {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -816,7 +818,7 @@
     z-index: 0;
   }
 
-  .companion-hero[data-companion='bear'] img {
+  .companion-hero[data-companion='bear'] .companion-hero-scene {
     width: min(62%, 720px);
     height: 100%;
     inset: auto 0 0 auto;
@@ -826,7 +828,7 @@
     filter: saturate(1.02);
   }
 
-  .companion-hero[data-companion='fox'] img {
+  .companion-hero[data-companion='fox'] .companion-hero-scene {
     object-fit: cover;
     /* Håll räven (nedre högra tredjedelen) helt i bild oavsett kortets bredd */
     object-position: var(--hero-focus, 70% 64%);
@@ -1620,7 +1622,7 @@
       min-height: 280px;
     }
 
-    .companion-hero[data-companion='bear'] img {
+    .companion-hero[data-companion='bear'] .companion-hero-scene {
       width: min(58%, 280px);
       object-position: right bottom;
     }
@@ -1723,7 +1725,7 @@
       font-size: 1.22rem;
     }
 
-    .companion-hero[data-companion='bear'] img {
+    .companion-hero[data-companion='bear'] .companion-hero-scene {
       width: min(54%, 240px);
     }
 
