@@ -10,13 +10,15 @@
 
 	let {
 		class: className = '',
-		decorative = false
+		decorative = false,
+		basePose: providedBasePose = null
 	}: {
 		class?: string;
 		decorative?: boolean;
+		basePose?: CompanionPose | null;
 	} = $props();
 
-	let basePose = $state<CompanionPose | null>(null);
+	let localBasePose = $state<CompanionPose | null>(null);
 	let overlayPose = $state<CompanionPose | null>(null);
 	let daypart = $state<CompanionPoseDaypart>('day');
 	let baseFrameIndex = $state(0);
@@ -25,6 +27,7 @@
 	let reducedMotion = $state(false);
 
 	const classes = $derived(`companion-pose ${className}`.trim());
+	const basePose = $derived(providedBasePose ?? localBasePose);
 	const baseFrame = $derived(
 		basePose ? basePose.frames[baseFrameIndex % basePose.frames.length] : null
 	);
@@ -35,7 +38,9 @@
 	function refreshBasePose() {
 		const now = new Date();
 		daypart = getCompanionPoseDaypart(now);
-		basePose = getCompanionBasePose(now, window.localStorage);
+		if (!providedBasePose) {
+			localBasePose = getCompanionBasePose(now, window.localStorage);
+		}
 		baseFrameIndex = 0;
 	}
 

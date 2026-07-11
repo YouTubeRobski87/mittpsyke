@@ -199,16 +199,6 @@
         <div class="topbar-actions" aria-label="Kontroller">
           {#if isAnonymous}
             <a class="soft-account-link" href="/register">Spara platsen</a>
-          {:else}
-            <a class="avatar-button" href="/dashboard/installningar" aria-label="Öppna inställningar">
-              <UserAvatar
-                name={displayName ?? 'MittPsyke'}
-                seed={displayName ?? 'mittpsyke-profil'}
-                size="lg"
-                label={`${displayName ?? 'Din'} profilbild`}
-                decorative
-              />
-            </a>
           {/if}
         </div>
       </header>
@@ -624,8 +614,8 @@
     gap: 0.75rem;
     padding: 0.95rem;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.64);
-    border: 1px solid var(--mp-card-border);
+    background: rgba(17, 30, 49, 0.82);
+    border: 1px solid rgba(160, 188, 220, 0.28);
   }
 
   .framsteg-panel-details h3,
@@ -634,13 +624,14 @@
   }
 
   .framsteg-panel-details h3 {
+    color: var(--mp-text);
     font-size: 0.95rem;
     line-height: 1.2;
   }
 
   .framsteg-panel-details p,
   .framsteg-panel-details li {
-    color: var(--mp-text-dim);
+    color: #d9e1ea;
     font-size: 0.86rem;
     line-height: 1.5;
   }
