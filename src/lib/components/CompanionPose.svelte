@@ -120,10 +120,25 @@
 
 	.companion-pose:global(.hero-companion-pose) {
 		position: absolute;
-		right: clamp(22px, 5vw, 74px);
-		bottom: clamp(-20px, -1.2vw, -6px);
+		right: clamp(18px, 4.2vw, 64px);
+		bottom: clamp(-10px, -0.5vw, -2px);
 		z-index: 2;
-		width: min(42%, 330px);
+		width: min(39%, 310px);
+	}
+
+	.companion-pose:global(.hero-companion-pose)::before {
+		content: '';
+		position: absolute;
+		z-index: -1;
+		left: 17%;
+		bottom: 9%;
+		width: 68%;
+		height: 8%;
+		border-radius: 50%;
+		background: rgb(43 39 27 / 0.22);
+		filter: blur(8px);
+		transform: rotate(-4deg);
+		pointer-events: none;
 	}
 
 	.companion-pose-image {
@@ -181,8 +196,8 @@
 	@media (max-width: 620px) {
 		.companion-pose:global(.hero-companion-pose) {
 			right: 10px;
-			bottom: -12px;
-			width: min(54%, 230px);
+			bottom: -4px;
+			width: min(50%, 220px);
 		}
 	}
 </style>

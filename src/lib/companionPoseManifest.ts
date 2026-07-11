@@ -17,7 +17,7 @@ export type CompanionPose = {
 	durationMs?: number;
 };
 
-const FOX_POSE_BASE_PATH = '/images/avatars/presets/fox';
+const FOX_POSE_BASE_PATH = '/images/avatars/presets';
 
 const foxPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
 
