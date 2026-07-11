@@ -5,8 +5,14 @@
 	import { browser } from '$app/environment';
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
+	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
-	import type { ProgressCompanionSelection } from '$lib/progressCompanion';
+	import {
+		COMPANION_WORLD_SCENE_IMAGE,
+		getProgressCompanionDayState,
+		type ProgressCompanionDayState,
+		type ProgressCompanionSelection
+	} from '$lib/progressCompanion';
 	import { trackMilestoneReachedOnce, trackStreakDayReachedOnce } from '$lib/analytics';
 	import {
 		SENSITIVE_CONSENT_HEADER,
@@ -17,59 +23,23 @@
 	import { supabase } from '$lib/supabase';
 	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart } from 'lucide-svelte';
 
-	const now = new Date();
-	const hour = now.getHours();
-	const month = now.getMonth() + 1;
-
 	type CompanionSeason = 'spring' | 'summer' | 'autumn' | 'winter';
-	type CompanionTimeOfDay = 'morning' | 'day' | 'evening' | 'night';
+	type CompanionTimeOfDay = ProgressCompanionDayState;
 
 	interface CompanionScene {
 		image: string;
 		season: CompanionSeason;
-		timeOfDay: CompanionTimeOfDay;
+		timeOfDay: ProgressCompanionDayState;
 		alt: string;
 		copy: string;
 		anonymousCopy: string;
 	}
 
-	const getSeason = (value: number): CompanionSeason => {
-		if (value >= 12 || value <= 2) return 'winter';
-		if (value >= 3 && value <= 5) return 'spring';
-		if (value >= 9 && value <= 11) return 'autumn';
-		return 'summer';
-	};
+	let season = $state<CompanionSeason>('summer');
+	let timeOfDay = $state<CompanionTimeOfDay>(getProgressCompanionDayState());
 
-	const getTimeOfDay = (value: number): CompanionTimeOfDay => {
-		if (value >= 5 && value < 10) return 'morning';
-		if (value >= 10 && value < 17) return 'day';
-		if (value >= 17 && value < 21) return 'evening';
-		return 'night';
-	};
-
-	const season = getSeason(month);
-	const timeOfDay = getTimeOfDay(hour);
-	const sceneImages: Record<CompanionSeason, Partial<Record<CompanionTimeOfDay, string>> & { default: string }> = {
-		spring: {
-			default: '/images/avatars/presets/spring_meadow_fox.png',
-			morning: '/images/avatars/presets/fox_sunrise_dawn.png',
-			night: '/images/avatars/presets/fox-night.webp'
-		},
-		summer: {
-			default: '/images/avatars/presets/fox-morning.webp',
-			morning: '/images/avatars/presets/Morgon fox sjön.png',
-			night: '/images/avatars/presets/fox-night.webp'
-		},
-		autumn: {
-			default: '/images/avatars/presets/Autumn fox 2.png',
-			night: '/images/avatars/presets/fox-night.webp'
-		},
-		winter: {
-			default: '/images/avatars/presets/fox-winter.webp'
-		}
-	};
-	const companionScene: CompanionScene = {
-		image: sceneImages[season][timeOfDay] ?? sceneImages[season].default,
+	const companionScene = $derived<CompanionScene>({
+		image: COMPANION_WORLD_SCENE_IMAGE,
 		season,
 		timeOfDay,
 		alt: 'Din följeslagare, räven, vid sjön',
@@ -85,7 +55,7 @@
 				: season === 'winter'
 					? 'Räven håller platsen varm och stilla medan den växer fram.'
 					: 'Räven är vaken och håller platsen sällskap medan den växer fram.'
-	};
+	});
 
 	interface StreakData {
 		currentStreak: number;
@@ -561,6 +531,13 @@
 	}
 
 	onMount(() => {
+		const updateCompanionTimeOfDay = () => {
+			timeOfDay = getProgressCompanionDayState();
+		};
+		updateCompanionTimeOfDay();
+		const companionTimeTimer = window.setInterval(updateCompanionTimeOfDay, 60 * 1000);
+		const cleanupCompanionTime = () => window.clearInterval(companionTimeTimer);
+
 		if (isAnonymous) {
 			progressLoaded = true;
 			insightsVisible = true;
@@ -568,7 +545,7 @@
 			if (browser) {
 				localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
 			}
-			return;
+			return cleanupCompanionTime;
 		}
 
 		void loadProgressData();
@@ -581,7 +558,7 @@
 		maybeLoadInsights();
 
 		if (typeof IntersectionObserver === 'undefined') {
-			return;
+			return cleanupCompanionTime;
 		}
 
 		const observer = new IntersectionObserver(
@@ -609,6 +586,7 @@
 
 		return () => {
 			observer.disconnect();
+			cleanupCompanionTime();
 		};
 	});
 
@@ -733,33 +711,21 @@
 				data-time={companionScene.timeOfDay}
 			>
 				<img
+					class="companion-world-scene"
 					src={companionScene.image}
-					alt={companionScene.alt}
+					alt=""
+					aria-hidden="true"
 					loading="lazy"
 					decoding="async"
 				/>
+				<CompanionPose class="progress-companion-pose" decorative />
 				<div class="living-world" aria-hidden="true">
 					<span class="sky-glow"></span>
 					<span class="lake-mist mist-one"></span>
 					<span class="lake-mist mist-two"></span>
-					<span class="meteor meteor-one"></span>
-					<span class="meteor meteor-two"></span>
 					<span class="water-shimmer shimmer-one"></span>
 					<span class="water-shimmer shimmer-two"></span>
-					<span class="fox-breath"></span>
-					<span class="tree-foliage foliage-left"></span>
-					<span class="tree-foliage foliage-centre"></span>
-					<span class="tree-foliage foliage-right"></span>
-					<span class="drifting-leaf leaf-one"></span>
-					<span class="drifting-leaf leaf-two"></span>
-					<span class="drifting-leaf leaf-three"></span>
-					<span class="snowflake snow-one"></span>
-					<span class="snowflake snow-two"></span>
-					<span class="snowflake snow-three"></span>
 					<span class="distant-bird bird-one"></span>
-					<span class="firefly firefly-one"></span>
-					<span class="firefly firefly-two"></span>
-					<span class="firefly firefly-three"></span>
 				</div>
 			</div>
 			<div class="companion-copy">
@@ -1060,24 +1026,46 @@
 		isolation: isolate;
 	}
 
-	.companion-media img {
+	.companion-world-scene {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		object-position: 50% 50%;
+		object-position: 70% 64%;
 		display: block;
 		transform: scale(1.018);
 		animation: companionWorldDrift 18s ease-in-out infinite alternate;
 		will-change: transform, filter;
 	}
 
-	.companion-media[data-season='autumn'] img,
-	.companion-media[data-season='spring'] img {
-		object-position: 52% 50%;
+	.companion-media[data-time='evening'] .companion-world-scene {
+		filter: saturate(0.96) brightness(0.96) sepia(0.04);
 	}
 
-	.companion-media[data-time='night'] img {
+	.companion-media[data-time='night'] .companion-world-scene {
 		filter: saturate(1.04) brightness(0.95);
+	}
+
+	.companion-media :global(.progress-companion-pose) {
+		position: absolute;
+		right: clamp(16px, 5vw, 42px);
+		bottom: clamp(-9px, -0.8vw, -3px);
+		z-index: 2;
+		width: min(36%, 205px);
+	}
+
+	.companion-media :global(.progress-companion-pose)::before {
+		content: '';
+		position: absolute;
+		z-index: -1;
+		left: 17%;
+		bottom: 9%;
+		width: 68%;
+		height: 8%;
+		border-radius: 50%;
+		background: rgb(43 39 27 / 0.2);
+		filter: blur(8px);
+		transform: rotate(-4deg);
+		pointer-events: none;
 	}
 
 	.living-world,
@@ -1140,33 +1128,6 @@
 		animation: lakeMistDrift 19s ease-in-out 4s infinite reverse;
 	}
 
-	.meteor {
-		width: clamp(7rem, 18vw, 15rem);
-		height: 2px;
-		border-radius: 999px;
-		background: linear-gradient(90deg, transparent, rgba(175, 230, 255, 0.12), rgba(206, 244, 255, 0.9));
-		filter: drop-shadow(0 0 8px rgba(93, 191, 255, 0.75));
-		opacity: 0;
-		transform: rotate(-35deg);
-	}
-
-	.companion-media:not([data-time='night']) .meteor {
-		display: none;
-	}
-
-	.meteor-one {
-		top: 13%;
-		left: 22%;
-		animation: meteorDrift 8.5s ease-in-out infinite;
-	}
-
-	.meteor-two {
-		top: 24%;
-		left: 58%;
-		width: clamp(5rem, 14vw, 11rem);
-		animation: meteorDrift 12s ease-in-out 3.4s infinite;
-	}
-
 	.water-shimmer {
 		left: 6%;
 		right: 34%;
@@ -1187,154 +1148,6 @@
 		left: 10%;
 		right: 44%;
 		animation: waterShimmer 7.5s ease-in-out 1.9s infinite;
-	}
-
-	.fox-breath {
-		right: clamp(5rem, 12vw, 9rem);
-		bottom: clamp(1.4rem, 4vw, 3.8rem);
-		width: clamp(7rem, 20vw, 15rem);
-		height: clamp(4rem, 11vw, 8rem);
-		border-radius: 999px;
-		background: radial-gradient(ellipse at center, rgba(255, 188, 106, 0.2), rgba(255, 148, 72, 0.08) 45%, transparent 72%);
-		filter: blur(10px);
-		opacity: 0.62;
-		mix-blend-mode: soft-light;
-		animation: foxBreath 5.4s ease-in-out infinite;
-	}
-
-	.tree-foliage {
-		position: absolute;
-		top: -5%;
-		pointer-events: none;
-		will-change: transform;
-		background:
-			radial-gradient(ellipse at 18% 72%, rgba(91, 123, 45, 0.24) 0 7%, transparent 8%),
-			radial-gradient(ellipse at 34% 44%, rgba(128, 157, 57, 0.2) 0 8%, transparent 9%),
-			radial-gradient(ellipse at 51% 66%, rgba(74, 109, 38, 0.18) 0 7%, transparent 8%),
-			radial-gradient(ellipse at 68% 35%, rgba(147, 172, 65, 0.18) 0 8%, transparent 9%),
-			radial-gradient(ellipse at 84% 61%, rgba(75, 110, 39, 0.2) 0 7%, transparent 8%);
-		filter: blur(0.35px);
-		opacity: 0.28;
-	}
-
-	.foliage-left {
-		left: 17%;
-		width: 27%;
-		height: 38%;
-		transform-origin: 88% 95%;
-		animation: foliageSwayLeft 9.4s ease-in-out -2.1s infinite;
-	}
-
-	.foliage-centre {
-		left: 37%;
-		width: 29%;
-		height: 34%;
-		transform-origin: 58% 100%;
-		animation: foliageSwayCentre 11.2s ease-in-out -5.6s infinite;
-	}
-
-	.foliage-right {
-		right: 3%;
-		width: 30%;
-		height: 42%;
-		transform-origin: 92% 96%;
-		animation: foliageSwayRight 7.8s ease-in-out -1.4s infinite;
-	}
-
-	.companion-media[data-season='winter'] .tree-foliage {
-		display: none;
-	}
-
-	.firefly {
-		width: 0.42rem;
-		height: 0.42rem;
-		border-radius: 999px;
-		background: rgba(255, 239, 156, 0.92);
-		box-shadow: 0 0 12px rgba(255, 225, 125, 0.78);
-		opacity: 0;
-	}
-
-	.companion-media[data-season='winter'] .firefly,
-	.companion-media[data-time='morning'] .firefly,
-	.companion-media[data-time='day'] .firefly {
-		display: none;
-	}
-
-	.firefly-one {
-		right: 16%;
-		bottom: 30%;
-		animation: fireflyFloat 7s ease-in-out infinite;
-	}
-
-	.firefly-two {
-		right: 9%;
-		bottom: 44%;
-		animation: fireflyFloat 9s ease-in-out 1.6s infinite;
-	}
-
-	.firefly-three {
-		right: 27%;
-		bottom: 22%;
-		animation: fireflyFloat 8s ease-in-out 3.1s infinite;
-	}
-
-	.drifting-leaf {
-		top: -8%;
-		width: clamp(0.85rem, 1.8vw, 1.25rem);
-		height: clamp(0.52rem, 1.1vw, 0.78rem);
-		border-radius: 90% 0 90% 0;
-		background: linear-gradient(135deg, rgba(255, 194, 85, 0.92), rgba(185, 91, 39, 0.78));
-		filter: drop-shadow(0 0 5px rgba(255, 178, 81, 0.28));
-		opacity: 0;
-		transform: rotate(20deg);
-	}
-
-	.leaf-one {
-		left: 25%;
-		animation: leafDrift 13s ease-in-out infinite;
-	}
-
-	.leaf-two {
-		left: 55%;
-		animation: leafDrift 17s ease-in-out 3.2s infinite;
-	}
-
-	.leaf-three {
-		left: 80%;
-		animation: leafDrift 15s ease-in-out 6.8s infinite;
-	}
-
-	.companion-media:not([data-season='autumn']) .drifting-leaf {
-		display: none;
-	}
-
-	.snowflake {
-		top: -8%;
-		width: 0.36rem;
-		height: 0.36rem;
-		border-radius: 999px;
-		background: rgba(245, 252, 255, 0.9);
-		box-shadow: 0 0 9px rgba(196, 232, 255, 0.64);
-		opacity: 0;
-	}
-
-	.snow-one {
-		left: 20%;
-		animation: snowFall 14s linear infinite;
-	}
-
-	.snow-two {
-		left: 52%;
-		animation: snowFall 18s linear 2.8s infinite;
-	}
-
-	.snow-three {
-		left: 82%;
-		animation: snowFall 16s linear 6s infinite;
-	}
-
-	.companion-media:not([data-season='winter']) .snowflake {
-		display: none;
 	}
 
 	.distant-bird {
@@ -1435,7 +1248,7 @@
 		aspect-ratio: auto;
 	}
 
-	.companion-media img {
+	.companion-world-scene {
 		object-position: 50% 50%;
 	}
 
@@ -1455,22 +1268,16 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.companion-media img,
+		.companion-world-scene,
 		.sky-glow,
 		.lake-mist,
-		.meteor,
 		.water-shimmer,
-		.fox-breath,
-		.tree-foliage,
-		.drifting-leaf,
-		.snowflake,
 		.distant-bird,
-		.firefly,
 		.card-placeholder {
 			animation: none !important;
 		}
 
-		.companion-media img {
+		.companion-world-scene {
 			transform: none;
 			filter: none;
 		}
@@ -1574,13 +1381,6 @@
 		50% { opacity: 0.68; transform: translate3d(1.2%, 1%, 0) scale(1.035); }
 	}
 
-	@keyframes meteorDrift {
-		0%, 58% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-35deg); }
-		64% { opacity: 0.95; }
-		78% { opacity: 0; transform: translate3d(-34vw, 22vw, 0) rotate(-35deg); }
-		100% { opacity: 0; transform: translate3d(-34vw, 22vw, 0) rotate(-35deg); }
-	}
-
 	@keyframes lakeMistDrift {
 		0%, 100% { opacity: 0.08; transform: translate3d(-4%, 0, 0) scaleX(0.95); }
 		42% { opacity: 0.32; }
@@ -1591,47 +1391,6 @@
 		0%, 100% { opacity: 0; transform: translate3d(-8%, 0, 0) scaleX(0.72); }
 		35% { opacity: 0.54; }
 		68% { opacity: 0.12; transform: translate3d(18%, 0, 0) scaleX(1.08); }
-	}
-
-	@keyframes foxBreath {
-		0%, 100% { opacity: 0.38; transform: scale(0.96) translate3d(0, 0, 0); }
-		48% { opacity: 0.75; transform: scale(1.08) translate3d(-1.6%, -2%, 0); }
-	}
-
-	@keyframes foliageSwayLeft {
-		0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-		48% { transform: translate3d(1px, -1px, 0) rotate(0.7deg); }
-	}
-
-	@keyframes foliageSwayCentre {
-		0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-		52% { transform: translate3d(-1px, 0, 0) rotate(-0.5deg); }
-	}
-
-	@keyframes foliageSwayRight {
-		0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
-		46% { transform: translate3d(2px, -1px, 0) rotate(1.1deg); }
-	}
-
-	@keyframes fireflyFloat {
-		0%, 100% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.75); }
-		18% { opacity: 0.72; }
-		46% { opacity: 0.28; transform: translate3d(-1.4rem, -1.1rem, 0) scale(1); }
-		72% { opacity: 0.82; transform: translate3d(0.8rem, -2rem, 0) scale(0.9); }
-	}
-
-	@keyframes leafDrift {
-		0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(15deg); }
-		14% { opacity: 0.72; }
-		52% { opacity: 0.58; transform: translate3d(-2.4rem, 14rem, 0) rotate(96deg); }
-		100% { opacity: 0; transform: translate3d(1.8rem, 28rem, 0) rotate(176deg); }
-	}
-
-	@keyframes snowFall {
-		0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.8); }
-		12% { opacity: 0.62; }
-		88% { opacity: 0.48; }
-		100% { opacity: 0; transform: translate3d(2.2rem, 31rem, 0) scale(1.08); }
 	}
 
 	@keyframes birdGlide {
@@ -1730,6 +1489,11 @@
 		.card { padding: 1.5rem; }
 		.companion-card { padding: 0; }
 		.companion-media { aspect-ratio: 4 / 3; }
+		.companion-media :global(.progress-companion-pose) {
+			right: 8px;
+			bottom: -4px;
+			width: min(44%, 180px);
+		}
 		.companion-copy { padding: 1rem 1.25rem 1.2rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.insights-card,

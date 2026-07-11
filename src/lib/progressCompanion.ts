@@ -41,6 +41,7 @@ type ProgressCompanionPresenceInput = {
 };
 
 const COMPANION_IMAGE_VERSION = 'v=2';
+export const COMPANION_WORLD_SCENE_IMAGE = '/images/dashboard-lakeside-world.png';
 
 const DASHBOARD_COMPANION_IMAGE_PATHS = {
 	day: '/images/avatars/presets/fox-morning.webp',

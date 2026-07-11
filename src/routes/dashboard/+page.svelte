@@ -19,6 +19,7 @@
   } from 'lucide-svelte';
   import {
     getDashboardCompanionScene,
+    COMPANION_WORLD_SCENE_IMAGE,
     getProgressCompanionAnimal,
     getProgressCompanionArtId,
     getProgressCompanionHeroFocus,
@@ -29,7 +30,7 @@
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
-  const GENERIC_COMPANION_HERO_IMAGE = '/images/dashboard-lakeside-world.png';
+  const GENERIC_COMPANION_HERO_IMAGE = COMPANION_WORLD_SCENE_IMAGE;
 
   type DashboardData = {
     diaryPreview: {
@@ -1393,6 +1394,22 @@
     font-size: 0.9rem;
   }
 
+  .mp-dashboard .text-link {
+    min-height: 42px;
+    margin-top: 0.25rem;
+    padding: 0.68rem 0.85rem;
+    border: 1px solid #a7bfd6;
+    border-radius: 10px;
+    transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+  }
+
+  .mp-dashboard .text-link:hover {
+    background: #edf4fa;
+    border-color: #c4d5e4;
+    box-shadow: 0 4px 12px rgba(4, 17, 31, 0.18);
+    transform: translateY(-1px);
+  }
+
   .quote-card {
     position: relative;
     overflow: hidden;
@@ -1501,12 +1518,33 @@
 
   .mp-dashboard .card-button,
   .mp-dashboard .text-link {
-    border-color: rgba(160, 188, 220, 0.24);
-    background: rgba(255, 255, 255, 0.03);
-    color: #31473a;
+    border-color: #a7bfd6;
+    background: #dce8f3;
+    color: #19364b;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     opacity: 1;
+  }
+
+  .mp-dashboard .card-button {
+    min-height: 42px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.26) inset;
+    transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+  }
+
+  .mp-dashboard .card-button:hover {
+    background: #edf4fa;
+    border-color: #c4d5e4;
+    box-shadow: 0 4px 12px rgba(4, 17, 31, 0.18);
+    transform: translateY(-1px);
+  }
+
+  .mp-dashboard .card-button:focus-visible,
+  .mp-dashboard .text-link:focus-visible,
+  .mp-dashboard .explore-panel a:focus-visible,
+  .mp-dashboard .privacy-row a:focus-visible {
+    outline: 3px solid #dce8f3;
+    outline-offset: 3px;
   }
 
   .mp-dashboard .mood-card { background: linear-gradient(145deg, rgba(24, 57, 52, 0.92), rgba(14, 31, 42, 0.96)); }
@@ -1531,8 +1569,8 @@
     background: rgba(17, 27, 43, 0.88);
   }
   .explore-panel h2 { margin: 0 0 0.7rem; font-size: 1.05rem; }
-  .explore-panel a { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; padding:0.72rem 0; color:var(--mp-text); text-decoration:none; border-top:1px solid rgba(160,188,220,0.12); }
-  .explore-panel a:hover, .explore-panel a:focus-visible { color:var(--mp-green); }
+  .explore-panel a { display:flex; align-items:center; justify-content:space-between; gap:0.75rem; min-height:44px; margin:0.22rem 0; padding:0.62rem 0.75rem; border:1px solid rgba(160,188,220,0.32); border-radius:9px; background:rgba(255,255,255,0.045); color:var(--mp-text); text-decoration:none; transition:background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease; }
+  .explore-panel a:hover { border-color:#a7bfd6; background:rgba(220,232,243,0.12); box-shadow:0 3px 10px rgba(4,17,31,0.15); transform:translateX(2px); }
   .explore-panel span { display:grid; gap:0.15rem; }
   .explore-panel small { color:var(--mp-text-dim); font-size:0.78rem; }
 
@@ -1542,7 +1580,8 @@
   .privacy-row h2, .privacy-row p { margin:0; }
   .privacy-row h2 { font-size:0.98rem; }
   .privacy-row p { margin-top:0.25rem; color:var(--mp-text-dim); font-size:0.88rem; }
-  .privacy-row a { margin-left:auto; padding:0.65rem 0.9rem; border:1px solid var(--mp-card-border); border-radius:10px; color:var(--mp-text); text-decoration:none; white-space:nowrap; }
+  .privacy-row a { margin-left:auto; min-height:42px; display:inline-flex; align-items:center; padding:0.65rem 0.9rem; border:1px solid #a7bfd6; border-radius:10px; background:#dce8f3; color:#19364b; font-weight:700; text-decoration:none; white-space:nowrap; transition:background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease; }
+  .privacy-row a:hover { border-color:#c4d5e4; background:#edf4fa; box-shadow:0 4px 12px rgba(4,17,31,0.18); transform:translateY(-1px); }
 
   @media (max-width: 980px) {
     .dashboard-shell {
@@ -1786,7 +1825,10 @@
     .ambient-grass,
     .ambient-bird,
     .ambient-leaf,
-    .card-button {
+    .card-button,
+    .text-link,
+    .explore-panel a,
+    .privacy-row a {
       transition: none;
       animation: none !important;
       transform: none !important;
