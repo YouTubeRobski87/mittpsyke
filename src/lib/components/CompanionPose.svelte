@@ -4,21 +4,29 @@
 		getCompanionBasePose,
 		getCompanionOverlayPose,
 		getCompanionPoseDaypart,
+		getCompanionScenePosition,
 		getMsUntilNextCompanionPoseCheck
 	} from '$lib/companionPoseState';
-	import type { CompanionPose, CompanionPoseDaypart } from '$lib/companionPoseManifest';
+	import type {
+		CompanionPose,
+		CompanionPoseDaypart,
+		CompanionScenePosition
+	} from '$lib/companionPoseManifest';
 
 	let {
 		class: className = '',
 		decorative = false,
-		basePose: providedBasePose = null
+		basePose: providedBasePose = null,
+		position: providedPosition = null
 	}: {
 		class?: string;
 		decorative?: boolean;
 		basePose?: CompanionPose | null;
+		position?: CompanionScenePosition | null;
 	} = $props();
 
 	let localBasePose = $state<CompanionPose | null>(null);
+	let localPosition = $state<CompanionScenePosition | null>(null);
 	let overlayPose = $state<CompanionPose | null>(null);
 	let daypart = $state<CompanionPoseDaypart>('day');
 	let baseFrameIndex = $state(0);
@@ -28,18 +36,37 @@
 
 	const classes = $derived(`companion-pose ${className}`.trim());
 	const basePose = $derived(providedBasePose ?? localBasePose);
+	const position = $derived(providedPosition ?? localPosition);
 	const baseFrame = $derived(
 		basePose ? basePose.frames[baseFrameIndex % basePose.frames.length] : null
 	);
 	const overlayFrame = $derived(
 		overlayPose ? overlayPose.frames[overlayFrameIndex % overlayPose.frames.length] : null
 	);
+	const positionStyle = $derived(
+		position
+			? [
+					`--companion-x: ${position.x}%`,
+					`--companion-y: ${position.y}%`,
+					`--companion-scale: ${position.scale}`,
+					`--companion-z: ${position.zIndex}`,
+					`--shadow-width: ${position.shadow.width}%`,
+					`--shadow-height: ${position.shadow.height}%`,
+					`--shadow-blur: ${position.shadow.blur}px`,
+					`--shadow-opacity: ${position.shadow.opacity}`
+				].join('; ')
+			: ''
+	);
 
 	function refreshBasePose() {
 		const now = new Date();
 		daypart = getCompanionPoseDaypart(now);
 		if (!providedBasePose) {
-			localBasePose = getCompanionBasePose(now, window.localStorage);
+			const nextBasePose = getCompanionBasePose(now, window.localStorage);
+			localBasePose = nextBasePose;
+			localPosition = getCompanionScenePosition(nextBasePose, now, window.localStorage);
+		} else if (!providedPosition) {
+			localPosition = getCompanionScenePosition(providedBasePose, now, window.localStorage);
 		}
 		baseFrameIndex = 0;
 	}
@@ -127,11 +154,18 @@
 			document.removeEventListener('visibilitychange', updateActiveState);
 		};
 	});
+
+	$effect(() => {
+		if (!providedBasePose || providedPosition) return;
+		localPosition = getCompanionScenePosition(providedBasePose, new Date(), window.localStorage);
+	});
 </script>
 
 <figure
 	class={classes}
 	data-daypart={daypart}
+	data-position={position?.id}
+	style={positionStyle}
 	aria-hidden={decorative ? 'true' : undefined}
 	aria-label={decorative ? undefined : basePose?.alt}
 	role={decorative ? undefined : 'img'}
@@ -161,10 +195,16 @@
 
 	.companion-pose:global(.hero-companion-pose) {
 		position: absolute;
-		right: clamp(18px, 4.2vw, 64px);
-		bottom: clamp(-10px, -0.5vw, -2px);
-		z-index: 2;
+		left: var(--companion-x, 78%);
+		top: var(--companion-y, 82%);
+		z-index: var(--companion-z, 2);
 		width: min(39%, 310px);
+		transform: translate3d(-50%, -100%, 0) scale(var(--companion-scale, 1));
+		transform-origin: 50% 100%;
+		transition:
+			left 900ms ease,
+			top 900ms ease,
+			transform 900ms ease;
 	}
 
 	.companion-pose:global(.hero-companion-pose)::before {
@@ -173,11 +213,11 @@
 		z-index: -1;
 		left: 17%;
 		bottom: 9%;
-		width: 68%;
-		height: 8%;
+		width: var(--shadow-width, 68%);
+		height: var(--shadow-height, 8%);
 		border-radius: 50%;
-		background: rgb(43 39 27 / 0.22);
-		filter: blur(8px);
+		background: rgb(43 39 27 / var(--shadow-opacity, 0.22));
+		filter: blur(var(--shadow-blur, 8px));
 		transform: rotate(-4deg);
 		pointer-events: none;
 	}
@@ -228,6 +268,10 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
+		.companion-pose:global(.hero-companion-pose) {
+			transition: none;
+		}
+
 		.companion-pose-image {
 			animation: none !important;
 			transform: none !important;
@@ -236,8 +280,6 @@
 
 	@media (max-width: 620px) {
 		.companion-pose:global(.hero-companion-pose) {
-			right: 10px;
-			bottom: -4px;
 			width: min(50%, 220px);
 		}
 	}

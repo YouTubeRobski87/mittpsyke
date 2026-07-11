@@ -5,6 +5,25 @@ export type CompanionPoseFrame = {
 	src: string;
 };
 
+export type CompanionScenePositionId = 'foreground-right' | 'shore-near' | 'shore-far';
+
+export type CompanionScenePosition = {
+	id: CompanionScenePositionId;
+	x: number;
+	y: number;
+	scale: number;
+	zIndex: number;
+	shadow: {
+		width: number;
+		height: number;
+		blur: number;
+		opacity: number;
+	};
+	allowedPoseIds: string[];
+	dayparts: CompanionPoseDaypart[];
+	weight?: number;
+};
+
 export type CompanionPose = {
 	id: string;
 	role: CompanionPoseRole;
@@ -216,6 +235,68 @@ export const FOX_COMPANION_POSES = [
 ] satisfies CompanionPose[];
 
 export const COMPANION_POSES: readonly CompanionPose[] = FOX_COMPANION_POSES;
+
+export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
+	{
+		id: 'foreground-right',
+		x: 78,
+		y: 82,
+		scale: 1,
+		zIndex: 2,
+		shadow: {
+			width: 68,
+			height: 8,
+			blur: 8,
+			opacity: 0.22
+		},
+		allowedPoseIds: [
+			'idle',
+			'look-left',
+			'look-right',
+			'sit',
+			'sit-look-up',
+			'sniff',
+			'stretch',
+			'rest',
+			'sleep-curled',
+			'sleep-side'
+		],
+		dayparts: ['day', 'evening', 'night'],
+		weight: 2.2
+	},
+	{
+		id: 'shore-near',
+		x: 66,
+		y: 73,
+		scale: 0.72,
+		zIndex: 2,
+		shadow: {
+			width: 58,
+			height: 7,
+			blur: 7,
+			opacity: 0.16
+		},
+		allowedPoseIds: ['drink', 'sniff', 'sit', 'sit-look-up', 'look-left', 'look-right', 'evening-lake'],
+		dayparts: ['day', 'evening'],
+		weight: 1.25
+	},
+	{
+		id: 'shore-far',
+		x: 50,
+		y: 65,
+		scale: 0.46,
+		zIndex: 1,
+		shadow: {
+			width: 46,
+			height: 5,
+			blur: 6,
+			opacity: 0.1
+		},
+		allowedPoseIds: ['idle', 'look-left', 'look-right', 'sit', 'sit-look-up', 'evening-lake'],
+		dayparts: ['day', 'evening'],
+		weight: 0.85
+	}
+];
 
 export const COMPANION_POSE_CHANGE_MIN_MS = 20 * 60 * 1000;
 export const COMPANION_POSE_CHANGE_MAX_MS = 40 * 60 * 1000;
