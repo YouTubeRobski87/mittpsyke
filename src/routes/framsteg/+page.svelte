@@ -752,7 +752,9 @@
 					loading="lazy"
 					decoding="async"
 				/>
+				<span class="companion-ground-shadow" aria-hidden="true"></span>
 				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} decorative />
+				<span class="companion-foreground-edge" aria-hidden="true"></span>
 				<LivingWorld scene={livingWorldScene} class="progress-living-world" />
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
@@ -1048,6 +1050,12 @@
 
 	.companion-media {
 		position: relative;
+		--scene-background: 0;
+		--scene-midground: 1;
+		--scene-ambient: 2;
+		--scene-companion: 3;
+		--scene-foreground: 4;
+		--scene-overlay: 5;
 		width: 100%;
 		aspect-ratio: 16 / 10;
 		overflow: hidden;
@@ -1065,7 +1073,7 @@
 	.companion-media::before {
 		top: -2%;
 		right: -1%;
-		z-index: 1;
+		z-index: var(--scene-midground);
 		width: 30%;
 		height: 27%;
 		background:
@@ -1079,7 +1087,7 @@
 
 	.companion-media::after {
 		inset: auto 0 0;
-		z-index: 4;
+		z-index: var(--scene-foreground);
 		height: 47%;
 		background: linear-gradient(
 			180deg,
@@ -1090,6 +1098,8 @@
 	}
 
 	.companion-world-scene {
+		position: relative;
+		z-index: var(--scene-background);
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
@@ -1101,7 +1111,7 @@
 	}
 
 	.companion-media :global(.progress-living-world) {
-		z-index: 1;
+		z-index: var(--scene-ambient);
 		mix-blend-mode: screen;
 	}
 
@@ -1117,13 +1127,72 @@
 		position: absolute;
 		right: 21%;
 		bottom: 32%;
-		z-index: 2;
+		z-index: var(--scene-companion);
 		width: clamp(42px, 9%, 64px);
+		--companion-grade: saturate(0.7) contrast(0.88) brightness(0.94) sepia(0.14)
+			hue-rotate(-3deg);
+	}
+
+	.companion-media[data-time='evening'] :global(.progress-companion-pose) {
+		--companion-grade: saturate(0.68) contrast(0.88) brightness(0.88) sepia(0.18)
+			hue-rotate(-6deg);
+	}
+
+	.companion-media[data-time='night'] :global(.progress-companion-pose) {
+		--companion-grade: saturate(0.55) contrast(0.84) brightness(0.72) sepia(0.14)
+			hue-rotate(5deg);
+	}
+
+	.companion-media :global(.progress-companion-pose .companion-pose-image) {
+		filter: var(--companion-grade) drop-shadow(0 7px 8px rgb(37 31 20 / 0.1));
+		-webkit-mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.88) 89%, transparent 100%);
+		mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.88) 89%, transparent 100%);
+	}
+
+	.companion-ground-shadow,
+	.companion-foreground-edge {
+		position: absolute;
+		pointer-events: none;
+	}
+
+	.companion-ground-shadow {
+		left: 66.9%;
+		top: 64%;
+		z-index: var(--scene-ambient);
+		width: clamp(48px, 9.2%, 88px);
+		height: clamp(8px, 1.3vw, 14px);
+		border-radius: 52% 48% 58% 42%;
+		background:
+			radial-gradient(ellipse at 45% 58%, rgb(28 31 20 / 0.28), transparent 62%),
+			linear-gradient(88deg, transparent 0%, rgb(41 43 27 / 0.16) 32%, rgb(31 34 22 / 0.18) 58%, transparent 100%);
+		filter: blur(4.5px);
+		opacity: 0.58;
+		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-18deg) scaleX(1.18);
+		transform-origin: 44% 50%;
+		mix-blend-mode: multiply;
+	}
+
+	.companion-foreground-edge {
+		left: 66.6%;
+		top: 64.1%;
+		z-index: var(--scene-foreground);
+		width: clamp(58px, 9.4%, 92px);
+		height: clamp(18px, 3vw, 32px);
+		background:
+			radial-gradient(38% 20% at 26% 78%, rgb(58 67 43 / 0.38), transparent 72%),
+			radial-gradient(36% 18% at 72% 82%, rgb(84 86 59 / 0.26), transparent 74%),
+			linear-gradient(78deg, transparent 0 20%, rgb(61 81 46 / 0.34) 21% 23%, transparent 24%),
+			linear-gradient(96deg, transparent 0 39%, rgb(79 97 54 / 0.3) 40% 42%, transparent 43%),
+			linear-gradient(82deg, transparent 0 58%, rgb(50 70 42 / 0.34) 59% 61%, transparent 62%);
+		filter: blur(0.18px);
+		opacity: 0.68;
+		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-8deg);
+		mix-blend-mode: multiply;
 	}
 
 	.progress-ripple {
 		position: absolute;
-		z-index: 1;
+		z-index: var(--scene-ambient);
 		display: block;
 		width: clamp(34px, 6.5%, 58px);
 		aspect-ratio: 2.9 / 1;
@@ -1161,8 +1230,8 @@
 		width: 58%;
 		height: 6%;
 		border-radius: 50%;
-		background: rgb(43 39 27 / 0.18);
-		filter: blur(5px);
+		background: rgb(43 39 27 / 0.08);
+		filter: blur(3px);
 		transform: rotate(-4deg);
 		pointer-events: none;
 	}
@@ -1181,7 +1250,7 @@
 			linear-gradient(82deg, transparent 0 17%, rgb(86 103 61 / 0.4) 18% 19%, transparent 20%),
 			linear-gradient(98deg, transparent 0 42%, rgb(65 85 51 / 0.32) 43% 44%, transparent 45%),
 			linear-gradient(76deg, transparent 0 60%, rgb(91 109 65 / 0.36) 61% 62%, transparent 63%);
-		opacity: 0.62;
+		opacity: 0.36;
 		pointer-events: none;
 	}
 
@@ -1190,7 +1259,7 @@
 		left: clamp(1.25rem, 3.2vw, 2rem);
 		right: clamp(1.25rem, 24vw, 13rem);
 		bottom: clamp(1.15rem, 3vw, 2rem);
-		z-index: 5;
+		z-index: var(--scene-overlay);
 		padding: 0;
 		text-shadow: 0 2px 14px rgb(0 0 0 / 0.42);
 	}
@@ -1503,6 +1572,20 @@
 			right: 20%;
 			bottom: 31%;
 			width: clamp(38px, 10%, 58px);
+		}
+		.companion-ground-shadow {
+			left: 70.8%;
+			top: 64.1%;
+			width: clamp(42px, 14%, 68px);
+			height: 9px;
+			filter: blur(4px);
+			transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-16deg) scaleX(1.12);
+		}
+		.companion-foreground-edge {
+			left: 70.5%;
+			top: 64.2%;
+			width: clamp(52px, 17%, 82px);
+			height: clamp(18px, 6vw, 30px);
 		}
 		.companion-copy {
 			left: 1.2rem;

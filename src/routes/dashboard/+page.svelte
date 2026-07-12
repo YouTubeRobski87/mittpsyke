@@ -726,6 +726,12 @@
   .companion-hero {
 	grid-area: hero;
     position: relative;
+	--scene-background: 0;
+	--scene-midground: 1;
+	--scene-ambient: 2;
+	--scene-companion: 3;
+	--scene-foreground: 4;
+	--scene-overlay: 5;
 	min-height: 300px;
 	height: clamp(300px, 24vw, 360px);
     overflow: hidden;
@@ -754,7 +760,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: var(--scene-background);
     background-image: var(--hero-image);
     background-size: cover;
     /* Följ samma fokus som förgrundsbilden så den suddiga bakgrunden matchar */
@@ -800,7 +806,7 @@
     /* Fokus styrs per följeslagare via --hero-focus (standard: nedre högra tredjedelen där djuret sitter) */
     object-position: var(--hero-focus, 70% 64%);
     display: block;
-    z-index: 0;
+    z-index: var(--scene-background);
   }
 
   .companion-hero[data-companion='bear'] .companion-hero-scene {
@@ -819,11 +825,19 @@
     object-position: var(--hero-focus, 70% 64%);
   }
 
+  .companion-hero :global(.hero-living-world) {
+    z-index: var(--scene-ambient);
+  }
+
+  .companion-hero :global(.hero-companion-pose) {
+    z-index: calc(var(--companion-z, 2) + 1);
+  }
+
   .companion-hero::after {
     content: '';
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: var(--scene-midground);
     background:
       linear-gradient(
         90deg,
@@ -853,7 +867,7 @@
 
   .hero-copy {
     position: absolute;
-    z-index: 2;
+    z-index: var(--scene-overlay);
     left: clamp(24px, 4vw, 48px);
     top: clamp(36px, 6vw, 72px);
     max-width: min(22rem, 42%);
@@ -880,7 +894,7 @@
 
   .time-badge {
     position: absolute;
-    z-index: 2;
+    z-index: var(--scene-overlay);
     top: 20px;
     right: 20px;
     display: flex;

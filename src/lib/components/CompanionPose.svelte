@@ -214,14 +214,19 @@
 		content: '';
 		position: absolute;
 		z-index: -1;
-		left: 17%;
-		bottom: 9%;
+		left: 15%;
+		bottom: 7%;
 		width: var(--shadow-width, 68%);
 		height: var(--shadow-height, 8%);
-		border-radius: 50%;
-		background: rgb(43 39 27 / var(--shadow-opacity, 0.22));
+		border-radius: 52% 48% 58% 42%;
+		background:
+			radial-gradient(ellipse at 44% 56%, rgb(37 35 23 / 0.48), transparent 58%),
+			linear-gradient(88deg, transparent 0%, rgb(46 43 28 / 0.28) 30%, rgb(37 35 23 / 0.34) 56%, transparent 100%);
 		filter: blur(var(--shadow-blur, 8px));
-		transform: rotate(-4deg);
+		opacity: var(--shadow-opacity, 0.22);
+		transform: rotate(-7deg) skewX(-14deg) scaleX(1.14);
+		transform-origin: 44% 50%;
+		mix-blend-mode: multiply;
 		pointer-events: none;
 	}
 
@@ -234,15 +239,16 @@
 		bottom: 5%;
 		height: 18%;
 		background:
-			radial-gradient(34% 18% at 26% 78%, rgb(74 78 52 / 0.42), transparent 70%),
-			radial-gradient(26% 14% at 68% 84%, rgb(96 93 66 / 0.28), transparent 72%),
-			linear-gradient(82deg, transparent 0 14%, rgb(86 103 61 / 0.48) 15% 16%, transparent 17%),
-			linear-gradient(98deg, transparent 0 30%, rgb(65 85 51 / 0.4) 31% 32%, transparent 33%),
-			linear-gradient(76deg, transparent 0 45%, rgb(91 109 65 / 0.42) 46% 47%, transparent 48%),
-			linear-gradient(104deg, transparent 0 58%, rgb(67 86 52 / 0.34) 59% 60%, transparent 61%);
+			radial-gradient(34% 18% at 26% 78%, rgb(74 78 52 / 0.38), transparent 70%),
+			radial-gradient(26% 14% at 68% 84%, rgb(96 93 66 / 0.25), transparent 72%),
+			linear-gradient(82deg, transparent 0 14%, rgb(86 103 61 / 0.42) 15% 16%, transparent 17%),
+			linear-gradient(98deg, transparent 0 30%, rgb(65 85 51 / 0.35) 31% 32%, transparent 33%),
+			linear-gradient(76deg, transparent 0 45%, rgb(91 109 65 / 0.37) 46% 47%, transparent 48%),
+			linear-gradient(104deg, transparent 0 58%, rgb(67 86 52 / 0.3) 59% 60%, transparent 61%);
 		filter: blur(0.1px);
-		opacity: 0.74;
-		transform: rotate(-3deg);
+		opacity: 0.64;
+		transform: rotate(-5deg) skewX(-7deg);
+		mix-blend-mode: multiply;
 		pointer-events: none;
 	}
 
@@ -253,7 +259,9 @@
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
-		filter: var(--companion-grade) drop-shadow(0 16px 18px rgb(43 33 20 / 0.14));
+		filter: var(--companion-grade) drop-shadow(0 12px 14px rgb(43 33 20 / 0.1));
+		-webkit-mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.9) 89%, transparent 100%);
+		mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.9) 89%, transparent 100%);
 		transform-origin: 50% 78%;
 	}
 
