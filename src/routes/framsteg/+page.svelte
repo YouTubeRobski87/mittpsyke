@@ -754,7 +754,8 @@
 				/>
 				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} decorative />
 				<LivingWorld scene={livingWorldScene} class="progress-living-world" />
-			</div>
+				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
+				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
 			<div class="companion-copy">
 				<h2>Din följeslagare</h2>
 				<p>
@@ -762,6 +763,7 @@
 						? companionScene.anonymousCopy
 						: companionScene.copy}
 				</p>
+			</div>
 			</div>
 		</section>
 
@@ -1053,6 +1055,40 @@
 		isolation: isolate;
 	}
 
+	.companion-media::before,
+	.companion-media::after {
+		content: '';
+		position: absolute;
+		pointer-events: none;
+	}
+
+	.companion-media::before {
+		top: -2%;
+		right: -1%;
+		z-index: 1;
+		width: 30%;
+		height: 27%;
+		background:
+			radial-gradient(ellipse at 38% 28%, rgb(92 120 62 / 0.16), transparent 62%),
+			radial-gradient(ellipse at 72% 16%, rgb(131 151 82 / 0.13), transparent 60%);
+		filter: blur(1.5px);
+		opacity: 0.48;
+		transform-origin: 72% 0%;
+		animation: progressCanopyDrift 8.5s ease-in-out infinite alternate;
+	}
+
+	.companion-media::after {
+		inset: auto 0 0;
+		z-index: 4;
+		height: 47%;
+		background: linear-gradient(
+			180deg,
+			transparent 0%,
+			rgb(5 12 22 / 0.14) 32%,
+			rgb(5 12 22 / 0.68) 100%
+		);
+	}
+
 	.companion-world-scene {
 		width: 100%;
 		height: 100%;
@@ -1062,6 +1098,11 @@
 		transform: scale(1.018);
 		animation: companionWorldDrift 18s ease-in-out infinite alternate;
 		will-change: transform, filter;
+	}
+
+	.companion-media :global(.progress-living-world) {
+		z-index: 1;
+		mix-blend-mode: screen;
 	}
 
 	.companion-media[data-time='evening'] .companion-world-scene {
@@ -1078,6 +1119,37 @@
 		bottom: 32%;
 		z-index: 2;
 		width: clamp(42px, 9%, 64px);
+	}
+
+	.progress-ripple {
+		position: absolute;
+		z-index: 1;
+		display: block;
+		width: clamp(34px, 6.5%, 58px);
+		aspect-ratio: 2.9 / 1;
+		border: 1px solid rgb(238 251 248 / 0.3);
+		border-radius: 50%;
+		background: radial-gradient(ellipse at center, rgb(255 255 255 / 0.1), transparent 68%);
+		filter: blur(0.2px);
+		opacity: 0;
+		transform: translate3d(-50%, -50%, 0) scale(0.55);
+		pointer-events: none;
+		animation: progressWaterRipple 12.5s ease-out infinite;
+	}
+
+	.progress-ripple--one {
+		left: 51%;
+		top: 58%;
+		animation-delay: -2.4s;
+	}
+
+	.progress-ripple--two {
+		left: 60%;
+		top: 63%;
+		width: clamp(26px, 5%, 46px);
+		opacity: 0;
+		animation-duration: 16.5s;
+		animation-delay: -8.8s;
 	}
 
 	.companion-media :global(.progress-companion-pose)::before {
@@ -1114,18 +1186,25 @@
 	}
 
 	.companion-copy {
-		padding: 1rem 1.5rem 1.2rem;
+		position: absolute;
+		left: clamp(1.25rem, 3.2vw, 2rem);
+		right: clamp(1.25rem, 24vw, 13rem);
+		bottom: clamp(1.15rem, 3vw, 2rem);
+		z-index: 5;
+		padding: 0;
+		text-shadow: 0 2px 14px rgb(0 0 0 / 0.42);
 	}
 
 	.companion-copy h2 {
 		margin: 0 0 0.35rem;
-		font-size: 1.15rem;
-		color: var(--color-dashboard-text);
+		font-size: clamp(1.2rem, 2vw, 1.55rem);
+		color: #fffaf2;
 	}
 
 	.companion-copy p {
 		margin: 0;
-		color: var(--color-dashboard-text-muted);
+		max-width: 36rem;
+		color: rgb(247 244 234 / 0.86);
 		font-size: 0.95rem;
 		line-height: 1.5;
 	}
@@ -1178,7 +1257,7 @@
 	}
 
 	.companion-copy {
-		padding: 1rem 1.5rem 1.15rem;
+		right: clamp(1.5rem, 22vw, 13rem);
 	}
 }
 	@media (max-width: 980px) {
@@ -1194,13 +1273,20 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.companion-world-scene,
-		.card-placeholder {
+		.card-placeholder,
+		.companion-media::before,
+		.progress-ripple {
 			animation: none !important;
 		}
 
 		.companion-world-scene {
 			transform: none;
 			filter: none;
+		}
+
+		.companion-media::before,
+		.progress-ripple {
+			opacity: 0 !important;
 		}
 
 	}
@@ -1294,6 +1380,35 @@
 		}
 	}
 
+	@keyframes progressCanopyDrift {
+		0% {
+			transform: translate3d(0, 0, 0) rotate(0deg);
+		}
+		100% {
+			transform: translate3d(-2px, 1px, 0) rotate(-0.7deg);
+		}
+	}
+
+	@keyframes progressWaterRipple {
+		0%,
+		47% {
+			opacity: 0;
+			transform: translate3d(-50%, -50%, 0) scale(0.52);
+		}
+		52% {
+			opacity: 0.17;
+		}
+		70% {
+			opacity: 0.05;
+			transform: translate3d(-50%, -50%, 0) scale(1.18);
+		}
+		76%,
+		100% {
+			opacity: 0;
+			transform: translate3d(-50%, -50%, 0) scale(1.34);
+		}
+	}
+
 	/* Badge colors */
 	.icon-badge.week { background: var(--theme-accent, #436e8f); }
 	.icon-badge.milestone-leaf { background: linear-gradient(135deg, #7ea47c, #557c68); }
@@ -1383,12 +1498,19 @@
 		.card { padding: 1.5rem; }
 		.companion-card { padding: 0; }
 		.companion-media { aspect-ratio: 4 / 3; }
+		.companion-media::after { height: 56%; }
 		.companion-media :global(.progress-companion-pose) {
 			right: 20%;
 			bottom: 31%;
 			width: clamp(38px, 10%, 58px);
 		}
-		.companion-copy { padding: 1rem 1.25rem 1.2rem; }
+		.companion-copy {
+			left: 1.2rem;
+			right: 5.5rem;
+			bottom: 1.1rem;
+		}
+		.companion-copy h2 { font-size: 1.16rem; }
+		.companion-copy p { font-size: 0.88rem; line-height: 1.45; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.insights-card,
 		.heatmap-card { min-height: 18rem; }
