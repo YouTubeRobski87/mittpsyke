@@ -1074,10 +1074,10 @@
 
 	.companion-media :global(.progress-companion-pose) {
 		position: absolute;
-		right: clamp(16px, 5vw, 42px);
-		bottom: clamp(-9px, -0.8vw, -3px);
+		right: clamp(20px, 4vw, 36px);
+		bottom: clamp(-2px, -0.35vw, 3px);
 		z-index: 2;
-		width: min(36%, 205px);
+		width: min(31%, 180px);
 	}
 
 	.companion-media :global(.progress-companion-pose)::before {
@@ -1086,12 +1086,30 @@
 		z-index: -1;
 		left: 17%;
 		bottom: 9%;
-		width: 68%;
-		height: 8%;
+		width: 58%;
+		height: 6%;
 		border-radius: 50%;
-		background: rgb(43 39 27 / 0.2);
-		filter: blur(8px);
+		background: rgb(43 39 27 / 0.18);
+		filter: blur(5px);
 		transform: rotate(-4deg);
+		pointer-events: none;
+	}
+
+	.companion-media :global(.progress-companion-pose)::after {
+		content: '';
+		position: absolute;
+		z-index: 3;
+		left: 14%;
+		right: 8%;
+		bottom: 4%;
+		height: 16%;
+		background:
+			radial-gradient(32% 18% at 24% 80%, rgb(74 78 52 / 0.35), transparent 70%),
+			radial-gradient(25% 14% at 68% 86%, rgb(96 93 66 / 0.22), transparent 72%),
+			linear-gradient(82deg, transparent 0 17%, rgb(86 103 61 / 0.4) 18% 19%, transparent 20%),
+			linear-gradient(98deg, transparent 0 42%, rgb(65 85 51 / 0.32) 43% 44%, transparent 45%),
+			linear-gradient(76deg, transparent 0 60%, rgb(91 109 65 / 0.36) 61% 62%, transparent 63%);
+		opacity: 0.62;
 		pointer-events: none;
 	}
 
