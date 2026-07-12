@@ -222,16 +222,20 @@ export function getCompanionScenePosition(
 	return nextPosition;
 }
 
-export function getCompanionOverlayPose(daypart: CompanionPoseDaypart): CompanionPose | null {
+export function getCompanionOverlayPose(
+	daypart: CompanionPoseDaypart,
+	motion: CompanionPose['motion']
+): CompanionPose | null {
 	const availableOverlays = COMPANION_POSES.filter(
-		(pose) => pose.role === 'overlay' && pose.dayparts.includes(daypart)
+		(pose) => pose.role === 'overlay' && pose.dayparts.includes(daypart) && pose.motion === motion
 	);
+	if (!availableOverlays.length) return null;
 
-	for (const pose of availableOverlays) {
-		if (Math.random() < (pose.eventChance ?? 0)) return pose;
-	}
+	// Blinks are brief and should be dependable; sleep movements remain uncommon.
+	if (motion === 'blink') return availableOverlays[0];
+	if (motion === 'sleep' && Math.random() > 0.3) return null;
 
-	return null;
+	return availableOverlays[Math.floor(Math.random() * availableOverlays.length)];
 }
 
 export function getMsUntilNextCompanionPoseCheck(

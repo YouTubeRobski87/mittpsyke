@@ -27,6 +27,7 @@ export type CompanionScenePosition = {
 export type CompanionPose = {
 	id: string;
 	role: CompanionPoseRole;
+	motion?: 'blink' | 'gesture' | 'sleep';
 	dayparts: CompanionPoseDaypart[];
 	frames: CompanionPoseFrame[];
 	alt: string;
@@ -154,6 +155,7 @@ export const FOX_COMPANION_POSES = [
 	{
 		id: 'blink',
 		role: 'overlay',
+		motion: 'blink',
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox_idle_blink.png') }],
 		alt: '',
@@ -163,6 +165,7 @@ export const FOX_COMPANION_POSES = [
 	{
 		id: 'happy',
 		role: 'overlay',
+		motion: 'gesture',
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox_happy.png') }],
 		alt: '',
@@ -172,6 +175,7 @@ export const FOX_COMPANION_POSES = [
 	{
 		id: 'curious',
 		role: 'overlay',
+		motion: 'gesture',
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox_curious.png') }],
 		alt: '',
@@ -181,6 +185,7 @@ export const FOX_COMPANION_POSES = [
 	{
 		id: 'thoughtful',
 		role: 'overlay',
+		motion: 'gesture',
 		dayparts: ['day', 'evening'],
 		frames: [{ src: foxPoseSrc('fox_thoughtful.png') }],
 		alt: '',
@@ -190,6 +195,7 @@ export const FOX_COMPANION_POSES = [
 	{
 		id: 'listening',
 		role: 'overlay',
+		motion: 'gesture',
 		dayparts: ['day', 'evening'],
 		frames: [{ src: foxPoseSrc('fox_listening.png') }],
 		alt: '',
@@ -199,6 +205,7 @@ export const FOX_COMPANION_POSES = [
 	{
 		id: 'look-user',
 		role: 'overlay',
+		motion: 'gesture',
 		dayparts: ['day', 'evening'],
 		frames: [{ src: foxPoseSrc('fox_look_user.png') }],
 		alt: '',
@@ -208,6 +215,7 @@ export const FOX_COMPANION_POSES = [
 	{
 		id: 'yawn',
 		role: 'overlay',
+		motion: 'gesture',
 		dayparts: ['evening'],
 		frames: [{ src: foxPoseSrc('fox_yawn.png') }],
 		alt: '',
@@ -217,6 +225,7 @@ export const FOX_COMPANION_POSES = [
 	{
 		id: 'sleep-ear-twitch',
 		role: 'overlay',
+		motion: 'sleep',
 		dayparts: ['night'],
 		frames: [{ src: foxPoseSrc('fox_sleep_ear_twitch.png') }],
 		alt: '',
@@ -226,6 +235,7 @@ export const FOX_COMPANION_POSES = [
 	{
 		id: 'sleep-tail-move',
 		role: 'overlay',
+		motion: 'sleep',
 		dayparts: ['night'],
 		frames: [{ src: foxPoseSrc('fox_sleep_tail_move.png') }],
 		alt: '',

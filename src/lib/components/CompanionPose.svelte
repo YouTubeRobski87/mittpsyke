@@ -74,7 +74,9 @@
 	function maybePlayOverlay() {
 		if (overlayPose || !isActive || reducedMotion) return;
 
-		const nextOverlay = getCompanionOverlayPose(daypart);
+		const isSleeping = basePose?.id === 'sleep-curled' || basePose?.id === 'sleep-side';
+		const motion = isSleeping ? 'sleep' : Math.random() < 0.72 ? 'blink' : 'gesture';
+		const nextOverlay = getCompanionOverlayPose(daypart, motion);
 		if (!nextOverlay) return;
 
 		overlayPose = nextOverlay;
