@@ -193,6 +193,7 @@
 		aspect-ratio: 1;
 		margin: 0;
 		pointer-events: none;
+		--companion-grade: saturate(0.78) contrast(0.9) brightness(0.96) sepia(0.08);
 	}
 
 	.companion-pose:global(.hero-companion-pose) {
@@ -252,7 +253,7 @@
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
-		filter: drop-shadow(0 24px 28px rgb(43 33 20 / 0.2));
+		filter: var(--companion-grade) drop-shadow(0 16px 18px rgb(43 33 20 / 0.14));
 		transform-origin: 50% 78%;
 	}
 
@@ -265,11 +266,13 @@
 	}
 
 	.companion-pose[data-daypart='evening'] .companion-pose-image {
-		filter: drop-shadow(0 24px 28px rgb(24 25 44 / 0.24)) saturate(0.95) brightness(0.96);
+		filter: saturate(0.72) contrast(0.9) brightness(0.9) sepia(0.13)
+			drop-shadow(0 16px 18px rgb(24 25 44 / 0.2));
 	}
 
 	.companion-pose[data-daypart='night'] .companion-pose-image {
-		filter: drop-shadow(0 24px 28px rgb(9 13 27 / 0.34)) saturate(0.82) brightness(0.84);
+		filter: saturate(0.62) contrast(0.88) brightness(0.78) sepia(0.1)
+			drop-shadow(0 16px 18px rgb(9 13 27 / 0.28));
 	}
 
 	@keyframes companionPoseBreath {
