@@ -292,15 +292,15 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 	},
 	{
 		id: 'shore-far',
-		x: 50,
-		y: 65,
-		scale: 0.36,
+		x: 73,
+		y: 66,
+		scale: 0.26,
 		zIndex: 1,
 		shadow: {
-			width: 34,
-			height: 4,
-			blur: 5,
-			opacity: 0.07
+			width: 28,
+			height: 3,
+			blur: 4,
+			opacity: 0.05
 		},
 		allowedPoseIds: ['idle', 'look-left', 'look-right', 'sit', 'sit-look-up', 'evening-lake'],
 		dayparts: ['day', 'evening'],
