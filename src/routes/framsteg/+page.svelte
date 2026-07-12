@@ -1074,10 +1074,10 @@
 
 	.companion-media :global(.progress-companion-pose) {
 		position: absolute;
-		right: clamp(20px, 4vw, 36px);
-		bottom: clamp(-2px, -0.35vw, 3px);
+		right: 21%;
+		bottom: 32%;
 		z-index: 2;
-		width: min(31%, 180px);
+		width: clamp(42px, 9%, 64px);
 	}
 
 	.companion-media :global(.progress-companion-pose)::before {
@@ -1384,9 +1384,9 @@
 		.companion-card { padding: 0; }
 		.companion-media { aspect-ratio: 4 / 3; }
 		.companion-media :global(.progress-companion-pose) {
-			right: 8px;
-			bottom: -4px;
-			width: min(44%, 180px);
+			right: 20%;
+			bottom: 31%;
+			width: clamp(38px, 10%, 58px);
 		}
 		.companion-copy { padding: 1rem 1.25rem 1.2rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }

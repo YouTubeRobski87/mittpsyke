@@ -221,8 +221,8 @@
         <CompanionPose class="hero-companion-pose" />
         <LivingWorld scene={livingWorldScene} class="hero-living-world" />
         <div class="hero-copy">
-          <h2 id="companion-title">Välkommen tillbaka</h2>
-          <p>Din följeslagare finns kvar här när du återvänder.</p>
+          <h2 id="companion-title">Din följeslagare</h2>
+          <p>Den finns kvar här när du återvänder.</p>
           <span class="soft-heart">
             <Heart size={23} fill="currentColor" strokeWidth={0} aria-hidden="true" />
           </span>
