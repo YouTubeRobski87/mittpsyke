@@ -1138,14 +1138,14 @@
 	}
 
 	.progress-ripple--one {
-		left: 51%;
-		top: 58%;
+		left: 49%;
+		top: 56%;
 		animation-delay: -2.4s;
 	}
 
 	.progress-ripple--two {
-		left: 60%;
-		top: 63%;
+		left: 56%;
+		top: 59%;
 		width: clamp(26px, 5%, 46px);
 		opacity: 0;
 		animation-duration: 16.5s;
