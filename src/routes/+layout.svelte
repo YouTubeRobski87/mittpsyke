@@ -78,7 +78,9 @@
 	];
 
 	const signedInPortalNavItems: NavItem[] = [
+		{ href: '/dashboard', label: 'Mitt Hem' },
 		{ href: '/framsteg', label: 'Framsteg' },
+		{ href: '/dagbok/checkin', label: 'Dagbok' },
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
 
@@ -165,7 +167,11 @@
 			)
 		)
 	);
-	const isDashboardShell = $derived(page.url.pathname === '/dashboard' || page.url.pathname.startsWith('/dashboard/'));
+	const isProductPage = $derived(
+		page.url.pathname === '/dashboard' ||
+		page.url.pathname.startsWith('/dashboard/') ||
+		page.url.pathname === '/framsteg'
+	);
 
 	let user = $state<User | null>(null);
 	let displayName = $state<string | null>(null);
@@ -606,7 +612,6 @@
 	</main>
 {:else}
 	<a href="#main-content" class="skip-link">Hoppa till innehåll</a>
-	{#if !isDashboardShell}
 		<header
 			class="site-header sticky top-0 z-30 bg-[hsl(var(--background)/0.94)] supports-[backdrop-filter]:backdrop-blur"
 			class:chat-header={isChat}
@@ -621,8 +626,8 @@
 				>
 					<span class="brand-wordmark">MittPsyke</span>
 				</a>
-				<nav class="hidden lg:flex items-center gap-3" aria-label="Navigering">
-					{#each primaryNavItems as item}
+				<nav class="hidden lg:flex items-center gap-3" aria-label={user ? 'Din navigation' : 'Navigering'}>
+					{#each (user ? signedInPortalNavItems : primaryNavItems) as item}
 						{#if item.href === '/guider'}
 							<details bind:this={resourcesMenuRef} class="resources-dropdown">
 								<summary class="text-sm transition-opacity {isActive(item.href) || guideNavItems.some((guideItem) => isActive(guideItem.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">{item.label}</summary>
@@ -652,7 +657,7 @@
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
 				<nav class="mobile-quick-nav" aria-label="Snabbnavigering">
-					{#each primaryNavItems.slice(0, 3) as item}
+					{#each (user ? signedInPortalNavItems.slice(0, 2) : primaryNavItems.slice(0, 3)) as item}
 						<a
 							href={item.href}
 							class="mobile-quick-link"
@@ -748,7 +753,6 @@
 									{/if}
 
 									<div class="profile-panel-links" aria-label="Snabbval">
-										<a href="/dashboard" class="profile-panel-link" onclick={closeProfilePanel}>Mitt rum</a>
 										<a href="/dagbok/checkin" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
 										<a href="/chat" class="profile-panel-link" onclick={closeProfilePanel}>Starta chat</a>
 										<a href="/dashboard/installningar" class="profile-panel-link" onclick={closeProfilePanel}>Inställningar</a>
@@ -812,6 +816,15 @@
 
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden px-5 py-3" role="navigation" aria-label="Mobilmeny">
+				{#if user}
+					<p class="mobile-menu-section-title text-xs opacity-55">Din plats</p>
+					{#each signedInPortalNavItems as item}
+						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>
+							{item.label}
+						</a>
+					{/each}
+					<p class="mobile-menu-section-title text-xs opacity-55">Upptäck</p>
+				{/if}
 				{#each primaryNavItems as item}
 					<a
 						href={item.href}
@@ -831,12 +844,6 @@
 				{/each}
 				{#if user}
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
-					<p class="mobile-menu-section-title text-xs opacity-55">Profil</p>
-					{#each signedInPortalNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>
-							{item.label}
-						</a>
-					{/each}
 					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
@@ -866,14 +873,13 @@
 			</div>
 		{/if}
 		</header>
-	{/if}
 
 	<div class:is-chat-page={isChat}>
-		<main id="main-content" class={isDashboardShell ? 'app-shell-main' : 'mt-6'} class:chat-main={isChat}>
+		<main id="main-content" class={isProductPage ? 'app-shell-main' : 'mt-6'} class:chat-main={isChat}>
 			{@render children()}
 		</main>
 
-		{#if !isDashboardShell}
+		{#if !isProductPage}
 			<section class="site-disclaimer mt-6 px-5">
 				<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
 					MittPsyke ersätter inte vård. Vid akut fara ring 112 &middot; Vårdråd 1177.
@@ -941,7 +947,7 @@
 		{/if}
 	</div>
 
-	{#if !isDashboardShell}
+	{#if !isProductPage}
 		<CookieBanner />
 	{/if}
 {/if}

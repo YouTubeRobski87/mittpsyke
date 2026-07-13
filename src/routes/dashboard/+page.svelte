@@ -4,7 +4,6 @@
   import AccountTeaser from '$lib/components/AccountTeaser.svelte';
   import CompanionPose from '$lib/components/CompanionPose.svelte';
   import LivingWorld from '$lib/components/LivingWorld.svelte';
-  import UserAvatar from '$lib/components/UserAvatar.svelte';
   import {
     ArrowRight,
     BarChart3,
@@ -167,25 +166,6 @@
 
 <div class="mp-dashboard">
   <div class="dashboard-shell">
-    <header class="home-nav">
-      <a class="home-brand" href="/" aria-label="MittPsyke startsida"><Leaf size={25} fill="currentColor" /> <span>MittPsyke</span></a>
-      <nav class="home-links" aria-label="Mitt Hem-navigering">
-        <a href="/chat">Chatta</a>
-        <a href="/guider">Guider</a>
-        <a href="/blogg">Artiklar</a>
-        <a href="/anonyma-berattelser">Berättelser</a>
-        <a href="/om-mittpsyke">Om MittPsyke</a>
-      </nav>
-      <div class="home-nav-actions">
-        <a href="/sok" aria-label="Sök">⌕</a>
-        {#if !isAnonymous}
-          <a class="avatar-button home-nav-avatar" href="/dashboard/installningar" aria-label="Öppna inställningar">
-            <UserAvatar name={displayName ?? 'MittPsyke'} seed={displayName ?? 'mittpsyke-profil'} size="sm" decorative />
-          </a>
-        {/if}
-      </div>
-    </header>
-
     <main class="dashboard-main" aria-labelledby="dashboard-title">
       <header class="topbar">
         <div>
@@ -436,24 +416,6 @@
     display: block;
     min-height: 100vh;
   }
-
-  .home-nav {
-    display: flex;
-    align-items: center;
-    gap: 2.5rem;
-    min-height: 66px;
-    padding: 0 3rem;
-    border-bottom: 1px solid rgba(160, 188, 220, 0.14);
-    background: rgba(7, 14, 26, 0.8);
-  }
-
-  .home-brand { display: inline-flex; align-items: center; gap: 0.6rem; color: var(--mp-text); font-size: 1.35rem; font-weight: 800; text-decoration: none; }
-  .home-brand :global(svg) { color: var(--mp-green); }
-  .home-links { display: flex; align-items: center; gap: 2rem; }
-  .home-links a, .home-nav-actions > a { color: var(--mp-text); font-size: 0.92rem; text-decoration: none; opacity: 0.9; }
-  .home-links a:hover, .home-links a:focus-visible { color: var(--mp-green); }
-  .home-nav-actions { margin-left: auto; display: flex; align-items: center; gap: 1.25rem; }
-  .home-nav-avatar { width: 42px; height: 42px; background: transparent; border-color: rgba(160, 188, 220, 0.35); box-shadow: none; }
 
   .dashboard-main {
     display: flex;
