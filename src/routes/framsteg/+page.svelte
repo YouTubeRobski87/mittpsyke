@@ -11,6 +11,7 @@
 	import {
 		COMPANION_WORLD_SCENE_IMAGE,
 		getProgressCompanionDayState,
+		getProgressCompanionDayStateLabel,
 		getProgressCompanionSeason,
 		type ProgressCompanionDayState,
 		type ProgressCompanionSeason,
@@ -736,9 +737,10 @@
 							<AccountTeaser variant="progress" mode="overlay" />
 						</div>
 					{/if}
-	<div class="framsteg-layout">
-	<div class="framsteg-main">
-		<section class="card companion-card">
+					<section
+						class="companion-banner"
+						aria-label={`Följeslagarscen, ${getProgressCompanionDayStateLabel(companionScene.timeOfDay)}`}
+					>
 			<div
 				class="companion-media"
 				data-season={companionScene.season}
@@ -749,7 +751,7 @@
 					src={companionScene.image}
 					alt=""
 					aria-hidden="true"
-					loading="lazy"
+					loading="eager"
 					decoding="async"
 				/>
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
@@ -759,7 +761,8 @@
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
 			<div class="companion-copy">
-				<h2>Din följeslagare</h2>
+				<span class="companion-eyebrow">{getProgressCompanionDayStateLabel(companionScene.timeOfDay)}</span>
+				<h2>Din resa</h2>
 				<p>
 					{isAnonymous
 						? companionScene.anonymousCopy
@@ -767,7 +770,9 @@
 				</p>
 			</div>
 			</div>
-		</section>
+					</section>
+	<div class="framsteg-layout">
+	<div class="framsteg-main">
 
 		<!-- ── Aktivitetskarta ── -->
 		<section class="card heatmap-card" bind:this={heatmapCardEl}>
@@ -1043,9 +1048,11 @@
 		top: 1rem;
 	}
 
-	.companion-card {
-		padding: 0;
+	.companion-banner {
 		overflow: hidden;
+		border: 1px solid color-mix(in srgb, var(--color-dashboard-border) 82%, transparent);
+		border-radius: 14px;
+		background: #0d1727;
 	}
 
 	.companion-media {
@@ -1057,7 +1064,7 @@
 		--scene-foreground: 4;
 		--scene-overlay: 5;
 		width: 100%;
-		aspect-ratio: 16 / 10;
+		height: clamp(150px, 42vw, 190px);
 		overflow: hidden;
 		background: #0d1727;
 		isolation: isolate;
@@ -1264,9 +1271,19 @@
 		text-shadow: 0 2px 14px rgb(0 0 0 / 0.42);
 	}
 
+	.companion-eyebrow {
+		display: block;
+		margin-bottom: 0.2rem;
+		color: rgb(255 250 242 / 0.76);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
 	.companion-copy h2 {
 		margin: 0 0 0.35rem;
-		font-size: clamp(1.2rem, 2vw, 1.55rem);
+		font-size: clamp(1rem, 1.5vw, 1.18rem);
 		color: #fffaf2;
 	}
 
@@ -1274,8 +1291,8 @@
 		margin: 0;
 		max-width: 36rem;
 		color: rgb(247 244 234 / 0.86);
-		font-size: 0.95rem;
-		line-height: 1.5;
+		font-size: 0.84rem;
+		line-height: 1.4;
 	}
 
 	.summary-stats {
@@ -1312,13 +1329,8 @@
 	}
 
 	@media (min-width: 981px) {
-	.companion-card {
-		padding: 0;
-	}
-
 	.companion-media {
-		height: clamp(240px, 20vw, 280px);
-		aspect-ratio: auto;
+		height: clamp(150px, 13vw, 180px);
 	}
 
 	.companion-world-scene {
@@ -1565,9 +1577,7 @@
 		}
 
 		.card { padding: 1.5rem; }
-		.companion-card { padding: 0; }
-		.companion-media { aspect-ratio: 4 / 3; }
-		.companion-media::after { height: 56%; }
+		.companion-media::after { height: 62%; }
 		.companion-media :global(.progress-companion-pose) {
 			right: 20%;
 			bottom: 31%;
@@ -1592,8 +1602,8 @@
 			right: 5.5rem;
 			bottom: 1.1rem;
 		}
-		.companion-copy h2 { font-size: 1.16rem; }
-		.companion-copy p { font-size: 0.88rem; line-height: 1.45; }
+		.companion-copy h2 { font-size: 1rem; }
+		.companion-copy p { font-size: 0.8rem; line-height: 1.4; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.insights-card,
 		.heatmap-card { min-height: 18rem; }
