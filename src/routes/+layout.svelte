@@ -91,6 +91,22 @@
 	function isActive(href: string): boolean {
 		const path = page.url.pathname;
 		const normalizedHref = href.split('#')[0].split('?')[0];
+
+		if (normalizedHref === '/dashboard') {
+			return path === '/dashboard' ||
+				(path.startsWith('/dashboard/') && !path.startsWith('/dashboard/installningar'));
+		}
+
+		if (normalizedHref === '/dashboard/installningar') {
+			return path === '/dashboard/installningar';
+		}
+
+		if (normalizedHref === '/framsteg') return path === '/framsteg';
+
+		if (normalizedHref === '/dagbok/checkin') {
+			return path === '/dagbok' || path.startsWith('/dagbok/') || path === '/journalforing';
+		}
+
 		return normalizedHref === '/'
 			? path === '/'
 			: path === normalizedHref || path.startsWith(normalizedHref + '/');
@@ -617,7 +633,7 @@
 			class:chat-header={isChat}
 		>
 		<div class="site-header-inner flex items-center justify-between gap-2 px-5 py-3.5 md:gap-3">
-			<div class="flex min-w-0 flex-1 items-center gap-2 md:gap-4 lg:flex-none">
+			<div class="flex min-w-0 flex-1 items-center gap-2 md:gap-4 lg:gap-0 lg:flex-none">
 				<a
 					href="/"
 					class="brand-link min-w-0 self-center opacity-95 hover:opacity-100 transition-opacity"
@@ -626,7 +642,7 @@
 				>
 					<span class="brand-wordmark">MittPsyke</span>
 				</a>
-				<nav class="hidden lg:flex items-center gap-3" aria-label={user ? 'Din navigation' : 'Navigering'}>
+				<nav class="product-nav hidden lg:flex items-center gap-3" aria-label={user ? 'Din navigation' : 'Navigering'}>
 					{#each (user ? signedInPortalNavItems : primaryNavItems) as item}
 						{#if item.href === '/guider'}
 							<details bind:this={resourcesMenuRef} class="resources-dropdown">
@@ -1396,6 +1412,14 @@
 		letter-spacing: -0.04em;
 		line-height: 1;
 		white-space: nowrap;
+	}
+
+	@media (min-width: 1024px) {
+		.product-nav {
+			margin-left: clamp(1.75rem, 3vw, 3.5rem);
+			flex-shrink: 0;
+			white-space: nowrap;
+		}
 	}
 
 	.profile-trigger {
