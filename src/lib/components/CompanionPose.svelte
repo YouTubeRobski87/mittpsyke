@@ -8,11 +8,11 @@
 		getMsUntilNextCompanionPoseCheck
 	} from '$lib/companionPoseState';
 	import type {
+		CompanionId,
 		CompanionPose,
 		CompanionPoseDaypart,
 		CompanionScenePosition
 	} from '$lib/companionPoseManifest';
-	import { COMPANION_SCENE_POSITIONS } from '$lib/companionPoseManifest';
 
 	let {
 		class: className = '',
@@ -25,7 +25,7 @@
 		decorative?: boolean;
 		basePose?: CompanionPose | null;
 		position?: CompanionScenePosition | null;
-		companionId?: 'fox' | 'bear';
+		companionId?: CompanionId;
 	} = $props();
 
 	let localBasePose = $state<CompanionPose | null>(null);
@@ -38,13 +38,9 @@
 	let reducedMotion = $state(false);
 
 	const classes = $derived(`companion-pose ${className}`.trim());
-	const isBear = $derived(companionId === 'bear');
-	const bearFallbackPose = 'sitting';
-	const bearPosition =
-		COMPANION_SCENE_POSITIONS.find((position) => position.id === 'foreground-right') ??
-		COMPANION_SCENE_POSITIONS[0];
 	const basePose = $derived(providedBasePose ?? localBasePose);
-	const position = $derived(isBear ? bearPosition : providedPosition ?? localPosition);
+	const position = $derived(providedPosition ?? localPosition);
+	const sceneAdjustment = $derived(basePose?.sceneAdjustment);
 	const baseFrame = $derived(
 		basePose ? basePose.frames[baseFrameIndex % basePose.frames.length] : null
 	);
@@ -54,15 +50,14 @@
 	const positionStyle = $derived(
 		position
 			? [
-					`--companion-x: ${position.x}%`,
-					`--companion-y: ${position.y}%`,
-					`--companion-scale: ${position.scale}`,
+					`--companion-x: ${position.x + (sceneAdjustment?.x ?? 0)}%`,
+					`--companion-y: ${position.y + (sceneAdjustment?.y ?? 0)}%`,
+					`--companion-scale: ${position.scale * (sceneAdjustment?.scale ?? 1)}`,
 					`--companion-z: ${position.zIndex}`,
 					`--shadow-width: ${position.shadow.width}%`,
 					`--shadow-height: ${position.shadow.height}%`,
 					`--shadow-blur: ${position.shadow.blur}px`,
-					`--shadow-opacity: ${position.shadow.opacity}`,
-					`--companion-animal-scale: ${isBear ? 0.82 : 1}`
+					`--shadow-opacity: ${position.shadow.opacity}`
 				].join('; ')
 			: ''
 	);
@@ -70,13 +65,12 @@
 	function refreshBasePose() {
 		const now = new Date();
 		daypart = getCompanionPoseDaypart(now);
-		if (isBear) return;
 		if (!providedBasePose) {
-			const nextBasePose = getCompanionBasePose(now, window.localStorage);
+			const nextBasePose = getCompanionBasePose(now, window.localStorage, companionId);
 			localBasePose = nextBasePose;
-			localPosition = getCompanionScenePosition(nextBasePose, now, window.localStorage);
+			localPosition = getCompanionScenePosition(nextBasePose, now, window.localStorage, companionId);
 		} else if (!providedPosition) {
-			localPosition = getCompanionScenePosition(providedBasePose, now, window.localStorage);
+			localPosition = getCompanionScenePosition(providedBasePose, now, window.localStorage, companionId);
 		}
 		baseFrameIndex = 0;
 	}
@@ -86,7 +80,7 @@
 
 		const isSleeping = basePose?.id === 'sleep-curled' || basePose?.id === 'sleep-side';
 		const motion = isSleeping ? 'sleep' : Math.random() < 0.72 ? 'blink' : 'gesture';
-		const nextOverlay = getCompanionOverlayPose(daypart, motion);
+		const nextOverlay = getCompanionOverlayPose(daypart, motion, companionId);
 		if (!nextOverlay) return;
 
 		overlayPose = nextOverlay;
@@ -99,10 +93,6 @@
 
 	onMount(() => {
 		refreshBasePose();
-		// Björnen är ett avsiktligt statiskt scenval med fast, sittande fallback-pose.
-		// Den läser eller ändrar inte rävens pose- och positionstillstånd.
-		if (isBear) return;
-
 		let baseTimer: number | null = null;
 		let baseFrameTimer: number | null = null;
 		let overlayFrameTimer: number | null = null;
@@ -121,7 +111,7 @@
 			baseTimer = window.setTimeout(() => {
 				refreshBasePose();
 				scheduleBaseCheck();
-			}, getMsUntilNextCompanionPoseCheck(new Date(), window.localStorage));
+			}, getMsUntilNextCompanionPoseCheck(new Date(), window.localStorage, companionId));
 		};
 
 		const scheduleBaseFrame = () => {
@@ -172,35 +162,27 @@
 
 	$effect(() => {
 		if (!providedBasePose || providedPosition) return;
-		localPosition = getCompanionScenePosition(providedBasePose, new Date(), window.localStorage);
+		localPosition = getCompanionScenePosition(
+			providedBasePose,
+			new Date(),
+			window.localStorage,
+			companionId
+		);
 	});
 </script>
 
 <figure
 	class={classes}
 	data-companion={companionId}
-	data-motion={isBear ? 'static' : 'pose'}
 	data-daypart={daypart}
 	data-position={position?.id}
+	data-pose={basePose?.id}
 	style={positionStyle}
 	aria-hidden={decorative ? 'true' : undefined}
-	aria-label={decorative ? undefined : isBear ? 'Din följeslagare, björnen, sitter stilla.' : basePose?.alt}
+	aria-label={decorative ? undefined : basePose?.alt}
 	role={decorative ? undefined : 'img'}
 >
-	{#if isBear}
-		<span class="bear-scene-fallback" data-pose={bearFallbackPose} aria-hidden="true">
-			<svg viewBox="0 0 100 100" focusable="false" aria-hidden="true">
-				<ellipse class="bear-body" cx="50" cy="66" rx="28" ry="24" />
-				<circle class="bear-ear" cx="31" cy="38" r="11" />
-				<circle class="bear-ear" cx="69" cy="38" r="11" />
-				<circle class="bear-head" cx="50" cy="48" r="25" />
-				<ellipse class="bear-muzzle" cx="50" cy="58" rx="13" ry="9" />
-				<circle class="bear-eye" cx="41" cy="47" r="2.5" />
-				<circle class="bear-eye" cx="59" cy="47" r="2.5" />
-				<path class="bear-mouth" d="M45 62 C48 65 52 65 55 62" />
-			</svg>
-		</span>
-	{:else if baseFrame}
+	{#if baseFrame}
 		<img class="companion-pose-image companion-pose-base" src={baseFrame.src} alt="" decoding="async" />
 	{/if}
 	{#if overlayFrame}
@@ -310,25 +292,6 @@
 	.companion-pose-overlay {
 		animation: companionPoseOverlay 420ms ease both;
 	}
-
-	/* Avsiktlig statisk fallback. TODO: ersätt med frilagda björnposer när rätt assets finns. */
-	.bear-scene-fallback {
-		position: absolute;
-		inset: 0;
-		display: block;
-		filter: var(--companion-grade) drop-shadow(0 12px 14px rgb(43 33 20 / 0.1));
-		-webkit-mask-image: radial-gradient(ellipse at 50% 56%, #000 70%, rgb(0 0 0 / 0.9) 88%, transparent 100%);
-		mask-image: radial-gradient(ellipse at 50% 56%, #000 70%, rgb(0 0 0 / 0.9) 88%, transparent 100%);
-	}
-
-	.bear-scene-fallback svg { width: 100%; height: 100%; display: block; }
-	.bear-body, .bear-head, .bear-ear { fill: #836454; }
-	.bear-ear { fill: #6d4f43; }
-	.bear-muzzle { fill: #c7a98e; }
-	.bear-eye { fill: #2e2824; }
-	.bear-mouth { fill: none; stroke: #4a342d; stroke-width: 2.4; stroke-linecap: round; }
-	.bear-scene-fallback[data-pose='sitting'] .bear-body { transform: scale(0.88, 1.04); transform-origin: 50px 70px; }
-	.bear-scene-fallback[data-pose='sleeping'] { transform: translateY(13%) scale(1.12, 0.66); transform-origin: 50% 100%; }
 
 	.companion-pose[data-daypart='evening'] .companion-pose-image {
 		filter: saturate(0.72) contrast(0.9) brightness(0.9) sepia(0.13)

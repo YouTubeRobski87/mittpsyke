@@ -583,7 +583,11 @@
 			const now = new Date();
 			timeOfDay = getProgressCompanionDayState(now);
 			season = getProgressCompanionSeason(now);
-			companionBasePose = getCompanionBasePose(now, browser ? window.localStorage : null);
+			companionBasePose = getCompanionBasePose(
+				now,
+				browser ? window.localStorage : null,
+				sceneCompanionId
+			);
 			companionPoseId = companionBasePose.id;
 		};
 		updateCompanionTimeOfDay();
@@ -763,6 +767,7 @@
 				data-season={companionScene.season}
 				data-time={companionScene.timeOfDay}
 				data-companion={sceneCompanionId}
+				data-pose={companionBasePose?.id}
 			>
 				<img
 					class="companion-world-scene"
@@ -1162,6 +1167,16 @@
 		bottom: 30%;
 	}
 
+	.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
+		width: clamp(50px, 11.2%, 74px);
+		bottom: 27.8%;
+	}
+
+	.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-stretching']) {
+		right: 20.2%;
+		bottom: 28.8%;
+	}
+
 	.companion-media[data-companion='bear'] .companion-ground-shadow {
 		left: 66.6%;
 		top: 64.7%;
@@ -1169,6 +1184,16 @@
 		height: clamp(9px, 1.45vw, 15px);
 		opacity: 0.62;
 		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-18deg) scaleX(1.28);
+	}
+
+	.companion-media[data-companion='bear'][data-pose='bear-sleeping'] .companion-ground-shadow {
+		top: 65.2%;
+		width: clamp(62px, 12%, 106px);
+	}
+
+	.companion-media[data-companion='bear'][data-pose='bear-stretching'] .companion-ground-shadow {
+		left: 66.1%;
+		top: 65.1%;
 	}
 
 	.companion-media[data-time='evening'] :global(.progress-companion-pose) {
@@ -1618,6 +1643,11 @@
 		.companion-media[data-companion='bear'] :global(.progress-companion-pose) {
 			width: clamp(40px, 11%, 60px);
 			bottom: 30%;
+		}
+
+		.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
+			width: clamp(44px, 12%, 64px);
+			bottom: 28.5%;
 		}
 		.companion-ground-shadow {
 			left: 70.8%;

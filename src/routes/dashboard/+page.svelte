@@ -792,10 +792,6 @@
     z-index: calc(var(--companion-z, 2) + 1);
   }
 
-  .companion-hero[data-companion='bear'] :global(.hero-companion-pose) {
-    --companion-animal-scale: 0.82;
-  }
-
   .companion-hero::after {
     content: '';
     position: absolute;
