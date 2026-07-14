@@ -89,10 +89,10 @@ function poseHasAvailablePosition(daypart: CompanionPoseDaypart, pose: Companion
 
 function getFallbackPose(companionId: CompanionId, availablePoses: CompanionPose[]) {
 	return (
-		availablePoses[0] ??
 		COMPANION_POSES.find(
 			(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.id === 'bear-standing'
 		) ??
+		availablePoses[0] ??
 		COMPANION_POSES.find((pose) => pose.role === 'base' && belongsToCompanion(pose, companionId)) ??
 		COMPANION_POSES[0]
 	);
