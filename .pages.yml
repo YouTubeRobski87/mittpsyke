@@ -3,7 +3,7 @@
 media:
   - name: images
     label: Bilder
-    input: public/uploads
+    input: static/uploads
     output: /uploads
     categories: [image]
     extensions: [png, jpg, jpeg, webp, svg, avif, gif]
