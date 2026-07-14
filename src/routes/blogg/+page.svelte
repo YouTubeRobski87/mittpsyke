@@ -34,7 +34,7 @@
 			<ul class="article-grid">
 				{#each data.articles as article (article.id)}
 					<li>
-						<a href="/blogg/{article.slug}" class="article-card">
+						<a href={article.href} class="article-card">
 							{#if article.imageUrl}
 								<img
 									src={article.imageUrl}

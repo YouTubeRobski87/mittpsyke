@@ -4,6 +4,7 @@ import { tools } from '$lib/data/seo-architecture';
 import { portals } from '$lib/data/portals';
 import { seoSupportPagePaths } from '$lib/data/seo-support-pages';
 import { SORO_EMBED_SRC } from '$lib/soro';
+import { getArticleTopics, getPublishedArticles } from '$lib/server/article-content';
 import type { RequestHandler } from './$types';
 
 const STATIC_CONTENT_LASTMOD = '2026-03-29';
@@ -270,7 +271,26 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		}
 	];
 
-	const blogPages = [...fallbackBlogPages, ...(await loadSoroBlogEntries(fetch))];
+	const markdownTopicPages: SitemapEntry[] = getArticleTopics().map((topic) => ({
+		path: `/blogg/amne/${topic.slug}`,
+		lastmod: BLOG_LASTMOD,
+		changefreq: 'monthly',
+		priority: '0.6'
+	}));
+
+	const markdownArticlePages: SitemapEntry[] = getPublishedArticles().map((article) => ({
+		path: article.url,
+		lastmod: (article.updated ?? article.date).toISOString().slice(0, 10),
+		changefreq: 'monthly',
+		priority: '0.6'
+	}));
+
+	const blogPages = [
+		...fallbackBlogPages,
+		...markdownTopicPages,
+		...markdownArticlePages,
+		...(await loadSoroBlogEntries(fetch))
+	];
 
 	const urls = dedupeEntries([
 		...standalonePages,

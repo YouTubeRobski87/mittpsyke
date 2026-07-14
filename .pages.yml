@@ -1,0 +1,84 @@
+# PagesCMS skriver Markdown/JSON till detta repo. SvelteKit validerar samma
+# frontmatter i src/lib/server/article-content.ts vid build och på serversidan.
+media:
+  - name: images
+    label: Bilder
+    input: public/uploads
+    output: /uploads
+    categories: [image]
+    extensions: [png, jpg, jpeg, webp, svg, avif, gif]
+    rename: safe
+
+content:
+  - name: articles
+    label: Artiklar
+    type: collection
+    path: src/content/articles
+    format: yaml-frontmatter
+    subfolders: true
+    filename: "{fields.collection}/{primary}.md"
+    view:
+      fields: [title, date, draft]
+      primary: title
+      sort: [date, title]
+      search: [title, description]
+      default: { sort: date, order: desc }
+    fields:
+      - name: type
+        label: Typ
+        type: select
+        default: article
+        options:
+          values:
+            - { name: article, label: Artikel }
+            - { name: guide, label: Guide }
+      - { name: title, label: Titel, type: string, required: true }
+      - { name: description, label: Beskrivning, type: text, required: true }
+      - { name: date, label: Publicerad, type: date, required: true, options: { format: "yyyy-MM-dd", time: false } }
+      - { name: updated, label: Uppdaterad, type: date, options: { format: "yyyy-MM-dd", time: false } }
+      - { name: author, label: Författare, type: string, required: true }
+      - name: collection
+        label: Ämne
+        type: reference
+        required: true
+        options:
+          collection: article-topics
+          value: "{fields.slug}"
+          label: "{fields.label}"
+          search: [label, slug]
+      - { name: tags, label: Taggar, type: string, list: true }
+      - { name: readingTime, label: Lästid, type: string }
+      - { name: references, label: Källor, type: text, list: true }
+      - name: relatedArticles
+        label: Relaterade artiklar
+        type: object
+        list:
+          collapsible: { collapsed: true, summary: "{fields.title}" }
+        fields:
+          - { name: title, label: Titel, type: string }
+          - { name: url, label: URL, type: string }
+      - { name: draft, label: Utkast, type: boolean, default: false }
+      - { name: body, label: Innehåll, type: rich-text }
+
+  - name: article-topics
+    label: Artikelämnen
+    type: collection
+    path: src/content/article-topics
+    format: json
+    filename: "{fields.slug}.json"
+    view:
+      fields: [label, slug, order]
+      primary: label
+      sort: [order, label]
+      default: { sort: order, order: asc }
+    fields:
+      - { name: slug, label: Slug, type: string, required: true }
+      - { name: label, label: Namn, type: string, required: true }
+      - { name: description, label: Beskrivning, type: text, required: true }
+      - { name: icon, label: Ikon, type: string, required: true }
+      - name: color
+        label: Färg
+        type: select
+        options:
+          values: [red, green, rose, sky, teal, lime, amber, pink, blue, violet, cyan, indigo, orange]
+      - { name: order, label: Ordning, type: number, required: true }

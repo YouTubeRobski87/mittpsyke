@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import { getArticleDateLabel, getPublishedArticles } from '$lib/server/article-content';
 import { normalizeSoroArticleSlug, fetchSoroArticles } from '$lib/server/soro-articles';
 import type { PageServerLoad } from './$types';
 
@@ -84,7 +85,21 @@ export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 		throw redirect(302, buildPagePath(url, 1));
 	}
 
-	const { articles, loadError } = await fetchSoroArticles(fetch);
+	const markdownArticles = getPublishedArticles().map((article) => ({
+		id: `markdown-${article.collection}-${article.slug}`,
+		title: article.title,
+		slug: article.slug,
+		excerpt: article.description,
+		date: getArticleDateLabel(article),
+		isoDate: article.date.toISOString(),
+		imageUrl: null,
+		href: article.url
+	}));
+	const { articles: soroArticles, loadError } = await fetchSoroArticles(fetch);
+	const articles = [
+		...markdownArticles,
+		...soroArticles.map((article) => ({ ...article, href: `/blogg/${article.slug}` }))
+	].sort((a, b) => Date.parse(b.isoDate) - Date.parse(a.isoDate));
 	const totalArticles = articles.length;
 	const totalPages = Math.max(1, Math.ceil(totalArticles / ARTICLES_PER_PAGE));
 	const currentPage = Math.min(requestedPage, totalPages);
@@ -115,6 +130,6 @@ export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 			nextPageHref: currentPage < totalPages ? buildPagePath(url, currentPage + 1) : null,
 			pageItems: buildPageItems(url, currentPage, totalPages)
 		},
-		loadError
+		loadError: loadError && markdownArticles.length === 0
 	};
 };
