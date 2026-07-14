@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import CompanionAvatar from '$lib/components/CompanionAvatar.svelte';
+	import CompanionSelector from '$lib/components/CompanionSelector.svelte';
 	import { supabase } from '$lib/supabase';
 	import {
 		getSensitiveConsentRecord,
@@ -18,8 +19,7 @@
 	import { THEME_STORAGE_KEY } from '$lib/theme';
 	import {
 	getProgressCompanionAnimal,
-	PROGRESS_COMPANION_ANIMALS,
-	readProgressCompanionFromMetadata,
+		readProgressCompanionFromMetadata,
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
 
@@ -32,7 +32,7 @@
 	let nameMessage = $state('');
 
 	// Personalization
-	let progressCompanion = $state<ProgressCompanionSelection | null>(null);
+	let progressCompanion = $state<ProgressCompanionSelection>({ id: 'fox' });
 	let companionSaving = $state(false);
 	let companionMessage = $state('');
 	let companionMessageType = $state<'success' | 'error'>('success');
@@ -78,9 +78,6 @@
 		{ value: 'chat',   label: 'Chatten' },
 	];
 	const selectedCompanion = $derived(getProgressCompanionAnimal(progressCompanion));
-	const companionChoices = PROGRESS_COMPANION_ANIMALS.filter(
-		(companion) => companion.id === 'fox' || companion.id === 'bear'
-	);
 
 	function normalizeSwedishMobileNumber(value: string): string | null {
 		const compact = value.trim().replace(/[\s().-]/g, '');
@@ -321,7 +318,7 @@
 		companionSaving = false;
 
 		if (error) {
-			progressCompanion = previousCompanion ?? { id: 'fox' };
+			progressCompanion = previousCompanion;
 			companionMessage = 'Kunde inte spara ditt val just nu. Försök igen.';
 			companionMessageType = 'error';
 			return;
@@ -449,6 +446,14 @@
 	/>
 
 	<div class="settings-page auth-shell">
+		<CompanionSelector
+			selection={progressCompanion}
+			saving={companionSaving}
+			message={companionMessage}
+			messageType={companionMessageType}
+			onselect={selectCompanion}
+		/>
+
 		{#if loading}
 			<p class="loading-copy">Laddar inställningar...</p>
 		{:else}
@@ -491,32 +496,6 @@
 			<h2>Personalisera portalen</h2>
 			<p class="field-hint">Välj tema, mål och vilket kort du vill se på startsidan. Du kan ändra när du vill.</p>
 
-			<!-- Companion profile -->
-			<section class="companion-selection" aria-labelledby="companion-heading">
-				<h3 id="companion-heading">Välj följeslagare</h3>
-				<div class="companion-choice-grid" role="radiogroup" aria-label="Välj följeslagare">
-				{#each companionChoices as companion}
-					<button
-						type="button"
-						role="radio"
-						class="companion-choice"
-						class:companion-choice-active={progressCompanion?.id === companion.id}
-						onclick={() => selectCompanion(companion.id as 'fox' | 'bear')}
-						aria-checked={progressCompanion?.id === companion.id}
-						disabled={companionSaving}
-					>
-						<CompanionAvatar selection={{ id: companion.id }} size="lg" decorative animated={false} />
-						<span><strong>{companion.name}</strong><small>{companion.temperament}</small></span>
-						{#if progressCompanion?.id === companion.id}
-							<span class="companion-active-badge">Vald</span>
-						{/if}
-					</button>
-				{/each}
-				</div>
-				{#if companionMessage}
-					<p class="feedback {companionMessageType}" aria-live="polite">{companionMessage}</p>
-				{/if}
-			</section>
 			<div class="companion-profile-card">
 				<CompanionAvatar selection={progressCompanion} size="xl" decorative animated={false} />
 				<div class="companion-profile-copy">
@@ -935,63 +914,6 @@
 		background: hsl(var(--surface));
 	}
 
-	.companion-selection {
-		margin-top: 1rem;
-	}
-
-	.companion-selection h3 {
-		margin: 0 0 0.4rem;
-		font-family: var(--font-body);
-		font-size: 0.95rem;
-		font-weight: 650;
-	}
-
-	.companion-choice-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 0.6rem;
-		margin-bottom: 0.75rem;
-	}
-
-	.companion-choice {
-		display: flex;
-		align-items: center;
-		gap: 0.65rem;
-		min-width: 0;
-		padding: 0.7rem;
-		border: 1px solid hsl(var(--border));
-		border-radius: 12px;
-		background: hsl(var(--surface));
-		color: inherit;
-		text-align: left;
-		cursor: pointer;
-	}
-
-	.companion-choice:disabled {
-		cursor: wait;
-	}
-
-	.companion-choice-active {
-		border-color: hsl(var(--primary));
-		box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.25);
-		background: hsl(var(--surface-soft));
-	}
-
-	.companion-choice span { min-width: 0; display: grid; gap: 0.12rem; }
-	.companion-choice strong { font-size: 0.9rem; }
-	.companion-choice small { color: hsl(var(--muted-foreground)); font-size: 0.76rem; line-height: 1.25; }
-
-	.companion-active-badge {
-		flex: 0 0 auto;
-		padding: 0.2rem 0.45rem;
-		border-radius: 999px;
-		background: hsl(var(--primary));
-		color: hsl(var(--primary-foreground));
-		font-family: var(--font-body);
-		font-size: 0.72rem;
-		font-weight: 650;
-	}
-
 	.companion-profile-copy {
 		display: grid;
 		gap: 0.18rem;
@@ -1199,8 +1121,6 @@
 			border-radius: 12px;
 			padding: 0.65rem;
 		}
-
-		.companion-choice-grid { grid-template-columns: 1fr; }
 
 		.option-list.widget-row {
 			flex-direction: column;
