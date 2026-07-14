@@ -81,6 +81,7 @@
 		{ href: '/dashboard', label: 'Mitt Hem' },
 		{ href: '/framsteg', label: 'Framsteg' },
 		{ href: '/dagbok/checkin', label: 'Dagbok' },
+		{ href: '/blogg', label: 'Artiklar' },
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
 
