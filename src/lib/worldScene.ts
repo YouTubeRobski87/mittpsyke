@@ -47,6 +47,7 @@ export type LivingWorldEvent = {
 export type LivingWorldScene = {
 	season: ProgressCompanionSeason;
 	timeOfDay: ProgressCompanionDayState;
+	wind: number;
 	effects: LivingWorldEffect[];
 	events: LivingWorldEvent[];
 	features: Record<LivingWorldEffectKind, boolean>;
@@ -56,6 +57,7 @@ type LivingWorldSceneInput = {
 	date?: Date;
 	season?: ProgressCompanionSeason;
 	timeOfDay?: ProgressCompanionDayState;
+	wind?: number;
 	features?: Partial<Record<LivingWorldEffectKind, boolean>>;
 };
 
@@ -123,6 +125,19 @@ const baseEffects: LivingWorldEffect[] = [
 		durationMs: 146_000,
 		delayMs: -44_000,
 		opacity: 0.12
+	},
+	{
+		id: 'water-surface',
+		kind: 'water',
+		enabled: true,
+		className: 'water-surface',
+		x: 0,
+		y: 46,
+		width: 72,
+		height: 27,
+		durationMs: 96_000,
+		delayMs: -34_000,
+		opacity: 0.14
 	},
 	{
 		id: 'grass-left',
@@ -220,6 +235,7 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 	const date = input.date ?? new Date();
 	const season = input.season ?? getProgressCompanionSeason(date);
 	const timeOfDay = input.timeOfDay ?? getProgressCompanionDayState(date);
+	const wind = Math.min(Math.max(input.wind ?? 0.18, 0), 1);
 	const isDaylight = timeOfDay === 'morning' || timeOfDay === 'day';
 	const features = { ...ALL_FEATURES, ...input.features };
 	const mistOpacity = getMistOpacity(timeOfDay);
@@ -244,5 +260,5 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 			(event.kind !== 'leaf' || season === 'autumn')
 	}));
 
-	return { season, timeOfDay, effects, events, features };
+	return { season, timeOfDay, wind, effects, events, features };
 }
