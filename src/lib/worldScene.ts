@@ -83,9 +83,9 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 9,
 		width: 28,
 		height: 9,
-		durationMs: 132_000,
+		durationMs: 84_000,
 		delayMs: -18_000,
-		opacity: 0.13
+		opacity: 0.24
 	},
 	{
 		id: 'cloud-front',
@@ -96,9 +96,9 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 15,
 		width: 22,
 		height: 7,
-		durationMs: 164_000,
+		durationMs: 112_000,
 		delayMs: -61_000,
-		opacity: 0.1
+		opacity: 0.18
 	},
 	{
 		id: 'mist-one',
@@ -135,9 +135,9 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 46,
 		width: 72,
 		height: 27,
-		durationMs: 96_000,
+		durationMs: 64_000,
 		delayMs: -34_000,
-		opacity: 0.14
+		opacity: 0.26
 	},
 	{
 		id: 'grass-left',
@@ -148,9 +148,9 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 70,
 		width: 20,
 		height: 24,
-		durationMs: 47_000,
+		durationMs: 28_000,
 		delayMs: -7_000,
-		opacity: 0.18
+		opacity: 0.3
 	},
 	{
 		id: 'grass-bank',
@@ -161,9 +161,9 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 63,
 		width: 23,
 		height: 28,
-		durationMs: 61_000,
+		durationMs: 36_000,
 		delayMs: -20_000,
-		opacity: 0.16
+		opacity: 0.24
 	},
 	{
 		id: 'canopy-right',
@@ -174,9 +174,9 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 0,
 		width: 24,
 		height: 22,
-		durationMs: 79_000,
+		durationMs: 44_000,
 		delayMs: -31_000,
-		opacity: 0.11
+		opacity: 0.2
 	}
 ];
 

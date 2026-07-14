@@ -167,7 +167,7 @@
 <style>
 	.living-world,
 	.world-effect { position: absolute; pointer-events: none; }
-	.living-world { inset: 0; z-index: 1; overflow: hidden; contain: layout paint style; isolation: isolate; mix-blend-mode: screen; }
+	.living-world { inset: 0; z-index: 1; overflow: hidden; contain: layout paint style; isolation: isolate; }
 	.world-effect { left: var(--x, 0); top: var(--y, 0); width: var(--w, auto); height: var(--h, auto); opacity: 0; will-change: transform, opacity; }
 	.is-paused .world-effect { animation-play-state: paused !important; }
 
@@ -181,7 +181,7 @@
 	.canopy-right { transform-origin: 70% 0%; background: radial-gradient(ellipse at 40% 15%, rgba(133, 154, 80, 0.2), transparent 60%), radial-gradient(ellipse at 72% 35%, rgba(87, 126, 74, 0.16), transparent 62%); filter: blur(1px); }
 
 	.world-water { border-radius: 50%; border: 1px solid rgba(235, 248, 246, 0.42); background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent 66%); filter: blur(0.25px); }
-	.water-surface { border: 0; border-radius: 0; background: repeating-linear-gradient(176deg, transparent 0 10%, rgba(235, 248, 246, 0.2) 13%, transparent 18% 29%); filter: blur(1.4px); mix-blend-mode: soft-light; opacity: var(--opacity, 0.14); transform-origin: 50% 50%; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 80%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 80%, transparent); animation: waterSurfaceDrift var(--duration, 96000ms) ease-in-out var(--delay, 0ms) infinite alternate; }
+	.water-surface { border: 0; border-radius: 0; background: repeating-linear-gradient(176deg, transparent 0 10%, rgba(235, 248, 246, 0.34) 13%, transparent 18% 29%); filter: blur(0.65px); opacity: var(--opacity, 0.26); transform-origin: 50% 50%; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 80%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 80%, transparent); animation: waterSurfaceDrift var(--duration, 64000ms) ease-in-out var(--delay, 0ms) infinite alternate; }
 	.world-event-water { transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 0.64)); animation: waterRing var(--duration, 4800ms) ease-out both; }
 	.world-bird { transform: translate3d(0, 0, 0) scale(var(--scale, 0.75)); }
 	.world-bird::before, .world-bird::after { content: ''; position: absolute; top: 34%; width: 50%; height: 42%; border-top: 1.5px solid rgba(36, 49, 45, 0.42); border-radius: 999px 999px 0 0; }
@@ -199,8 +199,8 @@
 	@keyframes worldLightShift { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(2.2%, 1.6%, 0) scale(1.035); } }
 	@keyframes cloudDrift { 0%, 8%, 100% { opacity: 0; transform: translate3d(-10%, 0, 0) scale(var(--scale, 1)); } 18%, 72% { opacity: var(--opacity, 0.1); } 86% { opacity: 0; transform: translate3d(calc(12% + (28% * var(--world-wind, 0.18))), -3%, 0) scale(var(--scale, 1)); } }
 	@keyframes mistDrift { 0%, 100% { opacity: calc(var(--opacity, 0.14) * 0.34); transform: translate3d(-4%, 0, 0) scaleX(0.94); } 48% { opacity: var(--opacity, 0.14); } 74% { opacity: calc(var(--opacity, 0.14) * 0.62); transform: translate3d(5%, -4%, 0) scaleX(1.08); } }
-	@keyframes waterSurfaceDrift { 0%, 24% { transform: translate3d(calc(-0.5% * var(--world-wind, 0.18)), 0, 0) scaleX(1.01); } 62%, 100% { transform: translate3d(calc(2% * var(--world-wind, 0.18)), -0.35%, 0) scaleX(1.025); } }
-	@keyframes foliageBreathe { 0%, 24%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); } 58% { transform: rotate(calc(0.9deg * var(--world-wind, 0.18))) translate3d(calc(0.7% * var(--world-wind, 0.18)), -0.35%, 0); } }
+	@keyframes waterSurfaceDrift { 0%, 24% { transform: translate3d(-0.55%, 0, 0) scaleX(1.01); } 62%, 100% { transform: translate3d(calc(1.2% + (0.7% * var(--world-wind, 0.18))), -0.35%, 0) scaleX(1.025); } }
+	@keyframes foliageBreathe { 0%, 24%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); } 58% { transform: rotate(calc(0.9deg + (1.2deg * var(--world-wind, 0.18)))) translate3d(calc(0.7% * var(--world-wind, 0.18)), -0.35%, 0); } }
 	@keyframes waterRing { 0% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 0.64)); } 16% { opacity: var(--opacity, 0.16); } 86% { opacity: calc(var(--opacity, 0.16) * 0.16); transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 1.25)); } 100% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 1.34)); } }
 	@keyframes birdGlide { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(var(--scale, 0.75)); } 12% { opacity: var(--opacity, 0.18); } 82% { opacity: calc(var(--opacity, 0.18) * 0.65); transform: translate3d(92vw, -2.2rem, 0) scale(var(--scale, 0.75)); } 100% { opacity: 0; transform: translate3d(108vw, -2.8rem, 0) scale(var(--scale, 0.75)); } }
 	@keyframes butterflyPass { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(var(--scale, 1)) rotate(-5deg); } 12% { opacity: var(--opacity, 0.24); } 80% { opacity: calc(var(--opacity, 0.24) * 0.72); transform: translate3d(18vw, -4.4rem, 0) scale(var(--scale, 1)) rotate(8deg); } 100% { opacity: 0; transform: translate3d(26vw, -3.2rem, 0) scale(var(--scale, 1)) rotate(-3deg); } }

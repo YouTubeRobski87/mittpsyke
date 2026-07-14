@@ -1119,7 +1119,6 @@
 
 	.companion-media :global(.progress-living-world) {
 		z-index: var(--scene-ambient);
-		mix-blend-mode: screen;
 	}
 
 	.companion-media[data-time='evening'] .companion-world-scene {
