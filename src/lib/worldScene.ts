@@ -72,6 +72,17 @@ const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
 	cloud: true
 };
 
+// Pausat tills scenen har separata, transparenta assets för vatten, moln och lövverk.
+// De tidigare CSS-lagren konkurrerade visuellt med den illustrerade bakgrunden utan att
+// ge en pålitligt synlig rörelse i faktisk rendering. Behåll definitionerna så att de
+// kan återaktiveras med rätt originalassets, utan att ändra scenens lagerstruktur.
+const PAUSED_AMBIENT_FEATURES: Partial<Record<LivingWorldEffectKind, boolean>> = {
+
+	water: false,
+	cloud: false,
+	foliage: false
+};
+
 const baseEffects: LivingWorldEffect[] = [
 	{ id: 'sunlight', kind: 'light', enabled: true, durationMs: 52_000, opacity: 0.45 },
 	{
@@ -237,7 +248,7 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 	const timeOfDay = input.timeOfDay ?? getProgressCompanionDayState(date);
 	const wind = Math.min(Math.max(input.wind ?? 0.18, 0), 1);
 	const isDaylight = timeOfDay === 'morning' || timeOfDay === 'day';
-	const features = { ...ALL_FEATURES, ...input.features };
+	const features = { ...ALL_FEATURES, ...input.features, ...PAUSED_AMBIENT_FEATURES };
 	const mistOpacity = getMistOpacity(timeOfDay);
 
 	const effects = baseEffects.map((effect) => {

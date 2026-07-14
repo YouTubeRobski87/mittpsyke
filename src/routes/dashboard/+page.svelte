@@ -24,7 +24,6 @@
     getProgressCompanionArtId,
     getProgressCompanionHeroFocus,
     type DashboardCompanionScene,
-    type ProgressCompanionArtId,
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
   import { getLivingWorldScene, type LivingWorldScene } from '$lib/worldScene';
@@ -96,9 +95,7 @@
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
   const companionHeroImage = GENERIC_COMPANION_HERO_IMAGE;
-  // Följeslagaren som hero-scenen visar. Räven är vaken och aktiv — fokus hämtas ur
-  // konfigurationen så CSS aldrig behöver ändras när bilden byts.
-  const heroCompanionId: ProgressCompanionArtId = 'fox';
+  const heroCompanionId = $derived(companionArtId === 'bear' ? 'bear' : 'fox') as 'fox' | 'bear';
   const heroFocus = $derived(getProgressCompanionHeroFocus(heroCompanionId));
   const companionHeroAlt =
   'En vaken, nyfiken räv sitter vid ett träd i en varm och stillsam naturmiljö vid en sjö';
@@ -198,7 +195,7 @@
           aria-hidden="true"
           decoding="async"
         />
-        <CompanionPose class="hero-companion-pose" />
+        <CompanionPose class="hero-companion-pose" companionId={heroCompanionId} />
         <LivingWorld scene={livingWorldScene} class="hero-living-world" />
         <div class="hero-copy">
           <h2 id="companion-title">Din följeslagare</h2>
@@ -793,6 +790,10 @@
 
   .companion-hero :global(.hero-companion-pose) {
     z-index: calc(var(--companion-z, 2) + 1);
+  }
+
+  .companion-hero[data-companion='bear'] :global(.hero-companion-pose) {
+    --companion-animal-scale: 0.82;
   }
 
   .companion-hero::after {

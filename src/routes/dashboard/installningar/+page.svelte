@@ -17,8 +17,9 @@
 	} from '$lib/types';
 	import { THEME_STORAGE_KEY } from '$lib/theme';
 	import {
-		getProgressCompanionAnimal,
-		readProgressCompanionFromMetadata,
+	getProgressCompanionAnimal,
+	PROGRESS_COMPANION_ANIMALS,
+	readProgressCompanionFromMetadata,
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
 
@@ -74,6 +75,9 @@
 		{ value: 'chat',   label: 'Chatten' },
 	];
 	const selectedCompanion = $derived(getProgressCompanionAnimal(progressCompanion));
+	const companionChoices = PROGRESS_COMPANION_ANIMALS.filter(
+		(companion) => companion.id === 'fox' || companion.id === 'bear'
+	);
 
 	function normalizeSwedishMobileNumber(value: string): string | null {
 		const compact = value.trim().replace(/[\s().-]/g, '');
@@ -125,7 +129,7 @@
 			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
 			displayName = typeof meta.display_name === 'string' ? meta.display_name : '';
 			birthday = typeof meta.birthday === 'string' ? meta.birthday : '';
-			progressCompanion = readProgressCompanionFromMetadata(meta);
+			progressCompanion = readProgressCompanionFromMetadata(meta) ?? { id: 'fox' };
 			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
@@ -274,6 +278,7 @@
 
 		const { error } = await supabase.auth.updateUser({
 			data: {
+				progress_companion: { id: progressCompanion?.id ?? 'fox' },
 				profile_theme: profileTheme,
 				weekly_goal_type: weeklyGoalType,
 				dashboard_widget: dashboardWidget
@@ -455,7 +460,21 @@
 			<p class="field-hint">Välj tema, mål och vilket kort du vill se på startsidan. Du kan ändra när du vill.</p>
 
 			<!-- Companion profile -->
-			<p class="pref-label">Din följeslagare</p>
+			<p class="pref-label">Välj följeslagare</p>
+			<div class="companion-choice-grid" role="radiogroup" aria-label="Välj följeslagare">
+				{#each companionChoices as companion}
+					<button
+						type="button"
+						class="companion-choice"
+						class:companion-choice-active={progressCompanion?.id === companion.id}
+						onclick={() => (progressCompanion = { id: companion.id })}
+						aria-pressed={progressCompanion?.id === companion.id}
+					>
+						<CompanionAvatar selection={{ id: companion.id }} size="lg" decorative animated={false} />
+						<span><strong>{companion.name}</strong><small>{companion.temperament}</small></span>
+					</button>
+				{/each}
+			</div>
 			<div class="companion-profile-card">
 				<CompanionAvatar selection={progressCompanion} size="xl" decorative animated={false} />
 				<div class="companion-profile-copy">
@@ -874,6 +893,37 @@
 		background: hsl(var(--surface));
 	}
 
+	.companion-choice-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.6rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.companion-choice {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		min-width: 0;
+		padding: 0.7rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: 12px;
+		background: hsl(var(--surface));
+		color: inherit;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.companion-choice-active {
+		border-color: hsl(var(--primary));
+		box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.25);
+		background: hsl(var(--surface-soft));
+	}
+
+	.companion-choice span { min-width: 0; display: grid; gap: 0.12rem; }
+	.companion-choice strong { font-size: 0.9rem; }
+	.companion-choice small { color: hsl(var(--muted-foreground)); font-size: 0.76rem; line-height: 1.25; }
+
 	.companion-profile-copy {
 		display: grid;
 		gap: 0.18rem;
@@ -1081,6 +1131,8 @@
 			border-radius: 12px;
 			padding: 0.65rem;
 		}
+
+		.companion-choice-grid { grid-template-columns: 1fr; }
 
 		.option-list.widget-row {
 			flex-direction: column;

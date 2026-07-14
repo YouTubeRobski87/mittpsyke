@@ -13,6 +13,8 @@
 		getProgressCompanionDayState,
 		getProgressCompanionDayStateLabel,
 		getProgressCompanionSeason,
+		getProgressCompanionAnimal,
+		getProgressCompanionArtId,
 		type ProgressCompanionDayState,
 		type ProgressCompanionSeason,
 		type ProgressCompanionSelection
@@ -29,6 +31,8 @@
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart } from 'lucide-svelte';
+
+	let { data } = $props<{ data: PageData }>();
 
 	type CompanionTimeOfDay = ProgressCompanionDayState;
 
@@ -47,7 +51,13 @@
 	let companionBasePose = $state<CompanionPoseData | null>(null);
 	const livingWorldScene = $derived(getLivingWorldScene({ season, timeOfDay }));
 
-	function getCompanionPoseCopy(poseId: string, anonymous: boolean) {
+	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: 'fox' | 'bear') {
+		if (companionId === 'bear') {
+			if (poseId.startsWith('sleep')) {
+				return anonymous ? 'Björnen vilar lugnt medan platsen är stilla.' : 'Björnen vilar lugnt vid sjön.';
+			}
+			return anonymous ? 'Björnen håller platsen lugnt sällskap.' : 'Björnen håller dig lugnt sällskap.';
+		}
 		if (poseId.startsWith('sleep')) {
 			return anonymous ? 'Räven sover lugnt medan platsen vilar.' : 'Räven sover lugnt vid sjön.';
 		}
@@ -79,13 +89,21 @@
 		return anonymous ? 'Räven håller platsen sällskap.' : 'Räven håller dig sällskap.';
 	}
 
+	const sceneCompanionId = $derived(
+		getProgressCompanionArtId(
+			getProgressCompanionAnimal(data.isAnonymous ? { id: 'fox' } : data.progressCompanion)?.id
+		) === 'bear'
+			? 'bear'
+			: 'fox'
+	) as 'fox' | 'bear';
+
 	const companionScene = $derived<CompanionScene>({
 		image: COMPANION_WORLD_SCENE_IMAGE,
 		season,
 		timeOfDay,
-		alt: 'Din följeslagare, räven, vid sjön',
-		copy: getCompanionPoseCopy(companionPoseId, false),
-		anonymousCopy: getCompanionPoseCopy(companionPoseId, true)
+		alt: `Din följeslagare, ${sceneCompanionId === 'bear' ? 'björnen' : 'räven'}, vid sjön`,
+		copy: getCompanionPoseCopy(companionPoseId, false, sceneCompanionId),
+		anonymousCopy: getCompanionPoseCopy(companionPoseId, true, sceneCompanionId)
 	});
 
 	interface StreakData {
@@ -314,7 +332,6 @@
 
 	// ── Theme ──
 
-	let { data } = $props<{ data: PageData }>();
 	let profileTheme = $state<keyof typeof THEMES>(getCachedTheme());
 	const isAnonymous = $derived(Boolean(data.isAnonymous));
 	const currentTheme = $derived(THEMES[profileTheme] ?? THEMES.neutral);
@@ -745,6 +762,7 @@
 				class="companion-media"
 				data-season={companionScene.season}
 				data-time={companionScene.timeOfDay}
+				data-companion={sceneCompanionId}
 			>
 				<img
 					class="companion-world-scene"
@@ -755,7 +773,7 @@
 					decoding="async"
 				/>
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
-				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} decorative />
+				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} decorative />
 				<span class="companion-foreground-edge" aria-hidden="true"></span>
 				<LivingWorld scene={livingWorldScene} class="progress-living-world" />
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
@@ -1137,6 +1155,16 @@
 		width: clamp(42px, 9%, 64px);
 		--companion-grade: saturate(0.7) contrast(0.88) brightness(0.94) sepia(0.14)
 			hue-rotate(-3deg);
+	}
+
+	.companion-media[data-companion='bear'] :global(.progress-companion-pose) {
+		width: clamp(46px, 10.5%, 70px);
+		bottom: 30%;
+	}
+
+	.companion-media[data-companion='bear'] .companion-ground-shadow {
+		width: clamp(56px, 10.8%, 98px);
+		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-18deg) scaleX(1.28);
 	}
 
 	.companion-media[data-time='evening'] :global(.progress-companion-pose) {

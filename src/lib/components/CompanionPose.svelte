@@ -17,12 +17,14 @@
 		class: className = '',
 		decorative = false,
 		basePose: providedBasePose = null,
-		position: providedPosition = null
+		position: providedPosition = null,
+		companionId = 'fox'
 	}: {
 		class?: string;
 		decorative?: boolean;
 		basePose?: CompanionPose | null;
 		position?: CompanionScenePosition | null;
+		companionId?: 'fox' | 'bear';
 	} = $props();
 
 	let localBasePose = $state<CompanionPose | null>(null);
@@ -35,6 +37,10 @@
 	let reducedMotion = $state(false);
 
 	const classes = $derived(`companion-pose ${className}`.trim());
+	const isBear = $derived(companionId === 'bear');
+	const bearPose = $derived(
+		daypart === 'night' ? 'sleeping' : daypart === 'evening' ? 'sitting' : 'standing'
+	);
 	const basePose = $derived(providedBasePose ?? localBasePose);
 	const position = $derived(providedPosition ?? localPosition);
 	const baseFrame = $derived(
@@ -53,7 +59,8 @@
 					`--shadow-width: ${position.shadow.width}%`,
 					`--shadow-height: ${position.shadow.height}%`,
 					`--shadow-blur: ${position.shadow.blur}px`,
-					`--shadow-opacity: ${position.shadow.opacity}`
+					`--shadow-opacity: ${position.shadow.opacity}`,
+					`--companion-animal-scale: ${isBear ? 0.82 : 1}`
 				].join('; ')
 			: ''
 	);
@@ -89,6 +96,9 @@
 
 	onMount(() => {
 		refreshBasePose();
+		// Björnen använder en stilla, gemensam SVG-fallback tills separata scenposer finns.
+		// Den ska inte starta rävens pose- eller overlaytimers.
+		if (isBear) return;
 
 		let baseTimer: number | null = null;
 		let baseFrameTimer: number | null = null;
@@ -165,6 +175,7 @@
 
 <figure
 	class={classes}
+	data-companion={companionId}
 	data-daypart={daypart}
 	data-position={position?.id}
 	style={positionStyle}
@@ -172,7 +183,20 @@
 	aria-label={decorative ? undefined : basePose?.alt}
 	role={decorative ? undefined : 'img'}
 >
-	{#if baseFrame}
+	{#if isBear}
+		<span class="bear-scene-fallback" data-pose={bearPose} aria-hidden="true">
+			<svg viewBox="0 0 100 100" focusable="false" aria-hidden="true">
+				<ellipse class="bear-body" cx="50" cy="66" rx="28" ry="24" />
+				<circle class="bear-ear" cx="31" cy="38" r="11" />
+				<circle class="bear-ear" cx="69" cy="38" r="11" />
+				<circle class="bear-head" cx="50" cy="48" r="25" />
+				<ellipse class="bear-muzzle" cx="50" cy="58" rx="13" ry="9" />
+				<circle class="bear-eye" cx="41" cy="47" r="2.5" />
+				<circle class="bear-eye" cx="59" cy="47" r="2.5" />
+				<path class="bear-mouth" d="M45 62 C48 65 52 65 55 62" />
+			</svg>
+		</span>
+	{:else if baseFrame}
 		<img class="companion-pose-image companion-pose-base" src={baseFrame.src} alt="" decoding="async" />
 	{/if}
 	{#if overlayFrame}
@@ -202,7 +226,7 @@
 		top: var(--companion-y, 82%);
 		z-index: var(--companion-z, 2);
 		width: min(39%, 310px);
-		transform: translate3d(-50%, -100%, 0) scale(var(--companion-scale, 1));
+		transform: translate3d(-50%, -100%, 0) scale(calc(var(--companion-scale, 1) * var(--companion-animal-scale, 1)));
 		transform-origin: 50% 100%;
 		transition:
 			left 900ms ease,
@@ -272,6 +296,25 @@
 	.companion-pose-overlay {
 		animation: companionPoseOverlay 420ms ease both;
 	}
+
+	/* TODO: ersätt med frilagda björnposer (stående, sittande och sovande) när de finns. */
+	.bear-scene-fallback {
+		position: absolute;
+		inset: 0;
+		display: block;
+		filter: var(--companion-grade) drop-shadow(0 12px 14px rgb(43 33 20 / 0.1));
+		-webkit-mask-image: radial-gradient(ellipse at 50% 56%, #000 70%, rgb(0 0 0 / 0.9) 88%, transparent 100%);
+		mask-image: radial-gradient(ellipse at 50% 56%, #000 70%, rgb(0 0 0 / 0.9) 88%, transparent 100%);
+	}
+
+	.bear-scene-fallback svg { width: 100%; height: 100%; display: block; }
+	.bear-body, .bear-head, .bear-ear { fill: #836454; }
+	.bear-ear { fill: #6d4f43; }
+	.bear-muzzle { fill: #c7a98e; }
+	.bear-eye { fill: #2e2824; }
+	.bear-mouth { fill: none; stroke: #4a342d; stroke-width: 2.4; stroke-linecap: round; }
+	.bear-scene-fallback[data-pose='sitting'] .bear-body { transform: scale(0.88, 1.04); transform-origin: 50px 70px; }
+	.bear-scene-fallback[data-pose='sleeping'] { transform: translateY(13%) scale(1.12, 0.66); transform-origin: 50% 100%; }
 
 	.companion-pose[data-daypart='evening'] .companion-pose-image {
 		filter: saturate(0.72) contrast(0.9) brightness(0.9) sepia(0.13)
