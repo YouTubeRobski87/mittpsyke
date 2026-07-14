@@ -99,11 +99,6 @@ function isSupportedProgressCompanionId(id: string): id is ProgressCompanionId {
 	return id === 'fox' || id === 'bear';
 }
 
-function getSupportedProgressCompanion(value: unknown): ProgressCompanionSelection | null {
-	const selection = normalizeProgressCompanion(value);
-	return selection && isSupportedProgressCompanionId(selection.id) ? selection : null;
-}
-
 function cleanString(value: unknown): string | null {
 	if (typeof value !== 'string') return null;
 	const trimmed = value.trim();
@@ -170,8 +165,8 @@ export function readProgressCompanionFromMetadata(
 	if (!metadata) return null;
 
 	for (const key of COMPANION_METADATA_KEYS) {
-		const selection = getSupportedProgressCompanion(metadata[key]);
-		if (selection) return selection;
+		const selection = normalizeProgressCompanion(metadata[key]);
+		if (selection) return isSupportedProgressCompanionId(selection.id) ? selection : null;
 	}
 
 	for (const containerKey of COMPANION_CONTAINER_KEYS) {
@@ -180,8 +175,8 @@ export function readProgressCompanionFromMetadata(
 		const record = container as Record<string, unknown>;
 
 		for (const key of COMPANION_METADATA_KEYS) {
-			const selection = getSupportedProgressCompanion(record[key]);
-			if (selection) return selection;
+			const selection = normalizeProgressCompanion(record[key]);
+			if (selection) return isSupportedProgressCompanionId(selection.id) ? selection : null;
 		}
 	}
 
