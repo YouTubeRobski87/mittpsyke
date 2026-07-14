@@ -1163,7 +1163,11 @@
 	}
 
 	.companion-media[data-companion='bear'] .companion-ground-shadow {
+		left: 66.6%;
+		top: 64.7%;
 		width: clamp(56px, 10.8%, 98px);
+		height: clamp(9px, 1.45vw, 15px);
+		opacity: 0.62;
 		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-18deg) scaleX(1.28);
 	}
 
@@ -1609,6 +1613,11 @@
 			right: 20%;
 			bottom: 31%;
 			width: clamp(38px, 10%, 58px);
+		}
+
+		.companion-media[data-companion='bear'] :global(.progress-companion-pose) {
+			width: clamp(40px, 11%, 60px);
+			bottom: 30%;
 		}
 		.companion-ground-shadow {
 			left: 70.8%;

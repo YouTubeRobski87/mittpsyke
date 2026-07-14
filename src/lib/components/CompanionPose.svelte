@@ -12,6 +12,7 @@
 		CompanionPoseDaypart,
 		CompanionScenePosition
 	} from '$lib/companionPoseManifest';
+	import { COMPANION_SCENE_POSITIONS } from '$lib/companionPoseManifest';
 
 	let {
 		class: className = '',
@@ -38,11 +39,12 @@
 
 	const classes = $derived(`companion-pose ${className}`.trim());
 	const isBear = $derived(companionId === 'bear');
-	const bearPose = $derived(
-		daypart === 'night' ? 'sleeping' : daypart === 'evening' ? 'sitting' : 'standing'
-	);
+	const bearFallbackPose = 'sitting';
+	const bearPosition =
+		COMPANION_SCENE_POSITIONS.find((position) => position.id === 'foreground-right') ??
+		COMPANION_SCENE_POSITIONS[0];
 	const basePose = $derived(providedBasePose ?? localBasePose);
-	const position = $derived(providedPosition ?? localPosition);
+	const position = $derived(isBear ? bearPosition : providedPosition ?? localPosition);
 	const baseFrame = $derived(
 		basePose ? basePose.frames[baseFrameIndex % basePose.frames.length] : null
 	);
@@ -68,6 +70,7 @@
 	function refreshBasePose() {
 		const now = new Date();
 		daypart = getCompanionPoseDaypart(now);
+		if (isBear) return;
 		if (!providedBasePose) {
 			const nextBasePose = getCompanionBasePose(now, window.localStorage);
 			localBasePose = nextBasePose;
@@ -96,8 +99,8 @@
 
 	onMount(() => {
 		refreshBasePose();
-		// Björnen använder en stilla, gemensam SVG-fallback tills separata scenposer finns.
-		// Den ska inte starta rävens pose- eller overlaytimers.
+		// Björnen är ett avsiktligt statiskt scenval med fast, sittande fallback-pose.
+		// Den läser eller ändrar inte rävens pose- och positionstillstånd.
 		if (isBear) return;
 
 		let baseTimer: number | null = null;
@@ -176,15 +179,16 @@
 <figure
 	class={classes}
 	data-companion={companionId}
+	data-motion={isBear ? 'static' : 'pose'}
 	data-daypart={daypart}
 	data-position={position?.id}
 	style={positionStyle}
 	aria-hidden={decorative ? 'true' : undefined}
-	aria-label={decorative ? undefined : basePose?.alt}
+	aria-label={decorative ? undefined : isBear ? 'Din följeslagare, björnen, sitter stilla.' : basePose?.alt}
 	role={decorative ? undefined : 'img'}
 >
 	{#if isBear}
-		<span class="bear-scene-fallback" data-pose={bearPose} aria-hidden="true">
+		<span class="bear-scene-fallback" data-pose={bearFallbackPose} aria-hidden="true">
 			<svg viewBox="0 0 100 100" focusable="false" aria-hidden="true">
 				<ellipse class="bear-body" cx="50" cy="66" rx="28" ry="24" />
 				<circle class="bear-ear" cx="31" cy="38" r="11" />
@@ -254,6 +258,16 @@
 		pointer-events: none;
 	}
 
+	.companion-pose:global(.hero-companion-pose)[data-companion='bear']::before {
+		left: 10%;
+		bottom: 5%;
+		width: 76%;
+		height: 10%;
+		filter: blur(9px);
+		opacity: 0.26;
+		transform: rotate(-5deg) skewX(-12deg) scaleX(1.1);
+	}
+
 	.companion-pose:global(.hero-companion-pose)[data-position='shore-near']::after {
 		content: '';
 		position: absolute;
@@ -297,7 +311,7 @@
 		animation: companionPoseOverlay 420ms ease both;
 	}
 
-	/* TODO: ersätt med frilagda björnposer (stående, sittande och sovande) när de finns. */
+	/* Avsiktlig statisk fallback. TODO: ersätt med frilagda björnposer när rätt assets finns. */
 	.bear-scene-fallback {
 		position: absolute;
 		inset: 0;
