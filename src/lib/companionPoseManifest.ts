@@ -1,5 +1,6 @@
 export type CompanionPoseDaypart = 'day' | 'evening' | 'night';
 export type CompanionPoseRole = 'base' | 'overlay';
+export type CompanionId = 'fox' | 'bear';
 
 export type CompanionPoseFrame = {
 	src: string;
@@ -26,6 +27,7 @@ export type CompanionScenePosition = {
 
 export type CompanionPose = {
 	id: string;
+	companionId?: CompanionId;
 	role: CompanionPoseRole;
 	motion?: 'blink' | 'gesture' | 'sleep';
 	dayparts: CompanionPoseDaypart[];
@@ -35,11 +37,17 @@ export type CompanionPose = {
 	frameMs?: number;
 	eventChance?: number;
 	durationMs?: number;
+	sceneAdjustment?: {
+		x?: number;
+		y?: number;
+		scale?: number;
+	};
 };
 
 const FOX_POSE_BASE_PATH = '/images/avatars/presets';
 
 const foxPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
+const bearPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
 
 export const FOX_COMPANION_POSES = [
 	{
@@ -244,7 +252,53 @@ export const FOX_COMPANION_POSES = [
 	}
 ] satisfies CompanionPose[];
 
-export const COMPANION_POSES: readonly CompanionPose[] = FOX_COMPANION_POSES;
+export const BEAR_COMPANION_POSES = [
+	{
+		id: 'bear-standing',
+		companionId: 'bear',
+		role: 'base',
+		dayparts: ['day'],
+		frames: [{ src: bearPoseSrc('bear-standing.png') }],
+		alt: 'Din följeslagare, björnen, står lugnt.',
+		weight: 2.4,
+		sceneAdjustment: { scale: 0.82, y: 1 }
+	},
+	{
+		id: 'bear-sitting',
+		companionId: 'bear',
+		role: 'base',
+		dayparts: ['day', 'evening'],
+		frames: [{ src: bearPoseSrc('bear-sitting.png') }],
+		alt: 'Din följeslagare, björnen, sitter stilla.',
+		weight: 2.1,
+		sceneAdjustment: { scale: 0.78, y: 2 }
+	},
+	{
+		id: 'bear-sleeping',
+		companionId: 'bear',
+		role: 'base',
+		dayparts: ['night'],
+		frames: [{ src: bearPoseSrc('bear-sleeping.png') }],
+		alt: 'Din följeslagare, björnen, sover lugnt.',
+		weight: 2.4,
+		sceneAdjustment: { scale: 0.76, y: 4 }
+	},
+	{
+		id: 'bear-stretching',
+		companionId: 'bear',
+		role: 'base',
+		dayparts: ['day'],
+		frames: [{ src: bearPoseSrc('bear-stretching.png') }],
+		alt: 'Din följeslagare, björnen, sträcker lugnt på sig.',
+		weight: 0.9,
+		sceneAdjustment: { scale: 0.78, x: -1, y: 3 }
+	}
+] satisfies CompanionPose[];
+
+export const COMPANION_POSES: readonly CompanionPose[] = [
+	...FOX_COMPANION_POSES,
+	...BEAR_COMPANION_POSES
+];
 
 export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 	{
@@ -269,7 +323,11 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 			'stretch',
 			'rest',
 			'sleep-curled',
-			'sleep-side'
+			'sleep-side',
+			'bear-standing',
+			'bear-sitting',
+			'bear-sleeping',
+			'bear-stretching'
 		],
 		dayparts: ['day', 'evening', 'night'],
 		weight: 2.2
