@@ -1,6 +1,8 @@
 ---
 title: 'Vad händer i hjärnan när du känner ångest?'
 description: 'En lugn förklaring till varför ångest kan kännas så stark i kroppen, och när det kan vara bra att söka stöd.'
+image: '/uploads/articles/vad-hander-i-hjarnan-nar-du-kanner-angest.png'
+imageAlt: 'En person sitter lugnt hemma med handen på bröstet, medan ett mjukt illustrerat hjärnmönster syns ovanför.'
 date: 2026-07-15
 author: 'MittPsyke redaktion'
 collection: 'oro-och-stress'

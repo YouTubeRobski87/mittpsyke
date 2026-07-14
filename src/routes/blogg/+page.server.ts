@@ -92,7 +92,7 @@ export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 		excerpt: article.description,
 		date: getArticleDateLabel(article),
 		isoDate: article.date.toISOString(),
-		imageUrl: null,
+		imageUrl: article.image ?? null,
 		href: article.url
 	}));
 	const { articles: soroArticles, loadError } = await fetchSoroArticles(fetch);

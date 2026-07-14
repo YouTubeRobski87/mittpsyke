@@ -5,6 +5,8 @@ import { z } from 'zod';
 const articleSchema = z.object({
 	title: z.string().min(1),
 	description: z.string().min(1),
+	image: z.string().min(1).optional(),
+	imageAlt: z.string().min(1).optional(),
 	date: z.coerce.date(),
 	updated: z.coerce.date().optional(),
 	author: z.string().min(1),

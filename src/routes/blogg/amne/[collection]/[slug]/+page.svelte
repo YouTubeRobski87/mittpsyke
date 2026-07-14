@@ -36,6 +36,10 @@
 		{#if article.readingTime}<p class="meta">{article.readingTime}</p>{/if}
 	</header>
 
+	{#if article.image}
+		<img class="featured-image" src={article.image} alt={article.imageAlt ?? article.title} loading="eager" decoding="async" />
+	{/if}
+
 	<div class="article-content">{@html article.content}</div>
 
 	{#if article.references.length > 0}
@@ -61,6 +65,7 @@
 	h1 { margin-top: .55rem; font-family: var(--font-heading); font-size: clamp(1.95rem, 1.55rem + 2.2vw, 2.6rem); line-height: 1.08; }
 	.lead { margin-top: .9rem; font-size: clamp(1.03rem, .99rem + .5vw, 1.16rem); line-height: 1.72; opacity: .88; }
 	.meta { margin-top: .7rem; font-size: .9rem; opacity: .64; }
+	.featured-image { display: block; width: 100%; max-height: 460px; margin-top: 1.35rem; border-radius: var(--radius-card); object-fit: cover; }
 	.article-content { display: grid; gap: 1.15rem; margin-top: 1.65rem; }
 	.article-content :global(h2), .article-section h2 { margin: 1.1rem 0 0; color: #2563eb; font-family: var(--font-heading); font-size: clamp(1.38rem, 1.2rem + .7vw, 1.62rem); line-height: 1.2; }
 	.article-content :global(p), .article-content :global(li), .article-section li { margin: 0; font-size: clamp(1rem, .96rem + .35vw, 1.08rem); line-height: 1.75; }

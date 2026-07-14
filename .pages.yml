@@ -34,6 +34,8 @@ content:
             - { name: guide, label: Guide }
       - { name: title, label: Titel, type: string, required: true }
       - { name: description, label: Beskrivning, type: text, required: true }
+      - { name: image, label: Feature image, type: image }
+      - { name: imageAlt, label: Bildbeskrivning, type: string }
       - { name: date, label: Publicerad, type: date, required: true, options: { format: "yyyy-MM-dd", time: false } }
       - { name: updated, label: Uppdaterad, type: date, options: { format: "yyyy-MM-dd", time: false } }
       - { name: author, label: Författare, type: string, required: true }
