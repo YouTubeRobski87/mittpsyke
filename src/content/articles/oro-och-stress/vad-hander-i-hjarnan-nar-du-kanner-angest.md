@@ -1,20 +1,22 @@
 ---
-title: 'Vad händer i hjärnan när du känner ångest?'
-description: 'En lugn förklaring till varför ångest kan kännas så stark i kroppen, och när det kan vara bra att söka stöd.'
-image: '/uploads/articles/vad-hander-i-hjarnan-nar-du-kanner-angest.png'
-imageAlt: 'En person sitter lugnt hemma med handen på bröstet, medan ett mjukt illustrerat hjärnmönster syns ovanför.'
-date: 2026-07-15
-author: 'MittPsyke redaktion'
-collection: 'oro-och-stress'
-tags: ['ångest', 'oro', 'stress']
-readingTime: '4 min läsning'
-references:
-  - label: '1177. Ångest – starka känslor av oro'
-    url: 'https://www.1177.se/Gotland/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/angest--starka-kanslor-av-oro/'
 type: article
+title: Vad händer i hjärnan när du känner ångest?
+description: En lugn förklaring till varför ångest kan kännas så stark i
+  kroppen, och när det kan vara bra att söka stöd.
+image: /uploads/articles/vad-hander-i-hjarnan-nar-du-kanner-angest.png
+imageAlt: En person sitter lugnt hemma med handen på bröstet, medan ett mjukt
+  illustrerat hjärnmönster syns ovanför.
+date: 2026-07-15
+updated: 2026-07-16
+author: MittPsyke redaktion
+collection: oro-och-stress
+tags:
+  - ångest
+  - oro
+  - stress
+readingTime: 4 min läsning
 draft: false
 ---
-
 Ångest kan komma med starka kroppsliga reaktioner: hjärtat kan slå fortare, andningen kan kännas annorlunda och kroppen kan bli spänd. Det kan vara skrämmande, särskilt om det kommer plötsligt. Du är inte ensam om att känna så.
 
 ## Kroppens alarmsystem går i gång
