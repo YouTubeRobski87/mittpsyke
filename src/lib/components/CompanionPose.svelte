@@ -19,12 +19,14 @@
 		decorative = false,
 		basePose: providedBasePose = null,
 		position: providedPosition = null,
+		placement = null,
 		companionId = 'fox'
 	}: {
 		class?: string;
 		decorative?: boolean;
 		basePose?: CompanionPose | null;
 		position?: CompanionScenePosition | null;
+		placement?: { scale?: number; x?: number; y?: number } | null;
 		companionId?: CompanionId;
 	} = $props();
 
@@ -48,11 +50,11 @@
 		overlayPose ? overlayPose.frames[overlayFrameIndex % overlayPose.frames.length] : null
 	);
 	const positionStyle = $derived(
-		position
-			? [
-					`--companion-x: ${position.x + (sceneAdjustment?.x ?? 0)}%`,
-					`--companion-y: ${position.y + (sceneAdjustment?.y ?? 0)}%`,
-					`--companion-scale: ${position.scale * (sceneAdjustment?.scale ?? 1)}`,
+	position
+		? [
+					`--companion-x: ${(placement?.x ?? position.x) + (sceneAdjustment?.x ?? 0)}%`,
+					`--companion-y: ${(placement?.y ?? position.y) + (sceneAdjustment?.y ?? 0)}%`,
+					`--companion-scale: ${position.scale * (sceneAdjustment?.scale ?? 1) * (placement?.scale ?? 1)}`,
 					`--companion-z: ${position.zIndex}`,
 					`--shadow-width: ${position.shadow.width}%`,
 					`--shadow-height: ${position.shadow.height}%`,

@@ -26,6 +26,7 @@
     type DashboardCompanionScene,
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
+  import { BEAR_SCENE_PLACEMENTS } from '$lib/companionPoseManifest';
   import { getLivingWorldScene, type LivingWorldScene } from '$lib/worldScene';
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
@@ -195,7 +196,11 @@
           aria-hidden="true"
           decoding="async"
         />
-        <CompanionPose class="hero-companion-pose" companionId={heroCompanionId} />
+        <CompanionPose
+          class="hero-companion-pose"
+          companionId={heroCompanionId}
+          placement={heroCompanionId === 'bear' ? BEAR_SCENE_PLACEMENTS.dashboard : null}
+        />
         <LivingWorld scene={livingWorldScene} class="hero-living-world" />
         <div class="hero-copy">
           <h2 id="companion-title">Din följeslagare</h2>
@@ -768,16 +773,6 @@
     z-index: var(--scene-background);
   }
 
-  .companion-hero[data-companion='bear'] .companion-hero-scene {
-    width: min(62%, 720px);
-    height: 100%;
-    inset: auto 0 0 auto;
-    left: auto;
-    object-fit: contain;
-    object-position: right bottom;
-    filter: saturate(1.02);
-  }
-
   .companion-hero[data-companion='fox'] .companion-hero-scene {
     object-fit: cover;
     /* Håll räven (nedre högra tredjedelen) helt i bild oavsett kortets bredd */
@@ -807,6 +802,27 @@
       ),
       linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 38%, rgba(255, 255, 255, 0.06));
     pointer-events: none;
+  }
+
+  .companion-hero[data-companion='bear']::after {
+    background:
+      linear-gradient(90deg, rgba(16, 42, 45, 0.72) 0%, rgba(16, 42, 45, 0.44) 33%, rgba(16, 42, 45, 0.12) 58%, transparent 76%),
+      linear-gradient(180deg, rgba(8, 24, 32, 0.16), transparent 42%, rgba(8, 24, 32, 0.22));
+  }
+
+  .companion-hero[data-companion='bear'] .hero-copy h2,
+  .companion-hero[data-companion='bear'] .hero-copy p {
+    color: #fffaf2;
+    text-shadow: 0 2px 14px rgba(8, 24, 32, 0.38);
+  }
+
+  .companion-hero[data-companion='bear'] .time-badge {
+    top: 14px;
+    right: 14px;
+    gap: 0.45rem;
+    padding: 0.5rem 0.65rem;
+    border-color: rgba(255, 250, 242, 0.28);
+    background: rgba(255, 253, 248, 0.86);
   }
 
   .selected-companion-mark {
@@ -1397,11 +1413,6 @@
       min-height: 280px;
     }
 
-    .companion-hero[data-companion='bear'] .companion-hero-scene {
-      width: min(58%, 280px);
-      object-position: right bottom;
-    }
-
     .companion-hero::after {
       background:
         linear-gradient(
@@ -1498,10 +1509,6 @@
 
     .hero-copy h2 {
       font-size: 1.22rem;
-    }
-
-    .companion-hero[data-companion='bear'] .companion-hero-scene {
-      width: min(54%, 240px);
     }
 
     .time-badge {

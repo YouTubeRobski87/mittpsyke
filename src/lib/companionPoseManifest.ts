@@ -295,6 +295,27 @@ export const BEAR_COMPANION_POSES = [
 	}
 ] satisfies CompanionPose[];
 
+// Björnen använder samma värld som räven, men behöver en mindre och lägre placering
+// tills fler miljöanpassade poser finns. Värdena hålls per vy så att nya björnposer
+// kan läggas till utan att påverka rävens scenlogik.
+export const BEAR_SCENE_PLACEMENTS = {
+	dashboard: { scale: 0.72, x: 78, y: 82 },
+	progress: {
+		scale: 0.74,
+		bottom: '30%',
+		right: '21%',
+		groundLeft: '66.6%',
+		groundTop: '64.7%',
+		compact: {
+			scale: 0.76,
+			bottom: '30%',
+			right: '20%',
+			groundLeft: '66.6%',
+			groundTop: '64.7%'
+		}
+	}
+} as const;
+
 export const COMPANION_POSES: readonly CompanionPose[] = [
 	...FOX_COMPANION_POSES,
 	...BEAR_COMPANION_POSES

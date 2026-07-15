@@ -20,7 +20,10 @@
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
 	import { getCompanionBasePose } from '$lib/companionPoseState';
-	import type { CompanionPose as CompanionPoseData } from '$lib/companionPoseManifest';
+	import {
+		BEAR_SCENE_PLACEMENTS,
+		type CompanionPose as CompanionPoseData
+	} from '$lib/companionPoseManifest';
 	import { getLivingWorldScene } from '$lib/worldScene';
 	import { trackMilestoneReachedOnce, trackStreakDayReachedOnce } from '$lib/analytics';
 	import {
@@ -105,6 +108,22 @@
 		copy: getCompanionPoseCopy(companionPoseId, false, sceneCompanionId),
 		anonymousCopy: getCompanionPoseCopy(companionPoseId, true, sceneCompanionId)
 	});
+	const bearProgressSceneStyle = $derived(
+		sceneCompanionId === 'bear'
+			? [
+					`--bear-progress-scale: ${BEAR_SCENE_PLACEMENTS.progress.scale}`,
+					`--bear-progress-bottom: ${BEAR_SCENE_PLACEMENTS.progress.bottom}`,
+					`--bear-progress-right: ${BEAR_SCENE_PLACEMENTS.progress.right}`,
+					`--bear-progress-ground-left: ${BEAR_SCENE_PLACEMENTS.progress.groundLeft}`,
+					`--bear-progress-ground-top: ${BEAR_SCENE_PLACEMENTS.progress.groundTop}`,
+					`--bear-progress-compact-scale: ${BEAR_SCENE_PLACEMENTS.progress.compact.scale}`,
+					`--bear-progress-compact-bottom: ${BEAR_SCENE_PLACEMENTS.progress.compact.bottom}`,
+					`--bear-progress-compact-right: ${BEAR_SCENE_PLACEMENTS.progress.compact.right}`,
+					`--bear-progress-compact-ground-left: ${BEAR_SCENE_PLACEMENTS.progress.compact.groundLeft}`,
+					`--bear-progress-compact-ground-top: ${BEAR_SCENE_PLACEMENTS.progress.compact.groundTop}`
+				].join('; ')
+			: undefined
+	);
 
 	interface StreakData {
 		currentStreak: number;
@@ -768,6 +787,7 @@
 				data-time={companionScene.timeOfDay}
 				data-companion={sceneCompanionId}
 				data-pose={companionBasePose?.id}
+				style={bearProgressSceneStyle}
 			>
 				<img
 					class="companion-world-scene"
@@ -1163,8 +1183,10 @@
 	}
 
 	.companion-media[data-companion='bear'] :global(.progress-companion-pose) {
-		width: clamp(46px, 10.5%, 70px);
-		bottom: 30%;
+		right: var(--bear-progress-right);
+		bottom: var(--bear-progress-bottom);
+		transform: scale(var(--bear-progress-scale));
+		transform-origin: 50% 100%;
 	}
 
 	.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
@@ -1178,8 +1200,8 @@
 	}
 
 	.companion-media[data-companion='bear'] .companion-ground-shadow {
-		left: 66.6%;
-		top: 64.7%;
+		left: var(--bear-progress-ground-left);
+		top: var(--bear-progress-ground-top);
 		width: clamp(56px, 10.8%, 98px);
 		height: clamp(9px, 1.45vw, 15px);
 		opacity: 0.62;
@@ -1641,13 +1663,18 @@
 		}
 
 		.companion-media[data-companion='bear'] :global(.progress-companion-pose) {
-			width: clamp(40px, 11%, 60px);
-			bottom: 30%;
+			right: var(--bear-progress-compact-right);
+			bottom: var(--bear-progress-compact-bottom);
+			transform: scale(var(--bear-progress-compact-scale));
 		}
 
 		.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
-			width: clamp(44px, 12%, 64px);
 			bottom: 28.5%;
+		}
+
+		.companion-media[data-companion='bear'] .companion-ground-shadow {
+			left: var(--bear-progress-compact-ground-left);
+			top: var(--bear-progress-compact-ground-top);
 		}
 		.companion-ground-shadow {
 			left: 70.8%;
