@@ -1041,7 +1041,11 @@
 </main>
 
 <style>
-	.journey-container { display: grid; gap: 1rem; }
+	.journey-container { display: grid; gap: 20px; }
+
+	.framsteg-page {
+		padding: 30px 3rem 40px;
+	}
 
 	.home-return-link {
 		display: inline-flex;
@@ -1063,17 +1067,26 @@
 
 	.progress-content {
 		display: grid;
-		gap: 1rem;
+		gap: 20px;
 	}
 
 	.framsteg-shell {
-		max-width: 1240px;
+		width: min(1440px, 100%);
+		max-width: none;
+	}
+
+	.framsteg-shell + .framsteg-shell {
+		margin-top: 28px;
+	}
+
+	.framsteg-page .auth-hero {
+		padding: 0.25rem 0;
 	}
 
 	.framsteg-layout {
 		display: grid;
-		grid-template-columns: minmax(0, 1.7fr) minmax(380px, 0.95fr);
-		gap: 1.25rem;
+		grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr);
+		gap: 20px;
 		align-items: start;
 	}
 
@@ -1107,7 +1120,7 @@
 		--scene-foreground: 4;
 		--scene-overlay: 5;
 		width: 100%;
-		height: clamp(150px, 42vw, 190px);
+		height: clamp(220px, 22vw, 300px);
 		overflow: hidden;
 		background: #0d1727;
 		isolation: isolate;
@@ -1408,7 +1421,7 @@
 
 	@media (min-width: 981px) {
 	.companion-media {
-		height: clamp(150px, 13vw, 180px);
+		height: clamp(240px, 20vw, 300px);
 	}
 
 	.companion-world-scene {
@@ -1420,6 +1433,10 @@
 	}
 }
 	@media (max-width: 980px) {
+		.framsteg-page {
+			padding: 24px 22px 20px;
+		}
+
 		.framsteg-layout {
 			grid-template-columns: 1fr;
 		}
@@ -1508,7 +1525,9 @@
 	}
 	.icon-badge { width: 3.2rem; height: 3.2rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
 	.insights-card,
-	.heatmap-card { min-height: 25rem; }
+	.heatmap-card,
+	.progress-summary-card { min-height: 25rem; }
+	.progress-summary-card { box-sizing: border-box; }
 	.card-placeholder {
 		border-radius: 0.75rem;
 		background:
@@ -1646,6 +1665,16 @@
 	.empty-state .auth-button { margin-top: 0.25rem; }
 
 	@media (max-width: 640px) {
+		.framsteg-page {
+			padding: 16px 14px 18px;
+		}
+
+		.framsteg-shell + .framsteg-shell {
+			margin-top: 20px;
+		}
+
+		.companion-media { height: clamp(210px, 68vw, 260px); }
+
 		.progress-preview-note {
 			position: relative;
 			top: auto;
@@ -1699,7 +1728,8 @@
 		.companion-copy p { font-size: 0.8rem; line-height: 1.4; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.insights-card,
-		.heatmap-card { min-height: 18rem; }
+		.heatmap-card,
+		.progress-summary-card { min-height: 18rem; }
 		.card-placeholder--heatmap { min-height: 14rem; }
 		.milestones-grid { grid-template-columns: 1fr; }
 		.insights-grid { grid-template-columns: 1fr; }
