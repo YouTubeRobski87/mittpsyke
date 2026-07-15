@@ -96,6 +96,7 @@
 	const DIARY_IMAGE_COMPRESSED_TYPE = 'image/jpeg';
 	const fallbackDailyQuestion = 'Vad behöver få lite mer plats hos dig idag?';
 	const entriesPerPage = 10;
+	const showGuidedDiaryPath = false;
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -1279,8 +1280,8 @@
 			</section>
 
 			<section class="auth-panel">
-				<h2 class="text-base font-semibold">Två sätt att skriva</h2>
-				<div class="diary-path-grid mt-3">
+				<h2 class="text-base font-semibold">Skriv i din egen takt</h2>
+				<div class="diary-path-grid diary-path-grid--single mt-3">
 					<div class="diary-path-card diary-path-card--preview diary-path-card--write">
 						<span class="path-icon-wrap path-icon-wrap--write" aria-hidden="true">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -1289,13 +1290,15 @@
 						<span class="diary-path-title">Skriv själv</span>
 						<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
 					</div>
-					<div class="diary-path-card diary-path-card--preview diary-path-card--guided">
-						<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-						</span>
-						<span class="diary-path-title">Dagbok med olika stilar</span>
-						<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
-					</div>
+					{#if showGuidedDiaryPath}
+						<div class="diary-path-card diary-path-card--preview diary-path-card--guided">
+							<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+							</span>
+							<span class="diary-path-title">Dagbok med olika stilar</span>
+							<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
+						</div>
+					{/if}
 				</div>
 			</section>
 
@@ -1330,9 +1333,9 @@
 					<section class="auth-panel diary-paths">
 						<h2 class="text-base font-semibold">Välj hur du vill börja</h2>
 						<p class="mt-2 text-sm auth-muted">
-							En stilla plats för det som vill få form. Skriv fritt, eller börja med en varsam guidning.
+							En stilla plats för det som vill få form. Skriv fritt i din egen takt.
 						</p>
-						<div class="diary-path-grid mt-3">
+						<div class="diary-path-grid diary-path-grid--single mt-3">
 							<button type="button" class="diary-path-card diary-path-card--write" onclick={openWriteEditor}>
 								<span class="path-icon-wrap path-icon-wrap--write" aria-hidden="true">
 									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -1342,13 +1345,15 @@
 								<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
 								<span class="diary-path-action">Börja skriva</span>
 							</button>
-							<a href="/dagars-avtryck" class="diary-path-card diary-path-card--guided">
-								<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
-									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-								</span>
-								<span class="diary-path-title">Dagbok med olika stilar</span>
-								<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
-							</a>
+							{#if showGuidedDiaryPath}
+								<a href="/dagars-avtryck" class="diary-path-card diary-path-card--guided">
+									<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
+										<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+									</span>
+									<span class="diary-path-title">Dagbok med olika stilar</span>
+									<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
+								</a>
+							{/if}
 						</div>
 					</section>
 
@@ -1947,6 +1952,10 @@
 	.diary-path-grid {
 		display: grid;
 		gap: 0.65rem;
+	}
+
+	.diary-path-grid--single {
+		grid-template-columns: minmax(0, 34rem);
 	}
 
 	.daily-question-panel {
@@ -3225,6 +3234,10 @@
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 0.45rem;
 			margin-top: 0.35rem !important;
+		}
+
+		.diary-path-grid--single {
+			grid-template-columns: minmax(0, 1fr);
 		}
 
 		.diary-path-card {
