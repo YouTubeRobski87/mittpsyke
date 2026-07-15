@@ -9,12 +9,8 @@ collection: 'oro-och-stress'
 tags: ['ångest', 'oro', 'stress']
 readingTime: '4 min läsning'
 references:
-  - '1177. Ångest – starka känslor av oro. https://www.1177.se/Gotland/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/angest--starka-kanslor-av-oro/'
-relatedArticles:
-  - title: 'När oron känns nära'
-    url: '/blogg/amne/oro-och-stress/nar-oron-kanns-nara'
-  - title: 'Små steg i vardagen'
-    url: '/blogg/amne/oro-och-stress/sma-steg-i-vardagen'
+  - label: '1177. Ångest – starka känslor av oro'
+    url: 'https://www.1177.se/Gotland/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/angest--starka-kanslor-av-oro/'
 type: article
 draft: false
 ---

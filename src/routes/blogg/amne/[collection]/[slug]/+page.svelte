@@ -45,7 +45,11 @@
 	{#if article.references.length > 0}
 		<section class="article-section" aria-labelledby="references-heading">
 			<h2 id="references-heading">Källor</h2>
-			<ul>{#each article.references as reference}<li>{reference}</li>{/each}</ul>
+			<ul>
+				{#each article.references as reference}
+					<li><a href={reference.url} target="_blank" rel="noopener noreferrer">{reference.label}</a></li>
+				{/each}
+			</ul>
 		</section>
 	{/if}
 

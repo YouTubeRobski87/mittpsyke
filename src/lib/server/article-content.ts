@@ -13,7 +13,14 @@ const articleSchema = z.object({
 	collection: z.string().min(1),
 	tags: z.array(z.string()).default([]),
 	readingTime: z.string().optional(),
-	references: z.array(z.string()).default([]),
+	references: z
+		.array(
+			z.object({
+				label: z.string().min(1),
+				url: z.string().url()
+			})
+		)
+		.default([]),
 	relatedArticles: z
 		.array(z.object({ title: z.string().min(1), url: z.string().min(1) }))
 		.default([]),
