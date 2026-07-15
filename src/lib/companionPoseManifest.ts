@@ -301,16 +301,16 @@ export const BEAR_COMPANION_POSES = [
 export const BEAR_SCENE_PLACEMENTS = {
 	dashboard: { scale: 0.72, x: 78, y: 82 },
 	progress: {
-		scale: 0.74,
+		scale: 1.1,
 		bottom: '30%',
-		right: '21%',
-		groundLeft: '66.6%',
+		right: '25%',
+		groundLeft: '62.6%',
 		groundTop: '64.7%',
 		compact: {
-			scale: 0.76,
+			scale: 1.12,
 			bottom: '30%',
-			right: '20%',
-			groundLeft: '66.6%',
+			right: '24%',
+			groundLeft: '62.6%',
 			groundTop: '64.7%'
 		}
 	}
