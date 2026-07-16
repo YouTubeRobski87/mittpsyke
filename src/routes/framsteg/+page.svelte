@@ -821,13 +821,9 @@
 		<section class="card heatmap-card" bind:this={heatmapCardEl}>
 			<div class="card-header">
 				<div class="icon-badge heat"><TrendingUp size={24} /></div>
-				<h2>{isAnonymous ? 'Exempel på aktivitetskarta' : 'Din aktivitetskarta'}</h2>
+				<h2>Din aktivitetsöversikt</h2>
 			</div>
-			<p class="heatmap-description">
-				{isAnonymous
-					? 'Varje ruta kan motsvara en dag. Mörkare färg visar hur fler inlägg kan synas.'
-					: 'Varje ruta motsvarar en dag. Mörkare färg betyder fler inlägg.'}
-			</p>
+			<p class="heatmap-description">Varje markering är en dag. Färgen visar hur mycket du skrev i dagboken.</p>
 			{#if shouldShowHeatmap}
 				<ActivityHeatmap data={heatmapData} error={heatmapError} />
 			{:else}
