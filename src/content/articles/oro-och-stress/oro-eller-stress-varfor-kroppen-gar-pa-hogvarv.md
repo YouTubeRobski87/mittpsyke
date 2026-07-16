@@ -41,7 +41,7 @@ Tankarna kan låta ungefär så här:
 
 Att oroa sig ibland är mänskligt. Problemet uppstår när tankarna fortsätter utan att leda till ett tydligt nästa steg. Då kan kroppen reagera som om faran redan är här.
 
-Vill du förstå den kroppsliga reaktionen bättre kan du läsa [vad som händer i hjärnan när du känner ångest](/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest).
+Vill du förstå den kroppsliga reaktionen bättre kan du läsa [vad som händer i hjärnan när du känner ångest](https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest).
 
 ## Stress handlar ofta om belastning
 
