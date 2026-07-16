@@ -70,13 +70,18 @@
 	.lead { margin-top: .9rem; font-size: clamp(1.03rem, .99rem + .5vw, 1.16rem); line-height: 1.72; opacity: .88; }
 	.meta { margin-top: .7rem; font-size: .9rem; opacity: .64; }
 	.featured-image { display: block; width: 100%; max-height: 460px; margin-top: 1.35rem; border-radius: var(--radius-card); object-fit: cover; }
-	.article-content { display: grid; gap: 1.15rem; margin-top: 1.65rem; }
+	.article-content { display: grid; gap: 1.15rem; max-width: 70ch; margin-top: 1.65rem; }
 	.article-content :global(h2), .article-section h2 { margin: 1.1rem 0 0; color: #2563eb; font-family: var(--font-heading); font-size: clamp(1.38rem, 1.2rem + .7vw, 1.62rem); line-height: 1.2; }
+	.article-content :global(h3) { margin: .85rem 0 0; font-family: var(--font-heading); font-size: clamp(1.12rem, 1.05rem + .35vw, 1.28rem); line-height: 1.3; }
 	.article-content :global(p), .article-content :global(li), .article-section li { margin: 0; font-size: clamp(1rem, .96rem + .35vw, 1.08rem); line-height: 1.75; }
 	.article-content :global(ul), .article-content :global(ol), .article-section ul { display: grid; gap: .45rem; margin: 0; padding-left: 1.2rem; }
-	.article-content :global(a), .article-section a { text-decoration: underline; text-underline-offset: 2px; }
+	.article-content :global(a), .article-section a { color: #2563eb; font-weight: 600; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
+	.article-content :global(a:hover), .article-content :global(a:focus-visible), .article-section a:hover, .article-section a:focus-visible { color: #1d4ed8; outline: 2px solid currentColor; outline-offset: 3px; }
+	.article-content :global(blockquote) { margin: 0; padding: .35rem 0 .35rem 1rem; border-left: 3px solid #60a5fa; color: inherit; font-size: clamp(1rem, .96rem + .35vw, 1.08rem); font-style: italic; line-height: 1.75; opacity: .9; }
+	.article-content :global(hr) { width: 100%; height: 1px; margin: .5rem 0; border: 0; background: hsl(var(--border)); }
 	.article-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid hsl(var(--border)); }
 	.article-section h2 { margin-top: 0; }
 	.article-section ul { margin-top: .75rem; }
 	:global(.dark) .article-content :global(h2), :global(.dark) .article-section h2 { color: #93c5fd; }
+	:global(.dark) .article-content :global(a), :global(.dark) .article-section a { color: #93c5fd; }
 </style>

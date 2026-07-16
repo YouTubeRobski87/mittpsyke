@@ -22,7 +22,7 @@ export const load: PageServerLoad = ({ params }) => {
 			...article,
 			dateLabel: getArticleDateLabel(article),
 			updatedLabel: article.updated ? getArticleDateLabel({ date: article.updated }) : null,
-			content: renderArticleMarkdown(article.body)
+			content: renderArticleMarkdown(article.body, article.title)
 		},
 		topic
 	};

@@ -137,8 +137,58 @@ renderer.heading = function ({ tokens, depth }: Tokens.Heading) {
 	return `<h${level}>${this.parser.parseInline(tokens)}</h${level}>\n`;
 };
 
-export function renderArticleMarkdown(markdown: string) {
-	const html = marked.parse(markdown, { async: false, gfm: true, renderer });
+function escapeHtmlAttribute(value: string) {
+	return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function isSafeArticleHref(href: string) {
+	if (href.startsWith('/') && !href.startsWith('//')) return true;
+	if (href.startsWith('#') || href.startsWith('?')) return true;
+
+	try {
+		const url = new URL(href);
+		return ['http:', 'https:', 'mailto:'].includes(url.protocol);
+	} catch {
+		return false;
+	}
+}
+
+renderer.link = function ({ href, title, tokens }: Tokens.Link) {
+	const text = this.parser.parseInline(tokens);
+	if (!href || !isSafeArticleHref(href)) return text;
+
+	const titleAttribute = title ? ` title="${escapeHtmlAttribute(title)}"` : '';
+	return `<a href="${escapeHtmlAttribute(href)}"${titleAttribute}>${text}</a>`;
+};
+
+function unwrapMarkdownDocumentFence(markdown: string) {
+	const fencedDocument = markdown
+		.trim()
+		.match(/^```(?:markdown|md)\s*\r?\n([\s\S]*?)\r?\n```\s*$/i);
+
+	return fencedDocument ? fencedDocument[1].trim() : markdown;
+}
+
+function normalizeHeading(value: string) {
+	return value
+		.trim()
+		.replace(/[–—]/g, '-')
+		.replace(/\s+/g, ' ')
+		.toLocaleLowerCase('sv-SE');
+}
+
+function removeLeadingDuplicateTitle(markdown: string, title?: string) {
+	if (!title) return markdown;
+
+	const heading = markdown.match(/^#\s+([^\r\n]+)\r?\n?/);
+	if (!heading || normalizeHeading(heading[1]) !== normalizeHeading(title)) return markdown;
+
+	return markdown.slice(heading[0].length).replace(/^\s*\r?\n/, '');
+}
+
+export function renderArticleMarkdown(markdown: string, title?: string) {
+	const content = removeLeadingDuplicateTitle(unwrapMarkdownDocumentFence(markdown), title);
+	const html = marked.parse(content, { async: false, gfm: true, renderer });
 	return typeof html === 'string' ? html : '';
 }
 
