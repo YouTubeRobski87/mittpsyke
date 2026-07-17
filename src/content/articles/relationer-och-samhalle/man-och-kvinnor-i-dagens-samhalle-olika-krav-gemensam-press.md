@@ -46,6 +46,17 @@ references:
 
     Forskning om psykisk hälsa, relationer och sociala faktorer
     https://forte.se
+relatedArticles:
+  - title: Vad händer i hjärnan när du känner ångest
+    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
+  - title: Oro eller stress – varför kroppen går på högvarv
+    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv
+  - title: Stresshantering för föräldrar
+    url: https://www.mittpsyke.se/blogg/stresshantering-foraldrar
+  - title: Digital återhämtning
+    url: https://www.mittpsyke.se/blogg/digital-aterhamtning
+  - title: Verktyg som minskar inre kaos
+    url: https://www.mittpsyke.se/blogg/verktyg-som-minskar-inre-kaos
 draft: true
 ---
 ## Vi lever i samma samhälle men möter olika förväntningar
