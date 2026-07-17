@@ -337,16 +337,16 @@ export const WOLF_SCENE_PLACEMENTS = {
 	dashboard: { scale: 0.9, x: 76, y: 84 },
 	progress: {
 		scale: 1.23,
-		bottom: '28.5%',
+		bottom: '41%',
 		right: '26%',
 		groundLeft: '61.9%',
-		groundTop: '66%',
+		groundTop: '58%',
 		compact: {
 			scale: 1.23,
-			bottom: '27.5%',
+			bottom: '39%',
 			right: '25%',
 			groundLeft: '65.8%',
-			groundTop: '66%'
+			groundTop: '58%'
 		}
 	}
 } as const;
