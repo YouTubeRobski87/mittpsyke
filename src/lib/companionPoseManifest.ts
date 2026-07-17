@@ -334,7 +334,21 @@ export const BEAR_SCENE_PLACEMENTS = {
 // Dashboardplaceringen hålls därför separat så att den kan vila på marken
 // utan att påverka rävens eller björnens etablerade placeringar.
 export const WOLF_SCENE_PLACEMENTS = {
-	dashboard: { scale: 0.9, x: 76, y: 84 }
+	dashboard: { scale: 0.9, x: 76, y: 84 },
+	progress: {
+		scale: 1.23,
+		bottom: '28.5%',
+		right: '26%',
+		groundLeft: '61.9%',
+		groundTop: '66%',
+		compact: {
+			scale: 1.23,
+			bottom: '27.5%',
+			right: '25%',
+			groundLeft: '65.8%',
+			groundTop: '66%'
+		}
+	}
 } as const;
 
 export const COMPANION_POSES: readonly CompanionPose[] = [

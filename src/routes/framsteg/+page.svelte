@@ -22,6 +22,7 @@
 	import { getCompanionBasePose } from '$lib/companionPoseState';
 	import {
 		BEAR_SCENE_PLACEMENTS,
+		WOLF_SCENE_PLACEMENTS,
 		type CompanionPose as CompanionPoseData
 	} from '$lib/companionPoseManifest';
 	import { getLivingWorldScene } from '$lib/worldScene';
@@ -128,6 +129,22 @@
 					`--bear-progress-compact-right: ${BEAR_SCENE_PLACEMENTS.progress.compact.right}`,
 					`--bear-progress-compact-ground-left: ${BEAR_SCENE_PLACEMENTS.progress.compact.groundLeft}`,
 					`--bear-progress-compact-ground-top: ${BEAR_SCENE_PLACEMENTS.progress.compact.groundTop}`
+				].join('; ')
+			: undefined
+	);
+	const wolfProgressSceneStyle = $derived(
+		sceneCompanionId === 'wolf'
+			? [
+					`--wolf-progress-scale: ${WOLF_SCENE_PLACEMENTS.progress.scale}`,
+					`--wolf-progress-bottom: ${WOLF_SCENE_PLACEMENTS.progress.bottom}`,
+					`--wolf-progress-right: ${WOLF_SCENE_PLACEMENTS.progress.right}`,
+					`--wolf-progress-ground-left: ${WOLF_SCENE_PLACEMENTS.progress.groundLeft}`,
+					`--wolf-progress-ground-top: ${WOLF_SCENE_PLACEMENTS.progress.groundTop}`,
+					`--wolf-progress-compact-scale: ${WOLF_SCENE_PLACEMENTS.progress.compact.scale}`,
+					`--wolf-progress-compact-bottom: ${WOLF_SCENE_PLACEMENTS.progress.compact.bottom}`,
+					`--wolf-progress-compact-right: ${WOLF_SCENE_PLACEMENTS.progress.compact.right}`,
+					`--wolf-progress-compact-ground-left: ${WOLF_SCENE_PLACEMENTS.progress.compact.groundLeft}`,
+					`--wolf-progress-compact-ground-top: ${WOLF_SCENE_PLACEMENTS.progress.compact.groundTop}`
 				].join('; ')
 			: undefined
 	);
@@ -794,7 +811,7 @@
 				data-time={companionScene.timeOfDay}
 				data-companion={sceneCompanionId}
 				data-pose={companionBasePose?.id}
-				style={bearProgressSceneStyle}
+				style={bearProgressSceneStyle ?? wolfProgressSceneStyle}
 			>
 				<img
 					class="companion-world-scene"
@@ -1205,6 +1222,13 @@
 		transform-origin: 50% 100%;
 	}
 
+	.companion-media[data-companion='wolf'] :global(.progress-companion-pose) {
+		right: var(--wolf-progress-right);
+		bottom: var(--wolf-progress-bottom);
+		transform: scale(var(--wolf-progress-scale));
+		transform-origin: 50% 100%;
+	}
+
 	.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
 		width: clamp(50px, 11.2%, 74px);
 		bottom: 27.8%;
@@ -1222,6 +1246,11 @@
 		height: clamp(9px, 1.45vw, 15px);
 		opacity: 0.62;
 		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-18deg) scaleX(1.28);
+	}
+
+	.companion-media[data-companion='wolf'] .companion-ground-shadow {
+		left: var(--wolf-progress-ground-left);
+		top: var(--wolf-progress-ground-top);
 	}
 
 	.companion-media[data-companion='bear'][data-pose='bear-sleeping'] .companion-ground-shadow {
@@ -1700,6 +1729,12 @@
 			transform: scale(var(--bear-progress-compact-scale));
 		}
 
+		.companion-media[data-companion='wolf'] :global(.progress-companion-pose) {
+			right: var(--wolf-progress-compact-right);
+			bottom: var(--wolf-progress-compact-bottom);
+			transform: scale(var(--wolf-progress-compact-scale));
+		}
+
 		.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
 			bottom: 28.5%;
 		}
@@ -1707,6 +1742,11 @@
 		.companion-media[data-companion='bear'] .companion-ground-shadow {
 			left: var(--bear-progress-compact-ground-left);
 			top: var(--bear-progress-compact-ground-top);
+		}
+
+		.companion-media[data-companion='wolf'] .companion-ground-shadow {
+			left: var(--wolf-progress-compact-ground-left);
+			top: var(--wolf-progress-compact-ground-top);
 		}
 		.companion-ground-shadow {
 			left: 70.8%;
