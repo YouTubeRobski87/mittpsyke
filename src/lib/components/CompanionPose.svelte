@@ -305,6 +305,24 @@
 			drop-shadow(0 16px 18px rgb(9 13 27 / 0.28));
 	}
 
+	/* Vargens panorama är redan frilagt. Behåll alpha-kanalen direkt i stället
+	 * för den generella mjuka masken, och förankra bildytan nedåt så tassarna
+	 * möter scenens markpunkt. */
+	.companion-pose[data-companion='wolf'] .companion-pose-image {
+		object-position: center bottom;
+		filter: saturate(0.78) contrast(0.9) brightness(0.96) sepia(0.08);
+		-webkit-mask-image: none;
+		mask-image: none;
+	}
+
+	.companion-pose[data-companion='wolf'][data-daypart='evening'] .companion-pose-image {
+		filter: saturate(0.72) contrast(0.9) brightness(0.9) sepia(0.13);
+	}
+
+	.companion-pose[data-companion='wolf'][data-daypart='night'] .companion-pose-image {
+		filter: saturate(0.62) contrast(0.88) brightness(0.78) sepia(0.1);
+	}
+
 	@keyframes companionPoseBreath {
 		0%,
 		100% {

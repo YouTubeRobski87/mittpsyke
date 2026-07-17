@@ -26,7 +26,7 @@
     type DashboardCompanionScene,
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
-  import { BEAR_SCENE_PLACEMENTS } from '$lib/companionPoseManifest';
+  import { BEAR_SCENE_PLACEMENTS, WOLF_SCENE_PLACEMENTS } from '$lib/companionPoseManifest';
   import { getLivingWorldScene, type LivingWorldScene } from '$lib/worldScene';
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
@@ -201,7 +201,13 @@
         <CompanionPose
           class="hero-companion-pose"
           companionId={heroCompanionId}
-          placement={heroCompanionId === 'bear' ? BEAR_SCENE_PLACEMENTS.dashboard : null}
+          placement={
+            heroCompanionId === 'bear'
+              ? BEAR_SCENE_PLACEMENTS.dashboard
+              : heroCompanionId === 'wolf'
+                ? WOLF_SCENE_PLACEMENTS.dashboard
+                : null
+          }
         />
         <LivingWorld scene={livingWorldScene} class="hero-living-world" />
         <div class="hero-copy">

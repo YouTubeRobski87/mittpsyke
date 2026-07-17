@@ -330,6 +330,13 @@ export const BEAR_SCENE_PLACEMENTS = {
 	}
 } as const;
 
+// Vargens frilagda, liggande bild har luft under tassarna i sin egen canvas.
+// Dashboardplaceringen hålls därför separat så att den kan vila på marken
+// utan att påverka rävens eller björnens etablerade placeringar.
+export const WOLF_SCENE_PLACEMENTS = {
+	dashboard: { scale: 0.9, x: 76, y: 84 }
+} as const;
+
 export const COMPANION_POSES: readonly CompanionPose[] = [
 	...FOX_COMPANION_POSES,
 	...BEAR_COMPANION_POSES,
