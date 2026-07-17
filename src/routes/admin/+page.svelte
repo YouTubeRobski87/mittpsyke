@@ -175,6 +175,7 @@
 			A/B-testing
 		</button>
 		<a href="/admin/stories">Stories</a>
+		<a href="/admin/radar">Radar</a>
 	</div>
 
 	{#if form?.error}
