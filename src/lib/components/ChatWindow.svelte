@@ -807,15 +807,17 @@
 			<span class="history-notice">{HISTORY_NOTICE}</span>
 		{/if}
 
-		<button
-			type="button"
-			class="clear-history-button"
-			onclick={clearHistory}
-			disabled={sending || clearingHistory || messages.length === 0}
-			aria-label="Rensa den laddade chatthistoriken"
-		>
-			Rensa historik
-		</button>
+		{#if messages.length > 0 || clearingHistory}
+			<button
+				type="button"
+				class="clear-history-button"
+				onclick={clearHistory}
+				disabled={sending || clearingHistory || messages.length === 0}
+				aria-label="Rensa den laddade chatthistoriken"
+			>
+				Rensa historik
+			</button>
+		{/if}
 	</div>
 
 	<div
@@ -1557,17 +1559,18 @@
 
 	@media (max-width: 768px) {
 		.chat-container {
-			height: calc(100svh - 3.5rem - env(safe-area-inset-top));
-			min-height: calc(100svh - 3.5rem - env(safe-area-inset-top));
-			max-height: calc(100svh - 3.5rem - env(safe-area-inset-top));
+			flex: 1 1 auto;
+			height: auto;
+			min-height: 0;
+			max-height: none;
 			overflow: hidden;
 		}
 
 		@supports (height: 100dvh) {
 			.chat-container {
-				height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
-				min-height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
-				max-height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
+				height: auto;
+				min-height: 0;
+				max-height: none;
 			}
 		}
 
