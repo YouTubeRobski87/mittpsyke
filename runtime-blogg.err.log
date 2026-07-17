@@ -1,0 +1,180 @@
+
+[1;31m[500] GET /blogg[0m
+Error: Ogiltig artikel i /src/content/articles/relationer-och-samhalle/man-och-kvinnor-i-dagens-samhalle-olika-krav-gemensam-press.md: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      0
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      1
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      2
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      3
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      4
+    ],
+    "message": "Expected object, received string"
+  }
+]
+    at E:\mittpsyke-main\src\lib\server\article-content.ts:114:11
+    at Array.map (<anonymous>)
+    at getArticles (src\lib\server\article-content.ts:96:4)
+    at getPublishedArticles (src\lib\server\article-content.ts:121:9)
+    at load (src\routes\blogg\+page.server.ts:88:27)
+Avoid calling `fetch` eagerly during server-side rendering — put your `fetch` calls inside `onMount` or a `load` function instead
+
+[1;31m[500] GET /blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest[0m
+Error: Ogiltig artikel i /src/content/articles/relationer-och-samhalle/man-och-kvinnor-i-dagens-samhalle-olika-krav-gemensam-press.md: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      0
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      1
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      2
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      3
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      4
+    ],
+    "message": "Expected object, received string"
+  }
+]
+    at E:\mittpsyke-main\src\lib\server\article-content.ts:114:11
+    at Array.map (<anonymous>)
+    at getArticles (src\lib\server\article-content.ts:96:4)
+    at getPublishedArticles (src\lib\server\article-content.ts:121:9)
+    at getPublishedArticle (src\lib\server\article-content.ts:125:9)
+    at load (src\routes\blogg\amne\[collection]\[slug]\+page.server.ts:14:18)
+
+[1;31m[500] GET /blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv[0m
+Error: Ogiltig artikel i /src/content/articles/relationer-och-samhalle/man-och-kvinnor-i-dagens-samhalle-olika-krav-gemensam-press.md: [
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      0
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      1
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      2
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      3
+    ],
+    "message": "Expected object, received string"
+  },
+  {
+    "code": "invalid_type",
+    "expected": "object",
+    "received": "string",
+    "path": [
+      "references",
+      4
+    ],
+    "message": "Expected object, received string"
+  }
+]
+    at E:\mittpsyke-main\src\lib\server\article-content.ts:114:11
+    at Array.map (<anonymous>)
+    at getArticles (src\lib\server\article-content.ts:96:4)
+    at getPublishedArticles (src\lib\server\article-content.ts:121:9)
+    at getPublishedArticle (src\lib\server\article-content.ts:125:9)
+    at load (src\routes\blogg\amne\[collection]\[slug]\+page.server.ts:14:18)

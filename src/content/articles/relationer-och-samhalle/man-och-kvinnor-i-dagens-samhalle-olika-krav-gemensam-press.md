@@ -21,43 +21,22 @@ tags:
   - sociala medier
 readingTime: 7 min
 references:
-  - |-
-    Folkhälsomyndigheten
-
-    Psykisk hälsa och folkhälsa
-    https://www.folkhalsomyndigheten.se
-  - |-
-    1177 Vårdguiden
-
-    Stress, psykisk hälsa och egenvård
-    https://www.1177.se
-  - |-
-    Socialstyrelsen
-
-    Psykisk hälsa och jämlik vård
-    https://www.socialstyrelsen.se
-  - |-
-    SCB (Statistiska centralbyrån)
-
-    Statistik om levnadsförhållanden, ensamhet och jämställdhet
-    https://www.scb.se
-  - |-
-    Forte
-
-    Forskning om psykisk hälsa, relationer och sociala faktorer
-    https://forte.se
+  - label: Folkhälsomyndigheten – psykisk hälsa och folkhälsa
+    url: https://www.folkhalsomyndigheten.se
+  - label: 1177 Vårdguiden – stress, psykisk hälsa och egenvård
+    url: https://www.1177.se
+  - label: Socialstyrelsen – psykisk hälsa och jämlik vård
+    url: https://www.socialstyrelsen.se
+  - label: SCB – statistik om levnadsförhållanden, ensamhet och jämställdhet
+    url: https://www.scb.se
+  - label: Forte – forskning om psykisk hälsa, relationer och sociala faktorer
+    url: https://forte.se
 relatedArticles:
   - title: Vad händer i hjärnan när du känner ångest
     url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
   - title: Oro eller stress – varför kroppen går på högvarv
     url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv
-  - title: Stresshantering för föräldrar
-    url: https://www.mittpsyke.se/blogg/stresshantering-foraldrar
-  - title: Digital återhämtning
-    url: https://www.mittpsyke.se/blogg/digital-aterhamtning
-  - title: Verktyg som minskar inre kaos
-    url: https://www.mittpsyke.se/blogg/verktyg-som-minskar-inre-kaos
-draft: true
+draft: false
 ---
 ## Vi lever i samma samhälle men möter olika förväntningar
 
