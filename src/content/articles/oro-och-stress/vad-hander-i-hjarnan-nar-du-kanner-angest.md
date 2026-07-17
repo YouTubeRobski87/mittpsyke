@@ -8,7 +8,7 @@ imageAlt: En person sitter lugnt hemma med handen på bröstet, medan ett mjukt
   illustrerat hjärnmönster syns ovanför.
 date: 2026-07-15
 updated: 2026-07-16
-author: MittPsyke redaktion
+author: Robert Claesson
 collection: oro-och-stress
 tags:
   - ångest
