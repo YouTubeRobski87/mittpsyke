@@ -5,7 +5,7 @@
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
 
-	type CompanionId = 'fox' | 'bear';
+	type CompanionId = 'fox' | 'bear' | 'wolf';
 
 	let {
 		selection,
@@ -23,7 +23,7 @@
 
 	const choices = PROGRESS_COMPANION_ANIMALS.filter(
 		(companion): companion is (typeof PROGRESS_COMPANION_ANIMALS)[number] & { id: CompanionId } =>
-			companion.id === 'fox' || companion.id === 'bear'
+			companion.id === 'fox' || companion.id === 'bear' || companion.id === 'wolf'
 	);
 </script>
 

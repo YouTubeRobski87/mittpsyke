@@ -4,7 +4,7 @@ export type ProgressCompanionSelection = {
 	icon?: string;
 };
 
-export type ProgressCompanionId = 'fox' | 'bear';
+export type ProgressCompanionId = 'fox' | 'bear' | 'wolf';
 
 export type ProgressCompanionAnimal = {
 	id: string;
@@ -15,6 +15,7 @@ export type ProgressCompanionAnimal = {
 export type ProgressCompanionArtId =
 	| 'fox'
 	| 'bear'
+	| 'wolf'
 	| 'owl'
 	| 'rabbit'
 	| 'squirrel'
@@ -55,6 +56,7 @@ const DASHBOARD_COMPANION_IMAGE_PATHS = {
 export const PROGRESS_COMPANION_ANIMALS = [
 	{ id: 'fox', name: 'Räv', temperament: 'Nyfiken och varsam' },
 	{ id: 'bear', name: 'Björn', temperament: 'Lugn och stadig' },
+	{ id: 'wolf', name: 'Varg', temperament: 'Trygg och närvarande' },
 	{ id: 'owl', name: 'Uggla', temperament: 'Vaken och stilla' },
 	{ id: 'rabbit', name: 'Kanin', temperament: 'Mjuk och uppmärksam' },
 	{ id: 'squirrel', name: 'Ekorre', temperament: 'Liten och närvarande' },
@@ -96,7 +98,7 @@ const COMPANION_NESTED_KEYS = [
 ] as const;
 
 function isSupportedProgressCompanionId(id: string): id is ProgressCompanionId {
-	return id === 'fox' || id === 'bear';
+	return id === 'fox' || id === 'bear' || id === 'wolf';
 }
 
 function cleanString(value: unknown): string | null {
@@ -226,6 +228,7 @@ export function getProgressCompanionArtId(id: string | null | undefined): Progre
 	if (
 		id === 'fox' ||
 		id === 'bear' ||
+		id === 'wolf' ||
 		id === 'owl' ||
 		id === 'rabbit' ||
 		id === 'squirrel' ||

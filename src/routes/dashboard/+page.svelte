@@ -96,7 +96,9 @@
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
   const companionHeroImage = GENERIC_COMPANION_HERO_IMAGE;
-  const heroCompanionId = $derived(companionArtId === 'bear' ? 'bear' : 'fox') as 'fox' | 'bear';
+  const heroCompanionId = $derived(
+    companionArtId === 'bear' || companionArtId === 'wolf' ? companionArtId : 'fox'
+  ) as 'fox' | 'bear' | 'wolf';
   const heroFocus = $derived(getProgressCompanionHeroFocus(heroCompanionId));
   const companionHeroAlt =
   'En vaken, nyfiken räv sitter vid ett träd i en varm och stillsam naturmiljö vid en sjö';

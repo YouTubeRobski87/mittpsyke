@@ -54,12 +54,15 @@
 	let companionBasePose = $state<CompanionPoseData | null>(null);
 	const livingWorldScene = $derived(getLivingWorldScene({ season, timeOfDay }));
 
-	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: 'fox' | 'bear') {
+	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: 'fox' | 'bear' | 'wolf') {
 		if (companionId === 'bear') {
 			if (poseId.startsWith('sleep')) {
 				return anonymous ? 'Björnen vilar lugnt medan platsen är stilla.' : 'Björnen vilar lugnt vid sjön.';
 			}
 			return anonymous ? 'Björnen håller platsen lugnt sällskap.' : 'Björnen håller dig lugnt sällskap.';
+		}
+		if (companionId === 'wolf') {
+			return anonymous ? 'Vargen håller platsen stilla sällskap.' : 'Vargen håller dig stilla sällskap.';
 		}
 		if (poseId.startsWith('sleep')) {
 			return anonymous ? 'Räven sover lugnt medan platsen vilar.' : 'Räven sover lugnt vid sjön.';
@@ -97,14 +100,18 @@
 			getProgressCompanionAnimal(data.isAnonymous ? { id: 'fox' } : data.progressCompanion)?.id
 		) === 'bear'
 			? 'bear'
-			: 'fox'
-	) as 'fox' | 'bear';
+			: getProgressCompanionArtId(
+				getProgressCompanionAnimal(data.isAnonymous ? { id: 'fox' } : data.progressCompanion)?.id
+			) === 'wolf'
+				? 'wolf'
+				: 'fox'
+	) as 'fox' | 'bear' | 'wolf';
 
 	const companionScene = $derived<CompanionScene>({
 		image: COMPANION_WORLD_SCENE_IMAGE,
 		season,
 		timeOfDay,
-		alt: `Din följeslagare, ${sceneCompanionId === 'bear' ? 'björnen' : 'räven'}, vid sjön`,
+		alt: `Din följeslagare, ${sceneCompanionId === 'bear' ? 'björnen' : sceneCompanionId === 'wolf' ? 'vargen' : 'räven'}, vid sjön`,
 		copy: getCompanionPoseCopy(companionPoseId, false, sceneCompanionId),
 		anonymousCopy: getCompanionPoseCopy(companionPoseId, true, sceneCompanionId)
 	});

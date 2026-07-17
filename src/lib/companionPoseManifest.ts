@@ -1,6 +1,6 @@
 export type CompanionPoseDaypart = 'day' | 'evening' | 'night';
 export type CompanionPoseRole = 'base' | 'overlay';
-export type CompanionId = 'fox' | 'bear';
+export type CompanionId = 'fox' | 'bear' | 'wolf';
 
 export type CompanionPoseFrame = {
 	src: string;
@@ -48,6 +48,7 @@ const FOX_POSE_BASE_PATH = '/images/avatars/presets';
 
 const foxPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
 const bearPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
+const wolfPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
 
 export const FOX_COMPANION_POSES = [
 	{
@@ -295,6 +296,19 @@ export const BEAR_COMPANION_POSES = [
 	}
 ] satisfies CompanionPose[];
 
+export const WOLF_COMPANION_POSES = [
+	{
+		id: 'wolf-standing',
+		companionId: 'wolf',
+		role: 'base',
+		dayparts: ['day', 'evening', 'night'],
+		frames: [{ src: wolfPoseSrc('wolf-standing.png') }],
+		alt: 'Din följeslagare, vargen, står lugnt.',
+		weight: 2.4,
+		sceneAdjustment: { scale: 0.74, y: 3 }
+	}
+] satisfies CompanionPose[];
+
 // Björnen använder samma värld som räven, men behöver en mindre och lägre placering
 // tills fler miljöanpassade poser finns. Värdena hålls per vy så att nya björnposer
 // kan läggas till utan att påverka rävens scenlogik.
@@ -318,7 +332,8 @@ export const BEAR_SCENE_PLACEMENTS = {
 
 export const COMPANION_POSES: readonly CompanionPose[] = [
 	...FOX_COMPANION_POSES,
-	...BEAR_COMPANION_POSES
+	...BEAR_COMPANION_POSES,
+	...WOLF_COMPANION_POSES
 ];
 
 export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
@@ -348,7 +363,8 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 			'bear-standing',
 			'bear-sitting',
 			'bear-sleeping',
-			'bear-stretching'
+			'bear-stretching',
+			'wolf-standing'
 		],
 		dayparts: ['day', 'evening', 'night'],
 		weight: 2.2

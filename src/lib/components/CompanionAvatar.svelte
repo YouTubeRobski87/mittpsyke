@@ -52,6 +52,14 @@
 				<ellipse class="belly" cx="51" cy="67" rx="13" ry="14" />
 				<ellipse class="face" cx="49" cy="42" rx="23" ry="21" />
 				<path class="muzzle" d="M34 49 C40 42 58 42 64 49 C59 58 39 58 34 49 Z" />
+			{:else if artId === 'wolf'}
+				<path class="wolf-tail" d="M31 66 C13 64 12 43 29 35 C27 49 36 56 48 61 C43 68 36 70 31 66 Z" />
+				<path class="ear wolf-ear" d="M30 39 L37 16 L47 40 Z" />
+				<path class="ear wolf-ear" d="M51 40 L62 16 L67 43 Z" />
+				<ellipse class="body" cx="50" cy="62" rx="25" ry="23" />
+				<ellipse class="belly" cx="51" cy="68" rx="13" ry="13" />
+				<ellipse class="face" cx="49" cy="43" rx="23" ry="20" />
+				<path class="muzzle wolf-muzzle" d="M33 49 C39 43 59 43 66 50 C61 59 39 59 33 49 Z" />
 			{:else if artId === 'owl'}
 				<path class="ear" d="M29 36 L36 17 L48 35 Z" />
 				<path class="ear" d="M49 35 L62 17 L67 37 Z" />
@@ -167,6 +175,16 @@
 		--companion-face: #d68a55;
 	}
 
+	.companion-avatar[data-companion='wolf'] {
+		--companion-sky-top: #e8edf0;
+		--companion-sky-bottom: #cbd9d4;
+		--companion-ground: #8fae98;
+		--companion-body: #7d8584;
+		--companion-body-dark: #586362;
+		--companion-belly: #e4ddd1;
+		--companion-face: #99a09e;
+	}
+
 	.companion-avatar[data-companion='owl'] {
 		--companion-sky-top: #ece8d9;
 		--companion-sky-bottom: #cbdccf;
@@ -248,6 +266,7 @@
 	}
 
 	.tail,
+	.wolf-tail,
 	.squirrel-tail {
 		fill: var(--companion-body-dark);
 	}
@@ -255,6 +274,9 @@
 	.tail-tip {
 		fill: var(--companion-belly);
 	}
+
+	.wolf-ear { fill: var(--companion-body-dark); }
+	.wolf-muzzle { fill: var(--companion-belly); }
 
 	.rabbit-ear,
 	.ear-round {

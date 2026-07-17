@@ -303,7 +303,7 @@
 		}
 	}
 
-	async function selectCompanion(id: 'fox' | 'bear') {
+	async function selectCompanion(id: 'fox' | 'bear' | 'wolf') {
 		if (companionSaving || progressCompanion?.id === id) return;
 
 		const previousCompanion = progressCompanion;
@@ -325,7 +325,7 @@
 		}
 
 		await supabase.auth.refreshSession();
-		companionMessage = `${id === 'fox' ? 'Räv' : 'Björn'} är nu din följeslagare.`;
+		companionMessage = `${id === 'fox' ? 'Räv' : id === 'bear' ? 'Björn' : 'Varg'} är nu din följeslagare.`;
 		companionMessageType = 'success';
 		setTimeout(() => {
 			companionMessage = '';
