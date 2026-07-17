@@ -33,6 +33,7 @@ $$;
 revoke all on function public.radar_validate_secret(text) from public, anon, authenticated;
 grant execute on function public.radar_validate_secret(text) to service_role;
 
+<<<<<<< ours
 drop policy if exists "radar_findings_admin_select" on public.radar_findings;
 create policy "radar_findings_admin_select"
 on public.radar_findings for select
@@ -58,6 +59,8 @@ on public.radar_runs for select
 to authenticated
 using ((select public.current_user_is_super_admin()));
 
+=======
+>>>>>>> theirs
 select cron.schedule(
   'mittpsyke-radar-daily',
   '15 6 * * *',
