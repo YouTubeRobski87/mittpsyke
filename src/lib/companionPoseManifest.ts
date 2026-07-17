@@ -302,7 +302,7 @@ export const WOLF_COMPANION_POSES = [
 		companionId: 'wolf',
 		role: 'base',
 		dayparts: ['day', 'evening', 'night'],
-		frames: [{ src: wolfPoseSrc('wolf-standing.png') }],
+		frames: [{ src: wolfPoseSrc('wolf-standing-transparent.png') }],
 		alt: 'Din följeslagare, vargen, står lugnt.',
 		weight: 2.4,
 		sceneAdjustment: { scale: 0.74, y: 3 }
