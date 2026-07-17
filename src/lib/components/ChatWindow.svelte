@@ -1582,8 +1582,8 @@
 		}
 
 		.chat-messages {
-			flex: 1 0 65svh;
-			min-height: 65svh;
+			flex: 1 1 auto;
+			min-height: 0;
 			padding: 0.6rem 0.65rem 1rem;
 			overflow-y: auto;
 			overscroll-behavior: contain;
@@ -1592,8 +1592,8 @@
 
 		@supports (height: 100dvh) {
 			.chat-messages {
-				flex-basis: 65dvh;
-				min-height: 65dvh;
+				flex-basis: auto;
+				min-height: 0;
 			}
 		}
 

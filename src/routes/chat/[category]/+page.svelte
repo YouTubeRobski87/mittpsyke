@@ -228,4 +228,12 @@
 		background: rgba(23, 29, 36, 0.84);
 		border-color: rgba(255, 255, 255, 0.08);
 	}
+
+	@media (max-width: 768px) {
+		/* Chatten behöver börja direkt under sidhuvudet på små skärmar.
+		 * Annars hamnar samtycket och skrivfältet utanför den låsta chattytan. */
+		.chat-intro-panel {
+			display: none;
+		}
+	}
 </style>
