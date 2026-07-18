@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { createServiceClient, isMissingTableError, isUuid } from '$lib/server/supabase-admin';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -13,54 +13,52 @@ const RADAR_STATUSES: RadarStatus[] = [
 	'development_task'
 ];
 
-const RADAR_ADMIN_USER_IDS = new Set(['f4f107ef-461a-4090-bc2f-6ddccc0cc64d']);
-const RADAR_ADMIN_EMAILS = new Set(['rbsthh@gmail.com']);
-
 function getAdminClient(locals: App.Locals) {
 	return createServiceClient() ?? locals.supabase;
 }
 
-async function isRadarAdmin(
-	locals: App.Locals,
-	user: Awaited<ReturnType<App.Locals['getSession']>>
-) {
-	if (!user) return false;
+async function checkRadarAdmin(locals: App.Locals, pathname: string) {
+	const user = await locals.getSession();
+	const serviceClient = createServiceClient();
+	const sessionIsAdmin = user?.is_super_admin === true;
+	let adminLookup: 'not_run' | 'found' | 'missing' | 'error' = 'not_run';
 
-	const sessionEmail = user.email?.trim().toLowerCase() ?? '';
-	if (
-		user.is_super_admin ||
-		RADAR_ADMIN_USER_IDS.has(user.id) ||
-		RADAR_ADMIN_EMAILS.has(sessionEmail)
-	) {
-		return true;
+	if (user && serviceClient) {
+		const { data, error: lookupError } = await serviceClient.auth.admin.getUserById(user.id);
+		adminLookup = lookupError ? 'error' : data.user ? 'found' : 'missing';
 	}
 
-	const serviceClient = createServiceClient();
-	if (!serviceClient) return false;
+	// Tillfällig diagnostik för Render. Inga nycklar, tokenvärden eller cookieinnehåll loggas.
+	console.info('[radar-admin-auth]', {
+		pathname,
+		hasSession: Boolean(user),
+		userId: user?.id ?? null,
+		userEmail: user?.email ?? null,
+		isSuperAdmin: user?.is_super_admin ?? false,
+		serviceClientCreated: Boolean(serviceClient),
+		adminGetUserById: adminLookup,
+		failedCheck: !user ? 'missing_session' : !sessionIsAdmin ? 'not_super_admin' : null
+	});
 
-	const { data, error } = await serviceClient.auth.admin.getUserById(user.id);
-	if (error || !data.user) return false;
-
-	const verifiedEmail = data.user.email?.trim().toLowerCase() ?? '';
-	return RADAR_ADMIN_EMAILS.has(verifiedEmail);
+	return { user, isAdmin: sessionIsAdmin };
 }
 
-async function requireAdmin(locals: App.Locals) {
-	const user = await locals.getSession();
+async function requireAdmin(locals: App.Locals, pathname: string) {
+	const { user, isAdmin } = await checkRadarAdmin(locals, pathname);
 	if (!user) throw redirect(303, '/login?redirect=/admin/radar');
-	if (!(await isRadarAdmin(locals, user))) throw redirect(303, '/?admin=denied');
+	if (!isAdmin) throw error(403, 'Du är inloggad men har inte behörighet till Radar.');
 	return user;
 }
 
 async function ensureAdmin(locals: App.Locals) {
-	const user = await locals.getSession();
+	const { user, isAdmin } = await checkRadarAdmin(locals, '/admin/radar (action)');
 	if (!user) return fail(401, { error: 'Du behöver logga in igen.' });
-	if (!(await isRadarAdmin(locals, user))) return fail(403, { error: 'Åtkomst nekad.' });
+	if (!isAdmin) return fail(403, { error: 'Du har inte behörighet till Radar.' });
 	return user;
 }
 
-export const load: PageServerLoad = async ({ locals }) => {
-	await requireAdmin(locals);
+export const load: PageServerLoad = async ({ locals, url }) => {
+	await requireAdmin(locals, url.pathname);
 	const admin = getAdminClient(locals);
 
 	const [findingsResult, sourcesResult, runsResult] = await Promise.all([
