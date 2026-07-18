@@ -17,48 +17,27 @@ function getAdminClient(locals: App.Locals) {
 	return createServiceClient() ?? locals.supabase;
 }
 
-async function checkRadarAdmin(locals: App.Locals, pathname: string) {
+async function checkRadarAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
-	const serviceClient = createServiceClient();
-	const sessionIsAdmin = user?.is_super_admin === true;
-	let adminLookup: 'not_run' | 'found' | 'missing' | 'error' = 'not_run';
-
-	if (user && serviceClient) {
-		const { data, error: lookupError } = await serviceClient.auth.admin.getUserById(user.id);
-		adminLookup = lookupError ? 'error' : data.user ? 'found' : 'missing';
-	}
-
-	// Tillfällig diagnostik för Render. Inga nycklar, tokenvärden eller cookieinnehåll loggas.
-	console.info('[radar-admin-auth]', {
-		pathname,
-		hasSession: Boolean(user),
-		userId: user?.id ?? null,
-		userEmail: user?.email ?? null,
-		isSuperAdmin: user?.is_super_admin ?? false,
-		serviceClientCreated: Boolean(serviceClient),
-		adminGetUserById: adminLookup,
-		failedCheck: !user ? 'missing_session' : !sessionIsAdmin ? 'not_super_admin' : null
-	});
-
-	return { user, isAdmin: sessionIsAdmin };
+	return { user, isAdmin: user?.is_super_admin === true };
 }
 
-async function requireAdmin(locals: App.Locals, pathname: string) {
-	const { user, isAdmin } = await checkRadarAdmin(locals, pathname);
+async function requireAdmin(locals: App.Locals) {
+	const { user, isAdmin } = await checkRadarAdmin(locals);
 	if (!user) throw redirect(303, '/login?redirect=/admin/radar');
 	if (!isAdmin) throw error(403, 'Du är inloggad men har inte behörighet till Radar.');
 	return user;
 }
 
 async function ensureAdmin(locals: App.Locals) {
-	const { user, isAdmin } = await checkRadarAdmin(locals, '/admin/radar (action)');
+	const { user, isAdmin } = await checkRadarAdmin(locals);
 	if (!user) return fail(401, { error: 'Du behöver logga in igen.' });
 	if (!isAdmin) return fail(403, { error: 'Du har inte behörighet till Radar.' });
 	return user;
 }
 
-export const load: PageServerLoad = async ({ locals, url }) => {
-	await requireAdmin(locals, url.pathname);
+export const load: PageServerLoad = async ({ locals }) => {
+	await requireAdmin(locals);
 	const admin = getAdminClient(locals);
 
 	const [findingsResult, sourcesResult, runsResult] = await Promise.all([
