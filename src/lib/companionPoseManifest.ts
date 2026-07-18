@@ -336,17 +336,17 @@ export const BEAR_SCENE_PLACEMENTS = {
 export const WOLF_SCENE_PLACEMENTS = {
 	dashboard: { scale: 0.9, x: 76, y: 84 },
 	progress: {
-		scale: 1.23,
-		bottom: '41%',
-		right: '26%',
-		groundLeft: '61.9%',
-		groundTop: '58%',
+		scale: 1.6,
+		bottom: '47%',
+		right: '21%',
+		groundLeft: '76%',
+		groundTop: '53%',
 		compact: {
-			scale: 1.23,
-			bottom: '39%',
-			right: '25%',
-			groundLeft: '65.8%',
-			groundTop: '58%'
+			scale: 1.34,
+			bottom: '42%',
+			right: '20%',
+			groundLeft: '75%',
+			groundTop: '54%'
 		}
 	}
 } as const;

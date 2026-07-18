@@ -1251,6 +1251,19 @@
 	.companion-media[data-companion='wolf'] .companion-ground-shadow {
 		left: var(--wolf-progress-ground-left);
 		top: var(--wolf-progress-ground-top);
+		width: clamp(42px, 7.4%, 72px);
+		height: clamp(5px, 0.7vw, 8px);
+		filter: blur(4.5px);
+		opacity: 0.28;
+		transform: translate3d(-50%, -50%, 0) rotate(-5deg) skewX(-12deg) scaleX(1.12);
+	}
+
+	.companion-media[data-companion='wolf'] .companion-foreground-edge {
+		left: var(--wolf-progress-ground-left);
+		top: calc(var(--wolf-progress-ground-top) + 0.35%);
+		width: clamp(50px, 7.9%, 78px);
+		height: clamp(13px, 1.9vw, 20px);
+		opacity: 0.32;
 	}
 
 	.companion-media[data-companion='bear'][data-pose='bear-sleeping'] .companion-ground-shadow {
@@ -1268,6 +1281,11 @@
 			hue-rotate(-6deg);
 	}
 
+	.companion-media[data-companion='wolf'][data-time='evening'] :global(.progress-companion-pose) {
+		--companion-grade: saturate(0.62) contrast(0.84) brightness(0.84) sepia(0.21)
+			hue-rotate(-8deg) blur(0.12px);
+	}
+
 	.companion-media[data-time='night'] :global(.progress-companion-pose) {
 		--companion-grade: saturate(0.55) contrast(0.84) brightness(0.72) sepia(0.14)
 			hue-rotate(5deg);
@@ -1277,6 +1295,13 @@
 		filter: var(--companion-grade) drop-shadow(0 7px 8px rgb(37 31 20 / 0.1));
 		-webkit-mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.88) 89%, transparent 100%);
 		mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.88) 89%, transparent 100%);
+	}
+
+	/* Vargbilden är redan frilagd. Låt dess egen alpha-kant möta skuggan och
+	 * förgrunden, i stället för att lägga på den generella panoramamasken. */
+	.companion-media[data-companion='wolf'] :global(.progress-companion-pose .companion-pose-image) {
+		-webkit-mask-image: none;
+		mask-image: none;
 	}
 
 	.companion-ground-shadow,
