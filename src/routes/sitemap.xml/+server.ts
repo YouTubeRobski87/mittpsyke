@@ -280,7 +280,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 
 	const markdownArticlePages: SitemapEntry[] = getPublishedArticles().map((article) => ({
 		path: article.url,
-		lastmod: (article.updated ?? article.date).toISOString().slice(0, 10),
+		lastmod: (article.updated ?? article.date)?.toISOString().slice(0, 10) ?? BLOG_LASTMOD,
 		changefreq: 'monthly',
 		priority: '0.6'
 	}));

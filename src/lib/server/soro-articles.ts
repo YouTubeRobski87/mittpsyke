@@ -31,7 +31,8 @@ export type SoroArticleListItem = {
 type SoroRawArticle = Record<string, unknown>;
 
 // Normaliserar en slug-sträng oavsett om det är full URL, query-värde eller ren slug.
-export function normalizeSoroArticleSlug(value: string) {
+export function normalizeSoroArticleSlug(value: unknown) {
+	if (typeof value !== 'string') return '';
 	try {
 		const decoded = decodeURIComponent(value);
 		const url = decoded.startsWith('http') ? new URL(decoded) : null;
@@ -112,9 +113,10 @@ function extractArticles(embedScript: string): SoroArticleListItem[] {
 		}));
 }
 
-export async function fetchSoroArticles(fetcher: typeof fetch) {
+export async function fetchSoroArticles(fetcher: typeof fetch, fresh = false) {
 	try {
-		const embedResponse = await fetcher(`${SORO_EMBED_SRC}&cb=${Date.now()}`, {
+		const cacheBuster = fresh ? `&cb=${Date.now()}` : '';
+		const embedResponse = await fetcher(`${SORO_EMBED_SRC}${cacheBuster}`, {
 			headers: {
 				accept: 'application/javascript,*/*',
 				'user-agent': 'Mozilla/5.0'

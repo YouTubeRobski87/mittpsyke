@@ -2,30 +2,79 @@ import matter from 'gray-matter';
 import { marked, type Tokens } from 'marked';
 import { z } from 'zod';
 
+const DEFAULT_ARTICLE_TITLE = 'Artikel';
+const DEFAULT_ARTICLE_AUTHOR = 'MittPsyke';
+const MISSING_DATE_LABEL = 'Datum saknas';
+
+function getOptionalString(value: unknown, fallback = '') {
+	return typeof value === 'string' && value.trim() ? value.trim() : fallback;
+}
+
+function getOptionalDate(value: unknown) {
+	if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
+	if (typeof value !== 'string' && typeof value !== 'number') return null;
+
+	const date = new Date(value);
+	return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getBoolean(value: unknown) {
+	return value === true || value === 'true';
+}
+
+function getSafeArticleUrl(value: unknown) {
+	const url = getOptionalString(value);
+	if (!url) return null;
+	if (url.startsWith('/') && !url.startsWith('//')) return url;
+
+	try {
+		const parsed = new URL(url);
+		return ['http:', 'https:'].includes(parsed.protocol) ? url : null;
+	} catch {
+		return null;
+	}
+}
+
 const articleSchema = z.object({
-	title: z.string().min(1),
-	description: z.string().min(1),
-	image: z.string().min(1).optional(),
-	imageAlt: z.string().min(1).optional(),
-	date: z.coerce.date(),
-	updated: z.coerce.date().optional(),
-	author: z.string().min(1),
+	title: z.preprocess((value) => getOptionalString(value, DEFAULT_ARTICLE_TITLE), z.string()),
+	description: z.preprocess((value) => getOptionalString(value), z.string()),
+	image: z.preprocess((value) => getOptionalString(value) || undefined, z.string().optional()),
+	imageAlt: z.preprocess((value) => getOptionalString(value) || undefined, z.string().optional()),
+	date: z.preprocess(getOptionalDate, z.date().nullable()),
+	updated: z.preprocess(getOptionalDate, z.date().nullable()),
+	author: z.preprocess((value) => getOptionalString(value, DEFAULT_ARTICLE_AUTHOR), z.string()),
 	collection: z.string().min(1),
-	tags: z.array(z.string()).default([]),
-	readingTime: z.string().optional(),
+	tags: z.preprocess(
+		(value) => (Array.isArray(value) ? value.map((tag) => getOptionalString(tag)).filter(Boolean) : []),
+		z.array(z.string())
+	),
+	readingTime: z.preprocess((value) => getOptionalString(value) || undefined, z.string().optional()),
 	references: z
-		.array(
-			z.object({
-				label: z.string().min(1),
-				url: z.string().url()
-			})
+		.preprocess(
+			(value) => (Array.isArray(value) ? value : []),
+			z.array(z.object({ label: z.unknown(), url: z.unknown() }))
 		)
-		.default([]),
+		.transform((references) =>
+			references.flatMap((reference) => {
+				const label = getOptionalString(reference.label);
+				const url = getSafeArticleUrl(reference.url);
+				return label && url ? [{ label, url }] : [];
+			})
+		),
 	relatedArticles: z
-		.array(z.object({ title: z.string().min(1), url: z.string().min(1) }))
-		.default([]),
+		.preprocess(
+			(value) => (Array.isArray(value) ? value : []),
+			z.array(z.object({ title: z.unknown().optional(), url: z.unknown().optional() }))
+		)
+		.transform((relatedArticles) =>
+			relatedArticles.flatMap((relatedArticle) => {
+				const title = getOptionalString(relatedArticle.title);
+				const url = getSafeArticleUrl(relatedArticle.url);
+				return title && url ? [{ title, url }] : [];
+			})
+		),
 	type: z.enum(['article', 'guide']).default('article'),
-	draft: z.boolean().default(false)
+	draft: z.preprocess(getBoolean, z.boolean())
 });
 
 const articleTopicSchema = z.object({
@@ -89,14 +138,23 @@ export function getArticleTopics(): ArticleTopic[] {
 		.sort((a, b) => a.order - b.order || a.label.localeCompare(b.label, 'sv'));
 }
 
+export function parseArticleFrontmatter(data: unknown, collection: string) {
+	const parsed = articleSchema.parse(data);
+	if (parsed.collection !== collection) {
+		throw new Error(`Frontmatter collection does not match "${collection}"`);
+	}
+
+	return parsed;
+}
+
 export function getArticles(): Article[] {
 	const topics = new Set(getArticleTopics().map((topic) => topic.slug));
 
 	return Object.entries(articleFiles)
-		.map(([path, raw]) => {
+		.flatMap(([path, raw]) => {
 			const { collection, slug } = getArticlePathParts(path);
 			try {
-				const parsed = articleSchema.parse(matter(raw).data);
+				const parsed = parseArticleFrontmatter(matter(raw).data, collection);
 				if (parsed.collection !== collection) {
 					throw new Error(`frontmatter.collection måste vara "${collection}"`);
 				}
@@ -104,17 +162,21 @@ export function getArticles(): Article[] {
 					throw new Error(`okänt ämne "${parsed.collection}"`);
 				}
 
-				return {
+				return [{
 					...parsed,
 					slug,
 					url: `/blogg/amne/${collection}/${slug}`,
 					body: matter(raw).content.trim()
-				};
+				}];
 			} catch (cause) {
-				throw new Error(`Ogiltig artikel i ${path}: ${cause instanceof Error ? cause.message : cause}`);
+				console.error('[articles] Skipped invalid article', {
+					path,
+					reason: cause instanceof Error ? cause.message : String(cause)
+				});
+				return [];
 			}
 		})
-		.sort((a, b) => b.date.getTime() - a.date.getTime());
+		.sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
 }
 
 export function getPublishedArticles() {
@@ -193,5 +255,5 @@ export function renderArticleMarkdown(markdown: string, title?: string) {
 }
 
 export function getArticleDateLabel(article: Pick<Article, 'date'>) {
-	return formatDate(article.date);
+	return article.date ? formatDate(article.date) : MISSING_DATE_LABEL;
 }

@@ -91,7 +91,7 @@ export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 		slug: article.slug,
 		excerpt: article.description,
 		date: getArticleDateLabel(article),
-		isoDate: article.date.toISOString(),
+		isoDate: article.date?.toISOString() ?? '',
 		imageUrl: article.image ?? null,
 		href: article.url
 	}));
