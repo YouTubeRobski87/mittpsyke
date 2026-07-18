@@ -14,23 +14,32 @@ const RADAR_STATUSES: RadarStatus[] = [
 ];
 
 const RADAR_ADMIN_USER_IDS = new Set(['f4f107ef-461a-4090-bc2f-6ddccc0cc64d']);
+const RADAR_ADMIN_EMAILS = new Set(['rbsthh@gmail.com']);
 
 function getAdminClient(locals: App.Locals) {
 	return createServiceClient() ?? locals.supabase;
 }
 
 function isRadarAdmin(user: Awaited<ReturnType<App.Locals['getSession']>>) {
-	return Boolean(user && (user.is_super_admin || RADAR_ADMIN_USER_IDS.has(user.id)));
+	if (!user) return false;
+	const email = user.email?.trim().toLowerCase() ?? '';
+	return Boolean(
+		user.is_super_admin ||
+		RADAR_ADMIN_USER_IDS.has(user.id) ||
+		RADAR_ADMIN_EMAILS.has(email)
+	);
 }
 
 async function requireAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
-	if (!isRadarAdmin(user)) throw redirect(303, '/');
+	if (!user) throw redirect(303, '/login?redirect=/admin/radar');
+	if (!isRadarAdmin(user)) throw redirect(303, '/?admin=denied');
 	return user;
 }
 
 async function ensureAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
+	if (!user) return fail(401, { error: 'Du behöver logga in igen.' });
 	if (!isRadarAdmin(user)) return fail(403, { error: 'Åtkomst nekad.' });
 	return user;
 }
