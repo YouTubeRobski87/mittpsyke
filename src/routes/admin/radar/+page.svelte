@@ -14,6 +14,13 @@
 		development_task: 'Utvecklingsuppgift'
 	};
 
+	function nextStepLabel(action: string | null) {
+		if (action === 'agera_nu') return 'Agera nu';
+		if (action === 'testa_i_sandbox') return 'Testa';
+		if (action === 'bevaka') return 'Bevaka';
+		return 'Ignorera';
+	}
+
 	function formatDate(value: string | null) {
 		if (!value) return '–';
 		const date = new Date(value);
@@ -61,7 +68,7 @@
 	</section>
 
 	<section class="section">
-		<div class="section-heading"><h2>Senaste fynd</h2><p>Välj en lugn nästa hantering för varje fynd.</p></div>
+		<div class="section-heading"><h2>Senaste fynd</h2><p>Varje fynd får ett tydligt nästa steg: Agera nu, Testa, Bevaka eller Ignorera.</p></div>
 		{#if data.findings.length === 0}
 			<p class="notice">Inga fynd ännu. De visas här efter nästa körning.</p>
 		{:else}
@@ -72,6 +79,7 @@
 							<div><p class="meta">{finding.provider ?? 'Okänd källa'} · {formatDate(finding.published_at)}</p><h3><a href={finding.url} target="_blank" rel="noreferrer">{finding.title}</a></h3></div>
 							<span class:official={finding.source_is_official} class="source-badge">{finding.source_is_official ? 'Officiell källa' : 'Forskningsflöde'}</span>
 						</div>
+						<p class:act-now={finding.recommended_action === 'agera_nu'} class:test={finding.recommended_action === 'testa_i_sandbox'} class:watch={finding.recommended_action === 'bevaka'} class:ignore={finding.recommended_action === 'ignorera'} class="next-step">{nextStepLabel(finding.recommended_action)}</p>
 						{#if finding.summary}<p>{finding.summary}</p>{/if}
 						{#if finding.why_it_matters}<p class="matters"><strong>Varför det kan vara relevant:</strong> {finding.why_it_matters}</p>{/if}
 						<form method="POST" action="?/setStatus" use:enhance>
@@ -110,6 +118,11 @@
 	.finding-card > p { line-height: 1.55; } .matters { color: var(--color-text-muted); }
 	.source-badge { border: 1px solid var(--color-border); border-radius: 999px; padding: .3rem .55rem; color: var(--color-text-muted); font-size: .78rem; white-space: nowrap; }
 	.source-badge.official { border-color: var(--color-primary); color: var(--color-primary); }
+	.next-step { display: inline-block; margin: 0 0 .8rem; border-radius: 999px; padding: .35rem .65rem; background: var(--color-surface-raised, var(--color-surface)); color: var(--color-text-muted); font-size: .85rem; font-weight: 750; }
+	.next-step.act-now { background: color-mix(in srgb, var(--color-danger) 13%, transparent); color: var(--color-danger); }
+	.next-step.test { background: color-mix(in srgb, var(--color-primary) 13%, transparent); color: var(--color-primary); }
+	.next-step.watch { background: color-mix(in srgb, var(--color-warning) 15%, transparent); color: var(--color-text-muted); }
+	.next-step.ignore { background: var(--color-surface-raised, var(--color-surface)); }
 	form { flex-wrap: wrap; align-items: end; margin-top: 1rem; } select, button { border-radius: .6rem; padding: .55rem .65rem; font: inherit; } select { border: 1px solid var(--color-border); background: var(--color-surface); } button { border: 0; background: var(--color-primary); color: white; font-weight: 700; cursor: pointer; } .score { color: var(--color-text-muted); font-size: .85rem; padding-bottom: .55rem; }
 	.two-columns { display: grid; grid-template-columns: repeat(2, 1fr); } .compact-list { margin: 0; padding: 0; list-style: none; } .compact-list li { justify-content: space-between; padding: .75rem 0; border-top: 1px solid var(--color-border); font-size: .9rem; } .compact-list li:first-child { border-top: 0; padding-top: 0; }
 	@media (max-width: 700px) { .overview, .two-columns { grid-template-columns: 1fr; } .finding-head, .compact-list li { display: block; } .source-badge { display: inline-block; margin-top: .4rem; } }
