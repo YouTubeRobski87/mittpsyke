@@ -20,27 +20,42 @@ function getAdminClient(locals: App.Locals) {
 	return createServiceClient() ?? locals.supabase;
 }
 
-function isRadarAdmin(user: Awaited<ReturnType<App.Locals['getSession']>>) {
+async function isRadarAdmin(
+	locals: App.Locals,
+	user: Awaited<ReturnType<App.Locals['getSession']>>
+) {
 	if (!user) return false;
-	const email = user.email?.trim().toLowerCase() ?? '';
-	return Boolean(
+
+	const sessionEmail = user.email?.trim().toLowerCase() ?? '';
+	if (
 		user.is_super_admin ||
 		RADAR_ADMIN_USER_IDS.has(user.id) ||
-		RADAR_ADMIN_EMAILS.has(email)
-	);
+		RADAR_ADMIN_EMAILS.has(sessionEmail)
+	) {
+		return true;
+	}
+
+	const serviceClient = createServiceClient();
+	if (!serviceClient) return false;
+
+	const { data, error } = await serviceClient.auth.admin.getUserById(user.id);
+	if (error || !data.user) return false;
+
+	const verifiedEmail = data.user.email?.trim().toLowerCase() ?? '';
+	return RADAR_ADMIN_EMAILS.has(verifiedEmail);
 }
 
 async function requireAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
 	if (!user) throw redirect(303, '/login?redirect=/admin/radar');
-	if (!isRadarAdmin(user)) throw redirect(303, '/?admin=denied');
+	if (!(await isRadarAdmin(locals, user))) throw redirect(303, '/?admin=denied');
 	return user;
 }
 
 async function ensureAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
 	if (!user) return fail(401, { error: 'Du behöver logga in igen.' });
-	if (!isRadarAdmin(user)) return fail(403, { error: 'Åtkomst nekad.' });
+	if (!(await isRadarAdmin(locals, user))) return fail(403, { error: 'Åtkomst nekad.' });
 	return user;
 }
 
