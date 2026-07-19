@@ -886,6 +886,10 @@ export const guides: Guide[] = [
 				answer: 'Att lägga märke till stresspåslaget, sakta ner tempot och ge kroppen en tydlig övergång mellan dag och natt kan vara en bra början.'
 			}
 		],
+		relatedArticles: [
+			{ title: 'När kroppen säger ifrån vid stress', href: '/guider/stress/nar-kroppen-sager-ifran-stress' },
+			{ title: 'Trött men uppvarvad på kvällen', href: '/guider/sovproblem/trott-men-uppvarvad' }
+		],
 	},
 	{
 		pillarSlug: 'sovproblem',
@@ -915,6 +919,10 @@ export const guides: Guide[] = [
 				question: 'Vad kan hjälpa när tankarna snurrar i sängen?',
 				answer: 'Det kan hjälpa att sätta ord på tankarna tidigare på kvällen eller använda en lugn rutin som markerar att dagen är slut.'
 			}
+		],
+		relatedArticles: [
+			{ title: 'Sluta övertänka på kvällen', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' },
+			{ title: 'Stress och sömn', href: '/guider/sovproblem/stress-och-somn' }
 		],
 	},
 	{
@@ -947,6 +955,10 @@ export const guides: Guide[] = [
 				answer: 'Lugna övergångar, mindre press kring sömnen och regelbundna stunder för återhämtning under dagen kan göra skillnad över tid.'
 			}
 		],
+		relatedArticles: [
+			{ title: 'Hur återhämtar man sig mentalt?', href: '/guider/stress/hur-aterhamtar-man-sig-mentalt' },
+			{ title: 'Stress och sömn', href: '/guider/sovproblem/stress-och-somn' }
+		],
 	},
 	{
 		pillarSlug: 'sovproblem',
@@ -977,6 +989,10 @@ export const guides: Guide[] = [
 				question: 'När bör jag ta hjälp för både sömn och mående?',
 				answer: 'Om sömnbristen pågått ett tag och samtidigt påverkar hur du mår, fungerar eller orkar i vardagen är det klokt att soka stöd.'
 			}
+		],
+		relatedArticles: [
+			{ title: 'Nedstämdhet eller depression', href: '/guider/depression/nedstamdhet' },
+			{ title: 'Stress och sömn', href: '/guider/sovproblem/stress-och-somn' }
 		],
 	},
 	{
@@ -2587,6 +2603,10 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 				question: 'Fungerar grounding för alla?',
 				answer: 'De flesta hittar att åtminstone en variant fungerar. Om 5-4-3-2-1 känns svårt, prova att bara hålla i ett föremål och beskriva det detaljerat – temperatur, vikt, yta, form.'
 			}
+		],
+		relatedArticles: [
+			{ title: 'När kroppen säger ifrån vid stress', href: '/guider/stress/nar-kroppen-sager-ifran-stress' },
+			{ title: 'Tecken på ångest', href: '/guider/angest/tecken' }
 		],
 	},
 	{
