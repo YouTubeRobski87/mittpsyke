@@ -198,6 +198,11 @@
 		}
 	}
 
+	function isFollowingLatestMessage() {
+		if (!chatLog) return true;
+		return chatLog.scrollHeight - chatLog.scrollTop - chatLog.clientHeight <= 96;
+	}
+
 	function readStorageValue(key: string) {
 		if (!browser) return null;
 		try {
@@ -686,6 +691,7 @@
 			const assistantReply =
 				data?.reply && data.reply.trim() ? data.reply : GENERIC_CHAT_ERROR;
 			const assistantMessageIndex = messages.length;
+			const shouldFollowReply = isFollowingLatestMessage();
 
 			messages.push({
 				role: 'assistant',
@@ -694,7 +700,7 @@
 			});
 
 			await tick();
-			scrollToBottom();
+			if (shouldFollowReply) scrollToBottom();
 			if (autoReadReplies) {
 				// Autouppläsning sker bara här efter ett nytt, lyckat API-svar – aldrig vid historikladdning.
 				speakReply(assistantReply, assistantMessageIndex);
@@ -711,13 +717,9 @@
 					: GENERIC_CHAT_ERROR;
 			if (!input.trim()) input = text;
 
-			await tick();
-			scrollToBottom();
 		} finally {
 			sendInFlight = false;
 			sending = false;
-			await tick();
-			scrollToBottom();
 		}
 	}
 
@@ -1122,8 +1124,20 @@
 </div>
 
 <style>
+	.chat-container {
+		flex: 1 1 auto;
+		height: auto;
+		width: 100%;
+		max-width: min(42rem, 100%);
+		min-height: 0;
+		max-height: none;
+		min-width: 0;
+		overflow: hidden;
+	}
+
 	.chat-toolbar {
 		display: flex;
+		flex: 0 0 auto;
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
@@ -1553,22 +1567,49 @@
 	:global(.message-bubble) {
 		min-width: 0;
 		word-break: break-word;
+		overflow-wrap: anywhere;
+	}
+
+	.chat-messages,
+	.chat-input-area,
+	.chat-input-extras,
+	.composer-row {
+		min-width: 0;
+		max-width: 100%;
+	}
+
+	.chat-messages {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-x: hidden;
+	}
+
+	.chat-input-area {
+		flex: 0 0 auto;
+	}
+
+	.composer-row textarea {
+		width: 100%;
+		min-width: 0;
+		min-height: 2.75rem;
+		max-height: 8rem;
+		field-sizing: content;
+		overflow-y: auto;
+		overflow-wrap: anywhere;
+	}
+
+	.send-button {
+		flex: 0 0 auto;
+		min-height: 2.75rem;
 	}
 
 	@media (max-width: 768px) {
 		.chat-container {
-			height: calc(100svh - 3.5rem - env(safe-area-inset-top));
-			min-height: calc(100svh - 3.5rem - env(safe-area-inset-top));
-			max-height: calc(100svh - 3.5rem - env(safe-area-inset-top));
+			flex: 1 1 auto;
+			height: auto;
+			min-height: 0;
+			max-height: none;
 			overflow: hidden;
-		}
-
-		@supports (height: 100dvh) {
-			.chat-container {
-				height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
-				min-height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
-				max-height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
-			}
 		}
 
 		.chat-toolbar {
@@ -1582,19 +1623,13 @@
 		}
 
 		.chat-messages {
-			flex: 1 0 65svh;
-			min-height: 65svh;
+			flex: 1 1 auto;
+			min-height: 0;
 			padding: 0.6rem 0.65rem 1rem;
 			overflow-y: auto;
+			overflow-x: hidden;
 			overscroll-behavior: contain;
 			-webkit-overflow-scrolling: touch;
-		}
-
-		@supports (height: 100dvh) {
-			.chat-messages {
-				flex-basis: 65dvh;
-				min-height: 65dvh;
-			}
 		}
 
 		:global(.message-bubble) {
@@ -1604,9 +1639,10 @@
 
 		.chat-input-area {
 			display: flex;
-			flex: 0 1 auto;
+			flex: 0 0 auto;
 			flex-direction: column;
 			min-height: 0;
+			max-height: min(48dvh, 25rem);
 			overflow: hidden;
 			padding: 0.4rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom));
 		}
@@ -1624,6 +1660,7 @@
 		}
 
 		.composer-row {
+			align-items: flex-end;
 			padding-top: 0.25rem;
 			background: hsl(var(--background));
 		}
@@ -1654,6 +1691,20 @@
 
 		.settings-footer {
 			margin-top: 0.35rem;
+		}
+	}
+
+	@media (max-width: 340px) {
+		.composer-row {
+			gap: 0.4rem;
+		}
+
+		.composer-row textarea {
+			padding-inline: 0.75rem;
+		}
+
+		.send-button {
+			padding-inline: 0.85rem;
 		}
 	}
 </style>
