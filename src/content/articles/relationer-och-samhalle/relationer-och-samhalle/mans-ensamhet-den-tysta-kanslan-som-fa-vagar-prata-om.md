@@ -45,7 +45,7 @@ relatedArticles:
     url: https://www.mittpsyke.se/blogg/mans-psykiska-halsa-sverige
   - title: När en vän mår dåligt - vad kan du säga?
     url: https://www.mittpsyke.se/blogg/nar-en-van-mar-daligt-vad-kan-du-saga
-draft: true
+draft: false
 ---
 ## Ensamhet syns inte alltid
 
@@ -131,3 +131,4 @@ Att säga att man känner sig ensam är inte ett misslyckande. Det är ett ärli
 Ibland börjar förändringen med en enkel mening:
 
 > Jag har haft det ensamt på sistone och skulle behöva någon att prata med.
+
