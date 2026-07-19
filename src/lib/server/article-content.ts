@@ -35,6 +35,18 @@ function getSafeArticleUrl(value: unknown) {
 	}
 }
 
+function getReferenceFromText(value: string) {
+	const lines = value
+		.split(/\r?\n/)
+		.map((line) => line.trim())
+		.filter(Boolean);
+	const url = lines.map(getSafeArticleUrl).find((candidate) => candidate !== null);
+	if (!url) return null;
+
+	const label = lines.find((line) => getSafeArticleUrl(line) === null) ?? url;
+	return { label, url };
+}
+
 const articleSchema = z.object({
 	title: z.preprocess((value) => getOptionalString(value, DEFAULT_ARTICLE_TITLE), z.string()),
 	description: z.preprocess((value) => getOptionalString(value), z.string()),
@@ -52,10 +64,15 @@ const articleSchema = z.object({
 	references: z
 		.preprocess(
 			(value) => (Array.isArray(value) ? value : []),
-			z.array(z.object({ label: z.unknown(), url: z.unknown() }))
+			z.array(z.union([z.string(), z.object({ label: z.unknown(), url: z.unknown() })]))
 		)
 		.transform((references) =>
 			references.flatMap((reference) => {
+				if (typeof reference === 'string') {
+					const parsed = getReferenceFromText(reference);
+					return parsed ? [parsed] : [];
+				}
+
 				const label = getOptionalString(reference.label);
 				const url = getSafeArticleUrl(reference.url);
 				return label && url ? [{ label, url }] : [];
