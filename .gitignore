@@ -32,3 +32,8 @@ authorized_keys
 # Loggar
 *.log
 tmp-blogg-dev*.log
+.claude/worktrees/amazing-bose/
+.claude/worktrees/elastic-aryabhata-62805c/
+.claude/worktrees/brave-keller-a99011/
+.claude/worktrees/mystifying-hodgkin/
+.claude/worktrees/peaceful-hertz-5bbb6a/
