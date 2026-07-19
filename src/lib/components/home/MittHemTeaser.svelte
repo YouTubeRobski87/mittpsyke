@@ -33,10 +33,8 @@
 				samla dina framsteg och återvända när du behöver stöd.
 			</p>
 			<div class="mitt-hem-actions">
-				<a class="mitt-hem-cta mitt-hem-cta-primary" href="/register">
-					Skapa ditt hem
-				</a>
-				<a class="mitt-hem-cta mitt-hem-cta-secondary" href="/login">Logga in</a>
+				<a class="mitt-hem-link" href="/register">Skapa konto</a>
+				<a class="mitt-hem-link" href="/login">Logga in</a>
 			</div>
 			<p class="mitt-hem-note">Privat, personligt och skapat för att kännas tryggt.</p>
 		</div>
@@ -226,54 +224,23 @@
 	.mitt-hem-actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.7rem;
+		gap: 1rem;
 		margin-top: 1.35rem;
 	}
 
-	.mitt-hem-cta {
+	.mitt-hem-link {
 		display: inline-flex;
 		align-items: center;
-		justify-content: center;
-		min-height: 2.9rem;
-		padding: 0.78rem 1.2rem;
-		border-radius: var(--radius-pill);
 		font-family: var(--font-heading);
-		font-size: 0.93rem;
-		font-weight: 700;
-		text-decoration: none;
-		transition:
-			transform 0.16s ease,
-			box-shadow 0.16s ease,
-			background 0.16s ease,
-			border-color 0.16s ease;
+		font-size: 0.9rem;
+		font-weight: 650;
+		color: #4f7658;
+		text-underline-offset: 3px;
 	}
 
-	.mitt-hem-cta-primary {
-		background: #3f7f53;
-		color: #ffffff;
-		box-shadow: 0 10px 24px rgba(63, 127, 83, 0.18);
-	}
-
-	.mitt-hem-cta-secondary {
-		border: 1px solid rgba(70, 100, 74, 0.18);
-		background: rgba(255, 255, 255, 0.7);
-		color: #32543a;
-	}
-
-	.mitt-hem-cta:hover,
-	.mitt-hem-cta:focus-visible {
-		transform: translateY(-1px);
-	}
-
-	.mitt-hem-cta-primary:hover,
-	.mitt-hem-cta-primary:focus-visible {
-		box-shadow: 0 14px 28px rgba(63, 127, 83, 0.22);
-	}
-
-	.mitt-hem-cta-secondary:hover,
-	.mitt-hem-cta-secondary:focus-visible {
-		background: rgba(255, 255, 255, 0.88);
-		border-color: rgba(70, 100, 74, 0.28);
+	.mitt-hem-link:hover,
+	.mitt-hem-link:focus-visible {
+		color: #315b3b;
 	}
 
 	.mitt-hem-note {
@@ -910,14 +877,6 @@
 			filter: blur(16px);
 		}
 
-		.mitt-hem-actions {
-			flex-direction: column;
-		}
-
-		.mitt-hem-cta {
-			width: 100%;
-		}
-
 		.mitt-hem-window-body {
 			max-height: 24.75rem;
 		}
@@ -947,7 +906,7 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.mitt-hem-cta,
+		.mitt-hem-link,
 		.mitt-hem-preview-float {
 			transition: none;
 			transform: none !important;

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
-	import HeroShowcase from '$lib/components/home/HeroShowcase.svelte';
 	import MittHemTeaser from '$lib/components/home/MittHemTeaser.svelte';
 	import {
 		trackHomeCtaClick,
@@ -9,7 +8,14 @@
 	} from '$lib/analytics';
 	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
 
-	let { data }: { data: Record<string, unknown> } = $props();
+	type HomePageData = {
+		contentStats?: {
+			guideCount: number;
+			articleCount: number;
+		};
+	};
+
+	let { data }: { data: HomePageData } = $props();
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
 	let quickFlowEl: HTMLElement | null = null;
@@ -32,19 +38,34 @@
 		}
 	];
 
-	const quickFlowSteps = [
+	const productSteps = [
+		{ number: '01', title: 'Skriv', text: 'Sätt ord på det som är nära just nu.' },
+		{ number: '02', title: 'Få svar', text: 'Möt lugna frågor som hjälper dig att sortera.' },
+		{ number: '03', title: 'Spara', text: 'Behåll en reflektion om du har konto.' },
+		{ number: '04', title: 'Följ', text: 'Se anteckningar och mående samlat över tid.' }
+	];
+
+	const outcomeItems = [
 		{
-			title: 'Skriv vad som känns svårt',
-			text: 'Börja med det som är nära just nu.'
+			title: 'Se vad som återkommer',
+			text: 'Dina anteckningar kan göra det lättare att upptäcka mönster mellan sömn, stress och hur du mår.'
 		},
 		{
-			title: 'Få lugnt samtalsstöd',
-			text: 'Sortera tankar och hitta ett litet nästa steg.'
+			title: 'Minnas det som hjälper',
+			text: 'Du kan samla reflektioner och återvända till sådant som gav lite mer lugn eller struktur.'
 		},
 		{
-			title: 'Spara om du vill',
-			text: 'Följ ditt mående över tid när du har konto.'
+			title: 'Få en tydligare överblick',
+			text: 'Med tiden kan du följa små förändringar utan att behöva minnas allt själv.'
 		}
+	];
+
+	const guideTopics = [
+		{ label: 'Ångest', href: '/guider/angest' },
+		{ label: 'Stress', href: '/guider/stress' },
+		{ label: 'Sömn', href: '/guider/sovproblem' },
+		{ label: 'Depression', href: '/guider/depression' },
+		{ label: 'Trauma', href: '/guider/trauma' }
 	];
 
 	function trackHomeCta(section: string, cta: string, href: string) {
@@ -137,11 +158,91 @@
 					<a href="/register" class="hero-cta hero-cta-secondary" onclick={() => trackHomeCta('hero', 'skapa_konto', '/register')}>Skapa konto</a>
 				</div>
 			</div>
-			<HeroShowcase />
 		</div>
 	</section>
 
-	<!-- 2. Samlad trygghet -->
+	<!-- 2. Kompakt produktvisning byggd av verkliga produktsteg, utan exempeldata -->
+	<section id="sa-fungerar-det" class="product-demo" aria-labelledby="product-demo-title" bind:this={quickFlowEl}>
+		<div class="cards-narrow product-demo-inner">
+			<div class="section-heading">
+				<p class="section-eyebrow">En lugn väg genom tjänsten</p>
+				<h2 id="product-demo-title">Från första rad till egen överblick</h2>
+				<p>En förenklad visning av flödet i chatten, dagboken och Mitt hem.</p>
+			</div>
+			<figure class="product-flow">
+				<ol class="product-flow-grid">
+					{#each productSteps as step}
+						<li class="product-flow-step">
+							<span class="product-flow-number" aria-hidden="true">{step.number}</span>
+							<div>
+								<h3>{step.title}</h3>
+								<p>{step.text}</p>
+							</div>
+						</li>
+					{/each}
+				</ol>
+				<figcaption>Visningen innehåller ingen användardata eller påhittad konversation.</figcaption>
+			</figure>
+			<a class="context-link" href="/dagbok" onclick={() => trackHomeCta('product_demo', 'borja_skriva', '/dagbok')}>Börja skriva <span aria-hidden="true">→</span></a>
+		</div>
+	</section>
+
+	<!-- 3. Försiktigt formulerad nytta över tid -->
+	<section class="outcomes-section" aria-labelledby="outcomes-title">
+		<div class="cards-narrow outcomes-inner">
+			<div class="section-heading">
+				<p class="section-eyebrow">Med tiden</p>
+				<h2 id="outcomes-title">Låt det du skriver bli lättare att se</h2>
+			</div>
+			<ul class="outcomes-grid">
+				{#each outcomeItems as item}
+					<li>
+						<h3>{item.title}</h3>
+						<p>{item.text}</p>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	</section>
+
+	<!-- 5. Endast verifierbara publicerade innehållsmått -->
+	{#if data.contentStats}
+		<section class="proof-section" aria-labelledby="proof-title">
+			<div class="cards-narrow proof-inner">
+				<div>
+					<p class="section-eyebrow">Innehåll som finns att använda</p>
+					<h2 id="proof-title">Fördjupa dig i din takt</h2>
+				</div>
+				<dl class="proof-grid">
+					<div>
+						<dt>{data.contentStats.guideCount}</dt>
+						<dd>publicerade guider</dd>
+					</div>
+					<div>
+						<dt>{data.contentStats.articleCount}</dt>
+						<dd>publicerade artiklar</dd>
+					</div>
+				</dl>
+			</div>
+		</section>
+	{/if}
+
+	<!-- 6. Verifierad grundarberättelse -->
+	<section class="founder-section" aria-labelledby="founder-title">
+		<div class="cards-narrow founder-inner">
+			<div class="founder-mark" aria-hidden="true">RC</div>
+			<div class="founder-copy">
+				<p class="section-eyebrow">Bakom MittPsyke</p>
+				<h2 id="founder-title">Hej, jag heter Robban.</h2>
+				<p>Jag byggde MittPsyke ur egna erfarenheter av psykisk belastning och en enkel tanke: det ska vara lättare att ta ett första steg när något känns svårt. Här ska du kunna skriva, få struktur och stanna upp utan att behöva ha rätt ord från början. MittPsyke ersätter inte vård eller behandling, men kan vara en lugn ingång till reflektion och vidare stöd.</p>
+				<a class="context-link" href="/om-mittpsyke" onclick={() => trackHomeCta('founder', 'om_mittpsyke', '/om-mittpsyke')}>Läs varför MittPsyke finns <span aria-hidden="true">→</span></a>
+			</div>
+		</div>
+	</section>
+
+	<MittHemTeaser />
+
+	<!-- 8. Samlad trygghet -->
 	<section class="early-trust" aria-labelledby="early-trust-title">
 		<div class="cards-narrow early-trust-inner">
 			<p class="early-trust-eyebrow">Trygg start</p>
@@ -150,13 +251,7 @@
 			<ul class="early-trust-grid">
 				{#each trustHighlights as item}
 					<li>
-						<a
-							class="early-trust-item"
-							href={item.href}
-							onclick={() => trackHomeCta('early_trust', item.trackCta, item.href)}
-						>
-							{item.text}
-						</a>
+						<a class="early-trust-item" href={item.href} onclick={() => trackHomeCta('early_trust', item.trackCta, item.href)}>{item.text}</a>
 					</li>
 				{/each}
 			</ul>
@@ -169,24 +264,7 @@
 		</div>
 	</section>
 
-	<section id="sa-fungerar-det" class="quick-flow" aria-labelledby="quick-flow-title" bind:this={quickFlowEl}>
-		<div class="cards-narrow quick-flow-inner">
-			<h2 id="quick-flow-title">Så fungerar MittPsyke</h2>
-			<ol class="quick-flow-grid">
-				{#each quickFlowSteps as step, index}
-					<li class="quick-flow-item">
-						<p class="quick-flow-step">Steg {index + 1}</p>
-						<h3>{step.title}</h3>
-						<p>{step.text}</p>
-					</li>
-				{/each}
-			</ol>
-		</div>
-	</section>
-
-	<MittHemTeaser />
-
-	<!-- 5. Artiklar och vidare stöd -->
+	<!-- 9. Artiklar och vidare stöd -->
 	<section id="sa-fungerar-det-fordjupning" class="how-it-works" aria-labelledby="how-it-works-title">
 		<div class="cards-narrow how-inner">
 			<h2 id="how-it-works-title">Läs och hitta vidare stöd</h2>
@@ -208,37 +286,23 @@
 					<a class="how-card-cta" href="/blogg" onclick={() => trackHomeCta('how_it_works', 'artiklar', '/blogg')}>Läs artiklar</a>
 				</article>
 			</div>
+			<nav class="topic-links" aria-label="Vanliga ämnen">
+				{#each guideTopics as topic}
+					<a href={topic.href} onclick={() => trackHomeCta('guide_topics', topic.label.toLowerCase(), topic.href)}>{topic.label}</a>
+				{/each}
+			</nav>
 		</div>
 	</section>
 
-	<!-- 6. Social proof -->
-	<section class="review-section" aria-labelledby="review-section-title">
-		<div class="cards-narrow review-inner">
-			<p class="review-origin">Citaten kommer från frivillig feedback som delats direkt med MittPsyke och visas anonymiserat.</p>
-			<h2 id="review-section-title">Så beskriver andra sin upplevelse</h2>
-			<div class="review-grid">
-				<blockquote class="review-card">
-					<p>&ldquo;Jag skrev i några minuter och kände mig mindre uppjagad.&rdquo;</p>
-					<cite>Anonym användare</cite>
-				</blockquote>
-				<blockquote class="review-card">
-					<p>&ldquo;Frågorna hjälpte mig sortera vad som var viktigast just då.&rdquo;</p>
-					<cite>Anonym användare</cite>
-				</blockquote>
-				<blockquote class="review-card">
-					<p>&ldquo;När jag kom tillbaka såg jag mönster i sömn och stress.&rdquo;</p>
-					<cite>Anonym användare</cite>
-				</blockquote>
-			</div>
-		</div>
-	</section>
-
-	<!-- 7. Slutlig CTA -->
+	<!-- 10. Slutlig CTA -->
 	<section class="important-section final-cta" aria-labelledby="final-cta-title">
 		<div class="cards-narrow important-inner final-cta-inner">
 			<h2 id="final-cta-title">Börja där du är</h2>
 			<p>Du behöver inte ha rätt ord. Vi tar det i din takt.</p>
-			<a href="/dagbok" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('final_cta', 'borja_skriva', '/dagbok')}>Börja skriva</a>
+			<div class="final-cta-actions">
+				<a href="/dagbok" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('final_cta', 'borja_skriva', '/dagbok')}>Börja skriva</a>
+				<a href="/register" class="final-secondary-link" onclick={() => trackHomeCta('final_cta', 'skapa_konto', '/register')}>Skapa konto</a>
+			</div>
 		</div>
 	</section>
 </main>
@@ -447,6 +511,226 @@
 		box-shadow: 0 8px 22px var(--home-cta-shadow-hover);
 	}
 
+	.section-heading {
+		max-width: 42rem;
+	}
+
+	.section-heading h2,
+	.founder-copy h2,
+	.proof-inner h2 {
+		margin: 0;
+		color: var(--home-text-strong);
+		font-size: clamp(1.5rem, 3vw, 2.1rem);
+	}
+
+	.section-heading > p:last-child {
+		margin: 0.7rem 0 0;
+		color: var(--home-text-muted-strong);
+		font-size: 0.96rem;
+		line-height: 1.65;
+	}
+
+	.section-eyebrow {
+		margin: 0 0 0.45rem;
+		font-family: var(--font-heading);
+		font-size: 0.8rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--home-text-blue-muted-strong);
+	}
+
+	.context-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-top: 1rem;
+		color: var(--home-link);
+		font-family: var(--font-heading);
+		font-size: 0.9rem;
+		font-weight: 650;
+		text-underline-offset: 3px;
+	}
+
+	.product-demo {
+		scroll-margin-top: 80px;
+		padding: clamp(2.1rem, 6vw, 3.8rem) 1.25rem;
+		background: var(--home-section-bg);
+		color: var(--home-text-soft);
+	}
+
+	.product-flow {
+		margin: 1rem 0 0;
+		padding: clamp(0.65rem, 2vw, 1rem);
+		border: 1px solid var(--home-card-border-soft);
+		border-radius: clamp(1rem, 3vw, 1.5rem);
+		background: linear-gradient(145deg, rgba(20, 34, 52, 0.98), rgba(8, 16, 29, 0.98));
+		box-shadow: 0 18px 44px rgba(3, 8, 18, 0.2);
+	}
+
+	.product-flow-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.55rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.product-flow-step {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.65rem;
+		min-width: 0;
+		padding: 0.7rem;
+		border: 1px solid var(--home-card-border);
+		border-radius: var(--radius-card);
+		background: rgba(255, 255, 255, 0.035);
+	}
+
+	.product-flow-number {
+		display: grid;
+		place-items: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 999px;
+		background: var(--home-primary-soft);
+		color: var(--home-primary-text);
+		font-size: 0.72rem;
+		font-weight: 750;
+		flex: 0 0 auto;
+	}
+
+	.product-flow-step h3 {
+		margin: 0;
+		color: var(--home-text-strong);
+		font-size: 0.98rem;
+	}
+
+	.product-flow-step p {
+		margin: 0.25rem 0 0;
+		color: var(--home-text-muted-body);
+		font-size: 0.86rem;
+		line-height: 1.48;
+	}
+
+	.product-flow figcaption {
+		margin-top: 0.8rem;
+		color: var(--home-text-muted-faint);
+		font-size: 0.78rem;
+		line-height: 1.5;
+	}
+
+	.outcomes-section {
+		padding: clamp(2.5rem, 7vw, 4rem) 1.25rem;
+		background: var(--home-section-bg);
+		color: var(--home-text-soft);
+	}
+
+	.outcomes-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.9rem;
+		margin: 1.25rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.outcomes-grid li {
+		padding-left: 1rem;
+		border-left: 2px solid rgba(var(--home-primary-rgb), 0.55);
+	}
+
+	.outcomes-grid h3 {
+		margin: 0;
+		color: var(--home-text-strong);
+		font-size: 1rem;
+	}
+
+	.outcomes-grid p {
+		margin: 0.45rem 0 0;
+		color: var(--home-text-muted-body);
+		font-size: 0.94rem;
+		line-height: 1.62;
+	}
+
+	.proof-section {
+		padding: clamp(2.2rem, 6vw, 3.5rem) 1.25rem;
+		background: var(--home-section-bg-alt);
+		color: var(--home-text-soft);
+	}
+
+	.proof-inner {
+		display: grid;
+		gap: 1.25rem;
+		align-items: center;
+	}
+
+	.proof-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.75rem;
+		margin: 0;
+	}
+
+	.proof-grid div {
+		padding: 0.9rem;
+		border: 1px solid var(--home-card-border-soft);
+		border-radius: var(--radius-card);
+		background: rgba(10, 18, 30, 0.45);
+	}
+
+	.proof-grid dt {
+		color: var(--home-text-strong);
+		font-family: var(--font-heading);
+		font-size: clamp(1.55rem, 4vw, 2.1rem);
+		font-weight: 800;
+	}
+
+	.proof-grid dd {
+		margin: 0.2rem 0 0;
+		color: var(--home-text-muted);
+		font-size: 0.84rem;
+		line-height: 1.4;
+	}
+
+	.founder-section {
+		padding: clamp(2.5rem, 7vw, 4rem) 1.25rem;
+		background: var(--home-section-bg-soft);
+		color: var(--home-text-soft);
+	}
+
+	.founder-inner {
+		display: grid;
+		gap: 1.1rem;
+		align-items: start;
+	}
+
+	.founder-mark {
+		display: grid;
+		place-items: center;
+		width: 4rem;
+		height: 4rem;
+		border: 1px solid rgba(147, 197, 253, 0.22);
+		border-radius: 50%;
+		background: var(--home-primary-soft);
+		color: var(--home-primary-text);
+		font-family: var(--font-heading);
+		font-weight: 800;
+		letter-spacing: 0.04em;
+	}
+
+	.founder-copy {
+		max-width: 46rem;
+	}
+
+	.founder-copy > p:not(.section-eyebrow) {
+		margin: 0.8rem 0 0;
+		color: var(--home-text-muted-strong);
+		font-size: 0.96rem;
+		line-height: 1.7;
+	}
+
 	/* ── Sektion 2: Första steget ── */
 	.early-trust {
 		padding: clamp(2.2rem, 6vw, 3.4rem) 1.25rem;
@@ -529,62 +813,6 @@
 		text-underline-offset: 3px;
 	}
 
-	.quick-flow {
-		scroll-margin-top: 80px;
-		padding: clamp(2.3rem, 6vw, 3.6rem) 1.25rem;
-		padding-bottom: clamp(2.9rem, 7.5vw, 4.4rem);
-		background: var(--home-section-bg-soft);
-		color: var(--home-text-soft);
-	}
-
-	.quick-flow-inner h2 {
-		margin: 0;
-		color: var(--home-text-strong);
-		font-size: clamp(1.45rem, 2.9vw, 2rem);
-	}
-
-	.quick-flow-grid {
-		margin: 1rem 0 0;
-		padding: 0;
-		list-style: none;
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.85rem;
-	}
-
-	.quick-flow-item {
-		padding: 0.95rem 1rem;
-		border-radius: var(--radius-card);
-		background:
-			radial-gradient(circle at top left, var(--home-card-bg-accent), transparent 42%),
-			linear-gradient(180deg, var(--home-card-bg-start), var(--home-card-bg-end));
-		border: 1px solid var(--home-card-border);
-	}
-
-	.quick-flow-step {
-		margin: 0;
-		font-family: var(--font-heading);
-		font-size: 0.81rem;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: var(--home-text-blue-muted-strong);
-	}
-
-	.quick-flow-item h3 {
-		margin: 0.45rem 0 0;
-		font-size: 1.02rem;
-		line-height: 1.35;
-		color: var(--home-text-strong);
-	}
-
-	.quick-flow-item p {
-		margin: 0.5rem 0 0;
-		font-size: 0.94rem;
-		line-height: 1.62;
-		color: var(--home-text-muted-body);
-	}
-
 	.cards-narrow {
 		width: min(1080px, 100%);
 		margin: 0 auto;
@@ -655,68 +883,20 @@
 		letter-spacing: 0.005em;
 	}
 
-
-	/* ── Social proof ── */
-	.review-section {
-		padding: clamp(2.8rem, 7vw, 5rem) 1.25rem;
-		background: var(--home-section-bg-alt);
-		color: var(--home-text-inverted);
+	.topic-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.55rem;
+		margin-top: 1.1rem;
 	}
 
-	.review-inner {
-		max-width: 1080px;
-		margin: 0 auto;
-	}
-
-	.review-origin {
-		margin: 0.7rem auto 0;
-		max-width: 42rem;
-		text-align: center;
-		font-size: 0.95rem;
-		line-height: 1.6;
-		color: var(--home-text-muted-mid);
-	}
-
-	.review-inner h2 {
-		margin: 0;
-		font-family: var(--font-heading);
-		font-weight: 700;
-		font-size: clamp(1.55rem, 3vw, 2.2rem);
-		color: var(--home-text-review);
-	}
-
-	.review-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.85rem;
-		margin-top: 1.4rem;
-	}
-
-	.review-card {
-		margin: 0;
-		padding: 1rem 1.1rem;
-		background:
-			radial-gradient(circle at top left, var(--home-card-bg-accent), transparent 42%),
-			linear-gradient(180deg, var(--home-card-bg-start), var(--home-card-bg-end));
-		border: 1px solid var(--home-card-border);
-		border-radius: var(--radius-card);
-	}
-
-	.review-card p {
-		margin: 0;
-		font-family: var(--font-body);
-		font-size: 0.97rem;
-		line-height: 1.7;
-		color: var(--home-quote-text);
-		font-style: italic;
-	}
-
-	.review-card cite {
-		display: block;
-		margin-top: 0.55rem;
+	.topic-links a {
+		padding: 0.42rem 0.72rem;
+		border: 1px solid var(--home-card-border-blue);
+		border-radius: var(--radius-pill);
+		color: var(--home-link);
 		font-size: 0.82rem;
-		font-style: normal;
-		color: var(--home-quote-cite);
+		text-decoration: none;
 	}
 
 	/* ── Sektion 8: Viktigt att veta ── */
@@ -746,6 +926,22 @@
 		width: auto;
 	}
 
+	.final-cta-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: center;
+		gap: 0.9rem;
+	}
+
+	.final-secondary-link {
+		color: var(--home-link);
+		font-family: var(--font-heading);
+		font-size: 0.9rem;
+		font-weight: 650;
+		text-underline-offset: 3px;
+	}
+
 	/* ── Gemensamma typografi ── */
 	h2 {
 		margin: 0;
@@ -772,16 +968,23 @@
 		}
 	}
 
-	@media (min-width: 680px) {
-		.review-grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 1rem;
-		}
-	}
-
 	@media (min-width: 700px) {
-		.quick-flow-grid {
+		.product-flow-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.outcomes-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 1.1rem;
+		}
+
+		.proof-inner {
+			grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.8fr);
+		}
+
+		.founder-inner {
+			grid-template-columns: 4rem minmax(0, 1fr);
+			gap: 1.4rem;
 		}
 
 		.early-trust-grid {
@@ -796,10 +999,13 @@
 
 	@media (min-width: 1040px) {
 		.hero-shell {
-			grid-template-columns: minmax(0, 1fr) minmax(20rem, 23rem);
+			grid-template-columns: minmax(0, 1fr);
 		}
 
-		.quick-flow-grid,
+		.product-flow-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
 		.how-grid {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
@@ -814,9 +1020,11 @@
 	}
 
 	/* ── Dark mode — base is already dark, just deepen slightly ── */
+	:global(.dark) .product-demo { background: var(--home-dark-bg); }
 	:global(.dark) .early-trust { background: var(--home-dark-bg); }
-	:global(.dark) .quick-flow { background: var(--home-dark-bg-soft); }
+	:global(.dark) .outcomes-section { background: var(--home-dark-bg); }
+	:global(.dark) .proof-section { background: var(--home-dark-bg-alt); }
+	:global(.dark) .founder-section { background: var(--home-dark-bg-soft); }
 	:global(.dark) .how-it-works { background: var(--home-dark-bg); }
-	:global(.dark) .review-section { background: var(--home-dark-bg-alt); }
 	:global(.dark) .important-section { background: var(--home-dark-bg-important); }
 </style>
