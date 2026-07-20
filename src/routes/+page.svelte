@@ -233,8 +233,9 @@
 			<div class="founder-mark" aria-hidden="true">RC</div>
 			<div class="founder-copy">
 				<p class="section-eyebrow">Bakom MittPsyke</p>
-				<h2 id="founder-title">Hej, jag heter Robban.</h2>
-				<p>Jag byggde MittPsyke ur egna erfarenheter av psykisk belastning och en enkel tanke: det ska vara lättare att ta ett första steg när något känns svårt. Här ska du kunna skriva, få struktur och stanna upp utan att behöva ha rätt ord från början. MittPsyke ersätter inte vård eller behandling, men kan vara en lugn ingång till reflektion och vidare stöd.</p>
+				<h2 id="founder-title">Översikt och syfte med MittPsyke</h2>
+				<p>MittPsyke är en svensk digital plattform för samtalsstöd, skapad för personer som lever med psykisk belastning i olika former. Plattformen syftar till att erbjuda ett tryggt, tillgängligt och lågtröskligt rum där användaren kan stanna upp, sätta ord på det som känns svårt och få stöd i stunden – utan krav på prestation eller att behöva förklara allt från början. Grundaren, Robert Claesson, har själv erfarenhet av psykisk ohälsa och skapade MittPsyke utifrån egna behov av stöd när traditionell hjälp kändes långt borta. Visionen är att erbjuda en personlig och tillgänglig plats för reflektion, struktur och stöd, där användaren kan känna sig hörd och tagen på allvar.</p>
+				<p>Det är viktigt att understryka att MittPsyke inte är en vårdtjänst och inte erbjuder diagnos, behandling eller akut hjälp. Plattformen positionerar sig tydligt som ett första steg för reflektion och struktur i vardagen, snarare än som ett substitut för professionell vård. Vid akuta situationer hänvisas användaren alltid till <a href="tel:112">112</a> eller <a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>, och detta framgår tydligt i plattformens information och säkerhetsrutiner.</p>
 				<a class="context-link" href="/om-mittpsyke" onclick={() => trackHomeCta('founder', 'om_mittpsyke', '/om-mittpsyke')}>Läs varför MittPsyke finns <span aria-hidden="true">→</span></a>
 			</div>
 		</div>
