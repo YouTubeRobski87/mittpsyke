@@ -73,6 +73,8 @@
 	let chatLog: HTMLDivElement;
 	let showHumanSupport = $state(false);
 	let showSettings = $state(false);
+	let hasUserMessage = $derived(messages.some((message) => message.role === 'user'));
+	let showChatIntro = $derived(persistenceReady && !hasUserMessage);
 
 	const MAX_MESSAGE_LENGTH = 2000;
 	const LONG_MESSAGE_ERROR =
@@ -803,6 +805,21 @@
 
 </script>
 
+{#if showChatIntro}
+	<section class="chat-intro-panel" aria-labelledby="chat-intro-title">
+		<h2 id="chat-intro-title">Så går det till här</h2>
+		<p>
+			Du skriver några rader. MittPsyke svarar lugnt och hjälper dig att sortera det som känns
+			mest nära just nu.
+		</p>
+		<ul>
+			<li>Du behöver inte formulera allt perfekt.</li>
+			<li>Du kan ta en sak i taget och pausa när du vill.</li>
+			<li>Vid akut fara ska du ringa 112 i stället för att använda chatten.</li>
+		</ul>
+	</section>
+{/if}
+
 <div class="chat-container flex flex-col h-[calc(100vh-175px)] max-w-2xl mx-auto">
 	<div class="chat-toolbar px-4 pb-1">
 		{#if historyNoticeVisible && messages.length > 0}
@@ -1124,6 +1141,44 @@
 </div>
 
 <style>
+	.chat-intro-panel {
+		flex: 0 0 auto;
+		width: 100%;
+		max-width: 42rem;
+		margin: 0 auto 0.85rem;
+		padding: 0.95rem 1rem;
+		border: 1px solid rgba(52, 91, 55, 0.1);
+		border-radius: var(--radius-card);
+		background: rgba(248, 245, 239, 0.9);
+		color: inherit;
+	}
+
+	.chat-intro-panel h2 {
+		margin: 0 0 0.4rem;
+		font-size: 0.98rem;
+		font-weight: 700;
+	}
+
+	.chat-intro-panel p {
+		margin: 0;
+		font-size: 0.94rem;
+		line-height: 1.6;
+	}
+
+	.chat-intro-panel ul {
+		display: grid;
+		gap: 0.35rem;
+		margin: 0.65rem 0 0;
+		padding-left: 1.1rem;
+		font-size: 0.9rem;
+		line-height: 1.55;
+	}
+
+	:global(.dark) .chat-intro-panel {
+		border-color: rgba(255, 255, 255, 0.08);
+		background: rgba(23, 29, 36, 0.84);
+	}
+
 	.chat-container {
 		flex: 1 1 auto;
 		height: auto;
@@ -1604,6 +1659,29 @@
 	}
 
 	@media (max-width: 768px) {
+		.chat-intro-panel {
+			width: auto;
+			margin: 0 0.65rem 0.4rem;
+			padding: 0.6rem 0.7rem;
+		}
+
+		.chat-intro-panel h2 {
+			margin-bottom: 0.25rem;
+			font-size: 0.9rem;
+		}
+
+		.chat-intro-panel p {
+			font-size: 0.8rem;
+			line-height: 1.4;
+		}
+
+		.chat-intro-panel ul {
+			gap: 0.18rem;
+			margin-top: 0.4rem;
+			font-size: 0.76rem;
+			line-height: 1.35;
+		}
+
 		.chat-container {
 			flex: 1 1 auto;
 			height: auto;
@@ -1695,6 +1773,11 @@
 	}
 
 	@media (max-width: 340px) {
+		.chat-intro-panel {
+			margin-inline: 0.5rem;
+			padding: 0.55rem 0.65rem;
+		}
+
 		.composer-row {
 			gap: 0.4rem;
 		}

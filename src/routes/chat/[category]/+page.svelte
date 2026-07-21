@@ -171,19 +171,6 @@
 			</div>
 		{/if}
 
-		<section class="chat-intro-panel" aria-labelledby="chat-intro-title">
-			<h2 id="chat-intro-title">Så går det till här</h2>
-			<p>
-				Du skriver några rader. MittPsyke svarar lugnt och hjälper dig att sortera det som känns
-				mest nära just nu.
-			</p>
-			<ul>
-				<li>Du behöver inte formulera allt perfekt.</li>
-				<li>Du kan ta en sak i taget och pausa när du vill.</li>
-				<li>Vid akut fara ska du ringa 112 i stället för att använda chatten.</li>
-			</ul>
-		</section>
-
 		<ChatWindow
 			category={category}
 			initialMessages={initialMessages}
@@ -215,42 +202,6 @@
 		min-height: 0;
 	}
 
-	.chat-intro-panel {
-		max-width: 42rem;
-		margin: 0 auto 0.85rem;
-		padding: 0.95rem 1rem;
-		border-radius: var(--radius-card);
-		background: rgba(248, 245, 239, 0.9);
-		border: 1px solid rgba(52, 91, 55, 0.1);
-		color: inherit;
-	}
-
-	.chat-intro-panel h2 {
-		margin: 0 0 0.4rem;
-		font-size: 0.98rem;
-		font-weight: 700;
-	}
-
-	.chat-intro-panel p {
-		margin: 0;
-		font-size: 0.94rem;
-		line-height: 1.6;
-	}
-
-	.chat-intro-panel ul {
-		margin: 0.65rem 0 0;
-		padding-left: 1.1rem;
-		display: grid;
-		gap: 0.35rem;
-		font-size: 0.9rem;
-		line-height: 1.55;
-	}
-
-	:global(.dark) .chat-intro-panel {
-		background: rgba(23, 29, 36, 0.84);
-		border-color: rgba(255, 255, 255, 0.08);
-	}
-
 	@media (max-width: 767px) {
 		[data-page='chat'] {
 			height: calc(100svh - 3.5rem - env(safe-area-inset-top));
@@ -268,31 +219,5 @@
 			margin-bottom: 0.2rem;
 		}
 
-		.chat-intro-panel {
-			flex: 0 0 auto;
-			margin: 0 0.65rem 0.4rem;
-			padding: 0.55rem 0.7rem;
-		}
-
-		.chat-intro-panel p {
-			font-size: 0.82rem;
-			line-height: 1.45;
-		}
-
-		.chat-intro-panel ul {
-			display: none;
-		}
-
-	}
-
-	@media (max-height: 600px) {
-		.chat-intro-panel {
-			margin-bottom: 0.35rem;
-			padding-block: 0.45rem;
-		}
-
-		.chat-intro-panel ul {
-			display: none;
-		}
 	}
 </style>
