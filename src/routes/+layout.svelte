@@ -85,6 +85,17 @@
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
 
+	const mobileSignedInGeneralNavItems: NavItem[] = [
+		{ href: '/blogg', label: 'Artiklar' },
+		{ href: '/guider', label: 'Guider' },
+		{ href: '/anonyma-berattelser', label: 'Berättelser' },
+		{ href: '/ovningar', label: 'Övningar' },
+		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
+		{ href: '/om-skaparen', label: 'Om skaparen' },
+		{ href: PUBLIC_CONTACT_MAILTO, label: 'Kontakt' },
+		{ href: '/dashboard/installningar', label: 'Inställningar' }
+	];
+
 	const guestSecondaryNavItems: NavItem[] = [
 		{ href: 'https://stodlinjer.se', label: 'Akut hjälp', external: true }
 	];
@@ -673,8 +684,8 @@
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
-				<nav class="mobile-quick-nav" aria-label="Snabbnavigering">
-					{#each (user ? signedInPortalNavItems.slice(0, 2) : primaryNavItems.slice(0, 3)) as item}
+				<nav class="mobile-quick-nav" class:mobile-quick-nav-signed={Boolean(user)} aria-label="Snabbnavigering">
+					{#each (user ? signedInPortalNavItems.slice(0, 1) : primaryNavItems.slice(0, 3)) as item}
 						<a
 							href={item.href}
 							class="mobile-quick-link"
@@ -833,16 +844,7 @@
 
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden px-5 py-3" role="navigation" aria-label="Mobilmeny">
-				{#if user}
-					<p class="mobile-menu-section-title text-xs opacity-55">Din plats</p>
-					{#each signedInPortalNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>
-							{item.label}
-						</a>
-					{/each}
-					<p class="mobile-menu-section-title text-xs opacity-55">Upptäck</p>
-				{/if}
-				{#each primaryNavItems as item}
+				{#each (user ? mobileSignedInGeneralNavItems : primaryNavItems) as item}
 					<a
 						href={item.href}
 						class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
@@ -856,12 +858,13 @@
 					<Search size={16} aria-hidden="true" />
 					<span>Sök</span>
 				</a>
-				{#each mobileSupplementalNavItems as item}
-					<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
-				{/each}
+				{#if !user}
+					{#each mobileSupplementalNavItems as item}
+						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+					{/each}
+				{/if}
 				{#if user}
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
-					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
 						class="mobile-menu-link text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
@@ -1293,14 +1296,6 @@
 		border-top: 1px solid var(--layout-footer-border);
 	}
 
-
-	.mobile-menu-section-title {
-		margin: 0.5rem 0 0.2rem;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-	}
-
-
 	.mobile-menu-link {
 		display: block;
 		width: 100%;
@@ -1644,10 +1639,6 @@
 			display: none;
 		}
 
-		.mobile-menu-section-title {
-			margin-top: 0.35rem;
-		}
-
 		.mobile-menu-link {
 			padding: 0.42rem 0;
 		}
@@ -1677,9 +1668,12 @@
 	}
 
 	@media (max-width: 640px) {
-		/* Dölj snabbnavlänkarna — hamburgermenyn räcker på smal skärm */
 		.mobile-quick-nav {
 			display: none;
+		}
+
+		.mobile-quick-nav-signed {
+			display: inline-flex;
 		}
 
 		.site-header-inner {
