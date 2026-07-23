@@ -57,7 +57,8 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-standing-front-alert.png') }],
 		alt: 'Din följeslagare, räven, står avslappnat.',
-		weight: 3
+		weight: 3,
+		sceneAdjustment: { scale: 0.75 }
 	},
 	{
 		id: 'look-left',
@@ -65,7 +66,8 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-standing-side-left-lake.png') }],
 		alt: 'Din följeslagare, räven, tittar lugnt åt vänster.',
-		weight: 1.1
+		weight: 1.1,
+		sceneAdjustment: { scale: 0.68 }
 	},
 	{
 		id: 'look-right',
@@ -73,7 +75,8 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-standing-side-right-listening.png') }],
 		alt: 'Din följeslagare, räven, tittar lugnt åt höger.',
-		weight: 1.1
+		weight: 1.1,
+		sceneAdjustment: { scale: 0.76 }
 	},
 	{
 		id: 'sit',
@@ -81,7 +84,8 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-resting-sitting.png') }],
 		alt: 'Din följeslagare, räven, sitter stilla.',
-		weight: 2.2
+		weight: 2.2,
+		sceneAdjustment: { scale: 0.89 }
 	},
 	{
 		id: 'sit-look-up',
@@ -97,7 +101,8 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-lake-drinking.png') }],
 		alt: 'Din följeslagare, räven, dricker stilla vid sjön.',
-		weight: 0.75
+		weight: 0.75,
+		sceneAdjustment: { scale: 0.92 }
 	},
 	{
 		id: 'sniff',
@@ -105,7 +110,8 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-lake-sniffing.png') }],
 		alt: 'Din följeslagare, räven, nosar försiktigt på marken.',
-		weight: 0.8
+		weight: 0.8,
+		sceneAdjustment: { scale: 0.93 }
 	},
 	{
 		id: 'stretch',
@@ -123,7 +129,8 @@ export const FOX_COMPANION_POSES = [
 		frames: [{ src: foxPoseSrc('fox-realistic-walking-curious.png') }],
 		alt: 'Din följeslagare, räven, går långsamt genom platsen.',
 		weight: 0.22,
-		frameMs: 620
+		frameMs: 620,
+		sceneAdjustment: { scale: 0.67 }
 	},
 	{
 		id: 'evening-lake',
@@ -131,7 +138,8 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['evening'],
 		frames: [{ src: foxPoseSrc('fox-realistic-lake-sitting-gazing.png') }],
 		alt: 'Din följeslagare, räven, sitter och tittar mot sjön i kvällsljus.',
-		weight: 2.6
+		weight: 2.6,
+		sceneAdjustment: { scale: 0.95 }
 	},
 	{
 		id: 'rest',
@@ -139,7 +147,8 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['evening'],
 		frames: [{ src: foxPoseSrc('fox-realistic-resting-lying-half-asleep.png') }],
 		alt: 'Din följeslagare, räven, ligger och vilar i kvällslugnet.',
-		weight: 1.7
+		weight: 1.7,
+		sceneAdjustment: { scale: 0.82 }
 	},
 	{
 		id: 'sleep-curled',
@@ -147,7 +156,8 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['night'],
 		frames: [{ src: foxPoseSrc('fox-realistic-sleeping-curled.png') }],
 		alt: 'Din följeslagare, räven, sover hoprullad.',
-		weight: 2.3
+		weight: 2.3,
+		sceneAdjustment: { scale: 0.75 }
 	},
 	{
 		id: 'sleep-side',
@@ -155,7 +165,8 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['night'],
 		frames: [{ src: foxPoseSrc('fox-realistic-sleeping-side-dreaming.png') }],
 		alt: 'Din följeslagare, räven, sover lugnt på sidan.',
-		weight: 1.8
+		weight: 1.8,
+		sceneAdjustment: { scale: 0.58 }
 	},
 	{
 		id: 'blink',
