@@ -110,13 +110,13 @@
           {
             icon: PenLine,
             tone: 'green',
-            title: 'Din dagbok kan följa med dig',
+            title: 'Din dagbok sparas med konto',
             time: 'När du vill spara'
           },
           {
             icon: Wind,
             tone: 'purple',
-            title: 'Dina små steg kan samlas här',
+            title: 'Dina små steg samlas här',
             time: 'I din takt'
           },
           {

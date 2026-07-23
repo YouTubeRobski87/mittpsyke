@@ -127,7 +127,7 @@ function buildProgressSummary(currentStreak: number, weeklyEntries: number, tota
 	if (totalEntries >= 1) {
 		return `${totalEntries} sparade anteckningar finns kvar att gå tillbaka till.`;
 	}
-	return 'Små steg räcker. Ditt första inlägg kan börja här.';
+	return 'Små steg räcker. Skriv ditt första inlägg här.';
 }
 
 function buildCurrentStreak(entries: { created_at: string | null }[]) {
@@ -181,7 +181,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				currentStreak: 0,
 				weeklyEntries: 0,
 				totalEntries: 0,
-				summary: 'Här kan små tecken på din resa samlas när du vill spara dem.'
+				summary: 'Små tecken på din resa samlas här när du skapar konto.'
 			},
 			settingsPreview: {
 				displayName: null,
@@ -252,7 +252,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			}
 		: {
 				id: null,
-				snippet: 'Din dagbok väntar stilla. Du kan fortsätta där du var eller börja med några enkla ord.',
+				snippet: 'Din dagbok väntar stilla. Skriv några enkla ord för att börja.',
 				dateLabel: '',
 				hasEntry: false
 			};

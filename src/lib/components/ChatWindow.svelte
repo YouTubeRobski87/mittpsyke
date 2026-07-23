@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Square, Volume2 } from 'lucide-svelte';
-	import { containsCrisisSignal } from '$lib/ai/safety';
+	import { containsCrisisSignal, containsThirdPartyRiskSignal } from '$lib/ai/safety';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
 	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
@@ -107,49 +107,6 @@
 		'texten racker inte'
 	];
 
-	const acuteSupportKeywords = [
-		'akut fara',
-		'självmord',
-		'sjalvmord',
-		'suicid',
-		'ta mitt liv',
-		'ta livet av mig',
-		'vill dö',
-		'vill vara död',
-		'vill do',
-		'vill vara dod',
-		'orkar inte leva',
-		'inte orkar leva',
-		'skada mig själv',
-		'skada mig sjalv',
-		'självskad',
-		'sjalvskad',
-		'skada någon annan',
-		'skada nagon annan',
-		'hoppa från',
-		'hoppa fran',
-		'försvinna för alltid',
-		'forsvinna for alltid',
-		'ingen mening att leva',
-		'hoppas att jag dör',
-		'hoppas att jag dor',
-		'bättre om jag var död',
-		'battre om jag var dod',
-		'avsluta allt',
-		'avsluta mitt liv',
-		'inte vakna',
-		'somna för alltid',
-		'somna for alltid',
-		'avskedsbrev',
-		'ta tabletter',
-		'ta överdos',
-		'ta overdos',
-		'sista utvägen',
-		'sista utvagen',
-		'göra slut på allt',
-		'gora slut pa allt'
-	];
-
 	let chatTopic = $derived(getChatTopic(category));
 	let inputLength = $derived(input.length);
 	let showStarterSuggestions = $derived(
@@ -173,8 +130,11 @@
 	function supportLevel() {
 		const text = latestUserMessageContent();
 		if (!text) return 'standard';
-		if (acuteSupportKeywords.some((keyword) => text.includes(keyword)) || containsCrisisSignal(text)) {
+		if (containsCrisisSignal(text)) {
 			return 'acute';
+		}
+		if (containsThirdPartyRiskSignal(text)) {
+			return 'acute-third-party';
 		}
 		if (elevatedSupportKeywords.some((keyword) => text.includes(keyword))) {
 			return 'elevated';
@@ -184,7 +144,9 @@
 
 	let currentSupportLevel = $derived(supportLevel());
 	let followUpSuggestions = $derived(
-		currentSupportLevel === 'acute' || currentSupportLevel === 'elevated'
+		currentSupportLevel === 'acute' ||
+		currentSupportLevel === 'acute-third-party' ||
+		currentSupportLevel === 'elevated'
 			? ['Jag vill stanna kvar i det här en stund', 'Hjälp mig hitta ett tryggt nästa steg']
 			: category === 'a'
 				? ['Kan vi ta en sak i taget?', 'Hjälp mig lugna tankarna lite']
@@ -983,6 +945,19 @@
 				</div>
 				<p class="mt-2 text-xs opacity-70">
 					MittPsyke är inte en akuttjänst. Vid akut kris, kontakta alltid professionell hjälp.
+				</p>
+			</div>
+		{:else if currentSupportLevel === 'acute-third-party'}
+			<div class="support-panel support-panel-acute mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
+				<p class="font-medium text-rose-900 dark:text-rose-100">
+					Om du eller någon annan är i fara just nu, ring 112 direkt.
+				</p>
+				<div class="mt-2 flex flex-wrap gap-2">
+					<a href="tel:112" class="support-chip support-chip-urgent">Ring 112</a>
+					<a href="tel:1177" class="support-chip">Ring 1177</a>
+				</div>
+				<p class="mt-2 text-xs opacity-70">
+					MittPsyke är inte en akuttjänst. Vid risk för någons säkerhet, kontakta alltid 112 eller vården.
 				</p>
 			</div>
 		{:else if currentSupportLevel === 'elevated'}

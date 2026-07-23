@@ -3,6 +3,7 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { CHAT_CONTEXT_LIMIT, getChatContextMessages } from '$lib/state/chat-memory';
+import { containsAcuteCrisisPhrase, containsThirdPartyRiskPhrase } from '$lib/ai/crisis-keywords';
 import {
 	formatMemoriesForPrompt,
 	loadUserMemories,
@@ -196,42 +197,16 @@ Du är ett tryggt samtalsrum.
 `.trim();
 
 // ---------------------------------------------------------------------------
-// Krisorddetektering – körs alltid FÖRE AI-anrop
+// Krisorddetektering – körs alltid FÖRE AI-anrop.
+// Ordlistorna kommer från $lib/ai/crisis-keywords, den enda källan som delas
+// med klientens omedelbara UI-check och ChatWindows stödnivåer.
 // ---------------------------------------------------------------------------
-const CRISIS_PATTERNS = [
-	/självmord/i,
-	/ta livet av (mig|sig|oss|dig)/i,
-	/avsluta (mitt|sitt|livet|allt)/i,
-	/inte orkar leva/i,
-	/orkar inte leva/i,
-	/vill inte leva/i,
-	/vill (bara |helst )?(dö|vara död)/i,
-	/hoppas att jag dör/i,
-	/bättre om jag (var|vore) död/i,
-	/ingen anledning att leva/i,
-	/suicid/i,
-	/självskad/i,
-	/skada mig (själv)?/i,
-	/hoppa (från|av|ner)/i,
-	/inte vilja finnas/i,
-	/försvinna för alltid/i,
-	/ge upp (allt|livet|hoppet)/i,
-	/inget hopp/i,
-	/ingen mening (med|att leva)/i,
-	/alla vore bättre utan mig/i,
-	/ingen (saknar|behöver|bryr sig om) mig/i,
-	/ta (tabletter|piller|överdos)/i,
-	/lagt en plan/i,
-	/skriva (ett )?avskedsbrev/i,
-	/inte vakna (imorgon|igen|upp)/i,
-	/somna (in )?för alltid/i,
-	/göra slut på (allt|det här|mitt liv)/i,
-	/kan inte fortsätta/i,
-	/sista (utvägen|chansen)/i
-];
-
 function detectCrisis(text: string): boolean {
-	return CRISIS_PATTERNS.some((pattern) => pattern.test(text));
+	return containsAcuteCrisisPhrase(text);
+}
+
+function detectThirdPartyRisk(text: string): boolean {
+	return containsThirdPartyRiskPhrase(text);
 }
 
 const CRISIS_RESPONSE = `Det du skriver rör mig, och jag vill att du vet att du inte är ensam just nu.
@@ -247,6 +222,14 @@ Det här är inte rätt plats för akut hjälp – men det finns människor som 
 **Stödlinjer.se** – lista över fler stödlinjer och chattar.
 
 Jag finns kvar här om du vill prata vidare, men vid akut kris är en riktig människa viktigast just nu.`;
+
+const THIRD_PARTY_RISK_RESPONSE = `Det du skriver oroar mig. Om du eller någon annan är i fara just nu är rätt hjälp direkt viktigast.
+
+**Ring 112** om faran är omedelbar.
+
+Om det känns svårt att hålla kontrollen kan det hjälpa att genast prata med någon utanför situationen – en vän, anhörig eller vården via **1177**.
+
+Jag finns kvar här om du vill prata vidare, men vid risk för någons säkerhet är 112 och professionell hjälp viktigast just nu.`;
 // ---------------------------------------------------------------------------
 
 const CHAT_MODEL = (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
@@ -497,6 +480,19 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 		return json({
 			reply: CRISIS_RESPONSE,
+			crisis: true,
+			conversationId: null,
+			mode: isGuestRequest ? 'guest' : 'user'
+		});
+	}
+
+	if (detectThirdPartyRisk(message)) {
+		console.warn('[chat] third-party risk keywords detected', {
+			guest: isGuestRequest,
+			messageLength: message.length
+		});
+		return json({
+			reply: THIRD_PARTY_RISK_RESPONSE,
 			crisis: true,
 			conversationId: null,
 			mode: isGuestRequest ? 'guest' : 'user'
