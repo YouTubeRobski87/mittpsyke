@@ -17,7 +17,7 @@ export type Pillar = {
 	slug: string;
 	title: string;
 	description: string;
-	chatPath: '/chat/a' | '/chat/b' | '/chat/e';
+	chatPath: '/chat/angest' | '/chat/nedstamdhet' | '/chat/trauma';
 };
 
 export type Guide = {
@@ -61,37 +61,37 @@ export const pillars: Pillar[] = [
 		slug: 'angest',
 		title: 'Ångest',
 		description: 'Förstå vanliga reaktioner vid ångest och hur du kan hantera dem stegvis.',
-		chatPath: '/chat/a'
+		chatPath: '/chat/angest'
 	},
 	{
 		slug: 'panikattack',
 		title: 'Panikattack',
 		description: 'Förstå panikattacker, vad som händer i kroppen och hur du kan ta dig igenom det steg för steg.',
-		chatPath: '/chat/a'
+		chatPath: '/chat/angest'
 	},
 	{
 		slug: 'depression',
 		title: 'Nedstämdhet och depression',
 		description: 'En lugn översikt av symtom, vardagsstöd och när extra hjälp kan behövas.',
-		chatPath: '/chat/b'
+		chatPath: '/chat/nedstamdhet'
 	},
 	{
 		slug: 'trauma',
 		title: 'Trauma och trygghet',
 		description: 'Om stressreaktioner efter svåra händelser och sätt att bygga mer trygghet.',
-		chatPath: '/chat/e'
+		chatPath: '/chat/trauma'
 	},
 	{
 		slug: 'sovproblem',
 		title: 'Sömnproblem',
 		description: 'Förstå varför sömnen uteblir och hur du kan börja hantera det som håller dig vaken.',
-		chatPath: '/chat/a'
+		chatPath: '/chat/angest'
 	},
 	{
 		slug: 'sjalvkansla',
 		title: 'Självkänsla',
 		description: 'Om låg självkänsla, vad det beror på och hur du kan börja utforska din relation till dig själv.',
-		chatPath: '/chat/a'
+		chatPath: '/chat/angest'
 	}
 ,
 
@@ -99,31 +99,31 @@ export const pillars: Pillar[] = [
 		slug: 'stress',
 		title: 'Stress och överbelastning',
 		description: 'Om stress, mental utmattning och hur du kan börja hitta tillbaka till ett lugnare läge.',
-		chatPath: '/chat/a'
+		chatPath: '/chat/angest'
 	},
 	{
 		slug: 'ensamhet',
 		title: 'Ensamhet och tomhet',
 		description: 'Om känslan av ensamhet, tomhet och hur du kan börja hitta kontakt med dig själv och andra.',
-		chatPath: '/chat/b'
+		chatPath: '/chat/nedstamdhet'
 	},
 	{
 		slug: 'overtankande',
 		title: 'Ältande och övertänkande',
 		description: 'Om tankeloopar, grubblande och hur du kan hitta mer lugn utan att behöva stänga av allt.',
-		chatPath: '/chat/e'
+		chatPath: '/chat/trauma'
 	},
 	{
 		slug: 'kbt',
 		title: 'KBT – Kognitiv beteendeterapi',
 		description: 'Förstå KBT-principer och prova tekniker du kan använda hemma för att hantera tankar, känslor och beteenden.',
-		chatPath: '/chat/a'
+		chatPath: '/chat/angest'
 	},
 	{
 		slug: 'beroende',
 		title: 'Beroende och missbruk',
 		description: 'Om skam, ambivalens, kontrollförlust och små steg mot stöd när något har börjat ta för stor plats.',
-		chatPath: '/chat/b'
+		chatPath: '/chat/nedstamdhet'
 	}
 ];
 
@@ -4115,7 +4115,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				links: [
 					{ title: 'Hjälp vid ångest online', href: '/hjalp-vid-angest-online' },
 					{ title: 'Hjälp mot oro online', href: '/hjalp-mot-oro-online' },
-					{ title: 'Prata anonymt om ångest', href: '/chat/a' }
+					{ title: 'Prata anonymt om ångest', href: '/chat/angest' }
 				]
 			},
 			{
@@ -4223,7 +4223,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				links: [
 					{ title: 'Läs mer om stöd vid stress online', href: '/stress' },
 					{ title: 'Hjälp mot oro online', href: '/hjalp-mot-oro-online' },
-					{ title: 'Prata anonymt om stress', href: '/chat/a' }
+					{ title: 'Prata anonymt om stress', href: '/chat/angest' }
 				]
 			},
 			{
@@ -4336,7 +4336,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 		primaryLinks: [
 			{ title: 'Se alla guider om ensamhet', href: '/guider/ensamhet' },
 			{ title: 'Läs mer om ensamhet hos MittPsyke', href: '/ensamhet' },
-			{ title: 'Prata anonymt om ensamhet', href: '/chat/b' }
+			{ title: 'Prata anonymt om ensamhet', href: '/chat/nedstamdhet' }
 		]
 	},
 	depression: {
@@ -4369,7 +4369,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				body: 'MittPsyke kan ge stöd för reflektion, men ersätter inte vård. Vid akut fara ringer du 112. För vårdråd finns 1177.',
 				links: [
 					{ title: 'Skriv av dig i dagboken', href: '/dagbok' },
-					{ title: 'Chatta anonymt i lugn takt', href: '/chat/b' },
+					{ title: 'Chatta anonymt i lugn takt', href: '/chat/nedstamdhet' },
 					{ title: 'Vad journalterapi kan hjälpa med', href: '/blogg/vad-ar-journalterapi' }
 				]
 			}
@@ -4418,7 +4418,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 		primaryLinks: [
 			{ title: 'Läs mer om panikattack på MittPsyke', href: '/panikattack' },
 			{ title: 'Se guider om ångest', href: '/guider/angest' },
-			{ title: 'Starta chatt om panik och ångest', href: '/chat/a' }
+			{ title: 'Starta chatt om panik och ångest', href: '/chat/angest' }
 		]
 	},
 	overtankande: {
@@ -4471,7 +4471,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 		primaryLinks: [
 			{ title: 'Läs mer om oro och övertänkande', href: '/oro' },
 			{ title: 'Se guider om ångest', href: '/guider/angest' },
-			{ title: 'Starta chatt om oro', href: '/chat/e' }
+			{ title: 'Starta chatt om oro', href: '/chat/trauma' }
 		]
 	},
 	sovproblem: {
@@ -4504,7 +4504,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				body: 'Du behöver inte hitta perfekt sömn direkt. Små justeringar i rutiner och tankemönster kan göra stor skillnad över tid. MittPsyke är ett komplement för stöd och reflektion, inte en ersättning för vård.',
 				links: [
 					{ title: 'Skriv av dig kvällstankarna', href: '/dagbok' },
-					{ title: 'Chatta när tankarna håller dig vaken', href: '/chat/a' },
+					{ title: 'Chatta när tankarna håller dig vaken', href: '/chat/angest' },
 					{ title: 'Sluta övertänka på kvällen', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' }
 				]
 			}
@@ -4545,7 +4545,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				body: 'Förändring i självkänsla sker sällan snabbt, men varje litet steg räknas. Du kan börja med att sätta ord på det som känns svårt, skriva i dagboken eller prova en enkel övning.',
 				links: [
 					{ title: 'Skriv om självbilden i dagboken', href: '/dagbok' },
-					{ title: 'Chatta anonymt om det som känns svårt', href: '/chat/a' },
+					{ title: 'Chatta anonymt om det som känns svårt', href: '/chat/angest' },
 					{ title: 'Vad journalterapi kan hjälpa med', href: '/blogg/vad-ar-journalterapi' }
 				]
 			}

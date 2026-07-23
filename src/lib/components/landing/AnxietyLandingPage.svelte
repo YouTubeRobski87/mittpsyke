@@ -121,7 +121,7 @@
 				till samtalsstöd, skrivande och små verktyg när du behöver andrum.
 			</p>
 			<div class="hero__actions">
-				<a class="button button--primary" href="/chat/a" onclick={trackPrimaryCta}>
+				<a class="button button--primary" href="/chat/angest" onclick={trackPrimaryCta}>
 					{data.ctaText}
 				</a>
 				<a class="button button--ghost" href="/dagbok" onclick={trackSecondaryCta}>
@@ -171,7 +171,7 @@
 		</div>
 
 		<div class="pathways__grid">
-			<a class="path-card" href="/chat/a">
+			<a class="path-card" href="/chat/angest">
 				<h3>Prata anonymt</h3>
 				<p>För dig som vill få ordning i tankarna i ett samtal direkt.</p>
 			</a>

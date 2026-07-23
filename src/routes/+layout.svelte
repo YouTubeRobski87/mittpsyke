@@ -953,7 +953,9 @@
 					<div class="footer-company">
 						<p>© {new Date().getFullYear()} MittPsyke</p>
 						<p>Enskild näringsverksamhet</p>
-						<p>Org.nr: 198712284895</p>
+						<p>
+							<a href="/kontakt-och-villkor" class="footer-link">Org.nr och kontaktuppgifter</a>
+						</p>
 						<p><a href={PUBLIC_CONTACT_MAILTO} class="footer-link">{PUBLIC_CONTACT_EMAIL}</a></p>
 					</div>
 				</div>

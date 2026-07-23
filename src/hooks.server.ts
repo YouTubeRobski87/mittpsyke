@@ -52,8 +52,8 @@ const legacyPageRedirects: Record<string, string> = {
 	'/guider-seo/nedstamdhet': '/guider/depression',
 	'/samtalsstod-vid-trauma': '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma',
 	'/ai': '/skriv',
-	'/b': '/chat/b',
-	'/e': '/chat/e'
+	'/b': '/chat/nedstamdhet',
+	'/e': '/chat/trauma'
 }
 
 const legacyPathRedirects: Handle = async ({ event, resolve }) => {

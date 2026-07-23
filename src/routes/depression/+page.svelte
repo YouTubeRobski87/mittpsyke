@@ -53,7 +53,7 @@
 
 		<!-- CTA Button -->
 		<div class="cta-container">
-			<a class="cta-button" href="/chat/b">Starta ett samtal</a>
+			<a class="cta-button" href="/chat/nedstamdhet">Starta ett samtal</a>
 		</div>
 
 		<!-- Additional Support Info -->

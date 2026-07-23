@@ -101,15 +101,15 @@
 		</section>
 
 		<section class="choices" aria-label="Välj ingång till chatten">
-			<a class="choice-card" href="/chat/a">
+			<a class="choice-card" href="/chat/angest">
 				<h2>Ångest</h2>
 				<p>För oro, ångest och tankar som snurrar.</p>
 			</a>
-			<a class="choice-card" href="/chat/b">
+			<a class="choice-card" href="/chat/nedstamdhet">
 				<h2>Nedstämdhet</h2>
 				<p>För tunga dagar, låg ork och sådant som känns mörkt.</p>
 			</a>
-			<a class="choice-card" href="/chat/e">
+			<a class="choice-card" href="/chat/trauma">
 				<h2>Trauma</h2>
 				<p>För svåra upplevelser, behov av trygghet och att ta det i egen takt.</p>
 			</a>
@@ -120,8 +120,8 @@
 		<section class="section">
 			<h2>Vad kan du få hjälp med?</h2>
 			<p>
-				AI-chatten kan hjälpa dig att reflektera kring ångest, stress, sömnproblem, relationer
-				och psykiskt mående. Du kan börja utan konto. Vissa tekniska uppgifter hanteras enligt
+				AI-chatten hjälper dig att reflektera kring ångest, stress, sömnproblem, relationer
+				och psykiskt mående. Du kan börja utan konto. Vi hanterar vissa tekniska uppgifter enligt
 				<a href="/integritet">integritetspolicyn</a>. Om du vill läsa mer först finns
 				<a href="/prata-anonymt-online">prata anonymt online</a>. Vid akut fara, ring 112.
 				För vårdråd, kontakta 1177. Behöver du mänsklig kontakt finns

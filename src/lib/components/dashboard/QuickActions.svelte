@@ -4,7 +4,7 @@
 		<a href="/dagbok" class="auth-button">
 			Öppna dagboken
 		</a>
-		<a href="/chat/a" class="auth-button">
+		<a href="/chat/angest" class="auth-button">
 			Starta samtal
 		</a>
 	</div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { chatPath } = $props<{ chatPath: '/chat/a' | '/chat/b' | '/chat/e' }>();
+	let { chatPath } = $props<{ chatPath: '/chat/angest' | '/chat/nedstamdhet' | '/chat/trauma' }>();
 </script>
 
 <aside class="seo-cta">

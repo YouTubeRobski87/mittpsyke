@@ -12,7 +12,6 @@
 	type HomePageData = {
 		contentStats?: {
 			guideCount: number;
-			articleCount: number;
 		};
 	};
 
@@ -67,15 +66,15 @@
 	const outcomeItems = [
 		{
 			title: 'Se vad som återkommer',
-			text: 'Dina anteckningar kan göra det lättare att upptäcka mönster mellan sömn, stress och hur du mår.'
+			text: 'Dina anteckningar visar mönster mellan sömn, stress och hur du mår.'
 		},
 		{
 			title: 'Minnas det som hjälper',
-			text: 'Du kan samla reflektioner och återvända till sådant som gav lite mer lugn eller struktur.'
+			text: 'Du samlar reflektioner och kan återvända till det som gav lugn eller struktur.'
 		},
 		{
 			title: 'Få en tydligare överblick',
-			text: 'Med tiden kan du följa små förändringar utan att behöva minnas allt själv.'
+			text: 'Med tiden ser du förändringar utan att behöva minnas allt själv.'
 		}
 	];
 
@@ -257,10 +256,6 @@
 						<dt>{data.contentStats.guideCount}</dt>
 						<dd>publicerade guider</dd>
 					</div>
-					<div>
-						<dt>{data.contentStats.articleCount}</dt>
-						<dd>publicerade artiklar</dd>
-					</div>
 				</dl>
 			</div>
 		</section>
@@ -273,8 +268,8 @@
 			<div class="founder-copy">
 				<p class="section-eyebrow">Bakom MittPsyke</p>
 				<h2 id="founder-title">Översikt och syfte med MittPsyke</h2>
-				<p>MittPsyke är en svensk digital plattform för samtalsstöd, skapad för personer som lever med psykisk belastning i olika former. Plattformen syftar till att erbjuda ett tryggt, tillgängligt och lågtröskligt rum där användaren kan stanna upp, sätta ord på det som känns svårt och få stöd i stunden – utan krav på prestation eller att behöva förklara allt från början. Grundaren, Robert Claesson, har själv erfarenhet av psykisk ohälsa och skapade MittPsyke utifrån egna behov av stöd när traditionell hjälp kändes långt borta. Visionen är att erbjuda en personlig och tillgänglig plats för reflektion, struktur och stöd, där användaren kan känna sig hörd och tagen på allvar.</p>
-				<p>Det är viktigt att understryka att MittPsyke inte är en vårdtjänst och inte erbjuder diagnos, behandling eller akut hjälp. Plattformen positionerar sig tydligt som ett första steg för reflektion och struktur i vardagen, snarare än som ett substitut för professionell vård. Vid akuta situationer hänvisas användaren alltid till <a href="tel:112">112</a> eller <a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>, och detta framgår tydligt i plattformens information och säkerhetsrutiner.</p>
+				<p>MittPsyke är en svensk digital plattform för samtalsstöd, skapad för personer som lever med psykisk belastning i olika former. Här kan du stanna upp, sätta ord på det som känns svårt och få stöd i stunden – utan krav på prestation eller att förklara allt från början. Grundaren, Robert Claesson, har själv erfarenhet av psykisk ohälsa och skapade MittPsyke utifrån egna behov av stöd när traditionell hjälp kändes långt borta. Målet är en personlig och tillgänglig plats för reflektion, struktur och stöd, där du kan känna dig hörd och tagen på allvar.</p>
+				<p>MittPsyke är inte en vårdtjänst och erbjuder inte diagnos, behandling eller akut hjälp. Det är ett första steg för reflektion och struktur i vardagen, inte en ersättning för professionell vård. Vid akuta situationer hänvisar vi alltid till <a href="tel:112">112</a> eller <a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>.</p>
 				<a class="context-link" href="/om-mittpsyke" onclick={() => trackHomeCta('founder', 'om_mittpsyke', '/om-mittpsyke')}>Läs varför MittPsyke finns <span aria-hidden="true">→</span></a>
 			</div>
 		</div>
@@ -771,7 +766,8 @@
 
 	.proof-grid {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		grid-template-columns: minmax(0, 1fr);
+		max-width: 14rem;
 		gap: 0.75rem;
 		margin: 0;
 	}

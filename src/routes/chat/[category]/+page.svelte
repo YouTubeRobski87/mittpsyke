@@ -4,6 +4,7 @@
 	import HealthConsent from '$lib/components/HealthConsent.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { getPortalByKey } from '$lib/data/portals';
+	import { resolveChatCategory } from '$lib/data/chat-slugs';
 	import { supabase } from '$lib/supabase';
 	import type { ChatMessage } from '$lib/types';
 	import { page } from '$app/state';
@@ -12,7 +13,9 @@
 	const STORAGE_KEY = 'mittpsyke.healthConsent';
 	const VERSION = '2026-04-29';
 
-	const category = $derived(page.params.category ?? '');
+	// Slugen i URL:en (t.ex. "angest") slås om till den interna kategorikoden ("a")
+	// som redan används i databasen, portalnycklar och /api/chat.
+	const category = $derived(resolveChatCategory(page.params.category ?? ''));
 	const portal = $derived(getPortalByKey(category));
 
 	let hasConsent = $state(false);

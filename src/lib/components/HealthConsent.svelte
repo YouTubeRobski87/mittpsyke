@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { grantSensitiveConsent, type HealthConsentRecord } from '$lib/consent';
 	import { supabase } from '$lib/supabase';
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 
 	export let onAccept: (consent: HealthConsentRecord) => void | Promise<void> = () => {};
 
@@ -43,15 +44,9 @@
 	<div class="consent-box" role="dialog" aria-modal="true" aria-labelledby="health-consent-title">
 		<h2 id="health-consent-title">Innan du börjar</h2>
 
-		<p>
-			MittPsyke är ett stöd i egen takt, inte vård. Det du skriver kan handla om mående och
-			andra känsliga personuppgifter. För att chatten och dagboken ska kunna svara på det du delar
-			behöver texten behandlas här i tjänsten.
-		</p>
-
-		<p>
-			Samtycket är separat för känsliga uppgifter, sparas med tidpunkt och version och kan
-			återkallas senare i dina inställningar.
+		<p id="health-consent-copy">
+			MittPsyke är ett stöd i egen takt, inte vård. Det du skriver kan innehålla känsliga
+			uppgifter om mående.
 		</p>
 
 		<label class="consent-check">
@@ -62,10 +57,32 @@
 			>
 		</label>
 
-		<p class="links">
-			Läs mer i <a href="/integritet">integritetspolicyn</a> och
-			<a href="/ansvar">ansvarsinformationen</a>.
-		</p>
+		<details class="consent-more">
+			<summary>Läs mer</summary>
+			<p>
+				För att chatten och dagboken ska kunna svara på det du delar behöver texten behandlas
+				här i tjänsten.
+			</p>
+			<p>
+				Samtycket är separat för känsliga uppgifter, sparas med tidpunkt och version och kan
+				återkallas senare i dina inställningar.
+			</p>
+			<div class="consent-data-summary">
+				<h3>Så hanteras det du skriver</h3>
+				<ul>
+					<li><strong>Vem behandlar det:</strong> MittPsyke, med hjälp av Supabase (lagring) och OpenAI (AI-svar).</li>
+					<li><strong>Var lagras det:</strong> Supabase lagrar inom EU (Frankfurt).</li>
+					<li><strong>Inom EU/EES?:</strong> Lagringen sker inom EU. OpenAI kan behandla texten i USA, skyddat av EU:s standardavtalsklausuler (SCC).</li>
+					<li><strong>Hur länge sparas det:</strong> Har du konto sparas det tills du raderar det. Utan konto rensas det automatiskt inom 24 timmar.</li>
+					<li><strong>Hur raderar du det:</strong> Via dina inställningar om du har konto, eller genom att kontakta <a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a>.</li>
+				</ul>
+			</div>
+
+			<p class="links">
+				Läs mer i <a href="/integritet">integritetspolicyn</a> och
+				<a href="/ansvar">ansvarsinformationen</a>.
+			</p>
+		</details>
 
 		{#if errorMessage}
 			<p class="feedback">{errorMessage}</p>
@@ -115,6 +132,63 @@
 	.links {
 		font-size: 0.9rem;
 		opacity: 0.8;
+	}
+
+	.consent-more {
+		margin-top: 0.9rem;
+	}
+
+	.consent-more summary {
+		cursor: pointer;
+		font-size: 0.9rem;
+		font-weight: 600;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		list-style: none;
+	}
+
+	.consent-more summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.consent-more summary:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+
+	.consent-more p {
+		margin: 0.6rem 0 0;
+		font-size: 0.88rem;
+		line-height: 1.55;
+		opacity: 0.85;
+	}
+
+	.consent-data-summary {
+		margin-top: 0.9rem;
+		padding: 0.75rem 0.85rem;
+		border-radius: 12px;
+		background: rgba(0, 0, 0, 0.03);
+	}
+
+	.consent-data-summary h3 {
+		margin: 0;
+		font-size: 0.85rem;
+		font-weight: 700;
+	}
+
+	.consent-data-summary ul {
+		margin: 0.55rem 0 0;
+		padding-left: 1.1rem;
+		display: grid;
+		gap: 0.4rem;
+		font-size: 0.85rem;
+		line-height: 1.55;
+		opacity: 0.9;
+	}
+
+	:global(.dark) .consent-data-summary {
+		background: rgba(255, 255, 255, 0.05);
 	}
 
 	.feedback {

@@ -41,6 +41,7 @@
 
 		<div class="mitt-hem-preview-wrap">
 			<div class="mitt-hem-preview-float">
+				<span class="mitt-hem-example-badge">Exempelvy — inte riktiga uppgifter</span>
 				<div class="mitt-hem-window" aria-label="Förhandsvisning av Mitt hem">
 					<div class="mitt-hem-window-bar" aria-hidden="true">
 						<span class="window-dots">
@@ -106,7 +107,7 @@
 										<Sparkles size={16} aria-hidden="true" />
 										<div>
 											<strong>{localScene?.greeting.label ?? 'Välkommen'}</strong>
-											<small>{localScene?.greeting.note ?? 'Din plats finns här.'}</small>
+											<small>{localScene?.greeting.note ?? 'Bra att du är tillbaka igen.'}</small>
 										</div>
 									</div>
 								</section>
@@ -136,7 +137,7 @@
 										<div class="preview-card-head">
 											<div>
 												<h4>Dina insikter</h4>
-												<p>Små steg kan få synas här.</p>
+												<p>Sömn och oro hänger ofta ihop den här veckan.</p>
 											</div>
 											<BarChart3 size={16} aria-hidden="true" />
 										</div>
@@ -158,7 +159,7 @@
 											</li>
 											<li>
 												<span class="activity-dot lilac"></span>
-												<span>Små framsteg kan få ligga kvar här.</span>
+												<span>Skrev om en lugnare kväll för tre dagar sedan.</span>
 											</li>
 										</ul>
 									</article>
@@ -307,6 +308,20 @@
 	.mitt-hem-preview-float {
 		position: relative;
 		z-index: 1;
+	}
+
+	.mitt-hem-example-badge {
+		display: inline-flex;
+		align-items: center;
+		margin: 0 0 0.6rem;
+		padding: 0.3rem 0.7rem;
+		border-radius: 999px;
+		background: rgba(58, 75, 57, 0.88);
+		color: #fdfaf2;
+		font-family: var(--font-heading);
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.03em;
 	}
 
 	.mitt-hem-window {

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser, dev } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { Square, Volume2 } from 'lucide-svelte';
 	import { containsCrisisSignal } from '$lib/ai/safety';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
@@ -489,7 +490,7 @@
 			await deletePersistedChatHistory(persistenceUserId, 'clear-history');
 		}
 
-		await goto(`/chat/${category}`, {
+		await goto(page.url.pathname, {
 			replaceState: true,
 			noScroll: true,
 			keepFocus: true
