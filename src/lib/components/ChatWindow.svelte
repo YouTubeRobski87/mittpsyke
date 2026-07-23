@@ -62,6 +62,7 @@
 	let historyNoticeVisible = $state(false);
 	let persistenceReady = $state(false);
 	let persistenceUserId = $state<string | null>(null);
+	let pendingHeroSend = $state(false);
 	let clearingHistory = $state(false);
 	let voiceBusy = $state(false);
 	let sendInFlight = false;
@@ -193,6 +194,7 @@
 						: ['Jag vill stanna kvar i det här en stund', 'Vad kan vara ett litet nästa steg?']
 	);
 	const tempEntryStorageKey = 'mittpsyke_temp_entry';
+	const heroQuickStartStorageKey = 'mittpsyke_hero_quick_start';
 
 	function scrollToBottom() {
 		if (chatLog) {
@@ -510,6 +512,12 @@
 			savePromptHidden = {};
 			historyNoticeVisible = false;
 
+			// Text skriven i hero-fältet på startsidan tar alltid med sig hela vägen in i chatten.
+			const heroEntry = readStorageValue(heroQuickStartStorageKey)?.trim() ?? '';
+			if (heroEntry.length > 0) {
+				removeStorageValue(heroQuickStartStorageKey);
+			}
+
 			const seededMessages = sanitizeChatMessages(initialMessages);
 			const {
 				data: { session }
@@ -542,6 +550,11 @@
 				}
 			}
 
+			if (heroEntry.length > 0) {
+				input = heroEntry;
+				pendingHeroSend = true;
+			}
+
 			writeStorageValue('mittpsyke:last-chat-category', category);
 			persistenceReady = true;
 			await tick();
@@ -553,6 +566,17 @@
 		return () => {
 			cancelled = true;
 		};
+	});
+
+	// Skickar hero-utkastet automatiskt så snart samtycket är klart — aldrig innan.
+	$effect(() => {
+		if (!pendingHeroSend) return;
+		if (!persistenceReady || !hasSensitiveDataConsent) return;
+		if (sendInFlight || !input.trim()) return;
+
+		pendingHeroSend = false;
+		firstMessageSource = 'manual';
+		void send();
 	});
 
 	onMount(() => {

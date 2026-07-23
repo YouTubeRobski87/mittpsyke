@@ -33,7 +33,7 @@
 				samla dina framsteg och återvända när du behöver stöd.
 			</p>
 			<div class="mitt-hem-actions">
-				<a class="mitt-hem-link" href="/register">Skapa konto</a>
+				<a class="mitt-hem-link mitt-hem-link-primary" href="/register">Skapa konto</a>
 				<a class="mitt-hem-link" href="/login">Logga in</a>
 			</div>
 			<p class="mitt-hem-note">Privat, personligt och skapat för att kännas tryggt.</p>
@@ -241,6 +241,19 @@
 	.mitt-hem-link:hover,
 	.mitt-hem-link:focus-visible {
 		color: #315b3b;
+	}
+
+	.mitt-hem-link-primary {
+		padding: 0.6rem 1.1rem;
+		border-radius: var(--radius-pill);
+		background: #4f7658;
+		color: #fff;
+	}
+
+	.mitt-hem-link-primary:hover,
+	.mitt-hem-link-primary:focus-visible {
+		background: #3f5f49;
+		color: #fff;
 	}
 
 	.mitt-hem-note {

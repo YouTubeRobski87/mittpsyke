@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import MittHemTeaser from '$lib/components/home/MittHemTeaser.svelte';
 	import {
 		trackHomeCtaClick,
@@ -15,10 +16,28 @@
 		};
 	};
 
+	const HERO_QUICK_START_KEY = 'mittpsyke_hero_quick_start';
+
 	let { data }: { data: HomePageData } = $props();
 	let heroEl: HTMLElement | null = null;
 	let bgEl: HTMLImageElement | null = null;
 	let quickFlowEl: HTMLElement | null = null;
+	let heroDraft = $state('');
+
+	function submitHeroQuickStart(event: SubmitEvent) {
+		event.preventDefault();
+		const text = heroDraft.trim();
+		if (!text) return;
+
+		try {
+			localStorage.setItem(HERO_QUICK_START_KEY, text);
+		} catch {
+			// Fortsätter ändå — texten följer bara inte med om lagring är blockerad.
+		}
+
+		trackHomeCta('hero', 'skriv_till_chatten', '/chat');
+		goto('/chat');
+	}
 
 	const trustHighlights = [
 		{
@@ -153,9 +172,29 @@
 			<div class="hero-content">
 				<h1>Skriv anonymt och få stöd</h1>
 				<p>Du behöver inte förklara allt perfekt. Skriv några rader anonymt – vi tar det i din takt.</p>
-				<div class="hero-actions">
-					<a href="/dagbok" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('hero', 'borja_skriva_anonymt_nu', '/dagbok')}>Börja skriva</a>
-					<a href="/register" class="hero-cta hero-cta-secondary" onclick={() => trackHomeCta('hero', 'skapa_konto', '/register')}>Skapa konto</a>
+
+				<form class="hero-quick-start" onsubmit={submitHeroQuickStart}>
+					<label for="hero-quick-start-input" class="hero-quick-start-label">Skriv din första rad</label>
+					<textarea
+						id="hero-quick-start-input"
+						bind:value={heroDraft}
+						class="hero-quick-start-input"
+						rows="3"
+						required
+						placeholder="Vad snurrar det i huvudet just nu?"
+						aria-describedby="hero-quick-start-hint"
+					></textarea>
+					<p id="hero-quick-start-hint" class="hero-quick-start-hint">
+						Texten sparas tillfälligt på din enhet tills du fortsätter i chatten.
+					</p>
+					<button type="submit" class="hero-quick-start-submit" disabled={!heroDraft.trim()}>
+						Skicka till chatten
+					</button>
+				</form>
+
+				<div class="hero-secondary-actions">
+					<a href="/dagbok" class="context-link" onclick={() => trackHomeCta('hero', 'borja_skriva_anonymt_nu', '/dagbok')}>Börja skriva</a>
+					<a href="/register" class="context-link" onclick={() => trackHomeCta('hero', 'skapa_konto', '/register')}>Skapa konto</a>
 				</div>
 			</div>
 		</div>
@@ -467,7 +506,80 @@
 		color: var(--home-hero-text);
 	}
 
-.hero-cta {
+.hero-quick-start {
+		margin: 1.4rem auto 0;
+		max-width: 480px;
+		display: grid;
+		gap: 0.5rem;
+		text-align: left;
+	}
+
+	.hero-quick-start-label {
+		font-family: var(--font-heading);
+		font-size: 0.85rem;
+		font-weight: 650;
+		color: var(--home-hero-text);
+	}
+
+	.hero-quick-start-input {
+		width: 100%;
+		min-height: 4.5rem;
+		resize: vertical;
+		border-radius: 14px;
+		border: 1px solid rgba(255, 255, 255, 0.28);
+		background: rgba(8, 16, 29, 0.55);
+		color: var(--home-text-inverted);
+		padding: 0.7rem 0.85rem;
+		font-family: var(--font-body);
+		font-size: 1rem;
+		line-height: 1.55;
+		box-sizing: border-box;
+	}
+
+	.hero-quick-start-input::placeholder {
+		color: rgba(245, 245, 242, 0.55);
+	}
+
+	.hero-quick-start-input:focus-visible {
+		outline: 2px solid var(--home-primary);
+		outline-offset: 2px;
+	}
+
+	.hero-quick-start-hint {
+		margin: 0;
+		font-size: 0.8rem;
+		line-height: 1.5;
+		color: var(--home-text-muted);
+	}
+
+	.hero-quick-start-submit {
+		justify-self: start;
+		padding: 0.65rem 1.2rem;
+		border-radius: var(--radius-pill);
+		border: none;
+		background: var(--home-primary);
+		color: var(--home-text-on-primary);
+		font-family: var(--font-heading);
+		font-size: 0.9rem;
+		font-weight: 700;
+		cursor: pointer;
+		transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+		box-shadow: 0 6px 18px var(--home-cta-shadow);
+	}
+
+	.hero-quick-start-submit:hover:not(:disabled),
+	.hero-quick-start-submit:focus-visible {
+		transform: translateY(-1px);
+		box-shadow: 0 8px 22px var(--home-cta-shadow-hover);
+	}
+
+	.hero-quick-start-submit:disabled {
+		opacity: 0.55;
+		cursor: not-allowed;
+		box-shadow: none;
+	}
+
+	.hero-cta {
 		display: inline-block;
 		padding: 0.7rem 1.3rem;
 		font-family: var(--font-heading);
@@ -478,26 +590,16 @@
 		transition: transform 0.15s ease, box-shadow 0.15s ease;
 	}
 
-	.hero-cta-secondary {
-		background: transparent;
-		color: rgba(255, 255, 255, 0.88);
-		border: 1.5px solid rgba(255, 255, 255, 0.32);
-		box-shadow: none;
-	}
-
-	.hero-cta-secondary:hover,
-	.hero-cta-secondary:focus-visible {
-		background: rgba(255, 255, 255, 0.08);
-		border-color: rgba(255, 255, 255, 0.55);
-		transform: translateY(-1px);
-	}
-
-	.hero-actions {
-		margin-top: 1.7rem;
+	.hero-secondary-actions {
+		margin-top: 1.4rem;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.65rem;
+		gap: 0.6rem 1.3rem;
 		justify-content: center;
+	}
+
+	.hero-secondary-actions .context-link {
+		margin-top: 0;
 	}
 
 	.hero-cta-primary {
@@ -957,11 +1059,6 @@
 	@media (max-width: 900px) {
 		.hero-content {
 			padding: 0;
-		}
-
-		.hero-actions {
-			flex-direction: column;
-			align-items: stretch;
 		}
 
 		.hero-cta {
