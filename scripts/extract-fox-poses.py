@@ -1,52 +1,68 @@
 """
-Engångsscript: klipper ut och bakgrundstar bort enskilda rävposer ur
-fox-positioner.png (ett oanvänt referensblad med mer realistiska rävposer)
-och sparar dem som transparenta PNG:er.
+Engångsscript: klipper ut enskilda rävposer ur fox-positioner.png (ett
+oanvänt referensblad med mer realistiska rävposer) till separata filer.
 
-Körs manuellt, inte en del av byggkedjan.
+Bakgrunden tas INTE bort här (körs manuellt genom ett riktigt AI-verktyg,
+t.ex. remove.bg, eftersom en enkel färgtröskel inte kan skilja den målade
+marken vid tassarna från rävens egen päls).
+
+Körs manuellt, inte en del av byggkedjan:
+    python scripts/extract-fox-poses.py
 """
 
 from PIL import Image
-import math
 
 SRC = "static/images/avatars/presets/fox-positioner.png"
-OUT_DIR = "static/images/avatars/presets"
+OUT_DIR = "static/images/avatars/presets/fox-realistic-source"
 
-BG_COLOR = (245, 236, 227)
-LOW_THRESH = 18   # under detta: helt transparent
-HIGH_THRESH = 60  # över detta: helt opak
+ROW1_Y = (58, 292)   # STÅENDE
+ROW2_Y = (398, 632)  # VID SJÖN
+ROW3_Y = (728, 922)  # VILA & SÖMN
 
-def remove_background(img: Image.Image) -> Image.Image:
-    img = img.convert("RGBA")
-    pixels = img.load()
-    w, h = img.size
-    for y in range(h):
-        for x in range(w):
-            r, g, b, a = pixels[x, y]
-            dist = math.sqrt(
-                (r - BG_COLOR[0]) ** 2 + (g - BG_COLOR[1]) ** 2 + (b - BG_COLOR[2]) ** 2
-            )
-            if dist <= LOW_THRESH:
-                pixels[x, y] = (r, g, b, 0)
-            elif dist < HIGH_THRESH:
-                alpha = int(255 * (dist - LOW_THRESH) / (HIGH_THRESH - LOW_THRESH))
-                pixels[x, y] = (r, g, b, alpha)
-            # annars: behåll full opacitet
-    return img
+COL6_WIDTH = 1536 / 6
+COL5_WIDTH = 1536 / 5
+MARGIN_6 = 8
+MARGIN_5 = 10
 
-def crop_and_save(src_img, box, out_name):
-    crop = src_img.crop(box)
-    result = remove_background(crop)
-    # Trimma bort helt transparenta kantrader/kolumner
-    bbox = result.getbbox()
-    if bbox:
-        result = result.crop(bbox)
-    out_path = f"{OUT_DIR}/{out_name}"
-    result.save(out_path)
-    print(f"saved {out_path} {result.size}")
+def col6_box(index, y_range):
+    x0 = int(index * COL6_WIDTH + MARGIN_6)
+    x1 = int((index + 1) * COL6_WIDTH - MARGIN_6)
+    return (x0, y_range[0], x1, y_range[1])
+
+def col5_box(index, y_range):
+    x0 = int(index * COL5_WIDTH + MARGIN_5)
+    x1 = int((index + 1) * COL5_WIDTH - MARGIN_5)
+    return (x0, y_range[0], x1, y_range[1])
+
+POSES = [
+    # (box, filnamn)
+    (col6_box(0, ROW1_Y), "fox-realistic-standing-front-alert.png"),
+    (col6_box(1, ROW1_Y), "fox-realistic-standing-blink-left.png"),
+    (col6_box(2, ROW1_Y), "fox-realistic-standing-side-left-lake.png"),
+    (col6_box(3, ROW1_Y), "fox-realistic-standing-back-horizon.png"),
+    (col6_box(4, ROW1_Y), "fox-realistic-walking-curious.png"),
+    (col6_box(5, ROW1_Y), "fox-realistic-standing-side-right-listening.png"),
+
+    (col6_box(0, ROW2_Y), "fox-realistic-lake-standing-look-down.png"),
+    (col6_box(1, ROW2_Y), "fox-realistic-lake-drinking.png"),
+    (col6_box(2, ROW2_Y), "fox-realistic-lake-sniffing.png"),
+    (col6_box(3, ROW2_Y), "fox-realistic-lake-standing-in-water.png"),
+    (col6_box(4, ROW2_Y), "fox-realistic-lake-sitting-gazing.png"),
+    (col6_box(5, ROW2_Y), "fox-realistic-lake-leaning-forward.png"),
+
+    (col5_box(0, ROW3_Y), "fox-realistic-resting-sitting.png"),
+    (col5_box(1, ROW3_Y), "fox-realistic-resting-lying-half-asleep.png"),
+    (col5_box(2, ROW3_Y), "fox-realistic-sleeping-curled.png"),
+    (col5_box(3, ROW3_Y), "fox-realistic-sleeping-side-dreaming.png"),
+    (col5_box(4, ROW3_Y), "fox-realistic-sleeping-deep-still.png"),
+]
 
 if __name__ == "__main__":
+    import os
+    os.makedirs(OUT_DIR, exist_ok=True)
     src = Image.open(SRC).convert("RGB")
-
-    # Test: bara den första posen (framifrån, uppmärksam) för granskning.
-    crop_and_save(src, (5, 60, 255, 295), "fox_idle_v2_TEST.png")
+    for box, name in POSES:
+        crop = src.crop(box)
+        out_path = f"{OUT_DIR}/{name}"
+        crop.save(out_path)
+        print(f"saved {out_path} {crop.size}")
