@@ -11,11 +11,20 @@
 		'@type': article.type === 'guide' ? 'HowTo' : 'BlogPosting',
 		headline: article.title,
 		description: article.description,
+		image: article.image
+			? `https://www.mittpsyke.se${article.image}`
+			: 'https://www.mittpsyke.se/og-image.png',
 		datePublished: article.date,
 		dateModified: article.updated ?? article.date,
 		inLanguage: 'sv-SE',
 		author: { '@type': 'Person', name: article.author },
-		mainEntityOfPage: canonical
+		publisher: {
+			'@type': 'Organization',
+			name: 'MittPsyke',
+			logo: { '@type': 'ImageObject', url: 'https://www.mittpsyke.se/logo.png' }
+		},
+		articleSection: topic.label,
+		mainEntityOfPage: { '@type': 'WebPage', '@id': canonical }
 	}).replace(/</g, '\\u003c'));
 </script>
 

@@ -206,6 +206,111 @@ export function validateArticleFiles(): ArticleFileValidation[] {
 	});
 }
 
+const SITE_HOSTNAMES = new Set(['www.mittpsyke.se', 'mittpsyke.se']);
+
+// Alla konkreta (icke-dynamiska) sidor i src/routes, t.ex. "/ansvarsfull-ai".
+// Byggs från samma import.meta.glob-mekanism som resten av modulen så att
+// listan alltid speglar de rutter som faktiskt finns.
+const routePageModules = import.meta.glob('/src/routes/**/+page.svelte');
+const routeServerModules = import.meta.glob('/src/routes/**/+server.ts');
+const knownStaticRoutePaths = new Set(
+	[...Object.keys(routePageModules), ...Object.keys(routeServerModules)].map((path) => {
+		const withoutPrefix = path.replace(/^\/src\/routes/, '').replace(/\/\+(page\.svelte|server\.ts)$/, '');
+		return withoutPrefix || '/';
+	})
+);
+
+type InternalLinkCheck =
+	| { kind: 'blog-article'; collection: string; slug: string }
+	| { kind: 'static-route'; path: string }
+	| { kind: 'unverifiable' }
+	| { kind: 'external' };
+
+function classifyInternalLink(url: string): InternalLinkCheck {
+	let pathname: string;
+
+	if (url.startsWith('/')) {
+		pathname = url;
+	} else {
+		try {
+			const parsed = new URL(url);
+			if (!SITE_HOSTNAMES.has(parsed.hostname)) return { kind: 'external' };
+			pathname = parsed.pathname;
+		} catch {
+			return { kind: 'external' };
+		}
+	}
+
+	pathname = pathname.replace(/\/+$/, '') || '/';
+
+	const blogArticleMatch = pathname.match(/^\/blogg\/amne\/([^/]+)\/([^/]+)$/);
+	if (blogArticleMatch) {
+		return {
+			kind: 'blog-article',
+			collection: decodeURIComponent(blogArticleMatch[1]),
+			slug: decodeURIComponent(blogArticleMatch[2])
+		};
+	}
+
+	// Övriga /blogg/*-länkar pekar på det externa Soro-drivna blogginnehållet,
+	// som inte finns i det här repot och därför inte kan verifieras vid build.
+	if (pathname.startsWith('/blogg/')) {
+		return { kind: 'unverifiable' };
+	}
+
+	return { kind: 'static-route', path: pathname };
+}
+
+export type BrokenRelatedArticleLink = {
+	sourcePath: string;
+	sourceTitle: string;
+	linkTitle: string;
+	url: string;
+	reason: string;
+};
+
+// Kontrollerar "Läs vidare"-länkarna (relatedArticles) för varje giltig artikel
+// och rapporterar länkar som pekar på ett okänt ämne, en opublicerad artikel
+// eller en rutt som inte finns i src/routes.
+export function findBrokenRelatedArticleLinks(): BrokenRelatedArticleLink[] {
+	const publishedByKey = new Set(
+		getPublishedArticles().map((article) => `${article.collection}/${article.slug}`)
+	);
+
+	return validateArticleFiles().flatMap((result) => {
+		if (!result.valid) return [];
+
+		return result.article.relatedArticles.flatMap((related) => {
+			const check = classifyInternalLink(related.url);
+
+			if (check.kind === 'blog-article') {
+				const key = `${check.collection}/${check.slug}`;
+				if (!publishedByKey.has(key)) {
+					return [{
+						sourcePath: result.path,
+						sourceTitle: result.article.title,
+						linkTitle: related.title,
+						url: related.url,
+						reason: `pekar på en okänd eller opublicerad artikel ("${check.collection}/${check.slug}")`
+					}];
+				}
+			}
+
+			if (check.kind === 'static-route' && !knownStaticRoutePaths.has(check.path)) {
+				return [{
+					sourcePath: result.path,
+					sourceTitle: result.article.title,
+					linkTitle: related.title,
+					url: related.url,
+					reason: `pekar på en rutt som inte finns ("${check.path}")`
+				}];
+			}
+
+			return [];
+		});
+	});
+}
+
 export function getArticles(): Article[] {
 	return validateArticleFiles()
 		.flatMap((result) => {

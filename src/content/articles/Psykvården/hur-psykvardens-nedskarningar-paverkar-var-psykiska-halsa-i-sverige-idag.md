@@ -18,8 +18,8 @@ relatedArticles:
     url: https://www.mittpsyke.se/blogg/amne/relationer-och-samhalle/mans-ensamhet-den-tysta-kanslan-som-fa-vagar-prata-om
   - title: Vad händer i hjärnan när du känner ångest?
     url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
-  - title: Ansvarsfull AI
-    url: https://www.mittpsyke.se/ansvarsfull-ai
+  - title: AI inom psykisk hälsa – möjligheter, gränser och säker användning
+    url: https://www.mittpsyke.se/blogg/amne/ai-och-mental-halsa/ai-inom-psykisk-halsa-mojligheter-och-granser
 draft: false
 ---
 # Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag

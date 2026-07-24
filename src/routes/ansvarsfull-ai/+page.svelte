@@ -84,6 +84,12 @@
 		finns samlat i <a href="/ansvar" class="underline hover:no-underline">ansvarsinformationen</a>.
 	</p>
 
+	<h2 class="text-lg font-semibold mt-8 mb-2">Läs mer</h2>
+	<p class="opacity-80 leading-relaxed mb-3">
+		För ett bredare perspektiv på möjligheter och gränser med AI inom psykisk hälsa, se artikeln
+		<a href="/blogg/amne/ai-och-mental-halsa/ai-inom-psykisk-halsa-mojligheter-och-granser" class="underline hover:no-underline">AI inom psykisk hälsa – möjligheter, gränser och säker användning</a>.
+	</p>
+
 	<h2 class="text-lg font-semibold mt-8 mb-2">Rapportera fel eller otydligheter</h2>
 	<p class="opacity-80 leading-relaxed">
 		Om ett AI-svar känns fel, otryggt eller otydligt kan du kontakta oss på

@@ -121,8 +121,10 @@
 			<h2>Vad kan du få hjälp med?</h2>
 			<p>
 				AI-chatten hjälper dig att reflektera kring ångest, stress, sömnproblem, relationer
-				och psykiskt mående. Du kan börja utan konto. Vi hanterar vissa tekniska uppgifter enligt
-				<a href="/integritet">integritetspolicyn</a>. Om du vill läsa mer först finns
+				och psykiskt mående. Du kan börja utan konto — då rensas samtalet automatiskt inom 24
+				timmar. Med konto sparas det tills du själv raderar det. Läs mer om hur uppgifter hanteras
+				i <a href="/integritet">integritetspolicyn</a> och om hur AI-stödet är byggt i
+				<a href="/ansvarsfull-ai">Ansvarsfull AI</a>. Om du vill läsa mer först finns
 				<a href="/prata-anonymt-online">prata anonymt online</a>. Vid akut fara, ring 112.
 				För vårdråd, kontakta 1177. Behöver du mänsklig kontakt finns
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer</a>.

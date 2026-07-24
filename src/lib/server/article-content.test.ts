@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+	findBrokenRelatedArticleLinks,
 	getPublishedArticle,
 	getPublishedArticles,
 	parseArticleFrontmatter,
@@ -88,5 +89,35 @@ describe('every article file in src/content/articles', () => {
 			.filter((key) => !publishedSlugs.has(key));
 
 		expect(missing).toEqual([]);
+	});
+
+	it('has no broken "Läs vidare"-links', () => {
+		const broken = findBrokenRelatedArticleLinks();
+
+		expect(
+			broken,
+			broken
+				.map((link) => `${link.sourcePath} → "${link.linkTitle}" (${link.url}) ${link.reason}`)
+				.join('\n')
+		).toEqual([]);
+	});
+
+	// Titel, beskrivning och datum matas rakt in i <title>, <meta name="description">
+	// och artikelns JSON-LD (BlogPosting). Schemat tillåter tekniskt sett att de
+	// saknas (tomma strängar/null), men det gör metadata och strukturerad data
+	// ofullständig utan att build eller "frontmatter parses"-testet slår larm.
+	it('has metadata that keeps <title>, <meta description> and JSON-LD complete', () => {
+		const incomplete = results.flatMap((result) => {
+			if (!result.valid || result.article.draft) return [];
+
+			const problems: string[] = [];
+			if (!result.article.title || result.article.title === 'Artikel') problems.push('saknar en riktig titel');
+			if (!result.article.description) problems.push('saknar description');
+			if (!result.article.date) problems.push('saknar ett giltigt datum');
+
+			return problems.length > 0 ? [`${result.path}: ${problems.join(', ')}`] : [];
+		});
+
+		expect(incomplete).toEqual([]);
 	});
 });
