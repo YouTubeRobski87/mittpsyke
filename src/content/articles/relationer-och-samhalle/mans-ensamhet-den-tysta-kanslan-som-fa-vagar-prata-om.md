@@ -45,6 +45,10 @@ relatedArticles:
     url: https://www.mittpsyke.se/blogg/mans-psykiska-halsa-sverige
   - title: När en vän mår dåligt - vad kan du säga?
     url: https://www.mittpsyke.se/blogg/nar-en-van-mar-daligt-vad-kan-du-saga
+  - title: Män och kvinnor i dagens samhälle – olika krav, gemensam press
+    url: https://www.mittpsyke.se/blogg/amne/relationer-och-samhalle/man-och-kvinnor-i-dagens-samhalle-olika-krav-gemensam-press
+  - title: Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag
+    url: https://www.mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
 draft: false
 ---
 ## Ensamhet syns inte alltid

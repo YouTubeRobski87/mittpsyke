@@ -13,6 +13,13 @@ collection: Psykvården
 readingTime: 5 min läsning
 references:
   - Folkhälsomyndigheten
+relatedArticles:
+  - title: Mäns ensamhet – den tysta känslan som få vågar prata om
+    url: https://www.mittpsyke.se/blogg/amne/relationer-och-samhalle/mans-ensamhet-den-tysta-kanslan-som-fa-vagar-prata-om
+  - title: Vad händer i hjärnan när du känner ångest?
+    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
+  - title: Ansvarsfull AI
+    url: https://www.mittpsyke.se/ansvarsfull-ai
 draft: false
 ---
 # Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag

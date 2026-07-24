@@ -17,6 +17,7 @@
 		SmsPreferenceSuccessResponse
 	} from '$lib/types';
 	import { THEME_STORAGE_KEY } from '$lib/theme';
+	import { PUBLIC_CONTACT_EMAIL } from '$lib/contact';
 	import {
 	getProgressCompanionAnimal,
 		readProgressCompanionFromMetadata,
@@ -24,6 +25,7 @@
 	} from '$lib/progressCompanion';
 
 	let loading = $state(true);
+	let accountEmail = $state('');
 
 	// Display name
 	let displayName = $state('');
@@ -79,6 +81,12 @@
 	];
 	const selectedCompanion = $derived(getProgressCompanionAnimal(progressCompanion));
 
+	const dataExportMailto = $derived.by(() => {
+		const subject = 'Dataexport – MittPsyke';
+		const body = `Hej,\n\nJag vill få en kopia av min data (dataportabilitet) kopplad till kontot ${accountEmail || '[din e-post]'}.\n\nMvh`;
+		return `mailto:${PUBLIC_CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+	});
+
 	function normalizeSwedishMobileNumber(value: string): string | null {
 		const compact = value.trim().replace(/[\s().-]/g, '');
 		if (!compact) return null;
@@ -126,6 +134,7 @@
 			if (!alive) return;
 
 			// Load display name and personalization from user metadata
+			accountEmail = session.user.email ?? '';
 			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
 			displayName = typeof meta.display_name === 'string' ? meta.display_name : '';
 			birthday = typeof meta.birthday === 'string' ? meta.birthday : '';
@@ -600,7 +609,20 @@
 			<h2>Mejlutskick</h2>
 			<p class="field-hint">Hantera avregistrering och stoppa framtida utskick.</p>
 			<a class="save-btn link-btn" href="/avregistrera">Hantera avregistrering</a>
-			<p class="field-hint">Läs mer om radering, export och hur uppgifter hanteras i <a href="/integritet">integritetspolicyn</a>.</p>
+		</section>
+
+		<section id="din-data" class="auth-panel section-block">
+			<h2>Din data</h2>
+			<p class="field-hint">
+				Du bestämmer själv över din data. Här kan du begära en kopia av det du sparat hos oss
+				(dataportabilitet) eller läsa mer om hur uppgifter hanteras.
+			</p>
+			<a class="save-btn link-btn" href={dataExportMailto}>Begär dataexport</a>
+			<p class="field-hint">
+				Vi svarar och skickar din data i JSON-format inom 30 dagar. Vill du radera allt istället,
+				se <a href="#radera-konto">Radera konto</a> nedan. Fullständig information finns i
+				<a href="/integritet">integritetspolicyn</a>.
+			</p>
 		</section>
 
 		<section class="auth-panel section-block">

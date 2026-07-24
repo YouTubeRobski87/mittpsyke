@@ -36,6 +36,8 @@ relatedArticles:
     url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
   - title: Oro eller stress – varför kroppen går på högvarv
     url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv
+  - title: Mäns ensamhet – den tysta känslan som få vågar prata om
+    url: https://www.mittpsyke.se/blogg/amne/relationer-och-samhalle/mans-ensamhet-den-tysta-kanslan-som-fa-vagar-prata-om
 draft: false
 ---
 ## Vi lever i samma samhälle men möter olika förväntningar
