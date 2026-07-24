@@ -19,6 +19,8 @@ references:
   - Socialstyrelsen
   - Folkhälsomyndigheten
 relatedArticles:
+  - title: Hur använder människor AI för psykisk hälsa?
+    url: https://www.mittpsyke.se/blogg/amne/ai-och-mental-halsa/hur-anvander-manniskor-ai-for-psykisk-halsa
   - title: Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag
     url: https://www.mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
   - title: Ansvarsfull AI
