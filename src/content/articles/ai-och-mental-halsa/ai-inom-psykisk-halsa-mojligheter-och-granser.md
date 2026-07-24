@@ -4,6 +4,10 @@ title: AI inom psykisk hälsa – möjligheter, gränser och säker användning
 description: AI används allt oftare som stöd för psykisk hälsa. Här går vi
   igenom vad AI faktiskt kan hjälpa till med, vilka gränser som gäller och
   hur du känner igen ett tryggt AI-stöd.
+image: /uploads/ai-inom-psykisk-halsa-mojligheter-och-granser.png
+imageAlt: Person som blickar ut över ett landskap med AI-inspirerade
+  illustrationer som symboliserar möjligheter och begränsningar för AI inom
+  psykisk hälsa.
 date: 2026-07-24
 updated: 2026-07-24
 author: MittPsyke redaktion

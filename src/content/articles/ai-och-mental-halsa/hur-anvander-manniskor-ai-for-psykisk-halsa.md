@@ -4,6 +4,9 @@ title: Hur använder människor AI för psykisk hälsa?
 description: Allt fler vänder sig till AI-chattar för att prata om hur de mår.
   Här går vi igenom de vanligaste sätten människor använder AI för psykisk
   hälsa, varför det ökar och vad som är bra att tänka på.
+image: /uploads/hur-anvander-manniskor-ai-for-psykisk-halsa.png
+imageAlt: Person använder en mobil med AI-stöd för psykisk hälsa i en lugn
+  hemmiljö, vilket illustrerar hur AI används som stöd i vardagen.
 date: 2026-07-24
 updated: 2026-07-24
 author: MittPsyke redaktion
