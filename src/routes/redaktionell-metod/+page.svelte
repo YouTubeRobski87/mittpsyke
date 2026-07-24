@@ -82,6 +82,8 @@
 	<p class="opacity-80 leading-relaxed mb-3">
 		Läs mer om data och personuppgifter i <a href="/integritet" class="underline hover:no-underline">integritetspolicyn</a>.
 		MittPsykes avgränsningar finns samlade i <a href="/ansvar" class="underline hover:no-underline">ansvarsinformationen</a>.
+		Hur AI-stödet är byggt med ett säkerhetsnät före varje svar beskrivs i
+		<a href="/ansvarsfull-ai" class="underline hover:no-underline">Ansvarsfull AI</a>.
 	</p>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Rapportera fel eller otydligheter</h2>

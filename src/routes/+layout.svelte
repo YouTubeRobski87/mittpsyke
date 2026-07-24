@@ -929,6 +929,7 @@
 					<a href="/om-skaparen" class="footer-link">Om skaparen</a>
 					<a href="/sa-fungerar-mittpsyke" class="footer-link">Så fungerar det</a>
 					<a href="/redaktionell-metod" class="footer-link">Redaktionell metod</a>
+					<a href="/ansvarsfull-ai" class="footer-link">Ansvarsfull AI</a>
 					<a href="/ansvar" class="footer-link">Ansvar</a>
 					<a href="/feedback" class="footer-link">Feedback</a>
 					<a href="/kontakt-och-villkor" class="footer-link">Kontakt och villkor</a>

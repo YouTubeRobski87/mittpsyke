@@ -68,6 +68,12 @@
 		MittPsyke kan vid vissa tecken på akut kris visa ett särskilt säkerhetssvar med hänvisning till akut hjälp och stödlinjer. Tjänsten är ändå inte en akuttjänst och ersätter inte vård eller larm vid fara.
 	</p>
 
+	<h2 class="text-lg font-semibold mt-8 mb-2">Så använder vi AI</h2>
+	<p class="opacity-80 leading-relaxed mb-3">
+		Läs mer om säkerhetsnätet som körs innan AI:n svarar och vilka gränser som gäller för
+		AI-stödet i <a href="/ansvarsfull-ai" class="underline hover:no-underline">Ansvarsfull AI</a>.
+	</p>
+
 	<h2 class="text-lg font-semibold mt-8 mb-2">Kontakt</h2>
 	<p class="opacity-80 leading-relaxed">
 		Om du har frågor om ansvar och hur tjänsten fungerar kan du kontakta oss på
