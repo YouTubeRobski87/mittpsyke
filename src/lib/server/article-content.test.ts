@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
 	getPublishedArticle,
 	getPublishedArticles,
-	parseArticleFrontmatter
+	parseArticleFrontmatter,
+	validateArticleFiles
 } from './article-content';
 
 const MENS_LONELINESS_SLUG = 'mans-ensamhet-den-tysta-kanslan-som-fa-vagar-prata-om';
@@ -64,5 +65,28 @@ describe('article discovery', () => {
 		expect(
 			getPublishedArticle('relationer-och-samhalle', MENS_LONELINESS_SLUG)?.slug
 		).toBe(MENS_LONELINESS_SLUG);
+	});
+});
+
+describe('every article file in src/content/articles', () => {
+	const results = validateArticleFiles();
+
+	it('has frontmatter that parses without error', () => {
+		const failures = results.filter((result) => !result.valid);
+
+		expect(failures, failures.map((f) => `${f.path}: ${(f as { error: string }).error}`).join('\n')).toEqual([]);
+	});
+
+	it('reaches the blog index whenever it is not a draft', () => {
+		const publishedSlugs = new Set(
+			getPublishedArticles().map((article) => `${article.collection}/${article.slug}`)
+		);
+
+		const missing = results
+			.filter((result) => result.valid && !result.article.draft)
+			.map((result) => `${result.collection}/${result.slug}`)
+			.filter((key) => !publishedSlugs.has(key));
+
+		expect(missing).toEqual([]);
 	});
 });

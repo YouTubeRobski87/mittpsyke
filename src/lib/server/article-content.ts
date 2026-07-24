@@ -164,34 +164,60 @@ export function parseArticleFrontmatter(data: unknown, collection: string) {
 	return parsed;
 }
 
-export function getArticles(): Article[] {
+export type ArticleFileValidation =
+	| { path: string; collection: string; slug: string; valid: true; article: Article }
+	| { path: string; collection: string; slug: string; valid: false; error: string };
+
+// Validerar varje artikelfil oberoende av varandra, så att ett trasigt
+// frontmatter i en fil kan upptäckas (t.ex. i test eller build) utan att
+// tystas ner av felhanteringen i getArticles().
+export function validateArticleFiles(): ArticleFileValidation[] {
 	const topics = new Set(getArticleTopics().map((topic) => topic.slug));
 
-	return Object.entries(articleFiles)
-		.flatMap(([path, raw]) => {
-			const { collection, slug } = getArticlePathParts(path);
-			try {
-				const parsed = parseArticleFrontmatter(matter(raw).data, collection);
-				if (parsed.collection !== collection) {
-					throw new Error(`frontmatter.collection måste vara "${collection}"`);
-				}
-				if (!topics.has(parsed.collection)) {
-					throw new Error(`okänt ämne "${parsed.collection}"`);
-				}
+	return Object.entries(articleFiles).map(([path, raw]) => {
+		const { collection, slug } = getArticlePathParts(path);
+		try {
+			const parsed = parseArticleFrontmatter(matter(raw).data, collection);
+			if (!topics.has(parsed.collection)) {
+				throw new Error(`okänt ämne "${parsed.collection}"`);
+			}
 
-				return [{
+			return {
+				path,
+				collection,
+				slug,
+				valid: true,
+				article: {
 					...parsed,
 					slug,
 					url: `/blogg/amne/${collection}/${slug}`,
 					body: matter(raw).content.trim()
-				}];
-			} catch (cause) {
+				}
+			};
+		} catch (cause) {
+			return {
+				path,
+				collection,
+				slug,
+				valid: false,
+				error: cause instanceof Error ? cause.message : String(cause)
+			};
+		}
+	});
+}
+
+export function getArticles(): Article[] {
+	return validateArticleFiles()
+		.flatMap((result) => {
+			if (!result.valid) {
 				console.error('[articles] Skipped invalid article', {
-					path,
-					reason: cause instanceof Error ? cause.message : String(cause)
+					path: result.path,
+					reason: result.error
 				});
 				return [];
 			}
+
+			return [result.article];
 		})
 		.sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
 }
