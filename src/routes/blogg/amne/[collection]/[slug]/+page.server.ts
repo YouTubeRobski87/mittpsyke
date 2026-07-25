@@ -18,6 +18,9 @@ export const load: PageServerLoad = ({ params }) => {
 		title: article.title,
 		description: article.description,
 		ogType: 'article',
+		ogImage: article.image
+			? new URL(article.image, 'https://www.mittpsyke.se').toString()
+			: undefined,
 		article: {
 			...article,
 			dateLabel: getArticleDateLabel(article),
