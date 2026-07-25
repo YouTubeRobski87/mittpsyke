@@ -18,8 +18,12 @@ tags:
   - återhämtning
 readingTime: 7 min läsning
 relatedArticles:
-  - title: Oro eller stress – varför kroppen går på högvarv
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv
+  - title: Varför blir vissa människor lätt överstimulerade?
+    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/varfor-blir-man-overstimulerad
+  - title: Empati – när omtanke blir en styrka och en belastning
+    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/empati-styrka-och-belastning
+  - title: Hur återhämtning fungerar när hjärnan fått för många intryck
+    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck
   - title: Vad händer i hjärnan när du känner ångest?
     url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
 draft: false
@@ -53,7 +57,7 @@ Hög känslighet kan ibland upplevas som krävande, men den kan också innebära
 
 Många högkänsliga personer har:
 
-- stark empati och förmåga att förstå andra
+- [stark empati](/blogg/amne/oro-och-stress/empati-styrka-och-belastning) och förmåga att förstå andra
 - hög kreativitet
 - god förmåga att uppmärksamma detaljer
 - ett eftertänksamt sätt att fatta beslut
@@ -66,7 +70,7 @@ Den djupare bearbetningen kan göra att du ser samband, behov och nyanser som an
 
 Eftersom många intryck bearbetas noggrant kan vardagen ibland kännas mer krävande. Stressiga miljöer, höga ljud, konflikter, tidspress eller ständig stimulans kan göra att energin tar slut snabbare. Även positiva och sociala upplevelser kan kräva återhämtning efteråt.
 
-Det betyder inte att du är svag eller dålig på att hantera livet. Det kan snarare vara ett tecken på att ditt nervsystem behöver mer lugn och återhämtning mellan intensiva perioder. Du kan läsa mer om vad som händer i kroppen vid den här typen av överbelastning i [oro eller stress – varför kroppen går på högvarv](/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv).
+Det betyder inte att du är svag eller dålig på att hantera livet. Det kan snarare vara ett tecken på att ditt nervsystem behöver mer lugn och återhämtning mellan intensiva perioder. Du kan läsa mer om vad som händer i kroppen vid den här typen av överbelastning i [oro eller stress – varför kroppen går på högvarv](/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv), eller mer specifikt om [varför vissa människor lätt blir överstimulerade](/blogg/amne/oro-och-stress/varfor-blir-man-overstimulerad).
 
 ## Så kan du ta hand om din känslighet
 
@@ -86,7 +90,7 @@ Små förändringar kan göra stor skillnad. Målet behöver inte vara att undvi
 
 ## Du behöver inte bli mindre känslig
 
-Många som är högkänsliga försöker länge bli mer tåliga eller mindre påverkade. Men känslighet är inte något som måste tränas bort.
+Många som är högkänsliga försöker länge bli mer tåliga eller mindre påverkade. Men känslighet är inte något som måste tränas bort. Det som ofta hjälper mer är att bli bättre på [återhämtning när intrycken blivit för många](/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck).
 
 När du lär känna dina behov och arbetar med ditt sätt att fungera istället för mot det kan känsligheten bli en styrka. Det som ibland gör livet mer intensivt kan också vara det som gör att du lyssnar bättre, känner djupare, upptäcker mer och visar stor omtanke om andra.
 
