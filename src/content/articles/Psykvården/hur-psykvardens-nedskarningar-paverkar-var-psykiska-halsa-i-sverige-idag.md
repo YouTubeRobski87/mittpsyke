@@ -20,6 +20,8 @@ relatedArticles:
     url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
   - title: AI inom psykisk hälsa – möjligheter, gränser och säker användning
     url: https://www.mittpsyke.se/blogg/amne/ai-och-mental-halsa/ai-inom-psykisk-halsa-mojligheter-och-granser
+  - title: Samsjuklighetsreformen – vad innebär den för dig som lever med samsjuklighet?
+    url: https://www.mittpsyke.se/blogg/amne/Psykvården/samsjuklighetsreformen-vad-innebar-den-for-dig
 draft: false
 ---
 # Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag
