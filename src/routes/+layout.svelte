@@ -133,6 +133,7 @@
 	const fallbackDescription =
 		'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.';
 	const ogDescription = $derived(page.data?.description || fallbackDescription);
+	const ogImage = $derived(page.data?.ogImage ?? 'https://www.mittpsyke.se/og-image.png');
 
 	function getProfileName(profileDisplayName: string | null, sessionUser: User | null) {
 		const metadata = sessionUser?.user_metadata as Record<string, unknown> | undefined;
@@ -613,7 +614,7 @@
 		<meta property="og:site_name" content="MittPsyke" />
 
 		<meta property="og:url" content={`https://www.mittpsyke.se${page.url.pathname}`} />
-		<meta property="og:image" content={page.data?.ogImage ?? 'https://www.mittpsyke.se/og-image.png'} />
+		<meta property="og:image" content={ogImage} />
 
 		<link rel="alternate" hreflang="sv" href={`https://www.mittpsyke.se${page.url.pathname}`} />
 
@@ -623,6 +624,7 @@
 			name="twitter:description"
 			content={ogDescription}
 		/>
+		<meta name="twitter:image" content={ogImage} />
 		{@html `<script type="application/ld+json">${JSON.stringify(organizationJsonLd)}<\/script>`}
 		{@html `<script type="application/ld+json">${JSON.stringify(webApplicationJsonLd)}<\/script>`}
 	{/if}
