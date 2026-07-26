@@ -344,16 +344,19 @@ export const WOLF_SCENE_PLACEMENTS = {
 	dashboard: { scale: 0.9, x: 76, y: 84 },
 	progress: {
 		scale: 1.6,
-		bottom: '39%',
-		right: '21%',
-		groundLeft: '76%',
-		groundTop: '53%',
+		// Vargbildens genomskinliga marginal under tassarna (se kommentaren ovan)
+		// gör att "bottom" måste sättas lägre än det visuella fotfästet för att
+		// tassarna ska hamna på gräset i stället för att glida ut i sjön.
+		bottom: '26%',
+		right: '18%',
+		groundLeft: '80%',
+		groundTop: '65%',
 		compact: {
 			scale: 1.55,
-			bottom: '39%',
-			right: '20%',
-			groundLeft: '75%',
-			groundTop: '54%'
+			bottom: '26%',
+			right: '17%',
+			groundLeft: '79%',
+			groundTop: '66%'
 		}
 	}
 } as const;
