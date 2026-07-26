@@ -1,6 +1,10 @@
 import matter from 'gray-matter';
 import { marked, type Tokens } from 'marked';
 import { z } from 'zod';
+import { getGuideBySlugs, getPillarBySlug } from '$lib/seo-kit/content';
+import { getToolBySlug } from '$lib/data/seo-architecture';
+import { getPortalByKey } from '$lib/data/portals';
+import { CHAT_CATEGORY_TO_SLUG, CHAT_SLUG_TO_CATEGORY } from '$lib/data/chat-slugs';
 
 const DEFAULT_ARTICLE_TITLE = 'Artikel';
 const DEFAULT_ARTICLE_AUTHOR = 'MittPsyke';
@@ -213,24 +217,83 @@ const SITE_HOSTNAMES = new Set(['www.mittpsyke.se', 'mittpsyke.se']);
 // listan alltid speglar de rutter som faktiskt finns.
 const routePageModules = import.meta.glob('/src/routes/**/+page.svelte');
 const routeServerModules = import.meta.glob('/src/routes/**/+server.ts');
-const knownStaticRoutePaths = new Set(
+export const knownStaticRoutePaths = new Set(
 	[...Object.keys(routePageModules), ...Object.keys(routeServerModules)].map((path) => {
 		const withoutPrefix = path.replace(/^\/src\/routes/, '').replace(/\/\+(page\.svelte|server\.ts)$/, '');
 		return withoutPrefix || '/';
 	})
 );
 
-type InternalLinkCheck =
+export type InternalLinkCheck =
 	| { kind: 'blog-article'; collection: string; slug: string }
 	| { kind: 'static-route'; path: string }
+	| { kind: 'dynamic-route'; path: string; valid: boolean }
 	| { kind: 'unverifiable' }
 	| { kind: 'external' };
 
-function classifyInternalLink(url: string): InternalLinkCheck {
+// Kontrollerar dynamiska ruttfamiljer (/guider/[pillar]/[guide] osv.) mot de
+// datakällor som faktiskt styr respektive rutt, så att en länk till en
+// obefintlig pelare/guide/övning fångas i stället för att tystas ner som
+// "static-route" (vilket bara känner till de bokstavliga mapp-namnen).
+function classifyDynamicRoute(pathname: string): InternalLinkCheck | null {
+	const guiderMatch = pathname.match(/^\/(guider|guider-seo)\/([^/]+)(?:\/([^/]+))?$/);
+	if (guiderMatch) {
+		const [, , pillarSlug, guideSlug] = guiderMatch;
+		const pillar = getPillarBySlug(decodeURIComponent(pillarSlug));
+		const valid = guideSlug
+			? !!pillar && !!getGuideBySlugs(decodeURIComponent(pillarSlug), decodeURIComponent(guideSlug))
+			: !!pillar;
+		return { kind: 'dynamic-route', path: pathname, valid };
+	}
+
+	const ovningarMatch = pathname.match(/^\/ovningar\/([^/]+)$/);
+	if (ovningarMatch) {
+		return {
+			kind: 'dynamic-route',
+			path: pathname,
+			valid: !!getToolBySlug(decodeURIComponent(ovningarMatch[1]))
+		};
+	}
+
+	const portalMatch = pathname.match(/^\/portal\/([^/]+)$/);
+	if (portalMatch) {
+		return {
+			kind: 'dynamic-route',
+			path: pathname,
+			valid: !!getPortalByKey(decodeURIComponent(portalMatch[1]))
+		};
+	}
+
+	const chatMatch = pathname.match(/^\/chat\/([^/]+)$/);
+	if (chatMatch) {
+		const segment = decodeURIComponent(chatMatch[1]);
+		return {
+			kind: 'dynamic-route',
+			path: pathname,
+			valid: segment in CHAT_SLUG_TO_CATEGORY || segment in CHAT_CATEGORY_TO_SLUG
+		};
+	}
+
+	const blogTopicMatch = pathname.match(/^\/blogg\/amne\/([^/]+)$/);
+	if (blogTopicMatch) {
+		const topics = new Set(getArticleTopics().map((topic) => topic.slug));
+		return {
+			kind: 'dynamic-route',
+			path: pathname,
+			valid: topics.has(decodeURIComponent(blogTopicMatch[1]))
+		};
+	}
+
+	return null;
+}
+
+export function classifyInternalLink(url: string): InternalLinkCheck {
 	let pathname: string;
 
 	if (url.startsWith('/')) {
-		pathname = url;
+		// Klipp bort query och hash så att t.ex. "/dagbok?tab=x" eller "/#kontakt"
+		// klassas mot samma rutt som den bokstavliga sökvägen.
+		pathname = url.split(/[?#]/)[0] || '/';
 	} else {
 		try {
 			const parsed = new URL(url);
@@ -257,6 +320,15 @@ function classifyInternalLink(url: string): InternalLinkCheck {
 	if (pathname.startsWith('/blogg/')) {
 		return { kind: 'unverifiable' };
 	}
+
+	// En bokstavlig statisk rutt vinner alltid över ett dynamiskt mönster, t.ex.
+	// är /guider/anonym-dagbok-online en egen statisk sida, inte /guider/[pillar].
+	if (knownStaticRoutePaths.has(pathname)) {
+		return { kind: 'static-route', path: pathname };
+	}
+
+	const dynamicRoute = classifyDynamicRoute(pathname);
+	if (dynamicRoute) return dynamicRoute;
 
 	return { kind: 'static-route', path: pathname };
 }
@@ -302,6 +374,81 @@ export function findBrokenRelatedArticleLinks(): BrokenRelatedArticleLink[] {
 					sourceTitle: result.article.title,
 					linkTitle: related.title,
 					url: related.url,
+					reason: `pekar på en rutt som inte finns ("${check.path}")`
+				}];
+			}
+
+			if (check.kind === 'dynamic-route' && !check.valid) {
+				return [{
+					sourcePath: result.path,
+					sourceTitle: result.article.title,
+					linkTitle: related.title,
+					url: related.url,
+					reason: `pekar på en rutt som inte finns ("${check.path}")`
+				}];
+			}
+
+			return [];
+		});
+	});
+}
+
+const MARKDOWN_LINK_PATTERN = /(!?)\[[^\]]*\]\(\s*([^)\s]+)(?:\s+"[^"]*")?\s*\)/g;
+
+// Plockar ut länk-URL:er ur Markdown-länksyntax i artikeltexten (bildlänkar,
+// dvs "![alt](url)", räknas inte som interna sidlänkar och hoppas över).
+export function extractMarkdownLinkUrls(markdown: string): string[] {
+	return [...markdown.matchAll(MARKDOWN_LINK_PATTERN)]
+		.filter(([, bang]) => bang !== '!')
+		.map(([, , url]) => url);
+}
+
+export type BrokenArticleBodyLink = {
+	sourcePath: string;
+	sourceTitle: string;
+	url: string;
+	reason: string;
+};
+
+// Kontrollerar länkar skrivna direkt i artikeltexten (till skillnad från de
+// kurerade "Läs vidare"-länkarna i relatedArticles).
+export function findBrokenArticleBodyLinks(): BrokenArticleBodyLink[] {
+	const publishedByKey = new Set(
+		getPublishedArticles().map((article) => `${article.collection}/${article.slug}`)
+	);
+
+	return validateArticleFiles().flatMap((result) => {
+		if (!result.valid || result.article.draft) return [];
+
+		return extractMarkdownLinkUrls(result.article.body).flatMap((url) => {
+			const check = classifyInternalLink(url);
+
+			if (check.kind === 'blog-article') {
+				const key = `${check.collection}/${check.slug}`;
+				if (!publishedByKey.has(key)) {
+					return [{
+						sourcePath: result.path,
+						sourceTitle: result.article.title,
+						url,
+						reason: `pekar på en okänd eller opublicerad artikel ("${key}")`
+					}];
+				}
+			}
+
+			if (check.kind === 'static-route' && !knownStaticRoutePaths.has(check.path)) {
+				return [{
+					sourcePath: result.path,
+					sourceTitle: result.article.title,
+					url,
+					reason: `pekar på en rutt som inte finns ("${check.path}")`
+				}];
+			}
+
+			if (check.kind === 'dynamic-route' && !check.valid) {
+				return [{
+					sourcePath: result.path,
+					sourceTitle: result.article.title,
+					url,
 					reason: `pekar på en rutt som inte finns ("${check.path}")`
 				}];
 			}
@@ -405,3 +552,49 @@ export function renderArticleMarkdown(markdown: string, title?: string) {
 export function getArticleDateLabel(article: Pick<Article, 'date'>) {
 	return article.date ? formatDate(article.date) : MISSING_DATE_LABEL;
 }
+
+const SITE_URL = 'https://www.mittpsyke.se';
+
+// Bygger samma BlogPosting/HowTo-schema som artikelsidan lägger i <script type="application/ld+json">.
+// Delad funktion så att både sidan och testerna använder exakt samma logik.
+export function buildArticleJsonLd(article: Article, topic: Pick<ArticleTopic, 'label'>) {
+	return {
+		'@context': 'https://schema.org' as const,
+		'@type': article.type === 'guide' ? ('HowTo' as const) : ('BlogPosting' as const),
+		headline: article.title,
+		description: article.description,
+		image: article.image ? `${SITE_URL}${article.image}` : `${SITE_URL}/og-image.png`,
+		datePublished: article.date,
+		dateModified: article.updated ?? article.date,
+		inLanguage: 'sv-SE' as const,
+		author: { '@type': 'Person' as const, name: article.author },
+		publisher: {
+			'@type': 'Organization' as const,
+			name: 'MittPsyke',
+			logo: { '@type': 'ImageObject' as const, url: `${SITE_URL}/logo.png` }
+		},
+		articleSection: topic.label,
+		mainEntityOfPage: { '@type': 'WebPage' as const, '@id': `${SITE_URL}${article.url}` }
+	};
+}
+
+// Validerar den serialiserade formen (så som den faktiskt hamnar i sidans
+// JSON-LD-script) mot de fält schema.org/Google kräver för BlogPosting/HowTo.
+export const articleJsonLdSchema = z.object({
+	'@context': z.literal('https://schema.org'),
+	'@type': z.enum(['BlogPosting', 'HowTo']),
+	headline: z.string().min(1),
+	description: z.string().min(1),
+	image: z.string().url(),
+	datePublished: z.string().refine((value) => !Number.isNaN(Date.parse(value)), 'ogiltigt datum'),
+	dateModified: z.string().refine((value) => !Number.isNaN(Date.parse(value)), 'ogiltigt datum'),
+	inLanguage: z.literal('sv-SE'),
+	author: z.object({ '@type': z.literal('Person'), name: z.string().min(1) }),
+	publisher: z.object({
+		'@type': z.literal('Organization'),
+		name: z.string().min(1),
+		logo: z.object({ '@type': z.literal('ImageObject'), url: z.string().url() })
+	}),
+	articleSection: z.string().min(1),
+	mainEntityOfPage: z.object({ '@type': z.literal('WebPage'), '@id': z.string().url() })
+});

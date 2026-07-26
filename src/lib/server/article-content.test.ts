@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+	articleJsonLdSchema,
+	buildArticleJsonLd,
+	findBrokenArticleBodyLinks,
 	findBrokenRelatedArticleLinks,
+	getArticleTopics,
 	getPublishedArticle,
 	getPublishedArticles,
 	parseArticleFrontmatter,
@@ -100,6 +104,34 @@ describe('every article file in src/content/articles', () => {
 				.map((link) => `${link.sourcePath} → "${link.linkTitle}" (${link.url}) ${link.reason}`)
 				.join('\n')
 		).toEqual([]);
+	});
+
+	it('has no broken links written directly in the article body', () => {
+		const broken = findBrokenArticleBodyLinks();
+
+		expect(
+			broken,
+			broken.map((link) => `${link.sourcePath}: "${link.url}" ${link.reason}`).join('\n')
+		).toEqual([]);
+	});
+
+	it('produces JSON-LD that satisfies the schema.org BlogPosting/HowTo fields Google expects', () => {
+		const topicsBySlug = new Map(getArticleTopics().map((topic) => [topic.slug, topic]));
+
+		const invalid = results.flatMap((result) => {
+			if (!result.valid || result.article.draft) return [];
+
+			const topic = topicsBySlug.get(result.article.collection);
+			if (!topic) return [`${result.path}: okänt ämne "${result.article.collection}"`];
+
+			const jsonLd = JSON.parse(JSON.stringify(buildArticleJsonLd(result.article, topic)));
+			const parsed = articleJsonLdSchema.safeParse(jsonLd);
+			if (parsed.success) return [];
+
+			return [`${result.path}: ${parsed.error.issues.map((issue) => `${issue.path.join('.')} ${issue.message}`).join(', ')}`];
+		});
+
+		expect(invalid).toEqual([]);
 	});
 
 	// Titel, beskrivning och datum matas rakt in i <title>, <meta name="description">
