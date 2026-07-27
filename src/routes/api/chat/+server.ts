@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
-import { hasSensitiveConsentHeader } from '$lib/consent';
+import { hasHealthConsentInMetadata, hasSensitiveConsentHeader } from '$lib/consent';
 import { CHAT_CONTEXT_LIMIT, getChatContextMessages } from '$lib/state/chat-memory';
 import { containsAcuteCrisisPhrase, containsThirdPartyRiskPhrase } from '$lib/ai/crisis-keywords';
 import {
@@ -11,6 +11,11 @@ import {
 	shouldRefreshUserMemories,
 	type MemoryHistoryMessage
 } from '$lib/server/user-memory';
+import {
+	formatDiaryContextForPrompt,
+	getActivePersonalGoals,
+	loadRecentDiaryEntries
+} from '$lib/server/diary-context';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 import type { RequestHandler } from './$types';
@@ -677,10 +682,22 @@ export const POST: RequestHandler = async ({ request }) => {
 			const memories = await loadUserMemories(authClient, user.id);
 			const memoryBlock = formatMemoriesForPrompt(memories);
 
+			// Frivillig extra kontext från dagbok/mål – kräver att användaren both
+			// slagit på inställningen och redan lämnat samtycke för känsliga uppgifter.
+			const userMetadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+			const diaryContextEnabled =
+				userMetadata.ai_diary_context_enabled === true && hasHealthConsentInMetadata(userMetadata);
+			const diaryContextBlock = diaryContextEnabled
+				? formatDiaryContextForPrompt(
+						await loadRecentDiaryEntries(authClient, user.id),
+						getActivePersonalGoals(userMetadata)
+					)
+				: '';
+
 			const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
-			const systemPromptWithMemory = memoryBlock
-				? `${systemPrompt}\n\n${memoryBlock}`
-				: systemPrompt;
+			const systemPromptWithMemory = [systemPrompt, memoryBlock, diaryContextBlock]
+				.filter(Boolean)
+				.join('\n\n');
 			const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
 				{ role: 'system', content: systemPromptWithMemory },
 				...modelContext,
