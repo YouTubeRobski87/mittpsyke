@@ -13,7 +13,8 @@ export type LivingWorldEffectKind =
 	| 'bird'
 	| 'butterfly'
 	| 'leaf'
-	| 'cloud';
+	| 'cloud'
+	| 'drift';
 
 export type LivingWorldEffect = {
 	id: string;
@@ -69,14 +70,15 @@ const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
 	bird: true,
 	butterfly: true,
 	leaf: true,
-	cloud: true
+	cloud: true,
+	drift: true
 };
 
 // Moln är fortfarande pausat tills scenen har egna transparenta molnassets -
 // CSS-lagret konkurrerade visuellt med den illustrerade bakgrunden. Vatten och
-// lövverk återaktiverades i extremt diskret form (se opacitetsvärdena i
-// baseEffects nedan) - följeslagaren och användarens innehåll ska alltid vara
-// det som märks, ambienta lager är bara en svag understrykning.
+// lövverk är aktiva och medvetet mer synliga (se opacitetsvärdena i
+// baseEffects nedan) - lugnt och tydligt märkbart, men fortfarande under
+// följeslagaren och texten i lagerordningen så de aldrig skymmer dem.
 const PAUSED_AMBIENT_FEATURES: Partial<Record<LivingWorldEffectKind, boolean>> = {
 	cloud: false
 };
@@ -146,9 +148,72 @@ const baseEffects: LivingWorldEffect[] = [
 		height: 27,
 		durationMs: 64_000,
 		delayMs: -34_000,
-		// Extremt diskret: bara en svag glimt av rörelse i vattnet, aldrig
-		// tillräckligt märkbar för att konkurrera med följeslagaren.
-		opacity: 0.05
+		// Tydligt synlig rörelse i vattnet, men fortfarande lugn - se den
+		// breddade rörelseamplituden i waterSurfaceDrift (LivingWorld.svelte).
+		opacity: 0.34
+	},
+	{
+		// Den primära, tydligt synliga vattenrörelsen: en varm ljusglimt som
+		// långsamt sveper över vattenytan (helt annat visuellt uttryck än
+		// water-surface ovan, inte bara högre opacitet på samma mönster).
+		// Startar synlig inom ~2s (se waterGlintSweep i LivingWorld.svelte).
+		id: 'water-glint',
+		kind: 'water',
+		enabled: true,
+		className: 'water-glint',
+		x: 2,
+		y: 49,
+		width: 58,
+		height: 18,
+		durationMs: 9_000,
+		delayMs: 0,
+		opacity: 0.75
+	},
+	// Kontinuerligt upprepade vattenringar - den tydligaste "vattnet rör sig"-
+	// signalen, eftersom en ring är en otvetydig vattenform (till skillnad från
+	// en abstrakt glimt/sken). Loopar hela tiden i stället för att vänta på
+	// den slumpmässiga shore-ripple-händelsen. Se .water-ripple-loop.
+	{
+		id: 'water-ripple-loop-one',
+		kind: 'water',
+		enabled: true,
+		className: 'water-ripple-loop',
+		x: 51,
+		y: 60,
+		width: 9,
+		height: 3.1,
+		durationMs: 4_200,
+		delayMs: 0,
+		opacity: 0.75,
+		scale: 1
+	},
+	{
+		id: 'water-ripple-loop-two',
+		kind: 'water',
+		enabled: true,
+		className: 'water-ripple-loop',
+		x: 35,
+		y: 64,
+		width: 7.5,
+		height: 2.6,
+		durationMs: 5_000,
+		delayMs: -1_700,
+		opacity: 0.65,
+		scale: 0.82
+	},
+	{
+		id: 'water-ripple-loop-three',
+		kind: 'water',
+		enabled: true,
+		className: 'water-ripple-loop',
+		x: 61,
+		y: 66,
+		width: 7,
+		height: 2.4,
+		durationMs: 4_600,
+		delayMs: -2_900,
+		opacity: 0.6,
+		scale: 0.75
 	},
 	{
 		id: 'grass-left',
@@ -161,7 +226,7 @@ const baseEffects: LivingWorldEffect[] = [
 		height: 24,
 		durationMs: 28_000,
 		delayMs: -7_000,
-		opacity: 0.06
+		opacity: 0.3
 	},
 	{
 		id: 'grass-bank',
@@ -174,7 +239,7 @@ const baseEffects: LivingWorldEffect[] = [
 		height: 28,
 		durationMs: 36_000,
 		delayMs: -20_000,
-		opacity: 0.05
+		opacity: 0.26
 	},
 	{
 		id: 'canopy-right',
@@ -187,59 +252,103 @@ const baseEffects: LivingWorldEffect[] = [
 		height: 22,
 		durationMs: 44_000,
 		delayMs: -31_000,
-		opacity: 0.045
+		opacity: 0.22
+	},
+	// Ett fåtal långsamt svävande ljuspartiklar/dimstråk i övre delen av
+	// scenen (aldrig i följeslagarens eller textens område), synliga direkt
+	// och kontinuerligt - inte slumpmässiga händelser. Se driftFloat i
+	// LivingWorld.svelte.
+	{
+		id: 'drift-one',
+		kind: 'drift',
+		enabled: true,
+		x: 18,
+		y: 10,
+		width: 5,
+		height: 5,
+		durationMs: 8_000,
+		delayMs: 0,
+		opacity: 0.75
+	},
+	{
+		id: 'drift-two',
+		kind: 'drift',
+		enabled: true,
+		x: 46,
+		y: 18,
+		width: 4,
+		height: 4,
+		durationMs: 9_500,
+		delayMs: -1_500,
+		opacity: 0.65
+	},
+	{
+		id: 'drift-three',
+		kind: 'drift',
+		enabled: true,
+		x: 67,
+		y: 7,
+		width: 4.6,
+		height: 4.6,
+		durationMs: 11_000,
+		delayMs: -3_000,
+		opacity: 0.7
 	}
 ];
 
+// Chansvärden höjda så att en händelse nästan alltid väljs när minst en typ är
+// aktuell för dagpart/säsong (se chooseEvent() i LivingWorld.svelte) - det gör
+// naturhändelserna mer sannolika utan att ändra hur ofta de *försöker* ske
+// (det styrs av schemaläggningen i LivingWorld.svelte).
 const baseEvents: Omit<LivingWorldEvent, 'enabled'>[] = [
 	{
 		id: 'shore-ripple',
 		kind: 'water',
-		chance: 0.68,
+		chance: 0.8,
 		durationMs: [3_800, 5_800],
 		positions: [
-			{ x: 51, y: 60, scale: 0.85, opacity: 0.06 },
-			{ x: 61, y: 66, scale: 0.7, opacity: 0.045 },
-			{ x: 34, y: 64, scale: 0.62, opacity: 0.035 }
+			{ x: 51, y: 60, scale: 0.95, opacity: 0.32 },
+			{ x: 61, y: 66, scale: 0.8, opacity: 0.26 },
+			{ x: 34, y: 64, scale: 0.72, opacity: 0.22 }
 		]
 	},
 	{
 		id: 'distant-birds',
 		kind: 'bird',
-		chance: 0.06,
+		chance: 0.1,
 		durationMs: [8_000, 12_000],
 		positions: [
-			{ x: -5, y: 22, scale: 0.72, opacity: 0.2 },
-			{ x: -4, y: 29, scale: 0.58, opacity: 0.14 }
+			{ x: -5, y: 22, scale: 0.72, opacity: 0.4 },
+			{ x: -4, y: 29, scale: 0.58, opacity: 0.3 }
 		]
 	},
 	{
 		id: 'daytime-butterfly',
 		kind: 'butterfly',
-		chance: 0.05,
+		chance: 0.09,
 		durationMs: [6_500, 9_000],
 		positions: [
-			{ x: 16, y: 66, scale: 0.9, opacity: 0.26 },
-			{ x: 29, y: 72, scale: 0.72, opacity: 0.2 }
+			{ x: 16, y: 66, scale: 0.9, opacity: 0.42 },
+			{ x: 29, y: 72, scale: 0.72, opacity: 0.32 }
 		]
 	},
 	{
 		id: 'autumn-leaf',
 		kind: 'leaf',
-		chance: 0.04,
+		chance: 0.08,
 		durationMs: [5_500, 7_500],
 		positions: [
-			{ x: 77, y: 9, scale: 0.9, opacity: 0.24 },
-			{ x: 67, y: 16, scale: 0.7, opacity: 0.18 }
+			{ x: 77, y: 9, scale: 0.9, opacity: 0.4 },
+			{ x: 67, y: 16, scale: 0.7, opacity: 0.3 }
 		]
 	}
 ];
 
 function getMistOpacity(timeOfDay: ProgressCompanionDayState): number {
-	if (timeOfDay === 'morning') return 0.2;
-	if (timeOfDay === 'evening') return 0.17;
-	if (timeOfDay === 'night') return 0.18;
-	return 0.055;
+	if (timeOfDay === 'morning') return 0.3;
+	if (timeOfDay === 'evening') return 0.27;
+	if (timeOfDay === 'night') return 0.29;
+	return 0.24;
 }
 
 export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWorldScene {
