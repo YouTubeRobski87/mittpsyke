@@ -72,15 +72,13 @@ const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
 	cloud: true
 };
 
-// Pausat tills scenen har separata, transparenta assets för vatten, moln och lövverk.
-// De tidigare CSS-lagren konkurrerade visuellt med den illustrerade bakgrunden utan att
-// ge en pålitligt synlig rörelse i faktisk rendering. Behåll definitionerna så att de
-// kan återaktiveras med rätt originalassets, utan att ändra scenens lagerstruktur.
+// Moln är fortfarande pausat tills scenen har egna transparenta molnassets -
+// CSS-lagret konkurrerade visuellt med den illustrerade bakgrunden. Vatten och
+// lövverk återaktiverades i extremt diskret form (se opacitetsvärdena i
+// baseEffects nedan) - följeslagaren och användarens innehåll ska alltid vara
+// det som märks, ambienta lager är bara en svag understrykning.
 const PAUSED_AMBIENT_FEATURES: Partial<Record<LivingWorldEffectKind, boolean>> = {
-
-	water: false,
-	cloud: false,
-	foliage: false
+	cloud: false
 };
 
 const baseEffects: LivingWorldEffect[] = [
@@ -148,7 +146,9 @@ const baseEffects: LivingWorldEffect[] = [
 		height: 27,
 		durationMs: 64_000,
 		delayMs: -34_000,
-		opacity: 0.26
+		// Extremt diskret: bara en svag glimt av rörelse i vattnet, aldrig
+		// tillräckligt märkbar för att konkurrera med följeslagaren.
+		opacity: 0.05
 	},
 	{
 		id: 'grass-left',
@@ -161,7 +161,7 @@ const baseEffects: LivingWorldEffect[] = [
 		height: 24,
 		durationMs: 28_000,
 		delayMs: -7_000,
-		opacity: 0.3
+		opacity: 0.06
 	},
 	{
 		id: 'grass-bank',
@@ -174,7 +174,7 @@ const baseEffects: LivingWorldEffect[] = [
 		height: 28,
 		durationMs: 36_000,
 		delayMs: -20_000,
-		opacity: 0.24
+		opacity: 0.05
 	},
 	{
 		id: 'canopy-right',
@@ -187,7 +187,7 @@ const baseEffects: LivingWorldEffect[] = [
 		height: 22,
 		durationMs: 44_000,
 		delayMs: -31_000,
-		opacity: 0.2
+		opacity: 0.045
 	}
 ];
 
@@ -198,9 +198,9 @@ const baseEvents: Omit<LivingWorldEvent, 'enabled'>[] = [
 		chance: 0.68,
 		durationMs: [3_800, 5_800],
 		positions: [
-			{ x: 51, y: 60, scale: 0.85, opacity: 0.2 },
-			{ x: 61, y: 66, scale: 0.7, opacity: 0.16 },
-			{ x: 34, y: 64, scale: 0.62, opacity: 0.12 }
+			{ x: 51, y: 60, scale: 0.85, opacity: 0.06 },
+			{ x: 61, y: 66, scale: 0.7, opacity: 0.045 },
+			{ x: 34, y: 64, scale: 0.62, opacity: 0.035 }
 		]
 	},
 	{

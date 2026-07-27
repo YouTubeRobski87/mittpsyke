@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
 	import {
 		getLivingWorldScene,
 		type LivingWorldEffect,
@@ -17,8 +17,7 @@
 		class?: string;
 	} = $props();
 
-	let isActive = $state(true);
-	let reducedMotion = $state(false);
+	const motion = createMotionAwareness();
 	let activeEvent = $state<ActiveWorldEvent | null>(null);
 
 	const classes = $derived(`living-world ${className}`.trim());
@@ -79,10 +78,16 @@
 		};
 	}
 
-	onMount(() => {
+	// Körs om varje gång motion.isActive/motion.reducedMotion ändras (flik
+	// döljs/visas, eller användaren togglar reduced-motion), och startar då om
+	// den ambienta händelseloopen från grunden - samma beteende som förut, men
+	// utan att LivingWorld behöver äga sin egen matchMedia/visibilitychange-lyssnare.
+	$effect(() => {
+		const active = motion.isActive;
+		const reduced = motion.reducedMotion;
+
 		let eventTimer: number | null = null;
 		let clearEventTimer: number | null = null;
-		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 		const clearTimers = () => {
 			if (eventTimer !== null) window.clearTimeout(eventTimer);
@@ -92,11 +97,11 @@
 		};
 
 		const scheduleAmbientEvent = (initial = false) => {
-			if (!isActive || reducedMotion) return;
+			if (!active || reduced) return;
 
 			const delay = initial ? between(9_000, 22_000) : between(18_000, 48_000);
 			eventTimer = window.setTimeout(() => {
-				if (!isActive || reducedMotion || activeEvent) {
+				if (!active || reduced || activeEvent) {
 					scheduleAmbientEvent();
 					return;
 				}
@@ -115,36 +120,16 @@
 			}, delay);
 		};
 
-		const updateMotionState = () => {
-			reducedMotion = motionQuery.matches;
-			clearTimers();
-			activeEvent = null;
-			if (!reducedMotion && isActive) scheduleAmbientEvent(true);
-		};
+		activeEvent = null;
+		if (active && !reduced) scheduleAmbientEvent(true);
 
-		const updateActiveState = () => {
-			isActive = document.visibilityState === 'visible';
-			clearTimers();
-			activeEvent = null;
-			if (isActive && !reducedMotion) scheduleAmbientEvent(true);
-		};
-
-		motionQuery.addEventListener('change', updateMotionState);
-		document.addEventListener('visibilitychange', updateActiveState);
-		updateMotionState();
-		updateActiveState();
-
-		return () => {
-			clearTimers();
-			motionQuery.removeEventListener('change', updateMotionState);
-			document.removeEventListener('visibilitychange', updateActiveState);
-		};
+		return clearTimers;
 	});
 </script>
 
 <div
 	class={classes}
-	class:is-paused={!isActive || reducedMotion}
+	class:is-paused={!motion.isActive || motion.reducedMotion}
 	data-season={scene.season}
 	data-time={scene.timeOfDay}
 	style={`--world-wind: ${scene.wind}`}

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
+	import { getCompanionDisplayState } from '$lib/companionStateMachine';
 	import {
 		getCompanionBasePose,
 		getCompanionOverlayPose,
@@ -30,14 +32,13 @@
 		companionId?: CompanionId;
 	} = $props();
 
+	const motionAwareness = createMotionAwareness();
 	let localBasePose = $state<CompanionPose | null>(null);
 	let localPosition = $state<CompanionScenePosition | null>(null);
 	let overlayPose = $state<CompanionPose | null>(null);
 	let daypart = $state<CompanionPoseDaypart>('day');
 	let baseFrameIndex = $state(0);
 	let overlayFrameIndex = $state(0);
-	let isActive = $state(true);
-	let reducedMotion = $state(false);
 
 	const classes = $derived(`companion-pose ${className}`.trim());
 	const basePose = $derived(providedBasePose ?? localBasePose);
@@ -49,6 +50,10 @@
 	const overlayFrame = $derived(
 		overlayPose ? overlayPose.frames[overlayFrameIndex % overlayPose.frames.length] : null
 	);
+	// Kanoniskt tillstånd (idle/look-left/look-right/blink/sniff/walk/sit/rest/sleep),
+	// se $lib/companionStateMachine - används bara som ett stabilt data-attribut,
+	// styr inte vilken bild som faktiskt visas (det gör basePose/overlayPose ovan).
+	const displayState = $derived(getCompanionDisplayState(basePose, overlayPose));
 	const positionStyle = $derived(
 	position
 		? [
@@ -78,7 +83,7 @@
 	}
 
 	function maybePlayOverlay() {
-		if (overlayPose || !isActive || reducedMotion) return;
+		if (overlayPose || !motionAwareness.isActive || motionAwareness.reducedMotion) return;
 
 		const isSleeping = basePose?.id === 'sleep-curled' || basePose?.id === 'sleep-side';
 		const motion = isSleeping ? 'sleep' : Math.random() < 0.72 ? 'blink' : 'gesture';
@@ -99,15 +104,6 @@
 		let baseFrameTimer: number | null = null;
 		let overlayFrameTimer: number | null = null;
 		let overlayTimer: number | null = null;
-		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-		const updateMotionState = () => {
-			reducedMotion = motionQuery.matches;
-		};
-
-		const updateActiveState = () => {
-			isActive = document.visibilityState === 'visible';
-		};
 
 		const scheduleBaseCheck = () => {
 			baseTimer = window.setTimeout(() => {
@@ -118,7 +114,7 @@
 
 		const scheduleBaseFrame = () => {
 			baseFrameTimer = window.setTimeout(() => {
-				if (isActive && !reducedMotion && basePose && basePose.frames.length > 1) {
+				if (motionAwareness.isActive && !motionAwareness.reducedMotion && basePose && basePose.frames.length > 1) {
 					baseFrameIndex += 1;
 				}
 				scheduleBaseFrame();
@@ -127,7 +123,7 @@
 
 		const scheduleOverlayFrame = () => {
 			overlayFrameTimer = window.setTimeout(() => {
-				if (isActive && !reducedMotion && overlayPose && overlayPose.frames.length > 1) {
+				if (motionAwareness.isActive && !motionAwareness.reducedMotion && overlayPose && overlayPose.frames.length > 1) {
 					overlayFrameIndex += 1;
 				}
 				scheduleOverlayFrame();
@@ -142,11 +138,6 @@
 			}, delay);
 		};
 
-		updateMotionState();
-		updateActiveState();
-		motionQuery.addEventListener('change', updateMotionState);
-		document.addEventListener('visibilitychange', updateActiveState);
-
 		scheduleBaseCheck();
 		scheduleBaseFrame();
 		scheduleOverlayFrame();
@@ -157,8 +148,6 @@
 			if (baseFrameTimer !== null) window.clearTimeout(baseFrameTimer);
 			if (overlayFrameTimer !== null) window.clearTimeout(overlayFrameTimer);
 			if (overlayTimer !== null) window.clearTimeout(overlayTimer);
-			motionQuery.removeEventListener('change', updateMotionState);
-			document.removeEventListener('visibilitychange', updateActiveState);
 		};
 	});
 
@@ -179,6 +168,7 @@
 	data-daypart={daypart}
 	data-position={position?.id}
 	data-pose={basePose?.id}
+	data-state={displayState}
 	style={positionStyle}
 	aria-hidden={decorative ? 'true' : undefined}
 	aria-label={decorative ? undefined : basePose?.alt}
