@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { trackEvent, trackSearchUsed } from '$lib/analytics';
-	import { guides, pillars } from '$lib/seo-kit/content';
 
-	type SearchResult = {
+	type LegacyResult = {
 		href: string;
 		title: string;
 		description: string;
@@ -13,6 +12,29 @@
 		title: string;
 		excerpt: string;
 	};
+	type HybridContentType = 'article' | 'guide' | 'pillar' | 'faq' | 'support-line';
+	type HybridResult = {
+		contentType: HybridContentType;
+		title: string;
+		url: string;
+		snippet: string;
+		score: number;
+	};
+	type SearchResponse = {
+		results: HybridResult[];
+		page: number;
+		pageSize: number;
+		total: number;
+		mode: string;
+	};
+
+	const CONTENT_TYPE_LABELS: Record<HybridContentType, string> = {
+		article: 'Artikel',
+		guide: 'Guide',
+		pillar: 'Ämne',
+		faq: 'Vanlig fråga',
+		'support-line': 'Stödlinje'
+	};
 
 	let { data } = $props<{
 		data: {
@@ -20,8 +42,16 @@
 			loadError?: boolean;
 		};
 	}>();
+
 	let query = $state(page.url.searchParams.get('q') ?? '');
 	let lastTrackedSearchQuery = '';
+
+	const PAGE_SIZE = 10;
+	let hybridResults = $state<HybridResult[]>([]);
+	let hybridTotal = $state(0);
+	let hybridLoading = $state(false);
+	let hybridError = $state(false);
+	let currentPage = $state(1);
 
 	// Håll query synkad med URL vid SvelteKit client-side navigation (GET-formulär utan use:enhance).
 	// $state()-initialvärdet evalueras bara en gång vid mount – om komponenten redan är monterad
@@ -30,21 +60,10 @@
 		query = page.url.searchParams.get('q') ?? '';
 	});
 
-	const guideResults: SearchResult[] = [
-		...pillars.map((pillar) => ({
-			href: `/guider/${pillar.slug}`,
-			title: pillar.title,
-			description: pillar.description
-		})),
-		...guides.map((guide) => ({
-			href: `/guider/${guide.pillarSlug}/${guide.slug}`,
-			title: guide.title,
-			description: guide.description
-		}))
-	];
-
-	// Statiska artiklar som inte ingår i Soro-flödet – alltid sökbara
-	const localBlogArticles: SearchResult[] = [
+	// Statiska artiklar som varken ingår i Soro-flödet eller det embeddingindexerade
+	// artikelkollektivet (src/content/articles) – hålls kvar som enkel
+	// keyword-fallback så de inte försvinner ur sökningen.
+	const localBlogArticles: LegacyResult[] = [
 		{
 			href: '/blogg/ai-hjalper-dig-bearbeta-kanslor',
 			title: 'Hur AI kan hjälpa dig sortera känslor – utan att ersätta terapi',
@@ -67,8 +86,8 @@
 
 	const normalizedQuery = $derived(query.trim().toLowerCase());
 	const showResults = $derived(normalizedQuery.length > 0);
-	const filteredGuides = $derived.by(() => filterResults(guideResults, normalizedQuery));
-	const articleResults = $derived.by(() => [
+
+	const legacyResults = $derived.by(() => [
 		...localBlogArticles,
 		...(data.articles ?? []).map((article: ArticleResult) => ({
 			href: `/blogg/${encodeURIComponent(article.slug)}`,
@@ -76,9 +95,62 @@
 			description: article.excerpt
 		}))
 	]);
+	const filteredLegacyResults = $derived.by(() => filterLegacy(legacyResults, normalizedQuery));
+	const totalPages = $derived(Math.max(1, Math.ceil(hybridTotal / PAGE_SIZE)));
+	const hasResults = $derived(hybridResults.length > 0 || filteredLegacyResults.length > 0);
 
-	const filteredArticles = $derived.by(() => filterResults(articleResults, normalizedQuery));
-	const hasResults = $derived(filteredGuides.length > 0 || filteredArticles.length > 0);
+	async function fetchHybridResults(q: string, requestedPage: number, signal?: AbortSignal) {
+		hybridLoading = true;
+		hybridError = false;
+
+		try {
+			const response = await fetch(
+				`/api/search?q=${encodeURIComponent(q)}&page=${requestedPage}&pageSize=${PAGE_SIZE}`,
+				{ signal }
+			);
+			if (!response.ok) throw new Error('search request failed');
+
+			const payload = (await response.json()) as SearchResponse;
+			hybridResults = payload.results;
+			hybridTotal = payload.total;
+			currentPage = requestedPage;
+		} catch (err) {
+			if ((err as Error).name === 'AbortError') return;
+			hybridError = true;
+			hybridResults = [];
+			hybridTotal = 0;
+		} finally {
+			hybridLoading = false;
+		}
+	}
+
+	// Debounce:ad sökning mot /api/search när frågan ändras.
+	$effect(() => {
+		const q = normalizedQuery;
+
+		if (q.length === 0) {
+			hybridResults = [];
+			hybridTotal = 0;
+			hybridError = false;
+			currentPage = 1;
+			return;
+		}
+
+		const controller = new AbortController();
+		const timeout = window.setTimeout(() => {
+			void fetchHybridResults(q, 1, controller.signal);
+		}, 350);
+
+		return () => {
+			window.clearTimeout(timeout);
+			controller.abort();
+		};
+	});
+
+	function loadPage(nextPage: number) {
+		if (!normalizedQuery || hybridLoading || nextPage < 1 || nextPage > totalPages) return;
+		void fetchHybridResults(normalizedQuery, nextPage);
+	}
 
 	$effect(() => {
 		if (normalizedQuery.length < 2) return;
@@ -92,18 +164,43 @@
 		return () => window.clearTimeout(timeout);
 	});
 
-	function filterResults(results: SearchResult[], q: string) {
+	function filterLegacy(results: LegacyResult[], q: string) {
 		if (!q) return [];
 		return results.filter((result) =>
 			`${result.href} ${result.title} ${result.description}`.toLowerCase().includes(q)
 		);
 	}
 
-	function trackSearchResultClick(result: SearchResult, resultType: 'guide' | 'article', position: number) {
+	// Hybrid-resultat har absoluta URL:er (så de går att embedda/länka utan tvetydighet
+	// server-side). Gör om egna sidor till relativa href så SvelteKits client-side-routing
+	// tar över, men lämna externa länkar (tel:, andra domäner) orörda.
+	function toHref(absoluteUrl: string): string {
+		try {
+			const parsed = new URL(absoluteUrl);
+			if (parsed.hostname === 'www.mittpsyke.se' || parsed.hostname === 'mittpsyke.se') {
+				return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+			}
+			return absoluteUrl;
+		} catch {
+			return absoluteUrl;
+		}
+	}
+
+	function trackHybridResultClick(result: HybridResult, position: number) {
 		if (!normalizedQuery) return;
 		trackEvent('search_result_click', {
 			query: normalizedQuery.slice(0, 120),
-			resultType,
+			resultType: result.contentType,
+			href: result.url,
+			position
+		});
+	}
+
+	function trackLegacyResultClick(result: LegacyResult, position: number) {
+		if (!normalizedQuery) return;
+		trackEvent('search_result_click', {
+			query: normalizedQuery.slice(0, 120),
+			resultType: 'article',
 			href: result.href,
 			position
 		});
@@ -113,7 +210,7 @@
 <main class="search-page">
 	<header class="search-hero">
 		<h1>Sök på MittPsyke</h1>
-		<p>Hitta guider och artiklar om psykiskt mående i lugn takt.</p>
+		<p>Hitta guider, artiklar och stöd om psykiskt mående i lugn takt.</p>
 		<input
 			type="search"
 			bind:value={query}
@@ -125,39 +222,70 @@
 
 	{#if showResults}
 		<div class="results">
-			{#if hasResults}
-				{#if filteredGuides.length}
-					<section aria-labelledby="guide-results">
-						<h2 id="guide-results">Guider</h2>
-						<ul class="result-list">
-							{#each filteredGuides as result, index}
-								<li>
-									<a class="result-link" href={result.href} onclick={() => trackSearchResultClick(result, 'guide', index + 1)}>
-										<strong>{result.title}</strong>
-										<span>{result.description}</span>
-									</a>
-								</li>
-							{/each}
-						</ul>
-					</section>
-				{/if}
+			{#if hybridError}
+				<p class="hint">Sökningen svarade inte just nu. Här är ändå det vi hittar direkt:</p>
+			{/if}
 
-				{#if filteredArticles.length}
-					<section aria-labelledby="article-results">
-						<h2 id="article-results">Artiklar</h2>
-						<ul class="result-list">
-							{#each filteredArticles as result, index}
-								<li>
-									<a class="result-link" href={result.href} onclick={() => trackSearchResultClick(result, 'article', index + 1)}>
-										<strong>{result.title}</strong>
-										<span>{result.description}</span>
-									</a>
-								</li>
-							{/each}
-						</ul>
-					</section>
-				{/if}
-			{:else}
+			{#if hybridResults.length}
+				<section aria-labelledby="hybrid-results">
+					<h2 id="hybrid-results">Resultat</h2>
+					<ul class="result-list">
+						{#each hybridResults as result, index}
+							<li>
+								<a
+									class="result-link"
+									href={toHref(result.url)}
+									onclick={() => trackHybridResultClick(result, (currentPage - 1) * PAGE_SIZE + index + 1)}
+								>
+									<span class="result-type">{CONTENT_TYPE_LABELS[result.contentType]}</span>
+									<strong>{result.title}</strong>
+									<span>{result.snippet}</span>
+								</a>
+							</li>
+						{/each}
+					</ul>
+
+					{#if totalPages > 1}
+						<div class="pagination">
+							<button
+								type="button"
+								onclick={() => loadPage(currentPage - 1)}
+								disabled={currentPage <= 1 || hybridLoading}
+							>
+								Föregående
+							</button>
+							<span>Sida {currentPage} av {totalPages}</span>
+							<button
+								type="button"
+								onclick={() => loadPage(currentPage + 1)}
+								disabled={currentPage >= totalPages || hybridLoading}
+							>
+								Nästa
+							</button>
+						</div>
+					{/if}
+				</section>
+			{:else if hybridLoading}
+				<p class="hint">Söker...</p>
+			{/if}
+
+			{#if filteredLegacyResults.length}
+				<section aria-labelledby="legacy-results">
+					<h2 id="legacy-results">Fler artiklar</h2>
+					<ul class="result-list">
+						{#each filteredLegacyResults as result, index}
+							<li>
+								<a class="result-link" href={result.href} onclick={() => trackLegacyResultClick(result, index + 1)}>
+									<strong>{result.title}</strong>
+									<span>{result.description}</span>
+								</a>
+							</li>
+						{/each}
+					</ul>
+				</section>
+			{/if}
+
+			{#if !hasResults && !hybridLoading}
 				<p class="empty">Inga resultat hittades.</p>
 			{/if}
 		</div>
@@ -247,6 +375,41 @@
 		opacity: 0.78;
 	}
 
+	.result-type {
+		display: inline-block;
+		width: fit-content;
+		padding: 0.15rem 0.5rem;
+		border-radius: 999px;
+		background: rgba(37, 99, 235, 0.12);
+		color: #1d4ed8;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.03em;
+		text-transform: uppercase;
+		opacity: 1;
+	}
+
+	.pagination {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-top: 1rem;
+		font-size: 0.9rem;
+	}
+
+	.pagination button {
+		padding: 0.4rem 0.85rem;
+		border-radius: var(--radius-card);
+		border: 1px solid rgba(0, 0, 0, 0.14);
+		background: #f8fafb;
+		cursor: pointer;
+	}
+
+	.pagination button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
 	.hint {
 		margin-top: 1.2rem;
 	}
@@ -261,5 +424,16 @@
 	:global(.dark) .result-link:hover,
 	:global(.dark) .result-link:focus-visible {
 		background: #1f2530;
+	}
+
+	:global(.dark) .result-type {
+		background: rgba(147, 197, 253, 0.16);
+		color: #93c5fd;
+	}
+
+	:global(.dark) .pagination button {
+		background: #1a2128;
+		border-color: rgba(255, 255, 255, 0.12);
+		color: inherit;
 	}
 </style>
