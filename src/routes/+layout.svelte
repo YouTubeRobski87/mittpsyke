@@ -86,6 +86,7 @@
 	];
 
 	const mobileSignedInGeneralNavItems: NavItem[] = [
+		{ href: '/chat', label: 'Chatta' },
 		{ href: '/blogg', label: 'Artiklar' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/anonyma-berattelser', label: 'Berättelser' },
