@@ -3,7 +3,7 @@
   import SEO from '$lib/components/SEO.svelte';
   import AccountTeaser from '$lib/components/AccountTeaser.svelte';
   import CompanionPose from '$lib/components/CompanionPose.svelte';
-  import LivingWorld from '$lib/components/LivingWorld.svelte';
+  import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
   import {
     ArrowRight,
     BarChart3,
@@ -202,7 +202,7 @@
              alfakanal). När en mattad utklippsfil finns (t.ex.
              dashboard-lakeside-world-foliage.webp), lägg ett eget <img> här med
              samma object-fit/object-position, klassen "companion-hero-foliage",
-             och animera med canopySway (LivingWorld.svelte). -->
+             och animera med canopySway (AmbientWorld.svelte). -->
         <CompanionPose
           class="hero-companion-pose"
           companionId={heroCompanionId}
@@ -214,7 +214,7 @@
                 : null
           }
         />
-        <LivingWorld scene={livingWorldScene} class="hero-living-world" />
+        <AmbientWorld scene={livingWorldScene} class="hero-living-world" />
         <div class="hero-copy">
           <h2 id="companion-title">Din följeslagare</h2>
           <p>Den finns kvar här när du återvänder.</p>

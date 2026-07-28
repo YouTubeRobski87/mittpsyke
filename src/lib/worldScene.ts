@@ -29,6 +29,13 @@ export type LivingWorldEffect = {
 	delayMs?: number;
 	opacity?: number;
 	scale?: number;
+	/**
+	 * Parallaxdjup: 0 = längst bort, 1 = närmast betraktaren. Skalar hur långt
+	 * effekten rör sig i sina keyframes, så avlägsna lager (fjärran dimma, moln)
+	 * driver långsammare och kortare än nära lager (strandgräs, fallande löv).
+	 * Utelämnad = 0.5, dvs mellanplan.
+	 */
+	depth?: number;
 };
 
 export type LivingWorldEvent = {
@@ -74,11 +81,13 @@ const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
 	drift: true
 };
 
-// Moln är fortfarande pausat tills scenen har egna transparenta molnassets -
-// CSS-lagret konkurrerade visuellt med den illustrerade bakgrunden. Vatten och
-// lövverk är aktiva och medvetet mer synliga (se opacitetsvärdena i
-// baseEffects nedan) - lugnt och tydligt märkbart, men fortfarande under
-// följeslagaren och texten i lagerordningen så de aldrig skymmer dem.
+// Extensionspunkt för att stänga av en effekttyp i hela scenen utan att röra
+// enskilda effekter - t.ex. när en effekt inte har rätt assets ännu.
+//
+// Molnen är fortsatt pausade: de täta CSS-blobbarna konkurrerar visuellt med
+// fotots egen himmel. För att slå på dem behöver .world-cloud i
+// AmbientWorld.svelte först göras om till breda, flacka slöjor med
+// soft-light-blend så de lägger sig i fotots ljus i stället för ovanpå det.
 const PAUSED_AMBIENT_FEATURES: Partial<Record<LivingWorldEffectKind, boolean>> = {
 	cloud: false
 };
@@ -149,14 +158,14 @@ const baseEffects: LivingWorldEffect[] = [
 		durationMs: 64_000,
 		delayMs: -34_000,
 		// Tydligt synlig rörelse i vattnet, men fortfarande lugn - se den
-		// breddade rörelseamplituden i waterSurfaceDrift (LivingWorld.svelte).
+		// breddade rörelseamplituden i waterSurfaceDrift (WaterLayer.svelte).
 		opacity: 0.34
 	},
 	{
 		// Den primära, tydligt synliga vattenrörelsen: en varm ljusglimt som
 		// långsamt sveper över vattenytan (helt annat visuellt uttryck än
 		// water-surface ovan, inte bara högre opacitet på samma mönster).
-		// Startar synlig inom ~2s (se waterGlintSweep i LivingWorld.svelte).
+		// Startar synlig inom ~2s (se waterGlintSweep i WaterLayer.svelte).
 		id: 'water-glint',
 		kind: 'water',
 		enabled: true,
@@ -245,7 +254,7 @@ const baseEffects: LivingWorldEffect[] = [
 		// Motsvarar den fotografiska grenen som hänger in uppifrån höger i
 		// dashboard-lakeside-world.png. Egen, kort duration/delay (skild från
 		// foliageBreathe/grässvajen) så den svaga vindrörelsen i canopySway
-		// (LivingWorld.svelte) inte känns synkad med gräset vid stranden.
+		// (AmbientWorld.svelte) inte känns synkad med gräset vid stranden.
 		id: 'canopy-right',
 		kind: 'foliage',
 		enabled: true,
@@ -261,7 +270,7 @@ const baseEffects: LivingWorldEffect[] = [
 	// Ett fåtal långsamt svävande ljuspartiklar/dimstråk i övre delen av
 	// scenen (aldrig i följeslagarens eller textens område), synliga direkt
 	// och kontinuerligt - inte slumpmässiga händelser. Se driftFloat i
-	// LivingWorld.svelte.
+	// AmbientWorld.svelte.
 	{
 		id: 'drift-one',
 		kind: 'drift',
@@ -300,10 +309,35 @@ const baseEffects: LivingWorldEffect[] = [
 	}
 ];
 
+// Parallaxdjup per effekt: 0 = längst bort, 1 = närmast. Samlat här i stället
+// för utspritt i baseEffects ovan, så hela djupordningen i scenen går att läsa
+// och justera på ett ställe. Effekter som saknas här hamnar på mellanplan.
+//
+// Ordningen speglar hur scenen faktiskt ser ut: himmel/moln längst bort, sedan
+// sjön, sedan stranden, och lövverket närmast betraktaren.
+const EFFECT_DEPTHS: Record<string, number> = {
+	sunlight: 0.05,
+	'cloud-back': 0.1,
+	'cloud-front': 0.2,
+	'mist-two': 0.22,
+	'mist-one': 0.32,
+	'water-surface': 0.4,
+	'water-glint': 0.45,
+	'water-ripple-loop-three': 0.42,
+	'water-ripple-loop-two': 0.52,
+	'water-ripple-loop-one': 0.58,
+	'drift-three': 0.55,
+	'drift-two': 0.65,
+	'drift-one': 0.72,
+	'grass-bank': 0.7,
+	'grass-left': 0.8,
+	'canopy-right': 0.95
+};
+
 // Chansvärden höjda så att en händelse nästan alltid väljs när minst en typ är
-// aktuell för dagpart/säsong (se chooseEvent() i LivingWorld.svelte) - det gör
+// aktuell för dagpart/säsong (se chooseEvent() i AmbientWorld.svelte) - det gör
 // naturhändelserna mer sannolika utan att ändra hur ofta de *försöker* ske
-// (det styrs av schemaläggningen i LivingWorld.svelte).
+// (det styrs av schemaläggningen i AmbientWorld.svelte).
 const baseEvents: Omit<LivingWorldEvent, 'enabled'>[] = [
 	{
 		id: 'shore-ripple',
@@ -365,7 +399,7 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 	const mistOpacity = getMistOpacity(timeOfDay);
 
 	const effects = baseEffects.map((effect) => {
-		const next = { ...effect };
+		const next = { ...effect, depth: effect.depth ?? EFFECT_DEPTHS[effect.id] ?? 0.5 };
 
 		if (next.kind === 'mist') {
 			next.opacity = mistOpacity * (effect.id === 'mist-two' ? 0.72 : 1);

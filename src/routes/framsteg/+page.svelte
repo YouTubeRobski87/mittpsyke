@@ -7,7 +7,7 @@
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
-	import LivingWorld from '$lib/components/LivingWorld.svelte';
+	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
 	import {
 		COMPANION_WORLD_SCENE_IMAGE,
 		getProgressCompanionDayState,
@@ -825,11 +825,11 @@
 					 alfakanal). När en mattad utklippsfil finns (t.ex.
 					 dashboard-lakeside-world-foliage.webp), lägg ett eget <img> här med
 					 samma object-fit/object-position, klassen "companion-hero-foliage",
-					 och animera med canopySway (LivingWorld.svelte). -->
+					 och animera med canopySway (AmbientWorld.svelte). -->
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
 				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} decorative />
 				<span class="companion-foreground-edge" aria-hidden="true"></span>
-				<LivingWorld scene={livingWorldScene} class="progress-living-world" />
+				<AmbientWorld scene={livingWorldScene} class="progress-living-world" />
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
 			<div class="companion-copy">
