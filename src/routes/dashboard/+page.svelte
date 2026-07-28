@@ -198,6 +198,11 @@
           aria-hidden="true"
           decoding="async"
         />
+        <!-- Grenen/löven uppe till höger ligger inbränd i companionHeroImage (ingen
+             alfakanal). När en mattad utklippsfil finns (t.ex.
+             dashboard-lakeside-world-foliage.webp), lägg ett eget <img> här med
+             samma object-fit/object-position, klassen "companion-hero-foliage",
+             och animera med canopySway (LivingWorld.svelte). -->
         <CompanionPose
           class="hero-companion-pose"
           companionId={heroCompanionId}

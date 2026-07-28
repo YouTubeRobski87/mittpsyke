@@ -172,7 +172,10 @@
 	.world-mist { border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(255, 251, 236, 0.52), rgba(226, 245, 255, 0.36), transparent); filter: blur(12px); mix-blend-mode: soft-light; animation: mistDrift var(--duration, 118000ms) ease-in-out var(--delay, 0ms) infinite; }
 	.living-world[data-time='day'] .world-mist { filter: blur(14px); }
 	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.5px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) ease-in-out var(--delay, 0ms) infinite; }
-	.canopy-right { transform-origin: 70% 0%; background: radial-gradient(ellipse at 40% 15%, rgba(133, 154, 80, 0.2), transparent 60%), radial-gradient(ellipse at 72% 35%, rgba(87, 126, 74, 0.16), transparent 62%); filter: blur(1px); }
+	/* Ligger ovanpå den fotografiska grenen uppe till höger (companion-hero-scene) -
+	   transform-origin nära bildens överkant, dvs där grenen kommer in i bild, inte
+	   mitt i klungan, så rörelsen ser ut som en gren som svajar, inte hela trädet. */
+	.canopy-right { transform-origin: 78% 0%; background: radial-gradient(ellipse at 40% 15%, rgba(133, 154, 80, 0.2), transparent 60%), radial-gradient(ellipse at 72% 35%, rgba(87, 126, 74, 0.16), transparent 62%); filter: blur(1px); animation: canopySway var(--duration, 7400ms) cubic-bezier(0.42, 0, 0.24, 1) var(--delay, 0ms) infinite; }
 
 	.world-water { border-radius: 50%; border: 1px solid rgba(235, 248, 246, 0.42); background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent 66%); filter: blur(0.25px); }
 	.water-surface { border: 0; border-radius: 0; background: repeating-linear-gradient(176deg, transparent 0 10%, rgba(235, 248, 246, 0.34) 13%, transparent 18% 29%); filter: blur(0.65px); opacity: var(--opacity, 0.26); transform-origin: 50% 50%; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 80%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 80%, transparent); animation: waterSurfaceDrift var(--duration, 64000ms) ease-in-out var(--delay, 0ms) infinite alternate; }
@@ -206,6 +209,17 @@
 	@keyframes mistDrift { 0%, 100% { opacity: calc(var(--opacity, 0.14) * 0.34); transform: translate3d(-4%, 0, 0) scaleX(0.94); } 48% { opacity: var(--opacity, 0.14); } 74% { opacity: calc(var(--opacity, 0.14) * 0.62); transform: translate3d(5%, -4%, 0) scaleX(1.08); } }
 	@keyframes waterSurfaceDrift { 0%, 24% { transform: translate3d(-1.8%, 0, 0) scaleX(1.03); } 62%, 100% { transform: translate3d(calc(3.6% + (2% * var(--world-wind, 0.18))), -0.9%, 0) scaleX(1.07); } }
 	@keyframes foliageBreathe { 0%, 24%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); } 58% { transform: rotate(calc(2deg + (2.4deg * var(--world-wind, 0.18)))) translate3d(calc(1.6% * var(--world-wind, 0.18)), -0.8%, 0); } }
+	/* Svag, ojämn vindpust i grenen - ojämna procentsteg och skilda +/- värden
+	   (inte ett symmetriskt fram-och-tillbaka) så det inte känns mekaniskt
+	   loopat. Börjar och slutar i samma läge så loopen inte hackar till. */
+	@keyframes canopySway {
+		0% { transform: rotate(0deg) translate3d(0, 0, 0); }
+		22% { transform: rotate(0.55deg) translate3d(1.4px, -0.6px, 0); }
+		47% { transform: rotate(-0.35deg) translate3d(-1.8px, 0.3px, 0); }
+		68% { transform: rotate(0.75deg) translate3d(2.2px, -1px, 0); }
+		85% { transform: rotate(-0.2deg) translate3d(-1px, 0.2px, 0); }
+		100% { transform: rotate(0deg) translate3d(0, 0, 0); }
+	}
 	/* Tydlig, långsam glimt som sveper över vattenytan - blir synlig inom ~2s. */
 	@keyframes waterGlintSweep { 0% { opacity: 0; transform: translate3d(-20%, 0, 0) scaleX(0.75); } 18% { opacity: var(--opacity, 0.55); } 50% { transform: translate3d(55%, -1.8%, 0) scaleX(1.08); opacity: calc(var(--opacity, 0.55) * 0.82); } 82% { opacity: var(--opacity, 0.55); } 100% { opacity: 0; transform: translate3d(130%, 0.6%, 0) scaleX(0.75); } }
 	/* Långsamt svävande ljuspartiklar i övre delen av scenen - synliga inom några sekunder, hela tiden. */

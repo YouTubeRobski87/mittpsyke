@@ -821,6 +821,11 @@
 					loading="eager"
 					decoding="async"
 				/>
+				<!-- Grenen/löven uppe till höger ligger inbränd i companionScene.image (ingen
+					 alfakanal). När en mattad utklippsfil finns (t.ex.
+					 dashboard-lakeside-world-foliage.webp), lägg ett eget <img> här med
+					 samma object-fit/object-position, klassen "companion-hero-foliage",
+					 och animera med canopySway (LivingWorld.svelte). -->
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
 				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} decorative />
 				<span class="companion-foreground-edge" aria-hidden="true"></span>

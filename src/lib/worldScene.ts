@@ -242,6 +242,10 @@ const baseEffects: LivingWorldEffect[] = [
 		opacity: 0.26
 	},
 	{
+		// Motsvarar den fotografiska grenen som hänger in uppifrån höger i
+		// dashboard-lakeside-world.png. Egen, kort duration/delay (skild från
+		// foliageBreathe/grässvajen) så den svaga vindrörelsen i canopySway
+		// (LivingWorld.svelte) inte känns synkad med gräset vid stranden.
 		id: 'canopy-right',
 		kind: 'foliage',
 		enabled: true,
@@ -250,8 +254,8 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 0,
 		width: 24,
 		height: 22,
-		durationMs: 44_000,
-		delayMs: -31_000,
+		durationMs: 7_400,
+		delayMs: -2_600,
 		opacity: 0.22
 	},
 	// Ett fåtal långsamt svävande ljuspartiklar/dimstråk i övre delen av
