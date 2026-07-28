@@ -13,6 +13,7 @@
 		type LivingWorldScene
 	} from '$lib/worldScene';
 	import { effectStyle } from '$lib/world/effectStyle';
+	import type { CompanionRelationshipStage } from '$lib/companionRelationship';
 	import WaterLayer from './WaterLayer.svelte';
 	import LeafLayer from './LeafLayer.svelte';
 
@@ -20,9 +21,11 @@
 
 	let {
 		scene = getLivingWorldScene(),
+		relationshipStage = 0,
 		class: className = ''
 	}: {
 		scene?: LivingWorldScene;
+		relationshipStage?: CompanionRelationshipStage;
 		class?: string;
 	} = $props();
 
@@ -150,6 +153,11 @@
 	<WaterLayer effects={waterEffects} />
 	<LeafLayer season={scene.season} />
 
+	{#if relationshipStage >= 1}
+		<!-- Ett diskret naturtecken, inte en belöning eller indikator. -->
+		<span class="world-presence-sign" aria-hidden="true"></span>
+	{/if}
+
 	{#if activeEvent}
 		<span
 			class={`world-effect world-${activeEvent.kind} ${activeEvent.className ?? ''}`.trim()}
@@ -191,6 +199,7 @@
 	.world-event-butterfly { animation: butterflyPass var(--duration, 7000ms) ease-in-out both; }
 	.world-leaf { border-radius: 70% 30% 70% 30%; background: linear-gradient(135deg, rgba(157, 119, 62, 0.56), rgba(126, 145, 80, 0.28)); filter: blur(0.15px); }
 	.world-event-leaf { animation: leafFall var(--duration, 6200ms) linear both; }
+	.world-presence-sign { position: absolute; left: 61%; top: 66%; width: clamp(22px, 4.4%, 46px); height: clamp(5px, 0.8%, 8px); border-radius: 50%; border: 1px solid rgba(228, 239, 218, 0.18); opacity: 0; transform: translate3d(-50%, -50%, 0) scale(0.6); animation: presenceRipple 29s ease-out 9s infinite; }
 
 	/* Parallax: --depth (0 = längst bort, 1 = närmast) skalar rörelselängden, så
 	   avlägsna lager driver kortare och långsammare än nära. Se EFFECT_DEPTHS i
@@ -217,10 +226,11 @@
 	@keyframes butterflyPass { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(var(--scale, 1)) rotate(-5deg); } 12% { opacity: var(--opacity, 0.24); } 80% { opacity: calc(var(--opacity, 0.24) * 0.72); transform: translate3d(18vw, -4.4rem, 0) scale(var(--scale, 1)) rotate(8deg); } 100% { opacity: 0; transform: translate3d(26vw, -3.2rem, 0) scale(var(--scale, 1)) rotate(-3deg); } }
 	@keyframes butterflyWing { from { transform: rotateY(0deg) rotate(8deg); } to { transform: rotateY(54deg) rotate(-6deg); } }
 	@keyframes leafFall { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(var(--scale, 1)) rotate(0deg); } 14% { opacity: var(--opacity, 0.22); } 84% { opacity: calc(var(--opacity, 0.22) * 0.5); transform: translate3d(-2.7rem, 7rem, 0) scale(var(--scale, 1)) rotate(128deg); } 100% { opacity: 0; transform: translate3d(-3.4rem, 9.4rem, 0) scale(var(--scale, 1)) rotate(184deg); } }
+	@keyframes presenceRipple { 0%, 48%, 100% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(0.6); } 56% { opacity: 0.18; } 78% { opacity: 0.03; transform: translate3d(-50%, -50%, 0) scale(1.28); } }
 
 	@media (prefers-reduced-motion: reduce) {
 		.world-effect { animation: none !important; transform: none !important; }
-		.world-bird, .world-butterfly, .world-leaf, .world-drift, .world-event-water { opacity: 0 !important; }
+		.world-bird, .world-butterfly, .world-leaf, .world-drift, .world-event-water, .world-presence-sign { opacity: 0 !important; }
 		.world-light, .world-mist, .world-cloud, .world-foliage { opacity: calc(var(--opacity, 0.12) * 0.5); }
 	}
 </style>

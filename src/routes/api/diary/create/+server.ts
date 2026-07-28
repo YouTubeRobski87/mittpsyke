@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { hasSensitiveConsentHeader } from '$lib/consent';
+import { recordCurrentCompanionPresence } from '$lib/server/companion-presence';
 import type { RequestHandler } from './$types';
 import type {
 	CreateDiaryErrorResponse,
@@ -183,6 +184,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		.single();
 
 	if (!insertError && inserted) {
+		try {
+			await recordCurrentCompanionPresence(supabase);
+		} catch (presenceError) {
+			console.error('Could not record companion presence after diary save:', presenceError);
+		}
+
 		const response: CreateDiarySuccessResponse = {
 			success: true,
 			diary: inserted as DiaryRecord

@@ -3,7 +3,9 @@
   import SEO from '$lib/components/SEO.svelte';
   import AccountTeaser from '$lib/components/AccountTeaser.svelte';
   import CompanionPose from '$lib/components/CompanionPose.svelte';
+  import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
   import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
+  import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
   import {
     ArrowRight,
     BarChart3,
@@ -53,6 +55,7 @@
       dashboardFocusLabel: string;
     };
     progressCompanion: ProgressCompanionSelection | string | null;
+    companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
     isAnonymous?: boolean;
   };
 
@@ -94,6 +97,7 @@
   const selectedCompanion = $derived(getProgressCompanionAnimal(displayedCompanionSelection));
   const hasSelectedCompanion = $derived(Boolean(selectedCompanion));
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
+  const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
   const companionHeroImage = GENERIC_COMPANION_HERO_IMAGE;
   const heroCompanionId = $derived(
@@ -165,6 +169,7 @@
 <SEO canonical="https://www.mittpsyke.se/dashboard" />
 
 <div class="mp-dashboard">
+  <CompanionPresenceTracker enabled={!isAnonymous} />
   <div class="dashboard-shell">
     <main class="dashboard-main" aria-labelledby="dashboard-title">
       <header class="topbar">
@@ -214,7 +219,8 @@
                 : null
           }
         />
-        <AmbientWorld scene={livingWorldScene} class="hero-living-world" />
+        <AmbientWorld scene={livingWorldScene} class="hero-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
+        <CompanionFriend class="hero-companion-friend" companionId={heroCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
         <div class="hero-copy">
           <h2 id="companion-title">Din följeslagare</h2>
           <p>Den finns kvar här när du återvänder.</p>

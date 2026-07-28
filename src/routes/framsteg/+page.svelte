@@ -6,8 +6,10 @@
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
+	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
+	import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
 	import {
 		COMPANION_WORLD_SCENE_IMAGE,
 		getProgressCompanionDayState,
@@ -54,6 +56,7 @@
 	let companionPoseId = $state('idle');
 	let companionBasePose = $state<CompanionPoseData | null>(null);
 	const livingWorldScene = $derived(getLivingWorldScene({ season, timeOfDay }));
+	const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
 
 	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: 'fox' | 'bear' | 'wolf') {
 		if (companionId === 'bear') {
@@ -236,6 +239,7 @@
 		heatmapError?: string;
 		profileTheme?: keyof typeof THEMES | null;
 		progressCompanion?: ProgressCompanionSelection | string | null;
+		companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
 		isAnonymous?: boolean;
 	}
 
@@ -767,6 +771,7 @@
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/framsteg" />
+<CompanionPresenceTracker enabled={!data.isAnonymous} />
 
 <main class="auth-page framsteg-page" style={themeStyle}>
 	<div class="auth-shell framsteg-shell">
@@ -829,7 +834,8 @@
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
 				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} decorative />
 				<span class="companion-foreground-edge" aria-hidden="true"></span>
-				<AmbientWorld scene={livingWorldScene} class="progress-living-world" />
+				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
+				<CompanionFriend class="progress-companion-friend" companionId={sceneCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
 			<div class="companion-copy">
@@ -1818,5 +1824,4 @@
 		.icon-badge { width: 2.3rem; height: 2.3rem; }
 	}
 </style>
-
 
