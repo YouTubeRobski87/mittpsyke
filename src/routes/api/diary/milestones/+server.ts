@@ -3,6 +3,7 @@ import { json } from '@sveltejs/kit';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/public';
 import type { RequestHandler } from '@sveltejs/kit';
+import { TtlCache } from '$lib/server/search-cache';
 
 const STOCKHOLM_TIME_ZONE = 'Europe/Stockholm';
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -16,6 +17,13 @@ const MILESTONES_LOOKBACK_DAYS = 365;
 const MILESTONES_ROW_LIMIT = 500;
 const TOTAL_WORDS_PAGE_SIZE = 1000;
 const HIGHEST_TOTAL_WORDS_THRESHOLD = 50000;
+
+// calculateTotalWords() nedan kan sida genom hela dagboken i omgångar om 1000
+// rader för aktiva skribenter - dyrt att göra på varje sidladdning. Milstolpar
+// ändras sällan (bara vid nya inlägg), så några minuters eftersläpning märks
+// inte men sparar upprepade Supabase-anrop vid stigande trafik.
+const MILESTONES_CACHE_TTL_MS = 3 * 60 * 1000;
+const milestonesCache = new TtlCache<MilestonesResponse>(MILESTONES_CACHE_TTL_MS);
 
 type MilestoneCategory = 'firstSteps' | 'diary' | 'consistency' | 'time' | 'writingDepth';
 type MilestoneMetric =
@@ -477,6 +485,11 @@ export const GET: RequestHandler = async ({ request }) => {
 		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
 		const user = data.user;
 
+		const cached = milestonesCache.get(user.id);
+		if (cached) {
+			return json(cached);
+		}
+
 		const since = new Date(Date.now() - MILESTONES_LOOKBACK_DAYS * DAY_MS).toISOString();
 		const [totalEntriesQuery, entriesQuery, totalWords] = await Promise.all([
 			supabase.from('diary').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
@@ -545,12 +558,13 @@ export const GET: RequestHandler = async ({ request }) => {
 			milestones: milestones.filter((milestone) => milestone.category === category)
 		}));
 
-		const value = {
+		const value: MilestonesResponse = {
 			achieved,
 			sections,
 			nextMilestone,
 			totalEntries
 		};
+		milestonesCache.set(user.id, value);
 		return json(value);
 	} catch (err) {
 		console.error('Milestones error:', err);

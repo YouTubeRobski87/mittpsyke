@@ -31,7 +31,10 @@ export const POST: RequestHandler = async ({ request, url }) => {
 	}
 
 	try {
-		const result = await reindexContentEmbeddings(new OpenAI({ apiKey }), supabase);
+		// Längre gräns än de interaktiva OpenAI-anropen - varje anrop kan
+		// embedda en hel batch (se EMBEDDING_BATCH_SIZE i search-index.ts), men
+		// jobbet ska ändå aldrig kunna hänga kvar obegränsat.
+		const result = await reindexContentEmbeddings(new OpenAI({ apiKey, timeout: 60_000 }), supabase);
 		return json({ ok: true, ...result });
 	} catch (err) {
 		console.error('[cron][reindex-search] misslyckades', err);

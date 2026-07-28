@@ -9,9 +9,12 @@ import OpenAI from 'openai';
 
 const INSIGHTS_ROW_LIMIT = 500;
 const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
+const INSIGHTS_AI_TIMEOUT_MS = 20_000;
 
 function getOpenAIClient() {
-	return privateEnv.OPENAI_API_KEY ? new OpenAI({ apiKey: privateEnv.OPENAI_API_KEY }) : null;
+	return privateEnv.OPENAI_API_KEY
+		? new OpenAI({ apiKey: privateEnv.OPENAI_API_KEY, timeout: INSIGHTS_AI_TIMEOUT_MS })
+		: null;
 }
 
 function getModel() {

@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 import { createServiceClient } from '$lib/server/supabase-admin';
 import { collectSearchContent, EMBEDDING_MODEL, type SearchContentItem } from '$lib/server/search-index';
 import { TtlCache } from '$lib/server/search-cache';
+import { RateLimiter } from '$lib/server/rate-limit';
 import type { RequestHandler } from './$types';
 
 // ---------------------------------------------------------------------------
@@ -22,10 +23,25 @@ const MAX_PAGE_SIZE = 30;
 const VECTOR_MATCH_COUNT = 50;
 const SEMANTIC_WEIGHT = 0.65;
 const KEYWORD_WEIGHT = 0.35;
+// Embeddingen är redan i ett try/catch med fallback till keyword-sökning,
+// men utan gräns kunde ett hängande anrop ändå hålla kvar hela requesten.
+const SEARCH_EMBEDDING_TIMEOUT_MS = 8_000;
 
 // Rankade resultat cachas per normaliserad fråga i 10 minuter - täcker
 // upprepade/populära sökningar utan nya embedding-anrop.
 const resultCache = new TtlCache<RankedResult[]>(10 * 60 * 1000, 500);
+
+// Endpointen är öppen (ingen inloggning krävs) och varje ocachad, unik fråga
+// kostar ett OpenAI-embedding-anrop - begränsa per IP så den inte kan
+// användas för att generera obegränsat många embeddingar.
+const SEARCH_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const SEARCH_RATE_LIMIT_MAX_REQUESTS = 20;
+const searchRateLimiter = new RateLimiter(SEARCH_RATE_LIMIT_WINDOW_MS, SEARCH_RATE_LIMIT_MAX_REQUESTS);
+
+// Sökresultat är publikt, icke-personligt innehåll - korta cache-headers
+// låter webbläsare/CDN återanvända identiska sökningar en liten stund,
+// samma mönster som redan används för /sok.
+const SEARCH_CACHE_CONTROL = 'public, max-age=60, s-maxage=300, stale-while-revalidate=600';
 
 type RankedResult = {
 	contentType: SearchContentItem['contentType'];
@@ -67,7 +83,7 @@ async function rankResults(query: string): Promise<{ results: RankedResult[]; mo
 
 	if (apiKey && supabase) {
 		try {
-			const openai = new OpenAI({ apiKey });
+			const openai = new OpenAI({ apiKey, timeout: SEARCH_EMBEDDING_TIMEOUT_MS });
 			const embeddingResponse = await openai.embeddings.create({
 				model: EMBEDDING_MODEL,
 				input: query
@@ -119,7 +135,7 @@ async function rankResults(query: string): Promise<{ results: RankedResult[]; mo
 	return { results: ranked, mode };
 }
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async ({ url, getClientAddress }) => {
 	const rawQuery = url.searchParams.get('q') ?? '';
 	const query = normalizeQuery(rawQuery);
 
@@ -137,6 +153,15 @@ export const GET: RequestHandler = async ({ url }) => {
 	let mode: 'hybrid' | 'keyword-fallback' | 'cached' = 'cached';
 
 	if (!cached) {
+		// Rate-limita bara ocachade frågor - populära/upprepade sökningar
+		// serveras redan gratis från resultCache ovan.
+		if (searchRateLimiter.consume(`ip:${getClientAddress()}`)) {
+			return json(
+				{ error: 'För många sökningar just nu. Vänta en liten stund och försök igen.' },
+				{ status: 429, headers: { 'cache-control': 'no-store' } }
+			);
+		}
+
 		const ranked = await rankResults(query);
 		cached = ranked.results;
 		mode = ranked.mode;
@@ -146,11 +171,14 @@ export const GET: RequestHandler = async ({ url }) => {
 	const start = (page - 1) * pageSize;
 	const pageResults = cached.slice(start, start + pageSize);
 
-	return json({
-		results: pageResults,
-		page,
-		pageSize,
-		total: cached.length,
-		mode
-	});
+	return json(
+		{
+			results: pageResults,
+			page,
+			pageSize,
+			total: cached.length,
+			mode
+		},
+		{ headers: { 'cache-control': SEARCH_CACHE_CONTROL } }
+	);
 };

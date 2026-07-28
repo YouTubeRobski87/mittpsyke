@@ -3,6 +3,7 @@ import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/public';
 import type { RequestHandler } from '@sveltejs/kit';
+import { TtlCache } from '$lib/server/search-cache';
 
 const HEATMAP_CACHE_TTL_MS = 60 * 1000;
 const HEATMAP_ROW_LIMIT = 1000;
@@ -14,7 +15,9 @@ type HeatmapResponse = {
 	totalEntries: number;
 };
 
-const heatmapCache = new Map<string, { expiresAt: number; value: HeatmapResponse }>();
+// TtlCache begränsar antal nycklar (till skillnad från en vanlig Map), så
+// minnet inte växer obegränsat i takt med antal unika användare över tid.
+const heatmapCache = new TtlCache<HeatmapResponse>(HEATMAP_CACHE_TTL_MS);
 
 export const GET: RequestHandler = async ({ request }) => {
 	try {
@@ -30,8 +33,8 @@ export const GET: RequestHandler = async ({ request }) => {
 		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
 		const user = data.user;
 		const cached = heatmapCache.get(user.id);
-		if (cached && cached.expiresAt > Date.now()) {
-			return json(cached.value);
+		if (cached) {
+			return json(cached);
 		}
 
 		const endDate = new Date();
@@ -85,7 +88,7 @@ export const GET: RequestHandler = async ({ request }) => {
 			endDate: endDateISO,
 			totalEntries: entries ? entries.length : 0
 		};
-		heatmapCache.set(user.id, { expiresAt: Date.now() + HEATMAP_CACHE_TTL_MS, value });
+		heatmapCache.set(user.id, value);
 		return json(value);
 	} catch (err) {
 		console.error('Heatmap error:', err);

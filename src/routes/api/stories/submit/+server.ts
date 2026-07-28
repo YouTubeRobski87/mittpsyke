@@ -10,6 +10,7 @@ const MIN_CONTENT_LENGTH = 50;
 const MAX_CONTENT_LENGTH = 2000;
 const MAX_SUBMISSIONS_PER_DAY = 3;
 const MIN_SUBMIT_DELAY_MS = 3000;
+const MODERATION_AI_TIMEOUT_MS = 12_000;
 const THANK_YOU_MESSAGE =
 	'Tack. Din berättelse är mottagen och granskas innan eventuell publicering.';
 
@@ -59,7 +60,7 @@ async function moderateStory(content: string): Promise<ModerationResult> {
 	}
 
 	try {
-		const openai = new OpenAI({ apiKey });
+		const openai = new OpenAI({ apiKey, timeout: MODERATION_AI_TIMEOUT_MS });
 		const response = await openai.chat.completions.create({
 			model: (env.OPENAI_STORY_MODERATION_MODEL || env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim(),
 			temperature: 0,

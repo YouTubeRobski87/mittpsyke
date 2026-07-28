@@ -18,6 +18,7 @@ import {
 } from '$lib/server/diary-context';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
+import { RateLimiter } from '$lib/server/rate-limit';
 import type { RequestHandler } from './$types';
 
 const SYSTEM_PROMPT = `
@@ -239,6 +240,21 @@ Jag finns kvar här om du vill prata vidare, men vid risk för någons säkerhet
 
 const CHAT_MODEL = (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
 
+// Hindrar OpenAI-anrop från att hänga kvar och äta serverresurser om
+// modellen är trög eller nere - kortare svar hinner alltid klart långt före
+// den här gränsen, så den påverkar inte normala samtal.
+const CHAT_AI_TIMEOUT_MS = 25_000;
+
+// Per-IP gräns (samma mönster som hibp/breaches och diary/reflect): stoppar
+// skriptad spam mot OpenAI utan att störa ett vanligt, aktivt samtal. Körs
+// EFTER kris-/tredjepartsdetekteringen längre ner så en person i akut kris
+// alltid får krissvaret, oavsett hur många meddelanden som skickats innan.
+const CHAT_RATE_LIMIT_WINDOW_MS = 60_000;
+const CHAT_RATE_LIMIT_MAX_REQUESTS = 12;
+const chatRateLimiter = new RateLimiter(CHAT_RATE_LIMIT_WINDOW_MS, CHAT_RATE_LIMIT_MAX_REQUESTS);
+const CHAT_RATE_LIMIT_MESSAGE =
+	'Du skickar meddelanden lite för snabbt. Vänta en liten stund och skicka igen.';
+
 function logOpenAIError(context: { guest: boolean; category: SupportCategory; conversationId: string }, err: unknown) {
 	const openaiError = err as {
 		message?: string;
@@ -432,7 +448,7 @@ const normalizeApiKey = (value: string | undefined): string | null => {
 	return normalized;
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 	if (!hasSensitiveConsentHeader(request)) {
 		return errorResponse('Consent required for sensitive AI features.', 403);
 	}
@@ -505,6 +521,13 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 	// ---------------------------------------------------------------------------
 
+	// Rate limit - placerad EFTER kris-/tredjepartschecken ovan så den aldrig
+	// kan blockera ett akut krissvar, men innan några Supabase- eller
+	// OpenAI-anrop görs.
+	if (chatRateLimiter.consume(`ip:${getClientAddress()}`)) {
+		return errorResponse(CHAT_RATE_LIMIT_MESSAGE, 429);
+	}
+
 	if (isGuestRequest) {
 		console.info('[chat][guest] request identified as guest', {
 			hasToken: Boolean(token),
@@ -543,7 +566,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('Server configuration error', 500);
 	}
 
-	const openai = new OpenAI({ apiKey });
+	const openai = new OpenAI({ apiKey, timeout: CHAT_AI_TIMEOUT_MS });
 
 	const authClient = createClient(supabaseUrl, supabaseAnonKey, {
 		auth: { autoRefreshToken: false, persistSession: false },
@@ -936,7 +959,17 @@ export const POST: RequestHandler = async ({ request }) => {
 			console.error('[chat][guest] catch error object:', err);
 		}
 		console.error('Chat API error:', err);
-		return errorResponse('AI error', 500);
+
+		// Lugna, konkreta svenska felmeddelanden istället för ett generiskt
+		// tekniskt fel - särskilja timeout/överbelastning så användaren förstår
+		// att det är tillfälligt och kan försöka igen.
+		if (err instanceof OpenAI.APIConnectionTimeoutError) {
+			return errorResponse('Svaret tog för lång tid just nu. Försök gärna igen om en liten stund.', 504);
+		}
+		if (err instanceof OpenAI.RateLimitError) {
+			return errorResponse('Tjänsten är hårt belastad just nu. Vänta en liten stund och försök igen.', 503);
+		}
+		return errorResponse('Något gick fel just nu. Försök gärna igen om en liten stund.', 500);
 	}
 };
 

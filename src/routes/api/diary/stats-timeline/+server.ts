@@ -14,6 +14,12 @@ type DiaryTimelineRow = {
 	mood: string | null;
 };
 
+// Utan gräns läser den här frågan hela användarens dagbokshistorik vid varje
+// anrop - obegränsat i tid, till skillnad från streak/heatmap som redan är
+// begränsade. 2000 punkter räcker gott för en tidslinjegraf och matchar samma
+// storleksordning som t.ex. diary/heatmap.
+const STATS_TIMELINE_ROW_LIMIT = 2000;
+
 function errorResponse(message: string, status: number) {
 	const body: DiaryStatsTimelineErrorResponse = { success: false, error: message };
 	return json(body, { status });
@@ -63,12 +69,16 @@ export const GET: RequestHandler = async ({ request }) => {
 		return errorResponse('Unauthorized.', 401);
 	}
 
+	// Hämtas nyast-först med gräns, sedan vänds ordningen - annars skulle en
+	// gräns på en äldst-först-fråga tysta bort de senaste inläggen för
+	// användare med väldigt många humörloggade dagar.
 	const { data, error } = await supabase
 		.from('diary')
 		.select('created_at, mood')
 		.eq('user_id', user.id)
 		.not('mood', 'is', null)
-		.order('created_at', { ascending: true });
+		.order('created_at', { ascending: false })
+		.limit(STATS_TIMELINE_ROW_LIMIT);
 
 	if (error) {
 		console.error('Failed to load mood timeline:', error);
@@ -78,7 +88,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		return errorResponse(error.message ?? 'Could not load diary statistics.', 500);
 	}
 
-	const rows = (data ?? []) as DiaryTimelineRow[];
+	const rows = ((data ?? []) as DiaryTimelineRow[]).slice().reverse();
 	const timeline: DiaryStatsTimelinePoint[] = rows
 		.map((row) => {
 			const date = toDate(row.created_at);
