@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	FOX_DEER_RELATIONSHIP,
 	getCompanionRelationshipStage,
+	getFriendPairing,
 	getFriendStageAsset,
 	isFoxDeerRelationship
 } from './companionRelationship';
@@ -74,13 +75,47 @@ describe('getFriendStageAsset', () => {
 		}
 		expect(stageAssets[2]?.position.id).toBe('shore-far');
 		expect(stageAssets[3]?.position.id).toBe('shore-near');
-		expect(stageAssets[4]?.position.id).toBe('shore-near');
+		expect(stageAssets[4]?.position.id).toBe('shore-foreground');
 	});
 
-	it('keeps the distant silhouette smaller and fainter than the near poses', () => {
-		const far = FOX_DEER_RELATIONSHIP.stageAssets[2]!.position;
-		const near = FOX_DEER_RELATIONSHIP.stageAssets[3]!.position;
-		expect(far.scale).toBeLessThan(near.scale);
-		expect(far.opacity).toBeLessThan(near.opacity);
+	it('moves the friend steadily closer with each stage', () => {
+		const stageAssets = FOX_DEER_RELATIONSHIP.stageAssets;
+		const positions = [2, 3, 4].map((stage) => stageAssets[stage as 2 | 3 | 4]!.position);
+
+		for (let i = 1; i < positions.length; i += 1) {
+			// Större skala, längre ner i bild och tydligare = närmare.
+			expect(positions[i].scale).toBeGreaterThan(positions[i - 1].scale);
+			expect(positions[i].y).toBeGreaterThan(positions[i - 1].y);
+			expect(positions[i].opacity).toBeGreaterThan(positions[i - 1].opacity);
+		}
+	});
+
+	it('never places the friend where the companion stands', () => {
+		// Följeslagaren står på x78 (foreground-right). Vännen måste hålla sig
+		// tydligt åt vänster, annars överlappar de.
+		const companionX = 78;
+		for (const stage of [2, 3, 4] as const) {
+			expect(FOX_DEER_RELATIONSHIP.stageAssets[stage]!.position.x).toBeLessThan(companionX - 10);
+		}
+	});
+});
+
+describe('getFriendPairing', () => {
+	it('resolves the fox pairing and nothing else yet', () => {
+		expect(getFriendPairing('fox')?.friendId).toBe('deer');
+		expect(getFriendPairing('bear')).toBeNull();
+		expect(getFriendPairing('wolf')).toBeNull();
+		expect(getFriendPairing(null)).toBeNull();
+		expect(getFriendPairing(undefined)).toBeNull();
+	});
+
+	it('exposes pairings as data so a new friend needs no component change', () => {
+		const pairing = getFriendPairing('fox');
+		expect(pairing).toMatchObject({
+			companionId: expect.any(String),
+			friendId: expect.any(String),
+			assetsAvailable: expect.any(Boolean)
+		});
+		expect(pairing?.stageAssets).toBeTypeOf('object');
 	});
 });

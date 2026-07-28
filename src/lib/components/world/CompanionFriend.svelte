@@ -101,9 +101,14 @@
 		opacity: var(--friend-opacity, 0.8);
 	}
 
-	/* Reduced motion: bilden ska fortfarande synas, men utan intoning. */
-	.companion-friend.is-paused {
+	/* Dold flik eller reduced motion: en stilla variant. Bilden syns fortfarande
+	   i sitt slutläge - den tonas bara inte in, och eventuella framtida
+	   inaktivitetsrörelser fryses i stället för att fortsätta i bakgrunden.
+	   Använder befintlig motionAwareness, inga egna timers. */
+	.companion-friend.is-paused,
+	.companion-friend.is-paused .companion-friend-image {
 		transition: none;
+		animation-play-state: paused;
 	}
 
 	.companion-friend-image {
@@ -139,6 +144,23 @@
 	@media (max-width: 620px) {
 		.companion-friend:global(.hero-companion-friend) {
 			--friend-base-width: 38%;
+		}
+
+		.companion-friend:global(.progress-companion-friend) {
+			--friend-base-width: 30%;
+		}
+	}
+
+	/* 320-375 px: scenen är så smal att den bortre siluetten annars krymper
+	   till en oläslig prick. Basbredden höjs, men djuret hålls fortfarande
+	   mindre än följeslagaren. */
+	@media (max-width: 380px) {
+		.companion-friend:global(.hero-companion-friend) {
+			--friend-base-width: 44%;
+		}
+
+		.companion-friend:global(.progress-companion-friend) {
+			--friend-base-width: 34%;
 		}
 	}
 

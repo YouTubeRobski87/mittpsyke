@@ -21,7 +21,13 @@ Katalog: `static/images/world/friends/` (skapas när filerna läggs till).
 | --- | --- | --- | --- | --- |
 | `deer-silhouette-far.webp` | 2 | `shore-far` | Stående i profil, vänd åt vänster mot sjön. Lågkontrast, läsbar som form snarare än som detaljerat djur. | 400×400 |
 | `deer-standing-near.webp` | 3 | `shore-near` | Stående vid vattenbrynet, huvudet något lyft och vaksamt, vänd åt vänster. Full detalj. | 800×800 |
-| `deer-resting-near.webp` | 4 | `shore-near` | Liggande eller betande, lugn och stilla, vänd åt vänster. Full detalj. | 800×800 |
+| `deer-resting-near.webp` | 4 | `shore-foreground` | Liggande eller betande, lugn och stilla, vänd åt vänster. Full detalj. | 800×800 |
+
+Steg 4 använder `shore-foreground` och inte följeslagarens `foreground-right`:
+den senare är exakt där räven står, så de två skulle överlappa. Positionerna
+trappas i stället nedåt och inåt i bild (`shore-far` → `shore-near` →
+`shore-foreground`) så vännen läses som att den kommer närmare för varje steg,
+men alltid till vänster om och något mindre än följeslagaren.
 
 Steg 0 renderar ingenting. Steg 1 är enbart det diskreta naturtecknet som
 `AmbientWorld.svelte` redan ritar i ren CSS - aldrig ett djur.
