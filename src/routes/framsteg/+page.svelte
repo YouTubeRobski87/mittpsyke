@@ -12,6 +12,9 @@
 	import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
 	import {
 		COMPANION_WORLD_SCENE_IMAGE,
+		COMPANION_WORLD_SCENE_SRCSET,
+		COMPANION_WORLD_SCENE_SIZES,
+		COMPANION_WORLD_SCENE_FALLBACK,
 		getProgressCompanionDayState,
 		getProgressCompanionDayStateLabel,
 		getProgressCompanionSeason,
@@ -822,7 +825,9 @@
 					 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
 				<img
 					class="companion-world-scene"
-					src={companionScene.image}
+					srcset={COMPANION_WORLD_SCENE_SRCSET}
+					sizes={COMPANION_WORLD_SCENE_SIZES}
+					src={COMPANION_WORLD_SCENE_FALLBACK}
 					alt=""
 					aria-hidden="true"
 					width="1672"

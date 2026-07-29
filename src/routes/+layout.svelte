@@ -1353,7 +1353,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 2.5rem;
+		min-height: 2.75rem;
 		padding: 0 0.48rem;
 		border-radius: 999px;
 		color: hsl(var(--foreground) / 0.82);

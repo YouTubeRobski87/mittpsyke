@@ -22,6 +22,10 @@
   import {
     getDashboardCompanionScene,
     COMPANION_WORLD_SCENE_IMAGE,
+    COMPANION_WORLD_SCENE_SRCSET,
+    COMPANION_WORLD_SCENE_SIZES,
+    COMPANION_WORLD_SCENE_BACKDROP,
+    COMPANION_WORLD_SCENE_FALLBACK,
     getProgressCompanionAnimal,
     getProgressCompanionArtId,
     getProgressCompanionHeroFocus,
@@ -194,14 +198,16 @@
         class:personal-preview={isAnonymous}
         data-companion={heroCompanionId}
         aria-labelledby="companion-title"
-        style={`--hero-image: ${companionHeroImage ? `url('${companionHeroImage}')` : 'none'}; --hero-focus: ${heroFocus};`}
+        style={`--hero-image: ${companionHeroImage ? `url('${COMPANION_WORLD_SCENE_BACKDROP}')` : 'none'}; --hero-focus: ${heroFocus};`}
       >
         <!-- width/height ger webbläsaren bildens proportioner innan den laddats,
              så hjältekortet inte hoppar till. fetchpriority="high" eftersom det
              här är sidans LCP-element. -->
         <img
           class="companion-hero-scene"
-          src={companionHeroImage}
+          srcset={COMPANION_WORLD_SCENE_SRCSET}
+          sizes={COMPANION_WORLD_SCENE_SIZES}
+          src={COMPANION_WORLD_SCENE_FALLBACK}
           alt=""
           aria-hidden="true"
           width="1672"
@@ -496,6 +502,8 @@
     justify-content: space-between;
     gap: 0.8rem;
     width: 100%;
+    /* 44px = Apples HIG-minimum för träffytor. */
+    min-height: 44px;
     padding: 0;
     border: 0;
     background: transparent;
@@ -701,7 +709,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 42px;
+    min-height: 44px;
     padding: 0.62rem 1rem;
     border-radius: 8px;
     border: 1px solid rgba(85, 124, 104, 0.18);
@@ -1068,7 +1076,8 @@
     align-items: center;
     justify-content: center;
     gap: 0.55rem;
-    min-height: 38px;
+    /* 44px är Apples HIG-minimum för träffytor. 38px gav missar på mobil. */
+    min-height: 44px;
     margin-top: auto;
     border-radius: 10px;
     border: 1px solid color-mix(in srgb, var(--accent, var(--mp-green)) 22%, transparent);
@@ -1173,7 +1182,7 @@
   }
 
   .mp-dashboard .text-link {
-    min-height: 42px;
+    min-height: 44px;
     margin-top: 0.25rem;
     padding: 0.68rem 0.85rem;
     border: 1px solid #a7bfd6;
@@ -1305,7 +1314,7 @@
   }
 
   .mp-dashboard .card-button {
-    min-height: 42px;
+    min-height: 44px;
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.26) inset;
     transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
   }
