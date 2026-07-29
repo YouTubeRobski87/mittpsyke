@@ -818,11 +818,16 @@
 				data-pose={companionBasePose?.id}
 				style={bearProgressSceneStyle ?? wolfProgressSceneStyle}
 			>
+				<!-- width/height ger proportionerna innan bilden laddats så scenen
+					 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
 				<img
 					class="companion-world-scene"
 					src={companionScene.image}
 					alt=""
 					aria-hidden="true"
+					width="1672"
+					height="941"
+					fetchpriority="high"
 					loading="eager"
 					decoding="async"
 				/>

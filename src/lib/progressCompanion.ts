@@ -44,7 +44,11 @@ type ProgressCompanionPresenceInput = {
 };
 
 const COMPANION_IMAGE_VERSION = 'v=2';
-export const COMPANION_WORLD_SCENE_IMAGE = '/images/dashboard-lakeside-world.png';
+// WebP i stället för PNG: 2416 kB -> 272 kB (-89%) utan synlig kvalitetsskillnad.
+// Bilden är LCP-element på både Mitt Hem och Framsteg, och laddas dessutom en
+// gång till som suddig bakgrund i .companion-hero::before - besparingen slår
+// alltså dubbelt. PNG-originalet ligger kvar i static/ som källfil.
+export const COMPANION_WORLD_SCENE_IMAGE = '/images/dashboard-lakeside-world.webp';
 
 const DASHBOARD_COMPANION_IMAGE_PATHS = {
 	day: '/images/avatars/presets/fox-morning.webp',

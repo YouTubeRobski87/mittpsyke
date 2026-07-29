@@ -2,20 +2,21 @@
   "name": "mittpsyke",
   "version": "1.0.0",
   "private": true,
-	"scripts": {
-		"dev": "vite dev",
-		"prebuild": "npm run test",
-		"build": "vite build",
-		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"test": "vitest run"
-	},
+  "scripts": {
+    "dev": "vite dev",
+    "prebuild": "npm run test",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "test": "vitest run"
+  },
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.5.2",
     "@sveltejs/adapter-static": "^3.0.10",
     "@sveltejs/kit": "^2.53.4",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@tailwindcss/vite": "^4.0.0",
+    "sharp": "^0.35.3",
     "svelte": "^5.0.0",
     "svelte-check": "^4.0.0",
     "tailwindcss": "^4.0.0",

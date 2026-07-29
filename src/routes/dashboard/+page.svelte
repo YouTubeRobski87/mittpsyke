@@ -196,11 +196,17 @@
         aria-labelledby="companion-title"
         style={`--hero-image: ${companionHeroImage ? `url('${companionHeroImage}')` : 'none'}; --hero-focus: ${heroFocus};`}
       >
+        <!-- width/height ger webbläsaren bildens proportioner innan den laddats,
+             så hjältekortet inte hoppar till. fetchpriority="high" eftersom det
+             här är sidans LCP-element. -->
         <img
           class="companion-hero-scene"
           src={companionHeroImage}
           alt=""
           aria-hidden="true"
+          width="1672"
+          height="941"
+          fetchpriority="high"
           decoding="async"
         />
         <!-- Grenen/löven uppe till höger ligger inbränd i companionHeroImage (ingen
@@ -1478,7 +1484,10 @@
       bottom: auto;
       padding: 0.55rem 0.72rem;
       gap: 0.5rem;
-      max-width: calc(100% - 24px);
+      /* Brickan är högerankrad och .hero-copy vänsterankrad i samma vertikala
+         band. Utan ett breddtak här växte brickan in över rubriken. Taket och
+         .hero-copys bredd måste tillsammans lämna luft för sidoavstånden. */
+      max-width: 46%;
     }
 
     .time-badge :global(svg) {
@@ -1522,8 +1531,10 @@
       padding: 14px 12px 16px;
     }
 
+    /* Smalare, inte bredare, ju mindre skärmen blir - annars möter texten
+       tidsbrickan på högersidan. */
     .hero-copy {
-      max-width: 50%;
+      max-width: 44%;
     }
 
     .hero-copy h2 {
@@ -1532,6 +1543,9 @@
 
     .time-badge {
       padding: 0.48rem 0.62rem;
+      /* Snävare tak än 620px-regeln: utrymmet mellan rubrik och bricka blir
+         annars nere på ett par pixlar här. */
+      max-width: 42%;
     }
 
   }
@@ -1565,10 +1579,16 @@
     }
 
     .hero-copy {
-      max-width: 52%;
+      max-width: 44%;
     }
 
     .hero-copy p {
+      display: none;
+    }
+
+    /* På de smalaste skärmarna räcker hälsningen. Utan detta trycks
+       noteringen ihop till tre rader och brickan blir onödigt bred. */
+    .time-badge small {
       display: none;
     }
 
