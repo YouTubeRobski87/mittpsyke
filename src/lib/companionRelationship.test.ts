@@ -41,13 +41,15 @@ describe('fox and deer relationship', () => {
 });
 
 describe('getFriendStageAsset', () => {
-	it('returns nothing for every stage while the assets are still missing', () => {
+	it('exposes the verified deer assets at their intended stages only', () => {
 		// Skyddar produktionen: så länge flaggan är false får inget steg peka
 		// ut en bildfil, oavsett hur långt användaren kommit.
-		expect(FOX_DEER_RELATIONSHIP.assetsAvailable).toBe(false);
-		for (const stage of [0, 1, 2, 3, 4] as const) {
-			expect(getFriendStageAsset('fox', stage)).toBeNull();
-		}
+		expect(FOX_DEER_RELATIONSHIP.assetsAvailable).toBe(true);
+		expect(getFriendStageAsset('fox', 0)).toBeNull();
+		expect(getFriendStageAsset('fox', 1)).toBeNull();
+		expect(getFriendStageAsset('fox', 2)?.src).toBe('/images/world/friends/deer-silhouette-far.webp');
+		expect(getFriendStageAsset('fox', 3)?.src).toBe('/images/world/friends/deer-standing-near.webp');
+		expect(getFriendStageAsset('fox', 4)?.src).toBe('/images/world/friends/deer-resting-near.webp');
 	});
 
 	it('never returns an asset for companions without a friend pair', () => {

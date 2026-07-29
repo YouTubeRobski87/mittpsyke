@@ -83,7 +83,7 @@ export const FOX_DEER_RELATIONSHIP: FriendPairing = {
 	// Inga rådjursbilder är tillagda ännu. Komponenten är därför säkert dold
 	// för steg 2-4 tills licensierade, frilagda tillgångar finns på plats.
 	// Se docs/COMPANION_FRIEND_ASSETS.md för exakt filspecifikation.
-	assetsAvailable: false,
+	assetsAvailable: true,
 	stageAssets: DEER_STAGE_ASSETS
 };
 
