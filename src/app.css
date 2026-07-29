@@ -256,7 +256,10 @@ a {
 	pointer-events: none;
 	background:
 		linear-gradient(180deg, var(--dashboard-bg-overlay-start), var(--dashboard-bg-overlay-end)),
-		url('/assets/diary/dagboken-background.jpg') center top / cover no-repeat;
+		/* WebP i stället för JPG: 227 kB -> 84 kB. Bilden ritas på opacity 0.22
+		   under en gradient, så 1200 px bredd och q64 räcker gott - den läses
+		   som textur, inte som detaljerad bild. */
+		url('/assets/diary/dagboken-background.webp') center top / cover no-repeat;
 	opacity: 0.22;
 	filter: none;
 	transform: scale(1.02);
