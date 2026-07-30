@@ -39,11 +39,15 @@ export type FriendPairing = {
 // följeslagaren står, och de två skulle överlappa. Steg 4 får i stället en egen
 // främre position på samma strandlinje men tydligt åtskild i sidled.
 //
-// Exakta värden behöver finjusteras visuellt när de riktiga bilderna finns -
-// ett rådjurs tyngdpunkt och silhuett går inte att kalibrera mot en tom ruta.
+// Värdena är kalibrerade mot de riktiga bilderna, inte mot en tom ruta.
 const FRIEND_SCENE_POSITIONS: Record<FriendScenePositionId, FriendScenePosition> = {
 	// Bortre stranden, tvärs över vattnet.
-	'shore-far': { id: 'shore-far', x: 62, y: 62, scale: 0.26, opacity: 0.5, blur: 0.6 },
+	//
+	// x låg tidigare på 62. På Mitt Hem sitter räven mitt i scenen på mobil, och
+	// då hamnade 62 % rakt bakom den: 65-66 % av siluetten doldes vid 320 och
+	// 375 px. 53 % lägger den i luckan mellan rubriktexten till vänster och
+	// rävens faktiska kontur till höger på samtliga testbredder.
+	'shore-far': { id: 'shore-far', x: 53, y: 62, scale: 0.26, opacity: 0.5, blur: 0.6 },
 	// Vattenbrynet på samma sida, en bit ner längs stranden.
 	'shore-near': { id: 'shore-near', x: 52, y: 74, scale: 0.5, opacity: 0.88, blur: 0 },
 	// Främre strandlinjen, samma djupled som följeslagaren men långt åt vänster.
@@ -80,9 +84,8 @@ const DEER_STAGE_ASSETS: Partial<Record<CompanionRelationshipStage, FriendStageA
 export const FOX_DEER_RELATIONSHIP: FriendPairing = {
 	companionId: 'fox',
 	friendId: 'deer',
-	// Inga rådjursbilder är tillagda ännu. Komponenten är därför säkert dold
-	// för steg 2-4 tills licensierade, frilagda tillgångar finns på plats.
-	// Se docs/COMPANION_FRIEND_ASSETS.md för exakt filspecifikation.
+	// Bilderna finns på plats och är visuellt verifierade på 1280, 375 och 320 px
+	// i dag, skymning och natt. Se docs/COMPANION_FRIEND_ASSETS.md.
 	assetsAvailable: true,
 	stageAssets: DEER_STAGE_ASSETS
 };
