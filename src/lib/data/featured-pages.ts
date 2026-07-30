@@ -27,15 +27,17 @@ export const featuredPages: readonly FeaturedPage[] = [
 	{
 		id: 'featured-nar-familjen-ar-i-kris',
 		title: 'När familjen är i kris och du känner dig utanför',
+		// Kortets ingress klipps vid tre rader (.article-excerpt). Hålls därför
+		// kortare än sidans meta description, som är längre och ligger i
+		// routens +page.js - de två behöver inte vara samma text.
 		description:
-			'När en familjekris väcker rädsla, ilska och gamla konflikter. Få stöd att förstå känslorna, pausa konflikten och uttrycka vad du behöver.',
+			'När en familjekris väcker rädsla, ensamhet och gamla konflikter. Få stöd att förstå det du känner.',
 		url: '/nar-familjen-ar-i-kris',
 		collection: 'relationer-och-samhalle',
 		date: '2026-07-31',
-		// Ingen egen bild ännu. Kortet faller tillbaka på översiktens
-		// platshållargradient, som redan är ett stött läge i .article-card.
-		image: null,
-		imageAlt: null
+		image: '/uploads/familjekris.webp',
+		imageAlt:
+			'En familj sitter och samtalar i ett vardagsrum medan en person sitter för sig själv i förgrunden, vänd bort från de andra.'
 	}
 ];
 
