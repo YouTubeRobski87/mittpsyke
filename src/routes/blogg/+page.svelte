@@ -36,9 +36,12 @@
 					<li>
 						<a href={article.href} class="article-card">
 							{#if article.imageUrl}
+								<!-- Dekorativ bild: rubriken står i <h2> direkt under, så en alt-text
+									 hade fått skärmläsare att läsa samma budskap två gånger per kort.
+									 Låg tidigare på alt={article.title}. -->
 								<img
 									src={article.imageUrl}
-									alt={article.title}
+									alt=""
 									class="article-img"
 									loading="lazy"
 									width="400"
