@@ -369,6 +369,15 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			priority: '0.7'
 		},
 		{
+			path: '/nar-familjen-ar-i-kris',
+			lastmod: getContentLastmod(
+				'src/routes/nar-familjen-ar-i-kris/+page.svelte',
+				STATIC_CONTENT_LASTMOD
+			),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
 			path: '/nedstamdhet',
 			lastmod: getContentLastmod('src/routes/nedstamdhet/+page.svelte', GUIDE_FALLBACK_LASTMOD),
 			changefreq: 'weekly',
