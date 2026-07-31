@@ -73,6 +73,7 @@
 	let sendInFlight = false;
 	let speechSupported = $state(true);
 	let autoReadReplies = $state(false);
+	let sendWithEnter = $state(true);
 	let speakingMessageIndex = $state<number | null>(null);
 	let swedishVoice: SpeechSynthesisVoice | null = null;
 	let activeUtterance: SpeechSynthesisUtterance | null = null;
@@ -89,6 +90,7 @@
 	const HISTORY_NOTICE = 'Tidigare samtal är laddat.';
 	const guestIdStorageKey = 'mittpsyke:guest-id';
 	const autoReadStorageKey = 'mittpsyke:chat-auto-read-replies';
+	const sendWithEnterStorageKey = 'mittpsyke:chat-send-with-enter';
 	const starterSuggestions = ['En sak i taget', 'Lugna tankarna', 'Skriv av dig'];
 
 	const elevatedSupportKeywords = [
@@ -269,6 +271,11 @@
 		writeStorageValue(autoReadStorageKey, String(enabled));
 
 		if (!enabled) stopSpeaking();
+	}
+
+	function setSendWithEnter(enabled: boolean) {
+		sendWithEnter = enabled;
+		writeStorageValue(sendWithEnterStorageKey, String(enabled));
 	}
 
 	function getOrCreateGuestId() {
@@ -555,6 +562,7 @@
 	});
 
 	onMount(() => {
+		sendWithEnter = readStorageValue(sendWithEnterStorageKey) !== 'false';
 		speechSupported =
 			typeof window.speechSynthesis !== 'undefined' &&
 			typeof window.SpeechSynthesisUtterance !== 'undefined';
@@ -727,7 +735,7 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.isComposing) return;
-		if (event.key === 'Enter' && !event.shiftKey) {
+		if (sendWithEnter && event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
 			void send();
 		}
@@ -1110,6 +1118,18 @@
 
 			{#if showSettings}
 				<div class="settings-panel">
+					<div class="chat-setting">
+						<label>
+							<input
+								type="checkbox"
+								checked={sendWithEnter}
+								onchange={(event) =>
+									setSendWithEnter((event.currentTarget as HTMLInputElement).checked)}
+							/>
+							<span>Skicka med Enter</span>
+						</label>
+						<p>När den är på skickar Enter. Shift + Enter ger alltid en ny rad.</p>
+					</div>
 					<div class="speech-setting" class:unsupported={!speechSupported}>
 						<label>
 							<input
@@ -1485,12 +1505,14 @@
 		gap: 0.55rem;
 	}
 
-	.speech-setting {
+	.speech-setting,
+	.chat-setting {
 		display: grid;
 		gap: 0.14rem;
 	}
 
-	.speech-setting label {
+	.speech-setting label,
+	.chat-setting label {
 		display: flex;
 		align-items: center;
 		gap: 0.48rem;
@@ -1500,14 +1522,16 @@
 		cursor: pointer;
 	}
 
-	.speech-setting input {
+	.speech-setting input,
+	.chat-setting input {
 		width: 1rem;
 		height: 1rem;
 		margin: 0;
 		accent-color: var(--primary);
 	}
 
-	.speech-setting p {
+	.speech-setting p,
+	.chat-setting p {
 		margin: 0 0 0 1.48rem;
 		font-size: 0.69rem;
 		line-height: 1.4;
