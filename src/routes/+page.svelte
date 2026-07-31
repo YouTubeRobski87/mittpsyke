@@ -8,6 +8,7 @@
 		trackScrollToHowItWorks
 	} from '$lib/analytics';
 	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
+	import { CHAT_START_DESTINATION } from '$lib/ai/chat-start';
 
 	type HomePageData = {
 		contentStats?: {
@@ -34,8 +35,11 @@
 			// Fortsätter ändå — texten följer bara inte med om lagring är blockerad.
 		}
 
-		trackHomeCta('hero', 'skriv_till_chatten', '/chat');
-		goto('/chat');
+		// Går direkt till samtalet, inte till chattingången. Texten är redan
+		// skriven här, så /chat hade bara blivit ett extra steg där användaren
+		// fick trycka "Börja samtalet" på nytt.
+		trackHomeCta('hero', 'skriv_till_chatten', CHAT_START_DESTINATION);
+		goto(CHAT_START_DESTINATION);
 	}
 
 	const trustHighlights = [
