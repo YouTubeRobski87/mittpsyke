@@ -2,6 +2,7 @@
 type: article
 title: Hjärtklappning på kvällen – kan det bero på ångest?
 description: Hjärtklappning på kvällen kan hänga ihop med stress eller ångest, men kan också ha andra orsaker. Här finns lugn vägledning om när du ska söka vård.
+image: /uploads/hjartklappning-pa-kvallen.jpg
 imageAlt: En person sitter lugnt med handen över bröstet i ett dämpat kvällsljus.
 date: 2026-07-31
 updated: 2026-07-31

@@ -2,6 +2,7 @@
 type: article
 title: Vaknar med panik på natten – varför händer det?
 description: Vaknar du med panik eller stark ångest på natten? Läs om möjliga förklaringar, vad som kan hjälpa i stunden och när det är bra att söka vård.
+image: /uploads/vaknar-med-panik-pa-natten.jpg
 imageAlt: Ett mörkt sovrum med ett mjukt nattljus som signalerar lugn och trygghet.
 date: 2026-07-31
 updated: 2026-07-31

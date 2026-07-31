@@ -2,6 +2,7 @@
 type: article
 title: Ångest när man ska lägga sig – varför blir det värre på kvällen?
 description: Ångest vid läggdags kan kännas både ensam och överväldigande. Här finns lugna förklaringar, små steg och vägar vidare när kvällen blir svår.
+image: /uploads/angest-nar-man-ska-lagga-sig.jpg
 imageAlt: En stilla kväll med en säng, ett varmt läsljus och en lugn atmosfär.
 date: 2026-07-31
 updated: 2026-07-31

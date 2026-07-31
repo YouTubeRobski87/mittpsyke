@@ -2,6 +2,7 @@
 type: article
 title: Rädd för att somna – när tankarna inte vill släppa taget
 description: Rädsla för att somna kan göra kvällen till en kamp. Läs om den onda cirkeln, varsamma steg och när det är bra att prata med vården.
+image: /uploads/radd-for-att-somna.jpg
 imageAlt: En trygg sovmiljö med dämpat ljus och en öppen anteckningsbok på ett nattduksbord.
 date: 2026-07-31
 updated: 2026-07-31

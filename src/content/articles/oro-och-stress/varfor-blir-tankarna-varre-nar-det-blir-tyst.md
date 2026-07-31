@@ -2,6 +2,7 @@
 type: article
 title: Varför blir tankarna värre när det blir tyst?
 description: När det blir tyst kan oro och negativa tankar kännas större. Här finns en lugn förklaring, små sätt att bryta loopar och vägar vidare.
+image: /uploads/varfor-blir-tankarna-varre-nar-det-blir-tyst.jpg
 imageAlt: Ett stilla fönster i kvällsljus och en skrivbok som symboliserar reflektion.
 date: 2026-07-31
 updated: 2026-07-31

@@ -2,6 +2,7 @@
 type: guide
 title: Kvällsångest och nattångest – varför blir ångesten värre på kvällen?
 description: "En samlad guide om kvällsångest och nattångest: varför kvällen kan kännas svårare, vad som kan hjälpa i stunden och när du bör söka stöd."
+image: /uploads/kvallsangest-och-nattangest.jpg
 imageAlt: En lugn nordisk kväll vid ett fönster med mjukt ljus som förmedlar trygghet.
 date: 2026-07-31
 updated: 2026-07-31
