@@ -321,6 +321,9 @@ Så fort AI:n säger att den minns blir det övervakning i stället för närvar
 
 ### Ett mindre bra samtal
 
+*Konstruerat exempel. Det visar vad nuvarande mekanik **tillåter**, inte vad den
+brukar producera - se `conversation-review.md` för uppmätt beteende.*
+
 > — Jag vet inte varför jag mår så dåligt just nu.
 >
 > — Välkommen hit. Det låter som att du bär på mycket just nu. Ibland kan det
@@ -495,7 +498,16 @@ till tio meddelanden. Räknaren mättades därför runt sex och kom aldrig ner i
 Ett samtal i replik 40 fick exakt samma instruktioner som ett i replik 10:
 "erbjud ett litet nästa steg" och "erbjud att spara som anteckning".
 
-Det gjorde att någon som just berättat något de aldrig sagt högt kunde mötas av
-ett sparförslag, för att en räknare sagt så. Det är samtalet i kapitel 4.
+Det gör att någon som just berättat något de aldrig sagt högt **kan** mötas av
+ett sparförslag, för att en räknare sagt så.
 
-Det är den mekanismen som lägesmodellen ersätter.
+**Men mätningen visade att det inte är vad som faktiskt händer.** Ett sju
+repliker långt samtal mot nuvarande prompt gav noll sparförslag, noll råd, ingen
+välkomstfras och i snitt 158 tecken per svar. Se `conversation-review.md`.
+
+Slutsatsen är alltså inte att samtalen är dåliga idag. Den är att **det som
+håller dem bra är modellens omdöme, inte systemets konstruktion.** Instruktionen
+säger "erbjud att spara" och modellen väljer att låta bli. Nästa modell kanske
+inte gör det valet.
+
+Lägesmodellen finns för att flytta den garantin från omdöme till design.
