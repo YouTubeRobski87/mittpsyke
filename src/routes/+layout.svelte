@@ -87,6 +87,7 @@
 
 	const mobileSignedInGeneralNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chatta' },
+		{ href: '/dagbok', label: 'Dagbok' },
 		{ href: '/blogg', label: 'Artiklar' },
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/anonyma-berattelser', label: 'Berättelser' },
@@ -95,6 +96,12 @@
 		{ href: '/om-skaparen', label: 'Om skaparen' },
 		{ href: PUBLIC_CONTACT_MAILTO, label: 'Kontakt' },
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
+	];
+
+	const mobileGuestGeneralNavItems: NavItem[] = [
+		{ href: '/chat', label: 'Chatta' },
+		{ href: '/dagbok', label: 'Dagbok' },
+		...primaryNavItems.slice(1)
 	];
 
 	const guestSecondaryNavItems: NavItem[] = [
@@ -847,7 +854,7 @@
 
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden px-5 py-3" role="navigation" aria-label="Mobilmeny">
-				{#each (user ? mobileSignedInGeneralNavItems : primaryNavItems) as item}
+				{#each (user ? mobileSignedInGeneralNavItems : mobileGuestGeneralNavItems) as item}
 					<a
 						href={item.href}
 						class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
