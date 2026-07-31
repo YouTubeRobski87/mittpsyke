@@ -13,7 +13,6 @@
 	import {
 		COMPANION_WORLD_SCENE_IMAGE,
 		COMPANION_WORLD_SCENE_SRCSET,
-		COMPANION_WORLD_SCENE_SIZES,
 		COMPANION_WORLD_SCENE_FALLBACK,
 		getProgressCompanionDayState,
 		getProgressCompanionDayStateLabel,
@@ -823,10 +822,12 @@
 			>
 				<!-- width/height ger proportionerna innan bilden laddats så scenen
 					 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
+				<!-- Framsteg är fullbrett på desktop (upp till 1440 px), till skillnad från
+					 Mitt Hems smalare hero. Ett eget sizes-värde hindrar att 800/1200w skalas upp. -->
 				<img
 					class="companion-world-scene"
 					srcset={COMPANION_WORLD_SCENE_SRCSET}
-					sizes={COMPANION_WORLD_SCENE_SIZES}
+					sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
 					src={COMPANION_WORLD_SCENE_FALLBACK}
 					alt=""
 					aria-hidden="true"

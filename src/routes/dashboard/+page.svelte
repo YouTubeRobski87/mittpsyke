@@ -23,7 +23,6 @@
     getDashboardCompanionScene,
     COMPANION_WORLD_SCENE_IMAGE,
     COMPANION_WORLD_SCENE_SRCSET,
-    COMPANION_WORLD_SCENE_SIZES,
     COMPANION_WORLD_SCENE_BACKDROP,
     COMPANION_WORLD_SCENE_FALLBACK,
     getProgressCompanionAnimal,
@@ -203,10 +202,12 @@
         <!-- width/height ger webbläsaren bildens proportioner innan den laddats,
              så hjältekortet inte hoppar till. fetchpriority="high" eftersom det
              här är sidans LCP-element. -->
+        <!-- Mitt Hem har en sidokolumn på desktop; hero-rutan är då som mest 984 px
+             bred. Det egna sizes-värdet hindrar att 800w förstoras till desktopbredd. -->
         <img
           class="companion-hero-scene"
           srcset={COMPANION_WORLD_SCENE_SRCSET}
-          sizes={COMPANION_WORLD_SCENE_SIZES}
+          sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1440px) calc(100vw - 360px), 984px"
           src={COMPANION_WORLD_SCENE_FALLBACK}
           alt=""
           aria-hidden="true"
