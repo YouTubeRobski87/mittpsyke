@@ -65,6 +65,16 @@ const articleSchema = z.object({
 		z.array(z.string())
 	),
 	readingTime: z.preprocess((value) => getOptionalString(value) || undefined, z.string().optional()),
+	faqs: z.preprocess(
+		(value) => (Array.isArray(value) ? value : []),
+		z.array(z.object({ question: z.unknown().optional(), answer: z.unknown().optional() }))
+	).transform((faqs) =>
+		faqs.flatMap((faq) => {
+			const question = getOptionalString(faq.question);
+			const answer = getOptionalString(faq.answer);
+			return question && answer ? [{ question, answer }] : [];
+		})
+	),
 	references: z
 		.preprocess(
 			(value) => (Array.isArray(value) ? value : []),

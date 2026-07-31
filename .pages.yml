@@ -51,6 +51,14 @@ content:
       - { name: tags, label: Taggar, type: string, list: true }
       - { name: readingTime, label: Lästid, type: string }
       - { name: references, label: Källor, type: text, list: true }
+      - name: faqs
+        label: Vanliga frågor
+        type: object
+        list:
+          collapsible: { collapsed: true, summary: "{fields.question}" }
+        fields:
+          - { name: question, label: Fråga, type: string }
+          - { name: answer, label: Svar, type: text }
       - name: relatedArticles
         label: Relaterade artiklar
         type: object

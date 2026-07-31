@@ -7,12 +7,28 @@
 	const topic = $derived(data.topic);
 	const canonical = $derived(`https://www.mittpsyke.se${article.url}`);
 	const jsonLd = $derived(JSON.stringify(data.jsonLd).replace(/</g, '\\u003c'));
+	const faqJsonLd = $derived(
+		article.faqs.length
+			? JSON.stringify({
+					'@context': 'https://schema.org',
+					'@type': 'FAQPage',
+					mainEntity: article.faqs.map((faq) => ({
+						'@type': 'Question',
+						name: faq.question,
+						acceptedAnswer: { '@type': 'Answer', text: faq.answer }
+					}))
+				}).replace(/</g, '\\u003c')
+			: null
+	);
 </script>
 
 <SEO {canonical} />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${jsonLd}<\\/script>`}
+	{#if faqJsonLd}
+		{@html `<script type="application/ld+json">${faqJsonLd}<\\/script>`}
+	{/if}
 </svelte:head>
 
 <article class="article-page">
