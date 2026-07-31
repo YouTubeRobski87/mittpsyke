@@ -4,6 +4,7 @@ import { env as publicEnv } from '$env/dynamic/public';
 import { hasHealthConsentInMetadata, hasSensitiveConsentHeader } from '$lib/consent';
 import { CHAT_CONTEXT_LIMIT, getChatContextMessages } from '$lib/state/chat-memory';
 import { containsAcuteCrisisPhrase, containsThirdPartyRiskPhrase } from '$lib/ai/crisis-keywords';
+import { CRISIS_RESPONSE, THIRD_PARTY_RISK_RESPONSE } from '$lib/ai/crisis-responses';
 import {
 	formatMemoriesForPrompt,
 	loadUserMemories,
@@ -57,6 +58,7 @@ Språk och ton:
 - Undvik överpersonlig ton.
 - Inga emojis.
 - Ingen kompis-slang.
+- Skriv i ren text. Ingen markdown: inga asterisker för fetstil, inga rubriker med brädgård, inga punktlistor med bindestreck. Chatten visar text precis som den skrivs, så formateringstecken syns som tecken.
 - Undvik överdriven AI-empati.
 Samtalsstil:
 
@@ -217,27 +219,7 @@ function detectThirdPartyRisk(text: string): boolean {
 	return containsThirdPartyRiskPhrase(text);
 }
 
-const CRISIS_RESPONSE = `Det du skriver rör mig, och jag vill att du vet att du inte är ensam just nu.
-
-Det här är inte rätt plats för akut hjälp – men det finns människor som kan vara där för dig:
-
-**Ring 112** om du befinner dig i omedelbar fara.
-
-**Mind Självmordslinjen** – ring 90101, öppen dygnet runt.
-
-**1177** – för råd och vägledning om psykisk hälsa och vård.
-
-**Stödlinjer.se** – lista över fler stödlinjer och chattar.
-
-Jag finns kvar här om du vill prata vidare, men vid akut kris är en riktig människa viktigast just nu.`;
-
-const THIRD_PARTY_RISK_RESPONSE = `Det du skriver oroar mig. Om du eller någon annan är i fara just nu är rätt hjälp direkt viktigast.
-
-**Ring 112** om faran är omedelbar.
-
-Om det känns svårt att hålla kontrollen kan det hjälpa att genast prata med någon utanför situationen – en vän, anhörig eller vården via **1177**.
-
-Jag finns kvar här om du vill prata vidare, men vid risk för någons säkerhet är 112 och professionell hjälp viktigast just nu.`;
+// Säkerhetssvaren ligger i $lib/ai/crisis-responses, som ren text.
 // ---------------------------------------------------------------------------
 
 const CHAT_MODEL = (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
