@@ -19,6 +19,8 @@ import {
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 import { RateLimiter } from '$lib/server/rate-limit';
+import { buildTopicHintInstruction, getTopicHint } from '$lib/ai/chat-topics';
+import { normalizeCategory, type SupportCategory } from '$lib/ai/chat-categories';
 import type { RequestHandler } from './$types';
 
 const SYSTEM_PROMPT = `
@@ -280,13 +282,20 @@ function logOpenAIError(context: { guest: boolean; category: SupportCategory; co
 const systemByCategory: Record<string, string> = {
 	A: `${SYSTEM_PROMPT}\nFokusera varsamt på ångest och oro med stabiliserande, jordande språk.`,
 	B: `${SYSTEM_PROMPT}\nFokusera varsamt på nedstämdhet med hoppfull men realistisk ton, utan att bagatellisera.`,
-	E: `${SYSTEM_PROMPT}\nFokusera varsamt på trauma med extra försiktighet, undvik detaljer som kan återaktivera stark stress.`
+	E: `${SYSTEM_PROMPT}\nFokusera varsamt på trauma med extra försiktighet, undvik detaljer som kan återaktivera stark stress.`,
+	// G = samtal utan vald kategori, numera den normala vägen in. Ingen
+	// ämnesstyrning läggs på: användarens egna ord ska avgöra riktningen, och
+	// samtalet ska kunna byta spår utan att något behöver väljas om.
+	G: `${SYSTEM_PROMPT}
+Användaren har inte valt något ämne, och behöver inte göra det.
+Följ det användaren faktiskt skriver. Tvinga inte fram en etikett, kategori eller diagnos, och be inte användaren precisera vilket område det gäller.
+Du hanterar lika gärna ångest, nedstämdhet, ensamhet, relationer, stress och utmattning, trauma, sömn, neuropsykiatriska svårigheter eller ett helt vanligt samtal.
+Om det är oklart vad det handlar om: säg att det är okej att inte veta, och fråga vad som känns tyngst just nu i stället för att be om en kategori.
+Om samtalet byter riktning, följ med dit utan att kommentera bytet.`
 };
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const GUEST_ID_REGEX = /^[a-zA-Z0-9_-]{8,128}$/;
-
-type SupportCategory = 'A' | 'B' | 'E';
 
 type ConversationRow = {
 	id: string;
@@ -310,8 +319,17 @@ const GUEST_MESSAGES_TABLE = 'guest_messages';
 const MAX_CHAT_MESSAGE_LENGTH = 2000;
 const CHAT_MESSAGE_TOO_LONG_ERROR = 'Din text blev lite för lång att skicka på en gång. Dela gärna upp den i två delar.';
 
-function buildDynamicSystemPrompt(category: SupportCategory, history: PromptHistoryMessage[]) {
-	const basePrompt = systemByCategory[category] || SYSTEM_PROMPT;
+function buildDynamicSystemPrompt(
+	category: SupportCategory,
+	history: PromptHistoryMessage[],
+	topicHintId: string | null = null
+) {
+	const categoryPrompt = systemByCategory[category] || SYSTEM_PROMPT;
+	// Genvägen är extra kontext ovanpå grundprompten, aldrig en egen prompt.
+	const topicInstruction = buildTopicHintInstruction(topicHintId);
+	const basePrompt = topicInstruction
+		? `${categoryPrompt}\n${topicInstruction}`
+		: categoryPrompt;
 	const userTurns = history.filter((item) => item.role === 'user').length;
 	const nextAssistantTurn = userTurns + 1;
 	const isFirstPhase = nextAssistantTurn <= 2;
@@ -403,13 +421,6 @@ function getAccessToken(authorizationHeader: string | null): string | null {
 	return token.trim();
 }
 
-function normalizeCategory(value: unknown): SupportCategory {
-	const normalized = typeof value === 'string' ? value.trim().toUpperCase() : '';
-	if (normalized === 'B') return 'B';
-	if (normalized === 'E') return 'E';
-	return 'A';
-}
-
 function normalizeConversationId(value: unknown): string | null {
 	if (typeof value !== 'string') return null;
 	const trimmed = value.trim();
@@ -471,7 +482,12 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		conversationId?: unknown;
 		guestId?: unknown;
 		contextMessages?: unknown;
+		topicHint?: unknown;
 	};
+
+	// Valfri ämnesgenväg. Valideras mot den fasta listan innan den kan nå
+	// systemprompten - fritext härifrån får aldrig vävas in.
+	const topicHintId = getTopicHint(body.topicHint)?.id ?? null;
 
 	const message = typeof body.message === 'string' ? body.message.trim() : '';
 	if (!message) {
@@ -717,7 +733,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 					)
 				: '';
 
-			const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
+			const systemPrompt = buildDynamicSystemPrompt(category, modelContext, topicHintId);
 			const systemPromptWithMemory = [systemPrompt, memoryBlock, diaryContextBlock]
 				.filter(Boolean)
 				.join('\n\n');
@@ -907,7 +923,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 					}))
 				: promptHistory;
 
-		const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
+		const systemPrompt = buildDynamicSystemPrompt(category, modelContext, topicHintId);
 		const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
 			{ role: 'system', content: systemPrompt },
 			...modelContext,

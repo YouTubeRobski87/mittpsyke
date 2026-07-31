@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import { Square, Volume2 } from 'lucide-svelte';
 	import { containsCrisisSignal, containsThirdPartyRiskSignal } from '$lib/ai/safety';
+	import { getTopicHint } from '$lib/ai/chat-topics';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
 	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
@@ -64,6 +65,9 @@
 	let persistenceReady = $state(false);
 	let persistenceUserId = $state<string | null>(null);
 	let pendingHeroSend = $state(false);
+	// Valfri ämnesgenväg från chattingången. Skickas med som extra kontext till
+	// /api/chat, men styr aldrig samtalet - modellen följer användarens ord.
+	let topicHint = $state<string | null>(null);
 	let clearingHistory = $state(false);
 	let voiceBusy = $state(false);
 	let sendInFlight = false;
@@ -158,6 +162,7 @@
 	);
 	const tempEntryStorageKey = 'mittpsyke_temp_entry';
 	const heroQuickStartStorageKey = 'mittpsyke_hero_quick_start';
+	const topicHintStorageKey = 'mittpsyke_chat_topic_hint';
 
 	function scrollToBottom() {
 		if (chatLog) {
@@ -481,6 +486,13 @@
 				removeStorageValue(heroQuickStartStorageKey);
 			}
 
+			// Ämnesgenväg vald i chattingången. Läses en gång och gäller sessionen.
+			const storedTopicHint = readStorageValue(topicHintStorageKey)?.trim() ?? '';
+			if (storedTopicHint.length > 0) {
+				removeStorageValue(topicHintStorageKey);
+				topicHint = getTopicHint(storedTopicHint)?.id ?? null;
+			}
+
 			const seededMessages = sanitizeChatMessages(initialMessages);
 			const {
 				data: { session }
@@ -637,6 +649,7 @@
 					category,
 					conversationId,
 					contextMessages,
+					...(topicHint ? { topicHint } : {}),
 					...(guestId ? { guestId } : {})
 				})
 			});

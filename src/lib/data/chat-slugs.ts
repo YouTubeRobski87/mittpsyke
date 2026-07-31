@@ -2,16 +2,20 @@
 // De interna koderna är oförändrade — de används redan i databasen (conversations.category),
 // portalnycklar och /api/chat, så de byts inte. Bara den publika webbadressen blir läsbar.
 
+// 'g' är det neutrala spåret: samtal utan vald kategori. Det använder
+// grundprompten utan ämnesstyrning och är numera den normala vägen in.
 export const CHAT_CATEGORY_TO_SLUG: Record<string, string> = {
 	a: 'angest',
 	b: 'nedstamdhet',
-	e: 'trauma'
+	e: 'trauma',
+	g: 'samtal'
 };
 
 export const CHAT_SLUG_TO_CATEGORY: Record<string, string> = {
 	angest: 'a',
 	nedstamdhet: 'b',
-	trauma: 'e'
+	trauma: 'e',
+	samtal: 'g'
 };
 
 export function resolveChatCategory(slugOrCategory: string): string {

@@ -1,13 +1,26 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
 	import HealthConsent from '$lib/components/HealthConsent.svelte';
 	import RecentConversations from '$lib/components/RecentConversations.svelte';
+	import { CHAT_TOPIC_HINTS } from '$lib/ai/chat-topics';
+	import { planChatStart } from '$lib/ai/chat-start';
+	import { trackAiChatStarted, trackAiTopicShortcutSelected } from '$lib/analytics';
 
 	const STORAGE_KEY = 'mittpsyke.healthConsent';
 	const VERSION = '2026-04-29';
 
-	let hasConsent = false;
+	// Samma nycklar som ChatWindow läser vid uppstart. Texten skickas automatiskt
+	// när samtycket är klart, ämnesgenvägen följer med som extra kontext.
+	const HERO_QUICK_START_KEY = 'mittpsyke_hero_quick_start';
+	const TOPIC_HINT_KEY = 'mittpsyke_chat_topic_hint';
+
+	let hasConsent = $state(false);
+	let draft = $state('');
+	let selectedTopic = $state<string | null>(null);
+	let emptyDraftError = $state('');
+	let draftField: HTMLTextAreaElement | null = $state(null);
 
 	onMount(() => {
 		try {
@@ -22,6 +35,41 @@
 			hasConsent = false;
 		}
 	});
+
+	function toggleTopic(id: string) {
+		// Ett valfritt val, aldrig ett krav. Klick på samma genväg tar bort valet.
+		selectedTopic = selectedTopic === id ? null : id;
+		if (selectedTopic) trackAiTopicShortcutSelected(selectedTopic);
+	}
+
+	function startConversation(event: SubmitEvent) {
+		event.preventDefault();
+		const plan = planChatStart(draft, selectedTopic);
+
+		if (!plan.ok) {
+			emptyDraftError = 'Skriv några ord om vad du tänker på, så börjar vi där.';
+			draftField?.focus();
+			return;
+		}
+
+		emptyDraftError = '';
+
+		try {
+			localStorage.setItem(HERO_QUICK_START_KEY, plan.text);
+			if (plan.topicId) {
+				localStorage.setItem(TOPIC_HINT_KEY, plan.topicId);
+			} else {
+				localStorage.removeItem(TOPIC_HINT_KEY);
+			}
+		} catch {
+			// Blockerad lagring stoppar inte samtalet - texten följer bara inte med.
+		}
+
+		// Bara längd och genvägens id. Aldrig det användaren skrivit.
+		trackAiChatStarted({ topicId: plan.topicId, textLength: plan.analytics.textLength });
+
+		void goto(plan.destination);
+	}
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/chat" />
@@ -64,14 +112,57 @@
 <main class="page">
 	<div class="page-container">
 		<header class="hero">
-			<h1>AI-chat för psykisk hälsa</h1>
-			<p>
-				Du behöver inte veta exakt hur du ska börja. Välj det som känns närmast just nu och låt
-				samtalet ta form i din egen takt. MittPsyke är ett AI-baserat samtalsstöd för reflektion
-				och stöd i vardagen. Det ersätter inte vård eller kontakt med psykolog, läkare eller annan
-				legitimerad vårdpersonal.
+			<h1>Vad vill du prata om idag?</h1>
+			<p class="hero-lead">
+				Skriv precis det du tänker på. Du behöver inte välja kategori – jag hjälper dig att hitta
+				rätt.
 			</p>
 		</header>
+
+		<section class="starter" aria-labelledby="starter-heading">
+			<h2 id="starter-heading" class="visually-hidden">Börja ett samtal</h2>
+
+			<form class="starter-form" onsubmit={startConversation}>
+				<label class="starter-label" for="chat-starter">Skriv ditt första meddelande</label>
+				<textarea
+					id="chat-starter"
+					bind:this={draftField}
+					bind:value={draft}
+					class="starter-input"
+					rows="4"
+					placeholder="Till exempel: Jag kan inte sova. Eller: Jag vet inte varför jag mår dåligt."
+					aria-describedby="starter-help{emptyDraftError ? ' starter-error' : ''}"
+					oninput={() => (emptyDraftError = '')}
+				></textarea>
+				<p id="starter-help" class="starter-help">
+					Du kan skriva hur lite eller mycket du vill. ”Jag vill bara prata” räcker.
+				</p>
+				<p id="starter-error" class="starter-error" aria-live="polite">{emptyDraftError}</p>
+
+				<button type="submit" class="starter-submit">Börja samtalet</button>
+			</form>
+
+			<div class="topics" role="group" aria-labelledby="topics-heading">
+				<p id="topics-heading" class="topics-heading">
+					Vill du ge en riktning? Helt frivilligt.
+				</p>
+				<ul class="topic-list">
+					{#each CHAT_TOPIC_HINTS as topic (topic.id)}
+						<li>
+							<button
+								type="button"
+								class="topic-chip"
+								class:is-selected={selectedTopic === topic.id}
+								aria-pressed={selectedTopic === topic.id}
+								onclick={() => toggleTopic(topic.id)}
+							>
+								{topic.label}
+							</button>
+						</li>
+					{/each}
+				</ul>
+			</div>
+		</section>
 
 		<section class="section how-chat-works" aria-labelledby="how-chat-works-title">
 			<h2 id="how-chat-works-title">Så går det till</h2>
@@ -98,21 +189,6 @@
 			<p class="how-chat-note">
 				MittPsyke är ett stödverktyg och ersätter inte vård eller behandling.
 			</p>
-		</section>
-
-		<section class="choices" aria-label="Välj ingång till chatten">
-			<a class="choice-card" href="/chat/angest">
-				<h2>Ångest</h2>
-				<p>För oro, ångest och tankar som snurrar.</p>
-			</a>
-			<a class="choice-card" href="/chat/nedstamdhet">
-				<h2>Nedstämdhet</h2>
-				<p>För tunga dagar, låg ork och sådant som känns mörkt.</p>
-			</a>
-			<a class="choice-card" href="/chat/trauma">
-				<h2>Trauma</h2>
-				<p>För svåra upplevelser, behov av trygghet och att ta det i egen takt.</p>
-			</a>
 		</section>
 
 		<RecentConversations />
@@ -177,36 +253,151 @@
 		margin: 0;
 	}
 
-	.choices {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-		gap: 0.85rem;
+
+	.visually-hidden {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.hero-lead {
+		margin-top: 0.7rem;
+	}
+
+	/* Textrutan är sidans primära väg in. Genvägarna under den hålls medvetet
+	   lättare i vikt och yta så att de inte konkurrerar visuellt. */
+	.starter {
 		max-width: 720px;
+		display: grid;
+		gap: 1rem;
+	}
+
+	.starter-form {
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.starter-label {
+		font-family: var(--font-heading);
+		font-size: 1rem;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+	}
+
+	.starter-input {
 		width: 100%;
-		min-width: 0;
-	}
-
-	.choice-card {
-		padding: 1rem;
-		border-radius: var(--radius-card);
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		background: #f8fafc;
+		padding: 0.9rem 1rem;
+		font-family: var(--font-body);
+		font-size: 1.05rem;
+		line-height: 1.6;
 		color: inherit;
-		text-decoration: none;
+		background: var(--color-surface, hsl(var(--surface)));
+		border: 1.5px solid var(--color-border, hsl(var(--border)));
+		border-radius: var(--radius-input);
+		resize: vertical;
+		min-height: 7rem;
+	}
+
+	.starter-input::placeholder {
+		color: var(--color-text-muted, hsl(var(--muted-foreground)));
+		opacity: 0.8;
+	}
+
+	.starter-help {
+		font-size: 0.9rem;
+		line-height: 1.55;
+		color: var(--color-text-muted, hsl(var(--muted-foreground)));
+	}
+
+	.starter-error {
+		font-size: 0.9rem;
+		line-height: 1.55;
+		color: var(--primary);
+	}
+
+	.starter-error:empty {
+		display: none;
+	}
+
+	.starter-submit {
+		justify-self: start;
+		margin-top: 0.35rem;
+		padding: 0.8rem 1.9rem;
+		font-family: var(--font-heading);
+		font-size: 1rem;
+		font-weight: 600;
+		color: #fff;
+		background: var(--primary);
+		border: 1.5px solid var(--primary);
+		border-radius: var(--radius-pill);
+		cursor: pointer;
+		transition: background-color 0.18s ease;
+	}
+
+	.starter-submit:hover {
+		background: var(--color-primary-hover, var(--primary));
+	}
+
+	.topics-heading {
+		font-size: 0.9rem;
+		color: var(--color-text-muted, hsl(var(--muted-foreground)));
+	}
+
+	.topic-list {
+		margin: 0.55rem 0 0;
+		padding: 0;
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+	}
+
+	.topic-chip {
+		padding: 0.42rem 0.85rem;
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		color: inherit;
+		background: transparent;
+		border: 1px solid var(--color-border, hsl(var(--border)));
+		border-radius: var(--radius-pill);
+		cursor: pointer;
 		transition:
-			transform 0.18s ease,
-			background-color 0.18s ease;
+			background-color 0.18s ease,
+			border-color 0.18s ease;
 	}
 
-	.choice-card:hover {
-		transform: translateY(-2px);
-		background: #f1f5f9;
+	.topic-chip:hover {
+		border-color: var(--primary);
 	}
 
-	.choice-card p {
-		margin-top: 0.45rem;
-		font-size: 0.95rem;
-		opacity: 0.82;
+	/* Valt läge markeras med ram och vikt, inte enbart med färg. */
+	.topic-chip.is-selected {
+		background: var(--primary-soft, rgba(67, 110, 143, 0.08));
+		border-color: var(--primary);
+		font-weight: 600;
+	}
+
+	:global(.dark) .starter-submit {
+		color: #0b1220;
+		background: var(--primary-dark, #7dd3fc);
+		border-color: var(--primary-dark, #7dd3fc);
+	}
+
+	:global(.dark) .starter-error,
+	:global(.dark) .topic-chip:hover {
+		color: var(--primary-dark, #7dd3fc);
+		border-color: var(--primary-dark, #7dd3fc);
+	}
+
+	:global(.dark) .topic-chip.is-selected {
+		background: var(--primary-dark-soft, rgba(125, 211, 252, 0.1));
+		border-color: var(--primary-dark, #7dd3fc);
 	}
 
 	.how-chat-works {
@@ -260,15 +451,6 @@
 		text-underline-offset: 2px;
 	}
 
-	:global(.dark) .choice-card {
-		background: #171d24;
-		border-color: rgba(255, 255, 255, 0.12);
-	}
-
-	:global(.dark) .choice-card:hover {
-		background: #1c2230;
-	}
-
 	:global(.dark) .how-chat-works {
 		background: rgba(23, 29, 36, 0.82);
 		border-color: rgba(255, 255, 255, 0.08);
@@ -304,28 +486,6 @@
 		.section {
 			max-width: 100%;
 			min-width: 0;
-		}
-
-		.choices {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 0.4rem;
-		}
-
-		.choice-card {
-			display: grid;
-			place-items: center;
-			min-height: 3.25rem;
-			padding: 0.55rem 0.35rem;
-			text-align: center;
-		}
-
-		.choice-card p {
-			display: none;
-		}
-
-		.choice-card h2 {
-			font-size: 0.8rem;
-			line-height: 1.2;
 		}
 
 		.how-chat-steps {

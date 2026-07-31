@@ -19,6 +19,9 @@ type EventName =
 	| 'forum_reply_created'
 	| 'chat_started'
 	| 'chat_message_sent'
+	| 'ai_chat_started_free_text'
+	| 'ai_chat_started_with_topic'
+	| 'ai_topic_shortcut_selected'
 	| 'return_visit'
 	| 'streak_day_reached'
 	| 'milestone_reached'
@@ -417,6 +420,24 @@ export function trackChatStarted() {
 
 export function trackChatMessageSent() {
 	trackEvent('chat_message_sent');
+}
+
+// Chattingången. Skickar aldrig med användarens text - bara längden och den
+// eventuella ämnesgenvägens id, som är ett fast värde ur en känd lista.
+export function trackAiChatStarted(params: { topicId: string | null; textLength: number }) {
+	if (params.topicId) {
+		trackEvent('ai_chat_started_with_topic', {
+			topic: params.topicId,
+			textLength: params.textLength
+		});
+		return;
+	}
+
+	trackEvent('ai_chat_started_free_text', { textLength: params.textLength });
+}
+
+export function trackAiTopicShortcutSelected(topicId: string) {
+	trackEvent('ai_topic_shortcut_selected', { topic: topicId });
 }
 
 export function trackReturnVisit() {
