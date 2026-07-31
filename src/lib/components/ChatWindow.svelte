@@ -74,6 +74,7 @@
 	let speechSupported = $state(true);
 	let autoReadReplies = $state(false);
 	let sendWithEnter = $state(true);
+	let desktopKeyboard = $state(false);
 	let speakingMessageIndex = $state<number | null>(null);
 	let swedishVoice: SpeechSynthesisVoice | null = null;
 	let activeUtterance: SpeechSynthesisUtterance | null = null;
@@ -563,6 +564,12 @@
 
 	onMount(() => {
 		sendWithEnter = readStorageValue(sendWithEnterStorageKey) !== 'false';
+		const desktopPointerQuery = window.matchMedia('(pointer: fine)');
+		const updateDesktopKeyboard = () => {
+			desktopKeyboard = desktopPointerQuery.matches;
+		};
+		updateDesktopKeyboard();
+		desktopPointerQuery.addEventListener('change', updateDesktopKeyboard);
 		speechSupported =
 			typeof window.speechSynthesis !== 'undefined' &&
 			typeof window.SpeechSynthesisUtterance !== 'undefined';
@@ -597,6 +604,7 @@
 
 		return () => {
 			stopSpeaking();
+			desktopPointerQuery.removeEventListener('change', updateDesktopKeyboard);
 			if (speechSupported) {
 				window.speechSynthesis.removeEventListener('voiceschanged', loadSpeechVoices);
 			}
@@ -735,7 +743,7 @@
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.isComposing) return;
-		if (sendWithEnter && event.key === 'Enter' && !event.shiftKey) {
+		if (desktopKeyboard && sendWithEnter && event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
 			void send();
 		}
@@ -1128,7 +1136,10 @@
 							/>
 							<span>Skicka med Enter</span>
 						</label>
-						<p>När den är på skickar Enter. Shift + Enter ger alltid en ny rad.</p>
+						<p>
+							På dator skickar Enter när den är på. Shift + Enter ger alltid en ny rad. På mobil
+							använder du Skicka-knappen.
+						</p>
 					</div>
 					<div class="speech-setting" class:unsupported={!speechSupported}>
 						<label>
