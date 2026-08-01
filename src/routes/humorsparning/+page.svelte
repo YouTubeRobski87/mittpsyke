@@ -64,7 +64,7 @@
 
 <main class="page">
 	<div class="page-container">
-		<Breadcrumbs items={[{ label: 'Funktioner', href: '/#sa-fungerar-det-fordjupning' }, { label: 'Humörspårning' }]} />
+		<Breadcrumbs items={[{ label: 'Funktioner', href: '/#innehall' }, { label: 'Humörspårning' }]} />
 
 		<header class="hero">
 			<h1>Spåra ditt humör över tid</h1>
