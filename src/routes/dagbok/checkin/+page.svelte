@@ -1318,21 +1318,35 @@
 					<DiaryMoodTimeline entries={entries} />
 
 					<section class="auth-panel diary-paths">
-						<h2 class="text-base font-semibold">Välj hur du vill börja</h2>
+						<h2 class="text-base font-semibold">Börja skriva</h2>
 						<p class="mt-2 text-sm auth-muted">
-							En stilla plats för det som vill få form. Skriv fritt i din egen takt.
+							Skriv fritt om det som finns i tankarna. Det behöver inte vara genomtänkt eller perfekt.
 						</p>
-						<div class="diary-path-grid diary-path-grid--single mt-3">
-							<button type="button" class="diary-path-card diary-path-card--write" onclick={openWriteEditor}>
-								<span class="path-icon-wrap path-icon-wrap--write" aria-hidden="true">
-									<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-								</span>
-								<span class="diary-path-badge">Snabbast att börja</span>
-								<span class="diary-path-title">Skriv själv</span>
-								<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
-								<span class="diary-path-action">Börja skriva</span>
+						<div class="diary-start-primary">
+							<span class="diary-start-icon" aria-hidden="true">
+								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+							</span>
+							<span class="diary-start-text">
+								<span class="diary-start-title">Skriv fritt</span>
+								<span class="diary-start-copy">Börja med dina egna ord, i din egen takt.</span>
+							</span>
+							<button type="button" class="auth-button primary diary-start-button" onclick={openWriteEditor}>
+								Börja skriva
 							</button>
-							{#if showGuidedDiaryPath}
+						</div>
+						<div class="diary-start-secondary">
+							<span>Behöver du hjälp att komma igång?</span>
+							<button
+								type="button"
+								class="diary-start-secondary-action"
+								onclick={answerDailyQuestion}
+								disabled={dailyQuestionLoading && !dailyQuestion && !draftPromptQuestion}
+							>
+								Svara på dagens fråga
+							</button>
+						</div>
+						{#if showGuidedDiaryPath}
+							<div class="diary-path-grid diary-path-grid--single mt-3">
 								<a href="/dagars-avtryck" class="diary-path-card diary-path-card--guided">
 									<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
 										<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -1340,8 +1354,8 @@
 									<span class="diary-path-title">Dagbok med olika stilar</span>
 									<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
 								</a>
-							{/if}
-						</div>
+							</div>
+						{/if}
 					</section>
 
 					<section class="auth-panel daily-question-panel" aria-label="Dagens fråga">
@@ -1913,21 +1927,113 @@
 		box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
 	}
 
-	.diary-paths::before {
-		content: '✎';
-		position: absolute;
-		top: 0.8rem;
-		right: 1rem;
-		font-size: 1.15rem;
-		line-height: 1;
-		color: rgba(191, 219, 254, 0.64);
-		pointer-events: none;
-	}
-
 	.diary-paths h2 {
 		position: relative;
-		margin-right: 2rem;
 		color: hsl(210 40% 98%);
+	}
+
+	/* Primärvalet ligger på en rad så att hela panelbredden används i stället för
+	   att kortet låses till en smal kolumn med tom yta bredvid. Ikonen sitter
+	   intill rubriken, inte ensam i ett hörn. */
+	.diary-start-primary {
+		position: relative;
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 0.9rem;
+		margin-top: 0.75rem;
+		padding: 1rem 1.1rem;
+		border: 1px solid rgba(96, 165, 250, 0.34);
+		border-radius: var(--radius-input);
+		background: rgba(15, 23, 42, 0.34);
+	}
+
+	.diary-start-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.4rem;
+		height: 2.4rem;
+		border-radius: 0.6rem;
+		background: hsl(214 34% 24%);
+		color: hsl(214 78% 76%);
+		flex-shrink: 0;
+	}
+
+	.diary-start-text {
+		display: grid;
+		gap: 0.2rem;
+		min-width: 0;
+	}
+
+	.diary-start-title {
+		font-size: 1rem;
+		font-weight: 650;
+		color: hsl(210 40% 98%);
+	}
+
+	.diary-start-copy {
+		font-size: 0.86rem;
+		line-height: 1.5;
+		color: hsl(214 32% 86% / 0.8);
+	}
+
+	/* Bygger vidare på .auth-button, men får en egen fylld yta som håller mot den
+	   mörka panelen. Detta är sidans viktigaste handling. */
+	.diary-start-button {
+		justify-self: end;
+		min-height: 2.75rem;
+		padding-inline: 1.35rem;
+		/* 48 % ljushet ger 4,7:1 mot den ljusa etiketten. 52 % hamnade på 4,1:1
+		   och klarade inte WCAG AA för normal textstorlek. */
+		border-color: hsl(214 72% 48%);
+		background: hsl(214 72% 48%);
+		color: hsl(210 40% 98%);
+		font-weight: 650;
+		white-space: nowrap;
+		cursor: pointer;
+	}
+
+	.diary-start-button:hover {
+		border-color: hsl(214 72% 42%);
+		background: hsl(214 72% 42%);
+	}
+
+	/* Fokusmarkering kommer från den globala *:focus-visible-regeln i app.css,
+	   som sätter outline med !important. Lokala outline-regler vore död kod. */
+
+	.diary-start-secondary {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.3rem 0.45rem;
+		margin-top: 0.7rem;
+		font-size: 0.85rem;
+		line-height: 1.5;
+		color: hsl(214 32% 86% / 0.78);
+	}
+
+	.diary-start-secondary-action {
+		padding: 0;
+		border: 0;
+		background: none;
+		color: hsl(214 88% 80%);
+		font: inherit;
+		font-weight: 650;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.diary-start-secondary-action:hover:not(:disabled) {
+		color: hsl(214 92% 88%);
+	}
+
+	.diary-start-secondary-action:disabled {
+		opacity: 0.6;
+		cursor: default;
+		text-decoration: none;
 	}
 
 	.diary-paths > p {
@@ -2202,14 +2308,6 @@
 		letter-spacing: 0.02em;
 	}
 
-	.diary-path-action {
-		align-self: flex-start;
-		margin-top: 0.35rem;
-		color: hsl(214 68% 34%);
-		font-size: 0.82rem;
-		font-weight: 700;
-	}
-
 	.diary-path-title {
 		font-size: 0.95rem;
 		font-weight: 600;
@@ -2260,10 +2358,6 @@
 
 	:global(.dark) .diary-path-badge {
 		background: rgba(147, 197, 253, 0.16);
-		color: hsl(214 88% 80%);
-	}
-
-	:global(.dark) .diary-path-action {
 		color: hsl(214 88% 80%);
 	}
 
@@ -3217,6 +3311,31 @@
 			display: none;
 		}
 
+		/* Ikon och rubrik på egen rad, knappen i full bredd under. Ingen
+		   horisontell trängsel och full tryckyta. */
+		.diary-start-primary {
+			grid-template-columns: auto minmax(0, 1fr);
+			gap: 0.6rem 0.7rem;
+			margin-top: 0.55rem;
+			padding: 0.8rem;
+		}
+
+		.diary-start-icon {
+			width: 2.1rem;
+			height: 2.1rem;
+		}
+
+		.diary-start-button {
+			grid-column: 1 / -1;
+			justify-self: stretch;
+			width: 100%;
+		}
+
+		.diary-start-secondary {
+			margin-top: 0.55rem;
+			font-size: 0.82rem;
+		}
+
 		.diary-path-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 0.45rem;
@@ -3246,11 +3365,6 @@
 		.diary-path-badge {
 			padding: 0.14rem 0.36rem;
 			font-size: 0.62rem;
-		}
-
-		.diary-path-action {
-			margin-top: 0.15rem;
-			font-size: 0.74rem;
 		}
 
 		.diary-editor-panel {
