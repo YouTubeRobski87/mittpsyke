@@ -241,9 +241,5 @@
 				min-height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
 			}
 		}
-
-		.chat-intro-panel {
-			flex: 0 0 auto;
-		}
 	}
 </style>
