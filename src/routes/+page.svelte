@@ -8,7 +8,7 @@
 		trackScrollToHowItWorks
 	} from '$lib/analytics';
 	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
-	import { CHAT_START_DESTINATION } from '$lib/ai/chat-start';
+	import { writeDiaryDraftHandoff } from '$lib/diary-draft';
 
 	type HomePageData = {
 		contentStats?: {
@@ -17,6 +17,7 @@
 	};
 
 	const HERO_QUICK_START_KEY = 'mittpsyke_hero_quick_start';
+	const DIARY_START_DESTINATION = '/dagbok?action=new';
 
 	let { data }: { data: HomePageData } = $props();
 	let heroEl: HTMLElement | null = null;
@@ -29,17 +30,28 @@
 		const text = heroDraft.trim();
 		if (!text) return;
 
-		try {
-			localStorage.setItem(HERO_QUICK_START_KEY, text);
-		} catch {
-			// Fortsätter ändå — texten följer bara inte med om lagring är blockerad.
-		}
+		// Texten lämnas över till den anonyma skrivytan i dagboken. Överlämningen
+		// ligger i sessionStorage och konsumeras där en gång, så den kan inte bli
+		// ett andra utkast vid sidan av det riktiga.
+		writeDiaryDraftHandoff(text);
 
-		// Går direkt till samtalet, inte till chattingången. Texten är redan
-		// skriven här, så /chat hade bara blivit ett extra steg där användaren
-		// fick trycka "Börja samtalet" på nytt.
-		trackHomeCta('hero', 'skriv_till_chatten', CHAT_START_DESTINATION);
-		goto(CHAT_START_DESTINATION);
+		trackHomeCta('hero', 'borja_skriva', DIARY_START_DESTINATION);
+		goto(DIARY_START_DESTINATION);
+	}
+
+	function handleHeroChatClick() {
+		// Chatten är kvar som ett fullt fungerande andraval. Har användaren redan
+		// skrivit något följer texten med in i chattingången i stället för att
+		// försvinna — men den skickas aldrig automatiskt.
+		const text = heroDraft.trim();
+		if (text) {
+			try {
+				localStorage.setItem(HERO_QUICK_START_KEY, text);
+			} catch {
+				// Blockerad lagring stoppar inte navigeringen.
+			}
+		}
+		trackHomeCta('hero', 'oppna_chatten', '/chat');
 	}
 
 	const trustHighlights = [
@@ -47,11 +59,6 @@
 			text: 'Börja anonymt utan konto.',
 			href: '/chatta-anonymt',
 			trackCta: 'chatta_anonymt_utan_konto'
-		},
-		{
-			text: 'MittPsyke är ett första steg i text – inte vård, behandling, diagnos eller akuthjälp.',
-			href: '/om-mittpsyke',
-			trackCta: 'tydliga_granser'
 		},
 		{
 			text: 'Skapa konto först om du vill spara och följa ditt mående.',
@@ -62,24 +69,16 @@
 
 	const productSteps = [
 		{ number: '01', title: 'Skriv', text: 'Sätt ord på det som är nära just nu.' },
-		{ number: '02', title: 'Få svar', text: 'Möt lugna frågor som hjälper dig att sortera.' },
-		{ number: '03', title: 'Spara', text: 'Behåll en reflektion om du har konto.' },
+		{ number: '02', title: 'Sortera', text: 'Möt lugna frågor som hjälper dig vidare.' },
+		{ number: '03', title: 'Spara när du vill', text: 'Behåll reflektionen om du har konto.' },
 		{ number: '04', title: 'Följ', text: 'Se anteckningar och mående samlat över tid.' }
 	];
 
-	const outcomeItems = [
-		{
-			title: 'Se vad som återkommer',
-			text: 'Dina anteckningar visar mönster mellan sömn, stress och hur du mår.'
-		},
-		{
-			title: 'Minnas det som hjälper',
-			text: 'Du samlar reflektioner och kan återvända till det som gav lugn eller struktur.'
-		},
-		{
-			title: 'Få en tydligare överblick',
-			text: 'Med tiden ser du förändringar utan att behöva minnas allt själv.'
-		}
+	const beyondChatPoints = [
+		'En plats för dina anteckningar, inte en tråd som försvinner',
+		'Reflektioner du kan återvända till',
+		'Mående och teman samlat över tid',
+		'Svensk tjänst med tydliga gränser för vad den är'
 	];
 
 	const guideTopics = [
@@ -92,7 +91,7 @@
 
 	function trackHomeCta(section: string, cta: string, href: string) {
 		trackHomeCtaClick({ section, cta, href });
-		if (cta === 'borja_skriva_anonymt_nu') {
+		if (cta === 'borja_skriva' || cta === 'borja_skriva_anonymt_nu') {
 			trackTikTokButtonClick('start_writing_anonymously');
 		}
 	}
@@ -173,43 +172,46 @@
 		</picture>
 		<div class="hero-shell">
 			<div class="hero-content">
-				<h1>Skriv anonymt och få stöd</h1>
-				<p>Du behöver inte förklara allt perfekt. Skriv några rader anonymt – vi tar det i din takt.</p>
+				<h1>Din privata dagbok</h1>
+				<p>
+					Skriv anonymt direkt, utan konto. När du är redo kan du skapa ett konto och följa hur ditt
+					mående förändras över tid.
+				</p>
 
 				<form class="hero-quick-start" onsubmit={submitHeroQuickStart}>
-					<label for="hero-quick-start-input" class="hero-quick-start-label">Skriv din första rad</label>
+					<label for="hero-quick-start-input" class="hero-quick-start-label">Vad tänker du på just nu?</label>
 					<textarea
 						id="hero-quick-start-input"
 						bind:value={heroDraft}
 						class="hero-quick-start-input"
 						rows="3"
 						required
-						placeholder="Vad snurrar det i huvudet just nu?"
+						placeholder="Några rader räcker."
 						aria-describedby="hero-quick-start-hint"
 					></textarea>
 					<p id="hero-quick-start-hint" class="hero-quick-start-hint">
-						Texten sparas tillfälligt på din enhet tills du fortsätter i chatten.
+						Texten stannar på din enhet. Inget skickas någonstans förrän du väljer det.
 					</p>
 					<button type="submit" class="hero-quick-start-submit" disabled={!heroDraft.trim()}>
-						Skicka till chatten
+						Börja skriva
 					</button>
 				</form>
 
 				<div class="hero-secondary-actions">
-					<a href="/dagbok" class="context-link" onclick={() => trackHomeCta('hero', 'borja_skriva_anonymt_nu', '/dagbok')}>Börja skriva</a>
-					<a href="/register" class="context-link" onclick={() => trackHomeCta('hero', 'skapa_konto', '/register')}>Skapa konto</a>
+					<a href="/chat" class="context-link" onclick={handleHeroChatClick}>
+						Hellre ett samtal? Öppna chatten
+					</a>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- 2. Kompakt produktvisning byggd av verkliga produktsteg, utan exempeldata -->
+	<!-- B. Så fungerar det. Verkliga produktsteg, utan exempeldata -->
 	<section id="sa-fungerar-det" class="product-demo" aria-labelledby="product-demo-title" bind:this={quickFlowEl}>
 		<div class="cards-narrow product-demo-inner">
 			<div class="section-heading">
-				<p class="section-eyebrow">En lugn väg genom tjänsten</p>
+				<p class="section-eyebrow">Så fungerar det</p>
 				<h2 id="product-demo-title">Från första rad till egen överblick</h2>
-				<p>En förenklad visning av flödet i chatten, dagboken och Mitt hem.</p>
 			</div>
 			<figure class="product-flow">
 				<ol class="product-flow-grid">
@@ -223,108 +225,79 @@
 						</li>
 					{/each}
 				</ol>
-				<figcaption>Visningen innehåller ingen användardata eller påhittad konversation.</figcaption>
+				<figcaption>Ingen användardata visas här.</figcaption>
 			</figure>
-			<a class="context-link" href="/dagbok" onclick={() => trackHomeCta('product_demo', 'borja_skriva', '/dagbok')}>Börja skriva <span aria-hidden="true">→</span></a>
+			<a class="context-link" href="/dagbok?action=new" onclick={() => trackHomeCta('product_demo', 'borja_skriva', '/dagbok?action=new')}>Börja skriva <span aria-hidden="true">→</span></a>
 		</div>
 	</section>
 
-	<!-- 3. Försiktigt formulerad nytta över tid -->
-	<section class="outcomes-section" aria-labelledby="outcomes-title">
-		<div class="cards-narrow outcomes-inner">
+	<!-- C. Utveckling över tid -->
+	<MittHemTeaser />
+
+	<!-- D. Skillnaden mot en vanlig AI-chatt -->
+	<section class="beyond-chat" aria-labelledby="beyond-chat-title">
+		<div class="cards-narrow beyond-chat-inner">
 			<div class="section-heading">
-				<p class="section-eyebrow">Med tiden</p>
-				<h2 id="outcomes-title">Låt det du skriver bli lättare att se</h2>
+				<p class="section-eyebrow">Mer än en AI-chatt</p>
+				<h2 id="beyond-chat-title">Varför inte bara en AI-chatt?</h2>
+				<p>
+					En AI-chatt börjar om varje gång. MittPsyke är byggt som en dagbok: det du skriver hör
+					ihop, i din takt, på ett ställe som är ditt. Du får hjälp att sortera tankar när du vill ha
+					det, men det du skrivit finns kvar även när samtalet är slut.
+				</p>
 			</div>
-			<ul class="outcomes-grid">
-				{#each outcomeItems as item}
-					<li>
-						<h3>{item.title}</h3>
-						<p>{item.text}</p>
-					</li>
+			<ul class="beyond-chat-list">
+				{#each beyondChatPoints as point}
+					<li>{point}</li>
 				{/each}
 			</ul>
 		</div>
 	</section>
 
-	<!-- 5. Endast verifierbara publicerade innehållsmått -->
-	{#if data.contentStats}
-		<section class="proof-section" aria-labelledby="proof-title">
-			<div class="cards-narrow proof-inner">
-				<div>
-					<p class="section-eyebrow">Innehåll som finns att använda</p>
-					<h2 id="proof-title">Fördjupa dig i din takt</h2>
-				</div>
-				<dl class="proof-grid">
-					<div>
-						<dt>{data.contentStats.guideCount}</dt>
-						<dd>publicerade guider</dd>
-					</div>
-				</dl>
-			</div>
-		</section>
-	{/if}
-
-	<!-- 6. Verifierad grundarberättelse -->
-	<section class="founder-section" aria-labelledby="founder-title">
-		<div class="cards-narrow founder-inner">
-			<div class="founder-mark" aria-hidden="true">RC</div>
-			<div class="founder-copy">
-				<p class="section-eyebrow">Bakom MittPsyke</p>
-				<h2 id="founder-title">Översikt och syfte med MittPsyke</h2>
-				<p>MittPsyke är en svensk digital plattform för samtalsstöd, skapad för personer som lever med psykisk belastning i olika former. Här kan du stanna upp, sätta ord på det som känns svårt och få stöd i stunden – utan krav på prestation eller att förklara allt från början. Grundaren, Robert Claesson, har själv erfarenhet av psykisk ohälsa och skapade MittPsyke utifrån egna behov av stöd när traditionell hjälp kändes långt borta. Målet är en personlig och tillgänglig plats för reflektion, struktur och stöd, där du kan känna dig hörd och tagen på allvar.</p>
-				<p>MittPsyke är inte en vårdtjänst och erbjuder inte diagnos, behandling eller akut hjälp. Det är ett första steg för reflektion och struktur i vardagen, inte en ersättning för professionell vård. Vid akuta situationer hänvisar vi alltid till <a href="tel:112">112</a> eller <a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>.</p>
-				<a class="context-link" href="/om-mittpsyke" onclick={() => trackHomeCta('founder', 'om_mittpsyke', '/om-mittpsyke')}>Läs varför MittPsyke finns <span aria-hidden="true">→</span></a>
-			</div>
-		</div>
-	</section>
-
-	<MittHemTeaser />
-
-	<!-- 8. Samlad trygghet -->
+	<!-- E. Förtroende: grundare, verifierat innehållsmått, integritet och vårdgräns -->
 	<section class="early-trust" aria-labelledby="early-trust-title">
 		<div class="cards-narrow early-trust-inner">
 			<p class="early-trust-eyebrow">Trygg start</p>
-			<h2 id="early-trust-title">Känn dig trygg innan du börjar</h2>
-			<p class="early-trust-intro">Du väljer själv vad du vill dela och kan pausa när du vill.</p>
+			<h2 id="early-trust-title">Bakom MittPsyke</h2>
+			<p class="early-trust-intro">
+				MittPsyke är byggt av Robert Claesson, som själv har erfarenhet av psykisk ohälsa och saknade
+				en lugn plats att skriva på när vården kändes långt borta. Det är en svensk tjänst, byggd för
+				att kännas trygg att återvända till.
+			</p>
 			<ul class="early-trust-grid">
 				{#each trustHighlights as item}
 					<li>
 						<a class="early-trust-item" href={item.href} onclick={() => trackHomeCta('early_trust', item.trackCta, item.href)}>{item.text}</a>
 					</li>
 				{/each}
+				{#if data.contentStats}
+					<li>
+						<a class="early-trust-item" href="/guider" onclick={() => trackHomeCta('early_trust', 'guider', '/guider')}>
+							<strong>{data.contentStats.guideCount}</strong> publicerade guider att läsa i din takt.
+						</a>
+					</li>
+				{/if}
 			</ul>
 			<p class="early-trust-note">
+				MittPsyke är ett stöd för reflektion – inte vård, behandling, diagnos eller akuthjälp.
 				Vid akut fara: <a href="tel:112">112</a>. För vårdråd:
 				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare stöd:
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
-				<a href="/integritet">Läs om integritet</a>.
+				<a href="/om-mittpsyke" onclick={() => trackHomeCta('early_trust', 'om_mittpsyke', '/om-mittpsyke')}>Om MittPsyke</a> och
+				<a href="/integritet">integritet</a>.
 			</p>
 		</div>
 	</section>
 
-	<!-- 9. Artiklar och vidare stöd -->
-	<section id="sa-fungerar-det-fordjupning" class="how-it-works" aria-labelledby="how-it-works-title">
+	<!-- F. Guider och artiklar. Sekundärt, efter kärnprodukten -->
+	<section id="innehall" class="how-it-works" aria-labelledby="how-it-works-title">
 		<div class="cards-narrow how-inner">
 			<h2 id="how-it-works-title">Läs och hitta vidare stöd</h2>
-			<p class="how-intro">Välj det som känns hjälpsamt just nu.</p>
-			<div class="how-grid">
-				<article class="how-card">
-					<h3>Guider</h3>
-					<p>Läs enkla förklaringar om känslor och mående.</p>
-					<a class="how-card-cta" href="/guider" onclick={() => trackHomeCta('how_it_works', 'guider', '/guider')}>Se guider</a>
-				</article>
-				<article class="how-card">
-					<h3>Övningar</h3>
-					<p>Prova något konkret för att landa eller sortera tankar.</p>
-					<a class="how-card-cta" href="/ovningar" onclick={() => trackHomeCta('how_it_works', 'ovningar', '/ovningar')}>Se övningar</a>
-				</article>
-				<article class="how-card">
-					<h3>Artiklar</h3>
-					<p>Fördjupa dig i lugn och ro, utan att behöva börja ett samtal.</p>
-					<a class="how-card-cta" href="/blogg" onclick={() => trackHomeCta('how_it_works', 'artiklar', '/blogg')}>Läs artiklar</a>
-				</article>
-			</div>
+			<nav class="content-links" aria-label="Innehåll">
+				<a class="how-card-cta" href="/guider" onclick={() => trackHomeCta('how_it_works', 'guider', '/guider')}>Se guider</a>
+				<a class="how-card-cta" href="/ovningar" onclick={() => trackHomeCta('how_it_works', 'ovningar', '/ovningar')}>Se övningar</a>
+				<a class="how-card-cta" href="/blogg" onclick={() => trackHomeCta('how_it_works', 'artiklar', '/blogg')}>Läs artiklar</a>
+			</nav>
 			<nav class="topic-links" aria-label="Vanliga ämnen">
 				{#each guideTopics as topic}
 					<a href={topic.href} onclick={() => trackHomeCta('guide_topics', topic.label.toLowerCase(), topic.href)}>{topic.label}</a>
@@ -333,13 +306,13 @@
 		</div>
 	</section>
 
-	<!-- 10. Slutlig CTA -->
+	<!-- G. Slutlig CTA -->
 	<section class="important-section final-cta" aria-labelledby="final-cta-title">
 		<div class="cards-narrow important-inner final-cta-inner">
 			<h2 id="final-cta-title">Börja där du är</h2>
 			<p>Du behöver inte ha rätt ord. Vi tar det i din takt.</p>
 			<div class="final-cta-actions">
-				<a href="/dagbok" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('final_cta', 'borja_skriva', '/dagbok')}>Börja skriva</a>
+				<a href="/dagbok?action=new" class="hero-cta hero-cta-primary" onclick={() => trackHomeCta('final_cta', 'borja_skriva', '/dagbok?action=new')}>Börja skriva</a>
 				<a href="/register" class="final-secondary-link" onclick={() => trackHomeCta('final_cta', 'skapa_konto', '/register')}>Skapa konto</a>
 			</div>
 		</div>
@@ -617,9 +590,7 @@
 		max-width: 42rem;
 	}
 
-	.section-heading h2,
-	.founder-copy h2,
-	.proof-inner h2 {
+	.section-heading h2 {
 		margin: 0;
 		color: var(--home-text-strong);
 		font-size: clamp(1.5rem, 3vw, 2.1rem);
@@ -723,118 +694,31 @@
 		line-height: 1.5;
 	}
 
-	.outcomes-section {
-		padding: clamp(2.5rem, 7vw, 4rem) 1.25rem;
-		background: var(--home-section-bg);
-		color: var(--home-text-soft);
-	}
-
-	.outcomes-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.9rem;
-		margin: 1.25rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.outcomes-grid li {
-		padding-left: 1rem;
-		border-left: 2px solid rgba(var(--home-primary-rgb), 0.55);
-	}
-
-	.outcomes-grid h3 {
-		margin: 0;
-		color: var(--home-text-strong);
-		font-size: 1rem;
-	}
-
-	.outcomes-grid p {
-		margin: 0.45rem 0 0;
-		color: var(--home-text-muted-body);
-		font-size: 0.94rem;
-		line-height: 1.62;
-	}
-
-	.proof-section {
-		padding: clamp(2.2rem, 6vw, 3.5rem) 1.25rem;
+	/* ── Sektion D: Mer än en AI-chatt ── */
+	.beyond-chat {
+		padding: clamp(2.2rem, 6vw, 3.6rem) 1.25rem;
 		background: var(--home-section-bg-alt);
 		color: var(--home-text-soft);
 	}
 
-	.proof-inner {
+	.beyond-chat-list {
 		display: grid;
-		gap: 1.25rem;
-		align-items: center;
+		grid-template-columns: 1fr;
+		gap: 0.6rem;
+		margin: 1.15rem 0 0;
+		padding: 0;
+		list-style: none;
 	}
 
-	.proof-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		max-width: 14rem;
-		gap: 0.75rem;
-		margin: 0;
+	.beyond-chat-list li {
+		padding-left: 1rem;
+		border-left: 2px solid rgba(var(--home-primary-rgb), 0.55);
+		color: var(--home-text-muted-body);
+		font-size: 0.94rem;
+		line-height: 1.6;
 	}
 
-	.proof-grid div {
-		padding: 0.9rem;
-		border: 1px solid var(--home-card-border-soft);
-		border-radius: var(--radius-card);
-		background: rgba(10, 18, 30, 0.45);
-	}
-
-	.proof-grid dt {
-		color: var(--home-text-strong);
-		font-family: var(--font-heading);
-		font-size: clamp(1.55rem, 4vw, 2.1rem);
-		font-weight: 800;
-	}
-
-	.proof-grid dd {
-		margin: 0.2rem 0 0;
-		color: var(--home-text-muted);
-		font-size: 0.84rem;
-		line-height: 1.4;
-	}
-
-	.founder-section {
-		padding: clamp(2.5rem, 7vw, 4rem) 1.25rem;
-		background: var(--home-section-bg-soft);
-		color: var(--home-text-soft);
-	}
-
-	.founder-inner {
-		display: grid;
-		gap: 1.1rem;
-		align-items: start;
-	}
-
-	.founder-mark {
-		display: grid;
-		place-items: center;
-		width: 4rem;
-		height: 4rem;
-		border: 1px solid rgba(147, 197, 253, 0.22);
-		border-radius: 50%;
-		background: var(--home-primary-soft);
-		color: var(--home-primary-text);
-		font-family: var(--font-heading);
-		font-weight: 800;
-		letter-spacing: 0.04em;
-	}
-
-	.founder-copy {
-		max-width: 46rem;
-	}
-
-	.founder-copy > p:not(.section-eyebrow) {
-		margin: 0.8rem 0 0;
-		color: var(--home-text-muted-strong);
-		font-size: 0.96rem;
-		line-height: 1.7;
-	}
-
-	/* ── Sektion 2: Första steget ── */
+	/* ── Sektion E: Förtroende ── */
 	.early-trust {
 		padding: clamp(2.2rem, 6vw, 3.4rem) 1.25rem;
 		background: var(--home-section-bg);
@@ -921,7 +805,13 @@
 		margin: 0 auto;
 	}
 
-	/* ── Sektion 4: Så fungerar det ── */
+	.early-trust-item strong {
+		color: var(--home-text-strong);
+		font-family: var(--font-heading);
+		font-weight: 800;
+	}
+
+	/* ── Sektion F: Guider och artiklar ── */
 	.how-it-works {
 		padding: clamp(2.8rem, 8vw, 4.4rem) 1.25rem;
 		background: var(--home-section-bg);
@@ -934,48 +824,16 @@
 		font-size: clamp(1.55rem, 3vw, 2.05rem);
 	}
 
-	.how-intro {
-		margin: 0.75rem 0 0;
-		max-width: 66ch;
-		color: var(--home-text-muted);
-		font-size: 0.96rem;
-		line-height: 1.65;
-	}
-
-	.how-grid {
-		margin-top: 1.2rem;
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.95rem;
-	}
-
-	.how-card {
-		padding: 1rem;
-		border-radius: var(--radius-card);
-		background:
-			radial-gradient(circle at top left, var(--home-card-bg-accent), transparent 42%),
-			linear-gradient(180deg, var(--home-card-bg-start), var(--home-card-bg-end));
-		border: 1px solid var(--home-card-border);
-	}
-
-	.how-card h3 {
-		margin: 0.8rem 0 0;
-		color: var(--home-text-strong);
-		font-size: 1.06rem;
-		line-height: 1.3;
-	}
-
-	.how-card p {
-		margin: 0.55rem 0 0;
-		color: var(--home-text-muted-soft);
-		font-size: 0.95rem;
-		line-height: 1.65;
+	.content-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.55rem;
+		margin-top: 1.1rem;
 	}
 
 	.how-card-cta {
 		display: inline-flex;
 		align-items: center;
-		margin-top: 0.9rem;
 		padding: 0.42rem 0.78rem;
 		border-radius: var(--radius-pill);
 		background: var(--home-primary-soft);
@@ -1071,27 +929,13 @@
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 
-		.outcomes-grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			gap: 1.1rem;
-		}
-
-		.proof-inner {
-			grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.8fr);
-		}
-
-		.founder-inner {
-			grid-template-columns: 4rem minmax(0, 1fr);
-			gap: 1.4rem;
+		.beyond-chat-list {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 0.8rem 1.1rem;
 		}
 
 		.early-trust-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-
-		.how-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			gap: 1.05rem;
 		}
 	}
 
@@ -1104,25 +948,16 @@
 			grid-template-columns: repeat(4, minmax(0, 1fr));
 		}
 
-		.how-grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-		}
-
 		.early-trust-grid {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 			gap: 0.8rem;
 		}
-
-		.how-grid { gap: 1.1rem; }
-
 	}
 
 	/* ── Dark mode — base is already dark, just deepen slightly ── */
 	:global(.dark) .product-demo { background: var(--home-dark-bg); }
 	:global(.dark) .early-trust { background: var(--home-dark-bg); }
-	:global(.dark) .outcomes-section { background: var(--home-dark-bg); }
-	:global(.dark) .proof-section { background: var(--home-dark-bg-alt); }
-	:global(.dark) .founder-section { background: var(--home-dark-bg-soft); }
+	:global(.dark) .beyond-chat { background: var(--home-dark-bg-alt); }
 	:global(.dark) .how-it-works { background: var(--home-dark-bg); }
 	:global(.dark) .important-section { background: var(--home-dark-bg-important); }
 </style>

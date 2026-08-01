@@ -2,13 +2,30 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
+		trackAccountOfferSeen,
 		trackAnonymousWriteCompletedFromText,
-		trackAnonymousWriteStarted
+		trackAnonymousWriteStarted,
+		trackReturningDiaryUser
 	} from '$lib/analytics';
 	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
+	import {
+		clearDiaryDraft,
+		consumeDiaryDraftHandoff,
+		getDaysSinceDiaryDraftSaved,
+		readDiaryDraft,
+		writeDiaryDraft
+	} from '$lib/diary-draft';
 
-	const STORAGE_KEY = 'mittpsyke_guest_entry';
 	const AUTOSAVE_INTERVAL_MS = 3000;
+
+	// Startfrågor som fyller i första raden. Frivilliga, högst fyra, och alltid
+	// med fritext som ett likvärdigt val. Ingen fråga om diagnos eller behandling.
+	const STARTERS = [
+		{ label: 'Så här känns det just nu', prefix: 'Så här känns det just nu… ' },
+		{ label: 'Det som tar mest plats idag', prefix: 'Det som tar mest plats idag är… ' },
+		{ label: 'Något som gick bättre än väntat', prefix: 'En sak som gick bättre än väntat… ' },
+		{ label: 'Skriv fritt', prefix: '' }
+	];
 
 	let entry = $state('');
 	let savedEntryFromPreviousVisit = $state('');
@@ -16,8 +33,10 @@
 	let saveStatus = $state<'idle' | 'saved'>('idle');
 	let containerEl = $state<HTMLElement | null>(null);
 	let textareaEl = $state<HTMLTextAreaElement | null>(null);
+	let accountOfferEl = $state<HTMLElement | null>(null);
 	let lastSavedValue = '';
 	let saveTimer: ReturnType<typeof setInterval> | null = null;
+	let accountOfferObserver: IntersectionObserver | null = null;
 	let hasStartedTracking = false;
 	let hasCompletedTracking = false;
 
@@ -25,20 +44,34 @@
 		if (!browser) return;
 		if (entry === lastSavedValue) return;
 
-		try {
-			if (entry.trim().length === 0) {
-				window.localStorage.removeItem(STORAGE_KEY);
-			} else {
-				window.localStorage.setItem(STORAGE_KEY, entry);
-				if (!hasCompletedTracking) {
-					hasCompletedTracking = true;
-					trackAnonymousWriteCompletedFromText(entry);
-				}
+		if (entry.trim().length === 0) {
+			clearDiaryDraft();
+		} else {
+			writeDiaryDraft(entry);
+			if (!hasCompletedTracking) {
+				hasCompletedTracking = true;
+				trackAnonymousWriteCompletedFromText(entry);
 			}
-			lastSavedValue = entry;
-			saveStatus = 'saved';
-		} catch {
-			// Privatläge eller full kvot — failar tyst, vi visar bara ingen "sparat"-status.
+		}
+		lastSavedValue = entry;
+		saveStatus = 'saved';
+	}
+
+	function applyStarter(prefix: string) {
+		// Startfrågan fyller bara i en början. Texten går alltid att skriva över.
+		if (showSavedEntryPrompt) {
+			clearSavedEntry({ keepCurrentText: true });
+		}
+		entry = prefix ? `${prefix}${entry.trimStart()}` : entry;
+		saveStatus = 'idle';
+		textareaEl?.focus();
+		// Markören hamnar sist så att användaren skriver vidare direkt.
+		queueMicrotask(() => {
+			textareaEl?.setSelectionRange(entry.length, entry.length);
+		});
+		if (!hasStartedTracking && entry.trim().length > 0) {
+			hasStartedTracking = true;
+			trackAnonymousWriteStarted();
 		}
 	}
 
@@ -78,11 +111,7 @@
 	function clearSavedEntry(options: { keepCurrentText?: boolean } = {}) {
 		if (!browser) return;
 
-		try {
-			window.localStorage.removeItem(STORAGE_KEY);
-		} catch {
-			// Ignorera storage-fel
-		}
+		clearDiaryDraft();
 
 		if (!options.keepCurrentText) {
 			entry = '';
@@ -97,15 +126,21 @@
 	onMount(() => {
 		if (!browser) return;
 
-		// Håll tidigare text dold tills användaren själv väljer att fortsätta.
-		try {
-			const stored = window.localStorage.getItem(STORAGE_KEY);
+		// Text skriven i startsidans hero följer med hit och fylls i direkt. Den
+		// är inte ett "tidigare besök" och ska därför inte ligga bakom en fråga.
+		const handoff = consumeDiaryDraftHandoff();
+		if (handoff) {
+			entry = handoff;
+			hasStartedTracking = true;
+			trackAnonymousWriteStarted();
+		} else {
+			// Håll tidigare text dold tills användaren själv väljer att fortsätta.
+			const stored = readDiaryDraft();
 			if (stored) {
 				savedEntryFromPreviousVisit = stored;
 				showSavedEntryPrompt = true;
+				trackReturningDiaryUser({ days_since_last: getDaysSinceDiaryDraftSaved() });
 			}
-		} catch {
-			// Ignorera storage-fel
 		}
 
 		// Auto-scroll till komponenten efter kort fördröjning
@@ -117,11 +152,26 @@
 		// Auto-save var 3:e sekund
 		saveTimer = setInterval(persistIfDirty, AUTOSAVE_INTERVAL_MS);
 
+		// Räknas som sett först när kontoerbjudandet faktiskt syns i vyn.
+		if (accountOfferEl && typeof IntersectionObserver !== 'undefined') {
+			accountOfferObserver = new IntersectionObserver(
+				(entries) => {
+					if (!entries.some((observed) => observed.isIntersecting)) return;
+					trackAccountOfferSeen('guest_diary');
+					accountOfferObserver?.disconnect();
+					accountOfferObserver = null;
+				},
+				{ threshold: 0.6 }
+			);
+			accountOfferObserver.observe(accountOfferEl);
+		}
+
 		return () => clearTimeout(scrollTimer);
 	});
 
 	onDestroy(() => {
 		if (saveTimer) clearInterval(saveTimer);
+		accountOfferObserver?.disconnect();
 		// Sista sparet innan unmount
 		persistIfDirty();
 	});
@@ -162,11 +212,22 @@
 			</div>
 		{/if}
 
+		<div class="starters">
+			<p class="starters-label" id="guest-entry-starters-label">Vill du ha en början?</p>
+			<div class="starter-row" role="group" aria-labelledby="guest-entry-starters-label">
+				{#each STARTERS as starter}
+					<button type="button" class="starter-chip" onclick={() => applyStarter(starter.prefix)}>
+						{starter.label}
+					</button>
+				{/each}
+			</div>
+		</div>
+
 		<textarea
 			bind:this={textareaEl}
 			bind:value={entry}
 			oninput={handleInput}
-			placeholder="Vad snurrar det i huvudet just nu?"
+			placeholder="Några rader räcker."
 			rows="8"
 			aria-label="Din snabbanteckning"
 		></textarea>
@@ -175,16 +236,23 @@
 			Rensa texten
 		</button>
 
-		<footer class="guest-entry-footer">
-			<span class="char-count" aria-hidden="true">{charCount} tecken</span>
+		<footer class="guest-entry-footer" bind:this={accountOfferEl}>
+			<div class="account-offer">
+				<p class="account-offer-title">Vill du behålla det här?</p>
+				<p class="account-offer-text">
+					Med ett konto sparas det du skriver, och du kan följa hur det ser ut över tid. Utan konto
+					ligger texten kvar på den här enheten tills du rensar den.
+				</p>
+			</div>
 			<div class="actions">
 				<a class="primary-action" href="/register?fromDiary=true" onclick={saveAndCreateAccount}
-					>Spara och skapa konto</a
+					>Spara med konto</a
 				>
 				<button type="button" class="secondary-action" onclick={continueWriting}>
-					Fortsätt skriva
+					Fortsätt utan konto
 				</button>
 			</div>
+			<span class="char-count" aria-hidden="true">{charCount} tecken</span>
 		</footer>
 	</div>
 </section>
@@ -331,12 +399,72 @@
 		border-radius: 4px;
 	}
 
-	.guest-entry-footer {
+	.starters {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.starters-label {
+		margin: 0;
+		font-size: 0.86rem;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.starter-row {
 		display: flex;
 		flex-wrap: wrap;
-		align-items: center;
-		justify-content: space-between;
+		gap: 0.4rem;
+	}
+
+	.starter-chip {
+		min-height: 2.2rem;
+		padding: 0.4rem 0.75rem;
+		border-radius: var(--radius-pill);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-soft));
+		color: hsl(var(--foreground) / 0.88);
+		font: inherit;
+		font-size: 0.86rem;
+		line-height: 1.3;
+		text-align: left;
+		cursor: pointer;
+		transition: border-color 150ms ease, background 150ms ease;
+	}
+
+	.starter-chip:hover,
+	.starter-chip:focus-visible {
+		border-color: var(--theme-accent, var(--primary));
+		background: hsl(var(--surface));
+	}
+
+	.guest-entry-footer {
+		display: grid;
 		gap: 0.75rem;
+		padding: 0.95rem;
+		border-radius: 16px;
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-soft));
+	}
+
+	.account-offer {
+		display: grid;
+		gap: 0.3rem;
+	}
+
+	.account-offer-title {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: 1rem;
+		font-weight: 650;
+		color: hsl(var(--foreground));
+	}
+
+	.account-offer-text {
+		margin: 0;
+		max-width: 46ch;
+		font-size: 0.9rem;
+		line-height: 1.6;
+		color: hsl(var(--foreground) / 0.78);
 	}
 
 	.char-count {
@@ -396,8 +524,11 @@
 		}
 
 		.guest-entry-footer {
-			flex-direction: column;
-			align-items: stretch;
+			padding: 0.8rem;
+		}
+
+		.starter-chip {
+			font-size: 0.83rem;
 		}
 
 		.actions {
