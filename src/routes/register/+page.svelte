@@ -4,12 +4,14 @@
 	import { onMount } from 'svelte';
 	import {
 		clearPendingAuthFunnel,
+		trackAccountCreatedAfterEntry,
 		trackRegisterPageView,
 		trackSignUpStarted,
 		trackTempEntryPreviewShown
 	} from '$lib/analytics';
 	import { supabase } from '$lib/supabase';
 	import { canUseGoogleOAuth, getStableOAuthCallbackUrl } from '$lib/auth-redirect';
+	import { readDiaryDraft } from '$lib/diary-draft';
 	import type { ActionData } from './$types';
 
 	let tempEntryPreview = $state<{ title?: string; content?: string } | null>(null);
@@ -23,20 +25,13 @@
 	onMount(() => {
 		googleOAuthAvailable = canUseGoogleOAuth(window.location.origin);
 
-		// Load temp entry
-		if (typeof window !== 'undefined') {
-			const stored = localStorage.getItem('mittpsyke_temp_entry');
-			if (stored) {
-				try {
-					const data = JSON.parse(stored);
-					tempEntryPreview = data;
-					showPreview = true;
-				} catch (e) {
-					// Try as plain text
-					tempEntryPreview = { content: stored };
-					showPreview = true;
-				}
-			}
+		// Utkastet läses via den kanoniska dagboksnyckeln, med den äldre nyckeln
+		// som fallback. Tidigare lästes bara den äldre, vilket gjorde att anonyma
+		// dagboksutkast aldrig syntes här.
+		const storedDraft = readDiaryDraft();
+		if (storedDraft) {
+			tempEntryPreview = { content: storedDraft };
+			showPreview = true;
 		}
 
 		// Track events
@@ -103,6 +98,11 @@
 				loading = false;
 				if (result.type === 'failure' || result.type === 'error') {
 					clearPendingAuthFunnel();
+				}
+				// Kontot skapades med ett anonymt utkast i bagaget. Bara händelsen
+				// skickas — aldrig texten.
+				if (result.type === 'redirect' && showPreview) {
+					trackAccountCreatedAfterEntry();
 				}
 				await update();
 			};

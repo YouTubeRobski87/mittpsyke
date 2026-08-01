@@ -30,7 +30,12 @@
 		type CompanionPose as CompanionPoseData
 	} from '$lib/companionPoseManifest';
 	import { getLivingWorldScene } from '$lib/worldScene';
-	import { trackMilestoneReachedOnce, trackStreakDayReachedOnce } from '$lib/analytics';
+	import {
+		trackInsightOpened,
+		trackMilestoneReachedOnce,
+		trackProgressViewOpened,
+		trackStreakDayReachedOnce
+	} from '$lib/analytics';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -418,6 +423,7 @@
 	let progressLoaded = $state(false);
 	let progressError = $state('');
 	let loadedInsightsData = $state<InsightsResponse | null>(null);
+	let hasTrackedInsightOpened = false;
 	let insightsLoading = $state(false);
 	let insightsError = $state('');
 	let hasSensitiveDataConsent = $state(browser ? hasSensitiveConsent() : false);
@@ -628,6 +634,9 @@
 	}
 
 	onMount(() => {
+		// Enbart om vyn öppnades och om besökaren var inloggad. Ingen dagboksdata.
+		trackProgressViewOpened({ signed_in: !isAnonymous });
+
 		const updateCompanionTimeOfDay = () => {
 			const now = new Date();
 			timeOfDay = getProgressCompanionDayState(now);
@@ -748,6 +757,22 @@
 			}
 
 			loadedInsightsData = result;
+
+			// Insikterna visades med innehåll. Endast fast typ, en boolean och ett
+			// antal — aldrig sammanfattningen, temana eller humörvärdena.
+			if (!hasTrackedInsightOpened) {
+				const hasContent = Boolean(
+					result.aiSummary || result.insights.length > 0 || result.bestDay || result.worstDay
+				);
+				if (hasContent) {
+					hasTrackedInsightOpened = true;
+					trackInsightOpened({
+						insight_type: 'diary_insights',
+						has_summary: Boolean(result.aiSummary),
+						pattern_count: result.insights.length
+					});
+				}
+			}
 		} catch {
 			insightsError = 'Kunde inte ladda AI-insikter just nu.';
 			loadedInsightsData = null;

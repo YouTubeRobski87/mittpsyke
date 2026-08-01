@@ -23,6 +23,18 @@
 	let draftField: HTMLTextAreaElement | null = $state(null);
 
 	onMount(() => {
+		// Text som skrevs i startsidans hero och som användaren valde att ta med
+		// hit i stället för till dagboken. Fylls i, men skickas aldrig automatiskt.
+		try {
+			const carriedDraft = localStorage.getItem(HERO_QUICK_START_KEY)?.trim();
+			if (carriedDraft) {
+				draft = carriedDraft;
+				localStorage.removeItem(HERO_QUICK_START_KEY);
+			}
+		} catch {
+			// Blockerad lagring betyder bara att texten inte följde med.
+		}
+
 		try {
 			const stored = localStorage.getItem(STORAGE_KEY);
 			if (!stored) return;
