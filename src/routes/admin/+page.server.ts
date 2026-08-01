@@ -1,6 +1,8 @@
 import { env } from '$env/dynamic/private';
 import { fail, redirect } from '@sveltejs/kit';
 import { createServiceClient } from '$lib/server/supabase-admin';
+import { callClaude } from '$lib/server/ai/anthropic';
+import { CLAUDE_MODELS, resolveModel } from '$lib/server/ai/models';
 import type { Actions, PageServerLoad } from './$types';
 import {
 	AB_VARIANTS,
@@ -165,55 +167,31 @@ async function loadDashboardData(locals: App.Locals) {
 }
 
 async function generateSeoPrompt(input: {
-	apiKey: string;
 	pageName: string;
 	pageDescription: string | null;
 	promptType: string;
 	context: string | null;
 }) {
-	const response = await fetch('https://api.anthropic.com/v1/messages', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			'x-api-key': input.apiKey,
-			'anthropic-version': '2023-06-01'
-		},
-		body: JSON.stringify({
-			model: env.ANTHROPIC_MODEL || 'claude-haiku-4-5-20251001',
-			max_tokens: 500,
-			system:
-				'Du är en svensk SEO-redaktör för MittPsyke, en lugn mental wellbeing-plattform. Skriv alltid på enkel, varm svenska. Undvik alarmism. Påminn inte om vård om inte det är relevant för texttypen. Svara bara med det färdiga textförslaget, utan rubriker eller förklaring.',
-			messages: [
-				{
-					role: 'user',
-					content: [
-						`Landningssida: ${input.pageName}`,
-						input.pageDescription ? `Nuvarande beskrivning: ${input.pageDescription}` : '',
-						`Typ av SEO-text: ${input.promptType}`,
-						input.context ? `Önskat fokus: ${input.context}` : '',
-						'Gör texten tydlig, trygg och sökvänlig för svenska användare.'
-					]
-						.filter(Boolean)
-						.join('\n')
-				}
-			]
-		})
+	const text = await callClaude({
+		label: 'admin-seo-prompt',
+		model: resolveModel(env.ANTHROPIC_MODEL, CLAUDE_MODELS.fast),
+		// SEO-texten är några stycken lång; taket rymmer även thinking.
+		maxTokens: 4000,
+		system:
+			'Du är en svensk SEO-redaktör för MittPsyke, en lugn mental wellbeing-plattform. Skriv alltid på enkel, varm svenska. Undvik alarmism. Påminn inte om vård om inte det är relevant för texttypen. Svara bara med det färdiga textförslaget, utan rubriker eller förklaring.',
+		prompt: [
+			`Landningssida: ${input.pageName}`,
+			input.pageDescription ? `Nuvarande beskrivning: ${input.pageDescription}` : '',
+			`Typ av SEO-text: ${input.promptType}`,
+			input.context ? `Önskat fokus: ${input.context}` : '',
+			'Gör texten tydlig, trygg och sökvänlig för svenska användare.'
+		]
+			.filter(Boolean)
+			.join('\n')
 	});
 
-	if (!response.ok) {
-		const errorText = await response.text();
-		console.error('Anthropic prompt generation failed:', errorText);
-		throw new Error('Claude API kunde inte generera text just nu.');
-	}
-
-	const payload = (await response.json()) as {
-		content?: Array<{ type: string; text?: string }>;
-	};
-
-	const text = payload.content?.find((item) => item.type === 'text')?.text?.trim() ?? '';
-
 	if (!text) {
-		throw new Error('Claude API svarade utan textinnehåll.');
+		throw new Error('Claude API kunde inte generera text just nu.');
 	}
 
 	return text;
@@ -281,7 +259,6 @@ export const actions: Actions = {
 
 		try {
 			const generatedContent = await generateSeoPrompt({
-				apiKey,
 				pageName: page.name,
 				pageDescription: page.description,
 				promptType,

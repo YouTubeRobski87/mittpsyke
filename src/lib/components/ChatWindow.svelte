@@ -81,8 +81,21 @@
 	let chatLog: HTMLDivElement;
 	let showHumanSupport = $state(false);
 	let showSettings = $state(false);
+	let takeawayOpen = $state(false);
+	let takeawayDismissed = $state(false);
+	let takeawayDraft = $state('');
+	let takeawayError = $state('');
 	let hasUserMessage = $derived(messages.some((message) => message.role === 'user'));
 	let showChatIntro = $derived(persistenceReady && !hasUserMessage);
+	let assistantMessageCount = $derived(messages.filter((message) => message.role === 'assistant').length);
+	let canCaptureTakeaway = $derived(
+		hasSensitiveDataConsent &&
+		!sending &&
+		!takeawayDismissed &&
+		assistantMessageCount >= 2 &&
+		messages[messages.length - 1]?.role === 'assistant' &&
+		!messages[messages.length - 1]?.crisis
+	);
 
 	const MAX_MESSAGE_LENGTH = 2000;
 	const LONG_MESSAGE_ERROR =
@@ -456,6 +469,10 @@
 		input = '';
 		messages = [];
 		savePromptHidden = {};
+		takeawayOpen = false;
+		takeawayDismissed = false;
+		takeawayDraft = '';
+		takeawayError = '';
 		historyNoticeVisible = false;
 		conversationId = null;
 
@@ -486,6 +503,10 @@
 			persistenceReady = false;
 			chatError = '';
 			savePromptHidden = {};
+			takeawayOpen = false;
+			takeawayDismissed = false;
+			takeawayDraft = '';
+			takeawayError = '';
 			historyNoticeVisible = false;
 
 			// Text skriven i hero-fältet på startsidan tar alltid med sig hela vägen in i chatten.
@@ -635,6 +656,9 @@
 			return;
 		}
 
+		takeawayOpen = false;
+		takeawayDraft = '';
+		takeawayError = '';
 		sendInFlight = true;
 		sending = true;
 		stopSpeaking();
@@ -780,6 +804,39 @@
 		chatError = '';
 		input = text;
 		void trackEvent('starter_chip_clicked', { source: 'follow_up' });
+	}
+
+	function openTakeaway() {
+		takeawayOpen = true;
+		takeawayError = '';
+	}
+
+	function dismissTakeaway() {
+		takeawayOpen = false;
+		takeawayDismissed = true;
+		takeawayDraft = '';
+		takeawayError = '';
+	}
+
+	function continueTakeawayInDiary() {
+		const reflection = takeawayDraft.trim();
+		if (!reflection) {
+			takeawayError = 'Skriv en rad du vill ta med dig, eller välj Inte nu.';
+			return;
+		}
+
+		const content = `Jag tar med mig från chatten:\n\n${reflection}`;
+		try {
+			window.localStorage.setItem(
+				tempEntryStorageKey,
+				JSON.stringify({ title: 'En tanke från chatten', content })
+			);
+		} catch {
+			takeawayError = 'Det gick inte att föra över texten just nu. Du kan kopiera den och försöka igen.';
+			return;
+		}
+
+		void goto('/dagbok/checkin#skriv-sjalv');
 	}
 
 	async function saveAsJournalNote(content: string, index: number) {
@@ -950,6 +1007,41 @@
 				</button>
 			</div>
 		</div>
+	{/if}
+
+	{#if canCaptureTakeaway}
+		<section class="takeaway-card" aria-labelledby="takeaway-title">
+			{#if takeawayOpen}
+				<label for="chat-takeaway" class="takeaway-label" id="takeaway-title">
+					En tanke att ta med
+				</label>
+				<textarea
+					id="chat-takeaway"
+					bind:value={takeawayDraft}
+					maxlength="500"
+					rows="2"
+					placeholder="Till exempel: Jag behöver inte lösa allt på en gång."
+					aria-describedby="takeaway-help{takeawayError ? ' takeaway-error' : ''}"
+					oninput={() => (takeawayError = '')}
+				></textarea>
+				<p id="takeaway-help" class="takeaway-help">Din formulering skickas inte till AI:n.</p>
+				{#if takeawayError}
+					<p id="takeaway-error" class="takeaway-error" role="alert">{takeawayError}</p>
+				{/if}
+				<div class="takeaway-actions">
+					<button type="button" class="takeaway-primary" onclick={continueTakeawayInDiary}>
+						Fortsätt i dagboken
+					</button>
+					<button type="button" class="takeaway-secondary" onclick={dismissTakeaway}>Inte nu</button>
+				</div>
+			{:else}
+				<p id="takeaway-title" class="takeaway-copy">Vill du skriva en rad att ta med dig?</p>
+				<div class="takeaway-actions">
+					<button type="button" class="takeaway-primary" onclick={openTakeaway}>Fånga en tanke</button>
+					<button type="button" class="takeaway-secondary" onclick={dismissTakeaway}>Inte nu</button>
+				</div>
+			{/if}
+		</section>
 	{/if}
 
 	<div class="chat-input-area border-t border-black/8 dark:border-white/10 px-3 pt-2 pb-3">
@@ -1274,6 +1366,9 @@
 	.starter-chip:focus-visible,
 	.account-nudge-link:focus-visible,
 	.account-nudge-close:focus-visible,
+	.takeaway-primary:focus-visible,
+	.takeaway-secondary:focus-visible,
+	.takeaway-card textarea:focus-visible,
 	.send-button:focus-visible,
 	.settings-toggle:focus-visible,
 	.human-support-button:focus-visible,
@@ -1355,6 +1450,110 @@
 	:global(.dark) .account-nudge-close {
 		border-color: rgba(248, 250, 252, 0.12);
 		color: rgba(248, 250, 252, 0.58);
+	}
+
+	.takeaway-card {
+		margin: 0.2rem 0;
+		padding: 0.8rem 1rem;
+		border: 1px solid rgba(52, 91, 55, 0.13);
+		border-radius: var(--radius-card);
+		background: rgba(248, 245, 239, 0.78);
+	}
+
+	.takeaway-label,
+	.takeaway-copy {
+		display: block;
+		margin: 0;
+		font-size: 0.83rem;
+		font-weight: 650;
+		line-height: 1.45;
+		color: rgba(15, 23, 42, 0.8);
+	}
+
+	.takeaway-card textarea {
+		box-sizing: border-box;
+		width: 100%;
+		margin-top: 0.5rem;
+		padding: 0.65rem 0.75rem;
+		resize: vertical;
+		border: 1px solid rgba(15, 23, 42, 0.14);
+		border-radius: 10px;
+		background: rgba(255, 255, 255, 0.72);
+		font: inherit;
+		font-size: 0.84rem;
+		line-height: 1.5;
+		color: inherit;
+	}
+
+	.takeaway-help,
+	.takeaway-error {
+		margin: 0.42rem 0 0;
+		font-size: 0.72rem;
+		line-height: 1.4;
+	}
+
+	.takeaway-help {
+		opacity: 0.62;
+	}
+
+	.takeaway-error {
+		color: #9f1239;
+	}
+
+	.takeaway-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 0.62rem;
+	}
+
+	.takeaway-primary,
+	.takeaway-secondary {
+		min-height: 2rem;
+		padding: 0.42rem 0.72rem;
+		border-radius: 999px;
+		font-size: 0.75rem;
+		font-weight: 650;
+		line-height: 1;
+		cursor: pointer;
+	}
+
+	.takeaway-primary {
+		border: 1px solid rgba(15, 118, 110, 0.18);
+		background: rgba(15, 118, 110, 0.09);
+		color: rgba(15, 92, 86, 0.96);
+	}
+
+	.takeaway-secondary {
+		border: 1px solid rgba(15, 23, 42, 0.12);
+		background: transparent;
+		color: rgba(15, 23, 42, 0.6);
+	}
+
+	:global(.dark) .takeaway-card {
+		border-color: rgba(147, 197, 253, 0.16);
+		background: rgba(147, 197, 253, 0.06);
+	}
+
+	:global(.dark) .takeaway-label,
+	:global(.dark) .takeaway-copy {
+		color: rgba(248, 250, 252, 0.86);
+	}
+
+	:global(.dark) .takeaway-card textarea {
+		border-color: rgba(248, 250, 252, 0.14);
+		background: rgba(15, 23, 42, 0.28);
+	}
+
+	:global(.dark) .takeaway-primary {
+		border-color: rgba(94, 234, 212, 0.16);
+		background: rgba(94, 234, 212, 0.08);
+		color: rgba(204, 251, 241, 0.92);
+	}
+
+	:global(.dark) .takeaway-secondary {
+		border-color: rgba(248, 250, 252, 0.12);
+		color: rgba(248, 250, 252, 0.62);
 	}
 
 	@media (max-width: 520px) {
