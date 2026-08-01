@@ -1,0 +1,20 @@
+name: Reindex search embeddings
+
+on:
+  schedule:
+    # Kör en gång per natt så att nytt/ändrat innehåll (artiklar, guider, FAQ)
+    # blir sökbart inom ett dygn. Endpointen är inkrementell - oförändrat
+    # innehåll embeddas inte om, så det här är billigt även vid daglig körning.
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  reindex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger search reindex
+        run: |
+          curl --fail --show-error --silent \
+            --request POST \
+            --header "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            "${{ vars.MITTPSYKE_SITE_URL || 'https://www.mittpsyke.se' }}/api/cron/reindex-search"

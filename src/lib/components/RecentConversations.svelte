@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { supabase } from '$lib/supabase';
+	import { resolveChatSlug } from '$lib/data/chat-slugs';
 	import { onMount } from 'svelte';
 
 	type ConversationRow = {
@@ -39,7 +40,8 @@
 
 	function conversationHref(conversation: ConversationRow) {
 		const category = conversation.category?.trim() || 'a';
-		return `/chat/${encodeURIComponent(category)}?id=${encodeURIComponent(conversation.id)}`;
+		const slug = resolveChatSlug(category);
+		return `/chat/${encodeURIComponent(slug)}?id=${encodeURIComponent(conversation.id)}`;
 	}
 
 	async function loadConversations(userId: string | null) {

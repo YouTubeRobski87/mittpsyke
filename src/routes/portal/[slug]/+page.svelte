@@ -17,6 +17,10 @@
 <SEO canonical={`https://www.mittpsyke.se${page.url.pathname}`} />
 
 <svelte:head>
+	<!-- Tunn genomgångssida till /chat/[category] (redan noindex). Innehållet
+	     dupplicerar de fullständiga ämnessidorna (/angest, /depression,
+	     /trauma), som är de sidor som ska ranka i sökresultat. -->
+	<meta name="robots" content="noindex, follow" />
 	<title>{portal ? portal.title : 'Portal'} – MittPsyke</title>
 </svelte:head>
 

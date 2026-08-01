@@ -1,8 +1,10 @@
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
-import { hasSensitiveConsentHeader } from '$lib/consent';
+import { hasHealthConsentInMetadata, hasSensitiveConsentHeader } from '$lib/consent';
 import { CHAT_CONTEXT_LIMIT, getChatContextMessages } from '$lib/state/chat-memory';
+import { containsAcuteCrisisPhrase, containsThirdPartyRiskPhrase } from '$lib/ai/crisis-keywords';
+import { CRISIS_RESPONSE, THIRD_PARTY_RISK_RESPONSE } from '$lib/ai/crisis-responses';
 import {
 	formatMemoriesForPrompt,
 	loadUserMemories,
@@ -10,8 +12,16 @@ import {
 	shouldRefreshUserMemories,
 	type MemoryHistoryMessage
 } from '$lib/server/user-memory';
+import {
+	formatDiaryContextForPrompt,
+	getActivePersonalGoals,
+	loadRecentDiaryEntries
+} from '$lib/server/diary-context';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
+import { RateLimiter } from '$lib/server/rate-limit';
+import { buildTopicHintInstruction, getTopicHint } from '$lib/ai/chat-topics';
+import { normalizeCategory, type SupportCategory } from '$lib/ai/chat-categories';
 import type { RequestHandler } from './$types';
 
 const SYSTEM_PROMPT = `
@@ -48,6 +58,7 @@ Språk och ton:
 - Undvik överpersonlig ton.
 - Inga emojis.
 - Ingen kompis-slang.
+- Skriv i ren text. Ingen markdown: inga asterisker för fetstil, inga rubriker med brädgård, inga punktlistor med bindestreck. Chatten visar text precis som den skrivs, så formateringstecken syns som tecken.
 - Undvik överdriven AI-empati.
 Samtalsstil:
 
@@ -196,60 +207,37 @@ Du är ett tryggt samtalsrum.
 `.trim();
 
 // ---------------------------------------------------------------------------
-// Krisorddetektering – körs alltid FÖRE AI-anrop
+// Krisorddetektering – körs alltid FÖRE AI-anrop.
+// Ordlistorna kommer från $lib/ai/crisis-keywords, den enda källan som delas
+// med klientens omedelbara UI-check och ChatWindows stödnivåer.
 // ---------------------------------------------------------------------------
-const CRISIS_PATTERNS = [
-	/självmord/i,
-	/ta livet av (mig|sig|oss|dig)/i,
-	/avsluta (mitt|sitt|livet|allt)/i,
-	/inte orkar leva/i,
-	/orkar inte leva/i,
-	/vill inte leva/i,
-	/vill (bara |helst )?(dö|vara död)/i,
-	/hoppas att jag dör/i,
-	/bättre om jag (var|vore) död/i,
-	/ingen anledning att leva/i,
-	/suicid/i,
-	/självskad/i,
-	/skada mig (själv)?/i,
-	/hoppa (från|av|ner)/i,
-	/inte vilja finnas/i,
-	/försvinna för alltid/i,
-	/ge upp (allt|livet|hoppet)/i,
-	/inget hopp/i,
-	/ingen mening (med|att leva)/i,
-	/alla vore bättre utan mig/i,
-	/ingen (saknar|behöver|bryr sig om) mig/i,
-	/ta (tabletter|piller|överdos)/i,
-	/lagt en plan/i,
-	/skriva (ett )?avskedsbrev/i,
-	/inte vakna (imorgon|igen|upp)/i,
-	/somna (in )?för alltid/i,
-	/göra slut på (allt|det här|mitt liv)/i,
-	/kan inte fortsätta/i,
-	/sista (utvägen|chansen)/i
-];
-
 function detectCrisis(text: string): boolean {
-	return CRISIS_PATTERNS.some((pattern) => pattern.test(text));
+	return containsAcuteCrisisPhrase(text);
 }
 
-const CRISIS_RESPONSE = `Det du skriver rör mig, och jag vill att du vet att du inte är ensam just nu.
+function detectThirdPartyRisk(text: string): boolean {
+	return containsThirdPartyRiskPhrase(text);
+}
 
-Det här är inte rätt plats för akut hjälp – men det finns människor som kan vara där för dig:
-
-**Ring 112** om du befinner dig i omedelbar fara.
-
-**Mind Självmordslinjen** – ring 90101, öppen dygnet runt.
-
-**1177** – för råd och vägledning om psykisk hälsa och vård.
-
-**Stödlinjer.se** – lista över fler stödlinjer och chattar.
-
-Jag finns kvar här om du vill prata vidare, men vid akut kris är en riktig människa viktigast just nu.`;
+// Säkerhetssvaren ligger i $lib/ai/crisis-responses, som ren text.
 // ---------------------------------------------------------------------------
 
 const CHAT_MODEL = (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
+
+// Hindrar OpenAI-anrop från att hänga kvar och äta serverresurser om
+// modellen är trög eller nere - kortare svar hinner alltid klart långt före
+// den här gränsen, så den påverkar inte normala samtal.
+const CHAT_AI_TIMEOUT_MS = 25_000;
+
+// Per-IP gräns (samma mönster som hibp/breaches och diary/reflect): stoppar
+// skriptad spam mot OpenAI utan att störa ett vanligt, aktivt samtal. Körs
+// EFTER kris-/tredjepartsdetekteringen längre ner så en person i akut kris
+// alltid får krissvaret, oavsett hur många meddelanden som skickats innan.
+const CHAT_RATE_LIMIT_WINDOW_MS = 60_000;
+const CHAT_RATE_LIMIT_MAX_REQUESTS = 12;
+const chatRateLimiter = new RateLimiter(CHAT_RATE_LIMIT_WINDOW_MS, CHAT_RATE_LIMIT_MAX_REQUESTS);
+const CHAT_RATE_LIMIT_MESSAGE =
+	'Du skickar meddelanden lite för snabbt. Vänta en liten stund och skicka igen.';
 
 function logOpenAIError(context: { guest: boolean; category: SupportCategory; conversationId: string }, err: unknown) {
 	const openaiError = err as {
@@ -276,13 +264,20 @@ function logOpenAIError(context: { guest: boolean; category: SupportCategory; co
 const systemByCategory: Record<string, string> = {
 	A: `${SYSTEM_PROMPT}\nFokusera varsamt på ångest och oro med stabiliserande, jordande språk.`,
 	B: `${SYSTEM_PROMPT}\nFokusera varsamt på nedstämdhet med hoppfull men realistisk ton, utan att bagatellisera.`,
-	E: `${SYSTEM_PROMPT}\nFokusera varsamt på trauma med extra försiktighet, undvik detaljer som kan återaktivera stark stress.`
+	E: `${SYSTEM_PROMPT}\nFokusera varsamt på trauma med extra försiktighet, undvik detaljer som kan återaktivera stark stress.`,
+	// G = samtal utan vald kategori, numera den normala vägen in. Ingen
+	// ämnesstyrning läggs på: användarens egna ord ska avgöra riktningen, och
+	// samtalet ska kunna byta spår utan att något behöver väljas om.
+	G: `${SYSTEM_PROMPT}
+Användaren har inte valt något ämne, och behöver inte göra det.
+Följ det användaren faktiskt skriver. Tvinga inte fram en etikett, kategori eller diagnos, och be inte användaren precisera vilket område det gäller.
+Du hanterar lika gärna ångest, nedstämdhet, ensamhet, relationer, stress och utmattning, trauma, sömn, neuropsykiatriska svårigheter eller ett helt vanligt samtal.
+Om det är oklart vad det handlar om: säg att det är okej att inte veta, och fråga vad som känns tyngst just nu i stället för att be om en kategori.
+Om samtalet byter riktning, följ med dit utan att kommentera bytet.`
 };
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const GUEST_ID_REGEX = /^[a-zA-Z0-9_-]{8,128}$/;
-
-type SupportCategory = 'A' | 'B' | 'E';
 
 type ConversationRow = {
 	id: string;
@@ -306,8 +301,17 @@ const GUEST_MESSAGES_TABLE = 'guest_messages';
 const MAX_CHAT_MESSAGE_LENGTH = 2000;
 const CHAT_MESSAGE_TOO_LONG_ERROR = 'Din text blev lite för lång att skicka på en gång. Dela gärna upp den i två delar.';
 
-function buildDynamicSystemPrompt(category: SupportCategory, history: PromptHistoryMessage[]) {
-	const basePrompt = systemByCategory[category] || SYSTEM_PROMPT;
+function buildDynamicSystemPrompt(
+	category: SupportCategory,
+	history: PromptHistoryMessage[],
+	topicHintId: string | null = null
+) {
+	const categoryPrompt = systemByCategory[category] || SYSTEM_PROMPT;
+	// Genvägen är extra kontext ovanpå grundprompten, aldrig en egen prompt.
+	const topicInstruction = buildTopicHintInstruction(topicHintId);
+	const basePrompt = topicInstruction
+		? `${categoryPrompt}\n${topicInstruction}`
+		: categoryPrompt;
 	const userTurns = history.filter((item) => item.role === 'user').length;
 	const nextAssistantTurn = userTurns + 1;
 	const isFirstPhase = nextAssistantTurn <= 2;
@@ -399,13 +403,6 @@ function getAccessToken(authorizationHeader: string | null): string | null {
 	return token.trim();
 }
 
-function normalizeCategory(value: unknown): SupportCategory {
-	const normalized = typeof value === 'string' ? value.trim().toUpperCase() : '';
-	if (normalized === 'B') return 'B';
-	if (normalized === 'E') return 'E';
-	return 'A';
-}
-
 function normalizeConversationId(value: unknown): string | null {
 	if (typeof value !== 'string') return null;
 	const trimmed = value.trim();
@@ -444,7 +441,7 @@ const normalizeApiKey = (value: string | undefined): string | null => {
 	return normalized;
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 	if (!hasSensitiveConsentHeader(request)) {
 		return errorResponse('Consent required for sensitive AI features.', 403);
 	}
@@ -467,7 +464,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		conversationId?: unknown;
 		guestId?: unknown;
 		contextMessages?: unknown;
+		topicHint?: unknown;
 	};
+
+	// Valfri ämnesgenväg. Valideras mot den fasta listan innan den kan nå
+	// systemprompten - fritext härifrån får aldrig vävas in.
+	const topicHintId = getTopicHint(body.topicHint)?.id ?? null;
 
 	const message = typeof body.message === 'string' ? body.message.trim() : '';
 	if (!message) {
@@ -502,7 +504,27 @@ export const POST: RequestHandler = async ({ request }) => {
 			mode: isGuestRequest ? 'guest' : 'user'
 		});
 	}
+
+	if (detectThirdPartyRisk(message)) {
+		console.warn('[chat] third-party risk keywords detected', {
+			guest: isGuestRequest,
+			messageLength: message.length
+		});
+		return json({
+			reply: THIRD_PARTY_RISK_RESPONSE,
+			crisis: true,
+			conversationId: null,
+			mode: isGuestRequest ? 'guest' : 'user'
+		});
+	}
 	// ---------------------------------------------------------------------------
+
+	// Rate limit - placerad EFTER kris-/tredjepartschecken ovan så den aldrig
+	// kan blockera ett akut krissvar, men innan några Supabase- eller
+	// OpenAI-anrop görs.
+	if (chatRateLimiter.consume(`ip:${getClientAddress()}`)) {
+		return errorResponse(CHAT_RATE_LIMIT_MESSAGE, 429);
+	}
 
 	if (isGuestRequest) {
 		console.info('[chat][guest] request identified as guest', {
@@ -542,7 +564,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('Server configuration error', 500);
 	}
 
-	const openai = new OpenAI({ apiKey });
+	const openai = new OpenAI({ apiKey, timeout: CHAT_AI_TIMEOUT_MS });
 
 	const authClient = createClient(supabaseUrl, supabaseAnonKey, {
 		auth: { autoRefreshToken: false, persistSession: false },
@@ -681,10 +703,22 @@ export const POST: RequestHandler = async ({ request }) => {
 			const memories = await loadUserMemories(authClient, user.id);
 			const memoryBlock = formatMemoriesForPrompt(memories);
 
-			const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
-			const systemPromptWithMemory = memoryBlock
-				? `${systemPrompt}\n\n${memoryBlock}`
-				: systemPrompt;
+			// Frivillig extra kontext från dagbok/mål – kräver att användaren both
+			// slagit på inställningen och redan lämnat samtycke för känsliga uppgifter.
+			const userMetadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+			const diaryContextEnabled =
+				userMetadata.ai_diary_context_enabled === true && hasHealthConsentInMetadata(userMetadata);
+			const diaryContextBlock = diaryContextEnabled
+				? formatDiaryContextForPrompt(
+						await loadRecentDiaryEntries(authClient, user.id),
+						getActivePersonalGoals(userMetadata)
+					)
+				: '';
+
+			const systemPrompt = buildDynamicSystemPrompt(category, modelContext, topicHintId);
+			const systemPromptWithMemory = [systemPrompt, memoryBlock, diaryContextBlock]
+				.filter(Boolean)
+				.join('\n\n');
 			const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
 				{ role: 'system', content: systemPromptWithMemory },
 				...modelContext,
@@ -871,7 +905,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					}))
 				: promptHistory;
 
-		const systemPrompt = buildDynamicSystemPrompt(category, modelContext);
+		const systemPrompt = buildDynamicSystemPrompt(category, modelContext, topicHintId);
 		const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
 			{ role: 'system', content: systemPrompt },
 			...modelContext,
@@ -923,7 +957,17 @@ export const POST: RequestHandler = async ({ request }) => {
 			console.error('[chat][guest] catch error object:', err);
 		}
 		console.error('Chat API error:', err);
-		return errorResponse('AI error', 500);
+
+		// Lugna, konkreta svenska felmeddelanden istället för ett generiskt
+		// tekniskt fel - särskilja timeout/överbelastning så användaren förstår
+		// att det är tillfälligt och kan försöka igen.
+		if (err instanceof OpenAI.APIConnectionTimeoutError) {
+			return errorResponse('Svaret tog för lång tid just nu. Försök gärna igen om en liten stund.', 504);
+		}
+		if (err instanceof OpenAI.RateLimitError) {
+			return errorResponse('Tjänsten är hårt belastad just nu. Vänta en liten stund och försök igen.', 503);
+		}
+		return errorResponse('Något gick fel just nu. Försök gärna igen om en liten stund.', 500);
 	}
 };
 

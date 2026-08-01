@@ -1,7 +1,7 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { createServiceClient, createTokenClient } from '$lib/server/supabase-admin';
 
-type SessionUser = User & {
+export type SessionUser = User & {
 	is_super_admin: boolean;
 };
 
@@ -22,13 +22,10 @@ export function isSuperAdminUser(user: (User & UnknownRecord) | null | undefined
 	if (!user) return false;
 
 	const appMetadata = asRecord(user.app_metadata);
-	const userMetadata = asRecord(user.user_metadata);
-
 	return (
 		LEGACY_ADMIN_USER_IDS.has(user.id) ||
 		readBoolean(user.is_super_admin) ||
-		readBoolean(appMetadata.is_super_admin) ||
-		readBoolean(userMetadata.is_super_admin)
+		readBoolean(appMetadata.is_super_admin)
 	);
 }
 

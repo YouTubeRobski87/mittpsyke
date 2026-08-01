@@ -19,6 +19,9 @@ type EventName =
 	| 'forum_reply_created'
 	| 'chat_started'
 	| 'chat_message_sent'
+	| 'ai_chat_started_free_text'
+	| 'ai_chat_started_with_topic'
+	| 'ai_topic_shortcut_selected'
 	| 'return_visit'
 	| 'streak_day_reached'
 	| 'milestone_reached'
@@ -56,6 +59,11 @@ type EventName =
 	| 'diary_cta_click'
 	| 'diary_guest_entry_started'
 	| 'diary_guest_entry_saved'
+	| 'account_offer_seen'
+	| 'account_created_after_entry'
+	| 'progress_view_opened'
+	| 'returning_diary_user'
+	| 'insight_opened'
 	| 'chat_open'
 	| 'first_message_sent'
 	| 'starter_chip_clicked';
@@ -419,6 +427,24 @@ export function trackChatMessageSent() {
 	trackEvent('chat_message_sent');
 }
 
+// Chattingången. Skickar aldrig med användarens text - bara längden och den
+// eventuella ämnesgenvägens id, som är ett fast värde ur en känd lista.
+export function trackAiChatStarted(params: { topicId: string | null; textLength: number }) {
+	if (params.topicId) {
+		trackEvent('ai_chat_started_with_topic', {
+			topic: params.topicId,
+			textLength: params.textLength
+		});
+		return;
+	}
+
+	trackEvent('ai_chat_started_free_text', { textLength: params.textLength });
+}
+
+export function trackAiTopicShortcutSelected(topicId: string) {
+	trackEvent('ai_topic_shortcut_selected', { topic: topicId });
+}
+
 export function trackReturnVisit() {
 	trackEvent('return_visit');
 }
@@ -605,6 +631,50 @@ export function trackDiaryGuestEntryStarted() {
 
 export function trackDiaryGuestEntrySaved(wordCount: number) {
 	trackAnonymousWriteCompleted({ word_count: wordCount });
+}
+
+// ── Dagboksfunneln ──────────────────────────────────────────────────────────
+// Samtliga händelser nedan skickar enbart fasta enums, booleaner och
+// aggregerade tal. Aldrig dagbokstext, teman, humörvärden eller annan fritext.
+
+/** Var kontoerbjudandet visades. Fast lista, inte fri text. */
+type AccountOfferSurface = 'guest_diary';
+
+/** Var Framsteg öppnades ifrån. Fast lista. */
+type InsightType = 'diary_insights';
+
+export function trackAccountOfferSeen(surface: AccountOfferSurface) {
+	trackEvent('account_offer_seen', { surface });
+}
+
+export function trackAccountCreatedAfterEntry() {
+	trackEvent('account_created_after_entry');
+}
+
+export function trackProgressViewOpened(params: { signed_in: boolean }) {
+	trackEvent('progress_view_opened', { signed_in: params.signed_in });
+}
+
+export function trackReturningDiaryUser(params: { days_since_last: number | null }) {
+	// Saknas tidpunkt skickas ingen parameter alls hellre än ett påhittat värde.
+	if (params.days_since_last === null) {
+		trackEvent('returning_diary_user');
+		return;
+	}
+
+	trackEvent('returning_diary_user', { days_since_last: params.days_since_last });
+}
+
+export function trackInsightOpened(params: {
+	insight_type: InsightType;
+	has_summary: boolean;
+	pattern_count: number;
+}) {
+	trackEvent('insight_opened', {
+		insight_type: params.insight_type,
+		has_summary: params.has_summary,
+		pattern_count: params.pattern_count
+	});
 }
 
 function getLandingSessionId() {

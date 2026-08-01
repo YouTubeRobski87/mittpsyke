@@ -64,6 +64,12 @@
 			<p>Nej. MittPsyke är ett digitalt samtalsstöd och ett komplement till vård.</p>
 			<h3>Kan jag börja i lugn takt?</h3>
 			<p>Ja. Tjänsten är byggd för små steg och ett varsamt tempo.</p>
+			<h3>Vad händer med det jag skriver?</h3>
+			<p>
+				Utan konto rensas samtalet automatiskt inom 24 timmar. Med konto sparas det tills du
+				själv raderar det. Läs mer i <a href="/integritet">integritetspolicyn</a> och om hur
+				AI-stödet är byggt i <a href="/ansvarsfull-ai">Ansvarsfull AI</a>.
+			</p>
 		</section>
 		<!-- Källor och uppdatering -->
 		<section class="source-block" aria-label="Källor och uppdatering">

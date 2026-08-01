@@ -55,33 +55,37 @@ export const FOX_COMPANION_POSES = [
 		id: 'idle',
 		role: 'base',
 		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_idle.png') }],
+		frames: [{ src: foxPoseSrc('fox-realistic-standing-front-alert.png') }],
 		alt: 'Din följeslagare, räven, står avslappnat.',
-		weight: 3
+		weight: 3,
+		sceneAdjustment: { scale: 0.45 }
 	},
 	{
 		id: 'look-left',
 		role: 'base',
 		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_look_left.png') }],
+		frames: [{ src: foxPoseSrc('fox-realistic-standing-side-left-lake.png') }],
 		alt: 'Din följeslagare, räven, tittar lugnt åt vänster.',
-		weight: 1.1
+		weight: 1.1,
+		sceneAdjustment: { scale: 0.42 }
 	},
 	{
 		id: 'look-right',
 		role: 'base',
 		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_look_right.png') }],
+		frames: [{ src: foxPoseSrc('fox-realistic-standing-side-right-listening.png') }],
 		alt: 'Din följeslagare, räven, tittar lugnt åt höger.',
-		weight: 1.1
+		weight: 1.1,
+		sceneAdjustment: { scale: 0.46 }
 	},
 	{
 		id: 'sit',
 		role: 'base',
 		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_sit.png') }],
+		frames: [{ src: foxPoseSrc('fox-realistic-resting-sitting.png') }],
 		alt: 'Din följeslagare, räven, sitter stilla.',
-		weight: 2.2
+		weight: 2.2,
+		sceneAdjustment: { scale: 0.55 }
 	},
 	{
 		id: 'sit-look-up',
@@ -95,17 +99,19 @@ export const FOX_COMPANION_POSES = [
 		id: 'drink',
 		role: 'base',
 		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_drink.png') }],
+		frames: [{ src: foxPoseSrc('fox-realistic-lake-drinking.png') }],
 		alt: 'Din följeslagare, räven, dricker stilla vid sjön.',
-		weight: 0.75
+		weight: 0.75,
+		sceneAdjustment: { scale: 0.55 }
 	},
 	{
 		id: 'sniff',
 		role: 'base',
 		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_sniff.png') }],
+		frames: [{ src: foxPoseSrc('fox-realistic-lake-sniffing.png') }],
 		alt: 'Din följeslagare, räven, nosar försiktigt på marken.',
-		weight: 0.8
+		weight: 0.8,
+		sceneAdjustment: { scale: 0.55 }
 	},
 	{
 		id: 'stretch',
@@ -119,47 +125,48 @@ export const FOX_COMPANION_POSES = [
 		id: 'walk',
 		role: 'base',
 		dayparts: ['day'],
-		frames: [
-			{ src: foxPoseSrc('fox_walk_1.png') },
-			{ src: foxPoseSrc('fox_walk_2.png') },
-			{ src: foxPoseSrc('fox_walk_3.png') },
-			{ src: foxPoseSrc('fox_walk_4.png') }
-		],
+		// Endast en realistisk gångbild finns ännu (ingen gångcykel-animation).
+		frames: [{ src: foxPoseSrc('fox-realistic-walking-curious.png') }],
 		alt: 'Din följeslagare, räven, går långsamt genom platsen.',
 		weight: 0.22,
-		frameMs: 620
+		frameMs: 620,
+		sceneAdjustment: { scale: 0.42 }
 	},
 	{
 		id: 'evening-lake',
 		role: 'base',
 		dayparts: ['evening'],
-		frames: [{ src: foxPoseSrc('fox_evening_lake.png') }],
+		frames: [{ src: foxPoseSrc('fox-realistic-lake-sitting-gazing.png') }],
 		alt: 'Din följeslagare, räven, sitter och tittar mot sjön i kvällsljus.',
-		weight: 2.6
+		weight: 2.6,
+		sceneAdjustment: { scale: 0.55 }
 	},
 	{
 		id: 'rest',
 		role: 'base',
 		dayparts: ['evening'],
-		frames: [{ src: foxPoseSrc('fox_rest.png') }],
+		frames: [{ src: foxPoseSrc('fox-realistic-resting-lying-half-asleep.png') }],
 		alt: 'Din följeslagare, räven, ligger och vilar i kvällslugnet.',
-		weight: 1.7
+		weight: 1.7,
+		sceneAdjustment: { scale: 0.5 }
 	},
 	{
 		id: 'sleep-curled',
 		role: 'base',
 		dayparts: ['night'],
-		frames: [{ src: foxPoseSrc('fox_sleep.png') }],
+		frames: [{ src: foxPoseSrc('fox-realistic-sleeping-curled.png') }],
 		alt: 'Din följeslagare, räven, sover hoprullad.',
-		weight: 2.3
+		weight: 2.3,
+		sceneAdjustment: { scale: 0.45 }
 	},
 	{
 		id: 'sleep-side',
 		role: 'base',
 		dayparts: ['night'],
-		frames: [{ src: foxPoseSrc('fox_sleep_side.png') }],
+		frames: [{ src: foxPoseSrc('fox-realistic-sleeping-side-dreaming.png') }],
 		alt: 'Din följeslagare, räven, sover lugnt på sidan.',
-		weight: 1.8
+		weight: 1.8,
+		sceneAdjustment: { scale: 0.38 }
 	},
 	{
 		id: 'blink',
@@ -336,17 +343,20 @@ export const BEAR_SCENE_PLACEMENTS = {
 export const WOLF_SCENE_PLACEMENTS = {
 	dashboard: { scale: 0.9, x: 76, y: 84 },
 	progress: {
-		scale: 1.23,
-		bottom: '41%',
-		right: '26%',
-		groundLeft: '61.9%',
-		groundTop: '58%',
+		scale: 1.6,
+		// Vargbildens genomskinliga marginal under tassarna (se kommentaren ovan)
+		// gör att "bottom" måste sättas lägre än det visuella fotfästet för att
+		// tassarna ska hamna på gräset i stället för att glida ut i sjön.
+		bottom: '26%',
+		right: '18%',
+		groundLeft: '80%',
+		groundTop: '65%',
 		compact: {
-			scale: 1.23,
-			bottom: '39%',
-			right: '25%',
-			groundLeft: '65.8%',
-			groundTop: '58%'
+			scale: 1.55,
+			bottom: '26%',
+			right: '17%',
+			groundLeft: '79%',
+			groundTop: '66%'
 		}
 	}
 } as const;

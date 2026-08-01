@@ -4,6 +4,7 @@
 	import HealthConsent from '$lib/components/HealthConsent.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { getPortalByKey } from '$lib/data/portals';
+	import { resolveChatCategory } from '$lib/data/chat-slugs';
 	import { supabase } from '$lib/supabase';
 	import type { ChatMessage } from '$lib/types';
 	import { page } from '$app/state';
@@ -12,7 +13,9 @@
 	const STORAGE_KEY = 'mittpsyke.healthConsent';
 	const VERSION = '2026-04-29';
 
-	const category = $derived(page.params.category ?? '');
+	// Slugen i URL:en (t.ex. "angest") slås om till den interna kategorikoden ("a")
+	// som redan används i databasen, portalnycklar och /api/chat.
+	const category = $derived(resolveChatCategory(page.params.category ?? ''));
 	const portal = $derived(getPortalByKey(category));
 
 	let hasConsent = $state(false);
@@ -171,19 +174,6 @@
 			</div>
 		{/if}
 
-		<section class="chat-intro-panel" aria-labelledby="chat-intro-title">
-			<h2 id="chat-intro-title">Så går det till här</h2>
-			<p>
-				Du skriver några rader. MittPsyke svarar lugnt och hjälper dig att sortera det som känns
-				mest nära just nu.
-			</p>
-			<ul>
-				<li>Du behöver inte formulera allt perfekt.</li>
-				<li>Du kan ta en sak i taget och pausa när du vill.</li>
-				<li>Vid akut fara ska du ringa 112 i stället för att använda chatten.</li>
-			</ul>
-		</section>
-
 		<ChatWindow
 			category={category}
 			initialMessages={initialMessages}
@@ -193,40 +183,45 @@
 {/if}
 
 <style>
-	.chat-intro-panel {
-		max-width: 42rem;
-		margin: 0 auto 0.85rem;
-		padding: 0.95rem 1rem;
-		border-radius: var(--radius-card);
-		background: rgba(248, 245, 239, 0.9);
-		border: 1px solid rgba(52, 91, 55, 0.1);
-		color: inherit;
+	[data-page='chat'] {
+		display: flex;
+		flex-direction: column;
+		height: calc(100svh - 4.75rem - env(safe-area-inset-top));
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+		overflow: hidden;
+		padding-block: 0.5rem 0;
 	}
 
-	.chat-intro-panel h2 {
-		margin: 0 0 0.4rem;
-		font-size: 0.98rem;
-		font-weight: 700;
+	@supports (height: 100dvh) {
+		[data-page='chat'] {
+			height: calc(100dvh - 4.75rem - env(safe-area-inset-top));
+		}
 	}
 
-	.chat-intro-panel p {
-		margin: 0;
-		font-size: 0.94rem;
-		line-height: 1.6;
+	[data-page='chat'] :global(.chat-container) {
+		flex: 1 1 auto;
+		min-height: 0;
 	}
 
-	.chat-intro-panel ul {
-		margin: 0.65rem 0 0;
-		padding-left: 1.1rem;
-		display: grid;
-		gap: 0.35rem;
-		font-size: 0.9rem;
-		line-height: 1.55;
-	}
+	@media (max-width: 767px) {
+		[data-page='chat'] {
+			height: calc(100svh - 3.5rem - env(safe-area-inset-top));
+			padding: 0.25rem 0 0;
+		}
 
-	:global(.dark) .chat-intro-panel {
-		background: rgba(23, 29, 36, 0.84);
-		border-color: rgba(255, 255, 255, 0.08);
+		@supports (height: 100dvh) {
+			[data-page='chat'] {
+				height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
+			}
+		}
+
+		.portal-header {
+			flex: 0 0 auto;
+			margin-bottom: 0.2rem;
+		}
+
 	}
 
 	@media (max-width: 768px) {

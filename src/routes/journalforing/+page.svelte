@@ -48,7 +48,7 @@
 
 <main class="page">
 	<div class="page-container">
-		<Breadcrumbs items={[{ label: 'Funktioner', href: '/#sa-fungerar-det-fordjupning' }, { label: 'Journalföring' }]} />
+		<Breadcrumbs items={[{ label: 'Funktioner', href: '/#innehall' }, { label: 'Journalföring' }]} />
 
 		<header class="hero">
 			<h1>Dagboksskrivande för reflektion och bättre överblick</h1>

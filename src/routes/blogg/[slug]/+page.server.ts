@@ -1,42 +1,15 @@
 import { error } from '@sveltejs/kit';
-import { SORO_EMBED_SRC, SORO_TOKEN } from '$lib/soro';
+import { SORO_TOKEN } from '$lib/soro';
+import { fetchSoroArticles, normalizeSoroArticleSlug } from '$lib/server/soro-articles';
 import type { PageServerLoad } from './$types';
 
 const CACHE_CONTROL = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
 const LOCAL_FEATURED_IMAGE_BY_SLUG = new Map([['ai-dagbok', '/storify-og-image.png']]);
 const LOCAL_TITLE_BY_SLUG = new Map([['chatta-anonymt-utan-konto', 'Chatta anonymt utan konto – börja direkt']]);
 
-type SoroArticleListItem = {
-	id: string;
-	title: string;
-	slug: string;
-	excerpt: string;
-	date: string;
-	isoDate: string;
-	image: string | null;
-};
-
 type SoroArticleContentResponse = {
 	content?: string;
 };
-
-function normalizeSlug(value: string) {
-	try {
-		const decoded = decodeURIComponent(value);
-		const url = decoded.startsWith('http') ? new URL(decoded) : null;
-		const path = (url?.pathname ?? decoded).replace(/^\/+|\/+$/g, '');
-		return (path.startsWith('blogg/') ? path.slice('blogg/'.length) : path).toLowerCase();
-	} catch {
-		const path = value.replace(/^\/+|\/+$/g, '');
-		return (path.startsWith('blogg/') ? path.slice('blogg/'.length) : path).toLowerCase();
-	}
-}
-
-function extractArticles(embedScript: string) {
-	const match = embedScript.match(/var SORO_ARTICLES = (\[[\s\S]*?\]);/);
-	if (!match) return [];
-	return JSON.parse(match[1]) as SoroArticleListItem[];
-}
 
 // Soro-innehåll kan innehålla länkar utan protokoll (t.ex. href="www.1177.se").
 // Utan https:// tolkas de relativt och blir /blogg/www.1177.se (404). Lägg på https://.
@@ -76,29 +49,22 @@ function normalizeYoungMentalHealthArticleContent(content: string) {
 		);
 }
 
-async function fetchArticleList(fetcher: typeof fetch, fresh = false) {
-	const embedResponse = await fetcher(fresh ? `${SORO_EMBED_SRC}&cb=${Date.now()}` : SORO_EMBED_SRC, {
-		headers: {
-			accept: 'application/javascript,*/*',
-			'user-agent': 'Mozilla/5.0'
-		}
-	});
-
-	if (!embedResponse.ok) {
+export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
+	const requestedSlug = normalizeSoroArticleSlug(params.slug);
+	let { articles, loadError } = await fetchSoroArticles(fetch);
+	if (loadError) {
+		console.error('[blogg/article] Unable to load article list', { slug: requestedSlug, reason: 'soro_embed' });
 		throw error(502, 'Kunde inte hämta artikeln just nu.');
 	}
-
-	return extractArticles(await embedResponse.text());
-}
-
-export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
-	const requestedSlug = normalizeSlug(params.slug).toLowerCase();
-	let articles = await fetchArticleList(fetch);
-	let article = articles.find((item) => normalizeSlug(item.slug).toLowerCase() === requestedSlug);
+	let article = articles.find((item) => normalizeSoroArticleSlug(item.slug) === requestedSlug);
 
 	if (!article) {
-		articles = await fetchArticleList(fetch, true);
-		article = articles.find((item) => normalizeSlug(item.slug).toLowerCase() === requestedSlug);
+		({ articles, loadError } = await fetchSoroArticles(fetch, true));
+		if (loadError) {
+			console.error('[blogg/article] Unable to refresh article list', { slug: requestedSlug, reason: 'soro_embed' });
+			throw error(502, 'Kunde inte hämta artikeln just nu.');
+		}
+		article = articles.find((item) => normalizeSoroArticleSlug(item.slug) === requestedSlug);
 	}
 
 	if (!article) {
@@ -119,9 +85,18 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 		throw error(502, 'Kunde inte hämta artikeln just nu.');
 	}
 
-	const contentPayload = (await contentResponse.json()) as SoroArticleContentResponse;
+	let contentPayload: SoroArticleContentResponse;
+	try {
+		contentPayload = (await contentResponse.json()) as SoroArticleContentResponse;
+	} catch (cause) {
+		console.error('[blogg/article] Invalid article content response', {
+			slug: requestedSlug,
+			reason: cause instanceof Error ? cause.name : 'invalid_json'
+		});
+		throw error(502, 'Kunde inte hämta artikeln just nu.');
+	}
 
-	if (!contentPayload.content) {
+	if (typeof contentPayload.content !== 'string' || !contentPayload.content.trim()) {
 		throw error(404, 'Artikeln saknar innehåll.');
 	}
 
@@ -129,8 +104,8 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 		'cache-control': CACHE_CONTROL
 	});
 
-	const normalizedSlug = normalizeSlug(article.slug);
-	const title = LOCAL_TITLE_BY_SLUG.get(normalizedSlug) ?? article.title;
+	const normalizedSlug = normalizeSoroArticleSlug(article.slug);
+	const title = LOCAL_TITLE_BY_SLUG.get(normalizedSlug) ?? (article.title || 'Artikel');
 	const content = fixProtocolLessLinks(
 		stripLeadingH1(
 			normalizedSlug === 'psykisk-ohalsa-unga'
@@ -139,7 +114,7 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 		)
 	);
 
-	const featuredImage = LOCAL_FEATURED_IMAGE_BY_SLUG.get(normalizedSlug) ?? article.image;
+	const featuredImage = LOCAL_FEATURED_IMAGE_BY_SLUG.get(normalizedSlug) ?? article.imageUrl;
 	const ogImage = featuredImage
 		? toAbsoluteUrl(featuredImage)
 		: 'https://www.mittpsyke.se/og-image.png';

@@ -1,5 +1,5 @@
-import { env } from '$env/dynamic/private';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
+import { callClaude } from './ai/anthropic';
 
 type MoodTrend = 'stabil' | 'stigande' | 'fallande' | 'svängig' | null;
 
@@ -32,9 +32,11 @@ type DiaryRow = {
 };
 
 const STOCKHOLM_TIME_ZONE = 'Europe/Stockholm';
-const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
 const MAX_REGENERATIONS = 2;
-const AI_TIMEOUT_MS = 8000;
+const AI_TIMEOUT_MS = 15000;
+// Taket täcker thinking och svarstext tillsammans. Frågan i sig är kort —
+// SYSTEM_PROMPT begränsar den till ~15 ord — men thinking behöver utrymme.
+const AI_MAX_TOKENS = 2000;
 
 const stockholmDateFormatter = new Intl.DateTimeFormat('sv-CA', {
 	timeZone: STOCKHOLM_TIME_ZONE,
@@ -143,12 +145,6 @@ const STOP_WORDS = new Set([
 	'blev',
 	'när'
 ]);
-
-function normalizeApiKey(value: string | undefined): string | null {
-	if (!value) return null;
-	const normalized = value.trim().replace(/^['"]/, '').replace(/['"]$/, '').replace(/^Bearer\s+/i, '');
-	return normalized || null;
-}
 
 export function getStockholmDateKey(date = new Date()) {
 	return stockholmDateFormatter.format(date);
@@ -260,57 +256,23 @@ function isValidQuestion(value: string) {
 	return question.length > 0 && question.length <= 200 && !question.includes('!') && words.length <= 15;
 }
 
-function extractAnthropicText(payload: unknown) {
-	if (!payload || typeof payload !== 'object') return '';
-	const content = (payload as { content?: unknown }).content;
-	if (!Array.isArray(content)) return '';
-	return content
-		.map((item) => {
-			if (!item || typeof item !== 'object') return '';
-			const maybeText = (item as { type?: unknown; text?: unknown }).text;
-			return typeof maybeText === 'string' ? maybeText : '';
-		})
-		.join('')
-		.trim();
-}
-
 async function generateQuestionWithClaude(context: DailyQuestionContext) {
-	const apiKey = normalizeApiKey(env.ANTHROPIC_API_KEY || env.CLAUDE_API_KEY || env.STORIFY_API_KEY);
-	if (!apiKey) return fallbackQuestion(context);
-
+	// Två försök: modellen kan svara med en fråga som inte klarar isValidQuestion
+	// (för lång, utropstecken, för många ord). Ett tekniskt fel ger däremot null
+	// och då är ett omtag meningslöst — då går vi direkt på reservfrågan.
 	for (let attempt = 0; attempt < 2; attempt += 1) {
-		const controller = new AbortController();
-		const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+		const text = await callClaude({
+			label: 'daily-question',
+			system: SYSTEM_PROMPT,
+			prompt: JSON.stringify(context),
+			maxTokens: AI_MAX_TOKENS,
+			timeoutMs: AI_TIMEOUT_MS
+		});
 
-		try {
-			const response = await fetch('https://api.anthropic.com/v1/messages', {
-				method: 'POST',
-				signal: controller.signal,
-				headers: {
-					'Content-Type': 'application/json',
-					'x-api-key': apiKey,
-					'anthropic-version': '2023-06-01'
-				},
-				body: JSON.stringify({
-					model: CLAUDE_MODEL,
-					max_tokens: 100,
-					system: SYSTEM_PROMPT,
-					messages: [{ role: 'user', content: JSON.stringify(context) }]
-				})
-			});
+		if (!text) break;
 
-			if (!response.ok) {
-				console.error('Daily question Anthropic error:', response.status, await response.text());
-				continue;
-			}
-
-			const question = cleanQuestion(extractAnthropicText(await response.json()));
-			if (isValidQuestion(question)) return question;
-		} catch (error) {
-			console.error('Daily question Anthropic request failed:', error);
-		} finally {
-			clearTimeout(timeout);
-		}
+		const question = cleanQuestion(text);
+		if (isValidQuestion(question)) return question;
 	}
 
 	return fallbackQuestion(context);

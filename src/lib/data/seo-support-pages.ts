@@ -234,7 +234,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		h1: 'Hjälp mot oro online',
 		lead:
 			'Oro kan handla om allt från ekonomi och relationer till hälsa, framtid och vardagsbeslut. Här kan du läsa om vad som skiljer oro från ångest, vad som kan hjälpa i stunden och när det är dags att ta oron på större allvar.',
-		primaryCta: { href: '/chat/e', label: 'Starta samtal om oro' },
+		primaryCta: { href: '/chat/trauma', label: 'Starta samtal om oro' },
 		secondaryCta: { href: '/guider/overtankande', label: 'Läs guide om övertänkande' },
 		sections: [
 			{
@@ -306,7 +306,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		h1: 'Hjälp vid depression online',
 		lead:
 			'När allt känns tyngre än vanligt kan även små saker bli svåra att få gjort. Den här sidan samlar lugn information om vanliga symtom vid depression, varför tidigt stöd spelar roll och hur du kan börja idag utan att pressa dig mer än du orkar.',
-		primaryCta: { href: '/chat/b', label: 'Starta samtal om nedstämdhet' },
+		primaryCta: { href: '/chat/nedstamdhet', label: 'Starta samtal om nedstämdhet' },
 		secondaryCta: { href: '/depression', label: 'Läs översikt om depression' },
 		sections: [
 			{
@@ -332,7 +332,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		resourceListItems: [
 			{ href: '/dagbok', label: 'Dagbok', description: 'för att skriva av dig när tankarna känns tröga eller otydliga.' },
 			{ href: '/framsteg', label: 'Framsteg', description: 'om du vill kunna följa små förändringar över tid när du har konto.' },
-			{ href: '/chat/b', label: 'Samtal om nedstämdhet', description: 'när du vill börja i text i stället för att bära allt själv.' },
+			{ href: '/chat/nedstamdhet', label: 'Samtal om nedstämdhet', description: 'när du vill börja i text i stället för att bära allt själv.' },
 			{ href: '/om-mittpsyke', label: 'Om MittPsyke', description: 'om du vill förstå vad tjänsten är och inte är innan du använder den.' }
 		],
 		nextStepTitle: 'Om du behöver mer än ett första steg',
@@ -341,7 +341,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			'Vid vårdråd kan du vända dig till 1177. Vid akut fara eller om du inte kan hålla dig själv säker ska du ringa 112 direkt.'
 		],
 		nextStepLinks: [
-			{ href: '/chat/b', label: 'Öppna samtalet' },
+			{ href: '/chat/nedstamdhet', label: 'Öppna samtalet' },
 			{ href: '/dagbok', label: 'Skriv några rader' },
 			{ href: '/depression', label: 'Gå till översikt om depression' }
 		],
@@ -405,7 +405,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			{ href: '/andningsovningar-mot-angest', label: 'Andningsövningar mot ångest', description: 'när du behöver börja i kroppen och sakta ner tempot.' },
 			{ href: '/4-7-8-andning-ovning', label: '4-7-8-andning', description: 'om du vill testa en enkel, tydlig övning direkt.' },
 			{ href: '/exponering-ovningar-mot-angest', label: 'Exponeringsövningar mot ångest', description: 'om undvikande har blivit ett återkommande mönster.' },
-			{ href: '/chat/a', label: 'Samtal om ångest', description: 'när du vill kombinera övningar med reflektion i text.' }
+			{ href: '/chat/angest', label: 'Samtal om ångest', description: 'när du vill kombinera övningar med reflektion i text.' }
 		],
 		nextStepTitle: 'Välj en nivå som känns möjlig',
 		nextStepParagraphs: [
@@ -449,7 +449,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		h1: 'Psykiskt stöd online',
 		lead:
 			'Digitalt psykiskt stöd kan fylla olika roller beroende på vad du behöver. Här går vi igenom vad stödet faktiskt kan hjälpa med, vad det inte ska blandas ihop med och vilka styrkor och begränsningar som är viktiga att känna till.',
-		primaryCta: { href: '/chat/a', label: 'Börja anonymt' },
+		primaryCta: { href: '/chat/angest', label: 'Börja anonymt' },
 		secondaryCta: { href: '/register', label: 'Skapa din egen plats' },
 		sections: [
 			{
@@ -615,9 +615,9 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		],
 		resourceListTitle: 'Bra nästa steg beroende på behov',
 		resourceListItems: [
-			{ href: '/chat/a', label: 'Samtal om ångest', description: 'om oron eller kroppslig ångest är det som känns mest akut just nu.' },
-			{ href: '/chat/b', label: 'Samtal om nedstämdhet', description: 'om orken är låg och du vill börja varsamt i text.' },
-			{ href: '/chat/e', label: 'Samtal om stress och oro', description: 'om du främst känner överbelastning eller grubbel.' },
+			{ href: '/chat/angest', label: 'Samtal om ångest', description: 'om oron eller kroppslig ångest är det som känns mest akut just nu.' },
+			{ href: '/chat/nedstamdhet', label: 'Samtal om nedstämdhet', description: 'om orken är låg och du vill börja varsamt i text.' },
+			{ href: '/chat/trauma', label: 'Samtal om stress och oro', description: 'om du främst känner överbelastning eller grubbel.' },
 			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva först och återkomma när du behöver.' }
 		],
 		nextStepTitle: 'När du behöver något nu och något mer senare',
@@ -662,7 +662,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		h1: 'Stöd vid stress online',
 		lead:
 			'Stress blir lätt ett ord för allt, men långvarig stress sätter sig ofta tydligt i både kropp, tankar och vardag. Här kan du läsa om hur kronisk stress kan märkas och vad som kan hjälpa när återhämtningen inte längre kommer av sig själv.',
-		primaryCta: { href: '/chat/e', label: 'Starta samtal om stress' },
+		primaryCta: { href: '/chat/trauma', label: 'Starta samtal om stress' },
 		secondaryCta: { href: '/guider/stress', label: 'Läs guide om stress' },
 		sections: [
 			{
@@ -697,7 +697,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			'För vårdråd kan du kontakta 1177. Vid akut fara ska du ringa 112.'
 		],
 		nextStepLinks: [
-			{ href: '/chat/e', label: 'Prata om stress' },
+			{ href: '/chat/trauma', label: 'Prata om stress' },
 			{ href: '/dagbok', label: 'Skriv av dig' },
 			{ href: '/guider/stress', label: 'Läs mer om stress' }
 		],
@@ -733,7 +733,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		h1: 'Stöd vid PTSD online',
 		lead:
 			'Traumarelaterade symtom kan vara svåra att beskriva och ännu svårare att leva med. Den här sidan samlar varsam information om vanliga PTSD-symtom, vad som kan hjälpa i vardagen och när digitalt stöd behöver kompletteras med professionell hjälp.',
-		primaryCta: { href: '/chat/a', label: 'Starta ett lugnt samtal' },
+		primaryCta: { href: '/chat/angest', label: 'Starta ett lugnt samtal' },
 		secondaryCta: { href: '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma', label: 'Läs om samtalsstöd vid trauma' },
 		sections: [
 			{
@@ -768,7 +768,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			'Vid akut fara eller om du inte känner dig säker ska du ringa 112. För vårdråd kan du kontakta 1177.'
 		],
 		nextStepLinks: [
-			{ href: '/chat/a', label: 'Börja försiktigt i chatten' },
+			{ href: '/chat/angest', label: 'Börja försiktigt i chatten' },
 			{ href: '/dagbok', label: 'Skriv om nuläget' },
 			{ href: '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma', label: 'Läs mer om trauma' }
 		],

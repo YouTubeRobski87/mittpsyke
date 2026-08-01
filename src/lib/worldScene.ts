@@ -13,7 +13,8 @@ export type LivingWorldEffectKind =
 	| 'bird'
 	| 'butterfly'
 	| 'leaf'
-	| 'cloud';
+	| 'cloud'
+	| 'drift';
 
 export type LivingWorldEffect = {
 	id: string;
@@ -28,6 +29,13 @@ export type LivingWorldEffect = {
 	delayMs?: number;
 	opacity?: number;
 	scale?: number;
+	/**
+	 * Parallaxdjup: 0 = längst bort, 1 = närmast betraktaren. Skalar hur långt
+	 * effekten rör sig i sina keyframes, så avlägsna lager (fjärran dimma, moln)
+	 * driver långsammare och kortare än nära lager (strandgräs, fallande löv).
+	 * Utelämnad = 0.5, dvs mellanplan.
+	 */
+	depth?: number;
 };
 
 export type LivingWorldEvent = {
@@ -69,18 +77,19 @@ const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
 	bird: true,
 	butterfly: true,
 	leaf: true,
-	cloud: true
+	cloud: true,
+	drift: true
 };
 
-// Pausat tills scenen har separata, transparenta assets för vatten, moln och lövverk.
-// De tidigare CSS-lagren konkurrerade visuellt med den illustrerade bakgrunden utan att
-// ge en pålitligt synlig rörelse i faktisk rendering. Behåll definitionerna så att de
-// kan återaktiveras med rätt originalassets, utan att ändra scenens lagerstruktur.
+// Extensionspunkt för att stänga av en effekttyp i hela scenen utan att röra
+// enskilda effekter - t.ex. när en effekt inte har rätt assets ännu.
+//
+// Molnen är fortsatt pausade: de täta CSS-blobbarna konkurrerar visuellt med
+// fotots egen himmel. För att slå på dem behöver .world-cloud i
+// AmbientWorld.svelte först göras om till breda, flacka slöjor med
+// soft-light-blend så de lägger sig i fotots ljus i stället för ovanpå det.
 const PAUSED_AMBIENT_FEATURES: Partial<Record<LivingWorldEffectKind, boolean>> = {
-
-	water: false,
-	cloud: false,
-	foliage: false
+	cloud: false
 };
 
 const baseEffects: LivingWorldEffect[] = [
@@ -148,7 +157,72 @@ const baseEffects: LivingWorldEffect[] = [
 		height: 27,
 		durationMs: 64_000,
 		delayMs: -34_000,
-		opacity: 0.26
+		// Tydligt synlig rörelse i vattnet, men fortfarande lugn - se den
+		// breddade rörelseamplituden i waterSurfaceDrift (WaterLayer.svelte).
+		opacity: 0.34
+	},
+	{
+		// Den primära, tydligt synliga vattenrörelsen: en varm ljusglimt som
+		// långsamt sveper över vattenytan (helt annat visuellt uttryck än
+		// water-surface ovan, inte bara högre opacitet på samma mönster).
+		// Startar synlig inom ~2s (se waterGlintSweep i WaterLayer.svelte).
+		id: 'water-glint',
+		kind: 'water',
+		enabled: true,
+		className: 'water-glint',
+		x: 2,
+		y: 49,
+		width: 58,
+		height: 18,
+		durationMs: 9_000,
+		delayMs: 0,
+		opacity: 0.75
+	},
+	// Kontinuerligt upprepade vattenringar - den tydligaste "vattnet rör sig"-
+	// signalen, eftersom en ring är en otvetydig vattenform (till skillnad från
+	// en abstrakt glimt/sken). Loopar hela tiden i stället för att vänta på
+	// den slumpmässiga shore-ripple-händelsen. Se .water-ripple-loop.
+	{
+		id: 'water-ripple-loop-one',
+		kind: 'water',
+		enabled: true,
+		className: 'water-ripple-loop',
+		x: 51,
+		y: 60,
+		width: 9,
+		height: 3.1,
+		durationMs: 4_200,
+		delayMs: 0,
+		opacity: 0.75,
+		scale: 1
+	},
+	{
+		id: 'water-ripple-loop-two',
+		kind: 'water',
+		enabled: true,
+		className: 'water-ripple-loop',
+		x: 35,
+		y: 64,
+		width: 7.5,
+		height: 2.6,
+		durationMs: 5_000,
+		delayMs: -1_700,
+		opacity: 0.65,
+		scale: 0.82
+	},
+	{
+		id: 'water-ripple-loop-three',
+		kind: 'water',
+		enabled: true,
+		className: 'water-ripple-loop',
+		x: 61,
+		y: 66,
+		width: 7,
+		height: 2.4,
+		durationMs: 4_600,
+		delayMs: -2_900,
+		opacity: 0.6,
+		scale: 0.75
 	},
 	{
 		id: 'grass-left',
@@ -174,9 +248,13 @@ const baseEffects: LivingWorldEffect[] = [
 		height: 28,
 		durationMs: 36_000,
 		delayMs: -20_000,
-		opacity: 0.24
+		opacity: 0.26
 	},
 	{
+		// Motsvarar den fotografiska grenen som hänger in uppifrån höger i
+		// dashboard-lakeside-world.png. Egen, kort duration/delay (skild från
+		// foliageBreathe/grässvajen) så den svaga vindrörelsen i canopySway
+		// (AmbientWorld.svelte) inte känns synkad med gräset vid stranden.
 		id: 'canopy-right',
 		kind: 'foliage',
 		enabled: true,
@@ -185,61 +263,130 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 0,
 		width: 24,
 		height: 22,
-		durationMs: 44_000,
-		delayMs: -31_000,
-		opacity: 0.2
+		durationMs: 7_400,
+		delayMs: -2_600,
+		opacity: 0.22
+	},
+	// Ett fåtal långsamt svävande ljuspartiklar/dimstråk i övre delen av
+	// scenen (aldrig i följeslagarens eller textens område), synliga direkt
+	// och kontinuerligt - inte slumpmässiga händelser. Se driftFloat i
+	// AmbientWorld.svelte.
+	{
+		id: 'drift-one',
+		kind: 'drift',
+		enabled: true,
+		x: 18,
+		y: 10,
+		width: 5,
+		height: 5,
+		durationMs: 8_000,
+		delayMs: 0,
+		opacity: 0.75
+	},
+	{
+		id: 'drift-two',
+		kind: 'drift',
+		enabled: true,
+		x: 46,
+		y: 18,
+		width: 4,
+		height: 4,
+		durationMs: 9_500,
+		delayMs: -1_500,
+		opacity: 0.65
+	},
+	{
+		id: 'drift-three',
+		kind: 'drift',
+		enabled: true,
+		x: 67,
+		y: 7,
+		width: 4.6,
+		height: 4.6,
+		durationMs: 11_000,
+		delayMs: -3_000,
+		opacity: 0.7
 	}
 ];
 
+// Parallaxdjup per effekt: 0 = längst bort, 1 = närmast. Samlat här i stället
+// för utspritt i baseEffects ovan, så hela djupordningen i scenen går att läsa
+// och justera på ett ställe. Effekter som saknas här hamnar på mellanplan.
+//
+// Ordningen speglar hur scenen faktiskt ser ut: himmel/moln längst bort, sedan
+// sjön, sedan stranden, och lövverket närmast betraktaren.
+const EFFECT_DEPTHS: Record<string, number> = {
+	sunlight: 0.05,
+	'cloud-back': 0.1,
+	'cloud-front': 0.2,
+	'mist-two': 0.22,
+	'mist-one': 0.32,
+	'water-surface': 0.4,
+	'water-glint': 0.45,
+	'water-ripple-loop-three': 0.42,
+	'water-ripple-loop-two': 0.52,
+	'water-ripple-loop-one': 0.58,
+	'drift-three': 0.55,
+	'drift-two': 0.65,
+	'drift-one': 0.72,
+	'grass-bank': 0.7,
+	'grass-left': 0.8,
+	'canopy-right': 0.95
+};
+
+// Chansvärden höjda så att en händelse nästan alltid väljs när minst en typ är
+// aktuell för dagpart/säsong (se chooseEvent() i AmbientWorld.svelte) - det gör
+// naturhändelserna mer sannolika utan att ändra hur ofta de *försöker* ske
+// (det styrs av schemaläggningen i AmbientWorld.svelte).
 const baseEvents: Omit<LivingWorldEvent, 'enabled'>[] = [
 	{
 		id: 'shore-ripple',
 		kind: 'water',
-		chance: 0.68,
+		chance: 0.8,
 		durationMs: [3_800, 5_800],
 		positions: [
-			{ x: 51, y: 60, scale: 0.85, opacity: 0.2 },
-			{ x: 61, y: 66, scale: 0.7, opacity: 0.16 },
-			{ x: 34, y: 64, scale: 0.62, opacity: 0.12 }
+			{ x: 51, y: 60, scale: 0.95, opacity: 0.32 },
+			{ x: 61, y: 66, scale: 0.8, opacity: 0.26 },
+			{ x: 34, y: 64, scale: 0.72, opacity: 0.22 }
 		]
 	},
 	{
 		id: 'distant-birds',
 		kind: 'bird',
-		chance: 0.06,
+		chance: 0.1,
 		durationMs: [8_000, 12_000],
 		positions: [
-			{ x: -5, y: 22, scale: 0.72, opacity: 0.2 },
-			{ x: -4, y: 29, scale: 0.58, opacity: 0.14 }
+			{ x: -5, y: 22, scale: 0.72, opacity: 0.4 },
+			{ x: -4, y: 29, scale: 0.58, opacity: 0.3 }
 		]
 	},
 	{
 		id: 'daytime-butterfly',
 		kind: 'butterfly',
-		chance: 0.05,
+		chance: 0.09,
 		durationMs: [6_500, 9_000],
 		positions: [
-			{ x: 16, y: 66, scale: 0.9, opacity: 0.26 },
-			{ x: 29, y: 72, scale: 0.72, opacity: 0.2 }
+			{ x: 16, y: 66, scale: 0.9, opacity: 0.42 },
+			{ x: 29, y: 72, scale: 0.72, opacity: 0.32 }
 		]
 	},
 	{
 		id: 'autumn-leaf',
 		kind: 'leaf',
-		chance: 0.04,
+		chance: 0.08,
 		durationMs: [5_500, 7_500],
 		positions: [
-			{ x: 77, y: 9, scale: 0.9, opacity: 0.24 },
-			{ x: 67, y: 16, scale: 0.7, opacity: 0.18 }
+			{ x: 77, y: 9, scale: 0.9, opacity: 0.4 },
+			{ x: 67, y: 16, scale: 0.7, opacity: 0.3 }
 		]
 	}
 ];
 
 function getMistOpacity(timeOfDay: ProgressCompanionDayState): number {
-	if (timeOfDay === 'morning') return 0.2;
-	if (timeOfDay === 'evening') return 0.17;
-	if (timeOfDay === 'night') return 0.18;
-	return 0.055;
+	if (timeOfDay === 'morning') return 0.3;
+	if (timeOfDay === 'evening') return 0.27;
+	if (timeOfDay === 'night') return 0.29;
+	return 0.24;
 }
 
 export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWorldScene {
@@ -252,7 +399,7 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 	const mistOpacity = getMistOpacity(timeOfDay);
 
 	const effects = baseEffects.map((effect) => {
-		const next = { ...effect };
+		const next = { ...effect, depth: effect.depth ?? EFFECT_DEPTHS[effect.id] ?? 0.5 };
 
 		if (next.kind === 'mist') {
 			next.opacity = mistOpacity * (effect.id === 'mist-two' ? 0.72 : 1);

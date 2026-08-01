@@ -3,7 +3,9 @@
   import SEO from '$lib/components/SEO.svelte';
   import AccountTeaser from '$lib/components/AccountTeaser.svelte';
   import CompanionPose from '$lib/components/CompanionPose.svelte';
-  import LivingWorld from '$lib/components/LivingWorld.svelte';
+  import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
+  import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
+  import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
   import {
     ArrowRight,
     BarChart3,
@@ -20,6 +22,9 @@
   import {
     getDashboardCompanionScene,
     COMPANION_WORLD_SCENE_IMAGE,
+    COMPANION_WORLD_SCENE_SRCSET,
+    COMPANION_WORLD_SCENE_BACKDROP,
+    COMPANION_WORLD_SCENE_FALLBACK,
     getProgressCompanionAnimal,
     getProgressCompanionArtId,
     getProgressCompanionHeroFocus,
@@ -53,6 +58,7 @@
       dashboardFocusLabel: string;
     };
     progressCompanion: ProgressCompanionSelection | string | null;
+    companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
     isAnonymous?: boolean;
   };
 
@@ -94,6 +100,7 @@
   const selectedCompanion = $derived(getProgressCompanionAnimal(displayedCompanionSelection));
   const hasSelectedCompanion = $derived(Boolean(selectedCompanion));
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
+  const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
   const companionHeroImage = GENERIC_COMPANION_HERO_IMAGE;
   const heroCompanionId = $derived(
@@ -110,13 +117,13 @@
           {
             icon: PenLine,
             tone: 'green',
-            title: 'Din dagbok kan följa med dig',
+            title: 'Din dagbok sparas med konto',
             time: 'När du vill spara'
           },
           {
             icon: Wind,
             tone: 'purple',
-            title: 'Dina små steg kan samlas här',
+            title: 'Dina små steg samlas här',
             time: 'I din takt'
           },
           {
@@ -165,6 +172,7 @@
 <SEO canonical="https://www.mittpsyke.se/dashboard" />
 
 <div class="mp-dashboard">
+  <CompanionPresenceTracker enabled={!isAnonymous} />
   <div class="dashboard-shell">
     <main class="dashboard-main" aria-labelledby="dashboard-title">
       <header class="topbar">
@@ -189,15 +197,30 @@
         class:personal-preview={isAnonymous}
         data-companion={heroCompanionId}
         aria-labelledby="companion-title"
-        style={`--hero-image: ${companionHeroImage ? `url('${companionHeroImage}')` : 'none'}; --hero-focus: ${heroFocus};`}
+        style={`--hero-image: ${companionHeroImage ? `url('${COMPANION_WORLD_SCENE_BACKDROP}')` : 'none'}; --hero-focus: ${heroFocus};`}
       >
+        <!-- width/height ger webbläsaren bildens proportioner innan den laddats,
+             så hjältekortet inte hoppar till. fetchpriority="high" eftersom det
+             här är sidans LCP-element. -->
+        <!-- Mitt Hem har en sidokolumn på desktop; hero-rutan är då som mest 984 px
+             bred. Det egna sizes-värdet hindrar att 800w förstoras till desktopbredd. -->
         <img
           class="companion-hero-scene"
-          src={companionHeroImage}
+          srcset={COMPANION_WORLD_SCENE_SRCSET}
+          sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1440px) calc(100vw - 360px), 984px"
+          src={COMPANION_WORLD_SCENE_FALLBACK}
           alt=""
           aria-hidden="true"
+          width="1672"
+          height="941"
+          fetchpriority="high"
           decoding="async"
         />
+        <!-- Grenen/löven uppe till höger ligger inbränd i companionHeroImage (ingen
+             alfakanal). När en mattad utklippsfil finns (t.ex.
+             dashboard-lakeside-world-foliage.webp), lägg ett eget <img> här med
+             samma object-fit/object-position, klassen "companion-hero-foliage",
+             och animera med canopySway (AmbientWorld.svelte). -->
         <CompanionPose
           class="hero-companion-pose"
           companionId={heroCompanionId}
@@ -209,7 +232,8 @@
                 : null
           }
         />
-        <LivingWorld scene={livingWorldScene} class="hero-living-world" />
+        <AmbientWorld scene={livingWorldScene} class="hero-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
+        <CompanionFriend class="hero-companion-friend" companionId={heroCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
         <div class="hero-copy">
           <h2 id="companion-title">Din följeslagare</h2>
           <p>Den finns kvar här när du återvänder.</p>
@@ -479,6 +503,8 @@
     justify-content: space-between;
     gap: 0.8rem;
     width: 100%;
+    /* 44px = Apples HIG-minimum för träffytor. */
+    min-height: 44px;
     padding: 0;
     border: 0;
     background: transparent;
@@ -684,7 +710,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 42px;
+    min-height: 44px;
     padding: 0.62rem 1rem;
     border-radius: 8px;
     border: 1px solid rgba(85, 124, 104, 0.18);
@@ -1051,7 +1077,8 @@
     align-items: center;
     justify-content: center;
     gap: 0.55rem;
-    min-height: 38px;
+    /* 44px är Apples HIG-minimum för träffytor. 38px gav missar på mobil. */
+    min-height: 44px;
     margin-top: auto;
     border-radius: 10px;
     border: 1px solid color-mix(in srgb, var(--accent, var(--mp-green)) 22%, transparent);
@@ -1156,7 +1183,7 @@
   }
 
   .mp-dashboard .text-link {
-    min-height: 42px;
+    min-height: 44px;
     margin-top: 0.25rem;
     padding: 0.68rem 0.85rem;
     border: 1px solid #a7bfd6;
@@ -1288,7 +1315,7 @@
   }
 
   .mp-dashboard .card-button {
-    min-height: 42px;
+    min-height: 44px;
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.26) inset;
     transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
   }
@@ -1467,7 +1494,10 @@
       bottom: auto;
       padding: 0.55rem 0.72rem;
       gap: 0.5rem;
-      max-width: calc(100% - 24px);
+      /* Brickan är högerankrad och .hero-copy vänsterankrad i samma vertikala
+         band. Utan ett breddtak här växte brickan in över rubriken. Taket och
+         .hero-copys bredd måste tillsammans lämna luft för sidoavstånden. */
+      max-width: 46%;
     }
 
     .time-badge :global(svg) {
@@ -1511,8 +1541,10 @@
       padding: 14px 12px 16px;
     }
 
+    /* Smalare, inte bredare, ju mindre skärmen blir - annars möter texten
+       tidsbrickan på högersidan. */
     .hero-copy {
-      max-width: 50%;
+      max-width: 44%;
     }
 
     .hero-copy h2 {
@@ -1521,6 +1553,9 @@
 
     .time-badge {
       padding: 0.48rem 0.62rem;
+      /* Snävare tak än 620px-regeln: utrymmet mellan rubrik och bricka blir
+         annars nere på ett par pixlar här. */
+      max-width: 42%;
     }
 
   }
@@ -1554,10 +1589,16 @@
     }
 
     .hero-copy {
-      max-width: 52%;
+      max-width: 44%;
     }
 
     .hero-copy p {
+      display: none;
+    }
+
+    /* På de smalaste skärmarna räcker hälsningen. Utan detta trycks
+       noteringen ihop till tre rader och brickan blir onödigt bred. */
+    .time-badge small {
       display: none;
     }
 

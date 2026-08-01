@@ -1,10 +1,10 @@
 import { guides, pillars } from '$lib/seo-kit/content';
 import { canonical } from '$lib/seo-kit/seo';
 import { tools } from '$lib/data/seo-architecture';
-import { portals } from '$lib/data/portals';
 import { seoSupportPagePaths } from '$lib/data/seo-support-pages';
 import { SORO_EMBED_SRC } from '$lib/soro';
 import { getArticleTopics, getPublishedArticles } from '$lib/server/article-content';
+import { getContentLastmod } from '$lib/server/content-freshness';
 import type { RequestHandler } from './$types';
 
 const STATIC_CONTENT_LASTMOD = '2026-03-29';
@@ -163,51 +163,268 @@ function dedupeEntries(entries: SitemapEntry[]): SitemapEntry[] {
 
 export const GET: RequestHandler = async ({ fetch }) => {
 	const standalonePages: SitemapEntry[] = [
-		{ path: '/', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '1.0' },
-		{ path: '/dagbok', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'weekly', priority: '0.9' },
+		{
+			path: '/',
+			lastmod: getContentLastmod(
+				['src/routes/+page.svelte', 'src/routes/+page.server.ts'],
+				STATIC_CONTENT_LASTMOD
+			),
+			changefreq: 'weekly',
+			priority: '1.0'
+		},
+		{
+			path: '/dagbok',
+			lastmod: getContentLastmod(
+				['src/routes/dagbok/+page.svelte', 'src/routes/dagbok/+page.server.ts', 'src/routes/dagbok/+page.ts'],
+				STATIC_CONTENT_LASTMOD
+			),
+			changefreq: 'weekly',
+			priority: '0.9'
+		},
 		{
 			path: '/anonyma-berattelser',
-			lastmod: STATIC_CONTENT_LASTMOD,
+			lastmod: getContentLastmod(
+				['src/routes/anonyma-berattelser/+page.svelte', 'src/routes/anonyma-berattelser/+page.server.ts'],
+				STATIC_CONTENT_LASTMOD
+			),
 			changefreq: 'monthly',
 			priority: '0.6'
 		},
 		{ path: '/guider', lastmod: latestGuideLastmod, changefreq: 'weekly', priority: '0.8' },
-		{ path: '/ovningar', lastmod: TOOL_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{ path: '/blogg', lastmod: BLOG_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{ path: '/om-mittpsyke', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.5' },
-		{ path: '/for-organisationer', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.5' },
-		{ path: '/om-skaparen', lastmod: CREATOR_LASTMOD, changefreq: 'monthly', priority: '0.5' },
-		{ path: '/premium', lastmod: PREMIUM_LASTMOD, changefreq: 'monthly', priority: '0.5' },
-		{ path: '/feedback', lastmod: FEEDBACK_LASTMOD, changefreq: 'monthly', priority: '0.5' },
-		{ path: '/ansvar', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
-		{ path: '/integritet', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
-		{ path: '/redaktionell-metod', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
-		{ path: '/tillganglighet', lastmod: LEGAL_LASTMOD, changefreq: 'yearly', priority: '0.3' },
-		{ path: '/skriv', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{ path: '/4-7-8-andning-ovning', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.6' },
-		{ path: '/ai-samtalsstod-online', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{ path: '/andningsovningar-mot-angest', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.6' },
-		{ path: '/anonym-dagbok-online', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{ path: '/guider/anonym-dagbok-online', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{ path: '/guider/dagbok-och-reflektion', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{ path: '/digital-dagbok-for-maende', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{ path: '/exponering-ovningar-mot-angest', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.6' },
-		{ path: '/hjalp-vid-angest-online', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.7' },
-		{ path: '/humorsparning', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.6' },
-		{ path: '/journalforing', lastmod: STATIC_CONTENT_LASTMOD, changefreq: 'monthly', priority: '0.6' },
-		{ path: '/angest', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.8' },
-		{ path: '/depression', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.8' },
-		{ path: '/ensamhet', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
-		{ path: '/nedstamdhet', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
-		{ path: '/oro', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
-		{ path: '/panikattack', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
-		{ path: '/sjalvkansla', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
-		{ path: '/sovproblem', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
-		{ path: '/stress', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
-		{ path: '/trauma', lastmod: GUIDE_FALLBACK_LASTMOD, changefreq: 'weekly', priority: '0.7' },
+		{
+			path: '/ovningar',
+			lastmod: getContentLastmod('src/routes/ovningar/+page.svelte', TOOL_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/blogg',
+			lastmod: getContentLastmod(
+				['src/routes/blogg/+page.svelte', 'src/routes/blogg/+page.server.ts'],
+				BLOG_LASTMOD
+			),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/om-mittpsyke',
+			lastmod: getContentLastmod('src/routes/om-mittpsyke/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.5'
+		},
+		{
+			path: '/for-organisationer',
+			lastmod: getContentLastmod('src/routes/for-organisationer/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.5'
+		},
+		{
+			path: '/om-skaparen',
+			lastmod: getContentLastmod('src/routes/om-skaparen/+page.svelte', CREATOR_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.5'
+		},
+		{
+			path: '/premium',
+			lastmod: getContentLastmod(
+				['src/routes/premium/+page.svelte', 'src/routes/premium/+page.ts'],
+				PREMIUM_LASTMOD
+			),
+			changefreq: 'monthly',
+			priority: '0.5'
+		},
+		{
+			path: '/feedback',
+			lastmod: getContentLastmod(
+				['src/routes/feedback/+page.svelte', 'src/routes/feedback/+page.server.ts'],
+				FEEDBACK_LASTMOD
+			),
+			changefreq: 'monthly',
+			priority: '0.5'
+		},
+		{
+			path: '/ansvar',
+			lastmod: getContentLastmod('src/routes/ansvar/+page.svelte', LEGAL_LASTMOD),
+			changefreq: 'yearly',
+			priority: '0.3'
+		},
+		{
+			path: '/integritet',
+			lastmod: getContentLastmod('src/routes/integritet/+page.svelte', LEGAL_LASTMOD),
+			changefreq: 'yearly',
+			priority: '0.3'
+		},
+		{
+			path: '/redaktionell-metod',
+			lastmod: getContentLastmod('src/routes/redaktionell-metod/+page.svelte', LEGAL_LASTMOD),
+			changefreq: 'yearly',
+			priority: '0.3'
+		},
+		{
+			path: '/ansvarsfull-ai',
+			lastmod: getContentLastmod('src/routes/ansvarsfull-ai/+page.svelte', LEGAL_LASTMOD),
+			changefreq: 'yearly',
+			priority: '0.3'
+		},
+		{
+			path: '/tillganglighet',
+			lastmod: getContentLastmod('src/routes/tillganglighet/+page.svelte', LEGAL_LASTMOD),
+			changefreq: 'yearly',
+			priority: '0.3'
+		},
+		{
+			path: '/skriv',
+			lastmod: getContentLastmod('src/routes/skriv/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/4-7-8-andning-ovning',
+			lastmod: getContentLastmod(
+				['src/routes/4-7-8-andning-ovning/+page.svelte', 'src/routes/4-7-8-andning-ovning/+page.ts'],
+				STATIC_CONTENT_LASTMOD
+			),
+			changefreq: 'monthly',
+			priority: '0.6'
+		},
+		{
+			path: '/ai-samtalsstod-online',
+			lastmod: getContentLastmod('src/routes/ai-samtalsstod-online/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/andningsovningar-mot-angest',
+			lastmod: getContentLastmod('src/routes/andningsovningar-mot-angest/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.6'
+		},
+		{
+			path: '/anonym-dagbok-online',
+			lastmod: getContentLastmod('src/routes/anonym-dagbok-online/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/guider/anonym-dagbok-online',
+			lastmod: getContentLastmod('src/routes/guider/anonym-dagbok-online/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/guider/dagbok-och-reflektion',
+			lastmod: getContentLastmod('src/routes/guider/dagbok-och-reflektion/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/digital-dagbok-for-maende',
+			lastmod: getContentLastmod('src/routes/digital-dagbok-for-maende/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/exponering-ovningar-mot-angest',
+			lastmod: getContentLastmod('src/routes/exponering-ovningar-mot-angest/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.6'
+		},
+		{
+			path: '/hjalp-vid-angest-online',
+			lastmod: getContentLastmod('src/routes/hjalp-vid-angest-online/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/humorsparning',
+			lastmod: getContentLastmod('src/routes/humorsparning/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.6'
+		},
+		{
+			path: '/journalforing',
+			lastmod: getContentLastmod('src/routes/journalforing/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.6'
+		},
+		{
+			path: '/angest',
+			lastmod: getContentLastmod(
+				['src/routes/angest/+page.svelte', 'src/routes/angest/+page.server.ts'],
+				GUIDE_FALLBACK_LASTMOD
+			),
+			changefreq: 'weekly',
+			priority: '0.8'
+		},
+		{
+			path: '/depression',
+			lastmod: getContentLastmod('src/routes/depression/+page.svelte', GUIDE_FALLBACK_LASTMOD),
+			changefreq: 'weekly',
+			priority: '0.8'
+		},
+		{
+			path: '/ensamhet',
+			lastmod: getContentLastmod('src/routes/ensamhet/+page.svelte', GUIDE_FALLBACK_LASTMOD),
+			changefreq: 'weekly',
+			priority: '0.7'
+		},
+		{
+			path: '/nar-familjen-ar-i-kris',
+			lastmod: getContentLastmod(
+				'src/routes/nar-familjen-ar-i-kris/+page.svelte',
+				STATIC_CONTENT_LASTMOD
+			),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
+			path: '/nedstamdhet',
+			lastmod: getContentLastmod('src/routes/nedstamdhet/+page.svelte', GUIDE_FALLBACK_LASTMOD),
+			changefreq: 'weekly',
+			priority: '0.7'
+		},
+		{
+			path: '/oro',
+			lastmod: getContentLastmod('src/routes/oro/+page.svelte', GUIDE_FALLBACK_LASTMOD),
+			changefreq: 'weekly',
+			priority: '0.7'
+		},
+		{
+			path: '/panikattack',
+			lastmod: getContentLastmod('src/routes/panikattack/+page.svelte', GUIDE_FALLBACK_LASTMOD),
+			changefreq: 'weekly',
+			priority: '0.7'
+		},
+		{
+			path: '/sjalvkansla',
+			lastmod: getContentLastmod('src/routes/sjalvkansla/+page.svelte', GUIDE_FALLBACK_LASTMOD),
+			changefreq: 'weekly',
+			priority: '0.7'
+		},
+		{
+			path: '/sovproblem',
+			lastmod: getContentLastmod('src/routes/sovproblem/+page.svelte', GUIDE_FALLBACK_LASTMOD),
+			changefreq: 'weekly',
+			priority: '0.7'
+		},
+		{
+			path: '/stress',
+			lastmod: getContentLastmod('src/routes/stress/+page.svelte', GUIDE_FALLBACK_LASTMOD),
+			changefreq: 'weekly',
+			priority: '0.7'
+		},
+		{
+			path: '/trauma',
+			lastmod: getContentLastmod('src/routes/trauma/+page.svelte', GUIDE_FALLBACK_LASTMOD),
+			changefreq: 'weekly',
+			priority: '0.7'
+		},
 		{
 			path: '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma',
-			lastmod: SEO_SUPPORT_LASTMOD,
+			lastmod: getContentLastmod(
+				'src/routes/samtalsstod-utan-vantetid/samtalsstod-vid-trauma/+page.svelte',
+				SEO_SUPPORT_LASTMOD
+			),
 			changefreq: 'monthly',
 			priority: '0.6'
 		}
@@ -243,12 +460,10 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		priority: '0.6'
 	}));
 
-	const portalPages: SitemapEntry[] = portals.map((portal) => ({
-		path: `/portal/${portal.key}`,
-		lastmod: STATIC_CONTENT_LASTMOD,
-		changefreq: 'monthly',
-		priority: '0.5'
-	}));
+	// /portal/a, /portal/b och /portal/e är tunna, ej länkade genomgångssidor
+	// som bara skickar vidare till /chat/[category] (redan noindex). De är
+	// medvetet uteslutna ur sitemapen och markerade noindex på sidan själv,
+	// se src/routes/portal/[slug]/+page.svelte.
 
 	const fallbackBlogPages: SitemapEntry[] = [
 		{
@@ -280,7 +495,7 @@ export const GET: RequestHandler = async ({ fetch }) => {
 
 	const markdownArticlePages: SitemapEntry[] = getPublishedArticles().map((article) => ({
 		path: article.url,
-		lastmod: (article.updated ?? article.date).toISOString().slice(0, 10),
+		lastmod: (article.updated ?? article.date)?.toISOString().slice(0, 10) ?? BLOG_LASTMOD,
 		changefreq: 'monthly',
 		priority: '0.6'
 	}));
@@ -298,7 +513,6 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		...guidePillarPages,
 		...guidePages,
 		...toolPages,
-		...portalPages,
 		...blogPages
 	])
 		.map((entry) => renderUrl(entry))

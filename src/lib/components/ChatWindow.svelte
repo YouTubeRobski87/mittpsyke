@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { browser, dev } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import { Square, Volume2 } from 'lucide-svelte';
-	import { containsCrisisSignal } from '$lib/ai/safety';
+	import { containsCrisisSignal, containsThirdPartyRiskSignal } from '$lib/ai/safety';
+	import { getTopicHint } from '$lib/ai/chat-topics';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
 	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
@@ -62,17 +64,38 @@
 	let historyNoticeVisible = $state(false);
 	let persistenceReady = $state(false);
 	let persistenceUserId = $state<string | null>(null);
+	let pendingHeroSend = $state(false);
+	// Valfri ämnesgenväg från chattingången. Skickas med som extra kontext till
+	// /api/chat, men styr aldrig samtalet - modellen följer användarens ord.
+	let topicHint = $state<string | null>(null);
 	let clearingHistory = $state(false);
 	let voiceBusy = $state(false);
 	let sendInFlight = false;
 	let speechSupported = $state(true);
 	let autoReadReplies = $state(false);
+	let sendWithEnter = $state(true);
+	let desktopKeyboard = $state(false);
 	let speakingMessageIndex = $state<number | null>(null);
 	let swedishVoice: SpeechSynthesisVoice | null = null;
 	let activeUtterance: SpeechSynthesisUtterance | null = null;
 	let chatLog: HTMLDivElement;
 	let showHumanSupport = $state(false);
 	let showSettings = $state(false);
+	let takeawayOpen = $state(false);
+	let takeawayDismissed = $state(false);
+	let takeawayDraft = $state('');
+	let takeawayError = $state('');
+	let hasUserMessage = $derived(messages.some((message) => message.role === 'user'));
+	let showChatIntro = $derived(persistenceReady && !hasUserMessage);
+	let assistantMessageCount = $derived(messages.filter((message) => message.role === 'assistant').length);
+	let canCaptureTakeaway = $derived(
+		hasSensitiveDataConsent &&
+		!sending &&
+		!takeawayDismissed &&
+		assistantMessageCount >= 2 &&
+		messages[messages.length - 1]?.role === 'assistant' &&
+		!messages[messages.length - 1]?.crisis
+	);
 
 	const MAX_MESSAGE_LENGTH = 2000;
 	const LONG_MESSAGE_ERROR =
@@ -81,6 +104,7 @@
 	const HISTORY_NOTICE = 'Tidigare samtal är laddat.';
 	const guestIdStorageKey = 'mittpsyke:guest-id';
 	const autoReadStorageKey = 'mittpsyke:chat-auto-read-replies';
+	const sendWithEnterStorageKey = 'mittpsyke:chat-send-with-enter';
 	const starterSuggestions = ['En sak i taget', 'Lugna tankarna', 'Skriv av dig'];
 
 	const elevatedSupportKeywords = [
@@ -101,49 +125,6 @@
 		'text racker inte',
 		'texten räcker inte',
 		'texten racker inte'
-	];
-
-	const acuteSupportKeywords = [
-		'akut fara',
-		'självmord',
-		'sjalvmord',
-		'suicid',
-		'ta mitt liv',
-		'ta livet av mig',
-		'vill dö',
-		'vill vara död',
-		'vill do',
-		'vill vara dod',
-		'orkar inte leva',
-		'inte orkar leva',
-		'skada mig själv',
-		'skada mig sjalv',
-		'självskad',
-		'sjalvskad',
-		'skada någon annan',
-		'skada nagon annan',
-		'hoppa från',
-		'hoppa fran',
-		'försvinna för alltid',
-		'forsvinna for alltid',
-		'ingen mening att leva',
-		'hoppas att jag dör',
-		'hoppas att jag dor',
-		'bättre om jag var död',
-		'battre om jag var dod',
-		'avsluta allt',
-		'avsluta mitt liv',
-		'inte vakna',
-		'somna för alltid',
-		'somna for alltid',
-		'avskedsbrev',
-		'ta tabletter',
-		'ta överdos',
-		'ta overdos',
-		'sista utvägen',
-		'sista utvagen',
-		'göra slut på allt',
-		'gora slut pa allt'
 	];
 
 	let chatTopic = $derived(getChatTopic(category));
@@ -169,8 +150,11 @@
 	function supportLevel() {
 		const text = latestUserMessageContent();
 		if (!text) return 'standard';
-		if (acuteSupportKeywords.some((keyword) => text.includes(keyword)) || containsCrisisSignal(text)) {
+		if (containsCrisisSignal(text)) {
 			return 'acute';
+		}
+		if (containsThirdPartyRiskSignal(text)) {
+			return 'acute-third-party';
 		}
 		if (elevatedSupportKeywords.some((keyword) => text.includes(keyword))) {
 			return 'elevated';
@@ -180,7 +164,9 @@
 
 	let currentSupportLevel = $derived(supportLevel());
 	let followUpSuggestions = $derived(
-		currentSupportLevel === 'acute' || currentSupportLevel === 'elevated'
+		currentSupportLevel === 'acute' ||
+		currentSupportLevel === 'acute-third-party' ||
+		currentSupportLevel === 'elevated'
 			? ['Jag vill stanna kvar i det här en stund', 'Hjälp mig hitta ett tryggt nästa steg']
 			: category === 'a'
 				? ['Kan vi ta en sak i taget?', 'Hjälp mig lugna tankarna lite']
@@ -191,11 +177,18 @@
 						: ['Jag vill stanna kvar i det här en stund', 'Vad kan vara ett litet nästa steg?']
 	);
 	const tempEntryStorageKey = 'mittpsyke_temp_entry';
+	const heroQuickStartStorageKey = 'mittpsyke_hero_quick_start';
+	const topicHintStorageKey = 'mittpsyke_chat_topic_hint';
 
 	function scrollToBottom() {
 		if (chatLog) {
 			chatLog.scrollTop = chatLog.scrollHeight;
 		}
+	}
+
+	function isFollowingLatestMessage() {
+		if (!chatLog) return true;
+		return chatLog.scrollHeight - chatLog.scrollTop - chatLog.clientHeight <= 96;
 	}
 
 	function readStorageValue(key: string) {
@@ -292,6 +285,11 @@
 		writeStorageValue(autoReadStorageKey, String(enabled));
 
 		if (!enabled) stopSpeaking();
+	}
+
+	function setSendWithEnter(enabled: boolean) {
+		sendWithEnter = enabled;
+		writeStorageValue(sendWithEnterStorageKey, String(enabled));
 	}
 
 	function getOrCreateGuestId() {
@@ -471,6 +469,10 @@
 		input = '';
 		messages = [];
 		savePromptHidden = {};
+		takeawayOpen = false;
+		takeawayDismissed = false;
+		takeawayDraft = '';
+		takeawayError = '';
 		historyNoticeVisible = false;
 		conversationId = null;
 
@@ -480,7 +482,7 @@
 			await deletePersistedChatHistory(persistenceUserId, 'clear-history');
 		}
 
-		await goto(`/chat/${category}`, {
+		await goto(page.url.pathname, {
 			replaceState: true,
 			noScroll: true,
 			keepFocus: true
@@ -501,7 +503,24 @@
 			persistenceReady = false;
 			chatError = '';
 			savePromptHidden = {};
+			takeawayOpen = false;
+			takeawayDismissed = false;
+			takeawayDraft = '';
+			takeawayError = '';
 			historyNoticeVisible = false;
+
+			// Text skriven i hero-fältet på startsidan tar alltid med sig hela vägen in i chatten.
+			const heroEntry = readStorageValue(heroQuickStartStorageKey)?.trim() ?? '';
+			if (heroEntry.length > 0) {
+				removeStorageValue(heroQuickStartStorageKey);
+			}
+
+			// Ämnesgenväg vald i chattingången. Läses en gång och gäller sessionen.
+			const storedTopicHint = readStorageValue(topicHintStorageKey)?.trim() ?? '';
+			if (storedTopicHint.length > 0) {
+				removeStorageValue(topicHintStorageKey);
+				topicHint = getTopicHint(storedTopicHint)?.id ?? null;
+			}
 
 			const seededMessages = sanitizeChatMessages(initialMessages);
 			const {
@@ -535,6 +554,11 @@
 				}
 			}
 
+			if (heroEntry.length > 0) {
+				input = heroEntry;
+				pendingHeroSend = true;
+			}
+
 			writeStorageValue('mittpsyke:last-chat-category', category);
 			persistenceReady = true;
 			await tick();
@@ -548,7 +572,25 @@
 		};
 	});
 
+	// Skickar hero-utkastet automatiskt så snart samtycket är klart — aldrig innan.
+	$effect(() => {
+		if (!pendingHeroSend) return;
+		if (!persistenceReady || !hasSensitiveDataConsent) return;
+		if (sendInFlight || !input.trim()) return;
+
+		pendingHeroSend = false;
+		firstMessageSource = 'manual';
+		void send();
+	});
+
 	onMount(() => {
+		sendWithEnter = readStorageValue(sendWithEnterStorageKey) !== 'false';
+		const desktopPointerQuery = window.matchMedia('(pointer: fine)');
+		const updateDesktopKeyboard = () => {
+			desktopKeyboard = desktopPointerQuery.matches;
+		};
+		updateDesktopKeyboard();
+		desktopPointerQuery.addEventListener('change', updateDesktopKeyboard);
 		speechSupported =
 			typeof window.speechSynthesis !== 'undefined' &&
 			typeof window.SpeechSynthesisUtterance !== 'undefined';
@@ -583,6 +625,7 @@
 
 		return () => {
 			stopSpeaking();
+			desktopPointerQuery.removeEventListener('change', updateDesktopKeyboard);
 			if (speechSupported) {
 				window.speechSynthesis.removeEventListener('voiceschanged', loadSpeechVoices);
 			}
@@ -613,6 +656,9 @@
 			return;
 		}
 
+		takeawayOpen = false;
+		takeawayDraft = '';
+		takeawayError = '';
 		sendInFlight = true;
 		sending = true;
 		stopSpeaking();
@@ -643,6 +689,7 @@
 					category,
 					conversationId,
 					contextMessages,
+					...(topicHint ? { topicHint } : {}),
 					...(guestId ? { guestId } : {})
 				})
 			});
@@ -686,6 +733,7 @@
 			const assistantReply =
 				data?.reply && data.reply.trim() ? data.reply : GENERIC_CHAT_ERROR;
 			const assistantMessageIndex = messages.length;
+			const shouldFollowReply = isFollowingLatestMessage();
 
 			messages.push({
 				role: 'assistant',
@@ -694,7 +742,7 @@
 			});
 
 			await tick();
-			scrollToBottom();
+			if (shouldFollowReply) scrollToBottom();
 			if (autoReadReplies) {
 				// Autouppläsning sker bara här efter ett nytt, lyckat API-svar – aldrig vid historikladdning.
 				speakReply(assistantReply, assistantMessageIndex);
@@ -711,19 +759,15 @@
 					: GENERIC_CHAT_ERROR;
 			if (!input.trim()) input = text;
 
-			await tick();
-			scrollToBottom();
 		} finally {
 			sendInFlight = false;
 			sending = false;
-			await tick();
-			scrollToBottom();
 		}
 	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.isComposing) return;
-		if (event.key === 'Enter' && !event.shiftKey) {
+		if (desktopKeyboard && sendWithEnter && event.key === 'Enter' && !event.shiftKey) {
 			event.preventDefault();
 			void send();
 		}
@@ -760,6 +804,39 @@
 		chatError = '';
 		input = text;
 		void trackEvent('starter_chip_clicked', { source: 'follow_up' });
+	}
+
+	function openTakeaway() {
+		takeawayOpen = true;
+		takeawayError = '';
+	}
+
+	function dismissTakeaway() {
+		takeawayOpen = false;
+		takeawayDismissed = true;
+		takeawayDraft = '';
+		takeawayError = '';
+	}
+
+	function continueTakeawayInDiary() {
+		const reflection = takeawayDraft.trim();
+		if (!reflection) {
+			takeawayError = 'Skriv en rad du vill ta med dig, eller välj Inte nu.';
+			return;
+		}
+
+		const content = `Jag tar med mig från chatten:\n\n${reflection}`;
+		try {
+			window.localStorage.setItem(
+				tempEntryStorageKey,
+				JSON.stringify({ title: 'En tanke från chatten', content })
+			);
+		} catch {
+			takeawayError = 'Det gick inte att föra över texten just nu. Du kan kopiera den och försöka igen.';
+			return;
+		}
+
+		void goto('/dagbok/checkin#skriv-sjalv');
 	}
 
 	async function saveAsJournalNote(content: string, index: number) {
@@ -800,6 +877,21 @@
 
 
 </script>
+
+{#if showChatIntro}
+	<section class="chat-intro-panel" aria-labelledby="chat-intro-title">
+		<h2 id="chat-intro-title">Så går det till här</h2>
+		<p>
+			Du skriver några rader. MittPsyke svarar lugnt och hjälper dig att sortera det som känns
+			mest nära just nu.
+		</p>
+		<ul>
+			<li>Du behöver inte formulera allt perfekt.</li>
+			<li>Du kan ta en sak i taget och pausa när du vill.</li>
+			<li>Vid akut fara ska du ringa 112 i stället för att använda chatten.</li>
+		</ul>
+	</section>
+{/if}
 
 <div class="chat-container flex flex-col h-[calc(100vh-175px)] max-w-2xl mx-auto">
 	<div class="chat-toolbar px-4 pb-1">
@@ -919,6 +1011,41 @@
 		</div>
 	{/if}
 
+	{#if canCaptureTakeaway}
+		<section class="takeaway-card" aria-labelledby="takeaway-title">
+			{#if takeawayOpen}
+				<label for="chat-takeaway" class="takeaway-label" id="takeaway-title">
+					En tanke att ta med
+				</label>
+				<textarea
+					id="chat-takeaway"
+					bind:value={takeawayDraft}
+					maxlength="500"
+					rows="2"
+					placeholder="Till exempel: Jag behöver inte lösa allt på en gång."
+					aria-describedby="takeaway-help{takeawayError ? ' takeaway-error' : ''}"
+					oninput={() => (takeawayError = '')}
+				></textarea>
+				<p id="takeaway-help" class="takeaway-help">Din formulering skickas inte till AI:n.</p>
+				{#if takeawayError}
+					<p id="takeaway-error" class="takeaway-error" role="alert">{takeawayError}</p>
+				{/if}
+				<div class="takeaway-actions">
+					<button type="button" class="takeaway-primary" onclick={continueTakeawayInDiary}>
+						Fortsätt i dagboken
+					</button>
+					<button type="button" class="takeaway-secondary" onclick={dismissTakeaway}>Inte nu</button>
+				</div>
+			{:else}
+				<p id="takeaway-title" class="takeaway-copy">Vill du skriva en rad att ta med dig?</p>
+				<div class="takeaway-actions">
+					<button type="button" class="takeaway-primary" onclick={openTakeaway}>Fånga en tanke</button>
+					<button type="button" class="takeaway-secondary" onclick={dismissTakeaway}>Inte nu</button>
+				</div>
+			{/if}
+		</section>
+	{/if}
+
 	<div class="chat-input-area border-t border-black/8 dark:border-white/10 px-3 pt-2 pb-3">
 		<div class="chat-input-extras">
 		{#if !hasSensitiveDataConsent}
@@ -941,6 +1068,19 @@
 				</div>
 				<p class="mt-2 text-xs opacity-70">
 					MittPsyke är inte en akuttjänst. Vid akut kris, kontakta alltid professionell hjälp.
+				</p>
+			</div>
+		{:else if currentSupportLevel === 'acute-third-party'}
+			<div class="support-panel support-panel-acute mb-3 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-3 text-sm">
+				<p class="font-medium text-rose-900 dark:text-rose-100">
+					Om du eller någon annan är i fara just nu, ring 112 direkt.
+				</p>
+				<div class="mt-2 flex flex-wrap gap-2">
+					<a href="tel:112" class="support-chip support-chip-urgent">Ring 112</a>
+					<a href="tel:1177" class="support-chip">Ring 1177</a>
+				</div>
+				<p class="mt-2 text-xs opacity-70">
+					MittPsyke är inte en akuttjänst. Vid risk för någons säkerhet, kontakta alltid 112 eller vården.
 				</p>
 			</div>
 		{:else if currentSupportLevel === 'elevated'}
@@ -1080,6 +1220,21 @@
 
 			{#if showSettings}
 				<div class="settings-panel">
+					<div class="chat-setting">
+						<label>
+							<input
+								type="checkbox"
+								checked={sendWithEnter}
+								onchange={(event) =>
+									setSendWithEnter((event.currentTarget as HTMLInputElement).checked)}
+							/>
+							<span>Skicka med Enter</span>
+						</label>
+						<p>
+							På dator skickar Enter när den är på. Shift + Enter ger alltid en ny rad. På mobil
+							använder du Skicka-knappen.
+						</p>
+					</div>
 					<div class="speech-setting" class:unsupported={!speechSupported}>
 						<label>
 							<input
@@ -1124,8 +1279,58 @@
 </div>
 
 <style>
+	.chat-intro-panel {
+		flex: 0 0 auto;
+		width: 100%;
+		max-width: 42rem;
+		margin: 0 auto 0.85rem;
+		padding: 0.95rem 1rem;
+		border: 1px solid rgba(52, 91, 55, 0.1);
+		border-radius: var(--radius-card);
+		background: rgba(248, 245, 239, 0.9);
+		color: inherit;
+	}
+
+	.chat-intro-panel h2 {
+		margin: 0 0 0.4rem;
+		font-size: 0.98rem;
+		font-weight: 700;
+	}
+
+	.chat-intro-panel p {
+		margin: 0;
+		font-size: 0.94rem;
+		line-height: 1.6;
+	}
+
+	.chat-intro-panel ul {
+		display: grid;
+		gap: 0.35rem;
+		margin: 0.65rem 0 0;
+		padding-left: 1.1rem;
+		font-size: 0.9rem;
+		line-height: 1.55;
+	}
+
+	:global(.dark) .chat-intro-panel {
+		border-color: rgba(255, 255, 255, 0.08);
+		background: rgba(23, 29, 36, 0.84);
+	}
+
+	.chat-container {
+		flex: 1 1 auto;
+		height: auto;
+		width: 100%;
+		max-width: min(42rem, 100%);
+		min-height: 0;
+		max-height: none;
+		min-width: 0;
+		overflow: hidden;
+	}
+
 	.chat-toolbar {
 		display: flex;
+		flex: 0 0 auto;
 		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
@@ -1163,6 +1368,9 @@
 	.starter-chip:focus-visible,
 	.account-nudge-link:focus-visible,
 	.account-nudge-close:focus-visible,
+	.takeaway-primary:focus-visible,
+	.takeaway-secondary:focus-visible,
+	.takeaway-card textarea:focus-visible,
 	.send-button:focus-visible,
 	.settings-toggle:focus-visible,
 	.human-support-button:focus-visible,
@@ -1244,6 +1452,110 @@
 	:global(.dark) .account-nudge-close {
 		border-color: rgba(248, 250, 252, 0.12);
 		color: rgba(248, 250, 252, 0.58);
+	}
+
+	.takeaway-card {
+		margin: 0.2rem 0;
+		padding: 0.8rem 1rem;
+		border: 1px solid rgba(52, 91, 55, 0.13);
+		border-radius: var(--radius-card);
+		background: rgba(248, 245, 239, 0.78);
+	}
+
+	.takeaway-label,
+	.takeaway-copy {
+		display: block;
+		margin: 0;
+		font-size: 0.83rem;
+		font-weight: 650;
+		line-height: 1.45;
+		color: rgba(15, 23, 42, 0.8);
+	}
+
+	.takeaway-card textarea {
+		box-sizing: border-box;
+		width: 100%;
+		margin-top: 0.5rem;
+		padding: 0.65rem 0.75rem;
+		resize: vertical;
+		border: 1px solid rgba(15, 23, 42, 0.14);
+		border-radius: 10px;
+		background: rgba(255, 255, 255, 0.72);
+		font: inherit;
+		font-size: 0.84rem;
+		line-height: 1.5;
+		color: inherit;
+	}
+
+	.takeaway-help,
+	.takeaway-error {
+		margin: 0.42rem 0 0;
+		font-size: 0.72rem;
+		line-height: 1.4;
+	}
+
+	.takeaway-help {
+		opacity: 0.62;
+	}
+
+	.takeaway-error {
+		color: #9f1239;
+	}
+
+	.takeaway-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 0.62rem;
+	}
+
+	.takeaway-primary,
+	.takeaway-secondary {
+		min-height: 2rem;
+		padding: 0.42rem 0.72rem;
+		border-radius: 999px;
+		font-size: 0.75rem;
+		font-weight: 650;
+		line-height: 1;
+		cursor: pointer;
+	}
+
+	.takeaway-primary {
+		border: 1px solid rgba(15, 118, 110, 0.18);
+		background: rgba(15, 118, 110, 0.09);
+		color: rgba(15, 92, 86, 0.96);
+	}
+
+	.takeaway-secondary {
+		border: 1px solid rgba(15, 23, 42, 0.12);
+		background: transparent;
+		color: rgba(15, 23, 42, 0.6);
+	}
+
+	:global(.dark) .takeaway-card {
+		border-color: rgba(147, 197, 253, 0.16);
+		background: rgba(147, 197, 253, 0.06);
+	}
+
+	:global(.dark) .takeaway-label,
+	:global(.dark) .takeaway-copy {
+		color: rgba(248, 250, 252, 0.86);
+	}
+
+	:global(.dark) .takeaway-card textarea {
+		border-color: rgba(248, 250, 252, 0.14);
+		background: rgba(15, 23, 42, 0.28);
+	}
+
+	:global(.dark) .takeaway-primary {
+		border-color: rgba(94, 234, 212, 0.16);
+		background: rgba(94, 234, 212, 0.08);
+		color: rgba(204, 251, 241, 0.92);
+	}
+
+	:global(.dark) .takeaway-secondary {
+		border-color: rgba(248, 250, 252, 0.12);
+		color: rgba(248, 250, 252, 0.62);
 	}
 
 	@media (max-width: 520px) {
@@ -1405,12 +1717,14 @@
 		gap: 0.55rem;
 	}
 
-	.speech-setting {
+	.speech-setting,
+	.chat-setting {
 		display: grid;
 		gap: 0.14rem;
 	}
 
-	.speech-setting label {
+	.speech-setting label,
+	.chat-setting label {
 		display: flex;
 		align-items: center;
 		gap: 0.48rem;
@@ -1420,14 +1734,16 @@
 		cursor: pointer;
 	}
 
-	.speech-setting input {
+	.speech-setting input,
+	.chat-setting input {
 		width: 1rem;
 		height: 1rem;
 		margin: 0;
 		accent-color: var(--primary);
 	}
 
-	.speech-setting p {
+	.speech-setting p,
+	.chat-setting p {
 		margin: 0 0 0 1.48rem;
 		font-size: 0.69rem;
 		line-height: 1.4;
@@ -1555,23 +1871,72 @@
 	:global(.message-bubble) {
 		min-width: 0;
 		word-break: break-word;
+		overflow-wrap: anywhere;
+	}
+
+	.chat-messages,
+	.chat-input-area,
+	.chat-input-extras,
+	.composer-row {
+		min-width: 0;
+		max-width: 100%;
+	}
+
+	.chat-messages {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-x: hidden;
+	}
+
+	.chat-input-area {
+		flex: 0 0 auto;
+	}
+
+	.composer-row textarea {
+		width: 100%;
+		min-width: 0;
+		min-height: 2.75rem;
+		max-height: 8rem;
+		field-sizing: content;
+		overflow-y: auto;
+		overflow-wrap: anywhere;
+	}
+
+	.send-button {
+		flex: 0 0 auto;
+		min-height: 2.75rem;
 	}
 
 	@media (max-width: 768px) {
+		.chat-intro-panel {
+			width: auto;
+			margin: 0 0.65rem 0.4rem;
+			padding: 0.6rem 0.7rem;
+		}
+
+		.chat-intro-panel h2 {
+			margin-bottom: 0.25rem;
+			font-size: 0.9rem;
+		}
+
+		.chat-intro-panel p {
+			font-size: 0.8rem;
+			line-height: 1.4;
+		}
+
+		.chat-intro-panel ul {
+			gap: 0.18rem;
+			margin-top: 0.4rem;
+			font-size: 0.76rem;
+			line-height: 1.35;
+		}
+
 		.chat-container {
 			flex: 1 1 auto;
 			height: auto;
 			min-height: 0;
 			max-height: none;
 			overflow: hidden;
-		}
-
-		@supports (height: 100dvh) {
-			.chat-container {
-				height: auto;
-				min-height: 0;
-				max-height: none;
-			}
 		}
 
 		.chat-toolbar {
@@ -1589,15 +1954,9 @@
 			min-height: 0;
 			padding: 0.6rem 0.65rem 1rem;
 			overflow-y: auto;
+			overflow-x: hidden;
 			overscroll-behavior: contain;
 			-webkit-overflow-scrolling: touch;
-		}
-
-		@supports (height: 100dvh) {
-			.chat-messages {
-				flex-basis: auto;
-				min-height: 0;
-			}
 		}
 
 		:global(.message-bubble) {
@@ -1607,9 +1966,10 @@
 
 		.chat-input-area {
 			display: flex;
-			flex: 0 1 auto;
+			flex: 0 0 auto;
 			flex-direction: column;
 			min-height: 0;
+			max-height: min(48dvh, 25rem);
 			overflow: hidden;
 			padding: 0.4rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom));
 		}
@@ -1627,6 +1987,7 @@
 		}
 
 		.composer-row {
+			align-items: flex-end;
 			padding-top: 0.25rem;
 			background: hsl(var(--background));
 		}
@@ -1657,6 +2018,25 @@
 
 		.settings-footer {
 			margin-top: 0.35rem;
+		}
+	}
+
+	@media (max-width: 340px) {
+		.chat-intro-panel {
+			margin-inline: 0.5rem;
+			padding: 0.55rem 0.65rem;
+		}
+
+		.composer-row {
+			gap: 0.4rem;
+		}
+
+		.composer-row textarea {
+			padding-inline: 0.75rem;
+		}
+
+		.send-button {
+			padding-inline: 0.85rem;
 		}
 	}
 </style>

@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { recordCurrentCompanionPresence } from '$lib/server/companion-presence';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ locals, params }) => {
@@ -26,5 +27,12 @@ export const POST: RequestHandler = async ({ locals, params }) => {
 	}
 
 	if (!data) return json({ error: 'Not found.' }, { status: 404 });
+
+	try {
+		await recordCurrentCompanionPresence(locals.supabase);
+	} catch (presenceError) {
+		console.error('Could not record companion presence after reflection open:', presenceError);
+	}
+
 	return json({ success: true });
 };

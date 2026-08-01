@@ -1,12 +1,21 @@
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import OpenAI from 'openai';
+import { RateLimiter } from '$lib/server/rate-limit';
 import type { RequestHandler } from './$types';
 
 // Simple in-memory cache per sign+date — max 12 signs × 1 date = 12 entries/day
 const cache = new Map<string, string>();
 
-export const POST: RequestHandler = async ({ request }) => {
+// Ingen inloggning krävs och "sign" valideras inte mot en fast lista - utan
+// gräns skulle ett godtyckligt/skriptat "sign" per anrop kringgå cachen ovan
+// och ge ett nytt OpenAI-anrop varje gång.
+const HOROSCOPE_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const HOROSCOPE_RATE_LIMIT_MAX_REQUESTS = 10;
+const horoscopeRateLimiter = new RateLimiter(HOROSCOPE_RATE_LIMIT_WINDOW_MS, HOROSCOPE_RATE_LIMIT_MAX_REQUESTS);
+const HOROSCOPE_AI_TIMEOUT_MS = 15_000;
+
+export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 	let sign: string;
 	try {
 		const body = await request.json();
@@ -26,8 +35,15 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ text: cache.get(cacheKey) });
 	}
 
+	if (horoscopeRateLimiter.consume(`ip:${getClientAddress()}`)) {
+		return json(
+			{ error: 'För många förfrågningar just nu. Vänta en liten stund och försök igen.' },
+			{ status: 429 }
+		);
+	}
+
 	try {
-		const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY });
+		const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY, timeout: HOROSCOPE_AI_TIMEOUT_MS });
 
 		const response = await openai.chat.completions.create({
 			model: 'gpt-4o-mini',

@@ -48,7 +48,7 @@
 			<ul>
 				<li><a href="/ovningar-mot-angest-online">Övningar mot ångest online</a> när du vill börja konkret.</li>
 				<li><a href="/angest">Samlade sidan om ångest</a> och <a href="/guider/overtankande">guide om övertänkande</a>.</li>
-				<li><a href="/chat/a">Samtal om ångest</a> när du vill reflektera vidare.</li>
+				<li><a href="/chat/angest">Samtal om ångest</a> när du vill reflektera vidare.</li>
 				<li><a href="/dagbok">Dagbok</a> för att följa hur stegen känns över tid.</li>
 			</ul>
 		</section>
@@ -61,7 +61,7 @@
 			</p>
 			<p class="links-row">
 				<a href="/ovningar">Prova en övning</a>
-				<a href="/chat/a">Starta samtal</a>
+				<a href="/chat/angest">Starta samtal</a>
 				<a href="/dagbok">Skriv i dagboken</a>
 			</p>
 		</section>

@@ -8,13 +8,18 @@ imageAlt: En person sitter lugnt hemma med handen på bröstet, medan ett mjukt
   illustrerat hjärnmönster syns ovanför.
 date: 2026-07-15
 updated: 2026-07-16
-author: MittPsyke redaktion
+author: Robert Claesson
 collection: oro-och-stress
 tags:
   - ångest
   - oro
   - stress
 readingTime: 4 min läsning
+relatedArticles:
+  - title: oro eller stress
+    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv
+  - title: Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag
+    url: https://www.mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
 draft: false
 ---
 Ångest kan komma med starka kroppsliga reaktioner: hjärtat kan slå fortare, andningen kan kännas annorlunda och kroppen kan bli spänd. Det kan vara skrämmande, särskilt om det kommer plötsligt. Du är inte ensam om att känna så.
@@ -50,3 +55,5 @@ Små steg räcker. Målet behöver inte vara att bli helt lugn på en gång, uta
 Ångest kan vara mycket obehaglig. Om den ofta påverkar din vardag, sömn, relationer eller det du vill göra, kan du prata med vårdcentralen eller ringa 1177 för råd om var du kan söka hjälp. Om du är i akut fara eller har tankar på att skada dig själv, ring 112.
 
 Att förstå reaktionen kan göra den mindre ensam och mindre mystisk. Du behöver inte bära den på egen hand.
+
+Av Robert Claesson

@@ -30,7 +30,7 @@
 		</header>
 
 		<div class="cta-container">
-			<a class="cta-button" href="/chat/a">Starta ett lugnt samtal</a>
+			<a class="cta-button" href="/chat/angest">Starta ett lugnt samtal</a>
 			<a class="cta-button ghost" href="/trauma">Läs mer om trauma</a>
 		</div>
 
@@ -45,7 +45,7 @@
 		<section class="section">
 			<h2>Vad MittPsyke erbjuder</h2>
 			<ul>
-				<li><a href="/chat/a">Samtalsstöd</a> när du behöver sätta ord på det som känns svårt.</li>
+				<li><a href="/chat/angest">Samtalsstöd</a> när du behöver sätta ord på det som känns svårt.</li>
 				<li><a href="/stod-vid-ptsd-online">Stöd vid PTSD online</a> om du vill läsa vidare i lugn takt.</li>
 				<li><a href="/dagbok">Dagbok</a> för att skriva i lugn takt och få mer kontinuitet.</li>
 				<li><a href="/framsteg">Framsteg</a> för att följa små förändringar över tid.</li>

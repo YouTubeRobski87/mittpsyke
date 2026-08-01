@@ -36,9 +36,12 @@
 					<li>
 						<a href={article.href} class="article-card">
 							{#if article.imageUrl}
+								<!-- Dekorativ bild: rubriken står i <h2> direkt under, så en alt-text
+									 hade fått skärmläsare att läsa samma budskap två gånger per kort.
+									 Låg tidigare på alt={article.title}. -->
 								<img
 									src={article.imageUrl}
-									alt={article.title}
+									alt=""
 									class="article-img"
 									loading="lazy"
 									width="400"
@@ -182,7 +185,10 @@
 
 	.article-img-placeholder {
 		width: 100%;
-		height: 100px;
+		/* Samma höjd som .article-img. En platshållare ska hålla just den plats
+		   bilden tar, annars blir kortet synligt kortare än sina grannar i
+		   rutnätet. Låg tidigare på 100px. */
+		height: 180px;
 		background: linear-gradient(135deg, rgba(58, 123, 213, 0.18) 0%, rgba(99, 102, 241, 0.12) 100%);
 		border-bottom: 1px solid rgba(96, 165, 250, 0.15);
 	}

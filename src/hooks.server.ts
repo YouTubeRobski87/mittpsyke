@@ -3,6 +3,7 @@ import { env as publicEnv } from '$env/dynamic/public'
 import { redirect, type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { getSessionUser } from '$lib/server/admin-auth'
+import { getGuideBySlugs, getPillarBySlug } from '$lib/seo-kit/content'
 
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''
@@ -50,16 +51,34 @@ const legacyPageRedirects: Record<string, string> = {
 	'/hem': '/dashboard',
 	'/anonymt-samtalsstod-online': '/anonymt-samtalstod-online',
 	'/guider-seo/nedstamdhet': '/guider/depression',
+	'/guider-seo/somnproblem': '/guider/sovproblem',
+	'/guider-seo/stress-och-overbelastning': '/guider/stress',
 	'/samtalsstod-vid-trauma': '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma',
 	'/ai': '/skriv',
-	'/b': '/chat/b',
-	'/e': '/chat/e'
+	'/b': '/chat/nedstamdhet',
+	'/e': '/chat/trauma'
+}
+
+function getLegacyGuideRedirectTarget(pathname: string): string | null {
+	const legacyPath = pathname.replace(/^\/guider-seo\/?/, '').replace(/\/$/, '')
+	if (!legacyPath) return '/guider'
+
+	const [pillarSlug, guideSlug, ...extraSegments] = legacyPath.split('/')
+	if (!pillarSlug || extraSegments.length > 0) return null
+
+	const pillar = getPillarBySlug(pillarSlug)
+	if (!pillar) return null
+	if (!guideSlug) return `/guider/${pillar.slug}`
+
+	const guide = getGuideBySlugs(pillar.slug, guideSlug)
+	return guide ? `/guider/${pillar.slug}/${guide.slug}` : null
 }
 
 const legacyPathRedirects: Handle = async ({ event, resolve }) => {
 	const { url } = event
+	const normalizedPathname = url.pathname === '/' ? '/' : url.pathname.replace(/\/+$/, '')
 
-	const legacyPageTarget = legacyPageRedirects[url.pathname]
+	const legacyPageTarget = legacyPageRedirects[normalizedPathname]
 	if (legacyPageTarget) {
 		throw redirect(301, legacyPageTarget)
 	}
@@ -69,12 +88,11 @@ const legacyPathRedirects: Handle = async ({ event, resolve }) => {
 		throw redirect(301, legacyBlogTarget)
 	}
 
-	if (url.pathname === '/guider-seo') {
-		throw redirect(301, '/guider')
-	}
+	if (normalizedPathname === '/guider-seo' || normalizedPathname.startsWith('/guider-seo/')) {
+		const target = getLegacyGuideRedirectTarget(normalizedPathname)
+		if (target) throw redirect(301, target)
 
-	if (url.pathname.startsWith('/guider-seo/')) {
-		throw redirect(301, url.pathname.replace('/guider-seo/', '/guider/'))
+		return new Response('Sidan finns inte.', { status: 404 })
 	}
 
 	if (url.pathname === '/kbt') {

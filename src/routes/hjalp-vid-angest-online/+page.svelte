@@ -32,7 +32,7 @@
 		</header>
 
 		<div class="cta-container">
-			<a class="cta-button" href="/chat/a">Starta samtal om ångest</a>
+			<a class="cta-button" href="/chat/angest">Starta samtal om ångest</a>
 			<a class="cta-button ghost" href="/guider/angest">Läs guide om ångest</a>
 		</div>
 
@@ -47,7 +47,7 @@
 		<section class="section">
 			<h2>Stöd som kan hjälpa vid ångest</h2>
 			<ul>
-				<li><a href="/chat/a">Anonym chatt om ångest</a> när oron är stark.</li>
+				<li><a href="/chat/angest">Anonym chatt om ångest</a> när oron är stark.</li>
 				<li><a href="/dagbok">Dagbok</a> för att skriva av dig och följa återkommande mönster.</li>
 				<li><a href="/guider/overtankande">Guide om övertänkande</a> och oro.</li>
 				<li><a href="/andningsovningar-mot-angest">Andningsövningar mot ångest</a> när du behöver landa i kroppen.</li>

@@ -17,6 +17,7 @@
 		SmsPreferenceSuccessResponse
 	} from '$lib/types';
 	import { THEME_STORAGE_KEY } from '$lib/theme';
+	import { PUBLIC_CONTACT_EMAIL } from '$lib/contact';
 	import {
 	getProgressCompanionAnimal,
 		readProgressCompanionFromMetadata,
@@ -24,6 +25,7 @@
 	} from '$lib/progressCompanion';
 
 	let loading = $state(true);
+	let accountEmail = $state('');
 
 	// Display name
 	let displayName = $state('');
@@ -54,6 +56,18 @@
 	let consentMessage = $state('');
 	let consentMessageType = $state<'success' | 'error'>('success');
 
+	// Mina mål + AI-kontext från dagbok
+	type PersonalGoal = { id: string; text: string; status: 'active' | 'done'; createdAt: string };
+	let personalGoals = $state<PersonalGoal[]>([]);
+	let newGoalText = $state('');
+	let goalsSaving = $state(false);
+	let goalsMessage = $state('');
+	let goalsMessageType = $state<'success' | 'error'>('success');
+	let aiDiaryContextEnabled = $state(false);
+	let aiContextSaving = $state(false);
+	let aiContextMessage = $state('');
+	let aiContextMessageType = $state<'success' | 'error'>('success');
+
 	const THEMES = [
 		{ value: 'neutral',   label: 'Neutral',    color: '#436e8f' },
 		{ value: 'salvia',    label: 'Salvia',      color: '#5f7fa5' },
@@ -78,6 +92,12 @@
 		{ value: 'chat',   label: 'Chatten' },
 	];
 	const selectedCompanion = $derived(getProgressCompanionAnimal(progressCompanion));
+
+	const dataExportMailto = $derived.by(() => {
+		const subject = 'Dataexport – MittPsyke';
+		const body = `Hej,\n\nJag vill få en kopia av min data (dataportabilitet) kopplad till kontot ${accountEmail || '[din e-post]'}.\n\nMvh`;
+		return `mailto:${PUBLIC_CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+	});
 
 	function normalizeSwedishMobileNumber(value: string): string | null {
 		const compact = value.trim().replace(/[\s().-]/g, '');
@@ -126,6 +146,7 @@
 			if (!alive) return;
 
 			// Load display name and personalization from user metadata
+			accountEmail = session.user.email ?? '';
 			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
 			displayName = typeof meta.display_name === 'string' ? meta.display_name : '';
 			birthday = typeof meta.birthday === 'string' ? meta.birthday : '';
@@ -134,6 +155,8 @@
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
 			healthConsentRecord = getSensitiveConsentRecord(meta);
+			personalGoals = Array.isArray(meta.personal_goals) ? (meta.personal_goals as PersonalGoal[]) : [];
+			aiDiaryContextEnabled = meta.ai_diary_context_enabled === true;
 			await loadSmsPreference();
 			loading = false;
 		}
@@ -248,6 +271,79 @@
 		consentMessage =
 			'Samtycket har återkallats. MittPsyke ber om nytt samtycke nästa gång känsliga uppgifter behöver behandlas.';
 		consentMessageType = 'success';
+	}
+
+	async function saveGoals(nextGoals: PersonalGoal[]) {
+		goalsMessage = '';
+		goalsSaving = true;
+		const previousGoals = personalGoals;
+		personalGoals = nextGoals;
+
+		const { error } = await supabase.auth.updateUser({ data: { personal_goals: nextGoals } });
+
+		goalsSaving = false;
+
+		if (error) {
+			personalGoals = previousGoals;
+			goalsMessage = 'Kunde inte spara målet just nu. Försök igen.';
+			goalsMessageType = 'error';
+			return;
+		}
+
+		await supabase.auth.refreshSession();
+		goalsMessage = 'Sparat ✓';
+		goalsMessageType = 'success';
+		setTimeout(() => { goalsMessage = ''; }, 3000);
+	}
+
+	async function addGoal() {
+		const text = newGoalText.trim();
+		if (!text) return;
+
+		const goal: PersonalGoal = {
+			id: crypto.randomUUID(),
+			text,
+			status: 'active',
+			createdAt: new Date().toISOString()
+		};
+		newGoalText = '';
+		await saveGoals([...personalGoals, goal]);
+	}
+
+	async function toggleGoalStatus(id: string) {
+		const nextGoals = personalGoals.map((goal) =>
+			goal.id === id ? { ...goal, status: (goal.status === 'done' ? 'active' : 'done') as PersonalGoal['status'] } : goal
+		);
+		await saveGoals(nextGoals);
+	}
+
+	async function deleteGoal(id: string) {
+		await saveGoals(personalGoals.filter((goal) => goal.id !== id));
+	}
+
+	async function saveAiContextSetting() {
+		aiContextMessage = '';
+		aiContextSaving = true;
+
+		const { error } = await supabase.auth.updateUser({
+			data: { ai_diary_context_enabled: aiDiaryContextEnabled }
+		});
+
+		aiContextSaving = false;
+
+		if (error) {
+			aiDiaryContextEnabled = !aiDiaryContextEnabled;
+			aiContextMessage = 'Kunde inte spara inställningen just nu. Försök igen.';
+			aiContextMessageType = 'error';
+			return;
+		}
+
+		await supabase.auth.refreshSession();
+		aiContextMessage = aiDiaryContextEnabled
+			? 'AI-stödet kan nu använda dina senaste anteckningar och mål som kontext.'
+			: 'AI-stödet använder inte längre dagbok eller mål som kontext.';
+		aiContextMessageType = 'success';
+		setTimeout(() => { aiContextMessage = ''; }, 4000);
 	}
 
 	async function saveDisplayName() {
@@ -600,7 +696,20 @@
 			<h2>Mejlutskick</h2>
 			<p class="field-hint">Hantera avregistrering och stoppa framtida utskick.</p>
 			<a class="save-btn link-btn" href="/avregistrera">Hantera avregistrering</a>
-			<p class="field-hint">Läs mer om radering, export och hur uppgifter hanteras i <a href="/integritet">integritetspolicyn</a>.</p>
+		</section>
+
+		<section id="din-data" class="auth-panel section-block">
+			<h2>Din data</h2>
+			<p class="field-hint">
+				Du bestämmer själv över din data. Här kan du begära en kopia av det du sparat hos oss
+				(dataportabilitet) eller läsa mer om hur uppgifter hanteras.
+			</p>
+			<a class="save-btn link-btn" href={dataExportMailto}>Begär dataexport</a>
+			<p class="field-hint">
+				Vi svarar och skickar din data i JSON-format inom 30 dagar. Vill du radera allt istället,
+				se <a href="#radera-konto">Radera konto</a> nedan. Fullständig information finns i
+				<a href="/integritet">integritetspolicyn</a>.
+			</p>
 		</section>
 
 		<section class="auth-panel section-block">
@@ -667,6 +776,95 @@
 
 			{#if consentMessage}
 				<p class="feedback {consentMessageType}">{consentMessage}</p>
+			{/if}
+		</section>
+
+		<section class="auth-panel section-block">
+			<h2>Mina mål</h2>
+			<p class="field-hint">
+				Skriv upp egna mål och bocka av dem när de känns klara. Helt frivilligt och bara synligt för dig.
+			</p>
+
+			<ul class="goal-list">
+				{#each personalGoals as goal (goal.id)}
+					<li class="goal-row {goal.status === 'done' ? 'done' : ''}">
+						<label class="goal-check">
+							<input
+								type="checkbox"
+								checked={goal.status === 'done'}
+								onchange={() => toggleGoalStatus(goal.id)}
+								disabled={goalsSaving}
+							/>
+							<span>{goal.text}</span>
+						</label>
+						<button
+							type="button"
+							class="goal-remove"
+							onclick={() => deleteGoal(goal.id)}
+							disabled={goalsSaving}
+							aria-label={`Ta bort målet ${goal.text}`}
+						>
+							Ta bort
+						</button>
+					</li>
+				{:else}
+					<li class="field-hint goal-empty">Du har inga sparade mål ännu.</li>
+				{/each}
+			</ul>
+
+			<div class="goal-add-row">
+				<input
+					type="text"
+					class="text-input"
+					bind:value={newGoalText}
+					placeholder="T.ex. Skriva i dagboken när jag känner mig orolig"
+					maxlength="120"
+					onkeydown={(event) => {
+						if (event.key === 'Enter') {
+							event.preventDefault();
+							addGoal();
+						}
+					}}
+				/>
+				<button class="save-btn" onclick={addGoal} disabled={goalsSaving || !newGoalText.trim()}>
+					Lägg till mål
+				</button>
+			</div>
+
+			{#if goalsMessage}
+				<p class="feedback {goalsMessageType}">{goalsMessage}</p>
+			{/if}
+		</section>
+
+		<section class="auth-panel section-block">
+			<h2>AI-kontext från dagbok och mål</h2>
+			<p class="field-hint">
+				Om du vill kan AI-stödet i chatten få ta del av dina senaste dagboksanteckningar och
+				aktiva mål ovan, för att kunna svara mer sammanhängande. Helt frivilligt, och kräver att
+				du redan har lämnat samtycke för känsliga uppgifter ovan.
+			</p>
+
+			<label class="sms-consent-row">
+				<input type="checkbox" bind:checked={aiDiaryContextEnabled} disabled={!healthConsentRecord} />
+				<span>Låt AI-stödet använda mina senaste dagboksanteckningar och mål som kontext i chatten.</span>
+			</label>
+
+			{#if !healthConsentRecord}
+				<p class="field-hint">
+					Kräver aktivt samtycke för känsliga uppgifter (se ovan) innan det kan slås på.
+				</p>
+			{/if}
+
+			<button
+				class="save-btn"
+				onclick={saveAiContextSetting}
+				disabled={aiContextSaving || !healthConsentRecord}
+			>
+				{aiContextSaving ? 'Sparar...' : 'Spara'}
+			</button>
+
+			{#if aiContextMessage}
+				<p class="feedback {aiContextMessageType}">{aiContextMessage}</p>
 			{/if}
 		</section>
 
@@ -891,6 +1089,80 @@
 
 	.feedback.error {
 		color: hsl(var(--error-foreground));
+	}
+
+	.goal-list {
+		display: grid;
+		gap: 0.5rem;
+		margin: 0.9rem 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.goal-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.6rem;
+		padding: 0.55rem 0.75rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: var(--radius-input);
+	}
+
+	.goal-row.done .goal-check span {
+		color: hsl(var(--muted-foreground));
+		text-decoration: line-through;
+	}
+
+	.goal-check {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		line-height: 1.4;
+		cursor: pointer;
+	}
+
+	.goal-check input {
+		width: 1rem;
+		height: 1rem;
+		accent-color: var(--primary, #2563eb);
+		flex-shrink: 0;
+	}
+
+	.goal-remove {
+		flex-shrink: 0;
+		background: transparent;
+		border: none;
+		color: hsl(var(--muted-foreground));
+		font-family: var(--font-body);
+		font-size: 0.82rem;
+		text-decoration: underline;
+		cursor: pointer;
+		padding: 0.2rem 0.3rem;
+	}
+
+	.goal-remove:hover {
+		color: hsl(var(--foreground));
+	}
+
+	.goal-empty {
+		border: 1px dashed hsl(var(--border));
+		border-radius: var(--radius-input);
+		padding: 0.6rem 0.75rem;
+	}
+
+	.goal-add-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.55rem;
+		align-items: center;
+	}
+
+	.goal-add-row .text-input {
+		flex: 1;
+		min-width: 12rem;
 	}
 
 	

@@ -48,7 +48,7 @@
 		</div>
 
 		<div class="cta-container">
-			<a class="cta-button" href="/chat/a">Starta ett samtal</a>
+			<a class="cta-button" href="/chat/angest">Starta ett samtal</a>
 		</div>
 
 		<aside class="callout" aria-label="Viktigt att veta">

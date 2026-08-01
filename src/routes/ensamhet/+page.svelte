@@ -49,13 +49,16 @@
 					möta dig genuint, och du kan vara helt anonym medan du sätter ord på det som är svårt.
 					Om ensamheten också rymmer oro för någon annan finns en guide om
 					<a href="/blogg/nar-en-van-mar-daligt-vad-kan-du-saga">vad du kan säga när en vän mår dåligt</a>.
+					Och om ensamheten uppstår mitt i familjen, när någon är sjuk och du blir den som hamnar
+					utanför, finns en sida om
+					<a href="/nar-familjen-ar-i-kris">när familjen är i kris men du själv hamnar utanför</a>.
 				</p>
 			</section>
 		</div>
 
 		<!-- CTA Button -->
 		<div class="cta-container">
-			<a class="cta-button" href="/chat/a">Starta ett samtal</a>
+			<a class="cta-button" href="/chat/angest">Starta ett samtal</a>
 		</div>
 
 		<!-- Additional Support Info -->

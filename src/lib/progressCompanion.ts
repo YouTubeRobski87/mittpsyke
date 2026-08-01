@@ -44,7 +44,41 @@ type ProgressCompanionPresenceInput = {
 };
 
 const COMPANION_IMAGE_VERSION = 'v=2';
-export const COMPANION_WORLD_SCENE_IMAGE = '/images/dashboard-lakeside-world.png';
+// WebP i stället för PNG: 2416 kB -> 272 kB (-89%) utan synlig kvalitetsskillnad.
+// Bilden är LCP-element på både Mitt Hem och Framsteg, och laddas dessutom en
+// gång till som suddig bakgrund i .companion-hero::before - besparingen slår
+// alltså dubbelt. PNG-originalet ligger kvar i static/ som källfil.
+export const COMPANION_WORLD_SCENE_IMAGE = '/images/dashboard-lakeside-world.webp';
+
+/**
+ * Fallback för src-attributet. Pekar medvetet på den minsta varianten:
+ * webbläsarens preload-scanner hinner starta en hämtning av src innan den
+ * hunnit väga srcset-kandidaterna, och då ska det inte vara 272 kB som går
+ * i onödan. Moderna webbläsare väljer ändå rätt kandidat ur srcset.
+ */
+export const COMPANION_WORLD_SCENE_FALLBACK = '/images/dashboard-lakeside-world-800.webp';
+
+/** Responsiva varianter av scenbilden. Mobilen hämtar 74 kB i stället för 272 kB. */
+export const COMPANION_WORLD_SCENE_SRCSET = [
+	'/images/dashboard-lakeside-world-800.webp 800w',
+	'/images/dashboard-lakeside-world-1200.webp 1200w',
+	'/images/dashboard-lakeside-world.webp 1672w'
+].join(', ');
+
+/**
+ * Hjältekortet är fullbrett på mobil och toppar runt 720 CSS-px på desktop.
+ * Värdet styr vilken srcset-kandidat webbläsaren väljer.
+ */
+export const COMPANION_WORLD_SCENE_SIZES = '(max-width: 620px) 100vw, 720px';
+
+/**
+ * Egen, liten bild för den suddiga bakgrunden i .companion-hero::before.
+ * Den ritas med blur(10px) på opacity 0.35 - 400 px är omöjligt att skilja
+ * från originalet där, men sparar 260 kB. Utan den skulle srcset dessutom
+ * kunna ge två nedladdningar: en liten till <img> och full storlek till
+ * bakgrunden.
+ */
+export const COMPANION_WORLD_SCENE_BACKDROP = '/images/dashboard-lakeside-world-backdrop.webp';
 
 const DASHBOARD_COMPANION_IMAGE_PATHS = {
 	day: '/images/avatars/presets/fox-morning.webp',

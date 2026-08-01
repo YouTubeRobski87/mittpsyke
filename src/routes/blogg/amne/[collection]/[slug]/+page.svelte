@@ -6,23 +6,29 @@
 	const article = $derived(data.article);
 	const topic = $derived(data.topic);
 	const canonical = $derived(`https://www.mittpsyke.se${article.url}`);
-	const jsonLd = $derived(JSON.stringify({
-		'@context': 'https://schema.org',
-		'@type': article.type === 'guide' ? 'HowTo' : 'BlogPosting',
-		headline: article.title,
-		description: article.description,
-		datePublished: article.date,
-		dateModified: article.updated ?? article.date,
-		inLanguage: 'sv-SE',
-		author: { '@type': 'Person', name: article.author },
-		mainEntityOfPage: canonical
-	}).replace(/</g, '\\u003c'));
+	const jsonLd = $derived(JSON.stringify(data.jsonLd).replace(/</g, '\\u003c'));
+	const faqJsonLd = $derived(
+		article.faqs.length
+			? JSON.stringify({
+					'@context': 'https://schema.org',
+					'@type': 'FAQPage',
+					mainEntity: article.faqs.map((faq) => ({
+						'@type': 'Question',
+						name: faq.question,
+						acceptedAnswer: { '@type': 'Answer', text: faq.answer }
+					}))
+				}).replace(/</g, '\\u003c')
+			: null
+	);
 </script>
 
 <SEO {canonical} />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${jsonLd}<\\/script>`}
+	{#if faqJsonLd}
+		{@html `<script type="application/ld+json">${faqJsonLd}<\\/script>`}
+	{/if}
 </svelte:head>
 
 <article class="article-page">
@@ -79,9 +85,15 @@
 	.article-content :global(a:hover), .article-content :global(a:focus-visible), .article-section a:hover, .article-section a:focus-visible { color: #1d4ed8; outline: 2px solid currentColor; outline-offset: 3px; }
 	.article-content :global(blockquote) { margin: 0; padding: .35rem 0 .35rem 1rem; border-left: 3px solid #60a5fa; color: inherit; font-size: clamp(1rem, .96rem + .35vw, 1.08rem); font-style: italic; line-height: 1.75; opacity: .9; }
 	.article-content :global(hr) { width: 100%; height: 1px; margin: .5rem 0; border: 0; background: hsl(var(--border)); }
+	.article-content :global(table) { display: block; width: 100%; max-width: 100%; overflow: auto; -webkit-overflow-scrolling: touch; border-collapse: collapse; border: 1px solid hsl(var(--border)); border-radius: var(--radius-card); font-size: clamp(.92rem, .89rem + .2vw, 1rem); }
+	.article-content :global(th), .article-content :global(td) { padding: 10px 12px; min-width: 9rem; line-height: 1.5; text-align: left; overflow-wrap: normal; word-break: normal; white-space: normal; border: 1px solid hsl(var(--border)); }
+	.article-content :global(th) { font-weight: 700; background: rgba(37, 99, 235, .12); }
+	.article-content :global(tbody tr:nth-child(even) td) { background: hsl(var(--muted-foreground) / .1); }
 	.article-section { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid hsl(var(--border)); }
 	.article-section h2 { margin-top: 0; }
 	.article-section ul { margin-top: .75rem; }
 	:global(.dark) .article-content :global(h2), :global(.dark) .article-section h2 { color: #93c5fd; }
 	:global(.dark) .article-content :global(a), :global(.dark) .article-section a { color: #93c5fd; }
+	:global(.dark) .article-content :global(th) { background: rgba(147, 197, 253, .14); }
+	:global(.dark) .article-content :global(tbody tr:nth-child(even) td) { background: hsl(var(--muted-foreground) / .14); }
 </style>

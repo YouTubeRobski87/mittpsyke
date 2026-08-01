@@ -3,6 +3,7 @@ import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/public';
 import type { RequestHandler } from '@sveltejs/kit';
+import { TtlCache } from '$lib/server/search-cache';
 
 const STOCKHOLM_TIME_ZONE = 'Europe/Stockholm';
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -23,7 +24,9 @@ type StreakResponse = {
 	lastEntryDaysAgo: number;
 };
 
-const streakCache = new Map<string, { expiresAt: number; value: StreakResponse }>();
+// TtlCache begränsar antal nycklar (till skillnad från en vanlig Map), så
+// minnet inte växer obegränsat i takt med antal unika användare över tid.
+const streakCache = new TtlCache<StreakResponse>(STREAK_CACHE_TTL_MS);
 
 function toStockholmDateKey(value: string) {
 	return stockholmDateFormatter.format(new Date(value));
@@ -52,8 +55,8 @@ export const GET: RequestHandler = async ({ request }) => {
 		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
 		const user = data.user;
 		const cached = streakCache.get(user.id);
-		if (cached && cached.expiresAt > Date.now()) {
-			return json(cached.value);
+		if (cached) {
+			return json(cached);
 		}
 
 		const since = new Date(Date.now() - STREAK_LOOKBACK_DAYS * DAY_MS).toISOString();
@@ -70,7 +73,7 @@ export const GET: RequestHandler = async ({ request }) => {
 
 		if (!entries || entries.length === 0) {
 			const emptyValue = { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 };
-			streakCache.set(user.id, { expiresAt: Date.now() + STREAK_CACHE_TTL_MS, value: emptyValue });
+			streakCache.set(user.id, emptyValue);
 			return json(emptyValue);
 		}
 
@@ -113,7 +116,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		const lastEntryDaysAgo = Math.floor((todayUtcMs - lastEntryUtcMs) / DAY_MS);
 
 		const value = { currentStreak, longestStreak, lastEntryDate: entryDates[0], lastEntryDaysAgo };
-		streakCache.set(user.id, { expiresAt: Date.now() + STREAK_CACHE_TTL_MS, value });
+		streakCache.set(user.id, value);
 		return json(value);
 	} catch (err) {
 		console.error('Streak error:', err);

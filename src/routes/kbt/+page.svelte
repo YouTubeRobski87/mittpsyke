@@ -46,7 +46,7 @@
 
 		<!-- CTA-knapp -->
 		<div class="cta-container">
-			<a class="cta-button" href="/chat/a">Prata om dina tankar</a>
+			<a class="cta-button" href="/chat/angest">Prata om dina tankar</a>
 		</div>
 
 		<!-- Informationsruta -->

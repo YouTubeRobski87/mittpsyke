@@ -3,6 +3,10 @@ import type { PageServerLoad } from './$types';
 
 const PAGE_SIZE = 20;
 const SITE_URL = 'https://www.mittpsyke.se';
+// Samma konvention som /blogg: publikt, icke-personligt innehåll (bara
+// godkända, redan anonymiserade berättelser) - kan cachas utan risk för att
+// visa någons privata/opublicerade data.
+const CACHE_CONTROL = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
 
 export type AnonymousStory = {
 	id: string;
@@ -51,7 +55,9 @@ function buildJsonLd(stories: AnonymousStory[], page: number) {
 	};
 }
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load: PageServerLoad = async ({ locals, url, setHeaders }) => {
+	setHeaders({ 'cache-control': CACHE_CONTROL });
+
 	const requestedPage = Number(url.searchParams.get('page') ?? '1');
 	const page = Number.isFinite(requestedPage) && requestedPage > 0 ? Math.floor(requestedPage) : 1;
 	const from = (page - 1) * PAGE_SIZE;

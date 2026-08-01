@@ -18,6 +18,7 @@
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import VideoRecorder from '$lib/components/VideoRecorder.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
+	import { clearDiaryDraft, readDiaryDraft } from '$lib/diary-draft';
 	import {
 		awardMilestone,
 		consumePendingMilestone,
@@ -193,22 +194,6 @@
 		hasMoreEntries = data.hasMoreEntries ?? false;
 		sessionUser = data.session?.user ?? null;
 	});
-
-	function parseStoredDraft(value: string | null): string {
-		if (!value) return '';
-
-		try {
-			const parsed = JSON.parse(value);
-			if (typeof parsed === 'string') return parsed.trim();
-			if (parsed && typeof parsed === 'object' && typeof parsed.content === 'string') {
-				return parsed.content.trim();
-			}
-		} catch {
-			return value.trim();
-		}
-
-		return value.trim();
-	}
 
 	function formatDate(value: string | null): string {
 		if (!value) return 'Okänt datum';
@@ -1089,7 +1074,8 @@
 			showManualDiaryMilestoneToast(getMilestoneUserId(), payload?.diary?.id ?? null);
 
 			if (typeof window !== 'undefined') {
-				localStorage.removeItem('mittpsyke_temp_entry');
+				// Rensar båda nycklarna så att ett sparat inlägg inte dyker upp som utkast igen.
+				clearDiaryDraft();
 
 				const url = new URL(window.location.href);
 				if (url.searchParams.has('prefill')) {
@@ -1162,7 +1148,8 @@
 			draftText = '';
 			shouldOpenWriteEditor = true;
 		} else if (typeof window !== 'undefined') {
-			draftText = parseStoredDraft(localStorage.getItem('mittpsyke_temp_entry'));
+			// Läser kanonisk dagboksnyckel först, äldre chattöverlämning som fallback.
+			draftText = readDiaryDraft();
 		}
 
 		if (typeof window !== 'undefined' && window.location.hash === '#skriv-sjalv') {

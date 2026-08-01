@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { env as publicEnv } from '$env/dynamic/public';
+import { recordCurrentCompanionPresence } from '$lib/server/companion-presence';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -85,6 +86,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	// Dual-write till diary-tabellen så inlägget syns i /dagbok/checkin.
 	// diary.text = innehållet, mood = tonens id, tags = ['dagars-avtryck'] för filtrering.
+	try {
+		await recordCurrentCompanionPresence(supabase);
+	} catch (presenceError) {
+		console.error('[storify/save] Could not record companion presence:', presenceError);
+	}
+
 	const { error: diaryError } = await supabase.from('diary').insert({
 		user_id: user.id,
 		text: entry,

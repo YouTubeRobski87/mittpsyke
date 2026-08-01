@@ -33,6 +33,91 @@
 			</p>
 		</header>
 
+		<section class="audience-section" aria-labelledby="audience-title">
+			<div class="audience-heading">
+				<h2 id="audience-title">Vem är MittPsyke till för?</h2>
+				<p>
+					MittPsyke är till för dig som vill stanna upp, sätta ord på det som känns svårt och få
+					mer struktur i vardagen. Du kan använda plattformen oavsett om du har kontakt med
+					vården, väntar på stöd eller bara vill börja förstå ditt mående bättre. Här finns inga
+					krav på prestation eller snabba svar – du tar det i din egen takt.
+				</p>
+			</div>
+
+			<div class="audience-grid">
+				<article class="audience-card">
+					<h3>Reflektera och skapa struktur</h3>
+					<p>Sortera tankar, skriv dagbok och få bättre överblick över hur du mår.</p>
+				</article>
+				<article class="audience-card">
+					<h3>Ett stöd mellan vårdkontakter</h3>
+					<p>
+						Använd MittPsyke för reflektion och kontinuitet mellan samtal eller andra
+						vårdkontakter. Plattformen ersätter inte professionell vård.
+					</p>
+				</article>
+				<article class="audience-card">
+					<h3>Ett första steg</h3>
+					<p>
+						Börja utforska ditt mående i en trygg miljö innan du känner dig redo att prata med
+						någon annan.
+					</p>
+				</article>
+				<article class="audience-card">
+					<h3>Följ din utveckling</h3>
+					<p>
+						Återvänd till samma digitala rum, upptäck mönster och följ förändringar i ditt mående
+						över tid.
+					</p>
+				</article>
+			</div>
+
+			<aside class="organization-note" aria-labelledby="organization-title">
+				<h3 id="organization-title">För organisationer och föreningar</h3>
+				<p>
+					MittPsyke kan även anpassas för organisationer, företag och föreningar som vill
+					erbjuda ett frivilligt digitalt stöd för psykiskt välbefinnande. Lösningen bygger
+					alltid på integritet, frivillighet och tydliga gränser mot vård och behandling.
+				</p>
+				<a href="/for-organisationer">Läs om MittPsyke för organisationer</a>
+			</aside>
+		</section>
+
+		<section class="privacy-summary" aria-labelledby="privacy-summary-title">
+			<div class="privacy-summary-heading">
+				<span class="privacy-summary-icon" aria-hidden="true">🔒</span>
+				<div>
+					<p class="privacy-summary-label">Integritet</p>
+					<h2 id="privacy-summary-title">Integritet och dataskydd</h2>
+				</div>
+			</div>
+
+			<div class="privacy-summary-copy">
+				<p>
+					Integritet är en av MittPsykes viktigaste grundprinciper. Plattformen är utformad för
+					att ge användaren kontroll över sin egen information och möjlighet att använda
+					tjänsten på ett sätt som känns tryggt.
+				</p>
+				<p>
+					Du kan utforska delar av MittPsyke utan att skapa ett konto. För den som vill följa
+					sin utveckling över tid finns möjlighet att skapa ett konto och spara samtal,
+					dagboksanteckningar och andra personliga uppgifter.
+				</p>
+				<p>
+					All behandling av personuppgifter sker i enlighet med gällande dataskyddslagstiftning
+					och beskrivs närmare i MittPsykes integritetspolicy.
+				</p>
+				<p>Användaren har kontroll över vad som delas och vad som sparas i tjänsten.</p>
+				<p>
+					Vid användning inom företag, organisationer eller föreningar bygger lösningen alltid
+					på frivillighet, integritet och tydliga gränser mellan digitalt stöd och vård eller
+					behandling.
+				</p>
+			</div>
+
+			<a class="privacy-summary-link" href="/integritet">Läs vår integritetspolicy</a>
+		</section>
+
 		<section class="trust-overview" aria-label="Snabbt om MittPsyke">
 			<h2>Snabbt om MittPsyke</h2>
 			<ul>
@@ -178,19 +263,6 @@
 				</p>
 			</section>
 
-			<!-- 4) For vem -->
-			<section class="section">
-				<h2>För vem är det här?</h2>
-				<p>
-					MittPsyke är skapat för människor som vill ha ett lugnt, tillgängligt och respektfullt
-					samtalsstöd i vardagen.
-				</p>
-				<ul>
-					<li>För dig som lever med psykisk belastning i olika former.</li>
-					<li>För dig som vill stanna upp och sätta ord på det som känns svårt.</li>
-					<li>För dig som vill ta steg i egen takt, utan dömande ton eller krav på snabba svar.</li>
-				</ul>
-			</section>
 		</div>
 
 		<!-- 5) Cards -->
@@ -411,6 +483,139 @@
 		border-radius: var(--radius-card);
 		border: 1px solid rgba(15, 23, 42, 0.1);
 		background: rgba(248, 250, 252, 0.82);
+	}
+
+	.audience-section {
+		max-width: 840px;
+	}
+
+	.audience-heading {
+		max-width: 720px;
+	}
+
+	.audience-heading h2 {
+		margin: 0;
+		color: var(--primary);
+		font-size: clamp(1.55rem, 1.35rem + 1vw, 1.9rem);
+		font-weight: 700;
+		line-height: 1.15;
+	}
+
+	.audience-heading > p {
+		margin-top: 0.8rem;
+	}
+
+	.audience-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.85rem;
+		margin-top: 1.25rem;
+	}
+
+	.audience-card {
+		padding: 1rem 1rem 1.05rem;
+		border: 1px solid rgba(15, 23, 42, 0.1);
+		border-radius: var(--radius-card);
+		background: rgba(248, 250, 252, 0.78);
+	}
+
+	.audience-card p {
+		margin-top: 0.45rem;
+		font-size: clamp(0.98rem, 0.95rem + 0.25vw, 1.05rem);
+		line-height: 1.6;
+	}
+
+	.organization-note {
+		margin-top: 1rem;
+		padding: 1rem 1.05rem;
+		border-left: 3px solid rgba(15, 118, 110, 0.4);
+		border-radius: var(--radius-card);
+		background: rgba(226, 240, 236, 0.5);
+	}
+
+	.organization-note p {
+		margin-top: 0.45rem;
+		font-size: clamp(0.96rem, 0.93rem + 0.25vw, 1.03rem);
+		line-height: 1.6;
+	}
+
+	.organization-note a {
+		display: inline-block;
+		margin-top: 0.75rem;
+		font-family: var(--font-heading);
+		font-size: 0.94rem;
+		font-weight: 600;
+		color: #145a54;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	.privacy-summary {
+		max-width: 720px;
+		padding: clamp(1rem, 2.5vw, 1.35rem);
+		border: 1px solid rgba(15, 23, 42, 0.1);
+		border-radius: var(--radius-card);
+		background: rgba(248, 250, 252, 0.62);
+	}
+
+	.privacy-summary-heading {
+		display: flex;
+		gap: 0.75rem;
+		align-items: flex-start;
+	}
+
+	.privacy-summary-icon {
+		display: inline-grid;
+		place-items: center;
+		flex: 0 0 auto;
+		width: 2.35rem;
+		height: 2.35rem;
+		border-radius: var(--radius-pill);
+		background: rgba(15, 118, 110, 0.1);
+		font-size: 1rem;
+	}
+
+	.privacy-summary-label {
+		margin: 0 0 0.18rem;
+		color: #145a54;
+		font-family: var(--font-heading);
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.07em;
+		line-height: 1.2;
+		text-transform: uppercase;
+	}
+
+	.privacy-summary h2 {
+		margin: 0;
+		color: var(--primary);
+		font-size: clamp(1.35rem, 1.2rem + 0.75vw, 1.65rem);
+		font-weight: 700;
+		line-height: 1.15;
+	}
+
+	.privacy-summary-copy {
+		margin-top: 0.9rem;
+	}
+
+	.privacy-summary-copy p {
+		font-size: clamp(0.96rem, 0.93rem + 0.25vw, 1.03rem);
+		line-height: 1.65;
+	}
+
+	.privacy-summary-copy p + p {
+		margin-top: 0.7rem;
+	}
+
+	.privacy-summary-link {
+		display: inline-block;
+		margin-top: 0.85rem;
+		color: #145a54;
+		font-family: var(--font-heading);
+		font-size: 0.94rem;
+		font-weight: 600;
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 
 	.trust-overview h2 {
@@ -710,6 +915,10 @@
 	}
 
 	@media (min-width: 760px) {
+		.audience-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
 		.feature-grid {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
@@ -745,6 +954,7 @@
 	}
 
 	:global(.dark) .feature-card,
+	:global(.dark) .audience-card,
 	:global(.dark) .steps li,
 	:global(.dark) .callout {
 		background: #1a1a1a;
@@ -757,13 +967,38 @@
 		border-color: rgba(255, 255, 255, 0.08);
 	}
 
+	:global(.dark) .privacy-summary {
+		background: rgba(255, 255, 255, 0.035);
+		border-color: rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .privacy-summary-icon {
+		background: rgba(134, 223, 214, 0.12);
+	}
+
+	:global(.dark) .privacy-summary-label,
+	:global(.dark) .privacy-summary-link {
+		color: #86dfd6;
+	}
+
+	:global(.dark) .organization-note {
+		background: rgba(15, 118, 110, 0.12);
+		border-left-color: rgba(134, 223, 214, 0.5);
+	}
+
+	:global(.dark) .organization-note a {
+		color: #86dfd6;
+	}
+
 	:global(.dark) .feature-card h3,
+	:global(.dark) .audience-card h3,
 	:global(.dark) .steps li h3,
 	:global(.dark) .callout h2 {
 		color: #ffffff;
 	}
 
 	:global(.dark) .feature-card p,
+	:global(.dark) .audience-card p,
 	:global(.dark) .steps li p,
 	:global(.dark) .callout p {
 		color: rgba(255, 255, 255, 0.85);

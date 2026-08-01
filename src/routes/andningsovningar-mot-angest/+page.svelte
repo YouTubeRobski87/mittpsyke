@@ -31,7 +31,7 @@
 		</header>
 
 		<div class="cta-container">
-			<a class="cta-button" href="/chat/a">Prata om ångest</a>
+			<a class="cta-button" href="/chat/angest">Prata om ångest</a>
 			<a class="cta-button ghost" href="/ovningar">Se fler övningar</a>
 		</div>
 
@@ -61,7 +61,7 @@
 			</p>
 			<p class="links-row">
 				<a href="/ovningar">Prova en övning</a>
-				<a href="/chat/a">Starta samtal</a>
+				<a href="/chat/angest">Starta samtal</a>
 				<a href="/dagbok">Skriv i dagboken</a>
 			</p>
 		</section>

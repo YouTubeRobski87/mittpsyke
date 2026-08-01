@@ -6,10 +6,14 @@
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
+	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
-	import LivingWorld from '$lib/components/LivingWorld.svelte';
+	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
+	import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
 	import {
 		COMPANION_WORLD_SCENE_IMAGE,
+		COMPANION_WORLD_SCENE_SRCSET,
+		COMPANION_WORLD_SCENE_FALLBACK,
 		getProgressCompanionDayState,
 		getProgressCompanionDayStateLabel,
 		getProgressCompanionSeason,
@@ -26,7 +30,12 @@
 		type CompanionPose as CompanionPoseData
 	} from '$lib/companionPoseManifest';
 	import { getLivingWorldScene } from '$lib/worldScene';
-	import { trackMilestoneReachedOnce, trackStreakDayReachedOnce } from '$lib/analytics';
+	import {
+		trackInsightOpened,
+		trackMilestoneReachedOnce,
+		trackProgressViewOpened,
+		trackStreakDayReachedOnce
+	} from '$lib/analytics';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -54,6 +63,7 @@
 	let companionPoseId = $state('idle');
 	let companionBasePose = $state<CompanionPoseData | null>(null);
 	const livingWorldScene = $derived(getLivingWorldScene({ season, timeOfDay }));
+	const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
 
 	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: 'fox' | 'bear' | 'wolf') {
 		if (companionId === 'bear') {
@@ -236,6 +246,7 @@
 		heatmapError?: string;
 		profileTheme?: keyof typeof THEMES | null;
 		progressCompanion?: ProgressCompanionSelection | string | null;
+		companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
 		isAnonymous?: boolean;
 	}
 
@@ -412,6 +423,7 @@
 	let progressLoaded = $state(false);
 	let progressError = $state('');
 	let loadedInsightsData = $state<InsightsResponse | null>(null);
+	let hasTrackedInsightOpened = false;
 	let insightsLoading = $state(false);
 	let insightsError = $state('');
 	let hasSensitiveDataConsent = $state(browser ? hasSensitiveConsent() : false);
@@ -622,6 +634,9 @@
 	}
 
 	onMount(() => {
+		// Enbart om vyn öppnades och om besökaren var inloggad. Ingen dagboksdata.
+		trackProgressViewOpened({ signed_in: !isAnonymous });
+
 		const updateCompanionTimeOfDay = () => {
 			const now = new Date();
 			timeOfDay = getProgressCompanionDayState(now);
@@ -742,6 +757,22 @@
 			}
 
 			loadedInsightsData = result;
+
+			// Insikterna visades med innehåll. Endast fast typ, en boolean och ett
+			// antal — aldrig sammanfattningen, temana eller humörvärdena.
+			if (!hasTrackedInsightOpened) {
+				const hasContent = Boolean(
+					result.aiSummary || result.insights.length > 0 || result.bestDay || result.worstDay
+				);
+				if (hasContent) {
+					hasTrackedInsightOpened = true;
+					trackInsightOpened({
+						insight_type: 'diary_insights',
+						has_summary: Boolean(result.aiSummary),
+						pattern_count: result.insights.length
+					});
+				}
+			}
 		} catch {
 			insightsError = 'Kunde inte ladda AI-insikter just nu.';
 			loadedInsightsData = null;
@@ -767,6 +798,7 @@
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/framsteg" />
+<CompanionPresenceTracker enabled={!data.isAnonymous} />
 
 <main class="auth-page framsteg-page" style={themeStyle}>
 	<div class="auth-shell framsteg-shell">
@@ -813,18 +845,33 @@
 				data-pose={companionBasePose?.id}
 				style={bearProgressSceneStyle ?? wolfProgressSceneStyle}
 			>
+				<!-- width/height ger proportionerna innan bilden laddats så scenen
+					 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
+				<!-- Framsteg är fullbrett på desktop (upp till 1440 px), till skillnad från
+					 Mitt Hems smalare hero. Ett eget sizes-värde hindrar att 800/1200w skalas upp. -->
 				<img
 					class="companion-world-scene"
-					src={companionScene.image}
+					srcset={COMPANION_WORLD_SCENE_SRCSET}
+					sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
+					src={COMPANION_WORLD_SCENE_FALLBACK}
 					alt=""
 					aria-hidden="true"
+					width="1672"
+					height="941"
+					fetchpriority="high"
 					loading="eager"
 					decoding="async"
 				/>
+				<!-- Grenen/löven uppe till höger ligger inbränd i companionScene.image (ingen
+					 alfakanal). När en mattad utklippsfil finns (t.ex.
+					 dashboard-lakeside-world-foliage.webp), lägg ett eget <img> här med
+					 samma object-fit/object-position, klassen "companion-hero-foliage",
+					 och animera med canopySway (AmbientWorld.svelte). -->
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
 				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} decorative />
 				<span class="companion-foreground-edge" aria-hidden="true"></span>
-				<LivingWorld scene={livingWorldScene} class="progress-living-world" />
+				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
+				<CompanionFriend class="progress-companion-friend" companionId={sceneCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
 			<div class="companion-copy">
@@ -1251,6 +1298,24 @@
 	.companion-media[data-companion='wolf'] .companion-ground-shadow {
 		left: var(--wolf-progress-ground-left);
 		top: var(--wolf-progress-ground-top);
+		width: clamp(42px, 7.4%, 72px);
+		height: clamp(5px, 0.7vw, 8px);
+		filter: blur(4.5px);
+		opacity: 0.28;
+		transform: translate3d(-50%, -50%, 0) rotate(-5deg) skewX(-12deg) scaleX(1.12);
+	}
+
+	.companion-media[data-companion='wolf'] .companion-foreground-edge {
+		left: var(--wolf-progress-ground-left);
+		top: calc(var(--wolf-progress-ground-top) + 0.55%);
+		width: clamp(50px, 7.9%, 78px);
+		height: clamp(7px, 1.1vw, 12px);
+		background:
+			radial-gradient(ellipse at center, rgb(226 238 231 / 0.22), transparent 66%),
+			linear-gradient(90deg, transparent, rgb(219 234 227 / 0.18) 45% 58%, transparent);
+		filter: blur(0.6px);
+		opacity: 0.42;
+		mix-blend-mode: screen;
 	}
 
 	.companion-media[data-companion='bear'][data-pose='bear-sleeping'] .companion-ground-shadow {
@@ -1268,6 +1333,11 @@
 			hue-rotate(-6deg);
 	}
 
+	.companion-media[data-companion='wolf'][data-time='evening'] :global(.progress-companion-pose) {
+		--companion-grade: saturate(0.62) contrast(0.84) brightness(0.84) sepia(0.21)
+			hue-rotate(-8deg) blur(0.12px);
+	}
+
 	.companion-media[data-time='night'] :global(.progress-companion-pose) {
 		--companion-grade: saturate(0.55) contrast(0.84) brightness(0.72) sepia(0.14)
 			hue-rotate(5deg);
@@ -1277,6 +1347,15 @@
 		filter: var(--companion-grade) drop-shadow(0 7px 8px rgb(37 31 20 / 0.1));
 		-webkit-mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.88) 89%, transparent 100%);
 		mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.88) 89%, transparent 100%);
+	}
+
+	/* Vargbilden är redan frilagd. Låt dess egen alpha-kant möta skuggan och
+	 * förgrunden, i stället för att lägga på den generella panoramamasken. */
+	.companion-media[data-companion='wolf'] :global(.progress-companion-pose .companion-pose-image) {
+		-webkit-box-reflect: below -22%
+			linear-gradient(to bottom, rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.08) 38%, transparent 76%);
+		-webkit-mask-image: none;
+		mask-image: none;
 	}
 
 	.companion-ground-shadow,
@@ -1781,5 +1860,4 @@
 		.icon-badge { width: 2.3rem; height: 2.3rem; }
 	}
 </style>
-
 

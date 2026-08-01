@@ -1,0 +1,8 @@
+{
+  "slug": "Psykvården",
+  "label": "Psykvårdens påverkan",
+  "description": "Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag",
+  "icon": "message-circle",
+  "color": "blue",
+  "order": 4
+}

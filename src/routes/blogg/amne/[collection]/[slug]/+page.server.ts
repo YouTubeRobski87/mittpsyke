@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import {
+	buildArticleJsonLd,
 	getArticleDateLabel,
 	getArticleTopics,
 	getPublishedArticle,
@@ -18,12 +19,16 @@ export const load: PageServerLoad = ({ params }) => {
 		title: article.title,
 		description: article.description,
 		ogType: 'article',
+		ogImage: article.image
+			? new URL(article.image, 'https://www.mittpsyke.se').toString()
+			: undefined,
 		article: {
 			...article,
 			dateLabel: getArticleDateLabel(article),
 			updatedLabel: article.updated ? getArticleDateLabel({ date: article.updated }) : null,
 			content: renderArticleMarkdown(article.body, article.title)
 		},
-		topic
+		topic,
+		jsonLd: buildArticleJsonLd(article, topic)
 	};
 };

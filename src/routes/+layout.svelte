@@ -85,6 +85,25 @@
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
 
+	const mobileSignedInGeneralNavItems: NavItem[] = [
+		{ href: '/chat', label: 'Chatta' },
+		{ href: '/dagbok', label: 'Dagbok' },
+		{ href: '/blogg', label: 'Artiklar' },
+		{ href: '/guider', label: 'Guider' },
+		{ href: '/anonyma-berattelser', label: 'Berättelser' },
+		{ href: '/ovningar', label: 'Övningar' },
+		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
+		{ href: '/om-skaparen', label: 'Om skaparen' },
+		{ href: PUBLIC_CONTACT_MAILTO, label: 'Kontakt' },
+		{ href: '/dashboard/installningar', label: 'Inställningar' }
+	];
+
+	const mobileGuestGeneralNavItems: NavItem[] = [
+		{ href: '/chat', label: 'Chatta' },
+		{ href: '/dagbok', label: 'Dagbok' },
+		...primaryNavItems.slice(1)
+	];
+
 	const guestSecondaryNavItems: NavItem[] = [
 		{ href: 'https://stodlinjer.se', label: 'Akut hjälp', external: true }
 	];
@@ -122,6 +141,7 @@
 	const fallbackDescription =
 		'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.';
 	const ogDescription = $derived(page.data?.description || fallbackDescription);
+	const ogImage = $derived(page.data?.ogImage ?? 'https://www.mittpsyke.se/og-image.png');
 
 	function getProfileName(profileDisplayName: string | null, sessionUser: User | null) {
 		const metadata = sessionUser?.user_metadata as Record<string, unknown> | undefined;
@@ -602,7 +622,7 @@
 		<meta property="og:site_name" content="MittPsyke" />
 
 		<meta property="og:url" content={`https://www.mittpsyke.se${page.url.pathname}`} />
-		<meta property="og:image" content={page.data?.ogImage ?? 'https://www.mittpsyke.se/og-image.png'} />
+		<meta property="og:image" content={ogImage} />
 
 		<link rel="alternate" hreflang="sv" href={`https://www.mittpsyke.se${page.url.pathname}`} />
 
@@ -612,6 +632,7 @@
 			name="twitter:description"
 			content={ogDescription}
 		/>
+		<meta name="twitter:image" content={ogImage} />
 		{@html `<script type="application/ld+json">${JSON.stringify(organizationJsonLd)}<\/script>`}
 		{@html `<script type="application/ld+json">${JSON.stringify(webApplicationJsonLd)}<\/script>`}
 	{/if}
@@ -673,8 +694,8 @@
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
-				<nav class="mobile-quick-nav" aria-label="Snabbnavigering">
-					{#each (user ? signedInPortalNavItems.slice(0, 2) : primaryNavItems.slice(0, 3)) as item}
+				<nav class="mobile-quick-nav" class:mobile-quick-nav-signed={Boolean(user)} aria-label="Snabbnavigering">
+					{#each (user ? signedInPortalNavItems.slice(0, 1) : primaryNavItems.slice(0, 3)) as item}
 						<a
 							href={item.href}
 							class="mobile-quick-link"
@@ -833,16 +854,7 @@
 
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden px-5 py-3" role="navigation" aria-label="Mobilmeny">
-				{#if user}
-					<p class="mobile-menu-section-title text-xs opacity-55">Din plats</p>
-					{#each signedInPortalNavItems as item}
-						<a href={item.href} class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-85 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>
-							{item.label}
-						</a>
-					{/each}
-					<p class="mobile-menu-section-title text-xs opacity-55">Upptäck</p>
-				{/if}
-				{#each primaryNavItems as item}
+				{#each (user ? mobileSignedInGeneralNavItems : mobileGuestGeneralNavItems) as item}
 					<a
 						href={item.href}
 						class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
@@ -856,12 +868,13 @@
 					<Search size={16} aria-hidden="true" />
 					<span>Sök</span>
 				</a>
-				{#each mobileSupplementalNavItems as item}
-					<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
-				{/each}
+				{#if !user}
+					{#each mobileSupplementalNavItems as item}
+						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+					{/each}
+				{/if}
 				{#if user}
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
-					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
 						class="mobile-menu-link text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
@@ -896,7 +909,7 @@
 			{@render children()}
 		</main>
 
-		{#if !isProductPage}
+		{#if !isProductPage && !isChat}
 			<section class="site-disclaimer mt-6 px-5">
 				<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
 					MittPsyke ersätter inte vård. Vid akut fara ring 112 &middot; Vårdråd 1177.
@@ -926,6 +939,7 @@
 					<a href="/om-skaparen" class="footer-link">Om skaparen</a>
 					<a href="/sa-fungerar-mittpsyke" class="footer-link">Så fungerar det</a>
 					<a href="/redaktionell-metod" class="footer-link">Redaktionell metod</a>
+					<a href="/ansvarsfull-ai" class="footer-link">Ansvarsfull AI</a>
 					<a href="/ansvar" class="footer-link">Ansvar</a>
 					<a href="/feedback" class="footer-link">Feedback</a>
 					<a href="/kontakt-och-villkor" class="footer-link">Kontakt och villkor</a>
@@ -950,7 +964,9 @@
 					<div class="footer-company">
 						<p>© {new Date().getFullYear()} MittPsyke</p>
 						<p>Enskild näringsverksamhet</p>
-						<p>Org.nr: 198712284895</p>
+						<p>
+							<a href="/kontakt-och-villkor" class="footer-link">Org.nr och kontaktuppgifter</a>
+						</p>
 						<p><a href={PUBLIC_CONTACT_MAILTO} class="footer-link">{PUBLIC_CONTACT_EMAIL}</a></p>
 					</div>
 				</div>
@@ -970,6 +986,10 @@
 {/if}
 
 <style>
+	:global(#main-content.chat-main) {
+		margin-top: 0 !important;
+	}
+
 	.site-header {
 		top: 0;
 		z-index: 60;
@@ -1289,14 +1309,6 @@
 		border-top: 1px solid var(--layout-footer-border);
 	}
 
-
-	.mobile-menu-section-title {
-		margin: 0.5rem 0 0.2rem;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-	}
-
-
 	.mobile-menu-link {
 		display: block;
 		width: 100%;
@@ -1348,7 +1360,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 2.5rem;
+		min-height: 2.75rem;
 		padding: 0 0.48rem;
 		border-radius: 999px;
 		color: hsl(var(--foreground) / 0.82);
@@ -1640,10 +1652,6 @@
 			display: none;
 		}
 
-		.mobile-menu-section-title {
-			margin-top: 0.35rem;
-		}
-
 		.mobile-menu-link {
 			padding: 0.42rem 0;
 		}
@@ -1673,9 +1681,12 @@
 	}
 
 	@media (max-width: 640px) {
-		/* Dölj snabbnavlänkarna — hamburgermenyn räcker på smal skärm */
 		.mobile-quick-nav {
 			display: none;
+		}
+
+		.mobile-quick-nav-signed {
+			display: inline-flex;
 		}
 
 		.site-header-inner {

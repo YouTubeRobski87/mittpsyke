@@ -7,8 +7,15 @@ import { env as privateEnv } from '$env/dynamic/private';
 import type { RequestHandler } from '@sveltejs/kit';
 import OpenAI from 'openai';
 
+// Utan gräns kunde ett trögt/nere OpenAI-anrop hänga kvar obegränsat länge -
+// samma mönster som diary/reflect.
+const WEEKLY_SUMMARY_AI_TIMEOUT_MS = 20_000;
+const FALLBACK_SUMMARY = 'Det gick inte att skapa en AI-sammanfattning just nu. Försök gärna igen om en liten stund.';
+
 function getOpenAIClient() {
-	return privateEnv.OPENAI_API_KEY ? new OpenAI({ apiKey: privateEnv.OPENAI_API_KEY }) : null;
+	return privateEnv.OPENAI_API_KEY
+		? new OpenAI({ apiKey: privateEnv.OPENAI_API_KEY, timeout: WEEKLY_SUMMARY_AI_TIMEOUT_MS })
+		: null;
 }
 
 function getWeekNumber(date: Date): number {
@@ -80,8 +87,13 @@ export const POST: RequestHandler = async ({ request }) => {
 			.join('\n\n');
 
 		const openai = getOpenAIClient();
-		const completion = openai
-			? await openai.chat.completions.create({
+		// AI-sammanfattningen är en extra krydda ovanpå humörstatistiken, som
+		// redan är klar här. Om OpenAI hänger/timar ut ska hela veckosvaret
+		// (inklusive humörtrenden) fortfarande nå användaren, bara utan text.
+		let summaryText = FALLBACK_SUMMARY;
+		if (openai) {
+			try {
+				const completion = await openai.chat.completions.create({
 					model: 'gpt-4-turbo',
 					messages: [
 						{
@@ -91,18 +103,20 @@ export const POST: RequestHandler = async ({ request }) => {
 					],
 					max_tokens: 200,
 					temperature: 0.7
-				})
-			: null;
+				});
+				const content = completion.choices[0]?.message?.content?.trim();
+				if (content) summaryText = content;
+			} catch (aiError) {
+				console.error('Weekly summary AI call failed:', aiError);
+			}
+		}
 
 		return json({
 			week: weekNumber,
 			year,
 			startDate,
 			endDate,
-			summary: (
-				completion?.choices[0]?.message?.content ||
-				'Det gick inte att generera AI-sammanfattningen just nu.'
-			).trim(),
+			summary: summaryText,
 			moodTrend: { trend, average_mood: averageMood, start_mood: startMood, end_mood: endMood },
 			entryCount: entries.length
 		});

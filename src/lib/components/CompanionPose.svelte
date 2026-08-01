@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
+	import { getCompanionDisplayState } from '$lib/companionStateMachine';
 	import {
 		getCompanionBasePose,
 		getCompanionOverlayPose,
@@ -7,6 +9,12 @@
 		getCompanionScenePosition,
 		getMsUntilNextCompanionPoseCheck
 	} from '$lib/companionPoseState';
+	import {
+		getCompanionBehaviourRestMs,
+		isQuietPose,
+		pickCompanionBehaviour,
+		type CompanionBehaviourId
+	} from '$lib/world/companionBehaviour';
 	import type {
 		CompanionId,
 		CompanionPose,
@@ -30,14 +38,17 @@
 		companionId?: CompanionId;
 	} = $props();
 
+	const motionAwareness = createMotionAwareness();
 	let localBasePose = $state<CompanionPose | null>(null);
 	let localPosition = $state<CompanionScenePosition | null>(null);
 	let overlayPose = $state<CompanionPose | null>(null);
 	let daypart = $state<CompanionPoseDaypart>('day');
 	let baseFrameIndex = $state(0);
 	let overlayFrameIndex = $state(0);
-	let isActive = $state(true);
-	let reducedMotion = $state(false);
+
+	// Mikrorörelser - urval, vikter och vilotider bor i $lib/world/companionBehaviour.
+	let microGesture = $state<CompanionBehaviourId | null>(null);
+	let previousGesture: CompanionBehaviourId | null = null;
 
 	const classes = $derived(`companion-pose ${className}`.trim());
 	const basePose = $derived(providedBasePose ?? localBasePose);
@@ -49,6 +60,10 @@
 	const overlayFrame = $derived(
 		overlayPose ? overlayPose.frames[overlayFrameIndex % overlayPose.frames.length] : null
 	);
+	// Kanoniskt tillstånd (idle/look-left/look-right/blink/sniff/walk/sit/rest/sleep),
+	// se $lib/companionStateMachine - används bara som ett stabilt data-attribut,
+	// styr inte vilken bild som faktiskt visas (det gör basePose/overlayPose ovan).
+	const displayState = $derived(getCompanionDisplayState(basePose, overlayPose));
 	const positionStyle = $derived(
 	position
 		? [
@@ -78,7 +93,7 @@
 	}
 
 	function maybePlayOverlay() {
-		if (overlayPose || !isActive || reducedMotion) return;
+		if (overlayPose || !motionAwareness.isActive || motionAwareness.reducedMotion) return;
 
 		const isSleeping = basePose?.id === 'sleep-curled' || basePose?.id === 'sleep-side';
 		const motion = isSleeping ? 'sleep' : Math.random() < 0.72 ? 'blink' : 'gesture';
@@ -93,21 +108,27 @@
 		}, nextOverlay.durationMs ?? 3000);
 	}
 
+	function maybePlayMicroGesture() {
+		if (microGesture || !motionAwareness.isActive || motionAwareness.reducedMotion) return;
+		// Ingen mikrorörelse ovanpå ett aktivt blink/gesture-overlay, och inte
+		// för poser som redan rör sig eller ska ligga still.
+		if (overlayPose || isQuietPose(basePose?.id)) return;
+
+		const behaviour = pickCompanionBehaviour(previousGesture);
+		previousGesture = behaviour.id;
+		microGesture = behaviour.id;
+		window.setTimeout(() => {
+			microGesture = null;
+		}, behaviour.durationMs);
+	}
+
 	onMount(() => {
 		refreshBasePose();
 		let baseTimer: number | null = null;
 		let baseFrameTimer: number | null = null;
 		let overlayFrameTimer: number | null = null;
 		let overlayTimer: number | null = null;
-		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-		const updateMotionState = () => {
-			reducedMotion = motionQuery.matches;
-		};
-
-		const updateActiveState = () => {
-			isActive = document.visibilityState === 'visible';
-		};
+		let microGestureTimer: number | null = null;
 
 		const scheduleBaseCheck = () => {
 			baseTimer = window.setTimeout(() => {
@@ -118,7 +139,7 @@
 
 		const scheduleBaseFrame = () => {
 			baseFrameTimer = window.setTimeout(() => {
-				if (isActive && !reducedMotion && basePose && basePose.frames.length > 1) {
+				if (motionAwareness.isActive && !motionAwareness.reducedMotion && basePose && basePose.frames.length > 1) {
 					baseFrameIndex += 1;
 				}
 				scheduleBaseFrame();
@@ -127,7 +148,7 @@
 
 		const scheduleOverlayFrame = () => {
 			overlayFrameTimer = window.setTimeout(() => {
-				if (isActive && !reducedMotion && overlayPose && overlayPose.frames.length > 1) {
+				if (motionAwareness.isActive && !motionAwareness.reducedMotion && overlayPose && overlayPose.frames.length > 1) {
 					overlayFrameIndex += 1;
 				}
 				scheduleOverlayFrame();
@@ -142,23 +163,27 @@
 			}, delay);
 		};
 
-		updateMotionState();
-		updateActiveState();
-		motionQuery.addEventListener('change', updateMotionState);
-		document.addEventListener('visibilitychange', updateActiveState);
+		// Kort rörelse följd av flera sekunders vila - vilotiderna kommer från
+		// $lib/world/companionBehaviour så de kan justeras på ett ställe.
+		const scheduleMicroGesture = (isFirst = false) => {
+			microGestureTimer = window.setTimeout(() => {
+				maybePlayMicroGesture();
+				scheduleMicroGesture();
+			}, getCompanionBehaviourRestMs(isFirst));
+		};
 
 		scheduleBaseCheck();
 		scheduleBaseFrame();
 		scheduleOverlayFrame();
 		scheduleOverlay(22_000, 68_000);
+		scheduleMicroGesture(true);
 
 		return () => {
 			if (baseTimer !== null) window.clearTimeout(baseTimer);
 			if (baseFrameTimer !== null) window.clearTimeout(baseFrameTimer);
 			if (overlayFrameTimer !== null) window.clearTimeout(overlayFrameTimer);
 			if (overlayTimer !== null) window.clearTimeout(overlayTimer);
-			motionQuery.removeEventListener('change', updateMotionState);
-			document.removeEventListener('visibilitychange', updateActiveState);
+			if (microGestureTimer !== null) window.clearTimeout(microGestureTimer);
 		};
 	});
 
@@ -179,13 +204,20 @@
 	data-daypart={daypart}
 	data-position={position?.id}
 	data-pose={basePose?.id}
+	data-state={displayState}
 	style={positionStyle}
 	aria-hidden={decorative ? 'true' : undefined}
 	aria-label={decorative ? undefined : basePose?.alt}
 	role={decorative ? undefined : 'img'}
 >
 	{#if baseFrame}
-		<img class="companion-pose-image companion-pose-base" src={baseFrame.src} alt="" decoding="async" />
+		<img
+			class="companion-pose-image companion-pose-base"
+			data-micro-gesture={microGesture}
+			src={baseFrame.src}
+			alt=""
+			decoding="async"
+		/>
 	{/if}
 	{#if overlayFrame}
 		<img
@@ -291,6 +323,31 @@
 		animation: companionPoseBreath 7s ease-in-out infinite;
 	}
 
+	/* Mikrorörelser - kort, sällan och litet. Ersätter tillfälligt den
+	   vanliga andningen (samma transform-egenskap kan inte köra två
+	   animationer samtidigt) med en variant som väver in ett litet ögonkast
+	   eller en hållningsjustering i samma lugna rörelse, så andningen aldrig
+	   känns som att den tvärstannar. */
+	.companion-pose-base[data-micro-gesture='glance-left'] {
+		animation: companionMicroGlanceLeft 2.8s ease-in-out both;
+	}
+
+	.companion-pose-base[data-micro-gesture='glance-right'] {
+		animation: companionMicroGlanceRight 2.8s ease-in-out both;
+	}
+
+	.companion-pose-base[data-micro-gesture='settle'] {
+		animation: companionMicroSettle 2.2s ease-in-out both;
+	}
+
+	.companion-pose-base[data-micro-gesture='ear-twitch'] {
+		animation: companionMicroEarTwitch 0.9s ease-out both;
+	}
+
+	.companion-pose-base[data-micro-gesture='sniff'] {
+		animation: companionMicroSniff 2.6s ease-in-out both;
+	}
+
 	.companion-pose-overlay {
 		animation: companionPoseOverlay 420ms ease both;
 	}
@@ -330,6 +387,91 @@
 		}
 		50% {
 			transform: translateY(0.55%) scale(1.006);
+		}
+	}
+
+	/* Ett lugnt litet ögonkast åt sidan och tillbaka - ojämna procentsteg så
+	   det inte känns som en mekanisk pendling. */
+	@keyframes companionMicroGlanceLeft {
+		0%,
+		100% {
+			transform: translateY(0) scale(1) rotate(0deg) translateX(0);
+		}
+		18% {
+			transform: translateY(0.25%) scale(1.003) rotate(-0.4deg) translateX(-0.3%);
+		}
+		45% {
+			transform: translateY(0.5%) scale(1.006) rotate(-1.1deg) translateX(-0.7%);
+		}
+		72% {
+			transform: translateY(0.35%) scale(1.004) rotate(-0.9deg) translateX(-0.6%);
+		}
+	}
+
+	@keyframes companionMicroGlanceRight {
+		0%,
+		100% {
+			transform: translateY(0) scale(1) rotate(0deg) translateX(0);
+		}
+		18% {
+			transform: translateY(0.25%) scale(1.003) rotate(0.4deg) translateX(0.3%);
+		}
+		45% {
+			transform: translateY(0.5%) scale(1.006) rotate(1.1deg) translateX(0.7%);
+		}
+		72% {
+			transform: translateY(0.35%) scale(1.004) rotate(0.9deg) translateX(0.6%);
+		}
+	}
+
+	/* En liten justering av hållning/svans - kortare och lite mer asymmetrisk
+	   än ögonkasten ovan så de två inte känns som samma rörelse. */
+	@keyframes companionMicroSettle {
+		0%,
+		100% {
+			transform: translateY(0) scale(1) rotate(0deg);
+		}
+		35% {
+			transform: translateY(0.3%) scale(1.009) rotate(0.6deg);
+		}
+		65% {
+			transform: translateY(0.15%) scale(1.004) rotate(-0.3deg);
+		}
+	}
+
+	/* Snabbt öronryck - avsiktligt mycket kortare och vassare än de andra, det
+	   är det som får den att läsas som ett ryck och inte som en rörelse. */
+	@keyframes companionMicroEarTwitch {
+		0%,
+		100% {
+			transform: translateY(0) scale(1) rotate(0deg);
+		}
+		22% {
+			transform: translateY(-0.15%) scale(1.004) rotate(0.5deg);
+		}
+		44% {
+			transform: translateY(0) scale(1.001) rotate(-0.2deg);
+		}
+		66% {
+			transform: translateY(-0.08%) scale(1.003) rotate(0.28deg);
+		}
+	}
+
+	/* Nosa mot marken: en mjuk nedåtdipp som stannar kvar en stund innan den
+	   släpper - läses som uppmärksamhet nedåt snarare än en nick. */
+	@keyframes companionMicroSniff {
+		0%,
+		100% {
+			transform: translateY(0) scale(1) rotate(0deg);
+		}
+		28% {
+			transform: translateY(0.7%) scale(1.005) rotate(-0.35deg);
+		}
+		58% {
+			transform: translateY(0.95%) scale(1.008) rotate(-0.5deg);
+		}
+		80% {
+			transform: translateY(0.5%) scale(1.004) rotate(-0.25deg);
 		}
 	}
 

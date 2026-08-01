@@ -284,7 +284,7 @@
 	<section id="sa-gor-du" class="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-950/30 p-4 sm:p-5 mt-4 mb-6" aria-label="Så gör du">
 		<h3 class="text-base font-semibold mt-0 mb-2">Så här begär du radering eller export</h3>
 		<ol class="opacity-80 leading-relaxed text-sm list-decimal pl-6 space-y-2">
-			<li><strong>Via inställningar</strong> — logga in och gå till kontoinställningar för att radera ditt konto direkt.</li>
+			<li><strong>Via inställningar</strong> — logga in och gå till <a href="/dashboard/installningar#din-data" class="underline hover:no-underline">Din data</a> i kontoinställningarna för att begära export direkt, eller till <a href="/dashboard/installningar#radera-konto" class="underline hover:no-underline">Radera konto</a> för att radera.</li>
 				<li><strong>Via e-post</strong> — skicka ett mejl till <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a> och ange vad du vill (radering, export, eller båda).</li>
 			<li>Vi bekräftar din begäran och genomför den <strong>inom 30 dagar</strong>.</li>
 			<li>Vid export får du din data i JSON-format via e-post.</li>

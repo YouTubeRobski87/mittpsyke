@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { DEFAULT_THEME, THEMES } from '$lib/theme';
 import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
+import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
 
 type DiaryRow = {
 	id: string;
@@ -127,7 +128,7 @@ function buildProgressSummary(currentStreak: number, weeklyEntries: number, tota
 	if (totalEntries >= 1) {
 		return `${totalEntries} sparade anteckningar finns kvar att gå tillbaka till.`;
 	}
-	return 'Små steg räcker. Ditt första inlägg kan börja här.';
+	return 'Små steg räcker. Skriv ditt första inlägg här.';
 }
 
 function buildCurrentStreak(entries: { created_at: string | null }[]) {
@@ -181,7 +182,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				currentStreak: 0,
 				weeklyEntries: 0,
 				totalEntries: 0,
-				summary: 'Här kan små tecken på din resa samlas när du vill spara dem.'
+				summary: 'Små tecken på din resa samlas här när du skapar konto.'
 			},
 			settingsPreview: {
 				displayName: null,
@@ -189,7 +190,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				weeklyGoalLabel: WEEKLY_GOAL_LABELS.none,
 				dashboardFocusLabel: DASHBOARD_WIDGET_LABELS.dagbok
 			},
-			progressCompanion: null
+			progressCompanion: null,
+			companionRelationshipStage: 0
 		};
 	}
 
@@ -201,7 +203,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			: DEFAULT_THEME;
 	const themeLabel = THEMES[themeKey]?.label ?? THEMES[DEFAULT_THEME].label;
 
-	const [latestDiaryEntryResult, streakEntriesResult, totalEntriesResult, weeklyEntriesResult] =
+	const [latestDiaryEntryResult, streakEntriesResult, totalEntriesResult, weeklyEntriesResult, companionRelationshipStage] =
 		await Promise.all([
 			locals.supabase
 				.from('diary')
@@ -221,7 +223,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				.from('diary')
 				.select('id', { count: 'exact', head: true })
 				.eq('user_id', user.id)
-				.gte('created_at', weeklyStart)
+				.gte('created_at', weeklyStart),
+			getCompanionRelationshipStageForUser(locals.supabase, user.id)
 		]);
 
 	if (latestDiaryEntryResult.error && !isMissingTableError(latestDiaryEntryResult.error, 'diary')) {
@@ -252,7 +255,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			}
 		: {
 				id: null,
-				snippet: 'Din dagbok väntar stilla. Du kan fortsätta där du var eller börja med några enkla ord.',
+				snippet: 'Din dagbok väntar stilla. Skriv några enkla ord för att börja.',
 				dateLabel: '',
 				hasEntry: false
 			};
@@ -284,6 +287,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		diaryPreview,
 		progressPreview,
 		settingsPreview,
-		progressCompanion: readProgressCompanionFromMetadata(metadata)
+		progressCompanion: readProgressCompanionFromMetadata(metadata),
+		companionRelationshipStage
 	};
 };

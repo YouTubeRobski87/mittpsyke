@@ -55,7 +55,7 @@
 				vill ha mer stöd än en övning just nu.
 			</p>
 			<p class="links-row">
-				<a href="/chat/a">Starta samtal om ångest</a>
+				<a href="/chat/angest">Starta samtal om ångest</a>
 				<a href="/ovningar">Se fler övningar</a>
 				<a href="/dagbok">Skriv i dagboken</a>
 			</p>

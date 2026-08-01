@@ -1,5 +1,5 @@
-import { env } from '$env/dynamic/private';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { callClaude as callClaudeShared } from './ai/anthropic';
 
 type WeeklyReflectionStatus = 'ready' | 'paused' | 'opened' | 'expired';
 
@@ -27,8 +27,10 @@ export type WeeklyReflectionRecord = {
 };
 
 const STOCKHOLM_TIME_ZONE = 'Europe/Stockholm';
-const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
-const AI_TIMEOUT_MS = 9000;
+const AI_TIMEOUT_MS = 15000;
+// Taket täcker thinking och svarstext tillsammans. Systemprompterna begränsar
+// själva svaret (JSON på några rader), men thinking behöver eget utrymme.
+const AI_MAX_TOKENS = 2000;
 const CRISIS_KEYWORDS = [
 	'ta livet av mig',
 	'döda mig',
@@ -161,12 +163,6 @@ const stockholmPartsFormatter = new Intl.DateTimeFormat('sv-SE', {
 	hour12: false
 });
 
-function normalizeApiKey(value: string | undefined): string | null {
-	if (!value) return null;
-	const normalized = value.trim().replace(/^['"]/, '').replace(/['"]$/, '').replace(/^Bearer\s+/i, '');
-	return normalized || null;
-}
-
 export function getStockholmDateKey(date = new Date()) {
 	return stockholmDateFormatter.format(date);
 }
@@ -295,52 +291,14 @@ function isValidQuestion(value: string) {
 	return question.length > 0 && question.length <= 240 && !question.includes('!') && words.length <= 20;
 }
 
-function extractAnthropicText(payload: unknown) {
-	if (!payload || typeof payload !== 'object') return '';
-	const content = (payload as { content?: unknown }).content;
-	if (!Array.isArray(content)) return '';
-	return content
-		.map((item) => {
-			if (!item || typeof item !== 'object') return '';
-			const maybeText = (item as { text?: unknown }).text;
-			return typeof maybeText === 'string' ? maybeText : '';
-		})
-		.join('')
-		.trim();
-}
-
-async function callClaude(system: string, userContent: string, maxTokens = 200) {
-	const apiKey = normalizeApiKey(env.ANTHROPIC_API_KEY || env.CLAUDE_API_KEY || env.STORIFY_API_KEY);
-	if (!apiKey) return null;
-	const controller = new AbortController();
-	const timeout = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
-	try {
-		const response = await fetch('https://api.anthropic.com/v1/messages', {
-			method: 'POST',
-			signal: controller.signal,
-			headers: {
-				'Content-Type': 'application/json',
-				'x-api-key': apiKey,
-				'anthropic-version': '2023-06-01'
-			},
-			body: JSON.stringify({
-				model: CLAUDE_MODEL,
-				max_tokens: maxTokens,
-				system,
-				messages: [{ role: 'user', content: userContent }]
-			})
-		});
-		if (!response.ok) {
-			console.error('Spegelvattnet Anthropic error:', response.status, await response.text());
-			return null;
-		}
-		return extractAnthropicText(await response.json());
-	} catch (error) {
-		console.error('Spegelvattnet Anthropic request failed:', error);
-		return null;
-	} finally {
-		clearTimeout(timeout);
-	}
+function callClaude(system: string, userContent: string, maxTokens = AI_MAX_TOKENS) {
+	return callClaudeShared({
+		label: 'spegelvattnet',
+		system,
+		prompt: userContent,
+		maxTokens,
+		timeoutMs: AI_TIMEOUT_MS
+	});
 }
 
 async function selectQuotedSentence(posts: DiaryPost[]) {
@@ -366,7 +324,7 @@ Inget annat.`;
 			text: post.text ?? ''
 		}))
 	};
-	const raw = await callClaude(system, JSON.stringify(payload), 260);
+	const raw = await callClaude(system, JSON.stringify(payload));
 	if (!raw) return { sentence: null, post_id: null };
 
 	try {
@@ -403,7 +361,7 @@ INNEHÅLL
 - Om veckan haft tunga inslag (humör 1-4): mjuk fråga om utrymme eller vila, inte om glädje.
 
 Du får veckans data som JSON. Svara med endast frågan.`;
-	const raw = await callClaude(system, JSON.stringify(summary), 100);
+	const raw = await callClaude(system, JSON.stringify(summary));
 	if (raw && isValidQuestion(raw)) return cleanQuestion(raw);
 	const seed = JSON.stringify(summary);
 	const index = [...seed].reduce((sum, char) => sum + char.charCodeAt(0), 0) % QUESTION_FALLBACKS.length;

@@ -1,7 +1,15 @@
 import { redirect } from '@sveltejs/kit';
 import { getArticleDateLabel, getPublishedArticles } from '$lib/server/article-content';
 import { normalizeSoroArticleSlug, fetchSoroArticles } from '$lib/server/soro-articles';
+import { featuredPages } from '$lib/data/featured-pages';
 import type { PageServerLoad } from './$types';
+
+// Samma format som artiklarnas datumetikett (se formatDate i article-content).
+const dateLabelFormatter = new Intl.DateTimeFormat('sv-SE', {
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric'
+});
 
 const CACHE_CONTROL = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
 const ARTICLES_PER_PAGE = 12;
@@ -91,13 +99,30 @@ export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 		slug: article.slug,
 		excerpt: article.description,
 		date: getArticleDateLabel(article),
-		isoDate: article.date.toISOString(),
+		isoDate: article.date?.toISOString() ?? '',
 		imageUrl: article.image ?? null,
 		href: article.url
 	}));
+	// Fristående sidor som hör hemma i översikten men inte är markdown-artiklar.
+	// De länkar till sin egen adress, inte till någon /blogg-URL.
+	const curatedPages = featuredPages.map((page) => {
+		const date = new Date(page.date);
+		return {
+			id: page.id,
+			title: page.title,
+			slug: page.url.replace(/^\//, ''),
+			excerpt: page.description,
+			date: dateLabelFormatter.format(date),
+			isoDate: date.toISOString(),
+			imageUrl: page.image,
+			href: page.url
+		};
+	});
+
 	const { articles: soroArticles, loadError } = await fetchSoroArticles(fetch);
 	const articles = [
 		...markdownArticles,
+		...curatedPages,
 		...soroArticles.map((article) => ({ ...article, href: `/blogg/${article.slug}` }))
 	].sort((a, b) => Date.parse(b.isoDate) - Date.parse(a.isoDate));
 	const totalArticles = articles.length;
