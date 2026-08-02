@@ -43,7 +43,16 @@
 		hasSensitiveConsent
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
-	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart } from 'lucide-svelte';
+	import RecentPeriodChart from '$lib/components/RecentPeriodChart.svelte';
+	import {
+		buildRecentPeriodView,
+		toMoodSamples,
+		CHART_FALLBACK_COPY,
+		type MoodSample,
+		type PeriodDays,
+		type ThemeLike
+	} from '$lib/progress-recent-period';
+	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart, ChevronDown } from 'lucide-svelte';
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -220,6 +229,9 @@
 		worstDay: InsightDay | null;
 		emotionDistribution: Record<string, number>;
 		aiSummary: string | null;
+		// narrative.themes räknas fram deterministiskt serversidan och följer
+		// redan med i svaret. Vi läser bara av det, ingen extra AI-körning.
+		narrative?: { themes?: ThemeLike[] } | null;
 	}
 
 	interface HeatmapResponse {
@@ -228,10 +240,16 @@
 		totalEntries?: number;
 	}
 
+	interface MoodTimelineResponse {
+		success?: boolean;
+		data?: { date?: unknown; mood?: unknown }[];
+	}
+
 	interface ProgressCachePayload {
 		streak: StreakData | null;
 		milestones: MilestonesResponse | null;
 		heatmap: HeatmapResponse | null;
+		moodTimeline: MoodTimelineResponse | null;
 	}
 
 	interface PageData {
@@ -275,7 +293,8 @@
 		worstDay: { day: 'Söndag', average: 5.4, count: 1 },
 		emotionDistribution: { lugn: 4, oro: 2, trötthet: 2 },
 		aiSummary:
-			'Här kan en mjuk sammanfattning växa fram ur dina egna ord. Den ska hjälpa dig se mönster utan att pressa fram svar.'
+			'Här kan en mjuk sammanfattning växa fram ur dina egna ord. Den ska hjälpa dig se mönster utan att pressa fram svar.',
+		narrative: { themes: [{ label: 'Sömn', count: 5 }] }
 	};
 
 	function previewDateKey(daysAgo: number) {
@@ -384,6 +403,20 @@
 	};
 	const ANONYMOUS_PREVIEW_HEATMAP = buildAnonymousPreviewHeatmap();
 
+	// Exempelkurva för utloggade. Medvetet ojämn, utan att antyda en riktning.
+	const ANONYMOUS_PREVIEW_MOOD_SAMPLES: MoodSample[] = [
+		[27, 5],
+		[24, 6],
+		[20, 4],
+		[17, 7],
+		[13, 5],
+		[10, 6],
+		[7, 6],
+		[4, 7],
+		[2, 6],
+		[0, 6]
+	].map(([daysAgo, mood]) => ({ date: previewDateKey(daysAgo), mood }));
+
 	// ── Theme ──
 
 	let profileTheme = $state<keyof typeof THEMES>(getCachedTheme());
@@ -418,6 +451,9 @@
 	let loadedGrowthScore = $state(0);
 	let loadedGrowthLevel = $state(0);
 	let loadedHeatmapData = $state<Record<string, number>>({});
+	let loadedMoodSamples = $state<MoodSample[]>([]);
+	let selectedPeriod = $state<PeriodDays>(30);
+	let historyOpen = $state(false);
 	let heatmapError = $state('');
 	let progressLoading = $state(false);
 	let progressLoaded = $state(false);
@@ -439,6 +475,18 @@
 	const growthLevel = $derived(isAnonymous ? 3 : loadedGrowthLevel);
 	const heatmapData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : loadedHeatmapData);
 	const insightsData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_INSIGHTS : loadedInsightsData);
+	const moodSamples = $derived(isAnonymous ? ANONYMOUS_PREVIEW_MOOD_SAMPLES : loadedMoodSamples);
+
+	// Hela sektionen "Din senaste tid" byggs av redan hämtad data.
+	const recentPeriod = $derived(
+		buildRecentPeriodView({
+			samples: moodSamples,
+			heatmapData,
+			themes: insightsData?.narrative?.themes ?? null,
+			hasConsent: isAnonymous || hasSensitiveDataConsent,
+			periodDays: selectedPeriod
+		})
+	);
 	const shouldShowInsights = $derived(isAnonymous || insightsVisible);
 	const shouldShowHeatmap = $derived(isAnonymous || heatmapVisible);
 	let loading = $derived(progressLoading && !progressLoaded);
@@ -555,6 +603,7 @@
 		loadedStreakData = payload.streak;
 		loadedMilestonesData = payload.milestones;
 		loadedHeatmapData = payload.heatmap?.data ?? {};
+		loadedMoodSamples = toMoodSamples(payload.moodTimeline?.data);
 		heatmapError = payload.heatmap?.error ?? '';
 
 		const weekStart = startOfWeekKey();
@@ -593,22 +642,26 @@
 			}
 
 			const headers = { Authorization: `Bearer ${session.access_token}` };
-			const [streakRes, milestonesRes, heatmapRes] = await Promise.all([
+			const [streakRes, milestonesRes, heatmapRes, moodTimelineRes] = await Promise.all([
 				fetch('/api/diary/streak', { headers }),
 				fetch('/api/diary/milestones', { headers }),
-				fetch('/api/diary/heatmap', { headers })
+				fetch('/api/diary/heatmap', { headers }),
+				fetch('/api/diary/stats-timeline', { headers })
 			]);
 
-			const [streakPayload, milestonesPayload, heatmapPayload] = await Promise.all([
-				streakRes.ok ? streakRes.json() : null,
-				milestonesRes.ok ? milestonesRes.json() : null,
-				heatmapRes.ok ? heatmapRes.json() : null
-			]);
+			const [streakPayload, milestonesPayload, heatmapPayload, moodTimelinePayload] =
+				await Promise.all([
+					streakRes.ok ? streakRes.json() : null,
+					milestonesRes.ok ? milestonesRes.json() : null,
+					heatmapRes.ok ? heatmapRes.json() : null,
+					moodTimelineRes.ok ? moodTimelineRes.json() : null
+				]);
 
 			const payload = {
 				streak: streakPayload as StreakData | null,
 				milestones: milestonesPayload as MilestonesResponse | null,
-				heatmap: heatmapPayload as HeatmapResponse | null
+				heatmap: heatmapPayload as HeatmapResponse | null,
+				moodTimeline: moodTimelinePayload as MoodTimelineResponse | null
 			};
 			applyProgressPayload(payload);
 		} catch {
@@ -888,18 +941,66 @@
 	<div class="framsteg-layout">
 	<div class="framsteg-main">
 
-		<!-- ── Aktivitetskarta ── -->
-		<section class="card heatmap-card" bind:this={heatmapCardEl}>
+		<!-- ── Din senaste tid ── -->
+		<section class="card recent-card" bind:this={heatmapCardEl} aria-labelledby="recent-period-heading">
 			<div class="card-header">
 				<div class="icon-badge heat"><TrendingUp size={24} /></div>
-				<h2>Din aktivitetsöversikt</h2>
+				<h2 id="recent-period-heading">Din senaste tid</h2>
 			</div>
-			<p class="heatmap-description">Varje markering är en dag. Färgen visar hur mycket du skrev i dagboken.</p>
-			{#if shouldShowHeatmap}
-				<ActivityHeatmap data={heatmapData} error={heatmapError} />
-			{:else}
-				<div class="card-placeholder card-placeholder--heatmap" aria-hidden="true"></div>
+			<p class="recent-intro">
+				Kurvan visar det humör du själv noterat i dagboken, på en skala från 1 tungt till 10
+				ljusare. Texten under är observationer ur din egen data, inte en bedömning.
+			</p>
+
+			<RecentPeriodChart
+				points={recentPeriod.points}
+				period={selectedPeriod}
+				onSelectPeriod={(value) => (selectedPeriod = value)}
+				textAlternative={recentPeriod.textAlternative}
+				hasChart={recentPeriod.hasChart}
+				fallbackText={CHART_FALLBACK_COPY}
+			/>
+
+			<!-- Utan kurva står samma förklaring redan i grafytan. -->
+			{#if recentPeriod.hasChart}
+				<p class="recent-summary">{recentPeriod.summary}</p>
 			{/if}
+
+			<ul class="observation-list">
+				{#each recentPeriod.observations as observation (observation.id)}
+					<li class="observation">
+						<span class="observation-label">{observation.label}</span>
+						<span class="observation-text">{observation.text}</span>
+					</li>
+				{/each}
+			</ul>
+
+			<!-- Skrivhistoriken är fördjupning, inte huvudbudskap. Stängd som standard. -->
+			<div class="history-disclosure">
+				<button
+					type="button"
+					class="history-toggle"
+					aria-expanded={historyOpen}
+					aria-controls="framsteg-writing-history"
+					onclick={() => (historyOpen = !historyOpen)}
+				>
+					<span>{historyOpen ? 'Dölj skrivhistorik' : 'Visa skrivhistorik'}</span>
+					<ChevronDown size={18} class="history-chevron" aria-hidden="true" />
+				</button>
+				<div
+					id="framsteg-writing-history"
+					class="history-panel"
+					role="region"
+					aria-label="Skrivhistorik"
+				>
+					{#if historyOpen && shouldShowHeatmap}
+						<p class="history-description">
+							Varje markering är en dag du skrev. Färgen visar hur många inlägg dagen fick.
+						</p>
+						<ActivityHeatmap data={heatmapData} error={heatmapError} />
+					{/if}
+				</div>
+			</div>
 		</section>
 
 		<!-- ── AI-insikter ── -->
@@ -1636,7 +1737,6 @@
 	}
 	.icon-badge { width: 3.2rem; height: 3.2rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
 	.insights-card,
-	.heatmap-card,
 	.progress-summary-card { min-height: 25rem; }
 	.progress-summary-card { box-sizing: border-box; }
 	.card-placeholder {
@@ -1647,7 +1747,98 @@
 		animation: cardPlaceholderShimmer 1.6s ease-in-out infinite;
 	}
 	.card-placeholder--insights { min-height: 12rem; }
-	.card-placeholder--heatmap { min-height: 21rem; }
+
+	/* ── Din senaste tid ── */
+	.recent-card { min-width: 0; }
+
+	.recent-intro {
+		max-width: 42rem;
+		margin: 0 0 1.4rem;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.95rem;
+		line-height: 1.6;
+	}
+
+	.recent-summary {
+		max-width: 46rem;
+		margin: 1.4rem 0 0;
+		color: hsl(var(--foreground));
+		font-size: 1.05rem;
+		line-height: 1.6;
+	}
+
+	.observation-list {
+		display: grid;
+		gap: 0.75rem;
+		margin: 1.25rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.observation {
+		display: grid;
+		gap: 0.15rem;
+		padding-left: 0.9rem;
+		border-left: 2px solid color-mix(in srgb, var(--theme-accent, #557c68) 45%, transparent);
+	}
+
+	.observation-label {
+		color: hsl(var(--muted-foreground));
+		font-size: 0.82rem;
+		font-weight: 600;
+	}
+
+	.observation-text {
+		color: hsl(var(--foreground));
+		font-size: 0.98rem;
+		line-height: 1.55;
+	}
+
+	.history-disclosure {
+		margin-top: 1.75rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--color-dashboard-border);
+	}
+
+	.history-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		min-height: 44px;
+		padding: 0 0.15rem;
+		border: 0;
+		background: none;
+		color: hsl(var(--muted-foreground));
+		font: inherit;
+		font-size: 0.92rem;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.history-toggle:hover { color: hsl(var(--foreground)); }
+
+	.history-toggle:focus-visible {
+		outline: 2px solid hsl(var(--foreground));
+		outline-offset: 3px;
+		border-radius: 0.35rem;
+	}
+
+	.history-toggle :global(.history-chevron) { flex-shrink: 0; }
+
+	.history-toggle[aria-expanded='true'] :global(.history-chevron) { transform: rotate(180deg); }
+
+	.history-panel:not(:empty) { margin-top: 1rem; }
+
+	.history-description {
+		margin: 0 0 0.9rem;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.9rem;
+		line-height: 1.6;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.history-toggle :global(.history-chevron) { transition: transform 180ms ease; }
+	}
 
 	@keyframes cardPlaceholderShimmer {
 		0% { background-position: 200% 0; }
@@ -1751,7 +1942,6 @@
 	.next-milestone small { color: hsl(var(--muted-foreground)); display: block; line-height: 1.5; }
 
 	/* Heatmap */
-	.heatmap-card { overflow-x: auto; }
 	.heatmap-description { color: hsl(var(--muted-foreground)); font-size: 0.95rem; margin: 0 0 1.5rem 0; }
 
 	/* Insights */
@@ -1850,9 +2040,7 @@
 		.companion-copy p { font-size: 0.8rem; line-height: 1.4; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.insights-card,
-		.heatmap-card,
 		.progress-summary-card { min-height: 18rem; }
-		.card-placeholder--heatmap { min-height: 14rem; }
 		.milestones-grid { grid-template-columns: 1fr; }
 		.insights-grid { grid-template-columns: 1fr; }
 		.overview-grid { grid-template-columns: repeat(2, 1fr); }
