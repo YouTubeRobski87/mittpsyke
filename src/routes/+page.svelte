@@ -63,23 +63,29 @@
 		}
 	];
 
-	// Mitt Hem-showcase: samma vy vid sjön i olika ljus. Rena stämningsbilder —
-	// ingen räknare, ingen progress, ingen CTA. Blocket ska läsas som ett löfte.
+	// Mitt Hem-showcase: samma vy vid sjön genom dygnet och året. Rena
+	// stämningsbilder — ingen räknare, ingen progress, ingen CTA. Blocket ska
+	// läsas som ett löfte.
 	const homeShowcaseScenes = [
 		{
-			src: '/assets/home/hem-gryning-720.webp',
-			label: 'Gryning',
-			alt: 'Björnen sover mot trädet vid sjön i tidigt morgonljus.'
+			src: '/assets/home/hem-rav-morgon-720.webp',
+			label: 'Morgon',
+			alt: 'Räven vilar under trädet vid sjön medan solen går upp över bergen.'
 		},
 		{
-			src: '/assets/home/hem-dag-720.webp',
-			label: 'Dag',
-			alt: 'Samma plats mitt på dagen. Björnen sitter vaken mot trädet och ser ut över sjön.'
+			src: '/assets/home/hem-rav-var-720.webp',
+			label: 'Vår',
+			alt: 'Samma plats om våren. Räven ligger i en äng av blommor vid den lugna sjön.'
 		},
 		{
-			src: '/assets/home/hem-kvall-720.webp',
-			label: 'Kväll',
-			alt: 'Samma plats i kvällsljus. Björnen vilar mot trädet medan solen går ner bakom sjön.'
+			src: '/assets/home/hem-rav-host-720.webp',
+			label: 'Höst',
+			alt: 'Samma plats om hösten. Trädet har gula löv och räven vilar i kvällssolen.'
+		},
+		{
+			src: '/assets/home/hem-rav-vinter-720.webp',
+			label: 'Vinter',
+			alt: 'Samma plats om vintern. Snö över marken och norrsken över den frusna sjön.'
 		}
 	];
 
@@ -170,14 +176,14 @@
 	<section class="hero-section hero" aria-label="Introduktion till MittPsyke" bind:this={heroEl}>
 		<picture class="hero-picture">
 			<source
-				type="image/jpeg"
-				srcset="/assets/home/Bjorn-tryggplats-hero-720.jpg 720w, /assets/home/Bjorn-tryggplats-hero-1200.jpg 1200w, /assets/home/Bjorn-tryggplats-hero-1695.jpg 1695w"
+				type="image/webp"
+				srcset="/assets/home/rav-tryggplats-hero-720.webp 720w, /assets/home/rav-tryggplats-hero-1200.webp 1200w, /assets/home/rav-tryggplats-hero-1695.webp 1695w"
 				sizes="100vw"
 			/>
 			<img
 				class="hero-bg"
 				bind:this={bgEl}
-				src="/assets/home/Bjorn-tryggplats-hero-1200.jpg"
+				src="/assets/home/rav-tryggplats-hero-1200.webp"
 				alt=""
 				width="1200"
 				height="657"
@@ -193,7 +199,7 @@
 			<div class="hero-content">
 				<h1>En plats som väntar på dig</h1>
 				<p>
-					Björnen sitter vid sjön, oavsett hur länge du är borta. Skriv anonymt, utan konto. Texten
+					Räven sitter vid sjön, oavsett hur länge du är borta. Skriv anonymt, utan konto. Texten
 					stannar på din enhet tills du väljer något annat.
 				</p>
 
@@ -233,8 +239,8 @@
 				<p class="section-eyebrow">Mitt Hem</p>
 				<h2 id="home-showcase-title">Mer än en anteckning</h2>
 				<p>
-					Din plats förändras i takt med årstiderna, precis som du. Björnen finns kvar där du lämnade
-					den.
+					Din plats förändras i takt med dygnet och årstiderna, precis som du. Räven finns kvar där
+					du lämnade den.
 				</p>
 			</div>
 			<ul class="home-showcase-strip">
@@ -1072,12 +1078,15 @@
 		}
 	}
 
-	@media (min-width: 700px) {
+	/* Fyra scener: 2x2 på surfplatta, en rad på desktop. */
+	@media (min-width: 560px) {
 		.home-showcase-strip {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 0.9rem;
 		}
+	}
 
+	@media (min-width: 700px) {
 		.product-flow-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
@@ -1093,6 +1102,10 @@
 	}
 
 	@media (min-width: 1040px) {
+		.home-showcase-strip {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+
 		.hero-shell {
 			grid-template-columns: minmax(0, 1fr);
 		}

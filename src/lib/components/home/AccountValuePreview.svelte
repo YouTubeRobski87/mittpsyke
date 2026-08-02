@@ -76,10 +76,10 @@
 
 				<section class="home-card" aria-labelledby="home-title">
 					<img
-						src="/images/home-companion-bear-awake.webp"
-						alt="Illustration av den lugna naturmiljön och björnen som håller platsen sällskap i Mitt Hem."
-						width="240"
-						height="360"
+						src="/images/home-companion-fox-awake.webp"
+						alt="Illustration av den lugna naturmiljön och räven som håller platsen sällskap i Mitt Hem."
+						width="1536"
+						height="1024"
 						loading="lazy"
 						decoding="async"
 					/>

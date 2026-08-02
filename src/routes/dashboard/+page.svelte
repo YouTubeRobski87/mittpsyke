@@ -10,7 +10,10 @@
     ArrowRight,
     ChevronDown,
     Heart,
-    SunMedium
+    MoonStar,
+    SunMedium,
+    Sunrise,
+    Sunset
   } from 'lucide-svelte';
   import {
     getDashboardCompanionScene,
@@ -103,6 +106,18 @@
   const companionHeroAlt =
   'En vaken, nyfiken räv sitter vid ett träd i en varm och stillsam naturmiljö vid en sjö';
   const companionBadgeMessage = $derived(localCompanionScene?.greeting ?? null);
+  // Ikonen ska följa hälsningen — "God natt" fick tidigare alltid en solikon.
+  const CompanionBadgeIcon = $derived(
+    companionBadgeMessage?.label === 'God morgon'
+      ? Sunrise
+      : companionBadgeMessage?.label === 'God dag'
+        ? SunMedium
+        : companionBadgeMessage?.label === 'God kväll'
+          ? Sunset
+          : companionBadgeMessage?.label === 'God natt'
+            ? MoonStar
+            : SunMedium
+  );
   onMount(() => {
     const updateLocalTime = () => {
       localHour = new Date().getHours();
@@ -183,7 +198,7 @@
         <AmbientWorld scene={livingWorldScene} class="hero-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
         <CompanionFriend class="hero-companion-friend" companionId={heroCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
         <div class="time-badge" aria-label={companionBadgeMessage?.label ?? 'Hälsning'}>
-          <SunMedium size={24} aria-hidden="true" />
+          <CompanionBadgeIcon size={24} aria-hidden="true" />
           <span>
             <strong>{companionBadgeMessage?.label ?? 'Välkommen'}</strong>
             <small>{companionBadgeMessage?.note ?? 'Din plats finns här.'}</small>

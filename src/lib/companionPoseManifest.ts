@@ -416,21 +416,26 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 		dayparts: ['day', 'evening'],
 		weight: 1.25
 	},
+	// Låg scale + hög y placerade följeslagaren så långt bort att den blev en
+	// prick i scenen (~25 px motiv på en hero som är upp till 984 px bred).
+	// Flyttad något närmare och uppskalad i motsvarande grad, så djupkänslan
+	// finns kvar men följeslagaren alltid går att känna igen. Skuggan behöver
+	// då också synas, annars ser den ut att strunta i marken.
 	{
 		id: 'shore-far',
 		x: 73,
-		y: 66,
-		scale: 0.26,
+		y: 70,
+		scale: 0.44,
 		zIndex: 1,
 		shadow: {
 			width: 28,
 			height: 3,
 			blur: 4,
-			opacity: 0.05
+			opacity: 0.12
 		},
 		allowedPoseIds: ['idle', 'look-left', 'look-right', 'sit', 'sit-look-up', 'evening-lake'],
 		dayparts: ['day', 'evening'],
-		weight: 0.85
+		weight: 0.6
 	}
 ];
 
