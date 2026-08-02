@@ -9,10 +9,22 @@
 	function nextStepLabel(action: string | null) {
 		return ({ agera_nu: 'Agera nu', testa_i_sandbox: 'Testa lugnt', bevaka: 'Bevaka', ignorera: 'Ignorera' } as Record<string, string>)[action ?? ''] ?? 'Ignorera';
 	}
-	function formatDate(value: string | null) {
-		if (!value) return '–';
+	function toDate(value: string | null) {
+		if (!value) return null;
 		const date = new Date(value);
-		return Number.isNaN(date.getTime()) ? '–' : new Intl.DateTimeFormat('sv-SE', { dateStyle: 'medium' }).format(date);
+		return Number.isNaN(date.getTime()) ? null : date;
+	}
+	function formatDate(value: string | null) {
+		const date = toDate(value);
+		return date ? new Intl.DateTimeFormat('sv-SE', { dateStyle: 'medium' }).format(date) : '–';
+	}
+	// Körningar och källkontroller sker flera gånger per dygn, så klockslaget
+	// behövs där. Fynd visas med enbart datum eftersom flödenas tider är brus.
+	function formatDateTime(value: string | null) {
+		const date = toDate(value);
+		return date
+			? new Intl.DateTimeFormat('sv-SE', { dateStyle: 'medium', timeStyle: 'short' }).format(date)
+			: '–';
 	}
 	function sourceLabel(source: { provider: string; name: string }) {
 		return source.name === source.provider ? source.provider : `${source.provider} · ${source.name}`;
@@ -69,8 +81,8 @@
 	</section>
 
 	<div class="two-columns">
-		<section class="section"><div class="section-heading"><h2>Källor</h2><p>Endast godkända externa flöden.</p></div><ul class="compact-list">{#each data.sources as source}<li><div><strong>{sourceLabel(source)}</strong><span>{source.category}</span></div><span>{source.enabled ? 'Aktiv' : 'Pausad'} · kontrollerad {formatDate(source.last_checked_at)}</span></li>{/each}</ul></section>
-		<section class="section"><div class="section-heading"><h2>Körningar</h2><p>Dagligen 06:15 UTC.</p></div><ul class="compact-list">{#each data.runs as run}<li><div><strong>{run.status === 'completed' ? 'Genomförd' : run.status}</strong><span>{formatDate(run.started_at)}</span></div><span>{run.sources_checked} källor · {run.findings_saved} sparade</span></li>{/each}</ul></section>
+		<section class="section"><div class="section-heading"><h2>Källor</h2><p>Endast godkända externa flöden.</p></div><ul class="compact-list">{#each data.sources as source}<li><div><strong>{sourceLabel(source)}</strong><span>{source.category}</span></div><span>{source.enabled ? 'Aktiv' : 'Pausad'} · kontrollerad {formatDateTime(source.last_checked_at)}</span></li>{/each}</ul></section>
+		<section class="section"><div class="section-heading"><h2>Körningar</h2><p>Dagligen 06:15 UTC.</p></div><ul class="compact-list">{#each data.runs as run}<li><div><strong>{run.status === 'completed' ? 'Genomförd' : run.status}</strong><span>{formatDateTime(run.started_at)}</span></div><span>{run.sources_checked} källor · {run.findings_saved} sparade</span></li>{/each}</ul></section>
 	</div>
 </main>
 

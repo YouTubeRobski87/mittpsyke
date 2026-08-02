@@ -896,15 +896,17 @@
 			<span class="history-notice">{HISTORY_NOTICE}</span>
 		{/if}
 
-		<button
-			type="button"
-			class="clear-history-button"
-			onclick={clearHistory}
-			disabled={sending || clearingHistory || messages.length === 0}
-			aria-label="Rensa den laddade chatthistoriken"
-		>
-			Rensa historik
-		</button>
+		{#if messages.length > 0 || clearingHistory}
+			<button
+				type="button"
+				class="clear-history-button"
+				onclick={clearHistory}
+				disabled={sending || clearingHistory || messages.length === 0}
+				aria-label="Rensa den laddade chatthistoriken"
+			>
+				Rensa historik
+			</button>
+		{/if}
 	</div>
 
 	<div

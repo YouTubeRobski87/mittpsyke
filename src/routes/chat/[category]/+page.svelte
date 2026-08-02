@@ -223,4 +223,23 @@
 		}
 
 	}
+
+	@media (max-width: 768px) {
+		/* Låt informationskortet, meddelandeytan och inmatningen dela den verkliga
+		 * mobilviewporten. min-height: 0 är viktigt för att barnen ska kunna krympa. */
+		.container[data-page='chat'] {
+			display: flex;
+			flex-direction: column;
+			height: calc(100svh - 3.5rem - env(safe-area-inset-top));
+			min-height: calc(100svh - 3.5rem - env(safe-area-inset-top));
+			overflow: hidden;
+		}
+
+		@supports (height: 100dvh) {
+			.container[data-page='chat'] {
+				height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
+				min-height: calc(100dvh - 3.5rem - env(safe-area-inset-top));
+			}
+		}
+	}
 </style>
