@@ -2,7 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import MittHemTeaser from '$lib/components/home/MittHemTeaser.svelte';
+	import AccountValuePreview from '$lib/components/home/AccountValuePreview.svelte';
 	import {
 		trackHomeCtaClick,
 		trackScrollToHowItWorks
@@ -231,8 +231,8 @@
 		</div>
 	</section>
 
-	<!-- C. Utveckling över tid -->
-	<MittHemTeaser />
+	<!-- C. Kontot gör det möjligt att följa det som växer fram över tid. -->
+	<AccountValuePreview />
 
 	<!-- D. Skillnaden mot en vanlig AI-chatt -->
 	<section class="beyond-chat" aria-labelledby="beyond-chat-title">
