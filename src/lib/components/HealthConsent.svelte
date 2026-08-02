@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount, onDestroy, tick } from 'svelte';
 	import { grantSensitiveConsent, type HealthConsentRecord } from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
@@ -7,6 +8,101 @@
 
 	let confirmed = false;
 	let errorMessage = '';
+
+	// Fokushantering för dialogen. Detta gäller uttryckligt samtycke för
+	// känsliga uppgifter, så tangentbords- och skärmläsarflödet måste vara
+	// korrekt: fokus in i dialogen vid öppning, fokusfälla medan den är öppen,
+	// bakgrunden `inert`, och fokus tillbaka till det som öppnade dialogen.
+	let overlayEl: HTMLDivElement;
+	let titleEl: HTMLHeadingElement;
+	let previouslyFocused: HTMLElement | null = null;
+	let restoreInert: (() => void) | null = null;
+
+	const FOCUSABLE_SELECTOR =
+		'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+	function getFocusable(): HTMLElement[] {
+		return Array.from(overlayEl.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+	}
+
+	function trapTab(event: KeyboardEvent) {
+		if (event.key !== 'Tab') return;
+		const focusable = getFocusable();
+		if (focusable.length === 0) return;
+
+		const first = focusable[0];
+		const last = focusable[focusable.length - 1];
+		const active = document.activeElement as HTMLElement | null;
+		// Fokus börjar på rubriken, som har tabindex="-1" och därför inte är
+		// med i `focusable`. Shift+Tab därifrån har ingen naturlig "föregående"
+		// inom fällan och måste alltså också hanteras här, annars läcker
+		// fokus ut i sidan bakom (t.ex. cookiebannern).
+		const activeIsTracked = active ? focusable.includes(active) : false;
+
+		if (event.shiftKey) {
+			if (!activeIsTracked || active === first) {
+				event.preventDefault();
+				last.focus();
+			}
+		} else if (activeIsTracked && active === last) {
+			event.preventDefault();
+			first.focus();
+		}
+	}
+
+	// Gör allt utanför dialogens gren av DOM:et `inert`, ett steg åt gången
+	// upp mot <body>. Fungerar oavsett var i sidan komponenten monteras,
+	// utan att kräva en portal.
+	function makeOutsideInert(node: HTMLElement): () => void {
+		const restore: Array<() => void> = [];
+		let current: HTMLElement | null = node;
+
+		while (current && current.parentElement && current !== document.body) {
+			const parent: HTMLElement = current.parentElement;
+			for (const sibling of Array.from(parent.children)) {
+				if (sibling === current) continue;
+				const el = sibling as HTMLElement;
+				if (el.hasAttribute('inert')) continue;
+				el.setAttribute('inert', '');
+				restore.push(() => el.removeAttribute('inert'));
+			}
+			current = parent;
+		}
+
+		return () => {
+			for (const fn of restore) fn();
+		};
+	}
+
+	onMount(() => {
+		previouslyFocused = document.activeElement as HTMLElement | null;
+		const restoreFirstPass = makeOutsideInert(overlayEl);
+		document.addEventListener('keydown', trapTab);
+		tick().then(() => {
+			titleEl?.focus();
+			// Cookiebannern i layouten öppnas via sin egen $effect en tick efter
+			// att den här komponenten monteras, så den finns inte alltid med i
+			// den första inert-passeringen. En andra passering efter tick()
+			// fångar upp den (och annat som dyker upp lika sent) utan att kräva
+			// en MutationObserver för detta smala fallet. Tab-fällan ovan är
+			// kvar som skydd oavsett.
+			const restoreSecondPass = makeOutsideInert(overlayEl);
+			restoreInert = () => {
+				restoreFirstPass();
+				restoreSecondPass();
+			};
+		});
+		restoreInert = restoreFirstPass;
+	});
+
+	// onDestroy körs även under SSR (till skillnad från onMount), så allt här
+	// måste tåla att köras utan `document` — annars kraschar sidan på servern.
+	onDestroy(() => {
+		if (typeof document === 'undefined') return;
+		document.removeEventListener('keydown', trapTab);
+		restoreInert?.();
+		previouslyFocused?.focus?.();
+	});
 
 	async function persistConsentForSignedInUser(consent: HealthConsentRecord) {
 		const {
@@ -40,9 +136,9 @@
 	}
 </script>
 
-<div class="consent-overlay">
+<div class="consent-overlay" bind:this={overlayEl}>
 	<div class="consent-box" role="dialog" aria-modal="true" aria-labelledby="health-consent-title">
-		<h2 id="health-consent-title">Innan du börjar</h2>
+		<h2 id="health-consent-title" bind:this={titleEl} tabindex="-1">Innan du börjar</h2>
 
 		<p id="health-consent-copy">
 			MittPsyke är ett stöd i egen takt, inte vård. Det du skriver kan innehålla känsliga
@@ -149,6 +245,12 @@
 
 	.consent-more summary::-webkit-details-marker {
 		display: none;
+	}
+
+	#health-consent-title:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 4px;
+		border-radius: 4px;
 	}
 
 	.consent-more summary:focus-visible {

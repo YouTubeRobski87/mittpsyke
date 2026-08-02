@@ -401,8 +401,10 @@
 		--home-dark-bg-soft: #0d1520;
 		--home-dark-bg-alt: #0a1018;
 		--home-dark-bg-important: #080e16;
-		--home-primary: #3a7bd5;
-		--home-primary-rgb: 58, 123, 213;
+		/* Mörkad från #3a7bd5 så vit text på knappen når WCAG AA (4,5:1) — den
+		   ursprungliga tonen gav bara 4,22:1. Ny kontrast: ~5:1. */
+		--home-primary: #346fc0;
+		--home-primary-rgb: 52, 111, 192;
 		--home-primary-soft: rgba(var(--home-primary-rgb), 0.15);
 		--home-primary-text: #7db4e8;
 		--home-link: #93c5fd;
