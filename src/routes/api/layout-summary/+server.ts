@@ -43,16 +43,17 @@ async function loadUnreadNotificationCount(
 
 export const GET: RequestHandler = async ({ locals: { supabase } }) => {
 	const {
-		data: { session }
-	} = await supabase.auth.getSession();
+		data: { user },
+		error: authError
+	} = await supabase.auth.getUser();
 
-	if (!session) {
+	if (authError || !user) {
 		return json({ profilePanel: null, unreadNotificationCount: 0 }, { status: 401 });
 	}
 
 	const [profilePanel, unreadNotificationCount] = await Promise.all([
-		loadProfilePanelStats(supabase, session.user.id),
-		loadUnreadNotificationCount(supabase, session.user.id)
+		loadProfilePanelStats(supabase, user.id),
+		loadUnreadNotificationCount(supabase, user.id)
 	]);
 
 	return json({ profilePanel, unreadNotificationCount });

@@ -78,9 +78,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ reflection: text.length < 10 ? null : FALLBACK });
 	}
 
-	// Rate limit key: prefer user_id (avoids NAT/shared IP issues), fallback to IP
-	const session = (locals as unknown as { session?: { user?: { id?: string } } })?.session;
-	const userId = session?.user?.id;
+	// Rate limit key: prefer a verified user_id, fallback to IP.
+	const {
+		data: { user }
+	} = await locals.supabase.auth.getUser();
+	const userId = user?.id;
 	const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
 	const rateLimitKey = userId ? `user:${userId}` : `ip:${clientIp}`;
 

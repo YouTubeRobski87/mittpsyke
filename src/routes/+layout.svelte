@@ -221,7 +221,7 @@
 	let lastTikTokPagePath = $state('');
 	let profileRequestVersion = 0;
 	let layoutSummaryRequestVersion = 0;
-	let seededSessionAccessToken = '';
+	let seededServerUserId = '';
 	let syncedProfileUserId = '';
 	let loadedLayoutSummaryUserId = '';
 	let profileButtonRef = $state<HTMLButtonElement | null>(null);
@@ -240,7 +240,8 @@
 			? 'Hämtar dagboksinlägg'
 			: `${profilePanelData?.diaryEntryCount ?? 0} dagboksinlägg`
 	);
-	const shouldUseClientAuth = $derived(Boolean(data?.session || isPrivateOrUtilityPage));
+	const serverUser = $derived(data?.authenticatedUser ?? null);
+	const shouldUseClientAuth = $derived(Boolean(serverUser || isPrivateOrUtilityPage));
 
 	function getSupabaseClient() {
 		if (!browser) return null;
@@ -321,16 +322,16 @@
 		void getSupabaseClient()?.then((supabase) => {
 			if (cancelled) return;
 
-			// Seed klienten med server-side session direkt (undviker flash vid login/redirect)
-			if (data?.session) {
-				if (seededSessionAccessToken !== data.session.access_token) {
-					seededSessionAccessToken = data.session.access_token;
-					void syncUser(data.session.user);
-				} else if (user?.id !== data.session.user.id) {
-					void syncUser(data.session.user);
+			// Endast en av servern verifierad användare får användas för första UI-renderingen.
+			if (serverUser) {
+				if (seededServerUserId !== serverUser.id) {
+					seededServerUserId = serverUser.id;
+					void syncUser(serverUser);
+				} else if (user?.id !== serverUser.id) {
+					void syncUser(serverUser);
 				}
 			} else {
-				seededSessionAccessToken = '';
+				seededServerUserId = '';
 				supabase.auth.getSession().then(({ data: sessionData }) => {
 					void syncUser(sessionData.session?.user ?? null);
 				});

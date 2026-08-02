@@ -124,9 +124,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const {
-		data: { session }
-	} = await locals.supabase.auth.getSession();
-	const userId = session?.user?.id ?? null;
+		data: { user }
+	} = await locals.supabase.auth.getUser();
+	// An optional analytics user_id must come from the verified Auth response.
+	const userId = user?.id ?? null;
 
 	const rpcPayload = {
 		p_landing_page_id: resolvedLandingPage.id,
