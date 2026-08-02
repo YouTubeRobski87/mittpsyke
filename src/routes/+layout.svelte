@@ -81,21 +81,19 @@
 		{ href: '/dashboard', label: 'Mitt Hem' },
 		{ href: '/framsteg', label: 'Framsteg' },
 		{ href: '/dagbok/checkin', label: 'Dagbok' },
+		{ href: '/chat', label: 'Chatta' },
 		{ href: '/blogg', label: 'Artiklar' },
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
 
 	const mobileSignedInGeneralNavItems: NavItem[] = [
-		{ href: '/chat', label: 'Chatta' },
-		{ href: '/dagbok', label: 'Dagbok' },
-		{ href: '/blogg', label: 'Artiklar' },
+		...signedInPortalNavItems,
 		{ href: '/guider', label: 'Guider' },
 		{ href: '/anonyma-berattelser', label: 'Berättelser' },
 		{ href: '/ovningar', label: 'Övningar' },
 		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
 		{ href: '/om-skaparen', label: 'Om skaparen' },
-		{ href: PUBLIC_CONTACT_MAILTO, label: 'Kontakt' },
-		{ href: '/dashboard/installningar', label: 'Inställningar' }
+		{ href: PUBLIC_CONTACT_MAILTO, label: 'Kontakt' }
 	];
 
 	const mobileGuestGeneralNavItems: NavItem[] = [
