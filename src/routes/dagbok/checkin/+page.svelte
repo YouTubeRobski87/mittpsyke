@@ -1317,25 +1317,23 @@
 				<div class="diary-main">
 					<DiaryMoodTimeline entries={entries} />
 
-					<section class="auth-panel diary-paths">
-						<h2 class="text-base font-semibold">Börja skriva</h2>
-						<p class="mt-2 text-sm auth-muted">
-							Skriv fritt om det som finns i tankarna. Det behöver inte vara genomtänkt eller perfekt.
+					<section class="auth-panel diary-paths diary-paths--signed-in">
+						<h2 class="text-base font-semibold">Din privata dagbok</h2>
+						<p class="diary-start-intro text-sm auth-muted">
+							Skriv det som känns viktigt just nu.<br />Det behöver inte vara perfekt. Börja där du är.
 						</p>
 						<div class="diary-start-primary">
-							<span class="diary-start-icon" aria-hidden="true">
-								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-							</span>
+							<svg class="diary-start-icon" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 							<span class="diary-start-text">
 								<span class="diary-start-title">Skriv fritt</span>
-								<span class="diary-start-copy">Börja med dina egna ord, i din egen takt.</span>
+								<span class="diary-start-copy">Börja med några ord, i din egen takt.</span>
 							</span>
 							<button type="button" class="auth-button primary diary-start-button" onclick={openWriteEditor}>
 								Börja skriva
 							</button>
 						</div>
 						<div class="diary-start-secondary">
-							<span>Behöver du hjälp att komma igång?</span>
+							<span>Behöver du inspiration?</span>
 							<button
 								type="button"
 								class="diary-start-secondary-action"
@@ -2040,6 +2038,66 @@
 		position: relative;
 		max-width: 58ch;
 		color: hsl(214 32% 86% / 0.86);
+	}
+
+	/* Den inloggade ingången ska kännas som en lugn personlig start, utan den
+	   mer dekorativa panelbehandlingen som används för övriga dagboksvägar. */
+	.diary-paths--signed-in {
+		gap: 0.75rem;
+		padding: clamp(1.2rem, 2.3vw, 1.55rem);
+		background: hsl(216 32% 18%);
+		box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+	}
+
+	.diary-paths--signed-in .diary-start-intro {
+		margin-top: 0.05rem;
+		line-height: 1.6;
+	}
+
+	.diary-paths--signed-in .diary-start-primary {
+		gap: 1rem;
+		margin-top: 0.45rem;
+		padding: 1.12rem 1.2rem;
+		border-color: rgba(191, 219, 254, 0.22);
+		background: rgba(15, 23, 42, 0.2);
+	}
+
+	.diary-paths--signed-in .diary-start-icon {
+		display: block;
+		width: 1.4rem;
+		height: 1.4rem;
+		color: hsl(207 72% 78%);
+		flex-shrink: 0;
+	}
+
+	.diary-paths--signed-in .diary-start-text {
+		gap: 0.28rem;
+	}
+
+	.diary-paths--signed-in .diary-start-copy {
+		line-height: 1.55;
+	}
+
+	.diary-paths--signed-in .diary-start-button {
+		min-width: 10.25rem;
+		min-height: 2.8rem;
+		padding-inline: 1.55rem;
+	}
+
+	.diary-paths--signed-in .diary-start-secondary {
+		align-items: center;
+		gap: 0.35rem 0.55rem;
+		margin-top: 0.1rem;
+	}
+
+	.diary-paths--signed-in .diary-start-secondary-action {
+		min-height: 2.75rem;
+		padding: 0.45rem 0.15rem;
+	}
+
+	:global(.dark) .diary-paths--signed-in {
+		background: hsl(216 25% 14%);
+		box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
 	}
 
 	.diary-path-grid {
@@ -3334,6 +3392,26 @@
 		.diary-start-secondary {
 			margin-top: 0.55rem;
 			font-size: 0.82rem;
+		}
+
+		.diary-paths--signed-in {
+			padding: 1rem;
+			gap: 0.65rem;
+		}
+
+		.diary-paths--signed-in .diary-start-primary {
+			margin-top: 0.2rem;
+			padding: 0.95rem;
+		}
+
+		.diary-paths--signed-in .diary-start-secondary {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 0;
+		}
+
+		.diary-paths--signed-in .diary-start-secondary-action {
+			min-height: 2.75rem;
 		}
 
 		.diary-path-grid {
