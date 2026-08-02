@@ -5,6 +5,7 @@
 	import { Square, Volume2 } from 'lucide-svelte';
 	import { containsCrisisSignal, containsThirdPartyRiskSignal } from '$lib/ai/safety';
 	import { getTopicHint } from '$lib/ai/chat-topics';
+	import { consumeHeroChatHandoff } from '$lib/chat-handoff';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
 	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
@@ -177,7 +178,6 @@
 						: ['Jag vill stanna kvar i det här en stund', 'Vad kan vara ett litet nästa steg?']
 	);
 	const tempEntryStorageKey = 'mittpsyke_temp_entry';
-	const heroQuickStartStorageKey = 'mittpsyke_hero_quick_start';
 	const topicHintStorageKey = 'mittpsyke_chat_topic_hint';
 
 	function scrollToBottom() {
@@ -510,10 +510,7 @@
 			historyNoticeVisible = false;
 
 			// Text skriven i hero-fältet på startsidan tar alltid med sig hela vägen in i chatten.
-			const heroEntry = readStorageValue(heroQuickStartStorageKey)?.trim() ?? '';
-			if (heroEntry.length > 0) {
-				removeStorageValue(heroQuickStartStorageKey);
-			}
+			const heroEntry = consumeHeroChatHandoff() ?? '';
 
 			// Ämnesgenväg vald i chattingången. Läses en gång och gäller sessionen.
 			const storedTopicHint = readStorageValue(topicHintStorageKey)?.trim() ?? '';

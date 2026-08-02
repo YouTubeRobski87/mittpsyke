@@ -8,6 +8,7 @@
 		trackScrollToHowItWorks
 	} from '$lib/analytics';
 	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
+	import { storeHeroChatHandoff } from '$lib/chat-handoff';
 	import { writeDiaryDraftHandoff } from '$lib/diary-draft';
 
 	type HomePageData = {
@@ -16,7 +17,6 @@
 		};
 	};
 
-	const HERO_QUICK_START_KEY = 'mittpsyke_hero_quick_start';
 	const DIARY_START_DESTINATION = '/dagbok?action=new';
 
 	let { data }: { data: HomePageData } = $props();
@@ -45,11 +45,7 @@
 		// försvinna — men den skickas aldrig automatiskt.
 		const text = heroDraft.trim();
 		if (text) {
-			try {
-				localStorage.setItem(HERO_QUICK_START_KEY, text);
-			} catch {
-				// Blockerad lagring stoppar inte navigeringen.
-			}
+			storeHeroChatHandoff(text);
 		}
 		trackHomeCta('hero', 'oppna_chatten', '/chat');
 	}
