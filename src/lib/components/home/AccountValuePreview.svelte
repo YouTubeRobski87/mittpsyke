@@ -75,7 +75,14 @@
 				</section>
 
 				<section class="home-card" aria-labelledby="home-title">
-					<img src="/images/home-companion-fox-awake.webp" alt="Illustration av den lugna naturmiljön och följeslagaren i Mitt Hem." />
+					<img
+						src="/images/home-companion-bear-awake.webp"
+						alt="Illustration av den lugna naturmiljön och björnen som håller platsen sällskap i Mitt Hem."
+						width="240"
+						height="360"
+						loading="lazy"
+						decoding="async"
+					/>
 					<div class="home-card-copy">
 						<p class="card-kicker">Mitt Hem</p>
 						<h3 id="home-title">En plats som finns kvar</h3>

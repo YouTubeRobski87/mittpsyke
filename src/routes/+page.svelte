@@ -63,6 +63,26 @@
 		}
 	];
 
+	// Mitt Hem-showcase: samma vy vid sjön i olika ljus. Rena stämningsbilder —
+	// ingen räknare, ingen progress, ingen CTA. Blocket ska läsas som ett löfte.
+	const homeShowcaseScenes = [
+		{
+			src: '/assets/home/hem-gryning-720.webp',
+			label: 'Gryning',
+			alt: 'Björnen sover mot trädet vid sjön i tidigt morgonljus.'
+		},
+		{
+			src: '/assets/home/hem-dag-720.webp',
+			label: 'Dag',
+			alt: 'Samma plats mitt på dagen. Björnen sitter vaken mot trädet och ser ut över sjön.'
+		},
+		{
+			src: '/assets/home/hem-kvall-720.webp',
+			label: 'Kväll',
+			alt: 'Samma plats i kvällsljus. Björnen vilar mot trädet medan solen går ner bakom sjön.'
+		}
+	];
+
 	const productSteps = [
 		{ number: '01', title: 'Skriv', text: 'Sätt ord på det som är nära just nu.' },
 		{ number: '02', title: 'Sortera', text: 'Möt lugna frågor som hjälper dig vidare.' },
@@ -166,12 +186,15 @@
 				fetchpriority="high"
 			/>
 		</picture>
+		<!-- Ett mjukt skimmer över vattnet. Ska inte dra uppmärksamhet: låg
+		     opacitet, långsam cykel, och helt av vid reduced motion och på mobil. -->
+		<span class="hero-shimmer" aria-hidden="true"></span>
 		<div class="hero-shell">
 			<div class="hero-content">
-				<h1>Din privata dagbok</h1>
+				<h1>En plats som väntar på dig</h1>
 				<p>
-					Skriv anonymt direkt, utan konto. När du är redo kan du skapa ett konto och följa hur ditt
-					mående förändras över tid.
+					Björnen sitter vid sjön, oavsett hur länge du är borta. Skriv anonymt, utan konto. Texten
+					stannar på din enhet tills du väljer något annat.
 				</p>
 
 				<form class="hero-quick-start" onsubmit={submitHeroQuickStart}>
@@ -186,7 +209,7 @@
 						aria-describedby="hero-quick-start-hint"
 					></textarea>
 					<p id="hero-quick-start-hint" class="hero-quick-start-hint">
-						Texten stannar på din enhet. Inget skickas någonstans förrän du väljer det.
+						Inget skickas någonstans förrän du väljer det.
 					</p>
 					<button type="submit" class="hero-quick-start-submit" disabled={!heroDraft.trim()}>
 						Börja skriva
@@ -199,6 +222,38 @@
 					</a>
 				</div>
 			</div>
+		</div>
+	</section>
+
+	<!-- 2. Mitt Hem — showcase. Stämning, inte uppmaning: ingen räknare,
+	     ingen progress, medvetet ingen CTA. -->
+	<section class="home-showcase" aria-labelledby="home-showcase-title">
+		<div class="cards-narrow home-showcase-inner">
+			<div class="section-heading">
+				<p class="section-eyebrow">Mitt Hem</p>
+				<h2 id="home-showcase-title">Mer än en anteckning</h2>
+				<p>
+					Din plats förändras i takt med årstiderna, precis som du. Björnen finns kvar där du lämnade
+					den.
+				</p>
+			</div>
+			<ul class="home-showcase-strip">
+				{#each homeShowcaseScenes as scene}
+					<li class="home-showcase-scene">
+						<figure>
+							<img
+								src={scene.src}
+								alt={scene.alt}
+								width="720"
+								height="360"
+								loading="lazy"
+								decoding="async"
+							/>
+							<figcaption>{scene.label}</figcaption>
+						</figure>
+					</li>
+				{/each}
+			</ul>
 		</div>
 	</section>
 
@@ -435,6 +490,49 @@
 		z-index: 1;
 	}
 
+	/* Skimret ligger över hero-överlägget men under innehållet. Positionen är
+	   satt mot vattenytan i hero-bilden, inte mot en exakt pixel. */
+	.hero-shimmer {
+		position: absolute;
+		left: 2%;
+		top: 66%;
+		width: 52%;
+		height: 22%;
+		z-index: 1;
+		pointer-events: none;
+		border-radius: 50%;
+		background: linear-gradient(
+			100deg,
+			transparent 8%,
+			rgba(255, 247, 225, 0.5) 38%,
+			rgba(226, 240, 255, 0.34) 58%,
+			transparent 88%
+		);
+		filter: blur(14px);
+		mix-blend-mode: soft-light;
+		opacity: 0;
+		will-change: transform, opacity;
+		animation: heroShimmer 17s ease-in-out infinite;
+	}
+
+	@keyframes heroShimmer {
+		0%,
+		100% {
+			opacity: 0;
+			transform: translate3d(-6%, 0, 0) scaleX(0.94);
+		}
+		38% {
+			opacity: 0.45;
+		}
+		62% {
+			opacity: 0.34;
+		}
+		90% {
+			opacity: 0;
+			transform: translate3d(7%, -1%, 0) scaleX(1.06);
+		}
+	}
+
 	.hero-shell {
 		position: relative;
 		z-index: 2;
@@ -619,6 +717,46 @@
 		font-size: 0.9rem;
 		font-weight: 650;
 		text-underline-offset: 3px;
+	}
+
+	/* ── Sektion 2: Mitt Hem — showcase ── */
+	.home-showcase {
+		padding: clamp(2.4rem, 6vw, 4rem) 1.25rem;
+		background: var(--home-section-bg-soft);
+		color: var(--home-text-soft);
+	}
+
+	.home-showcase-strip {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 0.75rem;
+		margin: 1.4rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.home-showcase-scene figure {
+		margin: 0;
+	}
+
+	.home-showcase-scene img {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 2 / 1;
+		object-fit: cover;
+		border-radius: var(--radius-card);
+		border: 1px solid var(--home-card-border-soft);
+	}
+
+	.home-showcase-scene figcaption {
+		margin-top: 0.5rem;
+		font-family: var(--font-heading);
+		font-size: 0.78rem;
+		font-weight: 650;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--home-text-muted-faint);
 	}
 
 	.product-demo {
@@ -920,7 +1058,26 @@
 		}
 	}
 
+	/* Skimret hör ihop med hero-parallaxen och stängs av på samma villkor:
+	   ingen extra rörelse på mobil eller vid reduced motion. */
+	@media (max-width: 767px) {
+		.hero-shimmer {
+			display: none;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero-shimmer {
+			display: none;
+		}
+	}
+
 	@media (min-width: 700px) {
+		.home-showcase-strip {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 0.9rem;
+		}
+
 		.product-flow-grid {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
@@ -951,6 +1108,7 @@
 	}
 
 	/* ── Dark mode — base is already dark, just deepen slightly ── */
+	:global(.dark) .home-showcase { background: var(--home-dark-bg-soft); }
 	:global(.dark) .product-demo { background: var(--home-dark-bg); }
 	:global(.dark) .early-trust { background: var(--home-dark-bg); }
 	:global(.dark) .beyond-chat { background: var(--home-dark-bg-alt); }
