@@ -8,16 +8,9 @@
   import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
   import {
     ArrowRight,
-    BarChart3,
     ChevronDown,
     Heart,
-    Leaf,
-    PenLine,
-    Smile,
-    Sparkles,
-    SunMedium,
-    TrendingUp,
-    Wind
+    SunMedium
   } from 'lucide-svelte';
   import {
     getDashboardCompanionScene,
@@ -110,51 +103,6 @@
   const companionHeroAlt =
   'En vaken, nyfiken räv sitter vid ett träd i en varm och stillsam naturmiljö vid en sjö';
   const companionBadgeMessage = $derived(localCompanionScene?.greeting ?? null);
-  const moodLabel = $derived(progressPreview.weeklyEntries > 0 ? 'Bra' : 'Redo');
-  const latestActivity = $derived(
-    isAnonymous
-      ? [
-          {
-            icon: PenLine,
-            tone: 'green',
-            title: 'Din dagbok sparas med konto',
-            time: 'När du vill spara'
-          },
-          {
-            icon: Wind,
-            tone: 'purple',
-            title: 'Dina små steg samlas här',
-            time: 'I din takt'
-          },
-          {
-            icon: Smile,
-            tone: 'mint',
-            title: 'Historiken väntar stilla',
-            time: 'Om du skapar konto'
-          }
-        ]
-      : [
-          {
-            icon: PenLine,
-            tone: 'green',
-            title: diaryPreview.hasEntry ? 'Du skrev i din dagbok' : 'Din dagbok väntar på dig',
-            time: diaryPreview.hasEntry ? diaryPreview.dateLabel || 'Senast' : 'När du vill'
-          },
-          {
-            icon: Wind,
-            tone: 'purple',
-            title: 'Du gjorde en andningsövning',
-            time: progressPreview.weeklyEntries > 0 ? 'Igår kl. 20:15' : 'Ett lugnt första steg'
-          },
-          {
-            icon: Smile,
-            tone: 'mint',
-            title: 'Du uppdaterade ditt mående',
-            time: progressPreview.currentStreak > 0 ? `${progressPreview.currentStreak} dag nära i tid` : 'Idag'
-          }
-        ]
-  );
-
   onMount(() => {
     const updateLocalTime = () => {
       localHour = new Date().getHours();
@@ -196,7 +144,7 @@
         class="companion-hero"
         class:personal-preview={isAnonymous}
         data-companion={heroCompanionId}
-        aria-labelledby="companion-title"
+        aria-label="Din följeslagare"
         style={`--hero-image: ${companionHeroImage ? `url('${COMPANION_WORLD_SCENE_BACKDROP}')` : 'none'}; --hero-focus: ${heroFocus};`}
       >
         <!-- width/height ger webbläsaren bildens proportioner innan den laddats,
@@ -234,13 +182,6 @@
         />
         <AmbientWorld scene={livingWorldScene} class="hero-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
         <CompanionFriend class="hero-companion-friend" companionId={heroCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
-        <div class="hero-copy">
-          <h2 id="companion-title">Din följeslagare</h2>
-          <p>Den finns kvar här när du återvänder.</p>
-          <span class="soft-heart">
-            <Heart size={23} fill="currentColor" strokeWidth={0} aria-hidden="true" />
-          </span>
-        </div>
         <div class="time-badge" aria-label={companionBadgeMessage?.label ?? 'Hälsning'}>
           <SunMedium size={24} aria-hidden="true" />
           <span>
@@ -257,160 +198,59 @@
 
 
         <div class="dashboard-content">
-		<div class="section-heading">
-			<h2>Dagens nästa steg</h2>
-			<p>Välj det som känns hjälpsamt just nu.</p>
-		</div>
-      <section class="quick-grid" aria-label="Snabb översikt">
-        <article class="quick-card mood-card">
-          <div class="card-head">
+          <section class="now-panel" aria-labelledby="dashboard-now-title">
+            <h2 id="dashboard-now-title">Just nu</h2>
+            <p>{progressPreview.summary}</p>
+          </section>
+
+          <section class="next-step-panel" aria-labelledby="dashboard-next-step-title">
             <div>
-              <h2>Dagens incheckning</h2>
-              <p>Hur har du det idag?</p>
+              <h2 id="dashboard-next-step-title">Fortsätt skriva</h2>
+              <p>Sätt ord på det du känner.</p>
             </div>
-            <TrendingUp size={20} aria-hidden="true" />
-          </div>
-          <div class="mood-face" aria-label={`Mående: ${moodLabel}`}>
-            <span class="eye left"></span>
-            <span class="eye right"></span>
-            <span class="mouth"></span>
-          </div>
-          <strong class="mood-label">Sätt ord på det du känner.</strong>
-          <a class="card-button" href="/dagbok/checkin">
-            Skriv i dagboken
-            <ArrowRight size={18} aria-hidden="true" />
-          </a>
-        </article>
+            <a class="dashboard-primary-action" href="/dagbok/checkin">
+              Skriv i dagboken
+              <ArrowRight size={18} aria-hidden="true" />
+            </a>
+            <a class="dashboard-secondary-link" href="/framsteg">Se din utveckling</a>
+          </section>
 
-        <article class="quick-card tools-card">
-          <div class="card-head">
-            <div>
-              <h2>Growth Garden</h2>
-              <p>Din trädgård växer med din närvaro. Små steg, stor skillnad.</p>
-            </div>
-            <Heart size={22} aria-hidden="true" />
-          </div>
-          <div class="garden-progress" aria-label="Din trädgårds utveckling">
-            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <div class="leaf-mark" aria-hidden="true">
-            <Leaf size={66} strokeWidth={1.4} />
-            <Sparkles class="spark-mark" size={17} />
-          </div>
-          <a class="card-button" href="/framsteg">
-            Gå till trädgården
-            <ArrowRight size={18} aria-hidden="true" />
-          </a>
-        </article>
-
-      </section>
-
-      <section class="lower-grid">
-        <article class="activity-card" class:personal-preview={isAnonymous}>
-          <header>
-            <h2>Senaste aktivitet</h2>
-          </header>
-
-          <div class="activity-list">
-            {#each latestActivity as activity}
-              {@const ActivityIcon = activity.icon}
-              <div class="activity-item">
-                <span class:green={activity.tone === 'green'} class:purple={activity.tone === 'purple'} class:mint={activity.tone === 'mint'} class="activity-icon">
-                  <ActivityIcon size={19} strokeWidth={2} />
-                </span>
-                <span>
-                  <strong>{activity.title}</strong>
-                  <small>{activity.time}</small>
-                </span>
-              </div>
-            {/each}
-          </div>
-
-          <a class="text-link" href="/dagbok">
-            Visa all aktivitet
-            <ArrowRight size={18} aria-hidden="true" />
-          </a>
-        </article>
-
-        <article class="quote-card">
-          <div class="quote-mark" aria-hidden="true">“</div>
-          <blockquote>
-            Det räcker att du är här.<br />
-            En liten stund i taget.
-          </blockquote>
-          <span class="quote-heart">
-            <Heart size={26} fill="currentColor" strokeWidth={0} aria-hidden="true" />
-          </span>
-          <div class="mountains" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </article>
-      </section>
-        </div>
-
-        <aside class="framsteg-aside" aria-label="Framsteg">
-          <section class="framsteg-panel" class:personal-preview={isAnonymous}>
+          <section class="dashboard-details" aria-labelledby="dashboard-details-title">
             <button
-              class="framsteg-panel-toggle"
+              class="dashboard-details-toggle"
               type="button"
-              aria-controls="dashboard-framsteg-details"
+              aria-controls="dashboard-more-details"
               aria-expanded={progressExpanded}
               onclick={() => (progressExpanded = !progressExpanded)}
             >
-              <span class="framsteg-panel-head">
-                <span class="framsteg-panel-icon" aria-hidden="true">
-                  <Leaf size={22} strokeWidth={1.8} />
-                </span>
-                <span class="framsteg-title-wrap">
-                  <span class="framsteg-title">Ditt nuläge</span>
-                  <span class="framsteg-subtitle">{progressExpanded ? 'Dölj överblicken' : 'Visa mer här'}</span>
-                </span>
-              </span>
-              <span class={`framsteg-expand-icon ${progressExpanded ? 'expanded' : ''}`} aria-hidden="true">
+              <span id="dashboard-details-title">{progressExpanded ? 'Dölj mer' : 'Visa mer'}</span>
+              <span class:expanded={progressExpanded} class="dashboard-details-chevron" aria-hidden="true">
                 <ChevronDown size={20} />
               </span>
             </button>
-            <p class="framsteg-panel-lead">{progressPreview.summary}</p>
-            <div class="framsteg-panel-stats">
-              <div class="framsteg-stat">
-                <strong>{progressPreview.totalEntries}</strong>
-                <span>Texter skrivna</span>
-              </div>
-              <div class="framsteg-stat">
-                <strong>{progressPreview.currentStreak}</strong>
-                <span>Dagar i följd</span>
-              </div>
-              <div class="framsteg-stat">
-                <strong>{progressPreview.weeklyEntries}</strong>
-                <span>Den här veckan</span>
-              </div>
-            </div>
             {#if progressExpanded}
-              <div id="dashboard-framsteg-details" class="framsteg-panel-details">
-                <h3>Din lugna överblick</h3>
-                <p>
-                  Här samlas dina små steg utan att du behöver lämna Mitt rum. Fortsätt i samma takt och låt mönster
-                  växa fram över tid.
-                </p>
-                <ul>
-                  <li>{progressPreview.totalEntries} texter finns sparade i din historik.</li>
-                  <li>{progressPreview.weeklyEntries} steg har lagts till den här veckan.</li>
-                  <li>{progressPreview.currentStreak} dagar i följd syns som små avtryck.</li>
-                </ul>
+              <div id="dashboard-more-details" class="dashboard-details-content">
+                <div class="dashboard-stats" aria-label="Din lugna överblick">
+                  <div><strong>{progressPreview.totalEntries}</strong><span>Texter skrivna</span></div>
+                  <div><strong>{progressPreview.currentStreak}</strong><span>Dagar i följd</span></div>
+                  <div><strong>{progressPreview.weeklyEntries}</strong><span>Den här veckan</span></div>
+                </div>
+
+                <section class="dashboard-activity" aria-labelledby="dashboard-activity-title">
+                  <h3 id="dashboard-activity-title">Senaste i dagboken</h3>
+                  <p>{diaryPreview.hasEntry ? `Du skrev ${diaryPreview.dateLabel || 'senast'}.` : 'Din dagbok väntar på dig när du vill.'}</p>
+                  <a href="/dagbok">Visa all aktivitet</a>
+                </section>
+
+                <nav class="dashboard-explore" aria-label="Utforska vidare">
+                  <a href="/guider">Guider</a>
+                  <a href="/chat">Chatta med AI</a>
+                  <a href="/blogg">Artiklar</a>
+                </nav>
               </div>
             {/if}
           </section>
-
-          <section class="explore-panel" aria-labelledby="explore-title">
-            <h2 id="explore-title">Utforska vidare</h2>
-            <a href="/framsteg"><span><strong>Framsteg</strong><small>Se din utveckling över tid</small></span><ArrowRight size={18} /></a>
-            <a href="/guider"><span><strong>Guider</strong><small>Praktiska övningar och stöd</small></span><ArrowRight size={18} /></a>
-            <a href="/chat"><span><strong>Chatta med AI</strong><small>Sortera tankar i lugn och ro</small></span><ArrowRight size={18} /></a>
-            <a href="/blogg"><span><strong>Artiklar</strong><small>Kunskap och inspiration</small></span><ArrowRight size={18} /></a>
-          </section>
-        </aside>
+        </div>
       </div>
 
       <section class="privacy-row" aria-labelledby="privacy-title">
@@ -463,182 +303,177 @@
 
   .dashboard-body {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) clamp(280px, 26%, 340px);
+    grid-template-columns: minmax(0, 1fr);
 	grid-template-areas:
-	  'hero aside'
-	  'content aside';
-    gap: 20px;
+	  'hero'
+	  'content';
+    gap: clamp(1.5rem, 3vw, 2.5rem);
     align-items: start;
   }
 
   .dashboard-content {
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: clamp(1.5rem, 3vw, 2.25rem);
     min-width: 0;
 	grid-area: content;
   }
 
-  .framsteg-aside {
-	grid-area: aside;
-    position: sticky;
-    top: 24px;
-    min-width: 0;
+  .now-panel,
+  .next-step-panel,
+  .dashboard-details {
+    width: min(100%, 44rem);
   }
 
-  .framsteg-panel {
-    display: flex;
-    flex-direction: column;
+  .now-panel {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0 0.25rem;
+  }
+
+  .now-panel h2,
+  .now-panel p,
+  .next-step-panel h2,
+  .next-step-panel p,
+  .dashboard-activity h3,
+  .dashboard-activity p {
+    margin: 0;
+  }
+
+  .now-panel h2,
+  .next-step-panel h2 {
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+  }
+
+  .now-panel p,
+  .next-step-panel p,
+  .dashboard-activity p {
+    color: var(--mp-text-dim);
+    line-height: 1.6;
+  }
+
+  .next-step-panel {
+    display: grid;
     gap: 1rem;
-    padding: 22px;
-    border-radius: var(--mp-radius);
+    padding: clamp(1.25rem, 3vw, 1.75rem);
     border: 1px solid var(--mp-card-border);
-    background: linear-gradient(150deg, rgba(19, 32, 50, 0.96), rgba(13, 23, 39, 0.96));
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.18);
+    border-radius: var(--mp-radius);
+    background: rgba(17, 27, 43, 0.72);
   }
 
-  .framsteg-panel-toggle {
+  .dashboard-primary-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    width: fit-content;
+    min-height: 48px;
+    padding: 0.78rem 1.2rem;
+    border-radius: 12px;
+    background: #dce8f3;
+    color: #19364b;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .dashboard-secondary-link,
+  .dashboard-activity a,
+  .dashboard-explore a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--mp-blue);
+    font-weight: 650;
+    text-decoration: none;
+  }
+
+  .dashboard-secondary-link {
+    width: fit-content;
+  }
+
+  .dashboard-details {
+    border-top: 1px solid var(--mp-card-border);
+  }
+
+  .dashboard-details-toggle {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.8rem;
     width: 100%;
-    /* 44px = Apples HIG-minimum för träffytor. */
-    min-height: 44px;
-    padding: 0;
+    min-height: 48px;
+    padding: 0.25rem 0;
     border: 0;
     background: transparent;
-    color: inherit;
+    color: var(--mp-text);
     font: inherit;
+    font-weight: 700;
     text-align: left;
     cursor: pointer;
   }
 
-  .framsteg-panel-toggle:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--mp-green) 32%, transparent);
-    outline-offset: 5px;
-    border-radius: 12px;
+  .dashboard-details-chevron {
+    display: inline-flex;
+    transition: transform 0.16s ease;
   }
 
-  .framsteg-panel-head {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    min-width: 0;
-  }
-
-  .framsteg-panel-icon {
-    display: grid;
-    place-items: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-    background: var(--mp-green-soft);
-    color: var(--mp-green);
-    flex: 0 0 auto;
-  }
-
-  .framsteg-title-wrap {
-    display: grid;
-    gap: 0.12rem;
-    min-width: 0;
-  }
-
-  .framsteg-title {
-    font-size: 1.05rem;
-    font-weight: 800;
-    line-height: 1.15;
-  }
-
-  .framsteg-subtitle {
-    color: var(--mp-text-dim);
-    font-size: 0.78rem;
-    font-weight: 700;
-    line-height: 1.2;
-  }
-
-  .framsteg-expand-icon {
-    flex: 0 0 auto;
-    color: var(--mp-green);
-    transition: transform 0.18s ease;
-  }
-
-  .framsteg-expand-icon.expanded {
+  .dashboard-details-chevron.expanded {
     transform: rotate(180deg);
   }
 
-  .framsteg-panel-lead {
-    margin: 0;
-    color: var(--mp-text-dim);
-    font-size: 0.92rem;
-    line-height: 1.5;
-  }
-
-  .framsteg-panel-stats {
+  .dashboard-details-content {
     display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    gap: 1.25rem;
+    padding: 0.75rem 0 0.25rem;
   }
 
-  .framsteg-stat {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  .dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.75rem;
-    padding: 0.7rem 0.9rem;
-    border-radius: 12px;
-    background: rgba(17, 30, 49, 0.72);
-    border: 1px solid var(--mp-card-border);
   }
 
-  .framsteg-stat strong {
+  .dashboard-stats div {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.9rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .dashboard-stats strong {
+    color: var(--mp-green);
     font-size: 1.35rem;
-    line-height: 1;
-    color: var(--mp-text);
   }
 
-  .framsteg-stat span {
+  .dashboard-stats span {
     color: var(--mp-text-dim);
-    font-size: 0.85rem;
-    text-align: right;
+    font-size: 0.82rem;
   }
 
-	.framsteg-stat:last-child {
-		grid-column: 1 / -1;
-	}
-
-  .framsteg-panel-details {
+  .dashboard-activity {
     display: grid;
-    gap: 0.75rem;
-    padding: 0.95rem;
-    border-radius: 12px;
-    background: rgba(17, 30, 49, 0.82);
-    border: 1px solid rgba(160, 188, 220, 0.28);
+    gap: 0.45rem;
   }
 
-  .framsteg-panel-details h3,
-  .framsteg-panel-details p {
-    margin: 0;
+  .dashboard-explore {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
   }
 
-  .framsteg-panel-details h3 {
-    color: var(--mp-text);
-    font-size: 0.95rem;
-    line-height: 1.2;
+  .dashboard-primary-action:hover,
+  .privacy-row a:hover {
+    background: #edf4fa;
   }
 
-  .framsteg-panel-details p,
-  .framsteg-panel-details li {
-    color: #d9e1ea;
-    font-size: 0.86rem;
-    line-height: 1.5;
-  }
-
-  .framsteg-panel-details ul {
-    display: grid;
-    gap: 0.42rem;
-    margin: 0;
-    padding-left: 1.1rem;
+  .dashboard-primary-action:focus-visible,
+  .dashboard-secondary-link:focus-visible,
+  .dashboard-details-toggle:focus-visible,
+  .dashboard-activity a:focus-visible,
+  .dashboard-explore a:focus-visible {
+    outline: 3px solid #dce8f3;
+    outline-offset: 3px;
+    border-radius: 8px;
   }
 
   .topbar {
@@ -1390,7 +1225,6 @@
       grid-template-columns: 1fr;
 	  grid-template-areas:
 		'hero'
-		'aside'
 		'content';
       gap: 24px;
     }
@@ -1427,6 +1261,14 @@
 
     .topbar h1 {
       font-size: 1.5rem;
+    }
+
+    .dashboard-primary-action {
+      width: 100%;
+    }
+
+    .dashboard-stats {
+      grid-template-columns: 1fr;
     }
 
   .topbar p {
