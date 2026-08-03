@@ -87,11 +87,13 @@ function poseHasAvailablePosition(daypart: CompanionPoseDaypart, pose: Companion
 	return getAvailablePositions(daypart, pose.id).length > 0;
 }
 
+// Sista utvägen om ingen pose är tillgänglig för dagparten just nu (t.ex. en
+// framtida följeslagare med ofullständig dagpartstäckning). Varje companions
+// poser är listade med sin lugnaste stående/sittande pose först i
+// companionPoseManifest.ts, så den enklaste find() nedan råkar alltid landa
+// där - följeslagaren visas aldrig trasig, bara i sitt mest neutrala läge.
 function getFallbackPose(companionId: CompanionId, availablePoses: CompanionPose[]) {
 	return (
-		COMPANION_POSES.find(
-			(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.id === 'bear-standing'
-		) ??
 		availablePoses[0] ??
 		COMPANION_POSES.find((pose) => pose.role === 'base' && belongsToCompanion(pose, companionId)) ??
 		COMPANION_POSES[0]
