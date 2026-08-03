@@ -9,14 +9,20 @@
 		getCompanionPoseDaypart,
 		getCompanionScenePosition,
 		getMsUntilNextCompanionPoseCheck,
+		isReflectionSaveWithinReactionWindow,
 		qualifiesAsCompanionReturn,
 		recordCompanionSeen
 	} from '$lib/companionPoseState';
+	import {
+		clearReflectionSavedTimestamp,
+		getReflectionSavedTimestamp
+	} from '$lib/diary-events';
 	import {
 		COMPANION_BEHAVIOURS,
 		getCompanionBehaviourRestMs,
 		isQuietPose,
 		pickCompanionBehaviour,
+		type CompanionBehaviour,
 		type CompanionBehaviourId
 	} from '$lib/world/companionBehaviour';
 	import type {
@@ -57,6 +63,13 @@
 	// companionPoseState.ts). Förbrukas av den första tillåtna mikrorörelsen
 	// i maybePlayMicroGesture - se kommentaren där för ordningen.
 	let returnGestureAvailable = false;
+	// Sant en gång per montering om en reflektion sparades nyligen (se
+	// diary-events.ts + companionPoseState.ts). Till skillnad från
+	// returnGestureAvailable är den underliggande signalen persisterad
+	// (localStorage), så "förbrukning" innebär att faktiskt rensa den - se
+	// maybePlayMicroGesture, som gör det exakt när gesten startar, inte
+	// tidigare.
+	let reflectionGestureAvailable = false;
 
 	const classes = $derived(`companion-pose ${className}`.trim());
 	const basePose = $derived(providedBasePose ?? localBasePose);
@@ -116,23 +129,42 @@
 		}, nextOverlay.durationMs ?? 3000);
 	}
 
+	/** Samma lugna gest används för båda "riktade" reaktionerna nedan - ingen
+	 *  ny CSS eller pose, bara ett medvetet val i stället för fri slump. */
+	function getSettleBehaviour(): CompanionBehaviour {
+		return (
+			COMPANION_BEHAVIOURS.find((candidate) => candidate.id === 'settle') ??
+			pickCompanionBehaviour(previousGesture)
+		);
+	}
+
 	function maybePlayMicroGesture() {
 		if (microGesture || !motionAwareness.isActive || motionAwareness.reducedMotion) return;
 		// Ingen mikrorörelse ovanpå ett aktivt blink/gesture-overlay, och inte
 		// för poser som redan rör sig eller ska ligga still.
 		if (overlayPose || isQuietPose(basePose?.id)) return;
 
-		// Första tillåtna cykeln efter ett kvalificerat uppehåll (se
-		// returnGestureAvailable ovan): tvinga en lugn "settle" i stället för
-		// att slumpa fritt. Flaggan förbrukas här, efter att alla spärrar
-		// ovan redan passerats - blockerar de gesten förbrukas den alltså
-		// inte, och nästa tillåtna cykel får försöka i stället. När flaggan
-		// är false (det normala fallet) är raden nedan identisk med tidigare.
-		const behaviour = returnGestureAvailable
-			? (COMPANION_BEHAVIOURS.find((candidate) => candidate.id === 'settle') ??
-					pickCompanionBehaviour(previousGesture))
-			: pickCompanionBehaviour(previousGesture);
-		returnGestureAvailable = false;
+		// Båda flaggorna förbrukas här, efter att alla spärrar ovan redan
+		// passerats - blockerar de gesten förbrukas ingendera, och nästa
+		// tillåtna cykel får försöka igen. När båda är false (det normala
+		// fallet) är else-grenen nedan identisk med tidigare.
+		let behaviour: CompanionBehaviour;
+		if (reflectionGestureAvailable) {
+			// Reflektionsreaktionen har prioritet över återkomstgesten om båda
+			// är tillgängliga samma cykel (se onMount) - returnGestureAvailable
+			// rörs inte här, så den kan spelas en senare cykel, efter den
+			// normala viloperioden, aldrig direkt efter denna.
+			behaviour = getSettleBehaviour();
+			reflectionGestureAvailable = false;
+			// Den persisterade flaggan (diary-events.ts) rensas exakt här, när
+			// gesten faktiskt startar - inte tidigare, se onMount.
+			clearReflectionSavedTimestamp();
+		} else if (returnGestureAvailable) {
+			behaviour = getSettleBehaviour();
+			returnGestureAvailable = false;
+		} else {
+			behaviour = pickCompanionBehaviour(previousGesture);
+		}
 
 		previousGesture = behaviour.id;
 		microGesture = behaviour.id;
@@ -154,6 +186,19 @@
 		const absenceMs = getCompanionAbsenceMs(seenNow, window.localStorage, companionId);
 		recordCompanionSeen(seenNow, window.localStorage, companionId);
 		returnGestureAvailable = qualifiesAsCompanionReturn(absenceMs);
+
+		// Reflektion sparad nyligen (se diary-events.ts): flaggan lämnas kvar
+		// i storage om den är giltig - den rensas först när gesten faktiskt
+		// startar (maybePlayMicroGesture), så en blockerad cykel inte
+		// förbrukar den. En utgången flagga rensas direkt, utan gest.
+		const reflectionSavedAt = getReflectionSavedTimestamp();
+		if (reflectionSavedAt !== null) {
+			if (isReflectionSaveWithinReactionWindow(reflectionSavedAt, seenNow)) {
+				reflectionGestureAvailable = true;
+			} else {
+				clearReflectionSavedTimestamp();
+			}
+		}
 
 		let baseTimer: number | null = null;
 		let baseFrameTimer: number | null = null;

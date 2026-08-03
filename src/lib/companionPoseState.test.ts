@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+	COMPANION_REFLECTION_REACTION_WINDOW_MS,
 	COMPANION_RETURN_ABSENCE_THRESHOLD_MS,
 	getCompanionAbsenceMs,
 	getCompanionBasePose,
 	getCompanionScenePosition,
 	getMsUntilNextCompanionPoseCheck,
+	isReflectionSaveWithinReactionWindow,
 	qualifiesAsCompanionReturn,
 	recordCompanionSeen
 } from './companionPoseState';
@@ -199,5 +201,46 @@ describe('qualifiesAsCompanionReturn', () => {
 
 	it('does not qualify for a short gap, e.g. tab switching within the same sitting', () => {
 		expect(qualifiesAsCompanionReturn(10 * 60 * 1000)).toBe(false); // 10 min
+	});
+});
+
+describe('isReflectionSaveWithinReactionWindow', () => {
+	it('uses the named threshold constant, currently 6 hours', () => {
+		expect(COMPANION_REFLECTION_REACTION_WINDOW_MS).toBe(6 * 60 * 60 * 1000);
+	});
+
+	it('is within the window for a save that just happened', () => {
+		const now = new Date('2026-06-15T12:00:00Z');
+		expect(isReflectionSaveWithinReactionWindow(now.getTime(), now)).toBe(true);
+	});
+
+	it('stays within the window just under the threshold', () => {
+		const savedAt = new Date('2026-06-15T06:00:00Z').getTime();
+		const now = new Date(savedAt + COMPANION_REFLECTION_REACTION_WINDOW_MS - 1);
+		expect(isReflectionSaveWithinReactionWindow(savedAt, now)).toBe(true);
+	});
+
+	it('is still within the window exactly at the threshold', () => {
+		const savedAt = new Date('2026-06-15T06:00:00Z').getTime();
+		const now = new Date(savedAt + COMPANION_REFLECTION_REACTION_WINDOW_MS);
+		expect(isReflectionSaveWithinReactionWindow(savedAt, now)).toBe(true);
+	});
+
+	it('is expired just past the threshold', () => {
+		const savedAt = new Date('2026-06-15T06:00:00Z').getTime();
+		const now = new Date(savedAt + COMPANION_REFLECTION_REACTION_WINDOW_MS + 1);
+		expect(isReflectionSaveWithinReactionWindow(savedAt, now)).toBe(false);
+	});
+
+	it('is expired well past the threshold, e.g. a save from yesterday', () => {
+		const savedAt = new Date('2026-06-14T12:00:00Z').getTime();
+		const now = new Date('2026-06-15T12:00:00Z');
+		expect(isReflectionSaveWithinReactionWindow(savedAt, now)).toBe(false);
+	});
+
+	it('treats a timestamp in the future (clock skew) as invalid, not as freshly saved', () => {
+		const now = new Date('2026-06-15T12:00:00Z');
+		const savedAt = now.getTime() + 1000;
+		expect(isReflectionSaveWithinReactionWindow(savedAt, now)).toBe(false);
 	});
 });

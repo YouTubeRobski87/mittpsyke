@@ -56,9 +56,10 @@
 	});
 
 	const primaryNavItems: NavItem[] = [
+		{ href: '/dagbok', label: 'Dagbok' },
 		{ href: '/chat', label: 'Chatta' },
-		{ href: '/blogg', label: 'Artiklar' },
 		{ href: '/guider', label: 'Guider' },
+		{ href: '/blogg', label: 'Artiklar' },
 		{ href: '/anonyma-berattelser', label: 'Berättelser' },
 		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
 		{ href: '/om-skaparen', label: 'Om skaparen' }
@@ -97,9 +98,7 @@
 	];
 
 	const mobileGuestGeneralNavItems: NavItem[] = [
-		{ href: '/chat', label: 'Chatta' },
-		{ href: '/dagbok', label: 'Dagbok' },
-		...primaryNavItems.slice(1)
+		...primaryNavItems
 	];
 
 	const guestSecondaryNavItems: NavItem[] = [

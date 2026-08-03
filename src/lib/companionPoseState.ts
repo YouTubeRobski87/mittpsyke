@@ -223,3 +223,23 @@ export function recordCompanionSeen(now: Date, storage: Storage | null, companio
 export function qualifiesAsCompanionReturn(absenceMs: number | null): boolean {
 	return absenceMs !== null && absenceMs >= COMPANION_RETURN_ABSENCE_THRESHOLD_MS;
 }
+
+// ---------------------------------------------------------------------------
+// Reaktion på en sparad reflektion. Den faktiska tidsstämpeln lagras och
+// tolkas av $lib/diary-events.ts (som inte vet något om följeslagaren) -
+// den här funktionen äger bara tolkningen av hur "nyligen" räknas.
+// ---------------------------------------------------------------------------
+
+/** Hur länge en sparad reflektion räknas som "nyligen" för följeslagarens
+ *  reaktion. Efter det ska flaggan rensas utan att spela någon gest. */
+export const COMPANION_REFLECTION_REACTION_WINDOW_MS = 6 * 60 * 60 * 1000;
+
+/**
+ * Ren tröskelkontroll, samma mönster som qualifiesAsCompanionReturn - inget
+ * storage-beroende, lätt att testa mot exakta gränsvärden. En tidsstämpel i
+ * framtiden (klockskevhet) räknas som ogiltig, inte som "precis sparad".
+ */
+export function isReflectionSaveWithinReactionWindow(savedAtMs: number, now: Date): boolean {
+	const age = now.getTime() - savedAtMs;
+	return age >= 0 && age <= COMPANION_REFLECTION_REACTION_WINDOW_MS;
+}
