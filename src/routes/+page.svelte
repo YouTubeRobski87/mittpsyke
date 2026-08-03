@@ -463,6 +463,7 @@
 	.hero-picture img {
 		width: 100%;
 		object-fit: cover;
+		object-position: 42% center;
 		filter: saturate(0.75) brightness(0.85) contrast(1.05);
 	}
 
@@ -483,6 +484,13 @@
 		position: absolute;
 		inset: 0;
 		background:
+			linear-gradient(
+				90deg,
+				rgba(9, 17, 27, 0.58) 0%,
+				rgba(9, 17, 27, 0.48) 42%,
+				rgba(9, 17, 27, 0.2) 66%,
+				rgba(9, 17, 27, 0.08) 100%
+			),
 			radial-gradient(
 				800px 400px at 50% 20%,
 				var(--home-hero-accent),
@@ -1069,6 +1077,10 @@
 	/* Skimret hör ihop med hero-parallaxen och stängs av på samma villkor:
 	   ingen extra rörelse på mobil eller vid reduced motion. */
 	@media (max-width: 767px) {
+		.hero-picture img {
+			object-position: 58% center;
+		}
+
 		.hero-shimmer {
 			display: none;
 		}
@@ -1109,7 +1121,30 @@
 		}
 
 		.hero-shell {
-			grid-template-columns: minmax(0, 1fr);
+			grid-template-columns: minmax(0, 44%) minmax(0, 1fr);
+			justify-items: start;
+		}
+
+		.hero-content {
+			justify-self: start;
+			width: min(34rem, 100%);
+			box-sizing: border-box;
+			padding-left: clamp(1rem, 2vw, 2rem);
+			text-align: left;
+		}
+
+		.hero-content p {
+			margin-left: 0;
+			margin-right: 0;
+		}
+
+		.hero-quick-start {
+			margin-left: 0;
+			margin-right: 0;
+		}
+
+		.hero-secondary-actions {
+			justify-content: flex-start;
 		}
 
 		.product-flow-grid {
