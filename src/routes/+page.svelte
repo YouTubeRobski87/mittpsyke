@@ -629,7 +629,7 @@
 	}
 
 	.hero-quick-start-hint {
-		margin: 0;
+		margin: 0.1rem 0 0;
 		font-size: 0.8rem;
 		line-height: 1.5;
 		color: var(--home-text-muted);
@@ -637,6 +637,7 @@
 
 	.hero-quick-start-submit {
 		justify-self: start;
+		margin-top: 0.15rem;
 		padding: 0.65rem 1.2rem;
 		border-radius: var(--radius-pill);
 		border: none;
@@ -674,7 +675,7 @@
 	}
 
 	.hero-secondary-actions {
-		margin-top: 1.4rem;
+		margin-top: 1.1rem;
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.6rem 1.3rem;
@@ -683,6 +684,8 @@
 
 	.hero-secondary-actions .context-link {
 		margin-top: 0;
+		color: rgba(219, 236, 255, 0.94);
+		font-weight: 700;
 	}
 
 	.hero-cta-primary {
@@ -1138,6 +1141,11 @@
 			text-align: left;
 		}
 
+		h1 {
+			width: min(38rem, calc(100% + 3rem));
+			font-size: clamp(2.4rem, 3.2vw, 3rem);
+		}
+
 		.hero-content p {
 			margin-top: 1.2rem;
 			margin-left: 0;
@@ -1153,7 +1161,7 @@
 		}
 
 		.hero-secondary-actions {
-			margin-top: 1.6rem;
+			margin-top: 1rem;
 			justify-content: flex-start;
 		}
 
