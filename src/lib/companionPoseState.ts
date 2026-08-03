@@ -175,3 +175,51 @@ export function getMsUntilNextCompanionPoseCheck(
 	const remainingMs = storedState ? storedState.expiresAt - date.getTime() : 0;
 	return Math.min(Math.max(remainingMs, 30 * 1000), 5 * 60 * 1000);
 }
+
+// ---------------------------------------------------------------------------
+// "Kommer tillbaka"-signal. Egen, separat lagringsnyckel (skild från
+// pos/position-nycklarna ovan) eftersom det här mäter besök, inte poseval.
+//
+// Skrivs en gång per faktisk sidmontering, aldrig från den periodiska
+// pose-uppdateringen - annars skulle en flik som bara ligger öppen i
+// timmar felaktigt tolkas som "borta och tillbaka" varje gång posen
+// råkar uppdateras i bakgrunden.
+// ---------------------------------------------------------------------------
+
+/** Hur länge companionen måste ha varit osedd för att räknas som en återkomst. */
+export const COMPANION_RETURN_ABSENCE_THRESHOLD_MS = 4 * 60 * 60 * 1000;
+
+const lastSeenStorageKeyFor = (companionId: CompanionId) =>
+	`mittpsyke:companion-last-seen:${companionId}:v1`;
+
+/**
+ * Millisekunder sedan companionen senast sågs, eller null om det saknas en
+ * tidigare tidsstämpel (första besöket - inget att jämföra "återkomst" mot).
+ * Ren läsning, ingen sidoeffekt - anropas innan recordCompanionSeen skriver
+ * över värdet.
+ */
+export function getCompanionAbsenceMs(
+	now: Date,
+	storage: Storage | null,
+	companionId: CompanionId
+): number | null {
+	if (!storage) return null;
+	const stored = storage.getItem(lastSeenStorageKeyFor(companionId));
+	if (!stored) return null;
+	const previous = Number(stored);
+	if (!Number.isFinite(previous)) return null;
+	return Math.max(0, now.getTime() - previous);
+}
+
+/** Skriver den aktuella tiden som "senast sedd". Måste anropas efter att den
+ *  gamla tidsstämpeln redan lästs med getCompanionAbsenceMs, annars jämförs
+ *  `now` mot sig själv. */
+export function recordCompanionSeen(now: Date, storage: Storage | null, companionId: CompanionId): void {
+	if (!storage) return;
+	storage.setItem(lastSeenStorageKeyFor(companionId), String(now.getTime()));
+}
+
+/** Ren tröskelkontroll, utan storage-beroende - lätt att testa isolerat. */
+export function qualifiesAsCompanionReturn(absenceMs: number | null): boolean {
+	return absenceMs !== null && absenceMs >= COMPANION_RETURN_ABSENCE_THRESHOLD_MS;
+}

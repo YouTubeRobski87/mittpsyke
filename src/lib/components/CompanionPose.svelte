@@ -3,13 +3,17 @@
 	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
 	import { getCompanionDisplayState } from '$lib/companionStateMachine';
 	import {
+		getCompanionAbsenceMs,
 		getCompanionBasePose,
 		getCompanionOverlayPose,
 		getCompanionPoseDaypart,
 		getCompanionScenePosition,
-		getMsUntilNextCompanionPoseCheck
+		getMsUntilNextCompanionPoseCheck,
+		qualifiesAsCompanionReturn,
+		recordCompanionSeen
 	} from '$lib/companionPoseState';
 	import {
+		COMPANION_BEHAVIOURS,
 		getCompanionBehaviourRestMs,
 		isQuietPose,
 		pickCompanionBehaviour,
@@ -49,6 +53,10 @@
 	// Mikrorörelser - urval, vikter och vilotider bor i $lib/world/companionBehaviour.
 	let microGesture = $state<CompanionBehaviourId | null>(null);
 	let previousGesture: CompanionBehaviourId | null = null;
+	// Sant en gång per montering om användaren varit borta länge nog (se
+	// companionPoseState.ts). Förbrukas av den första tillåtna mikrorörelsen
+	// i maybePlayMicroGesture - se kommentaren där för ordningen.
+	let returnGestureAvailable = false;
 
 	const classes = $derived(`companion-pose ${className}`.trim());
 	const basePose = $derived(providedBasePose ?? localBasePose);
@@ -114,7 +122,18 @@
 		// för poser som redan rör sig eller ska ligga still.
 		if (overlayPose || isQuietPose(basePose?.id)) return;
 
-		const behaviour = pickCompanionBehaviour(previousGesture);
+		// Första tillåtna cykeln efter ett kvalificerat uppehåll (se
+		// returnGestureAvailable ovan): tvinga en lugn "settle" i stället för
+		// att slumpa fritt. Flaggan förbrukas här, efter att alla spärrar
+		// ovan redan passerats - blockerar de gesten förbrukas den alltså
+		// inte, och nästa tillåtna cykel får försöka i stället. När flaggan
+		// är false (det normala fallet) är raden nedan identisk med tidigare.
+		const behaviour = returnGestureAvailable
+			? (COMPANION_BEHAVIOURS.find((candidate) => candidate.id === 'settle') ??
+					pickCompanionBehaviour(previousGesture))
+			: pickCompanionBehaviour(previousGesture);
+		returnGestureAvailable = false;
+
 		previousGesture = behaviour.id;
 		microGesture = behaviour.id;
 		window.setTimeout(() => {
@@ -124,6 +143,18 @@
 
 	onMount(() => {
 		refreshBasePose();
+
+		// Mäts en gång per faktisk montering, inte i den periodiska
+		// refreshBasePose-cykeln ovan - annars skulle en flik som bara
+		// ligger öppen räknas som "borta och tillbaka" varje gång posen
+		// råkar uppdateras i bakgrunden. Skrivs alltid, oavsett
+		// rörelseinställning, så nästa faktiska återkomst mäts mot rätt
+		// tidpunkt.
+		const seenNow = new Date();
+		const absenceMs = getCompanionAbsenceMs(seenNow, window.localStorage, companionId);
+		recordCompanionSeen(seenNow, window.localStorage, companionId);
+		returnGestureAvailable = qualifiesAsCompanionReturn(absenceMs);
+
 		let baseTimer: number | null = null;
 		let baseFrameTimer: number | null = null;
 		let overlayFrameTimer: number | null = null;

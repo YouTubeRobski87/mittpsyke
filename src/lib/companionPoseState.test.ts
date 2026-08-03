@@ -1,10 +1,44 @@
 import { describe, expect, it } from 'vitest';
 import {
+	COMPANION_RETURN_ABSENCE_THRESHOLD_MS,
+	getCompanionAbsenceMs,
 	getCompanionBasePose,
 	getCompanionScenePosition,
-	getMsUntilNextCompanionPoseCheck
+	getMsUntilNextCompanionPoseCheck,
+	qualifiesAsCompanionReturn,
+	recordCompanionSeen
 } from './companionPoseState';
 import type { CompanionId, CompanionPoseDaypart } from './companionPoseManifest';
+
+// Minimal Storage-implementation i minnet, samma mönster som redan används
+// för localStorage-beroende kod i chat-handoff.test.ts.
+class MemoryStorage implements Storage {
+	private store = new Map<string, string>();
+
+	get length() {
+		return this.store.size;
+	}
+
+	clear(): void {
+		this.store.clear();
+	}
+
+	getItem(key: string): string | null {
+		return this.store.get(key) ?? null;
+	}
+
+	key(index: number): string | null {
+		return [...this.store.keys()][index] ?? null;
+	}
+
+	removeItem(key: string): void {
+		this.store.delete(key);
+	}
+
+	setItem(key: string, value: string): void {
+		this.store.set(key, value);
+	}
+}
 
 // Fasta tidpunkter i juni (sommartid, UTC+2), en per dagpart som
 // companionPoseState faktiskt skiljer på (morgon slås ihop med dag där).
@@ -78,5 +112,92 @@ describe('getMsUntilNextCompanionPoseCheck', () => {
 		const ms = getMsUntilNextCompanionPoseCheck(new Date(), null, 'fox');
 		expect(ms).toBeGreaterThanOrEqual(30 * 1000);
 		expect(ms).toBeLessThanOrEqual(5 * 60 * 1000);
+	});
+});
+
+describe('getCompanionAbsenceMs', () => {
+	it('returns null when there is no previous timestamp (first visit ever)', () => {
+		const storage = new MemoryStorage();
+		expect(getCompanionAbsenceMs(new Date(), storage, 'fox')).toBeNull();
+	});
+
+	it('returns null when no storage is available', () => {
+		expect(getCompanionAbsenceMs(new Date(), null, 'fox')).toBeNull();
+	});
+
+	it('measures the gap against a previously recorded timestamp', () => {
+		const storage = new MemoryStorage();
+		const firstVisit = new Date('2026-06-15T10:00:00Z');
+		recordCompanionSeen(firstVisit, storage, 'fox');
+
+		const secondVisit = new Date(firstVisit.getTime() + 90 * 60 * 1000); // +90 min
+		expect(getCompanionAbsenceMs(secondVisit, storage, 'fox')).toBe(90 * 60 * 1000);
+	});
+
+	it('keeps each companion on its own key, so switching companion does not fake an absence', () => {
+		const storage = new MemoryStorage();
+		const now = new Date('2026-06-15T10:00:00Z');
+		recordCompanionSeen(now, storage, 'fox');
+
+		// Räven har setts, men björnen har aldrig setts på den här enheten.
+		expect(getCompanionAbsenceMs(now, storage, 'bear')).toBeNull();
+	});
+
+	it('never returns a negative gap even with clock skew', () => {
+		const storage = new MemoryStorage();
+		const now = new Date('2026-06-15T10:00:00Z');
+		recordCompanionSeen(now, storage, 'fox');
+
+		const earlierRead = new Date(now.getTime() - 1000);
+		expect(getCompanionAbsenceMs(earlierRead, storage, 'fox')).toBe(0);
+	});
+});
+
+describe('recordCompanionSeen', () => {
+	it('reading the previous timestamp before recording the new one yields the real gap', () => {
+		// Skyddar ordningen som funktionerna måste anropas i: läs
+		// (getCompanionAbsenceMs) före skriv (recordCompanionSeen). Testet
+		// simulerar två besök i följd, precis som CompanionPose.svelte gör i
+		// onMount, och kontrollerar att den andra läsningen ser gapet mellan
+		// besök ett och två - inte noll, vilket den hade blivit om skrivningen
+		// råkat ske innan läsningen.
+		const storage = new MemoryStorage();
+		const visit1 = new Date('2026-06-15T08:00:00Z');
+		const visit2 = new Date('2026-06-15T13:00:00Z'); // +5h
+
+		const gapAtVisit1 = getCompanionAbsenceMs(visit1, storage, 'fox');
+		recordCompanionSeen(visit1, storage, 'fox');
+		expect(gapAtVisit1).toBeNull(); // inget tidigare besök alls
+
+		const gapAtVisit2 = getCompanionAbsenceMs(visit2, storage, 'fox');
+		recordCompanionSeen(visit2, storage, 'fox');
+		expect(gapAtVisit2).toBe(5 * 60 * 60 * 1000);
+	});
+
+	it('does nothing when no storage is available', () => {
+		expect(() => recordCompanionSeen(new Date(), null, 'fox')).not.toThrow();
+	});
+});
+
+describe('qualifiesAsCompanionReturn', () => {
+	it('uses the named threshold constant, currently 4 hours', () => {
+		expect(COMPANION_RETURN_ABSENCE_THRESHOLD_MS).toBe(4 * 60 * 60 * 1000);
+	});
+
+	it('does not qualify when there is no previous visit to compare against', () => {
+		expect(qualifiesAsCompanionReturn(null)).toBe(false);
+	});
+
+	it('does not qualify just under the threshold', () => {
+		expect(qualifiesAsCompanionReturn(COMPANION_RETURN_ABSENCE_THRESHOLD_MS - 1)).toBe(false);
+	});
+
+	it('qualifies exactly at and above the threshold', () => {
+		expect(qualifiesAsCompanionReturn(COMPANION_RETURN_ABSENCE_THRESHOLD_MS)).toBe(true);
+		expect(qualifiesAsCompanionReturn(COMPANION_RETURN_ABSENCE_THRESHOLD_MS + 1)).toBe(true);
+	});
+
+	it('does not qualify for a short gap, e.g. tab switching within the same sitting', () => {
+		expect(qualifiesAsCompanionReturn(10 * 60 * 1000)).toBe(false); // 10 min
 	});
 });
