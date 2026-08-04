@@ -29,6 +29,7 @@
   } from '$lib/progressCompanion';
   import { BEAR_SCENE_PLACEMENTS, WOLF_SCENE_PLACEMENTS } from '$lib/companionPoseManifest';
   import { getLivingWorldScene, getGrowthLevel, type LivingWorldScene } from '$lib/worldScene';
+  import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
@@ -93,6 +94,9 @@
   const progressPreview = $derived(data.progressPreview);
   const settingsPreview = $derived(data.settingsPreview);
   const isAnonymous = $derived(Boolean(data.isAnonymous));
+  const livingWorldReflectionCopy = $derived(
+    getLivingWorldReflectionCopy(isAnonymous ? undefined : progressPreview.totalEntries)
+  );
   const displayName = $derived(settingsPreview.displayName);
   const greeting = $derived(
     isAnonymous ? 'Välkommen hit' : `Välkommen tillbaka${displayName ? `, ${displayName}` : ''}`
@@ -221,6 +225,7 @@
 
         <div class="dashboard-content">
           <section class="now-panel" aria-labelledby="dashboard-now-title">
+            <p>{livingWorldReflectionCopy}</p>
             <h2 id="dashboard-now-title">Just nu</h2>
             <p>{progressPreview.summary}</p>
           </section>

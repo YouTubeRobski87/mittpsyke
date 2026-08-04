@@ -30,6 +30,7 @@
 		type CompanionPose as CompanionPoseData
 	} from '$lib/companionPoseManifest';
 	import { getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
+	import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
 	import {
 		trackInsightOpened,
 		trackMilestoneReachedOnce,
@@ -470,6 +471,9 @@
 	const milestonesData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_MILESTONES : loadedMilestonesData);
 	const weeklyEntries = $derived(isAnonymous ? 3 : loadedWeeklyEntries);
 	const entryCount = $derived(isAnonymous ? 18 : loadedEntryCount);
+	const livingWorldReflectionCopy = $derived(
+		getLivingWorldReflectionCopy(isAnonymous ? undefined : entryCount)
+	);
 	const activeDays = $derived(isAnonymous ? 11 : loadedActiveDays);
 	const growthLevel = $derived(isAnonymous ? 3 : loadedGrowthLevel);
 	// Växtnivån styr hur rik den beständiga världen är. Reaktiv: uppdateras när
@@ -928,6 +932,7 @@
 						? companionScene.anonymousCopy
 						: companionScene.copy}
 				</p>
+				<p>{livingWorldReflectionCopy}</p>
 			</div>
 			</div>
 					</section>
