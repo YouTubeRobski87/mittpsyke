@@ -28,7 +28,7 @@
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
   import { BEAR_SCENE_PLACEMENTS, WOLF_SCENE_PLACEMENTS } from '$lib/companionPoseManifest';
-  import { getLivingWorldScene, type LivingWorldScene } from '$lib/worldScene';
+  import { getLivingWorldScene, getGrowthLevel, type LivingWorldScene } from '$lib/worldScene';
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
@@ -77,10 +77,17 @@
 
   let { data } = $props<{ data: DashboardData }>();
 
+  // Växtnivån (0-4) driver hur rik den beständiga världen är. Kommer från riktig
+  // serverdata (totalEntries) redan vid SSR, så scenen är korrekt från första
+  // paint. Utloggad förhandsvisning använder en mellannivå så marknadsvyn lever.
+  const growthLevel = $derived(
+    data.isAnonymous ? 3 : getGrowthLevel(data.progressPreview.totalEntries)
+  );
+
   let progressExpanded = $state(false);
   let localHour = $state<number | null>(null);
   let localCompanionScene = $state<DashboardCompanionScene | null>(null);
-  let livingWorldScene = $state<LivingWorldScene>(getLivingWorldScene());
+  let livingWorldScene = $state<LivingWorldScene>(getLivingWorldScene({ growthLevel }));
 
   const diaryPreview = $derived(data.diaryPreview);
   const progressPreview = $derived(data.progressPreview);
@@ -123,7 +130,7 @@
       localHour = new Date().getHours();
       const now = new Date();
       localCompanionScene = getDashboardCompanionScene(now);
-      livingWorldScene = getLivingWorldScene({ date: now });
+      livingWorldScene = getLivingWorldScene({ date: now, growthLevel });
     };
 
     updateLocalTime();

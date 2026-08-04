@@ -29,7 +29,7 @@
 		WOLF_SCENE_PLACEMENTS,
 		type CompanionPose as CompanionPoseData
 	} from '$lib/companionPoseManifest';
-	import { getLivingWorldScene } from '$lib/worldScene';
+	import { getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
 	import {
 		trackInsightOpened,
 		trackMilestoneReachedOnce,
@@ -71,7 +71,6 @@
 	let timeOfDay = $state<CompanionTimeOfDay>(getProgressCompanionDayState());
 	let companionPoseId = $state('idle');
 	let companionBasePose = $state<CompanionPoseData | null>(null);
-	const livingWorldScene = $derived(getLivingWorldScene({ season, timeOfDay }));
 	const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
 
 	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: 'fox' | 'bear' | 'wolf') {
@@ -473,6 +472,9 @@
 	const entryCount = $derived(isAnonymous ? 18 : loadedEntryCount);
 	const activeDays = $derived(isAnonymous ? 11 : loadedActiveDays);
 	const growthLevel = $derived(isAnonymous ? 3 : loadedGrowthLevel);
+	// Växtnivån styr hur rik den beständiga världen är. Reaktiv: uppdateras när
+	// loadProgressData() satt loadedGrowthLevel efter klientfetch.
+	const livingWorldScene = $derived(getLivingWorldScene({ season, timeOfDay, growthLevel }));
 	const heatmapData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : loadedHeatmapData);
 	const insightsData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_INSIGHTS : loadedInsightsData);
 	const moodSamples = $derived(isAnonymous ? ANONYMOUS_PREVIEW_MOOD_SAMPLES : loadedMoodSamples);
@@ -579,15 +581,6 @@
 		'Vad är du tacksam för just nu?'
 	];
 	const todayReflection = reflections[new Date().getDay()];
-
-	function getGrowthLevel(entryCountValue: number) {
-		let level = 0;
-		if (entryCountValue >= 1) level = 1;
-		if (entryCountValue >= 6) level = 2;
-		if (entryCountValue >= 16) level = 3;
-		if (entryCountValue >= 31) level = 4;
-		return level;
-	}
 
 	function startOfWeekKey() {
 		const now = new Date();

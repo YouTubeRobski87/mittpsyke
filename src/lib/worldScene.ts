@@ -61,12 +61,22 @@ export type LivingWorldScene = {
 	features: Record<LivingWorldEffectKind, boolean>;
 };
 
+export type WorldGrowthLevel = 0 | 1 | 2 | 3 | 4;
+
 type LivingWorldSceneInput = {
 	date?: Date;
 	season?: ProgressCompanionSeason;
 	timeOfDay?: ProgressCompanionDayState;
 	wind?: number;
 	features?: Partial<Record<LivingWorldEffectKind, boolean>>;
+	/**
+	 * Hur mycket den beständiga världen har "vuxit" (0-4), härlett ur antalet
+	 * dagboksanteckningar via getGrowthLevel. Styr enbart hur rik den beständiga
+	 * växtligheten är och när sekundärt liv (drift/fjäril/fågel) tänds - aldrig
+	 * relationen till följeslagaren (det är relationshipStage, helt skilt) och
+	 * aldrig säsong/dygn. Utelämnat/okänt värde faller tillbaka till nivå 0.
+	 */
+	growthLevel?: number;
 };
 
 const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
@@ -91,6 +101,73 @@ const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
 const PAUSED_AMBIENT_FEATURES: Partial<Record<LivingWorldEffectKind, boolean>> = {
 	cloud: false
 };
+
+/**
+ * Antal sparade dagboksanteckningar -> växtnivå (0-4). Samma trösklar som
+ * framstegssidan alltid använt; samlad här så både världen och sifferstatistiken
+ * delar en enda källa. Icke-numeriskt/negativt värde ger nivå 0.
+ */
+export function getGrowthLevel(entryCount: unknown): WorldGrowthLevel {
+	if (typeof entryCount !== 'number' || !Number.isFinite(entryCount)) return 0;
+	if (entryCount >= 31) return 4;
+	if (entryCount >= 16) return 3;
+	if (entryCount >= 6) return 2;
+	if (entryCount >= 1) return 1;
+	return 0;
+}
+
+/**
+ * Klampar ett godtyckligt värde till en giltig växtnivå. Okänt, saknat, NaN
+ * eller negativt -> 0 (den lugna men kompletta basvärlden). Värden över 4 -> 4.
+ */
+export function normalizeGrowthLevel(value: unknown): WorldGrowthLevel {
+	if (typeof value !== 'number' || !Number.isFinite(value)) return 0;
+	const floored = Math.floor(value);
+	if (floored <= 0) return 0;
+	if (floored >= 4) return 4;
+	return floored as WorldGrowthLevel;
+}
+
+// Opacitetsfaktor för den beständiga växtligheten (foliage) per nivå. Nivå 0
+// hålls tydligt synlig - aldrig 0 - så basvärlden ser komplett ut; nivå 4 = 1.0,
+// dvs exakt dagens utseende. Detta är den PRIMÄRA tillväxtsignalen.
+const FOLIAGE_OPACITY_SCALE: Record<WorldGrowthLevel, number> = {
+	0: 0.72,
+	1: 0.82,
+	2: 0.9,
+	3: 0.96,
+	4: 1
+};
+
+// Vilken nivå som krävs för att sekundärt liv ska tändas. Beständiga baslager
+// (light/water/foliage/mist) och det årstidsstyrda lövet finns kvar på alla
+// nivåer och saknas därför här. Cloud hanteras separat av PAUSED_AMBIENT_FEATURES.
+const SECONDARY_FEATURE_MIN_LEVEL: Partial<Record<LivingWorldEffectKind, WorldGrowthLevel>> = {
+	drift: 2,
+	butterfly: 3,
+	bird: 4
+};
+
+export type GrowthWorldMask = {
+	level: WorldGrowthLevel;
+	features: Partial<Record<LivingWorldEffectKind, boolean>>;
+	foliageOpacityScale: number;
+};
+
+/**
+ * Ren översättning växtnivå -> vilka sekundära lager som är tända och hur rik
+ * växtligheten är. Rör aldrig säsong, dygn eller relationshipStage. Gaten läggs
+ * OVANPÅ säsongslogiken: den kan bara hålla tillbaka en effekt på låg nivå, aldrig
+ * tvinga fram en som säsongen/dygnet ändå stänger av.
+ */
+export function growthWorldMask(growthLevel: unknown): GrowthWorldMask {
+	const level = normalizeGrowthLevel(growthLevel);
+	const features: Partial<Record<LivingWorldEffectKind, boolean>> = {};
+	for (const [kind, minLevel] of Object.entries(SECONDARY_FEATURE_MIN_LEVEL)) {
+		features[kind as LivingWorldEffectKind] = level >= minLevel;
+	}
+	return { level, features, foliageOpacityScale: FOLIAGE_OPACITY_SCALE[level] };
+}
 
 const baseEffects: LivingWorldEffect[] = [
 	{ id: 'sunlight', kind: 'light', enabled: true, durationMs: 52_000, opacity: 0.45 },
@@ -395,7 +472,15 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 	const timeOfDay = input.timeOfDay ?? getProgressCompanionDayState(date);
 	const wind = Math.min(Math.max(input.wind ?? 0.18, 0), 1);
 	const isDaylight = timeOfDay === 'morning' || timeOfDay === 'day';
-	const features = { ...ALL_FEATURES, ...input.features, ...PAUSED_AMBIENT_FEATURES };
+	const growth = growthWorldMask(input.growthLevel);
+	// Ordning: växtnivåns sekundärgate först, explicit input.features får skriva
+	// över den (t.ex. tester), och pausade moln vinner alltid sist.
+	const features = {
+		...ALL_FEATURES,
+		...growth.features,
+		...input.features,
+		...PAUSED_AMBIENT_FEATURES
+	};
 	const mistOpacity = getMistOpacity(timeOfDay);
 
 	const effects = baseEffects.map((effect) => {
@@ -403,6 +488,12 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 
 		if (next.kind === 'mist') {
 			next.opacity = mistOpacity * (effect.id === 'mist-two' ? 0.72 : 1);
+		}
+
+		// Den beständiga växtligheten skalas av växtnivån - den primära, alltid
+		// synliga tillväxtsignalen. Rör bara foliage, aldrig övriga lager.
+		if (next.kind === 'foliage') {
+			next.opacity = (effect.opacity ?? 0.22) * growth.foliageOpacityScale;
 		}
 
 		if (next.kind === 'light' && timeOfDay === 'night') next.opacity = 0.12;
