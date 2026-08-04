@@ -18,7 +18,8 @@
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import VideoRecorder from '$lib/components/VideoRecorder.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
-	import { clearDiaryDraft, readDiaryDraft } from '$lib/diary-draft';
+	import { clearDiaryDraft, consumeDiaryDraftHandoff, readDiaryDraft } from '$lib/diary-draft';
+	import GuestQuickEntry from '$lib/components/GuestQuickEntry.svelte';
 	import {
 		awardMilestone,
 		consumePendingMilestone,
@@ -1135,11 +1136,17 @@
 			trackDiaryPageOpenedFromHoroscope();
 		}
 
+		// Startsidans text kommer hit via sessionStorage, aldrig i URL:en. Den
+		// konsumeras en gÃ¥ng sÃ¥ att den inte kan dyka upp som ett gammalt utkast.
+		const handoff = consumeDiaryDraftHandoff();
 		const prefill = $page.url.searchParams.get('prefill')?.trim();
 		const promptQuestion = $page.url.searchParams.get('prompt')?.trim();
 		const promptDailyQuestionId = $page.url.searchParams.get('daily_question_id')?.trim();
 		let shouldOpenWriteEditor = false;
-		if (prefill) {
+		if (handoff) {
+			draftText = handoff;
+			shouldOpenWriteEditor = true;
+		} else if (prefill) {
 			draftText = prefill;
 			shouldOpenWriteEditor = true;
 		} else if (promptQuestion) {
@@ -1258,6 +1265,9 @@
 					<p>Din plats för dagen — skriv fritt eller låt en röst guida dig.</p>
 				</div>
 			</header>
+			<GuestQuickEntry />
+
+			{#if false}
 
 			<section class="auth-panel">
 				<h2 class="text-base font-semibold">Så fungerar dagboken</h2>
@@ -1300,6 +1310,7 @@
 					<a href="/register" class="auth-button">Skapa konto</a>
 				</div>
 			</section>
+			{/if}
 		</div>
 	{:else}
 		<!-- Inloggad dagboksvy -->

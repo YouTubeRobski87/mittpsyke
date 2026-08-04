@@ -17,7 +17,7 @@
 		};
 	};
 
-	const DIARY_START_DESTINATION = '/dagbok?action=new';
+	const DIARY_START_DESTINATION = '/dagbok/checkin#skriv-sjalv';
 
 	let { data }: { data: HomePageData } = $props();
 	let heroEl: HTMLElement | null = null;
