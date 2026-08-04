@@ -18,8 +18,7 @@
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import VideoRecorder from '$lib/components/VideoRecorder.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
-	import { clearDiaryDraft, consumeDiaryDraftHandoff, readDiaryDraft } from '$lib/diary-draft';
-	import GuestQuickEntry from '$lib/components/GuestQuickEntry.svelte';
+	import { clearDiaryDraft, readDiaryDraft } from '$lib/diary-draft';
 	import {
 		awardMilestone,
 		consumePendingMilestone,
@@ -105,7 +104,6 @@
 
 	let entries = $state<DiaryEntry[]>([]);
 	let loading = $state(false);
-	let authResolved = $state(false);
 	let loadingMoreEntries = $state(false);
 	let hasMoreEntries = $state(false);
 	let sessionUser = $state<User | null>(null);
@@ -1137,17 +1135,11 @@
 			trackDiaryPageOpenedFromHoroscope();
 		}
 
-		// Startsidans text kommer hit via sessionStorage, aldrig i URL:en. Den
-		// konsumeras en gÃ¥ng sÃ¥ att den inte kan dyka upp som ett gammalt utkast.
-		const handoff = consumeDiaryDraftHandoff();
 		const prefill = $page.url.searchParams.get('prefill')?.trim();
 		const promptQuestion = $page.url.searchParams.get('prompt')?.trim();
 		const promptDailyQuestionId = $page.url.searchParams.get('daily_question_id')?.trim();
 		let shouldOpenWriteEditor = false;
-		if (handoff) {
-			draftText = handoff;
-			shouldOpenWriteEditor = true;
-		} else if (prefill) {
+		if (prefill) {
 			draftText = prefill;
 			shouldOpenWriteEditor = true;
 		} else if (promptQuestion) {
@@ -1198,26 +1190,16 @@
 		canRenderMarkdown = true;
 
 		if (!data.session) {
-			supabase.auth
-				.getSession()
-				.then(({ data: sessionData }) => {
-					sessionUser = sessionData.session?.user ?? null;
-					hasHealthDataConsent = hasSensitiveConsent(sessionData.session?.user.user_metadata);
-					refreshEarnedMilestones(getMilestoneUserId());
-				})
-				.catch(() => {
-					sessionUser = null;
-					hasHealthDataConsent = false;
-				})
-				.finally(() => {
-					authResolved = true;
-					void initializeDiary();
-				});
+			supabase.auth.getSession().then(({ data: sessionData }) => {
+				sessionUser = sessionData.session?.user ?? null;
+				hasHealthDataConsent = hasSensitiveConsent(sessionData.session?.user.user_metadata);
+				refreshEarnedMilestones(getMilestoneUserId());
+				void initializeDiary();
+			});
 		} else {
 			sessionUser = data.session.user;
 			hasHealthDataConsent = hasSensitiveConsent(data.session.user.user_metadata);
 			refreshEarnedMilestones(getMilestoneUserId());
-			authResolved = true;
 			void initializeDiary();
 		}
 
@@ -1267,12 +1249,6 @@
 				<p class="auth-muted">Laddar...</p>
 			</section>
 		</div>
-	{:else if !authResolved}
-		<div class="auth-shell">
-			<section class="auth-panel">
-				<p class="auth-muted">Öppnar skrivytan...</p>
-			</section>
-		</div>
 	{:else if !isLoggedIn}
 		<!-- Publik dagboksvy för utloggade besökare -->
 		<div class="auth-shell">
@@ -1282,9 +1258,6 @@
 					<p>Din plats för dagen — skriv fritt eller låt en röst guida dig.</p>
 				</div>
 			</header>
-			<GuestQuickEntry />
-
-			{#if false}
 
 			<section class="auth-panel">
 				<h2 class="text-base font-semibold">Så fungerar dagboken</h2>
@@ -1327,7 +1300,6 @@
 					<a href="/register" class="auth-button">Skapa konto</a>
 				</div>
 			</section>
-			{/if}
 		</div>
 	{:else}
 		<!-- Inloggad dagboksvy -->
