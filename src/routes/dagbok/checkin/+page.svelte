@@ -105,6 +105,7 @@
 
 	let entries = $state<DiaryEntry[]>([]);
 	let loading = $state(false);
+	let authResolved = $state(false);
 	let loadingMoreEntries = $state(false);
 	let hasMoreEntries = $state(false);
 	let sessionUser = $state<User | null>(null);
@@ -1197,16 +1198,26 @@
 		canRenderMarkdown = true;
 
 		if (!data.session) {
-			supabase.auth.getSession().then(({ data: sessionData }) => {
-				sessionUser = sessionData.session?.user ?? null;
-				hasHealthDataConsent = hasSensitiveConsent(sessionData.session?.user.user_metadata);
-				refreshEarnedMilestones(getMilestoneUserId());
-				void initializeDiary();
-			});
+			supabase.auth
+				.getSession()
+				.then(({ data: sessionData }) => {
+					sessionUser = sessionData.session?.user ?? null;
+					hasHealthDataConsent = hasSensitiveConsent(sessionData.session?.user.user_metadata);
+					refreshEarnedMilestones(getMilestoneUserId());
+				})
+				.catch(() => {
+					sessionUser = null;
+					hasHealthDataConsent = false;
+				})
+				.finally(() => {
+					authResolved = true;
+					void initializeDiary();
+				});
 		} else {
 			sessionUser = data.session.user;
 			hasHealthDataConsent = hasSensitiveConsent(data.session.user.user_metadata);
 			refreshEarnedMilestones(getMilestoneUserId());
+			authResolved = true;
 			void initializeDiary();
 		}
 
@@ -1254,6 +1265,12 @@
 		<div class="auth-shell">
 			<section class="auth-panel">
 				<p class="auth-muted">Laddar...</p>
+			</section>
+		</div>
+	{:else if !authResolved}
+		<div class="auth-shell">
+			<section class="auth-panel">
+				<p class="auth-muted">Öppnar skrivytan...</p>
 			</section>
 		</div>
 	{:else if !isLoggedIn}
