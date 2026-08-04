@@ -11,8 +11,9 @@
 	const VERSION = '2026-04-29';
 
 	// Samma nycklar som ChatWindow läser vid uppstart. Texten skickas automatiskt
-	// när samtycket är klart.
+	// när samtycket är klart, ämnet följer med som extra kontext när det matchats.
 	const HERO_QUICK_START_KEY = 'mittpsyke_hero_quick_start';
+	const TOPIC_HINT_KEY = 'mittpsyke_chat_topic_hint';
 
 	let hasConsent = $state(false);
 	let draft = $state('');
@@ -59,6 +60,11 @@
 
 		try {
 			localStorage.setItem(HERO_QUICK_START_KEY, plan.text);
+			if (plan.topicId) {
+				localStorage.setItem(TOPIC_HINT_KEY, plan.topicId);
+			} else {
+				localStorage.removeItem(TOPIC_HINT_KEY);
+			}
 		} catch {
 			// Blockerad lagring stoppar inte samtalet - texten följer bara inte med.
 		}
