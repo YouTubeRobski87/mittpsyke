@@ -27,6 +27,21 @@ Vi frågar inte bara: "Vad ska hända här?"
 
 Vi frågar: "Vad får platsen att kännas levande och trygg?"
 
+## Verktyget tjänar tillståndet
+
+Verktyget ska tjäna användarens tillstånd, inte jaga användarens uppmärksamhet.
+
+Det gäller hela MittPsyke, inte bara världen:
+
+- AI:n ska hjälpa, inte imponera.
+- Dagboken ska bjuda in, inte pressa användaren att skriva mer än hen vill.
+- Statistik ska hjälpa användaren förstå, inte få hen att prestera.
+- Världen ska påminna om att användaren varit där, inte kräva att hen kommer tillbaka.
+
+Beslutstest inför varje ny idé:
+
+> Passar detta MittPsyke för att det hjälper användaren – eller för att det fångar mer uppmärksamhet?
+
 ## Platsen kommer först
 
 Användaren återvänder alltid till samma plats.
