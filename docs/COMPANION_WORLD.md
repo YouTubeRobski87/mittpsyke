@@ -104,6 +104,23 @@ When the user writes, reflects, returns or takes care of themselves, the place c
 
 The product should make this feel discovered, not announced.
 
+## Levande värld – nästa steg
+
+Nuvarande läge:
+- Dagboksvolym styr `growthLevel` (0–4, via `getGrowthLevel` i `src/lib/worldScene.ts`).
+- `growthLevel` påverkar världen på Mitt Hem (`/dashboard`) och Framsteg (`/framsteg`):
+  beständig växtlighet (foliage/gräs/canopy) primärt, drift/fjäril/fågel sekundärt på högre nivåer.
+- Reflektionsraden under bilden förklarar kopplingen (`src/lib/livingWorldCopy.ts`):
+  "Din plats har vuxit i takt med dina N sparade reflektioner."
+- `relationshipStage` styr följeslagaren separat och blandas aldrig ihop med `growthLevel`.
+
+Vänta med:
+- nivåberoende copy (låt reflektionsraden variera ton med `growthLevel`)
+- finare progression över 31 anteckningar (`getGrowthLevel` mättar vid nivå 4)
+
+Nästa beslut tas först efter visuell utvärdering i produktion. Håll copy och signaler
+varma och berättande – aldrig prestations- eller poängspråk.
+
 ## Companion world references
 
 Always inspect:
