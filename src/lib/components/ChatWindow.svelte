@@ -5,6 +5,7 @@
 	import { Square, Volume2 } from 'lucide-svelte';
 	import { containsCrisisSignal, containsThirdPartyRiskSignal } from '$lib/ai/safety';
 	import { getTopicHint } from '$lib/ai/chat-topics';
+	import { SWEDISH_LOCALE, selectVoiceForLang, waitForVoiceForLang } from '$lib/ai/speech';
 	import { consumeHeroChatHandoff } from '$lib/chat-handoff';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
@@ -79,6 +80,9 @@
 	let speakingMessageIndex = $state<number | null>(null);
 	let swedishVoice: SpeechSynthesisVoice | null = null;
 	let activeUtterance: SpeechSynthesisUtterance | null = null;
+	// Räknare som ogiltigförklarar en väntande uppläsning om användaren avbryter
+	// eller startar en annan medan vi väntar in en röst (röster laddas asynkront).
+	let speechRequestId = 0;
 	let chatLog: HTMLDivElement;
 	let showHumanSupport = $state(false);
 	let showSettings = $state(false);
@@ -221,16 +225,16 @@
 	function loadSpeechVoices() {
 		if (!browser || !speechSupported) return;
 
-		const voices = window.speechSynthesis.getVoices();
-		swedishVoice =
-			voices.find((voice) => voice.lang.toLowerCase() === 'sv-se') ??
-			voices.find((voice) => voice.lang.toLowerCase().startsWith('sv')) ??
-			null;
+		// Välj svensk röst utifrån voice.lang, inte OS:ets standardspråk.
+		swedishVoice = selectVoiceForLang(window.speechSynthesis.getVoices(), SWEDISH_LOCALE);
 	}
 
 	function stopSpeaking() {
 		if (!browser || typeof window.speechSynthesis === 'undefined') return;
 
+		// Ogiltigförklara en eventuell väntande uppläsning så den inte startar när
+		// rösten laddats klart.
+		speechRequestId += 1;
 		if (activeUtterance) {
 			activeUtterance.onend = null;
 			activeUtterance.onerror = null;
@@ -240,16 +244,33 @@
 		window.speechSynthesis.cancel();
 	}
 
-	function speakReply(content: string, messageIndex: number) {
+	async function speakReply(content: string, messageIndex: number) {
 		const normalized = content.trim();
 		if (!browser || !speechSupported || !normalized) return;
 
 		stopSpeaking();
-		loadSpeechVoices();
+
+		// Markera den här uppläsningen som den aktuella. stopSpeaking() ökade nyss
+		// räknaren, så ett nytt id skiljer den från alla tidigare väntande anrop.
+		const requestId = ++speechRequestId;
+		// Visa aktivt tillstånd direkt så knappen kan avbryta redan under väntan.
+		speakingMessageIndex = messageIndex;
+
+		// Vänta in en svensk röst innan uppläsningen startar – annars kan en redan
+		// startad utterance fastna på OS-standardrösten även om listan fylls på sen.
+		const voice = await waitForVoiceForLang(SWEDISH_LOCALE, { synth: window.speechSynthesis });
+
+		// Användaren kan ha avbrutit eller startat en annan uppläsning under väntan.
+		if (requestId !== speechRequestId) return;
+		swedishVoice = voice;
 
 		const utterance = new SpeechSynthesisUtterance(normalized);
-		utterance.lang = swedishVoice?.lang ?? 'sv-SE';
-		utterance.voice = swedishVoice;
+		// Sätt alltid svenskt språk för svensk text. Tilldela bara en röst när en
+		// svensk faktiskt finns – annars skulle null tvinga fram OS-standardrösten.
+		utterance.lang = SWEDISH_LOCALE;
+		if (voice) {
+			utterance.voice = voice;
+		}
 		utterance.rate = 0.92;
 		utterance.pitch = 1;
 		utterance.volume = 1;
@@ -275,7 +296,7 @@
 			return;
 		}
 
-		speakReply(content, messageIndex);
+		void speakReply(content, messageIndex);
 	}
 
 	function setAutoReadReplies(enabled: boolean) {
@@ -742,7 +763,7 @@
 			if (shouldFollowReply) scrollToBottom();
 			if (autoReadReplies) {
 				// Autouppläsning sker bara här efter ett nytt, lyckat API-svar – aldrig vid historikladdning.
-				speakReply(assistantReply, assistantMessageIndex);
+				void speakReply(assistantReply, assistantMessageIndex);
 			}
 		} catch (error) {
 			const lastMessage = messages[messages.length - 1];
