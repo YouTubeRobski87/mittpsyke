@@ -33,11 +33,32 @@ Examples:
 
 The companion should not demand attention. It should simply be there.
 
-## The bear
+## The companion system
 
-The bear is warm, safe, grounded, a little philosophical, calm and friendly.
+There is no single companion. There is a **companion system**.
 
-The bear can sometimes sit by the lake, blink slowly, shift its weight, look up toward the sky, rest quietly or hold a grass straw like a farmer.
+Fox, bear and future animals are different companions in the same world, built on the same foundation. They are not competing directions — they are different ways of being someone who is simply there.
+
+The fox is the first fully developed companion. The bear is to receive the same capabilities. New animals must be addable without rewriting the architecture.
+
+### Same foundation, different temperament
+
+Every companion shares the same behaviour system: the same pose layers (base pose, short overlay gesture, subtle motion), the same slow cadence, and the same rules for what is allowed to move.
+
+What differs is **temperament** — how often the companion changes pose, how much it moves, and which parts of the day it is most present.
+
+| Companion | Temperament |
+| --- | --- |
+| Fox | Curious. Moves more, looks toward the lake, blinks often. |
+| Bear | Warm, safe, grounded, a little philosophical. Sits for long stretches, moves sparingly, radiates calm. Can blink slowly, shift its weight, look up toward the sky or hold a grass straw. |
+| Owl | Most present in the evening and at night. Observes its surroundings. |
+| Deer | Cautious. Appears more rarely and moves softly. |
+
+Choosing a companion is therefore choosing a mood, not choosing a skin.
+
+No companion is a mascot that performs. Motion stays quiet for all of them.
+
+Technical direction: `docs/COMPANION_SYSTEM.md`.
 
 ## Layer 3 — Seasons
 
@@ -140,3 +161,5 @@ Always inspect:
 - `docs/references/03-companion-world-reference.png`
 - `docs/references/04-hero-bear-scene.png`
 - `docs/references/02-home-vision-bear.png`
+
+These references happen to show the bear, since they predate the companion system. Read them as references for **the world, the framing and the mood** — not as a statement that the bear is the companion. The same scene should hold any companion.
