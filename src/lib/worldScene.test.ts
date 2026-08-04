@@ -117,8 +117,8 @@ describe('growthWorldMask - foliage-opacitet (primär tillväxtsignal)', () => {
 		}
 	});
 
-	it('nivå 4 = full opacitet (1.0), dvs dagens utseende', () => {
-		expect(growthWorldMask(4).foliageOpacityScale).toBe(1);
+	it('nivå 4 förstärker den beständiga växtligheten med skalan 1.4', () => {
+		expect(growthWorldMask(4).foliageOpacityScale).toBe(1.4);
 	});
 
 	it('okänt/saknat värde ger nivå 0-skala (säker fallback)', () => {
@@ -154,14 +154,13 @@ describe('getLivingWorldScene - växtnivå styr scenen', () => {
 		expect(enabledPersistentKinds(4).has('drift')).toBe(true);
 	});
 
-	it('foliage-opaciteten är högre på nivå 4 än på nivå 1', () => {
-		const foliageOpacity = (growthLevel: number) => {
-			const scene = getLivingWorldScene({ ...fixed, growthLevel });
-			const grass = scene.effects.find((e) => e.id === 'grass-left');
-			return grass?.opacity ?? 0;
-		};
-		expect(foliageOpacity(4)).toBeGreaterThan(foliageOpacity(1));
-		expect(foliageOpacity(1)).toBeGreaterThan(0);
+	it('nivå 4 ger de avsedda slutopaciteterna för beständig vegetation', () => {
+		const scene = getLivingWorldScene({ ...fixed, growthLevel: 4 });
+		const opacity = (id: string) => scene.effects.find((effect) => effect.id === id)?.opacity;
+
+		expect(opacity('grass-left')).toBeCloseTo(0.42);
+		expect(opacity('grass-bank')).toBeCloseTo(0.364);
+		expect(opacity('canopy-right')).toBeCloseTo(0.308);
 	});
 
 	it('säsong och dygn påverkas inte av växtnivån', () => {

@@ -136,7 +136,7 @@ const FOLIAGE_OPACITY_SCALE: Record<WorldGrowthLevel, number> = {
 	1: 0.82,
 	2: 0.9,
 	3: 0.96,
-	4: 1
+	4: 1.4
 };
 
 // Vilken nivå som krävs för att sekundärt liv ska tändas. Beständiga baslager
