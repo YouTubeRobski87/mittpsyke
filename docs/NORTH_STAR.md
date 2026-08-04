@@ -66,13 +66,28 @@ Följeslagaren ska inte alltid prata eller kräva uppmärksamhet. Ibland sitter 
 
 Närvaron ska kännas som sällskap utan krav.
 
-## Björnen
+## Följeslagarna
 
-Björnen är varm, trygg, jordnära och lite småfilosofisk.
+Det finns inte en följeslagare. Det finns ett **Companion-system**.
 
-Den kan ibland sitta vid sjön, blinka långsamt, flytta vikten, titta upp mot himlen eller ha ett grässtrå i munnen.
+Räven, björnen och kommande djur är olika följeslagare i samma värld och på samma tekniska grund. De konkurrerar inte om riktningen — de är olika sätt att vara någon som finns där.
 
-Rörelsen ska vara lågmäld. Björnen är inte en maskot som uppträder. Den är någon som finns där.
+Ingen av dem är en maskot som uppträder. Rörelsen ska alltid vara lågmäld.
+
+### Samma grund, olika temperament
+
+Alla följeslagare delar samma beteendesystem: samma poslager, samma lugna kadens, samma regler för vad som får röra sig. Det som skiljer dem är **temperament** — hur ofta de byter läge, hur mycket de rör sig, vilka tider på dygnet de är som mest närvarande.
+
+Det gör valet av följeslagare till ett val av stämning, inte ett val av utseende.
+
+- **Räven** är nyfiken. Den rör sig mer, tittar mot sjön och blinkar ofta.
+- **Björnen** är varm, trygg, jordnära och lite småfilosofisk. Den sitter länge, rör sig sparsamt och utstrålar trygghet. Den kan blinka långsamt, flytta vikten, titta upp mot himlen eller ha ett grässtrå i munnen.
+- **Ugglan** är mest närvarande på kvällen och natten. Den observerar omgivningen.
+- **Hjorten** är försiktig. Den dyker upp mer sällan och rör sig mjukt.
+
+Räven är den första fullt utvecklade följeslagaren. Björnen ska få samma möjligheter. Nya djur ska kunna läggas till utan att arkitekturen skrivs om.
+
+Teknisk riktning finns i `docs/COMPANION_SYSTEM.md`.
 
 ## Världens lager
 
@@ -231,3 +246,5 @@ Priority order:
 5. `docs/references/04-hero-bear-scene.png`
 
 The first two references are the strongest source of truth for interface work.
+
+Referenserna 3–5 visar björnen eftersom de är äldre än Companion-systemet. Läs dem som referens för världen, bildutsnittet och stämningen — inte som att björnen är följeslagaren. Samma scen ska bära vilken följeslagare som helst.
