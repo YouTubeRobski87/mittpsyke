@@ -926,7 +926,7 @@
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
 			<div class="companion-copy">
 				<span class="companion-eyebrow">{getProgressCompanionDayStateLabel(companionScene.timeOfDay)}</span>
-				<h2>Din resa</h2>
+				<h2>Din plats idag</h2>
 				<p>
 					{isAnonymous
 						? companionScene.anonymousCopy
