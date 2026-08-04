@@ -121,6 +121,18 @@ Vänta med:
 Nästa beslut tas först efter visuell utvärdering i produktion. Håll copy och signaler
 varma och berättande – aldrig prestations- eller poängspråk.
 
+## Designprincip: väntar på dig, inte på nästa klick
+
+Världen ska kännas som att den fortsätter finnas även när användaren inte tittar. Effekter ska skapa närvaro, lugn och tillhörighet — inte kräva uppmärksamhet.
+
+Använd följande beslutstester innan en ny effekt eller animation byggs:
+
+1. Skulle detta kännas naturligt även om användaren inte aktivt tittade efter det?
+2. Får det platsen att kännas mer levande, eller försöker det bara bli uppmärksammat?
+3. Om vi tog bort det här om ett år, skulle någon sakna det för att platsen kändes mindre levande?
+
+Grundregel: mer liv, inte mer brus.
+
 ## Companion world references
 
 Always inspect:
