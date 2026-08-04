@@ -7,7 +7,7 @@ import {
 describe('getLivingWorldReflectionCopy', () => {
 	it.each([278, 2])('shows a trustworthy entry count (%s)', (entryCount) => {
 		expect(getLivingWorldReflectionCopy(entryCount)).toBe(
-			`Din plats har vuxit genom ${entryCount} sparade reflektioner.`
+			`Din plats har vuxit i takt med dina ${entryCount} sparade reflektioner.`
 		);
 	});
 

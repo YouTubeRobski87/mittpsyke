@@ -9,7 +9,7 @@ export function getLivingWorldReflectionCopy(entryCount: unknown): string {
 		return FALLBACK_COPY;
 	}
 
-	return `Din plats har vuxit genom ${entryCount} sparade reflektioner.`;
+	return `Din plats har vuxit i takt med dina ${entryCount} sparade reflektioner.`;
 }
 
 export { FALLBACK_COPY as LIVING_WORLD_REFLECTION_FALLBACK_COPY };
