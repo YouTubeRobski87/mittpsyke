@@ -4,21 +4,18 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import HealthConsent from '$lib/components/HealthConsent.svelte';
 	import RecentConversations from '$lib/components/RecentConversations.svelte';
-	import { CHAT_TOPIC_HINTS } from '$lib/ai/chat-topics';
 	import { planChatStart } from '$lib/ai/chat-start';
-	import { trackAiChatStarted, trackAiTopicShortcutSelected } from '$lib/analytics';
+	import { trackAiChatStarted } from '$lib/analytics';
 
 	const STORAGE_KEY = 'mittpsyke.healthConsent';
 	const VERSION = '2026-04-29';
 
 	// Samma nycklar som ChatWindow läser vid uppstart. Texten skickas automatiskt
-	// när samtycket är klart, ämnesgenvägen följer med som extra kontext.
+	// när samtycket är klart.
 	const HERO_QUICK_START_KEY = 'mittpsyke_hero_quick_start';
-	const TOPIC_HINT_KEY = 'mittpsyke_chat_topic_hint';
 
 	let hasConsent = $state(false);
 	let draft = $state('');
-	let selectedTopic = $state<string | null>(null);
 	let emptyDraftError = $state('');
 	let draftField: HTMLTextAreaElement | null = $state(null);
 
@@ -48,15 +45,9 @@
 		}
 	});
 
-	function toggleTopic(id: string) {
-		// Ett valfritt val, aldrig ett krav. Klick på samma genväg tar bort valet.
-		selectedTopic = selectedTopic === id ? null : id;
-		if (selectedTopic) trackAiTopicShortcutSelected(selectedTopic);
-	}
-
 	function startConversation(event: SubmitEvent) {
 		event.preventDefault();
-		const plan = planChatStart(draft, selectedTopic);
+		const plan = planChatStart(draft, null);
 
 		if (!plan.ok) {
 			emptyDraftError = 'Skriv några ord om vad du tänker på, så börjar vi där.';
@@ -68,16 +59,11 @@
 
 		try {
 			localStorage.setItem(HERO_QUICK_START_KEY, plan.text);
-			if (plan.topicId) {
-				localStorage.setItem(TOPIC_HINT_KEY, plan.topicId);
-			} else {
-				localStorage.removeItem(TOPIC_HINT_KEY);
-			}
 		} catch {
 			// Blockerad lagring stoppar inte samtalet - texten följer bara inte med.
 		}
 
-		// Bara längd och genvägens id. Aldrig det användaren skrivit.
+		// Bara längd och temats id. Aldrig det användaren skrivit.
 		trackAiChatStarted({ topicId: plan.topicId, textLength: plan.analytics.textLength });
 
 		void goto(plan.destination);
@@ -153,27 +139,6 @@
 
 				<button type="submit" class="starter-submit">Börja samtalet</button>
 			</form>
-
-			<div class="topics" role="group" aria-labelledby="topics-heading">
-				<p id="topics-heading" class="topics-heading">
-					Vill du ge en riktning? Helt frivilligt.
-				</p>
-				<ul class="topic-list">
-					{#each CHAT_TOPIC_HINTS as topic (topic.id)}
-						<li>
-							<button
-								type="button"
-								class="topic-chip"
-								class:is-selected={selectedTopic === topic.id}
-								aria-pressed={selectedTopic === topic.id}
-								onclick={() => toggleTopic(topic.id)}
-							>
-								{topic.label}
-							</button>
-						</li>
-					{/each}
-				</ul>
-			</div>
 		</section>
 
 		<section class="section how-chat-works" aria-labelledby="how-chat-works-title">
@@ -282,8 +247,7 @@
 		margin-top: 0.7rem;
 	}
 
-	/* Textrutan är sidans primära väg in. Genvägarna under den hålls medvetet
-	   lättare i vikt och yta så att de inte konkurrerar visuellt. */
+	/* Textrutan är sidans primära väg in. */
 	.starter {
 		max-width: 720px;
 		display: grid;
@@ -356,60 +320,14 @@
 		background: var(--color-primary-hover, var(--primary));
 	}
 
-	.topics-heading {
-		font-size: 0.9rem;
-		color: var(--color-text-muted, hsl(var(--muted-foreground)));
-	}
-
-	.topic-list {
-		margin: 0.55rem 0 0;
-		padding: 0;
-		list-style: none;
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.45rem;
-	}
-
-	.topic-chip {
-		padding: 0.42rem 0.85rem;
-		font-family: var(--font-body);
-		font-size: 0.9rem;
-		color: inherit;
-		background: transparent;
-		border: 1px solid var(--color-border, hsl(var(--border)));
-		border-radius: var(--radius-pill);
-		cursor: pointer;
-		transition:
-			background-color 0.18s ease,
-			border-color 0.18s ease;
-	}
-
-	.topic-chip:hover {
-		border-color: var(--primary);
-	}
-
-	/* Valt läge markeras med ram och vikt, inte enbart med färg. */
-	.topic-chip.is-selected {
-		background: var(--primary-soft, rgba(67, 110, 143, 0.08));
-		border-color: var(--primary);
-		font-weight: 600;
-	}
-
 	:global(.dark) .starter-submit {
 		color: #0b1220;
 		background: var(--primary-dark, #7dd3fc);
 		border-color: var(--primary-dark, #7dd3fc);
 	}
 
-	:global(.dark) .starter-error,
-	:global(.dark) .topic-chip:hover {
+	:global(.dark) .starter-error {
 		color: var(--primary-dark, #7dd3fc);
-		border-color: var(--primary-dark, #7dd3fc);
-	}
-
-	:global(.dark) .topic-chip.is-selected {
-		background: var(--primary-dark-soft, rgba(125, 211, 252, 0.1));
-		border-color: var(--primary-dark, #7dd3fc);
 	}
 
 	.how-chat-works {
@@ -477,6 +395,7 @@
 		border-left-color: rgba(147, 197, 253, 0.48);
 		background: rgba(147, 197, 253, 0.07);
 	}
+
 
 	@media (max-width: 768px) {
 		.page {
