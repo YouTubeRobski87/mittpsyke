@@ -1,3 +1,4 @@
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 type DiaryEntry = {
@@ -47,19 +48,12 @@ export const load: PageServerLoad = async ({ locals }) => {
 		data: { user }
 	} = await locals.supabase.auth.getUser();
 
+	if (!user) {
+		throw redirect(303, '/login');
+	}
+
 	let entries: DiaryEntry[] = [];
 	let hasMoreEntries = false;
-
-	if (!user) {
-		return {
-			title: 'Dagbok',
-			description: 'Skriv i din dagbok i lugn takt.',
-			noindex: true,
-			isLoggedIn: false,
-			entries,
-			hasMoreEntries
-		};
-	}
 
 	const diaryQuery = await locals.supabase
 		.from('diary')
