@@ -71,7 +71,7 @@ Required in `.env`:
 - `SUPABASE_URL` + `SUPABASE_ANON_KEY` — Server-side Supabase (private, used in hooks)
 - `SUPABASE_SERVICE_ROLE_KEY` — Server-side (guest conversations, bypasses RLS)
 - `ANTHROPIC_API_KEY` — Anthropic integration
-- `GA_MEASUREMENT_ID` — Google Analytics
+- `PUBLIC_GA_MEASUREMENT_ID` — Google Analytics 4 (mätnings-ID, `G-…`). Läses klientsidan i `src/lib/analytics.ts`; utan den är `ANALYTICS_ENABLED` falskt och gtag laddas aldrig
 
 ## Svelte 5 Runes
 
