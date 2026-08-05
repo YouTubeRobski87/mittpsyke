@@ -22,6 +22,10 @@ import OpenAI from 'openai';
 import { RateLimiter } from '$lib/server/rate-limit';
 import { buildTopicHintInstruction, getTopicHint } from '$lib/ai/chat-topics';
 import { normalizeCategory, type SupportCategory } from '$lib/ai/chat-categories';
+import {
+	buildReassurancePatternInstruction,
+	detectReassurancePattern
+} from '$lib/ai/reassurance-pattern';
 import type { RequestHandler } from './$types';
 
 const SYSTEM_PROMPT = `
@@ -304,7 +308,8 @@ const CHAT_MESSAGE_TOO_LONG_ERROR = 'Din text blev lite för lång att skicka p�
 function buildDynamicSystemPrompt(
 	category: SupportCategory,
 	history: PromptHistoryMessage[],
-	topicHintId: string | null = null
+	topicHintId: string | null = null,
+	reassurancePatternInstruction = ''
 ) {
 	const categoryPrompt = systemByCategory[category] || SYSTEM_PROMPT;
 	// Genvägen är extra kontext ovanpå grundprompten, aldrig en egen prompt.
@@ -349,14 +354,18 @@ Ge i så fall högst ett konkret förslag och formulera det tillåtande ("om du 
 			'Endast ibland och när något konkret formulerats: erbjud kort "Vill du spara det här som en anteckning?"'
 		);
 	}
-	const retentionInstructionBlock =
-		retentionInstructions.length > 0 ? `\n${retentionInstructions.join('\n')}` : '';
+	const retentionInstructionBlock = [
+		retentionInstructions.length > 0 ? retentionInstructions.join('\n') : '',
+		reassurancePatternInstruction
+	]
+		.filter(Boolean)
+		.join('\n');
 
 	if (history.length === 0) {
 		return `${basePrompt}
 
 Det här är första gången du pratar med den här användaren. Välkomna dem varmt.
-${phaseInstruction}${retentionInstructionBlock}`.trim();
+${phaseInstruction}${retentionInstructionBlock ? `\n${retentionInstructionBlock}` : ''}`.trim();
 	}
 
 	return `${basePrompt}
@@ -364,7 +373,7 @@ ${phaseInstruction}${retentionInstructionBlock}`.trim();
 Konversationen pågår redan – användaren har skickat meddelanden tidigare i denna session.
 Svara direkt på det senaste meddelandet utan att hälsa, presentera dig eller sammanfatta vad ni pratat om.
 Använd ALDRIG fraser som "Hej igen", "Jag minns att vi pratade om...", "Vill du att vi börjar om?" eller liknande återöppningsfraser mitt i en pågående konversation.
-${phaseInstruction}${retentionInstructionBlock}`.trim();
+${phaseInstruction}${retentionInstructionBlock ? `\n${retentionInstructionBlock}` : ''}`.trim();
 }
 
 function logChatPayloadStructure(context: {
@@ -715,7 +724,15 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 					)
 				: '';
 
-			const systemPrompt = buildDynamicSystemPrompt(category, modelContext, topicHintId);
+			const reassurancePatternInstruction = buildReassurancePatternInstruction(
+				detectReassurancePattern(message, modelContext)
+			);
+			const systemPrompt = buildDynamicSystemPrompt(
+				category,
+				modelContext,
+				topicHintId,
+				reassurancePatternInstruction
+			);
 			const systemPromptWithMemory = [systemPrompt, memoryBlock, diaryContextBlock]
 				.filter(Boolean)
 				.join('\n\n');
@@ -905,7 +922,15 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 					}))
 				: promptHistory;
 
-		const systemPrompt = buildDynamicSystemPrompt(category, modelContext, topicHintId);
+		const reassurancePatternInstruction = buildReassurancePatternInstruction(
+			detectReassurancePattern(message, modelContext)
+		);
+		const systemPrompt = buildDynamicSystemPrompt(
+			category,
+			modelContext,
+			topicHintId,
+			reassurancePatternInstruction
+		);
 		const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
 			{ role: 'system', content: systemPrompt },
 			...modelContext,

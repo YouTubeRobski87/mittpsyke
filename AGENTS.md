@@ -26,6 +26,13 @@ MittPsyke är en svensk mental-wellbeing-plattform där användare kan få AI-ba
   - `npm run build`
 - Rapportera tydligt om fel är nya eller redan existerande i repo.
 
+## Gemensamma arbetsregler
+- Las alltid berorda filer och relevanta tester innan andring. Hall andringen sa liten som mojligt och uppdatera relevanta tester.
+- Vid UI-andringar: kontrollera mobil layout, tangentbordsnavigering, synligt fokus, begripliga etiketter, berorda lankar och kontrast nar farger andras.
+- Var extra forsiktig med auth, sessioner, behorigheter, databasmigrationer och radering av data. Radera aldrig data utan uttrycklig instruktion.
+- Rapportera exakt vad som verifierats och vad som inte kunnat verifieras. Gor inga automatiska commits eller pushar.
+- Se `docs/agents/mittpsyke.md` och `docs/agents/stodlinjer.md` for produktspecifika tillagg.
+
 ## Copy-principer
 - Skriv på svenska.
 - Använd lågtrösklig, tydlig och varm ton.
