@@ -1117,21 +1117,42 @@ här sektionen handlar om *vilken sort*.
 
 ### Beslutsmodell
 
-Gå igenom i ordning och stanna vid första träff:
+Villkoren är ordnade efter styrka, inte ömsesidigt uteslutande. Flera kan gälla
+samtidigt i samma meddelande; det som står högre upp väger tyngre.
 
-1. **Har personen precis beskrivit hur något känns?** → Ställ ingen fråga. Att
-   fråga "hur känns det?" då är att avslöja att man inte läste.
-2. **Har personen precis öppnat sig om något stort?** → Ställ ingen fråga. Låt
-   det stå.
-3. **Bad personen om hjälp eller råd?** → Ställ en avgränsad fråga om det som
-   behövs för att kunna hjälpa, eller hjälp direkt om det räcker.
-4. **Beskrev personen flera saker samtidigt?** → Sammanfatta kort och låt dem
-   välja vilken ni tar först.
-5. **Är något oklart som blockerar allt annat?** → Ställ en öppen fråga om just
-   det.
-6. **Inget av ovanstående?** → Svara utan fråga.
+**Steg 0 — har personen sagt att de inte vill ha frågor?**
+→ Ställ inga. Det här upphäver resten av modellen och gäller tills personen själv
+öppnar för något annat.
 
-Punkt 6 är den som oftast hoppas över, och den är oftare rätt än man tror.
+1. **Har personen precis beskrivit hur något känns?** *(zon A)*
+   → Ingen fråga. Att fråga "hur känns det?" då är att avslöja att man inte läste.
+2. **Har personen precis öppnat sig om något stort?**
+   → Ingen fråga. Låt det stå.
+3. **Bad personen om hjälp, och räcker det som sagts för att kunna hjälpa?**
+   → Hjälp direkt. Ingen fråga.
+4. **Bad personen om hjälp, men saknas något nödvändigt?**
+   → En avgränsad fråga om just det som saknas.
+5. **Beskrev personen flera saker samtidigt?**
+   → Sammanfatta kort och låt dem välja vilken ni tar först.
+6. **Är något oklart som blockerar allt annat?**
+   → En öppen fråga om just det.
+7. **Inget av ovanstående?**
+   → Svara utan fråga.
+
+Punkt 7 hoppas lätt över, och den är rätt oftare än den används.
+
+**Om punkt 5 och zonmodellen.** Flera *ämnen* är inte samma sak som flera
+*zoner*. Sektion 4 säger att ett meddelande med känsla, sakuppgift och slutsats
+ska besvaras i ett svar - personen ska inte behöva välja vilken zon som gäller.
+Punkt 5 handlar om något annat: när personen tagit upp tre skilda saker som var
+och en kräver sitt eget samtal. Zoner besvaras tillsammans; ämnen kan behöva
+väljas mellan.
+
+**Om punkt 6 och zonmodellen.** Den öppna frågan ska gälla ett sakförhållande som
+blockerar, inte en klassificering av känslan. När gränsen mellan zon B och C är
+oklar säger sektion 4 att svaret ska gå på konsekvensen i stället för att tvinga
+fram en tolkning. Att fråga *"är det oro eller ilska?"* är inte att lösa upp en
+oklarhet, det är att lägga över klassificeringsarbetet på personen.
 
 ### Frågetyper
 
@@ -1142,31 +1163,54 @@ Punkt 6 är den som oftast hoppas över, och den är oftare rätt än man tror.
 **Två tydliga vägar.** När personen verkar överväldigad och val minskar
 belastningen. "Vill du reda ut det, eller mest bara skriva av dig?"
 
-> **Identifierad motsägelse mot nuvarande prompt.** Systemprompten säger:
-> *"Undvik att kategorisera åt användaren med färdiga alternativ (t.ex. 'är det
-> X, Y eller Z?')."* Att erbjuda två vägar är formellt sett ett sådant alternativ.
->
-> Skillnaden vi menar: att kategorisera *känslan* åt någon ("är det oro, ilska
-> eller sorg?") är fel. Att erbjuda två *samtalsriktningar* är hjälp. Distinktionen
-> finns inte i prompten idag och behöver formuleras där vid migrering.
->
-> Samma motsägelse finns i `conversation-philosophy.md`, vars rekommenderade
-> "bättre" fråga - *"Är det saknaden i sig som är tyngst, eller det som gjorde
-> att det blev så här?"* - är en X-eller-Y-fråga om känslor. Rapporterad, inte
-> rättad.
+> Formen "två vägar" står i konflikt med en regel i nuvarande systemprompt. Se
+> punkt 9 i `_consistency-worklist.md`.
+
+### Hur en fråga formuleras
+
+`conversation-philosophy.md` har regeln: **frågan ska innehålla minst ett ord
+personen själv använt, och ska inte gå att ställa till någon annan.** En fråga som
+passar alla är inte en fråga - det är ett formulär.
+
+Regeln biter olika hårt på de tre typerna:
+
+**Öppen fråga.** Här är risken störst, eftersom öppenhet lätt blir generellt.
+*"Vad var det som hände?"* är öppen men innehållslös. *"Vad hände på mötet?"* är
+lika öppen och kan bara ställas till den här personen.
+
+**Avgränsad fråga.** Blir specifik nästan av sig själv. Kontrollen är i stället om
+det som efterfrågas verkligen behövs - en avgränsad fråga om något oviktigt är ett
+förhör i miniatyr.
+
+**Två tydliga vägar.** Båda alternativen ska komma ur det personen faktiskt sagt,
+inte ur en färdig lista. *"Vill du reda ut det, eller mest bara skriva av dig?"*
+fungerar för att båda är riktningar personen kan känna igen. *"Är det jobbet,
+familjen eller något annat?"* är en påhittad kategorisering.
+
+Undantaget är första svaret, när personen gett för lite för att någon specifik
+fråga ska vara möjlig. Se sektion 5.
 
 ### Undvik
 
-- Flera frågor i samma svar ✅ redan i prompten: *"Max en fråga."*
+- Flera frågor i samma svar
 - Rutinmässig fråga efter varje stycke
 - Frågor som redan besvarats
 - "Hur känns det?" direkt efter att personen beskrivit hur det känns
+- Frågor som ber personen kategorisera sin egen känsla
 
-> **Identifierad motsägelse mot nuvarande prompt.** Prompten anger *"Vad känns
-> tyngst just nu?"* som mönsterexempel på en bra fråga. `conversation-philosophy.md`
-> anger samma fras som exempel på en generisk fråga att undvika, och
-> baslinjemätningen i `conversation-review.md` visar att modellen använde den i
-> replik 1. Rapporterad, inte rättad.
+> Prompten rekommenderar idag en öppen fråga som filosofin avråder från. Se punkt
+> 8 i `_consistency-worklist.md`.
+
+### Status
+
+| Förmåga | Status | Var det finns eller saknas |
+| --- | --- | --- |
+| Högst en fråga per svar | Implementerat | *"Max en fråga."* |
+| Kunna avstå från fråga helt | Implementerat | *"Du behöver inte alltid ställa en fråga."* Tillåtelse, inte villkorsstyrt |
+| Avstå just när personen beskrivit en känsla | Framtida mål | Prompten kopplar inte avståendet till något villkor |
+| Sluta fråga när personen bett om det | Framtida mål | Ingen motsvarighet |
+| Frågan innehåller personens egna ord | Delvis implementerat | Spegelregeln gäller svar i allmänhet, inte frågor specifikt |
+| Två samtalsriktningar som form | Framtida mål | Prompten förbjuder formen. Se punkt 9 i arbetslistan |
 
 ---
 

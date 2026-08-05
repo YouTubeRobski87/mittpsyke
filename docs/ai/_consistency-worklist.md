@@ -126,6 +126,39 @@ det hör till avläsning och inte till formulering.
 
 ---
 
+### 8. Prompten rekommenderar en fråga som filosofin avråder från
+
+Systemprompten anger *"Vad känns tyngst just nu?"* som mönsterexempel på en bra
+öppen fråga.
+
+`conversation-philosophy.md` anger samma fras som exempel på en generisk fråga
+att undvika - en som hade kunnat ställas till vem som helst.
+
+Baslinjemätningen i `conversation-review.md` visar att modellen faktiskt använde
+den i replik 1. Motsägelsen är alltså inte teoretisk.
+
+**Hanteras:** vid migrering av prompten. Flyttad hit från sektion 6.
+
+---
+
+### 9. Prompten förbjuder färdiga alternativ som två dokument rekommenderar
+
+Systemprompten säger: *"Undvik att kategorisera åt användaren med färdiga
+alternativ (t.ex. 'är det X, Y eller Z?')."*
+
+Både `emotional-intelligence.md` sektion 6 och `conversation-philosophy.md`
+rekommenderar formen. Filosofins egen "bättre" fråga - *"Är det saknaden i sig
+som är tyngst, eller det som gjorde att det blev så här?"* - är en X-eller-Y-fråga
+om känslor.
+
+**Distinktionen som behöver in i prompten:** att kategorisera *känslan* åt någon
+("är det oro, ilska eller sorg?") är fel. Att erbjuda två *samtalsriktningar*
+("vill du reda ut det, eller mest bara skriva av dig?") är hjälp.
+
+**Hanteras:** vid migrering av prompten. Flyttad hit från sektion 6.
+
+---
+
 ## Genomgående mönster att bevaka
 
 **Överabsoluta formuleringar.** Genomgången av hela dokumentet visade att det
