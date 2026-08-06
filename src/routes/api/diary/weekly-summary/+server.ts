@@ -3,20 +3,11 @@ import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/public';
-import { env as privateEnv } from '$env/dynamic/private';
 import type { RequestHandler } from '@sveltejs/kit';
-import OpenAI from 'openai';
+import { generateAIText } from '$lib/server/ai/text-generation';
+import { buildWeeklySummarySafetyInstructions } from '$lib/server/ai/safety-instructions';
 
-// Utan gräns kunde ett trögt/nere OpenAI-anrop hänga kvar obegränsat länge -
-// samma mönster som diary/reflect.
-const WEEKLY_SUMMARY_AI_TIMEOUT_MS = 20_000;
 const FALLBACK_SUMMARY = 'Det gick inte att skapa en AI-sammanfattning just nu. Försök gärna igen om en liten stund.';
-
-function getOpenAIClient() {
-	return privateEnv.OPENAI_API_KEY
-		? new OpenAI({ apiKey: privateEnv.OPENAI_API_KEY, timeout: WEEKLY_SUMMARY_AI_TIMEOUT_MS })
-		: null;
-}
 
 function getWeekNumber(date: Date): number {
 	const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -86,29 +77,25 @@ export const POST: RequestHandler = async ({ request }) => {
 			.map((e) => `[${e.date}] Humör: ${e.mood}/10\n${e.content}`)
 			.join('\n\n');
 
-		const openai = getOpenAIClient();
 		// AI-sammanfattningen är en extra krydda ovanpå humörstatistiken, som
-		// redan är klar här. Om OpenAI hänger/timar ut ska hela veckosvaret
+		// redan är klar här. Om AI-tjänsten hänger/timar ut ska hela veckosvaret
 		// (inklusive humörtrenden) fortfarande nå användaren, bara utan text.
 		let summaryText = FALLBACK_SUMMARY;
-		if (openai) {
-			try {
-				const completion = await openai.chat.completions.create({
-					model: 'gpt-4-turbo',
-					messages: [
-						{
-							role: 'user',
-							content: `Du är en empatisk psykolog som läser dagboksinlägg.\n\nAnalysera dessa dagboksinlägg från vecka ${weekNumber} år ${year}:\n\n${entriesText}\n\nSkriv en kort, känslig sammanfattning (2-3 meningar) om användarens mentala tillstånd denna vecka.\nFokusera på känslotrender och övergripande mönster, inte specifika fakta.\nVar uppmuntrande men ärlig. Skriv på svenska. Börja INTE med "Denna vecka".`
-						}
-					],
-					max_tokens: 200,
-					temperature: 0.7
-				});
-				const content = completion.choices[0]?.message?.content?.trim();
-				if (content) summaryText = content;
-			} catch (aiError) {
-				console.error('Weekly summary AI call failed:', aiError);
-			}
+		try {
+			const result = await generateAIText({
+				purpose: 'weekly-summary',
+				systemInstructions: buildWeeklySummarySafetyInstructions(),
+				messages: [
+					{
+						role: 'user',
+						content: `Sammanfatta dagboksinlägg från vecka ${weekNumber} år ${year}.\n\n${entriesText}\n\nSkriv 2–3 meningar på svenska. Fokusera på känslotrender och övergripande mönster, inte specifika fakta. Var uppmuntrande men ärlig. Börja inte med "Denna vecka".`
+					}
+				],
+				temperature: 0.7
+			});
+			summaryText = `AI-genererad reflektion: ${result.text}`;
+		} catch {
+			console.error('Weekly summary AI call failed');
 		}
 
 		return json({

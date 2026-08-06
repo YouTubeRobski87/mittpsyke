@@ -53,3 +53,10 @@ MittPsyke är en svensk mental-wellbeing-plattform där användare kan få AI-ba
 - När juridisk precision krävs: länka till integritetspolicy/ansvarssidor i stället för att överförenkla.
 - Anta inte hur data lagras eller delas utan att kontrollera koden först.
 - Ändra inte integritetsrelaterad copy utan att verifiera faktisk implementation.
+
+## AI-regler
+- Ny eller ändrad AI-produktlogik ska använda det gemensamma serverlagret i `src/lib/server/ai/`; inga direkta provider-SDK-anrop från routes eller komponenter.
+- Återanvänd gemensamma säkerhetsinstruktioner. Krisflödet och skyddet mot upprepat bekräftelsesökande ska alltid ha företräde.
+- Logga eller tracka inte känslig fri text, promptar, samtal eller dagboksinnehåll. Testa modell- och providerbyte med mockad adapter utan produktionsanrop.
+- Dataåtgärder ska alltid följa: föreslå → validera → användaren godkänner → utför. AI får aldrig automatiskt radera, publicera eller dela data.
+- Kontrollera databehandlingsavtal, region och loggning innan ny AI-provider hanterar känsligt innehåll. Märk AI-genererat innehåll tydligt där det visas.

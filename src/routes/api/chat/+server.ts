@@ -18,7 +18,12 @@ import {
 	loadRecentDiaryEntries
 } from '$lib/server/diary-context';
 import { createClient } from '@supabase/supabase-js';
-import OpenAI from 'openai';
+import {
+	AITextGenerationError,
+	generateAIText,
+	type AIMessage
+} from '$lib/server/ai/text-generation';
+import { buildSupportChatSafetyInstructions } from '$lib/server/ai/safety-instructions';
 import { RateLimiter } from '$lib/server/rate-limit';
 import { buildTopicHintInstruction, getTopicHint } from '$lib/ai/chat-topics';
 import { normalizeCategory, type SupportCategory } from '$lib/ai/chat-categories';
@@ -226,15 +231,8 @@ function detectThirdPartyRisk(text: string): boolean {
 // Säkerhetssvaren ligger i $lib/ai/crisis-responses, som ren text.
 // ---------------------------------------------------------------------------
 
-const CHAT_MODEL = (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
-
-// Hindrar OpenAI-anrop från att hänga kvar och äta serverresurser om
-// modellen är trög eller nere - kortare svar hinner alltid klart långt före
-// den här gränsen, så den påverkar inte normala samtal.
-const CHAT_AI_TIMEOUT_MS = 25_000;
-
 // Per-IP gräns (samma mönster som hibp/breaches och diary/reflect): stoppar
-// skriptad spam mot OpenAI utan att störa ett vanligt, aktivt samtal. Körs
+// skriptad spam mot AI-tjänsten utan att störa ett vanligt, aktivt samtal. Körs
 // EFTER kris-/tredjepartsdetekteringen längre ner så en person i akut kris
 // alltid får krissvaret, oavsett hur många meddelanden som skickats innan.
 const CHAT_RATE_LIMIT_WINDOW_MS = 60_000;
@@ -243,25 +241,16 @@ const chatRateLimiter = new RateLimiter(CHAT_RATE_LIMIT_WINDOW_MS, CHAT_RATE_LIM
 const CHAT_RATE_LIMIT_MESSAGE =
 	'Du skickar meddelanden lite för snabbt. Vänta en liten stund och skicka igen.';
 
-function logOpenAIError(context: { guest: boolean; category: SupportCategory; conversationId: string }, err: unknown) {
-	const openaiError = err as {
-		message?: string;
-		status?: number;
-		code?: string;
-		type?: string;
-		error?: unknown;
-	};
-
-	console.error('OpenAI completion failed', {
-		model: CHAT_MODEL,
+function logAIError(
+	context: { guest: boolean; category: SupportCategory; conversationId: string },
+	error: AITextGenerationError
+) {
+	console.error('Chat AI generation failed', {
+		purpose: 'support-chat',
 		guest: context.guest,
 		category: context.category,
 		conversationId: context.conversationId,
-		status: openaiError?.status ?? null,
-		code: openaiError?.code ?? null,
-		type: openaiError?.type ?? null,
-		message: openaiError?.message ?? String(err),
-		error: openaiError?.error ?? null
+		code: error.code
 	});
 }
 
@@ -381,10 +370,10 @@ function logChatPayloadStructure(context: {
 	category: SupportCategory;
 	conversationId: string;
 	contextSource: 'client' | 'database';
-	messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[];
+	messages: AIMessage[];
 }) {
-	console.info('[chat] OpenAI payload structure', {
-		model: CHAT_MODEL,
+	console.info('[chat] AI payload structure', {
+		purpose: 'support-chat',
 		guest: context.guest,
 		category: context.category,
 		conversationId: context.conversationId,
@@ -530,7 +519,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 
 	// Rate limit - placerad EFTER kris-/tredjepartschecken ovan så den aldrig
 	// kan blockera ett akut krissvar, men innan några Supabase- eller
-	// OpenAI-anrop görs.
+	// AI-anrop görs.
 	if (chatRateLimiter.consume(`ip:${getClientAddress()}`)) {
 		return errorResponse(CHAT_RATE_LIMIT_MESSAGE, 429);
 	}
@@ -567,13 +556,10 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		return errorResponse('Server configuration error', 500);
 	}
 
-	const apiKey = normalizeApiKey(env.OPENAI_API_KEY);
-	if (!apiKey) {
+	if (!normalizeApiKey(env.OPENAI_API_KEY)) {
 		console.error('OPENAI_API_KEY is missing or malformed');
 		return errorResponse('Server configuration error', 500);
 	}
-
-	const openai = new OpenAI({ apiKey, timeout: CHAT_AI_TIMEOUT_MS });
 
 	const authClient = createClient(supabaseUrl, supabaseAnonKey, {
 		auth: { autoRefreshToken: false, persistSession: false },
@@ -736,8 +722,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			const systemPromptWithMemory = [systemPrompt, memoryBlock, diaryContextBlock]
 				.filter(Boolean)
 				.join('\n\n');
-			const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-				{ role: 'system', content: systemPromptWithMemory },
+			const completionMessages: AIMessage[] = [
 				...modelContext,
 				{ role: 'user', content: message }
 			];
@@ -748,22 +733,22 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 				contextSource,
 				messages: completionMessages
 			});
-			let completion;
+			let reply: string;
 			try {
-				completion = await openai.chat.completions.create({
-					model: CHAT_MODEL,
+				const result = await generateAIText({
+					purpose: 'support-chat',
+					systemInstructions: [...buildSupportChatSafetyInstructions(), systemPromptWithMemory],
+					messages: completionMessages,
 					temperature: 0.75,
-					max_completion_tokens: 500,
-					frequency_penalty: 0.3,
-					presence_penalty: 0.2,
-					messages: completionMessages
+					frequencyPenalty: 0.3,
+					presencePenalty: 0.2
 				});
-			} catch (openaiError) {
-				logOpenAIError({ guest: false, category, conversationId }, openaiError);
-				throw openaiError;
+				reply = result.text;
+			} catch (error) {
+				const aiError = error instanceof AITextGenerationError ? error : new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.');
+				logAIError({ guest: false, category, conversationId }, aiError);
+				throw aiError;
 			}
-
-			const reply = completion.choices[0]?.message?.content?.trim() ?? 'Något gick fel.';
 
 			const { error: assistantMessageError } = await authClient.from('messages').insert({
 				conversation_id: conversationId,
@@ -791,11 +776,9 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			const memoryTurns = memoryHistory.filter((item) => item.role === 'user').length;
 			if (shouldRefreshUserMemories(memoryTurns)) {
 				void refreshUserMemories({
-					openai,
 					client: authClient,
 					userId: user.id,
-					history: memoryHistory,
-					model: CHAT_MODEL
+					history: memoryHistory
 				}).catch((err) =>
 					console.error('[chat] bakgrundsuppdatering av minne misslyckades', err)
 				);
@@ -931,8 +914,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			topicHintId,
 			reassurancePatternInstruction
 		);
-		const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
-			{ role: 'system', content: systemPrompt },
+		const completionMessages: AIMessage[] = [
 			...modelContext,
 			{ role: 'user', content: message }
 		];
@@ -943,22 +925,22 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			contextSource,
 			messages: completionMessages
 		});
-		let completion;
+		let reply: string;
 		try {
-			completion = await openai.chat.completions.create({
-				model: CHAT_MODEL,
+			const result = await generateAIText({
+				purpose: 'support-chat',
+				systemInstructions: [...buildSupportChatSafetyInstructions(), systemPrompt],
+				messages: completionMessages,
 				temperature: 0.75,
-				max_completion_tokens: 500,
-				frequency_penalty: 0.3,
-				presence_penalty: 0.2,
-				messages: completionMessages
+				frequencyPenalty: 0.3,
+				presencePenalty: 0.2
 			});
-		} catch (openaiError) {
-			logOpenAIError({ guest: true, category, conversationId }, openaiError);
-			throw openaiError;
+			reply = result.text;
+		} catch (error) {
+			const aiError = error instanceof AITextGenerationError ? error : new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.');
+			logAIError({ guest: true, category, conversationId }, aiError);
+			throw aiError;
 		}
-
-		const reply = completion.choices[0]?.message?.content?.trim() ?? 'Något gick fel.';
 
 		const { error: assistantMessageError } = await guestDbClient.from(GUEST_MESSAGES_TABLE).insert({
 			conversation_id: conversationId,
@@ -986,10 +968,10 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		// Lugna, konkreta svenska felmeddelanden istället för ett generiskt
 		// tekniskt fel - särskilja timeout/överbelastning så användaren förstår
 		// att det är tillfälligt och kan försöka igen.
-		if (err instanceof OpenAI.APIConnectionTimeoutError) {
+		if (err instanceof AITextGenerationError && err.code === 'timeout') {
 			return errorResponse('Svaret tog för lång tid just nu. Försök gärna igen om en liten stund.', 504);
 		}
-		if (err instanceof OpenAI.RateLimitError) {
+		if (err instanceof AITextGenerationError && err.code === 'rate_limit') {
 			return errorResponse('Tjänsten är hårt belastad just nu. Vänta en liten stund och försök igen.', 503);
 		}
 		return errorResponse('Något gick fel just nu. Försök gärna igen om en liten stund.', 500);

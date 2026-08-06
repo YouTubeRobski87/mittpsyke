@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type OpenAI from 'openai';
+import { generateAIText } from '$lib/server/ai/text-generation';
 
 // ---------------------------------------------------------------------------
 // Användarminne – korta återkommande teman för kontinuitet mellan samtal.
@@ -160,13 +160,11 @@ function parseMemoryList(raw: string): string[] {
  * fire-and-forget från chatt-endpointen.
  */
 export async function refreshUserMemories(params: {
-	openai: OpenAI;
 	client: SupabaseClient;
 	userId: string;
 	history: MemoryHistoryMessage[];
-	model: string;
 }): Promise<void> {
-	const { openai, client, userId, history, model } = params;
+	const { client, userId, history } = params;
 
 	const userTurns = history.filter((message) => message.role === 'user').length;
 	if (userTurns < MIN_USER_TURNS_FOR_MEMORY) return;
@@ -182,27 +180,26 @@ export async function refreshUserMemories(params: {
 		.map((message) => `${message.role === 'user' ? 'Användare' : 'Stöd'}: ${message.content}`)
 		.join('\n');
 
-	let completion: OpenAI.Chat.Completions.ChatCompletion;
+	let raw: string;
 	try {
-		completion = await openai.chat.completions.create({
-			model,
+		const result = await generateAIText({
+			purpose: 'user-memory',
 			temperature: 0.2,
-			max_completion_tokens: 400,
-			response_format: { type: 'json_object' },
+			outputFormat: 'json_object',
+			systemInstructions: [MEMORY_SYSTEM_PROMPT],
 			messages: [
-				{ role: 'system', content: MEMORY_SYSTEM_PROMPT },
 				{
 					role: 'user',
 					content: `Befintliga teman:\n${existingBlock}\n\nSenaste delen av samtalet:\n${transcript}\n\nReturnera en uppdaterad lista enligt formatet {"memories": ["..."]}.`
 				}
 			]
 		});
-	} catch (err) {
-		console.error('[memory] AI-anrop för minnessammanfattning misslyckades', err);
+		raw = result.text;
+	} catch {
+		console.error('[memory] AI-anrop för minnessammanfattning misslyckades');
 		return;
 	}
 
-	const raw = completion.choices[0]?.message?.content ?? '';
 	const memories = parseMemoryList(raw);
 	if (memories.length === 0) return;
 
