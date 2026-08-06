@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
 	canShowCompanionVisitorAtViewport,
+	COMPANION_VISITOR_MAX_DURATION_MS,
+	COMPANION_VISITOR_MIN_DURATION_MS,
 	COMPANION_VISITOR_MIN_PAUSE_MS,
+	COMPANION_VISITOR_SLEEP_MAX_DURATION_MS,
+	COMPANION_VISITOR_SLEEP_MIN_DURATION_MS,
 	getCompanionVisitorAsset,
 	getCompanionVisitorPosition,
-	getCompanionVisitorState
+	getCompanionVisitorState,
+	type CompanionVisitorAssets
 } from './companionVisitor';
 
 class MemoryStorage implements Storage {
@@ -19,81 +24,179 @@ class MemoryStorage implements Storage {
 
 const DAYTIME_FOX = { mainCompanionId: 'fox', isSleeping: false, sceneAllowsVisitor: true };
 const DAYTIME_BEAR = { mainCompanionId: 'bear', isSleeping: false, sceneAllowsVisitor: true };
+const SLEEPING_FOX = { mainCompanionId: 'fox', isSleeping: true, sceneAllowsVisitor: true };
+const SLEEPING_BEAR = { mainCompanionId: 'bear', isSleeping: true, sceneAllowsVisitor: true };
 const now = 1_700_000_000_000;
 const alwaysVisit = () => 0;
 
-describe('tillfälliga companion-besök', () => {
-	it('visar ingen besökare när huvudföljeslagaren sover', () => {
-		const storage = new MemoryStorage();
-		const state = getCompanionVisitorState({ ...DAYTIME_FOX, isSleeping: true }, now, storage, alwaysVisit);
+const ASSETS_WITHOUT_SLEEPING_BEAR: CompanionVisitorAssets = {
+	awake: {
+		fox: '/fox-awake.png',
+		bear: '/bear-awake.png'
+	},
+	sleeping: {
+		fox: '/fox-sleeping.png'
+	}
+};
+
+describe('tillfalliga companion-besok', () => {
+	it('kan visa en sovande besokare nar huvudfoljeslagaren sover', () => {
+		const state = getCompanionVisitorState(SLEEPING_FOX, now, new MemoryStorage(), alwaysVisit);
+
+		expect(state.visitorId).toBe('bear');
+		expect(state.visitorType).toBe('sleeping');
+	});
+
+	it('anvander endast en riktig sovpose for sovbesok', () => {
+		expect(getCompanionVisitorAsset('fox', 'sleeping')).toBe(
+			'/images/avatars/presets/fox-realistic-sleeping-curled.png'
+		);
+		expect(getCompanionVisitorAsset('bear', 'sleeping')).toBe(
+			'/images/avatars/presets/bear-sleeping.png'
+		);
+	});
+
+	it('visar ingen sovande besokare om den korrekta sovposen saknas', () => {
+		const state = getCompanionVisitorState(
+			SLEEPING_FOX,
+			now,
+			new MemoryStorage(),
+			alwaysVisit,
+			ASSETS_WITHOUT_SLEEPING_BEAR
+		);
+
 		expect(state.visitorId).toBeNull();
+		expect(state.visitorType).toBeNull();
 	});
 
-	it('väljer inte om besökaren vid varje render och behåller besöket under tidsfönstret', () => {
-		const storage = new MemoryStorage();
-		const first = getCompanionVisitorState(DAYTIME_FOX, now, storage, alwaysVisit);
-		const rerender = getCompanionVisitorState(DAYTIME_FOX, now + 5 * 60 * 1000, storage, () => 0.99);
+	it('anvander aldrig en vaken pose som fallback for sovbesok', () => {
+		expect(getCompanionVisitorAsset('bear', 'sleeping', ASSETS_WITHOUT_SLEEPING_BEAR)).toBeNull();
+		expect(getCompanionVisitorAsset('bear', 'awake', ASSETS_WITHOUT_SLEEPING_BEAR)).toBe(
+			'/bear-awake.png'
+		);
+	});
 
-		expect(first.visitorId).toBe('bear');
+	it('behaller sovbesoket stabilt mellan renders och under tidsfonstret', () => {
+		const storage = new MemoryStorage();
+		const first = getCompanionVisitorState(SLEEPING_FOX, now, storage, alwaysVisit);
+		const rerender = getCompanionVisitorState(
+			SLEEPING_FOX,
+			now + 5 * 60 * 1000,
+			storage,
+			() => 0.99
+		);
+
 		expect(rerender).toEqual(first);
-		expect(first.endsAt).toBeGreaterThan(now + 20 * 60 * 1000 - 1);
-		expect(first.endsAt).toBeLessThanOrEqual(now + 40 * 60 * 1000);
+		expect(first.endsAt).toBeGreaterThan(now + COMPANION_VISITOR_SLEEP_MIN_DURATION_MS - 1);
+		expect(first.endsAt).toBeLessThanOrEqual(now + COMPANION_VISITOR_SLEEP_MAX_DURATION_MS);
 	});
 
-	it('tar bort besökaren efter slutet och spärrar nytt besök fram till nextEligibleAt', () => {
+	it('tar bort sovbesoket efter sluttiden och respekterar cooldown', () => {
 		const storage = new MemoryStorage();
-		const visit = getCompanionVisitorState(DAYTIME_FOX, now, storage, alwaysVisit);
-		const expired = getCompanionVisitorState(DAYTIME_FOX, visit.endsAt!, storage, alwaysVisit);
-		const tooEarly = getCompanionVisitorState(DAYTIME_FOX, expired.nextEligibleAt - 1, storage, alwaysVisit);
+		const visit = getCompanionVisitorState(SLEEPING_FOX, now, storage, alwaysVisit);
+		const expired = getCompanionVisitorState(SLEEPING_FOX, visit.endsAt!, storage, alwaysVisit);
+		const tooEarly = getCompanionVisitorState(
+			SLEEPING_FOX,
+			expired.nextEligibleAt - 1,
+			storage,
+			alwaysVisit
+		);
 
 		expect(expired.visitorId).toBeNull();
 		expect(expired.nextEligibleAt).toBe(visit.endsAt! + COMPANION_VISITOR_MIN_PAUSE_MS);
 		expect(tooEarly.visitorId).toBeNull();
 	});
 
-	it('väljer alltid det andra djuret, aldrig en kopia av huvudföljeslagaren', () => {
-		expect(getCompanionVisitorState(DAYTIME_FOX, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('bear');
-		expect(getCompanionVisitorState(DAYTIME_BEAR, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('fox');
+	it('paverkar inte huvudfoljeslagarens pose eller val', () => {
+		const mainCompanion = { ...SLEEPING_BEAR };
+		const state = getCompanionVisitorState(mainCompanion, now, new MemoryStorage(), alwaysVisit);
+
+		expect(mainCompanion).toEqual(SLEEPING_BEAR);
+		expect(state.visitorId).toBe('fox');
+		expect(state.visitorType).toBe('sleeping');
 	});
 
-	it('har säker asset-fallback och låter inte en saknad art renderas', () => {
-		expect(getCompanionVisitorAsset('fox')).toContain('fox-realistic-resting-sitting.png');
-		expect(getCompanionVisitorAsset('bear')).toContain('bear-sitting.png');
-		expect(getCompanionVisitorAsset('wolf')).toBeNull();
+	it('behaller vakna besok enligt de befintliga reglerna', () => {
+		const storage = new MemoryStorage();
+		const first = getCompanionVisitorState(DAYTIME_FOX, now, storage, alwaysVisit);
+		const rerender = getCompanionVisitorState(DAYTIME_FOX, now + 5 * 60 * 1000, storage, () => 0.99);
+
+		expect(first.visitorId).toBe('bear');
+		expect(first.visitorType).toBe('awake');
+		expect(rerender).toEqual(first);
+		expect(first.endsAt).toBeGreaterThan(now + COMPANION_VISITOR_MIN_DURATION_MS - 1);
+		expect(first.endsAt).toBeLessThanOrEqual(now + COMPANION_VISITOR_MAX_DURATION_MS);
 	});
 
-	it('ändrar inte huvudföljeslagarens val och avslutar säkert vid ett byte', () => {
+	it('avslutar sakert om huvudfoljeslagaren byts medan ett besok ar aktivt', () => {
 		const storage = new MemoryStorage();
 		getCompanionVisitorState(DAYTIME_FOX, now, storage, alwaysVisit);
-		const afterMainCompanionChange = getCompanionVisitorState(DAYTIME_BEAR, now + 1, storage, alwaysVisit);
+		const afterMainCompanionChange = getCompanionVisitorState(
+			DAYTIME_BEAR,
+			now + 1,
+			storage,
+			alwaysVisit
+		);
 
-		expect(DAYTIME_BEAR.mainCompanionId).toBe('bear');
 		expect(afterMainCompanionChange.visitorId).toBeNull();
+		expect(afterMainCompanionChange.visitorType).toBeNull();
 	});
 
-	it('använder separat scenposition och återställer samma besök vid navigation', () => {
+	it('avslutar ett aktivt vaket besok vid somn utan att starta sovbesok i samma utvardering', () => {
 		const storage = new MemoryStorage();
-		const dashboardVisit = getCompanionVisitorState(DAYTIME_FOX, now, storage, alwaysVisit);
-		const progressVisit = getCompanionVisitorState(DAYTIME_FOX, now + 1_000, storage, () => 0.99);
-		const dashboardPosition = getCompanionVisitorPosition('dashboard');
-		const progressPosition = getCompanionVisitorPosition('progress');
+		const awake = getCompanionVisitorState(DAYTIME_FOX, now, storage, alwaysVisit);
+		const transition = getCompanionVisitorState(SLEEPING_FOX, now + 1, storage, alwaysVisit);
+		const sameWindow = getCompanionVisitorState(SLEEPING_FOX, now + 2, storage, alwaysVisit);
+		const afterStableWindow = getCompanionVisitorState(
+			SLEEPING_FOX,
+			transition.nextEligibleAt,
+			storage,
+			alwaysVisit
+		);
+
+		expect(awake.visitorType).toBe('awake');
+		expect(transition.visitorId).toBeNull();
+		expect(transition.nextEligibleAt).toBe(awake.nextEligibleAt);
+		expect(sameWindow.visitorId).toBeNull();
+		expect(afterStableWindow.visitorType).toBe('sleeping');
+	});
+
+	it('valjer alltid det andra djuret, aldrig en kopia av huvudfoljeslagaren', () => {
+		expect(getCompanionVisitorState(DAYTIME_FOX, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('bear');
+		expect(getCompanionVisitorState(DAYTIME_BEAR, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('fox');
+		expect(getCompanionVisitorState(SLEEPING_FOX, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('bear');
+		expect(getCompanionVisitorState(SLEEPING_BEAR, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('fox');
+	});
+
+	it('anvander separata sovpositioner och behaller sovbesoket mellan Mitt Hem och Framsteg', () => {
+		const storage = new MemoryStorage();
+		const dashboardVisit = getCompanionVisitorState(SLEEPING_FOX, now, storage, alwaysVisit);
+		const progressVisit = getCompanionVisitorState(SLEEPING_FOX, now + 1_000, storage, () => 0.99);
+		const dashboardPosition = getCompanionVisitorPosition('dashboard', 'sleeping');
+		const progressPosition = getCompanionVisitorPosition('progress', 'sleeping');
 
 		expect(progressVisit).toEqual(dashboardVisit);
 		expect(progressPosition).not.toEqual(dashboardPosition);
 		expect(progressPosition.x).toBeLessThan(50);
+		expect(progressPosition.zIndex).toBeLessThan(2);
 	});
 
-	it('döljs i mobilvy för att undvika trång scen och overflow', () => {
+	it('doljs i mobilvy for att undvika trang scen och overflow', () => {
 		expect(canShowCompanionVisitorAtViewport(320)).toBe(false);
 		expect(canShowCompanionVisitorAtViewport(375)).toBe(false);
 		expect(canShowCompanionVisitorAtViewport(768)).toBe(true);
 	});
 
-	it('döljs när scenen redan är olämpligt fylld utan att radera sessionstillståndet', () => {
+	it('doljs nar scenen ar olampligt fylld utan att radera sessionstillstandet', () => {
 		const storage = new MemoryStorage();
-		const visit = getCompanionVisitorState(DAYTIME_FOX, now, storage, alwaysVisit);
-		const hidden = getCompanionVisitorState({ ...DAYTIME_FOX, sceneAllowsVisitor: false }, now + 1, storage, alwaysVisit);
-		const returned = getCompanionVisitorState(DAYTIME_FOX, now + 2, storage, alwaysVisit);
+		const visit = getCompanionVisitorState(SLEEPING_FOX, now, storage, alwaysVisit);
+		const hidden = getCompanionVisitorState(
+			{ ...SLEEPING_FOX, sceneAllowsVisitor: false },
+			now + 1,
+			storage,
+			alwaysVisit
+		);
+		const returned = getCompanionVisitorState(SLEEPING_FOX, now + 2, storage, alwaysVisit);
 
 		expect(hidden.visitorId).toBeNull();
 		expect(returned).toEqual(visit);

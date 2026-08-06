@@ -5,7 +5,8 @@
 		getCompanionVisitorPosition,
 		getCompanionVisitorState,
 		canShowCompanionVisitorAtViewport,
-		type CompanionVisitorId
+		type CompanionVisitorId,
+		type CompanionVisitorType
 	} from '$lib/companionVisitor';
 
 	let {
@@ -23,10 +24,11 @@
 	} = $props();
 
 	let visitorId = $state<CompanionVisitorId | null>(null);
+	let visitorType = $state<CompanionVisitorType | null>(null);
 	let hasFailed = $state(false);
 	let viewportAllowsVisitor = $state(false);
-	const asset = $derived(getCompanionVisitorAsset(visitorId));
-	const position = $derived(getCompanionVisitorPosition(scene));
+	const asset = $derived(getCompanionVisitorAsset(visitorId, visitorType));
+	const position = $derived(getCompanionVisitorPosition(scene, visitorType ?? 'awake'));
 
 	function refreshVisitor() {
 		const state = getCompanionVisitorState(
@@ -35,6 +37,7 @@
 			window.sessionStorage
 		);
 		visitorId = state.visitorId;
+		visitorType = state.visitorType;
 		hasFailed = false;
 	}
 
@@ -63,12 +66,13 @@
 	});
 </script>
 
-{#if visitorId && asset && !hasFailed}
+{#if visitorId && visitorType && asset && !hasFailed}
 	<figure
 		class={`companion-visitor ${className}`.trim()}
 		data-visitor={visitorId}
+		data-visitor-type={visitorType}
 		data-scene={scene}
-		style={`--visitor-x: ${position.x}%; --visitor-y: ${position.y}%; --visitor-z: ${position.zIndex};`}
+		style={`--visitor-x: ${position.x}%; --visitor-y: ${position.y}%; --visitor-z: ${position.zIndex}; --visitor-scale: ${position.scale};`}
 		aria-hidden="true"
 	>
 		<img class="companion-visitor-image" src={asset} alt="" decoding="async" onerror={() => (hasFailed = true)} />
@@ -84,7 +88,7 @@
 		width: min(18%, 142px);
 		aspect-ratio: 1;
 		margin: 0;
-		transform: translate3d(-50%, -100%, 0);
+		transform: translate3d(-50%, -100%, 0) scale(var(--visitor-scale));
 		transform-origin: 50% 100%;
 		pointer-events: none;
 		overflow: clip;
@@ -109,6 +113,14 @@
 
 	.companion-visitor:global(.progress-companion-visitor) {
 		width: clamp(46px, 8%, 86px);
+	}
+
+	.companion-visitor[data-visitor-type='sleeping'] {
+		width: min(16%, 124px);
+	}
+
+	.companion-visitor[data-visitor-type='sleeping']:global(.progress-companion-visitor) {
+		width: clamp(42px, 7%, 76px);
 	}
 
 	@media (max-width: 640px) {
