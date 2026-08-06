@@ -10,6 +10,7 @@
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
 	import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
+	import CompanionVisitor from '$lib/components/world/CompanionVisitor.svelte';
 	import {
 		COMPANION_WORLD_SCENE_IMAGE,
 		COMPANION_WORLD_SCENE_SRCSET,
@@ -919,6 +920,13 @@
 					 och animera med canopySway (AmbientWorld.svelte). -->
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
 				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} decorative />
+				<CompanionVisitor
+					class="progress-companion-visitor"
+					mainCompanionId={sceneCompanionId}
+					isSleeping={timeOfDay === 'night' || companionBasePose?.id.includes('sleep') === true}
+					scene="progress"
+					sceneAllowsVisitor={!isAnonymous && !(sceneCompanionId === 'fox' && companionRelationshipStage >= 2)}
+				/>
 				<span class="companion-foreground-edge" aria-hidden="true"></span>
 				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
 				<CompanionFriend class="progress-companion-friend" companionId={sceneCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />

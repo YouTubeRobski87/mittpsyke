@@ -6,6 +6,7 @@
   import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
   import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
   import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
+  import CompanionVisitor from '$lib/components/world/CompanionVisitor.svelte';
   import {
     ArrowRight,
     ChevronDown,
@@ -17,6 +18,7 @@
   } from 'lucide-svelte';
   import {
     getDashboardCompanionScene,
+    getProgressCompanionDayState,
     COMPANION_WORLD_SCENE_IMAGE,
     COMPANION_WORLD_SCENE_SRCSET,
     COMPANION_WORLD_SCENE_BACKDROP,
@@ -117,6 +119,11 @@
   const companionHeroAlt =
   'En vaken, nyfiken räv sitter vid ett träd i en varm och stillsam naturmiljö vid en sjö';
   const companionBadgeMessage = $derived(localCompanionScene?.greeting ?? null);
+  // Uppdateras tillsammans med den lokala scenen, så besökaren följer samma
+  // nattdefinition som huvudföljeslagarens poser.
+  const heroCompanionIsSleeping = $derived(
+    localCompanionScene !== null && getProgressCompanionDayState() === 'night'
+  );
   // Ikonen ska följa hälsningen — "God natt" fick tidigare alltid en solikon.
   const CompanionBadgeIcon = $derived(
     companionBadgeMessage?.label === 'God morgon'
@@ -205,6 +212,13 @@
                 ? WOLF_SCENE_PLACEMENTS.dashboard
                 : null
           }
+        />
+        <CompanionVisitor
+          class="hero-companion-visitor"
+          mainCompanionId={heroCompanionId}
+          isSleeping={heroCompanionIsSleeping}
+          scene="dashboard"
+          sceneAllowsVisitor={!isAnonymous && Boolean(localCompanionScene) && !(heroCompanionId === 'fox' && companionRelationshipStage >= 2)}
         />
         <AmbientWorld scene={livingWorldScene} class="hero-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
         <CompanionFriend class="hero-companion-friend" companionId={heroCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
