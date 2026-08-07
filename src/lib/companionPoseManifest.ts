@@ -456,5 +456,19 @@ export const COMPANION_SCENE_CONTEXT_POSITION_IDS: Record<
 	progress: ['foreground-right', 'shore-near', 'shore-far']
 };
 
+/**
+ * Andel av dashboardhjältens bredd, räknat från vänsterkanten, som garanterat
+ * är fri från både följeslagare och besökare. Hjältetexten får aldrig bli
+ * bredare än så.
+ *
+ * Värdet är inte godtyckligt och får inte höjas på känsla: testet i
+ * companionPoseState.test.ts räknar fram den västligaste kant någon tillåten
+ * dashboardposition kan nå (idag det vakna besöket på x 52 %) och faller om en
+ * ny position, pose eller placement skulle krympa marginalen under det här
+ * talet. Hjältetexten vet alltså ingenting om var djuret står - den vet bara
+ * hur mycket yta scenen lovar att lämna ifred.
+ */
+export const COMPANION_DASHBOARD_COPY_SAFE_WIDTH_PCT = 40;
+
 export const COMPANION_POSE_CHANGE_MIN_MS = 20 * 60 * 1000;
 export const COMPANION_POSE_CHANGE_MAX_MS = 40 * 60 * 1000;

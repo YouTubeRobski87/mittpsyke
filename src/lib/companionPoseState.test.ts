@@ -10,8 +10,16 @@ import {
 	qualifiesAsCompanionReturn,
 	recordCompanionSeen
 } from './companionPoseState';
-import { COMPANION_SCENE_CONTEXT_POSITION_IDS } from './companionPoseManifest';
+import {
+	BEAR_SCENE_PLACEMENTS,
+	COMPANION_DASHBOARD_COPY_SAFE_WIDTH_PCT,
+	COMPANION_POSES,
+	COMPANION_SCENE_CONTEXT_POSITION_IDS,
+	COMPANION_SCENE_POSITIONS,
+	WOLF_SCENE_PLACEMENTS
+} from './companionPoseManifest';
 import type { CompanionId, CompanionPoseDaypart } from './companionPoseManifest';
+import { getCompanionVisitorPosition } from './companionVisitor';
 
 // Minimal Storage-implementation i minnet, samma mönster som redan används
 // för localStorage-beroende kod i chat-handoff.test.ts.
@@ -125,6 +133,66 @@ describe('getCompanionScenePosition', () => {
 				}
 			}
 		}
+	});
+});
+
+// Hjältetexten på Mitt Hem ligger i vänsterkanten och får inte kollidera med
+// vare sig följeslagaren eller besökaren. Den vet inget om var djuren står -
+// den litar på COMPANION_DASHBOARD_COPY_SAFE_WIDTH_PCT. Det här testet är det
+// som gör löftet sant: det räknar fram den västligaste kant scenen faktiskt kan
+// producera och faller om en ny position, pose eller placement kryper in över
+// textens yta. Faller det ska texten smalnas av - inte konstanten höjas.
+describe('dashboardscenens fria yta för hjältetexten', () => {
+	// Figurernas bredder är CSS (CompanionPose.svelte respektive
+	// CompanionVisitor.svelte). Värdena här är de procentuella taken, som är
+	// worst case: px-taken (310/142/124) ger en mindre andel så fort hjälten är
+	// bredare än ~795 px.
+	const POSE_WIDTH_PCT = 39;
+	const VISITOR_AWAKE_WIDTH_PCT = 18;
+	const VISITOR_SLEEPING_WIDTH_PCT = 16;
+
+	const placementFor = (companionId: CompanionId) =>
+		companionId === 'bear'
+			? BEAR_SCENE_PLACEMENTS.dashboard
+			: companionId === 'wolf'
+				? WOLF_SCENE_PLACEMENTS.dashboard
+				: null;
+
+	function westernmostCompanionEdge() {
+		let edge = 100;
+		for (const position of COMPANION_SCENE_POSITIONS) {
+			if (!COMPANION_SCENE_CONTEXT_POSITION_IDS.dashboard.includes(position.id)) continue;
+			for (const pose of COMPANION_POSES) {
+				if (pose.role !== 'base' || !position.allowedPoseIds.includes(pose.id)) continue;
+				const placement = placementFor(pose.companionId ?? 'fox');
+				// Samma kedja som positionStyle i CompanionPose.svelte.
+				const scale = position.scale * (pose.sceneAdjustment?.scale ?? 1) * (placement?.scale ?? 1);
+				const centerX = (placement?.x ?? position.x) + (pose.sceneAdjustment?.x ?? 0);
+				edge = Math.min(edge, centerX - (POSE_WIDTH_PCT / 2) * scale);
+			}
+		}
+		return edge;
+	}
+
+	function westernmostVisitorEdge() {
+		const awake = getCompanionVisitorPosition('dashboard', 'awake');
+		const sleeping = getCompanionVisitorPosition('dashboard', 'sleeping');
+		return Math.min(
+			awake.x - (VISITOR_AWAKE_WIDTH_PCT / 2) * awake.scale,
+			sleeping.x - (VISITOR_SLEEPING_WIDTH_PCT / 2) * sleeping.scale
+		);
+	}
+
+	it('lämnar hjältetextens yta fri för varje tillåten pose och position', () => {
+		expect(westernmostCompanionEdge()).toBeGreaterThanOrEqual(
+			COMPANION_DASHBOARD_COPY_SAFE_WIDTH_PCT
+		);
+	});
+
+	it('lämnar hjältetextens yta fri för både vaket och sovande besök', () => {
+		expect(westernmostVisitorEdge()).toBeGreaterThanOrEqual(
+			COMPANION_DASHBOARD_COPY_SAFE_WIDTH_PCT
+		);
 	});
 });
 
