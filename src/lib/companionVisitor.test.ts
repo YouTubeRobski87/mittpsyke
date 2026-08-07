@@ -168,7 +168,7 @@ describe('tillfalliga companion-besok', () => {
 		expect(getCompanionVisitorState(SLEEPING_BEAR, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('fox');
 	});
 
-	it('anvander separata sovpositioner och behaller sovbesoket mellan Mitt Hem och Framsteg', () => {
+	it('anvander separata landpositioner for sovbesok och behaller besoket mellan Mitt Hem och Framsteg', () => {
 		const storage = new MemoryStorage();
 		const dashboardVisit = getCompanionVisitorState(SLEEPING_FOX, now, storage, alwaysVisit);
 		const progressVisit = getCompanionVisitorState(SLEEPING_FOX, now + 1_000, storage, () => 0.99);
@@ -177,8 +177,10 @@ describe('tillfalliga companion-besok', () => {
 
 		expect(progressVisit).toEqual(dashboardVisit);
 		expect(progressPosition).not.toEqual(dashboardPosition);
-		expect(progressPosition.x).toBeLessThan(50);
-		expect(progressPosition.zIndex).toBeLessThan(2);
+		expect(dashboardPosition).toEqual({ x: 60, y: 81, zIndex: 2, scale: 0.88 });
+		expect(progressPosition).toEqual({ x: 84, y: 68, zIndex: 3, scale: 0.86 });
+		expect(progressPosition.x).toBeGreaterThan(80);
+		expect(progressPosition.y).toBeLessThan(70);
 	});
 
 	it('doljs i mobilvy for att undvika trang scen och overflow', () => {

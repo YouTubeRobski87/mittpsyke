@@ -209,8 +209,8 @@ export function getCompanionVisitorPosition(
 ) {
 	if (visitorType === 'sleeping') {
 		return scene === 'dashboard'
-			? { x: 39, y: 84, zIndex: 1, scale: 0.82 }
-			: { x: 33, y: 78, zIndex: 1, scale: 0.76 };
+			? { x: 60, y: 81, zIndex: 2, scale: 0.88 }
+			: { x: 84, y: 68, zIndex: 3, scale: 0.86 };
 	}
 
 	return scene === 'dashboard'
