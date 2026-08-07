@@ -12,7 +12,7 @@
 		title: string;
 		excerpt: string;
 	};
-	type HybridContentType = 'article' | 'guide' | 'pillar' | 'faq' | 'support-line';
+	type HybridContentType = 'article' | 'guide' | 'tool' | 'pillar' | 'faq' | 'support-line';
 	type HybridResult = {
 		contentType: HybridContentType;
 		title: string;
@@ -31,6 +31,7 @@
 	const CONTENT_TYPE_LABELS: Record<HybridContentType, string> = {
 		article: 'Artikel',
 		guide: 'Guide',
+		tool: 'Övning',
 		pillar: 'Ämne',
 		faq: 'Vanlig fråga',
 		'support-line': 'Stödlinje'
