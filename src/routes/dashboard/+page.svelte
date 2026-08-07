@@ -218,7 +218,7 @@
           mainCompanionId={heroCompanionId}
           isSleeping={heroCompanionIsSleeping}
           scene="dashboard"
-          sceneAllowsVisitor={!isAnonymous && Boolean(localCompanionScene) && !(heroCompanionId === 'fox' && companionRelationshipStage >= 2)}
+          sceneAllowsVisitor={Boolean(localCompanionScene)}
         />
         <AmbientWorld scene={livingWorldScene} class="hero-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
         <CompanionFriend class="hero-companion-friend" companionId={heroCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />

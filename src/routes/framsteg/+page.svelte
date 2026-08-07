@@ -925,7 +925,7 @@
 					mainCompanionId={sceneCompanionId}
 					isSleeping={timeOfDay === 'night' || companionBasePose?.id.includes('sleep') === true}
 					scene="progress"
-					sceneAllowsVisitor={!isAnonymous && !(sceneCompanionId === 'fox' && companionRelationshipStage >= 2)}
+					sceneAllowsVisitor={true}
 				/>
 				<span class="companion-foreground-edge" aria-hidden="true"></span>
 				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />

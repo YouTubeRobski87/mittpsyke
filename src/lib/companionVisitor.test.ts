@@ -31,6 +31,8 @@ const DAYTIME_FOX = { mainCompanionId: 'fox', isSleeping: false, sceneAllowsVisi
 const DAYTIME_BEAR = { mainCompanionId: 'bear', isSleeping: false, sceneAllowsVisitor: true };
 const SLEEPING_FOX = { mainCompanionId: 'fox', isSleeping: true, sceneAllowsVisitor: true };
 const SLEEPING_BEAR = { mainCompanionId: 'bear', isSleeping: true, sceneAllowsVisitor: true };
+const ANONYMOUS_FOX = { ...DAYTIME_FOX, isAnonymous: true };
+const ANONYMOUS_SLEEPING_FOX = { ...SLEEPING_FOX, isAnonymous: true };
 const now = 1_700_000_000_000;
 const alwaysVisit = () => 0;
 
@@ -50,6 +52,37 @@ describe('tillfalliga companion-besok', () => {
 
 		expect(state.visitorId).toBe('bear');
 		expect(state.visitorType).toBe('sleeping');
+	});
+
+	it('later anonyma anvandare fa vakna besok nar scenen ar eligible', () => {
+		const state = getCompanionVisitorState(ANONYMOUS_FOX, now, new MemoryStorage(), alwaysVisit);
+
+		expect(state).toMatchObject({ visitorId: 'bear', visitorType: 'awake' });
+	});
+
+	it('later anonyma anvandare fa sovbesok nar scenen ar eligible', () => {
+		const state = getCompanionVisitorState(
+			ANONYMOUS_SLEEPING_FOX,
+			now,
+			new MemoryStorage(),
+			alwaysVisit
+		);
+
+		expect(state).toMatchObject({ visitorId: 'bear', visitorType: 'sleeping' });
+	});
+
+	it('later relationsniva 2 eller hogre fa besok nar scenen ar eligible', () => {
+		for (const relationshipStage of [2, 3, 4]) {
+			const bondedFox = { ...DAYTIME_FOX, relationshipStage };
+			const state = getCompanionVisitorState(
+				bondedFox,
+				now,
+				new MemoryStorage(),
+				alwaysVisit
+			);
+
+			expect(state).toMatchObject({ visitorId: 'bear', visitorType: 'awake' });
+		}
 	});
 
 	it('anvander endast en riktig sovpose for sovbesok', () => {
@@ -235,7 +268,7 @@ describe('tillfalliga companion-besok', () => {
 
 	it('returnerar renderbeslut nar alla villkor ar uppfyllda', () => {
 		const state = startCompanionVisitorDebugVisit('fox', 'awake', now, new MemoryStorage());
-		const diagnostics = getCompanionVisitorRenderDiagnostics(DAYTIME_FOX, state, true, false, now);
+		const diagnostics = getCompanionVisitorRenderDiagnostics(ANONYMOUS_FOX, state, true, false, now);
 
 		expect(diagnostics).toEqual({
 			assetAvailable: true,
