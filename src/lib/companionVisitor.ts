@@ -20,6 +20,22 @@ export type CompanionVisitorContext = {
 	sceneAllowsVisitor: boolean;
 };
 
+export type CompanionVisitorBlockReason =
+	| 'rendering'
+	| 'viewport-too-narrow'
+	| 'scene-ineligible'
+	| 'unsupported-main-companion'
+	| 'missing-asset'
+	| 'asset-load-failed'
+	| 'cooldown-active'
+	| 'no-active-visit';
+
+export type CompanionVisitorRenderDiagnostics = {
+	assetAvailable: boolean;
+	blockingReason: CompanionVisitorBlockReason;
+	shouldRender: boolean;
+};
+
 export const COMPANION_VISITOR_MIN_DURATION_MS = 20 * 60 * 1000;
 export const COMPANION_VISITOR_MAX_DURATION_MS = 40 * 60 * 1000;
 export const COMPANION_VISITOR_SLEEP_MIN_DURATION_MS = 30 * 60 * 1000;
@@ -192,6 +208,78 @@ export function getCompanionVisitorState(
 		endsAt: now + duration,
 		nextEligibleAt: now + duration + COMPANION_VISITOR_MIN_PAUSE_MS
 	});
+}
+
+/** Rensar bara det lokala visitor-tillståndet; används av dev-diagnostiken. */
+export function clearCompanionVisitorState(storage: Storage | null): void {
+	storage?.removeItem(STORAGE_KEY);
+}
+
+/** Läser det persisterade sessionsstate:t utan att omvärdera ett besök. */
+export function getStoredCompanionVisitorState(storage: Storage | null): CompanionVisitorState {
+	return parseState(storage?.getItem(STORAGE_KEY) ?? null);
+}
+
+/**
+ * Skapar ett deterministiskt lokalt testbesök. Funktionen anropas enbart av
+ * den development-only panelen och ändrar inte det normala urvalet.
+ */
+export function startCompanionVisitorDebugVisit(
+	mainCompanionId: string,
+	visitorType: CompanionVisitorType,
+	now = Date.now(),
+	storage: Storage | null = null,
+	assets: CompanionVisitorAssets = VISITOR_ASSETS
+): CompanionVisitorState {
+	const visitorId = getVisitorFor(mainCompanionId);
+	if (!visitorId || !getCompanionVisitorAsset(visitorId, visitorType, assets)) {
+		return persistState(storage, { ...EMPTY_STATE, nextEligibleAt: now });
+	}
+
+	const duration = getVisitDuration(visitorType, () => 0);
+	return persistState(storage, {
+		visitorId,
+		visitorType,
+		startedAt: now,
+		endsAt: now + duration,
+		nextEligibleAt: now + duration + COMPANION_VISITOR_MIN_PAUSE_MS
+	});
+}
+
+/**
+ * Ren diagnos av samma slutvillkor som renderingen använder. Den muterar
+ * inte state och används endast av development-only debugpanelen.
+ */
+export function getCompanionVisitorRenderDiagnostics(
+	context: CompanionVisitorContext,
+	state: CompanionVisitorState,
+	viewportAllowsVisitor: boolean,
+	hasFailedAsset: boolean,
+	now = Date.now(),
+	assets: CompanionVisitorAssets = VISITOR_ASSETS
+): CompanionVisitorRenderDiagnostics {
+	const assetAvailable = Boolean(getCompanionVisitorAsset(state.visitorId, state.visitorType, assets));
+	if (!viewportAllowsVisitor) return { assetAvailable, blockingReason: 'viewport-too-narrow', shouldRender: false };
+	if (!context.sceneAllowsVisitor) return { assetAvailable, blockingReason: 'scene-ineligible', shouldRender: false };
+	if (!getVisitorFor(context.mainCompanionId)) {
+		return { assetAvailable, blockingReason: 'unsupported-main-companion', shouldRender: false };
+	}
+	if (state.visitorId && state.visitorType && !assetAvailable) {
+		return { assetAvailable, blockingReason: 'missing-asset', shouldRender: false };
+	}
+	if (hasFailedAsset) return { assetAvailable, blockingReason: 'asset-load-failed', shouldRender: false };
+	if (state.visitorId && state.visitorType && assetAvailable) {
+		return { assetAvailable, blockingReason: 'rendering', shouldRender: true };
+	}
+	if (state.nextEligibleAt > now) {
+		return { assetAvailable, blockingReason: 'cooldown-active', shouldRender: false };
+	}
+	return { assetAvailable, blockingReason: 'no-active-visit', shouldRender: false };
+}
+
+/** Query-parametern gäller bara i en development-build. */
+export function isCompanionVisitorDebugEnabled(search: string, isDevelopment: boolean): boolean {
+	return isDevelopment && new URLSearchParams(search).get('debugVisitor') === '1';
 }
 
 /** Returnerar aldrig en vaken pose som reserv för ett sovbesök. */

@@ -6,9 +6,14 @@ import {
 	COMPANION_VISITOR_MIN_PAUSE_MS,
 	COMPANION_VISITOR_SLEEP_MAX_DURATION_MS,
 	COMPANION_VISITOR_SLEEP_MIN_DURATION_MS,
+	clearCompanionVisitorState,
 	getCompanionVisitorAsset,
 	getCompanionVisitorPosition,
+	getCompanionVisitorRenderDiagnostics,
 	getCompanionVisitorState,
+	getStoredCompanionVisitorState,
+	isCompanionVisitorDebugEnabled,
+	startCompanionVisitorDebugVisit,
 	type CompanionVisitorAssets
 } from './companionVisitor';
 
@@ -202,5 +207,57 @@ describe('tillfalliga companion-besok', () => {
 
 		expect(hidden.visitorId).toBeNull();
 		expect(returned).toEqual(visit);
+	});
+
+	it('har debuglaget avstangt som standard och i produktion', () => {
+		expect(isCompanionVisitorDebugEnabled('', true)).toBe(false);
+		expect(isCompanionVisitorDebugEnabled('?debugVisitor=1', false)).toBe(false);
+		expect(isCompanionVisitorDebugEnabled('?debugVisitor=1', true)).toBe(true);
+	});
+
+	it('kan tvinga fram ett dev-testbesok utan att andra urvalsregler andras', () => {
+		const storage = new MemoryStorage();
+		const visit = startCompanionVisitorDebugVisit('fox', 'awake', now, storage);
+
+		expect(visit).toMatchObject({ visitorId: 'bear', visitorType: 'awake', startedAt: now });
+		expect(getCompanionVisitorState(DAYTIME_FOX, now + 1, storage, () => 0.99)).toEqual(visit);
+	});
+
+	it('rensning av dev-state aterstaller eligibility', () => {
+		const storage = new MemoryStorage();
+		startCompanionVisitorDebugVisit('fox', 'sleeping', now, storage);
+		clearCompanionVisitorState(storage);
+		const next = getCompanionVisitorState(DAYTIME_FOX, now + 1, storage, alwaysVisit);
+
+		expect(next).toMatchObject({ visitorId: 'bear', visitorType: 'awake', startedAt: now + 1 });
+		expect(getStoredCompanionVisitorState(storage)).toEqual(next);
+	});
+
+	it('returnerar renderbeslut nar alla villkor ar uppfyllda', () => {
+		const state = startCompanionVisitorDebugVisit('fox', 'awake', now, new MemoryStorage());
+		const diagnostics = getCompanionVisitorRenderDiagnostics(DAYTIME_FOX, state, true, false, now);
+
+		expect(diagnostics).toEqual({
+			assetAvailable: true,
+			blockingReason: 'rendering',
+			shouldRender: true
+		});
+	});
+
+	it('returnerar den exakta blockerande orsaken', () => {
+		const state = { visitorId: null, visitorType: null, startedAt: null, endsAt: null, nextEligibleAt: now + 1 } as const;
+		const cooldown = getCompanionVisitorRenderDiagnostics(DAYTIME_FOX, state, true, false, now);
+		const scene = getCompanionVisitorRenderDiagnostics(
+			{ ...DAYTIME_FOX, sceneAllowsVisitor: false },
+			state,
+			true,
+			false,
+			now
+		);
+		const viewport = getCompanionVisitorRenderDiagnostics(DAYTIME_FOX, state, false, false, now);
+
+		expect(cooldown.blockingReason).toBe('cooldown-active');
+		expect(scene.blockingReason).toBe('scene-ineligible');
+		expect(viewport.blockingReason).toBe('viewport-too-narrow');
 	});
 });
