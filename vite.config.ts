@@ -7,6 +7,6 @@ export default defineConfig({
 	test: {
 		// Bara det här projektets egna tester, inte de i .claude/worktrees eller
 		// _reference (fristående kopior med sin egen, obundna tsconfig).
-		include: ['src/**/*.test.ts']
+		include: ['src/**/*.test.ts', 'tests/**/*.test.ts']
 	}
 });

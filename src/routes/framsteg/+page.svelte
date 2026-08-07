@@ -695,7 +695,8 @@
 			companionBasePose = getCompanionBasePose(
 				now,
 				browser ? window.localStorage : null,
-				sceneCompanionId
+				sceneCompanionId,
+				'progress'
 			);
 			companionPoseId = companionBasePose.id;
 		};
@@ -919,7 +920,7 @@
 					 samma object-fit/object-position, klassen "companion-hero-foliage",
 					 och animera med canopySway (AmbientWorld.svelte). -->
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
-				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} decorative />
+				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} scene="progress" decorative />
 				<CompanionVisitor
 					class="progress-companion-visitor"
 					mainCompanionId={sceneCompanionId}

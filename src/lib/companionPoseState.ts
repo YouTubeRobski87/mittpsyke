@@ -2,10 +2,12 @@ import {
 	COMPANION_POSE_CHANGE_MAX_MS,
 	COMPANION_POSE_CHANGE_MIN_MS,
 	COMPANION_POSES,
+	COMPANION_SCENE_CONTEXT_POSITION_IDS,
 	COMPANION_SCENE_POSITIONS,
 	type CompanionId,
 	type CompanionPose,
 	type CompanionPoseDaypart,
+	type CompanionSceneContext,
 	type CompanionScenePosition,
 	type CompanionScenePositionId
 } from '$lib/companionPoseManifest';
@@ -22,8 +24,12 @@ type StoredCompanionPositionState = StoredCompanionPoseState & {
 };
 
 const storageKeyFor = (companionId: CompanionId) => `mittpsyke:companion-pose:${companionId}:v1`;
-const positionStorageKeyFor = (companionId: CompanionId) =>
-	`mittpsyke:companion-position:${companionId}:v1`;
+// Positionen lagras per scen, till skillnad från posen. Posen är
+// följeslagarens tillstånd och ska vara densamma i alla vyer; positionen är
+// scenberoende, så ett val gjort i Framsteg får inte läcka in i dashboarden
+// och tvinga fram en fallback där.
+const positionStorageKeyFor = (companionId: CompanionId, scene: CompanionSceneContext | null) =>
+	`mittpsyke:companion-position:${companionId}:${scene ?? 'any'}:v1`;
 
 function getPoseDaypart(date: Date): CompanionPoseDaypart {
 	const state = getProgressCompanionDayState(date);
@@ -77,14 +83,34 @@ function belongsToCompanion(pose: CompanionPose, companionId: CompanionId) {
 	return (pose.companionId ?? 'fox') === companionId;
 }
 
-function getAvailablePositions(daypart: CompanionPoseDaypart, poseId: string) {
+// scene = null betyder "ingen scenbegränsning" och ger exakt det tidigare
+// beteendet - så anropare utan scenkontext (t.ex. tester) inte påverkas.
+function isPositionAllowedInScene(
+	position: CompanionScenePosition,
+	scene: CompanionSceneContext | null
+) {
+	return scene === null || COMPANION_SCENE_CONTEXT_POSITION_IDS[scene].includes(position.id);
+}
+
+function getAvailablePositions(
+	daypart: CompanionPoseDaypart,
+	poseId: string,
+	scene: CompanionSceneContext | null = null
+) {
 	return COMPANION_SCENE_POSITIONS.filter(
-		(position) => position.dayparts.includes(daypart) && position.allowedPoseIds.includes(poseId)
+		(position) =>
+			position.dayparts.includes(daypart) &&
+			position.allowedPoseIds.includes(poseId) &&
+			isPositionAllowedInScene(position, scene)
 	);
 }
 
-function poseHasAvailablePosition(daypart: CompanionPoseDaypart, pose: CompanionPose) {
-	return getAvailablePositions(daypart, pose.id).length > 0;
+function poseHasAvailablePosition(
+	daypart: CompanionPoseDaypart,
+	pose: CompanionPose,
+	scene: CompanionSceneContext | null = null
+) {
+	return getAvailablePositions(daypart, pose.id, scene).length > 0;
 }
 
 // Sista utvägen om ingen pose är tillgänglig för dagparten just nu (t.ex. en
@@ -107,12 +133,13 @@ export function getCompanionPoseDaypart(date = new Date()) {
 export function getCompanionBasePose(
 	date = new Date(),
 	storage: Storage | null = null,
-	companionId: CompanionId = 'fox'
+	companionId: CompanionId = 'fox',
+	scene: CompanionSceneContext | null = null
 ): CompanionPose {
 	const daypart = getPoseDaypart(date);
 	const now = date.getTime();
 	const availablePoses = COMPANION_POSES.filter(
-		(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.dayparts.includes(daypart) && poseHasAvailablePosition(daypart, pose)
+		(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.dayparts.includes(daypart) && poseHasAvailablePosition(daypart, pose, scene)
 	);
 	const fallbackPose = getFallbackPose(companionId, availablePoses);
 	const storedState = storage ? parseStoredState(storage.getItem(storageKeyFor(companionId))) : null;
@@ -120,7 +147,7 @@ export function getCompanionBasePose(
 		const storedPose = COMPANION_POSES.find(
 			(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.id === storedState.poseId && pose.dayparts.includes(daypart)
 		);
-		if (storedPose && poseHasAvailablePosition(daypart, storedPose)) return storedPose;
+		if (storedPose && poseHasAvailablePosition(daypart, storedPose, scene)) return storedPose;
 	}
 
 	const nextPose = getWeightedPose(availablePoses.length ? availablePoses : [fallbackPose]);
@@ -132,14 +159,15 @@ export function getCompanionScenePosition(
 	pose: CompanionPose | null,
 	date = new Date(),
 	storage: Storage | null = null,
-	companionId: CompanionId = pose?.companionId ?? 'fox'
+	companionId: CompanionId = pose?.companionId ?? 'fox',
+	scene: CompanionSceneContext | null = null
 ): CompanionScenePosition {
 	const daypart = getPoseDaypart(date);
-	const fallbackPose = pose ?? getCompanionBasePose(date, storage, companionId);
+	const fallbackPose = pose ?? getCompanionBasePose(date, storage, companionId, scene);
 	const now = date.getTime();
-	const availablePositions = getAvailablePositions(daypart, fallbackPose.id);
+	const availablePositions = getAvailablePositions(daypart, fallbackPose.id, scene);
 	const fallbackPosition = availablePositions[0] ?? COMPANION_SCENE_POSITIONS.find((position) => position.id === 'foreground-right') ?? COMPANION_SCENE_POSITIONS[0];
-	const storedState = storage ? parseStoredPositionState(storage.getItem(positionStorageKeyFor(companionId))) : null;
+	const storedState = storage ? parseStoredPositionState(storage.getItem(positionStorageKeyFor(companionId, scene))) : null;
 	if (storedState && storedState.daypart === daypart && storedState.poseId === fallbackPose.id && storedState.expiresAt > now) {
 		return availablePositions.find((position) => position.id === storedState.positionId) ?? fallbackPosition;
 	}
@@ -147,7 +175,7 @@ export function getCompanionScenePosition(
 	const nextPosition = getWeightedPosition(availablePositions.length ? availablePositions : [fallbackPosition]);
 	if (storage) {
 		const poseExpiry = parseStoredState(storage.getItem(storageKeyFor(companionId)))?.expiresAt ?? getNextExpiry(now);
-		storage.setItem(positionStorageKeyFor(companionId), JSON.stringify({ positionId: nextPosition.id, poseId: fallbackPose.id, daypart, expiresAt: Math.max(poseExpiry, getNextExpiry(now)) }));
+		storage.setItem(positionStorageKeyFor(companionId, scene), JSON.stringify({ positionId: nextPosition.id, poseId: fallbackPose.id, daypart, expiresAt: Math.max(poseExpiry, getNextExpiry(now)) }));
 	}
 	return nextPosition;
 }

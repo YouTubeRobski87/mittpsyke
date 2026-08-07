@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "ai:eval": "vitest run tests/ai-evals/eval-suite.test.ts"
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.5.2",

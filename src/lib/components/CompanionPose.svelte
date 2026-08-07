@@ -29,6 +29,7 @@
 		CompanionId,
 		CompanionPose,
 		CompanionPoseDaypart,
+		CompanionSceneContext,
 		CompanionScenePosition
 	} from '$lib/companionPoseManifest';
 
@@ -38,7 +39,8 @@
 		basePose: providedBasePose = null,
 		position: providedPosition = null,
 		placement = null,
-		companionId = 'fox'
+		companionId = 'fox',
+		scene = null
 	}: {
 		class?: string;
 		decorative?: boolean;
@@ -46,6 +48,9 @@
 		position?: CompanionScenePosition | null;
 		placement?: { scale?: number; x?: number; y?: number } | null;
 		companionId?: CompanionId;
+		// Begränsar vilka scenpositioner vyn tillåter (se
+		// COMPANION_SCENE_CONTEXT_POSITION_IDS). null = ingen begränsning.
+		scene?: CompanionSceneContext | null;
 	} = $props();
 
 	const motionAwareness = createMotionAwareness();
@@ -104,11 +109,11 @@
 		const now = new Date();
 		daypart = getCompanionPoseDaypart(now);
 		if (!providedBasePose) {
-			const nextBasePose = getCompanionBasePose(now, window.localStorage, companionId);
+			const nextBasePose = getCompanionBasePose(now, window.localStorage, companionId, scene);
 			localBasePose = nextBasePose;
-			localPosition = getCompanionScenePosition(nextBasePose, now, window.localStorage, companionId);
+			localPosition = getCompanionScenePosition(nextBasePose, now, window.localStorage, companionId, scene);
 		} else if (!providedPosition) {
-			localPosition = getCompanionScenePosition(providedBasePose, now, window.localStorage, companionId);
+			localPosition = getCompanionScenePosition(providedBasePose, now, window.localStorage, companionId, scene);
 		}
 		baseFrameIndex = 0;
 	}
@@ -269,7 +274,8 @@
 			providedBasePose,
 			new Date(),
 			window.localStorage,
-			companionId
+			companionId,
+			scene
 		);
 	});
 </script>

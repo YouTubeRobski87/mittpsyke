@@ -15,5 +15,16 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: AI Evaluation Suite
+        run: npm run ai:eval
+        env:
+          AI_EVAL_REPORT_PATH: artifacts/ai-evaluation-report.md
+      - name: Upload AI evaluation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-evaluation-report
+          path: artifacts/ai-evaluation-report.md
+          if-no-files-found: warn
       - run: npm run check
       - run: npm run build

@@ -10,6 +10,7 @@ import {
 	qualifiesAsCompanionReturn,
 	recordCompanionSeen
 } from './companionPoseState';
+import { COMPANION_SCENE_CONTEXT_POSITION_IDS } from './companionPoseManifest';
 import type { CompanionId, CompanionPoseDaypart } from './companionPoseManifest';
 
 // Minimal Storage-implementation i minnet, samma mönster som redan används
@@ -103,6 +104,24 @@ describe('getCompanionScenePosition', () => {
 					// följeslagaren att stå i en scenposition som inte matchar hur
 					// den faktiskt ser ut (fel skala/skugga för posen).
 					expect(position.allowedPoseIds).toContain(pose.id);
+				}
+			}
+		}
+	});
+
+	// Dashboardhjälten är liten och står bredvid text - där får följeslagaren
+	// aldrig hamna i de avlägsna positionerna, oavsett vilken pose som lottats.
+	// Framsteg har hela scenen och behåller alla positioner.
+	it('respects the allowed positions for each scene context', () => {
+		for (const scene of ['dashboard', 'progress'] as const) {
+			for (const companionId of COMPANION_IDS) {
+				for (const date of Object.values(DAYPART_DATES)) {
+					for (let i = 0; i < 20; i += 1) {
+						const pose = getCompanionBasePose(date, null, companionId, scene);
+						const position = getCompanionScenePosition(pose, date, null, companionId, scene);
+						expect(COMPANION_SCENE_CONTEXT_POSITION_IDS[scene]).toContain(position.id);
+						expect(position.allowedPoseIds).toContain(pose.id);
+					}
 				}
 			}
 		}

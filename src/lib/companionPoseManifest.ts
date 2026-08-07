@@ -8,6 +8,10 @@ export type CompanionPoseFrame = {
 
 export type CompanionScenePositionId = 'foreground-right' | 'shore-near' | 'shore-far';
 
+/** Vilken vy följeslagaren visas i. Samma namn som CompanionVisitor redan
+ *  använder, så scenbegreppet betyder samma sak i hela världen. */
+export type CompanionSceneContext = 'dashboard' | 'progress';
+
 export type CompanionScenePosition = {
 	id: CompanionScenePositionId;
 	x: number;
@@ -438,6 +442,19 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 		weight: 0.6
 	}
 ];
+
+// Vilka scenpositioner varje vy tillåter. Generell regel, inte ett
+// specialfall per följeslagare: dashboardhjälten är liten och har text
+// bredvid sig, så följeslagaren måste läsas direkt - de riktigt avlägsna
+// positionerna hör hemma i Framsteg, där scenen får vara en upptäckt.
+// En framtida uggla eller hjort ärver samma regel utan ny kod.
+export const COMPANION_SCENE_CONTEXT_POSITION_IDS: Record<
+	CompanionSceneContext,
+	readonly CompanionScenePositionId[]
+> = {
+	dashboard: ['foreground-right', 'shore-near'],
+	progress: ['foreground-right', 'shore-near', 'shore-far']
+};
 
 export const COMPANION_POSE_CHANGE_MIN_MS = 20 * 60 * 1000;
 export const COMPANION_POSE_CHANGE_MAX_MS = 40 * 60 * 1000;

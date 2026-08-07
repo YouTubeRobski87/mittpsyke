@@ -205,6 +205,7 @@
         <CompanionPose
           class="hero-companion-pose"
           companionId={heroCompanionId}
+          scene="dashboard"
           placement={
             heroCompanionId === 'bear'
               ? BEAR_SCENE_PLACEMENTS.dashboard
