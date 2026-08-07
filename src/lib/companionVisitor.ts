@@ -301,9 +301,18 @@ export function getCompanionVisitorPosition(
 			: { x: 84, y: 68, zIndex: 3, scale: 0.86 };
 	}
 
+	// Dashboardhjälten beskär scenbilden hårt i höjdled (object-position 70% 64%
+	// mot ett kort på ~3.8:1), så container-y 82 % landar på bildens y ~72 % -
+	// och där går strandkanten vid x ~52 %. x 41 satte alltså besökaren i sjön.
+	// x 52 / y 93 ligger på gräset i hela hjältens bredspann, tydligt vid sidan
+	// av huvudföljeslagarens positioner (shore-near 66, foreground-right 78).
+	// Samma sorts rättning som redan gjorts för sovbesöket ovan.
+	// Framsteg beskär samma bild ännu hårdare (~4.5:1, object-position 50% 50%),
+	// så bara bandet y ~55-68 % av bilden syns - där ligger allt land till höger
+	// om x ~62 %. x 35 låg alltså mitt i den soldränkta vattenspegeln.
 	return scene === 'dashboard'
-		? { x: 41, y: 82, zIndex: 2, scale: 1 }
-		: { x: 35, y: 74, zIndex: 2, scale: 1 };
+		? { x: 52, y: 93, zIndex: 2, scale: 1 }
+		: { x: 68, y: 92, zIndex: 2, scale: 1 };
 }
 
 export function canShowCompanionVisitorAtViewport(viewportWidth: number): boolean {

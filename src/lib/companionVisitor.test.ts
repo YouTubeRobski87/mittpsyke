@@ -221,6 +221,21 @@ describe('tillfalliga companion-besok', () => {
 		expect(progressPosition.y).toBeLessThan(70);
 	});
 
+	// Gransvardena ar uppmatta mot scenbilden (dashboard-lakeside-world) genom
+	// hjaltens faktiska beskarning: pa Mitt Hem borjar landet vid x ~52 % for
+	// container-y over 88 %, pa Framsteg vid x ~62 %. Bada vakna positionerna
+	// lag tidigare utanfor de banden, det vill saga i sjon.
+	it('placerar aven det vakna besoket pa land i bada scenerna', () => {
+		const dashboardPosition = getCompanionVisitorPosition('dashboard', 'awake');
+		const progressPosition = getCompanionVisitorPosition('progress', 'awake');
+
+		expect(dashboardPosition).toEqual({ x: 52, y: 93, zIndex: 2, scale: 1 });
+		expect(progressPosition).toEqual({ x: 68, y: 92, zIndex: 2, scale: 1 });
+		expect(dashboardPosition.y).toBeGreaterThanOrEqual(88);
+		expect(dashboardPosition.x).toBeGreaterThanOrEqual(52);
+		expect(progressPosition.x).toBeGreaterThanOrEqual(62);
+	});
+
 	it('doljs i mobilvy for att undvika trang scen och overflow', () => {
 		expect(canShowCompanionVisitorAtViewport(320)).toBe(false);
 		expect(canShowCompanionVisitorAtViewport(375)).toBe(false);
