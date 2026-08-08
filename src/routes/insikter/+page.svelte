@@ -68,7 +68,7 @@
 				<div>
 					<div class="kicker">AI-insikter</div>
 					<h1>Insikter</h1>
-					<p class="lead">Personliga mönster, teman och förändringar som bara visas när de stöds av din dagbok.</p>
+					<p class="lead">Frivilliga reflektioner från din dagbok. De är till för din egen förståelse, inte för att bedöma dig.</p>
 				</div>
 			</header>
 

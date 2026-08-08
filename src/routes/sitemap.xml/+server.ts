@@ -213,6 +213,12 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			priority: '0.5'
 		},
 		{
+			path: '/mittpsyke-psykolog-eller-varden',
+			lastmod: getContentLastmod('src/routes/mittpsyke-psykolog-eller-varden/+page.svelte', STATIC_CONTENT_LASTMOD),
+			changefreq: 'monthly',
+			priority: '0.7'
+		},
+		{
 			path: '/for-organisationer',
 			lastmod: getContentLastmod('src/routes/for-organisationer/+page.svelte', STATIC_CONTENT_LASTMOD),
 			changefreq: 'monthly',

@@ -197,10 +197,11 @@
 		<span class="hero-shimmer" aria-hidden="true"></span>
 		<div class="hero-shell">
 			<div class="hero-content">
-				<h1>En plats som väntar på dig</h1>
+				<h1>Skriv anonymt. Ta det i din takt.</h1>
 				<p>
-					Räven sitter vid sjön, oavsett hur länge du är borta. Skriv anonymt, utan konto. Texten
-					stannar på din enhet tills du väljer något annat.
+					En lugn plats att börja på när du vill skriva av dig, sortera tankar eller förstå vilket stöd
+					du behöver. Du kan börja utan konto. Utkastet i den här skrivytan stannar på din enhet tills
+					du själv går vidare.
 				</p>
 
 				<form class="hero-quick-start" onsubmit={submitHeroQuickStart}>
@@ -331,6 +332,10 @@
 					<li>
 						<a class="early-trust-item" href="/guider" onclick={() => trackHomeCta('early_trust', 'guider', '/guider')}>
 							<strong>{data.contentStats.guideCount}</strong> publicerade guider att läsa i din takt.
+						</a>
+						<a class="early-trust-item" href="/mittpsyke-psykolog-eller-varden" onclick={() => trackHomeCta('early_trust', 'valj_stod', '/mittpsyke-psykolog-eller-varden')}>
+							<strong>Osäker på vad som passar?</strong>
+							<span>Jämför MittPsyke, psykolog och vården</span>
 						</a>
 					</li>
 				{/if}

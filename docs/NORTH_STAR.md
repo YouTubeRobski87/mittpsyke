@@ -21,6 +21,16 @@ Målet är inte en plats full av ständig aktivitet, utan en värld som känns l
 
 Om två lösningar är lika bra tekniskt väljer vi alltid den lugnaste.
 
+## Den mänskliga starten
+
+MittPsyke ska vara den mest mänskliga och trygga starten för någon som ännu inte vet vilket stöd den behöver.
+
+Beslutstest:
+
+> Gör den här förändringen starten lugnare, tryggare och tydligare – eller gör den bara produkten mer avancerad?
+
+Om svaret främst är att den är mer avancerad, prioriteras den inte utan en tydlig nytta för användaren.
+
 Det betyder oftast mindre animation, mindre brus, mer luft, färre färger, enklare copy, tydligare hierarki och mjukare övergångar.
 
 Vi frågar inte bara: "Vad ska hända här?"

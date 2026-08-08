@@ -14,9 +14,9 @@ export const load: PageServerLoad = async ({ url }) => {
 	}
 
 	return {
-		title: 'När tankarna snurrar – skriv av dig anonymt direkt',
+		title: 'Skriv anonymt i din takt – samtalsstöd och reflektion | MittPsyke',
 		description:
-			'Få hjälp att sortera, förstå och sätta ord på det som känns. MittPsyke är ett lugnt första steg i text – inte vård eller akuthjälp. Inget konto krävs för att börja.',
+			'En lugn start när du vill skriva av dig, sortera tankar eller förstå vilket stöd du behöver. MittPsyke är samtalsstöd och reflektion, inte vård eller akuthjälp.',
 		contentStats: {
 			guideCount: guides.length
 		}
