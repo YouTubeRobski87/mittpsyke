@@ -12,9 +12,9 @@
 	import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
 	import CompanionVisitor from '$lib/components/world/CompanionVisitor.svelte';
 	import {
-		COMPANION_WORLD_SCENE_IMAGE,
-		COMPANION_WORLD_SCENE_SRCSET,
-		COMPANION_WORLD_SCENE_FALLBACK,
+		PROGRESS_CABIN_LAKESIDE_SCENE_IMAGE,
+		PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET,
+		PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK,
 		getProgressCompanionDayState,
 		getProgressCompanionDayStateLabel,
 		getProgressCompanionSeason,
@@ -129,7 +129,7 @@
 	) as 'fox' | 'bear' | 'wolf';
 
 	const companionScene = $derived<CompanionScene>({
-		image: COMPANION_WORLD_SCENE_IMAGE,
+		image: PROGRESS_CABIN_LAKESIDE_SCENE_IMAGE,
 		season,
 		timeOfDay,
 		alt: `Din följeslagare, ${sceneCompanionId === 'bear' ? 'björnen' : sceneCompanionId === 'wolf' ? 'vargen' : 'räven'}, vid sjön`,
@@ -899,13 +899,13 @@
 			>
 				<!-- width/height ger proportionerna innan bilden laddats så scenen
 					 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
-				<!-- Framsteg är fullbrett på desktop (upp till 1440 px), till skillnad från
-					 Mitt Hems smalare hero. Ett eget sizes-värde hindrar att 800/1200w skalas upp. -->
-				<img
-					class="companion-world-scene"
-					srcset={COMPANION_WORLD_SCENE_SRCSET}
-					sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
-					src={COMPANION_WORLD_SCENE_FALLBACK}
+					<!-- Framsteg har en egen, avlägsen vy av samma plats. Den använder sin egen
+						 srcset så Mitt Hems delade scenbild aldrig återanvänds här. -->
+					<img
+						class="companion-world-scene"
+						srcset={PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET}
+						sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
+						src={PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK}
 					alt=""
 					aria-hidden="true"
 					width="1672"
@@ -914,11 +914,6 @@
 					loading="eager"
 					decoding="async"
 				/>
-				<!-- Grenen/löven uppe till höger ligger inbränd i companionScene.image (ingen
-					 alfakanal). När en mattad utklippsfil finns (t.ex.
-					 dashboard-lakeside-world-foliage.webp), lägg ett eget <img> här med
-					 samma object-fit/object-position, klassen "companion-hero-foliage",
-					 och animera med canopySway (AmbientWorld.svelte). -->
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
 				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} scene="progress" decorative />
 				<CompanionVisitor
@@ -1982,6 +1977,9 @@
 		}
 
 		.companion-media { height: clamp(210px, 68vw, 260px); }
+
+		/* Behåll den avlägsna stugan i bild när den breda sjöscenen beskärs på mobil. */
+		.companion-world-scene { object-position: 20% 64%; }
 
 		.progress-preview-note {
 			position: relative;
