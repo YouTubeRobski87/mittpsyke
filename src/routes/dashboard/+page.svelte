@@ -27,10 +27,6 @@
   import {
     getDashboardCompanionScene,
     getProgressCompanionDayState,
-    COMPANION_WORLD_SCENE_IMAGE,
-    COMPANION_WORLD_SCENE_SRCSET,
-    COMPANION_WORLD_SCENE_BACKDROP,
-    COMPANION_WORLD_SCENE_FALLBACK,
     getProgressCompanionAnimal,
     getProgressCompanionArtId,
     getProgressCompanionHeroFocus,
@@ -43,7 +39,7 @@
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
-  const GENERIC_COMPANION_HERO_IMAGE = COMPANION_WORLD_SCENE_IMAGE;
+  const DASHBOARD_HERO_IMAGE = '/images/Stugscen%20med%20r%C3%A4v.png';
 
   type DashboardData = {
     diaryPreview: {
@@ -122,7 +118,7 @@
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
-  const companionHeroImage = GENERIC_COMPANION_HERO_IMAGE;
+  const companionHeroImage = DASHBOARD_HERO_IMAGE;
   const heroCompanionId = $derived(
     companionArtId === 'bear' || companionArtId === 'wolf' ? companionArtId : 'fox'
   ) as 'fox' | 'bear' | 'wolf';
@@ -192,7 +188,7 @@
         class:personal-preview={isAnonymous}
         data-companion={heroCompanionId}
         aria-label="Din följeslagare"
-        style={`--hero-image: ${companionHeroImage ? `url('${COMPANION_WORLD_SCENE_BACKDROP}')` : 'none'}; --hero-focus: ${heroFocus};`}
+        style={`--hero-image: ${companionHeroImage ? `url('${companionHeroImage}')` : 'none'}; --hero-focus: ${heroFocus};`}
       >
         <!-- width/height ger webbläsaren bildens proportioner innan den laddats,
              så hjältekortet inte hoppar till. fetchpriority="high" eftersom det
@@ -201,9 +197,7 @@
              bred. Det egna sizes-värdet hindrar att 800w förstoras till desktopbredd. -->
         <img
           class="companion-hero-scene"
-          srcset={COMPANION_WORLD_SCENE_SRCSET}
-          sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1440px) calc(100vw - 360px), 984px"
-          src={COMPANION_WORLD_SCENE_FALLBACK}
+          src={companionHeroImage}
           alt=""
           aria-hidden="true"
           width="1672"
@@ -309,7 +303,11 @@
           </a>
         </section>
 
-        <section class="home-card checkin-card" aria-labelledby="dashboard-checkin-title">
+        <section
+          class="home-card checkin-card"
+          aria-labelledby="dashboard-checkin-title"
+          style="--checkin-image: url('/images/Dagboksbild%20med%20bok%2C%20kvist%20och%20kopp.png')"
+        >
           <div class="home-card-head">
             <span class="home-card-mark home-card-mark--rose" aria-hidden="true"><Heart size={20} /></span>
             <h2 id="dashboard-checkin-title">Dagens incheckning</h2>
@@ -550,10 +548,7 @@
     background-size: cover;
     /* Följ samma fokus som förgrundsbilden så den suddiga bakgrunden matchar */
     background-position: var(--hero-focus, 70% 64%);
-    opacity: 0.35;
-    filter: blur(10px) saturate(1.04);
-    transform: scale(1.03);
-    pointer-events: none;
+    display: none;
   }
 
   .companion-hero.personal-preview::before {
@@ -615,17 +610,17 @@
   .companion-hero::after {
     content: '';
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 49%;
-    z-index: var(--scene-midground);
-    background: rgba(9, 19, 33, 0.82);
-    pointer-events: none;
+    display: none;
   }
 
   .companion-hero :global(.hero-companion-pose) {
-    left: calc(100% - var(--companion-x, 78%));
+    display: none;
+  }
+
+  .companion-hero :global(.hero-companion-visitor),
+  .companion-hero :global(.hero-living-world),
+  .companion-hero :global(.hero-companion-friend) {
+    display: none;
   }
 
   /* Bredden är låst till den yta scenen garanterar fri från följeslagare och
@@ -872,8 +867,8 @@
     position: absolute;
     inset: 0 0 0 42%;
     z-index: 0;
-    background: url('/assets/diary/dagboken-background.webp') right center / cover no-repeat;
-    opacity: 0.4;
+    background: var(--checkin-image) right center / cover no-repeat;
+    opacity: 1;
   }
 
   .checkin-card::before {
@@ -881,7 +876,7 @@
     position: absolute;
     inset: 0 0 0 42%;
     z-index: 1;
-    background: rgba(9, 19, 33, 0.46);
+    background: transparent;
   }
 
   .checkin-card > * {
@@ -1244,8 +1239,7 @@
     }
 
     .companion-hero::after {
-      left: 38%;
-      background: rgba(9, 19, 33, 0.84);
+      display: none;
     }
 
     /* På mobil ligger copy fortsatt över den mörka högra delen av scenen. */
