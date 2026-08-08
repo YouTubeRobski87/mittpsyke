@@ -1474,28 +1474,32 @@
 	}
 
 	.companion-ground-shadow {
-		left: 66.9%;
-		top: 64%;
+		/* Rävens tassar hamnar här i den etablerade progressplaceringen.
+		   Skuggan följer därför motivets verkliga markpunkt, inte strandens
+		   mitt, så att den inte ser inklistrad ut. Björn och varg har egna
+		   justeringar nedan. */
+		left: 76.8%;
+		top: 68.4%;
 		z-index: var(--scene-ambient);
-		width: clamp(48px, 9.2%, 88px);
-		height: clamp(8px, 1.3vw, 14px);
+		width: clamp(38px, 6%, 60px);
+		height: clamp(6px, 0.9vw, 10px);
 		border-radius: 52% 48% 58% 42%;
 		background:
 			radial-gradient(ellipse at 45% 58%, rgb(28 31 20 / 0.28), transparent 62%),
 			linear-gradient(88deg, transparent 0%, rgb(41 43 27 / 0.16) 32%, rgb(31 34 22 / 0.18) 58%, transparent 100%);
 		filter: blur(4.5px);
-		opacity: 0.58;
+		opacity: 0.48;
 		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-18deg) scaleX(1.18);
 		transform-origin: 44% 50%;
 		mix-blend-mode: multiply;
 	}
 
 	.companion-foreground-edge {
-		left: 66.6%;
-		top: 64.1%;
+		left: 76.5%;
+		top: 68.5%;
 		z-index: var(--scene-foreground);
-		width: clamp(58px, 9.4%, 92px);
-		height: clamp(18px, 3vw, 32px);
+		width: clamp(46px, 7.2%, 72px);
+		height: clamp(12px, 1.9vw, 20px);
 		background:
 			radial-gradient(38% 20% at 26% 78%, rgb(58 67 43 / 0.38), transparent 72%),
 			radial-gradient(36% 18% at 72% 82%, rgb(84 86 59 / 0.26), transparent 74%),
@@ -1509,15 +1513,20 @@
 	}
 
 	.progress-ripple {
+		--progress-ripple-border: rgb(238 251 248 / 0.3);
+		--progress-ripple-fill: rgb(255 255 255 / 0.1);
+		--progress-ripple-blur: 0.2px;
+		--progress-ripple-peak-opacity: 0.17;
+		--progress-ripple-fade-opacity: 0.05;
 		position: absolute;
 		z-index: var(--scene-ambient);
 		display: block;
 		width: clamp(34px, 6.5%, 58px);
 		aspect-ratio: 2.9 / 1;
-		border: 1px solid rgb(238 251 248 / 0.3);
+		border: 1px solid var(--progress-ripple-border);
 		border-radius: 50%;
-		background: radial-gradient(ellipse at center, rgb(255 255 255 / 0.1), transparent 68%);
-		filter: blur(0.2px);
+		background: radial-gradient(ellipse at center, var(--progress-ripple-fill), transparent 68%);
+		filter: blur(var(--progress-ripple-blur));
 		opacity: 0;
 		transform: translate3d(-50%, -50%, 0) scale(0.55);
 		pointer-events: none;
@@ -1884,10 +1893,10 @@
 			transform: translate3d(-50%, -50%, 0) scale(0.52);
 		}
 		52% {
-			opacity: 0.17;
+			opacity: var(--progress-ripple-peak-opacity);
 		}
 		70% {
-			opacity: 0.05;
+			opacity: var(--progress-ripple-fade-opacity);
 			transform: translate3d(-50%, -50%, 0) scale(1.18);
 		}
 		76%,
@@ -2001,6 +2010,24 @@
 			right: 20%;
 			bottom: 31%;
 			width: clamp(38px, 10%, 58px);
+		}
+
+		/* Räven blir lite mindre och får vila längre ut på strandkanten på mobil.
+		   Björnens och vargens särskilda placeringar lämnas helt orörda. */
+		.companion-media[data-companion='fox'] :global(.progress-companion-pose) {
+			right: 16%;
+			bottom: 28%;
+			width: clamp(32px, 8.2%, 48px);
+		}
+
+		/* Samma långsamma vattenrörelse, men mjukare och mindre tydlig på den
+		   smalare beskärningen så reflexerna läser som ljus i vattnet. */
+		.progress-ripple {
+			--progress-ripple-border: rgb(238 251 248 / 0.14);
+			--progress-ripple-fill: rgb(255 255 255 / 0.035);
+			--progress-ripple-blur: 1.2px;
+			--progress-ripple-peak-opacity: 0.08;
+			--progress-ripple-fade-opacity: 0.025;
 		}
 
 		.companion-media[data-companion='bear'] :global(.progress-companion-pose) {
