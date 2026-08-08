@@ -16,22 +16,16 @@
 	import type { CompanionRelationshipStage } from '$lib/companionRelationship';
 	import WaterLayer from './WaterLayer.svelte';
 	import LeafLayer from './LeafLayer.svelte';
-	import HearthLayer from './HearthLayer.svelte';
 
 	type ActiveWorldEvent = LivingWorldEffect & { eventId: string };
 
 	let {
 		scene = getLivingWorldScene(),
 		relationshipStage = 0,
-		hearth = false,
 		class: className = ''
 	}: {
 		scene?: LivingWorldScene;
 		relationshipStage?: CompanionRelationshipStage;
-		/** Brasan med gestalten vid strandkanten. Opt-in: lagret används både i
-		 *  Mitt Hems hero och i Framstegs banner, och elden hör i dagsläget bara
-		 *  hemma i den senare. Tänds ändå bara på kväll/natt (se HearthLayer). */
-		hearth?: boolean;
 		class?: string;
 	} = $props();
 
@@ -158,7 +152,6 @@
 
 	<WaterLayer effects={waterEffects} />
 	<LeafLayer season={scene.season} />
-	<HearthLayer timeOfDay={scene.timeOfDay} enabled={hearth} />
 
 	{#if relationshipStage >= 1}
 		<!-- Ett diskret naturtecken, inte en belöning eller indikator. -->
