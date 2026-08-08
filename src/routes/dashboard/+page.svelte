@@ -13,6 +13,7 @@
     BookOpen,
     Feather,
     Heart,
+    House,
     Lock,
     MessageCircle,
     MoonStar,
@@ -171,7 +172,10 @@
           {#if isAnonymous}
             <a class="home-return-link" href="/">&larr; Till startsidan</a>
           {/if}
-          <h1 id="dashboard-title">Mitt Hem</h1>
+          <div class="dashboard-title-row">
+            <House size={32} aria-hidden="true" />
+            <h1 id="dashboard-title">Mitt Hem</h1>
+          </div>
           <p>Din personliga plats för reflektion, närvaro och utveckling.</p>
         </div>
 
@@ -393,10 +397,12 @@
     --mp-shadow: 0 14px 36px rgba(69, 83, 61, 0.07);
     color: var(--mp-text);
     min-height: 100vh;
-    background:
-      radial-gradient(800px 420px at 64% 0%, rgba(35, 66, 100, 0.24), transparent 68%),
-      radial-gradient(680px 420px at 10% 80%, rgba(26, 63, 73, 0.18), transparent 70%),
-      linear-gradient(145deg, #07111f 0%, #0b1526 48%, #0c1728 100%);
+    background: #091321;
+  }
+
+  :global(.site-header) {
+    background: #091321 !important;
+    border-bottom: 1px solid rgba(160, 188, 220, 0.16);
   }
 
   .dashboard-shell {
@@ -442,6 +448,17 @@
     font-size: clamp(1.9rem, 3.1vw, 2.3rem);
     line-height: 1.08;
     letter-spacing: 0;
+  }
+
+  .dashboard-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--mp-green);
+  }
+
+  .dashboard-title-row h1 {
+    color: var(--mp-text);
   }
 
   .topbar p {
@@ -506,7 +523,7 @@
     border-radius: var(--mp-radius);
     box-shadow: var(--mp-shadow);
     border: 1px solid var(--mp-card-border);
-    background: linear-gradient(135deg, #16243a 0%, #0a1424 100%);
+    background: #101b2b;
   }
 
   .personal-preview {
@@ -598,39 +615,17 @@
   .companion-hero::after {
     content: '';
     position: absolute;
-    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 49%;
     z-index: var(--scene-midground);
-    background:
-      linear-gradient(
-        90deg,
-        rgba(255, 253, 247, 0.92) 0%,
-        rgba(255, 253, 247, 0.62) 34%,
-        rgba(255, 253, 247, 0.08) 52%,
-        transparent 68%
-      ),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 38%, rgba(255, 255, 255, 0.06));
+    background: rgba(9, 19, 33, 0.82);
     pointer-events: none;
   }
 
-  .companion-hero[data-companion='bear']::after {
-    background:
-      linear-gradient(90deg, rgba(16, 42, 45, 0.72) 0%, rgba(16, 42, 45, 0.44) 33%, rgba(16, 42, 45, 0.12) 58%, transparent 76%),
-      linear-gradient(180deg, rgba(8, 24, 32, 0.16), transparent 42%, rgba(8, 24, 32, 0.22));
-  }
-
-  .companion-hero[data-companion='bear'] .hero-copy h2,
-  .companion-hero[data-companion='bear'] .hero-copy > p {
-    color: #fffaf2;
-    text-shadow: 0 2px 14px rgba(8, 24, 32, 0.38);
-  }
-
-  .companion-hero[data-companion='bear'] .time-badge {
-    top: 14px;
-    right: 14px;
-    gap: 0.45rem;
-    padding: 0.5rem 0.65rem;
-    border-color: rgba(255, 250, 242, 0.28);
-    background: rgba(255, 253, 248, 0.86);
+  .companion-hero :global(.hero-companion-pose) {
+    left: calc(100% - var(--companion-x, 78%));
   }
 
   /* Bredden är låst till den yta scenen garanterar fri från följeslagare och
@@ -642,17 +637,18 @@
     position: absolute;
     z-index: var(--scene-overlay);
     --hero-copy-inset: clamp(20px, 3vw, 38px);
-    left: var(--hero-copy-inset);
+    right: var(--hero-copy-inset);
+    left: auto;
     top: clamp(22px, 3.4vw, 42px);
     /* Indraget måste dras av, annars hamnar textens HÖGERkant på
        inset + 40 % och kryper in i besökarens yta. Det är högerkanten som är
        löftet, inte bredden. */
-    width: min(24rem, calc(40% - var(--hero-copy-inset)));
+    width: min(23rem, calc(45% - var(--hero-copy-inset)));
   }
 
   .hero-copy h2 {
     margin: 0;
-    color: #2a3d2e;
+    color: var(--mp-text);
     font-size: clamp(1.4rem, 2.2vw, 1.9rem);
     line-height: 1.12;
     letter-spacing: -0.01em;
@@ -666,7 +662,7 @@
 
   .hero-copy > p {
     margin: 0.45rem 0 0.85rem;
-    color: #4c5a4d;
+    color: var(--mp-text-dim);
     font-size: 0.98rem;
     line-height: 1.5;
   }
@@ -733,7 +729,7 @@
   }
 
   .time-badge {
-    position: absolute;
+    display: none;
     z-index: var(--scene-overlay);
     top: 20px;
     right: 20px;
@@ -866,6 +862,31 @@
 
   .checkin-card {
     grid-area: checkin;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .checkin-card::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 0 42%;
+    z-index: 0;
+    background: url('/assets/diary/dagboken-background.webp') right center / cover no-repeat;
+    opacity: 0.4;
+  }
+
+  .checkin-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 0 42%;
+    z-index: 1;
+    background: rgba(9, 19, 33, 0.46);
+  }
+
+  .checkin-card > * {
+    position: relative;
+    z-index: 2;
   }
 
   .garden-card {
@@ -937,7 +958,7 @@
   }
 
   .garden-progress span.grown {
-    background: linear-gradient(135deg, #4d9566, #a9dc7d);
+    background: #79ad6f;
   }
 
   /* ── Utforska vidare ─────────────────────────────────────────────────── */
@@ -1026,10 +1047,10 @@
     min-height: 46px;
     margin-top: auto;
     padding: 0.7rem 1.1rem;
-    border: 1px solid #a7bfd6;
+    border: 1px solid rgba(160, 188, 220, 0.36);
     border-radius: 10px;
-    background: #dce8f3;
-    color: #19364b;
+    background: transparent;
+    color: var(--mp-text);
     font-weight: 700;
     text-decoration: none;
     transition:
@@ -1041,9 +1062,9 @@
 
   .now-cta:hover,
   .home-card-action:hover {
-    background: #edf4fa;
-    border-color: #c4d5e4;
-    box-shadow: 0 4px 12px rgba(4, 17, 31, 0.18);
+    background: rgba(220, 232, 243, 0.1);
+    border-color: rgba(220, 232, 243, 0.62);
+    box-shadow: none;
     transform: translateY(-1px);
   }
 
@@ -1052,6 +1073,17 @@
     border-color: rgba(160, 188, 220, 0.36);
     background: transparent;
     color: var(--mp-text);
+  }
+
+  .checkin-card .home-card-action {
+    border-color: #cbb48b;
+    background: #cbb48b;
+    color: #101a28;
+  }
+
+  .checkin-card .home-card-action:hover {
+    border-color: #dbc7a3;
+    background: #dbc7a3;
   }
 
   .garden-card .home-card-action:hover {
@@ -1119,10 +1151,10 @@
     display: inline-flex;
     align-items: center;
     padding: 0.65rem 0.9rem;
-    border: 1px solid #a7bfd6;
+    border: 1px solid rgba(160, 188, 220, 0.3);
     border-radius: 10px;
-    background: #dce8f3;
-    color: #19364b;
+    background: transparent;
+    color: var(--mp-text);
     font-weight: 700;
     text-decoration: none;
     white-space: nowrap;
@@ -1134,9 +1166,9 @@
   }
 
   .privacy-row a:hover {
-    border-color: #c4d5e4;
-    background: #edf4fa;
-    box-shadow: 0 4px 12px rgba(4, 17, 31, 0.18);
+    border-color: rgba(220, 232, 243, 0.62);
+    background: rgba(220, 232, 243, 0.1);
+    box-shadow: none;
     transform: translateY(-1px);
   }
 
@@ -1212,20 +1244,11 @@
     }
 
     .companion-hero::after {
-      background:
-        linear-gradient(
-          90deg,
-          rgba(255, 253, 247, 0.94) 0%,
-          rgba(255, 253, 247, 0.72) 40%,
-          rgba(255, 253, 247, 0.12) 58%,
-          transparent 72%
-        ),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 42%);
+      left: 38%;
+      background: rgba(9, 19, 33, 0.84);
     }
 
-    /* Under 641 px döljs besökaren helt (canShowCompanionVisitorAtViewport),
-       så den västligaste upptagna kanten flyttar ut till följeslagarens egen -
-       texten får därför vara bredare här än på desktop. */
+    /* På mobil ligger copy fortsatt över den mörka högra delen av scenen. */
     .hero-copy {
       --hero-copy-inset: 16px;
       top: 18px;
@@ -1241,8 +1264,7 @@
       font-size: 0.88rem;
     }
 
-    /* Kortet skulle möta tidsbrickan och följeslagaren i den låga hjälten.
-       Vägen till chatten finns kvar i "Utforska vidare". */
+    /* Chattvägen finns kvar i "Utforska vidare" när kortet inte ryms. */
     .hero-companion-note {
       display: none;
     }
