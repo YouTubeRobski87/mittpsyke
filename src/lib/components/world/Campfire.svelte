@@ -210,8 +210,11 @@
 	   i rutan. */
 	@media (max-width: 640px) {
 		.campfire {
-			left: 23%;
-			top: 43%;
+			/* Den avlägsna stranden beskärs ner mot textytan på smal mobil.
+		   Dölj den extra detaljscenen i stället för att låta den konkurrera
+		   med kopian nere till vänster. Det påverkar inte layouten eftersom
+		   komponenten är absolut positionerad. */
+			display: none;
 		}
 	}
 
