@@ -1452,6 +1452,10 @@
 		mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.88) 89%, transparent 100%);
 	}
 
+	.companion-media[data-companion='fox'] :global(.progress-companion-pose .companion-pose-image) {
+		filter: var(--companion-grade) brightness(0.94) drop-shadow(0 7px 8px rgb(37 31 20 / 0.1));
+	}
+
 	/* Vargbilden är redan frilagd. Låt dess egen alpha-kant möta skuggan och
 	 * förgrunden, i stället för att lägga på den generella panoramamasken. */
 	.companion-media[data-companion='wolf'] :global(.progress-companion-pose .companion-pose-image) {
