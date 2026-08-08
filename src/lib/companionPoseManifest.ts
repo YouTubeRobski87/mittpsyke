@@ -102,7 +102,12 @@ export const FOX_COMPANION_POSES = [
 	{
 		id: 'drink',
 		role: 'base',
-		dayparts: ['day'],
+		// Även kväll: shore-near tillåter redan 'drink' på både day och evening,
+		// men posen själv var låst till day - och Framstegs scen är en kvällsscen,
+		// så snittet var tomt och räven kunde aldrig dricka där. Vikten hålls låg
+		// mot evening-lake (2.6), så drickandet blir det sällsynta undantaget i
+		// posbytet var 20-40 min, inte ett nytt normalläge.
+		dayparts: ['day', 'evening'],
 		frames: [{ src: foxPoseSrc('fox-realistic-lake-drinking.png') }],
 		alt: 'Din följeslagare, räven, dricker stilla vid sjön.',
 		weight: 0.75,
