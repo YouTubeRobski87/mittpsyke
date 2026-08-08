@@ -1,19 +1,16 @@
 <script lang="ts">
-	// En liten brasa med en stillsam gestalt bredvid, på den bortre stranden i
-	// Framstegs banner. Egen komponent (inte en LivingWorldEffectKind) eftersom
+	// En liten brasa med en stillsam gestalt bredvid i Framstegs förgrund.
+	// Egen komponent (inte en LivingWorldEffectKind) eftersom
 	// eld och gestalt hör ihop, delar en ankarpunkt i scenen och inte ska
 	// påverka Mitt Hems hero, som återanvänder samma AmbientWorld-lager.
 	//
-	// Placeringen (left/top nedan) är avläst mot det faktiska fotot, inte
-	// gissad: källpunkt x23 %/y43 % i progress-cabin-lakeside.webp ligger mitt
-	// i den mörka, jämna bortre stranden (luminans ~15-30 i ett 4x4%-fönster
-	// runt punkten) - tydligt under den ljusa solnedgångsreflektionen i sjön
-	// och till höger om stugans siluett.
+	// Placeringen ligger mellan textblocket och räven, på den mörka stranden
+	// i nedre mellangrunden. Den ska läsas som en liten samlingspunkt, inte
+	// som en ljuskälla ute i sjön.
 	//
 	// Scenen beskärs olika i tre breakpoints (se object-position i
-	// +page.svelte: bas=70% 64%, ≥981px=50% 50%, ≤640px=20% 64%), så samma
-	// källpunkt kräver tre olika container-procent. Ändras någon av de tre
-	// object-position-värdena i +page.svelte måste top-värdena här räknas om.
+	// +page.svelte), så gruppen får en egen mobilplacering för att hålla både
+	// eld och figur synliga utan att täcka kopian.
 	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
 
 	let { class: className = '' }: { class?: string } = $props();
@@ -26,6 +23,8 @@
 	class:is-paused={!motion.isActive || motion.reducedMotion}
 	aria-hidden="true"
 >
+	<span class="campfire-log campfire-log--rear"></span>
+	<span class="campfire-log campfire-log--front"></span>
 	<span class="campfire-glow"></span>
 	<span class="campfire-ember"></span>
 	<span class="campfire-flame campfire-flame--a"></span>
@@ -47,12 +46,13 @@
 <style>
 	.campfire {
 		position: absolute;
-		left: 23%;
-		top: 25%;
+		left: 55%;
+		top: 71%;
 		pointer-events: none;
-		z-index: calc(var(--scene-ambient, 2) - 1);
+		z-index: var(--scene-ambient, 2);
 	}
 
+	.campfire-log,
 	.campfire-glow,
 	.campfire-ember,
 	.campfire-flame,
@@ -62,10 +62,32 @@
 		top: 0;
 	}
 
+	/* Två små stockar gör platsen läsbar utan att bli en campingillustration. */
+	.campfire-log {
+		z-index: 0;
+		width: clamp(13px, 1.55vw, 20px);
+		height: clamp(2.6px, 0.3vw, 4px);
+		border-radius: 999px;
+		background: linear-gradient(90deg, rgb(46 31 20 / 0.72), rgb(91 57 32 / 0.62), rgb(39 27 19 / 0.66));
+		box-shadow: 0 1px 2px rgb(13 10 8 / 0.28);
+		filter: blur(0.2px);
+		transform-origin: center;
+	}
+
+	.campfire-log--rear {
+		transform: translate3d(calc(-50% - 1px), 0, 0) rotate(-20deg);
+	}
+
+	.campfire-log--front {
+		transform: translate3d(calc(-50% + 1px), 1.5px, 0) rotate(22deg);
+		opacity: 0.86;
+	}
+
 	/* Det breda, mjuka skenet. Varma toner utan vit kärna, stor blur, låg alpha
 	   - samma idiom som vattenglimten i WaterLayer.svelte: ljuset ska andas på
 	   plats, inte lysa som en strålkastare. */
 	.campfire-glow {
+		z-index: 1;
 		width: clamp(22px, 3vw, 38px);
 		height: clamp(14px, 1.9vw, 24px);
 		border-radius: 50%;
@@ -84,6 +106,7 @@
 	}
 
 	.campfire-ember {
+		z-index: 2;
 		width: clamp(3.5px, 0.5vw, 6px);
 		height: clamp(1.6px, 0.24vw, 3px);
 		border-radius: 50%;
@@ -103,6 +126,7 @@
 	   tecknad. Två lågor med olika takt/fördröjning ger ett organiskt
 	   intryck utan att röra sig mycket. */
 	.campfire-flame {
+		z-index: 3;
 		width: clamp(2.2px, 0.28vw, 3.6px);
 		height: clamp(4px, 0.5vw, 6.5px);
 		border-radius: 55% 45% 48% 52% / 66% 68% 32% 34%;
@@ -130,6 +154,7 @@
 	   precis som CompanionFriend, så den står kvar på marken när scenen ändrar
 	   storlek. Aldrig ren svart - det ser ut som ett hål i kvällsfotot. */
 	.campfire-figure {
+		z-index: 2;
 		width: clamp(7px, 0.95vw, 12px);
 		height: auto;
 		aspect-ratio: 24 / 32;
@@ -197,24 +222,52 @@
 		animation-play-state: paused;
 	}
 
-	/* ≥981px: object-position går till 50% 50% i +page.svelte (centrerad
-	   beskärning i stället för bas-värdets 70% 64%). */
+	/* ≥981px: den bredare beskärningen ger plats åt en lite lugnare avståndsbild. */
 	@media (min-width: 981px) {
 		.campfire {
-			top: 32%;
+			left: 54%;
+			top: 72%;
 		}
 	}
 
-	/* ≤640px: object-position går till 20% 64%, och scenen byter fokus mot
-	   stugan på vänster strand - samma källpunkt hamnar då mycket längre ner
-	   i rutan. */
+	/* På mobil ligger gruppen precis till höger om kopian och före räven.
+	   Elden prioriteras; figur och stockar får skala ner, men döljs inte. */
 	@media (max-width: 640px) {
 		.campfire {
-			/* Den avlägsna stranden beskärs ner mot textytan på smal mobil.
-		   Dölj den extra detaljscenen i stället för att låta den konkurrera
-		   med kopian nere till vänster. Det påverkar inte layouten eftersom
-		   komponenten är absolut positionerad. */
-			display: none;
+			left: 63%;
+			top: 59%;
+		}
+
+		.campfire-log {
+			width: clamp(11px, 3.6vw, 14px);
+			height: 2.5px;
+		}
+
+		.campfire-glow {
+			width: clamp(13px, 3.8vw, 16px);
+			height: clamp(8px, 2.3vw, 10px);
+			background: radial-gradient(
+				ellipse at 50% 62%,
+				rgb(242 176 106 / 0.2) 0%,
+				rgb(213 141 81 / 0.09) 45%,
+				transparent 82%
+			);
+			filter: blur(4.5px);
+			mix-blend-mode: normal;
+		}
+
+		.campfire-ember {
+			opacity: 0.68;
+		}
+
+		.campfire-flame {
+			width: clamp(1.8px, 0.52vw, 2.2px);
+			height: clamp(3.4px, 0.95vw, 4px);
+		}
+
+		.campfire-figure {
+			width: clamp(6px, 2.15vw, 8px);
+			transform: translate3d(calc(-100% - 3px), -100%, 0);
 		}
 	}
 
