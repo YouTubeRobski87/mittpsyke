@@ -44,18 +44,32 @@
 		animation: waterSurfaceDrift var(--duration, 64000ms) ease-in-out var(--delay, 0ms) infinite alternate;
 	}
 
-	/* Den primära, tydligt läsbara vattenrörelsen: en varm ljusglimt som sveper
-	   över ytan. Egen visuell form (glödande sken, screen-blend) i stället för
-	   bara högre opacitet på water-surface - måste komma efter .world-water i
-	   källan för att override:a dess border/bakgrund korrekt. */
+	/* Ett varmt, diffust solnedgångssken på vattenytan - ambient ljus, inte en
+	   strålkastare. Måste komma efter .world-water i källan för att override:a
+	   dess border/bakgrund korrekt.
+	   Ingen vit kärna: färgen ligger i solnedgångens varma toner så skenet
+	   smälter in i fotot i stället för att lägga ett vitt lager på den mörka
+	   stranden. Många mjuka gradientsteg + stor blur ger en gradvis falloff
+	   utan läsbar kant. */
 	.water-glint {
 		border: 0;
 		border-radius: 50%;
-		background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.98) 0%, rgba(224, 245, 255, 0.65) 38%, transparent 72%);
-		filter: blur(2px);
+		background: radial-gradient(
+			ellipse at 46% 52%,
+			rgba(255, 227, 182, 0.32) 0%,
+			rgba(252, 216, 166, 0.24) 26%,
+			rgba(244, 209, 172, 0.14) 48%,
+			rgba(233, 205, 182, 0.07) 68%,
+			rgba(226, 204, 186, 0.03) 84%,
+			transparent 100%
+		);
+		/* Proportionell blur. Scenen är bara ~210-260px hög på mobil, så en fast
+		   blur i px smetar ut fläcken helt där samtidigt som den blir för hård på
+		   desktop. */
+		filter: blur(clamp(10px, 1.5vw, 22px));
 		mix-blend-mode: screen;
 		opacity: 0;
-		animation: waterGlintSweep var(--duration, 13000ms) ease-in-out var(--delay, 0ms) infinite;
+		animation: waterGlintSweep var(--duration, 34000ms) ease-in-out var(--delay, 0ms) infinite;
 	}
 
 	/* Kontinuerligt upprepade ringar - en ring är en otvetydig vattenform (till
@@ -81,24 +95,33 @@
 		}
 	}
 
+	/* Rörelsen är i första hand små opacitetsvariationer - skenet andas på plats.
+	   Translationen är avsiktligt liten (~6% totalt, mot 150% tidigare) och något
+	   diagonal, med ojämnt fördelade keyframes så rytmen inte blir mekanisk.
+	   0% och 100% är identiska, så loopen inte hoppar.
+	   Öka inte translationen: så fort fläcken tydligt färdas över scenen läser den
+	   som en svepande kägla igen. */
 	@keyframes waterGlintSweep {
-		0% {
-			opacity: 0;
-			transform: translate3d(-20%, 0, 0) scaleX(0.75);
-		}
-		18% {
-			opacity: var(--opacity, 0.55);
-		}
-		50% {
-			transform: translate3d(55%, -1.8%, 0) scaleX(1.08);
-			opacity: calc(var(--opacity, 0.55) * 0.82);
-		}
-		82% {
-			opacity: var(--opacity, 0.55);
-		}
+		0%,
 		100% {
-			opacity: 0;
-			transform: translate3d(130%, 0.6%, 0) scaleX(0.75);
+			opacity: calc(var(--opacity, 0.26) * 0.34);
+			transform: translate3d(-2.4%, 0.5%, 0) scale(0.97);
+		}
+		23% {
+			opacity: var(--opacity, 0.26);
+			transform: translate3d(-0.7%, -0.4%, 0) scale(1.02);
+		}
+		41% {
+			opacity: calc(var(--opacity, 0.26) * 0.58);
+			transform: translate3d(1.1%, 0.8%, 0) scale(1);
+		}
+		62% {
+			opacity: calc(var(--opacity, 0.26) * 0.9);
+			transform: translate3d(3.1%, -0.7%, 0) scale(1.04);
+		}
+		84% {
+			opacity: calc(var(--opacity, 0.26) * 0.46);
+			transform: translate3d(0.9%, 1%, 0) scale(0.99);
 		}
 	}
 

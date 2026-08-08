@@ -239,21 +239,24 @@ const baseEffects: LivingWorldEffect[] = [
 		opacity: 0.34
 	},
 	{
-		// Den primära, tydligt synliga vattenrörelsen: en varm ljusglimt som
-		// långsamt sveper över vattenytan (helt annat visuellt uttryck än
-		// water-surface ovan, inte bara högre opacitet på samma mönster).
-		// Startar synlig inom ~2s (se waterGlintSweep i WaterLayer.svelte).
+		// Ett varmt, diffust solnedgångssken på vattenytan. Ska läsas som
+		// omgivande ljus, inte som en strålkastare: bred och suddig fläck vars
+		// rörelse i första hand är små opacitetsvariationer, inte en förflyttning
+		// över scenen. Se .water-glint och waterGlintSweep i WaterLayer.svelte.
+		//
+		// durationMs styr en hel andning. Håll den i intervallet 20-40s - kortare
+		// än så börjar fläcken läsa som en svepande kägla igen.
 		id: 'water-glint',
 		kind: 'water',
 		enabled: true,
 		className: 'water-glint',
-		x: 2,
-		y: 49,
-		width: 58,
-		height: 18,
-		durationMs: 9_000,
+		x: -2,
+		y: 44,
+		width: 74,
+		height: 26,
+		durationMs: 34_000,
 		delayMs: 0,
-		opacity: 0.75
+		opacity: 0.26
 	},
 	// Kontinuerligt upprepade vattenringar - den tydligaste "vattnet rör sig"-
 	// signalen, eftersom en ring är en otvetydig vattenform (till skillnad från
