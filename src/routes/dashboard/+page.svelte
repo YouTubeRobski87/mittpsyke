@@ -395,6 +395,8 @@
     --mp-shadow: 0 14px 36px rgba(69, 83, 61, 0.07);
     color: var(--mp-text);
     min-height: 100vh;
+    max-width: 100%;
+    overflow-x: clip;
     background: #091321;
   }
 
@@ -406,6 +408,7 @@
   .dashboard-shell {
     display: block;
     min-height: 100vh;
+    min-width: 0;
   }
 
   .dashboard-main {
@@ -431,6 +434,13 @@
       'checkin garden explore';
     gap: clamp(0.9rem, 1.4vw, 1.375rem);
     align-items: stretch;
+    min-width: 0;
+  }
+
+  .dashboard-body > *,
+  .topbar > *,
+  .privacy-row > * {
+    min-width: 0;
   }
 
   .topbar {
@@ -1217,6 +1227,7 @@
 
     .topbar {
       align-items: flex-start;
+      flex-wrap: wrap;
       gap: 1rem;
     }
 
@@ -1231,6 +1242,14 @@
     .topbar-actions {
       gap: 0.5rem;
       padding-top: 0.15rem;
+    }
+
+    .topbar-actions:has(.soft-account-link) {
+      width: 100%;
+    }
+
+    .topbar-actions .soft-account-link {
+      width: 100%;
     }
 
     .companion-hero {
@@ -1299,6 +1318,18 @@
       bottom: 12px;
       left: 12px;
       width: auto;
+    }
+
+    .privacy-row {
+      gap: 0.8rem;
+      padding: 1rem;
+    }
+
+    .privacy-row a {
+      width: 100%;
+      justify-content: center;
+      white-space: normal;
+      text-align: center;
     }
   }
 
