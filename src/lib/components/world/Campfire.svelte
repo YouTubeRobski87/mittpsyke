@@ -53,8 +53,8 @@
 <style>
 	.campfire {
 		position: absolute;
-		left: 58%;
-		top: 72%;
+		left: 63%;
+		top: 76%;
 		pointer-events: none;
 		/* Elden ligger över den mörka förgrundstoningen så att den fortfarande
 		   läses som en liten punkt på stranden, inte som ljus ute i sjön. */
@@ -78,8 +78,8 @@
 	   Skenet stannar inom samlingsplatsen och når aldrig ut mot vattnet. */
 	.campfire-ground-shadow {
 		z-index: 0;
-		width: clamp(58px, 7.4vw, 92px);
-		height: clamp(12px, 1.5vw, 18px);
+		width: clamp(70px, 8.8vw, 108px);
+		height: clamp(14px, 1.7vw, 21px);
 		border-radius: 50%;
 		background: radial-gradient(ellipse at center, rgb(18 14 10 / 0.44), transparent 72%);
 		filter: blur(clamp(2px, 0.38vw, 5px));
@@ -88,13 +88,13 @@
 
 	.campfire-light-patch {
 		z-index: 1;
-		width: clamp(54px, 6.8vw, 84px);
-		height: clamp(20px, 2.45vw, 30px);
+		width: clamp(64px, 8vw, 98px);
+		height: clamp(24px, 2.85vw, 35px);
 		border-radius: 50%;
 		background: radial-gradient(
 			ellipse at 52% 56%,
-			rgb(210 124 61 / 0.2) 0%,
-			rgb(153 86 42 / 0.1) 38%,
+			rgb(210 124 61 / 0.24) 0%,
+			rgb(153 86 42 / 0.12) 38%,
 			transparent 76%
 		);
 		filter: blur(clamp(3px, 0.55vw, 7px));
@@ -103,8 +103,8 @@
 
 	.campfire-stump {
 		z-index: 1;
-		width: clamp(9px, 1.05vw, 14px);
-		height: clamp(6px, 0.72vw, 9px);
+		width: clamp(11px, 1.25vw, 16px);
+		height: clamp(7px, 0.82vw, 10px);
 		border-radius: 47% 53% 35% 36%;
 		background: linear-gradient(100deg, rgb(42 28 18 / 0.88), rgb(81 50 29 / 0.8) 58%, rgb(30 21 15 / 0.78));
 		box-shadow: inset 0 1px 0 rgb(154 100 58 / 0.18), 0 1px 2px rgb(8 7 5 / 0.34);
@@ -124,8 +124,8 @@
 	/* Två små stockar gör platsen läsbar utan att bli en campingillustration. */
 	.campfire-log {
 		z-index: 2;
-		width: clamp(21px, 2.55vw, 33px);
-		height: clamp(3.5px, 0.44vw, 5.8px);
+		width: clamp(25px, 3vw, 38px);
+		height: clamp(4px, 0.5vw, 6.5px);
 		border-radius: 999px;
 		background: linear-gradient(90deg, rgb(46 31 20 / 0.72), rgb(91 57 32 / 0.62), rgb(39 27 19 / 0.66));
 		box-shadow: 0 1px 2px rgb(13 10 8 / 0.28);
@@ -147,14 +147,14 @@
 	   plats, inte lysa som en strålkastare. */
 	.campfire-glow {
 		z-index: 3;
-		width: clamp(36px, 4.6vw, 58px);
-		height: clamp(21px, 2.7vw, 33px);
+		width: clamp(44px, 5.5vw, 68px);
+		height: clamp(25px, 3.15vw, 39px);
 		border-radius: 50%;
 		background: radial-gradient(
 			ellipse at 50% 60%,
-			rgb(255 192 113 / 0.38) 0%,
-			rgb(241 151 76 / 0.2) 32%,
-			rgb(198 107 58 / 0.1) 56%,
+			rgb(255 192 113 / 0.42) 0%,
+			rgb(241 151 76 / 0.23) 32%,
+			rgb(198 107 58 / 0.12) 56%,
 			transparent 78%
 		);
 		filter: blur(clamp(2.5px, 0.46vw, 6px));
@@ -185,8 +185,8 @@
 	   intryck utan att röra sig mycket. */
 	.campfire-flame {
 		z-index: 5;
-		width: clamp(4.6px, 0.56vw, 7.2px);
-		height: clamp(8px, 0.96vw, 12px);
+		width: clamp(5.5px, 0.68vw, 8.5px);
+		height: clamp(10px, 1.18vw, 15px);
 		border-radius: 55% 45% 48% 52% / 66% 68% 32% 34%;
 		background: linear-gradient(
 			358deg,
@@ -213,23 +213,23 @@
 	   storlek. Aldrig ren svart - det ser ut som ett hål i kvällsfotot. */
 	.campfire-figure {
 		z-index: 4;
-		width: clamp(22px, 2.4vw, 34px);
+		width: clamp(28px, 3.15vw, 44px);
 		height: auto;
 		aspect-ratio: 38 / 48;
 		transform: translate3d(calc(-100% - 8px), -100%, 0);
-		filter: blur(0.12px) saturate(0.78);
+		filter: drop-shadow(0 1px 1px rgb(9 7 5 / 0.38)) saturate(0.84);
 	}
 
 	.figure-seat { fill: rgb(46 30 19 / 0.78); }
-	.figure-leg--far { fill: rgb(27 23 19 / 0.82); }
-	.figure-leg--near { fill: rgb(35 29 22 / 0.88); }
-	.figure-coat { fill: rgb(34 30 24 / 0.9); }
-	.figure-arm { fill: rgb(43 35 25 / 0.86); }
+	.figure-leg--far { fill: rgb(39 32 23 / 0.86); }
+	.figure-leg--near { fill: rgb(48 38 27 / 0.92); }
+	.figure-coat { fill: rgb(58 45 33 / 0.94); }
+	.figure-arm { fill: rgb(77 51 30 / 0.86); }
 	.figure-neck,
-	.figure-face { fill: rgb(93 63 42 / 0.68); }
+	.figure-face { fill: rgb(139 87 51 / 0.72); }
 	.figure-cap,
-	.figure-hat-brim { fill: rgb(23 24 20 / 0.9); }
-	.figure-firelight { fill: rgb(189 103 52 / 0.26); }
+	.figure-hat-brim { fill: rgb(34 34 26 / 0.94); }
+	.figure-firelight { fill: rgb(216 122 59 / 0.38); }
 
 	@keyframes campfireGlowBreathe {
 		0%,
@@ -293,8 +293,8 @@
 	/* ≥981px: den bredare beskärningen ger plats åt en lite lugnare avståndsbild. */
 	@media (min-width: 981px) {
 		.campfire {
-			left: 58%;
-			top: 70.5%;
+			left: 63%;
+			top: 75.5%;
 		}
 	}
 
@@ -302,34 +302,34 @@
 	   Elden prioriteras; figur och stockar får skala ner, men döljs inte. */
 	@media (max-width: 640px) {
 		.campfire {
-			left: 61%;
-			top: 62%;
+			left: 66%;
+			top: 65%;
 		}
 
 		.campfire-ground-shadow {
-			width: clamp(40px, 11.5vw, 48px);
-			height: clamp(9px, 2.8vw, 11px);
+			width: clamp(46px, 13vw, 54px);
+			height: clamp(10px, 3vw, 12px);
 		}
 
 		.campfire-light-patch {
-			width: clamp(36px, 10.5vw, 43px);
-			height: clamp(14px, 4.1vw, 17px);
-			background: radial-gradient(ellipse at 52% 56%, rgb(210 124 61 / 0.14), transparent 74%);
+			width: clamp(42px, 12vw, 48px);
+			height: clamp(16px, 4.5vw, 18px);
+			background: radial-gradient(ellipse at 52% 56%, rgb(210 124 61 / 0.16), transparent 74%);
 		}
 
 		.campfire-log {
-			width: clamp(15px, 4.8vw, 18px);
+			width: clamp(18px, 5.5vw, 21px);
 			height: 2.5px;
 		}
 
 		.campfire-stump {
-			width: clamp(6.5px, 2.05vw, 8px);
-			height: clamp(4.5px, 1.55vw, 6px);
+			width: clamp(8px, 2.35vw, 9px);
+			height: clamp(5px, 1.75vw, 6.5px);
 		}
 
 		.campfire-glow {
-			width: clamp(22px, 6.2vw, 25px);
-			height: clamp(12px, 3.7vw, 14px);
+			width: clamp(27px, 7.4vw, 30px);
+			height: clamp(15px, 4.2vw, 16px);
 			background: radial-gradient(
 				ellipse at 50% 62%,
 				rgb(242 176 106 / 0.2) 0%,
@@ -345,12 +345,12 @@
 		}
 
 		.campfire-flame {
-			width: clamp(3px, 0.9vw, 3.5px);
-			height: clamp(5.5px, 1.55vw, 6.2px);
+			width: clamp(3.6px, 1.05vw, 4px);
+			height: clamp(6.5px, 1.85vw, 7.4px);
 		}
 
 		.campfire-figure {
-			width: clamp(14px, 4.2vw, 16px);
+			width: clamp(18px, 5vw, 20px);
 			transform: translate3d(calc(-100% - 5px), -100%, 0);
 		}
 	}
