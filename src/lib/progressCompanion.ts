@@ -80,6 +80,20 @@ export const COMPANION_WORLD_SCENE_SIZES = '(max-width: 620px) 100vw, 720px';
  */
 export const COMPANION_WORLD_SCENE_BACKDROP = '/images/dashboard-lakeside-world-backdrop.webp';
 
+/**
+ * Framsteg använder samma plats som Mitt Hem, men från längre avstånd.
+ * De här konstanterna är avsiktligt separata från COMPANION_WORLD_SCENE_*
+ * ovan så att Mitt Hems bild, backdrop och laddningsstrategi inte påverkas.
+ */
+export const PROGRESS_CABIN_LAKESIDE_SCENE_IMAGE = '/images/scenes/progress-cabin-lakeside.webp';
+export const PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK =
+	'/images/scenes/progress-cabin-lakeside-800.webp';
+export const PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET = [
+	'/images/scenes/progress-cabin-lakeside-800.webp 800w',
+	'/images/scenes/progress-cabin-lakeside-1200.webp 1200w',
+	'/images/scenes/progress-cabin-lakeside.webp 1672w'
+].join(', ');
+
 const DASHBOARD_COMPANION_IMAGE_PATHS = {
 	day: '/images/avatars/presets/fox-morning.webp',
 	night: '/images/avatars/presets/fox-night.webp',
