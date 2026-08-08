@@ -9,6 +9,7 @@
 	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
+	import Campfire from '$lib/components/world/Campfire.svelte';
 	import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
 	import CompanionVisitor from '$lib/components/world/CompanionVisitor.svelte';
 	import {
@@ -925,6 +926,7 @@
 				/>
 				<span class="companion-foreground-edge" aria-hidden="true"></span>
 				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
+				<Campfire class="progress-campfire" />
 				<CompanionFriend class="progress-companion-friend" companionId={sceneCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
