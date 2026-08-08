@@ -287,6 +287,19 @@
 		animation-play-state: paused;
 	}
 
+	/* Framsteg har TRE beskärningar av samma foto, inte två:
+	     - min-width 981px  -> object-position 50 % 50 %  (basvärdena ovan)
+	     - 641-980px        -> 70 % 64 %                  (den här regeln)
+	     - max-width 640px  -> 20 % 64 %                  (regeln under)
+	   Mellanbandet är lätt att missa. Med basvärdet y 44 % landar brasan där på
+	   källpunkt (184, 241) i stället för målet (184, 215), dvs 26 px för långt
+	   ner - nere i det ljusa vattnet. Omräknat blir rätt värde y 33 %. */
+	@media (min-width: 641px) and (max-width: 980px) {
+		.hearth {
+			--hearth-y: 33%;
+		}
+	}
+
 	/* Mobilbeskärningen är en annan bild. object-position går till 20 % 64 %, och
 	   eftersom scenen blir smalare syns fotots HELA höjd (källa sy0 sh450) mot
 	   desktops mittband (sy136 sh179). Samma y-procent pekar alltså på helt olika
