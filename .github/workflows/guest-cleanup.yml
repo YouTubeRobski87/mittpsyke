@@ -1,10 +1,8 @@
-name: Guest chat cleanup
+name: Guest chat cleanup (manual only)
 
 on:
-  schedule:
-    # Rensar anonym gästdata varje timme (retention 24h).
-    # Endpointen kontrollerar CRON_SECRET och raderar guest_messages + guest_conversations.
-    - cron: '0 * * * *'
+  # Automatisk radering är avstängd under incidentbedömningen den 9 augusti 2026.
+  # Kör inte detta manuellt utan uttryckligt beslut om att radering får ske.
   workflow_dispatch:
 
 jobs:

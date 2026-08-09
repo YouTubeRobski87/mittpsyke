@@ -66,7 +66,7 @@
 			<p>Ja. Tjänsten är byggd för små steg och ett varsamt tempo.</p>
 			<h3>Vad händer med det jag skriver?</h3>
 			<p>
-				Utan konto rensas samtalet automatiskt inom 24 timmar. Med konto sparas det tills du
+				Utan konto sparas samtalet i MittPsyke bara under det aktuella besöket. Med konto sparas det tills du
 				själv raderar det. Läs mer i <a href="/integritet">integritetspolicyn</a> och om hur
 				AI-stödet är byggt i <a href="/ansvarsfull-ai">Ansvarsfull AI</a>.
 			</p>

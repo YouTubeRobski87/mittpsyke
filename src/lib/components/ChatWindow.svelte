@@ -107,7 +107,7 @@
 		'Din text blev lite för lång att skicka på en gång. Dela gärna upp den i två delar.';
 	const GENERIC_CHAT_ERROR = 'Något gick fel. Försök igen om en stund.';
 	const HISTORY_NOTICE = 'Tidigare samtal är laddat.';
-	const guestIdStorageKey = 'mittpsyke:guest-id';
+	const legacyGuestHistoryTopics = ['angest', 'nedstamdhet', 'stress-oro', 'allmant'] as const;
 	const autoReadStorageKey = 'mittpsyke:chat-auto-read-replies';
 	const sendWithEnterStorageKey = 'mittpsyke:chat-send-with-enter';
 	const starterSuggestions = ['En sak i taget', 'Lugna tankarna', 'Skriv av dig'];
@@ -313,17 +313,6 @@
 		writeStorageValue(sendWithEnterStorageKey, String(enabled));
 	}
 
-	function getOrCreateGuestId() {
-		if (!browser) return null;
-
-		const existingGuestId = readStorageValue(guestIdStorageKey)?.trim();
-		if (existingGuestId) return existingGuestId;
-
-		const guestId = crypto.randomUUID();
-		writeStorageValue(guestIdStorageKey, guestId);
-		return guestId;
-	}
-
 	function readLocalHistory(userId: string | null = null) {
 		if (!browser) return [];
 
@@ -358,6 +347,14 @@
 		}
 
 		writeStorageValue(storageKey, JSON.stringify(nextMessages));
+	}
+
+	function clearLegacyGuestHistory() {
+		if (!browser) return;
+
+		for (const topic of legacyGuestHistoryTopics) {
+			removeStorageValue(getChatHistoryStorageKey(topic));
+		}
 	}
 
 	function logChatCleanupError(context: string, error: unknown) {
@@ -412,13 +409,14 @@
 	}
 
 	async function loadPersistedHistory(userId: string | null) {
-		const localMessages = readLocalHistory(userId);
 		if (!userId) {
 			return {
-				messages: localMessages,
-				loadedFromMemory: localMessages.length > 0
+				messages: [],
+				loadedFromMemory: false
 			};
 		}
+
+		const localMessages = readLocalHistory(userId);
 
 		try {
 			const { data, error } = await supabase
@@ -454,11 +452,13 @@
 	}
 
 	async function persistHistory(nextMessages: ChatMessage[], userId: string | null) {
+		// Gästläge är avsiktligt sessionsbaserat: ingen chatttext skrivs till
+		// webbläsarens lokala lagring eller till Supabase utan inloggat konto.
+		if (!userId) return;
+
 		const normalized = sanitizeChatMessages(nextMessages);
 
 		writeLocalHistory(normalized, userId);
-
-		if (!userId) return;
 
 		try {
 			if (normalized.length === 0) {
@@ -549,6 +549,7 @@
 
 			persistenceUserId = session?.user.id ?? null;
 			isAnonymous = !session;
+			if (!session) clearLegacyGuestHistory();
 
 			if (seededMessages.length > 0 || initialConversationId) {
 				messages = seededMessages;
@@ -686,7 +687,6 @@
 			const {
 				data: { session }
 			} = await supabase.auth.getSession();
-			const guestId = session ? null : getOrCreateGuestId();
 			const contextMessages = sanitizeChatMessages(messages, CHAT_CONTEXT_LIMIT);
 
 			messages.push({ role: 'user', content: text });
@@ -705,10 +705,9 @@
 				body: JSON.stringify({
 					message: text,
 					category,
-					conversationId,
+					conversationId: session ? conversationId : null,
 					contextMessages,
-					...(topicHint ? { topicHint } : {}),
-					...(guestId ? { guestId } : {})
+					...(topicHint ? { topicHint } : {})
 				})
 			});
 
@@ -1272,7 +1271,7 @@
 							<p>Av som standard. Du kan också välja Lyssna vid ett enskilt svar.</p>
 						{/if}
 					</div>
-					<p class="privacy-note-inline">Du väljer själv vad du skickar. Texten sparas bara när du skickar.</p>
+					<p class="privacy-note-inline">I MittPsyke sparas gästchatt bara under det här besöket. När du ber om ett svar skickas texten till AI-tjänsten.</p>
 					<div class="settings-links">
 						<a
 							href="https://stodlinjer.se"

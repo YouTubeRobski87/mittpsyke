@@ -3,11 +3,11 @@
 -- Kör detta i Supabase SQL Editor
 -- Idempotent – säker att köra flera gånger
 --
--- Gästdata är kortlivad och får inte ligga kvar långsiktigt. Den rensas
--- automatiskt (retention 24h) via cron-rutten /api/cron/guest-cleanup.
--- Skrivning/läsning sker enbart server-side med service role; därför är
--- RLS påslaget utan publika policys (anonyma klienter når aldrig tabellerna
--- direkt, service role kringgår RLS).
+-- Historiskt schema. Ny serverlagring av gästchatt är pausad från 9 augusti
+-- 2026 medan datahantering och incidentbedömning ses över. Kör inte detta för
+-- att återaktivera gästlagring utan ett uttryckligt, granskat beslut.
+-- När detta schema var aktivt skedde skrivning/läsning enbart server-side med
+-- service role. RLS är därför påslaget utan publika policys.
 -- ============================================================
 
 create extension if not exists pgcrypto;

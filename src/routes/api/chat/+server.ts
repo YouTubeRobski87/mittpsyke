@@ -242,7 +242,7 @@ const CHAT_RATE_LIMIT_MESSAGE =
 	'Du skickar meddelanden lite för snabbt. Vänta en liten stund och skicka igen.';
 
 function logAIError(
-	context: { guest: boolean; category: SupportCategory; conversationId: string },
+	context: { guest: boolean; category: SupportCategory; conversationId: string | null },
 	error: AITextGenerationError
 ) {
 	console.error('Chat AI generation failed', {
@@ -270,17 +270,9 @@ Om samtalet byter riktning, följ med dit utan att kommentera bytet.`
 };
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const GUEST_ID_REGEX = /^[a-zA-Z0-9_-]{8,128}$/;
-
 type ConversationRow = {
 	id: string;
 	user_id: string;
-	category: string | null;
-};
-
-type GuestConversationRow = {
-	id: string;
-	guest_id: string;
 	category: string | null;
 };
 
@@ -289,8 +281,6 @@ type PromptHistoryMessage = {
 	content: string;
 };
 
-const GUEST_CONVERSATIONS_TABLE = 'guest_conversations';
-const GUEST_MESSAGES_TABLE = 'guest_messages';
 const MAX_CHAT_MESSAGE_LENGTH = 2000;
 const CHAT_MESSAGE_TOO_LONG_ERROR = 'Din text blev lite för lång att skicka på en gång. Dela gärna upp den i två delar.';
 
@@ -368,7 +358,7 @@ ${phaseInstruction}${retentionInstructionBlock ? `\n${retentionInstructionBlock}
 function logChatPayloadStructure(context: {
 	guest: boolean;
 	category: SupportCategory;
-	conversationId: string;
+	conversationId: string | null;
 	contextSource: 'client' | 'database';
 	messages: AIMessage[];
 }) {
@@ -405,13 +395,6 @@ function normalizeConversationId(value: unknown): string | null {
 	if (typeof value !== 'string') return null;
 	const trimmed = value.trim();
 	if (!trimmed || !UUID_REGEX.test(trimmed)) return null;
-	return trimmed;
-}
-
-function normalizeGuestId(value: unknown): string | null {
-	if (typeof value !== 'string') return null;
-	const trimmed = value.trim();
-	if (!trimmed || !GUEST_ID_REGEX.test(trimmed)) return null;
 	return trimmed;
 }
 
@@ -460,7 +443,6 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		message?: unknown;
 		category?: unknown;
 		conversationId?: unknown;
-		guestId?: unknown;
 		contextMessages?: unknown;
 		topicHint?: unknown;
 	};
@@ -484,7 +466,6 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 	}
 
 	const token = getAccessToken(request.headers.get('authorization'));
-	const guestId = normalizeGuestId(body.guestId);
 	const isGuestRequest = !token;
 
 	// ---------------------------------------------------------------------------
@@ -524,62 +505,79 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		return errorResponse(CHAT_RATE_LIMIT_MESSAGE, 429);
 	}
 
-	if (isGuestRequest) {
-		console.info('[chat][guest] request identified as guest', {
-			hasToken: Boolean(token),
-			bodyFields: {
-				message: typeof body.message === 'string' ? `string(${body.message.trim().length})` : typeof body.message,
-				category: typeof body.category === 'string' ? body.category : typeof body.category,
-				conversationId: typeof body.conversationId === 'string' ? body.conversationId : typeof body.conversationId,
-				guestId: typeof body.guestId === 'string' ? `string(${body.guestId.trim().length})` : typeof body.guestId
-			},
-			normalized: {
-				guestIdPresent: Boolean(guestId),
-				conversationIdPresent: Boolean(normalizeConversationId(body.conversationId))
-			}
-		});
-	}
-
-	if (!token && !guestId) {
-		console.warn('[chat][guest] missing required auth field', {
-			required: 'guestId',
-			rawGuestIdType: typeof body.guestId
-		});
-		return errorResponse('Missing auth. Provide either bearer token or guestId.', 401);
-	}
-
-	const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
-	const supabaseAnonKey = env.SUPABASE_ANON_KEY || publicEnv.PUBLIC_SUPABASE_ANON_KEY;
-
-	if (!supabaseUrl || !supabaseAnonKey) {
-		console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY.');
-		return errorResponse('Server configuration error', 500);
-	}
-
 	if (!normalizeApiKey(env.OPENAI_API_KEY)) {
 		console.error('OPENAI_API_KEY is missing or malformed');
 		return errorResponse('Server configuration error', 500);
 	}
 
-	const authClient = createClient(supabaseUrl, supabaseAnonKey, {
-		auth: { autoRefreshToken: false, persistSession: false },
-		global: token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
-	});
-
-	const serviceRoleKey = env.SUPABASE_SERVICE_ROLE_KEY;
-	const serviceClient =
-		serviceRoleKey
-			? createClient(supabaseUrl, serviceRoleKey, {
-					auth: { autoRefreshToken: false, persistSession: false }
-			  })
-			: null;
-
 	try {
 		let category = normalizeCategory(body.category);
 		let conversationId = normalizeConversationId(body.conversationId);
 
+		// Gästläge är avsiktligt utan serverlagring tills datahanteringen och
+		// retentionen är genomgångna. Samtalet fortsätter endast med den begränsade
+		// kontext som webbläsaren skickar i det aktuella anropet.
+		if (!token) {
+			const modelContext = contextMessages.map((row) => ({
+				role: row.role,
+				content: row.content
+			}));
+			const reassurancePatternInstruction = buildReassurancePatternInstruction(
+				detectReassurancePattern(message, modelContext)
+			);
+			const systemPrompt = buildDynamicSystemPrompt(
+				category,
+				modelContext,
+				topicHintId,
+				reassurancePatternInstruction
+			);
+			const completionMessages: AIMessage[] = [
+				...modelContext,
+				{ role: 'user', content: message }
+			];
+			logChatPayloadStructure({
+				guest: true,
+				category,
+				conversationId: null,
+				contextSource: 'client',
+				messages: completionMessages
+			});
+
+			try {
+				const result = await generateAIText({
+					purpose: 'support-chat',
+					systemInstructions: [...buildSupportChatSafetyInstructions(), systemPrompt],
+					messages: completionMessages,
+					temperature: 0.75,
+					frequencyPenalty: 0.3,
+					presencePenalty: 0.2
+				});
+				return json({ reply: result.text, conversationId: null, mode: 'guest' });
+			} catch (error) {
+				const aiError =
+					error instanceof AITextGenerationError
+						? error
+						: new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.');
+				logAIError({ guest: true, category, conversationId: null }, aiError);
+				throw aiError;
+			}
+		}
+
+		const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
+		const supabaseAnonKey = env.SUPABASE_ANON_KEY || publicEnv.PUBLIC_SUPABASE_ANON_KEY;
+
+		if (!supabaseUrl || !supabaseAnonKey) {
+			console.error('Missing SUPABASE_URL or SUPABASE_ANON_KEY.');
+			return errorResponse('Server configuration error', 500);
+		}
+
+		const authClient = createClient(supabaseUrl, supabaseAnonKey, {
+			auth: { autoRefreshToken: false, persistSession: false },
+			global: { headers: { Authorization: `Bearer ${token}` } }
+		});
+
 		// INLOGGAD ANVÄNDARE
-		if (token) {
+		{
 			const {
 				data: { user },
 				error: userError
@@ -791,179 +789,11 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			});
 		}
 
-		// GÄSTANVÄNDARE
-		if (!guestId) {
-			console.warn('[chat][guest] missing required field', {
-				required: 'guestId',
-				rawGuestIdType: typeof body.guestId
-			});
-			return errorResponse('Missing guestId.', 400);
-		}
-
-		const guestDbClient = serviceClient ?? authClient;
-		console.info('[chat][guest] supabase client initialized', {
-			hasServiceRoleKey: Boolean(serviceRoleKey),
-			mode: serviceClient ? 'service_role' : 'anon_fallback'
-		});
-
-		if (conversationId) {
-			const { data: existingConversation, error: existingConversationError } = await guestDbClient
-				.from(GUEST_CONVERSATIONS_TABLE)
-				.select('id, guest_id, category')
-				.eq('id', conversationId)
-				.eq('guest_id', guestId)
-				.maybeSingle();
-
-			if (existingConversationError) {
-				console.error('[chat][guest] DB operation failed: verify guest conversation', existingConversationError);
-				return errorResponse('Could not validate guest conversation.', 500);
-			}
-
-			if (!existingConversation) {
-				console.warn('[chat][guest] conversationId not found for guest, creating a new one', {
-					conversationId,
-					guestId
-				});
-				conversationId = null;
-			} else {
-				const conversation = existingConversation as GuestConversationRow;
-				category = normalizeCategory(conversation.category);
-			}
-		}
-
-		if (!conversationId) {
-			const title = buildConversationTitle(message);
-
-			let { data: createdConversation, error: createConversationError } = await guestDbClient
-				.from(GUEST_CONVERSATIONS_TABLE)
-				.insert({
-					guest_id: guestId,
-					category,
-					title
-				})
-				.select('id')
-				.single();
-
-			const missingTitleColumn =
-				createConversationError?.code === 'PGRST204' ||
-				createConversationError?.code === '42703' ||
-				(createConversationError?.message ?? '').toLowerCase().includes('title');
-
-			if (missingTitleColumn) {
-				const retry = await guestDbClient
-					.from(GUEST_CONVERSATIONS_TABLE)
-					.insert({
-						guest_id: guestId,
-						category
-					})
-					.select('id')
-					.single();
-
-				createdConversation = retry.data;
-				createConversationError = retry.error;
-			}
-
-			if (createConversationError || !createdConversation) {
-				console.error('[chat][guest] DB operation failed: create guest conversation', createConversationError);
-				return errorResponse('Could not create guest conversation.', 500);
-			}
-
-			conversationId = createdConversation.id as string;
-		}
-
-		const { data: previousMessages, error: previousMessagesError } = await guestDbClient
-			.from(GUEST_MESSAGES_TABLE)
-			.select('role, content')
-			.eq('conversation_id', conversationId)
-			.order('created_at', { ascending: true })
-			.limit(20);
-
-		if (previousMessagesError) {
-			console.error('[chat][guest] DB operation failed: load guest conversation history', previousMessagesError);
-			return errorResponse('Could not load guest conversation history.', 500);
-		}
-
-		const { error: guestMessageError } = await guestDbClient.from(GUEST_MESSAGES_TABLE).insert({
-			conversation_id: conversationId,
-			role: 'user',
-			content: message
-		});
-
-		if (guestMessageError) {
-			console.error('[chat][guest] DB operation failed: save guest user message', guestMessageError);
-			return errorResponse('Could not save guest message.', 500);
-		}
-
-		const promptHistory = getChatContextMessages(previousMessages, CHAT_CONTEXT_LIMIT);
-
-		const contextSource = contextMessages.length > 0 ? 'client' : 'database';
-		const modelContext =
-			contextMessages.length > 0
-				? contextMessages.map((row) => ({
-						role: row.role,
-						content: row.content
-					}))
-				: promptHistory;
-
-		const reassurancePatternInstruction = buildReassurancePatternInstruction(
-			detectReassurancePattern(message, modelContext)
-		);
-		const systemPrompt = buildDynamicSystemPrompt(
-			category,
-			modelContext,
-			topicHintId,
-			reassurancePatternInstruction
-		);
-		const completionMessages: AIMessage[] = [
-			...modelContext,
-			{ role: 'user', content: message }
-		];
-		logChatPayloadStructure({
-			guest: true,
-			category,
-			conversationId,
-			contextSource,
-			messages: completionMessages
-		});
-		let reply: string;
-		try {
-			const result = await generateAIText({
-				purpose: 'support-chat',
-				systemInstructions: [...buildSupportChatSafetyInstructions(), systemPrompt],
-				messages: completionMessages,
-				temperature: 0.75,
-				frequencyPenalty: 0.3,
-				presencePenalty: 0.2
-			});
-			reply = result.text;
-		} catch (error) {
-			const aiError = error instanceof AITextGenerationError ? error : new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.');
-			logAIError({ guest: true, category, conversationId }, aiError);
-			throw aiError;
-		}
-
-		const { error: assistantMessageError } = await guestDbClient.from(GUEST_MESSAGES_TABLE).insert({
-			conversation_id: conversationId,
-			role: 'assistant',
-			content: reply
-		});
-
-		if (assistantMessageError) {
-			console.error('[chat][guest] DB operation failed: save guest assistant message', assistantMessageError);
-			return errorResponse('Could not save guest assistant message.', 500);
-		}
-
-		return json({
-			reply,
-			conversationId,
-			mode: 'guest',
-			guestId
-		});
 	} catch (err) {
-		if (!token) {
-			console.error('[chat][guest] catch error object:', err);
-		}
-		console.error('Chat API error:', err);
+		console.error('Chat API error:', {
+			errorType: err instanceof Error ? err.name : typeof err,
+			code: err instanceof AITextGenerationError ? err.code : undefined
+		});
 
 		// Lugna, konkreta svenska felmeddelanden istället för ett generiskt
 		// tekniskt fel - särskilja timeout/överbelastning så användaren förstår

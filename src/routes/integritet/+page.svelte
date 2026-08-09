@@ -70,7 +70,7 @@
 			<li><strong>Inga kakor utöver funktionella</strong> — om du inte godkänner analytics i cookie-bannern.</li>
 		</ul>
 		<p class="opacity-70 leading-relaxed text-sm mt-3">
-			Tips: Om du vill använda dagbok, se historik eller spara framsteg behöver du skapa ett konto.
+			I MittPsyke sparas gästchatt bara under det aktuella besöket och finns inte kvar när sessionen avslutas. Text du skickar i AI-chatten behandlas ändå av AI-leverantören för att kunna ge ett svar. Om du vill använda dagbok, se historik med konto eller spara framsteg behöver du skapa ett konto.
 		</p>
 	</section>
 
@@ -151,13 +151,6 @@
 					<td class="px-4 py-3">Samtycke</td>
 					<td class="px-4 py-3">Tills du raderar</td>
 				</tr>
-				<tr>
-					<th scope="row" class="px-4 py-3 font-normal text-left">Anonyma chattsamtal (gäst)</th>
-					<td class="px-4 py-3">Supabase + OpenAI</td>
-					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
-					<td class="px-4 py-3">Samtycke</td>
-					<td class="px-4 py-3">Rensas automatiskt inom 24 timmar</td>
-				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
 					<th scope="row" class="px-4 py-3 font-normal text-left">Tekniska loggar</th>
 					<td class="px-4 py-3">Supabase / Vercel</td>
@@ -230,7 +223,7 @@
 		<li>Kontorelaterade uppgifter sparas så länge kontot är aktivt eller tills du begär radering.</li>
 		<li>Chatt- och dagboksinnehåll sparas så länge du har ett aktivt konto och inte raderar innehållet själv.</li>
 		<li>Tekniska loggar och säkerhetsuppgifter sparas normalt i upp till 90 dagar.</li>
-		<li>Anonym chatt sparas inte i någon historik. Innehållet kan ligga tekniskt tillfälligt under kort tid för att tjänsten ska fungera, och rensas automatiskt senast inom 24 timmar.</li>
+			<li>I MittPsyke sparas gästchatt bara under det aktuella besöket och finns inte kvar när sessionen avslutas.</li>
 		<li>När uppgifter inte längre behövs raderas eller anonymiseras de.</li>
 	</ul>
 
