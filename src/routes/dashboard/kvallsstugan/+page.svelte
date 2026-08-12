@@ -188,17 +188,17 @@
 		position: absolute;
 		z-index: 3;
 		left: 10%;
-		bottom: -13%;
+		bottom: 2%;
 		width: min(26%, 250px);
 		margin: 0;
 	}
-	.evening-scene :global(.interior-companion[data-companion='bear']) { left: 8%; bottom: -16%; width: min(30%, 280px); }
-	.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 9%; bottom: -11%; width: min(29%, 270px); }
+	.evening-scene :global(.interior-companion[data-companion='bear']) { left: 8%; bottom: 1%; width: min(30%, 280px); }
+	.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 9%; bottom: 3%; width: min(29%, 270px); }
 	.evening-flow-wrap {
 		position: relative;
 		z-index: 4;
 		width: min(100% - 1.5rem, 44rem);
-		margin: -2.2rem auto 0;
+		margin: -1rem auto 0;
 	}
 	.evening-help { margin: 1.1rem 0 0; color: hsl(var(--muted-foreground)); font-size: 0.82rem; line-height: 1.55; }
 	.evening-help summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 650; }
@@ -214,10 +214,10 @@
 	@media (max-width: 640px) {
 		.evening-page { width: min(100% - 1.25rem, 44rem); padding-top: 0.45rem; }
 		.evening-scene { min-height: 180px; border-radius: 1rem; }
-		.evening-scene :global(.interior-companion) { left: 8%; bottom: -17%; width: min(32%, 175px); }
-		.evening-scene :global(.interior-companion[data-companion='bear']) { left: 6%; bottom: -21%; width: min(37%, 190px); }
-		.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 7%; bottom: -15%; width: min(35%, 185px); }
-		.evening-flow-wrap { width: 100%; margin-top: -1.15rem; }
+		.evening-scene :global(.interior-companion) { left: 8%; bottom: 1%; width: min(32%, 175px); }
+		.evening-scene :global(.interior-companion[data-companion='bear']) { left: 6%; bottom: 0; width: min(37%, 190px); }
+		.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 7%; bottom: 2%; width: min(35%, 185px); }
+		.evening-flow-wrap { width: 100%; margin-top: 0; }
 	}
 
 	@media (prefers-reduced-motion: reduce) {
