@@ -29,6 +29,21 @@ export type CompanionScenePosition = {
 	weight?: number;
 };
 
+/**
+ * Visuell placering ovanpå en scenposition. `compact` används av dashboardens
+ * smala viewport utan att ändra följeslagarens pose- eller relationsdata.
+ */
+export type CompanionPlacement = {
+	scale: number;
+	x: number;
+	y: number;
+	compact?: {
+		scale: number;
+		x: number;
+		y: number;
+	};
+};
+
 export type CompanionPose = {
 	id: string;
 	companionId?: CompanionId;
@@ -378,10 +393,18 @@ export const WOLF_SCENE_PLACEMENTS = {
  */
 export const DASHBOARD_CABIN_COMPANION_PLACEMENTS: Record<
 	CompanionId,
-	{ scale: number; x: number; y: number }
+	CompanionPlacement
 > = {
 	fox: { scale: 0.8, x: 37, y: 91 },
-	bear: { scale: 0.9, x: 37, y: 91 },
+	// Björnens breda canvas har genomskinlig marginal under tassarna. Ett eget
+	// dashboardankare håller därför den synliga kroppen mindre och tassarna på
+	// den sluttande marken vid verandan, utan att ändra poser eller andra vyer.
+	bear: {
+		scale: 0.68,
+		x: 35,
+		y: 94,
+		compact: { scale: 0.72, x: 31, y: 92 }
+	},
 	wolf: { scale: 0.9, x: 37, y: 91 }
 };
 

@@ -162,6 +162,16 @@ describe('dashboardscenens fria yta för hjältetexten', () => {
 		return edge;
 	}
 
+	it('uses a separate smaller, lower dashboard anchor for the bear', () => {
+		const bear = DASHBOARD_CABIN_COMPANION_PLACEMENTS.bear;
+		const fox = DASHBOARD_CABIN_COMPANION_PLACEMENTS.fox;
+
+		expect(bear).toMatchObject({ scale: 0.68, x: 35, y: 94 });
+		expect(bear.compact).toEqual({ scale: 0.72, x: 31, y: 92 });
+		expect(bear.scale).toBeLessThan(fox.scale);
+		expect(bear.y).toBeGreaterThan(fox.y);
+	});
+
 	it('lämnar hjälte-textens högra yta fri för varje tillåten pose och position', () => {
 		expect(easternmostCompanionEdge()).toBeLessThanOrEqual(
 			DASHBOARD_CABIN_COPY_SAFE_START_PCT

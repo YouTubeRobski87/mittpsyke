@@ -27,6 +27,7 @@
 	} from '$lib/world/companionBehaviour';
 	import type {
 		CompanionId,
+		CompanionPlacement,
 		CompanionPose,
 		CompanionPoseDaypart,
 		CompanionSceneContext,
@@ -47,7 +48,7 @@
 		decorative?: boolean;
 		basePose?: CompanionPose | null;
 		position?: CompanionScenePosition | null;
-		placement?: { scale?: number; x?: number; y?: number } | null;
+		placement?: CompanionPlacement | null;
 		companionId?: CompanionId;
 		// Ett lokalt, räknande event från en vy som vill låta följeslagaren
 		// uppmärksamma användaren. Det är ingen ny companion-state och sparas inte.
@@ -101,6 +102,9 @@
 					`--companion-x: ${(placement?.x ?? position.x) + (sceneAdjustment?.x ?? 0)}%`,
 					`--companion-y: ${(placement?.y ?? position.y) + (sceneAdjustment?.y ?? 0)}%`,
 					`--companion-scale: ${position.scale * (sceneAdjustment?.scale ?? 1) * (placement?.scale ?? 1)}`,
+					`--companion-compact-x: ${(placement?.compact?.x ?? placement?.x ?? position.x) + (sceneAdjustment?.x ?? 0)}%`,
+					`--companion-compact-y: ${(placement?.compact?.y ?? placement?.y ?? position.y) + (sceneAdjustment?.y ?? 0)}%`,
+					`--companion-compact-scale: ${position.scale * (sceneAdjustment?.scale ?? 1) * (placement?.compact?.scale ?? placement?.scale ?? 1)}`,
 					`--companion-z: ${position.zIndex}`,
 					`--shadow-width: ${position.shadow.width}%`,
 					`--shadow-height: ${position.shadow.height}%`,
@@ -601,6 +605,9 @@
 	@media (max-width: 620px) {
 		.companion-pose:global(.hero-companion-pose) {
 			width: min(50%, 220px);
+			left: var(--companion-compact-x, var(--companion-x, 78%));
+			top: var(--companion-compact-y, var(--companion-y, 82%));
+			transform: translate3d(-50%, -100%, 0) scale(calc(var(--companion-compact-scale, var(--companion-scale, 1)) * var(--companion-animal-scale, 1)));
 		}
 	}
 </style>
