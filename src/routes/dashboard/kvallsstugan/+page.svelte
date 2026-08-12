@@ -76,11 +76,12 @@
 	</header>
 
 	<div class="evening-experience">
+		<div class="evening-scene-column">
 		<section class="evening-scene" data-time={dayState} aria-label="Inne i Kvällsstugan, vid vattnet">
 			<img
 				class="evening-scene-image"
 				srcset={CABIN_SRCSET}
-				sizes="(max-width: 899px) calc(100vw - 20px), 660px"
+				sizes="(max-width: 899px) calc(100vw - 20px), 860px"
 				src={CABIN_IMAGE}
 				alt=""
 				aria-hidden="true"
@@ -99,8 +100,21 @@
 			/>
 		</section>
 
-		<div class="evening-flow-wrap">
-			<EveningCheckinFlow oncomplete={handleComplete} />
+			<section class="evening-reassurance" aria-labelledby="evening-reassurance-title">
+				<h2 id="evening-reassurance-title">Du är på en trygg plats</h2>
+				<p>Här inne får du stanna upp, andas och lyssna in hur du har det just nu.</p>
+				<p>Det finns inget rätt eller fel – bara du och en stund av lugn.</p>
+			</section>
+		</div>
+
+		<div class="evening-flow-column">
+			<div class="evening-flow-wrap">
+				<EveningCheckinFlow oncomplete={handleComplete} />
+			</div>
+			<p class="evening-privacy">
+				Dina svar sparas bara om du väljer att spara dem.
+				<a href="/integritet">Läs mer om integritet</a>
+			</p>
 		</div>
 	</div>
 
@@ -200,11 +214,52 @@
 		display: grid;
 		gap: 1rem;
 	}
+	.evening-scene-column,
+	.evening-flow-column {
+		display: grid;
+		gap: 1rem;
+		min-width: 0;
+	}
 	.evening-flow-wrap {
 		position: relative;
 		z-index: 4;
 		width: min(100% - 1.5rem, 44rem);
 		margin: 0 auto;
+	}
+	.evening-reassurance {
+		padding: clamp(1rem, 2.4vw, 1.45rem);
+		border: 1px solid rgb(237 222 194 / 0.12);
+		border-radius: 1rem;
+		background: linear-gradient(135deg, rgb(46 42 37 / 0.54), rgb(28 30 31 / 0.5));
+		color: rgb(247 243 235 / 0.88);
+	}
+	.evening-reassurance h2 {
+		margin: 0 0 0.55rem;
+		font-family: var(--font-heading);
+		font-size: 1.1rem;
+	}
+	.evening-reassurance p {
+		margin: 0;
+		font-size: 0.92rem;
+		line-height: 1.55;
+	}
+	.evening-reassurance p + p { margin-top: 0.2rem; }
+	.evening-privacy {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.82rem;
+		line-height: 1.5;
+	}
+	.evening-privacy a {
+		display: block;
+		width: fit-content;
+		margin-top: 0.1rem;
+		color: #d6b46c;
+		text-underline-offset: 0.18em;
+	}
+	.evening-privacy a:focus-visible {
+		outline: 2px solid #f5c878;
+		outline-offset: 3px;
 	}
 	.evening-help { margin: 1.1rem 0 0; color: hsl(var(--muted-foreground)); font-size: 0.82rem; line-height: 1.55; }
 	.evening-help summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 650; }
