@@ -224,10 +224,11 @@
 
 	.evening-flow {
 		padding: clamp(1.1rem, 4vw, 1.8rem);
-		border: 1px solid rgb(237 222 194 / 0.22);
+		border: 1px solid rgb(237 222 194 / 0.28);
 		border-radius: 1.2rem;
-		background: rgb(19 27 38 / 0.88);
-		box-shadow: 0 18px 42px rgb(10 16 24 / 0.14);
+		background: linear-gradient(145deg, rgb(55 38 29 / 0.96), rgb(28 23 22 / 0.97));
+		box-shadow: 0 18px 42px rgb(22 15 12 / 0.28);
+		backdrop-filter: blur(8px);
 		color: #f7f3eb;
 	}
 
