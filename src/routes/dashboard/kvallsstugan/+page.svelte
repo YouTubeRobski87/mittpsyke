@@ -75,31 +75,33 @@
 		<span>En stund där dagen får landa.</span>
 	</header>
 
-	<section class="evening-scene" data-time={dayState} aria-label="Inne i Kvällsstugan, vid vattnet">
-		<img
-			class="evening-scene-image"
-			srcset={CABIN_SRCSET}
-			sizes="(max-width: 680px) calc(100vw - 20px), 1056px"
-			src={CABIN_IMAGE}
-			alt=""
-			aria-hidden="true"
-			width="1672"
-			height="941"
-			decoding="async"
-		/>
-		<div class="cabin-window-view" aria-hidden="true">
-			<AmbientWorld scene={worldScene} class="evening-ambient" />
-		</div>
-		<CompanionPose
-			class="evening-companion interior-companion"
-			companionId={companionId}
-			scene="dashboard"
-			greetingReaction={completionSignal}
-		/>
-	</section>
+	<div class="evening-experience">
+		<section class="evening-scene" data-time={dayState} aria-label="Inne i Kvällsstugan, vid vattnet">
+			<img
+				class="evening-scene-image"
+				srcset={CABIN_SRCSET}
+				sizes="(max-width: 899px) calc(100vw - 20px), 660px"
+				src={CABIN_IMAGE}
+				alt=""
+				aria-hidden="true"
+				width="1672"
+				height="941"
+				decoding="async"
+			/>
+			<div class="cabin-window-view" aria-hidden="true">
+				<AmbientWorld scene={worldScene} class="evening-ambient" />
+			</div>
+			<CompanionPose
+				class="evening-companion interior-companion"
+				companionId={companionId}
+				scene="dashboard"
+				greetingReaction={completionSignal}
+			/>
+		</section>
 
-	<div class="evening-flow-wrap">
-		<EveningCheckinFlow oncomplete={handleComplete} />
+		<div class="evening-flow-wrap">
+			<EveningCheckinFlow oncomplete={handleComplete} />
+		</div>
 	</div>
 
 	<details class="evening-help">
@@ -110,7 +112,7 @@
 
 <style>
 	.evening-page {
-		width: min(100% - 2rem, 66rem);
+		width: min(100% - 2rem, 92rem);
 		margin: 0 auto;
 		padding: clamp(0.9rem, 3vw, 1.6rem) 0 2.8rem;
 		font-family: var(--font-body);
@@ -194,11 +196,15 @@
 	}
 	.evening-scene :global(.interior-companion[data-companion='bear']) { left: 8%; bottom: 1%; width: min(30%, 280px); }
 	.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 9%; bottom: 3%; width: min(29%, 270px); }
+	.evening-experience {
+		display: grid;
+		gap: 1rem;
+	}
 	.evening-flow-wrap {
 		position: relative;
 		z-index: 4;
 		width: min(100% - 1.5rem, 44rem);
-		margin: -1rem auto 0;
+		margin: 0 auto;
 	}
 	.evening-help { margin: 1.1rem 0 0; color: hsl(var(--muted-foreground)); font-size: 0.82rem; line-height: 1.55; }
 	.evening-help summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 650; }
@@ -218,6 +224,18 @@
 		.evening-scene :global(.interior-companion[data-companion='bear']) { left: 6%; bottom: 0; width: min(37%, 190px); }
 		.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 7%; bottom: 2%; width: min(35%, 185px); }
 		.evening-flow-wrap { width: 100%; margin-top: 0; }
+	}
+
+	@media (min-width: 900px) {
+		.evening-experience {
+			grid-template-columns: minmax(0, 1.55fr) minmax(20rem, 0.9fr);
+			align-items: start;
+			gap: clamp(1.25rem, 3vw, 2rem);
+		}
+		.evening-flow-wrap {
+			width: 100%;
+			margin: 0;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
