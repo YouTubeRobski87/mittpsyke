@@ -5,6 +5,9 @@
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 
 	export let onAccept: (consent: HealthConsentRecord) => void | Promise<void> = () => {};
+	export let title = 'Innan du börjar';
+	export let intro =
+		'MittPsyke är ett stöd i egen takt, inte vård. Det du skriver kan innehålla känsliga uppgifter om mående.';
 
 	let confirmed = false;
 	let errorMessage = '';
@@ -138,11 +141,10 @@
 
 <div class="consent-overlay" bind:this={overlayEl}>
 	<div class="consent-box" role="dialog" aria-modal="true" aria-labelledby="health-consent-title">
-		<h2 id="health-consent-title" bind:this={titleEl} tabindex="-1">Innan du börjar</h2>
+		<h2 id="health-consent-title" bind:this={titleEl} tabindex="-1">{title}</h2>
 
 		<p id="health-consent-copy">
-			MittPsyke är ett stöd i egen takt, inte vård. Det du skriver kan innehålla känsliga
-			uppgifter om mående.
+			{intro}
 		</p>
 
 		<label class="consent-check">
