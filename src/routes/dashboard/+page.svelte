@@ -8,6 +8,7 @@
   import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
   import CompanionVisitor from '$lib/components/world/CompanionVisitor.svelte';
   import CompanionDailyCard from '$lib/components/world/CompanionDailyCard.svelte';
+  import CompanionWorldResponse from '$lib/components/world/CompanionWorldResponse.svelte';
   import {
     Activity,
     ArrowRight,
@@ -49,6 +50,7 @@
     shouldShowCompanionDailyQuestion,
     type CompanionDailyState
   } from '$lib/companionDailyQuestion';
+  import { shouldTriggerWorldResponse } from '$lib/world/worldResponse';
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
@@ -97,6 +99,9 @@
   let companionDailyBusy = $state(false);
   let companionDailyReaction = $state<string | null>(null);
   let companionDailyReactionTimer: number | null = null;
+  // Transient räknare för världens korta svar. Sparas aldrig, varken i databasen
+  // eller i localStorage - den lever bara så länge sidan är öppen.
+  let worldResponseSignal = $state(0);
 
   const companionDailyState = $derived<CompanionDailyState | null>(
     companionDailyOverride ?? data.companionDaily ?? null
@@ -223,11 +228,26 @@
     }
 
     try {
-      await fetch('/api/companion/daily-question', {
+      const response = await fetch('/api/companion/daily-question', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ questionId: state.questionId, answerId })
       });
+
+      // Världen svarar först när sparningen är bekräftad - aldrig optimistiskt,
+      // aldrig vid hoppa över, och aldrig på en dag som redan var hanterad.
+      // Följeslagarens egen reaktion ovan är däremot medvetet omedelbar: den ska
+      // inte vänta på nätverket.
+      if (
+        shouldTriggerWorldResponse({
+          isAnonymous: Boolean(data.isAnonymous),
+          previousStatus: state.status,
+          answerId,
+          requestOk: response.ok
+        })
+      ) {
+        worldResponseSignal += 1;
+      }
     } catch {
       // Dagens fråga är frivillig och får aldrig störa besöket.
     } finally {
@@ -330,6 +350,10 @@
           sceneAllowsVisitor={true}
         />
         <AmbientWorld scene={livingWorldScene} class="hero-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
+        <!-- Kort, kosmetiskt svar från platsen efter en reflektion. Ligger i
+             ambientbandet, alltså bakom följeslagaren, så pusten drar förbi den
+             i stället för över den. -->
+        <CompanionWorldResponse class="hero-world-response" signal={worldResponseSignal} />
         <CompanionFriend class="hero-companion-friend" companionId={heroCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
         <!-- Textytan ligger i stugscenens lugna högra del. Testet i
              companionPoseState.test.ts kontrollerar marginalen mot varje
@@ -708,6 +732,13 @@
 
   .companion-hero :global(.hero-companion-pose) {
     z-index: calc(var(--companion-z, 2) + 1);
+  }
+
+  /* Samma djupband som det (dolda) världslagret: bakom följeslagaren, framför
+     scenbilden. Till skillnad från .hero-living-world döljs det här lagret inte
+     - det är hela poängen med det. */
+  .companion-hero :global(.hero-world-response) {
+    z-index: var(--scene-ambient);
   }
 
   .companion-greeting {
