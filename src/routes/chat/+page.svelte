@@ -107,6 +107,8 @@
 
 {#if !hasConsent}
 	<HealthConsent
+		title="Innan du börjar chatta"
+		intro="För att chatten ska kunna svara på det du delar behöver du först samtycka till att känsliga uppgifter behandlas. Efter det kan du börja skriva i din egen takt."
 		onAccept={() => {
 			hasConsent = true;
 		}}
