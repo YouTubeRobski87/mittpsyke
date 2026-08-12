@@ -5,22 +5,9 @@ import { createClient } from '@supabase/supabase-js';
 import { env as publicEnv } from '$env/dynamic/public';
 import { env as privateEnv } from '$env/dynamic/private';
 import type { RequestHandler } from '@sveltejs/kit';
-import OpenAI from 'openai';
 
 const INSIGHTS_ROW_LIMIT = 500;
 const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
-const INSIGHTS_AI_TIMEOUT_MS = 20_000;
-
-function getOpenAIClient() {
-	return privateEnv.OPENAI_API_KEY
-		? new OpenAI({ apiKey: privateEnv.OPENAI_API_KEY, timeout: INSIGHTS_AI_TIMEOUT_MS })
-		: null;
-}
-
-function getModel() {
-	return (privateEnv.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
-}
-
 function getAccessToken(authorizationHeader: string | null): string | null {
 	if (!authorizationHeader) return null;
 	const [scheme, token] = authorizationHeader.split(' ');
@@ -102,10 +89,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		if (error) return json({ error: error.message }, { status: 500 });
 
 		const rows = (entries ?? []) as DiaryInsightRow[];
-		const narrative = await buildDiaryNarrativeInsight(rows, {
-			openai: getOpenAIClient(),
-			model: getModel()
-		});
+		const narrative = await buildDiaryNarrativeInsight(rows);
 		const { bestDay, worstDay } = getWeekdayExtremes(rows);
 
 		const legacyInsights = [...narrative.overview, ...narrative.patterns].slice(0, 6).map((item) => ({

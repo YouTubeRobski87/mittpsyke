@@ -1,4 +1,9 @@
-import OpenAI from 'openai';
+import {
+	createAITextGenerator,
+	type AIMessage,
+	type AITextProvider
+} from '$lib/server/ai/text-generation';
+import { buildWeeklySummarySafetyInstructions } from '$lib/server/ai/safety-instructions';
 
 export type DiaryInsightRow = {
 	created_at: string | null;
@@ -469,8 +474,34 @@ function buildStory(insight: Omit<DiaryNarrativeInsight, 'storyParagraphs' | 'ge
 	return paragraphs.slice(0, insight.evidenceLevel === 'emerging' ? 5 : 10);
 }
 
-async function rewriteStoryWithAi(openai: OpenAI | null, model: string, insight: DiaryNarrativeInsight) {
-	if (!openai || insight.storyParagraphs.length === 0) return insight;
+type NarrativeProviderInput = {
+	response_format: { type: 'json_object' };
+	temperature: number;
+	max_tokens: number;
+	messages: AIMessage[];
+};
+
+/** Keeps the diary analysis on the shared provider contract and makes it injectable in tests. */
+async function generateDiaryNarrativeCompletion(
+	provider: AITextProvider | undefined,
+	request: NarrativeProviderInput
+) {
+	const systemInstructions = request.messages
+		.filter((message) => message.role === 'system')
+		.map((message) => message.content);
+	const messages = request.messages.filter((message) => message.role !== 'system');
+	const result = await createAITextGenerator(provider)({
+		purpose: 'diary-narrative',
+		systemInstructions: [...buildWeeklySummarySafetyInstructions(), ...systemInstructions],
+		messages,
+		temperature: request.temperature,
+		outputFormat: 'json_object'
+	});
+	return { choices: [{ message: { content: result.text } }] };
+}
+
+async function rewriteStoryWithAi(provider: AITextProvider | undefined, insight: DiaryNarrativeInsight) {
+	if (insight.storyParagraphs.length === 0) return insight;
 
 	const evidence = [
 		...insight.overview,
@@ -480,8 +511,7 @@ async function rewriteStoryWithAi(openai: OpenAI | null, model: string, insight:
 	].map((claim) => `- ${claim.title}: ${claim.evidence}`);
 
 	try {
-		const completion = await openai.chat.completions.create({
-			model,
+		const completion = await generateDiaryNarrativeCompletion(provider, {
 			response_format: { type: 'json_object' },
 			temperature: 0.25,
 			max_tokens: 900,
@@ -520,7 +550,7 @@ ${insight.storyParagraphs.map((text) => `- ${text}`).join('\n')}`
 
 export async function buildDiaryNarrativeInsight(
 	rows: DiaryInsightRow[],
-	options: { openai?: OpenAI | null; model?: string } = {}
+	options: { provider?: AITextProvider; generateWithAi?: boolean } = {}
 ): Promise<DiaryNarrativeInsight> {
 	const entries = prepareEntries(rows);
 	const first = entries[0]?.date ?? null;
@@ -558,7 +588,6 @@ export async function buildDiaryNarrativeInsight(
 		generatedWithAi: false
 	};
 
-	if (entries.length < MIN_PATTERN_ENTRIES) return insight;
-	return rewriteStoryWithAi(options.openai ?? null, options.model ?? 'gpt-4o-mini', insight);
+	if (entries.length < MIN_PATTERN_ENTRIES || options.generateWithAi === false) return insight;
+	return rewriteStoryWithAi(options.provider, insight);
 }
-

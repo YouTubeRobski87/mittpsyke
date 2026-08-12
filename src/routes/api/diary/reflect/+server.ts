@@ -1,42 +1,11 @@
 import { json } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
-import OpenAI from 'openai';
+import { generateAIText } from '$lib/server/ai/text-generation';
+import {
+	buildDiaryReflectionRequest,
+	DIARY_REFLECTION_FALLBACK
+} from '$lib/server/ai/diary-reflection';
+import { resolveDeterministicRiskGuard } from '$lib/ai/crisis-guard';
 import type { RequestHandler } from './$types';
-
-const REFLECTION_PROMPT = `Du är en lugn reflektionskompanjon.
-
-Din uppgift är att kort spegla tillbaka det användaren skrev i sin dagbok.
-
-Regler:
-- Max 2 meningar
-- Inga råd
-- Ingen analys eller diagnos
-- Inget terapispråk
-- Inga instruktioner
-- Bara mjuk spegling
-- Ton: lugn, validerande, enkel
-- Skriv på svenska
-
-Tala som någon som erkänner det som skrevs, utan att tolka det.
-
-Undvik:
-- "Det låter som att" som öppning (variera)
-- Upprepande formuleringar
-- Kliniska ord
-- Överdrivet positiva uttalanden
-
-Exempel på bra öppningar:
-- "Mycket verkar snurra runt just nu."
-- "Det finns en tyngd i det du beskriver."
-- "Något i dagen verkar ha gett lite mer utrymme."
-- "Det märks att du försöker ta hand om dig själv."`;
-
-const normalizeApiKey = (value: string | undefined): string | null => {
-	if (!value) return null;
-	const normalized = value.trim().replace(/^['"]/,'').replace(/['"]$/,'').replace(/^Bearer\s+/i, '').replace(/\s+/g, '');
-	if (!normalized || /[\u0000-\u001f\u007f]/.test(normalized)) return null;
-	return normalized;
-};
 
 // Rate limiting: per user_id (logged in) or per IP (anonymous)
 const rateLimitMap = new Map<string, number>();
@@ -45,10 +14,6 @@ const RATE_LIMIT_MS = 3 * 60 * 1000; // 3 minutes
 // Minimum text length for AI reflection (cost gating ~40% savings)
 const MIN_TEXT_LENGTH = 50;
 
-// Hard timeout for AI call
-const AI_TIMEOUT_MS = 8000;
-
-const FALLBACK = 'Tack för att du skrev ner dina tankar idag 🌱';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	let parsedBody: unknown;
@@ -73,9 +38,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: 'Text too long.' }, { status: 400 });
 	}
 
+	const guard = resolveDeterministicRiskGuard(text);
+	if (guard) return json({ reflection: guard.reply, crisis: true });
+
 	// AI gating: min 50 chars for meaningful reflection (saves ~40% cost)
 	if (text.length < MIN_TEXT_LENGTH) {
-		return json({ reflection: text.length < 10 ? null : FALLBACK });
+		return json({ reflection: text.length < 10 ? null : DIARY_REFLECTION_FALLBACK });
 	}
 
 	// Rate limit key: prefer a verified user_id, fallback to IP.
@@ -88,7 +56,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const lastCall = rateLimitMap.get(rateLimitKey) || 0;
 	if (Date.now() - lastCall < RATE_LIMIT_MS) {
-		return json({ reflection: FALLBACK });
+		return json({ reflection: DIARY_REFLECTION_FALLBACK });
 	}
 	rateLimitMap.set(rateLimitKey, Date.now());
 
@@ -100,32 +68,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		}
 	}
 
-	const apiKey = normalizeApiKey(env.OPENAI_API_KEY);
-	if (!apiKey) {
-		console.error('OPENAI_API_KEY is missing or malformed');
-		return json({ reflection: FALLBACK });
-	}
-
-	const openai = new OpenAI({ apiKey, timeout: AI_TIMEOUT_MS });
-	const model = (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim();
-
 	try {
-		const completion = await openai.chat.completions.create({
-			model,
-			temperature: 0.7,
-			max_completion_tokens: 150,
-			frequency_penalty: 0.4,
-			presence_penalty: 0.3,
-			messages: [
-				{ role: 'system', content: REFLECTION_PROMPT },
-				{ role: 'user', content: `Dagboksinlägg:\n"""\n${text}\n"""` }
-			]
-		});
-
-		const reflection = completion.choices[0]?.message?.content?.trim() || null;
-		return json({ reflection: reflection || FALLBACK });
+		const result = await generateAIText(buildDiaryReflectionRequest(text));
+		return json({ reflection: result.text || DIARY_REFLECTION_FALLBACK });
 	} catch (err) {
 		console.error('Reflection API error:', err);
-		return json({ reflection: FALLBACK });
+		return json({ reflection: DIARY_REFLECTION_FALLBACK });
 	}
 };

@@ -3,8 +3,7 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { hasHealthConsentInMetadata, hasSensitiveConsentHeader } from '$lib/consent';
 import { CHAT_CONTEXT_LIMIT, getChatContextMessages } from '$lib/state/chat-memory';
-import { containsAcuteCrisisPhrase, containsThirdPartyRiskPhrase } from '$lib/ai/crisis-keywords';
-import { CRISIS_RESPONSE, THIRD_PARTY_RISK_RESPONSE } from '$lib/ai/crisis-responses';
+import { resolveDeterministicRiskGuard } from '$lib/ai/crisis-guard';
 import {
 	formatMemoriesForPrompt,
 	loadUserMemories,
@@ -21,7 +20,8 @@ import { createClient } from '@supabase/supabase-js';
 import {
 	AITextGenerationError,
 	generateAIText,
-	type AIMessage
+	type AIMessage,
+	type AITextRequest
 } from '$lib/server/ai/text-generation';
 import { buildSupportChatSafetyInstructions } from '$lib/server/ai/safety-instructions';
 import { RateLimiter } from '$lib/server/rate-limit';
@@ -220,12 +220,9 @@ Du är ett tryggt samtalsrum.
 // Ordlistorna kommer från $lib/ai/crisis-keywords, den enda källan som delas
 // med klientens omedelbara UI-check och ChatWindows stödnivåer.
 // ---------------------------------------------------------------------------
-function detectCrisis(text: string): boolean {
-	return containsAcuteCrisisPhrase(text);
-}
-
-function detectThirdPartyRisk(text: string): boolean {
-	return containsThirdPartyRiskPhrase(text);
+/** Runs before rate limiting, storage and any provider request. */
+export function _resolveDeterministicChatGuard(message: string) {
+	return resolveDeterministicRiskGuard(message);
 }
 
 // Säkerhetssvaren ligger i $lib/ai/crisis-responses, som ren text.
@@ -284,7 +281,7 @@ type PromptHistoryMessage = {
 const MAX_CHAT_MESSAGE_LENGTH = 2000;
 const CHAT_MESSAGE_TOO_LONG_ERROR = 'Din text blev lite för lång att skicka på en gång. Dela gärna upp den i två delar.';
 
-function buildDynamicSystemPrompt(
+export function _buildDynamicSystemPrompt(
 	category: SupportCategory,
 	history: PromptHistoryMessage[],
 	topicHintId: string | null = null,
@@ -355,12 +352,41 @@ Använd ALDRIG fraser som "Hej igen", "Jag minns att vi pratade om...", "Vill du
 ${phaseInstruction}${retentionInstructionBlock ? `\n${retentionInstructionBlock}` : ''}`.trim();
 }
 
+export function _buildSupportChatRequest(options: {
+	category: SupportCategory;
+	history: PromptHistoryMessage[];
+	message: string;
+	topicHintId?: string | null;
+	contextBlocks?: string[];
+}): AITextRequest {
+	const reassurancePatternInstruction = buildReassurancePatternInstruction(
+		detectReassurancePattern(options.message, options.history)
+	);
+	const systemPrompt = _buildDynamicSystemPrompt(
+		options.category,
+		options.history,
+		options.topicHintId ?? null,
+		reassurancePatternInstruction
+	);
+	return {
+		purpose: 'support-chat',
+		systemInstructions: [
+			...buildSupportChatSafetyInstructions(),
+			[systemPrompt, ...(options.contextBlocks ?? [])].filter(Boolean).join('\n\n')
+		],
+		messages: [...options.history, { role: 'user', content: options.message }],
+		temperature: 0.75,
+		frequencyPenalty: 0.3,
+		presencePenalty: 0.2
+	};
+}
+
 function logChatPayloadStructure(context: {
 	guest: boolean;
 	category: SupportCategory;
 	conversationId: string | null;
 	contextSource: 'client' | 'database';
-	messages: AIMessage[];
+	messages: readonly AIMessage[];
 }) {
 	console.info('[chat] AI payload structure', {
 		purpose: 'support-chat',
@@ -471,27 +497,16 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 	// ---------------------------------------------------------------------------
 	// Krischeck – avbryt AI-anrop och returnera säkerhetssvar om riskord hittas
 	// ---------------------------------------------------------------------------
-	if (detectCrisis(message)) {
-		console.warn('[chat] crisis keywords detected', {
+	const guardResult = _resolveDeterministicChatGuard(message);
+	if (guardResult) {
+		console.warn('[chat] deterministic risk guard matched', {
+			kind: guardResult.kind,
 			guest: isGuestRequest,
 			messageLength: message.length
 		});
 		return json({
-			reply: CRISIS_RESPONSE,
-			crisis: true,
-			conversationId: null,
-			mode: isGuestRequest ? 'guest' : 'user'
-		});
-	}
-
-	if (detectThirdPartyRisk(message)) {
-		console.warn('[chat] third-party risk keywords detected', {
-			guest: isGuestRequest,
-			messageLength: message.length
-		});
-		return json({
-			reply: THIRD_PARTY_RISK_RESPONSE,
-			crisis: true,
+			reply: guardResult.reply,
+			crisis: guardResult.crisis,
 			conversationId: null,
 			mode: isGuestRequest ? 'guest' : 'user'
 		});
@@ -522,19 +537,13 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 				role: row.role,
 				content: row.content
 			}));
-			const reassurancePatternInstruction = buildReassurancePatternInstruction(
-				detectReassurancePattern(message, modelContext)
-			);
-			const systemPrompt = buildDynamicSystemPrompt(
+			const generationRequest = _buildSupportChatRequest({
 				category,
-				modelContext,
-				topicHintId,
-				reassurancePatternInstruction
-			);
-			const completionMessages: AIMessage[] = [
-				...modelContext,
-				{ role: 'user', content: message }
-			];
+				history: modelContext,
+				message,
+				topicHintId
+			});
+			const completionMessages = generationRequest.messages;
 			logChatPayloadStructure({
 				guest: true,
 				category,
@@ -544,14 +553,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			});
 
 			try {
-				const result = await generateAIText({
-					purpose: 'support-chat',
-					systemInstructions: [...buildSupportChatSafetyInstructions(), systemPrompt],
-					messages: completionMessages,
-					temperature: 0.75,
-					frequencyPenalty: 0.3,
-					presencePenalty: 0.2
-				});
+				const result = await generateAIText(generationRequest);
 				return json({ reply: result.text, conversationId: null, mode: 'guest' });
 			} catch (error) {
 				const aiError =
@@ -708,22 +710,14 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 					)
 				: '';
 
-			const reassurancePatternInstruction = buildReassurancePatternInstruction(
-				detectReassurancePattern(message, modelContext)
-			);
-			const systemPrompt = buildDynamicSystemPrompt(
+			const generationRequest = _buildSupportChatRequest({
 				category,
-				modelContext,
+				history: modelContext,
+				message,
 				topicHintId,
-				reassurancePatternInstruction
-			);
-			const systemPromptWithMemory = [systemPrompt, memoryBlock, diaryContextBlock]
-				.filter(Boolean)
-				.join('\n\n');
-			const completionMessages: AIMessage[] = [
-				...modelContext,
-				{ role: 'user', content: message }
-			];
+				contextBlocks: [memoryBlock, diaryContextBlock]
+			});
+			const completionMessages = generationRequest.messages;
 			logChatPayloadStructure({
 				guest: false,
 				category,
@@ -733,14 +727,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 			});
 			let reply: string;
 			try {
-				const result = await generateAIText({
-					purpose: 'support-chat',
-					systemInstructions: [...buildSupportChatSafetyInstructions(), systemPromptWithMemory],
-					messages: completionMessages,
-					temperature: 0.75,
-					frequencyPenalty: 0.3,
-					presencePenalty: 0.2
-				});
+				const result = await generateAIText(generationRequest);
 				reply = result.text;
 			} catch (error) {
 				const aiError = error instanceof AITextGenerationError ? error : new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.');

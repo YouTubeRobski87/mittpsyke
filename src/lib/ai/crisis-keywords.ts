@@ -30,6 +30,7 @@ export const ACUTE_CRISIS_PHRASES = Object.freeze([
 	'inte orkar leva',
 	'orkar inte leva',
 	'orkar inte mer',
+	'orkar langre',
 	'vill inte leva',
 	'vill do',
 	'vill vara dod',

@@ -1,7 +1,13 @@
 import { env } from '$env/dynamic/private';
 import OpenAI from 'openai';
 
-export type AITextPurpose = 'support-chat' | 'weekly-summary' | 'user-memory';
+export type AITextPurpose =
+	| 'support-chat'
+	| 'diary-reflection'
+	| 'checkin-reflection'
+	| 'diary-narrative'
+	| 'weekly-summary'
+	| 'user-memory';
 
 export type AIMessage = {
 	role: 'system' | 'user' | 'assistant';
@@ -39,6 +45,27 @@ const modelConfigurations: Record<AITextPurpose, ModelConfiguration> = {
 		timeoutMs: 25_000,
 		maxOutputTokens: 500,
 		maxTokensField: 'max_completion_tokens'
+	},
+	'diary-reflection': {
+		provider: 'openai',
+		model: (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim(),
+		timeoutMs: 8_000,
+		maxOutputTokens: 150,
+		maxTokensField: 'max_completion_tokens'
+	},
+	'checkin-reflection': {
+		provider: 'openai',
+		model: (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim(),
+		timeoutMs: 12_000,
+		maxOutputTokens: 260,
+		maxTokensField: 'max_completion_tokens'
+	},
+	'diary-narrative': {
+		provider: 'openai',
+		model: (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim(),
+		timeoutMs: 20_000,
+		maxOutputTokens: 900,
+		maxTokensField: 'max_tokens'
 	},
 	'weekly-summary': {
 		provider: 'openai',

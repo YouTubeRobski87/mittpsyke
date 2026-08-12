@@ -24,10 +24,12 @@ Stödlinjer.se – lista över fler stödlinjer och chattar.
 
 Jag finns kvar här om du vill prata vidare, men vid akut kris är en riktig människa viktigast just nu.`;
 
-export const THIRD_PARTY_RISK_RESPONSE = `Det du skriver oroar mig. Om du eller någon annan är i fara just nu är rätt hjälp direkt viktigast.
+export const THIRD_PARTY_RISK_RESPONSE = `Det du skriver är viktigt och behöver tas på allvar. Du ska inte behöva vara ensam i det. Om du eller någon annan är i fara just nu är rätt hjälp direkt viktigast.
 
 Ring 112 om faran är omedelbar.
 
-Om det känns svårt att hålla kontrollen kan det hjälpa att genast prata med någon utanför situationen – en vän, anhörig eller vården via 1177.
+Om det känns svårt att hålla kontrollen kan det hjälpa att genast prata med en människa utanför situationen – en vän, anhörig eller vården via 1177.
+
+Stödlinjer.se – lista över fler stödlinjer och chattar.
 
 Jag finns kvar här om du vill prata vidare, men vid risk för någons säkerhet är 112 och professionell hjälp viktigast just nu.`;

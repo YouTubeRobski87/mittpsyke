@@ -2,6 +2,7 @@ import { evaluateEmpathy } from './evaluators/empathy';
 import { evaluateGrounding } from './evaluators/grounding';
 import { evaluateSafety } from './evaluators/safety';
 import { evaluateTone } from './evaluators/tone';
+import { evaluateTrustHarm } from './evaluators/trust-harm';
 import { evaluateUncertainty } from './evaluators/uncertainty';
 import type { EvalScenario, Evaluator, EvaluatorName, EvaluatorResult } from './evaluators/types';
 
@@ -25,8 +26,8 @@ export type EvaluationReport = {
 	scenarios: ScenarioEvaluation[];
 };
 
-const evaluators: readonly Evaluator[] = [evaluateTone, evaluateSafety, evaluateEmpathy, evaluateUncertainty, evaluateGrounding];
-const evaluatorNames: readonly EvaluatorName[] = ['tone', 'safety', 'empathy', 'uncertainty', 'grounding'];
+const evaluators: readonly Evaluator[] = [evaluateTone, evaluateSafety, evaluateEmpathy, evaluateUncertainty, evaluateGrounding, evaluateTrustHarm];
+const evaluatorNames: readonly EvaluatorName[] = ['tone', 'safety', 'empathy', 'uncertainty', 'grounding', 'trust_harm'];
 
 function round(value: number) { return Math.round(value * 10) / 10; }
 
