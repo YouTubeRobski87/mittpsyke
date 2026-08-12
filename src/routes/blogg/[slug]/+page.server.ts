@@ -5,7 +5,16 @@ import type { PageServerLoad } from './$types';
 
 const CACHE_CONTROL = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
 const LOCAL_FEATURED_IMAGE_BY_SLUG = new Map([['ai-dagbok', '/storify-og-image.png']]);
-const LOCAL_TITLE_BY_SLUG = new Map([['chatta-anonymt-utan-konto', 'Chatta anonymt utan konto – börja direkt']]);
+// SEO-cannibalization-fix (2026-08): artikelns title/H1/ingress fick tidigare Soro-artikelns
+// standardvärden, vilket gjorde att title/H1 blev identiska med /chatta-anonymt. Lokala
+// overrides gör artikeln tydligt informativ i stället för en andra transaktionell landningssida.
+const LOCAL_TITLE_BY_SLUG = new Map([['chatta-anonymt-utan-konto', 'Chatta anonymt utan konto – vad du bör tänka på']]);
+const LOCAL_EXCERPT_BY_SLUG = new Map([
+	[
+		'chatta-anonymt-utan-konto',
+		'Vad innebär det att chatta anonymt utan konto? Här får du veta vad du bör tänka på, när det kan passa och hur du kommer igång i din egen takt.'
+	]
+]);
 
 type SoroArticleContentResponse = {
 	content?: string;
@@ -106,6 +115,7 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 
 	const normalizedSlug = normalizeSoroArticleSlug(article.slug);
 	const title = LOCAL_TITLE_BY_SLUG.get(normalizedSlug) ?? (article.title || 'Artikel');
+	const excerpt = LOCAL_EXCERPT_BY_SLUG.get(normalizedSlug) ?? article.excerpt;
 	const content = fixProtocolLessLinks(
 		stripLeadingH1(
 			normalizedSlug === 'psykisk-ohalsa-unga'
@@ -121,13 +131,14 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 
 	return {
 		title,
-		description: article.excerpt,
+		description: excerpt,
 		ogType: 'article',
 		ogImage,
 		article: {
 			...article,
 			slug: normalizedSlug,
 			title,
+			excerpt,
 			image: featuredImage,
 			content
 		}

@@ -77,9 +77,9 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'chatta-anonymt-med-nagon': {
-		title: 'Chatta anonymt online – så fungerar det | MittPsyke',
+		title: 'Anonym chatt med AI-stöd – så fungerar det | MittPsyke',
 		description:
-			'Chatta anonymt med någon utan konto och börja direkt i anonym chatt. Läs hur samtalet fungerar, vad AI-stöd kan hjälpa med och vad du kan förvänta dig.',
+			'Så fungerar anonym chatt med AI-stöd hos MittPsyke: vad som brukar hända i samtalet, hur AI:n kan hjälpa dig reflektera och vad du kan förvänta dig.',
 		canonical: 'https://www.mittpsyke.se/chatta-anonymt-med-nagon',
 		ogTitle: 'Chatta anonymt med någon | MittPsyke',
 		ogDescription:
@@ -804,7 +804,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		h1: 'Chatta anonymt utan konto',
 		lead:
 			'Du kan chatta anonymt utan konto och börja direkt i text. Skriv några rader om det som känns tungt och få lugnt stöd i din egen takt. MittPsyke är ett samtalsstöd, inte vård eller akuthjälp.',
-		primaryCta: { href: '/skriv', label: 'Börja skriva anonymt' },
+		primaryCta: { href: '/chat', label: 'Chatta anonymt nu' },
 		sections: [
 			{
 				title: 'En lugn start utan registrering',
