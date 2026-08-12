@@ -323,6 +323,13 @@
           fetchpriority="high"
           decoding="async"
         />
+        <a
+          class="cabin-entrance"
+          href="/dashboard/kvallsstugan"
+          aria-label="Gå in i Kvällsstugan och öppna Kvällslugn"
+        >
+          <span aria-hidden="true">Kvällslugn</span>
+        </a>
         <CompanionPose
           class="hero-companion-pose"
           companionId={heroCompanionId}
@@ -724,6 +731,48 @@
     object-position: 50% 60%;
     display: block;
     z-index: var(--scene-background);
+  }
+
+  /* Endast dörren/verandan är en länk. Den är tillräckligt stor för touch men
+     täcker aldrig hela världen eller följeslagarens egen interaktion. */
+  .cabin-entrance {
+    position: absolute;
+    z-index: calc(var(--scene-overlay) + 1);
+    left: 8%;
+    top: 37%;
+    width: 23%;
+    height: 39%;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 12px;
+    color: #fff7e6;
+    text-decoration: none;
+    outline: none;
+  }
+
+  .cabin-entrance span {
+    position: absolute;
+    left: 50%;
+    bottom: 5px;
+    padding: 0.28rem 0.48rem;
+    border: 1px solid rgb(248 207 133 / 0.46);
+    border-radius: 999px;
+    background: rgb(27 21 15 / 0.72);
+    box-shadow: 0 4px 14px rgb(8 8 8 / 0.22);
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+
+  .cabin-entrance:hover,
+  .cabin-entrance:focus-visible {
+    box-shadow: inset 0 0 0 2px rgb(248 207 133 / 0.86), 0 0 0 3px rgb(20 29 37 / 0.56);
+  }
+
+  .cabin-entrance:focus-visible span {
+    background: rgb(38 29 17 / 0.94);
   }
 
   .companion-hero :global(.hero-living-world) {
@@ -1425,6 +1474,13 @@
     /* Vänsterförankringen bevarar stuga, dörr och veranda i mobil-cropen. */
     .companion-hero-scene {
       object-position: 0% 60%;
+    }
+
+    .cabin-entrance {
+      left: 5%;
+      top: 35%;
+      width: 27%;
+      height: 42%;
     }
 
     /* Följeslagaren stannar vid huset till vänster, medan copy behåller den
