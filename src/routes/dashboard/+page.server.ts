@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import { DEFAULT_THEME, THEMES } from '$lib/theme';
 import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
 import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
+import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
 
 type DiaryRow = {
 	id: string;
@@ -191,7 +192,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 				dashboardFocusLabel: DASHBOARD_WIDGET_LABELS.dagbok
 			},
 			progressCompanion: null,
-			companionRelationshipStage: 0
+			companionRelationshipStage: 0,
+			// Utloggade och gästbesök får aldrig följeslagarens dagliga fråga.
+			companionDaily: null
 		};
 	}
 
@@ -203,8 +206,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 			: DEFAULT_THEME;
 	const themeLabel = THEMES[themeKey]?.label ?? THEMES[DEFAULT_THEME].label;
 
-	const [latestDiaryEntryResult, streakEntriesResult, totalEntriesResult, weeklyEntriesResult, companionRelationshipStage] =
-		await Promise.all([
+	const [
+		latestDiaryEntryResult,
+		streakEntriesResult,
+		totalEntriesResult,
+		weeklyEntriesResult,
+		companionRelationshipStage,
+		companionDaily
+	] = await Promise.all([
 			locals.supabase
 				.from('diary')
 				.select('id, text, created_at')
@@ -224,7 +233,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 				.select('id', { count: 'exact', head: true })
 				.eq('user_id', user.id)
 				.gte('created_at', weeklyStart),
-			getCompanionRelationshipStageForUser(locals.supabase, user.id)
+			getCompanionRelationshipStageForUser(locals.supabase, user.id),
+			loadCompanionDailyState(locals.supabase, user.id)
 		]);
 
 	if (latestDiaryEntryResult.error && !isMissingTableError(latestDiaryEntryResult.error, 'diary')) {
@@ -288,6 +298,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		progressPreview,
 		settingsPreview,
 		progressCompanion: readProgressCompanionFromMetadata(metadata),
-		companionRelationshipStage
+		companionRelationshipStage,
+		companionDaily
 	};
 };

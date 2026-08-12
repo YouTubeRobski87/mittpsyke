@@ -117,6 +117,30 @@ export function getGrowthLevel(entryCount: unknown): WorldGrowthLevel {
 }
 
 /**
+ * Vad ett svar på följeslagarens dagliga fråga bidrar med till trädgården,
+ * uttryckt i samma enhet som en dagboksanteckning. Medvetet ett halvt steg: en
+ * reflektion ska märkas, men aldrig väga lika tungt som en skriven text.
+ */
+export const GROWTH_POINTS_PER_COMPANION_REFLECTION = 0.5;
+
+/**
+ * Trädgårdens samlade tillväxtunderlag. Enda stället där olika sorters närvaro
+ * vägs ihop; trösklarna bor kvar i getGrowthLevel, så ingen tillväxtlogik
+ * dupliceras. Additivt per konstruktion - ett värde kan bara öka.
+ */
+export function getGardenGrowthPoints(
+	diaryEntryCount: unknown,
+	companionReflectionCount: unknown = 0
+): number {
+	const entries = typeof diaryEntryCount === 'number' && Number.isFinite(diaryEntryCount) ? Math.max(0, diaryEntryCount) : 0;
+	const reflections =
+		typeof companionReflectionCount === 'number' && Number.isFinite(companionReflectionCount)
+			? Math.max(0, companionReflectionCount)
+			: 0;
+	return entries + reflections * GROWTH_POINTS_PER_COMPANION_REFLECTION;
+}
+
+/**
  * Klampar ett godtyckligt värde till en giltig växtnivå. Okänt, saknat, NaN
  * eller negativt -> 0 (den lugna men kompletta basvärlden). Värden över 4 -> 4.
  */

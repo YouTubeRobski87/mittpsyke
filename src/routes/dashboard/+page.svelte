@@ -7,6 +7,7 @@
   import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
   import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
   import CompanionVisitor from '$lib/components/world/CompanionVisitor.svelte';
+  import CompanionDailyCard from '$lib/components/world/CompanionDailyCard.svelte';
   import {
     Activity,
     ArrowRight,
@@ -34,8 +35,20 @@
     COMPANION_GREETING_DURATION_MS,
     getCompanionGreeting
   } from '$lib/companionGreeting';
-  import { getLivingWorldScene, getGrowthLevel, type LivingWorldScene } from '$lib/worldScene';
+  import {
+    getLivingWorldScene,
+    getGardenGrowthPoints,
+    getGrowthLevel,
+    type LivingWorldScene
+  } from '$lib/worldScene';
   import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
+  import {
+    COMPANION_DAILY_REACTION_DURATION_MS,
+    getCompanionDailyQuestionById,
+    getCompanionDailyReaction,
+    shouldShowCompanionDailyQuestion,
+    type CompanionDailyState
+  } from '$lib/companionDailyQuestion';
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
@@ -69,22 +82,62 @@
     };
     progressCompanion: ProgressCompanionSelection | string | null;
     companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
+    companionDaily?: CompanionDailyState | null;
     isAnonymous?: boolean;
   };
 
   let { data } = $props<{ data: DashboardData }>();
 
+  // Dagens fråga kommer färdigt bedömd från servern: är dagen redan hanterad
+  // (svarad eller överhoppad) är status inte längre 'pending', och varken
+  // refresh eller navigation tillbaka hit kan väcka frågan igen.
+  // Serverns läge gäller, tills användaren svarar här och nu. Övertäckningen är
+  // bara det lokala, optimistiska läget för det pågående besöket.
+  let companionDailyOverride = $state<CompanionDailyState | null>(null);
+  let companionDailyBusy = $state(false);
+  let companionDailyReaction = $state<string | null>(null);
+  let companionDailyReactionTimer: number | null = null;
+
+  const companionDailyState = $derived<CompanionDailyState | null>(
+    companionDailyOverride ?? data.companionDaily ?? null
+  );
+  const companionDailyQuestion = $derived(
+    companionDailyState ? getCompanionDailyQuestionById(companionDailyState.questionId) : null
+  );
+  const showCompanionDailyQuestion = $derived(
+    Boolean(companionDailyQuestion) &&
+      shouldShowCompanionDailyQuestion({
+        isAnonymous: Boolean(data.isAnonymous),
+        state: companionDailyState
+      })
+  );
+
   // Växtnivån (0-4) driver hur rik den beständiga världen är. Kommer från riktig
   // serverdata (totalEntries) redan vid SSR, så scenen är korrekt från första
-  // paint. Utloggad förhandsvisning använder en mellannivå så marknadsvyn lever.
+  // paint. Svar på följeslagarens fråga väger ett halvt steg vardera - se
+  // getGardenGrowthPoints; trösklarna bor kvar i getGrowthLevel.
+  // Utloggad förhandsvisning använder en mellannivå så marknadsvyn lever.
   const growthLevel = $derived(
-    data.isAnonymous ? 3 : getGrowthLevel(data.progressPreview.totalEntries)
+    data.isAnonymous
+      ? 3
+      : getGrowthLevel(
+          getGardenGrowthPoints(
+            data.progressPreview.totalEntries,
+            companionDailyState?.answeredDayCount ?? 0
+          )
+        )
   );
 
   // Uppdateras från samma gemensamma helper som Framsteg, inte från egen
   // dashboardlogik. Det håller ljusgraderingen synkad mellan vyerna.
   let companionDayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
-  let livingWorldScene = $state<LivingWorldScene>(getLivingWorldScene({ growthLevel }));
+  // Härledd, inte lagrad: scenen följer både klockan (sceneDate, som tickar en
+  // gång i minuten) och växtnivån. Det gör att ett svar på dagens fråga syns i
+  // världen direkt i stället för vid nästa tick.
+  let sceneDate = $state(new Date());
+  const livingWorldScene = $derived<LivingWorldScene>(
+    getLivingWorldScene({ date: sceneDate, growthLevel })
+  );
   let companionGreeting = $state<string | null>(null);
   let companionGreetingReaction = $state(0);
   let lastCompanionGreetingAt = 0;
@@ -137,11 +190,56 @@
     }, COMPANION_GREETING_DURATION_MS);
   }
 
+  /**
+   * Markerar dagen som hanterad direkt i gränssnittet och skickar sedan svaret.
+   * Ordningen är medveten: användaren ska aldrig vänta på nätverket, och ett
+   * misslyckat anrop får inte ge en ny fråga i samma besök. answerId null =
+   * hoppa över, vilket varken ger bond eller tillväxt i trädgården.
+   */
+  async function respondToCompanionDailyQuestion(answerId: string | null) {
+    const state = companionDailyState;
+    if (!state || companionDailyBusy || state.status !== 'pending') return;
+
+    companionDailyBusy = true;
+    companionDailyOverride = {
+      ...state,
+      status: answerId ? 'answered' : 'skipped',
+      answerId,
+      // Bandet och trädgården växer bara av ett faktiskt svar.
+      answeredDayCount: state.answeredDayCount + (answerId ? 1 : 0)
+    };
+
+    if (answerId) {
+      // Följeslagaren reagerar direkt: befintlig settle-gest via
+      // greetingReaction, plus en kort replik i samma bubbla som hälsningen.
+      companionGreetingReaction += 1;
+      companionGreeting = null;
+      companionDailyReaction = getCompanionDailyReaction(state.questionId, answerId);
+      if (companionDailyReactionTimer !== null) window.clearTimeout(companionDailyReactionTimer);
+      companionDailyReactionTimer = window.setTimeout(() => {
+        companionDailyReaction = null;
+        companionDailyReactionTimer = null;
+      }, COMPANION_DAILY_REACTION_DURATION_MS);
+    }
+
+    try {
+      await fetch('/api/companion/daily-question', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ questionId: state.questionId, answerId })
+      });
+    } catch {
+      // Dagens fråga är frivillig och får aldrig störa besöket.
+    } finally {
+      companionDailyBusy = false;
+    }
+  }
+
   onMount(() => {
     const updateLocalTime = () => {
       const now = new Date();
       companionDayState = getProgressCompanionDayState(now);
-      livingWorldScene = getLivingWorldScene({ date: now, growthLevel });
+      sceneDate = now;
     };
 
     updateLocalTime();
@@ -149,6 +247,7 @@
     return () => {
       window.clearInterval(interval);
       if (companionGreetingTimer !== null) window.clearTimeout(companionGreetingTimer);
+      if (companionDailyReactionTimer !== null) window.clearTimeout(companionDailyReactionTimer);
     };
   });
 </script>
@@ -178,7 +277,7 @@
         </div>
       </header>
 
-      <div class="dashboard-body">
+      <div class="dashboard-body" class:has-daily={showCompanionDailyQuestion}>
       <section
         class="companion-hero"
         class:personal-preview={isAnonymous}
@@ -211,14 +310,16 @@
           placement={heroCompanionPlacement}
           greetingReaction={companionGreetingReaction}
         />
-        {#if companionGreeting}
+        <!-- En bubbla i taget vid följeslagaren. Reaktionen på dagens fråga har
+             företräde framför hälsningen, så de aldrig kan ligga ovanpå varandra. -->
+        {#if companionDailyReaction || companionGreeting}
           <p
             class="companion-greeting"
             style={`--companion-greeting-x: ${heroCompanionPlacement.x}%; --companion-greeting-y: ${heroCompanionPlacement.y}%;`}
             aria-live="polite"
             aria-atomic="true"
           >
-            {companionGreeting}
+            {companionDailyReaction ?? companionGreeting}
           </p>
         {/if}
         <CompanionVisitor
@@ -254,6 +355,19 @@
         {/if}
       </section>
 
+        <!-- Frågan ligger strax under scenen, aldrig som en modal ovanpå den:
+             världen och följeslagaren syns hela tiden. Kortet finns bara i DOM:en
+             den dag frågan är obesvarad, och rutnätets grundläge är därför
+             oförändrat resten av tiden (se .dashboard-body.has-daily). -->
+        {#if showCompanionDailyQuestion && companionDailyQuestion}
+          <CompanionDailyCard
+            question={companionDailyQuestion}
+            {companionName}
+            busy={companionDailyBusy}
+            onanswer={(answerId) => respondToCompanionDailyQuestion(answerId)}
+            onskip={() => respondToCompanionDailyQuestion(null)}
+          />
+        {/if}
 
         <section class="now-panel" aria-labelledby="dashboard-now-title">
           <h2 id="dashboard-now-title">Ditt nuläge</h2>
@@ -422,6 +536,15 @@
       'checkin garden explore';
     gap: clamp(0.9rem, 1.4vw, 1.375rem);
     align-items: stretch;
+  }
+
+  /* Extraraden finns bara den dag följeslagarens fråga är obesvarad. Grundläget
+     ovan rörs aldrig, så resten av tiden ser rutnätet ut precis som förut. */
+  .dashboard-body.has-daily {
+    grid-template-areas:
+      'hero    hero   now'
+      'daily   daily  daily'
+      'checkin garden explore';
   }
 
   .topbar {
@@ -1188,6 +1311,14 @@
         'now     explore'
         'checkin garden';
     }
+
+    .dashboard-body.has-daily {
+      grid-template-areas:
+        'hero    hero'
+        'daily   daily'
+        'now     explore'
+        'checkin garden';
+    }
   }
 
   @media (max-width: 980px) {
@@ -1210,6 +1341,16 @@
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
         'hero'
+        'now'
+        'checkin'
+        'garden'
+        'explore';
+    }
+
+    .dashboard-body.has-daily {
+      grid-template-areas:
+        'hero'
+        'daily'
         'now'
         'checkin'
         'garden'
