@@ -10,7 +10,7 @@ MittPsyke is a Swedish mental wellbeing web platform offering AI-based conversat
 
 ```bash
 npm run dev        # Start dev server at http://localhost:5173
-npm run build      # Production build (Vercel adapter)
+npm run build      # Production build (Node adapter, deployed on Render)
 npm run preview    # Preview production build locally
 npm run check      # Type-check (svelte-kit sync + svelte-check)
 ```
