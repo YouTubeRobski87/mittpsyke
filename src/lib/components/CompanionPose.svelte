@@ -40,6 +40,7 @@
 		position: providedPosition = null,
 		placement = null,
 		companionId = 'fox',
+		greetingReaction = 0,
 		scene = null
 	}: {
 		class?: string;
@@ -48,6 +49,9 @@
 		position?: CompanionScenePosition | null;
 		placement?: { scale?: number; x?: number; y?: number } | null;
 		companionId?: CompanionId;
+		// Ett lokalt, räknande event från en vy som vill låta följeslagaren
+		// uppmärksamma användaren. Det är ingen ny companion-state och sparas inte.
+		greetingReaction?: number;
 		// Begränsar vilka scenpositioner vyn tillåter (se
 		// COMPANION_SCENE_CONTEXT_POSITION_IDS). null = ingen begränsning.
 		scene?: CompanionSceneContext | null;
@@ -75,6 +79,7 @@
 	// maybePlayMicroGesture, som gör det exakt när gesten startar, inte
 	// tidigare.
 	let reflectionGestureAvailable = false;
+	let handledGreetingReaction = 0;
 
 	const classes = $derived(`companion-pose ${className}`.trim());
 	const basePose = $derived(providedBasePose ?? localBasePose);
@@ -177,6 +182,22 @@
 			microGesture = null;
 		}, behaviour.durationMs);
 	}
+
+	$effect(() => {
+		if (!greetingReaction || greetingReaction === handledGreetingReaction) return;
+		handledGreetingReaction = greetingReaction;
+
+		// Rörelse är frivillig för den som bett om minskad rörelse. Själva
+		// textreaktionen hanteras av anroparen och fortsätter vara tillgänglig.
+		if (motionAwareness.reducedMotion) return;
+
+		microGesture = 'settle';
+		const timer = window.setTimeout(() => {
+			if (microGesture === 'settle') microGesture = null;
+		}, 2200);
+
+		return () => window.clearTimeout(timer);
+	});
 
 	onMount(() => {
 		refreshBasePose();

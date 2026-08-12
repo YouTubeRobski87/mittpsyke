@@ -29,6 +29,11 @@
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
   import { DASHBOARD_CABIN_COMPANION_PLACEMENTS } from '$lib/companionPoseManifest';
+  import {
+    canTriggerCompanionGreeting,
+    COMPANION_GREETING_DURATION_MS,
+    getCompanionGreeting
+  } from '$lib/companionGreeting';
   import { getLivingWorldScene, getGrowthLevel, type LivingWorldScene } from '$lib/worldScene';
   import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
 
@@ -80,6 +85,10 @@
   // dashboardlogik. Det håller ljusgraderingen synkad mellan vyerna.
   let companionDayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
   let livingWorldScene = $state<LivingWorldScene>(getLivingWorldScene({ growthLevel }));
+  let companionGreeting = $state<string | null>(null);
+  let companionGreetingReaction = $state(0);
+  let lastCompanionGreetingAt = 0;
+  let companionGreetingTimer: number | null = null;
 
   const diaryPreview = $derived(data.diaryPreview);
   const progressPreview = $derived(data.progressPreview);
@@ -108,9 +117,26 @@
   const heroCompanionId = $derived(
     companionArtId === 'bear' || companionArtId === 'wolf' ? companionArtId : 'fox'
   ) as 'fox' | 'bear' | 'wolf';
+  const heroCompanionPlacement = $derived(DASHBOARD_CABIN_COMPANION_PLACEMENTS[heroCompanionId]);
   // Ingen alt-text för scenbilden: den är dekorativ (aria-hidden) och
   // följeslagaren beskrivs av CompanionPose, som vet vilket djur som visas.
   const heroCompanionIsSleeping = $derived(companionDayState === 'night');
+
+  function greetCompanion() {
+    const now = Date.now();
+    if (!canTriggerCompanionGreeting(lastCompanionGreetingAt, now)) return;
+
+    lastCompanionGreetingAt = now;
+    companionGreetingReaction += 1;
+    companionGreeting = getCompanionGreeting(displayName, companionGreetingReaction);
+
+    if (companionGreetingTimer !== null) window.clearTimeout(companionGreetingTimer);
+    companionGreetingTimer = window.setTimeout(() => {
+      companionGreeting = null;
+      companionGreetingTimer = null;
+    }, COMPANION_GREETING_DURATION_MS);
+  }
+
   onMount(() => {
     const updateLocalTime = () => {
       const now = new Date();
@@ -120,7 +146,10 @@
 
     updateLocalTime();
     const interval = window.setInterval(updateLocalTime, 60 * 1000);
-    return () => window.clearInterval(interval);
+    return () => {
+      window.clearInterval(interval);
+      if (companionGreetingTimer !== null) window.clearTimeout(companionGreetingTimer);
+    };
   });
 </script>
 
@@ -179,8 +208,19 @@
           class="hero-companion-pose"
           companionId={heroCompanionId}
           scene="dashboard"
-          placement={DASHBOARD_CABIN_COMPANION_PLACEMENTS[heroCompanionId]}
+          placement={heroCompanionPlacement}
+          greetingReaction={companionGreetingReaction}
         />
+        {#if companionGreeting}
+          <p
+            class="companion-greeting"
+            style={`--companion-greeting-x: ${heroCompanionPlacement.x}%; --companion-greeting-y: ${heroCompanionPlacement.y}%;`}
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            {companionGreeting}
+          </p>
+        {/if}
         <CompanionVisitor
           class="hero-companion-visitor"
           mainCompanionId={heroCompanionId}
@@ -202,7 +242,9 @@
               <strong>Följeslagaren är här för dig.</strong>
               <small>{companionName} vakar lugnt över din resa.</small>
             </span>
-            <a class="hero-companion-link" href="/chat">Säg hej till {companionName}</a>
+            <button class="hero-companion-link" type="button" onclick={greetCompanion}>
+              Säg hej till {companionName}
+            </button>
           </div>
         </div>
         {#if isAnonymous}
@@ -545,6 +587,41 @@
     z-index: calc(var(--companion-z, 2) + 1);
   }
 
+  .companion-greeting {
+    position: absolute;
+    z-index: var(--scene-overlay);
+    left: var(--companion-greeting-x);
+    top: calc(var(--companion-greeting-y) - 43%);
+    width: max-content;
+    max-width: min(12.5rem, calc(100% - 32px));
+    margin: 0;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid rgb(217 202 166 / 0.38);
+    border-radius: 12px;
+    background: rgb(20 29 37 / 0.9);
+    box-shadow: 0 8px 20px rgb(6 12 19 / 0.2);
+    color: #f4f1e9;
+    font-size: 0.84rem;
+    font-weight: 650;
+    line-height: 1.3;
+    pointer-events: none;
+    transform: translateX(-14%);
+    animation: companionGreetingIn 180ms ease-out both;
+  }
+
+  .companion-greeting::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 34%;
+    width: 11px;
+    height: 11px;
+    border-right: 1px solid rgb(217 202 166 / 0.38);
+    border-bottom: 1px solid rgb(217 202 166 / 0.38);
+    background: rgb(20 29 37 / 0.9);
+    transform: rotate(45deg);
+  }
+
   /* Stugan hålls ljus och öppen till vänster. En lågmäld toning över sjön till
      höger ger det befintliga textblocket lugn kontrast utan att täcka huset. */
   .companion-hero::after {
@@ -663,15 +740,28 @@
     border-radius: 9px;
     background: rgba(255, 255, 255, 0.72);
     color: #31473a;
+    font: inherit;
     font-weight: 700;
     font-size: 0.88rem;
     text-decoration: none;
+    cursor: pointer;
     transition: background-color 0.16s ease, transform 0.16s ease;
   }
 
   .hero-companion-link:hover {
     background: #fff;
     transform: translateY(-1px);
+  }
+
+  @keyframes companionGreetingIn {
+    from {
+      opacity: 0;
+      transform: translateX(-14%) translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-14%) translateY(0);
+    }
   }
 
   /* ── Ditt nuläge ─────────────────────────────────────────────────────── */
@@ -1184,9 +1274,40 @@
       font-size: 0.88rem;
     }
 
-    /* Chattvägen finns kvar i "Utforska vidare" när kortet inte ryms. */
+    /* CTA:n är en sceninteraktion, inte en chattlänk, och ska därför vara
+       åtkomlig även på mobil. Själva companion-copyn döljs för att ge plats. */
     .hero-companion-note {
+      display: block;
+      padding: 0;
+      border: 0;
+      background: none;
+      box-shadow: none;
+    }
+
+    .hero-companion-mark,
+    .hero-companion-text {
       display: none;
+    }
+
+    .hero-companion-link {
+      width: 100%;
+      min-height: 38px;
+      margin-top: 0.65rem;
+      padding: 0.42rem 0.5rem;
+      font-size: 0.78rem;
+      line-height: 1.25;
+    }
+
+    .companion-greeting {
+      top: calc(var(--companion-greeting-y) - 47%);
+      max-width: 7rem;
+      padding: 0.46rem 0.55rem;
+      font-size: 0.76rem;
+      transform: translateX(-40%);
+    }
+
+    .companion-greeting::after {
+      left: 50%;
     }
 
     .hero-preview-note {
@@ -1247,6 +1368,10 @@
       transition: none;
       animation: none !important;
       transform: none !important;
+    }
+
+    .companion-greeting {
+      animation: none;
     }
   }
 </style>
