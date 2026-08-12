@@ -16,30 +16,32 @@
     House,
     Lock,
     MessageCircle,
-    MoonStar,
     Newspaper,
     Sprout,
     SunMedium,
-    Sunrise,
-    Sunset,
     TrendingUp
   } from 'lucide-svelte';
   import {
-    getDashboardCompanionScene,
     getProgressCompanionDayState,
     getProgressCompanionAnimal,
     getProgressCompanionArtId,
-    getProgressCompanionHeroFocus,
-    type DashboardCompanionScene,
+    type ProgressCompanionDayState,
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
-  import { BEAR_SCENE_PLACEMENTS, WOLF_SCENE_PLACEMENTS } from '$lib/companionPoseManifest';
+  import { DASHBOARD_CABIN_COMPANION_PLACEMENTS } from '$lib/companionPoseManifest';
   import { getLivingWorldScene, getGrowthLevel, type LivingWorldScene } from '$lib/worldScene';
   import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
-  const DASHBOARD_HERO_IMAGE = '/images/Stugscen%20med%20r%C3%A4v.png';
+  // Egen närbild av samma plats som Framsteg. Bilden innehåller inga djur;
+  // CompanionPose är alltid det enda lagret som visar följeslagaren.
+  const DASHBOARD_HERO_IMAGE = '/images/scenes/dashboard-cabin-close.webp';
+  const DASHBOARD_HERO_SRCSET = [
+    '/images/scenes/dashboard-cabin-close-800.webp 800w',
+    '/images/scenes/dashboard-cabin-close-1200.webp 1200w',
+    '/images/scenes/dashboard-cabin-close.webp 1915w'
+  ].join(', ');
 
   type DashboardData = {
     diaryPreview: {
@@ -65,23 +67,6 @@
     isAnonymous?: boolean;
   };
 
-  type CompanionBadgeMessage = {
-    label: string;
-    note: string;
-  };
-
-  function getLocalGreeting(hour: number): CompanionBadgeMessage {
-    if (hour >= 5 && hour <= 10) return { label: 'God morgon', note: 'En ny dag börjar.' };
-    if (hour >= 11 && hour <= 16) return { label: 'God dag', note: 'En sak i taget.' };
-    if (hour >= 17 && hour <= 21) return { label: 'God kväll', note: 'Du får landa här.' };
-    return { label: 'God natt', note: 'Det får vara stilla nu.' };
-  }
-
-  function getCompanionBadgeMessage(hour: number | null): CompanionBadgeMessage | null {
-    if (hour === null) return null;
-    return getLocalGreeting(hour);
-  }
-
   let { data } = $props<{ data: DashboardData }>();
 
   // Växtnivån (0-4) driver hur rik den beständiga världen är. Kommer från riktig
@@ -91,8 +76,9 @@
     data.isAnonymous ? 3 : getGrowthLevel(data.progressPreview.totalEntries)
   );
 
-  let localHour = $state<number | null>(null);
-  let localCompanionScene = $state<DashboardCompanionScene | null>(null);
+  // Uppdateras från samma gemensamma helper som Framsteg, inte från egen
+  // dashboardlogik. Det håller ljusgraderingen synkad mellan vyerna.
+  let companionDayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
   let livingWorldScene = $state<LivingWorldScene>(getLivingWorldScene({ growthLevel }));
 
   const diaryPreview = $derived(data.diaryPreview);
@@ -122,32 +108,13 @@
   const heroCompanionId = $derived(
     companionArtId === 'bear' || companionArtId === 'wolf' ? companionArtId : 'fox'
   ) as 'fox' | 'bear' | 'wolf';
-  const heroFocus = $derived(getProgressCompanionHeroFocus(heroCompanionId));
-  const companionHeroAlt =
-  'En vaken, nyfiken räv sitter vid ett träd i en varm och stillsam naturmiljö vid en sjö';
-  const companionBadgeMessage = $derived(localCompanionScene?.greeting ?? null);
-  // Uppdateras tillsammans med den lokala scenen, så besökaren följer samma
-  // nattdefinition som huvudföljeslagarens poser.
-  const heroCompanionIsSleeping = $derived(
-    localCompanionScene !== null && getProgressCompanionDayState() === 'night'
-  );
-  // Ikonen ska följa hälsningen — "God natt" fick tidigare alltid en solikon.
-  const CompanionBadgeIcon = $derived(
-    companionBadgeMessage?.label === 'God morgon'
-      ? Sunrise
-      : companionBadgeMessage?.label === 'God dag'
-        ? SunMedium
-        : companionBadgeMessage?.label === 'God kväll'
-          ? Sunset
-          : companionBadgeMessage?.label === 'God natt'
-            ? MoonStar
-            : SunMedium
-  );
+  // Ingen alt-text för scenbilden: den är dekorativ (aria-hidden) och
+  // följeslagaren beskrivs av CompanionPose, som vet vilket djur som visas.
+  const heroCompanionIsSleeping = $derived(companionDayState === 'night');
   onMount(() => {
     const updateLocalTime = () => {
-      localHour = new Date().getHours();
       const now = new Date();
-      localCompanionScene = getDashboardCompanionScene(now);
+      companionDayState = getProgressCompanionDayState(now);
       livingWorldScene = getLivingWorldScene({ date: now, growthLevel });
     };
 
@@ -187,8 +154,9 @@
         class="companion-hero"
         class:personal-preview={isAnonymous}
         data-companion={heroCompanionId}
+        data-time={companionDayState}
         aria-label="Din följeslagare"
-        style={`--hero-image: ${companionHeroImage ? `url('${companionHeroImage}')` : 'none'}; --hero-focus: ${heroFocus};`}
+        style={`--hero-image: ${companionHeroImage ? `url('${companionHeroImage}')` : 'none'};`}
       >
         <!-- width/height ger webbläsaren bildens proportioner innan den laddats,
              så hjältekortet inte hoppar till. fetchpriority="high" eftersom det
@@ -197,46 +165,34 @@
              bred. Det egna sizes-värdet hindrar att 800w förstoras till desktopbredd. -->
         <img
           class="companion-hero-scene"
+          srcset={DASHBOARD_HERO_SRCSET}
+          sizes="(max-width: 620px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1440px) calc(100vw - 360px), 984px"
           src={companionHeroImage}
           alt=""
           aria-hidden="true"
-          width="1672"
-          height="941"
+          width="1915"
+          height="821"
           fetchpriority="high"
           decoding="async"
         />
-        <!-- Grenen/löven uppe till höger ligger inbränd i companionHeroImage (ingen
-             alfakanal). När en mattad utklippsfil finns (t.ex.
-             dashboard-lakeside-world-foliage.webp), lägg ett eget <img> här med
-             samma object-fit/object-position, klassen "companion-hero-foliage",
-             och animera med canopySway (AmbientWorld.svelte). -->
         <CompanionPose
           class="hero-companion-pose"
           companionId={heroCompanionId}
           scene="dashboard"
-          placement={
-            heroCompanionId === 'bear'
-              ? BEAR_SCENE_PLACEMENTS.dashboard
-              : heroCompanionId === 'wolf'
-                ? WOLF_SCENE_PLACEMENTS.dashboard
-                : null
-          }
+          placement={DASHBOARD_CABIN_COMPANION_PLACEMENTS[heroCompanionId]}
         />
         <CompanionVisitor
           class="hero-companion-visitor"
           mainCompanionId={heroCompanionId}
           isSleeping={heroCompanionIsSleeping}
           scene="dashboard"
-          sceneAllowsVisitor={Boolean(localCompanionScene)}
+          sceneAllowsVisitor={true}
         />
         <AmbientWorld scene={livingWorldScene} class="hero-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
         <CompanionFriend class="hero-companion-friend" companionId={heroCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
-        <!-- Texten är inte placerad "mitt emot räven". Den är kapad till
-             COMPANION_DASHBOARD_COPY_SAFE_WIDTH_PCT, den yta scenen lovar att
-             hålla fri från både följeslagare och besökare oavsett vilken pose,
-             position eller vilket djur som råkar vara valt. Löftet hålls av
-             testerna i companionPoseState.test.ts - ändra aldrig bredden här
-             utan att uppdatera konstanten och låta testet räkna om marginalen. -->
+        <!-- Textytan ligger i stugscenens lugna högra del. Testet i
+             companionPoseState.test.ts kontrollerar marginalen mot varje
+             befintlig pose och djurplacering. -->
         <div class="hero-copy">
           <h2>{greeting}</h2>
           <p>{livingWorldReflectionCopy}</p>
@@ -248,13 +204,6 @@
             </span>
             <a class="hero-companion-link" href="/chat">Säg hej till {companionName}</a>
           </div>
-        </div>
-        <div class="time-badge" aria-label={companionBadgeMessage?.label ?? 'Hälsning'}>
-          <CompanionBadgeIcon size={24} aria-hidden="true" />
-          <span>
-            <strong>{companionBadgeMessage?.label ?? 'Välkommen'}</strong>
-            <small>{companionBadgeMessage?.note ?? 'Din plats finns här.'}</small>
-          </span>
         </div>
         {#if isAnonymous}
           <div class="preview-note hero-preview-note">
@@ -546,8 +495,7 @@
     z-index: var(--scene-background);
     background-image: var(--hero-image);
     background-size: cover;
-    /* Följ samma fokus som förgrundsbilden så den suddiga bakgrunden matchar */
-    background-position: var(--hero-focus, 70% 64%);
+    background-position: 50% 60%;
     display: none;
   }
 
@@ -583,16 +531,10 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Fokus styrs per följeslagare via --hero-focus (standard: nedre högra tredjedelen där djuret sitter) */
-    object-position: var(--hero-focus, 70% 64%);
+    /* Stugan är motivet i närbilden; följeslagaren är ett separat lager. */
+    object-position: 50% 60%;
     display: block;
     z-index: var(--scene-background);
-  }
-
-  .companion-hero[data-companion='fox'] .companion-hero-scene {
-    object-fit: cover;
-    /* Håll räven (nedre högra tredjedelen) helt i bild oavsett kortets bredd */
-    object-position: var(--hero-focus, 70% 64%);
   }
 
   .companion-hero :global(.hero-living-world) {
@@ -603,19 +545,34 @@
     z-index: calc(var(--companion-z, 2) + 1);
   }
 
-  /* Läsbarhetstvätten över vänstra tredjedelen. Den är förutsättningen för att
-     hjältetexten kan vara mörk text direkt på scenen i stället för en egen
-     panel - en panel hade krävt att bildytan kröps ihop, och då hade
-     följeslagarens procentkoordinater slutat peka på rätt mark. */
+  /* Stugan hålls ljus och öppen till vänster. En lågmäld toning över sjön till
+     höger ger det befintliga textblocket lugn kontrast utan att täcka huset. */
   .companion-hero::after {
     content: '';
     position: absolute;
-    display: none;
+    inset: 0;
+    z-index: var(--scene-midground);
+    background: linear-gradient(90deg, transparent 0 43%, rgb(9 19 33 / 0.16) 64%, rgb(9 19 33 / 0.72) 100%);
+    pointer-events: none;
   }
 
-  .companion-hero :global(.hero-companion-pose) {
-    display: none;
+  .companion-hero[data-time='evening'] .companion-hero-scene {
+    filter: saturate(0.96) brightness(0.96) sepia(0.04);
   }
+
+  .companion-hero[data-time='night'] .companion-hero-scene {
+    filter: saturate(1.04) brightness(0.95);
+  }
+
+  .companion-hero[data-time='evening'] :global(.hero-companion-pose) {
+    --companion-grade: saturate(0.68) contrast(0.88) brightness(0.88) sepia(0.18) hue-rotate(-6deg);
+  }
+
+  .companion-hero[data-time='night'] :global(.hero-companion-pose) {
+    --companion-grade: saturate(0.55) contrast(0.84) brightness(0.72) sepia(0.14) hue-rotate(5deg);
+  }
+
+  /* Följeslagaren står vid huset. Texten använder den fria ytan till höger. */
 
   .companion-hero :global(.hero-companion-visitor),
   .companion-hero :global(.hero-living-world),
@@ -623,11 +580,8 @@
     display: none;
   }
 
-  /* Bredden är låst till den yta scenen garanterar fri från följeslagare och
-     besökare - se COMPANION_DASHBOARD_COPY_SAFE_WIDTH_PCT i
-     companionPoseManifest.ts. Höj den aldrig utan att höja konstanten, för då
-     räknar testet i companionPoseState.test.ts om marginalen och faller om
-     scenen inte längre håller löftet. */
+  /* Bredden är låst till den högra textytan. Marginalen verifieras mot varje
+     dashboard-pose i companionPoseState.test.ts. */
   .hero-copy {
     position: absolute;
     z-index: var(--scene-overlay);
@@ -635,10 +589,7 @@
     right: var(--hero-copy-inset);
     left: auto;
     top: clamp(22px, 3.4vw, 42px);
-    /* Indraget måste dras av, annars hamnar textens HÖGERkant på
-       inset + 40 % och kryper in i besökarens yta. Det är högerkanten som är
-       löftet, inte bredden. */
-    width: min(23rem, calc(45% - var(--hero-copy-inset)));
+    width: min(23rem, calc(40% - var(--hero-copy-inset)));
   }
 
   .hero-copy h2 {
@@ -721,39 +672,6 @@
   .hero-companion-link:hover {
     background: #fff;
     transform: translateY(-1px);
-  }
-
-  .time-badge {
-    display: none;
-    z-index: var(--scene-overlay);
-    top: 20px;
-    right: 20px;
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    padding: 0.72rem 0.95rem;
-    border-radius: 12px;
-    background: rgba(255, 253, 248, 0.94);
-    border: 1px solid rgba(49, 71, 58, 0.18);
-    box-shadow: 0 8px 24px rgba(10, 25, 45, 0.16);
-    color: #d4a017;
-    opacity: 1;
-  }
-
-  .time-badge span {
-    display: grid;
-    gap: 0.15rem;
-    color: #31473a;
-    font-size: 15px;
-    font-weight: 600;
-    opacity: 1;
-  }
-
-  .time-badge small {
-    color: #5f6f64;
-    font-size: 14px;
-    font-weight: 400;
-    opacity: 1;
   }
 
   /* ── Ditt nuläge ─────────────────────────────────────────────────────── */
@@ -1239,14 +1157,22 @@
     }
 
     .companion-hero::after {
-      display: none;
+      background: linear-gradient(90deg, transparent 0 38%, rgb(9 19 33 / 0.18) 61%, rgb(9 19 33 / 0.74) 100%);
     }
 
-    /* På mobil ligger copy fortsatt över den mörka högra delen av scenen. */
+    /* Vänsterförankringen bevarar stuga, dörr och veranda i mobil-cropen. */
+    .companion-hero-scene {
+      object-position: 0% 60%;
+    }
+
+    /* Följeslagaren stannar vid huset till vänster, medan copy behåller den
+       mörkare sjöytan till höger. */
     .hero-copy {
       --hero-copy-inset: 16px;
+      right: var(--hero-copy-inset);
+      left: auto;
       top: 18px;
-      width: min(17rem, calc(46% - var(--hero-copy-inset)));
+      width: min(15rem, calc(46% - var(--hero-copy-inset)));
     }
 
     .hero-copy h2 {
@@ -1260,37 +1186,6 @@
 
     /* Chattvägen finns kvar i "Utforska vidare" när kortet inte ryms. */
     .hero-companion-note {
-      display: none;
-    }
-
-    .time-badge {
-      top: 12px;
-      right: 12px;
-      left: auto;
-      bottom: auto;
-      padding: 0.55rem 0.72rem;
-      gap: 0.5rem;
-      /* Brickan är högerankrad och .hero-copy vänsterankrad i samma vertikala
-         band. Utan ett breddtak här växte brickan in över rubriken. Taket och
-         .hero-copys bredd måste tillsammans lämna luft för sidoavstånden. */
-      max-width: 46%;
-    }
-
-    .time-badge :global(svg) {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-    }
-
-    .time-badge strong {
-      font-size: 15px;
-    }
-
-    .time-badge small {
-      font-size: 14px;
-    }
-
-    .companion-hero.personal-preview .time-badge {
       display: none;
     }
 
@@ -1313,22 +1208,16 @@
       padding: 14px 12px 16px;
     }
 
-    /* Smalare, inte bredare, ju mindre skärmen blir - annars möter texten
-       tidsbrickan på högersidan. */
+    /* Smalare, inte bredare, ju mindre skärmen blir - så stugan och
+       följeslagaren fortfarande får sin vänstra del av scenen. */
     .hero-copy {
-      width: min(14rem, calc(44% - var(--hero-copy-inset)));
+      width: min(13.5rem, calc(44% - var(--hero-copy-inset)));
     }
 
     .hero-copy h2 {
       font-size: 1.22rem;
     }
 
-    .time-badge {
-      padding: 0.48rem 0.62rem;
-      /* Snävare tak än 620px-regeln: utrymmet mellan rubrik och bricka blir
-         annars nere på ett par pixlar här. */
-      max-width: 42%;
-    }
   }
 
   @media (max-width: 320px) {
@@ -1341,12 +1230,6 @@
     }
 
     .hero-copy > p {
-      display: none;
-    }
-
-    /* På de smalaste skärmarna räcker hälsningen. Utan detta trycks
-       noteringen ihop till tre rader och brickan blir onödigt bred. */
-    .time-badge small {
       display: none;
     }
 

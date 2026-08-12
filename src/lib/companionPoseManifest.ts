@@ -371,6 +371,23 @@ export const WOLF_SCENE_PLACEMENTS = {
 	}
 } as const;
 
+/**
+ * Mitt Hem ligger vid stugan, inte ute i den breda sjövyn. Detta är enbart
+ * scengeometri för den befintliga dashboard-vyn: poseval, positionernas
+ * lagring och companion-state fortsätter använda samma `dashboard`-kontext.
+ */
+export const DASHBOARD_CABIN_COMPANION_PLACEMENTS: Record<
+	CompanionId,
+	{ scale: number; x: number; y: number }
+> = {
+	fox: { scale: 0.8, x: 37, y: 91 },
+	bear: { scale: 0.9, x: 37, y: 91 },
+	wolf: { scale: 0.9, x: 37, y: 91 }
+};
+
+/** Startpunkten för Mitt Hems högra textyta i stugscenen. */
+export const DASHBOARD_CABIN_COPY_SAFE_START_PCT = 54;
+
 export const COMPANION_POSES: readonly CompanionPose[] = [
 	...FOX_COMPANION_POSES,
 	...BEAR_COMPANION_POSES,
