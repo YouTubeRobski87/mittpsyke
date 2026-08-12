@@ -23,6 +23,7 @@ describe('getBaseCompanionState', () => {
 		expect(getBaseCompanionState({ id: 'bear-sleeping' })).toBe('sleep');
 		expect(getBaseCompanionState({ id: 'bear-stretching' })).toBe('idle');
 		expect(getBaseCompanionState({ id: 'wolf-standing' })).toBe('idle');
+		expect(getBaseCompanionState({ id: 'wolf-sleeping' })).toBe('sleep');
 	});
 
 	it('falls back to idle for missing or unknown poses', () => {

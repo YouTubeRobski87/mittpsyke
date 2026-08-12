@@ -87,15 +87,22 @@ describe('getCompanionBasePose', () => {
 		}
 	});
 
-	it('always resolves to a real base pose, even for companions with a single pose (wolf)', () => {
-		// Vargen har i dag bara wolf-standing - garanterar att fallback-kedjan
-		// (se getFallbackPose) fungerar även när det tillgängliga urvalet är som
-		// minst, inte bara när det finns flera alternativ att välja mellan.
-		for (const daypart of DAYPARTS) {
-			const pose = getCompanionBasePose(DAYPART_DATES[daypart], null, 'wolf');
-			expect(pose.id).toBe('wolf-standing');
-			expect(pose.role).toBe('base');
-		}
+	it('uses the sleeping wolf pose at 00:20 in Stockholm and standing pose during the day', () => {
+		// Nattposen kommer från samma gemensamma poseval som de andra följeslagarna.
+		const stockholm0020 = new Date('2026-06-14T22:20:00Z');
+		const stockholmNoon = new Date('2026-06-15T10:00:00Z');
+
+		expect(getCompanionBasePose(stockholm0020, null, 'wolf').id).toBe('wolf-sleeping');
+		expect(getCompanionBasePose(stockholmNoon, null, 'wolf').id).toBe('wolf-standing');
+	});
+
+	it('keeps existing fox and bear night poses at 00:20 in Stockholm', () => {
+		const stockholm0020 = new Date('2026-06-14T22:20:00Z');
+
+		expect(['sleep-curled', 'sleep-side']).toContain(
+			getCompanionBasePose(stockholm0020, null, 'fox').id
+		);
+		expect(getCompanionBasePose(stockholm0020, null, 'bear').id).toBe('bear-sleeping');
 	});
 });
 

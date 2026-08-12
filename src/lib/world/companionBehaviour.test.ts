@@ -3,6 +3,7 @@ import {
 	COMPANION_BEHAVIOURS,
 	COMPANION_BEHAVIOUR_MAX_REST_MS,
 	COMPANION_BEHAVIOUR_MIN_REST_MS,
+	canPlayCompanionSettle,
 	getCompanionBehaviourRestMs,
 	getMotionDutyCycle,
 	isQuietPose,
@@ -68,6 +69,7 @@ describe('isQuietPose', () => {
 	it('skips gestures for poses that already move or should stay still', () => {
 		expect(isQuietPose('sleep-curled')).toBe(true);
 		expect(isQuietPose('bear-sleeping')).toBe(true);
+		expect(isQuietPose('wolf-sleeping')).toBe(true);
 		expect(isQuietPose('walk')).toBe(true);
 		expect(isQuietPose('rest')).toBe(true);
 	});
@@ -77,5 +79,17 @@ describe('isQuietPose', () => {
 		expect(isQuietPose('sit')).toBe(false);
 		expect(isQuietPose('wolf-standing')).toBe(false);
 		expect(isQuietPose(null)).toBe(false);
+	});
+});
+
+describe('canPlayCompanionSettle', () => {
+	it('does not let a greeting reaction settle a quiet pose', () => {
+		expect(canPlayCompanionSettle('wolf-sleeping')).toBe(false);
+		expect(canPlayCompanionSettle('bear-sleeping')).toBe(false);
+	});
+
+	it('keeps the greeting settle reaction for awake poses', () => {
+		expect(canPlayCompanionSettle('wolf-standing')).toBe(true);
+		expect(canPlayCompanionSettle('idle')).toBe(true);
 	});
 });

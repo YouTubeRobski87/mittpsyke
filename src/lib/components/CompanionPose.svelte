@@ -19,6 +19,7 @@
 	} from '$lib/diary-events';
 	import {
 		COMPANION_BEHAVIOURS,
+		canPlayCompanionSettle,
 		getCompanionBehaviourRestMs,
 		isQuietPose,
 		pickCompanionBehaviour,
@@ -193,7 +194,7 @@
 
 		// Rörelse är frivillig för den som bett om minskad rörelse. Själva
 		// textreaktionen hanteras av anroparen och fortsätter vara tillgänglig.
-		if (motionAwareness.reducedMotion) return;
+		if (motionAwareness.reducedMotion || !canPlayCompanionSettle(basePose?.id)) return;
 
 		microGesture = 'settle';
 		const timer = window.setTimeout(() => {

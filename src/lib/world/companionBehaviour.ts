@@ -62,12 +62,17 @@ const QUIET_POSE_IDS = new Set([
 	'sleep-curled',
 	'sleep-side',
 	'bear-sleeping',
+	'wolf-sleeping',
 	'rest',
 	'walk'
 ]);
 
 export function isQuietPose(poseId: string | null | undefined): boolean {
 	return poseId ? QUIET_POSE_IDS.has(poseId) : false;
+}
+
+export function canPlayCompanionSettle(poseId: string | null | undefined): boolean {
+	return !isQuietPose(poseId);
 }
 
 /**

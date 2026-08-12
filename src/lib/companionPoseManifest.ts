@@ -333,11 +333,21 @@ export const WOLF_COMPANION_POSES = [
 		id: 'wolf-standing',
 		companionId: 'wolf',
 		role: 'base',
-		dayparts: ['day', 'evening', 'night'],
+		dayparts: ['day', 'evening'],
 		frames: [{ src: wolfPoseSrc('wolf-standing-transparent.png') }],
 		alt: 'Din följeslagare, vargen, står lugnt.',
 		weight: 2.4,
 		sceneAdjustment: { scale: 0.74, y: 3 }
+	},
+	{
+		id: 'wolf-sleeping',
+		companionId: 'wolf',
+		role: 'base',
+		dayparts: ['night'],
+		frames: [{ src: wolfPoseSrc('wolf-sleeping.png') }],
+		alt: 'Vargen sover lugnt.',
+		weight: 2.4,
+		sceneAdjustment: { scale: 0.96 }
 	}
 ] satisfies CompanionPose[];
 
@@ -445,7 +455,8 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 			'bear-sitting',
 			'bear-sleeping',
 			'bear-stretching',
-			'wolf-standing'
+			'wolf-standing',
+			'wolf-sleeping'
 		],
 		dayparts: ['day', 'evening', 'night'],
 		weight: 2.2

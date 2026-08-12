@@ -43,8 +43,9 @@ const BASE_POSE_ID_TO_STATE: Record<string, CompanionState> = {
 	'bear-sitting': 'sit',
 	'bear-sleeping': 'sleep',
 	'bear-stretching': 'idle',
-	// Varg (en enda pose finns ännu - se companionPoseManifest.ts)
-	'wolf-standing': 'idle'
+	// Varg
+	'wolf-standing': 'idle',
+	'wolf-sleeping': 'sleep'
 };
 
 /** Mappar en bas-pose till dess kanoniska tillstånd. Okänt/saknat → "idle". */
