@@ -4,6 +4,8 @@
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import EveningCheckinFlow from '$lib/components/evening/EveningCheckinFlow.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
+	import WaterLayer from '$lib/components/world/WaterLayer.svelte';
+	import type { LivingWorldEffect } from '$lib/worldScene';
 	import {
 		getProgressCompanionAnimal,
 		getProgressCompanionArtId,
@@ -19,6 +21,47 @@
 		'/images/scenes/cabin-interior-evening-v1-1200.webp 1200w',
 		'/images/scenes/cabin-interior-evening-v1.webp 1672w'
 	].join(', ');
+
+	// Samma vattenringar som på /framsteg: klassen `.water-ripple-loop` och
+	// keyframen `waterRing` bor kvar i WaterLayer.svelte - här definieras bara
+	// var de ligger inne i fönstrets sjövy. Route-lokala i stället för i
+	// worldScene.ts, eftersom koordinaterna hör till interiörbilden och inte till
+	// den globala sjöscenen.
+	//
+	// Två emitters i stället för /framstegs tre, och längre durations (~2x), så
+	// ringarna kommer sällan och expanderar mjukare - sjön ska leva lite utanför,
+	// inte dra blicken från Kvällslugn. Koordinaterna är procent av
+	// `.cabin-lake-view`, och `.water-ripple-loop` centrerar sig själv på dem.
+	const LAKE_RIPPLES: LivingWorldEffect[] = [
+		{
+			id: 'cabin-lake-ripple-one',
+			kind: 'water',
+			enabled: true,
+			className: 'water-ripple-loop',
+			x: 33,
+			y: 44,
+			width: 20,
+			height: 36,
+			durationMs: 7_600,
+			delayMs: 0,
+			opacity: 0.38,
+			scale: 1
+		},
+		{
+			id: 'cabin-lake-ripple-two',
+			kind: 'water',
+			enabled: true,
+			className: 'water-ripple-loop',
+			x: 70,
+			y: 60,
+			width: 16,
+			height: 30,
+			durationMs: 9_400,
+			delayMs: -3_400,
+			opacity: 0.3,
+			scale: 0.82
+		}
+	];
 
 	let { data } = $props<{ data: { progressCompanion: ProgressCompanionSelection | null } }>();
 	let sceneDate = $state(new Date());
@@ -91,6 +134,11 @@
 			/>
 			<div class="cabin-window-view" aria-hidden="true">
 				<AmbientWorld scene={worldScene} class="evening-ambient" />
+			</div>
+			<!-- Sjöytan utanför fönstret: egen viewport så ringarna klipps till
+			     vattnet och aldrig hamnar på karm, vägg, golv eller möbler. -->
+			<div class="cabin-lake-view" aria-hidden="true">
+				<WaterLayer effects={LAKE_RIPPLES} />
 			</div>
 			<CompanionPose
 				class="evening-companion interior-companion"
@@ -200,6 +248,21 @@
 		overflow: hidden;
 	}
 	.cabin-window-view :global(.evening-ambient) { inset: 0; opacity: 0.72; }
+	/* Route-specifik "sjövy": exakt den del av cabin-interior-evening-v1.webp där
+	   den öppna vattenytan syns (källpixlar x 460-861, y 327-397 av 1672x941).
+	   Rent procentuell, så masken följer bilden när scenen skalar. overflow: hidden
+	   gör att ringarna aldrig kan läcka ut på strandbuskar eller fönsterkarm.
+	   z-index 1 håller den under lampskenet (::before, z 2) och companion (z 3). */
+	.cabin-lake-view {
+		position: absolute;
+		z-index: 1;
+		left: 27.5%;
+		top: 34.8%;
+		width: 24%;
+		height: 7.4%;
+		overflow: hidden;
+		pointer-events: none;
+	}
 	.evening-scene :global(.interior-companion) {
 		position: absolute;
 		z-index: 3;
