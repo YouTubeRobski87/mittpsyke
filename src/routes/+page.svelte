@@ -88,9 +88,18 @@
 					det.
 				</p>
 			</div>
-			<div class="evening-proof">
-				<CabinProof variant="section" />
-			</div>
+			<figure class="evening-scene">
+				<img
+					srcset="/images/scenes/cabin-interior-evening-v1-800.webp 800w, /images/scenes/cabin-interior-evening-v1-1200.webp 1200w, /images/scenes/cabin-interior-evening-v1.webp 1672w"
+					sizes="(max-width: 1129px) calc(100vw - 2.5rem), 1080px"
+					src="/images/scenes/cabin-interior-evening-v1-1200.webp"
+					alt="Inne i Kvällsstugan: en lampa lyser i en stuga och genom fönstret syns en sjö i skymningen."
+					width="1672"
+					height="941"
+					loading="lazy"
+					decoding="async"
+				/>
+			</figure>
 			<a
 				class="text-link"
 				href={SUPPORT_LINES_URL}
@@ -377,8 +386,21 @@
 		text-underline-offset: 3px;
 	}
 
-	.evening-proof {
+	.evening-scene {
 		margin-top: 1.5rem;
+		margin-bottom: 0;
+		overflow: hidden;
+		border: 1px solid rgb(92 72 47 / 0.34);
+		border-radius: 1.2rem;
+		background: #17110e;
+	}
+
+	.evening-scene img {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
 	}
 
 	.safety {
@@ -398,6 +420,16 @@
 		.hero-grid {
 			grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
 			gap: clamp(2rem, 3vw, 2.75rem);
+		}
+	}
+
+	@media (max-width: 759px) {
+		/* Den breda originalbilden behöver lite extra höjd på smala skärmar för
+		   att fortfarande kännas som en plats, inte som en tunn bildremsa. */
+		.evening-scene img {
+			height: max(12.5rem, 56.25vw);
+			aspect-ratio: auto;
+			object-fit: cover;
 		}
 	}
 
