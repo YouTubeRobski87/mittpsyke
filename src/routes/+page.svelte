@@ -289,10 +289,24 @@
 	}
 
 	/* ── Hero ── */
+	/* Heron får en egen, bredare container än övriga sektioner (1080px). Utan
+	   den krympte proofen till en miniatyr på 1440/1920 medan sidorna fylldes
+	   med tom yta. Taket ligger kvar långt under viewportbredden på stora
+	   skärmar, så heron blir större utan att fylla hela ytan. */
+	.home-hero .home-inner {
+		width: min(1240px, 100%);
+	}
+
 	.hero-grid {
 		display: grid;
 		gap: clamp(1.6rem, 4vw, 2.5rem);
 		align-items: center;
+	}
+
+	/* Läsbredden hålls kvar nära den tidigare (~506px) även när kolumnen växer,
+	   så rubrik → ingress → CTA behåller sin hierarki. */
+	.hero-copy {
+		max-width: 30rem;
 	}
 
 	.hero-actions {
@@ -382,7 +396,8 @@
 	/* ── Responsivt ── */
 	@media (min-width: 900px) {
 		.hero-grid {
-			grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+			gap: clamp(2rem, 3vw, 2.75rem);
 		}
 	}
 

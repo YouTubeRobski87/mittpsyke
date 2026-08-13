@@ -47,8 +47,6 @@
 		</ul>
 		<span class="cabin-proof-primary" aria-hidden="true">Fortsätt</span>
 	</div>
-
-	<figcaption>Kvällsstugan, steg 1.</figcaption>
 </figure>
 
 <style>
@@ -140,12 +138,6 @@
 		font-weight: 650;
 	}
 
-	.cabin-proof figcaption {
-		color: rgb(220 225 235 / 0.66);
-		font-size: 0.78rem;
-		line-height: 1.5;
-	}
-
 	/* Samma uppdelning som den riktiga Kvällsstugan gör på bred skärm: scenen
 	   bredvid steget, inte ovanpå det. Under brytpunkten staplas de, vilket
 	   håller 320 px fritt från överlägg och horisontell overflow. */
@@ -154,11 +146,6 @@
 			grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
 			align-items: start;
 			gap: 1rem;
-		}
-
-		.cabin-proof--section figcaption {
-			grid-column: 1 / -1;
-			margin-top: -0.25rem;
 		}
 	}
 
