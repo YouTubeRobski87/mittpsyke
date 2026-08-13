@@ -303,7 +303,7 @@
 	   med tom yta. Taket ligger kvar långt under viewportbredden på stora
 	   skärmar, så heron blir större utan att fylla hela ytan. */
 	.home-hero .home-inner {
-		width: min(1240px, 100%);
+		width: min(1320px, 100%);
 	}
 
 	.hero-grid {
@@ -418,7 +418,7 @@
 	/* ── Responsivt ── */
 	@media (min-width: 900px) {
 		.hero-grid {
-			grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
+			grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
 			gap: clamp(2rem, 3vw, 2.75rem);
 		}
 	}
