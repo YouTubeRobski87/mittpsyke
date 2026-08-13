@@ -26,7 +26,7 @@
 	<div class="cabin-proof-scene">
 		<img
 			srcset={CABIN_SRCSET}
-			sizes="(max-width: 759px) calc(100vw - 2.5rem), 520px"
+			sizes="(max-width: 759px) calc(100vw - 2.5rem), (min-width: 900px) 60vw, 520px"
 			src="/images/scenes/cabin-interior-evening-v1-1200.webp"
 			alt="Inne i Kvällsstugan: en lampa lyser i en stuga och genom fönstret syns en sjö i skymningen."
 			width="1672"
@@ -149,10 +149,69 @@
 		}
 	}
 
-	/* Hero-varianten står i en smalare kolumn bredvid rubriken, så den staplas
-	   alltid: scenen får hela kolumnbredden i stället för att krympa till en
-	   oläslig miniatyr bredvid steg-kortet. */
-	.cabin-proof--hero {
-		gap: 0.75rem;
+	/* Hero-varianten låter scenen bära hela proof-ytan. På breda skärmar ligger
+	   det statiska stegkortet förankrat i scenens nedre del; på mobil staplas
+	   ytorna fortsatt för att alternativen ska vara lätta att läsa. */
+	@media (min-width: 760px) {
+		.cabin-proof--hero {
+			display: block;
+			position: relative;
+			isolation: isolate;
+		}
+
+		.cabin-proof--hero .cabin-proof-scene {
+			min-height: 30rem;
+			aspect-ratio: 5 / 4;
+			border-radius: 1.35rem;
+		}
+
+		.cabin-proof--hero .cabin-proof-scene::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(0deg, rgb(15 10 8 / 0.74) 0%, rgb(15 10 8 / 0.24) 42%, transparent 70%);
+			pointer-events: none;
+		}
+
+		.cabin-proof--hero .cabin-proof-scene img {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			aspect-ratio: auto;
+			object-position: center;
+		}
+
+		.cabin-proof--hero .cabin-proof-card {
+			position: absolute;
+			z-index: 1;
+			right: clamp(1rem, 2.5vw, 1.5rem);
+			bottom: clamp(1rem, 2.5vw, 1.5rem);
+			width: min(54%, 24rem);
+			padding: clamp(0.9rem, 1.7vw, 1.15rem);
+			border-color: rgb(237 222 194 / 0.34);
+			background: linear-gradient(145deg, rgb(55 38 29 / 0.88), rgb(28 23 22 / 0.92));
+			backdrop-filter: blur(8px);
+			box-shadow: 0 18px 42px rgb(12 8 6 / 0.36);
+		}
+
+		.cabin-proof--hero .cabin-proof-step,
+		.cabin-proof--hero .cabin-proof-question {
+			margin-bottom: 0.55rem;
+		}
+
+		.cabin-proof--hero .cabin-proof-options {
+			gap: 0.35rem;
+		}
+
+		.cabin-proof--hero .cabin-proof-options li {
+			padding: 0.48rem 0.62rem;
+			font-size: 0.86rem;
+		}
+
+		.cabin-proof--hero .cabin-proof-primary {
+			margin-top: 0.6rem;
+			padding: 0.5rem 0.85rem;
+		}
 	}
 </style>
