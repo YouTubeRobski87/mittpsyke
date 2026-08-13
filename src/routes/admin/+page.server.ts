@@ -1,5 +1,5 @@
 import { env } from '$env/dynamic/private';
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { createServiceClient } from '$lib/server/supabase-admin';
 import { callClaude } from '$lib/server/ai/anthropic';
 import { CLAUDE_MODELS, resolveModel } from '$lib/server/ai/models';
@@ -39,11 +39,18 @@ type FeedbackSubmissionRecord = {
 	other: string | null;
 };
 
+// Utloggad -> till inloggningen med vägen tillbaka. Inloggad men obehörig -> 403.
+// Tidigare gav båda fallen en tyst redirect till '/', vilket gjorde det omöjligt
+// att se om sessionen eller behörigheten saknades.
 async function requireAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
 
-	if (!user?.is_super_admin) {
-		throw redirect(303, '/');
+	if (!user) {
+		throw redirect(303, '/login?redirect=/admin');
+	}
+
+	if (!user.is_super_admin) {
+		throw error(403, 'Du är inloggad men har inte behörighet till adminvyn.');
 	}
 
 	return user;
@@ -52,7 +59,11 @@ async function requireAdmin(locals: App.Locals) {
 async function ensureAdminAction(locals: App.Locals, activeTab: 'prompts' | 'pages' | 'ab' = 'prompts') {
 	const user = await locals.getSession();
 
-	if (!user?.is_super_admin) {
+	if (!user) {
+		return fail(401, { activeTab, error: 'Du behöver logga in igen.' });
+	}
+
+	if (!user.is_super_admin) {
 		return fail(403, { activeTab, error: 'Åtkomst nekad.' });
 	}
 

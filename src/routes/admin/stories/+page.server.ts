@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { createServiceClient, isMissingTableError, isUuid } from '$lib/server/supabase-admin';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -22,11 +22,16 @@ function getStatusFilter(value: string | null): StatusFilter {
 	return STATUS_FILTERS.includes(value as StatusFilter) ? (value as StatusFilter) : 'pending';
 }
 
+// Samma uppdelning som /admin: utloggad -> inloggning, obehörig -> 403.
 async function requireAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
 
-	if (!user?.is_super_admin) {
-		throw redirect(303, '/');
+	if (!user) {
+		throw redirect(303, '/login?redirect=/admin/stories');
+	}
+
+	if (!user.is_super_admin) {
+		throw error(403, 'Du är inloggad men har inte behörighet att moderera berättelser.');
 	}
 
 	return user;
@@ -35,7 +40,11 @@ async function requireAdmin(locals: App.Locals) {
 async function ensureAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
 
-	if (!user?.is_super_admin) {
+	if (!user) {
+		return fail(401, { error: 'Du behöver logga in igen.' });
+	}
+
+	if (!user.is_super_admin) {
 		return fail(403, { error: 'Åtkomst nekad.' });
 	}
 

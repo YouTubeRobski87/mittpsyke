@@ -71,6 +71,10 @@ Required in `.env`:
 - `SUPABASE_URL` + `SUPABASE_ANON_KEY` — Server-side Supabase (private, used in hooks)
 - `SUPABASE_SERVICE_ROLE_KEY` — Server-side (guest conversations, bypasses RLS)
 - `ANTHROPIC_API_KEY` — Anthropic integration
+- `ADMIN_USER_IDS` — Valfri. Kommaseparerade user-id:n som får adminbehörighet
+  (`/admin`, `/admin/stories`, `/admin/radar`). Serverkontrollerad källa, sätts i
+  Render. Behörighet får aldrig läsas ur `user_metadata` — användaren kan skriva
+  det fältet själv via `supabase.auth.updateUser()`
 - `PUBLIC_GA_MEASUREMENT_ID` — Google Analytics 4 (mätnings-ID, `G-…`). Läses klientsidan i `src/lib/analytics.ts`; utan den är `ANALYTICS_ENABLED` falskt och gtag laddas aldrig
 
 ## Svelte 5 Runes

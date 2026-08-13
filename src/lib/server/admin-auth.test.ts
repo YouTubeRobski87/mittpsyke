@@ -1,41 +1,78 @@
-import { describe, expect, it, vi } from 'vitest';
-import { getSessionUser, isSuperAdminUser } from './admin-auth';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const regularUser = {
-	id: 'regular-user-id',
-	app_metadata: {},
-	user_metadata: {}
-};
+// $env/dynamic/private finns inte utanför SvelteKit-runtime. Mockas så
+// ADMIN_USER_IDS kan varieras per test.
+const mockEnv: Record<string, string | undefined> = {};
+vi.mock('$env/dynamic/private', () => ({ env: mockEnv }));
+vi.mock('$env/dynamic/public', () => ({ env: {} }));
 
-describe('getSessionUser', () => {
-	it('returns null for a signed-out user', async () => {
-		const supabase = { auth: { getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }) } };
+const { isSuperAdminUser } = await import('./admin-auth');
 
-		expect(await getSessionUser(supabase as never)).toBeNull();
+// Riktigt id från auth.users - kontot som legacy-allowlisten pekar ut.
+const LEGACY_ID = 'f4f107ef-461a-4090-bc2f-6ddccc0cc64d';
+const OTHER_ID = '11111111-2222-4333-8444-555555555555';
+
+function user(overrides: Record<string, unknown> = {}) {
+	return {
+		id: OTHER_ID,
+		app_metadata: {},
+		user_metadata: {},
+		aud: 'authenticated',
+		created_at: '2026-01-01T00:00:00Z',
+		...overrides
+	} as never;
+}
+
+describe('isSuperAdminUser', () => {
+	beforeEach(() => {
+		for (const key of Object.keys(mockEnv)) delete mockEnv[key];
 	});
 
-	it('returns the verified user identity', async () => {
-		const supabase = {
-			auth: { getUser: vi.fn().mockResolvedValue({ data: { user: regularUser }, error: null }) },
-			rpc: vi.fn().mockResolvedValue({ data: false, error: null })
-		};
-
-		const user = await getSessionUser(supabase as never);
-
-		expect(supabase.auth.getUser).toHaveBeenCalledOnce();
-		expect(user?.id).toBe('regular-user-id');
-		expect(user?.is_super_admin).toBe(false);
+	it('nekar när ingen källa ger behörighet', () => {
+		expect(isSuperAdminUser(user())).toBe(false);
 	});
 
-	it('returns null when Auth rejects the session', async () => {
-		const supabase = {
-			auth: { getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: new Error('JWT invalid') }) }
-		};
-
-		expect(await getSessionUser(supabase as never)).toBeNull();
+	it('nekar null/undefined', () => {
+		expect(isSuperAdminUser(null)).toBe(false);
+		expect(isSuperAdminUser(undefined)).toBe(false);
 	});
 
-	it('does not grant an admin route to a verified user without an admin claim', () => {
-		expect(isSuperAdminUser(regularUser as never)).toBe(false);
+	it('godkänner legacy-id:t', () => {
+		expect(isSuperAdminUser(user({ id: LEGACY_ID }))).toBe(true);
+	});
+
+	it('godkänner id i ADMIN_USER_IDS', () => {
+		mockEnv.ADMIN_USER_IDS = OTHER_ID;
+		expect(isSuperAdminUser(user())).toBe(true);
+	});
+
+	it('tål mellanslag, versaler och flera id:n i ADMIN_USER_IDS', () => {
+		mockEnv.ADMIN_USER_IDS = ` ${LEGACY_ID} , ${OTHER_ID.toUpperCase()} `;
+		expect(isSuperAdminUser(user())).toBe(true);
+	});
+
+	it('godkänner app_metadata.is_super_admin', () => {
+		expect(isSuperAdminUser(user({ app_metadata: { is_super_admin: true } }))).toBe(true);
+	});
+
+	// Regressionsskydd. user_metadata är skrivbart av användaren själv via
+	// supabase.auth.updateUser(), så det får aldrig ge adminbehörighet.
+	it('ger ALDRIG behörighet från user_metadata', () => {
+		expect(isSuperAdminUser(user({ user_metadata: { is_super_admin: true } }))).toBe(false);
+		mockEnv.ADMIN_USER_IDS = '';
+		expect(
+			isSuperAdminUser(user({ user_metadata: { is_super_admin: true, role: 'admin' } }))
+		).toBe(false);
+	});
+
+	it('godkänner inte sträng-sanning, bara boolean true', () => {
+		expect(isSuperAdminUser(user({ app_metadata: { is_super_admin: 'true' } }))).toBe(false);
+		expect(isSuperAdminUser(user({ app_metadata: { is_super_admin: 1 } }))).toBe(false);
+	});
+
+	it('tom ADMIN_USER_IDS ger inte behörighet till alla', () => {
+		mockEnv.ADMIN_USER_IDS = ',, ,';
+		expect(isSuperAdminUser(user())).toBe(false);
+		expect(isSuperAdminUser(user({ id: '' }))).toBe(false);
 	});
 });
