@@ -80,7 +80,7 @@
 
 	<!-- 3. Kvällsstugan -->
 	<section class="home-section" aria-labelledby="evening-title">
-		<div class="home-inner">
+		<div class="home-inner evening-inner">
 			<div class="narrow">
 				<h2 id="evening-title">En stund där dagen får landa</h2>
 				<p>
@@ -228,8 +228,10 @@
 		color: var(--home-text-inverted);
 	}
 
+	/* Gemensam desktop-container. Under ~1280px viewport löser min() ut till
+	   100%, så mobil och surfplatta beter sig exakt som förut. */
 	.home-inner {
-		width: min(1080px, 100%);
+		width: min(1280px, 100%);
 		margin: 0 auto;
 	}
 
@@ -420,6 +422,66 @@
 		.hero-grid {
 			grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
 			gap: clamp(2rem, 3vw, 2.75rem);
+		}
+
+		/* Textsektionerna låg tidigare som en 46rem-kolumn centrerad i
+		   viewporten - på 1440/1920 blev det en mobilstrimma i en tom yta.
+		   Här delas de i stället upp redaktionellt: rubriken i en egen vänster-
+		   kolumn, brödtext och länk till höger. Ytan används av layouten, inte
+		   av längre rader. */
+		.home-section .home-inner.narrow {
+			max-width: none;
+			display: grid;
+			grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+			column-gap: clamp(2rem, 4vw, 4rem);
+			align-items: start;
+		}
+
+		.home-section .home-inner.narrow > h2 {
+			grid-column: 1;
+			grid-row: 1;
+		}
+
+		.home-section .home-inner.narrow > :not(h2) {
+			grid-column: 2;
+		}
+
+		/* Första stycket ska ligga i linje med rubrikens överkant. */
+		.home-section .home-inner.narrow > p:first-of-type {
+			margin-top: 0;
+		}
+
+		/* Raderna hålls läsbara även när kolumnen är bred. Tidigare gav
+		   .narrow (46rem) ~94 tecken per rad; 62ch ger ~75. Kortare, inte längre. */
+		.home-section p {
+			max-width: 62ch;
+		}
+
+		/* Kvällsstugan: texten och den befintliga stugbilden sida vid sida i
+		   stället för bild staplad under en smal textklump. */
+		.evening-inner {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+			column-gap: clamp(2rem, 4vw, 3.5rem);
+			align-items: center;
+		}
+
+		.evening-inner > .narrow {
+			grid-column: 1;
+			grid-row: 1;
+			max-width: none;
+		}
+
+		.evening-inner > .text-link {
+			grid-column: 1;
+			grid-row: 2;
+			margin-top: 1.1rem;
+		}
+
+		.evening-inner > .evening-scene {
+			grid-column: 2;
+			grid-row: 1 / span 2;
+			margin-top: 0;
 		}
 	}
 
