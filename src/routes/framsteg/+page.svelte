@@ -31,7 +31,7 @@
 		WOLF_SCENE_PLACEMENTS,
 		type CompanionPose as CompanionPoseData
 	} from '$lib/companionPoseManifest';
-	import { getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
+	import { getGardenGrowthPoints, getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
 	import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
 	import {
 		trackInsightOpened,
@@ -55,6 +55,12 @@
 		type PeriodDays,
 		type ThemeLike
 	} from '$lib/progress-recent-period';
+	import {
+		buildMoodChangeObservation,
+		buildMoodTimelineView,
+		buildRecurringThemes,
+		EMPTY_MOOD_COPY
+	} from '$lib/progress-reflection';
 	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart, ChevronDown } from 'lucide-svelte';
 
 	let { data } = $props<{ data: PageData }>();
@@ -267,36 +273,23 @@
 		profileTheme?: keyof typeof THEMES | null;
 		progressCompanion?: ProgressCompanionSelection | string | null;
 		companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
+		companionDaily?: { answeredDayCount: number } | null;
 		isAnonymous?: boolean;
 	}
 
 	const ANONYMOUS_PREVIEW_STREAK: StreakData = {
-		currentStreak: 3,
-		longestStreak: 6,
+		currentStreak: 0,
+		longestStreak: 0,
 		lastEntryDate: null,
-		lastEntryDaysAgo: 1
+		lastEntryDaysAgo: 0
 	};
 	const ANONYMOUS_PREVIEW_INSIGHTS: InsightsResponse = {
-		insights: [
-			{
-				type: 'rhythm',
-				title: 'Varsam rytm',
-				description: 'Flera reflektioner verkar landa när dagen får börja lite långsamt.',
-				icon: 'leaf'
-			},
-			{
-				type: 'return',
-				title: 'Återkomst',
-				description: 'Små återkommande stunder gör platsen lättare att hitta tillbaka till.',
-				icon: 'garden'
-			}
-		],
-		bestDay: { day: 'Tisdag', average: 7.1, count: 3 },
-		worstDay: { day: 'Söndag', average: 5.4, count: 1 },
-		emotionDistribution: { lugn: 4, oro: 2, trötthet: 2 },
-		aiSummary:
-			'Här kan en mjuk sammanfattning växa fram ur dina egna ord. Den ska hjälpa dig se mönster utan att pressa fram svar.',
-		narrative: { themes: [{ label: 'Sömn', count: 5 }] }
+		insights: [],
+		bestDay: null,
+		worstDay: null,
+		emotionDistribution: {},
+		aiSummary: null,
+		narrative: null
 	};
 
 	function previewDateKey(daysAgo: number) {
@@ -382,42 +375,15 @@
 		unit: 'inlägg'
 	});
 	const ANONYMOUS_PREVIEW_MILESTONES: MilestonesResponse = {
-		achieved: [PREVIEW_FIRST_STEP, PREVIEW_RETURNING, PREVIEW_DEEPER_TEXT],
-		sections: [
-			{
-				id: 'firstSteps',
-				title: 'Första avtryck',
-				milestones: [PREVIEW_FIRST_STEP, PREVIEW_NEXT_STEP]
-			},
-			{
-				id: 'consistency',
-				title: 'Återkomst',
-				milestones: [PREVIEW_RETURNING]
-			},
-			{
-				id: 'writingDepth',
-				title: 'Ord som fick plats',
-				milestones: [PREVIEW_DEEPER_TEXT]
-			}
-		],
-		nextMilestone: PREVIEW_NEXT_STEP,
-		totalEntries: 18
+		achieved: [],
+		sections: [],
+		nextMilestone: null,
+		totalEntries: 0
 	};
-	const ANONYMOUS_PREVIEW_HEATMAP = buildAnonymousPreviewHeatmap();
+	const ANONYMOUS_PREVIEW_HEATMAP: Record<string, number> = {};
 
-	// Exempelkurva för utloggade. Medvetet ojämn, utan att antyda en riktning.
-	const ANONYMOUS_PREVIEW_MOOD_SAMPLES: MoodSample[] = [
-		[27, 5],
-		[24, 6],
-		[20, 4],
-		[17, 7],
-		[13, 5],
-		[10, 6],
-		[7, 6],
-		[4, 7],
-		[2, 6],
-		[0, 6]
-	].map(([daysAgo, mood]) => ({ date: previewDateKey(daysAgo), mood }));
+	// Utloggad vy använder aldrig exempelvärden som kan uppfattas som användarens.
+	const ANONYMOUS_PREVIEW_MOOD_SAMPLES: MoodSample[] = [];
 
 	// ── Theme ──
 
@@ -454,6 +420,7 @@
 	let loadedGrowthLevel = $state(0);
 	let loadedHeatmapData = $state<Record<string, number>>({});
 	let loadedMoodSamples = $state<MoodSample[]>([]);
+	let moodTimelineLoading = $state(false);
 	let selectedPeriod = $state<PeriodDays>(30);
 	let historyOpen = $state(false);
 	let heatmapError = $state('');
@@ -469,21 +436,43 @@
 	let heatmapVisible = $state(false);
 	let insightsCardEl = $state<HTMLElement | null>(null);
 	let heatmapCardEl = $state<HTMLElement | null>(null);
-	const streakData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_STREAK : loadedStreakData);
-	const milestonesData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_MILESTONES : loadedMilestonesData);
+	const streakData = $derived(
+		loadedStreakData ?? { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 }
+	);
+	const milestonesData = $derived(
+		loadedMilestonesData ?? { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 }
+	);
 	const weeklyEntries = $derived(isAnonymous ? 3 : loadedWeeklyEntries);
-	const entryCount = $derived(isAnonymous ? 18 : loadedEntryCount);
+	// Samma serverkälla som Dashboard: alla sparade rader i diary, utan tidsgräns.
+	const entryCount = $derived(data.entryCount ?? 0);
 	const livingWorldReflectionCopy = $derived(
 		getLivingWorldReflectionCopy(isAnonymous ? undefined : entryCount)
 	);
 	const activeDays = $derived(isAnonymous ? 11 : loadedActiveDays);
-	const growthLevel = $derived(isAnonymous ? 3 : loadedGrowthLevel);
+	// Samma tillväxtunderlag som Dashboard. Presentationen här ändrar aldrig världen.
+	const growthLevel = $derived(
+		getGrowthLevel(getGardenGrowthPoints(entryCount, data.companionDaily?.answeredDayCount ?? 0))
+	);
 	// Växtnivån styr hur rik den beständiga världen är. Reaktiv: uppdateras när
 	// loadProgressData() satt loadedGrowthLevel efter klientfetch.
 	const livingWorldScene = $derived(getLivingWorldScene({ season, timeOfDay, growthLevel }));
 	const heatmapData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : loadedHeatmapData);
-	const insightsData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_INSIGHTS : loadedInsightsData);
-	const moodSamples = $derived(isAnonymous ? ANONYMOUS_PREVIEW_MOOD_SAMPLES : loadedMoodSamples);
+	const insightsData = $derived(
+		loadedInsightsData ?? {
+			insights: [],
+			bestDay: null,
+			worstDay: null,
+			emotionDistribution: {},
+			aiSummary: null,
+			narrative: null
+		}
+	);
+	const moodSamples = $derived(loadedMoodSamples);
+	const moodTimeline = $derived(buildMoodTimelineView(moodSamples, selectedPeriod));
+	const recurringThemes = $derived(
+		hasSensitiveDataConsent ? buildRecurringThemes(insightsData?.narrative?.themes) : []
+	);
+	const moodChange = $derived(buildMoodChangeObservation(moodSamples));
 
 	// Hela sektionen "Din senaste tid" byggs av redan hämtad data.
 	const recentPeriod = $derived(
@@ -670,6 +659,30 @@
 		}
 	}
 
+	async function loadMoodTimeline() {
+		if (isAnonymous) return;
+		moodTimelineLoading = true;
+
+		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+			if (!session?.access_token) return;
+
+			const response = await fetch('/api/diary/stats-timeline', {
+				headers: { Authorization: `Bearer ${session.access_token}` }
+			});
+			if (!response.ok) return;
+			const payload = (await response.json()) as MoodTimelineResponse;
+			loadedMoodSamples = toMoodSamples(payload.data);
+		} catch {
+			// Ett tomt läge är tryggare än en gissad kurva när tidslinjen inte går att läsa.
+			loadedMoodSamples = [];
+		} finally {
+			moodTimelineLoading = false;
+		}
+	}
+
 	function maybeLoadInsights() {
 		if (
 			isAnonymous ||
@@ -677,7 +690,7 @@
 			!hasSensitiveDataConsent ||
 			!insightsVisible ||
 			insightsLoading ||
-			insightsData
+			loadedInsightsData
 		) {
 			return;
 		}
@@ -715,7 +728,7 @@
 			return cleanupCompanionTime;
 		}
 
-		void loadProgressData();
+		void loadMoodTimeline();
 		hasSensitiveDataConsent = hasSensitiveConsent();
 		if (browser) {
 			localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
@@ -942,6 +955,77 @@
 			</div>
 			</div>
 					</section>
+	<div class="framsteg-layout framsteg-layout-v2">
+		<div class="framsteg-main">
+			<section class="card recent-card" aria-labelledby="mood-history-heading" data-testid="mood-history">
+				<div class="card-header">
+					<div class="icon-badge heat"><TrendingUp size={24} /></div>
+					<h2 id="mood-history-heading">Så har det sett ut</h2>
+				</div>
+				<p class="recent-intro">Här syns bara de humörvärden du själv har satt i dagboken.</p>
+				{#if moodTimelineLoading}
+					<p class="reflection-copy">Laddar dina sparade humörvärden.</p>
+				{:else}
+					<RecentPeriodChart
+						points={moodTimeline.points}
+						period={selectedPeriod}
+						onSelectPeriod={(value) => (selectedPeriod = value)}
+						textAlternative={moodTimeline.textAlternative}
+						hasChart={moodTimeline.hasChart}
+						fallbackText={EMPTY_MOOD_COPY}
+					/>
+				{/if}
+			</section>
+
+			<section class="card reflection-card" aria-labelledby="recurring-heading" data-testid="recurring-themes">
+				<div class="card-header">
+					<div class="icon-badge insight"><Lightbulb size={24} /></div>
+					<h2 id="recurring-heading">Det som återkommer</h2>
+				</div>
+				{#if !isAnonymous && !hasSensitiveDataConsent}
+					<ConsentGate
+						title="Se återkommande teman"
+						dataLabel="Dina sparade texter"
+						serviceLabel="Analys av dina egna texter"
+						onAccept={acceptSensitiveDataConsent}
+					/>
+				{:else if insightsLoading}
+					<p class="reflection-copy">Letar efter sådant som faktiskt återkommer i det du själv skrivit.</p>
+				{:else if insightsError}
+					<p class="reflection-copy">Det gick inte att hämta återkommande teman just nu.</p>
+				{:else if recurringThemes.length > 0}
+					<ul class="theme-observations">
+						{#each recurringThemes as theme}
+							<li>{theme}</li>
+						{/each}
+					</ul>
+				{:else}
+					<p class="reflection-copy">När fler ord återkommer i dina sparade texter kan de synas här.</p>
+				{/if}
+			</section>
+
+			<section class="card reflection-card" aria-labelledby="change-heading" data-testid="mood-change">
+				<div class="card-header">
+					<div class="icon-badge week"><Heart size={24} /></div>
+					<h2 id="change-heading">Förändring</h2>
+				</div>
+				<p class="reflection-copy">{moodChange.text}</p>
+			</section>
+
+			<section class="card garden-presence-card" aria-labelledby="garden-presence-heading">
+				<div class="card-header">
+					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
+					<h2 id="garden-presence-heading">Din plats</h2>
+				</div>
+				<p class="reflection-copy">Din plats har förändrats med din närvaro.</p>
+				{#if entryCount > 0}
+					<p class="reflection-copy">{entryCount} sparade {entryCount === 1 ? 'text finns' : 'texter finns'} kvar när du vill titta tillbaka.</p>
+				{/if}
+			</section>
+		</div>
+	</div>
+
+	{#if false}
 	<div class="framsteg-layout">
 	<div class="framsteg-main">
 
@@ -1040,8 +1124,8 @@
 							<div class="insight-item best">
 								<div class="insight-content">
 									<h3>Mår bäst på</h3>
-									<p class="day-name">{insightsData.bestDay.day}</p>
-									<small>Genomsnitt: {insightsData.bestDay.average}/10</small>
+									<p class="day-name">{insightsData.bestDay?.day}</p>
+									<small>Genomsnitt: {insightsData.bestDay?.average}/10</small>
 								</div>
 							</div>
 						{/if}
@@ -1049,8 +1133,8 @@
 							<div class="insight-item worst">
 								<div class="insight-content">
 									<h3>Svårare på</h3>
-									<p class="day-name">{insightsData.worstDay.day}</p>
-									<small>Genomsnitt: {insightsData.worstDay.average}/10</small>
+									<p class="day-name">{insightsData.worstDay?.day}</p>
+									<small>Genomsnitt: {insightsData.worstDay?.average}/10</small>
 								</div>
 							</div>
 						{/if}
@@ -1142,7 +1226,7 @@
 					<div class="next-milestone">
 						<div class="next-header"><Calendar size={18} /><span>Det som långsamt kan växa fram</span></div>
 						<h3>{isAnonymous ? 'Trädgården kan få plats för mer ljus.' : 'Din trädgård har plats för mer ljus.'}</h3>
-						<p>{nextMilestoneCopy(milestonesData.nextMilestone)}</p>
+						<p>{nextMilestoneCopy(milestonesData.nextMilestone!)}</p>
 						<small>
 							{isAnonymous
 								? 'Ingen brådska. Platsen kan växa när återbesöken blir fler.'
@@ -1206,6 +1290,7 @@
 				</section>
 			</aside>
 		</div>
+	{/if}
 				</div>
 			{/if}
 		</div>
@@ -1260,6 +1345,39 @@
 		grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr);
 		gap: 20px;
 		align-items: start;
+	}
+
+	.framsteg-layout-v2 {
+		grid-template-columns: minmax(0, 1fr);
+		max-width: 860px;
+	}
+
+	.reflection-card,
+	.garden-presence-card {
+		display: grid;
+		gap: 0.8rem;
+	}
+
+	.reflection-copy {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		line-height: 1.6;
+	}
+
+	.theme-observations {
+		display: grid;
+		gap: 0.55rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.theme-observations li {
+		padding: 0.75rem 0.85rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: 0.75rem;
+		background: hsl(var(--muted) / 0.34);
+		line-height: 1.45;
 	}
 
 	.framsteg-main {

@@ -3,6 +3,7 @@ import { DEFAULT_THEME, THEMES } from '$lib/theme';
 import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
 import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
 import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
+import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
 
 type DiaryRow = {
 	id: string;
@@ -227,7 +228,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				.eq('user_id', user.id)
 				.order('created_at', { ascending: false })
 				.limit(120),
-			locals.supabase.from('diary').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+			loadDiaryEntryCount(locals.supabase, user.id),
 			locals.supabase
 				.from('diary')
 				.select('id', { count: 'exact', head: true })
@@ -243,16 +244,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (streakEntriesResult.error && !isMissingTableError(streakEntriesResult.error, 'diary')) {
 		console.error('Dashboard streak load error:', streakEntriesResult.error);
 	}
-	if (totalEntriesResult.error && !isMissingTableError(totalEntriesResult.error, 'diary')) {
-		console.error('Dashboard total entries load error:', totalEntriesResult.error);
-	}
 	if (weeklyEntriesResult.error && !isMissingTableError(weeklyEntriesResult.error, 'diary')) {
 		console.error('Dashboard weekly entries load error:', weeklyEntriesResult.error);
 	}
 
 	const latestDiaryEntry = latestDiaryEntryResult.data ?? null;
 	const streakEntries = streakEntriesResult.data ?? [];
-	const totalEntries = totalEntriesResult.count ?? 0;
+	const totalEntries = totalEntriesResult;
 	const weeklyEntries = weeklyEntriesResult.count ?? 0;
 	const currentStreak = buildCurrentStreak(streakEntries);
 
