@@ -423,13 +423,11 @@
 		}
 	}
 
-	@media (max-width: 759px) {
-		/* Den breda originalbilden behöver lite extra höjd på smala skärmar för
-		   att fortfarande kännas som en plats, inte som en tunn bildremsa. */
-		.evening-scene img {
-			height: max(12.5rem, 56.25vw);
-			aspect-ratio: auto;
-			object-fit: cover;
+	@media (max-width: 899px) {
+		/* På mindre skärmar finns Kvällsstugan redan som hero-scen. Låt texten
+		   och stödlänken ge nästa rytm i stället för att upprepa samma bild. */
+		.evening-scene {
+			display: none;
 		}
 	}
 

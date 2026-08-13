@@ -149,10 +149,10 @@
 		}
 	}
 
-	/* Hero-varianten låter scenen bära hela proof-ytan. På breda skärmar ligger
-	   det statiska stegkortet förankrat i scenens nedre del; på mobil staplas
-	   ytorna fortsatt för att alternativen ska vara lätta att läsa. */
-	@media (min-width: 760px) {
+	/* Hero-varianten låter scenen bära hela proof-ytan. På desktop ligger det
+	   statiska stegkortet förankrat i scenens nedre del. På mindre skärmar
+	   visas bara platsen, så heron kan leda vidare utan ett extra långt kort. */
+	@media (min-width: 900px) {
 		.cabin-proof--hero {
 			display: block;
 			position: relative;
@@ -212,6 +212,12 @@
 		.cabin-proof--hero .cabin-proof-primary {
 			margin-top: 0.6rem;
 			padding: 0.5rem 0.85rem;
+		}
+	}
+
+	@media (max-width: 899px) {
+		.cabin-proof--hero .cabin-proof-card {
+			display: none;
 		}
 	}
 </style>
