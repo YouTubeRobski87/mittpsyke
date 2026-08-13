@@ -220,7 +220,7 @@
 	   avlägsna lager driver kortare och långsammare än nära. Se EFFECT_DEPTHS i
 	   $lib/worldScene för djupordningen. */
 	@keyframes worldLightShift { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(calc(2.2% * (0.4 + var(--depth, 0.5))), calc(1.6% * (0.4 + var(--depth, 0.5))), 0) scale(1.035); } }
-	@keyframes cloudDrift { 0%, 8%, 100% { opacity: 0; transform: translate3d(-10%, 0, 0) scale(var(--scale, 1)); } 18%, 72% { opacity: var(--opacity, 0.1); } 86% { opacity: 0; transform: translate3d(calc((12% + (28% * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5))), -3%, 0) scale(var(--scale, 1)); } }
+	@keyframes cloudDrift { 0%, 8%, 100% { opacity: 0; transform: translate3d(-10%, 0, 0) scale(var(--scale, 1)); } 18%, 72% { opacity: calc(var(--opacity, 0.1) * var(--cloud-layer-opacity, 1)); } 86% { opacity: 0; transform: translate3d(calc((12% + (28% * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5))), -3%, 0) scale(var(--scale, 1)); } }
 	@keyframes mistDrift { 0%, 100% { opacity: calc(var(--opacity, 0.14) * 0.34); transform: translate3d(-4%, 0, 0) scaleX(0.94); } 48% { opacity: var(--opacity, 0.14); } 74% { opacity: calc(var(--opacity, 0.14) * 0.62); transform: translate3d(calc(5% * (0.5 + var(--depth, 0.5))), calc(-4% * (0.5 + var(--depth, 0.5))), 0) scaleX(1.08); } }
 	@keyframes foliageBreathe { 0%, 24%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); } 58% { transform: rotate(calc((2deg + (2.4deg * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)))) translate3d(calc(1.6% * var(--world-wind, 0.18)), -0.8%, 0); } }
 	/* Svag, ojämn vindpust i grenen - ojämna procentsteg och skilda +/- värden
@@ -247,6 +247,7 @@
 		.world-effect { animation: none !important; transform: none !important; }
 		.world-moon { transform: translate3d(-50%, -50%, 0) !important; }
 		.world-bird, .world-butterfly, .world-leaf, .world-drift, .world-event-water, .world-presence-sign { opacity: 0 !important; }
-		.world-light, .world-mist, .world-cloud, .world-foliage { opacity: calc(var(--opacity, 0.12) * 0.5); }
+		.world-light, .world-mist, .world-foliage { opacity: calc(var(--opacity, 0.12) * 0.5); }
+		.world-cloud { opacity: calc(var(--opacity, 0.12) * var(--cloud-layer-opacity, 1) * 0.5); }
 	}
 </style>

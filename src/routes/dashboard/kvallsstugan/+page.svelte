@@ -247,7 +247,9 @@
 		height: 49%;
 		overflow: hidden;
 	}
-	.cabin-window-view :global(.evening-ambient) { inset: 0; opacity: 0.72; }
+	/* Dämpa bara molnen som tidigare. Månen behåller sin enda gemensamma stil från
+	   AmbientWorld och blandas inte ned mot den kallare fönsterbilden. */
+	.cabin-window-view :global(.evening-ambient) { inset: 0; --cloud-layer-opacity: 0.72; }
 	/* Route-specifik "sjövy": exakt den del av cabin-interior-evening-v1.webp där
 	   den öppna vattenytan syns (källpixlar x 460-861, y 327-397 av 1672x941).
 	   Rent procentuell, så masken följer bilden när scenen skalar. overflow: hidden
