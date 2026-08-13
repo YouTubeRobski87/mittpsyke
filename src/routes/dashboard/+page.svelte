@@ -141,7 +141,7 @@
   // världen direkt i stället för vid nästa tick.
   let sceneDate = $state(new Date());
   const livingWorldScene = $derived<LivingWorldScene>(
-    getLivingWorldScene({ date: sceneDate, growthLevel })
+    getLivingWorldScene({ date: sceneDate, growthLevel, features: { cloud: true } })
   );
   let companionGreeting = $state<string | null>(null);
   let companionGreetingReaction = $state(0);
@@ -356,7 +356,12 @@
           scene="dashboard"
           sceneAllowsVisitor={true}
         />
-        <AmbientWorld scene={livingWorldScene} class="hero-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
+        <AmbientWorld
+          scene={livingWorldScene}
+          class="hero-living-world"
+          relationshipStage={isAnonymous ? 0 : companionRelationshipStage}
+          visibleEffects={['moon', 'cloud']}
+        />
         <!-- Kort, kosmetiskt svar från platsen efter en reflektion. Ligger i
              ambientbandet, alltså bakom följeslagaren, så pusten drar förbi den
              i stället för över den. -->
@@ -855,7 +860,6 @@
   /* Följeslagaren står vid huset. Texten använder den fria ytan till höger. */
 
   .companion-hero :global(.hero-companion-visitor),
-  .companion-hero :global(.hero-living-world),
   .companion-hero :global(.hero-companion-friend) {
     display: none;
   }

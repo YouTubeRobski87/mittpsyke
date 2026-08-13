@@ -84,7 +84,7 @@
 				bird: false,
 				butterfly: false,
 				leaf: false,
-				cloud: false,
+				cloud: true,
 				drift: false
 			}
 		})
@@ -133,7 +133,7 @@
 				decoding="async"
 			/>
 			<div class="cabin-window-view" aria-hidden="true">
-				<AmbientWorld scene={worldScene} class="evening-ambient" />
+				<AmbientWorld scene={worldScene} class="evening-ambient" visibleEffects={['moon', 'cloud']} />
 			</div>
 			<!-- Sjöytan utanför fönstret: egen viewport så ringarna klipps till
 			     vattnet och aldrig hamnar på karm, vägg, golv eller möbler. -->

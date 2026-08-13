@@ -1,5 +1,6 @@
 import {
 	getProgressCompanionDayState,
+	getProgressCompanionLocalTime,
 	getProgressCompanionSeason,
 	type ProgressCompanionDayState,
 	type ProgressCompanionSeason
@@ -14,6 +15,7 @@ export type LivingWorldEffectKind =
 	| 'butterfly'
 	| 'leaf'
 	| 'cloud'
+	| 'moon'
 	| 'drift';
 
 export type LivingWorldEffect = {
@@ -55,6 +57,7 @@ export type LivingWorldEvent = {
 export type LivingWorldScene = {
 	season: ProgressCompanionSeason;
 	timeOfDay: ProgressCompanionDayState;
+	localTimeMinutes: number;
 	wind: number;
 	effects: LivingWorldEffect[];
 	events: LivingWorldEvent[];
@@ -88,6 +91,7 @@ const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
 	butterfly: true,
 	leaf: true,
 	cloud: true,
+	moon: true,
 	drift: true
 };
 
@@ -195,6 +199,9 @@ export function growthWorldMask(growthLevel: unknown): GrowthWorldMask {
 
 const baseEffects: LivingWorldEffect[] = [
 	{ id: 'sunlight', kind: 'light', enabled: true, durationMs: 52_000, opacity: 0.45 },
+	// AmbientWorld behåller ordningen när den renderar effekterna. Månen ligger
+	// därför före molnen, så deras befintliga drift naturligt passerar framför den.
+	{ id: 'moon', kind: 'moon', enabled: true, opacity: 0.82 },
 	{
 		id: 'cloud-back',
 		kind: 'cloud',
@@ -421,6 +428,7 @@ const baseEffects: LivingWorldEffect[] = [
 // sjön, sedan stranden, och lövverket närmast betraktaren.
 const EFFECT_DEPTHS: Record<string, number> = {
 	sunlight: 0.05,
+	moon: 0.08,
 	'cloud-back': 0.1,
 	'cloud-front': 0.2,
 	'mist-two': 0.22,
@@ -493,20 +501,50 @@ function getMistOpacity(timeOfDay: ProgressCompanionDayState): number {
 	return 0.24;
 }
 
+export type MoonPosition = { x: number; y: number };
+
+/**
+ * En lugn, deterministisk båge över den befintliga nattperioden (22:00–05:00).
+ * Den använder inga timers eller animationer: routen uppdaterar redan scenens
+ * datum varje minut och samma lokala världstid ger alltid samma läge.
+ */
+export function getMoonPosition(
+	timeOfDay: ProgressCompanionDayState,
+	localTimeMinutes: number
+): MoonPosition | null {
+	if (timeOfDay !== 'night') return null;
+
+	const minutesSinceNightStart = localTimeMinutes >= 22 * 60
+		? localTimeMinutes - 22 * 60
+		: localTimeMinutes + 2 * 60;
+	const progress = Math.min(Math.max(minutesSinceNightStart / (7 * 60), 0), 1);
+
+	return {
+		// Bågen undviker dashboardens copy och ryms i Kvällsstugans öppna fönsteryta.
+		x: 31 + progress * 24,
+		// Lägre vid nattens kanter, högst ungefär mitt i natten.
+		y: 29 - Math.sin(progress * Math.PI) * 17
+	};
+}
+
 export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWorldScene {
 	const date = input.date ?? new Date();
 	const season = input.season ?? getProgressCompanionSeason(date);
 	const timeOfDay = input.timeOfDay ?? getProgressCompanionDayState(date);
+	const { hour, minute } = getProgressCompanionLocalTime(date);
+	const localTimeMinutes = hour * 60 + minute;
+	const moonPosition = getMoonPosition(timeOfDay, localTimeMinutes);
 	const wind = Math.min(Math.max(input.wind ?? 0.18, 0), 1);
 	const isDaylight = timeOfDay === 'morning' || timeOfDay === 'day';
 	const growth = growthWorldMask(input.growthLevel);
 	// Ordning: växtnivåns sekundärgate först, explicit input.features får skriva
-	// över den (t.ex. tester), och pausade moln vinner alltid sist.
+	// över den (t.ex. tester). Pausade moln behåller sitt standardläge, men en
+	// scen kan uttryckligen återanvända deras befintliga utseende och rörelse.
 	const features = {
 		...ALL_FEATURES,
 		...growth.features,
-		...input.features,
-		...PAUSED_AMBIENT_FEATURES
+		...PAUSED_AMBIENT_FEATURES,
+		...input.features
 	};
 	const mistOpacity = getMistOpacity(timeOfDay);
 
@@ -524,6 +562,14 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 		}
 
 		if (next.kind === 'light' && timeOfDay === 'night') next.opacity = 0.12;
+
+		if (next.kind === 'moon') {
+			next.enabled = moonPosition !== null;
+			if (moonPosition) {
+				next.x = moonPosition.x;
+				next.y = moonPosition.y;
+			}
+		}
 		return next;
 	});
 
@@ -536,5 +582,5 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 			(event.kind !== 'leaf' || season === 'autumn')
 	}));
 
-	return { season, timeOfDay, wind, effects, events, features };
+	return { season, timeOfDay, localTimeMinutes, wind, effects, events, features };
 }

@@ -341,19 +341,31 @@ export function getDashboardCompanionScene(date = new Date()): DashboardCompanio
 }
 
 export function getProgressCompanionDayState(date = new Date()): ProgressCompanionDayState {
-	const hour = Number(
-		new Intl.DateTimeFormat('sv-SE', {
-			timeZone: 'Europe/Stockholm',
-			hour: 'numeric',
-			hour12: false
-		}).format(date)
-	);
+	const { hour } = getProgressCompanionLocalTime(date);
 
 	if (!Number.isFinite(hour)) return 'day';
 	if (hour >= 5 && hour < 10) return 'morning';
 	if (hour >= 10 && hour < 17) return 'day';
 	if (hour >= 17 && hour < 22) return 'evening';
 	return 'night';
+}
+
+/** Den lokala Stockholmstiden som den levande världen använder. */
+export function getProgressCompanionLocalTime(date = new Date()) {
+	const parts = new Intl.DateTimeFormat('sv-SE', {
+		timeZone: 'Europe/Stockholm',
+		hour: '2-digit',
+		minute: '2-digit',
+		hourCycle: 'h23'
+	}).formatToParts(date);
+	const valueFor = (type: 'hour' | 'minute') => Number(parts.find((part) => part.type === type)?.value);
+	const hour = valueFor('hour');
+	const minute = valueFor('minute');
+
+	return {
+		hour: Number.isFinite(hour) ? hour : 12,
+		minute: Number.isFinite(minute) ? minute : 0
+	};
 }
 
 export function getProgressCompanionDayStateLabel(state: ProgressCompanionDayState): string {

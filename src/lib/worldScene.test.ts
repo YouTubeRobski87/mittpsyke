@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import {
 	getGrowthLevel,
 	getLivingWorldScene,
+	getMoonPosition,
 	growthWorldMask,
 	normalizeGrowthLevel,
 	type LivingWorldEffectKind,
 	type WorldGrowthLevel
 } from './worldScene';
+import { getProgressCompanionDayState, getProgressCompanionLocalTime } from './progressCompanion';
 
 // Effekttyper som ska finnas på ALLA nivåer (den lugna men kompletta basvärlden).
 const PERSISTENT_BASE_KINDS: LivingWorldEffectKind[] = ['light', 'water', 'foliage', 'mist'];
@@ -205,5 +207,55 @@ describe('getLivingWorldScene - växtnivå styr scenen', () => {
 		for (const growthLevel of [0, 4]) {
 			expect(getLivingWorldScene({ ...fixed, growthLevel }).features.cloud).toBe(false);
 		}
+	});
+});
+
+describe('månen i den gemensamma world-scenen', () => {
+	const moon = (date: Date) => getLivingWorldScene({ date }).effects.find((effect) => effect.id === 'moon');
+
+	it('är dold utanför befintlig night-daypart', () => {
+		const effect = moon(new Date('2026-06-15T10:00:00Z'));
+		expect(effect?.enabled).toBe(false);
+	});
+
+	it('är synlig när den gemensamma daypart-källan säger night', () => {
+		const date = new Date('2026-06-15T00:00:00Z'); // 02:00 i Stockholm
+		const scene = getLivingWorldScene({ date });
+		const effect = moon(date);
+
+		expect(scene.timeOfDay).toBe('night');
+		expect(effect?.enabled).toBe(true);
+		expect(effect).toMatchObject({ kind: 'moon', x: expect.any(Number), y: expect.any(Number) });
+	});
+
+	it('har samma deterministiska position för en given lokal världstid', () => {
+		const date = new Date('2026-06-15T01:30:00Z'); // 03:30 i Stockholm
+		const scene = getLivingWorldScene({ date });
+		const repeatedScene = getLivingWorldScene({ date });
+		const localTime = getProgressCompanionLocalTime(date);
+
+		expect(scene.timeOfDay).toBe(getProgressCompanionDayState(date));
+		expect(scene.localTimeMinutes).toBe(localTime.hour * 60 + localTime.minute);
+		expect(getMoonPosition(scene.timeOfDay, scene.localTimeMinutes)).toEqual(getMoonPosition(
+			repeatedScene.timeOfDay,
+			repeatedScene.localTimeMinutes
+		));
+		expect(moon(date)).toMatchObject(getMoonPosition(scene.timeOfDay, scene.localTimeMinutes) ?? {});
+	});
+
+	it('deklareras före de befintliga molnen när scenen väljer att visa dem', () => {
+		const scene = getLivingWorldScene({
+			date: new Date('2026-06-15T00:00:00Z'),
+			features: { cloud: true }
+		});
+		const indexOf = (id: string) => scene.effects.findIndex((effect) => effect.id === id);
+
+		expect(scene.features.cloud).toBe(true);
+		expect(indexOf('moon')).toBeLessThan(indexOf('cloud-back'));
+		expect(indexOf('moon')).toBeLessThan(indexOf('cloud-front'));
+	});
+
+	it('har ingen egen duration och förblir statisk när reducerad rörelse stänger av CSS-animationer', () => {
+		expect(moon(new Date('2026-06-15T00:00:00Z'))?.durationMs).toBeUndefined();
 	});
 });

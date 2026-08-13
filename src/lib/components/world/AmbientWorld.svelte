@@ -9,6 +9,7 @@
 	import {
 		getLivingWorldScene,
 		type LivingWorldEffect,
+		type LivingWorldEffectKind,
 		type LivingWorldEvent,
 		type LivingWorldScene
 	} from '$lib/worldScene';
@@ -22,10 +23,12 @@
 	let {
 		scene = getLivingWorldScene(),
 		relationshipStage = 0,
+		visibleEffects,
 		class: className = ''
 	}: {
 		scene?: LivingWorldScene;
 		relationshipStage?: CompanionRelationshipStage;
+		visibleEffects?: readonly LivingWorldEffectKind[];
 		class?: string;
 	} = $props();
 
@@ -33,8 +36,12 @@
 	let activeEvent = $state<ActiveWorldEvent | null>(null);
 
 	const classes = $derived(`living-world ${className}`.trim());
+	const isVisibleEffect = (kind: LivingWorldEffectKind) =>
+		visibleEffects === undefined || visibleEffects.includes(kind);
 	const enabledEffects = $derived(
-		scene.effects.filter((effect) => effect.enabled && scene.features[effect.kind])
+		scene.effects.filter(
+			(effect) => effect.enabled && scene.features[effect.kind] && isVisibleEffect(effect.kind)
+		)
 	);
 	// Vattnet renderas av WaterLayer, resten av det här lagret.
 	const waterEffects = $derived(enabledEffects.filter((effect) => effect.kind === 'water'));
@@ -45,7 +52,9 @@
 	}
 
 	function chooseEvent(): LivingWorldEvent | null {
-		const eligible = scene.events.filter((event) => event.enabled && scene.features[event.kind]);
+		const eligible = scene.events.filter(
+			(event) => event.enabled && scene.features[event.kind] && isVisibleEffect(event.kind)
+		);
 		const roll = Math.random();
 		let threshold = 0;
 
@@ -151,9 +160,11 @@
 	{/each}
 
 	<WaterLayer effects={waterEffects} />
-	<LeafLayer season={scene.season} />
+	{#if isVisibleEffect('foliage')}
+		<LeafLayer season={scene.season} />
+	{/if}
 
-	{#if relationshipStage >= 1}
+	{#if relationshipStage >= 1 && isVisibleEffect('water')}
 		<!-- Ett diskret naturtecken, inte en belöning eller indikator. -->
 		<span class="world-presence-sign" aria-hidden="true"></span>
 	{/if}
@@ -177,6 +188,10 @@
 	.living-world[data-time='night'] .world-light { background: radial-gradient(circle, rgba(171, 204, 255, 0.12) 0%, rgba(171, 204, 255, 0.05) 46%, transparent 74%); }
 	.world-cloud { border-radius: 999px; background: radial-gradient(ellipse at 22% 58%, rgba(255, 252, 238, 0.9), transparent 58%), radial-gradient(ellipse at 54% 48%, rgba(255, 252, 238, 0.8), transparent 62%), radial-gradient(ellipse at 78% 60%, rgba(255, 252, 238, 0.64), transparent 58%); filter: blur(7px); opacity: 0; transform: translate3d(-8%, 0, 0) scale(var(--scale, 1)); animation: cloudDrift var(--duration, 140000ms) linear var(--delay, 0ms) infinite; }
 	.cloud-front { filter: blur(9px); }
+	/* Månen har ingen egen animation eller timer. worldScene.ts deklarerar den före
+	   .world-cloud, så molnen behåller sitt vanliga lager ovanpå halo och månskiva. */
+	.world-moon { width: clamp(3.25rem, 7vw, 5.5rem); aspect-ratio: 1; height: auto; border-radius: 50%; background: radial-gradient(circle, rgba(205, 219, 236, 0.14) 0%, rgba(180, 204, 232, 0.07) 42%, transparent 72%); opacity: var(--opacity, 0.82); transform: translate3d(-50%, -50%, 0); }
+	.world-moon::after { content: ''; position: absolute; inset: 31%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgba(252, 244, 217, 0.86) 0%, rgba(220, 224, 207, 0.73) 58%, rgba(179, 192, 191, 0.65) 100%); box-shadow: 0 0 14px rgba(196, 214, 233, 0.16); }
 	.world-mist { border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(255, 251, 236, 0.52), rgba(226, 245, 255, 0.36), transparent); filter: blur(12px); mix-blend-mode: soft-light; animation: mistDrift var(--duration, 118000ms) ease-in-out var(--delay, 0ms) infinite; }
 	.living-world[data-time='day'] .world-mist { filter: blur(14px); }
 	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.5px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) ease-in-out var(--delay, 0ms) infinite; }
@@ -230,6 +245,7 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.world-effect { animation: none !important; transform: none !important; }
+		.world-moon { transform: translate3d(-50%, -50%, 0) !important; }
 		.world-bird, .world-butterfly, .world-leaf, .world-drift, .world-event-water, .world-presence-sign { opacity: 0 !important; }
 		.world-light, .world-mist, .world-cloud, .world-foliage { opacity: calc(var(--opacity, 0.12) * 0.5); }
 	}
