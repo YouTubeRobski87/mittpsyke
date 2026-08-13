@@ -1,9 +1,10 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { createServiceClient, isMissingTableError, isUuid } from '$lib/server/supabase-admin';
+import { buildDailyBrief, type RadarRecommendedAction } from '$lib/server/radar/daily-brief';
 import type { Actions, PageServerLoad } from './$types';
 
 type RadarStatus = 'new' | 'reviewed' | 'approved' | 'ignored' | 'article_idea' | 'development_task';
-type RecommendedAction = 'agera_nu' | 'testa_i_sandbox' | 'bevaka' | 'ignorera';
+type RecommendedAction = RadarRecommendedAction;
 
 const RADAR_STATUSES: RadarStatus[] = ['new', 'reviewed', 'approved', 'ignored', 'article_idea', 'development_task'];
 const NAMED_ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", '#39': "'" };
@@ -107,9 +108,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 	]);
 	const loadError = findingsResult.error ?? sourcesResult.error ?? runsResult.error;
 	if (loadError) {
-		if (isMissingTableError(loadError, 'radar_findings')) return { findings: [], sources: [], runs: [], schemaError: 'Radar-tabellerna saknas ännu.' };
+		if (isMissingTableError(loadError, 'radar_findings')) return { findings: [], dailyBrief: buildDailyBrief([], null), sources: [], runs: [], schemaError: 'Radar-tabellerna saknas ännu.' };
 		console.error('Admin radar load error:', loadError);
-		return { findings: [], sources: [], runs: [], schemaError: 'Radarn kunde inte hämtas just nu.' };
+		return { findings: [], dailyBrief: buildDailyBrief([], null), sources: [], runs: [], schemaError: 'Radarn kunde inte hämtas just nu.' };
 	}
 
 	const findings = (findingsResult.data ?? []).map((finding) => {
@@ -131,7 +132,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 		};
 	});
 
-	return { findings, sources: sourcesResult.data ?? [], runs: runsResult.data ?? [], schemaError: null };
+	const runs = runsResult.data ?? [];
+	const latestReviewedCount = runs[0]?.candidates_found ?? null;
+	return {
+		findings,
+		dailyBrief: buildDailyBrief(findings, latestReviewedCount),
+		sources: sourcesResult.data ?? [],
+		runs,
+		schemaError: null
+	};
 };
 
 export const actions: Actions = {

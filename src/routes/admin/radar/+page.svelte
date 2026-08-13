@@ -29,6 +29,9 @@
 	function sourceLabel(source: { provider: string; name: string }) {
 		return source.name === source.provider ? source.provider : `${source.provider} · ${source.name}`;
 	}
+	function isActionToday(priority: string) {
+		return priority === 'Gör idag';
+	}
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/admin/radar" />
@@ -47,6 +50,36 @@
 		<div class="metric"><span>Aktiva källor</span><strong>{data.sources.filter((source) => source.enabled).length}</strong></div>
 		<div class="metric"><span>Sparade fynd</span><strong>{data.findings.length}</strong></div>
 		<div class="metric"><span>Senaste körning</span><strong>{data.runs[0]?.status === 'completed' ? 'Klar' : data.runs[0]?.status ?? '–'}</strong></div>
+	</section>
+
+	<section class="daily-brief" aria-labelledby="daily-brief-heading">
+		<div class="section-heading"><p class="eyebrow">Prioriterat för idag</p><h2 id="daily-brief-heading">Daily Brief</h2><p>Vad behöver jag faktiskt bry mig om idag?</p></div>
+		{#if data.dailyBrief.mostImportant}
+			<article class="important-card">
+				<p class="brief-label">Dagens viktigaste</p>
+				<h3><a href={data.dailyBrief.mostImportant.url} target="_blank" rel="noreferrer">{data.dailyBrief.mostImportant.title}</a></h3>
+				<dl class="brief-details">
+					<div><dt>Vad har hänt</dt><dd>{data.dailyBrief.mostImportant.summary ?? 'Ett nytt fynd har bedömts i Radar.'}</dd></div>
+					<div><dt>Konkret åtgärd</dt><dd>{data.dailyBrief.mostImportant.recommendedAction}</dd></div>
+					<div><dt>Varför nu</dt><dd>{data.dailyBrief.mostImportant.why_it_matters ?? data.dailyBrief.mostImportant.summary ?? 'Fyndet har bedömts som relevant för det aktiva arbetet.'}</dd></div>
+					<div><dt>Insats</dt><dd>{data.dailyBrief.mostImportant.effort}</dd></div>
+					<div><dt>Gör idag</dt><dd>Ja</dd></div>
+				</dl>
+				<div class="brief-tags"><span>{data.dailyBrief.mostImportant.priority}</span><span>{data.dailyBrief.mostImportant.project}</span>{#if data.dailyBrief.mostImportant.uncertaintyNote}<span class="uncertain">Osäkert underlag</span>{/if}</div>
+				{#if data.dailyBrief.mostImportant.uncertaintyNote}<p class="uncertainty-note">{data.dailyBrief.mostImportant.uncertaintyNote}</p>{/if}
+			</article>
+		{:else}
+			<p class="no-action">Inget kräver åtgärd idag.</p>
+		{/if}
+
+		{#if data.dailyBrief.mainFindings.length > 0}
+			<div class="brief-subsection"><h3>Ytterligare huvudfynd</h3><div class="brief-list">{#each data.dailyBrief.mainFindings as finding}<article class="brief-card"><h4><a href={finding.url} target="_blank" rel="noreferrer">{finding.title}</a></h4><p><strong>Vad har hänt:</strong> {finding.summary ?? 'Ett relevant fynd att bedöma i nästa steg.'}</p><p><strong>Varför relevant:</strong> {finding.why_it_matters ?? 'Det kan beröra MittPsyke eller Stödlinjer.'}</p><p><strong>Rekommenderad handling:</strong> {finding.recommendedAction}</p><div class="brief-tags"><span class:today={isActionToday(finding.priority)}>{finding.priority}</span><span>{finding.effort}</span><span>{finding.project}</span></div>{#if finding.uncertaintyNote}<p class="uncertainty-note">{finding.uncertaintyNote}</p>{/if}</article>{/each}</div></div>
+		{/if}
+
+		{#if data.dailyBrief.worthKnowing.length > 0}
+			<div class="brief-subsection"><h3>Bra att känna till</h3><div class="brief-list">{#each data.dailyBrief.worthKnowing as finding}<article class="brief-card compact"><h4><a href={finding.url} target="_blank" rel="noreferrer">{finding.title}</a></h4><p>{finding.summary ?? 'Fyndet sparas som underlag, utan rekommenderad arbetsuppgift.'}</p><div class="brief-tags"><span>{finding.priority}</span><span>{finding.project}</span></div>{#if finding.uncertaintyNote}<p class="uncertainty-note">{finding.uncertaintyNote}</p>{/if}</article>{/each}</div></div>
+		{/if}
+		<p class="brief-summary">{data.dailyBrief.summary}</p>
 	</section>
 
 	<section class="section">
@@ -92,7 +125,8 @@
 	.hero p, .section-heading p, .meta, .privacy-note, .compact-list span { color: var(--color-text-muted); } .eyebrow { margin-bottom: .25rem; font-size: .8rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
 	.privacy-note, .notice { border: 1px solid var(--color-border); border-radius: 1rem; background: var(--color-surface); padding: .9rem 1rem; color: var(--color-text-muted); } .notice.error { color: var(--color-danger); } .notice.success { color: var(--color-success); }
 	.overview, .two-columns { display: grid; gap: 1rem; } .overview { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 1rem 0 2rem; } .two-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-	.metric, .finding-card, .section { min-width: 0; border: 1px solid var(--color-border); border-radius: 1rem; background: var(--color-surface); padding: 1rem; } .metric span, label span, .compact-list span { display: block; font-size: .85rem; } .metric strong { display: block; margin-top: .25rem; font-size: 1.55rem; }
+	.metric, .finding-card, .section, .daily-brief { min-width: 0; border: 1px solid var(--color-border); border-radius: 1rem; background: var(--color-surface); padding: 1rem; } .metric span, label span, .compact-list span { display: block; font-size: .85rem; } .metric strong { display: block; margin-top: .25rem; font-size: 1.55rem; }
+	.daily-brief { margin: 0 0 1rem; border-color: color-mix(in srgb, var(--color-primary) 45%, var(--color-border)); } .daily-brief h2, .daily-brief h3, .daily-brief h4 { margin-top: 0; } .daily-brief h3 { font-size: 1.2rem; } .daily-brief h4 { margin-bottom: .45rem; font-size: 1rem; } .daily-brief a { color: inherit; text-decoration: none; } .daily-brief a:hover { text-decoration: underline; } .important-card, .brief-card, .no-action { border-radius: .8rem; padding: 1rem; } .important-card { border: 1px solid color-mix(in srgb, var(--color-primary) 42%, var(--color-border)); background: color-mix(in srgb, var(--color-primary) 7%, var(--color-surface)); } .brief-label { margin: 0 0 .3rem; color: var(--color-primary); font-size: .82rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; } .brief-details { display: grid; gap: .7rem; margin: 1rem 0; } .brief-details div { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: .75rem; } .brief-details dt { font-weight: 750; } .brief-details dd { margin: 0; } .brief-tags { display: flex; flex-wrap: wrap; gap: .4rem; } .brief-tags span { border: 1px solid var(--color-border); border-radius: 999px; padding: .25rem .5rem; color: var(--color-text-muted); font-size: .8rem; font-weight: 700; } .brief-tags .today { border-color: var(--color-primary); color: var(--color-primary); } .brief-tags .uncertain { border-color: var(--color-warning); } .uncertainty-note, .brief-summary { color: var(--color-text-muted); font-size: .9rem; line-height: 1.5; } .uncertainty-note { margin: .75rem 0 0; } .no-action { margin: 0; background: var(--color-surface-raised, var(--color-surface)); color: var(--color-text-muted); font-weight: 700; } .brief-subsection { margin-top: 1.25rem; } .brief-subsection > h3 { margin-bottom: .65rem; } .brief-list { display: grid; gap: .65rem; } .brief-card { border: 1px solid var(--color-border); } .brief-card p { margin: .55rem 0; line-height: 1.5; } .brief-card.compact { background: var(--color-surface-raised, var(--color-surface)); } .brief-summary { margin: 1.25rem 0 0; }
 	.section { margin-top: 1rem; } .section-heading { margin-bottom: 1rem; } .section-heading h2 { margin: 0; } .finding-list { display: grid; gap: .75rem; min-width: 0; }
 	.finding-head { justify-content: space-between; align-items: start; min-width: 0; } .heading-content, .badges { min-width: 0; } .badges { display: flex; flex-wrap: wrap; justify-content: end; gap: .4rem; } .finding-card h3 { margin: .2rem 0 .7rem; font-size: 1.05rem; } .finding-card h3 a, .summary, .matters, dd { overflow-wrap: anywhere; word-break: break-word; } .finding-card h3 a { text-decoration: none; } .finding-card h3 a:hover { text-decoration: underline; }
 	.finding-card > p { line-height: 1.55; } .matters { color: var(--color-text-muted); } .clamp { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; }
@@ -101,5 +135,5 @@
 	.handling-form { flex-wrap: wrap; align-items: end; min-width: 0; margin-top: 1rem; } .handling-form label { min-width: 0; } select, button { min-width: 0; border-radius: .6rem; padding: .55rem .65rem; font: inherit; } select { border: 1px solid var(--color-border); background: var(--color-surface); } button { border: 0; background: var(--color-primary); color: white; font-weight: 700; cursor: pointer; } .scores { display: flex; flex-wrap: wrap; gap: .35rem .75rem; width: 100%; color: var(--color-text-muted); font-size: .85rem; }
 	.more, .technical { margin-top: .85rem; color: var(--color-text-muted); } summary { cursor: pointer; overflow-wrap: anywhere; } .more p { line-height: 1.5; overflow-wrap: anywhere; } .technical dl { display: grid; gap: .4rem; margin: .7rem 0 0; } .technical dl div { display: grid; grid-template-columns: 7rem minmax(0, 1fr); gap: .5rem; } .technical dt { font-weight: 700; } .technical dd { margin: 0; }.archived { opacity: .78; }
 	.compact-list { margin: 0; padding: 0; list-style: none; } .compact-list li { min-width: 0; justify-content: space-between; padding: .75rem 0; border-top: 1px solid var(--color-border); font-size: .9rem; overflow-wrap: anywhere; } .compact-list li:first-child { border-top: 0; padding-top: 0; }
-	@media (max-width: 700px) { .overview, .two-columns { grid-template-columns: 1fr; } .finding-head, .compact-list li { display: block; } .badges { justify-content: start; margin-top: .4rem; } .handling-form { display: grid; grid-template-columns: 1fr; gap: .7rem; } .handling-form label, .handling-form select, .handling-form button { width: 100%; } .scores { display: grid; gap: .25rem; } }
+	@media (max-width: 700px) { .overview, .two-columns { grid-template-columns: 1fr; } .finding-head, .compact-list li { display: block; } .badges { justify-content: start; margin-top: .4rem; } .handling-form { display: grid; grid-template-columns: 1fr; gap: .7rem; } .handling-form label, .handling-form select, .handling-form button { width: 100%; } .scores { display: grid; gap: .25rem; } .brief-details div { grid-template-columns: 1fr; gap: .15rem; } }
 </style>
