@@ -243,6 +243,20 @@ describe('månen i den gemensamma world-scenen', () => {
 		expect(moon(date)).toMatchObject(getMoonPosition(scene.timeOfDay, scene.localTimeMinutes) ?? {});
 	});
 
+	it('följer en lugn båge från tidig till sen natt', () => {
+		const early = getMoonPosition('night', 22 * 60);
+		const middle = getMoonPosition('night', 1 * 60 + 30);
+		const late = getMoonPosition('night', 5 * 60);
+
+		expect(early).not.toBeNull();
+		expect(middle).not.toBeNull();
+		expect(late).not.toBeNull();
+		expect(early!.x).toBeLessThan(middle!.x);
+		expect(middle!.x).toBeLessThan(late!.x);
+		expect(middle!.y).toBeLessThan(early!.y);
+		expect(middle!.y).toBeLessThan(late!.y);
+	});
+
 	it('deklareras före de befintliga molnen när scenen väljer att visa dem', () => {
 		const scene = getLivingWorldScene({
 			date: new Date('2026-06-15T00:00:00Z'),

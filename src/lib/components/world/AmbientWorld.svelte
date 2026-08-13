@@ -190,8 +190,8 @@
 	.cloud-front { filter: blur(9px); }
 	/* Månen har ingen egen animation eller timer. worldScene.ts deklarerar den före
 	   .world-cloud, så molnen behåller sitt vanliga lager ovanpå halo och månskiva. */
-	.world-moon { width: clamp(3.25rem, 7vw, 5.5rem); aspect-ratio: 1; height: auto; border-radius: 50%; background: radial-gradient(circle, rgba(205, 219, 236, 0.14) 0%, rgba(180, 204, 232, 0.07) 42%, transparent 72%); opacity: var(--opacity, 0.82); transform: translate3d(-50%, -50%, 0); }
-	.world-moon::after { content: ''; position: absolute; inset: 31%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgba(252, 244, 217, 0.86) 0%, rgba(220, 224, 207, 0.73) 58%, rgba(179, 192, 191, 0.65) 100%); box-shadow: 0 0 14px rgba(196, 214, 233, 0.16); }
+	.world-moon { width: clamp(3.25rem, 7vw, 5.5rem); aspect-ratio: 1; height: auto; border-radius: 50%; background: radial-gradient(circle, rgba(239, 217, 154, 0.15) 0%, rgba(226, 199, 138, 0.07) 42%, transparent 72%); opacity: var(--opacity, 0.82); transform: translate3d(-50%, -50%, 0); }
+	.world-moon::after { content: ''; position: absolute; inset: 31%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgba(239, 217, 154, 0.82) 0%, rgba(226, 199, 138, 0.7) 58%, rgba(184, 157, 105, 0.58) 100%); box-shadow: 0 0 14px rgba(226, 199, 138, 0.13); }
 	.world-mist { border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(255, 251, 236, 0.52), rgba(226, 245, 255, 0.36), transparent); filter: blur(12px); mix-blend-mode: soft-light; animation: mistDrift var(--duration, 118000ms) ease-in-out var(--delay, 0ms) infinite; }
 	.living-world[data-time='day'] .world-mist { filter: blur(14px); }
 	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.5px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) ease-in-out var(--delay, 0ms) infinite; }
