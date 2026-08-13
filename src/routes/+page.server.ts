@@ -1,5 +1,4 @@
 import { redirect } from '@sveltejs/kit';
-import { guides } from '$lib/seo-kit/content';
 import { normalizeSoroArticleSlug } from '$lib/server/soro-articles';
 import type { PageServerLoad } from './$types';
 
@@ -14,11 +13,8 @@ export const load: PageServerLoad = async ({ url }) => {
 	}
 
 	return {
-		title: 'När tankarna snurrar – skriv av dig anonymt direkt',
+		title: 'En lugn plats att återvända till',
 		description:
-			'Få hjälp att sortera, förstå och sätta ord på det som känns. MittPsyke är ett lugnt första steg i text – inte vård eller akuthjälp. Inget konto krävs för att börja.',
-		contentStats: {
-			guideCount: guides.length
-		}
+			'MittPsyke är en personlig plats för självreflektion. Skriv, checka in och följ hur du har det över tid – i din takt, med eller utan konto. Inte vård, behandling eller akuthjälp.'
 	};
 };

@@ -91,13 +91,13 @@ describe('hero → chatt-handoff', () => {
 		expect(source).not.toMatch(/\$app|\$lib\/(?!chat-handoff)|supabase|fetch\(|track[A-Z]|analytics/i);
 	});
 
-	it('används av både startsidan och ChatWindow', () => {
+	// Startsidan hade tidigare en hero-textarea som lämnade över texten till
+	// chatten. Den ytan togs bort när / blev en platspositionering, så
+	// överlämningen har numera bara en konsument: ChatWindow.
+	it('konsumeras av ChatWindow', () => {
 		const workspace = process.cwd();
-		const homeSource = readFileSync(join(workspace, 'src/routes/+page.svelte'), 'utf8');
 		const chatSource = readFileSync(join(workspace, 'src/lib/components/ChatWindow.svelte'), 'utf8');
 
-		expect(homeSource).toContain("from '$lib/chat-handoff'");
-		expect(homeSource).toContain('storeHeroChatHandoff(text)');
 		expect(chatSource).toContain("from '$lib/chat-handoff'");
 		expect(chatSource).toContain('consumeHeroChatHandoff()');
 	});
