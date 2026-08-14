@@ -104,6 +104,19 @@ describe('getCompanionBasePose', () => {
 		);
 		expect(getCompanionBasePose(stockholm0020, null, 'bear').id).toBe('bear-sleeping');
 	});
+
+	it('uses only existing calm poses for fox, bear and wolf in the cabin profile', () => {
+		const calmPoseIds = new Set([
+			'idle', 'look-left', 'look-right', 'sit', 'sit-look-up', 'evening-lake', 'rest',
+			'sleep-curled', 'sleep-side', 'bear-sitting', 'bear-sleeping', 'wolf-standing', 'wolf-sleeping'
+		]);
+		for (const companionId of COMPANION_IDS) {
+			for (const date of Object.values(DAYPART_DATES)) {
+				const pose = getCompanionBasePose(date, null, companionId, 'dashboard', 'calm');
+				expect(calmPoseIds.has(pose.id)).toBe(true);
+			}
+		}
+	});
 });
 
 describe('getCompanionScenePosition', () => {
@@ -138,6 +151,15 @@ describe('getCompanionScenePosition', () => {
 				}
 			}
 		}
+	});
+
+	it('keeps a calm placement stable until its stored pose period expires', () => {
+		const storage = new MemoryStorage();
+		const date = DAYPART_DATES.day;
+		const pose = getCompanionBasePose(date, storage, 'fox', 'dashboard', 'calm');
+		const first = getCompanionScenePosition(pose, date, storage, 'fox', 'dashboard', 'calm');
+		const second = getCompanionScenePosition(pose, date, storage, 'fox', 'dashboard', 'calm');
+		expect(second.id).toBe(first.id);
 	});
 });
 

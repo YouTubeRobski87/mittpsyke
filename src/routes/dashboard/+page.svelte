@@ -51,6 +51,7 @@
     type CompanionDailyState
   } from '$lib/companionDailyQuestion';
   import { shouldTriggerWorldResponse } from '$lib/world/worldResponse';
+  import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
@@ -166,6 +167,9 @@
   const hasSelectedCompanion = $derived(Boolean(selectedCompanion));
   const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
+  const companionBondLevel = $derived(
+    getCompanionBondLevel(getCompanionBond(companionDailyState?.answeredDayCount ?? 0))
+  );
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
   const companionHeroImage = DASHBOARD_HERO_IMAGE;
   const heroCompanionId = $derived(
@@ -332,6 +336,7 @@
           scene="dashboard"
           placement={heroCompanionPlacement}
           greetingReaction={companionGreetingReaction}
+          bondLevel={companionBondLevel}
         />
         <!-- En bubbla i taget vid följeslagaren. Reaktionen på dagens fråga har
              företräde framför hälsningen, så de aldrig kan ligga ovanpå varandra. -->

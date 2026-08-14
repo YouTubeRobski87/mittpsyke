@@ -11,7 +11,8 @@
 		getMsUntilNextCompanionPoseCheck,
 		isReflectionSaveWithinReactionWindow,
 		qualifiesAsCompanionReturn,
-		recordCompanionSeen
+		recordCompanionSeen,
+		type CompanionPosePreference
 	} from '$lib/companionPoseState';
 	import {
 		clearReflectionSavedTimestamp,
@@ -19,13 +20,16 @@
 	} from '$lib/diary-events';
 	import {
 		COMPANION_BEHAVIOURS,
+		canPlayCompanionIdleBehaviour,
 		canPlayCompanionSettle,
 		getCompanionBehaviourRestMs,
 		isQuietPose,
 		pickCompanionBehaviour,
 		type CompanionBehaviour,
-		type CompanionBehaviourId
+		type CompanionBehaviourId,
+		type CompanionBehaviourProfile
 	} from '$lib/world/companionBehaviour';
+	import type { CompanionBondLevel } from '$lib/companionBond';
 	import type {
 		CompanionId,
 		CompanionPlacement,
@@ -43,7 +47,10 @@
 		placement = null,
 		companionId = 'fox',
 		greetingReaction = 0,
-		scene = null
+		scene = null,
+		bondLevel = 0,
+		behaviourProfile = 'world',
+		posePreference = 'default'
 	}: {
 		class?: string;
 		decorative?: boolean;
@@ -57,6 +64,9 @@
 		// Begränsar vilka scenpositioner vyn tillåter (se
 		// COMPANION_SCENE_CONTEXT_POSITION_IDS). null = ingen begränsning.
 		scene?: CompanionSceneContext | null;
+		bondLevel?: CompanionBondLevel;
+		behaviourProfile?: CompanionBehaviourProfile;
+		posePreference?: CompanionPosePreference;
 	} = $props();
 
 	const motionAwareness = createMotionAwareness();
@@ -119,11 +129,31 @@
 		const now = new Date();
 		daypart = getCompanionPoseDaypart(now);
 		if (!providedBasePose) {
-			const nextBasePose = getCompanionBasePose(now, window.localStorage, companionId, scene);
+			const nextBasePose = getCompanionBasePose(
+				now,
+				window.localStorage,
+				companionId,
+				scene,
+				posePreference
+			);
 			localBasePose = nextBasePose;
-			localPosition = getCompanionScenePosition(nextBasePose, now, window.localStorage, companionId, scene);
+			localPosition = getCompanionScenePosition(
+				nextBasePose,
+				now,
+				window.localStorage,
+				companionId,
+				scene,
+				posePreference
+			);
 		} else if (!providedPosition) {
-			localPosition = getCompanionScenePosition(providedBasePose, now, window.localStorage, companionId, scene);
+			localPosition = getCompanionScenePosition(
+				providedBasePose,
+				now,
+				window.localStorage,
+				companionId,
+				scene,
+				posePreference
+			);
 		}
 		baseFrameIndex = 0;
 	}
@@ -131,8 +161,14 @@
 	function maybePlayOverlay() {
 		if (overlayPose || !motionAwareness.isActive || motionAwareness.reducedMotion) return;
 
-		const isSleeping = basePose?.id === 'sleep-curled' || basePose?.id === 'sleep-side';
-		const motion = isSleeping ? 'sleep' : Math.random() < 0.72 ? 'blink' : 'gesture';
+		const isSleeping = isQuietPose(basePose?.id);
+		// Kvällsstugan väljer endast blink när följeslagaren är vaken; den får
+		// därmed inga mer aktiva overlay-gester ovanpå sitt lugna basläge.
+		const motion = isSleeping
+			? 'sleep'
+			: behaviourProfile === 'quiet' || Math.random() < 0.72
+				? 'blink'
+				: 'gesture';
 		const nextOverlay = getCompanionOverlayPose(daypart, motion, companionId);
 		if (!nextOverlay) return;
 
@@ -154,10 +190,10 @@
 	}
 
 	function maybePlayMicroGesture() {
-		if (microGesture || !motionAwareness.isActive || motionAwareness.reducedMotion) return;
+		if (microGesture || !motionAwareness.isActive) return;
 		// Ingen mikrorörelse ovanpå ett aktivt blink/gesture-overlay, och inte
 		// för poser som redan rör sig eller ska ligga still.
-		if (overlayPose || isQuietPose(basePose?.id)) return;
+		if (overlayPose || !canPlayCompanionIdleBehaviour(basePose?.id, motionAwareness.reducedMotion)) return;
 
 		// Båda flaggorna förbrukas här, efter att alla spärrar ovan redan
 		// passerats - blockerar de gesten förbrukas ingendera, och nästa
@@ -178,7 +214,10 @@
 			behaviour = getSettleBehaviour();
 			returnGestureAvailable = false;
 		} else {
-			behaviour = pickCompanionBehaviour(previousGesture);
+			behaviour = pickCompanionBehaviour(previousGesture, Math.random, {
+				bondLevel,
+				profile: behaviourProfile
+			});
 		}
 
 		previousGesture = behaviour.id;
@@ -239,9 +278,9 @@
 
 		const scheduleBaseCheck = () => {
 			baseTimer = window.setTimeout(() => {
-				refreshBasePose();
+				if (!motionAwareness.reducedMotion) refreshBasePose();
 				scheduleBaseCheck();
-			}, getMsUntilNextCompanionPoseCheck(new Date(), window.localStorage, companionId));
+			}, getMsUntilNextCompanionPoseCheck(new Date(), window.localStorage, companionId, posePreference));
 		};
 
 		const scheduleBaseFrame = () => {
@@ -301,7 +340,8 @@
 			new Date(),
 			window.localStorage,
 			companionId,
-			scene
+			scene,
+			posePreference
 		);
 	});
 </script>

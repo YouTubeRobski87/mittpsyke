@@ -3,7 +3,10 @@ import {
 	COMPANION_BEHAVIOURS,
 	COMPANION_BEHAVIOUR_MAX_REST_MS,
 	COMPANION_BEHAVIOUR_MIN_REST_MS,
+	canPlayCompanionIdleBehaviour,
 	canPlayCompanionSettle,
+	getCompanionBehaviourWeight,
+	getEligibleCompanionBehaviours,
 	getCompanionBehaviourRestMs,
 	getMotionDutyCycle,
 	isQuietPose,
@@ -91,5 +94,37 @@ describe('canPlayCompanionSettle', () => {
 	it('keeps the greeting settle reaction for awake poses', () => {
 		expect(canPlayCompanionSettle('wolf-standing')).toBe(true);
 		expect(canPlayCompanionSettle('idle')).toBe(true);
+	});
+});
+
+describe('Companion Behaviour V2', () => {
+	it('blocks every idle behaviour for sleep and reduced motion', () => {
+		expect(canPlayCompanionIdleBehaviour('sleep-curled')).toBe(false);
+		expect(canPlayCompanionIdleBehaviour('bear-sleeping')).toBe(false);
+		expect(canPlayCompanionIdleBehaviour('wolf-sleeping')).toBe(false);
+		expect(canPlayCompanionIdleBehaviour('idle', true)).toBe(false);
+		expect(canPlayCompanionIdleBehaviour('idle', false)).toBe(true);
+	});
+
+	it('makes calm positive behaviour more likely at higher bond without removing neutral behaviour', () => {
+		const settle = COMPANION_BEHAVIOURS.find((behaviour) => behaviour.id === 'settle')!;
+		const glance = COMPANION_BEHAVIOURS.find((behaviour) => behaviour.id === 'glance-left')!;
+
+		expect(getCompanionBehaviourWeight(settle, { bondLevel: 3 })).toBeGreaterThan(
+			getCompanionBehaviourWeight(settle, { bondLevel: 0 })
+		);
+		expect(getCompanionBehaviourWeight(glance, { bondLevel: 3 })).toBeGreaterThan(
+			getCompanionBehaviourWeight(glance, { bondLevel: 0 })
+		);
+		expect(getEligibleCompanionBehaviours({ bondLevel: 0 })).toHaveLength(
+			COMPANION_BEHAVIOURS.length
+		);
+	});
+
+	it('uses only calm existing behaviours in Kvällsstugan', () => {
+		const ids = getEligibleCompanionBehaviours({ profile: 'quiet', bondLevel: 3 }).map(
+			(behaviour) => behaviour.id
+		);
+		expect(ids).toEqual(['glance-left', 'glance-right', 'settle']);
 	});
 });

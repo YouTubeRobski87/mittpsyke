@@ -23,13 +23,35 @@ type StoredCompanionPositionState = StoredCompanionPoseState & {
 	positionId: CompanionScenePositionId;
 };
 
-const storageKeyFor = (companionId: CompanionId) => `mittpsyke:companion-pose:${companionId}:v1`;
+export type CompanionPosePreference = 'default' | 'calm';
+
+const storageKeyFor = (companionId: CompanionId, preference: CompanionPosePreference = 'default') =>
+	`mittpsyke:companion-pose:${companionId}:${preference}:v1`;
 // Positionen lagras per scen, till skillnad från posen. Posen är
 // följeslagarens tillstånd och ska vara densamma i alla vyer; positionen är
 // scenberoende, så ett val gjort i Framsteg får inte läcka in i dashboarden
 // och tvinga fram en fallback där.
-const positionStorageKeyFor = (companionId: CompanionId, scene: CompanionSceneContext | null) =>
-	`mittpsyke:companion-position:${companionId}:${scene ?? 'any'}:v1`;
+const positionStorageKeyFor = (
+	companionId: CompanionId,
+	scene: CompanionSceneContext | null,
+	preference: CompanionPosePreference = 'default'
+) => `mittpsyke:companion-position:${companionId}:${scene ?? 'any'}:${preference}:v1`;
+
+const CALM_POSE_IDS = new Set([
+	'idle',
+	'look-left',
+	'look-right',
+	'sit',
+	'sit-look-up',
+	'evening-lake',
+	'rest',
+	'sleep-curled',
+	'sleep-side',
+	'bear-sitting',
+	'bear-sleeping',
+	'wolf-standing',
+	'wolf-sleeping'
+]);
 
 function getPoseDaypart(date: Date): CompanionPoseDaypart {
 	const state = getProgressCompanionDayState(date);
@@ -134,15 +156,18 @@ export function getCompanionBasePose(
 	date = new Date(),
 	storage: Storage | null = null,
 	companionId: CompanionId = 'fox',
-	scene: CompanionSceneContext | null = null
+	scene: CompanionSceneContext | null = null,
+	preference: CompanionPosePreference = 'default'
 ): CompanionPose {
 	const daypart = getPoseDaypart(date);
 	const now = date.getTime();
-	const availablePoses = COMPANION_POSES.filter(
+	const allAvailablePoses = COMPANION_POSES.filter(
 		(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.dayparts.includes(daypart) && poseHasAvailablePosition(daypart, pose, scene)
 	);
+	const calmPoses = allAvailablePoses.filter((pose) => CALM_POSE_IDS.has(pose.id));
+	const availablePoses = preference === 'calm' && calmPoses.length ? calmPoses : allAvailablePoses;
 	const fallbackPose = getFallbackPose(companionId, availablePoses);
-	const storedState = storage ? parseStoredState(storage.getItem(storageKeyFor(companionId))) : null;
+	const storedState = storage ? parseStoredState(storage.getItem(storageKeyFor(companionId, preference))) : null;
 	if (storedState && storedState.daypart === daypart && storedState.expiresAt > now) {
 		const storedPose = COMPANION_POSES.find(
 			(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.id === storedState.poseId && pose.dayparts.includes(daypart)
@@ -151,7 +176,7 @@ export function getCompanionBasePose(
 	}
 
 	const nextPose = getWeightedPose(availablePoses.length ? availablePoses : [fallbackPose]);
-	if (storage) storage.setItem(storageKeyFor(companionId), JSON.stringify({ poseId: nextPose.id, daypart, expiresAt: getNextExpiry(now) }));
+	if (storage) storage.setItem(storageKeyFor(companionId, preference), JSON.stringify({ poseId: nextPose.id, daypart, expiresAt: getNextExpiry(now) }));
 	return nextPose;
 }
 
@@ -160,22 +185,23 @@ export function getCompanionScenePosition(
 	date = new Date(),
 	storage: Storage | null = null,
 	companionId: CompanionId = pose?.companionId ?? 'fox',
-	scene: CompanionSceneContext | null = null
+	scene: CompanionSceneContext | null = null,
+	preference: CompanionPosePreference = 'default'
 ): CompanionScenePosition {
 	const daypart = getPoseDaypart(date);
-	const fallbackPose = pose ?? getCompanionBasePose(date, storage, companionId, scene);
+	const fallbackPose = pose ?? getCompanionBasePose(date, storage, companionId, scene, preference);
 	const now = date.getTime();
 	const availablePositions = getAvailablePositions(daypart, fallbackPose.id, scene);
 	const fallbackPosition = availablePositions[0] ?? COMPANION_SCENE_POSITIONS.find((position) => position.id === 'foreground-right') ?? COMPANION_SCENE_POSITIONS[0];
-	const storedState = storage ? parseStoredPositionState(storage.getItem(positionStorageKeyFor(companionId, scene))) : null;
+	const storedState = storage ? parseStoredPositionState(storage.getItem(positionStorageKeyFor(companionId, scene, preference))) : null;
 	if (storedState && storedState.daypart === daypart && storedState.poseId === fallbackPose.id && storedState.expiresAt > now) {
 		return availablePositions.find((position) => position.id === storedState.positionId) ?? fallbackPosition;
 	}
 
 	const nextPosition = getWeightedPosition(availablePositions.length ? availablePositions : [fallbackPosition]);
 	if (storage) {
-		const poseExpiry = parseStoredState(storage.getItem(storageKeyFor(companionId)))?.expiresAt ?? getNextExpiry(now);
-		storage.setItem(positionStorageKeyFor(companionId, scene), JSON.stringify({ positionId: nextPosition.id, poseId: fallbackPose.id, daypart, expiresAt: Math.max(poseExpiry, getNextExpiry(now)) }));
+		const poseExpiry = parseStoredState(storage.getItem(storageKeyFor(companionId, preference)))?.expiresAt ?? getNextExpiry(now);
+		storage.setItem(positionStorageKeyFor(companionId, scene, preference), JSON.stringify({ positionId: nextPosition.id, poseId: fallbackPose.id, daypart, expiresAt: Math.max(poseExpiry, getNextExpiry(now)) }));
 	}
 	return nextPosition;
 }
@@ -197,9 +223,12 @@ export function getCompanionOverlayPose(
 export function getMsUntilNextCompanionPoseCheck(
 	date = new Date(),
 	storage: Storage | null = null,
-	companionId: CompanionId = 'fox'
+	companionId: CompanionId = 'fox',
+	preference: CompanionPosePreference = 'default'
 ) {
-	const storedState = storage ? parseStoredState(storage.getItem(storageKeyFor(companionId))) : null;
+	const storedState = storage
+		? parseStoredState(storage.getItem(storageKeyFor(companionId, preference)))
+		: null;
 	const remainingMs = storedState ? storedState.expiresAt - date.getTime() : 0;
 	return Math.min(Math.max(remainingMs, 30 * 1000), 5 * 60 * 1000);
 }

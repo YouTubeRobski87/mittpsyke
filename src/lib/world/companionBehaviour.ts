@@ -9,6 +9,8 @@
 // Lägg till en ny rörelse genom att lägga till en post i BEHAVIOURS och en
 // matchande @keyframes i CompanionPose.svelte (selektorn följer id:t).
 
+import type { CompanionBondLevel } from '$lib/companionBond';
+
 export type CompanionBehaviourId =
 	| 'glance-left'
 	| 'glance-right'
@@ -24,6 +26,14 @@ export type CompanionBehaviour = {
 	durationMs: number;
 };
 
+/** Kvällsstugan delar samma beteenden men väljer bara de allra lugnaste. */
+export type CompanionBehaviourProfile = 'world' | 'quiet';
+
+export type CompanionBehaviourOptions = {
+	bondLevel?: CompanionBondLevel;
+	profile?: CompanionBehaviourProfile;
+};
+
 // Blickarna dominerar medvetet: de läses tydligast som "levande" på en
 // stillbild. Öronryck och nosande är lågt viktade - de är de mest "pilliga"
 // rörelserna och skulle annars kännas påträngande tillsammans med de
@@ -36,6 +46,45 @@ export const COMPANION_BEHAVIOURS: readonly CompanionBehaviour[] = [
 	{ id: 'ear-twitch', weight: 0.7, durationMs: 900 },
 	{ id: 'sniff', weight: 0.6, durationMs: 2600 }
 ];
+
+const QUIET_BEHAVIOUR_IDS = new Set<CompanionBehaviourId>([
+	'glance-left',
+	'glance-right',
+	'settle'
+]);
+
+function normalizeBondLevel(level: CompanionBondLevel | undefined): CompanionBondLevel {
+	return level === 1 || level === 2 || level === 3 ? level : 0;
+}
+
+/**
+ * Högre band gör bara de redan lugna initiativen lite mer sannolika. Det är
+ * additivt: låg bond tar inte bort något, och frånvaro spelar ingen roll.
+ */
+export function getCompanionBehaviourWeight(
+	behaviour: CompanionBehaviour,
+	options: CompanionBehaviourOptions = {}
+): number {
+	const profile = options.profile ?? 'world';
+	if (profile === 'quiet' && !QUIET_BEHAVIOUR_IDS.has(behaviour.id)) return 0;
+
+	let weight = behaviour.weight;
+	if (profile === 'quiet' && behaviour.id === 'settle') weight *= 2.2;
+
+	const bondLevel = normalizeBondLevel(options.bondLevel);
+	if (bondLevel >= 2 && behaviour.id === 'settle') weight *= 1.35;
+	if (bondLevel >= 3 && (behaviour.id === 'glance-left' || behaviour.id === 'glance-right')) {
+		weight *= 1.12;
+	}
+
+	return weight;
+}
+
+export function getEligibleCompanionBehaviours(
+	options: CompanionBehaviourOptions = {}
+): CompanionBehaviour[] {
+	return COMPANION_BEHAVIOURS.filter((behaviour) => getCompanionBehaviourWeight(behaviour, options) > 0);
+}
 
 // Vila mellan rörelserna. Satt så att följeslagaren är stilla minst 95% av
 // tiden - se testet som räknar ut den viktade duty cycle:n, det går sönder om
@@ -75,6 +124,13 @@ export function canPlayCompanionSettle(poseId: string | null | undefined): boole
 	return !isQuietPose(poseId);
 }
 
+export function canPlayCompanionIdleBehaviour(
+	poseId: string | null | undefined,
+	reducedMotion = false
+): boolean {
+	return !reducedMotion && !isQuietPose(poseId);
+}
+
 /**
  * Väljer nästa rörelse viktat. `random` injiceras för testbarhet.
  * Undviker att upprepa samma rörelse två gånger i rad, så den inte
@@ -82,15 +138,17 @@ export function canPlayCompanionSettle(poseId: string | null | undefined): boole
  */
 export function pickCompanionBehaviour(
 	previousId: CompanionBehaviourId | null = null,
-	random: () => number = Math.random
+	random: () => number = Math.random,
+	options: CompanionBehaviourOptions = {}
 ): CompanionBehaviour {
-	const candidates = COMPANION_BEHAVIOURS.filter((behaviour) => behaviour.id !== previousId);
-	const pool = candidates.length > 0 ? candidates : COMPANION_BEHAVIOURS;
-	const totalWeight = pool.reduce((sum, behaviour) => sum + behaviour.weight, 0);
+	const eligible = getEligibleCompanionBehaviours(options);
+	const candidates = eligible.filter((behaviour) => behaviour.id !== previousId);
+	const pool = candidates.length > 0 ? candidates : eligible;
+	const totalWeight = pool.reduce((sum, behaviour) => sum + getCompanionBehaviourWeight(behaviour, options), 0);
 
 	let cursor = random() * totalWeight;
 	for (const behaviour of pool) {
-		cursor -= behaviour.weight;
+		cursor -= getCompanionBehaviourWeight(behaviour, options);
 		if (cursor <= 0) return behaviour;
 	}
 

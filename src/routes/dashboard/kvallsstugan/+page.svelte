@@ -14,6 +14,8 @@
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
 	import { getLivingWorldScene, type LivingWorldScene } from '$lib/worldScene';
+	import type { CompanionDailyState } from '$lib/companionDailyQuestion';
+	import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
 
 	const CABIN_IMAGE = '/images/scenes/cabin-interior-evening-v1.webp';
 	const CABIN_SRCSET = [
@@ -63,7 +65,12 @@
 		}
 	];
 
-	let { data } = $props<{ data: { progressCompanion: ProgressCompanionSelection | null } }>();
+	let { data } = $props<{
+		data: {
+			progressCompanion: ProgressCompanionSelection | null;
+			companionDaily: CompanionDailyState | null;
+		};
+	}>();
 	let sceneDate = $state(new Date());
 	let completionSignal = $state(0);
 	let dayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
@@ -75,6 +82,9 @@
 				? 'wolf'
 				: 'fox'
 	) as 'fox' | 'bear' | 'wolf';
+	const companionBondLevel = $derived(
+		getCompanionBondLevel(getCompanionBond(data.companionDaily?.answeredDayCount ?? 0))
+	);
 	const worldScene = $derived<LivingWorldScene>(
 		getLivingWorldScene({
 			date: sceneDate,
@@ -145,6 +155,9 @@
 				companionId={companionId}
 				scene="dashboard"
 				greetingReaction={completionSignal}
+				bondLevel={companionBondLevel}
+				behaviourProfile="quiet"
+				posePreference="calm"
 			/>
 		</section>
 
