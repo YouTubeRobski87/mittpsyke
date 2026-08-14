@@ -249,6 +249,19 @@ export const COMPANION_RETURN_ABSENCE_THRESHOLD_MS = 4 * 60 * 60 * 1000;
 const lastSeenStorageKeyFor = (companionId: CompanionId) =>
 	`mittpsyke:companion-last-seen:${companionId}:v1`;
 
+/** Den befintliga, minimala "senast sedd"-signalen. */
+export function getCompanionLastSeenAt(
+	storage: Storage | null,
+	companionId: CompanionId
+): Date | null {
+	if (!storage) return null;
+	const stored = storage.getItem(lastSeenStorageKeyFor(companionId));
+	if (!stored) return null;
+	const timestamp = Number(stored);
+	if (!Number.isFinite(timestamp)) return null;
+	return new Date(timestamp);
+}
+
 /**
  * Millisekunder sedan companionen senast sågs, eller null om det saknas en
  * tidigare tidsstämpel (första besöket - inget att jämföra "återkomst" mot).
@@ -260,12 +273,9 @@ export function getCompanionAbsenceMs(
 	storage: Storage | null,
 	companionId: CompanionId
 ): number | null {
-	if (!storage) return null;
-	const stored = storage.getItem(lastSeenStorageKeyFor(companionId));
-	if (!stored) return null;
-	const previous = Number(stored);
-	if (!Number.isFinite(previous)) return null;
-	return Math.max(0, now.getTime() - previous);
+	const previous = getCompanionLastSeenAt(storage, companionId);
+	if (!previous) return null;
+	return Math.max(0, now.getTime() - previous.getTime());
 }
 
 /** Skriver den aktuella tiden som "senast sedd". Måste anropas efter att den

@@ -338,6 +338,7 @@
           placement={heroCompanionPlacement}
           greetingReaction={companionGreetingReaction}
           bondLevel={companionBondLevel}
+			returnContextEnabled
         />
         <!-- En bubbla i taget vid följeslagaren. Reaktionen på dagens fråga har
              företräde framför hälsningen, så de aldrig kan ligga ovanpå varandra. -->

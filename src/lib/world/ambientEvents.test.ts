@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getAmbientEventPlan, type AmbientEventPlanInput } from './ambientEvents';
+import { getReturnContext } from '$lib/returnContext';
 
 const baseInput: AmbientEventPlanInput = {
 	sessionSeed: 'session-42',
@@ -73,5 +74,16 @@ describe('getAmbientEventPlan', () => {
 		const before = getAmbientEventPlan(baseInput);
 		const after = getAmbientEventPlan({ ...baseInput });
 		expect(after).toEqual(before);
+	});
+
+	it('does not turn a longer return into a guaranteed ambient event', () => {
+		expect(
+			getReturnContext({
+				now: new Date('2026-08-14T12:00:00Z'),
+				lastSeenAt: new Date('2026-08-01T12:00:00Z'),
+				hasSeenInSession: false
+			})
+		).toBe('longer_return');
+		expect(plansFor(2).some((plan) => plan === null)).toBe(true);
 	});
 });

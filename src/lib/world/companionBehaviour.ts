@@ -10,6 +10,7 @@
 // matchande @keyframes i CompanionPose.svelte (selektorn följer id:t).
 
 import type { CompanionBondLevel } from '$lib/companionBond';
+import type { ReturnContext } from '$lib/returnContext';
 
 export type CompanionBehaviourId =
 	| 'glance-left'
@@ -32,6 +33,8 @@ export type CompanionBehaviourProfile = 'world' | 'quiet';
 export type CompanionBehaviourOptions = {
 	bondLevel?: CompanionBondLevel;
 	profile?: CompanionBehaviourProfile;
+	/** Återkomst ändrar bara viktningen av befintliga lugna rörelser. */
+	returnContext?: ReturnContext;
 };
 
 // Blickarna dominerar medvetet: de läses tydligast som "levande" på en
@@ -75,6 +78,16 @@ export function getCompanionBehaviourWeight(
 	if (bondLevel >= 2 && behaviour.id === 'settle') weight *= 1.35;
 	if (bondLevel >= 3 && (behaviour.id === 'glance-left' || behaviour.id === 'glance-right')) {
 		weight *= 1.12;
+	}
+
+	// Ingen särskild "comeback"-gest: en riktig återkomst gör bara de befintliga,
+	// lugna beteendena lite mer sannolika. Samma session lämnas helt orörd.
+	if (options.returnContext === 'same_day' && behaviour.id === 'settle') weight *= 1.1;
+	if (
+		(options.returnContext === 'recent_return' || options.returnContext === 'longer_return') &&
+		behaviour.id === 'settle'
+	) {
+		weight *= 1.2;
 	}
 
 	return weight;
@@ -129,6 +142,19 @@ export function canPlayCompanionIdleBehaviour(
 	reducedMotion = false
 ): boolean {
 	return !reducedMotion && !isQuietPose(poseId);
+}
+
+/** Sömn och reduced motion har företräde även om återkomsten är eligible. */
+export function canPlayCompanionReturnBehaviour(
+	poseId: string | null | undefined,
+	reducedMotion: boolean,
+	returnContext: ReturnContext
+): boolean {
+	return (
+		returnContext !== 'first_visit' &&
+		returnContext !== 'same_session' &&
+		canPlayCompanionIdleBehaviour(poseId, reducedMotion)
+	);
 }
 
 /**

@@ -5,6 +5,7 @@
 	import {
 		getCompanionAbsenceMs,
 		getCompanionBasePose,
+		getCompanionLastSeenAt,
 		getCompanionOverlayPose,
 		getCompanionPoseDaypart,
 		getCompanionScenePosition,
@@ -15,12 +16,19 @@
 		type CompanionPosePreference
 	} from '$lib/companionPoseState';
 	import {
+		getReturnContext,
+		hasSeenReturnContextInSession,
+		recordReturnContextSessionSeen,
+		type ReturnContext
+	} from '$lib/returnContext';
+	import {
 		clearReflectionSavedTimestamp,
 		getReflectionSavedTimestamp
 	} from '$lib/diary-events';
 	import {
 		COMPANION_BEHAVIOURS,
 		canPlayCompanionIdleBehaviour,
+		canPlayCompanionReturnBehaviour,
 		canPlayCompanionSettle,
 		getCompanionBehaviourRestMs,
 		isQuietPose,
@@ -50,7 +58,8 @@
 		scene = null,
 		bondLevel = 0,
 		behaviourProfile = 'world',
-		posePreference = 'default'
+		posePreference = 'default',
+		returnContextEnabled = false
 	}: {
 		class?: string;
 		decorative?: boolean;
@@ -67,6 +76,8 @@
 		bondLevel?: CompanionBondLevel;
 		behaviourProfile?: CompanionBehaviourProfile;
 		posePreference?: CompanionPosePreference;
+		// Mitt Hem opt-in: andra vyer behåller sitt befintliga beteende.
+		returnContextEnabled?: boolean;
 	} = $props();
 
 	const motionAwareness = createMotionAwareness();
@@ -80,13 +91,15 @@
 	// Mikrorörelser - urval, vikter och vilotider bor i $lib/world/companionBehaviour.
 	let microGesture = $state<CompanionBehaviourId | null>(null);
 	let previousGesture: CompanionBehaviourId | null = null;
-	// Sant en gång per montering om användaren varit borta länge nog (se
-	// companionPoseState.ts). Förbrukas av den första tillåtna mikrorörelsen
-	// i maybePlayMicroGesture - se kommentaren där för ordningen.
-	let returnGestureAvailable = false;
+	// Återkomst är en anonym, grov kontext. Den kan bara vikta redan befintliga
+	// rörelser och lagrar aldrig en exakt frånvarotid i komponentens UI.
+	let returnContext: ReturnContext = 'first_visit';
+	// Behåll tidigare riktade returgest i vyer som ännu inte använder Return
+	// Context; Mitt Hem tar i stället den lugnare, viktade vägen ovan.
+	let legacyReturnGestureAvailable = false;
 	// Sant en gång per montering om en reflektion sparades nyligen (se
-	// diary-events.ts + companionPoseState.ts). Till skillnad från
-	// returnGestureAvailable är den underliggande signalen persisterad
+	// diary-events.ts + companionPoseState.ts). Till skillnad från den lokala
+	// returflaggan är den underliggande signalen persisterad
 	// (localStorage), så "förbrukning" innebär att faktiskt rensa den - se
 	// maybePlayMicroGesture, som gör det exakt när gesten startar, inte
 	// tidigare.
@@ -195,28 +208,30 @@
 		// för poser som redan rör sig eller ska ligga still.
 		if (overlayPose || !canPlayCompanionIdleBehaviour(basePose?.id, motionAwareness.reducedMotion)) return;
 
-		// Båda flaggorna förbrukas här, efter att alla spärrar ovan redan
-		// passerats - blockerar de gesten förbrukas ingendera, och nästa
-		// tillåtna cykel får försöka igen. När båda är false (det normala
-		// fallet) är else-grenen nedan identisk med tidigare.
+		// Reflektionsflaggan förbrukas först när alla spärrar ovan passerat,
+		// så en blockerad cykel inte tar bort den.
 		let behaviour: CompanionBehaviour;
 		if (reflectionGestureAvailable) {
-			// Reflektionsreaktionen har prioritet över återkomstgesten om båda
-			// är tillgängliga samma cykel (se onMount) - returnGestureAvailable
-			// rörs inte här, så den kan spelas en senare cykel, efter den
-			// normala viloperioden, aldrig direkt efter denna.
 			behaviour = getSettleBehaviour();
 			reflectionGestureAvailable = false;
 			// Den persisterade flaggan (diary-events.ts) rensas exakt här, när
 			// gesten faktiskt startar - inte tidigare, se onMount.
 			clearReflectionSavedTimestamp();
-		} else if (returnGestureAvailable) {
+		} else if (legacyReturnGestureAvailable) {
 			behaviour = getSettleBehaviour();
-			returnGestureAvailable = false;
+			legacyReturnGestureAvailable = false;
 		} else {
+			const eligibleReturnContext = canPlayCompanionReturnBehaviour(
+				basePose?.id,
+				motionAwareness.reducedMotion,
+				returnContext
+			)
+				? returnContext
+				: 'first_visit';
 			behaviour = pickCompanionBehaviour(previousGesture, Math.random, {
 				bondLevel,
-				profile: behaviourProfile
+				profile: behaviourProfile,
+				returnContext: eligibleReturnContext
 			});
 		}
 
@@ -246,16 +261,23 @@
 	onMount(() => {
 		refreshBasePose();
 
-		// Mäts en gång per faktisk montering, inte i den periodiska
-		// refreshBasePose-cykeln ovan - annars skulle en flik som bara
-		// ligger öppen räknas som "borta och tillbaka" varje gång posen
-		// råkar uppdateras i bakgrunden. Skrivs alltid, oavsett
-		// rörelseinställning, så nästa faktiska återkomst mäts mot rätt
-		// tidpunkt.
+		// Läs och skriv en gång per faktisk montering. På Mitt Hem markeras
+		// samma session explicit som kontinuerlig navigation, inte som en
+		// återkomst. Övriga vyer behåller sin tidigare återkomstsignal.
 		const seenNow = new Date();
-		const absenceMs = getCompanionAbsenceMs(seenNow, window.localStorage, companionId);
+		if (returnContextEnabled) {
+			returnContext = getReturnContext({
+				now: seenNow,
+				lastSeenAt: getCompanionLastSeenAt(window.localStorage, companionId),
+				hasSeenInSession: hasSeenReturnContextInSession(window.sessionStorage)
+			});
+			recordReturnContextSessionSeen(window.sessionStorage);
+		} else {
+			legacyReturnGestureAvailable = qualifiesAsCompanionReturn(
+				getCompanionAbsenceMs(seenNow, window.localStorage, companionId)
+			);
+		}
 		recordCompanionSeen(seenNow, window.localStorage, companionId);
-		returnGestureAvailable = qualifiesAsCompanionReturn(absenceMs);
 
 		// Reflektion sparad nyligen (se diary-events.ts): flaggan lämnas kvar
 		// i storage om den är giltig - den rensas först när gesten faktiskt

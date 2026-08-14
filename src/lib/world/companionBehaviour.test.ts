@@ -4,6 +4,7 @@ import {
 	COMPANION_BEHAVIOUR_MAX_REST_MS,
 	COMPANION_BEHAVIOUR_MIN_REST_MS,
 	canPlayCompanionIdleBehaviour,
+	canPlayCompanionReturnBehaviour,
 	canPlayCompanionSettle,
 	getCompanionBehaviourWeight,
 	getEligibleCompanionBehaviours,
@@ -126,5 +127,26 @@ describe('Companion Behaviour V2', () => {
 			(behaviour) => behaviour.id
 		);
 		expect(ids).toEqual(['glance-left', 'glance-right', 'settle']);
+	});
+
+	it('lets a return only weight existing calm behaviour, never guarantee it', () => {
+		const settle = COMPANION_BEHAVIOURS.find((behaviour) => behaviour.id === 'settle')!;
+		const sniff = COMPANION_BEHAVIOURS.find((behaviour) => behaviour.id === 'sniff')!;
+
+		expect(getCompanionBehaviourWeight(settle, { returnContext: 'recent_return' })).toBeGreaterThan(
+			getCompanionBehaviourWeight(settle, { returnContext: 'first_visit' })
+		);
+		expect(getCompanionBehaviourWeight(sniff, { returnContext: 'recent_return' })).toBe(
+			getCompanionBehaviourWeight(sniff, { returnContext: 'first_visit' })
+		);
+	});
+
+	it('lets sleep block a return behaviour for every companion pose', () => {
+		expect(canPlayCompanionReturnBehaviour('sleep-curled', false, 'longer_return')).toBe(false);
+		expect(canPlayCompanionReturnBehaviour('bear-sleeping', false, 'recent_return')).toBe(false);
+		expect(canPlayCompanionReturnBehaviour('wolf-sleeping', false, 'same_day')).toBe(false);
+		expect(canPlayCompanionReturnBehaviour('idle', true, 'longer_return')).toBe(false);
+		expect(canPlayCompanionReturnBehaviour('idle', false, 'same_session')).toBe(false);
+		expect(canPlayCompanionReturnBehaviour('idle', false, 'recent_return')).toBe(true);
 	});
 });
