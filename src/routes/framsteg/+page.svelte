@@ -18,6 +18,7 @@
 		PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK,
 		getProgressCompanionDayState,
 		getProgressCompanionDayStateLabel,
+		getProgressCompanionDisplayName,
 		getProgressCompanionSeason,
 		getProgressCompanionAnimal,
 		getProgressCompanionArtId,
@@ -83,44 +84,45 @@
 	const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
 
 	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: 'fox' | 'bear' | 'wolf') {
+		const companionName = getProgressCompanionDisplayName(companionId);
 		if (companionId === 'bear') {
 			if (poseId.startsWith('sleep')) {
-				return anonymous ? 'Björnen vilar lugnt medan platsen är stilla.' : 'Björnen vilar lugnt vid sjön.';
+				return anonymous ? `${companionName} vilar lugnt medan platsen är stilla.` : `${companionName} vilar lugnt vid sjön.`;
 			}
-			return anonymous ? 'Björnen håller platsen lugnt sällskap.' : 'Björnen håller dig lugnt sällskap.';
+			return anonymous ? `${companionName} håller platsen lugnt sällskap.` : `${companionName} håller dig lugnt sällskap.`;
 		}
 		if (companionId === 'wolf') {
-			return anonymous ? 'Vargen håller platsen stilla sällskap.' : 'Vargen håller dig stilla sällskap.';
+			return anonymous ? `${companionName} håller platsen stilla sällskap.` : `${companionName} håller dig stilla sällskap.`;
 		}
 		if (poseId.startsWith('sleep')) {
-			return anonymous ? 'Räven sover lugnt medan platsen vilar.' : 'Räven sover lugnt vid sjön.';
+			return anonymous ? `${companionName} sover lugnt medan platsen vilar.` : `${companionName} sover lugnt vid sjön.`;
 		}
 
 		if (poseId === 'rest') {
-			return anonymous ? 'Räven vilar lugnt medan platsen växer fram.' : 'Räven vilar lugnt vid sjön.';
+			return anonymous ? `${companionName} vilar lugnt medan platsen växer fram.` : `${companionName} vilar lugnt vid sjön.`;
 		}
 
 		if (poseId === 'drink') {
-			return anonymous ? 'Räven har gått ner till vattnet medan platsen vilar.' : 'Räven har gått ner till vattnet.';
+			return anonymous ? `${companionName} har gått ner till vattnet medan platsen vilar.` : `${companionName} har gått ner till vattnet.`;
 		}
 
 		if (poseId === 'walk') {
-			return anonymous ? 'Räven rör sig långsamt genom platsen.' : 'Räven går långsamt genom platsen.';
+			return anonymous ? `${companionName} rör sig långsamt genom platsen.` : `${companionName} går långsamt genom platsen.`;
 		}
 
 		if (poseId === 'sniff') {
-			return anonymous ? 'Räven nosar försiktigt i gräset.' : 'Räven nosar försiktigt vid strandkanten.';
+			return anonymous ? `${companionName} nosar försiktigt i gräset.` : `${companionName} nosar försiktigt vid strandkanten.`;
 		}
 
 		if (poseId === 'stretch') {
-			return anonymous ? 'Räven sträcker lugnt på sig.' : 'Räven sträcker lugnt på sig vid sjön.';
+			return anonymous ? `${companionName} sträcker lugnt på sig.` : `${companionName} sträcker lugnt på sig vid sjön.`;
 		}
 
 		if (poseId === 'evening-lake' || poseId.startsWith('sit') || poseId.startsWith('look')) {
-			return anonymous ? 'Räven sitter stilla och håller platsen sällskap.' : 'Räven sitter stilla och håller dig sällskap.';
+			return anonymous ? `${companionName} sitter stilla och håller platsen sällskap.` : `${companionName} sitter stilla och håller dig sällskap.`;
 		}
 
-		return anonymous ? 'Räven håller platsen sällskap.' : 'Räven håller dig sällskap.';
+		return anonymous ? `${companionName} håller platsen sällskap.` : `${companionName} håller dig sällskap.`;
 	}
 
 	const sceneCompanionId = $derived(
@@ -139,7 +141,7 @@
 		image: PROGRESS_CABIN_LAKESIDE_SCENE_IMAGE,
 		season,
 		timeOfDay,
-		alt: `Din följeslagare, ${sceneCompanionId === 'bear' ? 'björnen' : sceneCompanionId === 'wolf' ? 'vargen' : 'räven'}, vid sjön`,
+		alt: `Din följeslagare, ${getProgressCompanionDisplayName(sceneCompanionId)}, vid sjön`,
 		copy: getCompanionPoseCopy(companionPoseId, false, sceneCompanionId),
 		anonymousCopy: getCompanionPoseCopy(companionPoseId, true, sceneCompanionId)
 	});

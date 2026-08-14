@@ -9,6 +9,7 @@ export type ProgressCompanionId = 'fox' | 'bear' | 'wolf';
 export type ProgressCompanionAnimal = {
 	id: string;
 	name: string;
+	speciesName?: string;
 	temperament: string;
 };
 
@@ -102,9 +103,9 @@ const DASHBOARD_COMPANION_IMAGE_PATHS = {
 } as const;
 
 export const PROGRESS_COMPANION_ANIMALS = [
-	{ id: 'fox', name: 'Räv', temperament: 'Nyfiken och varsam' },
-	{ id: 'bear', name: 'Björn', temperament: 'Lugn och stadig' },
-	{ id: 'wolf', name: 'Varg', temperament: 'Trygg och närvarande' },
+	{ id: 'fox', name: 'Vide', speciesName: 'Räv', temperament: 'Nyfiken och varsam' },
+	{ id: 'bear', name: 'Balder', speciesName: 'Björn', temperament: 'Lugn och stadig' },
+	{ id: 'wolf', name: 'Ylva', speciesName: 'Varg', temperament: 'Trygg och närvarande' },
 	{ id: 'owl', name: 'Uggla', temperament: 'Vaken och stilla' },
 	{ id: 'rabbit', name: 'Kanin', temperament: 'Mjuk och uppmärksam' },
 	{ id: 'squirrel', name: 'Ekorre', temperament: 'Liten och närvarande' },
@@ -242,6 +243,15 @@ export function formatProgressCompanionName(id: string) {
 	return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 }
 
+/** Det användarsynliga namnet för en följeslagare. Tekniska IDs förblir oförändrade. */
+export function getProgressCompanionDisplayName(id: string | null | undefined): string {
+	if (!id) return 'Din följeslagare';
+	return (
+		PROGRESS_COMPANION_ANIMALS.find((companion) => companion.id === id)?.name ??
+		formatProgressCompanionName(id)
+	);
+}
+
 export function getProgressCompanionAnimal(value: unknown): ProgressCompanionAnimal | null {
 	const selection = normalizeProgressCompanion(value);
 	if (!selection) return null;
@@ -251,7 +261,7 @@ export function getProgressCompanionAnimal(value: unknown): ProgressCompanionAni
 
 	return {
 		id: selection.id,
-		name: selection.name ?? formatProgressCompanionName(selection.id),
+		name: selection.name ?? getProgressCompanionDisplayName(selection.id),
 		temperament: 'Din egen lilla närvaro'
 	};
 }
@@ -324,17 +334,19 @@ export function getDashboardCompanionScene(date = new Date()): DashboardCompanio
 		imagePath = DASHBOARD_COMPANION_IMAGE_PATHS.winter;
 	}
 
+	const companionName = getProgressCompanionDisplayName('fox');
+
 	return {
 		greeting: getDashboardCompanionGreeting(date),
 		imageSrc: appendImageVersion(imagePath),
 		alt:
 			season === 'winter'
-				? 'Din följeslagare, räven, sitter vid sjön i en stilla vintermiljö.'
+				? `Din följeslagare, ${companionName}, sitter vid sjön i en stilla vintermiljö.`
 				: season === 'autumn'
-					? 'Din följeslagare, räven, sitter vid sjön i ett mjukt höstljus.'
+					? `Din följeslagare, ${companionName}, sitter vid sjön i ett mjukt höstljus.`
 					: light === 'night'
-						? 'Din följeslagare, räven, sitter vid sjön i kvälls- eller nattljus.'
-						: 'Din följeslagare, räven, sitter vid sjön i ett lugnt dagsljus.',
+						? `Din följeslagare, ${companionName}, sitter vid sjön i kvälls- eller nattljus.`
+						: `Din följeslagare, ${companionName}, sitter vid sjön i ett lugnt dagsljus.`,
 		season,
 		light
 	};

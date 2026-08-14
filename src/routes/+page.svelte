@@ -3,6 +3,7 @@
 	import CabinProof from '$lib/components/home/CabinProof.svelte';
 	import { trackHomeCtaClick } from '$lib/analytics';
 	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
+	import { getProgressCompanionDisplayName } from '$lib/progressCompanion';
 
 	// Anonyma skrivytan är kvar som destination - den är ett val inne i
 	// produkten, inte startsidans löfte.
@@ -65,7 +66,7 @@
 		<div class="home-inner narrow">
 			<h2 id="companion-title">Någon sitter kvar</h2>
 			<p>
-				Björn är kvar där du lämnade honom. Inte en tråd som börjar om. Du skriver när du vill.
+				{getProgressCompanionDisplayName('bear')} är kvar där du lämnade honom. Inte en tråd som börjar om. Du skriver när du vill.
 				Platsen minns det du valt att spara.
 			</p>
 			<a

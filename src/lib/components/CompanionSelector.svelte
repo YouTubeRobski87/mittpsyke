@@ -47,7 +47,7 @@
 				<CompanionAvatar selection={{ id: companion.id }} size="lg" decorative animated={false} />
 				<span class="companion-choice-copy">
 					<strong>{companion.name}</strong>
-					<small>{companion.temperament}</small>
+					<small>{companion.speciesName ? `${companion.speciesName} · ${companion.temperament}` : companion.temperament}</small>
 				</span>
 				{#if selection.id === companion.id}
 					<span class="companion-active-badge">Vald</span>

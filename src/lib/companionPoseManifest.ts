@@ -1,3 +1,5 @@
+import { getProgressCompanionDisplayName } from '$lib/progressCompanion';
+
 export type CompanionPoseDaypart = 'day' | 'evening' | 'night';
 export type CompanionPoseRole = 'base' | 'overlay';
 export type CompanionId = 'fox' | 'bear' | 'wolf';
@@ -68,6 +70,9 @@ const FOX_POSE_BASE_PATH = '/images/avatars/presets';
 const foxPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
 const bearPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
 const wolfPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
+const FOX_DISPLAY_NAME = getProgressCompanionDisplayName('fox');
+const BEAR_DISPLAY_NAME = getProgressCompanionDisplayName('bear');
+const WOLF_DISPLAY_NAME = getProgressCompanionDisplayName('wolf');
 
 export const FOX_COMPANION_POSES = [
 	{
@@ -75,7 +80,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-standing-front-alert.png') }],
-		alt: 'Din följeslagare, räven, står avslappnat.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, står avslappnat.`,
 		weight: 3,
 		sceneAdjustment: { scale: 0.45 }
 	},
@@ -84,7 +89,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-standing-side-left-lake.png') }],
-		alt: 'Din följeslagare, räven, tittar lugnt åt vänster.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, tittar lugnt åt vänster.`,
 		weight: 1.1,
 		sceneAdjustment: { scale: 0.42 }
 	},
@@ -93,7 +98,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-standing-side-right-listening.png') }],
-		alt: 'Din följeslagare, räven, tittar lugnt åt höger.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, tittar lugnt åt höger.`,
 		weight: 1.1,
 		sceneAdjustment: { scale: 0.46 }
 	},
@@ -102,7 +107,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-resting-sitting.png') }],
-		alt: 'Din följeslagare, räven, sitter stilla.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sitter stilla.`,
 		weight: 2.2,
 		sceneAdjustment: { scale: 0.55 }
 	},
@@ -111,7 +116,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox_sit_look_up.png') }],
-		alt: 'Din följeslagare, räven, sitter och tittar upp.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sitter och tittar upp.`,
 		weight: 0.9
 	},
 	{
@@ -125,7 +130,7 @@ export const FOX_COMPANION_POSES = [
 		// var 20-40 min, inte ett nytt normalläge.
 		dayparts: ['day', 'evening'],
 		frames: [{ src: foxPoseSrc('fox-realistic-lake-drinking.png') }],
-		alt: 'Din följeslagare, räven, dricker stilla vid sjön.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, dricker stilla vid sjön.`,
 		weight: 0.75,
 		sceneAdjustment: { scale: 0.55 }
 	},
@@ -134,7 +139,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox-realistic-lake-sniffing.png') }],
-		alt: 'Din följeslagare, räven, nosar försiktigt på marken.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, nosar försiktigt på marken.`,
 		weight: 0.8,
 		sceneAdjustment: { scale: 0.55 }
 	},
@@ -143,7 +148,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day'],
 		frames: [{ src: foxPoseSrc('fox_stretch.png') }],
-		alt: 'Din följeslagare, räven, sträcker lugnt på sig.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sträcker lugnt på sig.`,
 		weight: 0.65
 	},
 	{
@@ -152,7 +157,7 @@ export const FOX_COMPANION_POSES = [
 		dayparts: ['day'],
 		// Endast en realistisk gångbild finns ännu (ingen gångcykel-animation).
 		frames: [{ src: foxPoseSrc('fox-realistic-walking-curious.png') }],
-		alt: 'Din följeslagare, räven, går långsamt genom platsen.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, går långsamt genom platsen.`,
 		weight: 0.22,
 		frameMs: 620,
 		sceneAdjustment: { scale: 0.42 }
@@ -162,7 +167,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['evening'],
 		frames: [{ src: foxPoseSrc('fox-realistic-lake-sitting-gazing.png') }],
-		alt: 'Din följeslagare, räven, sitter och tittar mot sjön i kvällsljus.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sitter och tittar mot sjön i kvällsljus.`,
 		weight: 2.6,
 		sceneAdjustment: { scale: 0.55 }
 	},
@@ -171,7 +176,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['evening'],
 		frames: [{ src: foxPoseSrc('fox-realistic-resting-lying-half-asleep.png') }],
-		alt: 'Din följeslagare, räven, ligger och vilar i kvällslugnet.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, ligger och vilar i kvällslugnet.`,
 		weight: 1.7,
 		sceneAdjustment: { scale: 0.5 }
 	},
@@ -180,7 +185,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['night'],
 		frames: [{ src: foxPoseSrc('fox-realistic-sleeping-curled.png') }],
-		alt: 'Din följeslagare, räven, sover hoprullad.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sover hoprullad.`,
 		weight: 2.3,
 		sceneAdjustment: { scale: 0.45 }
 	},
@@ -189,7 +194,7 @@ export const FOX_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['night'],
 		frames: [{ src: foxPoseSrc('fox-realistic-sleeping-side-dreaming.png') }],
-		alt: 'Din följeslagare, räven, sover lugnt på sidan.',
+		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sover lugnt på sidan.`,
 		weight: 1.8,
 		sceneAdjustment: { scale: 0.38 }
 	},
@@ -292,7 +297,7 @@ export const BEAR_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day'],
 		frames: [{ src: bearPoseSrc('bear-standing.png') }],
-		alt: 'Din följeslagare, björnen, står lugnt.',
+		alt: `Din följeslagare, ${BEAR_DISPLAY_NAME}, står lugnt.`,
 		weight: 2.4,
 		sceneAdjustment: { scale: 0.82, y: 1 }
 	},
@@ -302,7 +307,7 @@ export const BEAR_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day', 'evening'],
 		frames: [{ src: bearPoseSrc('bear-sitting.png') }],
-		alt: 'Din följeslagare, björnen, sitter stilla.',
+		alt: `Din följeslagare, ${BEAR_DISPLAY_NAME}, sitter stilla.`,
 		weight: 2.1,
 		sceneAdjustment: { scale: 0.78, y: 2 }
 	},
@@ -312,7 +317,7 @@ export const BEAR_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['night'],
 		frames: [{ src: bearPoseSrc('bear-sleeping.png') }],
-		alt: 'Din följeslagare, björnen, sover lugnt.',
+		alt: `Din följeslagare, ${BEAR_DISPLAY_NAME}, sover lugnt.`,
 		weight: 2.4,
 		sceneAdjustment: { scale: 0.76, y: 4 }
 	},
@@ -322,7 +327,7 @@ export const BEAR_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day'],
 		frames: [{ src: bearPoseSrc('bear-stretching.png') }],
-		alt: 'Din följeslagare, björnen, sträcker lugnt på sig.',
+		alt: `Din följeslagare, ${BEAR_DISPLAY_NAME}, sträcker lugnt på sig.`,
 		weight: 0.9,
 		sceneAdjustment: { scale: 0.78, x: -1, y: 3 }
 	}
@@ -335,7 +340,7 @@ export const WOLF_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['day', 'evening'],
 		frames: [{ src: wolfPoseSrc('wolf-standing-transparent.png') }],
-		alt: 'Din följeslagare, vargen, står lugnt.',
+		alt: `Din följeslagare, ${WOLF_DISPLAY_NAME}, står lugnt.`,
 		weight: 2.4,
 		sceneAdjustment: { scale: 0.74, y: 3 }
 	},
@@ -345,7 +350,7 @@ export const WOLF_COMPANION_POSES = [
 		role: 'base',
 		dayparts: ['night'],
 		frames: [{ src: wolfPoseSrc('wolf-sleeping.png') }],
-		alt: 'Vargen sover lugnt.',
+		alt: `${WOLF_DISPLAY_NAME} sover lugnt.`,
 		weight: 2.4,
 		sceneAdjustment: { scale: 0.96 }
 	}

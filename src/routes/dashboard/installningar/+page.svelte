@@ -19,7 +19,8 @@
 	import { THEME_STORAGE_KEY } from '$lib/theme';
 	import { PUBLIC_CONTACT_EMAIL } from '$lib/contact';
 	import {
-	getProgressCompanionAnimal,
+		getProgressCompanionAnimal,
+		getProgressCompanionDisplayName,
 		readProgressCompanionFromMetadata,
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
@@ -421,7 +422,7 @@
 		}
 
 		await supabase.auth.refreshSession();
-		companionMessage = `${id === 'fox' ? 'Räv' : id === 'bear' ? 'Björn' : 'Varg'} är nu din följeslagare.`;
+		companionMessage = `${getProgressCompanionDisplayName(id)} är nu din följeslagare.`;
 		companionMessageType = 'success';
 		setTimeout(() => {
 			companionMessage = '';
