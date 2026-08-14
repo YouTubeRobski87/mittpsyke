@@ -5,6 +5,7 @@
 	import EveningCheckinFlow from '$lib/components/evening/EveningCheckinFlow.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
 	import WaterLayer from '$lib/components/world/WaterLayer.svelte';
+	import { isEveningInteriorMemoryEligible } from '$lib/evening-interior-memory';
 	import type { LivingWorldEffect } from '$lib/worldScene';
 	import {
 		getProgressCompanionAnimal,
@@ -69,11 +70,15 @@
 		data: {
 			progressCompanion: ProgressCompanionSelection | null;
 			companionDaily: CompanionDailyState | null;
+			hasInteriorMemory: boolean;
 		};
 	}>();
 	let sceneDate = $state(new Date());
 	let completionSignal = $state(0);
+	let savedInteriorMemory = $state(false);
+	let interiorMemoryIntroduction = $state(0);
 	let dayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
+	const hasInteriorMemory = $derived(data.hasInteriorMemory || savedInteriorMemory);
 
 	const companionId = $derived(
 		getProgressCompanionArtId(getProgressCompanionAnimal(data.progressCompanion)?.id) === 'bear'
@@ -100,8 +105,11 @@
 		})
 	);
 
-	function handleComplete() {
+	function handleComplete(saved: boolean) {
 		completionSignal += 1;
+		const wasEligible = hasInteriorMemory;
+		savedInteriorMemory = isEveningInteriorMemoryEligible(savedInteriorMemory, saved);
+		if (!wasEligible && hasInteriorMemory) interiorMemoryIntroduction += 1;
 	}
 
 	onMount(() => {
@@ -156,6 +164,16 @@
 			<div class="cabin-lake-view" aria-hidden="true">
 				<WaterLayer effects={LAKE_RIPPLES} />
 			</div>
+			{#if hasInteriorMemory}
+				<img
+					class:introducing={interiorMemoryIntroduction > 0}
+					class="interior-memory-book"
+					src="/images/evening/interior/boken.png"
+					alt=""
+					aria-hidden="true"
+					draggable="false"
+				/>
+			{/if}
 			<CompanionPose
 				class="evening-companion interior-companion"
 				companionId={companionId}
@@ -294,6 +312,22 @@
 	}
 	.evening-scene :global(.interior-companion[data-companion='bear']) { left: 8%; bottom: 1%; width: min(30%, 280px); }
 	.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 9%; bottom: 3%; width: min(29%, 270px); }
+	/* Det enda bestående avtrycket i rummet. Boken ligger på sidobordets nedre
+	   hylla, under lampans befintliga ljuslager och bakom följeslagaren. */
+	.interior-memory-book {
+		position: absolute;
+		z-index: 1;
+		left: 67%;
+		top: 36%;
+		width: 13%;
+		max-width: 13rem;
+		min-width: 3rem;
+		opacity: 0.8;
+		filter: brightness(0.82) saturate(0.78);
+		pointer-events: none;
+		user-select: none;
+	}
+	.interior-memory-book.introducing { animation: interior-memory-arrive 1.3s ease-out both; }
 	.evening-experience {
 		display: grid;
 		gap: 1rem;
@@ -355,6 +389,10 @@
 		38% { opacity: 0.82; transform: scale(1.008); }
 		57% { opacity: 0.68; transform: scale(0.994); }
 	}
+	@keyframes interior-memory-arrive {
+		from { opacity: 0; }
+		to { opacity: 0.8; }
+	}
 
 	@media (max-width: 640px) {
 		.evening-page { width: min(100% - 1.25rem, 44rem); padding-top: 0.45rem; }
@@ -362,6 +400,7 @@
 		.evening-scene :global(.interior-companion) { left: 8%; bottom: 1%; width: min(32%, 175px); }
 		.evening-scene :global(.interior-companion[data-companion='bear']) { left: 6%; bottom: 0; width: min(37%, 190px); }
 		.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 7%; bottom: 2%; width: min(35%, 185px); }
+		.interior-memory-book { left: 66.5%; top: 35.5%; width: 14.5%; }
 		.evening-flow-wrap { width: 100%; margin-top: 0; }
 	}
 
@@ -379,5 +418,6 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.evening-scene::before { animation: none; }
+		.interior-memory-book.introducing { animation: none; }
 	}
 </style>

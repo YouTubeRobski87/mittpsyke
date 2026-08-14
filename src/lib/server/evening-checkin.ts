@@ -17,6 +17,24 @@ export type SaveEveningCheckinResult =
 	| { ok: true; checkin: { id: string; created_at: string; checkin_date: string } }
 	| { ok: false };
 
+/**
+ * Läser bara om minst ett tidigare kvällsavtryck finns för användaren. Det
+ * används för en enda bestående detalj i Kvällsstugan, aldrig som progression.
+ */
+export async function hasSavedEveningCheckin(
+	supabase: SupabaseClient,
+	userId: string | null | undefined
+): Promise<boolean> {
+	if (!userId) return false;
+
+	const { count, error } = await supabase
+		.from(TABLE)
+		.select('id', { count: 'exact', head: true })
+		.eq('user_id', userId);
+
+	return !error && (count ?? 0) > 0;
+}
+
 /** Sparar en uttryckligen vald kvällsincheckning. Klienten bestämmer aldrig användare eller datum. */
 export async function saveEveningCheckin(
 	supabase: SupabaseClient,
