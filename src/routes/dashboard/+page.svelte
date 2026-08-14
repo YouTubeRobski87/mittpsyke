@@ -152,10 +152,6 @@
   const progressPreview = $derived(data.progressPreview);
   const settingsPreview = $derived(data.settingsPreview);
   const isAnonymous = $derived(Boolean(data.isAnonymous));
-  // Fem lugna segment i stället för en XP-liknande mätare. Nivå 0 tänder ett
-  // segment - basvärlden är aldrig tom, samma hållning som FOLIAGE_OPACITY_SCALE
-  // i worldScene.ts där nivå 0 ligger på 0.72 och inte på noll.
-  const gardenSegments = $derived([0, 1, 2, 3, 4].map((step) => step <= growthLevel));
   const livingWorldReflectionCopy = $derived(
     getLivingWorldReflectionCopy(isAnonymous ? undefined : progressPreview.totalEntries)
   );
@@ -360,7 +356,7 @@
           scene={livingWorldScene}
           class="hero-living-world"
           relationshipStage={isAnonymous ? 0 : companionRelationshipStage}
-          visibleEffects={['moon', 'cloud']}
+          visibleEffects={['moon', 'cloud', 'foliage', 'drift', 'butterfly', 'bird', 'leaf']}
         />
         <!-- Kort, kosmetiskt svar från platsen efter en reflektion. Ligger i
              ambientbandet, alltså bakom följeslagaren, så pusten drar förbi den
@@ -429,13 +425,6 @@
                 <small>Den här veckan</small>
               </span>
             </div>
-            <div class="now-stat">
-              <span class="now-stat-mark now-stat-mark--green" aria-hidden="true"><Sprout size={18} /></span>
-              <span class="now-stat-body">
-                <strong>{growthLevel}</strong>
-                <small>Trädgården växer</small>
-              </span>
-            </div>
           </div>
           <p class="now-summary">{progressPreview.summary}</p>
           <a class="now-cta" href="/framsteg">
@@ -459,29 +448,6 @@
             <p class="home-card-note">Du skrev {diaryPreview.dateLabel}.</p>
           {/if}
           <a class="home-card-action" href="/dagbok/checkin">Skriv i dagboken</a>
-        </section>
-
-        <section class="home-card garden-card" aria-labelledby="dashboard-garden-title">
-          <div class="home-card-head">
-            <span class="home-card-mark home-card-mark--green" aria-hidden="true"><Sprout size={20} /></span>
-            <h2 id="dashboard-garden-title">Growth Garden</h2>
-          </div>
-          <p class="home-card-copy">Din trädgård växer med din närvaro.</p>
-          <p class="home-card-copy">Små steg, stor skillnad.</p>
-          <!-- Fem segment, inte en cellindikator: North Star säger uttryckligen
-               "Inte XP. Inte nivåer." Segmenten speglar samma växtnivå som
-               världen redan använder, inget eget poängsystem. -->
-          <div
-            class="garden-progress"
-            role="img"
-            aria-label={`Trädgården växer, nivå ${growthLevel} av 4`}
-          >
-            {#each gardenSegments as grown}
-              <span class:grown aria-hidden="true"></span>
-            {/each}
-          </div>
-          <!-- /framsteg tills vidare: ingen egen trädgårdsroute finns. -->
-          <a class="home-card-action" href="/framsteg">Gå till trädgården</a>
         </section>
 
         <nav class="explore-panel" aria-labelledby="dashboard-explore-title">
@@ -569,7 +535,7 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.95fr);
     grid-template-areas:
       'hero    hero   now'
-      'checkin garden explore';
+      'checkin checkin explore';
     gap: clamp(0.9rem, 1.4vw, 1.375rem);
     align-items: stretch;
   }
@@ -580,7 +546,7 @@
     grid-template-areas:
       'hero    hero   now'
       'daily   daily  daily'
-      'checkin garden explore';
+      'checkin checkin explore';
   }
 
   .topbar {
@@ -1099,10 +1065,6 @@
     z-index: 2;
   }
 
-  .garden-card {
-    grid-area: garden;
-  }
-
   .home-card-head {
     display: flex;
     align-items: center;
@@ -1128,11 +1090,6 @@
     background: rgba(206, 120, 133, 0.18);
   }
 
-  .home-card-mark--green {
-    color: var(--mp-green);
-    background: var(--mp-green-soft);
-  }
-
   .home-card-lead {
     margin: 0.15rem 0 0;
     font-weight: 650;
@@ -1149,26 +1106,6 @@
     margin: 0.1rem 0 0;
     color: var(--mp-text-dim);
     font-size: 0.84rem;
-  }
-
-  /* Fem segment kopplade till growthLevel (0-4). Nivå 0 tänder ett segment -
-     basvärlden är aldrig tom. Medvetet inte en cellindikator: North Star säger
-     "Inte XP. Inte nivåer." */
-  .garden-progress {
-    display: flex;
-    gap: 0.4rem;
-    margin: 0.45rem 0 0.2rem;
-  }
-
-  .garden-progress span {
-    flex: 1;
-    height: 0.5rem;
-    border-radius: 3px;
-    background: rgba(255, 255, 255, 0.07);
-  }
-
-  .garden-progress span.grown {
-    background: #79ad6f;
   }
 
   /* ── Utforska vidare ─────────────────────────────────────────────────── */
@@ -1278,13 +1215,6 @@
     transform: translateY(-1px);
   }
 
-  /* Trädgården är den lugnare av de två - konturknapp mot dagbokens fyllda. */
-  .garden-card .home-card-action {
-    border-color: rgba(160, 188, 220, 0.36);
-    background: transparent;
-    color: var(--mp-text);
-  }
-
   .checkin-card .home-card-action {
     border-color: #cbb48b;
     background: #cbb48b;
@@ -1294,12 +1224,6 @@
   .checkin-card .home-card-action:hover {
     border-color: #dbc7a3;
     background: #dbc7a3;
-  }
-
-  .garden-card .home-card-action:hover {
-    border-color: #a7bfd6;
-    background: rgba(220, 232, 243, 0.12);
-    box-shadow: none;
   }
 
   .now-cta:focus-visible,
@@ -1393,7 +1317,7 @@
       grid-template-areas:
         'hero    hero'
         'now     explore'
-        'checkin garden';
+        'checkin explore';
     }
 
     .dashboard-body.has-daily {
@@ -1401,7 +1325,7 @@
         'hero    hero'
         'daily   daily'
         'now     explore'
-        'checkin garden';
+        'checkin explore';
     }
   }
 
@@ -1427,7 +1351,6 @@
         'hero'
         'now'
         'checkin'
-        'garden'
         'explore';
     }
 
@@ -1437,7 +1360,6 @@
         'daily'
         'now'
         'checkin'
-        'garden'
         'explore';
     }
   }

@@ -22,6 +22,8 @@ export type LivingWorldEffect = {
 	id: string;
 	kind: LivingWorldEffectKind;
 	enabled: boolean;
+	/** Beständig växtlighet använder världens canoniska garden-state. */
+	minGrowthLevel?: WorldGrowthLevel;
 	className?: string;
 	x?: number;
 	y?: number;
@@ -378,6 +380,64 @@ const baseEffects: LivingWorldEffect[] = [
 		delayMs: -2_600,
 		opacity: 0.22
 	},
+	// Låga, platsbundna lager som gör samma miljö rikare över tid. De ligger
+	// längs stranden och marken, inte ovanpå stugan, följeslagaren eller copy.
+	{
+		id: 'shore-sprigs',
+		kind: 'foliage',
+		enabled: true,
+		minGrowthLevel: 1,
+		className: 'shore-sprigs',
+		x: 47,
+		y: 76,
+		width: 16,
+		height: 14,
+		durationMs: 31_000,
+		delayMs: -11_000,
+		opacity: 0.18
+	},
+	{
+		id: 'bank-groundcover',
+		kind: 'foliage',
+		enabled: true,
+		minGrowthLevel: 2,
+		className: 'bank-groundcover',
+		x: 65,
+		y: 72,
+		width: 17,
+		height: 18,
+		durationMs: 38_000,
+		delayMs: -23_000,
+		opacity: 0.17
+	},
+	{
+		id: 'shore-understory',
+		kind: 'foliage',
+		enabled: true,
+		minGrowthLevel: 3,
+		className: 'shore-understory',
+		x: 80,
+		y: 76,
+		width: 15,
+		height: 17,
+		durationMs: 42_000,
+		delayMs: -16_000,
+		opacity: 0.16
+	},
+	{
+		id: 'settled-foreground',
+		kind: 'foliage',
+		enabled: true,
+		minGrowthLevel: 4,
+		className: 'settled-foreground',
+		x: 56,
+		y: 84,
+		width: 19,
+		height: 13,
+		durationMs: 46_000,
+		delayMs: -29_000,
+		opacity: 0.14
+	},
 	// Ett fåtal långsamt svävande ljuspartiklar/dimstråk i övre delen av
 	// scenen (aldrig i följeslagarens eller textens område), synliga direkt
 	// och kontinuerligt - inte slumpmässiga händelser. Se driftFloat i
@@ -443,7 +503,11 @@ const EFFECT_DEPTHS: Record<string, number> = {
 	'drift-one': 0.72,
 	'grass-bank': 0.7,
 	'grass-left': 0.8,
-	'canopy-right': 0.95
+	'canopy-right': 0.95,
+	'shore-sprigs': 0.72,
+	'bank-groundcover': 0.76,
+	'shore-understory': 0.8,
+	'settled-foreground': 0.84
 };
 
 // Chansvärden höjda så att en händelse nästan alltid väljs när minst en typ är
@@ -550,6 +614,9 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 
 	const effects = baseEffects.map((effect) => {
 		const next = { ...effect, depth: effect.depth ?? EFFECT_DEPTHS[effect.id] ?? 0.5 };
+		if (next.minGrowthLevel !== undefined && growth.level < next.minGrowthLevel) {
+			next.enabled = false;
+		}
 
 		if (next.kind === 'mist') {
 			next.opacity = mistOpacity * (effect.id === 'mist-two' ? 0.72 : 1);

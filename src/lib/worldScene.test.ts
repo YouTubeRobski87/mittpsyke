@@ -165,6 +165,25 @@ describe('getLivingWorldScene - växtnivå styr scenen', () => {
 		expect(opacity('canopy-right')).toBeCloseTo(0.308);
 	});
 
+	it('låter strandvegetationen växa stegvis från samma canoniska garden-state', () => {
+		const stageEffects = [
+			['shore-sprigs', 1],
+			['bank-groundcover', 2],
+			['shore-understory', 3],
+			['settled-foreground', 4]
+		] as const;
+
+		for (const [id, minGrowthLevel] of stageEffects) {
+			for (let level = 0; level <= 4; level++) {
+				const effect = getLivingWorldScene({ ...fixed, growthLevel: level }).effects.find(
+					(candidate) => candidate.id === id
+				);
+				expect(effect?.minGrowthLevel).toBe(minGrowthLevel);
+				expect(effect?.enabled).toBe(level >= minGrowthLevel);
+			}
+		}
+	});
+
 	it('säsong och dygn påverkas inte av växtnivån', () => {
 		const low = getLivingWorldScene({ ...fixed, growthLevel: 0 });
 		const high = getLivingWorldScene({ ...fixed, growthLevel: 4 });

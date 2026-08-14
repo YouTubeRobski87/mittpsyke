@@ -195,6 +195,12 @@
 	.world-mist { border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(255, 251, 236, 0.52), rgba(226, 245, 255, 0.36), transparent); filter: blur(12px); mix-blend-mode: soft-light; animation: mistDrift var(--duration, 118000ms) ease-in-out var(--delay, 0ms) infinite; }
 	.living-world[data-time='day'] .world-mist { filter: blur(14px); }
 	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.5px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) ease-in-out var(--delay, 0ms) infinite; }
+	/* Beständig markvegetation för Growth Garden. Samma foliage-lager och
+	   vindanimation som övrig värld, med små, låga former i strandperspektiv. */
+	.shore-sprigs { background: radial-gradient(ellipse at 18% 90%, rgba(83, 124, 73, 0.65) 0 16%, transparent 19%), radial-gradient(ellipse at 42% 77%, rgba(119, 151, 88, 0.58) 0 13%, transparent 17%), radial-gradient(ellipse at 68% 88%, rgba(77, 112, 70, 0.58) 0 18%, transparent 22%), linear-gradient(180deg, transparent 35%, rgba(73, 109, 66, 0.34) 100%); }
+	.bank-groundcover { background: radial-gradient(ellipse at 14% 85%, rgba(74, 113, 68, 0.72) 0 15%, transparent 19%), radial-gradient(ellipse at 36% 68%, rgba(122, 149, 84, 0.52) 0 12%, transparent 16%), radial-gradient(ellipse at 62% 83%, rgba(92, 132, 74, 0.62) 0 19%, transparent 24%), radial-gradient(ellipse at 84% 72%, rgba(133, 157, 91, 0.44) 0 10%, transparent 15%), linear-gradient(180deg, transparent 26%, rgba(62, 101, 62, 0.4) 100%); }
+	.shore-understory { background: radial-gradient(ellipse at 17% 84%, rgba(70, 110, 65, 0.7) 0 17%, transparent 21%), radial-gradient(ellipse at 43% 62%, rgba(125, 151, 87, 0.56) 0 13%, transparent 17%), radial-gradient(ellipse at 74% 82%, rgba(86, 125, 69, 0.68) 0 21%, transparent 26%), linear-gradient(180deg, transparent 22%, rgba(60, 96, 60, 0.42) 100%); }
+	.settled-foreground { background: radial-gradient(ellipse at 12% 90%, rgba(68, 105, 64, 0.78) 0 19%, transparent 23%), radial-gradient(ellipse at 35% 72%, rgba(115, 142, 79, 0.54) 0 13%, transparent 17%), radial-gradient(ellipse at 60% 85%, rgba(77, 118, 66, 0.72) 0 20%, transparent 25%), radial-gradient(ellipse at 86% 77%, rgba(130, 149, 84, 0.46) 0 11%, transparent 16%), linear-gradient(180deg, transparent 25%, rgba(58, 92, 59, 0.46) 100%); }
 	/* Ligger ovanpå den fotografiska grenen uppe till höger (companion-hero-scene) -
 	   transform-origin nära bildens överkant, dvs där grenen kommer in i bild, inte
 	   mitt i klungan, så rörelsen ser ut som en gren som svajar, inte hela trädet. */
@@ -249,5 +255,13 @@
 		.world-bird, .world-butterfly, .world-leaf, .world-drift, .world-event-water, .world-presence-sign { opacity: 0 !important; }
 		.world-light, .world-mist, .world-foliage { opacity: calc(var(--opacity, 0.12) * 0.5); }
 		.world-cloud { opacity: calc(var(--opacity, 0.12) * var(--cloud-layer-opacity, 1) * 0.5); }
+	}
+
+	/* På smala vyer prioriteras stugan, följeslagaren och Kvällslugn. De
+	   rikaste stranddetaljerna får falla bort innan de kan göra beskärningen rörig. */
+	@media (max-width: 620px) {
+		.hero-living-world .shore-understory,
+		.hero-living-world .settled-foreground { display: none; }
+		.hero-living-world .bank-groundcover { opacity: calc(var(--opacity, 0.12) * 0.72); }
 	}
 </style>
