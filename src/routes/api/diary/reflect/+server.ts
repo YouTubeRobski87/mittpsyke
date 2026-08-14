@@ -5,9 +5,10 @@ import {
 	DIARY_REFLECTION_FALLBACK
 } from '$lib/server/ai/diary-reflection';
 import { resolveDeterministicRiskGuard } from '$lib/ai/crisis-guard';
+import { hasHealthConsentInMetadata } from '$lib/consent';
 import type { RequestHandler } from './$types';
 
-// Rate limiting: per user_id (logged in) or per IP (anonymous)
+// Rate limiting: per authenticated user.
 const rateLimitMap = new Map<string, number>();
 const RATE_LIMIT_MS = 3 * 60 * 1000; // 3 minutes
 
@@ -16,6 +17,21 @@ const MIN_TEXT_LENGTH = 50;
 
 
 export const POST: RequestHandler = async ({ request, locals }) => {
+	// Reflektioner kan innehålla känsliga uppgifter. Headern som klienten skickar
+	// är inte ett behörighetsbevis; kontrollera i stället den aktuella, sparade
+	// consentposten hos den autentiserade användaren innan någon text behandlas.
+	const {
+		data: { user },
+		error: authError
+	} = await locals.supabase.auth.getUser();
+	if (authError || !user) {
+		return json({ error: 'Unauthorized.' }, { status: 401 });
+	}
+
+	if (!hasHealthConsentInMetadata(user.user_metadata)) {
+		return json({ error: 'Consent required for sensitive diary AI features.' }, { status: 403 });
+	}
+
 	let parsedBody: unknown;
 	try {
 		parsedBody = await request.json();
@@ -46,13 +62,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ reflection: text.length < 10 ? null : DIARY_REFLECTION_FALLBACK });
 	}
 
-	// Rate limit key: prefer a verified user_id, fallback to IP.
-	const {
-		data: { user }
-	} = await locals.supabase.auth.getUser();
-	const userId = user?.id;
-	const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-	const rateLimitKey = userId ? `user:${userId}` : `ip:${clientIp}`;
+	const rateLimitKey = `user:${user.id}`;
 
 	const lastCall = rateLimitMap.get(rateLimitKey) || 0;
 	if (Date.now() - lastCall < RATE_LIMIT_MS) {

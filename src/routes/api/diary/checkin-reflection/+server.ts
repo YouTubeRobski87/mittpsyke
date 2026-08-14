@@ -9,6 +9,7 @@ import {
 	CHECKIN_REFLECTION_FALLBACK
 } from '$lib/server/ai/checkin-reflection';
 import { generateAIText } from '$lib/server/ai/text-generation';
+import { hasHealthConsentInMetadata } from '$lib/consent';
 
 function errorResponse(message: string, status: number) {
 	return json({ success: false, error: message }, { status });
@@ -68,6 +69,13 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	if (userError || !user) {
 		return errorResponse('Unauthorized.', 401);
+	}
+
+	// En klientheader kan förfalskas. AI-anropet tillåts bara när den
+	// autentiserade användarens aktuella metadata innehåller en giltig,
+	// versionsbunden consentpost.
+	if (!hasHealthConsentInMetadata(user.user_metadata)) {
+		return errorResponse('Consent required for sensitive diary AI features.', 403);
 	}
 
 	let parsedBody: unknown;
