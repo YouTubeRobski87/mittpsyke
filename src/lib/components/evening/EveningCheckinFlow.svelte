@@ -133,6 +133,7 @@
 		{#if step === 1}
 			<div class="evening-step-content">
 				<h2 id="evening-flow-title" bind:this={stepHeading} tabindex="-1">Hur är det ikväll?</h2>
+				<p class="evening-hint">Det du väljer att spara här kan få betydelse när du tittar tillbaka.</p>
 				<div class="evening-options" aria-label="Välj det som passar bäst">
 					{#each EVENING_THEMES as theme}
 						<button
@@ -193,7 +194,7 @@
 				<h2 id="evening-flow-title" bind:this={stepHeading} tabindex="-1">Det räcker för ikväll.</h2>
 				<p>Du behöver inte bära allt färdigt just nu.</p>
 				{#if saved}
-					<p class="evening-saved" role="status">Kvällens incheckning är sparad.</p>
+					<p class="evening-saved" role="status">Kvällens avtryck finns kvar.</p>
 				{:else if finishedWithoutSaving}
 					<p class="evening-hint" role="status">Inget från den här stunden har sparats.</p>
 				{:else}

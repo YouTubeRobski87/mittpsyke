@@ -384,7 +384,7 @@
             <span class="hero-companion-mark" aria-hidden="true"><Sprout size={18} /></span>
             <span class="hero-companion-text">
               <strong>Följeslagaren är här för dig.</strong>
-              <small>{companionName} vakar lugnt över din resa.</small>
+              <small>{companionName} håller platsen lugnt sällskap.</small>
             </span>
             <button class="hero-companion-link" type="button" onclick={greetCompanion}>
               Säg hej till {companionName}

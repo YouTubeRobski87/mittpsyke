@@ -35,8 +35,8 @@
 <section class="account-teaser" class:account-teaser--overlay={isOverlay} aria-labelledby={titleId}>
 	<div class="teaser-copy">
 		<p class="eyebrow">När du vill spara platsen</p>
-		<h2 id={titleId}>Skapa ett konto för att ge din följeslagare ett hem.</h2>
-		<p>Din dagbok, din Growth Garden och din plats väntar på dig nästa gång.</p>
+		<h2 id={titleId}>Skapa ett konto när du vill spara det du lämnar här.</h2>
+		<p>Då kan dina texter och din plats finnas kvar när du vill återvända.</p>
 	</div>
 
 	<div class="account-actions" aria-label="Kontolänkar">

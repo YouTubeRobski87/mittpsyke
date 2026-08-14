@@ -876,8 +876,8 @@
 				<h1>Framsteg</h1>
 				<p>
 					{isAnonymous
-						? 'En förhandsvisning av hur små framsteg kan få synas över tid.'
-						: 'En lugn överblick över din resa, i din egen takt.'}
+						? 'En förhandsvisning av hur flera sparade stunder kan göra sådant som återkommer eller förändras lättare att se.'
+						: 'När flera stunder finns kvar kan sådant som återkommer eller förändras bli lättare att se.'}
 				</p>
 			</div>
 		</header>
