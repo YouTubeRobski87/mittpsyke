@@ -18,8 +18,14 @@
 		type HealthConsentRecord
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
+	import {
+		isEveningInteriorMemory,
+		type EveningInteriorMemory
+	} from '$lib/evening-interior-memory';
 
-	let { oncomplete = (_saved: boolean) => {} }: { oncomplete?: (saved: boolean) => void } = $props();
+	let { oncomplete = (_saved: boolean, _memory?: EveningInteriorMemory) => {} }: {
+		oncomplete?: (saved: boolean, memory?: EveningInteriorMemory) => void;
+	} = $props();
 
 	type Step = 1 | 2 | 3 | 4;
 
@@ -92,7 +98,10 @@
 					flowVersion: EVENING_CHECKIN_FLOW_VERSION
 				})
 			});
-			const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+			const payload = (await response.json().catch(() => null)) as {
+				error?: string;
+				interiorMemory?: unknown;
+			} | null;
 
 			if (!response.ok) {
 				saveError = payload?.error ?? 'Kunde inte spara just nu. Du kan fortfarande avsluta utan att spara.';
@@ -100,7 +109,10 @@
 			}
 
 			saved = true;
-			oncomplete(true);
+			oncomplete(
+				true,
+				isEveningInteriorMemory(payload?.interiorMemory) ? payload.interiorMemory : undefined
+			);
 		} catch {
 			saveError = 'Kunde inte nå servern. Du kan fortfarande avsluta utan att spara.';
 		} finally {

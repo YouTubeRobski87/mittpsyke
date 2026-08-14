@@ -1,5 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { EveningCheckinInput } from '$lib/evening-checkin';
+import {
+	EMPTY_EVENING_INTERIOR_MEMORY,
+	getEveningInteriorMemory,
+	type EveningInteriorMemory
+} from '$lib/evening-interior-memory';
 
 const TABLE = 'evening_checkins';
 const STOCKHOLM_DATE_FORMATTER = new Intl.DateTimeFormat('sv-CA', {
@@ -17,22 +22,28 @@ export type SaveEveningCheckinResult =
 	| { ok: true; checkin: { id: string; created_at: string; checkin_date: string } }
 	| { ok: false };
 
-/**
- * Läser bara om minst ett tidigare kvällsavtryck finns för användaren. Det
- * används för en enda bestående detalj i Kvällsstugan, aldrig som progression.
- */
+/** Läser enbart de servervaliderade svenska kalenderdagarna, aldrig fritext. */
+export async function loadEveningInteriorMemory(
+	supabase: SupabaseClient,
+	userId: string | null | undefined
+): Promise<EveningInteriorMemory> {
+	if (!userId) return EMPTY_EVENING_INTERIOR_MEMORY;
+
+	const { data, error } = await supabase
+		.from(TABLE)
+		.select('checkin_date')
+		.eq('user_id', userId);
+
+	if (error || !data) return EMPTY_EVENING_INTERIOR_MEMORY;
+	return getEveningInteriorMemory(data.map((checkin) => checkin.checkin_date));
+}
+
+/** V1-kompatibel bokkontroll för befintliga anrop. */
 export async function hasSavedEveningCheckin(
 	supabase: SupabaseClient,
 	userId: string | null | undefined
 ): Promise<boolean> {
-	if (!userId) return false;
-
-	const { count, error } = await supabase
-		.from(TABLE)
-		.select('id', { count: 'exact', head: true })
-		.eq('user_id', userId);
-
-	return !error && (count ?? 0) > 0;
+	return (await loadEveningInteriorMemory(supabase, userId)).hasBook;
 }
 
 /** Sparar en uttryckligen vald kvällsincheckning. Klienten bestämmer aldrig användare eller datum. */

@@ -83,6 +83,12 @@ describe('POST /api/evening-checkins', () => {
 							})
 						})
 					};
+				},
+				select: (columns: string) => {
+					expect(columns).toBe('checkin_date');
+					return {
+						eq: async () => ({ data: [{ checkin_date: '2026-08-12' }], error: null })
+					};
 				}
 			})
 		} as unknown as SupabaseClient;
@@ -99,6 +105,9 @@ describe('POST /api/evening-checkins', () => {
 			thought: 'Det är mycket inför i morgon.',
 			parking_bucket: 'tomorrow',
 			flow_version: EVENING_CHECKIN_FLOW_VERSION
+		});
+		expect(await response.json()).toMatchObject({
+			interiorMemory: { hasBook: true, hasRug: false }
 		});
 	});
 });

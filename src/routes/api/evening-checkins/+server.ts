@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { validateEveningCheckinInput } from '$lib/evening-checkin';
-import { saveEveningCheckin } from '$lib/server/evening-checkin';
+import { loadEveningInteriorMemory, saveEveningCheckin } from '$lib/server/evening-checkin';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -35,5 +35,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: 'Kunde inte spara Kvällslugn just nu.' }, { status: 500 });
 	}
 
-	return json({ checkin: result.checkin }, { status: 201 });
+	const interiorMemory = await loadEveningInteriorMemory(locals.supabase, user.id);
+	return json({ checkin: result.checkin, interiorMemory }, { status: 201 });
 };

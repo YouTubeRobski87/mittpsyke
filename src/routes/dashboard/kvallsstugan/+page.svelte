@@ -5,7 +5,11 @@
 	import EveningCheckinFlow from '$lib/components/evening/EveningCheckinFlow.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
 	import WaterLayer from '$lib/components/world/WaterLayer.svelte';
-	import { isEveningInteriorMemoryEligible } from '$lib/evening-interior-memory';
+	import {
+		isEveningInteriorMemoryEligible,
+		shouldIntroduceEveningInteriorRug,
+		type EveningInteriorMemory
+	} from '$lib/evening-interior-memory';
 	import type { LivingWorldEffect } from '$lib/worldScene';
 	import {
 		getProgressCompanionAnimal,
@@ -70,15 +74,18 @@
 		data: {
 			progressCompanion: ProgressCompanionSelection | null;
 			companionDaily: CompanionDailyState | null;
-			hasInteriorMemory: boolean;
+			interiorMemory: EveningInteriorMemory;
 		};
 	}>();
 	let sceneDate = $state(new Date());
 	let completionSignal = $state(0);
-	let savedInteriorMemory = $state(false);
+	let savedInteriorMemory = $state<EveningInteriorMemory | null>(null);
 	let interiorMemoryIntroduction = $state(0);
+	let interiorRugIntroduction = $state(0);
 	let dayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
-	const hasInteriorMemory = $derived(data.hasInteriorMemory || savedInteriorMemory);
+	const interiorMemory = $derived(savedInteriorMemory ?? data.interiorMemory);
+	const hasInteriorBook = $derived(interiorMemory.hasBook);
+	const hasInteriorRug = $derived(interiorMemory.hasRug);
 
 	const companionId = $derived(
 		getProgressCompanionArtId(getProgressCompanionAnimal(data.progressCompanion)?.id) === 'bear'
@@ -105,11 +112,21 @@
 		})
 	);
 
-	function handleComplete(saved: boolean) {
+	function handleComplete(saved: boolean, savedMemory?: EveningInteriorMemory) {
 		completionSignal += 1;
-		const wasEligible = hasInteriorMemory;
-		savedInteriorMemory = isEveningInteriorMemoryEligible(savedInteriorMemory, saved);
-		if (!wasEligible && hasInteriorMemory) interiorMemoryIntroduction += 1;
+		if (!saved) return;
+
+		const wasBookEligible = interiorMemory.hasBook;
+		const wasRugEligible = interiorMemory.hasRug;
+		savedInteriorMemory = savedMemory ?? {
+			hasBook: isEveningInteriorMemoryEligible(interiorMemory.hasBook, true),
+			hasRug: interiorMemory.hasRug
+		};
+
+		if (!wasBookEligible && interiorMemory.hasBook) interiorMemoryIntroduction += 1;
+		if (shouldIntroduceEveningInteriorRug(wasRugEligible, interiorMemory.hasRug)) {
+			interiorRugIntroduction += 1;
+		}
 	}
 
 	onMount(() => {
@@ -164,7 +181,17 @@
 			<div class="cabin-lake-view" aria-hidden="true">
 				<WaterLayer effects={LAKE_RIPPLES} />
 			</div>
-			{#if hasInteriorMemory}
+			{#if hasInteriorRug}
+				<img
+					class:introducing={interiorRugIntroduction > 0}
+					class="interior-memory-rug"
+					src="/images/evening/interior/rug.png"
+					alt=""
+					aria-hidden="true"
+					draggable="false"
+				/>
+			{/if}
+			{#if hasInteriorBook}
 				<img
 					class:introducing={interiorMemoryIntroduction > 0}
 					class="interior-memory-book"
@@ -328,6 +355,18 @@
 		user-select: none;
 	}
 	.interior-memory-book.introducing { animation: interior-memory-arrive 1.3s ease-out both; }
+	/* Mattans egna perspektiv följer golvet utan warp. Den ligger under
+	   följeslagaren (z 3), UI:t (z 4) och det varma lampskenet (z 2). */
+	.interior-memory-rug {
+		position: absolute;
+		z-index: 1;
+		left: 3%;
+		bottom: -1%;
+		width: 78%;
+		pointer-events: none;
+		user-select: none;
+	}
+	.interior-memory-rug.introducing { animation: interior-rug-arrive 1.8s ease-out both; }
 	.evening-experience {
 		display: grid;
 		gap: 1rem;
@@ -393,6 +432,10 @@
 		from { opacity: 0; }
 		to { opacity: 0.8; }
 	}
+	@keyframes interior-rug-arrive {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
 
 	@media (max-width: 640px) {
 		.evening-page { width: min(100% - 1.25rem, 44rem); padding-top: 0.45rem; }
@@ -402,6 +445,7 @@
 		.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 7%; bottom: 2%; width: min(35%, 185px); }
 		/* Något större på liten skärm, men med samma faktiska fönsterbänk som på desktop. */
 		.interior-memory-book { left: 56.5%; top: 40.1%; width: 17.2%; }
+		.interior-memory-rug { left: 2%; bottom: -1.5%; width: 82%; }
 		.evening-flow-wrap { width: 100%; margin-top: 0; }
 	}
 
@@ -420,5 +464,6 @@
 	@media (prefers-reduced-motion: reduce) {
 		.evening-scene::before { animation: none; }
 		.interior-memory-book.introducing { animation: none; }
+		.interior-memory-rug.introducing { animation: none; }
 	}
 </style>
