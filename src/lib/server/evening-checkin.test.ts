@@ -89,11 +89,13 @@ describe('saveEveningCheckin', () => {
 		expect(await hasSavedEveningCheckin(hasCheckinClient, 'user-1')).toBe(true);
 		expect(await loadEveningInteriorMemory(hasCheckinClient, 'user-1')).toEqual({
 			hasBook: true,
-			hasRug: false
+			hasRug: false,
+			hasBlanket: false
 		});
 		expect(await loadEveningInteriorMemory(failedClient, 'user-1')).toEqual({
 			hasBook: false,
-			hasRug: false
+			hasRug: false,
+			hasBlanket: false
 		});
 		expect(await hasSavedEveningCheckin(failedClient, 'user-1')).toBe(false);
 		expect(await hasSavedEveningCheckin(hasCheckinClient, null)).toBe(false);
@@ -115,6 +117,10 @@ describe('saveEveningCheckin', () => {
 			})
 		} as unknown as SupabaseClient;
 
-		expect(await loadEveningInteriorMemory(client, 'user-1')).toEqual({ hasBook: true, hasRug: true });
+		expect(await loadEveningInteriorMemory(client, 'user-1')).toEqual({
+			hasBook: true,
+			hasRug: true,
+			hasBlanket: false
+		});
 	});
 });

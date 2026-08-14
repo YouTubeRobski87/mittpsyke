@@ -1,32 +1,59 @@
 export const EVENING_INTERIOR_RUG_MINIMUM_DISTINCT_DAYS = 3;
+export const EVENING_INTERIOR_BLANKET_MINIMUM_DISTINCT_DAYS = 5;
+export const EVENING_INTERIOR_BLANKET_MINIMUM_SPAN_DAYS = 7;
 
 export type EveningInteriorMemory = {
 	hasBook: boolean;
 	hasRug: boolean;
+	hasBlanket: boolean;
 };
 
 export const EMPTY_EVENING_INTERIOR_MEMORY: EveningInteriorMemory = {
 	hasBook: false,
-	hasRug: false
+	hasRug: false,
+	hasBlanket: false
 };
 
-function isCheckinDate(value: unknown): value is string {
-	return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+function getCalendarDayNumber(value: unknown): number | null {
+	if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+
+	const [year, month, day] = value.split('-').map(Number);
+	const date = new Date(Date.UTC(year, month - 1, day));
+	if (
+		date.getUTCFullYear() !== year ||
+		date.getUTCMonth() !== month - 1 ||
+		date.getUTCDate() !== day
+	) {
+		return null;
+	}
+
+	return date.getTime() / 86_400_000;
 }
 
 /** Bygger bara på den servervaliderade svenska kalenderdagen, aldrig fritext. */
 export function getEveningInteriorMemory(checkinDates: readonly unknown[]): EveningInteriorMemory {
-	const savedDates = new Set(checkinDates.filter(isCheckinDate));
+	const savedDays = [...new Set(checkinDates.map(getCalendarDayNumber).filter((day): day is number => day !== null))].sort(
+		(first, second) => first - second
+	);
+	const hasBlanket =
+		savedDays.length >= EVENING_INTERIOR_BLANKET_MINIMUM_DISTINCT_DAYS &&
+		savedDays.at(-1)! - savedDays[0] >= EVENING_INTERIOR_BLANKET_MINIMUM_SPAN_DAYS;
+
 	return {
-		hasBook: savedDates.size > 0,
-		hasRug: savedDates.size >= EVENING_INTERIOR_RUG_MINIMUM_DISTINCT_DAYS
+		hasBook: savedDays.length > 0,
+		hasRug: savedDays.length >= EVENING_INTERIOR_RUG_MINIMUM_DISTINCT_DAYS,
+		hasBlanket
 	};
 }
 
 export function isEveningInteriorMemory(value: unknown): value is EveningInteriorMemory {
 	if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
 	const memory = value as Record<string, unknown>;
-	return typeof memory.hasBook === 'boolean' && typeof memory.hasRug === 'boolean';
+	return (
+		typeof memory.hasBook === 'boolean' &&
+		typeof memory.hasRug === 'boolean' &&
+		typeof memory.hasBlanket === 'boolean'
+	);
 }
 
 /**
@@ -42,6 +69,14 @@ export function isEveningInteriorMemoryEligible(
 
 /** Mattan får bara introduceras vid övergången till verklig eligibility. */
 export function shouldIntroduceEveningInteriorRug(
+	wasEligible: boolean,
+	isEligible: boolean
+): boolean {
+	return !wasEligible && isEligible;
+}
+
+/** Filten får bara introduceras vid övergången till verklig eligibility. */
+export function shouldIntroduceEveningInteriorBlanket(
 	wasEligible: boolean,
 	isEligible: boolean
 ): boolean {

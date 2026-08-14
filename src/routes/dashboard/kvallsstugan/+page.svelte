@@ -7,6 +7,7 @@
 	import WaterLayer from '$lib/components/world/WaterLayer.svelte';
 	import {
 		isEveningInteriorMemoryEligible,
+		shouldIntroduceEveningInteriorBlanket,
 		shouldIntroduceEveningInteriorRug,
 		type EveningInteriorMemory
 	} from '$lib/evening-interior-memory';
@@ -82,10 +83,12 @@
 	let savedInteriorMemory = $state<EveningInteriorMemory | null>(null);
 	let interiorMemoryIntroduction = $state(0);
 	let interiorRugIntroduction = $state(0);
+	let interiorBlanketIntroduction = $state(0);
 	let dayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
 	const interiorMemory = $derived(savedInteriorMemory ?? data.interiorMemory);
 	const hasInteriorBook = $derived(interiorMemory.hasBook);
 	const hasInteriorRug = $derived(interiorMemory.hasRug);
+	const hasInteriorBlanket = $derived(interiorMemory.hasBlanket);
 
 	const companionId = $derived(
 		getProgressCompanionArtId(getProgressCompanionAnimal(data.progressCompanion)?.id) === 'bear'
@@ -118,14 +121,19 @@
 
 		const wasBookEligible = interiorMemory.hasBook;
 		const wasRugEligible = interiorMemory.hasRug;
+		const wasBlanketEligible = interiorMemory.hasBlanket;
 		savedInteriorMemory = savedMemory ?? {
 			hasBook: isEveningInteriorMemoryEligible(interiorMemory.hasBook, true),
-			hasRug: interiorMemory.hasRug
+			hasRug: interiorMemory.hasRug,
+			hasBlanket: interiorMemory.hasBlanket
 		};
 
 		if (!wasBookEligible && interiorMemory.hasBook) interiorMemoryIntroduction += 1;
 		if (shouldIntroduceEveningInteriorRug(wasRugEligible, interiorMemory.hasRug)) {
 			interiorRugIntroduction += 1;
+		}
+		if (shouldIntroduceEveningInteriorBlanket(wasBlanketEligible, interiorMemory.hasBlanket)) {
+			interiorBlanketIntroduction += 1;
 		}
 	}
 
@@ -186,6 +194,16 @@
 					class:introducing={interiorRugIntroduction > 0}
 					class="interior-memory-rug"
 					src="/images/evening/interior/rug.png"
+					alt=""
+					aria-hidden="true"
+					draggable="false"
+				/>
+			{/if}
+			{#if hasInteriorBlanket}
+				<img
+					class:introducing={interiorBlanketIntroduction > 0}
+					class="interior-memory-blanket"
+					src="/images/evening/interior/blanket.png"
 					alt=""
 					aria-hidden="true"
 					draggable="false"
@@ -367,6 +385,17 @@
 		user-select: none;
 	}
 	.interior-memory-rug.introducing { animation: interior-rug-arrive 1.8s ease-out both; }
+	/* Filten vilar över soffans vänstra arm och får behålla assetens perspektiv. */
+	.interior-memory-blanket {
+		position: absolute;
+		z-index: 1;
+		left: 72%;
+		top: 39%;
+		width: 20%;
+		pointer-events: none;
+		user-select: none;
+	}
+	.interior-memory-blanket.introducing { animation: interior-blanket-arrive 1.8s ease-out both; }
 	.evening-experience {
 		display: grid;
 		gap: 1rem;
@@ -436,6 +465,10 @@
 		from { opacity: 0; }
 		to { opacity: 1; }
 	}
+	@keyframes interior-blanket-arrive {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
 
 	@media (max-width: 640px) {
 		.evening-page { width: min(100% - 1.25rem, 44rem); padding-top: 0.45rem; }
@@ -446,6 +479,7 @@
 		/* Något större på liten skärm, men med samma faktiska fönsterbänk som på desktop. */
 		.interior-memory-book { left: 56.5%; top: 40.1%; width: 17.2%; }
 		.interior-memory-rug { left: 2%; bottom: -1.5%; width: 82%; }
+		.interior-memory-blanket { left: 72%; top: 39%; width: 20%; }
 		.evening-flow-wrap { width: 100%; margin-top: 0; }
 	}
 
@@ -465,5 +499,6 @@
 		.evening-scene::before { animation: none; }
 		.interior-memory-book.introducing { animation: none; }
 		.interior-memory-rug.introducing { animation: none; }
+		.interior-memory-blanket.introducing { animation: none; }
 	}
 </style>

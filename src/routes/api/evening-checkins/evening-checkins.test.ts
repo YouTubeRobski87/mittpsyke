@@ -107,7 +107,7 @@ describe('POST /api/evening-checkins', () => {
 			flow_version: EVENING_CHECKIN_FLOW_VERSION
 		});
 		expect(await response.json()).toMatchObject({
-			interiorMemory: { hasBook: true, hasRug: false }
+			interiorMemory: { hasBook: true, hasRug: false, hasBlanket: false }
 		});
 	});
 });
