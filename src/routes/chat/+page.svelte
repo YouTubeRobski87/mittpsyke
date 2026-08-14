@@ -6,6 +6,7 @@
 	import RecentConversations from '$lib/components/RecentConversations.svelte';
 	import { planChatStart } from '$lib/ai/chat-start';
 	import { trackAiChatStarted } from '$lib/analytics';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 
 	const STORAGE_KEY = 'mittpsyke.healthConsent';
 	const VERSION = '2026-04-29';
@@ -108,7 +109,7 @@
 {#if !hasConsent}
 	<HealthConsent
 		title="Innan du börjar chatta"
-		intro="För att chatten ska kunna svara på det du delar behöver du först samtycka till att känsliga uppgifter behandlas. Efter det kan du börja skriva i din egen takt."
+		intro={`För att chatten ska kunna svara på det du delar behöver du samtycka innan du skickar känsliga uppgifter. ${dataflowCopy.guestChat.aiTransfer}`}
 		onAccept={() => {
 			hasConsent = true;
 		}}
@@ -182,8 +183,8 @@
 			<h2>Vad kan du få hjälp med?</h2>
 			<p>
 				AI-chatten hjälper dig att reflektera kring ångest, stress, sömnproblem, relationer
-				och psykiskt mående. Du kan börja utan konto — då sparas gästchatten i MittPsyke bara under det aktuella
-				besöket. Med konto sparas den tills du själv raderar den. Läs mer om hur uppgifter hanteras
+				och psykiskt mående. {dataflowCopy.guestChat.retention} {dataflowCopy.accountChat.storage}
+				{dataflowCopy.accountChat.retention} Läs mer om hur uppgifter hanteras
 				i <a href="/integritet">integritetspolicyn</a> och om hur AI-stödet är byggt i
 				<a href="/ansvarsfull-ai">Ansvarsfull AI</a>. Om du vill läsa mer först finns
 				<a href="/prata-anonymt-online">prata anonymt online</a>. Vid akut fara, ring 112.

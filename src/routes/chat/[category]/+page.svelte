@@ -9,6 +9,7 @@
 	import type { ChatMessage } from '$lib/types';
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 
 	const STORAGE_KEY = 'mittpsyke.healthConsent';
 	const VERSION = '2026-04-29';
@@ -161,7 +162,7 @@
 {#if !hasConsent}
 	<HealthConsent
 		title="Innan du börjar chatta"
-		intro="För att chatten ska kunna svara på det du delar behöver du först samtycka till att känsliga uppgifter behandlas. Efter det kan du börja skriva i din egen takt."
+		intro={`För att chatten ska kunna svara på det du delar behöver du samtycka innan du skickar känsliga uppgifter. ${dataflowCopy.guestChat.aiTransfer}`}
 		onAccept={() => {
 			hasConsent = true;
 		}}

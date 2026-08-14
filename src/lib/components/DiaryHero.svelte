@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { trackDiaryCtaClick } from '$lib/analytics';
 	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 
 	type Variant = 'diary-main' | 'diary-landing';
 
@@ -34,9 +35,9 @@
 
 	// Standard-subtitle beror på variant
 	const resolvedSubtitle = $derived(
-		subtitle ??
+			subtitle ??
 			(variant === 'diary-landing'
-				? 'Din text sparas lokalt. Inget konto krävs.'
+				? dataflowCopy.anonymousDiary.short
 				: 'Inget konto krävs för att börja. Skapa konto senare om du vill spara och följa över tid.')
 	);
 

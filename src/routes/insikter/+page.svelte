@@ -76,7 +76,7 @@
 				<section class="consent-card">
 					<h2>AI-insikter kräver ditt samtycke</h2>
 					<p>
-						För att hitta mönster behöver MittPsyke analysera innehållet i dina dagboksrader med AI.
+						För att hitta mönster skickar MittPsyke innehållet i dina dagboksrader till OpenAI för AI-analys.
 						Analysen visas bara för dig och bygger på dina egna reflektioner.
 					</p>
 					<button class="btn btn-primary" onclick={acceptConsent}>Jag godkänner – visa insikter</button>

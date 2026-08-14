@@ -157,7 +157,7 @@
 			{:else if !hasConsent}
 				<section class="consent-card">
 					<h2>AI-analys kräver ditt samtycke</h2>
-					<p>För att kunna läsa dina dagboksrader och leta efter mönster behöver MittPsyke använda den känsliga informationen i din dagbok för just den här analysen.</p>
+					<p>För att kunna läsa dina dagboksrader och leta efter mönster skickar MittPsyke innehållet till OpenAI för just den här analysen.</p>
 					<button class="btn btn-primary" onclick={acceptConsent}>Jag godkänner – visa analys</button>
 				</section>
 			{:else if error}

@@ -1311,7 +1311,12 @@
 
 		{#if !hasHealthDataConsent}
 			<div class="auth-shell">
-				<ConsentGate onAccept={acceptHealthConsent} />
+				<ConsentGate
+					title="Innan du sparar i dagboken"
+					dataLabel="Det du väljer att spara i dagboken"
+					serviceLabel="MittPsyke för lagring i din dagbok"
+					onAccept={acceptHealthConsent}
+				/>
 			</div>
 		{:else}
 		<div class="auth-shell">

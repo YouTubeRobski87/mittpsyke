@@ -10,6 +10,7 @@
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
 	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -967,7 +968,11 @@
 		<div class="chat-input-extras">
 		{#if !hasSensitiveDataConsent}
 			<div class="mb-3">
-				<ConsentGate onAccept={acceptSensitiveConsent} />
+				<ConsentGate
+					dataLabel="Meddelanden du väljer att skicka i chatten"
+					serviceLabel="MittPsyke och OpenAI för att skapa ett svar"
+					onAccept={acceptSensitiveConsent}
+				/>
 			</div>
 		{/if}
 
@@ -1171,7 +1176,11 @@
 							<p>Av som standard. Du kan också välja Lyssna vid ett enskilt svar.</p>
 						{/if}
 					</div>
-					<p class="privacy-note-inline">I MittPsyke sparas gästchatt bara under det här besöket. När du ber om ett svar skickas texten till AI-tjänsten.</p>
+					<p class="privacy-note-inline">
+						{isAnonymous
+							? `${dataflowCopy.guestChat.retention} ${dataflowCopy.guestChat.aiTransfer}`
+							: `${dataflowCopy.accountChat.storage} ${dataflowCopy.accountChat.retention}`}
+					</p>
 					<div class="settings-links">
 						<a
 							href="https://stodlinjer.se"

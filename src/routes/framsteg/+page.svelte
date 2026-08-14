@@ -985,10 +985,10 @@
 					<h2 id="recurring-heading">Det som återkommer</h2>
 				</div>
 				{#if !isAnonymous && !hasSensitiveDataConsent}
-					<ConsentGate
-						title="Se återkommande teman"
-						dataLabel="Dina sparade texter"
-						serviceLabel="Analys av dina egna texter"
+						<ConsentGate
+							title="Se återkommande teman"
+							dataLabel="Dina sparade texter"
+							serviceLabel="OpenAI via MittPsyke för AI-insikter"
 						onAccept={acceptSensitiveDataConsent}
 					/>
 				{:else if insightsLoading}
@@ -1104,7 +1104,7 @@
 				<ConsentGate
 					title="Samtycke innan AI-insikter"
 					dataLabel="Din dagbok och dina mönster"
-					serviceLabel="AI- och tredjepartstjänster"
+					serviceLabel="OpenAI via MittPsyke för AI-insikter"
 					onAccept={acceptSensitiveDataConsent}
 				/>
 			{:else if !shouldShowInsights}

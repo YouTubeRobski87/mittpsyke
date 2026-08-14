@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/ai-samtalsstod-online" />
@@ -66,8 +67,8 @@
 			<p>Ja. Tjänsten är byggd för små steg och ett varsamt tempo.</p>
 			<h3>Vad händer med det jag skriver?</h3>
 			<p>
-				Utan konto sparas samtalet i MittPsyke bara under det aktuella besöket. Med konto sparas det tills du
-				själv raderar det. Läs mer i <a href="/integritet">integritetspolicyn</a> och om hur
+				{dataflowCopy.guestChat.retention} {dataflowCopy.accountChat.storage}
+				{dataflowCopy.accountChat.retention} Läs mer i <a href="/integritet">integritetspolicyn</a> och om hur
 				AI-stödet är byggt i <a href="/ansvarsfull-ai">Ansvarsfull AI</a>.
 			</p>
 		</section>

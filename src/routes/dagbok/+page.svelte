@@ -1,32 +1,11 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import SEO from '$lib/components/SEO.svelte';
-	import HealthConsent from '$lib/components/HealthConsent.svelte';
 	import DiaryHero from '$lib/components/DiaryHero.svelte';
 	import GuestQuickEntry from '$lib/components/GuestQuickEntry.svelte';
 
-	const STORAGE_KEY = 'mittpsyke.healthConsent';
-	const VERSION = '2026-04-29';
-
-	let hasConsent = $state(false);
-
 	// Visa snabbantecknings-yta direkt om användaren kommer in via CTA
 	const showQuickEntry = $derived($page.url.searchParams.get('action') === 'new');
-
-	onMount(() => {
-		try {
-			const stored = localStorage.getItem(STORAGE_KEY);
-			if (!stored) return;
-
-			const parsed = JSON.parse(stored);
-			if (parsed?.accepted && parsed?.policy_version === VERSION) {
-				hasConsent = true;
-			}
-		} catch {
-			hasConsent = false;
-		}
-	});
 
 	const faqItems = [
 		{
@@ -79,15 +58,6 @@
 	<GuestQuickEntry />
 {/if}
 
-{#if !hasConsent}
-	<div class="consent-wrap">
-		<HealthConsent
-			onAccept={() => {
-				hasConsent = true;
-			}}
-		/>
-	</div>
-{:else}
 	<main class="seo-diary-page">
 		<section class="content-grid">
 			<article class="body-card">
@@ -163,15 +133,8 @@
 			För vårdråd: 1177.
 		</p>
 	</main>
-{/if}
 
 <style>
-	.consent-wrap {
-		max-width: 1080px;
-		margin: 1.25rem auto 0;
-		padding: 0 1.25rem;
-	}
-
 	.seo-diary-page {
 		max-width: 1080px;
 		margin: 1.25rem auto 0;

@@ -2,6 +2,7 @@
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/integritet" />
@@ -50,8 +51,8 @@
 		<ul class="opacity-80 leading-relaxed list-disc pl-6 space-y-2.5">
 			<li><strong>Är detta vård?</strong> Nej. MittPsyke är ett samtalsstöd, inte vård eller behandling.</li>
 			<li><strong>Kan man använda tjänsten anonymt?</strong> Ja. Du kan chatta utan konto.</li>
-			<li><strong>Vad sparas med konto?</strong> E-post, dagbok, chatthistorik och inställningar — du väljer själv vad du skriver.</li>
-			<li><strong>Kan jag radera allt?</strong> Ja. Du kan radera ditt konto och all data via inställningar eller genom att kontakta oss.</li>
+			<li><strong>Vad sparas med konto?</strong> E-post, sparad dagbokstext, chatthistorik och inställningar — du väljer själv vad du skriver.</li>
+			<li><strong>Kan jag radera kontot?</strong> Ja. Du kan radera kontot och den databasdata som hör till det via inställningar eller genom att kontakta oss.</li>
 			<li><strong>Kan jag exportera min data?</strong> Ja. Kontakta oss så får du en kopia inom 30 dagar.</li>
 			<li><strong>Akut läge?</strong> Ring 112 vid akut fara. För vårdråd i Sverige, kontakta 1177.</li>
 		</ul>
@@ -70,7 +71,11 @@
 			<li><strong>Inga kakor utöver funktionella</strong> — om du inte godkänner analytics i cookie-bannern.</li>
 		</ul>
 		<p class="opacity-70 leading-relaxed text-sm mt-3">
-			I MittPsyke sparas gästchatt bara under det aktuella besöket och finns inte kvar när sessionen avslutas. Text du skickar i AI-chatten behandlas ändå av AI-leverantören för att kunna ge ett svar. Om du vill använda dagbok, se historik med konto eller spara framsteg behöver du skapa ett konto.
+			{dataflowCopy.guestChat.retention} {dataflowCopy.guestChat.aiTransfer}
+		</p>
+		<p class="opacity-70 leading-relaxed text-sm mt-3">
+			För anonym dagbok gäller: {dataflowCopy.anonymousDiary.storage}
+			{dataflowCopy.anonymousDiary.transfer}
 		</p>
 	</section>
 
@@ -91,7 +96,7 @@
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li><strong>Cookie-bannern</strong> — innan analysverktyg aktiveras.</li>
 		<li><strong>Kontoskapande</strong> — när du registrerar dig godkänner du att kontouppgifter sparas.</li>
-		<li><strong>AI-chatt och dagbok</strong> — genom att använda dessa funktioner samtycker du till att innehåll som kan röra psykisk hälsa behandlas (artikel 9 GDPR).</li>
+		<li><strong>AI-funktioner</strong> — innan du skickar ett chattmeddelande eller aktivt använder AI på sparad dagbokstext ber vi om samtycke till den behandlingen (artikel 9 GDPR). Att skriva ett anonymt, lokalt dagboksutkast startar inte AI-behandling.</li>
 	</ul>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Du kan <strong>när som helst återkalla</strong> ditt samtycke genom att radera ditt konto, rensa cookies, eller kontakta oss.
@@ -111,10 +116,10 @@
 	<section class="rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-950/30 p-4 sm:p-5 mt-2 mb-6" aria-label="Känsliga uppgifter">
 		<h3 class="text-base font-semibold mt-0 mb-2">⚠️ Känsliga uppgifter (artikel 9 GDPR)</h3>
 		<p class="opacity-80 leading-relaxed text-sm">
-			Innehåll som du delar i chatt eller dagbok kan röra psykisk hälsa och betraktas som
-			<strong>känsliga personuppgifter</strong> enligt GDPR artikel 9. Sådana uppgifter behandlas enbart
-			med ditt <strong>uttryckliga samtycke</strong>, vilket du lämnar i samband med att du börjar använda
-			tjänstens AI-funktioner. Du kan när som helst återkalla samtycket genom att radera ditt konto eller
+			Innehåll som du väljer att skicka i chatt eller använda i en AI-funktion kan röra psykisk hälsa och betraktas som
+			<strong>känsliga personuppgifter</strong> enligt GDPR artikel 9. I tjänstens UI ber MittPsyke om ditt
+			<strong>uttryckliga samtycke</strong> innan den relevanta AI-funktionen startar. Du kan när som helst
+			återkalla samtycket genom att radera ditt konto eller
 			kontakta oss.
 		</p>
 	</section>
@@ -145,11 +150,25 @@
 					<td class="px-4 py-3">Tills kontot raderas</td>
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
-					<th scope="row" class="px-4 py-3 font-normal text-left">Chatt och dagboksinnehåll</th>
-					<td class="px-4 py-3">Supabase + OpenAI</td>
-					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<th scope="row" class="px-4 py-3 font-normal text-left">Gästchatt</th>
+					<td class="px-4 py-3">MittPsyke + OpenAI när du skickar</td>
+					<td class="px-4 py-3">Se leverantörsavtal</td>
 					<td class="px-4 py-3">Samtycke</td>
-					<td class="px-4 py-3">Tills du raderar</td>
+					<td class="px-4 py-3">Endast öppen chattvy i MittPsyke</td>
+				</tr>
+				<tr>
+					<th scope="row" class="px-4 py-3 font-normal text-left">Sparad chatt med konto</th>
+					<td class="px-4 py-3">Supabase</td>
+					<td class="px-4 py-3">EU (Frankfurt)</td>
+					<td class="px-4 py-3">Samtycke</td>
+					<td class="px-4 py-3">Tills kontot raderas</td>
+				</tr>
+				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
+					<th scope="row" class="px-4 py-3 font-normal text-left">Sparad dagbokstext</th>
+					<td class="px-4 py-3">Supabase. {dataflowCopy.savedDiary.aiTransfer}</td>
+					<td class="px-4 py-3">Se leverantörsavtal</td>
+					<td class="px-4 py-3">Samtycke</td>
+					<td class="px-4 py-3">Tills inlägget eller kontot raderas</td>
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
 					<th scope="row" class="px-4 py-3 font-normal text-left">Tekniska loggar</th>
@@ -184,7 +203,7 @@
 	</div>
 	<p class="opacity-60 text-xs leading-relaxed mb-6">
 		SCC = EU-kommissionens standardavtalsklausuler, som säkerställer ett adekvat skydd vid överföring av uppgifter till länder utanför EU/EES.
-		OpenAI använder inte API-data för att träna sina modeller.
+		{dataflowCopy.providerRetention}
 	</p>
 
 	<!-- VARFÖR -->
@@ -221,9 +240,10 @@
 	<h2 class="text-lg font-semibold mt-8 mb-2">Lagringstid</h2>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li>Kontorelaterade uppgifter sparas så länge kontot är aktivt eller tills du begär radering.</li>
-		<li>Chatt- och dagboksinnehåll sparas så länge du har ett aktivt konto och inte raderar innehållet själv.</li>
+		<li>{dataflowCopy.accountChat.storage} {dataflowCopy.accountChat.retention}</li>
+		<li>{dataflowCopy.savedDiary.storage}</li>
 		<li>Tekniska loggar och säkerhetsuppgifter sparas normalt i upp till 90 dagar.</li>
-			<li>I MittPsyke sparas gästchatt bara under det aktuella besöket och finns inte kvar när sessionen avslutas.</li>
+		<li>{dataflowCopy.guestChat.retention}</li>
 		<li>När uppgifter inte längre behövs raderas eller anonymiseras de.</li>
 	</ul>
 
@@ -235,7 +255,7 @@
 	</p>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll. Data lagras inom EU (Frankfurt).</li>
-		<li><strong>OpenAI:</strong> AI-funktioner som chatt. OpenAI använder inte API-data för att träna sina modeller. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
+		<li><strong>OpenAI:</strong> AI-funktioner som chatt och aktivt valda AI-funktioner för sparad dagbokstext. {dataflowCopy.providerRetention}</li>
 		<li><strong>Vercel:</strong> hosting och leverans av webbplatsen. Analytics aktiveras endast med ditt samtycke. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
 		<li><strong>TikTok:</strong> pixelanalys av sidvisningar och utvalda interaktioner, endast efter ditt samtycke. Integrationen skickar ingen dagbokstext.</li>
 		<li><strong>Ahrefs:</strong> cookie-fri webbstatistik om trafik och sidvisningar.</li>

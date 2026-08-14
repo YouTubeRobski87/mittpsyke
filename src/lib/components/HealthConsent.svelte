@@ -2,7 +2,7 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { grantSensitiveConsent, type HealthConsentRecord } from '$lib/consent';
 	import { supabase } from '$lib/supabase';
-	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 
 	export let onAccept: (consent: HealthConsentRecord) => void | Promise<void> = () => {};
 	export let title = 'Innan du börjar';
@@ -150,29 +150,25 @@
 		<label class="consent-check">
 			<input type="checkbox" bind:checked={confirmed} />
 			<span
-				>Jag samtycker uttryckligen till att MittPsyke behandlar det jag skriver som känsliga
-				uppgifter för att kunna ge stöd här.</span
+				>Jag samtycker uttryckligen till att MittPsyke och OpenAI behandlar meddelanden jag väljer
+				att skicka i chatten för att kunna ge ett svar här.</span
 			>
 		</label>
 
 		<details class="consent-more">
 			<summary>Läs mer</summary>
-			<p>
-				För att chatten och dagboken ska kunna svara på det du delar behöver texten behandlas
-				här i tjänsten.
-			</p>
+			<p>Samtycket gäller meddelanden du aktivt väljer att skicka i chatten.</p>
 			<p>
 				Samtycket är separat för känsliga uppgifter, sparas med tidpunkt och version och kan
 				återkallas senare i dina inställningar.
 			</p>
 			<div class="consent-data-summary">
-				<h3>Så hanteras det du skriver</h3>
+				<h3>Så hanteras chattmeddelanden</h3>
 				<ul>
-					<li><strong>Vem behandlar det:</strong> MittPsyke, med hjälp av Supabase (lagring) och OpenAI (AI-svar).</li>
-					<li><strong>Var lagras det:</strong> Supabase lagrar inom EU (Frankfurt).</li>
-					<li><strong>Inom EU/EES?:</strong> Lagringen sker inom EU. OpenAI kan behandla texten i USA, skyddat av EU:s standardavtalsklausuler (SCC).</li>
-					<li><strong>Hur länge sparas det:</strong> Har du konto sparas det tills du raderar det. Utan konto rensas det automatiskt inom 24 timmar.</li>
-					<li><strong>Hur raderar du det:</strong> Via dina inställningar om du har konto, eller genom att kontakta <a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a>.</li>
+					<li><strong>När det skickas:</strong> {dataflowCopy.guestChat.aiTransfer}</li>
+					<li><strong>Utan konto:</strong> {dataflowCopy.guestChat.retention}</li>
+					<li><strong>Med konto:</strong> {dataflowCopy.accountChat.storage} {dataflowCopy.accountChat.retention}</li>
+					<li><strong>OpenAI:</strong> {dataflowCopy.providerRetention}</li>
 				</ul>
 			</div>
 

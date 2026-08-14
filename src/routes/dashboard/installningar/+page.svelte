@@ -840,14 +840,14 @@
 		<section class="auth-panel section-block">
 			<h2>AI-kontext från dagbok och mål</h2>
 			<p class="field-hint">
-				Om du vill kan AI-stödet i chatten få ta del av dina senaste dagboksanteckningar och
-				aktiva mål ovan, för att kunna svara mer sammanhängande. Helt frivilligt, och kräver att
+				Om du vill kan AI-stödet i chatten skicka dina senaste dagboksanteckningar och
+				aktiva mål till OpenAI som kontext, för att kunna svara mer sammanhängande. Helt frivilligt, och kräver att
 				du redan har lämnat samtycke för känsliga uppgifter ovan.
 			</p>
 
 			<label class="sms-consent-row">
 				<input type="checkbox" bind:checked={aiDiaryContextEnabled} disabled={!healthConsentRecord} />
-				<span>Låt AI-stödet använda mina senaste dagboksanteckningar och mål som kontext i chatten.</span>
+				<span>Låt AI-stödet skicka mina senaste dagboksanteckningar och mål till OpenAI som kontext i chatten.</span>
 			</label>
 
 			{#if !healthConsentRecord}

@@ -15,6 +15,7 @@
 		readDiaryDraft,
 		writeDiaryDraft
 	} from '$lib/diary-draft';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 
 	const AUTOSAVE_INTERVAL_MS = 3000;
 
@@ -191,7 +192,7 @@
 		<header class="guest-entry-header">
 			<h2>Skriv av dig direkt</h2>
 			<p class="meta">
-				Sparas lokalt på din enhet. Inget skickas till någon server.
+				{dataflowCopy.anonymousDiary.storage} {dataflowCopy.anonymousDiary.transfer}
 				{#if saveStatus === 'saved' && entry.length > 0}
 					<span class="status-pill" aria-live="polite">Sparat</span>
 				{/if}
@@ -240,8 +241,8 @@
 			<div class="account-offer">
 				<p class="account-offer-title">Vill du behålla det här?</p>
 				<p class="account-offer-text">
-					Med ett konto sparas det du skriver, och du kan följa hur det ser ut över tid. Utan konto
-					ligger texten kvar på den här enheten tills du rensar den.
+					Med ett konto sparas det du skriver, och du kan följa hur det ser ut över tid. Utan konto:
+					{dataflowCopy.anonymousDiary.storage}
 				</p>
 			</div>
 			<div class="actions">

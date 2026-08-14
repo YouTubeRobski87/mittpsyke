@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import DiaryHero from '$lib/components/DiaryHero.svelte';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/anonym-dagbok-online" />
@@ -9,12 +10,12 @@
 	<title>Anonym dagbok online utan konto | Skriv direkt | MittPsyke</title>
 	<meta
 		name="description"
-		content="Skriv av dig anonymt direkt i webbläsaren. Inget konto behövs. Texten sparas lokalt tills du själv väljer att spara."
+		content={`Skriv av dig anonymt direkt i webbläsaren. Inget konto behövs. ${dataflowCopy.anonymousDiary.storage}`}
 	/>
 	<meta property="og:title" content="Anonym dagbok online | MittPsyke" />
 	<meta
 		property="og:description"
-		content="Skriv av dig anonymt direkt i webbläsaren. Inget konto behövs och texten sparas lokalt."
+		content={`Skriv av dig anonymt direkt i webbläsaren. ${dataflowCopy.anonymousDiary.short}`}
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
@@ -23,7 +24,7 @@
 <DiaryHero
 	variant="diary-landing"
 	title="Anonym dagbok online"
-	subtitle="Du kan börja skriva direkt och välja senare om du vill spara."
+	subtitle={dataflowCopy.anonymousDiary.short}
 	ctaLabel="Börja skriva anonym dagbok"
 	secondaryHref="/digital-dagbok-for-maende"
 	secondaryLabel="Så fungerar dagboken"
