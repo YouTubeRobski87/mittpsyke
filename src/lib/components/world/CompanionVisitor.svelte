@@ -20,12 +20,14 @@
 		mainCompanionId,
 		isSleeping = false,
 		sceneAllowsVisitor = true,
+		onVisitorChange,
 		scene,
 		class: className = ''
 	}: {
 		mainCompanionId: string;
 		isSleeping?: boolean;
 		sceneAllowsVisitor?: boolean;
+		onVisitorChange?: (isActive: boolean) => void;
 		scene: 'dashboard' | 'progress';
 		class?: string;
 	} = $props();
@@ -142,6 +144,10 @@
 		void viewportAllowsVisitor;
 		void debugForcedType;
 		if (typeof window !== 'undefined') refreshVisitor();
+	});
+
+	$effect(() => {
+		onVisitorChange?.(Boolean(visitorId && visitorType && !hasFailed));
 	});
 </script>
 

@@ -143,7 +143,13 @@
 				decoding="async"
 			/>
 			<div class="cabin-window-view" aria-hidden="true">
-				<AmbientWorld scene={worldScene} class="evening-ambient" visibleEffects={['moon', 'cloud']} />
+				<AmbientWorld
+					scene={worldScene}
+					class="evening-ambient"
+					visibleEffects={['moon', 'cloud']}
+					visibleEventKinds={['water']}
+					eventContext="cabin"
+				/>
 			</div>
 			<!-- Sjöytan utanför fönstret: egen viewport så ringarna klipps till
 			     vattnet och aldrig hamnar på karm, vägg, golv eller möbler. -->

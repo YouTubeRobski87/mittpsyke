@@ -100,6 +100,7 @@
   let companionDailyBusy = $state(false);
   let companionDailyReaction = $state<string | null>(null);
   let companionDailyReactionTimer: number | null = null;
+	let companionVisitorActive = $state(false);
   // Transient räknare för världens korta svar. Sparas aldrig, varken i databasen
   // eller i localStorage - den lever bara så länge sidan är öppen.
   let worldResponseSignal = $state(0);
@@ -356,12 +357,16 @@
           isSleeping={heroCompanionIsSleeping}
           scene="dashboard"
           sceneAllowsVisitor={true}
+			onVisitorChange={(isActive) => (companionVisitorActive = isActive)}
         />
         <AmbientWorld
           scene={livingWorldScene}
           class="hero-living-world"
           relationshipStage={isAnonymous ? 0 : companionRelationshipStage}
-          visibleEffects={['moon', 'cloud', 'foliage', 'drift', 'butterfly', 'bird', 'leaf']}
+          visibleEffects={['moon', 'cloud', 'foliage', 'drift', 'butterfly', 'bird']}
+          visibleEventKinds={['bird', 'butterfly', 'water', 'wind']}
+          eventContext="dashboard"
+          eventsBlocked={Boolean(companionDailyReaction || companionGreeting || companionVisitorActive)}
         />
         <!-- Kort, kosmetiskt svar från platsen efter en reflektion. Ligger i
              ambientbandet, alltså bakom följeslagaren, så pusten drar förbi den

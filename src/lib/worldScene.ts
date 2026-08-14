@@ -59,8 +59,11 @@ export type LivingWorldEvent = {
 export type LivingWorldScene = {
 	season: ProgressCompanionSeason;
 	timeOfDay: ProgressCompanionDayState;
+	/** Stockholmdatumet håller den lokala ambient-planen stabil över midnatt. */
+	localDateKey: string;
 	localTimeMinutes: number;
 	wind: number;
+	growthLevel: WorldGrowthLevel;
 	effects: LivingWorldEffect[];
 	events: LivingWorldEvent[];
 	features: Record<LivingWorldEffectKind, boolean>;
@@ -77,7 +80,7 @@ type LivingWorldSceneInput = {
 	/**
 	 * Hur mycket den beständiga världen har "vuxit" (0-4), härlett ur antalet
 	 * dagboksanteckningar via getGrowthLevel. Styr enbart hur rik den beständiga
-	 * växtligheten är och när sekundärt liv (drift/fjäril/fågel) tänds - aldrig
+	 * växtligheten är och hur sannolikt sekundärt liv syns - aldrig
 	 * relationen till följeslagaren (det är relationshipStage, helt skilt) och
 	 * aldrig säsong/dygn. Utelämnat/okänt värde faller tillbaka till nivå 0.
 	 */
@@ -510,10 +513,9 @@ const EFFECT_DEPTHS: Record<string, number> = {
 	'settled-foreground': 0.84
 };
 
-// Chansvärden höjda så att en händelse nästan alltid väljs när minst en typ är
-// aktuell för dagpart/säsong (se chooseEvent() i AmbientWorld.svelte) - det gör
-// naturhändelserna mer sannolika utan att ändra hur ofta de *försöker* ske
-// (det styrs av schemaläggningen i AmbientWorld.svelte).
+// Positions- och tidsvärden återanvänds av AmbientWorlds delade eventplan.
+// Själva sällsyntheten och urvalet hör till den stabila sessionsplanen, inte
+// till en route-specifik timer.
 const baseEvents: Omit<LivingWorldEvent, 'enabled'>[] = [
 	{
 		id: 'shore-ripple',
@@ -591,11 +593,21 @@ export function getMoonPosition(
 	};
 }
 
+function getWorldLocalDateKey(date: Date): string {
+	return new Intl.DateTimeFormat('sv-SE', {
+		timeZone: 'Europe/Stockholm',
+		year: 'numeric',
+		month: '2-digit',
+		day: '2-digit'
+	}).format(date);
+}
+
 export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWorldScene {
 	const date = input.date ?? new Date();
 	const season = input.season ?? getProgressCompanionSeason(date);
 	const timeOfDay = input.timeOfDay ?? getProgressCompanionDayState(date);
 	const { hour, minute } = getProgressCompanionLocalTime(date);
+	const localDateKey = getWorldLocalDateKey(date);
 	const localTimeMinutes = hour * 60 + minute;
 	const moonPosition = getMoonPosition(timeOfDay, localTimeMinutes);
 	const wind = Math.min(Math.max(input.wind ?? 0.18, 0), 1);
@@ -643,11 +655,10 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 	const events = baseEvents.map((event) => ({
 		...event,
 		enabled:
-			features[event.kind] &&
-			(event.kind !== 'bird' || (isDaylight && season !== 'winter')) &&
+			(event.kind !== 'bird' || (timeOfDay !== 'night' && season !== 'winter')) &&
 			(event.kind !== 'butterfly' || (isDaylight && (season === 'spring' || season === 'summer'))) &&
 			(event.kind !== 'leaf' || season === 'autumn')
 	}));
 
-	return { season, timeOfDay, localTimeMinutes, wind, effects, events, features };
+	return { season, timeOfDay, localDateKey, localTimeMinutes, wind, growthLevel: growth.level, effects, events, features };
 }

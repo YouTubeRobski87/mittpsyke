@@ -5,6 +5,7 @@
 	// Lägg till en ny effekttyp genom att (1) lägga till den i
 	// LivingWorldEffectKind + baseEffects i $lib/worldScene, och (2) antingen ge
 	// den CSS här eller bryta ut den i ett eget lager när den växer.
+	import { onMount } from 'svelte';
 	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
 	import {
 		getLivingWorldScene,
@@ -14,26 +15,41 @@
 		type LivingWorldScene
 	} from '$lib/worldScene';
 	import { effectStyle } from '$lib/world/effectStyle';
+	import {
+		getAmbientEventPlan,
+		type AmbientEventContext,
+		type AmbientEventKind
+	} from '$lib/world/ambientEvents';
 	import type { CompanionRelationshipStage } from '$lib/companionRelationship';
 	import WaterLayer from './WaterLayer.svelte';
 	import LeafLayer from './LeafLayer.svelte';
 
-	type ActiveWorldEvent = LivingWorldEffect & { eventId: string };
+	type ActiveWorldEvent = LivingWorldEffect & { eventId: string; planId: string };
 
 	let {
 		scene = getLivingWorldScene(),
 		relationshipStage = 0,
 		visibleEffects,
+		visibleEventKinds,
+		eventContext = 'progress',
+		eventsBlocked = false,
 		class: className = ''
 	}: {
 		scene?: LivingWorldScene;
 		relationshipStage?: CompanionRelationshipStage;
 		visibleEffects?: readonly LivingWorldEffectKind[];
+		visibleEventKinds?: readonly AmbientEventKind[];
+		eventContext?: AmbientEventContext;
+		eventsBlocked?: boolean;
 		class?: string;
 	} = $props();
 
 	const motion = createMotionAwareness();
 	let activeEvent = $state<ActiveWorldEvent | null>(null);
+	let activeWindEvent = $state(false);
+	let sessionSeed = $state<string | null>(null);
+	let handledPlanId = $state<string | null>(null);
+	let clearEventTimer: number | null = null;
 
 	const classes = $derived(`living-world ${className}`.trim());
 	const isVisibleEffect = (kind: LivingWorldEffectKind) =>
@@ -46,33 +62,52 @@
 	// Vattnet renderas av WaterLayer, resten av det här lagret.
 	const waterEffects = $derived(enabledEffects.filter((effect) => effect.kind === 'water'));
 	const ambientEffects = $derived(enabledEffects.filter((effect) => effect.kind !== 'water'));
+	const skyEffects = $derived(
+		ambientEffects.filter((effect) =>
+			['light', 'moon', 'cloud', 'mist'].includes(effect.kind)
+		)
+	);
+	const foregroundEffects = $derived(
+		ambientEffects.filter(
+			(effect) => !['light', 'moon', 'cloud', 'mist'].includes(effect.kind)
+		)
+	);
+	const availableEventKinds = $derived.by(() => {
+		const worldKinds = scene.events
+			.filter((event) => event.enabled && event.kind !== 'leaf')
+			.map((event) => event.kind as AmbientEventKind);
+		if (isVisibleEffect('foliage')) worldKinds.push('wind');
+		return visibleEventKinds === undefined
+			? worldKinds
+			: worldKinds.filter((kind) => visibleEventKinds.includes(kind));
+	});
+	const ambientPlan = $derived(
+		sessionSeed
+			? getAmbientEventPlan({
+				sessionSeed,
+				dateKey: scene.localDateKey,
+				localTimeMinutes: scene.localTimeMinutes,
+				timeOfDay: scene.timeOfDay,
+				season: scene.season,
+				growthLevel: scene.growthLevel,
+				context: eventContext,
+				reducedMotion: motion.reducedMotion,
+				availableKinds: availableEventKinds
+			})
+			: null
+	);
 
-	function between(min: number, max: number) {
-		return min + Math.random() * (max - min);
-	}
-
-	function chooseEvent(): LivingWorldEvent | null {
-		const eligible = scene.events.filter(
-			(event) => event.enabled && scene.features[event.kind] && isVisibleEffect(event.kind)
-		);
-		const roll = Math.random();
-		let threshold = 0;
-
-		for (const event of eligible) {
-			threshold += event.chance;
-			if (roll < threshold) return event;
-		}
-
-		return null;
-	}
-
-	function createActiveEvent(event: LivingWorldEvent): ActiveWorldEvent {
-		const position = event.positions[Math.floor(Math.random() * event.positions.length)];
-		const durationMs = Math.round(between(event.durationMs[0], event.durationMs[1]));
+	function createActiveEvent(
+		event: LivingWorldEvent,
+		plan: NonNullable<typeof ambientPlan>
+	): ActiveWorldEvent {
+		const position = event.positions[plan.positionIndex % event.positions.length];
+		const durationMs = plan.durationMs;
 		const size = event.kind === 'water' ? 9 : event.kind === 'bird' ? 2.2 : 1;
 
 		return {
-			id: `${event.id}-${Date.now()}`,
+			id: plan.id,
+			planId: plan.id,
 			eventId: event.id,
 			kind: event.kind,
 			enabled: true,
@@ -87,79 +122,94 @@
 		};
 	}
 
-	// Körs om varje gång motion.isActive/motion.reducedMotion ändras (flik
-	// döljs/visas, eller användaren togglar reduced-motion), och startar då om
-	// den ambienta händelseloopen från grunden.
+	function clearActiveEvent() {
+		if (clearEventTimer !== null) window.clearTimeout(clearEventTimer);
+		clearEventTimer = null;
+		activeEvent = null;
+		activeWindEvent = false;
+	}
+
+	function getSessionSeed() {
+		const key = 'mittpsyke:ambient-event-seed:v1';
+		const existing = window.sessionStorage.getItem(key);
+		if (existing) return existing;
+		const value = window.crypto.randomUUID();
+		window.sessionStorage.setItem(key, value);
+		return value;
+	}
+
+	onMount(() => {
+		sessionSeed = getSessionSeed();
+		return clearActiveEvent;
+	});
+
+	// Samma session, samma 30-minutersfönster och samma världstid ger samma
+	// beslut. Ingen händelseplan skapas om vid en vanlig Svelte-render.
 	$effect(() => {
 		const active = motion.isActive;
 		const reduced = motion.reducedMotion;
+		const plan = ambientPlan;
 
-		let eventTimer: number | null = null;
-		let clearEventTimer: number | null = null;
-		// Tills den första händelsen faktiskt spelats: försök igen snabbt om
-		// slumpen missar (chooseEvent() returnerar null), så att "första
-		// händelsen inom ~3-8 sekunder" håller även vid otur i urvalet.
-		let hasPlayedFirstEvent = false;
+		if (!active || reduced || eventsBlocked) {
+			clearActiveEvent();
+			return;
+		}
+		if (!plan || handledPlanId === plan.id || activeEvent || activeWindEvent) return;
 
-		const clearTimers = () => {
-			if (eventTimer !== null) window.clearTimeout(eventTimer);
-			if (clearEventTimer !== null) window.clearTimeout(clearEventTimer);
-			eventTimer = null;
-			clearEventTimer = null;
-		};
+		handledPlanId = plan.id;
+		const playedKey = `mittpsyke:ambient-event-played:v1:${plan.id}`;
+		if (window.sessionStorage.getItem(playedKey)) return;
+		window.sessionStorage.setItem(playedKey, '1');
+		if (plan.kind === 'wind') {
+			activeWindEvent = true;
+		} else {
+			const event = scene.events.find((candidate) => candidate.enabled && candidate.kind === plan.kind);
+			if (!event) return;
+			activeEvent = createActiveEvent(event, plan);
+		}
 
-		const scheduleAmbientEvent = (initial = false) => {
-			if (!active || reduced) return;
-
-			const delay = initial
-				? between(3_000, 8_000)
-				: hasPlayedFirstEvent
-					? between(12_000, 30_000)
-					: between(2_000, 4_500);
-			eventTimer = window.setTimeout(() => {
-				if (!active || reduced || activeEvent) {
-					scheduleAmbientEvent();
-					return;
-				}
-
-				const event = chooseEvent();
-				if (!event) {
-					scheduleAmbientEvent();
-					return;
-				}
-
-				hasPlayedFirstEvent = true;
-				activeEvent = createActiveEvent(event);
-				clearEventTimer = window.setTimeout(() => {
-					activeEvent = null;
-					scheduleAmbientEvent();
-				}, activeEvent.durationMs ?? 5_000);
-			}, delay);
-		};
-
-		activeEvent = null;
-		if (active && !reduced) scheduleAmbientEvent(true);
-
-		return clearTimers;
+		clearEventTimer = window.setTimeout(clearActiveEvent, plan.durationMs);
 	});
 </script>
 
 <div
 	class={classes}
 	class:is-paused={!motion.isActive || motion.reducedMotion}
+	class:is-wind-event={activeWindEvent}
 	data-season={scene.season}
 	data-time={scene.timeOfDay}
 	style={`--world-wind: ${scene.wind}`}
 	aria-hidden="true"
 >
-	{#each ambientEffects as effect (effect.id)}
+	{#each skyEffects as effect (effect.id)}
 		<span
 			class={`world-effect world-${effect.kind} ${effect.className ?? ''}`.trim()}
 			style={effectStyle(effect)}
 		></span>
 	{/each}
 
+	{#if activeEvent && (activeEvent.kind === 'bird' || activeEvent.kind === 'butterfly')}
+		<span
+			class={`world-effect world-${activeEvent.kind} ${activeEvent.className ?? ''}`.trim()}
+			style={effectStyle(activeEvent)}
+		></span>
+	{/if}
+
 	<WaterLayer effects={waterEffects} />
+	{#if activeEvent?.kind === 'water'}
+		<span
+			class={`world-effect world-${activeEvent.kind} ${activeEvent.className ?? ''}`.trim()}
+			style={effectStyle(activeEvent)}
+		></span>
+	{/if}
+
+	{#each foregroundEffects as effect (effect.id)}
+		<span
+			class={`world-effect world-${effect.kind} ${effect.className ?? ''}`.trim()}
+			style={effectStyle(effect)}
+		></span>
+	{/each}
+
 	{#if isVisibleEffect('foliage')}
 		<LeafLayer season={scene.season} />
 	{/if}
@@ -169,12 +219,6 @@
 		<span class="world-presence-sign" aria-hidden="true"></span>
 	{/if}
 
-	{#if activeEvent}
-		<span
-			class={`world-effect world-${activeEvent.kind} ${activeEvent.className ?? ''}`.trim()}
-			style={effectStyle(activeEvent)}
-		></span>
-	{/if}
 </div>
 
 <style>
@@ -195,6 +239,10 @@
 	.world-mist { border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(255, 251, 236, 0.52), rgba(226, 245, 255, 0.36), transparent); filter: blur(12px); mix-blend-mode: soft-light; animation: mistDrift var(--duration, 118000ms) ease-in-out var(--delay, 0ms) infinite; }
 	.living-world[data-time='day'] .world-mist { filter: blur(14px); }
 	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.5px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) ease-in-out var(--delay, 0ms) infinite; }
+	/* Samma lövverksanimation som vanligt, bara tillfälligt snabbare när den
+	   deterministiska eventplanen valt en vindpust. */
+	.is-wind-event .world-foliage { animation-duration: 11s; }
+	.is-wind-event .canopy-right { animation-duration: 5.5s; }
 	/* Beständig markvegetation för Growth Garden. Samma foliage-lager och
 	   vindanimation som övrig värld, med små, låga former i strandperspektiv. */
 	.shore-sprigs { background: radial-gradient(ellipse at 18% 90%, rgba(83, 124, 73, 0.65) 0 16%, transparent 19%), radial-gradient(ellipse at 42% 77%, rgba(119, 151, 88, 0.58) 0 13%, transparent 17%), radial-gradient(ellipse at 68% 88%, rgba(77, 112, 70, 0.58) 0 18%, transparent 22%), linear-gradient(180deg, transparent 35%, rgba(73, 109, 66, 0.34) 100%); }
