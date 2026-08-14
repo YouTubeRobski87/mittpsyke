@@ -312,18 +312,18 @@
 	}
 	.evening-scene :global(.interior-companion[data-companion='bear']) { left: 8%; bottom: 1%; width: min(30%, 280px); }
 	.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 9%; bottom: 3%; width: min(29%, 270px); }
-	/* Det enda bestående avtrycket i rummet. Boken ligger på sidobordets nedre
-	   hylla, under lampans befintliga ljuslager och bakom följeslagaren. */
+	/* Det enda bestående avtrycket i rummet. Boken vilar på den smala
+	   träfönsterbänken direkt till vänster om sidobordet: en fri horisontell
+	   yta nära lampan. Den ligger under lampskenet och bakom följeslagaren. */
 	.interior-memory-book {
 		position: absolute;
 		z-index: 1;
-		left: 67%;
-		top: 36%;
-		width: 13%;
-		max-width: 13rem;
+		left: 50.8%;
+		top: 48.9%;
+		width: 6.8%;
+		max-width: 6.5rem;
 		min-width: 3rem;
-		opacity: 0.8;
-		filter: brightness(0.82) saturate(0.78);
+		opacity: 0.82;
 		pointer-events: none;
 		user-select: none;
 	}
@@ -400,7 +400,8 @@
 		.evening-scene :global(.interior-companion) { left: 8%; bottom: 1%; width: min(32%, 175px); }
 		.evening-scene :global(.interior-companion[data-companion='bear']) { left: 6%; bottom: 0; width: min(37%, 190px); }
 		.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 7%; bottom: 2%; width: min(35%, 185px); }
-		.interior-memory-book { left: 66.5%; top: 35.5%; width: 14.5%; }
+		/* Något större på liten skärm, men med samma faktiska fönsterbänk som på desktop. */
+		.interior-memory-book { left: 49%; top: 42.8%; width: 14%; }
 		.evening-flow-wrap { width: 100%; margin-top: 0; }
 	}
 
