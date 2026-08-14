@@ -318,9 +318,9 @@
 	.interior-memory-book {
 		position: absolute;
 		z-index: 1;
-		left: 52.5%;
-		top: 48.9%;
-		width: 6.8%;
+		left: 57%;
+		top: 47.5%;
+		width: 8.4%;
 		max-width: 6.5rem;
 		min-width: 3rem;
 		opacity: 0.82;
@@ -401,7 +401,7 @@
 		.evening-scene :global(.interior-companion[data-companion='bear']) { left: 6%; bottom: 0; width: min(37%, 190px); }
 		.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 7%; bottom: 2%; width: min(35%, 185px); }
 		/* Något större på liten skärm, men med samma faktiska fönsterbänk som på desktop. */
-		.interior-memory-book { left: 52%; top: 42.8%; width: 14%; }
+		.interior-memory-book { left: 56.5%; top: 40.1%; width: 17.2%; }
 		.evening-flow-wrap { width: 100%; margin-top: 0; }
 	}
 
