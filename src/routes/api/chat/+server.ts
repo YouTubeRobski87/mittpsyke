@@ -17,6 +17,8 @@ import {
 	loadRecentDiaryEntries
 } from '$lib/server/diary-context';
 import { createClient } from '@supabase/supabase-js';
+import { createServiceClient } from '$lib/server/supabase-admin';
+import { hasChatAiConsent } from '$lib/server/chat-ai-consent';
 import {
 	AITextGenerationError,
 	generateAIText,
@@ -587,6 +589,24 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 
 			if (userError || !user) {
 				return errorResponse('Unauthorized.', 401);
+			}
+
+			// Serverägt samtycke för AI-chatten (scope chat_ai_support).
+			// Klientheadern och user_metadata är båda skrivbara av användaren och
+			// duger därför inte som säkerhetsbeslut. Grinden ligger före all
+			// lagring av meddelandet och före varje leverantörsanrop.
+			//
+			// Krisgrinden ovan är avsiktligt kvar före den här punkten: den är
+			// deterministisk, körs lokalt och skickar ingenting vidare. Ett
+			// saknat samtycke får aldrig tysta ett akut säkerhetssvar.
+			const consentServiceClient = createServiceClient();
+			if (!consentServiceClient) {
+				console.error('Missing service role client for chat consent check.');
+				return errorResponse('Server configuration error', 500);
+			}
+
+			if (!(await hasChatAiConsent(consentServiceClient, user.id))) {
+				return errorResponse('Consent required for sensitive AI features.', 403);
 			}
 
 			if (conversationId) {

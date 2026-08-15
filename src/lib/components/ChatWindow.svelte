@@ -32,6 +32,7 @@
 	import { supabase } from '$lib/supabase';
 	import { onMount, tick } from 'svelte';
 	import type { ChatMessage } from '$lib/types';
+	import type { Session } from '@supabase/supabase-js';
 
 	type ChatHistoryRow = {
 		id: string;
@@ -612,13 +613,11 @@
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			isAnonymous = !session;
 			persistenceUserId = session?.user.id ?? null;
-			if (hasSensitiveConsent(session?.user.user_metadata)) {
-				hasSensitiveDataConsent = true;
-			}
+			void syncSensitiveConsent(session);
 		});
 
 		void supabase.auth.getSession().then(({ data }) => {
-			hasSensitiveDataConsent = hasSensitiveConsent(data.session?.user.user_metadata);
+			void syncSensitiveConsent(data.session);
 		});
 
 		if (!hasTrackedOpen) {
@@ -822,10 +821,57 @@
 		}
 	}
 
-	function acceptSensitiveConsent() {
+	/**
+	 * För inloggade användare är den serverägda raden facit. Utan den här
+	 * synkningen skulle en användare som samtyckt före V3.2 se en chatt utan
+	 * samtyckesruta men få 403 från servern, eftersom localStorage och
+	 * user_metadata fortfarande såg ut att räcka.
+	 *
+	 * Gäster har ingen serverrad och behåller det tidigare beteendet.
+	 */
+	async function syncSensitiveConsent(session: Session | null) {
+		if (!session) {
+			hasSensitiveDataConsent = hasSensitiveConsent(undefined);
+			return;
+		}
+
+		try {
+			const response = await fetch('/api/consent/chat-ai', {
+				headers: { Authorization: `Bearer ${session.access_token}` }
+			});
+
+			if (response.ok) {
+				const payload = (await response.json()) as { status?: string };
+				hasSensitiveDataConsent = payload.status === 'granted';
+				return;
+			}
+		} catch {
+			// Nätverksfel ska inte låsa upp chatten. Faller igenom till false.
+		}
+
+		hasSensitiveDataConsent = false;
+	}
+
+	async function acceptSensitiveConsent() {
 		const consent = grantSensitiveConsent();
-		hasSensitiveDataConsent = true;
 		void persistUserConsent(consent);
+
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		if (!session) {
+			// Gästläge: oförändrat, ingen serverrad finns att skriva.
+			hasSensitiveDataConsent = true;
+			return;
+		}
+
+		const response = await fetch('/api/consent/chat-ai', {
+			method: 'POST',
+			headers: { Authorization: `Bearer ${session.access_token}` }
+		});
+
+		hasSensitiveDataConsent = response.ok;
 	}
 
 
