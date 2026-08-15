@@ -1,23 +1,21 @@
 import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-	createHealthConsentRecord,
-	SENSITIVE_CONSENT_HEADER,
-	SENSITIVE_CONSENT_VERSION
-} from '$lib/consent';
 
 const mocks = vi.hoisted(() => ({
-	createClient: vi.fn(),
-	generateAIText: vi.fn()
+	createServiceClient: vi.fn(),
+	createTokenClient: vi.fn(),
+	generateAIText: vi.fn(),
+	hasDiaryAiConsent: vi.fn()
 }));
 
-vi.mock('$env/dynamic/private', () => ({
-	env: { SUPABASE_URL: 'https://example.supabase.co', SUPABASE_ANON_KEY: 'test-key' }
+vi.mock('$lib/server/supabase-admin', () => ({
+	createServiceClient: mocks.createServiceClient,
+	createTokenClient: mocks.createTokenClient
 }));
 
-vi.mock('$env/dynamic/public', () => ({ env: {} }));
-
-vi.mock('@supabase/supabase-js', () => ({ createClient: mocks.createClient }));
+vi.mock('$lib/server/diary-ai-consent', () => ({
+	hasDiaryAiConsent: mocks.hasDiaryAiConsent
+}));
 
 vi.mock('$lib/server/ai/text-generation', async (importOriginal) => {
 	const actual = await importOriginal<typeof import('$lib/server/ai/text-generation')>();
@@ -37,22 +35,19 @@ function reflectRequest(headers: HeadersInit = {}) {
 	});
 }
 
-function checkinRequest() {
+function checkinRequest(headers: HeadersInit = {}) {
 	return new Request('http://localhost/api/diary/checkin-reflection', {
 		method: 'POST',
-		headers: { 'content-type': 'application/json', authorization: 'Bearer access-token' },
+		headers: { 'content-type': 'application/json', authorization: 'Bearer access-token', ...headers },
 		body: JSON.stringify({ selectedMoods: ['orolig'], moodFreeText: 'Det känns tungt i dag.' })
 	});
 }
 
-function authenticatedUser(metadata: unknown) {
-	return {
-		id: 'user-1',
-		user_metadata: metadata
-	};
+function authenticatedUser(metadata: unknown = {}) {
+	return { id: 'user-1', user_metadata: metadata };
 }
 
-function reflectEvent(metadata: unknown, headers: HeadersInit = {}) {
+function reflectEvent(metadata: unknown = {}, headers: HeadersInit = {}) {
 	return {
 		request: reflectRequest(headers),
 		locals: {
@@ -68,7 +63,7 @@ function reflectEvent(metadata: unknown, headers: HeadersInit = {}) {
 	} as unknown as Parameters<typeof reflectPost>[0];
 }
 
-function checkinClient(metadata: unknown) {
+function checkinClient(metadata: unknown = {}) {
 	return {
 		auth: {
 			getUser: vi.fn().mockResolvedValue({
@@ -79,91 +74,91 @@ function checkinClient(metadata: unknown) {
 	};
 }
 
-describe('diary reflection consent', () => {
+describe('server-owned diary AI consent', () => {
 	beforeEach(() => {
-		mocks.createClient.mockReset();
+		mocks.createServiceClient.mockReset();
+		mocks.createTokenClient.mockReset();
 		mocks.generateAIText.mockReset();
+		mocks.hasDiaryAiConsent.mockReset();
+		mocks.createServiceClient.mockReturnValue({});
+		mocks.createTokenClient.mockReturnValue(checkinClient());
 		mocks.generateAIText.mockResolvedValue({ text: 'Ta ett lugnt andetag.' });
+		mocks.hasDiaryAiConsent.mockResolvedValue(true);
 	});
 
-	it('allows /api/diary/reflect only with valid server-side consent', async () => {
-		const response = await reflectPost(
-			reflectEvent({
-				health_data_processing_consent: createHealthConsentRecord('2026-08-15T08:00:00.000Z')
-			})
-		);
-
-		expect(response.status).toBe(200);
-		expect(mocks.generateAIText).toHaveBeenCalledOnce();
-	});
-
-	it('blocks /api/diary/reflect without consent before it can call OpenAI', async () => {
-		const response = await reflectPost(reflectEvent({}));
-
-		expect(response.status).toBe(403);
-		expect(await response.json()).toEqual({
-			error: 'Consent required for sensitive diary AI features.'
-		});
-		expect(mocks.generateAIText).not.toHaveBeenCalled();
-	});
-
-	it('blocks stale consent even when the reflection request carries a consent header', async () => {
-		const response = await reflectPost(
-			reflectEvent(
-				{
-					health_data_processing_consent: {
-						...createHealthConsentRecord('2026-08-15T08:00:00.000Z'),
-						policy_version: 'outdated-policy'
-					}
-				},
-				{ [SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION }
-			)
-		);
-
-		expect(response.status).toBe(403);
-		expect(mocks.generateAIText).not.toHaveBeenCalled();
-	});
-
-	it('allows /api/diary/checkin-reflection only with current server-side consent', async () => {
-		mocks.createClient.mockReturnValue(
-			checkinClient({
-				health_data_processing_consent: createHealthConsentRecord('2026-08-15T08:00:00.000Z')
-			})
-		);
-
-		const response = await checkinReflectionPost({
+	it('allows both diary AI endpoints only after the shared server consent check succeeds', async () => {
+		const reflectResponse = await reflectPost(reflectEvent());
+		const checkinResponse = await checkinReflectionPost({
 			request: checkinRequest()
 		} as unknown as Parameters<typeof checkinReflectionPost>[0]);
 
-		expect(response.status).toBe(200);
-		expect(mocks.generateAIText).toHaveBeenCalledOnce();
+		expect(reflectResponse.status).toBe(200);
+		expect(checkinResponse.status).toBe(200);
+		expect(mocks.hasDiaryAiConsent).toHaveBeenCalledTimes(2);
+		expect(mocks.hasDiaryAiConsent).toHaveBeenNthCalledWith(1, {}, 'user-1');
+		expect(mocks.hasDiaryAiConsent).toHaveBeenNthCalledWith(2, {}, 'user-1');
+		expect(mocks.generateAIText).toHaveBeenCalledTimes(2);
 	});
 
-	it('blocks missing or invalid consent for check-in reflections before the AI call', async () => {
-		mocks.createClient.mockReturnValue(
-			checkinClient({
+	it('blocks a request with no server row before any provider call', async () => {
+		mocks.hasDiaryAiConsent.mockResolvedValue(false);
+
+		const response = await reflectPost(reflectEvent());
+
+		expect(response.status).toBe(403);
+		expect(mocks.generateAIText).not.toHaveBeenCalled();
+	});
+
+	it('blocks a consent header alone before any provider call', async () => {
+		mocks.hasDiaryAiConsent.mockResolvedValue(false);
+
+		const response = await checkinReflectionPost({
+			request: checkinRequest({ 'x-mittpsyke-sensitive-consent': '2026-04-29' })
+		} as unknown as Parameters<typeof checkinReflectionPost>[0]);
+
+		expect(response.status).toBe(403);
+		expect(mocks.generateAIText).not.toHaveBeenCalled();
+	});
+
+	it('closes the V2 gap: valid-looking user metadata alone is blocked', async () => {
+		mocks.hasDiaryAiConsent.mockResolvedValue(false);
+
+		const response = await reflectPost(
+			reflectEvent({
 				health_data_processing_consent: {
-					...createHealthConsentRecord('2026-08-15T08:00:00.000Z'),
-					type: 'other-consent'
+					accepted: true,
+					type: 'health_data_processing',
+					policy_version: '2026-04-29',
+					timestamp: '2026-08-15T08:00:00.000Z'
 				}
 			})
 		);
 
+		expect(response.status).toBe(403);
+		expect(mocks.generateAIText).not.toHaveBeenCalled();
+	});
+
+	it('blocks revoked consent before either endpoint can call the provider', async () => {
+		mocks.hasDiaryAiConsent.mockResolvedValue(false);
+
 		const response = await checkinReflectionPost({
 			request: checkinRequest()
 		} as unknown as Parameters<typeof checkinReflectionPost>[0]);
 
 		expect(response.status).toBe(403);
-		expect(await response.json()).toEqual({
-			success: false,
-			error: 'Consent required for sensitive diary AI features.'
-		});
 		expect(mocks.generateAIText).not.toHaveBeenCalled();
 	});
 
-	it('leaves the local-only diary helper free of server and AI requests', () => {
+	it('keeps local-only diary storage free of server and AI requests', () => {
 		const source = readFileSync(new URL('../../../lib/diary-draft.ts', import.meta.url), 'utf8');
 
 		expect(source).not.toMatch(/fetch\(|supabase|openai/i);
+	});
+
+	it('does not add diary AI consent to ordinary diary saving', () => {
+		const source = readFileSync(new URL('./create/+server.ts', import.meta.url), 'utf8');
+
+		expect(source).not.toContain('hasDiaryAiConsent');
+		expect(source).not.toContain('user_ai_consents');
 	});
 });

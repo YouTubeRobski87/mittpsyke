@@ -5,7 +5,8 @@ import {
 	DIARY_REFLECTION_FALLBACK
 } from '$lib/server/ai/diary-reflection';
 import { resolveDeterministicRiskGuard } from '$lib/ai/crisis-guard';
-import { hasHealthConsentInMetadata } from '$lib/consent';
+import { createServiceClient } from '$lib/server/supabase-admin';
+import { hasDiaryAiConsent } from '$lib/server/diary-ai-consent';
 import type { RequestHandler } from './$types';
 
 // Rate limiting: per authenticated user.
@@ -17,9 +18,6 @@ const MIN_TEXT_LENGTH = 50;
 
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Reflektioner kan innehålla känsliga uppgifter. Headern som klienten skickar
-	// är inte ett behörighetsbevis; kontrollera i stället den aktuella, sparade
-	// consentposten hos den autentiserade användaren innan någon text behandlas.
 	const {
 		data: { user },
 		error: authError
@@ -28,7 +26,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: 'Unauthorized.' }, { status: 401 });
 	}
 
-	if (!hasHealthConsentInMetadata(user.user_metadata)) {
+	const serviceClient = createServiceClient();
+	if (!serviceClient) {
+		return json({ error: 'Server configuration error.' }, { status: 500 });
+	}
+
+	if (!(await hasDiaryAiConsent(serviceClient, user.id))) {
 		return json({ error: 'Consent required for sensitive diary AI features.' }, { status: 403 });
 	}
 

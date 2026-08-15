@@ -56,6 +56,10 @@
 	let consentSaving = $state(false);
 	let consentMessage = $state('');
 	let consentMessageType = $state<'success' | 'error'>('success');
+	let diaryAiConsentGranted = $state(false);
+	let diaryAiConsentSaving = $state(false);
+	let diaryAiConsentMessage = $state('');
+	let diaryAiConsentMessageType = $state<'success' | 'error'>('success');
 
 	// Mina mål + AI-kontext från dagbok
 	type PersonalGoal = { id: string; text: string; status: 'active' | 'done'; createdAt: string };
@@ -159,6 +163,7 @@
 			personalGoals = Array.isArray(meta.personal_goals) ? (meta.personal_goals as PersonalGoal[]) : [];
 			aiDiaryContextEnabled = meta.ai_diary_context_enabled === true;
 			await loadSmsPreference();
+			await loadDiaryAiConsent(session.access_token);
 			loading = false;
 		}
 
@@ -186,6 +191,18 @@
 		} catch {
 			smsMessage = 'Kunde inte hämta SMS-inställningen just nu.';
 			smsMessageType = 'error';
+		}
+	}
+
+	async function loadDiaryAiConsent(accessToken: string) {
+		try {
+			const response = await fetch('/api/consent/diary-ai', {
+				headers: { Authorization: `Bearer ${accessToken}` }
+			});
+			const payload = (await response.json().catch(() => null)) as { status?: string } | null;
+			diaryAiConsentGranted = response.ok && payload?.status === 'granted';
+		} catch {
+			diaryAiConsentGranted = false;
 		}
 	}
 
@@ -272,6 +289,44 @@
 		consentMessage =
 			'Samtycket har återkallats. MittPsyke ber om nytt samtycke nästa gång känsliga uppgifter behöver behandlas.';
 		consentMessageType = 'success';
+	}
+
+	async function withdrawDiaryAiConsent() {
+		diaryAiConsentSaving = true;
+		diaryAiConsentMessage = '';
+
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		if (!session?.access_token) {
+			diaryAiConsentSaving = false;
+			diaryAiConsentMessage = 'Du behöver vara inloggad för att återkalla samtycket.';
+			diaryAiConsentMessageType = 'error';
+			return;
+		}
+
+		try {
+			const response = await fetch('/api/consent/diary-ai', {
+				method: 'DELETE',
+				headers: { Authorization: `Bearer ${session.access_token}` }
+			});
+
+			if (!response.ok) {
+				diaryAiConsentMessage = 'Kunde inte återkalla samtycket just nu.';
+				diaryAiConsentMessageType = 'error';
+				return;
+			}
+
+			diaryAiConsentGranted = false;
+			diaryAiConsentMessage = 'Samtycket för AI-reflektioner i dagboken har återkallats.';
+			diaryAiConsentMessageType = 'success';
+		} catch {
+			diaryAiConsentMessage = 'Kunde inte nå servern. Försök igen.';
+			diaryAiConsentMessageType = 'error';
+		} finally {
+			diaryAiConsentSaving = false;
+		}
 	}
 
 	async function saveGoals(nextGoals: PersonalGoal[]) {
@@ -777,6 +832,30 @@
 
 			{#if consentMessage}
 				<p class="feedback {consentMessageType}">{consentMessage}</p>
+			{/if}
+		</section>
+
+		<section class="auth-panel section-block">
+			<h2>Samtycke för AI-reflektioner i dagboken</h2>
+			<p class="field-hint">
+				Detta samtycke gäller bara när du aktivt väljer att få en AI-reflektion från din
+				incheckning i dagboken. Det är separat från vanligt sparande av dagbokstext.
+			</p>
+
+			{#if diaryAiConsentGranted}
+				<p class="field-hint">Aktivt samtycke för AI-reflektioner i dagboken.</p>
+				<button class="save-btn sms-off-btn" onclick={withdrawDiaryAiConsent} disabled={diaryAiConsentSaving}>
+					{diaryAiConsentSaving ? 'Sparar...' : 'Återkalla samtycke för AI-reflektioner'}
+				</button>
+			{:else}
+				<p class="field-hint">
+					Det finns inget aktivt samtycke för AI-reflektioner i dagboken. Du kan ge det
+					nästa gång du väljer att skapa en reflektion.
+				</p>
+			{/if}
+
+			{#if diaryAiConsentMessage}
+				<p class="feedback {diaryAiConsentMessageType}">{diaryAiConsentMessage}</p>
 			{/if}
 		</section>
 

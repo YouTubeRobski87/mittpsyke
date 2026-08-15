@@ -13,9 +13,7 @@
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
-		grantSensitiveConsent,
-		hasSensitiveConsent,
-		type HealthConsentRecord
+		grantSensitiveConsent
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import { notifyDiaryEntriesChanged } from '$lib/diary-events';
@@ -83,6 +81,7 @@
 	let sessionToken = '';
 	let sessionUserId = '';
 	let hasHealthDataConsent = false;
+	let hasDiaryAiConsent = false;
 
 	function logMilestoneDebug(details: {
 		milestoneKey?: string;
@@ -376,22 +375,18 @@
 		void goto(`/dagbok/checkin?prefill=${encodeURIComponent(prefill)}`);
 	}
 
-	async function persistUserConsent(consent: HealthConsentRecord) {
-		const { error } = await supabase.auth.updateUser({
-			data: {
-				health_data_processing_consent: consent
-			}
+	async function grantDiaryAiConsent() {
+		if (!sessionToken) throw new Error('Du behöver vara inloggad för att ge samtycke.');
+
+		const response = await fetch('/api/consent/diary-ai', {
+			method: 'POST',
+			headers: { Authorization: `Bearer ${sessionToken}` }
 		});
 
-		if (!error) {
-			await supabase.auth.refreshSession();
-		}
-	}
-
-	function acceptHealthConsent() {
-		const consent = grantSensitiveConsent();
+		if (!response.ok) throw new Error('Kunde inte spara samtycket just nu.');
+		grantSensitiveConsent();
 		hasHealthDataConsent = true;
-		void persistUserConsent(consent);
+		hasDiaryAiConsent = true;
 	}
 
 	onMount(async () => {
@@ -407,7 +402,17 @@
 
 		sessionToken = session.access_token;
 		sessionUserId = session.user.id;
-		hasHealthDataConsent = hasSensitiveConsent(session.user.user_metadata);
+		try {
+			const response = await fetch('/api/consent/diary-ai', {
+				headers: { Authorization: `Bearer ${session.access_token}` }
+			});
+			const payload = (await response.json().catch(() => null)) as { status?: string } | null;
+			hasDiaryAiConsent = response.ok && payload?.status === 'granted';
+			hasHealthDataConsent = hasDiaryAiConsent;
+		} catch {
+			hasDiaryAiConsent = false;
+			hasHealthDataConsent = false;
+		}
 		authLoading = false;
 	});
 </script>
@@ -436,8 +441,13 @@
 				<p>{authError}</p>
 				<a href="/login" class="auth-button mt-3">Logga in</a>
 			</section>
-		{:else if !hasHealthDataConsent}
-			<ConsentGate onAccept={acceptHealthConsent} />
+		{:else if !hasDiaryAiConsent}
+			<ConsentGate
+				title="Innan du får din reflektion"
+				dataLabel="Det du väljer i incheckningen"
+				serviceLabel="MittPsyke och OpenAI för att skapa en kort reflektion"
+				onAccept={grantDiaryAiConsent}
+			/>
 		{:else}
 			<section class="auth-panel auth-panel-accent checkin-panel">
 				<div class="progress-wrap" aria-label={`Steg ${step} av 6`}>

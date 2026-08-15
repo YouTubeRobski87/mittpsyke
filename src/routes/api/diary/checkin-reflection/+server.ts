@@ -1,7 +1,4 @@
 import { json } from '@sveltejs/kit';
-import { createClient } from '@supabase/supabase-js';
-import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
 import type { RequestHandler } from './$types';
 import { resolveDeterministicRiskGuard } from '$lib/ai/crisis-guard';
 import {
@@ -9,7 +6,8 @@ import {
 	CHECKIN_REFLECTION_FALLBACK
 } from '$lib/server/ai/checkin-reflection';
 import { generateAIText } from '$lib/server/ai/text-generation';
-import { hasHealthConsentInMetadata } from '$lib/consent';
+import { createServiceClient, createTokenClient } from '$lib/server/supabase-admin';
+import { hasDiaryAiConsent } from '$lib/server/diary-ai-consent';
 
 function errorResponse(message: string, status: number) {
 	return json({ success: false, error: message }, { status });
@@ -51,16 +49,10 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('Missing or invalid Authorization header.', 401);
 	}
 
-	const supabaseUrl = env.SUPABASE_URL || publicEnv.PUBLIC_SUPABASE_URL;
-	const supabaseAnonKey = env.SUPABASE_ANON_KEY || publicEnv.PUBLIC_SUPABASE_ANON_KEY;
-	if (!supabaseUrl || !supabaseAnonKey) {
+	const supabase = createTokenClient(token);
+	if (!supabase) {
 		return errorResponse('Server configuration error.', 500);
 	}
-
-	const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-		auth: { autoRefreshToken: false, persistSession: false },
-		global: { headers: { Authorization: `Bearer ${token}` } }
-	});
 
 	const {
 		data: { user },
@@ -71,10 +63,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('Unauthorized.', 401);
 	}
 
-	// En klientheader kan förfalskas. AI-anropet tillåts bara när den
-	// autentiserade användarens aktuella metadata innehåller en giltig,
-	// versionsbunden consentpost.
-	if (!hasHealthConsentInMetadata(user.user_metadata)) {
+	const serviceClient = createServiceClient();
+	if (!serviceClient) {
+		return errorResponse('Server configuration error.', 500);
+	}
+
+	if (!(await hasDiaryAiConsent(serviceClient, user.id))) {
 		return errorResponse('Consent required for sensitive diary AI features.', 403);
 	}
 

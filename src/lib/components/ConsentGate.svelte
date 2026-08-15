@@ -12,13 +12,25 @@
 		serviceLabel?: string;
 		policyHref?: string;
 		responsibilityHref?: string;
-		onAccept?: () => void;
+		onAccept?: () => void | Promise<void>;
 	} = $props();
 
 	const usesCustomCopy = $derived(Boolean(dataLabel || serviceLabel));
+	let submitting = $state(false);
+	let errorMessage = $state('');
 
-	function handleAccept() {
-		onAccept();
+	async function handleAccept() {
+		if (submitting) return;
+		submitting = true;
+		errorMessage = '';
+
+		try {
+			await onAccept();
+		} catch {
+			errorMessage = 'Kunde inte spara ditt samtycke just nu. Försök igen.';
+		} finally {
+			submitting = false;
+		}
 	}
 </script>
 
@@ -54,9 +66,13 @@
 		<button
 			type="button"
 			class="rounded-[var(--radius-input)] bg-[var(--primary)] px-3 py-2 text-sm font-medium text-white hover:opacity-95 transition-opacity cursor-pointer"
-			onclick={handleAccept}
+			onclick={() => void handleAccept()}
+			disabled={submitting}
 		>
-			Jag förstår och vill fortsätta
+			{submitting ? 'Sparar...' : 'Jag förstår och vill fortsätta'}
 		</button>
+		{#if errorMessage}
+			<p class="mt-2 text-sm text-[var(--error-foreground)]" role="alert">{errorMessage}</p>
+		{/if}
 	</div>
 </div>
