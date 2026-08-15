@@ -1,28 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import {
-	PROGRESS_COMPANION_ANIMALS,
-	getProgressCompanionDisplayName
+	getProgressCompanionDayState,
+	getProgressCompanionDayStateLabel
 } from './progressCompanion';
 
-describe('companion display names', () => {
+describe('Framstegs dygnsrytm', () => {
 	it.each([
-		['fox', 'Vide'],
-		['bear', 'Balder'],
-		['wolf', 'Ylva']
-	] as const)('maps %s to %s', (id, displayName) => {
-		expect(getProgressCompanionDisplayName(id)).toBe(displayName);
-	});
+		['05:00', '2026-08-15T03:00:00Z', 'morning', 'Morgon'],
+		['09:59', '2026-08-15T07:59:00Z', 'morning', 'Morgon'],
+		['10:00', '2026-08-15T08:00:00Z', 'day', 'Dag'],
+		['16:59', '2026-08-15T14:59:00Z', 'day', 'Dag'],
+		['17:00', '2026-08-15T15:00:00Z', 'evening', 'Eftermiddag'],
+		['19:59', '2026-08-15T17:59:00Z', 'evening', 'Eftermiddag'],
+		['20:00', '2026-08-15T18:00:00Z', 'night', 'Kväll'],
+		['04:59', '2026-08-15T02:59:00Z', 'night', 'Kväll']
+	])('%s i Stockholm ger %s', (_time, iso, expectedState, expectedLabel) => {
+		const state = getProgressCompanionDayState(new Date(iso));
 
-	it('keeps the technical species IDs unchanged', () => {
-		expect(PROGRESS_COMPANION_ANIMALS.slice(0, 3).map((companion) => companion.id)).toEqual([
-			'fox',
-			'bear',
-			'wolf'
-		]);
-	});
-
-	it('formats an unknown companion ID safely', () => {
-		expect(getProgressCompanionDisplayName('river-otter')).toBe('River otter');
-		expect(getProgressCompanionDisplayName(null)).toBe('Din följeslagare');
+		expect(state).toBe(expectedState);
+		expect(getProgressCompanionDayStateLabel(state)).toBe(expectedLabel);
 	});
 });

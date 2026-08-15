@@ -228,10 +228,17 @@
 	.world-effect { left: var(--x, 0); top: var(--y, 0); width: var(--w, auto); height: var(--h, auto); opacity: 0; will-change: transform, opacity; }
 	.is-paused :global(.world-effect) { animation-play-state: paused !important; }
 
-	.world-light { inset: -18% auto auto -10%; width: 58%; height: 70%; border-radius: 50%; background: radial-gradient(circle, rgba(255, 243, 206, 0.24) 0%, rgba(255, 243, 206, 0.08) 44%, transparent 72%); opacity: var(--opacity, 0.42); animation: worldLightShift var(--duration, 52000ms) ease-in-out infinite alternate; }
-	.living-world[data-time='night'] .world-light { background: radial-gradient(circle, rgba(171, 204, 255, 0.12) 0%, rgba(171, 204, 255, 0.05) 46%, transparent 74%); }
-	.world-cloud { border-radius: 999px; background: radial-gradient(ellipse at 22% 58%, rgba(255, 252, 238, 0.9), transparent 58%), radial-gradient(ellipse at 54% 48%, rgba(255, 252, 238, 0.8), transparent 62%), radial-gradient(ellipse at 78% 60%, rgba(255, 252, 238, 0.64), transparent 58%); filter: blur(7px); opacity: 0; transform: translate3d(-8%, 0, 0) scale(var(--scale, 1)); animation: cloudDrift var(--duration, 140000ms) linear var(--delay, 0ms) infinite; }
-	.cloud-front { filter: blur(9px); }
+	.world-light { inset: -18% auto auto -10%; width: 58%; height: 70%; border-radius: 50%; background: radial-gradient(circle, rgba(255, 243, 206, 0.24) 0%, rgba(255, 243, 206, 0.08) 44%, transparent 72%); opacity: var(--opacity, 0.42); animation: worldLightShift var(--duration, 52000ms) ease-in-out infinite alternate; transition: opacity 1200ms ease, background 1200ms ease; }
+	.living-world[data-time='morning'] .world-light { background: radial-gradient(circle at 28% 42%, rgba(255, 215, 154, 0.3) 0%, rgba(255, 227, 182, 0.11) 46%, transparent 74%); }
+	.living-world[data-time='day'] .world-light { inset: -22% auto auto 12%; background: radial-gradient(circle, rgba(232, 245, 255, 0.2) 0%, rgba(206, 230, 255, 0.07) 46%, transparent 75%); }
+	.living-world[data-time='evening'] .world-light { inset: -12% -8% auto auto; background: radial-gradient(circle at 62% 38%, rgba(255, 187, 120, 0.28) 0%, rgba(255, 208, 158, 0.1) 47%, transparent 74%); }
+	.living-world[data-time='night'] .world-light { background: radial-gradient(circle, rgba(171, 204, 255, 0.1) 0%, rgba(171, 204, 255, 0.035) 46%, transparent 74%); }
+	.world-cloud { border-radius: 50% 54% 48% 52% / 56% 48% 52% 44%; background: radial-gradient(ellipse at 20% 65%, rgba(250, 246, 231, 0.54), transparent 42%), radial-gradient(ellipse at 48% 45%, rgba(255, 252, 241, 0.64), transparent 48%), radial-gradient(ellipse at 78% 61%, rgba(236, 241, 230, 0.46), transparent 44%); filter: blur(12px); mix-blend-mode: soft-light; opacity: 0; transform: translate3d(-8%, 0, 0) scale(var(--scale, 1)); animation: cloudDrift var(--duration, 140000ms) linear var(--delay, 0ms) infinite; transition: filter 1200ms ease; }
+	.cloud-front { filter: blur(16px); }
+	.living-world[data-time='morning'] .world-cloud { --cloud-layer-opacity: 0.86; }
+	.living-world[data-time='day'] .world-cloud { --cloud-layer-opacity: 1; mix-blend-mode: screen; }
+	.living-world[data-time='evening'] .world-cloud { --cloud-layer-opacity: 0.72; }
+	.living-world[data-time='night'] .world-cloud { --cloud-layer-opacity: 0.26; filter: blur(17px) saturate(0.6); }
 	/* Månen har ingen egen animation eller timer. worldScene.ts deklarerar den före
 	   .world-cloud, så molnen behåller sitt vanliga lager ovanpå halo och månskiva. */
 	.world-moon { width: clamp(3.25rem, 7vw, 5.5rem); aspect-ratio: 1; height: auto; border-radius: 50%; background: radial-gradient(circle, rgba(239, 217, 154, 0.15) 0%, rgba(226, 199, 138, 0.07) 42%, transparent 72%); opacity: var(--opacity, 0.82); transform: translate3d(-50%, -50%, 0); }

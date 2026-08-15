@@ -1423,6 +1423,7 @@
 		content: '';
 		position: absolute;
 		pointer-events: none;
+		transition: background 1200ms ease, opacity 1200ms ease;
 	}
 
 	.companion-media::before {
@@ -1452,6 +1453,22 @@
 		);
 	}
 
+	.companion-media[data-time='morning']::after {
+		background: linear-gradient(180deg, rgb(255 210 154 / 0.04) 0%, rgb(82 61 44 / 0.1) 36%, rgb(7 14 23 / 0.64) 100%);
+	}
+
+	.companion-media[data-time='day']::after {
+		background: linear-gradient(180deg, rgb(204 234 255 / 0.02) 0%, rgb(7 17 28 / 0.1) 34%, rgb(5 12 22 / 0.6) 100%);
+	}
+
+	.companion-media[data-time='evening']::after {
+		background: linear-gradient(180deg, rgb(255 168 104 / 0.06) 0%, rgb(97 46 29 / 0.16) 35%, rgb(11 15 23 / 0.68) 100%);
+	}
+
+	.companion-media[data-time='night']::after {
+		background: linear-gradient(180deg, rgb(2 13 31 / 0.2) 0%, rgb(2 10 25 / 0.54) 34%, rgb(2 8 20 / 0.88) 100%);
+	}
+
 	.companion-world-scene {
 		position: relative;
 		z-index: var(--scene-background);
@@ -1462,6 +1479,7 @@
 		display: block;
 		transform: scale(1.018);
 		animation: companionWorldDrift 18s ease-in-out infinite alternate;
+		transition: filter 1200ms ease;
 		will-change: transform, filter;
 	}
 
@@ -1469,12 +1487,20 @@
 		z-index: var(--scene-ambient);
 	}
 
+	.companion-media[data-time='morning'] .companion-world-scene {
+		filter: saturate(0.96) brightness(1.04) sepia(0.1) hue-rotate(-6deg);
+	}
+
+	.companion-media[data-time='day'] .companion-world-scene {
+		filter: saturate(1.04) brightness(1.05) contrast(1.02);
+	}
+
 	.companion-media[data-time='evening'] .companion-world-scene {
-		filter: saturate(0.96) brightness(0.96) sepia(0.04);
+		filter: saturate(1.04) brightness(0.91) sepia(0.12) hue-rotate(-8deg);
 	}
 
 	.companion-media[data-time='night'] .companion-world-scene {
-		filter: saturate(1.04) brightness(0.95);
+		filter: saturate(0.66) brightness(0.52) contrast(1.08) sepia(0.1) hue-rotate(8deg);
 	}
 
 	.companion-media :global(.progress-companion-pose) {
@@ -1806,7 +1832,7 @@
 
 		.companion-world-scene {
 			transform: none;
-			filter: none;
+			transition: none;
 		}
 
 		.companion-media::before,

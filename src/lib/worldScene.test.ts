@@ -222,9 +222,11 @@ describe('getLivingWorldScene - växtnivå styr scenen', () => {
 		expect(scene.features.drift).toBe(true);
 	});
 
-	it('moln förblir pausade oavsett växtnivå', () => {
+	it('moln är ett beständigt bakgrundslager oavsett växtnivå', () => {
 		for (const growthLevel of [0, 4]) {
-			expect(getLivingWorldScene({ ...fixed, growthLevel }).features.cloud).toBe(false);
+			const scene = getLivingWorldScene({ ...fixed, growthLevel });
+			expect(scene.features.cloud).toBe(true);
+			expect(scene.effects.filter((effect) => effect.kind === 'cloud').every((effect) => effect.enabled)).toBe(true);
 		}
 	});
 });
@@ -262,9 +264,9 @@ describe('månen i den gemensamma world-scenen', () => {
 		expect(moon(date)).toMatchObject(getMoonPosition(scene.timeOfDay, scene.localTimeMinutes) ?? {});
 	});
 
-	it('följer en lugn båge från tidig till sen natt', () => {
-		const early = getMoonPosition('night', 22 * 60);
-		const middle = getMoonPosition('night', 1 * 60 + 30);
+	it('följer en lugn båge från tidig till sen kväll', () => {
+		const early = getMoonPosition('night', 20 * 60);
+		const middle = getMoonPosition('night', 0 * 60 + 30);
 		const late = getMoonPosition('night', 5 * 60);
 
 		expect(early).not.toBeNull();

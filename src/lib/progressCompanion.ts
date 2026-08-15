@@ -358,7 +358,7 @@ export function getProgressCompanionDayState(date = new Date()): ProgressCompani
 	if (!Number.isFinite(hour)) return 'day';
 	if (hour >= 5 && hour < 10) return 'morning';
 	if (hour >= 10 && hour < 17) return 'day';
-	if (hour >= 17 && hour < 22) return 'evening';
+	if (hour >= 17 && hour < 20) return 'evening';
 	return 'night';
 }
 
@@ -382,8 +382,8 @@ export function getProgressCompanionLocalTime(date = new Date()) {
 
 export function getProgressCompanionDayStateLabel(state: ProgressCompanionDayState): string {
 	if (state === 'morning') return 'Morgon';
-	if (state === 'evening') return 'Kväll';
-	if (state === 'night') return 'Natt';
+	if (state === 'evening') return 'Eftermiddag';
+	if (state === 'night') return 'Kväll';
 	return 'Dag';
 }
 

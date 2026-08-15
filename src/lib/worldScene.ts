@@ -100,17 +100,6 @@ const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
 	drift: true
 };
 
-// Extensionspunkt för att stänga av en effekttyp i hela scenen utan att röra
-// enskilda effekter - t.ex. när en effekt inte har rätt assets ännu.
-//
-// Molnen är fortsatt pausade: de täta CSS-blobbarna konkurrerar visuellt med
-// fotots egen himmel. För att slå på dem behöver .world-cloud i
-// AmbientWorld.svelte först göras om till breda, flacka slöjor med
-// soft-light-blend så de lägger sig i fotots ljus i stället för ovanpå det.
-const PAUSED_AMBIENT_FEATURES: Partial<Record<LivingWorldEffectKind, boolean>> = {
-	cloud: false
-};
-
 /**
  * Antal sparade dagboksanteckningar -> växtnivå (0-4). Samma trösklar som
  * framstegssidan alltid använt; samlad här så både världen och sifferstatistiken
@@ -212,26 +201,26 @@ const baseEffects: LivingWorldEffect[] = [
 		kind: 'cloud',
 		enabled: true,
 		className: 'cloud-back',
-		x: 10,
-		y: 9,
-		width: 28,
-		height: 9,
-		durationMs: 84_000,
+		x: 4,
+		y: 7,
+		width: 39,
+		height: 11,
+		durationMs: 96_000,
 		delayMs: -18_000,
-		opacity: 0.24
+		opacity: 0.2
 	},
 	{
 		id: 'cloud-front',
 		kind: 'cloud',
 		enabled: true,
 		className: 'cloud-front',
-		x: 48,
-		y: 15,
-		width: 22,
-		height: 7,
-		durationMs: 112_000,
+		x: 43,
+		y: 14,
+		width: 32,
+		height: 9,
+		durationMs: 126_000,
 		delayMs: -61_000,
-		opacity: 0.18
+		opacity: 0.14
 	},
 	{
 		id: 'mist-one',
@@ -570,7 +559,7 @@ function getMistOpacity(timeOfDay: ProgressCompanionDayState): number {
 export type MoonPosition = { x: number; y: number };
 
 /**
- * En lugn, deterministisk båge över den befintliga nattperioden (22:00–05:00).
+ * En lugn, deterministisk båge över den befintliga kvällsperioden (20:00–05:00).
  * Den använder inga timers eller animationer: routen uppdaterar redan scenens
  * datum varje minut och samma lokala världstid ger alltid samma läge.
  */
@@ -580,10 +569,10 @@ export function getMoonPosition(
 ): MoonPosition | null {
 	if (timeOfDay !== 'night') return null;
 
-	const minutesSinceNightStart = localTimeMinutes >= 22 * 60
-		? localTimeMinutes - 22 * 60
-		: localTimeMinutes + 2 * 60;
-	const progress = Math.min(Math.max(minutesSinceNightStart / (7 * 60), 0), 1);
+	const minutesSinceNightStart = localTimeMinutes >= 20 * 60
+		? localTimeMinutes - 20 * 60
+		: localTimeMinutes + 4 * 60;
+	const progress = Math.min(Math.max(minutesSinceNightStart / (9 * 60), 0), 1);
 
 	return {
 		// Bågen undviker dashboardens copy och ryms i Kvällsstugans öppna fönsteryta.
@@ -613,13 +602,11 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 	const wind = Math.min(Math.max(input.wind ?? 0.18, 0), 1);
 	const isDaylight = timeOfDay === 'morning' || timeOfDay === 'day';
 	const growth = growthWorldMask(input.growthLevel);
-	// Ordning: växtnivåns sekundärgate först, explicit input.features får skriva
-	// över den (t.ex. tester). Pausade moln behåller sitt standardläge, men en
-	// scen kan uttryckligen återanvända deras befintliga utseende och rörelse.
+	// Ordning: växtnivåns sekundärgate först och explicit input.features får
+	// skriva över den (t.ex. tester). Molnen är ett beständigt, lugnt bakgrundslager.
 	const features = {
 		...ALL_FEATURES,
 		...growth.features,
-		...PAUSED_AMBIENT_FEATURES,
 		...input.features
 	};
 	const mistOpacity = getMistOpacity(timeOfDay);
@@ -640,7 +627,16 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 			next.opacity = (effect.opacity ?? 0.22) * growth.foliageOpacityScale;
 		}
 
-		if (next.kind === 'light' && timeOfDay === 'night') next.opacity = 0.12;
+		if (next.kind === 'light') {
+			next.opacity =
+				timeOfDay === 'morning'
+					? 0.5
+					: timeOfDay === 'day'
+						? 0.32
+						: timeOfDay === 'evening'
+							? 0.42
+							: 0.1;
+		}
 
 		if (next.kind === 'moon') {
 			next.enabled = moonPosition !== null;
