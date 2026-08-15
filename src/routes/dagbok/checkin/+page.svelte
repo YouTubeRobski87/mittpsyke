@@ -1322,8 +1322,10 @@
 		<div class="auth-shell">
 			<div class="diary-layout">
 				<div class="diary-main">
-					<DiaryMoodTimeline entries={entries} />
-
+					<!-- Startpanelen ligger först i huvudkolumnen: valet av hur dagen ska
+					     börja kommer före all data. Full bredd över båda kolumnerna
+					     prövades men sträckte ut raderna (188–316 px död yta mellan
+					     text och knapp), så kolumnbredden är den naturliga. -->
 					<section class="auth-panel diary-paths diary-paths--signed-in">
 						<h2 class="text-base font-semibold">Din privata dagbok</h2>
 						<p class="diary-start-intro text-sm auth-muted">
@@ -1337,17 +1339,6 @@
 							</span>
 							<button type="button" class="auth-button primary diary-start-button" onclick={openWriteEditor}>
 								Börja skriva
-							</button>
-						</div>
-						<div class="diary-start-secondary">
-							<span>Behöver du inspiration?</span>
-							<button
-								type="button"
-								class="diary-start-secondary-action"
-								onclick={answerDailyQuestion}
-								disabled={dailyQuestionLoading && !dailyQuestion && !draftPromptQuestion}
-							>
-								Svara på dagens fråga
 							</button>
 						</div>
 						<!-- Guidad incheckning är ett frivilligt alternativ till att skriva fritt.
@@ -1366,6 +1357,17 @@
 								Starta incheckning
 							</a>
 						</div>
+						<div class="diary-start-secondary">
+							<span>Behöver du inspiration?</span>
+							<button
+								type="button"
+								class="diary-start-secondary-action"
+								onclick={answerDailyQuestion}
+								disabled={dailyQuestionLoading && !dailyQuestion && !draftPromptQuestion}
+							>
+								Svara på dagens fråga
+							</button>
+						</div>
 						{#if showGuidedDiaryPath}
 							<div class="diary-path-grid diary-path-grid--single mt-3">
 								<a href="/dagars-avtryck" class="diary-path-card diary-path-card--guided">
@@ -1378,6 +1380,8 @@
 							</div>
 						{/if}
 					</section>
+
+					<DiaryMoodTimeline entries={entries} />
 
 					<section class="auth-panel daily-question-panel" aria-label="Dagens fråga">
 						<div>

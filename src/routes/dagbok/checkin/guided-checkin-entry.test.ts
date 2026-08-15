@@ -45,6 +45,26 @@ describe('inloggad dagbok: ingång till guidad incheckning', () => {
 		expect(entryIndex).toBeLessThan(dailyQuestionIndex);
 	});
 
+	// Startpanelen ska ligga först i huvudkolumnen, före "Ditt mående över tid".
+	// DOM-ordningen styr både desktop och mobil här, eftersom kolumnerna staplas.
+	it('startpanelen kommer före måendetidslinjen', () => {
+		const startPanelIndex = source.indexOf('diary-paths--signed-in');
+		const moodTimelineIndex = source.indexOf('<DiaryMoodTimeline');
+
+		expect(moodTimelineIndex).toBeGreaterThan(-1);
+		expect(startPanelIndex).toBeLessThan(moodTimelineIndex);
+	});
+
+	// Ordning i panelen: Skriv fritt → Guidad incheckning → inspiration.
+	it('ligger mellan "Skriv fritt" och inspirationsraden', () => {
+		const writeIndex = source.indexOf('>Skriv fritt<');
+		const entryIndex = source.indexOf(`href="${GUIDED_HREF}"`);
+		const inspirationIndex = source.indexOf('Behöver du inspiration?');
+
+		expect(writeIndex).toBeLessThan(entryIndex);
+		expect(entryIndex).toBeLessThan(inspirationIndex);
+	});
+
 	it('marknadsför inte AI i ingången', () => {
 		const card = source.slice(
 			source.indexOf('<div class="diary-start-primary diary-start-guided">'),
