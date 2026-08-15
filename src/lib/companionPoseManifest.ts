@@ -373,27 +373,144 @@ export const WOLF_COMPANION_POSES = [
  * När riktiga pose-assets finns läggs de till här på samma sätt som björnens
  * och vargens, utan att något annat behöver ändras.
  */
+const SCHAFER_DISPLAY_NAME = getProgressCompanionDisplayName('schafer');
+const AUSTRALISK_SHEPHERD_DISPLAY_NAME = getProgressCompanionDisplayName('australisk_shepherd');
+
+/**
+ * Hundarnas sex poser följer samma modell som björnen och vargen: en pose per
+ * bild, dygnsdelar som speglar vad posen föreställer, och `sceneAdjustment.y`
+ * som kompenserar bildens genomskinliga marginal under tassarna.
+ *
+ * y-värdena är inte satta på känsla. CompanionPose ankrar bildens NEDERKANT
+ * (translate -100%), så en pose med tom yta under tassarna svävar. Marginalen
+ * är uppmätt per fil och omräknad till scenprocent:
+ *   flyt% = bottenmarginal% x (renderad elementhöjd / scenhöjd)
+ * På stugscenen (element 310 px, scen 331 px hög) ger det faktorn ~0,26 för
+ * schäfern och ~0,29 för australisk shepherd.
+ *
+ * Ingen scale-justering per pose: alla tolv bilderna är 512x512 med samma
+ * inramning, och höjdskillnaderna mellan poserna är verkliga (en sittande hund
+ * ÄR lägre än en stående). Att normalisera bort dem hade sett fel ut.
+ */
 export const SCHAFER_COMPANION_POSES = [
 	{
-		id: 'schafer-static',
+		id: 'schafer-standing',
 		companionId: 'schafer',
 		role: 'base',
-		dayparts: ['day', 'evening', 'night'],
-		frames: [{ src: dogPoseSrc('schafer.png') }],
-		alt: `Din följeslagare, ${getProgressCompanionDisplayName('schafer')}, står lugnt.`,
-		weight: 1
+		dayparts: ['day', 'evening'],
+		frames: [{ src: dogPoseSrc('schafer-standing.png') }],
+		alt: `Din följeslagare, ${SCHAFER_DISPLAY_NAME}, står lugnt.`,
+		weight: 2.4
+	},
+	{
+		id: 'schafer-sitting',
+		companionId: 'schafer',
+		role: 'base',
+		dayparts: ['day', 'evening'],
+		frames: [{ src: dogPoseSrc('schafer-sitting.png') }],
+		alt: `${SCHAFER_DISPLAY_NAME} sitter stilla.`,
+		weight: 2,
+		sceneAdjustment: { y: 3 }
+	},
+	{
+		id: 'schafer-lying',
+		companionId: 'schafer',
+		role: 'base',
+		dayparts: ['day', 'evening'],
+		frames: [{ src: dogPoseSrc('schafer-lying.png') }],
+		alt: `${SCHAFER_DISPLAY_NAME} ligger ned och vilar.`,
+		weight: 1.4,
+		sceneAdjustment: { y: 3 }
+	},
+	{
+		id: 'schafer-resting',
+		companionId: 'schafer',
+		role: 'base',
+		dayparts: ['evening', 'night'],
+		frames: [{ src: dogPoseSrc('schafer-resting.png') }],
+		alt: `${SCHAFER_DISPLAY_NAME} vilar i lugn takt.`,
+		weight: 1.8,
+		sceneAdjustment: { y: 1 }
+	},
+	{
+		id: 'schafer-sleeping',
+		companionId: 'schafer',
+		role: 'base',
+		dayparts: ['night'],
+		frames: [{ src: dogPoseSrc('schafer-sleeping.png') }],
+		alt: `${SCHAFER_DISPLAY_NAME} sover lugnt.`,
+		weight: 2.4,
+		sceneAdjustment: { y: 1 }
+	},
+	{
+		id: 'schafer-playful',
+		companionId: 'schafer',
+		role: 'base',
+		dayparts: ['day'],
+		frames: [{ src: dogPoseSrc('schafer-playful.png') }],
+		alt: `${SCHAFER_DISPLAY_NAME} är på lekhumör.`,
+		weight: 1,
+		sceneAdjustment: { y: 2 }
 	}
 ] satisfies CompanionPose[];
 
 export const AUSTRALISK_SHEPHERD_COMPANION_POSES = [
 	{
-		id: 'australisk-shepherd-static',
+		id: 'australisk-shepherd-standing',
 		companionId: 'australisk_shepherd',
 		role: 'base',
-		dayparts: ['day', 'evening', 'night'],
-		frames: [{ src: dogPoseSrc('australisk_shepherd.png') }],
-		alt: `Din följeslagare, ${getProgressCompanionDisplayName('australisk_shepherd')}, står lugnt.`,
-		weight: 1
+		dayparts: ['day', 'evening'],
+		frames: [{ src: dogPoseSrc('australisk_shepherd-standing.png') }],
+		alt: `Din följeslagare, ${AUSTRALISK_SHEPHERD_DISPLAY_NAME}, står lugnt.`,
+		weight: 2.4
+	},
+	{
+		id: 'australisk-shepherd-sitting',
+		companionId: 'australisk_shepherd',
+		role: 'base',
+		dayparts: ['day', 'evening'],
+		frames: [{ src: dogPoseSrc('australisk_shepherd-sitting.png') }],
+		alt: `${AUSTRALISK_SHEPHERD_DISPLAY_NAME} sitter stilla.`,
+		weight: 2
+	},
+	{
+		id: 'australisk-shepherd-lying',
+		companionId: 'australisk_shepherd',
+		role: 'base',
+		dayparts: ['day', 'evening'],
+		frames: [{ src: dogPoseSrc('australisk_shepherd-lying.png') }],
+		alt: `${AUSTRALISK_SHEPHERD_DISPLAY_NAME} ligger ned och vilar.`,
+		weight: 1.4
+	},
+	{
+		id: 'australisk-shepherd-resting',
+		companionId: 'australisk_shepherd',
+		role: 'base',
+		dayparts: ['evening', 'night'],
+		frames: [{ src: dogPoseSrc('australisk_shepherd-resting.png') }],
+		alt: `${AUSTRALISK_SHEPHERD_DISPLAY_NAME} vilar i lugn takt.`,
+		weight: 1.8,
+		sceneAdjustment: { y: 4 }
+	},
+	{
+		id: 'australisk-shepherd-sleeping',
+		companionId: 'australisk_shepherd',
+		role: 'base',
+		dayparts: ['night'],
+		frames: [{ src: dogPoseSrc('australisk_shepherd-sleeping.png') }],
+		alt: `${AUSTRALISK_SHEPHERD_DISPLAY_NAME} sover lugnt.`,
+		weight: 2.4,
+		sceneAdjustment: { y: 6 }
+	},
+	{
+		id: 'australisk-shepherd-playful',
+		companionId: 'australisk_shepherd',
+		role: 'base',
+		dayparts: ['day'],
+		frames: [{ src: dogPoseSrc('australisk_shepherd-playful.png') }],
+		alt: `${AUSTRALISK_SHEPHERD_DISPLAY_NAME} är på lekhumör.`,
+		weight: 1,
+		sceneAdjustment: { y: 3 }
 	}
 ] satisfies CompanionPose[];
 
@@ -476,12 +593,12 @@ export const DASHBOARD_CABIN_COMPANION_PLACEMENTS: Record<
 	// y = 91 är samma markankare som räv och varg. CompanionPose ankrar bildens
 	// nederkant (translate -100%), och hundarnas 12 px bottenmarginal motsvarar
 	// bara ~0,2 % av scenen, så tassarna vilar på marken utan eget y-värde.
-	schafer: { scale: 0.28, x: 37, y: 91, compact: { scale: 0.3, x: 34, y: 91 } },
+	schafer: { scale: 0.36, x: 37, y: 91, compact: { scale: 0.38, x: 34, y: 91 } },
 	australisk_shepherd: {
-		scale: 0.31,
+		scale: 0.37,
 		x: 37,
 		y: 91,
-		compact: { scale: 0.33, x: 34, y: 91 }
+		compact: { scale: 0.39, x: 34, y: 91 }
 	}
 };
 
@@ -526,8 +643,18 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 			'bear-stretching',
 			'wolf-standing',
 			'wolf-sleeping',
-			'schafer-static',
-			'australisk-shepherd-static'
+			'schafer-standing',
+			'schafer-sitting',
+			'schafer-lying',
+			'schafer-resting',
+			'schafer-sleeping',
+			'schafer-playful',
+			'australisk-shepherd-standing',
+			'australisk-shepherd-sitting',
+			'australisk-shepherd-lying',
+			'australisk-shepherd-resting',
+			'australisk-shepherd-sleeping',
+			'australisk-shepherd-playful'
 		],
 		dayparts: ['day', 'evening', 'night'],
 		weight: 2.2

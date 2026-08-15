@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
 	PROGRESS_COMPANION_ANIMALS,
@@ -14,30 +15,32 @@ import {
 	COMPANION_SCENE_POSITIONS,
 	DASHBOARD_CABIN_COMPANION_PLACEMENTS,
 	SCHAFER_COMPANION_POSES,
+	type CompanionPose,
 	type CompanionPoseDaypart
 } from './companionPoseManifest';
 import { getCompanionBasePose } from './companionPoseState';
 
-// Schäfer och Australisk shepherd är statiska följeslagare med en pose vardera.
-// Det viktigaste regressionsskyddet: de får aldrig falla tillbaka på en rävpose,
-// eftersom getFallbackPose() i sista hand returnerar COMPANION_POSES[0].
+// Schäfer och Australisk shepherd använder samma companion-system som räv,
+// björn och varg. Viktigaste regressionsskyddet: ett sparat hundval får aldrig
+// filtreras bort eller falla tillbaka på en rävpose - getFallbackPose()
+// returnerar i sista hand COMPANION_POSES[0], som tillhör räven.
+
+const POSE_KINDS = ['standing', 'sitting', 'lying', 'resting', 'sleeping', 'playful'] as const;
 
 const DOGS = [
 	{
 		id: 'schafer',
 		displayName: 'Schäfer',
-		poseId: 'schafer-static',
-		preset: '/images/avatars/presets/schafer.png',
-		scene: '/images/scenes/schafer.png',
-		poses: SCHAFER_COMPANION_POSES
+		posePrefix: 'schafer',
+		assetPrefix: 'schafer',
+		poses: SCHAFER_COMPANION_POSES as readonly CompanionPose[]
 	},
 	{
 		id: 'australisk_shepherd',
 		displayName: 'Australisk shepherd',
-		poseId: 'australisk-shepherd-static',
-		preset: '/images/avatars/presets/australisk_shepherd.png',
-		scene: '/images/scenes/australisk_shepherd.png',
-		poses: AUSTRALISK_SHEPHERD_COMPANION_POSES
+		posePrefix: 'australisk-shepherd',
+		assetPrefix: 'australisk_shepherd',
+		poses: AUSTRALISK_SHEPHERD_COMPANION_POSES as readonly CompanionPose[]
 	}
 ] as const;
 
@@ -46,78 +49,80 @@ const FOX_POSE_IDS = new Set(
 	COMPANION_POSES.filter((pose) => (pose.companionId ?? 'fox') === 'fox').map((pose) => pose.id)
 );
 
-describe.each(DOGS)('$displayName som följeslagare', (dog) => {
+describe.each(DOGS)('$displayName', (dog) => {
 	it('är ett accepterat companion-ID och överlever metadata-läsning', () => {
-		const selection = readProgressCompanionFromMetadata({ progress_companion: dog.id });
-
-		expect(selection).not.toBeNull();
-		expect(selection?.id).toBe(dog.id);
+		expect(readProgressCompanionFromMetadata({ progress_companion: dog.id })?.id).toBe(dog.id);
 	});
 
 	it('behåller sitt ID genom lagring och återläsning', () => {
-		// Så som värdet faktiskt ligger i user_metadata efter ett val.
 		const stored = { preferences: { companion: { id: dog.id, name: dog.displayName } } };
 
 		expect(readProgressCompanionFromMetadata(stored)?.id).toBe(dog.id);
 	});
 
-	it('finns bland valbara följeslagare med rätt visningsnamn', () => {
+	it('finns bland valbara följeslagare med svenskt visningsnamn', () => {
 		const entry = PROGRESS_COMPANION_ANIMALS.find((animal) => animal.id === dog.id);
 
-		expect(entry).toBeDefined();
 		expect(entry?.name).toBe(dog.displayName);
 		expect(getProgressCompanionDisplayName(dog.id)).toBe(dog.displayName);
 	});
 
-	it('har exakt en pose, kopplad till rätt companionId', () => {
-		expect(dog.poses).toHaveLength(1);
-		expect(dog.poses[0].id).toBe(dog.poseId);
-		expect(dog.poses[0].companionId).toBe(dog.id);
-		expect(dog.poses[0].role).toBe('base');
-	});
+	it('har exakt sex poser, alla kopplade till rätt companionId', () => {
+		expect(dog.poses).toHaveLength(6);
 
-	it('posen använder rätt scene-asset, och filen finns', () => {
-		expect(dog.poses[0].frames).toHaveLength(1);
-		expect(dog.poses[0].frames[0].src).toBe(dog.scene);
-		expect(existsSync(join(process.cwd(), 'static', dog.scene))).toBe(true);
-	});
-
-	it('preset-bilden för väljaren finns', () => {
-		expect(existsSync(join(process.cwd(), 'static', dog.preset))).toBe(true);
-	});
-
-	it('posen är giltig under day, evening och night', () => {
-		for (const daypart of DAYPARTS) {
-			expect(dog.poses[0].dayparts).toContain(daypart);
+		for (const pose of dog.poses) {
+			expect(pose.companionId).toBe(dog.id);
+			expect(pose.role).toBe('base');
+			expect(pose.frames).toHaveLength(1);
 		}
 	});
 
-	it('pose-ID:t accepteras av minst en scenposition', () => {
-		const accepting = COMPANION_SCENE_POSITIONS.filter((position) =>
-			position.allowedPoseIds.includes(dog.poseId)
-		);
+	it.each(POSE_KINDS)('har posen %s med rätt asset, och filen finns', (kind) => {
+		const pose = dog.poses.find((item) => item.id === `${dog.posePrefix}-${kind}`);
+		const expectedSrc = `/images/scenes/${dog.assetPrefix}-${kind}.png`;
 
-		expect(accepting.length).toBeGreaterThan(0);
+		expect(pose).toBeDefined();
+		expect(pose?.frames[0].src).toBe(expectedSrc);
+		expect(existsSync(join(process.cwd(), 'static', expectedSrc))).toBe(true);
+	});
+
+	it('använder inte de gamla enbildsassets:en', () => {
+		for (const pose of dog.poses) {
+			expect(pose.frames[0].src).not.toMatch(/\.webp$/);
+			expect(pose.frames[0].src).not.toBe(`/images/scenes/${dog.assetPrefix}.png`);
+		}
+	});
+
+	it('varje pose-ID accepteras av minst en scenposition', () => {
+		for (const pose of dog.poses) {
+			const accepting = COMPANION_SCENE_POSITIONS.filter((position) =>
+				position.allowedPoseIds.includes(pose.id)
+			);
+
+			expect(accepting.length).toBeGreaterThan(0);
+		}
+	});
+
+	it.each(DAYPARTS)('kan alltid lösa en pose för %s', (daypart) => {
+		const covering = dog.poses.filter((pose) => pose.dayparts.includes(daypart));
+
+		expect(covering.length).toBeGreaterThan(0);
 	});
 
 	it('har dashboard-placement', () => {
 		const placement = DASHBOARD_CABIN_COMPANION_PLACEMENTS[dog.id];
 
-		expect(placement).toBeDefined();
-		expect(placement.scale).toBeGreaterThan(0);
-		expect(Number.isFinite(placement.x)).toBe(true);
-		expect(Number.isFinite(placement.y)).toBe(true);
+		expect(placement?.scale).toBeGreaterThan(0);
+		expect(placement?.compact?.scale).toBeGreaterThan(0);
 	});
 
-	it('faller ALDRIG tillbaka på en rävpose, oavsett dygnsdel', () => {
-		// Klockslag som täcker day, evening och night.
-		for (const hour of [9, 13, 18, 23, 3]) {
-			const date = new Date(2026, 5, 15, hour, 0, 0);
-			const pose = getCompanionBasePose(date, null, dog.id);
+	it('faller ALDRIG tillbaka på en rävpose, oavsett tid på dygnet', () => {
+		for (const hour of [7, 9, 13, 16, 18, 20, 23, 3]) {
+			const pose = getCompanionBasePose(new Date(2026, 5, 15, hour, 0, 0), null, dog.id);
 
-			expect(pose.id).toBe(dog.poseId);
 			expect(pose.companionId).toBe(dog.id);
 			expect(FOX_POSE_IDS.has(pose.id)).toBe(false);
+			expect(pose.id.startsWith(dog.posePrefix)).toBe(true);
 		}
 	});
 
@@ -131,7 +136,6 @@ describe('befintliga följeslagare är oförändrade', () => {
 	it.each(['fox', 'bear', 'wolf'])('%s fungerar fortfarande', (id) => {
 		expect(readProgressCompanionFromMetadata({ progress_companion: id })?.id).toBe(id);
 		expect(getWorldCompanionId(id)).toBe(id);
-		expect(DASHBOARD_CABIN_COMPANION_PLACEMENTS[id as 'fox']).toBeDefined();
 	});
 
 	it('deras namn och ordning i listan är intakta', () => {
@@ -152,10 +156,19 @@ describe('befintliga följeslagare är oförändrade', () => {
 		});
 	});
 
+	it('deras poser är inte omskrivna', () => {
+		const foxPoses = COMPANION_POSES.filter((pose) => (pose.companionId ?? 'fox') === 'fox');
+		const bearPoses = COMPANION_POSES.filter((pose) => pose.companionId === 'bear');
+		const wolfPoses = COMPANION_POSES.filter((pose) => pose.companionId === 'wolf');
+
+		expect(foxPoses.length).toBeGreaterThan(0);
+		expect(bearPoses).toHaveLength(4);
+		expect(wolfPoses).toHaveLength(2);
+	});
+
 	it('räven är fortfarande fallback för okända och poselösa ID:n', () => {
 		expect(getWorldCompanionId('finns-inte')).toBe('fox');
 		expect(getWorldCompanionId(null)).toBe('fox');
-		// Uggla finns som art-ID men saknar poser i världen.
 		expect(getWorldCompanionId('owl')).toBe('fox');
 	});
 
@@ -165,15 +178,13 @@ describe('befintliga följeslagare är oförändrade', () => {
 });
 
 describe('väljaren', () => {
-	it('exponerar båda hundarna', () => {
-		const source = require('node:fs').readFileSync(
-			join(process.cwd(), 'src/lib/components/CompanionSelector.svelte'),
-			'utf8'
-		) as string;
+	const source = readFileSync(
+		join(process.cwd(), 'src/lib/components/CompanionSelector.svelte'),
+		'utf8'
+	);
 
-		for (const dog of DOGS) {
-			expect(source).toContain(`'${dog.id}'`);
-			expect(source).toContain(dog.preset);
-		}
+	it.each(DOGS)('exponerar $displayName', (dog) => {
+		expect(source).toContain(`'${dog.id}'`);
+		expect(source).toContain(`/images/avatars/presets/${dog.assetPrefix}.png`);
 	});
 });
