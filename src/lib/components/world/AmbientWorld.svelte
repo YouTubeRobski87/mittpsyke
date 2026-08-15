@@ -269,6 +269,10 @@
 	.canopy-right { transform-origin: 78% 0%; background: radial-gradient(ellipse at 40% 15%, rgba(133, 154, 80, 0.2), transparent 60%), radial-gradient(ellipse at 72% 35%, rgba(87, 126, 74, 0.16), transparent 62%); filter: blur(1px); animation: canopySway var(--duration, 7400ms) cubic-bezier(0.42, 0, 0.24, 1) var(--delay, 0ms) infinite; }
 
 	.world-drift { border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.4) 45%, transparent 72%); filter: blur(0.5px); mix-blend-mode: screen; opacity: 0; animation: driftFloat var(--duration, 13000ms) ease-in-out var(--delay, 0ms) infinite; }
+	/* Driftpartiklarna är avsedda som små ljus i dags-/skymningsvärlden, men
+	   blir tydliga vita ovaler mot Framstegs natthimmel. Nattens enda
+	   koncentrerade ljusform ska vara månen. */
+	.progress-living-world[data-time='night'] .world-drift { display: none; }
 	.world-event-water { border-radius: 50%; border: 1px solid rgba(235, 248, 246, 0.42); transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 0.64)); animation: waterRing var(--duration, 4800ms) ease-out both; }
 	.world-bird { transform: translate3d(0, 0, 0) scale(var(--scale, 0.75)); }
 	.world-bird::before, .world-bird::after { content: ''; position: absolute; top: 34%; width: 50%; height: 42%; border-top: 1.5px solid rgba(36, 49, 45, 0.42); border-radius: 999px 999px 0 0; }
