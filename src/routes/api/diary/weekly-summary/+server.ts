@@ -1,13 +1,28 @@
 ﻿// src/routes/api/diary/weekly-summary/+server.ts
+//
+// Skickar rå dagbokstext till AI och omfattas därför av samma serverägda
+// samtycke som /api/diary/reflect och /api/diary/checkin-reflection:
+// scope diary_ai_reflection, policyversion diary-ai-v1.
+//
+// Tidigare räckte den klientstyrda headern x-mittpsyke-sensitive-consent, som
+// vem som helst kan sätta på en request. Den auktoriserar inte längre den här
+// routen. Ordningen nedan är avsiktlig: användare, sedan samtycke, och först
+// därefter läses dagboksinnehåll eller anropas någon AI-leverantör.
 import { json } from '@sveltejs/kit';
-import { hasSensitiveConsentHeader } from '$lib/consent';
-import { createClient } from '@supabase/supabase-js';
-import { env } from '$env/dynamic/public';
 import type { RequestHandler } from '@sveltejs/kit';
+import { createServiceClient, createTokenClient } from '$lib/server/supabase-admin';
+import { hasDiaryAiConsent } from '$lib/server/diary-ai-consent';
 import { generateAIText } from '$lib/server/ai/text-generation';
 import { buildWeeklySummarySafetyInstructions } from '$lib/server/ai/safety-instructions';
 
 const FALLBACK_SUMMARY = 'Det gick inte att skapa en AI-sammanfattning just nu. Försök gärna igen om en liten stund.';
+
+function getAccessToken(authorizationHeader: string | null): string | null {
+	if (!authorizationHeader) return null;
+	const [scheme, token] = authorizationHeader.split(' ');
+	if (scheme?.toLowerCase() !== 'bearer' || !token?.trim()) return null;
+	return token.trim();
+}
 
 function getWeekNumber(date: Date): number {
 	const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -19,22 +34,29 @@ function getWeekNumber(date: Date): number {
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		if (!hasSensitiveConsentHeader(request)) {
-			return json({ error: 'Consent required for sensitive AI features.' }, { status: 403 });
-		}
+		const token = getAccessToken(request.headers.get('authorization'));
+		if (!token) return json({ error: 'Unauthorized' }, { status: 401 });
 
-		const authHeader = request.headers.get('Authorization');
-		if (!authHeader) return json({ error: 'Unauthorized' }, { status: 401 });
+		const supabase = createTokenClient(token);
+		if (!supabase) return json({ error: 'Server configuration error.' }, { status: 500 });
 
-		const token = authHeader.replace('Bearer ', '');
-		const supabase = createClient(env.PUBLIC_SUPABASE_URL ?? '', env.PUBLIC_SUPABASE_ANON_KEY ?? '', {
-			global: { headers: { Authorization: `Bearer ${token}` } }
-		});
-
-		const { data, error: authError } = await supabase.auth.getUser(token);
+		const { data, error: authError } = await supabase.auth.getUser();
 		if (authError || !data?.user) return json({ error: 'Unauthorized' }, { status: 401 });
 		const user = data.user;
 
+		// Samtycket läses med service-role, aldrig ur headers eller
+		// user_metadata. Saknas nyckeln stängs routen, inte öppnas.
+		const serviceClient = createServiceClient();
+		if (!serviceClient) return json({ error: 'Server configuration error.' }, { status: 500 });
+
+		if (!(await hasDiaryAiConsent(serviceClient, user.id))) {
+			return json(
+				{ error: 'Consent required for sensitive diary AI features.' },
+				{ status: 403 }
+			);
+		}
+
+		// Allt nedanför den här punkten rör användarens dagboksinnehåll.
 		const body = await request.json();
 		const { startDate, endDate } = body;
 		if (!startDate || !endDate) return json({ error: 'Missing startDate or endDate' }, { status: 400 });
