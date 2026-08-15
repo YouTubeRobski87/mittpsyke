@@ -8,7 +8,9 @@
 // Språkregel för hela modulen: observationer, inte tolkningar. Ingen text får
 // påstå något som inte passerar tröskelvärdena nedan.
 
-export type PeriodDays = 30 | 90 | 180;
+// 7 finns för dagbokens översikt. PERIOD_OPTIONS nedan är fortfarande Framstegs
+// uppsättning, så den sidans knappar påverkas inte av att typen vidgas.
+export type PeriodDays = 7 | 30 | 90 | 180;
 export type Resolution = 'day' | 'week';
 
 export interface MoodSample {
@@ -110,6 +112,21 @@ export const PERIOD_OPTIONS: { value: PeriodDays; label: string; longLabel: stri
 	{ value: 90, label: '3 månader', longLabel: 'senaste tre månaderna' },
 	{ value: 180, label: '6 månader', longLabel: 'senaste sex månaderna' }
 ];
+
+/**
+ * Täcker alla PeriodDays, även 7 som inte ligger i PERIOD_OPTIONS. Utan den här
+ * skulle textalternativ och observationer falla tillbaka på "perioden" för 7.
+ */
+const PERIOD_LONG_LABELS: Record<PeriodDays, string> = {
+	7: 'senaste 7 dagarna',
+	30: 'senaste 30 dagarna',
+	90: 'senaste tre månaderna',
+	180: 'senaste sex månaderna'
+};
+
+export function getPeriodLongLabel(periodDays: PeriodDays): string {
+	return PERIOD_LONG_LABELS[periodDays] ?? 'perioden';
+}
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -448,8 +465,7 @@ export function buildMoodObservation(samples: MoodSample[]): Observation | null 
 }
 
 function buildReturnObservation(activeWeeks: number, periodDays: PeriodDays): Observation {
-	const period = PERIOD_OPTIONS.find((option) => option.value === periodDays);
-	const periodLabel = period ? period.longLabel : 'perioden';
+	const periodLabel = getPeriodLongLabel(periodDays);
 	if (activeWeeks === 0) {
 		return {
 			id: 'return',
@@ -465,8 +481,7 @@ function buildReturnObservation(activeWeeks: number, periodDays: PeriodDays): Ob
 }
 
 function buildTextAlternative(points: ChartPoint[], periodDays: PeriodDays): string {
-	const period = PERIOD_OPTIONS.find((option) => option.value === periodDays);
-	const periodLabel = period ? period.longLabel : 'perioden';
+	const periodLabel = getPeriodLongLabel(periodDays);
 	if (points.length === 0) {
 		return `Ingen humörkurva ${periodLabel}. ${CHART_FALLBACK_COPY}`;
 	}

@@ -4,6 +4,7 @@
 	//
 	// Axeletiketterna ligger som HTML utanför SVG:en. SVG-text skalas med
 	// viewBox och blir oläslig på 320 px, medan HTML-text behåller sin storlek.
+	import type { Snippet } from 'svelte';
 	import {
 		buildChartGeometry,
 		PERIOD_OPTIONS,
@@ -18,7 +19,12 @@
 		textAlternative,
 		hasChart,
 		fallbackText,
-		labelledBy
+		labelledBy,
+		beforeChart,
+		// Dagboken visar 7/30/90, Framsteg 30/90/180. Utan den här propen skulle
+		// dagbokens periodval kräva att PERIOD_OPTIONS ändras, vilket hade lagt
+		// till en knapp på Framsteg också.
+		options = PERIOD_OPTIONS
 	}: {
 		points: ChartPoint[];
 		period: PeriodDays;
@@ -27,6 +33,9 @@
 		hasChart: boolean;
 		fallbackText: string;
 		labelledBy?: string;
+		options?: { value: PeriodDays; label: string }[];
+		/** Valfritt innehåll mellan periodvalet och kurvan, t.ex. nyckeltal. */
+		beforeChart?: Snippet;
 	} = $props();
 
 	// Förhållandet 2.4:1 håller kurvan läsbar både i den breda desktopkolumnen
@@ -60,7 +69,7 @@
 
 <div class="recent-chart">
 	<div class="period-picker" role="group" aria-label="Välj tidsperiod">
-		{#each PERIOD_OPTIONS as option}
+		{#each options as option}
 			<button
 				type="button"
 				class="period-button"
@@ -72,6 +81,8 @@
 			</button>
 		{/each}
 	</div>
+
+	{@render beforeChart?.()}
 
 	{#if hasChart && points.length > 0}
 		<div class="chart-plot">

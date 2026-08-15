@@ -1,6 +1,7 @@
 import {
 	aggregateSamples,
 	filterByPeriod,
+	getPeriodLongLabel,
 	getResolution,
 	MIN_MOOD_POINTS,
 	type ChartPoint,
@@ -54,7 +55,7 @@ export function buildMoodTimelineView(
 	const periodSamples = filterByPeriod(samples, periodDays, now);
 	const hasChart = periodSamples.length >= MIN_MOOD_POINTS;
 	const points = hasChart ? aggregateSamples(periodSamples, getResolution(periodDays)) : [];
-	const periodLabel = periodDays === 30 ? 'senaste 30 dagarna' : periodDays === 90 ? 'senaste tre månaderna' : 'senaste sex månaderna';
+	const periodLabel = getPeriodLongLabel(periodDays);
 	const textAlternative = hasChart
 		? `Humör ${periodLabel}. ${points
 				.map((point) => `${point.fullLabel}: ${point.value} av 10`)

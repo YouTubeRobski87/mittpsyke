@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/public';
 import type { RequestHandler } from '@sveltejs/kit';
 import { TtlCache } from '$lib/server/search-cache';
+import { toStockholmDateKey } from '$lib/stockholm-date';
 
 const HEATMAP_CACHE_TTL_MS = 60 * 1000;
 const HEATMAP_ROW_LIMIT = 1000;
@@ -74,10 +75,14 @@ export const GET: RequestHandler = async ({ request }) => {
 
 		if (error) return json({ error: error.message }, { status: 500 });
 
+		// Dygnet räknas i svensk tid, samma som diary/streak och
+		// diary/stats-timeline. Tidigare klipptes ISO-strängen, vilket gav
+		// UTC-dygn och andra tal än streak för inlägg strax efter midnatt.
 		const heatmapData: { [date: string]: number } = {};
 		if (entries && entries.length > 0) {
 			entries.forEach((entry) => {
-				const date = entry.created_at.split('T')[0];
+				const date = toStockholmDateKey(entry.created_at);
+				if (!date) return;
 				heatmapData[date] = (heatmapData[date] || 0) + 1;
 			});
 		}

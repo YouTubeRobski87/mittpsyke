@@ -1381,7 +1381,9 @@
 						{/if}
 					</section>
 
-					<DiaryMoodTimeline entries={entries} />
+					<!-- Hämtar sin egen data från stats-timeline/heatmap, eftersom
+					     `entries` bara är den paginerade listan. -->
+					<DiaryMoodTimeline />
 
 					<section class="auth-panel daily-question-panel" aria-label="Dagens fråga">
 						<div>

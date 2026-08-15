@@ -1,209 +1,158 @@
 <script lang="ts">
-	type DiaryMoodEntry = {
-		created_at: string | null;
-		mood: string | null;
-	};
+	// "Ditt mående över tid" i den inloggade dagboken.
+	//
+	// Datan hämtas från samma serverkällor som Framsteg använder:
+	//   /api/diary/stats-timeline  humörvärden, hela historiken
+	//   /api/diary/heatmap         antal inlägg per dag
+	// Tidigare läste sektionen propen `entries`, som bara är den paginerade
+	// listan i dagboken (20 rader initialt). Alla tal över 30 eller 90 dagar
+	// blev då tysta undertal. Beräkningen ligger i $lib/diary-progress.
+	//
+	// Ingen AI, ingen fritextanalys, ingen ny tabell.
+	import { onMount } from 'svelte';
+	import { supabase } from '$lib/supabase';
+	import RecentPeriodChart from '$lib/components/RecentPeriodChart.svelte';
+	import { DIARY_ENTRIES_CHANGED_EVENT } from '$lib/diary-events';
+	import { toMoodSamples, type MoodSample } from '$lib/progress-recent-period';
+	import {
+		buildDiaryProgressView,
+		CHART_PENDING_COPY,
+		DIARY_PERIOD_OPTIONS,
+		type DiaryPeriodDays
+	} from '$lib/diary-progress';
 
-	type DailyMoodPoint = {
-		date: string;
-		averageMood: number | null;
-		entriesCount: number;
-	};
+	type TimelinePayload = { data?: { date?: unknown; mood?: unknown }[] | null } | null;
+	type HeatmapPayload = { data?: Record<string, number> | null } | null;
 
-	type RangeDays = 7 | 30 | 90;
+	const LOAD_ERROR_COPY = 'Kunde inte hämta din översikt just nu. Dina inlägg finns kvar.';
 
-	type MoodDataResult = {
-		points: DailyMoodPoint[];
-		trimmedDays: number;
-	};
+	let selectedPeriod = $state<DiaryPeriodDays>(30);
+	let samples = $state<MoodSample[]>([]);
+	let heatmapData = $state<Record<string, number> | null>(null);
+	let loading = $state(true);
+	let loadError = $state('');
 
-	export let entries: DiaryMoodEntry[] = [];
+	const overview = $derived(
+		buildDiaryProgressView({ samples, heatmapData, period: selectedPeriod })
+	);
 
-	const RANGE_OPTIONS: RangeDays[] = [7, 30, 90];
-	const EMPTY_STATE_PRIMARY = 'När du har sparat några inlägg börjar en lugn överblick att ta form här.';
-	const EMPTY_STATE_SECONDARY =
-		'Fortsätt skriva några dagar till, så blir det lättare att se mönster över tid.';
+	// Inga registreringar alls i perioden. Då visas bara en lugn rad, inte
+	// nollställda nyckeltal och en tom kurvyta.
+	const isEmptyPeriod = $derived(overview.entryDays === 0 && overview.moodDays === 0);
 
-	let selectedRange: RangeDays = 30;
-	let dailyMoodData: DailyMoodPoint[] = [];
-	let trimmedDays = 0;
-	let isSparseView = false;
-	let hasEnoughData = false;
-	let supportiveLine = '';
+	async function loadOverview() {
+		loading = true;
+		loadError = '';
 
-	function parseMood(value: string | null): number | null {
-		if (!value) return null;
-		const numeric = Number(value);
-		if (!Number.isFinite(numeric)) return null;
-		if (numeric < 1 || numeric > 10) return null;
-		return Math.round(numeric * 10) / 10;
-	}
-
-	function toDateKey(dateValue: string): string | null {
-		const date = new Date(dateValue);
-		if (Number.isNaN(date.getTime())) return null;
-
-		const year = date.getFullYear();
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const day = String(date.getDate()).padStart(2, '0');
-		return `${year}-${month}-${day}`;
-	}
-
-	function createDateRange(days: number): string[] {
-		const result: string[] = [];
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-
-		for (let offset = days - 1; offset >= 0; offset--) {
-			const date = new Date(today);
-			date.setDate(today.getDate() - offset);
-			const year = date.getFullYear();
-			const month = String(date.getMonth() + 1).padStart(2, '0');
-			const day = String(date.getDate()).padStart(2, '0');
-			result.push(`${year}-${month}-${day}`);
-		}
-
-		return result;
-	}
-
-	function buildDailyMoodData(source: DiaryMoodEntry[], rangeDays: RangeDays): MoodDataResult {
-		const grouped = new Map<string, { moodSum: number; moodCount: number; entriesCount: number }>();
-
-		for (const entry of source) {
-			if (!entry.created_at) continue;
-			const dateKey = toDateKey(entry.created_at);
-			if (!dateKey) continue;
-
-			const bucket = grouped.get(dateKey) ?? { moodSum: 0, moodCount: 0, entriesCount: 0 };
-			bucket.entriesCount += 1;
-
-			const mood = parseMood(entry.mood);
-			if (mood !== null) {
-				bucket.moodSum += mood;
-				bucket.moodCount += 1;
+		try {
+			const { data } = await supabase.auth.getSession();
+			const token = data.session?.access_token;
+			if (!token) {
+				samples = [];
+				heatmapData = null;
+				return;
 			}
 
-			grouped.set(dateKey, bucket);
-		}
+			const headers = { Authorization: `Bearer ${token}` };
+			const [timelineResponse, heatmapResponse] = await Promise.all([
+				fetch('/api/diary/stats-timeline', { headers }),
+				fetch('/api/diary/heatmap', { headers })
+			]);
 
-		const fullRange = createDateRange(rangeDays);
+			const timelinePayload = (
+				timelineResponse.ok ? await timelineResponse.json() : null
+			) as TimelinePayload;
+			const heatmapPayload = (
+				heatmapResponse.ok ? await heatmapResponse.json() : null
+			) as HeatmapPayload;
 
-		// Trim leading empty days so sparse data doesn't cluster to the right.
-		// Keep LEAD_DAYS empty days before the first entry for visual breathing room.
-		const LEAD_DAYS = 2;
-		const SPARSE_THRESHOLD = Math.ceil(rangeDays * 0.25);
-		const firstDataIndex = fullRange.findIndex((date) => grouped.has(date));
+			samples = toMoodSamples(timelinePayload?.data ?? null);
+			heatmapData = heatmapPayload?.data ?? null;
 
-		let effectiveRange = fullRange;
-		let trimmedDays = 0;
-
-		if (firstDataIndex > SPARSE_THRESHOLD) {
-			const startIdx = Math.max(0, firstDataIndex - LEAD_DAYS);
-			effectiveRange = fullRange.slice(startIdx);
-			trimmedDays = startIdx;
-		}
-
-		const points = effectiveRange.map((dateKey) => {
-			const bucket = grouped.get(dateKey);
-			if (!bucket) {
-				return {
-					date: dateKey,
-					averageMood: null,
-					entriesCount: 0
-				};
+			// Bara ett verkligt fel om ingen av källorna gick fram. Går en av dem
+			// igenom visas det den kan bära, utan felruta.
+			if (!timelineResponse.ok && !heatmapResponse.ok) {
+				loadError = LOAD_ERROR_COPY;
 			}
-
-			return {
-				date: dateKey,
-				averageMood: bucket.moodCount > 0 ? Math.round((bucket.moodSum / bucket.moodCount) * 10) / 10 : null,
-				entriesCount: bucket.entriesCount
-			};
-		});
-
-		return { points, trimmedDays };
+		} catch {
+			loadError = LOAD_ERROR_COPY;
+		} finally {
+			loading = false;
+		}
 	}
 
-	function buildSupportiveLine(points: DailyMoodPoint[], range: RangeDays): string {
-		const totalEntries = points.reduce((sum, point) => sum + point.entriesCount, 0);
-		const periodLabel = `de senaste ${range} dagarna`;
-		const moodValues = points
-			.map((point) => point.averageMood)
-			.filter((value): value is number => typeof value === 'number');
+	onMount(() => {
+		void loadOverview();
 
-		if (totalEntries === 0) {
-			return `När du har skrivit några gånger ${periodLabel} blir mönster lättare att se.`;
-		}
-
-		const entryWord = totalEntries === 1 ? 'gång' : 'gånger';
-		if (moodValues.length >= 3) {
-			const spread = Math.max(...moodValues) - Math.min(...moodValues);
-			if (spread >= 2.5) {
-				return `Du har skrivit ${totalEntries} ${entryWord} ${periodLabel}. Det har svängt en del, vilket är helt normalt.`;
-			}
-		}
-
-		return `Du har skrivit ${totalEntries} ${entryWord} ${periodLabel}. Små förändringar över tid räknas också.`;
-	}
-
-	$: ({ points: dailyMoodData, trimmedDays } = buildDailyMoodData(entries, selectedRange));
-	$: isSparseView = trimmedDays > 0;
-	$: hasEnoughData = dailyMoodData.filter((point) => point.averageMood !== null).length >= 2;
-	$: supportiveLine = buildSupportiveLine(dailyMoodData, selectedRange);
+		// Samma signal som resten av dagboken använder efter sparning eller
+		// borttagning, och den skickas även från guidad incheckning.
+		const handleChange = () => void loadOverview();
+		window.addEventListener(DIARY_ENTRIES_CHANGED_EVENT, handleChange);
+		return () => window.removeEventListener(DIARY_ENTRIES_CHANGED_EVENT, handleChange);
+	});
 </script>
 
 <section class="auth-panel mood-timeline-panel" aria-labelledby="mood-timeline-title">
-	<div class="timeline-head">
-		<div class="timeline-copy">
-			<h2 id="mood-timeline-title">Ditt mående över tid</h2>
-			<p>
-				En enkel överblick över hur dina dagar har känts. Det behöver inte gå spikrakt för att räknas som
-				framsteg.
-			</p>
-		</div>
-
-		<div class="timeline-filter" role="group" aria-label="Välj tidsintervall">
-			{#each RANGE_OPTIONS as range}
-				<button
-					type="button"
-					class={`timeline-filter-button ${selectedRange === range ? 'active' : ''}`}
-					onclick={() => (selectedRange = range)}
-				>
-					{range} dagar
-				</button>
-			{/each}
-		</div>
+	<div class="timeline-copy">
+		<h2 id="mood-timeline-title">Ditt mående över tid</h2>
+		<p>En enkel överblick över de dagar du själv har registrerat.</p>
 	</div>
 
-	{#if hasEnoughData}
-		<div class="timeline-summary" aria-live="polite">
-			{#if isSparseView}
-				<p class="timeline-summary-context timeline-summary-context--sparse">
-					Dina anteckningar i den här perioden börjar vid ditt första sparade inlägg.
-				</p>
-			{:else}
-				<p class="timeline-summary-context">En lugn textöverblick över hur dagarna har känts.</p>
-			{/if}
-		</div>
-		<p class="timeline-note">Det här är en enkel överblick, inte en bedömning av dig.</p>
-		<p class="timeline-supportive">{supportiveLine}</p>
+	{#if loading}
+		<p class="timeline-status">Hämtar din översikt.</p>
 	{:else}
-		<div class="timeline-empty">
-			<p>{EMPTY_STATE_PRIMARY}</p>
-			<p>{EMPTY_STATE_SECONDARY}</p>
-		</div>
-		<p class="timeline-supportive">{supportiveLine}</p>
+		{#if loadError}
+			<p class="timeline-status timeline-status--error">{loadError}</p>
+		{/if}
+
+		<RecentPeriodChart
+			points={overview.points}
+			period={selectedPeriod}
+			onSelectPeriod={(value) => (selectedPeriod = value as DiaryPeriodDays)}
+			textAlternative={overview.textAlternative}
+			hasChart={overview.hasChart && !isEmptyPeriod}
+			fallbackText={CHART_PENDING_COPY}
+			options={DIARY_PERIOD_OPTIONS}
+		>
+			{#snippet beforeChart()}
+				{#if !isEmptyPeriod}
+					<div class="stat-row">
+						<div class="stat">
+							<span class="stat-value">{overview.entryDays}</span>
+							<span class="stat-label">
+								{overview.entryDays === 1 ? 'dag med inlägg' : 'dagar med inlägg'}
+							</span>
+						</div>
+						<div class="stat">
+							<span class="stat-value">{overview.moodDays}</span>
+							<span class="stat-label">
+								{overview.moodDays === 1
+									? 'dag med registrerat humör'
+									: 'dagar med registrerat humör'}
+							</span>
+						</div>
+					</div>
+
+					<h3 class="chart-heading">Humör över perioden</h3>
+				{/if}
+			{/snippet}
+		</RecentPeriodChart>
+
+		<p class="timeline-summary" aria-live="polite">{overview.summary}</p>
+
+		<!-- Trendraden visas bara när båda halvorna av perioden har tillräckligt
+		     med humördagar. Annars står här ingenting alls. -->
+		{#if overview.trend.text}
+			<p class="timeline-trend">{overview.trend.text}</p>
+		{/if}
 	{/if}
 </section>
 
 <style>
 	.mood-timeline-panel {
 		display: grid;
-		gap: 1rem;
-	}
-
-	.timeline-head {
-		display: grid;
-		gap: 0.8rem;
+		gap: 0.9rem;
+		min-width: 0;
 	}
 
 	.timeline-copy h2 {
@@ -212,94 +161,75 @@
 	}
 
 	.timeline-copy p {
-		margin: 0.45rem 0 0;
+		margin: 0.4rem 0 0;
 		font-size: 0.92rem;
-		line-height: 1.65;
+		line-height: 1.6;
 		color: hsl(var(--muted-foreground));
-		max-width: 72ch;
+		max-width: 62ch;
 	}
 
-	.timeline-filter {
-		display: inline-flex;
-		flex-wrap: wrap;
-		gap: 0.45rem;
+	.timeline-status {
+		margin: 0;
+		font-size: 0.9rem;
+		color: hsl(var(--muted-foreground));
 	}
 
-	.timeline-filter-button {
+	.timeline-status--error {
+		color: hsl(var(--foreground) / 0.8);
+	}
+
+	/* Två nyckeltal räcker för frågorna "hur ofta har jag skrivit" och "hur
+	   många dagar har jag satt humör". auto-fit gör att de lägger sig under
+	   varandra på 320 px utan en egen media query. */
+	.stat-row {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+		gap: 0.6rem;
+	}
+
+	.stat {
+		display: grid;
+		gap: 0.15rem;
+		padding: 0.75rem 0.85rem;
 		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface));
+		border-radius: var(--radius-input);
+		background: hsl(var(--surface-soft));
+	}
+
+	.stat-value {
+		font-family: var(--font-heading);
+		font-size: 1.5rem;
+		font-weight: 650;
+		line-height: 1.1;
+		color: hsl(var(--foreground));
+		/* Talen ska ligga i kolumn även när de har olika antal siffror. */
+		font-variant-numeric: tabular-nums;
+	}
+
+	.stat-label {
+		font-size: 0.84rem;
+		line-height: 1.45;
 		color: hsl(var(--muted-foreground));
-		border-radius: var(--radius-pill);
-		padding: 0.35rem 0.72rem;
-		font-size: 0.82rem;
-		line-height: 1.2;
-		cursor: pointer;
-		transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
 	}
 
-	.timeline-filter-button:hover {
-		color: hsl(var(--foreground));
-		border-color: hsl(var(--muted-foreground) / 0.5);
-	}
-
-	.timeline-filter-button.active {
-		background: color-mix(in srgb, var(--theme-accent, var(--primary)) 12%, hsl(var(--surface)));
-		border-color: color-mix(in srgb, var(--theme-accent, var(--primary)) 42%, hsl(var(--border)));
-		color: hsl(var(--foreground));
+	.chart-heading {
+		margin: 0.15rem 0 0;
+		font-size: 0.92rem;
+		font-weight: 600;
+		color: hsl(var(--foreground) / 0.9);
 	}
 
 	.timeline-summary {
-		padding: 0.9rem 0.95rem;
-		border-radius: var(--radius-input);
-		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface-soft));
+		margin: 0;
+		font-size: 0.92rem;
+		line-height: 1.6;
+		color: hsl(var(--foreground) / 0.88);
 	}
 
-	.timeline-summary-context {
+	.timeline-trend {
 		margin: 0;
 		font-size: 0.9rem;
 		line-height: 1.6;
 		color: hsl(var(--muted-foreground));
-	}
-
-	.timeline-summary-context--sparse {
-		color: hsl(var(--muted-foreground) / 0.65);
-		font-style: italic;
-	}
-
-	.timeline-note {
-		margin: 0;
-		font-size: 0.84rem;
-		color: hsl(var(--muted-foreground));
-	}
-
-	.timeline-supportive {
-		margin: 0;
-		font-size: 0.88rem;
-		line-height: 1.55;
-		color: hsl(var(--muted-foreground));
-	}
-
-	.timeline-empty {
-		padding: 0.9rem 0.95rem;
-		border-radius: var(--radius-input);
-		border: 1px solid hsl(var(--border));
-		background: hsl(var(--surface-soft));
-		display: grid;
-		gap: 0.45rem;
-	}
-
-	.timeline-empty p {
-		margin: 0;
-		font-size: 0.9rem;
-		line-height: 1.6;
-		color: hsl(var(--muted-foreground));
-	}
-
-	@media (min-width: 860px) {
-		.timeline-head {
-			grid-template-columns: minmax(0, 1fr) auto;
-			align-items: start;
-		}
 	}
 </style>

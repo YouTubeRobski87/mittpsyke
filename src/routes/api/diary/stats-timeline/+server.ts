@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { toStockholmDateKey } from '$lib/stockholm-date';
 import type { RequestHandler } from './$types';
 import type {
 	DiaryStatsTimelineErrorResponse,
@@ -36,10 +37,11 @@ function getAccessToken(authorizationHeader: string | null): string | null {
 	return token.trim();
 }
 
+// Dygnet räknas i svensk tid, samma som diary/streak och diary/heatmap. Att
+// klippa ISO-strängen gav UTC-dygn, vilket la inlägg strax efter midnatt på
+// föregående dag och gjorde talen olika mellan sidorna.
 function toDate(value: string | null): string | null {
-	if (!value) return null;
-	const date = value.slice(0, 10);
-	return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null;
+	return toStockholmDateKey(value);
 }
 
 export const GET: RequestHandler = async ({ request }) => {
