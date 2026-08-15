@@ -45,6 +45,23 @@ describe('inloggad dagbok: ingång till guidad incheckning', () => {
 		expect(entryIndex).toBeLessThan(dailyQuestionIndex);
 	});
 
+	// Sidopanelens gamla "Humörtrend" plottade de 10 senaste humörinläggen utan
+	// datum och dubblerade den nya sektionen. Den togs bort; 7-dagarsräknaren
+	// finns kvar. Sektionen ska vara sidans enda humörkurva.
+	it('sidopanelen har ingen egen humörkurva kvar', () => {
+		expect(source).not.toContain('Humörtrend');
+		expect(source).not.toContain('mood-graph');
+		expect(source).not.toContain('mood-chart');
+		expect(source).not.toContain('buildMoodPolyline');
+		expect(source).not.toContain('moodGraphPoints');
+	});
+
+	it('behåller räknaren för inlägg senaste 7 dagarna', () => {
+		expect(source).toContain('inlägg senaste 7 dagarna');
+		expect(source).toContain('{weeklyEntryCount}');
+		expect(source).toContain('countEntriesThisWeek');
+	});
+
 	// Startpanelen ska ligga först i huvudkolumnen, före "Ditt mående över tid".
 	// DOM-ordningen styr både desktop och mobil här, eftersom kolumnerna staplas.
 	it('startpanelen kommer före måendetidslinjen', () => {

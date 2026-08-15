@@ -122,8 +122,6 @@
 	let draftError = $state('');
 	let draftSuccess = $state('');
 	let savingDraft = $state(false);
-	type MoodGraphPoint = { mood: number };
-	let moodGraphPoints = $derived.by(() => buildMoodGraphPoints(entries));
 	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
 	let hasPromptQuestion = $derived(draftPromptQuestion.trim().length > 0);
@@ -263,22 +261,6 @@
 		if (!Number.isFinite(numeric)) return null;
 		if (numeric < 1 || numeric > 10) return null;
 		return Math.round(numeric);
-	}
-
-	function moodX(index: number, total: number): number {
-		if (total <= 1) return 50;
-		return 4 + (index / (total - 1)) * 92;
-	}
-
-	function moodY(mood: number): number {
-		return 34 - ((mood - 1) / 9) * 26;
-	}
-
-	function buildMoodPolyline(points: MoodGraphPoint[]): string {
-		if (points.length === 0) return '';
-		return points
-			.map((point, index) => `${moodX(index, points.length)},${moodY(point.mood)}`)
-			.join(' ');
 	}
 
 	function moodLabel(value: number) {
@@ -443,17 +425,6 @@
 			toastTriggered: true,
 			source: 'manual diary save success'
 		});
-	}
-
-	function buildMoodGraphPoints(source: DiaryEntry[]): MoodGraphPoint[] {
-		const points: MoodGraphPoint[] = [];
-		for (const entry of source) {
-			const mood = parseMoodValue(entry.mood);
-			if (mood === null) continue;
-			points.push({ mood });
-			if (points.length >= 10) break;
-		}
-		return points.reverse();
 	}
 
 	function countEntriesThisWeek(source: DiaryEntry[]): number {
@@ -1853,29 +1824,6 @@
 						</div>
 						<p class="week-count">{weeklyEntryCount}</p>
 						<p class="text-xs auth-muted">inlägg senaste 7 dagarna</p>
-
-						<div class="mood-graph-panel">
-							<div class="mood-graph-header">
-								<h3 class="text-sm font-semibold">Humörtrend</h3>
-								<p class="text-xs auth-muted">Senaste inlägg med humör</p>
-							</div>
-							{#if moodGraphPoints.length >= 2}
-								<svg viewBox="0 0 100 36" class="mood-chart" aria-label="Humörtrend över senaste inlägg">
-									<rect x="1" y="1" width="98" height="34" rx="8" class="mood-chart-bg"></rect>
-									<polyline points={buildMoodPolyline(moodGraphPoints)} class="mood-chart-line"></polyline>
-									{#each moodGraphPoints as point, index}
-										<circle cx={moodX(index, moodGraphPoints.length)} cy={moodY(point.mood)} r="1.35" class="mood-chart-dot"></circle>
-									{/each}
-								</svg>
-								<div class="mood-chart-anchors auth-muted">
-									<span>Tungt</span>
-									<span>Mitt emellan</span>
-									<span>Ljusare</span>
-								</div>
-							{:else}
-								<p class="text-sm auth-muted">Lägg till humör i minst två inlägg för att se en trend.</p>
-							{/if}
-						</div>
 					</section>
 
 					<section class="auth-panel diary-milestones-panel" aria-labelledby="diary-milestones-title">
@@ -2949,50 +2897,6 @@
 		letter-spacing: -0.02em;
 	}
 
-	.mood-graph-panel {
-		display: grid;
-		gap: 0.55rem;
-		border-radius: var(--radius-input);
-		background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(143, 227, 166, 0.06));
-	}
-
-	.mood-graph-header h3,
-	.mood-graph-header p {
-		margin: 0;
-	}
-
-	.mood-chart {
-		display: block;
-		width: 100%;
-		height: 106px;
-	}
-
-	.mood-chart-bg {
-		fill: hsl(var(--surface-muted));
-		stroke: hsl(var(--border));
-		stroke-width: 0.4;
-	}
-
-	.mood-chart-line {
-		fill: none;
-		stroke: #8FE3A6;
-		stroke-width: 1.2;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-	}
-
-	.mood-chart-dot {
-		fill: #8FE3A6;
-		stroke: hsl(var(--surface));
-		stroke-width: 0.6;
-	}
-
-	.mood-chart-anchors {
-		display: flex;
-		justify-content: space-between;
-		font-size: 0.75rem;
-	}
-
 	.diary-entries {
 		display: grid;
 		grid-template-columns: 1fr;
@@ -3418,8 +3322,7 @@
 		.editor-note,
 		.mood-meaning,
 		.mood-anchors,
-		.week-head p,
-		.mood-graph-header p {
+		.week-head p {
 			display: none;
 		}
 
@@ -3603,10 +3506,6 @@
 
 		.week-count {
 			font-size: 1.45rem;
-		}
-
-		.mood-chart {
-			height: 64px;
 		}
 
 		.diary-entries {

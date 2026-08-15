@@ -32,13 +32,23 @@
 	let loading = $state(true);
 	let loadError = $state('');
 
+	// Skiljer "källan svarade att det är tomt" från "källan svarade inte". Utan
+	// den skillnaden blir ett nätverksfel till ett påstående om att användaren
+	// saknar registreringar, eftersom talen då räknas från tom data.
+	let moodLoaded = $state(false);
+	let entriesLoaded = $state(false);
+
 	const overview = $derived(
 		buildDiaryProgressView({ samples, heatmapData, period: selectedPeriod })
 	);
 
-	// Inga registreringar alls i perioden. Då visas bara en lugn rad, inte
-	// nollställda nyckeltal och en tom kurvyta.
-	const isEmptyPeriod = $derived(overview.entryDays === 0 && overview.moodDays === 0);
+	const hasAnySource = $derived(moodLoaded || entriesLoaded);
+
+	// Bara ett verkligt tomt läge när båda källorna har svarat. Annars vet vi
+	// inte att perioden är tom.
+	const isEmptyPeriod = $derived(
+		moodLoaded && entriesLoaded && overview.entryDays === 0 && overview.moodDays === 0
+	);
 
 	async function loadOverview() {
 		loading = true;
@@ -47,11 +57,7 @@
 		try {
 			const { data } = await supabase.auth.getSession();
 			const token = data.session?.access_token;
-			if (!token) {
-				samples = [];
-				heatmapData = null;
-				return;
-			}
+			if (!token) return;
 
 			const headers = { Authorization: `Bearer ${token}` };
 			const [timelineResponse, heatmapResponse] = await Promise.all([
@@ -59,19 +65,21 @@
 				fetch('/api/diary/heatmap', { headers })
 			]);
 
-			const timelinePayload = (
-				timelineResponse.ok ? await timelineResponse.json() : null
-			) as TimelinePayload;
-			const heatmapPayload = (
-				heatmapResponse.ok ? await heatmapResponse.json() : null
-			) as HeatmapPayload;
+			// Skriv bara över när svaret gick fram. En misslyckad omhämtning
+			// behåller de senast kända talen i stället för att nolla dem.
+			if (timelineResponse.ok) {
+				const payload = (await timelineResponse.json()) as TimelinePayload;
+				samples = toMoodSamples(payload?.data ?? null);
+				moodLoaded = true;
+			}
 
-			samples = toMoodSamples(timelinePayload?.data ?? null);
-			heatmapData = heatmapPayload?.data ?? null;
+			if (heatmapResponse.ok) {
+				const payload = (await heatmapResponse.json()) as HeatmapPayload;
+				heatmapData = payload?.data ?? null;
+				entriesLoaded = true;
+			}
 
-			// Bara ett verkligt fel om ingen av källorna gick fram. Går en av dem
-			// igenom visas det den kan bära, utan felruta.
-			if (!timelineResponse.ok && !heatmapResponse.ok) {
+			if (!timelineResponse.ok || !heatmapResponse.ok) {
 				loadError = LOAD_ERROR_COPY;
 			}
 		} catch {
@@ -98,11 +106,15 @@
 		<p>En enkel överblick över de dagar du själv har registrerat.</p>
 	</div>
 
-	{#if loading}
+	{#if loading && !hasAnySource}
 		<p class="timeline-status">Hämtar din översikt.</p>
+	{:else if !hasAnySource}
+		<!-- Ingen källa svarade. Då sägs ingenting om hur mycket användaren har
+		     registrerat - varken tal, tomt läge eller trend. -->
+		<p class="timeline-status">{loadError || LOAD_ERROR_COPY}</p>
 	{:else}
 		{#if loadError}
-			<p class="timeline-status timeline-status--error">{loadError}</p>
+			<p class="timeline-status">{loadError}</p>
 		{/if}
 
 		<RecentPeriodChart
@@ -110,39 +122,50 @@
 			period={selectedPeriod}
 			onSelectPeriod={(value) => (selectedPeriod = value as DiaryPeriodDays)}
 			textAlternative={overview.textAlternative}
-			hasChart={overview.hasChart && !isEmptyPeriod}
-			fallbackText={CHART_PENDING_COPY}
+			hasChart={moodLoaded && overview.hasChart && !isEmptyPeriod}
+			fallbackText={moodLoaded ? CHART_PENDING_COPY : LOAD_ERROR_COPY}
 			options={DIARY_PERIOD_OPTIONS}
 		>
 			{#snippet beforeChart()}
 				{#if !isEmptyPeriod}
 					<div class="stat-row">
-						<div class="stat">
-							<span class="stat-value">{overview.entryDays}</span>
-							<span class="stat-label">
-								{overview.entryDays === 1 ? 'dag med inlägg' : 'dagar med inlägg'}
-							</span>
-						</div>
-						<div class="stat">
-							<span class="stat-value">{overview.moodDays}</span>
-							<span class="stat-label">
-								{overview.moodDays === 1
-									? 'dag med registrerat humör'
-									: 'dagar med registrerat humör'}
-							</span>
-						</div>
+						<!-- Varje tal kräver sin egen källa. Saknas den visas ingen ruta,
+						     hellre det än en nolla som ser ut som ett svar. -->
+						{#if entriesLoaded}
+							<div class="stat">
+								<span class="stat-value">{overview.entryDays}</span>
+								<span class="stat-label">
+									{overview.entryDays === 1 ? 'dag med inlägg' : 'dagar med inlägg'}
+								</span>
+							</div>
+						{/if}
+						{#if moodLoaded}
+							<div class="stat">
+								<span class="stat-value">{overview.moodDays}</span>
+								<span class="stat-label">
+									{overview.moodDays === 1
+										? 'dag med registrerat humör'
+										: 'dagar med registrerat humör'}
+								</span>
+							</div>
+						{/if}
 					</div>
 
-					<h3 class="chart-heading">Humör över perioden</h3>
+					{#if moodLoaded}
+						<h3 class="chart-heading">Humör över perioden</h3>
+					{/if}
 				{/if}
 			{/snippet}
 		</RecentPeriodChart>
 
-		<p class="timeline-summary" aria-live="polite">{overview.summary}</p>
+		<!-- Sammanfattningen räknar skrivdagar, så den kräver heatmap-källan. -->
+		{#if entriesLoaded}
+			<p class="timeline-summary" aria-live="polite">{overview.summary}</p>
+		{/if}
 
-		<!-- Trendraden visas bara när båda halvorna av perioden har tillräckligt
-		     med humördagar. Annars står här ingenting alls. -->
-		{#if overview.trend.text}
+		<!-- Trendraden visas bara när humörkällan svarat och båda halvorna av
+		     perioden har tillräckligt med humördagar. -->
+		{#if moodLoaded && overview.trend.text}
 			<p class="timeline-trend">{overview.trend.text}</p>
 		{/if}
 	{/if}
@@ -172,10 +195,6 @@
 		margin: 0;
 		font-size: 0.9rem;
 		color: hsl(var(--muted-foreground));
-	}
-
-	.timeline-status--error {
-		color: hsl(var(--foreground) / 0.8);
 	}
 
 	/* Två nyckeltal räcker för frågorna "hur ofta har jag skrivit" och "hur
