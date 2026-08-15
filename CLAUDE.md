@@ -76,6 +76,39 @@ Required in `.env`:
   Render. Behörighet får aldrig läsas ur `user_metadata` — användaren kan skriva
   det fältet själv via `supabase.auth.updateUser()`
 - `PUBLIC_GA_MEASUREMENT_ID` — Google Analytics 4 (mätnings-ID, `G-…`). Läses klientsidan i `src/lib/analytics.ts`; utan den är `ANALYTICS_ENABLED` falskt och gtag laddas aldrig
+- `REMOTE_ADMIN_TOKEN` — Valfri. Delad token för fjärrstyrnings-API:et
+  (`POST /api/remote`, se nedan). Måste vara minst 32 tecken; är den kortare
+  eller osatt svarar rutten 503 och går inte att använda. Sätts i Render
+
+## Remote Admin API
+
+`POST /api/remote` kör samma adminåtgärder som `/admin`, men från utsidan —
+en telefongenväg, ett skript eller en terminal — utan inloggad session.
+Autentisering sker med `REMOTE_ADMIN_TOKEN` i headern `x-remote-admin-token`
+(eller `Authorization: Bearer …`). Tokenen läses **aldrig** ur query-strängen,
+till skillnad från cron-rutterna, eftersom URL:er hamnar i access-loggar.
+
+```bash
+curl -X POST https://www.mittpsyke.se/api/remote \
+  -H "x-remote-admin-token: $REMOTE_ADMIN_TOKEN" \
+  -H "content-type: application/json" \
+  -d '{"command":"pages.set-status","params":{"pageId":"angst","status":"published"}}'
+```
+
+Kommandon (`src/lib/server/remote-admin.ts`):
+
+| Kommando | Params | Gör |
+| --- | --- | --- |
+| `status` | – | Antal sidor per status, A/B-tester, feedback |
+| `pages.list` | `status?` | Listar landningssidor |
+| `pages.set-status` | `pageId`, `status` | Publicerar/avpublicerar en sida (`pageId` = `page_id` eller uuid) |
+| `ab.list` | `activeOnly?` | Listar A/B-tester |
+| `ab.winner` | `abTestId` | Räknar fram och sparar vinnare (samma logik som adminvyn) |
+| `feedback.recent` | `limit?` (1–50) | Senaste feedbacken, utan `user_id` |
+
+Rutten är rate-limitad till 20 anrop/minut per IP. Tokenjämförelsen är
+konstanttid (SHA-256 + `timingSafeEqual`), och svaret skiljer aldrig på
+"fel token" och "token saknas" — orsaken hamnar bara i serverloggen.
 
 ## Svelte 5 Runes
 
