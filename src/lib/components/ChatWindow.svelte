@@ -1135,13 +1135,16 @@
 			</div>
 		{/if}
 
-		{#if hasSensitiveDataConsent}
-			{#if chatError}
-				<div class="mb-2 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-2 text-sm">
-					<p id="chat-error-text" class="text-rose-900 dark:text-rose-100">{chatError}</p>
-				</div>
-			{/if}
+		<!-- Ligger utanför samtyckesgrenen nedan. Ett 403 på grund av saknat
+		     eller återkallat samtycke sätter både felet och hasSensitiveDataConsent
+		     = false, så inuti grenen hade meddelandet aldrig kunnat visas. -->
+		{#if chatError}
+			<div class="mb-2 rounded-[var(--radius-card)] border border-rose-300/70 bg-rose-50 dark:bg-rose-900/20 px-3 py-2 text-sm">
+				<p id="chat-error-text" class="text-rose-900 dark:text-rose-100">{chatError}</p>
+			</div>
+		{/if}
 
+		{#if hasSensitiveDataConsent}
 			<VoiceInput
 				disabled={sending}
 				hasDraft={input.trim().length > 0}
