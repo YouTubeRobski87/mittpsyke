@@ -9,6 +9,10 @@
 
 :root {
 	color-scheme: light;
+	/* Yta som den fixerade cookiebannern upptar längst ned. Sätts av
+	 * CookieBanner medan den visas och tas bort när den stängs, så sidan får
+	 * tillbaka utrymmet. 0 när ingen banner finns. */
+	--cookie-banner-space: 0px;
 	--container-max: 980px;
 	--font-heading: 'Recursive H', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-body: 'Recursive T', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -497,6 +501,23 @@ a {
 
 .chat-input-area {
 	flex-shrink: 0;
+}
+
+/* Chatten är höjdlåst mot viewporten, så bottenutrymmet på sidskalet når inte
+ * hit. Ytan läggs i stället på den inre scrollcontainern, som innehåller
+ * ConsentGate: innehållet kan då alltid scrollas fritt från bannern.
+ * Padding sätts här och inte på .chat-input-area, eftersom den senare bär
+ * Tailwind-utilities (pb-3) som vinner över en vanlig klassregel. */
+.chat-input-extras {
+	padding-bottom: var(--cookie-banner-space);
+	scroll-padding-bottom: var(--cookie-banner-space);
+}
+
+/* Sidor i vanligt flöde: reservera ytan på skalet i stället för på enskilda
+ * komponenter, så all bottenplacerad interaktion får plats - inte bara
+ * ConsentGate. Chatten undantas eftersom den hanteras ovan. */
+.app-shell:not(.is-chat-page) {
+	padding-bottom: var(--cookie-banner-space);
 }
 
 /* Mobile optimizations for chat page */

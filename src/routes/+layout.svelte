@@ -902,7 +902,7 @@
 		{/if}
 		</header>
 
-	<div class:is-chat-page={isChat}>
+	<div class="app-shell" class:is-chat-page={isChat}>
 		<main id="main-content" class={isProductPage ? 'app-shell-main' : 'mt-6'} class:chat-main={isChat}>
 			{@render children()}
 		</main>
