@@ -1350,6 +1350,22 @@
 								Svara på dagens fråga
 							</button>
 						</div>
+						<!-- Guidad incheckning är ett frivilligt alternativ till att skriva fritt.
+						     Den ligger som en lugnare andra rad så att "Skriv fritt" förblir
+						     sidans primära handling. Destinationen är den befintliga routen. -->
+						<div class="diary-start-primary diary-start-guided">
+							<svg class="diary-start-icon" aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+							<span class="diary-start-text">
+								<span class="diary-start-title">Guidad incheckning</span>
+								<span class="diary-start-copy">Sex lugna steg för att sätta ord på hur du mår just nu.</span>
+							</span>
+							<a
+								href="/dagars-avtryck/checkin"
+								class="auth-button diary-start-button diary-start-guided-button"
+							>
+								Starta incheckning
+							</a>
+						</div>
 						{#if showGuidedDiaryPath}
 							<div class="diary-path-grid diary-path-grid--single mt-3">
 								<a href="/dagars-avtryck" class="diary-path-card diary-path-card--guided">
@@ -2007,6 +2023,25 @@
 	/* Fokusmarkering kommer från den globala *:focus-visible-regeln i app.css,
 	   som sätter outline med !important. Lokala outline-regler vore död kod. */
 
+	/* Sekundär rad: samma rutnät som primärvalet, men dämpad ram och ingen fylld
+	   knapp så att den inte konkurrerar med "Börja skriva". */
+	.diary-start-guided {
+		margin-top: 0.85rem;
+		border-color: rgba(191, 219, 254, 0.18);
+		background: rgba(15, 23, 42, 0.16);
+	}
+
+	.diary-start-guided-button {
+		border-color: rgba(191, 219, 254, 0.42);
+		background: rgba(15, 23, 42, 0.42);
+		color: hsl(210 40% 96%);
+	}
+
+	.diary-start-guided-button:hover {
+		border-color: rgba(191, 219, 254, 0.62);
+		background: rgba(15, 23, 42, 0.58);
+	}
+
 	.diary-start-secondary {
 		display: flex;
 		flex-wrap: wrap;
@@ -2067,6 +2102,12 @@
 		padding: 1.12rem 1.2rem;
 		border-color: rgba(191, 219, 254, 0.22);
 		background: rgba(15, 23, 42, 0.2);
+	}
+
+	/* Behöver egen regel eftersom .diary-paths--signed-in .diary-start-primary
+	   har högre specificitet än .diary-start-guided. */
+	.diary-paths--signed-in .diary-start-guided {
+		margin-top: 0.9rem;
 	}
 
 	.diary-paths--signed-in .diary-start-icon {
@@ -3409,6 +3450,10 @@
 		.diary-paths--signed-in .diary-start-primary {
 			margin-top: 0.2rem;
 			padding: 0.95rem;
+		}
+
+		.diary-paths--signed-in .diary-start-guided {
+			margin-top: 0.7rem;
 		}
 
 		.diary-paths--signed-in .diary-start-secondary {
