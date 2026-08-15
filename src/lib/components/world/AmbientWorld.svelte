@@ -238,7 +238,14 @@
 	.living-world[data-time='morning'] .world-cloud { --cloud-layer-opacity: 0.86; }
 	.living-world[data-time='day'] .world-cloud { --cloud-layer-opacity: 1; mix-blend-mode: screen; }
 	.living-world[data-time='evening'] .world-cloud { --cloud-layer-opacity: 0.72; }
-	.living-world[data-time='night'] .world-cloud { --cloud-layer-opacity: 0.14; filter: blur(22px) saturate(0.5) brightness(0.62); }
+	.living-world[data-time='night'] .world-cloud {
+		--cloud-layer-opacity: 0.14;
+		background:
+			radial-gradient(ellipse at 20% 65%, rgba(178, 194, 214, 0.14), transparent 58%),
+			radial-gradient(ellipse at 48% 45%, rgba(191, 204, 220, 0.18), transparent 62%),
+			radial-gradient(ellipse at 78% 61%, rgba(162, 181, 201, 0.12), transparent 58%);
+		filter: blur(32px) saturate(0.5) brightness(0.62);
+	}
 	/* Månen har ingen egen animation eller timer. worldScene.ts deklarerar den före
 	   .world-cloud, så molnen behåller sitt vanliga lager ovanpå halo och månskiva. */
 	.world-moon { width: clamp(3.25rem, 7vw, 5.5rem); aspect-ratio: 1; height: auto; border-radius: 50%; background: radial-gradient(circle, rgba(239, 217, 154, 0.15) 0%, rgba(226, 199, 138, 0.07) 42%, transparent 72%); opacity: var(--opacity, 0.82); transform: translate3d(-50%, -50%, 0); }
