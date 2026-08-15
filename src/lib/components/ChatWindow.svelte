@@ -15,7 +15,6 @@
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
 		grantSensitiveConsent,
-		hasSensitiveConsent,
 		type HealthConsentRecord
 	} from '$lib/consent';
 	import {
@@ -95,6 +94,8 @@
 	const LONG_MESSAGE_ERROR =
 		'Din text blev lite för lång att skicka på en gång. Dela gärna upp den i två delar.';
 	const GENERIC_CHAT_ERROR = 'Något gick fel. Försök igen om en stund.';
+	const CONSENT_REQUIRED_ERROR =
+		'Ditt samtycke behöver bekräftas igen innan chatten kan svara.';
 	const HISTORY_NOTICE = 'Tidigare samtal är laddat.';
 	const legacyGuestHistoryTopics = ['angest', 'nedstamdhet', 'stress-oro', 'allmant'] as const;
 	const autoReadStorageKey = 'mittpsyke:chat-auto-read-replies';
@@ -705,6 +706,12 @@
 				if (res.status === 413 || data?.code === 'MESSAGE_TOO_LONG') {
 					throw new Error(LONG_MESSAGE_ERROR);
 				}
+				// Samtycket saknas, har gått ut eller är återkallat. Visa rutan
+				// igen i stället för ett tekniskt felmeddelande.
+				if (res.status === 403) {
+					requireConsentAgain();
+					throw new Error(CONSENT_REQUIRED_ERROR);
+				}
 				if (typeof data?.error === 'string' && data.error.trim()) {
 					throw new Error(data.error);
 				}
@@ -822,23 +829,20 @@
 	}
 
 	/**
-	 * För inloggade användare är den serverägda raden facit. Utan den här
-	 * synkningen skulle en användare som samtyckt före V3.2 se en chatt utan
-	 * samtyckesruta men få 403 från servern, eftersom localStorage och
-	 * user_metadata fortfarande såg ut att räcka.
+	 * Servern är facit i båda lägena, men på två skilda sätt:
+	 *   inloggad → raden i user_ai_consents (V3.2)
+	 *   gäst     → den signerade HttpOnly-cookien (V3.3)
 	 *
-	 * Gäster har ingen serverrad och behåller det tidigare beteendet.
+	 * localStorage används fortfarande av äldre ytor, men styr inte längre om
+	 * chatten får anropa AI. Utan den här synkningen skulle en användare som
+	 * samtyckt tidigare se en chatt utan samtyckesruta men få 403 från servern.
 	 */
 	async function syncSensitiveConsent(session: Session | null) {
-		if (!session) {
-			hasSensitiveDataConsent = hasSensitiveConsent(undefined);
-			return;
-		}
+		const endpoint = session ? '/api/consent/chat-ai' : '/api/consent/chat-ai/anonymous';
+		const headers = session ? { Authorization: `Bearer ${session.access_token}` } : undefined;
 
 		try {
-			const response = await fetch('/api/consent/chat-ai', {
-				headers: { Authorization: `Bearer ${session.access_token}` }
-			});
+			const response = await fetch(endpoint, { headers });
 
 			if (response.ok) {
 				const payload = (await response.json()) as { status?: string };
@@ -853,25 +857,38 @@
 	}
 
 	async function acceptSensitiveConsent() {
-		const consent = grantSensitiveConsent();
-		void persistUserConsent(consent);
-
 		const {
 			data: { session }
 		} = await supabase.auth.getSession();
 
-		if (!session) {
-			// Gästläge: oförändrat, ingen serverrad finns att skriva.
-			hasSensitiveDataConsent = true;
+		if (session) {
+			// localStorage och user_metadata skrivs kvar för äldre ytor, men är
+			// inte auktorisation för AI-anropet.
+			const consent = grantSensitiveConsent();
+			void persistUserConsent(consent);
+
+			const response = await fetch('/api/consent/chat-ai', {
+				method: 'POST',
+				headers: { Authorization: `Bearer ${session.access_token}` }
+			});
+
+			hasSensitiveDataConsent = response.ok;
 			return;
 		}
 
-		const response = await fetch('/api/consent/chat-ai', {
-			method: 'POST',
-			headers: { Authorization: `Bearer ${session.access_token}` }
-		});
-
+		// Gäst: servern utfärdar den signerade cookien. Först när den är satt
+		// betraktas samtycket som aktivt - ingen lokal genväg.
+		const response = await fetch('/api/consent/chat-ai/anonymous', { method: 'POST' });
 		hasSensitiveDataConsent = response.ok;
+	}
+
+	/**
+	 * Anropas när servern svarar 403 på grund av saknat, utgånget eller
+	 * återkallat samtycke. Visar samtyckesrutan igen i stället för att lämna
+	 * ett obegripligt fel.
+	 */
+	function requireConsentAgain() {
+		hasSensitiveDataConsent = false;
 	}
 
 

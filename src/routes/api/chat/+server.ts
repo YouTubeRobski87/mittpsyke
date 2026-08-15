@@ -20,6 +20,11 @@ import { createClient } from '@supabase/supabase-js';
 import { createServiceClient } from '$lib/server/supabase-admin';
 import { hasChatAiConsent } from '$lib/server/chat-ai-consent';
 import {
+	ANONYMOUS_CHAT_CONSENT_COOKIE,
+	hasAnonymousChatConsentSecret,
+	hasValidAnonymousChatConsent
+} from '$lib/server/anonymous-chat-consent';
+import {
 	AITextGenerationError,
 	generateAIText,
 	type AIMessage,
@@ -450,7 +455,7 @@ const normalizeApiKey = (value: string | undefined): string | null => {
 	return normalized;
 };
 
-export const POST: RequestHandler = async ({ request, getClientAddress }) => {
+export const POST: RequestHandler = async ({ request, getClientAddress, cookies }) => {
 	if (!hasSensitiveConsentHeader(request)) {
 		return errorResponse('Consent required for sensitive AI features.', 403);
 	}
@@ -535,6 +540,24 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		// retentionen är genomgångna. Samtalet fortsätter endast med den begränsade
 		// kontext som webbläsaren skickar i det aktuella anropet.
 		if (!token) {
+			// Serververifierat samtycke för gästchatt: en HMAC-signerad,
+			// kortlivad HttpOnly-cookie som bara servern kan utfärda. Den gamla
+			// klientheadern är en konstant ur bundeln och duger inte ensam.
+			//
+			// Krisgrinden ovan ligger avsiktligt före den här punkten: den är
+			// deterministisk, körs lokalt och skickar ingenting vidare. Ett
+			// saknat samtycke får aldrig tysta ett akut säkerhetssvar.
+			if (!hasAnonymousChatConsentSecret()) {
+				console.error('Missing CHAT_ANON_CONSENT_SECRET for guest chat consent.');
+				return errorResponse('Server configuration error', 500);
+			}
+
+			if (!hasValidAnonymousChatConsent(cookies.get(ANONYMOUS_CHAT_CONSENT_COOKIE))) {
+				return errorResponse('Consent required for sensitive AI features.', 403, {
+					code: 'ANONYMOUS_CONSENT_REQUIRED'
+				});
+			}
+
 			const modelContext = contextMessages.map((row) => ({
 				role: row.role,
 				content: row.content

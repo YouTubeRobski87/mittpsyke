@@ -7,8 +7,11 @@ const mocks = vi.hoisted(() => ({
 	generateAIText: vi.fn()
 }));
 
+// Gästchatt kräver sedan V3.3 en signerad samtyckescookie, som i sin tur
+// kräver signeringsnyckeln. Testet handlar fortfarande om gästbeteendet, inte
+// om samtycket - det täcks av anonymous-chat-consent.test.ts.
 vi.mock('$env/dynamic/private', () => ({
-	env: { OPENAI_API_KEY: 'test-openai-key' }
+	env: { OPENAI_API_KEY: 'test-openai-key', CHAT_ANON_CONSENT_SECRET: 'a'.repeat(48) }
 }));
 
 vi.mock('$env/dynamic/public', () => ({ env: {} }));
@@ -21,6 +24,10 @@ vi.mock('$lib/server/ai/text-generation', async (importOriginal) => {
 });
 
 import { POST } from './+server';
+import {
+	ANONYMOUS_CHAT_CONSENT_COOKIE,
+	issueAnonymousChatConsentToken
+} from '$lib/server/anonymous-chat-consent';
 
 describe('POST /api/chat', () => {
 	beforeEach(() => {
@@ -82,7 +89,12 @@ describe('POST /api/chat', () => {
 			})
 		});
 
-		const response = await POST({ request, getClientAddress: () => '127.0.0.2' } as Parameters<typeof POST>[0]);
+		const { token } = issueAnonymousChatConsentToken();
+		const response = await POST({
+			request,
+			getClientAddress: () => '127.0.0.2',
+			cookies: { get: (name: string) => (name === ANONYMOUS_CHAT_CONSENT_COOKIE ? token : undefined) }
+		} as unknown as Parameters<typeof POST>[0]);
 		const body = (await response.json()) as { reply: string; conversationId: string | null; mode: string };
 
 		expect(response.status).toBe(200);

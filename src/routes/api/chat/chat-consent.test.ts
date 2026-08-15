@@ -317,8 +317,17 @@ describe('scope-avgränsning', () => {
 			new URL('../../../lib/components/ChatWindow.svelte', import.meta.url),
 			'utf8'
 		);
+		// Kommentarerna nämner tabellen för att förklara var facit ligger, så
+		// jämförelsen görs mot koden.
+		const code = chatWindow
+			.split('\n')
+			.filter((line) => {
+				const trimmed = line.trim();
+				return !trimmed.startsWith('//') && !trimmed.startsWith('*');
+			})
+			.join('\n');
 
-		expect(chatWindow).not.toContain('user_ai_consents');
-		expect(chatWindow).toContain("fetch('/api/consent/chat-ai'");
+		expect(code).not.toContain('user_ai_consents');
+		expect(code).toContain("fetch('/api/consent/chat-ai'");
 	});
 });
