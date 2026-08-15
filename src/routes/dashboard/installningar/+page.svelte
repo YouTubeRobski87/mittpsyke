@@ -22,6 +22,7 @@
 		getProgressCompanionAnimal,
 		getProgressCompanionDisplayName,
 		readProgressCompanionFromMetadata,
+		type ProgressCompanionId,
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
 
@@ -455,7 +456,7 @@
 		}
 	}
 
-	async function selectCompanion(id: 'fox' | 'bear' | 'wolf') {
+	async function selectCompanion(id: ProgressCompanionId) {
 		if (companionSaving || progressCompanion?.id === id) return;
 
 		const previousCompanion = progressCompanion;

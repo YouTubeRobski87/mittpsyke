@@ -27,10 +27,14 @@
     getProgressCompanionDayState,
     getProgressCompanionAnimal,
     getProgressCompanionArtId,
+    getWorldCompanionId,
     type ProgressCompanionDayState,
     type ProgressCompanionSelection
   } from '$lib/progressCompanion';
-  import { DASHBOARD_CABIN_COMPANION_PLACEMENTS } from '$lib/companionPoseManifest';
+  import {
+    DASHBOARD_CABIN_COMPANION_PLACEMENTS,
+    type CompanionId
+  } from '$lib/companionPoseManifest';
   import {
     canTriggerCompanionGreeting,
     COMPANION_GREETING_DURATION_MS,
@@ -173,9 +177,7 @@
   );
   const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
   const companionHeroImage = DASHBOARD_HERO_IMAGE;
-  const heroCompanionId = $derived(
-    companionArtId === 'bear' || companionArtId === 'wolf' ? companionArtId : 'fox'
-  ) as 'fox' | 'bear' | 'wolf';
+  const heroCompanionId = $derived(getWorldCompanionId(companionArtId)) as CompanionId;
   const heroCompanionPlacement = $derived(DASHBOARD_CABIN_COMPANION_PLACEMENTS[heroCompanionId]);
   // Ingen alt-text för scenbilden: den är dekorativ (aria-hidden) och
   // följeslagaren beskrivs av CompanionPose, som vet vilket djur som visas.

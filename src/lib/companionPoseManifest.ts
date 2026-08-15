@@ -2,7 +2,7 @@ import { getProgressCompanionDisplayName } from '$lib/progressCompanion';
 
 export type CompanionPoseDaypart = 'day' | 'evening' | 'night';
 export type CompanionPoseRole = 'base' | 'overlay';
-export type CompanionId = 'fox' | 'bear' | 'wolf';
+export type CompanionId = 'fox' | 'bear' | 'wolf' | 'schafer' | 'australisk_shepherd';
 
 export type CompanionPoseFrame = {
 	src: string;
@@ -70,6 +70,10 @@ const FOX_POSE_BASE_PATH = '/images/avatars/presets';
 const foxPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
 const bearPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
 const wolfPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
+// Hundarnas frilagda bilder ligger i /images/scenes, till skillnad från de
+// äldre djuren som bor i presets. Egna hjälpare i stället för att flytta filer.
+const DOG_POSE_BASE_PATH = '/images/scenes';
+const dogPoseSrc = (fileName: string) => `${DOG_POSE_BASE_PATH}/${fileName}`;
 const FOX_DISPLAY_NAME = getProgressCompanionDisplayName('fox');
 const BEAR_DISPLAY_NAME = getProgressCompanionDisplayName('bear');
 const WOLF_DISPLAY_NAME = getProgressCompanionDisplayName('wolf');
@@ -356,6 +360,43 @@ export const WOLF_COMPANION_POSES = [
 	}
 ] satisfies CompanionPose[];
 
+/**
+ * Hundarna har än så länge en enda frilagd bild vardera, så de får exakt en
+ * pose var som gäller alla dygnsdelar. Det är avsiktligt statiskt: hellre en
+ * korrekt stillastående hund än en simulerad rotation av samma bild under
+ * flera pose-ID:n.
+ *
+ * Poserna måste finnas, inte utelämnas. getFallbackPose() faller i sista hand
+ * tillbaka på COMPANION_POSES[0], som är en rävpose - en hund utan egen pose
+ * skulle alltså renderas som räv.
+ *
+ * När riktiga pose-assets finns läggs de till här på samma sätt som björnens
+ * och vargens, utan att något annat behöver ändras.
+ */
+export const SCHAFER_COMPANION_POSES = [
+	{
+		id: 'schafer-static',
+		companionId: 'schafer',
+		role: 'base',
+		dayparts: ['day', 'evening', 'night'],
+		frames: [{ src: dogPoseSrc('schafer.png') }],
+		alt: `Din följeslagare, ${getProgressCompanionDisplayName('schafer')}, står lugnt.`,
+		weight: 1
+	}
+] satisfies CompanionPose[];
+
+export const AUSTRALISK_SHEPHERD_COMPANION_POSES = [
+	{
+		id: 'australisk-shepherd-static',
+		companionId: 'australisk_shepherd',
+		role: 'base',
+		dayparts: ['day', 'evening', 'night'],
+		frames: [{ src: dogPoseSrc('australisk_shepherd.png') }],
+		alt: `Din följeslagare, ${getProgressCompanionDisplayName('australisk_shepherd')}, står lugnt.`,
+		weight: 1
+	}
+] satisfies CompanionPose[];
+
 // Björnen använder samma värld som räven, men behöver en mindre och lägre placering
 // tills fler miljöanpassade poser finns. Värdena hålls per vy så att nya björnposer
 // kan läggas till utan att påverka rävens scenlogik.
@@ -420,7 +461,28 @@ export const DASHBOARD_CABIN_COMPANION_PLACEMENTS: Record<
 		y: 94,
 		compact: { scale: 0.72, x: 31, y: 92 }
 	},
-	wolf: { scale: 0.9, x: 37, y: 91 }
+	wolf: { scale: 0.9, x: 37, y: 91 },
+	// Hundarnas dukar är porträttformat och nästan helt fyllda av motivet
+	// (schäfer 97,5 % av höjden, australisk shepherd 96,0 %), medan vargens duk
+	// är till 83 % genomskinlig och rävens motiv är litet i sin ruta. Samma
+	// scale hade därför gjort hundarna dubbelt så stora i scenen.
+	//
+	// Värdena är räknade ur faktisk synlig storlek i stugscenen, inte kopierade
+	// från något annat djur. Referens: räven syns som 9,6 % av scenens bredd och
+	// 13,6 % av dess höjd, vargen 12,8 % / 11,6 %. Hundarna landar på ~10 % / 14 %
+	// respektive ~11 % / 14 % - alltså samma storleksband, med hundarnas
+	// naturligt högre och smalare kroppsform.
+	//
+	// y = 91 är samma markankare som räv och varg. CompanionPose ankrar bildens
+	// nederkant (translate -100%), och hundarnas 12 px bottenmarginal motsvarar
+	// bara ~0,2 % av scenen, så tassarna vilar på marken utan eget y-värde.
+	schafer: { scale: 0.28, x: 37, y: 91, compact: { scale: 0.3, x: 34, y: 91 } },
+	australisk_shepherd: {
+		scale: 0.31,
+		x: 37,
+		y: 91,
+		compact: { scale: 0.33, x: 34, y: 91 }
+	}
 };
 
 /** Startpunkten för Mitt Hems högra textyta i stugscenen. */
@@ -429,7 +491,9 @@ export const DASHBOARD_CABIN_COPY_SAFE_START_PCT = 54;
 export const COMPANION_POSES: readonly CompanionPose[] = [
 	...FOX_COMPANION_POSES,
 	...BEAR_COMPANION_POSES,
-	...WOLF_COMPANION_POSES
+	...WOLF_COMPANION_POSES,
+	...SCHAFER_COMPANION_POSES,
+	...AUSTRALISK_SHEPHERD_COMPANION_POSES
 ];
 
 export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
@@ -461,7 +525,9 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 			'bear-sleeping',
 			'bear-stretching',
 			'wolf-standing',
-			'wolf-sleeping'
+			'wolf-sleeping',
+			'schafer-static',
+			'australisk-shepherd-static'
 		],
 		dayparts: ['day', 'evening', 'night'],
 		weight: 2.2

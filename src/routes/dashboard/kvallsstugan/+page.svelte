@@ -15,6 +15,7 @@
 	import {
 		getProgressCompanionAnimal,
 		getProgressCompanionArtId,
+		getWorldCompanionId,
 		getProgressCompanionDayState,
 		type ProgressCompanionDayState,
 		type ProgressCompanionSelection
@@ -91,12 +92,8 @@
 	const hasInteriorBlanket = $derived(interiorMemory.hasBlanket);
 
 	const companionId = $derived(
-		getProgressCompanionArtId(getProgressCompanionAnimal(data.progressCompanion)?.id) === 'bear'
-			? 'bear'
-			: getProgressCompanionArtId(getProgressCompanionAnimal(data.progressCompanion)?.id) === 'wolf'
-				? 'wolf'
-				: 'fox'
-	) as 'fox' | 'bear' | 'wolf';
+		getWorldCompanionId(getProgressCompanionAnimal(data.progressCompanion)?.id)
+	);
 	const companionBondLevel = $derived(
 		getCompanionBondLevel(getCompanionBond(data.companionDaily?.answeredDayCount ?? 0))
 	);

@@ -22,6 +22,7 @@
 		getProgressCompanionSeason,
 		getProgressCompanionAnimal,
 		getProgressCompanionArtId,
+		getWorldCompanionId,
 		type ProgressCompanionDayState,
 		type ProgressCompanionSeason,
 		type ProgressCompanionSelection
@@ -30,6 +31,7 @@
 	import {
 		BEAR_SCENE_PLACEMENTS,
 		WOLF_SCENE_PLACEMENTS,
+		type CompanionId,
 		type CompanionPose as CompanionPoseData
 	} from '$lib/companionPoseManifest';
 	import { getGardenGrowthPoints, getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
@@ -83,7 +85,7 @@
 	let companionBasePose = $state<CompanionPoseData | null>(null);
 	const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
 
-	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: 'fox' | 'bear' | 'wolf') {
+	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: CompanionId) {
 		const companionName = getProgressCompanionDisplayName(companionId);
 		if (companionId === 'bear') {
 			if (poseId.startsWith('sleep')) {
@@ -126,16 +128,10 @@
 	}
 
 	const sceneCompanionId = $derived(
-		getProgressCompanionArtId(
+		getWorldCompanionId(
 			getProgressCompanionAnimal(data.isAnonymous ? { id: 'fox' } : data.progressCompanion)?.id
-		) === 'bear'
-			? 'bear'
-			: getProgressCompanionArtId(
-				getProgressCompanionAnimal(data.isAnonymous ? { id: 'fox' } : data.progressCompanion)?.id
-			) === 'wolf'
-				? 'wolf'
-				: 'fox'
-	) as 'fox' | 'bear' | 'wolf';
+		)
+	) as CompanionId;
 
 	const companionScene = $derived<CompanionScene>({
 		image: PROGRESS_CABIN_LAKESIDE_SCENE_IMAGE,

@@ -5,7 +5,14 @@
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
 
-	type CompanionId = 'fox' | 'bear' | 'wolf';
+	type CompanionId = 'fox' | 'bear' | 'wolf' | 'schafer' | 'australisk_shepherd';
+
+	// Räv, björn och varg ritas som inline-SVG i CompanionAvatar. Hundarna har
+	// frilagda foton i stället, så de visas som bild. Inga andra djur påverkas.
+	const COMPANION_PRESET_IMAGES: Partial<Record<CompanionId, string>> = {
+		schafer: '/images/avatars/presets/schafer.png',
+		australisk_shepherd: '/images/avatars/presets/australisk_shepherd.png'
+	};
 
 	let {
 		selection,
@@ -21,9 +28,17 @@
 		onselect: (id: CompanionId) => void;
 	} = $props();
 
+	const SELECTABLE_COMPANION_IDS: readonly CompanionId[] = [
+		'fox',
+		'bear',
+		'wolf',
+		'schafer',
+		'australisk_shepherd'
+	];
+
 	const choices = PROGRESS_COMPANION_ANIMALS.filter(
 		(companion): companion is (typeof PROGRESS_COMPANION_ANIMALS)[number] & { id: CompanionId } =>
-			companion.id === 'fox' || companion.id === 'bear' || companion.id === 'wolf'
+			(SELECTABLE_COMPANION_IDS as readonly string[]).includes(companion.id)
 	);
 </script>
 
@@ -44,7 +59,17 @@
 				aria-checked={selection.id === companion.id}
 				disabled={saving}
 			>
-				<CompanionAvatar selection={{ id: companion.id }} size="lg" decorative animated={false} />
+				{#if COMPANION_PRESET_IMAGES[companion.id]}
+					<img
+						class="companion-choice-photo"
+						src={COMPANION_PRESET_IMAGES[companion.id]}
+						alt=""
+						loading="lazy"
+						decoding="async"
+					/>
+				{:else}
+					<CompanionAvatar selection={{ id: companion.id }} size="lg" decorative animated={false} />
+				{/if}
 				<span class="companion-choice-copy">
 					<strong>{companion.name}</strong>
 					<small>{companion.speciesName ? `${companion.speciesName} · ${companion.temperament}` : companion.temperament}</small>
@@ -90,6 +115,16 @@
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 0.6rem;
+	}
+
+	/* Samma yta som CompanionAvatar size="lg" upptar, så korten radar upp sig
+	   likadant oavsett om följeslagaren ritas som SVG eller visas som foto. */
+	.companion-choice-photo {
+		width: 3.5rem;
+		height: 3.5rem;
+		flex-shrink: 0;
+		object-fit: contain;
+		object-position: center bottom;
 	}
 
 	.companion-choice {

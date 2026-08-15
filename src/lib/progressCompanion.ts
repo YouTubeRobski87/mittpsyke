@@ -4,7 +4,10 @@ export type ProgressCompanionSelection = {
 	icon?: string;
 };
 
-export type ProgressCompanionId = 'fox' | 'bear' | 'wolf';
+// ID:na är stabila och lagras i user_metadata. Hundarnas ID följer filnamnen i
+// static/images (schafer, australisk_shepherd) och får aldrig bytas i efterhand
+// - då tappar befintliga användare sitt val.
+export type ProgressCompanionId = 'fox' | 'bear' | 'wolf' | 'schafer' | 'australisk_shepherd';
 
 export type ProgressCompanionAnimal = {
 	id: string;
@@ -21,7 +24,9 @@ export type ProgressCompanionArtId =
 	| 'rabbit'
 	| 'squirrel'
 	| 'turtle'
-	| 'dino';
+	| 'dino'
+	| 'schafer'
+	| 'australisk_shepherd';
 
 export type ProgressCompanionDayState = 'morning' | 'day' | 'evening' | 'night';
 export type ProgressCompanionSeason = 'spring' | 'summer' | 'autumn' | 'winter';
@@ -106,6 +111,13 @@ export const PROGRESS_COMPANION_ANIMALS = [
 	{ id: 'fox', name: 'Vide', speciesName: 'Räv', temperament: 'Nyfiken och varsam' },
 	{ id: 'bear', name: 'Balder', speciesName: 'Björn', temperament: 'Lugn och stadig' },
 	{ id: 'wolf', name: 'Ylva', speciesName: 'Varg', temperament: 'Trygg och närvarande' },
+	{ id: 'schafer', name: 'Schäfer', speciesName: 'Schäfer', temperament: 'Vaksam och lojal' },
+	{
+		id: 'australisk_shepherd',
+		name: 'Australisk shepherd',
+		speciesName: 'Australisk shepherd',
+		temperament: 'Följsam och alert'
+	},
 	{ id: 'owl', name: 'Uggla', temperament: 'Vaken och stilla' },
 	{ id: 'rabbit', name: 'Kanin', temperament: 'Mjuk och uppmärksam' },
 	{ id: 'squirrel', name: 'Ekorre', temperament: 'Liten och närvarande' },
@@ -146,8 +158,16 @@ const COMPANION_NESTED_KEYS = [
 	'progress_companion'
 ] as const;
 
+const SUPPORTED_PROGRESS_COMPANION_IDS = [
+	'fox',
+	'bear',
+	'wolf',
+	'schafer',
+	'australisk_shepherd'
+] as const satisfies readonly ProgressCompanionId[];
+
 function isSupportedProgressCompanionId(id: string): id is ProgressCompanionId {
-	return id === 'fox' || id === 'bear' || id === 'wolf';
+	return (SUPPORTED_PROGRESS_COMPANION_IDS as readonly string[]).includes(id);
 }
 
 function cleanString(value: unknown): string | null {
@@ -282,20 +302,42 @@ export function getProgressCompanionHeroFocus(id: string | null | undefined): st
 	return PROGRESS_COMPANION_HERO_FOCUS[artId] ?? DEFAULT_COMPANION_HERO_FOCUS;
 }
 
+const PROGRESS_COMPANION_ART_IDS = [
+	'fox',
+	'bear',
+	'wolf',
+	'owl',
+	'rabbit',
+	'squirrel',
+	'turtle',
+	'dino',
+	'schafer',
+	'australisk_shepherd'
+] as const satisfies readonly ProgressCompanionArtId[];
+
 export function getProgressCompanionArtId(id: string | null | undefined): ProgressCompanionArtId {
-	if (
-		id === 'fox' ||
-		id === 'bear' ||
-		id === 'wolf' ||
-		id === 'owl' ||
-		id === 'rabbit' ||
-		id === 'squirrel' ||
-		id === 'turtle' ||
-		id === 'dino'
-	) {
-		return id;
+	if (typeof id === 'string' && (PROGRESS_COMPANION_ART_IDS as readonly string[]).includes(id)) {
+		return id as ProgressCompanionArtId;
 	}
 	return 'fox';
+}
+
+/**
+ * De följeslagare som faktiskt har poser i den levande världen. Övriga art-ID:n
+ * (uggla, kanin ...) saknar assets och ritas som räv, precis som tidigare.
+ *
+ * Vyerna använde förut var sin ternärkedja som bara släppte igenom bear/wolf.
+ * En hund hade då blivit räv i världen trots korrekt sparat val.
+ */
+const WORLD_COMPANION_IDS = ['fox', 'bear', 'wolf', 'schafer', 'australisk_shepherd'] as const;
+
+export type WorldCompanionId = (typeof WORLD_COMPANION_IDS)[number];
+
+export function getWorldCompanionId(id: string | null | undefined): WorldCompanionId {
+	const artId = getProgressCompanionArtId(id);
+	return (WORLD_COMPANION_IDS as readonly string[]).includes(artId)
+		? (artId as WorldCompanionId)
+		: 'fox';
 }
 
 export function getProgressCompanionSeason(date = new Date()): ProgressCompanionSeason {
