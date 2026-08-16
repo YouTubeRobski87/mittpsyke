@@ -926,6 +926,7 @@
 					loading="eager"
 					decoding="async"
 				/>
+				<span class="scene-daylight-wash" aria-hidden="true"></span>
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
 				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} scene="progress" decorative />
 				<CompanionVisitor
@@ -1407,11 +1408,32 @@
 		--scene-companion: 3;
 		--scene-foreground: 4;
 		--scene-overlay: 5;
+		/* Grundtonen bakom scenen följer dygnet. Den syns innan bilden laddats och
+		   genom scenens kanter, så en fast nattblå färg gjorde att även dag och
+		   morgon läste som mörka. */
+		--scene-ground: #0d1727;
 		width: 100%;
 		height: clamp(220px, 22vw, 300px);
 		overflow: hidden;
-		background: #0d1727;
+		background: var(--scene-ground);
 		isolation: isolate;
+		transition: background 1200ms ease;
+	}
+
+	.companion-media[data-time='morning'] {
+		--scene-ground: #33465c;
+	}
+
+	.companion-media[data-time='day'] {
+		--scene-ground: #44607d;
+	}
+
+	.companion-media[data-time='evening'] {
+		--scene-ground: #23304a;
+	}
+
+	.companion-media[data-time='night'] {
+		--scene-ground: #0a1120;
 	}
 
 	.companion-media::before,
@@ -1449,12 +1471,14 @@
 		);
 	}
 
+	/* Toningen finns för att copyn i nederkanten ska gå att läsa. Dagtid räcker en
+	   svagare botten - texten har dessutom egen text-shadow. */
 	.companion-media[data-time='morning']::after {
-		background: linear-gradient(180deg, rgb(255 210 154 / 0.04) 0%, rgb(82 61 44 / 0.1) 36%, rgb(7 14 23 / 0.64) 100%);
+		background: linear-gradient(180deg, rgb(255 226 186 / 0.05) 0%, rgb(70 62 54 / 0.06) 36%, rgb(12 22 34 / 0.5) 100%);
 	}
 
 	.companion-media[data-time='day']::after {
-		background: linear-gradient(180deg, rgb(204 234 255 / 0.02) 0%, rgb(7 17 28 / 0.1) 34%, rgb(5 12 22 / 0.6) 100%);
+		background: linear-gradient(180deg, rgb(214 238 255 / 0.04) 0%, rgb(16 34 52 / 0.05) 34%, rgb(10 24 40 / 0.44) 100%);
 	}
 
 	.companion-media[data-time='evening']::after {
@@ -1479,20 +1503,67 @@
 		will-change: transform, filter;
 	}
 
+	/* Scenbilden är fotograferad i solnedgång. Ett filter kan lyfta ljusstyrkan men
+	   inte färgtemperaturen - den orange himlen läser fortfarande som kväll. Det
+	   här lagret lägger dygnets egen färgton över bilden i stället. */
+	.scene-daylight-wash {
+		position: absolute;
+		inset: 0;
+		z-index: var(--scene-midground);
+		opacity: 0;
+		pointer-events: none;
+		transition: background 1200ms ease, opacity 1200ms ease;
+	}
+
+	.companion-media[data-time='morning'] .scene-daylight-wash {
+		background: linear-gradient(
+			175deg,
+			rgb(168 206 236 / 0.5) 0%,
+			rgb(198 219 232 / 0.3) 42%,
+			rgb(196 210 200 / 0.14) 100%
+		);
+		opacity: 1;
+		mix-blend-mode: screen;
+	}
+
+	.companion-media[data-time='day'] .scene-daylight-wash {
+		background: linear-gradient(
+			175deg,
+			rgb(140 194 240 / 0.66) 0%,
+			rgb(176 212 240 / 0.42) 46%,
+			rgb(188 210 206 / 0.16) 100%
+		);
+		opacity: 1;
+		mix-blend-mode: screen;
+	}
+
+	.companion-media[data-time='night'] .scene-daylight-wash {
+		background: linear-gradient(
+			175deg,
+			rgb(10 22 52 / 0.5) 0%,
+			rgb(8 18 42 / 0.36) 52%,
+			rgb(6 14 32 / 0.24) 100%
+		);
+		opacity: 1;
+	}
+
 	.companion-media :global(.progress-living-world) {
 		z-index: var(--scene-ambient);
 	}
 
+	/* Scenbilden är fotograferad i solnedgång. Graderingen får därför lyfta och
+	   kyla ner den mot dagsljus, inte bara justera den i marginalen - annars
+	   känns morgon och dag lika mörka som kvällen. */
 	.companion-media[data-time='morning'] .companion-world-scene {
-		filter: saturate(0.96) brightness(1.04) sepia(0.1) hue-rotate(-6deg);
+		filter: saturate(0.92) brightness(1.24) contrast(0.97) sepia(0.05) hue-rotate(6deg);
 	}
 
 	.companion-media[data-time='day'] .companion-world-scene {
-		filter: saturate(1.04) brightness(1.05) contrast(1.02);
+		filter: saturate(1) brightness(1.34) contrast(0.96) sepia(0.03) hue-rotate(12deg);
 	}
 
 	.companion-media[data-time='evening'] .companion-world-scene {
-		filter: saturate(1.04) brightness(0.91) sepia(0.12) hue-rotate(-8deg);
+		filter: saturate(1.04) brightness(0.95) sepia(0.12) hue-rotate(-8deg);
 	}
 
 	.companion-media[data-time='night'] .companion-world-scene {
@@ -1573,6 +1644,16 @@
 	.companion-media[data-companion='bear'][data-pose='bear-stretching'] .companion-ground-shadow {
 		left: 66.1%;
 		top: 65.1%;
+	}
+
+	.companion-media[data-time='morning'] :global(.progress-companion-pose) {
+		--companion-grade: saturate(0.82) contrast(0.9) brightness(1.08) sepia(0.06)
+			hue-rotate(2deg);
+	}
+
+	.companion-media[data-time='day'] :global(.progress-companion-pose) {
+		--companion-grade: saturate(0.88) contrast(0.92) brightness(1.14) sepia(0.03)
+			hue-rotate(5deg);
 	}
 
 	.companion-media[data-time='evening'] :global(.progress-companion-pose) {
@@ -2004,18 +2085,18 @@
 		100% { background-position: -200% 0; }
 	}
 
+	/* Animerar enbart transform. En animerad filter-egenskap här skulle vinna över
+	   .companion-media[data-time='...'] .companion-world-scene och slå ut hela
+	   dygnsgraderingen, eftersom keyframes har högre prioritet än vanliga regler. */
 	@keyframes companionWorldDrift {
 		0% {
 			transform: scale(1.018) translate3d(-0.4%, -0.25%, 0);
-			filter: saturate(1.02) brightness(0.98);
 		}
 		50% {
 			transform: scale(1.035) translate3d(0.35%, 0.18%, 0);
-			filter: saturate(1.07) brightness(1.04);
 		}
 		100% {
 			transform: scale(1.024) translate3d(0.7%, -0.18%, 0);
-			filter: saturate(1.03) brightness(1);
 		}
 	}
 

@@ -64,12 +64,12 @@
 	const ambientEffects = $derived(enabledEffects.filter((effect) => effect.kind !== 'water'));
 	const skyEffects = $derived(
 		ambientEffects.filter((effect) =>
-			['light', 'moon', 'cloud', 'mist'].includes(effect.kind)
+			['light', 'moon', 'sun', 'cloud', 'mist'].includes(effect.kind)
 		)
 	);
 	const foregroundEffects = $derived(
 		ambientEffects.filter(
-			(effect) => !['light', 'moon', 'cloud', 'mist'].includes(effect.kind)
+			(effect) => !['light', 'moon', 'sun', 'cloud', 'mist'].includes(effect.kind)
 		)
 	);
 	const availableEventKinds = $derived.by(() => {
@@ -250,6 +250,35 @@
 	   .world-cloud, så molnen behåller sitt vanliga lager ovanpå halo och månskiva. */
 	.world-moon { width: clamp(3.25rem, 7vw, 5.5rem); aspect-ratio: 1; height: auto; border-radius: 50%; background: radial-gradient(circle, rgba(239, 217, 154, 0.15) 0%, rgba(226, 199, 138, 0.07) 42%, transparent 72%); opacity: var(--opacity, 0.82); transform: translate3d(-50%, -50%, 0); }
 	.world-moon::after { content: ''; position: absolute; inset: 31%; border-radius: 50%; background: radial-gradient(circle at 35% 30%, rgba(239, 217, 154, 0.82) 0%, rgba(226, 199, 138, 0.7) 58%, rgba(184, 157, 105, 0.58) 100%); box-shadow: 0 0 14px rgba(226, 199, 138, 0.13); }
+	/* Medvetet ett mjukt sken utan skarp skiva - scenbilden har redan en inbakad
+	   sol, och en andra tydlig solskiva skulle läsa som två solar. Det här lagret
+	   visar var dagsljuset kommer ifrån, inte solen själv. */
+	.world-sun {
+		width: clamp(5rem, 13vw, 10rem);
+		aspect-ratio: 1;
+		height: auto;
+		border-radius: 50%;
+		background: radial-gradient(
+			circle,
+			rgba(255, 243, 214, 0.72) 0%,
+			rgba(255, 226, 163, 0.34) 34%,
+			rgba(255, 206, 138, 0.14) 58%,
+			transparent 76%
+		);
+		filter: blur(6px);
+		opacity: var(--opacity, 0.6);
+		mix-blend-mode: screen;
+		transform: translate3d(-50%, -50%, 0);
+	}
+	.living-world[data-time='day'] .world-sun {
+		background: radial-gradient(
+			circle,
+			rgba(255, 252, 240, 0.78) 0%,
+			rgba(255, 244, 209, 0.36) 34%,
+			rgba(233, 240, 255, 0.14) 60%,
+			transparent 78%
+		);
+	}
 	.world-mist { border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(255, 251, 236, 0.52), rgba(226, 245, 255, 0.36), transparent); filter: blur(12px); mix-blend-mode: soft-light; animation: mistDrift var(--duration, 118000ms) ease-in-out var(--delay, 0ms) infinite; }
 	.living-world[data-time='day'] .world-mist { filter: blur(14px); }
 	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.5px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) ease-in-out var(--delay, 0ms) infinite; }
@@ -317,7 +346,7 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.world-effect { animation: none !important; transform: none !important; }
-		.world-moon { transform: translate3d(-50%, -50%, 0) !important; }
+		.world-moon, .world-sun { transform: translate3d(-50%, -50%, 0) !important; }
 		.world-bird, .world-butterfly, .world-leaf, .world-drift, .world-event-water, .world-presence-sign { opacity: 0 !important; }
 		.world-light, .world-mist, .world-foliage { opacity: calc(var(--opacity, 0.12) * 0.5); }
 		.world-cloud { opacity: calc(var(--opacity, 0.12) * var(--cloud-layer-opacity, 1) * 0.5); }

@@ -16,6 +16,7 @@ export type LivingWorldEffectKind =
 	| 'leaf'
 	| 'cloud'
 	| 'moon'
+	| 'sun'
 	| 'drift';
 
 export type LivingWorldEffect = {
@@ -97,6 +98,7 @@ const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
 	leaf: true,
 	cloud: true,
 	moon: true,
+	sun: true,
 	drift: true
 };
 
@@ -196,6 +198,8 @@ const baseEffects: LivingWorldEffect[] = [
 	// AmbientWorld behåller ordningen när den renderar effekterna. Månen ligger
 	// därför före molnen, så deras befintliga drift naturligt passerar framför den.
 	{ id: 'moon', kind: 'moon', enabled: true, opacity: 0.82 },
+	// Solen ligger, precis som månen, före molnen så deras drift passerar framför.
+	{ id: 'sun', kind: 'sun', enabled: true, opacity: 0.6 },
 	{
 		id: 'cloud-back',
 		kind: 'cloud',
@@ -480,6 +484,7 @@ const baseEffects: LivingWorldEffect[] = [
 // sjön, sedan stranden, och lövverket närmast betraktaren.
 const EFFECT_DEPTHS: Record<string, number> = {
 	sunlight: 0.05,
+	sun: 0.06,
 	moon: 0.08,
 	'cloud-back': 0.1,
 	'cloud-front': 0.2,
@@ -582,6 +587,37 @@ export function getMoonPosition(
 	};
 }
 
+export type SunPosition = { x: number; y: number; intensity: number };
+
+/**
+ * Solens bana över dagsljusfönstret (05:00–20:00), byggd som månens: ingen timer
+ * och ingen animation, bara den lokala världstiden. Låg och varm vid kanterna,
+ * högst mitt på dagen.
+ *
+ * `intensity` tonar ner skenet närmast gryning och skymning så soluppgången
+ * smyger in i stället för att tändas.
+ */
+export function getSunPosition(
+	timeOfDay: ProgressCompanionDayState,
+	localTimeMinutes: number
+): SunPosition | null {
+	if (timeOfDay === 'night') return null;
+
+	const dayStart = 5 * 60;
+	const dayEnd = 20 * 60;
+	if (localTimeMinutes < dayStart || localTimeMinutes >= dayEnd) return null;
+
+	const progress = (localTimeMinutes - dayStart) / (dayEnd - dayStart);
+	const arc = Math.sin(progress * Math.PI);
+
+	return {
+		x: 13 + progress * 62,
+		y: 33 - arc * 25,
+		// Skenet är svagast vid horisonten och starkast när solen står som högst.
+		intensity: 0.32 + arc * 0.68
+	};
+}
+
 function getWorldLocalDateKey(date: Date): string {
 	return new Intl.DateTimeFormat('sv-SE', {
 		timeZone: 'Europe/Stockholm',
@@ -599,6 +635,7 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 	const localDateKey = getWorldLocalDateKey(date);
 	const localTimeMinutes = hour * 60 + minute;
 	const moonPosition = getMoonPosition(timeOfDay, localTimeMinutes);
+	const sunPosition = getSunPosition(timeOfDay, localTimeMinutes);
 	const wind = Math.min(Math.max(input.wind ?? 0.18, 0), 1);
 	const isDaylight = timeOfDay === 'morning' || timeOfDay === 'day';
 	const growth = growthWorldMask(input.growthLevel);
@@ -643,6 +680,15 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 			if (moonPosition) {
 				next.x = moonPosition.x;
 				next.y = moonPosition.y;
+			}
+		}
+
+		if (next.kind === 'sun') {
+			next.enabled = sunPosition !== null;
+			if (sunPosition) {
+				next.x = sunPosition.x;
+				next.y = sunPosition.y;
+				next.opacity = (effect.opacity ?? 0.6) * sunPosition.intensity;
 			}
 		}
 		return next;

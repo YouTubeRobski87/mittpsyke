@@ -3,6 +3,7 @@ import {
 	getGrowthLevel,
 	getLivingWorldScene,
 	getMoonPosition,
+	getSunPosition,
 	growthWorldMask,
 	normalizeGrowthLevel,
 	type LivingWorldEffectKind,
@@ -292,5 +293,53 @@ describe('månen i den gemensamma world-scenen', () => {
 
 	it('har ingen egen duration och förblir statisk när reducerad rörelse stänger av CSS-animationer', () => {
 		expect(moon(new Date('2026-06-15T00:00:00Z'))?.durationMs).toBeUndefined();
+	});
+});
+
+describe('solen i den gemensamma world-scenen', () => {
+	const sun = (date: Date) => getLivingWorldScene({ date }).effects.find((effect) => effect.id === 'sun');
+
+	it('är dold på natten, när månen i stället är framme', () => {
+		const date = new Date('2026-06-15T00:00:00Z'); // 02:00 i Stockholm
+		const scene = getLivingWorldScene({ date });
+
+		expect(scene.timeOfDay).toBe('night');
+		expect(sun(date)?.enabled).toBe(false);
+		expect(getSunPosition('night', 2 * 60)).toBeNull();
+	});
+
+	it('är synlig under dagsljusfönstret', () => {
+		const date = new Date('2026-06-15T10:00:00Z'); // 12:00 i Stockholm
+		const effect = sun(date);
+
+		expect(effect?.enabled).toBe(true);
+		expect(effect).toMatchObject({ kind: 'sun', x: expect.any(Number), y: expect.any(Number) });
+	});
+
+	it('följer en båge från gryning till skymning', () => {
+		const dawn = getSunPosition('morning', 5 * 60);
+		const noon = getSunPosition('day', 12 * 60 + 30);
+		const dusk = getSunPosition('evening', 19 * 60 + 45);
+
+		expect(dawn).not.toBeNull();
+		expect(noon).not.toBeNull();
+		expect(dusk).not.toBeNull();
+		// Vandrar åt ett håll över himlen.
+		expect(dawn!.x).toBeLessThan(noon!.x);
+		expect(noon!.x).toBeLessThan(dusk!.x);
+		// Står som högst mitt på dagen (lägre y = högre upp).
+		expect(noon!.y).toBeLessThan(dawn!.y);
+		expect(noon!.y).toBeLessThan(dusk!.y);
+		// Skenet är starkast när solen står som högst.
+		expect(noon!.intensity).toBeGreaterThan(dawn!.intensity);
+		expect(noon!.intensity).toBeGreaterThan(dusk!.intensity);
+	});
+
+	it('ger samma position för samma lokala världstid', () => {
+		expect(getSunPosition('day', 13 * 60)).toEqual(getSunPosition('day', 13 * 60));
+	});
+
+	it('har ingen egen duration och förblir statisk när reducerad rörelse stänger av CSS-animationer', () => {
+		expect(sun(new Date('2026-06-15T10:00:00Z'))?.durationMs).toBeUndefined();
 	});
 });
