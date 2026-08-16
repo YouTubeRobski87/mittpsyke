@@ -1,20 +1,24 @@
 <script lang="ts">
-	// Publik proof-of-product för Kvällsstugan. Visar samma scen och samma steg 1
-	// som den inloggade vyn, men helt statiskt: ingen auth, inget API, ingen
-	// sparning. Det är en bild av produkten byggd av DOM i stället för en
-	// skärmdump, så den skalar och följer temat.
+	// Publik proof-of-product för Kvällsstugan. Steg 1 är detsamma som i den
+	// inloggade vyn, men helt statiskt: ingen auth, inget API, ingen sparning.
+	// Det är en bild av produkten byggd av DOM i stället för en skärmdump, så
+	// den skalar och följer temat.
+	//
+	// Scenen är medvetet platsen UTIFRÅN, inte Kvällsstugans interiör: startsidan
+	// visar ankomsten, och interiörbilden är kvar i sin egen sektion längre ner
+	// så samma motiv inte används två gånger på sidan.
 	//
 	// Temaknapparna kommer från EVENING_THEMES - samma källa som den riktiga
 	// incheckningen - så den publika proofen aldrig kan visa något annat än vad
 	// användaren faktiskt möter. Inget här är klickbart, och inget är märkt upp
 	// som en kontroll: alternativen är en lista, inte knappar.
 	import { EVENING_THEMES } from '$lib/evening-checkin';
-
-	const CABIN_SRCSET = [
-		'/images/scenes/cabin-interior-evening-v1-800.webp 800w',
-		'/images/scenes/cabin-interior-evening-v1-1200.webp 1200w',
-		'/images/scenes/cabin-interior-evening-v1.webp 1672w'
-	].join(', ');
+	// Landskapsscenen delas med Framsteg via samma konstanter, så startsidan och
+	// den inloggade vyn aldrig kan glida isär till två olika bilder av platsen.
+	import {
+		PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK,
+		PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET
+	} from '$lib/progressCompanion';
 
 	let {
 		variant = 'section',
@@ -25,10 +29,10 @@
 <figure class={`cabin-proof cabin-proof--${variant}`}>
 	<div class="cabin-proof-scene">
 		<img
-			srcset={CABIN_SRCSET}
+			srcset={PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET}
 			sizes="(max-width: 759px) calc(100vw - 2.5rem), (min-width: 900px) 60vw, 520px"
-			src="/images/scenes/cabin-interior-evening-v1-1200.webp"
-			alt="Inne i Kvällsstugan: en lampa lyser i en stuga och genom fönstret syns en sjö i skymningen."
+			src={PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK}
+			alt="Platsen utifrån: en stuga med lyktan tänd vid en spegelblank sjö, omgiven av granskog och berg."
 			width="1672"
 			height="941"
 			loading={priority ? 'eager' : 'lazy'}
@@ -64,7 +68,9 @@
 		overflow: hidden;
 		border: 1px solid rgb(92 72 47 / 0.34);
 		border-radius: 1.2rem;
-		background: #17110e;
+		/* Grundtonen syns innan bilden laddat. Följer landskapsscenens mörkblå,
+		   inte interiörens bruna, sedan hero bytte motiv. */
+		background: #0d1727;
 	}
 
 	/* aspect-ratio + width/height på bilden håller höjden reserverad innan

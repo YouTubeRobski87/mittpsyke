@@ -30,7 +30,7 @@
 		<div class="home-inner hero-grid">
 			<div class="hero-copy">
 				<p class="eyebrow">En lugn plats på nätet</p>
-				<h1 id="hero-title">Här är det kväll, och du behöver inte prestera något.</h1>
+				<h1 id="hero-title">Du behöver inte prestera något här.</h1>
 				<p class="lead">
 					En stuga med en lampa tänd, ett djur som sitter kvar, och plats att skriva av dig. Kom när
 					du vill, stanna hur länge du vill.
