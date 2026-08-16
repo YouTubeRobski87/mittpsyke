@@ -130,6 +130,29 @@ describe.each(DOGS)('$displayName', (dog) => {
 		expect(getWorldCompanionId(dog.id)).toBe(dog.id);
 		expect(getProgressCompanionArtId(dog.id)).toBe(dog.id);
 	});
+
+	it('poseval ger mer än bara standing', () => {
+		const seen = new Set<string>();
+
+		for (const hour of [7, 9, 13, 16, 18, 20, 23, 3]) {
+			const pose = getCompanionBasePose(new Date(2026, 5, 15, hour, 0, 0), null, dog.id);
+			seen.add(pose.id);
+		}
+
+		expect(seen.size).toBeGreaterThan(1);
+	});
+
+	it('sleeping-posen väljs vid natt', () => {
+		const nightPose = dog.poses.find((pose) => pose.id === `${dog.posePrefix}-sleeping`);
+
+		expect(nightPose).toBeDefined();
+		expect(nightPose?.dayparts).toContain('night');
+
+		const nightPoses = dog.poses.filter((pose) => pose.dayparts.includes('night'));
+		const sleepingAmong = nightPoses.some((pose) => pose.id === `${dog.posePrefix}-sleeping`);
+
+		expect(sleepingAmong).toBe(true);
+	});
 });
 
 describe('befintliga följeslagare är oförändrade', () => {

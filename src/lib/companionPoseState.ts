@@ -50,7 +50,15 @@ const CALM_POSE_IDS = new Set([
 	'bear-sitting',
 	'bear-sleeping',
 	'wolf-standing',
-	'wolf-sleeping'
+	'wolf-sleeping',
+	'schafer-sitting',
+	'schafer-lying',
+	'schafer-resting',
+	'schafer-sleeping',
+	'australisk-shepherd-sitting',
+	'australisk-shepherd-lying',
+	'australisk-shepherd-resting',
+	'australisk-shepherd-sleeping'
 ]);
 
 function getPoseDaypart(date: Date): CompanionPoseDaypart {

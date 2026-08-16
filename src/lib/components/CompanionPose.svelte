@@ -550,6 +550,24 @@
 		filter: saturate(0.62) contrast(0.88) brightness(0.78) sepia(0.1);
 	}
 
+	.companion-pose[data-companion='schafer'] .companion-pose-image,
+	.companion-pose[data-companion='australisk_shepherd'] .companion-pose-image {
+		object-position: center bottom;
+		filter: saturate(0.78) contrast(0.9) brightness(0.96) sepia(0.08);
+		-webkit-mask-image: none;
+		mask-image: none;
+	}
+
+	.companion-pose[data-companion='schafer'][data-daypart='evening'] .companion-pose-image,
+	.companion-pose[data-companion='australisk_shepherd'][data-daypart='evening'] .companion-pose-image {
+		filter: saturate(0.72) contrast(0.9) brightness(0.9) sepia(0.13);
+	}
+
+	.companion-pose[data-companion='schafer'][data-daypart='night'] .companion-pose-image,
+	.companion-pose[data-companion='australisk_shepherd'][data-daypart='night'] .companion-pose-image {
+		filter: saturate(0.62) contrast(0.88) brightness(0.78) sepia(0.1);
+	}
+
 	@keyframes companionPoseBreath {
 		0%,
 		100% {
