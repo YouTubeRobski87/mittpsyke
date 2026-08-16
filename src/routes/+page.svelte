@@ -3,7 +3,6 @@
 	import CabinProof from '$lib/components/home/CabinProof.svelte';
 	import { trackHomeCtaClick } from '$lib/analytics';
 	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
-	import { getProgressCompanionDisplayName } from '$lib/progressCompanion';
 
 	// Anonyma skrivytan är kvar som destination - den är ett val inne i
 	// produkten, inte startsidans löfte.
@@ -30,12 +29,13 @@
 	<section class="home-hero" aria-labelledby="hero-title">
 		<div class="home-inner hero-grid">
 			<div class="hero-copy">
-				<p class="eyebrow">En plats att återvända till</p>
-				<h1 id="hero-title">MittPsyke är en lugn plats för dig.</h1>
+				<p class="eyebrow">En lugn plats på nätet</p>
+				<h1 id="hero-title">Här är det kväll, och du behöver inte prestera något.</h1>
 				<p class="lead">
-					Skriv, checka in och följ hur du har det. Platsen förändras med dig. Följeslagaren sitter
-					kvar.
+					En stuga med en lampa tänd, ett djur som sitter kvar, och plats att skriva av dig. Kom när
+					du vill, stanna hur länge du vill.
 				</p>
+				<p class="promise">Inget bryts om du är borta.</p>
 				<div class="hero-actions">
 					<a
 						class="cta-primary"
@@ -61,12 +61,49 @@
 		</div>
 	</section>
 
-	<!-- 2. Följeslagaren -->
+	<!-- 2. Platsens karta. Ligger före incheckningen så en förstagångsbesökare
+		 vet vad platsen består av innan hen möter steg 1. -->
+	<section class="home-section section-map" aria-labelledby="map-title">
+		<div class="home-inner">
+			<div class="narrow">
+				<h2 id="map-title">Så ser platsen ut</h2>
+				<p>
+					MittPsyke är inte en app med funktioner. Det är några få platser du kan återvända till,
+					och någon som är kvar där emellan.
+				</p>
+			</div>
+			<ul class="place-map">
+				<li>
+					<h3>Mitt Hem</h3>
+					<p>
+						Din utgångspunkt. Det du skrivit, hur du haft det, allt samlat på ett ställe. Härifrån
+						går du vidare dit du vill.
+					</p>
+				</li>
+				<li>
+					<h3>Kvällsstugan</h3>
+					<p>
+						Hit går du när dagen ska landa. En lampa, en sjö utanför fönstret, och några frågor i
+						lugn takt. Inget måste besvaras.
+					</p>
+				</li>
+				<li>
+					<h3>Följeslagaren</h3>
+					<p>
+						Ett djur du väljer själv. Den sitter kvar där du lämnade den, också när du varit borta
+						länge.
+					</p>
+				</li>
+			</ul>
+		</div>
+	</section>
+
+	<!-- 3. Följeslagaren -->
 	<section class="home-section section-alt" aria-labelledby="companion-title">
 		<div class="home-inner narrow">
 			<h2 id="companion-title">Någon sitter kvar</h2>
 			<p>
-				{getProgressCompanionDisplayName('bear')} är kvar där du lämnade honom. Inte en tråd som börjar om. Du skriver när du vill.
+				Följeslagaren är kvar där du lämnade den. Inte en tråd som börjar om. Du skriver när du vill.
 				Platsen minns det du valt att spara.
 			</p>
 			<a
@@ -298,6 +335,63 @@
 		font-size: clamp(1rem, 1.7vw, 1.12rem);
 		line-height: 1.65;
 		color: var(--home-text-muted-strong);
+	}
+
+	/* Löftesraden ligger mellan ingressen och disclaimern i visuell tyngd: något
+	   mindre och svagare än .lead, men tydligt starkare än .boundary. Marginalen
+	   nedåt håller den fri från CTA-raden så de två små, dämpade raderna i heron
+	   inte läses som ett block. */
+	.promise {
+		margin: 0.85rem 0 0.35rem;
+		max-width: 42ch;
+		font-size: 0.95rem;
+		line-height: 1.6;
+		color: rgba(220, 225, 235, 0.82);
+	}
+
+	/* ── Platsens karta ── */
+	/* Ligger på samma bakgrund som heron och är därför avgränsad med en hårfin
+	   linje i stället för ett eget färgband. Då behåller alla sektioner efter
+	   den sin befintliga växling mellan bg och section-alt. */
+	.section-map {
+		border-top: 1px solid rgba(148, 163, 184, 0.14);
+	}
+
+	.place-map {
+		display: grid;
+		gap: clamp(1rem, 2.4vw, 1.5rem);
+		margin: clamp(1.5rem, 3.4vw, 2.2rem) 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	/* Medvetet utan ikoner, siffror och ramar: korten ska läsas som tre platser,
+	   inte som en funktionslista. Linjen till vänster är hela markeringen. */
+	.place-map li {
+		padding-left: clamp(0.9rem, 1.6vw, 1.15rem);
+		border-left: 1px solid rgba(148, 163, 184, 0.22);
+	}
+
+	.place-map h3 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: 1.05rem;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+		color: var(--home-text-strong);
+	}
+
+	.place-map p {
+		margin: 0.45rem 0 0;
+		font-size: 0.95rem;
+		line-height: 1.65;
+		color: var(--home-text-muted);
+	}
+
+	@media (min-width: 760px) {
+		.place-map {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
 	}
 
 	/* ── Hero ── */
