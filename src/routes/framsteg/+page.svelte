@@ -12,12 +12,16 @@
 	import Campfire from '$lib/components/world/Campfire.svelte';
 	import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
 	import CompanionVisitor from '$lib/components/world/CompanionVisitor.svelte';
+	import { page } from '$app/stores';
 	import {
-		PROGRESS_CABIN_LAKESIDE_SCENE_IMAGE,
-		PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET,
-		PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK,
+		PROGRESS_SCENE_SOURCES,
+		getProgressSceneBand,
+		getProgressSceneLabel,
+		parseProgressSceneOverride,
+		type ProgressSceneBand
+	} from '$lib/progressScene';
+	import {
 		getProgressCompanionDayState,
-		getProgressCompanionDayStateLabel,
 		getProgressCompanionDisplayName,
 		getProgressCompanionSeason,
 		getProgressCompanionAnimal,
@@ -81,6 +85,14 @@
 
 	let season = $state<ProgressCompanionSeason>(getProgressCompanionSeason());
 	let timeOfDay = $state<CompanionTimeOfDay>(getProgressCompanionDayState());
+	// Landskapsbilden väljs på tid, inte filtreras fram. Egen state från
+	// progressScene så bild och etikett alltid kommer ur samma spann.
+	let sceneBand = $state<ProgressSceneBand>(getProgressSceneBand());
+	// TILLFÄLLIG: ?scene=morning|day|afternoon|evening för okulär granskning.
+	// Läses ur page-storen så den gäller redan vid serverrendering, utan flash.
+	const sceneOverride = $derived(parseProgressSceneOverride($page.url.searchParams.get('scene')));
+	const activeSceneBand = $derived(sceneOverride ?? sceneBand);
+	const sceneSources = $derived(PROGRESS_SCENE_SOURCES[activeSceneBand]);
 	let companionPoseId = $state('idle');
 	let companionBasePose = $state<CompanionPoseData | null>(null);
 	const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
@@ -134,7 +146,7 @@
 	) as CompanionId;
 
 	const companionScene = $derived<CompanionScene>({
-		image: PROGRESS_CABIN_LAKESIDE_SCENE_IMAGE,
+		image: sceneSources.fallback,
 		season,
 		timeOfDay,
 		alt: `Din följeslagare, ${getProgressCompanionDisplayName(sceneCompanionId)}, vid sjön`,
@@ -453,12 +465,18 @@
 	);
 	// Växtnivån styr hur rik den beständiga världen är. Reaktiv: uppdateras när
 	// loadProgressData() satt loadedGrowthLevel efter klientfetch.
-	// Molnlagret är avstängt här. Mot den öppna himlen i den här vyn läste
-	// .world-cloud som ljusa, suddiga plattor snarare än moln - särskilt dagtid,
-	// där lagret blandas med mix-blend-mode: screen på full opacitet. Mitt Hem och
-	// Kvällsstugan väljer själva in molnen och påverkas inte.
+	// De fyra landskapsbilderna har himlen inbakad: moln, sol och måne finns
+	// redan i motivet. Lagren stängs därför av här - annars får kvällsbilden två
+	// månar och morgon/eftermiddag två solar. Avstängningen är lokal via
+	// features; Mitt Hem och Kvällsstugan väljer in moon/cloud själva och rörs
+	// inte. Vatten, dimma, lövverk och drift är kvar som ambient rörelse.
 	const livingWorldScene = $derived(
-		getLivingWorldScene({ season, timeOfDay, growthLevel, features: { cloud: false } })
+		getLivingWorldScene({
+			season,
+			timeOfDay,
+			growthLevel,
+			features: { cloud: false, sun: false, moon: false }
+		})
 	);
 	const heatmapData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : loadedHeatmapData);
 	const insightsData = $derived(
@@ -709,6 +727,7 @@
 		const updateCompanionTimeOfDay = () => {
 			const now = new Date();
 			timeOfDay = getProgressCompanionDayState(now);
+			sceneBand = getProgressSceneBand(now);
 			season = getProgressCompanionSeason(now);
 			companionBasePose = getCompanionBasePose(
 				now,
@@ -905,25 +924,26 @@
 					{/if}
 					<section
 						class="companion-banner"
-						aria-label={`Följeslagarscen, ${getProgressCompanionDayStateLabel(companionScene.timeOfDay)}`}
+						aria-label={`Följeslagarscen, ${getProgressSceneLabel(activeSceneBand)}`}
 					>
 			<div
 				class="companion-media"
 				data-season={companionScene.season}
-				data-time={companionScene.timeOfDay}
+				data-time={activeSceneBand}
 				data-companion={sceneCompanionId}
 				data-pose={companionBasePose?.id}
 				style={bearProgressSceneStyle ?? wolfProgressSceneStyle}
 			>
 				<!-- width/height ger proportionerna innan bilden laddats så scenen
 					 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
-					<!-- Framsteg har en egen, avlägsen vy av samma plats. Den använder sin egen
-						 srcset så Mitt Hems delade scenbild aldrig återanvänds här. -->
+					<!-- En egen bild per dygnsspann, med ljuset inbakat. Bilden och
+						 etiketten nedan kommer ur samma activeSceneBand och kan därför
+						 aldrig hamna ur fas. -->
 					<img
 						class="companion-world-scene"
-						srcset={PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET}
+						srcset={sceneSources.srcset}
 						sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
-						src={PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK}
+						src={sceneSources.fallback}
 					alt=""
 					aria-hidden="true"
 					width="1672"
@@ -932,7 +952,6 @@
 					loading="eager"
 					decoding="async"
 				/>
-				<span class="scene-daylight-wash" aria-hidden="true"></span>
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
 				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} scene="progress" decorative />
 				<CompanionVisitor
@@ -949,7 +968,7 @@
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
 			<div class="companion-copy">
-				<span class="companion-eyebrow">{getProgressCompanionDayStateLabel(companionScene.timeOfDay)}</span>
+				<span class="companion-eyebrow">{getProgressSceneLabel(activeSceneBand)}</span>
 				<h2>Din plats idag</h2>
 				<p>
 					{isAnonymous
@@ -1414,32 +1433,13 @@
 		--scene-companion: 3;
 		--scene-foreground: 4;
 		--scene-overlay: 5;
-		/* Grundtonen bakom scenen följer dygnet. Den syns innan bilden laddats och
-		   genom scenens kanter, så en fast nattblå färg gjorde att även dag och
-		   morgon läste som mörka. */
-		--scene-ground: #0d1727;
 		width: 100%;
 		height: clamp(220px, 22vw, 300px);
 		overflow: hidden;
-		background: var(--scene-ground);
+		/* Neutral bas som bara syns innan bilden laddats. Varje dygnsspann har nu
+		   sitt eget ljus inbakat i bilden, så grundtonen ska inte färga något. */
+		background: #10192a;
 		isolation: isolate;
-		transition: background 1200ms ease;
-	}
-
-	.companion-media[data-time='morning'] {
-		--scene-ground: #33465c;
-	}
-
-	.companion-media[data-time='day'] {
-		--scene-ground: #44607d;
-	}
-
-	.companion-media[data-time='evening'] {
-		--scene-ground: #23304a;
-	}
-
-	.companion-media[data-time='night'] {
-		--scene-ground: #0a1120;
 	}
 
 	.companion-media::before,
@@ -1487,11 +1487,11 @@
 		background: linear-gradient(180deg, rgb(214 238 255 / 0.04) 0%, rgb(16 34 52 / 0.05) 34%, rgb(10 24 40 / 0.44) 100%);
 	}
 
-	.companion-media[data-time='evening']::after {
+	.companion-media[data-time='afternoon']::after {
 		background: linear-gradient(180deg, rgb(255 168 104 / 0.06) 0%, rgb(97 46 29 / 0.16) 35%, rgb(11 15 23 / 0.68) 100%);
 	}
 
-	.companion-media[data-time='night']::after {
+	.companion-media[data-time='evening']::after {
 		background: linear-gradient(180deg, rgb(2 13 31 / 0.2) 0%, rgb(2 10 25 / 0.54) 34%, rgb(2 8 20 / 0.88) 100%);
 	}
 
@@ -1509,72 +1509,13 @@
 		will-change: transform, filter;
 	}
 
-	/* Scenbilden är fotograferad i solnedgång. Ett filter kan lyfta ljusstyrkan men
-	   inte färgtemperaturen - den orange himlen läser fortfarande som kväll. Det
-	   här lagret lägger dygnets egen färgton över bilden i stället. */
-	.scene-daylight-wash {
-		position: absolute;
-		inset: 0;
-		z-index: var(--scene-midground);
-		opacity: 0;
-		pointer-events: none;
-		transition: background 1200ms ease, opacity 1200ms ease;
-	}
-
-	.companion-media[data-time='morning'] .scene-daylight-wash {
-		background: linear-gradient(
-			175deg,
-			rgb(168 206 236 / 0.5) 0%,
-			rgb(198 219 232 / 0.3) 42%,
-			rgb(196 210 200 / 0.14) 100%
-		);
-		opacity: 1;
-		mix-blend-mode: screen;
-	}
-
-	.companion-media[data-time='day'] .scene-daylight-wash {
-		background: linear-gradient(
-			175deg,
-			rgb(140 194 240 / 0.66) 0%,
-			rgb(176 212 240 / 0.42) 46%,
-			rgb(188 210 206 / 0.16) 100%
-		);
-		opacity: 1;
-		mix-blend-mode: screen;
-	}
-
-	.companion-media[data-time='night'] .scene-daylight-wash {
-		background: linear-gradient(
-			175deg,
-			rgb(10 22 52 / 0.5) 0%,
-			rgb(8 18 42 / 0.36) 52%,
-			rgb(6 14 32 / 0.24) 100%
-		);
-		opacity: 1;
-	}
-
 	.companion-media :global(.progress-living-world) {
 		z-index: var(--scene-ambient);
 	}
 
-	/* Scenbilden är fotograferad i solnedgång. Graderingen får därför lyfta och
-	   kyla ner den mot dagsljus, inte bara justera den i marginalen - annars
-	   känns morgon och dag lika mörka som kvällen. */
-	.companion-media[data-time='morning'] .companion-world-scene {
-		filter: saturate(0.92) brightness(1.24) contrast(0.97) sepia(0.05) hue-rotate(6deg);
-	}
-
-	.companion-media[data-time='day'] .companion-world-scene {
-		filter: saturate(1) brightness(1.34) contrast(0.96) sepia(0.03) hue-rotate(12deg);
-	}
-
-	.companion-media[data-time='evening'] .companion-world-scene {
-		filter: saturate(1.04) brightness(0.95) sepia(0.12) hue-rotate(-8deg);
-	}
-
-	.companion-media[data-time='night'] .companion-world-scene {
-		filter: saturate(0.66) brightness(0.52) contrast(1.08) sepia(0.1) hue-rotate(8deg);
-	}
+	/* Ingen dygnsgradering av scenbilden längre. Morgon, dag, eftermiddag och
+	   kväll är fyra separata bilder med rätt ljus inbakat; ett filter ovanpå
+	   skulle överexponera morgonen och tona ner kvällen dubbelt. */
 
 	.companion-media :global(.progress-companion-pose) {
 		position: absolute;
@@ -1662,17 +1603,17 @@
 			hue-rotate(5deg);
 	}
 
-	.companion-media[data-time='evening'] :global(.progress-companion-pose) {
+	.companion-media[data-time='afternoon'] :global(.progress-companion-pose) {
 		--companion-grade: saturate(0.68) contrast(0.88) brightness(0.88) sepia(0.18)
 			hue-rotate(-6deg);
 	}
 
-	.companion-media[data-companion='wolf'][data-time='evening'] :global(.progress-companion-pose) {
+	.companion-media[data-companion='wolf'][data-time='afternoon'] :global(.progress-companion-pose) {
 		--companion-grade: saturate(0.62) contrast(0.84) brightness(0.84) sepia(0.21)
 			hue-rotate(-8deg) blur(0.12px);
 	}
 
-	.companion-media[data-time='night'] :global(.progress-companion-pose) {
+	.companion-media[data-time='evening'] :global(.progress-companion-pose) {
 		--companion-grade: saturate(0.55) contrast(0.84) brightness(0.72) sepia(0.14)
 			hue-rotate(5deg);
 	}
