@@ -1501,7 +1501,11 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		object-position: 70% 64%;
+		/* Beskär från botten, inte symmetriskt. Himlen bär dygnskänslan - måne och
+		   stjärnor på kvällen, dimslöjor på morgonen, cumulus på dagen - medan
+		   mitten ser nästan likadan ut i alla fyra bilderna. 42% behåller ändå
+		   personen vid brasan i nederkant. */
+		object-position: 50% 42%;
 		display: block;
 		transform: scale(1.018);
 		animation: companionWorldDrift 18s ease-in-out infinite alternate;
@@ -1819,12 +1823,15 @@
 	}
 
 	@media (min-width: 981px) {
+	/* Höjd i vw så rutan behåller samma andel av bilden på alla desktopbredder:
+	   ~52% av bildhöjden. Vid den tidigare höjden syntes bara 38%, och månen
+	   (bild-y ~25%) och personen (~68%) rymdes inte samtidigt. */
 	.companion-media {
-		height: clamp(240px, 20vw, 300px);
+		height: clamp(300px, 27vw, 420px);
 	}
 
 	.companion-world-scene {
-		object-position: 50% 50%;
+		object-position: 50% 42%;
 	}
 
 	.companion-copy {
