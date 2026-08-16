@@ -453,7 +453,13 @@
 	);
 	// Växtnivån styr hur rik den beständiga världen är. Reaktiv: uppdateras när
 	// loadProgressData() satt loadedGrowthLevel efter klientfetch.
-	const livingWorldScene = $derived(getLivingWorldScene({ season, timeOfDay, growthLevel }));
+	// Molnlagret är avstängt här. Mot den öppna himlen i den här vyn läste
+	// .world-cloud som ljusa, suddiga plattor snarare än moln - särskilt dagtid,
+	// där lagret blandas med mix-blend-mode: screen på full opacitet. Mitt Hem och
+	// Kvällsstugan väljer själva in molnen och påverkas inte.
+	const livingWorldScene = $derived(
+		getLivingWorldScene({ season, timeOfDay, growthLevel, features: { cloud: false } })
+	);
 	const heatmapData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : loadedHeatmapData);
 	const insightsData = $derived(
 		loadedInsightsData ?? {
