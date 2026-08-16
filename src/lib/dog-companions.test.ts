@@ -25,7 +25,11 @@ import { getCompanionBasePose } from './companionPoseState';
 // filtreras bort eller falla tillbaka på en rävpose - getFallbackPose()
 // returnerar i sista hand COMPANION_POSES[0], som tillhör räven.
 
-const POSE_KINDS = ['standing', 'sitting', 'lying', 'resting', 'sleeping', 'playful'] as const;
+// Hundarna delar fem posesorter. Den sjätte skiljer sig: schäferns assets har
+// ingen egen liggande bild, utan en stående sidovy (sideway), medan aussien har
+// en riktig lying. Listan hålls därför per hund i stället för som en gemensam
+// uppsättning - annars låser testet fast en pose som inte finns som bild.
+const SHARED_POSE_KINDS = ['standing', 'sitting', 'resting', 'sleeping', 'playful'] as const;
 
 const DOGS = [
 	{
@@ -33,6 +37,7 @@ const DOGS = [
 		displayName: 'Schäfer',
 		posePrefix: 'schafer',
 		assetPrefix: 'schafer',
+		poseKinds: [...SHARED_POSE_KINDS, 'sideway'],
 		poses: SCHAFER_COMPANION_POSES as readonly CompanionPose[]
 	},
 	{
@@ -40,6 +45,7 @@ const DOGS = [
 		displayName: 'Australisk shepherd',
 		posePrefix: 'australisk-shepherd',
 		assetPrefix: 'australisk_shepherd',
+		poseKinds: [...SHARED_POSE_KINDS, 'lying'],
 		poses: AUSTRALISK_SHEPHERD_COMPANION_POSES as readonly CompanionPose[]
 	}
 ] as const;
@@ -77,7 +83,7 @@ describe.each(DOGS)('$displayName', (dog) => {
 		}
 	});
 
-	it.each(POSE_KINDS)('har posen %s med rätt asset, och filen finns', (kind) => {
+	it.each(dog.poseKinds)('har posen %s med rätt asset, och filen finns', (kind) => {
 		const pose = dog.poses.find((item) => item.id === `${dog.posePrefix}-${kind}`);
 		const expectedSrc = `/images/scenes/${dog.assetPrefix}-${kind}.png`;
 

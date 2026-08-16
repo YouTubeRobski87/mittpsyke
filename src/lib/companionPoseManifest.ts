@@ -413,12 +413,12 @@ export const SCHAFER_COMPANION_POSES = [
 		sceneAdjustment: { y: 3 }
 	},
 	{
-		id: 'schafer-lying',
+		id: 'schafer-sideway',
 		companionId: 'schafer',
 		role: 'base',
 		dayparts: ['day', 'evening'],
-		frames: [{ src: dogPoseSrc('schafer-lying.png') }],
-		alt: `${SCHAFER_DISPLAY_NAME} ligger ned och vilar.`,
+		frames: [{ src: dogPoseSrc('schafer-sideway.png') }],
+		alt: `${SCHAFER_DISPLAY_NAME} står vänd åt sidan.`,
 		weight: 1.4,
 		sceneAdjustment: { y: 3 }
 	},
@@ -645,7 +645,7 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 			'wolf-sleeping',
 			'schafer-standing',
 			'schafer-sitting',
-			'schafer-lying',
+			'schafer-sideway',
 			'schafer-resting',
 			'schafer-sleeping',
 			'schafer-playful',

@@ -52,7 +52,7 @@ const CALM_POSE_IDS = new Set([
 	'wolf-standing',
 	'wolf-sleeping',
 	'schafer-sitting',
-	'schafer-lying',
+	'schafer-sideway',
 	'schafer-resting',
 	'schafer-sleeping',
 	'australisk-shepherd-sitting',
