@@ -279,6 +279,77 @@ describe('vargens mobilankare på Mitt Hem', () => {
 	});
 });
 
+// En pose kan inte skalas efter sitt sceneAdjustment ensamt: poserutan är
+// kvadratisk och bilden är object-fit: contain, så dukens förhållande avgör hur
+// stor del av rutan motivet får, och alfa-marginalerna avgör hur mycket av
+// duken som ens är djur. Vargens sovpose har som enda companion-duk förhållandet
+// 1,00 - den fyller alltså hela rutans höjd där de liggande dukarna får 67 %.
+// Testet räknar den faktiska scenytan per pose och håller sovande Ylva i samma
+// band som rävens och björnens vilande poser.
+describe('vargens sovpose ligger i proportion mot räv och björn', () => {
+	// Uppmätt ur PNG-filerna: dukens förhållande samt motivets alfa-bbox som
+	// andel av duken. Byts en bild ut måste raden mätas om.
+	const POSE_ART: Record<
+		string,
+		{ companion: CompanionId; aspectRatio: number; alphaWidth: number; alphaHeight: number }
+	> = {
+		'sleep-curled': { companion: 'fox', aspectRatio: 287 / 194, alphaWidth: 0.78, alphaHeight: 0.67 },
+		rest: { companion: 'fox', aspectRatio: 287 / 194, alphaWidth: 0.82, alphaHeight: 0.73 },
+		'bear-sleeping': { companion: 'bear', aspectRatio: 768 / 512, alphaWidth: 0.75, alphaHeight: 0.48 },
+		'wolf-standing': { companion: 'wolf', aspectRatio: 1536 / 1024, alphaWidth: 0.49, alphaHeight: 0.67 },
+		'wolf-sleeping': { companion: 'wolf', aspectRatio: 1024 / 1024, alphaWidth: 0.86, alphaHeight: 0.6 }
+	};
+
+	/** Motivets yta i scenen, i enheter av poserutans sida (samma för alla
+	 *  poser), alltså direkt jämförbar mellan följeslagare och viewporter. */
+	function sceneFootprint(poseId: string) {
+		const art = POSE_ART[poseId];
+		const pose = COMPANION_POSES.find((candidate) => candidate.id === poseId);
+		if (!art || !pose) throw new Error(`saknar underlag för posen ${poseId}`);
+		// object-fit: contain i en kvadratisk ruta med sidan 1.
+		const boxWidth = art.aspectRatio >= 1 ? 1 : art.aspectRatio;
+		const boxHeight = art.aspectRatio >= 1 ? 1 / art.aspectRatio : 1;
+		const scale =
+			(pose.sceneAdjustment?.scale ?? 1) * DASHBOARD_CABIN_COMPANION_PLACEMENTS[art.companion].scale;
+		return art.alphaWidth * boxWidth * art.alphaHeight * boxHeight * scale * scale;
+	}
+
+	const referenceIds = ['sleep-curled', 'rest', 'bear-sleeping'];
+
+	it('lägger sovande vargen i samma ytband som rävens och björnens vilande poser', () => {
+		const reference = referenceIds.map(sceneFootprint);
+		const wolf = sceneFootprint('wolf-sleeping');
+
+		expect(wolf).toBeGreaterThanOrEqual(Math.min(...reference) * 0.8);
+		expect(wolf).toBeLessThanOrEqual(Math.max(...reference) * 1.2);
+	});
+
+	it('gör sovposen mindre än vargens egen ståendepose', () => {
+		expect(sceneFootprint('wolf-sleeping')).toBeLessThan(sceneFootprint('wolf-standing'));
+	});
+
+	it('kompenserar den kvadratiska duken med ett lägre skalvärde än ståendeposen', () => {
+		const poseScale = (id: string) =>
+			COMPANION_POSES.find((pose) => pose.id === id)?.sceneAdjustment?.scale;
+
+		expect(poseScale('wolf-sleeping')).toBe(0.38);
+		expect(poseScale('wolf-standing')).toBe(0.74);
+		expect(poseScale('wolf-sleeping')).toBeLessThan(poseScale('wolf-standing') as number);
+	});
+
+	it('rör inte rävens eller björnens skalvärden', () => {
+		const poseScale = (id: string) =>
+			COMPANION_POSES.find((pose) => pose.id === id)?.sceneAdjustment?.scale;
+
+		expect(poseScale('sleep-curled')).toBe(0.45);
+		expect(poseScale('sleep-side')).toBe(0.38);
+		expect(poseScale('rest')).toBe(0.5);
+		expect(poseScale('bear-sleeping')).toBe(0.76);
+		expect(poseScale('bear-standing')).toBe(0.82);
+		expect(poseScale('bear-sitting')).toBe(0.78);
+	});
+});
+
 describe('getMsUntilNextCompanionPoseCheck', () => {
 	it('clamps to the documented 30s-5min window regardless of stored state', () => {
 		const ms = getMsUntilNextCompanionPoseCheck(new Date(), null, 'fox');

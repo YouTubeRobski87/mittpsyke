@@ -356,7 +356,19 @@ export const WOLF_COMPANION_POSES = [
 		frames: [{ src: wolfPoseSrc('wolf-sleeping.png') }],
 		alt: `${WOLF_DISPLAY_NAME} sover lugnt.`,
 		weight: 2.4,
-		sceneAdjustment: { scale: 0.96 }
+		// Sovposens duk är kvadratisk (1024x1024), till skillnad från alla andra
+		// companion-dukar som är liggande (1,03-1,50). Poserutan är kvadratisk och
+		// bilden är object-fit: contain, så en liggande duk får bara 67-68 % av
+		// rutans höjd medan den här fyller 100 % - och motivet täcker dessutom
+		// 86 % x 60 % av sin duk mot stående vargens 49 % x 67 %. Med 0.96 blev
+		// hon 28,6 % x 48,3 % av scenen, alltså större än stugan.
+		//
+		// 0.38 tar bort båda effekterna: hon landar på 11,3 % x 19,1 % och 2,2 %
+		// av scenytan, i nivå med björnens sovpose (2,3 %) och rävens vila
+		// (2,3 %). Värdet är räknat ur ytan, inte gissat - motivet är rundare
+		// (1,43) än rävens (1,72) och björnens (2,34) hopkrupna poser, så bredd
+		// och höjd kan inte matcha båda samtidigt.
+		sceneAdjustment: { scale: 0.38 }
 	}
 ] satisfies CompanionPose[];
 
