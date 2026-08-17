@@ -578,7 +578,13 @@ export const DASHBOARD_CABIN_COMPANION_PLACEMENTS: Record<
 		y: 94,
 		compact: { scale: 0.72, x: 31, y: 92 }
 	},
-	wolf: { scale: 0.9, x: 37, y: 91 },
+	// Vargens duk är bred och liggande. På desktop läser den som en följeslagare
+	// bredvid stugan, men i mobilcropen (scenen ankras då till 0 % 60 %, och
+	// posen får bredden min(50 %, 220 px) i stället för min(39 %, 310 px)) växte
+	// samma scale till scenens huvudmotiv och täckte stuga och landskap. Ett
+	// eget compact-ankare - samma mönster som björnen och hundarna redan har -
+	// krymper henne där utan att röra desktopvärdena ovan.
+	wolf: { scale: 0.9, x: 37, y: 91, compact: { scale: 0.7, x: 34, y: 92 } },
 	// Hundarnas dukar är porträttformat och nästan helt fyllda av motivet
 	// (schäfer 97,5 % av höjden, australisk shepherd 96,0 %), medan vargens duk
 	// är till 83 % genomskinlig och rävens motiv är litet i sin ruta. Samma

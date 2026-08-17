@@ -208,6 +208,77 @@ describe('dashboardscenens fria yta för hjältetexten', () => {
 	});
 });
 
+// Mobilcropen är inte desktop i litet format: CompanionPose ger posen bredden
+// min(50 %, 220 px) i stället för min(39 %, 310 px), och scenen ankras till
+// vänsterkanten. Vargens liggande duk fyllde därför scenen och gick in över
+// textytan när hon saknade eget compact-ankare. Testet låser mobilvärdena och
+// slår fast att desktop och de andra följeslagarna inte följde med.
+describe('vargens mobilankare på Mitt Hem', () => {
+	// CompanionPose.svelte, @media (max-width: 620px).
+	const COMPACT_POSE_WIDTH_PCT = 50;
+	const wolf = DASHBOARD_CABIN_COMPANION_PLACEMENTS.wolf;
+
+	it('har egna compact-värden', () => {
+		expect(wolf.compact).toEqual({ scale: 0.7, x: 34, y: 92 });
+	});
+
+	it('behåller desktopvärdena oförändrade', () => {
+		expect(wolf.scale).toBe(0.9);
+		expect(wolf.x).toBe(37);
+		expect(wolf.y).toBe(91);
+	});
+
+	it('är mindre och lägre än på desktop, och något längre åt vänster', () => {
+		const compact = wolf.compact;
+		if (!compact) throw new Error('vargen saknar compact-ankare');
+		const reduction = 1 - (compact.scale ?? wolf.scale) / wolf.scale;
+		expect(reduction).toBeGreaterThanOrEqual(0.2);
+		expect(reduction).toBeLessThanOrEqual(0.25);
+		expect(compact.y ?? wolf.y).toBeGreaterThan(wolf.y);
+		expect(compact.x ?? wolf.x).toBeLessThan(wolf.x);
+	});
+
+	it('håller varje vargpose innanför textytan även i mobilbredden', () => {
+		const compact = wolf.compact;
+		if (!compact) throw new Error('vargen saknar compact-ankare');
+		const wolfPoses = COMPANION_POSES.filter(
+			(pose) => pose.role === 'base' && pose.companionId === 'wolf'
+		);
+
+		expect(wolfPoses.length).toBeGreaterThan(0);
+		for (const pose of wolfPoses) {
+			for (const position of COMPANION_SCENE_POSITIONS) {
+				if (!COMPANION_SCENE_CONTEXT_POSITION_IDS.dashboard.includes(position.id)) continue;
+				if (!position.allowedPoseIds.includes(pose.id)) continue;
+				const scale =
+					position.scale * (pose.sceneAdjustment?.scale ?? 1) * (compact.scale ?? wolf.scale);
+				const centerX = (compact.x ?? wolf.x) + (pose.sceneAdjustment?.x ?? 0);
+				const edge = centerX + (COMPACT_POSE_WIDTH_PCT / 2) * scale;
+				expect(edge).toBeLessThanOrEqual(DASHBOARD_CABIN_COPY_SAFE_START_PCT);
+			}
+		}
+	});
+
+	it('rör inte räven, björnen eller hundarnas mobilvärden', () => {
+		expect(DASHBOARD_CABIN_COMPANION_PLACEMENTS.fox).toEqual({ scale: 0.8, x: 37, y: 91 });
+		expect(DASHBOARD_CABIN_COMPANION_PLACEMENTS.bear.compact).toEqual({
+			scale: 0.72,
+			x: 31,
+			y: 92
+		});
+		expect(DASHBOARD_CABIN_COMPANION_PLACEMENTS.schafer.compact).toEqual({
+			scale: 0.38,
+			x: 34,
+			y: 91
+		});
+		expect(DASHBOARD_CABIN_COMPANION_PLACEMENTS.australisk_shepherd.compact).toEqual({
+			scale: 0.39,
+			x: 34,
+			y: 91
+		});
+	});
+});
+
 describe('getMsUntilNextCompanionPoseCheck', () => {
 	it('clamps to the documented 30s-5min window regardless of stored state', () => {
 		const ms = getMsUntilNextCompanionPoseCheck(new Date(), null, 'fox');

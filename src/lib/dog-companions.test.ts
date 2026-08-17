@@ -176,7 +176,14 @@ describe('befintliga följeslagare är oförändrade', () => {
 
 	it('deras dashboard-placement är oförändrad', () => {
 		expect(DASHBOARD_CABIN_COMPANION_PLACEMENTS.fox).toEqual({ scale: 0.8, x: 37, y: 91 });
-		expect(DASHBOARD_CABIN_COMPANION_PLACEMENTS.wolf).toEqual({ scale: 0.9, x: 37, y: 91 });
+		// Vargens desktopvärden är oförändrade; compact gäller bara mobilcropen
+		// (se testet "vargens mobilankare" i companionPoseState.test.ts).
+		expect(DASHBOARD_CABIN_COMPANION_PLACEMENTS.wolf).toEqual({
+			scale: 0.9,
+			x: 37,
+			y: 91,
+			compact: { scale: 0.7, x: 34, y: 92 }
+		});
 		expect(DASHBOARD_CABIN_COMPANION_PLACEMENTS.bear).toEqual({
 			scale: 0.68,
 			x: 35,
