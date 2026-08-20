@@ -89,7 +89,10 @@ export const GET: RequestHandler = async ({ request }) => {
 		if (error) return json({ error: error.message }, { status: 500 });
 
 		const rows = (entries ?? []) as DiaryInsightRow[];
-		const narrative = await buildDiaryNarrativeInsight(rows);
+		// Den här vyn visar enbart deterministiska påståenden med synligt
+		// underlag. Ingen språkmodell får formulera eller utvidga personliga
+		// samband från dagbokstexten.
+		const narrative = await buildDiaryNarrativeInsight(rows, { generateWithAi: false });
 		const { bestDay, worstDay } = getWeekdayExtremes(rows);
 
 		const legacyInsights = [...narrative.overview, ...narrative.patterns].slice(0, 6).map((item) => ({

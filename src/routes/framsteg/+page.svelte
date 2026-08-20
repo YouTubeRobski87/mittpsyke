@@ -241,6 +241,30 @@
 		count: number;
 	}
 
+	interface EvidenceClaim {
+		title: string;
+		description: string;
+		evidence: string;
+	}
+
+	interface NarrativeInsight {
+		entryCount: number;
+		dataBasis: {
+			moodEntryCount: number;
+			textEntryCount: number;
+			firstDate: string | null;
+			latestDate: string | null;
+		};
+		patterns: EvidenceClaim[];
+		strengths: EvidenceClaim[];
+		challenges: EvidenceClaim[];
+		timeline: {
+			title: string;
+			summary: string;
+			observations: EvidenceClaim[];
+		};
+	}
+
 	interface InsightsResponse {
 		insights: InsightItem[];
 		bestDay: InsightDay | null;
@@ -249,7 +273,7 @@
 		aiSummary: string | null;
 		// narrative.themes räknas fram deterministiskt serversidan och följer
 		// redan med i svaret. Vi läser bara av det, ingen extra AI-körning.
-		narrative?: { themes?: ThemeLike[] } | null;
+		narrative?: (NarrativeInsight & { themes?: ThemeLike[] }) | null;
 	}
 
 	interface HeatmapResponse {
@@ -496,6 +520,7 @@
 	const recurringThemes = $derived(
 		hasSensitiveDataConsent ? buildRecurringThemes(insightsData?.narrative?.themes) : []
 	);
+	const narrativeInsight = $derived(insightsData?.narrative ?? null);
 
 	// Hela sektionen "Din senaste tid" byggs av redan hämtad data.
 	const recentPeriod = $derived(
@@ -1001,47 +1026,96 @@
 				{/if}
 			</section>
 
-			<section class="card reflection-card" aria-labelledby="recurring-heading" data-testid="recurring-themes">
+			<section class="card reflection-card analysis-card" aria-labelledby="analysis-heading" data-testid="mood-analysis">
 				<div class="card-header">
 					<div class="icon-badge insight"><Lightbulb size={24} /></div>
-					<h2 id="recurring-heading">Det som återkommer</h2>
+					<h2 id="analysis-heading">Måendeanalys</h2>
 				</div>
+				<p class="analysis-intro">Här visas bara mönster som går att räkna fram från dina registreringar och sparade texter. De beskriver samband, inte orsaker.</p>
 				{#if !isAnonymous && !hasSensitiveDataConsent}
-						<ConsentGate
-							title="Se återkommande teman"
-							dataLabel="Dina sparade texter"
-							serviceLabel="OpenAI via MittPsyke för AI-insikter"
+					<ConsentGate
+						title="Se analys av dina mönster"
+						dataLabel="Dina sparade texter och humörvärden"
+						serviceLabel="MittPsykes regelbaserade mönsteranalys"
 						onAccept={acceptSensitiveDataConsent}
 					/>
 				{:else if insightsLoading}
-					<p class="reflection-copy">Letar efter sådant som faktiskt återkommer i det du själv skrivit.</p>
+					<p class="reflection-copy">Räknar bara på sådant som har tillräckligt underlag.</p>
 				{:else if insightsError}
-					<p class="reflection-copy">Det gick inte att hämta återkommande teman just nu.</p>
-				{:else if recurringThemes.length > 0}
-					<ul class="theme-observations">
-						{#each recurringThemes as theme}
-							<li>{theme}</li>
-						{/each}
-					</ul>
-				{:else}
-					<p class="reflection-copy">När fler ord återkommer i dina sparade texter kan de synas här.</p>
-				{/if}
-			</section>
+					<p class="reflection-copy">Det gick inte att hämta analysen just nu.</p>
+				{:else if narrativeInsight}
+					<p class="analysis-basis">
+						Analysen bygger på {narrativeInsight.dataBasis.moodEntryCount} {narrativeInsight.dataBasis.moodEntryCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} och {narrativeInsight.dataBasis.textEntryCount} {narrativeInsight.dataBasis.textEntryCount === 1 ? 'sparad text' : 'sparade texter'}{#if narrativeInsight.dataBasis.firstDate && narrativeInsight.dataBasis.latestDate} från {narrativeInsight.dataBasis.firstDate} till {narrativeInsight.dataBasis.latestDate}{/if}.
+					</p>
+					{#if narrativeInsight.dataBasis.textEntryCount === 0}
+						<p class="reflection-copy">Det går att se hur måendet rör sig över tid, men det finns inga sparade texter att koppla teman eller situationer till ännu.</p>
+						<div class="analysis-section">
+							<h3>Förändring över tid</h3>
+							{#if periodAnalysis.observations.length > 0}
+								<ul class="evidence-observations">
+									{#each periodAnalysis.observations as observation}
+										<li><strong>{observation}</strong><small>{periodAnalysis.summary}</small></li>
+									{/each}
+								</ul>
+							{:else}
+								<p class="reflection-copy">Det finns ännu inte tillräckligt med data för att se en tydlig förändring över tid.</p>
+							{/if}
+						</div>
+					{:else}
+						<div class="analysis-section">
+							<h3>Det som återkommer</h3>
+							{#if narrativeInsight.patterns.length > 0}
+								<ul class="evidence-observations">
+									{#each narrativeInsight.patterns as insight}
+										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>{insight.evidence}</small></li>
+									{/each}
+								</ul>
+							{:else}
+								<p class="reflection-copy">Det finns ännu inte tillräckligt med data för att se ett tydligt återkommande mönster här.</p>
+							{/if}
+						</div>
 
-			<section class="card reflection-card" aria-labelledby="change-heading" data-testid="mood-change">
-				<div class="card-header">
-					<div class="icon-badge week"><Heart size={24} /></div>
-					<h2 id="change-heading">Förändring</h2>
-				</div>
-				{#if periodAnalysis.observations.length > 0}
-					<p class="reflection-copy">{periodAnalysis.summary}</p>
-					<ul class="theme-observations">
-						{#each periodAnalysis.observations as observation}
-							<li>{observation}</li>
-						{/each}
-					</ul>
+						<div class="analysis-section">
+							<h3>Vad verkar hjälpa?</h3>
+							{#if narrativeInsight.strengths.length > 0}
+								<ul class="evidence-observations">
+									{#each narrativeInsight.strengths as insight}
+										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>{insight.evidence}</small></li>
+									{/each}
+								</ul>
+							{:else}
+								<p class="reflection-copy">Det finns ännu inte tillräckligt med data för att säga vad som oftare sammanfaller med ljusare dagar.</p>
+							{/if}
+						</div>
+
+						<div class="analysis-section">
+							<h3>När det brukar bli tyngre</h3>
+							{#if narrativeInsight.challenges.length > 0}
+								<ul class="evidence-observations">
+									{#each narrativeInsight.challenges as insight}
+										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>{insight.evidence}</small></li>
+									{/each}
+								</ul>
+							{:else}
+								<p class="reflection-copy">Det finns ännu inte tillräckligt med data för att säga vad som oftare sammanfaller med tyngre dagar.</p>
+							{/if}
+						</div>
+
+						<div class="analysis-section">
+							<h3>Förändring över tid</h3>
+							{#if narrativeInsight.timeline.observations.length > 0}
+								<ul class="evidence-observations">
+									{#each narrativeInsight.timeline.observations as insight}
+										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>{insight.evidence}</small></li>
+									{/each}
+								</ul>
+							{:else}
+								<p class="reflection-copy">Det finns ännu inte tillräckligt med jämförbart underlag för att visa en tydlig förändring över tid.</p>
+							{/if}
+						</div>
+					{/if}
 				{:else}
-					<p class="reflection-copy">Det finns ännu för lite underlag i den valda perioden för att jämföra förändringar.</p>
+					<p class="reflection-copy">Det finns ännu inte tillräckligt med data för en personlig analys.</p>
 				{/if}
 			</section>
 
@@ -1050,8 +1124,9 @@
 					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
 					<h2 id="garden-presence-heading">Din plats</h2>
 				</div>
+				<p class="reflection-copy">{periodAnalysis.sampleCount} {periodAnalysis.sampleCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} under den valda perioden.</p>
 				<p class="reflection-copy">{periodActivity.entryCount} {periodActivity.entryCount === 1 ? 'sparad text' : 'sparade texter'} under den valda perioden.</p>
-				<p class="reflection-copy">{periodActivity.activeWeeks} {periodActivity.activeWeeks === 1 ? 'aktiv vecka' : 'aktiva veckor'} och {periodActivity.activeDays} {periodActivity.activeDays === 1 ? 'skrivdag' : 'skrivdagar'}.</p>
+				<p class="reflection-copy">{periodActivity.activeWeeks} {periodActivity.activeWeeks === 1 ? 'aktiv vecka med sparad text' : 'aktiva veckor med sparade texter'} och {periodActivity.activeDays} {periodActivity.activeDays === 1 ? 'skrivdag' : 'skrivdagar'}.</p>
 				{#if periodActivity.longestActiveStreak >= 2}
 					<p class="reflection-copy">Längsta sammanhängande följd: {periodActivity.longestActiveStreak} dagar.</p>
 				{/if}
@@ -1398,19 +1473,81 @@
 		line-height: 1.6;
 	}
 
-	.theme-observations {
+	.analysis-card {
+		gap: 1rem;
+	}
+
+	.analysis-intro,
+	.analysis-basis {
+		margin: 0;
+		max-width: 48rem;
+		line-height: 1.6;
+	}
+
+	.analysis-intro {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.analysis-basis {
+		padding: 0.85rem 1rem;
+		border-left: 3px solid color-mix(in srgb, var(--theme-accent, #557c68) 56%, transparent);
+		border-radius: 0 0.65rem 0.65rem 0;
+		background: hsl(var(--muted) / 0.28);
+		color: hsl(var(--foreground));
+		font-size: 0.94rem;
+	}
+
+	.analysis-section {
 		display: grid;
-		gap: 0.55rem;
+		gap: 0.7rem;
+		padding-top: 0.2rem;
+	}
+
+	.analysis-section + .analysis-section {
+		padding-top: 1.35rem;
+		border-top: 1px solid var(--color-dashboard-border);
+	}
+
+	.analysis-section h3 {
+		margin: 0;
+		color: hsl(var(--foreground));
+		font-size: 1.05rem;
+	}
+
+	.evidence-observations {
+		display: grid;
+		gap: 0.65rem;
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
 
-	.theme-observations li {
-		padding: 0.75rem 0.85rem;
-		border: 1px solid hsl(var(--border));
+	.evidence-observations li {
+		display: grid;
+		gap: 0.35rem;
+		padding: 0.9rem 1rem;
+		border: 1px solid var(--color-dashboard-border);
 		border-radius: 0.75rem;
-		background: hsl(var(--muted) / 0.34);
+		background: hsl(var(--muted) / 0.24);
+		line-height: 1.5;
+	}
+
+	.evidence-observations strong {
+		color: hsl(var(--foreground));
+		font-size: 0.95rem;
+	}
+
+	.evidence-observations span,
+	.evidence-observations small {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.evidence-observations span {
+		font-size: 0.92rem;
+	}
+
+	.evidence-observations small {
+		font-size: 0.82rem;
 		line-height: 1.45;
 	}
 

@@ -35,8 +35,16 @@ export type TimelineSegment = {
 	summary: string;
 };
 
+export type DiaryInsightDataBasis = {
+	moodEntryCount: number;
+	textEntryCount: number;
+	firstDate: string | null;
+	latestDate: string | null;
+};
+
 export type DiaryNarrativeInsight = {
 	entryCount: number;
+	dataBasis: DiaryInsightDataBasis;
 	firstEntryDate: string | null;
 	latestEntryDate: string | null;
 	evidenceLevel: InsightEvidenceLevel;
@@ -49,6 +57,7 @@ export type DiaryNarrativeInsight = {
 		title: string;
 		summary: string;
 		segments: TimelineSegment[];
+		observations: EvidenceClaim[];
 	};
 	strengths: EvidenceClaim[];
 	challenges: EvidenceClaim[];
@@ -77,6 +86,9 @@ const MIN_TIMELINE_ENTRIES = 18;
 const DEEP_ANALYSIS_ENTRIES = 100;
 const LONGITUDINAL_ENTRIES = 250;
 const DAY_MS = 24 * 60 * 60 * 1000;
+const MIN_ASSOCIATION_ENTRIES = 3;
+const MIN_ASSOCIATION_COMPARISON_ENTRIES = 3;
+const MOOD_ASSOCIATION_THRESHOLD = 0.75;
 
 const TOPICS: TopicDefinition[] = [
 	{ label: 'Barnen', keywords: ['barn', 'son', 'dotter', 'familj', 'förälder', 'föräldra'] },
@@ -90,6 +102,12 @@ const TOPICS: TopicDefinition[] = [
 	{ label: 'Återhämtning', keywords: ['vila', 'återhämt', 'paus', 'lugn', 'andas', 'landat'] },
 	{ label: 'Självmedkänsla', keywords: ['snäll mot mig', 'okej', 'räcker', 'förlåta', 'mildare'] },
 	{ label: 'Tacksamhet', keywords: ['tacksam', 'glad för', 'fint', 'värme', 'lättnad'] },
+	{ label: 'Ekonomi', keywords: ['ekonomi', 'pengar', 'räkning', 'räkningar', 'skuld', 'lön'] },
+	{ label: 'Ensamhet', keywords: ['ensam', 'ensamhet', 'isolerad', 'isolation'] },
+	{ label: 'Konflikter', keywords: ['bråk', 'konflikt', 'gräl', 'osams', 'tjafs'] },
+	{ label: 'Natur', keywords: ['natur', 'skog', 'sjö', 'ute', 'utomhus', 'park'] },
+	{ label: 'Struktur', keywords: ['rutin', 'rutiner', 'struktur', 'planering', 'planerat'] },
+	{ label: 'Social kontakt', keywords: ['umgås', 'umgänge', 'träffa', 'sällskap', 'prata med'] },
 	{ label: 'MittPsyke', keywords: ['mittpsyke', 'dagbok', 'skriva', 'reflektion'] }
 ];
 
@@ -145,6 +163,20 @@ function prepareEntries(rows: DiaryInsightRow[]): PreparedEntry[] {
 		})
 		.filter((entry): entry is PreparedEntry => entry !== null)
 		.sort((a, b) => a.date.getTime() - b.date.getTime());
+}
+
+function buildDataBasis(rows: DiaryInsightRow[]): DiaryInsightDataBasis {
+	const datedRows = rows
+		.map((row) => (row.created_at ? new Date(row.created_at) : null))
+		.filter((date): date is Date => date !== null && !Number.isNaN(date.getTime()))
+		.sort((a, b) => a.getTime() - b.getTime());
+
+	return {
+		moodEntryCount: rows.filter((row) => parseMood(row.mood) !== null).length,
+		textEntryCount: rows.filter((row) => typeof row.text === 'string' && row.text.trim().length > 0).length,
+		firstDate: formatDate(datedRows[0] ?? null),
+		latestDate: formatDate(datedRows.at(-1) ?? null)
+	};
 }
 
 function average(values: number[]) {
@@ -267,6 +299,92 @@ function buildOverview(entries: PreparedEntry[]): EvidenceClaim[] {
 	return claims.slice(0, 6);
 }
 
+type MoodAssociationGroups = {
+	helpful: EvidenceClaim[];
+	challenging: EvidenceClaim[];
+	combinations: EvidenceClaim[];
+};
+
+function formatMood(value: number) {
+	return value.toFixed(1).replace('.', ',');
+}
+
+/**
+ * Hittar endast samband som har en jämförelsegrupp. Det här är medvetet en
+ * snävare analys än en ordmolnslista: ett tema behöver förekomma minst tre
+ * gånger med humörvärde och skilja sig tydligt från övriga humörvärden.
+ */
+function buildMoodAssociationGroups(entries: PreparedEntry[]): MoodAssociationGroups {
+	const helpful: Array<EvidenceClaim & { difference: number }> = [];
+	const challenging: Array<EvidenceClaim & { difference: number }> = [];
+	const combinations: Array<EvidenceClaim & { difference: number }> = [];
+	const topics = TOPICS.filter((topic) => topic.label !== 'MittPsyke');
+
+	for (const topic of topics) {
+		const matching = entries.filter((entry) => entry.topicHits.has(topic.label) && entry.mood !== null);
+		const other = entries.filter((entry) => !entry.topicHits.has(topic.label) && entry.mood !== null);
+		if (matching.length < MIN_ASSOCIATION_ENTRIES || other.length < MIN_ASSOCIATION_COMPARISON_ENTRIES) continue;
+
+		const matchingAverage = average(matching.map((entry) => entry.mood as number));
+		const otherAverage = average(other.map((entry) => entry.mood as number));
+		if (matchingAverage === null || otherAverage === null) continue;
+
+		const difference = matchingAverage - otherAverage;
+		const evidence = `${matching.length} av ${entries.length} texter nämner ${topic.label.toLowerCase()}, med humörsnitt ${formatMood(matchingAverage)} jämfört med ${formatMood(otherAverage)} i ${other.length} övriga texter.`;
+		if (difference >= MOOD_ASSOCIATION_THRESHOLD) {
+			helpful.push({
+				title: `${topic.label} förekommer oftare under ljusare dagar`,
+				description: `När ${topic.label.toLowerCase()} nämns ligger humörvärdet oftare högre än i dina övriga texter. Det visar ett samband i underlaget, inte vad som orsakar det.`,
+				evidence,
+				difference
+			});
+		}
+		if (difference <= -MOOD_ASSOCIATION_THRESHOLD) {
+			challenging.push({
+				title: `${topic.label} sammanfaller oftare med tyngre dagar`,
+				description: `När ${topic.label.toLowerCase()} nämns ligger humörvärdet oftare lägre än i dina övriga texter. Det visar ett samband i underlaget, inte vad som orsakar det.`,
+				evidence,
+				difference: Math.abs(difference)
+			});
+		}
+	}
+
+	for (let index = 0; index < topics.length; index += 1) {
+		for (let compareIndex = index + 1; compareIndex < topics.length; compareIndex += 1) {
+			const first = topics[index];
+			const second = topics[compareIndex];
+			const matching = entries.filter(
+				(entry) => entry.topicHits.has(first.label) && entry.topicHits.has(second.label) && entry.mood !== null
+			);
+			const other = entries.filter(
+				(entry) => !(entry.topicHits.has(first.label) && entry.topicHits.has(second.label)) && entry.mood !== null
+			);
+			if (matching.length < MIN_ASSOCIATION_ENTRIES || other.length < MIN_ASSOCIATION_COMPARISON_ENTRIES) continue;
+
+			const matchingAverage = average(matching.map((entry) => entry.mood as number));
+			const otherAverage = average(other.map((entry) => entry.mood as number));
+			if (matchingAverage === null || otherAverage === null) continue;
+
+			const difference = matchingAverage - otherAverage;
+			if (Math.abs(difference) < MOOD_ASSOCIATION_THRESHOLD) continue;
+			const direction = difference > 0 ? 'ljusare' : 'tyngre';
+			combinations.push({
+				title: `${first.label} och ${second.label} återkommer tillsammans`,
+				description: `När båda nämns samtidigt ligger humörvärdet oftare på en ${direction} nivå än i övriga texter.`,
+				evidence: `${matching.length} texter nämner både ${first.label.toLowerCase()} och ${second.label.toLowerCase()}, med humörsnitt ${formatMood(matchingAverage)} jämfört med ${formatMood(otherAverage)} i ${other.length} övriga texter.`,
+				difference: Math.abs(difference)
+			});
+		}
+	}
+
+	const byStrength = (a: { difference: number }, b: { difference: number }) => b.difference - a.difference;
+	return {
+		helpful: helpful.sort(byStrength).slice(0, 3),
+		challenging: challenging.sort(byStrength).slice(0, 3),
+		combinations: combinations.sort(byStrength).slice(0, 2)
+	};
+}
+
 function buildPatterns(entries: PreparedEntry[]): EvidenceClaim[] {
 	const claims: EvidenceClaim[] = [];
 	const moods = entries.filter((entry) => entry.mood !== null);
@@ -290,7 +408,7 @@ function buildPatterns(entries: PreparedEntry[]): EvidenceClaim[] {
 			claims.push({
 				title: 'Helgerna verkar ge lite mer lugn',
 				description: 'Humörvärdena ligger högre på helger än på vardagar i det här underlaget.',
-				evidence: `Helgsnitt ${weekendAvg.toFixed(1)} jämfört med vardagssnitt ${weekdayAvg.toFixed(1)}.`
+				evidence: `Helgsnitt ${formatMood(weekendAvg)} i ${weekend.length} registreringar jämfört med vardagssnitt ${formatMood(weekdayAvg)} i ${weekday.length} registreringar.`
 			});
 		}
 	}
@@ -336,53 +454,17 @@ function buildPatterns(entries: PreparedEntry[]): EvidenceClaim[] {
 		});
 	}
 
+	claims.push(...buildMoodAssociationGroups(entries).combinations);
+
 	return claims.slice(0, 5);
 }
 
 function buildStrengths(entries: PreparedEntry[]): EvidenceClaim[] {
-	const { early, late } = splitEarlyLate(entries);
-	const strengths: EvidenceClaim[] = [];
-	const candidates = [
-		{ label: 'Mer hopp', words: ['hopp', 'hoppas', 'vill', 'framtid', 'plan'] },
-		{ label: 'Mer återhämtning', words: ['vila', 'återhämt', 'paus', 'lugn', 'andas'] },
-		{ label: 'Mer självmedkänsla', words: ['okej', 'räcker', 'snäll mot mig', 'förlåta', 'mildare'] },
-		{ label: 'Mer tacksamhet', words: ['tacksam', 'fint', 'glad för', 'värme', 'lättnad'] }
-	];
-
-	for (const candidate of candidates) {
-		const earlyCount = early.filter((entry) => includesAny(entry.text.toLowerCase(), candidate.words)).length;
-		const lateCount = late.filter((entry) => includesAny(entry.text.toLowerCase(), candidate.words)).length;
-		if (lateCount >= 2 && lateCount > earlyCount) {
-			strengths.push({
-				title: candidate.label,
-				description: `${candidate.label.replace('Mer ', '')} syns tydligare i de senare reflektionerna.`,
-				evidence: `${lateCount} av de senaste ${late.length} texterna innehåller sådana markörer, jämfört med ${earlyCount} av de första ${early.length}.`
-			});
-		}
-	}
-
-	return strengths.slice(0, 5);
+	return buildMoodAssociationGroups(entries).helpful;
 }
 
 function buildChallenges(entries: PreparedEntry[]): EvidenceClaim[] {
-	const challengeTopics = TOPICS.map((topic) => {
-		const count = topicCount(entries, topic.label);
-		const avgMood = topicAverageMood(entries, topic.label);
-		const challengeWords = entries.filter((entry) => entry.topicHits.has(topic.label) && includesAny(entry.text.toLowerCase(), CHALLENGE_WORDS)).length;
-		return { label: topic.label, count, avgMood, challengeWords };
-	})
-		.filter((topic) => topic.count >= 3 && (topic.challengeWords >= 2 || (topic.avgMood !== null && topic.avgMood <= 5.5)))
-		.sort((a, b) => b.count - a.count)
-		.slice(0, 3);
-
-	return challengeTopics.map((topic) => ({
-		title: topic.label,
-		description: `${topic.label} återkommer ibland i texter där tonen verkar tyngre eller mer pressad.`,
-		evidence:
-			topic.avgMood !== null
-				? `${topic.count} reflektioner nämner ${topic.label.toLowerCase()}, med humörsnitt ${topic.avgMood.toFixed(1)} när humör finns.`
-				: `${topic.count} reflektioner nämner ${topic.label.toLowerCase()}, varav ${topic.challengeWords} innehåller ord för press eller svårighet.`
-	}));
+	return buildMoodAssociationGroups(entries).challenging;
 }
 
 function summarizeSegment(entries: PreparedEntry[]) {
@@ -396,6 +478,76 @@ function summarizeSegment(entries: PreparedEntry[]) {
 	if (topTheme) return `Här återkommer ${topTheme.label.toLowerCase()} mest i texterna.`;
 	if (moodAvg !== null) return `Humörsnittet ligger runt ${moodAvg.toFixed(1)}, men teman är ännu svåra att urskilja.`;
 	return 'Texterna finns här, men underlaget är fortfarande ganska stilla och blandat.';
+}
+
+function meanAbsoluteDeviation(values: number[]) {
+	if (values.length < 2) return null;
+	const mean = average(values);
+	if (mean === null) return null;
+	return values.reduce((sum, value) => sum + Math.abs(value - mean), 0) / values.length;
+}
+
+function buildTimelineObservations(entries: PreparedEntry[]): EvidenceClaim[] {
+	const observations: EvidenceClaim[] = [];
+	const moodEntries = entries.filter((entry) => entry.mood !== null);
+	const { early, late } = splitEarlyLate(moodEntries);
+	const earlyValues = early.map((entry) => entry.mood as number);
+	const lateValues = late.map((entry) => entry.mood as number);
+	const earlyAverage = average(earlyValues);
+	const lateAverage = average(lateValues);
+
+	if (earlyValues.length >= 4 && lateValues.length >= 4 && earlyAverage !== null && lateAverage !== null) {
+		const difference = lateAverage - earlyAverage;
+		if (Math.abs(difference) >= MOOD_ASSOCIATION_THRESHOLD) {
+			observations.push({
+				title: difference > 0 ? 'Den senare perioden ligger ljusare' : 'Den senare perioden ligger tyngre',
+				description: difference > 0
+					? 'De senare humörvärdena ligger tydligt högre än i början av underlaget.'
+					: 'De senare humörvärdena ligger tydligt lägre än i början av underlaget.',
+				evidence: `Humörsnittet är ${formatMood(earlyAverage)} i de första ${earlyValues.length} registreringarna och ${formatMood(lateAverage)} i de senaste ${lateValues.length}.`
+			});
+		}
+
+		const earlyVariation = meanAbsoluteDeviation(earlyValues);
+		const lateVariation = meanAbsoluteDeviation(lateValues);
+		if (earlyVariation !== null && lateVariation !== null && Math.abs(lateVariation - earlyVariation) >= 0.6) {
+			observations.push({
+				title: lateVariation < earlyVariation ? 'Måendet har blivit jämnare' : 'Måendet har blivit mer växlande',
+				description: lateVariation < earlyVariation
+					? 'De senare registreringarna ligger närmare varandra än i början av underlaget.'
+					: 'De senare registreringarna ligger längre ifrån varandra än i början av underlaget.',
+				evidence: `Den genomsnittliga avvikelsen från snittet är ${formatMood(earlyVariation)} i början och ${formatMood(lateVariation)} i slutet, beräknat på ${earlyValues.length} respektive ${lateValues.length} registreringar.`
+			});
+		}
+	}
+
+	const recoveries: number[] = [];
+	let lowRegistrations = 0;
+	for (let index = 0; index < moodEntries.length - 1; index += 1) {
+		const current = moodEntries[index];
+		if ((current.mood as number) > 4) continue;
+		lowRegistrations += 1;
+		for (let nextIndex = index + 1; nextIndex < moodEntries.length; nextIndex += 1) {
+			const next = moodEntries[nextIndex];
+			const daysUntilNext = Math.round((next.date.getTime() - current.date.getTime()) / DAY_MS);
+			if (daysUntilNext > 14) break;
+			if ((next.mood as number) - (current.mood as number) >= 2) {
+				recoveries.push(daysUntilNext);
+				break;
+			}
+		}
+	}
+	if (recoveries.length >= 3 && lowRegistrations >= 3) {
+		const sortedDays = [...recoveries].sort((a, b) => a - b);
+		const medianDays = sortedDays[Math.floor(sortedDays.length / 2)];
+		observations.push({
+			title: 'Det finns flera återhämtningsskiften',
+			description: 'Efter några lägre registreringar följer en senare registrering som ligger minst två steg högre. Det visar ett återkommande förlopp, inte vad som ligger bakom det.',
+			evidence: `${recoveries.length} av ${lowRegistrations} registreringar på 4 eller lägre följdes inom 14 dagar av en registrering minst två steg högre. Medianen till nästa högre registrering är ${medianDays} ${medianDays === 1 ? 'dag' : 'dagar'}.`
+		});
+	}
+
+	return observations.slice(0, 3);
 }
 
 function buildTimeline(entries: PreparedEntry[]) {
@@ -447,7 +599,8 @@ function buildTimeline(entries: PreparedEntry[]) {
 	return {
 		title: 'Så har din resa förändrats',
 		summary,
-		segments
+		segments,
+		observations: buildTimelineObservations(entries)
 	};
 }
 
@@ -553,12 +706,14 @@ export async function buildDiaryNarrativeInsight(
 	options: { provider?: AITextProvider; generateWithAi?: boolean } = {}
 ): Promise<DiaryNarrativeInsight> {
 	const entries = prepareEntries(rows);
+	const dataBasis = buildDataBasis(rows);
 	const first = entries[0]?.date ?? null;
 	const latest = entries.at(-1)?.date ?? null;
 	const spanDays = first && latest ? Math.max(0, Math.round((latest.getTime() - first.getTime()) / DAY_MS)) : 0;
 	const evidenceLevel = getEvidenceLevel(entries.length, spanDays);
 	const base = {
 		entryCount: entries.length,
+		dataBasis,
 		firstEntryDate: formatDate(first),
 		latestEntryDate: formatDate(latest),
 		evidenceLevel,
@@ -576,7 +731,7 @@ export async function buildDiaryNarrativeInsight(
 		themes: entries.length < MIN_PATTERN_ENTRIES ? [] : buildThemes(entries),
 		timeline:
 			entries.length < MIN_TIMELINE_ENTRIES
-				? { title: 'Så har din resa förändrats', summary: '', segments: [] }
+				? { title: 'Så har din resa förändrats', summary: '', segments: [], observations: [] }
 				: buildTimeline(entries),
 		strengths: entries.length < MIN_PATTERN_ENTRIES ? [] : buildStrengths(entries),
 		challenges: entries.length < MIN_PATTERN_ENTRIES ? [] : buildChallenges(entries)
