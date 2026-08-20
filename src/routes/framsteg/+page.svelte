@@ -55,6 +55,7 @@
 	import RecentPeriodChart from '$lib/components/RecentPeriodChart.svelte';
 	import {
 		buildRecentPeriodView,
+		buildPeriodActivity,
 		toMoodSamples,
 		CHART_FALLBACK_COPY,
 		type MoodSample,
@@ -62,7 +63,7 @@
 		type ThemeLike
 	} from '$lib/progress-recent-period';
 	import {
-		buildMoodChangeObservation,
+		buildPeriodAnalysis,
 		buildMoodTimelineView,
 		buildRecurringThemes,
 		EMPTY_MOOD_COPY
@@ -490,10 +491,11 @@
 	);
 	const moodSamples = $derived(loadedMoodSamples);
 	const moodTimeline = $derived(buildMoodTimelineView(moodSamples, selectedPeriod));
+	const periodAnalysis = $derived(buildPeriodAnalysis(moodSamples, selectedPeriod));
+	const periodActivity = $derived(buildPeriodActivity(heatmapData, selectedPeriod));
 	const recurringThemes = $derived(
 		hasSensitiveDataConsent ? buildRecurringThemes(insightsData?.narrative?.themes) : []
 	);
-	const moodChange = $derived(buildMoodChangeObservation(moodSamples));
 
 	// Hela sektionen "Din senaste tid" byggs av redan hämtad data.
 	const recentPeriod = $derived(
@@ -1031,7 +1033,16 @@
 					<div class="icon-badge week"><Heart size={24} /></div>
 					<h2 id="change-heading">Förändring</h2>
 				</div>
-				<p class="reflection-copy">{moodChange.text}</p>
+				{#if periodAnalysis.observations.length > 0}
+					<p class="reflection-copy">{periodAnalysis.summary}</p>
+					<ul class="theme-observations">
+						{#each periodAnalysis.observations as observation}
+							<li>{observation}</li>
+						{/each}
+					</ul>
+				{:else}
+					<p class="reflection-copy">Det finns ännu för lite underlag i den valda perioden för att jämföra förändringar.</p>
+				{/if}
 			</section>
 
 			<section class="card garden-presence-card" aria-labelledby="garden-presence-heading">
@@ -1039,9 +1050,10 @@
 					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
 					<h2 id="garden-presence-heading">Din plats</h2>
 				</div>
-				<p class="reflection-copy">Din plats har förändrats med din närvaro.</p>
-				{#if entryCount > 0}
-					<p class="reflection-copy">{entryCount} sparade {entryCount === 1 ? 'text finns' : 'texter finns'} kvar när du vill titta tillbaka.</p>
+				<p class="reflection-copy">{periodActivity.entryCount} {periodActivity.entryCount === 1 ? 'sparad text' : 'sparade texter'} under den valda perioden.</p>
+				<p class="reflection-copy">{periodActivity.activeWeeks} {periodActivity.activeWeeks === 1 ? 'aktiv vecka' : 'aktiva veckor'} och {periodActivity.activeDays} {periodActivity.activeDays === 1 ? 'skrivdag' : 'skrivdagar'}.</p>
+				{#if periodActivity.longestActiveStreak >= 2}
+					<p class="reflection-copy">Längsta sammanhängande följd: {periodActivity.longestActiveStreak} dagar.</p>
 				{/if}
 			</section>
 		</div>

@@ -554,19 +554,23 @@ export const WOLF_SCENE_PLACEMENTS = {
 	dashboard: { scale: 0.9, x: 76, y: 84 },
 	progress: {
 		scale: 1.6,
-		// Vargbildens genomskinliga marginal under tassarna (se kommentaren ovan)
-		// gör att "bottom" måste sättas lägre än det visuella fotfästet för att
-		// tassarna ska hamna på gräset i stället för att glida ut i sjön.
-		bottom: '26%',
-		right: '18%',
-		groundLeft: '80%',
-		groundTop: '65%',
+		// Framsteg använder en bred, nedåtflyttad crop av sjöscenen. Vid det
+		// tidigare ankaret (18 % / 26 %) föll vargens synliga tassar i vattenytan
+		// intill personen. Den yttre högra strandremsan är fast mark i samtliga
+		// fyra dygnsbilder och lämnar samtidigt den inbakade personen och elden fri.
+		bottom: '17%',
+		right: '8%',
+		groundLeft: '91%',
+		groundTop: '80%',
 		compact: {
-			scale: 1.55,
-			bottom: '26%',
-			right: '17%',
-			groundLeft: '79%',
-			groundTop: '66%'
+			// På mobil visas hela bildhöjden och den inbakade personen fyller den
+			// nedre högra stranden. Ylva får därför en mindre, högre plats på den
+			// yttre slänten i stället för att konkurrera om förgrunden.
+			scale: 1.2,
+			bottom: '42%',
+			right: '0%',
+			groundLeft: '95%',
+			groundTop: '58%'
 		}
 	}
 } as const;

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	aggregateSamples,
 	buildChartGeometry,
+	buildPeriodActivity,
 	buildRecentPeriodView,
 	buildSteadinessObservation,
 	buildThemeObservation,
@@ -193,6 +194,33 @@ describe('aktiva veckor', () => {
 		expect(countActiveWeeks({}, 30, NOW)).toBe(0);
 		expect(countActiveWeeks(null, 30, NOW)).toBe(0);
 		expect(countActiveWeeks(undefined, 180, NOW)).toBe(0);
+	});
+});
+
+describe('periodaktivitet', () => {
+	it('summerar bara sparade texter och aktiva dagar inom den valda perioden', () => {
+		const activity = buildPeriodActivity(
+			{
+				'2026-08-02': 2,
+				'2026-08-01': 1,
+				'2026-07-30': 3,
+				'2026-07-02': 8,
+				'2026-01-01': 5
+			},
+			30,
+			NOW
+		);
+
+		expect(activity).toEqual({ entryCount: 6, activeDays: 3, activeWeeks: 1, longestActiveStreak: 2 });
+	});
+
+	it('ger ett tomt och säkert resultat utan heatmapdata', () => {
+		expect(buildPeriodActivity(null, 180, NOW)).toEqual({
+			entryCount: 0,
+			activeDays: 0,
+			activeWeeks: 0,
+			longestActiveStreak: 0
+		});
 	});
 });
 

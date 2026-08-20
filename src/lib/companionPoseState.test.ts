@@ -15,7 +15,8 @@ import {
 	DASHBOARD_CABIN_COPY_SAFE_START_PCT,
 	COMPANION_POSES,
 	COMPANION_SCENE_CONTEXT_POSITION_IDS,
-	COMPANION_SCENE_POSITIONS
+	COMPANION_SCENE_POSITIONS,
+	WOLF_SCENE_PLACEMENTS
 } from './companionPoseManifest';
 import type { CompanionId, CompanionPoseDaypart } from './companionPoseManifest';
 
@@ -276,6 +277,20 @@ describe('vargens mobilankare på Mitt Hem', () => {
 			x: 34,
 			y: 91
 		});
+	});
+});
+
+describe('vargens ankare på Framsteg', () => {
+	it('använder den yttre strandremsan och lämnar dashboardvärdena orörda', () => {
+		expect(WOLF_SCENE_PLACEMENTS.progress).toMatchObject({
+			scale: 1.6,
+			right: '8%',
+			bottom: '17%',
+			groundLeft: '91%',
+			groundTop: '80%',
+			compact: { scale: 1.2, right: '0%', bottom: '42%', groundLeft: '95%', groundTop: '58%' }
+		});
+		expect(WOLF_SCENE_PLACEMENTS.dashboard).toEqual({ scale: 0.9, x: 76, y: 84 });
 	});
 });
 

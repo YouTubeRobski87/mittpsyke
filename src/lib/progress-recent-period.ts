@@ -74,6 +74,18 @@ export interface ThemeLike {
 	count: number;
 }
 
+/** Skrivaktivitet som går att härleda direkt ur heatmapens dagliga antal. */
+export interface PeriodActivity {
+	/** Antal sparade texter inom det valda datumspannet. */
+	entryCount: number;
+	/** Antal dagar med minst en sparad text. */
+	activeDays: number;
+	/** Antal kalenderveckor med minst en sparad text. */
+	activeWeeks: number;
+	/** Längsta följd av aktiva dagar, räknad enbart inom datumspannet. */
+	longestActiveStreak: number;
+}
+
 // ── Tröskelvärden ──
 // Samlade här så att villkoren för varje påstående går att läsa på ett ställe.
 
@@ -332,6 +344,51 @@ export function countActiveWeeks(
 	}
 
 	return weeks.size;
+}
+
+/**
+ * Summerar befintliga heatmapdata för den valda perioden. Värdena tolkas
+ * enbart som antal sparade dagboksrader; ingen text eller känsloinnehåll
+ * analyseras här.
+ */
+export function buildPeriodActivity(
+	heatmapData: Record<string, number> | null | undefined,
+	periodDays: PeriodDays,
+	now: Date = new Date()
+): PeriodActivity {
+	if (!heatmapData) {
+		return { entryCount: 0, activeDays: 0, activeWeeks: 0, longestActiveStreak: 0 };
+	}
+
+	const startKey = getPeriodStartKey(periodDays, now);
+	const endKey = toDateKey(now);
+	const activeDateKeys = Object.entries(heatmapData)
+		.filter(([date, count]) =>
+			DATE_PATTERN.test(date) && date >= startKey && date <= endKey && Number.isFinite(count) && count > 0
+		)
+		.map(([date]) => date)
+		.sort();
+	const entryCount = activeDateKeys.reduce((sum, date) => sum + (heatmapData[date] ?? 0), 0);
+	let longestActiveStreak = 0;
+	let currentStreak = 0;
+	let previousDate: Date | null = null;
+
+	for (const dateKey of activeDateKeys) {
+		const currentDate = toLocalDate(dateKey);
+		if (!currentDate) continue;
+		const expectedNextDate = previousDate ? new Date(previousDate) : null;
+		if (expectedNextDate) expectedNextDate.setDate(expectedNextDate.getDate() + 1);
+		currentStreak = expectedNextDate && toDateKey(expectedNextDate) === dateKey ? currentStreak + 1 : 1;
+		longestActiveStreak = Math.max(longestActiveStreak, currentStreak);
+		previousDate = currentDate;
+	}
+
+	return {
+		entryCount,
+		activeDays: activeDateKeys.length,
+		activeWeeks: countActiveWeeks(heatmapData, periodDays, now),
+		longestActiveStreak
+	};
 }
 
 /** Genomsnittlig absolut avvikelse från medelvärdet. Tåligare än varians för små underlag. */
