@@ -759,7 +759,8 @@
 				now,
 				browser ? window.localStorage : null,
 				sceneCompanionId,
-				'progress'
+				'progress',
+				'resting'
 			);
 			companionPoseId = companionBasePose.id;
 		};
@@ -979,7 +980,14 @@
 					decoding="async"
 				/>
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
-				<CompanionPose class="progress-companion-pose" basePose={companionBasePose} companionId={sceneCompanionId} scene="progress" decorative />
+				<CompanionPose
+					class="progress-companion-pose"
+					basePose={companionBasePose}
+					companionId={sceneCompanionId}
+					scene="progress"
+					behaviourProfile="quiet"
+					decorative
+				/>
 				<CompanionVisitor
 					class="progress-companion-visitor"
 					mainCompanionId={sceneCompanionId}
@@ -1669,10 +1677,12 @@
 
 	.companion-media :global(.progress-companion-pose) {
 		position: absolute;
-		right: 21%;
-		bottom: 32%;
+		/* Vilar strax till vänster om personen: nära nog att kännas som sällskap,
+		   men utanför både ansiktet och eldens fokus. */
+		right: 32%;
+		bottom: 28%;
 		z-index: var(--scene-companion);
-		width: clamp(42px, 9%, 64px);
+		width: clamp(52px, 10%, 74px);
 		--companion-grade: saturate(0.7) contrast(0.88) brightness(0.94) sepia(0.14)
 			hue-rotate(-3deg);
 	}
@@ -1764,7 +1774,7 @@
 	}
 
 	.companion-media[data-time='evening'] :global(.progress-companion-pose) {
-		--companion-grade: saturate(0.55) contrast(0.84) brightness(0.72) sepia(0.14)
+		--companion-grade: saturate(0.55) contrast(0.84) brightness(0.78) sepia(0.14)
 			hue-rotate(5deg);
 	}
 
@@ -1794,12 +1804,12 @@
 	}
 
 	.companion-ground-shadow {
-		/* Rävens tassar hamnar här i den etablerade progressplaceringen.
+		/* Följeslagarens tassar hamnar intill personen i progressplaceringen.
 		   Skuggan följer därför motivets verkliga markpunkt, inte strandens
 		   mitt, så att den inte ser inklistrad ut. Björn och varg har egna
 		   justeringar nedan. */
-		left: 76.8%;
-		top: 68.4%;
+		left: 64.8%;
+		top: 71.1%;
 		z-index: var(--scene-ambient);
 		width: clamp(38px, 6%, 60px);
 		height: clamp(6px, 0.9vw, 10px);
@@ -1815,8 +1825,8 @@
 	}
 
 	.companion-foreground-edge {
-		left: 76.5%;
-		top: 68.5%;
+		left: 64.5%;
+		top: 71.2%;
 		z-index: var(--scene-foreground);
 		width: clamp(46px, 7.2%, 72px);
 		height: clamp(12px, 1.9vw, 20px);
@@ -2330,17 +2340,17 @@
 		.card { padding: 1.5rem; }
 		.companion-media::after { height: 62%; }
 		.companion-media :global(.progress-companion-pose) {
-			right: 20%;
-			bottom: 31%;
-			width: clamp(38px, 10%, 58px);
+			right: 28%;
+			bottom: 27%;
+			width: clamp(44px, 12%, 62px);
 		}
 
-		/* Räven blir lite mindre och får vila längre ut på strandkanten på mobil.
+		/* Räven ligger/sitter på samma strandkant som personen även på mobil.
 		   Björnens och vargens särskilda placeringar lämnas helt orörda. */
 		.companion-media[data-companion='fox'] :global(.progress-companion-pose) {
-			right: 16%;
-			bottom: 28%;
-			width: clamp(32px, 8.2%, 48px);
+			right: 27%;
+			bottom: 25%;
+			width: clamp(42px, 11.5%, 60px);
 		}
 
 		/* Samma långsamma vattenrörelse, men mjukare och mindre tydlig på den
@@ -2379,16 +2389,16 @@
 			top: var(--wolf-progress-compact-ground-top);
 		}
 		.companion-ground-shadow {
-			left: 70.8%;
-			top: 64.1%;
+			left: 65.8%;
+			top: 70.2%;
 			width: clamp(42px, 14%, 68px);
 			height: 9px;
 			filter: blur(4px);
 			transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-16deg) scaleX(1.12);
 		}
 		.companion-foreground-edge {
-			left: 70.5%;
-			top: 64.2%;
+			left: 65.5%;
+			top: 70.3%;
 			width: clamp(52px, 17%, 82px);
 			height: clamp(18px, 6vw, 30px);
 		}

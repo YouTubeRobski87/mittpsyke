@@ -23,7 +23,7 @@ type StoredCompanionPositionState = StoredCompanionPoseState & {
 	positionId: CompanionScenePositionId;
 };
 
-export type CompanionPosePreference = 'default' | 'calm';
+export type CompanionPosePreference = 'default' | 'calm' | 'resting';
 
 const storageKeyFor = (companionId: CompanionId, preference: CompanionPosePreference = 'default') =>
 	`mittpsyke:companion-pose:${companionId}:${preference}:v1`;
@@ -53,6 +53,29 @@ const CALM_POSE_IDS = new Set([
 	'wolf-sleeping',
 	'schafer-sitting',
 	'schafer-sideway',
+	'schafer-resting',
+	'schafer-sleeping',
+	'australisk-shepherd-sitting',
+	'australisk-shepherd-lying',
+	'australisk-shepherd-resting',
+	'australisk-shepherd-sleeping'
+]);
+
+// Används där följeslagaren delar en stilla stund med personen i scenen.
+// Bara poser som faktiskt sitter, ligger eller sover får väljas; om en
+// följeslagare saknar sådan bild för aktuell dygnsdel faller valet mjukt
+// tillbaka till dess vanliga lugna pose.
+const RESTING_POSE_IDS = new Set([
+	'sit',
+	'sit-look-up',
+	'evening-lake',
+	'rest',
+	'sleep-curled',
+	'sleep-side',
+	'bear-sitting',
+	'bear-sleeping',
+	'wolf-sleeping',
+	'schafer-sitting',
 	'schafer-resting',
 	'schafer-sleeping',
 	'australisk-shepherd-sitting',
@@ -173,7 +196,13 @@ export function getCompanionBasePose(
 		(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.dayparts.includes(daypart) && poseHasAvailablePosition(daypart, pose, scene)
 	);
 	const calmPoses = allAvailablePoses.filter((pose) => CALM_POSE_IDS.has(pose.id));
-	const availablePoses = preference === 'calm' && calmPoses.length ? calmPoses : allAvailablePoses;
+	const restingPoses = allAvailablePoses.filter((pose) => RESTING_POSE_IDS.has(pose.id));
+	const availablePoses =
+		preference === 'resting' && restingPoses.length
+			? restingPoses
+			: preference === 'calm' && calmPoses.length
+				? calmPoses
+				: allAvailablePoses;
 	const fallbackPose = getFallbackPose(companionId, availablePoses);
 	const storedState = storage ? parseStoredState(storage.getItem(storageKeyFor(companionId, preference))) : null;
 	if (storedState && storedState.daypart === daypart && storedState.expiresAt > now) {

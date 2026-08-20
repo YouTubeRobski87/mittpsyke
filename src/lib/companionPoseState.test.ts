@@ -58,7 +58,7 @@ const DAYPART_DATES: Record<CompanionPoseDaypart, Date> = {
 	night: new Date('2026-06-15T00:00:00Z') // 02:00 i Stockholm
 };
 
-const COMPANION_IDS: CompanionId[] = ['fox', 'bear', 'wolf'];
+const COMPANION_IDS = ['fox', 'bear', 'wolf'] as const satisfies CompanionId[];
 const DAYPARTS: CompanionPoseDaypart[] = ['day', 'evening', 'night'];
 
 // storage=null i alla anrop nedan så varje getCompanionBasePose-anrop slumpar
@@ -115,6 +115,41 @@ describe('getCompanionBasePose', () => {
 			for (const date of Object.values(DAYPART_DATES)) {
 				const pose = getCompanionBasePose(date, null, companionId, 'dashboard', 'calm');
 				expect(calmPoseIds.has(pose.id)).toBe(true);
+			}
+		}
+	});
+
+	it('uses a sitting or resting pose in the progress scene whenever one exists', () => {
+		const expectedPoseIds: Record<(typeof COMPANION_IDS)[number], Record<CompanionPoseDaypart, string[]>> = {
+			fox: {
+				day: ['sit', 'sit-look-up'],
+				evening: ['evening-lake', 'rest'],
+				night: ['sleep-curled', 'sleep-side']
+			},
+			bear: {
+				day: ['bear-sitting'],
+				evening: ['bear-sitting'],
+				night: ['bear-sleeping']
+			},
+			wolf: {
+				// Vargen har ännu ingen sittande/liggande dagbild, så dess stilla
+				// ståpose är den trygga fallbacken tills en sådan asset finns.
+				day: ['wolf-standing'],
+				evening: ['wolf-standing'],
+				night: ['wolf-sleeping']
+			}
+		};
+
+		for (const companionId of COMPANION_IDS) {
+			for (const daypart of DAYPARTS) {
+				const pose = getCompanionBasePose(
+					DAYPART_DATES[daypart],
+					null,
+					companionId,
+					'progress',
+					'resting'
+				);
+				expect(expectedPoseIds[companionId][daypart]).toContain(pose.id);
 			}
 		}
 	});

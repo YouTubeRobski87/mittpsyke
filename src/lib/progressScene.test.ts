@@ -82,6 +82,13 @@ describe('varje spann pekar på rätt befintlig assetfil', () => {
 });
 
 describe('Framstegs fullständiga dygnsscener', () => {
+	it('låter följeslagaren vila nära personen utan aktiva gester', () => {
+		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
+
+		expect(route).toContain("'progress',\n\t\t\t\t'resting'");
+		expect(route).toContain('behaviourProfile="quiet"');
+	});
+
 	it('renderar ingen äldre separat person- eller eldgrupp ovanpå scenbilden', () => {
 		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
 
