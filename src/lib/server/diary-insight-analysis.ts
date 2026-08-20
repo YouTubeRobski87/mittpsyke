@@ -65,7 +65,7 @@ export type DiaryNarrativeInsight = {
 	generatedWithAi: boolean;
 };
 
-type PreparedEntry = {
+export type PreparedEntry = {
 	date: Date;
 	dateKey: string;
 	weekday: number;
@@ -90,7 +90,7 @@ const MIN_ASSOCIATION_ENTRIES = 3;
 const MIN_ASSOCIATION_COMPARISON_ENTRIES = 3;
 const MOOD_ASSOCIATION_THRESHOLD = 0.75;
 
-const TOPICS: TopicDefinition[] = [
+export const TOPICS: TopicDefinition[] = [
 	{ label: 'Barnen', keywords: ['barn', 'son', 'dotter', 'familj', 'förälder', 'föräldra'] },
 	{ label: 'Stress', keywords: ['stress', 'stressad', 'press', 'mycket', 'överväldig', 'hinner', 'måste'] },
 	{ label: 'Sömn', keywords: ['sömn', 'sover', 'sova', 'trött', 'vaken', 'natt', 'somna'] },
@@ -108,6 +108,7 @@ const TOPICS: TopicDefinition[] = [
 	{ label: 'Natur', keywords: ['natur', 'skog', 'sjö', 'ute', 'utomhus', 'park'] },
 	{ label: 'Struktur', keywords: ['rutin', 'rutiner', 'struktur', 'planering', 'planerat'] },
 	{ label: 'Social kontakt', keywords: ['umgås', 'umgänge', 'träffa', 'sällskap', 'prata med'] },
+	{ label: 'Kreativitet', keywords: ['kreativ', 'skapande', 'måla', 'målar', 'målade', 'musik', 'sjunga', 'pyssel', 'fotografera'] },
 	{ label: 'MittPsyke', keywords: ['mittpsyke', 'dagbok', 'skriva', 'reflektion'] }
 ];
 
@@ -127,7 +128,7 @@ function dateKey(date: Date) {
 	return date.toISOString().slice(0, 10);
 }
 
-function formatDate(date: Date | null) {
+export function formatDate(date: Date | null) {
 	if (!date) return null;
 	return new Intl.DateTimeFormat('sv-SE', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
 }
@@ -145,7 +146,7 @@ function countTopicHits(text: string) {
 	return hits;
 }
 
-function prepareEntries(rows: DiaryInsightRow[]): PreparedEntry[] {
+export function prepareEntries(rows: DiaryInsightRow[]): PreparedEntry[] {
 	return rows
 		.map((row) => {
 			const date = row.created_at ? new Date(row.created_at) : null;
