@@ -56,6 +56,7 @@
 	import {
 		buildRecentPeriodView,
 		buildPeriodActivity,
+		buildHistoryActivity,
 		toMoodSamples,
 		CHART_FALLBACK_COPY,
 		type ChartPoint,
@@ -65,6 +66,7 @@
 	} from '$lib/progress-recent-period';
 	import {
 		buildPeriodAnalysis,
+		buildRecentComparison,
 		buildMoodTimelineView,
 		buildRecurringThemes,
 		EMPTY_MOOD_COPY
@@ -519,6 +521,8 @@
 	const moodTimeline = $derived(buildMoodTimelineView(moodSamples, selectedPeriod));
 	const periodAnalysis = $derived(buildPeriodAnalysis(moodSamples, selectedPeriod));
 	const periodActivity = $derived(buildPeriodActivity(heatmapData, selectedPeriod));
+	const historyActivity = $derived(buildHistoryActivity(heatmapData, moodSamples, selectedPeriod));
+	const recentComparison = $derived(buildRecentComparison(moodSamples));
 	const recurringThemes = $derived(
 		hasSensitiveDataConsent ? buildRecurringThemes(insightsData?.narrative?.themes) : []
 	);
@@ -1054,6 +1058,13 @@
 					{#if moodTimeline.hasChart}
 						<p class="recent-summary">{periodAnalysis.summary}</p>
 					{/if}
+					{#if recentComparison}
+						<div class="recent-comparison">
+							<strong>{recentComparison.title}</strong>
+							<span>{recentComparison.description}</span>
+							<small>{recentComparison.evidence}</small>
+						</div>
+					{/if}
 					{#if selectedMoodPoint}
 						<section class="chart-detail" aria-live="polite" aria-label="Detaljer för vald punkt">
 							<strong>{selectedMoodPoint.fullLabel} · {selectedMoodPoint.value.toFixed(1).replace('.', ',')}/10</strong>
@@ -1168,7 +1179,7 @@
 				</div>
 				<p class="reflection-copy">{moodSamples.length} {moodSamples.length === 1 ? 'måenderegistrering' : 'måenderegistreringar'} i tidslinjen.</p>
 				<p class="reflection-copy">{data.entryCount} {data.entryCount === 1 ? 'dagboksinlägg' : 'dagboksinlägg'}.</p>
-				<p class="reflection-copy">{periodActivity.activeDays} {periodActivity.activeDays === 1 ? 'skrivdag' : 'skrivdagar'} och {periodActivity.activeWeeks} {periodActivity.activeWeeks === 1 ? 'aktiv skrivvecka' : 'aktiva skrivveckor'} under den valda perioden.</p>
+				<p class="reflection-copy">{historyActivity.activeDays} {historyActivity.activeDays === 1 ? 'aktiv dag' : 'aktiva dagar'} och {historyActivity.activeWeeks} {historyActivity.activeWeeks === 1 ? 'aktiv vecka' : 'aktiva veckor'} under den valda perioden.</p>
 				{#if periodActivity.longestActiveStreak >= 2}
 					<p class="reflection-copy">Längsta sammanhängande följd: {periodActivity.longestActiveStreak} dagar.</p>
 				{/if}
@@ -1549,6 +1560,23 @@
 
 	.chart-detail span { font-size: 0.92rem; }
 	.chart-detail small { font-size: 0.82rem; }
+
+	.recent-comparison {
+		display: grid;
+		gap: 0.35rem;
+		max-width: 46rem;
+		padding: 0.9rem 1rem;
+		border-left: 3px solid color-mix(in srgb, var(--theme-accent, #557c68) 56%, transparent);
+		border-radius: 0 0.75rem 0.75rem 0;
+		background: hsl(var(--muted) / 0.24);
+		line-height: 1.5;
+	}
+
+	.recent-comparison strong { color: hsl(var(--foreground)); font-size: 0.95rem; }
+	.recent-comparison span,
+	.recent-comparison small { color: hsl(var(--muted-foreground)); }
+	.recent-comparison span { font-size: 0.92rem; }
+	.recent-comparison small { font-size: 0.82rem; line-height: 1.45; }
 
 	.analysis-intro {
 		color: hsl(var(--muted-foreground));

@@ -30,6 +30,12 @@ export type PeriodAnalysis = {
 	observations: string[];
 };
 
+export type RecentComparison = {
+	title: string;
+	description: string;
+	evidence: string;
+};
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 const COMPARISON_DAYS = 14;
 const MIN_SAMPLES_PER_PERIOD = 4;
@@ -72,6 +78,57 @@ function countLabel(count: number): string {
 
 function formatMood(value: number): string {
 	return value.toFixed(1).replace('.', ',');
+}
+
+function meanAbsoluteDeviation(samples: MoodSample[]): number | null {
+	if (samples.length < 2) return null;
+	const mean = average(samples);
+	return samples.reduce((sum, sample) => sum + Math.abs(sample.mood - mean), 0) / samples.length;
+}
+
+/**
+ * En enda lägesbild för den senaste tiden. Den visas bara när två lika långa
+ * tvåveckorsfönster har tillräckligt många faktiska humörregistreringar.
+ */
+export function buildRecentComparison(
+	samples: MoodSample[],
+	now: Date = new Date()
+): RecentComparison | null {
+	const end = dateKey(now);
+	const recentStart = dateKey(new Date(now.getTime() - (COMPARISON_DAYS - 1) * DAY_MS));
+	const previousStart = dateKey(new Date(now.getTime() - (COMPARISON_DAYS * 2 - 1) * DAY_MS));
+	const recent = samples.filter((sample) => sample.date >= recentStart && sample.date <= end);
+	const previous = samples.filter((sample) => sample.date >= previousStart && sample.date < recentStart);
+	if (recent.length < MIN_SAMPLES_PER_PERIOD || previous.length < MIN_SAMPLES_PER_PERIOD) return null;
+
+	const recentAverage = average(recent);
+	const previousAverage = average(previous);
+	const difference = recentAverage - previousAverage;
+	const evidence = `De senaste 14 dagarna bygger på ${recent.length} registreringar med snitt ${formatMood(recentAverage)}, jämfört med ${previous.length} registreringar och snitt ${formatMood(previousAverage)} under de 14 dagarna före.`;
+	if (difference >= MOOD_CHANGE_THRESHOLD || difference <= -MOOD_CHANGE_THRESHOLD) {
+		return {
+			title: difference > 0 ? 'Den senaste perioden ligger högre' : 'Den senaste perioden ligger lägre',
+			description: difference > 0
+				? 'Dina senaste registreringar ligger högre på skalan än perioden före.'
+				: 'Dina senaste registreringar ligger lägre på skalan än perioden före.',
+			evidence
+		};
+	}
+
+	const recentVariation = meanAbsoluteDeviation(recent);
+	const previousVariation = meanAbsoluteDeviation(previous);
+	if (recentVariation === null || previousVariation === null) return null;
+	const variationDifference = recentVariation - previousVariation;
+	if (Math.abs(variationDifference) < 0.6) return null;
+
+	return {
+		title: variationDifference > 0 ? 'Dagarna varierar mer just nu' : 'Dagarna varierar mindre just nu',
+		description:
+		variationDifference > 0
+			? 'Den senaste perioden ligger ungefär på samma nivå som tidigare, men variationen mellan dagarna har ökat.'
+			: 'Den senaste perioden ligger ungefär på samma nivå som tidigare, och variationen mellan dagarna har minskat.',
+		evidence: `${evidence} Den genomsnittliga avvikelsen från periodens snitt är ${formatMood(recentVariation)} nu och ${formatMood(previousVariation)} i föregående period.`
+	};
 }
 
 function buildOverallObservation(samples: MoodSample[]): string {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	buildMoodChangeObservation,
+	buildRecentComparison,
 	buildPeriodAnalysis,
 	buildMoodTimelineView,
 	buildRecurringThemes,
@@ -170,5 +171,40 @@ describe('periodanalys', () => {
 
 		expect(analysis.summary).toContain(label);
 		expect(analysis.observations.length).toBeLessThanOrEqual(maxObservations);
+	});
+});
+
+describe('senaste tiden', () => {
+	it('visar en lägre senaste period först med två jämförbara underlag', () => {
+		const comparison = buildRecentComparison(
+			[
+				sample(1, 4), sample(3, 4), sample(6, 5), sample(10, 4),
+				sample(16, 7), sample(18, 7), sample(21, 8), sample(25, 7)
+			],
+			NOW
+		);
+
+		expect(comparison).toMatchObject({
+			title: 'Den senaste perioden ligger lägre',
+			description: 'Dina senaste registreringar ligger lägre på skalan än perioden före.'
+		});
+		expect(comparison?.evidence).toContain('4 registreringar');
+	});
+
+	it('visar en större variation utan att hitta på en riktning', () => {
+		const comparison = buildRecentComparison(
+			[
+				sample(1, 2), sample(3, 8), sample(6, 3), sample(10, 7),
+				sample(16, 5), sample(18, 5), sample(21, 5), sample(25, 5)
+			],
+			NOW
+		);
+
+		expect(comparison?.title).toBe('Dagarna varierar mer just nu');
+		expect(comparison?.description).toContain('ungefär på samma nivå');
+	});
+
+	it('visar ingen lägesbild när en av perioderna saknar underlag', () => {
+		expect(buildRecentComparison([sample(1, 4), sample(3, 4), sample(16, 7)], NOW)).toBeNull();
 	});
 });

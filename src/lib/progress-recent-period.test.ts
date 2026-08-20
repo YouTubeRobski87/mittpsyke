@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	aggregateSamples,
 	buildChartGeometry,
+	buildHistoryActivity,
 	buildPeriodActivity,
 	buildRecentPeriodView,
 	buildSteadinessObservation,
@@ -220,6 +221,49 @@ describe('periodaktivitet', () => {
 			activeDays: 0,
 			activeWeeks: 0,
 			longestActiveStreak: 0
+		});
+	});
+});
+
+describe('samlad historikaktivitet', () => {
+	it('räknar mående och text som olika datakällor men samma aktiva dag', () => {
+		const activity = buildHistoryActivity(
+			{
+				'2026-08-02': 2,
+				'2026-07-30': 1
+			},
+			[
+				{ date: '2026-08-02', mood: 6 },
+				{ date: '2026-08-01', mood: 5 },
+				{ date: '2026-07-20', mood: 7 }
+			],
+			30,
+			NOW
+		);
+
+		expect(activity).toEqual({
+			moodEntryCount: 3,
+			textEntryCount: 3,
+			moodActiveDays: 3,
+			textActiveDays: 2,
+			activeDays: 4,
+			activeWeeks: 2
+		});
+	});
+
+	it('visar måendeaktivitet även utan sparade texter', () => {
+		const activity = buildHistoryActivity(
+			{},
+			[{ date: '2026-08-02', mood: 6 }, { date: '2026-07-31', mood: 4 }],
+			30,
+			NOW
+		);
+
+		expect(activity).toMatchObject({
+			moodEntryCount: 2,
+			textEntryCount: 0,
+			activeDays: 2,
+			activeWeeks: 1
 		});
 	});
 });

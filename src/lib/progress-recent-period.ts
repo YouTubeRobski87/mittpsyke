@@ -86,6 +86,22 @@ export interface PeriodActivity {
 	longestActiveStreak: number;
 }
 
+/** Samlad aktivitet, med datakällorna tydligt åtskilda. */
+export interface HistoryActivity {
+	/** Måenderegistreringar inom det valda spannet. */
+	moodEntryCount: number;
+	/** Sparade dagbokstexter inom det valda spannet. */
+	textEntryCount: number;
+	/** Dagar med minst en måenderegistrering. */
+	moodActiveDays: number;
+	/** Dagar med minst en sparad text. */
+	textActiveDays: number;
+	/** Unika dagar med antingen måenderegistrering eller sparad text. */
+	activeDays: number;
+	/** Unika kalenderveckor med någon av datakällorna. */
+	activeWeeks: number;
+}
+
 // ── Tröskelvärden ──
 // Samlade här så att villkoren för varje påstående går att läsa på ett ställe.
 
@@ -388,6 +404,44 @@ export function buildPeriodActivity(
 		activeDays: activeDateKeys.length,
 		activeWeeks: countActiveWeeks(heatmapData, periodDays, now),
 		longestActiveStreak
+	};
+}
+
+/**
+ * Räknar när användaren faktiskt har varit aktiv, även om dagen bara innehöll
+ * en måenderegistrering. Text- och måendedata hålls isär i resultatet så att
+ * gränssnittet aldrig behöver kalla en registrering för en dagbokstext.
+ */
+export function buildHistoryActivity(
+	heatmapData: Record<string, number> | null | undefined,
+	moodSamples: MoodSample[],
+	periodDays: PeriodDays,
+	now: Date = new Date()
+): HistoryActivity {
+	const startKey = getPeriodStartKey(periodDays, now);
+	const endKey = toDateKey(now);
+	const textDays = new Set(
+		Object.entries(heatmapData ?? {})
+			.filter(([date, count]) => DATE_PATTERN.test(date) && date >= startKey && date <= endKey && Number.isFinite(count) && count > 0)
+			.map(([date]) => date)
+	);
+	const periodMoods = filterByPeriod(moodSamples, periodDays, now);
+	const moodDays = new Set(periodMoods.map((sample) => sample.date));
+	const activeDays = new Set([...textDays, ...moodDays]);
+	const activeWeeks = new Set(
+		[...activeDays]
+			.map((date) => toLocalDate(date))
+			.filter((date): date is Date => date !== null)
+			.map(getIsoWeekKey)
+	);
+
+	return {
+		moodEntryCount: periodMoods.length,
+		textEntryCount: [...textDays].reduce((sum, date) => sum + (heatmapData?.[date] ?? 0), 0),
+		moodActiveDays: moodDays.size,
+		textActiveDays: textDays.size,
+		activeDays: activeDays.size,
+		activeWeeks: activeWeeks.size
 	};
 }
 
