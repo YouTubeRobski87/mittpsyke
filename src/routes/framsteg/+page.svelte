@@ -58,6 +58,7 @@
 		buildPeriodActivity,
 		toMoodSamples,
 		CHART_FALLBACK_COPY,
+		type ChartPoint,
 		type MoodSample,
 		type PeriodDays,
 		type ThemeLike
@@ -456,6 +457,7 @@
 	let loadedMoodSamples = $state<MoodSample[]>([]);
 	let moodTimelineLoading = $state(false);
 	let selectedPeriod = $state<PeriodDays>(30);
+	let selectedMoodPoint = $state<ChartPoint | null>(null);
 	let historyOpen = $state(false);
 	let heatmapError = $state('');
 	let progressLoading = $state(false);
@@ -521,6 +523,22 @@
 		hasSensitiveDataConsent ? buildRecurringThemes(insightsData?.narrative?.themes) : []
 	);
 	const narrativeInsight = $derived(insightsData?.narrative ?? null);
+	const allMoodAverage = $derived.by(() => {
+		if (moodSamples.length === 0) return null;
+		return moodSamples.reduce((sum, sample) => sum + sample.mood, 0) / moodSamples.length;
+	});
+	const selectedMoodDifference = $derived(
+		selectedMoodPoint && allMoodAverage !== null ? selectedMoodPoint.value - allMoodAverage : null
+	);
+
+	function chooseMoodPoint(point: ChartPoint) {
+		selectedMoodPoint = point;
+	}
+
+	function changePeriod(period: PeriodDays) {
+		selectedPeriod = period;
+		selectedMoodPoint = null;
+	}
 
 	// Hela sektionen "Din senaste tid" byggs av redan hämtad data.
 	const recentPeriod = $derived(
@@ -1017,27 +1035,43 @@
 			<section class="card recent-card" aria-labelledby="mood-history-heading" data-testid="mood-history">
 				<div class="card-header">
 					<div class="icon-badge heat"><TrendingUp size={24} /></div>
-					<h2 id="mood-history-heading">Så har det sett ut</h2>
+					<h2 id="mood-history-heading">Senaste tiden</h2>
 				</div>
-				<p class="recent-intro">Här syns bara de humörvärden du själv har satt i dagboken.</p>
+				<p class="recent-intro">Här syns bara de humörvärden du själv har satt i dagboken. Välj en punkt för att se den i sitt sammanhang.</p>
 				{#if moodTimelineLoading}
 					<p class="reflection-copy">Laddar dina sparade humörvärden.</p>
 				{:else}
 					<RecentPeriodChart
 						points={moodTimeline.points}
 						period={selectedPeriod}
-						onSelectPeriod={(value) => (selectedPeriod = value)}
+						onSelectPeriod={changePeriod}
+						selectedPointKey={selectedMoodPoint?.key}
+						onSelectPoint={chooseMoodPoint}
 						textAlternative={moodTimeline.textAlternative}
 						hasChart={moodTimeline.hasChart}
 						fallbackText={EMPTY_MOOD_COPY}
 					/>
+					{#if moodTimeline.hasChart}
+						<p class="recent-summary">{periodAnalysis.summary}</p>
+					{/if}
+					{#if selectedMoodPoint}
+						<section class="chart-detail" aria-live="polite" aria-label="Detaljer för vald punkt">
+							<strong>{selectedMoodPoint.fullLabel} · {selectedMoodPoint.value.toFixed(1).replace('.', ',')}/10</strong>
+							{#if selectedMoodDifference !== null}
+								<span>
+									{selectedMoodDifference >= 0 ? '+' : ''}{selectedMoodDifference.toFixed(1).replace('.', ',')} jämfört med genomsnittet i tidslinjen.
+								</span>
+							{/if}
+							<small>{selectedMoodPoint.count} {selectedMoodPoint.count === 1 ? 'registrering' : 'registreringar'} ligger bakom punkten.</small>
+						</section>
+					{/if}
 				{/if}
 			</section>
 
 			<section class="card reflection-card analysis-card" aria-labelledby="analysis-heading" data-testid="mood-analysis">
 				<div class="card-header">
 					<div class="icon-badge insight"><Lightbulb size={24} /></div>
-					<h2 id="analysis-heading">Måendeanalys</h2>
+					<h2 id="analysis-heading">Det som börjar synas</h2>
 				</div>
 				<p class="analysis-intro">Här visas bara mönster som går att räkna fram från dina registreringar och sparade texter. De beskriver samband, inte orsaker.</p>
 				{#if !isAnonymous && !hasSensitiveDataConsent}
@@ -1071,7 +1105,7 @@
 						</div>
 					{:else}
 						<div class="analysis-section">
-							<h3>Det som återkommer</h3>
+							<h3>Mönster som återkommer</h3>
 							{#if narrativeInsight.patterns.length > 0}
 								<ul class="evidence-observations">
 									{#each narrativeInsight.patterns as insight}
@@ -1130,11 +1164,11 @@
 			<section class="card garden-presence-card" aria-labelledby="garden-presence-heading">
 				<div class="card-header">
 					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
-					<h2 id="garden-presence-heading">Din plats</h2>
+					<h2 id="garden-presence-heading">Din historik</h2>
 				</div>
-				<p class="reflection-copy">{periodAnalysis.sampleCount} {periodAnalysis.sampleCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} under den valda perioden.</p>
-				<p class="reflection-copy">{periodActivity.entryCount} {periodActivity.entryCount === 1 ? 'sparad text' : 'sparade texter'} under den valda perioden.</p>
-				<p class="reflection-copy">{periodActivity.activeWeeks} {periodActivity.activeWeeks === 1 ? 'aktiv vecka med sparad text' : 'aktiva veckor med sparade texter'} och {periodActivity.activeDays} {periodActivity.activeDays === 1 ? 'skrivdag' : 'skrivdagar'}.</p>
+				<p class="reflection-copy">{moodSamples.length} {moodSamples.length === 1 ? 'måenderegistrering' : 'måenderegistreringar'} i tidslinjen.</p>
+				<p class="reflection-copy">{data.entryCount} {data.entryCount === 1 ? 'dagboksinlägg' : 'dagboksinlägg'}.</p>
+				<p class="reflection-copy">{periodActivity.activeDays} {periodActivity.activeDays === 1 ? 'skrivdag' : 'skrivdagar'} och {periodActivity.activeWeeks} {periodActivity.activeWeeks === 1 ? 'aktiv skrivvecka' : 'aktiva skrivveckor'} under den valda perioden.</p>
 				{#if periodActivity.longestActiveStreak >= 2}
 					<p class="reflection-copy">Längsta sammanhängande följd: {periodActivity.longestActiveStreak} dagar.</p>
 				{/if}
@@ -1491,6 +1525,30 @@
 		max-width: 48rem;
 		line-height: 1.6;
 	}
+
+	.chart-detail {
+		display: grid;
+		gap: 0.3rem;
+		max-width: 42rem;
+		padding: 0.9rem 1rem;
+		border: 1px solid var(--color-dashboard-border);
+		border-radius: 0.75rem;
+		background: hsl(var(--muted) / 0.24);
+		line-height: 1.5;
+	}
+
+	.chart-detail strong {
+		color: hsl(var(--foreground));
+		font-size: 0.95rem;
+	}
+
+	.chart-detail span,
+	.chart-detail small {
+		color: hsl(var(--muted-foreground));
+	}
+
+	.chart-detail span { font-size: 0.92rem; }
+	.chart-detail small { font-size: 0.82rem; }
 
 	.analysis-intro {
 		color: hsl(var(--muted-foreground));

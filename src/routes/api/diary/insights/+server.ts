@@ -83,12 +83,17 @@ export const GET: RequestHandler = async ({ request }) => {
 			.from('diary')
 			.select('created_at, mood, text, tags')
 			.eq('user_id', user.id)
-			.order('created_at', { ascending: true })
+			// Begränsningen ska alltid prioritera det användaren nyligen lagt till.
+			// Analysen sorterar tillbaka raderna kronologiskt innan den jämför
+			// perioder, så den läser aldrig äldre data på bekostnad av nya mönster.
+			.order('created_at', { ascending: false })
 			.limit(INSIGHTS_ROW_LIMIT);
 
 		if (error) return json({ error: error.message }, { status: 500 });
 
-		const rows = (entries ?? []) as DiaryInsightRow[];
+		const rows = ((entries ?? []) as DiaryInsightRow[])
+			.slice()
+			.sort((first, second) => (first.created_at ?? '').localeCompare(second.created_at ?? ''));
 		// Den här vyn visar enbart deterministiska påståenden med synligt
 		// underlag. Ingen språkmodell får formulera eller utvidga personliga
 		// samband från dagbokstexten.

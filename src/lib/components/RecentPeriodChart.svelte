@@ -20,6 +20,8 @@
 		hasChart,
 		fallbackText,
 		labelledBy,
+		selectedPointKey,
+		onSelectPoint,
 		beforeChart,
 		// Dagboken visar 7/30/90, Framsteg 30/90/180. Utan den här propen skulle
 		// dagbokens periodval kräva att PERIOD_OPTIONS ändras, vilket hade lagt
@@ -33,6 +35,9 @@
 		hasChart: boolean;
 		fallbackText: string;
 		labelledBy?: string;
+		/** Vald punkt visas även som en textpanel utanför grafen. */
+		selectedPointKey?: string | null;
+		onSelectPoint?: (point: ChartPoint) => void;
 		options?: { value: PeriodDays; label: string }[];
 		/** Valfritt innehåll mellan periodvalet och kurvan, t.ex. nyckeltal. */
 		beforeChart?: Snippet;
@@ -65,6 +70,16 @@
 		const middle = points[Math.floor((points.length - 1) / 2)];
 		return [points[0].label, middle.label, points[points.length - 1].label];
 	});
+
+	function selectPoint(point: ChartPoint) {
+		onSelectPoint?.(point);
+	}
+
+	function handlePointKeydown(event: KeyboardEvent, point: ChartPoint) {
+		if (event.key !== 'Enter' && event.key !== ' ') return;
+		event.preventDefault();
+		selectPoint(point);
+	}
 </script>
 
 <div class="recent-chart">
@@ -106,7 +121,18 @@
 					<polyline class="mood-line" points={geometry.line} />
 				{/if}
 				{#each geometry.points as point}
-					<circle class="mood-dot" cx={point.x} cy={point.y} r="4" />
+					<circle
+						class="mood-dot"
+						class:is-selected={selectedPointKey === point.key}
+						cx={point.x}
+						cy={point.y}
+						r={selectedPointKey === point.key ? 6 : 4}
+						role="button"
+						tabindex="0"
+						aria-label={`Visa detaljer för ${point.fullLabel}, ${point.value} av 10`}
+						onclick={() => selectPoint(point)}
+						onkeydown={(event) => handlePointKeydown(event, point)}
+					/>
 				{/each}
 			</svg>
 			<div class="x-labels" aria-hidden="true">
@@ -227,6 +253,18 @@
 		fill: var(--theme-accent, #557c68);
 		stroke: hsl(var(--background));
 		stroke-width: 1.5;
+		cursor: pointer;
+	}
+
+	.mood-dot.is-selected {
+		stroke: hsl(var(--foreground));
+		stroke-width: 2;
+	}
+
+	.mood-dot:focus-visible {
+		outline: none;
+		stroke: hsl(var(--foreground));
+		stroke-width: 3;
 	}
 
 	.x-labels {
