@@ -71,6 +71,21 @@
 		buildRecurringThemes,
 		EMPTY_MOOD_COPY
 	} from '$lib/progress-reflection';
+	import {
+		EMPTY_SUPPORT_VIEW,
+		SUPPORT_INTRO_COPY,
+		SUPPORT_LEARNING_COPY,
+		SUPPORT_LEARNING_DETAIL,
+		getExampleTopics,
+		getExamplesForTopic,
+		readSupportPreferences,
+		recordSupportResponse,
+		selectVisibleSuggestions,
+		type SupportPreferences,
+		type SupportResponse,
+		type SupportSuggestion,
+		type SupportView
+	} from '$lib/progress-support';
 	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart, ChevronDown } from 'lucide-svelte';
 
 	let { data } = $props<{ data: PageData }>();
@@ -277,6 +292,9 @@
 		// narrative.themes räknas fram deterministiskt serversidan och följer
 		// redan med i svaret. Vi läser bara av det, ingen extra AI-körning.
 		narrative?: (NarrativeInsight & { themes?: ThemeLike[] }) | null;
+		// Underlaget till "Kanske värt att prova". Byggs deterministiskt av samma
+		// rader som analysen och följer med i samma svar.
+		support?: SupportView | null;
 	}
 
 	interface HeatmapResponse {
@@ -326,7 +344,8 @@
 		worstDay: null,
 		emotionDistribution: {},
 		aiSummary: null,
-		narrative: null
+		narrative: null,
+		support: null
 	};
 
 	function previewDateKey(daysAgo: number) {
@@ -514,7 +533,8 @@
 			worstDay: null,
 			emotionDistribution: {},
 			aiSummary: null,
-			narrative: null
+			narrative: null,
+			support: null
 		}
 	);
 	const moodSamples = $derived(loadedMoodSamples);
@@ -534,6 +554,55 @@
 	const selectedMoodDifference = $derived(
 		selectedMoodPoint && allMoodAverage !== null ? selectedMoodPoint.value - allMoodAverage : null
 	);
+
+	// ── Kanske värt att prova ──
+	// Svaren är en preferenssignal som ligger lokalt hos användaren. De går
+	// aldrig in i dagboken eller måendehistoriken.
+	let supportPreferences = $state<SupportPreferences>({});
+	let supportRotation = $state(0);
+	let supportResponses = $state<Record<string, SupportResponse>>({});
+	let supportExamplesOpen = $state(false);
+	let supportSelectedTopic = $state<string | null>(null);
+
+	const supportView = $derived(insightsData?.support ?? EMPTY_SUPPORT_VIEW);
+	const supportSuggestions = $derived(
+		selectVisibleSuggestions(supportView, supportPreferences, { rotation: supportRotation })
+	);
+	const supportExampleTopics = $derived(getExampleTopics(supportView));
+	const supportExamples = $derived(getExamplesForTopic(supportView, supportSelectedTopic));
+	// Vid akut risk visas ingenting. Sektionen är vardagligt reflektionsstöd och
+	// ska aldrig försöka möta ett akut läge med en promenad eller en övning.
+	// Ett misslyckat anrop får inte läsas som att underlaget saknas, så kortet
+	// döljs hellre än att visa "vi lär fortfarande känna dina mönster".
+	const showSupportCard = $derived(
+		!supportView.withheldForSafety && !insightsError && (isAnonymous || hasSensitiveDataConsent)
+	);
+
+	function supportStorage() {
+		return browser ? window.localStorage : null;
+	}
+
+	function respondToSuggestion(suggestion: SupportSuggestion, response: SupportResponse) {
+		supportPreferences = recordSupportResponse(supportStorage(), suggestion.kind, response);
+		supportResponses = { ...supportResponses, [suggestion.id]: response };
+	}
+
+	function showAnotherSuggestion() {
+		supportRotation += 1;
+		supportResponses = {};
+	}
+
+	function chooseSupportTopic(topic: string) {
+		supportSelectedTopic = topic;
+		supportExamplesOpen = true;
+	}
+
+	function toggleSupportExamples() {
+		supportExamplesOpen = !supportExamplesOpen;
+		if (supportExamplesOpen && !supportSelectedTopic) {
+			supportSelectedTopic = supportExampleTopics[0] ?? null;
+		}
+	}
 
 	function chooseMoodPoint(point: ChartPoint) {
 		selectedMoodPoint = point;
@@ -771,6 +840,7 @@
 	onMount(() => {
 		// Enbart om vyn öppnades och om besökaren var inloggad. Ingen dagboksdata.
 		trackProgressViewOpened({ signed_in: !isAnonymous });
+		supportPreferences = readSupportPreferences(supportStorage());
 
 		const updateCompanionTimeOfDay = () => {
 			const now = new Date();
@@ -1171,6 +1241,101 @@
 					<p class="reflection-copy">Det finns ännu inte tillräckligt med data för en personlig analys.</p>
 				{/if}
 			</section>
+
+			{#if showSupportCard}
+				<section class="card reflection-card support-card" aria-labelledby="support-heading" data-testid="support-suggestions">
+					<div class="card-header">
+						<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
+						<h2 id="support-heading">Kanske värt att prova</h2>
+					</div>
+					<p class="analysis-intro">{SUPPORT_INTRO_COPY}</p>
+
+					{#if insightsLoading}
+						<p class="reflection-copy">Letar efter något som har täckning i din egen historik.</p>
+					{:else if supportView.learning || supportSuggestions.length === 0}
+						<p class="reflection-copy">{SUPPORT_LEARNING_COPY}</p>
+						<p class="reflection-copy">{SUPPORT_LEARNING_DETAIL}</p>
+					{:else}
+						<ul class="support-suggestions">
+							{#each supportSuggestions as suggestion (suggestion.id)}
+								<li class="support-suggestion">
+									<strong>{suggestion.title}</strong>
+									<span>{suggestion.body}</span>
+									<small>{suggestion.evidence}</small>
+									{#if supportResponses[suggestion.id]}
+										<p class="support-receipt" aria-live="polite">
+											{supportResponses[suggestion.id] === 'fits'
+												? 'Noterat som något som kan passa. Det påverkar inte din måendehistorik.'
+												: 'Okej. Det här får vila resten av dagen.'}
+										</p>
+									{:else}
+										<div class="support-actions">
+											<button type="button" class="support-action" onclick={() => respondToSuggestion(suggestion, 'fits')}>
+												Det här passar idag
+											</button>
+											<button type="button" class="support-action" onclick={() => respondToSuggestion(suggestion, 'not-today')}>
+												Inte idag
+											</button>
+										</div>
+									{/if}
+								</li>
+							{/each}
+						</ul>
+
+						{#if supportView.suggestions.length > supportSuggestions.length}
+							<button type="button" class="support-link" onclick={showAnotherSuggestion}>Visa något annat</button>
+						{/if}
+
+						{#if supportView.breathingRoom.length > 0}
+							<div class="analysis-section">
+								<h3>Det som verkar ge lite andrum</h3>
+								<ul class="support-topics">
+									{#each supportView.breathingRoom as topic}
+										<li>
+											<button
+												type="button"
+												class="support-chip"
+												aria-pressed={supportExamplesOpen && supportSelectedTopic === topic}
+												onclick={() => chooseSupportTopic(topic)}
+											>
+												{topic.toLocaleLowerCase('sv-SE')}
+											</button>
+										</li>
+									{/each}
+								</ul>
+							</div>
+						{/if}
+
+						{#if supportExampleTopics.length > 0}
+							<button
+								type="button"
+								class="support-link"
+								aria-expanded={supportExamplesOpen}
+								onclick={toggleSupportExamples}
+							>
+								{supportExamplesOpen ? 'Dölj det som hjälpt tidigare' : 'Visa vad som hjälpt tidigare'}
+							</button>
+							{#if supportExamplesOpen}
+								{#if supportExamples.length > 0}
+									<ul class="evidence-observations support-examples">
+										{#each supportExamples as example (`${example.topicLabel}-${example.date}-${example.summary}`)}
+											<li>
+												<strong>{example.date}</strong>
+												{#if example.quote}
+													<span>”{example.quote}”</span>
+												{/if}
+												<small>{example.summary}</small>
+											</li>
+										{/each}
+									</ul>
+								{:else}
+									<p class="reflection-copy">Det finns inga sparade rader att visa för det temat än.</p>
+								{/if}
+							{/if}
+						{/if}
+					{/if}
+				</section>
+			{/if}
 
 			<section class="card garden-presence-card" aria-labelledby="garden-presence-heading">
 				<div class="card-header">
@@ -1643,6 +1808,124 @@
 	.evidence-observations small {
 		font-size: 0.82rem;
 		line-height: 1.45;
+	}
+
+	/* Kortet ska läsas som en del av landskapet, inte som en informationsruta. */
+	.support-card {
+		gap: 1rem;
+	}
+
+	.support-suggestions {
+		display: grid;
+		gap: 0.65rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.support-suggestion {
+		display: grid;
+		gap: 0.4rem;
+		max-width: 46rem;
+		padding: 1rem 1.1rem;
+		border: 1px solid color-mix(in srgb, var(--theme-accent, #557c68) 22%, transparent);
+		border-radius: 0.9rem;
+		background: hsl(var(--muted) / 0.2);
+		line-height: 1.55;
+	}
+
+	.support-suggestion strong {
+		color: hsl(var(--foreground));
+		font-size: 1rem;
+		font-weight: 600;
+	}
+
+	.support-suggestion span {
+		color: hsl(var(--muted-foreground));
+		font-size: 0.94rem;
+	}
+
+	.support-suggestion small {
+		color: hsl(var(--muted-foreground) / 0.85);
+		font-size: 0.8rem;
+		line-height: 1.45;
+	}
+
+	.support-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 0.25rem;
+	}
+
+	.support-action {
+		padding: 0.42rem 0.85rem;
+		border: 1px solid var(--color-dashboard-border);
+		border-radius: 999px;
+		background: transparent;
+		color: hsl(var(--foreground));
+		font-size: 0.86rem;
+		cursor: pointer;
+		transition: background 160ms ease, border-color 160ms ease;
+	}
+
+	.support-action:hover,
+	.support-action:focus-visible {
+		border-color: color-mix(in srgb, var(--theme-accent, #557c68) 52%, transparent);
+		background: hsl(var(--muted) / 0.4);
+	}
+
+	.support-receipt {
+		margin: 0.25rem 0 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.85rem;
+	}
+
+	.support-link {
+		justify-self: start;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.88rem;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		cursor: pointer;
+	}
+
+	.support-link:hover,
+	.support-link:focus-visible {
+		color: hsl(var(--foreground));
+	}
+
+	.support-topics {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.support-chip {
+		padding: 0.34rem 0.8rem;
+		border: 1px solid var(--color-dashboard-border);
+		border-radius: 999px;
+		background: transparent;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.85rem;
+		cursor: pointer;
+		transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+	}
+
+	.support-chip[aria-pressed='true'] {
+		border-color: color-mix(in srgb, var(--theme-accent, #557c68) 52%, transparent);
+		background: hsl(var(--muted) / 0.42);
+		color: hsl(var(--foreground));
+	}
+
+	.support-examples span {
+		font-style: italic;
 	}
 
 	.framsteg-main {

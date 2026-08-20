@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { buildDiaryNarrativeInsight, type DiaryInsightRow } from '$lib/server/diary-insight-analysis';
+import { buildSupportView } from '$lib/server/diary-support-suggestions';
 import { createClient } from '@supabase/supabase-js';
 import { env as publicEnv } from '$env/dynamic/public';
 import { env as privateEnv } from '$env/dynamic/private';
@@ -98,6 +99,9 @@ export const GET: RequestHandler = async ({ request }) => {
 		// underlag. Ingen språkmodell får formulera eller utvidga personliga
 		// samband från dagbokstexten.
 		const narrative = await buildDiaryNarrativeInsight(rows, { generateWithAi: false });
+		// Förslagen i "Kanske värt att prova" byggs ur samma rader och samma
+		// tröskelvärden som analysen ovan. Ingen extra fråga, ingen AI.
+		const support = buildSupportView(rows);
 		const { bestDay, worstDay } = getWeekdayExtremes(rows);
 
 		const legacyInsights = [...narrative.overview, ...narrative.patterns].slice(0, 6).map((item) => ({
@@ -113,7 +117,8 @@ export const GET: RequestHandler = async ({ request }) => {
 			worstDay,
 			emotionDistribution: {},
 			aiSummary: narrative.storyParagraphs[0] ?? null,
-			narrative
+			narrative,
+			support
 		});
 	} catch (err) {
 		console.error('Insights error:', err);

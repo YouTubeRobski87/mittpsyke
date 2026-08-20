@@ -86,9 +86,9 @@ const MIN_TIMELINE_ENTRIES = 18;
 const DEEP_ANALYSIS_ENTRIES = 100;
 const LONGITUDINAL_ENTRIES = 250;
 const DAY_MS = 24 * 60 * 60 * 1000;
-const MIN_ASSOCIATION_ENTRIES = 3;
+export const MIN_ASSOCIATION_ENTRIES = 3;
 const MIN_ASSOCIATION_COMPARISON_ENTRIES = 3;
-const MOOD_ASSOCIATION_THRESHOLD = 0.75;
+export const MOOD_ASSOCIATION_THRESHOLD = 0.75;
 
 export const TOPICS: TopicDefinition[] = [
 	{ label: 'Barnen', keywords: ['barn', 'son', 'dotter', 'familj', 'förälder', 'föräldra'] },
@@ -311,6 +311,52 @@ function formatMood(value: number) {
 	return value.toFixed(1).replace('.', ',');
 }
 
+export type TopicMoodAssociation = {
+	label: string;
+	/** Antal texter med humörvärde där temat nämns. */
+	matchingCount: number;
+	/** Antal övriga texter med humörvärde, dvs jämförelsegruppen. */
+	otherCount: number;
+	totalCount: number;
+	matchingAverage: number;
+	otherAverage: number;
+	/** Positiv skillnad = temat nämns oftare i texter med högre humörvärde. */
+	difference: number;
+	evidence: string;
+};
+
+/**
+ * En enda källa för sambanden mellan tema och humör. Både "Vad verkar hjälpa?"
+ * och förslagen i "Kanske värt att prova" läser härifrån, så ett förslag kan
+ * aldrig vila på ett svagare underlag än observationen det hör ihop med.
+ */
+export function buildTopicMoodAssociations(entries: PreparedEntry[]): TopicMoodAssociation[] {
+	const associations: TopicMoodAssociation[] = [];
+
+	for (const topic of TOPICS) {
+		const matching = entries.filter((entry) => entry.topicHits.has(topic.label) && entry.mood !== null);
+		const other = entries.filter((entry) => !entry.topicHits.has(topic.label) && entry.mood !== null);
+		if (matching.length < MIN_ASSOCIATION_ENTRIES || other.length < MIN_ASSOCIATION_COMPARISON_ENTRIES) continue;
+
+		const matchingAverage = average(matching.map((entry) => entry.mood as number));
+		const otherAverage = average(other.map((entry) => entry.mood as number));
+		if (matchingAverage === null || otherAverage === null) continue;
+
+		associations.push({
+			label: topic.label,
+			matchingCount: matching.length,
+			otherCount: other.length,
+			totalCount: entries.length,
+			matchingAverage,
+			otherAverage,
+			difference: matchingAverage - otherAverage,
+			evidence: `${matching.length} av ${entries.length} texter nämner ${topic.label.toLowerCase()}, med humörsnitt ${formatMood(matchingAverage)} jämfört med ${formatMood(otherAverage)} i ${other.length} övriga texter.`
+		});
+	}
+
+	return associations;
+}
+
 /**
  * Hittar endast samband som har en jämförelsegrupp. Det här är medvetet en
  * snävare analys än en ordmolnslista: ett tema behöver förekomma minst tre
@@ -323,39 +369,31 @@ function buildMoodAssociationGroups(entries: PreparedEntry[]): MoodAssociationGr
 	const neutral: Array<EvidenceClaim & { count: number }> = [];
 	const topics = TOPICS.filter((topic) => topic.label !== 'MittPsyke');
 
-	for (const topic of topics) {
-		const matching = entries.filter((entry) => entry.topicHits.has(topic.label) && entry.mood !== null);
-		const other = entries.filter((entry) => !entry.topicHits.has(topic.label) && entry.mood !== null);
-		if (matching.length < MIN_ASSOCIATION_ENTRIES || other.length < MIN_ASSOCIATION_COMPARISON_ENTRIES) continue;
-
-		const matchingAverage = average(matching.map((entry) => entry.mood as number));
-		const otherAverage = average(other.map((entry) => entry.mood as number));
-		if (matchingAverage === null || otherAverage === null) continue;
-
-		const difference = matchingAverage - otherAverage;
-		const evidence = `${matching.length} av ${entries.length} texter nämner ${topic.label.toLowerCase()}, med humörsnitt ${formatMood(matchingAverage)} jämfört med ${formatMood(otherAverage)} i ${other.length} övriga texter.`;
+	for (const association of buildTopicMoodAssociations(entries)) {
+		const { label, difference, evidence, matchingCount } = association;
+		if (label === 'MittPsyke') continue;
 		if (difference >= MOOD_ASSOCIATION_THRESHOLD) {
 			helpful.push({
-				title: `${topic.label} förekommer oftare under ljusare dagar`,
-				description: `När ${topic.label.toLowerCase()} nämns ligger humörvärdet oftare högre än i dina övriga texter. Det visar ett samband i underlaget, inte vad som orsakar det.`,
+				title: `${label} förekommer oftare under ljusare dagar`,
+				description: `När ${label.toLowerCase()} nämns ligger humörvärdet oftare högre än i dina övriga texter. Det visar ett samband i underlaget, inte vad som orsakar det.`,
 				evidence,
 				difference
 			});
 		}
 		if (difference <= -MOOD_ASSOCIATION_THRESHOLD) {
 			challenging.push({
-				title: `${topic.label} sammanfaller oftare med tyngre dagar`,
-				description: `När ${topic.label.toLowerCase()} nämns ligger humörvärdet oftare lägre än i dina övriga texter. Det visar ett samband i underlaget, inte vad som orsakar det.`,
+				title: `${label} sammanfaller oftare med tyngre dagar`,
+				description: `När ${label.toLowerCase()} nämns ligger humörvärdet oftare lägre än i dina övriga texter. Det visar ett samband i underlaget, inte vad som orsakar det.`,
 				evidence,
 				difference: Math.abs(difference)
 			});
 		}
-		if (matching.length >= 4 && Math.abs(difference) < 0.4) {
+		if (matchingCount >= 4 && Math.abs(difference) < 0.4) {
 			neutral.push({
-				title: `${topic.label} återkommer i både lättare och tyngre perioder`,
-				description: `När ${topic.label.toLowerCase()} nämns ligger humörvärdet ungefär på samma nivå som i dina övriga texter. Det går därför inte att se ett enkelt samband här.`,
+				title: `${label} återkommer i både lättare och tyngre perioder`,
+				description: `När ${label.toLowerCase()} nämns ligger humörvärdet ungefär på samma nivå som i dina övriga texter. Det går därför inte att se ett enkelt samband här.`,
 				evidence,
-				count: matching.length
+				count: matchingCount
 			});
 		}
 	}
