@@ -9,7 +9,6 @@
 	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
-	import Campfire from '$lib/components/world/Campfire.svelte';
 	import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
 	import CompanionVisitor from '$lib/components/world/CompanionVisitor.svelte';
 	import { page } from '$app/stores';
@@ -963,7 +962,6 @@
 				/>
 				<span class="companion-foreground-edge" aria-hidden="true"></span>
 				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
-				<Campfire class="progress-campfire" />
 				<CompanionFriend class="progress-companion-friend" companionId={sceneCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
@@ -1501,11 +1499,10 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		/* Beskär från botten, inte symmetriskt. Himlen bär dygnskänslan - måne och
-		   stjärnor på kvällen, dimslöjor på morgonen, cumulus på dagen - medan
-		   mitten ser nästan likadan ut i alla fyra bilderna. 42% behåller ändå
-		   personen vid brasan i nederkant. */
-		object-position: 50% 42%;
+		/* Dygnsbilderna innehåller redan person och eld i sin egen markkontakt.
+		   Den breda desktop-rutan måste därför beskäras längre ned än mitten för att
+		   få med den sammanhängande förgrunden utan att kapa personen vid bålen. */
+		object-position: 50% 72%;
 		display: block;
 		transform: scale(1.018);
 		animation: companionWorldDrift 18s ease-in-out infinite alternate;
@@ -1831,7 +1828,7 @@
 	}
 
 	.companion-world-scene {
-		object-position: 50% 42%;
+		object-position: 50% 72%;
 	}
 
 	.companion-copy {

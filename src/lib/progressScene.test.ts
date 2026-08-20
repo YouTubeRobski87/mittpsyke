@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
 	PROGRESS_SCENE_BANDS,
@@ -78,6 +78,18 @@ describe('varje spann pekar på rätt befintlig assetfil', () => {
 	it('ger varje spann en egen bilduppsättning', () => {
 		const all = PROGRESS_SCENE_BANDS.map((band) => PROGRESS_SCENE_SOURCES[band].srcset);
 		expect(new Set(all).size).toBe(PROGRESS_SCENE_BANDS.length);
+	});
+});
+
+describe('Framstegs fullständiga dygnsscener', () => {
+	it('renderar ingen äldre separat person- eller eldgrupp ovanpå scenbilden', () => {
+		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
+
+		// Varje dygnsasset innehåller redan personen, elden och deras markkontakt.
+		// Campfire är en separat frilagd grupp och får därför inte monteras i just
+		// Framsteg-heron, oavsett vilket dygnsspann som väljs.
+		expect(route).not.toContain("import Campfire from '$lib/components/world/Campfire.svelte'");
+		expect(route).not.toContain('<Campfire');
 	});
 });
 
