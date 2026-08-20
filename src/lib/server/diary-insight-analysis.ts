@@ -303,6 +303,7 @@ type MoodAssociationGroups = {
 	helpful: EvidenceClaim[];
 	challenging: EvidenceClaim[];
 	combinations: EvidenceClaim[];
+	neutral: EvidenceClaim[];
 };
 
 function formatMood(value: number) {
@@ -318,6 +319,7 @@ function buildMoodAssociationGroups(entries: PreparedEntry[]): MoodAssociationGr
 	const helpful: Array<EvidenceClaim & { difference: number }> = [];
 	const challenging: Array<EvidenceClaim & { difference: number }> = [];
 	const combinations: Array<EvidenceClaim & { difference: number }> = [];
+	const neutral: Array<EvidenceClaim & { count: number }> = [];
 	const topics = TOPICS.filter((topic) => topic.label !== 'MittPsyke');
 
 	for (const topic of topics) {
@@ -345,6 +347,14 @@ function buildMoodAssociationGroups(entries: PreparedEntry[]): MoodAssociationGr
 				description: `När ${topic.label.toLowerCase()} nämns ligger humörvärdet oftare lägre än i dina övriga texter. Det visar ett samband i underlaget, inte vad som orsakar det.`,
 				evidence,
 				difference: Math.abs(difference)
+			});
+		}
+		if (matching.length >= 4 && Math.abs(difference) < 0.4) {
+			neutral.push({
+				title: `${topic.label} återkommer i både lättare och tyngre perioder`,
+				description: `När ${topic.label.toLowerCase()} nämns ligger humörvärdet ungefär på samma nivå som i dina övriga texter. Det går därför inte att se ett enkelt samband här.`,
+				evidence,
+				count: matching.length
 			});
 		}
 	}
@@ -381,7 +391,8 @@ function buildMoodAssociationGroups(entries: PreparedEntry[]): MoodAssociationGr
 	return {
 		helpful: helpful.sort(byStrength).slice(0, 3),
 		challenging: challenging.sort(byStrength).slice(0, 3),
-		combinations: combinations.sort(byStrength).slice(0, 2)
+		combinations: combinations.sort(byStrength).slice(0, 2),
+		neutral: neutral.sort((a, b) => b.count - a.count).slice(0, 1)
 	};
 }
 
@@ -454,7 +465,8 @@ function buildPatterns(entries: PreparedEntry[]): EvidenceClaim[] {
 		});
 	}
 
-	claims.push(...buildMoodAssociationGroups(entries).combinations);
+	const associations = buildMoodAssociationGroups(entries);
+	claims.push(...associations.combinations, ...associations.neutral);
 
 	return claims.slice(0, 5);
 }
@@ -463,8 +475,45 @@ function buildStrengths(entries: PreparedEntry[]): EvidenceClaim[] {
 	return buildMoodAssociationGroups(entries).helpful;
 }
 
+function buildMultipleThemeChallenge(entries: PreparedEntry[]): EvidenceClaim | null {
+	const moodEntries = entries.filter((entry) => entry.mood !== null);
+	const matching = moodEntries.filter((entry) => entry.topicHits.size >= 3);
+	const other = moodEntries.filter((entry) => entry.topicHits.size < 3);
+	if (matching.length < MIN_ASSOCIATION_ENTRIES || other.length < MIN_ASSOCIATION_COMPARISON_ENTRIES) {
+		return null;
+	}
+
+	const matchingAverage = average(matching.map((entry) => entry.mood as number));
+	const otherAverage = average(other.map((entry) => entry.mood as number));
+	if (matchingAverage === null || otherAverage === null || otherAverage - matchingAverage < MOOD_ASSOCIATION_THRESHOLD) {
+		return null;
+	}
+
+	const themeCounts = new Map<string, number>();
+	for (const entry of matching) {
+		for (const label of entry.topicHits.keys()) {
+			themeCounts.set(label, (themeCounts.get(label) ?? 0) + 1);
+		}
+	}
+	const themes = [...themeCounts.entries()]
+		.sort(([, firstCount], [, secondCount]) => secondCount - firstCount)
+		.slice(0, 3)
+		.map(([label]) => label.toLowerCase());
+	const themeList = themes.length > 0 ? `, bland annat ${themes.join(', ')}` : '';
+
+	return {
+		title: 'Flera teman samtidigt sammanfaller oftare med tyngre dagar',
+		description: `I de här registreringarna återkommer flera teman samtidigt${themeList}. Det visar ett mönster i underlaget, inte vad som ligger bakom det.`,
+		evidence: `${matching.length} registreringar med minst tre teman har humörsnitt ${formatMood(matchingAverage)}, jämfört med ${formatMood(otherAverage)} i ${other.length} övriga registreringar.`
+	};
+}
+
 function buildChallenges(entries: PreparedEntry[]): EvidenceClaim[] {
-	return buildMoodAssociationGroups(entries).challenging;
+	const multipleThemeChallenge = buildMultipleThemeChallenge(entries);
+	return [
+		...(multipleThemeChallenge ? [multipleThemeChallenge] : []),
+		...buildMoodAssociationGroups(entries).challenging
+	].slice(0, 3);
 }
 
 function summarizeSegment(entries: PreparedEntry[]) {

@@ -1120,7 +1120,7 @@
 							{#if narrativeInsight.patterns.length > 0}
 								<ul class="evidence-observations">
 									{#each narrativeInsight.patterns as insight}
-										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>{insight.evidence}</small></li>
+										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>Underlag · {insight.evidence}</small></li>
 									{/each}
 								</ul>
 							{:else}
@@ -1133,7 +1133,7 @@
 							{#if narrativeInsight.strengths.length > 0}
 								<ul class="evidence-observations">
 									{#each narrativeInsight.strengths as insight}
-										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>{insight.evidence}</small></li>
+										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>Underlag · {insight.evidence}</small></li>
 									{/each}
 								</ul>
 							{:else}
@@ -1146,7 +1146,7 @@
 							{#if narrativeInsight.challenges.length > 0}
 								<ul class="evidence-observations">
 									{#each narrativeInsight.challenges as insight}
-										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>{insight.evidence}</small></li>
+										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>Underlag · {insight.evidence}</small></li>
 									{/each}
 								</ul>
 							{:else}
@@ -1159,7 +1159,7 @@
 							{#if narrativeInsight.timeline.observations.length > 0}
 								<ul class="evidence-observations">
 									{#each narrativeInsight.timeline.observations as insight}
-										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>{insight.evidence}</small></li>
+										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>Underlag · {insight.evidence}</small></li>
 									{/each}
 								</ul>
 							{:else}

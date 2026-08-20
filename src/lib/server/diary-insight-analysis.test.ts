@@ -82,6 +82,28 @@ describe('dagboksanalysens datagrund', () => {
 		expect(insight.challenges.some((claim) => claim.title.includes('Ekonomi'))).toBe(false);
 	});
 
+	it('visar flera samtidiga teman först när de sammanfaller med lägre humörvärden', async () => {
+		const rows: DiaryInsightRow[] = [
+			...Array.from({ length: 4 }, (_, index) => ({
+				created_at: `2026-05-${String(index + 1).padStart(2, '0')}T12:00:00.000Z`,
+				mood: 3,
+				text: 'Stress, sömn och ekonomi tar mycket plats i dag.'
+			})),
+			...Array.from({ length: 8 }, (_, index) => ({
+				created_at: `2026-05-${String(index + 5).padStart(2, '0')}T12:00:00.000Z`,
+				mood: 7,
+				text: 'Jag skrev några rader om dagen.'
+			}))
+		];
+
+		const insight = await buildDiaryNarrativeInsight(rows, { generateWithAi: false });
+
+		expect(insight.challenges[0]).toMatchObject({
+			title: 'Flera teman samtidigt sammanfaller oftare med tyngre dagar'
+		});
+		expect(insight.challenges[0]?.evidence).toContain('4 registreringar med minst tre teman');
+	});
+
 	it('skiljer måenderegistreringar från sparade texter i datagrunden', async () => {
 		const rows: DiaryInsightRow[] = [
 			{ created_at: '2026-04-01T12:00:00.000Z', mood: 5, text: null },
