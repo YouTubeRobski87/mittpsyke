@@ -527,8 +527,9 @@ export const AUSTRALISK_SHEPHERD_COMPANION_POSES = [
 ] satisfies CompanionPose[];
 
 // Björnen använder samma värld som räven, men har ett eget markankare på
-// Framsteg: strax till vänster om den inbakade personen, på strandremsan.
-// Det håller den nära som sällskap utan att någonsin hamna ovanpå rygg eller axel.
+// Framsteg: i den fria strandremsan framför och till vänster om personen.
+// Den avsatta mellanrutan håller siluetterna tydligt isär, utan att björnen
+// lämnar samma stilla ögonblick vid strandkanten.
 // Värdena hålls per vy så att nya björnposer kan läggas till utan att påverka
 // rävens scenlogik.
 export const BEAR_SCENE_PLACEMENTS = {
@@ -537,18 +538,18 @@ export const BEAR_SCENE_PLACEMENTS = {
 		// Desktopscenen beskär bort en stor del av strandens nederkant. Ett
 		// lägre ankare här placerar Björn på gruset intill personen, inte i
 		// vattenytan som ligger direkt ovanför stranden i den beskärningen.
-		scale: 1.18,
+		scale: 1.16,
 		bottom: '8.5%',
-		right: '36%',
-		groundLeft: '61.4%',
+		right: '44.5%',
+		groundLeft: '50.5%',
 		groundTop: '91.5%',
 		compact: {
 			// På mobil ryms nästan hela originalbilden. Där ligger samma
 			// strandremsa högre i rutan, så den behöver ett eget markankare.
-			scale: 1.08,
+			scale: 1.06,
 			bottom: '16%',
-			right: '36%',
-			groundLeft: '61.4%',
+			right: '44.5%',
+			groundLeft: '50.5%',
 			groundTop: '84%'
 		}
 	}

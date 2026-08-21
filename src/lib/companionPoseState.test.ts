@@ -331,14 +331,14 @@ describe('vargens ankare på Framsteg', () => {
 });
 
 describe('björnens ankare på Framsteg', () => {
-	it('placerar björnen på marken till vänster om personen', () => {
+	it('placerar björnen på en fri markyta framför och till vänster om personen', () => {
 		expect(BEAR_SCENE_PLACEMENTS.progress).toMatchObject({
-			scale: 1.18,
-			right: '36%',
+			scale: 1.16,
+			right: '44.5%',
 			bottom: '8.5%',
-			groundLeft: '61.4%',
+			groundLeft: '50.5%',
 			groundTop: '91.5%',
-			compact: { scale: 1.08, right: '36%', bottom: '16%', groundLeft: '61.4%', groundTop: '84%' }
+			compact: { scale: 1.06, right: '44.5%', bottom: '16%', groundLeft: '50.5%', groundTop: '84%' }
 		});
 	});
 });
