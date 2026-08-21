@@ -174,6 +174,30 @@
 		filter: blur(0.4px);
 	}
 
+	/* Några få ljusa punkter i gräset. Samma slag av småblommor som redan finns
+	   i scenens förgrund, bara en aning fler. */
+	.world-mark-first-bloom {
+		--mark-opacity: 0.4;
+		background:
+			radial-gradient(circle at 18% 62%, rgba(246, 238, 214, 0.82) 0 1.1px, transparent 2.6px),
+			radial-gradient(circle at 44% 34%, rgba(226, 214, 236, 0.7) 0 1px, transparent 2.4px),
+			radial-gradient(circle at 68% 70%, rgba(246, 240, 220, 0.66) 0 1px, transparent 2.4px),
+			radial-gradient(circle at 88% 44%, rgba(232, 222, 240, 0.6) 0 0.9px, transparent 2.2px);
+		filter: blur(0.3px);
+	}
+
+	/* En ring av stenar runt elden. Låg, varm och dov - den ska läsas som mark
+	   intill lågan, aldrig som ytterligare en ljuskälla. */
+	.world-mark-hearth-stones {
+		--mark-opacity: 0.34;
+		background:
+			radial-gradient(ellipse at 16% 66%, rgba(126, 120, 112, 0.7) 0 16%, transparent 22%),
+			radial-gradient(ellipse at 40% 78%, rgba(146, 136, 124, 0.62) 0 14%, transparent 20%),
+			radial-gradient(ellipse at 66% 68%, rgba(118, 112, 106, 0.66) 0 15%, transparent 21%),
+			radial-gradient(ellipse at 88% 80%, rgba(138, 128, 118, 0.56) 0 13%, transparent 19%);
+		filter: blur(0.9px);
+	}
+
 	.world-mark-mushrooms {
 		--mark-opacity: 0.42;
 		background:

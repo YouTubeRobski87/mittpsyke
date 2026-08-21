@@ -192,6 +192,8 @@ export type WorldMarkId =
 	| 'still-birds'
 	| 'old-tree'
 	| 'night-glow'
+	| 'first-bloom'
+	| 'hearth-stones'
 	| 'companion';
 
 export interface WorldMark {
@@ -218,6 +220,8 @@ export interface WorldMark {
 	 */
 	narrowX?: number;
 	narrowY?: number;
+	narrowWidth?: number;
+	narrowHeight?: number;
 	/**
 	 * Sant för spår som redan finns i scenen och bara behöver en träffyta.
 	 * Spårlagret ritar då ingen egen form.
@@ -250,6 +254,13 @@ const WORLD_MARK_DEFINITIONS: readonly WorldMarkDefinition[] = [
 		width: 13,
 		height: 24,
 		depth: 0.92,
+		// Den smala beskärningen visar mycket mer himmel, och den vänstra
+		// trädridån krymper bort. Träddetaljen flyttas där till skogen på
+		// höger sida, som fortfarande fyller bildkanten.
+		narrowX: 88,
+		narrowY: 32,
+		narrowWidth: 11,
+		narrowHeight: 16,
 		appears: (presence) => presence.activeMonths >= 3 || presence.accountAgeDays >= 120
 	},
 	{
@@ -281,26 +292,50 @@ const WORLD_MARK_DEFINITIONS: readonly WorldMarkDefinition[] = [
 		id: 'lantern',
 		label: 'Lyktan',
 		revealText: 'Den här dök upp någon gång längs vägen.',
-		x: 4,
-		y: 51,
+		x: 31,
+		y: 37,
 		width: 2.2,
-		height: 5,
-		depth: 0.7,
-		narrowX: 88,
-		narrowY: 48,
+		height: 4.6,
+		depth: 0.62,
+		narrowX: 84,
+		narrowY: 52,
 		appears: (presence) => presence.activeWeeks >= 1
 	},
 	{
 		id: 'resting-seat',
 		label: 'Sittplatsen',
 		revealText: 'Någon har suttit här och tittat ut över vattnet.',
-		x: 12,
-		y: 56,
+		x: 76,
+		y: 51,
 		width: 7.5,
 		height: 3.6,
-		depth: 0.72,
+		depth: 0.68,
 		hideOnNarrow: true,
 		appears: (presence) => presence.reflectionCount >= 3 || presence.entryCount >= 8
+	},
+	{
+		id: 'first-bloom',
+		label: 'Blommorna',
+		revealText: 'De små sakerna kom först.',
+		x: 82,
+		y: 68,
+		width: 4.5,
+		height: 2.4,
+		depth: 0.75,
+		hideOnNarrow: true,
+		appears: (presence) => presence.reflectionCount >= 1
+	},
+	{
+		id: 'hearth-stones',
+		label: 'Stenarna vid elden',
+		revealText: 'Någon har lagt dem i en ring, en och en.',
+		x: 88,
+		y: 88,
+		width: 9,
+		height: 6,
+		depth: 0.9,
+		hideOnNarrow: true,
+		appears: (presence) => presence.registrationCount >= 100
 	},
 	{
 		id: 'mushrooms',
@@ -392,7 +427,9 @@ export function getWorldMarks(
 		return {
 			...mark,
 			x: mark.narrowX ?? mark.x,
-			y: mark.narrowY ?? mark.y
+			y: mark.narrowY ?? mark.y,
+			width: mark.narrowWidth ?? mark.width,
+			height: mark.narrowHeight ?? mark.height
 		};
 	});
 }

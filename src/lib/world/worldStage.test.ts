@@ -151,6 +151,32 @@ describe('spåren i scenen', () => {
 		expect(narrow?.x).toBeGreaterThan(80);
 	});
 
+	it('markerar den första reflektionen och den långa historiken', () => {
+		expect(getWorldMarks(presence({ reflectionCount: 0, activeDays: 5 })).map((m) => m.id)).not.toContain(
+			'first-bloom'
+		);
+		expect(getWorldMarks(presence({ reflectionCount: 1, activeDays: 5 })).map((m) => m.id)).toContain(
+			'first-bloom'
+		);
+		expect(getWorldMarks(presence({ entryCount: 99, activeDays: 5 })).map((m) => m.id)).not.toContain(
+			'hearth-stones'
+		);
+		expect(getWorldMarks(presence({ entryCount: 100, activeDays: 5 })).map((m) => m.id)).toContain(
+			'hearth-stones'
+		);
+	});
+
+	it('kan både flytta och krympa ett spår för den smala beskärningen', () => {
+		const rich = presence({ activeMonths: 4, activeDays: 40, entryCount: 60 });
+		const wide = getWorldMarks(rich).find((m) => m.id === 'old-tree');
+		const narrow = getWorldMarks(rich, { narrow: true }).find((m) => m.id === 'old-tree');
+
+		expect(narrow).toBeDefined();
+		expect(narrow?.width).toBeLessThan(wide!.width);
+		expect(narrow?.height).toBeLessThan(wide!.height);
+		expect(narrow?.x).toBeGreaterThan(wide!.x);
+	});
+
 	it('lämnar de minsta spåren utanför smala vyer', () => {
 		const rich = presence({ activeMonths: 4, entryCount: 60, activeDays: 40 });
 		const narrow = getWorldMarks(rich, { narrow: true });
