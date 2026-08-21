@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+	PROGRESS_CABIN_SOURCE_BOX,
 	PROGRESS_COMPACT_BREAKPOINT,
 	PROGRESS_COMPANION_SCALES,
+	PROGRESS_SCENE_IMAGE_SIZE,
 	PROGRESS_SCENE_PLACEMENTS,
+	getProgressCabinPlacement,
+	getProgressCabinPlacementStyle,
 	getProgressCompanionPlacement
 } from './progressCompanionPlacement';
 
@@ -64,5 +68,85 @@ describe('Framstegs följeslagarplacering', () => {
 		expect(fox?.left).toBe(australianShepherd?.left);
 		expect(fox?.top).toBe(australianShepherd?.top);
 		expect(PROGRESS_COMPANION_SCALES.australisk_shepherd).toBeLessThan(PROGRESS_COMPANION_SCALES.wolf);
+	});
+});
+
+
+/** Samma herohöjder som /framsteg använder, delade av båda sviterna. */
+function heroBox(viewportWidth: number) {
+	const compact = viewportWidth <= PROGRESS_COMPACT_BREAKPOINT;
+	return {
+		containerWidth: compact ? viewportWidth - 28 : viewportWidth - 96,
+		containerHeight: compact ? Math.min(260, viewportWidth * 0.68) : Math.min(420, viewportWidth * 0.27),
+		viewportWidth
+	};
+}
+
+describe('stugans klickyta', () => {
+	const scenes = ['morning', 'day', 'afternoon', 'evening'] as const;
+
+	it.each([
+		[1440, 900],
+		[1280, 720],
+		[390, 844],
+		[375, 812]
+	])('ligger inom den synliga hero-ytan vid %ix%i', (viewportWidth) => {
+		for (const scene of scenes) {
+			const box = heroBox(viewportWidth);
+			const cabin = getProgressCabinPlacement({ scene, ...box });
+
+			expect(cabin, `${scene} @ ${viewportWidth}`).not.toBeNull();
+			expect(cabin!.left).toBeGreaterThanOrEqual(0);
+			expect(cabin!.top).toBeGreaterThanOrEqual(0);
+			expect(cabin!.left + cabin!.width).toBeLessThanOrEqual(box.containerWidth + 0.01);
+			expect(cabin!.top + cabin!.height).toBeLessThanOrEqual(box.containerHeight + 0.01);
+			expect(cabin!.width).toBeGreaterThan(0);
+			expect(cabin!.height).toBeGreaterThan(0);
+		}
+	});
+
+	it('följer cropen i stället för en fast pixelposition', () => {
+		const wide = getProgressCabinPlacement({ scene: 'day', ...heroBox(1440) });
+		const narrow = getProgressCabinPlacement({ scene: 'day', ...heroBox(375) });
+
+		// Olika beskärning och skala ger olika ruta - hade den varit hårdkodad
+		// i pixlar skulle de två varit identiska.
+		expect(wide!.left).not.toBeCloseTo(narrow!.left, 1);
+		expect(wide!.width).not.toBeCloseTo(narrow!.width, 1);
+	});
+
+	it('landar på samma bildpunkt som originalbildens stuga', () => {
+		const box = heroBox(1440);
+		const cabin = getProgressCabinPlacement({ scene: 'day', ...box })!;
+		const scale = Math.max(
+			box.containerWidth / PROGRESS_SCENE_IMAGE_SIZE.width,
+			box.containerHeight / PROGRESS_SCENE_IMAGE_SIZE.height
+		);
+		const renderedWidth = PROGRESS_SCENE_IMAGE_SIZE.width * scale;
+		const offsetX = (box.containerWidth - renderedWidth) * 0.5;
+
+		expect(cabin.left).toBeCloseTo(offsetX + renderedWidth * (PROGRESS_CABIN_SOURCE_BOX.x / 100), 3);
+	});
+
+	it('krymper inte bort följeslagarens plats', () => {
+		const box = heroBox(1440);
+		const cabin = getProgressCabinPlacement({ scene: 'day', ...box })!;
+		const companion = getProgressCompanionPlacement({ scene: 'day', companionId: 'fox', ...box })!;
+
+		// Stugan står till vänster i motivet, följeslagaren långt ut till höger.
+		expect(cabin.left + cabin.width).toBeLessThan(companion.left);
+	});
+
+	it('ger ingen klickyta utan en mätbar container', () => {
+		expect(getProgressCabinPlacement({ scene: 'day', containerWidth: 0, containerHeight: 0, viewportWidth: 1440 })).toBeNull();
+		expect(getProgressCabinPlacementStyle({ scene: 'day', containerWidth: 0, containerHeight: 0, viewportWidth: 1440 })).toBe('');
+	});
+
+	it('skriver ut alla fyra variabler som mallen läser', () => {
+		const style = getProgressCabinPlacementStyle({ scene: 'day', ...heroBox(1280) });
+
+		for (const name of ['--progress-cabin-left', '--progress-cabin-top', '--progress-cabin-width', '--progress-cabin-height']) {
+			expect(style).toContain(name);
+		}
 	});
 });

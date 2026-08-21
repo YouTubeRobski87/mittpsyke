@@ -27,6 +27,12 @@
 		<p>
 			Läs lugna och konkreta texter om att skriva av sig, förstå tankar och hitta små steg framåt.
 		</p>
+		<nav class="content-switcher" aria-label="Växla mellan artiklar och guider">
+			<a class="content-switcher-link content-switcher-link--active" href="/blogg" aria-current="page">
+				Artiklar
+			</a>
+			<a class="content-switcher-link" href="/guider">Guider</a>
+		</nav>
 	</section>
 
 	<section class="blog-list" aria-label="Artiklar">
@@ -143,6 +149,60 @@
 		font-size: 1.02rem;
 		line-height: 1.68;
 		opacity: 0.84;
+	}
+
+	.content-switcher {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		margin-top: 1.1rem;
+		padding: 0.25rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: 999px;
+		background: hsl(var(--surface));
+	}
+
+	.content-switcher-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 2.75rem;
+		padding: 0.5rem 0.9rem;
+		border-radius: 999px;
+		color: inherit;
+		font-family: var(--font-body);
+		font-size: 0.92rem;
+		font-weight: 600;
+		line-height: 1.2;
+		text-decoration: none;
+	}
+
+	.content-switcher-link:hover {
+		background: hsl(var(--surface-muted));
+	}
+
+	.content-switcher-link--active {
+		background: hsl(var(--foreground));
+		color: hsl(var(--background));
+	}
+
+	.content-switcher-link--active:hover {
+		background: hsl(var(--foreground));
+	}
+
+	.content-switcher-link:focus-visible {
+		outline: 3px solid rgba(96, 165, 250, 0.7);
+		outline-offset: 2px;
+	}
+
+	:global(.dark) .content-switcher-link:hover {
+		background: rgba(148, 163, 184, 0.16);
+	}
+
+	:global(.dark) .content-switcher-link--active,
+	:global(.dark) .content-switcher-link--active:hover {
+		background: #e2e8f0;
+		color: #0f172a;
 	}
 
 	.blog-list {

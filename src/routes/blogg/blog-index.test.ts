@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { getPublishedArticles } from '$lib/server/article-content';
 import { load } from './+page.server';
 
@@ -58,6 +60,15 @@ async function loadAllIndexHrefs() {
 }
 
 describe('/blogg index-laddaren', () => {
+	it('har en tydlig väg från artiklar till det befintliga guideindexet', () => {
+		const page = readFileSync(resolve(process.cwd(), 'src/routes/blogg/+page.svelte'), 'utf8');
+
+		expect(page).toContain('aria-label="Växla mellan artiklar och guider"');
+		expect(page).toContain('href="/blogg" aria-current="page"');
+		expect(page).toContain('href="/guider">Guider</a>');
+		expect(page).toContain('class="article-grid"');
+	});
+
 	it('visar varje publicerad markdown-artikel någonstans i pagineringen', async () => {
 		const { hrefs } = await loadAllIndexHrefs();
 		const indexHrefs = new Set(hrefs);

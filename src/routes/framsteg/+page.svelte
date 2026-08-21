@@ -35,7 +35,12 @@
 		type CompanionId,
 		type CompanionPose as CompanionPoseData
 	} from '$lib/companionPoseManifest';
-	import { getProgressCompanionPlacementStyle } from '$lib/progressCompanionPlacement';
+	import {
+		getProgressCabinPlacement,
+		getProgressCabinPlacementStyle,
+		getProgressCompanionPlacementStyle,
+		type ProgressCabinPlacement
+	} from '$lib/progressCompanionPlacement';
 	import { getGardenGrowthPoints, getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
 	import WorldMarks from '$lib/components/world/WorldMarks.svelte';
 	import {
@@ -185,6 +190,9 @@
 		anonymousCopy: getCompanionPoseCopy(companionPoseId, true, sceneCompanionId)
 	});
 	let progressPlacementStyle = $state('');
+	// Stugan finns bara som motiv i scenbilden. Klickytan renderas därför bara
+	// när den uppmätta rutan faktiskt syns i den aktuella beskärningen.
+	let cabinPlacement = $state<ProgressCabinPlacement | null>(null);
 
 	interface StreakData {
 		currentStreak: number;
@@ -691,13 +699,21 @@
 	function updateProgressCompanionPlacement(element = sceneEl) {
 		if (!browser || !element) return;
 		const { width, height } = element.getBoundingClientRect();
-		progressPlacementStyle = getProgressCompanionPlacementStyle({
+		const input = {
 			scene: activeSceneBand,
-			companionId: sceneCompanionId,
 			containerWidth: width,
 			containerHeight: height,
 			viewportWidth: window.innerWidth
-		});
+		};
+		// Stugans klickyta mäts i samma svep som följeslagaren, ur samma
+		// cover-geometri. Ingen extra observer, ingen andra sanning om cropen.
+		cabinPlacement = getProgressCabinPlacement(input);
+		progressPlacementStyle = [
+			getProgressCompanionPlacementStyle({ ...input, companionId: sceneCompanionId }),
+			getProgressCabinPlacementStyle(input)
+		]
+			.filter(Boolean)
+			.join('; ');
 	}
 
 	function chooseSupportTopic(topic: string) {
@@ -1223,6 +1239,16 @@
 					loading="eager"
 					decoding="async"
 				/>
+				{#if cabinPlacement}
+					<!-- Stugan är inbakad i scenbilden, så genvägen hem är en osynlig
+						 länk lagd exakt över motivet. Ingen knapp, ingen etikett. -->
+					<a
+						class="progress-cabin-link"
+						href="/dashboard"
+						aria-label="Gå till Mitt Hem"
+						data-testid="progress-cabin-link"
+					></a>
+				{/if}
 				<span class="companion-ground-shadow" aria-hidden="true"></span>
 				<CompanionPose
 					class="progress-companion-pose"
@@ -2315,6 +2341,39 @@
 
 	.companion-media[data-time='evening']::after {
 		background: linear-gradient(180deg, rgb(2 13 31 / 0.2) 0%, rgb(2 10 25 / 0.54) 34%, rgb(2 8 20 / 0.88) 100%);
+	}
+
+	/* Genvägen hem till stugan. Ytan följer bildens cover-geometri via
+	   variablerna från getProgressCabinPlacementStyle, ligger över bakgrunden men
+	   under följeslagaren och scenens copy, och ändrar ingenting i layouten. */
+	.progress-cabin-link {
+		position: absolute;
+		left: var(--progress-cabin-left, 0);
+		top: var(--progress-cabin-top, 0);
+		z-index: var(--scene-midground);
+		width: var(--progress-cabin-width, 0);
+		height: var(--progress-cabin-height, 0);
+		border-radius: 8px;
+		/* Ingen egen yta i viloläge - motivet i bilden är hela affordancen. */
+		background: transparent;
+		box-shadow: 0 0 0 0 rgb(255 214 148 / 0);
+		transition: box-shadow 220ms ease;
+	}
+
+	.progress-cabin-link:hover,
+	.progress-cabin-link:focus-visible {
+		box-shadow: 0 0 18px 2px rgb(255 214 148 / 0.28);
+	}
+
+	.progress-cabin-link:focus-visible {
+		outline: 2px solid rgb(255 250 242 / 0.82);
+		outline-offset: 3px;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.progress-cabin-link {
+			transition: none;
+		}
 	}
 
 	.companion-world-scene {

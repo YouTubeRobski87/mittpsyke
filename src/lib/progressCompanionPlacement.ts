@@ -116,13 +116,27 @@ export type ProgressPlacement = {
  * Översätter en punkt i originalbilden till den synliga object-fit: cover-ytan.
  * Bild och overlay har därmed samma koordinatsystem även när hero-rutan croppas.
  */
-export function getProgressCompanionPlacement({
+type SceneGeometry = {
+	placement: SceneViewportPlacement;
+	viewport: 'desktop' | 'mobile';
+	scale: number;
+	renderedWidth: number;
+	renderedHeight: number;
+	offsetX: number;
+	offsetY: number;
+};
+
+/**
+ * object-fit: cover-geometrin för hero-bilden: hur mycket originalbilden skalas
+ * och var den hamnar i containern. Enda stället där den räknas ut, så
+ * följeslagarens markpunkt och stugans klickyta alltid delar koordinatsystem.
+ */
+function getSceneGeometry({
 	scene,
-	companionId,
 	containerWidth,
 	containerHeight,
 	viewportWidth
-}: ProgressPlacementInput): ProgressPlacement | null {
+}: Omit<ProgressPlacementInput, 'companionId'>): SceneGeometry | null {
 	if (containerWidth <= 0 || containerHeight <= 0) return null;
 
 	const viewport = viewportWidth <= PROGRESS_COMPACT_BREAKPOINT ? 'mobile' : 'desktop';
@@ -133,8 +147,29 @@ export function getProgressCompanionPlacement({
 	);
 	const renderedWidth = PROGRESS_SCENE_IMAGE_SIZE.width * scale;
 	const renderedHeight = PROGRESS_SCENE_IMAGE_SIZE.height * scale;
-	const offsetX = (containerWidth - renderedWidth) * (placement.imagePosition.x / 100);
-	const offsetY = (containerHeight - renderedHeight) * (placement.imagePosition.y / 100);
+
+	return {
+		placement,
+		viewport,
+		scale,
+		renderedWidth,
+		renderedHeight,
+		offsetX: (containerWidth - renderedWidth) * (placement.imagePosition.x / 100),
+		offsetY: (containerHeight - renderedHeight) * (placement.imagePosition.y / 100)
+	};
+}
+
+export function getProgressCompanionPlacement({
+	scene,
+	companionId,
+	containerWidth,
+	containerHeight,
+	viewportWidth
+}: ProgressPlacementInput): ProgressPlacement | null {
+	const geometry = getSceneGeometry({ scene, containerWidth, containerHeight, viewportWidth });
+	if (!geometry) return null;
+
+	const { placement, viewport, scale, renderedWidth, renderedHeight, offsetX, offsetY } = geometry;
 	const groundLeft = offsetX + renderedWidth * (placement.ground.x / 100);
 	const groundTop = offsetY + renderedHeight * (placement.ground.y / 100);
 
@@ -147,6 +182,64 @@ export function getProgressCompanionPlacement({
 		imagePosition: `${placement.imagePosition.x}% ${placement.imagePosition.y}%`,
 		viewport
 	};
+}
+
+/**
+ * Stugans yta i ORIGINALBILDENS koordinater (procent). Alla fyra dygnsbilder
+ * delar komposition, så en enda ruta räcker. Uppmätt mot källbilden: tak,
+ * väggar och farstubro, utan att nå vattnet eller trädlinjen bakom.
+ */
+export const PROGRESS_CABIN_SOURCE_BOX = { x: 12.5, y: 44, width: 11, height: 12 } as const;
+
+/** Under så här många pixlar är klickytan för liten för att vara meningsfull. */
+const MIN_CABIN_HIT_SIZE = 24;
+
+export type ProgressCabinPlacement = { left: number; top: number; width: number; height: number };
+
+/**
+ * Stugans klickyta, översatt från originalbilden till den synliga hero-ytan med
+ * exakt samma cover-geometri som följeslagaren använder. Rutan klipps mot
+ * containern, eftersom mobilens beskärning skär av stugans vänsterkant, och blir
+ * null när det som återstår är för litet för att träffa.
+ */
+export function getProgressCabinPlacement(
+	input: Omit<ProgressPlacementInput, 'companionId'>
+): ProgressCabinPlacement | null {
+	const geometry = getSceneGeometry(input);
+	if (!geometry) return null;
+
+	const { renderedWidth, renderedHeight, offsetX, offsetY } = geometry;
+	const rawLeft = offsetX + renderedWidth * (PROGRESS_CABIN_SOURCE_BOX.x / 100);
+	const rawTop = offsetY + renderedHeight * (PROGRESS_CABIN_SOURCE_BOX.y / 100);
+	const left = Math.max(0, rawLeft);
+	const top = Math.max(0, rawTop);
+	const right = Math.min(
+		input.containerWidth,
+		rawLeft + renderedWidth * (PROGRESS_CABIN_SOURCE_BOX.width / 100)
+	);
+	const bottom = Math.min(
+		input.containerHeight,
+		rawTop + renderedHeight * (PROGRESS_CABIN_SOURCE_BOX.height / 100)
+	);
+	const width = right - left;
+	const height = bottom - top;
+	if (width < MIN_CABIN_HIT_SIZE || height < MIN_CABIN_HIT_SIZE) return null;
+
+	return { left, top, width, height };
+}
+
+export function getProgressCabinPlacementStyle(
+	input: Omit<ProgressPlacementInput, 'companionId'>
+): string {
+	const cabin = getProgressCabinPlacement(input);
+	if (!cabin) return '';
+
+	return [
+		`--progress-cabin-left: ${cabin.left}px`,
+		`--progress-cabin-top: ${cabin.top}px`,
+		`--progress-cabin-width: ${cabin.width}px`,
+		`--progress-cabin-height: ${cabin.height}px`
+	].join('; ');
 }
 
 export function getProgressCompanionPlacementStyle(input: ProgressPlacementInput): string {
