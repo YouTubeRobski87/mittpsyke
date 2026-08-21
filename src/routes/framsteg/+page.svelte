@@ -32,11 +32,10 @@
 	} from '$lib/progressCompanion';
 	import { getCompanionBasePose } from '$lib/companionPoseState';
 	import {
-		BEAR_SCENE_PLACEMENTS,
-		WOLF_SCENE_PLACEMENTS,
 		type CompanionId,
 		type CompanionPose as CompanionPoseData
 	} from '$lib/companionPoseManifest';
+	import { getProgressCompanionPlacementStyle } from '$lib/progressCompanionPlacement';
 	import { getGardenGrowthPoints, getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
 	import WorldMarks from '$lib/components/world/WorldMarks.svelte';
 	import {
@@ -185,38 +184,7 @@
 		copy: getCompanionPoseCopy(companionPoseId, false, sceneCompanionId),
 		anonymousCopy: getCompanionPoseCopy(companionPoseId, true, sceneCompanionId)
 	});
-	const bearProgressSceneStyle = $derived(
-		sceneCompanionId === 'bear'
-			? [
-					`--bear-progress-scale: ${BEAR_SCENE_PLACEMENTS.progress.scale}`,
-					`--bear-progress-bottom: ${BEAR_SCENE_PLACEMENTS.progress.bottom}`,
-					`--bear-progress-right: ${BEAR_SCENE_PLACEMENTS.progress.right}`,
-					`--bear-progress-ground-left: ${BEAR_SCENE_PLACEMENTS.progress.groundLeft}`,
-					`--bear-progress-ground-top: ${BEAR_SCENE_PLACEMENTS.progress.groundTop}`,
-					`--bear-progress-compact-scale: ${BEAR_SCENE_PLACEMENTS.progress.compact.scale}`,
-					`--bear-progress-compact-bottom: ${BEAR_SCENE_PLACEMENTS.progress.compact.bottom}`,
-					`--bear-progress-compact-right: ${BEAR_SCENE_PLACEMENTS.progress.compact.right}`,
-					`--bear-progress-compact-ground-left: ${BEAR_SCENE_PLACEMENTS.progress.compact.groundLeft}`,
-					`--bear-progress-compact-ground-top: ${BEAR_SCENE_PLACEMENTS.progress.compact.groundTop}`
-				].join('; ')
-			: undefined
-	);
-	const wolfProgressSceneStyle = $derived(
-		sceneCompanionId === 'wolf'
-			? [
-					`--wolf-progress-scale: ${WOLF_SCENE_PLACEMENTS.progress.scale}`,
-					`--wolf-progress-bottom: ${WOLF_SCENE_PLACEMENTS.progress.bottom}`,
-					`--wolf-progress-right: ${WOLF_SCENE_PLACEMENTS.progress.right}`,
-					`--wolf-progress-ground-left: ${WOLF_SCENE_PLACEMENTS.progress.groundLeft}`,
-					`--wolf-progress-ground-top: ${WOLF_SCENE_PLACEMENTS.progress.groundTop}`,
-					`--wolf-progress-compact-scale: ${WOLF_SCENE_PLACEMENTS.progress.compact.scale}`,
-					`--wolf-progress-compact-bottom: ${WOLF_SCENE_PLACEMENTS.progress.compact.bottom}`,
-					`--wolf-progress-compact-right: ${WOLF_SCENE_PLACEMENTS.progress.compact.right}`,
-					`--wolf-progress-compact-ground-left: ${WOLF_SCENE_PLACEMENTS.progress.compact.groundLeft}`,
-					`--wolf-progress-compact-ground-top: ${WOLF_SCENE_PLACEMENTS.progress.compact.groundTop}`
-				].join('; ')
-			: undefined
-	);
+	let progressPlacementStyle = $state('');
 
 	interface StreakData {
 		currentStreak: number;
@@ -716,6 +684,22 @@
 		};
 	}
 
+	/**
+	 * Bildens crop och följeslagarens markpunkt räknas från samma originalbild.
+	 * Inga procentvärden från hero-containern används här.
+	 */
+	function updateProgressCompanionPlacement(element = sceneEl) {
+		if (!browser || !element) return;
+		const { width, height } = element.getBoundingClientRect();
+		progressPlacementStyle = getProgressCompanionPlacementStyle({
+			scene: activeSceneBand,
+			companionId: sceneCompanionId,
+			containerWidth: width,
+			containerHeight: height,
+			viewportWidth: window.innerWidth
+		});
+	}
+
 	function chooseSupportTopic(topic: string) {
 		supportSelectedTopic = topic;
 		supportExamplesOpen = true;
@@ -975,13 +959,17 @@
 		narrowQuery.addEventListener('change', onNarrowChange);
 
 		// Scenen ändrar storlek när bilden laddats och vid varje omritning. En
-		// ResizeObserver täcker båda, så följeslagarens träffyta aldrig ligger kvar
-		// på ett gammalt läge.
+		// ResizeObserver håller både den synliga cropens markpunkt och följeslagarens
+		// träffyta i synk med den verkliga renderade scenen.
 		const sceneResizeObserver =
 			typeof ResizeObserver !== 'undefined' && sceneEl
-				? new ResizeObserver(() => measureCompanionBox())
+				? new ResizeObserver(() => {
+					updateProgressCompanionPlacement();
+					measureCompanionBox();
+				})
 				: null;
 		if (sceneResizeObserver && sceneEl) sceneResizeObserver.observe(sceneEl);
+		updateProgressCompanionPlacement();
 		measureCompanionBox();
 
 		const cleanupNarrowQuery = () => {
@@ -1064,9 +1052,14 @@
 
 	// Ny pose eller nytt djur betyder ny storlek och nytt läge i scenen.
 	$effect(() => {
+		// Bindningen sker efter första rendern; gör den reaktiv så den första
+		// riktiga scenytan också får en placement, inte bara senare scenbyten.
+		const renderedSceneEl = sceneEl;
 		companionPoseId;
 		sceneCompanionId;
+		activeSceneBand;
 		isNarrowViewport;
+		updateProgressCompanionPlacement(renderedSceneEl);
 		measureCompanionBox();
 	});
 
@@ -1210,7 +1203,7 @@
 				data-time={activeSceneBand}
 				data-companion={sceneCompanionId}
 				data-pose={companionBasePose?.id}
-				style={bearProgressSceneStyle ?? wolfProgressSceneStyle}
+				style={progressPlacementStyle}
 			>
 				<!-- width/height ger proportionerna innan bilden laddats så scenen
 					 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
@@ -2330,15 +2323,11 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		/* Dygnsbilderna innehåller redan person och eld i sin egen markkontakt.
-		   Den breda desktop-rutan måste därför beskäras längre ned än mitten för att
-		   få med den sammanhängande förgrunden utan att kapa personen vid bålen. */
-		object-position: 50% 72%;
+		/* Samma object-position används av getProgressCompanionPlacement(). */
+		object-position: var(--progress-scene-object-position, 50% 72%);
 		display: block;
-		transform: scale(1.018);
-		animation: companionWorldDrift 18s ease-in-out infinite alternate;
 		transition: filter 1200ms ease;
-		will-change: transform, filter;
+		will-change: filter;
 	}
 
 	.companion-media :global(.progress-living-world) {
@@ -2351,88 +2340,15 @@
 
 	.companion-media :global(.progress-companion-pose) {
 		position: absolute;
-		/* Vilar strax till vänster om personen: nära nog att kännas som sällskap,
-		   men utanför både ansiktet och eldens fokus. */
-		right: 32%;
-		bottom: 28%;
+		/* Markpunkten beräknas ur samma object-fit-crop som scenbilden. */
+		left: var(--progress-companion-left);
+		top: var(--progress-companion-top);
 		z-index: var(--scene-companion);
-		width: clamp(52px, 10%, 74px);
+		width: var(--progress-companion-width);
+		transform: translate3d(-50%, -100%, 0);
+		transform-origin: 50% 100%;
 		--companion-grade: saturate(0.7) contrast(0.88) brightness(0.94) sepia(0.14)
 			hue-rotate(-3deg);
-	}
-
-	.companion-media[data-companion='bear'] :global(.progress-companion-pose) {
-		right: var(--bear-progress-right);
-		bottom: var(--bear-progress-bottom);
-		transform: scale(var(--bear-progress-scale));
-		transform-origin: 50% 100%;
-	}
-
-	.companion-media[data-companion='wolf'] :global(.progress-companion-pose) {
-		right: var(--wolf-progress-right);
-		bottom: var(--wolf-progress-bottom);
-		transform: scale(var(--wolf-progress-scale));
-		transform-origin: 50% 100%;
-	}
-
-	.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
-		width: clamp(50px, 11.2%, 74px);
-		/* Den liggande filen är bredare än hög och får luft under motivet i
-		   den kvadratiska poserutan. Ett lägre elementankare sätter den synliga
-		   kroppen på samma strandmark som den sittande björnen. */
-		bottom: 4.5%;
-	}
-
-	.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-stretching']) {
-		right: var(--bear-progress-right);
-		bottom: 9.2%;
-	}
-
-	.companion-media[data-companion='bear'] .companion-ground-shadow {
-		left: var(--bear-progress-ground-left);
-		top: var(--bear-progress-ground-top);
-		width: clamp(56px, 10.8%, 98px);
-		height: clamp(9px, 1.45vw, 15px);
-		opacity: 0.62;
-		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-18deg) scaleX(1.28);
-	}
-
-	.companion-media[data-companion='bear'] .companion-foreground-edge {
-		left: var(--bear-progress-ground-left);
-		top: calc(var(--bear-progress-ground-top) + 0.15%);
-	}
-
-	.companion-media[data-companion='wolf'] .companion-ground-shadow {
-		left: var(--wolf-progress-ground-left);
-		top: var(--wolf-progress-ground-top);
-		width: clamp(42px, 7.4%, 72px);
-		height: clamp(5px, 0.7vw, 8px);
-		filter: blur(4.5px);
-		opacity: 0.28;
-		transform: translate3d(-50%, -50%, 0) rotate(-5deg) skewX(-12deg) scaleX(1.12);
-	}
-
-	.companion-media[data-companion='wolf'] .companion-foreground-edge {
-		left: var(--wolf-progress-ground-left);
-		top: calc(var(--wolf-progress-ground-top) + 0.55%);
-		width: clamp(50px, 7.9%, 78px);
-		height: clamp(7px, 1.1vw, 12px);
-		background:
-			radial-gradient(ellipse at center, rgb(226 238 231 / 0.22), transparent 66%),
-			linear-gradient(90deg, transparent, rgb(219 234 227 / 0.18) 45% 58%, transparent);
-		filter: blur(0.6px);
-		opacity: 0.42;
-		mix-blend-mode: screen;
-	}
-
-	.companion-media[data-companion='bear'][data-pose='bear-sleeping'] .companion-ground-shadow {
-		top: 91.8%;
-		width: clamp(62px, 12%, 106px);
-	}
-
-	.companion-media[data-companion='bear'][data-pose='bear-stretching'] .companion-ground-shadow {
-		left: var(--bear-progress-ground-left);
-		top: 91.5%;
 	}
 
 	.companion-media[data-time='morning'] :global(.progress-companion-pose) {
@@ -2486,12 +2402,8 @@
 	}
 
 	.companion-ground-shadow {
-		/* Följeslagarens tassar hamnar intill personen i progressplaceringen.
-		   Skuggan följer därför motivets verkliga markpunkt, inte strandens
-		   mitt, så att den inte ser inklistrad ut. Björn och varg har egna
-		   justeringar nedan. */
-		left: 64.8%;
-		top: 71.1%;
+		left: var(--progress-companion-ground-left);
+		top: var(--progress-companion-ground-top);
 		z-index: var(--scene-ambient);
 		width: clamp(38px, 6%, 60px);
 		height: clamp(6px, 0.9vw, 10px);
@@ -2507,8 +2419,8 @@
 	}
 
 	.companion-foreground-edge {
-		left: 64.5%;
-		top: 71.2%;
+		left: var(--progress-companion-ground-left);
+		top: calc(var(--progress-companion-ground-top) + 1px);
 		z-index: var(--scene-foreground);
 		width: clamp(46px, 7.2%, 72px);
 		height: clamp(12px, 1.9vw, 20px);
@@ -2675,7 +2587,7 @@
 	}
 
 	.companion-world-scene {
-		object-position: 50% 72%;
+		object-position: var(--progress-scene-object-position, 50% 72%);
 	}
 
 	.companion-copy {
@@ -2883,21 +2795,6 @@
 		100% { background-position: -200% 0; }
 	}
 
-	/* Animerar enbart transform. En animerad filter-egenskap här skulle vinna över
-	   .companion-media[data-time='...'] .companion-world-scene och slå ut hela
-	   dygnsgraderingen, eftersom keyframes har högre prioritet än vanliga regler. */
-	@keyframes companionWorldDrift {
-		0% {
-			transform: scale(1.018) translate3d(-0.4%, -0.25%, 0);
-		}
-		50% {
-			transform: scale(1.035) translate3d(0.35%, 0.18%, 0);
-		}
-		100% {
-			transform: scale(1.024) translate3d(0.7%, -0.18%, 0);
-		}
-	}
-
 	@keyframes progressCanopyDrift {
 		0% {
 			transform: translate3d(0, 0, 0) rotate(0deg);
@@ -3014,9 +2911,6 @@
 
 		.companion-media { height: clamp(210px, 68vw, 260px); }
 
-		/* Behåll den avlägsna stugan i bild när den breda sjöscenen beskärs på mobil. */
-		.companion-world-scene { object-position: 20% 64%; }
-
 		.progress-preview-note {
 			position: relative;
 			top: auto;
@@ -3027,20 +2921,6 @@
 
 		.card { padding: 1.5rem; }
 		.companion-media::after { height: 62%; }
-		.companion-media :global(.progress-companion-pose) {
-			right: 28%;
-			bottom: 27%;
-			width: clamp(44px, 12%, 62px);
-		}
-
-		/* Räven ligger/sitter på samma strandkant som personen även på mobil.
-		   Björnens och vargens särskilda placeringar lämnas helt orörda. */
-		.companion-media[data-companion='fox'] :global(.progress-companion-pose) {
-			right: 27%;
-			bottom: 25%;
-			width: clamp(42px, 11.5%, 60px);
-		}
-
 		/* Samma långsamma vattenrörelse, men mjukare och mindre tydlig på den
 		   smalare beskärningen så reflexerna läser som ljus i vattnet. */
 		.progress-ripple {
@@ -3051,52 +2931,6 @@
 			--progress-ripple-fade-opacity: 0.025;
 		}
 
-		.companion-media[data-companion='bear'] :global(.progress-companion-pose) {
-			right: var(--bear-progress-compact-right);
-			bottom: var(--bear-progress-compact-bottom);
-			transform: scale(var(--bear-progress-compact-scale));
-		}
-
-		.companion-media[data-companion='wolf'] :global(.progress-companion-pose) {
-			right: var(--wolf-progress-compact-right);
-			bottom: var(--wolf-progress-compact-bottom);
-			transform: scale(var(--wolf-progress-compact-scale));
-		}
-
-		.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
-			/* Sovposens liggande duk lämnar luft under motivet. Den synliga
-			   kroppen landar därför på samma kompakta strandremsa som övriga poser. */
-			bottom: 10.5%;
-		}
-
-		.companion-media[data-companion='bear'] .companion-ground-shadow {
-			left: var(--bear-progress-compact-ground-left);
-			top: var(--bear-progress-compact-ground-top);
-		}
-
-		.companion-media[data-companion='bear'] .companion-foreground-edge {
-			left: var(--bear-progress-compact-ground-left);
-			top: calc(var(--bear-progress-compact-ground-top) + 0.15%);
-		}
-
-		.companion-media[data-companion='wolf'] .companion-ground-shadow {
-			left: var(--wolf-progress-compact-ground-left);
-			top: var(--wolf-progress-compact-ground-top);
-		}
-		.companion-ground-shadow {
-			left: 65.8%;
-			top: 70.2%;
-			width: clamp(42px, 14%, 68px);
-			height: 9px;
-			filter: blur(4px);
-			transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-16deg) scaleX(1.12);
-		}
-		.companion-foreground-edge {
-			left: 65.5%;
-			top: 70.3%;
-			width: clamp(52px, 17%, 82px);
-			height: clamp(18px, 6vw, 30px);
-		}
 		.companion-copy {
 			left: 1.2rem;
 			right: 5.5rem;
