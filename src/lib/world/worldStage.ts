@@ -191,7 +191,8 @@ export type WorldMarkId =
 	| 'mushrooms'
 	| 'still-birds'
 	| 'old-tree'
-	| 'night-glow';
+	| 'night-glow'
+	| 'companion';
 
 export interface WorldMark {
 	id: WorldMarkId;
@@ -217,6 +218,11 @@ export interface WorldMark {
 	 */
 	narrowX?: number;
 	narrowY?: number;
+	/**
+	 * Sant för spår som redan finns i scenen och bara behöver en träffyta.
+	 * Spårlagret ritar då ingen egen form.
+	 */
+	invisible?: boolean;
 }
 
 type WorldMarkDefinition = WorldMark & {
@@ -357,7 +363,9 @@ export function getWorldMarkVariation(
 	mark: WorldMark,
 	visitSeed: string | null | undefined
 ): { x: number; y: number; opacityScale: number } {
-	if (!visitSeed) return { x: mark.x, y: mark.y, opacityScale: 1 };
+	// Ett spår som redan finns i scenen är förankrat i sin egen bild. Att
+	// förskjuta träffytan skulle bara flytta den bort från motivet.
+	if (!visitSeed || mark.invisible) return { x: mark.x, y: mark.y, opacityScale: 1 };
 	const seed = `${visitSeed}:${mark.id}`;
 	return {
 		x: Math.round((mark.x + (hash(`${seed}:x`) - 0.5) * 1.8) * 100) / 100,
@@ -387,6 +395,51 @@ export function getWorldMarks(
 			y: mark.narrowY ?? mark.y
 		};
 	});
+}
+
+/** Följeslagarens plats i scenen, mätt i procent av scenrutan. */
+export interface CompanionMarkBox {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+}
+
+/**
+ * Så mycket historik krävs innan följeslagaren får säga att den känner igen
+ * återkomsten. Utan det vore raden en artighet, inte en observation.
+ */
+const COMPANION_MARK_MIN_ACTIVE_DAYS = 3;
+
+/**
+ * Följeslagaren som ett spår att röra vid. Den ritas inte av spårlagret — djuret
+ * finns redan i scenen — så det här är enbart en träffyta ovanpå den, med samma
+ * beröring och samma rad som övriga spår.
+ *
+ * Rutan mäts i vyn i stället för att skrivas här: följeslagarens placering
+ * varierar med djur, pose och brytpunkt, och en kopierad koordinat skulle
+ * hamna fel för björnen och vargen.
+ */
+export function getCompanionMark(
+	presence: WorldPresence,
+	box: CompanionMarkBox | null
+): WorldMark | null {
+	if (!box) return null;
+	if (box.width <= 0 || box.height <= 0) return null;
+	if (presence.activeDays < COMPANION_MARK_MIN_ACTIVE_DAYS) return null;
+
+	return {
+		id: 'companion',
+		label: 'Följeslagaren',
+		revealText: 'Den verkar ha vant sig vid att du kommer tillbaka.',
+		x: box.x,
+		y: box.y,
+		width: box.width,
+		height: box.height,
+		depth: 0.9,
+		// Ritas aldrig av spårlagret; djuret självt är formen.
+		invisible: true
+	};
 }
 
 // ── Återkomst ──

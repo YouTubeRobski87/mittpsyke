@@ -43,11 +43,13 @@
 		buildWorldPresence,
 		getDaysSinceLastVisit,
 		getWorldGrowthLevel,
+		getCompanionMark,
 		getWorldMarks,
 		getWorldReturnCopy,
 		getWorldStage,
 		readLastVisit,
-		recordVisit
+		recordVisit,
+		type CompanionMarkBox
 	} from '$lib/world/worldStage';
 	import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
 	import {
@@ -542,9 +544,15 @@
 	// Serverrenderingen utgår från den breda scenen. De minsta spåren tas bort
 	// först när klienten vet att vyn faktiskt är smal.
 	let isNarrowViewport = $state(false);
-	const worldMarks = $derived(
-		getWorldMarks(worldPresence, { timeOfDay, narrow: isNarrowViewport })
-	);
+	// Följeslagarens ruta mäts ur den renderade scenen. Placeringen varierar med
+	// djur, pose och brytpunkt, så en fast koordinat skulle hamna fel.
+	let sceneEl = $state<HTMLElement | null>(null);
+	let companionMarkBox = $state<CompanionMarkBox | null>(null);
+	const companionMark = $derived(getCompanionMark(worldPresence, companionMarkBox));
+	const worldMarks = $derived([
+		...getWorldMarks(worldPresence, { timeOfDay, narrow: isNarrowViewport }),
+		...(companionMark ? [companionMark] : [])
+	]);
 	const worldReturnCopy = $derived(getWorldReturnCopy(worldPresence, daysSinceLastVisit));
 
 	// Samma tillväxtunderlag som Dashboard, men kontinuitet får höja nivån:
@@ -658,6 +666,32 @@
 	function showAnotherSuggestion() {
 		supportRotation += 1;
 		supportResponses = {};
+	}
+
+	/**
+	 * Mäter var följeslagaren faktiskt hamnade och översätter rutan till procent
+	 * av scenen. Misslyckas mätningen lämnas rutan tom, och då finns ingen
+	 * träffyta alls — resten av scenen påverkas inte.
+	 */
+	function measureCompanionBox() {
+		if (!browser || !sceneEl) return;
+		const pose = sceneEl.querySelector('.progress-companion-pose');
+		if (!(pose instanceof HTMLElement)) {
+			companionMarkBox = null;
+			return;
+		}
+		const sceneRect = sceneEl.getBoundingClientRect();
+		const poseRect = pose.getBoundingClientRect();
+		if (sceneRect.width <= 0 || sceneRect.height <= 0 || poseRect.width <= 0) {
+			companionMarkBox = null;
+			return;
+		}
+		companionMarkBox = {
+			x: ((poseRect.left - sceneRect.left) / sceneRect.width) * 100,
+			y: ((poseRect.top - sceneRect.top) / sceneRect.height) * 100,
+			width: (poseRect.width / sceneRect.width) * 100,
+			height: (poseRect.height / sceneRect.height) * 100
+		};
 	}
 
 	function chooseSupportTopic(topic: string) {
@@ -917,7 +951,21 @@
 			isNarrowViewport = event.matches;
 		};
 		narrowQuery.addEventListener('change', onNarrowChange);
-		const cleanupNarrowQuery = () => narrowQuery.removeEventListener('change', onNarrowChange);
+
+		// Scenen ändrar storlek när bilden laddats och vid varje omritning. En
+		// ResizeObserver täcker båda, så följeslagarens träffyta aldrig ligger kvar
+		// på ett gammalt läge.
+		const sceneResizeObserver =
+			typeof ResizeObserver !== 'undefined' && sceneEl
+				? new ResizeObserver(() => measureCompanionBox())
+				: null;
+		if (sceneResizeObserver && sceneEl) sceneResizeObserver.observe(sceneEl);
+		measureCompanionBox();
+
+		const cleanupNarrowQuery = () => {
+			narrowQuery.removeEventListener('change', onNarrowChange);
+			sceneResizeObserver?.disconnect();
+		};
 
 		const updateCompanionTimeOfDay = () => {
 			const now = new Date();
@@ -990,6 +1038,14 @@
 			observer.disconnect();
 			cleanupSceneWatchers();
 		};
+	});
+
+	// Ny pose eller nytt djur betyder ny storlek och nytt läge i scenen.
+	$effect(() => {
+		companionPoseId;
+		sceneCompanionId;
+		isNarrowViewport;
+		measureCompanionBox();
 	});
 
 	$effect(() => {
@@ -1127,6 +1183,7 @@
 					>
 			<div
 				class="companion-media"
+				bind:this={sceneEl}
 				data-season={companionScene.season}
 				data-time={activeSceneBand}
 				data-companion={sceneCompanionId}

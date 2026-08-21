@@ -50,6 +50,7 @@
 			<button
 				type="button"
 				class={`world-mark world-mark-${mark.id}`}
+				class:is-invisible={mark.invisible}
 				style={markStyle(mark)}
 				aria-pressed={revealedId === mark.id}
 				aria-label={mark.label}
@@ -111,6 +112,14 @@
 	.world-mark:focus-visible {
 		outline: 2px solid rgb(255 250 242 / 0.72);
 		border-radius: 4px;
+	}
+
+	/* Motivet finns redan i scenen - knappen är bara ytan att röra vid. Den
+	   behåller sin fokusram, så den går fortfarande att hitta med tangentbord. */
+	.world-mark.is-invisible {
+		background: none;
+		opacity: 1;
+		animation: none;
 	}
 
 	/* Spåren är alltid dovare än scenen omkring dem. Ingen av dem får läsa som

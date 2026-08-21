@@ -9,6 +9,7 @@ import {
 	getDaysSinceLastVisit,
 	getWorldGrowthLevel,
 	getWorldMarkVariation,
+	getCompanionMark,
 	getWorldMarks,
 	getWorldReturnCopy,
 	getWorldStage,
@@ -165,6 +166,41 @@ describe('spåren i scenen', () => {
 			expect(mark.revealText.length).toBeLessThanOrEqual(60);
 			expect(mark.revealText).not.toMatch(/nivå|poäng|dagar i rad|streak|upplåst|grattis|\d/i);
 		}
+	});
+});
+
+describe('följeslagaren som spår', () => {
+	const box = { x: 61.5, y: 50.6, width: 6.5, height: 21.4 };
+
+	it('finns inte förrän det finns en återkomst att känna igen', () => {
+		expect(getCompanionMark(presence({ activeDays: 1 }), box)).toBeNull();
+		expect(getCompanionMark(presence({ activeDays: 3 }), box)).not.toBeNull();
+	});
+
+	it('ger ingen träffyta utan en mätt ruta', () => {
+		expect(getCompanionMark(presence({ activeDays: 12 }), null)).toBeNull();
+		expect(getCompanionMark(presence({ activeDays: 12 }), { ...box, width: 0 })).toBeNull();
+		expect(getCompanionMark(presence({ activeDays: 12 }), { ...box, height: -4 })).toBeNull();
+	});
+
+	it('lägger sig exakt över den mätta rutan och ritar ingen egen form', () => {
+		const mark = getCompanionMark(presence({ activeDays: 12 }), box);
+
+		expect(mark).toMatchObject({ id: 'companion', x: box.x, y: box.y, width: box.width, invisible: true });
+		expect(getWorldMarkVariation(mark!, 'nagot-besok')).toEqual({ x: box.x, y: box.y, opacityScale: 1 });
+	});
+
+	it('talar om igenkänning, inte om en nivå', () => {
+		const mark = getCompanionMark(presence({ activeDays: 12 }), box);
+
+		expect(mark?.revealText).toBe('Den verkar ha vant sig vid att du kommer tillbaka.');
+		expect(mark?.revealText).not.toMatch(/nivå|poäng|band|steg|\d/i);
+	});
+
+	it('ingår aldrig i de spår som växer fram ur historiken', () => {
+		const ids = getWorldMarks(presence({ activeMonths: 4, activeDays: 40, entryCount: 60 })).map((m) => m.id);
+
+		expect(ids).not.toContain('companion');
 	});
 });
 
