@@ -99,6 +99,57 @@
 	];
 	const selectedCompanion = $derived(getProgressCompanionAnimal(progressCompanion));
 
+	let exportLoading = $state(false);
+	let exportMessage = $state('');
+	let exportMessageType = $state<'success' | 'error'>('success');
+
+	/**
+	 * Hämtar exporten från servern och sparar den som fil. exportLoading spärrar
+	 * knappen, så en andra körning kan inte startas medan den första pågår.
+	 */
+	async function exportMyData() {
+		if (exportLoading) return;
+		exportLoading = true;
+		exportMessage = '';
+
+		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+			if (!session) {
+				goto('/login');
+				return;
+			}
+
+			const response = await fetch('/api/account/export', {
+				headers: { Authorization: `Bearer ${session.access_token}` }
+			});
+			if (!response.ok) {
+				exportMessageType = 'error';
+				exportMessage = 'Kunde inte hämta din data just nu. Försök igen.';
+				return;
+			}
+
+			const blob = await response.blob();
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = `mittpsyke-data-${new Date().toISOString().slice(0, 10)}.json`;
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			URL.revokeObjectURL(url);
+
+			exportMessageType = 'success';
+			exportMessage = 'Din data har laddats ner.';
+		} catch {
+			exportMessageType = 'error';
+			exportMessage = 'Kunde inte nå servern. Försök igen.';
+		} finally {
+			exportLoading = false;
+		}
+	}
+
 	const dataExportMailto = $derived.by(() => {
 		const subject = 'Dataexport – MittPsyke';
 		const body = `Hej,\n\nJag vill få en kopia av min data (dataportabilitet) kopplad till kontot ${accountEmail || '[din e-post]'}.\n\nMvh`;
@@ -761,11 +812,25 @@
 				Du bestämmer själv över din data. Här kan du begära en kopia av det du sparat hos oss
 				(dataportabilitet) eller läsa mer om hur uppgifter hanteras.
 			</p>
-			<a class="save-btn link-btn" href={dataExportMailto}>Begär dataexport</a>
 			<p class="field-hint">
-				Vi svarar och skickar din data i JSON-format inom 30 dagar. Vill du radera allt istället,
-				se <a href="#radera-konto">Radera konto</a> nedan. Fullständig information finns i
-				<a href="/integritet">integritetspolicyn</a>.
+				Filen innehåller dina dagboksinlägg, kvällsincheckningar, svar till följeslagaren,
+				rörelsedata, veckoreflektioner, sparade teman, dina chattar samt dina egna inställningar
+				och mål. Den laddas ner som JSON direkt i webbläsaren.
+			</p>
+			<div class="export-actions">
+				<button class="save-btn" onclick={exportMyData} disabled={exportLoading}>
+					{exportLoading ? 'Sammanställer...' : 'Exportera mina data'}
+				</button>
+				<a class="save-btn link-btn" href={dataExportMailto}>Begär export via mejl</a>
+			</div>
+
+			{#if exportMessage}
+				<p class="feedback {exportMessageType}" role="status" aria-live="polite">{exportMessage}</p>
+			{/if}
+
+			<p class="field-hint">
+				Vill du radera allt istället, se <a href="#radera-konto">Radera konto</a> nedan.
+				Fullständig information finns i <a href="/integritet">integritetspolicyn</a>.
 			</p>
 		</section>
 
@@ -1124,6 +1189,9 @@
 		flex-shrink: 0;
 	}
 
+	/* Samma radlayout som SMS-knapparna: mobil först, knapparna radbryts i
+	   stället för att krympa. */
+	.export-actions,
 	.sms-actions {
 		display: flex;
 		flex-wrap: wrap;

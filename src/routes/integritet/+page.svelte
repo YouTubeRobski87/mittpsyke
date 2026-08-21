@@ -53,7 +53,7 @@
 			<li><strong>Kan man använda tjänsten anonymt?</strong> Ja. Du kan chatta utan konto.</li>
 			<li><strong>Vad sparas med konto?</strong> E-post, sparad dagbokstext, chatthistorik och inställningar — du väljer själv vad du skriver.</li>
 			<li><strong>Kan jag radera kontot?</strong> Ja. Du kan radera kontot och den databasdata som hör till det via inställningar eller genom att kontakta oss.</li>
-			<li><strong>Kan jag exportera min data?</strong> Ja. Kontakta oss så får du en kopia inom 30 dagar.</li>
+			<li><strong>Kan jag exportera min data?</strong> Ja. Under Inställningar → Din data kan du själv ladda ner en JSON-fil med bland annat dina dagboksinlägg, incheckningar, chattar och inställningar. Vill du ha en kopia på annat sätt kan du kontakta oss.</li>
 			<li><strong>Akut läge?</strong> Ring 112 vid akut fara. För vårdråd i Sverige, kontakta 1177.</li>
 		</ul>
 	</section>
