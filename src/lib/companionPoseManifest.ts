@@ -526,23 +526,25 @@ export const AUSTRALISK_SHEPHERD_COMPANION_POSES = [
 	}
 ] satisfies CompanionPose[];
 
-// Björnen använder samma värld som räven, men behöver en mindre och lägre placering
-// tills fler miljöanpassade poser finns. Värdena hålls per vy så att nya björnposer
-// kan läggas till utan att påverka rävens scenlogik.
+// Björnen använder samma värld som räven, men har ett eget markankare på
+// Framsteg: strax till vänster om den inbakade personen, på strandremsan.
+// Det håller den nära som sällskap utan att någonsin hamna ovanpå rygg eller axel.
+// Värdena hålls per vy så att nya björnposer kan läggas till utan att påverka
+// rävens scenlogik.
 export const BEAR_SCENE_PLACEMENTS = {
 	dashboard: { scale: 0.72, x: 78, y: 82 },
 	progress: {
-		scale: 1.1,
-		bottom: '30%',
-		right: '25%',
-		groundLeft: '62.6%',
-		groundTop: '64.7%',
+		scale: 0.98,
+		bottom: '17%',
+		right: '39%',
+		groundLeft: '56.7%',
+		groundTop: '81.8%',
 		compact: {
-			scale: 1.12,
-			bottom: '30%',
-			right: '24%',
-			groundLeft: '62.6%',
-			groundTop: '64.7%'
+			scale: 1,
+			bottom: '17%',
+			right: '39%',
+			groundLeft: '56.7%',
+			groundTop: '81.8%'
 		}
 	}
 } as const;

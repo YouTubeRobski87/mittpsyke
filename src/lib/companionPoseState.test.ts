@@ -13,6 +13,7 @@ import {
 import {
 	DASHBOARD_CABIN_COMPANION_PLACEMENTS,
 	DASHBOARD_CABIN_COPY_SAFE_START_PCT,
+	BEAR_SCENE_PLACEMENTS,
 	COMPANION_POSES,
 	COMPANION_SCENE_CONTEXT_POSITION_IDS,
 	COMPANION_SCENE_POSITIONS,
@@ -326,6 +327,19 @@ describe('vargens ankare på Framsteg', () => {
 			compact: { scale: 1.2, right: '0%', bottom: '42%', groundLeft: '95%', groundTop: '58%' }
 		});
 		expect(WOLF_SCENE_PLACEMENTS.dashboard).toEqual({ scale: 0.9, x: 76, y: 84 });
+	});
+});
+
+describe('björnens ankare på Framsteg', () => {
+	it('placerar björnen på marken till vänster om personen', () => {
+		expect(BEAR_SCENE_PLACEMENTS.progress).toMatchObject({
+			scale: 0.98,
+			right: '39%',
+			bottom: '17%',
+			groundLeft: '56.7%',
+			groundTop: '81.8%',
+			compact: { scale: 1, right: '39%', bottom: '17%', groundLeft: '56.7%', groundTop: '81.8%' }
+		});
 	});
 });
 

@@ -2377,12 +2377,15 @@
 
 	.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
 		width: clamp(50px, 11.2%, 74px);
-		bottom: 27.8%;
+		/* Den liggande filen är bredare än hög och får luft under motivet i
+		   den kvadratiska poserutan. Ett lägre elementankare sätter den synliga
+		   kroppen på samma strandmark som den sittande björnen. */
+		bottom: 13.4%;
 	}
 
 	.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-stretching']) {
-		right: 20.2%;
-		bottom: 28.8%;
+		right: 34.8%;
+		bottom: 17.8%;
 	}
 
 	.companion-media[data-companion='bear'] .companion-ground-shadow {
@@ -2418,13 +2421,13 @@
 	}
 
 	.companion-media[data-companion='bear'][data-pose='bear-sleeping'] .companion-ground-shadow {
-		top: 65.2%;
+		top: 82.2%;
 		width: clamp(62px, 12%, 106px);
 	}
 
 	.companion-media[data-companion='bear'][data-pose='bear-stretching'] .companion-ground-shadow {
-		left: 66.1%;
-		top: 65.1%;
+		left: 58.2%;
+		top: 81.9%;
 	}
 
 	.companion-media[data-time='morning'] :global(.progress-companion-pose) {
@@ -3056,7 +3059,7 @@
 		}
 
 		.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
-			bottom: 28.5%;
+			bottom: 13.4%;
 		}
 
 		.companion-media[data-companion='bear'] .companion-ground-shadow {
@@ -3099,4 +3102,3 @@
 		.icon-badge { width: 2.3rem; height: 2.3rem; }
 	}
 </style>
-
