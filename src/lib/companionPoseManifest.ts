@@ -534,17 +534,22 @@ export const AUSTRALISK_SHEPHERD_COMPANION_POSES = [
 export const BEAR_SCENE_PLACEMENTS = {
 	dashboard: { scale: 0.72, x: 78, y: 82 },
 	progress: {
-		scale: 0.98,
-		bottom: '17%',
-		right: '39%',
-		groundLeft: '56.7%',
-		groundTop: '81.8%',
+		// Desktopscenen beskär bort en stor del av strandens nederkant. Ett
+		// lägre ankare här placerar Björn på gruset intill personen, inte i
+		// vattenytan som ligger direkt ovanför stranden i den beskärningen.
+		scale: 1.18,
+		bottom: '8.5%',
+		right: '36%',
+		groundLeft: '61.4%',
+		groundTop: '91.5%',
 		compact: {
-			scale: 1,
-			bottom: '17%',
-			right: '39%',
-			groundLeft: '56.7%',
-			groundTop: '81.8%'
+			// På mobil ryms nästan hela originalbilden. Där ligger samma
+			// strandremsa högre i rutan, så den behöver ett eget markankare.
+			scale: 1.08,
+			bottom: '16%',
+			right: '36%',
+			groundLeft: '61.4%',
+			groundTop: '84%'
 		}
 	}
 } as const;

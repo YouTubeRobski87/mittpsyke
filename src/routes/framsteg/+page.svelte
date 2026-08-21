@@ -2380,12 +2380,12 @@
 		/* Den liggande filen är bredare än hög och får luft under motivet i
 		   den kvadratiska poserutan. Ett lägre elementankare sätter den synliga
 		   kroppen på samma strandmark som den sittande björnen. */
-		bottom: 13.4%;
+		bottom: 4.5%;
 	}
 
 	.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-stretching']) {
-		right: 34.8%;
-		bottom: 17.8%;
+		right: var(--bear-progress-right);
+		bottom: 9.2%;
 	}
 
 	.companion-media[data-companion='bear'] .companion-ground-shadow {
@@ -2395,6 +2395,11 @@
 		height: clamp(9px, 1.45vw, 15px);
 		opacity: 0.62;
 		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-18deg) scaleX(1.28);
+	}
+
+	.companion-media[data-companion='bear'] .companion-foreground-edge {
+		left: var(--bear-progress-ground-left);
+		top: calc(var(--bear-progress-ground-top) + 0.15%);
 	}
 
 	.companion-media[data-companion='wolf'] .companion-ground-shadow {
@@ -2421,13 +2426,13 @@
 	}
 
 	.companion-media[data-companion='bear'][data-pose='bear-sleeping'] .companion-ground-shadow {
-		top: 82.2%;
+		top: 91.8%;
 		width: clamp(62px, 12%, 106px);
 	}
 
 	.companion-media[data-companion='bear'][data-pose='bear-stretching'] .companion-ground-shadow {
-		left: 58.2%;
-		top: 81.9%;
+		left: var(--bear-progress-ground-left);
+		top: 91.5%;
 	}
 
 	.companion-media[data-time='morning'] :global(.progress-companion-pose) {
@@ -3059,12 +3064,19 @@
 		}
 
 		.companion-media[data-companion='bear'] :global(.progress-companion-pose[data-pose='bear-sleeping']) {
-			bottom: 13.4%;
+			/* Sovposens liggande duk lämnar luft under motivet. Den synliga
+			   kroppen landar därför på samma kompakta strandremsa som övriga poser. */
+			bottom: 10.5%;
 		}
 
 		.companion-media[data-companion='bear'] .companion-ground-shadow {
 			left: var(--bear-progress-compact-ground-left);
 			top: var(--bear-progress-compact-ground-top);
+		}
+
+		.companion-media[data-companion='bear'] .companion-foreground-edge {
+			left: var(--bear-progress-compact-ground-left);
+			top: calc(var(--bear-progress-compact-ground-top) + 0.15%);
 		}
 
 		.companion-media[data-companion='wolf'] .companion-ground-shadow {
