@@ -99,6 +99,7 @@
 		type SupportSuggestion,
 		type SupportView
 	} from '$lib/progress-support';
+	import { buildAnalysisCards, type AnalysisCardId } from '$lib/progress-analysis-cards';
 	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart, ChevronDown } from 'lucide-svelte';
 
 	let { data } = $props<{ data: PageData }>();
@@ -601,6 +602,27 @@
 		hasSensitiveDataConsent ? buildRecurringThemes(insightsData?.narrative?.themes) : []
 	);
 	const narrativeInsight = $derived(insightsData?.narrative ?? null);
+
+	// ── Analysen som fyra skannbara kort ──
+	// Kondenseringen ligger i en ren modul; här hålls bara vilka kort som är
+	// utfällda. Långa formuleringar visas aldrig förrän användaren ber om dem.
+	let openAnalysisCards = $state<Partial<Record<AnalysisCardId, boolean>>>({});
+	let analysisBasisOpen = $state(false);
+	const analysisCards = $derived(
+		buildAnalysisCards({
+			recentComparison,
+			patterns: narrativeInsight?.patterns ?? null,
+			strengths: narrativeInsight?.strengths ?? null,
+			challenges: narrativeInsight?.challenges ?? null,
+			timelineObservations: narrativeInsight?.timeline?.observations ?? null,
+			themes: narrativeInsight?.themes ?? null,
+			dataBasis: narrativeInsight?.dataBasis ?? null
+		})
+	);
+
+	function toggleAnalysisCard(id: AnalysisCardId) {
+		openAnalysisCards = { ...openAnalysisCards, [id]: !openAnalysisCards[id] };
+	}
 	const allMoodAverage = $derived.by(() => {
 		if (moodSamples.length === 0) return null;
 		return moodSamples.reduce((sum, sample) => sum + sample.mood, 0) / moodSamples.length;
@@ -1266,13 +1288,6 @@
 					{#if moodTimeline.hasChart}
 						<p class="recent-summary">{periodAnalysis.summary}</p>
 					{/if}
-					{#if recentComparison}
-						<div class="recent-comparison">
-							<strong>{recentComparison.title}</strong>
-							<span>{recentComparison.description}</span>
-							<small>{recentComparison.evidence}</small>
-						</div>
-					{/if}
 					{#if selectedMoodPoint}
 						<section class="chart-detail" aria-live="polite" aria-label="Detaljer för vald punkt">
 							<strong>{selectedMoodPoint.fullLabel} · {selectedMoodPoint.value.toFixed(1).replace('.', ',')}/10</strong>
@@ -1292,7 +1307,7 @@
 					<div class="icon-badge insight"><Lightbulb size={24} /></div>
 					<h2 id="analysis-heading">Det som börjar synas</h2>
 				</div>
-				<p class="analysis-intro">Här visas bara mönster som går att räkna fram från dina registreringar och sparade texter. De beskriver samband, inte orsaker.</p>
+				<p class="analysis-intro">Samband som går att räkna fram ur dina egna registreringar.</p>
 				{#if !isAnonymous && !hasSensitiveDataConsent}
 					<ConsentGate
 						title="Se analys av dina mönster"
@@ -1305,75 +1320,76 @@
 				{:else if insightsError}
 					<p class="reflection-copy">Det gick inte att hämta analysen just nu.</p>
 				{:else if narrativeInsight}
-					<p class="analysis-basis">
-						Analysen bygger på {narrativeInsight.dataBasis.moodEntryCount} {narrativeInsight.dataBasis.moodEntryCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} och {narrativeInsight.dataBasis.textEntryCount} {narrativeInsight.dataBasis.textEntryCount === 1 ? 'sparad text' : 'sparade texter'}{#if narrativeInsight.dataBasis.firstDate && narrativeInsight.dataBasis.latestDate} från {narrativeInsight.dataBasis.firstDate} till {narrativeInsight.dataBasis.latestDate}{/if}.
-					</p>
-					{#if narrativeInsight.dataBasis.textEntryCount === 0}
-						<p class="reflection-copy">Det går att se hur måendet rör sig över tid, men det finns inga sparade texter att koppla teman eller situationer till ännu.</p>
-						<div class="analysis-section">
-							<h3>Förändring över tid</h3>
-							{#if periodAnalysis.observations.length > 0}
-								<ul class="evidence-observations">
-									{#each periodAnalysis.observations as observation}
-										<li><strong>{observation}</strong><small>{periodAnalysis.summary}</small></li>
-									{/each}
-								</ul>
-							{:else}
-								<p class="reflection-copy">Det finns ännu inte tillräckligt med data för att se en tydlig förändring över tid.</p>
-							{/if}
-						</div>
-					{:else}
-						<div class="analysis-section">
-							<h3>Mönster som återkommer</h3>
-							{#if narrativeInsight.patterns.length > 0}
-								<ul class="evidence-observations">
-									{#each narrativeInsight.patterns as insight}
-										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>Underlag · {insight.evidence}</small></li>
-									{/each}
-								</ul>
-							{:else}
-								<p class="reflection-copy">Det finns ännu inte tillräckligt med data för att se ett tydligt återkommande mönster här.</p>
-							{/if}
-						</div>
+					<ul class="analysis-grid">
+						{#each analysisCards as card (card.id)}
+							<li class="analysis-tile" class:is-empty={card.empty} data-card={card.id}>
+								<h3>{card.title}</h3>
+								{#if card.caption}
+									<p class="analysis-tile-caption">{card.caption}</p>
+								{/if}
+								<p class="analysis-tile-conclusion">{card.conclusion}</p>
 
-						<div class="analysis-section">
-							<h3>Vad verkar hjälpa?</h3>
-							{#if narrativeInsight.strengths.length > 0}
-								<ul class="evidence-observations">
-									{#each narrativeInsight.strengths as insight}
-										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>Underlag · {insight.evidence}</small></li>
-									{/each}
-								</ul>
-							{:else}
-								<p class="reflection-copy">Det finns ännu inte tillräckligt med data för att säga vad som oftare sammanfaller med ljusare dagar.</p>
-							{/if}
-						</div>
+								{#if card.chips.length > 0}
+									<ul class="analysis-chips">
+										{#each card.chips as chip (chip)}
+											<li class="analysis-chip">{chip}</li>
+										{/each}
+									</ul>
+								{/if}
 
-						<div class="analysis-section">
-							<h3>När det brukar bli tyngre</h3>
-							{#if narrativeInsight.challenges.length > 0}
-								<ul class="evidence-observations">
-									{#each narrativeInsight.challenges as insight}
-										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>Underlag · {insight.evidence}</small></li>
-									{/each}
-								</ul>
-							{:else}
-								<p class="reflection-copy">Det finns ännu inte tillräckligt med data för att säga vad som oftare sammanfaller med tyngre dagar.</p>
-							{/if}
-						</div>
+								{#if card.items.length > 0}
+									<ul class="analysis-items">
+										{#each card.items as item (item.label)}
+											<li>
+												<strong>{item.label}</strong>
+												<span>{item.note}</span>
+											</li>
+										{/each}
+									</ul>
+								{/if}
 
-						<div class="analysis-section">
-							<h3>Förändring över tid</h3>
-							{#if narrativeInsight.timeline.observations.length > 0}
-								<ul class="evidence-observations">
-									{#each narrativeInsight.timeline.observations as insight}
-										<li><strong>{insight.title}</strong><span>{insight.description}</span><small>Underlag · {insight.evidence}</small></li>
-									{/each}
-								</ul>
-							{:else}
-								<p class="reflection-copy">Det finns ännu inte tillräckligt med jämförbart underlag för att visa en tydlig förändring över tid.</p>
-							{/if}
-						</div>
+								{#if card.explanation}
+									<p class="analysis-tile-explanation">{card.explanation}</p>
+								{/if}
+
+								{#if card.dataPoint}
+									<p class="analysis-tile-data">{card.dataPoint}</p>
+								{/if}
+
+								{#if card.details.length > 0}
+									<button
+										type="button"
+										class="analysis-more"
+										aria-expanded={openAnalysisCards[card.id] === true}
+										onclick={() => toggleAnalysisCard(card.id)}
+									>
+										{openAnalysisCards[card.id] ? 'Visa mindre' : 'Visa mer'}
+									</button>
+									{#if openAnalysisCards[card.id]}
+										<dl class="analysis-details">
+											{#each card.details as item (item.label + item.value)}
+												<dt>{item.label}</dt>
+												<dd>{item.value}</dd>
+											{/each}
+										</dl>
+									{/if}
+								{/if}
+							</li>
+						{/each}
+					</ul>
+
+					<button
+						type="button"
+						class="analysis-more analysis-basis-toggle"
+						aria-expanded={analysisBasisOpen}
+						onclick={() => (analysisBasisOpen = !analysisBasisOpen)}
+					>
+						{analysisBasisOpen ? 'Dölj datagrunden' : 'Vad bygger det här på?'}
+					</button>
+					{#if analysisBasisOpen}
+						<p class="analysis-basis">
+							Analysen bygger på {narrativeInsight.dataBasis.moodEntryCount} {narrativeInsight.dataBasis.moodEntryCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} och {narrativeInsight.dataBasis.textEntryCount} {narrativeInsight.dataBasis.textEntryCount === 1 ? 'sparad text' : 'sparade texter'}{#if narrativeInsight.dataBasis.firstDate && narrativeInsight.dataBasis.latestDate} från {narrativeInsight.dataBasis.firstDate} till {narrativeInsight.dataBasis.latestDate}{/if}. Här visas bara mönster som går att räkna fram ur dina registreringar och sparade texter. Varje slutsats visas först när den passerat ett tröskelvärde, och den beskriver samband — inte orsak.
+						</p>
 					{/if}
 				{:else}
 					<p class="reflection-copy">Det finns ännu inte tillräckligt med data för en personlig analys.</p>
@@ -1864,23 +1880,6 @@
 	.chart-detail span { font-size: 0.92rem; }
 	.chart-detail small { font-size: 0.82rem; }
 
-	.recent-comparison {
-		display: grid;
-		gap: 0.35rem;
-		max-width: 46rem;
-		padding: 0.9rem 1rem;
-		border-left: 3px solid color-mix(in srgb, var(--theme-accent, #557c68) 56%, transparent);
-		border-radius: 0 0.75rem 0.75rem 0;
-		background: hsl(var(--muted) / 0.24);
-		line-height: 1.5;
-	}
-
-	.recent-comparison strong { color: hsl(var(--foreground)); font-size: 0.95rem; }
-	.recent-comparison span,
-	.recent-comparison small { color: hsl(var(--muted-foreground)); }
-	.recent-comparison span { font-size: 0.92rem; }
-	.recent-comparison small { font-size: 0.82rem; line-height: 1.45; }
-
 	.analysis-intro {
 		color: hsl(var(--muted-foreground));
 	}
@@ -1898,11 +1897,6 @@
 		display: grid;
 		gap: 0.7rem;
 		padding-top: 0.2rem;
-	}
-
-	.analysis-section + .analysis-section {
-		padding-top: 1.35rem;
-		border-top: 1px solid var(--color-dashboard-border);
 	}
 
 	.analysis-section h3 {
@@ -1946,6 +1940,179 @@
 	.evidence-observations small {
 		font-size: 0.82rem;
 		line-height: 1.45;
+	}
+
+	/* ── Analysen som fyra kort ──
+	   Mobil först: en kolumn. Från 720 px läggs de i 2x2, vilket håller alla
+	   fyra slutsatserna inom en skärmhöjd på desktop. */
+	.analysis-grid {
+		display: grid;
+		gap: 0.75rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.analysis-tile {
+		display: grid;
+		align-content: start;
+		gap: 0.4rem;
+		padding: 1rem 1.1rem;
+		border: 1px solid var(--color-dashboard-border);
+		border-radius: 0.9rem;
+		background: hsl(var(--muted) / 0.2);
+	}
+
+	.analysis-tile h3 {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.analysis-tile-caption {
+		margin: -0.2rem 0 0;
+		color: hsl(var(--muted-foreground) / 0.85);
+		font-size: 0.76rem;
+	}
+
+	/* Slutsatsen är kortets tyngdpunkt och ska kunna läsas ensam. */
+	.analysis-tile-conclusion {
+		margin: 0.1rem 0 0;
+		color: hsl(var(--foreground));
+		font-size: 1.02rem;
+		font-weight: 600;
+		line-height: 1.35;
+	}
+
+	.is-empty .analysis-tile-conclusion {
+		color: hsl(var(--muted-foreground));
+		font-weight: 500;
+	}
+
+	.analysis-tile-explanation {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.9rem;
+		line-height: 1.5;
+	}
+
+	.analysis-tile-data {
+		margin: 0;
+		color: hsl(var(--muted-foreground) / 0.85);
+		font-size: 0.78rem;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.analysis-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem;
+		margin: 0.15rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.analysis-chip {
+		padding: 0.2rem 0.6rem;
+		border: 1px solid color-mix(in srgb, var(--theme-accent, #557c68) 30%, transparent);
+		border-radius: 999px;
+		color: hsl(var(--foreground));
+		font-size: 0.8rem;
+		line-height: 1.4;
+	}
+
+	.analysis-items {
+		display: grid;
+		gap: 0.5rem;
+		margin: 0.15rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.analysis-items li {
+		display: grid;
+		gap: 0.1rem;
+	}
+
+	.analysis-items strong {
+		color: hsl(var(--foreground));
+		font-size: 0.92rem;
+		font-weight: 600;
+	}
+
+	.analysis-items span {
+		color: hsl(var(--muted-foreground));
+		font-size: 0.84rem;
+		line-height: 1.45;
+	}
+
+	.analysis-more {
+		justify-self: start;
+		margin-top: 0.15rem;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.82rem;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		cursor: pointer;
+	}
+
+	.analysis-more:hover,
+	.analysis-more:focus-visible {
+		color: hsl(var(--foreground));
+	}
+
+	/* Fördjupningen bär hela det ursprungliga underlaget. Den får vara lång -
+	   den syns bara för den som bett om den. */
+	.analysis-details {
+		display: grid;
+		gap: 0.45rem;
+		margin: 0.35rem 0 0;
+		padding-top: 0.6rem;
+		border-top: 1px solid var(--color-dashboard-border);
+	}
+
+	.analysis-details dt {
+		color: hsl(var(--foreground));
+		font-size: 0.84rem;
+		font-weight: 600;
+	}
+
+	.analysis-details dd {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.82rem;
+		line-height: 1.5;
+	}
+
+	.analysis-basis-toggle {
+		margin-top: 0.35rem;
+	}
+
+	@media (max-width: 620px) {
+		.analysis-grid {
+			gap: 0.6rem;
+		}
+
+		.analysis-tile {
+			gap: 0.3rem;
+			padding: 0.8rem 0.9rem;
+		}
+
+		.analysis-tile-conclusion {
+			font-size: 0.98rem;
+		}
+	}
+
+	@media (min-width: 720px) {
+		.analysis-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 	}
 
 	/* Kortet ska läsas som en del av landskapet, inte som en informationsruta. */

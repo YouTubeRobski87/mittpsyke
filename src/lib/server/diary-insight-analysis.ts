@@ -18,6 +18,11 @@ export type EvidenceClaim = {
 	title: string;
 	description: string;
 	evidence: string;
+	/**
+	 * Temat påståendet handlar om, när det finns ett. Presentationslagret kan då
+	 * visa en kort etikett utan att behöva tolka rubriktexten.
+	 */
+	topic?: string;
 };
 
 export type ThemeInsight = {
@@ -374,6 +379,7 @@ function buildMoodAssociationGroups(entries: PreparedEntry[]): MoodAssociationGr
 		if (label === 'MittPsyke') continue;
 		if (difference >= MOOD_ASSOCIATION_THRESHOLD) {
 			helpful.push({
+				topic: label,
 				title: `${label} förekommer oftare under ljusare dagar`,
 				description: `När ${label.toLowerCase()} nämns ligger humörvärdet oftare högre än i dina övriga texter. Det visar ett samband i underlaget, inte vad som orsakar det.`,
 				evidence,
@@ -382,6 +388,7 @@ function buildMoodAssociationGroups(entries: PreparedEntry[]): MoodAssociationGr
 		}
 		if (difference <= -MOOD_ASSOCIATION_THRESHOLD) {
 			challenging.push({
+				topic: label,
 				title: `${label} sammanfaller oftare med tyngre dagar`,
 				description: `När ${label.toLowerCase()} nämns ligger humörvärdet oftare lägre än i dina övriga texter. Det visar ett samband i underlaget, inte vad som orsakar det.`,
 				evidence,
@@ -390,6 +397,7 @@ function buildMoodAssociationGroups(entries: PreparedEntry[]): MoodAssociationGr
 		}
 		if (matchingCount >= 4 && Math.abs(difference) < 0.4) {
 			neutral.push({
+				topic: label,
 				title: `${label} återkommer i både lättare och tyngre perioder`,
 				description: `När ${label.toLowerCase()} nämns ligger humörvärdet ungefär på samma nivå som i dina övriga texter. Det går därför inte att se ett enkelt samband här.`,
 				evidence,
