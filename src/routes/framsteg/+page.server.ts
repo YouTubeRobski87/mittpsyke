@@ -13,6 +13,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (!user) {
 		return {
 			isAnonymous: true,
+			accountCreatedAt: null,
 			streak: { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 },
 			milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
 			weeklyEntries: 0,
@@ -36,6 +37,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		isAnonymous: false,
+		// Kontots ålder är en av världens tidssignaler. Den läses här i stället
+		// för via ett extra anrop; user finns redan.
+		accountCreatedAt: user.created_at ?? null,
 		streak: { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 },
 		milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
 		weeklyEntries: 0,

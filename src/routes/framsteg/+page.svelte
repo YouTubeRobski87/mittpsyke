@@ -38,6 +38,17 @@
 		type CompanionPose as CompanionPoseData
 	} from '$lib/companionPoseManifest';
 	import { getGardenGrowthPoints, getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
+	import WorldMarks from '$lib/components/world/WorldMarks.svelte';
+	import {
+		buildWorldPresence,
+		getDaysSinceLastVisit,
+		getWorldGrowthLevel,
+		getWorldMarks,
+		getWorldReturnCopy,
+		getWorldStage,
+		readLastVisit,
+		recordVisit
+	} from '$lib/world/worldStage';
 	import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
 	import {
 		trackInsightOpened,
@@ -330,6 +341,8 @@
 		companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
 		companionDaily?: { answeredDayCount: number } | null;
 		isAnonymous?: boolean;
+		/** Kontots skapandedatum. En av världens tidssignaler, aldrig visad som siffra. */
+		accountCreatedAt?: string | null;
 	}
 
 	const ANONYMOUS_PREVIEW_STREAK: StreakData = {
@@ -506,9 +519,42 @@
 		getLivingWorldReflectionCopy(isAnonymous ? undefined : entryCount)
 	);
 	const activeDays = $derived(isAnonymous ? 11 : loadedActiveDays);
-	// Samma tillväxtunderlag som Dashboard. Presentationen här ändrar aldrig världen.
+
+	// ── Världens långsamma utveckling ──
+	// Underlaget är enbart tid, återkomst och aktivitet. Inga humörvärden går in
+	// här: hur användaren mår får aldrig avgöra hur platsen ser ut.
+	const worldPresence = $derived(
+		isAnonymous
+			? buildWorldPresence({})
+			: buildWorldPresence({
+					heatmapData: loadedHeatmapData,
+					moodDates: loadedMoodSamples.map((sample) => sample.date),
+					entryCount,
+					moodEntryCount: loadedMoodSamples.length,
+					reflectionCount: data.companionDaily?.answeredDayCount ?? 0,
+					accountCreatedAt: data.accountCreatedAt ?? null
+				})
+	);
+	const worldStage = $derived(getWorldStage(worldPresence));
+	// Ett besök ger samma små förskjutningar hela vägen; nästa besök ger andra.
+	let visitSeed = $state<string | null>(null);
+	let daysSinceLastVisit = $state<number | null>(null);
+	// Serverrenderingen utgår från den breda scenen. De minsta spåren tas bort
+	// först när klienten vet att vyn faktiskt är smal.
+	let isNarrowViewport = $state(false);
+	const worldMarks = $derived(
+		getWorldMarks(worldPresence, { timeOfDay, narrow: isNarrowViewport })
+	);
+	const worldReturnCopy = $derived(getWorldReturnCopy(worldPresence, daysSinceLastVisit));
+
+	// Samma tillväxtunderlag som Dashboard, men kontinuitet får höja nivån:
+	// någon som återvänder och registrerar utan att skriva långa texter ska också
+	// få en rikare plats. Math.max gör steget enkelriktat - inget kan tas bort.
 	const growthLevel = $derived(
-		getGrowthLevel(getGardenGrowthPoints(entryCount, data.companionDaily?.answeredDayCount ?? 0))
+		Math.max(
+			getGrowthLevel(getGardenGrowthPoints(entryCount, data.companionDaily?.answeredDayCount ?? 0)),
+			getWorldGrowthLevel(worldStage)
+		)
 	);
 	// Växtnivån styr hur rik den beständiga världen är. Reaktiv: uppdateras när
 	// loadProgressData() satt loadedGrowthLevel efter klientfetch.
@@ -580,6 +626,28 @@
 
 	function supportStorage() {
 		return browser ? window.localStorage : null;
+	}
+
+	/**
+	 * Läser förra besöket innan det här besöket skrivs över det, så en återkomst
+	 * hinner märkas. Seeden lever i sessionStorage: samma flik ger samma värld
+	 * hela vägen, en ny flik ger nästa besöks små variationer.
+	 */
+	function initWorldVisit() {
+		if (!browser) return;
+		const now = new Date();
+		daysSinceLastVisit = getDaysSinceLastVisit(readLastVisit(window.localStorage), now);
+		recordVisit(window.localStorage, now);
+
+		const seedKey = 'mittpsyke:world-visit-seed:v1';
+		const existing = window.sessionStorage.getItem(seedKey);
+		if (existing) {
+			visitSeed = existing;
+			return;
+		}
+		const seed = window.crypto.randomUUID();
+		window.sessionStorage.setItem(seedKey, seed);
+		visitSeed = seed;
 	}
 
 	function respondToSuggestion(suggestion: SupportSuggestion, response: SupportResponse) {
@@ -841,6 +909,15 @@
 		// Enbart om vyn öppnades och om besökaren var inloggad. Ingen dagboksdata.
 		trackProgressViewOpened({ signed_in: !isAnonymous });
 		supportPreferences = readSupportPreferences(supportStorage());
+		initWorldVisit();
+
+		const narrowQuery = window.matchMedia('(max-width: 620px)');
+		isNarrowViewport = narrowQuery.matches;
+		const onNarrowChange = (event: MediaQueryListEvent) => {
+			isNarrowViewport = event.matches;
+		};
+		narrowQuery.addEventListener('change', onNarrowChange);
+		const cleanupNarrowQuery = () => narrowQuery.removeEventListener('change', onNarrowChange);
 
 		const updateCompanionTimeOfDay = () => {
 			const now = new Date();
@@ -858,7 +935,10 @@
 		};
 		updateCompanionTimeOfDay();
 		const companionTimeTimer = window.setInterval(updateCompanionTimeOfDay, 60 * 1000);
-		const cleanupCompanionTime = () => window.clearInterval(companionTimeTimer);
+		const cleanupSceneWatchers = () => {
+			window.clearInterval(companionTimeTimer);
+			cleanupNarrowQuery();
+		};
 
 		if (isAnonymous) {
 			progressLoaded = true;
@@ -867,7 +947,7 @@
 			if (browser) {
 				localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
 			}
-			return cleanupCompanionTime;
+			return cleanupSceneWatchers;
 		}
 
 		void loadMoodTimeline();
@@ -880,7 +960,7 @@
 		maybeLoadInsights();
 
 		if (typeof IntersectionObserver === 'undefined') {
-			return cleanupCompanionTime;
+			return cleanupSceneWatchers;
 		}
 
 		const observer = new IntersectionObserver(
@@ -908,7 +988,7 @@
 
 		return () => {
 			observer.disconnect();
-			cleanupCompanionTime();
+			cleanupSceneWatchers();
 		};
 	});
 
@@ -1090,6 +1170,7 @@
 				<span class="companion-foreground-edge" aria-hidden="true"></span>
 				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
 				<CompanionFriend class="progress-companion-friend" companionId={sceneCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
+				<WorldMarks class="progress-world-marks" marks={worldMarks} {visitSeed} />
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
 			<div class="companion-copy">
@@ -1100,7 +1181,7 @@
 						? companionScene.anonymousCopy
 						: companionScene.copy}
 				</p>
-				<p>{livingWorldReflectionCopy}</p>
+				<p>{worldReturnCopy ?? livingWorldReflectionCopy}</p>
 			</div>
 			</div>
 					</section>
@@ -2278,6 +2359,12 @@
 			linear-gradient(76deg, transparent 0 60%, rgb(91 109 65 / 0.36) 61% 62%, transparent 63%);
 		opacity: 0.36;
 		pointer-events: none;
+	}
+
+	/* Spåren hör till scenens omgivning: ovanpå bakgrunden och de beständiga
+	   lagren, men alltid bakom följeslagaren och texten. */
+	.companion-media :global(.progress-world-marks) {
+		--world-marks-z: var(--scene-ambient);
 	}
 
 	.companion-copy {
