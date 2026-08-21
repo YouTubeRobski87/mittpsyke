@@ -1509,36 +1509,94 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 	{
 		pillarSlug: 'angest',
 		slug: 'vaknar-med-angest',
-		title: 'Vaknar med ångest – när morgonen börjar tungt',
-		description: 'Om att vakna med ångest, klump i magen eller oro – och hur du kan börja dagen på ett lugnare sätt.',
-		updatedAt: '2026-03-14',
+		nextStepTool: 'grounding-5-4-3-2-1',
+		title: 'Vaknar med ångest på natten – varför händer det?',
+		description:
+			'Vaknar du med ångest på natten? Läs om möjliga förklaringar, hur du kan göra stunden mer hanterbar och när det är bra att söka vård.',
+		publishedAt: '2026-08-21',
+		seoTitle: 'Vaknar med ångest på natten – varför händer det? | MittPsyke',
+		seoDescription:
+			'Vaknar du med ångest på natten? Få lugn information om möjliga förklaringar, vad du kan göra i stunden och när du bör söka vård.',
+		content: `## När du vaknar med ångest på natten
+
+		Att vakna med oro, hjärtklappning eller en stark obehagskänsla kan vara skrämmande, särskilt när det är mörkt och du kanske är trött och desorienterad. Du behöver inte förstå exakt varför det händer just då. Först kan det räcka att hjälpa dig själv att komma tillbaka till stunden.
+
+		Ångest kan kännas tydligt i kroppen, men det går inte att avgöra orsaken enbart utifrån att du vaknar med ångest. Om symtomen är nya, svåra eller oroar dig är det klokt att låta vården bedöma dem.
+
+		## Det kan finnas flera möjliga förklaringar
+
+		Korta uppvaknanden under natten är vanliga. Ibland somnar man om utan att minnas det. Om du vaknar när kroppen redan är spänd eller tankarna snabbt går i gång kan uppvaknandet i stället kännas stort och hotfullt.
+
+		Stress, oro, sömnbrist och en period med mycket belastning kan samspela med hur lätt det är att vakna och hur starkt kroppen reagerar. För en del finns ett tydligt mönster, för andra är sambandet inte alls självklart. Det är därför bättre att vara nyfiken på vad som händer än att försöka bestämma en enda förklaring mitt i natten.
+
+		### Kroppsliga signaler kan kännas starkare när allt är tyst
+
+		När du vaknar i mörkret kan hjärtslag, andning, värme eller spänning i kroppen ta mycket plats. Ångest kan ge kroppsliga reaktioner, men liknande symtom kan också ha andra orsaker. Försök därför att inte själv avgöra att det “bara” är ångest om något känns nytt eller annorlunda för dig.
+
+		### Ibland kan det handla om en panikreaktion
+
+		En panikattack kan komma plötsligt och kännas intensiv, med till exempel hjärtklappning, svettningar, yrsel eller stark rädsla. Det går inte att avgöra genom en artikel om det du upplever är en panikattack. Om uppvaknandet mest handlar om en akut, stark kroppslig reaktion kan du läsa mer om <a href="/guider/panikattack/panikattacker-pa-natten">panikattacker på natten</a>.
+
+		## Vad kan hjälpa i stunden?
+
+		Målet behöver inte vara att somna om direkt eller få bort all ångest. Försök i stället att göra de närmaste minuterna lite mer hanterbara.
+
+		- **Orientera dig lugnt.** Se dig omkring, lägg märke till var du är och påminn dig om att du har vaknat. Ett dämpat ljus kan kännas hjälpsamt om mörkret gör dig mer rädd.
+		- **Låt andningen få vara mjuk.** Försök inte pressa fram stora andetag. Om det känns möjligt kan du låta utandningen bli lite längre och bara följa några andetag.
+		- **Rikta uppmärksamheten mot något konkret.** Känn täcket mot kroppen, fötterna mot golvet eller nämn några saker du ser. Du kan också prova <a href="/ovningar/grounding-5-4-3-2-1">grounding-övningen 5-4-3-2-1</a> i din egen takt.
+		- **Sänk kravet för resten av natten.** Du behöver inte lösa morgondagen eller förstå allt just nu. Om du vill kan du skriva en kort rad i <a href="/dagbok">dagboken</a> om vad som hände och återvända till den när det är ljust.
+
+		## Skillnaden mellan att vakna med ångest och nattlig panik
+
+		Att vakna med ångest behöver inte betyda att du har haft en panikattack. Ibland handlar det mer om oro som blir tydlig när du vaknar, eller om tankar som snabbt tar fart. En panikattack brukar upplevas som mer plötslig och intensiv, men gränsen är inte alltid lätt att dra själv.
+
+		Om du framför allt märker att ångesten växer redan under kvällen eller när du ska lägga dig kan <a href="/guider/angest/angest-pa-kvallen">ångest på kvällen</a> vara en mer träffsäker fördjupning. Om natten ofta fylls av tankar och det är svårt att hitta tillbaka till sömnen kan du också läsa om <a href="/guider/sovproblem/nattlig-oro">nattlig oro</a> och <a href="/guider/angest/angest-och-somn">ångest och sömn</a>.
+
+		## Om det händer återkommande
+
+		Om du märker ett återkommande mönster kan det vara hjälpsamt att notera några enkla saker dagen efter: ungefär när du vaknade, hur det kändes i kroppen, om något verkade ha hjälpt och hur dagen varit i stort. Det är inte till för att övervaka dig själv eller hitta ett perfekt svar, utan kan ge ett underlag om du senare vill prata med vården.
+
+		Återkommande uppvaknanden, oro för att somna eller en vardag som börjar formas av rädslan för nästa natt är skäl att söka mer stöd. Du ska inte behöva bära det ensam.
+
+		## När är det bra att söka vård eller stöd?
+
+		Kontakta en vårdcentral om ångesten återkommer och gör det svårt att fungera i vardagen, eller om du börjar undvika sömn eller situationer av rädsla för nya reaktioner. Ring 1177 om du behöver sjukvårdsrådgivning eller hjälp att bedöma vart du kan vända dig.
+
+		Ring 112 vid direkt fara för livet. Sök också akut hjälp vid till exempel bröstsmärta, svår andnöd eller svimning. Om du har tankar eller planer på att skada dig själv ska du inte vara ensam med det utan söka akut hjälp direkt.`,
+		updatedAt: '2026-08-21',
 		sources: [
 			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+			{ label: 'Paniksyndrom – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/paniksyndrom/' },
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Hjärtklappning – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/hjarta-och-blodkarl/hjartrytm/hjartklappning/' }
 		],
 		faqs: [
 			{
-				question: 'Varför känns ångesten värst på morgonen?',
-				answer: 'Stresshormonet kortisol toppar tidigt på morgonen. För den som redan bär på oro kan det skapa en stark ångestkänsla direkt vid uppvaknandet.'
+				question: 'Varför vaknar jag med ångest på natten?',
+				answer: 'Det kan finnas flera möjliga förklaringar, till exempel stress, oro, sömnsvårigheter eller en stark kroppslig reaktion. Det går inte att avgöra orsaken enbart utifrån ett uppvaknande.'
 			},
 			{
-				question: 'Är det farligt att vakna med ångest?',
-				answer: 'Inte farligt, men det är ett tecken på att kroppen och sinnet behöver mer stöd. Det förtjänar att tas på allvar.'
+				question: 'Är det samma sak som en panikattack på natten?',
+				answer: 'Inte alltid. En panikattack brukar kännas plötslig och intensiv, men det går inte att avgöra genom en artikel vad som ligger bakom just dina symtom.'
+			},
+			{
+				question: 'Varför vaknar jag med hjärtklappning och ångest?',
+				answer: 'Ångest och panik kan ge hjärtklappning, men hjärtklappning kan också ha andra orsaker. Sök vård om symtomen är nya, svåra eller oroar dig.'
 			},
 			{
 				question: 'Vad kan jag göra direkt när jag vaknar?',
-				answer: 'Ligg still en stund. Lägg handen på magen och andas lugnt. Undvik att direkt kolla telefonen – ge kroppen en chans att landa.'
+				answer: 'Försök orientera dig lugnt, rikta uppmärksamheten mot något konkret och låt andningen vara mjuk. Målet behöver inte vara att bli helt lugn direkt, utan att göra stunden lite mer hanterbar.'
 			},
 			{
-				question: 'Kan detta bero på dålig sömn?',
-				answer: 'Ja, sömnbrist och ytlig sömn kan göra nervsystemet mer känsligt och förstärka morgonångesten. De hänger ofta ihop.'
+				question: 'När bör jag söka vård?',
+				answer: 'Kontakta vårdcentralen om ångesten återkommer och påverkar vardagen. Ring 1177 för råd. Vid direkt fara för livet, eller vid exempelvis bröstsmärta, svår andnöd eller svimning, ska du söka akut hjälp via 112.'
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider/angest/angest-och-somn' },
-			{ title: 'Ångesthjälp – vad du kan göra när ångesten tar tag', href: '/guider/angest/angest-hjalp' },
-			{ title: 'Stressymtom – tecken på att kroppen bär för mycket', href: '/guider/stress/stressymtom' }
+			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider/angest/angest-pa-kvallen' },
+			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider/sovproblem/nattlig-oro' },
+			{ title: 'Panikattacker på natten – varför händer det och vad du kan göra', href: '/guider/panikattack/panikattacker-pa-natten' },
+			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider/angest/angest-och-somn' }
 		],
 	},
 	{
