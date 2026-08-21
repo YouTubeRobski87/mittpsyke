@@ -22,6 +22,9 @@
 	--surface-muted: 38 30% 95%;
 	--surface-soft: 210 32% 96%;
 	--foreground: 240 10% 4%;
+	/* Motparten till --muted-foreground. Alias till --surface-muted så att dova
+	   ytor och dov text hämtar sin färg ur samma palett. */
+	--muted: var(--surface-muted);
 	--muted-foreground: 240 4% 46%;
 	--border: 240 6% 90%;
 	--success-surface: 211 62% 95%;
@@ -117,6 +120,7 @@
 	--surface-muted: 222 14% 16%;
 	--surface-soft: 217 26% 16%;
 	--foreground: 0 0% 95%;
+	--muted: var(--surface-muted);
 	--muted-foreground: 240 5% 65%;
 	--border: 220 10% 24%;
 	--success-surface: 214 34% 20%;
