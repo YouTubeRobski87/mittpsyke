@@ -56,6 +56,27 @@ export type SeoLandingPage = {
 	sources?: SourceItem[];
 };
 
+type DatedContent = {
+	title?: string;
+	publishedAt?: string;
+	updatedAt?: string;
+	slug?: string;
+	pillarSlug?: string;
+};
+
+/**
+ * Håller publiceringsmetadata trovärdig i de handskrivna guidekatalogerna.
+ * Funktionen anropas i testsviten, som också körs före produktionens build.
+ */
+export function findInvalidContentDateOrder(entries: readonly DatedContent[]) {
+	return entries.flatMap((entry) => {
+		if (!entry.publishedAt || !entry.updatedAt || entry.updatedAt >= entry.publishedAt) return [];
+
+		const identifier = [entry.pillarSlug, entry.slug].filter(Boolean).join('/') || entry.title || 'okänt innehåll';
+		return [`${identifier}: updatedAt (${entry.updatedAt}) is earlier than publishedAt (${entry.publishedAt})`];
+	});
+}
+
 export const pillars: Pillar[] = [
 	{
 		slug: 'angest',

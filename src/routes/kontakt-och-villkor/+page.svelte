@@ -43,7 +43,6 @@
 			<strong>E-post:</strong>
 			<a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a>
 		</li>
-		<li><strong>Postadress:</strong> Kompletteras.</li>
 	</ul>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Du kan kontakta MittPsyke via e-post om du har frågor om konto, data, export,

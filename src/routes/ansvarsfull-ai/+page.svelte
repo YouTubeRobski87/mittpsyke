@@ -2,6 +2,9 @@
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 </script>
 
 <SEO canonical="https://www.mittpsyke.se/ansvarsfull-ai" />
@@ -48,7 +51,7 @@
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Vad AI-modellen gör och inte gör</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		Samtalsstödet bygger på en språkmodell (OpenAI gpt-4o-mini) som formulerar svar utifrån din
+		Samtalsstödet bygger på språkmodellen {data.supportChatModel} från OpenAI, som formulerar svar utifrån din
 		text och de senaste meddelandena i samtalet. Den är till för reflektion, struktur och att sätta
 		ord på tankar.
 	</p>

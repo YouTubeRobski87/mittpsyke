@@ -175,6 +175,11 @@ export function parseArticleFrontmatter(data: unknown, collection: string) {
 	if (parsed.collection !== collection) {
 		throw new Error(`Frontmatter collection does not match "${collection}"`);
 	}
+	if (parsed.date && parsed.updated && parsed.updated < parsed.date) {
+		throw new Error(
+			`Updated date (${parsed.updated.toISOString().slice(0, 10)}) must not be earlier than published date (${parsed.date.toISOString().slice(0, 10)}).`
+		);
+	}
 
 	return parsed;
 }
