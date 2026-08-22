@@ -1,10 +1,11 @@
 import { _buildSupportChatRequest, _resolveDeterministicChatGuard } from '../../src/routes/api/chat/+server';
 import { buildDiaryReflectionRequest } from '../../src/lib/server/ai/diary-reflection';
 import {
-	createAITextGenerator,
+	generateAIText,
 	type AITextProvider,
 	type AITextProviderRequest
 } from '../../src/lib/server/ai/text-generation';
+import { formatMemoriesForPrompt, type UserMemory } from '../../src/lib/server/user-memory';
 import type { EvalScenario } from '../../src/lib/ai/evaluators/types';
 
 export type ProductFlowResult = {
@@ -14,8 +15,13 @@ export type ProductFlowResult = {
 };
 
 function buildMemoryContextBlock(memoryContext: string[] | undefined) {
-	if (!memoryContext?.length) return [];
-	return [`Minnesunderlag från det användaren har delat:\n${memoryContext.map((entry) => `- ${entry}`).join('\n')}`];
+	const memories: UserMemory[] = (memoryContext ?? []).map((content, index) => ({
+		id: `eval-memory-${index + 1}`,
+		content,
+		created_at: '2026-01-01T00:00:00.000Z'
+	}));
+	const block = formatMemoriesForPrompt(memories);
+	return block ? [block] : [];
 }
 
 /**
@@ -49,6 +55,6 @@ export async function runScenarioThroughProductFlow(scenario: EvalScenario): Pro
 			return scenario.goldenResponse;
 		}
 	};
-	const result = await createAITextGenerator(provider)(request);
+	const result = await generateAIText(request, provider);
 	return { response: result.text, deterministic: false, providerRequests };
 }

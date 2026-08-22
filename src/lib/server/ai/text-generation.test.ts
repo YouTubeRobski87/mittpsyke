@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
 	createAITextGenerator,
+	generateAIText,
 	getAIModelConfiguration,
 	normalizeAIError,
 	OpenAITextProvider,
@@ -25,6 +26,23 @@ describe('AI:s textgenereringslager', () => {
 		});
 		expect(provider.generate).toHaveBeenCalledWith(
 			expect.objectContaining({ purpose: 'support-chat', timeoutMs: 25_000, maxOutputTokens: 500 })
+		);
+	});
+
+	it('kan använda en injicerad provider utan att ändra produktens generationsservice', async () => {
+		const provider: AITextProvider = { generate: vi.fn().mockResolvedValue('Inspelat svar.') };
+
+		const result = await generateAIText(
+			{
+				purpose: 'support-chat',
+				messages: [{ role: 'user', content: 'Hej' }]
+			},
+			provider
+		);
+
+		expect(result.text).toBe('Inspelat svar.');
+		expect(provider.generate).toHaveBeenCalledWith(
+			expect.objectContaining({ purpose: 'support-chat', timeoutMs: 25_000 })
 		);
 	});
 

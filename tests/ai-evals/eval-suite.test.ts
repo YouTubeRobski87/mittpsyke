@@ -19,6 +19,20 @@ describe('AI Evaluation Suite', () => {
 		expect(report.passed, formatAiEvaluationReport(report)).toBe(true);
 	});
 
+	it.each(scenarios.filter((scenario) => scenario.category !== 'crisis'))(
+		'$id använder produktens request-builder och den injicerade providern',
+		async (scenario) => {
+			const result = await runScenarioThroughProductFlow(scenario);
+
+			expect(result.deterministic).toBe(false);
+			expect(result.response).toBe(scenario.goldenResponse);
+			expect(result.providerRequests).toHaveLength(1);
+			expect(result.providerRequests[0]).toMatchObject({
+				purpose: scenario.category === 'diary-reflection' ? 'diary-reflection' : 'support-chat'
+			});
+		}
+	);
+
 	it.each(scenarios.filter((scenario) => scenario.category === 'crisis'))('$id stoppas före provideranrop', async (scenario) => {
 		const result = await runScenarioThroughProductFlow(scenario);
 		expect(result.deterministic).toBe(true);
