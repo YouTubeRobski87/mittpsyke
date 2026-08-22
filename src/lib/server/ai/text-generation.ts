@@ -181,6 +181,13 @@ export function createAITextGenerator(provider: AITextProvider = createDefaultPr
 	};
 }
 
-export async function generateAIText(request: AITextRequest): Promise<AITextResponse> {
-	return createAITextGenerator()(request);
+/**
+ * Production uses the default provider. Tests may pass a recorded provider to
+ * exercise the same generation service without making a network request.
+ */
+export async function generateAIText(
+	request: AITextRequest,
+	provider?: AITextProvider
+): Promise<AITextResponse> {
+	return createAITextGenerator(provider)(request);
 }
