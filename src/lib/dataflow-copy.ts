@@ -10,7 +10,8 @@ export const dataflowCopy = {
 		storage: 'Texten sparas lokalt i den här webbläsaren tills du rensar den.',
 		transfer:
 			'Medan du skriver skickas den inte till MittPsyke, Supabase eller OpenAI.',
-		short: 'Texten stannar i den här webbläsaren tills du rensar den. Inget konto krävs.'
+		short:
+			'Texten du skriver stannar i den här webbläsaren och skickas inte till MittPsyke eller OpenAI. Inget konto krävs.'
 	},
 	guestChat: {
 		retention:

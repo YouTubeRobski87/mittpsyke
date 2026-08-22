@@ -2,6 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import CabinProof from '$lib/components/home/CabinProof.svelte';
 	import { trackHomeCtaClick } from '$lib/analytics';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 
 	// Anonyma skrivytan är kvar som destination - den är ett val inne i
 	// produkten, inte startsidans löfte.
@@ -156,13 +157,12 @@
 	</section>
 
 	<!-- 5. När du vill skriva utan konto -->
-	<section class="home-section" aria-labelledby="anonymous-title">
-		<div class="home-inner narrow">
-			<h2 id="anonymous-title">Börja där du är</h2>
-			<p>
-				Inget konto krävs för att skriva av dig. Texten stannar på din enhet tills du väljer något
-				annat. Skapa en plats den dag du vill att den ska finnas kvar.
-			</p>
+		<section class="home-section" aria-labelledby="anonymous-title">
+			<div class="home-inner narrow">
+				<h2 id="anonymous-title">Börja där du är</h2>
+				<p>
+					{dataflowCopy.anonymousDiary.short} Skapa en plats den dag du vill att den ska finnas kvar.
+				</p>
 			<a
 				class="text-link"
 				href={ANONYMOUS_WRITE_DESTINATION}

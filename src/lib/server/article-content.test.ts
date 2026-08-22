@@ -55,6 +55,19 @@ describe('parseArticleFrontmatter', () => {
 			'Frontmatter collection does not match'
 		);
 	});
+
+	it('rejects an updated date that comes before the published date', () => {
+		expect(() =>
+			parseArticleFrontmatter(
+				{
+					collection: 'oro-och-stress',
+					date: '2026-03-21',
+					updated: '2026-03-14'
+				},
+				'oro-och-stress'
+			)
+		).toThrow('Updated date (2026-03-14) must not be earlier than published date (2026-03-21).');
+	});
 });
 
 describe('article discovery', () => {

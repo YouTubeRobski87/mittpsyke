@@ -7,6 +7,7 @@ describe('dataflowCopy', () => {
 		expect(dataflowCopy.anonymousDiary.storage).toContain('rensar');
 		expect(dataflowCopy.anonymousDiary.transfer).toContain('skickas den inte');
 		expect(dataflowCopy.anonymousDiary.transfer).toContain('OpenAI');
+		expect(dataflowCopy.anonymousDiary.short).toContain('skickas inte till MittPsyke eller OpenAI');
 	});
 
 	it('uses one non-persistent retention rule for guest chat', () => {
