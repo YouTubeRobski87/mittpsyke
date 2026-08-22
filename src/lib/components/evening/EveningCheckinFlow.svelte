@@ -41,6 +41,9 @@
 	let saved = $state(false);
 	let finishedWithoutSaving = $state(false);
 	let stepHeading = $state<HTMLElement | null>(null);
+	// Rent lokalt val. Att stanna kvar sparas inte, mäts inte och navigerar
+	// ingenstans - det tystar bara nästa steg för den här stunden.
+	let stayingHere = $state(false);
 
 	function goToStep(next: Step) {
 		step = next;
@@ -211,18 +214,28 @@
 					<!-- Frivilliga nästa steg. Inget av dem är markerat som rekommenderat,
 						 och "bara vara här" leder medvetet ingenstans. -->
 					<div class="evening-next">
-						<p class="evening-next-prompt">{getEveningNextStepPrompt(themeId)}</p>
-						<ul class="evening-next-list">
-							{#each getEveningNextSteps(themeId) as nextStep (nextStep.id)}
-								<li>
-									{#if nextStep.href}
-										<a class="evening-next-link" href={nextStep.href}>{nextStep.label}</a>
-									{:else}
-										<p class="evening-next-stay">{nextStep.label}</p>
-									{/if}
-								</li>
-							{/each}
-						</ul>
+						{#if stayingHere}
+							<p class="evening-next-resting" role="status">Då stannar vi här.</p>
+						{:else}
+							<p class="evening-next-prompt">{getEveningNextStepPrompt(themeId)}</p>
+							<ul class="evening-next-list">
+								{#each getEveningNextSteps(themeId) as nextStep (nextStep.id)}
+									<li>
+										{#if nextStep.href}
+											<a class="evening-next-link" href={nextStep.href}>{nextStep.label}</a>
+										{:else}
+											<button
+												class="evening-next-link evening-next-stay"
+												type="button"
+												onclick={() => (stayingHere = true)}
+											>
+												{nextStep.label}
+											</button>
+										{/if}
+									</li>
+								{/each}
+							</ul>
+						{/if}
 					</div>
 				{:else if finishedWithoutSaving}
 					<p class="evening-hint" role="status">Inget från den här stunden har sparats.</p>
@@ -421,10 +434,12 @@
 		list-style: none;
 	}
 
-	.evening-next-link,
-	.evening-next-stay {
+	/* Alla tre alternativen är verkliga val och ser därför likadana ut. Att
+	   stanna kvar är en knapp som byter lokalt läge, inte en död etikett. */
+	.evening-next-link {
 		display: flex;
 		align-items: center;
+		width: 100%;
 		min-height: 44px;
 		margin: 0;
 		padding: 0.6rem 0.9rem;
@@ -434,7 +449,9 @@
 		color: inherit;
 		font: inherit;
 		line-height: 1.35;
+		text-align: left;
 		text-decoration: none;
+		cursor: pointer;
 	}
 
 	.evening-next-link:hover,
@@ -442,11 +459,11 @@
 		background: rgb(255 255 255 / 0.1);
 	}
 
-	/* Att stanna kvar är inget mål att klicka på - det är bara sant. */
-	.evening-next-stay {
-		border-style: dashed;
-		background: transparent;
-		opacity: 0.85;
+	.evening-next-resting {
+		margin: 0;
+		font-size: 0.95rem;
+		line-height: 1.5;
+		opacity: 0.9;
 	}
 
 	.sr-only {
