@@ -24,11 +24,14 @@
 	import type { CompanionDailyState } from '$lib/companionDailyQuestion';
 	import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
 
-	const CABIN_IMAGE = '/images/scenes/cabin-interior-evening-v1.webp';
+	// Kvällsstugan har en egen scenbild: personen är inbakad i soffan i samma
+	// perspektiv som möbeln. Därmed behöver vi inte lägga en frilagd kropp ovanpå
+	// soffans ryggstöd eller ändra följeslagarens lokala placering.
+	const CABIN_IMAGE = '/images/scenes/cabin-interior-evening-resting-v1.webp';
 	const CABIN_SRCSET = [
-		'/images/scenes/cabin-interior-evening-v1-800.webp 800w',
-		'/images/scenes/cabin-interior-evening-v1-1200.webp 1200w',
-		'/images/scenes/cabin-interior-evening-v1.webp 1672w'
+		'/images/scenes/cabin-interior-evening-resting-v1-800.webp 800w',
+		'/images/scenes/cabin-interior-evening-resting-v1-1200.webp 1200w',
+		'/images/scenes/cabin-interior-evening-resting-v1.webp 1672w'
 	].join(', ');
 
 	// Samma vattenringar som på /framsteg: klassen `.water-ripple-loop` och
