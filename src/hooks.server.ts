@@ -141,17 +141,17 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		// Standard
 		"default-src 'self'",
 		// Scripts: self + godkända analysleverantörer
-		`script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://analytics.tiktok.com https://analytics.ahrefs.com https://app.trysoro.com`,
+		`script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://analytics.ahrefs.com https://app.trysoro.com`,
 		// Styles: self + unsafe-inline (Tailwind/Svelte)
 		"style-src 'self' 'unsafe-inline'",
 		// Images
-		`img-src 'self' data: blob: https://www.google-analytics.com https://*.google-analytics.com https://analytics.tiktok.com https://www.google.se https://*.google.com https://app.trysoro.com https://${supabaseHost} https://*.supabase.co https://*.storage.supabase.co`,
+		`img-src 'self' data: blob: https://www.google-analytics.com https://*.google-analytics.com https://www.google.se https://*.google.com https://app.trysoro.com https://${supabaseHost} https://*.supabase.co https://*.storage.supabase.co`,
 		// Fonts (lokala)
 		"font-src 'self'",
 		// Media (video): self + blob för inspelad förhandsvisning + Supabase storage för sparade videor
 		`media-src 'self' blob: https://${supabaseHost} https://*.supabase.co https://*.storage.supabase.co`,
 		// API-anrop
-		`connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://www.google-analytics.com https://*.google-analytics.com https://region1.analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://analytics.tiktok.com https://analytics-ipv6.tiktokw.us https://analytics.ahrefs.com https://app.trysoro.com`,
+		`connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://www.google-analytics.com https://*.google-analytics.com https://region1.analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://analytics.ahrefs.com https://app.trysoro.com`,
 		// Frames
 		"frame-src 'none'",
 		// Objects

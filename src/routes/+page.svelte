@@ -2,7 +2,6 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import CabinProof from '$lib/components/home/CabinProof.svelte';
 	import { trackHomeCtaClick } from '$lib/analytics';
-	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
 
 	// Anonyma skrivytan är kvar som destination - den är ett val inne i
 	// produkten, inte startsidans löfte.
@@ -14,11 +13,6 @@
 
 	function trackHomeCta(section: string, cta: string, href: string) {
 		trackHomeCtaClick({ section, cta, href });
-		// TikTok-pixeln följer det anonyma skrivandet, oavsett vilken sektion
-		// det startas från.
-		if (cta === 'skriv_utan_konto') {
-			trackTikTokButtonClick('start_writing_anonymously');
-		}
 	}
 </script>
 

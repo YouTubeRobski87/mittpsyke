@@ -12,14 +12,6 @@
 		trackPageView,
 		disableAnalytics
 	} from '$lib/analytics';
-	import {
-		TIKTOK_PIXEL_ENABLED,
-		disableTikTokPixel,
-		initializeTikTokPixel,
-		isTikTokPixelAllowedPath,
-		trackTikTokPageView,
-		trackTikTokRegistrationCompleted
-	} from '$lib/analytics/tiktokPixel';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
@@ -216,8 +208,6 @@
 	let profilePanelOpen = $state(false);
 	let analyticsEnabled = $state(false);
 	let lastTrackedPagePath = $state('');
-	let tiktokPixelEnabled = $state(false);
-	let lastTikTokPagePath = $state('');
 	let profileRequestVersion = 0;
 	let layoutSummaryRequestVersion = 0;
 	let seededServerUserId = '';
@@ -265,8 +255,7 @@
 			loadedLayoutSummaryUserId = sessionUser.id;
 			void loadLayoutSummary();
 		}
-		// TikTok CompleteRegistration triggas först när registreringen gett en faktisk användarsession.
-		trackAuthCompletedFromPendingState(trackTikTokRegistrationCompleted);
+		trackAuthCompletedFromPendingState();
 		if (syncedProfileUserId === sessionUser.id) return;
 		syncedProfileUserId = sessionUser.id;
 
@@ -396,11 +385,6 @@
 			lastTrackedPagePath = nextPageKey;
 		}
 
-		if (tiktokPixelEnabled && lastTikTokPagePath !== nextPageKey) {
-			// TikTok: SvelteKit-navigationer får exakt en manuell PageView per URL.
-			trackTikTokPageView(url);
-			lastTikTokPagePath = nextPageKey;
-		}
 	}
 
 	function handleInternalLinkClick(event: MouseEvent) {
@@ -433,25 +417,14 @@
 		if (!browser) return;
 
 		const consentStatus = getAnalyticsConsent();
-		const tiktokAllowedOnThisPage = isTikTokPixelAllowedPath(page.url.pathname);
 		const hasConsent = hasAnalyticsConsent();
 		analyticsEnabled = ANALYTICS_ENABLED && hasConsent;
-		tiktokPixelEnabled = TIKTOK_PIXEL_ENABLED && hasConsent && tiktokAllowedOnThisPage;
 
 		if (!analyticsEnabled) {
 			lastTrackedPagePath = '';
 			disableAnalytics();
 		} else {
 			initializeAnalytics();
-		}
-
-		if (!tiktokPixelEnabled) {
-			lastTikTokPagePath = '';
-			disableTikTokPixel();
-		} else if (tiktokAllowedOnThisPage) {
-			initializeTikTokPixel();
-		} else {
-			disableTikTokPixel();
 		}
 
 		trackCurrentPage(new URL(window.location.href));

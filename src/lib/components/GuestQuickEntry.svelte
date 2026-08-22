@@ -7,7 +7,6 @@
 		trackAnonymousWriteStarted,
 		trackReturningDiaryUser
 	} from '$lib/analytics';
-	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
 	import {
 		clearDiaryDraft,
 		consumeDiaryDraftHandoff,
@@ -99,14 +98,10 @@
 	}
 
 	function continueWriting() {
-		// TikTok: fast knappnamn, ingen dagbokstext skickas.
-		trackTikTokButtonClick('continue_writing');
 		persistIfDirty();
 	}
 
 	function saveAndCreateAccount() {
-		// TikTok: registrerings-CTA klickad; registreringen är inte slutförd här.
-		trackTikTokButtonClick('save_create_account');
 	}
 
 	function clearSavedEntry(options: { keepCurrentText?: boolean } = {}) {

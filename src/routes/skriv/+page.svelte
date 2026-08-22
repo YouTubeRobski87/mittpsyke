@@ -8,7 +8,6 @@
 		trackContinueFromWrite,
 		trackContinueAnonymousClicked
 	} from '$lib/analytics';
-	import { trackTikTokButtonClick } from '$lib/analytics/tiktokPixel';
 	import { goto } from '$app/navigation';
 
 	type PageData = {
@@ -24,8 +23,6 @@
 	});
 
 	async function handleStartChat() {
-		// TikTok: fast knappnamn, inget sid- eller användarinnehåll skickas.
-		trackTikTokButtonClick('start_chat');
 		trackContinueFromWrite();
 		if (!isLoggedIn) {
 			trackContinueAnonymousClicked();
@@ -34,8 +31,6 @@
 	}
 
 	async function handleOpenDiary() {
-		// TikTok: fast knappnamn, inget sid- eller användarinnehåll skickas.
-		trackTikTokButtonClick('start_writing_anonymously');
 		if (!isLoggedIn) {
 			trackAnonymousWriteStarted();
 		}

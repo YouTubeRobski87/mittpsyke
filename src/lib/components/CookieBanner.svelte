@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { ANALYTICS_ENABLED } from '$lib/analytics';
-	import { TIKTOK_PIXEL_ENABLED } from '$lib/analytics/tiktokPixel';
 	import {
 		getAnalyticsConsent,
 		grantAnalyticsConsent,
@@ -33,7 +32,7 @@
 	}
 
 	$effect(() => {
-		if (browser && (ANALYTICS_ENABLED || TIKTOK_PIXEL_ENABLED) && getAnalyticsConsent() === null) {
+		if (browser && ANALYTICS_ENABLED && getAnalyticsConsent() === null) {
 			cookieBannerOpen.set(true);
 		}
 	});
@@ -70,7 +69,7 @@
 	});
 
 	function accept() {
-		if (!ANALYTICS_ENABLED && !TIKTOK_PIXEL_ENABLED) {
+		if (!ANALYTICS_ENABLED) {
 			cookieBannerOpen.set(false);
 			return;
 		}
