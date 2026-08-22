@@ -22,6 +22,7 @@
 		isEveningInteriorMemory,
 		type EveningInteriorMemory
 	} from '$lib/evening-interior-memory';
+	import { getEveningNextStepPrompt, getEveningNextSteps } from '$lib/evening-next-steps';
 
 	let { oncomplete = (_saved: boolean, _memory?: EveningInteriorMemory) => {} }: {
 		oncomplete?: (saved: boolean, memory?: EveningInteriorMemory) => void;
@@ -207,6 +208,22 @@
 				<p>Du behöver inte bära allt färdigt just nu.</p>
 				{#if saved}
 					<p class="evening-saved" role="status">Kvällens avtryck finns kvar.</p>
+					<!-- Frivilliga nästa steg. Inget av dem är markerat som rekommenderat,
+						 och "bara vara här" leder medvetet ingenstans. -->
+					<div class="evening-next">
+						<p class="evening-next-prompt">{getEveningNextStepPrompt(themeId)}</p>
+						<ul class="evening-next-list">
+							{#each getEveningNextSteps(themeId) as nextStep (nextStep.id)}
+								<li>
+									{#if nextStep.href}
+										<a class="evening-next-link" href={nextStep.href}>{nextStep.label}</a>
+									{:else}
+										<p class="evening-next-stay">{nextStep.label}</p>
+									{/if}
+								</li>
+							{/each}
+						</ul>
+					</div>
 				{:else if finishedWithoutSaving}
 					<p class="evening-hint" role="status">Inget från den här stunden har sparats.</p>
 				{:else}
@@ -380,6 +397,56 @@
 		color: #f7f3eb;
 		text-decoration: underline;
 		text-underline-offset: 0.18em;
+	}
+
+	/* Nästa steg. Lågmält och likvärdigt: inget alternativ är visuellt
+	   framhävt, så inget läses som det rekommenderade valet. */
+	.evening-next {
+		margin-top: 0.9rem;
+		padding-top: 0.9rem;
+		border-top: 1px solid rgb(238 225 202 / 0.18);
+	}
+
+	.evening-next-prompt {
+		margin: 0 0 0.55rem;
+		font-size: 0.95rem;
+		line-height: 1.5;
+	}
+
+	.evening-next-list {
+		display: grid;
+		gap: 0.45rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.evening-next-link,
+	.evening-next-stay {
+		display: flex;
+		align-items: center;
+		min-height: 44px;
+		margin: 0;
+		padding: 0.6rem 0.9rem;
+		border: 1px solid rgb(238 225 202 / 0.24);
+		border-radius: 0.8rem;
+		background: rgb(255 255 255 / 0.06);
+		color: inherit;
+		font: inherit;
+		line-height: 1.35;
+		text-decoration: none;
+	}
+
+	.evening-next-link:hover,
+	.evening-next-link:focus-visible {
+		background: rgb(255 255 255 / 0.1);
+	}
+
+	/* Att stanna kvar är inget mål att klicka på - det är bara sant. */
+	.evening-next-stay {
+		border-style: dashed;
+		background: transparent;
+		opacity: 0.85;
 	}
 
 	.sr-only {
