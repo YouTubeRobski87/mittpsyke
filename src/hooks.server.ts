@@ -4,7 +4,7 @@ import { redirect, type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { getSessionUser } from '$lib/server/admin-auth'
 import { getGuideBySlugs, getPillarBySlug } from '$lib/seo-kit/content'
-import { canonicalRequestUrl, normalizeStructuredDataSiteUrls } from '$lib/seo'
+import { normalizeStructuredDataSiteUrls } from '$lib/seo'
 
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''
@@ -109,17 +109,6 @@ const legacyPathRedirects: Handle = async ({ event, resolve }) => {
 
 	if (url.pathname === '/guider/relationsproblem') {
 		throw redirect(301, '/guider/sjalvkansla/gransen-och-sjalvkansla')
-	}
-
-	return resolve(event)
-}
-
-const canonicalHostRedirect: Handle = async ({ event, resolve }) => {
-	const forwardedHost = event.request.headers.get('x-forwarded-host')?.split(',')[0]?.trim() ?? ''
-	const requestHost = (forwardedHost || event.url.host).replace(/:\d+$/, '')
-
-	if (requestHost === 'www.mittpsyke.se') {
-		throw redirect(301, canonicalRequestUrl(event.url))
 	}
 
 	return resolve(event)
@@ -232,7 +221,6 @@ const supabaseAuth: Handle = async ({ event, resolve }) => {
 // Kör säkerhetsheaders först, sedan Supabase auth
 export const handle = sequence(
 	legacyPathRedirects,
-	canonicalHostRedirect,
 	seoHeadCleanup,
 	securityHeaders,
 	supabaseAuth
