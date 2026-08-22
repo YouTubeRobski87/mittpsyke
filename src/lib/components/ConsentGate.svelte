@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';
+
 	let {
 		title = 'Innan du börjar',
 		dataLabel = '',
@@ -44,7 +46,7 @@
 	<h2 id="health-consent-title" class="text-sm font-semibold">{title}</h2>
 	{#if usesCustomCopy}
 		<p id="health-consent-copy" class="mt-2 text-sm leading-relaxed opacity-85">
-			MittPsyke är ett stöd i egen takt, inte vård. {dataLabel || 'Det du delar här'} kan
+			{GENERAL_SAFETY_COPY} {dataLabel || 'Det du delar här'} kan
 			innehålla känsliga uppgifter om mående och behandlas av {serviceLabel || 'AI- och tredjepartstjänster'}
 			för att kunna ge dig stöd här.
 		</p>
@@ -54,7 +56,7 @@
 		</p>
 	{:else}
 		<p id="health-consent-copy" class="mt-2 text-sm leading-relaxed opacity-85">
-			MittPsyke är ett stöd i egen takt, inte vård. Det du skriver kan handla om mående och
+			{GENERAL_SAFETY_COPY} Det du skriver kan handla om mående och
 			andra känsliga uppgifter. Texten behandlas för att kunna ge dig stöd här.
 		</p>
 		<p class="mt-2 text-xs opacity-65">

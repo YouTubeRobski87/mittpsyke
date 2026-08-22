@@ -3,11 +3,12 @@
 	import { grantSensitiveConsent, type HealthConsentRecord } from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import { dataflowCopy } from '$lib/dataflow-copy';
+	import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';
 
 	export let onAccept: (consent: HealthConsentRecord) => void | Promise<void> = () => {};
 	export let title = 'Innan du börjar';
 	export let intro =
-		'MittPsyke är ett stöd i egen takt, inte vård. Det du skriver kan innehålla känsliga uppgifter om mående.';
+		`${GENERAL_SAFETY_COPY} Det du skriver kan innehålla känsliga uppgifter om mående.`;
 
 	let confirmed = false;
 	let errorMessage = '';

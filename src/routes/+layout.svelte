@@ -33,6 +33,7 @@
 		cookieBannerOpen
 	} from '$lib/consent';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';
 	import { page } from '$app/state';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
@@ -910,7 +911,7 @@
 		{#if !isProductPage && !isChat}
 			<section class="site-disclaimer mt-6 px-5">
 				<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
-					MittPsyke ersätter inte vård. Vid akut fara ring 112 &middot; Vårdråd 1177.
+					{GENERAL_SAFETY_COPY} Vid akut fara ring 112 &middot; Vårdråd 1177.
 				</p>
 			</section>
 
@@ -971,7 +972,7 @@
 			</div>
 
 			<p class="footer-disclaimer">
-				MittPsyke ersätter inte vård. Vid akut fara ring 112 · Vårdråd 1177.
+				{GENERAL_SAFETY_COPY} Vid akut fara ring 112 · Vårdråd 1177.
 			</p>
 		</div>
 	</footer>

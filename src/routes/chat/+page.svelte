@@ -7,6 +7,7 @@
 	import { planChatStart } from '$lib/ai/chat-start';
 	import { trackAiChatStarted } from '$lib/analytics';
 	import { dataflowCopy } from '$lib/dataflow-copy';
+	import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';
 
 	const STORAGE_KEY = 'mittpsyke.healthConsent';
 	const VERSION = '2026-04-29';
@@ -173,7 +174,7 @@
 				</li>
 			</ol>
 			<p class="how-chat-note">
-				MittPsyke är ett stödverktyg och ersätter inte vård eller behandling.
+				{GENERAL_SAFETY_COPY}
 			</p>
 		</section>
 
