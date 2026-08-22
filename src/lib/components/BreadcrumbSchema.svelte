@@ -1,10 +1,10 @@
 <script lang="ts">
+	import { canonicalUrl, PUBLIC_SITE_ORIGIN } from '$lib/seo';
+
 	type Crumb = {
 		name: string;
 		url: string;
 	};
-
-	const SITE_URL = 'https://www.mittpsyke.se';
 
 	type BreadcrumbSchemaProps = {
 		crumbs: Crumb[];
@@ -14,24 +14,21 @@
 
 	function toAbsoluteUrl(url: string): string {
 		if (url.startsWith('http://') || url.startsWith('https://')) {
-			return url;
+			const parsed = new URL(url);
+			if (!['mittpsyke.se', 'www.mittpsyke.se'].includes(parsed.hostname)) return url;
 		}
 
-		if (url === '/') {
-			return `${SITE_URL}/`;
-		}
-
-		return `${SITE_URL}${url.startsWith('/') ? url : `/${url}`}`;
+		return canonicalUrl(url);
 	}
 
 	const normalizedCrumbs = $derived.by(() => {
 		const remainingCrumbs =
-			crumbs[0]?.name === 'Hem' || crumbs[0]?.url === '/' || crumbs[0]?.url === `${SITE_URL}/`
+			crumbs[0]?.name === 'Hem' || crumbs[0]?.url === '/' || crumbs[0]?.url === `${PUBLIC_SITE_ORIGIN}/`
 				? crumbs.slice(1)
 				: crumbs;
 
 		return [
-			{ name: 'Hem', item: `${SITE_URL}/` },
+			{ name: 'Hem', item: `${PUBLIC_SITE_ORIGIN}/` },
 			...remainingCrumbs.map((crumb) => ({
 				name: crumb.name || crumb.url.split('/').filter(Boolean).pop() || 'Sida',
 				item: toAbsoluteUrl(crumb.url)

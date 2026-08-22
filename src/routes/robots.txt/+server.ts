@@ -1,8 +1,10 @@
+import { canonical } from '$lib/seo';
+
 export function GET() {
 	const body = `User-agent: *
 Allow: /
 
-Sitemap: https://www.mittpsyke.se/sitemap.xml
+Sitemap: ${canonical('/sitemap.xml')}
 `;
 
 	return new Response(body, {

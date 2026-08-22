@@ -5,6 +5,7 @@ import { seoSupportPagePaths } from '$lib/data/seo-support-pages';
 import { SORO_EMBED_SRC } from '$lib/soro';
 import { getArticleTopics, getPublishedArticles } from '$lib/server/article-content';
 import { getContentLastmod } from '$lib/server/content-freshness';
+import { replaceRedirectedSitemapPath } from '$lib/server/sitemap-redirects';
 import type { RequestHandler } from './$types';
 
 const STATIC_CONTENT_LASTMOD = '2026-03-29';
@@ -65,16 +66,6 @@ function asLastmod(value: string | undefined): string {
 	}
 
 	return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : BLOG_LASTMOD;
-}
-
-const SITEMAP_REDIRECT_REPLACEMENTS: Record<string, string> = {
-	'/blogg/nar-soka-vard-for-psykiskt-maende': '/ansvar',
-	'/blogg/anonym-hjalp-for-oro': '/hjalp-mot-oro-online',
-	'/blogg/integritet-i-appar-for-mental-halsa': '/blogg/säkra-maendedata-tjanster'
-};
-
-function replaceRedirectedSitemapPath(path: string): string {
-	return SITEMAP_REDIRECT_REPLACEMENTS[path] ?? path;
 }
 
 function extractSoroArticles(embedScript: string): SoroArticleListItem[] {

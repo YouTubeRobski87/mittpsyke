@@ -34,6 +34,7 @@
 	} from '$lib/consent';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';
+	import { PUBLIC_SITE_ORIGIN } from '$lib/seo';
 	import { page } from '$app/state';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
@@ -139,7 +140,7 @@
 	const fallbackDescription =
 		'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.';
 	const ogDescription = $derived(page.data?.description || fallbackDescription);
-	const ogImage = $derived(page.data?.ogImage ?? 'https://www.mittpsyke.se/og-image.png');
+	const ogImage = $derived(page.data?.ogImage ?? `${PUBLIC_SITE_ORIGIN}/og-image.png`);
 
 	function getProfileName(profileDisplayName: string | null, sessionUser: User | null) {
 		const metadata = sessionUser?.user_metadata as Record<string, unknown> | undefined;
@@ -164,10 +165,10 @@
 		'@context': 'https://schema.org',
 		'@type': 'Organization',
 		name: 'MittPsyke',
-		url: 'https://www.mittpsyke.se',
+		url: PUBLIC_SITE_ORIGIN,
 		email: PUBLIC_CONTACT_EMAIL,
 		description: 'Svensk plattform för AI-baserat samtalsstöd och mental hälsa.',
-		logo: 'https://www.mittpsyke.se/logo.png',
+		logo: `${PUBLIC_SITE_ORIGIN}/logo.png`,
 		founder: {
 			'@type': 'Person',
 			name: 'Robert Claesson'
@@ -180,7 +181,7 @@
 		'@context': 'https://schema.org',
 		'@type': 'WebApplication',
 		name: 'MittPsyke',
-		url: 'https://www.mittpsyke.se',
+		url: PUBLIC_SITE_ORIGIN,
 		description: 'AI-driven dagbok för mental hälsa på svenska',
 		applicationCategory: 'HealthApplication',
 		inLanguage: 'sv',
@@ -620,10 +621,10 @@
 		<meta property="og:type" content={page.data?.ogType ?? 'website'} />
 		<meta property="og:site_name" content="MittPsyke" />
 
-		<meta property="og:url" content={`https://www.mittpsyke.se${page.url.pathname}`} />
+		<meta property="og:url" content={`${PUBLIC_SITE_ORIGIN}${page.url.pathname}`} />
 		<meta property="og:image" content={ogImage} />
 
-		<link rel="alternate" hreflang="sv" href={`https://www.mittpsyke.se${page.url.pathname}`} />
+		<link rel="alternate" hreflang="sv" href={`${PUBLIC_SITE_ORIGIN}${page.url.pathname}`} />
 
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | MittPsyke` : 'MittPsyke – Psykiskt stöd online'} />

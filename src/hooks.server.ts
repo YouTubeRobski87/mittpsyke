@@ -4,11 +4,13 @@ import { redirect, type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { getSessionUser } from '$lib/server/admin-auth'
 import { getGuideBySlugs, getPillarBySlug } from '$lib/seo-kit/content'
+import { canonicalRequestUrl, normalizeStructuredDataSiteUrls } from '$lib/seo'
 
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''
 
 const metaDescriptionPattern = /<meta\s+name=(["'])description\1[^>]*>/gi
+const jsonLdScriptPattern = /(<script\s+type=(["'])application\/ld\+json\2[^>]*>)([\s\S]*?)(<\/script>)/gi
 
 function dedupeMetaDescriptions(html: string): string {
 	const matches = [...html.matchAll(metaDescriptionPattern)]
@@ -18,6 +20,12 @@ function dedupeMetaDescriptions(html: string): string {
 	return html.replace(metaDescriptionPattern, (match: string, ...args: unknown[]) => {
 		const offset = args[args.length - 2]
 		return offset === keepIndex ? match : ''
+	})
+}
+
+function normalizeStructuredDataUrls(html: string): string {
+	return html.replace(jsonLdScriptPattern, (_match, startTag: string, _quote: string, json: string, endTag: string) => {
+		return `${startTag}${normalizeStructuredDataSiteUrls(json)}${endTag}`
 	})
 }
 
@@ -110,10 +118,8 @@ const canonicalHostRedirect: Handle = async ({ event, resolve }) => {
 	const forwardedHost = event.request.headers.get('x-forwarded-host')?.split(',')[0]?.trim() ?? ''
 	const requestHost = (forwardedHost || event.url.host).replace(/:\d+$/, '')
 
-	if (requestHost === 'mittpsyke.se') {
-		const canonicalUrl = new URL(event.url)
-		canonicalUrl.host = 'www.mittpsyke.se'
-		throw redirect(301, canonicalUrl.toString())
+	if (requestHost === 'www.mittpsyke.se') {
+		throw redirect(301, canonicalRequestUrl(event.url))
 	}
 
 	return resolve(event)
@@ -121,7 +127,7 @@ const canonicalHostRedirect: Handle = async ({ event, resolve }) => {
 
 const seoHeadCleanup: Handle = async ({ event, resolve }) => {
 	return resolve(event, {
-		transformPageChunk: ({ html }) => dedupeMetaDescriptions(html)
+		transformPageChunk: ({ html }) => normalizeStructuredDataUrls(dedupeMetaDescriptions(html))
 	})
 }
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { canonicalUrl } from '$lib/seo';
+
 	type OpenGraph = {
 		title?: string;
 		description?: string;
@@ -16,7 +18,7 @@
 
 	const ogTitle = $derived(og?.title ?? title);
 	const ogDescription = $derived(og?.description ?? description);
-	const ogUrl = $derived(og?.url ?? canonical);
+	const ogUrl = $derived(canonicalUrl(og?.url ?? canonical));
 </script>
 
 <svelte:head>

@@ -7,6 +7,7 @@
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { trackGuideView } from '$lib/analytics';
 	import { buildTitle } from '$lib/seo-kit/seo';
+	import { PUBLIC_SITE_ORIGIN } from '$lib/seo';
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 
@@ -35,11 +36,11 @@
 		'@type': 'WebPage',
 		headline: data.guide.title,
 		description: data.guide.seoDescription ?? data.guide.description,
-		url: `https://www.mittpsyke.se${$page.url.pathname}`,
+		url: `${PUBLIC_SITE_ORIGIN}${$page.url.pathname}`,
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			url: 'https://www.mittpsyke.se'
+			url: PUBLIC_SITE_ORIGIN
 		},
 		inLanguage: 'sv-SE'
 	});

@@ -5,6 +5,7 @@ import { getGuideBySlugs, getPillarBySlug } from '$lib/seo-kit/content';
 import { getToolBySlug } from '$lib/data/seo-architecture';
 import { getPortalByKey } from '$lib/data/portals';
 import { CHAT_CATEGORY_TO_SLUG, CHAT_SLUG_TO_CATEGORY } from '$lib/data/chat-slugs';
+import { PUBLIC_SITE_ORIGIN } from '$lib/seo';
 
 const DEFAULT_ARTICLE_TITLE = 'Artikel';
 const DEFAULT_ARTICLE_AUTHOR = 'MittPsyke';
@@ -563,7 +564,7 @@ export function getArticleDateLabel(article: Pick<Article, 'date'>) {
 	return article.date ? formatDate(article.date) : MISSING_DATE_LABEL;
 }
 
-const SITE_URL = 'https://www.mittpsyke.se';
+const SITE_URL = PUBLIC_SITE_ORIGIN;
 
 // Bygger samma BlogPosting/HowTo-schema som artikelsidan lägger i <script type="application/ld+json">.
 // Delad funktion så att både sidan och testerna använder exakt samma logik.

@@ -5,6 +5,7 @@
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import SeoPillarLanding from '$lib/components/SeoPillarLanding.svelte';
 	import { buildTitle } from '$lib/seo-kit/seo';
+	import { PUBLIC_SITE_ORIGIN } from '$lib/seo';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
@@ -21,11 +22,11 @@
 		'@type': 'CollectionPage',
 		headline,
 		description: pageDescription,
-		url: `https://www.mittpsyke.se${$page.url.pathname}`,
+		url: `${PUBLIC_SITE_ORIGIN}${$page.url.pathname}`,
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			url: 'https://www.mittpsyke.se'
+			url: PUBLIC_SITE_ORIGIN
 		},
 		inLanguage: 'sv-SE'
 	});

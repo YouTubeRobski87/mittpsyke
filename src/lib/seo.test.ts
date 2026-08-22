@@ -1,0 +1,35 @@
+import { describe, expect, it } from 'vitest';
+import {
+	canonical,
+	canonicalRequestUrl,
+	canonicalUrl,
+	normalizeStructuredDataSiteUrls,
+	PUBLIC_SITE_ORIGIN
+} from './seo';
+
+describe('canonical SEO URLs', () => {
+	it('uses the non-www HTTPS origin for generated paths', () => {
+		expect(PUBLIC_SITE_ORIGIN).toBe('https://mittpsyke.se');
+		expect(canonical('/framsteg/')).toBe('https://mittpsyke.se/framsteg');
+	});
+
+	it('normalizes legacy hosts without retaining query strings or fragments', () => {
+		expect(canonicalUrl('http://www.mittpsyke.se/guider/angest/?source=old#intro')).toBe(
+			'https://mittpsyke.se/guider/angest'
+		);
+	});
+
+	it('keeps request query strings when redirecting a legacy host', () => {
+		expect(canonicalRequestUrl('http://www.mittpsyke.se/guider/angest/?source=old#intro')).toBe(
+			'https://mittpsyke.se/guider/angest?source=old'
+		);
+	});
+
+	it('normalizes legacy URLs in structured data without touching other hosts', () => {
+		expect(
+			normalizeStructuredDataSiteUrls(
+				'{"url":"https://www.mittpsyke.se/angest","sameAs":"https://example.com"}'
+			)
+		).toBe('{"url":"https://mittpsyke.se/angest","sameAs":"https://example.com"}');
+	});
+});

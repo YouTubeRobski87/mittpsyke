@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { canonicalUrl } from '$lib/seo';
 
 	type BreadcrumbItem = {
 		label: string;
@@ -10,20 +11,10 @@
 		items: BreadcrumbItem[];
 	};
 
-	const SITE_URL = 'https://www.mittpsyke.se';
-
 	let { items }: BreadcrumbsProps = $props();
 
 	function toAbsoluteUrl(href: string): string {
-		const url = new URL(href, SITE_URL);
-		url.protocol = 'https:';
-		url.host = 'www.mittpsyke.se';
-
-		if (url.pathname !== '/') {
-			url.pathname = url.pathname.replace(/\/+$/, '');
-		}
-
-		return url.toString();
+		return canonicalUrl(href);
 	}
 
 	const normalizedItems = $derived.by(() => {
