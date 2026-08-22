@@ -1,14 +1,19 @@
 import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
-import { buildDiaryNarrativeInsight, type DiaryInsightRow } from '$lib/server/diary-insight-analysis';
+import type { DiaryInsightRow } from '$lib/server/diary-insight-analysis';
 import { buildSupportView } from '$lib/server/diary-support-suggestions';
+import {
+	buildProgressAnalysis,
+	filterProgressRows,
+	type ProgressPeriodDays
+} from '$lib/server/progress-analysis';
 import { createClient } from '@supabase/supabase-js';
 import { env as publicEnv } from '$env/dynamic/public';
 import { env as privateEnv } from '$env/dynamic/private';
 import type { RequestHandler } from '@sveltejs/kit';
 
 const INSIGHTS_ROW_LIMIT = 500;
-const WEEKDAYS = ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'];
+const VALID_PERIODS = new Set<ProgressPeriodDays>([30, 90, 180]);
 function getAccessToken(authorizationHeader: string | null): string | null {
 	if (!authorizationHeader) return null;
 	const [scheme, token] = authorizationHeader.split(' ');
@@ -16,44 +21,7 @@ function getAccessToken(authorizationHeader: string | null): string | null {
 	return token.trim();
 }
 
-function parseMood(value: unknown): number | null {
-	if (typeof value === 'number' && Number.isFinite(value)) return value;
-	if (typeof value === 'string') {
-		const parsed = Number.parseFloat(value.replace(',', '.'));
-		return Number.isFinite(parsed) ? parsed : null;
-	}
-	return null;
-}
-
-function getWeekdayExtremes(entries: DiaryInsightRow[]) {
-	const byDay = new Map<string, number[]>();
-	for (const day of WEEKDAYS) byDay.set(day, []);
-
-	for (const entry of entries) {
-		if (!entry.created_at) continue;
-		const date = new Date(entry.created_at);
-		if (Number.isNaN(date.getTime())) continue;
-		const mood = parseMood(entry.mood);
-		if (mood === null) continue;
-		byDay.get(WEEKDAYS[date.getDay()])?.push(mood);
-	}
-
-	const averages = [...byDay.entries()]
-		.filter(([, moods]) => moods.length > 0)
-		.map(([day, moods]) => ({
-			day,
-			average: Math.round((moods.reduce((sum, mood) => sum + mood, 0) / moods.length) * 10) / 10,
-			count: moods.length
-		}))
-		.sort((a, b) => b.average - a.average);
-
-	return {
-		bestDay: averages[0] ?? null,
-		worstDay: averages.at(-1) ?? null
-	};
-}
-
-export const GET: RequestHandler = async ({ request }) => {
+export const GET: RequestHandler = async ({ request, url }) => {
 	try {
 		if (!hasSensitiveConsentHeader(request)) {
 			return json({ error: 'Consent required for sensitive AI features.' }, { status: 403 });
@@ -95,29 +63,17 @@ export const GET: RequestHandler = async ({ request }) => {
 		const rows = ((entries ?? []) as DiaryInsightRow[])
 			.slice()
 			.sort((first, second) => (first.created_at ?? '').localeCompare(second.created_at ?? ''));
-		// Den här vyn visar enbart deterministiska påståenden med synligt
-		// underlag. Ingen språkmodell får formulera eller utvidga personliga
-		// samband från dagbokstexten.
-		const narrative = await buildDiaryNarrativeInsight(rows, { generateWithAi: false });
-		// Förslagen i "Kanske värt att prova" byggs ur samma rader och samma
-		// tröskelvärden som analysen ovan. Ingen extra fråga, ingen AI.
-		const support = buildSupportView(rows);
-		const { bestDay, worstDay } = getWeekdayExtremes(rows);
-
-		const legacyInsights = [...narrative.overview, ...narrative.patterns].slice(0, 6).map((item) => ({
-			type: 'narrative_observation',
-			title: item.title,
-			description: item.description,
-			icon: 'lightbulb'
-		}));
+		const requestedPeriod = Number(url.searchParams.get('period') ?? '30');
+		const period: ProgressPeriodDays = VALID_PERIODS.has(requestedPeriod as ProgressPeriodDays)
+			? requestedPeriod as ProgressPeriodDays
+			: 30;
+		// Allt faktaunderlag räknas lokalt på servern ur vald period. Ingen
+		// språkmodell får formulera eller utvidga personliga samband från råtext.
+		const analysis = buildProgressAnalysis(rows, period);
+		const support = buildSupportView(filterProgressRows(rows, period));
 
 		return json({
-			insights: legacyInsights,
-			bestDay,
-			worstDay,
-			emotionDistribution: {},
-			aiSummary: narrative.storyParagraphs[0] ?? null,
-			narrative,
+			analysis,
 			support
 		});
 	} catch (err) {
@@ -125,4 +81,3 @@ export const GET: RequestHandler = async ({ request }) => {
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };
-

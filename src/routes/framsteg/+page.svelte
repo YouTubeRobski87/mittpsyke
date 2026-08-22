@@ -78,14 +78,11 @@
 		CHART_FALLBACK_COPY,
 		type ChartPoint,
 		type MoodSample,
-		type PeriodDays,
-		type ThemeLike
+		type PeriodDays
 	} from '$lib/progress-recent-period';
 	import {
 		buildPeriodAnalysis,
-		buildRecentComparison,
 		buildMoodTimelineView,
-		buildRecurringThemes,
 		EMPTY_MOOD_COPY
 	} from '$lib/progress-reflection';
 	import {
@@ -103,7 +100,6 @@
 		type SupportSuggestion,
 		type SupportView
 	} from '$lib/progress-support';
-	import { buildAnalysisCards, type AnalysisCardId } from '$lib/progress-analysis-cards';
 	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart, ChevronDown } from 'lucide-svelte';
 
 	let { data } = $props<{ data: PageData }>();
@@ -249,42 +245,38 @@
 		count: number;
 	}
 
-	interface EvidenceClaim {
-		title: string;
-		description: string;
-		evidence: string;
-	}
-
-	interface NarrativeInsight {
-		entryCount: number;
-		dataBasis: {
-			moodEntryCount: number;
-			textEntryCount: number;
-			firstDate: string | null;
-			latestDate: string | null;
-		};
-		patterns: EvidenceClaim[];
-		strengths: EvidenceClaim[];
-		challenges: EvidenceClaim[];
-		timeline: {
-			title: string;
-			summary: string;
-			observations: EvidenceClaim[];
-		};
-	}
-
 	interface InsightsResponse {
+		analysis: ProgressAnalysisResponse;
+		// Fälten nedan används av den avstängda äldre presentationen längre ned
+		// i filen. Det nya gränssnittet använder enbart analysis.
 		insights: InsightItem[];
 		bestDay: InsightDay | null;
 		worstDay: InsightDay | null;
 		emotionDistribution: Record<string, number>;
 		aiSummary: string | null;
-		// narrative.themes räknas fram deterministiskt serversidan och följer
-		// redan med i svaret. Vi läser bara av det, ingen extra AI-körning.
-		narrative?: (NarrativeInsight & { themes?: ThemeLike[] }) | null;
 		// Underlaget till "Kanske värt att prova". Byggs deterministiskt av samma
 		// rader som analysen och följer med i samma svar.
 		support?: SupportView | null;
+	}
+
+	interface ProgressInsight {
+		id: string;
+		category: string;
+		title: string;
+		description: string;
+		evidence: string;
+		confidence: 'strong' | 'moderate';
+		rank: number;
+	}
+
+	interface ProgressAnalysisResponse {
+		periodDays: PeriodDays;
+		periodLabel: string;
+		coverage: { firstDate: string | null; latestDate: string | null; textEntryCount: number; activeDays: number; activeWeeks: number };
+		moodSummary: { entryCount: number; activeDays: number; activeWeeks: number; mean: number | null; median: number | null; min: number | null; max: number | null; standardDeviation: number | null; lowShare: number | null; middleShare: number | null; highShare: number | null };
+		monthly: { label: string; entryCount: number; activeDays: number; mean: number; median: number; standardDeviation: number | null }[];
+		insights: ProgressInsight[];
+		halfYearSummary: ProgressInsight[];
 	}
 
 	interface HeatmapResponse {
@@ -331,12 +323,17 @@
 		lastEntryDaysAgo: 0
 	};
 	const ANONYMOUS_PREVIEW_INSIGHTS: InsightsResponse = {
+		analysis: {
+			periodDays: 30, periodLabel: 'den senaste månaden',
+			coverage: { firstDate: null, latestDate: null, textEntryCount: 0, activeDays: 0, activeWeeks: 0 },
+			moodSummary: { entryCount: 0, activeDays: 0, activeWeeks: 0, mean: null, median: null, min: null, max: null, standardDeviation: null, lowShare: null, middleShare: null, highShare: null },
+			monthly: [], insights: [], halfYearSummary: []
+		},
 		insights: [],
 		bestDay: null,
 		worstDay: null,
 		emotionDistribution: {},
 		aiSummary: null,
-		narrative: null,
 		support: null
 	};
 
@@ -477,6 +474,7 @@
 	let progressLoaded = $state(false);
 	let progressError = $state('');
 	let loadedInsightsData = $state<InsightsResponse | null>(null);
+	let loadedInsightsPeriod = $state<PeriodDays | null>(null);
 	let hasTrackedInsightOpened = false;
 	let insightsLoading = $state(false);
 	let insightsError = $state('');
@@ -564,7 +562,6 @@
 			worstDay: null,
 			emotionDistribution: {},
 			aiSummary: null,
-			narrative: null,
 			support: null
 		}
 	);
@@ -573,31 +570,13 @@
 	const periodAnalysis = $derived(buildPeriodAnalysis(moodSamples, selectedPeriod));
 	const periodActivity = $derived(buildPeriodActivity(heatmapData, selectedPeriod));
 	const historyActivity = $derived(buildHistoryActivity(heatmapData, moodSamples, selectedPeriod));
-	const recentComparison = $derived(buildRecentComparison(moodSamples));
-	const recurringThemes = $derived(
-		hasSensitiveDataConsent ? buildRecurringThemes(insightsData?.narrative?.themes) : []
-	);
-	const narrativeInsight = $derived(insightsData?.narrative ?? null);
-
-	// ── Analysen som fyra skannbara kort ──
-	// Kondenseringen ligger i en ren modul; här hålls bara vilka kort som är
-	// utfällda. Långa formuleringar visas aldrig förrän användaren ber om dem.
-	let openAnalysisCards = $state<Partial<Record<AnalysisCardId, boolean>>>({});
+	const progressAnalysis = $derived(loadedInsightsData?.analysis ?? null);
+	// Huvudvyn visar bara de starkast rankade insikterna. Beräkningen och
+	// rangordningen sker server-side; här hålls endast det lokala visningsläget.
+	let openAnalysisInsights = $state<Record<string, boolean>>({});
 	let analysisBasisOpen = $state(false);
-	const analysisCards = $derived(
-		buildAnalysisCards({
-			recentComparison,
-			patterns: narrativeInsight?.patterns ?? null,
-			strengths: narrativeInsight?.strengths ?? null,
-			challenges: narrativeInsight?.challenges ?? null,
-			timelineObservations: narrativeInsight?.timeline?.observations ?? null,
-			themes: narrativeInsight?.themes ?? null,
-			dataBasis: narrativeInsight?.dataBasis ?? null
-		})
-	);
-
-	function toggleAnalysisCard(id: AnalysisCardId) {
-		openAnalysisCards = { ...openAnalysisCards, [id]: !openAnalysisCards[id] };
+	function toggleAnalysisInsight(id: string) {
+		openAnalysisInsights = { ...openAnalysisInsights, [id]: !openAnalysisInsights[id] };
 	}
 	const allMoodAverage = $derived.by(() => {
 		if (moodSamples.length === 0) return null;
@@ -735,6 +714,9 @@
 	function changePeriod(period: PeriodDays) {
 		selectedPeriod = period;
 		selectedMoodPoint = null;
+		openAnalysisInsights = {};
+		supportRotation = 0;
+		if (!isAnonymous && hasSensitiveDataConsent && insightsVisible) void loadInsights();
 	}
 
 	// Hela sektionen "Din senaste tid" byggs av redan hämtad data.
@@ -742,7 +724,7 @@
 		buildRecentPeriodView({
 			samples: moodSamples,
 			heatmapData,
-			themes: insightsData?.narrative?.themes ?? null,
+			themes: null,
 			hasConsent: isAnonymous || hasSensitiveDataConsent,
 			periodDays: selectedPeriod
 		})
@@ -953,7 +935,7 @@
 			!hasSensitiveDataConsent ||
 			!insightsVisible ||
 			insightsLoading ||
-			loadedInsightsData
+			loadedInsightsPeriod === selectedPeriod
 		) {
 			return;
 		}
@@ -1087,6 +1069,7 @@
 
 	async function loadInsights() {
 		if (insightsLoading) return;
+		const requestedPeriod = selectedPeriod;
 
 		insightsLoading = true;
 		insightsError = '';
@@ -1097,7 +1080,7 @@
 			} = await supabase.auth.getSession();
 
 			if (!session?.access_token) {
-				insightsError = 'Du behöver vara inloggad för att se AI-insikter.';
+				insightsError = 'Du behöver vara inloggad för att se din analys.';
 				loadedInsightsData = null;
 				return;
 			}
@@ -1107,7 +1090,7 @@
 				insightsFetchController.abort();
 			}, 12000);
 
-			const response = await fetch('/api/diary/insights', {
+			const response = await fetch(`/api/diary/insights?period=${requestedPeriod}`, {
 				headers: {
 					Authorization: `Bearer ${session.access_token}`,
 					[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION
@@ -1122,37 +1105,39 @@
 				| { error?: string }
 				| null;
 
-			if (!response.ok || !result || !('insights' in result)) {
+			if (!response.ok || !result || !('analysis' in result)) {
 				insightsError =
 					result && 'error' in result && typeof result.error === 'string'
 						? result.error
-						: 'Kunde inte ladda AI-insikter just nu.';
+						: 'Kunde inte ladda analysen just nu.';
 				loadedInsightsData = null;
+				loadedInsightsPeriod = null;
 				return;
 			}
 
+			if (selectedPeriod !== requestedPeriod) return;
 			loadedInsightsData = result;
+			loadedInsightsPeriod = requestedPeriod;
 
 			// Insikterna visades med innehåll. Endast fast typ, en boolean och ett
 			// antal — aldrig sammanfattningen, temana eller humörvärdena.
 			if (!hasTrackedInsightOpened) {
-				const hasContent = Boolean(
-					result.aiSummary || result.insights.length > 0 || result.bestDay || result.worstDay
-				);
+				const hasContent = result.analysis.insights.length > 0;
 				if (hasContent) {
 					hasTrackedInsightOpened = true;
 					trackInsightOpened({
 						insight_type: 'diary_insights',
-						has_summary: Boolean(result.aiSummary),
-						pattern_count: result.insights.length
+						has_summary: result.analysis.halfYearSummary.length > 0,
+						pattern_count: result.analysis.insights.length
 					});
 				}
 			}
 		} catch {
-			insightsError = 'Kunde inte ladda AI-insikter just nu.';
+			insightsError = 'Kunde inte ladda analysen just nu.';
 			loadedInsightsData = null;
 		} finally {
 			insightsLoading = false;
+			if (selectedPeriod !== requestedPeriod) void loadInsights();
 		}
 	}
 
@@ -1338,64 +1323,41 @@
 					<p class="reflection-copy">Räknar bara på sådant som har tillräckligt underlag.</p>
 				{:else if insightsError}
 					<p class="reflection-copy">Det gick inte att hämta analysen just nu.</p>
-				{:else if narrativeInsight}
-					<ul class="analysis-grid">
-						{#each analysisCards as card (card.id)}
-							<li class="analysis-tile" class:is-empty={card.empty} data-card={card.id}>
-								<h3>{card.title}</h3>
-								{#if card.caption}
-									<p class="analysis-tile-caption">{card.caption}</p>
+				{:else if progressAnalysis}
+					{#if selectedPeriod === 180 && progressAnalysis.halfYearSummary.length > 0}
+						<h3 class="analysis-summary-heading">Ditt halvår i korthet</h3>
+						<ul class="analysis-summary-list">
+							{#each progressAnalysis.halfYearSummary as item (item.id)}
+								<li>{item.description}</li>
+							{/each}
+						</ul>
+					{/if}
+					{#if progressAnalysis.insights.length === 0}
+						<p class="reflection-copy">Inget tydligt mönster syns ännu i den här perioden. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
+					{:else}
+						<ul class="analysis-grid">
+							{#each progressAnalysis.insights as item (item.id)}
+								<li class="analysis-tile" data-card={item.category}>
+								<h3>{item.title}</h3>
+								<p class="analysis-tile-conclusion">{item.description}</p>
+								<button
+									type="button"
+									class="analysis-more"
+									aria-expanded={openAnalysisInsights[item.id] === true}
+									onclick={() => toggleAnalysisInsight(item.id)}
+								>
+									{openAnalysisInsights[item.id] ? 'Visa mindre' : 'Vad bygger det här på?'}
+								</button>
+								{#if openAnalysisInsights[item.id]}
+									<dl class="analysis-details">
+										<dt>Så är observationen räknad</dt>
+										<dd>{item.evidence}</dd>
+									</dl>
 								{/if}
-								<p class="analysis-tile-conclusion">{card.conclusion}</p>
-
-								{#if card.chips.length > 0}
-									<ul class="analysis-chips">
-										{#each card.chips as chip (chip)}
-											<li class="analysis-chip">{chip}</li>
-										{/each}
-									</ul>
-								{/if}
-
-								{#if card.items.length > 0}
-									<ul class="analysis-items">
-										{#each card.items as item (item.label)}
-											<li>
-												<strong>{item.label}</strong>
-												<span>{item.note}</span>
-											</li>
-										{/each}
-									</ul>
-								{/if}
-
-								{#if card.explanation}
-									<p class="analysis-tile-explanation">{card.explanation}</p>
-								{/if}
-
-								{#if card.dataPoint}
-									<p class="analysis-tile-data">{card.dataPoint}</p>
-								{/if}
-
-								{#if card.details.length > 0}
-									<button
-										type="button"
-										class="analysis-more"
-										aria-expanded={openAnalysisCards[card.id] === true}
-										onclick={() => toggleAnalysisCard(card.id)}
-									>
-										{openAnalysisCards[card.id] ? 'Visa mindre' : 'Visa mer'}
-									</button>
-									{#if openAnalysisCards[card.id]}
-										<dl class="analysis-details">
-											{#each card.details as item (item.label + item.value)}
-												<dt>{item.label}</dt>
-												<dd>{item.value}</dd>
-											{/each}
-										</dl>
-									{/if}
-								{/if}
-							</li>
-						{/each}
-					</ul>
+								</li>
+							{/each}
+						</ul>
+					{/if}
 
 					<button
 						type="button"
@@ -1407,7 +1369,15 @@
 					</button>
 					{#if analysisBasisOpen}
 						<p class="analysis-basis">
-							Analysen bygger på {narrativeInsight.dataBasis.moodEntryCount} {narrativeInsight.dataBasis.moodEntryCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} och {narrativeInsight.dataBasis.textEntryCount} {narrativeInsight.dataBasis.textEntryCount === 1 ? 'sparad text' : 'sparade texter'}{#if narrativeInsight.dataBasis.firstDate && narrativeInsight.dataBasis.latestDate} från {narrativeInsight.dataBasis.firstDate} till {narrativeInsight.dataBasis.latestDate}{/if}. Här visas bara mönster som går att räkna fram ur dina registreringar och sparade texter. Varje slutsats visas först när den passerat ett tröskelvärde, och den beskriver samband — inte orsak.
+							Analysen bygger på {progressAnalysis.moodSummary.entryCount} {progressAnalysis.moodSummary.entryCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} och {progressAnalysis.coverage.textEntryCount} {progressAnalysis.coverage.textEntryCount === 1 ? 'sparad text' : 'sparade texter'}{#if progressAnalysis.coverage.firstDate && progressAnalysis.coverage.latestDate} från {progressAnalysis.coverage.firstDate} till {progressAnalysis.coverage.latestDate}{/if}. Här visas bara mönster som går att räkna fram ur den valda periodens registreringar och sparade texter. Varje slutsats visas först när den passerat ett tröskelvärde, och den beskriver samband — inte orsak.
+							{#if progressAnalysis.moodSummary.mean !== null && progressAnalysis.moodSummary.median !== null}
+								Ditt snitt är {progressAnalysis.moodSummary.mean.toFixed(1).replace('.', ',')} och medianen {progressAnalysis.moodSummary.median.toFixed(1).replace('.', ',')} på skalan. Registreringarna ligger mellan {progressAnalysis.moodSummary.min} och {progressAnalysis.moodSummary.max}.
+							{/if}
+							{#if selectedPeriod === 180 && progressAnalysis.monthly.length > 0}
+								Månader med tillräckligt underlag: {progressAnalysis.monthly.map((month) => `${month.label} (${month.entryCount} registreringar)`).join(', ')}.
+							{:else if selectedPeriod === 180}
+								Underlaget är för ojämnt för att jämföra kalendermånader på ett tryggt sätt ännu.
+							{/if}
 						</p>
 					{/if}
 				{:else}
@@ -1972,6 +1942,21 @@
 		list-style: none;
 	}
 
+	.analysis-summary-heading {
+		margin: 0.35rem 0 0;
+		color: hsl(var(--foreground));
+		font-size: 1.05rem;
+	}
+
+	.analysis-summary-list {
+		display: grid;
+		gap: 0.5rem;
+		margin: 0;
+		padding-left: 1.2rem;
+		color: hsl(var(--foreground));
+		line-height: 1.5;
+	}
+
 	.analysis-tile {
 		display: grid;
 		align-content: start;
@@ -1991,12 +1976,6 @@
 		text-transform: uppercase;
 	}
 
-	.analysis-tile-caption {
-		margin: -0.2rem 0 0;
-		color: hsl(var(--muted-foreground) / 0.85);
-		font-size: 0.76rem;
-	}
-
 	/* Slutsatsen är kortets tyngdpunkt och ska kunna läsas ensam. */
 	.analysis-tile-conclusion {
 		margin: 0.1rem 0 0;
@@ -2004,68 +1983,6 @@
 		font-size: 1.02rem;
 		font-weight: 600;
 		line-height: 1.35;
-	}
-
-	.is-empty .analysis-tile-conclusion {
-		color: hsl(var(--muted-foreground));
-		font-weight: 500;
-	}
-
-	.analysis-tile-explanation {
-		margin: 0;
-		color: hsl(var(--muted-foreground));
-		font-size: 0.9rem;
-		line-height: 1.5;
-	}
-
-	.analysis-tile-data {
-		margin: 0;
-		color: hsl(var(--muted-foreground) / 0.85);
-		font-size: 0.78rem;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.analysis-chips {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.35rem;
-		margin: 0.15rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.analysis-chip {
-		padding: 0.2rem 0.6rem;
-		border: 1px solid color-mix(in srgb, var(--theme-accent, #557c68) 30%, transparent);
-		border-radius: 999px;
-		color: hsl(var(--foreground));
-		font-size: 0.8rem;
-		line-height: 1.4;
-	}
-
-	.analysis-items {
-		display: grid;
-		gap: 0.5rem;
-		margin: 0.15rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.analysis-items li {
-		display: grid;
-		gap: 0.1rem;
-	}
-
-	.analysis-items strong {
-		color: hsl(var(--foreground));
-		font-size: 0.92rem;
-		font-weight: 600;
-	}
-
-	.analysis-items span {
-		color: hsl(var(--muted-foreground));
-		font-size: 0.84rem;
-		line-height: 1.45;
 	}
 
 	.analysis-more {

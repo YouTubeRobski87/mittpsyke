@@ -274,19 +274,24 @@ describe('weekly-summary: serverägt diary AI-samtycke', () => {
 });
 
 describe('V3.1-avgränsning', () => {
-	it('diary/insights är deterministisk och rörs inte', () => {
+	it('diary/insights använder den deterministiska Framstegsmotorn', () => {
 		const endpoint = readFileSync(new URL('./insights/+server.ts', import.meta.url), 'utf8');
 		const analysis = readFileSync(
 			new URL('../../../lib/server/diary-insight-analysis.ts', import.meta.url),
 			'utf8'
 		);
+		const progressAnalysis = readFileSync(
+			new URL('../../../lib/server/progress-analysis.ts', import.meta.url),
+			'utf8'
+		);
 
-		// Ingen extern AI i varken routen eller analysen, därför ingen V3.1-ändring.
-		for (const source of [endpoint, analysis]) {
+		// Ingen extern AI får användas när den periodvalda analysen räknas fram.
+		for (const source of [endpoint, analysis, progressAnalysis]) {
 			expect(source).not.toContain('generateAIText');
 			expect(source).not.toMatch(/openai|anthropic/i);
 		}
-		expect(endpoint).toContain('buildDiaryNarrativeInsight');
+		expect(endpoint).toContain('buildProgressAnalysis');
+		expect(endpoint).toContain('filterProgressRows');
 	});
 
 	it('ingen kvarvarande AI-endpoint under api/diary saknar serversamtycke', async () => {
