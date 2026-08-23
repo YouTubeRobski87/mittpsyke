@@ -131,9 +131,10 @@ describe('Framstegsanalysens täckning', () => {
 	});
 
 	it('markerar ett query-cap som truncerat underlag utan att exponera råtext', () => {
-		const analysis = buildProgressAnalysis(days('2026-07-20', [6, 6, 6, 6]), 30, NOW, { truncated: true });
+		const privateText = 'Privat anteckning som aldrig får finnas i analysresultatet.';
+		const analysis = buildProgressAnalysis(days('2026-07-20', [6, 6, 6, 6], () => privateText), 30, NOW, { truncated: true });
 		expect(analysis.coverage.truncated).toBe(true);
-		expect(JSON.stringify(analysis)).not.toContain('råtext');
+		expect(JSON.stringify(analysis)).not.toContain(privateText);
 	});
 
 	it('ger stabila kalendergränser för endpointens periodfilter', () => {
@@ -172,6 +173,17 @@ describe('Framstegsanalysens täckning', () => {
 		const rows = days('2026-02-20', [3, 3, 4, 4, 7, 7, 8, 8], () => 'Stress och sömn återkommer.');
 		expect(buildProgressAnalysis(rows, 180, NOW).halfYearSummary.length).toBeGreaterThan(0);
 		expect(buildProgressAnalysis(rows, 30, NOW).halfYearSummary).toEqual([]);
+	});
+
+	it('begränsar halvåret till högst fyra primära observationer', () => {
+		const rows = [
+			...days('2026-02-18', [2, 3, 2, 3, 2, 3, 2, 3], () => 'Stress och sömn tar plats.'),
+			...days('2026-06-17', [8, 9, 8, 9, 8, 9, 8, 9], () => 'Sömn och promenad tar plats.')
+		];
+		const analysis = buildProgressAnalysis(rows, 180, NOW);
+
+		expect(analysis.insights.length).toBeLessThanOrEqual(4);
+		expect(analysis.halfYearSummary.length).toBeLessThanOrEqual(4);
 	});
 
 	it('hanterar en stor dagbok och luckor utan att göra råtext till klientdata', () => {

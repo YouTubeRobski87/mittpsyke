@@ -1353,6 +1353,9 @@
 				{:else if insightsError}
 					<p class="reflection-copy">Det gick inte att hämta analysen just nu.</p>
 				{:else if progressAnalysis}
+					{#if progressAnalysis.coverage.truncated}
+						<p class="analysis-coverage-note">Analysen bygger på en begränsad del av periodens anteckningar.</p>
+					{/if}
 					{#if selectedPeriod === 180 && progressAnalysis.longPeriodSummary}
 						<section class="analysis-section analysis-long-period" aria-labelledby="half-year-summary-heading">
 							<h3 id="half-year-summary-heading">Ditt halvår i korthet</h3>
@@ -1369,7 +1372,7 @@
 										{:else if month.status === 'thin'}
 											<span>Tunt underlag · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
 										{:else}
-											<span>Ingen registrering</span>
+											<span>Inget mående registrerat</span>
 										{/if}
 									</li>
 								{/each}

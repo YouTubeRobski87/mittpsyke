@@ -30,9 +30,10 @@ describe('Framstegsanalysens endpointkontrakt', () => {
 		expect(source).toContain('truncated: (count ?? entries?.length ?? 0) > INSIGHTS_ROW_LIMIT');
 	});
 
-	it('använder den deterministiska motorn och skickar inte rå dagbokstext i svaret', () => {
+	it('håller analysen deterministisk och begränsar eventuella citat till det uttryckliga supportfältet', () => {
 		const source = endpointSource();
 		expect(source).toContain('buildProgressAnalysis(rows, period');
+		expect(source).toContain('buildSupportView(filterProgressRows(rows, period))');
 		expect(source).toContain('return json({\n\t\t\tanalysis,\n\t\t\tsupport\n\t\t});');
 		expect(source).not.toMatch(/openai|anthropic|generateAIText/i);
 	});

@@ -135,6 +135,12 @@ describe('exempel ur den egna historiken', () => {
 		expect(extractTopicSentence('Promenad.', ['promenad'])).toBeNull();
 	});
 
+	it('släpper inte igenom ett citat som överskrider längdgränsen', () => {
+		const tooLong = `Promenad ${'lugn '.repeat(40)}idag.`;
+		expect(tooLong.length).toBeGreaterThan(160);
+		expect(extractTopicSentence(tooLong, ['promenad'])).toBeNull();
+	});
+
 	it('har alltid en neutral sammanfattning även när citatet uteblir', () => {
 		const view = buildSupportView(walkHistory(), { now: NOW });
 		const examples = view.examples.filter((example) => example.topicLabel === 'Motion');
