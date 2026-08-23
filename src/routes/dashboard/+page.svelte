@@ -300,7 +300,11 @@
         </div>
       </header>
 
-      <div class="dashboard-body" class:has-daily={showCompanionDailyQuestion}>
+      <div
+        class="dashboard-body"
+        class:has-daily={showCompanionDailyQuestion}
+        class:has-account-teaser={isAnonymous}
+      >
       <section
         class="companion-hero"
         class:personal-preview={isAnonymous}
@@ -328,10 +332,16 @@
         />
         <a
           class="cabin-entrance"
+          class:requires-login={isAnonymous}
           href="/dashboard/kvallsstugan"
-          aria-label="Gå in i Kvällsstugan och öppna Kvällslugn"
+          aria-label={
+            isAnonymous ? 'Kvällslugn – logga in för att använda' : 'Gå in i Kvällsstugan och öppna Kvällslugn'
+          }
         >
-          <span aria-hidden="true">Kvällslugn</span>
+          <span class="cabin-entrance-label" aria-hidden="true">
+            <span>Kvällslugn</span>
+            {#if isAnonymous}<small>Logga in för att använda</small>{/if}
+          </span>
         </a>
         <CompanionPose
           class="hero-companion-pose"
@@ -393,12 +403,13 @@
             </button>
           </div>
         </div>
-        {#if isAnonymous}
-          <div class="preview-note hero-preview-note">
-            <AccountTeaser variant="dashboard" mode="overlay" />
-          </div>
-        {/if}
       </section>
+
+      {#if isAnonymous}
+        <div class="dashboard-account-teaser">
+          <AccountTeaser variant="dashboard" mode="overlay" />
+        </div>
+      {/if}
 
         <!-- Frågan ligger strax under scenen, aldrig som en modal ovanpå den:
              världen och följeslagaren syns hela tiden. Kortet finns bara i DOM:en
@@ -460,7 +471,10 @@
           {#if diaryPreview.hasEntry && diaryPreview.dateLabel}
             <p class="home-card-note">Du skrev {diaryPreview.dateLabel}.</p>
           {/if}
-          <a class="home-card-action" href="/dagbok/checkin">Skriv i dagboken</a>
+          <a class="home-card-action" class:home-card-action--login={isAnonymous} href="/dagbok/checkin">
+            <span>Skriv i dagboken</span>
+            {#if isAnonymous}<span class="home-card-action-note">Konto krävs för att spara</span>{/if}
+          </a>
         </section>
 
         <nav class="explore-panel" aria-labelledby="dashboard-explore-title">
@@ -566,6 +580,21 @@
   .dashboard-body.has-daily {
     grid-template-areas:
       'hero    hero   now'
+      'daily   daily  daily'
+      'checkin checkin explore';
+  }
+
+  .dashboard-body.has-account-teaser {
+    grid-template-areas:
+      'hero    hero   now'
+      'teaser  teaser teaser'
+      'checkin checkin explore';
+  }
+
+  .dashboard-body.has-account-teaser.has-daily {
+    grid-template-areas:
+      'hero    hero   now'
+      'teaser  teaser teaser'
       'daily   daily  daily'
       'checkin checkin explore';
   }
@@ -702,15 +731,9 @@
     filter: none;
   }
 
-  .preview-note {
-    position: absolute;
-    z-index: 4;
-  }
-
-  .hero-preview-note {
-    right: clamp(18px, 3vw, 34px);
-    bottom: clamp(18px, 3vw, 34px);
-    width: min(28rem, calc(100% - 36px));
+  .dashboard-account-teaser {
+    grid-area: teaser;
+    min-width: 0;
   }
 
   .companion-hero-scene {
@@ -742,7 +765,7 @@
     outline: none;
   }
 
-  .cabin-entrance span {
+  .cabin-entrance-label {
     position: absolute;
     left: 50%;
     bottom: 5px;
@@ -758,12 +781,26 @@
     transform: translateX(-50%);
   }
 
+  .cabin-entrance.requires-login .cabin-entrance-label {
+    display: grid;
+    gap: 0.18rem;
+    min-width: 7.25rem;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .cabin-entrance-label small {
+    font-size: 0.62rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
   .cabin-entrance:hover,
   .cabin-entrance:focus-visible {
     box-shadow: inset 0 0 0 2px rgb(248 207 133 / 0.86), 0 0 0 3px rgb(20 29 37 / 0.56);
   }
 
-  .cabin-entrance:focus-visible span {
+  .cabin-entrance:focus-visible .cabin-entrance-label {
     background: rgb(38 29 17 / 0.94);
   }
 
@@ -1228,6 +1265,18 @@
       transform 0.16s ease;
   }
 
+  .home-card-action--login {
+    flex-direction: column;
+    gap: 0.12rem;
+    padding-block: 0.5rem;
+    line-height: 1.15;
+  }
+
+  .home-card-action-note {
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+
   .now-cta:hover,
   .home-card-action:hover {
     background: color-mix(in srgb, var(--mp-accent) 12%, transparent);
@@ -1348,6 +1397,23 @@
         'now     explore'
         'checkin explore';
     }
+
+    .dashboard-body.has-account-teaser {
+      grid-template-areas:
+        'hero    hero'
+        'teaser  teaser'
+        'now     explore'
+        'checkin explore';
+    }
+
+    .dashboard-body.has-account-teaser.has-daily {
+      grid-template-areas:
+        'hero    hero'
+        'teaser  teaser'
+        'daily   daily'
+        'now     explore'
+        'checkin explore';
+    }
   }
 
   @media (max-width: 980px) {
@@ -1378,6 +1444,25 @@
     .dashboard-body.has-daily {
       grid-template-areas:
         'hero'
+        'daily'
+        'now'
+        'checkin'
+        'explore';
+    }
+
+    .dashboard-body.has-account-teaser {
+      grid-template-areas:
+        'hero'
+        'teaser'
+        'now'
+        'checkin'
+        'explore';
+    }
+
+    .dashboard-body.has-account-teaser.has-daily {
+      grid-template-areas:
+        'hero'
+        'teaser'
         'daily'
         'now'
         'checkin'
@@ -1485,11 +1570,9 @@
       left: 50%;
     }
 
-    .hero-preview-note {
-      right: 12px;
-      bottom: 12px;
-      left: 12px;
-      width: auto;
+    .cabin-entrance.requires-login .cabin-entrance-label {
+      min-width: 6.65rem;
+      font-size: 0.68rem;
     }
   }
 
