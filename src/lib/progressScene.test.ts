@@ -4,9 +4,13 @@ import { join } from 'node:path';
 import {
 	PROGRESS_SCENE_BANDS,
 	PROGRESS_SCENE_SOURCES,
+	PROGRESS_SCENE_CROSSFADE_MS,
+	clearProgressSceneOutgoing,
+	completeProgressSceneTransition,
 	getProgressSceneBand,
 	getProgressSceneLabel,
 	parseProgressSceneOverride,
+	prepareProgressSceneTransition,
 	type ProgressSceneBand
 } from './progressScene';
 
@@ -82,6 +86,15 @@ describe('varje spann pekar på rätt befintlig assetfil', () => {
 });
 
 describe('Framstegs fullständiga dygnsscener', () => {
+	it('förbereder nästa responsiva asset innan den synliga scenen byts och kortar bytet vid reduced motion', () => {
+		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
+
+		expect(route).toContain('prepareProgressSceneTransition');
+		expect(route).toContain('onload={() => revealPreparedScene(pendingBand)}');
+		expect(route).toContain('@media (prefers-reduced-motion: reduce)');
+		expect(route).toContain('animation-duration: 1ms;');
+	});
+
 	it('låter följeslagaren vila nära personen utan aktiva gester', () => {
 		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
 
@@ -128,5 +141,44 @@ describe('parseProgressSceneOverride', () => {
 
 	it.each([null, undefined, '', 'night', 'DAG', 'nonsense'])('avvisar %s', (value) => {
 		expect(parseProgressSceneOverride(value)).toBeNull();
+	});
+});
+
+describe('Framstegs mjuka scenbyte', () => {
+	it('behåller den synliga scenen medan nästa asset förbereds', () => {
+		const state = prepareProgressSceneTransition(
+			{ visibleBand: 'afternoon', pendingBand: null, outgoingBand: null },
+			'evening'
+		);
+
+		expect(state).toEqual({ visibleBand: 'afternoon', pendingBand: 'evening', outgoingBand: null });
+	});
+
+	it('byter först när den väntande bilden har laddat och behåller den gamla för crossfade', () => {
+		const pending = prepareProgressSceneTransition(
+			{ visibleBand: 'afternoon', pendingBand: null, outgoingBand: null },
+			'evening'
+		);
+		const transitioned = completeProgressSceneTransition(pending, 'evening');
+
+		expect(transitioned).toEqual({ visibleBand: 'evening', pendingBand: null, outgoingBand: 'afternoon' });
+		expect(clearProgressSceneOutgoing(transitioned)).toEqual({
+			visibleBand: 'evening',
+			pendingBand: null,
+			outgoingBand: null
+		});
+	});
+
+	it('ignorerar en gammal bild som blir klar efter att ett senare byte förberetts', () => {
+		const state = completeProgressSceneTransition(
+			{ visibleBand: 'day', pendingBand: 'afternoon', outgoingBand: null },
+			'evening'
+		);
+		expect(state).toEqual({ visibleBand: 'day', pendingBand: 'afternoon', outgoingBand: null });
+	});
+
+	it('har en lugn men begränsad överlappningstid', () => {
+		expect(PROGRESS_SCENE_CROSSFADE_MS).toBeGreaterThanOrEqual(700);
+		expect(PROGRESS_SCENE_CROSSFADE_MS).toBeLessThanOrEqual(1_200);
 	});
 });

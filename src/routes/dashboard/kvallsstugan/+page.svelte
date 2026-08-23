@@ -21,6 +21,7 @@
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
 	import { getLivingWorldScene, type LivingWorldScene } from '$lib/worldScene';
+	import { getEveningLampCssVariables } from '$lib/evening-lamp';
 	import type { CompanionDailyState } from '$lib/companionDailyQuestion';
 	import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
 
@@ -163,7 +164,7 @@
 
 	<div class="evening-experience">
 		<div class="evening-scene-column">
-		<section class="evening-scene" data-time={dayState} aria-label="Inne i Kvällsstugan, vid vattnet">
+		<section class="evening-scene" data-time={dayState} style={getEveningLampCssVariables(dayState)} aria-label="Inne i Kvällsstugan, vid vattnet">
 			<img
 				class="evening-scene-image"
 				srcset={CABIN_SRCSET}
@@ -306,7 +307,7 @@
 		position: absolute;
 		z-index: 2;
 		inset: 0;
-		background: radial-gradient(circle at 79% 48%, rgb(255 193 112 / 0.2), transparent 23%);
+		background: radial-gradient(circle at 79% 48%, rgb(255 193 112 / var(--cabin-lamp-glow-opacity, 0.2)), transparent 23%);
 		mix-blend-mode: screen;
 		pointer-events: none;
 		animation: cabin-lamp-flicker 8s ease-in-out infinite;
@@ -453,9 +454,9 @@
 	.evening-help a { color: inherit; text-underline-offset: 0.18em; }
 
 	@keyframes cabin-lamp-flicker {
-		0%, 100% { opacity: 0.72; transform: scale(1); }
-		38% { opacity: 0.82; transform: scale(1.008); }
-		57% { opacity: 0.68; transform: scale(0.994); }
+		0%, 100% { opacity: var(--cabin-lamp-idle-opacity, 0.72); transform: scale(1); }
+		38% { opacity: var(--cabin-lamp-peak-opacity, 0.82); transform: scale(1.008); }
+		57% { opacity: var(--cabin-lamp-low-opacity, 0.68); transform: scale(0.994); }
 	}
 	@keyframes interior-memory-arrive {
 		from { opacity: 0; }

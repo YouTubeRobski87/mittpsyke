@@ -15,6 +15,7 @@
 		type LivingWorldScene
 	} from '$lib/worldScene';
 	import { effectStyle } from '$lib/world/effectStyle';
+	import { getCloudSessionVariation } from '$lib/world/sessionVariation';
 	import {
 		getAmbientEventPlan,
 		type AmbientEventContext,
@@ -96,6 +97,20 @@
 			})
 			: null
 	);
+
+	function styleForEffect(effect: LivingWorldEffect) {
+		const baseStyle = effectStyle(effect);
+		if (effect.kind !== 'cloud' || !sessionSeed) return baseStyle;
+
+		const variation = getCloudSessionVariation(sessionSeed, effect.id, effect);
+		return [
+			baseStyle,
+			`--cloud-offset-x: ${variation.offsetX.toFixed(2)}%`,
+			`--cloud-offset-y: ${variation.offsetY.toFixed(2)}%`,
+			`--cloud-duration: ${variation.durationMs}ms`,
+			`--cloud-delay: ${variation.delayMs}ms`
+		].join('; ');
+	}
 
 	function createActiveEvent(
 		event: LivingWorldEvent,
@@ -184,7 +199,7 @@
 	{#each skyEffects as effect (effect.id)}
 		<span
 			class={`world-effect world-${effect.kind} ${effect.className ?? ''}`.trim()}
-			style={effectStyle(effect)}
+			style={styleForEffect(effect)}
 		></span>
 	{/each}
 
@@ -206,12 +221,12 @@
 	{#each foregroundEffects as effect (effect.id)}
 		<span
 			class={`world-effect world-${effect.kind} ${effect.className ?? ''}`.trim()}
-			style={effectStyle(effect)}
+			style={styleForEffect(effect)}
 		></span>
 	{/each}
 
-	{#if isVisibleEffect('foliage')}
-		<LeafLayer season={scene.season} />
+	{#if isVisibleEffect('foliage') && sessionSeed}
+		<LeafLayer season={scene.season} {sessionSeed} />
 	{/if}
 
 	{#if relationshipStage >= 1 && isVisibleEffect('water')}
@@ -233,7 +248,7 @@
 	.living-world[data-time='day'] .world-light { inset: -22% auto auto 12%; background: radial-gradient(circle, rgba(232, 245, 255, 0.2) 0%, rgba(206, 230, 255, 0.07) 46%, transparent 75%); }
 	.living-world[data-time='evening'] .world-light { inset: -12% -8% auto auto; background: radial-gradient(circle at 62% 38%, rgba(255, 187, 120, 0.28) 0%, rgba(255, 208, 158, 0.1) 47%, transparent 74%); }
 	.living-world[data-time='night'] .world-light { background: radial-gradient(circle, rgba(171, 204, 255, 0.1) 0%, rgba(171, 204, 255, 0.035) 46%, transparent 74%); }
-	.world-cloud { border-radius: 50% 54% 48% 52% / 56% 48% 52% 44%; background: radial-gradient(ellipse at 20% 65%, rgba(250, 246, 231, 0.54), transparent 42%), radial-gradient(ellipse at 48% 45%, rgba(255, 252, 241, 0.64), transparent 48%), radial-gradient(ellipse at 78% 61%, rgba(236, 241, 230, 0.46), transparent 44%); filter: blur(12px); mix-blend-mode: soft-light; opacity: 0; transform: translate3d(-8%, 0, 0) scale(var(--scale, 1)); animation: cloudDrift var(--duration, 140000ms) linear var(--delay, 0ms) infinite; transition: filter 1200ms ease; }
+	.world-cloud { border-radius: 50% 54% 48% 52% / 56% 48% 52% 44%; background: radial-gradient(ellipse at 20% 65%, rgba(250, 246, 231, 0.54), transparent 42%), radial-gradient(ellipse at 48% 45%, rgba(255, 252, 241, 0.64), transparent 48%), radial-gradient(ellipse at 78% 61%, rgba(236, 241, 230, 0.46), transparent 44%); filter: blur(12px); mix-blend-mode: soft-light; opacity: 0; transform: translate3d(calc(-8% + var(--cloud-offset-x, 0%)), var(--cloud-offset-y, 0%), 0) scale(var(--scale, 1)); animation: cloudDrift var(--cloud-duration, var(--duration, 140000ms)) linear var(--cloud-delay, var(--delay, 0ms)) infinite; transition: filter 1200ms ease; }
 	.cloud-front { filter: blur(16px); }
 	.living-world[data-time='morning'] .world-cloud { --cloud-layer-opacity: 0.86; }
 	.living-world[data-time='day'] .world-cloud { --cloud-layer-opacity: 1; mix-blend-mode: screen; }
@@ -321,7 +336,7 @@
 	   avlägsna lager driver kortare och långsammare än nära. Se EFFECT_DEPTHS i
 	   $lib/worldScene för djupordningen. */
 	@keyframes worldLightShift { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(calc(2.2% * (0.4 + var(--depth, 0.5))), calc(1.6% * (0.4 + var(--depth, 0.5))), 0) scale(1.035); } }
-	@keyframes cloudDrift { 0%, 8%, 100% { opacity: 0; transform: translate3d(-10%, 0, 0) scale(var(--scale, 1)); } 18%, 72% { opacity: calc(var(--opacity, 0.1) * var(--cloud-layer-opacity, 1)); } 86% { opacity: 0; transform: translate3d(calc((12% + (28% * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5))), -3%, 0) scale(var(--scale, 1)); } }
+	@keyframes cloudDrift { 0%, 8%, 100% { opacity: 0; transform: translate3d(calc(-10% + var(--cloud-offset-x, 0%)), var(--cloud-offset-y, 0%), 0) scale(var(--scale, 1)); } 18%, 72% { opacity: calc(var(--opacity, 0.1) * var(--cloud-layer-opacity, 1)); } 86% { opacity: 0; transform: translate3d(calc((12% + (28% * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)) + var(--cloud-offset-x, 0%)), calc(-3% + var(--cloud-offset-y, 0%)), 0) scale(var(--scale, 1)); } }
 	@keyframes mistDrift { 0%, 100% { opacity: calc(var(--opacity, 0.14) * 0.34); transform: translate3d(-4%, 0, 0) scaleX(0.94); } 48% { opacity: var(--opacity, 0.14); } 74% { opacity: calc(var(--opacity, 0.14) * 0.62); transform: translate3d(calc(5% * (0.5 + var(--depth, 0.5))), calc(-4% * (0.5 + var(--depth, 0.5))), 0) scaleX(1.08); } }
 	@keyframes foliageBreathe { 0%, 24%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); } 58% { transform: rotate(calc((2deg + (2.4deg * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)))) translate3d(calc(1.6% * var(--world-wind, 0.18)), -0.8%, 0); } }
 	/* Svag, ojämn vindpust i grenen - ojämna procentsteg och skilda +/- värden

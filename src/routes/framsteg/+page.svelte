@@ -14,10 +14,15 @@
 	import { page } from '$app/stores';
 	import {
 		PROGRESS_SCENE_SOURCES,
+		PROGRESS_SCENE_CROSSFADE_MS,
+		clearProgressSceneOutgoing,
+		completeProgressSceneTransition,
 		getProgressSceneBand,
 		getProgressSceneLabel,
 		parseProgressSceneOverride,
-		type ProgressSceneBand
+		prepareProgressSceneTransition,
+		type ProgressSceneBand,
+		type ProgressSceneTransitionState
 	} from '$lib/progressScene';
 	import {
 		getProgressCompanionDayState,
@@ -124,10 +129,36 @@
 	// Läses ur page-storen så den gäller redan vid serverrendering, utan flash.
 	const sceneOverride = $derived(parseProgressSceneOverride($page.url.searchParams.get('scene')));
 	const activeSceneBand = $derived(sceneOverride ?? sceneBand);
-	const sceneSources = $derived(PROGRESS_SCENE_SOURCES[activeSceneBand]);
+	let sceneTransition = $state<ProgressSceneTransitionState>({
+		visibleBand: getProgressSceneBand(),
+		pendingBand: null,
+		outgoingBand: null
+	});
+	let clearSceneTransitionTimer: number | null = null;
+	const visibleSceneSources = $derived(PROGRESS_SCENE_SOURCES[sceneTransition.visibleBand]);
 	let companionPoseId = $state('idle');
 	let companionBasePose = $state<CompanionPoseData | null>(null);
 	const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
+
+	function prepareSceneTransition(nextBand: ProgressSceneBand) {
+		sceneTransition = prepareProgressSceneTransition(sceneTransition, nextBand);
+	}
+
+	function revealPreparedScene(loadedBand: ProgressSceneBand) {
+		const next = completeProgressSceneTransition(sceneTransition, loadedBand);
+		if (next === sceneTransition) return;
+		if (clearSceneTransitionTimer !== null) window.clearTimeout(clearSceneTransitionTimer);
+		sceneTransition = next;
+		updateProgressCompanionPlacement();
+		clearSceneTransitionTimer = window.setTimeout(() => {
+			sceneTransition = clearProgressSceneOutgoing(sceneTransition);
+			clearSceneTransitionTimer = null;
+		}, PROGRESS_SCENE_CROSSFADE_MS + 80);
+	}
+
+	$effect(() => {
+		prepareSceneTransition(activeSceneBand);
+	});
 
 	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: CompanionId) {
 		const companionName = getProgressCompanionDisplayName(companionId);
@@ -178,7 +209,7 @@
 	) as CompanionId;
 
 	const companionScene = $derived<CompanionScene>({
-		image: sceneSources.fallback,
+		image: visibleSceneSources.fallback,
 		season,
 		timeOfDay,
 		alt: `Din följeslagare, ${getProgressCompanionDisplayName(sceneCompanionId)}, vid sjön`,
@@ -186,6 +217,9 @@
 		anonymousCopy: getCompanionPoseCopy(companionPoseId, true, sceneCompanionId)
 	});
 	let progressPlacementStyle = $state('');
+	const progressSceneStyle = $derived(
+		`${progressPlacementStyle}${progressPlacementStyle ? '; ' : ''}--progress-scene-crossfade-duration: ${PROGRESS_SCENE_CROSSFADE_MS}ms`
+	);
 	// Stugan finns bara som motiv i scenbilden. Klickytan renderas därför bara
 	// när den uppmätta rutan faktiskt syns i den aktuella beskärningen.
 	let cabinPlacement = $state<ProgressCabinPlacement | null>(null);
@@ -708,7 +742,7 @@
 		if (!browser || !element) return;
 		const { width, height } = element.getBoundingClientRect();
 		const input = {
-			scene: activeSceneBand,
+			scene: sceneTransition.visibleBand,
 			containerWidth: width,
 			containerHeight: height,
 			viewportWidth: window.innerWidth
@@ -1022,6 +1056,7 @@
 		const companionTimeTimer = window.setInterval(updateCompanionTimeOfDay, 60 * 1000);
 		const cleanupSceneWatchers = () => {
 			window.clearInterval(companionTimeTimer);
+			if (clearSceneTransitionTimer !== null) window.clearTimeout(clearSceneTransitionTimer);
 			cleanupNarrowQuery();
 		};
 
@@ -1224,35 +1259,70 @@
 					{/if}
 					<section
 						class="companion-banner"
-						aria-label={`Följeslagarscen, ${getProgressSceneLabel(activeSceneBand)}`}
+						aria-label={`Följeslagarscen, ${getProgressSceneLabel(sceneTransition.visibleBand)}`}
 					>
 			<div
 				class="companion-media"
 				bind:this={sceneEl}
 				data-season={companionScene.season}
-				data-time={activeSceneBand}
+				data-time={sceneTransition.visibleBand}
 				data-companion={sceneCompanionId}
 				data-pose={companionBasePose?.id}
-				style={progressPlacementStyle}
+				style={progressSceneStyle}
 			>
 				<!-- width/height ger proportionerna innan bilden laddats så scenen
 					 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
-					<!-- En egen bild per dygnsspann, med ljuset inbakat. Bilden och
-						 etiketten nedan kommer ur samma activeSceneBand och kan därför
-						 aldrig hamna ur fas. -->
-					<img
-						class="companion-world-scene"
-						srcset={sceneSources.srcset}
-						sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
-						src={sceneSources.fallback}
-					alt=""
-					aria-hidden="true"
-					width="1672"
-					height="941"
-					fetchpriority="high"
-					loading="eager"
-					decoding="async"
-				/>
+					<!-- En egen bild per dygnsspann, med ljuset inbakat. Den synliga
+						 bilden behålls tills nästa responsiva asset är klar, så scenen
+						 aldrig blir tom under följeslagare eller world marks. -->
+					{#if sceneTransition.outgoingBand}
+						{@const outgoingSceneSources = PROGRESS_SCENE_SOURCES[sceneTransition.outgoingBand]}
+						<img
+							class="companion-world-scene companion-world-scene--outgoing"
+							srcset={outgoingSceneSources.srcset}
+							sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
+							src={outgoingSceneSources.fallback}
+							alt=""
+							aria-hidden="true"
+							width="1672"
+							height="941"
+							decoding="async"
+						/>
+					{/if}
+					{#key sceneTransition.visibleBand}
+						<img
+							class:companion-world-scene--crossfading={sceneTransition.outgoingBand !== null}
+							class="companion-world-scene companion-world-scene--visible"
+							srcset={visibleSceneSources.srcset}
+							sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
+							src={visibleSceneSources.fallback}
+							alt=""
+							aria-hidden="true"
+							width="1672"
+							height="941"
+							fetchpriority="high"
+							loading="eager"
+							decoding="async"
+						/>
+					{/key}
+					{#if sceneTransition.pendingBand}
+						{#each [sceneTransition.pendingBand] as pendingBand (pendingBand)}
+							{@const pendingSceneSources = PROGRESS_SCENE_SOURCES[pendingBand]}
+							<img
+								class="companion-world-scene companion-world-scene--preload"
+								srcset={pendingSceneSources.srcset}
+								sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
+								src={pendingSceneSources.fallback}
+								alt=""
+								aria-hidden="true"
+								width="1672"
+								height="941"
+								loading="eager"
+								decoding="async"
+								onload={() => revealPreparedScene(pendingBand)}
+							/>
+						{/each}
+					{/if}
 				{#if cabinPlacement}
 					<!-- Stugan är inbakad i scenbilden, så genvägen hem är en osynlig
 						 länk lagd exakt över motivet. Ingen knapp, ingen etikett. -->
@@ -1286,7 +1356,7 @@
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
 			<div class="companion-copy">
-				<span class="companion-eyebrow">{getProgressSceneLabel(activeSceneBand)}</span>
+				<span class="companion-eyebrow">{getProgressSceneLabel(sceneTransition.visibleBand)}</span>
 				<h2>Din plats idag</h2>
 				<p>
 					{isAnonymous
@@ -2359,7 +2429,8 @@
 	}
 
 	.companion-world-scene {
-		position: relative;
+		position: absolute;
+		inset: 0;
 		z-index: var(--scene-background);
 		width: 100%;
 		height: 100%;
@@ -2367,8 +2438,40 @@
 		/* Samma object-position används av getProgressCompanionPlacement(). */
 		object-position: var(--progress-scene-object-position, 50% 72%);
 		display: block;
-		transition: filter 1200ms ease;
-		will-change: filter;
+		transition: opacity var(--progress-scene-crossfade-duration, 1000ms) ease;
+	}
+
+	.companion-world-scene--crossfading {
+		opacity: 1;
+		animation: progressSceneFadeIn var(--progress-scene-crossfade-duration, 1000ms) ease both;
+	}
+
+	.companion-world-scene--outgoing {
+		opacity: 0;
+		animation: progressSceneFadeOut var(--progress-scene-crossfade-duration, 1000ms) ease both;
+	}
+
+	.companion-world-scene--preload {
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	@keyframes progressSceneFadeIn {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
+
+	@keyframes progressSceneFadeOut {
+		from { opacity: 1; }
+		to { opacity: 0; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.companion-world-scene--crossfading,
+		.companion-world-scene--outgoing {
+			animation-duration: 1ms;
+			transition-duration: 1ms;
+		}
 	}
 
 	.companion-media :global(.progress-living-world) {

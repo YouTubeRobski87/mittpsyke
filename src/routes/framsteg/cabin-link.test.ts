@@ -61,7 +61,7 @@ describe('resten av hero-scenen är oförändrad', () => {
 			expect(route.slice(index, index + 120), layer).toContain('aria-hidden="true"');
 		}
 		// Scenbilden är fortfarande dekorativ och utan egen länk.
-		expect(route).toMatch(/class="companion-world-scene"[\s\S]{0,400}?aria-hidden="true"/);
+		expect(route).toMatch(/class="companion-world-scene(?: [^"]*)?"[\s\S]{0,400}?aria-hidden="true"/);
 	});
 
 	it('lämnar följeslagaren dekorativ och på sin plats', () => {
@@ -72,7 +72,7 @@ describe('resten av hero-scenen är oförändrad', () => {
 
 	it('lämnar hero-copyn orörd', () => {
 		expect(route).toContain('<h2>Din plats idag</h2>');
-		expect(route).toContain('{getProgressSceneLabel(activeSceneBand)}');
+		expect(route).toContain('{getProgressSceneLabel(sceneTransition.visibleBand)}');
 	});
 
 	it('har bara en länk till Mitt Hem i scenen', () => {

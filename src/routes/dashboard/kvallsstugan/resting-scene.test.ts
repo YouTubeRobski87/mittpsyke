@@ -36,4 +36,10 @@ describe('Kvällsstugans viloscen', () => {
 		expect(route).toContain('width: 100%; height: 100%; object-fit: cover;');
 		expect(route).toContain('aspect-ratio: 16 / 9;');
 	});
+
+	it('använder den delade dygnsmodellen för det befintliga, lågmälda lampskenet', () => {
+		expect(route).toContain("import { getEveningLampCssVariables } from '$lib/evening-lamp'");
+		expect(route).toContain('style={getEveningLampCssVariables(dayState)}');
+		expect(route).toContain('--cabin-lamp-glow-opacity');
+	});
 });

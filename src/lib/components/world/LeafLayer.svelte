@@ -7,8 +7,9 @@
 	// samma mönster (säsongsstyrd täthet + fall-keyframes med parallaxdjup).
 	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
 	import type { ProgressCompanionSeason } from '$lib/progressCompanion';
+	import { getLeafSessionCharacter } from '$lib/world/sessionVariation';
 
-	let { season = 'summer' }: { season?: ProgressCompanionSeason } = $props();
+	let { season = 'summer', sessionSeed }: { season?: ProgressCompanionSeason; sessionSeed: string } = $props();
 
 	type FallingLeaf = {
 		key: number;
@@ -36,6 +37,7 @@
 				? { count: [1, 1] as const, opacity: 0.16, minGapMs: 55_000, maxGapMs: 95_000 }
 				: { count: [1, 2] as const, opacity: 0.24, minGapMs: 34_000, maxGapMs: 88_000 }
 	);
+	const sessionCharacter = $derived(getLeafSessionCharacter(sessionSeed));
 
 	function between(min: number, max: number) {
 		return min + Math.random() * (max - min);
@@ -57,14 +59,14 @@
 				key: nextKey++,
 				// Håller sig till lövverkets sida av scenen (uppe till höger) så
 				// löven aldrig faller över texten till vänster.
-				x: between(58, 92),
+				x: between(sessionCharacter.spawnMinX, sessionCharacter.spawnMaxX),
 				y: between(2, 16),
 				size: 0.5 + depth * 0.85,
 				durationMs: between(11_000, 17_000) * (1.35 - depth * 0.45),
-				drift: between(-4.5, -1.2) * depth,
+				drift: between(-4.5, -1.2) * depth * sessionCharacter.driftFactor,
 				// Fallhöjd i rem, inte procent: procent i translate3d räknas mot
 				// lövets egen (mycket lilla) höjd och skulle knappt flytta det alls.
-				fall: between(9, 15) * (0.7 + depth * 0.5),
+				fall: between(9, 15) * (0.7 + depth * 0.5) * sessionCharacter.amplitudeFactor,
 				spin: between(90, 220) * (Math.random() < 0.5 ? -1 : 1),
 				opacity: seasonProfile.opacity * (0.6 + depth * 0.4),
 				depth
@@ -86,6 +88,7 @@
 		const active = motion.isActive;
 		const reduced = motion.reducedMotion;
 		const profile = seasonProfile;
+		const character = sessionCharacter;
 
 		if (!active || reduced) {
 			leaves = [];
@@ -95,8 +98,8 @@
 		let timer: number | null = null;
 		const schedule = (initial = false) => {
 			const delay = initial
-				? between(8_000, 20_000)
-				: between(profile.minGapMs, profile.maxGapMs);
+				? character.initialDelayMs
+				: between(profile.minGapMs, profile.maxGapMs) * character.intervalFactor;
 			timer = window.setTimeout(() => {
 				spawnLeaves();
 				schedule();

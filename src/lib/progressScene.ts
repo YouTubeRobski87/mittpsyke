@@ -15,6 +15,15 @@ import { getProgressCompanionLocalTime } from '$lib/progressCompanion';
  */
 export type ProgressSceneBand = 'morning' | 'day' | 'afternoon' | 'evening';
 
+export type ProgressSceneTransitionState = {
+	visibleBand: ProgressSceneBand;
+	pendingBand: ProgressSceneBand | null;
+	outgoingBand: ProgressSceneBand | null;
+};
+
+/** Tiden som två befintliga landskapsbilder får överlappa vid ett fasbyte. */
+export const PROGRESS_SCENE_CROSSFADE_MS = 1_000;
+
 export const PROGRESS_SCENE_BANDS = ['morning', 'day', 'afternoon', 'evening'] as const;
 
 const SCENE_BASE = '/images/scenes/progress-cabin-lakeside';
@@ -68,6 +77,38 @@ export function getProgressSceneBand(date = new Date()): ProgressSceneBand {
 
 export function getProgressSceneLabel(band: ProgressSceneBand): string {
 	return SCENE_LABELS[band];
+}
+
+/**
+ * Förbereder nästa bild utan att byta den synliga scenen. Routens osynliga img
+ * får först ladda klart; först därefter bekräftas övergången nedan. Därmed
+ * finns alltid en hel scen under följeslagare och world marks.
+ */
+export function prepareProgressSceneTransition(
+	state: ProgressSceneTransitionState,
+	nextBand: ProgressSceneBand
+): ProgressSceneTransitionState {
+	if (nextBand === state.visibleBand || nextBand === state.pendingBand) return state;
+	return { ...state, pendingBand: nextBand };
+}
+
+/** Bekräftar endast den bild som just nu väntar på att få visas. */
+export function completeProgressSceneTransition(
+	state: ProgressSceneTransitionState,
+	loadedBand: ProgressSceneBand
+): ProgressSceneTransitionState {
+	if (loadedBand !== state.pendingBand) return state;
+	return {
+		visibleBand: loadedBand,
+		pendingBand: null,
+		outgoingBand: state.visibleBand
+	};
+}
+
+export function clearProgressSceneOutgoing(
+	state: ProgressSceneTransitionState
+): ProgressSceneTransitionState {
+	return state.outgoingBand ? { ...state, outgoingBand: null } : state;
 }
 
 /**
