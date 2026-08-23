@@ -1,4 +1,4 @@
-export const PUBLIC_SITE_ORIGIN = 'https://mittpsyke.se';
+export const PUBLIC_SITE_ORIGIN = 'https://www.mittpsyke.se';
 
 export function buildTitle(pageTitle: string): string {
 	return `${pageTitle} | MittPsyke`;
@@ -15,7 +15,7 @@ export function canonical(path: string): string {
 function normalizeToCanonicalUrl(value: string | URL, preserveSearch: boolean): URL {
 	const url = new URL(value, PUBLIC_SITE_ORIGIN);
 	url.protocol = 'https:';
-	url.host = 'mittpsyke.se';
+	url.host = 'www.mittpsyke.se';
 	url.port = '';
 	url.hash = '';
 	if (!preserveSearch) url.search = '';
@@ -36,5 +36,5 @@ export function canonicalRequestUrl(value: string | URL): string {
 }
 
 export function normalizeStructuredDataSiteUrls(value: string): string {
-	return value.replaceAll('https://www.mittpsyke.se', PUBLIC_SITE_ORIGIN);
+	return value.replaceAll('https://mittpsyke.se', PUBLIC_SITE_ORIGIN);
 }
