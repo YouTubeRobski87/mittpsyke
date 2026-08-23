@@ -167,7 +167,7 @@
 		{#if !googleOAuthAvailable}
 			<p class="text-sm opacity-70">
 				Öppna den publika MittPsyke-sidan för att fortsätta med Google:
-				<a href="https://www.mittpsyke.se/register" class="underline">gå till registreringen</a>.
+				<a href="https://mittpsyke.se/register" class="underline">gå till registreringen</a>.
 			</p>
 		{/if}
 

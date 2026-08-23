@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/public';
 
-const DEFAULT_PUBLIC_SITE_URL = 'https://www.mittpsyke.se';
+const DEFAULT_PUBLIC_SITE_URL = 'https://mittpsyke.se';
 
 function normalizeBaseUrl(url: string) {
 	return url.trim().replace(/\/+$/, '');
