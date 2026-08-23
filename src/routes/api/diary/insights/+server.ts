@@ -5,8 +5,10 @@ import { buildSupportView } from '$lib/server/diary-support-suggestions';
 import {
 	buildProgressAnalysis,
 	filterProgressRows,
+	getProgressPeriodBounds,
 	type ProgressPeriodDays
 } from '$lib/server/progress-analysis';
+import { shiftDateKey } from '$lib/stockholm-date';
 import { createClient } from '@supabase/supabase-js';
 import { env as publicEnv } from '$env/dynamic/public';
 import { env as privateEnv } from '$env/dynamic/private';
@@ -48,10 +50,20 @@ export const GET: RequestHandler = async ({ request, url }) => {
 		} = await supabase.auth.getUser();
 		if (authError || !user) return json({ error: 'Unauthorized' }, { status: 401 });
 
-		const { data: entries, error } = await supabase
+		const requestedPeriod = Number(url.searchParams.get('period') ?? '30');
+		const period: ProgressPeriodDays = VALID_PERIODS.has(requestedPeriod as ProgressPeriodDays)
+			? requestedPeriod as ProgressPeriodDays
+			: 30;
+		const { start: periodStart } = getProgressPeriodBounds(period);
+		// Query one Stockholm calendar day before the selected range to account for
+		// timestamps near a daylight-saving boundary. filterProgressRows() applies
+		// the exact Stockholm range before anything is analysed.
+		const queryStart = `${shiftDateKey(periodStart, -1)}T00:00:00.000Z`;
+		const { data: entries, error, count } = await supabase
 			.from('diary')
-			.select('created_at, mood, text, tags')
+			.select('created_at, mood, text, tags', { count: 'exact' })
 			.eq('user_id', user.id)
+			.gte('created_at', queryStart)
 			// Begränsningen ska alltid prioritera det användaren nyligen lagt till.
 			// Analysen sorterar tillbaka raderna kronologiskt innan den jämför
 			// perioder, så den läser aldrig äldre data på bekostnad av nya mönster.
@@ -63,13 +75,11 @@ export const GET: RequestHandler = async ({ request, url }) => {
 		const rows = ((entries ?? []) as DiaryInsightRow[])
 			.slice()
 			.sort((first, second) => (first.created_at ?? '').localeCompare(second.created_at ?? ''));
-		const requestedPeriod = Number(url.searchParams.get('period') ?? '30');
-		const period: ProgressPeriodDays = VALID_PERIODS.has(requestedPeriod as ProgressPeriodDays)
-			? requestedPeriod as ProgressPeriodDays
-			: 30;
 		// Allt faktaunderlag räknas lokalt på servern ur vald period. Ingen
 		// språkmodell får formulera eller utvidga personliga samband från råtext.
-		const analysis = buildProgressAnalysis(rows, period);
+		const analysis = buildProgressAnalysis(rows, period, new Date(), {
+			truncated: (count ?? entries?.length ?? 0) > INSIGHTS_ROW_LIMIT
+		});
 		const support = buildSupportView(filterProgressRows(rows, period));
 
 		return json({

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildProgressAnalysis } from './progress-analysis';
+import { buildProgressAnalysis, getProgressPeriodBounds } from './progress-analysis';
 import type { DiaryInsightRow } from './diary-insight-analysis';
 
 const NOW = new Date('2026-08-15T12:00:00.000Z');
@@ -19,24 +19,36 @@ function days(start: string, values: number[], textForIndex: (index: number) => 
 
 describe('Framstegsanalysens skala och riktning', () => {
 	it('tolkar högre värde som högre registrerat mående', () => {
-		const analysis = buildProgressAnalysis(days('2026-02-20', [2, 3, 3, 4, 2, 3, 4, 3, 7, 8, 8, 9, 7, 8, 9, 8]), 180, NOW);
+		const analysis = buildProgressAnalysis([
+			...days('2026-02-18', [2, 3, 3, 4, 2, 3, 4, 3]),
+			...days('2026-06-17', [7, 8, 8, 9, 7, 8, 9, 8])
+		], 180, NOW);
 		expect(analysis.trend.direction).toBe('clearly-higher');
 		expect(analysis.insights.some((item) => item.title.includes('högre'))).toBe(true);
 	});
 
 	it('identifierar en tydlig lägre riktning', () => {
-		const analysis = buildProgressAnalysis(days('2026-02-20', [9, 8, 8, 7, 9, 8, 7, 8, 4, 3, 3, 2, 4, 3, 2, 3]), 180, NOW);
+		const analysis = buildProgressAnalysis([
+			...days('2026-02-18', [9, 8, 8, 7, 9, 8, 7, 8]),
+			...days('2026-06-17', [4, 3, 3, 2, 4, 3, 2, 3])
+		], 180, NOW);
 		expect(analysis.trend.direction).toBe('clearly-lower');
 	});
 
 	it('säger ungefär oförändrat när värden varierar runt samma nivå', () => {
-		const analysis = buildProgressAnalysis(days('2026-02-20', [5, 6, 5, 6, 6, 5, 6, 5, 5, 6, 5, 6, 6, 5, 6, 5]), 180, NOW);
+		const analysis = buildProgressAnalysis([
+			...days('2026-02-18', [5, 6, 5, 6, 6, 5, 6, 5]),
+			...days('2026-06-17', [5, 6, 5, 6, 6, 5, 6, 5])
+		], 180, NOW);
 		expect(analysis.trend.direction).toBe('unchanged');
 		expect(analysis.insights[0]?.title).toBe('Ingen tydlig långsiktig riktning');
 	});
 
 	it('skiljer ökad variation från en försämring', () => {
-		const analysis = buildProgressAnalysis(days('2026-02-20', [6, 6, 6, 6, 6, 6, 6, 6, 3, 9, 3, 9, 3, 9, 3, 9]), 180, NOW);
+		const analysis = buildProgressAnalysis([
+			...days('2026-02-18', [6, 6, 6, 6, 6, 6, 6, 6]),
+			...days('2026-06-17', [3, 9, 3, 9, 3, 9, 3, 9])
+		], 180, NOW);
 		expect(analysis.variability.direction).toBe('more-varied');
 		expect(analysis.insights.some((item) => item.id === 'variability')).toBe(true);
 	});
@@ -65,6 +77,70 @@ describe('Framstegsanalysens temaunderlag', () => {
 });
 
 describe('Framstegsanalysens täckning', () => {
+	it('jämför kalenderblock, inte första och sista fjärdedelen av datapunkter', () => {
+		const rows = [
+			...days('2026-02-18', [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]),
+			...days('2026-06-17', [8, 8, 8, 8])
+		];
+		const analysis = buildProgressAnalysis(rows, 180, NOW);
+		expect(analysis.trend.direction).toBe('clearly-higher');
+		expect(analysis.insights.find((item) => item.id === 'trend')?.evidence).toContain('17 februari');
+		expect(analysis.insights.find((item) => item.id === 'trend')?.evidence).toContain('17 juni');
+	});
+
+	it('avstår från trend när ett kalenderblock saknar tillräckligt underlag', () => {
+		const analysis = buildProgressAnalysis([
+			...days('2026-02-18', [2, 2, 2, 2, 2, 2]),
+			...days('2026-06-17', [8, 8])
+		], 180, NOW);
+		expect(analysis.trend.direction).toBe('insufficient');
+		expect(analysis.insights.some((item) => item.id === 'trend')).toBe(false);
+	});
+
+	it('skapar månadstäckning för hela sexmånadersperioden', () => {
+		const rows = [
+			...days('2026-02-18', [5, 5, 5, 5]),
+			...days('2026-03-03', [5, 5, 5, 5]),
+			...days('2026-04-03', [5, 5, 5, 5]),
+			...days('2026-05-03', [5, 5, 5, 5]),
+			...days('2026-06-03', [5, 5, 5, 5]),
+			...days('2026-07-03', [5, 5, 5, 5])
+		];
+		const analysis = buildProgressAnalysis(rows, 180, NOW);
+		expect(analysis.monthly).toHaveLength(6);
+		expect(analysis.coverage.periodStart).toBe('2026-02-17');
+		expect(analysis.coverage.periodEnd).toBe('2026-08-15');
+	});
+
+	it('identifierar tema som tar mer plats senare först med tillräckligt textunderlag', () => {
+		const rows = [
+			...days('2026-02-18', [6, 6, 6, 6], (index) => index < 2 ? 'Sömnen nämns kort.' : 'En vanlig dag.'),
+			...days('2026-06-17', [6, 6, 6, 6], () => 'Sömnen och natten tar plats i texten.')
+		];
+		const analysis = buildProgressAnalysis(rows, 180, NOW);
+		expect(analysis.insights.some((item) => item.id === 'theme-change:Sömn')).toBe(true);
+	});
+
+	it('gör ingen temaförändringsslutsats när den ena perioden är för tunn', () => {
+		const rows = [
+			...days('2026-02-18', [6, 6, 6, 6], () => 'En vanlig dag.'),
+			...days('2026-06-17', [6], () => 'Sömnen tar plats.')
+		];
+		const analysis = buildProgressAnalysis(rows, 180, NOW);
+		expect(analysis.insights.some((item) => item.id === 'theme-change:Sömn')).toBe(false);
+	});
+
+	it('markerar ett query-cap som truncerat underlag utan att exponera råtext', () => {
+		const analysis = buildProgressAnalysis(days('2026-07-20', [6, 6, 6, 6]), 30, NOW, { truncated: true });
+		expect(analysis.coverage.truncated).toBe(true);
+		expect(JSON.stringify(analysis)).not.toContain('råtext');
+	});
+
+	it('ger stabila kalendergränser för endpointens periodfilter', () => {
+		expect(getProgressPeriodBounds(30, NOW)).toEqual({ start: '2026-07-17', end: '2026-08-15' });
+		expect(getProgressPeriodBounds(90, NOW)).toEqual({ start: '2026-05-18', end: '2026-08-15' });
+	});
+
 	it('hanterar tomt och mycket litet underlag utan NaN eller påhittad trend', () => {
 		for (const rows of [[], [row('2026-08-14', 6)]]) {
 			const analysis = buildProgressAnalysis(rows, 30, NOW);
@@ -82,14 +158,14 @@ describe('Framstegsanalysens täckning', () => {
 		expect(analysis.moodSummary.activeDays).toBe(2);
 	});
 
-	it('utelämnar månader med för glest underlag', () => {
+	it('markerar månader med för glest underlag utan att göra dem till ett måendeutfall', () => {
 		const rows = [
 			...days('2026-03-01', [4, 4, 4, 4]),
 			row('2026-04-10', 10),
 			...days('2026-05-01', [8, 8, 8, 8])
 		];
 		const analysis = buildProgressAnalysis(rows, 180, NOW);
-		expect(analysis.monthly.map((month) => month.month)).not.toContain('2026-04');
+		expect(analysis.monthly.find((month) => month.month === '2026-04')).toMatchObject({ status: 'thin', mean: null });
 	});
 
 	it('bygger en sexmånaderssammanfattning men inte samma djup för 30 dagar', () => {
@@ -112,7 +188,10 @@ describe('Framstegsanalysens täckning', () => {
 	});
 
 	it('håller konstant mående neutralt och klarar period över årsskifte', () => {
-		const rows = days('2025-12-20', Array.from({ length: 18 }, () => 6));
+		const rows = [
+			...days('2025-08-18', Array.from({ length: 8 }, () => 6)),
+			...days('2025-12-15', Array.from({ length: 8 }, () => 6))
+		];
 		const analysis = buildProgressAnalysis(rows, 180, new Date('2026-02-10T12:00:00.000Z'));
 		expect(analysis.trend.direction).toBe('unchanged');
 		expect(analysis.moodSummary.standardDeviation).toBe(0);

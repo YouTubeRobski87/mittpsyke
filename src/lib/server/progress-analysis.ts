@@ -20,7 +20,7 @@ type TextRecord = { date: string; themes: string[] };
 export type ProgressInsight = {
 
 	id: string;
-	category: 'development' | 'stability' | 'period' | 'recurring' | 'association' | 'recovery' | 'time' | 'positive';
+	category: 'development' | 'stability' | 'period' | 'recurring' | 'change' | 'association' | 'recovery' | 'time' | 'positive';
 	title: string;
 	description: string;
 	evidence: string;
@@ -55,9 +55,37 @@ export type MonthlyMood = {
 	label: string;
 	entryCount: number;
 	activeDays: number;
-	mean: number;
-	median: number;
+	status: 'sufficient' | 'thin' | 'missing';
+	mean: number | null;
+	median: number | null;
 	standardDeviation: number | null;
+};
+
+export type CoveragePeriod = {
+	id: string;
+	label: string;
+	kind: 'week' | 'month';
+	status: 'thin' | 'missing';
+	entryCount: number;
+	activeDays: number;
+};
+
+export type ProgressCoverage = {
+	/** The selected calendar range, in Stockholm dates. */
+	periodStart: string;
+	periodEnd: string;
+	/** All diary rows in the selected period, including rows without a mood or text. */
+	entryCount: number;
+	firstDate: string | null;
+	latestDate: string | null;
+	textEntryCount: number;
+	activeDays: number;
+	activeWeeks: number;
+	coveredWeeks: number;
+	coveredMonths: number;
+	sparsePeriods: CoveragePeriod[];
+	/** True only when the endpoint had to cap the selected period's query. */
+	truncated: boolean;
 };
 
 export type ThemeMoodAssociation = {
@@ -74,7 +102,9 @@ export type ThemeMoodAssociation = {
 export type ProgressAnalysis = {
 	periodDays: ProgressPeriodDays;
 	periodLabel: string;
-	coverage: { firstDate: string | null; latestDate: string | null; textEntryCount: number; activeDays: number; activeWeeks: number };
+	/** A cautious, deterministic overview for the half-year presentation. */
+	longPeriodSummary: string | null;
+	coverage: ProgressCoverage;
 	moodSummary: MoodSummary;
 	trend: TrendAnalysis;
 	variability: { direction: 'steadier' | 'more-varied' | 'unchanged' | 'insufficient'; first: number | null; last: number | null; confidence: AnalysisConfidence };
@@ -142,9 +172,13 @@ function detectThemes(text: string, tags: string[] | null | undefined): string[]
 	}).map((topic) => topic.label);
 }
 
-export function filterProgressRows(rows: DiaryInsightRow[], periodDays: ProgressPeriodDays, now: Date = new Date()): DiaryInsightRow[] {
-	const start = shiftDateKey(stockholmTodayKey(now), -(periodDays - 1));
+export function getProgressPeriodBounds(periodDays: ProgressPeriodDays, now: Date = new Date()) {
 	const end = stockholmTodayKey(now);
+	return { start: shiftDateKey(end, -(periodDays - 1)), end };
+}
+
+export function filterProgressRows(rows: DiaryInsightRow[], periodDays: ProgressPeriodDays, now: Date = new Date()): DiaryInsightRow[] {
+	const { start, end } = getProgressPeriodBounds(periodDays, now);
 	return rows.filter((row) => {
 		const date = toStockholmDateKey(row.created_at);
 		return date !== null && date >= start && date <= end;
@@ -167,24 +201,51 @@ function prepare(rows: DiaryInsightRow[]) {
 	return { moods: moods.sort((a, b) => a.date.localeCompare(b.date)), texts: texts.sort((a, b) => a.date.localeCompare(b.date)), activeDays };
 }
 
-function trendFrom(moods: MoodRecord[]): TrendAnalysis {
-	const segmentSize = Math.floor(moods.length * 0.25);
-	if (segmentSize < MIN_TREND_SAMPLES_PER_SEGMENT) return { direction: 'insufficient', firstAverage: null, lastAverage: null, difference: null, confidence: 'insufficient' };
-	const firstAverage = average(moods.slice(0, segmentSize).map((item) => item.mood))!;
-	const lastAverage = average(moods.slice(-segmentSize).map((item) => item.mood))!;
-	const difference = lastAverage - firstAverage;
-	const direction: TrendDirection = difference >= 0.9 ? 'clearly-higher' : difference >= 0.35 ? 'somewhat-higher' : difference <= -0.9 ? 'clearly-lower' : difference <= -0.35 ? 'somewhat-lower' : 'unchanged';
-	return { direction, firstAverage, lastAverage, difference, confidence: confidence(segmentSize, difference) };
+type TimeSegments = { first: MoodRecord[]; last: MoodRecord[]; firstLabel: string; lastLabel: string };
+
+/**
+ * The comparison windows are fixed calendar ranges. A burst of entries on one
+ * day must never move the beginning or end of a user's period.
+ */
+function comparisonSegments(moods: MoodRecord[], periodDays: ProgressPeriodDays, now: Date): TimeSegments {
+	const { start, end } = getProgressPeriodBounds(periodDays, now);
+	const segmentDays = periodDays === 30 ? 14 : Math.floor(periodDays / 3);
+	const firstEnd = shiftDateKey(start, segmentDays - 1);
+	const lastStart = shiftDateKey(end, -(segmentDays - 1));
+	return {
+		first: moods.filter((item) => item.date >= start && item.date <= firstEnd),
+		last: moods.filter((item) => item.date >= lastStart && item.date <= end),
+		firstLabel: `${dateLabel(start)}–${dateLabel(firstEnd)}`,
+		lastLabel: `${dateLabel(lastStart)}–${dateLabel(end)}`
+	};
 }
 
-function variabilityFrom(moods: MoodRecord[]) {
-	const segmentSize = Math.floor(moods.length * 0.25);
-	if (segmentSize < MIN_TREND_SAMPLES_PER_SEGMENT) return { direction: 'insufficient' as const, first: null, last: null, confidence: 'insufficient' as const };
-	const first = standardDeviation(moods.slice(0, segmentSize).map((item) => item.mood));
-	const last = standardDeviation(moods.slice(-segmentSize).map((item) => item.mood));
+function trendFrom(segments: TimeSegments): TrendAnalysis {
+	if (
+		segments.first.length < MIN_TREND_SAMPLES_PER_SEGMENT ||
+		segments.last.length < MIN_TREND_SAMPLES_PER_SEGMENT
+	) {
+		return { direction: 'insufficient', firstAverage: null, lastAverage: null, difference: null, confidence: 'insufficient' };
+	}
+	const firstAverage = average(segments.first.map((item) => item.mood))!;
+	const lastAverage = average(segments.last.map((item) => item.mood))!;
+	const difference = lastAverage - firstAverage;
+	const direction: TrendDirection = difference >= 0.9 ? 'clearly-higher' : difference >= 0.35 ? 'somewhat-higher' : difference <= -0.9 ? 'clearly-lower' : difference <= -0.35 ? 'somewhat-lower' : 'unchanged';
+	return { direction, firstAverage, lastAverage, difference, confidence: confidence(Math.min(segments.first.length, segments.last.length), difference) };
+}
+
+function variabilityFrom(segments: TimeSegments) {
+	if (
+		segments.first.length < MIN_TREND_SAMPLES_PER_SEGMENT ||
+		segments.last.length < MIN_TREND_SAMPLES_PER_SEGMENT
+	) {
+		return { direction: 'insufficient' as const, first: null, last: null, confidence: 'insufficient' as const };
+	}
+	const first = standardDeviation(segments.first.map((item) => item.mood));
+	const last = standardDeviation(segments.last.map((item) => item.mood));
 	if (first === null || last === null) return { direction: 'insufficient' as const, first, last, confidence: 'insufficient' as const };
 	const difference = last - first;
-	return { direction: difference >= 0.45 ? 'more-varied' as const : difference <= -0.45 ? 'steadier' as const : 'unchanged' as const, first, last, confidence: confidence(segmentSize, difference) };
+	return { direction: difference >= 0.45 ? 'more-varied' as const : difference <= -0.45 ? 'steadier' as const : 'unchanged' as const, first, last, confidence: confidence(Math.min(segments.first.length, segments.last.length), difference) };
 }
 
 function findNotablePeriods(moods: MoodRecord[]) {
@@ -206,18 +267,128 @@ function insight(id: string, category: ProgressInsight['category'], title: strin
 	return { id, category, title, description, evidence, confidence: confidence(count, difference), rank };
 }
 
-export function buildProgressAnalysis(rows: DiaryInsightRow[], periodDays: ProgressPeriodDays, now: Date = new Date()): ProgressAnalysis {
+function monthKeysInRange(start: string, end: string): string[] {
+	const result: string[] = [];
+	const [startYear, startMonth] = start.slice(0, 7).split('-').map(Number);
+	const [endYear, endMonth] = end.slice(0, 7).split('-').map(Number);
+	let year = startYear;
+	let month = startMonth;
+	while (year < endYear || (year === endYear && month <= endMonth)) {
+		result.push(`${year}-${String(month).padStart(2, '0')}`);
+		month += 1;
+		if (month === 13) {
+			month = 1;
+			year += 1;
+		}
+	}
+	return result;
+}
+
+function buildMonthlyMood(moods: MoodRecord[], start: string, end: string): MonthlyMood[] {
+	const byMonth = new Map<string, MoodRecord[]>();
+	for (const mood of moods) byMonth.set(mood.date.slice(0, 7), [...(byMonth.get(mood.date.slice(0, 7)) ?? []), mood]);
+	// A rolling 180-day range can touch seven named calendar months when both
+	// endpoints land mid-month. The six most recent blocks are the clearest
+	// half-year view; the exact full range remains available in coverage.
+	return monthKeysInRange(start, end).slice(-6).map((month) => {
+		const samples = byMonth.get(month) ?? [];
+		const activeDays = new Set(samples.map((item) => item.date)).size;
+		const status: MonthlyMood['status'] =
+			samples.length === 0 ? 'missing' : samples.length >= MIN_MONTH_SAMPLES && activeDays >= MIN_MONTH_ACTIVE_DAYS ? 'sufficient' : 'thin';
+		return {
+			month,
+			label: monthLabel(month),
+			entryCount: samples.length,
+			activeDays,
+			status,
+			mean: status === 'sufficient' ? average(samples.map((item) => item.mood)) : null,
+			median: status === 'sufficient' ? median(samples.map((item) => item.mood)) : null,
+			standardDeviation: status === 'sufficient' ? standardDeviation(samples.map((item) => item.mood)) : null
+		};
+	});
+}
+
+function buildCoverage(
+	filtered: DiaryInsightRow[],
+	moods: MoodRecord[],
+	texts: TextRecord[],
+	activeDays: Set<string>,
+	periodDays: ProgressPeriodDays,
+	now: Date,
+	truncated: boolean
+): ProgressCoverage {
+	const { start, end } = getProgressPeriodBounds(periodDays, now);
+	const activeDateKeys = [...activeDays].sort();
+	const weeks = new Map<string, string[]>();
+	for (const day of activeDateKeys) weeks.set(isoWeek(day), [...(weeks.get(isoWeek(day)) ?? []), day]);
+	const sparsePeriods: CoveragePeriod[] = [...weeks.entries()]
+		.filter(([, days]) => days.length < 2)
+		.map(([week, days]) => ({ id: week, label: `Vecka ${week.slice(-2)}`, kind: 'week', status: 'thin', entryCount: filtered.filter((row) => {
+			const date = toStockholmDateKey(row.created_at);
+			return date !== null && isoWeek(date) === week;
+		}).length, activeDays: days.length }));
+	const monthCoverage = buildMonthlyMood(moods, start, end);
+	for (const month of monthCoverage) {
+		if (month.status === 'sufficient') continue;
+		sparsePeriods.push({ id: month.month, label: month.label, kind: 'month', status: month.status, entryCount: month.entryCount, activeDays: month.activeDays });
+	}
+	return {
+		periodStart: start,
+		periodEnd: end,
+		entryCount: filtered.length,
+		firstDate: activeDateKeys[0] ? dateLabel(activeDateKeys[0]) : null,
+		latestDate: activeDateKeys.at(-1) ? dateLabel(activeDateKeys.at(-1)!) : null,
+		textEntryCount: texts.length,
+		activeDays: activeDays.size,
+		activeWeeks: weeks.size,
+		coveredWeeks: [...weeks.values()].filter((days) => days.length >= 2).length,
+		coveredMonths: monthCoverage.filter((month) => month.status === 'sufficient').length,
+		sparsePeriods,
+		truncated
+	};
+}
+
+function buildLongPeriodSummary(
+	periodDays: ProgressPeriodDays,
+	coverage: ProgressCoverage,
+	trend: TrendAnalysis,
+	variability: ProgressAnalysis['variability']
+): string | null {
+	if (periodDays !== 180) return null;
+	if (coverage.truncated || coverage.coveredMonths < 3) {
+		return 'Underlaget är ojämnt fördelat över halvåret, så någon tydlig riktning går inte att se ännu.';
+	}
+	if (trend.direction === 'clearly-higher' || trend.direction === 'somewhat-higher') {
+		return 'I de delar av halvåret som har tillräckligt underlag ligger den senare perioden något högre på skalan än den första.';
+	}
+	if (trend.direction === 'clearly-lower' || trend.direction === 'somewhat-lower') {
+		return 'I de delar av halvåret som har tillräckligt underlag ligger den senare perioden något lägre på skalan än den första.';
+	}
+	if (variability.direction === 'more-varied') {
+		return 'Halvåret har varierat mer i den senare delen av de registreringar som har tillräckligt underlag.';
+	}
+	if (variability.direction === 'steadier') {
+		return 'Halvåret har varit jämnare i den senare delen av de registreringar som har tillräckligt underlag.';
+	}
+	return 'Ditt halvår ser ganska stabilt ut i de registreringar som har tillräckligt underlag.';
+}
+
+export function buildProgressAnalysis(
+	rows: DiaryInsightRow[],
+	periodDays: ProgressPeriodDays,
+	now: Date = new Date(),
+	options: { truncated?: boolean } = {}
+): ProgressAnalysis {
 	const filtered = filterProgressRows(rows, periodDays, now);
 	const { moods, texts, activeDays } = prepare(filtered);
 	const values = moods.map((item) => item.mood);
 	const moodDays = new Set(moods.map((item) => item.date));
-	const weeks = new Set([...activeDays].map(isoWeek));
 	const mean = average(values);
-	const trend = trendFrom(moods);
-	const variability = variabilityFrom(moods);
+	const segments = comparisonSegments(moods, periodDays, now);
+	const trend = trendFrom(segments);
+	const variability = variabilityFrom(segments);
 	const insights: ProgressInsight[] = [];
-	const activeDateKeys = [...activeDays].sort();
-	const coverage = { firstDate: activeDateKeys[0] ? dateLabel(activeDateKeys[0]) : null, latestDate: activeDateKeys.at(-1) ? dateLabel(activeDateKeys.at(-1)!) : null, textEntryCount: texts.length, activeDays: activeDays.size, activeWeeks: weeks.size };
+	const coverage = buildCoverage(filtered, moods, texts, activeDays, periodDays, now, options.truncated === true);
 	const moodSummary: MoodSummary = {
 		entryCount: moods.length, activeDays: moodDays.size, activeWeeks: new Set([...moodDays].map(isoWeek)).size,
 		mean, median: median(values), min: values.length ? Math.min(...values) : null, max: values.length ? Math.max(...values) : null,
@@ -236,12 +407,12 @@ export function buildProgressAnalysis(rows: DiaryInsightRow[], periodDays: Progr
 		const description = trend.direction === 'unchanged'
 			? `Måendet har varierat, men början och slutet av ${periodLabel(periodDays)} ligger ungefär på samma nivå.`
 			: `Den senare delen av ${periodLabel(periodDays)} ligger ${directionCopy[trend.direction]} än början i dina registreringar.`;
-		insights.push(insight('trend', 'development', title, description, `Jämförelsen bygger på de första och sista ${Math.floor(moods.length * 0.25)} registreringarna: ${format(trend.firstAverage!)} respektive ${format(trend.lastAverage!)} av 10.`, Math.floor(moods.length * 0.25), trend.difference!, trend.direction === 'unchanged' ? 84 : 100));
+		insights.push(insight('trend', 'development', title, description, `Jämförelsen bygger på ${segments.first.length} registreringar ${segments.firstLabel} och ${segments.last.length} registreringar ${segments.lastLabel}: ${format(trend.firstAverage!)} respektive ${format(trend.lastAverage!)} av 10.`, Math.min(segments.first.length, segments.last.length), trend.difference!, trend.direction === 'unchanged' ? 84 : 100));
 	}
 
 	if (variability.direction !== 'insufficient' && variability.direction !== 'unchanged') {
 		const steadier = variability.direction === 'steadier';
-		insights.push(insight('variability', 'stability', steadier ? 'Registreringarna har blivit jämnare' : 'Registreringarna har blivit mer växlande', steadier ? 'Den senare delen av perioden ligger närmare sin egen nivå än början.' : 'Den senare delen av perioden svänger mer runt sin egen nivå än början.', `Spridningen i början är ${format(variability.first!)} och i slutet ${format(variability.last!)} på skalan.`, Math.floor(moods.length * 0.25), variability.last! - variability.first!, steadier ? 88 : 90));
+		insights.push(insight('variability', 'stability', steadier ? 'Registreringarna har blivit jämnare' : 'Registreringarna har blivit mer växlande', steadier ? 'Den senare delen av perioden ligger närmare sin egen nivå än början.' : 'Den senare delen av perioden svänger mer runt sin egen nivå än början.', `Spridningen är ${format(variability.first!)} i perioden ${segments.firstLabel} och ${format(variability.last!)} i ${segments.lastLabel}.`, Math.min(segments.first.length, segments.last.length), variability.last! - variability.first!, steadier ? 88 : 90));
 	}
 
 	const today = stockholmTodayKey(now);
@@ -261,14 +432,13 @@ export function buildProgressAnalysis(rows: DiaryInsightRow[], periodDays: Progr
 		insights.push(insight('notable-period', 'period', 'Tydligare högre och lägre delar syns', `En tvåveckorsdel från ${dateLabel(better.start)} till ${dateLabel(better.end)} ligger högre än den tyngsta jämförbara delen av perioden.`, `Den högre delen bygger på ${better.count} registreringar med snitt ${format(better.mean)}, jämfört med ${format(heavier.mean)} i delen ${dateLabel(heavier.start)} till ${dateLabel(heavier.end)}.`, Math.min(better.count, heavier.count), better.mean - heavier.mean, 87));
 	}
 
-	const monthGroups = new Map<string, MoodRecord[]>();
-	for (const mood of moods) monthGroups.set(mood.date.slice(0, 7), [...(monthGroups.get(mood.date.slice(0, 7)) ?? []), mood]);
-	const monthly = periodDays === 180 ? [...monthGroups.entries()].map(([month, samples]) => ({ month, label: monthLabel(month), entryCount: samples.length, activeDays: new Set(samples.map((item) => item.date)).size, mean: average(samples.map((item) => item.mood))!, median: median(samples.map((item) => item.mood))!, standardDeviation: standardDeviation(samples.map((item) => item.mood)) })).filter((month) => month.entryCount >= MIN_MONTH_SAMPLES && month.activeDays >= MIN_MONTH_ACTIVE_DAYS).sort((a, b) => a.month.localeCompare(b.month)) : [];
-	if (monthly.length >= 3) {
-		const highest = [...monthly].sort((a, b) => b.mean - a.mean)[0];
-		const lowest = [...monthly].sort((a, b) => a.mean - b.mean)[0];
+	const monthly = periodDays === 180 ? buildMonthlyMood(moods, coverage.periodStart, coverage.periodEnd) : [];
+	const sufficientMonths = monthly.filter((month): month is MonthlyMood & { mean: number; median: number } => month.status === 'sufficient' && month.mean !== null && month.median !== null);
+	if (sufficientMonths.length >= 3) {
+		const highest = [...sufficientMonths].sort((a, b) => b.mean - a.mean)[0];
+		const lowest = [...sufficientMonths].sort((a, b) => a.mean - b.mean)[0];
 		if (highest.mean - lowest.mean >= MEANINGFUL_MOOD_DIFFERENCE) insights.push(insight('months', 'period', `${highest.label[0].toLocaleUpperCase('sv-SE')}${highest.label.slice(1)} låg högst`, `${highest.label[0].toLocaleUpperCase('sv-SE')}${highest.label.slice(1)} har periodens högsta registrerade måendenivå bland månader med tillräckligt underlag.`, `${highest.entryCount} registreringar gav snitt ${format(highest.mean)}, jämfört med ${format(lowest.mean)} i ${lowest.label}.`, Math.min(highest.entryCount, lowest.entryCount), highest.mean - lowest.mean, 92));
-		const variable = monthly.filter((month) => month.standardDeviation !== null).sort((a, b) => (b.standardDeviation ?? 0) - (a.standardDeviation ?? 0));
+		const variable = sufficientMonths.filter((month) => month.standardDeviation !== null).sort((a, b) => (b.standardDeviation ?? 0) - (a.standardDeviation ?? 0));
 		if (variable.length >= 2 && (variable[0].standardDeviation ?? 0) - (variable[1].standardDeviation ?? 0) >= 0.45) insights.push(insight('month-variation', 'stability', `${variable[0].label[0].toLocaleUpperCase('sv-SE')}${variable[0].label.slice(1)} varierade mest`, 'Den månaden hade större spridning mellan registreringarna än övriga månader med tillräckligt underlag.', `${variable[0].entryCount} registreringar har spridning ${format(variable[0].standardDeviation!)}, jämfört med ${format(variable[1].standardDeviation!)} i nästa mest varierande månad.`, variable[0].entryCount, (variable[0].standardDeviation ?? 0) - (variable[1].standardDeviation ?? 0), 78));
 	}
 
@@ -287,7 +457,7 @@ export function buildProgressAnalysis(rows: DiaryInsightRow[], periodDays: Progr
 		const secondTotal = texts.length - firstTotal;
 		if (theme.firstHalfCount < 2 || theme.secondHalfCount < 2 || firstTotal === 0 || secondTotal === 0) continue;
 		const difference = theme.secondHalfCount / secondTotal - theme.firstHalfCount / firstTotal;
-		if (Math.abs(difference) >= 0.15) insights.push(insight(`theme-change:${theme.label}`, difference > 0 ? 'recurring' : 'positive', difference > 0 ? `${theme.label} tar mer plats senare` : `${theme.label} tar mindre plats senare`, difference > 0 ? `Temat förekommer oftare i den senare delen av ${periodLabel(periodDays)}.` : `Temat förekommer mer sällan i den senare delen av ${periodLabel(periodDays)}.`, `${theme.secondHalfCount} av ${secondTotal} texter senare i perioden jämfört med ${theme.firstHalfCount} av ${firstTotal} i början.`, Math.min(theme.firstHalfCount, theme.secondHalfCount), difference, 74));
+		if (Math.abs(difference) >= 0.15) insights.push(insight(`theme-change:${theme.label}`, 'change', difference > 0 ? `${theme.label} tar mer plats senare` : `${theme.label} tar mindre plats senare`, difference > 0 ? `Temat förekommer oftare i den senare delen av ${periodLabel(periodDays)}.` : `Temat förekommer mer sällan i den senare delen av ${periodLabel(periodDays)}.`, `${theme.secondHalfCount} av ${secondTotal} texter senare i perioden jämfört med ${theme.firstHalfCount} av ${firstTotal} i början.`, Math.min(theme.firstHalfCount, theme.secondHalfCount), difference, 74));
 	}
 
 	const moodsByDay = new Map<string, number[]>();
@@ -339,5 +509,5 @@ export function buildProgressAnalysis(rows: DiaryInsightRow[], periodDays: Progr
 	}
 
 	const ranked = insights.sort((a, b) => b.rank - a.rank || (a.confidence === 'strong' ? -1 : 1)).filter((item, index, all) => all.findIndex((other) => other.category === item.category) === index).slice(0, periodDays === 30 ? 3 : periodDays === 90 ? 4 : 5);
-	return { periodDays, periodLabel: periodLabel(periodDays), coverage, moodSummary, trend, variability, recentComparison, monthly, periods, themes, themeMoodAssociations: associations, recovery, weekdayPattern, insights: ranked, halfYearSummary: periodDays === 180 ? ranked.slice(0, 5) : [] };
+	return { periodDays, periodLabel: periodLabel(periodDays), longPeriodSummary: buildLongPeriodSummary(periodDays, coverage, trend, variability), coverage, moodSummary, trend, variability, recentComparison, monthly, periods, themes, themeMoodAssociations: associations, recovery, weekdayPattern, insights: ranked, halfYearSummary: periodDays === 180 ? ranked.slice(0, 5) : [] };
 }

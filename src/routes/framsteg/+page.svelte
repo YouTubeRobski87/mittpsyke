@@ -272,9 +272,23 @@
 	interface ProgressAnalysisResponse {
 		periodDays: PeriodDays;
 		periodLabel: string;
-		coverage: { firstDate: string | null; latestDate: string | null; textEntryCount: number; activeDays: number; activeWeeks: number };
+		longPeriodSummary: string | null;
+		coverage: {
+			periodStart: string;
+			periodEnd: string;
+			entryCount: number;
+			firstDate: string | null;
+			latestDate: string | null;
+			textEntryCount: number;
+			activeDays: number;
+			activeWeeks: number;
+			coveredWeeks: number;
+			coveredMonths: number;
+			sparsePeriods: { id: string; label: string; kind: 'week' | 'month'; status: 'thin' | 'missing'; entryCount: number; activeDays: number }[];
+			truncated: boolean;
+		};
 		moodSummary: { entryCount: number; activeDays: number; activeWeeks: number; mean: number | null; median: number | null; min: number | null; max: number | null; standardDeviation: number | null; lowShare: number | null; middleShare: number | null; highShare: number | null };
-		monthly: { label: string; entryCount: number; activeDays: number; mean: number; median: number; standardDeviation: number | null }[];
+		monthly: { month: string; label: string; entryCount: number; activeDays: number; status: 'sufficient' | 'thin' | 'missing'; mean: number | null; median: number | null; standardDeviation: number | null }[];
 		insights: ProgressInsight[];
 		halfYearSummary: ProgressInsight[];
 	}
@@ -325,7 +339,8 @@
 	const ANONYMOUS_PREVIEW_INSIGHTS: InsightsResponse = {
 		analysis: {
 			periodDays: 30, periodLabel: 'den senaste månaden',
-			coverage: { firstDate: null, latestDate: null, textEntryCount: 0, activeDays: 0, activeWeeks: 0 },
+			longPeriodSummary: null,
+			coverage: { periodStart: '', periodEnd: '', entryCount: 0, firstDate: null, latestDate: null, textEntryCount: 0, activeDays: 0, activeWeeks: 0, coveredWeeks: 0, coveredMonths: 0, sparsePeriods: [], truncated: false },
 			moodSummary: { entryCount: 0, activeDays: 0, activeWeeks: 0, mean: null, median: null, min: null, max: null, standardDeviation: null, lowShare: null, middleShare: null, highShare: null },
 			monthly: [], insights: [], halfYearSummary: []
 		},
@@ -571,6 +586,20 @@
 	const periodActivity = $derived(buildPeriodActivity(heatmapData, selectedPeriod));
 	const historyActivity = $derived(buildHistoryActivity(heatmapData, moodSamples, selectedPeriod));
 	const progressAnalysis = $derived(loadedInsightsData?.analysis ?? null);
+	const analysisPeriodSummary = $derived.by(() => {
+		if (!progressAnalysis) return null;
+		const count = progressAnalysis.coverage.entryCount;
+		const label = count === 1 ? 'anteckning' : 'anteckningar';
+		return `Baserat på ${count} ${label} under den valda perioden.`;
+	});
+	const sparseMonthCopy = $derived.by(() => {
+		if (!progressAnalysis || selectedPeriod !== 180) return null;
+		const labels = progressAnalysis.coverage.sparsePeriods
+			.filter((period) => period.kind === 'month')
+			.map((period) => period.label);
+		if (labels.length === 0) return null;
+		return `${labels.join(', ')} har begränsat underlag och väger därför mindre i analysen.`;
+	});
 	// Huvudvyn visar bara de starkast rankade insikterna. Beräkningen och
 	// rangordningen sker server-side; här hålls endast det lokala visningsläget.
 	let openAnalysisInsights = $state<Record<string, boolean>>({});
@@ -1289,8 +1318,8 @@
 						hasChart={moodTimeline.hasChart}
 						fallbackText={EMPTY_MOOD_COPY}
 					/>
-					{#if moodTimeline.hasChart}
-						<p class="recent-summary">{periodAnalysis.summary}</p>
+					{#if moodTimeline.hasChart && analysisPeriodSummary}
+						<p class="recent-summary">{analysisPeriodSummary}</p>
 					{/if}
 					{#if selectedMoodPoint}
 						<section class="chart-detail" aria-live="polite" aria-label="Detaljer för vald punkt">
@@ -1324,13 +1353,29 @@
 				{:else if insightsError}
 					<p class="reflection-copy">Det gick inte att hämta analysen just nu.</p>
 				{:else if progressAnalysis}
-					{#if selectedPeriod === 180 && progressAnalysis.halfYearSummary.length > 0}
-						<h3 class="analysis-summary-heading">Ditt halvår i korthet</h3>
-						<ul class="analysis-summary-list">
-							{#each progressAnalysis.halfYearSummary as item (item.id)}
-								<li>{item.description}</li>
-							{/each}
-						</ul>
+					{#if selectedPeriod === 180 && progressAnalysis.longPeriodSummary}
+						<section class="analysis-section analysis-long-period" aria-labelledby="half-year-summary-heading">
+							<h3 id="half-year-summary-heading">Ditt halvår i korthet</h3>
+							<p>{progressAnalysis.longPeriodSummary}</p>
+						</section>
+						<section class="analysis-section" aria-labelledby="monthly-analysis-heading">
+							<h3 id="monthly-analysis-heading">Månad för månad</h3>
+							<ul class="monthly-analysis-list">
+								{#each progressAnalysis.monthly as month (month.month)}
+									<li class:thin={month.status !== 'sufficient'}>
+										<strong>{month.label}</strong>
+										{#if month.status === 'sufficient' && month.mean !== null}
+											<span>Snitt {month.mean.toFixed(1).replace('.', ',')} · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
+										{:else if month.status === 'thin'}
+											<span>Tunt underlag · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
+										{:else}
+											<span>Ingen registrering</span>
+										{/if}
+									</li>
+								{/each}
+							</ul>
+							{#if sparseMonthCopy}<p class="analysis-coverage-note">{sparseMonthCopy}</p>{/if}
+						</section>
 					{/if}
 					{#if progressAnalysis.insights.length === 0}
 						<p class="reflection-copy">Inget tydligt mönster syns ännu i den här perioden. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
@@ -1369,15 +1414,11 @@
 					</button>
 					{#if analysisBasisOpen}
 						<p class="analysis-basis">
-							Analysen bygger på {progressAnalysis.moodSummary.entryCount} {progressAnalysis.moodSummary.entryCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} och {progressAnalysis.coverage.textEntryCount} {progressAnalysis.coverage.textEntryCount === 1 ? 'sparad text' : 'sparade texter'}{#if progressAnalysis.coverage.firstDate && progressAnalysis.coverage.latestDate} från {progressAnalysis.coverage.firstDate} till {progressAnalysis.coverage.latestDate}{/if}. Här visas bara mönster som går att räkna fram ur den valda periodens registreringar och sparade texter. Varje slutsats visas först när den passerat ett tröskelvärde, och den beskriver samband — inte orsak.
+							Analysen bygger på {progressAnalysis.coverage.entryCount} {progressAnalysis.coverage.entryCount === 1 ? 'anteckning' : 'anteckningar'}, varav {progressAnalysis.moodSummary.entryCount} {progressAnalysis.moodSummary.entryCount === 1 ? 'måenderegistrering' : 'måenderegistreringar'} och {progressAnalysis.coverage.textEntryCount} {progressAnalysis.coverage.textEntryCount === 1 ? 'sparad text' : 'sparade texter'}{#if progressAnalysis.coverage.firstDate && progressAnalysis.coverage.latestDate} från {progressAnalysis.coverage.firstDate} till {progressAnalysis.coverage.latestDate}{/if}. Här visas bara mönster som går att räkna fram ur den valda periodens registreringar och sparade texter. Varje slutsats visas först när den passerat ett tröskelvärde, och den beskriver samband — inte orsak.
 							{#if progressAnalysis.moodSummary.mean !== null && progressAnalysis.moodSummary.median !== null}
 								Ditt snitt är {progressAnalysis.moodSummary.mean.toFixed(1).replace('.', ',')} och medianen {progressAnalysis.moodSummary.median.toFixed(1).replace('.', ',')} på skalan. Registreringarna ligger mellan {progressAnalysis.moodSummary.min} och {progressAnalysis.moodSummary.max}.
 							{/if}
-							{#if selectedPeriod === 180 && progressAnalysis.monthly.length > 0}
-								Månader med tillräckligt underlag: {progressAnalysis.monthly.map((month) => `${month.label} (${month.entryCount} registreringar)`).join(', ')}.
-							{:else if selectedPeriod === 180}
-								Underlaget är för ojämnt för att jämföra kalendermånader på ett tryggt sätt ännu.
-							{/if}
+							{#if progressAnalysis.coverage.truncated} Analysen kan vara begränsad eftersom perioden innehåller fler registreringar än den säkra läsgränsen just nu. {/if}
 						</p>
 					{/if}
 				{:else}
@@ -1894,6 +1935,42 @@
 		font-size: 1.05rem;
 	}
 
+	.analysis-long-period {
+		padding: 0.9rem 1rem;
+		border-left: 3px solid color-mix(in srgb, var(--theme-accent, #557c68) 56%, transparent);
+		border-radius: 0 0.65rem 0.65rem 0;
+		background: hsl(var(--muted) / 0.2);
+	}
+
+	.analysis-long-period p,
+	.analysis-coverage-note {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		line-height: 1.5;
+	}
+
+	.monthly-analysis-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+		gap: 0.55rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.monthly-analysis-list li {
+		display: grid;
+		gap: 0.2rem;
+		padding: 0.7rem 0.8rem;
+		border: 1px solid var(--color-dashboard-border);
+		border-radius: 0.7rem;
+		background: hsl(var(--muted) / 0.16);
+	}
+
+	.monthly-analysis-list strong { color: hsl(var(--foreground)); font-size: 0.88rem; }
+	.monthly-analysis-list span { color: hsl(var(--muted-foreground)); font-size: 0.82rem; line-height: 1.4; }
+	.monthly-analysis-list .thin { opacity: 0.78; }
+
 	.evidence-observations {
 		display: grid;
 		gap: 0.65rem;
@@ -1940,21 +2017,6 @@
 		margin: 0;
 		padding: 0;
 		list-style: none;
-	}
-
-	.analysis-summary-heading {
-		margin: 0.35rem 0 0;
-		color: hsl(var(--foreground));
-		font-size: 1.05rem;
-	}
-
-	.analysis-summary-list {
-		display: grid;
-		gap: 0.5rem;
-		margin: 0;
-		padding-left: 1.2rem;
-		color: hsl(var(--foreground));
-		line-height: 1.5;
 	}
 
 	.analysis-tile {
