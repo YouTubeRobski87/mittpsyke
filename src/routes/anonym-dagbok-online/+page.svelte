@@ -4,7 +4,7 @@
 	import { dataflowCopy } from '$lib/dataflow-copy';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/anonym-dagbok-online" />
+<SEO canonical="https://mittpsyke.se/anonym-dagbok-online" />
 
 <svelte:head>
 	<title>Anonym dagbok online utan konto | Skriv direkt | MittPsyke</title>

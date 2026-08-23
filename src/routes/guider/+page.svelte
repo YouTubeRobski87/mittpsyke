@@ -14,12 +14,12 @@
 
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/guider" />
+<SEO canonical="https://mittpsyke.se/guider" />
 
 <SeoHead
 	title="Guider om psykisk hälsa – ångest, stress och mer | MittPsyke"
 	description="Samlade guider om ångest, stress, nedstämdhet, sömn, självkänsla och beroende. Skrivet för reflektion och förståelse i lugn takt."
-	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
+	canonical={`https://mittpsyke.se${$page.url.pathname}`}
 />
 
 <main class="container guides-page">

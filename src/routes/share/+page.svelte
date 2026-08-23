@@ -9,7 +9,7 @@
 
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/share" />
+<SEO canonical="https://mittpsyke.se/share" />
 
 <svelte:head>
 	<title>{ogTitle}</title>

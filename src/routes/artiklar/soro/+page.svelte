@@ -2,7 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/artiklar/soro" />
+<SEO canonical="https://mittpsyke.se/artiklar/soro" />
 
 <svelte:head>
 	<title>Artiklar | Fördjupande texter om välmående | MittPsyke</title>

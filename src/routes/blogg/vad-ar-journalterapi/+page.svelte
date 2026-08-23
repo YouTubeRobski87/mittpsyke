@@ -5,7 +5,7 @@
 	const title = 'Vad är journalterapi – och fungerar det egentligen?';
 	const description =
 		'Journalterapi kan vara ett sätt att sortera tankar och förstå ditt mående bättre. Vi går igenom forskning, praktiska tips och hur MittPsyke kan stötta.';
-	const canonical = 'https://www.mittpsyke.se/blogg/vad-ar-journalterapi';
+	const canonical = 'https://mittpsyke.se/blogg/vad-ar-journalterapi';
 	const datePublished = '2026-03-19';
 
 	const blogPostingJsonLd = {
@@ -22,12 +22,12 @@
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			url: 'https://www.mittpsyke.se'
+			url: 'https://mittpsyke.se'
 		}
 	};
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/blogg/vad-ar-journalterapi" />
+<SEO canonical="https://mittpsyke.se/blogg/vad-ar-journalterapi" />
 
 <svelte:head>
 	<title>{title}</title>

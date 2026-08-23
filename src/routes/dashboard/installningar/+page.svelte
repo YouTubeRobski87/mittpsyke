@@ -636,7 +636,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/dashboard/installningar" />
+<SEO canonical="https://mittpsyke.se/dashboard/installningar" />
 
 <svelte:head>
 	<title>Kontoinställningar - MittPsyke</title>

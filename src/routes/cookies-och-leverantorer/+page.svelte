@@ -4,7 +4,7 @@
 	import { cookieBannerOpen } from '$lib/consent';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/cookies-och-leverantorer" />
+<SEO canonical="https://mittpsyke.se/cookies-och-leverantorer" />
 
 <svelte:head>
 	<title>Cookies och leverantörer | MittPsyke</title>

@@ -6,7 +6,7 @@
 	let { data } = $props<{ data: PageData }>();
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/guider" />
+<SEO canonical="https://mittpsyke.se/guider" />
 
 <svelte:head>
 	<title>{buildTitle('Guider')}</title>

@@ -3,7 +3,7 @@
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/tiktok" />
+<SEO canonical="https://mittpsyke.se/tiktok" />
 
 <svelte:head>
 	<title>Behöver du någon att prata med? | MittPsyke</title>

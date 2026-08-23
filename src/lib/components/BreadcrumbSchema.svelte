@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { canonicalUrl, PUBLIC_SITE_ORIGIN } from '$lib/seo';
-
 	type Crumb = {
 		name: string;
 		url: string;

@@ -9,7 +9,7 @@
 	const formMessage = $derived(typeof form?.message === 'string' ? form.message : '');
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/avregistrera" />
+<SEO canonical="https://mittpsyke.se/avregistrera" />
 
 <svelte:head>
 	<title>Avregistrera - MittPsyke</title>

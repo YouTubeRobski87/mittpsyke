@@ -7,7 +7,7 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/ansvarsfull-ai" />
+<SEO canonical="https://mittpsyke.se/ansvarsfull-ai" />
 
 <svelte:head>
 	<title>Ansvarsfull AI | MittPsyke</title>

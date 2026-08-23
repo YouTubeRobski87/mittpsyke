@@ -1221,7 +1221,7 @@
 
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/framsteg" />
+<SEO canonical="https://mittpsyke.se/framsteg" />
 <CompanionPresenceTracker enabled={!data.isAnonymous} />
 
 <main class="auth-page framsteg-page" style={themeStyle}>

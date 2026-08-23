@@ -3,7 +3,7 @@
 	import DiaryHero from '$lib/components/DiaryHero.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/digital-dagbok-for-maende" />
+<SEO canonical="https://mittpsyke.se/digital-dagbok-for-maende" />
 
 <svelte:head>
 	<title>Digital dagbok för mående – skriv och följ över tid | MittPsyke</title>

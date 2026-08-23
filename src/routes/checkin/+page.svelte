@@ -36,7 +36,7 @@
     $: canSubmit = answer1.trim() || answer2.trim() || answer3.trim();
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/checkin" />
+<SEO canonical="https://mittpsyke.se/checkin" />
 
 <svelte:head>
     <title>Snabb check-in – MittPsyke</title>

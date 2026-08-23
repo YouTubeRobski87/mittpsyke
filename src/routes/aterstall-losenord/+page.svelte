@@ -56,7 +56,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/aterstall-losenord" />
+<SEO canonical="https://mittpsyke.se/aterstall-losenord" />
 
 <svelte:head>
 	<title>Återställ lösenord - MittPsyke</title>

@@ -14,7 +14,7 @@ describe('canonical SEO URLs', () => {
 		expect(canonical('/angest')).toBe('https://mittpsyke.se/angest');
 	});
 
-	it('normalizes www inputs to apex without retaining query strings or fragments', () => {
+it('normalizes www inputs to apex without retaining query strings or fragments', () => {
 		expect(canonicalUrl('http://www.mittpsyke.se/guider/angest/?source=old#intro')).toBe(
 			'https://mittpsyke.se/guider/angest'
 		);
@@ -29,7 +29,7 @@ describe('canonical SEO URLs', () => {
 		);
 	});
 
-	it('normalizes www URLs in structured data without touching other hosts', () => {
+it('normalizes MittPsyke URLs in structured data without touching other hosts', () => {
 		expect(
 			normalizeStructuredDataSiteUrls(
 				'{"url":"https://www.mittpsyke.se/angest","sameAs":"https://example.com"}'

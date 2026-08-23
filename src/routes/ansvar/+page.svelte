@@ -4,7 +4,7 @@
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/ansvar" />
+<SEO canonical="https://mittpsyke.se/ansvar" />
 
 <svelte:head>
 	<title>Ansvarsinfo | MittPsyke</title>

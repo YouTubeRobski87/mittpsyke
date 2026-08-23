@@ -59,7 +59,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/login" />
+<SEO canonical="https://mittpsyke.se/login" />
 
 <svelte:head>
 	<title>Logga in - MittPsyke</title>

@@ -503,7 +503,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/dashboard/gemenskap" />
+<SEO canonical="https://mittpsyke.se/dashboard/gemenskap" />
 
 <main class="auth-page">
 	<PortalSubnav

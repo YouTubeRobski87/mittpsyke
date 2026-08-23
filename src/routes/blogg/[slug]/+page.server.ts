@@ -34,7 +34,7 @@ function stripLeadingH1(html: string): string {
 }
 
 function toAbsoluteUrl(path: string): string {
-	return path.startsWith('http') ? path : `https://www.mittpsyke.se${path}`;
+	return path.startsWith('http') ? path : `https://mittpsyke.se${path}`;
 }
 
 function normalizeYoungMentalHealthArticleContent(content: string) {
@@ -127,7 +127,7 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	const featuredImage = LOCAL_FEATURED_IMAGE_BY_SLUG.get(normalizedSlug) ?? article.imageUrl;
 	const ogImage = featuredImage
 		? toAbsoluteUrl(featuredImage)
-		: 'https://www.mittpsyke.se/og-image.png';
+		: 'https://mittpsyke.se/og-image.png';
 
 	return {
 		title,

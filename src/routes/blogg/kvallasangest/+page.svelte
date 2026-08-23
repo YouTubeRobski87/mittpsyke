@@ -5,7 +5,7 @@
 	const title = 'Kvällsångest: varför den kommer just när du ska sova, och vad som faktiskt hjälper';
 	const description =
 		'Varför blir ångesten värre på kvällen? Lär dig vad kvällsångest är, varför tankarna snurrar när det blir tyst, och konkreta sätt att lugna sinnet innan sömn.';
-	const canonical = 'https://www.mittpsyke.se/blogg/kvallasangest';
+	const canonical = 'https://mittpsyke.se/blogg/kvallasangest';
 	const datePublished = '2026-08-04';
 
 	const blogPostingJsonLd = {
@@ -22,12 +22,12 @@
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			url: 'https://www.mittpsyke.se'
+			url: 'https://mittpsyke.se'
 		}
 	};
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/blogg/kvallasangest" />
+<SEO canonical="https://mittpsyke.se/blogg/kvallasangest" />
 
 <svelte:head>
 	<title>{title}</title>

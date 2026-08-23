@@ -11,7 +11,7 @@ describe('seoSupportPages metadata', () => {
 
 	it('has a canonical URL that matches its own record key', () => {
 		const mismatched = entries
-			.filter(([key, config]) => config.canonical !== `https://www.mittpsyke.se/${key}`)
+			.filter(([key, config]) => config.canonical !== `https://mittpsyke.se/${key}`)
 			.map(([key, config]) => `"${key}" has canonical "${config.canonical}"`);
 
 		expect(mismatched).toEqual([]);

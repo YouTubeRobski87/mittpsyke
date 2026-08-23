@@ -5,7 +5,7 @@
 	const title = 'KBT-dagbok eller fritt skrivande – vad passar dig?';
 	const description =
 		'KBT-dagbok är strukturerad, fritt skrivande är öppet. Här jämför vi fördelar och nackdelar och visar hur AI kan hjälpa dig kombinera båda.';
-	const canonical = 'https://www.mittpsyke.se/blogg/kbt-dagbok-vs-fri-journalforing';
+	const canonical = 'https://mittpsyke.se/blogg/kbt-dagbok-vs-fri-journalforing';
 	const datePublished = '2026-03-19';
 
 	const blogPostingJsonLd = {
@@ -22,12 +22,12 @@
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			url: 'https://www.mittpsyke.se'
+			url: 'https://mittpsyke.se'
 		}
 	};
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/blogg/kbt-dagbok-vs-fri-journalforing" />
+<SEO canonical="https://mittpsyke.se/blogg/kbt-dagbok-vs-fri-journalforing" />
 
 <svelte:head>
 	<title>{title}</title>

@@ -40,7 +40,7 @@
 	// Rest of component...
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/skriv" />
+<SEO canonical="https://mittpsyke.se/skriv" />
 
 <main class="container py-12">
 	<h1 class="text-2xl font-bold mb-4">Skriv av dig anonymt</h1>

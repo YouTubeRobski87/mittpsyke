@@ -6,7 +6,7 @@
 	const organizationNumber = '198712284895';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/kontakt-och-villkor" />
+<SEO canonical="https://mittpsyke.se/kontakt-och-villkor" />
 
 <svelte:head>
 	<title>Kontakt och villkor | MittPsyke</title>

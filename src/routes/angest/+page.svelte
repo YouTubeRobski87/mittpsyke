@@ -92,7 +92,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/angest" />
+<SEO canonical="https://mittpsyke.se/angest" />
 
 <svelte:head>
 	{#if data.noindex}
@@ -102,13 +102,13 @@
 		'@context': 'https://schema.org',
 		'@type': 'MedicalWebPage',
 		name: data.content.h1_heading,
-		url: 'https://www.mittpsyke.se/angest',
+		url: 'https://mittpsyke.se/angest',
 		description: data.description,
 		about: { '@type': 'MedicalCondition', name: 'Ångest' },
 		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
 		specialty: 'https://schema.org/Psychiatric',
 		dateModified: data.lastUpdated,
-		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
 

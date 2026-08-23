@@ -44,7 +44,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/humorsparning" />
+<SEO canonical="https://mittpsyke.se/humorsparning" />
 
 <svelte:head>
 	<title>Humörspårning & aktivitetsheatmap – MittPsyke</title>

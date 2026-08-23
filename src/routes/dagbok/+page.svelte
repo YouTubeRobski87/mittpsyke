@@ -39,7 +39,7 @@
 	};
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/dagbok" />
+<SEO canonical="https://mittpsyke.se/dagbok" />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify(faqSchema)}<\/script>`}

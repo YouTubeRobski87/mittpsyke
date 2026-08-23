@@ -41,7 +41,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/anonyma-berattelser/dela" />
+<SEO canonical="https://mittpsyke.se/anonyma-berattelser/dela" />
 
 <svelte:head>
 	<title>Dela en anonym berättelse | MittPsyke</title>

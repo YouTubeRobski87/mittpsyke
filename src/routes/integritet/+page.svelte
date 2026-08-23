@@ -5,7 +5,7 @@
 	import { dataflowCopy } from '$lib/dataflow-copy';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/integritet" />
+<SEO canonical="https://mittpsyke.se/integritet" />
 
 <svelte:head>
 	<title>Integritetspolicy | MittPsyke</title>

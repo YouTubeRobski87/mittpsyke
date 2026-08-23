@@ -2,7 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/andningsovningar-mot-angest" />
+<SEO canonical="https://mittpsyke.se/andningsovningar-mot-angest" />
 
 <svelte:head>
 	<title>Andningsövningar mot ångest | Lugna verktyg online | MittPsyke</title>

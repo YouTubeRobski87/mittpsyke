@@ -2,7 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/samtalsstod-utan-vantetid/samtalsstod-vid-trauma" />
+<SEO canonical="https://mittpsyke.se/samtalsstod-utan-vantetid/samtalsstod-vid-trauma" />
 
 <svelte:head>
 	<title>Samtalsstöd vid trauma | Lugn reflektion och nästa steg | MittPsyke</title>

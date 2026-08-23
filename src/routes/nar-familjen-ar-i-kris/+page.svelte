@@ -167,7 +167,7 @@
 				: ''
 	);
 
-	const pageUrl = 'https://www.mittpsyke.se/nar-familjen-ar-i-kris';
+	const pageUrl = 'https://mittpsyke.se/nar-familjen-ar-i-kris';
 </script>
 
 <SEO canonical={pageUrl} />
@@ -189,7 +189,7 @@
 		],
 		audience: { '@type': 'Audience', audienceType: 'Anhöriga' },
 		dateModified: '2026-07-31',
-		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
 

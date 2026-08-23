@@ -1,4 +1,5 @@
 import type { SeoSupportPageConfig } from '$lib/components/SeoSupportPage.svelte';
+import { canonical } from '$lib/seo';
 
 const updatedDate = '4 april 2026';
 
@@ -7,7 +8,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Anonymt samtalsstöd online – trygg start | MittPsyke',
 		description:
 			'Utforska anonymt samtalsstöd online när du vill börja varsamt. Läs om låg tröskel, reflektion i text, vad stödet kan hjälpa med och hur det skiljer sig från vård.',
-		canonical: 'https://www.mittpsyke.se/anonymt-samtalstod-online',
+		canonical: canonical('/anonymt-samtalstod-online'),
 		ogTitle: 'Anonymt samtalsstöd online | MittPsyke',
 		ogDescription:
 			'När du inte orkar förklara allt direkt kan anonymt samtalsstöd vara en trygg första ingång.',
@@ -80,7 +81,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Anonym chatt med AI-stöd – så fungerar det | MittPsyke',
 		description:
 			'Så fungerar anonym chatt med AI-stöd hos MittPsyke: vad som brukar hända i samtalet, hur AI:n kan hjälpa dig reflektera och vad du kan förvänta dig.',
-		canonical: 'https://www.mittpsyke.se/chatta-anonymt-med-nagon',
+		canonical: canonical('/chatta-anonymt-med-nagon'),
 		ogTitle: 'Chatta anonymt med någon | MittPsyke',
 		ogDescription:
 			'En genomgång av hur anonym chatt kan fungera när du behöver börja enkelt och utan press.',
@@ -156,7 +157,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Chattstöd vid psykisk ohälsa | Tidigt stöd online | MittPsyke',
 		description:
 			'Förstå vad psykisk ohälsa kan innebära i vardagen och hur chattstöd kan hjälpa tidigt när du vill sätta ord på det som känns tungt.',
-		canonical: 'https://www.mittpsyke.se/chattstod-psykisk-ohalsa',
+		canonical: canonical('/chattstod-psykisk-ohalsa'),
 		ogTitle: 'Chattstöd vid psykisk ohälsa | MittPsyke',
 		ogDescription:
 			'En lugn genomgång av hur textbaserat stöd kan hjälpa dig att börja tidigt när måendet skaver.',
@@ -227,7 +228,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Hjälp mot oro online | Skillnaden mellan oro och ångest | MittPsyke',
 		description:
 			'Läs om skillnaden mellan oro och ångest, vilka tekniker som kan hjälpa och när oron har börjat ta för mycket plats i vardagen.',
-		canonical: 'https://www.mittpsyke.se/hjalp-mot-oro-online',
+		canonical: canonical('/hjalp-mot-oro-online'),
 		ogTitle: 'Hjälp mot oro online | MittPsyke',
 		ogDescription:
 			'När tankarna fastnar i framtiden kan det hjälpa att förstå oron och välja lugna nästa steg.',
@@ -299,7 +300,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Hjälp vid depression online | Symtom, stöd och nästa steg | MittPsyke',
 		description:
 			'Läs om vanliga depressionssymtom, varför tidig hjälp spelar roll och vad du kan göra idag om nedstämdheten tar mycket plats.',
-		canonical: 'https://www.mittpsyke.se/hjalp-vid-depression-online',
+		canonical: canonical('/hjalp-vid-depression-online'),
 		ogTitle: 'Hjälp vid depression online | MittPsyke',
 		ogDescription:
 			'När orken är låg kan det hjälpa att börja varsamt och förstå vad som faktiskt händer.',
@@ -370,7 +371,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Övningar mot ångest – KBT, andning och exponering | MittPsyke',
 		description:
 			'Utforska KBT-baserade övningar mot ångest online. Läs om andning, exponering och varför praktiska övningar ofta hjälper mer än att bara försöka tänka bort ångesten.',
-		canonical: 'https://www.mittpsyke.se/ovningar-mot-angest-online',
+		canonical: canonical('/ovningar-mot-angest-online'),
 		ogTitle: 'Övningar mot ångest online | MittPsyke',
 		ogDescription:
 			'När ångest tar plats kan övningar ge kroppen och tankarna något konkret att hålla i.',
@@ -442,7 +443,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Psykiskt stöd online | Vad digitalt stöd är och inte är | MittPsyke',
 		description:
 			'Läs vad digitalt psykiskt stöd online kan vara, vilka fördelar och begränsningar som finns och när det fungerar som en bra första ingång.',
-		canonical: 'https://www.mittpsyke.se/psykiskt-stod-online',
+		canonical: canonical('/psykiskt-stod-online'),
 		ogTitle: 'Psykiskt stöd online | MittPsyke',
 		ogDescription:
 			'Digitalt stöd kan vara ett lugnt första steg, men det är inte samma sak som vård.',
@@ -513,7 +514,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Prata anonymt online | Hur du börjar och vad du kan ta upp | MittPsyke',
 		description:
 			'Läs varför anonymitet kan hjälpa, vad du kan prata om i ett anonymt stöd och hur du kommer igång när du vill börja utan press.',
-		canonical: 'https://www.mittpsyke.se/prata-anonymt-online',
+		canonical: canonical('/prata-anonymt-online'),
 		ogTitle: 'Prata anonymt online | MittPsyke',
 		ogDescription:
 			'När du vill börja utan press kan anonymitet göra det lättare att sätta ord på det som känns svårt.',
@@ -584,7 +585,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Samtalsstöd utan väntetid | När du behöver börja nu | MittPsyke',
 		description:
 			'Läs om hur digitalt samtalsstöd kan fylla ett gap när vårdköer eller trösklar gör att hjälpen känns långt bort, och vad som skiljer det från traditionell vård.',
-		canonical: 'https://www.mittpsyke.se/samtalsstod-utan-vantetid',
+		canonical: canonical('/samtalsstod-utan-vantetid'),
 		ogTitle: 'Samtalsstöd utan väntetid | MittPsyke',
 		ogDescription:
 			'När du behöver börja nu kan digitalt stöd vara en första ingång, men det är inte samma sak som vård.',
@@ -655,7 +656,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Stöd vid stress online | Kronisk stress, symtom och hjälp | MittPsyke',
 		description:
 			'Läs om kronisk stress, vanliga stressymtom och vad som kan hjälpa när belastningen blivit långvarig eller svår att återhämta sig från.',
-		canonical: 'https://www.mittpsyke.se/stod-vid-stress-online',
+		canonical: canonical('/stod-vid-stress-online'),
 		ogTitle: 'Stöd vid stress online | MittPsyke',
 		ogDescription:
 			'När kroppen går länge på högvarv kan det hjälpa att förstå stressymtom och börja sänka tempot stegvis.',
@@ -726,7 +727,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Stöd vid PTSD online | Symtom, vardagsstöd och nästa steg | MittPsyke',
 		description:
 			'Läs om vanliga PTSD-symtom, vad som kan hjälpa i vardagen och när det är viktigt att söka professionell hjälp utöver digitalt stöd.',
-		canonical: 'https://www.mittpsyke.se/stod-vid-ptsd-online',
+		canonical: canonical('/stod-vid-ptsd-online'),
 		ogTitle: 'Stöd vid PTSD online | MittPsyke',
 		ogDescription:
 			'När svåra minnen och reaktioner tar plats kan varsamt stöd hjälpa dig att börja förstå ditt läge.',
@@ -797,7 +798,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Chatta anonymt utan konto – börja direkt | MittPsyke',
 		description:
 			'Chatta anonymt utan konto hos MittPsyke. Skriv av dig, sortera tankar och få stöd i lugn takt – utan registrering eller krav.',
-		canonical: 'https://www.mittpsyke.se/chatta-anonymt',
+		canonical: canonical('/chatta-anonymt'),
 		ogTitle: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
 		ogDescription:
 			'Börja chatta anonymt utan konto. Få lugnt stöd i text direkt i webbläsaren.',
@@ -864,7 +865,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		title: 'Chatta anonymt om din psykiska hälsa | Låg tröskel online | MittPsyke',
 		description:
 			'Chatta anonymt om din psykiska hälsa på svenska. Läs hur anonym chatt fungerar, vad du kan ta upp, vad AI-stöd kan hjälpa med och när du bör söka mer hjälp.',
-		canonical: 'https://www.mittpsyke.se/anonym-chatt',
+		canonical: canonical('/anonym-chatt'),
 		ogTitle: 'Chatta anonymt om din psykiska hälsa | MittPsyke',
 		ogDescription:
 			'En lågtröskelsida om anonym chatt för psykisk hälsa, med FAQ och tydliga nästa steg.',
@@ -934,5 +935,5 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 };
 
 export const seoSupportPagePaths = Object.values(seoSupportPages).map((page) =>
-	page.canonical.replace('https://www.mittpsyke.se', '')
+	new URL(page.canonical).pathname
 );

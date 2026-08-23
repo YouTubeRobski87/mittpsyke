@@ -5,7 +5,7 @@
 	let { data } = $props();
 	const article = $derived(data.article);
 	const topic = $derived(data.topic);
-	const canonical = $derived(`https://www.mittpsyke.se${article.url}`);
+	const canonical = $derived(`https://mittpsyke.se${article.url}`);
 	const jsonLd = $derived(JSON.stringify(data.jsonLd).replace(/</g, '\\u003c'));
 	const faqJsonLd = $derived(
 		article.faqs.length

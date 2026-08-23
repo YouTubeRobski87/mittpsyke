@@ -32,7 +32,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/qr" />
+<SEO canonical="https://mittpsyke.se/qr" />
 
 <svelte:head>
 	<title>Du kan börja skriva anonymt direkt | MittPsyke</title>

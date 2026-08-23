@@ -61,7 +61,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/admin/stories" />
+<SEO canonical="https://mittpsyke.se/admin/stories" />
 
 <svelte:head>
 	<title>Anonyma berättelser | Admin | MittPsyke</title>

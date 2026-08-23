@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { canonicalUrl } from '$lib/seo';
-
 	type OpenGraph = {
 		title?: string;
 		description?: string;

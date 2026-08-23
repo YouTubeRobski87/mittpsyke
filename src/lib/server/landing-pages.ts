@@ -1,4 +1,5 @@
 import { createServiceClient, isMissingTableError } from '$lib/server/supabase-admin';
+import { canonical } from '$lib/seo';
 
 type LandingPageRow = {
 	id: string;
@@ -63,7 +64,7 @@ function getFallbackLandingPage(pageId: string): PublicLandingPageData {
 		ctaText: 'Starta ett lugnt samtal',
 		keywords: ['ångest', 'oro', 'stöd vid ångest', 'prata anonymt', 'övningar mot ångest'],
 		htmlContent: null,
-		canonicalUrl: 'https://www.mittpsyke.se/angest'
+		canonicalUrl: canonical('/angest')
 	};
 }
 
@@ -115,6 +116,6 @@ export async function loadPublicLandingPage(pageId: string): Promise<PublicLandi
 			? splitKeywords(content?.keywords)
 			: fallback.keywords,
 		htmlContent: content?.html_content ?? null,
-		canonicalUrl: `https://www.mittpsyke.se${slug}`
+		canonicalUrl: canonical(slug)
 	};
 }

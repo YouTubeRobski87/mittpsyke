@@ -32,14 +32,14 @@
 				'@type': 'CollectionPage',
 				headline: data.landing?.h1 ?? data.pillar.title,
 				description: pageDescription,
-				url: `https://www.mittpsyke.se/guider/${data.pillar.slug}`,
+				url: `https://mittpsyke.se/guider/${data.pillar.slug}`,
 				author: [
-					{ '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' },
+					{ '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' },
 					{
 						'@type': 'Person',
 						name: 'Robert Claesson',
 						jobTitle: 'Grundare',
-						url: 'https://www.mittpsyke.se/om-mittpsyke'
+						url: 'https://mittpsyke.se/om-mittpsyke'
 					}
 				],
 				inLanguage: 'sv-SE'
@@ -47,13 +47,13 @@
 			{
 				'@type': 'BreadcrumbList',
 				itemListElement: [
-					{ '@type': 'ListItem', position: 1, name: 'Hem', item: 'https://www.mittpsyke.se' },
-					{ '@type': 'ListItem', position: 2, name: 'Guider', item: 'https://www.mittpsyke.se/guider' },
+					{ '@type': 'ListItem', position: 1, name: 'Hem', item: 'https://mittpsyke.se' },
+					{ '@type': 'ListItem', position: 2, name: 'Guider', item: 'https://mittpsyke.se/guider' },
 					{
 						'@type': 'ListItem',
 						position: 3,
 						name: data.pillar.title || data.pillar.slug || 'Sida',
-						item: `https://www.mittpsyke.se/guider/${data.pillar.slug}`
+						item: `https://mittpsyke.se/guider/${data.pillar.slug}`
 					}
 				]
 			}
@@ -61,7 +61,7 @@
 	});
 </script>
 
-<SEO canonical={`https://www.mittpsyke.se/guider/${data.pillar.slug}`} />
+<SEO canonical={`https://mittpsyke.se/guider/${data.pillar.slug}`} />
 
 <svelte:head>
 	<title>{buildTitle(pageTitle)}</title>

@@ -3,7 +3,7 @@
 	import { dataflowCopy } from '$lib/dataflow-copy';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/ai-samtalsstod-online" />
+<SEO canonical="https://mittpsyke.se/ai-samtalsstod-online" />
 
 <main class="page">
 	<div class="page-container">

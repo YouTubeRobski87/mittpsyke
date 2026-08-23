@@ -39,17 +39,17 @@
 		headline: 'Dagbok och reflektion – skriv dig till klarhet',
 		description:
 			'Dagbok och reflektion hjälper dig att bearbeta tankar, se mönster och förstå ditt mående. Börja skriva anonymt direkt – inget konto krävs.',
-		url: 'https://www.mittpsyke.se/guider/dagbok-och-reflektion',
+		url: 'https://mittpsyke.se/guider/dagbok-och-reflektion',
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			url: 'https://www.mittpsyke.se'
+			url: 'https://mittpsyke.se'
 		},
 		inLanguage: 'sv-SE'
 	};
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/guider/dagbok-och-reflektion" />
+<SEO canonical="https://mittpsyke.se/guider/dagbok-och-reflektion" />
 
 <svelte:head>
 	<title>Dagbok och reflektion – skriv dig till klarhet | MittPsyke</title>

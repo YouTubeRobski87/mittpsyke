@@ -3,20 +3,20 @@
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/sjalvkansla" />
+<SEO canonical="https://mittpsyke.se/sjalvkansla" />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
 		'@type': 'MedicalWebPage',
 		name: 'Självkänsla – samtalsstöd och stöd i din takt',
-		url: 'https://www.mittpsyke.se/sjalvkansla',
+		url: 'https://mittpsyke.se/sjalvkansla',
 		description: 'Låg självkänsla är tyst men tung. Prata anonymt och utforska din relation till dig själv – utan dömande ton, utan krav.',
 		about: { '@type': 'MedicalCondition', name: 'Låg självkänsla' },
 		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
 		specialty: 'https://schema.org/Psychiatric',
 		dateModified: '2026-03-14',
-		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
 

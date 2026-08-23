@@ -14,7 +14,7 @@
 	});
 </script>
 
-<SEO canonical={`https://www.mittpsyke.se${page.url.pathname}`} />
+<SEO canonical={`https://mittpsyke.se${page.url.pathname}`} />
 
 <svelte:head>
 	<!-- Tunn genomgångssida till /chat/[category] (redan noindex). Innehållet

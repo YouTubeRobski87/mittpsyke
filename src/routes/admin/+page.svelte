@@ -56,7 +56,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/admin" />
+<SEO canonical="https://mittpsyke.se/admin" />
 
 <svelte:head>
 	<title>Admin och SEO | MittPsyke</title>

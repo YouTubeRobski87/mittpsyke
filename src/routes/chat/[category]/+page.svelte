@@ -139,7 +139,7 @@
 	});
 </script>
 
-<SEO canonical={`https://www.mittpsyke.se${page.url.pathname}`} />
+<SEO canonical={`https://mittpsyke.se${page.url.pathname}`} />
 
 <svelte:head>
 	<meta name="robots" content="noindex, follow" />
@@ -153,7 +153,7 @@
 		'@type': 'WebPage',
 		name: pageMeta.title,
 		description: pageMeta.description,
-		url: `https://www.mittpsyke.se${page.url.pathname}`,
+		url: `https://mittpsyke.se${page.url.pathname}`,
 		dateModified: '2026-07-10',
 		inLanguage: 'sv-SE'
 	})}<\/script>`}
