@@ -76,6 +76,19 @@
 				{ title: 'Orkar ingenting – när krafterna inte räcker', href: '/guider/ensamhet/orkar-ingenting' }
 			]}
 		/>
+
+		<aside class="callout" aria-label="Vidare stöd">
+			<h2>Vill du att någon lyssnar en stund?</h2>
+			<p>
+				Jourhavande Medmänniska erbjuder anonymt samtalsstöd på kvällar och nätter.
+				<a
+					href="https://www.stodlinjer.se/stodlinjer/jourhavande-medmanniska/"
+					target="_blank"
+					rel="noopener noreferrer"
+				>Se kontaktvägar</a>.
+			</p>
+		</aside>
+
 		<!-- Källor och uppdatering -->
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>

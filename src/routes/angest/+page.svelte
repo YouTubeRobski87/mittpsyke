@@ -252,8 +252,12 @@
 				</a>
 			</li>
 			<li>
-				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">
-					Stödlinjer för vidare hjälp
+				<a
+					href="https://www.stodlinjer.se/stodlinjer/angestforbundet/"
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Stöd för ångest och panikångest
 				</a>
 			</li>
 		</ul>

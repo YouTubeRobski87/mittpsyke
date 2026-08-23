@@ -61,6 +61,19 @@
 			<h2>Panikattacker går över</h2>
 			<p>Även när det känns omöjligt och evigt, så passerar panikattacker – i regel inom 15-30 minuter. Du är inte i fara. Din kropp försöker skydda dig. MittPsyke kan guida dig genom det.</p>
 		</aside>
+
+		<aside class="callout" aria-label="Vidare stöd">
+			<h2>Vidare stöd om du vill prata med någon</h2>
+			<p>
+				Ångestförbundet erbjuder stöd och information för personer med ångest och panikångest.
+				<a
+					href="https://www.stodlinjer.se/stodlinjer/angestforbundet/"
+					target="_blank"
+					rel="noopener noreferrer"
+				>Prata med någon om panik och ångest</a>.
+			</p>
+		</aside>
+
 		<!-- Källor och uppdatering -->
 		<TopicGuideSection
 			topicTitle="Panikattack"
