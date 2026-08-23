@@ -17,8 +17,8 @@
 	<meta property="og:title" content={ogTitle} />
 	<meta property="og:description" content={ogDescription} />
 	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://www.mittpsyke.se/share" />
-	<meta property="og:image" content="https://www.mittpsyke.se/assets/og-default.jpg" />
+	<meta property="og:url" content="https://mittpsyke.se/share" />
+	<meta property="og:image" content="https://mittpsyke.se/assets/og-default.jpg" />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={ogTitle} />
 	<meta name="twitter:description" content={ogDescription} />

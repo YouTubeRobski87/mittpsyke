@@ -8,36 +8,37 @@ import {
 } from './seo';
 
 describe('canonical SEO URLs', () => {
-	it('uses the www HTTPS origin for generated paths', () => {
-		expect(PUBLIC_SITE_ORIGIN).toBe('https://www.mittpsyke.se');
-		expect(canonical('/framsteg/')).toBe('https://www.mittpsyke.se/framsteg');
-		expect(canonical('/angest')).toBe('https://www.mittpsyke.se/angest');
+	it('uses the apex HTTPS origin for generated paths', () => {
+		expect(PUBLIC_SITE_ORIGIN).toBe('https://mittpsyke.se');
+		expect(canonical('/framsteg/')).toBe('https://mittpsyke.se/framsteg');
+		expect(canonical('/angest')).toBe('https://mittpsyke.se/angest');
 	});
 
-	it('normalizes legacy hosts without retaining query strings or fragments', () => {
+	it('normalizes www inputs to apex without retaining query strings or fragments', () => {
 		expect(canonicalUrl('http://www.mittpsyke.se/guider/angest/?source=old#intro')).toBe(
-			'https://www.mittpsyke.se/guider/angest'
+			'https://mittpsyke.se/guider/angest'
 		);
-		expect(canonicalUrl('https://mittpsyke.se/angest')).toBe('https://www.mittpsyke.se/angest');
-		expect(canonicalUrl('https://www.mittpsyke.se/angest')).not.toContain('www.www.');
+		expect(canonicalUrl('https://mittpsyke.se/angest')).toBe('https://mittpsyke.se/angest');
+		expect(canonicalUrl('https://www.mittpsyke.se/angest')).toBe('https://mittpsyke.se/angest');
+		expect(canonicalUrl('https://www.www.mittpsyke.se/angest')).toBe('https://mittpsyke.se/angest');
 	});
 
-	it('keeps request query strings when redirecting a legacy host', () => {
+	it('keeps request query strings when normalizing a www request URL', () => {
 		expect(canonicalRequestUrl('http://www.mittpsyke.se/guider/angest/?source=old#intro')).toBe(
-			'https://www.mittpsyke.se/guider/angest?source=old'
+			'https://mittpsyke.se/guider/angest?source=old'
 		);
 	});
 
-	it('normalizes legacy URLs in structured data without touching other hosts', () => {
-		expect(
-			normalizeStructuredDataSiteUrls(
-				'{"url":"https://mittpsyke.se/angest","sameAs":"https://example.com"}'
-			)
-		).toBe('{"url":"https://www.mittpsyke.se/angest","sameAs":"https://example.com"}');
+	it('normalizes www URLs in structured data without touching other hosts', () => {
 		expect(
 			normalizeStructuredDataSiteUrls(
 				'{"url":"https://www.mittpsyke.se/angest","sameAs":"https://example.com"}'
 			)
-		).toBe('{"url":"https://www.mittpsyke.se/angest","sameAs":"https://example.com"}');
+		).toBe('{"url":"https://mittpsyke.se/angest","sameAs":"https://example.com"}');
+		expect(
+			normalizeStructuredDataSiteUrls(
+				'{"url":"https://www.www.mittpsyke.se/angest","sameAs":"https://example.com"}'
+			)
+		).toBe('{"url":"https://mittpsyke.se/angest","sameAs":"https://example.com"}');
 	});
 });
