@@ -28,25 +28,25 @@
 		'@type': 'Article',
 		headline: data.guide.title,
 		description: data.guide.seoDescription ?? data.guide.description,
-		url: `https://www.mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`,
+		url: `https://mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`,
 		dateModified: data.guide.updatedAt ?? undefined,
 		author: [
 			{
 				'@type': 'Organization',
 				name: 'MittPsyke',
-				url: 'https://www.mittpsyke.se'
+				url: 'https://mittpsyke.se'
 			},
 			{
 				'@type': 'Person',
 				name: 'Robert Claesson',
 				jobTitle: 'Grundare',
-				url: 'https://www.mittpsyke.se/om-mittpsyke'
+				url: 'https://mittpsyke.se/om-mittpsyke'
 			}
 		],
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			url: 'https://www.mittpsyke.se'
+			url: 'https://mittpsyke.se'
 		},
 		inLanguage: 'sv-SE'
 	});
@@ -89,25 +89,25 @@
 		'@context': 'https://schema.org',
 		'@type': 'BreadcrumbList',
 		itemListElement: [
-			{ '@type': 'ListItem', position: 1, name: 'Hem', item: 'https://www.mittpsyke.se' },
-			{ '@type': 'ListItem', position: 2, name: 'Guider', item: 'https://www.mittpsyke.se/guider' },
+			{ '@type': 'ListItem', position: 1, name: 'Hem', item: 'https://mittpsyke.se' },
+			{ '@type': 'ListItem', position: 2, name: 'Guider', item: 'https://mittpsyke.se/guider' },
 			{
 				'@type': 'ListItem',
 				position: 3,
 				name: data.pillar.title || data.pillar.slug || 'Sida',
-				item: `https://www.mittpsyke.se/guider/${data.pillar.slug}`
+				item: `https://mittpsyke.se/guider/${data.pillar.slug}`
 			},
 			{
 				'@type': 'ListItem',
 				position: 4,
 				name: data.guide.title || data.guide.slug || 'Artikel',
-				item: `https://www.mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`
+				item: `https://mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`
 			}
 		]
 	});
 </script>
 
-<SEO canonical={`https://www.mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`} />
+<SEO canonical={`https://mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`} />
 
 <svelte:head>
 	<title>{data.guide.seoTitle ?? buildTitle(data.guide.title)}</title>

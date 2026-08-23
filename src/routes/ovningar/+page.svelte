@@ -8,12 +8,12 @@
 	const pillarLabelBySlug = Object.fromEntries(pillars.map((pillar) => [pillar.slug, pillar.title]));
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/ovningar" />
+<SEO canonical="https://mittpsyke.se/ovningar" />
 
 <SeoHead
 	title="Övningar mot ångest och stress – steg för steg | MittPsyke"
 	description="Steg-för-steg-övningar mot ångest, stress, sömn och självkänsla. Konkreta verktyg för vardagen i lugn takt."
-	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
+	canonical={`https://mittpsyke.se${$page.url.pathname}`}
 />
 
 <main class="container tools-page">

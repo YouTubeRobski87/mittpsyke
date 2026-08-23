@@ -6,6 +6,6 @@
 	const config = seoSupportPages['samtalsstod-utan-vantetid'];
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/samtalsstod-utan-vantetid" />
+<SEO canonical="https://mittpsyke.se/samtalsstod-utan-vantetid" />
 
 <SeoSupportPage {config} />

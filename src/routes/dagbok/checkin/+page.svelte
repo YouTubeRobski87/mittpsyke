@@ -1198,7 +1198,7 @@
 	});
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/dagbok/checkin" />
+<SEO canonical="https://mittpsyke.se/dagbok/checkin" />
 
 <svelte:head>
 	<meta name="robots" content="noindex, nofollow" />

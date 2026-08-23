@@ -5,7 +5,7 @@
 	const title = 'Hur AI kan hjälpa dig sortera känslor – utan att ersätta terapi';
 	const description =
 		'AI kan stötta med reflektion, frågor och mönster över tid. Vi går igenom vad AI kan göra för mental hälsa, vad det inte kan ersätta och hur MittPsyke arbetar ansvarsfullt.';
-	const canonical = 'https://www.mittpsyke.se/blogg/ai-hjalper-dig-bearbeta-kanslor';
+	const canonical = 'https://mittpsyke.se/blogg/ai-hjalper-dig-bearbeta-kanslor';
 	const datePublished = '2026-03-19';
 
 	const blogPostingJsonLd = {
@@ -22,12 +22,12 @@
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			url: 'https://www.mittpsyke.se'
+			url: 'https://mittpsyke.se'
 		}
 	};
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/blogg/ai-hjalper-dig-bearbeta-kanslor" />
+<SEO canonical="https://mittpsyke.se/blogg/ai-hjalper-dig-bearbeta-kanslor" />
 
 <svelte:head>
 	<title>{title}</title>

@@ -5,16 +5,16 @@
 	import ResearchEvidenceCard from '$lib/components/ResearchEvidenceCard.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/om-mittpsyke" />
+<SEO canonical="https://mittpsyke.se/om-mittpsyke" />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
 		'@type': 'AboutPage',
 		name: 'Om MittPsyke – Skapad av erfarenhet, inte teori',
-		url: 'https://www.mittpsyke.se/om-mittpsyke',
+		url: 'https://mittpsyke.se/om-mittpsyke',
 		description: 'MittPsyke skapades av Robert Claesson – av egna erfarenheter av psykisk ohälsa och återhämtning.',
-		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
 

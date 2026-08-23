@@ -52,7 +52,7 @@
 	});
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/spegelvattnet" />
+<SEO canonical="https://mittpsyke.se/spegelvattnet" />
 
 <main class="auth-page spegel-page">
 	<div class="spegel-column">

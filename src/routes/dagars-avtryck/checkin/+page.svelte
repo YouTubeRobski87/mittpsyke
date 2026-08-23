@@ -417,7 +417,7 @@
 	});
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/dagars-avtryck/checkin" />
+<SEO canonical="https://mittpsyke.se/dagars-avtryck/checkin" />
 
 <svelte:head>
 	<title>Guidad incheckning – MittPsyke</title>

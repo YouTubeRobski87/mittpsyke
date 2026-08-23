@@ -3,14 +3,14 @@
 	import HomeSafetyStrip from '$lib/components/HomeSafetyStrip.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/tiktok" />
+<SEO canonical="https://mittpsyke.se/tiktok" />
 
 <svelte:head>
 	<title>Behöver du någon att prata med? | MittPsyke</title>
 	<meta name="description" content="Skriv av dig anonymt och få stöd för din psykiska hälsa. Gratis, anonymt, dygnet runt." />
 	<meta property="og:title" content="Behöver du någon att prata med? | MittPsyke" />
 	<meta property="og:description" content="Skriv av dig anonymt och få stöd för din psykiska hälsa. Gratis, anonymt, dygnet runt." />
-	<meta property="og:url" content="https://www.mittpsyke.se/tiktok" />
+	<meta property="og:url" content="https://mittpsyke.se/tiktok" />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 

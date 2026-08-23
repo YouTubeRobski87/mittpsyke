@@ -34,7 +34,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/admin/radar" />
+<SEO canonical="https://mittpsyke.se/admin/radar" />
 <svelte:head><title>Radar | Admin | MittPsyke</title><meta name="robots" content="noindex, nofollow" /></svelte:head>
 
 <main class="radar-shell">

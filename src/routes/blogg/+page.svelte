@@ -7,7 +7,7 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/blogg" />
+<SEO canonical="https://mittpsyke.se/blogg" />
 
 <svelte:head>
 	<title>Artiklar om psykiskt mående | MittPsyke</title>

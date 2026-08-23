@@ -87,7 +87,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/anonyma-berattelser" />
+<SEO canonical="https://mittpsyke.se/anonyma-berattelser" />
 
 <svelte:head>
 	<title>Anonyma berättelser om psykisk hälsa | MittPsyke</title>

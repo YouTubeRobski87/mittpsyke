@@ -28,7 +28,7 @@
 	});
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/journalforing" />
+<SEO canonical="https://mittpsyke.se/journalforing" />
 
 <svelte:head>
 	<title>Dagboksskrivande för psykisk hälsa – MittPsyke</title>

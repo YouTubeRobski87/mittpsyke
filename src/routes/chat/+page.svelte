@@ -78,7 +78,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/chat" />
+<SEO canonical="https://mittpsyke.se/chat" />
 
 <svelte:head>
 	<title>AI-chat för psykisk hälsa | MittPsyke</title>
@@ -99,11 +99,11 @@
 		name: 'AI-chat för psykisk hälsa | MittPsyke',
 		description:
 			'Prata anonymt med MittPsykes AI-chat om ångest, stress, nedstämdhet och psykiskt mående.',
-		url: 'https://www.mittpsyke.se/chat',
+		url: 'https://mittpsyke.se/chat',
 		dateModified: '2026-07-10',
 		about: { '@type': 'Thing', name: 'Psykisk hälsa och samtalsstöd' },
 		inLanguage: 'sv-SE',
-		provider: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+		provider: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
 

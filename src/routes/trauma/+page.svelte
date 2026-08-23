@@ -4,20 +4,20 @@
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/trauma" />
+<SEO canonical="https://mittpsyke.se/trauma" />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
 		'@type': 'MedicalWebPage',
 		name: 'Samtalsstöd vid trauma – Bearbeta i din egen takt',
-		url: 'https://www.mittpsyke.se/trauma',
+		url: 'https://mittpsyke.se/trauma',
 		description: 'Vi erbjuder samtalsstöd vid trauma i ett tryggt rum där du kan börja utan konto och reflektera i din egen takt.',
 		about: { '@type': 'MedicalCondition', name: 'Trauma' },
 		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
 		specialty: 'https://schema.org/Psychiatric',
 		dateModified: '2026-03-14',
-		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
 

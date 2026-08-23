@@ -275,7 +275,7 @@
   });
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/dashboard" />
+<SEO canonical="https://mittpsyke.se/dashboard" />
 
 <div class="mp-dashboard">
   <CompanionPresenceTracker enabled={!isAnonymous} />

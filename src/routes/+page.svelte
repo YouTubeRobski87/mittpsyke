@@ -17,7 +17,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/" />
+<SEO canonical="https://mittpsyke.se/" />
 
 <main class="home">
 	<!-- 1. Hero -->

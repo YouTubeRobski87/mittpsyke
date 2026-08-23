@@ -3,7 +3,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 
 	let { data } = $props();
-	const canonical = $derived(`https://www.mittpsyke.se/blogg/amne/${data.topic.slug}`);
+	const canonical = $derived(`https://mittpsyke.se/blogg/amne/${data.topic.slug}`);
 </script>
 
 <SEO {canonical} />

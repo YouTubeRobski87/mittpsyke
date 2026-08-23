@@ -48,12 +48,12 @@
 	);
 </script>
 
-<SEO canonical={`https://www.mittpsyke.se${$page.url.pathname}`} />
+<SEO canonical={`https://mittpsyke.se${$page.url.pathname}`} />
 
 <SeoHead
 	title={pageTitle}
 	description={pageDescription}
-	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
+	canonical={`https://mittpsyke.se${$page.url.pathname}`}
 />
 <BreadcrumbSchema
 	crumbs={[

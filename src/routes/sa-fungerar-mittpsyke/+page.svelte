@@ -3,7 +3,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/sa-fungerar-mittpsyke" />
+<SEO canonical="https://mittpsyke.se/sa-fungerar-mittpsyke" />
 
 <svelte:head>
 	<title>Så fungerar MittPsyke | AI-stött reflektionsstöd</title>

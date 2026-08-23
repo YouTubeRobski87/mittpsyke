@@ -75,7 +75,7 @@
 	const unread = $derived(notifications.filter((n) => !n.is_read).length);
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/notiser" />
+<SEO canonical="https://mittpsyke.se/notiser" />
 
 <svelte:head>
 	<title>Notiser | MittPsyke</title>

@@ -48,17 +48,17 @@
 		headline: 'Så kan anonym dagbok online hjälpa dig att sortera tankar',
 		description:
 			'Anonym dagbok kan hjälpa dig sortera tankar när allt känns rörigt. Läs om hur skrivandet fungerar och när det hjälper mest.',
-		url: 'https://www.mittpsyke.se/guider/anonym-dagbok-online',
+		url: 'https://mittpsyke.se/guider/anonym-dagbok-online',
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			url: 'https://www.mittpsyke.se'
+			url: 'https://mittpsyke.se'
 		},
 		inLanguage: 'sv-SE'
 	};
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/guider/anonym-dagbok-online" />
+<SEO canonical="https://mittpsyke.se/guider/anonym-dagbok-online" />
 
 <svelte:head>
 	<title>Så kan anonym dagbok online hjälpa dig att sortera tankar | MittPsyke</title>

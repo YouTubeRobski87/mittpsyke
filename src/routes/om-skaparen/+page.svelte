@@ -44,7 +44,7 @@
 		'@context': 'https://schema.org',
 		'@type': 'AboutPage',
 		name: 'Om skaparen',
-		url: 'https://www.mittpsyke.se/om-skaparen',
+		url: 'https://mittpsyke.se/om-skaparen',
 		description:
 			'Presentation av Robert "Robban" Claesson, personen bakom MittPsyke.',
 		mainEntity: {
@@ -62,11 +62,11 @@
 				'digital psykisk hälsa'
 			]
 		},
-		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	};
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/om-skaparen" />
+<SEO canonical="https://mittpsyke.se/om-skaparen" />
 
 <svelte:head>
 	<title>Om skaparen | MittPsyke</title>

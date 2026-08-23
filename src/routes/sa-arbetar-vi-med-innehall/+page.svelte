@@ -3,7 +3,7 @@
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/sa-arbetar-vi-med-innehall" />
+<SEO canonical="https://mittpsyke.se/sa-arbetar-vi-med-innehall" />
 
 <svelte:head>
     <title>Så arbetar vi med innehåll | MittPsyke</title>

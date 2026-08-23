@@ -401,7 +401,7 @@
 	});
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/dagars-avtryck" />
+<SEO canonical="https://mittpsyke.se/dagars-avtryck" />
 
 <svelte:head>
 	<title>Dagbok med olika stilar | MittPsyke</title>

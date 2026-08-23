@@ -2,7 +2,7 @@ import { isMissingTableError } from '$lib/server/supabase-admin';
 import type { PageServerLoad } from './$types';
 
 const PAGE_SIZE = 20;
-const SITE_URL = 'https://www.mittpsyke.se';
+const SITE_URL = 'https://mittpsyke.se';
 // Samma konvention som /blogg: publikt, icke-personligt innehåll (bara
 // godkända, redan anonymiserade berättelser) - kan cachas utan risk för att
 // visa någons privata/opublicerade data.

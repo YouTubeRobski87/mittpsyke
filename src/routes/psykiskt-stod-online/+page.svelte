@@ -6,6 +6,6 @@
 	const config = seoSupportPages['psykiskt-stod-online'];
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/psykiskt-stod-online" />
+<SEO canonical="https://mittpsyke.se/psykiskt-stod-online" />
 
 <SeoSupportPage {config} />

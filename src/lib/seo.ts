@@ -1,21 +1,18 @@
-export const PUBLIC_SITE_ORIGIN = 'https://www.mittpsyke.se';
+export const PUBLIC_SITE_ORIGIN = 'https://mittpsyke.se';
+export const SITE_URL = PUBLIC_SITE_ORIGIN;
 
 export function buildTitle(pageTitle: string): string {
 	return `${pageTitle} | MittPsyke`;
 }
 
-export function canonical(path: string): string {
-	const normalizedPath = (path.startsWith('/') ? path : `/${path}`)
-		.replace(/[?#].*$/, '')
-		.replace(/\/+$/, '') || '/';
-
-	return `${PUBLIC_SITE_ORIGIN}${normalizedPath}`;
-}
-
 function normalizeToCanonicalUrl(value: string | URL, preserveSearch: boolean): URL {
 	const url = new URL(value, PUBLIC_SITE_ORIGIN);
+	const isMittPsykeHost = /^(?:www\.)*mittpsyke\.se$/i.test(url.hostname);
+
+	if (!isMittPsykeHost) return url;
+
 	url.protocol = 'https:';
-	url.host = 'www.mittpsyke.se';
+	url.host = 'mittpsyke.se';
 	url.port = '';
 	url.hash = '';
 	if (!preserveSearch) url.search = '';
@@ -27,6 +24,10 @@ function normalizeToCanonicalUrl(value: string | URL, preserveSearch: boolean): 
 	return url;
 }
 
+export function canonical(value: string): string {
+	return canonicalUrl(value);
+}
+
 export function canonicalUrl(value: string | URL): string {
 	return normalizeToCanonicalUrl(value, false).toString();
 }
@@ -36,5 +37,5 @@ export function canonicalRequestUrl(value: string | URL): string {
 }
 
 export function normalizeStructuredDataSiteUrls(value: string): string {
-	return value.replaceAll('https://mittpsyke.se', PUBLIC_SITE_ORIGIN);
+	return value.replace(/https?:\/\/(?:www\.)*mittpsyke\.se/gi, PUBLIC_SITE_ORIGIN);
 }

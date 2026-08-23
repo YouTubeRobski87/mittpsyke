@@ -6,7 +6,7 @@
 	const contactHref = `${PUBLIC_CONTACT_MAILTO}?subject=${encodeURIComponent('Förfrågan från organisation')}`;
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/for-organisationer" />
+<SEO canonical="https://mittpsyke.se/for-organisationer" />
 
 <svelte:head>
 	<title>MittPsyke för företag och organisationer</title>

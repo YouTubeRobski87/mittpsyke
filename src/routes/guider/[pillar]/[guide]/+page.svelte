@@ -87,12 +87,12 @@
 	});
 </script>
 
-<SEO canonical={`https://www.mittpsyke.se${$page.url.pathname}`} />
+<SEO canonical={`https://mittpsyke.se${$page.url.pathname}`} />
 
 <SeoHead
 	title={data.guide.seoTitle ?? buildTitle(data.guide.title)}
 	description={data.guide.seoDescription ?? data.guide.description}
-	canonical={`https://www.mittpsyke.se${$page.url.pathname}`}
+	canonical={`https://mittpsyke.se${$page.url.pathname}`}
 />
 <BreadcrumbSchema
 	crumbs={[

@@ -6,8 +6,8 @@
 	let { data } = $props();
 
 	const article = $derived(data.article);
-	const canonical = $derived(`https://www.mittpsyke.se/blogg/${article.slug}`);
-	const ogImage = $derived(article.image ?? 'https://www.mittpsyke.se/og-image.png');
+	const canonical = $derived(`https://mittpsyke.se/blogg/${article.slug}`);
+	const ogImage = $derived(article.image ?? 'https://mittpsyke.se/og-image.png');
 	const schema = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'BlogPosting',
@@ -20,12 +20,12 @@
 		author: {
 			'@type': 'Person',
 			name: 'Robert Claesson',
-			url: 'https://www.mittpsyke.se/om-mittpsyke'
+			url: 'https://mittpsyke.se/om-mittpsyke'
 		},
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
-			logo: 'https://www.mittpsyke.se/logo.png'
+			logo: 'https://mittpsyke.se/logo.png'
 		},
 		mainEntityOfPage: canonical
 	});

@@ -18,7 +18,7 @@
 	];
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/premium" />
+<SEO canonical="https://mittpsyke.se/premium" />
 
 <main class="premium-page">
 	<Breadcrumbs items={[{ label: 'Premium' }]} />

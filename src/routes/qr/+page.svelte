@@ -32,7 +32,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/qr" />
+<SEO canonical="https://mittpsyke.se/qr" />
 
 <svelte:head>
 	<title>Du kan börja skriva anonymt direkt | MittPsyke</title>
@@ -45,7 +45,7 @@
 		property="og:description"
 		content="Du hittade hit via QR-koden. Här kan du börja skriva anonymt direkt. Gratis, anonymt och tillgängligt dygnet runt."
 	/>
-	<meta property="og:url" content="https://www.mittpsyke.se/qr" />
+	<meta property="og:url" content="https://mittpsyke.se/qr" />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 

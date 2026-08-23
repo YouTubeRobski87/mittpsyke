@@ -3,7 +3,7 @@
 	import PublicTrustPanel from '$lib/components/PublicTrustPanel.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/hjalp-vid-angest-online" />
+<SEO canonical="https://mittpsyke.se/hjalp-vid-angest-online" />
 
 <svelte:head>
 	<title>Hjälp vid ångest online | Samtal, dagbok och övningar | MittPsyke</title>

@@ -6,6 +6,6 @@
 	const config = seoSupportPages['hjalp-mot-oro-online'];
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/hjalp-mot-oro-online" />
+<SEO canonical="https://mittpsyke.se/hjalp-mot-oro-online" />
 
 <SeoSupportPage {config} />

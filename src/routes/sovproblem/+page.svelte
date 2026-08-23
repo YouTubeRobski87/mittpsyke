@@ -3,19 +3,19 @@
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/sovproblem" />
+<SEO canonical="https://mittpsyke.se/sovproblem" />
 
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
 		'@type': 'MedicalWebPage',
 		name: 'Sömnproblem – samtalsstöd och stöd i stunden',
-		url: 'https://www.mittpsyke.se/sovproblem',
+		url: 'https://mittpsyke.se/sovproblem',
 		description: 'Kan du inte sova? Prata anonymt med AI-baserat samtalsstöd om vad som håller dig vaken. Lugnt, tillgängligt och utan krav.',
 		about: { '@type': 'MedicalCondition', name: 'Sömnproblem' },
 		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
 		specialty: 'https://schema.org/Psychiatric',
-		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
 

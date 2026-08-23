@@ -6,6 +6,6 @@
 	const config = seoSupportPages['anonymt-samtalstod-online'];
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/anonymt-samtalstod-online" />
+<SEO canonical="https://mittpsyke.se/anonymt-samtalstod-online" />
 
 <SeoSupportPage {config} />

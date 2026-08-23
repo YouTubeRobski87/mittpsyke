@@ -28,7 +28,7 @@
 	const values = $derived((form?.values ?? {}) as FormValues);
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/feedback" />
+<SEO canonical="https://mittpsyke.se/feedback" />
 
 <svelte:head>
 	<title>Feedback | MittPsyke</title>

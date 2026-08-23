@@ -3,7 +3,7 @@
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/kbt" />
+<SEO canonical="https://mittpsyke.se/kbt" />
 
 <svelte:head>
 	<title>KBT – Kognitiv beteendeterapi | Tekniker och guider | MittPsyke</title>

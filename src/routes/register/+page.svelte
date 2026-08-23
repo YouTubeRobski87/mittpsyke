@@ -65,7 +65,7 @@
 	}
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/register" />
+<SEO canonical="https://mittpsyke.se/register" />
 
 <svelte:head>
 	<title>Skapa konto | MittPsyke</title>

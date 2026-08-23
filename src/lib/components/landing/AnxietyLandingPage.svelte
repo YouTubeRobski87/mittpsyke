@@ -104,7 +104,7 @@
 		url: data.canonicalUrl,
 		description: data.seoMeta,
 		about: { '@type': 'MedicalCondition', name: 'Ångest' },
-		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://www.mittpsyke.se' }
+		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
 
