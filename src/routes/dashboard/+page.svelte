@@ -449,7 +449,7 @@
         <section
           class="home-card checkin-card"
           aria-labelledby="dashboard-checkin-title"
-          style="--checkin-image: url('/images/Dagboksbild%20med%20bok%2C%20kvist%20och%20kopp.png')"
+          style="--checkin-image: url('/images/diary-book-branch-cup.png')"
         >
           <div class="home-card-head">
             <span class="home-card-mark home-card-mark--rose" aria-hidden="true"><Heart size={20} /></span>
