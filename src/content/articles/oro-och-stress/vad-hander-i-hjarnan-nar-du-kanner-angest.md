@@ -17,9 +17,9 @@ tags:
 readingTime: 4 min läsning
 relatedArticles:
   - title: oro eller stress
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv
   - title: Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag
-    url: https://www.mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
+    url: https://mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
 draft: false
 ---
 Ångest kan komma med starka kroppsliga reaktioner: hjärtat kan slå fortare, andningen kan kännas annorlunda och kroppen kan bli spänd. Det kan vara skrämmande, särskilt om det kommer plötsligt. Du är inte ensam om att känna så.

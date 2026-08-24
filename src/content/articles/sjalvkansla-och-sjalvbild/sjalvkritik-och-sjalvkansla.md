@@ -24,13 +24,13 @@ references:
     Stöder avsnittet om vad självkänsla är: att den beskriver vilket värde du tycker att du har, till skillnad från självförtroendet som handlar om att lyckas med det du gör.
 relatedArticles:
   - title: Varför är jag så hård mot mig själv?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/hard-mot-sig-sjalv
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/hard-mot-sig-sjalv
   - title: Självkänsla eller självförtroende – vad är skillnaden?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkansla-eller-sjalvfortroende
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkansla-eller-sjalvfortroende
   - title: Prestationsbaserad självkänsla – när ditt värde beror på vad du gör
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/prestationsbaserad-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/prestationsbaserad-sjalvkansla
   - title: Jag känner mig aldrig tillräcklig – varför?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/aldrig-tillracklig
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/aldrig-tillracklig
 draft: false
 ---
 # Självkritik och självkänsla – när du aldrig känner dig tillräcklig

@@ -18,11 +18,11 @@ tags:
 readingTime: 7 min läsning
 relatedArticles:
   - title: Varför blir vissa människor lätt överstimulerade?
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/varfor-blir-man-overstimulerad
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/varfor-blir-man-overstimulerad
   - title: Är du högkänslig? När känslighet är en styrka – inte en svaghet
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/ar-du-hogkanslig
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/ar-du-hogkanslig
   - title: Introvert eller blyg? Det är inte samma sak
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/introvert-eller-blyg
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/introvert-eller-blyg
 draft: false
 ---
 # Hur återhämtning fungerar när hjärnan fått för många intryck

@@ -23,9 +23,9 @@ references:
   - Folkhälsomyndigheten
 relatedArticles:
   - title: AI inom psykisk hälsa – möjligheter, gränser och säker användning
-    url: https://www.mittpsyke.se/blogg/amne/ai-och-mental-halsa/ai-inom-psykisk-halsa-mojligheter-och-granser
+    url: https://mittpsyke.se/blogg/amne/ai-och-mental-halsa/ai-inom-psykisk-halsa-mojligheter-och-granser
   - title: Ansvarsfull AI
-    url: https://www.mittpsyke.se/ansvarsfull-ai
+    url: https://mittpsyke.se/ansvarsfull-ai
 draft: false
 ---
 # Hur använder människor AI för psykisk hälsa?

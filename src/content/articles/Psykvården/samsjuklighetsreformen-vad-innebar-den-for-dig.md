@@ -24,11 +24,11 @@ references:
   - Riksdagen
 relatedArticles:
   - title: Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag
-    url: https://www.mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
+    url: https://mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
   - title: AI inom psykisk hälsa – möjligheter, gränser och säker användning
-    url: https://www.mittpsyke.se/blogg/amne/ai-och-mental-halsa/ai-inom-psykisk-halsa-mojligheter-och-granser
+    url: https://mittpsyke.se/blogg/amne/ai-och-mental-halsa/ai-inom-psykisk-halsa-mojligheter-och-granser
   - title: Vad händer i hjärnan när du känner ångest?
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
 draft: false
 ---
 # Samsjuklighetsreformen – vad innebär den för dig som lever med samsjuklighet?

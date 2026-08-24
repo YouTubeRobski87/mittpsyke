@@ -4,7 +4,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 
-const SITE_ORIGIN = 'https://www.mittpsyke.se';
+const SITE_ORIGIN = 'https://mittpsyke.se';
 const BLOG_PREFIX = `${SITE_ORIGIN}/blogg/`;
 const BLOG_ROUTES_DIR = path.join(process.cwd(), 'src', 'routes', 'blogg');
 const SORO_TOKEN = '9a08468b-7239-4e08-bd5f-5bf59e87b3f7';
@@ -335,7 +335,7 @@ function renderMarkdownReport({ rows, duplicateWarnings, searchConsoleEnabled })
 			'',
 			'## Manuell kontroll i Search Console',
 			'',
-			'1. Oppna Google Search Console for egendomen `https://www.mittpsyke.se/`.',
+			'1. Oppna Google Search Console for egendomen `https://mittpsyke.se/`.',
 			'2. Anvand URL-inspektion for URL:erna i tabellen ovan.',
 			'3. Jamfor Googles valda canonical med sidans canonical och sitemap-statusen i rapporten.',
 			'4. For API-korning kan en befintlig OAuth access token sattas som `GSC_ACCESS_TOKEN` och egendomen som `GSC_SITE_URL`.'

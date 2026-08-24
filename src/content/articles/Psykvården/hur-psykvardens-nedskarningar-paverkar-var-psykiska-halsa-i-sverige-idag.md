@@ -15,13 +15,13 @@ references:
   - Folkhälsomyndigheten
 relatedArticles:
   - title: Mäns ensamhet – den tysta känslan som få vågar prata om
-    url: https://www.mittpsyke.se/blogg/amne/relationer-och-samhalle/mans-ensamhet-den-tysta-kanslan-som-fa-vagar-prata-om
+    url: https://mittpsyke.se/blogg/amne/relationer-och-samhalle/mans-ensamhet-den-tysta-kanslan-som-fa-vagar-prata-om
   - title: Vad händer i hjärnan när du känner ångest?
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
   - title: AI inom psykisk hälsa – möjligheter, gränser och säker användning
-    url: https://www.mittpsyke.se/blogg/amne/ai-och-mental-halsa/ai-inom-psykisk-halsa-mojligheter-och-granser
+    url: https://mittpsyke.se/blogg/amne/ai-och-mental-halsa/ai-inom-psykisk-halsa-mojligheter-och-granser
   - title: Samsjuklighetsreformen – vad innebär den för dig som lever med samsjuklighet?
-    url: https://www.mittpsyke.se/blogg/amne/Psykvården/samsjuklighetsreformen-vad-innebar-den-for-dig
+    url: https://mittpsyke.se/blogg/amne/Psykvården/samsjuklighetsreformen-vad-innebar-den-for-dig
 draft: false
 ---
 # Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag

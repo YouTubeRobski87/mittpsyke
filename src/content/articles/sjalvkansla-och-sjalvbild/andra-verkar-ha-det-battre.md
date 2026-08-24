@@ -18,11 +18,11 @@ tags:
 readingTime: 7 min läsning
 relatedArticles:
   - title: Självkritik och självkänsla – när du aldrig känner dig tillräcklig
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
   - title: Hur slutar man jämföra sig med andra?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sluta-jamfora-sig-med-andra
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sluta-jamfora-sig-med-andra
   - title: Jag känner mig aldrig tillräcklig – varför?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/aldrig-tillracklig
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/aldrig-tillracklig
 draft: false
 ---
 # Varför andra verkar ha det bättre än de har

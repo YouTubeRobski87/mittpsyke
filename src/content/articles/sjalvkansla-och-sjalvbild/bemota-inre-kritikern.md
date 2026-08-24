@@ -18,11 +18,11 @@ tags:
 readingTime: 8 min läsning
 relatedArticles:
   - title: Varför är jag så hård mot mig själv?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/hard-mot-sig-sjalv
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/hard-mot-sig-sjalv
   - title: Självkritik och självkänsla – när du aldrig känner dig tillräcklig
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
   - title: Övertänker du allt du sagt efter sociala situationer?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/overtanka-efter-sociala-situationer
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/overtanka-efter-sociala-situationer
 draft: false
 ---
 # Hur bemöter du din inre kritiker?

@@ -18,11 +18,11 @@ tags:
 readingTime: 6 min läsning
 relatedArticles:
   - title: Är du högkänslig? När känslighet är en styrka – inte en svaghet
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/ar-du-hogkanslig
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/ar-du-hogkanslig
   - title: Hur återhämtning fungerar när hjärnan fått för många intryck
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck
   - title: Oro eller stress – varför kroppen går på högvarv
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv
 draft: false
 ---
 # Varför blir vissa människor lätt överstimulerade?

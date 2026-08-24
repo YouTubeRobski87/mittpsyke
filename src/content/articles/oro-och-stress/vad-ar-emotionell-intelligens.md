@@ -18,9 +18,9 @@ tags:
 readingTime: 6 min läsning
 relatedArticles:
   - title: Empati – när omtanke blir en styrka och en belastning
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/empati-styrka-och-belastning
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/empati-styrka-och-belastning
   - title: Så sätter du gränser utan dåligt samvete
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/satta-granser-utan-daligt-samvete
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/satta-granser-utan-daligt-samvete
 draft: false
 ---
 # Vad är emotionell intelligens?

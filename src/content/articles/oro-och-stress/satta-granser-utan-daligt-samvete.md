@@ -18,11 +18,11 @@ tags:
 readingTime: 7 min läsning
 relatedArticles:
   - title: Empati – när omtanke blir en styrka och en belastning
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/empati-styrka-och-belastning
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/empati-styrka-och-belastning
   - title: Vad är emotionell intelligens?
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-ar-emotionell-intelligens
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/vad-ar-emotionell-intelligens
   - title: Introvert eller blyg? Det är inte samma sak
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/introvert-eller-blyg
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/introvert-eller-blyg
 draft: false
 ---
 # Så sätter du gränser utan dåligt samvete

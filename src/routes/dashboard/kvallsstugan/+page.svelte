@@ -147,7 +147,7 @@
 	});
 </script>
 
-<SEO canonical="https://www.mittpsyke.se/dashboard/kvallsstugan" />
+<SEO canonical="https://mittpsyke.se/dashboard/kvallsstugan" />
 
 <svelte:head>
 	<title>Kvällslugn – MittPsyke</title>

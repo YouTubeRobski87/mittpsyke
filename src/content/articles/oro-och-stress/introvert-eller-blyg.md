@@ -18,11 +18,11 @@ tags:
 readingTime: 7 min läsning
 relatedArticles:
   - title: Hur återhämtning fungerar när hjärnan fått för många intryck
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck
   - title: Så sätter du gränser utan dåligt samvete
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/satta-granser-utan-daligt-samvete
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/satta-granser-utan-daligt-samvete
   - title: Är du högkänslig? När känslighet är en styrka – inte en svaghet
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/ar-du-hogkanslig
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/ar-du-hogkanslig
 draft: false
 ---
 # Introvert eller blyg? Det är inte samma sak

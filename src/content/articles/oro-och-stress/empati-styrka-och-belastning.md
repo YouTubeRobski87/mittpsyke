@@ -17,11 +17,11 @@ tags:
 readingTime: 7 min läsning
 relatedArticles:
   - title: Så sätter du gränser utan dåligt samvete
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/satta-granser-utan-daligt-samvete
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/satta-granser-utan-daligt-samvete
   - title: Vad är emotionell intelligens?
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-ar-emotionell-intelligens
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/vad-ar-emotionell-intelligens
   - title: Hur återhämtning fungerar när hjärnan fått för många intryck
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck
 draft: false
 ---
 # Empati – när omtanke blir en styrka och en belastning

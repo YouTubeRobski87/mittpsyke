@@ -18,11 +18,11 @@ tags:
 readingTime: 7 min läsning
 relatedArticles:
   - title: Självkritik och självkänsla – när du aldrig känner dig tillräcklig
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
   - title: Prestationsbaserad självkänsla – när ditt värde beror på vad du gör
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/prestationsbaserad-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/prestationsbaserad-sjalvkansla
   - title: Hur bemöter du din inre kritiker?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/bemota-inre-kritikern
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/bemota-inre-kritikern
 draft: false
 ---
 # Varför är jag så hård mot mig själv?

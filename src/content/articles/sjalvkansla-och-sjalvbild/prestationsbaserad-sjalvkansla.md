@@ -19,11 +19,11 @@ tags:
 readingTime: 8 min läsning
 relatedArticles:
   - title: Självkritik och självkänsla – när du aldrig känner dig tillräcklig
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
   - title: Varför är jag så hård mot mig själv?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/hard-mot-sig-sjalv
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/hard-mot-sig-sjalv
   - title: Jag känner mig aldrig tillräcklig – varför?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/aldrig-tillracklig
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/aldrig-tillracklig
 draft: false
 ---
 # Prestationsbaserad självkänsla – när ditt värde beror på vad du gör

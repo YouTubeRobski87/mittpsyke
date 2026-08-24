@@ -19,13 +19,13 @@ tags:
 readingTime: 7 min läsning
 relatedArticles:
   - title: Varför blir vissa människor lätt överstimulerade?
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/varfor-blir-man-overstimulerad
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/varfor-blir-man-overstimulerad
   - title: Empati – när omtanke blir en styrka och en belastning
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/empati-styrka-och-belastning
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/empati-styrka-och-belastning
   - title: Hur återhämtning fungerar när hjärnan fått för många intryck
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck
   - title: Vad händer i hjärnan när du känner ångest?
-    url: https://www.mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
+    url: https://mittpsyke.se/blogg/amne/oro-och-stress/vad-hander-i-hjarnan-nar-du-kanner-angest
 draft: false
 ---
 # Är du högkänslig? När känslighet är en styrka – inte en svaghet

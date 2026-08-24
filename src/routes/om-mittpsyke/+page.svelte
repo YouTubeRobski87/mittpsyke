@@ -449,7 +449,7 @@
 					</p>
 				<p>
 					<strong>Webbplats:</strong>
-					<a href="https://www.mittpsyke.se" target="_blank" rel="noopener noreferrer">https://www.mittpsyke.se</a>
+					<a href="https://mittpsyke.se" target="_blank" rel="noopener noreferrer">https://mittpsyke.se</a>
 				</p>
 			</address>
 		</section>

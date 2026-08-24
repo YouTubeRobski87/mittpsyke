@@ -24,11 +24,11 @@ references:
   - Folkhälsomyndigheten
 relatedArticles:
   - title: Hur använder människor AI för psykisk hälsa?
-    url: https://www.mittpsyke.se/blogg/amne/ai-och-mental-halsa/hur-anvander-manniskor-ai-for-psykisk-halsa
+    url: https://mittpsyke.se/blogg/amne/ai-och-mental-halsa/hur-anvander-manniskor-ai-for-psykisk-halsa
   - title: Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag
-    url: https://www.mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
+    url: https://mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
   - title: Ansvarsfull AI
-    url: https://www.mittpsyke.se/ansvarsfull-ai
+    url: https://mittpsyke.se/ansvarsfull-ai
 draft: false
 ---
 # AI inom psykisk hälsa – möjligheter, gränser och säker användning

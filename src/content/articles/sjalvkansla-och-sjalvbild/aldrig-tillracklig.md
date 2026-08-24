@@ -18,11 +18,11 @@ tags:
 readingTime: 7 min läsning
 relatedArticles:
   - title: Självkritik och självkänsla – när du aldrig känner dig tillräcklig
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
   - title: Prestationsbaserad självkänsla – när ditt värde beror på vad du gör
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/prestationsbaserad-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/prestationsbaserad-sjalvkansla
   - title: Självkänsla eller självförtroende – vad är skillnaden?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkansla-eller-sjalvfortroende
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkansla-eller-sjalvfortroende
 draft: false
 ---
 # Jag känner mig aldrig tillräcklig – varför?

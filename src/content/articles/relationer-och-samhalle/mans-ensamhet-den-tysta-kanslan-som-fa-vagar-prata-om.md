@@ -40,15 +40,15 @@ references:
     och psykisk ohälsa kan påverka.
 relatedArticles:
   - title: Män står för 70 % av alla självmord i Sverige
-    url: https://www.mittpsyke.se/blogg/man-star-for-70-procent-av-alla-sjalvmord-i-sverige
+    url: https://mittpsyke.se/blogg/man-star-for-70-procent-av-alla-sjalvmord-i-sverige
   - title: "Mäns psykiska hälsa "
-    url: https://www.mittpsyke.se/blogg/mans-psykiska-halsa-sverige
+    url: https://mittpsyke.se/blogg/mans-psykiska-halsa-sverige
   - title: När en vän mår dåligt - vad kan du säga?
-    url: https://www.mittpsyke.se/blogg/nar-en-van-mar-daligt-vad-kan-du-saga
+    url: https://mittpsyke.se/blogg/nar-en-van-mar-daligt-vad-kan-du-saga
   - title: Män och kvinnor i dagens samhälle – olika krav, gemensam press
-    url: https://www.mittpsyke.se/blogg/amne/relationer-och-samhalle/man-och-kvinnor-i-dagens-samhalle-olika-krav-gemensam-press
+    url: https://mittpsyke.se/blogg/amne/relationer-och-samhalle/man-och-kvinnor-i-dagens-samhalle-olika-krav-gemensam-press
   - title: Hur psykvårdens nedskärningar påverkar vår psykiska hälsa i Sverige idag
-    url: https://www.mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
+    url: https://mittpsyke.se/blogg/amne/Psykvården/hur-psykvardens-nedskarningar-paverkar-var-psykiska-halsa-i-sverige-idag
 draft: false
 ---
 ## Ensamhet syns inte alltid

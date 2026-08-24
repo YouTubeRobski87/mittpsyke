@@ -18,11 +18,11 @@ tags:
 readingTime: 7 min läsning
 relatedArticles:
   - title: Hur bemöter du din inre kritiker?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/bemota-inre-kritikern
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/bemota-inre-kritikern
   - title: Självkritik och självkänsla – när du aldrig känner dig tillräcklig
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
   - title: Varför andra verkar ha det bättre än de har
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/andra-verkar-ha-det-battre
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/andra-verkar-ha-det-battre
 draft: false
 ---
 # Övertänker du allt du sagt efter sociala situationer?

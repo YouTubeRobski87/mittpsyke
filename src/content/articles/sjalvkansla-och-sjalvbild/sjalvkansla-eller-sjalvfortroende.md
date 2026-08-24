@@ -23,11 +23,11 @@ references:
     Stöder artikelns kärnpåstående: självkänsla beskriver vilket värde du tycker att du har, medan självförtroende handlar om känslan av att lyckas med det du gör – och att självförtroendet kan vara starkt samtidigt som självkänslan är svag.
 relatedArticles:
   - title: Självkritik och självkänsla – när du aldrig känner dig tillräcklig
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/sjalvkritik-och-sjalvkansla
   - title: Jag känner mig aldrig tillräcklig – varför?
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/aldrig-tillracklig
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/aldrig-tillracklig
   - title: Prestationsbaserad självkänsla – när ditt värde beror på vad du gör
-    url: https://www.mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/prestationsbaserad-sjalvkansla
+    url: https://mittpsyke.se/blogg/amne/sjalvkansla-och-sjalvbild/prestationsbaserad-sjalvkansla
 draft: false
 ---
 # Självkänsla eller självförtroende – vad är skillnaden?

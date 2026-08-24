@@ -6,10 +6,10 @@
       "has": [
         {
           "type": "host",
-          "value": "mittpsyke.se"
+          "value": "www.mittpsyke.se"
         }
       ],
-      "destination": "https://www.mittpsyke.se/$1",
+      "destination": "https://mittpsyke.se/$1",
       "statusCode": 301
     },
     {
