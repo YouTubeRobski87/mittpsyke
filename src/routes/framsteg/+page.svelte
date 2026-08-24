@@ -90,6 +90,7 @@
 		buildMoodTimelineView,
 		EMPTY_MOOD_COPY
 	} from '$lib/progress-reflection';
+	import { buildHalfYearView } from '$lib/progress-half-year';
 	import {
 		EMPTY_SUPPORT_VIEW,
 		SUPPORT_INTRO_COPY,
@@ -625,6 +626,16 @@
 		const count = progressAnalysis.coverage.entryCount;
 		const label = count === 1 ? 'anteckning' : 'anteckningar';
 		return `Baserat på ${count} ${label} under den valda perioden.`;
+	});
+	// Halvårsvyn härleds ur samma månadsblock som redan kommer från servern.
+	// Modulen räknar inget nytt ur databasen och anropas bara för 180 dagar, så
+	// 30- och 90-dagarsvyn är oförändrad.
+	const halfYear = $derived.by(() => {
+		if (!progressAnalysis || selectedPeriod !== 180) return null;
+		return buildHalfYearView({
+			months: progressAnalysis.monthly,
+			truncated: progressAnalysis.coverage.truncated
+		});
 	});
 	const sparseMonthCopy = $derived.by(() => {
 		if (!progressAnalysis || selectedPeriod !== 180) return null;
@@ -1426,19 +1437,34 @@
 					{#if progressAnalysis.coverage.truncated}
 						<p class="analysis-coverage-note">Analysen bygger på en begränsad del av periodens anteckningar.</p>
 					{/if}
-					{#if selectedPeriod === 180 && progressAnalysis.longPeriodSummary}
+					{#if selectedPeriod === 180 && halfYear}
 						<section class="analysis-section analysis-long-period" aria-labelledby="half-year-summary-heading">
-							<h3 id="half-year-summary-heading">Ditt halvår i korthet</h3>
-							<p>{progressAnalysis.longPeriodSummary}</p>
+							<h3 id="half-year-summary-heading">Ditt senaste halvår</h3>
+							<p>{halfYear.summary}</p>
+							<!-- Fyra nyckeltal i fast ordning. De ska gå att läsa utan att
+							     detaljtexten nedanför läses, och varje ruta säger uttryckligen
+							     när jämförelsen inte går att göra. -->
+							<dl class="half-year-stats">
+								{#each halfYear.stats as stat (stat.id)}
+									<div class="half-year-stat">
+										<dt>{stat.label}</dt>
+										<dd>{stat.value}</dd>
+										<p>{stat.note}</p>
+									</div>
+								{/each}
+							</dl>
 						</section>
 						<section class="analysis-section" aria-labelledby="monthly-analysis-heading">
 							<h3 id="monthly-analysis-heading">Månad för månad</h3>
 							<ul class="monthly-analysis-list">
-								{#each progressAnalysis.monthly as month (month.month)}
+								{#each halfYear.months as month (month.month)}
 									<li class:thin={month.status !== 'sufficient'}>
-										<strong>{month.label}</strong>
+										<strong>{month.shortLabel}</strong>
 										{#if month.status === 'sufficient' && month.mean !== null}
 											<span>Snitt {month.mean.toFixed(1).replace('.', ',')} · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
+											<!-- Lägesmarkering mot användarens eget halvårssnitt. Samma
+											     dämpade stil för alla tre lägen: ingen bra/dålig-signal. -->
+											{#if month.relativeText}<span class="month-relative">{month.relativeText}</span>{/if}
 										{:else if month.status === 'thin'}
 											<span>Tunt underlag · {month.entryCount} {month.entryCount === 1 ? 'registrering' : 'registreringar'}</span>
 										{:else}
@@ -1493,6 +1519,12 @@
 							{/if}
 							{#if progressAnalysis.coverage.truncated} Analysen kan vara begränsad eftersom perioden innehåller fler registreringar än den säkra läsgränsen just nu. {/if}
 						</p>
+						{#if halfYear}
+							<!-- Halvårets eget underlag: vilka månader som jämförts, hur många
+							     registreringar de bygger på, och varför en slutsats kan eller
+							     inte kan dras. -->
+							<p class="analysis-basis">{halfYear.basis}</p>
+						{/if}
 					{/if}
 				{:else}
 					<p class="reflection-copy">Det finns ännu inte tillräckligt med data för en personlig analys.</p>
@@ -2022,9 +2054,54 @@
 		line-height: 1.5;
 	}
 
+	/* Nyckeltalen ligger på en rad på desktop och två i bredd på mobil, så
+	   halvåret går att överblicka utan att detaljtexten läses. 8rem är valt så
+	   att två ryms i bredd även på 390px-skärmar; med 9rem föll de ned till fyra
+	   staplade rader. */
+	.half-year-stats {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+		gap: 0.5rem;
+		margin: 0.35rem 0 0;
+	}
+
+	.half-year-stat {
+		display: grid;
+		gap: 0.1rem;
+		min-width: 0;
+		padding: 0.6rem 0.7rem;
+		border: 1px solid var(--color-dashboard-border);
+		border-radius: 0.65rem;
+		background: hsl(var(--background) / 0.5);
+	}
+
+	.half-year-stat dt {
+		color: hsl(var(--muted-foreground));
+		font-size: 0.74rem;
+		letter-spacing: 0.02em;
+	}
+
+	.half-year-stat dd {
+		margin: 0;
+		color: hsl(var(--foreground));
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.25;
+	}
+
+	.half-year-stat p {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.72rem;
+		line-height: 1.35;
+	}
+
+	/* 7,5rem räcker för "Nära ditt halvårssnitt" på två rader och låter alla sex
+	   månaderna ligga på en rad på desktop. Med 10rem föll den sjätte månaden
+	   ned på egen rad, vilket gjorde halvåret svårare att jämföra i ett svep. */
 	.monthly-analysis-list {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
 		gap: 0.55rem;
 		margin: 0;
 		padding: 0;
@@ -2043,6 +2120,9 @@
 	.monthly-analysis-list strong { color: hsl(var(--foreground)); font-size: 0.88rem; }
 	.monthly-analysis-list span { color: hsl(var(--muted-foreground)); font-size: 0.82rem; line-height: 1.4; }
 	.monthly-analysis-list .thin { opacity: 0.78; }
+	/* Samma dämpade ton oavsett om månaden ligger över, under eller nära
+	   snittet. Markeringen ska hjälpa jämförelsen, inte värdera månaden. */
+	.monthly-analysis-list .month-relative { font-size: 0.74rem; opacity: 0.82; }
 
 	.evidence-observations {
 		display: grid;

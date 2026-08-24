@@ -20,7 +20,11 @@
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
       "Bash(npm run *)",
-      "PowerShell(npm run test 2>&1)"
+      "PowerShell(npm run test 2>&1)",
+      "Read(//c/Users/rbsth/AppData/Local/Temp/claude/E--mittpsyke-main/b58b095d-4601-4940-9549-9297b4af9c0f/scratchpad/**)",
+      "Bash(sed -i 's/grid-template-columns: repeat\\(auto-fit, minmax\\(9rem, 1fr\\)\\);/grid-template-columns: repeat\\(auto-fit, minmax\\(8rem, 1fr\\)\\);/' halfyear-qa.html)",
+      "Bash(node prerender.mjs)",
+      "Bash(node combine.mjs)"
     ]
   }
 }
