@@ -1,5 +1,7 @@
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { SORO_TOKEN } from '$lib/soro';
+import { canonicalUrl } from '$lib/seo';
+import { legacyBlogRedirects } from '$lib/server/legacy-redirects';
 import { fetchSoroArticles, fetchSoroResponse, normalizeSoroArticleSlug } from '$lib/server/soro-articles';
 import type { PageServerLoad } from './$types';
 
@@ -60,6 +62,9 @@ function normalizeYoungMentalHealthArticleContent(content: string) {
 
 export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	const requestedSlug = normalizeSoroArticleSlug(params.slug);
+	const legacyTarget = legacyBlogRedirects[`/blogg/${requestedSlug}`];
+	if (legacyTarget) throw redirect(301, legacyTarget);
+
 	let soroResult = await fetchSoroArticles(fetch);
 	let articles = soroResult.articles;
 	if (soroResult.loadError) {
@@ -153,6 +158,7 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	return {
 		title,
 		description: excerpt,
+		canonical: canonicalUrl(`/blogg/${normalizedSlug}`),
 		ogType: 'article',
 		ogImage,
 		article: {

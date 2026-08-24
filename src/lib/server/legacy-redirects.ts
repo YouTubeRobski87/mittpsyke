@@ -19,6 +19,7 @@ export const legacyBlogRedirects: Record<string, string> = {
 	'/blogg/hjalp-att-satta-ord-pa-kanslor': '/blogg/guide-till-battre-kansloverblick',
 	'/blogg/ai-dagbok': '/blogg/ai-hjalper-dig-bearbeta-kanslor',
 	'/blogg/textstod-eller-terapi-online-vad-passar-dig': '/blogg/ar-textstod-lika-hjalpsamt-som-samtal',
+	'/blogg/ar-textstod-lika-hjalpsamt-samtal': '/blogg/ar-textstod-lika-hjalpsamt-som-samtal',
 	'/blogg/anonym-hjalp-for-oro': '/hjalp-mot-oro-online',
 	'/blogg/hur-fungerar-humordagbok': '/blogg/humorsparning-online',
 	'/blogg/psykisk-ohalsa-stod-hjalp-sverige': '/blogg/hjaelp-vid-psykisk-ohaelsa',

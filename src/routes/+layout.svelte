@@ -133,6 +133,7 @@
 		'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.';
 	const ogDescription = $derived(page.data?.description || fallbackDescription);
 	const ogImage = $derived(page.data?.ogImage ?? canonicalUrl('/og-image.png'));
+	const pageCanonical = $derived(page.data?.canonical ?? canonicalUrl(page.url.pathname));
 
 	function getProfileName(profileDisplayName: string | null, sessionUser: User | null) {
 		const metadata = sessionUser?.user_metadata as Record<string, unknown> | undefined;
@@ -594,10 +595,10 @@
 		<meta property="og:type" content={page.data?.ogType ?? 'website'} />
 		<meta property="og:site_name" content="MittPsyke" />
 
-		<meta property="og:url" content={canonicalUrl(page.url.pathname)} />
+		<meta property="og:url" content={pageCanonical} />
 		<meta property="og:image" content={ogImage} />
 
-		<link rel="alternate" hreflang="sv" href={canonicalUrl(page.url.pathname)} />
+		<link rel="alternate" hreflang="sv" href={pageCanonical} />
 
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={page.data?.title ? `${page.data.title} | MittPsyke` : 'MittPsyke – Psykiskt stöd online'} />

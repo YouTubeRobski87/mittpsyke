@@ -32,6 +32,15 @@ async function thrownStatus(promise: Promise<unknown>) {
 	}
 }
 
+async function thrownRedirect(promise: Promise<unknown>) {
+	try {
+		await promise;
+		return null;
+	} catch (error) {
+		return error as { status?: number; location?: string };
+	}
+}
+
 describe('/blogg/[slug]', () => {
 	it('renders the known previous 404 article after the corrected slug mapping', async () => {
 		const fetcher = vi
@@ -41,9 +50,52 @@ describe('/blogg/[slug]', () => {
 
 		const result = (await load(createEvent('ar-textstod-lika-hjalpsamt-som-samtal', fetcher))) as {
 			article: { slug: string };
+			canonical: string;
 		};
 
 		expect(result.article.slug).toBe('ar-textstod-lika-hjalpsamt-som-samtal');
+		expect(result.canonical).toBe('https://mittpsyke.se/blogg/ar-textstod-lika-hjalpsamt-som-samtal');
+	});
+
+	it('permanently redirects the stale textstod slug to its valid canonical Soro article', async () => {
+		const targetFetcher = vi
+			.fn()
+			.mockResolvedValueOnce(listResponse([article('ar-textstod-lika-hjalpsamt-som-samtal')]))
+			.mockResolvedValueOnce(new Response(JSON.stringify({ content: '<p>Innehåll</p>' }), { status: 200 })) as unknown as typeof fetch;
+		const target = (await load(createEvent('ar-textstod-lika-hjalpsamt-som-samtal', targetFetcher))) as {
+			article: { slug: string };
+		};
+		const legacyFetcher = vi.fn() as unknown as typeof fetch;
+
+		const redirect = await thrownRedirect(
+			Promise.resolve(load(createEvent('ar-textstod-lika-hjalpsamt-samtal', legacyFetcher)))
+		);
+
+		expect(target.article.slug).toBe('ar-textstod-lika-hjalpsamt-som-samtal');
+		expect(redirect).toMatchObject({
+			status: 301,
+			location: '/blogg/ar-textstod-lika-hjalpsamt-som-samtal'
+		});
+		expect(new URL(redirect?.location ?? '', 'https://mittpsyke.se').toString()).toBe(
+			'https://mittpsyke.se/blogg/ar-textstod-lika-hjalpsamt-som-samtal'
+		);
+		expect(legacyFetcher).not.toHaveBeenCalled();
+	});
+
+	it('normalizes a mixed-case Soro request to one lowercase apex canonical URL', async () => {
+		const fetcher = vi
+			.fn()
+			.mockResolvedValueOnce(listResponse([article('digital-aterhamtning')]))
+			.mockResolvedValueOnce(new Response(JSON.stringify({ content: '<p>Innehåll</p>' }), { status: 200 })) as unknown as typeof fetch;
+
+		const result = (await load(createEvent('Digital-aterhamtning', fetcher))) as {
+			article: { slug: string };
+			canonical: string;
+		};
+
+		expect(result.article.slug).toBe('digital-aterhamtning');
+		expect(result.canonical).toBe('https://mittpsyke.se/blogg/digital-aterhamtning');
+		expect(result.canonical).not.toContain('www.');
 	});
 
 	it('returns 404 when the article is absent from a valid source', async () => {

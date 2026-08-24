@@ -6,7 +6,7 @@
 	let { data } = $props();
 
 	const article = $derived(data.article);
-	const canonical = $derived(`https://mittpsyke.se/blogg/${article.slug}`);
+	const canonical = $derived(data.canonical);
 	const ogImage = $derived(article.image ?? 'https://mittpsyke.se/og-image.png');
 	const schema = $derived({
 		'@context': 'https://schema.org',
