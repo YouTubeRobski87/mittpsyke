@@ -460,7 +460,7 @@
         <section
           class="home-card checkin-card"
           aria-labelledby="dashboard-checkin-title"
-          style="--checkin-image: url('/images/diary-book-branch-cup.png')"
+          style="--checkin-image-desktop: url('/images/diary-book-branch-cup-960.webp'); --checkin-image-mobile: url('/images/diary-book-branch-cup-480.webp')"
         >
           <div class="home-card-head">
             <span class="home-card-mark home-card-mark--rose" aria-hidden="true"><Heart size={20} /></span>
@@ -1099,6 +1099,7 @@
     position: relative;
     overflow: hidden;
     isolation: isolate;
+    --checkin-image: var(--checkin-image-desktop);
   }
 
   .checkin-card::after {
@@ -1432,6 +1433,10 @@
   }
 
   @media (max-width: 860px) {
+    .checkin-card {
+      --checkin-image: var(--checkin-image-mobile);
+    }
+
     .dashboard-body {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
