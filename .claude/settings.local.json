@@ -24,7 +24,15 @@
       "Read(//c/Users/rbsth/AppData/Local/Temp/claude/E--mittpsyke-main/b58b095d-4601-4940-9549-9297b4af9c0f/scratchpad/**)",
       "Bash(sed -i 's/grid-template-columns: repeat\\(auto-fit, minmax\\(9rem, 1fr\\)\\);/grid-template-columns: repeat\\(auto-fit, minmax\\(8rem, 1fr\\)\\);/' halfyear-qa.html)",
       "Bash(node prerender.mjs)",
-      "Bash(node combine.mjs)"
+      "Bash(node combine.mjs)",
+      "PowerShell(npx vitest run src/lib/progress-half-year.test.ts src/routes/framsteg src/lib/server/progress-analysis.test.ts --reporter=verbose 2>&1)",
+      "PowerShell(tail -40)",
+      "PowerShell(npx vitest run src/lib/progress-half-year.test.ts src/routes/framsteg src/lib/server/progress-analysis.test.ts)",
+      "Bash(awk '{print $6, $7, $8, $9}')",
+      "Bash(git check-ignore *)",
+      "Bash(git ls-files *)",
+      "Bash(git restore *)",
+      "Bash(git reset *)"
     ]
   }
 }
