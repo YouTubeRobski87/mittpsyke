@@ -98,7 +98,9 @@ describe('Framstegs fullständiga dygnsscener', () => {
 	it('låter följeslagaren vila nära personen utan aktiva gester', () => {
 		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
 
-		expect(route).toContain("'progress',\n\t\t\t\t'resting'");
+		expect(route).toMatch(
+			/getCompanionBasePose\(\s*now,\s*browser \? window\.localStorage : null,\s*sceneCompanionId,\s*'progress',\s*'resting'\s*\)/
+		);
 		expect(route).toContain('behaviourProfile="quiet"');
 	});
 

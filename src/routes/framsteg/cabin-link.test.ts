@@ -23,8 +23,8 @@ describe('genvägen hem via stugan', () => {
 	});
 
 	it('bär ingen synlig textetikett ovanpå bilden', () => {
-		// Elementet stängs direkt efter attributen; det finns inget barn att rendera.
-		expect(route).toContain('data-testid="progress-cabin-link"\n\t\t\t\t\t></a>');
+		// Elementet får bara innehålla whitespace före stängningen, aldrig synlig copy.
+		expect(route).toMatch(/<a\s+[^>]*data-testid="progress-cabin-link"[^>]*>\s*<\/a>/s);
 	});
 
 	it('renderas bara när klickytan faktiskt är uppmätt', () => {
