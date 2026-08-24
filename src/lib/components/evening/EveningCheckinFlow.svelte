@@ -83,6 +83,15 @@
 		oncomplete(false);
 	}
 
+	// Ångerväg tillbaka från avslutet utan sparning. Svaren ligger kvar i state,
+	// så det enda som behövs är att öppna avslutet igen och lämna tillbaka
+	// fokus - ingenting behöver skrivas om och ingenting sparas här.
+	function returnToAnswers() {
+		finishedWithoutSaving = false;
+		saveError = '';
+		void tick().then(() => stepHeading?.focus());
+	}
+
 	async function saveAndFinish() {
 		if (!themeId || !parkingBucket || saving || saved || finishedWithoutSaving) return;
 		saving = true;
@@ -239,6 +248,11 @@
 					</div>
 				{:else if finishedWithoutSaving}
 					<p class="evening-hint" role="status">Inget från den här stunden har sparats.</p>
+					<div class="evening-actions">
+						<button class="evening-secondary" type="button" onclick={returnToAnswers}>
+							Tillbaka till dina svar
+						</button>
+					</div>
 				{:else}
 					<p class="evening-hint">Inget sparas om du avslutar utan att spara.</p>
 					<div class="evening-actions evening-actions--stacked">
