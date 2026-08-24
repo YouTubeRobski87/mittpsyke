@@ -2,10 +2,10 @@ import { guides, pillars } from '$lib/seo-kit/content';
 import { canonical } from '$lib/seo-kit/seo';
 import { tools } from '$lib/data/seo-architecture';
 import { seoSupportPagePaths } from '$lib/data/seo-support-pages';
-import { SORO_EMBED_SRC } from '$lib/soro';
 import { getArticleTopics, getPublishedArticles } from '$lib/server/article-content';
 import { getContentLastmod } from '$lib/server/content-freshness';
 import { replaceRedirectedSitemapPath } from '$lib/server/sitemap-redirects';
+import { fetchSoroArticles, type SoroArticleLoadError } from '$lib/server/soro-articles';
 import type { RequestHandler } from './$types';
 
 const STATIC_CONTENT_LASTMOD = '2026-03-29';
@@ -25,11 +25,15 @@ type SitemapEntry = {
 	priority: '1.0' | '0.9' | '0.8' | '0.7' | '0.6' | '0.5' | '0.3';
 };
 
-type SoroArticleListItem = {
-	slug?: string;
-	isoDate?: string;
-	date?: string;
-};
+class SitemapArticleSourceError extends Error {
+	constructor(
+		public readonly reason: SoroArticleLoadError | 'no_valid_articles',
+		public readonly status?: number
+	) {
+		super(`Soro article source unavailable: ${reason}`);
+		this.name = 'SitemapArticleSourceError';
+	}
+}
 
 function xmlEscape(value: string): string {
 	return value
@@ -68,47 +72,27 @@ function asLastmod(value: string | undefined): string {
 	return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : BLOG_LASTMOD;
 }
 
-function extractSoroArticles(embedScript: string): SoroArticleListItem[] {
-	const match = embedScript.match(/var SORO_ARTICLES = (\[[\s\S]*?\]);/);
-	if (!match) return [];
-
-	try {
-		const parsed = JSON.parse(match[1]) as unknown;
-		return Array.isArray(parsed) ? (parsed as SoroArticleListItem[]) : [];
-	} catch {
-		return [];
-	}
-}
-
 async function loadSoroBlogEntries(fetch: typeof globalThis.fetch): Promise<SitemapEntry[]> {
-	try {
-		const embedResponse = await fetch(`${SORO_EMBED_SRC}&cb=${Date.now()}`, {
-			headers: {
-				accept: 'application/javascript,*/*',
-				'user-agent': 'Mozilla/5.0'
-			}
-		});
+	const result = await fetchSoroArticles(fetch);
+	if (result.loadError) throw new SitemapArticleSourceError(result.errorReason);
 
-		if (!embedResponse.ok) return [];
+	const entries = result.articles
+		.map((article) => {
+			const slug = normalizeBlogSlug(article.slug);
+			if (!slug) return null;
 
-		const embedScript = await embedResponse.text();
+			return {
+				path: replaceRedirectedSitemapPath(`/blogg/${slug}`),
+				lastmod: asLastmod(article.isoDate || article.date),
+				changefreq: 'monthly',
+				priority: '0.6'
+			};
+		})
+		.filter((entry): entry is SitemapEntry => Boolean(entry));
 
-		return extractSoroArticles(embedScript)
-			.map((article) => {
-				const slug = normalizeBlogSlug(article.slug ?? '');
-				if (!slug) return null;
+	if (entries.length === 0) throw new SitemapArticleSourceError('no_valid_articles');
 
-				return {
-					path: replaceRedirectedSitemapPath(`/blogg/${slug}`),
-					lastmod: asLastmod(article.isoDate ?? article.date),
-					changefreq: 'monthly',
-					priority: '0.6'
-				};
-			})
-			.filter((entry): entry is SitemapEntry => Boolean(entry));
-	} catch {
-		return [];
-	}
+	return entries;
 }
 
 const latestGuideLastmod = getLatestLastmod(
@@ -491,12 +475,28 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		priority: '0.6'
 	}));
 
-	const blogPages = [
-		...fallbackBlogPages,
-		...markdownTopicPages,
-		...markdownArticlePages,
-		...(await loadSoroBlogEntries(fetch))
-	];
+	let soroBlogPages: SitemapEntry[];
+	try {
+		soroBlogPages = await loadSoroBlogEntries(fetch);
+	} catch (error) {
+		const failure =
+			error instanceof SitemapArticleSourceError
+				? error
+				: new SitemapArticleSourceError('network');
+		console.error('[sitemap] Soro article source unavailable', {
+			reason: failure.reason,
+			...(failure.status ? { status: failure.status } : {})
+		});
+		return new Response('Sitemap source unavailable.', {
+			status: 503,
+			headers: {
+				'Content-Type': 'text/plain; charset=utf-8',
+				'Cache-Control': 'no-store'
+			}
+		});
+	}
+
+	const blogPages = [...fallbackBlogPages, ...markdownTopicPages, ...markdownArticlePages, ...soroBlogPages];
 
 	const urls = dedupeEntries([
 		...standalonePages,

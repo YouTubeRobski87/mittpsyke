@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { SORO_TOKEN } from '$lib/soro';
-import { fetchSoroArticles, normalizeSoroArticleSlug } from '$lib/server/soro-articles';
+import { fetchSoroArticles, fetchSoroResponse, normalizeSoroArticleSlug } from '$lib/server/soro-articles';
 import type { PageServerLoad } from './$types';
 
 const CACHE_CONTROL = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
@@ -60,17 +60,27 @@ function normalizeYoungMentalHealthArticleContent(content: string) {
 
 export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	const requestedSlug = normalizeSoroArticleSlug(params.slug);
-	let { articles, loadError } = await fetchSoroArticles(fetch);
-	if (loadError) {
-		console.error('[blogg/article] Unable to load article list', { slug: requestedSlug, reason: 'soro_embed' });
+	let soroResult = await fetchSoroArticles(fetch);
+	let articles = soroResult.articles;
+	if (soroResult.loadError) {
+		console.error('[blogg/article] Unable to load article list', {
+			slug: requestedSlug,
+			reason: 'soro_embed',
+			classification: soroResult.errorReason
+		});
 		throw error(502, 'Kunde inte hämta artikeln just nu.');
 	}
 	let article = articles.find((item) => normalizeSoroArticleSlug(item.slug) === requestedSlug);
 
 	if (!article) {
-		({ articles, loadError } = await fetchSoroArticles(fetch, true));
-		if (loadError) {
-			console.error('[blogg/article] Unable to refresh article list', { slug: requestedSlug, reason: 'soro_embed' });
+		soroResult = await fetchSoroArticles(fetch, true);
+		articles = soroResult.articles;
+		if (soroResult.loadError) {
+			console.error('[blogg/article] Unable to refresh article list', {
+				slug: requestedSlug,
+				reason: 'soro_embed',
+				classification: soroResult.errorReason
+			});
 			throw error(502, 'Kunde inte hämta artikeln just nu.');
 		}
 		article = articles.find((item) => normalizeSoroArticleSlug(item.slug) === requestedSlug);
@@ -80,7 +90,8 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 		throw error(404, 'Artikeln kunde inte hittas.');
 	}
 
-	const contentResponse = await fetch(
+	const contentRequest = await fetchSoroResponse(
+		fetch,
 		`https://app.trysoro.com/api/embed/${SORO_TOKEN}/article/${article.id}`,
 		{
 			headers: {
@@ -90,9 +101,15 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 		}
 	);
 
-	if (!contentResponse.ok) {
+	if (!contentRequest.response) {
+		console.error('[blogg/article] Unable to load article content', {
+			slug: requestedSlug,
+			status: contentRequest.status ?? null,
+			classification: contentRequest.failure
+		});
 		throw error(502, 'Kunde inte hämta artikeln just nu.');
 	}
+	const contentResponse = contentRequest.response;
 
 	let contentPayload: SoroArticleContentResponse;
 	try {
@@ -106,7 +123,11 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	}
 
 	if (typeof contentPayload.content !== 'string' || !contentPayload.content.trim()) {
-		throw error(404, 'Artikeln saknar innehåll.');
+		console.error('[blogg/article] Invalid article content payload', {
+			slug: requestedSlug,
+			reason: 'missing_content'
+		});
+		throw error(502, 'Kunde inte hämta artikeln just nu.');
 	}
 
 	setHeaders({

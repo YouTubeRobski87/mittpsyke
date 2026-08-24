@@ -28,6 +28,26 @@ export type SoroArticleListItem = {
 	imageUrl: string | null;
 };
 
+export const SORO_REQUEST_TIMEOUT_MS = 8_000;
+
+export type SoroArticleLoadError =
+	| 'timeout'
+	| 'network'
+	| 'upstream_5xx'
+	| 'upstream_4xx'
+	| 'invalid_payload'
+	| 'empty_payload';
+
+type SoroRequestFailure = Extract<SoroArticleLoadError, 'timeout' | 'network' | 'upstream_5xx' | 'upstream_4xx'>;
+
+type SoroRequestResult =
+	| { response: Response; failure?: never; status?: never }
+	| { response?: never; failure: SoroRequestFailure; status?: number };
+
+export type SoroArticleLoadResult =
+	| { articles: SoroArticleListItem[]; loadError: false; errorReason?: never }
+	| { articles: SoroArticleListItem[]; loadError: true; errorReason: SoroArticleLoadError };
+
 type SoroRawArticle = Record<string, unknown>;
 
 // Normaliserar en slug-sträng oavsett om det är full URL, query-värde eller ren slug.
@@ -46,6 +66,92 @@ export function normalizeSoroArticleSlug(value: unknown) {
 
 function asString(value: unknown): string {
 	return typeof value === 'string' ? value : value == null ? '' : String(value);
+}
+
+function isValidDate(value: string) {
+	return Boolean(value.trim()) && !Number.isNaN(Date.parse(value));
+}
+
+function isPublishedArticle(article: SoroRawArticle) {
+	if (article.draft === true || article.published === false || article.isPublished === false) return false;
+
+	for (const field of ['publicationState', 'status']) {
+		if (!(field in article)) continue;
+		const state = asString(article[field]).trim().toLowerCase();
+		if (!['published', 'public', 'live', 'active'].includes(state)) return false;
+	}
+
+	return true;
+}
+
+function validateArticle(article: SoroRawArticle): article is SoroRawArticle {
+	const slug = normalizeSoroArticleSlug(asString(article.slug));
+	const date = asString(article.isoDate || article.date);
+
+	return Boolean(
+		asString(article.id).trim() &&
+		asString(article.title).trim() &&
+		slug &&
+		!slug.includes('/') &&
+		isValidDate(date) &&
+		isPublishedArticle(article)
+	);
+}
+
+function isRetryableStatus(status: number) {
+	return status >= 500 && status <= 599;
+}
+
+async function fetchWithTimeout(fetcher: typeof fetch, url: string, init: RequestInit): Promise<Response> {
+	const controller = new AbortController();
+	let timedOut = false;
+	let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+	const timeout = new Promise<never>((_, reject) => {
+		timeoutId = setTimeout(() => {
+			timedOut = true;
+			controller.abort();
+			reject(new Error('Soro request timed out'));
+		}, SORO_REQUEST_TIMEOUT_MS);
+	});
+
+	try {
+		return await Promise.race([
+			fetcher(url, { ...init, signal: controller.signal }),
+			timeout
+		]);
+	} catch (error) {
+		if (timedOut) throw Object.assign(new Error('Soro request timed out'), { code: 'timeout' });
+		throw error;
+	} finally {
+		if (timeoutId) clearTimeout(timeoutId);
+	}
+}
+
+export async function fetchSoroResponse(
+	fetcher: typeof fetch,
+	url: string,
+	init: RequestInit
+): Promise<SoroRequestResult> {
+	let lastFailure: SoroRequestFailure = 'network';
+	let lastStatus: number | undefined;
+
+	for (let attempt = 0; attempt < 2; attempt += 1) {
+		try {
+			const response = await fetchWithTimeout(fetcher, url, init);
+			if (response.ok) return { response };
+
+			lastStatus = response.status;
+			lastFailure = isRetryableStatus(response.status) ? 'upstream_5xx' : 'upstream_4xx';
+			if (!isRetryableStatus(response.status) || attempt === 1) break;
+			await response.body?.cancel();
+		} catch (error) {
+			lastFailure = error instanceof Error && 'code' in error && error.code === 'timeout' ? 'timeout' : 'network';
+			if (attempt === 1) break;
+		}
+	}
+
+	return { failure: lastFailure, ...(lastStatus ? { status: lastStatus } : {}) };
 }
 
 // Plockar ut första giltiga bild-URL från en artikelpost. Soro varierar fältnamn
@@ -89,19 +195,20 @@ function coerceImageValue(value: unknown): string | null {
 }
 
 // Plockar ut artikellistan från Soro:s embed-script.
-function extractArticles(embedScript: string): SoroArticleListItem[] {
+function extractArticles(embedScript: string): { articles: SoroArticleListItem[]; invalidCount: number } | null {
 	const match = embedScript.match(/var SORO_ARTICLES = (\[[\s\S]*?\]);/);
-	if (!match) return [];
+	if (!match) return null;
 	let parsed: unknown;
 	try {
 		parsed = JSON.parse(match[1]);
 	} catch {
-		return [];
+		return null;
 	}
-	if (!Array.isArray(parsed)) return [];
+	if (!Array.isArray(parsed)) return null;
 
-	return parsed
-		.filter((item): item is SoroRawArticle => typeof item === 'object' && item !== null)
+	const rawArticles = parsed.filter((item): item is SoroRawArticle => typeof item === 'object' && item !== null);
+	const validArticles = rawArticles
+		.filter(validateArticle)
 		.map((article) => ({
 			id: asString(article.id),
 			title: asString(article.title),
@@ -111,25 +218,43 @@ function extractArticles(embedScript: string): SoroArticleListItem[] {
 			isoDate: asString(article.isoDate),
 			imageUrl: getArticleImageUrl(article)
 		}));
+
+	return { articles: validArticles, invalidCount: parsed.length - validArticles.length };
 }
 
-export async function fetchSoroArticles(fetcher: typeof fetch, fresh = false) {
-	try {
-		const cacheBuster = fresh ? `&cb=${Date.now()}` : '';
-		const embedResponse = await fetcher(`${SORO_EMBED_SRC}${cacheBuster}`, {
-			headers: {
-				accept: 'application/javascript,*/*',
-				'user-agent': 'Mozilla/5.0'
-			}
-		});
-
-		if (!embedResponse.ok) {
-			return { articles: [], loadError: true };
+export async function fetchSoroArticles(fetcher: typeof fetch, fresh = false): Promise<SoroArticleLoadResult> {
+	const cacheBuster = fresh ? `&cb=${Date.now()}` : '';
+	const request = await fetchSoroResponse(fetcher, `${SORO_EMBED_SRC}${cacheBuster}`, {
+		headers: {
+			accept: 'application/javascript,*/*',
+			'user-agent': 'Mozilla/5.0'
 		}
+	});
 
-		const embedScript = await embedResponse.text();
-		return { articles: extractArticles(embedScript), loadError: false };
-	} catch {
-		return { articles: [], loadError: true };
+	if (!request.response) {
+		return { articles: [], loadError: true, errorReason: request.failure };
 	}
+
+	let embedScript: string;
+	try {
+		embedScript = await request.response.text();
+	} catch {
+		return { articles: [], loadError: true, errorReason: 'network' };
+	}
+
+	const extracted = extractArticles(embedScript);
+	if (!extracted) return { articles: [], loadError: true, errorReason: 'invalid_payload' };
+	if (extracted.articles.length === 0) {
+		return {
+			articles: [],
+			loadError: true,
+			errorReason: extracted.invalidCount > 0 ? 'invalid_payload' : 'empty_payload'
+		};
+	}
+
+	if (extracted.invalidCount > 0) {
+		console.warn('[soro] Skipped invalid article records', { count: extracted.invalidCount });
+	}
+
+	return { articles: extracted.articles, loadError: false };
 }
