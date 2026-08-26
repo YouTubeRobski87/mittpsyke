@@ -140,6 +140,11 @@
 				<a href="/framsteg">framsteg och mönster</a>. Redo att spara din historia?
 				<a href="/register">Skapa konto</a>.
 			</p>
+			<p>
+				För den som vill skriva mer fritt finns även en
+				<a href="https://bystorify.se/" target="_blank" rel="noopener noreferrer">AI-dagbok på svenska</a>
+				som hjälper till att fånga och utveckla vardagens reflektioner.
+			</p>
 		</section>
 
 		<p class="support-note">

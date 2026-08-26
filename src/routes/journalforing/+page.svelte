@@ -83,11 +83,6 @@
 				Över tid kan du jämföra anteckningar och se tydligare samband mellan känslor, sömn, stress och
 				vardag.
 			</p>
-			<p>
-				Vill du prova ett annat sätt att komma igång med dagbokstext finns
-				<a href="https://bystorify.se/">Storify</a>, ett fristående verktyg där du kan skriva eller
-				svara på frågor om din dag. Läs gärna deras integritetspolicy innan du delar känsliga uppgifter.
-			</p>
 			<p class="links-row">
 				<a class="secondary-link" href="/dagbok">Öppna dagboken</a>
 				<a class="secondary-link" href="/framsteg">Se framsteg</a>
