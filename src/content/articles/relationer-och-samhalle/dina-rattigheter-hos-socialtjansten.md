@@ -2,6 +2,8 @@
 type: article
 title: Dina rättigheter hos socialtjänsten – beslut, överklagande och stöd
 description: "Vilka rättigheter har du hos socialtjänsten? Så fungerar ansökan, skriftligt beslut, motivering och överklagande till förvaltningsrätten – lugnt förklarat."
+image: /uploads/dina-rattigheter-hos-socialtjansten.webp
+imageAlt: Person som sitter vid ett bord och går igenom ett beslut från socialtjänsten.
 date: 2026-08-27
 updated: 2026-08-27
 author: MittPsyke redaktion
