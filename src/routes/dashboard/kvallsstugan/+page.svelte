@@ -124,9 +124,8 @@
 		const wasRugEligible = interiorMemory.hasRug;
 		const wasBlanketEligible = interiorMemory.hasBlanket;
 		savedInteriorMemory = savedMemory ?? {
-			hasBook: isEveningInteriorMemoryEligible(interiorMemory.hasBook, true),
-			hasRug: interiorMemory.hasRug,
-			hasBlanket: interiorMemory.hasBlanket
+			...interiorMemory,
+			hasBook: isEveningInteriorMemoryEligible(interiorMemory.hasBook, true)
 		};
 
 		if (!wasBookEligible && interiorMemory.hasBook) interiorMemoryIntroduction += 1;

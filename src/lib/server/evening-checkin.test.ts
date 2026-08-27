@@ -90,12 +90,14 @@ describe('saveEveningCheckin', () => {
 		expect(await loadEveningInteriorMemory(hasCheckinClient, 'user-1')).toEqual({
 			hasBook: true,
 			hasRug: false,
-			hasBlanket: false
+			hasBlanket: false,
+			hasVeranda: false
 		});
 		expect(await loadEveningInteriorMemory(failedClient, 'user-1')).toEqual({
 			hasBook: false,
 			hasRug: false,
-			hasBlanket: false
+			hasBlanket: false,
+			hasVeranda: false
 		});
 		expect(await hasSavedEveningCheckin(failedClient, 'user-1')).toBe(false);
 		expect(await hasSavedEveningCheckin(hasCheckinClient, null)).toBe(false);
@@ -120,7 +122,8 @@ describe('saveEveningCheckin', () => {
 		expect(await loadEveningInteriorMemory(client, 'user-1')).toEqual({
 			hasBook: true,
 			hasRug: true,
-			hasBlanket: false
+			hasBlanket: false,
+			hasVeranda: false
 		});
 	});
 });

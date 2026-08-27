@@ -1,17 +1,23 @@
 export const EVENING_INTERIOR_RUG_MINIMUM_DISTINCT_DAYS = 3;
 export const EVENING_INTERIOR_BLANKET_MINIMUM_DISTINCT_DAYS = 5;
 export const EVENING_INTERIOR_BLANKET_MINIMUM_SPAN_DAYS = 7;
+// Verandan kräver både återkomst och tidsspann, eftersom den speglar
+// kontinuitet över tid och inte hur tätt kvällarna ligger.
+export const EVENING_VERANDA_MINIMUM_DISTINCT_DAYS = 10;
+export const EVENING_VERANDA_MINIMUM_SPAN_DAYS = 21;
 
 export type EveningInteriorMemory = {
 	hasBook: boolean;
 	hasRug: boolean;
 	hasBlanket: boolean;
+	hasVeranda: boolean;
 };
 
 export const EMPTY_EVENING_INTERIOR_MEMORY: EveningInteriorMemory = {
 	hasBook: false,
 	hasRug: false,
-	hasBlanket: false
+	hasBlanket: false,
+	hasVeranda: false
 };
 
 function getCalendarDayNumber(value: unknown): number | null {
@@ -35,14 +41,19 @@ export function getEveningInteriorMemory(checkinDates: readonly unknown[]): Even
 	const savedDays = [...new Set(checkinDates.map(getCalendarDayNumber).filter((day): day is number => day !== null))].sort(
 		(first, second) => first - second
 	);
+	const spanDays = savedDays.length > 0 ? savedDays.at(-1)! - savedDays[0] : 0;
 	const hasBlanket =
 		savedDays.length >= EVENING_INTERIOR_BLANKET_MINIMUM_DISTINCT_DAYS &&
-		savedDays.at(-1)! - savedDays[0] >= EVENING_INTERIOR_BLANKET_MINIMUM_SPAN_DAYS;
+		spanDays >= EVENING_INTERIOR_BLANKET_MINIMUM_SPAN_DAYS;
+	const hasVeranda =
+		savedDays.length >= EVENING_VERANDA_MINIMUM_DISTINCT_DAYS &&
+		spanDays >= EVENING_VERANDA_MINIMUM_SPAN_DAYS;
 
 	return {
 		hasBook: savedDays.length > 0,
 		hasRug: savedDays.length >= EVENING_INTERIOR_RUG_MINIMUM_DISTINCT_DAYS,
-		hasBlanket
+		hasBlanket,
+		hasVeranda
 	};
 }
 
@@ -52,7 +63,8 @@ export function isEveningInteriorMemory(value: unknown): value is EveningInterio
 	return (
 		typeof memory.hasBook === 'boolean' &&
 		typeof memory.hasRug === 'boolean' &&
-		typeof memory.hasBlanket === 'boolean'
+		typeof memory.hasBlanket === 'boolean' &&
+		typeof memory.hasVeranda === 'boolean'
 	);
 }
 
@@ -77,6 +89,14 @@ export function shouldIntroduceEveningInteriorRug(
 
 /** Filten får bara introduceras vid övergången till verklig eligibility. */
 export function shouldIntroduceEveningInteriorBlanket(
+	wasEligible: boolean,
+	isEligible: boolean
+): boolean {
+	return !wasEligible && isEligible;
+}
+
+/** Verandan får bara introduceras vid övergången till verklig eligibility. */
+export function shouldIntroduceEveningVeranda(
 	wasEligible: boolean,
 	isEligible: boolean
 ): boolean {
