@@ -3,6 +3,8 @@
 ## Status
 
 - V1B.1 asset specification
+- V1B.2: två beslut tillagda efter asset-QA mot nuvarande master, se
+  avsnitt 3 (inbakad matta tas bort) och avsnitt 5 (rug-justering skjuts upp)
 - Implementation not started
 - Eligibility already implemented separately (`src/lib/evening-interior-memory.ts`, commit `09abf93d`)
 - No veranda/dörr assets currently exist i repot
@@ -109,6 +111,20 @@ Följande ska behållas visuellt oförändrat i den nya basbilden:
 - samma scenkänsla
 
 Det ska se ut som att dörren alltid funnits där.
+
+### Ett medvetet undantag: den inbakade mattan
+
+Nuvarande master `cabin-interior-evening-resting-v1.webp` har en vävd jutematta
+**inbakad i golvet** från y ≈ 74 % och ned. Eftersom `rug.png` läggs ovanpå den
+visar dagens scen två mattor samtidigt.
+
+**Beslut (V1B.2): den inbakade mattan tas bort ur den nya basbilden.** Golvet ska
+vara rena plankor.
+
+Detta är den enda avsiktliga avvikelsen från kravet ovan. Att golvet blir tommare
+innan `rug.png` visas är accepterat – det är mer konsekvent med
+interior-memory-idén, där mattan ska *tillkomma* och inte redan finnas i basen.
+Alternativet hade varit att bygga vidare på ett känt visuellt fel.
 
 ### Får absolut inte flyttas
 
@@ -220,6 +236,32 @@ Mattans överkant ligger på y 63 % – bara 3,5 procentenheter under tröskeln 
 mattan är en separat overlay som kan finnas eller inte finnas. Ett ljuspölsljus med
 hård kant hade fått en synlig avskuren kant när mattan dyker upp. Låg kontrast,
 ingen skarp kant.
+
+### Geometrisk konflikt mellan matta och tröskel
+
+Uppmätt mot nuvarande master: vägg/golv-linjen ligger på y 66–67 %, men `rug.png`
+börjar synligt på y 63,0 % och dess bortre kant stiger vänster→höger. Från cirka
+x 14 % passerar kanten över golvlinjen; vid x 20,5 % ligger den på y ≈ 63,5 %,
+alltså ~3 procentenheter **upp på väggen**.
+
+Det är ett befintligt fel i dagens scen, men det ligger exakt i dörrens zon. Med
+dörren på plats hamnar mattans bakkant ovanför tröskeln (y 65,5–67 %), och dörren
+ser ut att stå bakom mattan.
+
+**Beslut (V1B.2): tröskeln ligger kvar, mattan justeras.** Dörrens arkitektur
+styr scenen. Tröskeln på y 65,5–67 % följer den faktiska vägg/golv-linjen och är
+rätt. `rug.png` flyttas i stället ned så att bakkanten hamnar under tröskeln.
+
+**Justeringen får inte göras nu.** Ordningen är:
+
+1. den nya basinteriören produceras, utan inbakad matta
+2. nuvarande `rug.png` läggs ovanpå i nuvarande koordinater
+3. överlappningen mot tröskeln mäts i den faktiska kompositen
+4. minsta nödvändiga flytt anges i procent och genomförs
+
+Att gissa en ny koordinat innan basbilden finns vore att flytta mattan mot en
+tröskel som ännu inte är renderad. **Book och blanket är fortsatt unchanged** tills
+QA mot den nya mastern visar annat.
 
 ---
 
@@ -490,6 +532,13 @@ LAYOUT (percentages of frame width/height):
 - Window sill at 49.5-52%. Timber breast wall below. Wall meets the
   wooden plank floor at 66.5%. Floor planks converge toward 55% width.
 
+FLOOR: the floor must be plain bare wooden planks with NO baked-in rug,
+carpet, mat or floor covering of any kind. Preserve the existing room
+composition otherwise. The veranda door threshold must align naturally
+with the existing wall/floor boundary at 66-67%. Leave the floor in
+front of the threshold clear and unobstructed, so a separate rug overlay
+can be positioned later without overlapping the door.
+
 LIGHT: warm 2700K amber from the table lamp on the right, secondary warm
 glow from the stove. Cool 8000K blue-violet twilight outside. Soft open
 shadows, muted matte palette, low contrast, gentle falloff.
@@ -600,6 +649,9 @@ Assets must be approved before:
 - [ ] changing any overlay coordinates
 
 V1B implementation must use this document as source of truth.
+
+Ingen kodändring görs innan assetsen finns. Rug-koordinaten justeras först efter
+mätning mot den nya mastern, enligt ordningen i avsnitt 5.
 
 ### Kända följdarbeten vid implementation
 
