@@ -2,9 +2,11 @@ export const EVENING_INTERIOR_RUG_MINIMUM_DISTINCT_DAYS = 3;
 export const EVENING_INTERIOR_BLANKET_MINIMUM_DISTINCT_DAYS = 5;
 export const EVENING_INTERIOR_BLANKET_MINIMUM_SPAN_DAYS = 7;
 // Verandan kräver både återkomst och tidsspann, eftersom den speglar
-// kontinuitet över tid och inte hur tätt kvällarna ligger.
-export const EVENING_VERANDA_MINIMUM_DISTINCT_DAYS = 10;
-export const EVENING_VERANDA_MINIMUM_SPAN_DAYS = 21;
+// kontinuitet över tid och inte hur tätt kvällarna ligger. Värdena ligger på
+// exakt det dubbla mot filten (5 dagar / 7 spann), så trappan bok → matta →
+// filt → veranda behåller sina proportioner.
+export const EVENING_VERANDA_MINIMUM_DISTINCT_DAYS = 8;
+export const EVENING_VERANDA_MINIMUM_SPAN_DAYS = 14;
 
 export type EveningInteriorMemory = {
 	hasBook: boolean;

@@ -138,55 +138,55 @@ function days(...offsets: readonly number[]): string[] {
 	return offsets.map((offset) => new Date(BASE_DAY + offset * 86_400_000).toISOString().slice(0, 10));
 }
 
-/** Tio unika dagar med exakt 21 kalenderdagars spann: minsta berättigade historik. */
-const VERANDA_ELIGIBLE_DAYS = days(0, 1, 2, 3, 4, 5, 6, 7, 8, 21);
+/** Åtta unika dagar med exakt 14 kalenderdagars spann: minsta berättigade historik. */
+const VERANDA_ELIGIBLE_DAYS = days(0, 1, 2, 3, 4, 5, 6, 14);
 
 describe('Kvällsstugans veranda', () => {
 	it('har inga trösklar som råkat glida', () => {
-		expect(EVENING_VERANDA_MINIMUM_DISTINCT_DAYS).toBe(10);
-		expect(EVENING_VERANDA_MINIMUM_SPAN_DAYS).toBe(21);
+		expect(EVENING_VERANDA_MINIMUM_DISTINCT_DAYS).toBe(8);
+		expect(EVENING_VERANDA_MINIMUM_SPAN_DAYS).toBe(14);
 	});
 
 	it('ger ingen veranda utan sparade dagar', () => {
 		expect(getEveningInteriorMemory([]).hasVeranda).toBe(false);
 	});
 
-	it('ger ingen veranda vid nio unika dagar trots trettio dagars spann', () => {
-		const history = days(0, 1, 2, 3, 4, 5, 6, 7, 30);
+	it('ger ingen veranda vid sju unika dagar trots trettio dagars spann', () => {
+		const history = days(0, 1, 2, 3, 4, 5, 30);
 
-		expect(new Set(history).size).toBe(9);
+		expect(new Set(history).size).toBe(7);
 		expect(getEveningInteriorMemory(history).hasVeranda).toBe(false);
 	});
 
-	it('ger ingen veranda vid tio unika dagar med bara tjugo dagars spann', () => {
-		const history = days(0, 1, 2, 3, 4, 5, 6, 7, 8, 20);
+	it('ger ingen veranda vid åtta unika dagar med bara tretton dagars spann', () => {
+		const history = days(0, 1, 2, 3, 4, 5, 6, 13);
 
-		expect(new Set(history).size).toBe(10);
+		expect(new Set(history).size).toBe(8);
 		expect(getEveningInteriorMemory(history).hasVeranda).toBe(false);
 	});
 
-	it('ger veranda vid tio unika dagar med tjugoen dagars spann', () => {
-		expect(new Set(VERANDA_ELIGIBLE_DAYS).size).toBe(10);
+	it('ger veranda vid åtta unika dagar med fjorton dagars spann', () => {
+		expect(new Set(VERANDA_ELIGIBLE_DAYS).size).toBe(8);
 		expect(getEveningInteriorMemory(VERANDA_ELIGIBLE_DAYS).hasVeranda).toBe(true);
 	});
 
-	it('lägger gränsen mellan exakt tjugo och exakt tjugoen dagars spann', () => {
-		expect(getEveningInteriorMemory(days(0, 1, 2, 3, 4, 5, 6, 7, 8, 20)).hasVeranda).toBe(false);
-		expect(getEveningInteriorMemory(days(0, 1, 2, 3, 4, 5, 6, 7, 8, 21)).hasVeranda).toBe(true);
+	it('lägger gränsen mellan exakt tretton och exakt fjorton dagars spann', () => {
+		expect(getEveningInteriorMemory(days(0, 1, 2, 3, 4, 5, 6, 13)).hasVeranda).toBe(false);
+		expect(getEveningInteriorMemory(days(0, 1, 2, 3, 4, 5, 6, 14)).hasVeranda).toBe(true);
 	});
 
 	it('räknar flera sparningar samma kalenderdag som en enda dag', () => {
 		const duplicated = [...VERANDA_ELIGIBLE_DAYS, ...VERANDA_ELIGIBLE_DAYS];
 		expect(getEveningInteriorMemory(duplicated).hasVeranda).toBe(true);
 
-		// Nio verkliga dagar blir inte tio av att en av dem sparats flera gånger.
-		const nineDays = days(0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 21);
-		expect(new Set(nineDays).size).toBe(9);
-		expect(getEveningInteriorMemory(nineDays).hasVeranda).toBe(false);
+		// Sju verkliga dagar blir inte åtta av att en av dem sparats flera gånger.
+		const sevenDays = days(0, 0, 0, 1, 2, 3, 4, 5, 14);
+		expect(new Set(sevenDays).size).toBe(7);
+		expect(getEveningInteriorMemory(sevenDays).hasVeranda).toBe(false);
 	});
 
 	it('ger samma resultat oavsett inputordning', () => {
-		const shuffled = days(21, 3, 0, 8, 5, 1, 7, 2, 6, 4);
+		const shuffled = days(14, 3, 0, 5, 1, 6, 2, 4);
 
 		expect(getEveningInteriorMemory(shuffled)).toEqual(
 			getEveningInteriorMemory(VERANDA_ELIGIBLE_DAYS)
@@ -280,7 +280,7 @@ describe('Kvällsstugans befintliga trappa efter verandan', () => {
 	});
 
 	it('lämnar bok, matta och filt orörda när verandan blir tillgänglig', () => {
-		const belowVeranda = getEveningInteriorMemory(days(0, 1, 2, 3, 4, 5, 6, 7, 8, 20));
+		const belowVeranda = getEveningInteriorMemory(days(0, 1, 2, 3, 4, 5, 6, 13));
 		const atVeranda = getEveningInteriorMemory(VERANDA_ELIGIBLE_DAYS);
 
 		expect(belowVeranda).toEqual({
