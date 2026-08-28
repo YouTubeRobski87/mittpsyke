@@ -1,6 +1,8 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { render } from 'svelte/server';
+import Page from './+page.svelte';
 
 const routeDirectory = join(process.cwd(), 'src/routes/dashboard/kvallsstugan');
 const route = readFileSync(join(routeDirectory, '+page.svelte'), 'utf8');
@@ -97,5 +99,44 @@ describe('Kvällsstugans veranda', () => {
 		expect(route).toContain('{#if hasInteriorBook}');
 		expect(route).toContain('{#if hasInteriorRug}');
 		expect(route).toContain('{#if hasInteriorBlanket}');
+	});
+});
+
+/* Renderar den riktiga sidan i stället för att läsa dess källkod. Textmatchning
+   mot +page.svelte kan vara grön medan dörren aldrig når DOM:en - de här testerna
+   kan bara passera om markupen faktiskt produceras. */
+describe('Verandadörren i renderad markup', () => {
+	const pageData = (hasVeranda: boolean) => ({
+		progressCompanion: null,
+		companionDaily: null,
+		interiorMemory: { hasBook: true, hasRug: true, hasBlanket: true, hasVeranda }
+	});
+
+	it('renderar ingen väg ut när hasVeranda är false', () => {
+		const { body } = render(Page, { props: { data: pageData(false) } });
+		expect(body).not.toContain('Gå ut på verandan');
+		expect(body).not.toContain('scene-door-out');
+	});
+
+	it('renderar dörren som en knapp när hasVeranda är true', () => {
+		const { body } = render(Page, { props: { data: pageData(true) } });
+		expect(body).toContain('aria-label="Gå ut på verandan"');
+		const door = body.slice(body.indexOf('scene-door-out') - 200, body.indexOf('scene-door-out') + 200);
+		expect(door).toContain('<button');
+		expect(door).toContain('type="button"');
+	});
+
+	it('startar alltid inne, med interiörlagret aktivt', () => {
+		const { body } = render(Page, { props: { data: pageData(true) } });
+		expect(body).toContain('data-view="interior"');
+		// Returdörren finns inte förrän man faktiskt är ute.
+		expect(body).not.toContain('Gå in i stugan');
+	});
+
+	it('behåller interiörminnet i markupen', () => {
+		const { body } = render(Page, { props: { data: pageData(true) } });
+		for (const asset of ['rug.png', 'blanket.png', 'boken.png']) {
+			expect(body, asset).toContain(`/images/evening/interior/${asset}`);
+		}
 	});
 });
