@@ -6,9 +6,9 @@ const routePath = join(process.cwd(), 'src/routes/dashboard/kvallsstugan/+page.s
 const route = readFileSync(routePath, 'utf8');
 const sceneDirectory = join(process.cwd(), 'static/images/scenes');
 const restingSceneAssets = [
-	'cabin-interior-evening-resting-v1-800.webp',
-	'cabin-interior-evening-resting-v1-1200.webp',
-	'cabin-interior-evening-resting-v1.webp'
+	'cabin-interior-evening-resting-veranda-v1-800.webp',
+	'cabin-interior-evening-resting-veranda-v1-1200.webp',
+	'cabin-interior-evening-resting-veranda-v1.webp'
 ];
 
 describe('Kvällsstugans viloscen', () => {
