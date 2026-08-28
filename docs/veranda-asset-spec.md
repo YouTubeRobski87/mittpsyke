@@ -495,9 +495,92 @@ Reservera på verandan:
 Prompterna är på engelska; bildverktyg följer engelska rumsliga instruktioner
 betydligt mer tillförlitligt.
 
+> **V1B.2 prompt hardening:** critical visual state is expressed positively near
+> the top of each prompt because repeated renders ignored equivalent late-stage
+> negative constraints.
+
 ### A. Interior master with veranda door
 
 ```
+OUTPUT ONE SINGLE SCENE ONLY.
+
+Do not create:
+- triptych
+- contact sheet
+- comparison image
+- side-by-side layout
+- labels
+- letters A, B or C
+- captions
+- borders
+- white separators
+
+The entire 1672 x 941 canvas must contain one full scene.
+
+OUTPUT:
+- exactly one image
+- 1672 x 941 pixels
+- 16:9
+- full-frame scene
+- no embedded labels
+- no border
+- no contact sheet
+- no crop
+- highest possible quality
+
+SUBJECT: the only living subject in the room is one resting woman in a
+rust-red knitted sweater, asleep on her side with her head on a cushion,
+calm and unposed. She is the same woman in every render of this scene.
+
+No other person.
+No bear.
+No fox.
+No wolf.
+No dog.
+No cat.
+No bird.
+No animal of any kind.
+
+BASE INTERIOR STATE:
+
+- bare wooden plank floor
+- empty sofa apart from the resting woman and ordinary sofa cushions
+- empty coffee table
+- no persistent-memory objects are present in the base scene
+- the separate book, rug and blanket are NOT part of this base image
+
+The floor must be completely bare wooden planks.
+There must be no rug, mat or carpet anywhere in the room.
+
+The sofa must not have any draped blanket, throw or plaid.
+Only the resting woman and ordinary fixed sofa cushions may be present.
+
+The coffee table and window ledge must not contain any book.
+
+These objects are added later by the product as separate persistent
+visual layers.
+
+CAMERA LOCK:
+
+This render is one frame of a matched closed/ajar pair.
+
+The closed and ajar versions must use:
+- identical camera position
+- identical focal length
+- identical crop
+- identical horizon
+- identical furniture placement
+- identical woman pose
+- identical window geometry
+- identical lighting
+- identical color balance
+- identical landscape
+
+The ONLY material difference between A and C is the veranda door state
+and its local light spill.
+
+No object may shift between the two renders.
+
 Painterly digital illustration of a cozy Nordic timber cabin interior at
 twilight, viewed from inside. Horizontal 16:9, 1672x941.
 
@@ -557,6 +640,53 @@ no fisheye.
 ### B. Veranda scene
 
 ```
+OUTPUT ONE SINGLE SCENE ONLY.
+
+Do not create:
+- triptych
+- contact sheet
+- comparison image
+- side-by-side layout
+- labels
+- letters A, B or C
+- captions
+- borders
+- white separators
+
+The entire 1672 x 941 canvas must contain one full scene.
+
+OUTPUT:
+- exactly one image
+- 1672 x 941 pixels
+- 16:9
+- full-frame scene
+- no embedded labels
+- no border
+- no contact sheet
+- no crop
+- highest possible quality
+
+VERANDA CONTENTS. The veranda contains exactly:
+- one visible glazed return door
+- one simple bench OR one simple chair
+- one single lantern total
+- wooden decking
+- simple railing
+- cabin wall
+- lake
+- forest
+- sky
+
+Do not add a second seat.
+Do not add a second lantern.
+
+Keep the future companion-safe deck area clear.
+
+No blanket.
+No book.
+No rug.
+No decorative objects.
+
 Painterly digital illustration of a small, simple wooden veranda on a
 Nordic timber cabin at twilight, seen from someone standing on the deck.
 Same artist, same world, same evening as the cabin interior.
@@ -620,10 +750,99 @@ light, no tilted horizon, no fisheye.
 
 ### C. Door-ajar overlay render
 
-Kör **exakt samma prompt som A** i **samma session**, och ändra endast raden om
-dörren till:
+C är en **edit av A i samma session**, inte en ny generation. Kör prompten nedan
+direkt på den färdiga A-bilden.
 
 ```
+EDIT THE EXACT PREVIOUS A IMAGE.
+
+Do not regenerate the room.
+
+Change ONLY the veranda door from closed to slightly ajar.
+
+Everything else must remain pixel-consistent as far as the image tool
+permits.
+
+OUTPUT ONE SINGLE SCENE ONLY.
+
+Do not create:
+- triptych
+- contact sheet
+- comparison image
+- side-by-side layout
+- labels
+- letters A, B or C
+- captions
+- borders
+- white separators
+
+The entire 1672 x 941 canvas must contain one full scene.
+
+OUTPUT:
+- exactly one image
+- 1672 x 941 pixels
+- 16:9
+- full-frame scene
+- no embedded labels
+- no border
+- no contact sheet
+- no crop
+- highest possible quality
+
+CAMERA LOCK:
+
+This render is one frame of a matched closed/ajar pair.
+
+The closed and ajar versions must use:
+- identical camera position
+- identical focal length
+- identical crop
+- identical horizon
+- identical furniture placement
+- identical woman pose
+- identical window geometry
+- identical lighting
+- identical color balance
+- identical landscape
+
+The ONLY material difference between A and C is the veranda door state
+and its local light spill.
+
+No object may shift between the two renders.
+
+SUBJECT: the only living subject in the room is the same resting woman in
+the rust-red knitted sweater, in the same position as in A.
+
+No other person.
+No bear.
+No fox.
+No wolf.
+No dog.
+No cat.
+No bird.
+No animal of any kind.
+
+BASE INTERIOR STATE:
+
+- bare wooden plank floor
+- empty sofa apart from the resting woman and ordinary sofa cushions
+- empty coffee table
+- no persistent-memory objects are present in the base scene
+- the separate book, rug and blanket are NOT part of this base image
+
+The floor must be completely bare wooden planks.
+There must be no rug, mat or carpet anywhere in the room.
+
+The sofa must not have any draped blanket, throw or plaid.
+Only the resting woman and ordinary fixed sofa cushions may be present.
+
+The coffee table and window ledge must not contain any book.
+
+These objects are added later by the product as separate persistent
+visual layers.
+
+THE ONE CHANGE:
+
 - Left 4.5-20.5%, from 3% down to 66.5%: the same timber veranda door,
   now standing AJAR, opened outward. The leaf is swung away so mostly its
   inner edge and hinge side are visible. Through the opening: a sliver of
@@ -631,6 +850,9 @@ dörren till:
   outside. A soft, low-contrast warm light spill falls onto the floor
   from the threshold, fading out completely by 74% height. No hard-edged
   pool of light.
+
+Horizon stays at 34.5%. No text, no letters, no numbers, no signage, no
+logos, no watermark.
 ```
 
 Beskär sedan den öppna renderingen till x 2–24 %, y 1–76 % och exportera som PNG
