@@ -13,7 +13,7 @@ import type { RequestHandler } from '@sveltejs/kit';
 import { createServiceClient, createTokenClient } from '$lib/server/supabase-admin';
 import { hasDiaryAiConsent } from '$lib/server/diary-ai-consent';
 import { generateAIText } from '$lib/server/ai/text-generation';
-import { buildWeeklySummarySafetyInstructions } from '$lib/server/ai/safety-instructions';
+import { buildWeeklySummaryRequest } from '$lib/server/ai/weekly-summary';
 
 const FALLBACK_SUMMARY = 'Det gick inte att skapa en AI-sammanfattning just nu. Försök gärna igen om en liten stund.';
 
@@ -95,26 +95,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		const weekNumber = getWeekNumber(startDateObj);
 		const year = startDateObj.getFullYear();
 
-		const entriesText = entries
-			.map((e) => `[${e.date}] Humör: ${e.mood}/10\n${e.content}`)
-			.join('\n\n');
-
 		// AI-sammanfattningen är en extra krydda ovanpå humörstatistiken, som
 		// redan är klar här. Om AI-tjänsten hänger/timar ut ska hela veckosvaret
 		// (inklusive humörtrenden) fortfarande nå användaren, bara utan text.
 		let summaryText = FALLBACK_SUMMARY;
 		try {
-			const result = await generateAIText({
-				purpose: 'weekly-summary',
-				systemInstructions: buildWeeklySummarySafetyInstructions(),
-				messages: [
-					{
-						role: 'user',
-						content: `Sammanfatta dagboksinlägg från vecka ${weekNumber} år ${year}.\n\n${entriesText}\n\nSkriv 2–3 meningar på svenska. Fokusera på känslotrender och övergripande mönster, inte specifika fakta. Var uppmuntrande men ärlig. Börja inte med "Denna vecka".`
-					}
-				],
-				temperature: 0.7
-			});
+			const result = await generateAIText(buildWeeklySummaryRequest(entries, weekNumber, year));
 			summaryText = `AI-genererad reflektion: ${result.text}`;
 		} catch {
 			console.error('Weekly summary AI call failed');

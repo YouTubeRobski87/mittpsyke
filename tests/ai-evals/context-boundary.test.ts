@@ -3,6 +3,8 @@ import { _buildSupportChatRequest } from '../../src/routes/api/chat/+server';
 import { buildCheckinReflectionRequest } from '../../src/lib/server/ai/checkin-reflection';
 import { buildDiaryReflectionRequest } from '../../src/lib/server/ai/diary-reflection';
 import { formatMemoriesForPrompt, type UserMemory } from '../../src/lib/server/user-memory';
+import { buildWeeklySummaryRequest } from '../../src/lib/server/ai/weekly-summary';
+import { buildWeeklySummarySafetyInstructions } from '../../src/lib/server/ai/safety-instructions';
 import type { AITextRequest } from '../../src/lib/server/ai/text-generation';
 
 /* MINIMUM NECESSARY CONTEXT
@@ -127,5 +129,83 @@ describe('checkin_reflection: bara den aktuella incheckningen', () => {
 
 	it('skickar exakt ett meddelande', () => {
 		expect(request.messages).toHaveLength(1);
+	});
+});
+
+describe('weekly_summary: bara den period routen hämtade', () => {
+	const entries = [
+		{ date: '2026-08-24', mood: 4, content: 'Trött hela dagen.' },
+		{ date: '2026-08-25', mood: 6, content: 'Bättre efter en promenad.' },
+		{ date: '2026-08-26', mood: 5, content: 'Ojämnt, men okej.' }
+	];
+	const request = buildWeeklySummaryRequest(entries, 35, 2026);
+
+	it('använder rätt purpose', () => {
+		expect(request.purpose).toBe('weekly-summary');
+	});
+
+	it('använder produktens egna safety-instruktioner', () => {
+		// Jämförs mot funktionen, inte mot en kopierad textmassa.
+		expect(request.systemInstructions).toEqual(buildWeeklySummarySafetyInstructions());
+	});
+
+	it('innehåller de inlägg den fick, i den ordning den fick dem', () => {
+		const text = requestText(request);
+
+		for (const entry of entries) {
+			expect(text).toContain(entry.content);
+			expect(text).toContain(entry.date);
+		}
+		const positions = entries.map((entry) => text.indexOf(entry.date));
+		expect(positions).toEqual([...positions].sort((a, b) => a - b));
+	});
+
+	it('innehåller vecka och år enligt nuvarande kontrakt', () => {
+		const text = requestText(request);
+
+		expect(text).toContain('vecka 35');
+		expect(text).toContain('år 2026');
+	});
+
+	it('innehåller ingenting utöver de inlägg som skickades in', () => {
+		const text = requestText(buildWeeklySummaryRequest([entries[0]], 35, 2026));
+
+		// Ett inlägg som aldrig lämnades till buildern kan inte dyka upp.
+		expect(text).toContain('Trött hela dagen.');
+		expect(text).not.toContain('Bättre efter en promenad.');
+	});
+
+	it('innehåller varken minne, chatthistorik eller profilmetadata', () => {
+		expectAbsent(request, MEMORY_MARKERS, 'weekly-summary');
+		expectAbsent(request, PROFILE_MARKERS, 'weekly-summary');
+	});
+
+	it('skickar exakt ett meddelande', () => {
+		expect(request.messages).toHaveLength(1);
+		expect(request.messages[0].role).toBe('user');
+	});
+
+	it('filtrerar inte på datum - det ägs av routens fråga', () => {
+		// Buildern ska inte bli ett andra policylager: den formaterar det den får.
+		const outsideWeek = [{ date: '2020-01-01', mood: 3, content: 'Gammalt inlägg.' }];
+
+		expect(requestText(buildWeeklySummaryRequest(outsideWeek, 35, 2026))).toContain('Gammalt inlägg.');
+	});
+});
+
+describe('weekly_summary: routen har ingen egen requestkonstruktion kvar', () => {
+	it('anropar buildern i stället för att bygga inline', async () => {
+		const { readFileSync } = await import('node:fs');
+		const { join } = await import('node:path');
+		const route = readFileSync(
+			join(process.cwd(), 'src/routes/api/diary/weekly-summary/+server.ts'),
+			'utf8'
+		);
+
+		expect(route).toContain('buildWeeklySummaryRequest(entries, weekNumber, year)');
+		// Ingen kvarvarande promptcopy eller egen requestuppsättning i handlern.
+		expect(route).not.toContain('Sammanfatta dagboksinlägg');
+		expect(route).not.toContain("purpose: 'weekly-summary'");
+		expect(route).not.toContain('const entriesText');
 	});
 });
