@@ -250,6 +250,10 @@
 					aria-hidden="true"
 					draggable="false"
 				/>
+				<!-- Boken på fönsterbänken är vägen in i dagboken. Egen yta ovanpå
+				     asseten, så bildens uttoning och introduktionsanimation lämnas
+				     orörda. Finns bara när boken faktiskt syns. -->
+				<a class="scene-object scene-object-book" href="/dagbok" aria-label="Öppna min dagbok"></a>
 			{/if}
 			<CompanionPose
 				class="evening-companion interior-companion"
@@ -422,6 +426,32 @@
 		outline: 2px solid rgb(255 214 150 / 0.9);
 		outline-offset: 2px;
 	}
+	/* Klickbara föremål i scenen. Samma tysta princip som dörrarna: ingen ram,
+	   ingen etikett, föremålet är sin egen affordans. Till skillnad från dörrarna
+	   är det här navigation, så det är en länk och inte en knapp. */
+	.scene-object {
+		position: absolute;
+		z-index: 4;
+		display: block;
+		min-width: 44px;
+		min-height: 44px;
+		border-radius: 0.4rem;
+		cursor: pointer;
+		/* Mycket lågmäld glöd, i samma varma ton som lampan. */
+		transition: background 200ms ease, box-shadow 200ms ease;
+	}
+	.scene-object:hover {
+		background: rgb(255 205 140 / 0.09);
+		box-shadow: 0 0 12px 2px rgb(255 205 140 / 0.14);
+	}
+	.scene-object:focus-visible {
+		outline: 2px solid rgb(255 214 150 / 0.9);
+		outline-offset: 2px;
+	}
+	/* Ligger över boken på fönsterbänken, med lite marginal så den går att träffa
+	   på mobil. Krockar inte med dörrytorna till vänster. */
+	.scene-object-book { left: 59%; top: 58.5%; width: 8%; height: 9.5%; }
+
 	/* Dörröppningen enligt docs/veranda-asset-spec.md: x 4,5-20,5 %, y 3-66,5 %. */
 	.scene-door-out { left: 4.5%; top: 3%; width: 16%; height: 63.5%; }
 	/* Returdörren mätt i den färdiga verandabilden: den glasade dörren går från
@@ -610,5 +640,6 @@
 		/* Vybytet ska ske direkt, inte tonas. */
 		.scene-layer,
 		.scene-layer.is-active { transition: none; }
+		.scene-object { transition: none; }
 	}
 </style>
