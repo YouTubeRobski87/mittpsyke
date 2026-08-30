@@ -1,8 +1,12 @@
 ﻿// src/routes/api/diary/weekly-summary/+server.ts
 //
-// Skickar rå dagbokstext till AI och omfattas därför av samma serverägda
-// samtycke som /api/diary/reflect och /api/diary/checkin-reflection:
-// scope diary_ai_reflection, policyversion diary-ai-v1.
+// Skickar flera sparade dagboksinlägg till AI och har därför ett EGET serverägt
+// samtycke: scope diary_ai_weekly_summary, policyversion diary-weekly-summary-v1.
+//
+// Det är avsiktligt inte samma scope som /api/diary/reflect och
+// /api/diary/checkin-reflection. Deras copy beskriver en reflektion på en
+// enskild incheckning; den här routen behandlar en hel period. Ett granted
+// diary_ai_reflection ger noll access här.
 //
 // Tidigare räckte den klientstyrda headern x-mittpsyke-sensitive-consent, som
 // vem som helst kan sätta på en request. Den auktoriserar inte längre den här
@@ -11,7 +15,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { createServiceClient, createTokenClient } from '$lib/server/supabase-admin';
-import { hasDiaryAiConsent } from '$lib/server/diary-ai-consent';
+import { hasWeeklySummaryAiConsent } from '$lib/server/weekly-summary-ai-consent';
 import { generateAIText } from '$lib/server/ai/text-generation';
 import { buildWeeklySummaryRequest } from '$lib/server/ai/weekly-summary';
 
@@ -49,7 +53,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const serviceClient = createServiceClient();
 		if (!serviceClient) return json({ error: 'Server configuration error.' }, { status: 500 });
 
-		if (!(await hasDiaryAiConsent(serviceClient, user.id))) {
+		if (!(await hasWeeklySummaryAiConsent(serviceClient, user.id))) {
 			return json(
 				{ error: 'Consent required for sensitive diary AI features.' },
 				{ status: 403 }

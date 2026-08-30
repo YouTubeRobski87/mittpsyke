@@ -2,7 +2,11 @@ import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Trust Pass V3.1: weekly-summary skickar rå dagbokstext till AI och ska ligga
-// bakom samma serverägda samtycke som reflect och checkin-reflection.
+// bakom serverägt samtycke.
+//
+// Consent Scope Separation V1: samtycket är numera weekly-summary-eget
+// (diary_ai_weekly_summary), inte det scope reflect och checkin-reflection
+// använder. Scope-oberoendet bevisas i weekly-summary-scope.test.ts.
 //
 // Testerna bevisar två saker som är lätta att blanda samman: att leverantören
 // inte anropas, och att dagboksinnehållet inte ens läses från databasen när
@@ -12,7 +16,7 @@ const mocks = vi.hoisted(() => ({
 	createServiceClient: vi.fn(),
 	createTokenClient: vi.fn(),
 	generateAIText: vi.fn(),
-	hasDiaryAiConsent: vi.fn()
+	hasWeeklySummaryAiConsent: vi.fn()
 }));
 
 vi.mock('$lib/server/supabase-admin', () => ({
@@ -20,8 +24,8 @@ vi.mock('$lib/server/supabase-admin', () => ({
 	createTokenClient: mocks.createTokenClient
 }));
 
-vi.mock('$lib/server/diary-ai-consent', () => ({
-	hasDiaryAiConsent: mocks.hasDiaryAiConsent
+vi.mock('$lib/server/weekly-summary-ai-consent', () => ({
+	hasWeeklySummaryAiConsent: mocks.hasWeeklySummaryAiConsent
 }));
 
 vi.mock('$lib/server/ai/text-generation', async (importOriginal) => {
@@ -104,40 +108,40 @@ describe('weekly-summary: serverägt diary AI-samtycke', () => {
 		mocks.createServiceClient.mockReset();
 		mocks.createTokenClient.mockReset();
 		mocks.generateAIText.mockReset();
-		mocks.hasDiaryAiConsent.mockReset();
+		mocks.hasWeeklySummaryAiConsent.mockReset();
 
 		client = tokenClient();
 		mocks.createServiceClient.mockReturnValue({});
 		mocks.createTokenClient.mockReturnValue(client);
 		mocks.generateAIText.mockResolvedValue({ text: 'En lugnare vecka än den förra.' });
-		mocks.hasDiaryAiConsent.mockResolvedValue(true);
+		mocks.hasWeeklySummaryAiConsent.mockResolvedValue(true);
 	});
 
 	it('släpper igenom med giltigt serversamtycke och anropar leverantören exakt en gång', async () => {
 		const response = await callWeeklySummary();
 
 		expect(response.status).toBe(200);
-		expect(mocks.hasDiaryAiConsent).toHaveBeenCalledTimes(1);
-		expect(mocks.hasDiaryAiConsent).toHaveBeenCalledWith({}, 'user-1');
+		expect(mocks.hasWeeklySummaryAiConsent).toHaveBeenCalledTimes(1);
+		expect(mocks.hasWeeklySummaryAiConsent).toHaveBeenCalledWith({}, 'user-1');
 		expect(mocks.generateAIText).toHaveBeenCalledTimes(1);
 		expect(readDiaryTable(client)).toBe(true);
 	});
 
 	it('använder samma scope och policyversion som övriga diary AI-endpoints', async () => {
-		const consentModule = await import('$lib/server/diary-ai-consent');
+		const consentModule = await import('$lib/server/weekly-summary-ai-consent');
 		const code = weeklySummaryCode();
 
 		// Ingen egen tabell, inget eget scope, ingen egen policyversion - routen
 		// går helt genom den delade helpern.
-		expect(code).toContain("from '$lib/server/diary-ai-consent'");
-		expect(code).toContain('hasDiaryAiConsent');
+		expect(code).toContain("from '$lib/server/weekly-summary-ai-consent'");
+		expect(code).toContain('hasWeeklySummaryAiConsent');
 		expect(code).not.toContain('user_ai_consents');
 		expect(code).not.toMatch(/scope|policy_version|diary-ai-v|diary_ai_reflection/);
-		expect(Object.keys(consentModule)).toContain('hasDiaryAiConsent');
+		expect(Object.keys(consentModule)).toContain('hasWeeklySummaryAiConsent');
 	});
 
 	describe('blockerade lägen', () => {
-		// Alla dessa gör hasDiaryAiConsent falsk. Helpern är fail-closed och
+		// Alla dessa gör hasWeeklySummaryAiConsent falsk. Helpern är fail-closed och
 		// returnerar false för saknad row, revoked, stale policyversion och
 		// DB-fel, så routen behöver bara ett enda villkor.
 		const blockedCases: { name: string; headers?: HeadersInit }[] = [
@@ -153,7 +157,7 @@ describe('weekly-summary: serverägt diary AI-samtycke', () => {
 
 		for (const testCase of blockedCases) {
 			it(`${testCase.name} → 403, ingen leverantör, ingen dagboksläsning`, async () => {
-				mocks.hasDiaryAiConsent.mockResolvedValue(false);
+				mocks.hasWeeklySummaryAiConsent.mockResolvedValue(false);
 
 				const response = await callWeeklySummary(testCase.headers);
 
@@ -164,7 +168,7 @@ describe('weekly-summary: serverägt diary AI-samtycke', () => {
 		}
 
 		it('gammalt user_metadata-samtycke räcker inte', async () => {
-			mocks.hasDiaryAiConsent.mockResolvedValue(false);
+			mocks.hasWeeklySummaryAiConsent.mockResolvedValue(false);
 			client = tokenClient({
 				id: 'user-1',
 				user_metadata: {
@@ -193,7 +197,7 @@ describe('weekly-summary: serverägt diary AI-samtycke', () => {
 			expect(code).not.toContain("from '$lib/consent'");
 
 			// Och beteendemässigt: header satt, serversamtycke saknas → 403.
-			mocks.hasDiaryAiConsent.mockResolvedValue(false);
+			mocks.hasWeeklySummaryAiConsent.mockResolvedValue(false);
 			const response = await callWeeklySummary({
 				'x-mittpsyke-sensitive-consent': '2026-04-29'
 			});
@@ -208,7 +212,7 @@ describe('weekly-summary: serverägt diary AI-samtycke', () => {
 			const response = await callWeeklySummary();
 
 			expect(response.status).toBe(500);
-			expect(mocks.hasDiaryAiConsent).not.toHaveBeenCalled();
+			expect(mocks.hasWeeklySummaryAiConsent).not.toHaveBeenCalled();
 			expect(mocks.generateAIText).not.toHaveBeenCalled();
 			expect(readDiaryTable(client)).toBe(false);
 		});
@@ -224,7 +228,7 @@ describe('weekly-summary: serverägt diary AI-samtycke', () => {
 			mocks.generateAIText.mockClear();
 			client = tokenClient();
 			mocks.createTokenClient.mockReturnValue(client);
-			mocks.hasDiaryAiConsent.mockResolvedValue(false);
+			mocks.hasWeeklySummaryAiConsent.mockResolvedValue(false);
 
 			const revoked = await callWeeklySummary();
 
@@ -245,7 +249,7 @@ describe('weekly-summary: serverägt diary AI-samtycke', () => {
 			} as unknown as Parameters<typeof weeklySummaryPost>[0]);
 
 			expect(response.status).toBe(401);
-			expect(mocks.hasDiaryAiConsent).not.toHaveBeenCalled();
+			expect(mocks.hasWeeklySummaryAiConsent).not.toHaveBeenCalled();
 			expect(mocks.generateAIText).not.toHaveBeenCalled();
 		});
 
@@ -256,13 +260,13 @@ describe('weekly-summary: serverägt diary AI-samtycke', () => {
 			const response = await callWeeklySummary();
 
 			expect(response.status).toBe(401);
-			expect(mocks.hasDiaryAiConsent).not.toHaveBeenCalled();
+			expect(mocks.hasWeeklySummaryAiConsent).not.toHaveBeenCalled();
 			expect(readDiaryTable(client)).toBe(false);
 		});
 
 		it('samtyckeskontrollen står före dagboksläsningen i källan', () => {
 			const code = weeklySummaryCode();
-			const consentIndex = code.indexOf('hasDiaryAiConsent(serviceClient');
+			const consentIndex = code.indexOf('hasWeeklySummaryAiConsent(serviceClient');
 			const bodyIndex = code.indexOf('await request.json()');
 			const diaryIndex = code.indexOf("from('diary')");
 
@@ -310,7 +314,10 @@ describe('V3.1-avgränsning', () => {
 
 			const source = readFileSync(endpointPath, 'utf8');
 			const callsProvider = source.includes('generateAIText');
-			const hasServerConsent = source.includes('hasDiaryAiConsent');
+			// Vilket scope som gäller skiljer sig mellan endpoints - reflect och
+			// checkin-reflection har diary_ai_reflection, weekly-summary sitt eget.
+			// Kravet här är att någon serverägd consent-grind finns, inte vilken.
+			const hasServerConsent = /has\w*AiConsent\(/.test(source);
 			if (callsProvider && !hasServerConsent) unprotected.push(entry);
 		}
 
