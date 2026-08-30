@@ -69,7 +69,7 @@ function view(months: HalfYearMonthInput[], truncated = false) {
 }
 
 describe('riktning över halvåret', () => {
-	it('ser en tydlig förbättring mellan de första och de senaste månaderna', () => {
+	it('ser när slutet ligger tydligt högre än början', () => {
 		const half = view([month(0, 4), month(1, 4.2), month(2, 5), month(3, 6), month(4, 7), month(5, 7.4)]);
 
 		expect(half.edges?.direction).toBe('higher');
@@ -79,7 +79,7 @@ describe('riktning över halvåret', () => {
 		expect(half.edges?.lastLabel).toBe('juli och augusti');
 	});
 
-	it('ser en tydlig försämring', () => {
+	it('ser när slutet ligger tydligt lägre än början', () => {
 		const half = view([month(0, 7.4), month(1, 7), month(2, 6), month(3, 5), month(4, 4.2), month(5, 4)]);
 
 		expect(half.edges?.direction).toBe('lower');
@@ -186,14 +186,14 @@ describe('månadskortens jämförbarhet', () => {
 
 		expect(half.average).toBe(6);
 		expect(half.months.map((item) => item.relative)).toEqual([
-			'lower',
-			'lower',
+			'much-lower',
+			'much-lower',
 			'near',
 			'near',
-			'higher',
-			'higher'
+			'much-higher',
+			'much-higher'
 		]);
-		expect(half.months[4].relativeText).toBe('Över ditt halvårssnitt');
+		expect(half.months[4].relativeText).toBe('tydligt högre än halvårssnittet');
 	});
 
 	it('lämnar månader utan eget snitt omarkerade', () => {
@@ -214,6 +214,93 @@ describe('månadskortens jämförbarhet', () => {
 
 	it('kortar månadsetiketten utan årtal', () => {
 		expect(view([month(0, 6), month(1, 6), month(2, 6), month(3, 6)]).months[0].shortLabel).toBe('mars');
+	});
+});
+
+describe('förlopp i halvårsreflektionen', () => {
+	it('beskriver en jämn start, en nedgång och en gradvis återgång', () => {
+		const half = view([
+			month(0, 7.4, { entryCount: 14 }),
+			month(1, 7.5, { entryCount: 20 }),
+			month(2, 6.7, { entryCount: 16 }),
+			month(3, 7, { entryCount: 18 }),
+			month(4, 7.2, { entryCount: 15 }),
+			month(5, 7.2, { entryCount: 13 })
+		]);
+
+		expect(half.reflection.pattern).toBe('mid-dip-return');
+		expect(half.reflection.sentences).toEqual([
+			'Halvåret börjar på en ganska jämn nivå under mars och april.',
+			'I maj syns en tydligare nedgång jämfört med april.',
+			'Efter den lägre nivån i maj stiger värdena gradvis under juni, juli och augusti.',
+			'Juli och augusti ligger sedan ungefär på samma nivå.',
+			'Underlaget är ganska jämnt fördelat över månaderna.'
+		]);
+		expect(half.reflection.highlights).toEqual([
+			'Maj ligger lägst bland månaderna med tillräckligt underlag.',
+			'Juli och augusti ligger nästan på samma nivå.'
+		]);
+		expect(half.reflection.changes).toContainEqual({
+			fromLabel: 'april',
+			toLabel: 'maj',
+			difference: -0.8,
+			direction: 'down'
+		});
+	});
+
+	it('beskriver en tydlig uppgång följd av stabilisering', () => {
+		const half = view([month(0, 5), month(1, 5.1), month(2, 6), month(3, 7), month(4, 7.1), month(5, 7.1)]);
+
+		expect(half.reflection.pattern).toBe('rise-stabilizes');
+		expect(half.reflection.sentences.join(' ')).toContain('uppgång');
+		expect(half.reflection.sentences.join(' ')).toContain('juli och augusti ungefär på samma nivå');
+	});
+
+	it('beskriver flera växlingar utan att skapa en riktning', () => {
+		const half = view([month(0, 6), month(1, 7), month(2, 6), month(3, 7), month(4, 6), month(5, 7)]);
+
+		expect(half.reflection.pattern).toBe('zigzag');
+		expect(half.reflection.sentences[0]).toContain('växlar upp och ner');
+		expect(half.reflection.highlights).toContain('Flera intilliggande månader växlar i riktning.');
+	});
+
+	it('beskriver nästan identiska månader som en jämn period', () => {
+		const half = view([month(0, 6), month(1, 6.1), month(2, 5.9), month(3, 6), month(4, 6.1), month(5, 6)]);
+
+		expect(half.reflection.pattern).toBe('even');
+		expect(half.reflection.sentences).toHaveLength(4);
+		expect(half.reflection.sentences[0]).toBe('Värdena ligger nära varandra under större delen av perioden.');
+		expect(half.reflection.highlights).toEqual([]);
+	});
+
+	it('håller analysen försiktig vid två eller tre månader med underlag', () => {
+		const half = view([missingMonth(0), thinMonth(1), month(2, 6), month(3, 7), missingMonth(4), month(5, 6.5)]);
+
+		expect(half.reflection.pattern).toBe('varied');
+		expect(half.reflection.sentences.at(-1)).toBe(
+			'Några månader innehåller få eller inga registreringar, så förändringarna bör läsas försiktigt.'
+		);
+		expect(half.reflection.highlights).toEqual([]);
+	});
+
+	it('säger inte något om förloppet när färre än tre månader har underlag', () => {
+		const half = view([missingMonth(0), thinMonth(1), missingMonth(2), month(3, 6), missingMonth(4), month(5, 6.5)]);
+
+		expect(half.reflection.pattern).toBe('insufficient');
+		expect(half.reflection.sentences).toEqual([
+			'Underlaget räcker ännu inte för att läsa ett säkert förlopp över halvåret.'
+		]);
+		expect(half.reflection.highlights).toEqual([]);
+	});
+
+	it('låter saknade månader bryta månad-till-månad-jämförelser', () => {
+		const half = view([month(0, 6), month(1, 6.5), missingMonth(2), month(3, 6), month(4, 6.5), month(5, 6.5)]);
+
+		expect(half.reflection.changes).toEqual([
+			{ fromLabel: 'mars', toLabel: 'april', difference: 0.5, direction: 'up' },
+			{ fromLabel: 'juni', toLabel: 'juli', difference: 0.5, direction: 'up' },
+			{ fromLabel: 'juli', toLabel: 'augusti', difference: 0, direction: 'level' }
+		]);
 	});
 });
 
@@ -260,9 +347,17 @@ describe('nyckeltal och underlag', () => {
 
 	it('innehåller ingen dagbokstext, bara siffror och månadsnamn', () => {
 		const half = view([month(0, 5), month(1, 5), month(2, 6), month(3, 6), month(4, 7), month(5, 7)]);
-		const allCopy = [half.summary, half.basis, ...half.stats.map((stat) => `${stat.value} ${stat.note}`)].join(' ');
+		const allCopy = [
+			half.summary,
+			half.basis,
+			...half.reflection.sentences,
+			...half.reflection.highlights,
+			...half.months.flatMap((item) => item.relativeText ?? []),
+			...half.stats.map((stat) => `${stat.value} ${stat.note}`)
+		].join(' ');
 
 		expect(allCopy).not.toMatch(/dagbok|anteckning|"|”/i);
+		expect(allCopy).not.toMatch(/förbättr|försämr|framgång|resultat|prestation|du borde|diagnos|återhämtade/i);
 	});
 });
 

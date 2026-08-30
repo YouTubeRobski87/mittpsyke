@@ -22,17 +22,28 @@ describe('Framstegsanalysens presentation', () => {
 });
 
 describe('halvårsvyns informationshierarki', () => {
-	it('inleder med en sammanfattning som kommer från den deterministiska modulen', () => {
+	it('inleder med en reflektion från den deterministiska modulen', () => {
 		expect(route).toContain("import { buildHalfYearView } from '$lib/progress-half-year'");
 		expect(halfYearBlock).toContain('<h3 id="half-year-summary-heading">Ditt senaste halvår</h3>');
-		expect(halfYearBlock).toContain('{halfYear.summary}');
+		expect(halfYearBlock).toContain('{#each halfYear.reflection.sentences as sentence}');
+		expect(halfYearBlock).toContain('<p>{sentence}</p>');
+		expect(halfYearBlock).not.toContain('{halfYear.summary}');
+	});
+
+	it('visar högst tre valfria observationer först när det finns tydliga sådana', () => {
+		expect(halfYearBlock).toContain('{#if halfYear.reflection.highlights.length > 0}');
+		expect(halfYearBlock).toContain('<h4 id="half-year-highlights-heading">Det som sticker ut</h4>');
+		expect(halfYearBlock).toContain('{#each halfYear.reflection.highlights as highlight}');
 	});
 
 	it('visar nyckeltalen före månadsdetaljen', () => {
+		const reflectionIndex = halfYearBlock.indexOf('halfYear.reflection.sentences');
 		const statsIndex = halfYearBlock.indexOf('halfYear.stats');
 		const monthsIndex = halfYearBlock.indexOf('halfYear.months');
 
+		expect(reflectionIndex).toBeGreaterThan(-1);
 		expect(statsIndex).toBeGreaterThan(-1);
+		expect(statsIndex).toBeGreaterThan(reflectionIndex);
 		expect(monthsIndex).toBeGreaterThan(statsIndex);
 	});
 
@@ -59,5 +70,9 @@ describe('halvårsvyns informationshierarki', () => {
 		const relativeStyle = route.slice(route.indexOf('.monthly-analysis-list .month-relative'));
 
 		expect(relativeStyle.slice(0, 120)).not.toMatch(/red|green|--destructive|--success/i);
+	});
+
+	it('använder neutral reflektionstext utan prestations- eller diagnosspråk', () => {
+		expect(halfYearBlock).not.toMatch(/förbättr|försämr|framgång|resultat|prestation|mål|du borde|diagnos/i);
 	});
 });

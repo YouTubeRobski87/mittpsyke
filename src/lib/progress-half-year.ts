@@ -18,9 +18,10 @@
 //    AI, ingen slump, ingen dagbokstext.
 
 export type MonthStatus = 'sufficient' | 'thin' | 'missing';
-export type MonthRelative = 'higher' | 'lower' | 'near';
+export type MonthRelative = 'much-higher' | 'higher' | 'near' | 'lower' | 'much-lower';
 export type HalfYearDirection = 'higher' | 'lower' | 'level';
 export type HalfYearVariation = 'steadier' | 'more-varied' | 'unchanged' | 'insufficient';
+export type HalfYearPattern = 'insufficient' | 'even' | 'mid-dip-return' | 'rise-stabilizes' | 'zigzag' | 'varied';
 
 /** Exakt den form servern redan skickar i `analysis.monthly`. */
 export interface HalfYearMonthInput {
@@ -61,6 +62,20 @@ export interface HalfYearStat {
 	note: string;
 }
 
+export interface HalfYearMonthChange {
+	fromLabel: string;
+	toLabel: string;
+	difference: number;
+	direction: 'up' | 'down' | 'level';
+}
+
+export interface HalfYearReflection {
+	pattern: HalfYearPattern;
+	sentences: string[];
+	highlights: string[];
+	changes: HalfYearMonthChange[];
+}
+
 export interface HalfYearView {
 	months: HalfYearMonthView[];
 	monthsShown: number;
@@ -79,6 +94,7 @@ export interface HalfYearView {
 	/** Sant bara när en riktning faktiskt får uttalas. */
 	hasDirection: boolean;
 	summary: string;
+	reflection: HalfYearReflection;
 	stats: HalfYearStat[];
 	basis: string;
 }
@@ -102,6 +118,15 @@ export const EDGE_DIFFERENCE_THRESHOLD = 0.6;
 
 /** Avvikelse mot eget halvårssnitt innan en månad kallas högre eller lägre. */
 export const MONTH_RELATIVE_THRESHOLD = 0.4;
+
+/** Avvikelse mot halvårssnittet innan en månad beskrivs som tydligt högre eller lägre. */
+export const MONTH_RELATIVE_STRONG_THRESHOLD = 0.9;
+
+/** Förändring mellan två intilliggande månader som får beskrivas som tydligare. */
+export const MONTH_CHANGE_THRESHOLD = 0.4;
+
+/** Två månader inom detta avstånd beskrivs som ungefär på samma nivå. */
+export const MONTH_STABILITY_THRESHOLD = 0.2;
 
 /** Spridningen mellan högsta och lägsta månad måste nå hit för att nämnas. */
 export const MONTH_SPREAD_THRESHOLD = 0.6;
@@ -386,10 +411,231 @@ function buildStats(view: {
 }
 
 const RELATIVE_TEXT: Record<MonthRelative, string> = {
-	higher: 'Över ditt halvårssnitt',
-	lower: 'Under ditt halvårssnitt',
-	near: 'Nära ditt halvårssnitt'
+	'much-higher': 'tydligt högre än halvårssnittet',
+	higher: 'något högre än halvårssnittet',
+	near: 'ungefär i nivå med halvårssnittet',
+	lower: 'något lägre än halvårssnittet',
+	'much-lower': 'tydligt lägre än halvårssnittet'
 };
+
+type IndexedMonth = HalfYearMonthInput & { index: number; mean: number; shortLabel: string };
+
+function indexedMonths(months: HalfYearMonthInput[]): IndexedMonth[] {
+	return months.flatMap((month, index) =>
+		month.status === 'sufficient' && typeof month.mean === 'number' && Number.isFinite(month.mean)
+			? [{ ...month, index, mean: month.mean, shortLabel: toShortLabel(month.label) }]
+			: []
+	);
+}
+
+function monthAt(months: IndexedMonth[], index: number): IndexedMonth | null {
+	return months.find((month) => month.index === index) ?? null;
+}
+
+function buildMonthChanges(months: IndexedMonth[]): HalfYearMonthChange[] {
+	const changes: HalfYearMonthChange[] = [];
+	for (const current of months) {
+		const previous = monthAt(months, current.index - 1);
+		if (!previous) continue;
+
+		const difference = roundToOneDecimal(current.mean - previous.mean);
+		changes.push({
+			fromLabel: previous.shortLabel,
+			toLabel: current.shortLabel,
+			difference,
+			direction:
+				difference >= MONTH_STABILITY_THRESHOLD
+					? 'up'
+					: difference <= -MONTH_STABILITY_THRESHOLD
+						? 'down'
+						: 'level'
+		});
+	}
+	return changes;
+}
+
+function stableStart(months: IndexedMonth[]): IndexedMonth[] | null {
+	const first = monthAt(months, 0);
+	const second = monthAt(months, 1);
+	if (!first || !second || Math.abs(second.mean - first.mean) > MONTH_STABILITY_THRESHOLD) return null;
+	return [first, second];
+}
+
+function stableEnd(months: IndexedMonth[]): IndexedMonth[] | null {
+	const last = months.at(-1);
+	const previous = last ? monthAt(months, last.index - 1) : null;
+	if (!last || !previous || Math.abs(last.mean - previous.mean) > MONTH_STABILITY_THRESHOLD) return null;
+	return [previous, last];
+}
+
+function findMidDipReturn(months: IndexedMonth[]) {
+	for (const low of months) {
+		const before = monthAt(months, low.index - 1);
+		if (!before || low.index === 0 || before.mean - low.mean < MONTH_CHANGE_THRESHOLD) continue;
+
+		const after: IndexedMonth[] = [];
+		for (let index = low.index + 1; ; index += 1) {
+			const next = monthAt(months, index);
+			if (!next) break;
+			after.push(next);
+		}
+		if (after.length < 2) continue;
+
+		const recoveryDeltas = after.map((month, index) => month.mean - (index === 0 ? low.mean : after[index - 1].mean));
+		const returnsGradually =
+			recoveryDeltas.every((difference) => difference >= -MONTH_STABILITY_THRESHOLD) &&
+			recoveryDeltas.filter((difference) => difference >= MONTH_STABILITY_THRESHOLD).length >= 2 &&
+			after.at(-1)!.mean - low.mean >= MONTH_CHANGE_THRESHOLD;
+
+		if (returnsGradually) return { before, low, after };
+	}
+	return null;
+}
+
+function findRiseThenStable(months: IndexedMonth[], changes: HalfYearMonthChange[]) {
+	const rise = changes
+		.filter((change) => change.difference >= MONTH_CHANGE_THRESHOLD)
+		.sort((a, b) => b.difference - a.difference)[0];
+	const ending = stableEnd(months);
+	if (!rise || !ending) return null;
+	const riseTarget = months.find((month) => month.shortLabel === rise.toLabel);
+	if (!riseTarget || ending[0].index <= riseTarget.index) return null;
+	return { rise, ending };
+}
+
+function hasZigzag(changes: HalfYearMonthChange[]) {
+	const directions = changes.filter((change) => Math.abs(change.difference) >= MONTH_CHANGE_THRESHOLD).map((change) => change.direction);
+	let switches = 0;
+	for (let index = 1; index < directions.length; index += 1) {
+		if (directions[index] !== directions[index - 1]) switches += 1;
+	}
+	return switches >= 2;
+}
+
+function coverageSentence(months: HalfYearMonthInput[], valued: IndexedMonth[], truncated: boolean) {
+	if (truncated || valued.length < MIN_MONTHS_FOR_SUMMARY) {
+		return 'Underlaget räcker ännu inte för att läsa ett säkert förlopp över halvåret.';
+	}
+	if (months.some((month) => month.status !== 'sufficient')) {
+		return 'Några månader innehåller få eller inga registreringar, så förändringarna bör läsas försiktigt.';
+	}
+
+	const counts = valued.map((month) => month.entryCount);
+	const countAverage = average(counts)!;
+	return Math.max(...counts) - Math.min(...counts) <= Math.max(4, countAverage * 0.5)
+		? 'Underlaget är ganska jämnt fördelat över månaderna.'
+		: 'Antalet registreringar varierar mellan månaderna, så varje månad bygger på olika mycket underlag.';
+}
+
+function edgeSentence(edges: HalfYearEdgeComparison | null) {
+	if (!edges) return 'Början och slutet går inte att jämföra säkert med det här underlaget.';
+	if (edges.direction === 'level') return 'Skillnaden mellan början och slutet av perioden är liten.';
+	return edges.direction === 'higher'
+		? 'I slutet av perioden ligger värdena högre än i början.'
+		: 'I slutet av perioden ligger värdena lägre än i början.';
+}
+
+function buildHighlights(input: {
+	months: IndexedMonth[];
+	pattern: HalfYearPattern;
+	monthSpread: number | null;
+	truncated: boolean;
+	allMonthsSufficient: boolean;
+	dipReturn: ReturnType<typeof findMidDipReturn>;
+	ending: IndexedMonth[] | null;
+}): string[] {
+	if (input.truncated || !input.allMonthsSufficient || input.months.length < MIN_MONTHS_FOR_SUMMARY) return [];
+
+	const highlights: string[] = [];
+	if (input.dipReturn) {
+		highlights.push(`${startSentence(input.dipReturn.low.shortLabel)} ligger lägst bland månaderna med tillräckligt underlag.`);
+	} else if (input.monthSpread !== null && input.monthSpread >= MONTH_SPREAD_THRESHOLD) {
+		const lowest = [...input.months].sort((a, b) => a.mean - b.mean)[0];
+		highlights.push(`${startSentence(lowest.shortLabel)} ligger lägst bland månaderna med tillräckligt underlag.`);
+	}
+	if (input.ending && input.pattern !== 'even') {
+		highlights.push(`${startSentence(input.ending[0].shortLabel)} och ${input.ending[1].shortLabel} ligger nästan på samma nivå.`);
+	}
+	if (input.pattern === 'zigzag') {
+		highlights.push('Flera intilliggande månader växlar i riktning.');
+	}
+	return [...new Set(highlights)].slice(0, 3);
+}
+
+function buildReflection(input: {
+	months: HalfYearMonthInput[];
+	edges: HalfYearEdgeComparison | null;
+	monthSpread: number | null;
+	truncated: boolean;
+}): HalfYearReflection {
+	const valued = indexedMonths(input.months);
+	const changes = buildMonthChanges(valued);
+	const coverage = coverageSentence(input.months, valued, input.truncated);
+	if (input.truncated || valued.length < MIN_MONTHS_FOR_SUMMARY) {
+		return { pattern: 'insufficient', sentences: [coverage], highlights: [], changes };
+	}
+
+	const sentences: string[] = [];
+	const opening = stableStart(valued);
+	const ending = stableEnd(valued);
+	const dipReturn = findMidDipReturn(valued);
+	const riseThenStable = findRiseThenStable(valued, changes);
+	const zigzag = hasZigzag(changes);
+	const pattern: HalfYearPattern = dipReturn
+		? 'mid-dip-return'
+		: riseThenStable
+			? 'rise-stabilizes'
+			: zigzag
+				? 'zigzag'
+				: input.monthSpread !== null && input.monthSpread < MONTH_SPREAD_THRESHOLD
+					? 'even'
+					: 'varied';
+
+	if (pattern === 'mid-dip-return' && dipReturn) {
+		if (opening) sentences.push(`Halvåret börjar på en ganska jämn nivå under ${joinLabels(opening.map((month) => month.shortLabel))}.`);
+		sentences.push(`I ${dipReturn.low.shortLabel} syns en tydligare nedgång jämfört med ${dipReturn.before.shortLabel}.`);
+		sentences.push(`Efter den lägre nivån i ${dipReturn.low.shortLabel} stiger värdena gradvis under ${joinLabels(dipReturn.after.map((month) => month.shortLabel))}.`);
+		if (ending) sentences.push(`${startSentence(ending[0].shortLabel)} och ${ending[1].shortLabel} ligger sedan ungefär på samma nivå.`);
+	} else if (pattern === 'rise-stabilizes' && riseThenStable) {
+		sentences.push(`En tydligare uppgång syns mellan ${riseThenStable.rise.fromLabel} och ${riseThenStable.rise.toLabel}.`);
+		sentences.push(`Efter uppgången ligger ${riseThenStable.ending[0].shortLabel} och ${riseThenStable.ending[1].shortLabel} ungefär på samma nivå.`);
+		sentences.push(edgeSentence(input.edges));
+	} else if (pattern === 'zigzag') {
+		const largest = [...changes].sort((a, b) => Math.abs(b.difference) - Math.abs(a.difference))[0];
+		sentences.push('Värdena växlar upp och ner mellan flera månader, utan en jämn riktning genom perioden.');
+		if (largest && Math.abs(largest.difference) >= MONTH_CHANGE_THRESHOLD) {
+			sentences.push(`Den största förändringen syns mellan ${largest.fromLabel} och ${largest.toLabel}.`);
+		}
+		sentences.push(edgeSentence(input.edges));
+	} else if (pattern === 'even') {
+		sentences.push('Värdena ligger nära varandra under större delen av perioden.');
+		sentences.push('Ingen enskild månad skiljer ut sig tydligt från de andra månaderna med underlag.');
+		sentences.push(edgeSentence(input.edges));
+	} else {
+		const largest = [...changes].sort((a, b) => Math.abs(b.difference) - Math.abs(a.difference))[0];
+		sentences.push('Det finns större skillnader mellan vissa månader i perioden.');
+		if (largest && Math.abs(largest.difference) >= MONTH_CHANGE_THRESHOLD) {
+			sentences.push(`Den största förändringen syns mellan ${largest.fromLabel} och ${largest.toLabel}.`);
+		}
+		sentences.push(edgeSentence(input.edges));
+	}
+
+	sentences.push(coverage);
+	return {
+		pattern,
+		sentences: sentences.slice(0, 5),
+		highlights: buildHighlights({
+			months: valued,
+			pattern,
+			monthSpread: input.monthSpread,
+			truncated: input.truncated,
+			allMonthsSufficient: input.months.every((month) => month.status === 'sufficient'),
+			dipReturn,
+			ending
+		}),
+		changes
+	};
+}
 
 /**
  * Bygger hela halvårsvyn ur månadsblocken som redan finns i analysen.
@@ -414,16 +660,22 @@ export function buildHalfYearView(input: {
 		highest && lowest && valued.length >= 2 ? roundToOneDecimal(highest.mean - lowest.mean) : null;
 	const edges = buildEdgeComparison(months);
 	const variation = buildVariation(months);
+	const reflection = buildReflection({ months, edges, monthSpread, truncated });
 
 	const monthViews: HalfYearMonthView[] = months.map((month) => {
 		const hasValue = month.status === 'sufficient' && typeof month.mean === 'number';
+		const difference = hasValue && overallAverage !== null ? month.mean! - overallAverage : null;
 		const relative: MonthRelative | null =
-			hasValue && overallAverage !== null
-				? Math.abs(month.mean! - overallAverage) < MONTH_RELATIVE_THRESHOLD
+			difference !== null
+				? Math.abs(difference) < MONTH_RELATIVE_THRESHOLD
 					? 'near'
-					: month.mean! > overallAverage
-						? 'higher'
-						: 'lower'
+					: difference >= MONTH_RELATIVE_STRONG_THRESHOLD
+						? 'much-higher'
+						: difference <= -MONTH_RELATIVE_STRONG_THRESHOLD
+							? 'much-lower'
+							: difference > 0
+								? 'higher'
+								: 'lower'
 				: null;
 		return {
 			...month,
@@ -459,6 +711,7 @@ export function buildHalfYearView(input: {
 			edges.direction !== 'level' &&
 			shape.monthsWithData >= MIN_MONTHS_FOR_DIRECTION,
 		summary: buildSummary(edges, variation, monthSpread, shape.monthsWithData, truncated),
+		reflection,
 		stats: buildStats(shape),
 		basis: buildBasis({ ...shape, edges }, truncated)
 	};

@@ -1440,10 +1440,23 @@
 					{#if selectedPeriod === 180 && halfYear}
 						<section class="analysis-section analysis-long-period" aria-labelledby="half-year-summary-heading">
 							<h3 id="half-year-summary-heading">Ditt senaste halvår</h3>
-							<p>{halfYear.summary}</p>
-							<!-- Fyra nyckeltal i fast ordning. De ska gå att läsa utan att
-							     detaljtexten nedanför läses, och varje ruta säger uttryckligen
-							     när jämförelsen inte går att göra. -->
+							<div class="half-year-reflection">
+								{#each halfYear.reflection.sentences as sentence}
+									<p>{sentence}</p>
+								{/each}
+							</div>
+							{#if halfYear.reflection.highlights.length > 0}
+								<section class="half-year-highlights" aria-labelledby="half-year-highlights-heading">
+									<h4 id="half-year-highlights-heading">Det som sticker ut</h4>
+									<ul>
+										{#each halfYear.reflection.highlights as highlight}
+											<li>{highlight}</li>
+										{/each}
+									</ul>
+								</section>
+							{/if}
+							<!-- Fakta-korten ligger efter reflektionen: de ger detaljer utan att
+							     användaren först behöver tolka siffrorna själv. -->
 							<dl class="half-year-stats">
 								{#each halfYear.stats as stat (stat.id)}
 									<div class="half-year-stat">
@@ -2054,6 +2067,52 @@
 		line-height: 1.5;
 	}
 
+	.half-year-reflection {
+		display: grid;
+		gap: 0.45rem;
+	}
+
+	.half-year-reflection p {
+		line-height: 1.58;
+	}
+
+	.half-year-reflection p:first-child {
+		color: hsl(var(--foreground));
+		font-weight: 500;
+	}
+
+	.half-year-highlights {
+		display: grid;
+		gap: 0.4rem;
+		min-width: 0;
+		margin: 0.1rem 0 0;
+		padding: 0.75rem 0.85rem;
+		border: 1px solid var(--color-dashboard-border);
+		border-radius: 0.65rem;
+		background: hsl(var(--background) / 0.46);
+	}
+
+	.half-year-highlights h4 {
+		margin: 0;
+		color: hsl(var(--foreground));
+		font-size: 0.9rem;
+	}
+
+	.half-year-highlights ul {
+		display: grid;
+		gap: 0.28rem;
+		min-width: 0;
+		margin: 0;
+		padding-left: 1.1rem;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.88rem;
+		line-height: 1.48;
+	}
+
+	.half-year-highlights li {
+		overflow-wrap: anywhere;
+	}
+
 	/* Nyckeltalen ligger på en rad på desktop och två i bredd på mobil, så
 	   halvåret går att överblicka utan att detaljtexten läses. 8rem är valt så
 	   att två ryms i bredd även på 390px-skärmar; med 9rem föll de ned till fyra
@@ -2094,6 +2153,21 @@
 		color: hsl(var(--muted-foreground));
 		font-size: 0.72rem;
 		line-height: 1.35;
+	}
+
+	@media (max-width: 620px) {
+		.analysis-long-period {
+			gap: 0.65rem;
+			padding: 0.85rem 0.9rem;
+		}
+
+		.half-year-reflection {
+			gap: 0.4rem;
+		}
+
+		.half-year-highlights {
+			padding: 0.7rem 0.75rem;
+		}
 	}
 
 	/* 7,5rem räcker för "Nära ditt halvårssnitt" på två rader och låter alla sex
