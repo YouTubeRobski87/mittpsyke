@@ -19,9 +19,19 @@ export function loadEvalScenarios(): EvalScenario[] {
 	);
 }
 
+/**
+ * Antalet är avsiktligt hårdkodat. Grinden finns för att ingenting utöver de
+ * granskade, syntetiska fixtures ska kunna skickas till en riktig provider, och
+ * ett tal som räknas fram automatiskt hade skyddat mot ingenting. Höj det bara
+ * tillsammans med ett nytt scenario som faktiskt granskats.
+ */
+const EXPECTED_SYNTHETIC_FIXTURES = 25;
+
 export function assertSyntheticEvalFixtures(scenarios: readonly EvalScenario[]) {
-	if (scenarios.length !== 24) {
-		throw new Error(`Live-eval kräver exakt 24 syntetiska scenarier, fick ${scenarios.length}.`);
+	if (scenarios.length !== EXPECTED_SYNTHETIC_FIXTURES) {
+		throw new Error(
+			`Live-eval kräver exakt ${EXPECTED_SYNTHETIC_FIXTURES} syntetiska scenarier, fick ${scenarios.length}.`
+		);
 	}
 
 	const ids = new Set(scenarios.map((scenario) => scenario.id));

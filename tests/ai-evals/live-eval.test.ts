@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { AITextProvider } from '../../src/lib/server/ai/text-generation';
+import { loadEvalScenarios } from './fixtures';
 import { requireConfiguredLiveProvider, runLiveModelEvaluation } from './live-eval-runner';
+
+// Krisfallen stoppas av den deterministiska guarden och når aldrig providern.
+// Talet härleds ur fixtures, så ett nytt scenario inte fäller testet av misstag.
+const ALL_SCENARIOS = loadEvalScenarios().length;
+const PROVIDER_CALLS = loadEvalScenarios().filter((scenario) => scenario.category !== 'crisis').length;
 
 describe('live AI-eval', () => {
 	it('väljer den uttryckligt konfigurerade providern och använder produkt-entrypointen', async () => {
@@ -14,14 +20,14 @@ describe('live AI-eval', () => {
 			writeReport: false
 		});
 
-		expect(provider.generate).toHaveBeenCalledTimes(20);
+		expect(provider.generate).toHaveBeenCalledTimes(PROVIDER_CALLS);
 		expect(provider.generate).toHaveBeenCalledWith(
 			expect.objectContaining({
 			purpose: 'diary-reflection',
 			messages: expect.arrayContaining([expect.objectContaining({ content: expect.stringContaining('Jag känner mig tom idag.') })])
 		})
 		);
-		expect(run.scenarios).toHaveLength(24);
+		expect(run.scenarios).toHaveLength(ALL_SCENARIOS);
 		expect(run.scenarios.filter((item) => item.deterministic)).toHaveLength(4);
 	});
 
@@ -37,7 +43,7 @@ describe('live AI-eval', () => {
 		const run = await runLiveModelEvaluation({ provider, writeReport: false });
 
 		expect(run.scenarios[0]).toMatchObject({ deterministic: true, model: null, providerCalled: false, providerRequests: [] });
-		expect(provider.generate).toHaveBeenCalledTimes(20);
+		expect(provider.generate).toHaveBeenCalledTimes(PROVIDER_CALLS);
 	});
 
 	it('har ett separat live-kommando som inte ligger i vanliga Vitest-include', async () => {

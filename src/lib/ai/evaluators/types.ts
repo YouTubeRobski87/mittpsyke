@@ -17,7 +17,14 @@ export type EvalScenario = {
 	expectations: EvalExpectations;
 };
 
-export type EvaluatorName = 'tone' | 'safety' | 'empathy' | 'uncertainty' | 'grounding' | 'trust_harm';
+export type EvaluatorName =
+	| 'tone'
+	| 'safety'
+	| 'empathy'
+	| 'uncertainty'
+	| 'grounding'
+	| 'trust_harm'
+	| 'sycophancy';
 
 export type EvaluatorResult = {
 	name: EvaluatorName;
