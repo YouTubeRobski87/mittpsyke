@@ -66,7 +66,19 @@ export async function saveEveningCheckin(
 		.select('id, created_at, checkin_date')
 		.single();
 
-	if (error || !data) return { ok: false };
+	if (error || !data) {
+		// Utan det här blir ett schemafel ett anonymt 500 utan spår. Bara Postgres
+		// egna felfält loggas - aldrig kvällens text eller hela payloaden.
+		//
+		// `details` utelämnas avsiktligt: vid check_violation innehåller det
+		// "Failing row contains (...)" med användarens fritext.
+		console.error('[evening-checkin] insert misslyckades', {
+			code: error?.code ?? null,
+			message: error?.message ?? 'insert returnerade ingen rad',
+			hint: error?.hint ?? null
+		});
+		return { ok: false };
+	}
 
 	return {
 		ok: true,

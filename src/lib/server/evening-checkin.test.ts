@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { EVENING_CHECKIN_FLOW_VERSION, type EveningCheckinInput } from '$lib/evening-checkin';
 import {
@@ -125,5 +125,52 @@ describe('saveEveningCheckin', () => {
 			hasBlanket: false,
 			hasVeranda: false
 		});
+	});
+});
+
+/* Ett schemafel gav tidigare ett anonymt 500 utan spår i loggen - rotorsaken
+   till att en trasig CHECK-constraint kunde ligga live. Felet ska synas, men
+   kvällens text får aldrig hamna i loggen. */
+describe('saveEveningCheckin loggar databasfel utan att läcka innehåll', () => {
+	afterEach(() => vi.restoreAllMocks());
+
+	function failingClient(error: Record<string, unknown>) {
+		return {
+			from: () => ({
+				insert: () => ({
+					select: () => ({ single: async () => ({ data: null, error }) })
+				})
+			})
+		} as unknown as SupabaseClient;
+	}
+
+	const dbError = {
+		code: '23514',
+		message: 'new row for relation "evening_checkins" violates check constraint',
+		hint: null,
+		details: 'Failing row contains (…, Mötet i morgon., …)'
+	};
+
+	it('loggar Postgres felkod och meddelande', async () => {
+		const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+		const result = await saveEveningCheckin(failingClient(dbError), 'user-1', input);
+
+		expect(result).toEqual({ ok: false });
+		expect(logged).toHaveBeenCalledOnce();
+		const [prefix, payload] = logged.mock.calls[0];
+		expect(prefix).toBe('[evening-checkin] insert misslyckades');
+		expect(payload).toMatchObject({ code: '23514' });
+	});
+
+	it('loggar varken fritexten eller Postgres details-fält', async () => {
+		const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+		await saveEveningCheckin(failingClient(dbError), 'user-1', input);
+
+		const serialised = JSON.stringify(logged.mock.calls);
+		expect(serialised).not.toContain(input.thought);
+		expect(serialised).not.toContain('Failing row contains');
+		expect(serialised).not.toContain('details');
 	});
 });
