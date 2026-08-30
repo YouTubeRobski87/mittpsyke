@@ -114,3 +114,30 @@ describe('språket', () => {
 		}
 	});
 });
+
+describe('det neutrala temat behandlas inte som ett problem', () => {
+	it('erbjuder ingen övning för "det är ändå okej"', () => {
+		const steps = getEveningNextSteps('feeling_okay');
+
+		// Skriva eller stanna kvar - ingenting som antyder att kvällen borde
+		// bli bättre än den redan är.
+		expect(steps.map((step) => step.id)).toEqual(['write', 'stay']);
+		expect(steps.some((step) => step.id === 'exercise')).toBe(false);
+	});
+
+	it('speglar valet utan att fråga vad som är jobbigt', () => {
+		const prompt = getEveningNextStepPrompt('feeling_okay');
+
+		expect(prompt).toContain('det är ändå okej');
+		expect(prompt).not.toMatch(/jobbig|oroa|svår|bättre|problem|besvär/i);
+	});
+
+	it('rör inte övningarna för de teman som redan hade en', () => {
+		for (const themeId of ['racing_thoughts', 'body_anxiety', 'loneliness', 'tomorrow', 'other'] as const) {
+			expect(
+				getEveningNextSteps(themeId).some((step) => step.id === 'exercise'),
+				themeId
+			).toBe(true);
+		}
+	});
+});

@@ -3,8 +3,9 @@
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import {
 		EVENING_CHECKIN_FLOW_VERSION,
-		EVENING_PARKING_BUCKETS,
 		EVENING_THEMES,
+		getEveningParkingBuckets,
+		getEveningParkingPrompt,
 		MAX_EVENING_THOUGHT_LENGTH,
 		canAdvanceEveningFlow,
 		type EveningParkingBucket,
@@ -32,6 +33,9 @@
 
 	let step = $state<Step>(1);
 	let themeId = $state<EveningThemeId | null>(null);
+	// Steg tre följer temat: en lugn kväll ska inte få frågan vad som ska lösas.
+	const parkingBuckets = $derived(getEveningParkingBuckets(themeId));
+	const parkingPrompt = $derived(getEveningParkingPrompt(themeId));
 	let thought = $state('');
 	let parkingBucket = $state<EveningParkingBucket | null>(null);
 	let hasHealthDataConsent = $state(false);
@@ -49,6 +53,16 @@
 		step = next;
 		saveError = '';
 		void tick().then(() => stepHeading?.focus());
+	}
+
+	// Byter man tema efter att ha valt i steg tre kan det valet höra till den
+	// andra uppsättningen. Då nollställs det hellre än följer med till en fråga
+	// där det inte fanns.
+	function selectTheme(next: EveningThemeId) {
+		themeId = next;
+		if (parkingBucket && !getEveningParkingBuckets(next).some((b) => b.id === parkingBucket)) {
+			parkingBucket = null;
+		}
 	}
 
 	function continueFromTheme() {
@@ -165,7 +179,7 @@
 							type="button"
 							class:selected={themeId === theme.id}
 							aria-pressed={themeId === theme.id}
-							onclick={() => (themeId = theme.id)}
+							onclick={() => selectTheme(theme.id)}
 						>
 							{theme.label}
 						</button>
@@ -194,9 +208,9 @@
 			</div>
 		{:else if step === 3}
 			<div class="evening-step-content">
-				<h2 id="evening-flow-title" bind:this={stepHeading} tabindex="-1">Vad vill du göra med det för ikväll?</h2>
+				<h2 id="evening-flow-title" bind:this={stepHeading} tabindex="-1">{parkingPrompt}</h2>
 				<div class="evening-options" aria-label="Välj en lugn riktning för ikväll">
-					{#each EVENING_PARKING_BUCKETS as bucket}
+					{#each parkingBuckets as bucket}
 						<button
 							type="button"
 							class:selected={parkingBucket === bucket.id}

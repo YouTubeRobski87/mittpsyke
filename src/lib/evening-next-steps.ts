@@ -37,8 +37,12 @@ const WRITE_STEP: EveningNextStep = {
 /**
  * Övningarna är befintliga sidor under /ovningar. Valet per tema är enkelt och
  * uppenbart - ingen dold viktning, ingen personlig profilering.
+ *
+ * Partial, eftersom alla teman inte ska erbjudas en övning. "Det är ändå okej"
+ * beskriver ingenting som behöver åtgärdas, och en övning där hade läst som att
+ * kvällen ändå borde bli bättre. Det temat får skriva eller stanna kvar.
  */
-const EXERCISE_BY_THEME: Record<EveningThemeId, { label: string; href: string }> = {
+const EXERCISE_BY_THEME: Partial<Record<EveningThemeId, { label: string; href: string }>> = {
 	racing_thoughts: { label: 'Göra en lugn övning', href: '/ovningar/grounding-5-4-3-2-1' },
 	body_anxiety: { label: 'Göra en lugn övning', href: '/ovningar/4-7-8-andning' },
 	loneliness: { label: 'Göra en lugn övning', href: '/ovningar/sjalvmedkansla-ovning' },

@@ -5,6 +5,10 @@ export const EVENING_THEMES = [
 	{ id: 'body_anxiety', label: 'Oro i kroppen' },
 	{ id: 'loneliness', label: 'Känner mig ensam' },
 	{ id: 'tomorrow', label: 'Orolig inför imorgon' },
+	// Kvällsstugan är inte bara till för svåra kvällar. Det här valet betyder inte
+	// "jag mår jättebra" utan är avsiktligt mjukare, och det egna id:t gör att en
+	// framtida analys kan skilja det från de fyra som beskriver något jobbigt.
+	{ id: 'feeling_okay', label: 'Det är ändå okej' },
 	{ id: 'other', label: 'Något annat' }
 ] as const;
 
@@ -14,8 +18,41 @@ export const EVENING_PARKING_BUCKETS = [
 	{ id: 'not_tonight', label: 'Inte lösa det ikväll' }
 ] as const;
 
+// Samma steg, men för en kväll som inte bär på något att hantera. De tre valen
+// ovan förutsätter alla ett "det" som är ett bekymmer - särskilt "inte lösa det
+// ikväll" läser fel för den som just sagt att kvällen är okej.
+//
+// Egna id:n i stället för omdöpta etiketter, så att ett sparat värde betyder
+// samma sak för alltid och analysen inte blandar ihop de två vägarna.
+export const EVENING_CALM_PARKING_BUCKETS = [
+	{ id: 'let_it_be', label: 'Låta kvällen vara som den är' },
+	{ id: 'carry_it', label: 'Ta med mig det här till imorgon' },
+	{ id: 'take_it_easy', label: 'Bara ta det lugnt' }
+] as const;
+
 export type EveningThemeId = (typeof EVENING_THEMES)[number]['id'];
-export type EveningParkingBucket = (typeof EVENING_PARKING_BUCKETS)[number]['id'];
+export type EveningParkingBucket =
+	| (typeof EVENING_PARKING_BUCKETS)[number]['id']
+	| (typeof EVENING_CALM_PARKING_BUCKETS)[number]['id'];
+
+/** Teman som beskriver en kväll utan något att hantera. */
+const CALM_THEMES: readonly EveningThemeId[] = ['feeling_okay'];
+
+/** Steg tre ser olika ut beroende på om kvällen bär på något eller inte. */
+export function getEveningParkingBuckets(
+	themeId: EveningThemeId | null | undefined
+): readonly { readonly id: EveningParkingBucket; readonly label: string }[] {
+	return themeId && CALM_THEMES.includes(themeId)
+		? EVENING_CALM_PARKING_BUCKETS
+		: EVENING_PARKING_BUCKETS;
+}
+
+/** Rubriken över samma steg. Frågar aldrig vad som ska lösas för en lugn kväll. */
+export function getEveningParkingPrompt(themeId: EveningThemeId | null | undefined): string {
+	return themeId && CALM_THEMES.includes(themeId)
+		? 'Vad känns rätt för resten av kvällen?'
+		: 'Vad vill du göra med det för ikväll?';
+}
 
 export const MAX_EVENING_THOUGHT_LENGTH = 1_200;
 
@@ -48,7 +85,11 @@ function isThemeId(value: unknown): value is EveningThemeId {
 }
 
 function isParkingBucket(value: unknown): value is EveningParkingBucket {
-	return typeof value === 'string' && EVENING_PARKING_BUCKETS.some((bucket) => bucket.id === value);
+	if (typeof value !== 'string') return false;
+	return (
+		EVENING_PARKING_BUCKETS.some((bucket) => bucket.id === value) ||
+		EVENING_CALM_PARKING_BUCKETS.some((bucket) => bucket.id === value)
+	);
 }
 
 /** Validerar en frivillig kvällsincheckning. Fritext lämnar aldrig klienten utan sparval. */
@@ -63,6 +104,12 @@ export function validateEveningCheckinInput(value: unknown): EveningCheckinValid
 	}
 	if (!isParkingBucket(input.parkingBucket)) {
 		return { ok: false, error: 'Välj vad du vill göra med det för ikväll.' };
+	}
+	// Steg tre visar olika uppsättningar beroende på tema, och kombinationen låses
+	// även här. Annars kan ett sparat värde beskriva ett steg användaren aldrig
+	// blev erbjuden. Samma källa som UI:t läser, så reglerna inte kan glida isär.
+	if (!getEveningParkingBuckets(input.themeId).some((bucket) => bucket.id === input.parkingBucket)) {
+		return { ok: false, error: 'Valet hör inte till hur du beskrev kvällen.' };
 	}
 	if (input.flowVersion !== EVENING_CHECKIN_FLOW_VERSION) {
 		return { ok: false, error: 'Ogiltig version av Kvällslugn.' };
