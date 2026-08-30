@@ -15,6 +15,7 @@
 		writeDiaryDraft
 	} from '$lib/diary-draft';
 	import { dataflowCopy } from '$lib/dataflow-copy';
+	import { scrollIntoViewWithMotionPreference } from '$lib/scroll';
 
 	const AUTOSAVE_INTERVAL_MS = 3000;
 
@@ -141,7 +142,7 @@
 
 		// Auto-scroll till komponenten efter kort fördröjning
 		const scrollTimer = setTimeout(() => {
-			containerEl?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			if (containerEl) scrollIntoViewWithMotionPreference(containerEl, { block: 'start' });
 			textareaEl?.focus({ preventScroll: true });
 		}, 100);
 

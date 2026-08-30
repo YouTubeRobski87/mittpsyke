@@ -35,10 +35,10 @@ export const PROGRESS_SCENE_PLACEMENTS: Record<ProgressSceneBand, ProgressSceneP
 			safeZone: 'Den fria gräs- och stenremsan längst ut på högra sluttningen, ovanför elden.'
 		},
 		mobile: {
-			ground: { x: 81, y: 68 },
-			imagePosition: { x: 60, y: 64 },
-			baseWidth: 240,
-			safeZone: 'Den fria högra sluttningen ovanför elden, utanför personen och mobilcopy.'
+			ground: { x: 86, y: 57 },
+			imagePosition: { x: 74, y: 64 },
+			baseWidth: 180,
+			safeZone: 'Den högra strandremsan ovanför elden, avskild från personen och vattnet.'
 		}
 	},
 	day: {
@@ -49,10 +49,10 @@ export const PROGRESS_SCENE_PLACEMENTS: Record<ProgressSceneBand, ProgressSceneP
 			safeZone: 'Den fria gräs- och stenremsan längst ut på högra sluttningen, ovanför elden.'
 		},
 		mobile: {
-			ground: { x: 81, y: 69 },
-			imagePosition: { x: 60, y: 64 },
-			baseWidth: 240,
-			safeZone: 'Den fria högra sluttningen ovanför elden, utanför personen och mobilcopy.'
+			ground: { x: 86, y: 57 },
+			imagePosition: { x: 74, y: 64 },
+			baseWidth: 180,
+			safeZone: 'Den högra strandremsan ovanför elden, avskild från personen och vattnet.'
 		}
 	},
 	afternoon: {
@@ -63,10 +63,10 @@ export const PROGRESS_SCENE_PLACEMENTS: Record<ProgressSceneBand, ProgressSceneP
 			safeZone: 'Den yttre högra grässlänten; avsiktligt bort från mannen och lägerelden.'
 		},
 		mobile: {
-			ground: { x: 81, y: 68 },
-			imagePosition: { x: 60, y: 64 },
-			baseWidth: 240,
-			safeZone: 'Den fria högra sluttningen ovanför elden, utanför mannens siluett och mobilcopy.'
+			ground: { x: 86, y: 57 },
+			imagePosition: { x: 74, y: 64 },
+			baseWidth: 180,
+			safeZone: 'Den högra strandremsan ovanför elden, avskild från mannens siluett och vattnet.'
 		}
 	},
 	evening: {
@@ -77,10 +77,10 @@ export const PROGRESS_SCENE_PLACEMENTS: Record<ProgressSceneBand, ProgressSceneP
 			safeZone: 'Den fria gräs- och stenremsan längst ut på högra sluttningen, ovanför elden.'
 		},
 		mobile: {
-			ground: { x: 81, y: 68 },
-			imagePosition: { x: 60, y: 64 },
-			baseWidth: 240,
-			safeZone: 'Den fria högra sluttningen ovanför elden, utanför personen och mobilcopy.'
+			ground: { x: 86, y: 57 },
+			imagePosition: { x: 74, y: 64 },
+			baseWidth: 180,
+			safeZone: 'Den högra strandremsan ovanför elden, avskild från personen och vattnet.'
 		}
 	}
 };

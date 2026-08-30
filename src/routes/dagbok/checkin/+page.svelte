@@ -18,6 +18,7 @@
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import VideoRecorder from '$lib/components/VideoRecorder.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
+	import { scrollIntoViewWithMotionPreference } from '$lib/scroll';
 	import { clearDiaryDraft, readDiaryDraft } from '$lib/diary-draft';
 	import {
 		awardMilestone,
@@ -876,7 +877,8 @@
 		calendarFilterDate = dateKey;
 		currentPage = 1;
 		if (dateKey && typeof document !== 'undefined') {
-			document.getElementById('senaste-inlagg')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			const latestEntries = document.getElementById('senaste-inlagg');
+			if (latestEntries) scrollIntoViewWithMotionPreference(latestEntries, { block: 'start' });
 		}
 	}
 
@@ -909,7 +911,7 @@
 		if (typeof requestAnimationFrame === 'function') {
 			await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
 		}
-		writeEditorPanel?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		if (writeEditorPanel) scrollIntoViewWithMotionPreference(writeEditorPanel, { block: 'start' });
 		draftTextarea?.focus({ preventScroll: true });
 	}
 
@@ -959,7 +961,8 @@
 		currentPage = 1;
 		await tick();
 		if (typeof document !== 'undefined') {
-			document.getElementById('senaste-inlagg')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			const latestEntries = document.getElementById('senaste-inlagg');
+			if (latestEntries) scrollIntoViewWithMotionPreference(latestEntries, { block: 'start' });
 		}
 	}
 

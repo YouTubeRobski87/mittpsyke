@@ -1374,7 +1374,7 @@
 						? companionScene.anonymousCopy
 						: companionScene.copy}
 				</p>
-				<p>{worldReturnCopy ?? livingWorldReflectionCopy}</p>
+				<p class="companion-reflection">{worldReturnCopy ?? livingWorldReflectionCopy}</p>
 			</div>
 			</div>
 					</section>
@@ -3155,13 +3155,19 @@
 			--progress-ripple-fade-opacity: 0.025;
 		}
 
+		/* Den smalare mobilcropen samlar personen och följeslagaren till höger.
+		   Lägg copyn i övre vänsterdelen i stället för att trycka dess två stycken
+		   mot kortets nederkant. */
 		.companion-copy {
+			top: clamp(0.9rem, 4vw, 1.2rem);
 			left: 1.2rem;
-			right: 5.5rem;
-			bottom: 1.1rem;
+			right: clamp(4.8rem, 20vw, 6.5rem);
+			bottom: auto;
+			max-width: 18rem;
 		}
 		.companion-copy h2 { font-size: 1rem; }
-		.companion-copy p { font-size: 0.8rem; line-height: 1.4; }
+		.companion-copy p { font-size: clamp(0.78rem, 2.9vw, 0.84rem); line-height: 1.4; }
+		.companion-copy .companion-reflection { margin-top: 0.35rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
 		.insights-card,
 		.progress-summary-card { min-height: 18rem; }

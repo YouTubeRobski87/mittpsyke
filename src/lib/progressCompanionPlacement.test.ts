@@ -29,8 +29,13 @@ describe('Framstegs följeslagarplacering', () => {
 		[1920, 1080],
 		[1440, 900],
 		[1280, 720],
+		[915, 412],
+		[844, 390],
+		[430, 932],
+		[412, 915],
 		[390, 844],
-		[375, 812]
+		[375, 812],
+		[360, 800]
 	])('räknar en synlig, positiv storlek vid %ix%i', (viewportWidth, viewportHeight) => {
 		// Samma herohöjder som /framsteg använder för respektive breakpoint.
 		const containerWidth = viewportWidth <= PROGRESS_COMPACT_BREAKPOINT ? viewportWidth - 28 : viewportWidth - 96;
@@ -88,8 +93,13 @@ describe('stugans klickyta', () => {
 	it.each([
 		[1440, 900],
 		[1280, 720],
+		[915, 412],
+		[844, 390],
+		[430, 932],
+		[412, 915],
 		[390, 844],
-		[375, 812]
+		[375, 812],
+		[360, 800]
 	])('ligger inom den synliga hero-ytan vid %ix%i', (viewportWidth) => {
 		for (const scene of scenes) {
 			const box = heroBox(viewportWidth);
