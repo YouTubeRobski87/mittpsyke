@@ -27,6 +27,7 @@ import {
 import {
 	AITextGenerationError,
 	generateAIText,
+	hasConfiguredTextProvider,
 	type AIMessage,
 	type AITextRequest
 } from '$lib/server/ai/text-generation';
@@ -439,22 +440,6 @@ function buildConversationTitle(input: string): string {
 	return firstWords.slice(0, 60).trim() || 'Samtal';
 }
 
-const normalizeApiKey = (value: string | undefined): string | null => {
-	if (!value) return null;
-
-	const normalized = value
-		.trim()
-		.replace(/^['"]|['"]$/g, '')
-		.replace(/^Bearer\s+/i, '')
-		.replace(/\s+/g, '');
-
-	if (!normalized || /[\u0000-\u001f\u007f]/.test(normalized)) {
-		return null;
-	}
-
-	return normalized;
-};
-
 export const POST: RequestHandler = async ({ request, getClientAddress, cookies }) => {
 	if (!hasSensitiveConsentHeader(request)) {
 		return errorResponse('Consent required for sensitive AI features.', 403);
@@ -527,8 +512,8 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 		return errorResponse(CHAT_RATE_LIMIT_MESSAGE, 429);
 	}
 
-	if (!normalizeApiKey(env.OPENAI_API_KEY)) {
-		console.error('OPENAI_API_KEY is missing or malformed');
+	if (!hasConfiguredTextProvider()) {
+		console.error('AI text provider is missing or malformed');
 		return errorResponse('Server configuration error', 500);
 	}
 

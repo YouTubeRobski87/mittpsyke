@@ -35,7 +35,6 @@ describe('POST /api/chat', () => {
 		mocks.generateAIText.mockReset();
 		mocks.generateAIText.mockResolvedValue({
 			text: 'Tack för att du berättar.',
-			provider: 'openai',
 			model: 'test-model'
 		});
 	});

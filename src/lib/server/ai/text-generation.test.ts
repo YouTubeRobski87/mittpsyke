@@ -1,12 +1,13 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
 import {
 	createAITextGenerator,
 	generateAIText,
 	getAIModelConfiguration,
 	normalizeAIError,
-	OpenAITextProvider,
 	type AITextProvider
 } from './text-generation';
+import { normalizeOpenAIError, OpenAITextProvider } from './providers/openai-text-provider';
 
 describe('AI:s textgenereringslager', () => {
 	it('väljer centralt konfigurerad modell och timeout för ett känt syfte', async () => {
@@ -21,7 +22,6 @@ describe('AI:s textgenereringslager', () => {
 
 		expect(result).toMatchObject({
 			text: 'Ett lugnt svar.',
-			provider: 'openai',
 			model: getAIModelConfiguration('support-chat').model
 		});
 		expect(provider.generate).toHaveBeenCalledWith(
@@ -70,7 +70,15 @@ describe('AI:s textgenereringslager', () => {
 	});
 
 	it('normaliserar timeout och providerfel utan att bära vidare rått felinnehåll', () => {
-		expect(normalizeAIError(Object.assign(new Error('intern detalj'), { name: 'APIConnectionTimeoutError' }))).toMatchObject({ code: 'timeout' });
+		expect(normalizeOpenAIError(Object.assign(new Error('intern detalj'), { name: 'APIConnectionTimeoutError' }))).toMatchObject({ code: 'timeout' });
 		expect(normalizeAIError(new Error('intern detalj'))).toMatchObject({ code: 'provider' });
+	});
+
+	it('håller produktkärnan fri från OpenAI-SDK och OpenAI-konfiguration', () => {
+		const source = readFileSync(new URL('./text-generation.ts', import.meta.url), 'utf8');
+
+		expect(source).not.toMatch(/from\s+['"]openai['"]/);
+		expect(source).not.toMatch(/OPENAI_/);
+		expect(source).not.toMatch(/\bOpenAI\b/);
 	});
 });

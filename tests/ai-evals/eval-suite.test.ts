@@ -20,7 +20,7 @@ describe('AI Evaluation Suite', () => {
 	});
 
 	it.each(scenarios.filter((scenario) => scenario.category !== 'crisis'))(
-		'$id använder produktens request-builder och den injicerade providern',
+		'$id använder produktens request-builder, kontextassembly och den injicerade providern',
 		async (scenario) => {
 			const result = await runScenarioThroughProductFlow(scenario);
 
@@ -30,6 +30,11 @@ describe('AI Evaluation Suite', () => {
 			expect(result.providerRequests[0]).toMatchObject({
 				purpose: scenario.category === 'diary-reflection' ? 'diary-reflection' : 'support-chat'
 			});
+			if (scenario.category === 'memory' && (scenario.memoryContext?.length ?? 0) > 0) {
+				expect(result.providerRequests[0].systemInstructions?.join('\n')).toContain(
+					'Bakgrund för kontinuitet (inte för analys eller profilering):'
+				);
+			}
 		}
 	);
 
