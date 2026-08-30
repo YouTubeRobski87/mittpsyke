@@ -8,7 +8,7 @@ export default defineConfig({
 		watch: {
 			// _reference är ett fristående projekt med egen Vite-root och egna fonts.
 			// Det får inte trigga HMR eller asset-requests i MittPsykes preview.
-			ignored: ['**/_reference/**', '**/node_modules/**', '**/.git/**']
+			ignored: ['**/_reference/**', '**/.claude/worktrees/**', '**/node_modules/**', '**/.git/**']
 		}
 	},
 	test: {
