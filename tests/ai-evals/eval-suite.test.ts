@@ -1,18 +1,16 @@
-import { readFileSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { afterAll, describe, expect, it } from 'vitest';
 import { formatAiEvaluationReport, runAiEvaluations } from '../../src/lib/ai/evalRunner';
 import type { EvalScenario } from '../../src/lib/ai/evaluators/types';
-import { runScenarioThroughProductFlow } from './product-flow';
+import { loadEvalScenarios } from './fixtures';
+import { runDeterministicScenarioThroughProductFlow } from './product-flow';
 
-const fixtureFiles = ['diary-reflection.json', 'supportive-chat.json', 'information.json', 'crisis.json', 'memory.json'];
-const fixtureDirectory = join(process.cwd(), 'tests', 'ai-evals');
-const scenarios = fixtureFiles.flatMap((file) => JSON.parse(readFileSync(join(fixtureDirectory, file), 'utf8')) as EvalScenario[]);
+const scenarios = loadEvalScenarios();
 
 describe('AI Evaluation Suite', () => {
 	it.each(scenarios)('$id uppfyller golden-kraven', async (scenario) => {
-		const report = await runAiEvaluations([scenario], async (current) => (await runScenarioThroughProductFlow(current)).response, {
+		const report = await runAiEvaluations([scenario], async (current) => (await runDeterministicScenarioThroughProductFlow(current)).response, {
 			model: 'product-flow-recorded-provider',
 			date: new Date('2026-01-01T00:00:00.000Z')
 		});
@@ -22,7 +20,7 @@ describe('AI Evaluation Suite', () => {
 	it.each(scenarios.filter((scenario) => scenario.category !== 'crisis'))(
 		'$id använder produktens request-builder, kontextassembly och den injicerade providern',
 		async (scenario) => {
-			const result = await runScenarioThroughProductFlow(scenario);
+			const result = await runDeterministicScenarioThroughProductFlow(scenario);
 
 			expect(result.deterministic).toBe(false);
 			expect(result.response).toBe(scenario.goldenResponse);
@@ -39,7 +37,7 @@ describe('AI Evaluation Suite', () => {
 	);
 
 	it.each(scenarios.filter((scenario) => scenario.category === 'crisis'))('$id stoppas före provideranrop', async (scenario) => {
-		const result = await runScenarioThroughProductFlow(scenario);
+		const result = await runDeterministicScenarioThroughProductFlow(scenario);
 		expect(result.deterministic).toBe(true);
 		expect(result.providerRequests).toHaveLength(0);
 	});
@@ -131,7 +129,7 @@ describe('AI Evaluation Suite', () => {
 		const reportPath = process.env.AI_EVAL_REPORT_PATH ?? join(process.cwd(), 'artifacts', 'ai-evaluation-report.md');
 		const report = await runAiEvaluations(
 			scenarios,
-			async (scenario) => (await runScenarioThroughProductFlow(scenario)).response,
+			async (scenario) => (await runDeterministicScenarioThroughProductFlow(scenario)).response,
 			{ model: process.env.AI_EVAL_MODEL ?? 'product-flow-recorded-provider' }
 		);
 		await mkdir(dirname(reportPath), { recursive: true });

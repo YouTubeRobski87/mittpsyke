@@ -10,7 +10,9 @@ import type { EvalScenario } from '../../src/lib/ai/evaluators/types';
 
 export type ProductFlowResult = {
 	response: string;
+	model: string | null;
 	deterministic: boolean;
+	providerCalled: boolean;
 	providerRequests: AITextProviderRequest[];
 };
 
@@ -26,13 +28,16 @@ function buildMemoryContextBlock(memoryContext: string[] | undefined) {
 
 /**
  * Runs an eval through the same deterministic chat guard and request builders
- * as the product. The provider is injected and only returns the fixture's
- * recorded synthetic response, so no sensitive text leaves the test process.
+ * as the product. Callers choose the provider explicitly, which keeps the
+ * recorded CI path and the live model path on the same product entrypoint.
  */
-export async function runScenarioThroughProductFlow(scenario: EvalScenario): Promise<ProductFlowResult> {
+export async function runScenarioThroughProductFlow(
+	scenario: EvalScenario,
+	provider: AITextProvider
+): Promise<ProductFlowResult> {
 	const guard = _resolveDeterministicChatGuard(scenario.input);
 	if (guard) {
-		return { response: guard.reply, deterministic: true, providerRequests: [] };
+		return { response: guard.reply, model: null, deterministic: true, providerCalled: false, providerRequests: [] };
 	}
 
 	if (scenario.category === 'crisis') {
@@ -49,12 +54,25 @@ export async function runScenarioThroughProductFlow(scenario: EvalScenario): Pro
 				contextBlocks: buildMemoryContextBlock(scenario.memoryContext)
 			});
 	const providerRequests: AITextProviderRequest[] = [];
-	const provider: AITextProvider = {
+	const recordingProvider: AITextProvider = {
 		async generate(providerRequest) {
 			providerRequests.push(providerRequest);
+			return provider.generate(providerRequest);
+		}
+	};
+	const result = await generateAIText(request, recordingProvider);
+	return { response: result.text, model: result.model, deterministic: false, providerCalled: true, providerRequests };
+}
+
+/** Recorded synthetic provider used exclusively by deterministic CI evals. */
+export function createRecordedEvalProvider(scenario: EvalScenario): AITextProvider {
+	return {
+		async generate() {
 			return scenario.goldenResponse;
 		}
 	};
-	const result = await generateAIText(request, provider);
-	return { response: result.text, deterministic: false, providerRequests };
+}
+
+export function runDeterministicScenarioThroughProductFlow(scenario: EvalScenario) {
+	return runScenarioThroughProductFlow(scenario, createRecordedEvalProvider(scenario));
 }
