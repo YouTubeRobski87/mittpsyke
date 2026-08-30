@@ -12,6 +12,7 @@
 		trackSignupCompleted
 	} from '$lib/analytics';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import { DAILY_QUESTION_CONSENT_COPY } from '$lib/daily-question-consent-copy';
 	import MilestoneToast from '$lib/components/MilestoneToast.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
@@ -57,9 +58,12 @@
 
 	type DailyQuestionPayload = {
 		id?: string | null;
-		question?: string;
-		date?: string;
+		question?: string | null;
+		date?: string | null;
 		safety?: boolean;
+		/** Sant när servern saknar sparad fråga för idag och generering krävs. */
+		needsGeneration?: boolean;
+		code?: string;
 		error?: string;
 	};
 
@@ -118,6 +122,13 @@
 	let dailyQuestionSafety = $state(false);
 	let dailyQuestionLoading = $state(false);
 	let dailyQuestionError = $state('');
+	// Sant när servern inte har någon sparad fråga för idag. Då krävs ett aktivt
+	// val innan dagbokskontext skickas till Anthropic.
+	let dailyQuestionNeedsGeneration = $state(false);
+	// Samtycket för dagens fråga är eget och läses serverägt. Null = inte hämtat än.
+	let dailyQuestionConsent = $state<boolean | null>(null);
+	// Sant när användaren klickat men saknar samtycke: då visas grinden i stället.
+	let showDailyQuestionConsentGate = $state(false);
 	let draftMood = $state('');
 	let draftMoodPreview = $state(5);
 	let draftError = $state('');
@@ -922,28 +933,77 @@
 	}
 
 	function applyDailyQuestion(payload: DailyQuestionPayload) {
-		dailyQuestion = payload.question?.trim() || fallbackDailyQuestion;
+		dailyQuestionNeedsGeneration = Boolean(payload.needsGeneration);
+		// Utan sparad fråga visas reservfrågan tills användaren själv hämtar dagens.
+		dailyQuestion = payload.question?.trim() || '';
 		dailyQuestionId = payload.id ?? null;
 		dailyQuestionSafety = Boolean(payload.safety);
 		dailyQuestionError = '';
 	}
 
-	async function loadDailyQuestion() {
-		if (dailyQuestionLoading || dailyQuestion) return;
+	async function loadDailyQuestionConsent() {
+		try {
+			const response = await fetch('/api/consent/diary-daily-question');
+			const payload = (await response.json().catch(() => null)) as { status?: string } | null;
+			dailyQuestionConsent = response.ok && payload?.status === 'granted';
+		} catch {
+			dailyQuestionConsent = false;
+		}
+	}
+
+	/**
+	 * Ger samtycket och hämtar frågan direkt. Ett lyckat godkännande ska inte
+	 * kräva ett extra klick.
+	 */
+	async function acceptDailyQuestionConsent() {
+		const response = await fetch('/api/consent/diary-daily-question', { method: 'POST' });
+		if (!response.ok) throw new Error('Kunde inte spara samtycket just nu.');
+
+		dailyQuestionConsent = true;
+		showDailyQuestionConsentGate = false;
+		await loadDailyQuestion(true);
+	}
+
+	/**
+	 * Klickvägen. Utan giltigt samtycke visas grinden i stället för att generera -
+	 * ingen dagbokskontext lämnar MittPsyke förrän användaren sagt ja.
+	 */
+	async function requestDailyQuestion() {
+		if (dailyQuestionConsent === null) await loadDailyQuestionConsent();
+		if (!dailyQuestionConsent) {
+			showDailyQuestionConsentGate = true;
+			return;
+		}
+		await loadDailyQuestion(true);
+	}
+
+	/**
+	 * `generate` styr om anropet får orsaka ny AI-behandling. Vid sidladdning är
+	 * det alltid false: då läser servern bara en redan sparad fråga, utan att
+	 * röra dagboken eller providern.
+	 */
+	async function loadDailyQuestion(generate = false) {
+		if (dailyQuestionLoading || (dailyQuestion && !generate)) return;
 		dailyQuestionLoading = true;
 		dailyQuestionError = '';
 
 		try {
-			const response = await fetch('/api/daily-question');
+			const response = await fetch(generate ? '/api/daily-question?generate=true' : '/api/daily-question');
 			const payload = (await response.json().catch(() => ({}))) as DailyQuestionPayload;
+			if (response.status === 403) {
+				// Saknat samtycke är inte ett fel - det är ett läge användaren kan ändra.
+				dailyQuestionConsent = false;
+				dailyQuestionNeedsGeneration = true;
+				dailyQuestion = '';
+				dailyQuestionError = '';
+				return;
+			}
 			if (!response.ok) {
-				dailyQuestion = fallbackDailyQuestion;
 				dailyQuestionError = payload.error ?? 'Kunde inte hämta dagens fråga just nu.';
 				return;
 			}
 			applyDailyQuestion(payload);
 		} catch {
-			dailyQuestion = fallbackDailyQuestion;
 			dailyQuestionError = 'Kunde inte hämta dagens fråga just nu.';
 		} finally {
 			dailyQuestionLoading = false;
@@ -1367,9 +1427,43 @@
 							{:else}
 								<h2>{dailyQuestionPanelQuestion}</h2>
 							{/if}
+							{#if showDailyQuestionConsentGate}
+								<!-- Just-in-time: grinden visas först när användaren bett om frågan,
+								     och innan någon dagbokskontext lämnar MittPsyke. -->
+								<ConsentGate
+									title={DAILY_QUESTION_CONSENT_COPY.title}
+									dataLabel={DAILY_QUESTION_CONSENT_COPY.dataLabel}
+									serviceLabel={DAILY_QUESTION_CONSENT_COPY.serviceLabel}
+									onAccept={acceptDailyQuestionConsent}
+								/>
+								<p class="auth-muted">{DAILY_QUESTION_CONSENT_COPY.activeChoice}</p>
+								<button
+									type="button"
+									class="auth-button"
+									onclick={() => (showDailyQuestionConsentGate = false)}
+								>
+									Inte nu
+								</button>
+							{:else if dailyQuestionNeedsGeneration && !draftPromptQuestion}
+								<!-- Dagens fråga skapas först när användaren väljer det. Att öppna
+								     sidan skickar aldrig dagbokskontext vidare av sig själv. -->
+								<button
+									type="button"
+									class="auth-button"
+									onclick={requestDailyQuestion}
+									disabled={dailyQuestionLoading}
+								>
+									{dailyQuestionLoading ? 'Hämtar...' : 'Hämta dagens fråga'}
+								</button>
+							{/if}
 							{#if dailyQuestionSafety}
 								<p class="auth-muted">
 									Om det känns akut, ring 112. För vårdråd finns 1177, och fler stödlinjer finns på stodlinjer.se.
+								</p>
+							{:else if dailyQuestionNeedsGeneration && !draftPromptQuestion}
+								<!-- Reservfrågan får inte se ut som dagens genererade fråga. -->
+								<p class="auth-muted">
+									Det här är en allmän fråga. Dagens egna fråga hämtas när du väljer det.
 								</p>
 							{:else}
 								<p class="auth-muted">Du kan svara med en rad eller skriva längre, i din egen takt.</p>

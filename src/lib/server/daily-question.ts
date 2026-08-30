@@ -324,19 +324,35 @@ export async function buildDailyQuestionContext(
 	};
 }
 
-export async function getOrCreateDailyQuestion(supabase: SupabaseClient, user: User) {
-	const today = getStockholmDateKey();
+/**
+ * Läser dagens redan sparade fråga. Rör varken dagboken eller någon AI-
+ * leverantör: den enda källan är användarens egen daily_questions-rad.
+ *
+ * Utbruten så att routen kan besvara ett sidbesök utan att orsaka ny extern
+ * behandling. Att visa en fråga som redan genererats är inte samma sak som att
+ * generera en ny.
+ */
+export async function readTodaysDailyQuestion(
+	supabase: SupabaseClient,
+	userId: string
+): Promise<DailyQuestionRecord | null> {
 	const existing = await supabase
 		.from('daily_questions')
 		.select('id, user_id, date, question_text, context_snapshot, regenerations, created_at')
-		.eq('user_id', user.id)
-		.eq('date', today)
+		.eq('user_id', userId)
+		.eq('date', getStockholmDateKey())
 		.maybeSingle<DailyQuestionRecord>();
 
 	if (existing.error) {
 		console.error('Daily question load error:', existing.error);
 	}
-	if (existing.data) return { question: existing.data, safety: false };
+	return existing.data ?? null;
+}
+
+export async function getOrCreateDailyQuestion(supabase: SupabaseClient, user: User) {
+	const today = getStockholmDateKey();
+	const cached = await readTodaysDailyQuestion(supabase, user.id);
+	if (cached) return { question: cached, safety: false };
 
 	const { context, crisis } = await buildDailyQuestionContext(supabase, user.id, 0);
 	if (crisis) {

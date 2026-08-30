@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { regenerateDailyQuestion } from '$lib/server/daily-question';
-import { hasDiaryAiConsent } from '$lib/server/diary-ai-consent';
+import { hasDailyQuestionAiConsent } from '$lib/server/daily-question-ai-consent';
 import { createServiceClient } from '$lib/server/supabase-admin';
 import type { RequestHandler } from './$types';
 
@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ locals }) => {
 		return json({ error: 'Server configuration error.' }, { status: 500 });
 	}
 
-	if (!(await hasDiaryAiConsent(serviceClient, user.id))) {
+	if (!(await hasDailyQuestionAiConsent(serviceClient, user.id))) {
 		return json(
 			{
 				error: 'Consent required for sensitive diary AI features.',

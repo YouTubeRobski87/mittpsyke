@@ -58,6 +58,11 @@
 	let consentMessage = $state('');
 	let consentMessageType = $state<'success' | 'error'>('success');
 	let diaryAiConsentGranted = $state(false);
+	// Dagens fråga har eget samtycke och egen återkallelse.
+	let dailyQuestionConsentGranted = $state(false);
+	let dailyQuestionConsentSaving = $state(false);
+	let dailyQuestionConsentMessage = $state('');
+	let dailyQuestionConsentMessageType = $state<'success' | 'error'>('success');
 	let diaryAiConsentSaving = $state(false);
 	let diaryAiConsentMessage = $state('');
 	let diaryAiConsentMessageType = $state<'success' | 'error'>('success');
@@ -216,6 +221,7 @@
 			aiDiaryContextEnabled = meta.ai_diary_context_enabled === true;
 			await loadSmsPreference();
 			await loadDiaryAiConsent(session.access_token);
+			await loadDailyQuestionConsent(session.access_token);
 			loading = false;
 		}
 
@@ -243,6 +249,56 @@
 		} catch {
 			smsMessage = 'Kunde inte hämta SMS-inställningen just nu.';
 			smsMessageType = 'error';
+		}
+	}
+
+	async function loadDailyQuestionConsent(accessToken: string) {
+		try {
+			const response = await fetch('/api/consent/diary-daily-question', {
+				headers: { Authorization: `Bearer ${accessToken}` }
+			});
+			const payload = (await response.json().catch(() => null)) as { status?: string } | null;
+			dailyQuestionConsentGranted = response.ok && payload?.status === 'granted';
+		} catch {
+			dailyQuestionConsentGranted = false;
+		}
+	}
+
+	async function withdrawDailyQuestionConsent() {
+		dailyQuestionConsentSaving = true;
+		dailyQuestionConsentMessage = '';
+
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		if (!session?.access_token) {
+			dailyQuestionConsentSaving = false;
+			dailyQuestionConsentMessage = 'Du behöver vara inloggad för att återkalla samtycket.';
+			dailyQuestionConsentMessageType = 'error';
+			return;
+		}
+
+		try {
+			const response = await fetch('/api/consent/diary-daily-question', {
+				method: 'DELETE',
+				headers: { Authorization: `Bearer ${session.access_token}` }
+			});
+
+			if (!response.ok) {
+				dailyQuestionConsentMessage = 'Kunde inte återkalla samtycket just nu.';
+				dailyQuestionConsentMessageType = 'error';
+				return;
+			}
+
+			dailyQuestionConsentGranted = false;
+			dailyQuestionConsentMessage = 'Samtycket för dagens reflektionsfråga har återkallats.';
+			dailyQuestionConsentMessageType = 'success';
+		} catch {
+			dailyQuestionConsentMessage = 'Kunde inte återkalla samtycket just nu.';
+			dailyQuestionConsentMessageType = 'error';
+		} finally {
+			dailyQuestionConsentSaving = false;
 		}
 	}
 
@@ -922,6 +978,36 @@
 
 			{#if diaryAiConsentMessage}
 				<p class="feedback {diaryAiConsentMessageType}">{diaryAiConsentMessage}</p>
+			{/if}
+		</section>
+
+		<section class="auth-panel section-block">
+			<h2>Samtycke för dagens reflektionsfråga</h2>
+			<p class="field-hint">
+				Det här samtycket gäller bara när du själv väljer att hämta dagens fråga i dagboken.
+				Ett kort utdrag ur ditt senaste inlägg och härledda signaler som humör och
+				återkommande ord behandlas då av MittPsyke och Anthropic. Det är skilt från
+				samtycket för AI-reflektioner.
+			</p>
+
+			{#if dailyQuestionConsentGranted}
+				<p class="field-hint">Aktivt samtycke för dagens reflektionsfråga.</p>
+				<button
+					class="save-btn sms-off-btn"
+					onclick={withdrawDailyQuestionConsent}
+					disabled={dailyQuestionConsentSaving}
+				>
+					{dailyQuestionConsentSaving ? 'Sparar...' : 'Återkalla samtycke för dagens fråga'}
+				</button>
+			{:else}
+				<p class="field-hint">
+					Det finns inget aktivt samtycke för dagens reflektionsfråga. Du kan ge det nästa
+					gång du väljer att hämta den.
+				</p>
+			{/if}
+
+			{#if dailyQuestionConsentMessage}
+				<p class="feedback {dailyQuestionConsentMessageType}">{dailyQuestionConsentMessage}</p>
 			{/if}
 		</section>
 

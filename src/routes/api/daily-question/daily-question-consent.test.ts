@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
 	callClaude: vi.fn(),
 	createServiceClient: vi.fn(),
-	hasDiaryAiConsent: vi.fn()
+	hasDailyQuestionAiConsent: vi.fn()
 }));
 
 vi.mock('$lib/server/ai/anthropic', () => ({ callClaude: mocks.callClaude }));
@@ -12,8 +12,8 @@ vi.mock('$lib/server/supabase-admin', () => ({
 	createServiceClient: mocks.createServiceClient
 }));
 
-vi.mock('$lib/server/diary-ai-consent', () => ({
-	hasDiaryAiConsent: mocks.hasDiaryAiConsent
+vi.mock('$lib/server/daily-question-ai-consent', () => ({
+	hasDailyQuestionAiConsent: mocks.hasDailyQuestionAiConsent
 }));
 
 import { GET as dailyQuestionGet } from './+server';
@@ -95,8 +95,16 @@ function dailyQuestionClient(
 	};
 }
 
-function getEvent(client: ReturnType<typeof dailyQuestionClient>) {
-	return { locals: { supabase: client } } as unknown as Parameters<typeof dailyQuestionGet>[0];
+/**
+ * `generate` avgör om anropet får orsaka ny AI-behandling. Utan flaggan läser
+ * routen bara en redan sparad fråga - det är hela poängen med att ett sidbesök
+ * inte längre skickar dagbokskontext vidare.
+ */
+function getEvent(client: ReturnType<typeof dailyQuestionClient>, generate = true) {
+	return {
+		locals: { supabase: client },
+		url: new URL(`http://localhost/api/daily-question${generate ? '?generate=true' : ''}`)
+	} as unknown as Parameters<typeof dailyQuestionGet>[0];
 }
 
 function regenerateEvent(client: ReturnType<typeof dailyQuestionClient>) {
@@ -111,10 +119,10 @@ describe('daily-question: serverägt diary AI-samtycke', () => {
 	beforeEach(() => {
 		mocks.callClaude.mockReset();
 		mocks.createServiceClient.mockReset();
-		mocks.hasDiaryAiConsent.mockReset();
+		mocks.hasDailyQuestionAiConsent.mockReset();
 		mocks.callClaude.mockResolvedValue('Vad skulle vara hjälpsamt att skriva ner just nu?');
 		mocks.createServiceClient.mockReturnValue({ service: true });
-		mocks.hasDiaryAiConsent.mockResolvedValue(true);
+		mocks.hasDailyQuestionAiConsent.mockResolvedValue(true);
 	});
 
 	it('läser diary-kontext och anropar Claude vid giltigt serversamtycke', async () => {
@@ -123,7 +131,7 @@ describe('daily-question: serverägt diary AI-samtycke', () => {
 		const response = await dailyQuestionGet(getEvent(client));
 
 		expect(response.status).toBe(200);
-		expect(mocks.hasDiaryAiConsent).toHaveBeenCalledWith({ service: true }, 'user-1');
+		expect(mocks.hasDailyQuestionAiConsent).toHaveBeenCalledWith({ service: true }, 'user-1');
 		expect(readDiaryTable(client)).toBe(2);
 		expect(mocks.callClaude).toHaveBeenCalledTimes(1);
 	});
@@ -131,7 +139,7 @@ describe('daily-question: serverägt diary AI-samtycke', () => {
 	describe('blockerade lägen', () => {
 		for (const name of ['saknad consent-row', 'revoked consent', 'stale policyversion', 'DB-fel']) {
 			it(`${name} → 403 utan diary-läsning eller Claude`, async () => {
-				mocks.hasDiaryAiConsent.mockResolvedValue(false);
+				mocks.hasDailyQuestionAiConsent.mockResolvedValue(false);
 				const client = dailyQuestionClient();
 
 				const response = await dailyQuestionGet(getEvent(client));
@@ -144,7 +152,7 @@ describe('daily-question: serverägt diary AI-samtycke', () => {
 		}
 
 		it('gammal klientmetadata räcker inte utan serversamtycke', async () => {
-			mocks.hasDiaryAiConsent.mockResolvedValue(false);
+			mocks.hasDailyQuestionAiConsent.mockResolvedValue(false);
 			const client = dailyQuestionClient('missing', {
 				health_data_processing_consent: { accepted: true, policy_version: '2026-04-29' }
 			});
@@ -158,7 +166,7 @@ describe('daily-question: serverägt diary AI-samtycke', () => {
 	});
 
 	it('regenerate kan inte kringgå grinden utan samtycke', async () => {
-		mocks.hasDiaryAiConsent.mockResolvedValue(false);
+		mocks.hasDailyQuestionAiConsent.mockResolvedValue(false);
 		const client = dailyQuestionClient('existing');
 
 		const response = await regenerateDailyQuestionPost(regenerateEvent(client));
@@ -175,7 +183,7 @@ describe('daily-question: serverägt diary AI-samtycke', () => {
 		expect(mocks.callClaude).toHaveBeenCalledTimes(1);
 
 		mocks.callClaude.mockClear();
-		mocks.hasDiaryAiConsent.mockResolvedValue(false);
+		mocks.hasDailyQuestionAiConsent.mockResolvedValue(false);
 		const revokedClient = dailyQuestionClient();
 		const revoked = await dailyQuestionGet(getEvent(revokedClient));
 
