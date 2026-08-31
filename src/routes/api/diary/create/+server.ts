@@ -4,6 +4,7 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { recordCurrentCompanionPresence } from '$lib/server/companion-presence';
+import { recordDiaryFunnelEvents } from '$lib/server/funnel-events';
 import type { RequestHandler } from './$types';
 import type {
 	CreateDiaryErrorResponse,
@@ -190,9 +191,27 @@ export const POST: RequestHandler = async ({ request }) => {
 			console.error('Could not record companion presence after diary save:', presenceError);
 		}
 
+		const savedDiary = inserted as DiaryRecord;
+
+		// Product Funnel Analytics. Körs först här, efter att raden faktiskt
+		// ligger i databasen - aldrig på knappklick eller före insert. Bara att
+		// sparningen skedde skickas, aldrig innehållet.
+		//
+		// Helpern sväljer redan sina egna fel, men grinden sitter även här:
+		// endpointens garanti att en lyckad sparning förblir lyckad ska inte
+		// bero på en annan moduls interna felhantering.
+		try {
+			await recordDiaryFunnelEvents(supabase, user.id, {
+				id: savedDiary.id,
+				created_at: savedDiary.created_at
+			});
+		} catch (funnelError) {
+			console.error('Could not record funnel events after diary save:', funnelError);
+		}
+
 		const response: CreateDiarySuccessResponse = {
 			success: true,
-			diary: inserted as DiaryRecord
+			diary: savedDiary
 		};
 
 		return json(response, { status: 200 });
