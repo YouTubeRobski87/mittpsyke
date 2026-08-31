@@ -805,8 +805,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		ogDescription:
 			'Börja chatta anonymt utan konto. Få lugnt stöd i text direkt i webbläsaren.',
 		variant: 'landing',
-		eyebrow: 'Chatta anonymt',
-		h1: 'Skriv det som snurrar',
+		h1: 'Chatta anonymt – skriv det som snurrar',
 		lead:
 			'Du behöver inget konto. Skriv anonymt om det som känns tungt just nu och få ett svar direkt från MittPsykes AI.',
 		// Trygghetspunkterna motsvarar gästflödet i `api/chat/+server.ts`: ingen
