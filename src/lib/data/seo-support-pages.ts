@@ -1,5 +1,7 @@
 import type { SeoSupportPageConfig } from '$lib/components/SeoSupportPage.svelte';
+import { dataflowCopy } from '$lib/dataflow-copy';
 import { canonical } from '$lib/seo';
+import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';
 
 const updatedDate = '4 april 2026';
 
@@ -802,10 +804,49 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		ogTitle: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
 		ogDescription:
 			'Börja chatta anonymt utan konto. Få lugnt stöd i text direkt i webbläsaren.',
-		h1: 'Chatta anonymt utan konto',
+		variant: 'landing',
+		eyebrow: 'Chatta anonymt',
+		h1: 'Skriv det som snurrar',
 		lead:
-			'Du kan chatta anonymt utan konto och börja direkt i text. Skriv några rader om det som känns tungt och få lugnt stöd i din egen takt. MittPsyke är ett samtalsstöd, inte vård eller akuthjälp.',
-		primaryCta: { href: '/chat', label: 'Chatta anonymt nu' },
+			'Du behöver inget konto. Skriv anonymt om det som känns tungt just nu och få ett svar direkt från MittPsykes AI.',
+		// Trygghetspunkterna motsvarar gästflödet i `api/chat/+server.ts`: ingen
+		// inloggning, ingen lagring hos MittPsyke, AI-genererat svar. Formuleras
+		// alltid med MittPsyke som subjekt – meddelandet skickas till OpenAI.
+		trustPoints: [
+			{ label: 'Inget konto behövs', body: 'Du kan börja utan att registrera dig.' },
+			{
+				label: 'MittPsyke sparar inte gästchatten',
+				body: 'Chatten finns bara kvar medan sidan är öppen.'
+			},
+			{ label: 'Du chattar med AI', body: 'Inte med en människa.' }
+		],
+		primaryCta: { href: '/chat', label: 'Börja skriva' },
+		ctaNote:
+			'Innan första meddelandet får du en kort ruta om hur AI-chatten fungerar och vad som händer med det du skriver.',
+		howItWorksTitle: 'Så fungerar det',
+		howItWorks: [
+			{
+				title: 'Skriv det du vill få ur dig',
+				body: 'Några rader räcker. Du behöver inte formulera dig perfekt eller veta var du ska börja.'
+			},
+			{
+				title: 'MittPsykes AI svarar',
+				body: dataflowCopy.guestChat.aiTransfer
+			},
+			{
+				title: 'Chatten försvinner när du lämnar sidan',
+				body: dataflowCopy.guestChat.retention
+			}
+		],
+		safetyNote: {
+			text: `${GENERAL_SAFETY_COPY} Vid akut fara ska du ringa 112 i stället för att använda chatten.`,
+			links: [
+				{ href: 'tel:112', label: 'Ring 112' },
+				{ href: 'https://www.1177.se', label: '1177 för vårdråd' },
+				{ href: 'https://stodlinjer.se', label: 'Stödlinjer.se' }
+			]
+		},
+		resourceLayout: 'cards',
 		sections: [
 			{
 				title: 'En lugn start utan registrering',
@@ -820,7 +861,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 				]
 			}
 		],
-		resourceListTitle: 'Du kan också fortsätta här',
+		resourceListTitle: 'Det finns mer här när du vill',
 		resourceListItems: [
 			{ href: '/prata-anonymt-online', label: 'Prata anonymt online', description: 'om du vill läsa mer om hur anonymt samtalsstöd fungerar.' },
 			{ href: '/anonymt-samtalstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför låg tröskel kan göra det lättare att börja.' },
@@ -831,12 +872,11 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		],
 		nextStepTitle: 'Nästa steg i din takt',
 		nextStepParagraphs: [
-			'Om det känns lättare att börja direkt kan du gå vidare till skrivytan nu. Du kan också läsa mer först och komma tillbaka när du vill.',
-			'Vid akut fara ska du ringa 112. För vårdråd finns 1177 och för vidare stöd finns stodlinjer.se.'
+			'Chatten är en ingång. Vill du läsa mer först, eller skriva i egen takt utan att få svar, finns det plats för det också.'
 		],
 		nextStepLinks: [
-			{ href: '/skriv', label: 'Börja skriva direkt' },
-			{ href: '/chat', label: 'Chatta anonymt nu' },
+			{ href: '/skriv', label: 'Skriv av dig anonymt' },
+			{ href: '/chat', label: 'Öppna chatten' },
 			{ href: '/om-mittpsyke', label: 'Läs om MittPsyke' }
 		],
 		faq: [

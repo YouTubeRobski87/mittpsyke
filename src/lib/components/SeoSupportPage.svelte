@@ -26,6 +26,23 @@
 		href: string;
 	};
 
+	// Kort, verifierbar trygghetspunkt högt upp på sidan. Texten ska alltid
+	// kunna spåras till `dataflow-copy.ts`, aldrig skrivas fritt.
+	type TrustPoint = {
+		label: string;
+		body: string;
+	};
+
+	type HowItWorksStep = {
+		title: string;
+		body: string;
+	};
+
+	type SafetyNote = {
+		text: string;
+		links?: TextLink[];
+	};
+
 	export type SeoSupportPageConfig = {
 		title: string;
 		description: string;
@@ -46,9 +63,28 @@
 		updatedDate: string;
 		sources: TrustSource[];
 		faqSchema?: boolean;
+		// ---------------------------------------------------------------------
+		// Frivilliga fält för landningsvarianten. Utan dem renderar sidan exakt
+		// som förut, vilket är det som håller de övriga stödsidorna oförändrade.
+		// ---------------------------------------------------------------------
+		variant?: 'default' | 'landing';
+		eyebrow?: string;
+		trustPoints?: TrustPoint[];
+		ctaNote?: string;
+		howItWorksTitle?: string;
+		howItWorks?: HowItWorksStep[];
+		safetyNote?: SafetyNote;
+		resourceLayout?: 'list' | 'cards';
 	};
 
 	let { config }: { config: SeoSupportPageConfig } = $props();
+
+	const isLanding = $derived(config.variant === 'landing');
+	const useResourceCards = $derived(config.resourceLayout === 'cards');
+
+	function isExternal(href: string): boolean {
+		return href.startsWith('http');
+	}
 
 	const faqJsonLd = $derived(
 		config.faqSchema
@@ -89,12 +125,26 @@
 	{@html faqJsonLdTag}
 </svelte:head>
 
-<main class="page">
+<main class="page" class:landing={isLanding}>
 	<div class="page-container">
 		<header class="hero">
+			{#if config.eyebrow}
+				<p class="eyebrow">{config.eyebrow}</p>
+			{/if}
 			<h1>{config.h1}</h1>
 			<p>{config.lead}</p>
 		</header>
+
+		{#if config.trustPoints?.length}
+			<ul class="trust-points">
+				{#each config.trustPoints as point}
+					<li>
+						<span class="trust-label">{point.label}</span>
+						<span class="trust-body">{point.body}</span>
+					</li>
+				{/each}
+			</ul>
+		{/if}
 
 		<div class="cta-container">
 			<a class="cta-button" href={config.primaryCta.href}>{config.primaryCta.label}</a>
@@ -102,6 +152,24 @@
 				<a class="cta-button ghost" href={config.secondaryCta.href}>{config.secondaryCta.label}</a>
 			{/if}
 		</div>
+
+		{#if config.ctaNote}
+			<p class="cta-note">{config.ctaNote}</p>
+		{/if}
+
+		{#if config.howItWorks?.length}
+			<section class="section how-it-works">
+				<h2>{config.howItWorksTitle ?? 'Så fungerar det'}</h2>
+				<ol class="how-steps">
+					{#each config.howItWorks as step}
+						<li>
+							<h3>{step.title}</h3>
+							<p>{step.body}</p>
+						</li>
+					{/each}
+				</ol>
+			</section>
+		{/if}
 
 		{#each config.sections as section}
 			<section class="section">
@@ -112,15 +180,43 @@
 			</section>
 		{/each}
 
-		<section class="section">
+		{#if config.safetyNote}
+			<aside class="safety-note" aria-label="Om akut hjälp">
+				<p>{config.safetyNote.text}</p>
+				{#if config.safetyNote.links?.length}
+					<p class="safety-links">
+						{#each config.safetyNote.links as link}
+							{#if isExternal(link.href)}
+								<a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>
+							{:else}
+								<a href={link.href}>{link.label}</a>
+							{/if}
+						{/each}
+					</p>
+				{/if}
+			</aside>
+		{/if}
+
+		<section class="section" class:section-wide={useResourceCards}>
 			<h2>{config.resourceListTitle}</h2>
-			<ul>
-				{#each config.resourceListItems as item}
-					<li>
-						<a href={item.href}>{item.label}</a> {item.description}
-					</li>
-				{/each}
-			</ul>
+			{#if useResourceCards}
+				<ul class="resource-cards">
+					{#each config.resourceListItems as item}
+						<li>
+							<a href={item.href}>{item.label}</a>
+							<span>{item.description}</span>
+						</li>
+					{/each}
+				</ul>
+			{:else}
+				<ul>
+					{#each config.resourceListItems as item}
+						<li>
+							<a href={item.href}>{item.label}</a> {item.description}
+						</li>
+					{/each}
+				</ul>
+			{/if}
 		</section>
 
 		<section class="section">
@@ -264,5 +360,396 @@
 	:global(.dark) .cta-button {
 		background: rgba(255, 255, 255, 0.12);
 		border-color: rgba(255, 255, 255, 0.18);
+	}
+
+	/* -------------------------------------------------------------------------
+	 * Landningsvarianten. Allt nedan är scopat under `.landing` så att de
+	 * stödsidor som inte sätter `variant: 'landing'` behåller exakt sin
+	 * nuvarande rendering.
+	 * ---------------------------------------------------------------------- */
+
+	.landing {
+		background:
+			radial-gradient(
+				120% 62% at 50% 0%,
+				var(--dashboard-bg-accent) 0%,
+				transparent 68%
+			),
+			linear-gradient(hsl(var(--background)), hsl(var(--surface-muted) / 0.42));
+	}
+
+	.landing .page-container {
+		max-width: var(--container-max);
+		gap: clamp(1.5rem, 3.2vw, 2.1rem);
+	}
+
+	.landing .hero {
+		max-width: 34ch;
+	}
+
+	.landing .section {
+		max-width: 62ch;
+	}
+
+	.landing h1 {
+		font-size: clamp(2rem, 1.5rem + 2.4vw, 2.9rem);
+		line-height: 1.06;
+		text-wrap: balance;
+	}
+
+	.landing .hero p {
+		margin-top: 0.85rem;
+		max-width: 46ch;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.eyebrow {
+		margin-bottom: 0.7rem;
+		font-family: var(--font-heading);
+		font-size: 0.78rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--primary);
+	}
+
+	/* Trygghetspunkter: kort rad direkt under ingressen, före CTA. */
+	.trust-points {
+		max-width: var(--container-max);
+		padding-left: 0;
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.7rem;
+	}
+
+	.trust-points li {
+		min-width: 0;
+		display: grid;
+		gap: 0.2rem;
+		padding: 0.9rem 1rem;
+		border-radius: var(--radius-card);
+		background: var(--color-surface);
+		border: 1px solid var(--primary-border-soft);
+		box-shadow: 0 1px 2px var(--shadow-color);
+	}
+
+	.trust-label {
+		font-family: var(--font-heading);
+		font-size: 0.98rem;
+		font-weight: 600;
+		line-height: 1.35;
+		letter-spacing: -0.01em;
+	}
+
+	.trust-body {
+		font-family: var(--font-body);
+		font-size: 0.9rem;
+		line-height: 1.55;
+		color: hsl(var(--muted-foreground));
+	}
+
+	/* CTA i landningsvarianten använder produktens primärfärg i stället för
+	 * mallens hårdkodade mörka knapp. */
+	.landing .cta-button {
+		min-height: 3rem;
+		padding: 0.85rem 1.85rem;
+		background: var(--primary);
+		border-color: var(--primary);
+	}
+
+	.landing .cta-button:hover {
+		background: var(--color-primary-hover);
+		border-color: var(--color-primary-hover);
+	}
+
+	.landing .cta-button.ghost {
+		background: transparent;
+		border-color: var(--primary-border-soft);
+		color: hsl(var(--foreground));
+	}
+
+	.landing .cta-button.ghost:hover {
+		background: var(--primary-soft);
+	}
+
+	.landing .cta-button:focus-visible {
+		outline: 3px solid var(--focus-ring);
+		outline-offset: 2px;
+	}
+
+	.cta-note {
+		margin-top: -0.6rem;
+		max-width: 46ch;
+		font-size: 0.9rem;
+		line-height: 1.6;
+		color: hsl(var(--muted-foreground));
+	}
+
+	/* "Så fungerar det" – tre steg, samma varma kortkänsla som chattsidan. */
+	.how-it-works {
+		max-width: var(--container-max);
+		padding: 1.15rem 1.25rem;
+		border-radius: var(--radius-card);
+		background: var(--color-surface-muted);
+		border: 1px solid var(--border-subtle);
+	}
+
+	.how-steps {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.75rem;
+		counter-reset: how;
+	}
+
+	.how-steps li {
+		min-width: 0;
+		counter-increment: how;
+		padding: 0.95rem 1rem;
+		border-radius: var(--radius-card);
+		background: var(--color-surface);
+		border: 1px solid var(--border-subtle);
+	}
+
+	.how-steps h3 {
+		margin-top: 0;
+		display: grid;
+		grid-template-columns: 1.5rem 1fr;
+		gap: 0.55rem;
+		align-items: baseline;
+		font-size: 0.98rem;
+		line-height: 1.35;
+	}
+
+	.how-steps h3::before {
+		content: counter(how);
+		font-size: 0.78rem;
+		font-weight: 600;
+		color: var(--primary);
+	}
+
+	.how-steps p {
+		margin-top: 0.5rem;
+		font-size: 0.88rem;
+		line-height: 1.6;
+		color: hsl(var(--muted-foreground));
+	}
+
+	/* Akuthänvisning: tydlig men medvetet lågmäld, inte en varningsbanner. */
+	.safety-note {
+		max-width: 62ch;
+		padding: 0.85rem 1rem;
+		border-left: 3px solid var(--primary-border-soft);
+		border-radius: 0 var(--radius-input) var(--radius-input) 0;
+		background: var(--primary-soft);
+	}
+
+	.safety-note p {
+		font-size: 0.92rem;
+		line-height: 1.6;
+	}
+
+	.safety-links {
+		margin-top: 0.45rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.9rem;
+	}
+
+	.safety-links a {
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.75rem;
+		font-size: 0.92rem;
+	}
+
+	/* Väg vidare som kort i stället för punktlista. Samma länkmål som förut. */
+	.resource-cards {
+		padding-left: 0;
+		list-style: none;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.7rem;
+	}
+
+	.resource-cards li {
+		position: relative;
+		min-width: 0;
+		display: grid;
+		gap: 0.2rem;
+		padding: 0.9rem 1rem;
+		border-radius: var(--radius-card);
+		background: var(--color-surface);
+		border: 1px solid var(--border-subtle);
+	}
+
+	.resource-cards a {
+		font-family: var(--font-heading);
+		font-size: 0.98rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+	}
+
+	/* Hela kortet blir träffyta, så länken inte blir ett smalt textmål på mobil. */
+	.resource-cards a::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: var(--radius-card);
+	}
+
+	.resource-cards li:hover {
+		border-color: var(--primary-border-soft);
+	}
+
+	.resource-cards a:focus-visible {
+		outline: none;
+	}
+
+	.resource-cards li:focus-within {
+		outline: 3px solid var(--focus-ring);
+		outline-offset: 2px;
+	}
+
+	.resource-cards span {
+		font-size: 0.88rem;
+		line-height: 1.55;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.landing .section-wide {
+		max-width: var(--container-max);
+	}
+
+	@media (max-width: 860px) {
+		.trust-points,
+		.how-steps {
+			grid-template-columns: 1fr;
+		}
+
+		.resource-cards {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	/* På mobil blir trygghetspunkterna ett samlat kort med tunna avdelare i
+	 * stället för tre separata kort. Det håller CTA:n kvar i första vyn. */
+	@media (max-width: 640px) {
+		.trust-points {
+			gap: 0;
+			border-radius: var(--radius-card);
+			background: var(--color-surface);
+			border: 1px solid var(--primary-border-soft);
+			box-shadow: 0 1px 2px var(--shadow-color);
+		}
+
+		.trust-points li {
+			padding: 0.6rem 0.9rem;
+			border: none;
+			border-radius: 0;
+			background: transparent;
+			box-shadow: none;
+		}
+
+		.trust-points li + li {
+			border-top: 1px solid var(--border-subtle);
+		}
+
+		.trust-label {
+			font-size: 0.94rem;
+		}
+
+		.trust-body {
+			font-size: 0.86rem;
+			line-height: 1.45;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.landing {
+			padding-top: 1.6rem;
+		}
+
+		.landing .hero,
+		.landing .section {
+			max-width: 100%;
+		}
+
+		.landing h1 {
+			font-size: clamp(1.75rem, 1.3rem + 2.4vw, 2.1rem);
+		}
+
+		.cta-note {
+			margin-top: -0.35rem;
+		}
+	}
+
+	:global(.dark) .landing {
+		background:
+			radial-gradient(120% 62% at 50% 0%, var(--dashboard-bg-accent) 0%, transparent 68%),
+			hsl(var(--background));
+	}
+
+	:global(.dark) .eyebrow,
+	:global(.dark) .how-steps h3::before {
+		color: var(--primary-dark);
+	}
+
+	:global(.dark) .trust-points li,
+	:global(.dark) .how-steps li,
+	:global(.dark) .resource-cards li {
+		background: rgba(255, 255, 255, 0.04);
+		border-color: var(--border-subtle-inverted);
+	}
+
+	:global(.dark) .how-it-works {
+		background: rgba(255, 255, 255, 0.02);
+		border-color: var(--border-subtle-inverted);
+	}
+
+	:global(.dark) .safety-note {
+		border-left-color: var(--primary-dark-border-soft);
+		background: var(--primary-dark-soft);
+	}
+
+	:global(.dark) .landing .cta-button {
+		color: #0b1220;
+		background: var(--primary-dark);
+		border-color: var(--primary-dark);
+	}
+
+	:global(.dark) .landing .cta-button:hover {
+		background: var(--primary-dark);
+		border-color: var(--primary-dark);
+	}
+
+	:global(.dark) .landing .cta-button.ghost {
+		color: #f8fafc;
+		background: transparent;
+		border-color: var(--primary-dark-border-soft);
+	}
+
+	:global(.dark) .landing .cta-button.ghost:hover {
+		background: var(--primary-dark-soft);
+	}
+
+	/* Sist i filen: mobilvarianten av trygghetskortet i mörkt läge måste ligga
+	 * efter de generella dark-reglerna ovan, annars vinner de på källordning. */
+	@media (max-width: 640px) {
+		:global(.dark) .trust-points {
+			background: rgba(255, 255, 255, 0.04);
+			border-color: var(--primary-dark-border-soft);
+		}
+
+		:global(.dark) .trust-points li {
+			background: transparent;
+			border-color: transparent;
+		}
+
+		:global(.dark) .trust-points li + li {
+			border-top: 1px solid var(--border-subtle-inverted);
+		}
 	}
 </style>
