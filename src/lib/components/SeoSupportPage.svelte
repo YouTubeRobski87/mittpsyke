@@ -686,6 +686,87 @@
 		}
 	}
 
+	/* -------------------------------------------------------------------------
+	 * Desktop: hero i två kolumner. Vänster bär rubrik, ingress, CTA och
+	 * samtyckesraden; höger bär trygghetspunkterna och dataflödesstegen.
+	 *
+	 * Detta är enbart grid-placering. DOM-ordningen är oförändrad, så
+	 * rubrikordning, skärmläsarflöde och tabbordning påverkas inte, och
+	 * trygghetspunkterna och stegen innehåller inga fokuserbara element.
+	 * ---------------------------------------------------------------------- */
+	@media (min-width: 900px) {
+		.landing {
+			padding-top: 2rem;
+		}
+
+		.landing .page-container {
+			max-width: 1160px;
+			grid-template-columns: 42fr 58fr;
+			column-gap: clamp(2rem, 3.6vw, 3.25rem);
+			row-gap: 1.5rem;
+			align-items: start;
+		}
+
+		.landing .hero {
+			grid-column: 1;
+			grid-row: 1;
+			max-width: none;
+		}
+
+		.landing .hero p {
+			max-width: none;
+		}
+
+		.landing .cta-container {
+			grid-column: 1;
+			grid-row: 2;
+			max-width: none;
+		}
+
+		.landing .cta-note {
+			grid-column: 1;
+			grid-row: 3;
+			max-width: none;
+		}
+
+		/* I högerkolumnen läser punkterna bättre staplade än tre i bredd –
+		 * kolumnen är för smal för att etiketterna ska få plats på en rad. */
+		.landing .trust-points {
+			grid-column: 2;
+			grid-row: 1;
+			grid-template-columns: 1fr;
+			gap: 0.6rem;
+		}
+
+		.landing .how-it-works {
+			grid-column: 2;
+			grid-row: 2 / 4;
+			max-width: none;
+		}
+
+		.landing .how-steps {
+			grid-template-columns: 1fr;
+			gap: 0.55rem;
+		}
+
+		/* Allt under hero-blocket återgår till en kolumn i full bredd.
+		 * Brödtexten behåller sitt läsmått. */
+		.landing .section:not(.how-it-works),
+		.landing .safety-note {
+			grid-column: 1 / -1;
+		}
+
+		.landing .section-wide {
+			max-width: none;
+		}
+
+		/* Källpanelen är en egen komponent och ligger utanför denna
+		 * komponents CSS-scope, men är ett direkt grid-barn. */
+		.landing .page-container > :global(.trust-panel) {
+			grid-column: 1 / -1;
+		}
+	}
+
 	:global(.dark) .landing {
 		background:
 			radial-gradient(120% 62% at 50% 0%, var(--dashboard-bg-accent) 0%, transparent 68%),
