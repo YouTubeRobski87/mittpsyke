@@ -32,7 +32,10 @@
       "Bash(git check-ignore *)",
       "Bash(git ls-files *)",
       "Bash(git restore *)",
-      "Bash(git reset *)"
+      "Bash(git reset *)",
+      "PowerShell(git status --porcelain)",
+      "PowerShell(git rev-parse HEAD)",
+      "PowerShell(git rev-parse origin/main)"
     ]
   }
 }
