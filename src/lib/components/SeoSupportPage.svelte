@@ -171,14 +171,25 @@
 			</section>
 		{/if}
 
-		{#each config.sections as section}
-			<section class="section">
-				<h2>{section.title}</h2>
-				{#each section.paragraphs as paragraph}
-					<p>{paragraph}</p>
-				{/each}
-			</section>
-		{/each}
+		{#snippet contentSections()}
+			{#each config.sections as section}
+				<section class="section">
+					<h2>{section.title}</h2>
+					{#each section.paragraphs as paragraph}
+						<p>{paragraph}</p>
+					{/each}
+				</section>
+			{/each}
+		{/snippet}
+
+		<!-- Landningsvarianten får en wrapper så textsektionerna kan ställas i
+		     två kolumner på desktop. Övriga stödsidor renderar sektionerna som
+		     direkta barn precis som förut, utan extra element. -->
+		{#if isLanding}
+			<div class="section-pair">{@render contentSections()}</div>
+		{:else}
+			{@render contentSections()}
+		{/if}
 
 		{#if config.safetyNote}
 			<aside class="safety-note" aria-label="Om akut hjälp">
@@ -623,6 +634,14 @@
 		max-width: var(--container-max);
 	}
 
+	/* Wrappern runt textsektionerna. Under desktopbrytpunkten är den en ren
+	 * enkolumnsstack med samma avstånd som containern hade, så mobil- och
+	 * tablet-layouten är oförändrad. */
+	.landing .section-pair {
+		display: grid;
+		gap: clamp(1.5rem, 3.2vw, 2.1rem);
+	}
+
 	@media (max-width: 860px) {
 		.trust-points,
 		.how-steps {
@@ -764,6 +783,28 @@
 		 * komponents CSS-scope, men är ett direkt grid-barn. */
 		.landing .page-container > :global(.trust-panel) {
 			grid-column: 1 / -1;
+		}
+
+		/* Textsektionerna i två lika breda kolumner. Wrappern spänner hela
+		 * containern och delar den själv, så hero-gridens 42/58 lämnas orörd. */
+		.landing .section-pair {
+			grid-column: 1 / -1;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			column-gap: clamp(2rem, 3.6vw, 3.25rem);
+			row-gap: 1.5rem;
+			align-items: start;
+		}
+
+		/* Sektionerna ligger nu i wrapperns grid, inte i sidans. Nollställ
+		 * spannet från regeln ovan så de hamnar bredvid varandra. */
+		.landing .section-pair .section {
+			grid-column: auto;
+		}
+
+		/* Akutrutan får ligga an mot samma kanter som kolumnerna ovan.
+		 * Den är fortfarande lågmäld genom sin ton, inte genom sin bredd. */
+		.landing .safety-note {
+			max-width: none;
 		}
 	}
 
