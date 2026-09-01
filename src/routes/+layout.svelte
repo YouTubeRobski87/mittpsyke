@@ -224,14 +224,27 @@
 	let layoutSummaryError = $state<string | null>(null);
 	let supabaseClientPromise: Promise<SupabaseClient> | null = null;
 
-	const profileName = $derived(getProfileName(displayName, user));
-	const memberSinceLabel = $derived(getMemberSinceLabel(user?.created_at));
+	const serverUser = $derived(data?.authenticatedUser ?? null);
+
+	// Sätts först när syncUser() faktiskt kört, alltså när klienten läst
+	// sessionen. Dessförinnan säger `user` bara "vet inte än", inte "utloggad".
+	let clientAuthResolved = $state(false);
+
+	// Headerns enda auth-källa. `user` är $state(null) och fylls först av en
+	// $effect som kräver browser + en dynamisk import av supabase-klienten -
+	// under SSR och hela hydreringen är den alltså null även för en inloggad
+	// användare, och headern renderade då "Logga in"/"Registrera" för alla.
+	// Serverns getUser() vet redan svaret vid SSR, så den gäller tills klienten
+	// tagit över (som behövs för in- och utloggning utan omladdning).
+	const currentUser = $derived(clientAuthResolved ? user : serverUser);
+
+	const profileName = $derived(getProfileName(displayName, currentUser));
+	const memberSinceLabel = $derived(getMemberSinceLabel(currentUser?.created_at));
 	const diaryEntryTooltip = $derived(
 		layoutSummaryLoading
 			? 'Hämtar dagboksinlägg'
 			: `${profilePanelData?.diaryEntryCount ?? 0} dagboksinlägg`
 	);
-	const serverUser = $derived(data?.authenticatedUser ?? null);
 	const shouldUseClientAuth = $derived(Boolean(serverUser || isPrivateOrUtilityPage));
 
 	function getSupabaseClient() {
@@ -242,6 +255,7 @@
 
 	async function syncUser(sessionUser: User | null) {
 		user = sessionUser;
+		clientAuthResolved = true;
 		const requestVersion = ++profileRequestVersion;
 
 		if (!sessionUser) {
@@ -681,8 +695,8 @@
 				>
 					<span class="brand-wordmark">MittPsyke</span>
 				</a>
-				<nav class="product-nav hidden lg:flex items-center gap-3" aria-label={user ? 'Din navigation' : 'Navigering'}>
-					{#each (user ? signedInPortalNavItems : primaryNavItems) as item}
+				<nav class="product-nav hidden lg:flex items-center gap-3" aria-label={currentUser ? 'Din navigation' : 'Navigering'}>
+					{#each (currentUser ? signedInPortalNavItems : primaryNavItems) as item}
 						{#if item.href === '/guider'}
 							<details bind:this={resourcesMenuRef} class="resources-dropdown">
 								<summary class="text-sm transition-opacity {isActive(item.href) || guideNavItems.some((guideItem) => isActive(guideItem.href)) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}">{item.label}</summary>
@@ -711,8 +725,8 @@
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
-				<nav class="mobile-quick-nav" class:mobile-quick-nav-signed={Boolean(user)} aria-label="Snabbnavigering">
-					{#each (user ? signedInPortalNavItems.slice(0, 1) : primaryNavItems.slice(0, 3)) as item}
+				<nav class="mobile-quick-nav" class:mobile-quick-nav-signed={Boolean(currentUser)} aria-label="Snabbnavigering">
+					{#each (currentUser ? signedInPortalNavItems.slice(0, 1) : primaryNavItems.slice(0, 3)) as item}
 						<a
 							href={item.href}
 							class="mobile-quick-link"
@@ -736,7 +750,7 @@
 				>
 					<Search size={16} aria-hidden="true" />
 				</a>
-				{#if !user}
+				{#if !currentUser}
 					<div class="hidden lg:flex items-center gap-3">
 						<a href={PUBLIC_CONTACT_MAILTO} class="text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity">Kontakt</a>
 						<a href="/login" class="text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity">Logga in</a>
@@ -744,7 +758,7 @@
 					</div>
 				{/if}
 
-					{#if user}
+					{#if currentUser}
 						<div class="relative">
 							<div class="profile-trigger">
 								<button
@@ -760,7 +774,7 @@
 								>
 									<UserAvatar
 										name={profileName}
-										seed={user?.id ?? profileName}
+										seed={currentUser?.id ?? profileName}
 										size="md"
 										label={`${profileName} profilbild`}
 										decorative
@@ -782,7 +796,7 @@
 									<div class="profile-panel-header">
 										<UserAvatar
 											name={profileName}
-											seed={user?.id ?? profileName}
+											seed={currentUser?.id ?? profileName}
 											size="lg"
 											label={`${profileName} profilbild`}
 											decorative
@@ -871,7 +885,7 @@
 
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden px-5 py-3" role="navigation" aria-label="Mobilmeny">
-				{#each (user ? mobileSignedInGeneralNavItems : mobileGuestGeneralNavItems) as item}
+				{#each (currentUser ? mobileSignedInGeneralNavItems : mobileGuestGeneralNavItems) as item}
 					<a
 						href={item.href}
 						class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
@@ -885,12 +899,12 @@
 					<Search size={16} aria-hidden="true" />
 					<span>Sök</span>
 				</a>
-				{#if !user}
+				{#if !currentUser}
 					{#each mobileSupplementalNavItems as item}
 						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
 					{/each}
 				{/if}
-				{#if user}
+				{#if currentUser}
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
 					<button
 						onclick={() => { mobileMenuOpen = false; logout(); }}
