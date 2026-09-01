@@ -1441,14 +1441,36 @@
     }
   }
 
-  @media (max-width: 860px) {
+  /* Surfplatteläge, ca 700–1023px. Rutnätet kommer från 1180px-blocket ovan
+     (hero över två spalter, nuläge/incheckning bredvid utforska), så här
+     justeras bara det som annars är dimensionerat för desktop:
+     incheckningskortet ligger i en av två spalter och hero behöver inte
+     desktopens höjd på en smalare skärm. */
+  @media (max-width: 1023px) {
     .checkin-card {
       --checkin-image: var(--checkin-image-mobile);
-      /* Kortet är fullbrett här, så 42% skulle ge en orimligt smal
+      /* Kortet är smalt här, så desktopens 42% skulle ge en orimligt smal
          textspalt. Bilden får mindre andel i stället. */
-      --checkin-split: 58%;
+      --checkin-split: 62%;
     }
+  }
 
+  /* Desktopens 320px golv slog i taket redan vid 763px (26vw = 198px), så
+     hero blev en onödigt hög banderoll när den spänner två spalter. Här
+     skalar den med bredden i stället.
+
+     Avgränsad till surfplatteintervallet med flit: under 700px är rutnätet
+     enkolumnigt och hero smalare, och då är den högre proportionen rätt –
+     samma som mobilregeln under 620px. Höjdbytet hamnar därmed vid
+     layoutbytet, inte mitt i mobilområdet. */
+  @media (min-width: 700px) and (max-width: 1023px) {
+    .companion-hero {
+      height: clamp(260px, 36vw, 330px);
+      min-height: 260px;
+    }
+  }
+
+  @media (max-width: 699px) {
     .dashboard-body {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas:
