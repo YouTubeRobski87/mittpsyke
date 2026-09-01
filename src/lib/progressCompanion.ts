@@ -300,6 +300,7 @@ export function getProgressCompanionAnimal(value: unknown): ProgressCompanionAni
 export const COMPANION_PORTRAIT_IMAGES: Partial<Record<ProgressCompanionArtId, string>> = {
 	fox: '/images/avatars/presets/fox.png',
 	bear: '/images/avatars/presets/bear.png',
+	wolf: '/images/avatars/presets/varg.png',
 	schafer: '/images/avatars/presets/schafer.png',
 	australisk_shepherd: '/images/avatars/presets/australisk_shepherd.png'
 };

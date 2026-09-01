@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { existsSync } from 'node:fs';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { render } from 'svelte/server';
+import CompanionAvatar from './components/CompanionAvatar.svelte';
+import CompanionSelector from './components/CompanionSelector.svelte';
+import SignedInHome from './components/home/SignedInHome.svelte';
 import {
 	COMPANION_PORTRAIT_IMAGES,
 	PROGRESS_COMPANION_ANIMALS,
@@ -244,12 +248,13 @@ describe('väljaren', () => {
 describe('porträttuppslaget', () => {
 	const entries = Object.entries(COMPANION_PORTRAIT_IMAGES) as [string, string][];
 
-	it('täcker räv, björn och båda hundarna', () => {
+	it('täcker räv, björn, varg och båda hundarna', () => {
 		expect(entries.map(([id]) => id).sort()).toEqual([
 			'australisk_shepherd',
 			'bear',
 			'fox',
-			'schafer'
+			'schafer',
+			'wolf'
 		]);
 	});
 
@@ -258,9 +263,34 @@ describe('porträttuppslaget', () => {
 		expect(existsSync(join(process.cwd(), 'static', src))).toBe(true);
 	});
 
-	// Ylva har medvetet inget foto än. Utan det här testet skulle ett halvfärdigt
-	// vargporträtt kunna smyga in utan beslut.
-	it('lämnar vargen till SVG-figuren tills ett vargporträtt finns', () => {
-		expect(getCompanionPortraitSrc('wolf')).toBeNull();
+	it('pekar Ylvas stabila wolf-ID på vargporträttet', () => {
+		expect(getCompanionPortraitSrc('wolf')).toBe('/images/avatars/presets/varg.png');
+	});
+});
+
+describe('Ylvas porträttytor', () => {
+	const wolfPortrait = 'src="/images/avatars/presets/varg.png"';
+
+	it('använder samma foto i väljaren, profilkortets gemensamma avatar och inloggad översikt', () => {
+		const avatar = render(CompanionAvatar, { props: { selection: { id: 'wolf' }, size: 'xl' } }).body;
+		const selector = render(CompanionSelector, {
+			props: { selection: { id: 'wolf' }, onselect: () => undefined }
+		}).body;
+		const home = render(SignedInHome, {
+			props: { overview: { displayName: 'Maja', entryCount: 0, progressCompanion: { id: 'wolf' } } }
+		}).body;
+
+		expect(avatar).toContain(wolfPortrait);
+		expect(selector).toContain(wolfPortrait);
+		expect(home).toContain(wolfPortrait);
+	});
+
+	it('har exakt en vald radioknapp och en Vald-badge för Ylva', () => {
+		const selector = render(CompanionSelector, {
+			props: { selection: { id: 'wolf' }, onselect: () => undefined }
+		}).body;
+
+		expect(selector.match(/aria-checked="true"/g)).toHaveLength(1);
+		expect(selector.match(/>Vald<\/span>/g)).toHaveLength(1);
 	});
 });
