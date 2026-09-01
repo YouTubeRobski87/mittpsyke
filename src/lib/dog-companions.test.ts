@@ -3,7 +3,9 @@ import { existsSync } from 'node:fs';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
+	COMPANION_PORTRAIT_IMAGES,
 	PROGRESS_COMPANION_ANIMALS,
+	getCompanionPortraitSrc,
 	getProgressCompanionArtId,
 	getProgressCompanionDisplayName,
 	getWorldCompanionId,
@@ -219,8 +221,46 @@ describe('väljaren', () => {
 		'utf8'
 	);
 
-	it.each(DOGS)('exponerar $displayName', (dog) => {
+	it.each(DOGS)('exponerar $displayName som valbar', (dog) => {
 		expect(source).toContain(`'${dog.id}'`);
-		expect(source).toContain(`/images/avatars/presets/${dog.assetPrefix}.png`);
+	});
+
+	// Porträttuppslaget låg tidigare som en egen tabell i CompanionSelector, och
+	// testet läste komponentens källtext. Uppslaget bor nu i progressCompanion
+	// och används av CompanionAvatar på alla tre porträttytor, så assertionen
+	// följer med dit: samma bild oavsett var följeslagaren visas.
+	it.each(DOGS)('har ett porträttfoto för $displayName', (dog) => {
+		const src = getCompanionPortraitSrc(dog.id);
+
+		expect(src).toBe(`/images/avatars/presets/${dog.assetPrefix}.png`);
+		expect(existsSync(join(process.cwd(), 'static', src as string))).toBe(true);
+	});
+});
+
+// Porträttuppslaget delas av räv, björn och hundarna. Ett ID utan fil på disk
+// ger inte krasch - CompanionAvatar faller tillbaka på SVG-figuren - men det
+// blir en tyst nedgradering ingen upptäcker. Testet gäller därför HELA
+// uppslaget, så en ny följeslagare aldrig kan läggas till utan sin bild.
+describe('porträttuppslaget', () => {
+	const entries = Object.entries(COMPANION_PORTRAIT_IMAGES) as [string, string][];
+
+	it('täcker räv, björn och båda hundarna', () => {
+		expect(entries.map(([id]) => id).sort()).toEqual([
+			'australisk_shepherd',
+			'bear',
+			'fox',
+			'schafer'
+		]);
+	});
+
+	it.each(entries)('%s pekar på en fil som finns', (id, src) => {
+		expect(getCompanionPortraitSrc(id)).toBe(src);
+		expect(existsSync(join(process.cwd(), 'static', src))).toBe(true);
+	});
+
+	// Ylva har medvetet inget foto än. Utan det här testet skulle ett halvfärdigt
+	// vargporträtt kunna smyga in utan beslut.
+	it('lämnar vargen till SVG-figuren tills ett vargporträtt finns', () => {
+		expect(getCompanionPortraitSrc('wolf')).toBeNull();
 	});
 });

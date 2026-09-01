@@ -1,5 +1,6 @@
 <script lang="ts">
 	import {
+		getCompanionPortraitSrc,
 		getProgressCompanionAnimal,
 		getProgressCompanionArtId,
 		type ProgressCompanionSelection
@@ -26,8 +27,22 @@
 	const companion = $derived(getProgressCompanionAnimal(selection));
 	const artId = $derived(getProgressCompanionArtId(companion?.id));
 	const resolvedLabel = $derived(label ?? `${companion?.name ?? 'Din följeslagare'} är din följeslagare`);
+
+	// Följeslagare med frilagt porträttfoto visas som foto, övriga som den
+	// inbyggda SVG-figuren. Uppslaget ligger i progressCompanion så väljaren,
+	// profilkortet och Översikt aldrig kan visa olika bild för samma val.
+	const portraitSrc = $derived(getCompanionPortraitSrc(artId));
+
+	// Om filen saknas eller inte kan laddas faller porträttet tillbaka på
+	// SVG-figuren i stället för att lämna en trasig bildruta. Nollställs när
+	// följeslagaren byts, annars skulle ett misslyckat foto blockera nästa.
+	let failedPortrait = $state<string | null>(null);
+	const showPortrait = $derived(Boolean(portraitSrc) && failedPortrait !== portraitSrc);
+
 	const classes = $derived(
-		`companion-avatar companion-avatar-${size} ${animated ? 'companion-avatar-animated' : ''} ${className}`.trim()
+		`companion-avatar companion-avatar-${size} ${showPortrait ? 'companion-avatar-portrait' : ''} ${animated ? 'companion-avatar-animated' : ''} ${className}`
+			.replace(/\s+/g, ' ')
+			.trim()
 	);
 </script>
 
@@ -38,6 +53,18 @@
 	aria-label={decorative ? undefined : resolvedLabel}
 	aria-hidden={decorative ? 'true' : undefined}
 >
+	{#if showPortrait}
+		<!-- alt="" - wrappern bär redan role="img" + aria-label, så bilden ska
+			 inte annonseras en andra gång. -->
+		<img
+			class="companion-portrait-photo"
+			src={portraitSrc}
+			alt=""
+			loading="lazy"
+			decoding="async"
+			onerror={() => (failedPortrait = portraitSrc)}
+		/>
+	{:else}
 	<svg viewBox="0 0 96 96" focusable="false" aria-hidden="true">
 		<circle class="avatar-sky" cx="48" cy="48" r="48" />
 		<path class="avatar-ground" d="M8 74 C22 63 37 62 48 69 C61 77 77 72 88 62 L88 96 H8 Z" />
@@ -114,6 +141,7 @@
 			{/if}
 		</g>
 	</svg>
+	{/if}
 </span>
 
 <style>
@@ -158,6 +186,33 @@
 
 	.companion-avatar-xl {
 		--companion-avatar-size: 3.25rem;
+	}
+
+	/* ── Fotoporträtt ──
+	   Frilagda helkroppsfoton ligger fritt i stället för i den runda brickan.
+	   En cirkel skulle antingen beskära huvudet (object-fit: cover) eller
+	   krympa djuret till en prick mitt i tom yta (contain), och båda bryter
+	   mot att porträtten ska vara lika stora och visa hela djuret. */
+	.companion-avatar-portrait {
+		/* Optisk kompensation: ett frilagt djur med transparent marginal ser
+		   mindre ut än en fylld cirkel av samma mått. Faktorn är densamma för
+		   ALLA fotoporträtt, så räv, björn, schäfer och aussie hamnar på exakt
+		   samma storlek. 2.75rem * 1.27 = 3.49rem, alltså samma yta som
+		   hundarna hade i väljaren innan uppslaget flyttades hit. */
+		width: calc(var(--companion-avatar-size) * 1.27);
+		height: calc(var(--companion-avatar-size) * 1.27);
+		border-radius: 0;
+		background: none;
+		box-shadow: none;
+	}
+
+	.companion-portrait-photo {
+		width: 100%;
+		height: 100%;
+		/* contain visar hela djuret, bottenlinjen ger dem gemensam ståplats
+		   så de inte svävar olika högt i sina rutor. */
+		object-fit: contain;
+		object-position: center bottom;
 	}
 
 	.companion-avatar:hover {

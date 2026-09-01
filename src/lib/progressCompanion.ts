@@ -286,6 +286,29 @@ export function getProgressCompanionAnimal(value: unknown): ProgressCompanionAni
 	};
 }
 
+/**
+ * Frilagda porträttfoton för väljaren och profilkorten.
+ *
+ * Medvetet skilt från companionPoseManifest: det här är följeslagarens ANSIKTE
+ * i menyer, poserna är samma djur i världen. Räven har 80+ poser och björnen
+ * fyra - inget av det rörs för att porträttet byts.
+ *
+ * Nyckeln är art-ID, samma som `getProgressCompanionArtId` returnerar, så ett
+ * sparat val aldrig kan peka på fel bild. Saknas ett ID här ritas den
+ * inbyggda SVG-figuren precis som förut.
+ */
+export const COMPANION_PORTRAIT_IMAGES: Partial<Record<ProgressCompanionArtId, string>> = {
+	fox: '/images/avatars/presets/fox.png',
+	bear: '/images/avatars/presets/bear.png',
+	schafer: '/images/avatars/presets/schafer.png',
+	australisk_shepherd: '/images/avatars/presets/australisk_shepherd.png'
+};
+
+/** Porträttfoto för en följeslagare, eller null när SVG-figuren ska användas. */
+export function getCompanionPortraitSrc(id: string | null | undefined): string | null {
+	return COMPANION_PORTRAIT_IMAGES[getProgressCompanionArtId(id)] ?? null;
+}
+
 // Standardfokus (object-position) för hero-bilden. Räven använder detta värde,
 // så det håller nuvarande komposition oförändrad om en följeslagare saknar eget värde.
 export const DEFAULT_COMPANION_HERO_FOCUS = '70% 64%';

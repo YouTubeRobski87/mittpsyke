@@ -7,12 +7,11 @@
 
 	type CompanionId = 'fox' | 'bear' | 'wolf' | 'schafer' | 'australisk_shepherd';
 
-	// Räv, björn och varg ritas som inline-SVG i CompanionAvatar. Hundarna har
-	// frilagda foton i stället, så de visas som bild. Inga andra djur påverkas.
-	const COMPANION_PRESET_IMAGES: Partial<Record<CompanionId, string>> = {
-		schafer: '/images/avatars/presets/schafer.png',
-		australisk_shepherd: '/images/avatars/presets/australisk_shepherd.png'
-	};
+	// Porträttet - foto eller inbyggd SVG-figur - avgörs numera av
+	// CompanionAvatar, som läser COMPANION_PORTRAIT_IMAGES i progressCompanion.
+	// Väljaren hade tidigare ett eget bilduppslag som bara hundarna fanns i,
+	// vilket gjorde att ett sparat hundval ändå ritades som SVG på Mitt Hem och
+	// i profilkortet. Ett uppslag, tre ytor, samma bild.
 
 	let {
 		selection,
@@ -59,17 +58,7 @@
 				aria-checked={selection.id === companion.id}
 				disabled={saving}
 			>
-				{#if COMPANION_PRESET_IMAGES[companion.id]}
-					<img
-						class="companion-choice-photo"
-						src={COMPANION_PRESET_IMAGES[companion.id]}
-						alt=""
-						loading="lazy"
-						decoding="async"
-					/>
-				{:else}
-					<CompanionAvatar selection={{ id: companion.id }} size="lg" decorative animated={false} />
-				{/if}
+				<CompanionAvatar selection={{ id: companion.id }} size="lg" decorative animated={false} />
 				<span class="companion-choice-copy">
 					<strong>{companion.name}</strong>
 					<small>{companion.speciesName ? `${companion.speciesName} · ${companion.temperament}` : companion.temperament}</small>
@@ -115,16 +104,6 @@
 		display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 0.6rem;
-	}
-
-	/* Samma yta som CompanionAvatar size="lg" upptar, så korten radar upp sig
-	   likadant oavsett om följeslagaren ritas som SVG eller visas som foto. */
-	.companion-choice-photo {
-		width: 3.5rem;
-		height: 3.5rem;
-		flex-shrink: 0;
-		object-fit: contain;
-		object-position: center bottom;
 	}
 
 	.companion-choice {
