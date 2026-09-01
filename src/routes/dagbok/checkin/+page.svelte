@@ -2011,6 +2011,10 @@
 
 	.diary-paths h2 {
 		position: relative;
+		color: hsl(var(--foreground));
+	}
+
+	:global(.dark) .diary-paths h2 {
 		color: hsl(210 40% 98%);
 	}
 
@@ -2037,9 +2041,14 @@
 		width: 2.4rem;
 		height: 2.4rem;
 		border-radius: 0.6rem;
+		background: var(--primary-soft);
+		color: var(--primary);
+		flex-shrink: 0;
+	}
+
+	:global(.dark) .diary-start-icon {
 		background: hsl(214 34% 24%);
 		color: hsl(214 78% 76%);
-		flex-shrink: 0;
 	}
 
 	.diary-start-text {
@@ -2051,12 +2060,20 @@
 	.diary-start-title {
 		font-size: 1rem;
 		font-weight: 650;
+		color: hsl(var(--foreground));
+	}
+
+	:global(.dark) .diary-start-title {
 		color: hsl(210 40% 98%);
 	}
 
 	.diary-start-copy {
 		font-size: 0.86rem;
 		line-height: 1.5;
+		color: hsl(var(--muted-foreground));
+	}
+
+	:global(.dark) .diary-start-copy {
 		color: hsl(214 32% 86% / 0.8);
 	}
 
@@ -2093,12 +2110,23 @@
 	}
 
 	.diary-start-guided-button {
+		border-color: var(--primary-border-soft);
+		background: hsl(var(--surface));
+		color: hsl(var(--foreground));
+	}
+
+	:global(.dark) .diary-start-guided-button {
 		border-color: rgba(191, 219, 254, 0.42);
 		background: rgba(15, 23, 42, 0.42);
 		color: hsl(210 40% 96%);
 	}
 
 	.diary-start-guided-button:hover {
+		border-color: var(--primary);
+		background: var(--primary-soft);
+	}
+
+	:global(.dark) .diary-start-guided-button:hover {
 		border-color: rgba(191, 219, 254, 0.62);
 		background: rgba(15, 23, 42, 0.58);
 	}
@@ -2111,6 +2139,10 @@
 		margin-top: 0.7rem;
 		font-size: 0.85rem;
 		line-height: 1.5;
+		color: hsl(var(--muted-foreground));
+	}
+
+	:global(.dark) .diary-start-secondary {
 		color: hsl(214 32% 86% / 0.78);
 	}
 
@@ -2118,7 +2150,7 @@
 		padding: 0;
 		border: 0;
 		background: none;
-		color: hsl(214 88% 80%);
+		color: var(--primary);
 		font: inherit;
 		font-weight: 650;
 		text-decoration: underline;
@@ -2128,11 +2160,17 @@
 	}
 
 	.diary-start-secondary-action:hover:not(:disabled) {
+		color: var(--color-primary-hover);
+	}
+
+	:global(.dark) .diary-start-secondary-action:hover:not(:disabled) {
 		color: hsl(214 92% 88%);
 	}
 
 	.diary-start-secondary-action:disabled {
-		opacity: 0.6;
+		/* 0.6 gav 2,37:1 mot panelen. 0.75 ger 3,07:1 – fortfarande tydligt
+		   dämpad, men läsbar. */
+		opacity: 0.75;
 		cursor: default;
 		text-decoration: none;
 	}
@@ -2140,6 +2178,10 @@
 	.diary-paths > p {
 		position: relative;
 		max-width: 58ch;
+		color: hsl(var(--muted-foreground));
+	}
+
+	:global(.dark) .diary-paths > p {
 		color: hsl(214 32% 86% / 0.86);
 	}
 
