@@ -18,7 +18,7 @@
 	   från --container-max, som gäller smalare läs- och skrivytor: de sidorna
 	   har ett trekolumnsgrid som behöver mer bredd. Håll värdet här, inte per
 	   sida, så de två inte glider isär. */
-	--portal-max: 1200px;
+	--portal-max: 1120px;
 	--font-heading: 'Recursive H', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-body: 'Recursive T', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-main: var(--font-body);
