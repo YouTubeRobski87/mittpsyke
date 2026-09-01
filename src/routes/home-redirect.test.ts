@@ -4,26 +4,35 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { load } from './+page.server';
 
 type TestUser = { id: string; is_anonymous?: boolean } | null;
+type HomeData = {
+	title: string;
+	isSignedInHome: boolean;
+	homeOverview?: {
+		displayName: string | null;
+		entryCount: number;
+		progressCompanion: null;
+	};
+};
 
 function eventFor(user: TestUser, path = 'http://localhost/') {
 	return {
 		url: new URL(path),
 		locals: {
 			supabase: {
-				auth: { getUser: async () => ({ data: { user }, error: null }) }
+				auth: { getUser: async () => ({ data: { user }, error: null }) },
+				from: () => ({
+					select: () => ({
+						eq: async () => ({ count: 3, error: null })
+					})
+				})
 			} as unknown as SupabaseClient
 		}
 	} as unknown as Parameters<typeof load>[0];
 }
 
-/** Kör laddaren och returnerar antingen sidans data eller den kastade redirecten. */
-async function runLoad(user: TestUser, path?: string) {
-	try {
-		return { data: await load(eventFor(user, path)), redirect: null };
-	} catch (thrown) {
-		if (isRedirect(thrown)) return { data: null, redirect: thrown };
-		throw thrown;
-	}
+/** Kör startsidans serverladdare med den angivna sessionen. */
+async function runLoad(user: TestUser, path?: string): Promise<HomeData> {
+	return (await load(eventFor(user, path))) as HomeData;
 }
 
 const signedIn: TestUser = { id: 'user-1', is_anonymous: false };
@@ -31,46 +40,48 @@ const guest: TestUser = { id: 'guest-1', is_anonymous: true };
 
 describe('Startsidan för inloggade', () => {
 	it('visar den publika startsidan för den som inte är inloggad', async () => {
-		const { data, redirect } = await runLoad(null);
+		const data = await runLoad(null);
 
-		expect(redirect).toBeNull();
-		expect(data?.title).toBe('En lugn plats att återvända till');
+		expect(data.title).toBe('En lugn plats att återvända till');
+		expect(data.isSignedInHome).toBe(false);
 	});
 
-	it('skickar inloggade till Mitt Hem', async () => {
-		const { redirect } = await runLoad(signedIn);
+	it('visar översikten för inloggade utan att redirecta till Mitt Hem', async () => {
+		const data = await runLoad(signedIn);
 
-		expect(redirect).not.toBeNull();
-		expect(redirect?.status).toBe(303);
-		expect(redirect?.location).toBe('/dashboard');
-	});
-
-	it('redirectar innan startsidan hinner byggas', async () => {
-		// Laddaren kastar i stället för att returnera data, så SvelteKit hinner
-		// aldrig rendera den publika sidan för en inloggad användare.
-		const { data } = await runLoad(signedIn);
-
-		expect(data).toBeNull();
+		expect(data.isSignedInHome).toBe(true);
+		expect(data.homeOverview).toEqual({
+			displayName: null,
+			entryCount: 3,
+			progressCompanion: null
+		});
 	});
 
 	it('låter gäster utan konto vara kvar på startsidan', async () => {
 		// "Skriv först, utan konto" vänder sig till just de här sessionerna.
-		const { data, redirect } = await runLoad(guest);
+		const data = await runLoad(guest);
 
-		expect(redirect).toBeNull();
-		expect(data?.title).toBe('En lugn plats att återvända till');
+		expect(data.title).toBe('En lugn plats att återvända till');
+		expect(data.isSignedInHome).toBe(false);
 	});
 
 	it('behåller legacy-länken till bloggen även för inloggade', async () => {
 		// Publika URL:er ska fortsatt gå fram; bara "/" byter beteende.
-		const { redirect } = await runLoad(signedIn, 'http://localhost/?post=angest-pa-natten');
+		let caught: unknown;
+		try {
+			await runLoad(signedIn, 'http://localhost/?post=angest-pa-natten');
+		} catch (error) {
+			caught = error;
+		}
 
-		expect(redirect?.status).toBe(308);
-		expect(redirect?.location).toBe('/blogg/angest-pa-natten');
+		expect(isRedirect(caught)).toBe(true);
+		if (!isRedirect(caught)) return;
+		expect(caught.status).toBe(308);
+		expect(caught.location).toBe('/blogg/angest-pa-natten');
 	});
 
 	it('rör inga andra publika laddare', async () => {
-		// Ingen annan publik route har fått samma dashboard-redirect.
+		// Ingen annan publik route får en inloggad startsida som bieffekt.
 		const { readFileSync } = await import('node:fs');
 		const { join } = await import('node:path');
 		const others = ['blogg/+page.server.ts', 'om-oss/+page.server.ts'];
@@ -83,7 +94,7 @@ describe('Startsidan för inloggade', () => {
 			} catch {
 				continue;
 			}
-			expect(source, relative).not.toContain("redirect(303, '/dashboard')");
+			expect(source, relative).not.toContain('isSignedInHome');
 		}
 	});
 });

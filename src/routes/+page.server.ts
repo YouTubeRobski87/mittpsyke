@@ -1,6 +1,14 @@
 import { redirect } from '@sveltejs/kit';
 import { normalizeSoroArticleSlug } from '$lib/server/soro-articles';
+import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
+import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
 import type { PageServerLoad } from './$types';
+
+function cleanName(value: unknown): string | null {
+	if (typeof value !== 'string') return null;
+	const trimmed = value.trim();
+	return trimmed && !trimmed.includes('@') ? trimmed : null;
+}
 
 export const load: PageServerLoad = async ({ url, locals }) => {
 	const legacyPost = url.searchParams.get('post');
@@ -12,27 +20,30 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		throw redirect(308, '/blogg');
 	}
 
-	// Startsidans copy är skriven för den som ännu inte har en plats här
-	// ("Skapa din plats", "Skriv först, utan konto"). Den som redan är inloggad
-	// har den platsen, och skickas till Mitt Hem innan sidan hinner renderas.
-	//
-	// Gästsessioner räknas inte som inloggade: hela poängen med att kunna skriva
-	// utan konto är att startsidan ska finnas kvar för dem. Samma bedömning som
-	// i /api/evening-checkins och Kvällsstugan.
-	//
-	// Ligger efter legacy-redirecten ovan, så att en delad ?post-länk fortsätter
-	// leda till artikeln även för inloggade.
 	const {
 		data: { user }
 	} = await locals.supabase.auth.getUser();
 
 	if (user && !user.is_anonymous) {
-		throw redirect(303, '/dashboard');
+		const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+
+		return {
+			title: 'MittPsyke',
+			description: 'En lugn översikt över dina platser i MittPsyke.',
+			isSignedInHome: true,
+			homeOverview: {
+				displayName:
+					cleanName(metadata.display_name) ?? cleanName(metadata.full_name) ?? cleanName(metadata.name),
+				entryCount: await loadDiaryEntryCount(locals.supabase, user.id),
+				progressCompanion: readProgressCompanionFromMetadata(metadata)
+			}
+		};
 	}
 
 	return {
 		title: 'En lugn plats att återvända till',
 		description:
-			'MittPsyke är en personlig plats för självreflektion. Skriv, checka in och följ hur du har det över tid – i din takt, med eller utan konto. Inte vård, behandling eller akuthjälp.'
+			'MittPsyke är en personlig plats för självreflektion. Skriv, checka in och följ hur du har det över tid – i din takt, med eller utan konto. Inte vård, behandling eller akuthjälp.',
+		isSignedInHome: false
 	};
 };

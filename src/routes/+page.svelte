@@ -1,8 +1,12 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import CabinProof from '$lib/components/home/CabinProof.svelte';
+	import SignedInHome from '$lib/components/home/SignedInHome.svelte';
 	import { trackHomeCtaClick } from '$lib/analytics';
 	import { dataflowCopy } from '$lib/dataflow-copy';
+	import type { PageData } from './$types';
+
+	let { data } = $props<{ data: PageData }>();
 
 	// Anonyma skrivytan är kvar som destination - den är ett val inne i
 	// produkten, inte startsidans löfte.
@@ -19,6 +23,9 @@
 
 <SEO canonical="https://mittpsyke.se/" />
 
+{#if data.isSignedInHome}
+	<SignedInHome overview={data.homeOverview} />
+{:else}
 <main class="home">
 	<!-- 1. Hero -->
 	<section class="home-hero" aria-labelledby="hero-title">
@@ -226,6 +233,7 @@
 		</div>
 	</section>
 </main>
+{/if}
 
 <style>
 	:global(:root) {
