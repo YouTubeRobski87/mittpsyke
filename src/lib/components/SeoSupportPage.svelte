@@ -748,24 +748,23 @@
 			max-width: none;
 		}
 
-		/* I högerkolumnen läser punkterna bättre staplade än tre i bredd –
-		 * kolumnen är för smal för att etiketterna ska få plats på en rad. */
+		/* Trygghetspunkterna följer hela vänsterkolumnen i stället för bara
+		 * rubrikraden. De staplas eftersom kolumnen är för smal för tre
+		 * etiketter i bredd. */
 		.landing .trust-points {
 			grid-column: 2;
-			grid-row: 1;
+			grid-row: 1 / 4;
+			align-self: start;
 			grid-template-columns: 1fr;
 			gap: 0.6rem;
 		}
 
+		/* "Så fungerar det" är en egen sektion under hero-raden, inte en del
+		 * av högerkolumnen. Tidigare spände den rad 2–3, vilket tvingade upp
+		 * radhöjderna och lade ett tomrum mellan CTA och samtyckesraden. */
 		.landing .how-it-works {
-			grid-column: 2;
-			grid-row: 2 / 4;
+			grid-column: 1 / -1;
 			max-width: none;
-		}
-
-		.landing .how-steps {
-			grid-template-columns: 1fr;
-			gap: 0.55rem;
 		}
 
 		/* Allt under hero-blocket återgår till en kolumn i full bredd.
@@ -777,6 +776,12 @@
 
 		.landing .section-wide {
 			max-width: none;
+		}
+
+		/* Samma tresspalt som stegen ovan, så sidans nedre del får samma
+		 * rytm i stället för två breda kort. */
+		.landing .resource-cards {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 
 		/* Källpanelen är en egen komponent och ligger utanför denna
