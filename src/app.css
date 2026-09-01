@@ -14,6 +14,11 @@
 	 * tillbaka utrymmet. 0 när ingen banner finns. */
 	--cookie-banner-space: 0px;
 	--container-max: 980px;
+	/* Tak för portalens griddade översiktssidor (Mitt Hem, Framsteg). Skilt
+	   från --container-max, som gäller smalare läs- och skrivytor: de sidorna
+	   har ett trekolumnsgrid som behöver mer bredd. Håll värdet här, inte per
+	   sida, så de två inte glider isär. */
+	--portal-max: 1200px;
 	--font-heading: 'Recursive H', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-body: 'Recursive T', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-main: var(--font-body);

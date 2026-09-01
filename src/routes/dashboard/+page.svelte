@@ -554,7 +554,7 @@
     display: flex;
     flex-direction: column;
     gap: clamp(1rem, 1.6vw, 1.5rem);
-    width: min(1440px, 100%);
+    width: min(var(--portal-max), 100%);
     margin: 0 auto;
     padding: clamp(18px, 2.4vw, 28px) clamp(14px, 2.6vw, 40px) clamp(24px, 3vw, 36px);
     min-width: 0;

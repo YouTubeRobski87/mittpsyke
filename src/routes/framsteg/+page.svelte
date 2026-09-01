@@ -1957,7 +1957,7 @@
 	}
 
 	.framsteg-shell {
-		width: min(1440px, 100%);
+		width: min(var(--portal-max), 100%);
 		max-width: none;
 	}
 
