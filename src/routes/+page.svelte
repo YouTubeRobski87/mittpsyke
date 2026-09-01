@@ -31,29 +31,33 @@
 	<section class="home-hero" aria-labelledby="hero-title">
 		<div class="home-inner hero-grid">
 			<div class="hero-copy">
-				<p class="eyebrow">Dagbok och kvällsincheckning</p>
-				<h1 id="hero-title">Skriv av dig – och se vad som återkommer.</h1>
+				<p class="eyebrow">Skriv, reflektera och se mönster över tid</p>
+				<h1 id="hero-title">Skriv av dig. Se mönster över tid.</h1>
 				<p class="lead">
-					MittPsyke är en svensk dagbok att skriva i när det behövs. Det du sparar möter dig igen
-					senare, så att det som återkommer eller förändras blir lättare att se.
+					MittPsyke är ett digitalt stöd där du kan skriva, reflektera och följa hur du har det över
+					tid. Det du väljer att spara finns kvar när du återvänder, så att återkommande tankar och
+					förändringar blir lättare att upptäcka.
 				</p>
-				<p class="promise">Du behöver inte prestera något här. Inget bryts om du är borta.</p>
 				<div class="hero-actions">
 					<a
 						class="cta-primary"
-						href={CREATE_PLACE_DESTINATION}
-						onclick={() => trackHomeCta('hero', 'skapa_din_plats', CREATE_PLACE_DESTINATION)}
-					>
-						Skapa din plats
-					</a>
-					<a
-						class="cta-secondary"
 						href={ANONYMOUS_WRITE_DESTINATION}
 						onclick={() => trackHomeCta('hero', 'skriv_utan_konto', ANONYMOUS_WRITE_DESTINATION)}
 					>
-						Skriv först, utan konto
+						Börja skriva
+					</a>
+					<a
+						class="cta-secondary"
+						href={CREATE_PLACE_DESTINATION}
+						onclick={() => trackHomeCta('hero', 'skapa_din_plats', CREATE_PLACE_DESTINATION)}
+					>
+						Skapa en plats för att spara det du skriver
 					</a>
 				</div>
+				<p class="product-path" aria-label="Så fungerar det: skriv, spara det du vill och se vad som återkommer.">
+					<span aria-hidden="true">Skriv → spara det du vill → se vad som återkommer</span>
+				</p>
+				<p class="promise">Du behöver inte prestera något här. Inget bryts om du är borta.</p>
 				<p class="boundary">Inte vård. Inte behandling. Inte akuthjälp. Vid fara: <a href="tel:112">112</a>.</p>
 			</div>
 
@@ -353,6 +357,15 @@
 		font-size: 0.95rem;
 		line-height: 1.6;
 		color: rgba(220, 225, 235, 0.82);
+	}
+
+	.product-path {
+		margin: 1rem 0 0;
+		font-family: var(--font-heading);
+		font-size: 0.9rem;
+		font-weight: 650;
+		line-height: 1.5;
+		color: var(--home-text-cool);
 	}
 
 	/* ── Platsens karta ── */
