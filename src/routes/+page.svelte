@@ -24,13 +24,13 @@
 	<section class="home-hero" aria-labelledby="hero-title">
 		<div class="home-inner hero-grid">
 			<div class="hero-copy">
-				<p class="eyebrow">En lugn plats på nätet</p>
-				<h1 id="hero-title">Du behöver inte prestera något här.</h1>
+				<p class="eyebrow">Dagbok och kvällsincheckning</p>
+				<h1 id="hero-title">Skriv av dig – och se vad som återkommer.</h1>
 				<p class="lead">
-					En stuga med en lampa tänd, ett djur som sitter kvar, och plats att skriva av dig. Kom när
-					du vill, stanna hur länge du vill.
+					MittPsyke är en svensk dagbok att skriva i när det behövs. Det du sparar möter dig igen
+					senare, så att det som återkommer eller förändras blir lättare att se.
 				</p>
-				<p class="promise">Inget bryts om du är borta.</p>
+				<p class="promise">Du behöver inte prestera något här. Inget bryts om du är borta.</p>
 				<div class="hero-actions">
 					<a
 						class="cta-primary"
@@ -63,8 +63,8 @@
 			<div class="narrow">
 				<h2 id="map-title">Så ser platsen ut</h2>
 				<p>
-					MittPsyke är inte en app med funktioner. Det är några få platser du kan återvända till,
-					och någon som är kvar där emellan.
+					Tre ställen, inte fler. Du behöver inte lära dig något system: det handlar om att skriva,
+					svara kort när du orkar, och hitta tillbaka till det du lämnat.
 				</p>
 			</div>
 			<ul class="place-map">
@@ -78,28 +78,30 @@
 				<li>
 					<h3>Kvällsstugan</h3>
 					<p>
-						Hit går du när dagen ska landa. En lampa, en sjö utanför fönstret, och några frågor i
-						lugn takt. Inget måste besvaras.
+						En kort incheckning på kvällen: hur kvällen känns, några ord om du vill skriva dem, och
+						vad du vill göra med det för ikväll. Inget måste besvaras.
 					</p>
 				</li>
 				<li>
 					<h3>Följeslagaren</h3>
 					<p>
-						Ett djur du väljer själv. Den sitter kvar där du lämnade den, också när du varit borta
-						länge.
+						Ett djur du väljer själv, ungefär som en profilbild – fast det syns i platsen när du
+						loggar in. Det ber dig aldrig om något, och står kvar som du lämnade det.
 					</p>
 				</li>
 			</ul>
 		</div>
 	</section>
 
-	<!-- 3. Följeslagaren -->
-	<section class="home-section section-alt" aria-labelledby="companion-title">
+	<!-- 3. Skillnaden mot en vanlig dagbok. Ligger före Kvällsstugan så en ny
+		 besökare vet varför det här är något annat än ett anteckningsblock. -->
+	<section class="home-section section-alt" aria-labelledby="difference-title">
 		<div class="home-inner narrow">
-			<h2 id="companion-title">Någon sitter kvar</h2>
+			<h2 id="difference-title">Skillnaden mot ett anteckningsblock</h2>
 			<p>
-				Följeslagaren är kvar där du lämnade den. Inte en tråd som börjar om. Du skriver när du vill.
-				Platsen minns det du valt att spara.
+				I ett block ligger det du skrivit kvar, men du får själv leta upp det. Här kan det du valt
+				att spara möta dig igen: i en fråga, i en tillbakablick, eller när samma sak dykt upp några
+				gånger. Ingenting börjar om från noll för att det gått en tid.
 			</p>
 			<a
 				class="text-link"
@@ -115,10 +117,10 @@
 	<section class="home-section" aria-labelledby="evening-title">
 		<div class="home-inner evening-inner">
 			<div class="narrow">
-				<h2 id="evening-title">En stund där dagen får landa</h2>
+				<h2 id="evening-title">En kort incheckning när dagen ska landa</h2>
 				<p>
-					Ett steg i taget. Hur är det ikväll. Inget rätt eller fel. Svaren sparas bara om du väljer
-					det.
+					Fyra steg, ett i taget, på någon minut. Det finns inget rätt svar, textrutan får lämnas
+					tom, och ingenting sparas om du inte väljer att spara det.
 				</p>
 			</div>
 			<figure class="evening-scene">
@@ -148,10 +150,11 @@
 	<!-- 4. Över tid -->
 	<section class="home-section section-alt" aria-labelledby="over-time-title">
 		<div class="home-inner narrow">
-			<h2 id="over-time-title">Det du skrivit hör ihop</h2>
+			<h2 id="over-time-title">Efter ett tag syns mönstren</h2>
 			<p>
-				Teman ur dina egna texter. Humör du själv satt, från tungt till ljusare. Observationer ur din
-				data, inte en bedömning.
+				När du varit här några gånger kan du se tillbaka: teman som återkommer i det du skrivit, och
+				hur du själv beskrivit dagarna. Det är dina egna ord sammanställda – ingen mätning av hur du
+				sköter dig, och inget som blir sämre av att du varit borta.
 			</p>
 		</div>
 	</section>
@@ -178,8 +181,9 @@
 		<div class="home-inner narrow">
 			<h2 id="chat-title">Hjälp att sortera, när du vill ha det</h2>
 			<p>
-				Chatten hjälper dig att sortera tankarna i stunden. Det du väljer att spara kan bli en del av
-				det du återvänder till. Chatten är ett verktyg i MittPsyke, inte hela platsen.
+				Ibland är det lättare att komma igång genom att prata. Chatten hjälper dig sortera tankarna i
+				stunden, och det du väljer att spara följer med till resten av det du samlat. Du kan använda
+				MittPsyke helt utan den.
 			</p>
 		</div>
 	</section>
@@ -188,7 +192,7 @@
 	<section class="home-section" aria-labelledby="reading-title">
 		<div class="home-inner narrow">
 			<h2 id="reading-title">Guider när du behöver ord</h2>
-			<p>Artiklar och övningar finns om du vill läsa först. De är stöd, inte produkten.</p>
+			<p>Artiklar och övningar finns här om du hellre vill läsa än skriva just nu.</p>
 			<a
 				class="text-link"
 				href="/guider"

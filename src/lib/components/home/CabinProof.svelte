@@ -51,6 +51,10 @@
 		</ul>
 		<span class="cabin-proof-primary" aria-hidden="true">Fortsätt</span>
 	</div>
+
+	<!-- Säger vad kortet ovanför är. Utan bildtexten kan proofen läsas som
+		 dekor, och besökaren får aldrig veta att det är produkten hen ser. -->
+	<figcaption class="cabin-proof-caption">Så ser kvällsincheckningen ut.</figcaption>
 </figure>
 
 <style>
@@ -61,6 +65,28 @@
 		gap: 0.9rem;
 		margin: 0;
 		font-family: var(--font-body);
+	}
+
+	.cabin-proof-caption {
+		color: var(--home-text-muted, rgb(220 225 235 / 0.78));
+		font-size: 0.82rem;
+		line-height: 1.5;
+	}
+
+	/* I section-varianten ligger scen och kort i två kolumner. Bildtexten hör
+	   till båda och läggs därför under hela bredden. */
+	@media (min-width: 760px) {
+		.cabin-proof--section .cabin-proof-caption {
+			grid-column: 1 / -1;
+		}
+	}
+
+	/* Under 900px är stegkortet dolt i hero-varianten och bara landskapet syns.
+	   Då finns ingen incheckning att sätta bildtext på. */
+	@media (max-width: 899px) {
+		.cabin-proof--hero .cabin-proof-caption {
+			display: none;
+		}
 	}
 
 	.cabin-proof-scene {
@@ -218,6 +244,11 @@
 		.cabin-proof--hero .cabin-proof-primary {
 			margin-top: 0.6rem;
 			padding: 0.5rem 0.85rem;
+		}
+
+		/* Hero-varianten är display:block, så figurens gap gäller inte här. */
+		.cabin-proof--hero .cabin-proof-caption {
+			margin-top: 0.6rem;
 		}
 	}
 
