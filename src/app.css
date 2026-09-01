@@ -25,7 +25,10 @@
 	/* Motparten till --muted-foreground. Alias till --surface-muted så att dova
 	   ytor och dov text hämtar sin färg ur samma palett. */
 	--muted: var(--surface-muted);
-	--muted-foreground: 240 4% 46%;
+	/* 44% i stället för 46%: på de tonade ytorna (--surface-soft, --surface-muted)
+	   gav 46% 4,40–4,43:1, alltså strax under WCAG AA för brödtext. 44% ger
+	   minst 4,73:1 mot samtliga ljusa ytor. Mörkt läge har ett eget värde. */
+	--muted-foreground: 240 4% 44%;
 	--border: 240 6% 90%;
 	--success-surface: 211 62% 95%;
 	--success-foreground: 214 47% 32%;

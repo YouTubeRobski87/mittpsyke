@@ -1993,6 +1993,16 @@
 		overflow: hidden;
 		border-color: var(--color-dashboard-border);
 		background:
+			radial-gradient(circle at 92% 18%, rgba(var(--primary-rgb), 0.1), transparent 34%),
+			var(--theme-bg, hsl(var(--surface-soft)));
+		color: hsl(var(--foreground));
+		box-shadow: 0 14px 34px var(--shadow-color);
+	}
+
+	/* Den mörka panelen är mörkt läges uttryck. I ljust läge gav den
+	 * dov brödtext (.auth-muted) på mörk yta, under AA. */
+	:global(.dark) .diary-paths {
+		background:
 			radial-gradient(circle at 92% 18%, rgba(96, 165, 250, 0.18), transparent 34%),
 			linear-gradient(135deg, hsl(222 47% 13%), hsl(224 36% 18%) 58%, hsl(230 30% 16%));
 		color: hsl(210 40% 98%);
@@ -2138,8 +2148,8 @@
 	.diary-paths--signed-in {
 		gap: 0.75rem;
 		padding: clamp(1.2rem, 2.3vw, 1.55rem);
-		background: hsl(216 32% 18%);
-		box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+		background: hsl(var(--surface-muted));
+		box-shadow: 0 10px 24px var(--shadow-color);
 	}
 
 	.diary-paths--signed-in .diary-start-intro {
@@ -2151,6 +2161,11 @@
 		gap: 1rem;
 		margin-top: 0.45rem;
 		padding: 1.12rem 1.2rem;
+		border-color: var(--primary-border-soft);
+		background: var(--primary-soft);
+	}
+
+	:global(.dark) .diary-paths--signed-in .diary-start-primary {
 		border-color: rgba(191, 219, 254, 0.22);
 		background: rgba(15, 23, 42, 0.2);
 	}
@@ -2165,8 +2180,12 @@
 		display: block;
 		width: 1.4rem;
 		height: 1.4rem;
-		color: hsl(207 72% 78%);
+		color: var(--primary);
 		flex-shrink: 0;
+	}
+
+	:global(.dark) .diary-paths--signed-in .diary-start-icon {
+		color: hsl(207 72% 78%);
 	}
 
 	.diary-paths--signed-in .diary-start-text {
@@ -2342,17 +2361,31 @@
 		display: grid;
 		gap: 0;
 		border-radius: calc(var(--radius-card) + 2px);
-		border: 1px solid rgba(255, 255, 255, 0.08);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface));
+		box-shadow: 0 18px 40px var(--shadow-color);
+		overflow: hidden;
+	}
+
+	/* Skrivytan är ett funktionellt formulärkort (textfält, humörreglage,
+	   bilduppladdning), inte ett scen-/bildelement. Den mörka ytan hör
+	   därför till mörkt läge. */
+	:global(.dark) .editor-card {
+		border-color: rgba(255, 255, 255, 0.08);
 		background: linear-gradient(180deg, rgba(24, 28, 39, 0.98) 0%, rgba(15, 18, 28, 0.98) 100%);
 		box-shadow:
 			0 18px 40px rgba(15, 23, 42, 0.18),
 			inset 0 1px 0 rgba(255, 255, 255, 0.03);
-		overflow: hidden;
 	}
 
 	.editor-prompt-question {
 		padding: 1rem 1.2rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		border-bottom: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-muted));
+	}
+
+	:global(.dark) .editor-prompt-question {
+		border-bottom-color: rgba(255, 255, 255, 0.08);
 		background: rgba(255, 255, 255, 0.025);
 	}
 
@@ -2362,16 +2395,25 @@
 		font-weight: 700;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
+		color: hsl(var(--muted-foreground));
+	}
+
+	:global(.dark) .editor-prompt-label {
 		color: rgba(226, 232, 240, 0.52);
 	}
 
 	.editor-prompt-question blockquote {
 		margin: 0;
 		padding-left: 0.75rem;
-		border-left: 2px solid rgba(191, 219, 254, 0.35);
-		color: rgba(226, 232, 240, 0.76);
+		border-left: 2px solid var(--primary-border-soft);
+		color: hsl(var(--foreground));
 		font-size: 0.93rem;
 		line-height: 1.65;
+	}
+
+	:global(.dark) .editor-prompt-question blockquote {
+		border-left-color: rgba(191, 219, 254, 0.35);
+		color: rgba(226, 232, 240, 0.76);
 	}
 
 	.diary-path-card {
@@ -2549,23 +2591,36 @@
 		margin-top: 0;
 		padding: 1.2rem 1.2rem 1.35rem;
 		border: 0;
-		border-top: 1px solid rgba(255, 255, 255, 0.08);
+		border-top: 1px solid hsl(var(--border));
 		border-radius: 0;
 		background: transparent;
-		color: rgba(248, 250, 252, 0.96);
+		color: hsl(var(--foreground));
 		font-size: 0.98rem;
 		line-height: 1.8;
 		min-height: 18rem;
 		resize: vertical;
 	}
 
+	:global(.dark) .diary-input--editor {
+		border-top-color: rgba(255, 255, 255, 0.08);
+		color: rgba(248, 250, 252, 0.96);
+	}
+
 	.diary-input--editor:focus {
 		border-color: transparent;
 		outline: none;
+		box-shadow: inset 0 0 0 2px var(--focus-ring);
+	}
+
+	:global(.dark) .diary-input--editor:focus {
 		box-shadow: inset 0 0 0 1px rgba(94, 234, 212, 0.28);
 	}
 
 	.diary-input--editor::placeholder {
+		color: hsl(var(--muted-foreground));
+	}
+
+	:global(.dark) .diary-input--editor::placeholder {
 		color: rgba(226, 232, 240, 0.48);
 	}
 
@@ -2674,6 +2729,11 @@
 
 	.editor-card .mood-current,
 	.editor-card .text-sm:not(.auth-muted) {
+		color: hsl(var(--foreground));
+	}
+
+	:global(.dark) .editor-card .mood-current,
+	:global(.dark) .editor-card .text-sm:not(.auth-muted) {
 		color: rgba(248, 250, 252, 0.96);
 	}
 
@@ -2681,16 +2741,33 @@
 	.editor-card .mood-meaning,
 	.editor-card .mood-anchors,
 	.editor-card .mood-clear {
+		color: hsl(var(--muted-foreground));
+	}
+
+	:global(.dark) .editor-card .auth-muted,
+	:global(.dark) .editor-card .mood-meaning,
+	:global(.dark) .editor-card .mood-anchors,
+	:global(.dark) .editor-card .mood-clear {
 		color: rgba(226, 232, 240, 0.68);
 	}
 
 	.editor-card .mood-slider {
-		background: rgba(255, 255, 255, 0.08);
-		border-color: rgba(255, 255, 255, 0.08);
+		background: hsl(var(--surface-muted));
+		border-color: hsl(var(--border));
 	}
 
 	.editor-card .mood-slider::-webkit-slider-runnable-track,
 	.editor-card .mood-slider::-moz-range-track {
+		background: hsl(var(--surface-muted));
+	}
+
+	:global(.dark) .editor-card .mood-slider {
+		background: rgba(255, 255, 255, 0.08);
+		border-color: rgba(255, 255, 255, 0.08);
+	}
+
+	:global(.dark) .editor-card .mood-slider::-webkit-slider-runnable-track,
+	:global(.dark) .editor-card .mood-slider::-moz-range-track {
 		background: rgba(255, 255, 255, 0.08);
 	}
 
@@ -3038,9 +3115,17 @@
 		padding: 1rem;
 		border: 1px solid var(--color-dashboard-border);
 		border-radius: 0.95rem;
+		background: hsl(var(--surface));
+		box-shadow: 0 8px 22px var(--shadow-color);
+		transition: border-color 160ms ease, box-shadow 160ms ease;
+	}
+
+	/* Kortets mörka yta hör till mörkt läge. I ljust läge ärver texten
+	 * hsl(var(--foreground)), som är nästan svart och tidigare hamnade på
+	 * den mörka bakgrunden. */
+	:global(.dark) .diary-entry {
 		background: linear-gradient(145deg, rgba(30, 41, 59, 0.94), rgba(17, 24, 39, 0.95));
 		box-shadow: 0 8px 22px rgba(2, 6, 23, 0.14);
-		transition: border-color 160ms ease, box-shadow 160ms ease;
 	}
 
 	.diary-entry:hover {

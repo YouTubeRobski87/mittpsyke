@@ -1100,12 +1100,15 @@
     overflow: hidden;
     isolation: isolate;
     --checkin-image: var(--checkin-image-desktop);
+    /* Delningspunkten mellan textkolumn och bildyta. Både bildens inset och
+       textens maxbredd utgår från den, så de inte kan glida isär. */
+    --checkin-split: 42%;
   }
 
   .checkin-card::after {
     content: '';
     position: absolute;
-    inset: 0 0 0 42%;
+    inset: 0 0 0 var(--checkin-split);
     z-index: 0;
     background: var(--checkin-image) right center / cover no-repeat;
     opacity: 1;
@@ -1114,14 +1117,20 @@
   .checkin-card::before {
     content: '';
     position: absolute;
-    inset: 0 0 0 42%;
+    inset: 0 0 0 var(--checkin-split);
     z-index: 1;
     background: transparent;
   }
 
+  /* Innehållet är vanligt flöde i hela kortbredden och låg tidigare ovanpå
+     bilden (z-index 2 över bildens 0). Maxbredden håller det i sin egen
+     kolumn; marginalen mot delningspunkten ger en luftspalt mot bilden. */
   .checkin-card > * {
     position: relative;
     z-index: 2;
+    min-width: 0;
+    max-width: calc(var(--checkin-split) - 1.25rem);
+    overflow-wrap: break-word;
   }
 
   .home-card-head {
@@ -1435,6 +1444,9 @@
   @media (max-width: 860px) {
     .checkin-card {
       --checkin-image: var(--checkin-image-mobile);
+      /* Kortet är fullbrett här, så 42% skulle ge en orimligt smal
+         textspalt. Bilden får mindre andel i stället. */
+      --checkin-split: 58%;
     }
 
     .dashboard-body {
@@ -1479,6 +1491,12 @@
     .dashboard-main {
       padding: 16px 14px 20px;
       gap: 16px;
+    }
+
+    /* Under 620px blir textspalten annars för smal för att brödtexten ska
+       bryta rimligt. Bilden får mindre andel, kompositionen behålls. */
+    .checkin-card {
+      --checkin-split: 64%;
     }
 
     .topbar {
