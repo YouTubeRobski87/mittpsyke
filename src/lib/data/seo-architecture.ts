@@ -470,8 +470,8 @@ export const tools: Tool[] = [
 	},
 	{
 		slug: 'trygghetscirkel-exponering',
-		title: 'Trygghetscirkel: exponering i smågrupp',
-		description: 'Social exponering i lagom steg tillsammans med andra.',
+		title: 'Trygghetscirkel: exponering i små steg',
+		description: 'Social exponering i lagom steg.',
 		purpose: 'Den här övningen hjälper dig att närma dig sociala situationer i små, hanterbara steg i stället för allt på en gång. Målet är att minska undvikande och bygga mer trygghet i kontakt med andra över tid. Du väljer själv tempo och nivå, så att stegen känns utmanande men fortfarande möjliga.',
 		steps: [
 			'Rita tre nivåer: Tryggt, Lagom utmaning och För svårt just nu.',

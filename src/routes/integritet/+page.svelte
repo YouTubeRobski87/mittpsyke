@@ -99,7 +99,8 @@
 		<li><strong>AI-funktioner</strong> — innan du skickar ett chattmeddelande eller aktivt använder AI på sparad dagbokstext ber vi om samtycke till den behandlingen (artikel 9 GDPR). Att skriva ett anonymt, lokalt dagboksutkast startar inte AI-behandling.</li>
 	</ul>
 	<p class="opacity-80 leading-relaxed mb-3">
-		Du kan <strong>när som helst återkalla</strong> ditt samtycke genom att radera ditt konto, rensa cookies, eller kontakta oss.
+		Du kan <strong>när som helst återkalla</strong> samtycke för anonym chatt genom att rensa cookies. För
+		kontoanslutna AI-funktioner kan du kontakta oss.
 	</p>
 
 	<!-- VILKA UPPGIFTER -->
@@ -172,22 +173,22 @@
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
 					<th scope="row" class="px-4 py-3 font-normal text-left">Tekniska loggar</th>
-					<td class="px-4 py-3">Supabase / Vercel</td>
-					<td class="px-4 py-3">EU / USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<td class="px-4 py-3">Driftleverantör (se leverantörsavtal)</td>
+					<td class="px-4 py-3">Se leverantörsavtal</td>
 					<td class="px-4 py-3">Berättigat intresse</td>
-					<td class="px-4 py-3">Upp till 90 dagar</td>
+					<td class="px-4 py-3">Se leverantörsavtal</td>
 				</tr>
 				<tr>
 					<th scope="row" class="px-4 py-3 font-normal text-left">Analyskakor</th>
 					<td class="px-4 py-3">Google Analytics</td>
-					<td class="px-4 py-3">USA&thinsp;<span class="opacity-60 text-xs">(SCC)</span></td>
+					<td class="px-4 py-3">Se leverantörsavtal</td>
 					<td class="px-4 py-3">Samtycke</td>
 					<td class="px-4 py-3">Sessionbaserat</td>
 				</tr>
 				<tr>
 					<th scope="row" class="px-4 py-3 font-normal text-left">Cookie-fri webbstatistik</th>
 					<td class="px-4 py-3">Ahrefs Web Analytics</td>
-					<td class="px-4 py-3">Singapore&thinsp;<span class="opacity-60 text-xs">(SCC vid tillämplig överföring)</span></td>
+					<td class="px-4 py-3">Se leverantörsavtal</td>
 					<td class="px-4 py-3">Berättigat intresse</td>
 					<td class="px-4 py-3">Aggregerad statistik</td>
 				</tr>
@@ -195,7 +196,7 @@
 		</table>
 	</div>
 	<p class="opacity-60 text-xs leading-relaxed mb-6">
-		SCC = EU-kommissionens standardavtalsklausuler, som säkerställer ett adekvat skydd vid överföring av uppgifter till länder utanför EU/EES.
+		SCC = EU-kommissionens standardavtalsklausuler. De kan användas som en skyddsmekanism vid överföring av uppgifter till länder utanför EU/EES.
 		{dataflowCopy.providerRetention}
 	</p>
 
@@ -234,7 +235,7 @@
 		<li>Kontorelaterade uppgifter sparas så länge kontot är aktivt eller tills du begär radering.</li>
 		<li>{dataflowCopy.accountChat.storage} {dataflowCopy.accountChat.retention}</li>
 		<li>{dataflowCopy.savedDiary.storage}</li>
-		<li>Tekniska loggar och säkerhetsuppgifter sparas normalt i upp till 90 dagar.</li>
+		<li>Lagringstiden för tekniska loggar och säkerhetsuppgifter behöver bekräftas i aktuellt leverantörsavtal.</li>
 		<li>{dataflowCopy.guestChat.retention}</li>
 		<li>När uppgifter inte längre behövs raderas eller anonymiseras de.</li>
 	</ul>
@@ -248,16 +249,16 @@
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll. Data lagras inom EU (Frankfurt).</li>
 		<li><strong>OpenAI:</strong> AI-funktioner som chatt och aktivt valda AI-funktioner för sparad dagbokstext. {dataflowCopy.providerRetention}</li>
-		<li><strong>Vercel:</strong> hosting och leverans av webbplatsen. Analytics aktiveras endast med ditt samtycke. Data kan behandlas i USA – skyddas av standardavtalsklausuler (SCCs).</li>
+		<li><strong>Driftleverantör:</strong> uppgifter om aktiv hosting, tekniska loggar och eventuell tredjelandsöverföring behöver bekräftas i aktuellt leverantörsavtal.</li>
 		<li><strong>Ahrefs:</strong> cookie-fri webbstatistik om trafik och sidvisningar.</li>
 	</ul>
 
 	<section class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 sm:p-5 mt-2 mb-6" aria-label="Tredjelandsöverföring">
 		<h3 class="text-base font-semibold mt-0 mb-2">Överföring utanför EU/EES</h3>
 		<p class="opacity-80 leading-relaxed text-sm">
-			Flera av våra leverantörer (OpenAI, Vercel) är baserade i USA. Överföring av personuppgifter
-			till dessa sker med stöd av EU-kommissionens <strong>standardavtalsklausuler (SCCs)</strong>, vilket
-			säkerställer ett adekvat skydd för dina uppgifter i enlighet med GDPR.
+			När en leverantör behandlar personuppgifter utanför EU/EES kan EU-kommissionens
+			<strong>standardavtalsklausuler (SCCs)</strong> vara en möjlig skyddsmekanism. Vilket skydd som
+			gäller för en enskild överföring beror på det aktuella leverantörsavtalet och överföringens förutsättningar.
 		</p>
 	</section>
 

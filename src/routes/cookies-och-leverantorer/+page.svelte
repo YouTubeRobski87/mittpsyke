@@ -85,12 +85,12 @@
 		<section class="provider-card" aria-label="OpenAI">
 			<h3 class="text-base font-semibold mt-0 mb-2">OpenAI</h3>
 			<p>AI-funktioner som chatt, reflektioner och vissa dagboksrelaterade svar.</p>
-			<p>Kan behandla text du skickar till AI-funktioner. API-data används inte för modellträning enligt integritetspolicyn.</p>
+			<p>Kan behandla text du skickar till AI-funktioner. Villkor för leverantörens hantering av API-data behöver bekräftas i aktuellt leverantörsavtal.</p>
 		</section>
 		<section class="provider-card" aria-label="Vercel">
 			<h3 class="text-base font-semibold mt-0 mb-2">Vercel</h3>
-			<p>Hosting, leverans av webbplatsen och tekniska loggar för drift och felsökning.</p>
-			<p>Kan behandla tekniska uppgifter som behövs för säker och stabil drift.</p>
+			<p>Repoet innehåller Vercel-konfiguration för redirects och domänlogik.</p>
+			<p>Detta kan inte ensamt bekräfta att Vercel är aktiv drift- eller loggleverantör.</p>
 		</section>
 		<section class="provider-card" aria-label="Soro">
 			<h3 class="text-base font-semibold mt-0 mb-2">Soro</h3>

@@ -147,6 +147,10 @@
 		<p id="health-consent-copy">
 			{intro}
 		</p>
+		<p class="emergency-guidance">
+			Vid akut fara: <a href="tel:112">ring 112</a>. För vårdråd, kontakta
+			<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>.
+		</p>
 
 		<label class="consent-check">
 			<input type="checkbox" bind:checked={confirmed} />
@@ -160,8 +164,9 @@
 			<summary>Läs mer</summary>
 			<p>Samtycket gäller meddelanden du aktivt väljer att skicka i chatten.</p>
 			<p>
-				Samtycket är separat för känsliga uppgifter, sparas med tidpunkt och version och kan
-				återkallas senare i dina inställningar.
+				Samtycket är separat för känsliga uppgifter och sparas med tidpunkt och version. För anonym
+				chatt kan du återkalla samtycket genom att rensa cookies. För kontoanslutna
+				chattfunktioner kan du kontakta oss.
 			</p>
 			<div class="consent-data-summary">
 				<h3>Så hanteras chattmeddelanden</h3>
@@ -222,6 +227,24 @@
 
 	.consent-check input {
 		margin-top: 0.2rem;
+	}
+
+	.emergency-guidance {
+		margin: 0.75rem 0 0;
+		font-size: 0.9rem;
+		line-height: 1.5;
+	}
+
+	.emergency-guidance a {
+		font-weight: 700;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	.emergency-guidance a:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 2px;
+		border-radius: 2px;
 	}
 
 	.links {

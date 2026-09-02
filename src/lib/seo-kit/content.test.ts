@@ -1,12 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import {
 	findInvalidContentDateOrder,
+	getDisplayContentDates,
 	guides,
 	pillarLandingPages,
 	type SeoLandingPage
 } from './content';
 
 describe('innehållsdatum', () => {
+	it('does not invent a publication date when only an update date is known', () => {
+		expect(getDisplayContentDates({ updatedAt: '2026-03-14' })).toEqual({
+			publishedAt: undefined,
+			updatedAt: '2026-03-14'
+		});
+	});
+
 	it('flags updatedAt before publishedAt with a clear error', () => {
 		expect(
 			findInvalidContentDateOrder([

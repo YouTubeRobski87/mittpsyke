@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { PERIOD_OPTIONS } from '$lib/progress-recent-period';
 
 const route = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
 
@@ -7,6 +8,10 @@ const route = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
 const halfYearBlock = route.slice(
 	route.indexOf('{#if selectedPeriod === 180 && halfYear}'),
 	route.indexOf('{#if progressAnalysis.insights.length === 0}')
+);
+const analysisBlock = route.slice(
+	route.indexOf('<section class="card reflection-card analysis-card"'),
+	route.indexOf('{#if showSupportCard}')
 );
 
 describe('Framstegsanalysens presentation', () => {
@@ -55,9 +60,10 @@ describe('halvårsvyns informationshierarki', () => {
 		expect(halfYearBlock).toContain('Tunt underlag');
 	});
 
-	it('visar högst fyra primära insikter, i den ordning servern rangordnat dem', () => {
+	it('visar högst fyra insikter, i den ordning servern rangordnat dem', () => {
 		// Servern kapar listan till fyra; vyn lägger inte till egna kort.
-		expect(route).toContain('{#each progressAnalysis.insights as item (item.id)}');
+		expect(route).toContain('const primaryInsight = $derived(progressAnalysis?.insights[0] ?? null);');
+		expect(route).toContain('const remainingInsights = $derived(progressAnalysis?.insights.slice(1) ?? []);');
 		expect(halfYearBlock).not.toContain('analysis-tile');
 	});
 
@@ -74,5 +80,57 @@ describe('halvårsvyns informationshierarki', () => {
 
 	it('använder neutral reflektionstext utan prestations- eller diagnosspråk', () => {
 		expect(halfYearBlock).not.toMatch(/förbättr|försämr|framgång|resultat|prestation|mål|du borde|diagnos/i);
+	});
+});
+
+describe('periodens viktigaste insikt', () => {
+	it('lyfter den första redan rankade insikten med en tydlig arbetsrubrik', () => {
+		const primaryIndex = analysisBlock.indexOf('{#if primaryInsight}');
+
+		expect(primaryIndex).toBeGreaterThan(-1);
+		expect(analysisBlock).toContain('<h3 id="primary-insight-heading">Det viktigaste just nu</h3>');
+		expect(analysisBlock).toContain('{primaryInsight.title}');
+		expect(analysisBlock).toContain('{primaryInsight.description}');
+	});
+
+	it('visar inte samma förstainsikt igen i rutnätet', () => {
+		expect(analysisBlock).toContain('{#each remainingInsights as item (item.id)}');
+		expect(analysisBlock).not.toContain('{#each progressAnalysis.insights as item (item.id)}');
+	});
+
+	it('behåller serverns ordning för återstående insikter', () => {
+		// slice(1) tar bara bort den redan visade förstainsikten; den sorterar inte om resten.
+		expect(route).toContain('const remainingInsights = $derived(progressAnalysis?.insights.slice(1) ?? []);');
+		expect(analysisBlock).toContain('{#each remainingInsights as item (item.id)}');
+	});
+
+	it('saknar rubriken när analysen inte har någon kvalificerad insikt', () => {
+		const emptyIndex = analysisBlock.indexOf('{#if progressAnalysis.insights.length === 0}');
+		const primaryIndex = analysisBlock.indexOf('{#if primaryInsight}');
+
+		expect(emptyIndex).toBeGreaterThan(primaryIndex);
+		expect(analysisBlock).toContain('Inget tydligt mönster syns ännu i den här perioden.');
+	});
+
+	it('respekterar tunt underlag utan att skapa en egen insikt', () => {
+		expect(analysisBlock).toContain('{#if progressAnalysis.coverage.truncated}');
+		expect(analysisBlock).toContain('Analysen bygger på en begränsad del av periodens anteckningar.');
+		expect(route).toContain('progressAnalysis?.insights[0] ?? null');
+	});
+
+	it('visar inte rubriken före samtyckesgrinden eller vid API-fel', () => {
+		const consentIndex = analysisBlock.indexOf('{#if !isAnonymous && !hasSensitiveDataConsent}');
+		const errorIndex = analysisBlock.indexOf('{:else if insightsError}');
+		const analysisIndex = analysisBlock.indexOf('{:else if progressAnalysis}');
+
+		expect(consentIndex).toBeGreaterThan(-1);
+		expect(errorIndex).toBeGreaterThan(consentIndex);
+		expect(analysisIndex).toBeGreaterThan(errorIndex);
+		expect(analysisBlock.indexOf('{#if primaryInsight}')).toBeGreaterThan(analysisIndex);
+	});
+
+	it.each([30, 90, 180])('använder samma presentationsväg för %i dagar', (period) => {
+		expect(PERIOD_OPTIONS.map((option) => option.value)).toContain(period);
+		expect(route).toContain('const primaryInsight = $derived(progressAnalysis?.insights[0] ?? null);');
 	});
 });

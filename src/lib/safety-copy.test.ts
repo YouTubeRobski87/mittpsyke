@@ -35,6 +35,8 @@ describe('akut- och säkerhetscopy', () => {
 	it('behåller 112 och 1177 i den globala akutvägledningen', () => {
 		expect(layout).toContain('href="tel:112"');
 		expect(layout).toContain('https://www.1177.se');
+		expect(healthConsent).toContain('href="tel:112"');
+		expect(healthConsent).toContain('https://www.1177.se');
 		expect(layout).toContain('Vid akut fara ring 112');
 		expect(homeSafetyStrip).toContain('Ring 112');
 		expect(homeSafetyStrip).toContain('1177');

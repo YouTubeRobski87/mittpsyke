@@ -621,6 +621,10 @@
 	const periodActivity = $derived(buildPeriodActivity(heatmapData, selectedPeriod));
 	const historyActivity = $derived(buildHistoryActivity(heatmapData, moodSamples, selectedPeriod));
 	const progressAnalysis = $derived(loadedInsightsData?.analysis ?? null);
+	// Servern har redan sorterat och begränsat listan. De här två vyerna delar
+	// därför samma data utan någon egen klientrangordning.
+	const primaryInsight = $derived(progressAnalysis?.insights[0] ?? null);
+	const remainingInsights = $derived(progressAnalysis?.insights.slice(1) ?? []);
 	const analysisPeriodSummary = $derived.by(() => {
 		if (!progressAnalysis) return null;
 		const count = progressAnalysis.coverage.entryCount;
@@ -1437,6 +1441,27 @@
 					{#if progressAnalysis.coverage.truncated}
 						<p class="analysis-coverage-note">Analysen bygger på en begränsad del av periodens anteckningar.</p>
 					{/if}
+					{#if primaryInsight}
+						<section class="analysis-primary-insight" aria-labelledby="primary-insight-heading">
+							<h3 id="primary-insight-heading">Det viktigaste just nu</h3>
+							<p class="analysis-primary-title">{primaryInsight.title}</p>
+							<p class="analysis-primary-conclusion">{primaryInsight.description}</p>
+							<button
+								type="button"
+								class="analysis-more"
+								aria-expanded={openAnalysisInsights[primaryInsight.id] === true}
+								onclick={() => toggleAnalysisInsight(primaryInsight.id)}
+							>
+								{openAnalysisInsights[primaryInsight.id] ? 'Visa mindre' : 'Vad bygger det här på?'}
+							</button>
+							{#if openAnalysisInsights[primaryInsight.id]}
+								<dl class="analysis-details">
+									<dt>Så är observationen räknad</dt>
+									<dd>{primaryInsight.evidence}</dd>
+								</dl>
+							{/if}
+						</section>
+					{/if}
 					{#if selectedPeriod === 180 && halfYear}
 						<section class="analysis-section analysis-long-period" aria-labelledby="half-year-summary-heading">
 							<h3 id="half-year-summary-heading">Ditt senaste halvår</h3>
@@ -1491,9 +1516,9 @@
 					{/if}
 					{#if progressAnalysis.insights.length === 0}
 						<p class="reflection-copy">Inget tydligt mönster syns ännu i den här perioden. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
-					{:else}
+					{:else if remainingInsights.length > 0}
 						<ul class="analysis-grid">
-							{#each progressAnalysis.insights as item (item.id)}
+							{#each remainingInsights as item (item.id)}
 								<li class="analysis-tile" data-card={item.category}>
 								<h3>{item.title}</h3>
 								<p class="analysis-tile-conclusion">{item.description}</p>
@@ -2246,6 +2271,43 @@
 		list-style: none;
 	}
 
+	.analysis-primary-insight {
+		display: grid;
+		align-content: start;
+		gap: 0.45rem;
+		padding: 1.1rem 1.2rem;
+		border: 1px solid color-mix(in srgb, var(--theme-accent, #557c68) 34%, var(--color-dashboard-border));
+		border-inline-start: 0.3rem solid color-mix(in srgb, var(--theme-accent, #557c68) 62%, transparent);
+		border-radius: 0.9rem;
+		background: hsl(var(--muted) / 0.3);
+	}
+
+	.analysis-primary-insight h3 {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	.analysis-primary-title,
+	.analysis-primary-conclusion {
+		margin: 0;
+		color: hsl(var(--foreground));
+	}
+
+	.analysis-primary-title {
+		font-size: 1rem;
+		font-weight: 700;
+	}
+
+	.analysis-primary-conclusion {
+		font-size: 1.08rem;
+		font-weight: 600;
+		line-height: 1.4;
+	}
+
 	.analysis-tile {
 		display: grid;
 		align-content: start;
@@ -2292,6 +2354,12 @@
 		color: hsl(var(--foreground));
 	}
 
+	.analysis-more:focus-visible {
+		outline: 2px solid hsl(var(--foreground));
+		outline-offset: 3px;
+		border-radius: 0.25rem;
+	}
+
 	/* Fördjupningen bär hela det ursprungliga underlaget. Den får vara lång -
 	   den syns bara för den som bett om den. */
 	.analysis-details {
@@ -2327,6 +2395,10 @@
 		.analysis-tile {
 			gap: 0.3rem;
 			padding: 0.8rem 0.9rem;
+		}
+
+		.analysis-primary-insight {
+			padding: 0.95rem 1rem;
 		}
 
 		.analysis-tile-conclusion {

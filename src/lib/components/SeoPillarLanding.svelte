@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ContentTrustBlock from '$lib/components/ContentTrustBlock.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
-	import type { Guide, Pillar, SeoLandingPage } from '$lib/seo-kit/content';
+	import { getDisplayContentDates, type Guide, type Pillar, type SeoLandingPage } from '$lib/seo-kit/content';
 
 	type SeoPillarLandingProps = {
 		pillar: Pillar;
@@ -25,16 +25,19 @@
 	};
 
 	const pillarRoute = $derived(pillarRoutes[pillar.slug] ?? null);
-	const publishedAt = $derived(landing?.publishedAt ?? '2026-03-21');
-	const updatedAt = $derived(
+	const latestGuideUpdate = $derived(
 		landing?.updatedAt ??
 			guides
 				.map((guide) => guide.updatedAt)
 				.filter((value): value is string => Boolean(value))
 				.sort()
-				.at(-1) ??
-			publishedAt
+				.at(-1)
 	);
+	const displayDates = $derived(
+		getDisplayContentDates({ publishedAt: landing?.publishedAt, updatedAt: latestGuideUpdate })
+	);
+	const publishedAt = $derived(displayDates.publishedAt);
+	const updatedAt = $derived(displayDates.updatedAt);
 	const contentSections = $derived(
 		landing?.sections?.length
 			? landing.sections
@@ -70,8 +73,8 @@
 	<h1 class="guide-title mt-3 text-3xl font-semibold tracking-tight">{landing?.h1 ?? pillar.title}</h1>
 	<p class="guide-copy mt-3 leading-relaxed">{landing?.intro ?? pillar.description}</p>
 	<div class="article-meta mt-4" aria-label="Guideinformation">
-		<p>Publicerad: {publishedAt}</p>
-		<p>Senast uppdaterad: {updatedAt}</p>
+		{#if publishedAt}<p>Publicerad: {publishedAt}</p>{/if}
+		{#if updatedAt}<p>Senast uppdaterad: {updatedAt}</p>{/if}
 		<p>Författare: MittPsyke</p>
 	</div>
 

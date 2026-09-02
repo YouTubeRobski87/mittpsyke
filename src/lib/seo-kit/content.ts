@@ -65,15 +65,28 @@ type DatedContent = {
 };
 
 /**
+ * Publiceringsdatum visas bara när innehållets källa uttryckligen anger det.
+ * Det hindrar presentationslagret från att skapa en felaktig datumordning med
+ * ett generellt reservdatum.
+ */
+export function getDisplayContentDates(entry: Pick<DatedContent, 'publishedAt' | 'updatedAt'>) {
+	return {
+		publishedAt: entry.publishedAt,
+		updatedAt: entry.updatedAt ?? entry.publishedAt
+	};
+}
+
+/**
  * Håller publiceringsmetadata trovärdig i de handskrivna guidekatalogerna.
  * Funktionen anropas i testsviten, som också körs före produktionens build.
  */
 export function findInvalidContentDateOrder(entries: readonly DatedContent[]) {
 	return entries.flatMap((entry) => {
-		if (!entry.publishedAt || !entry.updatedAt || entry.updatedAt >= entry.publishedAt) return [];
+		const { publishedAt, updatedAt } = getDisplayContentDates(entry);
+		if (!publishedAt || !updatedAt || updatedAt >= publishedAt) return [];
 
 		const identifier = [entry.pillarSlug, entry.slug].filter(Boolean).join('/') || entry.title || 'okänt innehåll';
-		return [`${identifier}: updatedAt (${entry.updatedAt}) is earlier than publishedAt (${entry.publishedAt})`];
+		return [`${identifier}: updatedAt (${updatedAt}) is earlier than publishedAt (${publishedAt})`];
 	});
 }
 

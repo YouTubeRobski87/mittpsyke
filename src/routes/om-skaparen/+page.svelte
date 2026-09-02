@@ -17,7 +17,7 @@
 		},
 		{
 			title: 'Render och Vercel',
-			text: 'Nuvarande projektkonfiguration använder Render som Node-deployment. Repoet har även Vercel-konfiguration för redirects och domänlogik.'
+			text: 'Repoet innehåller en Node-adapter och Vercel-konfiguration för redirects och domänlogik. Vilken driftsmiljö som är aktiv kan inte fastställas enbart från repot.'
 		},
 		{
 			title: 'Modern frontend',

@@ -6,6 +6,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import { trackGuideView } from '$lib/analytics';
+	import { getDisplayContentDates } from '$lib/seo-kit/content';
 	import { buildTitle } from '$lib/seo-kit/seo';
 	import { PUBLIC_SITE_ORIGIN } from '$lib/seo';
 	import { onMount } from 'svelte';
@@ -28,8 +29,9 @@
 	};
 
 	const pillarRoute = $derived(pillarRoutes[data.pillar.slug] ?? null);
-	const publishedAt = $derived(data.guide.publishedAt ?? '2026-03-21');
-	const updatedAt = $derived(data.guide.updatedAt ?? publishedAt);
+	const displayDates = $derived(getDisplayContentDates(data.guide));
+	const publishedAt = $derived(displayDates.publishedAt);
+	const updatedAt = $derived(displayDates.updatedAt);
 
 	const articleSchema = $derived({
 		'@context': 'https://schema.org',
@@ -122,8 +124,8 @@
 	<h1 class="text-3xl font-semibold tracking-tight">{data.guide.title}</h1>
 	<p class="guide-ingress mt-3 leading-relaxed">{data.guide.description}</p>
 	<div class="article-meta mt-4" aria-label="Guideinformation">
-		<p>Publicerad: {publishedAt}</p>
-		<p>Senast uppdaterad: {updatedAt}</p>
+		{#if publishedAt}<p>Publicerad: {publishedAt}</p>{/if}
+		{#if updatedAt}<p>Senast uppdaterad: {updatedAt}</p>{/if}
 		<p>Författare: MittPsyke</p>
 	</div>
 
