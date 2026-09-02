@@ -7,6 +7,7 @@
 		trackAuthCompletedFromPendingState,
 		trackInternalLinkClicked,
 		trackLandingPageViewOnce,
+		trackSignUp,
 		initializeAnalytics,
 		trackReturnVisitIfNeeded,
 		trackPageView,
@@ -209,6 +210,7 @@
 	let mobileSearchOpen = $state(false);
 	let profilePanelOpen = $state(false);
 	let analyticsEnabled = $state(false);
+	let signUpTracked = $state(false);
 	let lastTrackedPagePath = $state('');
 	let profileRequestVersion = 0;
 	let layoutSummaryRequestVersion = 0;
@@ -504,6 +506,13 @@
 			document.removeEventListener('click', handleInternalLinkClick);
 			document.removeEventListener('click', handleSmoothAnchorClick);
 		};
+	});
+
+	$effect(() => {
+		if (!browser || !data?.signUpCompleted || signUpTracked) return;
+
+		signUpTracked = true;
+		trackSignUp();
 	});
 
 	$effect(() => {

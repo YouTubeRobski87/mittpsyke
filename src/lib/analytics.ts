@@ -4,6 +4,7 @@ import { hasAnalyticsConsent } from '$lib/consent';
 
 type EventName =
 	| 'page_view'
+	| 'sign_up'
 	| 'landing_page_view'
 	| 'article_view'
 	| 'guide_view'
@@ -381,6 +382,10 @@ export function markLoginStarted() {
 
 export function trackSignUpCompleted() {
 	trackEvent('sign_up_completed');
+}
+
+export function trackSignUp() {
+	trackEvent('sign_up');
 }
 
 export function trackLoginCompleted() {
