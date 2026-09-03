@@ -145,8 +145,7 @@
 		};
 		current.onspeechend = () => {
 			if (recognition !== current) return;
-			setStatus('transcribing', 'Gör om talet till text…');
-			autoSender.speechEnd();
+			if (!pendingSend) setStatus('transcribing', 'Gör om talet till text…');
 		};
 		current.onresult = (event) => {
 			if (recognition !== current) return;
@@ -161,8 +160,9 @@
 		current.onend = () => {
 			if (recognition !== current) return;
 			isListening = false;
-			autoSender.speechEnd();
-			if (!pendingSend) {
+			if (pendingSend) {
+				setStatus('pending-send', 'Texten skickas strax. Du kan avbryta.');
+			} else {
 				setStatus(hasFinalTranscript ? 'ready-to-send' : 'error', hasFinalTranscript
 					? 'Kontrollera texten och tryck på Skicka när du är redo.'
 					: 'Jag hörde inget färdigt tal. Försök igen när du är redo.');
@@ -179,8 +179,7 @@
 
 	function stopListening() {
 		if (!recognition || !isListening) return;
-		autoSender.waitForEnd();
-		setStatus('transcribing', 'Gör om talet till text…');
+		if (!pendingSend) setStatus('transcribing', 'Gör om talet till text…');
 		try {
 			recognition.stop();
 		} catch {

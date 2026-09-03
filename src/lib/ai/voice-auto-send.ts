@@ -15,13 +15,11 @@ export function createVoiceAutoSend(options: {
 }) {
 	let active = false;
 	let finalCount = 0;
-	let hasFinalText = false;
-	let hasInterim = false;
-	let awaitingFinal = true;
-	let speechEnded = false;
 	let timer: ReturnType<typeof setTimeout> | null = null;
+	let timerVersion = 0;
 
 	function clearTimer() {
+		timerVersion += 1;
 		if (timer !== null) clearTimeout(timer);
 		timer = null;
 		options.onPendingChange(false);
@@ -33,11 +31,13 @@ export function createVoiceAutoSend(options: {
 	}
 
 	function schedule() {
-		clearTimer();
-		if (!active || !speechEnded || awaitingFinal || hasInterim || !hasFinalText || !options.isEnabled()) return;
+		if (!active || !options.isEnabled()) return;
 
+		const version = timerVersion;
 		options.onPendingChange(true);
 		timer = setTimeout(() => {
+			// An already queued callback must not consume a newer timer/session.
+			if (version !== timerVersion) return;
 			// Consume before calling out: duplicate events and failed sends cannot retry this session.
 			const allowed = active && options.isEnabled() && options.canSend();
 			cancel();
@@ -50,15 +50,14 @@ export function createVoiceAutoSend(options: {
 			cancel();
 			active = true;
 			finalCount = 0;
-			hasFinalText = false;
-			hasInterim = false;
-			awaitingFinal = true;
-			speechEnded = false;
 		},
 		result(results: VoiceResults) {
 			if (!active) return;
+			// Every result is activity, including interim and repeated final results.
+			// Cancel before processing; only a NEW non-empty final can arm the timer.
+			clearTimer();
 			const additions: string[] = [];
-			hasInterim = false;
+			let hasInterim = false;
 			for (let index = 0; index < results.length; index += 1) {
 				const result = results[index];
 				if (!result.isFinal) {
@@ -72,26 +71,12 @@ export function createVoiceAutoSend(options: {
 				if (text) additions.push(text);
 			}
 			if (additions.length) {
-				hasFinalText = true;
-				awaitingFinal = false;
 				options.onTranscript(additions.join(' '));
+				if (!hasInterim) schedule();
 			}
-			if (hasInterim) awaitingFinal = true;
-			schedule();
 		},
 		speechStart() {
 			if (!active) return;
-			speechEnded = false;
-			awaitingFinal = true;
-			clearTimer();
-		},
-		speechEnd() {
-			if (!active) return;
-			speechEnded = true;
-			schedule();
-		},
-		waitForEnd() {
-			speechEnded = false;
 			clearTimer();
 		},
 		cancel
