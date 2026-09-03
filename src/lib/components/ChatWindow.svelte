@@ -73,6 +73,8 @@
 	let topicHint = $state<string | null>(null);
 	let clearingHistory = $state(false);
 	let voiceBusy = $state(false);
+	let voiceInput = $state<VoiceInput>();
+	let autoSendVoice = $state(true);
 	let sendInFlight = false;
 	let speechSupported = $state(true);
 	let autoReadReplies = $state(false);
@@ -100,6 +102,7 @@
 	const legacyGuestHistoryTopics = ['angest', 'nedstamdhet', 'stress-oro', 'allmant'] as const;
 	const autoReadStorageKey = 'mittpsyke:chat-auto-read-replies';
 	const sendWithEnterStorageKey = 'mittpsyke:chat-send-with-enter';
+	const autoSendVoiceStorageKey = 'mittpsyke:chat-auto-send-voice';
 	const starterSuggestions = [
 		'Jag vill bara skriva av mig',
 		'Hjälp mig sortera det här',
@@ -307,6 +310,12 @@
 		writeStorageValue(sendWithEnterStorageKey, String(enabled));
 	}
 
+	function setAutoSendVoice(enabled: boolean) {
+		voiceInput?.cancel();
+		autoSendVoice = enabled;
+		writeStorageValue(autoSendVoiceStorageKey, String(enabled));
+	}
+
 	function readLocalHistory(userId: string | null = null) {
 		if (!browser) return [];
 
@@ -478,6 +487,7 @@
 	}
 
 	async function clearHistory() {
+		voiceInput?.cancel();
 		stopSpeaking();
 		clearingHistory = true;
 		chatError = '';
@@ -590,6 +600,7 @@
 
 	onMount(() => {
 		sendWithEnter = readStorageValue(sendWithEnterStorageKey) !== 'false';
+		autoSendVoice = readStorageValue(autoSendVoiceStorageKey) !== 'false';
 		const desktopPointerQuery = window.matchMedia('(pointer: fine)');
 		const updateDesktopKeyboard = () => {
 			desktopKeyboard = desktopPointerQuery.matches;
@@ -650,6 +661,7 @@
 	});
 
 	async function send() {
+		voiceInput?.cancel();
 		const text = input.trim();
 		if (!hasSensitiveDataConsent || !text || sendInFlight) return;
 
@@ -779,6 +791,7 @@
 
 	function useStarterSuggestion(text: string) {
 		if (!hasSensitiveDataConsent) return;
+		voiceInput?.cancel();
 
 		chatError = '';
 		firstMessageSource = 'chip';
@@ -799,12 +812,14 @@
 	}
 
 	function clearDraft() {
+		voiceInput?.cancel();
 		input = '';
 		chatError = '';
 		firstMessageSource = 'manual';
 	}
 
 	function useFollowUpSuggestion(text: string) {
+		voiceInput?.cancel();
 		chatError = '';
 		input = text;
 		void trackEvent('starter_chip_clicked', { source: 'follow_up' });
@@ -1146,9 +1161,12 @@
 
 		{#if hasSensitiveDataConsent}
 			<VoiceInput
+				bind:this={voiceInput}
 				disabled={sending}
+				autoSend={autoSendVoice}
 				hasDraft={input.trim().length > 0}
 				onTranscript={useVoiceTranscript}
+				onAutoSend={send}
 				onClear={clearDraft}
 				onBusyChange={(busy) => (voiceBusy = busy)}
 				showPrivacyNote={false}
@@ -1164,6 +1182,7 @@
 					bind:value={input}
 					maxlength={MAX_MESSAGE_LENGTH}
 					oninput={() => {
+						voiceInput?.cancel();
 						if (chatError) chatError = '';
 					}}
 					onkeydown={handleKeydown}
@@ -1208,6 +1227,18 @@
 
 			{#if showSettings}
 				<div class="settings-panel">
+					<div class="chat-setting">
+						<label>
+							<input
+								type="checkbox"
+								checked={autoSendVoice}
+								onchange={(event) =>
+									setAutoSendVoice((event.currentTarget as HTMLInputElement).checked)}
+							/>
+							<span>Skicka automatiskt efter tal</span>
+						</label>
+						<p>{autoSendVoice ? 'På' : 'Av'}. När den är på skickas färdig rösttext efter en kort paus. Du kan avbryta innan den skickas.</p>
+					</div>
 					<div class="chat-setting">
 						<label>
 							<input
@@ -1864,6 +1895,12 @@
 			overflow-y: auto;
 			overscroll-behavior: contain;
 			-webkit-overflow-scrolling: touch;
+		}
+
+		.settings-panel {
+			min-height: 0;
+			max-height: min(20dvh, 10rem);
+			overflow-y: auto;
 		}
 
 		.composer-row,

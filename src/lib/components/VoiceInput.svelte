@@ -1,19 +1,12 @@
 <script lang="ts">
 	import { CheckCircle2, LoaderCircle, Mic, MicOff, Square, Trash2 } from 'lucide-svelte';
 	import { onDestroy, onMount } from 'svelte';
+	import { createVoiceAutoSend, type VoiceResults } from '$lib/ai/voice-auto-send';
 
-	type VoiceStatus = 'ready' | 'listening' | 'transcribing' | 'ready-to-send' | 'error' | 'unsupported';
-
-	type SpeechRecognitionResultLike = {
-		isFinal: boolean;
-		0?: { transcript?: string };
-	};
+	type VoiceStatus = 'ready' | 'listening' | 'transcribing' | 'pending-send' | 'ready-to-send' | 'error' | 'unsupported';
 
 	type SpeechRecognitionEventLike = {
-		results: {
-			length: number;
-			[index: number]: SpeechRecognitionResultLike;
-		};
+		results: VoiceResults;
 	};
 
 	type SpeechRecognitionErrorEventLike = {
@@ -25,6 +18,8 @@
 		continuous: boolean;
 		interimResults: boolean;
 		onstart: (() => void) | null;
+		onspeechstart: (() => void) | null;
+		onspeechend: (() => void) | null;
 		onresult: ((event: SpeechRecognitionEventLike) => void) | null;
 		onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
 		onend: (() => void) | null;
@@ -39,14 +34,18 @@
 		disabled = false,
 		hasDraft = false,
 		showPrivacyNote = true,
+		autoSend = false,
 		onTranscript,
+		onAutoSend = () => undefined,
 		onClear,
 		onBusyChange = () => undefined
 	}: {
 		disabled?: boolean;
 		hasDraft?: boolean;
 		showPrivacyNote?: boolean;
+		autoSend?: boolean;
 		onTranscript: (transcript: string) => void;
+		onAutoSend?: () => void;
 		onClear: () => void;
 		onBusyChange?: (busy: boolean) => void;
 	} = $props();
@@ -54,14 +53,32 @@
 	const HELP_STORAGE_KEY = 'mittpsyke:voice-input-help-seen';
 
 	let recognition: SpeechRecognitionLike | null = null;
+	let Recognition: SpeechRecognitionConstructor | null = null;
 	let status = $state<VoiceStatus>('ready');
 	let detailMessage = $state('Tryck på mikrofonen när du vill börja.');
 	let showFirstTimeHelp = $state(false);
-	let transcript = '';
-	let shouldUseTranscript = false;
-	let completionTimer: ReturnType<typeof setTimeout> | null = null;
+	let isListening = $state(false);
+	let pendingSend = $state(false);
+	let hasFinalTranscript = false;
+	const autoSender = createVoiceAutoSend({
+		isEnabled: () => autoSend && !disabled,
+		canSend: () => hasDraft && !disabled,
+		onTranscript: (text) => {
+			hasFinalTranscript = true;
+			onTranscript(text);
+		},
+		onPendingChange: (pending) => {
+			pendingSend = pending;
+			if (pending) setStatus('pending-send', isListening
+				? 'Texten skickas strax. Du kan fortsätta prata eller avbryta.'
+				: 'Texten skickas strax. Du kan avbryta.');
+		},
+		onSend: () => {
+			cancel();
+			onAutoSend();
+		}
+	});
 
-	let isListening = $derived(status === 'listening');
 	let statusLabel = $derived(
 		status === 'ready'
 			? 'Redo'
@@ -69,11 +86,13 @@
 				? 'Lyssnar'
 				: status === 'transcribing'
 					? 'Transkriberar'
-					: status === 'ready-to-send'
-						? 'Klart att skicka'
-						: status === 'unsupported'
-							? 'Stöds inte'
-							: 'Fel'
+					: status === 'pending-send'
+						? 'Skickar snart'
+						: status === 'ready-to-send'
+							? 'Klart att skicka'
+							: status === 'unsupported'
+								? 'Stöds inte'
+								: 'Fel'
 	);
 
 	function setStatus(nextStatus: VoiceStatus, message: string) {
@@ -102,32 +121,100 @@
 	}
 
 	function startListening() {
-		if (!recognition || disabled || isListening) return;
-
-		if (completionTimer) clearTimeout(completionTimer);
-		transcript = '';
-		shouldUseTranscript = true;
+		if (!Recognition || disabled || isListening) return;
+		cancel();
+		autoSender.start();
+		hasFinalTranscript = false;
 		showFirstTimeHelp = false;
+		isListening = true;
 		setStatus('listening', 'Prata i din egen takt. Tryck på Stoppa när du är klar.');
+		// A new instance isolates late events from a cancelled or already sent recording.
+		const current = new Recognition();
+		recognition = current;
+		current.lang = 'sv-SE';
+		current.continuous = autoSend;
+		current.interimResults = true;
+		current.onstart = () => {
+			if (recognition !== current) return;
+			setStatus('listening', 'Prata i din egen takt. Tryck på Stoppa när du är klar.');
+		};
+		current.onspeechstart = () => {
+			if (recognition !== current) return;
+			autoSender.speechStart();
+			setStatus('listening', 'Prata i din egen takt. Tryck på Stoppa när du är klar.');
+		};
+		current.onspeechend = () => {
+			if (recognition !== current) return;
+			setStatus('transcribing', 'Gör om talet till text…');
+			autoSender.speechEnd();
+		};
+		current.onresult = (event) => {
+			if (recognition !== current) return;
+			autoSender.result(event.results);
+			if (!pendingSend) setStatus('listening', 'Prata i din egen takt. Tryck på Stoppa när du är klar.');
+		};
+		current.onerror = (event) => {
+			if (recognition !== current) return;
+			cancel();
+			setStatus('error', describeError(event.error));
+		};
+		current.onend = () => {
+			if (recognition !== current) return;
+			isListening = false;
+			autoSender.speechEnd();
+			if (!pendingSend) {
+				setStatus(hasFinalTranscript ? 'ready-to-send' : 'error', hasFinalTranscript
+					? 'Kontrollera texten och tryck på Skicka när du är redo.'
+					: 'Jag hörde inget färdigt tal. Försök igen när du är redo.');
+			}
+		};
 
 		try {
-			recognition.start();
+			current.start();
 		} catch {
-			shouldUseTranscript = false;
+			cancel();
 			setStatus('error', 'Mikrofonen kunde inte starta. Vänta en stund och försök igen.');
 		}
 	}
 
 	function stopListening() {
 		if (!recognition || !isListening) return;
+		autoSender.waitForEnd();
 		setStatus('transcribing', 'Gör om talet till text…');
-		recognition.stop();
+		try {
+			recognition.stop();
+		} catch {
+			cancel();
+			setStatus('error', describeError());
+		}
+	}
+
+	// Called synchronously before manual send, editing, clearing or changing settings.
+	// Keep the final draft, but make every outstanding timer/event inert.
+	export function cancel() {
+		if (!recognition && !pendingSend) return;
+		autoSender.cancel();
+		const current = recognition;
+		recognition = null;
+		isListening = false;
+		if (current) {
+			current.onstart = null;
+			current.onspeechstart = null;
+			current.onspeechend = null;
+			current.onresult = null;
+			current.onerror = null;
+			current.onend = null;
+			current.abort();
+		}
+		setStatus(hasDraft ? 'ready-to-send' : 'ready', hasDraft
+			? 'Texten är kvar. Tryck på Skicka när du är redo.'
+			: 'Tryck på mikrofonen när du vill börja.');
 	}
 
 	function clearDraft() {
 		if (!hasDraft) return;
+		cancel();
 		onClear();
-		transcript = '';
 		setStatus('ready', 'Texten är rensad. Tryck på mikrofonen när du vill börja igen.');
 	}
 
@@ -135,6 +222,10 @@
 		if (!hasDraft && status === 'ready-to-send') {
 			setStatus('ready', 'Tryck på mikrofonen när du vill börja.');
 		}
+	});
+
+	$effect(() => {
+		if (disabled) cancel();
 	});
 
 	onMount(() => {
@@ -145,7 +236,7 @@
 			showFirstTimeHelp = true;
 		}
 
-		const Recognition = getSpeechRecognitionConstructor();
+		Recognition = getSpeechRecognitionConstructor();
 		if (!Recognition) {
 			setStatus(
 				'unsupported',
@@ -153,74 +244,17 @@
 			);
 			return;
 		}
-
-		recognition = new Recognition();
-		recognition.lang = 'sv-SE';
-		recognition.continuous = false;
-		recognition.interimResults = true;
-		recognition.onstart = () => {
-			setStatus('listening', 'Prata i din egen takt. Tryck på Stoppa när du är klar.');
-		};
-		recognition.onresult = (event) => {
-			let nextTranscript = '';
-			let hasFinalResult = false;
-
-			for (let index = 0; index < event.results.length; index += 1) {
-				const result = event.results[index];
-				nextTranscript += result?.[0]?.transcript ?? '';
-				hasFinalResult ||= Boolean(result?.isFinal);
-			}
-
-			transcript = nextTranscript.trim();
-			if (hasFinalResult && transcript) {
-				setStatus('transcribing', 'Gör om talet till text…');
-			}
-		};
-		recognition.onerror = (event) => {
-			shouldUseTranscript = false;
-			setStatus('error', describeError(event.error));
-		};
-		recognition.onend = () => {
-			if (!shouldUseTranscript) return;
-
-			if (!transcript) {
-				shouldUseTranscript = false;
-				setStatus('error', 'Jag hörde inget tal. Försök igen när du är redo.');
-				return;
-			}
-
-			setStatus('transcribing', 'Gör om talet till text…');
-			completionTimer = setTimeout(() => {
-				onTranscript(transcript);
-				shouldUseTranscript = false;
-				setStatus('ready-to-send', 'Texten är tillagd. Läs gärna igenom den före du skickar.');
-			}, 180);
-		};
 	});
 
-	onDestroy(() => {
-		shouldUseTranscript = false;
-		onBusyChange(false);
-		if (completionTimer) {
-			clearTimeout(completionTimer);
-			completionTimer = null;
-		}
-
-		const activeRecognition = recognition;
-		recognition = null;
-		if (activeRecognition) {
-			activeRecognition.onstart = null;
-			activeRecognition.onresult = null;
-			activeRecognition.onerror = null;
-			activeRecognition.onend = null;
-			activeRecognition.abort();
-		}
-	});
+	onDestroy(cancel);
 </script>
 
 <div class="voice-card" class:has-error={status === 'error'} class:unsupported={status === 'unsupported'}>
 	{#if showFirstTimeHelp}
 		<p class="first-time-help">Du kan prata fritt. Texten går att ändra innan du skickar.</p>
+	{/if}
+	{#if autoSend}
+		<p class="first-time-help">Skickas automatiskt efter tal. Du kan avbryta innan texten skickas.</p>
 	{/if}
 
 	<div class="voice-controls">
@@ -229,9 +263,9 @@
 			class="microphone-button"
 			class:listening={isListening}
 			onclick={isListening ? stopListening : startListening}
-			disabled={disabled || status === 'unsupported' || status === 'transcribing'}
+			disabled={disabled || status === 'unsupported' || (status === 'transcribing' && !isListening)}
 			aria-pressed={isListening}
-			aria-describedby="voice-input-status voice-input-privacy"
+			aria-describedby={showPrivacyNote ? 'voice-input-status voice-input-privacy' : 'voice-input-status'}
 			aria-label={isListening
 				? 'Stoppa röstinmatning'
 				: status === 'unsupported'
@@ -250,7 +284,11 @@
 			{/if}
 		</button>
 
-		{#if hasDraft}
+		{#if pendingSend}
+			<button type="button" class="clear-button" onclick={cancel}>
+				Avbryt autosändning
+			</button>
+		{:else if hasDraft}
 			<button
 				type="button"
 				class="clear-button"
@@ -317,6 +355,7 @@
 
 	.voice-controls {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.5rem;
 	}
