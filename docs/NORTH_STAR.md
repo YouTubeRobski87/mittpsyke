@@ -42,6 +42,16 @@ Beslutstest inför varje ny idé:
 
 > Passar detta MittPsyke för att det hjälper användaren – eller för att det fångar mer uppmärksamhet?
 
+### Live-röstsamtal och minne
+
+Live är flyktigt. Dagboken är minnet. Humöranalysen använder bara material som användaren aktivt valt att spara.
+
+Framtida live-samtal ska vara röst till röst, utan automatisk texttråd eller långtidslagring. Efteråt väljer användaren att spara en granskad, kort sammanfattning i dagboken, spara ljud om stöd finns, eller spara inget. Ingenting sparas automatiskt.
+
+Sammanfattningen ska återge det användaren faktiskt uttryckte. Röstläge och ljudegenskaper får inte användas för humörpoäng eller psykologiska slutsatser. Säkerhetsregler gäller även när ingenting sparas.
+
+Arkitektur, datagränser och leveransordning finns i [Live-röstsamtal](LIVE_VOICE_ARCHITECTURE.md). Principen införs där som plan; dagens diktering i textchatten är inte ett separat live-läge.
+
 ## Platsen kommer först
 
 Användaren återvänder alltid till samma plats.

@@ -12,6 +12,10 @@ Reading order:
 
 The images inside `references/` are the visual source of truth.
 
+## Produkt- och arkitekturbeslut
+
+- [Live-röstsamtal: flyktigt samtal, frivilligt minne](LIVE_VOICE_ARCHITECTURE.md) — princip, verifierat nuläge, föreslagen datamodell, samtycke, sparande och testplan. Live-funktionen är ännu inte implementerad.
+
 # Visual References
 
 These images are the visual source of truth for MittPsyke.
