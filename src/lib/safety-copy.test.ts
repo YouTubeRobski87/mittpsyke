@@ -6,7 +6,7 @@ import { GENERAL_SAFETY_COPY } from './safety-copy';
 const consentGate = readFileSync(new URL('./components/ConsentGate.svelte', import.meta.url), 'utf8');
 const healthConsent = readFileSync(new URL('./components/HealthConsent.svelte', import.meta.url), 'utf8');
 const homeSafetyStrip = readFileSync(new URL('./components/HomeSafetyStrip.svelte', import.meta.url), 'utf8');
-const chatPage = readFileSync(new URL('../routes/chat/+page.svelte', import.meta.url), 'utf8');
+const chatPage = readFileSync(new URL('./components/ChatPage.svelte', import.meta.url), 'utf8');
 const layout = readFileSync(new URL('../routes/+layout.svelte', import.meta.url), 'utf8');
 
 describe('generell trygghetscopy', () => {
@@ -17,7 +17,7 @@ describe('generell trygghetscopy', () => {
 	});
 
 	it('återanvänder samma källa i de avgränsade känsliga ytorna', () => {
-		for (const source of [consentGate, healthConsent, chatPage, layout]) {
+		for (const source of [consentGate, healthConsent, layout]) {
 			expect(source).toContain("import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';");
 			expect(source).toContain('{GENERAL_SAFETY_COPY}');
 		}
@@ -32,6 +32,11 @@ describe('generell trygghetscopy', () => {
 });
 
 describe('akut- och säkerhetscopy', () => {
+	it('behåller HealthConsent framför den gemensamma chatten', () => {
+		expect(chatPage).toMatch(/\{#if !hasConsent\}\s*<HealthConsent/);
+		expect(chatPage).toContain('<ChatWindow');
+	});
+
 	it('behåller 112 och 1177 i den globala akutvägledningen', () => {
 		expect(layout).toContain('href="tel:112"');
 		expect(layout).toContain('https://www.1177.se');

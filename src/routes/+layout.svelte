@@ -186,7 +186,7 @@
 		}
 	};
 
-	const isChat = $derived(Boolean(page.route.id?.includes('/chat/')));
+	const isChat = $derived(page.url.pathname === '/chat' || page.url.pathname.startsWith('/chat/'));
 	const isPrivateOrUtilityPage = $derived(
 		Boolean(
 			page.route.id &&

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolveChatSlug } from '$lib/data/chat-slugs';
 	import SEO from '$lib/components/SEO.svelte';
 	import { getPortalByKey } from '$lib/data/portals';
 	import { page } from '$app/state';
@@ -31,7 +32,7 @@
 		<p class="opacity-75 leading-relaxed mb-8">{portal.description}</p>
 
 		<a
-			href="/chat/{portal.key}"
+			href="/chat/{resolveChatSlug(portal.key)}"
 			class="inline-flex items-center justify-center px-6 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white font-medium hover:opacity-90 transition-opacity"
 		>
 			Börja samtala

@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { resolveChatSlug } from '$lib/data/chat-slugs';
 	import type { Portal } from '$lib/types';
 
 	let { portal, active = false }: { portal: Portal; active?: boolean } = $props();
 </script>
 
 <a
-	href="/chat/{portal.key}"
+	href="/chat/{resolveChatSlug(portal.key)}"
 	class="flex gap-3.5 p-4.5 rounded-[var(--radius-card)] border transition-transform hover:-translate-y-px text-left no-underline
 		{active
 		? 'border-black/28 shadow-[0_8px_24px_rgba(0,0,0,0.06)]'
