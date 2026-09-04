@@ -1,7 +1,7 @@
 export const load = () => {
 	return {
-		title: 'Skriv av dig anonymt – digital dagbok & samtalsstöd online',
+		title: 'Skriv lokalt eller chatta med AI | MittPsyke',
 		description:
-			'Skriv av dig anonymt i en digital dagbok och få lugnt samtalsstöd online. Reflektera i din egen takt – utan konto och utan press.'
+			'Välj mellan lokalt skrivande utan konto och AI-chatt. Lokal text stannar i webbläsaren; chattmeddelanden skickas för att AI:n ska kunna svara.'
 	};
 };

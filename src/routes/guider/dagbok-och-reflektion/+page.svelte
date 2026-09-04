@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import DiaryHero from '$lib/components/DiaryHero.svelte';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 
 	const faqItems = [
 		{
@@ -10,8 +11,7 @@
 		},
 		{
 			question: 'Vad är skillnaden mellan dagbok och AI-chatt på MittPsyke?',
-			answer:
-				'Dagboken är din privata yta för fri reflektion. Chatten ger dig ett samtal med AI som svarar och ställer följdfrågor. Många kombinerar båda.'
+			answer: `${dataflowCopy.anonymousDiary.short} ${dataflowCopy.guestChat.aiTransfer}`
 		},
 		{
 			question: 'Hur ofta bör jag skriva för att se effekt?',
@@ -55,7 +55,7 @@
 	<title>Dagbok och reflektion – skriv dig till klarhet | MittPsyke</title>
 	<meta
 		name="description"
-		content="Dagbok och reflektion hjälper dig att bearbeta tankar och förstå ditt mående. Skriv anonymt direkt utan konto och få AI-reflektion på det du skriver."
+		content="Skriv lokalt utan konto och välj senare om du vill spara. AI-reflektion är en separat funktion för sparade inlägg som du aktivt väljer."
 	/>
 	<meta property="og:title" content="Dagbok och reflektion | MittPsyke" />
 	<meta
@@ -87,8 +87,8 @@
 			</p>
 			<p>
 				Reflekterande dagboksskrivande – att aktivt försöka förstå och tolka det man skriver – ger
-				starkare effekt än att bara ventilera känslor. Det är därför MittPsyke erbjuder
-				AI-reflektioner på dina inlägg.
+				starkare effekt än att bara ventilera känslor. Om du har konto kan du också aktivt välja
+				AI-reflektion för ett sparat inlägg. Då ber MittPsyke först om ett separat samtycke.
 			</p>
 		</section>
 
