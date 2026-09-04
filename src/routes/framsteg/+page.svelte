@@ -267,28 +267,14 @@
 		totalEntries: number;
 	}
 
-	interface InsightItem {
-		type: string;
-		title: string;
-		description: string;
-		icon: string;
-	}
-
-	interface InsightDay {
-		day: string;
-		average: number;
-		count: number;
-	}
-
+	// Speglar exakt vad /api/diary/insights svarar. Endpointens kontraktstest
+	// låser svaret till { analysis, support }, så inga andra fält får antas här.
+	// Tidigare fanns aiSummary, bestDay, worstDay, insights och
+	// emotionDistribution kvar i typen för en äldre presentation. Servern slutade
+	// skicka dem, men typen påstod fortfarande att de fanns - och läsningen av
+	// insights.length kastade därför TypeError så fort analysen laddats.
 	interface InsightsResponse {
 		analysis: ProgressAnalysisResponse;
-		// Fälten nedan används av den avstängda äldre presentationen längre ned
-		// i filen. Det nya gränssnittet använder enbart analysis.
-		insights: InsightItem[];
-		bestDay: InsightDay | null;
-		worstDay: InsightDay | null;
-		emotionDistribution: Record<string, number>;
-		aiSummary: string | null;
 		// Underlaget till "Kanske värt att prova". Byggs deterministiskt av samma
 		// rader som analysen och följer med i samma svar.
 		support?: SupportView | null;
@@ -371,22 +357,6 @@
 		lastEntryDate: null,
 		lastEntryDaysAgo: 0
 	};
-	const ANONYMOUS_PREVIEW_INSIGHTS: InsightsResponse = {
-		analysis: {
-			periodDays: 30, periodLabel: 'den senaste månaden',
-			longPeriodSummary: null,
-			coverage: { periodStart: '', periodEnd: '', entryCount: 0, firstDate: null, latestDate: null, textEntryCount: 0, activeDays: 0, activeWeeks: 0, coveredWeeks: 0, coveredMonths: 0, sparsePeriods: [], truncated: false },
-			moodSummary: { entryCount: 0, activeDays: 0, activeWeeks: 0, mean: null, median: null, min: null, max: null, standardDeviation: null, lowShare: null, middleShare: null, highShare: null },
-			monthly: [], insights: [], halfYearSummary: []
-		},
-		insights: [],
-		bestDay: null,
-		worstDay: null,
-		emotionDistribution: {},
-		aiSummary: null,
-		support: null
-	};
-
 	function previewDateKey(daysAgo: number) {
 		const date = new Date();
 		date.setDate(date.getDate() - daysAgo);
@@ -531,7 +501,6 @@
 	let hasSensitiveDataConsent = $state(browser ? hasSensitiveConsent() : false);
 	let insightsVisible = $state(false);
 	let heatmapVisible = $state(false);
-	let insightsCardEl = $state<HTMLElement | null>(null);
 	let heatmapCardEl = $state<HTMLElement | null>(null);
 	const streakData = $derived(
 		loadedStreakData ?? { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 }
@@ -605,16 +574,6 @@
 		})
 	);
 	const heatmapData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : loadedHeatmapData);
-	const insightsData = $derived(
-		loadedInsightsData ?? {
-			insights: [],
-			bestDay: null,
-			worstDay: null,
-			emotionDistribution: {},
-			aiSummary: null,
-			support: null
-		}
-	);
 	const moodSamples = $derived(loadedMoodSamples);
 	const moodTimeline = $derived(buildMoodTimelineView(moodSamples, selectedPeriod));
 	const periodAnalysis = $derived(buildPeriodAnalysis(moodSamples, selectedPeriod));
@@ -673,7 +632,7 @@
 	let supportExamplesOpen = $state(false);
 	let supportSelectedTopic = $state<string | null>(null);
 
-	const supportView = $derived(insightsData?.support ?? EMPTY_SUPPORT_VIEW);
+	const supportView = $derived(loadedInsightsData?.support ?? EMPTY_SUPPORT_VIEW);
 	const supportSuggestions = $derived(
 		selectVisibleSuggestions(supportView, supportPreferences, { rotation: supportRotation })
 	);
@@ -807,19 +766,9 @@
 			periodDays: selectedPeriod
 		})
 	);
-	const shouldShowInsights = $derived(isAnonymous || insightsVisible);
 	const shouldShowHeatmap = $derived(isAnonymous || heatmapVisible);
 	let loading = $derived(progressLoading && !progressLoaded);
 	let error = $derived(progressError);
-	let hasInsightsContent = $derived(
-		Boolean(
-			insightsData &&
-				(insightsData.aiSummary ||
-					insightsData.insights.length > 0 ||
-					insightsData.bestDay ||
-					insightsData.worstDay)
-		)
-	);
 
 	// ── Weekly summary copy (no AI, just warm text) ──
 	const weeklySummaryText = $derived.by(() => {
@@ -1103,12 +1052,6 @@
 				for (const entry of entries) {
 					if (!entry.isIntersecting) continue;
 
-					if (entry.target === insightsCardEl) {
-						insightsVisible = true;
-						maybeLoadInsights();
-						observer.unobserve(entry.target);
-					}
-
 					if (entry.target === heatmapCardEl) {
 						heatmapVisible = true;
 						observer.unobserve(entry.target);
@@ -1118,7 +1061,6 @@
 			{ rootMargin: '180px 0px' }
 		);
 
-		if (insightsCardEl) observer.observe(insightsCardEl);
 		if (heatmapCardEl) observer.observe(heatmapCardEl);
 
 		return () => {
@@ -1745,69 +1687,10 @@
 			</div>
 		</section>
 
-		<!-- ── AI-insikter ── -->
-		<section class="card insights-card" bind:this={insightsCardEl}>
-			<div class="card-header">
-				<div class="icon-badge insight"><Lightbulb size={24} /></div>
-				<h2>{isAnonymous ? 'Exempel på AI-insikter' : 'Dina AI-insikter'}</h2>
-			</div>
-
-			{#if !isAnonymous && !hasSensitiveDataConsent}
-				<ConsentGate
-					title="Samtycke innan AI-insikter"
-					dataLabel="Din dagbok och dina mönster"
-					serviceLabel="OpenAI via MittPsyke för AI-insikter"
-					onAccept={acceptSensitiveDataConsent}
-				/>
-			{:else if !shouldShowInsights}
-				<div class="card-placeholder card-placeholder--insights" aria-hidden="true"></div>
-			{:else if insightsLoading}
-				<p class="heatmap-description">Laddar AI-insikter...</p>
-			{:else if insightsError}
-				<p class="heatmap-description">{insightsError}</p>
-			{:else if hasInsightsContent && insightsData}
-				{#if insightsData.aiSummary}
-					<div class="summary-box">
-						<p>{insightsData.aiSummary}</p>
-					</div>
-				{/if}
-
-				{#if insightsData.bestDay || insightsData.worstDay}
-					<div class="insights-grid">
-						{#if insightsData.bestDay}
-							<div class="insight-item best">
-								<div class="insight-content">
-									<h3>Mår bäst på</h3>
-									<p class="day-name">{insightsData.bestDay?.day}</p>
-									<small>Genomsnitt: {insightsData.bestDay?.average}/10</small>
-								</div>
-							</div>
-						{/if}
-						{#if insightsData.worstDay}
-							<div class="insight-item worst">
-								<div class="insight-content">
-									<h3>Svårare på</h3>
-									<p class="day-name">{insightsData.worstDay?.day}</p>
-									<small>Genomsnitt: {insightsData.worstDay?.average}/10</small>
-								</div>
-							</div>
-						{/if}
-					</div>
-				{/if}
-
-				{#if insightsData.insights.length > 0}
-					<ul class="patterns-list">
-						{#each insightsData.insights as insight}
-							<li>
-								<span class="pattern-text">{insight.title}: {insight.description}</span>
-							</li>
-						{/each}
-					</ul>
-				{/if}
-			{:else}
-				<p class="heatmap-description">Det finns inte tillräckligt med data för AI-insikter ännu.</p>
-			{/if}
-		</section>
+		<!-- Den äldre "Dina AI-insikter"-ytan låg här. Den läste aiSummary, bestDay,
+		     worstDay och insights ur svaret, och de fälten slutade skickas när
+		     analysen blev serverlokal och periodmedveten. Analysen visas nu enbart
+		     i "Det som börjar synas" ovanför, som läser analysis. -->
 
 		<!-- ── Lugn dataöverblick ── -->
 		{#if streakData || milestonesData}
@@ -2981,7 +2864,6 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.companion-world-scene,
-		.card-placeholder,
 		.companion-media::before,
 		.progress-ripple {
 			animation: none !important;
@@ -3056,17 +2938,8 @@
 		line-height: 1.6;
 	}
 	.icon-badge { width: 3.2rem; height: 3.2rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
-	.insights-card,
 	.progress-summary-card { min-height: 25rem; }
 	.progress-summary-card { box-sizing: border-box; }
-	.card-placeholder {
-		border-radius: 0.75rem;
-		background:
-			linear-gradient(90deg, hsl(var(--surface-muted)) 25%, hsl(var(--surface-soft)) 50%, hsl(var(--surface-muted)) 75%);
-		background-size: 200% 100%;
-		animation: cardPlaceholderShimmer 1.6s ease-in-out infinite;
-	}
-	.card-placeholder--insights { min-height: 12rem; }
 
 	/* ── Din senaste tid ── */
 	.recent-card { min-width: 0; }
@@ -3160,11 +3033,6 @@
 		.history-toggle :global(.history-chevron) { transition: transform 180ms ease; }
 	}
 
-	@keyframes cardPlaceholderShimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
-	}
-
 	@keyframes progressCanopyDrift {
 		0% {
 			transform: translate3d(0, 0, 0) rotate(0deg);
@@ -3247,22 +3115,6 @@
 	.next-milestone small { color: hsl(var(--muted-foreground)); display: block; line-height: 1.5; }
 
 	/* Heatmap */
-	.heatmap-description { color: hsl(var(--muted-foreground)); font-size: 0.95rem; margin: 0 0 1.5rem 0; }
-
-	/* Insights */
-	.summary-box { margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem; background: hsl(var(--surface-muted)); border: 1px solid var(--color-dashboard-border); }
-	.summary-box p { margin: 0; color: hsl(var(--foreground)); line-height: 1.6; }
-	.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.2rem; }
-	.insight-item { padding: 1.5rem; border-radius: 0.5rem; display: flex; align-items: center; gap: 1rem; border: 1px solid var(--color-dashboard-border); background: hsl(var(--surface-muted)); transition: all 0.2s ease; }
-	.insight-item.best { background: var(--theme-bg, hsl(var(--surface-soft))); border-color: var(--color-dashboard-border); }
-	.insight-item.worst { background: hsl(var(--error-surface)); border-color: hsl(var(--error-foreground) / 0.24); }
-	.insight-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-	.insight-content h3 { margin: 0 0 0.25rem 0; font-size: 0.9rem; color: hsl(var(--muted-foreground)); text-transform: uppercase; letter-spacing: 0.5px; }
-	.day-name { margin: 0; font-size: 1.2rem; font-weight: 600; color: hsl(var(--foreground)); }
-	.insight-content small { color: hsl(var(--muted-foreground)); font-size: 0.85rem; }
-	.patterns-list { list-style: none; padding: 0; margin: 0; }
-	.patterns-list li { display: flex; align-items: center; padding: 0.75rem; background: hsl(var(--surface-muted)); border-radius: 0.25rem; margin-bottom: 0.5rem; font-size: 0.95rem; }
-	.pattern-text { color: hsl(var(--foreground)); font-weight: 500; }
 
 	/* Empty state */
 	.empty-state { text-align: center; padding: 3rem 2rem; background: var(--theme-bg, hsl(var(--surface-soft))); border: 1px dashed var(--color-dashboard-border); }
@@ -3315,10 +3167,8 @@
 		.companion-copy p { font-size: clamp(0.78rem, 2.9vw, 0.84rem); line-height: 1.4; }
 		.companion-copy .companion-reflection { margin-top: 0.35rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
-		.insights-card,
 		.progress-summary-card { min-height: 18rem; }
 		.milestones-grid { grid-template-columns: 1fr; }
-		.insights-grid { grid-template-columns: 1fr; }
 		.overview-grid { grid-template-columns: repeat(2, 1fr); }
 		.overview-number { font-size: 1.8rem; }
 		.icon-badge { width: 2.3rem; height: 2.3rem; }
