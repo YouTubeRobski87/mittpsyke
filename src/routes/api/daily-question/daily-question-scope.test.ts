@@ -7,7 +7,7 @@ import {
 	DIARY_AI_CONSENT_POLICY_VERSION,
 	DIARY_AI_CONSENT_SCOPE
 } from '$lib/server/diary-ai-consent';
-import { WEEKLY_SUMMARY_AI_CONSENT_SCOPE } from '$lib/server/weekly-summary-ai-consent';
+import { CHAT_AI_CONSENT_SCOPE } from '$lib/server/chat-ai-consent';
 import {
 	DAILY_QUESTION_AI_CONSENT_POLICY_VERSION,
 	DAILY_QUESTION_AI_CONSENT_SCOPE,
@@ -50,10 +50,14 @@ const dailyGranted: Row = {
 	policy_version: DAILY_QUESTION_AI_CONSENT_POLICY_VERSION,
 	revoked_at: null
 };
-const weeklyGranted: Row = {
-	scope: WEEKLY_SUMMARY_AI_CONSENT_SCOPE,
+// Ett främmande men aktivt scope. Rollen är att bevisa isolering: ett samtycke
+// till en annan AI-funktion får aldrig låsa upp dagens fråga. Tidigare låg
+// weekly-summary här; det scopet togs bort med den funktionen, och chattens
+// samtycke fyller samma roll utan att något nytt scope behöver uppfinnas.
+const foreignGranted: Row = {
+	scope: CHAT_AI_CONSENT_SCOPE,
 	status: 'granted',
-	policy_version: 'diary-weekly-summary-v1',
+	policy_version: 'chat-ai-v1',
 	revoked_at: null
 };
 
@@ -71,7 +75,7 @@ describe('dagens fråga har ett eget samtycke', () => {
 		expect(DAILY_QUESTION_AI_CONSENT_SCOPE).toBe('diary_ai_daily_question');
 		expect(DAILY_QUESTION_AI_CONSENT_POLICY_VERSION).toBe('diary-daily-question-v1');
 		expect(DAILY_QUESTION_AI_CONSENT_SCOPE).not.toBe(DIARY_AI_CONSENT_SCOPE);
-		expect(DAILY_QUESTION_AI_CONSENT_SCOPE).not.toBe(WEEKLY_SUMMARY_AI_CONSENT_SCOPE);
+		expect(DAILY_QUESTION_AI_CONSENT_SCOPE).not.toBe(CHAT_AI_CONSENT_SCOPE);
 	});
 
 	// LEGACY: kärnbeviset att gamla samtycken inte omtolkas.
@@ -93,8 +97,8 @@ describe('dagens fråga har ett eget samtycke', () => {
 		expect(await hasReflection(client)).toBe(false);
 	});
 
-	it('ger inte daily-question-åtkomst av ett weekly-summary-samtycke', async () => {
-		expect(await hasDailyQuestionAiConsent(clientWith([weeklyGranted]), 'user-1')).toBe(false);
+	it('ger inte daily-question-åtkomst av ett annat funktionssamtycke', async () => {
+		expect(await hasDailyQuestionAiConsent(clientWith([foreignGranted]), 'user-1')).toBe(false);
 	});
 
 	it('blockerar återkallat samtycke', async () => {
@@ -167,7 +171,7 @@ describe('grant och revoke rör bara sitt eget scope', () => {
 
 		expect(written).toHaveLength(1);
 		expect(written[0].scope).toBe('diary_ai_daily_question');
-		for (const other of [DIARY_AI_CONSENT_SCOPE, WEEKLY_SUMMARY_AI_CONSENT_SCOPE, 'chat_ai_support']) {
+		for (const other of [DIARY_AI_CONSENT_SCOPE, CHAT_AI_CONSENT_SCOPE]) {
 			expect(written.some((row) => row.scope === other)).toBe(false);
 		}
 	});
@@ -387,7 +391,7 @@ describe('återkallelse i inställningar', () => {
 	it('rör inte övriga scopes', () => {
 		const withdraw = settings.slice(settings.indexOf('async function withdrawDailyQuestionConsent'), settings.indexOf('async function loadDiaryAiConsent'));
 
-		for (const other of ['diary-weekly-summary', 'chat-ai']) {
+		for (const other of ['diary-ai', 'chat-ai']) {
 			expect(withdraw, other).not.toContain(other);
 		}
 	});

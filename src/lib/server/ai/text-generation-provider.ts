@@ -33,11 +33,6 @@ const modelConfigurations: Record<AITextPurpose, AIModelConfiguration> = {
 		timeoutMs: 20_000,
 		maxOutputTokens: 900
 	},
-	'weekly-summary': {
-		model: (env.OPENAI_WEEKLY_SUMMARY_MODEL || 'gpt-4-turbo').trim(),
-		timeoutMs: 20_000,
-		maxOutputTokens: 200
-	},
 	'user-memory': {
 		model: (env.OPENAI_CHAT_MODEL || 'gpt-4o-mini').trim(),
 		timeoutMs: 12_000,

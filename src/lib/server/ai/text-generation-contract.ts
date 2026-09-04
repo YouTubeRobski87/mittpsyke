@@ -4,7 +4,6 @@ export type AITextPurpose =
 	| 'diary-reflection'
 	| 'checkin-reflection'
 	| 'diary-narrative'
-	| 'weekly-summary'
 	| 'user-memory';
 
 export type AIMessage = {

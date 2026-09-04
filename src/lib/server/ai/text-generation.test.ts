@@ -54,9 +54,13 @@ describe('AI:s textgenereringslager', () => {
 		const create = vi.fn().mockResolvedValue({ choices: [{ message: { content: 'Adapter-svar' } }] });
 		const provider = new OpenAITextProvider({ chat: { completions: { create } } } as never);
 
+		// diary-narrative är kvar som det syfte som fortfarande använder det äldre
+		// max_tokens-fältet. Testet låg tidigare på weekly-summary; egenskapen som
+		// vaktas - att kontraktet översätts till adapterns fält och central timeout
+		// - är densamma.
 		const text = await provider.generate({
-			...getAIModelConfiguration('weekly-summary'),
-			purpose: 'weekly-summary',
+			...getAIModelConfiguration('diary-narrative'),
+			purpose: 'diary-narrative',
 			systemInstructions: ['Säkerhet först.'],
 			messages: [{ role: 'user', content: 'Underlag' }],
 			temperature: 0.7
@@ -64,7 +68,7 @@ describe('AI:s textgenereringslager', () => {
 
 		expect(text).toBe('Adapter-svar');
 		expect(create).toHaveBeenCalledWith(
-			expect.objectContaining({ model: getAIModelConfiguration('weekly-summary').model, max_tokens: 200 }),
+			expect.objectContaining({ model: getAIModelConfiguration('diary-narrative').model, max_tokens: 900 }),
 			{ timeout: 20_000 }
 		);
 	});

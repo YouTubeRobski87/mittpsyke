@@ -1,14 +1,17 @@
 # AI-inventering
 
-Senast kartlagd: 2026-08-05. Detta ar en teknisk inventering, inte en juridisk bedomning.
+Senast kartlagd: 2026-09-04. Detta ar en teknisk inventering, inte en juridisk bedomning.
+
+Veckosammanfattningen (`/api/diary/weekly-summary`) ar borttagen. Den hade ingen
+konsument, fragade efter kolumner som inte finns i `diary`, och tackte inget som
+Framstegs analys inte redan tacker.
 
 | AI-yta | Plats | Data/historik | Synlighet och kontroll | Bedomning |
 | --- | --- | --- | --- | --- |
 | Samtalsstod | `src/routes/api/chat/+server.ts`, `src/lib/server/ai/text-generation.ts`, `ChatWindow.svelte` | Aktuell session; inloggade samtal lagras i `conversations`/`messages`, gastsamtal i gasttabeller. Valfri dagbokskontext och anvandarminne for inloggad anvandare. | Chatten ar AI-markt i sidcopy. Rensa historik finns; exakt omfattning skiljer mellan lokal, sparad och samtalshistorik. | Verifierat: samtycke kravs och krisflodet ar serversidigt. Textgenerering, modell, timeout och fel ar centraliserade for denna yta. |
-| Dagboksinsikter | `src/routes/api/diary/insights/+server.ts`, `src/lib/server/diary-insight-analysis.ts` | Dagboksinlagg och aggregerade monster. | Insikter visas i dagboksflodet; radering av kallinlagg hanteras av dagbokens egna funktioner. | Behover fortsatt granskning av hur tydligt AI-anvandningen framgar i varje vy. |
+| Dagboksinsikter | `src/routes/api/diary/insights/+server.ts`, `src/lib/server/progress-analysis.ts` | Dagboksinlagg och aggregerade monster. | Visas under Framsteg; radering av kallinlagg hanteras av dagbokens egna funktioner. | Ingen sprakmodell: analysen raknas deterministiskt pa servern ur anvandarens egna rader. `insights-contract.test.ts` forbjuder LLM-anrop i routen. Kraver samtycke. |
 | Dagboksreflektion | `src/routes/api/diary/reflect/+server.ts` | Den text som anvandaren ber om reflektion for. | Anvandaren initierar funktionen. | Sannolik risk: hall gransen mellan reflektion och vardrad tydlig. |
 | Check-in-reflektion | `src/routes/api/diary/checkin-reflection/+server.ts` | Check-in-svar. | Initieras i check-in-flodet. | Verifierad AI-anropplats; ingen ny UI-andring gjordes. |
-| Veckosammanfattning | `src/routes/api/diary/weekly-summary/+server.ts`, `src/lib/server/ai/text-generation.ts` | Veckans dagboks-/check-in-underlag. | Kopplad till dagboksflodet. | Har gemensamma sakerhetsinstruktioner och inleder med AI-markning. UI-markning bor granskas i den berorda dagboksvyn. |
 | Daglig fraga | `src/lib/server/daily-question.ts`, `src/routes/api/daily-question/` | Begransad dagboks- och maendekontext; har eget krisskydd. | Visas i check-in. | Verifierat: krissignal hanteras utan vanlig fraga. |
 | Spegelvattnet | `src/lib/server/spegelvattnet.ts`, `src/routes/api/spegelvattnet/` | Historik for den funktionen. | Funktionsspecifik UI. | Behover separat UX-granskning for AI-markning och radering. |
 | Berattelser | `src/routes/api/stories/submit/+server.ts` | Inskickad berattelsetext. | Anvandaren initierar inskick. | Verifierad AI-anropplats; publicerings-/moderationsflode bor granskas separat. |

@@ -45,8 +45,11 @@ export class OpenAITextProvider implements AITextProvider {
 	}
 }
 
+// Kvar för diary-narrative, som fortfarande skickar max_tokens i stället för
+// max_completion_tokens. Grenen för weekly-summary togs bort tillsammans med
+// den funktionen.
 function usesLegacyMaxTokensField(purpose: AITextProviderRequest['purpose']): boolean {
-	return purpose === 'diary-narrative' || purpose === 'weekly-summary';
+	return purpose === 'diary-narrative';
 }
 
 export function normalizeOpenAIError(error: unknown): AITextGenerationError {

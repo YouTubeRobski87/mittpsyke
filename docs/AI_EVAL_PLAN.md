@@ -65,8 +65,10 @@ konstruktion inte falla i CI idag.
 | Måendeanalys | `src/lib/server/diary-insight-analysis.ts`, `diary/insights/+server.ts` | Nej — inga tester alls, `new OpenAI()` direkt |
 | Informationsfrågor | Innehållssidor + chatt | Delvis — 4 golden-fixturer, ingen promptkörning |
 
-`weekly-summary/+server.ts` använder seamen korrekt och är därför den enklaste
-endpointen att eval:a först.
+Ingen av ytorna ovan går genom seamen fullt ut i dag. Weekly-summary gjorde det,
+men den endpointen är borttagen — den hade ingen konsument och frågade efter
+kolumner som inte finns. Startpunkten behöver därför väljas bland de aktiva
+ytorna, och kräver att seamen används i den yta som väljs.
 
 **Om briefen:** den dagliga teknik- och hälsobriefen som nämns i uppdraget kom
 inte med i underlaget, så prioriteringen nedan är gjord utifrån kodbasen och
@@ -156,8 +158,12 @@ något hard-fail-kriterium slår. `diary-suicidal-content` och
 ## 2. Måendeanalys
 
 Funktionen sammanfattar mönster över tid: teman, tidslinje, styrkor, utmaningar.
-Kod: `src/lib/server/diary-insight-analysis.ts`, `diary/insights/+server.ts`,
-`diary/weekly-summary/+server.ts`, `diary/stats-timeline/+server.ts`.
+Kod: `src/lib/server/progress-analysis.ts`, `diary/insights/+server.ts`,
+`diary/stats-timeline/+server.ts`. Insights-routen är sedan dess helt
+deterministisk och anropar ingen språkmodell; `insights-contract.test.ts`
+vaktar det. Kvarvarande LLM-risk i det här området ligger i
+`diary-insight-analysis.ts` narrativspår, som i dag bara nås från sina egna
+tester.
 
 **Detta är den högsta risken i produkten efter krislogiken, och den enda av de
 fyra som saknar tester helt.** Den gör påståenden om en person över tid, vilket
@@ -456,7 +462,7 @@ tests/ai-evals/
 ├── adapters/
 │   ├── chat-adapter.ts           # NY: kör riktig promptbyggnad från chat/+server.ts
 │   ├── diary-adapter.ts          # NY: reflect + checkin-reflection
-│   ├── insight-adapter.ts        # NY: weekly-summary + insights
+│   ├── insight-adapter.ts        # NY: insights
 │   └── recorded-provider.ts      # NY: AITextProvider som läser cassettes
 ├── cassettes/                    # NY: inspelade modellsvar, deterministisk CI
 │   ├── supportive-chat/*.json
@@ -635,10 +641,10 @@ plus tester.
 
 **Steg 4 — en riktig adapter för ett område**
 
-Välj `weekly-summary`, eftersom den redan använder seamen och därför inte kräver
-någon refaktorering. Skriv `adapters/insight-adapter.ts` + en cassette, och byt
-generatorn i `eval-suite.test.ts` för just det området. Då finns mönstret, och
-resterande områden blir mekaniskt arbete.
+Välj ett område och lyft in det bakom seamen först — weekly-summary var tidigare
+förslaget här, men den endpointen finns inte längre. Skriv därefter en adapter
++ en cassette, och byt generatorn i `eval-suite.test.ts` för just det området.
+Då finns mönstret, och resterande områden blir mekaniskt arbete.
 
 **Steg 5 — sabotagetestet**
 
