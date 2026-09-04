@@ -55,6 +55,7 @@
   } from '$lib/companionDailyQuestion';
   import { shouldTriggerWorldResponse } from '$lib/world/worldResponse';
   import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
+  import { readDiaryDraft } from '$lib/diary-draft';
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
@@ -152,6 +153,7 @@
   let companionGreetingReaction = $state(0);
   let lastCompanionGreetingAt = 0;
   let companionGreetingTimer: number | null = null;
+  let hasLocalDraftToResume = $state(false);
 
   const diaryPreview = $derived(data.diaryPreview);
   const progressPreview = $derived(data.progressPreview);
@@ -258,6 +260,8 @@
   }
 
   onMount(() => {
+    hasLocalDraftToResume = !isAnonymous && Boolean(readDiaryDraft());
+
     const updateLocalTime = () => {
       const now = new Date();
       companionDayState = getProgressCompanionDayState(now);
@@ -462,13 +466,22 @@
             <span class="home-card-mark home-card-mark--rose" aria-hidden="true"><Heart size={20} /></span>
             <h2 id="dashboard-checkin-title">Dagens incheckning</h2>
           </div>
-          <p class="home-card-lead">Hur har du det idag?</p>
-          <p class="home-card-copy">Sätt ord på det du känner. Allt du skriver stannar hos dig.</p>
-          {#if diaryPreview.hasEntry && diaryPreview.dateLabel}
-            <p class="home-card-note">Du skrev {diaryPreview.dateLabel}.</p>
+          {#if hasLocalDraftToResume}
+            <p class="home-card-lead">Ditt utkast finns kvar</p>
+            <p class="home-card-copy">Fortsätt där du slutade. Du väljer själv när du vill spara texten som ett inlägg.</p>
+          {:else}
+            <p class="home-card-lead">Hur har du det idag?</p>
+            <p class="home-card-copy">Sätt ord på det du känner. Allt du skriver stannar hos dig.</p>
+            {#if diaryPreview.hasEntry && diaryPreview.dateLabel}
+              <p class="home-card-note">Du skrev {diaryPreview.dateLabel}.</p>
+            {/if}
           {/if}
-          <a class="home-card-action" class:home-card-action--login={isAnonymous} href="/dagbok/checkin">
-            <span>Skriv i dagboken</span>
+          <a
+            class="home-card-action"
+            class:home-card-action--login={isAnonymous}
+            href={hasLocalDraftToResume ? '/dagbok/checkin#skriv-sjalv' : '/dagbok/checkin'}
+          >
+            <span>{hasLocalDraftToResume ? 'Fortsätt skriva' : 'Skriv i dagboken'}</span>
             {#if isAnonymous}<span class="home-card-action-note">Konto krävs för att spara</span>{/if}
           </a>
         </section>
