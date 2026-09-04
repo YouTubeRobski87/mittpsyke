@@ -33,6 +33,21 @@ function registrationEvent(options: { signUpError?: Error | null; identities?: u
 	};
 }
 
+// SvelteKits genererade LayoutServerLoad tillåter void, eftersom en load får
+// returnera ingenting alls (MaybeWithVoid i .svelte-kit/types). Det är
+// annotationen - inte den returnerade objektliteralen - som bestämmer typen, så
+// resultatet är `void | <data>` även när rotlayouten alltid returnerar ett
+// objekt. Avgränsningen görs därför mot det verkliga värdet i stället för med en
+// cast: skulle loadern sluta returnera data är det ett riktigt fel, och då ska
+// testet falla här i stället för att tystas av typsystemet.
+type LayoutServerResult = Awaited<ReturnType<typeof layoutLoad>>;
+
+function assertLoadReturnedData(
+	result: LayoutServerResult
+): asserts result is Exclude<LayoutServerResult, void> {
+	expect(result).toBeDefined();
+}
+
 describe('GA4 sign_up efter registrering', () => {
 	it('lyckad ny e-postregistrering markerar exakt ett sign_up-event för nästa sidladdning', async () => {
 		const event = registrationEvent();
@@ -88,6 +103,9 @@ describe('GA4 sign_up efter registrering', () => {
 
 		const first = await layoutLoad({ locals, cookies } as never);
 		const second = await layoutLoad({ locals, cookies } as never);
+
+		assertLoadReturnedData(first);
+		assertLoadReturnedData(second);
 
 		expect(first.signUpCompleted).toBe(true);
 		expect(second.signUpCompleted).toBe(false);
