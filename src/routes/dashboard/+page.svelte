@@ -484,6 +484,11 @@
             <span class="explore-text"><strong>Framsteg</strong><small>Se din utveckling över tid</small></span>
             <ArrowRight size={18} aria-hidden="true" />
           </a>
+          <a href="/dashboard/kvallsstugan">
+            <span class="explore-mark" aria-hidden="true"><House size={18} /></span>
+            <span class="explore-text"><strong>Kvällslugn</strong><small>{isAnonymous ? 'Logga in för att använda' : 'En lugn stund i stugan.'}</small></span>
+            <ArrowRight size={18} aria-hidden="true" />
+          </a>
           <a href="/guider">
             <span class="explore-mark" aria-hidden="true"><BookOpen size={18} /></span>
             <span class="explore-text"><strong>Guider</strong><small>Praktiska övningar och stöd</small></span>

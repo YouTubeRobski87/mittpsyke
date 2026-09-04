@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { browser } from '$app/environment';
-	import { afterNavigate } from '$app/navigation';
+	import { afterNavigate, onNavigate } from '$app/navigation';
 	import {
 		ANALYTICS_ENABLED,
 		trackAuthCompletedFromPendingState,
@@ -431,46 +431,6 @@
 		});
 	}
 
-	function handleSmoothAnchorClick(event: MouseEvent) {
-		if (
-			!browser ||
-			event.defaultPrevented ||
-			event.button !== 0 ||
-			event.metaKey ||
-			event.ctrlKey ||
-			event.shiftKey ||
-			event.altKey
-		) {
-			return;
-		}
-
-		const target = event.target;
-		if (!(target instanceof Element)) return;
-
-		const anchor = target.closest('a[href^="#"]');
-		if (!(anchor instanceof HTMLAnchorElement)) return;
-
-		const hash = anchor.hash;
-		if (!hash || hash === '#') return;
-
-		let targetId: string;
-		try {
-			targetId = decodeURIComponent(hash.slice(1));
-		} catch {
-			return;
-		}
-
-		const anchorTarget = document.getElementById(targetId);
-		if (!anchorTarget) return;
-
-		event.preventDefault();
-		anchorTarget.scrollIntoView({
-			behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-			block: 'start'
-		});
-		window.history.pushState(null, '', hash);
-	}
-
 	function syncAnalyticsConsent() {
 		if (!browser) return;
 
@@ -499,12 +459,10 @@
 
 		window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
 		document.addEventListener('click', handleInternalLinkClick);
-		document.addEventListener('click', handleSmoothAnchorClick);
 
 		return () => {
 			window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
 			document.removeEventListener('click', handleInternalLinkClick);
-			document.removeEventListener('click', handleSmoothAnchorClick);
 		};
 	});
 
@@ -555,7 +513,13 @@
 		};
 	});
 
+	// Låt SvelteKit återställa scroll direkt vid sidbyte och back/forward.
+	onNavigate(() => {
+		delete document.documentElement.dataset.smoothScroll;
+	});
+
 	afterNavigate(({ to }) => {
+		document.documentElement.dataset.smoothScroll = '';
 		mobileMenuOpen = false;
 		mobileSearchOpen = false;
 		profilePanelOpen = false;

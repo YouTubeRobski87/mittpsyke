@@ -156,6 +156,12 @@ html {
 	scroll-padding-top: calc(4.75rem + env(safe-area-inset-top, 0px));
 }
 
+@media (prefers-reduced-motion: no-preference) {
+	html[data-smooth-scroll] {
+		scroll-behavior: smooth;
+	}
+}
+
 html,
 body {
 	margin: 0;

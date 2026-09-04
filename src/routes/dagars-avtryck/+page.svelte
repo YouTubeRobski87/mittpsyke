@@ -757,7 +757,12 @@
 		padding: 1rem;
 		max-height: 55vh;
 		overflow-y: auto;
-		scroll-behavior: smooth;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.message-list {
+			scroll-behavior: smooth;
+		}
 	}
 
 	.message {
