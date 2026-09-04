@@ -20,8 +20,7 @@
     MessageCircle,
     Newspaper,
     Sprout,
-    SunMedium,
-    TrendingUp
+    SunMedium
   } from 'lucide-svelte';
   import {
     getProgressCompanionDayState,
@@ -435,13 +434,10 @@
                 <small>Texter skrivna</small>
               </span>
             </div>
-            <div class="now-stat">
-              <span class="now-stat-mark now-stat-mark--blue" aria-hidden="true"><TrendingUp size={18} /></span>
-              <span class="now-stat-body">
-                <strong>{progressPreview.currentStreak}</strong>
-                <small>Dagar i följd</small>
-              </span>
-            </div>
+            <!-- Här låg "Dagar i följd". Ett antal sammanhängande dagar gör
+                 obruten användning till ett resultat, och därmed frånvaro till
+                 ett brutet resultat. Kvar står två neutrala historiktal som
+                 redan fanns: allt som sparats, och den här veckan. -->
             <div class="now-stat">
               <span class="now-stat-mark now-stat-mark--yellow" aria-hidden="true"><SunMedium size={18} /></span>
               <span class="now-stat-body">
@@ -1049,11 +1045,6 @@
   .now-stat-mark--green {
     color: var(--mp-green);
     background: var(--mp-green-soft);
-  }
-
-  .now-stat-mark--blue {
-    color: var(--mp-blue);
-    background: var(--mp-blue-soft);
   }
 
   .now-stat-mark--yellow {

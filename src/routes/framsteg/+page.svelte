@@ -508,6 +508,16 @@
 	const milestonesData = $derived(
 		loadedMilestonesData ?? { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 }
 	);
+	// "Det som långsamt kan växa fram" får aldrig peka ut ett antal
+	// sammanhängande dagar. En obruten rad som nästa steg är ett användningsmål,
+	// inte en observation - och en dag utan inlägg blir då ett misslyckande.
+	// Milstolpen finns kvar i listan och kan fortfarande uppnås; den lyfts bara
+	// inte fram som något att sträva mot.
+	const nextMilestone = $derived(
+		milestonesData.nextMilestone && milestonesData.nextMilestone.metric !== 'longestStreak'
+			? milestonesData.nextMilestone
+			: null
+	);
 	const weeklyEntries = $derived(isAnonymous ? 3 : loadedWeeklyEntries);
 	// Samma serverkälla som Dashboard: alla sparade rader i diary, utan tidsgräns.
 	const entryCount = $derived(data.entryCount ?? 0);
@@ -1759,11 +1769,13 @@
 						</div>
 					</div>
 				{/each}
-				{#if milestonesData.nextMilestone}
+				{#if nextMilestone}
 					<div class="next-milestone">
 						<div class="next-header"><Calendar size={18} /><span>Det som långsamt kan växa fram</span></div>
 						<h3>{isAnonymous ? 'Trädgården kan få plats för mer ljus.' : 'Din trädgård har plats för mer ljus.'}</h3>
-						<p>{nextMilestoneCopy(milestonesData.nextMilestone!)}</p>
+						<!-- Icke-null-assertion som tidigare: $derived narrowar inte in i
+						     blocket, men {#if nextMilestone} garanterar värdet här. -->
+						<p>{nextMilestoneCopy(nextMilestone!)}</p>
 						<small>
 							{isAnonymous
 								? 'Ingen brådska. Platsen kan växa när återbesöken blir fler.'
@@ -1809,17 +1821,16 @@
 							<span class="summary-stat-number">{activeDays}</span>
 							<span class="summary-stat-label">Dagar med avtryck</span>
 						</div>
-						{#if streakData}
-							<div class="summary-stat">
-								<span class="summary-stat-number">{streakData.currentStreak}</span>
-								<span class="summary-stat-label">Dagar i följd</span>
-							</div>
-						{/if}
+						<!-- Här låg "Dagar i följd". Framsteg ska visa vad som förändras
+						     över tid, inte hur oavbrutet tjänsten öppnats. "Dagar med
+						     avtryck" ovan är samma sorts historik utan att göra en obruten
+						     rad till ett resultat. Fyra rutor fyller rutnätets två kolumner
+						     jämnt, så tillväxtrutan behöver inte längre spänna över bredden. -->
 						<div class="summary-stat">
 							<span class="summary-stat-number">{weeklyEntries}</span>
 							<span class="summary-stat-label">Den här veckan</span>
 						</div>
-						<div class="summary-stat" class:summary-stat--growth={Boolean(streakData)}>
+						<div class="summary-stat">
 							<span class="summary-stat-number">{growthLevel}</span>
 							<span class="summary-stat-label">Trädgården växer</span>
 						</div>
@@ -2825,10 +2836,6 @@
 	.summary-stat-label {
 		font-size: 0.8rem;
 		color: var(--color-dashboard-text-muted);
-	}
-
-	.summary-stat--growth {
-		grid-column: 1 / -1;
 	}
 
 	@media (min-width: 981px) {

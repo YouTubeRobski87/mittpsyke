@@ -4,6 +4,7 @@ import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
 import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
 import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
 import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
+import { buildProgressSummary } from '$lib/dashboard-progress-summary';
 
 type DiaryRow = {
 	id: string;
@@ -115,22 +116,6 @@ function startOfWeekIso() {
 	monday.setDate(now.getDate() + mondayOffset);
 	monday.setHours(0, 0, 0, 0);
 	return monday.toISOString();
-}
-
-function buildProgressSummary(currentStreak: number, weeklyEntries: number, totalEntries: number) {
-	if (currentStreak >= 7) {
-		return `${currentStreak} dagar nära i tid. Du har hittat en rytm som verkar fungera just nu.`;
-	}
-	if (currentStreak >= 3) {
-		return `${currentStreak} dagar nära i tid och ${weeklyEntries} inlägg den här veckan.`;
-	}
-	if (weeklyEntries >= 3) {
-		return `${weeklyEntries} inlägg den här veckan. Du håller kontakt med dig själv.`;
-	}
-	if (totalEntries >= 1) {
-		return `${totalEntries} sparade anteckningar finns kvar att gå tillbaka till.`;
-	}
-	return 'Små steg räcker. Skriv ditt första inlägg här.';
 }
 
 function buildCurrentStreak(entries: { created_at: string | null }[]) {
@@ -268,11 +253,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 				hasEntry: false
 			};
 
+	// currentStreak behålls i nyttolasten: beräkningen är oförändrad och värdet
+	// kan användas internt. Det presenteras däremot inte längre för användaren.
 	const progressPreview: PortalProgressPreview = {
 		currentStreak,
 		weeklyEntries,
 		totalEntries,
-		summary: buildProgressSummary(currentStreak, weeklyEntries, totalEntries)
+		summary: buildProgressSummary(weeklyEntries, totalEntries)
 	};
 
 	const settingsPreview: PortalSettingsPreview = {
