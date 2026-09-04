@@ -10,7 +10,6 @@
   import CompanionDailyCard from '$lib/components/world/CompanionDailyCard.svelte';
   import CompanionWorldResponse from '$lib/components/world/CompanionWorldResponse.svelte';
   import {
-    Activity,
     ArrowRight,
     BookOpen,
     Feather,
@@ -488,16 +487,6 @@
 
         <nav class="explore-panel" aria-labelledby="dashboard-explore-title">
           <h2 id="dashboard-explore-title">Utforska vidare</h2>
-          <a href="/framsteg">
-            <span class="explore-mark" aria-hidden="true"><Activity size={18} /></span>
-            <span class="explore-text"><strong>Framsteg</strong><small>Se din utveckling över tid</small></span>
-            <ArrowRight size={18} aria-hidden="true" />
-          </a>
-          <a href="/dashboard/kvallsstugan">
-            <span class="explore-mark" aria-hidden="true"><House size={18} /></span>
-            <span class="explore-text"><strong>Kvällslugn</strong><small>{isAnonymous ? 'Logga in för att använda' : 'En lugn stund i stugan.'}</small></span>
-            <ArrowRight size={18} aria-hidden="true" />
-          </a>
           <a href="/guider">
             <span class="explore-mark" aria-hidden="true"><BookOpen size={18} /></span>
             <span class="explore-text"><strong>Guider</strong><small>Praktiska övningar och stöd</small></span>
