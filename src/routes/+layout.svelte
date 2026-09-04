@@ -132,7 +132,7 @@
 	}
 
 	const fallbackDescription =
-		'AI-baserat samtalsstöd för reflektion och stöd i vardagen. Börja utan konto eller skapa en egen plats över tid.';
+		'Digitalt stöd för att skriva, reflektera och se mönster över tid. Skriv lokalt utan konto eller använd AI-chatten.';
 	const ogDescription = $derived(page.data?.description || fallbackDescription);
 	const ogImage = $derived(page.data?.ogImage ?? canonicalUrl('/og-image.png'));
 	const pageCanonical = $derived(page.data?.canonical ?? canonicalUrl(page.url.pathname));
@@ -162,7 +162,7 @@
 		name: 'MittPsyke',
 		url: PUBLIC_SITE_ORIGIN,
 		email: PUBLIC_CONTACT_EMAIL,
-		description: 'Svensk plattform för AI-baserat samtalsstöd och mental hälsa.',
+		description: 'Svensk plattform för självreflektion, dagbok och AI-baserat samtalsstöd.',
 		logo: canonicalUrl('/logo.png'),
 		founder: {
 			'@type': 'Person',
@@ -177,7 +177,7 @@
 		'@type': 'WebApplication',
 		name: 'MittPsyke',
 		url: PUBLIC_SITE_ORIGIN,
-		description: 'AI-driven dagbok för mental hälsa på svenska',
+		description: 'Digitalt stöd för dagbok, reflektion, mönster över tid och AI-chatt på svenska',
 		applicationCategory: 'HealthApplication',
 		inLanguage: 'sv',
 		offers: {

@@ -26,10 +26,10 @@
 		<header class="hero">
 			<h1>Om MittPsyke</h1>
 			<p>
-				MittPsyke är en svensk plattform för digitalt samtalsstöd, skapad för människor som
+				MittPsyke är en svensk plattform för självreflektion och digitalt stöd, skapad för människor som
 				lever med psykisk belastning i olika former. Tanken är att erbjuda ett tryggt och tillgängligt
-				rum där det går att stanna upp, sätta ord på det som känns svårt och få
-				stöd i stunden — utan att behöva prestera eller förklara allt från början.
+				rum där det går att skriva, spara det man vill och se vad som återkommer över tid —
+				utan att behöva prestera eller förklara allt från början.
 			</p>
 		</header>
 
@@ -121,7 +121,7 @@
 		<section class="trust-overview" aria-label="Snabbt om MittPsyke">
 			<h2>Snabbt om MittPsyke</h2>
 			<ul>
-				<li><strong>Är detta vård?</strong> Nej. MittPsyke är ett AI-baserat samtalsstöd i text, inte vård, diagnos, behandling eller akuthjälp.</li>
+				<li><strong>Är detta vård?</strong> Nej. MittPsyke är ett digitalt stöd för skrivande, reflektion och AI-chatt, inte vård, diagnos, behandling eller akuthjälp.</li>
 				<li><strong>Vad används tjänsten till?</strong> Ett första steg för reflektion och struktur i vardagen när du vill börja någonstans.</li>
 				<li><strong>Vad gäller i akut läge?</strong> Ring 112 vid akut fara. För vårdråd, kontakta 1177.</li>
 				<li><strong>Vem står bakom?</strong> MittPsyke drivs av Robert Claesson som enskild näringsverksamhet (org.nr 198712284895).</li>
@@ -254,12 +254,14 @@
 				<h2>Vad är MittPsyke?</h2>
 				<p>
 					Plattformen fungerar som vardagsnära stöd för reflektion — också för dig som har, väntar på
-					eller har haft kontakt med vården. I centrum finns ett AI-baserat samtalsstöd som är utformat för att svara med
-					lugn, respekt och empati.
+					eller har haft kontakt med vården. I centrum finns en egen plats där du kan skriva, spara det
+					du vill och se vad som återkommer. AI-chatten är en av flera vägar till stöd och reflektion.
 				</p>
 				<p>
-					Målet är inte att ersätta professionell behandling, utan att göra det lättare att
-					reflektera, sortera tankar och vid behov hitta vidare till rätt resurser.
+					Med konto samlas det du väljer att spara i Mitt Hem. Där finns bland annat dagboken,
+					Kvällsstugan, Följeslagaren och möjligheten att se mönster över tid. Målet är inte att
+					ersätta professionell behandling, utan att göra det lättare att reflektera, sortera tankar
+					och vid behov hitta vidare till rätt resurser.
 				</p>
 			</section>
 
@@ -300,10 +302,10 @@
 				<li>
 					<span class="step-number">1</span>
 					<div>
-						<h3>Välj ingång</h3>
+						<h3>Börja där det passar</h3>
 						<p>
-							Börja i ett tema som känns relevant direkt: Ångest, Depression eller Trauma &amp;
-							våld.
+							Skriv lokalt utan konto, öppna AI-chatten utan att välja tema eller börja med en guide
+							eller övning.
 						</p>
 					</div>
 				</li>
@@ -320,10 +322,10 @@
 				<li>
 					<span class="step-number">3</span>
 					<div>
-						<h3>Följ din kontinuitet</h3>
+						<h3>Spara det du vill</h3>
 						<p>
-							Om du vill kan du logga in och spara samtal över tid, så att plattformen blir ett
-							personligt samtalsrum.
+							Med konto kan du spara dagbok, samtal och incheckningar och återvända till Mitt Hem för
+							att se vad som återkommer över tid.
 						</p>
 					</div>
 				</li>

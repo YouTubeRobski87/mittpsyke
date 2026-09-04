@@ -8,9 +8,9 @@
 <main class="page">
 	<div class="page-container">
 		<header class="hero">
-			<h1>Anonymt samtalsstöd online med dagbok</h1>
+			<h1>AI-samtalsstöd online och lokal dagbok</h1>
 			<p>
-				MittPsyke är en plats för anonymt samtalsstöd online där du kan skriva av dig, reflektera och ta det i din egen takt. Du behöver inte förklara allt direkt – ibland räcker det att börja med några ord.
+				Här kan du chatta med AI utan konto eller skriva lokalt i en digital dagbok. Du behöver inte förklara allt direkt – ibland räcker det att börja med några ord.
 			</p>
 			<p>
 				Här kan du använda en digital dagbok, få stöd i dina tankar eller bara vara i det som känns, utan press.
@@ -29,8 +29,8 @@
 		<section class="section">
 			<h2>Ett digitalt stöd i lugn takt</h2>
 			<p>
-				MittPsyke är till för reflektion, inte för att pressa fram snabba svar. Du kan börja anonymt och
-				välja om du vill fortsätta i chatten, dagboken eller någon av guiderna.
+				MittPsyke är till för reflektion, inte för att pressa fram snabba svar. Du kan börja utan konto
+				och välja om du vill chatta med AI, skriva lokalt i dagboken eller läsa någon av guiderna.
 			</p>
 		</section>
 
@@ -67,6 +67,8 @@
 			<p>Ja. Tjänsten är byggd för små steg och ett varsamt tempo.</p>
 			<h3>Vad händer med det jag skriver?</h3>
 			<p>
+				<strong>Lokalt skrivande:</strong> {dataflowCopy.anonymousDiary.short}
+				<strong>AI-chatt utan konto:</strong> {dataflowCopy.guestChat.aiTransfer}
 				{dataflowCopy.guestChat.retention} {dataflowCopy.accountChat.storage}
 				{dataflowCopy.accountChat.retention} Läs mer i <a href="/integritet">integritetspolicyn</a> och om hur
 				AI-stödet är byggt i <a href="/ansvarsfull-ai">Ansvarsfull AI</a>.

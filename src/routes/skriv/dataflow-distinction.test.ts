@@ -25,4 +25,15 @@ describe('skillnaden mellan lokalt skrivande och AI-chatt', () => {
 			'Skriv anonymt direkt utan konto och få AI-reflektion på det du skriver.'
 		);
 	});
+
+	it('blandytan för AI-stöd och dagbok förklarar båda dataflödena', () => {
+		const pageSource = projectFile('../ai-samtalsstod-online/+page.svelte');
+		const metadataSource = projectFile('../ai-samtalsstod-online/+page.js');
+
+		expect(pageSource).toContain('AI-samtalsstöd online och lokal dagbok');
+		expect(pageSource).toContain('dataflowCopy.anonymousDiary.short');
+		expect(pageSource).toContain('dataflowCopy.guestChat.aiTransfer');
+		expect(metadataSource).toContain('Lokal text stannar i webbläsaren');
+		expect(metadataSource).not.toContain('helt anonymt');
+	});
 });

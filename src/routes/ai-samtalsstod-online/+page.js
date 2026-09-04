@@ -1,7 +1,7 @@
 export const load = () => {
 	return {
-		title: 'Anonymt samtalsstöd online med dagbok',
+		title: 'AI-samtalsstöd online och lokal dagbok',
 		description:
-			'Få anonymt samtalsstöd online i lugn takt. Skriv dagbok, reflektera och chatta utan press. Börja direkt – helt anonymt.'
+			'Chatta med AI utan konto eller skriv lokalt i en digital dagbok. Lokal text stannar i webbläsaren; chattmeddelanden skickas för att AI:n ska kunna svara.'
 	};
 };

@@ -1,15 +1,16 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 </script>
 
 <SEO canonical="https://mittpsyke.se/sa-fungerar-mittpsyke" />
 
 <svelte:head>
-	<title>Så fungerar MittPsyke | AI-stött reflektionsstöd</title>
+	<title>Så fungerar MittPsyke | Skrivande, reflektion och AI-stöd</title>
 	<meta
 		name="description"
-		content="Läs hur MittPsyke fungerar, hur AI används, vad anonymt läge innebär och vad tjänsten inte ersätter."
+		content="Läs hur lokalt skrivande, AI-chatt, sparande och mönster över tid fungerar i MittPsyke och vad tjänsten inte ersätter."
 	/>
 </svelte:head>
 
@@ -26,7 +27,7 @@
 		<h2 class="text-lg font-semibold mt-0 mb-2">Kort sammanfattning</h2>
 		<ul>
 			<li>MittPsyke är ett digitalt stöd för att skriva av sig och reflektera i lugn takt.</li>
-			<li>Du kan börja anonymt utan konto.</li>
+			<li>Du kan skriva lokalt utan konto eller välja att chatta med AI utan konto.</li>
 			<li>Konto används om du vill spara historik, dagbok eller måendemönster över tid.</li>
 			<li>Tjänsten är inte vård, diagnos, behandling, terapi eller akuthjälp.</li>
 		</ul>
@@ -34,10 +35,10 @@
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Hur det fungerar steg för steg</h2>
 	<ol class="opacity-80 leading-relaxed mb-3 list-decimal pl-6 space-y-2">
-		<li>Du väljer om du vill skriva, chatta, läsa guider, göra övningar eller använda dagboken.</li>
+		<li>Du väljer om du vill skriva lokalt, chatta med AI, läsa guider eller göra övningar.</li>
 		<li>AI-stödet kan hjälpa till med varsamma frågor, spegling av text och mer struktur.</li>
 		<li>Du styr själv takt, innehåll och hur mycket du vill dela.</li>
-		<li>Du kan avsluta anonymt eller skapa konto om du vill spara och komma tillbaka senare.</li>
+		<li>Du kan fortsätta utan konto eller skapa konto om du vill spara och komma tillbaka senare.</li>
 	</ol>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Hur AI används</h2>
@@ -51,10 +52,13 @@
 		inte vård.
 	</p>
 
-	<h2 class="text-lg font-semibold mt-8 mb-2">Anonymt läge och konto</h2>
+	<h2 class="text-lg font-semibold mt-8 mb-2">Utan konto: lokalt skrivande och AI-chatt</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		I anonymt läge kan du börja med låg tröskel utan konto. Då skapas ingen kontohistorik
-		som du kan komma tillbaka till senare.
+		<strong>Lokalt skrivande:</strong> {dataflowCopy.anonymousDiary.short}
+	</p>
+	<p class="opacity-80 leading-relaxed mb-3">
+		<strong>AI-chatt utan konto:</strong> {dataflowCopy.guestChat.aiTransfer}
+		{dataflowCopy.guestChat.retention}
 	</p>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Med konto kan du spara anteckningar, dagbok, historik och återvända till ditt eget
