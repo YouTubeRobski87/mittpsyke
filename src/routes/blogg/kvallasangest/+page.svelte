@@ -105,8 +105,9 @@
 		</p>
 		<p>
 			Det behöver inte vara vackert eller genomtänkt. Skriv rakt, ärligt, och bara för dig själv.
-			I <a href="/dagbok">MittPsykes dagbok</a> skriver du helt anonymt, ingen annan kan läsa det,
-			och du kan följa ditt mående över tid och se mönster du annars missar. Läs mer om hur en
+			I <a href="/dagbok">MittPsykes dagbok</a> kan du skriva ett lokalt utkast utan konto.
+			Med konto kan du välja att spara dagboksinlägg och följa ditt mående över tid.
+			Läs om lagring och behandling i <a href="/integritet">integritetspolicyn</a> och om hur en
 			<a href="/guider/anonym-dagbok-online">anonym dagbok online</a> fungerar.
 		</p>
 		<p>

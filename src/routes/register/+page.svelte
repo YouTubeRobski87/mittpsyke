@@ -74,7 +74,7 @@
 
 <main class="container max-w-sm py-12">
 	<h1 class="text-2xl font-bold mb-3">
-		{showPreview ? 'Spara och fortsätt där du var' : 'Skapa konto för att spara och följa över tid'}
+		{showPreview ? 'Fortsätt med ditt utkast' : 'Skapa konto för att spara och följa över tid'}
 	</h1>
 	<p class="text-sm opacity-70 mb-6">
 		Konto är valfritt, men gör det lättare att spara historik, följa ditt mående och komma tillbaka i din egen takt.
@@ -82,9 +82,9 @@
 
 	{#if showPreview && tempEntryPreview}
 		<div class="mb-6 rounded-lg border border-blue-300 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-700/40 p-4">
-			<p class="text-sm font-medium mb-2">Du har redan börjat skriva</p>
+			<p class="text-sm font-medium mb-2">Ditt lokala utkast</p>
 			<p class="text-sm opacity-80 mb-2 line-clamp-3">{tempEntryPreview.content || 'Tomt utkast'}</p>
-			<p class="text-xs opacity-60">Skapa konto så finns texten kvar när du fortsätter.</p>
+			<p class="text-xs opacity-60">Utkastet stannar i den här webbläsaren när du skapar konto. Det blir ett kontoinlägg först när du är inloggad och väljer att spara i dagboken.</p>
 		</div>
 	{/if}
 

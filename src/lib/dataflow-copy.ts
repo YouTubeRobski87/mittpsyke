@@ -7,7 +7,8 @@
  */
 export const dataflowCopy = {
 	anonymousDiary: {
-		storage: 'Texten sparas lokalt i den här webbläsaren tills du rensar den.',
+		storage:
+			'När lokal lagring är tillgänglig sparas texten som ett lokalt utkast i den här webbläsaren tills du rensar det eller lagringen töms.',
 		transfer:
 			'Medan du skriver skickas den inte till MittPsyke, Supabase eller OpenAI.',
 		short:

@@ -19,7 +19,7 @@
 		variant,
 		title = 'Skriv anonymt och följ ditt mående',
 		subtitle,
-		lead = 'Skriv några rader direkt och välj senare om du vill spara.',
+		lead = 'Skriv ett lokalt utkast direkt. Med konto kan du välja att spara det som ett dagboksinlägg.',
 		ctaHref = '/dagbok?action=new',
 		ctaLabel = 'Börja skriva anonymt nu',
 		secondaryHref,
@@ -37,7 +37,7 @@
 			subtitle ??
 			(variant === 'diary-landing'
 				? dataflowCopy.anonymousDiary.short
-				: 'Inget konto krävs för att börja. Skapa konto senare om du vill spara och följa över tid.')
+				: 'Skriv ett lokalt utkast utan konto. Med konto kan du spara dagboksinlägg och följa ditt mående över tid.')
 	);
 
 	function handleCtaClick() {

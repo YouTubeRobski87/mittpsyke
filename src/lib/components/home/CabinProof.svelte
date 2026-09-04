@@ -42,6 +42,8 @@
 	</div>
 
 	<div class="cabin-proof-card">
+		<p class="cabin-proof-example">Exempel på kvällsincheckning</p>
+		<p class="cabin-proof-description">Förhandsvisning – går inte att fylla i här.</p>
 		<p class="cabin-proof-step">Steg 1 av 4</p>
 		<p class="cabin-proof-question">Hur är det ikväll?</p>
 		<ul class="cabin-proof-options">
@@ -49,7 +51,7 @@
 				<li>{theme.label}</li>
 			{/each}
 		</ul>
-		<span class="cabin-proof-primary" aria-hidden="true">Fortsätt</span>
+		<span class="cabin-proof-preview-action">Fortsätt · exempel</span>
 	</div>
 
 	<!-- Säger vad kortet ovanför är. Utan bildtexten kan proofen läsas som
@@ -127,6 +129,20 @@
 		text-transform: uppercase;
 	}
 
+	.cabin-proof-example {
+		margin: 0 0 0.25rem;
+		font-size: 0.85rem;
+		font-weight: 700;
+		line-height: 1.4;
+	}
+
+	.cabin-proof-description {
+		margin: 0 0 0.85rem;
+		color: #d9cebd;
+		font-size: 0.8rem;
+		line-height: 1.5;
+	}
+
 	.cabin-proof-question {
 		margin: 0 0 0.75rem;
 		font-family: var(--font-heading);
@@ -159,15 +175,12 @@
 		background: rgb(245 200 120 / 0.13);
 	}
 
-	.cabin-proof-primary {
-		display: inline-block;
+	.cabin-proof-preview-action {
+		display: block;
 		margin-top: 0.75rem;
-		padding: 0.6rem 1rem;
-		border-radius: 0.8rem;
-		background: rgb(239 193 113 / 0.42);
-		color: rgb(247 243 235 / 0.86);
-		font-size: 0.9rem;
-		font-weight: 650;
+		color: #d9cebd;
+		font-size: 0.82rem;
+		line-height: 1.5;
 	}
 
 	/* Samma uppdelning som den riktiga Kvällsstugan gör på bred skärm: scenen
@@ -241,9 +254,8 @@
 			font-size: 0.86rem;
 		}
 
-		.cabin-proof--hero .cabin-proof-primary {
+		.cabin-proof--hero .cabin-proof-preview-action {
 			margin-top: 0.6rem;
-			padding: 0.5rem 0.85rem;
 		}
 
 		/* Hero-varianten är display:block, så figurens gap gäller inte här. */

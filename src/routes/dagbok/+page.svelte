@@ -11,17 +11,17 @@
 		{
 			question: 'Är dagboken gratis?',
 			answer:
-				'Ja. Du kan börja gratis och skriva i lugn takt. Om du vill spara inlägg, få AI-reflektioner och följa ditt mående över tid skapar du ett konto.'
+				'Ja. Du kan skriva ett lokalt utkast gratis utan konto. För att spara dagboksinlägg på ditt konto och följa ditt mående över tid behöver du logga in.'
 		},
 		{
 			question: 'Kan någon annan läsa mina inlägg?',
 			answer:
-				'Nej. Dina dagboksinlägg är privata för dig. MittPsyke är byggt för att ge dig en egen och lugn plats för reflektion.'
+				'Lokala utkast finns i din webbläsare och kan läsas av någon som har tillgång till den. Kontoinlägg behandlas av MittPsykes system och Supabase. AI-reflektioner är valfria och kräver separat samtycke. Läs mer i integritetspolicyn.'
 		},
 		{
 			question: 'Behöver jag skapa ett konto?',
 			answer:
-				'För att spara i dagboken och följa stämningslogg och framsteg behöver du ett konto. Du kan läsa om funktionen utan att logga in.'
+				'Nej, du kan skriva ett lokalt utkast utan konto. För att spara dagboksinlägg och följa stämningslogg och framsteg behöver du ett konto. Registreringen sparar inte utkastet som ett inlägg; du väljer själv att spara i dagboken efter inloggning.'
 		}
 	];
 
@@ -65,11 +65,11 @@
 				<h2>En privat plats där tankar får landa</h2>
 				<p>
 					När du skriver får du en plats där tankar, känslor och återkommande mönster kan landa.
-					Dagboken hjälper dig att stanna upp, sätta ord på det som känns och få AI-genererade
-					reflektioner som ger lite mer riktning.
+					Med konto kan du spara dagboksinlägg. Du kan också välja att få AI-genererade
+					reflektioner efter separat samtycke.
 				</p>
 				<p>
-					Du kan också följa en enkel stämningslogg och se framsteg över tid. Det gör det lättare att
+					Med konto kan du också följa en enkel stämningslogg och se framsteg över tid. Det gör det lättare att
 					upptäcka vad som återkommer, vad som hjälper och hur ditt mående faktiskt förändras.
 				</p>
 			</article>
@@ -107,7 +107,7 @@
 				</article>
 				<article class="benefit-card">
 					<h3>Privat och tryggt</h3>
-					<p>Dina inlägg är privata för dig och du väljer själv vad du vill skriva.</p>
+					<p>Du väljer själv vad du vill skriva. Läs om lagring, åtkomst och AI i <a href="/integritet">integritetspolicyn</a>.</p>
 				</article>
 			</div>
 		</section>

@@ -175,7 +175,7 @@
 			<div class="home-inner narrow">
 				<h2 id="anonymous-title">Börja där du är</h2>
 				<p>
-					{dataflowCopy.anonymousDiary.short} Skapa en plats den dag du vill att den ska finnas kvar.
+					{dataflowCopy.anonymousDiary.short} Med konto kan du välja att spara utkastet som ett dagboksinlägg.
 				</p>
 			<a
 				class="text-link"

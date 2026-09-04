@@ -190,8 +190,12 @@
 			<p class="meta">
 				{dataflowCopy.anonymousDiary.storage} {dataflowCopy.anonymousDiary.transfer}
 				{#if saveStatus === 'saved' && entry.length > 0}
-					<span class="status-pill" aria-live="polite">Sparat</span>
+					<span class="status-pill" aria-live="polite">Lokalt utkast</span>
 				{/if}
+			</p>
+			<p class="meta">
+				Utkastet finns normalt kvar när du laddar om sidan eller stänger webbläsaren.
+				I privat läge kan det försvinna när du stänger webbläsaren.
 			</p>
 		</header>
 
@@ -235,15 +239,15 @@
 
 		<footer class="guest-entry-footer" bind:this={accountOfferEl}>
 			<div class="account-offer">
-				<p class="account-offer-title">Vill du behålla det här?</p>
+				<p class="account-offer-title">Vill du spara ett dagboksinlägg på ditt konto?</p>
 				<p class="account-offer-text">
-					Med ett konto sparas det du skriver, och du kan följa hur det ser ut över tid. Utan konto:
-					{dataflowCopy.anonymousDiary.storage}
+					Utkastet stannar lokalt när du skapar konto. Det blir ett dagboksinlägg först när du
+					är inloggad och väljer att spara i dagboken.
 				</p>
 			</div>
 			<div class="actions">
 				<a class="primary-action" href="/register?fromDiary=true" onclick={saveAndCreateAccount}
-					>Spara med konto</a
+					>Skapa konto för att spara inlägg</a
 				>
 				<button type="button" class="secondary-action" onclick={continueWriting}>
 					Fortsätt utan konto
