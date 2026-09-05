@@ -1,16 +1,20 @@
 import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import { env } from '$env/dynamic/private';
 
-const FALLBACK_SALT = 'mittpsyke-local-anonymous-stories-salt';
+const MIN_STORY_RATE_LIMIT_SALT_LENGTH = 32;
 
 function getStorySalt() {
-	return (
-		env.STORY_RATE_LIMIT_SALT ||
-		env.IP_HASH_SALT ||
-		env.SUPABASE_SERVICE_ROLE_KEY ||
-		env.SERVICE_ROLE_KEY ||
-		FALLBACK_SALT
-	);
+	const salt = env.STORY_RATE_LIMIT_SALT?.trim();
+	if (!salt || salt.length < MIN_STORY_RATE_LIMIT_SALT_LENGTH) {
+		throw new Error('Anonymous story rate limiting is not configured.');
+	}
+
+	return salt;
+}
+
+export function hasValidStoryRateLimitSalt() {
+	const salt = env.STORY_RATE_LIMIT_SALT?.trim();
+	return Boolean(salt && salt.length >= MIN_STORY_RATE_LIMIT_SALT_LENGTH);
 }
 
 export function hashStoryIp(ipAddress: string) {

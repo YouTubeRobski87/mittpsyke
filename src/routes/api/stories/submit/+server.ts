@@ -3,7 +3,11 @@ import { env } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 import { isAgeRange, isGender } from '$lib/data/anonymous-stories';
 import { createServiceClient, isMissingTableError } from '$lib/server/supabase-admin';
-import { hashStoryIp, isValidStoryLoadToken } from '$lib/server/anonymous-stories';
+import {
+	hasValidStoryRateLimitSalt,
+	hashStoryIp,
+	isValidStoryLoadToken
+} from '$lib/server/anonymous-stories';
 import type { RequestHandler } from './$types';
 
 const MIN_CONTENT_LENGTH = 50;
@@ -94,6 +98,10 @@ export const POST: RequestHandler = async (event) => {
 
 	if (honeypot) {
 		return json({ message: THANK_YOU_MESSAGE });
+	}
+
+	if (!hasValidStoryRateLimitSalt()) {
+		return json({ message: 'Berättelsen kunde inte tas emot just nu.' }, { status: 500 });
 	}
 
 	if (
