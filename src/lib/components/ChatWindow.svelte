@@ -876,17 +876,21 @@
 		} = await supabase.auth.getSession();
 
 		if (session) {
-			// localStorage och user_metadata skrivs kvar för äldre ytor, men är
-			// inte auktorisation för AI-anropet.
-			const consent = grantSensitiveConsent();
-			void persistUserConsent(consent);
-
 			const response = await fetch('/api/consent/chat-ai', {
 				method: 'POST',
 				headers: { Authorization: `Bearer ${session.access_token}` }
 			});
 
 			hasSensitiveDataConsent = response.ok;
+
+			// localStorage och user_metadata skrivs kvar för äldre ytor
+			// (analys, framsteg, insikter, incheckningen), men är inte
+			// auktorisation för AI-anropet. Skrivs först när servern beviljat,
+			// så en avvisad begäran aldrig lämnar en lokal post efter sig.
+			if (response.ok) {
+				const consent = grantSensitiveConsent();
+				void persistUserConsent(consent);
+			}
 			return;
 		}
 
@@ -894,6 +898,11 @@
 		// betraktas samtycket som aktivt - ingen lokal genväg.
 		const response = await fetch('/api/consent/chat-ai/anonymous', { method: 'POST' });
 		hasSensitiveDataConsent = response.ok;
+
+		// Gästens lokala post skrevs tidigare av helskärmsrutan på /chat. Den är
+		// borta, så den skrivs här i stället - annars skulle en gäst som
+		// samtyckt i chatten tillfrågas igen på de äldre ytorna.
+		if (response.ok) grantSensitiveConsent();
 	}
 
 	/**
@@ -1025,13 +1034,25 @@
 		</div>
 	{/if}
 
-	<div class="chat-input-area border-t border-black/8 dark:border-white/10 px-3 pt-2 pb-3">
+	<!-- Innan samtycket finns inga meddelanden att visa, så inmatningsytan får
+	     ta merparten av mobilviewporten. Annars hamnar kryssrutan och knappen
+	     under vecket i den inre skrollrutan på små skärmar (320px). -->
+	<div
+		class="chat-input-area border-t border-black/8 dark:border-white/10 px-3 pt-2 pb-3"
+		class:chat-input-area--consent={!hasSensitiveDataConsent}
+	>
 		<div class="chat-input-extras">
 		{#if !hasSensitiveDataConsent}
 			<div class="mb-3">
 				<ConsentGate
+					title="Innan du börjar chatta"
 					dataLabel="Meddelanden du väljer att skicka i chatten"
 					serviceLabel="MittPsyke och OpenAI för att skapa ett svar"
+					requireExplicitConfirmation
+					confirmationLabel="Jag samtycker uttryckligen till att MittPsyke och OpenAI behandlar meddelanden jag väljer att skicka i chatten för att kunna ge ett svar här."
+					showEmergencyGuidance
+					showDataflowDetails
+					acceptLabel="Jag samtycker och vill fortsätta"
 					onAccept={acceptSensitiveConsent}
 				/>
 			</div>
@@ -1815,6 +1836,10 @@
 			max-height: min(48dvh, 25rem);
 			overflow: hidden;
 			padding: 0.4rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom));
+		}
+
+		.chat-input-area--consent {
+			max-height: min(82dvh, 42rem);
 		}
 
 		.chat-input-extras {

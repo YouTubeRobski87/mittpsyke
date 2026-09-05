@@ -8,6 +8,7 @@ const entry = read('./+page.svelte');
 const categoryRoute = read('./[category]/+page.svelte');
 const chatPage = read('../../lib/components/ChatPage.svelte');
 const chatWindow = read('../../lib/components/ChatWindow.svelte');
+const consentGate = read('../../lib/components/ConsentGate.svelte');
 const layout = read('../+layout.svelte');
 
 describe('direkt ingång till den befintliga chatten', () => {
@@ -52,13 +53,66 @@ describe('direkt ingång till den befintliga chatten', () => {
 		expect(chatPage).toContain('initialConversationId={initialConversationId}');
 	});
 
-	it('behåller befintliga samtyckesgrindar och mikrofonens autosändning', () => {
-		expect(chatPage).toMatch(/\{#if !hasConsent\}\s*<HealthConsent/);
+	it('behåller samtyckesgrinden och mikrofonens autosändning', () => {
 		expect(chatWindow).toContain('<ConsentGate');
 		expect(chatWindow).toContain("payload.status === 'granted'");
 		expect(chatWindow).toContain('<VoiceInput');
 		expect(chatWindow).toContain('autoSend={autoSendVoice}');
 		expect(chatWindow).toContain('if (!hasSensitiveDataConsent)');
+	});
+
+	it('har exakt ett samtyckesbeslut, och det är det serververifierade', () => {
+		// Helskärmsrutan framför chatten är borta. Kvar finns ConsentGate inne i
+		// ChatWindow, och den enda vägen till hasSensitiveDataConsent = true går
+		// via ett OK-svar från servern.
+		expect(chatPage).not.toContain('HealthConsent');
+		expect(chatPage).not.toContain('hasConsent');
+		expect(chatWindow.match(/<ConsentGate\b/g)).toHaveLength(1);
+
+		for (const match of chatWindow.matchAll(/hasSensitiveDataConsent = (.+);/g)) {
+			expect(['$state(false)', 'false', 'response.ok', "payload.status === 'granted'"]).toContain(
+				match[1]
+			);
+		}
+	});
+
+	it('kräver fortfarande en aktiv kryssruta innan samtycket kan lämnas', () => {
+		expect(chatWindow).toContain('requireExplicitConfirmation');
+		expect(chatWindow).toContain('Jag samtycker uttryckligen till att MittPsyke och OpenAI behandlar');
+		expect(consentGate).toContain('bind:checked={confirmed}');
+		expect(consentGate).toContain('disabled={submitting || !canAccept}');
+		// Utan flaggan beter sig grinden som förut för de andra ytorna.
+		expect(consentGate).toContain('requireExplicitConfirmation = false');
+		expect(consentGate).toContain('if (submitting || !canAccept) return;');
+	});
+
+	it('ger samtyckesrutan plats på små skärmar och håller handlingen synlig', () => {
+		// Utan detta hamnade kryssrutan och knappen under vecket i den inre
+		// skrollrutan på 320px, eftersom rutan blev högre när den tog över
+		// innehållet från helskärmsrutan.
+		expect(chatWindow).toContain('class:chat-input-area--consent={!hasSensitiveDataConsent}');
+		expect(chatWindow).toContain('.chat-input-area--consent {');
+		expect(consentGate).toContain('.consent-actions {');
+		expect(consentGate).toContain('position: sticky;');
+		// Kryssruta och knapp måste ligga i samma fastklistrade block.
+		const actions = consentGate.slice(
+			consentGate.indexOf('<div class="consent-actions">'),
+			consentGate.indexOf('<style>')
+		);
+		expect(actions).toContain('type="checkbox"');
+		expect(actions).toContain('<button');
+	});
+
+	it('skriver den lokala samtyckesposten för både gäst och inloggad, men bara efter serverns ja', () => {
+		const accept = chatWindow.slice(
+			chatWindow.indexOf('async function acceptSensitiveConsent()'),
+			chatWindow.indexOf('function requireConsentAgain()')
+		);
+
+		expect(accept.match(/grantSensitiveConsent\(\)/g)).toHaveLength(2);
+		expect(accept).toContain('if (response.ok) grantSensitiveConsent();');
+		// grantSensitiveConsent får aldrig ligga före fetch-anropet i någon gren.
+		expect(accept.indexOf('grantSensitiveConsent()')).toBeGreaterThan(accept.indexOf('fetch('));
 	});
 
 	it('låter portalkortens CTA gå direkt till beskrivande chattrutter', () => {

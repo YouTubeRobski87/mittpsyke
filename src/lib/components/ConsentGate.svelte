@@ -117,29 +117,52 @@
 		</details>
 	{/if}
 
-	{#if requireExplicitConfirmation}
-		<label class="consent-check mt-3 flex items-start gap-2 text-sm leading-relaxed">
-			<input type="checkbox" class="mt-1" bind:checked={confirmed} />
-			<span>{confirmationLabel || 'Jag samtycker uttryckligen till behandlingen av känsliga uppgifter här.'}</span>
-		</label>
-	{/if}
-
-	<div class="mt-3">
-		<button
-			type="button"
-			class="rounded-[var(--radius-input)] bg-[var(--primary)] px-3 py-2 text-sm font-medium text-white hover:opacity-95 transition-opacity cursor-pointer disabled:cursor-not-allowed disabled:opacity-55"
-			onclick={() => void handleAccept()}
-			disabled={submitting || !canAccept}
-		>
-			{submitting ? 'Sparar...' : acceptLabel}
-		</button>
-		{#if errorMessage}
-			<p class="mt-2 text-sm text-[var(--error-foreground)]" role="alert">{errorMessage}</p>
+	<!-- Kryssrutan och knappen hålls ihop och klistras mot botten. På en liten
+		 skärm är rutan högre än sin skrollbehållare, och då måste själva
+		 handlingen synas hela tiden - inte hamna under vecket i en inre skroll. -->
+	<div class="consent-actions">
+		{#if requireExplicitConfirmation}
+			<label class="consent-check flex items-start gap-2 pt-3 text-sm leading-relaxed">
+				<input type="checkbox" class="mt-1" bind:checked={confirmed} />
+				<span>{confirmationLabel || 'Jag samtycker uttryckligen till behandlingen av känsliga uppgifter här.'}</span>
+			</label>
 		{/if}
+
+		<div class="pt-3 pb-1">
+			<button
+				type="button"
+				class="rounded-[var(--radius-input)] bg-[var(--primary)] px-3 py-2 text-sm font-medium text-white hover:opacity-95 transition-opacity cursor-pointer disabled:cursor-not-allowed disabled:opacity-55"
+				onclick={() => void handleAccept()}
+				disabled={submitting || !canAccept}
+			>
+				{submitting ? 'Sparar...' : acceptLabel}
+			</button>
+			{#if errorMessage}
+				<p class="mt-2 text-sm text-[var(--error-foreground)]" role="alert">{errorMessage}</p>
+			{/if}
+		</div>
 	</div>
 </div>
 
 <style>
+	/* Ogenomskinlig bakgrund i samma ton som rutan (sidbakgrund + rutans egen
+	   2%-slöja) så texten som skrollar under inte syns igenom. Utan
+	   skrollbehållare beter sig sticky som statisk, så de andra ytorna som
+	   använder grinden är oförändrade. */
+	.consent-actions {
+		position: sticky;
+		bottom: 0;
+		background:
+			linear-gradient(rgb(0 0 0 / 0.02), rgb(0 0 0 / 0.02)),
+			var(--color-bg, #fff);
+	}
+
+	:global(.dark) .consent-actions {
+		background:
+			linear-gradient(rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.04)),
+			var(--color-bg, #111827);
+	}
+
 	.consent-dataflow {
 		display: grid;
 		gap: 0.35rem;
