@@ -46,18 +46,29 @@ describe('Mitt Hem som navigationsnav', () => {
 	});
 
 	it('behåller stugscenen och en avgränsad, touchvänlig och fokuserbar hotspot', () => {
-		expect(dashboardSource).toContain("const DASHBOARD_HERO_IMAGE = '/images/scenes/dashboard-cabin-close.webp'");
+		expect(dashboardSource).toContain(
+			"const DASHBOARD_HERO_IMAGE = '/images/scenes/dashboard-cabin-view-clean.webp'"
+		);
+		for (const asset of [
+			'dashboard-cabin-view-clean-800.webp 800w',
+			'dashboard-cabin-view-clean-1200.webp 1200w',
+			'dashboard-cabin-view-clean.webp 1672w'
+		]) {
+			expect(dashboardSource).toContain(asset);
+		}
 		const cabinRule = dashboardSource.slice(
 			dashboardSource.indexOf('.cabin-entrance {'),
 			dashboardSource.indexOf('}', dashboardSource.indexOf('.cabin-entrance {'))
 		);
-		expect(cabinRule).toContain('left: 8%');
-		expect(cabinRule).toContain('top: 37%');
-		expect(cabinRule).toContain('width: 23%');
-		expect(cabinRule).toContain('height: 39%');
+		expect(cabinRule).toContain('left: 10%');
+		expect(cabinRule).toContain('top: 16%');
+		expect(cabinRule).toContain('width: 20%');
+		expect(cabinRule).toContain('height: 58%');
 		expect(cabinRule).toContain('min-width: 44px');
 		expect(cabinRule).toContain('min-height: 44px');
 		expect(dashboardSource).toContain('.cabin-entrance:focus-visible');
+		expect(heroPanel).toContain('<CompanionPose');
+		expect(heroPanel).toContain('<AmbientWorld');
 	});
 
 	it('har en enda innehållsnära dashboardväg till Framsteg', () => {

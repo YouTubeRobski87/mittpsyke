@@ -58,13 +58,14 @@
 
   const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
-  // Egen närbild av samma plats som Framsteg. Bilden innehåller inga djur;
-  // CompanionPose är alltid det enda lagret som visar följeslagaren.
-  const DASHBOARD_HERO_IMAGE = '/images/scenes/dashboard-cabin-close.webp';
+  // Den rena scenvarianten behåller det nya stugperspektivet utan det djur som
+  // fanns inbakat i originalet. CompanionPose är fortfarande det enda lagret
+  // som visar användarens valda följeslagare.
+  const DASHBOARD_HERO_IMAGE = '/images/scenes/dashboard-cabin-view-clean.webp';
   const DASHBOARD_HERO_SRCSET = [
-    '/images/scenes/dashboard-cabin-close-800.webp 800w',
-    '/images/scenes/dashboard-cabin-close-1200.webp 1200w',
-    '/images/scenes/dashboard-cabin-close.webp 1915w'
+    '/images/scenes/dashboard-cabin-view-clean-800.webp 800w',
+    '/images/scenes/dashboard-cabin-view-clean-1200.webp 1200w',
+    '/images/scenes/dashboard-cabin-view-clean.webp 1672w'
   ].join(', ');
 
   type DashboardData = {
@@ -318,17 +319,17 @@
         <!-- width/height ger webbläsaren bildens proportioner innan den laddats,
              så hjältekortet inte hoppar till. fetchpriority="high" eftersom det
              här är sidans LCP-element. -->
-        <!-- Mitt Hem har en sidokolumn på desktop; hero-rutan är då som mest 984 px
-             bred. Det egna sizes-värdet hindrar att 800w förstoras till desktopbredd. -->
+        <!-- Mitt Hem-scenen spänner hela innehållsbredden på stor desktop. Det
+             egna sizes-värdet hindrar att 800w förstoras där. -->
         <img
           class="companion-hero-scene"
           srcset={DASHBOARD_HERO_SRCSET}
-          sizes="(max-width: 620px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1440px) calc(100vw - 360px), 984px"
+          sizes="(max-width: 620px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1440px) calc(100vw - 320px), 1120px"
           src={companionHeroImage}
           alt=""
           aria-hidden="true"
-          width="1915"
-          height="821"
+          width="1672"
+          height="941"
           fetchpriority="high"
           decoding="async"
         />
@@ -563,16 +564,15 @@
     min-width: 0;
   }
 
-  /* Bred desktopgrid. Världen tar två av tre kolumnspår, nulägespanelen det
-     tredje. Raden under återanvänder exakt samma spår, så de två jämnstora
-     korten linjerar med världen och utforska-panelen med nuläget. Tidigare låg
-     allt i en enda kolumn med width: min(100%, 44rem) - det var den kapningen,
-     inte sidmarginalerna, som gjorde högra tredjedelen tom. */
+  /* På stor desktop får platsen en egen bred rad. Nuläge och incheckning
+     behåller två spår under den, medan Utforska vidare ligger kvar som lugn
+     sidokolumn. */
   .dashboard-body {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.95fr);
     grid-template-areas:
-      'hero    hero   now'
+      'hero    hero   hero'
+      'now     now    explore'
       'checkin checkin explore';
     gap: clamp(0.9rem, 1.4vw, 1.375rem);
     align-items: stretch;
@@ -582,23 +582,26 @@
      ovan rörs aldrig, så resten av tiden ser rutnätet ut precis som förut. */
   .dashboard-body.has-daily {
     grid-template-areas:
-      'hero    hero   now'
+      'hero    hero   hero'
       'daily   daily  daily'
+      'now     now    explore'
       'checkin checkin explore';
   }
 
   .dashboard-body.has-account-teaser {
     grid-template-areas:
-      'hero    hero   now'
+      'hero    hero   hero'
       'teaser  teaser teaser'
+      'now     now    explore'
       'checkin checkin explore';
   }
 
   .dashboard-body.has-account-teaser.has-daily {
     grid-template-areas:
-      'hero    hero   now'
+      'hero    hero   hero'
       'teaser  teaser teaser'
       'daily   daily  daily'
+      'now     now    explore'
       'checkin checkin explore';
   }
 
@@ -684,8 +687,8 @@
     --scene-companion: 3;
     --scene-foreground: 4;
     --scene-overlay: 5;
-    min-height: 320px;
-    height: clamp(320px, 26vw, 400px);
+    min-height: 420px;
+    height: clamp(420px, 32vw, 520px);
     overflow: hidden;
     border-radius: var(--mp-radius);
     box-shadow: var(--mp-shadow);
@@ -745,8 +748,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* Stugan är motivet i närbilden; följeslagaren är ett separat lager. */
-    object-position: 50% 60%;
+    /* Verandan, sjön och personen ryms samtidigt; följeslagaren är separat. */
+    object-position: 50% 52%;
     display: block;
     z-index: var(--scene-background);
   }
@@ -756,10 +759,10 @@
   .cabin-entrance {
     position: absolute;
     z-index: calc(var(--scene-overlay) + 1);
-    left: 8%;
-    top: 37%;
-    width: 23%;
-    height: 39%;
+    left: 10%;
+    top: 16%;
+    width: 20%;
+    height: 58%;
     min-width: 44px;
     min-height: 44px;
     border-radius: 12px;
@@ -858,7 +861,7 @@
   }
 
   /* Stugan hålls ljus och öppen till vänster. En lågmäld toning över sjön till
-     höger ger det befintliga textblocket lugn kontrast utan att täcka huset. */
+     höger ger textblocket lugn kontrast utan att täcka verandan. */
   .companion-hero::after {
     content: '';
     position: absolute;
@@ -905,7 +908,8 @@
 
   .hero-copy h2 {
     margin: 0;
-    color: var(--mp-text);
+    color: #fffaf1;
+    text-shadow: 0 2px 12px rgb(8 14 22 / 0.42);
     font-size: clamp(1.4rem, 2.2vw, 1.9rem);
     line-height: 1.12;
     letter-spacing: -0.01em;
@@ -919,7 +923,8 @@
 
   .hero-copy > p {
     margin: 0.45rem 0 0.85rem;
-    color: var(--mp-text-dim);
+    color: rgb(255 250 241 / 0.86);
+    text-shadow: 0 1px 8px rgb(8 14 22 / 0.46);
     font-size: 0.98rem;
     line-height: 1.5;
   }
@@ -930,8 +935,9 @@
     gap: 0.35rem 0.6rem;
     padding: 0.7rem 0.8rem;
     border-radius: 12px;
-    border: 1px solid rgba(49, 71, 58, 0.16);
-    background: rgba(255, 253, 248, 0.9);
+    border: 1px solid rgb(255 247 230 / 0.18);
+    background: rgb(20 29 37 / 0.72);
+    backdrop-filter: blur(7px);
     box-shadow: 0 8px 22px rgba(10, 25, 45, 0.14);
   }
 
@@ -941,8 +947,8 @@
     width: 1.9rem;
     height: 1.9rem;
     border-radius: 8px;
-    color: #4f7d54;
-    background: rgba(120, 174, 110, 0.2);
+    color: #d6eccf;
+    background: rgb(120 174 110 / 0.24);
   }
 
   .hero-companion-text {
@@ -952,12 +958,12 @@
   }
 
   .hero-companion-text strong {
-    color: #31473a;
+    color: #fffaf1;
     font-size: 0.92rem;
   }
 
   .hero-companion-text small {
-    color: #5f6f64;
+    color: rgb(255 250 241 / 0.76);
     font-size: 0.84rem;
     line-height: 1.35;
   }
@@ -1422,6 +1428,11 @@
         'now     explore'
         'checkin explore';
     }
+
+    .companion-hero {
+      min-height: 320px;
+      height: clamp(320px, 34vw, 400px);
+    }
   }
 
   @media (max-width: 980px) {
@@ -1463,8 +1474,8 @@
      layoutbytet, inte mitt i mobilområdet. */
   @media (min-width: 700px) and (max-width: 1023px) {
     .companion-hero {
-      height: clamp(260px, 36vw, 330px);
-      min-height: 260px;
+      height: clamp(300px, 42vw, 360px);
+      min-height: 300px;
     }
   }
 
@@ -1548,14 +1559,14 @@
 
     /* Vänsterförankringen bevarar stuga, dörr och veranda i mobil-cropen. */
     .companion-hero-scene {
-      object-position: 0% 60%;
+      object-position: 8% 52%;
     }
 
     .cabin-entrance {
-      left: 5%;
-      top: 35%;
-      width: 27%;
-      height: 42%;
+      left: 3%;
+      top: 16%;
+      width: 29%;
+      height: 58%;
     }
 
     /* Följeslagaren stannar vid huset till vänster, medan copy behåller den
