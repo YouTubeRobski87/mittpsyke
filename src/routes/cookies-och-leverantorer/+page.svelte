@@ -84,7 +84,7 @@
 		<section class="provider-card" aria-label="OpenAI">
 			<h3 class="text-base font-semibold mt-0 mb-2">OpenAI</h3>
 			<p>AI-funktioner som chatt, reflektioner och vissa dagboksrelaterade svar.</p>
-			<p>Kan behandla text du skickar till AI-funktioner. Villkor för leverantörens hantering av API-data behöver bekräftas i aktuellt leverantörsavtal.</p>
+			<p>Kan behandla text du skickar till AI-funktioner. Hur länge OpenAI behåller den texten styrs av OpenAI:s egna villkor för deras API.</p>
 		</section>
 		<section class="provider-card" aria-label="Anthropic">
 			<h3 class="text-base font-semibold mt-0 mb-2">Anthropic</h3>

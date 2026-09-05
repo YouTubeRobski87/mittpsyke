@@ -35,10 +35,14 @@ markdown-artikel, och `src/routes/blogg/blog-index.test.ts` kör den riktiga
 
 ### Core Data Flow
 
-**Chat** (`src/routes/api/chat/+server.ts` — ~880 lines):
+**Chat** (`src/routes/api/chat/+server.ts` — ~810 lines):
 - Crisis detection (regex, 20+ Swedish/Norwegian patterns) runs first; returns hotline response immediately without calling OpenAI
 - Authenticated users → `conversations` + `messages` tables
-- Guests → `guest_conversations` + `guest_messages` tables (via Supabase service role)
+- Guests → ingen serverlagring alls. Gästsvar returneras med `conversationId: null` och samtalet
+  finns bara i den öppna chattvyn. Samtycket är en HMAC-signerad HttpOnly-cookie
+  (`src/lib/server/anonymous-chat-consent.ts`), inte en klientheader. Tabellerna
+  `guest_conversations`/`guest_messages` finns kvar för äldre rader och töms av
+  `/api/cron/guest-cleanup` (24h), men skrivs inte längre av chatten
 - Loads last 20 messages as context; max message length 2000 chars
 
 **Diary** (`src/routes/api/diary/`): CRUD + analytics endpoints (heatmap, streak, mood timeline, AI insights). All tables use Supabase RLS — users access only their own rows.

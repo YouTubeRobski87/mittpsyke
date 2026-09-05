@@ -19,6 +19,16 @@ describe('dataflowCopy', () => {
 	it('separates account storage, saved diary AI actions, and provider retention', () => {
 		expect(dataflowCopy.accountChat.storage).toContain('Supabase');
 		expect(dataflowCopy.savedDiary.aiTransfer).toContain('aktivt');
-		expect(dataflowCopy.providerRetention).toContain('ingen separat retentionstid');
+		expect(dataflowCopy.providerRetention).toContain('ingen egen lagringstid');
+	});
+
+	// Publika sidor ska beskriva vad som händer med användarens text, inte hur
+	// kodbasen är granskad. Intern revisionsjargong har läckt ut hit förut.
+	it('keeps internal audit language out of user-facing copy', () => {
+		for (const value of Object.values(dataflowCopy).flatMap((entry) =>
+			typeof entry === 'string' ? [entry] : Object.values(entry)
+		)) {
+			expect(value).not.toMatch(/programkod|kodbas|ZDR|MAM|behöver bekräftas/i);
+		}
 	});
 });

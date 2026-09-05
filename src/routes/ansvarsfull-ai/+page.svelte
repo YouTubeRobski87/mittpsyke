@@ -2,6 +2,7 @@
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -73,8 +74,9 @@
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Data i AI-samtal</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		Konton har egna, skyddade samtal. Om du använder chatten utan att logga in sparas samtalet
-		separat som ett gästsamtal. I båda fallen gäller samma princip: dina samtal är inte offentliga
+		Konton har egna, skyddade samtal. {dataflowCopy.accountChat.storage}
+		Använder du chatten utan att logga in ser det annorlunda ut: {dataflowCopy.guestChat.retention}
+		I båda fallen gäller samma princip: dina samtal är inte offentliga
 		och delas inte som träningsdata för andra syften. Fullständig information om vilka uppgifter som
 		sparas och varför finns i
 		<a href="/integritet" class="underline hover:no-underline">integritetspolicyn</a>.

@@ -99,8 +99,13 @@
 		<li><strong>AI-funktioner</strong> — innan du skickar ett chattmeddelande eller aktivt använder AI på sparad dagbokstext ber vi om samtycke till den behandlingen (artikel 9 GDPR). Att skriva ett anonymt, lokalt dagboksutkast startar inte AI-behandling.</li>
 	</ul>
 	<p class="opacity-80 leading-relaxed mb-3">
-		Du kan <strong>när som helst återkalla</strong> samtycke för anonym chatt genom att rensa cookies. För
-		kontoanslutna AI-funktioner kan du kontakta oss.
+		Du kan <strong>när som helst återkalla</strong> ett samtycke. Samtycket för anonym chatt ligger i en
+		kaka som upphör av sig själv inom ett dygn, och försvinner direkt om du rensar webbläsarens kakor.
+		Är du inloggad återkallar du i stället i
+		<a href="/dashboard/installningar" class="underline hover:no-underline">kontoinställningarna</a>,
+		där du var för sig kan dra tillbaka samtycket för känsliga uppgifter, dagbokens AI-reflektioner,
+		Dagens fråga och Storify. Återkallar du samtycket för känsliga uppgifter stängs även AI-chatten
+		tills du lämnar ett nytt samtycke.
 	</p>
 
 	<!-- VILKA UPPGIFTER -->
@@ -120,8 +125,9 @@
 			Innehåll som du väljer att skicka i chatt eller använda i en AI-funktion kan röra psykisk hälsa och betraktas som
 			<strong>känsliga personuppgifter</strong> enligt GDPR artikel 9. I tjänstens UI ber MittPsyke om ditt
 			<strong>uttryckliga samtycke</strong> innan den relevanta AI-funktionen startar. Du kan när som helst
-			återkalla samtycket genom att radera ditt konto eller
-			kontakta oss.
+			återkalla samtycket i
+			<a href="/dashboard/installningar" class="underline hover:no-underline">kontoinställningarna</a>,
+			genom att radera ditt konto eller genom att kontakta oss.
 		</p>
 	</section>
 
@@ -183,13 +189,13 @@
 					<td class="px-4 py-3">Google Analytics</td>
 					<td class="px-4 py-3">Se leverantörsavtal</td>
 					<td class="px-4 py-3">Samtycke</td>
-					<td class="px-4 py-3">Styrs av inställningen hos Google Analytics och behöver bekräftas i leverantörskontot</td>
+					<td class="px-4 py-3">Styrs av lagringstiden i Google Analytics</td>
 				</tr>
 				<tr>
 					<th scope="row" class="px-4 py-3 font-normal text-left">Cookie-fri webbstatistik</th>
 					<td class="px-4 py-3">Ahrefs Web Analytics</td>
 					<td class="px-4 py-3">Se leverantörsavtal</td>
-					<td class="px-4 py-3">Berättigat intresse</td>
+					<td class="px-4 py-3">Samtycke</td>
 					<td class="px-4 py-3">Aggregerad statistik</td>
 				</tr>
 			</tbody>
@@ -235,7 +241,7 @@
 		<li>Kontorelaterade uppgifter sparas så länge kontot är aktivt eller tills du begär radering.</li>
 		<li>{dataflowCopy.accountChat.storage} {dataflowCopy.accountChat.retention}</li>
 		<li>{dataflowCopy.savedDiary.storage}</li>
-		<li>Lagringstiden för tekniska loggar och säkerhetsuppgifter behöver bekräftas i aktuellt leverantörsavtal.</li>
+		<li>Tekniska loggar och säkerhetsuppgifter sparas hos driftleverantören enligt deras egna lagringstider.</li>
 		<li>{dataflowCopy.guestChat.retention}</li>
 		<li>När uppgifter inte längre behövs raderas eller anonymiseras de.</li>
 	</ul>
@@ -250,7 +256,8 @@
 		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll. Data lagras inom EU (Frankfurt).</li>
 		<li><strong>OpenAI:</strong> AI-funktioner som chatt och aktivt valda AI-funktioner för sparad dagbokstext. {dataflowCopy.providerRetention}</li>
 		<li><strong>Anthropic:</strong> den guidade dagboken och vissa sammanfattningar, efter ett funktionsspecifikt samtycke.</li>
-		<li><strong>Driftleverantör:</strong> uppgifter om aktiv hosting, tekniska loggar och eventuell tredjelandsöverföring behöver bekräftas i aktuellt leverantörsavtal.</li>
+		<li><strong>Driftleverantör:</strong> kör MittPsykes servrar och hanterar tekniska loggar som behövs för drift och säkerhet.</li>
+		<li><strong>Soro:</strong> levererar bloggartiklarna. Artiklarna hämtas normalt av MittPsykes server, men om de inte kan laddas den vägen hämtar din webbläsare dem direkt från Soro. Soro används inte för analys eller spårning.</li>
 		<li><strong>Ahrefs:</strong> cookie-fri webbstatistik om trafik och sidvisningar.</li>
 	</ul>
 

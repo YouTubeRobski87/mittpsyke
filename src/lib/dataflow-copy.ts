@@ -33,5 +33,5 @@ export const dataflowCopy = {
 			'Din sparade dagbokstext skickas till en namngiven AI-leverantör först när du aktivt använder en AI-funktion och har gett samtycke för den behandlingen.'
 	},
 	providerRetention:
-		'MittPsykes programkod anger ingen separat retentionstid eller ZDR/MAM-konfiguration för OpenAI. Aktuella villkor behöver bekräftas i leverantörsavtalet.'
+		'MittPsyke sätter ingen egen lagringstid hos OpenAI. Hur länge leverantören behåller det som skickas via deras API styrs av OpenAI:s egna villkor.'
 } as const;
