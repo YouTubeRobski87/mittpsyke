@@ -171,3 +171,49 @@ describe('underlagskortet', () => {
 		expect(emptyBranch).not.toMatch(/\{moodSamples\.length\}|\{entryCount\}/);
 	});
 });
+
+// Överblicken högst upp ska svara på "hur har den senaste veckan sett ut?" utan
+// AI, utan samtycke och utan periodval. Den ersätter inget - den gör bara den
+// frågan möjlig att besvara, eftersom kortaste periodval är 30 dagar.
+const weekBlock = route.slice(
+	route.indexOf('<section class="card week-summary-card"'),
+	route.indexOf('<section class="card recent-card"')
+);
+
+describe('veckoöverblicken', () => {
+	it('ligger före kurvan och analysen i dokumentordning', () => {
+		const week = route.indexOf('data-testid="week-summary"');
+		const chart = route.indexOf('data-testid="mood-history"');
+		const analysis = route.indexOf('data-testid="mood-analysis"');
+		expect(week).toBeGreaterThan(-1);
+		expect(chart).toBeGreaterThan(week);
+		expect(analysis).toBeGreaterThan(chart);
+	});
+
+	it('bygger texten i den testade modulen i stället för i markupen', () => {
+		expect(route).toContain("import { buildWeekSummary } from '$lib/progress-week-summary';");
+		expect(route).toContain('const weekSummary = $derived(buildWeekSummary(moodSamples));');
+		expect(weekBlock).toContain('{weekSummary.summary}');
+	});
+
+	it('visar jämförelsen bara när modulen lämnat en', () => {
+		expect(weekBlock).toContain('{#if weekSummary.comparisonText}');
+		expect(weekBlock).toContain('{:else if !weekSummary.insufficient}');
+		expect(weekBlock).toContain('Veckan innan har för få registreringar för en jämförelse.');
+	});
+
+	it('ligger utanför samtyckesgrinden så den finns även utan AI', () => {
+		expect(weekBlock).not.toContain('hasSensitiveDataConsent');
+		expect(weekBlock).not.toContain('progressAnalysis');
+		expect(weekBlock).not.toContain('insightsLoading');
+	});
+
+	it('färgkodar inte riktningen', () => {
+		expect(weekBlock).not.toMatch(/class:is-(higher|lower|positive|negative)/);
+		expect(weekBlock).not.toMatch(/data-direction=/);
+	});
+
+	it('är inte beroende av periodvalet', () => {
+		expect(weekBlock).not.toContain('selectedPeriod');
+	});
+});

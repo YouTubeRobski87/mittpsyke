@@ -89,6 +89,7 @@
 		buildMoodTimelineView,
 		EMPTY_MOOD_COPY
 	} from '$lib/progress-reflection';
+	import { buildWeekSummary } from '$lib/progress-week-summary';
 	import { buildHalfYearView } from '$lib/progress-half-year';
 	import {
 		EMPTY_SUPPORT_VIEW,
@@ -590,6 +591,9 @@
 	// Utan något sparat material har underlagskortet inget att redovisa. Att räkna
 	// upp nollor gör en tom sida till ett facit (docs/NORTH_STAR.md, "Ingen skuld").
 	const hasHistoryMaterial = $derived(moodSamples.length > 0 || entryCount > 0);
+	// Överblicken högst upp. Oberoende av periodvalet: den svarar alltid på den
+	// senaste veckan, som annars inte hade någon yta alls på sidan.
+	const weekSummary = $derived(buildWeekSummary(moodSamples));
 	const progressAnalysis = $derived(loadedInsightsData?.analysis ?? null);
 	// Servern har redan sorterat och begränsat listan. De här två vyerna delar
 	// därför samma data utan någon egen klientrangordning.
@@ -1337,6 +1341,25 @@
 					</section>
 	<div class="framsteg-layout framsteg-layout-v2">
 		<div class="framsteg-main">
+			<!-- Överblicken ligger först: den ska gå att läsa på några sekunder och
+			     svarar på "hur har den senaste tiden sett ut?". Kurvan och analysen
+			     under är fördjupningen. Inget här är beroende av AI eller samtycke -
+			     det räknas fram ur humörvärden som redan är hämtade. -->
+			<section class="card week-summary-card" aria-labelledby="week-summary-heading" data-testid="week-summary">
+				<div class="card-header">
+					<div class="icon-badge heat"><Calendar size={24} /></div>
+					<h2 id="week-summary-heading">Den senaste veckan</h2>
+				</div>
+				<p class="week-summary-lead">{weekSummary.summary}</p>
+				{#if weekSummary.comparisonText}
+					<p class="week-summary-comparison">{weekSummary.comparisonText}</p>
+				{:else if !weekSummary.insufficient}
+					<p class="week-summary-note">
+						Veckan innan har för få registreringar för en jämförelse.
+					</p>
+				{/if}
+			</section>
+
 			<section class="card recent-card" aria-labelledby="mood-history-heading" data-testid="mood-history">
 				<div class="card-header">
 					<div class="icon-badge heat"><TrendingUp size={24} /></div>
@@ -2010,6 +2033,26 @@
 	   ligga lågt i hierarkin - inte som ännu ett påstående om måendet. */
 	.history-missing-note {
 		color: hsl(var(--muted-foreground));
+	}
+
+	/* Överblicken är sidans första innehållskort. Den får lite mer tyngd i
+	   ingressen än övriga kort, men ingen egen färgkodning - riktningen ska
+	   bäras av texten, inte av grönt eller rött (uppdragets Del 31). */
+	.week-summary-lead {
+		margin: 0;
+		font-size: 1.02rem;
+		line-height: 1.6;
+	}
+
+	.week-summary-comparison {
+		margin: 0.55rem 0 0;
+		line-height: 1.6;
+	}
+
+	.week-summary-note {
+		margin: 0.55rem 0 0;
+		color: hsl(var(--muted-foreground));
+		line-height: 1.5;
 	}
 
 	.half-year-reflection {

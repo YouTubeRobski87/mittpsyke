@@ -10,6 +10,7 @@ import {
 	type PeriodDays,
 	type ThemeLike
 } from '$lib/progress-recent-period';
+import { shiftDateKey, stockholmTodayKey } from '$lib/stockholm-date';
 
 export type MoodTimelineView = {
 	points: ChartPoint[];
@@ -36,7 +37,6 @@ export type RecentComparison = {
 	evidence: string;
 };
 
-const DAY_MS = 24 * 60 * 60 * 1000;
 const COMPARISON_DAYS = 14;
 const MIN_SAMPLES_PER_PERIOD = 4;
 const MOOD_CHANGE_THRESHOLD = 0.75;
@@ -62,6 +62,29 @@ function dateKey(date: Date): string {
 	const month = String(date.getMonth() + 1).padStart(2, '0');
 	const day = String(date.getDate()).padStart(2, '0');
 	return `${year}-${month}-${day}`;
+}
+
+/**
+ * Två lika långa, kant-i-kant-fönster räknade i Stockholms kalender.
+ *
+ * Gränserna räknades tidigare som `now.getTime() - n * DAY_MS` och formaterades
+ * med webbläsarens lokala datum. Det gav två fel:
+ *
+ * 1. Ett dygn är inte alltid 24 timmar. Vid sommar- och vintertidsskiftet är
+ *    dygnet 23 respektive 25 timmar, så n * DAY_MS landar på fel kalenderdag
+ *    och fönstret blir en dag för långt eller för kort.
+ * 2. `sample.date` är alltid ett Stockholmsdatum från servern. Räknades
+ *    gränserna i besökarens egen tidszon jämfördes två olika kalendrar, vilket
+ *    flyttar en registrering till fel fönster för den som är utomlands.
+ *
+ * `shiftDateKey` flyttar kalenderdatum, inte millisekunder, och är därför
+ * immun mot båda.
+ */
+function adjacentWindows(windowDays: number, now: Date) {
+	const end = stockholmTodayKey(now);
+	const recentStart = shiftDateKey(end, -(windowDays - 1));
+	const previousStart = shiftDateKey(recentStart, -windowDays);
+	return { end, recentStart, previousStart };
 }
 
 function average(samples: MoodSample[]): number {
@@ -94,9 +117,7 @@ export function buildRecentComparison(
 	samples: MoodSample[],
 	now: Date = new Date()
 ): RecentComparison | null {
-	const end = dateKey(now);
-	const recentStart = dateKey(new Date(now.getTime() - (COMPARISON_DAYS - 1) * DAY_MS));
-	const previousStart = dateKey(new Date(now.getTime() - (COMPARISON_DAYS * 2 - 1) * DAY_MS));
+	const { end, recentStart, previousStart } = adjacentWindows(COMPARISON_DAYS, now);
 	const recent = samples.filter((sample) => sample.date >= recentStart && sample.date <= end);
 	const previous = samples.filter((sample) => sample.date >= previousStart && sample.date < recentStart);
 	if (recent.length < MIN_SAMPLES_PER_PERIOD || previous.length < MIN_SAMPLES_PER_PERIOD) return null;
@@ -140,6 +161,19 @@ function buildOverallObservation(samples: MoodSample[]): string {
 	return `Snittet är ${mean} av 10, med registreringar mellan ${low} och ${high}.`;
 }
 
+/**
+ * Delningspunkten räknas medvetet vidare från `getPeriodStartKey`, inte ur
+ * Stockholmskalendern som fönstren ovan.
+ *
+ * Skälet är att urvalet den delar redan har filtrerats av `filterByPeriod` i
+ * samma modul som `getPeriodStartKey`. Skulle delningen räknas i en annan
+ * kalender än filtreringen kunde en registrering hamna i perioden men utanför
+ * båda halvorna. Den här funktionen är dessutom redan skiftsäker: ankaret ligger
+ * på klockan 12 och `setDate` flyttar kalenderdagar, inte millisekunder.
+ *
+ * `getPeriodStartKey` och `toDateKey` i progress-recent-period har kvar samma
+ * lokala-tid-beräkning som fönstren nedan hade. Det är ett eget, avgränsat pass.
+ */
 function splitPeriodHalves(samples: MoodSample[], periodDays: PeriodDays, now: Date) {
 	const start = new Date(`${getPeriodStartKey(periodDays, now)}T12:00:00`);
 	start.setDate(start.getDate() + Math.ceil(periodDays / 2));
@@ -208,9 +242,7 @@ function buildLatestObservation(samples: MoodSample[]): string | null {
 
 function buildRecentWindowObservation(samples: MoodSample[], periodDays: PeriodDays, now: Date): string | null {
 	if (periodDays < 90) return null;
-	const end = dateKey(now);
-	const recentStart = dateKey(new Date(now.getTime() - (RECENT_WINDOW_DAYS - 1) * DAY_MS));
-	const previousStart = dateKey(new Date(now.getTime() - (RECENT_WINDOW_DAYS * 2 - 1) * DAY_MS));
+	const { end, recentStart, previousStart } = adjacentWindows(RECENT_WINDOW_DAYS, now);
 	const recent = samples.filter((sample) => sample.date >= recentStart && sample.date <= end);
 	const previous = samples.filter((sample) => sample.date >= previousStart && sample.date < recentStart);
 	if (recent.length < MIN_SAMPLES_PER_PERIOD || previous.length < MIN_SAMPLES_PER_PERIOD) return null;
@@ -329,9 +361,7 @@ export function buildMoodChangeObservation(
 	samples: MoodSample[],
 	now: Date = new Date()
 ): ChangeObservation {
-	const end = dateKey(now);
-	const recentStart = dateKey(new Date(now.getTime() - (COMPARISON_DAYS - 1) * DAY_MS));
-	const previousStart = dateKey(new Date(now.getTime() - (COMPARISON_DAYS * 2 - 1) * DAY_MS));
+	const { end, recentStart, previousStart } = adjacentWindows(COMPARISON_DAYS, now);
 	const recent = samples.filter((sample) => sample.date >= recentStart && sample.date <= end);
 	const previous = samples.filter((sample) => sample.date >= previousStart && sample.date < recentStart);
 
