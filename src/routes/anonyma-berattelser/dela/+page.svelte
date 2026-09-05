@@ -55,7 +55,8 @@
 	<a class="back-link" href="/anonyma-berattelser">Till anonyma berättelser</a>
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Dela en anonym berättelse</h1>
 	<p class="intro">
-		Allt är helt anonymt. Vi sparar ingen IP, inget konto, ingen identifierare.
+		Du kan skicka in utan konto. För att begränsa spam sparar vi en hash av din IP-adress
+		tillsammans med berättelsen. Hashen kan koppla samman flera bidrag från samma IP-adress.
 		Berättelsen läses av vår AI och därefter manuellt innan publicering.
 	</p>
 
