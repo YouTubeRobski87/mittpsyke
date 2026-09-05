@@ -77,7 +77,6 @@
 	import RecentPeriodChart from '$lib/components/RecentPeriodChart.svelte';
 	import {
 		buildRecentPeriodView,
-		buildPeriodActivity,
 		buildHistoryActivity,
 		toMoodSamples,
 		CHART_FALLBACK_COPY,
@@ -587,8 +586,10 @@
 	const moodSamples = $derived(loadedMoodSamples);
 	const moodTimeline = $derived(buildMoodTimelineView(moodSamples, selectedPeriod));
 	const periodAnalysis = $derived(buildPeriodAnalysis(moodSamples, selectedPeriod));
-	const periodActivity = $derived(buildPeriodActivity(heatmapData, selectedPeriod));
 	const historyActivity = $derived(buildHistoryActivity(heatmapData, moodSamples, selectedPeriod));
+	// Utan något sparat material har underlagskortet inget att redovisa. Att räkna
+	// upp nollor gör en tom sida till ett facit (docs/NORTH_STAR.md, "Ingen skuld").
+	const hasHistoryMaterial = $derived(moodSamples.length > 0 || entryCount > 0);
 	const progressAnalysis = $derived(loadedInsightsData?.analysis ?? null);
 	// Servern har redan sorterat och begränsat listan. De här två vyerna delar
 	// därför samma data utan någon egen klientrangordning.
@@ -1619,13 +1620,32 @@
 			<section class="card garden-presence-card" aria-labelledby="garden-presence-heading">
 				<div class="card-header">
 					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
-					<h2 id="garden-presence-heading">Din historik</h2>
+					<h2 id="garden-presence-heading">Vad det här bygger på</h2>
 				</div>
-				<p class="reflection-copy">{moodSamples.length} {moodSamples.length === 1 ? 'måenderegistrering' : 'måenderegistreringar'} i tidslinjen.</p>
-				<p class="reflection-copy">{data.entryCount} {data.entryCount === 1 ? 'dagboksinlägg' : 'dagboksinlägg'}.</p>
-				<p class="reflection-copy">{historyActivity.activeDays} {historyActivity.activeDays === 1 ? 'aktiv dag' : 'aktiva dagar'} och {historyActivity.activeWeeks} {historyActivity.activeWeeks === 1 ? 'aktiv vecka' : 'aktiva veckor'} under den valda perioden.</p>
-				{#if periodActivity.longestActiveStreak >= 2}
-					<p class="reflection-copy">Längsta sammanhängande följd: {periodActivity.longestActiveStreak} dagar.</p>
+				<!-- Korten ovan säger vad som går att se. Det här säger hur mycket
+				     material observationerna vilar på, så att användaren kan väga dem
+				     själv. Det är underlag - inte ett resultat, och inte ett mått på
+				     hur mycket appen har använts (docs/NORTH_STAR.md, "Ingen skuld"). -->
+				{#if hasHistoryMaterial}
+					<p class="reflection-copy">
+						{moodSamples.length}
+						{moodSamples.length === 1 ? 'måenderegistrering' : 'måenderegistreringar'} i tidslinjen och
+						{entryCount}
+						{entryCount === 1 ? 'sparat dagboksinlägg' : 'sparade dagboksinlägg'} totalt.
+					</p>
+					<p class="reflection-copy">
+						Registreringarna i den valda perioden är spridda över {historyActivity.activeDays}
+						{historyActivity.activeDays === 1 ? 'dag' : 'dagar'} och {historyActivity.activeWeeks}
+						{historyActivity.activeWeeks === 1 ? 'vecka' : 'veckor'}.
+					</p>
+					<p class="reflection-copy history-missing-note">
+						Dagar utan registrering räknas som att det saknas data — inte som sämre mående.
+					</p>
+				{:else}
+					<p class="reflection-copy">
+						Här samlas underlaget som korten ovan vilar på. Det fylls på av det du själv väljer att
+						spara i dagboken.
+					</p>
 				{/if}
 			</section>
 		</div>
@@ -1984,6 +2004,12 @@
 		margin: 0;
 		color: hsl(var(--muted-foreground));
 		line-height: 1.5;
+	}
+
+	/* Saknad data är en förutsättning för att läsa korten rätt, men den ska
+	   ligga lågt i hierarkin - inte som ännu ett påstående om måendet. */
+	.history-missing-note {
+		color: hsl(var(--muted-foreground));
 	}
 
 	.half-year-reflection {

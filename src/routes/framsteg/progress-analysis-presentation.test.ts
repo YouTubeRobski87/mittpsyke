@@ -134,3 +134,40 @@ describe('periodens viktigaste insikt', () => {
 		expect(route).toContain('const primaryInsight = $derived(progressAnalysis?.insights[0] ?? null);');
 	});
 });
+
+// Underlagskortet låg tidigare som "Din historik" och redovisade antal inlägg,
+// aktiva dagar och en längsta sammanhängande följd. Det gjorde appanvändning
+// till sidans avslutande budskap. Kortet ska i stället säga vad observationerna
+// vilar på - och inte räkna upp nollor för den som ännu inte sparat något.
+const historyBlock = route.slice(
+	route.indexOf('<section class="card garden-presence-card"'),
+	route.indexOf('{#if false}')
+);
+
+describe('underlagskortet', () => {
+	it('ramar in talen som underlag i stället för historik', () => {
+		expect(historyBlock).toContain('Vad det här bygger på');
+		expect(historyBlock).not.toContain('Din historik');
+	});
+
+	it('redovisar ingen sammanhängande följd', () => {
+		expect(historyBlock).not.toContain('longestActiveStreak');
+		expect(historyBlock).not.toMatch(/sammanh[äa]ngande/i);
+	});
+
+	it('säger uttryckligen att saknad registrering inte är sämre mående', () => {
+		expect(historyBlock).toContain(
+			'Dagar utan registrering räknas som att det saknas data — inte som sämre mående.'
+		);
+	});
+
+	it('räknar inte upp nollor innan något sparats', () => {
+		expect(historyBlock).toContain('{#if hasHistoryMaterial}');
+		expect(route).toContain(
+			'const hasHistoryMaterial = $derived(moodSamples.length > 0 || entryCount > 0);'
+		);
+		const emptyBranch = historyBlock.slice(historyBlock.indexOf('{:else}'));
+		expect(emptyBranch).toContain('Här samlas underlaget som korten ovan vilar på.');
+		expect(emptyBranch).not.toMatch(/\{moodSamples\.length\}|\{entryCount\}/);
+	});
+});

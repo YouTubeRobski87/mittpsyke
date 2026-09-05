@@ -50,6 +50,21 @@ const STREAK_LABEL_ELEMENTS = [
 	'>dagar i följd<'
 ];
 
+/**
+ * Fritext som presenterar en obruten rad dagar. Etikettlistan ovan matchar bara
+ * exakta element och missade därför "Längsta sammanhängande följd: N dagar" i
+ * Framstegs historikkort, som låg kvar i renderad copy. Regexen fångar
+ * formuleringen oavsett hur den märks upp.
+ *
+ * Bara "sammanhängande/obruten rad" matchas här. Ett bredare mönster på
+ * "dagar i rad" hade träffat sanerings-regexen på Framsteg som *tar bort*
+ * den frasen ur milstolpstexter - se filhuvudet.
+ */
+const STREAK_PHRASE_PATTERNS = [
+	/l[äa]ngsta\s+(sammanh[äa]ngande|obrutna)/i,
+	/sammanh[äa]ngande\s+f[öo]ljd/i
+];
+
 /** Copy som uppmanar till obruten användning eller pekar ut missade dagar. */
 const PRESSURE_PHRASES = [
 	'fortsätt din',
@@ -68,6 +83,12 @@ describe('inga streak-etiketter i renderad copy', () => {
 		it(`${name} visar inget antal sammanhängande dagar`, () => {
 			for (const label of STREAK_LABEL_ELEMENTS) {
 				expect(source).not.toContain(label);
+			}
+		});
+
+		it(`${name} beskriver ingen obruten rad dagar i fritext`, () => {
+			for (const pattern of STREAK_PHRASE_PATTERNS) {
+				expect(source).not.toMatch(pattern);
 			}
 		});
 
