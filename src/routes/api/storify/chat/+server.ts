@@ -1,5 +1,13 @@
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
+import { createServiceClient, createTokenClient } from '$lib/server/supabase-admin';
+import { hasStorifyAiConsent } from '$lib/server/storify-ai-consent';
+
+function getAccessToken(header: string | null): string | null {
+	if (!header) return null;
+	const [scheme, token] = header.split(' ');
+	return scheme?.toLowerCase() === 'bearer' && token?.trim() ? token.trim() : null;
+}
 
 const BASE_INTERVIEWER_PROMPT = `Du ar en vanlig och nyfiken intervjuare vars enda uppgift ar att hjalpa anvandaren samla material till ett personligt dagboksinlagg. Du staller fragor och lyssnar - du skriver INTE dagboken.
 
@@ -85,6 +93,41 @@ function buildInterviewerPrompt(messageCount: number, colorTone: ColorTone | nul
 }
 
 export const POST: RequestHandler = async ({ request }) => {
+	const token = getAccessToken(request.headers.get('authorization'));
+	if (!token) {
+		return new Response(JSON.stringify({ error: 'Åtkomst nekad.' }), {
+			status: 401,
+			headers: { 'Content-Type': 'application/json' }
+		});
+	}
+
+	const userClient = createTokenClient(token);
+	const serviceClient = createServiceClient();
+	if (!userClient || !serviceClient) {
+		return new Response(JSON.stringify({ error: 'Serverkonfigurationsfel.' }), {
+			status: 500,
+			headers: { 'Content-Type': 'application/json' }
+		});
+	}
+
+	const {
+		data: { user },
+		error: authError
+	} = await userClient.auth.getUser();
+	if (authError || !user) {
+		return new Response(JSON.stringify({ error: 'Åtkomst nekad.' }), {
+			status: 401,
+			headers: { 'Content-Type': 'application/json' }
+		});
+	}
+
+	if (!(await hasStorifyAiConsent(serviceClient, user.id))) {
+		return new Response(JSON.stringify({ error: 'Samtycke krävs för AI-funktionen.' }), {
+			status: 403,
+			headers: { 'Content-Type': 'application/json' }
+		});
+	}
+
 	const storifyKey = env.STORIFY_API_KEY;
 	if (!storifyKey) {
 		return new Response(JSON.stringify({ error: 'AI-tjansten ar inte konfigurerad.' }), {
@@ -131,8 +174,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	});
 
 	if (!anthropicResponse.ok) {
-		const errText = await anthropicResponse.text();
-		console.error('Anthropic chat-fel:', errText);
+		console.error('Anthropic chat-fel:', { status: anthropicResponse.status });
 		return new Response(JSON.stringify({ error: 'AI-tjansten svarade inte. Forsok igen.' }), {
 			status: 502,
 			headers: { 'Content-Type': 'application/json' }

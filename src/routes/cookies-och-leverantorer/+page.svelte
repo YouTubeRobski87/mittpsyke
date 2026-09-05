@@ -29,7 +29,7 @@
 		<ul>
 			<li>Vissa tekniska funktioner behövs för att sidan, konto och inställningar ska fungera.</li>
 			<li>Google Analytics används bara när du har godkänt analys i cookieinställningarna.</li>
-			<li>Ahrefs Web Analytics används för cookie-fri, samlad webbstatistik.</li>
+			<li>Ahrefs Web Analytics används för cookie-fri, samlad webbstatistik först efter ditt analyssamtycke.</li>
 			<li>Du kan ändra ditt val genom att öppna cookieinställningarna igen.</li>
 		</ul>
 	</section>
@@ -48,9 +48,8 @@
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Analysverktyg</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		Kodbasen använder Google Analytics när analys är aktiverat och du har samtyckt.
-		Ahrefs Web Analytics ligger i sidans head och används för cookie-fri, samlad webbstatistik.
-		Vi hittar ingen aktiv Vercel Analytics-klientkod i projektet.
+		Google Analytics och Ahrefs Web Analytics aktiveras först när du har godkänt analys.
+		Ahrefs används utan cookies men behandlar ändå teknisk användningsdata för samlad webbstatistik.
 	</p>
 	<section class="provider-card" aria-label="Google Analytics">
 		<h3 class="text-base font-semibold mt-0 mb-2">Google Analytics</h3>
@@ -65,9 +64,9 @@
 		<h3 class="text-base font-semibold mt-0 mb-2">Ahrefs Web Analytics</h3>
 		<ul>
 			<li><strong>Syfte:</strong> samlad statistik om trafik och sidvisningar.</li>
-			<li><strong>När det aktiveras:</strong> laddas i sidans head för att Ahrefs ska kunna verifiera installationen.</li>
-			<li><strong>Typ av data:</strong> aggregerad användningsstatistik utan cookies enligt Ahrefs standardinställning.</li>
-			<li><strong>Samtycke:</strong> inga analyscookies sätts som standard.</li>
+			<li><strong>När det aktiveras:</strong> först efter att du godkänt analys.</li>
+			<li><strong>Typ av data:</strong> sid-URL, referrer och teknisk användningsdata som sammanställs utan cookies enligt Ahrefs standardinställning.</li>
+			<li><strong>Samtycke:</strong> krävs i MittPsyke även om Ahrefs inte sätter analyscookies.</li>
 		</ul>
 	</section>
 
@@ -87,10 +86,10 @@
 			<p>AI-funktioner som chatt, reflektioner och vissa dagboksrelaterade svar.</p>
 			<p>Kan behandla text du skickar till AI-funktioner. Villkor för leverantörens hantering av API-data behöver bekräftas i aktuellt leverantörsavtal.</p>
 		</section>
-		<section class="provider-card" aria-label="Vercel">
-			<h3 class="text-base font-semibold mt-0 mb-2">Vercel</h3>
-			<p>Repoet innehåller Vercel-konfiguration för redirects och domänlogik.</p>
-			<p>Detta kan inte ensamt bekräfta att Vercel är aktiv drift- eller loggleverantör.</p>
+		<section class="provider-card" aria-label="Anthropic">
+			<h3 class="text-base font-semibold mt-0 mb-2">Anthropic</h3>
+			<p>Den guidade dagboken och vissa sammanfattningar använder Claude för att skapa frågor och dagbokstext.</p>
+			<p>Kan behandla den text du aktivt skickar efter att du har gett samtycke för funktionen.</p>
 		</section>
 		<section class="provider-card" aria-label="Soro">
 			<h3 class="text-base font-semibold mt-0 mb-2">Soro</h3>

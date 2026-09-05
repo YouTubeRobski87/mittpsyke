@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { hasWeeklySummaryAiConsent } from '$lib/server/weekly-summary-ai-consent';
 import { callClaude as callClaudeShared } from './ai/anthropic';
 
 type WeeklyReflectionStatus = 'ready' | 'paused' | 'opened' | 'expired';
@@ -428,6 +429,13 @@ export async function generateWeeklyReflection(
 	userId: string,
 	weekStart: string
 ) {
+	// Veckospeglingen läser flera sparade dagbokstexter och skickar delar av
+	// dem till en AI-leverantör. Ett annat diary-/chattsamtycke får aldrig
+	// breddas till detta syfte. Grinden ligger före varje läsning av innehåll.
+	if (!(await hasWeeklySummaryAiConsent(supabase, userId))) {
+		return { skipped: true, reason: 'consent_required' };
+	}
+
 	const existing = await supabase
 		.from('weekly_reflections')
 		.select('id')

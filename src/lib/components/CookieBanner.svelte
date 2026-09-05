@@ -79,8 +79,12 @@
 	}
 
 	function decline() {
+		const wasAccepted = getAnalyticsConsent() === 'accepted';
 		declineAnalyticsConsent();
 		cookieBannerOpen.set(false);
+		// Redan körd tredjepartskod kan inte säkert avregistreras. En omladdning
+		// startar sidan i nekat läge och förhindrar nya GA-/Ahrefs-anrop.
+		if (wasAccepted && browser) window.location.reload();
 	}
 </script>
 

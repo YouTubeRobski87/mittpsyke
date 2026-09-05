@@ -105,10 +105,12 @@
 		hybridError = false;
 
 		try {
-			const response = await fetch(
-				`/api/search?q=${encodeURIComponent(q)}&page=${requestedPage}&pageSize=${PAGE_SIZE}`,
-				{ signal }
-			);
+			const response = await fetch('/api/search', {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ q, page: requestedPage, pageSize: PAGE_SIZE }),
+				signal
+			});
 			if (!response.ok) throw new Error('search request failed');
 
 			const payload = (await response.json()) as SearchResponse;
@@ -190,7 +192,7 @@
 	function trackHybridResultClick(result: HybridResult, position: number) {
 		if (!normalizedQuery) return;
 		trackEvent('search_result_click', {
-			query: normalizedQuery.slice(0, 120),
+			query_length: normalizedQuery.length,
 			resultType: result.contentType,
 			href: result.url,
 			position
@@ -200,7 +202,7 @@
 	function trackLegacyResultClick(result: LegacyResult, position: number) {
 		if (!normalizedQuery) return;
 		trackEvent('search_result_click', {
-			query: normalizedQuery.slice(0, 120),
+			query_length: normalizedQuery.length,
 			resultType: 'article',
 			href: result.href,
 			position
@@ -218,6 +220,7 @@
 			placeholder="Sök guider och artiklar..."
 			aria-label="Sök bland guider och artiklar"
 			class="search-input"
+			maxlength="200"
 		/>
 	</header>
 

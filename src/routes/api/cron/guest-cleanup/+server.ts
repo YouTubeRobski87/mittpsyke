@@ -9,12 +9,11 @@ import type { RequestHandler } from './$types';
 // automatiskt senast inom ~24 timmar.
 const RETENTION_HOURS = 24;
 
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	const configuredSecret = env.CRON_SECRET || env.GUEST_CLEANUP_CRON_SECRET;
 	const providedSecret =
 		request.headers.get('x-cron-secret') ||
-		request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ||
-		url.searchParams.get('secret');
+		request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
 
 	if (!configuredSecret || providedSecret !== configuredSecret) {
 		return json({ error: 'Unauthorized.' }, { status: 401 });

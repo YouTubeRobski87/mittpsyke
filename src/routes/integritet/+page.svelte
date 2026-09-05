@@ -183,7 +183,7 @@
 					<td class="px-4 py-3">Google Analytics</td>
 					<td class="px-4 py-3">Se leverantörsavtal</td>
 					<td class="px-4 py-3">Samtycke</td>
-					<td class="px-4 py-3">Sessionbaserat</td>
+					<td class="px-4 py-3">Styrs av inställningen hos Google Analytics och behöver bekräftas i leverantörskontot</td>
 				</tr>
 				<tr>
 					<th scope="row" class="px-4 py-3 font-normal text-left">Cookie-fri webbstatistik</th>
@@ -224,9 +224,9 @@
 	<h2 class="text-lg font-semibold mt-8 mb-2">Kakor och analyser</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
 		MittPsyke använder analysverktyg för att förstå hur sajten används och förbättra upplevelsen.
-		Google Analytics aktiveras <strong>endast om du godkänner</strong> det i cookie-bannern
-		som visas vid ditt första besök. Ahrefs Web Analytics används för cookie-fri, samlad webbstatistik enligt
-		verktygets standardinställning. Du kan när som helst ändra ditt val genom att rensa cookies i din webbläsare.
+		Google Analytics och Ahrefs Web Analytics aktiveras <strong>endast om du godkänner</strong>
+		analys i cookie-bannern. Ahrefs används utan cookies men behandlar bland annat sid-URL,
+		referrer och teknisk användningsdata. Du kan när som helst ändra ditt val i cookieinställningarna.
 	</p>
 
 	<!-- LAGRINGSTID -->
@@ -249,6 +249,7 @@
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll. Data lagras inom EU (Frankfurt).</li>
 		<li><strong>OpenAI:</strong> AI-funktioner som chatt och aktivt valda AI-funktioner för sparad dagbokstext. {dataflowCopy.providerRetention}</li>
+		<li><strong>Anthropic:</strong> den guidade dagboken och vissa sammanfattningar, efter ett funktionsspecifikt samtycke.</li>
 		<li><strong>Driftleverantör:</strong> uppgifter om aktiv hosting, tekniska loggar och eventuell tredjelandsöverföring behöver bekräftas i aktuellt leverantörsavtal.</li>
 		<li><strong>Ahrefs:</strong> cookie-fri webbstatistik om trafik och sidvisningar.</li>
 	</ul>

@@ -16,6 +16,7 @@
 		grantSensitiveConsent
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
+	import { writeDiaryCheckinPrefill } from '$lib/diary-draft';
 	import { notifyDiaryEntriesChanged } from '$lib/diary-events';
 
 	const moodOptions = [
@@ -372,7 +373,8 @@
 
 	function continueToDiaryWriting() {
 		const prefill = (reflection || reflectionFallback).trim();
-		void goto(`/dagbok/checkin?prefill=${encodeURIComponent(prefill)}`);
+		writeDiaryCheckinPrefill(prefill);
+		void goto('/dagbok/checkin#skriv-sjalv');
 	}
 
 	async function grantDiaryAiConsent() {

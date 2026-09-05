@@ -32,6 +32,11 @@ const DIARY_DRAFT_SAVED_AT_KEY = 'mittpsyke_guest_entry_saved_at';
  */
 const DIARY_DRAFT_HANDOFF_KEY = 'mittpsyke_diary_draft_handoff';
 
+/** Engångsöverlämning till den inloggade dagbokseditorn, utan URL-läckage. */
+const DIARY_CHECKIN_PREFILL_KEY = 'mittpsyke_diary_checkin_prefill';
+
+type SessionStorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
+
 function readLocal(key: string): string | null {
 	if (!browser) return null;
 	try {
@@ -141,6 +146,36 @@ export function consumeDiaryDraftHandoff(): string {
 	try {
 		const value = window.sessionStorage.getItem(DIARY_DRAFT_HANDOFF_KEY);
 		if (value) window.sessionStorage.removeItem(DIARY_DRAFT_HANDOFF_KEY);
+		return value?.trim() ?? '';
+	} catch {
+		return '';
+	}
+}
+
+/**
+ * Lämnar över personlig text till dagbokseditorn utan query string, historik
+ * eller referrer. Värdet är flikbundet och konsumeras en gång.
+ */
+export function writeDiaryCheckinPrefill(
+	text: string,
+	storage: SessionStorageLike | null = browser ? window.sessionStorage : null
+) {
+	const trimmed = text.trim();
+	if (!trimmed || !storage) return;
+	try {
+		storage.setItem(DIARY_CHECKIN_PREFILL_KEY, trimmed);
+	} catch {
+		// Om sessionStorage saknas navigerar användaren vidare utan prefill.
+	}
+}
+
+export function consumeDiaryCheckinPrefill(
+	storage: SessionStorageLike | null = browser ? window.sessionStorage : null
+): string {
+	if (!storage) return '';
+	try {
+		const value = storage.getItem(DIARY_CHECKIN_PREFILL_KEY);
+		storage.removeItem(DIARY_CHECKIN_PREFILL_KEY);
 		return value?.trim() ?? '';
 	} catch {
 		return '';

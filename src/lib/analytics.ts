@@ -104,6 +104,8 @@ const TRACKED_MILESTONES_STORAGE_KEY = 'mittpsyke:tracked-milestones';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const AUTH_FUNNEL_MAX_AGE_MS = 60 * 60 * 1000;
 const GTAG_SCRIPT_ID = 'mittpsyke-gtag';
+const AHREFS_SCRIPT_ID = 'mittpsyke-ahrefs';
+const AHREFS_DATA_KEY = 'XG5Lo0Q/lYLzWqNByIXjLQ';
 
 let analyticsInitialized = false;
 let analyticsInitPromise: Promise<boolean> | null = null;
@@ -160,6 +162,19 @@ function loadGtagScript(): Promise<void> {
 	return gtagScriptPromise;
 }
 
+function loadAhrefsScript(): Promise<void> {
+	if (!browser || !ANALYTICS_ENABLED) return Promise.resolve();
+	if (document.getElementById(AHREFS_SCRIPT_ID)) return Promise.resolve();
+
+	const script = document.createElement('script');
+	script.id = AHREFS_SCRIPT_ID;
+	script.async = true;
+	script.src = 'https://analytics.ahrefs.com/analytics.js';
+	script.dataset.key = AHREFS_DATA_KEY;
+	document.head.appendChild(script);
+	return Promise.resolve();
+}
+
 export function disableAnalytics() {
 	if (!browser) return;
 
@@ -196,7 +211,7 @@ export async function initializeAnalytics() {
 
 	setDefaultConsent(gtag);
 
-	analyticsInitPromise = loadGtagScript()
+	analyticsInitPromise = Promise.all([loadGtagScript(), loadAhrefsScript()])
 		.then(() => {
 			gtag('consent', 'update', {
 				analytics_storage: 'granted'
@@ -221,6 +236,14 @@ export function trackPageView(url: URL) {
 	void sendPageView(url);
 }
 
+/** Känslig fritext och identifierare i query/hash får aldrig skickas till GA. */
+export function getAnalyticsPageFields(url: URL) {
+	return {
+		page_path: url.pathname,
+		page_location: `${url.origin}${url.pathname}`
+	};
+}
+
 async function sendPageView(url: URL) {
 	if (!(await initializeAnalytics()) || !hasAnalyticsConsent()) return;
 
@@ -231,8 +254,7 @@ async function sendPageView(url: URL) {
 	}
 
 	gtag('event', 'page_view', {
-		page_path: `${url.pathname}${url.search}`,
-		page_location: url.href,
+		...getAnalyticsPageFields(url),
 		page_title: document.title
 	});
 }
@@ -314,7 +336,7 @@ export function trackLandingPageViewOnce(url: URL, pageTitle = browser ? documen
 
 	writeSessionValue(FUNNEL_LANDING_VIEW_SESSION_KEY, '1');
 	trackLandingPageView({
-		page_path: `${url.pathname}${url.search}`,
+		page_path: url.pathname,
 		page_title: pageTitle
 	});
 }

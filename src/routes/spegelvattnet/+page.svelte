@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
+	import { writeDiaryCheckinPrefill } from '$lib/diary-draft';
 
 	type Reflection = {
 		id: string;
@@ -26,9 +27,11 @@
 			: []
 	);
 	const openQuestion = $derived(reflection?.open_question || 'Vad vill du ta med dig från veckan som varit?');
-	const diaryHref = $derived(
-		`/dagbok/checkin?prefill=${encodeURIComponent(`${openQuestion}\n\n`)}#skriv-sjalv`
-	);
+	const diaryHref = '/dagbok/checkin#skriv-sjalv';
+
+	function prepareDiaryQuestion() {
+		writeDiaryCheckinPrefill(`${openQuestion}\n\n`);
+	}
 	const weekLabel = $derived(reflection ? formatWeekLabel(reflection.week_start) : '');
 
 	function formatWeekLabel(weekStart: string) {
@@ -113,7 +116,7 @@
 					</section>
 
 					<div class="spegel-actions">
-						<a href={diaryHref} class="auth-button primary">Skriv om det här</a>
+						<a href={diaryHref} class="auth-button primary" onclick={prepareDiaryQuestion}>Skriv om det här</a>
 						<a href="/dashboard" class="auth-button">Stäng</a>
 					</div>
 				</article>

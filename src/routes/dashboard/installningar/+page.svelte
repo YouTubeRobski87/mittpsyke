@@ -63,6 +63,10 @@
 	let dailyQuestionConsentSaving = $state(false);
 	let dailyQuestionConsentMessage = $state('');
 	let dailyQuestionConsentMessageType = $state<'success' | 'error'>('success');
+	let storifyAiConsentGranted = $state(false);
+	let storifyAiConsentSaving = $state(false);
+	let storifyAiConsentMessage = $state('');
+	let storifyAiConsentMessageType = $state<'success' | 'error'>('success');
 	let diaryAiConsentSaving = $state(false);
 	let diaryAiConsentMessage = $state('');
 	let diaryAiConsentMessageType = $state<'success' | 'error'>('success');
@@ -222,6 +226,7 @@
 			await loadSmsPreference();
 			await loadDiaryAiConsent(session.access_token);
 			await loadDailyQuestionConsent(session.access_token);
+			await loadStorifyAiConsent(session.access_token);
 			loading = false;
 		}
 
@@ -261,6 +266,45 @@
 			dailyQuestionConsentGranted = response.ok && payload?.status === 'granted';
 		} catch {
 			dailyQuestionConsentGranted = false;
+		}
+	}
+
+	async function loadStorifyAiConsent(accessToken: string) {
+		try {
+			const response = await fetch('/api/consent/storify-ai', {
+				headers: { Authorization: `Bearer ${accessToken}` }
+			});
+			const payload = (await response.json().catch(() => null)) as { status?: string } | null;
+			storifyAiConsentGranted = response.ok && payload?.status === 'granted';
+		} catch {
+			storifyAiConsentGranted = false;
+		}
+	}
+
+	async function withdrawStorifyAiConsent() {
+		storifyAiConsentSaving = true;
+		storifyAiConsentMessage = '';
+		const { data: { session } } = await supabase.auth.getSession();
+		if (!session?.access_token) {
+			storifyAiConsentSaving = false;
+			storifyAiConsentMessage = 'Du behöver vara inloggad för att återkalla samtycket.';
+			storifyAiConsentMessageType = 'error';
+			return;
+		}
+		try {
+			const response = await fetch('/api/consent/storify-ai', {
+				method: 'DELETE',
+				headers: { Authorization: `Bearer ${session.access_token}` }
+			});
+			if (!response.ok) throw new Error('revoke failed');
+			storifyAiConsentGranted = false;
+			storifyAiConsentMessage = 'Samtycket för Dagars avtryck har återkallats.';
+			storifyAiConsentMessageType = 'success';
+		} catch {
+			storifyAiConsentMessage = 'Kunde inte återkalla samtycket just nu.';
+			storifyAiConsentMessageType = 'error';
+		} finally {
+			storifyAiConsentSaving = false;
 		}
 	}
 
@@ -1012,6 +1056,28 @@
 		</section>
 
 		<section class="auth-panel section-block">
+			<h2>Samtycke för Dagars avtryck</h2>
+			<p class="field-hint">
+				Det här samtycket gäller den guidade dagboken, där intervjutext behandlas av
+				MittPsyke och Anthropic för att skapa frågor och ett dagboksutkast. Det är skilt
+				från samtycket för andra AI-funktioner.
+			</p>
+
+			{#if storifyAiConsentGranted}
+				<p class="field-hint">Aktivt samtycke för Dagars avtryck.</p>
+				<button class="save-btn sms-off-btn" onclick={withdrawStorifyAiConsent} disabled={storifyAiConsentSaving}>
+					{storifyAiConsentSaving ? 'Sparar...' : 'Återkalla samtycke för Dagars avtryck'}
+				</button>
+			{:else}
+				<p class="field-hint">Det finns inget aktivt samtycke för Dagars avtryck.</p>
+			{/if}
+
+			{#if storifyAiConsentMessage}
+				<p class="feedback {storifyAiConsentMessageType}">{storifyAiConsentMessage}</p>
+			{/if}
+		</section>
+
+		<section class="auth-panel section-block">
 			<h2>Mina mål</h2>
 			<p class="field-hint">
 				Skriv upp egna mål och bocka av dem när de känns klara. Helt frivilligt och bara synligt för dig.
@@ -1660,7 +1726,6 @@
 		}
 	}
 </style>
-
 
 
 

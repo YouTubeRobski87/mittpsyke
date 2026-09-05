@@ -3,11 +3,7 @@
 	import { onMount, tick } from 'svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import ColorPicker from '$lib/components/ColorPicker.svelte';
-	import {
-		grantSensitiveConsent,
-		hasSensitiveConsent,
-		type HealthConsentRecord
-	} from '$lib/consent';
+	import { grantSensitiveConsent } from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import { activeStorifyTones, storifyTones } from '$lib/data/storifyTones';
 	import { notifyDiaryEntriesChanged } from '$lib/diary-events';
@@ -176,6 +172,9 @@
 		messages = [...newMessages, assistantMsg];
 
 		try {
+			const token = await getToken();
+			if (!token) throw new Error('Sessionen har gått ut. Ladda om sidan och försök igen.');
+
 			// Injicera ett syntetiskt öppningsmeddelande från assistenten så att AI:n
 		// alltid ser [assistant_open, user_svar, ...] och hoppar direkt till uppföljning.
 		// Matchar den statiska texten som visas i empty-fasen.
@@ -187,7 +186,10 @@
 
 		const response = await fetch('/api/storify/chat', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`
+				},
 				body: JSON.stringify({
 					messages: apiMessages,
 					selectedTone,
@@ -368,36 +370,32 @@
 		return storifyTones.find((t) => t.id === toneId)?.label ?? toneId;
 	}
 
-	async function persistUserConsent(consent: HealthConsentRecord) {
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+	async function acceptHealthConsent() {
+		const token = await getToken();
+		if (!token) throw new Error('Du behöver vara inloggad för att ge samtycke.');
 
-		if (!session) return;
-
-		const { error } = await supabase.auth.updateUser({
-			data: {
-				health_data_processing_consent: consent
-			}
+		const response = await fetch('/api/consent/storify-ai', {
+			method: 'POST',
+			headers: { Authorization: `Bearer ${token}` }
 		});
+		if (!response.ok) throw new Error('Kunde inte spara samtycket just nu.');
 
-		if (!error) {
-			await supabase.auth.refreshSession();
-		}
-	}
-
-	function acceptHealthConsent() {
-		const consent = grantSensitiveConsent();
+		grantSensitiveConsent();
 		hasHealthDataConsent = true;
-		void persistUserConsent(consent);
 	}
 
 	onMount(async () => {
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		const token = await getToken();
+		if (!token) {
+			hasHealthDataConsent = false;
+			return;
+		}
 
-		hasHealthDataConsent = hasSensitiveConsent(session?.user.user_metadata);
+		const response = await fetch('/api/consent/storify-ai', {
+			headers: { Authorization: `Bearer ${token}` }
+		});
+		const payload = (await response.json().catch(() => null)) as { status?: string } | null;
+		hasHealthDataConsent = response.ok && payload?.status === 'granted';
 	});
 </script>
 
@@ -444,7 +442,13 @@
 		<!-- ===== SKRIV-FLIKEN ===== -->
 		{#if activeTab === 'skriv'}
 			{#if !hasHealthDataConsent}
-				<ConsentGate onAccept={acceptHealthConsent} />
+				<ConsentGate
+					dataLabel="Det du skriver i den guidade dagboken"
+					serviceLabel="MittPsyke och Anthropic"
+					requireExplicitConfirmation={true}
+					confirmationLabel="Jag samtycker uttryckligen till att min text behandlas av Anthropic för att skapa frågor och dagbokstext."
+					onAccept={acceptHealthConsent}
+				/>
 			{:else}
 
 			<!-- FAS: Tom start -->

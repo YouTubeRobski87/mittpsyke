@@ -2,6 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
     import { goto } from '$app/navigation';
     import { getCachedTheme, THEMES } from '$lib/theme';
+    import { writeDiaryCheckinPrefill } from '$lib/diary-draft';
     
     let answer1 = '';
     let answer2 = '';
@@ -30,7 +31,8 @@
             answer3.trim() || '–'
         ];
         const combined = parts.join('\n');
-        goto('/dagbok/checkin?prefill=' + encodeURIComponent(combined));
+        writeDiaryCheckinPrefill(combined);
+        goto('/dagbok/checkin#skriv-sjalv');
     }
     
     $: canSubmit = answer1.trim() || answer2.trim() || answer3.trim();

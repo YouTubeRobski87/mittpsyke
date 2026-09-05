@@ -9,12 +9,11 @@ import type { RequestHandler } from './$types';
 // schema, så nytt eller ändrat sökbart innehåll (artiklar, guider, FAQ) blir
 // sökbart utan manuell handpåläggning. Samma x-cron-secret-mönster som
 // /api/cron/guest-cleanup.
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request }) => {
 	const configuredSecret = env.CRON_SECRET;
 	const providedSecret =
 		request.headers.get('x-cron-secret') ||
-		request.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ||
-		url.searchParams.get('secret');
+		request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
 
 	if (!configuredSecret || providedSecret !== configuredSecret) {
 		return json({ error: 'Unauthorized.' }, { status: 401 });

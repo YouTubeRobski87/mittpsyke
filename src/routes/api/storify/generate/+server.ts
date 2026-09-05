@@ -3,6 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { availableToneIds, buildTonePrompt } from '$lib/data/tonePrompts';
+import { createServiceClient } from '$lib/server/supabase-admin';
+import { hasStorifyAiConsent } from '$lib/server/storify-ai-consent';
 import type { RequestHandler } from './$types';
 
 function getAccessToken(authorizationHeader: string | null): string | null {
@@ -52,6 +54,15 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	if (authError || !user) {
 		return json({ error: 'Åtkomst nekad.' }, { status: 401 });
+	}
+
+	const serviceClient = createServiceClient();
+	if (!serviceClient) {
+		return json({ error: 'Serverkonfigurationsfel.' }, { status: 500 });
+	}
+
+	if (!(await hasStorifyAiConsent(serviceClient, user.id))) {
+		return json({ error: 'Samtycke krävs för AI-funktionen.' }, { status: 403 });
 	}
 
 	const storifyKey = env.STORIFY_API_KEY;
@@ -134,7 +145,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	});
 
 	if (!anthropicResponse.ok) {
-		console.error('Anthropic generate-fel:', await anthropicResponse.text());
+		console.error('Anthropic generate-fel:', { status: anthropicResponse.status });
 		return json({ error: 'AI-tjänsten är inte tillgänglig just nu.' }, { status: 502 });
 	}
 

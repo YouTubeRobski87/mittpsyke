@@ -427,7 +427,7 @@
 		if (destination.origin !== window.location.origin) return;
 
 		trackInternalLinkClicked({
-			destination: `${destination.pathname}${destination.search}${destination.hash}`
+			destination: destination.pathname
 		});
 	}
 

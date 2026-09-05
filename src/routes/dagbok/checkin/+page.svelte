@@ -20,7 +20,7 @@
 	import VideoRecorder from '$lib/components/VideoRecorder.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
 	import { scrollIntoViewWithMotionPreference } from '$lib/scroll';
-	import { clearDiaryDraft, readDiaryDraft } from '$lib/diary-draft';
+	import { clearDiaryDraft, consumeDiaryCheckinPrefill, readDiaryDraft } from '$lib/diary-draft';
 	import {
 		awardMilestone,
 		consumePendingMilestone,
@@ -1169,7 +1169,8 @@
 			trackDiaryPageOpenedFromHoroscope();
 		}
 
-		const prefill = $page.url.searchParams.get('prefill')?.trim();
+		const prefill =
+			consumeDiaryCheckinPrefill() || $page.url.searchParams.get('prefill')?.trim() || '';
 		const promptQuestion = $page.url.searchParams.get('prompt')?.trim();
 		const promptDailyQuestionId = $page.url.searchParams.get('daily_question_id')?.trim();
 		let shouldOpenWriteEditor = false;
