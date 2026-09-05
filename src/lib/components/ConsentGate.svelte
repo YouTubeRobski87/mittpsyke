@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { dataflowCopy } from '$lib/dataflow-copy';
 	import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';
 
 	let {
@@ -7,6 +8,13 @@
 		serviceLabel = '',
 		policyHref = '/integritet',
 		responsibilityHref = '/ansvar',
+		// Uttryckligt samtycke (GDPR art. 9) kräver en aktiv, separat handling.
+		// Ytor som bara behöver en bekräftelseknapp lämnar den här avstängd.
+		requireExplicitConfirmation = false,
+		confirmationLabel = '',
+		showEmergencyGuidance = false,
+		showDataflowDetails = false,
+		acceptLabel = 'Jag förstår och vill fortsätta',
 		onAccept = () => {}
 	}: {
 		title?: string;
@@ -14,15 +22,25 @@
 		serviceLabel?: string;
 		policyHref?: string;
 		responsibilityHref?: string;
+		requireExplicitConfirmation?: boolean;
+		confirmationLabel?: string;
+		showEmergencyGuidance?: boolean;
+		showDataflowDetails?: boolean;
+		acceptLabel?: string;
 		onAccept?: () => void | Promise<void>;
 	} = $props();
 
 	const usesCustomCopy = $derived(Boolean(dataLabel || serviceLabel));
+	let confirmed = $state(false);
 	let submitting = $state(false);
 	let errorMessage = $state('');
 
+	// Knappen är spärrad tills kryssrutan är ibockad när uttryckligt samtycke
+	// krävs. Utan kravet beter den sig exakt som förut.
+	const canAccept = $derived(!requireExplicitConfirmation || confirmed);
+
 	async function handleAccept() {
-		if (submitting) return;
+		if (submitting || !canAccept) return;
 		submitting = true;
 		errorMessage = '';
 
@@ -64,17 +82,76 @@
 			och <a class="underline underline-offset-2" href={responsibilityHref}>ansvarsinformationen</a>.
 		</p>
 	{/if}
+
+	{#if showEmergencyGuidance}
+		<p class="consent-emergency mt-2 text-xs leading-relaxed">
+			Vid akut fara: <a class="underline underline-offset-2 font-semibold" href="tel:112">ring 112</a>.
+			För vårdråd, kontakta
+			<a
+				class="underline underline-offset-2"
+				href="https://www.1177.se"
+				target="_blank"
+				rel="noopener noreferrer">1177</a
+			>.
+		</p>
+	{/if}
+
+	{#if showDataflowDetails}
+		<details class="consent-more mt-3">
+			<summary class="text-xs font-semibold underline underline-offset-2 cursor-pointer">Läs mer</summary>
+			<p class="mt-2 text-xs leading-relaxed opacity-80">
+				Samtycket gäller meddelanden du aktivt väljer att skicka i chatten. Det är separat för
+				känsliga uppgifter och sparas med tidpunkt och version. För anonym chatt kan du återkalla
+				samtycket genom att rensa cookies. För kontoanslutna chattfunktioner kan du kontakta oss.
+			</p>
+			<ul class="consent-dataflow mt-2 text-xs leading-relaxed opacity-80">
+				<li><strong>När det skickas:</strong> {dataflowCopy.guestChat.aiTransfer}</li>
+				<li><strong>Utan konto:</strong> {dataflowCopy.guestChat.retention}</li>
+				<li>
+					<strong>Med konto:</strong>
+					{dataflowCopy.accountChat.storage}
+					{dataflowCopy.accountChat.retention}
+				</li>
+				<li><strong>OpenAI:</strong> {dataflowCopy.providerRetention}</li>
+			</ul>
+		</details>
+	{/if}
+
+	{#if requireExplicitConfirmation}
+		<label class="consent-check mt-3 flex items-start gap-2 text-sm leading-relaxed">
+			<input type="checkbox" class="mt-1" bind:checked={confirmed} />
+			<span>{confirmationLabel || 'Jag samtycker uttryckligen till behandlingen av känsliga uppgifter här.'}</span>
+		</label>
+	{/if}
+
 	<div class="mt-3">
 		<button
 			type="button"
-			class="rounded-[var(--radius-input)] bg-[var(--primary)] px-3 py-2 text-sm font-medium text-white hover:opacity-95 transition-opacity cursor-pointer"
+			class="rounded-[var(--radius-input)] bg-[var(--primary)] px-3 py-2 text-sm font-medium text-white hover:opacity-95 transition-opacity cursor-pointer disabled:cursor-not-allowed disabled:opacity-55"
 			onclick={() => void handleAccept()}
-			disabled={submitting}
+			disabled={submitting || !canAccept}
 		>
-			{submitting ? 'Sparar...' : 'Jag förstår och vill fortsätta'}
+			{submitting ? 'Sparar...' : acceptLabel}
 		</button>
 		{#if errorMessage}
 			<p class="mt-2 text-sm text-[var(--error-foreground)]" role="alert">{errorMessage}</p>
 		{/if}
 	</div>
 </div>
+
+<style>
+	.consent-dataflow {
+		display: grid;
+		gap: 0.35rem;
+		padding-left: 1.05rem;
+		list-style: disc;
+	}
+
+	.consent-more summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.consent-more summary {
+		list-style: none;
+	}
+</style>
