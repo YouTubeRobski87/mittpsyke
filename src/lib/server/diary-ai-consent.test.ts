@@ -22,8 +22,23 @@ function readClient(row: unknown) {
 
 function writeClient() {
 	const upsert = vi.fn().mockResolvedValue({ error: null });
-	const from = vi.fn().mockReturnValue({ upsert });
-	return { client: { from } as unknown as SupabaseClient, upsert };
+	// Återkallelse uppdaterar en befintlig rad i stället för att upserta, så att
+	// ingen samtyckesrad skapas för ett samtycke som aldrig lämnats. Filtren
+	// samlas upp så testet kan verifiera att rätt rad träffas.
+	const updateFilters: Record<string, string> = {};
+	const update = vi.fn().mockImplementation((values: Record<string, unknown>) => {
+		const builder = {
+			values,
+			eq: vi.fn().mockImplementation((column: string, value: string) => {
+				updateFilters[column] = value;
+				return builder;
+			}),
+			then: (resolve: (value: { error: null }) => unknown) => resolve({ error: null })
+		};
+		return builder;
+	});
+	const from = vi.fn().mockReturnValue({ upsert, update });
+	return { client: { from } as unknown as SupabaseClient, upsert, update, updateFilters };
 }
 
 describe('diary AI consent helper', () => {
@@ -67,10 +82,16 @@ describe('diary AI consent helper', () => {
 	it('records revocation and permits a later re-grant', async () => {
 		const revoked = writeClient();
 		expect(await revokeDiaryAiConsent(revoked.client, 'user-1')).toBe(true);
-		expect(revoked.upsert).toHaveBeenCalledWith(
-			expect.objectContaining({ status: 'revoked', revoked_at: expect.any(String) }),
-			{ onConflict: 'user_id,scope' }
+		expect(revoked.update).toHaveBeenCalledWith(
+			expect.objectContaining({ status: 'revoked', revoked_at: expect.any(String) })
 		);
+		// Bara den egna användarens rad för det egna scopet får träffas.
+		expect(revoked.updateFilters).toEqual({
+			user_id: 'user-1',
+			scope: DIARY_AI_CONSENT_SCOPE
+		});
+		// Ingen upsert: en återkallelse får aldrig skapa en ny samtyckesrad.
+		expect(revoked.upsert).not.toHaveBeenCalled();
 
 		const regranted = writeClient();
 		expect(await grantDiaryAiConsent(regranted.client, 'user-1')).toBe(true);

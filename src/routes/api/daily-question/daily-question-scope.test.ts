@@ -131,11 +131,28 @@ describe('dagens fråga har ett eget samtycke', () => {
 describe('grant och revoke rör bara sitt eget scope', () => {
 	function recordingClient() {
 		const written: Record<string, unknown>[] = [];
+		// Grant upsertar, revoke uppdaterar en befintlig rad. Båda registreras med
+		// sitt scope så testet kan visa att inget annat scope berörs - för revoke
+		// ligger scopet i filtret i stället för i den skrivna raden.
 		const client = {
 			from: () => ({
 				upsert: async (row: Record<string, unknown>) => {
 					written.push(row);
 					return { error: null };
+				},
+				update: (values: Record<string, unknown>) => {
+					const filters: Record<string, unknown> = {};
+					const builder = {
+						eq(column: string, value: unknown) {
+							filters[column] = value;
+							return builder;
+						},
+						then(resolve: (value: { error: null }) => unknown) {
+							written.push({ ...values, ...filters });
+							return resolve({ error: null });
+						}
+					};
+					return builder;
 				}
 			})
 		} as unknown as SupabaseClient;

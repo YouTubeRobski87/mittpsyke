@@ -76,17 +76,27 @@ export async function revokeAiConsent(
 	policyVersion: string
 ): Promise<boolean> {
 	const now = new Date().toISOString();
-	const { error } = await client.from(AI_CONSENT_TABLE).upsert(
-		{
-			user_id: userId,
-			scope,
+	// Uppdatering, inte upsert. En upsert skapade en rad även när användaren
+	// aldrig hade lämnat samtycket, och eftersom granted_at inte skickas med
+	// fyllde kolumnens DEFAULT now() i en tidpunkt. Resultatet blev en
+	// samtyckesrad enligt artikel 9 som påstod att samtycke gavs i samma
+	// ögonblick som det återkallades - ett falskt spår i just den logg som ska
+	// kunna bevisa motsatsen.
+	//
+	// Finns ingen rad har användaren inget aktivt samtycke, vilket redan är det
+	// önskade sluttillståndet. Noll uppdaterade rader är därför framgång, inte
+	// fel. Frånvaro av rad är dessutom det mest fail-closed läget som finns:
+	// hasAiConsent kräver status 'granted' och nekar på en saknad rad.
+	const { error } = await client
+		.from(AI_CONSENT_TABLE)
+		.update({
 			status: 'revoked',
 			policy_version: policyVersion,
 			revoked_at: now,
 			updated_at: now
-		},
-		{ onConflict: 'user_id,scope' }
-	);
+		})
+		.eq('user_id', userId)
+		.eq('scope', scope);
 
 	return !error;
 }
