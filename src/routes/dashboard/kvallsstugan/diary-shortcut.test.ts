@@ -1,8 +1,27 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'svelte/server';
-import Page from './+page.svelte';
+
+// $lib/supabase skapar sin klient direkt när modulen importeras, och
+// @supabase/ssr kastar om URL eller nyckel saknas. Sidan drar in modulen via
+// EveningCheckinFlow, så testet kunde inte ens importera sidan i en miljö utan
+// PUBLIC_SUPABASE_*-variabler - vilket är exakt läget i CI.
+//
+// Klienten används bara i asynkrona handlers (auth.getSession, updateUser,
+// refreshSession) som aldrig körs vid serverrendering. Testet handlar om
+// renderad markup, inte om Supabase, så modulen mockas bort helt.
+vi.mock('$lib/supabase', () => ({
+	supabase: {
+		auth: {
+			getSession: vi.fn(async () => ({ data: { session: null }, error: null })),
+			updateUser: vi.fn(async () => ({ data: { user: null }, error: null })),
+			refreshSession: vi.fn(async () => ({ data: { session: null }, error: null }))
+		}
+	}
+}));
+
+const { default: Page } = await import('./+page.svelte');
 
 const route = readFileSync(
 	join(process.cwd(), 'src/routes/dashboard/kvallsstugan/+page.svelte'),

@@ -1,8 +1,23 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { render } from 'svelte/server';
-import Page from './+page.svelte';
+
+// Se diary-shortcut.test.ts: $lib/supabase bygger sin klient vid import och
+// kastar utan PUBLIC_SUPABASE_*. Sidan drar in den via EveningCheckinFlow.
+// Klienten rörs aldrig vid serverrendering, och testet gäller markup - så
+// modulen mockas bort i stället för att CI förses med riktiga nycklar.
+vi.mock('$lib/supabase', () => ({
+	supabase: {
+		auth: {
+			getSession: vi.fn(async () => ({ data: { session: null }, error: null })),
+			updateUser: vi.fn(async () => ({ data: { user: null }, error: null })),
+			refreshSession: vi.fn(async () => ({ data: { session: null }, error: null }))
+		}
+	}
+}));
+
+const { default: Page } = await import('./+page.svelte');
 
 const routeDirectory = join(process.cwd(), 'src/routes/dashboard/kvallsstugan');
 const route = readFileSync(join(routeDirectory, '+page.svelte'), 'utf8');
