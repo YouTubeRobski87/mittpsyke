@@ -37,6 +37,17 @@ async function requireAdmin(locals: App.Locals) {
 	return user;
 }
 
+/**
+ * Grind för form actions. Returnerar antingen användaren eller en
+ * ActionFailure som anroparen MÅSTE returnera vidare.
+ *
+ * Anroparen kontrollerar `'status' in admin`, inte `'error' in admin`.
+ * `fail()` ger en ActionFailure med bara `status` och `data`; felmeddelandet
+ * ligger i `data.error`, inte på toppnivå. Ett `'error' in`-test är därför
+ * alltid falskt och släpper igenom både utloggade och icke-admins - och
+ * eftersom actions körs före `load` skyddar `requireAdmin` där inte POST.
+ * Skrivningen sker dessutom med service role, som kringgår RLS.
+ */
 async function ensureAdmin(locals: App.Locals) {
 	const user = await locals.getSession();
 
@@ -86,7 +97,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 export const actions: Actions = {
 	approve: async ({ locals, request }) => {
 		const admin = await ensureAdmin(locals);
-		if ('error' in admin) return admin;
+		if ('status' in admin) return admin;
 
 		const form = await request.formData();
 		const id = String(form.get('id') ?? '');
@@ -109,7 +120,7 @@ export const actions: Actions = {
 	},
 	reject: async ({ locals, request }) => {
 		const admin = await ensureAdmin(locals);
-		if ('error' in admin) return admin;
+		if ('status' in admin) return admin;
 
 		const form = await request.formData();
 		const id = String(form.get('id') ?? '');
@@ -132,7 +143,7 @@ export const actions: Actions = {
 	},
 	delete: async ({ locals, request }) => {
 		const admin = await ensureAdmin(locals);
-		if ('error' in admin) return admin;
+		if ('status' in admin) return admin;
 
 		const form = await request.formData();
 		const id = String(form.get('id') ?? '');
