@@ -3,6 +3,9 @@
 	import { ageRangeOptions, genderOptions } from '$lib/data/anonymous-stories';
 	import type { PageData } from './$types';
 
+	const FORM_UNAVAILABLE_MESSAGE =
+		'Berättelsefunktionen är tillfälligt otillgänglig. Försök gärna igen senare.';
+
 	let { data }: { data: PageData } = $props();
 
 	let content = $state('');
@@ -54,82 +57,86 @@
 <main class="story-form-page mx-auto w-full px-5 py-10">
 	<a class="back-link" href="/anonyma-berattelser">Till anonyma berättelser</a>
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Dela en anonym berättelse</h1>
-	<p class="intro">
-		Du kan skicka in utan konto. För att begränsa spam sparar vi en hash av din IP-adress
-		tillsammans med berättelsen. Hashen kan koppla samman flera bidrag från samma IP-adress.
-		Berättelsen läses av vår AI och därefter manuellt innan publicering.
-	</p>
-
-	<form class="story-form" method="POST" action="/api/stories/submit" onsubmit={handleSubmit}>
-		<input type="hidden" name="story_loaded_at" value={data.loadedAt} />
-		<input type="hidden" name="story_load_token" value={data.loadToken} />
-		<label class="honeypot" aria-hidden="true">
-			Företag
-			<input name="company" tabindex="-1" autocomplete="off" />
-		</label>
-
-		<label>
-			<span>Din berättelse</span>
-			<textarea
-				name="content"
-				bind:value={content}
-				minlength="50"
-				maxlength="2000"
-				rows="10"
-				required
-				placeholder="Skriv i din egen takt. Undvik namn på personer, skolor eller platser."
-			></textarea>
-		</label>
-		<p class="counter" class:counter-warning={content.length > 0 && content.length < 50}>
-			{content.length}/2000 tecken
+	{#if data.formAvailable}
+		<p class="intro">
+			Du kan skicka in utan konto. För att begränsa spam sparar vi en hash av din IP-adress
+			tillsammans med berättelsen. Hashen kan koppla samman flera bidrag från samma IP-adress.
+			Berättelsen läses av vår AI och därefter manuellt innan publicering.
 		</p>
 
-		<div class="optional-grid">
-			<label>
-				<span>Ålder, valfritt</span>
-				<select name="age_range" bind:value={ageRange}>
-					<option value="">Vill ej ange</option>
-					{#each ageRangeOptions as option}
-						<option value={option.value}>{option.label}</option>
-					{/each}
-				</select>
+		<form class="story-form" method="POST" action="/api/stories/submit" onsubmit={handleSubmit}>
+			<input type="hidden" name="story_loaded_at" value={data.loadedAt} />
+			<input type="hidden" name="story_load_token" value={data.loadToken} />
+			<label class="honeypot" aria-hidden="true">
+				Företag
+				<input name="company" tabindex="-1" autocomplete="off" />
 			</label>
 
 			<label>
-				<span>Kön, valfritt</span>
-				<select name="gender" bind:value={gender}>
-					<option value="">Vill ej ange</option>
-					{#each genderOptions as option}
-						<option value={option.value}>{option.label}</option>
-					{/each}
-				</select>
+				<span>Din berättelse</span>
+				<textarea
+					name="content"
+					bind:value={content}
+					minlength="50"
+					maxlength="2000"
+					rows="10"
+					required
+					placeholder="Skriv i din egen takt. Undvik namn på personer, skolor eller platser."
+				></textarea>
 			</label>
+			<p class="counter" class:counter-warning={content.length > 0 && content.length < 50}>
+				{content.length}/2000 tecken
+			</p>
 
-			<label>
-				<span>Känsloemoji, valfritt</span>
-				<input
-					name="emotion_emoji"
-					bind:value={emotionEmoji}
-					maxlength="8"
-					placeholder="t.ex. 🌧️"
-					inputmode="text"
-				/>
-			</label>
-		</div>
+			<div class="optional-grid">
+				<label>
+					<span>Ålder, valfritt</span>
+					<select name="age_range" bind:value={ageRange}>
+						<option value="">Vill ej ange</option>
+						{#each ageRangeOptions as option}
+							<option value={option.value}>{option.label}</option>
+						{/each}
+					</select>
+				</label>
 
-		<p class="fine-print">
-			MittPsyke är inte vård, diagnos, behandling, terapi eller akuthjälp. Vid akut fara:
-			ring 112. För vårdråd: kontakta 1177.
-		</p>
+				<label>
+					<span>Kön, valfritt</span>
+					<select name="gender" bind:value={gender}>
+						<option value="">Vill ej ange</option>
+						{#each genderOptions as option}
+							<option value={option.value}>{option.label}</option>
+						{/each}
+					</select>
+				</label>
 
-		<button type="submit" disabled={status === 'submitting'}>
-			{status === 'submitting' ? 'Skickar...' : 'Skicka berättelse'}
-		</button>
+				<label>
+					<span>Känsloemoji, valfritt</span>
+					<input
+						name="emotion_emoji"
+						bind:value={emotionEmoji}
+						maxlength="8"
+						placeholder="t.ex. 🌧️"
+						inputmode="text"
+					/>
+				</label>
+			</div>
 
-		{#if message}
-			<p class:success={status === 'success'} class:error={status === 'error'}>{message}</p>
-		{/if}
-	</form>
+			<p class="fine-print">
+				MittPsyke är inte vård, diagnos, behandling, terapi eller akuthjälp. Vid akut fara:
+				ring 112. För vårdråd: kontakta 1177.
+			</p>
+
+			<button type="submit" disabled={status === 'submitting'}>
+				{status === 'submitting' ? 'Skickar...' : 'Skicka berättelse'}
+			</button>
+
+			{#if message}
+				<p class:success={status === 'success'} class:error={status === 'error'}>{message}</p>
+			{/if}
+		</form>
+	{:else}
+		<p class="empty" role="status">{FORM_UNAVAILABLE_MESSAGE}</p>
+	{/if}
 </main>
 
 <style>
@@ -147,7 +154,8 @@
 	}
 
 	.intro,
-	.fine-print {
+	.fine-print,
+	.empty {
 		color: var(--color-text-muted);
 		line-height: 1.7;
 	}
