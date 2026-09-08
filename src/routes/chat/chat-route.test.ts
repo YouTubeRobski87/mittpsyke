@@ -115,6 +115,46 @@ describe('direkt ingång till den befintliga chatten', () => {
 		expect(accept.indexOf('grantSensitiveConsent()')).toBeGreaterThan(accept.indexOf('fetch('));
 	});
 
+	it('läser ingen hero-handoff och kan inte autoskicka något åt användaren', () => {
+		// Hero-fältet på startsidan finns inte längre, så överlämningen var
+		// enkelriktad: den lästes men skrevs aldrig. Med den borta försvinner
+		// också pendingHeroSend, som skickade texten så snart samtycket var klart.
+		expect(chatWindow).not.toMatch(/consumeHeroChatHandoff|storeHeroChatHandoff|chat-handoff/);
+		expect(chatWindow).not.toContain('mittpsyke_hero_quick_start');
+		expect(chatWindow).not.toContain('pendingHeroSend');
+
+		// Enda kvarvarande send()-anropet är Enter-tangenten. Ingen effekt, ingen
+		// timer och inget samtyckesflöde får skicka något åt användaren.
+		const sendCalls = chatWindow.match(/(?:void|await) send\(\)/g) ?? [];
+		expect(sendCalls).toHaveLength(1);
+		const keydown = chatWindow.slice(
+			chatWindow.indexOf('function handleKeydown('),
+			chatWindow.indexOf('function useStarterSuggestion(')
+		);
+		expect(keydown).toContain('void send();');
+	});
+
+	it('behåller /skriv-överlämningen: fyller fältet men skickar inte', () => {
+		const carry = chatWindow.slice(
+			chatWindow.indexOf('const tempEntry ='),
+			chatWindow.indexOf("writeStorageValue('mittpsyke:last-chat-category'")
+		);
+
+		// Texten hamnar i inmatningsfältet och nyckeln töms, så den inte dupliceras
+		// vid nästa besök. Ingen send, ingen URL, ingen historikskrivning.
+		expect(carry).toContain('input = tempEntry;');
+		expect(carry).toContain('removeStorageValue(tempEntryStorageKey)');
+		expect(carry).not.toMatch(/send\(|goto\(|searchParams|messages\.push/);
+		expect(chatWindow).toContain("const tempEntryStorageKey = 'mittpsyke_temp_entry'");
+	});
+
+	it('har inga döda topic-hint-nycklar kvar i klienten', () => {
+		// Servern stödjer fortfarande topicHint i /api/chat; det som togs bort är
+		// den klientläsning vars nyckel ingen längre skrev.
+		expect(chatWindow).not.toContain('mittpsyke_chat_topic_hint');
+		expect(chatWindow).not.toContain('getTopicHint');
+	});
+
 	it('låter portalkortens CTA gå direkt till beskrivande chattrutter', () => {
 		for (const path of ['../../lib/components/PortalCard.svelte', '../portal/[slug]/+page.svelte']) {
 			expect(read(path)).toContain('href="/chat/{resolveChatSlug(portal.key)}"');

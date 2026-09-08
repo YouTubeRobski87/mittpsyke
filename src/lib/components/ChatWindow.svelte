@@ -4,9 +4,7 @@
 	import { page } from '$app/state';
 	import { Square, Volume2 } from 'lucide-svelte';
 	import { containsCrisisSignal, containsThirdPartyRiskSignal } from '$lib/ai/safety';
-	import { getTopicHint } from '$lib/ai/chat-topics';
 	import { SWEDISH_LOCALE, selectVoiceForLang, waitForVoiceForLang } from '$lib/ai/speech';
-	import { consumeHeroChatHandoff } from '$lib/chat-handoff';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import RecentConversations from '$lib/components/RecentConversations.svelte';
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
@@ -68,10 +66,6 @@
 	let historyNoticeVisible = $state(false);
 	let persistenceReady = $state(false);
 	let persistenceUserId = $state<string | null>(null);
-	let pendingHeroSend = $state(false);
-	// Valfri ämnesgenväg från chattingången. Skickas med som extra kontext till
-	// /api/chat, men styr aldrig samtalet - modellen följer användarens ord.
-	let topicHint = $state<string | null>(null);
 	let clearingHistory = $state(false);
 	let voiceBusy = $state(false);
 	let voiceInput = $state<VoiceInput>();
@@ -178,7 +172,6 @@
 						: ['Jag vill stanna kvar i det här en stund', 'Vad kan vara ett litet nästa steg?']
 	);
 	const tempEntryStorageKey = 'mittpsyke_temp_entry';
-	const topicHintStorageKey = 'mittpsyke_chat_topic_hint';
 
 	function scrollToBottom() {
 		if (chatLog) {
@@ -525,16 +518,6 @@
 			savePromptHidden = {};
 			historyNoticeVisible = false;
 
-			// Text skriven i hero-fältet på startsidan tar alltid med sig hela vägen in i chatten.
-			const heroEntry = consumeHeroChatHandoff() ?? '';
-
-			// Ämnesgenväg vald i chattingången. Läses en gång och gäller sessionen.
-			const storedTopicHint = readStorageValue(topicHintStorageKey)?.trim() ?? '';
-			if (storedTopicHint.length > 0) {
-				removeStorageValue(topicHintStorageKey);
-				topicHint = getTopicHint(storedTopicHint)?.id ?? null;
-			}
-
 			const seededMessages = sanitizeChatMessages(initialMessages);
 			const {
 				data: { session }
@@ -568,11 +551,6 @@
 				}
 			}
 
-			if (heroEntry.length > 0) {
-				input = heroEntry;
-				pendingHeroSend = true;
-			}
-
 			writeStorageValue('mittpsyke:last-chat-category', category);
 			persistenceReady = true;
 			await tick();
@@ -584,17 +562,6 @@
 		return () => {
 			cancelled = true;
 		};
-	});
-
-	// Skickar hero-utkastet automatiskt så snart samtycket är klart — aldrig innan.
-	$effect(() => {
-		if (!pendingHeroSend) return;
-		if (!persistenceReady || !hasSensitiveDataConsent) return;
-		if (sendInFlight || !input.trim()) return;
-
-		pendingHeroSend = false;
-		firstMessageSource = 'manual';
-		void send();
 	});
 
 	onMount(() => {
@@ -698,8 +665,7 @@
 					message: text,
 					category,
 					conversationId: session ? conversationId : null,
-					contextMessages,
-					...(topicHint ? { topicHint } : {})
+					contextMessages
 				})
 			});
 

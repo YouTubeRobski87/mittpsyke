@@ -21,8 +21,8 @@ import {
 } from './companionPoseManifest';
 import type { CompanionId, CompanionPoseDaypart } from './companionPoseManifest';
 
-// Minimal Storage-implementation i minnet, samma mönster som redan används
-// för localStorage-beroende kod i chat-handoff.test.ts.
+// Minimal Storage-implementation i minnet, samma mönster som används på
+// andra ställen för localStorage-beroende kod.
 class MemoryStorage implements Storage {
 	private store = new Map<string, string>();
 

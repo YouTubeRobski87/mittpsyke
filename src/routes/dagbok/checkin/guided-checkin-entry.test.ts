@@ -5,7 +5,7 @@ import { join } from 'node:path';
 // Guidad incheckning ligger på /dagars-avtryck/checkin. Den inloggade dagboken
 // är den enda naturliga vägen dit, så ingången testas här. Vitest kör i
 // nodemiljö utan DOM, därför läses källan som text i stället för att renderas
-// (samma mönster som src/lib/chat-handoff.test.ts).
+// (samma kontraktsmönster som övriga route-tester).
 const source = readFileSync(
 	join(process.cwd(), 'src/routes/dagbok/checkin/+page.svelte'),
 	'utf8'
