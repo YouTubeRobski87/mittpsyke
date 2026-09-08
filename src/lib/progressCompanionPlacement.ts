@@ -1,125 +1,16 @@
-import type { CompanionId } from './companionPoseManifest';
-import type { ProgressSceneBand } from './progressScene';
-
 /** Originalmåtten för Framstegs sjöscen. */
 export const PROGRESS_SCENE_IMAGE_SIZE = { width: 1672, height: 941 } as const;
-export const PROGRESS_COMPACT_BREAKPOINT = 640;
-
-type ScenePoint = { x: number; y: number };
-type SceneViewportPlacement = {
-	/** Följeslagarens markpunkt i originalbildens koordinater (procent). */
-	ground: ScenePoint;
-	/** CSS object-position för samma originalbild. */
-	imagePosition: ScenePoint;
-	/** Basbredd i originalbildens pixlar. Djurets egen skala appliceras separat. */
-	baseWidth: number;
-	/** Visuellt dokumenterad markyta, för underhåll och QA. */
-	safeZone: string;
-};
-
-export type ProgressScenePlacement = Record<'desktop' | 'mobile', SceneViewportPlacement>;
 
 /**
- * Framstegs enda källa för var följeslagaren får stå.
- *
- * Punkterna hör till originalbilden, inte till den beskurna hero-containern.
- * Det gör att en punkt alltid följer samma markyta när object-fit: cover
- * beskär olika mycket på desktop och mobil.
+ * Scenrutans mätta storlek. Geometrin nedan behöver ingenting mer: bilden är
+ * densamma genom alla dygnsspann och renderas likadant i alla brytpunkter.
  */
-export const PROGRESS_SCENE_PLACEMENTS: Record<ProgressSceneBand, ProgressScenePlacement> = {
-	morning: {
-		desktop: {
-			ground: { x: 90, y: 76 },
-			imagePosition: { x: 50, y: 72 },
-			baseWidth: 130,
-			safeZone: 'Den fria gräs- och stenremsan längst ut på högra sluttningen, ovanför elden.'
-		},
-		mobile: {
-			ground: { x: 86, y: 57 },
-			imagePosition: { x: 74, y: 64 },
-			baseWidth: 180,
-			safeZone: 'Den högra strandremsan ovanför elden, avskild från personen och vattnet.'
-		}
-	},
-	day: {
-		desktop: {
-			ground: { x: 90, y: 76 },
-			imagePosition: { x: 50, y: 72 },
-			baseWidth: 130,
-			safeZone: 'Den fria gräs- och stenremsan längst ut på högra sluttningen, ovanför elden.'
-		},
-		mobile: {
-			ground: { x: 86, y: 57 },
-			imagePosition: { x: 74, y: 64 },
-			baseWidth: 180,
-			safeZone: 'Den högra strandremsan ovanför elden, avskild från personen och vattnet.'
-		}
-	},
-	afternoon: {
-		desktop: {
-			ground: { x: 91, y: 74 },
-			imagePosition: { x: 50, y: 72 },
-			baseWidth: 130,
-			safeZone: 'Den yttre högra grässlänten; avsiktligt bort från mannen och lägerelden.'
-		},
-		mobile: {
-			ground: { x: 86, y: 57 },
-			imagePosition: { x: 74, y: 64 },
-			baseWidth: 180,
-			safeZone: 'Den högra strandremsan ovanför elden, avskild från mannens siluett och vattnet.'
-		}
-	},
-	evening: {
-		desktop: {
-			ground: { x: 90, y: 76 },
-			imagePosition: { x: 50, y: 72 },
-			baseWidth: 130,
-			safeZone: 'Den fria gräs- och stenremsan längst ut på högra sluttningen, ovanför elden.'
-		},
-		mobile: {
-			ground: { x: 86, y: 57 },
-			imagePosition: { x: 74, y: 64 },
-			baseWidth: 180,
-			safeZone: 'Den högra strandremsan ovanför elden, avskild från personen och vattnet.'
-		}
-	}
-};
-
-/** Naturliga storleksskillnader utan att ändra djurets markpunkt. */
-export const PROGRESS_COMPANION_SCALES: Record<CompanionId, number> = {
-	fox: 0.74,
-	bear: 0.85,
-	wolf: 1.1,
-	schafer: 0.72,
-	australisk_shepherd: 0.72
-};
-
-export type ProgressPlacementInput = {
-	scene: ProgressSceneBand;
-	companionId: CompanionId;
+export type ProgressSceneGeometryInput = {
 	containerWidth: number;
 	containerHeight: number;
-	viewportWidth: number;
 };
 
-export type ProgressPlacement = {
-	left: number;
-	top: number;
-	width: number;
-	groundLeft: number;
-	groundTop: number;
-	imagePosition: string;
-	viewport: 'desktop' | 'mobile';
-};
-
-/**
- * Översätter en punkt i originalbilden till den synliga object-fit: cover-ytan.
- * Bild och overlay har därmed samma koordinatsystem även när hero-rutan croppas.
- */
 type SceneGeometry = {
-	placement: SceneViewportPlacement;
-	viewport: 'desktop' | 'mobile';
-	scale: number;
 	renderedWidth: number;
 	renderedHeight: number;
 	offsetX: number;
@@ -127,21 +18,25 @@ type SceneGeometry = {
 };
 
 /**
- * object-fit: cover-geometrin för hero-bilden: hur mycket originalbilden skalas
- * och var den hamnar i containern. Enda stället där den räknas ut, så
- * följeslagarens markpunkt och stugans klickyta alltid delar koordinatsystem.
+ * object-fit: contain-geometrin för hero-bilden: hur mycket originalbilden
+ * skalas och var den hamnar i containern.
+ *
+ * Speglar exakt vad CSS gör i routen - `object-fit: contain` med
+ * `object-position: center`. Contain skalar efter den MINSTA kvoten, så hela
+ * kompositionen ryms, och det som blir över fördelas lika på båda sidor.
+ *
+ * Just nu har scenrutan samma aspect-ratio som bilden (1672:941), så inget
+ * utrymme blir över. Det är medvetet inget antagande här: räknas offset ut
+ * ändå fortsätter stugans klickyta att ligga rätt även om rutan en dag får en
+ * annan proportion.
  */
 function getSceneGeometry({
-	scene,
 	containerWidth,
-	containerHeight,
-	viewportWidth
-}: Omit<ProgressPlacementInput, 'companionId'>): SceneGeometry | null {
+	containerHeight
+}: ProgressSceneGeometryInput): SceneGeometry | null {
 	if (containerWidth <= 0 || containerHeight <= 0) return null;
 
-	const viewport = viewportWidth <= PROGRESS_COMPACT_BREAKPOINT ? 'mobile' : 'desktop';
-	const placement = PROGRESS_SCENE_PLACEMENTS[scene][viewport];
-	const scale = Math.max(
+	const scale = Math.min(
 		containerWidth / PROGRESS_SCENE_IMAGE_SIZE.width,
 		containerHeight / PROGRESS_SCENE_IMAGE_SIZE.height
 	);
@@ -149,38 +44,11 @@ function getSceneGeometry({
 	const renderedHeight = PROGRESS_SCENE_IMAGE_SIZE.height * scale;
 
 	return {
-		placement,
-		viewport,
-		scale,
 		renderedWidth,
 		renderedHeight,
-		offsetX: (containerWidth - renderedWidth) * (placement.imagePosition.x / 100),
-		offsetY: (containerHeight - renderedHeight) * (placement.imagePosition.y / 100)
-	};
-}
-
-export function getProgressCompanionPlacement({
-	scene,
-	companionId,
-	containerWidth,
-	containerHeight,
-	viewportWidth
-}: ProgressPlacementInput): ProgressPlacement | null {
-	const geometry = getSceneGeometry({ scene, containerWidth, containerHeight, viewportWidth });
-	if (!geometry) return null;
-
-	const { placement, viewport, scale, renderedWidth, renderedHeight, offsetX, offsetY } = geometry;
-	const groundLeft = offsetX + renderedWidth * (placement.ground.x / 100);
-	const groundTop = offsetY + renderedHeight * (placement.ground.y / 100);
-
-	return {
-		left: groundLeft,
-		top: groundTop,
-		width: placement.baseWidth * scale * PROGRESS_COMPANION_SCALES[companionId],
-		groundLeft,
-		groundTop,
-		imagePosition: `${placement.imagePosition.x}% ${placement.imagePosition.y}%`,
-		viewport
+		// object-position: center - resten av rutan delas lika på båda sidor.
+		offsetX: (containerWidth - renderedWidth) / 2,
+		offsetY: (containerHeight - renderedHeight) / 2
 	};
 }
 
@@ -202,7 +70,7 @@ export type ProgressCabinPlacement = { left: number; top: number; width: number;
  * null när det som återstår är för litet för att träffa.
  */
 export function getProgressCabinPlacement(
-	input: Omit<ProgressPlacementInput, 'companionId'>
+	input: ProgressSceneGeometryInput
 ): ProgressCabinPlacement | null {
 	const geometry = getSceneGeometry(input);
 	if (!geometry) return null;
@@ -240,9 +108,7 @@ export function getProgressCabinPlacement(
 	return { left: hitLeft, top: hitTop, width, height };
 }
 
-export function getProgressCabinPlacementStyle(
-	input: Omit<ProgressPlacementInput, 'companionId'>
-): string {
+export function getProgressCabinPlacementStyle(input: ProgressSceneGeometryInput): string {
 	const cabin = getProgressCabinPlacement(input);
 	if (!cabin) return '';
 
@@ -251,19 +117,5 @@ export function getProgressCabinPlacementStyle(
 		`--progress-cabin-top: ${cabin.top}px`,
 		`--progress-cabin-width: ${cabin.width}px`,
 		`--progress-cabin-height: ${cabin.height}px`
-	].join('; ');
-}
-
-export function getProgressCompanionPlacementStyle(input: ProgressPlacementInput): string {
-	const placement = getProgressCompanionPlacement(input);
-	if (!placement) return '';
-
-	return [
-		`--progress-companion-left: ${placement.left}px`,
-		`--progress-companion-top: ${placement.top}px`,
-		`--progress-companion-width: ${placement.width}px`,
-		`--progress-companion-ground-left: ${placement.groundLeft}px`,
-		`--progress-companion-ground-top: ${placement.groundTop}px`,
-		`--progress-scene-object-position: ${placement.imagePosition}`
 	].join('; ');
 }

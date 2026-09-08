@@ -8,7 +8,6 @@
 	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
-	import { page } from '$app/stores';
 	import {
 		PROGRESS_SCENE_SOURCES,
 		PROGRESS_SCENE_CROSSFADE_MS,
@@ -16,7 +15,6 @@
 		completeProgressSceneTransition,
 		getProgressSceneBand,
 		getProgressSceneLabel,
-		parseProgressSceneOverride,
 		prepareProgressSceneTransition,
 		type ProgressSceneBand,
 		type ProgressSceneTransitionState
@@ -102,10 +100,6 @@
 	// Tidsläget styr etikett och lokala ambient-toner. Den responsiva sjöbilden
 	// behåller samma komposition genom alla spann.
 	let sceneBand = $state<ProgressSceneBand>(getProgressSceneBand());
-	// TILLFÄLLIG: ?scene=morning|day|afternoon|evening för okulär granskning.
-	// Läses ur page-storen så den gäller redan vid serverrendering, utan flash.
-	const sceneOverride = $derived(parseProgressSceneOverride($page.url.searchParams.get('scene')));
-	const activeSceneBand = $derived(sceneOverride ?? sceneBand);
 	let sceneTransition = $state<ProgressSceneTransitionState>({
 		visibleBand: getProgressSceneBand(),
 		pendingBand: null,
@@ -132,7 +126,7 @@
 	}
 
 	$effect(() => {
-		prepareSceneTransition(activeSceneBand);
+		prepareSceneTransition(sceneBand);
 	});
 
 	let cabinPlacementStyle = $state('');
@@ -621,17 +615,14 @@
 	}
 
 	/**
-	 * Stugans klickyta räknas från samma originalbild som scenen.
+	 * Stugans klickyta räknas från samma originalbild som scenen. Scenrutans
+	 * uppmätta storlek är allt geometrin behöver - bilden är densamma genom
+	 * dygnet och renderas contain-centrerad i alla brytpunkter.
 	 */
 	function updateProgressCabinPlacement(element = sceneEl) {
 		if (!browser || !element) return;
 		const { width, height } = element.getBoundingClientRect();
-		const input = {
-			scene: sceneTransition.visibleBand,
-			containerWidth: width,
-			containerHeight: height,
-			viewportWidth: window.innerWidth
-		};
+		const input = { containerWidth: width, containerHeight: height };
 		cabinPlacement = getProgressCabinPlacement(input);
 		cabinPlacementStyle = getProgressCabinPlacementStyle(input);
 	}
@@ -962,11 +953,10 @@
 		};
 	});
 
-	// Scenens storlek och dygnsläge kan flytta stugans klickyta.
+	// Klickytan mäts om så fort scenrutan byts ut. Storleksändringar fångas av
+	// ResizeObservern; dygnsspannet påverkar inte längre geometrin.
 	$effect(() => {
 		const renderedSceneEl = sceneEl;
-		activeSceneBand;
-		isNarrowViewport;
 		updateProgressCabinPlacement(renderedSceneEl);
 	});
 

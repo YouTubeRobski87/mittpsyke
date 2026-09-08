@@ -434,51 +434,6 @@ export function getWorldMarks(
 	});
 }
 
-/** Följeslagarens plats i scenen, mätt i procent av scenrutan. */
-export interface CompanionMarkBox {
-	x: number;
-	y: number;
-	width: number;
-	height: number;
-}
-
-/**
- * Så mycket historik krävs innan följeslagaren får säga att den känner igen
- * återkomsten. Utan det vore raden en artighet, inte en observation.
- */
-const COMPANION_MARK_MIN_ACTIVE_DAYS = 3;
-
-/**
- * Följeslagaren som ett spår att röra vid. Den ritas inte av spårlagret — djuret
- * finns redan i scenen — så det här är enbart en träffyta ovanpå den, med samma
- * beröring och samma rad som övriga spår.
- *
- * Rutan mäts i vyn i stället för att skrivas här: följeslagarens placering
- * varierar med djur, pose och brytpunkt, och en kopierad koordinat skulle
- * hamna fel för björnen och vargen.
- */
-export function getCompanionMark(
-	presence: WorldPresence,
-	box: CompanionMarkBox | null
-): WorldMark | null {
-	if (!box) return null;
-	if (box.width <= 0 || box.height <= 0) return null;
-	if (presence.activeDays < COMPANION_MARK_MIN_ACTIVE_DAYS) return null;
-
-	return {
-		id: 'companion',
-		label: 'Följeslagaren',
-		revealText: 'Den verkar ha vant sig vid att du kommer tillbaka.',
-		x: box.x,
-		y: box.y,
-		width: box.width,
-		height: box.height,
-		depth: 0.9,
-		// Ritas aldrig av spårlagret; djuret självt är formen.
-		invisible: true
-	};
-}
-
 // ── Återkomst ──
 // Besöket lagras lokalt hos användaren. Det finns ingen serversignal för
 // "senast sedd" på Framsteg, och en lokal nyckel räcker: den svarar på exakt

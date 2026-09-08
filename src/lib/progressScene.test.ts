@@ -9,7 +9,6 @@ import {
 	completeProgressSceneTransition,
 	getProgressSceneBand,
 	getProgressSceneLabel,
-	parseProgressSceneOverride,
 	prepareProgressSceneTransition,
 	type ProgressSceneBand
 } from './progressScene';
@@ -135,6 +134,16 @@ describe('Framstegs fullständiga dygnsscener', () => {
 		expect(route).toContain("fetch('/api/diary/stats-timeline'");
 	});
 
+	it('låter ingen URL-parameter styra vilket dygnsspann som visas', () => {
+		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
+
+		// Spannet kommer bara från klockan. Den tillfälliga ?scene=-genvägen för
+		// okulär granskning är borta och får inte återinföras.
+		expect(route).not.toContain('parseProgressSceneOverride');
+		expect(route).not.toContain("searchParams.get('scene')");
+		expect(route).toContain('prepareSceneTransition(sceneBand)');
+	});
+
 	it('låter dashboardens dynamiska companion-system vara kvar', () => {
 		const dashboard = readFileSync(join(process.cwd(), 'src/routes/dashboard/+page.svelte'), 'utf8');
 
@@ -163,16 +172,6 @@ describe('etikett och alt', () => {
 				{ morning: 'Morgon', day: 'Dag', afternoon: 'Eftermiddag', evening: 'Kväll' }[band]
 			);
 		}
-	});
-});
-
-describe('parseProgressSceneOverride', () => {
-	it.each(PROGRESS_SCENE_BANDS)('accepterar %s', (band) => {
-		expect(parseProgressSceneOverride(band)).toBe(band);
-	});
-
-	it.each([null, undefined, '', 'night', 'DAG', 'nonsense'])('avvisar %s', (value) => {
-		expect(parseProgressSceneOverride(value)).toBeNull();
 	});
 });
 

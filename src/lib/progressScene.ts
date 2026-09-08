@@ -112,14 +112,3 @@ export function clearProgressSceneOutgoing(
 ): ProgressSceneTransitionState {
 	return state.outgoingBand ? { ...state, outgoingBand: null } : state;
 }
-
-/**
- * TILLFÄLLIG: ?scene=morning|day|afternoon|evening tvingar fram ett dygnsläge
- * oavsett klockan, så scenerna går att granska okulärt. Tas bort innan commit.
- */
-export function parseProgressSceneOverride(value: string | null | undefined): ProgressSceneBand | null {
-	if (!value) return null;
-	return (PROGRESS_SCENE_BANDS as readonly string[]).includes(value)
-		? (value as ProgressSceneBand)
-		: null;
-}
