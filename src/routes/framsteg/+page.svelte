@@ -5,12 +5,9 @@
 	import { browser } from '$app/environment';
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
 	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
-	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
-	import CompanionFriend from '$lib/components/world/CompanionFriend.svelte';
-	import CompanionVisitor from '$lib/components/world/CompanionVisitor.svelte';
 	import { page } from '$app/stores';
 	import {
 		PROGRESS_SCENE_SOURCES,
@@ -26,24 +23,14 @@
 	} from '$lib/progressScene';
 	import {
 		getProgressCompanionDayState,
-		getProgressCompanionDisplayName,
 		getProgressCompanionSeason,
-		getProgressCompanionAnimal,
-		getProgressCompanionArtId,
-		getWorldCompanionId,
 		type ProgressCompanionDayState,
 		type ProgressCompanionSeason,
 		type ProgressCompanionSelection
 	} from '$lib/progressCompanion';
-	import { getCompanionBasePose } from '$lib/companionPoseState';
-	import {
-		type CompanionId,
-		type CompanionPose as CompanionPoseData
-	} from '$lib/companionPoseManifest';
 	import {
 		getProgressCabinPlacement,
 		getProgressCabinPlacementStyle,
-		getProgressCompanionPlacementStyle,
 		type ProgressCabinPlacement
 	} from '$lib/progressCompanionPlacement';
 	import { getGardenGrowthPoints, getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
@@ -52,13 +39,11 @@
 		buildWorldPresence,
 		getDaysSinceLastVisit,
 		getWorldGrowthLevel,
-		getCompanionMark,
 		getWorldMarks,
 		getWorldReturnCopy,
 		getWorldStage,
 		readLastVisit,
-		recordVisit,
-		type CompanionMarkBox
+		recordVisit
 	} from '$lib/world/worldStage';
 	import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
 	import {
@@ -112,19 +97,10 @@
 
 	type CompanionTimeOfDay = ProgressCompanionDayState;
 
-	interface CompanionScene {
-		image: string;
-		season: ProgressCompanionSeason;
-		timeOfDay: ProgressCompanionDayState;
-		alt: string;
-		copy: string;
-		anonymousCopy: string;
-	}
-
 	let season = $state<ProgressCompanionSeason>(getProgressCompanionSeason());
 	let timeOfDay = $state<CompanionTimeOfDay>(getProgressCompanionDayState());
-	// Landskapsbilden väljs på tid, inte filtreras fram. Egen state från
-	// progressScene så bild och etikett alltid kommer ur samma spann.
+	// Tidsläget styr etikett och lokala ambient-toner. Den responsiva sjöbilden
+	// behåller samma komposition genom alla spann.
 	let sceneBand = $state<ProgressSceneBand>(getProgressSceneBand());
 	// TILLFÄLLIG: ?scene=morning|day|afternoon|evening för okulär granskning.
 	// Läses ur page-storen så den gäller redan vid serverrendering, utan flash.
@@ -137,8 +113,6 @@
 	});
 	let clearSceneTransitionTimer: number | null = null;
 	const visibleSceneSources = $derived(PROGRESS_SCENE_SOURCES[sceneTransition.visibleBand]);
-	let companionPoseId = $state('idle');
-	let companionBasePose = $state<CompanionPoseData | null>(null);
 	const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
 
 	function prepareSceneTransition(nextBand: ProgressSceneBand) {
@@ -150,7 +124,7 @@
 		if (next === sceneTransition) return;
 		if (clearSceneTransitionTimer !== null) window.clearTimeout(clearSceneTransitionTimer);
 		sceneTransition = next;
-		updateProgressCompanionPlacement();
+		updateProgressCabinPlacement();
 		clearSceneTransitionTimer = window.setTimeout(() => {
 			sceneTransition = clearProgressSceneOutgoing(sceneTransition);
 			clearSceneTransitionTimer = null;
@@ -161,68 +135,12 @@
 		prepareSceneTransition(activeSceneBand);
 	});
 
-	function getCompanionPoseCopy(poseId: string, anonymous: boolean, companionId: CompanionId) {
-		const companionName = getProgressCompanionDisplayName(companionId);
-		if (companionId === 'bear') {
-			if (poseId.startsWith('sleep')) {
-				return anonymous ? `${companionName} vilar lugnt medan platsen är stilla.` : `${companionName} vilar lugnt vid sjön.`;
-			}
-			return anonymous ? `${companionName} håller platsen lugnt sällskap.` : `${companionName} håller dig lugnt sällskap.`;
-		}
-		if (companionId === 'wolf') {
-			return anonymous ? `${companionName} håller platsen stilla sällskap.` : `${companionName} håller dig stilla sällskap.`;
-		}
-		if (poseId.startsWith('sleep')) {
-			return anonymous ? `${companionName} sover lugnt medan platsen vilar.` : `${companionName} sover lugnt vid sjön.`;
-		}
-
-		if (poseId === 'rest') {
-			return anonymous ? `${companionName} vilar lugnt medan platsen växer fram.` : `${companionName} vilar lugnt vid sjön.`;
-		}
-
-		if (poseId === 'drink') {
-			return anonymous ? `${companionName} har gått ner till vattnet medan platsen vilar.` : `${companionName} har gått ner till vattnet.`;
-		}
-
-		if (poseId === 'walk') {
-			return anonymous ? `${companionName} rör sig långsamt genom platsen.` : `${companionName} går långsamt genom platsen.`;
-		}
-
-		if (poseId === 'sniff') {
-			return anonymous ? `${companionName} nosar försiktigt i gräset.` : `${companionName} nosar försiktigt vid strandkanten.`;
-		}
-
-		if (poseId === 'stretch') {
-			return anonymous ? `${companionName} sträcker lugnt på sig.` : `${companionName} sträcker lugnt på sig vid sjön.`;
-		}
-
-		if (poseId === 'evening-lake' || poseId.startsWith('sit') || poseId.startsWith('look')) {
-			return anonymous ? `${companionName} sitter stilla och håller platsen sällskap.` : `${companionName} sitter stilla och håller dig sällskap.`;
-		}
-
-		return anonymous ? `${companionName} håller platsen sällskap.` : `${companionName} håller dig sällskap.`;
-	}
-
-	const sceneCompanionId = $derived(
-		getWorldCompanionId(
-			getProgressCompanionAnimal(data.isAnonymous ? { id: 'fox' } : data.progressCompanion)?.id
-		)
-	) as CompanionId;
-
-	const companionScene = $derived<CompanionScene>({
-		image: visibleSceneSources.fallback,
-		season,
-		timeOfDay,
-		alt: `Din följeslagare, ${getProgressCompanionDisplayName(sceneCompanionId)}, vid sjön`,
-		copy: getCompanionPoseCopy(companionPoseId, false, sceneCompanionId),
-		anonymousCopy: getCompanionPoseCopy(companionPoseId, true, sceneCompanionId)
-	});
-	let progressPlacementStyle = $state('');
+	let cabinPlacementStyle = $state('');
 	const progressSceneStyle = $derived(
-		`${progressPlacementStyle}${progressPlacementStyle ? '; ' : ''}--progress-scene-crossfade-duration: ${PROGRESS_SCENE_CROSSFADE_MS}ms`
+		`${cabinPlacementStyle}${cabinPlacementStyle ? '; ' : ''}--progress-scene-crossfade-duration: ${PROGRESS_SCENE_CROSSFADE_MS}ms`
 	);
 	// Stugan finns bara som motiv i scenbilden. Klickytan renderas därför bara
-	// när den uppmätta rutan faktiskt syns i den aktuella beskärningen.
+	// när den uppmätta rutan faktiskt syns i den aktuella scenytan.
 	let cabinPlacement = $state<ProgressCabinPlacement | null>(null);
 
 	interface StreakData {
@@ -548,15 +466,20 @@
 	// Serverrenderingen utgår från den breda scenen. De minsta spåren tas bort
 	// först när klienten vet att vyn faktiskt är smal.
 	let isNarrowViewport = $state(false);
-	// Följeslagarens ruta mäts ur den renderade scenen. Placeringen varierar med
-	// djur, pose och brytpunkt, så en fast koordinat skulle hamna fel.
+	// Stuglänken mäts ur den renderade scenen så att den följer motivet vid varje
+	// brytpunkt i stället för att ligga på en fast pixelposition.
 	let sceneEl = $state<HTMLElement | null>(null);
-	let companionMarkBox = $state<CompanionMarkBox | null>(null);
-	const companionMark = $derived(getCompanionMark(worldPresence, companionMarkBox));
-	const worldMarks = $derived([
-		...getWorldMarks(worldPresence, { timeOfDay, narrow: isNarrowViewport }),
-		...(companionMark ? [companionMark] : [])
-	]);
+	const worldMarks = $derived.by(() => {
+		const fullSceneMarks = getWorldMarks(worldPresence, { timeOfDay });
+		if (!isNarrowViewport) return fullSceneMarks;
+
+		// Mobilreglerna avgör fortfarande vilka små spår som får plats, men deras
+		// gamla crop-koordinater ska inte användas när hela sjöbilden visas.
+		const narrowMarkIds = new Set(
+			getWorldMarks(worldPresence, { timeOfDay, narrow: true }).map((mark) => mark.id)
+		);
+		return fullSceneMarks.filter((mark) => narrowMarkIds.has(mark.id));
+	});
 	const worldReturnCopy = $derived(getWorldReturnCopy(worldPresence, daysSinceLastVisit));
 
 	// Samma tillväxtunderlag som Dashboard, men kontinuitet får höja nivån:
@@ -570,9 +493,9 @@
 	);
 	// Växtnivån styr hur rik den beständiga världen är. Reaktiv: uppdateras när
 	// loadProgressData() satt loadedGrowthLevel efter klientfetch.
-	// De fyra landskapsbilderna har himlen inbakad: moln, sol och måne finns
-	// redan i motivet. Lagren stängs därför av här - annars får kvällsbilden två
-	// månar och morgon/eftermiddag två solar. Avstängningen är lokal via
+	// Sjöscenen har himmel och sol inbakade i motivet. De separata himmelslagren
+	// stängs därför av här för att undvika dubbla solar eller en extra måne.
+	// Avstängningen är lokal via
 	// features; Mitt Hem och Kvällsstugan väljer in moon/cloud själva och rörs
 	// inte. Vatten, dimma, lövverk och drift är kvar som ambient rörelse.
 	const livingWorldScene = $derived(
@@ -698,36 +621,9 @@
 	}
 
 	/**
-	 * Mäter var följeslagaren faktiskt hamnade och översätter rutan till procent
-	 * av scenen. Misslyckas mätningen lämnas rutan tom, och då finns ingen
-	 * träffyta alls — resten av scenen påverkas inte.
+	 * Stugans klickyta räknas från samma originalbild som scenen.
 	 */
-	function measureCompanionBox() {
-		if (!browser || !sceneEl) return;
-		const pose = sceneEl.querySelector('.progress-companion-pose');
-		if (!(pose instanceof HTMLElement)) {
-			companionMarkBox = null;
-			return;
-		}
-		const sceneRect = sceneEl.getBoundingClientRect();
-		const poseRect = pose.getBoundingClientRect();
-		if (sceneRect.width <= 0 || sceneRect.height <= 0 || poseRect.width <= 0) {
-			companionMarkBox = null;
-			return;
-		}
-		companionMarkBox = {
-			x: ((poseRect.left - sceneRect.left) / sceneRect.width) * 100,
-			y: ((poseRect.top - sceneRect.top) / sceneRect.height) * 100,
-			width: (poseRect.width / sceneRect.width) * 100,
-			height: (poseRect.height / sceneRect.height) * 100
-		};
-	}
-
-	/**
-	 * Bildens crop och följeslagarens markpunkt räknas från samma originalbild.
-	 * Inga procentvärden från hero-containern används här.
-	 */
-	function updateProgressCompanionPlacement(element = sceneEl) {
+	function updateProgressCabinPlacement(element = sceneEl) {
 		if (!browser || !element) return;
 		const { width, height } = element.getBoundingClientRect();
 		const input = {
@@ -736,15 +632,8 @@
 			containerHeight: height,
 			viewportWidth: window.innerWidth
 		};
-		// Stugans klickyta mäts i samma svep som följeslagaren, ur samma
-		// cover-geometri. Ingen extra observer, ingen andra sanning om cropen.
 		cabinPlacement = getProgressCabinPlacement(input);
-		progressPlacementStyle = [
-			getProgressCompanionPlacementStyle({ ...input, companionId: sceneCompanionId }),
-			getProgressCabinPlacementStyle(input)
-		]
-			.filter(Boolean)
-			.join('; ');
+		cabinPlacementStyle = getProgressCabinPlacementStyle(input);
 	}
 
 	function chooseSupportTopic(topic: string) {
@@ -999,40 +888,29 @@
 		narrowQuery.addEventListener('change', onNarrowChange);
 
 		// Scenen ändrar storlek när bilden laddats och vid varje omritning. En
-		// ResizeObserver håller både den synliga cropens markpunkt och följeslagarens
-		// träffyta i synk med den verkliga renderade scenen.
+		// ResizeObserver håller stugans klickyta i synk med den renderade scenen.
 		const sceneResizeObserver =
 			typeof ResizeObserver !== 'undefined' && sceneEl
-				? new ResizeObserver(() => {
-					updateProgressCompanionPlacement();
-					measureCompanionBox();
+			? new ResizeObserver(() => {
+					updateProgressCabinPlacement();
 				})
 				: null;
 		if (sceneResizeObserver && sceneEl) sceneResizeObserver.observe(sceneEl);
-		updateProgressCompanionPlacement();
-		measureCompanionBox();
+		updateProgressCabinPlacement();
 
 		const cleanupNarrowQuery = () => {
 			narrowQuery.removeEventListener('change', onNarrowChange);
 			sceneResizeObserver?.disconnect();
 		};
 
-		const updateCompanionTimeOfDay = () => {
+		const updateSceneTimeOfDay = () => {
 			const now = new Date();
 			timeOfDay = getProgressCompanionDayState(now);
 			sceneBand = getProgressSceneBand(now);
 			season = getProgressCompanionSeason(now);
-			companionBasePose = getCompanionBasePose(
-				now,
-				browser ? window.localStorage : null,
-				sceneCompanionId,
-				'progress',
-				'resting'
-			);
-			companionPoseId = companionBasePose.id;
 		};
-		updateCompanionTimeOfDay();
-		const companionTimeTimer = window.setInterval(updateCompanionTimeOfDay, 60 * 1000);
+		updateSceneTimeOfDay();
+		const companionTimeTimer = window.setInterval(updateSceneTimeOfDay, 60 * 1000);
 		const cleanupSceneWatchers = () => {
 			window.clearInterval(companionTimeTimer);
 			if (clearSceneTransitionTimer !== null) window.clearTimeout(clearSceneTransitionTimer);
@@ -1084,17 +962,12 @@
 		};
 	});
 
-	// Ny pose eller nytt djur betyder ny storlek och nytt läge i scenen.
+	// Scenens storlek och dygnsläge kan flytta stugans klickyta.
 	$effect(() => {
-		// Bindningen sker efter första rendern; gör den reaktiv så den första
-		// riktiga scenytan också får en placement, inte bara senare scenbyten.
 		const renderedSceneEl = sceneEl;
-		companionPoseId;
-		sceneCompanionId;
 		activeSceneBand;
 		isNarrowViewport;
-		updateProgressCompanionPlacement(renderedSceneEl);
-		measureCompanionBox();
+		updateProgressCabinPlacement(renderedSceneEl);
 	});
 
 	$effect(() => {
@@ -1231,20 +1104,18 @@
 					{/if}
 					<section
 						class="companion-banner"
-						aria-label={`Följeslagarscen, ${getProgressSceneLabel(sceneTransition.visibleBand)}`}
+						aria-label={`Sjöscen, ${getProgressSceneLabel(sceneTransition.visibleBand)}`}
 					>
 			<div
 				class="companion-media"
 				bind:this={sceneEl}
-				data-season={companionScene.season}
+				data-season={season}
 				data-time={sceneTransition.visibleBand}
-				data-companion={sceneCompanionId}
-				data-pose={companionBasePose?.id}
 				style={progressSceneStyle}
 			>
 				<!-- width/height ger proportionerna innan bilden laddats så scenen
 					 inte hoppar till. fetchpriority="high" - detta är LCP-elementet. -->
-					<!-- En egen bild per dygnsspann, med ljuset inbakat. Den synliga
+					<!-- Samma responsiva sjöscen används genom dygnet. Den synliga
 						 bilden behålls tills nästa responsiva asset är klar, så scenen
 						 aldrig blir tom under följeslagare eller world marks. -->
 					{#if sceneTransition.outgoingBand}
@@ -1252,7 +1123,7 @@
 						<img
 							class="companion-world-scene companion-world-scene--outgoing"
 							srcset={outgoingSceneSources.srcset}
-							sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
+							sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
 							src={outgoingSceneSources.fallback}
 							alt=""
 							aria-hidden="true"
@@ -1266,10 +1137,9 @@
 							class:companion-world-scene--crossfading={sceneTransition.outgoingBand !== null}
 							class="companion-world-scene companion-world-scene--visible"
 							srcset={visibleSceneSources.srcset}
-							sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
+							sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
 							src={visibleSceneSources.fallback}
-							alt=""
-							aria-hidden="true"
+							alt="En människa och en björn sitter vid sjön, med stugan och lägerelden i närheten."
 							width="1672"
 							height="941"
 							fetchpriority="high"
@@ -1283,7 +1153,7 @@
 							<img
 								class="companion-world-scene companion-world-scene--preload"
 								srcset={pendingSceneSources.srcset}
-								sizes="(max-width: 980px) calc(100vw - 44px), (max-width: 1536px) calc(100vw - 96px), 1440px"
+								sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
 								src={pendingSceneSources.fallback}
 								alt=""
 								aria-hidden="true"
@@ -1305,38 +1175,18 @@
 						data-testid="progress-cabin-link"
 					></a>
 				{/if}
-				<span class="companion-ground-shadow" aria-hidden="true"></span>
-				<CompanionPose
-					class="progress-companion-pose"
-					basePose={companionBasePose}
-					companionId={sceneCompanionId}
-					scene="progress"
-					behaviourProfile="quiet"
-					decorative
-				/>
-				<CompanionVisitor
-					class="progress-companion-visitor"
-					mainCompanionId={sceneCompanionId}
-					isSleeping={timeOfDay === 'night' || companionBasePose?.id.includes('sleep') === true}
-					scene="progress"
-					sceneAllowsVisitor={true}
-				/>
-				<span class="companion-foreground-edge" aria-hidden="true"></span>
 				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
-				<CompanionFriend class="progress-companion-friend" companionId={sceneCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
 				<WorldMarks class="progress-world-marks" marks={worldMarks} {visitSeed} />
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
+			</div>
 			<div class="companion-copy">
 				<span class="companion-eyebrow">{getProgressSceneLabel(sceneTransition.visibleBand)}</span>
 				<h2>Din plats idag</h2>
 				<p>
-					{isAnonymous
-						? companionScene.anonymousCopy
-						: companionScene.copy}
+					En människa och en björn sitter stilla vid stranden och blickar ut över sjön.
 				</p>
 				<p class="companion-reflection">{worldReturnCopy ?? livingWorldReflectionCopy}</p>
-			</div>
 			</div>
 					</section>
 	<div class="framsteg-layout framsteg-layout-v2">
@@ -2508,6 +2358,7 @@
 	}
 
 	.companion-banner {
+		position: relative;
 		overflow: hidden;
 		border: 1px solid color-mix(in srgb, var(--color-dashboard-border) 82%, transparent);
 		border-radius: 14px;
@@ -2523,10 +2374,10 @@
 		--scene-foreground: 4;
 		--scene-overlay: 5;
 		width: 100%;
-		height: clamp(220px, 22vw, 300px);
+		height: auto;
+		aspect-ratio: 1672 / 941;
 		overflow: hidden;
-		/* Neutral bas som bara syns innan bilden laddats. Varje dygnsspann har nu
-		   sitt eget ljus inbakat i bilden, så grundtonen ska inte färga något. */
+		/* Neutral bas som bara syns innan den responsiva sjöbilden laddats. */
 		background: #10192a;
 		isolation: isolate;
 	}
@@ -2584,9 +2435,9 @@
 		background: linear-gradient(180deg, rgb(2 13 31 / 0.2) 0%, rgb(2 10 25 / 0.54) 34%, rgb(2 8 20 / 0.88) 100%);
 	}
 
-	/* Genvägen hem till stugan. Ytan följer bildens cover-geometri via
+	/* Genvägen hem till stugan. Ytan följer bildens scengeometri via
 	   variablerna från getProgressCabinPlacementStyle, ligger över bakgrunden men
-	   under följeslagaren och scenens copy, och ändrar ingenting i layouten. */
+	   under scenens copy och ändrar ingenting i layouten. */
 	.progress-cabin-link {
 		position: absolute;
 		left: var(--progress-cabin-left, 0);
@@ -2623,9 +2474,8 @@
 		z-index: var(--scene-background);
 		width: 100%;
 		height: 100%;
-		object-fit: cover;
-		/* Samma object-position används av getProgressCompanionPlacement(). */
-		object-position: var(--progress-scene-object-position, 50% 72%);
+		object-fit: contain;
+		object-position: center;
 		display: block;
 		transition: opacity var(--progress-scene-crossfade-duration, 1000ms) ease;
 	}
@@ -2667,108 +2517,6 @@
 		z-index: var(--scene-ambient);
 	}
 
-	/* Ingen dygnsgradering av scenbilden längre. Morgon, dag, eftermiddag och
-	   kväll är fyra separata bilder med rätt ljus inbakat; ett filter ovanpå
-	   skulle överexponera morgonen och tona ner kvällen dubbelt. */
-
-	.companion-media :global(.progress-companion-pose) {
-		position: absolute;
-		/* Markpunkten beräknas ur samma object-fit-crop som scenbilden. */
-		left: var(--progress-companion-left);
-		top: var(--progress-companion-top);
-		z-index: var(--scene-companion);
-		width: var(--progress-companion-width);
-		transform: translate3d(-50%, -100%, 0);
-		transform-origin: 50% 100%;
-		--companion-grade: saturate(0.7) contrast(0.88) brightness(0.94) sepia(0.14)
-			hue-rotate(-3deg);
-	}
-
-	.companion-media[data-time='morning'] :global(.progress-companion-pose) {
-		--companion-grade: saturate(0.82) contrast(0.9) brightness(1.08) sepia(0.06)
-			hue-rotate(2deg);
-	}
-
-	.companion-media[data-time='day'] :global(.progress-companion-pose) {
-		--companion-grade: saturate(0.88) contrast(0.92) brightness(1.14) sepia(0.03)
-			hue-rotate(5deg);
-	}
-
-	.companion-media[data-time='afternoon'] :global(.progress-companion-pose) {
-		--companion-grade: saturate(0.68) contrast(0.88) brightness(0.88) sepia(0.18)
-			hue-rotate(-6deg);
-	}
-
-	.companion-media[data-companion='wolf'][data-time='afternoon'] :global(.progress-companion-pose) {
-		--companion-grade: saturate(0.62) contrast(0.84) brightness(0.84) sepia(0.21)
-			hue-rotate(-8deg) blur(0.12px);
-	}
-
-	.companion-media[data-time='evening'] :global(.progress-companion-pose) {
-		--companion-grade: saturate(0.55) contrast(0.84) brightness(0.78) sepia(0.14)
-			hue-rotate(5deg);
-	}
-
-	.companion-media :global(.progress-companion-pose .companion-pose-image) {
-		filter: var(--companion-grade) drop-shadow(0 7px 8px rgb(37 31 20 / 0.1));
-		-webkit-mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.88) 89%, transparent 100%);
-		mask-image: radial-gradient(ellipse at 50% 52%, #000 72%, rgb(0 0 0 / 0.88) 89%, transparent 100%);
-	}
-
-	.companion-media[data-companion='fox'] :global(.progress-companion-pose .companion-pose-image) {
-		filter: var(--companion-grade) brightness(0.94) drop-shadow(0 7px 8px rgb(37 31 20 / 0.1));
-	}
-
-	/* Vargbilden är redan frilagd. Låt dess egen alpha-kant möta skuggan och
-	 * förgrunden, i stället för att lägga på den generella panoramamasken. */
-	.companion-media[data-companion='wolf'] :global(.progress-companion-pose .companion-pose-image) {
-		-webkit-box-reflect: below -22%
-			linear-gradient(to bottom, rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.08) 38%, transparent 76%);
-		-webkit-mask-image: none;
-		mask-image: none;
-	}
-
-	.companion-ground-shadow,
-	.companion-foreground-edge {
-		position: absolute;
-		pointer-events: none;
-	}
-
-	.companion-ground-shadow {
-		left: var(--progress-companion-ground-left);
-		top: var(--progress-companion-ground-top);
-		z-index: var(--scene-ambient);
-		width: clamp(38px, 6%, 60px);
-		height: clamp(6px, 0.9vw, 10px);
-		border-radius: 52% 48% 58% 42%;
-		background:
-			radial-gradient(ellipse at 45% 58%, rgb(28 31 20 / 0.28), transparent 62%),
-			linear-gradient(88deg, transparent 0%, rgb(41 43 27 / 0.16) 32%, rgb(31 34 22 / 0.18) 58%, transparent 100%);
-		filter: blur(4.5px);
-		opacity: 0.48;
-		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-18deg) scaleX(1.18);
-		transform-origin: 44% 50%;
-		mix-blend-mode: multiply;
-	}
-
-	.companion-foreground-edge {
-		left: var(--progress-companion-ground-left);
-		top: calc(var(--progress-companion-ground-top) + 1px);
-		z-index: var(--scene-foreground);
-		width: clamp(46px, 7.2%, 72px);
-		height: clamp(12px, 1.9vw, 20px);
-		background:
-			radial-gradient(38% 20% at 26% 78%, rgb(58 67 43 / 0.38), transparent 72%),
-			radial-gradient(36% 18% at 72% 82%, rgb(84 86 59 / 0.26), transparent 74%),
-			linear-gradient(78deg, transparent 0 20%, rgb(61 81 46 / 0.34) 21% 23%, transparent 24%),
-			linear-gradient(96deg, transparent 0 39%, rgb(79 97 54 / 0.3) 40% 42%, transparent 43%),
-			linear-gradient(82deg, transparent 0 58%, rgb(50 70 42 / 0.34) 59% 61%, transparent 62%);
-		filter: blur(0.18px);
-		opacity: 0.68;
-		transform: translate3d(-50%, -50%, 0) rotate(-8deg) skewX(-8deg);
-		mix-blend-mode: multiply;
-	}
-
 	.progress-ripple {
 		--progress-ripple-border: rgb(238 251 248 / 0.3);
 		--progress-ripple-fill: rgb(255 255 255 / 0.1);
@@ -2805,41 +2553,8 @@
 		animation-delay: -8.8s;
 	}
 
-	.companion-media :global(.progress-companion-pose)::before {
-		content: '';
-		position: absolute;
-		z-index: -1;
-		left: 17%;
-		bottom: 9%;
-		width: 58%;
-		height: 6%;
-		border-radius: 50%;
-		background: rgb(43 39 27 / 0.08);
-		filter: blur(3px);
-		transform: rotate(-4deg);
-		pointer-events: none;
-	}
-
-	.companion-media :global(.progress-companion-pose)::after {
-		content: '';
-		position: absolute;
-		z-index: 3;
-		left: 14%;
-		right: 8%;
-		bottom: 4%;
-		height: 16%;
-		background:
-			radial-gradient(32% 18% at 24% 80%, rgb(74 78 52 / 0.35), transparent 70%),
-			radial-gradient(25% 14% at 68% 86%, rgb(96 93 66 / 0.22), transparent 72%),
-			linear-gradient(82deg, transparent 0 17%, rgb(86 103 61 / 0.4) 18% 19%, transparent 20%),
-			linear-gradient(98deg, transparent 0 42%, rgb(65 85 51 / 0.32) 43% 44%, transparent 45%),
-			linear-gradient(76deg, transparent 0 60%, rgb(91 109 65 / 0.36) 61% 62%, transparent 63%);
-		opacity: 0.36;
-		pointer-events: none;
-	}
-
 	/* Spåren hör till scenens omgivning: ovanpå bakgrunden och de beständiga
-	   lagren, men alltid bakom följeslagaren och texten. */
+	   lagren, men alltid bakom bildens huvudmotiv och texten. */
 	.companion-media :global(.progress-world-marks) {
 		--world-marks-z: var(--scene-ambient);
 	}
@@ -2847,9 +2562,10 @@
 	.companion-copy {
 		position: absolute;
 		left: clamp(1.25rem, 3.2vw, 2rem);
-		right: clamp(1.25rem, 24vw, 13rem);
+		right: auto;
 		bottom: clamp(1.15rem, 3vw, 2rem);
-		z-index: var(--scene-overlay);
+		z-index: 5;
+		width: min(32rem, 46%);
 		padding: 0;
 		text-shadow: 0 2px 14px rgb(0 0 0 / 0.42);
 	}
@@ -2907,22 +2623,6 @@
 		color: var(--color-dashboard-text-muted);
 	}
 
-	@media (min-width: 981px) {
-	/* Höjd i vw så rutan behåller samma andel av bilden på alla desktopbredder:
-	   ~52% av bildhöjden. Vid den tidigare höjden syntes bara 38%, och månen
-	   (bild-y ~25%) och personen (~68%) rymdes inte samtidigt. */
-	.companion-media {
-		height: clamp(300px, 27vw, 420px);
-	}
-
-	.companion-world-scene {
-		object-position: var(--progress-scene-object-position, 50% 72%);
-	}
-
-	.companion-copy {
-		right: clamp(1.5rem, 22vw, 13rem);
-	}
-}
 	@media (max-width: 980px) {
 		.framsteg-page {
 			padding: 24px 22px 20px;
@@ -2935,6 +2635,19 @@
 		.framsteg-column {
 			position: static;
 			order: -1;
+		}
+
+		.companion-media::after {
+			display: none;
+		}
+
+		.companion-copy {
+			position: static;
+			width: 100%;
+			max-width: none;
+			padding: 0.85rem 1.2rem 1rem;
+			background: linear-gradient(135deg, rgb(13 23 39), rgb(20 35 49));
+			text-shadow: 0 2px 12px rgb(0 0 0 / 0.36);
 		}
 	}
 
@@ -3207,8 +2920,6 @@
 			margin-top: 20px;
 		}
 
-		.companion-media { height: clamp(210px, 68vw, 260px); }
-
 		.progress-preview-note {
 			position: relative;
 			top: auto;
@@ -3229,16 +2940,6 @@
 			--progress-ripple-fade-opacity: 0.025;
 		}
 
-		/* Den smalare mobilcropen samlar personen och följeslagaren till höger.
-		   Lägg copyn i övre vänsterdelen i stället för att trycka dess två stycken
-		   mot kortets nederkant. */
-		.companion-copy {
-			top: clamp(0.9rem, 4vw, 1.2rem);
-			left: 1.2rem;
-			right: clamp(4.8rem, 20vw, 6.5rem);
-			bottom: auto;
-			max-width: 18rem;
-		}
 		.companion-copy h2 { font-size: 1rem; }
 		.companion-copy p { font-size: clamp(0.78rem, 2.9vw, 0.84rem); line-height: 1.4; }
 		.companion-copy .companion-reflection { margin-top: 0.35rem; }

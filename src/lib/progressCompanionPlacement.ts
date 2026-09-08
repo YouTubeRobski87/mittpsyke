@@ -1,7 +1,7 @@
 import type { CompanionId } from './companionPoseManifest';
 import type { ProgressSceneBand } from './progressScene';
 
-/** Originalmåtten för alla fyra Framstegsscener. */
+/** Originalmåtten för Framstegs sjöscen. */
 export const PROGRESS_SCENE_IMAGE_SIZE = { width: 1672, height: 941 } as const;
 export const PROGRESS_COMPACT_BREAKPOINT = 640;
 
@@ -185,21 +185,20 @@ export function getProgressCompanionPlacement({
 }
 
 /**
- * Stugans yta i ORIGINALBILDENS koordinater (procent). Alla fyra dygnsbilder
- * delar komposition, så en enda ruta räcker. Uppmätt mot källbilden: tak,
+ * Stugans yta i ORIGINALBILDENS koordinater (procent). Uppmätt mot sjöscenen: tak,
  * väggar och farstubro, utan att nå vattnet eller trädlinjen bakom.
  */
-export const PROGRESS_CABIN_SOURCE_BOX = { x: 12.5, y: 44, width: 11, height: 12 } as const;
+export const PROGRESS_CABIN_SOURCE_BOX = { x: 6.5, y: 28, width: 16, height: 19 } as const;
 
-/** Under så här många pixlar är klickytan för liten för att vara meningsfull. */
-const MIN_CABIN_HIT_SIZE = 24;
+/** Minsta synliga motivyta respektive färdiga interaktiva träffyta. */
+const MIN_CABIN_VISIBLE_SIZE = 24;
+export const MIN_PROGRESS_CABIN_HIT_SIZE = 44;
 
 export type ProgressCabinPlacement = { left: number; top: number; width: number; height: number };
 
 /**
  * Stugans klickyta, översatt från originalbilden till den synliga hero-ytan med
- * exakt samma cover-geometri som följeslagaren använder. Rutan klipps mot
- * containern, eftersom mobilens beskärning skär av stugans vänsterkant, och blir
+ * samma scengeometri som bilden använder. Rutan klipps mot containern och blir
  * null när det som återstår är för litet för att träffa.
  */
 export function getProgressCabinPlacement(
@@ -221,11 +220,24 @@ export function getProgressCabinPlacement(
 		input.containerHeight,
 		rawTop + renderedHeight * (PROGRESS_CABIN_SOURCE_BOX.height / 100)
 	);
-	const width = right - left;
-	const height = bottom - top;
-	if (width < MIN_CABIN_HIT_SIZE || height < MIN_CABIN_HIT_SIZE) return null;
+	const visibleWidth = right - left;
+	const visibleHeight = bottom - top;
+	if (visibleWidth < MIN_CABIN_VISIBLE_SIZE || visibleHeight < MIN_CABIN_VISIBLE_SIZE) return null;
 
-	return { left, top, width, height };
+	// Motivet är lägre än 44 px på små skärmar. Förstora bara den osynliga
+	// träffytan, centrerat kring stugan och alltid inom scenen.
+	const width = Math.min(input.containerWidth, Math.max(visibleWidth, MIN_PROGRESS_CABIN_HIT_SIZE));
+	const height = Math.min(input.containerHeight, Math.max(visibleHeight, MIN_PROGRESS_CABIN_HIT_SIZE));
+	const hitLeft = Math.min(
+		input.containerWidth - width,
+		Math.max(0, left - (width - visibleWidth) / 2)
+	);
+	const hitTop = Math.min(
+		input.containerHeight - height,
+		Math.max(0, top - (height - visibleHeight) / 2)
+	);
+
+	return { left: hitLeft, top: hitTop, width, height };
 }
 
 export function getProgressCabinPlacementStyle(

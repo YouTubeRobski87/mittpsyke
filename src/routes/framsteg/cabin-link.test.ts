@@ -31,7 +31,7 @@ describe('genvägen hem via stugan', () => {
 		expect(route).toContain('{#if cabinPlacement}');
 	});
 
-	it('positioneras ur scenens cover-geometri, inte ur fasta pixlar', () => {
+	it('positioneras ur scenens bildgeometri, inte ur fasta pixlar', () => {
 		expect(route).toContain('getProgressCabinPlacement');
 		expect(route).toContain('var(--progress-cabin-left, 0)');
 		expect(route).toContain('var(--progress-cabin-top, 0)');
@@ -39,20 +39,18 @@ describe('genvägen hem via stugan', () => {
 		expect(route).toContain('var(--progress-cabin-height, 0)');
 	});
 
-	it('ligger under följeslagaren och scenens copy', () => {
+	it('ligger under scenens copy', () => {
 		const rule = route.slice(route.indexOf('.progress-cabin-link {'));
 
 		expect(rule.slice(0, rule.indexOf('}'))).toContain('z-index: var(--scene-midground)');
 	});
 });
 
-describe('resten av hero-scenen är oförändrad', () => {
+describe('Framstegsscenen runt stuglänken', () => {
 	it('gör inga andra scenlager klickbara', () => {
 		// Dekorativa lager ska förbli dekorativa. Endast stuglänken och
 		// spårlagrets knappar tar emot pekare i scenen.
 		for (const layer of [
-			'companion-ground-shadow',
-			'companion-foreground-edge',
 			'progress-ripple progress-ripple--one',
 			'progress-ripple progress-ripple--two'
 		]) {
@@ -60,19 +58,25 @@ describe('resten av hero-scenen är oförändrad', () => {
 			expect(index, layer).toBeGreaterThan(-1);
 			expect(route.slice(index, index + 120), layer).toContain('aria-hidden="true"');
 		}
-		// Scenbilden är fortfarande dekorativ och utan egen länk.
-		expect(route).toMatch(/class="companion-world-scene(?: [^"]*)?"[\s\S]{0,400}?aria-hidden="true"/);
+		// Den synliga scenbilden beskriver motivet men är inte en egen länk.
+		expect(route).toContain('alt="En människa och en björn sitter vid sjön, med stugan och lägerelden i närheten."');
 	});
 
-	it('lämnar följeslagaren dekorativ och på sin plats', () => {
-		expect(route).toContain('class="progress-companion-pose"');
-		expect(route).toContain('behaviourProfile="quiet"');
-		expect(route).toContain('getProgressCompanionPlacementStyle');
+	it('monterar inget extra djur ovanpå den inbakade björnen', () => {
+		expect(route).not.toContain('<CompanionPose');
+		expect(route).not.toContain('<CompanionVisitor');
+		expect(route).not.toContain('<CompanionFriend');
+		expect(route).not.toContain('getProgressCompanionPlacementStyle');
 	});
 
-	it('lämnar hero-copyn orörd', () => {
+	it('behåller hero-rubriken och tidslabeln', () => {
 		expect(route).toContain('<h2>Din plats idag</h2>');
 		expect(route).toContain('{getProgressSceneLabel(sceneTransition.visibleBand)}');
+	});
+
+	it('behåller WorldMarks på samma bildkoordinater när mobilscenen inte beskärs', () => {
+		expect(route).toContain('const fullSceneMarks = getWorldMarks(worldPresence, { timeOfDay })');
+		expect(route).toContain('return fullSceneMarks.filter((mark) => narrowMarkIds.has(mark.id))');
 	});
 
 	it('har bara en länk till Mitt Hem i scenen', () => {

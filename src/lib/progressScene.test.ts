@@ -49,17 +49,17 @@ describe('getProgressSceneBand - tidsgränser', () => {
 	});
 });
 
-describe('varje spann pekar på rätt befintlig assetfil', () => {
+describe('varje spann pekar på den responsiva sjöscenen', () => {
 	it.each(PROGRESS_SCENE_BANDS)('%s har tre storlekar som finns på disk', (band) => {
 		const { fallback, srcset } = PROGRESS_SCENE_SOURCES[band];
 
 		// Fallback ska vara den minsta varianten, inte fullbredd.
-		expect(fallback).toBe(`/images/scenes/progress-cabin-lakeside-${band}-800.webp`);
+		expect(fallback).toBe('/images/scenes/progress-lake-bear-800.webp');
 
 		const expected = [
-			`/images/scenes/progress-cabin-lakeside-${band}-800.webp 800w`,
-			`/images/scenes/progress-cabin-lakeside-${band}-1200.webp 1200w`,
-			`/images/scenes/progress-cabin-lakeside-${band}.webp 1672w`
+			'/images/scenes/progress-lake-bear-800.webp 800w',
+			'/images/scenes/progress-lake-bear-1200.webp 1200w',
+			'/images/scenes/progress-lake-bear.webp 1672w'
 		].join(', ');
 		expect(srcset).toBe(expected);
 
@@ -70,18 +70,17 @@ describe('varje spann pekar på rätt befintlig assetfil', () => {
 		expect(existsSync(join(process.cwd(), 'static', fallback))).toBe(true);
 	});
 
-	it('använder aldrig den gamla enbildsscenen', () => {
+	it('använder aldrig den gamla stugscenen', () => {
 		for (const band of PROGRESS_SCENE_BANDS) {
 			const { srcset, fallback } = PROGRESS_SCENE_SOURCES[band];
-			expect(fallback).not.toBe('/images/scenes/progress-cabin-lakeside-800.webp');
-			expect(srcset).not.toContain('progress-cabin-lakeside.webp');
-			expect(srcset).not.toContain('progress-cabin-lakeside-1200.webp');
+			expect(fallback).not.toContain('progress-cabin-lakeside');
+			expect(srcset).not.toContain('progress-cabin-lakeside');
 		}
 	});
 
-	it('ger varje spann en egen bilduppsättning', () => {
+	it('behåller samma komposition genom alla dygnsspann', () => {
 		const all = PROGRESS_SCENE_BANDS.map((band) => PROGRESS_SCENE_SOURCES[band].srcset);
-		expect(new Set(all).size).toBe(PROGRESS_SCENE_BANDS.length);
+		expect(new Set(all).size).toBe(1);
 	});
 });
 
@@ -95,23 +94,54 @@ describe('Framstegs fullständiga dygnsscener', () => {
 		expect(route).toContain('animation-duration: 1ms;');
 	});
 
-	it('låter följeslagaren vila nära personen utan aktiva gester', () => {
+	it('renderar ingen dynamisk följeslagare ovanpå den inbakade björnen', () => {
 		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
 
-		expect(route).toMatch(
-			/getCompanionBasePose\(\s*now,\s*browser \? window\.localStorage : null,\s*sceneCompanionId,\s*'progress',\s*'resting'\s*\)/
-		);
-		expect(route).toContain('behaviourProfile="quiet"');
+		expect(route).not.toContain('<CompanionPose');
+		expect(route).not.toContain('<CompanionVisitor');
+		expect(route).not.toContain('<CompanionFriend');
+		expect(route).not.toContain('getProgressCompanionPlacementStyle');
+	});
+
+	it('visar hela 1672:941-kompositionen utan beskärning och anger responsiva visningsbredder', () => {
+		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
+
+		expect(route).toContain('aspect-ratio: 1672 / 941');
+		expect(route).toContain('object-fit: contain');
+		expect(route).toContain('object-position: center');
+		expect(route).toContain('(max-width: 640px) calc(100vw - 28px)');
+		expect(route).toContain('(max-width: 980px) calc(100vw - 44px)');
+		expect(route).toContain('1120px');
 	});
 
 	it('renderar ingen äldre separat person- eller eldgrupp ovanpå scenbilden', () => {
 		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
 
-		// Varje dygnsasset innehåller redan personen, elden och deras markkontakt.
+		// Sjöscenen innehåller redan människan, björnen, elden och deras markkontakt.
 		// Campfire är en separat frilagd grupp och får därför inte monteras i just
 		// Framsteg-heron, oavsett vilket dygnsspann som väljs.
 		expect(route).not.toContain("import Campfire from '$lib/components/world/Campfire.svelte'");
 		expect(route).not.toContain('<Campfire');
+	});
+
+	it('behåller den levande världen och progressionsunderlaget', () => {
+		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
+
+		expect(route).toContain('<AmbientWorld');
+		expect(route).toContain('<WorldMarks');
+		expect(route).toContain('getWorldMarks(worldPresence');
+		expect(route).toContain('getGardenGrowthPoints(entryCount');
+		expect(route).toContain('getWorldGrowthLevel(worldStage)');
+		expect(route).toContain("fetch('/api/diary/stats-timeline'");
+	});
+
+	it('låter dashboardens dynamiska companion-system vara kvar', () => {
+		const dashboard = readFileSync(join(process.cwd(), 'src/routes/dashboard/+page.svelte'), 'utf8');
+
+		expect(dashboard).toContain('<CompanionPose');
+		expect(dashboard).toContain('<CompanionVisitor');
+		expect(dashboard).toContain('<CompanionFriend');
+		expect(dashboard).toContain('<AmbientWorld');
 	});
 });
 
@@ -125,10 +155,10 @@ describe('etikett och alt', () => {
 		expect(getProgressSceneLabel(band as ProgressSceneBand)).toBe(label);
 	});
 
-	it('bild och etikett kommer ur samma spann vid varje timme', () => {
+	it('bilden är fast medan etiketten följer rätt spann vid varje timme', () => {
 		for (let hour = 0; hour < 24; hour += 1) {
 			const band = getProgressSceneBand(atStockholm(hour, 15));
-			expect(PROGRESS_SCENE_SOURCES[band].srcset).toContain(`-${band}-800.webp`);
+			expect(PROGRESS_SCENE_SOURCES[band].srcset).toContain('progress-lake-bear-800.webp');
 			expect(getProgressSceneLabel(band)).toBe(
 				{ morning: 'Morgon', day: 'Dag', afternoon: 'Eftermiddag', evening: 'Kväll' }[band]
 			);

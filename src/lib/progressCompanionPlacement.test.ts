@@ -5,6 +5,7 @@ import {
 	PROGRESS_COMPANION_SCALES,
 	PROGRESS_SCENE_IMAGE_SIZE,
 	PROGRESS_SCENE_PLACEMENTS,
+	MIN_PROGRESS_CABIN_HIT_SIZE,
 	getProgressCabinPlacement,
 	getProgressCabinPlacementStyle,
 	getProgressCompanionPlacement
@@ -12,6 +13,21 @@ import {
 
 const scenes = ['morning', 'day', 'afternoon', 'evening'] as const;
 const companions = ['fox', 'bear', 'wolf', 'schafer', 'australisk_shepherd'] as const;
+
+/** Samma proportionella scenyta och sidmarginaler som /framsteg använder. */
+function heroBox(viewportWidth: number) {
+	const containerWidth =
+		viewportWidth <= PROGRESS_COMPACT_BREAKPOINT
+			? viewportWidth - 28
+			: viewportWidth <= 980
+				? viewportWidth - 44
+				: Math.min(1120, viewportWidth - 96);
+	return {
+		containerWidth,
+		containerHeight: containerWidth * (PROGRESS_SCENE_IMAGE_SIZE.height / PROGRESS_SCENE_IMAGE_SIZE.width),
+		viewportWidth
+	};
+}
 
 describe('Framstegs följeslagarplacering', () => {
 	it('har en dokumenterad safe zone per scen och viewport', () => {
@@ -35,11 +51,10 @@ describe('Framstegs följeslagarplacering', () => {
 		[412, 915],
 		[390, 844],
 		[375, 812],
-		[360, 800]
+		[360, 800],
+		[320, 568]
 	])('räknar en synlig, positiv storlek vid %ix%i', (viewportWidth, viewportHeight) => {
-		// Samma herohöjder som /framsteg använder för respektive breakpoint.
-		const containerWidth = viewportWidth <= PROGRESS_COMPACT_BREAKPOINT ? viewportWidth - 28 : viewportWidth - 96;
-		const containerHeight = viewportWidth <= PROGRESS_COMPACT_BREAKPOINT ? Math.min(260, viewportWidth * 0.68) : Math.min(420, viewportWidth * 0.27);
+		const { containerWidth, containerHeight } = heroBox(viewportWidth);
 
 		for (const scene of scenes) {
 			for (const companionId of companions) {
@@ -57,8 +72,7 @@ describe('Framstegs följeslagarplacering', () => {
 				expect(placement!.left).toBeLessThan(containerWidth);
 				expect(placement!.top).toBeGreaterThan(0);
 				expect(placement!.top).toBeLessThan(containerHeight);
-				// Hela elementet, även den största vargen, ska rymmas inom den
-				// synliga cropen. Det är ett regressionsskydd mot avklippta djur.
+				// Hela elementet, även den största vargen, ska rymmas inom scenytan.
 				expect(placement!.left - placement!.width / 2).toBeGreaterThanOrEqual(0);
 				expect(placement!.left + placement!.width / 2).toBeLessThanOrEqual(containerWidth);
 				expect(placement!.top - placement!.width).toBeGreaterThanOrEqual(0);
@@ -76,16 +90,6 @@ describe('Framstegs följeslagarplacering', () => {
 	});
 });
 
-
-/** Samma herohöjder som /framsteg använder, delade av båda sviterna. */
-function heroBox(viewportWidth: number) {
-	const compact = viewportWidth <= PROGRESS_COMPACT_BREAKPOINT;
-	return {
-		containerWidth: compact ? viewportWidth - 28 : viewportWidth - 96,
-		containerHeight: compact ? Math.min(260, viewportWidth * 0.68) : Math.min(420, viewportWidth * 0.27),
-		viewportWidth
-	};
-}
 
 describe('stugans klickyta', () => {
 	const scenes = ['morning', 'day', 'afternoon', 'evening'] as const;
@@ -110,16 +114,16 @@ describe('stugans klickyta', () => {
 			expect(cabin!.top).toBeGreaterThanOrEqual(0);
 			expect(cabin!.left + cabin!.width).toBeLessThanOrEqual(box.containerWidth + 0.01);
 			expect(cabin!.top + cabin!.height).toBeLessThanOrEqual(box.containerHeight + 0.01);
-			expect(cabin!.width).toBeGreaterThan(0);
-			expect(cabin!.height).toBeGreaterThan(0);
+			expect(cabin!.width).toBeGreaterThanOrEqual(MIN_PROGRESS_CABIN_HIT_SIZE);
+			expect(cabin!.height).toBeGreaterThanOrEqual(MIN_PROGRESS_CABIN_HIT_SIZE);
 		}
 	});
 
-	it('följer cropen i stället för en fast pixelposition', () => {
+	it('följer den proportionella bilden i stället för en fast pixelposition', () => {
 		const wide = getProgressCabinPlacement({ scene: 'day', ...heroBox(1440) });
 		const narrow = getProgressCabinPlacement({ scene: 'day', ...heroBox(375) });
 
-		// Olika beskärning och skala ger olika ruta - hade den varit hårdkodad
+		// Olika skala ger olika ruta - hade den varit hårdkodad
 		// i pixlar skulle de två varit identiska.
 		expect(wide!.left).not.toBeCloseTo(narrow!.left, 1);
 		expect(wide!.width).not.toBeCloseTo(narrow!.width, 1);
@@ -128,7 +132,7 @@ describe('stugans klickyta', () => {
 	it('landar på samma bildpunkt som originalbildens stuga', () => {
 		const box = heroBox(1440);
 		const cabin = getProgressCabinPlacement({ scene: 'day', ...box })!;
-		const scale = Math.max(
+		const scale = Math.min(
 			box.containerWidth / PROGRESS_SCENE_IMAGE_SIZE.width,
 			box.containerHeight / PROGRESS_SCENE_IMAGE_SIZE.height
 		);

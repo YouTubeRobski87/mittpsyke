@@ -5,7 +5,7 @@ import { getProgressCompanionLocalTime } from '$lib/progressCompanion';
  * getProgressCompanionDayState: den senare namnger samma gränser som
  * morning/day/evening/night och används av hundposerna, Mitt Hem och
  * Kvällsstugan. Här behövs presentationsnamnen morgon/dag/eftermiddag/kväll,
- * och de fyra landskapsbilderna hör bara hemma på Framsteg.
+ * och scenpresentationen hör bara hemma på Framsteg.
  *
  * Gränserna är identiska med den delade helperns - bara benämningen skiljer:
  *   morning   05:00-09:59
@@ -26,32 +26,34 @@ export const PROGRESS_SCENE_CROSSFADE_MS = 1_000;
 
 export const PROGRESS_SCENE_BANDS = ['morning', 'day', 'afternoon', 'evening'] as const;
 
-const SCENE_BASE = '/images/scenes/progress-cabin-lakeside';
+const SCENE_BASE = '/images/scenes/progress-lake-bear';
 
-function sourcesFor(band: ProgressSceneBand) {
+function sourcesForProgressLake() {
 	return {
 		/**
 		 * src pekar på den minsta varianten. Preload-scannern hinner starta en
 		 * hämtning av src innan srcset vägts, och då ska det inte vara fullbredd
 		 * som går i onödan. Samma resonemang som den ursprungliga scenbilden.
 		 */
-		fallback: `${SCENE_BASE}-${band}-800.webp`,
+		fallback: `${SCENE_BASE}-800.webp`,
 		srcset: [
-			`${SCENE_BASE}-${band}-800.webp 800w`,
-			`${SCENE_BASE}-${band}-1200.webp 1200w`,
-			`${SCENE_BASE}-${band}.webp 1672w`
+			`${SCENE_BASE}-800.webp 800w`,
+			`${SCENE_BASE}-1200.webp 1200w`,
+			`${SCENE_BASE}.webp 1672w`
 		].join(', ')
 	};
 }
+
+const PROGRESS_LAKE_SOURCES = sourcesForProgressLake();
 
 export const PROGRESS_SCENE_SOURCES: Record<
 	ProgressSceneBand,
 	{ fallback: string; srcset: string }
 > = {
-	morning: sourcesFor('morning'),
-	day: sourcesFor('day'),
-	afternoon: sourcesFor('afternoon'),
-	evening: sourcesFor('evening')
+	morning: PROGRESS_LAKE_SOURCES,
+	day: PROGRESS_LAKE_SOURCES,
+	afternoon: PROGRESS_LAKE_SOURCES,
+	evening: PROGRESS_LAKE_SOURCES
 };
 
 const SCENE_LABELS: Record<ProgressSceneBand, string> = {
