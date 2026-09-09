@@ -223,7 +223,11 @@ export const PROGRESS_COMPANION_GROUND_Y = 752;
 type ProgressSceneCompanionSpec = { groundX: number; motifHeight: number };
 
 const PROGRESS_SCENE_COMPANIONS: Record<CompanionId, ProgressSceneCompanionSpec> = {
-	fox: { groundX: 1215, motifHeight: 105 },
+	// 105 px är rävens anatomiskt korrekta mått mot människans sitthöjd, men på
+	// 375 px blir motivet ~20 px högt och läses som en fläck intill muggen i
+	// stället för som en följeslagare. 115 px räcker för att den ska gå att
+	// uppfatta, och vänsterkanten hamnar fortfarande på 1172 - klar av muggen.
+	fox: { groundX: 1215, motifHeight: 115 },
 	bear: { groundX: 1272, motifHeight: 180 },
 	wolf: { groundX: 1265, motifHeight: 135 },
 	schafer: { groundX: 1215, motifHeight: 145 },
