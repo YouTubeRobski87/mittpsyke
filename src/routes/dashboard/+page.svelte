@@ -375,12 +375,21 @@
           sceneAllowsVisitor={true}
 			onVisitorChange={(isActive) => (companionVisitorActive = isActive)}
         />
+        <!-- drift är medvetet inte med: mot den fotografiska stugscenen läser de
+             tre ljuspartiklarna som damm på skärmen i stället för som liv, och
+             på natten hamnar en av dem intill månen så himlen får flera
+             lysande punkter. Framsteg har redan samma bedömning i CSS
+             (.progress-living-world[data-time='night'] .world-drift).
+             water är inte med bland händelserna heller: shore-ripple-positionerna
+             (51/60, 61/66, 34/64) ligger på bryggan, strandgräset och
+             verandaräcket i den här scenen - inte på sjön. Tillväxten syns i
+             stället i den beständiga växtligheten, som är den primära signalen. -->
         <AmbientWorld
           scene={livingWorldScene}
           class="hero-living-world"
           relationshipStage={isAnonymous ? 0 : companionRelationshipStage}
-          visibleEffects={['moon', 'cloud', 'foliage', 'drift', 'butterfly', 'bird']}
-          visibleEventKinds={['bird', 'butterfly', 'water', 'wind']}
+          visibleEffects={['moon', 'cloud', 'foliage', 'butterfly', 'bird']}
+          visibleEventKinds={['bird', 'butterfly', 'wind']}
           eventContext="dashboard"
           eventsBlocked={Boolean(companionDailyReaction || companionGreeting || companionVisitorActive)}
         />
