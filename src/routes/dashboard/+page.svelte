@@ -56,7 +56,7 @@
   import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
   import { readDiaryDraft } from '$lib/diary-draft';
 
-  const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
+  const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'wolf' };
 
   // Den rena scenvarianten behåller det nya stugperspektivet utan det djur som
   // fanns inbakat i originalet. CompanionPose är fortfarande det enda lagret
