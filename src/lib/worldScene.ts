@@ -564,6 +564,26 @@ function getMistOpacity(timeOfDay: ProgressCompanionDayState): number {
 export type MoonPosition = { x: number; y: number };
 
 /**
+ * Hur långt månen hunnit över kvällsperioden (20:00–05:00): 0 vid nattens
+ * början, 1 vid dess slut, null när det inte är natt.
+ *
+ * Utbruten ur getMoonPosition utan att ändra något värde, så en scen kan lägga
+ * bågen i sitt eget koordinatsystem - till exempel bildankrat mot ett foto -
+ * utan att duplicera dygnsfönstret. Tidsmappningen bor fortfarande bara här.
+ */
+export function getMoonArcProgress(
+	timeOfDay: ProgressCompanionDayState,
+	localTimeMinutes: number
+): number | null {
+	if (timeOfDay !== 'night') return null;
+
+	const minutesSinceNightStart = localTimeMinutes >= 20 * 60
+		? localTimeMinutes - 20 * 60
+		: localTimeMinutes + 4 * 60;
+	return Math.min(Math.max(minutesSinceNightStart / (9 * 60), 0), 1);
+}
+
+/**
  * En lugn, deterministisk båge över den befintliga kvällsperioden (20:00–05:00).
  * Den använder inga timers eller animationer: routen uppdaterar redan scenens
  * datum varje minut och samma lokala världstid ger alltid samma läge.
@@ -572,12 +592,8 @@ export function getMoonPosition(
 	timeOfDay: ProgressCompanionDayState,
 	localTimeMinutes: number
 ): MoonPosition | null {
-	if (timeOfDay !== 'night') return null;
-
-	const minutesSinceNightStart = localTimeMinutes >= 20 * 60
-		? localTimeMinutes - 20 * 60
-		: localTimeMinutes + 4 * 60;
-	const progress = Math.min(Math.max(minutesSinceNightStart / (9 * 60), 0), 1);
+	const progress = getMoonArcProgress(timeOfDay, localTimeMinutes);
+	if (progress === null) return null;
 
 	return {
 		// Bågen undviker dashboardens copy och ryms i Kvällsstugans öppna fönsteryta.

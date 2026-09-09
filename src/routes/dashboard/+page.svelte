@@ -53,6 +53,7 @@
     type CompanionDailyState
   } from '$lib/companionDailyQuestion';
   import { shouldTriggerWorldResponse } from '$lib/world/worldResponse';
+  import { getDashboardImageAnchors } from '$lib/world/dashboardSceneAnchors';
   import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
   import { readDiaryDraft } from '$lib/diary-draft';
 
@@ -149,6 +150,10 @@
   const livingWorldScene = $derived<LivingWorldScene>(
     getLivingWorldScene({ date: sceneDate, growthLevel, features: { cloud: true } })
   );
+  // Månen och lövverket uppe till höger pekar på fysiska punkter i scenfotot
+  // och positioneras därför i bildrymd, inte i procent av scenrutan. Övriga
+  // lager - moln, gräs, dimband - ligger kvar i scenrymd.
+  const sceneImageAnchors = $derived(getDashboardImageAnchors(livingWorldScene));
   let companionGreeting = $state<string | null>(null);
   let companionGreetingReaction = $state(0);
   let lastCompanionGreetingAt = 0;
@@ -390,6 +395,7 @@
           relationshipStage={isAnonymous ? 0 : companionRelationshipStage}
           visibleEffects={['moon', 'cloud', 'foliage', 'butterfly', 'bird']}
           visibleEventKinds={['bird', 'butterfly', 'wind']}
+          imageAnchors={sceneImageAnchors}
           eventContext="dashboard"
           eventsBlocked={Boolean(companionDailyReaction || companionGreeting || companionVisitorActive)}
         />
@@ -690,6 +696,15 @@
   .companion-hero {
     grid-area: hero;
     position: relative;
+    /* Bakgrundsbildens proportioner och beskärning, delade med de bildankrade
+       världslagren. Måste hållas i takt med .companion-hero-scene nedan: samma
+       object-position-värden, uttryckta som andelar. Se
+       $lib/world/dashboardSceneAnchors.
+       1672/941 är img-taggens deklarerade mått. De responsiva varianterna är
+       exakt 16:9, alltså 0,05 % ifrån - under en halv pixel i scenrutan. */
+    --scene-image-aspect: 1.776833;
+    --scene-image-pos-x: 0.5;
+    --scene-image-pos-y: 0.52;
     --scene-background: 0;
     --scene-midground: 1;
     --scene-ambient: 2;
@@ -1569,6 +1584,13 @@
     /* Vänsterförankringen bevarar stuga, dörr och veranda i mobil-cropen. */
     .companion-hero-scene {
       object-position: 8% 52%;
+    }
+
+    /* Samma beskärning för de bildankrade världslagren. Lövverket uppe till
+       höger hamnar därmed utanför rutan här och klipps bort i stället för att
+       svaja över öppet vatten. */
+    .companion-hero {
+      --scene-image-pos-x: 0.08;
     }
 
     .cabin-entrance {

@@ -15,6 +15,11 @@
 		type LivingWorldScene
 	} from '$lib/worldScene';
 	import { effectStyle } from '$lib/world/effectStyle';
+	import {
+		imageAnchorMode,
+		imageAnchorStyle,
+		type ImageAnchor
+	} from '$lib/world/coverGeometry';
 	import { getCloudSessionVariation } from '$lib/world/sessionVariation';
 	import {
 		getAmbientEventPlan,
@@ -34,6 +39,7 @@
 		visibleEventKinds,
 		eventContext = 'progress',
 		eventsBlocked = false,
+		imageAnchors,
 		class: className = ''
 	}: {
 		scene?: LivingWorldScene;
@@ -42,6 +48,17 @@
 		visibleEventKinds?: readonly AmbientEventKind[];
 		eventContext?: AmbientEventContext;
 		eventsBlocked?: boolean;
+		/**
+		 * Bildankrade lager, per effekt-id. Ett ankare uttrycks som andelar av
+		 * scenens bakgrundsbild (0-1) i stället för procent av scenrutan, så
+		 * lagret följer motivet när `object-fit: cover` beskär bilden.
+		 *
+		 * Opt-in per vy: en scen som inte skickar in något behåller exakt sitt
+		 * nuvarande beteende, och effekter utan ankare fortsätter ligga i
+		 * scenrymd. Vyn måste själv sätta `--scene-image-aspect` och
+		 * `--scene-image-pos-x/y` på scenrutan - se $lib/world/coverGeometry.
+		 */
+		imageAnchors?: Readonly<Record<string, ImageAnchor>>;
 		class?: string;
 	} = $props();
 
@@ -98,8 +115,17 @@
 			: null
 	);
 
+	// Ett bildankrat lager behåller sina scenrymdsvärden som fallback: de
+	// används oförändrat om webbläsaren saknar container query-enheter, och de
+	// är också vad servern renderar innan CSS:en räknat om positionen.
+	const anchorFor = (effect: LivingWorldEffect): ImageAnchor | undefined =>
+		imageAnchors?.[effect.id];
+
 	function styleForEffect(effect: LivingWorldEffect) {
-		const baseStyle = effectStyle(effect);
+		const anchor = anchorFor(effect);
+		const baseStyle = anchor
+			? `${effectStyle(effect)}; ${imageAnchorStyle(anchor)}`
+			: effectStyle(effect);
 		if (effect.kind !== 'cloud' || !sessionSeed) return baseStyle;
 
 		const variation = getCloudSessionVariation(sessionSeed, effect.id, effect);
@@ -197,8 +223,10 @@
 	aria-hidden="true"
 >
 	{#each skyEffects as effect (effect.id)}
+		{@const anchor = anchorFor(effect)}
 		<span
 			class={`world-effect world-${effect.kind} ${effect.className ?? ''}`.trim()}
+			data-anchor={anchor ? imageAnchorMode(anchor) : undefined}
 			style={styleForEffect(effect)}
 		></span>
 	{/each}
@@ -219,8 +247,10 @@
 	{/if}
 
 	{#each foregroundEffects as effect (effect.id)}
+		{@const anchor = anchorFor(effect)}
 		<span
 			class={`world-effect world-${effect.kind} ${effect.className ?? ''}`.trim()}
+			data-anchor={anchor ? imageAnchorMode(anchor) : undefined}
 			style={styleForEffect(effect)}
 		></span>
 	{/each}
@@ -242,6 +272,45 @@
 	.living-world { inset: 0; z-index: 1; overflow: hidden; contain: layout paint style; isolation: isolate; }
 	.world-effect { left: var(--x, 0); top: var(--y, 0); width: var(--w, auto); height: var(--h, auto); opacity: 0; will-change: transform, opacity; }
 	.is-paused :global(.world-effect) { animation-play-state: paused !important; }
+
+	/* ── Bildankrade lager ────────────────────────────────────────────────
+	   Samma matematik som `object-fit: cover`, uttryckt i scenrutans egna
+	   enheter. Se $lib/world/coverGeometry för specifikationen och testerna:
+
+	     renderedWidth  = max(100cqw, 100cqh * aspect)      // cover = största skalan
+	     renderedHeight = max(100cqh, 100cqw / aspect)
+	     left = (100cqw - renderedWidth) * posX + imgX * renderedWidth
+	     top  = (100cqh - renderedHeight) * posY + imgY * renderedHeight
+
+	   Bildens proportioner och object-position ärvs från scenrutan, så samma
+	   mediefråga som byter `object-position` byter också ankringen. Ett lager
+	   vars punkt hamnar utanför beskärningen hamnar utanför rutan och klipps av
+	   `overflow: hidden` - det flyttas aldrig in till en falsk position.
+
+	   Utan container query-enheter faller lagret tillbaka på sina
+	   scenrymdsvärden (--x/--y ovan), vilket är dagens beteende. */
+	@supports (container-type: size) and (width: 1cqw) {
+		.living-world { container-type: size; }
+
+		.world-effect[data-anchor='image'],
+		.world-effect[data-anchor='image-box'] {
+			--rendered-w: max(100cqw, 100cqh * var(--scene-image-aspect, 1));
+			--rendered-h: max(100cqh, 100cqw / var(--scene-image-aspect, 1));
+			left: calc(
+				(100cqw - var(--rendered-w)) * var(--scene-image-pos-x, 0.5) +
+					var(--img-x, 0) * var(--rendered-w)
+			);
+			top: calc(
+				(100cqh - var(--rendered-h)) * var(--scene-image-pos-y, 0.5) +
+					var(--img-y, 0) * var(--rendered-h)
+			);
+		}
+
+		.world-effect[data-anchor='image-box'] {
+			width: calc(var(--img-w, 0) * var(--rendered-w));
+			height: calc(var(--img-h, 0) * var(--rendered-h));
+		}
+	}
 
 	.world-light { inset: -18% auto auto -10%; width: 58%; height: 70%; border-radius: 50%; background: radial-gradient(circle, rgba(255, 243, 206, 0.24) 0%, rgba(255, 243, 206, 0.08) 44%, transparent 72%); opacity: var(--opacity, 0.42); animation: worldLightShift var(--duration, 52000ms) ease-in-out infinite alternate; transition: opacity 1200ms ease, background 1200ms ease; }
 	.living-world[data-time='morning'] .world-light { background: radial-gradient(circle at 28% 42%, rgba(255, 215, 154, 0.3) 0%, rgba(255, 227, 182, 0.11) 46%, transparent 74%); }
