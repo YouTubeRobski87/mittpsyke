@@ -87,11 +87,18 @@ describe('direkt ingång till den befintliga chatten', () => {
 	});
 
 	it('ger samtyckesrutan plats på små skärmar och håller handlingen synlig', () => {
-		// Utan detta hamnade kryssrutan och knappen under vecket i den inre
-		// skrollrutan på 320px, eftersom rutan blev högre när den tog över
-		// innehållet från helskärmsrutan.
-		expect(chatWindow).toContain('class:chat-input-area--consent={!hasSensitiveDataConsent}');
-		expect(chatWindow).toContain('.chat-input-area--consent {');
+		// Kryssrutan och knappen ska vara nåbara även på 320px. Mekanismen var
+		// tidigare ett eget, högre höjdtak för samtyckesläget
+		// (.chat-input-area--consent). Taket räknades i dvh mot HELA skärmhöjden
+		// och blev därför fel så fort tangentbordet var uppe, så det är borta.
+		//
+		// I stället får inmatningsytan krympa (flex: 0 1 auto) och extras-rutan
+		// skrolla när innehållet omöjligt får plats. Det som håller handlingen
+		// synlig är att ConsentGate klistrar fast kryssrutan och knappen längst
+		// ned - de kan alltså inte hamna under vecket oavsett hur högt
+		// samtyckesblocket är.
+		expect(chatWindow).toMatch(/\.chat-input-area\s*\{[^}]*flex:\s*0 1 auto/);
+		expect(chatWindow).toMatch(/\.chat-input-extras\s*\{[^}]*overflow-y:\s*auto/);
 		expect(consentGate).toContain('.consent-actions {');
 		expect(consentGate).toContain('position: sticky;');
 		// Kryssruta och knapp måste ligga i samma fastklistrade block.

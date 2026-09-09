@@ -2,7 +2,17 @@
 <html lang="sv">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- interactive-widget=resizes-content: utan den krymper Android Chrome bara
+         den VISUELLA viewporten när tangentbordet öppnas, medan layoutviewporten
+         och därmed dvh/vh behåller hela skärmhöjden. Chatten trodde då att den
+         hade 800 px att fördela när bara ~475 px syntes, och webbläsaren fick
+         lösa det genom att scrolla fram textfältet - vilket skar av innehållet
+         ovanför. Med resizes-content krymper layouten på riktigt och flexkolumnen
+         fördelar den yta som faktiskt syns. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, interactive-widget=resizes-content"
+    />
     <meta name="theme-color" content="#0f172a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="MittPsyke" />

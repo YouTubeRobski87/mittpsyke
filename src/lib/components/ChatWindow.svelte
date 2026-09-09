@@ -10,6 +10,7 @@
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
 	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import { dataflowCopy } from '$lib/dataflow-copy';
+	import { observeKeyboardViewport } from '$lib/keyboardViewport';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -565,6 +566,9 @@
 	});
 
 	onMount(() => {
+		// Bara chatten bevakar tangentbordet. Städfunktionen körs när vyn lämnas,
+		// så inga andra routes ärver ett data-keyboard-open.
+		const stopKeyboardViewport = observeKeyboardViewport();
 		sendWithEnter = readStorageValue(sendWithEnterStorageKey) !== 'false';
 		autoSendVoice = readStorageValue(autoSendVoiceStorageKey) !== 'false';
 		const desktopPointerQuery = window.matchMedia('(pointer: fine)');
@@ -605,6 +609,7 @@
 
 		return () => {
 			stopSpeaking();
+			stopKeyboardViewport();
 			desktopPointerQuery.removeEventListener('change', updateDesktopKeyboard);
 			if (speechSupported) {
 				window.speechSynthesis.removeEventListener('voiceschanged', loadSpeechVoices);
@@ -1000,13 +1005,11 @@
 		</div>
 	{/if}
 
-	<!-- Innan samtycket finns inga meddelanden att visa, så inmatningsytan får
-	     ta merparten av mobilviewporten. Annars hamnar kryssrutan och knappen
-	     under vecket i den inre skrollrutan på små skärmar (320px). -->
-	<div
-		class="chat-input-area border-t border-black/8 dark:border-white/10 px-3 pt-2 pb-3"
-		class:chat-input-area--consent={!hasSensitiveDataConsent}
-	>
+	<!-- Inmatningsytan tar den höjd innehållet behöver. Samtyckesvarianten hade
+	     tidigare ett eget, högre höjdtak eftersom ytan låg i en inre skrollruta;
+	     den rutan finns inte längre, så kryssrutan och knappen kan inte hamna
+	     under vecket och taket behövs inte. -->
+	<div class="chat-input-area border-t border-black/8 dark:border-white/10 px-3 pt-2 pb-3">
 		<div class="chat-input-extras">
 		{#if !hasSensitiveDataConsent}
 			<div class="mb-3">
@@ -1779,8 +1782,11 @@
 			font-size: 0.7rem;
 		}
 
+		/* flex-basis 0: meddelandelistan tar det utrymme som blir över när
+		 * inmatningsytan fått sitt, i stället för att utgå från sin egen
+		 * innehållshöjd. Ett långt samtal ska inte tränga undan textfältet. */
 		.chat-messages {
-			flex: 1 1 auto;
+			flex: 1 1 0;
 			min-height: 0;
 			padding: 0.6rem 0.65rem 1rem;
 			overflow-y: auto;
@@ -1794,25 +1800,53 @@
 			padding: 0.6rem 0.85rem;
 		}
 
+		/* Inmatningsytan tar den höjd innehållet behöver och inget mer.
+		 *
+		 * Tidigare låg här max-height: min(48dvh, 25rem) plus overflow: hidden, och
+		 * .chat-input-extras var en egen skrollruta inuti. Taket räknades mot hela
+		 * skärmhöjden, inte mot den yta som syns när tangentbordet är uppe, så ytan
+		 * krävde 384 px av ~475 px synligt. Det som inte fick plats klipptes mitt i
+		 * en textrad i stället för att layouten krympte.
+		 *
+		 * Nu är det meddelandelistan som ger efter: den har flex: 1 1 auto och
+		 * min-height: 0 och är därmed enda ytan som skrollar. */
 		.chat-input-area {
 			display: flex;
-			flex: 0 0 auto;
+			flex: 0 1 auto;
 			flex-direction: column;
 			min-height: 0;
-			max-height: min(48dvh, 25rem);
-			overflow: hidden;
 			padding: 0.4rem 0.75rem calc(0.5rem + env(safe-area-inset-bottom));
 		}
 
-		.chat-input-area--consent {
-			max-height: min(82dvh, 42rem);
-		}
-
+		/* Sista utvägen, inte normalläget.
+		 *
+		 * Extras (samtyckestext, stödlänk, chips, röstpanel) skrollar bara när
+		 * innehållet omöjligt får plats - typiskt samtyckesvyn på en riktigt kort
+		 * viewport. I det vanliga samtalet ryms allt och rutan skrollar inte alls,
+		 * så meddelandelistan är i praktiken enda skrollytan.
+		 *
+		 * Tidigare tvingades den här rutan att skrolla även när det fanns gott om
+		 * plats, eftersom .chat-input-area hade taket min(48dvh, 25rem) räknat mot
+		 * hela skärmhöjden i stället för mot den yta som syns med tangentbord uppe. */
 		.chat-input-extras {
+			flex: 0 1 auto;
 			min-height: 0;
 			overflow-y: auto;
 			overscroll-behavior: contain;
 			-webkit-overflow-scrolling: touch;
+		}
+
+		/* Textfältet och skicka-knappen får aldrig krympas bort. */
+		.composer-row {
+			flex: 0 0 auto;
+		}
+
+		/* Med tangentbordet uppe gäller prioriteringen samtal > textfält >
+		 * skicka/röst. "Rensa historik" och historiknotisen är sekundära och får
+		 * inte konkurrera om höjden medan användaren skriver - de kommer tillbaka
+		 * så fort tangentbordet stängs. Ger meddelandelistan ~51 px. */
+		:global(html[data-keyboard-open='true']) .chat-toolbar {
+			display: none;
 		}
 
 		.settings-panel {
@@ -1842,15 +1876,32 @@
 			font-size: 0.85rem;
 		}
 
+		/* Horisontell skroll i egen ruta, inte radbrytning: med tangentbordet uppe
+		 * är höjden det dyra, och wrap hade gjort raden två-tre gånger så hög.
+		 *
+		 * scroll-snap är tillagt för att raden aldrig ska stanna mitt i ett chip.
+		 * Utan den kunde första chipet ligga avskuret mitt i ett ord vid
+		 * vänsterkanten, vilket såg ut som att innehållet var klippt i stället för
+		 * skrollbart. Raden skrollar i sin egen container - dokumentet får aldrig
+		 * någon horisontell overflow. */
 		.chips-row {
 			flex-wrap: nowrap;
 			overflow-x: auto;
+			overscroll-behavior-x: contain;
+			scroll-snap-type: x proximity;
+			-webkit-overflow-scrolling: touch;
 			padding-bottom: 0.1rem;
+			scrollbar-width: none;
+		}
+
+		.chips-row::-webkit-scrollbar {
+			display: none;
 		}
 
 		.starter-chip {
 			flex: 0 0 auto;
 			max-width: 72vw;
+			scroll-snap-align: start;
 			padding: 0.36rem 0.65rem;
 			font-size: 0.76rem;
 			white-space: nowrap;

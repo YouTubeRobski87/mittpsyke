@@ -537,4 +537,46 @@
 			font-size: 0.7rem;
 		}
 	}
+
+	/* Kompakt läge när tangentbordet är uppe (se $lib/keyboardViewport.ts).
+	 *
+	 * Ingen funktion tas bort: mikrofonknappen, avbryt-knappen och statusraden
+	 * finns kvar och gör samma sak. Det som ändras är att hjälptexten - en
+	 * engångsintroduktion, inte en kontroll - stiger åt sidan medan användaren
+	 * skriver, och att status flyttar upp på samma rad som knapparna.
+	 *
+	 * Panelen går från ~131 px till ~60 px, vilket är skillnaden mellan att
+	 * meddelandelistan får 27 px och att den får plats med ett par repliker.
+	 * Allt kommer tillbaka i fullt format så fort tangentbordet stängs. */
+	@media (max-width: 768px) {
+		:global(html[data-keyboard-open='true']) .voice-card {
+			gap: 0.3rem;
+			padding: 0.4rem 0.55rem;
+			grid-template-columns: auto minmax(0, 1fr);
+			align-items: center;
+		}
+
+		:global(html[data-keyboard-open='true']) .first-time-help {
+			display: none;
+		}
+
+		:global(html[data-keyboard-open='true']) .voice-controls {
+			grid-column: 1;
+			gap: 0.35rem;
+		}
+
+		:global(html[data-keyboard-open='true']) .status-row {
+			grid-column: 2;
+			display: flex;
+			align-items: center;
+			gap: 0.3rem;
+			min-width: 0;
+		}
+
+		:global(html[data-keyboard-open='true']) .microphone-button,
+		:global(html[data-keyboard-open='true']) .clear-button {
+			min-height: 2.15rem;
+			padding: 0.4rem 0.7rem;
+		}
+	}
 </style>
