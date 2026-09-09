@@ -320,12 +320,22 @@ const baseEffects: LivingWorldEffect[] = [
 		scale: 0.82
 	},
 	{
+		// Låg vid stugans spegling i vattnet, till vänster om de två andra
+		// ringarna. Låg tidigare på x 61 / y 66, vilket i den nuvarande
+		// Framstegsscenen (progress-lake-bear) är personens rygg, inte sjön -
+		// en ljus ring mot mörk jacka blev scenens tydligaste artefakt.
+		//
+		// De här vattenringarna renderas i dag bara av Framsteg: Mitt Hem
+		// utelämnar water ur visibleEffects och Kvällsstugan stänger av det via
+		// features och ritar sina egna ringar lokalt. Framstegs scenruta är
+		// låst till bildens proportioner (aspect-ratio 1672/941 + object-fit:
+		// contain), så procenten här är samma procent i bilden på alla bredder.
 		id: 'water-ripple-loop-three',
 		kind: 'water',
 		enabled: true,
 		className: 'water-ripple-loop',
-		x: 61,
-		y: 66,
+		x: 22,
+		y: 65,
 		width: 7,
 		height: 2.4,
 		durationMs: 4_600,
