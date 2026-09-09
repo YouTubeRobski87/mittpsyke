@@ -53,12 +53,12 @@ describe('varje spann pekar på den responsiva sjöscenen', () => {
 		const { fallback, srcset } = PROGRESS_SCENE_SOURCES[band];
 
 		// Fallback ska vara den minsta varianten, inte fullbredd.
-		expect(fallback).toBe('/images/scenes/progress-lake-bear-800.webp');
+		expect(fallback).toBe('/images/scenes/progress-lake-800.webp');
 
 		const expected = [
-			'/images/scenes/progress-lake-bear-800.webp 800w',
-			'/images/scenes/progress-lake-bear-1200.webp 1200w',
-			'/images/scenes/progress-lake-bear.webp 1672w'
+			'/images/scenes/progress-lake-800.webp 800w',
+			'/images/scenes/progress-lake-1200.webp 1200w',
+			'/images/scenes/progress-lake.webp 1672w'
 		].join(', ');
 		expect(srcset).toBe(expected);
 
@@ -93,13 +93,15 @@ describe('Framstegs fullständiga dygnsscener', () => {
 		expect(route).toContain('animation-duration: 1ms;');
 	});
 
-	it('renderar ingen dynamisk följeslagare ovanpå den inbakade björnen', () => {
+	it('renderar användarens egen följeslagare, men varken visitor eller friend', () => {
 		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
 
-		expect(route).not.toContain('<CompanionPose');
+		// Bakgrunden är bear-free, så följeslagaren MÅSTE ritas som eget lager -
+		// annars är scenen tom på djur oavsett vad användaren valt.
+		expect(route).toContain('<CompanionPose');
+		expect(route).toContain('getProgressCompanionPlacementStyle');
 		expect(route).not.toContain('<CompanionVisitor');
 		expect(route).not.toContain('<CompanionFriend');
-		expect(route).not.toContain('getProgressCompanionPlacementStyle');
 	});
 
 	it('visar hela 1672:941-kompositionen utan beskärning och anger responsiva visningsbredder', () => {
@@ -167,7 +169,7 @@ describe('etikett och alt', () => {
 	it('bilden är fast medan etiketten följer rätt spann vid varje timme', () => {
 		for (let hour = 0; hour < 24; hour += 1) {
 			const band = getProgressSceneBand(atStockholm(hour, 15));
-			expect(PROGRESS_SCENE_SOURCES[band].srcset).toContain('progress-lake-bear-800.webp');
+			expect(PROGRESS_SCENE_SOURCES[band].srcset).toContain('progress-lake-800.webp');
 			expect(getProgressSceneLabel(band)).toBe(
 				{ morning: 'Morgon', day: 'Dag', afternoon: 'Eftermiddag', evening: 'Kväll' }[band]
 			);

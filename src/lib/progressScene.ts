@@ -26,7 +26,11 @@ export const PROGRESS_SCENE_CROSSFADE_MS = 1_000;
 
 export const PROGRESS_SCENE_BANDS = ['morning', 'day', 'afternoon', 'evening'] as const;
 
-const SCENE_BASE = '/images/scenes/progress-lake-bear';
+// Bear-free komposition: sjö, berg, stuga, människa, lägereld, ryggsäck och mugg.
+// Scenen innehåller medvetet inget djur - användarens egen följeslagare ritas som
+// ett eget lager ovanpå, se getProgressCompanionPlacement i
+// progressCompanionPlacement.ts. Samma mått som den gamla bilden (1672x941).
+const SCENE_BASE = '/images/scenes/progress-lake';
 
 function sourcesForProgressLake() {
 	return {
