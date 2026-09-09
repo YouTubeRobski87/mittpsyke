@@ -87,7 +87,13 @@
 	}
 
 	function startDebugVisit(type: CompanionVisitorType) {
-		if (!debugEnabled) return;
+		// Debugpanelen lyder samma spärrar som det riktiga urvalet. Utan det
+		// kunde den skapa en besökare i en scen som inte har någon plats för
+		// en - bilden hann laddas och besöket hann räknas som aktivt innan
+		// effekten nedan nollade det igen, vilket i sin tur kunde släcka en
+		// pågående ambient-händelse. Ett verktyg ska inte kunna framkalla ett
+		// tillstånd som produktionsvägen inte kan nå.
+		if (!debugEnabled || !sceneAllowsVisitor || !viewportAllowsVisitor) return;
 		debugForcedType = type;
 		const state = startCompanionVisitorDebugVisit(mainCompanionId, type, Date.now(), window.sessionStorage);
 		visitorId = state.visitorId;

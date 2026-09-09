@@ -372,12 +372,21 @@
             {companionDailyReaction ?? companionGreeting}
           </p>
         {/if}
+        <!-- Stugscenen har ingen yta för en besökare: sedan scenbytet
+             (8bcec683) döljer .hero-companion-visitor nedan lagret helt, och
+             ingen brytpunkt eller state visar det igen. Scenen säger därför
+             ifrån via komponentens egen prop i stället för att bara måla över
+             resultatet - annars laddades besökarens bild ändå (bear-sitting.png
+             är 752 kB) och den osynliga besökaren satte companionVisitorActive,
+             som via eventsBlocked tystade de fågel-, fjärils- och vindhändelser
+             som faktiskt syns. Sätt tillbaka till true den dag scenen får en
+             plats för besökaren. -->
         <CompanionVisitor
           class="hero-companion-visitor"
           mainCompanionId={heroCompanionId}
           isSleeping={heroCompanionIsSleeping}
           scene="dashboard"
-          sceneAllowsVisitor={true}
+          sceneAllowsVisitor={false}
 			onVisitorChange={(isActive) => (companionVisitorActive = isActive)}
         />
         <!-- drift är medvetet inte med: mot den fotografiska stugscenen läser de
@@ -403,7 +412,11 @@
              ambientbandet, alltså bakom följeslagaren, så pusten drar förbi den
              i stället för över den. -->
         <CompanionWorldResponse class="hero-world-response" signal={worldResponseSignal} />
-        <CompanionFriend class="hero-companion-friend" companionId={heroCompanionId} stage={isAnonymous ? 0 : companionRelationshipStage} />
+        <!-- Samma sak för vännen: .hero-companion-friend är dold i den här
+             scenen, så steget hålls på 0 och getFriendStageAsset returnerar
+             null i stället för en bild ingen kan se. Relationssteget lever
+             kvar oförändrat och används fortfarande av AmbientWorld ovan. -->
+        <CompanionFriend class="hero-companion-friend" companionId={heroCompanionId} stage={0} />
         <!-- Textytan ligger i stugscenens lugna högra del. Testet i
              companionPoseState.test.ts kontrollerar marginalen mot varje
              befintlig pose och djurplacering. -->
@@ -913,6 +926,11 @@
 
   /* Följeslagaren står vid huset. Texten använder den fria ytan till höger. */
 
+  /* Backstop, inte avstängningen. Den riktiga avstängningen sitter på
+     komponenterna i markupen ovan (sceneAllowsVisitor={false} respektive
+     stage={0}), så inget state sätts och ingen bild laddas. Den här regeln
+     finns kvar som skydd om någon slår på propsen utan att först ge lagren en
+     plats i stugscenen. */
   .companion-hero :global(.hero-companion-visitor),
   .companion-hero :global(.hero-companion-friend) {
     display: none;
