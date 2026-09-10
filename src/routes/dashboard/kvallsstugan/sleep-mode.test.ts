@@ -247,6 +247,16 @@ describe('Sovlägets panel', () => {
 		expect(panel).toContain('onclick={endSleep}');
 	});
 
+	it('låter statusraden följa uppspelningens läge, inte bara valet', () => {
+		// Regression: statusraden sa "spelas" även när musiken var pausad.
+		expect(panel).toContain(
+			'getSleepStatusLine(getSleepActiveStatus(source, activeTitle, playbackStatus), remainingLabel)'
+		);
+		// Tiden sätts ihop i getSleepStatusLine, inte en gång till i mallen.
+		expect(panel).toMatch(/aria-live="polite">\s*\{statusText\}\s*<\/p>/);
+		expect(panel).not.toContain('{statusText}{remainingLabel');
+	});
+
 	it('benämner pausknappen efter vad som faktiskt spelas', () => {
 		expect(panel).toContain("{isPaused ? 'Fortsätt musiken' : 'Pausa musiken'}");
 		expect(panel).toContain("{isPaused ? 'Fortsätt uppläsningen' : 'Pausa uppläsningen'}");

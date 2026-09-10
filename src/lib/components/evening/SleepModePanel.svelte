@@ -19,6 +19,7 @@
 		createSleepTimer,
 		formatSleepRemaining,
 		getSleepActiveStatus,
+		getSleepStatusLine,
 		getSleepLength,
 		getSleepRemainingMs,
 		getSleepStageAfterSource,
@@ -103,7 +104,10 @@
 		timer ? formatSleepRemaining(getSleepRemainingMs(timer, now)) : null
 	);
 	const isPaused = $derived(playbackStatus === 'paused');
-	const statusText = $derived(getSleepActiveStatus(source, activeTitle));
+	// Statusraden följer uppspelningens faktiska läge, inte bara valet.
+	const statusText = $derived(
+		getSleepStatusLine(getSleepActiveStatus(source, activeTitle, playbackStatus), remainingLabel)
+	);
 
 	function goToStage(next: SleepStage) {
 		stage = next;
@@ -439,7 +443,7 @@
 					{getSleepStageHeading(stage, source)}
 				</h2>
 				<p class="sleep-status" role="status" aria-live="polite">
-					{statusText}{remainingLabel ? ` · ${remainingLabel}` : ''}
+					{statusText}
 				</p>
 				{#if playbackStatus === 'unavailable'}
 					<p class="sleep-hint" role="status">

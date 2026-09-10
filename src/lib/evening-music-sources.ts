@@ -18,8 +18,8 @@ export type EveningMusicTrack = {
  *
  * 1. Katalogen är gemen (`/audio/`). Både Vite och produktion är
  *    skiftlägeskänsliga, så versalt `/Audio/` skulle svara 404.
- * 2. encodeURI körs på hela sökvägen. De nya filnamnen är ASCII och påverkas
- *    inte, men det äldre spåret innehåller mellanslag och ä.
+ * 2. encodeURI körs på hela sökvägen, så ett framtida filnamn med mellanslag
+ *    eller å/ä/ö blir en giltig URL utan att någon behöver komma ihåg det.
  */
 const MUSIC_DIRECTORY = '/audio/musik/';
 
@@ -54,12 +54,6 @@ export const EVENING_MUSIC_TRACKS: readonly EveningMusicTrack[] = [
 		title: 'Trygg natt',
 		summary: 'Mörkare och ombonad.',
 		audioSrc: musicPath('trygg_natt.mp3')
-	},
-	{
-		id: 'lugn-musik',
-		title: 'Lugn musik',
-		summary: 'Ett stilla spår att vila till.',
-		audioSrc: musicPath('Kvar i mitt huvud - Den där Robban - Den där Robban du vet.mp3')
 	}
 ];
 

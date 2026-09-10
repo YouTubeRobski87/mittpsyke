@@ -12,6 +12,7 @@ import {
 	getSleepStageAfterSource,
 	getSleepStageBefore,
 	getSleepStageHeading,
+	getSleepStatusLine,
 	isSleepChoiceStage,
 	isSleepFinished,
 	pauseSleepTimer,
@@ -43,9 +44,9 @@ describe('Sovlägets val', () => {
 	});
 
 	it('namnger spåret i statusraden för både musik och meditation', () => {
-		expect(getSleepActiveStatus('music', 'Stilla sjö')).toBe('Stilla sjö spelas.');
+		expect(getSleepActiveStatus('music', 'Stilla sjö')).toBe('Stilla sjö spelas');
 		expect(getSleepActiveStatus('meditation', 'Guidad avslappning')).toBe(
-			'Guidad avslappning spelas.'
+			'Guidad avslappning spelas'
 		);
 	});
 
@@ -167,9 +168,69 @@ describe('Sovlägets copy', () => {
 	});
 
 	it('speglar valet i statusraden', () => {
-		expect(getSleepActiveStatus('silence', null)).toBe('Det är tyst nu.');
+		expect(getSleepActiveStatus('silence', null)).toBe('Det är tyst nu');
 		expect(getSleepActiveStatus('meditation', 'Body scan meditation')).toBe(
-			'Body scan meditation spelas.'
+			'Body scan meditation spelas'
 		);
+	});
+});
+
+describe('statusraden följer uppspelningens läge', () => {
+	it('säger "spelas" med återstående tid medan låten spelar', () => {
+		expect(
+			getSleepStatusLine(
+				getSleepActiveStatus('music', 'Stilla sjö', 'playing'),
+				formatSleepRemaining(10 * 60_000)
+			)
+		).toBe('Stilla sjö spelas · 10 minuter kvar');
+	});
+
+	it('säger "är pausad" med återstående tid när låten är pausad', () => {
+		expect(
+			getSleepStatusLine(
+				getSleepActiveStatus('music', 'Trygg natt', 'paused'),
+				formatSleepRemaining(7 * 60_000)
+			)
+		).toBe('Trygg natt är pausad · 7 minuter kvar');
+	});
+
+	it('kallar aldrig en pausad låt för "spelas" – regression', () => {
+		// Tidigare stod "Trygg natt spelas." kvar medan knappen sa "Fortsätt musiken".
+		const paused = getSleepActiveStatus('music', 'Trygg natt', 'paused');
+		expect(paused).not.toContain('spelas');
+	});
+
+	it('växlar tillbaka till "spelas" när låten fortsätter', () => {
+		const statuses: Array<'playing' | 'paused'> = ['playing', 'paused', 'playing'];
+		expect(
+			statuses.map((status) =>
+				getSleepStatusLine(getSleepActiveStatus('music', 'Mjuka andetag', status), '5 minuter kvar')
+			)
+		).toEqual([
+			'Mjuka andetag spelas · 5 minuter kvar',
+			'Mjuka andetag är pausad · 5 minuter kvar',
+			'Mjuka andetag spelas · 5 minuter kvar'
+		]);
+	});
+
+	it('gäller även pausad meditation', () => {
+		expect(getSleepActiveStatus('meditation', 'Andrum', 'paused')).toBe('Andrum är pausad');
+	});
+
+	it('beskriver en låt som tagit slut eller inte gick att spela', () => {
+		expect(getSleepActiveStatus('music', 'Stilla sjö', 'ended')).toBe('Stilla sjö har spelat klart');
+		expect(getSleepActiveStatus('music', 'Stilla sjö', 'unavailable')).toBe(
+			'Stilla sjö kan inte spelas just nu'
+		);
+	});
+
+	it('visar bara läget när stunden saknar sluttid', () => {
+		expect(getSleepStatusLine(getSleepActiveStatus('music', 'Stilla sjö', 'paused'), null)).toBe(
+			'Stilla sjö är pausad'
+		);
+	});
+
+	it('ignorerar uppspelningsläget för tystnad', () => {
+		expect(getSleepActiveStatus('silence', null, 'paused')).toBe('Det är tyst nu');
 	});
 });

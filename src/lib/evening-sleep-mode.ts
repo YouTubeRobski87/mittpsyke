@@ -12,6 +12,8 @@
 // 4. Copyn beskriver vad användaren valt. Den lovar aldrig sömn, effekt eller
 //    resultat – se docs/NORTH_STAR.md.
 
+import type { SleepPlaybackStatus } from './evening-sleep-playback';
+
 export type SleepStage = 'closed' | 'source' | 'music' | 'meditation' | 'length' | 'active';
 
 export type SleepSourceId = 'music' | 'meditation' | 'silence';
@@ -177,14 +179,32 @@ export function getSleepStageHeading(stage: SleepStage, source: SleepSourceId | 
 	return '';
 }
 
-/** Statusraden i aktivt Sovläge. Beskriver läget, aldrig en förväntad effekt. */
+/**
+ * Läget i aktivt Sovläge. Beskriver vad som faktiskt händer med ljudet just
+ * nu – en pausad låt får aldrig kallas "spelas" – och aldrig en förväntad
+ * effekt. `idle` räknas som spelar: det är det korta ögonblicket innan
+ * adaptern hunnit rapportera, till exempel medan talrösten laddas.
+ */
 export function getSleepActiveStatus(
 	source: SleepSourceId | null,
-	trackTitle: string | null
+	trackTitle: string | null,
+	playbackStatus: SleepPlaybackStatus = 'playing'
 ): string {
-	if (source === 'silence') return 'Det är tyst nu.';
+	if (source === 'silence') return 'Det är tyst nu';
 	if ((source === 'meditation' || source === 'music') && trackTitle) {
-		return `${trackTitle} spelas.`;
+		if (playbackStatus === 'paused') return `${trackTitle} är pausad`;
+		if (playbackStatus === 'ended') return `${trackTitle} har spelat klart`;
+		if (playbackStatus === 'unavailable') return `${trackTitle} kan inte spelas just nu`;
+		return `${trackTitle} spelas`;
 	}
-	return 'Sovläge är på.';
+	return 'Sovläge är på';
+}
+
+/**
+ * Hela statusraden: läget följt av återstående tid när stunden har en
+ * sluttid, t.ex. "Stilla sjö spelas · 10 minuter kvar". Vid öppen längd
+ * finns ingen tid att visa och bara läget står kvar.
+ */
+export function getSleepStatusLine(activeStatus: string, remainingLabel: string | null): string {
+	return remainingLabel ? `${activeStatus} · ${remainingLabel}` : activeStatus;
 }

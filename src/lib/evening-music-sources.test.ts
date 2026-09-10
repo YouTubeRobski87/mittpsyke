@@ -10,10 +10,8 @@ import {
 } from './evening-music-sources';
 
 describe('Musikspåren i Sovläge', () => {
-	it('erbjuder Stilla sjö, Mjuka andetag och Trygg natt med rätt filer', () => {
-		expect(
-			EVENING_MUSIC_TRACKS.slice(0, 3).map((track) => [track.title, track.audioSrc])
-		).toEqual([
+	it('erbjuder exakt Stilla sjö, Mjuka andetag och Trygg natt med rätt filer', () => {
+		expect(EVENING_MUSIC_TRACKS.map((track) => [track.title, track.audioSrc])).toEqual([
 			['Stilla sjö', '/audio/musik/stilla_sjo.mp3'],
 			['Mjuka andetag', '/audio/musik/mjuka_andetag.mp3'],
 			['Trygg natt', '/audio/musik/trygg_natt.mp3']
@@ -54,12 +52,24 @@ describe('Musikspåren i Sovläge', () => {
 		}
 	});
 
-	it('procentkodar mellanslag och ä så URL:en blir giltig', () => {
-		const older = getEveningMusicTrack('lugn-musik');
-		expect(older?.audioSrc).not.toContain(' ');
-		expect(older?.audioSrc).toContain('%20');
-		// ä = C3 A4 i UTF-8.
-		expect(older?.audioSrc).toContain('%C3%A4');
+	it('har inte kvar det äldre spåret som delade namn med källan', () => {
+		// Spåret hette "Lugn musik", precis som själva källan i första steget.
+		expect(getEveningMusicTrack('lugn-musik')).toBeNull();
+		expect(EVENING_MUSIC_TRACKS.map((track) => track.title)).not.toContain('Lugn musik');
+		expect(
+			existsSync(
+				join(
+					process.cwd(),
+					'static/audio/musik/Kvar i mitt huvud - Den där Robban - Den där Robban du vet.mp3'
+				)
+			)
+		).toBe(false);
+	});
+
+	it('ger giltiga URL:er utan mellanslag', () => {
+		for (const track of EVENING_MUSIC_TRACKS) {
+			expect(track.audioSrc).not.toContain(' ');
+		}
 	});
 
 	it('ligger i musikmappen och inte bland de guidade röstspåren', () => {
