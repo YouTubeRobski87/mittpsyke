@@ -29,6 +29,8 @@ export interface SleepPlayback {
 	pause(): void;
 	resume(): void;
 	stop(): void;
+	/** Bara ljudfiler kan upprepas. Övriga adaptrar saknar metoden. */
+	setLoop?(loop: boolean): void;
 }
 
 // ---------------------------------------------------------------------------
@@ -198,6 +200,8 @@ export interface AudioElementLike {
 	preload: string;
 	currentTime: number;
 	readonly duration: number;
+	/** Valfri så att testernas påhittade element inte måste bära den. */
+	loop?: boolean;
 	play(): Promise<void> | void;
 	pause(): void;
 	addEventListener(type: 'ended' | 'error', listener: () => void): void;
@@ -212,13 +216,23 @@ export interface AudioElementLike {
  * är därför två val i rad aldrig kan ge dubbla ljud - panelen anropar alltid
  * stop på föregående uppspelning innan en ny skapas.
  */
+export type AudioFilePlaybackOptions = SleepPlaybackEvents & {
+	/**
+	 * Upprepa spåret tills användaren pausar eller stänger av upprepningen.
+	 * Elementets egen loop används, så spåret börjar om utan omladdning och
+	 * utan att ended skickas. Av som standard.
+	 */
+	loop?: boolean;
+};
+
 export function createAudioFilePlayback(
 	src: string,
-	events: SleepPlaybackEvents = {},
+	events: AudioFilePlaybackOptions = {},
 	createAudio: (source: string) => AudioElementLike = (source) => new Audio(source)
 ): SleepPlayback {
 	let status: SleepPlaybackStatus = 'idle';
 	let audio: AudioElementLike | null = null;
+	let loop = events.loop ?? false;
 
 	function setStatus(next: SleepPlaybackStatus) {
 		if (status === next) return;
@@ -251,6 +265,7 @@ export function createAudioFilePlayback(
 			release();
 			audio = createAudio(src);
 			audio.preload = 'metadata';
+			audio.loop = loop;
 			audio.addEventListener('ended', onEnded);
 			audio.addEventListener('error', onError);
 			setStatus('playing');
@@ -272,6 +287,10 @@ export function createAudioFilePlayback(
 		stop() {
 			release();
 			setStatus('idle');
+		},
+		setLoop(next: boolean) {
+			loop = next;
+			if (audio) audio.loop = next;
 		}
 	};
 }

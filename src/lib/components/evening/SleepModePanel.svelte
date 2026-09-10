@@ -11,6 +11,7 @@
 	// inklämd där hade antingen svämmat över eller tryckt ihop kontrollerna.
 	// Scenen dimmas i stället av routen, så känslan av att ligga kvar i stugan
 	// bärs av scenen medan panelen får den plats den behöver.
+	import { browser } from '$app/environment';
 	import { onDestroy, tick } from 'svelte';
 	import {
 		SLEEP_LENGTHS,
@@ -38,7 +39,11 @@
 		getEveningMeditationScript,
 		getEveningMeditations
 	} from '$lib/evening-meditation-sources';
-	import { EVENING_MUSIC_TRACK } from '$lib/evening-music-sources';
+	import {
+		EVENING_MUSIC_TRACK,
+		readEveningMusicLoop,
+		writeEveningMusicLoop
+	} from '$lib/evening-music-sources';
 	import { calmMusic } from '$lib/calm-music-player.svelte';
 	import {
 		createAudioFilePlayback,
@@ -61,6 +66,9 @@
 	let timer = $state<SleepTimer | null>(null);
 	let now = $state(Date.now());
 	let playbackStatus = $state<SleepPlaybackStatus>('idle');
+	// Upprepning av musikspåret. Av tills användaren själv slår på den; valet
+	// sparas lokalt men startar aldrig någon uppspelning.
+	let musicLoop = $state(false);
 	let heading = $state<HTMLElement | null>(null);
 	// Speltid per inspelat spår, läst ur filerna själva och nycklad på id.
 	// Ett spår som ännu inte hunnit mätas, eller inte går att mäta, saknas här
@@ -96,6 +104,19 @@
 
 	function goToStage(next: SleepStage) {
 		stage = next;
+	}
+
+	// Upprepningsvalet är en inställning, inte sovlägets tillstånd, och är
+	// det enda som sparas. Läsningen startar aldrig någon uppspelning.
+	$effect(() => {
+		if (!browser) return;
+		musicLoop = readEveningMusicLoop();
+	});
+
+	function toggleMusicLoop() {
+		musicLoop = !musicLoop;
+		playback?.setLoop?.(musicLoop);
+		writeEveningMusicLoop(musicLoop);
 	}
 
 	// Läser speltiden ur ljudfilen när meditationsvalet öppnas.
@@ -203,9 +224,10 @@
 		startToken += 1;
 		const token = startToken;
 
-		// Musik är alltid en ljudfil och loopar inte - se evening-music-sources.
+		// Musik är alltid en ljudfil. Den upprepas bara om användaren valt det.
 		if (source === 'music') {
 			playback = createAudioFilePlayback(EVENING_MUSIC_TRACK.audioSrc, {
+				loop: musicLoop,
 				onStatusChange: (next) => {
 					if (token !== startToken) return;
 					playbackStatus = next;
@@ -272,6 +294,17 @@
 	onDestroy(stopPlayback);
 </script>
 
+{#snippet musicLoopToggle()}
+	<button
+		class="sleep-toggle"
+		type="button"
+		aria-pressed={musicLoop}
+		onclick={toggleMusicLoop}
+	>
+		Upprepa låten: {musicLoop ? 'på' : 'av'}
+	</button>
+{/snippet}
+
 {#if stage !== 'closed'}
 	<section class="sleep-panel" data-stage={stage} aria-labelledby="sleep-panel-title">
 		{#if stage === 'source'}
@@ -330,6 +363,9 @@
 					{/each}
 				</div>
 				<div class="sleep-actions">
+					{#if source === 'music'}
+						{@render musicLoopToggle()}
+					{/if}
 					<button class="sleep-secondary" type="button" onclick={goBack}>Tillbaka</button>
 				</div>
 			</div>
@@ -371,6 +407,9 @@
 								{isPaused ? 'Fortsätt uppläsningen' : 'Pausa uppläsningen'}
 							{/if}
 						</button>
+					{/if}
+					{#if source === 'music'}
+						{@render musicLoopToggle()}
 					{/if}
 					<button class="sleep-secondary" type="button" onclick={changeChoice}>Byt val</button>
 					<button class="sleep-secondary" type="button" onclick={endSleep}>Avsluta Sovläge</button>
@@ -505,8 +544,29 @@
 		text-underline-offset: 0.18em;
 	}
 
+	/* Av/på-läget bärs av texten, inte bara av färgen. */
+	.sleep-toggle {
+		min-height: 44px;
+		padding: 0.72rem 1rem;
+		border: 1px solid rgb(238 225 202 / 0.34);
+		border-radius: 0.8rem;
+		background: rgb(255 255 255 / 0.06);
+		color: #f7f3eb;
+		font: inherit;
+		font-weight: 650;
+		line-height: 1.3;
+		cursor: pointer;
+		transition: background-color 160ms ease, border-color 160ms ease;
+	}
+
+	.sleep-toggle[aria-pressed='true'] {
+		border-color: rgb(245 200 120 / 0.78);
+		background: rgb(245 200 120 / 0.15);
+	}
+
 	.sleep-primary:focus-visible,
 	.sleep-secondary:focus-visible,
+	.sleep-toggle:focus-visible,
 	.sleep-read-link:focus-visible {
 		outline: 2px solid #f5c878;
 		outline-offset: 3px;
@@ -520,7 +580,8 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.sleep-options button {
+		.sleep-options button,
+		.sleep-toggle {
 			transition: none;
 		}
 	}

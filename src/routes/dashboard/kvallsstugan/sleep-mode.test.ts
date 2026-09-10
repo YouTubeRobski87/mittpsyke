@@ -16,6 +16,9 @@ const playback = readFileSync(
 describe('Sovläget i Kvällsstugan', () => {
 	it('håller tillståndet lokalt: ingen persistens, ingen DB, ingen endpoint', () => {
 		expect(route).toContain("let sleepStage = $state<SleepStage>('closed')");
+		// Steg, timer och uppspelning sparas aldrig. Enda undantaget är
+		// användarens upprepningsval för musiken, som ligger i
+		// evening-music-sources och aldrig rör panelens tillstånd.
 		const sleepCode = route + panel;
 		expect(sleepCode).not.toMatch(/localStorage|sessionStorage/);
 		expect(panel).not.toMatch(/fetch\(|supabase/);
@@ -115,7 +118,7 @@ describe('Sovlägets panel', () => {
 		expect(panel).toContain('playback = createSilentPlayback();');
 	});
 
-	it('spelar musik som ljudfil, aldrig via talsyntes, och loopar inte', () => {
+	it('spelar musik som ljudfil, aldrig via talsyntes, och loopar bara efter eget val', () => {
 		expect(panel).toContain("if (source === 'music')");
 		expect(panel).toContain('createAudioFilePlayback(EVENING_MUSIC_TRACK.audioSrc, {');
 
@@ -126,8 +129,33 @@ describe('Sovlägets panel', () => {
 		expect(musicBranch).toContain('return;');
 		expect(musicBranch).not.toContain('createBrowserSpeechEngine');
 		expect(musicBranch).not.toContain('createTtsPlayback');
-		// Ingen loop: spåret är kortare än stunden och tystnar när det tar slut.
-		expect(panel).not.toMatch(/\.loop\s*=|loop=\{?true/);
+		// Upprepning är av som standard och styrs bara av användarens val.
+		// Panelen sätter aldrig elementets loop själv – det gör adaptern.
+		expect(panel).toContain('let musicLoop = $state(false);');
+		expect(musicBranch).toContain('loop: musicLoop,');
+		expect(panel).not.toMatch(/\.loop\s*=|loop=\{?true|loop:\s*true/);
+	});
+
+	it('låter användaren slå på och av upprepning av musiken och sparar valet lokalt', () => {
+		expect(panel).toContain('aria-pressed={musicLoop}');
+		expect(panel).toContain("Upprepa låten: {musicLoop ? 'på' : 'av'}");
+		expect(panel).toContain('playback?.setLoop?.(musicLoop);');
+		expect(panel).toContain('writeEveningMusicLoop(musicLoop);');
+		// Knappen visas bara för musik, aldrig för meditation eller tystnad.
+		expect(panel.match(/\{#if source === 'music'\}\s*\{@render musicLoopToggle\(\)\}/g)).toHaveLength(2);
+	});
+
+	it('startar aldrig musiken när upprepningsvalet läses in', () => {
+		const loadEffect = panel.slice(
+			panel.indexOf('musicLoop = readEveningMusicLoop();'),
+			panel.indexOf('function toggleMusicLoop')
+		);
+		expect(loadEffect).not.toMatch(/start\(|resume\(|play\(/);
+		const toggle = panel.slice(
+			panel.indexOf('function toggleMusicLoop'),
+			panel.indexOf('function toggleMusicLoop') + 400
+		);
+		expect(toggle).not.toMatch(/\.start\(|\.resume\(|\.play\(/);
 	});
 
 	it('spelar inspelade meditationer som ljudfil och aldrig via talsyntes', () => {

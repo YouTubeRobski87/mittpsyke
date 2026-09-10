@@ -217,6 +217,53 @@ describe('Inspelad uppspelning', () => {
 		expect(playback.status).toBe('playing');
 	});
 
+	it('upprepar inte spåret som standard', () => {
+		const fake = createFakeAudio();
+		const playback = createAudioFilePlayback(SRC, {}, () => fake.element);
+
+		playback.start();
+
+		expect((fake.element as { loop?: boolean }).loop).toBe(false);
+	});
+
+	it('upprepar spåret med elementets egen loop när det valts', () => {
+		const fake = createFakeAudio();
+		const playback = createAudioFilePlayback(SRC, { loop: true }, () => fake.element);
+
+		playback.start();
+
+		expect((fake.element as { loop?: boolean }).loop).toBe(true);
+		expect(playback.status).toBe('playing');
+	});
+
+	it('kan slå av och på upprepning mitt i uppspelningen utan att starta om', () => {
+		const fake = createFakeAudio();
+		const playback = createAudioFilePlayback(SRC, {}, () => fake.element);
+
+		playback.start();
+		fake.element.currentTime = 42;
+		playback.setLoop?.(true);
+		expect((fake.element as { loop?: boolean }).loop).toBe(true);
+		playback.setLoop?.(false);
+		expect((fake.element as { loop?: boolean }).loop).toBe(false);
+
+		// Bytet rör varken position eller uppspelning.
+		expect(fake.element.currentTime).toBe(42);
+		expect(fake.calls.filter((call) => call === 'play')).toHaveLength(1);
+	});
+
+	it('startar aldrig ljud när upprepning slås på före start', () => {
+		const fake = createFakeAudio();
+		const playback = createAudioFilePlayback(SRC, {}, () => fake.element);
+
+		playback.setLoop?.(true);
+
+		expect(fake.calls).not.toContain('play');
+		expect(playback.status).toBe('idle');
+		playback.start();
+		expect((fake.element as { loop?: boolean }).loop).toBe(true);
+	});
+
 	it('pausar och fortsätter från samma position i samma instans', () => {
 		const fake = createFakeAudio();
 		const playback = createAudioFilePlayback(SRC, {}, () => fake.element);

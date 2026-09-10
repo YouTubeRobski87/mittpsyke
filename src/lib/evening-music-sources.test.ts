@@ -1,7 +1,11 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { EVENING_MUSIC_TRACK } from './evening-music-sources';
+import {
+	EVENING_MUSIC_TRACK,
+	parseEveningMusicLoop,
+	serializeEveningMusicLoop
+} from './evening-music-sources';
 
 describe('Musikspåret i Sovläge', () => {
 	it('heter Lugn musik och spelas som ljudfil', () => {
@@ -32,5 +36,19 @@ describe('Musikspåret i Sovläge', () => {
 
 	it('ligger i musikmappen och inte bland de guidade röstspåren', () => {
 		expect(EVENING_MUSIC_TRACK.audioSrc).not.toContain('/meditations/');
+	});
+});
+
+describe('upprepningsvalet för musiken i Sovläge', () => {
+	it('är av som standard och för okända värden', () => {
+		expect(parseEveningMusicLoop(null)).toBe(false);
+		expect(parseEveningMusicLoop('')).toBe(false);
+		expect(parseEveningMusicLoop('true')).toBe(false);
+		expect(parseEveningMusicLoop('off')).toBe(false);
+	});
+
+	it('sparas och läses tillbaka oförändrat', () => {
+		expect(parseEveningMusicLoop(serializeEveningMusicLoop(true))).toBe(true);
+		expect(parseEveningMusicLoop(serializeEveningMusicLoop(false))).toBe(false);
 	});
 });
