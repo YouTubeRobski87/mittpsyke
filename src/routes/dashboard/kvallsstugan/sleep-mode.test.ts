@@ -56,6 +56,26 @@ describe('Sovläget i Kvällsstugan', () => {
 		expect(route).toContain('.evening-flow-column.is-dimmed { opacity: 0.42; }');
 	});
 
+	it('lyfter fram sovplatsen i stället för att bara dämpa hela rummet', () => {
+		// Ett enda lager över scenen släcker rummet men sparar hörnet där
+		// personen redan ligger i scenbilden.
+		expect(route).toContain('<div class="sleep-focus" aria-hidden="true"></div>');
+		expect(route).toContain(
+			".evening-scene[data-sleep='on'][data-view='interior'] .sleep-focus { opacity: 1; }"
+		);
+		expect(route).toMatch(/\.sleep-focus\s*\{[\s\S]*?pointer-events: none;/);
+		// Sovplatsen blir ljusare än förut, inte mörkare.
+		expect(route).toContain('filter: brightness(0.78) saturate(0.88);');
+		// Ute på verandan finns ingen sovplats att lysa upp.
+		expect(route).not.toContain(".evening-scene[data-sleep='on'] .sleep-focus { opacity: 1; }");
+	});
+
+	it('beskriver Sovläget för skärmläsare, inte bara visuellt', () => {
+		expect(route).toContain('Sovläge i Kvällsstugan: rummet är nedsläckt');
+		// sceneLabel läser isSleepMode, som därför måste deklareras före den.
+		expect(route.indexOf('const isSleepMode')).toBeLessThan(route.indexOf('const sceneLabel'));
+	});
+
 	it('låter följeslagaren lägga sig först i aktivt Sovläge', () => {
 		expect(route).toContain('posePreference={sleepPosePreference}');
 		expect(route).toContain("isSleepMode ? 'resting' : 'calm'");

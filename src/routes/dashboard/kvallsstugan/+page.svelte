@@ -126,14 +126,22 @@
 	type SceneView = 'interior' | 'veranda';
 	let sceneView = $state<SceneView>('interior');
 	const isVerandaView = $derived(sceneView === 'veranda');
-	const sceneLabel = $derived(
-		isVerandaView ? 'Ute på Kvällsstugans veranda, vid vattnet' : 'Inne i Kvällsstugan, vid vattnet'
-	);
 
 	// Sovläge. Rent lokalt tillstånd: ingen persistens, ingen DB, ingen
 	// endpoint, ingen analytics. Lämnar man sidan är stunden slut.
+	//
+	// Deklareras före sceneLabel, som beskriver Sovläget för skärmläsare.
 	let sleepStage = $state<SleepStage>('closed');
 	const isSleepMode = $derived(sleepStage === 'active');
+
+	const sceneLabel = $derived(
+		isVerandaView
+			? 'Ute på Kvällsstugans veranda, vid vattnet'
+			: isSleepMode
+				? 'Sovläge i Kvällsstugan: rummet är nedsläckt och ljuset ligger kvar över sovplatsen'
+				: 'Inne i Kvällsstugan, vid vattnet'
+	);
+
 	// Följeslagaren lägger sig först när Sovläge faktiskt är aktivt - inte
 	// medan användaren fortfarande väljer.
 	//
@@ -362,6 +370,13 @@
 				></button>
 			{/if}
 		</div>
+		<!-- Sovlägets ljusfokus. Ett enda lager ovanpå hela scenen som släcker
+		     rummet men lämnar en mjuk ljusficka kvar över sovplatsen i höger
+		     hörn, där personen redan ligger i scenbilden. Det är därför
+		     Sovläge läses som "jag har lagt mig" och inte som samma rum med
+		     annan text - utan att någon ny möbel eller ny scenbild behövs.
+		     pointer-events: none, så dörr- och bokytorna under är oförändrade. -->
+		<div class="sleep-focus" aria-hidden="true"></div>
 		</section>
 
 			<SleepModePanel bind:stage={sleepStage} />
@@ -654,8 +669,33 @@
 	   får behålla sin flimmerkurva men dämpad, annars slocknar den enda
 	   ljuskällan i rummet helt. */
 	.evening-scene[data-sleep='on'] .evening-scene-image {
-		filter: brightness(0.62) saturate(0.86);
+		/* Ljusare än den tidigare enhetliga dämpningen (0,62). Mörkret ligger nu
+		   i ljusfokus-lagret i stället, som släcker rummet men sparar hörnet där
+		   personen ligger - så sovplatsen blir ljusare än förut medan resten
+		   blir mörkare. */
+		filter: brightness(0.78) saturate(0.88);
 	}
+	/* Ljusfickan sitter över soffhörnet: personen ligger på x 84-100 %, soffan
+	   från x 78 %. Ellipsen är centrerad på 88 % 58 % och tonar ut mot rummet.
+	   z-index 5 lägger den över allt i scenen, inklusive följeslagaren (z 3) och
+	   dörrytorna (z 4) - men den fångar aldrig klick. */
+	.sleep-focus {
+		position: absolute;
+		z-index: 5;
+		inset: 0;
+		opacity: 0;
+		background: radial-gradient(
+			ellipse 46% 58% at 88% 58%,
+			rgb(6 5 9 / 0) 0%,
+			rgb(6 5 9 / 0.3) 44%,
+			rgb(5 4 8 / 0.55) 74%,
+			rgb(4 3 6 / 0.64) 100%
+		);
+		pointer-events: none;
+		transition: opacity 900ms ease;
+	}
+	/* Bara inne i stugan. Ute på verandan finns ingen sovplats att lysa upp. */
+	.evening-scene[data-sleep='on'][data-view='interior'] .sleep-focus { opacity: 1; }
 	.evening-scene[data-sleep='on']::before { opacity: 0.55; }
 	.evening-scene[data-sleep='on'] :global(.interior-companion),
 	.evening-scene[data-sleep='on'] .interior-memory-rug,
@@ -797,6 +837,7 @@
 		.interior-memory-blanket,
 		.interior-memory-book,
 		.interior-floor-bed,
+		.sleep-focus,
 		.evening-flow-column { transition: none; }
 	}
 </style>
