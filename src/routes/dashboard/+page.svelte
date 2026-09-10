@@ -18,7 +18,6 @@
     Lock,
     MessageCircle,
     Newspaper,
-    Sprout,
     SunMedium
   } from 'lucide-svelte';
   import {
@@ -360,6 +359,15 @@
           bondLevel={companionBondLevel}
 			returnContextEnabled
         />
+        <button
+          class="companion-hotspot"
+          type="button"
+          onclick={greetCompanion}
+          aria-label={`Säg hej till ${companionName}`}
+          style={`--companion-hotspot-x: ${heroCompanionPlacement.x}%; --companion-hotspot-y: ${heroCompanionPlacement.y}%; --companion-hotspot-compact-x: ${heroCompanionPlacement.compact?.x ?? heroCompanionPlacement.x}%; --companion-hotspot-compact-y: ${heroCompanionPlacement.compact?.y ?? heroCompanionPlacement.y}%;`}
+        >
+          <span aria-hidden="true">Säg hej till {companionName}</span>
+        </button>
         <!-- En bubbla i taget vid följeslagaren. Reaktionen på dagens fråga har
              företräde framför hälsningen, så de aldrig kan ligga ovanpå varandra. -->
         {#if companionDailyReaction || companionGreeting}
@@ -423,16 +431,6 @@
         <div class="hero-copy">
           <h2>{greeting}</h2>
           <p>{livingWorldReflectionCopy}</p>
-          <div class="hero-companion-note">
-            <span class="hero-companion-mark" aria-hidden="true"><Sprout size={18} /></span>
-            <span class="hero-companion-text">
-              <strong>Följeslagaren är här för dig.</strong>
-              <small>{companionName} håller platsen lugnt sällskap.</small>
-            </span>
-            <button class="hero-companion-link" type="button" onclick={greetCompanion}>
-              Säg hej till {companionName}
-            </button>
-          </div>
         </div>
       </section>
 
@@ -855,6 +853,78 @@
     z-index: calc(var(--companion-z, 2) + 1);
   }
 
+  /* Klickytan följer samma ankare som CompanionPose. Den är osynlig tills
+     användaren pekar eller fokuserar på djuret, så interaktionen förblir en
+     del av platsen i stället för en permanent knapp ovanpå landskapet. */
+  .companion-hotspot {
+    position: absolute;
+    z-index: calc(var(--scene-overlay) + 2);
+    left: var(--companion-hotspot-x);
+    top: var(--companion-hotspot-y);
+    width: 96px;
+    height: 96px;
+    padding: 0;
+    border: 0;
+    border-radius: 46% 54% 48% 52%;
+    background: transparent;
+    color: #fffaf1;
+    cursor: pointer;
+    touch-action: manipulation;
+    transform: translate(-50%, -100%);
+  }
+
+  .companion-hotspot::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    transition:
+      border-color 160ms ease,
+      background-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+
+  .companion-hotspot span {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 4px);
+    width: max-content;
+    max-width: 11rem;
+    padding: 0.28rem 0.48rem;
+    border: 1px solid rgb(217 202 166 / 0.38);
+    border-radius: 999px;
+    background: rgb(20 29 37 / 0.88);
+    box-shadow: 0 4px 14px rgb(6 12 19 / 0.2);
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.2;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 3px);
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease;
+  }
+
+  .companion-hotspot:hover::before,
+  .companion-hotspot:focus-visible::before {
+    border-color: rgb(255 247 230 / 0.68);
+    background: rgb(255 247 230 / 0.05);
+    box-shadow: 0 0 18px rgb(248 207 133 / 0.28);
+  }
+
+  .companion-hotspot:hover span,
+  .companion-hotspot:focus-visible span {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .companion-hotspot:focus-visible {
+    outline: 3px solid var(--mp-accent);
+    outline-offset: 2px;
+  }
+
   /* Samma djupband som det (dolda) världslagret: bakom följeslagaren, framför
      scenbilden. Till skillnad från .hero-living-world döljs det här lagret inte
      - det är hela poängen med det. */
@@ -964,75 +1034,11 @@
   }
 
   .hero-copy > p {
-    margin: 0.45rem 0 0.85rem;
+    margin: 0.45rem 0 0;
     color: rgb(255 250 241 / 0.86);
     text-shadow: 0 1px 8px rgb(8 14 22 / 0.46);
     font-size: 0.98rem;
     line-height: 1.5;
-  }
-
-  .hero-companion-note {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.35rem 0.6rem;
-    padding: 0.7rem 0.8rem;
-    border-radius: 12px;
-    border: 1px solid rgb(255 247 230 / 0.18);
-    background: rgb(20 29 37 / 0.72);
-    backdrop-filter: blur(7px);
-    box-shadow: 0 8px 22px rgba(10, 25, 45, 0.14);
-  }
-
-  .hero-companion-mark {
-    display: grid;
-    place-items: center;
-    width: 1.9rem;
-    height: 1.9rem;
-    border-radius: 8px;
-    color: #d6eccf;
-    background: rgb(120 174 110 / 0.24);
-  }
-
-  .hero-companion-text {
-    display: grid;
-    gap: 0.12rem;
-    min-width: 0;
-  }
-
-  .hero-companion-text strong {
-    color: #fffaf1;
-    font-size: 0.92rem;
-  }
-
-  .hero-companion-text small {
-    color: rgb(255 250 241 / 0.76);
-    font-size: 0.84rem;
-    line-height: 1.35;
-  }
-
-  .hero-companion-link {
-    grid-column: 1 / -1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 40px;
-    margin-top: 0.1rem;
-    padding: 0.45rem 0.8rem;
-    border: 1px solid rgba(49, 71, 58, 0.2);
-    border-radius: 9px;
-    background: rgba(255, 255, 255, 0.72);
-    color: #31473a;
-    font: inherit;
-    font-weight: 700;
-    font-size: 0.88rem;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.16s ease, transform 0.16s ease;
-  }
-
-  .hero-companion-link:hover {
-    background: #fff;
-    transform: translateY(-1px);
   }
 
   @keyframes companionGreetingIn {
@@ -1354,7 +1360,6 @@
 
   .now-cta:focus-visible,
   .home-card-action:focus-visible,
-  .hero-companion-link:focus-visible,
   .explore-panel a:focus-visible,
   .privacy-row a:focus-visible,
   .soft-account-link:focus-visible {
@@ -1637,28 +1642,11 @@
       font-size: 0.88rem;
     }
 
-    /* CTA:n är en sceninteraktion, inte en chattlänk, och ska därför vara
-       åtkomlig även på mobil. Själva companion-copyn döljs för att ge plats. */
-    .hero-companion-note {
-      display: block;
-      padding: 0;
-      border: 0;
-      background: none;
-      box-shadow: none;
-    }
-
-    .hero-companion-mark,
-    .hero-companion-text {
-      display: none;
-    }
-
-    .hero-companion-link {
-      width: 100%;
-      min-height: 38px;
-      margin-top: 0.65rem;
-      padding: 0.42rem 0.5rem;
-      font-size: 0.78rem;
-      line-height: 1.25;
+    .companion-hotspot {
+      left: var(--companion-hotspot-compact-x);
+      top: var(--companion-hotspot-compact-y);
+      width: 72px;
+      height: 72px;
     }
 
     .companion-greeting {
@@ -1723,7 +1711,9 @@
   @media (prefers-reduced-motion: reduce) {
     .now-cta,
     .home-card-action,
-    .hero-companion-link,
+    .companion-hotspot,
+    .companion-hotspot::before,
+    .companion-hotspot span,
     .explore-panel a,
     .privacy-row a {
       transition: none;

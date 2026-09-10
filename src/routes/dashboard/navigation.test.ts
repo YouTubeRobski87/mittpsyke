@@ -71,6 +71,17 @@ describe('Mitt Hem som navigationsnav', () => {
 		expect(heroPanel).toContain('<AmbientWorld');
 	});
 
+	it('gör följeslagaren till hero-interaktionen utan ett permanent kort', () => {
+		expect(heroPanel).toContain('class="companion-hotspot"');
+		expect(heroPanel).toContain('onclick={greetCompanion}');
+		expect(heroPanel).toContain('aria-label={`Säg hej till ${companionName}`}');
+		expect(heroPanel).toContain('heroCompanionPlacement.compact?.x');
+		expect(dashboardSource).toContain('.companion-hotspot:focus-visible');
+		expect(heroPanel).not.toContain('hero-companion-note');
+		expect(heroPanel).not.toContain('Följeslagaren är här för dig.');
+		expect(heroPanel).not.toContain('håller platsen lugnt sällskap.');
+	});
+
 	it('har en enda innehållsnära dashboardväg till Framsteg', () => {
 		expect(nowPanel).toContain('href="/framsteg"');
 		expect(nowPanel).toContain('Se alla framsteg');
