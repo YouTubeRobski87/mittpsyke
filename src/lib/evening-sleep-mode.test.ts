@@ -34,13 +34,16 @@ describe('Sovlägets val', () => {
 		expect(SLEEP_SOURCES.map((source) => source.id)).not.toContain('nature');
 	});
 
-	it('skickar musik direkt till längden eftersom det bara finns ett spår', () => {
-		expect(getSleepStageAfterSource('music')).toBe('length');
-		expect(getSleepStageBefore('length', 'music')).toBe('source');
+	it('låter musik välja spår i ett eget steg innan längden', () => {
+		expect(getSleepStageAfterSource('music')).toBe('music');
+		expect(getSleepStageBefore('length', 'music')).toBe('music');
+		expect(getSleepStageBefore('music', 'music')).toBe('source');
+		expect(isSleepChoiceStage('music')).toBe(true);
+		expect(getSleepStageHeading('music', 'music')).toBe('Vilken musik vill du lyssna på?');
 	});
 
 	it('namnger spåret i statusraden för både musik och meditation', () => {
-		expect(getSleepActiveStatus('music', 'Lugn musik')).toBe('Lugn musik spelas.');
+		expect(getSleepActiveStatus('music', 'Stilla sjö')).toBe('Stilla sjö spelas.');
 		expect(getSleepActiveStatus('meditation', 'Guidad avslappning')).toBe(
 			'Guidad avslappning spelas.'
 		);

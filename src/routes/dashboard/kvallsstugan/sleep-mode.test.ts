@@ -120,20 +120,60 @@ describe('Sovlägets panel', () => {
 
 	it('spelar musik som ljudfil, aldrig via talsyntes, och loopar bara efter eget val', () => {
 		expect(panel).toContain("if (source === 'music')");
-		expect(panel).toContain('createAudioFilePlayback(EVENING_MUSIC_TRACK.audioSrc, {');
 
 		const musicBranch = panel.slice(
 			panel.indexOf("if (source === 'music')"),
 			panel.indexOf('if (meditation?.audioSrc)')
 		);
+		expect(musicBranch).toContain('playSelectedMusic();');
 		expect(musicBranch).toContain('return;');
 		expect(musicBranch).not.toContain('createBrowserSpeechEngine');
 		expect(musicBranch).not.toContain('createTtsPlayback');
+
+		const playMusic = panel.slice(
+			panel.indexOf('function playSelectedMusic()'),
+			panel.indexOf('function switchMusic(')
+		);
+		expect(playMusic).toContain('const track = getEveningMusicTrack(musicId);');
+		expect(playMusic).toContain('createAudioFilePlayback(track.audioSrc, {');
+		expect(playMusic).not.toContain('createBrowserSpeechEngine');
 		// Upprepning är av som standard och styrs bara av användarens val.
 		// Panelen sätter aldrig elementets loop själv – det gör adaptern.
 		expect(panel).toContain('let musicLoop = $state(false);');
-		expect(musicBranch).toContain('loop: musicLoop,');
+		expect(playMusic).toContain('loop: musicLoop,');
 		expect(panel).not.toMatch(/\.loop\s*=|loop=\{?true|loop:\s*true/);
+	});
+
+	it('låter användaren välja låt före stunden bland alla musikspår', () => {
+		expect(panel).toContain("{:else if stage === 'music'}");
+		expect(panel).toContain('{#each EVENING_MUSIC_TRACKS as track (track.id)}');
+		expect(panel).toContain('onclick={() => chooseMusic(track.id)}');
+		const chooseMusic = panel.slice(panel.indexOf('function chooseMusic('));
+		// Valet leder vidare till längden och startar inget ljud.
+		expect(chooseMusic.slice(0, 120)).toContain("goToStage('length');");
+		expect(chooseMusic.slice(0, 120)).not.toMatch(/start\(|play\(/);
+	});
+
+	it('låter användaren byta låt under stunden utan att lämna den', () => {
+		expect(panel).toContain('aria-label="Byt låt"');
+		expect(panel).toContain('aria-pressed={musicId === track.id}');
+		expect(panel).toContain('onclick={() => switchMusic(track.id)}');
+		const switchMusic = panel.slice(
+			panel.indexOf('function switchMusic('),
+			panel.indexOf('async function startSleep(')
+		);
+		// Den gamla låten stoppas innan den nya startar – aldrig två samtidigt.
+		expect(switchMusic.indexOf('stopPlayback();')).toBeLessThan(
+			switchMusic.indexOf('playSelectedMusic();')
+		);
+		// Klockan fortsätter; stunden börjar inte om.
+		expect(switchMusic).not.toContain('createSleepTimer');
+	});
+
+	it('stoppar ljudet när Sovläge stängs, även om steget sätts utifrån', () => {
+		expect(panel).toContain("if (stage === 'closed') untrack(stopPlayback);");
+		const endSleep = panel.slice(panel.indexOf('function endSleep()'));
+		expect(endSleep.slice(0, 200)).toContain('stopPlayback();');
 	});
 
 	it('låter användaren slå på och av upprepning av musiken och sparar valet lokalt', () => {

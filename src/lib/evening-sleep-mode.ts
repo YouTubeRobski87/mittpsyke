@@ -5,13 +5,14 @@
 // 1. Ingenting startar av sig självt. Varje steg kräver ett uttryckligt val,
 //    och ljud spelas aldrig förrän användaren valt både källa och längd.
 // 2. Ingenting sparas. Sovläge lever bara i den öppna vyn – ingen DB, ingen
-//    localStorage, ingen ny datainsamling.
+//    ny datainsamling. Enda undantaget är användarens upprepningsval för
+//    musiken, en inställning som ligger i evening-music-sources.
 // 3. Tiden räknas mot tidsstämplar, aldrig mot en tickräknare. En strypt
 //    bakgrundsflik ska inte kunna få sessionen att glida.
 // 4. Copyn beskriver vad användaren valt. Den lovar aldrig sömn, effekt eller
 //    resultat – se docs/NORTH_STAR.md.
 
-export type SleepStage = 'closed' | 'source' | 'meditation' | 'length' | 'active';
+export type SleepStage = 'closed' | 'source' | 'music' | 'meditation' | 'length' | 'active';
 
 export type SleepSourceId = 'music' | 'meditation' | 'silence';
 
@@ -27,11 +28,11 @@ export type SleepSourceOption = {
  * visa det som gråat eller "kommer snart" hade gjort valet till en vägg i
  * stället för ett val. Det läggs till när det finns något att spela.
  *
- * Musik finns numera som ett inspelat spår och står först: det är den enda
- * källan utan guidande röst som ändå ger något att vila till.
+ * Musik står först: det är den enda källan utan guidande röst som ändå ger
+ * något att vila till. Vilket spår väljs i ett eget steg.
  */
 export const SLEEP_SOURCES: readonly SleepSourceOption[] = [
-	{ id: 'music', label: 'Lugn musik', hint: 'Ett stilla spår att vila till' },
+	{ id: 'music', label: 'Lugn musik', hint: 'Välj ett stilla spår att vila till' },
 	{ id: 'meditation', label: 'Meditation', hint: 'En lugn röst som guidar dig' },
 	{ id: 'silence', label: 'Tystnad', hint: 'Inget ljud alls' }
 ];
@@ -65,17 +66,14 @@ export function getSleepLength(id: SleepLengthId | null): SleepLengthOption | nu
 // ---------------------------------------------------------------------------
 // Stegövergångar
 //
-// Bara meditation har ett mellansteg. Tystnad har ingenting att välja mellan
-// och går direkt till längden – ett tomt steg hade bara varit en klickning
-// till.
+// Musik och meditation har var sitt mellansteg där spåret väljs. Tystnad har
+// ingenting att välja mellan och går direkt till längden – ett tomt steg hade
+// bara varit en klickning till.
 
-/**
- * Bara meditation har ett mellansteg. Musik har i dag ett enda spår och
- * tystnad har ingenting att välja mellan – båda går direkt till längden.
- * Tillkommer fler musikspår är det här och getSleepStageBefore som ändras.
- */
 export function getSleepStageAfterSource(source: SleepSourceId): SleepStage {
-	return source === 'meditation' ? 'meditation' : 'length';
+	if (source === 'music') return 'music';
+	if (source === 'meditation') return 'meditation';
+	return 'length';
 }
 
 /** Vägen bakåt. Speglar getSleepStageAfterSource så "Tillbaka" alltid landar rätt. */
@@ -83,14 +81,18 @@ export function getSleepStageBefore(
 	stage: SleepStage,
 	source: SleepSourceId | null
 ): SleepStage {
-	if (stage === 'length') return source === 'meditation' ? 'meditation' : 'source';
-	if (stage === 'meditation') return 'source';
+	if (stage === 'length') {
+		if (source === 'music') return 'music';
+		if (source === 'meditation') return 'meditation';
+		return 'source';
+	}
+	if (stage === 'music' || stage === 'meditation') return 'source';
 	return 'closed';
 }
 
 /** Sant när steget är ett val i panelen och inte det aktiva Sovläget. */
 export function isSleepChoiceStage(stage: SleepStage): boolean {
-	return stage === 'source' || stage === 'meditation' || stage === 'length';
+	return stage === 'source' || stage === 'music' || stage === 'meditation' || stage === 'length';
 }
 
 // ---------------------------------------------------------------------------
@@ -166,6 +168,7 @@ export function formatSleepRemaining(remainingMs: number | null): string | null 
 
 export function getSleepStageHeading(stage: SleepStage, source: SleepSourceId | null): string {
 	if (stage === 'source') return 'Välj något som hjälper dig att varva ner.';
+	if (stage === 'music') return 'Vilken musik vill du lyssna på?';
 	if (stage === 'meditation') return 'Vilken vill du lyssna på?';
 	if (stage === 'length') {
 		return source === 'silence' ? 'Hur länge vill du ha tyst?' : 'Hur länge vill du lyssna?';

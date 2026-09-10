@@ -16,8 +16,6 @@
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
-	import CalmMusicMiniPlayer from '$lib/components/music/CalmMusicMiniPlayer.svelte';
-	import { calmMusic } from '$lib/calm-music-player.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { Search } from 'lucide-svelte';
 	import { DIARY_ENTRIES_CHANGED_EVENT } from '$lib/diary-events';
@@ -515,13 +513,6 @@
 		};
 	});
 
-	// Lugn musik: en enda Audio-instans för hela besöket, så musiken överlever
-	// intern navigering. Inget spelas förrän användaren trycker på spela.
-	$effect(() => {
-		if (!browser) return;
-		return calmMusic.attach();
-	});
-
 	// Låt SvelteKit återställa scroll direkt vid sidbyte och back/forward.
 	onNavigate(() => {
 		delete document.documentElement.dataset.smoothScroll;
@@ -995,10 +986,6 @@
 
 	{#if !isProductPage}
 		<CookieBanner />
-	{/if}
-
-	{#if calmMusic.showMiniPlayer}
-		<CalmMusicMiniPlayer />
 	{/if}
 {/if}
 

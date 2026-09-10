@@ -7,37 +7,67 @@
 export type EveningMusicTrack = {
 	id: string;
 	title: string;
-	/** Kort förtydligande i valet. Beskriver, lovar ingen effekt. */
+	/** Kort förtydligande i valet. Beskriver klangen, lovar ingen effekt. */
 	summary: string;
 	/** Publik URL till ljudfilen. Musik spelas alltid som fil, aldrig via TTS. */
 	audioSrc: string;
 };
 
 /**
- * Sökvägen följer samma två regler som den inspelade meditationen:
+ * Sökvägarna följer samma två regler som de inspelade meditationerna:
  *
  * 1. Katalogen är gemen (`/audio/`). Både Vite och produktion är
  *    skiftlägeskänsliga, så versalt `/Audio/` skulle svara 404.
- * 2. encodeURI körs på hela sökvägen eftersom filnamnet innehåller mellanslag
- *    och ä. Filnamnet är UTF-8 på disk, så kodningen blir densamma överallt.
+ * 2. encodeURI körs på hela sökvägen. De nya filnamnen är ASCII och påverkas
+ *    inte, men det äldre spåret innehåller mellanslag och ä.
  */
-const MUSIC_TRACK_PATH =
-	'/audio/musik/Kvar i mitt huvud - Den där Robban - Den där Robban du vet.mp3';
+const MUSIC_DIRECTORY = '/audio/musik/';
+
+function musicPath(fileName: string): string {
+	return encodeURI(`${MUSIC_DIRECTORY}${fileName}`);
+}
 
 /**
- * Spåret loopar inte som standard.
+ * Spåren i den ordning de visas i Sovläge.
  *
- * Det är ~3 min 42 s medan stunderna är 10, 20 eller 30 minuter, så musiken
- * tar slut innan stunden gör det – samma beteende som meditationerna: spåret
- * tar slut, stunden fortsätter i tystnad. Den som hellre vill ha musik hela
- * stunden kan själv slå på upprepning i Sovläge; valet sparas lokalt.
+ * Inget spår loopar som standard. Spåren är några minuter långa medan
+ * stunderna är 10, 20 eller 30 minuter, så musiken tar slut innan stunden gör
+ * det – samma beteende som meditationerna: spåret tar slut, stunden fortsätter
+ * i tystnad. Den som hellre vill ha musik hela stunden kan själv slå på
+ * upprepning i Sovläge; valet sparas lokalt.
  */
-export const EVENING_MUSIC_TRACK: EveningMusicTrack = {
-	id: 'lugn-musik',
-	title: 'Lugn musik',
-	summary: 'Ett stilla spår att vila till.',
-	audioSrc: encodeURI(MUSIC_TRACK_PATH)
-};
+export const EVENING_MUSIC_TRACKS: readonly EveningMusicTrack[] = [
+	{
+		id: 'stilla-sjo',
+		title: 'Stilla sjö',
+		summary: 'Varm och meditativ.',
+		audioSrc: musicPath('stilla_sjo.mp3')
+	},
+	{
+		id: 'mjuka-andetag',
+		title: 'Mjuka andetag',
+		summary: 'Luftig med mjuka klocktoner.',
+		audioSrc: musicPath('mjuka_andetag.mp3')
+	},
+	{
+		id: 'trygg-natt',
+		title: 'Trygg natt',
+		summary: 'Mörkare och ombonad.',
+		audioSrc: musicPath('trygg_natt.mp3')
+	},
+	{
+		id: 'lugn-musik',
+		title: 'Lugn musik',
+		summary: 'Ett stilla spår att vila till.',
+		audioSrc: musicPath('Kvar i mitt huvud - Den där Robban - Den där Robban du vet.mp3')
+	}
+];
+
+export const DEFAULT_EVENING_MUSIC_ID = EVENING_MUSIC_TRACKS[0].id;
+
+export function getEveningMusicTrack(id: string): EveningMusicTrack | null {
+	return EVENING_MUSIC_TRACKS.find((track) => track.id === id) ?? null;
+}
 
 /** localStorage-nyckel för upprepningsvalet. Sparar bara valet, aldrig uppspelning. */
 export const EVENING_MUSIC_LOOP_STORAGE_KEY = 'mittpsyke:sleep-music-loop';

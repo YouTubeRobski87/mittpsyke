@@ -12,7 +12,7 @@
 	// Scenen dimmas i stället av routen, så känslan av att ligga kvar i stugan
 	// bärs av scenen medan panelen får den plats den behöver.
 	import { browser } from '$app/environment';
-	import { onDestroy, tick } from 'svelte';
+	import { onDestroy, tick, untrack } from 'svelte';
 	import {
 		SLEEP_LENGTHS,
 		SLEEP_SOURCES,
@@ -40,11 +40,12 @@
 		getEveningMeditations
 	} from '$lib/evening-meditation-sources';
 	import {
-		EVENING_MUSIC_TRACK,
+		DEFAULT_EVENING_MUSIC_ID,
+		EVENING_MUSIC_TRACKS,
+		getEveningMusicTrack,
 		readEveningMusicLoop,
 		writeEveningMusicLoop
 	} from '$lib/evening-music-sources';
-	import { calmMusic } from '$lib/calm-music-player.svelte';
 	import {
 		createAudioFilePlayback,
 		createBrowserSpeechEngine,
@@ -63,6 +64,7 @@
 
 	let source = $state<SleepSourceId | null>(null);
 	let meditationId = $state<string>(DEFAULT_EVENING_MEDITATION_ID);
+	let musicId = $state<string>(DEFAULT_EVENING_MUSIC_ID);
 	let timer = $state<SleepTimer | null>(null);
 	let now = $state(Date.now());
 	let playbackStatus = $state<SleepPlaybackStatus>('idle');
@@ -87,12 +89,13 @@
 	let startToken = 0;
 
 	const meditation = $derived(getEveningMeditation(meditationId));
+	const musicTrack = $derived(getEveningMusicTrack(musicId));
 	const lengthLabelFor = $derived((id: string) =>
 		formatMeditationLength(recordedDurations[id] ?? null)
 	);
 	// Titeln i statusraden kommer från vald källa: musikspåret eller meditationen.
 	const activeTitle = $derived(
-		source === 'music' ? EVENING_MUSIC_TRACK.title : (meditation?.title ?? null)
+		source === 'music' ? (musicTrack?.title ?? null) : (meditation?.title ?? null)
 	);
 	// Tystnad har ingenting att pausa. Musik och meditation har båda det.
 	const canPause = $derived(source !== null && source !== 'silence');
@@ -119,15 +122,20 @@
 		writeEveningMusicLoop(musicLoop);
 	}
 
-	// Läser speltiden ur ljudfilen när meditationsvalet öppnas.
+	// Läser speltiden ur ljudfilerna när musik- eller meditationsvalet öppnas.
 	//
 	// preload="metadata" hämtar bara filhuvudet via en Range-förfrågan, inte
 	// hela spåret - ingen 38 MB laddas ned för att visa en längd. Går det inte
 	// att läsa lämnas längden osatt och valet visas utan tidsangivelse.
 	$effect(() => {
-		if (stage !== 'meditation') return;
+		const candidates =
+			stage === 'music'
+				? EVENING_MUSIC_TRACKS.map((track) => ({ id: track.id, audioSrc: track.audioSrc }))
+				: stage === 'meditation'
+					? meditations.map((option) => ({ id: option.id, audioSrc: option.audioSrc }))
+					: [];
 
-		const pending = meditations.filter(
+		const pending = candidates.filter(
 			(option) => option.audioSrc && !probedIds.has(option.id)
 		);
 		if (pending.length === 0) return;
@@ -170,6 +178,11 @@
 		goToStage(getSleepStageAfterSource(next));
 	}
 
+	function chooseMusic(id: string) {
+		musicId = id;
+		goToStage('length');
+	}
+
 	function chooseMeditation(id: string) {
 		meditationId = id;
 		goToStage('length');
@@ -200,6 +213,44 @@
 		goToStage('source');
 	}
 
+	// Ljudet får aldrig överleva att panelen stängs, oavsett vem som stänger
+	// den. endSleep stoppar redan själv; det här är skyddsnätet om steget sätts
+	// till closed utifrån via den bundna `stage`.
+	$effect(() => {
+		if (stage === 'closed') untrack(stopPlayback);
+	});
+
+	// Musik är alltid en ljudfil. Den upprepas bara om användaren valt det.
+	function playSelectedMusic() {
+		const track = getEveningMusicTrack(musicId);
+		if (!track) return;
+
+		startToken += 1;
+		const token = startToken;
+		playback = createAudioFilePlayback(track.audioSrc, {
+			loop: musicLoop,
+			onStatusChange: (next) => {
+				if (token !== startToken) return;
+				playbackStatus = next;
+			}
+		});
+		playback.start();
+	}
+
+	/**
+	 * Byter låt mitt i stunden. Stundens klocka fortsätter, och eftersom bytet
+	 * är ett aktivt val spelar den nya låten direkt – även om musiken var pausad.
+	 */
+	function switchMusic(id: string) {
+		if (!getEveningMusicTrack(id)) return;
+		if (id === musicId && playbackStatus === 'playing') return;
+
+		musicId = id;
+		stopPlayback();
+		if (timer) timer = resumeSleepTimer(timer, Date.now());
+		playSelectedMusic();
+	}
+
 	async function startSleep(lengthId: SleepLengthId) {
 		const length = getSleepLength(lengthId);
 		if (!length || !source) return;
@@ -207,9 +258,6 @@
 		timer = createSleepTimer(Date.now(), length.minutes);
 		now = Date.now();
 		goToStage('active');
-
-		// Sovläge spelar aldrig ovanpå Lugn musik, inte heller vid tystnad.
-		calmMusic.pause();
 
 		// Vakten frågar uttryckligen efter tystnad i stället för "allt utom
 		// meditation". Den tidigare formen hade skickat musik hit och spelat
@@ -224,16 +272,9 @@
 		startToken += 1;
 		const token = startToken;
 
-		// Musik är alltid en ljudfil. Den upprepas bara om användaren valt det.
+		// Musik spelas synkront i klickets gest, precis som inspelade meditationer.
 		if (source === 'music') {
-			playback = createAudioFilePlayback(EVENING_MUSIC_TRACK.audioSrc, {
-				loop: musicLoop,
-				onStatusChange: (next) => {
-					if (token !== startToken) return;
-					playbackStatus = next;
-				}
-			});
-			playback.start();
+			playSelectedMusic();
 			return;
 		}
 
@@ -325,6 +366,29 @@
 					<button class="sleep-secondary" type="button" onclick={endSleep}>Avbryt</button>
 				</div>
 			</div>
+		{:else if stage === 'music'}
+			<div class="sleep-step">
+				<h2 id="sleep-panel-title" bind:this={heading} tabindex="-1">
+					{getSleepStageHeading(stage, source)}
+				</h2>
+				<div class="sleep-options" aria-label="Välj musik">
+					{#each EVENING_MUSIC_TRACKS as track (track.id)}
+						<button
+							type="button"
+							class:selected={musicId === track.id}
+							onclick={() => chooseMusic(track.id)}
+						>
+							<span class="sleep-option-label">{track.title}</span>
+							<span class="sleep-option-hint">
+								{track.summary}{lengthLabelFor(track.id) ? ` · ${lengthLabelFor(track.id)}` : ''}
+							</span>
+						</button>
+					{/each}
+				</div>
+				<div class="sleep-actions">
+					<button class="sleep-secondary" type="button" onclick={goBack}>Tillbaka</button>
+				</div>
+			</div>
 		{:else if stage === 'meditation'}
 			<div class="sleep-step">
 				<h2 id="sleep-panel-title" bind:this={heading} tabindex="-1">
@@ -379,7 +443,10 @@
 				</p>
 				{#if playbackStatus === 'unavailable'}
 					<p class="sleep-hint" role="status">
-						{#if meditation?.audioSrc}
+						{#if source === 'music'}
+							Låten kunde inte spelas upp just nu. Stunden fortsätter i tystnad – du kan välja en
+							annan låt eller avsluta när du vill.
+						{:else if meditation?.audioSrc}
 							Ljudet kunde inte spelas upp just nu. Stunden fortsätter i tystnad – du kan byta
 							val eller avsluta när du vill.
 						{:else}
@@ -389,9 +456,25 @@
 					</p>
 					<!-- Bara textövningarna har en sida att läsa. Den inspelade
 					     meditationen finns inte i skriven form. -->
-					{#if meditation?.href}
+					{#if source === 'meditation' && meditation?.href}
 						<a class="sleep-read-link" href={meditation.href}>Öppna {meditation.title}</a>
 					{/if}
+				{/if}
+				{#if source === 'music'}
+					<!-- Låten går att byta utan att lämna stunden. Vald låt markeras
+					     både med aria-pressed och i statusraden ovan, inte bara med färg. -->
+					<div class="sleep-tracks" role="group" aria-label="Byt låt">
+						{#each EVENING_MUSIC_TRACKS as track (track.id)}
+							<button
+								class="sleep-track"
+								type="button"
+								aria-pressed={musicId === track.id}
+								onclick={() => switchMusic(track.id)}
+							>
+								{track.title}
+							</button>
+						{/each}
+					</div>
 				{/if}
 				<div class="sleep-controls">
 					{#if canPause}
@@ -544,6 +627,42 @@
 		text-underline-offset: 0.18em;
 	}
 
+	.sleep-tracks {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.sleep-track {
+		min-height: 44px;
+		padding: 0.55rem 0.85rem;
+		border: 1px solid rgb(238 225 202 / 0.24);
+		border-radius: 999px;
+		background: transparent;
+		color: rgb(240 235 225 / 0.86);
+		font: inherit;
+		font-size: 0.92rem;
+		line-height: 1.3;
+		cursor: pointer;
+		transition: background-color 160ms ease, border-color 160ms ease;
+	}
+
+	.sleep-track:hover {
+		border-color: rgb(245 200 120 / 0.5);
+	}
+
+	.sleep-track[aria-pressed='true'] {
+		border-color: rgb(245 200 120 / 0.78);
+		background: rgb(245 200 120 / 0.15);
+		color: #f7f3eb;
+		font-weight: 650;
+	}
+
+	.sleep-track:focus-visible {
+		outline: 2px solid #f5c878;
+		outline-offset: 3px;
+	}
+
 	/* Av/på-läget bärs av texten, inte bara av färgen. */
 	.sleep-toggle {
 		min-height: 44px;
@@ -581,7 +700,8 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.sleep-options button,
-		.sleep-toggle {
+		.sleep-toggle,
+		.sleep-track {
 			transition: none;
 		}
 	}

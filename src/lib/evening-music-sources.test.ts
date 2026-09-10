@@ -2,40 +2,70 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-	EVENING_MUSIC_TRACK,
+	DEFAULT_EVENING_MUSIC_ID,
+	EVENING_MUSIC_TRACKS,
+	getEveningMusicTrack,
 	parseEveningMusicLoop,
 	serializeEveningMusicLoop
 } from './evening-music-sources';
 
-describe('Musikspåret i Sovläge', () => {
-	it('heter Lugn musik och spelas som ljudfil', () => {
-		expect(EVENING_MUSIC_TRACK.title).toBe('Lugn musik');
-		expect(EVENING_MUSIC_TRACK.audioSrc).toBeTruthy();
+describe('Musikspåren i Sovläge', () => {
+	it('erbjuder Stilla sjö, Mjuka andetag och Trygg natt med rätt filer', () => {
+		expect(
+			EVENING_MUSIC_TRACKS.slice(0, 3).map((track) => [track.title, track.audioSrc])
+		).toEqual([
+			['Stilla sjö', '/audio/musik/stilla_sjo.mp3'],
+			['Mjuka andetag', '/audio/musik/mjuka_andetag.mp3'],
+			['Trygg natt', '/audio/musik/trygg_natt.mp3']
+		]);
 	});
 
-	it('pekar på en fil som faktiskt finns och är en riktig MP3', () => {
-		const filePath = join(process.cwd(), 'static', decodeURI(EVENING_MUSIC_TRACK.audioSrc));
+	it('har neutrala beskrivningar som inte lovar någon effekt', () => {
+		expect(getEveningMusicTrack('stilla-sjo')?.summary).toBe('Varm och meditativ.');
+		expect(getEveningMusicTrack('mjuka-andetag')?.summary).toBe('Luftig med mjuka klocktoner.');
+		expect(getEveningMusicTrack('trygg-natt')?.summary).toBe('Mörkare och ombonad.');
+		for (const track of EVENING_MUSIC_TRACKS) {
+			expect(track.summary).not.toMatch(/somna|sömn|bot|läk|hjälper mot|minskar|behandl/i);
+		}
+	});
+
+	it('har unika id:n och ett standardval som finns i listan', () => {
+		const ids = EVENING_MUSIC_TRACKS.map((track) => track.id);
+		expect(new Set(ids).size).toBe(ids.length);
+		expect(getEveningMusicTrack(DEFAULT_EVENING_MUSIC_ID)).not.toBeNull();
+		expect(getEveningMusicTrack('finns-inte')).toBeNull();
+	});
+
+	it.each(EVENING_MUSIC_TRACKS)('$title pekar på en fil som finns och är en riktig MP3', (track) => {
+		const filePath = join(process.cwd(), 'static', decodeURI(track.audioSrc));
 		expect(existsSync(filePath), `saknar ljudfil: ${filePath}`).toBe(true);
 
 		// Tidigare låg här en omdöpt MP4 med videospår. Testet fångar det.
-		const header = readFileSync(filePath).subarray(0, 3).toString('latin1');
-		expect(header, 'filen saknar ID3-huvud och är kanske inte en MP3').toBe('ID3');
+		const header = readFileSync(filePath).subarray(0, 3);
+		const isId3 = header.toString('latin1') === 'ID3';
+		const isFrameSync = header[0] === 0xff && (header[1] & 0xe0) === 0xe0;
+		expect(isId3 || isFrameSync, `${track.audioSrc} ser inte ut som en MP3`).toBe(true);
 	});
 
 	it('använder gemener i sökvägen eftersom produktionen är skiftlägeskänslig', () => {
-		expect(EVENING_MUSIC_TRACK.audioSrc.startsWith('/audio/musik/')).toBe(true);
-		expect(EVENING_MUSIC_TRACK.audioSrc).not.toContain('/Audio/');
+		for (const track of EVENING_MUSIC_TRACKS) {
+			expect(track.audioSrc.startsWith('/audio/musik/')).toBe(true);
+			expect(track.audioSrc).not.toContain('/Audio/');
+		}
 	});
 
 	it('procentkodar mellanslag och ä så URL:en blir giltig', () => {
-		expect(EVENING_MUSIC_TRACK.audioSrc).not.toContain(' ');
-		expect(EVENING_MUSIC_TRACK.audioSrc).toContain('%20');
+		const older = getEveningMusicTrack('lugn-musik');
+		expect(older?.audioSrc).not.toContain(' ');
+		expect(older?.audioSrc).toContain('%20');
 		// ä = C3 A4 i UTF-8.
-		expect(EVENING_MUSIC_TRACK.audioSrc).toContain('%C3%A4');
+		expect(older?.audioSrc).toContain('%C3%A4');
 	});
 
 	it('ligger i musikmappen och inte bland de guidade röstspåren', () => {
-		expect(EVENING_MUSIC_TRACK.audioSrc).not.toContain('/meditations/');
+		for (const track of EVENING_MUSIC_TRACKS) {
+			expect(track.audioSrc).not.toContain('/meditations/');
+		}
 	});
 });
 
