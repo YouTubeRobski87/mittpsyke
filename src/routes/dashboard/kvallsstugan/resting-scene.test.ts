@@ -27,7 +27,11 @@ describe('Kvällsstugans viloscen', () => {
 
 		expect(companion).toContain('class="evening-companion interior-companion"');
 		expect(companion).toContain('behaviourProfile="quiet"');
-		expect(companion).toContain('posePreference="calm"');
+		// Posen är inte längre en fast sträng: den följer Sovläge. I vila -
+		// alltså när Sovläge är avstängt - är den fortfarande 'calm', precis
+		// som förut. Se sleep-mode.test.ts för det aktiva läget.
+		expect(companion).toContain('posePreference={sleepPosePreference}');
+		expect(route).toContain("isSleepMode ? 'resting' : 'calm'");
 		expect(route).toContain('.evening-scene :global(.interior-companion)');
 	});
 
