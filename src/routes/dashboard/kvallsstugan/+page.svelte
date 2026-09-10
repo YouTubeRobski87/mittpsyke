@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { dev } from '$app/environment';
 	import SEO from '$lib/components/SEO.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import EveningCheckinFlow from '$lib/components/evening/EveningCheckinFlow.svelte';
@@ -44,8 +43,8 @@
 	// null = ingen godkänd asset finns. Den levererade filen underkändes vid
 	// verifiering (helt rum i stället för urklippt bädd, genomgående ~94 %
 	// alfa) - se docs/sovlage-asset-spec.md. Så länge konstanten är null
-	// renderas varken bädden eller dess hotspot, så ingen tom golvyta blir
-	// klickbar.
+	// renderas ingen bädd. Sovläge är ändå nåbart via den tydligt märkta
+	// scen-hotspoten nedan; när rätt asset finns läggs den under samma hotspot.
 	//
 	// När en korrekt urklippt WebP finns är det här den enda rad som behöver
 	// ändras: sätt sökvägen, så följer bild, hotspot och Sovläge med.
@@ -286,12 +285,16 @@
 					aria-hidden="true"
 					draggable="false"
 				/>
+			{/if}
+			{#if sleepStage === 'closed'}
 				<button
 					class="scene-object scene-object-bed"
 					type="button"
-					aria-label="Lägg dig till rätta"
+					aria-label="Öppna Sovläge"
 					onclick={openSleepMode}
-				></button>
+				>
+					<span class="scene-object-label" aria-hidden="true">Sovläge</span>
+				</button>
 			{/if}
 			{#if hasInteriorBlanket}
 				<img
@@ -360,15 +363,6 @@
 			{/if}
 		</div>
 		</section>
-
-			{#if dev && sleepStage === 'closed'}
-				<!-- Utvecklingsgenväg tills bädd-asseten finns. `dev` är false i
-				     produktionsbygget, så knappen finns inte i den byggda
-				     bundlen - den ersätter hotspoten enbart för QA. -->
-				<button class="sleep-dev-trigger" type="button" onclick={openSleepMode}>
-					Öppna Sovläge (dev)
-				</button>
-			{/if}
 
 			<SleepModePanel bind:stage={sleepStage} />
 
@@ -527,7 +521,38 @@
 	/* Bädden. Ytan täcker medvetet inte hela madrassen: följeslagaren står på
 	   x 10-36 % och boken har sin yta från x 59 %, så hotspoten håller sig
 	   mellan dem. Då kan ett klick på djuret aldrig starta Sovläge. */
-	.scene-object-bed { left: 38%; top: 72%; width: 19%; height: 22%; }
+	.scene-object-bed {
+		left: 38%;
+		top: 72%;
+		width: 19%;
+		height: 22%;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: #f7e7c7;
+		font: inherit;
+	}
+	.scene-object-label {
+		position: absolute;
+		left: 50%;
+		bottom: 0.45rem;
+		transform: translateX(-50%);
+		padding: 0.25rem 0.55rem;
+		border: 1px solid rgb(245 200 120 / 0.32);
+		border-radius: 999px;
+		background: rgb(31 22 18 / 0.76);
+		box-shadow: 0 5px 16px rgb(18 12 10 / 0.3);
+		font-size: clamp(0.68rem, 1.6vw, 0.78rem);
+		font-weight: 700;
+		line-height: 1.2;
+		white-space: nowrap;
+		transition: background-color 200ms ease, border-color 200ms ease;
+	}
+	.scene-object-bed:hover .scene-object-label,
+	.scene-object-bed:focus-visible .scene-object-label {
+		border-color: rgb(255 214 150 / 0.72);
+		background: rgb(53 36 27 / 0.9);
+	}
 
 	/* Dörröppningen enligt docs/veranda-asset-spec.md: x 4,5-20,5 %, y 3-66,5 %. */
 	.scene-door-out { left: 4.5%; top: 3%; width: 16%; height: 63.5%; }
@@ -656,20 +681,6 @@
 	}
 	.evening-flow-column.is-dimmed { opacity: 0.42; }
 	.evening-flow-column.is-dimmed:focus-within { opacity: 1; }
-
-	.sleep-dev-trigger {
-		justify-self: start;
-		min-height: 44px;
-		padding: 0.6rem 0.9rem;
-		border: 1px dashed rgb(245 200 120 / 0.6);
-		border-radius: 0.8rem;
-		background: transparent;
-		color: rgb(245 200 120 / 0.9);
-		font: inherit;
-		font-weight: 650;
-		cursor: pointer;
-	}
-	.sleep-dev-trigger:focus-visible { outline: 2px solid #f5c878; outline-offset: 3px; }
 
 	.evening-experience {
 		display: grid;
