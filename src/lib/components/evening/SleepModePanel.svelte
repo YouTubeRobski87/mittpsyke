@@ -61,9 +61,14 @@
 	let now = $state(Date.now());
 	let playbackStatus = $state<SleepPlaybackStatus>('idle');
 	let heading = $state<HTMLElement | null>(null);
-	// Speltid för det inspelade spåret, läst ur filen själv. Null tills
-	// metadatan hunnit fram, eller om den inte går att läsa.
-	let recordedDurationSec = $state<number | null>(null);
+	// Speltid per inspelat spår, läst ur filerna själva och nycklad på id.
+	// Ett spår som ännu inte hunnit mätas, eller inte går att mäta, saknas här
+	// och visas då utan tidsangivelse.
+	let recordedDurations = $state<Record<string, number>>({});
+	// Vilka spår som redan har en mätning på gång. Medvetet en vanlig Set och
+	// inte $state: läses den inne i effekten nedan skulle varje mätning
+	// trigga om effekten och starta en ny mätning.
+	const probedIds = new Set<string>();
 
 	// Adaptern är avsiktligt inte reaktiv: panelen läser aldrig av den, den
 	// styr den. Statusen kommer tillbaka via onStatusChange.
@@ -73,7 +78,9 @@
 	let startToken = 0;
 
 	const meditation = $derived(getEveningMeditation(meditationId));
-	const recordedLengthLabel = $derived(formatMeditationLength(recordedDurationSec));
+	const lengthLabelFor = $derived((id: string) =>
+		formatMeditationLength(recordedDurations[id] ?? null)
+	);
 	// Titeln i statusraden kommer från vald källa: musikspåret eller meditationen.
 	const activeTitle = $derived(
 		source === 'music' ? EVENING_MUSIC_TRACK.title : (meditation?.title ?? null)
@@ -96,24 +103,32 @@
 	// hela spåret - ingen 38 MB laddas ned för att visa en längd. Går det inte
 	// att läsa lämnas längden osatt och valet visas utan tidsangivelse.
 	$effect(() => {
-		if (stage !== 'meditation' || recordedDurationSec !== null) return;
+		if (stage !== 'meditation') return;
 
-		const recorded = meditations.find((option) => option.audioSrc);
-		if (!recorded?.audioSrc) return;
+		const pending = meditations.filter(
+			(option) => option.audioSrc && !probedIds.has(option.id)
+		);
+		if (pending.length === 0) return;
 
-		const probe = new Audio();
-		const onLoaded = () => {
-			if (Number.isFinite(probe.duration) && probe.duration > 0) {
-				recordedDurationSec = probe.duration;
-			}
-		};
-		probe.preload = 'metadata';
-		probe.addEventListener('loadedmetadata', onLoaded);
-		probe.src = recorded.audioSrc;
+		const probes = pending.map((option) => {
+			probedIds.add(option.id);
+			const probe = new Audio();
+			const onLoaded = () => {
+				if (Number.isFinite(probe.duration) && probe.duration > 0) {
+					recordedDurations = { ...recordedDurations, [option.id]: probe.duration };
+				}
+			};
+			probe.preload = 'metadata';
+			probe.addEventListener('loadedmetadata', onLoaded);
+			probe.src = option.audioSrc ?? '';
+			return { probe, onLoaded };
+		});
 
 		return () => {
-			probe.removeEventListener('loadedmetadata', onLoaded);
-			probe.src = '';
+			for (const { probe, onLoaded } of probes) {
+				probe.removeEventListener('loadedmetadata', onLoaded);
+				probe.src = '';
+			}
 		};
 	});
 
@@ -287,8 +302,8 @@
 						>
 							<span class="sleep-option-label">{option.title}</span>
 							<span class="sleep-option-hint">
-								{option.summary}{option.audioSrc && recordedLengthLabel
-									? ` · ${recordedLengthLabel}`
+								{option.summary}{option.audioSrc && lengthLabelFor(option.id)
+									? ` · ${lengthLabelFor(option.id)}`
 									: ''}
 							</span>
 						</button>

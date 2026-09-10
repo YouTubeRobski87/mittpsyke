@@ -17,12 +17,20 @@ describe('Sovlägets meditationer', () => {
 		}
 	});
 
-	it('sätter den inspelade avslappningen först och som standardval', () => {
-		// Den inspelade meditationen är en riktig röst rakt igenom och står
-		// därför före textövningarna, som läses upp av talsyntes.
-		expect(DEFAULT_EVENING_MEDITATION_ID).toBe('guidad-avslappning');
-		expect(getEveningMeditations()[0]?.id).toBe('guidad-avslappning');
+	it('sätter den kortaste inspelningen först och som standardval', () => {
+		// De inspelade spåren är riktiga röster rakt igenom och står före
+		// textövningarna, som läses upp av talsyntes. Kortast först ger lägsta
+		// tröskeln att börja i.
+		expect(DEFAULT_EVENING_MEDITATION_ID).toBe('andrum');
+		expect(getEveningMeditations()[0]?.id).toBe('andrum');
 		expect(getEveningMeditation(DEFAULT_EVENING_MEDITATION_ID)).not.toBeNull();
+	});
+
+	it('lägger alla inspelade spår före textövningarna', () => {
+		const ids = getEveningMeditations().map((meditation) => meditation.id);
+		const forstaTextovning = getEveningMeditations().findIndex((m) => !m.audioSrc);
+		const sistaInspelade = getEveningMeditations().findLastIndex((m) => m.audioSrc);
+		expect(sistaInspelade, ids.join(', ')).toBeLessThan(forstaTextovning);
 	});
 
 	it('behåller body scan som första textövning', () => {

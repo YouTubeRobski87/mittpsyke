@@ -31,38 +31,89 @@ export type EveningMeditation = {
 };
 
 /**
- * Filnamnet står ordagrant som det ligger i static/audio/meditations/.
+ * Filnamnen står ordagrant som de ligger i static/audio/meditations/.
  *
- * Två saker om sökvägen är avsiktliga och får inte "städas":
+ * Två saker om sökvägarna är avsiktliga och får inte "städas":
  *
  * 1. Katalogen är gemen: `/audio/`. Både Vites statiska server och produktion
  *    är skiftlägeskänsliga, så versalt `/Audio/` skulle svara 404.
- * 2. encodeURI körs på hela sökvägen eftersom filnamnet innehåller mellanslag,
- *    parenteser och å/ö. Filnamnet är UTF-8 på disk, så procentkodningen blir
+ * 2. encodeURI körs på hela sökvägen eftersom filnamnen innehåller mellanslag,
+ *    parenteser och å/ä/ö. Namnen är UTF-8 på disk, så procentkodningen blir
  *    densamma på alla plattformar.
+ *
+ * Ingen speltid skrivs in här. Längden läses ur filen vid visning, så den inte
+ * kan bli fel om en fil byts ut – flera av filnamnen anger dessutom en annan
+ * längd än filen faktiskt har.
  */
-const RECORDED_MEDITATION_PATH =
-	'/audio/meditations/Guidad meditation för att slappna av på svenska 15 min (endast röst_ej musik) - Midsommarregn.mp3';
-
-/**
- * Den enda meditationen som finns som riktig inspelning. Den har inget manus
- * och ingen /ovningar-sida – ljudfilen är hela innehållet.
- */
-const RECORDED_MEDITATION: EveningMeditation = {
-	id: 'guidad-avslappning',
-	title: 'Guidad avslappning',
-	summary: 'En inspelad svensk röst som följer dig hela vägen ned i vila.',
+const recordedMeditation = (
+	id: string,
+	title: string,
+	summary: string,
+	fileName: string
+): EveningMeditation => ({
+	id,
+	title,
+	summary,
 	intro: null,
 	lines: [],
 	href: null,
-	audioSrc: encodeURI(RECORDED_MEDITATION_PATH)
-};
+	audioSrc: encodeURI(`/audio/meditations/${fileName}`)
+});
 
 /**
- * Urvalet och ordningen är medvetna. Den inspelade avslappningen står först:
- * den är en riktig röst rakt igenom, medan de tre övriga är övningstexter som
- * läses upp av talsyntes. Body scan följer som längsta textövning, och de två
- * korta ligger sist.
+ * De inspelade meditationerna, ordnade från kortast till längst så listan går
+ * att skumma. De har varken manus eller /ovningar-sida – ljudfilen är hela
+ * innehållet, och talsyntesen rörs aldrig för dem.
+ */
+const RECORDED_MEDITATIONS: readonly EveningMeditation[] = [
+	recordedMeditation(
+		'andrum',
+		'Andrum',
+		'En kort paus att hämta andan i.',
+		'andrum_s.mp3'
+	),
+	recordedMeditation(
+		'mindfulness-medkansla',
+		'Mindfulness och medkänsla',
+		'Närvaro med lite mer värme mot dig själv.',
+		'Mindfulness_compassion_s.mp3'
+	),
+	recordedMeditation(
+		'guidad-avslappning',
+		'Guidad avslappning',
+		'En inspelad svensk röst som följer dig hela vägen ned i vila.',
+		'Guidad meditation för att slappna av på svenska 15 min (endast röst_ej musik) - Midsommarregn.mp3'
+	),
+	recordedMeditation(
+		'sittande-meditation',
+		'Sittande meditation',
+		'Stilla sittande med andetaget som ankare.',
+		'sittande_meditation_20_min_s.mp3'
+	),
+	recordedMeditation(
+		'kroppsscanning',
+		'Kroppsscanning',
+		'Uppmärksamheten vandrar lugnt genom kroppen.',
+		'kroppsscanning_s.mp3'
+	),
+	recordedMeditation(
+		'kroppsscanning-lang',
+		'Kroppsscanning, längre',
+		'Samma vandring genom kroppen, i lugnare takt.',
+		'kroppsscanning_37_min_s.mp3'
+	),
+	recordedMeditation(
+		'sittande-meditation-lang',
+		'Sittande meditation, längre',
+		'En längre stund i stillhet.',
+		'sittande_meditation_38_min_s.mp3'
+	)
+];
+
+/**
+ * Textövningarna. De har inget inspelat ljud utan läses upp av talsyntes, och
+ * ligger därför efter de inspelade spåren i listan. Body scan står först som
+ * längsta textövning, de två korta sist.
  */
 export const EVENING_MEDITATION_IDS = [
 	'body-scan',
@@ -70,7 +121,8 @@ export const EVENING_MEDITATION_IDS = [
 	'grounding-5-4-3-2-1'
 ] as const;
 
-export const DEFAULT_EVENING_MEDITATION_ID = RECORDED_MEDITATION.id;
+/** Standardvalet är den kortaste inspelningen – lägsta tröskeln att börja i. */
+export const DEFAULT_EVENING_MEDITATION_ID = RECORDED_MEDITATIONS[0].id;
 
 /** Sant för meditationer som spelas som ljudfil i stället för att läsas upp. */
 export function isRecordedMeditation(meditation: EveningMeditation): boolean {
@@ -112,7 +164,7 @@ export function getEveningMeditations(): EveningMeditation[] {
 		return tool ? toMeditation(tool) : null;
 	}).filter((meditation): meditation is EveningMeditation => meditation !== null);
 
-	return [RECORDED_MEDITATION, ...spoken];
+	return [...RECORDED_MEDITATIONS, ...spoken];
 }
 
 export function getEveningMeditation(id: string | null): EveningMeditation | null {

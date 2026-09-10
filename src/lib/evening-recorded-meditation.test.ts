@@ -9,50 +9,72 @@ import {
 	isRecordedMeditation
 } from './evening-meditation-sources';
 
-const RECORDED_ID = 'guidad-avslappning';
+const recorded = getEveningMeditations().filter(isRecordedMeditation);
 
-describe('Den inspelade meditationen', () => {
-	const recorded = getEveningMeditation(RECORDED_ID);
+describe('De inspelade meditationerna', () => {
+	it('finns som egna val med begripliga namn', () => {
+		expect(recorded.map((meditation) => meditation.id)).toEqual([
+			'andrum',
+			'mindfulness-medkansla',
+			'guidad-avslappning',
+			'sittande-meditation',
+			'kroppsscanning',
+			'kroppsscanning-lang',
+			'sittande-meditation-lang'
+		]);
 
-	it('finns som ett eget val med rätt visningsnamn', () => {
-		expect(recorded).not.toBeNull();
-		expect(recorded?.title).toBe('Guidad avslappning');
-		expect(getEveningMeditations()[0]?.id).toBe(RECORDED_ID);
-		expect(DEFAULT_EVENING_MEDITATION_ID).toBe(RECORDED_ID);
+		for (const meditation of recorded) {
+			expect(meditation.title.length, `${meditation.id} saknar titel`).toBeGreaterThan(0);
+			expect(meditation.summary.length, `${meditation.id} saknar beskrivning`).toBeGreaterThan(0);
+		}
 	});
 
-	it('pekar på en ljudfil som faktiskt finns på disk', () => {
-		expect(recorded?.audioSrc).toBeTruthy();
-		if (!recorded?.audioSrc) return;
-
-		// URL:en är procentkodad; filsökvägen är den avkodade formen.
-		const filePath = join(process.cwd(), 'static', decodeURI(recorded.audioSrc));
-		expect(existsSync(filePath), `saknar ljudfil: ${filePath}`).toBe(true);
-
-		// Ljudfilen måste vara en riktig MP3, inte en omdöpt container.
-		const header = readFileSync(filePath).subarray(0, 3).toString('latin1');
-		expect(header, 'filen saknar ID3-huvud och är kanske inte en MP3').toBe('ID3');
+	it('standardvalet är ett av dem', () => {
+		const fallback = getEveningMeditation(DEFAULT_EVENING_MEDITATION_ID);
+		expect(fallback).not.toBeNull();
+		expect(fallback && isRecordedMeditation(fallback)).toBe(true);
 	});
 
-	it('använder gemener i sökvägen eftersom produktionen är skiftlägeskänslig', () => {
-		expect(recorded?.audioSrc?.startsWith('/audio/meditations/')).toBe(true);
-		// Versalt /Audio/ svarar 404 både i Vite och i produktion.
-		expect(recorded?.audioSrc).not.toContain('/Audio/');
+	// Kör per spår, så ett saknat eller omdöpt filnamn pekas ut direkt.
+	it.each(recorded.map((meditation) => [meditation.id, meditation] as const))(
+		'%s pekar på en riktig MP3 som finns på disk',
+		(id, meditation) => {
+			expect(meditation.audioSrc).toBeTruthy();
+			if (!meditation.audioSrc) return;
+
+			// URL:en är procentkodad; filsökvägen är den avkodade formen.
+			const filePath = join(process.cwd(), 'static', decodeURI(meditation.audioSrc));
+			expect(existsSync(filePath), `saknar ljudfil: ${filePath}`).toBe(true);
+
+			// Fångar en omdöpt container - musikmappen har haft en MP4 med
+			// videospår som låg under .mp3-namn.
+			const header = readFileSync(filePath).subarray(0, 3).toString('latin1');
+			expect(header, `${id} saknar ID3-huvud och är kanske inte en MP3`).toBe('ID3');
+		}
+	);
+
+	it('använder gemener och procentkodning i alla sökvägar', () => {
+		for (const meditation of recorded) {
+			expect(meditation.audioSrc?.startsWith('/audio/meditations/'), meditation.id).toBe(true);
+			// Versalt /Audio/ svarar 404 både i Vite och i produktion.
+			expect(meditation.audioSrc, meditation.id).not.toContain('/Audio/');
+			expect(meditation.audioSrc, meditation.id).not.toContain(' ');
+		}
 	});
 
-	it('procentkodar mellanslag och å/ö så URL:en blir giltig', () => {
-		expect(recorded?.audioSrc).not.toContain(' ');
-		expect(recorded?.audioSrc).toContain('%20');
-		// ö = C3 B6 i UTF-8, å = C3 A5.
-		expect(recorded?.audioSrc).toContain('%C3%B6');
-		expect(recorded?.audioSrc).toContain('%C3%A5');
+	it('spelas som ljud och har därför varken manus eller övningssida', () => {
+		for (const meditation of recorded) {
+			expect(meditation.lines, meditation.id).toHaveLength(0);
+			expect(meditation.href, meditation.id).toBeNull();
+		}
 	});
 
-	it('spelas som ljud och har därför inget manus att läsa upp', () => {
-		expect(recorded && isRecordedMeditation(recorded)).toBe(true);
-		expect(recorded?.lines).toHaveLength(0);
-		// Den finns inte i skriven form, så den har ingen /ovningar-sida.
-		expect(recorded?.href).toBeNull();
+	it('skriver aldrig in speltiden för hand', () => {
+		// Flera filnamn anger en annan längd än filen faktiskt har, så längden
+		// måste läsas ur filen vid visning i stället.
+		for (const meditation of recorded) {
+			expect(meditation.summary, meditation.id).not.toMatch(/\d+\s*min/);
+		}
 	});
 });
 
@@ -77,7 +99,8 @@ describe('Textövningarna påverkas inte', () => {
 describe('Längdvisning', () => {
 	it('avrundar till närmaste minut', () => {
 		expect(formatMeditationLength(947)).toBe('ca 16 min');
-		expect(formatMeditationLength(600)).toBe('ca 10 min');
+		expect(formatMeditationLength(316)).toBe('ca 5 min');
+		expect(formatMeditationLength(2282)).toBe('ca 38 min');
 	});
 
 	it('visar hellre ingen längd än en gissning när filen inte kan läsas', () => {
