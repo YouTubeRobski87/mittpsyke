@@ -17,17 +17,22 @@ describe('Sovläget i Kvällsstugan', () => {
 		expect(panel).not.toMatch(/fetch\(|supabase/);
 	});
 
-	it('renderar varken bädd eller hotspot förrän en godkänd asset finns', () => {
+	it('håller den underkända bädden borta men gör Sovläge synligt och nåbart', () => {
 		expect(route).toContain('const FLOOR_BED_ASSET: string | null = null');
 		expect(route).toContain('{#if FLOOR_BED_ASSET}');
 		// Den underkända asseten får inte refereras från produktionskoden.
 		expect(route).not.toContain('floor-bed.webp');
 		expect(route).not.toContain('floor-bed-master.png');
+		expect(route).toContain("{#if sleepStage === 'closed'}");
+		expect(route).toContain('aria-label="Öppna Sovläge"');
+		expect(route).toContain('<span class="scene-object-label" aria-hidden="true">Sovläge</span>');
 	});
 
 	it('lägger bäddens hotspot mellan följeslagaren och boken', () => {
-		expect(route).toContain('.scene-object-bed { left: 38%; top: 72%; width: 19%; height: 22%; }');
-		expect(route).toContain('aria-label="Lägg dig till rätta"');
+		expect(route).toMatch(
+			/\.scene-object-bed\s*\{[\s\S]*?left: 38%;[\s\S]*?top: 72%;[\s\S]*?width: 19%;[\s\S]*?height: 22%;/
+		);
+		expect(route).toContain('aria-label="Öppna Sovläge"');
 		// Följeslagaren står på x 10-36 % och bokens yta börjar på x 59 %.
 		expect(route).toContain('.scene-object-book { left: 59%; top: 58.5%; width: 8%; height: 9.5%; }');
 		// Delar den tysta ytans träffytegolv på 44 px med dörrarna och boken.
@@ -35,9 +40,10 @@ describe('Sovläget i Kvällsstugan', () => {
 		expect(route).toContain('min-height: 44px;');
 	});
 
-	it('gömmer utvecklingsgenvägen bakom dev så den aldrig når produktion', () => {
-		expect(route).toContain("import { dev } from '$app/environment'");
-		expect(route).toContain("{#if dev && sleepStage === 'closed'}");
+	it('behöver ingen separat utvecklingsgenväg i Kvällsstugan', () => {
+		expect(route).not.toContain("import { dev } from '$app/environment'");
+		expect(route).not.toContain('sleep-dev-trigger');
+		expect(route).not.toContain('Öppna Sovläge (dev)');
 	});
 
 	it('lugnar scenen när Sovläge är aktivt', () => {
