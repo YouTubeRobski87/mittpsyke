@@ -364,7 +364,7 @@
           type="button"
           onclick={greetCompanion}
           aria-label={`Säg hej till ${companionName}`}
-          style={`--companion-hotspot-x: ${heroCompanionPlacement.x}%; --companion-hotspot-y: ${heroCompanionPlacement.y}%; --companion-hotspot-compact-x: ${heroCompanionPlacement.compact?.x ?? heroCompanionPlacement.x}%; --companion-hotspot-compact-y: ${heroCompanionPlacement.compact?.y ?? heroCompanionPlacement.y}%;`}
+          style={`--companion-hotspot-x: ${heroCompanionPlacement.x}%; --companion-hotspot-y: ${heroCompanionPlacement.y}%; --companion-hotspot-scale: ${heroCompanionPlacement.scale}; --companion-hotspot-compact-x: ${heroCompanionPlacement.compact?.x ?? heroCompanionPlacement.x}%; --companion-hotspot-compact-y: ${heroCompanionPlacement.compact?.y ?? heroCompanionPlacement.y}%; --companion-hotspot-compact-scale: ${heroCompanionPlacement.compact?.scale ?? heroCompanionPlacement.scale};`}
         >
           <span aria-hidden="true">Säg hej till {companionName}</span>
         </button>
@@ -861,8 +861,8 @@
     z-index: calc(var(--scene-overlay) + 2);
     left: var(--companion-hotspot-x);
     top: var(--companion-hotspot-y);
-    width: 96px;
-    height: 96px;
+    width: max(96px, min(calc(39% * var(--companion-hotspot-scale)), calc(310px * var(--companion-hotspot-scale))));
+    aspect-ratio: 1;
     padding: 0;
     border: 0;
     border-radius: 46% 54% 48% 52%;
@@ -876,9 +876,13 @@
   .companion-hotspot::before {
     content: '';
     position: absolute;
-    inset: 8px;
+    left: 50%;
+    bottom: 8px;
+    width: 64px;
+    height: 64px;
     border: 1px solid transparent;
     border-radius: 50%;
+    transform: translateX(-50%);
     transition:
       border-color 160ms ease,
       background-color 160ms ease,
@@ -921,8 +925,10 @@
   }
 
   .companion-hotspot:focus-visible {
-    outline: 3px solid var(--mp-accent);
-    outline-offset: 2px;
+    /* Den lilla scenringen ovan är fokusindikatorn. Global fokus-outline skulle
+       annars rita en stor cirkel runt hela den transparenta träffytan. */
+    outline: none !important;
+    outline-offset: 0 !important;
   }
 
   /* Samma djupband som det (dolda) världslagret: bakom följeslagaren, framför
@@ -1645,8 +1651,12 @@
     .companion-hotspot {
       left: var(--companion-hotspot-compact-x);
       top: var(--companion-hotspot-compact-y);
-      width: 72px;
-      height: 72px;
+      width: max(72px, min(calc(50% * var(--companion-hotspot-compact-scale)), calc(220px * var(--companion-hotspot-compact-scale))));
+    }
+
+    .companion-hotspot::before {
+      width: 56px;
+      height: 56px;
     }
 
     .companion-greeting {

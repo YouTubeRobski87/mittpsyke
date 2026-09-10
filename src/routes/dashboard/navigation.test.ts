@@ -76,6 +76,7 @@ describe('Mitt Hem som navigationsnav', () => {
 		expect(heroPanel).toContain('onclick={greetCompanion}');
 		expect(heroPanel).toContain('aria-label={`Säg hej till ${companionName}`}');
 		expect(heroPanel).toContain('heroCompanionPlacement.compact?.x');
+		expect(heroPanel).toContain('heroCompanionPlacement.compact?.scale');
 		expect(dashboardSource).toContain('.companion-hotspot:focus-visible');
 		expect(heroPanel).not.toContain('hero-companion-note');
 		expect(heroPanel).not.toContain('Följeslagaren är här för dig.');
