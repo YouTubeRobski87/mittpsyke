@@ -108,8 +108,26 @@ describe('Sovlägets panel', () => {
 	});
 
 	it('använder tystnad som ett riktigt val och rör då aldrig talmotorn', () => {
-		expect(panel).toContain("if (source !== 'meditation')");
+		// Vakten frågar uttryckligen efter tystnad. Formen "allt utom
+		// meditation" hade tyst skickat musikvalet hit och spelat ingenting.
+		expect(panel).toContain("if (source === 'silence')");
+		expect(panel).not.toContain("if (source !== 'meditation')");
 		expect(panel).toContain('playback = createSilentPlayback();');
+	});
+
+	it('spelar musik som ljudfil, aldrig via talsyntes, och loopar inte', () => {
+		expect(panel).toContain("if (source === 'music')");
+		expect(panel).toContain('createAudioFilePlayback(EVENING_MUSIC_TRACK.audioSrc, {');
+
+		const musicBranch = panel.slice(
+			panel.indexOf("if (source === 'music')"),
+			panel.indexOf('if (meditation?.audioSrc)')
+		);
+		expect(musicBranch).toContain('return;');
+		expect(musicBranch).not.toContain('createBrowserSpeechEngine');
+		expect(musicBranch).not.toContain('createTtsPlayback');
+		// Ingen loop: spåret är kortare än stunden och tystnar när det tar slut.
+		expect(panel).not.toMatch(/\.loop\s*=|loop=\{?true/);
 	});
 
 	it('spelar inspelade meditationer som ljudfil och aldrig via talsyntes', () => {
@@ -152,11 +170,18 @@ describe('Sovlägets panel', () => {
 		expect(panel).toContain("probe.preload = 'metadata';");
 	});
 
-	it('ger meditation paus och play men tystnad bara byt val och avsluta', () => {
-		expect(panel).toContain("{#if source === 'meditation'}");
+	it('ger musik och meditation paus och play men tystnad bara byt val och avsluta', () => {
+		// Tystnad har ingenting att pausa; musik och meditation har båda det.
+		expect(panel).toContain("const canPause = $derived(source !== null && source !== 'silence')");
+		expect(panel).toContain('{#if canPause}');
 		expect(panel).toContain('onclick={togglePlayback}');
 		expect(panel).toContain('onclick={changeChoice}');
 		expect(panel).toContain('onclick={endSleep}');
+	});
+
+	it('benämner pausknappen efter vad som faktiskt spelas', () => {
+		expect(panel).toContain("{isPaused ? 'Fortsätt musiken' : 'Pausa musiken'}");
+		expect(panel).toContain("{isPaused ? 'Fortsätt uppläsningen' : 'Pausa uppläsningen'}");
 	});
 
 	it('pausar stundens klocka tillsammans med uppläsningen', () => {

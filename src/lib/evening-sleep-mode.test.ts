@@ -21,8 +21,29 @@ import {
 const START = 1_700_000_000_000;
 
 describe('Sovlägets val', () => {
-	it('erbjuder bara meditation och tystnad i V1', () => {
-		expect(SLEEP_SOURCES.map((source) => source.id)).toEqual(['meditation', 'silence']);
+	it('erbjuder musik, meditation och tystnad', () => {
+		expect(SLEEP_SOURCES.map((source) => source.id)).toEqual([
+			'music',
+			'meditation',
+			'silence'
+		]);
+	});
+
+	it('visar inte naturljud förrän det finns något att spela', () => {
+		// Ett gråat val hade blivit en vägg i stället för ett val.
+		expect(SLEEP_SOURCES.map((source) => source.id)).not.toContain('nature');
+	});
+
+	it('skickar musik direkt till längden eftersom det bara finns ett spår', () => {
+		expect(getSleepStageAfterSource('music')).toBe('length');
+		expect(getSleepStageBefore('length', 'music')).toBe('source');
+	});
+
+	it('namnger spåret i statusraden för både musik och meditation', () => {
+		expect(getSleepActiveStatus('music', 'Lugn musik')).toBe('Lugn musik spelas.');
+		expect(getSleepActiveStatus('meditation', 'Guidad avslappning')).toBe(
+			'Guidad avslappning spelas.'
+		);
 	});
 
 	it('erbjuder de fyra längderna, där den öppna saknar sluttid', () => {

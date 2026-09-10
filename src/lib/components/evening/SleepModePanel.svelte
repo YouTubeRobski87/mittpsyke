@@ -38,6 +38,7 @@
 		getEveningMeditationScript,
 		getEveningMeditations
 	} from '$lib/evening-meditation-sources';
+	import { EVENING_MUSIC_TRACK } from '$lib/evening-music-sources';
 	import {
 		createAudioFilePlayback,
 		createBrowserSpeechEngine,
@@ -73,11 +74,17 @@
 
 	const meditation = $derived(getEveningMeditation(meditationId));
 	const recordedLengthLabel = $derived(formatMeditationLength(recordedDurationSec));
+	// Titeln i statusraden kommer från vald källa: musikspåret eller meditationen.
+	const activeTitle = $derived(
+		source === 'music' ? EVENING_MUSIC_TRACK.title : (meditation?.title ?? null)
+	);
+	// Tystnad har ingenting att pausa. Musik och meditation har båda det.
+	const canPause = $derived(source !== null && source !== 'silence');
 	const remainingLabel = $derived(
 		timer ? formatSleepRemaining(getSleepRemainingMs(timer, now)) : null
 	);
 	const isPaused = $derived(playbackStatus === 'paused');
-	const statusText = $derived(getSleepActiveStatus(source, meditation?.title ?? null));
+	const statusText = $derived(getSleepActiveStatus(source, activeTitle));
 
 	function goToStage(next: SleepStage) {
 		stage = next;
@@ -164,7 +171,10 @@
 		now = Date.now();
 		goToStage('active');
 
-		if (source !== 'meditation') {
+		// Vakten frågar uttryckligen efter tystnad i stället för "allt utom
+		// meditation". Den tidigare formen hade skickat musik hit och spelat
+		// ingenting alls när en tredje källa tillkom.
+		if (source === 'silence') {
 			// Tystnad rör aldrig talmotorn. Nollobjektet finns bara för att
 			// kontrollerna ska kunna behandla alla lägen likadant.
 			playback = createSilentPlayback();
@@ -173,6 +183,18 @@
 
 		startToken += 1;
 		const token = startToken;
+
+		// Musik är alltid en ljudfil och loopar inte - se evening-music-sources.
+		if (source === 'music') {
+			playback = createAudioFilePlayback(EVENING_MUSIC_TRACK.audioSrc, {
+				onStatusChange: (next) => {
+					if (token !== startToken) return;
+					playbackStatus = next;
+				}
+			});
+			playback.start();
+			return;
+		}
 
 		// Färdiginspelade meditationer spelas som ljudfil. Talsyntesen rörs
 		// aldrig för ett sådant spår, och uppspelningen startar synkront i
@@ -317,14 +339,18 @@
 					{/if}
 				{/if}
 				<div class="sleep-controls">
-					{#if source === 'meditation'}
+					{#if canPause}
 						<button
 							class="sleep-primary"
 							type="button"
 							aria-pressed={isPaused}
 							onclick={togglePlayback}
 						>
-							{isPaused ? 'Fortsätt uppläsningen' : 'Pausa uppläsningen'}
+							{#if source === 'music'}
+								{isPaused ? 'Fortsätt musiken' : 'Pausa musiken'}
+							{:else}
+								{isPaused ? 'Fortsätt uppläsningen' : 'Pausa uppläsningen'}
+							{/if}
 						</button>
 					{/if}
 					<button class="sleep-secondary" type="button" onclick={changeChoice}>Byt val</button>

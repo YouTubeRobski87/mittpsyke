@@ -13,7 +13,7 @@
 
 export type SleepStage = 'closed' | 'source' | 'meditation' | 'length' | 'active';
 
-export type SleepSourceId = 'meditation' | 'silence';
+export type SleepSourceId = 'music' | 'meditation' | 'silence';
 
 export type SleepSourceOption = {
 	id: SleepSourceId;
@@ -23,13 +23,15 @@ export type SleepSourceOption = {
 };
 
 /**
- * V1 har medvetet bara två källor.
+ * Naturljud saknar fortfarande både ljudfil och licensbeslut i repot, och att
+ * visa det som gråat eller "kommer snart" hade gjort valet till en vägg i
+ * stället för ett val. Det läggs till när det finns något att spela.
  *
- * Musik och Naturljud saknar både ljudfiler och licensbeslut i repot, och att
- * visa dem som gråa eller "kommer snart" hade gjort valet till en vägg i
- * stället för ett val. De läggs till när det finns något att spela.
+ * Musik finns numera som ett inspelat spår och står först: det är den enda
+ * källan utan guidande röst som ändå ger något att vila till.
  */
 export const SLEEP_SOURCES: readonly SleepSourceOption[] = [
+	{ id: 'music', label: 'Lugn musik', hint: 'Ett stilla spår att vila till' },
 	{ id: 'meditation', label: 'Meditation', hint: 'En lugn röst som guidar dig' },
 	{ id: 'silence', label: 'Tystnad', hint: 'Inget ljud alls' }
 ];
@@ -67,6 +69,11 @@ export function getSleepLength(id: SleepLengthId | null): SleepLengthOption | nu
 // och går direkt till längden – ett tomt steg hade bara varit en klickning
 // till.
 
+/**
+ * Bara meditation har ett mellansteg. Musik har i dag ett enda spår och
+ * tystnad har ingenting att välja mellan – båda går direkt till längden.
+ * Tillkommer fler musikspår är det här och getSleepStageBefore som ändras.
+ */
 export function getSleepStageAfterSource(source: SleepSourceId): SleepStage {
 	return source === 'meditation' ? 'meditation' : 'length';
 }
@@ -170,9 +177,11 @@ export function getSleepStageHeading(stage: SleepStage, source: SleepSourceId | 
 /** Statusraden i aktivt Sovläge. Beskriver läget, aldrig en förväntad effekt. */
 export function getSleepActiveStatus(
 	source: SleepSourceId | null,
-	meditationTitle: string | null
+	trackTitle: string | null
 ): string {
 	if (source === 'silence') return 'Det är tyst nu.';
-	if (source === 'meditation' && meditationTitle) return `${meditationTitle} spelas.`;
+	if ((source === 'meditation' || source === 'music') && trackTitle) {
+		return `${trackTitle} spelas.`;
+	}
 	return 'Sovläge är på.';
 }
