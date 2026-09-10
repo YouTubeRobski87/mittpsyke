@@ -54,6 +54,14 @@ export const EVENING_MUSIC_TRACKS: readonly EveningMusicTrack[] = [
 		title: 'Trygg natt',
 		summary: 'Mörkare och ombonad.',
 		audioSrc: musicPath('trygg_natt.mp3')
+	},
+	{
+		// Hette tidigare "Lugn musik" i listan, samma namn som själva källan i
+		// första steget. Visas nu under låtens riktiga titel.
+		id: 'kvar-i-mitt-huvud',
+		title: 'Kvar i mitt huvud',
+		summary: 'Ett stilla spår att vila till.',
+		audioSrc: musicPath('Kvar i mitt huvud - Den där Robban - Den där Robban du vet.mp3')
 	}
 ];
 

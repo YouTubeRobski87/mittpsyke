@@ -10,11 +10,17 @@ import {
 } from './evening-music-sources';
 
 describe('Musikspåren i Sovläge', () => {
-	it('erbjuder exakt Stilla sjö, Mjuka andetag och Trygg natt med rätt filer', () => {
-		expect(EVENING_MUSIC_TRACKS.map((track) => [track.title, track.audioSrc])).toEqual([
-			['Stilla sjö', '/audio/musik/stilla_sjo.mp3'],
-			['Mjuka andetag', '/audio/musik/mjuka_andetag.mp3'],
-			['Trygg natt', '/audio/musik/trygg_natt.mp3']
+	it('erbjuder Stilla sjö, Mjuka andetag, Trygg natt och Kvar i mitt huvud', () => {
+		expect(EVENING_MUSIC_TRACKS.map((track) => track.title)).toEqual([
+			'Stilla sjö',
+			'Mjuka andetag',
+			'Trygg natt',
+			'Kvar i mitt huvud'
+		]);
+		expect(EVENING_MUSIC_TRACKS.slice(0, 3).map((track) => track.audioSrc)).toEqual([
+			'/audio/musik/stilla_sjo.mp3',
+			'/audio/musik/mjuka_andetag.mp3',
+			'/audio/musik/trygg_natt.mp3'
 		]);
 	});
 
@@ -52,10 +58,22 @@ describe('Musikspåren i Sovläge', () => {
 		}
 	});
 
-	it('har inte kvar det äldre spåret som delade namn med källan', () => {
-		// Spåret hette "Lugn musik", precis som själva källan i första steget.
+	it('visar Kvar i mitt huvud under sitt riktiga namn, inte som källans namn', () => {
+		// Spåret hette tidigare "Lugn musik", precis som själva källan i första
+		// steget, så det gick inte att se vilken låt det var.
 		expect(getEveningMusicTrack('lugn-musik')).toBeNull();
 		expect(EVENING_MUSIC_TRACKS.map((track) => track.title)).not.toContain('Lugn musik');
+		expect(getEveningMusicTrack('kvar-i-mitt-huvud')?.title).toBe('Kvar i mitt huvud');
+	});
+
+	it('procentkodar mellanslag och ä i Kvar i mitt huvud så URL:en blir giltig', () => {
+		const src = getEveningMusicTrack('kvar-i-mitt-huvud')?.audioSrc ?? '';
+		expect(decodeURI(src)).toBe(
+			'/audio/musik/Kvar i mitt huvud - Den där Robban - Den där Robban du vet.mp3'
+		);
+		expect(src).toContain('%20');
+		// ä = C3 A4 i UTF-8.
+		expect(src).toContain('%C3%A4');
 	});
 
 	it('ger giltiga URL:er utan mellanslag', () => {
