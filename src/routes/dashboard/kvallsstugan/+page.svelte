@@ -1,10 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { dev } from '$app/environment';
 	import SEO from '$lib/components/SEO.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import EveningCheckinFlow from '$lib/components/evening/EveningCheckinFlow.svelte';
+	import SleepModePanel from '$lib/components/evening/SleepModePanel.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
 	import WaterLayer from '$lib/components/world/WaterLayer.svelte';
+	import type { SleepStage } from '$lib/evening-sleep-mode';
+	import type { CompanionPosePreference } from '$lib/companionPoseState';
 	import {
 		isEveningInteriorMemoryEligible,
 		shouldIntroduceEveningInteriorBlanket,
@@ -34,6 +38,18 @@
 		'/images/scenes/cabin-interior-evening-resting-veranda-v1-1200.webp 1200w',
 		'/images/scenes/cabin-interior-evening-resting-veranda-v1.webp 1672w'
 	].join(', ');
+
+	// Sovlägets golvbädd.
+	//
+	// null = ingen godkänd asset finns. Den levererade filen underkändes vid
+	// verifiering (helt rum i stället för urklippt bädd, genomgående ~94 %
+	// alfa) - se docs/sovlage-asset-spec.md. Så länge konstanten är null
+	// renderas varken bädden eller dess hotspot, så ingen tom golvyta blir
+	// klickbar.
+	//
+	// När en korrekt urklippt WebP finns är det här den enda rad som behöver
+	// ändras: sätt sökvägen, så följer bild, hotspot och Sovläge med.
+	const FLOOR_BED_ASSET: string | null = null;
 
 	// Verandan är samma plats, sedd utifrån dörren. Den ligger i samma
 	// scencontainer som interiören och delar dygnsrytm och world-state - det är
@@ -115,6 +131,26 @@
 		isVerandaView ? 'Ute på Kvällsstugans veranda, vid vattnet' : 'Inne i Kvällsstugan, vid vattnet'
 	);
 
+	// Sovläge. Rent lokalt tillstånd: ingen persistens, ingen DB, ingen
+	// endpoint, ingen analytics. Lämnar man sidan är stunden slut.
+	let sleepStage = $state<SleepStage>('closed');
+	const isSleepMode = $derived(sleepStage === 'active');
+	// Följeslagaren lägger sig först när Sovläge faktiskt är aktivt - inte
+	// medan användaren fortfarande väljer.
+	//
+	// Typen står som annotering och inte som typargument till $derived. Ett
+	// typargument hade skrivits med vinkelparentes direkt före typnamnet, och
+	// den formen krockar med resting-scene.test.ts: testet klipper ut
+	// companion-taggen genom att söka efter taggens inledning som text, och
+	// hade då hittat typargumentet i skriptet i stället för taggen i markupen.
+	const sleepPosePreference: CompanionPosePreference = $derived(
+		isSleepMode ? 'resting' : 'calm'
+	);
+
+	function openSleepMode() {
+		if (sleepStage === 'closed') sleepStage = 'source';
+	}
+
 	function setSceneView(next: SceneView) {
 		// Verandan får aldrig nås utan behörighet, inte heller via tangentbord.
 		if (next === 'veranda' && !hasVeranda) return;
@@ -194,7 +230,7 @@
 
 	<div class="evening-experience">
 		<div class="evening-scene-column">
-		<section class="evening-scene" data-time={dayState} data-view={sceneView} style={getEveningLampCssVariables(dayState)} aria-label={sceneLabel}>
+		<section class="evening-scene" data-time={dayState} data-view={sceneView} data-sleep={isSleepMode ? 'on' : 'off'} style={getEveningLampCssVariables(dayState)} aria-label={sceneLabel}>
 		<div class="scene-layer" class:is-active={!isVerandaView} aria-hidden={isVerandaView}>
 			<img
 				class="evening-scene-image"
@@ -214,13 +250,18 @@
 					visibleEffects={['moon', 'cloud']}
 					visibleEventKinds={['water']}
 					eventContext="cabin"
+					eventsBlocked={isSleepMode}
 				/>
 			</div>
 			<!-- Sjöytan utanför fönstret: egen viewport så ringarna klipps till
-			     vattnet och aldrig hamnar på karm, vägg, golv eller möbler. -->
-			<div class="cabin-lake-view" aria-hidden="true">
-				<WaterLayer effects={LAKE_RIPPLES} />
-			</div>
+			     vattnet och aldrig hamnar på karm, vägg, golv eller möbler.
+			     Under Sovläge tas lagret bort helt i stället för att döljas, så
+			     att inga animationer fortsätter bakom en osynlig yta. -->
+			{#if !isSleepMode}
+				<div class="cabin-lake-view" aria-hidden="true">
+					<WaterLayer effects={LAKE_RIPPLES} />
+				</div>
+			{/if}
 			{#if hasInteriorRug}
 				<img
 					class:introducing={interiorRugIntroduction > 0}
@@ -230,6 +271,27 @@
 					aria-hidden="true"
 					draggable="false"
 				/>
+			{/if}
+			<!-- Golvbädden och dess hotspot. Till skillnad från matta, filt och
+			     bok är den inte kopplad till EveningInteriorMemory: sovplatsen
+			     är permanent och kräver ingen progression. Därför finns här
+			     heller ingen introduktionsanimation - bädden dyker aldrig upp,
+			     den har alltid funnits. Placeringen följer
+			     docs/sovlage-asset-spec.md avsnitt 3. -->
+			{#if FLOOR_BED_ASSET}
+				<img
+					class="interior-floor-bed"
+					src={FLOOR_BED_ASSET}
+					alt=""
+					aria-hidden="true"
+					draggable="false"
+				/>
+				<button
+					class="scene-object scene-object-bed"
+					type="button"
+					aria-label="Lägg dig till rätta"
+					onclick={openSleepMode}
+				></button>
 			{/if}
 			{#if hasInteriorBlanket}
 				<img
@@ -262,7 +324,7 @@
 				greetingReaction={completionSignal}
 				bondLevel={companionBondLevel}
 				behaviourProfile="quiet"
-				posePreference="calm"
+				posePreference={sleepPosePreference}
 			/>
 			{#if hasVeranda && !isVerandaView}
 				<!-- Tyst hotspot över verandadörren. Ingen synlig knapp, ingen
@@ -299,6 +361,17 @@
 		</div>
 		</section>
 
+			{#if dev && sleepStage === 'closed'}
+				<!-- Utvecklingsgenväg tills bädd-asseten finns. `dev` är false i
+				     produktionsbygget, så knappen finns inte i den byggda
+				     bundlen - den ersätter hotspoten enbart för QA. -->
+				<button class="sleep-dev-trigger" type="button" onclick={openSleepMode}>
+					Öppna Sovläge (dev)
+				</button>
+			{/if}
+
+			<SleepModePanel bind:stage={sleepStage} />
+
 			<section class="evening-reassurance" aria-labelledby="evening-reassurance-title">
 				<h2 id="evening-reassurance-title">Du är på en trygg plats</h2>
 				<p>Här inne får du stanna upp, andas och lyssna in hur du har det just nu.</p>
@@ -306,7 +379,7 @@
 			</section>
 		</div>
 
-		<div class="evening-flow-column">
+		<div class="evening-flow-column" class:is-dimmed={isSleepMode}>
 			<div class="evening-flow-wrap">
 				<EveningCheckinFlow oncomplete={handleComplete} />
 			</div>
@@ -451,6 +524,10 @@
 	/* Ligger över boken på fönsterbänken, med lite marginal så den går att träffa
 	   på mobil. Krockar inte med dörrytorna till vänster. */
 	.scene-object-book { left: 59%; top: 58.5%; width: 8%; height: 9.5%; }
+	/* Bädden. Ytan täcker medvetet inte hela madrassen: följeslagaren står på
+	   x 10-36 % och boken har sin yta från x 59 %, så hotspoten håller sig
+	   mellan dem. Då kan ett klick på djuret aldrig starta Sovläge. */
+	.scene-object-bed { left: 38%; top: 72%; width: 19%; height: 22%; }
 
 	/* Dörröppningen enligt docs/veranda-asset-spec.md: x 4,5-20,5 %, y 3-66,5 %. */
 	.scene-door-out { left: 4.5%; top: 3%; width: 16%; height: 63.5%; }
@@ -522,6 +599,20 @@
 		user-select: none;
 	}
 	.interior-memory-rug.introducing { animation: interior-rug-arrive 1.8s ease-out both; }
+	/* Golvbädden ligger på samma z-index som mattan men senare i DOM, så den
+	   målas ovanpå den - fysiskt korrekt, bädden står på mattan. Kvar under
+	   lampskenet (z 2) och följeslagaren (z 3). Måtten kommer från
+	   docs/sovlage-asset-spec.md; toppkanten faller ut av assetens egen
+	   proportion (2,26:1) och får aldrig gå över y 68 %. */
+	.interior-floor-bed {
+		position: absolute;
+		z-index: 1;
+		left: 20%;
+		bottom: -1%;
+		width: 42%;
+		pointer-events: none;
+		user-select: none;
+	}
 	/* Filten vilar över soffans vänstra arm och får behålla assetens perspektiv. */
 	.interior-memory-blanket {
 		position: absolute;
@@ -533,6 +624,53 @@
 		user-select: none;
 	}
 	.interior-memory-blanket.introducing { animation: interior-blanket-arrive 1.8s ease-out both; }
+	/* Sovläge: scenen sänks ett steg. Ingen svart overlay - i stället dämpas
+	   bilden med brightness/saturate, så rummet är kvar men vilar. Lampskenet
+	   får behålla sin flimmerkurva men dämpad, annars slocknar den enda
+	   ljuskällan i rummet helt. */
+	.evening-scene[data-sleep='on'] .evening-scene-image {
+		filter: brightness(0.62) saturate(0.86);
+	}
+	.evening-scene[data-sleep='on']::before { opacity: 0.55; }
+	.evening-scene[data-sleep='on'] :global(.interior-companion),
+	.evening-scene[data-sleep='on'] .interior-memory-rug,
+	.evening-scene[data-sleep='on'] .interior-memory-blanket,
+	.evening-scene[data-sleep='on'] .interior-memory-book,
+	.evening-scene[data-sleep='on'] .interior-floor-bed {
+		filter: brightness(0.7);
+	}
+	.evening-scene-image,
+	.evening-scene :global(.interior-companion),
+	.interior-memory-rug,
+	.interior-memory-blanket,
+	.interior-memory-book,
+	.interior-floor-bed {
+		transition: filter 900ms ease;
+	}
+
+	/* Högerspalten tonas ned men förblir nåbar: den som vill checka in mitt i
+	   Sovläge ska kunna göra det, och pointer-events: none hade dessutom låst
+	   ut tangentbordsnavigering. */
+	.evening-flow-column {
+		transition: opacity 900ms ease;
+	}
+	.evening-flow-column.is-dimmed { opacity: 0.42; }
+	.evening-flow-column.is-dimmed:focus-within { opacity: 1; }
+
+	.sleep-dev-trigger {
+		justify-self: start;
+		min-height: 44px;
+		padding: 0.6rem 0.9rem;
+		border: 1px dashed rgb(245 200 120 / 0.6);
+		border-radius: 0.8rem;
+		background: transparent;
+		color: rgb(245 200 120 / 0.9);
+		font: inherit;
+		font-weight: 650;
+		cursor: pointer;
+	}
+	.sleep-dev-trigger:focus-visible { outline: 2px solid #f5c878; outline-offset: 3px; }
+
 	.evening-experience {
 		display: grid;
 		gap: 1rem;
@@ -641,5 +779,13 @@
 		.scene-layer,
 		.scene-layer.is-active { transition: none; }
 		.scene-object { transition: none; }
+		/* Sovläget ska fortfarande dämpa scenen - bara utan uttoning. */
+		.evening-scene-image,
+		.evening-scene :global(.interior-companion),
+		.interior-memory-rug,
+		.interior-memory-blanket,
+		.interior-memory-book,
+		.interior-floor-bed,
+		.evening-flow-column { transition: none; }
 	}
 </style>
