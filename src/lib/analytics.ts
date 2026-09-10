@@ -111,6 +111,8 @@ let analyticsInitialized = false;
 let analyticsInitPromise: Promise<boolean> | null = null;
 let gtagScriptPromise: Promise<void> | null = null;
 let consentDefaultSet = false;
+// Senast satta, sanerade sidadress. Blir page_referrer vid nästa sidbyte.
+let currentPageLocation: string | null = null;
 
 function ensureGtag() {
 	if (!browser || !ANALYTICS_ENABLED) return null;
@@ -199,6 +201,7 @@ export function disableAnalytics() {
 
 	analyticsInitialized = false;
 	analyticsInitPromise = null;
+	currentPageLocation = null;
 }
 
 export async function initializeAnalytics() {
@@ -244,6 +247,35 @@ export function getAnalyticsPageFields(url: URL) {
 	};
 }
 
+/** Referrer saneras likadant: bara origin och sökväg, aldrig query eller hash. */
+export function sanitizeAnalyticsReferrer(referrer: string) {
+	if (!referrer) return '';
+
+	try {
+		const url = new URL(referrer);
+		return `${url.origin}${url.pathname}`;
+	} catch {
+		return '';
+	}
+}
+
+/**
+ * gtag bifogar annars webbläsarens fulla adress som dl/dr på VARJE event, även
+ * när page_view skickar en sanerad page_location. Det läckte t.ex. söktext
+ * (/sok?q=…) och samtals-id (/chat/…?id=…) via search_used, chat_open och
+ * internal_link_clicked. Ett 'set' gäller för alla efterföljande event.
+ */
+function setSanitizedPageContext(gtag: (...args: any[]) => void, url: URL) {
+	const { page_location } = getAnalyticsPageFields(url);
+	if (page_location === currentPageLocation) return;
+
+	gtag('set', {
+		page_location,
+		page_referrer: currentPageLocation ?? sanitizeAnalyticsReferrer(document.referrer)
+	});
+	currentPageLocation = page_location;
+}
+
 async function sendPageView(url: URL) {
 	if (!(await initializeAnalytics()) || !hasAnalyticsConsent()) return;
 
@@ -253,6 +285,7 @@ async function sendPageView(url: URL) {
 		return;
 	}
 
+	setSanitizedPageContext(gtag, url);
 	gtag('event', 'page_view', {
 		...getAnalyticsPageFields(url),
 		page_title: document.title
@@ -531,6 +564,7 @@ async function sendEvent(eventName: EventName, params: EventParams) {
 	}
 
 	try {
+		setSanitizedPageContext(gtag, new URL(window.location.href));
 		gtag('event', eventName, params);
 	} catch (error) {
 		if (dev) console.error('trackEvent error:', error);

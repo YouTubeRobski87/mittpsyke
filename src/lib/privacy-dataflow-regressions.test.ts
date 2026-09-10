@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { getAnalyticsPageFields } from './analytics';
+import { getAnalyticsPageFields, sanitizeAnalyticsReferrer } from './analytics';
 import { consumeDiaryCheckinPrefill, writeDiaryCheckinPrefill } from './diary-draft';
 
 const projectFile = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
@@ -31,6 +31,30 @@ describe('privacy-safe navigation and analytics', () => {
 			page_location: 'https://mittpsyke.se/dagbok/checkin'
 		});
 		expect(JSON.stringify(fields)).not.toContain('privat');
+	});
+
+	it('strips query strings and fragments from the GA referrer', () => {
+		expect(
+			sanitizeAnalyticsReferrer('https://mittpsyke.se/sok?q=privat-sokning#traff')
+		).toBe('https://mittpsyke.se/sok');
+		expect(sanitizeAnalyticsReferrer('')).toBe('');
+		expect(sanitizeAnalyticsReferrer('inte-en-url')).toBe('');
+	});
+
+	it('sätter en sanerad sidkontext på gtag så dl/dr aldrig bär query eller hash', () => {
+		// gtag bifogar annars window.location (med query/hash) som dl på varje
+		// event. Söktext och samtals-id fick inte läcka den vägen. Kontexten
+		// sätts både före page_view och före vanliga event.
+		const analytics = projectFile('./analytics.ts');
+		expect(analytics).toContain('function setSanitizedPageContext(');
+		expect(analytics).toMatch(/setSanitizedPageContext\(gtag, url\);\s*gtag\('event', 'page_view'/);
+		expect(analytics).toMatch(
+			/setSanitizedPageContext\(gtag, new URL\(window\.location\.href\)\);\s*gtag\('event', eventName/
+		);
+		// Kontexten sätter både page_location och page_referrer, och referrern
+		// saneras med samma funktion som testas ovan.
+		expect(analytics).toMatch(/gtag\('set', \{\s*page_location,\s*page_referrer:/);
+		expect(analytics).toContain('sanitizeAnalyticsReferrer(document.referrer)');
 	});
 
 	it('keeps search text out of active URLs, caches, and analytics payloads', () => {
