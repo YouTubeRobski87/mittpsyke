@@ -435,10 +435,9 @@ export const GET: RequestHandler = async ({ fetch }) => {
 		priority: '0.6'
 	}));
 
-	// /portal/a, /portal/b och /portal/e är tunna, ej länkade genomgångssidor
-	// som bara skickar vidare till /chat/[category] (redan noindex). De är
-	// medvetet uteslutna ur sitemapen och markerade noindex på sidan själv,
-	// se src/routes/portal/[slug]/+page.svelte.
+	// /portal/a, /portal/b och /portal/e är 301-omdirigeringar till
+	// /chat/[category] och hör därför inte hemma i sitemapen,
+	// se src/routes/portal/[slug]/+page.server.ts.
 
 	const fallbackBlogPages: SitemapEntry[] = [
 		{

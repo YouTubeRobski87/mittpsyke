@@ -163,9 +163,83 @@ describe('direkt ingång till den befintliga chatten', () => {
 	});
 
 	it('låter portalkortens CTA gå direkt till beskrivande chattrutter', () => {
-		for (const path of ['../../lib/components/PortalCard.svelte', '../portal/[slug]/+page.svelte']) {
-			expect(read(path)).toContain('href="/chat/{resolveChatSlug(portal.key)}"');
-		}
+		expect(read('../../lib/components/PortalCard.svelte')).toContain(
+			'href="/chat/{resolveChatSlug(portal.key)}"'
+		);
 		expect(resolveChatSlug('a')).toBe('angest');
+	});
+
+	it('skickar gamla /portal-länkar direkt till samma spår utan genomgångssida', async () => {
+		const { load } = await import('../portal/[slug]/+page.server');
+		const cases: Array<[string, string, string]> = [
+			['a', '', '/chat/angest'],
+			['b', '', '/chat/nedstamdhet'],
+			['e', '?utm_source=x', '/chat/trauma?utm_source=x'],
+			['okand', '', '/chat']
+		];
+
+		for (const [slug, search, expected] of cases) {
+			let thrown: unknown;
+			try {
+				await load({ params: { slug }, url: new URL(`https://mittpsyke.se/portal/${slug}${search}`) } as never);
+			} catch (error) {
+				thrown = error;
+			}
+			expect(thrown).toMatchObject({ status: 301, location: expected });
+		}
+
+		expect(() => read('../portal/[slug]/+page.svelte')).toThrow();
+	});
+
+	it('visar inte samtyckesrutan förrän servern svarat, men låser inte heller upp chatten', () => {
+		// Den som redan samtyckt ska inte mötas av samtyckestexten under tiden
+		// statusen hämtas. Grinden visas bara när statusen är känd och saknas.
+		expect(chatWindow).toContain('let consentStatusKnown = $state(false);');
+		expect(chatWindow).toContain('{#if !hasSensitiveDataConsent && !consentStatusKnown}');
+		expect(chatWindow).toMatch(/\{:else if !hasSensitiveDataConsent\}\s*<div class="mb-3">\s*<ConsentGate/);
+
+		// Statusen blir känd först efter serverns svar (eller reservtiden), och
+		// skrivfältet kräver fortfarande det serververifierade samtycket.
+		const sync = chatWindow.slice(
+			chatWindow.indexOf('async function syncSensitiveConsent('),
+			chatWindow.indexOf('async function acceptSensitiveConsent()')
+		);
+		expect(sync.indexOf('consentStatusKnown = true')).toBeGreaterThan(sync.indexOf('await fetch('));
+		expect(chatWindow).toMatch(/window\.setTimeout\(\(\) => \{\s*consentStatusKnown = true;/);
+		expect(chatWindow).toMatch(/\{#if hasSensitiveDataConsent\}\s*<div class="composer-row/);
+		expect(chatWindow).not.toMatch(/hasSensitiveDataConsent = consentStatusKnown/);
+	});
+
+	it('ger Chatta en egen snabblänk i mobilens sidhuvud för både gäst och inloggad', () => {
+		const quickNav = layout.slice(
+			layout.indexOf('<nav class="mobile-quick-nav"'),
+			layout.indexOf('</nav>', layout.indexOf('<nav class="mobile-quick-nav"'))
+		);
+		expect(quickNav).toContain("navItem.href === '/chat'");
+		expect(quickNav).toContain('primaryNavItems.slice(0, 3)');
+		expect(quickNav).toContain("class:mobile-quick-link-chat={item.href === '/chat'}");
+
+		// På telefon döljs gästens övriga snabblänkar, men aldrig Chatta.
+		const phone = layout.slice(layout.indexOf('@media (max-width: 640px)'));
+		expect(phone).toContain(
+			'.mobile-quick-nav:not(.mobile-quick-nav-signed) .mobile-quick-link:not(.mobile-quick-link-chat)'
+		);
+		expect(phone.slice(0, phone.indexOf('.site-header-inner'))).not.toMatch(
+			/\.mobile-quick-nav\s*\{\s*display:\s*none/
+		);
+
+		// På de smalaste skärmarna står bara Chatta kvar, så ordmärket inte klipps.
+		const narrow = layout.slice(layout.indexOf('@media (max-width: 370px)'));
+		expect(narrow.slice(0, narrow.indexOf('.site-header-inner'))).toContain(
+			'.mobile-quick-link:not(.mobile-quick-link-chat)'
+		);
+	});
+
+	it('låter ämnessidornas chatt-CTA öppna ämnets eget spår', () => {
+		expect(read('../trauma/+page.svelte')).toContain('href="/chat/trauma"');
+		expect(read('../nedstamdhet/+page.svelte')).toContain('href="/chat/nedstamdhet"');
+		const traumaSupport = read('../samtalsstod-utan-vantetid/samtalsstod-vid-trauma/+page.svelte');
+		expect(traumaSupport).toContain('href="/chat/trauma"');
+		expect(traumaSupport).not.toContain('href="/chat/angest"');
 	});
 });

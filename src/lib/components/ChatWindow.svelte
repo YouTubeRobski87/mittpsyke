@@ -63,6 +63,10 @@
 	let isAnonymous = $state(true);
 	let firstMessageSource = $state<'manual' | 'chip' | 'voice'>('manual');
 	let hasSensitiveDataConsent = $state(false);
+	// Blir sant när servern har svarat på samtyckesfrågan (eller efter en
+	// reservtid). Förhindrar att samtyckesrutan blinkar upp för den som redan
+	// har samtyckt. Låser aldrig upp chatten - det gör bara hasSensitiveDataConsent.
+	let consentStatusKnown = $state(false);
 	let conversationId = $state<string | null>(null);
 	let historyNoticeVisible = $state(false);
 	let persistenceReady = $state(false);
@@ -602,12 +606,19 @@
 			void syncSensitiveConsent(data.session);
 		});
 
+		// Svarar servern inte i tid visas samtyckesrutan som förut, så ingen
+		// fastnar i ett tomt läge på ett segt nät.
+		const consentStatusFallback = window.setTimeout(() => {
+			consentStatusKnown = true;
+		}, 4000);
+
 		if (!hasTrackedOpen) {
 			hasTrackedOpen = true;
 			void trackEvent('chat_open');
 		}
 
 		return () => {
+			window.clearTimeout(consentStatusFallback);
 			stopSpeaking();
 			stopKeyboardViewport();
 			desktopPointerQuery.removeEventListener('change', updateDesktopKeyboard);
@@ -832,6 +843,7 @@
 			if (response.ok) {
 				const payload = (await response.json()) as { status?: string };
 				hasSensitiveDataConsent = payload.status === 'granted';
+				consentStatusKnown = true;
 				return;
 			}
 		} catch {
@@ -839,6 +851,7 @@
 		}
 
 		hasSensitiveDataConsent = false;
+		consentStatusKnown = true;
 	}
 
 	async function acceptSensitiveConsent() {
@@ -1011,7 +1024,12 @@
 	     under vecket och taket behövs inte. -->
 	<div class="chat-input-area border-t border-black/8 dark:border-white/10 px-3 pt-2 pb-3">
 		<div class="chat-input-extras">
-		{#if !hasSensitiveDataConsent}
+		<!-- Samtyckesrutan visas först när servern svarat att samtycke saknas.
+		     Under tiden syns bara en kort statusrad; skrivfältet kräver
+		     fortfarande hasSensitiveDataConsent. -->
+		{#if !hasSensitiveDataConsent && !consentStatusKnown}
+			<p class="consent-pending mb-2 px-1 text-xs opacity-60" role="status">Öppnar chatten…</p>
+		{:else if !hasSensitiveDataConsent}
 			<div class="mb-3">
 				<ConsentGate
 					title="Innan du börjar chatta"

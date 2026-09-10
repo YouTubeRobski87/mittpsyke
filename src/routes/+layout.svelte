@@ -699,7 +699,7 @@
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
 				<nav class="mobile-quick-nav" class:mobile-quick-nav-signed={Boolean(currentUser)} aria-label="Snabbnavigering">
-					{#each (currentUser ? signedInPortalNavItems.slice(0, 1) : primaryNavItems.slice(0, 3)) as item}
+					{#each (currentUser ? signedInPortalNavItems.filter((navItem) => navItem.href === '/' || navItem.href === '/chat') : primaryNavItems.slice(0, 3)) as item}
 						<a
 							href={item.href}
 							class="mobile-quick-link"
@@ -1685,12 +1685,10 @@
 	}
 
 	@media (max-width: 640px) {
-		.mobile-quick-nav {
+		/* På telefon får bara Chatta plats bland gästens snabblänkar. Den ska
+		 * nås med ett tryck, precis som i desktopnavigeringen. */
+		.mobile-quick-nav:not(.mobile-quick-nav-signed) .mobile-quick-link:not(.mobile-quick-link-chat) {
 			display: none;
-		}
-
-		.mobile-quick-nav-signed {
-			display: inline-flex;
 		}
 
 		.site-header-inner {
@@ -1704,6 +1702,13 @@
 	}
 
 	@media (max-width: 370px) {
+		/* Här räcker bredden inte till både Översikt och Chatta utan att
+		 * ordmärket klipps. Översikt leder till samma sida som ordmärket, så
+		 * bara Chatta står kvar. */
+		.mobile-quick-link:not(.mobile-quick-link-chat) {
+			display: none;
+		}
+
 		.site-header-inner {
 			padding-inline: 0.55rem;
 			gap: 0.35rem;
