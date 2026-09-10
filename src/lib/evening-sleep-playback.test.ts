@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+	createAudioFilePlayback,
 	createSilentPlayback,
 	createTtsPlayback,
 	type PlaybackUtterance,
@@ -164,6 +165,135 @@ describe('TTS-uppspelning', () => {
 		playback.start();
 		expect(playback.status).toBe('unavailable');
 		expect(fake.spoken).toEqual([]);
+	});
+});
+
+describe('Inspelad uppspelning', () => {
+	function createFakeAudio() {
+		const calls: string[] = [];
+		const listeners = new Map<string, () => void>();
+		let playRejects = false;
+
+		const element = {
+			src: '',
+			preload: '',
+			currentTime: 0,
+			duration: 947,
+			play() {
+				calls.push('play');
+				return playRejects ? Promise.reject(new Error('nekad')) : Promise.resolve();
+			},
+			pause: () => void calls.push('pause'),
+			addEventListener: (type: string, listener: () => void) => void listeners.set(type, listener),
+			removeEventListener: (type: string) => void listeners.delete(type)
+		};
+
+		return {
+			element,
+			calls,
+			created: [] as string[],
+			fire: (type: 'ended' | 'error') => listeners.get(type)?.(),
+			failPlayback: () => {
+				playRejects = true;
+			}
+		};
+	}
+
+	const SRC = '/audio/meditations/spar.mp3';
+
+	it('spelar ljudfilen och rör aldrig talsyntesen', () => {
+		const fake = createFakeAudio();
+		const created: string[] = [];
+		const playback = createAudioFilePlayback(SRC, {}, (src) => {
+			created.push(src);
+			return fake.element;
+		});
+
+		playback.start();
+
+		expect(playback.kind).toBe('audio');
+		expect(created).toEqual([SRC]);
+		expect(fake.calls).toContain('play');
+		expect(playback.status).toBe('playing');
+	});
+
+	it('pausar och fortsätter från samma position i samma instans', () => {
+		const fake = createFakeAudio();
+		const playback = createAudioFilePlayback(SRC, {}, () => fake.element);
+
+		playback.start();
+		fake.element.currentTime = 120;
+		playback.pause();
+		expect(playback.status).toBe('paused');
+		expect(fake.calls).toContain('pause');
+
+		playback.resume();
+		expect(playback.status).toBe('playing');
+		// Positionen rörs aldrig av adaptern - samma element, samma currentTime.
+		expect(fake.element.currentTime).toBe(120);
+		expect(fake.calls.filter((call) => call === 'play')).toHaveLength(2);
+	});
+
+	it('stoppar ljudet och släpper källan vid avslut', () => {
+		const fake = createFakeAudio();
+		const playback = createAudioFilePlayback(SRC, {}, () => fake.element);
+
+		playback.start();
+		playback.stop();
+
+		expect(fake.calls).toContain('pause');
+		// Källan nollställs så webbläsaren inte fortsätter buffra efteråt.
+		expect(fake.element.src).toBe('');
+		expect(playback.status).toBe('idle');
+	});
+
+	it('skapar aldrig två samtidiga ljud vid omstart', () => {
+		const fake = createFakeAudio();
+		let created = 0;
+		const playback = createAudioFilePlayback(SRC, {}, () => {
+			created += 1;
+			return fake.element;
+		});
+
+		playback.start();
+		playback.start();
+
+		// Andra start river den första först: en pause per omstart.
+		expect(created).toBe(2);
+		expect(fake.calls.filter((call) => call === 'pause')).toHaveLength(1);
+	});
+
+	it('rapporterar ended när spåret spelat klart', () => {
+		const fake = createFakeAudio();
+		const events = track();
+		const playback = createAudioFilePlayback(SRC, events, () => fake.element);
+
+		playback.start();
+		fake.fire('ended');
+
+		expect(playback.status).toBe('ended');
+		expect(events.statuses).toEqual(['playing', 'ended']);
+	});
+
+	it('fäller inte Sovläge när filen inte kan laddas', () => {
+		const fake = createFakeAudio();
+		const playback = createAudioFilePlayback(SRC, {}, () => fake.element);
+
+		playback.start();
+		expect(() => fake.fire('error')).not.toThrow();
+		expect(playback.status).toBe('unavailable');
+	});
+
+	it('behandlar nekad uppspelning som ett laddningsfel i stället för att kasta', async () => {
+		const fake = createFakeAudio();
+		fake.failPlayback();
+		const playback = createAudioFilePlayback(SRC, {}, () => fake.element);
+
+		playback.start();
+		await Promise.resolve();
+		await Promise.resolve();
+
+		expect(playback.status).toBe('unavailable');
 	});
 });
 

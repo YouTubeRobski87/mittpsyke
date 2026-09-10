@@ -33,11 +33,13 @@
 	} from '$lib/evening-sleep-mode';
 	import {
 		DEFAULT_EVENING_MEDITATION_ID,
+		formatMeditationLength,
 		getEveningMeditation,
 		getEveningMeditationScript,
 		getEveningMeditations
 	} from '$lib/evening-meditation-sources';
 	import {
+		createAudioFilePlayback,
 		createBrowserSpeechEngine,
 		createSilentPlayback,
 		createTtsPlayback,
@@ -58,6 +60,9 @@
 	let now = $state(Date.now());
 	let playbackStatus = $state<SleepPlaybackStatus>('idle');
 	let heading = $state<HTMLElement | null>(null);
+	// Speltid för det inspelade spåret, läst ur filen själv. Null tills
+	// metadatan hunnit fram, eller om den inte går att läsa.
+	let recordedDurationSec = $state<number | null>(null);
 
 	// Adaptern är avsiktligt inte reaktiv: panelen läser aldrig av den, den
 	// styr den. Statusen kommer tillbaka via onStatusChange.
@@ -67,6 +72,7 @@
 	let startToken = 0;
 
 	const meditation = $derived(getEveningMeditation(meditationId));
+	const recordedLengthLabel = $derived(formatMeditationLength(recordedDurationSec));
 	const remainingLabel = $derived(
 		timer ? formatSleepRemaining(getSleepRemainingMs(timer, now)) : null
 	);
@@ -76,6 +82,33 @@
 	function goToStage(next: SleepStage) {
 		stage = next;
 	}
+
+	// Läser speltiden ur ljudfilen när meditationsvalet öppnas.
+	//
+	// preload="metadata" hämtar bara filhuvudet via en Range-förfrågan, inte
+	// hela spåret - ingen 38 MB laddas ned för att visa en längd. Går det inte
+	// att läsa lämnas längden osatt och valet visas utan tidsangivelse.
+	$effect(() => {
+		if (stage !== 'meditation' || recordedDurationSec !== null) return;
+
+		const recorded = meditations.find((option) => option.audioSrc);
+		if (!recorded?.audioSrc) return;
+
+		const probe = new Audio();
+		const onLoaded = () => {
+			if (Number.isFinite(probe.duration) && probe.duration > 0) {
+				recordedDurationSec = probe.duration;
+			}
+		};
+		probe.preload = 'metadata';
+		probe.addEventListener('loadedmetadata', onLoaded);
+		probe.src = recorded.audioSrc;
+
+		return () => {
+			probe.removeEventListener('loadedmetadata', onLoaded);
+			probe.src = '';
+		};
+	});
 
 	// Fokus följer steget.
 	//
@@ -138,9 +171,24 @@
 			return;
 		}
 
-		const script = meditation ? getEveningMeditationScript(meditation) : [];
 		startToken += 1;
 		const token = startToken;
+
+		// Färdiginspelade meditationer spelas som ljudfil. Talsyntesen rörs
+		// aldrig för ett sådant spår, och uppspelningen startar synkront i
+		// klickets gest - ingen await hinner bryta gestkedjan.
+		if (meditation?.audioSrc) {
+			playback = createAudioFilePlayback(meditation.audioSrc, {
+				onStatusChange: (next) => {
+					if (token !== startToken) return;
+					playbackStatus = next;
+				}
+			});
+			playback.start();
+			return;
+		}
+
+		const script = meditation ? getEveningMeditationScript(meditation) : [];
 		const engine = await createBrowserSpeechEngine();
 		// Användaren kan ha avslutat medan rösterna laddades.
 		if (token !== startToken) return;
@@ -216,7 +264,11 @@
 							onclick={() => chooseMeditation(option.id)}
 						>
 							<span class="sleep-option-label">{option.title}</span>
-							<span class="sleep-option-hint">{option.summary}</span>
+							<span class="sleep-option-hint">
+								{option.summary}{option.audioSrc && recordedLengthLabel
+									? ` · ${recordedLengthLabel}`
+									: ''}
+							</span>
 						</button>
 					{/each}
 				</div>
@@ -250,10 +302,17 @@
 				</p>
 				{#if playbackStatus === 'unavailable'}
 					<p class="sleep-hint" role="status">
-						Uppläsningen fungerar inte i den här webbläsaren. Stunden fortsätter i tystnad, och du
-						kan läsa övningen själv om du vill.
+						{#if meditation?.audioSrc}
+							Ljudet kunde inte spelas upp just nu. Stunden fortsätter i tystnad – du kan byta
+							val eller avsluta när du vill.
+						{:else}
+							Uppläsningen fungerar inte i den här webbläsaren. Stunden fortsätter i tystnad, och
+							du kan läsa övningen själv om du vill.
+						{/if}
 					</p>
-					{#if meditation}
+					<!-- Bara textövningarna har en sida att läsa. Den inspelade
+					     meditationen finns inte i skriven form. -->
+					{#if meditation?.href}
 						<a class="sleep-read-link" href={meditation.href}>Öppna {meditation.title}</a>
 					{/if}
 				{/if}

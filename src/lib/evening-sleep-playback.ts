@@ -16,7 +16,7 @@ import {
 
 export type SleepPlaybackStatus = 'idle' | 'playing' | 'paused' | 'ended' | 'unavailable';
 
-export type SleepPlaybackKind = 'tts' | 'silent';
+export type SleepPlaybackKind = 'tts' | 'audio' | 'silent';
 
 export type SleepPlaybackEvents = {
 	onStatusChange?: (status: SleepPlaybackStatus) => void;
@@ -178,6 +178,99 @@ export function createTtsPlayback(
 			generation += 1;
 			index = 0;
 			engine?.cancel();
+			setStatus('idle');
+		}
+	};
+}
+
+// ---------------------------------------------------------------------------
+// Inspelad uppspelning
+//
+// Färdiginspelade meditationer spelas som ljudfil. Talsyntesen rörs aldrig för
+// ett sådant spår - det är hela poängen med att adaptern är utbytbar.
+
+/**
+ * Den delmängd av HTMLAudioElement som uppspelningen behöver. Gör adaptern
+ * testbar utan DOM, precis som SpeechEngine gör för talsyntesen.
+ */
+export interface AudioElementLike {
+	src: string;
+	preload: string;
+	currentTime: number;
+	readonly duration: number;
+	play(): Promise<void> | void;
+	pause(): void;
+	addEventListener(type: 'ended' | 'error', listener: () => void): void;
+	removeEventListener(type: 'ended' | 'error', listener: () => void): void;
+}
+
+/**
+ * Spelar en färdiginspelad meditation.
+ *
+ * Samma instans används hela stunden: paus stannar där lyssnaren är, fortsätt
+ * startar från samma position, och stop nollställer och släpper elementet. Det
+ * är därför två val i rad aldrig kan ge dubbla ljud - panelen anropar alltid
+ * stop på föregående uppspelning innan en ny skapas.
+ */
+export function createAudioFilePlayback(
+	src: string,
+	events: SleepPlaybackEvents = {},
+	createAudio: (source: string) => AudioElementLike = (source) => new Audio(source)
+): SleepPlayback {
+	let status: SleepPlaybackStatus = 'idle';
+	let audio: AudioElementLike | null = null;
+
+	function setStatus(next: SleepPlaybackStatus) {
+		if (status === next) return;
+		status = next;
+		events.onStatusChange?.(next);
+	}
+
+	const onEnded = () => setStatus('ended');
+	// Ett laddningsfel får aldrig fälla Sovläge. Statusen rapporteras, och
+	// panelen visar en diskret rad med kvarvarande vägar ut.
+	const onError = () => setStatus('unavailable');
+
+	function release() {
+		if (!audio) return;
+		audio.removeEventListener('ended', onEnded);
+		audio.removeEventListener('error', onError);
+		audio.pause();
+		// Nollställ innan elementet släpps, annars kan webbläsaren fortsätta
+		// buffra en 38 MB-fil i bakgrunden efter att stunden är slut.
+		audio.src = '';
+		audio = null;
+	}
+
+	return {
+		kind: 'audio',
+		get status() {
+			return status;
+		},
+		start() {
+			release();
+			audio = createAudio(src);
+			audio.preload = 'metadata';
+			audio.addEventListener('ended', onEnded);
+			audio.addEventListener('error', onError);
+			setStatus('playing');
+			// play() avvisas om webbläsaren nekar uppspelning. Det behandlas som
+			// samma sak som ett laddningsfel i stället för att bli ett ohanterat
+			// promise-fel.
+			void Promise.resolve(audio.play()).catch(() => setStatus('unavailable'));
+		},
+		pause() {
+			if (!audio || status !== 'playing') return;
+			audio.pause();
+			setStatus('paused');
+		},
+		resume() {
+			if (!audio || status !== 'paused') return;
+			setStatus('playing');
+			void Promise.resolve(audio.play()).catch(() => setStatus('unavailable'));
+		},
+		stop() {
+			release();
 			setStatus('idle');
 		}
 	};

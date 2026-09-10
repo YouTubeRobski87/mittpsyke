@@ -112,6 +112,21 @@ describe('Sovlägets panel', () => {
 		expect(panel).toContain('playback = createSilentPlayback();');
 	});
 
+	it('spelar inspelade meditationer som ljudfil och aldrig via talsyntes', () => {
+		// Ljudgrenen ligger före TTS-grenen och returnerar direkt, så
+		// createBrowserSpeechEngine aldrig hinner anropas för ett inspelat spår.
+		expect(panel).toContain('if (meditation?.audioSrc) {');
+		expect(panel).toContain('playback = createAudioFilePlayback(meditation.audioSrc, {');
+
+		const audioBranch = panel.slice(
+			panel.indexOf('if (meditation?.audioSrc) {'),
+			panel.indexOf('const script =')
+		);
+		expect(audioBranch).toContain('return;');
+		expect(audioBranch).not.toContain('createBrowserSpeechEngine');
+		expect(audioBranch).not.toContain('createTtsPlayback');
+	});
+
 	it('låter all Sovläge-guidning använda den centrala guidade röstprofilen', () => {
 		expect(panel).toContain('getEveningMeditationScript(meditation)');
 		expect(panel).toContain('createBrowserSpeechEngine()');
@@ -128,8 +143,13 @@ describe('Sovlägets panel', () => {
 	it('räknar mot tidsstämplar och avslutar tyst', () => {
 		expect(panel).toContain('createSleepTimer(Date.now(), length.minutes)');
 		expect(panel).toContain('if (timer && isSleepFinished(timer, now)) endSleep();');
-		// Ingen ljudsignal och ingen bekräftelseruta när tiden går ut.
-		expect(panel).not.toMatch(/new Audio|klart!|Klart!/);
+		// Ingen ljudsignal och ingen bekräftelseruta när tiden går ut. Panelen
+		// skapar ett Audio-element, men bara för att läsa speltiden ur filen -
+		// det spelar aldrig upp något och ligger utanför avslutsvägen.
+		expect(panel).not.toMatch(/klart!|Klart!/);
+		const endSleep = panel.slice(panel.indexOf('function endSleep()'));
+		expect(endSleep.slice(0, 300)).not.toMatch(/new Audio|\.play\(/);
+		expect(panel).toContain("probe.preload = 'metadata';");
 	});
 
 	it('ger meditation paus och play men tystnad bara byt val och avsluta', () => {

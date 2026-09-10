@@ -17,14 +17,27 @@ describe('Sovlägets meditationer', () => {
 		}
 	});
 
-	it('sätter body scan först och som standardval', () => {
-		expect(DEFAULT_EVENING_MEDITATION_ID).toBe('body-scan');
-		expect(getEveningMeditations()[0]?.id).toBe('body-scan');
+	it('sätter den inspelade avslappningen först och som standardval', () => {
+		// Den inspelade meditationen är en riktig röst rakt igenom och står
+		// därför före textövningarna, som läses upp av talsyntes.
+		expect(DEFAULT_EVENING_MEDITATION_ID).toBe('guidad-avslappning');
+		expect(getEveningMeditations()[0]?.id).toBe('guidad-avslappning');
 		expect(getEveningMeditation(DEFAULT_EVENING_MEDITATION_ID)).not.toBeNull();
 	});
 
+	it('behåller body scan som första textövning', () => {
+		const spoken = getEveningMeditations().filter((meditation) => !meditation.audioSrc);
+		expect(spoken[0]?.id).toBe('body-scan');
+	});
+
 	it('länkar tillbaka till hela övningen för den som hellre läser', () => {
+		// Bara textövningarna finns i skriven form. Den inspelade meditationen
+		// har ingen /ovningar-sida och därför medvetet ingen länk.
 		for (const meditation of getEveningMeditations()) {
+			if (meditation.audioSrc) {
+				expect(meditation.href).toBeNull();
+				continue;
+			}
 			expect(meditation.href).toBe(`/ovningar/${meditation.id}`);
 		}
 	});
