@@ -13,6 +13,7 @@
 	 * CookieBanner medan den visas och tas bort när den stängs, så sidan får
 	 * tillbaka utrymmet. 0 när ingen banner finns. */
 	--cookie-banner-space: 0px;
+	--calm-music-space: 0px;
 	--container-max: 980px;
 	/* Tak för portalens griddade översiktssidor (Mitt Hem, Framsteg). Skilt
 	   från --container-max, som gäller smalare läs- och skrivytor: de sidorna
@@ -536,6 +537,17 @@ a {
  * ConsentGate. Chatten undantas eftersom den hanteras ovan. */
 .app-shell:not(.is-chat-page) {
 	padding-bottom: var(--cookie-banner-space);
+}
+
+/* Minispelaren för Lugn musik reserverar sin yta på samma sätt. Den ligger
+ * ovanför cookiebannern, så dess mätta yta inkluderar redan bannerns.
+ * Ytan läggs som ett eget block sist i skalet respektive under chattens
+ * inmatning, så cookiebannerns regler ovan lämnas orörda. */
+.app-shell:not(.is-chat-page)::after,
+.is-chat-page .chat-input-area::after {
+	content: '';
+	display: block;
+	height: max(0px, calc(var(--calm-music-space) - var(--cookie-banner-space)));
 }
 
 /* Mobile optimizations for chat page */

@@ -39,6 +39,7 @@
 		getEveningMeditations
 	} from '$lib/evening-meditation-sources';
 	import { EVENING_MUSIC_TRACK } from '$lib/evening-music-sources';
+	import { calmMusic } from '$lib/calm-music-player.svelte';
 	import {
 		createAudioFilePlayback,
 		createBrowserSpeechEngine,
@@ -185,6 +186,9 @@
 		timer = createSleepTimer(Date.now(), length.minutes);
 		now = Date.now();
 		goToStage('active');
+
+		// Sovläge spelar aldrig ovanpå Lugn musik, inte heller vid tystnad.
+		calmMusic.pause();
 
 		// Vakten frågar uttryckligen efter tystnad i stället för "allt utom
 		// meditation". Den tidigare formen hade skickat musik hit och spelat

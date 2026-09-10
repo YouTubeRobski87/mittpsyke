@@ -3,6 +3,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import { page } from '$app/stores';
 	import SeoHead from '$lib/components/SeoHead.svelte';
+	import CalmMusicPlayer from '$lib/components/music/CalmMusicPlayer.svelte';
 	import { pillars, tools } from '$lib/data/seo-architecture';
 
 	const pillarLabelBySlug = Object.fromEntries(pillars.map((pillar) => [pillar.slug, pillar.title]));
@@ -47,6 +48,8 @@
 			</a>
 		{/each}
 	</section>
+
+	<CalmMusicPlayer />
 </main>
 
 <style>
