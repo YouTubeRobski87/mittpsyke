@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
 	SWEDISH_LOCALE,
 	applyVoiceForLang,
+	selectGuidedVoiceForLang,
 	selectVoiceForLang,
 	waitForVoiceForLang,
 	type SpeechSynthesisLike,
@@ -47,6 +48,41 @@ describe('röstval för uppläsning', () => {
 	it('väljer engelsk röst för engelsk text', () => {
 		const selected = selectVoiceForLang(englishSystemVoices, 'en-US');
 		expect(selected?.lang).toBe('en-US');
+	});
+});
+
+describe('röstval för lugn, guidad uppläsning', () => {
+	it('väljer Hedvig som förstahandsröst även när en annan svensk röst står först', () => {
+		const voices = [voice('sv-SE', 'Microsoft Bengt'), voice('sv-SE', 'Microsoft Hedvig')];
+		expect(selectGuidedVoiceForLang(voices, SWEDISH_LOCALE)?.name).toContain('Hedvig');
+	});
+
+	it('väljer nästa tillgängliga kvinnliga svenska röst när Hedvig saknas', () => {
+		const voices = [voice('sv-SE', 'Microsoft Bengt'), voice('sv-SE', 'Alva')];
+		expect(selectGuidedVoiceForLang(voices, SWEDISH_LOCALE)?.name).toBe('Alva');
+	});
+
+	it('känner igen kvinnliga svenska röster på flera vanliga plattformar', () => {
+		for (const name of ['Alva', 'Klara', 'Sofie', 'Google svenska']) {
+			const voices = [voice('sv-SE', 'Oskar'), voice('sv-SE', name)];
+			expect(selectGuidedVoiceForLang(voices, SWEDISH_LOCALE)?.name).toBe(name);
+		}
+	});
+
+	it('faller stabilt tillbaka på en tillgänglig svensk röst när kvinnlig röst saknas', () => {
+		const voices = [voice('en-US', 'Samantha'), voice('sv-SE', 'Microsoft Bengt')];
+		expect(selectGuidedVoiceForLang(voices, SWEDISH_LOCALE)?.name).toBe('Microsoft Bengt');
+	});
+
+	it('faller tillbaka på null när ingen svensk röst finns', () => {
+		expect(
+			selectGuidedVoiceForLang([voice('en-US', 'Samantha')], SWEDISH_LOCALE)
+		).toBeNull();
+	});
+
+	it('påverkar inte det generiska språkvalet för vanlig uppläsning', () => {
+		const voices = [voice('sv-SE', 'Microsoft Bengt'), voice('sv-SE', 'Microsoft Hedvig')];
+		expect(selectVoiceForLang(voices, SWEDISH_LOCALE)?.name).toBe('Microsoft Bengt');
 	});
 });
 

@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
 	createSilentPlayback,
 	createTtsPlayback,
-	selectFemaleSwedishVoice,
 	type PlaybackUtterance,
 	type SleepPlaybackStatus,
 	type SpeechEngine
@@ -165,44 +164,6 @@ describe('TTS-uppspelning', () => {
 		playback.start();
 		expect(playback.status).toBe('unavailable');
 		expect(fake.spoken).toEqual([]);
-	});
-});
-
-describe('Röstval för uppläsningen', () => {
-	const voice = (name: string, lang = 'sv-SE') =>
-		({ name, lang, default: false, localService: true, voiceURI: name }) as SpeechSynthesisVoice;
-
-	it('väljer en känd kvinnlig svensk röst före den manliga standardrösten', () => {
-		// Bengt är Windows standardröst för svenska och den som valdes förut.
-		const voices = [voice('Microsoft Bengt - Swedish (Sweden)'), voice('Microsoft Hedvig')];
-		expect(selectFemaleSwedishVoice(voices, voices[0])?.name).toContain('Hedvig');
-	});
-
-	it('hittar de kvinnliga rösterna på macOS och iOS', () => {
-		for (const name of ['Alva', 'Klara']) {
-			const voices = [voice('Oskar'), voice(name)];
-			expect(selectFemaleSwedishVoice(voices, voices[0])?.name).toBe(name);
-		}
-	});
-
-	it('väljer bort kända manliga röster när inget kvinnligt namn matchar', () => {
-		// "Google svenska" namnger språket, inte personen, och är kvinnlig.
-		const voices = [voice('Microsoft Bengt'), voice('Google svenska')];
-		expect(selectFemaleSwedishVoice(voices, voices[0])?.name).toBe('Google svenska');
-	});
-
-	it('faller tillbaka på den manliga rösten hellre än att tystna', () => {
-		const voices = [voice('Microsoft Bengt')];
-		expect(selectFemaleSwedishVoice(voices, voices[0])?.name).toBe('Microsoft Bengt');
-	});
-
-	it('rör aldrig röster på andra språk', () => {
-		const english = voice('Microsoft Zira', 'en-US');
-		expect(selectFemaleSwedishVoice([english], null)).toBeNull();
-	});
-
-	it('klarar en tom röstlista utan fallback', () => {
-		expect(selectFemaleSwedishVoice([], null)).toBeNull();
 	});
 });
 

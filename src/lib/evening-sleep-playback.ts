@@ -8,7 +8,11 @@
 //
 // TTS är alltså en implementation av uppspelning, inte uppspelningen självt.
 
-import { SWEDISH_LOCALE, waitForVoiceForLang } from '$lib/ai/speech';
+import {
+	SWEDISH_LOCALE,
+	selectGuidedVoiceForLang,
+	waitForVoiceForLang
+} from '$lib/ai/speech';
 
 export type SleepPlaybackStatus = 'idle' | 'playing' | 'paused' | 'ended' | 'unavailable';
 
@@ -51,47 +55,6 @@ export interface SpeechEngine {
 }
 
 /**
- * Kvinnliga svenska röster i de talmotorer som faktiskt förekommer:
- * Alva och Klara på macOS/iOS, Hedvig och Sofie på Windows, Hillevi i Azure.
- */
-const FEMALE_SWEDISH_VOICE_NAMES = ['alva', 'klara', 'hedvig', 'sofie', 'hillevi', 'astrid'];
-
-/**
- * Kända manliga svenska röster. Bengt är Windows standardröst för svenska och
- * är den som annars väljs först – det är den rösten det här ersätter.
- */
-const MALE_SWEDISH_VOICE_NAMES = ['bengt', 'oskar', 'mattias', 'gustav', 'erik'];
-
-const includesName = (voiceName: string, names: readonly string[]) =>
-	names.some((name) => voiceName.toLowerCase().includes(name));
-
-/**
- * Väljer en kvinnlig svensk röst för kvällens uppläsning.
- *
- * Tre steg, i fallande säkerhet:
- *   1. En svensk röst vars namn är en känd kvinnlig röst.
- *   2. En svensk röst som inte är en känd manlig röst. Fångar motorer som
- *      namnger rösten efter språket ("Google svenska") i stället för person.
- *   3. `fallback` – den röst den delade språkvalslogiken redan valt.
- *
- * Steg 3 gör bytet säkert: finns bara en manlig svensk röst installerad läses
- * texten fortfarande upp, i stället för att tystna. Urvalet är medvetet lokalt
- * för Sovläge och rör inte $lib/ai/speech.ts, som chatten delar.
- */
-export function selectFemaleSwedishVoice(
-	voices: readonly SpeechSynthesisVoice[],
-	fallback: SpeechSynthesisVoice | null
-): SpeechSynthesisVoice | null {
-	const swedish = voices.filter((voice) => voice.lang.toLowerCase().startsWith('sv'));
-
-	return (
-		swedish.find((voice) => includesName(voice.name, FEMALE_SWEDISH_VOICE_NAMES)) ??
-		swedish.find((voice) => !includesName(voice.name, MALE_SWEDISH_VOICE_NAMES)) ??
-		fallback
-	);
-}
-
-/**
  * Bygger en talmotor mot webbläsarens speechSynthesis.
  *
  * Väntar in en svensk röst på samma sätt som chatten redan gör – utan det
@@ -108,8 +71,8 @@ export async function createBrowserSpeechEngine(): Promise<SpeechEngine | null> 
 	const synth = window.speechSynthesis;
 	// Väntan sker på den delade hjälpfunktionen, som redan hanterar att
 	// röstlistan fylls på asynkront. Först därefter går det att välja på namn.
-	const anySwedishVoice = await waitForVoiceForLang(SWEDISH_LOCALE, { synth });
-	const voice = selectFemaleSwedishVoice(synth.getVoices(), anySwedishVoice);
+	await waitForVoiceForLang(SWEDISH_LOCALE, { synth });
+	const voice = selectGuidedVoiceForLang(synth.getVoices(), SWEDISH_LOCALE);
 
 	return {
 		createUtterance(text: string): PlaybackUtterance {

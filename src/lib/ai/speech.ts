@@ -11,6 +11,28 @@
 // Svensk standard-locale. Sätts alltid på utterance för svensk text.
 export const SWEDISH_LOCALE = 'sv-SE';
 
+// Röstprofil för lugn, guidad svensk uppläsning. Web Speech API exponerar
+// inget standardiserat könsfält eller stabilt voice-id mellan plattformar, så
+// urvalet behöver göras via de namn som respektive talmotor publicerar.
+// Ordningen är avsiktlig: Hedvig är förstahandsval när hon finns, följt av
+// kvinnliga svenska röster på andra vanliga plattformar.
+export const GUIDED_SWEDISH_PRIMARY_VOICE_NAME = 'hedvig';
+
+const GUIDED_SWEDISH_FEMALE_VOICE_NAMES = [
+	GUIDED_SWEDISH_PRIMARY_VOICE_NAME,
+	'alva',
+	'klara',
+	'sofie',
+	'hillevi',
+	'astrid',
+	'google svenska'
+] as const;
+
+const KNOWN_MALE_SWEDISH_VOICE_NAMES = ['bengt', 'oskar', 'mattias', 'gustav', 'erik'] as const;
+
+const includesVoiceName = (voiceName: string, names: readonly string[]) =>
+	names.some((name) => voiceName.toLowerCase().includes(name));
+
 // Minimalt gränssnitt för det vi behöver konfigurera på en utterance. Gör
 // funktionerna testbara utan en riktig SpeechSynthesisUtterance.
 export interface UtteranceLike {
@@ -37,6 +59,40 @@ export function selectVoiceForLang(
 		voices.find((voice) => voice.lang.toLowerCase() === target) ??
 		voices.find((voice) => voice.lang.toLowerCase().startsWith(base)) ??
 		null
+	);
+}
+
+/**
+ * Väljer röst för lugn, guidad svensk uppläsning utan att ändra det generiska
+ * röstval som bland annat används för chattens svarsuppläsning.
+ *
+ * Prioritetsordning:
+ *   1. Hedvig, när rösten finns för svenska.
+ *   2. Övriga kända kvinnliga svenska röster i fast ordning.
+ *   3. En svensk röst som inte känns igen som en känd manlig röst.
+ *   4. Det vanliga språkvalet: sv-SE, därefter annan sv-röst, därefter null.
+ */
+export function selectGuidedVoiceForLang(
+	voices: readonly SpeechSynthesisVoice[],
+	lang: string
+): SpeechSynthesisVoice | null {
+	const target = lang.toLowerCase();
+	const base = target.split('-')[0];
+	if (base !== 'sv') return selectVoiceForLang(voices, lang);
+
+	const matchingVoices = voices.filter((voice) => voice.lang.toLowerCase().startsWith(base));
+
+	for (const preferredName of GUIDED_SWEDISH_FEMALE_VOICE_NAMES) {
+		const preferred = matchingVoices.find((voice) =>
+			`${voice.name} ${voice.voiceURI}`.toLowerCase().includes(preferredName)
+		);
+		if (preferred) return preferred;
+	}
+
+	return (
+		matchingVoices.find(
+			(voice) => !includesVoiceName(voice.name, KNOWN_MALE_SWEDISH_VOICE_NAMES)
+		) ?? selectVoiceForLang(voices, lang)
 	);
 }
 

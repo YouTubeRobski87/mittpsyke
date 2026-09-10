@@ -8,6 +8,10 @@ const panel = readFileSync(
 	join(process.cwd(), 'src/lib/components/evening/SleepModePanel.svelte'),
 	'utf8'
 );
+const playback = readFileSync(
+	join(process.cwd(), 'src/lib/evening-sleep-playback.ts'),
+	'utf8'
+);
 
 describe('Sovläget i Kvällsstugan', () => {
 	it('håller tillståndet lokalt: ingen persistens, ingen DB, ingen endpoint', () => {
@@ -106,6 +110,13 @@ describe('Sovlägets panel', () => {
 	it('använder tystnad som ett riktigt val och rör då aldrig talmotorn', () => {
 		expect(panel).toContain("if (source !== 'meditation')");
 		expect(panel).toContain('playback = createSilentPlayback();');
+	});
+
+	it('låter all Sovläge-guidning använda den centrala guidade röstprofilen', () => {
+		expect(panel).toContain('getEveningMeditationScript(meditation)');
+		expect(panel).toContain('createBrowserSpeechEngine()');
+		expect(panel).toContain('createTtsPlayback(script, engine');
+		expect(playback).toContain('selectGuidedVoiceForLang(synth.getVoices(), SWEDISH_LOCALE)');
 	});
 
 	it('flyttar fokus till varje steg och håller status artig', () => {
