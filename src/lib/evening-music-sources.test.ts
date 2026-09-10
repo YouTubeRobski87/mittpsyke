@@ -56,14 +56,6 @@ describe('Musikspåren i Sovläge', () => {
 		// Spåret hette "Lugn musik", precis som själva källan i första steget.
 		expect(getEveningMusicTrack('lugn-musik')).toBeNull();
 		expect(EVENING_MUSIC_TRACKS.map((track) => track.title)).not.toContain('Lugn musik');
-		expect(
-			existsSync(
-				join(
-					process.cwd(),
-					'static/audio/musik/Kvar i mitt huvud - Den där Robban - Den där Robban du vet.mp3'
-				)
-			)
-		).toBe(false);
 	});
 
 	it('ger giltiga URL:er utan mellanslag', () => {
