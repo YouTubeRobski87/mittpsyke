@@ -100,6 +100,32 @@ export const PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET = [
 	'/images/scenes/progress-cabin-lakeside.webp 1672w'
 ].join(', ');
 
+/**
+ * Samma plats som ovan, men kvällsvarianten: månen uppe, stugan tänd och en
+ * person vid lägerelden nere till höger. Den befolkade varianten används på
+ * den publika startsidan - grundbilden ovan är tom på både människa och eld,
+ * och en tom strand läser som en tapet i stället för en plats någon är på.
+ *
+ * Egna konstanter i stället för ett byte av värdena ovan: den tomma varianten
+ * beskriver samma plats mitt på dagen och ska gå att gå tillbaka till.
+ */
+export const PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_IMAGE =
+	'/images/scenes/progress-cabin-lakeside-evening.webp';
+export const PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_FALLBACK =
+	'/images/scenes/progress-cabin-lakeside-evening-800.webp';
+export const PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_SRCSET = [
+	'/images/scenes/progress-cabin-lakeside-evening-800.webp 800w',
+	'/images/scenes/progress-cabin-lakeside-evening-1200.webp 1200w',
+	'/images/scenes/progress-cabin-lakeside-evening.webp 1672w'
+].join(', ');
+
+/**
+ * Frilagd björn ur companion-preseten (Balder). Samma fil som björnens
+ * sittande pose i companionPoseManifest - den publika scenen och den inloggade
+ * följeslagaren ska aldrig visa två olika björnar.
+ */
+export const PROGRESS_COMPANION_BEAR_SITTING_IMAGE = '/images/avatars/presets/bear-sitting.png';
+
 const DASHBOARD_COMPANION_IMAGE_PATHS = {
 	day: '/images/avatars/presets/fox-morning.webp',
 	night: '/images/avatars/presets/fox-night.webp',

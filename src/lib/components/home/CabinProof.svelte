@@ -15,11 +15,13 @@
 	// uppräkning. Vägen till den riktiga incheckningen ligger i Kvällsstugans
 	// egen sektion på startsidan, inte inuti exemplet.
 	import { EVENING_THEMES } from '$lib/evening-checkin';
-	// Landskapsscenen delas med Framsteg via samma konstanter, så startsidan och
-	// den inloggade vyn aldrig kan glida isär till två olika bilder av platsen.
+	// Kvällsvarianten av landskapsscenen: samma plats som den inloggade vyn
+	// visar, men med månen uppe, stugan tänd och en person vid lägerelden.
+	// Den tomma dagvarianten ligger kvar i samma modul.
 	import {
-		PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK,
-		PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET
+		PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_FALLBACK,
+		PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_SRCSET,
+		PROGRESS_COMPANION_BEAR_SITTING_IMAGE
 	} from '$lib/progressCompanion';
 
 	let {
@@ -31,14 +33,31 @@
 <figure class={`cabin-proof cabin-proof--${variant}`}>
 	<div class="cabin-proof-scene">
 		<img
-			srcset={PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET}
+			class="cabin-proof-scene-image"
+			srcset={PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_SRCSET}
 			sizes="(max-width: 759px) calc(100vw - 2.5rem), (min-width: 900px) 60vw, 520px"
-			src={PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK}
-			alt="Platsen utifrån: en stuga med lyktan tänd vid en spegelblank sjö, omgiven av granskog och berg."
+			src={PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_FALLBACK}
+			alt="Platsen utifrån en kväll: en person sitter vid en lägereld på stranden, en björn vilar en bit bort, stugan lyser i skogsbrynet och månen står över sjön och bergen."
 			width="1672"
 			height="941"
 			loading={priority ? 'eager' : 'lazy'}
 			fetchpriority={priority ? 'high' : undefined}
+			decoding="async"
+		/>
+
+		<!-- Björnen ligger som eget lager, samma princip som följeslagaren i
+			 Framsteg: scenbilden är fri från djur, och den som ska synas ritas
+			 ovanpå. Frilägget är MittPsykes egen björn (Balder) ur
+			 companion-presets, inget nytt bildmaterial. -->
+		<img
+			class="cabin-proof-bear"
+			src={PROGRESS_COMPANION_BEAR_SITTING_IMAGE}
+			alt=""
+			aria-hidden="true"
+			width="768"
+			height="512"
+			loading="lazy"
+			fetchpriority="low"
 			decoding="async"
 		/>
 	</div>
@@ -90,9 +109,9 @@
 		}
 	}
 
-	/* Under 900px är stegkortet dolt i hero-varianten och bara landskapet syns.
+	/* Under 1120px är stegkortet dolt i hero-varianten och bara landskapet syns.
 	   Då finns ingen incheckning att sätta bildtext på. */
-	@media (max-width: 899px) {
+	@media (max-width: 1119.98px) {
 		.cabin-proof--hero .cabin-proof-caption {
 			display: none;
 		}
@@ -110,12 +129,29 @@
 
 	/* aspect-ratio + width/height på bilden håller höjden reserverad innan
 	   bilden laddat, så proofen aldrig orsakar layout shift. */
-	.cabin-proof-scene img {
+	.cabin-proof-scene-image {
 		display: block;
 		width: 100%;
 		height: auto;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
+	}
+
+	/* Björnen sitter på den närmaste stranden, till vänster om personen vid
+	   elden och under stugan. Måtten är i procent av scenrutan, så lagret följer
+	   bilden i alla bredder. Dämpningen tar ner studioljuset i frilägget till
+	   scenens månljus - utan den lyser björnen som om den stod i dagsljus. */
+	.cabin-proof-bear {
+		position: absolute;
+		left: 29%;
+		bottom: 4%;
+		width: 14.5%;
+		height: auto;
+		aspect-ratio: auto;
+		object-fit: contain;
+		filter: brightness(0.5) saturate(0.6) contrast(1.02)
+			drop-shadow(0 0.35rem 0.5rem rgb(4 8 16 / 0.55));
+		pointer-events: none;
 	}
 
 	.cabin-proof-card {
@@ -209,30 +245,42 @@
 	}
 
 	/* Hero-varianten låter scenen bära hela proof-ytan. På desktop ligger det
-	   statiska stegkortet förankrat i scenens nedre del. På mindre skärmar
-	   visas bara platsen, så heron kan leda vidare utan ett extra långt kort. */
-	@media (min-width: 900px) {
+	   statiska stegkortet över natthimlen i scenens övre del. På mindre skärmar
+	   visas bara platsen, så heron kan leda vidare utan ett extra långt kort.
+	   Gränsen går vid 1120px: under den blir scenrutan så låg att kortet skulle
+	   lägga sig över personen vid elden, och då är platsen viktigare än kortet -
+	   samma val som redan gjordes under 900px. */
+	@media (min-width: 1120px) {
 		.cabin-proof--hero {
 			display: block;
 			position: relative;
 			isolation: isolate;
 		}
 
+		/* 3:2 i stället för 5:4. Bilden är 16:9, så en högre ruta beskär i sidled -
+		   vid 5:4 föll lägerelden utanför högerkanten. 3:2 håller kvar både
+		   stugan till vänster och personen vid elden till höger. */
 		.cabin-proof--hero .cabin-proof-scene {
-			min-height: 30rem;
-			aspect-ratio: 5 / 4;
+			/* width: 100% behövs för att aspect-ratio ska räkna höjd ur bredd.
+			   Utan den ärvde rutan hero-radens höjd och bredden räknades ur
+			   höjden i stället - scenen blev då bredare än sin kolumn och sköt
+			   ut lägerelden utanför viewporten mellan 900 och 1100 px. */
+			width: 100%;
+			aspect-ratio: 3 / 2;
 			border-radius: 1.35rem;
 		}
 
+		/* Mörkningen ligger uppe vid kortet i stället för nere vid elden: den ska
+		   ge kortet en lugn botten, inte dämpa scenens enda varma ljus. */
 		.cabin-proof--hero .cabin-proof-scene::after {
 			content: '';
 			position: absolute;
 			inset: 0;
-			background: linear-gradient(0deg, rgb(15 10 8 / 0.74) 0%, rgb(15 10 8 / 0.24) 42%, transparent 70%);
+			background: linear-gradient(180deg, rgb(9 13 24 / 0.62) 0%, rgb(9 13 24 / 0.2) 46%, transparent 74%);
 			pointer-events: none;
 		}
 
-		.cabin-proof--hero .cabin-proof-scene img {
+		.cabin-proof--hero .cabin-proof-scene-image {
 			position: absolute;
 			inset: 0;
 			width: 100%;
@@ -241,11 +289,14 @@
 			object-position: center;
 		}
 
+		/* Kortet ligger uppe till höger, över natthimlen. Nere till höger täckte
+		   det personen och lägerelden - scenens enda liv - och det är den halvan
+		   av bilden som ska synas. */
 		.cabin-proof--hero .cabin-proof-card {
 			position: absolute;
 			z-index: 1;
 			right: clamp(1rem, 2.5vw, 1.5rem);
-			bottom: clamp(1rem, 2.5vw, 1.5rem);
+			top: clamp(1rem, 2.5vw, 1.5rem);
 			width: min(54%, 24rem);
 			padding: clamp(0.9rem, 1.7vw, 1.15rem);
 			border-color: rgb(237 222 194 / 0.34);
@@ -269,9 +320,36 @@
 		}
 	}
 
-	@media (max-width: 899px) {
+	@media (max-width: 1119.98px) {
 		.cabin-proof--hero .cabin-proof-card {
 			display: none;
+		}
+	}
+
+	/* Mellan 1120 och 1320px är scenrutan låg nog att ett kort i full storlek
+	   skulle nå ner över personen vid elden. Kortet krymper i stället för att
+	   försvinna: samma innehåll, mindre yta, och hela scenen syns. */
+	@media (min-width: 1120px) and (max-width: 1319.98px) {
+		.cabin-proof--hero .cabin-proof-card {
+			width: min(50%, 20rem);
+			padding: 0.8rem 0.85rem;
+		}
+
+		.cabin-proof--hero .cabin-proof-meta {
+			margin-bottom: 0.4rem;
+		}
+
+		.cabin-proof--hero .cabin-proof-question {
+			margin-bottom: 0.4rem;
+			font-size: 1.02rem;
+		}
+
+		.cabin-proof--hero .cabin-proof-options {
+			gap: 0.16rem;
+		}
+
+		.cabin-proof--hero .cabin-proof-options li {
+			font-size: 0.78rem;
 		}
 	}
 </style>

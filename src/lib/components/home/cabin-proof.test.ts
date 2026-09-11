@@ -14,6 +14,26 @@ describe.each(['hero', 'section'] as const)('Kvällsincheckningens preview (%s)'
 		expect(body).toContain('Så ser kvällsincheckningen ut. Du gör den i Kvällsstugan.');
 	});
 
+	it('visar kvällsscenen med personen och lägerelden, inte den tomma dagbilden', () => {
+		const { body } = render(CabinProof, { props: { variant } });
+		expect(body).toContain('progress-cabin-lakeside-evening-800.webp');
+		expect(body).toContain('progress-cabin-lakeside-evening-1200.webp');
+		expect(body).toContain('progress-cabin-lakeside-evening.webp 1672w');
+		// Den tomma varianten saknar både människa och eld och får inte smyga
+		// tillbaka in i heron.
+		expect(body).not.toContain('progress-cabin-lakeside-800.webp');
+	});
+
+	it('ritar björnen som eget lager och beskriver hela scenen i alt-texten', () => {
+		const { body } = render(CabinProof, { props: { variant } });
+		expect(body).toMatch(/class="cabin-proof-bear[^"]*"/);
+		expect(body).toContain('/images/avatars/presets/bear-sitting.png');
+		// Lagret är dekor ovanpå scenen - bakgrundsbildens alt bär beskrivningen.
+		expect(body).toMatch(/<img[^>]*class="cabin-proof-bear[^"]*"[^>]*alt=""/);
+		expect(body).toContain('en person sitter vid en lägereld');
+		expect(body).toContain('en björn vilar en bit bort');
+	});
+
 	it('har inga interaktiva kontroller, ingen CTA och ingen knappliknande åtgärdsrad', () => {
 		const { body } = render(CabinProof, { props: { variant } });
 		expect(body).not.toMatch(/<(?:button|a|input|select|textarea)\b|tabindex=|role="(?:button|link)"/);
