@@ -8,10 +8,12 @@
 	// visar ankomsten, och interiörbilden är kvar i sin egen sektion längre ner
 	// så samma motiv inte används två gånger på sidan.
 	//
-	// Temaknapparna kommer från EVENING_THEMES - samma källa som den riktiga
+	// Temavalen kommer från EVENING_THEMES - samma källa som den riktiga
 	// incheckningen - så den publika proofen aldrig kan visa något annat än vad
-	// användaren faktiskt möter. Inget här är klickbart, och inget är märkt upp
-	// som en kontroll: alternativen är en lista, inte knappar.
+	// användaren faktiskt möter. Inget här är klickbart, inget är märkt upp som
+	// en kontroll, och inget är format som en knapp: alternativen läses som en
+	// uppräkning. Vägen till den riktiga incheckningen ligger i Kvällsstugans
+	// egen sektion på startsidan, inte inuti exemplet.
 	import { EVENING_THEMES } from '$lib/evening-checkin';
 	// Landskapsscenen delas med Framsteg via samma konstanter, så startsidan och
 	// den inloggade vyn aldrig kan glida isär till två olika bilder av platsen.
@@ -42,21 +44,26 @@
 	</div>
 
 	<div class="cabin-proof-card">
-		<p class="cabin-proof-example">Exempel på kvällsincheckning</p>
-		<p class="cabin-proof-description">Förhandsvisning – går inte att fylla i här.</p>
-		<p class="cabin-proof-step">Steg 1 av 4</p>
+		<!-- Etiketten står först i kortet, så "det här är ett exempel" läses före
+			 frågan och alternativen i stället för efteråt. -->
+		<p class="cabin-proof-meta">
+			<span class="cabin-proof-badge">Exempel</span>
+			<span class="cabin-proof-step">Steg 1 av 4</span>
+		</p>
 		<p class="cabin-proof-question">Hur är det ikväll?</p>
 		<ul class="cabin-proof-options">
 			{#each EVENING_THEMES as theme}
 				<li>{theme.label}</li>
 			{/each}
 		</ul>
-		<span class="cabin-proof-preview-action">Fortsätt · exempel</span>
 	</div>
 
-	<!-- Säger vad kortet ovanför är. Utan bildtexten kan proofen läsas som
-		 dekor, och besökaren får aldrig veta att det är produkten hen ser. -->
-	<figcaption class="cabin-proof-caption">Så ser kvällsincheckningen ut.</figcaption>
+	<!-- Säger vad kortet ovanför är och var man gör det på riktigt. Utan
+		 bildtexten kan proofen läsas som dekor, och besökaren får aldrig veta
+		 att det är produkten hen ser. -->
+	<figcaption class="cabin-proof-caption">
+		Så ser kvällsincheckningen ut. Du gör den i Kvällsstugan.
+	</figcaption>
 </figure>
 
 <style>
@@ -120,27 +127,35 @@
 		color: #f7f3eb;
 	}
 
+	/* Etikett och stegräknare på samma rad: en rad i stället för tre textrader
+	   som alla säger samma sak. */
+	.cabin-proof-meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0 0 0.7rem;
+	}
+
+	/* Lyktans ton, inte en grå systemetikett - den ska kännas som kvällen den
+	   hör till och ändå läsas först. */
+	.cabin-proof-badge {
+		padding: 0.16rem 0.5rem;
+		border-radius: 999px;
+		background: rgb(245 200 120 / 0.18);
+		color: #f7dcae;
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+	}
+
 	.cabin-proof-step {
-		margin: 0 0 0.75rem;
 		color: rgb(235 223 200 / 0.72);
 		font-size: 0.76rem;
 		font-weight: 700;
 		letter-spacing: 0.07em;
 		text-transform: uppercase;
-	}
-
-	.cabin-proof-example {
-		margin: 0 0 0.25rem;
-		font-size: 0.85rem;
-		font-weight: 700;
-		line-height: 1.4;
-	}
-
-	.cabin-proof-description {
-		margin: 0 0 0.85rem;
-		color: #d9cebd;
-		font-size: 0.8rem;
-		line-height: 1.5;
 	}
 
 	.cabin-proof-question {
@@ -152,35 +167,34 @@
 
 	.cabin-proof-options {
 		display: grid;
-		gap: 0.45rem;
+		gap: 0.3rem;
 		margin: 0;
 		padding: 0;
 		list-style: none;
+		color: rgb(247 243 235 / 0.9);
 	}
 
-	/* Ser ut som alternativknapparna i den riktiga incheckningen, men är en
-	   lista - inget här går att trycka på, och inget utger sig för att göra det. */
+	/* Alternativen visades tidigare som ramade rutor med den första markerad -
+	   det läste som knappar med ett redan gjort val, alltså som ett formulär.
+	   Nu är de en uppräkning av vad frågan erbjuder: ingen ram, ingen fylld
+	   yta, inget markerat förval. Prickens ton håller kvällskänslan kvar. */
 	.cabin-proof-options li {
-		padding: 0.62rem 0.75rem;
-		border: 1px solid rgb(238 225 202 / 0.24);
-		border-radius: 0.8rem;
-		background: rgb(255 255 255 / 0.06);
-		font-size: 0.92rem;
-		font-weight: 650;
-		line-height: 1.3;
+		position: relative;
+		padding-left: 0.95rem;
+		font-size: 0.88rem;
+		font-weight: 500;
+		line-height: 1.45;
 	}
 
-	.cabin-proof-options li:first-child {
-		border-color: rgb(245 200 120 / 0.6);
-		background: rgb(245 200 120 / 0.13);
-	}
-
-	.cabin-proof-preview-action {
-		display: block;
-		margin-top: 0.75rem;
-		color: #d9cebd;
-		font-size: 0.82rem;
-		line-height: 1.5;
+	.cabin-proof-options li::before {
+		content: '';
+		position: absolute;
+		top: 0.58em;
+		left: 0;
+		width: 0.3rem;
+		height: 0.3rem;
+		border-radius: 50%;
+		background: rgb(245 200 120 / 0.78);
 	}
 
 	/* Samma uppdelning som den riktiga Kvällsstugan gör på bred skärm: scenen
@@ -240,22 +254,13 @@
 			box-shadow: 0 18px 42px rgb(12 8 6 / 0.36);
 		}
 
-		.cabin-proof--hero .cabin-proof-step,
+		.cabin-proof--hero .cabin-proof-meta,
 		.cabin-proof--hero .cabin-proof-question {
 			margin-bottom: 0.55rem;
 		}
 
-		.cabin-proof--hero .cabin-proof-options {
-			gap: 0.35rem;
-		}
-
 		.cabin-proof--hero .cabin-proof-options li {
-			padding: 0.48rem 0.62rem;
 			font-size: 0.86rem;
-		}
-
-		.cabin-proof--hero .cabin-proof-preview-action {
-			margin-top: 0.6rem;
 		}
 
 		/* Hero-varianten är display:block, så figurens gap gäller inte här. */

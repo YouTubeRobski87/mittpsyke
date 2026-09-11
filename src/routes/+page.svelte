@@ -12,6 +12,11 @@
 	// produkten, inte startsidans löfte.
 	const ANONYMOUS_WRITE_DESTINATION = '/dagbok?action=new';
 	const CREATE_PLACE_DESTINATION = '/register';
+	// Den riktiga kvällsincheckningen ligger i Kvällsstugan och kräver konto.
+	// Den publika startsidan visas bara för utloggade, så länken går via
+	// inloggningen med ?redirect= - samma mönster som övriga skyddade sidor -
+	// i stället för att låta /dashboard/kvallsstugan kasta bort destinationen.
+	const EVENING_CHECKIN_DESTINATION = '/login?redirect=/dashboard/kvallsstugan';
 	// Befintlig, korrekt stödväg. ASCII-värdnamn - aldrig ö i hostname och
 	// aldrig punycode-varianten från PDF-exporten.
 	const SUPPORT_LINES_URL = 'https://stodlinjer.se';
@@ -131,7 +136,8 @@
 				<h2 id="evening-title">En kort incheckning när dagen ska landa</h2>
 				<p>
 					Fyra steg, ett i taget, på någon minut. Det finns inget rätt svar, textrutan får lämnas
-					tom, och ingenting sparas om du inte väljer att spara det.
+					tom, och ingenting sparas om du inte väljer att spara det. Du gör den i Kvällsstugan när
+					du loggat in.
 				</p>
 			</div>
 			<figure class="evening-scene">
@@ -146,15 +152,25 @@
 					decoding="async"
 				/>
 			</figure>
-			<a
-				class="text-link"
-				href={SUPPORT_LINES_URL}
-				target="_blank"
-				rel="noopener noreferrer"
-				onclick={() => trackHomeCta('kvallsstugan', 'akut_stod', SUPPORT_LINES_URL)}
-			>
-				Behöver du akut stöd?
-			</a>
+			<div class="evening-actions">
+				<a
+					class="text-link"
+					href={EVENING_CHECKIN_DESTINATION}
+					onclick={() =>
+						trackHomeCta('kvallsstugan', 'oppna_kvallsincheckningen', EVENING_CHECKIN_DESTINATION)}
+				>
+					Öppna kvällsincheckningen <span aria-hidden="true">→</span>
+				</a>
+				<a
+					class="text-link"
+					href={SUPPORT_LINES_URL}
+					target="_blank"
+					rel="noopener noreferrer"
+					onclick={() => trackHomeCta('kvallsstugan', 'akut_stod', SUPPORT_LINES_URL)}
+				>
+					Behöver du akut stöd?
+				</a>
+			</div>
 		</div>
 	</section>
 
@@ -502,6 +518,19 @@
 		text-underline-offset: 3px;
 	}
 
+	/* Vägen in i den riktiga incheckningen står först, stödlänken efter. På smal
+	   skärm staplas de så båda behåller sin 44px träffyta. */
+	.evening-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0 1.75rem;
+	}
+
+	.evening-actions .text-link {
+		margin-top: 0.9rem;
+	}
+
 	.evening-scene {
 		margin-top: 1.5rem;
 		margin-bottom: 0;
@@ -586,9 +615,12 @@
 			max-width: none;
 		}
 
-		.evening-inner > .text-link {
+		.evening-inner > .evening-actions {
 			grid-column: 1;
 			grid-row: 2;
+		}
+
+		.evening-inner > .evening-actions .text-link {
 			margin-top: 1.1rem;
 		}
 
