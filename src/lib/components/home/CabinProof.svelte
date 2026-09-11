@@ -298,7 +298,11 @@
 			z-index: 1;
 			right: clamp(1rem, 2.5vw, 1.5rem);
 			top: clamp(1rem, 2.5vw, 1.5rem);
-			width: min(54%, 24rem);
+			/* Bredden följer innehållet: den längsta raden är frågan, och
+			   17rem lämnar den plus metaraden oavbrutna. Tidigare 24rem gav
+			   ~160px tom yta till höger i kortet och tog en halv scen i
+			   anspråk för text som bara använde vänsterhalvan. */
+			width: min(38%, 17rem);
 			padding: clamp(0.9rem, 1.7vw, 1.15rem);
 			border-color: rgb(237 222 194 / 0.34);
 			background: linear-gradient(145deg, rgb(55 38 29 / 0.88), rgb(28 23 22 / 0.92));
@@ -332,7 +336,7 @@
 	   försvinna: samma innehåll, mindre yta, och hela scenen syns. */
 	@media (min-width: 1120px) and (max-width: 1319.98px) {
 		.cabin-proof--hero .cabin-proof-card {
-			width: min(50%, 20rem);
+			width: min(42%, 15rem);
 			padding: 0.8rem 0.85rem;
 		}
 
