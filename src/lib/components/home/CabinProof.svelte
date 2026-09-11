@@ -15,12 +15,12 @@
 	// uppräkning. Vägen till den riktiga incheckningen ligger i Kvällsstugans
 	// egen sektion på startsidan, inte inuti exemplet.
 	import { EVENING_THEMES } from '$lib/evening-checkin';
-	// Kvällsvarianten av landskapsscenen: samma plats som den inloggade vyn
-	// visar, men med månen uppe, stugan tänd och en person vid lägerelden.
-	// Den tomma dagvarianten ligger kvar i samma modul.
+	// Solnedgångsvarianten av landskapsscenen: samma plats som den inloggade
+	// vyn visar, men med solen lågt över bergen, stugan tänd och en person vid
+	// lägerelden. Den tomma dagvarianten ligger kvar i samma modul.
 	import {
-		PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_FALLBACK,
-		PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_SRCSET,
+		PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_FALLBACK,
+		PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET,
 		PROGRESS_COMPANION_BEAR_SITTING_IMAGE
 	} from '$lib/progressCompanion';
 
@@ -34,10 +34,10 @@
 	<div class="cabin-proof-scene">
 		<img
 			class="cabin-proof-scene-image"
-			srcset={PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_SRCSET}
+			srcset={PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET}
 			sizes="(max-width: 759px) calc(100vw - 2.5rem), (min-width: 900px) 60vw, 520px"
-			src={PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_FALLBACK}
-			alt="Platsen utifrån en kväll: en person sitter vid en lägereld på stranden, en björn vilar en bit bort, stugan lyser i skogsbrynet och månen står över sjön och bergen."
+			src={PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_FALLBACK}
+			alt="Platsen utifrån i solnedgången: en person sitter vid en lägereld på stranden, en björn vilar en bit bort, stugan lyser i skogsbrynet och solen står lågt över sjön och bergen."
 			width="1672"
 			height="941"
 			loading={priority ? 'eager' : 'lazy'}
@@ -140,7 +140,8 @@
 	/* Björnen sitter på den närmaste stranden, till vänster om personen vid
 	   elden och under stugan. Måtten är i procent av scenrutan, så lagret följer
 	   bilden i alla bredder. Dämpningen tar ner studioljuset i frilägget till
-	   scenens månljus - utan den lyser björnen som om den stod i dagsljus. */
+	   scenens kvällsljus - utan den lyser björnen starkare än allt annat på
+	   stranden. */
 	.cabin-proof-bear {
 		position: absolute;
 		left: 29%;
@@ -149,8 +150,8 @@
 		height: auto;
 		aspect-ratio: auto;
 		object-fit: contain;
-		filter: brightness(0.5) saturate(0.6) contrast(1.02)
-			drop-shadow(0 0.35rem 0.5rem rgb(4 8 16 / 0.55));
+		filter: brightness(0.74) saturate(0.86) contrast(1.02)
+			drop-shadow(0 0.3rem 0.45rem rgb(28 18 10 / 0.5));
 		pointer-events: none;
 	}
 
@@ -276,7 +277,7 @@
 			content: '';
 			position: absolute;
 			inset: 0;
-			background: linear-gradient(180deg, rgb(9 13 24 / 0.62) 0%, rgb(9 13 24 / 0.2) 46%, transparent 74%);
+			background: linear-gradient(180deg, rgb(28 18 12 / 0.5) 0%, rgb(28 18 12 / 0.16) 46%, transparent 72%);
 			pointer-events: none;
 		}
 

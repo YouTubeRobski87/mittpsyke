@@ -101,22 +101,26 @@ export const PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET = [
 ].join(', ');
 
 /**
- * Samma plats som ovan, men kvällsvarianten: månen uppe, stugan tänd och en
- * person vid lägerelden nere till höger. Den befolkade varianten används på
- * den publika startsidan - grundbilden ovan är tom på både människa och eld,
- * och en tom strand läser som en tapet i stället för en plats någon är på.
+ * Samma plats som ovan, men solnedgångsvarianten: solen står lågt över
+ * bergen, stugan är tänd och en person sitter vid lägerelden nere till
+ * höger. Den befolkade varianten används på den publika startsidan -
+ * grundbilden ovan är tom på både människa och eld, och en tom strand läser
+ * som en tapet i stället för en plats någon är på.
+ *
+ * Filnamnet säger afternoon, men motivet är sent gyllene ljus: det är
+ * Framstegs eget namn på dygnsspannet 17-20, inte en beskrivning av ljuset.
  *
  * Egna konstanter i stället för ett byte av värdena ovan: den tomma varianten
  * beskriver samma plats mitt på dagen och ska gå att gå tillbaka till.
  */
-export const PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_IMAGE =
-	'/images/scenes/progress-cabin-lakeside-evening.webp';
-export const PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_FALLBACK =
-	'/images/scenes/progress-cabin-lakeside-evening-800.webp';
-export const PROGRESS_CABIN_LAKESIDE_EVENING_SCENE_SRCSET = [
-	'/images/scenes/progress-cabin-lakeside-evening-800.webp 800w',
-	'/images/scenes/progress-cabin-lakeside-evening-1200.webp 1200w',
-	'/images/scenes/progress-cabin-lakeside-evening.webp 1672w'
+export const PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_IMAGE =
+	'/images/scenes/progress-cabin-lakeside-afternoon.webp';
+export const PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_FALLBACK =
+	'/images/scenes/progress-cabin-lakeside-afternoon-800.webp';
+export const PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET = [
+	'/images/scenes/progress-cabin-lakeside-afternoon-800.webp 800w',
+	'/images/scenes/progress-cabin-lakeside-afternoon-1200.webp 1200w',
+	'/images/scenes/progress-cabin-lakeside-afternoon.webp 1672w'
 ].join(', ');
 
 /**
