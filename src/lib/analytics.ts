@@ -259,11 +259,47 @@ export function sanitizeAnalyticsReferrer(referrer: string) {
 	}
 }
 
+// utm-parameter -> GA4:s eget kampanjfält (skickas som cs/cm/cn/ck/cc/ci).
+// Klick-id som gclid räknas som identifierare och skickas inte.
+const CAMPAIGN_FIELD_BY_PARAM = {
+	utm_source: 'campaign_source',
+	utm_medium: 'campaign_medium',
+	utm_campaign: 'campaign_name',
+	utm_term: 'campaign_term',
+	utm_content: 'campaign_content',
+	utm_id: 'campaign_id'
+} as const;
+const MAX_CAMPAIGN_VALUE_LENGTH = 100;
+
+type CampaignField = (typeof CAMPAIGN_FIELD_BY_PARAM)[keyof typeof CAMPAIGN_FIELD_BY_PARAM];
+
+/**
+ * Eftersom sidadressen skickas utan query kan GA4 inte läsa utm_* ur den, och
+ * varje kampanjbesök hamnade som (direct). Kampanjen följer i stället med som
+ * GA4:s egna kampanjfält. Värdena är etiketter som länkens avsändare satt, inte
+ * användarens text; något som liknar en e-postadress tas ändå bort. Saknade
+ * fält blir undefined, vilket i gtag tar bort ett tidigare satt värde.
+ */
+export function getAnalyticsCampaignFields(url: URL): Record<CampaignField, string | undefined> {
+	const fields = {} as Record<CampaignField, string | undefined>;
+
+	for (const [param, field] of Object.entries(CAMPAIGN_FIELD_BY_PARAM) as [string, CampaignField][]) {
+		const value = url.searchParams.get(param)?.trim().slice(0, MAX_CAMPAIGN_VALUE_LENGTH);
+		fields[field] = value && !value.includes('@') ? value : undefined;
+	}
+
+	return fields;
+}
+
 /**
  * gtag bifogar annars webbläsarens fulla adress som dl/dr på VARJE event, även
  * när page_view skickar en sanerad page_location. Det läckte t.ex. söktext
  * (/sok?q=…) och samtals-id (/chat/…?id=…) via search_used, chat_open och
  * internal_link_clicked. Ett 'set' gäller för alla efterföljande event.
+ *
+ * Kampanjfälten sätts här och inte bara på page_view, eftersom sessionens
+ * första event kan komma före sidvisningen (chat_open på /chat). De gäller
+ * landningssidans event och nollställs vid nästa sidbyte.
  */
 function setSanitizedPageContext(gtag: (...args: any[]) => void, url: URL) {
 	const { page_location } = getAnalyticsPageFields(url);
@@ -271,7 +307,8 @@ function setSanitizedPageContext(gtag: (...args: any[]) => void, url: URL) {
 
 	gtag('set', {
 		page_location,
-		page_referrer: currentPageLocation ?? sanitizeAnalyticsReferrer(document.referrer)
+		page_referrer: currentPageLocation ?? sanitizeAnalyticsReferrer(document.referrer),
+		...getAnalyticsCampaignFields(url)
 	});
 	currentPageLocation = page_location;
 }

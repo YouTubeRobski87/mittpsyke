@@ -1,6 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { getAnalyticsPageFields, sanitizeAnalyticsReferrer } from './analytics';
+import {
+	getAnalyticsCampaignFields,
+	getAnalyticsPageFields,
+	sanitizeAnalyticsReferrer
+} from './analytics';
 import { consumeDiaryCheckinPrefill, writeDiaryCheckinPrefill } from './diary-draft';
 
 const projectFile = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
@@ -55,6 +59,48 @@ describe('privacy-safe navigation and analytics', () => {
 		// saneras med samma funktion som testas ovan.
 		expect(analytics).toMatch(/gtag\('set', \{\s*page_location,\s*page_referrer:/);
 		expect(analytics).toContain('sanitizeAnalyticsReferrer(document.referrer)');
+	});
+
+	it('bevarar kampanjen som egna GA-fält när sidadressen saneras', () => {
+		// Sedan page_location saneras (28d3d478) kom varje kampanjbesök fram som
+		// (direct): utm_* försvann ur dl och gtag skickar inga cs/cm/cn själv.
+		const url = new URL(
+			'https://mittpsyke.se/tiktok?utm_source=tiktok&utm_medium=paid&utm_campaign=host&utm_term=angest&utm_content=video_a&utm_id=42&gclid=KLICKID&q=privat#frag'
+		);
+
+		expect(getAnalyticsPageFields(url).page_location).toBe('https://mittpsyke.se/tiktok');
+		expect(getAnalyticsCampaignFields(url)).toEqual({
+			campaign_source: 'tiktok',
+			campaign_medium: 'paid',
+			campaign_name: 'host',
+			campaign_term: 'angest',
+			campaign_content: 'video_a',
+			campaign_id: '42'
+		});
+		// Klick-id, övriga parametrar och fragment följer aldrig med.
+		const sent = JSON.stringify(getAnalyticsCampaignFields(url));
+		expect(sent).not.toMatch(/KLICKID|privat|frag/);
+	});
+
+	it('nollställer kampanjfälten på sidor utan kampanj och släpper inget som liknar e-post', () => {
+		// undefined (inte null eller '') är det som får gtag att ta bort ett
+		// tidigare satt fält, så landningssidans kampanj inte följer med vidare.
+		const empty = getAnalyticsCampaignFields(new URL('https://mittpsyke.se/guider'));
+		expect(Object.keys(empty)).toHaveLength(6);
+		expect(Object.values(empty).every((value) => value === undefined)).toBe(true);
+
+		const unsafe = getAnalyticsCampaignFields(
+			new URL(`https://mittpsyke.se/?utm_source=namn%40example.com&utm_campaign=${'x'.repeat(300)}`)
+		);
+		expect(unsafe.campaign_source).toBeUndefined();
+		expect(unsafe.campaign_name).toHaveLength(100);
+
+		// Fälten sätts i samma 'set' som den sanerade sidkontexten, så även ett
+		// event före page_view (chat_open på /chat) bär kampanjen.
+		const analytics = projectFile('./analytics.ts');
+		expect(analytics).toMatch(
+			/gtag\('set', \{\s*page_location,\s*page_referrer:[^}]*\.\.\.getAnalyticsCampaignFields\(url\)\s*\}\)/
+		);
 	});
 
 	it('keeps search text out of active URLs, caches, and analytics payloads', () => {
