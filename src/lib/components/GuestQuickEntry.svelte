@@ -98,10 +98,6 @@
 		textareaEl?.focus();
 	}
 
-	function continueWriting() {
-		persistIfDirty();
-	}
-
 	function saveAndCreateAccount() {
 	}
 
@@ -246,12 +242,11 @@
 				</p>
 			</div>
 			<div class="actions">
+				<!-- "Fortsätt utan konto" låg här. Besökaren skriver redan utan konto
+					 och texten autosparas lokalt, så knappen gjorde inget synligt. -->
 				<a class="primary-action" href="/register?fromDiary=true" onclick={saveAndCreateAccount}
 					>Skapa konto för att spara inlägg</a
 				>
-				<button type="button" class="secondary-action" onclick={continueWriting}>
-					Fortsätt utan konto
-				</button>
 			</div>
 			<span class="char-count" aria-hidden="true">{charCount} tecken</span>
 		</footer>
@@ -479,8 +474,7 @@
 		gap: 0.6rem;
 	}
 
-	.primary-action,
-	.secondary-action {
+	.primary-action {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -502,14 +496,7 @@
 		box-shadow: 0 12px 24px rgba(15, 118, 110, 0.18);
 	}
 
-	.secondary-action {
-		background: hsl(var(--surface-soft));
-		color: hsl(var(--foreground));
-		border: 1px solid hsl(var(--border));
-	}
-
-	.primary-action:hover,
-	.secondary-action:hover {
+	.primary-action:hover {
 		transform: translateY(-1px);
 	}
 
@@ -538,8 +525,7 @@
 			gap: 0.5rem;
 		}
 
-		.primary-action,
-		.secondary-action {
+		.primary-action {
 			width: 100%;
 		}
 

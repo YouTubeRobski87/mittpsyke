@@ -17,6 +17,14 @@ describe('lokalt dagboksutkast efter registrering', () => {
 		expect(guestEntry).toContain('href="/register?fromDiary=true"');
 	});
 
+	// Besökaren skriver redan utan konto och texten autosparas lokalt, så
+	// "Fortsätt utan konto" gjorde inget synligt. Kontoerbjudandet står kvar.
+	it('har bara kontots CTA i skrivytans fot, ingen "Fortsätt utan konto"', () => {
+		expect(guestEntry).not.toContain('Fortsätt utan konto');
+		expect(guestEntry).toContain('Skapa konto för att spara inlägg');
+		expect(guestEntry).toContain('saveTimer = setInterval(persistIfDirty, AUTOSAVE_INTERVAL_MS);');
+	});
+
 	it('registreringen läser utkastet men skapar inget dagboksinlägg', () => {
 		expect(registerPage).toContain('const storedDraft = readDiaryDraft();');
 		expect(registerAction).not.toMatch(/from\(['"]diary['"]\)|\/api\/diary|writeDiaryDraft|clearDiaryDraft/);
