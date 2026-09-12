@@ -26,29 +26,29 @@ export const PROGRESS_SCENE_CROSSFADE_MS = 1_000;
 
 export const PROGRESS_SCENE_BANDS = ['morning', 'day', 'afternoon', 'evening'] as const;
 
-// Bear-free komposition: sjö, berg, stuga, människa, lägereld, ryggsäck och mugg.
-// Scenen innehåller medvetet inget djur - användarens egen följeslagare ritas som
-// ett eget lager ovanpå, se getProgressCompanionPlacement i
-// progressCompanionPlacement.ts. Samma mått som den gamla bilden (1672x941).
-const SCENE_BASE = '/images/scenes/progress-lake';
+// En statisk komposition: sjö, berg, stuga, människa, björn, lägereld, ryggsäck
+// och mugg. Björnen är en del av Framstegsscenen, inte användarens följeslagare.
+const SCENE_BASE = '/images/scenes/progress-lake-bear';
+const COMPANION_SCENE_BASE = '/images/scenes/progress-lake';
 
-function sourcesForProgressLake() {
+function sourcesForProgressLake(base: string) {
 	return {
 		/**
 		 * src pekar på den minsta varianten. Preload-scannern hinner starta en
 		 * hämtning av src innan srcset vägts, och då ska det inte vara fullbredd
 		 * som går i onödan. Samma resonemang som den ursprungliga scenbilden.
 		 */
-		fallback: `${SCENE_BASE}-800.webp`,
+		fallback: `${base}-800.webp`,
 		srcset: [
-			`${SCENE_BASE}-800.webp 800w`,
-			`${SCENE_BASE}-1200.webp 1200w`,
-			`${SCENE_BASE}.webp 1672w`
+			`${base}-800.webp 800w`,
+			`${base}-1200.webp 1200w`,
+			`${base}.webp 1672w`
 		].join(', ')
 	};
 }
 
-const PROGRESS_LAKE_SOURCES = sourcesForProgressLake();
+const PROGRESS_LAKE_SOURCES = sourcesForProgressLake(SCENE_BASE);
+const PROGRESS_COMPANION_LAKE_SOURCES = sourcesForProgressLake(COMPANION_SCENE_BASE);
 
 export const PROGRESS_SCENE_SOURCES: Record<
 	ProgressSceneBand,
@@ -58,6 +58,17 @@ export const PROGRESS_SCENE_SOURCES: Record<
 	day: PROGRESS_LAKE_SOURCES,
 	afternoon: PROGRESS_LAKE_SOURCES,
 	evening: PROGRESS_LAKE_SOURCES
+};
+
+/** Den inloggade användarens följeslagare behöver den artneutrala bilden. */
+export const PROGRESS_COMPANION_SCENE_SOURCES: Record<
+	ProgressSceneBand,
+	{ fallback: string; srcset: string }
+> = {
+	morning: PROGRESS_COMPANION_LAKE_SOURCES,
+	day: PROGRESS_COMPANION_LAKE_SOURCES,
+	afternoon: PROGRESS_COMPANION_LAKE_SOURCES,
+	evening: PROGRESS_COMPANION_LAKE_SOURCES
 };
 
 const SCENE_LABELS: Record<ProgressSceneBand, string> = {

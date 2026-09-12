@@ -10,6 +10,7 @@
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
 	import {
+		PROGRESS_COMPANION_SCENE_SOURCES,
 		PROGRESS_SCENE_SOURCES,
 		PROGRESS_SCENE_CROSSFADE_MS,
 		clearProgressSceneOutgoing,
@@ -113,7 +114,10 @@
 		outgoingBand: null
 	});
 	let clearSceneTransitionTimer: number | null = null;
-	const visibleSceneSources = $derived(PROGRESS_SCENE_SOURCES[sceneTransition.visibleBand]);
+	const sceneSources = $derived(
+		data.isAnonymous ? PROGRESS_SCENE_SOURCES : PROGRESS_COMPANION_SCENE_SOURCES
+	);
+	const visibleSceneSources = $derived(sceneSources[sceneTransition.visibleBand]);
 	const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
 
 	function prepareSceneTransition(nextBand: ProgressSceneBand) {
@@ -136,15 +140,9 @@
 		prepareSceneTransition(sceneBand);
 	});
 
-	// Användarens faktiska val styr vilken art som visas i scenen. Bakgrunden
-	// innehåller inget djur, så det här är enda källan till vem som sitter där.
-	// Den utloggade förhandsvisningen får räven, precis som tidigare.
 	const sceneCompanionId = $derived(
-		getWorldCompanionId(
-			getProgressCompanionAnimal(data.isAnonymous ? { id: 'fox' } : data.progressCompanion)?.id
-		)
+		getWorldCompanionId(getProgressCompanionAnimal(data.progressCompanion)?.id)
 	) as CompanionId;
-	// En fast, lugn pose per art. Scenen ska vara stilla - ingen posrotation här.
 	const scenePose = $derived(getProgressScenePose(sceneCompanionId));
 	const sceneCompanionName = $derived(getProgressCompanionDisplayName(sceneCompanionId));
 
@@ -637,22 +635,16 @@
 		supportResponses = {};
 	}
 
-	/**
-	 * Stugans klickyta och följeslagarens ruta räknas från samma originalbild som
-	 * scenen, i ett och samma svep. Scenrutans uppmätta storlek är allt geometrin
-	 * behöver - bilden är densamma genom dygnet och renderas contain-centrerad i
-	 * alla brytpunkter, så båda ytorna följer motivet i stället för containern.
-	 */
+	/** Stugans klickyta följer scenens contain-centrerade originalbild. */
 	function updateProgressScenePlacement(element = sceneEl) {
 		if (!browser || !element) return;
 		const { width, height } = element.getBoundingClientRect();
 		const input = { containerWidth: width, containerHeight: height };
 		cabinPlacement = getProgressCabinPlacement(input);
 		cabinPlacementStyle = getProgressCabinPlacementStyle(input);
-		companionPlacementStyle = getProgressCompanionPlacementStyle({
-			...input,
-			companionId: sceneCompanionId
-		});
+		companionPlacementStyle = data.isAnonymous
+			? ''
+			: getProgressCompanionPlacementStyle({ ...input, companionId: sceneCompanionId });
 	}
 
 	function chooseSupportTopic(topic: string) {
@@ -981,10 +973,8 @@
 		};
 	});
 
-	// Ytorna mäts om så fort scenrutan byts ut. Storleksändringar fångas av
-	// ResizeObservern; dygnsspannet påverkar inte längre geometrin. Arten läses
-	// däremot in explicit: byter följeslagare ändras både motivets bredd och dess
-	// markpunkt, och då måste rutan räknas om.
+	// Ytan mäts om så fort scenrutan byts ut. Storleksändringar fångas av
+	// ResizeObservern, och ett byt av följeslagare får en ny bildankring.
 	$effect(() => {
 		const renderedSceneEl = sceneEl;
 		sceneCompanionId;
@@ -1140,7 +1130,7 @@
 						 bilden behålls tills nästa responsiva asset är klar, så scenen
 						 aldrig blir tom under följeslagare eller world marks. -->
 					{#if sceneTransition.outgoingBand}
-						{@const outgoingSceneSources = PROGRESS_SCENE_SOURCES[sceneTransition.outgoingBand]}
+						{@const outgoingSceneSources = sceneSources[sceneTransition.outgoingBand]}
 						<img
 							class="companion-world-scene companion-world-scene--outgoing"
 							srcset={outgoingSceneSources.srcset}
@@ -1160,7 +1150,9 @@
 							srcset={visibleSceneSources.srcset}
 							sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
 							src={visibleSceneSources.fallback}
-							alt="Du sitter vid sjön, med stugan och lägerelden i närheten."
+							alt={isAnonymous
+								? 'Du sitter vid sjön tillsammans med en björn, med stugan och lägerelden i närheten.'
+								: 'Du sitter vid sjön, med stugan och lägerelden i närheten.'}
 							width="1672"
 							height="941"
 							fetchpriority="high"
@@ -1170,7 +1162,7 @@
 					{/key}
 					{#if sceneTransition.pendingBand}
 						{#each [sceneTransition.pendingBand] as pendingBand (pendingBand)}
-							{@const pendingSceneSources = PROGRESS_SCENE_SOURCES[pendingBand]}
+							{@const pendingSceneSources = sceneSources[pendingBand]}
 							<img
 								class="companion-world-scene companion-world-scene--preload"
 								srcset={pendingSceneSources.srcset}
@@ -1196,17 +1188,17 @@
 						data-testid="progress-cabin-link"
 					></a>
 				{/if}
-				<!-- Användarens egen följeslagare, ankrad på bildens markpunkt bredvid
-					 människan. Exakt en - scenen har medvetet varken visitor eller
-					 friend, de hör hemma på Mitt Hem. -->
-				<CompanionPose
-					class="progress-companion-pose"
-					basePose={scenePose}
-					companionId={sceneCompanionId}
-					scene="progress"
-					behaviourProfile="quiet"
-					decorative
-				/>
+				{#if !isAnonymous}
+					<!-- Den inloggades egen följeslagare ligger bara på den artneutrala bilden. -->
+					<CompanionPose
+						class="progress-companion-pose"
+						basePose={scenePose}
+						companionId={sceneCompanionId}
+						scene="progress"
+						behaviourProfile="quiet"
+						decorative
+					/>
+				{/if}
 				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
 				<WorldMarks class="progress-world-marks" marks={worldMarks} {visitSeed} />
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
@@ -1217,7 +1209,7 @@
 				<h2>Din plats idag</h2>
 				<p>
 					{isAnonymous
-						? 'Här sitter du och din följeslagare stilla vid stranden och blickar ut över sjön.'
+						? 'Här vid stranden finns stugan, lägerelden och björnen som en stilla del av platsen.'
 						: `Du och ${sceneCompanionName} sitter stilla vid stranden och blickar ut över sjön.`}
 				</p>
 				<p class="companion-reflection">{worldReturnCopy ?? livingWorldReflectionCopy}</p>
@@ -2551,11 +2543,6 @@
 		z-index: var(--scene-ambient);
 	}
 
-	/* Följeslagaren ligger på en ruta som getProgressCompanionPlacement räknat
-	   fram ur scenens contain-geometri. Både left/top OCH width/height sätts, och
-	   rutan får dukens proportion - då fyller posebildens `object-fit: contain`
-	   rutan exakt, och den uppmätta motivytan landar med tassarna på markpunkten.
-	   Ingen translate behövs: förskjutningen är redan inbakad i koordinaterna. */
 	.companion-media :global(.progress-companion-pose) {
 		position: absolute;
 		left: var(--progress-companion-left, 0);
@@ -2563,32 +2550,17 @@
 		z-index: var(--scene-companion);
 		width: var(--progress-companion-width, 0);
 		height: var(--progress-companion-height, 0);
-		/* Överskriver komponentens egen kvadratiska standardruta. */
 		aspect-ratio: auto;
 		transform: none;
 		--companion-grade: saturate(0.72) contrast(0.9) brightness(0.92) sepia(0.12);
 	}
 
-	/* Scenen är en solnedgång med motljus. Samma varma nedtoning för alla arter,
-	   så djuret sitter i bildens ljus i stället för att ligga som en ljus dekal
-	   ovanpå.
-
-	   Attributselektorn är medveten: CompanionPose har egna regler per art
-	   ([data-companion='schafer'][data-daypart='night'] och så vidare) som annars
-	   vinner på specificitet och ger hundarna och vargen ett annat ljus än räven
-	   och björnen. Den här regeln ska gälla alla fem lika.
-
-	   Masken stängs av av samma skäl som vargen redan hade den avstängd i
-	   komponenten: alla fem poser är rena frilägg, och den mjuka ellipsen fasar
-	   ut motivets ytterkant - alltså tassarna, precis där de möter marken. */
 	.companion-media :global(.progress-companion-pose[data-companion] .companion-pose-image) {
 		filter: var(--companion-grade) drop-shadow(0 8px 10px rgb(32 26 16 / 0.28));
 		-webkit-mask-image: none;
 		mask-image: none;
 	}
 
-	/* Mjuk markkontakt under tassarna. Ellipsen ligger i rutans nederkant, som
-	   efter placeringen sammanfaller med markpunkten. */
 	.companion-media :global(.progress-companion-pose)::before {
 		content: '';
 		position: absolute;

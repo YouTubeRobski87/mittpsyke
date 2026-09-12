@@ -121,7 +121,6 @@ export function getProgressCabinPlacementStyle(input: ProgressSceneGeometryInput
 		`--progress-cabin-height: ${cabin.height}px`
 	].join('; ');
 }
-
 /* -------------------------------------------------------------------------
  * Följeslagaren i Framstegsscenen
  *

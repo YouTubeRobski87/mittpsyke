@@ -58,12 +58,12 @@ describe('Framstegsscenen runt stuglänken', () => {
 			expect(index, layer).toBeGreaterThan(-1);
 			expect(route.slice(index, index + 120), layer).toContain('aria-hidden="true"');
 		}
-		// Den synliga scenbilden beskriver motivet men är inte en egen länk. Alt-
-		// texten nämner ingen art: djuret i scenen är användarens eget lager.
-		expect(route).toContain('alt="Du sitter vid sjön, med stugan och lägerelden i närheten."');
+		// Den synliga scenbilden beskriver motivet men är inte en egen länk.
+		expect(route).toContain("'Du sitter vid sjön tillsammans med en björn, med stugan och lägerelden i närheten.'");
+		expect(route).toContain("'Du sitter vid sjön, med stugan och lägerelden i närheten.'");
 	});
 
-	it('monterar exakt en följeslagare, och varken visitor eller friend', () => {
+	it('behåller den inloggades följeslagare men inga visitor eller friend', () => {
 		expect(route.match(/<CompanionPose/g) ?? []).toHaveLength(1);
 		expect(route).not.toContain('<CompanionVisitor');
 		expect(route).not.toContain('<CompanionFriend');
