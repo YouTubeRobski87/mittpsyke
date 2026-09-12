@@ -100,6 +100,37 @@ export const PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET = [
 	'/images/scenes/progress-cabin-lakeside.webp 1672w'
 ].join(', ');
 
+/**
+ * Samma plats som ovan, men solnedgångsvarianten: solen står lågt över
+ * bergen, stugan är tänd och en person sitter vid lägerelden nere till
+ * höger. Den befolkade varianten används på den publika startsidan -
+ * grundbilden ovan är tom på både människa och eld, och en tom strand läser
+ * som en tapet i stället för en plats någon är på.
+ *
+ * Filnamnet säger afternoon, men motivet är sent gyllene ljus: det är
+ * Framstegs eget namn på dygnsspannet 17-20, inte en beskrivning av ljuset.
+ *
+ * Egna konstanter i stället för ett byte av värdena ovan: den tomma varianten
+ * beskriver samma plats mitt på dagen och ska gå att gå tillbaka till.
+ */
+export const PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_IMAGE =
+	'/images/scenes/progress-cabin-lakeside-afternoon.webp';
+export const PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_FALLBACK =
+	'/images/scenes/progress-cabin-lakeside-afternoon-800.webp';
+export const PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET = [
+	'/images/scenes/progress-cabin-lakeside-afternoon-800.webp 800w',
+	'/images/scenes/progress-cabin-lakeside-afternoon-1200.webp 1200w',
+	'/images/scenes/progress-cabin-lakeside-afternoon.webp 1672w'
+].join(', ');
+
+/**
+ * Frilagd, bakåtvänd sittpose av Balder för den publika lägereldsscenen.
+ * Den separata posen låter björnen följa personens blick ut över sjön utan
+ * att ändra companion-preseten som används i den inloggade upplevelsen.
+ */
+export const PROGRESS_COMPANION_BEAR_BACK_SITTING_IMAGE =
+	'/images/avatars/presets/bear-sitting-back.png';
+
 const DASHBOARD_COMPANION_IMAGE_PATHS = {
 	day: '/images/avatars/presets/fox-morning.webp',
 	night: '/images/avatars/presets/fox-night.webp',

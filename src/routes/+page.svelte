@@ -3,7 +3,6 @@
 	import CabinProof from '$lib/components/home/CabinProof.svelte';
 	import SignedInHome from '$lib/components/home/SignedInHome.svelte';
 	import { trackHomeCtaClick } from '$lib/analytics';
-	import { dataflowCopy } from '$lib/dataflow-copy';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
@@ -11,13 +10,52 @@
 	// Anonyma skrivytan är kvar som destination - den är ett val inne i
 	// produkten, inte startsidans löfte.
 	const ANONYMOUS_WRITE_DESTINATION = '/dagbok?action=new';
-	const CREATE_PLACE_DESTINATION = '/register';
+	// Hero-sekundären är ett ankare inom sidan, inte en andra destination.
+	// Registreringen låg här tidigare och konkurrerade med den primära CTA:n
+	// trots att den kostar besökaren ett konto. Den finns kvar i headern och
+	// får en egen plats längre ner när avslutande CTA byggs.
+	//
+	// Länktexten följer målrubriken ("Så ser platsen ut"), inte tvärtom. En
+	// länk som lovar "Så fungerar det" och landar på en rubrik som säger något
+	// annat bryter förväntan direkt efter första klicket.
+	const PLACE_MAP_ANCHOR = '#map-title';
+	// Den riktiga kvällsincheckningen ligger i Kvällsstugan och kräver konto.
+	// Den publika startsidan visas bara för utloggade, så länken går via
+	// inloggningen med ?redirect= - samma mönster som övriga skyddade sidor -
+	// i stället för att låta /dashboard/kvallsstugan kasta bort destinationen.
+	const EVENING_CHECKIN_DESTINATION = '/login?redirect=/dashboard/kvallsstugan';
 	// Befintlig, korrekt stödväg. ASCII-värdnamn - aldrig ö i hostname och
 	// aldrig punycode-varianten från PDF-exporten.
 	const SUPPORT_LINES_URL = 'https://stodlinjer.se';
 
 	function trackHomeCta(section: string, cta: string, href: string) {
 		trackHomeCtaClick({ section, cta, href });
+	}
+
+	/**
+	 * Hero-ankaret sköts i JS, för att webbläsarens hash-navigering bara
+	 * fungerar en gång: efter första klicket är hashen redan `#map-title`,
+	 * ingen navigering utlöses, och besökaren som scrollat upp igen möter en
+	 * död länk. scrollIntoView kan köras hur många gånger som helst.
+	 *
+	 * href ligger kvar, så hoppet fungerar även utan JS. Offseten mot den
+	 * sticky headern kommer från scroll-padding-top på html i app.css och
+	 * respekteras av båda vägarna - den ska inte upprepas här.
+	 */
+	function scrollToPlaceMap(event: MouseEvent) {
+		trackHomeCta('hero', 'se_platsen', PLACE_MAP_ANCHOR);
+
+		const target = document.getElementById('map-title');
+		if (!target) return;
+
+		event.preventDefault();
+
+		// Ingen behavior anges medvetet: app.css styr mjuk scroll via
+		// html[data-smooth-scroll] bakom prefers-reduced-motion. Ett explicit
+		// 'smooth' här hade kringgått båda grindarna.
+		target.scrollIntoView({ block: 'start' });
+		// preventScroll: fokus ska inte konkurrera med scrollen.
+		target.focus({ preventScroll: true });
 	}
 </script>
 
@@ -31,7 +69,6 @@
 	<section class="home-hero" aria-labelledby="hero-title">
 		<div class="home-inner hero-grid">
 			<div class="hero-copy">
-				<p class="eyebrow">Skriv, reflektera och se mönster över tid</p>
 				<h1 id="hero-title">Skriv av dig. Se mönster över tid.</h1>
 				<p class="lead">
 					MittPsyke är ett digitalt stöd där du kan skriva, reflektera och följa hur du har det över
@@ -46,14 +83,17 @@
 					>
 						Börja skriva
 					</a>
-					<a
-						class="cta-secondary"
-						href={CREATE_PLACE_DESTINATION}
-						onclick={() => trackHomeCta('hero', 'skapa_din_plats', CREATE_PLACE_DESTINATION)}
-					>
-						Skapa en plats för att spara det du skriver
+					<a class="cta-secondary" href={PLACE_MAP_ANCHOR} onclick={scrollToPlaceMap}>
+						Se platsen <span aria-hidden="true">↓</span>
 					</a>
 				</div>
+				<!-- Ligger direkt under CTA-raden, där den sänker tröskeln för att
+					 klicka. Samma sak stod tidigare i en egen sektion fem skärmar
+					 längre ner, alltså långt efter att beslutet redan fattats.
+					 Formuleringen är kontrollerad mot implementationen: anonyma
+					 utkast skrivs bara till localStorage i diary-draft.ts och
+					 skickas aldrig till servern. -->
+				<p class="cta-micro">Inget konto behövs. Texten stannar i din webbläsare.</p>
 				<p class="product-path" aria-label="Så fungerar det: skriv, spara det du vill och se vad som återkommer.">
 					<span aria-hidden="true">Skriv → spara det du vill → se vad som återkommer</span>
 				</p>
@@ -61,8 +101,11 @@
 				<p class="boundary">Inte vård. Inte behandling. Inte akuthjälp. Vid fara: <a href="tel:112">112</a>.</p>
 			</div>
 
+			<!-- Bara scenen. Stegkortet har flyttat till Kvällsstugan, så heron
+				 bär stämning och inget ligger ovanpå personen, björnen eller
+				 elden i någon bredd. -->
 			<div class="hero-proof">
-				<CabinProof variant="hero" priority />
+				<CabinProof variant="scene" priority />
 			</div>
 		</div>
 	</section>
@@ -72,7 +115,12 @@
 	<section class="home-section section-map" aria-labelledby="map-title">
 		<div class="home-inner">
 			<div class="narrow">
-				<h2 id="map-title">Så ser platsen ut</h2>
+				<!-- Mål för hero-ankaret. tabindex="-1" gör att tangentbordsfokus
+					 faktiskt flyttas hit vid hopp - utan den scrollar sidan men
+					 fokus står kvar i heron, så nästa Tab fortsätter från fel
+					 ställe. Avståndet till den sticky headern kommer från
+					 scroll-padding-top på html i app.css. -->
+				<h2 id="map-title" tabindex="-1">Så ser platsen ut</h2>
 				<p>
 					Tre ställen, inte fler. Du behöver inte lära dig något system: det handlar om att skriva,
 					svara kort när du orkar, och hitta tillbaka till det du lämnat.
@@ -131,8 +179,15 @@
 				<h2 id="evening-title">En kort incheckning när dagen ska landa</h2>
 				<p>
 					Fyra steg, ett i taget, på någon minut. Det finns inget rätt svar, textrutan får lämnas
-					tom, och ingenting sparas om du inte väljer att spara det.
+					tom, och ingenting sparas om du inte väljer att spara det. Du gör den i Kvällsstugan när
+					du loggat in.
 				</p>
+			</div>
+			<!-- Produktbeviset. Låg tidigare som överlägg i heron och doldes helt
+				 under 1120px; här syns det i alla bredder, och interiörbilden är
+				 redan sektionens scen så landskapet upprepas inte. -->
+			<div class="evening-proof">
+				<CabinProof variant="card" />
 			</div>
 			<figure class="evening-scene">
 				<img
@@ -146,15 +201,25 @@
 					decoding="async"
 				/>
 			</figure>
-			<a
-				class="text-link"
-				href={SUPPORT_LINES_URL}
-				target="_blank"
-				rel="noopener noreferrer"
-				onclick={() => trackHomeCta('kvallsstugan', 'akut_stod', SUPPORT_LINES_URL)}
-			>
-				Behöver du akut stöd?
-			</a>
+			<div class="evening-actions">
+				<a
+					class="text-link"
+					href={EVENING_CHECKIN_DESTINATION}
+					onclick={() =>
+						trackHomeCta('kvallsstugan', 'oppna_kvallsincheckningen', EVENING_CHECKIN_DESTINATION)}
+				>
+					Öppna kvällsincheckningen <span aria-hidden="true">→</span>
+				</a>
+				<a
+					class="text-link"
+					href={SUPPORT_LINES_URL}
+					target="_blank"
+					rel="noopener noreferrer"
+					onclick={() => trackHomeCta('kvallsstugan', 'akut_stod', SUPPORT_LINES_URL)}
+				>
+					Behöver du akut stöd?
+				</a>
+			</div>
 		</div>
 	</section>
 
@@ -170,22 +235,12 @@
 		</div>
 	</section>
 
-	<!-- 5. När du vill skriva utan konto -->
-		<section class="home-section" aria-labelledby="anonymous-title">
-			<div class="home-inner narrow">
-				<h2 id="anonymous-title">Börja där du är</h2>
-				<p>
-					{dataflowCopy.anonymousDiary.short} Med konto kan du välja att spara utkastet som ett dagboksinlägg.
-				</p>
-			<a
-				class="text-link"
-				href={ANONYMOUS_WRITE_DESTINATION}
-				onclick={() => trackHomeCta('utan_konto', 'skriv_utan_konto', ANONYMOUS_WRITE_DESTINATION)}
-			>
-				Skriv utan konto <span aria-hidden="true">→</span>
-			</a>
-		</div>
-	</section>
+	<!-- Sektionen "Börja där du är" låg här. Den gick till samma destination som
+		 hero-knappen och sa samma sak som mikrotexten under den, så den var en
+		 ren dubblett. Integritetstexten (dataflowCopy.anonymousDiary.short) är
+		 inte borttagen från sajten: den står kvar i sin fulla form på
+		 /integritet, /anonym-dagbok-online, /skriv, /sa-fungerar-mittpsyke och
+		 i dagbokens egen FAQ - alltså även på sidan besökaren landar på. -->
 
 	<!-- 6. Chatten, som funktion -->
 	<section class="home-section section-alt" aria-labelledby="chat-title">
@@ -302,16 +357,6 @@
 		background: var(--home-section-bg-important);
 	}
 
-	.eyebrow {
-		margin: 0 0 0.5rem;
-		font-family: var(--font-heading);
-		font-size: 0.8rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--home-text-blue-muted-strong);
-	}
-
 	h1 {
 		margin: 0;
 		font-family: var(--font-heading);
@@ -374,6 +419,16 @@
 	   den sin befintliga växling mellan bg och section-alt. */
 	.section-map {
 		border-top: 1px solid rgba(148, 163, 184, 0.14);
+	}
+
+	/* Ingen scroll-margin-top här: app.css sätter redan scroll-padding-top på
+	   html för den sticky headern, safe-area inräknad. En marginal här hade
+	   adderats ovanpå den och lagt rubriken dubbelt så långt ner. */
+
+	/* Programmatiskt fokusmål, inte en kontroll - ingen synlig ring behövs när
+	   fokus flyttas hit av ankaret. Rubriken är aldrig nåbar med Tab. */
+	#map-title:focus {
+		outline: none;
 	}
 
 	.place-map {
@@ -469,9 +524,22 @@
 	}
 
 	.cta-secondary {
+		/* inline-flex kollapsar blankstegen mellan barnen, så pilen klistrade
+		   i texten ("det↓"). Samma gap som .text-link använder. */
+		gap: 0.4rem;
 		padding: 0.7rem 0.25rem;
 		color: var(--home-link);
 		text-underline-offset: 3px;
+	}
+
+	/* Ligger under CTA-raden och ska läsas efter knappen, inte konkurrera med
+	   den: minsta storleken i heron och samma dämpade ton som gränsdragningen. */
+	.cta-micro {
+		margin: 0.5rem 0 0;
+		max-width: 42ch;
+		font-size: 0.86rem;
+		line-height: 1.55;
+		color: var(--home-text-muted);
 	}
 
 	.boundary {
@@ -500,6 +568,19 @@
 		font-size: 0.92rem;
 		font-weight: 650;
 		text-underline-offset: 3px;
+	}
+
+	/* Vägen in i den riktiga incheckningen står först, stödlänken efter. På smal
+	   skärm staplas de så båda behåller sin 44px träffyta. */
+	.evening-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0 1.75rem;
+	}
+
+	.evening-actions .text-link {
+		margin-top: 0.9rem;
 	}
 
 	.evening-scene {
@@ -586,22 +667,40 @@
 			max-width: none;
 		}
 
-		.evening-inner > .text-link {
+		/* Stegkortet under texten, i samma kolumn. Interiörbilden till höger är
+		   sektionens scen och spänner nu över alla tre raderna. */
+		.evening-inner > .evening-proof {
 			grid-column: 1;
 			grid-row: 2;
+			margin-top: 1.25rem;
+		}
+
+		.evening-inner > .evening-actions {
+			grid-column: 1;
+			grid-row: 3;
+		}
+
+		.evening-inner > .evening-actions .text-link {
 			margin-top: 1.1rem;
 		}
 
 		.evening-inner > .evening-scene {
 			grid-column: 2;
-			grid-row: 1 / span 2;
+			grid-row: 1 / span 3;
 			margin-top: 0;
 		}
 	}
 
+	/* Under brytpunkten är .evening-inner vanligt blockflöde: text, stegkort,
+	   stödlänkar. Marginalen sätts här eftersom grid-gap inte gäller då. */
 	@media (max-width: 899px) {
-		/* På mindre skärmar finns Kvällsstugan redan som hero-scen. Låt texten
-		   och stödlänken ge nästa rytm i stället för att upprepa samma bild. */
+		.evening-proof {
+			margin-top: 1.25rem;
+		}
+
+		/* Interiörbilden döljs på smal skärm - stegkortet ovanför är sektionens
+		   produktinnehåll och ska inte behöva samsas med en andra bild.
+		   Produktbeviset självt döljs aldrig i någon bredd. */
 		.evening-scene {
 			display: none;
 		}

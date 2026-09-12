@@ -4,60 +4,101 @@
 	// Det är en bild av produkten byggd av DOM i stället för en skärmdump, så
 	// den skalar och följer temat.
 	//
-	// Scenen är medvetet platsen UTIFRÅN, inte Kvällsstugans interiör: startsidan
-	// visar ankomsten, och interiörbilden är kvar i sin egen sektion längre ner
-	// så samma motiv inte används två gånger på sidan.
+	// Två varianter, medvetet åtskilda:
 	//
-	// Temaknapparna kommer från EVENING_THEMES - samma källa som den riktiga
+	//   scene - landskapet utifrån, utan stegkort. Ligger i heron och bär
+	//           stämning, inte bevis.
+	//   card  - stegkortet plus bildtexten. Ligger i Kvällsstugans sektion,
+	//           där interiörbilden redan är sektionens scen.
+	//
+	// Tidigare låg kortet som ett överlägg ovanpå hero-scenen och doldes med
+	// display:none under 1120px, eftersom det annars täckte personen vid elden.
+	// Följden var att varje telefon fick landskapet utan produkt-UI och utan
+	// bildtext - alltså dekor. Uppdelningen tar bort både överlägget och
+	// brytpunkten: scenen är fri i alla bredder, och kortet syns i alla
+	// bredder på den plats där det hör hemma.
+	//
+	// Temavalen kommer från EVENING_THEMES - samma källa som den riktiga
 	// incheckningen - så den publika proofen aldrig kan visa något annat än vad
-	// användaren faktiskt möter. Inget här är klickbart, och inget är märkt upp
-	// som en kontroll: alternativen är en lista, inte knappar.
+	// användaren faktiskt möter. Inget här är klickbart, inget är märkt upp som
+	// en kontroll, och inget är format som en knapp: alternativen läses som en
+	// uppräkning. Vägen till den riktiga incheckningen ligger i Kvällsstugans
+	// egen sektion på startsidan, inte inuti exemplet.
 	import { EVENING_THEMES } from '$lib/evening-checkin';
-	// Landskapsscenen delas med Framsteg via samma konstanter, så startsidan och
-	// den inloggade vyn aldrig kan glida isär till två olika bilder av platsen.
+	// Solnedgångsvarianten av landskapsscenen: samma plats som den inloggade
+	// vyn visar, men med solen lågt över bergen, stugan tänd och en person vid
+	// lägerelden. Den tomma dagvarianten ligger kvar i samma modul.
 	import {
-		PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK,
-		PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET
+		PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_FALLBACK,
+		PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET,
+		PROGRESS_COMPANION_BEAR_BACK_SITTING_IMAGE
 	} from '$lib/progressCompanion';
 
 	let {
-		variant = 'section',
+		variant = 'card',
 		priority = false
-	}: { variant?: 'hero' | 'section'; priority?: boolean } = $props();
+	}: { variant?: 'scene' | 'card'; priority?: boolean } = $props();
 </script>
 
-<figure class={`cabin-proof cabin-proof--${variant}`}>
+{#if variant === 'scene'}
+<figure class="cabin-proof cabin-proof--scene">
 	<div class="cabin-proof-scene">
 		<img
-			srcset={PROGRESS_CABIN_LAKESIDE_SCENE_SRCSET}
+			class="cabin-proof-scene-image"
+			srcset={PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET}
 			sizes="(max-width: 759px) calc(100vw - 2.5rem), (min-width: 900px) 60vw, 520px"
-			src={PROGRESS_CABIN_LAKESIDE_SCENE_FALLBACK}
-			alt="Platsen utifrån: en stuga med lyktan tänd vid en spegelblank sjö, omgiven av granskog och berg."
+			src={PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_FALLBACK}
+			alt="Platsen utifrån i solnedgången: en person och en björn sitter tillsammans vid en lägereld på stranden och blickar ut över sjön, stugan lyser i skogsbrynet och solen står lågt över bergen."
 			width="1672"
 			height="941"
 			loading={priority ? 'eager' : 'lazy'}
 			fetchpriority={priority ? 'high' : undefined}
 			decoding="async"
 		/>
-	</div>
 
+		<!-- Björnen ligger som eget lager, samma princip som följeslagaren i
+			 Framsteg: scenbilden är fri från djur, och den som ska synas ritas
+			 ovanpå. Frilägget är MittPsykes egen björn (Balder), här i en
+			 bakåtvänd sittpose som följer personens blick ut över sjön. -->
+		<img
+			class="cabin-proof-bear"
+			src={PROGRESS_COMPANION_BEAR_BACK_SITTING_IMAGE}
+			alt=""
+			aria-hidden="true"
+			width="768"
+			height="512"
+			loading="lazy"
+			fetchpriority="low"
+			decoding="async"
+		/>
+	</div>
+</figure>
+{:else}
+<figure class="cabin-proof cabin-proof--card">
 	<div class="cabin-proof-card">
-		<p class="cabin-proof-example">Exempel på kvällsincheckning</p>
-		<p class="cabin-proof-description">Förhandsvisning – går inte att fylla i här.</p>
-		<p class="cabin-proof-step">Steg 1 av 4</p>
+		<!-- Etiketten står först i kortet, så "det här är ett exempel" läses före
+			 frågan och alternativen i stället för efteråt. -->
+		<p class="cabin-proof-meta">
+			<span class="cabin-proof-badge">Exempel</span>
+			<span class="cabin-proof-step">Steg 1 av 4</span>
+		</p>
 		<p class="cabin-proof-question">Hur är det ikväll?</p>
 		<ul class="cabin-proof-options">
 			{#each EVENING_THEMES as theme}
 				<li>{theme.label}</li>
 			{/each}
 		</ul>
-		<span class="cabin-proof-preview-action">Fortsätt · exempel</span>
 	</div>
 
-	<!-- Säger vad kortet ovanför är. Utan bildtexten kan proofen läsas som
-		 dekor, och besökaren får aldrig veta att det är produkten hen ser. -->
-	<figcaption class="cabin-proof-caption">Så ser kvällsincheckningen ut.</figcaption>
+	<!-- Säger vad kortet ovanför är och var man gör det på riktigt. Utan
+		 bildtexten kan proofen läsas som dekor, och besökaren får aldrig veta
+		 att det är produkten hen ser. Ligger i samma figure som kortet, så
+		 kopplingen är explicit i markupen och inte bara visuell. -->
+	<figcaption class="cabin-proof-caption">
+		Så ser kvällsincheckningen ut. Du gör den i Kvällsstugan.
+	</figcaption>
 </figure>
+{/if}
 
 <style>
 	/* Färger och former är hämtade från EveningCheckinFlow och Kvällsstugans
@@ -75,22 +116,6 @@
 		line-height: 1.5;
 	}
 
-	/* I section-varianten ligger scen och kort i två kolumner. Bildtexten hör
-	   till båda och läggs därför under hela bredden. */
-	@media (min-width: 760px) {
-		.cabin-proof--section .cabin-proof-caption {
-			grid-column: 1 / -1;
-		}
-	}
-
-	/* Under 900px är stegkortet dolt i hero-varianten och bara landskapet syns.
-	   Då finns ingen incheckning att sätta bildtext på. */
-	@media (max-width: 899px) {
-		.cabin-proof--hero .cabin-proof-caption {
-			display: none;
-		}
-	}
-
 	.cabin-proof-scene {
 		position: relative;
 		overflow: hidden;
@@ -103,12 +128,29 @@
 
 	/* aspect-ratio + width/height på bilden håller höjden reserverad innan
 	   bilden laddat, så proofen aldrig orsakar layout shift. */
-	.cabin-proof-scene img {
+	.cabin-proof-scene-image {
 		display: block;
 		width: 100%;
 		height: auto;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
+	}
+
+	/* Björnen sitter på samma markplan, direkt till vänster om personen och på
+	   motsatt sida från elden. Måtten är i procent av scenrutan, så den lilla
+	   gruppen håller ihop i alla bredder. Dämpningen tar ner friläggets ljus till
+	   scenens kvällsljus. */
+	.cabin-proof-bear {
+		position: absolute;
+		left: 43%;
+		bottom: 10%;
+		width: 28.5%;
+		height: auto;
+		aspect-ratio: auto;
+		object-fit: contain;
+		filter: brightness(0.74) saturate(0.86) contrast(1.02)
+			drop-shadow(0 0.3rem 0.45rem rgb(28 18 10 / 0.5));
+		pointer-events: none;
 	}
 
 	.cabin-proof-card {
@@ -120,27 +162,35 @@
 		color: #f7f3eb;
 	}
 
+	/* Etikett och stegräknare på samma rad: en rad i stället för tre textrader
+	   som alla säger samma sak. */
+	.cabin-proof-meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+		margin: 0 0 0.7rem;
+	}
+
+	/* Lyktans ton, inte en grå systemetikett - den ska kännas som kvällen den
+	   hör till och ändå läsas först. */
+	.cabin-proof-badge {
+		padding: 0.16rem 0.5rem;
+		border-radius: 999px;
+		background: rgb(245 200 120 / 0.18);
+		color: #f7dcae;
+		font-size: 0.7rem;
+		font-weight: 700;
+		letter-spacing: 0.09em;
+		text-transform: uppercase;
+	}
+
 	.cabin-proof-step {
-		margin: 0 0 0.75rem;
 		color: rgb(235 223 200 / 0.72);
 		font-size: 0.76rem;
 		font-weight: 700;
 		letter-spacing: 0.07em;
 		text-transform: uppercase;
-	}
-
-	.cabin-proof-example {
-		margin: 0 0 0.25rem;
-		font-size: 0.85rem;
-		font-weight: 700;
-		line-height: 1.4;
-	}
-
-	.cabin-proof-description {
-		margin: 0 0 0.85rem;
-		color: #d9cebd;
-		font-size: 0.8rem;
-		line-height: 1.5;
 	}
 
 	.cabin-proof-question {
@@ -152,121 +202,34 @@
 
 	.cabin-proof-options {
 		display: grid;
-		gap: 0.45rem;
+		gap: 0.3rem;
 		margin: 0;
 		padding: 0;
 		list-style: none;
+		color: rgb(247 243 235 / 0.9);
 	}
 
-	/* Ser ut som alternativknapparna i den riktiga incheckningen, men är en
-	   lista - inget här går att trycka på, och inget utger sig för att göra det. */
+	/* Alternativen visades tidigare som ramade rutor med den första markerad -
+	   det läste som knappar med ett redan gjort val, alltså som ett formulär.
+	   Nu är de en uppräkning av vad frågan erbjuder: ingen ram, ingen fylld
+	   yta, inget markerat förval. Prickens ton håller kvällskänslan kvar. */
 	.cabin-proof-options li {
-		padding: 0.62rem 0.75rem;
-		border: 1px solid rgb(238 225 202 / 0.24);
-		border-radius: 0.8rem;
-		background: rgb(255 255 255 / 0.06);
-		font-size: 0.92rem;
-		font-weight: 650;
-		line-height: 1.3;
+		position: relative;
+		padding-left: 0.95rem;
+		font-size: 0.88rem;
+		font-weight: 500;
+		line-height: 1.45;
 	}
 
-	.cabin-proof-options li:first-child {
-		border-color: rgb(245 200 120 / 0.6);
-		background: rgb(245 200 120 / 0.13);
+	.cabin-proof-options li::before {
+		content: '';
+		position: absolute;
+		top: 0.58em;
+		left: 0;
+		width: 0.3rem;
+		height: 0.3rem;
+		border-radius: 50%;
+		background: rgb(245 200 120 / 0.78);
 	}
 
-	.cabin-proof-preview-action {
-		display: block;
-		margin-top: 0.75rem;
-		color: #d9cebd;
-		font-size: 0.82rem;
-		line-height: 1.5;
-	}
-
-	/* Samma uppdelning som den riktiga Kvällsstugan gör på bred skärm: scenen
-	   bredvid steget, inte ovanpå det. Under brytpunkten staplas de, vilket
-	   håller 320 px fritt från överlägg och horisontell overflow. */
-	@media (min-width: 760px) {
-		.cabin-proof--section {
-			grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-			align-items: start;
-			gap: 1rem;
-		}
-	}
-
-	/* Hero-varianten låter scenen bära hela proof-ytan. På desktop ligger det
-	   statiska stegkortet förankrat i scenens nedre del. På mindre skärmar
-	   visas bara platsen, så heron kan leda vidare utan ett extra långt kort. */
-	@media (min-width: 900px) {
-		.cabin-proof--hero {
-			display: block;
-			position: relative;
-			isolation: isolate;
-		}
-
-		.cabin-proof--hero .cabin-proof-scene {
-			min-height: 30rem;
-			aspect-ratio: 5 / 4;
-			border-radius: 1.35rem;
-		}
-
-		.cabin-proof--hero .cabin-proof-scene::after {
-			content: '';
-			position: absolute;
-			inset: 0;
-			background: linear-gradient(0deg, rgb(15 10 8 / 0.74) 0%, rgb(15 10 8 / 0.24) 42%, transparent 70%);
-			pointer-events: none;
-		}
-
-		.cabin-proof--hero .cabin-proof-scene img {
-			position: absolute;
-			inset: 0;
-			width: 100%;
-			height: 100%;
-			aspect-ratio: auto;
-			object-position: center;
-		}
-
-		.cabin-proof--hero .cabin-proof-card {
-			position: absolute;
-			z-index: 1;
-			right: clamp(1rem, 2.5vw, 1.5rem);
-			bottom: clamp(1rem, 2.5vw, 1.5rem);
-			width: min(54%, 24rem);
-			padding: clamp(0.9rem, 1.7vw, 1.15rem);
-			border-color: rgb(237 222 194 / 0.34);
-			background: linear-gradient(145deg, rgb(55 38 29 / 0.88), rgb(28 23 22 / 0.92));
-			backdrop-filter: blur(8px);
-			box-shadow: 0 18px 42px rgb(12 8 6 / 0.36);
-		}
-
-		.cabin-proof--hero .cabin-proof-step,
-		.cabin-proof--hero .cabin-proof-question {
-			margin-bottom: 0.55rem;
-		}
-
-		.cabin-proof--hero .cabin-proof-options {
-			gap: 0.35rem;
-		}
-
-		.cabin-proof--hero .cabin-proof-options li {
-			padding: 0.48rem 0.62rem;
-			font-size: 0.86rem;
-		}
-
-		.cabin-proof--hero .cabin-proof-preview-action {
-			margin-top: 0.6rem;
-		}
-
-		/* Hero-varianten är display:block, så figurens gap gäller inte här. */
-		.cabin-proof--hero .cabin-proof-caption {
-			margin-top: 0.6rem;
-		}
-	}
-
-	@media (max-width: 899px) {
-		.cabin-proof--hero .cabin-proof-card {
-			display: none;
-		}
-	}
 </style>
