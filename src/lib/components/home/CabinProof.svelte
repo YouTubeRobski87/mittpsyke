@@ -31,7 +31,7 @@
 	import {
 		PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_FALLBACK,
 		PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET,
-		PROGRESS_COMPANION_BEAR_SITTING_IMAGE
+		PROGRESS_COMPANION_BEAR_BACK_SITTING_IMAGE
 	} from '$lib/progressCompanion';
 
 	let {
@@ -48,7 +48,7 @@
 			srcset={PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET}
 			sizes="(max-width: 759px) calc(100vw - 2.5rem), (min-width: 900px) 60vw, 520px"
 			src={PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_FALLBACK}
-			alt="Platsen utifrån i solnedgången: en person sitter vid en lägereld på stranden, en björn vilar en bit bort, stugan lyser i skogsbrynet och solen står lågt över sjön och bergen."
+			alt="Platsen utifrån i solnedgången: en person och en björn sitter tillsammans vid en lägereld på stranden och blickar ut över sjön, stugan lyser i skogsbrynet och solen står lågt över bergen."
 			width="1672"
 			height="941"
 			loading={priority ? 'eager' : 'lazy'}
@@ -58,11 +58,11 @@
 
 		<!-- Björnen ligger som eget lager, samma princip som följeslagaren i
 			 Framsteg: scenbilden är fri från djur, och den som ska synas ritas
-			 ovanpå. Frilägget är MittPsykes egen björn (Balder) ur
-			 companion-presets, inget nytt bildmaterial. -->
+			 ovanpå. Frilägget är MittPsykes egen björn (Balder), här i en
+			 bakåtvänd sittpose som följer personens blick ut över sjön. -->
 		<img
 			class="cabin-proof-bear"
-			src={PROGRESS_COMPANION_BEAR_SITTING_IMAGE}
+			src={PROGRESS_COMPANION_BEAR_BACK_SITTING_IMAGE}
 			alt=""
 			aria-hidden="true"
 			width="768"
@@ -136,16 +136,15 @@
 		object-fit: cover;
 	}
 
-	/* Björnen sitter på den närmaste stranden, till vänster om personen vid
-	   elden och under stugan. Måtten är i procent av scenrutan, så lagret följer
-	   bilden i alla bredder. Dämpningen tar ner studioljuset i frilägget till
-	   scenens kvällsljus - utan den lyser björnen starkare än allt annat på
-	   stranden. */
+	/* Björnen sitter på samma markplan, direkt till vänster om personen och på
+	   motsatt sida från elden. Måtten är i procent av scenrutan, så den lilla
+	   gruppen håller ihop i alla bredder. Dämpningen tar ner friläggets ljus till
+	   scenens kvällsljus. */
 	.cabin-proof-bear {
 		position: absolute;
-		left: 29%;
-		bottom: 4%;
-		width: 14.5%;
+		left: 43%;
+		bottom: 10%;
+		width: 28.5%;
 		height: auto;
 		aspect-ratio: auto;
 		object-fit: contain;

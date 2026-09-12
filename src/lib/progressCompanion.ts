@@ -124,11 +124,12 @@ export const PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET = [
 ].join(', ');
 
 /**
- * Frilagd björn ur companion-preseten (Balder). Samma fil som björnens
- * sittande pose i companionPoseManifest - den publika scenen och den inloggade
- * följeslagaren ska aldrig visa två olika björnar.
+ * Frilagd, bakåtvänd sittpose av Balder för den publika lägereldsscenen.
+ * Den separata posen låter björnen följa personens blick ut över sjön utan
+ * att ändra companion-preseten som används i den inloggade upplevelsen.
  */
-export const PROGRESS_COMPANION_BEAR_SITTING_IMAGE = '/images/avatars/presets/bear-sitting.png';
+export const PROGRESS_COMPANION_BEAR_BACK_SITTING_IMAGE =
+	'/images/avatars/presets/bear-sitting-back.png';
 
 const DASHBOARD_COMPANION_IMAGE_PATHS = {
 	day: '/images/avatars/presets/fox-morning.webp',
