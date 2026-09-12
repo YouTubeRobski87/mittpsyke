@@ -27,11 +27,11 @@ describe.each(['hero', 'section'] as const)('Kvällsincheckningens preview (%s)'
 	it('ritar björnen som eget lager och beskriver hela scenen i alt-texten', () => {
 		const { body } = render(CabinProof, { props: { variant } });
 		expect(body).toMatch(/class="cabin-proof-bear[^"]*"/);
-		expect(body).toContain('/images/avatars/presets/bear-sitting.png');
+		expect(body).toContain('/images/avatars/presets/bear-sitting-back.png');
 		// Lagret är dekor ovanpå scenen - bakgrundsbildens alt bär beskrivningen.
 		expect(body).toMatch(/<img[^>]*class="cabin-proof-bear[^"]*"[^>]*alt=""/);
-		expect(body).toContain('en person sitter vid en lägereld');
-		expect(body).toContain('en björn vilar en bit bort');
+		expect(body).toContain('en person och en björn sitter tillsammans vid en lägereld');
+		expect(body).toContain('blickar ut över sjön');
 		expect(body).toContain('solen står lågt');
 	});
 
