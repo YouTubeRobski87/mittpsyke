@@ -16,8 +16,18 @@ describe('Stegkortet (card)', () => {
 		expect(body.indexOf('Exempel')).toBeLessThan(body.indexOf('Hur är det ikväll?'));
 	});
 
-	it('säger i bildtexten vad kortet är och var incheckningen görs', () => {
-		expect(body).toContain('Så ser kvällsincheckningen ut. Du gör den i Kvällsstugan.');
+	it('säger i bildtexten att det bara är ett exempel och var man svarar', () => {
+		expect(body).toContain('Här är det bara ett exempel. Du svarar i Kvällsstugan.');
+		// Bildtexten ligger i samma figure som kortet och blir dess namn.
+		expect(body).toMatch(/<figure[^>]*cabin-proof--card[\s\S]*<figcaption[\s\S]*bara ett exempel[\s\S]*<\/figure>/);
+	});
+
+	// "Steg 1 av 4" är samma stegräknare som i det riktiga flödet och fick
+	// kortet att läsas som ett påbörjat formulär. Exemplet visar bara den
+	// första frågan och får inte signalera ett flöde man står mitt i.
+	it('visar ingen stegräknare som antyder ett pågående formulär', () => {
+		expect(body).not.toMatch(/Steg \d+ av \d+/);
+		expect(body).toContain('Första frågan');
 	});
 
 	it('har inga interaktiva kontroller, ingen CTA och ingen knappliknande åtgärdsrad', () => {

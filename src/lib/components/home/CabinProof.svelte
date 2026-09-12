@@ -77,10 +77,13 @@
 <figure class="cabin-proof cabin-proof--card">
 	<div class="cabin-proof-card">
 		<!-- Etiketten står först i kortet, så "det här är ett exempel" läses före
-			 frågan och alternativen i stället för efteråt. -->
+			 frågan och alternativen i stället för efteråt. Här stod tidigare
+			 "Steg 1 av 4" - samma stegräknare som i det riktiga flödet
+			 (EveningCheckinFlow), vilket fick kortet att se ut som ett påbörjat
+			 formulär man förväntades fortsätta i. -->
 		<p class="cabin-proof-meta">
 			<span class="cabin-proof-badge">Exempel</span>
-			<span class="cabin-proof-step">Steg 1 av 4</span>
+			<span class="cabin-proof-step">Första frågan</span>
 		</p>
 		<p class="cabin-proof-question">Hur är det ikväll?</p>
 		<ul class="cabin-proof-options">
@@ -90,12 +93,13 @@
 		</ul>
 	</div>
 
-	<!-- Säger vad kortet ovanför är och var man gör det på riktigt. Utan
-		 bildtexten kan proofen läsas som dekor, och besökaren får aldrig veta
-		 att det är produkten hen ser. Ligger i samma figure som kortet, så
-		 kopplingen är explicit i markupen och inte bara visuell. -->
+	<!-- Svarar på besökarens fråga "kan jag använda det här?" direkt vid kortet:
+		 nej, det är ett exempel, och svaren ges i Kvällsstugan. Länken dit står
+		 direkt efter i startsidans sektion, inte inuti exemplet. Ligger i samma
+		 figure som kortet, så kopplingen är explicit i markupen och blir
+		 figurens tillgängliga namn. -->
 	<figcaption class="cabin-proof-caption">
-		Så ser kvällsincheckningen ut. Du gör den i Kvällsstugan.
+		Här är det bara ett exempel. Du svarar i Kvällsstugan.
 	</figcaption>
 </figure>
 {/if}

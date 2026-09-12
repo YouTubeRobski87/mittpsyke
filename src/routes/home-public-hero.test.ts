@@ -52,8 +52,14 @@ describe('Den publika startsidans hero', () => {
 		expect(page).not.toMatch(/behavior:\s*'smooth'/);
 	});
 
-	it('har ingen registreringsuppmaning kvar i den publika sidans brödtext', () => {
-		expect(publicHome).not.toContain('/register');
+	// Registreringen hör hemma i avslutande CTA, efter att sidan förklarat vad
+	// kontot ger - aldrig i heron, där den konkurrerade med den primära CTA:n.
+	it('erbjuder konto först i avslutande CTA, aldrig i heron', () => {
+		expect(hero).not.toContain('/register');
+		expect(hero).not.toContain('REGISTER_DESTINATION');
+		expect(publicHome.match(/href=\{REGISTER_DESTINATION\}/g)).toHaveLength(1);
+		const closing = publicHome.slice(publicHome.indexOf('aria-labelledby="closing-title"'));
+		expect(closing).toContain('href={REGISTER_DESTINATION}');
 		expect(publicHome).not.toContain('Skapa en plats för att spara det du skriver');
 	});
 
@@ -64,8 +70,8 @@ describe('Den publika startsidans hero', () => {
 	});
 
 	// Länktexten lovade tidigare "Så fungerar det" men landade på rubriken
-	// "Så ser platsen ut". Den riktiga "Så fungerar det"-sektionen finns inte
-	// än, så texten följer målet - inte tvärtom.
+	// "Så ser platsen ut". Ankaret går fortfarande till platskartan (inte till
+	// stegsektionen), så texten följer målet - inte tvärtom.
 	it('lovar i länktexten det som målrubriken faktiskt säger', () => {
 		expect(publicHome).toContain('<h2 id="map-title" tabindex="-1">Så ser platsen ut</h2>');
 

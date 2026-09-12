@@ -13,7 +13,7 @@
 	// Hero-sekundären är ett ankare inom sidan, inte en andra destination.
 	// Registreringen låg här tidigare och konkurrerade med den primära CTA:n
 	// trots att den kostar besökaren ett konto. Den finns kvar i headern och
-	// får en egen plats längre ner när avslutande CTA byggs.
+	// har sin plats i avslutande CTA, efter att sidan förklarat vad kontot ger.
 	//
 	// Länktexten följer målrubriken ("Så ser platsen ut"), inte tvärtom. En
 	// länk som lovar "Så fungerar det" och landar på en rubrik som säger något
@@ -24,6 +24,12 @@
 	// inloggningen med ?redirect= - samma mönster som övriga skyddade sidor -
 	// i stället för att låta /dashboard/kvallsstugan kasta bort destinationen.
 	const EVENING_CHECKIN_DESTINATION = '/login?redirect=/dashboard/kvallsstugan';
+	// Avslutande CTA:ns sekundära väg. Registreringen tar med gästens utkast
+	// (readDiaryDraft i /register) och Mitt Hem erbjuder "Fortsätt skriva".
+	const REGISTER_DESTINATION = '/register';
+	// Integritetspolicyn beskriver både anonymt läge och vad som sparas med
+	// konto, och är den länk som tidigare låg i Bakom-sektionen.
+	const PRIVACY_DESTINATION = '/integritet';
 	// Befintlig, korrekt stödväg. ASCII-värdnamn - aldrig ö i hostname och
 	// aldrig punycode-varianten från PDF-exporten.
 	const SUPPORT_LINES_URL = 'https://stodlinjer.se';
@@ -98,7 +104,8 @@
 					<span aria-hidden="true">Skriv → spara det du vill → se vad som återkommer</span>
 				</p>
 				<p class="promise">Du behöver inte prestera något här. Inget bryts om du är borta.</p>
-				<p class="boundary">Inte vård. Inte behandling. Inte akuthjälp. Vid fara: <a href="tel:112">112</a>.</p>
+				<!-- Gränsdragningen ("inte vård", 112) står samlad i trygghetssektionen
+					 längre ner, och layoutens sidfot upprepar 112/1177 på varje sida. -->
 			</div>
 
 			<!-- Bara scenen. Stegkortet har flyttat till Kvällsstugan, så heron
@@ -110,9 +117,46 @@
 		</div>
 	</section>
 
-	<!-- 2. Platsens karta. Ligger före incheckningen så en förstagångsbesökare
-		 vet vad platsen består av innan hen möter steg 1. -->
-	<section class="home-section section-map" aria-labelledby="map-title">
+	<!-- 2. Så fungerar det. Ersätter de två tidigare sektionerna "Skillnaden mot
+		 ett anteckningsblock" och "Efter ett tag syns mönstren", som sa halva
+		 berättelsen var. Stegen är kontrollerade mot produkten: steg 2 säger vad
+		 som gäller utan konto (GuestQuickEntry autosparar till localStorage,
+		 diary-draft.ts) och med konto (inlägg sparas bara när du väljer det). -->
+	<section class="home-section section-alt" aria-labelledby="how-title">
+		<div class="home-inner">
+			<div class="narrow">
+				<h2 id="how-title">Fyra steg, och sedan börjar det om</h2>
+				<p>
+					I ett anteckningsblock ligger det du skrivit kvar, men du får själv leta upp det. Här möter
+					det dig igen.
+				</p>
+			</div>
+			<!-- role="list" behåller listsemantiken i Safari, som annars tappar den
+				 när list-style tas bort. -->
+			<ol class="place-map how-steps" role="list">
+				<li>
+					<h3>Skriv.</h3>
+					<p>Några ord eller en hel sida. Det finns inget rätt sätt.</p>
+				</li>
+				<li>
+					<h3>Spara det du vill.</h3>
+					<p>Utan konto stannar texten i din webbläsare. Med konto sparar du det du väljer.</p>
+				</li>
+				<li>
+					<h3>Kom tillbaka när du vill.</h3>
+					<p>Ingenting börjar om för att det gått en tid.</p>
+				</li>
+				<li>
+					<h3>Se vad som återkommer.</h3>
+					<p>Dina egna ord sammanställda — ingen mätning av hur du sköter dig.</p>
+				</li>
+			</ol>
+		</div>
+	</section>
+
+	<!-- 3. Platsens karta. Ligger efter stegen så besökaren först vet hur det
+		 fungerar och sedan var det händer. -->
+	<section class="home-section" aria-labelledby="map-title">
 		<div class="home-inner">
 			<div class="narrow">
 				<!-- Mål för hero-ankaret. tabindex="-1" gör att tangentbordsfokus
@@ -149,31 +193,18 @@
 					</p>
 				</li>
 			</ul>
+			<!-- Chatten står utanför listan: den är ett verktyg, inte ett av de tre
+				 ställena, så "Tre ställen, inte fler" stämmer fortfarande. Den ligger
+				 som en fjärde rad i samma form, men får aldrig bära berättelsen. -->
+			<div class="place-map-tool">
+				<h3>Chatten</h3>
+				<p>Vill du hellre prata fram tankarna finns en chatt. Du kan använda MittPsyke helt utan den.</p>
+			</div>
 		</div>
 	</section>
 
-	<!-- 3. Skillnaden mot en vanlig dagbok. Ligger före Kvällsstugan så en ny
-		 besökare vet varför det här är något annat än ett anteckningsblock. -->
-	<section class="home-section section-alt" aria-labelledby="difference-title">
-		<div class="home-inner narrow">
-			<h2 id="difference-title">Skillnaden mot ett anteckningsblock</h2>
-			<p>
-				I ett block ligger det du skrivit kvar, men du får själv leta upp det. Här kan det du valt
-				att spara möta dig igen: i en fråga, i en tillbakablick, eller när samma sak dykt upp några
-				gånger. Ingenting börjar om från noll för att det gått en tid.
-			</p>
-			<a
-				class="text-link"
-				href="/om-mittpsyke"
-				onclick={() => trackHomeCta('foljeslagaren', 'sa_fungerar_platsen', '/om-mittpsyke')}
-			>
-				Så fungerar platsen <span aria-hidden="true">→</span>
-			</a>
-		</div>
-	</section>
-
-	<!-- 3. Kvällsstugan -->
-	<section class="home-section" aria-labelledby="evening-title">
+	<!-- 4. Kvällsstugan -->
+	<section class="home-section section-alt" aria-labelledby="evening-title">
 		<div class="home-inner evening-inner">
 			<div class="narrow">
 				<h2 id="evening-title">En kort incheckning när dagen ska landa</h2>
@@ -210,28 +241,9 @@
 				>
 					Öppna kvällsincheckningen <span aria-hidden="true">→</span>
 				</a>
-				<a
-					class="text-link"
-					href={SUPPORT_LINES_URL}
-					target="_blank"
-					rel="noopener noreferrer"
-					onclick={() => trackHomeCta('kvallsstugan', 'akut_stod', SUPPORT_LINES_URL)}
-				>
-					Behöver du akut stöd?
-				</a>
+				<!-- Stödlänken till Stödlinjer.se låg tidigare här. Akutvägarna står
+					 nu samlade i trygghetssektionen längre ner. -->
 			</div>
-		</div>
-	</section>
-
-	<!-- 4. Över tid -->
-	<section class="home-section section-alt" aria-labelledby="over-time-title">
-		<div class="home-inner narrow">
-			<h2 id="over-time-title">Efter ett tag syns mönstren</h2>
-			<p>
-				När du varit här några gånger kan du se tillbaka: teman som återkommer i det du skrivit, och
-				hur du själv beskrivit dagarna. Det är dina egna ord sammanställda – ingen mätning av hur du
-				sköter dig, och inget som blir sämre av att du varit borta.
-			</p>
 		</div>
 	</section>
 
@@ -242,19 +254,7 @@
 		 /integritet, /anonym-dagbok-online, /skriv, /sa-fungerar-mittpsyke och
 		 i dagbokens egen FAQ - alltså även på sidan besökaren landar på. -->
 
-	<!-- 6. Chatten, som funktion -->
-	<section class="home-section section-alt" aria-labelledby="chat-title">
-		<div class="home-inner narrow">
-			<h2 id="chat-title">Hjälp att sortera, när du vill ha det</h2>
-			<p>
-				Ibland är det lättare att komma igång genom att prata. Chatten hjälper dig sortera tankarna i
-				stunden, och det du väljer att spara följer med till resten av det du samlat. Du kan använda
-				MittPsyke helt utan den.
-			</p>
-		</div>
-	</section>
-
-	<!-- 7. Läsning -->
+	<!-- 5. Läsning -->
 	<section class="home-section" aria-labelledby="reading-title">
 		<div class="home-inner narrow">
 			<h2 id="reading-title">Guider när du behöver ord</h2>
@@ -269,26 +269,46 @@
 		</div>
 	</section>
 
-	<!-- 8. Bakom -->
-	<section class="home-section section-behind" aria-labelledby="behind-title">
+	<!-- 6. Trygghet. Samlar det som tidigare stod på fyra ställen: heroens
+		 gränsdragning, Kvällsstugans akutlänk och Bakom-sektionens avsändare och
+		 säkerhetsstycke. Upprepningen är borta, inte säkerheten: 112, 1177 och
+		 Stödlinjer.se står kvar, och layoutens sidfot upprepar 112/1177 på varje
+		 sida. Avsändaren följer det sajten redan säger - "Svensk tjänst" och att
+		 Stödlinjer.se drivs av samma avsändare. -->
+	<section class="home-section section-behind" aria-labelledby="trust-title">
 		<div class="home-inner narrow">
-			<h2 id="behind-title">Bakom</h2>
+			<h2 id="trust-title">Vad det här är och inte är</h2>
 			<p>
-				MittPsyke är byggt av Robert Claesson. Svensk tjänst. En plats att återvända till när du
-				behöver någonstans att landa.
-			</p>
-			<p>
-				<a href={SUPPORT_LINES_URL} target="_blank" rel="noopener noreferrer" onclick={() => trackHomeCta('bakom', 'stodlinjer', SUPPORT_LINES_URL)}>Stödlinjer.se</a>
-				drivs av samma avsändare. Där finns nummer till 112, 1177 och stödlinjer.
+				MittPsyke är ett stöd för reflektion — inte vård, behandling, diagnos eller akuthjälp.
+				Tjänsten är svensk och byggd av Robert Claesson, som också driver Stödlinjer.se.
 			</p>
 			<p class="safety">
-				MittPsyke är ett stöd för reflektion – inte vård, behandling, diagnos eller akuthjälp. Vid
-				akut fara: <a href="tel:112">112</a>. För vårdråd:
-				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Vidare
-				stöd: <a href={SUPPORT_LINES_URL} target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.
-				<a href="/om-mittpsyke" onclick={() => trackHomeCta('bakom', 'om_mittpsyke', '/om-mittpsyke')}>Om MittPsyke</a>
-				och <a href="/integritet">integritet</a>.
+				Vid akut fara: <a href="tel:112">112</a>. Vårdråd:
+				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Fler
+				stödlinjer:
+				<a href={SUPPORT_LINES_URL} target="_blank" rel="noopener noreferrer" onclick={() => trackHomeCta('bakom', 'stodlinjer', SUPPORT_LINES_URL)}>Stödlinjer.se</a>
 			</p>
+			<a class="text-link" href={PRIVACY_DESTINATION}>
+				Så hanteras det du skriver <span aria-hidden="true">→</span>
+			</a>
+		</div>
+	</section>
+
+	<!-- 7. Avslutande CTA. Kontot erbjuds först här, efter att sidan förklarat
+		 vad det ger. Mikrotexten är kontrollerad mot produkten: registreringen
+		 visar gästens utkast, och med konto sparas inlägg så att de går att se
+		 tillbaka på. Skrivandet utan konto är fortfarande den primära vägen. -->
+	<section class="home-section section-alt" aria-labelledby="closing-title">
+		<div class="home-inner narrow">
+			<h2 id="closing-title">Börja med en mening</h2>
+			<p>Du behöver inte veta vad du vill säga innan du börjar.</p>
+			<div class="closing-actions">
+				<a class="cta-primary" href={ANONYMOUS_WRITE_DESTINATION}>Börja skriva</a>
+				<a class="cta-secondary" href={REGISTER_DESTINATION}>
+					Skapa konto för att spara <span aria-hidden="true">→</span>
+				</a>
+			</div>
+			<p class="cta-micro">Med konto kan du spara det du skrivit och se tillbaka på det senare.</p>
 		</div>
 	</section>
 </main>
@@ -414,13 +434,6 @@
 	}
 
 	/* ── Platsens karta ── */
-	/* Ligger på samma bakgrund som heron och är därför avgränsad med en hårfin
-	   linje i stället för ett eget färgband. Då behåller alla sektioner efter
-	   den sin befintliga växling mellan bg och section-alt. */
-	.section-map {
-		border-top: 1px solid rgba(148, 163, 184, 0.14);
-	}
-
 	/* Ingen scroll-margin-top här: app.css sätter redan scroll-padding-top på
 	   html för den sticky headern, safe-area inräknad. En marginal här hade
 	   adderats ovanpå den och lagt rubriken dubbelt så långt ner. */
@@ -441,12 +454,20 @@
 
 	/* Medvetet utan ikoner, siffror och ramar: korten ska läsas som tre platser,
 	   inte som en funktionslista. Linjen till vänster är hela markeringen. */
-	.place-map li {
+	.place-map li,
+	.place-map-tool {
 		padding-left: clamp(0.9rem, 1.6vw, 1.15rem);
 		border-left: 1px solid rgba(148, 163, 184, 0.22);
 	}
 
-	.place-map h3 {
+	/* Chatten som fjärde rad: samma form som ställena, men under dem och i
+	   full bredd - ett verktyg bland flera, inte en fjärde plats. */
+	.place-map-tool {
+		margin-top: clamp(1rem, 2.4vw, 1.5rem);
+	}
+
+	.place-map h3,
+	.place-map-tool h3 {
 		margin: 0;
 		font-family: var(--font-heading);
 		font-size: 1.05rem;
@@ -455,7 +476,8 @@
 		color: var(--home-text-strong);
 	}
 
-	.place-map p {
+	.place-map p,
+	.place-map-tool p {
 		margin: 0.45rem 0 0;
 		font-size: 0.95rem;
 		line-height: 1.65;
@@ -465,6 +487,39 @@
 	@media (min-width: 760px) {
 		.place-map {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	/* ── Så fungerar det ── */
+	/* Återanvänder platskartans form. Fyra steg ryms inte i tre kolumner, så
+	   de ligger två och två på mellanbredder och på en rad först när varje
+	   steg får plats utan att texten bryts i smala remsor. Siffran gör
+	   ordningen skanningsbar; den är dekor (ol:en bär numreringen) och
+	   döljs därför för skärmläsare med alt-texten "". */
+	.how-steps {
+		counter-reset: how-step;
+	}
+
+	.how-steps li::before {
+		counter-increment: how-step;
+		content: counter(how-step) / '';
+		display: block;
+		margin-bottom: 0.3rem;
+		font-family: var(--font-heading);
+		font-size: 0.82rem;
+		font-weight: 700;
+		color: var(--home-text-cool);
+	}
+
+	@media (min-width: 760px) {
+		.how-steps {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 1100px) {
+		.how-steps {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
 		}
 	}
 
@@ -542,18 +597,22 @@
 		color: var(--home-text-muted);
 	}
 
-	.boundary {
-		margin: 1.15rem 0 0;
-		max-width: 46ch;
-		font-size: 0.88rem;
-		line-height: 1.6;
-		color: var(--home-text-muted);
+	/* ── Avslutande CTA ── */
+	/* Samma knappar som heron. Mikrotexten ligger i en .home-section, vars
+	   styckestil annars skulle göra den lika stor som brödtexten. */
+	.closing-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem 1.1rem;
+		margin-top: 1.4rem;
 	}
 
-	.boundary a {
-		color: var(--home-text-cool);
-		text-decoration: underline;
-		text-underline-offset: 3px;
+	.home-section .cta-micro {
+		margin-top: 0.6rem;
+		font-size: 0.86rem;
+		line-height: 1.55;
+		color: var(--home-text-muted);
 	}
 
 	/* ── Gemensamma länkar ── */
@@ -570,8 +629,8 @@
 		text-underline-offset: 3px;
 	}
 
-	/* Vägen in i den riktiga incheckningen står först, stödlänken efter. På smal
-	   skärm staplas de så båda behåller sin 44px träffyta. */
+	/* Vägen in i den riktiga incheckningen. Stödlänken som stod bredvid finns
+	   nu i trygghetssektionen; raden behåller sin 44px träffyta. */
 	.evening-actions {
 		display: flex;
 		flex-wrap: wrap;
