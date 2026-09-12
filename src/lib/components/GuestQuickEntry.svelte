@@ -242,8 +242,6 @@
 				</p>
 			</div>
 			<div class="actions">
-				<!-- "Fortsätt utan konto" låg här. Besökaren skriver redan utan konto
-					 och texten autosparas lokalt, så knappen gjorde inget synligt. -->
 				<a class="primary-action" href="/register?fromDiary=true" onclick={saveAndCreateAccount}
 					>Skapa konto för att spara inlägg</a
 				>
