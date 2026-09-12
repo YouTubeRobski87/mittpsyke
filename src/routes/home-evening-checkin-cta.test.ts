@@ -22,4 +22,20 @@ describe('Kvällsstugan-sektionen på den publika startsidan', () => {
 	it('behåller stödlänken bredvid den nya CTA:n', () => {
 		expect(publicHome).toContain('Behöver du akut stöd?');
 	});
+
+	// Produktbeviset låg tidigare som överlägg i heron med display:none under
+	// 1120px - alltså osynligt på varje telefon. Det hör hemma här, och får
+	// inte döljas i någon bredd igen.
+	it('visar stegkortet här i stället för som överlägg i heron', () => {
+		const evening = publicHome.slice(
+			publicHome.indexOf('evening-inner'),
+			publicHome.indexOf('<!-- 4.')
+		);
+		expect(evening).toContain('<CabinProof variant="card" />');
+	});
+
+	it('döljer aldrig produktbeviset på någon skärmbredd', () => {
+		const styles = page.slice(page.indexOf('<style>'));
+		expect(styles).not.toMatch(/\.evening-proof\s*\{[^}]*display:\s*none/);
+	});
 });

@@ -4,9 +4,19 @@
 	// Det är en bild av produkten byggd av DOM i stället för en skärmdump, så
 	// den skalar och följer temat.
 	//
-	// Scenen är medvetet platsen UTIFRÅN, inte Kvällsstugans interiör: startsidan
-	// visar ankomsten, och interiörbilden är kvar i sin egen sektion längre ner
-	// så samma motiv inte används två gånger på sidan.
+	// Två varianter, medvetet åtskilda:
+	//
+	//   scene - landskapet utifrån, utan stegkort. Ligger i heron och bär
+	//           stämning, inte bevis.
+	//   card  - stegkortet plus bildtexten. Ligger i Kvällsstugans sektion,
+	//           där interiörbilden redan är sektionens scen.
+	//
+	// Tidigare låg kortet som ett överlägg ovanpå hero-scenen och doldes med
+	// display:none under 1120px, eftersom det annars täckte personen vid elden.
+	// Följden var att varje telefon fick landskapet utan produkt-UI och utan
+	// bildtext - alltså dekor. Uppdelningen tar bort både överlägget och
+	// brytpunkten: scenen är fri i alla bredder, och kortet syns i alla
+	// bredder på den plats där det hör hemma.
 	//
 	// Temavalen kommer från EVENING_THEMES - samma källa som den riktiga
 	// incheckningen - så den publika proofen aldrig kan visa något annat än vad
@@ -25,12 +35,13 @@
 	} from '$lib/progressCompanion';
 
 	let {
-		variant = 'section',
+		variant = 'card',
 		priority = false
-	}: { variant?: 'hero' | 'section'; priority?: boolean } = $props();
+	}: { variant?: 'scene' | 'card'; priority?: boolean } = $props();
 </script>
 
-<figure class={`cabin-proof cabin-proof--${variant}`}>
+{#if variant === 'scene'}
+<figure class="cabin-proof cabin-proof--scene">
 	<div class="cabin-proof-scene">
 		<img
 			class="cabin-proof-scene-image"
@@ -61,7 +72,9 @@
 			decoding="async"
 		/>
 	</div>
-
+</figure>
+{:else}
+<figure class="cabin-proof cabin-proof--card">
 	<div class="cabin-proof-card">
 		<!-- Etiketten står först i kortet, så "det här är ett exempel" läses före
 			 frågan och alternativen i stället för efteråt. -->
@@ -79,11 +92,13 @@
 
 	<!-- Säger vad kortet ovanför är och var man gör det på riktigt. Utan
 		 bildtexten kan proofen läsas som dekor, och besökaren får aldrig veta
-		 att det är produkten hen ser. -->
+		 att det är produkten hen ser. Ligger i samma figure som kortet, så
+		 kopplingen är explicit i markupen och inte bara visuell. -->
 	<figcaption class="cabin-proof-caption">
 		Så ser kvällsincheckningen ut. Du gör den i Kvällsstugan.
 	</figcaption>
 </figure>
+{/if}
 
 <style>
 	/* Färger och former är hämtade från EveningCheckinFlow och Kvällsstugans
@@ -99,22 +114,6 @@
 		color: var(--home-text-muted, rgb(220 225 235 / 0.78));
 		font-size: 0.82rem;
 		line-height: 1.5;
-	}
-
-	/* I section-varianten ligger scen och kort i två kolumner. Bildtexten hör
-	   till båda och läggs därför under hela bredden. */
-	@media (min-width: 760px) {
-		.cabin-proof--section .cabin-proof-caption {
-			grid-column: 1 / -1;
-		}
-	}
-
-	/* Under 1120px är stegkortet dolt i hero-varianten och bara landskapet syns.
-	   Då finns ingen incheckning att sätta bildtext på. */
-	@media (max-width: 1119.98px) {
-		.cabin-proof--hero .cabin-proof-caption {
-			display: none;
-		}
 	}
 
 	.cabin-proof-scene {
@@ -234,127 +233,4 @@
 		background: rgb(245 200 120 / 0.78);
 	}
 
-	/* Samma uppdelning som den riktiga Kvällsstugan gör på bred skärm: scenen
-	   bredvid steget, inte ovanpå det. Under brytpunkten staplas de, vilket
-	   håller 320 px fritt från överlägg och horisontell overflow. */
-	@media (min-width: 760px) {
-		.cabin-proof--section {
-			grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-			align-items: start;
-			gap: 1rem;
-		}
-	}
-
-	/* Hero-varianten låter scenen bära hela proof-ytan. På desktop ligger det
-	   statiska stegkortet över natthimlen i scenens övre del. På mindre skärmar
-	   visas bara platsen, så heron kan leda vidare utan ett extra långt kort.
-	   Gränsen går vid 1120px: under den blir scenrutan så låg att kortet skulle
-	   lägga sig över personen vid elden, och då är platsen viktigare än kortet -
-	   samma val som redan gjordes under 900px. */
-	@media (min-width: 1120px) {
-		.cabin-proof--hero {
-			display: block;
-			position: relative;
-			isolation: isolate;
-		}
-
-		/* 3:2 i stället för 5:4. Bilden är 16:9, så en högre ruta beskär i sidled -
-		   vid 5:4 föll lägerelden utanför högerkanten. 3:2 håller kvar både
-		   stugan till vänster och personen vid elden till höger. */
-		.cabin-proof--hero .cabin-proof-scene {
-			/* width: 100% behövs för att aspect-ratio ska räkna höjd ur bredd.
-			   Utan den ärvde rutan hero-radens höjd och bredden räknades ur
-			   höjden i stället - scenen blev då bredare än sin kolumn och sköt
-			   ut lägerelden utanför viewporten mellan 900 och 1100 px. */
-			width: 100%;
-			aspect-ratio: 3 / 2;
-			border-radius: 1.35rem;
-		}
-
-		/* Mörkningen ligger uppe vid kortet i stället för nere vid elden: den ska
-		   ge kortet en lugn botten, inte dämpa scenens enda varma ljus. */
-		.cabin-proof--hero .cabin-proof-scene::after {
-			content: '';
-			position: absolute;
-			inset: 0;
-			background: linear-gradient(180deg, rgb(28 18 12 / 0.5) 0%, rgb(28 18 12 / 0.16) 46%, transparent 72%);
-			pointer-events: none;
-		}
-
-		.cabin-proof--hero .cabin-proof-scene-image {
-			position: absolute;
-			inset: 0;
-			width: 100%;
-			height: 100%;
-			aspect-ratio: auto;
-			object-position: center;
-		}
-
-		/* Kortet ligger uppe till höger, över natthimlen. Nere till höger täckte
-		   det personen och lägerelden - scenens enda liv - och det är den halvan
-		   av bilden som ska synas. */
-		.cabin-proof--hero .cabin-proof-card {
-			position: absolute;
-			z-index: 1;
-			right: clamp(1rem, 2.5vw, 1.5rem);
-			top: clamp(1rem, 2.5vw, 1.5rem);
-			/* Bredden följer innehållet: den längsta raden är frågan, och
-			   17rem lämnar den plus metaraden oavbrutna. Tidigare 24rem gav
-			   ~160px tom yta till höger i kortet och tog en halv scen i
-			   anspråk för text som bara använde vänsterhalvan. */
-			width: min(38%, 17rem);
-			padding: clamp(0.9rem, 1.7vw, 1.15rem);
-			border-color: rgb(237 222 194 / 0.34);
-			background: linear-gradient(145deg, rgb(55 38 29 / 0.88), rgb(28 23 22 / 0.92));
-			backdrop-filter: blur(8px);
-			box-shadow: 0 18px 42px rgb(12 8 6 / 0.36);
-		}
-
-		.cabin-proof--hero .cabin-proof-meta,
-		.cabin-proof--hero .cabin-proof-question {
-			margin-bottom: 0.55rem;
-		}
-
-		.cabin-proof--hero .cabin-proof-options li {
-			font-size: 0.86rem;
-		}
-
-		/* Hero-varianten är display:block, så figurens gap gäller inte här. */
-		.cabin-proof--hero .cabin-proof-caption {
-			margin-top: 0.6rem;
-		}
-	}
-
-	@media (max-width: 1119.98px) {
-		.cabin-proof--hero .cabin-proof-card {
-			display: none;
-		}
-	}
-
-	/* Mellan 1120 och 1320px är scenrutan låg nog att ett kort i full storlek
-	   skulle nå ner över personen vid elden. Kortet krymper i stället för att
-	   försvinna: samma innehåll, mindre yta, och hela scenen syns. */
-	@media (min-width: 1120px) and (max-width: 1319.98px) {
-		.cabin-proof--hero .cabin-proof-card {
-			width: min(42%, 15rem);
-			padding: 0.8rem 0.85rem;
-		}
-
-		.cabin-proof--hero .cabin-proof-meta {
-			margin-bottom: 0.4rem;
-		}
-
-		.cabin-proof--hero .cabin-proof-question {
-			margin-bottom: 0.4rem;
-			font-size: 1.02rem;
-		}
-
-		.cabin-proof--hero .cabin-proof-options {
-			gap: 0.16rem;
-		}
-
-		.cabin-proof--hero .cabin-proof-options li {
-			font-size: 0.78rem;
-		}
-	}
 </style>
