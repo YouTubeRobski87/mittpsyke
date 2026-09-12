@@ -6,8 +6,13 @@
 	import { supabase } from '$lib/supabase';
 	import { canUseGoogleOAuth, getStableOAuthCallbackUrl } from '$lib/auth-redirect';
 	import { clearPendingAuthFunnel, markLoginStarted } from '$lib/analytics';
+	import { withSafeRedirect } from '$lib/safe-redirect';
+	import { page } from '$app/state';
 
 	let { form }: { form: ActionData } = $props();
+	// Den som saknar konto ska inte tappa målet (t.ex. Kvällsstugan) på vägen
+	// via registreringen.
+	const registerHref = $derived(withSafeRedirect('/register', page.url.searchParams.get('redirect')));
 	let loading = $state(false);
 	let oauthLoading = $state(false);
 	let oauthError = $state('');
@@ -182,6 +187,6 @@
 	</form>
 
 	<p class="text-center text-sm mt-4 opacity-70">
-		Inget konto? <a href="/register" class="underline">Registrera dig</a>
+		Inget konto? <a href={registerHref} class="underline">Registrera dig</a>
 	</p>
 </section>

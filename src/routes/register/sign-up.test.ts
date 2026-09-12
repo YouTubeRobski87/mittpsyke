@@ -11,12 +11,22 @@ function registrationRequest() {
 	});
 }
 
-function registrationEvent(options: { signUpError?: Error | null; identities?: unknown[] } = {}) {
+function registrationEvent(
+	options: {
+		signUpError?: Error | null;
+		identities?: unknown[];
+		signInError?: Error | null;
+		search?: string;
+	} = {}
+) {
 	const cookies = { set: vi.fn() };
-	const signInWithPassword = vi.fn().mockResolvedValue({ error: null });
+	const signInWithPassword = vi.fn().mockResolvedValue({ error: options.signInError ?? null });
 
 	return {
 		request: registrationRequest(),
+		// Formuläret postar till aktuell URL, så en ?redirect= från /login
+		// finns i url även för POST-anropet.
+		url: new URL(`http://localhost/register${options.search ?? ''}`),
 		locals: {
 			supabase: {
 				auth: {
@@ -82,6 +92,49 @@ describe('GA4 sign_up efter registrering', () => {
 		await expect(actions.default(event as never)).rejects.toMatchObject({ status: 303 });
 
 		expect(event.cookies.set).not.toHaveBeenCalled();
+	});
+
+	// Startsidans Kvällsstugan-CTA går till /login?redirect=/dashboard/kvallsstugan.
+	// Den som saknar konto och väljer "Registrera dig" hamnade tidigare på
+	// /dashboard, eftersom registreringen alltid skickade dit.
+	it('för registreringen vidare till målet som följde med från inloggningen', async () => {
+		const event = registrationEvent({ search: '?redirect=%2Fdashboard%2Fkvallsstugan' });
+
+		await expect(actions.default(event as never)).rejects.toMatchObject({
+			status: 303,
+			location: '/dashboard/kvallsstugan'
+		});
+	});
+
+	it('följer aldrig ett externt redirect-mål efter registreringen', async () => {
+		for (const search of ['?redirect=https%3A%2F%2Fevil.tld', '?redirect=%2F%2Fevil.tld']) {
+			await expect(actions.default(registrationEvent({ search }) as never)).rejects.toMatchObject({
+				status: 303,
+				location: '/dashboard'
+			});
+		}
+	});
+
+	it('behåller målet när kontot skapas men den automatiska inloggningen misslyckas', async () => {
+		const event = registrationEvent({
+			search: '?redirect=%2Fdashboard%2Fkvallsstugan',
+			signInError: new Error('Kunde inte logga in.')
+		});
+
+		await expect(actions.default(event as never)).rejects.toMatchObject({
+			status: 303,
+			location: '/login?redirect=%2Fdashboard%2Fkvallsstugan'
+		});
+	});
+
+	it('för målet mellan inloggning och registrering åt båda hållen', () => {
+		const loginPage = readFileSync(new URL('../login/+page.svelte', import.meta.url), 'utf8');
+		const registerPage = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
+
+		expect(loginPage).toContain("withSafeRedirect('/register', page.url.searchParams.get('redirect'))");
+		expect(loginPage).toContain('<a href={registerHref} class="underline">Registrera dig</a>');
+		expect(registerPage).toContain("withSafeRedirect('/login', page.url.searchParams.get('redirect'))");
+		expect(registerPage).toContain('<a href={loginHref} class="underline">Logga in</a>');
 	});
 
 	it('ett besök på /register skickar inte sign_up', () => {

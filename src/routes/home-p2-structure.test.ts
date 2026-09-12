@@ -80,6 +80,10 @@ describe('Startsidans P2-struktur', () => {
 		for (const place of ['Mitt Hem', 'Kvällsstugan', 'Följeslagaren']) {
 			expect(map).toContain(`<h3>${place}</h3>`);
 		}
+		// EveningCheckinFlow kräver tema (steg 1) och riktning (steg 3) för att
+		// gå vidare; bara texten och sparandet är valfria.
+		expect(map).toContain('Du tar en fråga i taget och skriver bara det du vill.');
+		expect(body).not.toContain('Inget måste besvaras');
 		const tool = map.slice(map.indexOf('place-map-tool'));
 		expect(tool).toContain('<h3>Chatten</h3>');
 		expect(tool).toContain(

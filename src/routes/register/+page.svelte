@@ -12,11 +12,15 @@
 	import { supabase } from '$lib/supabase';
 	import { canUseGoogleOAuth, getStableOAuthCallbackUrl } from '$lib/auth-redirect';
 	import { readDiaryDraft } from '$lib/diary-draft';
+	import { withSafeRedirect } from '$lib/safe-redirect';
+	import { page } from '$app/state';
 	import type { ActionData } from './$types';
 
 	let tempEntryPreview = $state<{ title?: string; content?: string } | null>(null);
 	let showPreview = $state(false);
 	let { form }: { form: ActionData } = $props();
+	// Tillbaka till inloggningen med samma mål, om besökaren ångrar sig.
+	const loginHref = $derived(withSafeRedirect('/login', page.url.searchParams.get('redirect')));
 	let loading = $state(false);
 	let oauthLoading = $state(false);
 	let oauthError = $state('');
@@ -177,7 +181,7 @@
 	</form>
 
 	<p class="text-center text-sm mt-4 opacity-70">
-		Har du redan konto? <a href="/login" class="underline">Logga in</a>
+		Har du redan konto? <a href={loginHref} class="underline">Logga in</a>
 	</p>
 	<p class="text-center text-xs mt-3 opacity-60">
 		Läs hur integritet och data hanteras i <a href="/integritet" class="underline">integritetspolicyn</a>.

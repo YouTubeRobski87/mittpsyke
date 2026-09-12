@@ -180,9 +180,12 @@
 				</li>
 				<li>
 					<h3>Kvällsstugan</h3>
+					<!-- Kontrollerat mot EveningCheckinFlow: steg 1 (tema) och 3 (riktning)
+						 krävs för att gå vidare, texten i steg 2 och sparandet är valfria.
+						 "Inget måste besvaras" stämde därför inte. -->
 					<p>
 						En kort incheckning på kvällen: hur kvällen känns, några ord om du vill skriva dem, och
-						vad du vill göra med det för ikväll. Inget måste besvaras.
+						vad du vill göra med det för ikväll. Du tar en fråga i taget och skriver bara det du vill.
 					</p>
 				</li>
 				<li>

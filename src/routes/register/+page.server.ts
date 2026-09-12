@@ -1,10 +1,11 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { createdAccountFromSignUp, SIGN_UP_COMPLETED_COOKIE } from '$lib/sign-up-event';
+import { safeInternalRedirect, withSafeRedirect } from '$lib/safe-redirect';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
-	default: async ({ request, locals, cookies }) => {
+	default: async ({ request, locals, cookies, url }) => {
 		const data = await request.formData();
 		const email = data.get('email') as string;
 		const password = data.get('password') as string;
@@ -38,11 +39,16 @@ export const actions: Actions = {
 		// Automatically sign in after successful registration
 		const { error: signInError } = await locals.supabase.auth.signInWithPassword({ email, password });
 
+		// Formuläret postar till aktuell URL, så en ?redirect= som följt med
+		// från /login finns här. Samma validering som inloggningen använder;
+		// utan parameter blir destinationen /dashboard som tidigare.
+		const redirectParam = url.searchParams.get('redirect');
+
 		if (signInError) {
 			// Account created but couldn't auto-login, send to login page
-			throw redirect(303, '/login');
+			throw redirect(303, withSafeRedirect('/login', redirectParam));
 		}
 
-		throw redirect(303, '/dashboard');
+		throw redirect(303, safeInternalRedirect(redirectParam));
 	}
 };

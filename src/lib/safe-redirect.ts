@@ -42,3 +42,14 @@ export function safeInternalRedirect(
 
 	return trimmed;
 }
+
+/**
+ * Bär en giltig ?redirect= vidare mellan inloggning och registrering, så att
+ * den som skickades till /login från en skyddad sida (t.ex. Kvällsstugan) och
+ * väljer "Registrera dig" hamnar på samma ställe efter att kontot skapats.
+ * Ogiltiga värden tas bort i stället för att föras vidare.
+ */
+export function withSafeRedirect(path: string, value: string | null | undefined): string {
+	const destination = safeInternalRedirect(value, '');
+	return destination ? `${path}?redirect=${encodeURIComponent(destination)}` : path;
+}

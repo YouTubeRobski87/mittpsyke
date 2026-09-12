@@ -1,5 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { safeInternalRedirect } from './safe-redirect';
+import { safeInternalRedirect, withSafeRedirect } from './safe-redirect';
+
+describe('withSafeRedirect', () => {
+	it('för vidare ett internt mål, kodat', () => {
+		expect(withSafeRedirect('/register', '/dashboard/kvallsstugan')).toBe(
+			'/register?redirect=%2Fdashboard%2Fkvallsstugan'
+		);
+	});
+
+	it('lämnar länken ren när målet saknas eller är ogiltigt', () => {
+		expect(withSafeRedirect('/register', null)).toBe('/register');
+		expect(withSafeRedirect('/register', '')).toBe('/register');
+		expect(withSafeRedirect('/register', 'https://evil.tld')).toBe('/register');
+		expect(withSafeRedirect('/login', '//evil.tld')).toBe('/login');
+	});
+});
 
 // Byggs ur teckenkod så testfilen aldrig behöver innehålla literala
 // backslash-escapes eller styrbytes.
