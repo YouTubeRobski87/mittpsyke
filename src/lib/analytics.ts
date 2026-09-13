@@ -161,17 +161,74 @@ function loadGtagScript(): Promise<void> {
 	return gtagScriptPromise;
 }
 
+/**
+ * Ahrefs får aldrig se chattens sidor. Skriptet läser själv sidadress, titel,
+ * referrer och varje länkklick, och har ingen inställning för att undanta
+ * sökvägar. Det laddas därför aldrig på /chat, och en sida där det redan körs
+ * lämnas med en hel sidladdning när besökaren går till chatten.
+ */
+export function shouldLoadAhrefs(pathname: string) {
+	return !/^\/chat(\/|$)/i.test(pathname);
+}
+
+type AhrefsWindow = Window & { AhrefsAnalytics?: { sendEvent: (name: string) => void } };
+
+// Löses när skriptet laddats (true) eller misslyckats (false).
+let ahrefsReadyPromise: Promise<boolean> | null = null;
+
 function loadAhrefsScript(): Promise<void> {
 	if (!browser || !ANALYTICS_ENABLED) return Promise.resolve();
-	if (document.getElementById(AHREFS_SCRIPT_ID)) return Promise.resolve();
+	if (!shouldLoadAhrefs(window.location.pathname)) return Promise.resolve();
+	if (ahrefsReadyPromise || document.getElementById(AHREFS_SCRIPT_ID)) return Promise.resolve();
 
 	const script = document.createElement('script');
 	script.id = AHREFS_SCRIPT_ID;
 	script.async = true;
 	script.src = 'https://analytics.ahrefs.com/analytics.js';
 	script.dataset.key = AHREFS_DATA_KEY;
+	// Skriptet skickar annars egna sidvisningar vid varje pushState och popstate,
+	// även in i chatten. Sidvisningarna skickas i stället av sendAhrefsPageView.
+	script.dataset.noPageviewAuto = '';
+	ahrefsReadyPromise = new Promise((resolve) => {
+		script.addEventListener('load', () => resolve(true), { once: true });
+		script.addEventListener('error', () => resolve(false), { once: true });
+	});
 	document.head.appendChild(script);
 	return Promise.resolve();
+}
+
+function sendAhrefsPageView(url: URL) {
+	if (!shouldLoadAhrefs(url.pathname)) return;
+
+	// Ett besök som började i chatten laddar Ahrefs först på den första publika sidan.
+	void loadAhrefsScript();
+	void ahrefsReadyPromise?.then((loaded) => {
+		if (!loaded || window.location.pathname !== url.pathname) return;
+		(window as AhrefsWindow).AhrefsAnalytics?.sendEvent('pageview');
+	});
+}
+
+/**
+ * Sant när Ahrefs redan körs på sidan och målet är en chattsida. Skriptet kan
+ * inte stängas av, så navigeringen måste bli en hel sidladdning: då får
+ * chattsidan ett eget dokument där Ahrefs aldrig laddas.
+ */
+// Sätts när sidan byts med en hel sidladdning. Då ska inga event skickas från
+// den SPA-rendering som hinner starta innan dokumentet lämnas (bakåt in i
+// chatten gav annars dubbla page_view och chat_open).
+let fullNavigationPending = false;
+
+export function markFullNavigationPending() {
+	fullNavigationPending = true;
+}
+
+export function needsAhrefsFreeNavigation(target: URL) {
+	if (!browser) return false;
+	return (
+		target.origin === window.location.origin &&
+		!shouldLoadAhrefs(target.pathname) &&
+		document.getElementById(AHREFS_SCRIPT_ID) !== null
+	);
 }
 
 export function disableAnalytics() {
@@ -231,9 +288,10 @@ export async function initializeAnalytics() {
 }
 
 export function trackPageView(url: URL) {
-	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent()) return;
+	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent() || fullNavigationPending) return;
 
 	void sendPageView(url);
+	sendAhrefsPageView(url);
 }
 
 /**
@@ -350,7 +408,7 @@ async function sendPageView(url: URL) {
 }
 
 export function trackEvent(eventName: EventName, params: EventParams = {}) {
-	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent()) return;
+	if (!browser || !ANALYTICS_ENABLED || !hasAnalyticsConsent() || fullNavigationPending) return;
 
 	void sendEvent(eventName, params);
 }

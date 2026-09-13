@@ -7,7 +7,8 @@ import {
 	getAnalyticsPageTitle,
 	sanitizeAnalyticsHref,
 	sanitizeAnalyticsPath,
-	sanitizeAnalyticsReferrer
+	sanitizeAnalyticsReferrer,
+	shouldLoadAhrefs
 } from './analytics';
 import { consumeDiaryCheckinPrefill, writeDiaryCheckinPrefill } from './diary-draft';
 
@@ -185,6 +186,59 @@ describe('privacy-safe navigation and analytics', () => {
 			expect(analytics).toContain("trackEvent('landing_page_view', getAnalyticsLandingPageParams(params))");
 			expect(analytics).toContain('destination: sanitizeAnalyticsHref(params.destination)');
 			expect(analytics).toContain('href: sanitizeAnalyticsHref(params.href)');
+		});
+	});
+
+	describe('Ahrefs körs aldrig på chattens sidor', () => {
+		// Ahrefs-skriptet läser själv adress, titel, referrer och varje länkklick.
+		// I produktion fick det /chat/angest som pageview, som x-link-click och som
+		// referrer på nästa sida.
+		const analytics = projectFile('./analytics.ts');
+		const layout = projectFile('../routes/+layout.svelte');
+
+		it('laddas inte på /chat, /chat/angest eller /chat/depression', () => {
+			for (const path of ['/chat', '/chat/angest', '/chat/depression', '/chat/tvangstankar', '/Chat/E']) {
+				expect(shouldLoadAhrefs(path)).toBe(false);
+			}
+		});
+
+		it('laddas fortfarande på publika innehållssidor', () => {
+			for (const path of ['/', '/guider', '/guider/angest', '/blogg', '/om-mittpsyke', '/chatta-anonymt']) {
+				expect(shouldLoadAhrefs(path)).toBe(true);
+			}
+		});
+
+		it('skriptet laddas bara efter kontroll av sökvägen och utan egna sidvisningar', () => {
+			expect(analytics).toMatch(
+				/function loadAhrefsScript\(\)[\s\S]*?if \(!shouldLoadAhrefs\(window\.location\.pathname\)\) return[\s\S]*?document\.head\.appendChild\(script\)/
+			);
+			// Utan data-no-pageview-auto skickar skriptet sidvisningar vid pushState
+			// och popstate, även in i chatten.
+			expect(analytics).toContain("script.dataset.noPageviewAuto = ''");
+			expect(analytics).toMatch(
+				/function sendAhrefsPageView\(url: URL\) \{\s*if \(!shouldLoadAhrefs\(url\.pathname\)\) return;/
+			);
+			expect(analytics).toMatch(/void sendPageView\(url\);\s*sendAhrefsPageView\(url\);/);
+		});
+
+		it('en sida där Ahrefs redan körs går till chatten med en hel sidladdning', () => {
+			// Länkklick fångas i capture-fasen, före Ahrefs egen klicklyssnare.
+			expect(layout).toContain("window.addEventListener('click', handleAhrefsBoundaryClick, true)");
+			expect(layout).toContain("window.addEventListener('auxclick', handleAhrefsBoundaryClick, true)");
+			expect(layout).toMatch(
+				/if \(!needsAhrefsFreeNavigation\(destination\)\) return;\s*event\.preventDefault\(\);/
+			);
+			// goto(), formulär och bakåt/framåt. Analysen tystas under omladdningen,
+			// annars ger bakåt in i chatten dubbla page_view.
+			expect(layout).toMatch(
+				/beforeNavigate\([\s\S]*?needsAhrefsFreeNavigation\(to\.url\)\) return;\s*markFullNavigationPending\(\);/
+			);
+			expect(analytics).toMatch(/export function trackPageView[\s\S]*?\|\| fullNavigationPending\) return;/);
+			expect(analytics).toMatch(/export function trackEvent[\s\S]*?\|\| fullNavigationPending\) return;/);
+		});
+
+		it('chattsidan ger nästa sida bara ursprunget som referrer', () => {
+			expect(layout).toMatch(/\{#if isChat\}[\s\S]*?<meta name="referrer" content="strict-origin" \/>/);
 		});
 	});
 

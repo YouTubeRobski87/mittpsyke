@@ -1,9 +1,11 @@
 <script lang="ts">
 	import '../app.css';
 	import { browser } from '$app/environment';
-	import { afterNavigate, onNavigate } from '$app/navigation';
+	import { afterNavigate, beforeNavigate, onNavigate } from '$app/navigation';
 	import {
 		ANALYTICS_ENABLED,
+		markFullNavigationPending,
+		needsAhrefsFreeNavigation,
 		trackAuthCompletedFromPendingState,
 		trackInternalLinkClicked,
 		trackLandingPageViewOnce,
@@ -431,6 +433,42 @@
 		});
 	}
 
+	// Ahrefs lyssnar på varje länkklick och hoppar bara över klick som redan är
+	// förhindrade. Lyssnaren körs i capture-fasen, före både Ahrefs och SvelteKit,
+	// så att en länk till chatten blir en hel sidladdning utan att Ahrefs ser den.
+	function handleAhrefsBoundaryClick(event: MouseEvent) {
+		if (event.defaultPrevented) return;
+		if (event.type === 'auxclick' && event.button !== 1) return;
+
+		const target = event.target;
+		if (!(target instanceof Element)) return;
+		const anchor = target.closest('a[href]');
+		if (!(anchor instanceof HTMLAnchorElement)) return;
+
+		let destination: URL;
+		try {
+			destination = new URL(anchor.href);
+		} catch {
+			return;
+		}
+		if (!needsAhrefsFreeNavigation(destination)) return;
+
+		event.preventDefault();
+		const opensNewTab =
+			event.type === 'auxclick' ||
+			event.metaKey ||
+			event.ctrlKey ||
+			event.shiftKey ||
+			(anchor.target !== '' && anchor.target !== '_self');
+		if (opensNewTab) {
+			window.open(destination.href, '_blank', 'noopener');
+		} else {
+			// Ingen SPA-rendering startar eftersom klicket är förhindrat, så GA:s
+			// internal_link_clicked får fortfarande skickas för klicket.
+			window.location.assign(destination.href);
+		}
+	}
+
 	function syncAnalyticsConsent() {
 		if (!browser) return;
 
@@ -459,10 +497,14 @@
 
 		window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
 		document.addEventListener('click', handleInternalLinkClick);
+		window.addEventListener('click', handleAhrefsBoundaryClick, true);
+		window.addEventListener('auxclick', handleAhrefsBoundaryClick, true);
 
 		return () => {
 			window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
 			document.removeEventListener('click', handleInternalLinkClick);
+			window.removeEventListener('click', handleAhrefsBoundaryClick, true);
+			window.removeEventListener('auxclick', handleAhrefsBoundaryClick, true);
 		};
 	});
 
@@ -511,6 +553,22 @@
 		return () => {
 			window.removeEventListener('mittpsyke:theme-changed', onChanged);
 		};
+	});
+
+	// Samma gräns för goto(), formulär och bakåt/framåt: kör Ahrefs redan på
+	// sidan laddas chattsidan som ett nytt dokument, där Ahrefs aldrig laddas.
+	beforeNavigate(({ to, type, cancel }) => {
+		if (!to?.url || type === 'leave' || !needsAhrefsFreeNavigation(to.url)) return;
+
+		markFullNavigationPending();
+		if (type === 'popstate') {
+			// Adressen har redan bytts vid popstate. En omladdning behåller historiken.
+			window.location.reload();
+			return;
+		}
+
+		cancel();
+		window.location.assign(to.url.href);
 	});
 
 	// Låt SvelteKit återställa scroll direkt vid sidbyte och back/forward.
@@ -598,6 +656,11 @@
 
 <svelte:head>
     <meta name="seobility" content="071531d0f6c0c987d277990fe526c5d4" />
+	{#if isChat}
+		<!-- Nästa sida som laddas från chatten får bara ursprunget som referrer,
+		     aldrig /chat/<ämne>. Ahrefs läser document.referrer oförändrad. -->
+		<meta name="referrer" content="strict-origin" />
+	{/if}
 	{#if UNDER_CONSTRUCTION}
 		<title>MittPsyke - Under konstruktion</title>
 		<meta
