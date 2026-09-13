@@ -237,8 +237,57 @@ describe('privacy-safe navigation and analytics', () => {
 			expect(analytics).toMatch(/export function trackEvent[\s\S]*?\|\| fullNavigationPending\) return;/);
 		});
 
-		it('chattsidan ger nästa sida bara ursprunget som referrer', () => {
-			expect(layout).toMatch(/\{#if isChat\}[\s\S]*?<meta name="referrer" content="strict-origin" \/>/);
+		it('känsliga sidor ger nästa sida bara ursprunget som referrer', () => {
+			expect(layout).toMatch(
+				/\{#if !shouldLoadAhrefs\(page\.url\.pathname\)\}[\s\S]*?<meta name="referrer" content="strict-origin" \/>/
+			);
+		});
+	});
+
+	describe('ingen sökfråga från /sok når Ahrefs', () => {
+		// I produktion fick Ahrefs /sok?q=<söktext> som pageview-adress, som
+		// x-link-click-mål, vid bakåt och som referrer på nästa sida.
+		const layout = projectFile('../routes/+layout.svelte');
+		const pathOf = (href: string) => new URL(href, 'https://mittpsyke.se').pathname;
+
+		it('laddas inte på /sok, oavsett query', () => {
+			for (const href of ['/sok', '/sok?q=ångest', '/sok?q=testfras_ahrefs', '/sok?q=x&utm_source=y', '/SOK?q=x']) {
+				expect(shouldLoadAhrefs(pathOf(href))).toBe(false);
+			}
+		});
+
+		it('laddas fortfarande på publika sidor, även de som liknar /sok', () => {
+			for (const href of ['/guider', '/guider/sovproblem', '/sokord', '/blogg?page=2']) {
+				expect(shouldLoadAhrefs(pathOf(href))).toBe(true);
+			}
+		});
+
+		it('publik sida → /sok: länkar och GET-formulär blir hel sidladdning före Ahrefs', () => {
+			// Länkklick går via samma gräns som chatten (needsAhrefsFreeNavigation
+			// bygger på shouldLoadAhrefs). Sökfältet i headern är ett GET-formulär.
+			expect(layout).toContain("window.addEventListener('submit', handleAhrefsBoundarySubmit, true)");
+			expect(layout).toMatch(
+				/function handleAhrefsBoundarySubmit[\s\S]*?form\.method\.toLowerCase\(\) !== 'get'[\s\S]*?if \(!needsAhrefsFreeNavigation\(destination\)\) return;\s*event\.preventDefault\(\);/
+			);
+			expect(layout).toMatch(/<form class="mobile-search-panel" action="\/sok" method="GET">/);
+		});
+
+		it('/sok → publik sida: referrer bär aldrig sökfrågan', () => {
+			// Meta-taggen gäller alla sidor där Ahrefs inte laddas, alltså även /sok.
+			expect(shouldLoadAhrefs('/sok')).toBe(false);
+			expect(layout).toMatch(
+				/\{#if !shouldLoadAhrefs\(page\.url\.pathname\)\}[\s\S]*?<meta name="referrer" content="strict-origin" \/>/
+			);
+		});
+
+		it('GA-fälten bär inte sökfrågan', () => {
+			const url = new URL('https://mittpsyke.se/sok?q=testfras_ahrefs#traff');
+			expect(getAnalyticsPageFields(url)).toEqual({
+				page_path: '/sok',
+				page_location: 'https://mittpsyke.se/sok'
+			});
+			expect(sanitizeAnalyticsReferrer(url.href)).toBe('https://mittpsyke.se/sok');
+			expect(sanitizeAnalyticsHref('/sok?q=testfras_ahrefs')).toBe('/sok');
 		});
 	});
 

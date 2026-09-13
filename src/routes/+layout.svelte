@@ -6,6 +6,7 @@
 		ANALYTICS_ENABLED,
 		markFullNavigationPending,
 		needsAhrefsFreeNavigation,
+		shouldLoadAhrefs,
 		trackAuthCompletedFromPendingState,
 		trackInternalLinkClicked,
 		trackLandingPageViewOnce,
@@ -435,7 +436,8 @@
 
 	// Ahrefs lyssnar på varje länkklick och hoppar bara över klick som redan är
 	// förhindrade. Lyssnaren körs i capture-fasen, före både Ahrefs och SvelteKit,
-	// så att en länk till chatten blir en hel sidladdning utan att Ahrefs ser den.
+	// så att en länk till en känslig sida (chatten, sökningen) blir en hel
+	// sidladdning utan att Ahrefs ser länkmålet.
 	function handleAhrefsBoundaryClick(event: MouseEvent) {
 		if (event.defaultPrevented) return;
 		if (event.type === 'auxclick' && event.button !== 1) return;
@@ -469,6 +471,31 @@
 		}
 	}
 
+	// Samma gräns för GET-formulär, t.ex. sökfältet i headern (/sok?q=…).
+	// Ahrefs hoppar över förhindrade submit, och SvelteKit tar då inte över.
+	function handleAhrefsBoundarySubmit(event: SubmitEvent) {
+		if (event.defaultPrevented) return;
+		const form = event.target;
+		if (!(form instanceof HTMLFormElement) || form.method.toLowerCase() !== 'get') return;
+
+		let destination: URL;
+		try {
+			destination = new URL(form.action);
+		} catch {
+			return;
+		}
+		if (!needsAhrefsFreeNavigation(destination)) return;
+
+		event.preventDefault();
+		const params = new URLSearchParams();
+		for (const [name, value] of new FormData(form, event.submitter)) {
+			if (typeof value === 'string') params.append(name, value);
+		}
+		destination.search = params.toString();
+		markFullNavigationPending();
+		window.location.assign(destination.href);
+	}
+
 	function syncAnalyticsConsent() {
 		if (!browser) return;
 
@@ -499,12 +526,14 @@
 		document.addEventListener('click', handleInternalLinkClick);
 		window.addEventListener('click', handleAhrefsBoundaryClick, true);
 		window.addEventListener('auxclick', handleAhrefsBoundaryClick, true);
+		window.addEventListener('submit', handleAhrefsBoundarySubmit, true);
 
 		return () => {
 			window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
 			document.removeEventListener('click', handleInternalLinkClick);
 			window.removeEventListener('click', handleAhrefsBoundaryClick, true);
 			window.removeEventListener('auxclick', handleAhrefsBoundaryClick, true);
+			window.removeEventListener('submit', handleAhrefsBoundarySubmit, true);
 		};
 	});
 
@@ -556,7 +585,7 @@
 	});
 
 	// Samma gräns för goto(), formulär och bakåt/framåt: kör Ahrefs redan på
-	// sidan laddas chattsidan som ett nytt dokument, där Ahrefs aldrig laddas.
+	// sidan laddas den känsliga sidan som ett nytt dokument, där Ahrefs aldrig laddas.
 	beforeNavigate(({ to, type, cancel }) => {
 		if (!to?.url || type === 'leave' || !needsAhrefsFreeNavigation(to.url)) return;
 
@@ -656,9 +685,10 @@
 
 <svelte:head>
     <meta name="seobility" content="071531d0f6c0c987d277990fe526c5d4" />
-	{#if isChat}
-		<!-- Nästa sida som laddas från chatten får bara ursprunget som referrer,
-		     aldrig /chat/<ämne>. Ahrefs läser document.referrer oförändrad. -->
+	{#if !shouldLoadAhrefs(page.url.pathname)}
+		<!-- Nästa sida som laddas från en känslig sida får bara ursprunget som
+		     referrer, aldrig /chat/<ämne> eller /sok?q=<söktext>. Ahrefs läser
+		     document.referrer oförändrad. -->
 		<meta name="referrer" content="strict-origin" />
 	{/if}
 	{#if UNDER_CONSTRUCTION}
