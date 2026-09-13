@@ -1,118 +1,50 @@
-import { describe, expect, it, vi } from 'vitest';
-import {
-	buildDiaryNarrativeInsight,
-	type DiaryInsightRow
-} from './diary-insight-analysis';
-import type { AITextProvider } from './ai/text-generation';
+import { describe, expect, it } from 'vitest';
+import * as insightAnalysis from './diary-insight-analysis';
+import { buildTopicMoodAssociations, prepareEntries, type DiaryInsightRow } from './diary-insight-analysis';
 
-const rows: DiaryInsightRow[] = Array.from({ length: 12 }, (_, index) => ({
-	created_at: `2026-01-${String(index + 1).padStart(2, '0')}T12:00:00.000Z`,
-	mood: index % 2 === 0 ? 4 : 6,
-	text: index % 2 === 0 ? 'Stress på jobbet och trött efter en kort natt.' : 'En lugn promenad efter jobbet hjälpte lite.',
-	tags: index % 2 === 0 ? ['jobb', 'sömn'] : ['promenad']
-}));
+function rows(
+	count: number,
+	day: number,
+	mood: number,
+	text: string
+): DiaryInsightRow[] {
+	return Array.from({ length: count }, (_, index) => ({
+		created_at: `2026-02-${String(day + index).padStart(2, '0')}T12:00:00.000Z`,
+		mood,
+		text
+	}));
+}
 
-describe('dagboksanalysens AI-gräns', () => {
-	it('kör den deterministiska analysen utan provider när generering stängs av', async () => {
-		const provider: AITextProvider = { generate: vi.fn().mockRejectedValue(new Error('Får inte anropas')) };
-		const insight = await buildDiaryNarrativeInsight(rows, { provider, generateWithAi: false });
+describe('tema och humör i dagboksinläggen', () => {
+	it('kopplar bara teman till måendet när jämförelsegruppen är tillräcklig', () => {
+		const entries = prepareEntries([
+			...rows(4, 1, 3, 'Stress och ekonomi känns tungt i dag.'),
+			...rows(4, 5, 8, 'En promenad i naturen gav en lugn stund.'),
+			...rows(4, 9, 6, 'Jag skrev några rader om dagen.')
+		]);
+		const associations = buildTopicMoodAssociations(entries);
+		const nature = associations.find((association) => association.label === 'Natur');
 
-		expect(provider.generate).not.toHaveBeenCalled();
-		expect(insight.generatedWithAi).toBe(false);
-		expect(insight.entryCount).toBe(12);
-		expect(insight.patterns.length).toBeGreaterThan(0);
+		expect(nature).toMatchObject({ matchingCount: 4, otherCount: 8 });
+		expect(nature?.difference).toBeGreaterThan(0);
+		expect(nature?.evidence).toContain('4 av 12 texter nämner natur');
 	});
 
-	it('använder den gemensamma, injicerbara providern för berättelsen', async () => {
-		const provider: AITextProvider = {
-			generate: vi.fn().mockResolvedValue(JSON.stringify({ storyParagraphs: ['Första stycket.', 'Andra stycket.', 'Tredje stycket.'] }))
-		};
-		const insight = await buildDiaryNarrativeInsight(rows, { provider });
+	it('räknar inget samband för ett enstaka omnämnande', () => {
+		const entries = prepareEntries([
+			{ created_at: '2026-03-01T12:00:00.000Z', mood: 2, text: 'Ekonomi stressar mig.' },
+			...rows(11, 2, 6, 'Jag skrev några rader om dagen.')
+		]);
 
-		expect(provider.generate).toHaveBeenCalledWith(
-			expect.objectContaining({ purpose: 'diary-narrative', outputFormat: 'json_object', timeoutMs: 20_000 })
-		);
-		expect(insight).toMatchObject({ generatedWithAi: true, storyParagraphs: ['Första stycket.', 'Andra stycket.', 'Tredje stycket.'] });
+		expect(buildTopicMoodAssociations(entries).some((association) => association.label === 'Ekonomi')).toBe(false);
 	});
 });
 
-describe('dagboksanalysens datagrund', () => {
-	it('kopplar bara teman till måendet när jämförelsegruppen är tillräcklig', async () => {
-		const rows: DiaryInsightRow[] = [
-			...Array.from({ length: 4 }, (_, index) => ({
-				created_at: `2026-02-${String(index + 1).padStart(2, '0')}T12:00:00.000Z`,
-				mood: 3,
-				text: 'Stress och ekonomi känns tungt i dag.'
-			})),
-			...Array.from({ length: 4 }, (_, index) => ({
-				created_at: `2026-02-${String(index + 5).padStart(2, '0')}T12:00:00.000Z`,
-				mood: 8,
-				text: 'En promenad i naturen gav en lugn stund.'
-			})),
-			...Array.from({ length: 4 }, (_, index) => ({
-				created_at: `2026-02-${String(index + 9).padStart(2, '0')}T12:00:00.000Z`,
-				mood: 6,
-				text: 'Jag skrev några rader om dagen.'
-			}))
-		];
-
-		const insight = await buildDiaryNarrativeInsight(rows, { generateWithAi: false });
-
-		expect(insight.challenges.some((claim) => claim.title.includes('Stress'))).toBe(true);
-		expect(insight.strengths.some((claim) => claim.title.includes('Natur'))).toBe(true);
-		const combination = insight.patterns.find((claim) => claim.title.includes('Stress och Ekonomi'));
-		expect(combination).toBeDefined();
-		for (const claim of [...insight.challenges, ...insight.strengths, combination!]) {
-			expect(claim.evidence).toMatch(/humörsnitt|registreringar|texter/);
+describe('ingen automatisk AI i dagboksanalysen', () => {
+	it('har inte längre någon berättande analys som anropar en språkmodell', () => {
+		expect(Object.keys(insightAnalysis)).not.toContain('buildDiaryNarrativeInsight');
+		for (const value of Object.values(insightAnalysis)) {
+			if (typeof value === 'function') expect(value.name).not.toMatch(/ai|narrative|story/i);
 		}
-	});
-
-	it('visar ingen temainsikt för ett enstaka omnämnande', async () => {
-		const rows: DiaryInsightRow[] = [
-			{ created_at: '2026-03-01T12:00:00.000Z', mood: 2, text: 'Ekonomi stressar mig.' },
-			...Array.from({ length: 11 }, (_, index) => ({
-				created_at: `2026-03-${String(index + 2).padStart(2, '0')}T12:00:00.000Z`,
-				mood: 6,
-				text: 'Jag skrev några rader om dagen.'
-			}))
-		];
-
-		const insight = await buildDiaryNarrativeInsight(rows, { generateWithAi: false });
-
-		expect(insight.challenges.some((claim) => claim.title.includes('Ekonomi'))).toBe(false);
-	});
-
-	it('visar flera samtidiga teman först när de sammanfaller med lägre humörvärden', async () => {
-		const rows: DiaryInsightRow[] = [
-			...Array.from({ length: 4 }, (_, index) => ({
-				created_at: `2026-05-${String(index + 1).padStart(2, '0')}T12:00:00.000Z`,
-				mood: 3,
-				text: 'Stress, sömn och ekonomi tar mycket plats i dag.'
-			})),
-			...Array.from({ length: 8 }, (_, index) => ({
-				created_at: `2026-05-${String(index + 5).padStart(2, '0')}T12:00:00.000Z`,
-				mood: 7,
-				text: 'Jag skrev några rader om dagen.'
-			}))
-		];
-
-		const insight = await buildDiaryNarrativeInsight(rows, { generateWithAi: false });
-
-		expect(insight.challenges[0]).toMatchObject({
-			title: 'Flera teman samtidigt sammanfaller oftare med tyngre dagar'
-		});
-		expect(insight.challenges[0]?.evidence).toContain('4 registreringar med minst tre teman');
-	});
-
-	it('skiljer måenderegistreringar från sparade texter i datagrunden', async () => {
-		const rows: DiaryInsightRow[] = [
-			{ created_at: '2026-04-01T12:00:00.000Z', mood: 5, text: null },
-			{ created_at: '2026-04-02T12:00:00.000Z', mood: 7, text: '' },
-			{ created_at: '2026-04-03T12:00:00.000Z', mood: null, text: 'En sparad text utan humör.' }
-		];
-
-		const insight = await buildDiaryNarrativeInsight(rows, { generateWithAi: false });
-
-		expect(insight.dataBasis).toMatchObject({ moodEntryCount: 2, textEntryCount: 1 });
 	});
 });

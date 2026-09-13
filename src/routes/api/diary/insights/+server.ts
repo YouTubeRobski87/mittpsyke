@@ -1,21 +1,16 @@
 import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
-import type { DiaryInsightRow } from '$lib/server/diary-insight-analysis';
+import { TOPICS } from '$lib/server/diary-insight-analysis';
 import { buildSupportView } from '$lib/server/diary-support-suggestions';
-import {
-	buildProgressAnalysis,
-	filterProgressRows,
-	getProgressPeriodBounds,
-	type ProgressPeriodDays
-} from '$lib/server/progress-analysis';
-import { shiftDateKey } from '$lib/stockholm-date';
+import { buildProgressAnalysis, filterProgressRows } from '$lib/server/progress-analysis';
+import { buildLighterDaysView } from '$lib/server/progress-lighter-days';
+import { loadProgressRows, parseProgressPeriod, readThemeOverrides } from '$lib/server/progress-rows';
+import { applyThemeOverridesToSupport, isThemeHidden } from '$lib/progress-theme-overrides';
 import { createClient } from '@supabase/supabase-js';
 import { env as publicEnv } from '$env/dynamic/public';
 import { env as privateEnv } from '$env/dynamic/private';
 import type { RequestHandler } from '@sveltejs/kit';
 
-const INSIGHTS_ROW_LIMIT = 500;
-const VALID_PERIODS = new Set<ProgressPeriodDays>([30, 90, 180]);
 function getAccessToken(authorizationHeader: string | null): string | null {
 	if (!authorizationHeader) return null;
 	const [scheme, token] = authorizationHeader.split(' ');
@@ -50,40 +45,28 @@ export const GET: RequestHandler = async ({ request, url }) => {
 		} = await supabase.auth.getUser();
 		if (authError || !user) return json({ error: 'Unauthorized' }, { status: 401 });
 
-		const requestedPeriod = Number(url.searchParams.get('period') ?? '30');
-		const period: ProgressPeriodDays = VALID_PERIODS.has(requestedPeriod as ProgressPeriodDays)
-			? requestedPeriod as ProgressPeriodDays
-			: 30;
-		const { start: periodStart } = getProgressPeriodBounds(period);
-		// Query one Stockholm calendar day before the selected range to account for
-		// timestamps near a daylight-saving boundary. filterProgressRows() applies
-		// the exact Stockholm range before anything is analysed.
-		const queryStart = `${shiftDateKey(periodStart, -1)}T00:00:00.000Z`;
-		const { data: entries, error, count } = await supabase
-			.from('diary')
-			.select('created_at, mood, text, tags', { count: 'exact' })
-			.eq('user_id', user.id)
-			.gte('created_at', queryStart)
-			// Begränsningen ska alltid prioritera det användaren nyligen lagt till.
-			// Analysen sorterar tillbaka raderna kronologiskt innan den jämför
-			// perioder, så den läser aldrig äldre data på bekostnad av nya mönster.
-			.order('created_at', { ascending: false })
-			.limit(INSIGHTS_ROW_LIMIT);
+		const period = parseProgressPeriod(url.searchParams.get('period'));
+		// Läsningen är alltid scopad till den verifierade användaren och vald period.
+		const { rows, truncated, error } = await loadProgressRows(supabase, user.id, period);
+		if (error) return json({ error }, { status: 500 });
 
-		if (error) return json({ error: error.message }, { status: 500 });
+		// Användarens egna temakorrigeringar. De ändrar bara analysen, aldrig
+		// inläggen, och ett dolt tema tas bort ur alla delar av återblicken.
+		const themeOverrides = readThemeOverrides(user);
+		const visibleTopics = TOPICS.filter((topic) => !isThemeHidden(themeOverrides, topic.label));
 
-		const rows = ((entries ?? []) as DiaryInsightRow[])
-			.slice()
-			.sort((first, second) => (first.created_at ?? '').localeCompare(second.created_at ?? ''));
 		// Allt faktaunderlag räknas lokalt på servern ur vald period. Ingen
-		// språkmodell får formulera eller utvidga personliga samband från råtext.
-		const analysis = buildProgressAnalysis(rows, period, new Date(), {
-			truncated: (count ?? entries?.length ?? 0) > INSIGHTS_ROW_LIMIT
-		});
-		const support = buildSupportView(filterProgressRows(rows, period));
+		// språkmodell körs här; AI-sammanfattningen är ett eget, valbart anrop.
+		const analysis = buildProgressAnalysis(rows, period, new Date(), { truncated, themeOverrides });
+		const lighterDays = buildLighterDaysView(rows, period, themeOverrides);
+		const support = applyThemeOverridesToSupport(
+			buildSupportView(filterProgressRows(rows, period), { topics: visibleTopics }),
+			themeOverrides
+		);
 
 		return json({
 			analysis,
+			lighterDays,
 			support
 		});
 	} catch (err) {

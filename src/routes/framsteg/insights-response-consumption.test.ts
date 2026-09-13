@@ -33,7 +33,7 @@ const endpoint = readFileSync(
 );
 
 /** Fälten endpointen faktiskt returnerar, lästa ur `return json({ ... })`. */
-const SERVER_FIELDS = ['analysis', 'support'] as const;
+const SERVER_FIELDS = ['analysis', 'lighterDays', 'support'] as const;
 
 /**
  * Fält som togs bort ur svaret. De får aldrig läsas ur svaret igen utan att
@@ -63,8 +63,8 @@ function buildResponse(rows: DiaryInsightRow[], period: ProgressPeriodDays = 30)
 }
 
 describe('svarsformen från /api/diary/insights', () => {
-	it('returnerar exakt analysis och support', () => {
-		expect(endpoint).toContain('return json({\n\t\t\tanalysis,\n\t\t\tsupport\n\t\t});');
+	it('returnerar exakt analysis, lighterDays och support', () => {
+		expect(endpoint).toContain('return json({\n\t\t\tanalysis,\n\t\t\tlighterDays,\n\t\t\tsupport\n\t\t});');
 		for (const field of REMOVED_RESPONSE_FIELDS) {
 			expect(endpoint).not.toContain(`${field}:`);
 		}
@@ -78,6 +78,7 @@ describe('svarsformen från /api/diary/insights', () => {
 
 		expect(declaration).toContain('analysis: ProgressAnalysisResponse;');
 		expect(declaration).toContain('support?: SupportView | null;');
+		expect(declaration).toContain('lighterDays?: LighterDaysView | null;');
 
 		const declaredFields = [...declaration.matchAll(/^\t\t(\w+)\??:/gm)].map(
 			(match) => match[1]

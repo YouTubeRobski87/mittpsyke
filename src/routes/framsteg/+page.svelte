@@ -8,6 +8,9 @@
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import LighterDaysCard from '$lib/components/progress/LighterDaysCard.svelte';
+	import ProgressExamplePreview from '$lib/components/progress/ProgressExamplePreview.svelte';
+	import type { LighterDaysView } from '$lib/progress-lighter-days-types';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
 	import {
 		PROGRESS_COMPANION_SCENE_SOURCES,
@@ -206,6 +209,8 @@
 		// Underlaget till "Kanske värt att prova". Byggs deterministiskt av samma
 		// rader som analysen och följer med i samma svar.
 		support?: SupportView | null;
+		// "Det som ofta fanns med under lättare dagar", med underlaget per tema.
+		lighterDays?: LighterDaysView | null;
 	}
 
 	interface ProgressInsight {
@@ -240,6 +245,8 @@
 		monthly: { month: string; label: string; entryCount: number; activeDays: number; status: 'sufficient' | 'thin' | 'missing'; mean: number | null; median: number | null; standardDeviation: number | null }[];
 		insights: ProgressInsight[];
 		halfYearSummary: ProgressInsight[];
+		relevantEntryCount?: number;
+		lowConfidence?: boolean;
 	}
 
 	interface HeatmapResponse {
@@ -580,6 +587,7 @@
 	let supportSelectedTopic = $state<string | null>(null);
 
 	const supportView = $derived(loadedInsightsData?.support ?? EMPTY_SUPPORT_VIEW);
+	const lighterDaysView = $derived(loadedInsightsData?.lighterDays ?? null);
 	const supportSuggestions = $derived(
 		selectVisibleSuggestions(supportView, supportPreferences, { rotation: supportRotation })
 	);
@@ -1100,12 +1108,7 @@
 					<small>Försök att ladda sidan igen</small>
 				</section>
 			{:else}
-				<div class="progress-content" class:account-preview-content={isAnonymous}>
-					{#if isAnonymous}
-						<div class="progress-preview-note">
-							<AccountTeaser variant="progress" mode="overlay" />
-						</div>
-					{/if}
+				<div class="progress-content">
 					<section
 						class="companion-banner"
 						aria-label={`Sjöscen, ${getProgressSceneLabel(sceneTransition.visibleBand)}`}
@@ -1210,6 +1213,12 @@
 					</section>
 	<div class="framsteg-layout framsteg-layout-v2">
 		<div class="framsteg-main">
+			{#if isAnonymous}
+				<!-- Utloggad vy: ett tydligt märkt, påhittat exempel i stället för
+				     suddiga kort. Inga av användarens kort renderas utan data. -->
+				<ProgressExamplePreview />
+				<AccountTeaser variant="progress" />
+			{:else}
 			<!-- Överblicken ligger först: den ska gå att läsa på några sekunder och
 			     svarar på "hur har den senaste tiden sett ut?". Kurvan och analysen
 			     under är fördjupningen. Inget här är beroende av AI eller samtycke -
@@ -1271,6 +1280,11 @@
 					<h2 id="analysis-heading">Det som börjar synas</h2>
 				</div>
 				<p class="analysis-intro">Samband som går att räkna fram ur dina egna registreringar.</p>
+				{#if progressAnalysis?.lowConfidence && !insightsLoading && !insightsError && (isAnonymous || hasSensitiveDataConsent)}
+					<p class="analysis-low-confidence" data-testid="analysis-low-confidence">
+						<strong>Låg säkerhet.</strong> Perioden har {progressAnalysis.relevantEntryCount ?? 0} inlägg med både text och humör. Med färre än 10 är underlaget litet.
+					</p>
+				{/if}
 				{#if !isAnonymous && !hasSensitiveDataConsent}
 					<ConsentGate
 						title="Se analys av dina mönster"
@@ -1414,6 +1428,17 @@
 				{/if}
 			</section>
 
+			{#if !isAnonymous && hasSensitiveDataConsent}
+				<section class="card reflection-card lighter-days-card" aria-labelledby="lighter-days-heading" data-testid="lighter-days">
+					<LighterDaysCard
+						view={lighterDaysView}
+						loading={insightsLoading}
+						failed={Boolean(insightsError)}
+						onChanged={loadInsights}
+					/>
+				</section>
+			{/if}
+
 			{#if showSupportCard}
 				<section class="card reflection-card support-card" aria-labelledby="support-heading" data-testid="support-suggestions">
 					<div class="card-header">
@@ -1540,6 +1565,7 @@
 					</p>
 				{/if}
 			</section>
+			{/if}
 		</div>
 	</div>
 
@@ -1861,6 +1887,17 @@
 
 	.analysis-intro {
 		color: hsl(var(--muted-foreground));
+	}
+
+	/* Litet underlag ska synas direkt, före slutsatserna - inte gömt i detaljerna. */
+	.analysis-low-confidence {
+		margin: 0;
+		padding: 0.7rem 0.9rem;
+		border-left: 3px solid hsl(var(--border));
+		border-radius: 0 0.65rem 0.65rem 0;
+		background: hsl(var(--muted) / 0.4);
+		color: hsl(var(--foreground));
+		line-height: 1.5;
 	}
 
 	.analysis-basis {
@@ -2721,38 +2758,6 @@
 
 	}
 
-	.account-preview-content {
-		position: relative;
-	}
-
-	.account-preview-content::after {
-		content: '';
-		position: absolute;
-		inset: 0;
-		z-index: 3;
-		border-radius: 8px;
-		background:
-			linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(248, 244, 232, 0.18)),
-			rgba(255, 255, 255, 0.14);
-		backdrop-filter: blur(2.5px);
-		pointer-events: none;
-	}
-
-	.account-preview-content > :not(.progress-preview-note) {
-		opacity: 0.68;
-		filter: saturate(0.82);
-		pointer-events: none;
-		user-select: none;
-	}
-
-	.progress-preview-note {
-		position: absolute;
-		z-index: 4;
-		top: clamp(1rem, 2vw, 1.35rem);
-		right: clamp(1rem, 2vw, 1.35rem);
-		width: min(28rem, calc(100% - 2rem));
-	}
-
 	.loading-state, .error-state { text-align: center; padding: 2rem 1rem; font-size: 1.05rem; }
 	.loading-state { color: hsl(var(--muted-foreground)); }
 	.error-state small { display: block; margin-top: 0.5rem; opacity: 0.9; font-size: 0.9rem; }
@@ -2969,14 +2974,6 @@
 
 		.framsteg-shell + .framsteg-shell {
 			margin-top: 20px;
-		}
-
-		.progress-preview-note {
-			position: relative;
-			top: auto;
-			right: auto;
-			width: 100%;
-			margin-bottom: 0.25rem;
 		}
 
 		.card { padding: 1.5rem; }

@@ -51,6 +51,7 @@ const METADATA_FIELDS = [
 	'birthday',
 	'personal_goals',
 	'progress_companion',
+	'progress_theme_overrides',
 	'profile_theme',
 	'ai_diary_context_enabled'
 ] as const;

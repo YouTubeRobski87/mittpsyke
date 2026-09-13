@@ -5,9 +5,8 @@
 // inga generiska självhjälpsråd, ingen språkmodell. Copyn är fast och ligger i
 // $lib/progress-support; här räknas bara fram vilket förslag som har täckning.
 //
-// Sambanden hämtas från buildTopicMoodAssociations, samma källa som
-// "Vad verkar hjälpa?". Ett förslag kan därför aldrig vila på ett svagare
-// underlag än den observation användaren redan ser längre upp på sidan.
+// Sambanden hämtas från buildTopicMoodAssociations. Ett förslag skapas bara
+// när ett tema har en jämförelsegrupp och skiljer sig tydligt från den.
 
 import { containsAcuteCrisisPhrase, containsThirdPartyRiskPhrase } from '$lib/ai/crisis-keywords';
 import {
