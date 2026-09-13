@@ -20,19 +20,55 @@
 
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Integritetspolicy</h1>
 	<p class="opacity-80 leading-relaxed mb-4">
-		MittPsyke är ett AI-baserat samtalsstöd för reflektion och stöd i vardagen. Här förklarar vi i enkel svenska
-		vilka uppgifter som kan behandlas, varför de används och vilka val du har.
-	</p>
-	<p class="opacity-70 leading-relaxed text-sm mb-4">
-		Snabbt svar: du kan börja anonymt utan konto. Med konto kan du spara historik, exportera data och radera konto när du vill.
+		MittPsyke är en plats för att skriva, reflektera och följa hur du har det över tid, med en AI-chatt som du
+		kan använda om du vill. Här förklarar vi i enkel svenska vilka uppgifter som kan behandlas, varför de används
+		och vilka val du har.
 	</p>
 	<p class="opacity-70 leading-relaxed text-sm">
 		Hoppa direkt till:
-		<a href="#snabb-oversikt" class="underline hover:no-underline">snabb överblick</a>,
+		<a href="#sammanfattning" class="underline hover:no-underline">sammanfattning</a>,
 		<a href="#anonymt-lage" class="underline hover:no-underline">anonymt läge</a>,
 		<a href="#med-konto" class="underline hover:no-underline">med konto</a>,
+		<a href="#ai-minne" class="underline hover:no-underline">AI-minne</a>,
+		<a href="#diktering" class="underline hover:no-underline">diktering</a>,
+		<a href="#leverantorer" class="underline hover:no-underline">leverantörer</a>,
 		<a href="#sa-gor-du" class="underline hover:no-underline">export och radering</a>.
 	</p>
+
+	<!-- SAMMANFATTNING -->
+	<section id="sammanfattning" class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 sm:p-5 mt-6" aria-label="Sammanfattning">
+		<h2 class="text-lg font-semibold mt-0 mb-3">Sammanfattning</h2>
+		<div class="grid gap-4 sm:grid-cols-3">
+			<div>
+				<h3 class="text-sm font-semibold mt-0 mb-1.5">Utan konto</h3>
+				<ul class="opacity-80 leading-relaxed text-sm list-disc pl-5 space-y-1.5">
+					<li>Dagboksutkast stannar i din webbläsare.</li>
+					<li>Gästchattar sparas inte av MittPsyke. Det du skickar går till OpenAI för att ett svar ska skapas.</li>
+					<li>Analysverktyg används bara om du godkänner dem.</li>
+				</ul>
+			</div>
+			<div>
+				<h3 class="text-sm font-semibold mt-0 mb-1.5">Med konto</h3>
+				<ul class="opacity-80 leading-relaxed text-sm list-disc pl-5 space-y-1.5">
+					<li>Det du sparar lagras i Supabase inom EU.</li>
+					<li>Chatten kan spara ett kort AI-minne, högst tio teman.</li>
+					<li>Du kan själv exportera din data och radera kontot i inställningarna.</li>
+				</ul>
+			</div>
+			<div>
+				<h3 class="text-sm font-semibold mt-0 mb-1.5">Externa tjänster</h3>
+				<ul class="opacity-80 leading-relaxed text-sm list-disc pl-5 space-y-1.5">
+					<li>OpenAI och Anthropic när du använder en AI-funktion.</li>
+					<li>Webbläsarens taligenkänning när du använder Prata in.</li>
+					<li>Have I Been Pwned när du kontrollerar en e-postadress.</li>
+					<li>Render, Cloudflare och Supabase för drift och lagring.</li>
+				</ul>
+			</div>
+		</div>
+		<p class="opacity-70 leading-relaxed text-sm mt-4 mb-0">
+			MittPsyke är inte vård eller behandling. Vid akut fara, ring 112. För vårdråd i Sverige, kontakta 1177.
+		</p>
+	</section>
 
 	<!-- PERSONUPPGIFTSANSVARIG -->
 	<section class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 sm:p-5 mt-6" aria-label="Personuppgiftsansvarig">
@@ -41,20 +77,7 @@
 			<li><strong>Företag:</strong> MittPsyke (Enskild näringsverksamhet)</li>
 			<li><strong>Organisationsnummer:</strong> 198712284895</li>
 			<li><strong>Grundare:</strong> Robert Claesson</li>
-				<li><strong>E-post:</strong> <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a></li>
-		</ul>
-	</section>
-
-	<!-- SNABB ÖVERBLICK -->
-	<section id="snabb-oversikt" class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 sm:p-5 mt-6" aria-label="Snabb överblick">
-		<h2 class="text-lg font-semibold mt-0 mb-2">Snabb överblick</h2>
-		<ul class="opacity-80 leading-relaxed list-disc pl-6 space-y-2.5">
-			<li><strong>Är detta vård?</strong> Nej. MittPsyke är ett samtalsstöd, inte vård eller behandling.</li>
-			<li><strong>Kan man använda tjänsten anonymt?</strong> Ja. Du kan chatta utan konto.</li>
-			<li><strong>Vad sparas med konto?</strong> E-post, sparad dagbokstext, chatthistorik och inställningar — du väljer själv vad du skriver.</li>
-			<li><strong>Kan jag radera kontot?</strong> Ja. Du kan radera kontot och den databasdata som hör till det via inställningar eller genom att kontakta oss.</li>
-			<li><strong>Kan jag exportera min data?</strong> Ja. Under Inställningar → Din data kan du själv ladda ner en JSON-fil med bland annat dina dagboksinlägg, incheckningar, chattar och inställningar. Vill du ha en kopia på annat sätt kan du kontakta oss.</li>
-			<li><strong>Akut läge?</strong> Ring 112 vid akut fara. För vårdråd i Sverige, kontakta 1177.</li>
+			<li><strong>E-post:</strong> <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a></li>
 		</ul>
 	</section>
 
@@ -68,7 +91,7 @@
 			<li><strong>Ingen profil skapas</strong> — du använder tjänsten utan konto.</li>
 			<li><strong>Ingen historik i konto</strong> — om du inte skapar konto finns ingen sparad historik kopplad till ett konto i MittPsyke.</li>
 			<li><strong>Ingen e-post krävs</strong> — du behöver inte registrera dig.</li>
-			<li><strong>Inga kakor utöver funktionella</strong> — om du inte godkänner analytics i cookie-bannern.</li>
+			<li><strong>Inga kakor utöver funktionella</strong> — om du inte godkänner analys i cookie-bannern.</li>
 		</ul>
 		<p class="opacity-70 leading-relaxed text-sm mt-3">
 			{dataflowCopy.guestChat.retention} {dataflowCopy.guestChat.aiTransfer}
@@ -80,11 +103,12 @@
 	</section>
 
 	<section id="med-konto" class="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-950/30 p-4 sm:p-5 mt-2 mb-6" aria-label="Med konto">
-		<h2 class="text-lg font-semibold mt-0 mb-2">Med konto — vad du får</h2>
+		<h2 class="text-lg font-semibold mt-0 mb-2">Med konto</h2>
 		<ul class="opacity-80 leading-relaxed text-sm list-disc pl-6 space-y-2">
-			<li><strong>Spara och fortsätt</strong> — behåll dagbok, chatt och inställningar över tid.</li>
-			<li><strong>Följ ditt mående</strong> — se mönster och kom tillbaka där du var.</li>
-			<li><strong>Export och radering</strong> — du kan begära en kopia av din data eller radera konto och innehåll.</li>
+			<li><strong>Spara och fortsätt</strong> — dagbok, kvällsincheckningar, chattar och inställningar sparas i Supabase så att du kan komma tillbaka till dem.</li>
+			<li><strong>Följ ditt mående</strong> — det du själv sparar kan visas som mönster över tid.</li>
+			<li><strong>AI-minne i chatten</strong> — chatten kan spara korta teman för kontinuitet, se <a href="#ai-minne" class="underline hover:no-underline">AI-minne</a>.</li>
+			<li><strong>Export och radering</strong> — du exporterar din data och raderar kontot själv i inställningarna, se <a href="#sa-gor-du" class="underline hover:no-underline">export och radering</a>.</li>
 		</ul>
 	</section>
 
@@ -113,9 +137,12 @@
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li>Kontouppgifter, till exempel e-postadress och tekniska identifierare som behövs för inloggning.</li>
 		<li>Innehåll som du själv väljer att skriva eller spara, till exempel i dagbok, chatt eller andra fält i tjänsten.</li>
+		<li>Korta teman som chatten sparar som AI-minne när du är inloggad.</li>
 		<li>Uppgifter i kontoinställningar, till exempel tilltalsnamn och val kring påminnelser eller utskick.</li>
 		<li>Tekniska uppgifter som behövs för funktion, säkerhet, missbruksförebyggande arbete och stabil drift.</li>
 		<li>Uppgifter om användning av AI-funktioner när du aktivt väljer att använda dem.</li>
+		<li>Pseudonymiserade användningshändelser, se <a href="#handelser" class="underline hover:no-underline">användningshändelser</a>.</li>
+		<li>En e-postadress som du själv kontrollerar i <a href="/dataintrang" class="underline hover:no-underline">dataintrångskontrollen</a>.</li>
 	</ul>
 
 	<!-- KÄNSLIGA UPPGIFTER -->
@@ -129,6 +156,89 @@
 			<a href="/dashboard/installningar" class="underline hover:no-underline">kontoinställningarna</a>,
 			genom att radera ditt konto eller genom att kontakta oss.
 		</p>
+	</section>
+
+	<!-- AI-MINNE -->
+	<section id="ai-minne" class="scroll-mt-6" aria-label="AI-minne">
+		<h2 class="text-lg font-semibold mt-8 mb-2">AI-minne i chatten</h2>
+		<p class="opacity-80 leading-relaxed mb-3">
+			När du är inloggad och chattar kan MittPsyke spara ett kort minne: högst tio korta teman som
+			sammanfattas ur dina senaste chattmeddelanden, till exempel något du ofta återkommer till.
+			Syftet är kontinuitet, så att chatten inte behöver börja om från början varje gång.
+		</p>
+		<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
+			<li><strong>Bara med konto.</strong> Gästchatten har inget minne.</li>
+			<li><strong>När det skapas.</strong> Minnet uppdateras tidigast efter tre meddelanden från dig och sedan
+				ungefär var tredje meddelande. Då skickas de senaste delarna av samtalet (högst 16 meddelanden) och de
+				teman som redan finns till OpenAI, som returnerar en uppdaterad lista. Det sker bara när du använder
+				chatten efter att ha gett samtycke till AI-behandling.</li>
+			<li><strong>Vad som sparas.</strong> Korta, neutrala teman på högst 240 tecken vardera. AI:n instrueras att
+				inte spara namn, platser, hälsouppgifter eller krisinnehåll, men en sammanfattning kan ändå råka
+				innehålla sådant du själv skrivit.</li>
+			<li><strong>Inte en diagnos.</strong> Minnet är ingen bedömning, diagnos eller medicinsk profil. Temana
+				följer bara med som bakgrund till chatten i dina kommande samtal.</li>
+			<li><strong>Var det lagras.</strong> I Supabase inom EU (Frankfurt), bara åtkomligt för ditt konto.</li>
+			<li><strong>Export och radering.</strong> Minnet ingår som ”sparade teman” i din dataexport och raderas när
+				du raderar kontot. Det finns i dag ingen knapp för att radera enbart minnet. Vill du det, mejla
+				<a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a>.</li>
+		</ul>
+	</section>
+
+	<!-- DIKTERING -->
+	<section id="diktering" class="scroll-mt-6" aria-label="Diktering och uppläsning">
+		<h2 class="text-lg font-semibold mt-8 mb-2">Diktering och uppläsning i chatten</h2>
+		<p class="opacity-80 leading-relaxed mb-3">
+			<strong>Prata in</strong> använder din webbläsares inbyggda taligenkänning (Web Speech API). Det är
+			webbläsaren, inte MittPsyke, som omvandlar tal till text. Beroende på webbläsare och enhet kan det ske på
+			själva enheten eller hos webbläsarens leverantör, till exempel Google eller Apple. Den behandlingen sker
+			utanför MittPsykes server och styrs av webbläsarleverantörens villkor.
+		</p>
+		<p class="opacity-80 leading-relaxed mb-3">
+			MittPsyke tar inte emot något ljud. Den färdiga texten hamnar i chattfältet och hanteras som ett vanligt
+			chattmeddelande när det skickas. Med automatisk sändning skickas texten efter en kort paus, och du kan
+			avbryta innan dess. Vill du undvika taligenkänningen skriver du i stället i textfältet.
+		</p>
+		<p class="opacity-80 leading-relaxed mb-3">
+			<strong>Lyssna</strong> läser upp svar med webbläsarens talsyntes. Vissa röster, till exempel
+			webbläsarens molnbaserade röster, kan skicka texten som läses upp till webbläsarens leverantör.
+		</p>
+	</section>
+
+	<!-- DATAINTRÅNGSKONTROLL -->
+	<section id="dataintrang" class="scroll-mt-6" aria-label="Dataintrångskontroll">
+		<h2 class="text-lg font-semibold mt-8 mb-2">Kontroll av e-post i dataintrång</h2>
+		<p class="opacity-80 leading-relaxed mb-3">
+			På <a href="/dataintrang" class="underline hover:no-underline">dataintrångssidan</a> kan du kontrollera om en
+			e-postadress förekommer i kända dataintrång. Kontrollen görs bara när du själv skriver in en adress och
+			startar den.
+		</p>
+		<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
+			<li>Adressen skickas via MittPsykes server till den externa tjänsten <strong>Have I Been Pwned</strong>, som
+				svarar med vilka kända intrång adressen finns med i.</li>
+			<li>Eftersom anropet görs från servern skickas din IP-adress inte till Have I Been Pwned. Servern använder
+				IP-adressen kortvarigt för att begränsa hur många kontroller som kan göras per minut.</li>
+			<li>MittPsyke sparar inte adressen eller resultatet i någon databas, och resultatet visas bara i din
+				webbläsare.</li>
+		</ul>
+	</section>
+
+	<!-- ANVÄNDNINGSHÄNDELSER -->
+	<section id="handelser" class="scroll-mt-6" aria-label="Användningshändelser">
+		<h2 class="text-lg font-semibold mt-8 mb-2">Användningshändelser på servern</h2>
+		<p class="opacity-80 leading-relaxed mb-3">
+			För att förstå om dagboken används och om människor kommer tillbaka registrerar servern två händelser
+			när du är inloggad och sparar dagboksinlägg: att ett första inlägg har sparats och att du har varit aktiv
+			en andra dag.
+		</p>
+		<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
+			<li>En händelse består av händelsens namn, en tidpunkt och en pseudonym. <strong>Dagbokstext, chattinnehåll,
+				humörvärden och andra uppgifter om hälsa ingår aldrig.</strong></li>
+			<li>Pseudonymen räknas fram ur ditt användar-id med en hemlig nyckel (HMAC), så varken id eller e-post står
+				i klartext. Det är en pseudonymisering, inte en anonymisering: MittPsyke kan räkna fram samma pseudonym
+				igen från ett känt användar-id.</li>
+			<li>Händelserna lagras i Supabase inom EU. De raderas inte när kontot raderas, men kan då inte längre
+				kopplas till ett konto i MittPsyke.</li>
+		</ul>
 	</section>
 
 	<!-- DATAFLÖDESKARTA -->
@@ -171,6 +281,13 @@
 					<td class="px-4 py-3">Tills kontot raderas</td>
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
+					<th scope="row" class="px-4 py-3 font-normal text-left">AI-minne (sparade teman)</th>
+					<td class="px-4 py-3">Supabase. Sammanfattas av OpenAI.</td>
+					<td class="px-4 py-3">Lagring: EU (Frankfurt)</td>
+					<td class="px-4 py-3">Samtycke</td>
+					<td class="px-4 py-3">Ersätts löpande, högst tio teman. Tills kontot raderas</td>
+				</tr>
+				<tr>
 					<th scope="row" class="px-4 py-3 font-normal text-left">Sparad dagbokstext</th>
 					<td class="px-4 py-3">Supabase. {dataflowCopy.savedDiary.aiTransfer}</td>
 					<td class="px-4 py-3">Se leverantörsavtal</td>
@@ -178,13 +295,37 @@
 					<td class="px-4 py-3">Tills inlägget eller kontot raderas</td>
 				</tr>
 				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
-					<th scope="row" class="px-4 py-3 font-normal text-left">Tekniska loggar</th>
-					<td class="px-4 py-3">Driftleverantör (se leverantörsavtal)</td>
-					<td class="px-4 py-3">Se leverantörsavtal</td>
+					<th scope="row" class="px-4 py-3 font-normal text-left">Diktering (Prata in)</th>
+					<td class="px-4 py-3">Din webbläsares taligenkänning</td>
+					<td class="px-4 py-3">Beror på webbläsare och enhet</td>
+					<td class="px-4 py-3">Du startar den själv</td>
+					<td class="px-4 py-3">Styrs av webbläsarleverantören. MittPsyke tar inte emot ljud</td>
+				</tr>
+				<!-- JURIDISKT EJ VERIFIERAT: "Berättigat intresse" som rättslig grund för
+				     dataintrångskontrollen och för de pseudonymiserade användningshändelserna
+				     är MittPsykes egen bedömning och har inte granskats av jurist. -->
+				<tr>
+					<th scope="row" class="px-4 py-3 font-normal text-left">E-post i dataintrångskontrollen</th>
+					<td class="px-4 py-3">MittPsykes server + Have I Been Pwned</td>
+					<td class="px-4 py-3">Se leverantörens villkor</td>
+					<td class="px-4 py-3">Berättigat intresse (kontrollen du begär)</td>
+					<td class="px-4 py-3">Sparas inte av MittPsyke</td>
+				</tr>
+				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
+					<th scope="row" class="px-4 py-3 font-normal text-left">Användningshändelser (pseudonym)</th>
+					<td class="px-4 py-3">Supabase</td>
+					<td class="px-4 py-3">EU (Frankfurt)</td>
 					<td class="px-4 py-3">Berättigat intresse</td>
-					<td class="px-4 py-3">Se leverantörsavtal</td>
+					<td class="px-4 py-3">Sparas utan koppling till kontot i klartext. Raderas inte med kontot</td>
 				</tr>
 				<tr>
+					<th scope="row" class="px-4 py-3 font-normal text-left">Tekniska loggar</th>
+					<td class="px-4 py-3">Render (drift) och Cloudflare (förmedling och skydd)</td>
+					<td class="px-4 py-3">Se leverantörsavtal</td>
+					<td class="px-4 py-3">Berättigat intresse</td>
+					<td class="px-4 py-3">Enligt respektive leverantörs lagringstid</td>
+				</tr>
+				<tr class="bg-black/[0.01] dark:bg-white/[0.01]">
 					<th scope="row" class="px-4 py-3 font-normal text-left">Analyskakor</th>
 					<td class="px-4 py-3">Google Analytics</td>
 					<td class="px-4 py-3">Se leverantörsavtal</td>
@@ -211,19 +352,23 @@
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li>För att skapa och hantera konto och inloggning.</li>
 		<li>För att ge tillgång till funktioner som dagbok, historik, chatt och personliga inställningar.</li>
+		<li>För att ge chatten kontinuitet mellan samtal genom AI-minnet.</li>
 		<li>För att driva, skydda och förbättra tjänsten, till exempel genom felsökning och säkerhetsarbete.</li>
+		<li>För att förstå om tjänstens kärnfunktioner används, genom pseudonymiserade användningshändelser.</li>
 		<li>För att besvara frågor och hantera support, radering, export och andra integritetsärenden.</li>
 		<li>För att uppfylla rättsliga skyldigheter när det krävs.</li>
 	</ul>
 
-	<!-- RÄTTSLIG GRUND -->
+	<!-- RÄTTSLIG GRUND
+	     JURIDISKT EJ VERIFIERAT: berättigat intresse för dataintrångskontrollen och de
+	     pseudonymiserade användningshändelserna. Se kommentaren vid tabellen ovan. -->
 	<h2 class="text-lg font-semibold mt-8 mb-2">Rättslig grund</h2>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
-		<li><strong>Samtycke</strong> – för behandling av känsliga uppgifter om psykisk hälsa (artikel 9.2a GDPR).</li>
+		<li><strong>Samtycke</strong> – för behandling av känsliga uppgifter om psykisk hälsa (artikel 9.2a GDPR), inklusive AI-minnet i chatten.</li>
 		<li><strong>Samtycke</strong> – för analyskakor och statistik (du väljer i cookie-bannern).</li>
 		<li><strong>Avtal</strong> – leverans av tjänstens funktioner när du använder konto och innehåll.</li>
 		<li><strong>Rättsliga skyldigheter</strong> – när lag kräver behandling.</li>
-		<li><strong>Berättigade intressen</strong> – säkerhet, missbruksförebyggande arbete och stabil drift.</li>
+		<li><strong>Berättigade intressen</strong> – säkerhet, missbruksförebyggande arbete, stabil drift, pseudonymiserade användningshändelser och dataintrångskontrollen när du själv startar den.</li>
 	</ul>
 
 	<!-- KAKOR -->
@@ -234,6 +379,10 @@
 		analys i cookie-bannern. Ahrefs används utan cookies men behandlar bland annat sid-URL,
 		referrer och teknisk användningsdata. Du kan när som helst ändra ditt val i cookieinställningarna.
 	</p>
+	<p class="opacity-80 leading-relaxed mb-3">
+		Till Google Analytics skickas sidadresser utan sökfrågor och utan chattens ämne. Ahrefs laddas inte alls på
+		chattens sidor eller på sökningen.
+	</p>
 
 	<!-- LAGRINGSTID -->
 	<h2 class="text-lg font-semibold mt-8 mb-2">Lagringstid</h2>
@@ -241,25 +390,32 @@
 		<li>Kontorelaterade uppgifter sparas så länge kontot är aktivt eller tills du begär radering.</li>
 		<li>{dataflowCopy.accountChat.storage} {dataflowCopy.accountChat.retention}</li>
 		<li>{dataflowCopy.savedDiary.storage}</li>
-		<li>Tekniska loggar och säkerhetsuppgifter sparas hos driftleverantören enligt deras egna lagringstider.</li>
+		<li>AI-minnet ersätts löpande och innehåller högst tio teman. Det raderas när du raderar kontot.</li>
+		<li>Pseudonymiserade användningshändelser raderas inte när kontot raderas, men kan då inte längre kopplas till ett konto.</li>
+		<li>Tekniska loggar och säkerhetsuppgifter sparas hos Render och Cloudflare enligt deras egna lagringstider.</li>
 		<li>{dataflowCopy.guestChat.retention}</li>
 		<li>När uppgifter inte längre behövs raderas eller anonymiseras de.</li>
 	</ul>
 
 	<!-- LEVERANTÖRER -->
-	<h2 class="text-lg font-semibold mt-8 mb-2">Tjänster och leverantörer</h2>
-	<p class="opacity-80 leading-relaxed mb-3">
-		För att driva MittPsyke används externa tekniska leverantörer. Det kan innebära att uppgifter behandlas av dessa
-		leverantörer i den utsträckning det behövs för att tjänsten ska fungera.
-	</p>
-	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
-		<li><strong>Supabase:</strong> konto, inloggning, sessioner och lagring av innehåll. Data lagras inom EU (Frankfurt).</li>
-		<li><strong>OpenAI:</strong> AI-funktioner som chatt och aktivt valda AI-funktioner för sparad dagbokstext. {dataflowCopy.providerRetention}</li>
-		<li><strong>Anthropic:</strong> den guidade dagboken och vissa sammanfattningar, efter ett funktionsspecifikt samtycke.</li>
-		<li><strong>Driftleverantör:</strong> kör MittPsykes servrar och hanterar tekniska loggar som behövs för drift och säkerhet.</li>
-		<li><strong>Soro:</strong> levererar bloggartiklarna. Artiklarna hämtas normalt av MittPsykes server, men om de inte kan laddas den vägen hämtar din webbläsare dem direkt från Soro. Soro används inte för analys eller spårning.</li>
-		<li><strong>Ahrefs:</strong> cookie-fri webbstatistik om trafik och sidvisningar.</li>
-	</ul>
+	<section id="leverantorer" class="scroll-mt-6" aria-label="Tjänster och leverantörer">
+		<h2 class="text-lg font-semibold mt-8 mb-2">Tjänster och leverantörer</h2>
+		<p class="opacity-80 leading-relaxed mb-3">
+			För att driva MittPsyke används externa tekniska leverantörer. Det kan innebära att uppgifter behandlas av dessa
+			leverantörer i den utsträckning det behövs för att tjänsten ska fungera.
+		</p>
+		<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
+			<li><strong>Supabase:</strong> databas, konto, inloggning, sessioner och lagring av innehåll, bilder och videor. Data lagras inom EU (Frankfurt).</li>
+			<li><strong>Render:</strong> kör MittPsykes server och hanterar tekniska loggar som behövs för drift och säkerhet.</li>
+			<li><strong>Cloudflare:</strong> förmedlar trafiken till och från mittpsyke.se och skyddar sajten. Det innebär att tekniska uppgifter som IP-adress och sidförfrågningar passerar Cloudflare.</li>
+			<li><strong>OpenAI:</strong> AI-funktioner som chatt, AI-minnet och aktivt valda AI-funktioner för sparad dagbokstext. {dataflowCopy.providerRetention}</li>
+			<li><strong>Anthropic:</strong> den guidade dagboken och vissa sammanfattningar, efter ett funktionsspecifikt samtycke.</li>
+			<li><strong>Din webbläsares taligenkänning:</strong> när du använder Prata in, se <a href="#diktering" class="underline hover:no-underline">diktering</a>. Leverantören beror på webbläsare och enhet.</li>
+			<li><strong>Have I Been Pwned:</strong> när du själv kontrollerar en e-postadress, se <a href="#dataintrang" class="underline hover:no-underline">dataintrångskontrollen</a>.</li>
+			<li><strong>Soro:</strong> levererar bloggartiklarna. Artiklarna hämtas normalt av MittPsykes server, men om de inte kan laddas den vägen hämtar din webbläsare dem direkt från Soro. Artiklarnas bilder laddas direkt från Soros bildlagring. Soro används inte för analys eller spårning.</li>
+			<li><strong>Google Analytics och Ahrefs:</strong> statistik om hur sajten används, bara efter ditt samtycke.</li>
+		</ul>
+	</section>
 
 	<section class="rounded-2xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4 sm:p-5 mt-2 mb-6" aria-label="Tredjelandsöverföring">
 		<h3 class="text-base font-semibold mt-0 mb-2">Överföring utanför EU/EES</h3>
@@ -273,9 +429,9 @@
 	<!-- BARN OCH MINDERÅRIGA -->
 	<h2 class="text-lg font-semibold mt-8 mb-2">Barn och minderåriga</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		MittPsyke riktar sig inte specifikt till barn under 13 år. Användare under 16 år bör ha vårdnadshavares 
+		MittPsyke riktar sig inte specifikt till barn under 13 år. Användare under 16 år bör ha vårdnadshavares
 		samtycke för att skapa konto. Det anonyma chattläget kan användas av alla åldrar utan registrering.
-		Om vi får kännedom om att ett barn under 13 år har skapat konto utan vårdnadshavares samtycke 
+		Om vi får kännedom om att ett barn under 13 år har skapat konto utan vårdnadshavares samtycke
 		kommer vi att radera kontot.
 	</p>
 
@@ -285,7 +441,7 @@
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 		<li><strong>Tillgång</strong> — få veta vilka uppgifter vi behandlar om dig.</li>
 		<li><strong>Rättelse</strong> — korrigera felaktiga uppgifter.</li>
-		<li><strong>Radering</strong> — begära att ditt konto och alla dina uppgifter raderas.</li>
+		<li><strong>Radering</strong> — begära att ditt konto och dina uppgifter raderas.</li>
 		<li><strong>Dataportabilitet</strong> — få en kopia av dina uppgifter i ett maskinläsbart format.</li>
 		<li><strong>Återkalla samtycke</strong> — du kan ångra givna samtycken när som helst.</li>
 		<li><strong>Invändning</strong> — invända mot behandling som grundas på berättigade intressen.</li>
@@ -293,21 +449,37 @@
 		<li><strong>Klagomål</strong> — lämna klagomål till <a href="https://www.imy.se" class="underline hover:no-underline" target="_blank" rel="noopener">Integritetsskyddsmyndigheten (IMY)</a>.</li>
 	</ul>
 
-	<!-- SÅ HÄR GÖR DU -->
-	<section id="sa-gor-du" class="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-950/30 p-4 sm:p-5 mt-4 mb-6" aria-label="Så gör du">
-		<h3 class="text-base font-semibold mt-0 mb-2">Så här begär du radering eller export</h3>
-		<ol class="opacity-80 leading-relaxed text-sm list-decimal pl-6 space-y-2">
-			<li><strong>Via inställningar</strong> — logga in och gå till <a href="/dashboard/installningar#din-data" class="underline hover:no-underline">Din data</a> i kontoinställningarna för att begära export direkt, eller till <a href="/dashboard/installningar#radera-konto" class="underline hover:no-underline">Radera konto</a> för att radera.</li>
-				<li><strong>Via e-post</strong> — skicka ett mejl till <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a> och ange vad du vill (radering, export, eller båda).</li>
-			<li>Vi bekräftar din begäran och genomför den <strong>inom 30 dagar</strong>.</li>
-			<li>Vid export får du din data i JSON-format via e-post.</li>
-		</ol>
+	<!-- EXPORT OCH RADERING -->
+	<section id="sa-gor-du" class="rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-950/30 p-4 sm:p-5 mt-4 mb-6" aria-label="Export och radering">
+		<h3 class="text-base font-semibold mt-0 mb-2">Export och radering</h3>
+		<p class="opacity-80 leading-relaxed text-sm mb-2"><strong>Exportera själv.</strong> Logga in och gå till
+			<a href="/dashboard/installningar#din-data" class="underline hover:no-underline">Din data</a> i
+			kontoinställningarna. Där laddar du ner en JSON-fil direkt i webbläsaren. Den innehåller e-post och
+			skapandedatum för kontot, dina dagboksinlägg, kvällsincheckningar, svar till följeslagaren, rörelsedata,
+			veckoreflektioner, sparade teman (AI-minnet), dina chattar, inlägg och kommentarer i gemenskapen, trådar
+			och svar från det tidigare forumet, SMS-inställningar samt dina egna inställningar och mål. För bilder och
+			videor innehåller filen deras sökvägar, inte själva filerna. Inlägg och kommentarer i gemenskapen som du
+			redan tagit bort kommer inte med.</p>
+		<p class="opacity-80 leading-relaxed text-sm mb-2"><strong>Radera själv.</strong> Enskilda dagboksinlägg
+			raderar du i dagboken. Hela kontot raderar du under
+			<a href="/dashboard/installningar#radera-konto" class="underline hover:no-underline">Radera konto</a>.
+			Då raderas kontot tillsammans med dagbok, bilder och videor, kvällsincheckningar, chattar, AI-minnet,
+			inlägg och kommentarer i gemenskapen, trådar och svar i det tidigare forumet, samtycken och
+			inställningar. En forumtråd du startat raderas med alla svar i den. Pseudonymiserade
+			användningshändelser och tekniska loggar hos driftleverantörerna raderas inte på det sättet, se ovan.
+			Feedback du skickat via feedbackformuläret och anmälningar du gjort i forumet sparas vidare utan
+			koppling till kontot.</p>
+		<p class="opacity-80 leading-relaxed text-sm mb-2"><strong>Via e-post.</strong> Du kan också mejla
+			<a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a> och ange
+			vad du vill: export, radering av hela kontot eller radering av en viss del, till exempel AI-minnet eller
+			bilder och videor. Begär du export via mejl får du samma JSON-fil, och vill du ha själva bild- och
+			videofilerna skickar vi dem också. Vi bekräftar din begäran och genomför den <strong>inom 30 dagar</strong>.</p>
 	</section>
 
 	<!-- ÄNDRINGAR -->
 	<h2 class="text-lg font-semibold mt-8 mb-2">Ändringar i policyn</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
-		Vi kan komma att uppdatera denna integritetspolicy. Vid väsentliga ändringar informerar vi via tjänsten 
+		Vi kan komma att uppdatera denna integritetspolicy. Vid väsentliga ändringar informerar vi via tjänsten
 		eller e-post (om du har konto). Den senaste versionen finns alltid tillgänglig på denna sida.
 	</p>
 
@@ -317,12 +489,12 @@
 		Har du frågor om hur vi hanterar dina uppgifter? Kontakta oss:
 	</p>
 	<ul class="opacity-80 leading-relaxed mb-3 list-none space-y-1.5">
-			<li><a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a></li>
+		<li><a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a></li>
 		<li>MittPsyke, Org.nr: 198712284895</li>
 	</ul>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Vi strävar efter att svara inom 30 dagar.
 	</p>
 
-	<p class="opacity-60 text-sm mt-10">Senast uppdaterad: 10 juni 2026</p>
+	<p class="opacity-60 text-sm mt-10">Senast uppdaterad: 13 september 2026</p>
 </main>

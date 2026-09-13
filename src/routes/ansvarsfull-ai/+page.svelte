@@ -75,6 +75,8 @@
 	<h2 class="text-lg font-semibold mt-8 mb-2">Data i AI-samtal</h2>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Konton har egna, skyddade samtal. {dataflowCopy.accountChat.storage}
+		Inloggad kan chatten också spara ett kort AI-minne med högst tio teman för kontinuitet mellan samtal,
+		se <a href="/integritet#ai-minne" class="underline hover:no-underline">AI-minne</a>.
 		Använder du chatten utan att logga in ser det annorlunda ut: {dataflowCopy.guestChat.retention}
 		I båda fallen gäller samma princip: dina samtal är inte offentliga
 		och delas inte som träningsdata för andra syften. Fullständig information om vilka uppgifter som

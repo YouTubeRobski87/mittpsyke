@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
 import { env as privateEnv } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { deleteAccountContent } from '$lib/server/account-deletion';
 import type { RequestHandler } from './$types';
 import type { DeleteAccountErrorResponse, DeleteAccountSuccessResponse } from '$lib/types';
 
@@ -49,6 +50,15 @@ export const DELETE: RequestHandler = async ({ request }) => {
 	const serviceClient = createClient(supabaseUrl, serviceRoleKey, {
 		auth: { autoRefreshToken: false, persistSession: false }
 	});
+
+	// Innehåll som inte följer med kontot i kaskad raderas först. Misslyckas det
+	// avbryts raderingen, så att inga chattar eller filer blir kvar utan ägare.
+	try {
+		await deleteAccountContent(serviceClient, user.id);
+	} catch (error) {
+		console.error('Failed to delete account content', error);
+		return errorResponse('Kunde inte radera kontot.', 500);
+	}
 
 	const { error: deleteError } = await serviceClient.auth.admin.deleteUser(user.id);
 	if (deleteError) {

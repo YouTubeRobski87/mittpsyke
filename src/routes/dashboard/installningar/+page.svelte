@@ -914,7 +914,8 @@
 			</p>
 			<p class="field-hint">
 				Filen innehåller dina dagboksinlägg, kvällsincheckningar, svar till följeslagaren,
-				rörelsedata, veckoreflektioner, sparade teman, dina chattar samt dina egna inställningar
+				rörelsedata, veckoreflektioner, sparade teman, dina chattar, inlägg och kommentarer i
+				gemenskapen, trådar och svar från det tidigare forumet samt dina egna inställningar
 				och mål. Den laddas ner som JSON direkt i webbläsaren.
 			</p>
 			<div class="export-actions">

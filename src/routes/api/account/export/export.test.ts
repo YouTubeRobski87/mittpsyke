@@ -38,6 +38,22 @@ const TABLE_ROWS: Record<string, Record<string, unknown>[]> = {
 	weekly_reflections: [{ id: 'w1', user_id: 'user-1', week_start: '2026-02-01', words: [] }],
 	user_memories: [{ id: 'u1', user_id: 'user-1', content: 'Tema', created_at: '2026-02-01T00:00:00.000Z' }],
 	user_sms_preferences: [{ user_id: 'user-1', sms_opt_in: false, phone_number: null }],
+	community_posts: [
+		{ id: 'p1', user_id: 'user-1', content: 'Delat inlägg', mood: 'lugn', created_at: '2026-02-01T00:00:00.000Z' },
+		{ id: 'p2', user_id: 'user-2', content: 'ANNAN', mood: 'lugn', created_at: '2026-02-01T00:00:00.000Z' }
+	],
+	community_comments: [
+		{ id: 'k1', user_id: 'user-1', post_id: 'p2', body: 'Min kommentar', created_at: '2026-02-01T00:00:00.000Z' },
+		{ id: 'k2', user_id: 'user-2', post_id: 'p1', body: 'ANNAN', created_at: '2026-02-01T00:00:00.000Z' }
+	],
+	forum_threads: [
+		{ id: 't1', user_id: 'user-1', title: 'Min tråd', body: 'Text', is_anonymous: true, created_at: '2026-03-22T00:00:00.000Z' },
+		{ id: 't2', user_id: 'user-2', title: 'ANNAN', body: 'ANNAN', is_anonymous: false, created_at: '2026-03-22T00:00:00.000Z' }
+	],
+	forum_replies: [
+		{ id: 'r1', user_id: 'user-1', thread_id: 't2', body: 'Mitt svar', is_anonymous: false, created_at: '2026-03-23T00:00:00.000Z' },
+		{ id: 'r2', user_id: 'user-2', thread_id: 't1', body: 'ANNAN', is_anonymous: true, created_at: '2026-03-23T00:00:00.000Z' }
+	],
 	conversations: [
 		{ id: 'c1', user_id: 'user-1', category: 'A', title: 'Samtal', created_at: '2026-02-01T00:00:00.000Z' },
 		{ id: 'c2', user_id: 'user-2', category: 'B', title: 'ANNAN', created_at: '2026-02-01T00:00:00.000Z' }
@@ -171,13 +187,17 @@ describe('innehållet', () => {
 		mockSupabase();
 		const body = await (await call(request())).json();
 
-		expect(body.export_version).toBe('1');
+		expect(body.export_version).toBe('2');
 		expect(typeof body.exported_at).toBe('string');
 		expect(Object.keys(body.data).sort()).toEqual(
 			[
 				'chattar',
 				'dagboksinlagg',
 				'foljeslagarsvar',
+				'forumsvar',
+				'forumtradar',
+				'gemenskapsinlagg',
+				'gemenskapskommentarer',
 				'installningar',
 				'konto',
 				'kvallsincheckningar',
@@ -187,6 +207,17 @@ describe('innehållet', () => {
 				'veckoreflektioner'
 			].sort()
 		);
+	});
+
+	it('tar med egna forum- och gemenskapsinlägg, men aldrig andras', async () => {
+		mockSupabase();
+		const body = await (await call(request())).json();
+
+		expect(body.data.forumtradar.map((row: { id: string }) => row.id)).toEqual(['t1']);
+		expect(body.data.forumsvar.map((row: { id: string }) => row.id)).toEqual(['r1']);
+		expect(body.data.gemenskapsinlagg.map((row: { id: string }) => row.id)).toEqual(['p1']);
+		expect(body.data.gemenskapskommentarer.map((row: { id: string }) => row.id)).toEqual(['k1']);
+		expect(JSON.stringify(body.data)).not.toContain('ANNAN');
 	});
 
 	it('nästlar meddelanden under rätt samtal', async () => {

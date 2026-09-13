@@ -6,7 +6,10 @@ import { grantAiConsent, hasAiConsent, revokeAiConsent } from '$lib/server/ai-co
 // (samtalsstöd). Ett samtycke till dagboksreflektion får därför aldrig
 // auktorisera chatten, och tvärtom.
 export const CHAT_AI_CONSENT_SCOPE = 'chat_ai_support';
-export const CHAT_AI_CONSENT_POLICY_VERSION = 'chat-ai-v1';
+// v2 (2026-09-13): samtyckestexten omfattar nu AI-minnet för inloggade.
+// Samtycken givna under v1 täcker inte minnet och godtas därför inte längre;
+// användaren får frågan igen. Gäller även gästchattens samtyckeskaka.
+export const CHAT_AI_CONSENT_POLICY_VERSION = 'chat-ai-v2';
 
 /**
  * Fail-closed kontroll för AI-chatten. Läser aldrig localStorage, request

@@ -14,6 +14,8 @@
 		confirmationLabel = '',
 		showEmergencyGuidance = false,
 		showDataflowDetails = false,
+		// Chattens AI-minne. Sätts bara där minnet faktiskt kan skapas.
+		memoryHref = '',
 		acceptLabel = 'Jag förstår och vill fortsätta',
 		onAccept = () => {}
 	}: {
@@ -26,6 +28,7 @@
 		confirmationLabel?: string;
 		showEmergencyGuidance?: boolean;
 		showDataflowDetails?: boolean;
+		memoryHref?: string;
 		acceptLabel?: string;
 		onAccept?: () => void | Promise<void>;
 	} = $props();
@@ -80,6 +83,14 @@
 		<p class="mt-2 text-xs opacity-65">
 			Läs mer i <a class="underline underline-offset-2" href={policyHref}>integritetspolicyn</a>
 			och <a class="underline underline-offset-2" href={responsibilityHref}>ansvarsinformationen</a>.
+		</p>
+	{/if}
+
+	{#if memoryHref}
+		<p class="consent-memory mt-2 text-xs leading-relaxed opacity-80">
+			Är du inloggad kan chatten också spara ett kort AI-minne med högst tio teman ur dina
+			meddelanden, så att nästa samtal inte börjar från noll. Det är ingen diagnos.
+			<a class="underline underline-offset-2" href={memoryHref}>Om AI-minnet</a>.
 		</p>
 	{/if}
 

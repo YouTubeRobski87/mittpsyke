@@ -319,6 +319,22 @@ describe('privacy-safe navigation and analytics', () => {
 	});
 });
 
+describe('det gamla forumet är inte publikt läsbart', () => {
+	// Forumet finns inte längre, men trådar och svar gick att läsa via Supabase-API:t
+	// med den publika nyckeln, inklusive user_id för inlägg som visats som anonyma.
+	it('tar bort de publika läspolicyerna och all anon-behörighet', () => {
+		const migration = projectFile('../../supabase/migrations/20260913120000_close_public_forum_access.sql');
+
+		expect(migration).toContain('drop policy if exists "forum_threads_public_select" on public.forum_threads;');
+		expect(migration).toContain('drop policy if exists "forum_replies_public_select" on public.forum_replies;');
+		for (const table of ['forum_threads', 'forum_replies', 'forum_reports']) {
+			expect(migration).toContain(`revoke all on table public.${table} from anon;`);
+		}
+		// Innehållet ska inte röras av migrationen.
+		expect(migration).not.toMatch(/^\s*(delete|update|truncate)\b/im);
+	});
+});
+
 describe('server-owned AI consent boundaries', () => {
 	it('gates both Storify provider routes before Anthropic', () => {
 		for (const path of [

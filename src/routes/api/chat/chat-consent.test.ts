@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Trust Pass V3.2: inloggad chatt bakom serverägt samtycke, scope
 // chat_ai_support. Den gamla headern och user_metadata är båda skrivbara av
@@ -288,7 +289,47 @@ describe('scope-avgränsning', () => {
 		expect(chatConsent.CHAT_AI_CONSENT_SCOPE).toBe('chat_ai_support');
 		expect(diaryConsent.DIARY_AI_CONSENT_SCOPE).toBe('diary_ai_reflection');
 		expect(chatConsent.CHAT_AI_CONSENT_SCOPE).not.toBe(diaryConsent.DIARY_AI_CONSENT_SCOPE);
-		expect(chatConsent.CHAT_AI_CONSENT_POLICY_VERSION).toBe('chat-ai-v1');
+		expect(chatConsent.CHAT_AI_CONSENT_POLICY_VERSION).toBe('chat-ai-v2');
+	});
+
+	it('godtar inte längre ett samtycke givet under v1, efter att AI-minnet lagts till', async () => {
+		// chat-ai-consent är mockad i den här filen; konstanterna hämtas oförändrade
+		// och kontrollen görs med den riktiga hasAiConsent, som hasChatAiConsent anropar.
+		const { CHAT_AI_CONSENT_SCOPE, CHAT_AI_CONSENT_POLICY_VERSION } =
+			await vi.importActual<typeof import('$lib/server/chat-ai-consent')>('$lib/server/chat-ai-consent');
+		const { hasAiConsent } = await import('$lib/server/ai-consent');
+		const rowFor = (policyVersion: string) => ({
+			from: () => ({
+				select: () => ({
+					eq: () => ({
+						eq: () => ({
+							maybeSingle: async () => ({
+								data: { status: 'granted', policy_version: policyVersion, revoked_at: null },
+								error: null
+							})
+						})
+					})
+				})
+			})
+		});
+
+		const check = (policyVersion: string) =>
+			hasAiConsent(
+				rowFor(policyVersion) as unknown as SupabaseClient,
+				'user-1',
+				CHAT_AI_CONSENT_SCOPE,
+				CHAT_AI_CONSENT_POLICY_VERSION
+			);
+		expect(await check('chat-ai-v1')).toBe(false);
+		expect(await check('chat-ai-v2')).toBe(true);
+	});
+
+	it('bumpar bara chattens samtyckesversion, inga andra', async () => {
+		expect((await import('$lib/server/diary-ai-consent')).DIARY_AI_CONSENT_POLICY_VERSION).toBe('diary-ai-v1');
+		expect((await import('$lib/server/storify-ai-consent')).STORIFY_AI_CONSENT_POLICY_VERSION).toBe('diary-storify-v1');
+		expect((await import('$lib/server/weekly-summary-ai-consent')).WEEKLY_SUMMARY_AI_CONSENT_POLICY_VERSION).toBe('weekly-summary-v1');
+		expect((await import('$lib/server/daily-question-ai-consent')).DAILY_QUESTION_AI_CONSENT_POLICY_VERSION).toBe('diary-daily-question-v1');
+		expect((await import('$lib/consent')).HEALTH_CONSENT_VERSION).toBe('2026-04-29');
 	});
 
 	it('chatroute läser inte dagbokens consenthelper', () => {

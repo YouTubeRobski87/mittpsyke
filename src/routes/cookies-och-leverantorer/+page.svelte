@@ -78,12 +78,22 @@
 	<div class="provider-list">
 		<section class="provider-card" aria-label="Supabase">
 			<h3 class="text-base font-semibold mt-0 mb-2">Supabase</h3>
-			<p>Konto, inloggning, sessioner och lagring av innehåll som du väljer att spara.</p>
+			<p>Konto, inloggning, sessioner och lagring av innehåll som du väljer att spara. Data lagras inom EU (Frankfurt).</p>
 			<p>Kan behandla kontouppgifter, tekniska identifierare och sparat innehåll.</p>
+		</section>
+		<section class="provider-card" aria-label="Render">
+			<h3 class="text-base font-semibold mt-0 mb-2">Render</h3>
+			<p>Kör MittPsykes server.</p>
+			<p>Kan behandla tekniska loggar som behövs för drift och säkerhet.</p>
+		</section>
+		<section class="provider-card" aria-label="Cloudflare">
+			<h3 class="text-base font-semibold mt-0 mb-2">Cloudflare</h3>
+			<p>Förmedlar trafiken till och från mittpsyke.se och skyddar sajten.</p>
+			<p>Kan behandla tekniska uppgifter som IP-adress och sidförfrågningar.</p>
 		</section>
 		<section class="provider-card" aria-label="OpenAI">
 			<h3 class="text-base font-semibold mt-0 mb-2">OpenAI</h3>
-			<p>AI-funktioner som chatt, reflektioner och vissa dagboksrelaterade svar.</p>
+			<p>AI-funktioner som chatt, chattens AI-minne, reflektioner och vissa dagboksrelaterade svar.</p>
 			<p>Kan behandla text du skickar till AI-funktioner. Hur länge OpenAI behåller den texten styrs av OpenAI:s egna villkor för deras API.</p>
 		</section>
 		<section class="provider-card" aria-label="Anthropic">
@@ -93,8 +103,18 @@
 		</section>
 		<section class="provider-card" aria-label="Soro">
 			<h3 class="text-base font-semibold mt-0 mb-2">Soro</h3>
-			<p>Används för att hämta bloggartiklar från Soro-integrationen.</p>
+			<p>Används för att hämta bloggartiklar från Soro-integrationen. Artiklarnas bilder laddas direkt från Soros bildlagring.</p>
 			<p>Soro används inte som analysverktyg i MittPsykes cookie-samtycke.</p>
+		</section>
+		<section class="provider-card" aria-label="Webbläsarens taligenkänning">
+			<h3 class="text-base font-semibold mt-0 mb-2">Webbläsarens taligenkänning</h3>
+			<p>Används när du väljer Prata in i chatten. Beroende på webbläsare och enhet kan talet behandlas på enheten eller hos webbläsarens leverantör, till exempel Google eller Apple.</p>
+			<p>MittPsyke tar inte emot något ljud, bara den färdiga texten. Läs mer om <a href="/integritet#diktering">diktering</a>.</p>
+		</section>
+		<section class="provider-card" aria-label="Have I Been Pwned">
+			<h3 class="text-base font-semibold mt-0 mb-2">Have I Been Pwned</h3>
+			<p>Används bara när du själv kontrollerar en e-postadress på dataintrångssidan.</p>
+			<p>Tar emot adressen via MittPsykes server. MittPsyke sparar varken adressen eller resultatet. Läs mer om <a href="/integritet#dataintrang">dataintrångskontrollen</a>.</p>
 		</section>
 		<section class="provider-card" aria-label="Google Analytics">
 			<h3 class="text-base font-semibold mt-0 mb-2">Google Analytics</h3>

@@ -22,7 +22,7 @@ import type { RequestHandler } from './$types';
 
 // SvelteKit tillåter bara HTTP-verb och _-prefixade namn som named exports i
 // +server-filer. Understrecket är alltså krav, inte stil.
-export const _EXPORT_VERSION = '1';
+export const _EXPORT_VERSION = '2';
 
 /** Tabeller som exporteras, med de kolumner användaren själv har skapat. */
 const EXPORT_TABLES = [
@@ -31,7 +31,14 @@ const EXPORT_TABLES = [
 	{ key: 'foljeslagarsvar', table: 'companion_daily_answers', columns: 'answer_date, question_id, answer_id, created_at', orderBy: 'answer_date' },
 	{ key: 'rorelse', table: 'daily_movement', columns: 'id, entry_date, step_count, cycled_today, cycled_km, created_at, updated_at', orderBy: 'entry_date' },
 	{ key: 'veckoreflektioner', table: 'weekly_reflections', columns: 'id, week_start, words, quoted_sentence, movement, open_question, status, created_at', orderBy: 'week_start' },
-	{ key: 'sparade_teman', table: 'user_memories', columns: 'id, content, created_at', orderBy: 'created_at' }
+	{ key: 'sparade_teman', table: 'user_memories', columns: 'id, content, created_at', orderBy: 'created_at' },
+	// Gemenskapen: inlägg du delat och kommentarer du skrivit. RLS släpper bara
+	// igenom rader som inte är borttagna (deleted_at är null).
+	{ key: 'gemenskapsinlagg', table: 'community_posts', columns: 'id, diary_entry_id, content, mood, created_at', orderBy: 'created_at' },
+	{ key: 'gemenskapskommentarer', table: 'community_comments', columns: 'id, post_id, body, created_at, updated_at', orderBy: 'created_at' },
+	// Det tidigare forumet. Egna trådar och svar, även de du tagit bort.
+	{ key: 'forumtradar', table: 'forum_threads', columns: 'id, category_id, title, body, is_anonymous, display_name, created_at, updated_at, deleted_at', orderBy: 'created_at' },
+	{ key: 'forumsvar', table: 'forum_replies', columns: 'id, thread_id, body, is_anonymous, display_name, created_at, updated_at, deleted_at', orderBy: 'created_at' }
 ] as const;
 
 /**

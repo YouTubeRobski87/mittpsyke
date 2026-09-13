@@ -1036,9 +1036,10 @@
 					dataLabel="Meddelanden du väljer att skicka i chatten"
 					serviceLabel="MittPsyke och OpenAI för att skapa ett svar"
 					requireExplicitConfirmation
-					confirmationLabel="Jag samtycker uttryckligen till att MittPsyke och OpenAI behandlar meddelanden jag väljer att skicka i chatten för att kunna ge ett svar här."
+					confirmationLabel="Jag samtycker uttryckligen till att MittPsyke och OpenAI behandlar meddelanden jag väljer att skicka i chatten för att kunna ge ett svar här, och att chatten sparar ett kort AI-minne när jag är inloggad."
 					showEmergencyGuidance
 					showDataflowDetails
+					memoryHref="/integritet#ai-minne"
 					acceptLabel="Jag samtycker och vill fortsätta"
 					onAccept={acceptSensitiveConsent}
 				/>
