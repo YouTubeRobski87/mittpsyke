@@ -20,7 +20,7 @@ describe('inloggad startsida', () => {
 		expect(body).toContain('Framsteg');
 		expect(body).toContain('Dagbok');
 		expect(body).toContain('>Kvällstugan</strong>');
-		expect(body).toContain('kvällsincheckning');
+		expect(body).toContain('Stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.');
 		expect(body).not.toContain('Kvällslugn');
 		expect(body).toContain('Artiklar');
 

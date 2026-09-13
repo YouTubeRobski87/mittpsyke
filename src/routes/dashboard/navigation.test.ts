@@ -39,7 +39,8 @@ describe('Mitt Hem som navigationsnav', () => {
 		expect(heroPanel).toMatch(
 			/class="cabin-entrance"[\s\S]{0,160}?href="\/dashboard\/kvallsstugan"/
 		);
-		expect(heroPanel).toContain("'Gå in i Kvällstugan'");
+		expect(heroPanel).toContain("'Gå in i Kvällstugan.");
+		expect(heroPanel).toContain('<small>Kvällsincheckning</small>');
 		expect(dashboardSource.match(/href="\/dashboard\/kvallsstugan"/g) ?? []).toHaveLength(1);
 		expect(explorePanel).not.toContain('href="/dashboard/kvallsstugan"');
 		expect(explorePanel).not.toContain('<strong>Kvällstugan</strong>');

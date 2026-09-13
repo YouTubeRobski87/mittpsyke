@@ -94,12 +94,12 @@
 	</div>
 
 	<!-- Svarar på besökarens fråga "kan jag använda det här?" direkt vid kortet:
-		 nej, det är ett exempel, och svaren ges i Kvällstugan. Länken dit står
+		 nej, det är ett exempel, och Kvällsincheckningen görs i Kvällstugan. Länken dit står
 		 direkt efter i startsidans sektion, inte inuti exemplet. Ligger i samma
 		 figure som kortet, så kopplingen är explicit i markupen och blir
 		 figurens tillgängliga namn. -->
 	<figcaption class="cabin-proof-caption">
-		Här är det bara ett exempel. Du svarar i Kvällstugan.
+		Här är det bara ett exempel. Kvällsincheckningen gör du i Kvällstugan.
 	</figcaption>
 </figure>
 {/if}

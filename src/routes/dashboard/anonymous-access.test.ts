@@ -14,10 +14,12 @@ describe('anonyma dashboardvägar', () => {
 	});
 
 	it('förklarar bara för anonyma användare att de skyddade vägarna kräver konto eller inloggning', () => {
-		expect(dashboardSource).toContain("{#if isAnonymous}<small>Logga in för att använda</small>{/if}");
+		expect(dashboardSource).toContain(
+			'{#if isAnonymous}<small>Logga in för att använda</small>{:else}<small>Kvällsincheckning</small>{/if}'
+		);
 		expect(dashboardSource).toContain(
 		"{#if isAnonymous}<span class=\"home-card-action-note\">Konto krävs för att spara</span>{/if}"
 	);
-		expect(dashboardSource).toContain("isAnonymous ? 'Kvällstugan – logga in för att använda'");
+		expect(dashboardSource).toContain("'Kvällstugan – logga in för att använda.");
 	});
 });

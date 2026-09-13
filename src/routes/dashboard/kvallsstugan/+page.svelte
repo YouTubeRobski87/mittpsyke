@@ -382,8 +382,12 @@
 		</div>
 
 		<div class="evening-flow-column" class:is-dimmed={isSleepMode}>
-			<div class="evening-flow-wrap" role="region" aria-labelledby="evening-flow-label">
+			<div class="evening-flow-wrap" role="region" aria-labelledby="evening-flow-label" aria-describedby="evening-flow-intro">
 				<p class="evening-flow-label" id="evening-flow-label">Kvällsincheckning</p>
+				<p class="evening-flow-intro" id="evening-flow-intro">
+					En kort stund för att landa i hur kvällen känns, sätta ord på det som tar mest plats och
+					välja vad du vill bära vidare — eller lägga undan för ikväll.
+				</p>
 				<EveningCheckinFlow oncomplete={handleComplete} />
 			</div>
 			<p class="evening-privacy">
@@ -421,12 +425,21 @@
 
 	.evening-header { margin: 1rem 0 1.15rem; }
 	.evening-flow-label {
-		margin: 0 0 0.6rem;
+		margin: 0 0 0.35rem;
 		color: hsl(var(--muted-foreground));
 		font-size: 0.82rem;
 		font-weight: 700;
 		letter-spacing: 0.07em;
 		text-transform: uppercase;
+	}
+	/* Kärnbeskrivningen av Kvällsincheckningen, direkt ovanför flödet. */
+	.evening-flow-intro {
+		max-width: 62ch;
+		margin: 0 0 1rem;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.95rem;
+		line-height: 1.5;
+		overflow-wrap: break-word;
 	}
 	.evening-header h1 {
 		margin: 0;

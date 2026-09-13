@@ -17,7 +17,7 @@ describe('Stegkortet (card)', () => {
 	});
 
 	it('säger i bildtexten att det bara är ett exempel och var man svarar', () => {
-		expect(body).toContain('Här är det bara ett exempel. Du svarar i Kvällstugan.');
+		expect(body).toContain('Här är det bara ett exempel. Kvällsincheckningen gör du i Kvällstugan.');
 		// Bildtexten ligger i samma figure som kortet och blir dess namn.
 		expect(body).toMatch(/<figure[^>]*cabin-proof--card[\s\S]*<figcaption[\s\S]*bara ett exempel[\s\S]*<\/figure>/);
 	});

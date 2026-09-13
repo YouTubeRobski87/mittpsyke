@@ -67,7 +67,7 @@ describe('ångerväg efter avslut utan att spara', () => {
 		expect(flow).toContain(
 			'if (!themeId || !parkingBucket || saving || saved || finishedWithoutSaving) return;'
 		);
-		expect(flow).toContain('Spara kvällens incheckning');
+		expect(flow).toContain('Spara kvällsincheckningen');
 		expect(flow).toContain('Avsluta utan att spara');
 	});
 });

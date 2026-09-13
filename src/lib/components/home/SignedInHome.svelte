@@ -113,7 +113,7 @@
 						</a>
 						<a href="/dashboard/kvallsstugan">
 							<MoonStar size={19} aria-hidden="true" />
-							<span><strong>Kvällstugan</strong><small>En kort kvällsincheckning när dagen landar.</small></span>
+							<span><strong>Kvällstugan</strong><small>Stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.</small></span>
 						</a>
 						<a href="/blogg">
 							<Newspaper size={19} aria-hidden="true" />

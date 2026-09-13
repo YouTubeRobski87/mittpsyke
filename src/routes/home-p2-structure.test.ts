@@ -31,7 +31,7 @@ describe('Startsidans P2-struktur', () => {
 		expect(h2s).toEqual([
 			'Fyra steg, och sedan börjar det om',
 			'Så ser platsen ut',
-			'En kort incheckning när dagen ska landa',
+			'Kvällsincheckning',
 			'Guider när du behöver ord',
 			'Vad det här är och inte är',
 			'Börja med en mening'
@@ -80,9 +80,13 @@ describe('Startsidans P2-struktur', () => {
 		for (const place of ['Mitt Hem', 'Kvällstugan', 'Följeslagaren']) {
 			expect(map).toContain(`<h3>${place}</h3>`);
 		}
-		// EveningCheckinFlow kräver tema (steg 1) och riktning (steg 3) för att
-		// gå vidare; bara texten och sparandet är valfria.
-		expect(map).toContain('Du tar en fråga i taget och skriver bara det du vill.');
+		// Kortvarianten av Kvällsincheckningens copy.
+		expect(map.replace(/\s+/g, ' ')).toContain(
+			'Här gör du Kvällsincheckningen: stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.'
+		);
+		// Det finns inget val av följeslagare längre.
+		expect(map).toContain('Björnen Balder');
+		expect(map).not.toContain('Ett djur du väljer själv');
 		expect(body).not.toContain('Inget måste besvaras');
 		const tool = map.slice(map.indexOf('place-map-tool'));
 		expect(tool).toContain('<h3>Chatten</h3>');

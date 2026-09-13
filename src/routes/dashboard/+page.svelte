@@ -331,12 +331,16 @@
           class:requires-login={isAnonymous}
           href="/dashboard/kvallsstugan"
           aria-label={
-            isAnonymous ? 'Kvällstugan – logga in för att använda' : 'Gå in i Kvällstugan'
+            isAnonymous
+              ? 'Kvällstugan – logga in för att använda. Stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.'
+              : 'Gå in i Kvällstugan. Stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.'
           }
         >
+          <!-- Etiketten ligger ovanpå stugbilden och hålls därför kort. Den korta
+               beskrivningen av Kvällsincheckningen står i aria-label ovan. -->
           <span class="cabin-entrance-label" aria-hidden="true">
             <span>Kvällstugan</span>
-            {#if isAnonymous}<small>Logga in för att använda</small>{/if}
+            {#if isAnonymous}<small>Logga in för att använda</small>{:else}<small>Kvällsincheckning</small>{/if}
           </span>
         </a>
         <CompanionPose
@@ -809,13 +813,14 @@
     line-height: 1;
     white-space: nowrap;
     transform: translateX(-50%);
+    /* Två rader: platsens namn och funktionen (eller inloggningskravet). */
+    display: grid;
+    gap: 0.18rem;
+    text-align: center;
   }
 
   .cabin-entrance.requires-login .cabin-entrance-label {
-    display: grid;
-    gap: 0.18rem;
     min-width: 7.25rem;
-    text-align: center;
     white-space: normal;
   }
 

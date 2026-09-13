@@ -162,7 +162,7 @@
 	<ConsentGate
 		title="Innan du börjar"
 		dataLabel="Det du väljer eller skriver i kvällsincheckningen"
-		serviceLabel="MittPsyke om du väljer att spara incheckningen"
+		serviceLabel="MittPsyke om du väljer att spara kvällsincheckningen"
 		onAccept={acceptHealthConsent}
 	/>
 {:else}
@@ -271,7 +271,7 @@
 					<p class="evening-hint">Inget sparas om du avslutar utan att spara.</p>
 					<div class="evening-actions evening-actions--stacked">
 						<button class="evening-primary" type="button" disabled={saving} onclick={saveAndFinish}>
-							{saving ? 'Sparar…' : 'Spara kvällens incheckning'}
+							{saving ? 'Sparar…' : 'Spara kvällsincheckningen'}
 						</button>
 						<button class="evening-secondary" type="button" disabled={saving} onclick={finishWithoutSaving}>
 							Avsluta utan att spara

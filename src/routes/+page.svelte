@@ -180,19 +180,18 @@
 				</li>
 				<li>
 					<h3>Kvällstugan</h3>
-					<!-- Kontrollerat mot EveningCheckinFlow: steg 1 (tema) och 3 (riktning)
-						 krävs för att gå vidare, texten i steg 2 och sparandet är valfria.
-						 "Inget måste besvaras" stämde därför inte. -->
+					<!-- Kort varianten av Kvällsincheckningens copy. Detaljerna om stegen
+						 står i Kvällstugans egen sektion längre ner. -->
 					<p>
-						En kort incheckning på kvällen: hur kvällen känns, några ord om du vill skriva dem, och
-						vad du vill göra med det för ikväll. Du tar en fråga i taget och skriver bara det du vill.
+						Här gör du Kvällsincheckningen: stäm av kvällen och lägg undan det du inte behöver bära
+						vidare just nu.
 					</p>
 				</li>
 				<li>
 					<h3>Följeslagaren</h3>
 					<p>
-						Ett djur du väljer själv, ungefär som en profilbild – fast det syns i platsen när du
-						loggar in. Det ber dig aldrig om något, och står kvar som du lämnade det.
+						Björnen Balder, ungefär som en profilbild – fast den syns i platsen när du loggar in.
+						Den ber dig aldrig om något, och står kvar som du lämnade den.
 					</p>
 				</li>
 			</ul>
@@ -210,11 +209,19 @@
 	<section class="home-section section-alt" aria-labelledby="evening-title">
 		<div class="home-inner evening-inner">
 			<div class="narrow">
-				<h2 id="evening-title">En kort incheckning när dagen ska landa</h2>
+				<h2 id="evening-title">Kvällsincheckning</h2>
+				<!-- Den längre, förklarande varianten. Kontrollerad mot EveningCheckinFlow:
+					 steg 1 väljer hur det känns, steg 2 är valfri text, steg 3 väljer vad
+					 som får vänta, och i steg 4 väljer man att spara eller avsluta utan att
+					 spara - och kan därefter stanna kvar i stugan. -->
 				<p>
-					Fyra steg, ett i taget, på någon minut. Det finns inget rätt svar, textrutan får lämnas
-					tom, och ingenting sparas om du inte väljer att spara det. Du gör den i Kvällstugan när
-					du loggat in.
+					Kvällsincheckningen hjälper dig att stanna upp inför kvällen. Du väljer hur det känns, kan
+					skriva vad som tar mest plats och bestämmer sedan om du vill spara det, släppa det för
+					ikväll eller bara vara kvar en stund.
+				</p>
+				<p>
+					Det finns inget rätt svar, textrutan får lämnas tom och ingenting sparas om du inte väljer
+					det. Du gör den i Kvällstugan när du har loggat in.
 				</p>
 			</div>
 			<!-- Produktbeviset. Låg tidigare som överlägg i heron och doldes helt

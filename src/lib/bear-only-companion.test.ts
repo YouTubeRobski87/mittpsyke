@@ -109,7 +109,8 @@ describe('Kvällstugan och Kvällsincheckning', () => {
 
 	it('använder Kvällstugan i ingången på Mitt Hem och på inloggad startsida', () => {
 		const dashboard = read('src/routes/dashboard/+page.svelte');
-		expect(dashboard).toContain("'Kvällstugan – logga in för att använda' : 'Gå in i Kvällstugan'");
+		expect(dashboard).toContain("'Kvällstugan – logga in för att använda.");
+		expect(dashboard).toContain("'Gå in i Kvällstugan.");
 		expect(dashboard).toContain('<span>Kvällstugan</span>');
 		expect(read('src/lib/components/home/SignedInHome.svelte')).toContain('<strong>Kvällstugan</strong>');
 	});

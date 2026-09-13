@@ -18,7 +18,7 @@ describe('sparandet är orört', () => {
 	});
 
 	it('behåller båda avsluten: spara respektive avsluta utan att spara', () => {
-		expect(flow).toContain('Spara kvällens incheckning');
+		expect(flow).toContain('Spara kvällsincheckningen');
 		expect(flow).toContain('Avsluta utan att spara');
 	});
 
