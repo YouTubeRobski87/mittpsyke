@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { getPublishedArticles } from '$lib/server/article-content';
@@ -11,13 +11,13 @@ const failingFetch: typeof fetch = () => Promise.reject(new Error('Soro avstäng
 
 type BlogIndexEvent = Parameters<typeof load>[0];
 
-function createEvent(page: number): BlogIndexEvent {
+function createEvent(page: number, fetcher: typeof fetch = failingFetch): BlogIndexEvent {
 	const url = new URL('https://www.mittpsyke.se/blogg');
 	if (page > 1) url.searchParams.set('page', String(page));
 
 	return {
 		url,
-		fetch: failingFetch,
+		fetch: fetcher,
 		setHeaders: () => {}
 	} as unknown as BlogIndexEvent;
 }
@@ -104,5 +104,38 @@ describe('/blogg index-laddaren', () => {
 		});
 
 		expect(incomplete).toEqual([]);
+	});
+
+	it('deduplicerar normaliserade Soro-destinationer före paginering och behåller den nyaste', async () => {
+		const soroArticles = [
+			{
+				id: 'older',
+				title: 'Äldre kvällsångest',
+				slug: 'Kvallsangest',
+				excerpt: 'Äldre ingress',
+				date: '2026-04-27',
+				isoDate: '2026-04-27'
+			},
+			{
+				id: 'newer',
+				title: 'Nyare kvällsångest',
+				slug: 'kvallsangest',
+				excerpt: 'Nyare ingress',
+				date: '2099-06-26',
+				isoDate: '2099-06-26'
+			}
+		];
+		const fetcher = vi.fn().mockResolvedValue(
+			new Response(`var SORO_ARTICLES = ${JSON.stringify(soroArticles)};`)
+		) as unknown as typeof fetch;
+		const result = (await load(createEvent(1, fetcher))) as IndexPageData;
+		const matching = result.articles.filter((item) => item.href.toLocaleLowerCase('sv') === '/blogg/kvallsangest');
+
+		expect(matching).toHaveLength(1);
+		expect(matching[0]?.title).toBe('Nyare kvällsångest');
+		expect(result.pagination.totalArticles).toBe(getPublishedArticles().length + 2);
+		expect(result.pagination.totalPages).toBe(
+			Math.ceil(result.pagination.totalArticles / 12)
+		);
 	});
 });

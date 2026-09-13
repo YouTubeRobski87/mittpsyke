@@ -124,8 +124,10 @@ function dedupeEntries(entries: SitemapEntry[]): SitemapEntry[] {
 	const uniqueEntries = new Map<string, SitemapEntry>();
 
 	for (const entry of entries) {
-		if (!uniqueEntries.has(entry.path)) {
-			uniqueEntries.set(entry.path, entry);
+		const canonicalUrl = canonical(entry.path);
+		const existing = uniqueEntries.get(canonicalUrl);
+		if (!existing || entry.lastmod > existing.lastmod) {
+			uniqueEntries.set(canonicalUrl, entry);
 		}
 	}
 

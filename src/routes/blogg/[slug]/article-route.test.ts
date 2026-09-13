@@ -41,6 +41,16 @@ async function thrownRedirect(promise: Promise<unknown>) {
 	}
 }
 
+async function loadArticleContent(content: string, title = article('artikel').title) {
+	const fetcher = vi
+		.fn()
+		.mockResolvedValueOnce(listResponse([{ ...article('artikel'), title }]))
+		.mockResolvedValueOnce(new Response(JSON.stringify({ content }), { status: 200 })) as unknown as typeof fetch;
+
+	const result = (await load(createEvent('artikel', fetcher))) as { article: { content: string } };
+	return result.article.content;
+}
+
 describe('/blogg/[slug]', () => {
 	it('renders the known previous 404 article after the corrected slug mapping', async () => {
 		const fetcher = vi
@@ -137,5 +147,29 @@ describe('/blogg/[slug]', () => {
 			.mockResolvedValueOnce(new Response(JSON.stringify({ content: '' }), { status: 200 })) as unknown as typeof fetch;
 
 		expect(await thrownStatus(Promise.resolve(load(createEvent('artikel', fetcher))))).toBe(502);
+	});
+
+	it('removes a duplicated article H1 when it is the first element', async () => {
+		const title = 'En artikelrubrik';
+		const content = await loadArticleContent(`<H1 class="title">${title}</H1><p>Innehåll</p>`, title);
+
+		expect(content).toBe('<p>Innehåll</p>');
+	});
+
+	it('keeps preamble markup but removes a duplicated article H1 after it', async () => {
+		const title = 'Övertänker allt? Därför fastnar tankarna';
+		const content = await loadArticleContent(`<p>En kort ingress</p><h1>${title}</h1><p>Innehåll</p>`, title);
+
+		expect(content).toBe('<p>En kort ingress</p><p>Innehåll</p>');
+	});
+
+	it('converts content H1 section headings to H2 without changing their attributes', async () => {
+		const content = await loadArticleContent(
+			'<h1 id="first">Första avsnittet</h1><H1 class="second">Andra avsnittet</H1>',
+			'En annan artikelrubrik'
+		);
+
+		expect(content).toBe('<h2 id="first">Första avsnittet</h2><h2 class="second">Andra avsnittet</h2>');
+		expect(content).not.toMatch(/<\/?h1\b/i);
 	});
 });

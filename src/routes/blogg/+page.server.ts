@@ -77,6 +77,26 @@ function buildPageItems(url: URL, currentPage: number, totalPages: number) {
 	return items;
 }
 
+function normalizeArticleHref(href: string) {
+	try {
+		const pathname = decodeURIComponent(new URL(href, 'https://mittpsyke.se').pathname);
+		return (pathname === '/' ? pathname : pathname.replace(/\/+$/, '')).toLocaleLowerCase('sv');
+	} catch {
+		return href.toLocaleLowerCase('sv');
+	}
+}
+
+function dedupeArticlesByHref<T extends { href: string }>(articles: T[]) {
+	const uniqueArticles = new Map<string, T>();
+
+	for (const article of articles) {
+		const key = normalizeArticleHref(article.href);
+		if (!uniqueArticles.has(key)) uniqueArticles.set(key, article);
+	}
+
+	return [...uniqueArticles.values()];
+}
+
 export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 	// Bevarar den gamla ?post=-länken: redirecta direkt till /blogg/[slug] istället.
 	const legacyPost = url.searchParams.get('post');
@@ -120,11 +140,14 @@ export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 	});
 
 	const { articles: soroArticles, loadError } = await fetchSoroArticles(fetch);
-	const articles = [
+	const soroIndexArticles = soroArticles
+		.map((article) => ({ ...article, href: `/blogg/${article.slug}` }))
+		.sort((a, b) => Date.parse(b.isoDate) - Date.parse(a.isoDate));
+	const articles = dedupeArticlesByHref([
 		...markdownArticles,
 		...curatedPages,
-		...soroArticles.map((article) => ({ ...article, href: `/blogg/${article.slug}` }))
-	].sort((a, b) => Date.parse(b.isoDate) - Date.parse(a.isoDate));
+		...soroIndexArticles
+	]).sort((a, b) => Date.parse(b.isoDate) - Date.parse(a.isoDate));
 	const totalArticles = articles.length;
 	const totalPages = Math.max(1, Math.ceil(totalArticles / ARTICLES_PER_PAGE));
 	const currentPage = Math.min(requestedPage, totalPages);

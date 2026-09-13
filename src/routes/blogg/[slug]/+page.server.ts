@@ -28,11 +28,47 @@ function fixProtocolLessLinks(html: string): string {
 	return html.replace(/(href=["'])(www\.)/gi, '$1https://$2');
 }
 
-// Soro-innehållet inleds med en egen <h1> (artikelrubriken). Mallen renderar redan
-// <h1>{article.title}</h1> i headern, så den ledande H1:an i innehållet ger en dubbel H1.
-// Strippa den ledande H1:an för samtliga artiklar så att varje sida har exakt en H1.
-function stripLeadingH1(html: string): string {
-	return html.replace(/^\s*<h1\b[^>]*>[\s\S]*?<\/h1>\s*/i, '');
+function decodeHeadingText(value: string): string {
+	return value
+		.replace(/<[^>]+>/g, ' ')
+		.replace(/&#(\d+);/g, (_, code: string) => String.fromCodePoint(Number(code)))
+		.replace(/&#x([\da-f]+);/gi, (_, code: string) => String.fromCodePoint(Number.parseInt(code, 16)))
+		.replace(/&nbsp;/gi, ' ')
+		.replace(/&amp;/gi, '&')
+		.replace(/&quot;/gi, '"')
+		.replace(/&#39;|&apos;/gi, "'")
+		.replace(/\s+/g, ' ')
+		.trim()
+		.toLocaleLowerCase('sv');
+}
+
+function isDuplicateArticleHeading(heading: string, articleTitle: string): boolean {
+	const normalizedHeading = decodeHeadingText(heading);
+	const normalizedTitle = decodeHeadingText(articleTitle);
+	if (!normalizedHeading || !normalizedTitle) return false;
+	if (normalizedHeading === normalizedTitle) return true;
+
+	const headingWords = new Set(normalizedHeading.split(' '));
+	const titleWords = new Set(normalizedTitle.split(' '));
+	const sharedWords = [...headingWords].filter((word) => titleWords.has(word)).length;
+	const allWords = new Set([...headingWords, ...titleWords]).size;
+
+	return Math.min(headingWords.size, titleWords.size) >= 4 && sharedWords / allWords >= 0.7;
+}
+
+// Sidmallen äger artikelns enda H1. Ta bort en eventuell upprepad artikelrubrik
+// från Soro-innehållet och gör övriga H1-rubriker till avsnittsrubriker.
+function normalizeContentHeadings(html: string, articleTitle: string): string {
+	let duplicateRemoved = false;
+
+	return html.replace(/<h1\b([^>]*)>([\s\S]*?)<\/h1>/gi, (match, attributes: string, content: string) => {
+		if (!duplicateRemoved && isDuplicateArticleHeading(content, articleTitle)) {
+			duplicateRemoved = true;
+			return '';
+		}
+
+		return `<h2${attributes}>${content}</h2>`;
+	});
 }
 
 function toAbsoluteUrl(path: string): string {
@@ -143,10 +179,11 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	const title = LOCAL_TITLE_BY_SLUG.get(normalizedSlug) ?? (article.title || 'Artikel');
 	const excerpt = LOCAL_EXCERPT_BY_SLUG.get(normalizedSlug) ?? article.excerpt;
 	const content = fixProtocolLessLinks(
-		stripLeadingH1(
+		normalizeContentHeadings(
 			normalizedSlug === 'psykisk-ohalsa-unga'
 				? normalizeYoungMentalHealthArticleContent(contentPayload.content)
-				: contentPayload.content
+				: contentPayload.content,
+			title
 		)
 	);
 

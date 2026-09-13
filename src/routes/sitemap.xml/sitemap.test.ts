@@ -81,6 +81,20 @@ describe('sitemap.xml', () => {
 		expect(soroLocations[0]).toContain('<lastmod>2026-08-02</lastmod>');
 	});
 
+	it('deduplicates encoded and decoded paths by their final canonical URL', async () => {
+		const response = await getSitemap(
+			soroScript([
+				soroArticle('säkra-maendedata-tjanster', '2026-08-01'),
+				soroArticle('s%C3%A4kra-maendedata-tjanster', '2026-08-03')
+			])
+		);
+		const xml = await response.text();
+		const matches = xml.match(/<loc>https:\/\/mittpsyke\.se\/blogg\/s%C3%A4kra-maendedata-tjanster<\/loc>/g);
+
+		expect(matches).toHaveLength(1);
+		expect(xml).toContain('<lastmod>2026-08-03</lastmod>');
+	});
+
 	it('excludes private and noindex route families and keeps legacy redirects out', () => {
 		expect(normalXml).not.toContain('https://mittpsyke.se/dashboard');
 		expect(normalXml).not.toContain('https://mittpsyke.se/login');

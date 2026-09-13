@@ -25,9 +25,9 @@
 <SEO {canonical} />
 
 <svelte:head>
-	{@html `<script type="application/ld+json">${jsonLd}<\\/script>`}
+	{@html `<script type="application/ld+json">${jsonLd}<\/script>`}
 	{#if faqJsonLd}
-		{@html `<script type="application/ld+json">${faqJsonLd}<\\/script>`}
+		{@html `<script type="application/ld+json">${faqJsonLd}<\/script>`}
 	{/if}
 </svelte:head>
 
