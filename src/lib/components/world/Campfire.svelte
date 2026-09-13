@@ -13,7 +13,7 @@
 	.campfire {
 		position: absolute;
 		/* Gruppen är ankrad i sin jordyta. Den står framför strandkanten men
-		   har fri luft till både textblocket och räven. */
+		   har fri luft till både textblocket och följeslagaren. */
 		left: 65%;
 		top: 87%;
 		z-index: var(--scene-overlay, 5);

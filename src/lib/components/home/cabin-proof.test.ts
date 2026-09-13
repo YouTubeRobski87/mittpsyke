@@ -4,7 +4,7 @@ import CabinProof from './CabinProof.svelte';
 
 // Komponenten har två varianter sedan stegkortet slutade ligga som överlägg
 // ovanpå hero-scenen: `scene` bär landskapet i heron, `card` bär produktbeviset
-// i Kvällsstugan. Att de inte överlappar är hela poängen - kortet doldes
+// i Kvällstugan. Att de inte överlappar är hela poängen - kortet doldes
 // tidigare med display:none under 1120px, vilket lämnade varje telefon utan
 // produkt-UI, och landskapet får inte dyka upp två gånger på samma sida.
 
@@ -17,7 +17,7 @@ describe('Stegkortet (card)', () => {
 	});
 
 	it('säger i bildtexten att det bara är ett exempel och var man svarar', () => {
-		expect(body).toContain('Här är det bara ett exempel. Du svarar i Kvällsstugan.');
+		expect(body).toContain('Här är det bara ett exempel. Du svarar i Kvällstugan.');
 		// Bildtexten ligger i samma figure som kortet och blir dess namn.
 		expect(body).toMatch(/<figure[^>]*cabin-proof--card[\s\S]*<figcaption[\s\S]*bara ett exempel[\s\S]*<\/figure>/);
 	});
@@ -38,7 +38,7 @@ describe('Stegkortet (card)', () => {
 		expect(body).not.toContain('cabin-proof-primary');
 	});
 
-	// Kvällsstugan har redan interiörbilden som sektionens scen. Skulle kortet
+	// Kvällstugan har redan interiörbilden som sektionens scen. Skulle kortet
 	// dra med sig landskapet låg samma motiv två gånger på startsidan.
 	it('drar inte med sig landskapsscenen', () => {
 		expect(body).not.toContain('cabin-proof-scene');

@@ -71,7 +71,7 @@ describe('nästa steg i avslutet', () => {
 		expect(nextBlock).toContain('class="evening-next-link evening-next-stay"');
 	});
 
-	it('tystar nästa steg i stället för att lämna Kvällsstugan', () => {
+	it('tystar nästa steg i stället för att lämna Kvällstugan', () => {
 		expect(flow).toContain('{#if stayingHere}');
 		expect(flow).toContain('Då stannar vi här.');
 	});

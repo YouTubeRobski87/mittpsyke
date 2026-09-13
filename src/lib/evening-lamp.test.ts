@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { getEveningLampCssVariables, getEveningLampStyle } from './evening-lamp';
 
-describe('Kvällsstugans lampsken', () => {
+describe('Kvällstugans lampsken', () => {
 	it('är diskret före kvällen och tydligare när natten kommer', () => {
 		const day = getEveningLampStyle('day');
 		const evening = getEveningLampStyle('evening');

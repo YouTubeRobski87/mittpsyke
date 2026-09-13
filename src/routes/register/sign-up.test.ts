@@ -94,7 +94,7 @@ describe('GA4 sign_up efter registrering', () => {
 		expect(event.cookies.set).not.toHaveBeenCalled();
 	});
 
-	// Startsidans Kvällsstugan-CTA går till /login?redirect=/dashboard/kvallsstugan.
+	// Startsidans Kvällstugan-CTA går till /login?redirect=/dashboard/kvallsstugan.
 	// Den som saknar konto och väljer "Registrera dig" hamnade tidigare på
 	// /dashboard, eftersom registreringen alltid skickade dit.
 	it('för registreringen vidare till målet som följde med från inloggningen', async () => {

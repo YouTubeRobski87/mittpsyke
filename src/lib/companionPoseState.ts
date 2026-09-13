@@ -37,52 +37,13 @@ const positionStorageKeyFor = (
 	preference: CompanionPosePreference = 'default'
 ) => `mittpsyke:companion-position:${companionId}:${scene ?? 'any'}:${preference}:v1`;
 
-const CALM_POSE_IDS = new Set([
-	'idle',
-	'look-left',
-	'look-right',
-	'sit',
-	'sit-look-up',
-	'evening-lake',
-	'rest',
-	'sleep-curled',
-	'sleep-side',
-	'bear-sitting',
-	'bear-sleeping',
-	'wolf-standing',
-	'wolf-sleeping',
-	'schafer-sitting',
-	'schafer-sideway',
-	'schafer-resting',
-	'schafer-sleeping',
-	'australisk-shepherd-sitting',
-	'australisk-shepherd-lying',
-	'australisk-shepherd-resting',
-	'australisk-shepherd-sleeping'
-]);
+const CALM_POSE_IDS = new Set(['bear-sitting', 'bear-sleeping']);
 
 // Används där följeslagaren delar en stilla stund med personen i scenen.
 // Bara poser som faktiskt sitter, ligger eller sover får väljas; om en
 // följeslagare saknar sådan bild för aktuell dygnsdel faller valet mjukt
 // tillbaka till dess vanliga lugna pose.
-const RESTING_POSE_IDS = new Set([
-	'sit',
-	'sit-look-up',
-	'evening-lake',
-	'rest',
-	'sleep-curled',
-	'sleep-side',
-	'bear-sitting',
-	'bear-sleeping',
-	'wolf-sleeping',
-	'schafer-sitting',
-	'schafer-resting',
-	'schafer-sleeping',
-	'australisk-shepherd-sitting',
-	'australisk-shepherd-lying',
-	'australisk-shepherd-resting',
-	'australisk-shepherd-sleeping'
-]);
+const RESTING_POSE_IDS = new Set(['bear-sitting', 'bear-sleeping']);
 
 function getPoseDaypart(date: Date): CompanionPoseDaypart {
 	const state = getProgressCompanionDayState(date);
@@ -133,7 +94,7 @@ function parseStoredPositionState(value: string | null): StoredCompanionPosition
 }
 
 function belongsToCompanion(pose: CompanionPose, companionId: CompanionId) {
-	return (pose.companionId ?? 'fox') === companionId;
+	return pose.companionId === companionId;
 }
 
 // scene = null betyder "ingen scenbegränsning" och ger exakt det tidigare
@@ -186,7 +147,7 @@ export function getCompanionPoseDaypart(date = new Date()) {
 export function getCompanionBasePose(
 	date = new Date(),
 	storage: Storage | null = null,
-	companionId: CompanionId = 'fox',
+	companionId: CompanionId = 'bear',
 	scene: CompanionSceneContext | null = null,
 	preference: CompanionPosePreference = 'default'
 ): CompanionPose {
@@ -221,7 +182,7 @@ export function getCompanionScenePosition(
 	pose: CompanionPose | null,
 	date = new Date(),
 	storage: Storage | null = null,
-	companionId: CompanionId = pose?.companionId ?? 'fox',
+	companionId: CompanionId = pose?.companionId ?? 'bear',
 	scene: CompanionSceneContext | null = null,
 	preference: CompanionPosePreference = 'default'
 ): CompanionScenePosition {
@@ -246,7 +207,7 @@ export function getCompanionScenePosition(
 export function getCompanionOverlayPose(
 	daypart: CompanionPoseDaypart,
 	motion: CompanionPose['motion'],
-	companionId: CompanionId = 'fox'
+	companionId: CompanionId = 'bear'
 ): CompanionPose | null {
 	const availableOverlays = COMPANION_POSES.filter(
 		(pose) => pose.role === 'overlay' && belongsToCompanion(pose, companionId) && pose.dayparts.includes(daypart) && pose.motion === motion
@@ -260,7 +221,7 @@ export function getCompanionOverlayPose(
 export function getMsUntilNextCompanionPoseCheck(
 	date = new Date(),
 	storage: Storage | null = null,
-	companionId: CompanionId = 'fox',
+	companionId: CompanionId = 'bear',
 	preference: CompanionPosePreference = 'default'
 ) {
 	const storedState = storage

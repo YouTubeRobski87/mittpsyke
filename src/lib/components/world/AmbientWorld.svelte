@@ -436,7 +436,7 @@
 		.world-cloud { opacity: calc(var(--opacity, 0.12) * var(--cloud-layer-opacity, 1) * 0.5); }
 	}
 
-	/* På smala vyer prioriteras stugan, följeslagaren och Kvällslugn. De
+	/* På smala vyer prioriteras stugan, följeslagaren och Kvällstugans ingång. De
 	   rikaste stranddetaljerna får falla bort innan de kan göra beskärningen rörig. */
 	@media (max-width: 620px) {
 		.hero-living-world .shore-understory,

@@ -18,7 +18,7 @@ const validInput = {
 	flowVersion: EVENING_CHECKIN_FLOW_VERSION
 };
 
-describe('Kvällslugns datakontrakt', () => {
+describe('Kvällsincheckningens datakontrakt', () => {
 	it('har de avsedda, kontrollerade tema- och parkeringsvärdena', () => {
 		expect(EVENING_THEMES.map((theme) => theme.id)).toEqual([
 			'racing_thoughts',
@@ -68,7 +68,7 @@ describe('Kvällslugns datakontrakt', () => {
 	});
 });
 
-/* Kvällsstugan ska rymma en helt okej kväll, inte bara en svår. Testerna nedan
+/* Kvällstugan ska rymma en helt okej kväll, inte bara en svår. Testerna nedan
    skyddar både att valet finns och att det inte behandlas som ett problem. */
 describe('Det neutrala kvällsvalet', () => {
 	it('erbjuder sex alternativ med det neutrala näst sist', () => {

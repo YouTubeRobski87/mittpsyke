@@ -94,12 +94,13 @@ describe('Framstegs fullständiga dygnsscener', () => {
 		expect(route).toContain('animation-duration: 1ms;');
 	});
 
-	it('behåller den inloggade användarens dynamiska följeslagare', () => {
+	it('visar björnen som enda följeslagare i Framstegs scen', () => {
 		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
 
 		expect(route).toContain('<CompanionPose');
 		expect(route).toContain('getProgressCompanionPlacementStyle');
-		expect(route).toContain('data.progressCompanion');
+		expect(route).toContain('COMPANION.id');
+		expect(route).not.toContain('data.progressCompanion');
 		expect(route).toContain('data.isAnonymous ? PROGRESS_SCENE_SOURCES : PROGRESS_COMPANION_SCENE_SOURCES');
 		expect(route).not.toContain('<CompanionVisitor');
 		expect(route).not.toContain('<CompanionFriend');

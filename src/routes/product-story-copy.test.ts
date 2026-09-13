@@ -12,7 +12,7 @@ describe('MittPsykes produktberättelse och dataflöden', () => {
 	it('beskriver skrivande, sparande och mönster som produktens sammanhang', () => {
 		expect(aboutPage).toContain('skriva, spara det man vill och se vad som återkommer över tid');
 		expect(aboutPage).toContain('Mitt Hem');
-		expect(aboutPage).toContain('Kvällsstugan');
+		expect(aboutPage).toContain('Kvällstugan');
 		expect(aboutPage).toContain('Följeslagaren');
 		expect(aboutPage).not.toContain('I centrum finns ett AI-baserat samtalsstöd');
 	});

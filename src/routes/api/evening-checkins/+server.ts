@@ -6,7 +6,7 @@ import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!hasSensitiveConsentHeader(request)) {
-		return json({ error: 'Samtycke krävs för att spara Kvällslugn.' }, { status: 403 });
+		return json({ error: 'Samtycke krävs för att spara kvällsincheckningen.' }, { status: 403 });
 	}
 
 	const {
@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const result = await saveEveningCheckin(locals.supabase, user.id, validated.data);
 	if (!result.ok) {
-		return json({ error: 'Kunde inte spara Kvällslugn just nu.' }, { status: 500 });
+		return json({ error: 'Kunde inte spara kvällsincheckningen just nu.' }, { status: 500 });
 	}
 
 	const interiorMemory = await loadEveningInteriorMemory(locals.supabase, user.id);

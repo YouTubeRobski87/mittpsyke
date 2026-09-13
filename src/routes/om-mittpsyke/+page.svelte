@@ -259,7 +259,7 @@
 				</p>
 				<p>
 					Med konto samlas det du väljer att spara i Mitt Hem. Där finns bland annat dagboken,
-					Kvällsstugan, Följeslagaren och möjligheten att se mönster över tid. Målet är inte att
+					Kvällstugan, Följeslagaren och möjligheten att se mönster över tid. Målet är inte att
 					ersätta professionell behandling, utan att göra det lättare att reflektera, sortera tankar
 					och vid behov hitta vidare till rätt resurser.
 				</p>

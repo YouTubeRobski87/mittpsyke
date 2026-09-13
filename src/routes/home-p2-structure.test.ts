@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import Page from './+page.svelte';
 
 // P2 för den publika startsidan: färre sektioner, tydligare ordning.
-// Hero -> Så fungerar det -> platsen (+ chatten som rad) -> Kvällsstugan ->
+// Hero -> Så fungerar det -> platsen (+ chatten som rad) -> Kvällstugan ->
 // guider -> trygghet -> avslutande CTA. Testerna läser den renderade sidan,
 // så ordningen och rubrikerna är det besökaren faktiskt får.
 // Sveltes scope-klasser (svelte-xxxx) tas bort så att testerna läser
@@ -77,7 +77,7 @@ describe('Startsidans P2-struktur', () => {
 		const map = sectionOf('map-title');
 		expect(map).toContain('Tre ställen, inte fler.');
 		expect([...map.matchAll(/<li>/g)]).toHaveLength(3);
-		for (const place of ['Mitt Hem', 'Kvällsstugan', 'Följeslagaren']) {
+		for (const place of ['Mitt Hem', 'Kvällstugan', 'Följeslagaren']) {
 			expect(map).toContain(`<h3>${place}</h3>`);
 		}
 		// EveningCheckinFlow kräver tema (steg 1) och riktning (steg 3) för att

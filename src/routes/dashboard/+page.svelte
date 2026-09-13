@@ -22,11 +22,8 @@
   } from 'lucide-svelte';
   import {
     getProgressCompanionDayState,
-    getProgressCompanionAnimal,
-    getProgressCompanionArtId,
-    getWorldCompanionId,
-    type ProgressCompanionDayState,
-    type ProgressCompanionSelection
+    COMPANION,
+    type ProgressCompanionDayState
   } from '$lib/progressCompanion';
   import {
     DASHBOARD_CABIN_COMPANION_PLACEMENTS,
@@ -56,7 +53,6 @@
   import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
   import { readDiaryDraft } from '$lib/diary-draft';
 
-  const ANONYMOUS_PREVIEW_COMPANION: ProgressCompanionSelection = { id: 'fox' };
 
   // Den rena scenvarianten behåller det nya stugperspektivet utan det djur som
   // fanns inbakat i originalet. CompanionPose är fortfarande det enda lagret
@@ -87,7 +83,6 @@
       weeklyGoalLabel: string;
       dashboardFocusLabel: string;
     };
-    progressCompanion: ProgressCompanionSelection | string | null;
     companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
     companionDaily?: CompanionDailyState | null;
     isAnonymous?: boolean;
@@ -170,20 +165,14 @@
   const greeting = $derived(
     isAnonymous ? 'Välkommen hit' : `Välkommen tillbaka${displayName ? `, ${displayName}` : ''}`
   );
-  const displayedCompanionSelection = $derived(
-    isAnonymous ? ANONYMOUS_PREVIEW_COMPANION : data.progressCompanion
-  );
-  const selectedCompanion = $derived(getProgressCompanionAnimal(displayedCompanionSelection));
-  const hasSelectedCompanion = $derived(Boolean(selectedCompanion));
-  const companionArtId = $derived(getProgressCompanionArtId(selectedCompanion?.id ?? 'fox'));
   const companionRelationshipStage = $derived(data.companionRelationshipStage ?? 0);
   const companionBondLevel = $derived(
     getCompanionBondLevel(getCompanionBond(companionDailyState?.answeredDayCount ?? 0))
   );
-  const companionName = $derived(selectedCompanion?.name ?? 'Din följeslagare');
+  const companionName = COMPANION.name;
   const companionHeroImage = DASHBOARD_HERO_IMAGE;
-  const heroCompanionId = $derived(getWorldCompanionId(companionArtId)) as CompanionId;
-  const heroCompanionPlacement = $derived(DASHBOARD_CABIN_COMPANION_PLACEMENTS[heroCompanionId]);
+  const heroCompanionId: CompanionId = COMPANION.id;
+  const heroCompanionPlacement = DASHBOARD_CABIN_COMPANION_PLACEMENTS[heroCompanionId];
   // Ingen alt-text för scenbilden: den är dekorativ (aria-hidden) och
   // följeslagaren beskrivs av CompanionPose, som vet vilket djur som visas.
   const heroCompanionIsSleeping = $derived(companionDayState === 'night');
@@ -342,11 +331,11 @@
           class:requires-login={isAnonymous}
           href="/dashboard/kvallsstugan"
           aria-label={
-            isAnonymous ? 'Kvällslugn – logga in för att använda' : 'Gå in i Kvällsstugan och öppna Kvällslugn'
+            isAnonymous ? 'Kvällstugan – logga in för att använda' : 'Gå in i Kvällstugan'
           }
         >
           <span class="cabin-entrance-label" aria-hidden="true">
-            <span>Kvällslugn</span>
+            <span>Kvällstugan</span>
             {#if isAnonymous}<small>Logga in för att använda</small>{/if}
           </span>
         </a>

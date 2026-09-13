@@ -1,4 +1,5 @@
-export type CompanionVisitorId = 'fox' | 'bear';
+// Räven är inte längre en följeslagare, bara en tillfällig besökare hos björnen.
+export type CompanionVisitorId = 'fox';
 export type CompanionVisitorType = 'awake' | 'sleeping';
 
 export type CompanionVisitorAssets = Record<
@@ -58,17 +59,15 @@ const EMPTY_STATE: CompanionVisitorState = {
 
 const VISITOR_ASSETS: CompanionVisitorAssets = {
 	awake: {
-		fox: '/images/avatars/presets/fox-realistic-resting-sitting.png',
-		bear: '/images/avatars/presets/bear-sitting.png'
+		fox: '/images/avatars/presets/fox-realistic-resting-sitting.png'
 	},
 	sleeping: {
-		fox: '/images/avatars/presets/fox-realistic-sleeping-curled.png',
-		bear: '/images/avatars/presets/bear-sleeping.png'
+		fox: '/images/avatars/presets/fox-realistic-sleeping-curled.png'
 	}
 };
 
 function isVisitorId(value: unknown): value is CompanionVisitorId {
-	return value === 'fox' || value === 'bear';
+	return value === 'fox';
 }
 
 function isVisitorType(value: unknown): value is CompanionVisitorType {
@@ -113,9 +112,7 @@ function persistState(storage: Storage | null, state: CompanionVisitorState): Co
 }
 
 function getVisitorFor(mainCompanionId: string): CompanionVisitorId | null {
-	if (mainCompanionId === 'fox') return 'bear';
-	if (mainCompanionId === 'bear') return 'fox';
-	return null;
+	return mainCompanionId === 'bear' ? 'fox' : null;
 }
 
 function getVisitDuration(visitorType: CompanionVisitorType, random: () => number): number {
@@ -128,7 +125,8 @@ function getVisitDuration(visitorType: CompanionVisitorType, random: () => numbe
 
 /**
  * Läser eller uppdaterar en kort, lokal besöksperiod. Tillståndet är helt
- * separat från användarens val av huvudföljeslagare och från posesystemet.
+ * separat från björnens poser. Ett äldre sparat besök där björnen själv var
+ * besökare avvisas redan av parseState.
  */
 export function getCompanionVisitorState(
 	context: CompanionVisitorContext,
@@ -145,18 +143,6 @@ export function getCompanionVisitorState(
 	// den stabila perioden. Sömn är däremot en egen besökstyp, inte en spärr.
 	if (!eligibleVisitor || !context.sceneAllowsVisitor) {
 		return { ...stored, visitorId: null, visitorType: null, startedAt: null, endsAt: null };
-	}
-
-	// Om användaren har bytt huvudföljeslagare får det tidigare besöket aldrig
-	// göra den nyvalda huvudfiguren till sin egen besökare.
-	if (stored.visitorId === context.mainCompanionId) {
-		return persistState(storage, {
-			visitorId: null,
-			visitorType: null,
-			startedAt: null,
-			endsAt: null,
-			nextEligibleAt: Math.max(stored.nextEligibleAt, now + COMPANION_VISITOR_MIN_PAUSE_MS)
-		});
 	}
 
 	if (stored.visitorId && stored.visitorType) {
@@ -305,7 +291,7 @@ export function getCompanionVisitorPosition(
 	// mot ett kort på ~3.8:1), så container-y 82 % landar på bildens y ~72 % -
 	// och där går strandkanten vid x ~52 %. x 41 satte alltså besökaren i sjön.
 	// x 52 / y 93 ligger på gräset i hela hjältens bredspann, tydligt vid sidan
-	// av huvudföljeslagarens positioner (shore-near 66, foreground-right 78).
+	// av björnens position (foreground-right 78).
 	// Samma sorts rättning som redan gjorts för sovbesöket ovan.
 	// Framsteg beskär samma bild ännu hårdare (~4.5:1, object-position 50% 50%),
 	// så bara bandet y ~55-68 % av bilden syns - där ligger allt land till höger

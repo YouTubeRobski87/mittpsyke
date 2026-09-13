@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 const page = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
 const publicHome = page.slice(page.indexOf('{:else}'), page.indexOf('</main>'));
 
-describe('Kvällsstugan-sektionen på den publika startsidan', () => {
+describe('Kvällstugan-sektionen på den publika startsidan', () => {
 	it('leder vidare till den riktiga incheckningen via inloggningen', () => {
 		expect(page).toContain(
 			"const EVENING_CHECKIN_DESTINATION = '/login?redirect=/dashboard/kvallsstugan';"
@@ -16,7 +16,7 @@ describe('Kvällsstugan-sektionen på den publika startsidan', () => {
 	});
 
 	it('säger var incheckningen görs, så CTA:n inte överraskar med inloggning', () => {
-		expect(publicHome).toContain('Du gör den i Kvällsstugan när');
+		expect(publicHome).toContain('Du gör den i Kvällstugan när');
 	});
 
 	// Exemplet och vägen till den riktiga incheckningen hör ihop: CTA:n är

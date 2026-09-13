@@ -40,59 +40,21 @@ export type FriendPairing = {
 // främre position på samma strandlinje men tydligt åtskild i sidled.
 //
 // Värdena är kalibrerade mot de riktiga bilderna, inte mot en tom ruta.
-const FRIEND_SCENE_POSITIONS: Record<FriendScenePositionId, FriendScenePosition> = {
+export const FRIEND_SCENE_POSITIONS: Record<FriendScenePositionId, FriendScenePosition> = {
 	// Bortre stranden, tvärs över vattnet.
-	//
-	// x låg tidigare på 62. På Mitt Hem sitter räven mitt i scenen på mobil, och
-	// då hamnade 62 % rakt bakom den: 65-66 % av siluetten doldes vid 320 och
-	// 375 px. 53 % lägger den i luckan mellan rubriktexten till vänster och
-	// rävens faktiska kontur till höger på samtliga testbredder.
 	'shore-far': { id: 'shore-far', x: 53, y: 62, scale: 0.26, opacity: 0.5, blur: 0.6 },
 	// Vattenbrynet på samma sida, en bit ner längs stranden.
 	'shore-near': { id: 'shore-near', x: 52, y: 74, scale: 0.5, opacity: 0.88, blur: 0 },
 	// Främre strandlinjen, samma djupled som följeslagaren men långt åt vänster.
-	// Medvetet mindre och något svagare än följeslagaren så räven förblir primär.
+	// Medvetet mindre och något svagare än följeslagaren så den förblir primär.
 	'shore-foreground': { id: 'shore-foreground', x: 40, y: 81, scale: 0.56, opacity: 0.9, blur: 0 }
 };
 
-const FRIENDS_ASSET_BASE_PATH = '/images/world/friends';
-
-// Steg 0 och 1 saknar medvetet bild: steg 0 är tomt, och steg 1 är enbart det
-// diskreta naturtecknet som AmbientWorld redan renderar i ren CSS.
-//
-// Steg 4 måste ha en egen post. Utan den skulle en användare som når steg 4 se
-// rådjuret försvinna, vilket vore precis den nedgradering systemet aldrig får
-// göra.
-const DEER_STAGE_ASSETS: Partial<Record<CompanionRelationshipStage, FriendStageAsset>> = {
-	2: {
-		src: `${FRIENDS_ASSET_BASE_PATH}/deer-silhouette-far.webp`,
-		position: FRIEND_SCENE_POSITIONS['shore-far'],
-		alt: ''
-	},
-	3: {
-		src: `${FRIENDS_ASSET_BASE_PATH}/deer-standing-near.webp`,
-		position: FRIEND_SCENE_POSITIONS['shore-near'],
-		alt: ''
-	},
-	4: {
-		src: `${FRIENDS_ASSET_BASE_PATH}/deer-resting-near.webp`,
-		position: FRIEND_SCENE_POSITIONS['shore-foreground'],
-		alt: ''
-	}
-};
-
-export const FOX_DEER_RELATIONSHIP: FriendPairing = {
-	companionId: 'fox',
-	friendId: 'deer',
-	// Bilderna finns på plats och är visuellt verifierade på 1280, 375 och 320 px
-	// i dag, skymning och natt. Se docs/COMPANION_FRIEND_ASSETS.md.
-	assetsAvailable: true,
-	stageAssets: DEER_STAGE_ASSETS
-};
-
-// Registret. Lägg till björn -> ekorre här när de assetsen finns; varken
-// CompanionFriend eller sidorna behöver då röras.
-const FRIEND_PAIRINGS: readonly FriendPairing[] = [FOX_DEER_RELATIONSHIP];
+// Registret. Räven och rådjuret var det enda paret; räven är inte längre
+// följeslagare, så registret är tomt tills björnen får en egen vän. Ett nytt
+// par läggs till här - varken CompanionFriend eller sidorna behöver då röras.
+// Positionerna ovan och rådjurets bilder i /images/world/friends ligger kvar.
+const FRIEND_PAIRINGS: readonly FriendPairing[] = [];
 
 export function getCompanionRelationshipStage(activeWeeks: number): CompanionRelationshipStage {
 	if (activeWeeks >= 10) return 4;
@@ -106,10 +68,6 @@ export function getCompanionRelationshipStage(activeWeeks: number): CompanionRel
 export function getFriendPairing(companionId: string | null | undefined): FriendPairing | null {
 	if (!companionId) return null;
 	return FRIEND_PAIRINGS.find((pairing) => pairing.companionId === companionId) ?? null;
-}
-
-export function isFoxDeerRelationship(companionId: string | null | undefined) {
-	return companionId === FOX_DEER_RELATIONSHIP.companionId;
 }
 
 /**

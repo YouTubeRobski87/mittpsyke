@@ -8,8 +8,7 @@ describe('inloggad startsida', () => {
 			props: {
 				overview: {
 					displayName: 'Maja',
-					entryCount: 3,
-					progressCompanion: { id: 'fox' }
+					entryCount: 3
 				}
 			}
 		});
@@ -20,7 +19,9 @@ describe('inloggad startsida', () => {
 		expect(body).toContain('Chatten');
 		expect(body).toContain('Framsteg');
 		expect(body).toContain('Dagbok');
-		expect(body).toContain('Kvällslugn');
+		expect(body).toContain('>Kvällstugan</strong>');
+		expect(body).toContain('kvällsincheckning');
+		expect(body).not.toContain('Kvällslugn');
 		expect(body).toContain('Artiklar');
 
 		for (const href of [
@@ -40,8 +41,7 @@ describe('inloggad startsida', () => {
 			props: {
 				overview: {
 					displayName: null,
-					entryCount: 0,
-					progressCompanion: null
+					entryCount: 0
 				}
 			}
 		});

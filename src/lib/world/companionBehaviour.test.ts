@@ -71,38 +71,31 @@ describe('getCompanionBehaviourRestMs', () => {
 
 describe('isQuietPose', () => {
 	it('skips gestures for poses that already move or should stay still', () => {
-		expect(isQuietPose('sleep-curled')).toBe(true);
 		expect(isQuietPose('bear-sleeping')).toBe(true);
-		expect(isQuietPose('wolf-sleeping')).toBe(true);
-		expect(isQuietPose('walk')).toBe(true);
-		expect(isQuietPose('rest')).toBe(true);
 	});
 
 	it('allows gestures for calm standing and sitting poses', () => {
-		expect(isQuietPose('idle')).toBe(false);
-		expect(isQuietPose('sit')).toBe(false);
-		expect(isQuietPose('wolf-standing')).toBe(false);
+		expect(isQuietPose('bear-standing')).toBe(false);
+		expect(isQuietPose('bear-sitting')).toBe(false);
+		expect(isQuietPose('bear-stretching')).toBe(false);
 		expect(isQuietPose(null)).toBe(false);
 	});
 });
 
 describe('canPlayCompanionSettle', () => {
 	it('does not let a greeting reaction settle a quiet pose', () => {
-		expect(canPlayCompanionSettle('wolf-sleeping')).toBe(false);
 		expect(canPlayCompanionSettle('bear-sleeping')).toBe(false);
 	});
 
 	it('keeps the greeting settle reaction for awake poses', () => {
-		expect(canPlayCompanionSettle('wolf-standing')).toBe(true);
-		expect(canPlayCompanionSettle('idle')).toBe(true);
+		expect(canPlayCompanionSettle('bear-standing')).toBe(true);
+		expect(canPlayCompanionSettle('bear-sitting')).toBe(true);
 	});
 });
 
 describe('Companion Behaviour V2', () => {
 	it('blocks every idle behaviour for sleep and reduced motion', () => {
-		expect(canPlayCompanionIdleBehaviour('sleep-curled')).toBe(false);
 		expect(canPlayCompanionIdleBehaviour('bear-sleeping')).toBe(false);
-		expect(canPlayCompanionIdleBehaviour('wolf-sleeping')).toBe(false);
 		expect(canPlayCompanionIdleBehaviour('idle', true)).toBe(false);
 		expect(canPlayCompanionIdleBehaviour('idle', false)).toBe(true);
 	});
@@ -122,7 +115,7 @@ describe('Companion Behaviour V2', () => {
 		);
 	});
 
-	it('uses only calm existing behaviours in Kvällsstugan', () => {
+	it('uses only calm existing behaviours in Kvällstugan', () => {
 		const ids = getEligibleCompanionBehaviours({ profile: 'quiet', bondLevel: 3 }).map(
 			(behaviour) => behaviour.id
 		);
@@ -141,10 +134,8 @@ describe('Companion Behaviour V2', () => {
 		);
 	});
 
-	it('lets sleep block a return behaviour for every companion pose', () => {
-		expect(canPlayCompanionReturnBehaviour('sleep-curled', false, 'longer_return')).toBe(false);
+	it('lets sleep block a return behaviour for the sleeping bear', () => {
 		expect(canPlayCompanionReturnBehaviour('bear-sleeping', false, 'recent_return')).toBe(false);
-		expect(canPlayCompanionReturnBehaviour('wolf-sleeping', false, 'same_day')).toBe(false);
 		expect(canPlayCompanionReturnBehaviour('idle', true, 'longer_return')).toBe(false);
 		expect(canPlayCompanionReturnBehaviour('idle', false, 'same_session')).toBe(false);
 		expect(canPlayCompanionReturnBehaviour('idle', false, 'recent_return')).toBe(true);

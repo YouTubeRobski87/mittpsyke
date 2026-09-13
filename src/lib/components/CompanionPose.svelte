@@ -53,7 +53,7 @@
 		basePose: providedBasePose = null,
 		position: providedPosition = null,
 		placement = null,
-		companionId = 'fox',
+		companionId = 'bear',
 		greetingReaction = 0,
 		scene = null,
 		bondLevel = 0,
@@ -175,7 +175,7 @@
 		if (overlayPose || !motionAwareness.isActive || motionAwareness.reducedMotion) return;
 
 		const isSleeping = isQuietPose(basePose?.id);
-		// Kvällsstugan väljer endast blink när följeslagaren är vaken; den får
+		// Kvällstugan väljer endast blink när följeslagaren är vaken; den får
 		// därmed inga mer aktiva overlay-gester ovanpå sitt lugna basläge.
 		const motion = isSleeping
 			? 'sleep'
@@ -454,27 +454,6 @@
 		transform: rotate(-5deg) skewX(-12deg) scaleX(1.1);
 	}
 
-	.companion-pose:global(.hero-companion-pose)[data-position='shore-near']::after {
-		content: '';
-		position: absolute;
-		z-index: 3;
-		left: 18%;
-		right: 11%;
-		bottom: 5%;
-		height: 18%;
-		background:
-			radial-gradient(34% 18% at 26% 78%, rgb(74 78 52 / 0.38), transparent 70%),
-			radial-gradient(26% 14% at 68% 84%, rgb(96 93 66 / 0.25), transparent 72%),
-			linear-gradient(82deg, transparent 0 14%, rgb(86 103 61 / 0.42) 15% 16%, transparent 17%),
-			linear-gradient(98deg, transparent 0 30%, rgb(65 85 51 / 0.35) 31% 32%, transparent 33%),
-			linear-gradient(76deg, transparent 0 45%, rgb(91 109 65 / 0.37) 46% 47%, transparent 48%),
-			linear-gradient(104deg, transparent 0 58%, rgb(67 86 52 / 0.3) 59% 60%, transparent 61%);
-		filter: blur(0.1px);
-		opacity: 0.64;
-		transform: rotate(-5deg) skewX(-7deg);
-		mix-blend-mode: multiply;
-		pointer-events: none;
-	}
 
 	.companion-pose-image {
 		position: absolute;
@@ -532,41 +511,6 @@
 			drop-shadow(0 16px 18px rgb(9 13 27 / 0.28));
 	}
 
-	/* Vargens panorama är redan frilagt. Behåll alpha-kanalen direkt i stället
-	 * för den generella mjuka masken, och förankra bildytan nedåt så tassarna
-	 * möter scenens markpunkt. */
-	.companion-pose[data-companion='wolf'] .companion-pose-image {
-		object-position: center bottom;
-		filter: saturate(0.78) contrast(0.9) brightness(0.96) sepia(0.08);
-		-webkit-mask-image: none;
-		mask-image: none;
-	}
-
-	.companion-pose[data-companion='wolf'][data-daypart='evening'] .companion-pose-image {
-		filter: saturate(0.72) contrast(0.9) brightness(0.9) sepia(0.13);
-	}
-
-	.companion-pose[data-companion='wolf'][data-daypart='night'] .companion-pose-image {
-		filter: saturate(0.62) contrast(0.88) brightness(0.78) sepia(0.1);
-	}
-
-	.companion-pose[data-companion='schafer'] .companion-pose-image,
-	.companion-pose[data-companion='australisk_shepherd'] .companion-pose-image {
-		object-position: center bottom;
-		filter: saturate(0.78) contrast(0.9) brightness(0.96) sepia(0.08);
-		-webkit-mask-image: none;
-		mask-image: none;
-	}
-
-	.companion-pose[data-companion='schafer'][data-daypart='evening'] .companion-pose-image,
-	.companion-pose[data-companion='australisk_shepherd'][data-daypart='evening'] .companion-pose-image {
-		filter: saturate(0.72) contrast(0.9) brightness(0.9) sepia(0.13);
-	}
-
-	.companion-pose[data-companion='schafer'][data-daypart='night'] .companion-pose-image,
-	.companion-pose[data-companion='australisk_shepherd'][data-daypart='night'] .companion-pose-image {
-		filter: saturate(0.62) contrast(0.88) brightness(0.78) sepia(0.1);
-	}
 
 	@keyframes companionPoseBreath {
 		0%,

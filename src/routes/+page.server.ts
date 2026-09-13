@@ -1,6 +1,5 @@
 import { redirect } from '@sveltejs/kit';
 import { normalizeSoroArticleSlug } from '$lib/server/soro-articles';
-import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
 import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
 import type { PageServerLoad } from './$types';
 
@@ -34,8 +33,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 			homeOverview: {
 				displayName:
 					cleanName(metadata.display_name) ?? cleanName(metadata.full_name) ?? cleanName(metadata.name),
-				entryCount: await loadDiaryEntryCount(locals.supabase, user.id),
-				progressCompanion: readProgressCompanionFromMetadata(metadata)
+				entryCount: await loadDiaryEntryCount(locals.supabase, user.id)
 			}
 		};
 	}

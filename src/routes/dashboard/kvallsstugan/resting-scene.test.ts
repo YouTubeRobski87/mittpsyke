@@ -11,7 +11,7 @@ const restingSceneAssets = [
 	'cabin-interior-evening-resting-veranda-v1.webp'
 ];
 
-describe('Kvällsstugans viloscen', () => {
+describe('Kvällstugans viloscen', () => {
 	it('använder den lokala scenbild där personen vilar i soffan, i alla responsiva storlekar', () => {
 		for (const asset of restingSceneAssets) {
 			expect(existsSync(join(sceneDirectory, asset)), asset).toBe(true);

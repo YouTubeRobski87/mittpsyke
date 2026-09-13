@@ -45,7 +45,7 @@ export function safeInternalRedirect(
 
 /**
  * Bär en giltig ?redirect= vidare mellan inloggning och registrering, så att
- * den som skickades till /login från en skyddad sida (t.ex. Kvällsstugan) och
+ * den som skickades till /login från en skyddad sida (t.ex. Kvällstugan) och
  * väljer "Registrera dig" hamnar på samma ställe efter att kontot skapats.
  * Ogiltiga värden tas bort i stället för att föras vidare.
  */

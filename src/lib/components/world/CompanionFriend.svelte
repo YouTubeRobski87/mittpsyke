@@ -1,10 +1,11 @@
 <script lang="ts">
-	// Vännen i scenen (första paret: räv → rådjur).
+	// Vännen i scenen. Björnen har ännu ingen vän i FRIEND_PAIRINGS, så
+	// komponenten renderar i dag ingenting; den står kvar för nästa vänpar.
 	//
 	// Renderar ingenting alls om något av följande gäller:
 	//   - följeslagaren inte har en vän definierad
 	//   - steget är under 2 (steg 1 är bara AmbientWorlds naturtecken)
-	//   - FOX_DEER_RELATIONSHIP.assetsAvailable är false
+	//   - parets assetsAvailable är false
 	//   - bilden inte går att ladda
 	//
 	// Den sista punkten är viktig: en saknad fil får aldrig ge en trasig
@@ -15,7 +16,7 @@
 
 	let {
 		stage = 0,
-		companionId = 'fox',
+		companionId = 'bear',
 		class: className = ''
 	}: {
 		stage?: CompanionRelationshipStage;
@@ -88,12 +89,12 @@
 		transform: translate3d(-50%, -100%, 0);
 		transform-origin: 50% 100%;
 		/* Alltid under huvudföljeslagaren. Vännen får aldrig konkurrera visuellt
-		   med djuret användaren valt.
+		   med följeslagaren.
 		   Ett steg under --scene-ambient, inte på samma nivå: i Mitt Hems hero
-		   får posen z-index calc(--companion-z + 1), och med räven på
+		   får posen z-index calc(--companion-z + 1), och med följeslagaren på
 		   --companion-z: 1 hamnade den på 2 - exakt samma som vännen. Vid lika
 		   z-index avgör DOM-ordningen, och eftersom CompanionFriend renderas
-		   efter CompanionPose hade rådjuret ritats ovanpå räven vid överlapp.
+		   efter CompanionPose hade vännen ritats ovanpå följeslagaren vid överlapp.
 		   --scene-background är 0, så 1 ligger fortfarande över scenfotot. */
 		z-index: calc(var(--scene-ambient, 2) - 1);
 		pointer-events: none;
@@ -142,12 +143,12 @@
 
 	/* Skymning och natt.
 	   Bilderna är exporterade i neutralt dagsljus, så kvälls- och nattkänslan
-	   måste läggas på här. Utan detta behöll rådjuret dagsgraderingen medan
-	   scenen och räven mörknade, och djuret lyste ut ur bilden.
+	   måste läggas på här. Utan detta behöll vännen dagsgraderingen medan
+	   scenen och följeslagaren mörknade, och djuret lyste ut ur bilden.
 	   Värdena speglar CompanionPose --companion-grade för respektive tid, med
-	   ett snäpp lägre ljushet så vännen förblir mindre framträdande än räven.
+	   ett snäpp lägre ljushet så vännen förblir mindre framträdande än följeslagaren.
 	   Graderingen ärvs från scenens data-time; Mitt Hems hero sätter inget
-	   data-time och håller därför både räv och rådjur i dagsläge. */
+	   data-time och håller därför både följeslagare och vän i dagsläge. */
 	:global(.companion-media[data-time='evening']) .companion-friend {
 		--friend-grade: saturate(0.68) contrast(0.88) brightness(0.86) sepia(0.18)
 			hue-rotate(-6deg);
@@ -163,11 +164,11 @@
 	}
 
 	/* Basbredden är kalibrerad per scen mot hur stor följeslagaren faktiskt
-	   renderas där, inte mot scenens bredd. Räven är stor i Mitt Hems hero men
+	   renderas där, inte mot scenens bredd. Följeslagaren är stor i Mitt Hems hero men
 	   liten och tillbakadragen i Framstegs banner, så samma procenttal ger helt
 	   olika maktförhållande mellan djuren. Framsteg behöver därför ett mycket
-	   lägre tal för att räven ska förbli den primära följeslagaren: med 22 %
-	   blev rådjuret 2,5-3 ggr rävens höjd och upp till 6,6 ggr dess yta. */
+	   lägre tal för att följeslagaren ska förbli det primära djuret: med 22 %
+	   blev vännen 2,5-3 ggr följeslagarens höjd och upp till 6,6 ggr dess yta. */
 	.companion-friend:global(.hero-companion-friend) {
 		--friend-base-width: 30%;
 	}

@@ -11,7 +11,6 @@
 		TrendingUp
 	} from 'lucide-svelte';
 	import CompanionAvatar from '$lib/components/CompanionAvatar.svelte';
-	import type { ProgressCompanionSelection } from '$lib/progressCompanion';
 
 	let {
 		overview
@@ -19,7 +18,6 @@
 		overview: {
 			displayName: string | null;
 			entryCount: number;
-			progressCompanion: ProgressCompanionSelection | string | null;
 		};
 	} = $props();
 
@@ -52,7 +50,7 @@
 			</div>
 
 			<aside class="companion-note" aria-label="Din plats">
-				<CompanionAvatar selection={overview.progressCompanion} size="xl" decorative />
+				<CompanionAvatar size="xl" decorative />
 				<div>
 					<p>Din plats finns kvar.</p>
 					<span>Du kan gå vidare i din takt.</span>
@@ -115,7 +113,7 @@
 						</a>
 						<a href="/dashboard/kvallsstugan">
 							<MoonStar size={19} aria-hidden="true" />
-							<span><strong>Kvällslugn</strong><small>En stilla incheckning när dagen landar.</small></span>
+							<span><strong>Kvällstugan</strong><small>En kort kvällsincheckning när dagen landar.</small></span>
 						</a>
 						<a href="/blogg">
 							<Newspaper size={19} aria-hidden="true" />

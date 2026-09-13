@@ -35,14 +35,15 @@ const explorePanel = dashboardSource.slice(
 );
 
 describe('Mitt Hem som navigationsnav', () => {
-	it('gör stugan till den enda direkta dashboardvägen till Kvällslugn', () => {
+	it('gör stugan till den enda direkta dashboardvägen till Kvällstugan', () => {
 		expect(heroPanel).toMatch(
 			/class="cabin-entrance"[\s\S]{0,160}?href="\/dashboard\/kvallsstugan"/
 		);
-		expect(heroPanel).toContain('Gå in i Kvällsstugan och öppna Kvällslugn');
+		expect(heroPanel).toContain("'Gå in i Kvällstugan'");
 		expect(dashboardSource.match(/href="\/dashboard\/kvallsstugan"/g) ?? []).toHaveLength(1);
 		expect(explorePanel).not.toContain('href="/dashboard/kvallsstugan"');
-		expect(explorePanel).not.toContain('<strong>Kvällslugn</strong>');
+		expect(explorePanel).not.toContain('<strong>Kvällstugan</strong>');
+		expect(dashboardSource).not.toContain('Kvällslugn');
 	});
 
 	it('behåller stugscenen och en avgränsad, touchvänlig och fokuserbar hotspot', () => {
@@ -106,7 +107,7 @@ describe('Mitt Hem som navigationsnav', () => {
 		expect(eveningSource).toContain('<a class="evening-back" href="/dashboard">← Till Mitt Hem</a>');
 	});
 
-	it('behåller Kvällslugns auth-guard för både utloggade och anonyma användare', () => {
+	it('behåller Kvällstugans auth-guard för både utloggade och anonyma användare', () => {
 		expect(eveningServerSource).toContain('if (!user || user.is_anonymous)');
 		expect(eveningServerSource).toContain("throw redirect(303, '/login')");
 	});

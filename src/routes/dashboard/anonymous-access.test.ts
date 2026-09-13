@@ -18,6 +18,6 @@ describe('anonyma dashboardvägar', () => {
 		expect(dashboardSource).toContain(
 		"{#if isAnonymous}<span class=\"home-card-action-note\">Konto krävs för att spara</span>{/if}"
 	);
-		expect(dashboardSource).toContain("isAnonymous ? 'Kvällslugn – logga in för att använda'");
+		expect(dashboardSource).toContain("isAnonymous ? 'Kvällstugan – logga in för att använda'");
 	});
 });

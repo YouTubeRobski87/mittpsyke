@@ -5,7 +5,7 @@ export const EVENING_THEMES = [
 	{ id: 'body_anxiety', label: 'Oro i kroppen' },
 	{ id: 'loneliness', label: 'Känner mig ensam' },
 	{ id: 'tomorrow', label: 'Orolig inför imorgon' },
-	// Kvällsstugan är inte bara till för svåra kvällar. Det här valet betyder inte
+	// Kvällstugan är inte bara till för svåra kvällar. Det här valet betyder inte
 	// "jag mår jättebra" utan är avsiktligt mjukare, och det egna id:t gör att en
 	// framtida analys kan skilja det från de fyra som beskriver något jobbigt.
 	{ id: 'feeling_okay', label: 'Det är ändå okej' },
@@ -112,7 +112,7 @@ export function validateEveningCheckinInput(value: unknown): EveningCheckinValid
 		return { ok: false, error: 'Valet hör inte till hur du beskrev kvällen.' };
 	}
 	if (input.flowVersion !== EVENING_CHECKIN_FLOW_VERSION) {
-		return { ok: false, error: 'Ogiltig version av Kvällslugn.' };
+		return { ok: false, error: 'Ogiltig version av kvällsincheckningen.' };
 	}
 	if (input.thought !== null && input.thought !== undefined && typeof input.thought !== 'string') {
 		return { ok: false, error: 'Tanken måste vara text.' };

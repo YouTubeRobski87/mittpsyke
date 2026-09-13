@@ -37,7 +37,7 @@ function buttonMarkup(className: string): string {
 	return route.slice(start, route.indexOf('</button>', anchor));
 }
 
-describe('Kvällsstugans veranda', () => {
+describe('Kvällstugans veranda', () => {
 	it('använder verandabilden i alla responsiva storlekar', () => {
 		for (const asset of verandaAssets) {
 			expect(existsSync(join(sceneDirectory, asset)), asset).toBe(true);

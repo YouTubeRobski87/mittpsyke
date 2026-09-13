@@ -27,61 +27,56 @@ class MemoryStorage implements Storage {
 	setItem(key: string, value: string) { this.store.set(key, value); }
 }
 
-const DAYTIME_FOX = { mainCompanionId: 'fox', isSleeping: false, sceneAllowsVisitor: true };
 const DAYTIME_BEAR = { mainCompanionId: 'bear', isSleeping: false, sceneAllowsVisitor: true };
-const SLEEPING_FOX = { mainCompanionId: 'fox', isSleeping: true, sceneAllowsVisitor: true };
 const SLEEPING_BEAR = { mainCompanionId: 'bear', isSleeping: true, sceneAllowsVisitor: true };
-const ANONYMOUS_FOX = { ...DAYTIME_FOX, isAnonymous: true };
-const ANONYMOUS_SLEEPING_FOX = { ...SLEEPING_FOX, isAnonymous: true };
+const ANONYMOUS_BEAR = { ...DAYTIME_BEAR, isAnonymous: true };
+const ANONYMOUS_SLEEPING_BEAR = { ...SLEEPING_BEAR, isAnonymous: true };
 const now = 1_700_000_000_000;
 const alwaysVisit = () => 0;
 
-const ASSETS_WITHOUT_SLEEPING_BEAR: CompanionVisitorAssets = {
+const ASSETS_WITHOUT_SLEEPING_VISITOR: CompanionVisitorAssets = {
 	awake: {
-		fox: '/fox-awake.png',
-		bear: '/bear-awake.png'
+		fox: '/fox-awake.png'
 	},
-	sleeping: {
-		fox: '/fox-sleeping.png'
-	}
+	sleeping: {}
 };
 
 describe('tillfalliga companion-besok', () => {
 	it('kan visa en sovande besokare nar huvudfoljeslagaren sover', () => {
-		const state = getCompanionVisitorState(SLEEPING_FOX, now, new MemoryStorage(), alwaysVisit);
+		const state = getCompanionVisitorState(SLEEPING_BEAR, now, new MemoryStorage(), alwaysVisit);
 
-		expect(state.visitorId).toBe('bear');
+		expect(state.visitorId).toBe('fox');
 		expect(state.visitorType).toBe('sleeping');
 	});
 
 	it('later anonyma anvandare fa vakna besok nar scenen ar eligible', () => {
-		const state = getCompanionVisitorState(ANONYMOUS_FOX, now, new MemoryStorage(), alwaysVisit);
+		const state = getCompanionVisitorState(ANONYMOUS_BEAR, now, new MemoryStorage(), alwaysVisit);
 
-		expect(state).toMatchObject({ visitorId: 'bear', visitorType: 'awake' });
+		expect(state).toMatchObject({ visitorId: 'fox', visitorType: 'awake' });
 	});
 
 	it('later anonyma anvandare fa sovbesok nar scenen ar eligible', () => {
 		const state = getCompanionVisitorState(
-			ANONYMOUS_SLEEPING_FOX,
+			ANONYMOUS_SLEEPING_BEAR,
 			now,
 			new MemoryStorage(),
 			alwaysVisit
 		);
 
-		expect(state).toMatchObject({ visitorId: 'bear', visitorType: 'sleeping' });
+		expect(state).toMatchObject({ visitorId: 'fox', visitorType: 'sleeping' });
 	});
 
 	it('later relationsniva 2 eller hogre fa besok nar scenen ar eligible', () => {
 		for (const relationshipStage of [2, 3, 4]) {
-			const bondedFox = { ...DAYTIME_FOX, relationshipStage };
+			const bondedBear = { ...DAYTIME_BEAR, relationshipStage };
 			const state = getCompanionVisitorState(
-				bondedFox,
+				bondedBear,
 				now,
 				new MemoryStorage(),
 				alwaysVisit
 			);
 
-			expect(state).toMatchObject({ visitorId: 'bear', visitorType: 'awake' });
+			expect(state).toMatchObject({ visitorId: 'fox', visitorType: 'awake' });
 		}
 	});
 
@@ -89,18 +84,16 @@ describe('tillfalliga companion-besok', () => {
 		expect(getCompanionVisitorAsset('fox', 'sleeping')).toBe(
 			'/images/avatars/presets/fox-realistic-sleeping-curled.png'
 		);
-		expect(getCompanionVisitorAsset('bear', 'sleeping')).toBe(
-			'/images/avatars/presets/bear-sleeping.png'
-		);
+		expect(getCompanionVisitorAsset('bear', 'sleeping')).toBeNull();
 	});
 
 	it('visar ingen sovande besokare om den korrekta sovposen saknas', () => {
 		const state = getCompanionVisitorState(
-			SLEEPING_FOX,
+			SLEEPING_BEAR,
 			now,
 			new MemoryStorage(),
 			alwaysVisit,
-			ASSETS_WITHOUT_SLEEPING_BEAR
+			ASSETS_WITHOUT_SLEEPING_VISITOR
 		);
 
 		expect(state.visitorId).toBeNull();
@@ -108,17 +101,17 @@ describe('tillfalliga companion-besok', () => {
 	});
 
 	it('anvander aldrig en vaken pose som fallback for sovbesok', () => {
-		expect(getCompanionVisitorAsset('bear', 'sleeping', ASSETS_WITHOUT_SLEEPING_BEAR)).toBeNull();
-		expect(getCompanionVisitorAsset('bear', 'awake', ASSETS_WITHOUT_SLEEPING_BEAR)).toBe(
-			'/bear-awake.png'
+		expect(getCompanionVisitorAsset('fox', 'sleeping', ASSETS_WITHOUT_SLEEPING_VISITOR)).toBeNull();
+		expect(getCompanionVisitorAsset('fox', 'awake', ASSETS_WITHOUT_SLEEPING_VISITOR)).toBe(
+			'/fox-awake.png'
 		);
 	});
 
 	it('behaller sovbesoket stabilt mellan renders och under tidsfonstret', () => {
 		const storage = new MemoryStorage();
-		const first = getCompanionVisitorState(SLEEPING_FOX, now, storage, alwaysVisit);
+		const first = getCompanionVisitorState(SLEEPING_BEAR, now, storage, alwaysVisit);
 		const rerender = getCompanionVisitorState(
-			SLEEPING_FOX,
+			SLEEPING_BEAR,
 			now + 5 * 60 * 1000,
 			storage,
 			() => 0.99
@@ -131,10 +124,10 @@ describe('tillfalliga companion-besok', () => {
 
 	it('tar bort sovbesoket efter sluttiden och respekterar cooldown', () => {
 		const storage = new MemoryStorage();
-		const visit = getCompanionVisitorState(SLEEPING_FOX, now, storage, alwaysVisit);
-		const expired = getCompanionVisitorState(SLEEPING_FOX, visit.endsAt!, storage, alwaysVisit);
+		const visit = getCompanionVisitorState(SLEEPING_BEAR, now, storage, alwaysVisit);
+		const expired = getCompanionVisitorState(SLEEPING_BEAR, visit.endsAt!, storage, alwaysVisit);
 		const tooEarly = getCompanionVisitorState(
-			SLEEPING_FOX,
+			SLEEPING_BEAR,
 			expired.nextEligibleAt - 1,
 			storage,
 			alwaysVisit
@@ -145,48 +138,25 @@ describe('tillfalliga companion-besok', () => {
 		expect(tooEarly.visitorId).toBeNull();
 	});
 
-	it('paverkar inte huvudfoljeslagarens pose eller val', () => {
-		const mainCompanion = { ...SLEEPING_BEAR };
-		const state = getCompanionVisitorState(mainCompanion, now, new MemoryStorage(), alwaysVisit);
-
-		expect(mainCompanion).toEqual(SLEEPING_BEAR);
-		expect(state.visitorId).toBe('fox');
-		expect(state.visitorType).toBe('sleeping');
-	});
-
 	it('behaller vakna besok enligt de befintliga reglerna', () => {
 		const storage = new MemoryStorage();
-		const first = getCompanionVisitorState(DAYTIME_FOX, now, storage, alwaysVisit);
-		const rerender = getCompanionVisitorState(DAYTIME_FOX, now + 5 * 60 * 1000, storage, () => 0.99);
+		const first = getCompanionVisitorState(DAYTIME_BEAR, now, storage, alwaysVisit);
+		const rerender = getCompanionVisitorState(DAYTIME_BEAR, now + 5 * 60 * 1000, storage, () => 0.99);
 
-		expect(first.visitorId).toBe('bear');
+		expect(first.visitorId).toBe('fox');
 		expect(first.visitorType).toBe('awake');
 		expect(rerender).toEqual(first);
 		expect(first.endsAt).toBeGreaterThan(now + COMPANION_VISITOR_MIN_DURATION_MS - 1);
 		expect(first.endsAt).toBeLessThanOrEqual(now + COMPANION_VISITOR_MAX_DURATION_MS);
 	});
 
-	it('avslutar sakert om huvudfoljeslagaren byts medan ett besok ar aktivt', () => {
-		const storage = new MemoryStorage();
-		getCompanionVisitorState(DAYTIME_FOX, now, storage, alwaysVisit);
-		const afterMainCompanionChange = getCompanionVisitorState(
-			DAYTIME_BEAR,
-			now + 1,
-			storage,
-			alwaysVisit
-		);
-
-		expect(afterMainCompanionChange.visitorId).toBeNull();
-		expect(afterMainCompanionChange.visitorType).toBeNull();
-	});
-
 	it('avslutar ett aktivt vaket besok vid somn utan att starta sovbesok i samma utvardering', () => {
 		const storage = new MemoryStorage();
-		const awake = getCompanionVisitorState(DAYTIME_FOX, now, storage, alwaysVisit);
-		const transition = getCompanionVisitorState(SLEEPING_FOX, now + 1, storage, alwaysVisit);
-		const sameWindow = getCompanionVisitorState(SLEEPING_FOX, now + 2, storage, alwaysVisit);
+		const awake = getCompanionVisitorState(DAYTIME_BEAR, now, storage, alwaysVisit);
+		const transition = getCompanionVisitorState(SLEEPING_BEAR, now + 1, storage, alwaysVisit);
+		const sameWindow = getCompanionVisitorState(SLEEPING_BEAR, now + 2, storage, alwaysVisit);
 		const afterStableWindow = getCompanionVisitorState(
-			SLEEPING_FOX,
+			SLEEPING_BEAR,
 			transition.nextEligibleAt,
 			storage,
 			alwaysVisit
@@ -199,17 +169,10 @@ describe('tillfalliga companion-besok', () => {
 		expect(afterStableWindow.visitorType).toBe('sleeping');
 	});
 
-	it('valjer alltid det andra djuret, aldrig en kopia av huvudfoljeslagaren', () => {
-		expect(getCompanionVisitorState(DAYTIME_FOX, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('bear');
-		expect(getCompanionVisitorState(DAYTIME_BEAR, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('fox');
-		expect(getCompanionVisitorState(SLEEPING_FOX, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('bear');
-		expect(getCompanionVisitorState(SLEEPING_BEAR, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('fox');
-	});
-
 	it('anvander separata landpositioner for sovbesok och behaller besoket mellan Mitt Hem och Framsteg', () => {
 		const storage = new MemoryStorage();
-		const dashboardVisit = getCompanionVisitorState(SLEEPING_FOX, now, storage, alwaysVisit);
-		const progressVisit = getCompanionVisitorState(SLEEPING_FOX, now + 1_000, storage, () => 0.99);
+		const dashboardVisit = getCompanionVisitorState(SLEEPING_BEAR, now, storage, alwaysVisit);
+		const progressVisit = getCompanionVisitorState(SLEEPING_BEAR, now + 1_000, storage, () => 0.99);
 		const dashboardPosition = getCompanionVisitorPosition('dashboard', 'sleeping');
 		const progressPosition = getCompanionVisitorPosition('progress', 'sleeping');
 
@@ -244,14 +207,14 @@ describe('tillfalliga companion-besok', () => {
 
 	it('doljs nar scenen ar olampligt fylld utan att radera sessionstillstandet', () => {
 		const storage = new MemoryStorage();
-		const visit = getCompanionVisitorState(SLEEPING_FOX, now, storage, alwaysVisit);
+		const visit = getCompanionVisitorState(SLEEPING_BEAR, now, storage, alwaysVisit);
 		const hidden = getCompanionVisitorState(
-			{ ...SLEEPING_FOX, sceneAllowsVisitor: false },
+			{ ...SLEEPING_BEAR, sceneAllowsVisitor: false },
 			now + 1,
 			storage,
 			alwaysVisit
 		);
-		const returned = getCompanionVisitorState(SLEEPING_FOX, now + 2, storage, alwaysVisit);
+		const returned = getCompanionVisitorState(SLEEPING_BEAR, now + 2, storage, alwaysVisit);
 
 		expect(hidden.visitorId).toBeNull();
 		expect(returned).toEqual(visit);
@@ -265,25 +228,25 @@ describe('tillfalliga companion-besok', () => {
 
 	it('kan tvinga fram ett dev-testbesok utan att andra urvalsregler andras', () => {
 		const storage = new MemoryStorage();
-		const visit = startCompanionVisitorDebugVisit('fox', 'awake', now, storage);
+		const visit = startCompanionVisitorDebugVisit('bear', 'awake', now, storage);
 
-		expect(visit).toMatchObject({ visitorId: 'bear', visitorType: 'awake', startedAt: now });
-		expect(getCompanionVisitorState(DAYTIME_FOX, now + 1, storage, () => 0.99)).toEqual(visit);
+		expect(visit).toMatchObject({ visitorId: 'fox', visitorType: 'awake', startedAt: now });
+		expect(getCompanionVisitorState(DAYTIME_BEAR, now + 1, storage, () => 0.99)).toEqual(visit);
 	});
 
 	it('rensning av dev-state aterstaller eligibility', () => {
 		const storage = new MemoryStorage();
-		startCompanionVisitorDebugVisit('fox', 'sleeping', now, storage);
+		startCompanionVisitorDebugVisit('bear', 'sleeping', now, storage);
 		clearCompanionVisitorState(storage);
-		const next = getCompanionVisitorState(DAYTIME_FOX, now + 1, storage, alwaysVisit);
+		const next = getCompanionVisitorState(DAYTIME_BEAR, now + 1, storage, alwaysVisit);
 
-		expect(next).toMatchObject({ visitorId: 'bear', visitorType: 'awake', startedAt: now + 1 });
+		expect(next).toMatchObject({ visitorId: 'fox', visitorType: 'awake', startedAt: now + 1 });
 		expect(getStoredCompanionVisitorState(storage)).toEqual(next);
 	});
 
 	it('returnerar renderbeslut nar alla villkor ar uppfyllda', () => {
-		const state = startCompanionVisitorDebugVisit('fox', 'awake', now, new MemoryStorage());
-		const diagnostics = getCompanionVisitorRenderDiagnostics(ANONYMOUS_FOX, state, true, false, now);
+		const state = startCompanionVisitorDebugVisit('bear', 'awake', now, new MemoryStorage());
+		const diagnostics = getCompanionVisitorRenderDiagnostics(ANONYMOUS_BEAR, state, true, false, now);
 
 		expect(diagnostics).toEqual({
 			assetAvailable: true,
@@ -294,18 +257,44 @@ describe('tillfalliga companion-besok', () => {
 
 	it('returnerar den exakta blockerande orsaken', () => {
 		const state = { visitorId: null, visitorType: null, startedAt: null, endsAt: null, nextEligibleAt: now + 1 } as const;
-		const cooldown = getCompanionVisitorRenderDiagnostics(DAYTIME_FOX, state, true, false, now);
+		const cooldown = getCompanionVisitorRenderDiagnostics(DAYTIME_BEAR, state, true, false, now);
 		const scene = getCompanionVisitorRenderDiagnostics(
-			{ ...DAYTIME_FOX, sceneAllowsVisitor: false },
+			{ ...DAYTIME_BEAR, sceneAllowsVisitor: false },
 			state,
 			true,
 			false,
 			now
 		);
-		const viewport = getCompanionVisitorRenderDiagnostics(DAYTIME_FOX, state, false, false, now);
+		const viewport = getCompanionVisitorRenderDiagnostics(DAYTIME_BEAR, state, false, false, now);
 
 		expect(cooldown.blockingReason).toBe('cooldown-active');
 		expect(scene.blockingReason).toBe('scene-ineligible');
 		expect(viewport.blockingReason).toBe('viewport-too-narrow');
+	});
+
+	it('raven ar enda besokaren och kommer bara till bjornen', () => {
+		expect(getCompanionVisitorState(DAYTIME_BEAR, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('fox');
+		expect(getCompanionVisitorState(SLEEPING_BEAR, now, new MemoryStorage(), alwaysVisit).visitorId).toBe('fox');
+		for (const retired of ['fox', 'wolf', 'schafer', 'australisk_shepherd']) {
+			const state = getCompanionVisitorState(
+				{ mainCompanionId: retired, isSleeping: false, sceneAllowsVisitor: true },
+				now,
+				new MemoryStorage(),
+				alwaysVisit
+			);
+			expect(state.visitorId).toBeNull();
+		}
+		expect(getCompanionVisitorAsset('wolf', 'awake')).toBeNull();
+	});
+
+	it('avvisar ett aldre sparat besok dar bjornen sjalv var besokare', () => {
+		const storage = new MemoryStorage();
+		storage.setItem(
+			'mittpsyke:companion-visitor:v1',
+			JSON.stringify({ visitorId: 'bear', visitorType: 'awake', startedAt: now, endsAt: now + 60_000, nextEligibleAt: now + 1 })
+		);
+
+		expect(getStoredCompanionVisitorState(storage).visitorId).toBeNull();
+		expect(getCompanionVisitorState(DAYTIME_BEAR, now, storage, alwaysVisit).visitorId).toBe('fox');
 	});
 });

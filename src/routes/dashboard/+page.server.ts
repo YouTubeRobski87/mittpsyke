@@ -1,6 +1,5 @@
 import type { PageServerLoad } from './$types';
 import { DEFAULT_THEME, THEMES } from '$lib/theme';
-import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
 import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
 import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
 import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
@@ -177,7 +176,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 				weeklyGoalLabel: WEEKLY_GOAL_LABELS.none,
 				dashboardFocusLabel: DASHBOARD_WIDGET_LABELS.dagbok
 			},
-			progressCompanion: null,
 			companionRelationshipStage: 0,
 			// Utloggade och gästbesök får aldrig följeslagarens dagliga fråga.
 			companionDaily: null
@@ -282,7 +280,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 		diaryPreview,
 		progressPreview,
 		settingsPreview,
-		progressCompanion: readProgressCompanionFromMetadata(metadata),
 		companionRelationshipStage,
 		companionDaily
 	};

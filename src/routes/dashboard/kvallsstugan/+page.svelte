@@ -16,19 +16,16 @@
 	} from '$lib/evening-interior-memory';
 	import type { LivingWorldEffect } from '$lib/worldScene';
 	import {
-		getProgressCompanionAnimal,
-		getProgressCompanionArtId,
-		getWorldCompanionId,
+		COMPANION,
 		getProgressCompanionDayState,
-		type ProgressCompanionDayState,
-		type ProgressCompanionSelection
+		type ProgressCompanionDayState
 	} from '$lib/progressCompanion';
 	import { getLivingWorldScene, type LivingWorldScene } from '$lib/worldScene';
 	import { getEveningLampCssVariables } from '$lib/evening-lamp';
 	import type { CompanionDailyState } from '$lib/companionDailyQuestion';
 	import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
 
-	// Kvällsstugan har en egen scenbild: personen är inbakad i soffan i samma
+	// Kvällstugan har en egen scenbild: personen är inbakad i soffan i samma
 	// perspektiv som möbeln. Därmed behöver vi inte lägga en frilagd kropp ovanpå
 	// soffans ryggstöd eller ändra följeslagarens lokala placering.
 	const CABIN_IMAGE = '/images/scenes/cabin-interior-evening-resting-veranda-v1.webp';
@@ -68,7 +65,7 @@
 	//
 	// Två emitters i stället för /framstegs tre, och längre durations (~2x), så
 	// ringarna kommer sällan och expanderar mjukare - sjön ska leva lite utanför,
-	// inte dra blicken från Kvällslugn. Koordinaterna är procent av
+	// inte dra blicken från kvällsincheckningen. Koordinaterna är procent av
 	// `.cabin-lake-view`, och `.water-ripple-loop` centrerar sig själv på dem.
 	const LAKE_RIPPLES: LivingWorldEffect[] = [
 		{
@@ -103,7 +100,6 @@
 
 	let { data } = $props<{
 		data: {
-			progressCompanion: ProgressCompanionSelection | null;
 			companionDaily: CompanionDailyState | null;
 			interiorMemory: EveningInteriorMemory;
 		};
@@ -122,7 +118,7 @@
 	const hasVeranda = $derived(interiorMemory.hasVeranda);
 
 	// Lokal scenvy. Ingen route, ingen DB, ingen ny progression - så att
-	// Kvällslugn-flödet och check-in-state överlever att man går ut och in.
+	// Kvällsincheckningens flöde och check-in-state överlever att man går ut och in.
 	type SceneView = 'interior' | 'veranda';
 	let sceneView = $state<SceneView>('interior');
 	const isVerandaView = $derived(sceneView === 'veranda');
@@ -136,10 +132,10 @@
 
 	const sceneLabel = $derived(
 		isVerandaView
-			? 'Ute på Kvällsstugans veranda, vid vattnet'
+			? 'Ute på Kvällstugans veranda, vid vattnet'
 			: isSleepMode
-				? 'Sovläge i Kvällsstugan: rummet är nedsläckt och ljuset ligger kvar över sovplatsen'
-				: 'Inne i Kvällsstugan, vid vattnet'
+				? 'Sovläge i Kvällstugan: rummet är nedsläckt och ljuset ligger kvar över sovplatsen'
+				: 'Inne i Kvällstugan, vid vattnet'
 	);
 
 	// Följeslagaren lägger sig först när Sovläge faktiskt är aktivt - inte
@@ -169,9 +165,7 @@
 		if (!hasVeranda && sceneView !== 'interior') sceneView = 'interior';
 	});
 
-	const companionId = $derived(
-		getWorldCompanionId(getProgressCompanionAnimal(data.progressCompanion)?.id)
-	);
+	const companionId = COMPANION.id;
 	const companionBondLevel = $derived(
 		getCompanionBondLevel(getCompanionBond(data.companionDaily?.answeredDayCount ?? 0))
 	);
@@ -223,15 +217,14 @@
 <SEO canonical="https://mittpsyke.se/dashboard/kvallsstugan" />
 
 <svelte:head>
-	<title>Kvällslugn – MittPsyke</title>
+	<title>Kvällstugan – MittPsyke</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <main class="evening-page" aria-labelledby="evening-title">
 	<a class="evening-back" href="/dashboard">← Till Mitt Hem</a>
 	<header class="evening-header">
-		<p>KVÄLLSSTUGAN</p>
-		<h1 id="evening-title">Kvällslugn</h1>
+		<h1 id="evening-title">Kvällstugan</h1>
 		<span>En stund där dagen får landa.</span>
 	</header>
 
@@ -389,7 +382,8 @@
 		</div>
 
 		<div class="evening-flow-column" class:is-dimmed={isSleepMode}>
-			<div class="evening-flow-wrap">
+			<div class="evening-flow-wrap" role="region" aria-labelledby="evening-flow-label">
+				<p class="evening-flow-label" id="evening-flow-label">Kvällsincheckning</p>
 				<EveningCheckinFlow oncomplete={handleComplete} />
 			</div>
 			<p class="evening-privacy">
@@ -426,8 +420,8 @@
 	.evening-back:focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 3px; }
 
 	.evening-header { margin: 1rem 0 1.15rem; }
-	.evening-header p {
-		margin: 0 0 0.2rem;
+	.evening-flow-label {
+		margin: 0 0 0.6rem;
 		color: hsl(var(--muted-foreground));
 		font-size: 0.82rem;
 		font-weight: 700;
@@ -610,7 +604,6 @@
 		margin: 0;
 	}
 	.evening-scene :global(.interior-companion[data-companion='bear']) { left: 8%; bottom: 1%; width: min(30%, 280px); }
-	.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 9%; bottom: 3%; width: min(29%, 270px); }
 	/* Det enda bestående avtrycket i rummet. Boken vilar på den smala
 	   träfönsterbänken direkt till vänster om sidobordet: en fri horisontell
 	   yta nära lampan. Den ligger under lampskenet och bakom följeslagaren. */
@@ -801,7 +794,6 @@
 		.evening-scene { min-height: 180px; border-radius: 1rem; }
 		.evening-scene :global(.interior-companion) { left: 8%; bottom: 1%; width: min(32%, 175px); }
 		.evening-scene :global(.interior-companion[data-companion='bear']) { left: 6%; bottom: 0; width: min(37%, 190px); }
-		.evening-scene :global(.interior-companion[data-companion='wolf']) { left: 7%; bottom: 2%; width: min(35%, 185px); }
 		/* Något större på liten skärm, men med samma faktiska fönsterbänk som på desktop. */
 		.interior-memory-book { left: 60%; top: 60%; width: 6.5%; }
 		.interior-memory-rug { left: 13%; bottom: -1.5%; width: 53%; }

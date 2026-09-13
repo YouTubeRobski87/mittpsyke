@@ -1,7 +1,7 @@
 <script lang="ts">
 	// QA-harness, se +page.ts. Ingen del av produkten - den monterar den
 	// riktiga SleepModePanel så flödet, fokus och mobillayouten går att köra i
-	// webbläsaren utan att logga in i Kvällsstugan.
+	// webbläsaren utan att logga in i Kvällstugan.
 	import SleepModePanel from '$lib/components/evening/SleepModePanel.svelte';
 	import type { SleepStage } from '$lib/evening-sleep-mode';
 
@@ -17,7 +17,7 @@
 <main class="harness">
 	<h1>QA: Sovläge</h1>
 	<p class="harness-note">
-		Utvecklingsharness. Rutan nedan står för Kvällsstugans scen och speglar bara dimningen –
+		Utvecklingsharness. Rutan nedan står för Kvällstugans scen och speglar bara dimningen –
 		den riktiga scenen ligger i <code>/dashboard/kvallsstugan</code>.
 	</p>
 

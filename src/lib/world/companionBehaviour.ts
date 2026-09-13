@@ -1,10 +1,8 @@
 // Beteendesystem för följeslagarens mikrorörelser.
 //
 // Rörelserna körs som CSS-transformer på grundbilden i stället för egna
-// sprites, eftersom bara räven har overlay-bilder i companionPoseManifest -
-// björn och varg har enbart statiska grundposer. Det här ger alla tre samma
-// lilla liv mellan posbytena, och rävens riktiga blink/gesture-overlays
-// fortsätter spelas parallellt ovanpå.
+// sprites, eftersom björnen bara har statiska grundposer. Det ger honom lite
+// liv mellan posbytena.
 //
 // Lägg till en ny rörelse genom att lägga till en post i BEHAVIOURS och en
 // matchande @keyframes i CompanionPose.svelte (selektorn följer id:t).
@@ -27,7 +25,7 @@ export type CompanionBehaviour = {
 	durationMs: number;
 };
 
-/** Kvällsstugan delar samma beteenden men väljer bara de allra lugnaste. */
+/** Kvällstugan delar samma beteenden men väljer bara de allra lugnaste. */
 export type CompanionBehaviourProfile = 'world' | 'quiet';
 
 export type CompanionBehaviourOptions = {
@@ -120,14 +118,7 @@ export function getMotionDutyCycle(): number {
 
 // Poser som redan har egen rörelse eller där en extra kropps-transform skulle
 // se fel ut (sovande djur ska ligga still, gående har redan sin rörelse).
-const QUIET_POSE_IDS = new Set([
-	'sleep-curled',
-	'sleep-side',
-	'bear-sleeping',
-	'wolf-sleeping',
-	'rest',
-	'walk'
-]);
+const QUIET_POSE_IDS = new Set(['bear-sleeping']);
 
 export function isQuietPose(poseId: string | null | undefined): boolean {
 	return poseId ? QUIET_POSE_IDS.has(poseId) : false;

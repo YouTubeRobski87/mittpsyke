@@ -10,7 +10,6 @@ type HomeData = {
 	homeOverview?: {
 		displayName: string | null;
 		entryCount: number;
-		progressCompanion: null;
 	};
 };
 
@@ -52,8 +51,7 @@ describe('Startsidan för inloggade', () => {
 		expect(data.isSignedInHome).toBe(true);
 		expect(data.homeOverview).toEqual({
 			displayName: null,
-			entryCount: 3,
-			progressCompanion: null
+			entryCount: 3
 		});
 	});
 

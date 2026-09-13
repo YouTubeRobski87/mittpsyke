@@ -10,7 +10,7 @@
 	import { page } from '$app/state';
 
 	let { form }: { form: ActionData } = $props();
-	// Den som saknar konto ska inte tappa målet (t.ex. Kvällsstugan) på vägen
+	// Den som saknar konto ska inte tappa målet (t.ex. Kvällstugan) på vägen
 	// via registreringen.
 	const registerHref = $derived(withSafeRedirect('/register', page.url.searchParams.get('redirect')));
 	let loading = $state(false);

@@ -1,6 +1,5 @@
 import type { PageServerLoad } from './$types';
 import { THEMES } from '$lib/theme';
-import { readProgressCompanionFromMetadata } from '$lib/progressCompanion';
 import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
 import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
 import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
@@ -24,7 +23,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 			heatmapData: {},
 			heatmapError: '',
 			profileTheme: null,
-			progressCompanion: null,
 			companionRelationshipStage: 0
 		};
 	}
@@ -53,7 +51,6 @@ export const load: PageServerLoad = async ({ locals }) => {
 			typeof userMetadata.profile_theme === 'string' && userMetadata.profile_theme in THEMES
 				? userMetadata.profile_theme
 				: null,
-		progressCompanion: readProgressCompanionFromMetadata(userMetadata),
 		companionRelationshipStage: await getCompanionRelationshipStageForUser(locals.supabase, user.id),
 		companionDaily
 	};

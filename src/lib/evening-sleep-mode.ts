@@ -1,4 +1,4 @@
-// Sovläge i Kvällsstugan – ren tillståndslogik.
+// Sovläge i Kvällstugan – ren tillståndslogik.
 //
 // Fyra regler bär hela filen:
 //

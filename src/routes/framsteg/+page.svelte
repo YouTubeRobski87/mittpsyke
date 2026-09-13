@@ -22,14 +22,11 @@
 		type ProgressSceneTransitionState
 	} from '$lib/progressScene';
 	import {
+		COMPANION,
 		getProgressCompanionDayState,
-		getProgressCompanionDisplayName,
 		getProgressCompanionSeason,
-		getProgressCompanionAnimal,
-		getWorldCompanionId,
 		type ProgressCompanionDayState,
-		type ProgressCompanionSeason,
-		type ProgressCompanionSelection
+		type ProgressCompanionSeason
 	} from '$lib/progressCompanion';
 	import type { CompanionId } from '$lib/companionPoseManifest';
 	import {
@@ -140,11 +137,9 @@
 		prepareSceneTransition(sceneBand);
 	});
 
-	const sceneCompanionId = $derived(
-		getWorldCompanionId(getProgressCompanionAnimal(data.progressCompanion)?.id)
-	) as CompanionId;
-	const scenePose = $derived(getProgressScenePose(sceneCompanionId));
-	const sceneCompanionName = $derived(getProgressCompanionDisplayName(sceneCompanionId));
+	const sceneCompanionId: CompanionId = COMPANION.id;
+	const scenePose = getProgressScenePose(sceneCompanionId);
+	const sceneCompanionName = COMPANION.name;
 
 	let cabinPlacementStyle = $state('');
 	let companionPlacementStyle = $state('');
@@ -276,7 +271,6 @@
 		heatmapData?: Record<string, number>;
 		heatmapError?: string;
 		profileTheme?: keyof typeof THEMES | null;
-		progressCompanion?: ProgressCompanionSelection | string | null;
 		companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
 		companionDaily?: { answeredDayCount: number } | null;
 		isAnonymous?: boolean;
@@ -511,7 +505,7 @@
 	// Sjöscenen har himmel och sol inbakade i motivet. De separata himmelslagren
 	// stängs därför av här för att undvika dubbla solar eller en extra måne.
 	// Avstängningen är lokal via
-	// features; Mitt Hem och Kvällsstugan väljer in moon/cloud själva och rörs
+	// features; Mitt Hem och Kvällstugan väljer in moon/cloud själva och rörs
 	// inte. Vatten, dimma, lövverk och drift är kvar som ambient rörelse.
 	const livingWorldScene = $derived(
 		getLivingWorldScene({
@@ -974,10 +968,9 @@
 	});
 
 	// Ytan mäts om så fort scenrutan byts ut. Storleksändringar fångas av
-	// ResizeObservern, och ett byt av följeslagare får en ny bildankring.
+	// ResizeObservern.
 	$effect(() => {
 		const renderedSceneEl = sceneEl;
-		sceneCompanionId;
 		updateProgressScenePlacement(renderedSceneEl);
 	});
 

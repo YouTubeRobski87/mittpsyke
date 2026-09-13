@@ -157,11 +157,11 @@
 </script>
 
 {#if consentLoading}
-	<p class="evening-loading">Laddar Kvällslugn…</p>
+	<p class="evening-loading">Laddar kvällsincheckningen…</p>
 {:else if !hasHealthDataConsent}
 	<ConsentGate
 		title="Innan du börjar"
-		dataLabel="Det du väljer eller skriver i Kvällslugn"
+		dataLabel="Det du väljer eller skriver i kvällsincheckningen"
 		serviceLabel="MittPsyke om du väljer att spara incheckningen"
 		onAccept={acceptHealthConsent}
 	/>

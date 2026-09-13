@@ -24,28 +24,10 @@ export type CompanionState =
 // Mappar bas-pose-id → kanoniskt tillstånd. Poser som inte finns med här
 // (t.ex. framtida tillägg) faller tillbaka till "idle" i getBaseCompanionState.
 const BASE_POSE_ID_TO_STATE: Record<string, CompanionState> = {
-	// Räv
-	idle: 'idle',
-	'look-left': 'look-left',
-	'look-right': 'look-right',
-	sit: 'sit',
-	'sit-look-up': 'sit',
-	'evening-lake': 'sit',
-	drink: 'sniff',
-	sniff: 'sniff',
-	stretch: 'idle',
-	walk: 'walk',
-	rest: 'rest',
-	'sleep-curled': 'sleep',
-	'sleep-side': 'sleep',
-	// Björn
 	'bear-standing': 'idle',
 	'bear-sitting': 'sit',
 	'bear-sleeping': 'sleep',
-	'bear-stretching': 'idle',
-	// Varg
-	'wolf-standing': 'idle',
-	'wolf-sleeping': 'sleep'
+	'bear-stretching': 'idle'
 };
 
 /** Mappar en bas-pose till dess kanoniska tillstånd. Okänt/saknat → "idle". */

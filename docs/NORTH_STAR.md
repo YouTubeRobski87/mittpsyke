@@ -76,28 +76,31 @@ Följeslagaren ska inte alltid prata eller kräva uppmärksamhet. Ibland sitter 
 
 Närvaron ska kännas som sällskap utan krav.
 
-## Följeslagarna
+## Balder
 
-Det finns inte en följeslagare. Det finns ett **Companion-system**.
+**Balder, björnen, är MittPsykes enda följeslagare.**
 
-Räven, björnen och kommande djur är olika följeslagare i samma värld och på samma tekniska grund. De konkurrerar inte om riktningen — de är olika sätt att vara någon som finns där.
+Det finns inget val av följeslagare. Alla som använder MittPsyke möter samma björn, i samma värld. Det gör platsen enkel att känna igen och lätt att återvända till.
 
-Ingen av dem är en maskot som uppträder. Rörelsen ska alltid vara lågmäld.
+Björnen är varm, trygg, jordnära och lite småfilosofisk. Den sitter länge, rör sig sparsamt och utstrålar trygghet. Den kan blinka långsamt, flytta vikten, titta upp mot himlen eller sova när natten kommer.
 
-### Samma grund, olika temperament
+Den är ingen maskot som uppträder. Rörelsen ska alltid vara lågmäld.
 
-Alla följeslagare delar samma beteendesystem: samma poslager, samma lugna kadens, samma regler för vad som får röra sig. Det som skiljer dem är **temperament** — hur ofta de byter läge, hur mycket de rör sig, vilka tider på dygnet de är som mest närvarande.
+### Besökare
 
-Det gör valet av följeslagare till ett val av stämning, inte ett val av utseende.
+**Räven förekommer bara som besökare.** Den kan ibland komma förbi och sitta en stund nära björnen, vaken eller sovande, och sedan gå igen. Den är aldrig en följeslagare, går inte att välja och får aldrig ta björnens plats.
 
-- **Räven** är nyfiken. Den rör sig mer, tittar mot sjön och blinkar ofta.
-- **Björnen** är varm, trygg, jordnära och lite småfilosofisk. Den sitter länge, rör sig sparsamt och utstrålar trygghet. Den kan blinka långsamt, flytta vikten, titta upp mot himlen eller ha ett grässtrå i munnen.
-- **Ugglan** är mest närvarande på kvällen och natten. Den observerar omgivningen.
-- **Hjorten** är försiktig. Den dyker upp mer sällan och rör sig mjukt.
+Nya djur läggs inte till som följeslagare. Om fler djur någon gång ska synas i världen är de besökare på samma villkor som räven.
 
-Räven är den första fullt utvecklade följeslagaren. Björnen ska få samma möjligheter. Nya djur ska kunna läggas till utan att arkitekturen skrivs om.
+Teknisk riktning finns i `docs/COMPANION_SYSTEM.md`. Där produktbeslutet ovan och den tekniska dokumentationen skiljer sig åt gäller produktbeslutet.
 
-Teknisk riktning finns i `docs/COMPANION_SYSTEM.md`.
+## Kvällstugan
+
+Platsen där dagen landar heter **Kvällstugan**. Man går in i den från stugan på Mitt Hem.
+
+Funktionen där inne heter **Kvällsincheckning**: en kort, frivillig incheckning när dagen är slut.
+
+Det finns inga andra namn för samma plats eller funktion. Namnet **Kvällslugn** ska inte användas.
 
 ## Världens lager
 
@@ -111,7 +114,7 @@ Det är hem.
 
 Följeslagaren gör platsen personlig.
 
-Den kan flytta sig lite, vila, sitta i trädet eller titta mot sjön.
+Den kan flytta sig lite, vila, sitta vid stugan eller titta mot sjön.
 
 ### Lager 3: Årstider
 
@@ -257,4 +260,4 @@ Priority order:
 
 The first two references are the strongest source of truth for interface work.
 
-Referenserna 3–5 visar björnen eftersom de är äldre än Companion-systemet. Läs dem som referens för världen, bildutsnittet och stämningen — inte som att björnen är följeslagaren. Samma scen ska bära vilken följeslagare som helst.
+Referenserna 3–5 visar björnen, som också är MittPsykes enda följeslagare. Läs dem som referens för världen, bildutsnittet och stämningen.

@@ -4,7 +4,7 @@ import { getProgressCompanionLocalTime } from '$lib/progressCompanion';
  * Framstegs dygnsscen. Egen modul, medvetet skild från den delade
  * getProgressCompanionDayState: den senare namnger samma gränser som
  * morning/day/evening/night och används av hundposerna, Mitt Hem och
- * Kvällsstugan. Här behövs presentationsnamnen morgon/dag/eftermiddag/kväll,
+ * Kvällstugan. Här behövs presentationsnamnen morgon/dag/eftermiddag/kväll,
  * och scenpresentationen hör bara hemma på Framsteg.
  *
  * Gränserna är identiska med den delade helperns - bara benämningen skiljer:

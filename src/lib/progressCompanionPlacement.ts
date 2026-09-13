@@ -125,8 +125,7 @@ export function getProgressCabinPlacementStyle(input: ProgressSceneGeometryInput
  * Följeslagaren i Framstegsscenen
  *
  * Scenbilden innehåller platsen - sjö, berg, stuga, människa, lägereld - men
- * INGET djur. Användarens valda följeslagare ritas som ett eget lager ovanpå,
- * så att en schäfer visas för den som valt schäfer.
+ * INGET djur. Följeslagaren, björnen Balder, ritas som ett eget lager ovanpå.
  *
  * Endast den primära följeslagaren renderas här. Visitor och Friend hör hemma
  * på Mitt Hem och återinförs medvetet inte i den här vyn.
@@ -135,11 +134,9 @@ export function getProgressCabinPlacementStyle(input: ProgressSceneGeometryInput
 /**
  * Motivets faktiska yta i en pose-PNG, uppmätt ur alfakanalen.
  *
- * Anledningen att det behövs: dukarna har vitt skilda genomskinliga marginaler
- * (0 % under schäferns tassar, 18 % under australisk shepherds vilopose) och
- * motivet fyller mellan 48 % och 100 % av duken. En gemensam
- * `translate(-50%, -100%)` ankrar dukens nederkant, inte djurets tassar - då
- * svävar vissa arter och andra sjunker genom marken.
+ * Anledningen att det behövs: duken har genomskinliga marginaler runt motivet.
+ * En gemensam `translate(-50%, -100%)` ankrar dukens nederkant, inte djurets
+ * tassar - utan uppmätt yta svävar björnen eller sjunker genom marken.
  */
 type CompanionArtBounds = {
 	canvasWidth: number;
@@ -154,55 +151,24 @@ type CompanionArtBounds = {
  * Uppmätta alfaytor per pose-ID. Värdena kommer ur PNG-filernas alfakanal och
  * ska mätas om ifall en pose byter bild.
  *
- * VIKTIGT: ytorna är mätta vid alfa > 16, inte alfa > 0. Flera dukar har en
- * nästan osynlig dis runt motivet - vargens sträcker sig 200 px under tassarna
- * och gör hennes råa alfaruta 338 px för hög. Mäts rutan vid alfa > 0 blir
- * djuret både för litet och svävande, eftersom disen räknas som kropp.
+ * VIKTIGT: ytorna är mätta vid alfa > 16, inte alfa > 0. En nästan osynlig dis
+ * runt motivet skulle annars räknas som kropp och göra djuret för litet och
+ * svävande.
  *
  * Lägg till en rad här när en ny pose ska kunna användas i scenen - det är allt
  * som krävs, se getProgressScenePoseId nedan.
  */
 const PROGRESS_POSE_ART_BOUNDS: Record<string, CompanionArtBounds> = {
-	// fox-realistic-lake-sitting-gazing.png
-	'evening-lake': { canvasWidth: 240, canvasHeight: 234, left: 79, top: 6, right: 227, bottom: 206 },
 	// bear-sitting.png
-	'bear-sitting': { canvasWidth: 768, canvasHeight: 512, left: 151, top: 41, right: 601, bottom: 489 },
-	// wolf-standing-transparent.png
-	'wolf-standing': {
-		canvasWidth: 1536,
-		canvasHeight: 1024,
-		left: 495,
-		top: 138,
-		right: 1253,
-		bottom: 823
-	},
-	// schafer-sitting.png
-	'schafer-sitting': { canvasWidth: 512, canvasHeight: 512, left: 142, top: 21, right: 412, bottom: 467 },
-	// australisk_shepherd-sitting.png
-	'australisk-shepherd-sitting': {
-		canvasWidth: 512,
-		canvasHeight: 512,
-		left: 129,
-		top: 40,
-		right: 475,
-		bottom: 512
-	}
+	'bear-sitting': { canvasWidth: 768, canvasHeight: 512, left: 151, top: 41, right: 601, bottom: 489 }
 };
 
 /**
- * Den lugna pose varje art visar i scenen. Vald efter prioritetsordningen
- * bortvänd sittande > sittande vid sjön > lugnt sittande > stående profil.
- *
- * Ingen art har ännu en bortvänd pose; räven kommer närmast med sin sittande
- * sidoprofil mot vattnet. Vargen har bara stående och sovande, så den stående
- * profilen är dess bästa vakna alternativ.
+ * Den lugna pose björnen visar i scenen: sittande, tills en bortvänd sittpose
+ * finns (se getProgressScenePoseId).
  */
 const PROGRESS_PREFERRED_SCENE_POSE: Record<CompanionId, string> = {
-	fox: 'evening-lake',
-	bear: 'bear-sitting',
-	wolf: 'wolf-standing',
-	schafer: 'schafer-sitting',
-	australisk_shepherd: 'australisk-shepherd-sitting'
+	bear: 'bear-sitting'
 };
 
 /**
@@ -210,38 +176,29 @@ const PROGRESS_PREFERRED_SCENE_POSE: Record<CompanionId, string> = {
  *
  * `groundX` är markpunkten och `motifHeight` djurets synliga höjd, båda i
  * originalbildens pixlar. Människan sitter med marklinje vid y 742 och är 255 px
- * hög sittande; höjderna nedan är satta som andel av det måttet så storleks-
- * förhållandet blir verkligt (en räv är liten, en björn stor).
+ * hög sittande; höjden nedan är satt som andel av det måttet så storleks-
+ * förhållandet blir verkligt.
  *
- * `groundX` skiljer sig per art av ett konkret skäl: muggen i motivet står på
- * x 1105-1155. Breda djur ankras längre åt höger så att kroppen börjar först
- * efter muggen i stället för att täcka den.
+ * `groundX` ligger till höger om muggen i motivet (x 1105-1155), så att
+ * björnens kropp börjar först efter muggen i stället för att täcka den.
  */
 export const PROGRESS_COMPANION_GROUND_Y = 752;
 
 type ProgressSceneCompanionSpec = { groundX: number; motifHeight: number };
 
 const PROGRESS_SCENE_COMPANIONS: Record<CompanionId, ProgressSceneCompanionSpec> = {
-	// 105 px är rävens anatomiskt korrekta mått mot människans sitthöjd, men på
-	// 375 px blir motivet ~20 px högt och läses som en fläck intill muggen i
-	// stället för som en följeslagare. 115 px räcker för att den ska gå att
-	// uppfatta, och vänsterkanten hamnar fortfarande på 1172 - klar av muggen.
-	fox: { groundX: 1215, motifHeight: 115 },
-	bear: { groundX: 1272, motifHeight: 180 },
-	wolf: { groundX: 1265, motifHeight: 135 },
-	schafer: { groundX: 1215, motifHeight: 145 },
-	australisk_shepherd: { groundX: 1220, motifHeight: 130 }
+	bear: { groundX: 1272, motifHeight: 180 }
 };
 
 /**
- * Pose-ID:t som arten visar i scenen. En bortvänd sittpose vinner så fort en
+ * Pose-ID:t som björnen visar i scenen. En bortvänd sittpose vinner så fort en
  * sådan finns i manifestet OCH har en uppmätt alfayta ovan - då byts posen in
  * utan att något annat behöver ändras.
  */
 export function getProgressScenePoseId(companionId: CompanionId): string {
 	const away = COMPANION_POSES.find(
 		(pose) =>
-			(pose.companionId ?? 'fox') === companionId &&
+			pose.companionId === companionId &&
 			pose.role === 'base' &&
 			pose.id.includes('sitting-away') &&
 			PROGRESS_POSE_ART_BOUNDS[pose.id] !== undefined
@@ -255,7 +212,7 @@ export function getProgressScenePose(companionId: CompanionId): CompanionPose | 
 	const poseId = getProgressScenePoseId(companionId);
 	return (
 		COMPANION_POSES.find(
-			(pose) => pose.id === poseId && (pose.companionId ?? 'fox') === companionId
+			(pose) => pose.id === poseId && pose.companionId === companionId
 		) ?? null
 	);
 }

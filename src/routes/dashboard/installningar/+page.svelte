@@ -3,7 +3,6 @@
 	import { goto } from '$app/navigation';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import CompanionAvatar from '$lib/components/CompanionAvatar.svelte';
-	import CompanionSelector from '$lib/components/CompanionSelector.svelte';
 	import { supabase } from '$lib/supabase';
 	import {
 		getSensitiveConsentRecord,
@@ -18,13 +17,7 @@
 	} from '$lib/types';
 	import { THEME_STORAGE_KEY } from '$lib/theme';
 	import { PUBLIC_CONTACT_EMAIL } from '$lib/contact';
-	import {
-		getProgressCompanionAnimal,
-		getProgressCompanionDisplayName,
-		readProgressCompanionFromMetadata,
-		type ProgressCompanionId,
-		type ProgressCompanionSelection
-	} from '$lib/progressCompanion';
+	import { COMPANION } from '$lib/progressCompanion';
 
 	let loading = $state(true);
 	let accountEmail = $state('');
@@ -36,10 +29,6 @@
 	let nameMessage = $state('');
 
 	// Personalization
-	let progressCompanion = $state<ProgressCompanionSelection>({ id: 'fox' });
-	let companionSaving = $state(false);
-	let companionMessage = $state('');
-	let companionMessageType = $state<'success' | 'error'>('success');
 	let profileTheme = $state('neutral');
 	let weeklyGoalType = $state('diary_3_week');
 	let dashboardWidget = $state('dagbok');
@@ -106,7 +95,6 @@
 		{ value: 'guide',  label: 'Guider' },
 		{ value: 'chat',   label: 'Chatten' },
 	];
-	const selectedCompanion = $derived(getProgressCompanionAnimal(progressCompanion));
 
 	let exportLoading = $state(false);
 	let exportMessage = $state('');
@@ -216,7 +204,6 @@
 			const meta = (session.user.user_metadata ?? {}) as Record<string, unknown>;
 			displayName = typeof meta.display_name === 'string' ? meta.display_name : '';
 			birthday = typeof meta.birthday === 'string' ? meta.birthday : '';
-			progressCompanion = readProgressCompanionFromMetadata(meta) ?? { id: 'fox' };
 			profileTheme = typeof meta.profile_theme === 'string' ? meta.profile_theme : 'neutral';
 			weeklyGoalType = typeof meta.weekly_goal_type === 'string' ? meta.weekly_goal_type : 'diary_3_week';
 			dashboardWidget = typeof meta.dashboard_widget === 'string' ? meta.dashboard_widget : 'dagbok';
@@ -582,7 +569,6 @@
 
 		const { error } = await supabase.auth.updateUser({
 			data: {
-				progress_companion: { id: progressCompanion?.id ?? 'fox' },
 				profile_theme: profileTheme,
 				weekly_goal_type: weeklyGoalType,
 				dashboard_widget: dashboardWidget
@@ -605,35 +591,6 @@
 				window.dispatchEvent(new CustomEvent('mittpsyke:theme-changed'));
 			}
 		}
-	}
-
-	async function selectCompanion(id: ProgressCompanionId) {
-		if (companionSaving || progressCompanion?.id === id) return;
-
-		const previousCompanion = progressCompanion;
-		progressCompanion = { id };
-		companionMessage = '';
-		companionSaving = true;
-
-		const { error } = await supabase.auth.updateUser({
-			data: { progress_companion: { id } }
-		});
-
-		companionSaving = false;
-
-		if (error) {
-			progressCompanion = previousCompanion;
-			companionMessage = 'Kunde inte spara ditt val just nu. Försök igen.';
-			companionMessageType = 'error';
-			return;
-		}
-
-		await supabase.auth.refreshSession();
-		companionMessage = `${getProgressCompanionDisplayName(id)} är nu din följeslagare.`;
-		companionMessageType = 'success';
-		setTimeout(() => {
-			companionMessage = '';
-		}, 3000);
 	}
 
 	async function savePassword() {
@@ -750,14 +707,6 @@
 	/>
 
 	<div class="settings-page auth-shell">
-		<CompanionSelector
-			selection={progressCompanion}
-			saving={companionSaving}
-			message={companionMessage}
-			messageType={companionMessageType}
-			onselect={selectCompanion}
-		/>
-
 		{#if loading}
 			<p class="loading-copy">Laddar inställningar...</p>
 		{:else}
@@ -801,9 +750,9 @@
 			<p class="field-hint">Välj tema, mål och vilket kort du vill se på startsidan. Du kan ändra när du vill.</p>
 
 			<div class="companion-profile-card">
-				<CompanionAvatar selection={progressCompanion} size="xl" decorative animated={false} />
+				<CompanionAvatar size="xl" decorative animated={false} />
 				<div class="companion-profile-copy">
-					<strong>{selectedCompanion?.name ?? 'Din följeslagare'}</strong>
+					<strong>{COMPANION.name}</strong>
 					<span>Finns kvar i din värld och möter dig när du återvänder.</span>
 				</div>
 			</div>

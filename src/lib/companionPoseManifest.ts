@@ -1,14 +1,14 @@
-import { getProgressCompanionDisplayName } from '$lib/progressCompanion';
+import { COMPANION } from '$lib/progressCompanion';
 
 export type CompanionPoseDaypart = 'day' | 'evening' | 'night';
 export type CompanionPoseRole = 'base' | 'overlay';
-export type CompanionId = 'fox' | 'bear' | 'wolf' | 'schafer' | 'australisk_shepherd';
+export type CompanionId = typeof COMPANION.id;
 
 export type CompanionPoseFrame = {
 	src: string;
 };
 
-export type CompanionScenePositionId = 'foreground-right' | 'shore-near' | 'shore-far';
+export type CompanionScenePositionId = 'foreground-right';
 
 /** Vilken vy följeslagaren visas i. Samma namn som CompanionVisitor redan
  *  använder, så scenbegreppet betyder samma sak i hela världen. */
@@ -48,7 +48,7 @@ export type CompanionPlacement = {
 
 export type CompanionPose = {
 	id: string;
-	companionId?: CompanionId;
+	companionId: CompanionId;
 	role: CompanionPoseRole;
 	motion?: 'blink' | 'gesture' | 'sleep';
 	dayparts: CompanionPoseDaypart[];
@@ -65,234 +65,9 @@ export type CompanionPose = {
 	};
 };
 
-const FOX_POSE_BASE_PATH = '/images/avatars/presets';
-
-const foxPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
-const bearPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
-const wolfPoseSrc = (fileName: string) => `${FOX_POSE_BASE_PATH}/${fileName}`;
-// Hundarnas frilagda bilder ligger i /images/scenes, till skillnad från de
-// äldre djuren som bor i presets. Egna hjälpare i stället för att flytta filer.
-const DOG_POSE_BASE_PATH = '/images/scenes';
-const dogPoseSrc = (fileName: string) => `${DOG_POSE_BASE_PATH}/${fileName}`;
-const FOX_DISPLAY_NAME = getProgressCompanionDisplayName('fox');
-const BEAR_DISPLAY_NAME = getProgressCompanionDisplayName('bear');
-const WOLF_DISPLAY_NAME = getProgressCompanionDisplayName('wolf');
-
-export const FOX_COMPANION_POSES = [
-	{
-		id: 'idle',
-		role: 'base',
-		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox-realistic-standing-front-alert.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, står avslappnat.`,
-		weight: 3,
-		sceneAdjustment: { scale: 0.45 }
-	},
-	{
-		id: 'look-left',
-		role: 'base',
-		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox-realistic-standing-side-left-lake.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, tittar lugnt åt vänster.`,
-		weight: 1.1,
-		sceneAdjustment: { scale: 0.42 }
-	},
-	{
-		id: 'look-right',
-		role: 'base',
-		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox-realistic-standing-side-right-listening.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, tittar lugnt åt höger.`,
-		weight: 1.1,
-		sceneAdjustment: { scale: 0.46 }
-	},
-	{
-		id: 'sit',
-		role: 'base',
-		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox-realistic-resting-sitting.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sitter stilla.`,
-		weight: 2.2,
-		sceneAdjustment: { scale: 0.55 }
-	},
-	{
-		id: 'sit-look-up',
-		role: 'base',
-		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_sit_look_up.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sitter och tittar upp.`,
-		weight: 0.9
-	},
-	{
-		id: 'drink',
-		role: 'base',
-		// Även kväll: shore-near tillåter redan 'drink' på både day och evening
-		// (se COMPANION_SCENE_POSITIONS nedan), men posen själv var låst till
-		// day - och Framstegs scen är en kvällsscen, så urvalet blev tomt och
-		// räven kunde aldrig dricka där. Vikten hålls låg mot evening-lake
-		// (2.6), så drickandet förblir det sällsynta undantaget i posbytet
-		// var 20-40 min, inte ett nytt normalläge.
-		dayparts: ['day', 'evening'],
-		frames: [{ src: foxPoseSrc('fox-realistic-lake-drinking.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, dricker stilla vid sjön.`,
-		weight: 0.75,
-		sceneAdjustment: { scale: 0.55 }
-	},
-	{
-		id: 'sniff',
-		role: 'base',
-		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox-realistic-lake-sniffing.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, nosar försiktigt på marken.`,
-		weight: 0.8,
-		sceneAdjustment: { scale: 0.55 }
-	},
-	{
-		id: 'stretch',
-		role: 'base',
-		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_stretch.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sträcker lugnt på sig.`,
-		weight: 0.65
-	},
-	{
-		id: 'walk',
-		role: 'base',
-		dayparts: ['day'],
-		// Endast en realistisk gångbild finns ännu (ingen gångcykel-animation).
-		frames: [{ src: foxPoseSrc('fox-realistic-walking-curious.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, går långsamt genom platsen.`,
-		weight: 0.22,
-		frameMs: 620,
-		sceneAdjustment: { scale: 0.42 }
-	},
-	{
-		id: 'evening-lake',
-		role: 'base',
-		dayparts: ['evening'],
-		frames: [{ src: foxPoseSrc('fox-realistic-lake-sitting-gazing.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sitter och tittar mot sjön i kvällsljus.`,
-		weight: 2.6,
-		sceneAdjustment: { scale: 0.55 }
-	},
-	{
-		id: 'rest',
-		role: 'base',
-		dayparts: ['evening'],
-		frames: [{ src: foxPoseSrc('fox-realistic-resting-lying-half-asleep.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, ligger och vilar i kvällslugnet.`,
-		weight: 1.7,
-		sceneAdjustment: { scale: 0.5 }
-	},
-	{
-		id: 'sleep-curled',
-		role: 'base',
-		dayparts: ['night'],
-		frames: [{ src: foxPoseSrc('fox-realistic-sleeping-curled.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sover hoprullad.`,
-		weight: 2.3,
-		sceneAdjustment: { scale: 0.45 }
-	},
-	{
-		id: 'sleep-side',
-		role: 'base',
-		dayparts: ['night'],
-		frames: [{ src: foxPoseSrc('fox-realistic-sleeping-side-dreaming.png') }],
-		alt: `Din följeslagare, ${FOX_DISPLAY_NAME}, sover lugnt på sidan.`,
-		weight: 1.8,
-		sceneAdjustment: { scale: 0.38 }
-	},
-	{
-		id: 'blink',
-		role: 'overlay',
-		motion: 'blink',
-		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_idle_blink.png') }],
-		alt: '',
-		eventChance: 0.06,
-		durationMs: 1450
-	},
-	{
-		id: 'happy',
-		role: 'overlay',
-		motion: 'gesture',
-		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_happy.png') }],
-		alt: '',
-		eventChance: 0.025,
-		durationMs: 5200
-	},
-	{
-		id: 'curious',
-		role: 'overlay',
-		motion: 'gesture',
-		dayparts: ['day'],
-		frames: [{ src: foxPoseSrc('fox_curious.png') }],
-		alt: '',
-		eventChance: 0.03,
-		durationMs: 5600
-	},
-	{
-		id: 'thoughtful',
-		role: 'overlay',
-		motion: 'gesture',
-		dayparts: ['day', 'evening'],
-		frames: [{ src: foxPoseSrc('fox_thoughtful.png') }],
-		alt: '',
-		eventChance: 0.02,
-		durationMs: 5600
-	},
-	{
-		id: 'listening',
-		role: 'overlay',
-		motion: 'gesture',
-		dayparts: ['day', 'evening'],
-		frames: [{ src: foxPoseSrc('fox_listening.png') }],
-		alt: '',
-		eventChance: 0.022,
-		durationMs: 5600
-	},
-	{
-		id: 'look-user',
-		role: 'overlay',
-		motion: 'gesture',
-		dayparts: ['day', 'evening'],
-		frames: [{ src: foxPoseSrc('fox_look_user.png') }],
-		alt: '',
-		eventChance: 0.018,
-		durationMs: 5200
-	},
-	{
-		id: 'yawn',
-		role: 'overlay',
-		motion: 'gesture',
-		dayparts: ['evening'],
-		frames: [{ src: foxPoseSrc('fox_yawn.png') }],
-		alt: '',
-		eventChance: 0.045,
-		durationMs: 4300
-	},
-	{
-		id: 'sleep-ear-twitch',
-		role: 'overlay',
-		motion: 'sleep',
-		dayparts: ['night'],
-		frames: [{ src: foxPoseSrc('fox_sleep_ear_twitch.png') }],
-		alt: '',
-		eventChance: 0.035,
-		durationMs: 2600
-	},
-	{
-		id: 'sleep-tail-move',
-		role: 'overlay',
-		motion: 'sleep',
-		dayparts: ['night'],
-		frames: [{ src: foxPoseSrc('fox_sleep_tail_move.png') }],
-		alt: '',
-		eventChance: 0.028,
-		durationMs: 3200
-	}
-] satisfies CompanionPose[];
+const POSE_BASE_PATH = '/images/avatars/presets';
+const bearPoseSrc = (fileName: string) => `${POSE_BASE_PATH}/${fileName}`;
+const BEAR_DISPLAY_NAME = COMPANION.name;
 
 export const BEAR_COMPANION_POSES = [
 	{
@@ -337,201 +112,12 @@ export const BEAR_COMPANION_POSES = [
 	}
 ] satisfies CompanionPose[];
 
-export const WOLF_COMPANION_POSES = [
-	{
-		id: 'wolf-standing',
-		companionId: 'wolf',
-		role: 'base',
-		dayparts: ['day', 'evening'],
-		frames: [{ src: wolfPoseSrc('wolf-standing-transparent.png') }],
-		alt: `Din följeslagare, ${WOLF_DISPLAY_NAME}, står lugnt.`,
-		weight: 2.4,
-		sceneAdjustment: { scale: 0.74, y: 3 }
-	},
-	{
-		id: 'wolf-sleeping',
-		companionId: 'wolf',
-		role: 'base',
-		dayparts: ['night'],
-		frames: [{ src: wolfPoseSrc('wolf-sleeping.png') }],
-		alt: `${WOLF_DISPLAY_NAME} sover lugnt.`,
-		weight: 2.4,
-		// Sovposens duk är kvadratisk (1024x1024), till skillnad från alla andra
-		// companion-dukar som är liggande (1,03-1,50). Poserutan är kvadratisk och
-		// bilden är object-fit: contain, så en liggande duk får bara 67-68 % av
-		// rutans höjd medan den här fyller 100 % - och motivet täcker dessutom
-		// 86 % x 60 % av sin duk mot stående vargens 49 % x 67 %. Med 0.96 blev
-		// hon 28,6 % x 48,3 % av scenen, alltså större än stugan.
-		//
-		// 0.38 tar bort båda effekterna: hon landar på 11,3 % x 19,1 % och 2,2 %
-		// av scenytan, i nivå med björnens sovpose (2,3 %) och rävens vila
-		// (2,3 %). Värdet är räknat ur ytan, inte gissat - motivet är rundare
-		// (1,43) än rävens (1,72) och björnens (2,34) hopkrupna poser, så bredd
-		// och höjd kan inte matcha båda samtidigt.
-		sceneAdjustment: { scale: 0.38 }
-	}
-] satisfies CompanionPose[];
-
-/**
- * Hundarna har än så länge en enda frilagd bild vardera, så de får exakt en
- * pose var som gäller alla dygnsdelar. Det är avsiktligt statiskt: hellre en
- * korrekt stillastående hund än en simulerad rotation av samma bild under
- * flera pose-ID:n.
- *
- * Poserna måste finnas, inte utelämnas. getFallbackPose() faller i sista hand
- * tillbaka på COMPANION_POSES[0], som är en rävpose - en hund utan egen pose
- * skulle alltså renderas som räv.
- *
- * När riktiga pose-assets finns läggs de till här på samma sätt som björnens
- * och vargens, utan att något annat behöver ändras.
- */
-const SCHAFER_DISPLAY_NAME = getProgressCompanionDisplayName('schafer');
-const AUSTRALISK_SHEPHERD_DISPLAY_NAME = getProgressCompanionDisplayName('australisk_shepherd');
-
-/**
- * Hundarnas sex poser följer samma modell som björnen och vargen: en pose per
- * bild, dygnsdelar som speglar vad posen föreställer, och `sceneAdjustment.y`
- * som kompenserar bildens genomskinliga marginal under tassarna.
- *
- * y-värdena är inte satta på känsla. CompanionPose ankrar bildens NEDERKANT
- * (translate -100%), så en pose med tom yta under tassarna svävar. Marginalen
- * är uppmätt per fil och omräknad till scenprocent:
- *   flyt% = bottenmarginal% x (renderad elementhöjd / scenhöjd)
- * På stugscenen (element 310 px, scen 331 px hög) ger det faktorn ~0,26 för
- * schäfern och ~0,29 för australisk shepherd.
- *
- * Ingen scale-justering per pose: alla tolv bilderna är 512x512 med samma
- * inramning, och höjdskillnaderna mellan poserna är verkliga (en sittande hund
- * ÄR lägre än en stående). Att normalisera bort dem hade sett fel ut.
- */
-export const SCHAFER_COMPANION_POSES = [
-	{
-		id: 'schafer-standing',
-		companionId: 'schafer',
-		role: 'base',
-		dayparts: ['day', 'evening'],
-		frames: [{ src: dogPoseSrc('schafer-standing.png') }],
-		alt: `Din följeslagare, ${SCHAFER_DISPLAY_NAME}, står lugnt.`,
-		weight: 2.4
-	},
-	{
-		id: 'schafer-sitting',
-		companionId: 'schafer',
-		role: 'base',
-		dayparts: ['day', 'evening'],
-		frames: [{ src: dogPoseSrc('schafer-sitting.png') }],
-		alt: `${SCHAFER_DISPLAY_NAME} sitter stilla.`,
-		weight: 2,
-		sceneAdjustment: { y: 3 }
-	},
-	{
-		id: 'schafer-sideway',
-		companionId: 'schafer',
-		role: 'base',
-		dayparts: ['day', 'evening'],
-		frames: [{ src: dogPoseSrc('schafer-sideway.png') }],
-		alt: `${SCHAFER_DISPLAY_NAME} står vänd åt sidan.`,
-		weight: 1.4,
-		sceneAdjustment: { y: 3 }
-	},
-	{
-		id: 'schafer-resting',
-		companionId: 'schafer',
-		role: 'base',
-		dayparts: ['evening', 'night'],
-		frames: [{ src: dogPoseSrc('schafer-resting.png') }],
-		alt: `${SCHAFER_DISPLAY_NAME} vilar i lugn takt.`,
-		weight: 1.8,
-		sceneAdjustment: { y: 1 }
-	},
-	{
-		id: 'schafer-sleeping',
-		companionId: 'schafer',
-		role: 'base',
-		dayparts: ['night'],
-		frames: [{ src: dogPoseSrc('schafer-sleeping.png') }],
-		alt: `${SCHAFER_DISPLAY_NAME} sover lugnt.`,
-		weight: 2.4,
-		sceneAdjustment: { y: 1 }
-	},
-	{
-		id: 'schafer-playful',
-		companionId: 'schafer',
-		role: 'base',
-		dayparts: ['day'],
-		frames: [{ src: dogPoseSrc('schafer-playful.png') }],
-		alt: `${SCHAFER_DISPLAY_NAME} är på lekhumör.`,
-		weight: 1,
-		sceneAdjustment: { y: 2 }
-	}
-] satisfies CompanionPose[];
-
-export const AUSTRALISK_SHEPHERD_COMPANION_POSES = [
-	{
-		id: 'australisk-shepherd-standing',
-		companionId: 'australisk_shepherd',
-		role: 'base',
-		dayparts: ['day', 'evening'],
-		frames: [{ src: dogPoseSrc('australisk_shepherd-standing.png') }],
-		alt: `Din följeslagare, ${AUSTRALISK_SHEPHERD_DISPLAY_NAME}, står lugnt.`,
-		weight: 2.4
-	},
-	{
-		id: 'australisk-shepherd-sitting',
-		companionId: 'australisk_shepherd',
-		role: 'base',
-		dayparts: ['day', 'evening'],
-		frames: [{ src: dogPoseSrc('australisk_shepherd-sitting.png') }],
-		alt: `${AUSTRALISK_SHEPHERD_DISPLAY_NAME} sitter stilla.`,
-		weight: 2
-	},
-	{
-		id: 'australisk-shepherd-lying',
-		companionId: 'australisk_shepherd',
-		role: 'base',
-		dayparts: ['day', 'evening'],
-		frames: [{ src: dogPoseSrc('australisk_shepherd-lying.png') }],
-		alt: `${AUSTRALISK_SHEPHERD_DISPLAY_NAME} ligger ned och vilar.`,
-		weight: 1.4
-	},
-	{
-		id: 'australisk-shepherd-resting',
-		companionId: 'australisk_shepherd',
-		role: 'base',
-		dayparts: ['evening', 'night'],
-		frames: [{ src: dogPoseSrc('australisk_shepherd-resting.png') }],
-		alt: `${AUSTRALISK_SHEPHERD_DISPLAY_NAME} vilar i lugn takt.`,
-		weight: 1.8,
-		sceneAdjustment: { y: 4 }
-	},
-	{
-		id: 'australisk-shepherd-sleeping',
-		companionId: 'australisk_shepherd',
-		role: 'base',
-		dayparts: ['night'],
-		frames: [{ src: dogPoseSrc('australisk_shepherd-sleeping.png') }],
-		alt: `${AUSTRALISK_SHEPHERD_DISPLAY_NAME} sover lugnt.`,
-		weight: 2.4,
-		sceneAdjustment: { y: 6 }
-	},
-	{
-		id: 'australisk-shepherd-playful',
-		companionId: 'australisk_shepherd',
-		role: 'base',
-		dayparts: ['day'],
-		frames: [{ src: dogPoseSrc('australisk_shepherd-playful.png') }],
-		alt: `${AUSTRALISK_SHEPHERD_DISPLAY_NAME} är på lekhumör.`,
-		weight: 1,
-		sceneAdjustment: { y: 3 }
-	}
-] satisfies CompanionPose[];
-
-// Björnen använder samma värld som räven, men har ett eget markankare på
-// Framsteg: i den fria strandremsan framför och till vänster om personen.
+// Björnen har ett eget markankare på Framsteg: i den fria strandremsan framför
+// och till vänster om personen.
 // Den avsatta mellanrutan håller siluetterna tydligt isär, utan att björnen
 // lämnar samma stilla ögonblick vid strandkanten.
 // Värdena hålls per vy så att nya björnposer kan läggas till utan att påverka
-// rävens scenlogik.
+// den andra vyn.
 export const BEAR_SCENE_PLACEMENTS = {
 	dashboard: { scale: 0.72, x: 78, y: 82 },
 	progress: {
@@ -555,34 +141,6 @@ export const BEAR_SCENE_PLACEMENTS = {
 	}
 } as const;
 
-// Vargens frilagda, liggande bild har luft under tassarna i sin egen canvas.
-// Dashboardplaceringen hålls därför separat så att den kan vila på marken
-// utan att påverka rävens eller björnens etablerade placeringar.
-export const WOLF_SCENE_PLACEMENTS = {
-	dashboard: { scale: 0.9, x: 76, y: 84 },
-	progress: {
-		scale: 1.6,
-		// Framsteg använder en bred, nedåtflyttad crop av sjöscenen. Vid det
-		// tidigare ankaret (18 % / 26 %) föll vargens synliga tassar i vattenytan
-		// intill personen. Den yttre högra strandremsan är fast mark i samtliga
-		// fyra dygnsbilder och lämnar samtidigt den inbakade personen och elden fri.
-		bottom: '17%',
-		right: '8%',
-		groundLeft: '91%',
-		groundTop: '80%',
-		compact: {
-			// På mobil visas hela bildhöjden och den inbakade personen fyller den
-			// nedre högra stranden. Ylva får därför en mindre, högre plats på den
-			// yttre slänten i stället för att konkurrera om förgrunden.
-			scale: 1.2,
-			bottom: '42%',
-			right: '0%',
-			groundLeft: '95%',
-			groundTop: '58%'
-		}
-	}
-} as const;
-
 /**
  * Mitt Hem ligger vid stugan, inte ute i den breda sjövyn. Detta är enbart
  * scengeometri för den befintliga dashboard-vyn: poseval, positionernas
@@ -592,7 +150,6 @@ export const DASHBOARD_CABIN_COMPANION_PLACEMENTS: Record<
 	CompanionId,
 	CompanionPlacement
 > = {
-	fox: { scale: 0.8, x: 37, y: 91 },
 	// Björnens breda canvas har genomskinlig marginal under tassarna. Ett eget
 	// dashboardankare håller därför den synliga kroppen mindre och tassarna på
 	// den sluttande marken vid verandan, utan att ändra poser eller andra vyer.
@@ -601,47 +158,13 @@ export const DASHBOARD_CABIN_COMPANION_PLACEMENTS: Record<
 		x: 35,
 		y: 94,
 		compact: { scale: 0.72, x: 31, y: 92 }
-	},
-	// Vargens duk är bred och liggande. På desktop läser den som en följeslagare
-	// bredvid stugan, men i mobilcropen (scenen ankras då till 0 % 60 %, och
-	// posen får bredden min(50 %, 220 px) i stället för min(39 %, 310 px)) växte
-	// samma scale till scenens huvudmotiv och täckte stuga och landskap. Ett
-	// eget compact-ankare - samma mönster som björnen och hundarna redan har -
-	// krymper henne där utan att röra desktopvärdena ovan.
-	wolf: { scale: 0.9, x: 37, y: 91, compact: { scale: 0.7, x: 34, y: 92 } },
-	// Hundarnas dukar är porträttformat och nästan helt fyllda av motivet
-	// (schäfer 97,5 % av höjden, australisk shepherd 96,0 %), medan vargens duk
-	// är till 83 % genomskinlig och rävens motiv är litet i sin ruta. Samma
-	// scale hade därför gjort hundarna dubbelt så stora i scenen.
-	//
-	// Värdena är räknade ur faktisk synlig storlek i stugscenen, inte kopierade
-	// från något annat djur. Referens: räven syns som 9,6 % av scenens bredd och
-	// 13,6 % av dess höjd, vargen 12,8 % / 11,6 %. Hundarna landar på ~10 % / 14 %
-	// respektive ~11 % / 14 % - alltså samma storleksband, med hundarnas
-	// naturligt högre och smalare kroppsform.
-	//
-	// y = 91 är samma markankare som räv och varg. CompanionPose ankrar bildens
-	// nederkant (translate -100%), och hundarnas 12 px bottenmarginal motsvarar
-	// bara ~0,2 % av scenen, så tassarna vilar på marken utan eget y-värde.
-	schafer: { scale: 0.36, x: 37, y: 91, compact: { scale: 0.38, x: 34, y: 91 } },
-	australisk_shepherd: {
-		scale: 0.37,
-		x: 37,
-		y: 91,
-		compact: { scale: 0.39, x: 34, y: 91 }
 	}
 };
 
 /** Startpunkten för Mitt Hems högra textyta i stugscenen. */
 export const DASHBOARD_CABIN_COPY_SAFE_START_PCT = 54;
 
-export const COMPANION_POSES: readonly CompanionPose[] = [
-	...FOX_COMPANION_POSES,
-	...BEAR_COMPANION_POSES,
-	...WOLF_COMPANION_POSES,
-	...SCHAFER_COMPANION_POSES,
-	...AUSTRALISK_SHEPHERD_COMPANION_POSES
-];
+export const COMPANION_POSES: readonly CompanionPose[] = [...BEAR_COMPANION_POSES];
 
 export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 	{
@@ -656,89 +179,20 @@ export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
 			blur: 8,
 			opacity: 0.22
 		},
-		allowedPoseIds: [
-			'idle',
-			'look-left',
-			'look-right',
-			'sit',
-			'sit-look-up',
-			'sniff',
-			'stretch',
-			'rest',
-			'sleep-curled',
-			'sleep-side',
-			'bear-standing',
-			'bear-sitting',
-			'bear-sleeping',
-			'bear-stretching',
-			'wolf-standing',
-			'wolf-sleeping',
-			'schafer-standing',
-			'schafer-sitting',
-			'schafer-sideway',
-			'schafer-resting',
-			'schafer-sleeping',
-			'schafer-playful',
-			'australisk-shepherd-standing',
-			'australisk-shepherd-sitting',
-			'australisk-shepherd-lying',
-			'australisk-shepherd-resting',
-			'australisk-shepherd-sleeping',
-			'australisk-shepherd-playful'
-		],
+		allowedPoseIds: BEAR_COMPANION_POSES.map((pose) => pose.id),
 		dayparts: ['day', 'evening', 'night'],
 		weight: 2.2
-	},
-	{
-		id: 'shore-near',
-		x: 66,
-		y: 76,
-		scale: 0.64,
-		zIndex: 2,
-		shadow: {
-			width: 44,
-			height: 5,
-			blur: 4,
-			opacity: 0.22
-		},
-		allowedPoseIds: ['drink', 'sniff', 'sit', 'sit-look-up', 'look-left', 'look-right', 'evening-lake'],
-		dayparts: ['day', 'evening'],
-		weight: 1.25
-	},
-	// Låg scale + hög y placerade följeslagaren så långt bort att den blev en
-	// prick i scenen (~25 px motiv på en hero som är upp till 984 px bred).
-	// Flyttad något närmare och uppskalad i motsvarande grad, så djupkänslan
-	// finns kvar men följeslagaren alltid går att känna igen. Skuggan behöver
-	// då också synas, annars ser den ut att strunta i marken.
-	{
-		id: 'shore-far',
-		x: 73,
-		y: 70,
-		scale: 0.44,
-		zIndex: 1,
-		shadow: {
-			width: 28,
-			height: 3,
-			blur: 4,
-			opacity: 0.12
-		},
-		allowedPoseIds: ['idle', 'look-left', 'look-right', 'sit', 'sit-look-up', 'evening-lake'],
-		dayparts: ['day', 'evening'],
-		weight: 0.6
 	}
 ];
 
-// Vilka scenpositioner varje vy tillåter. Generell regel, inte ett
-// specialfall per följeslagare: dashboardhjälten är liten och har text
-// bredvid sig, så följeslagaren måste läsas direkt - de riktigt avlägsna
-// positionerna hör hemma i Framsteg, där scenen får vara en upptäckt.
-// En framtida uggla eller hjort ärver samma regel utan ny kod.
+// Vilka scenpositioner varje vy tillåter. Björnen har bara förgrunden; de
+// avlägsna strandpositionerna användes enbart av räven.
 export const COMPANION_SCENE_CONTEXT_POSITION_IDS: Record<
 	CompanionSceneContext,
 	readonly CompanionScenePositionId[]
 > = {
-	dashboard: ['foreground-right', 'shore-near'],
-	progress: ['foreground-right', 'shore-near', 'shore-far']
+	dashboard: ['foreground-right'],
+	progress: ['foreground-right']
 };
 
 /**

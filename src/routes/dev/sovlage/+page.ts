@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { PageLoad } from './$types';
 
-// QA-harness för Sovlägets panel. Kvällsstugan ligger bakom inloggning, så
+// QA-harness för Sovlägets panel. Kvällstugan ligger bakom inloggning, så
 // panelen går inte att driva i webbläsaren via den riktiga routen utan ett
 // konto. Den här sidan monterar samma komponent utan scen och utan data.
 //

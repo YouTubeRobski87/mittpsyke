@@ -326,7 +326,7 @@ const baseEffects: LivingWorldEffect[] = [
 		// en ljus ring mot mörk jacka blev scenens tydligaste artefakt.
 		//
 		// De här vattenringarna renderas i dag bara av Framsteg: Mitt Hem
-		// utelämnar water ur visibleEffects och Kvällsstugan stänger av det via
+		// utelämnar water ur visibleEffects och Kvällstugan stänger av det via
 		// features och ritar sina egna ringar lokalt. Framstegs scenruta är
 		// låst till bildens proportioner (aspect-ratio 1672/941 + object-fit:
 		// contain), så procenten här är samma procent i bilden på alla bredder.
@@ -606,7 +606,7 @@ export function getMoonPosition(
 	if (progress === null) return null;
 
 	return {
-		// Bågen undviker dashboardens copy och ryms i Kvällsstugans öppna fönsteryta.
+		// Bågen undviker dashboardens copy och ryms i Kvällstugans öppna fönsteryta.
 		x: 31 + progress * 24,
 		// Lägre vid nattens kanter, högst ungefär mitt i natten.
 		y: 29 - Math.sin(progress * Math.PI) * 17

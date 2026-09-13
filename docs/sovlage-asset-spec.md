@@ -1,4 +1,4 @@
-# Kvällsstugan – Sovläge Asset Spec
+# Kvällstugan – Sovläge Asset Spec
 
 ## Status
 
@@ -12,7 +12,7 @@
 
 | Fråga | Beslut |
 |---|---|
-| Tillgänglighet | **Alltid synlig** i Kvällsstugan |
+| Tillgänglighet | **Alltid synlig** i Kvällstugan |
 | Progression | **Ingen.** Ej kopplad till `EveningInteriorMemory`, inget dagkrav |
 | Orientering | **Parallell** med bakväggen/fönstret |
 | Huvudända | **Vänster** |

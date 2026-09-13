@@ -1,4 +1,4 @@
-# Kvällsstugan – Veranda Asset Spec
+# Kvällstugan – Veranda Asset Spec
 
 ## Status
 

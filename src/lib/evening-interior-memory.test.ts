@@ -12,9 +12,9 @@ import {
 	shouldIntroduceEveningInteriorRug,
 	shouldIntroduceEveningVeranda
 } from './evening-interior-memory';
-import { getProgressCompanionArtId } from './progressCompanion';
+import { COMPANION } from './progressCompanion';
 
-describe('Kvällsstugans inredningsminne', () => {
+describe('Kvällstugans inredningsminne', () => {
 	it('visar ingen bok utan ett sparat kvällsavtryck', () => {
 		expect(isEveningInteriorMemoryEligible(false, false)).toBe(false);
 	});
@@ -111,7 +111,7 @@ describe('Kvällsstugans inredningsminne', () => {
 	});
 
 	it('påverkar inte följeslagarens tekniska ID:n', () => {
-		expect(['fox', 'bear', 'wolf'].map(getProgressCompanionArtId)).toEqual(['fox', 'bear', 'wolf']);
+		expect(COMPANION.id).toBe('bear');
 	});
 
 	it('introducerar mattan enbart vid den första övergången till eligibility', () => {
@@ -141,7 +141,7 @@ function days(...offsets: readonly number[]): string[] {
 /** Åtta unika dagar med exakt 14 kalenderdagars spann: minsta berättigade historik. */
 const VERANDA_ELIGIBLE_DAYS = days(0, 1, 2, 3, 4, 5, 6, 14);
 
-describe('Kvällsstugans veranda', () => {
+describe('Kvällstugans veranda', () => {
 	it('har inga trösklar som råkat glida', () => {
 		expect(EVENING_VERANDA_MINIMUM_DISTINCT_DAYS).toBe(8);
 		expect(EVENING_VERANDA_MINIMUM_SPAN_DAYS).toBe(14);
@@ -256,7 +256,7 @@ describe('Kvällsstugans veranda', () => {
 	});
 });
 
-describe('Kvällsstugans befintliga trappa efter verandan', () => {
+describe('Kvällstugans befintliga trappa efter verandan', () => {
 	it('behåller bokens, mattans och filtens trösklar oförändrade', () => {
 		expect(EVENING_INTERIOR_RUG_MINIMUM_DISTINCT_DAYS).toBe(3);
 		expect(EVENING_INTERIOR_BLANKET_MINIMUM_DISTINCT_DAYS).toBe(5);

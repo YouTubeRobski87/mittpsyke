@@ -19,7 +19,7 @@
 	// länk som lovar "Så fungerar det" och landar på en rubrik som säger något
 	// annat bryter förväntan direkt efter första klicket.
 	const PLACE_MAP_ANCHOR = '#map-title';
-	// Den riktiga kvällsincheckningen ligger i Kvällsstugan och kräver konto.
+	// Den riktiga kvällsincheckningen ligger i Kvällstugan och kräver konto.
 	// Den publika startsidan visas bara för utloggade, så länken går via
 	// inloggningen med ?redirect= - samma mönster som övriga skyddade sidor -
 	// i stället för att låta /dashboard/kvallsstugan kasta bort destinationen.
@@ -108,7 +108,7 @@
 					 längre ner, och layoutens sidfot upprepar 112/1177 på varje sida. -->
 			</div>
 
-			<!-- Bara scenen. Stegkortet har flyttat till Kvällsstugan, så heron
+			<!-- Bara scenen. Stegkortet har flyttat till Kvällstugan, så heron
 				 bär stämning och inget ligger ovanpå personen, björnen eller
 				 elden i någon bredd. -->
 			<div class="hero-proof">
@@ -179,7 +179,7 @@
 					</p>
 				</li>
 				<li>
-					<h3>Kvällsstugan</h3>
+					<h3>Kvällstugan</h3>
 					<!-- Kontrollerat mot EveningCheckinFlow: steg 1 (tema) och 3 (riktning)
 						 krävs för att gå vidare, texten i steg 2 och sparandet är valfria.
 						 "Inget måste besvaras" stämde därför inte. -->
@@ -206,14 +206,14 @@
 		</div>
 	</section>
 
-	<!-- 4. Kvällsstugan -->
+	<!-- 4. Kvällstugan -->
 	<section class="home-section section-alt" aria-labelledby="evening-title">
 		<div class="home-inner evening-inner">
 			<div class="narrow">
 				<h2 id="evening-title">En kort incheckning när dagen ska landa</h2>
 				<p>
 					Fyra steg, ett i taget, på någon minut. Det finns inget rätt svar, textrutan får lämnas
-					tom, och ingenting sparas om du inte väljer att spara det. Du gör den i Kvällsstugan när
+					tom, och ingenting sparas om du inte väljer att spara det. Du gör den i Kvällstugan när
 					du loggat in.
 				</p>
 			</div>
@@ -228,7 +228,7 @@
 					srcset="/images/scenes/cabin-interior-evening-v1-800.webp 800w, /images/scenes/cabin-interior-evening-v1-1200.webp 1200w, /images/scenes/cabin-interior-evening-v1.webp 1672w"
 					sizes="(max-width: 1129px) calc(100vw - 2.5rem), 1080px"
 					src="/images/scenes/cabin-interior-evening-v1-1200.webp"
-					alt="Inne i Kvällsstugan: en lampa lyser i en stuga och genom fönstret syns en sjö i skymningen."
+					alt="Inne i Kvällstugan: en lampa lyser i en stuga och genom fönstret syns en sjö i skymningen."
 					width="1672"
 					height="941"
 					loading="lazy"
@@ -273,7 +273,7 @@
 	</section>
 
 	<!-- 6. Trygghet. Samlar det som tidigare stod på fyra ställen: heroens
-		 gränsdragning, Kvällsstugans akutlänk och Bakom-sektionens avsändare och
+		 gränsdragning, Kvällstugans akutlänk och Bakom-sektionens avsändare och
 		 säkerhetsstycke. Upprepningen är borta, inte säkerheten: 112, 1177 och
 		 Stödlinjer.se står kvar, och layoutens sidfot upprepar 112/1177 på varje
 		 sida. Avsändaren följer det sajten redan säger - "Svensk tjänst" och att
@@ -714,7 +714,7 @@
 			max-width: 62ch;
 		}
 
-		/* Kvällsstugan: texten och den befintliga stugbilden sida vid sida i
+		/* Kvällstugan: texten och den befintliga stugbilden sida vid sida i
 		   stället för bild staplad under en smal textklump. */
 		.evening-inner {
 			display: grid;

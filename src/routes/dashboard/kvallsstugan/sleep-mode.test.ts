@@ -13,7 +13,7 @@ const playback = readFileSync(
 	'utf8'
 );
 
-describe('Sovläget i Kvällsstugan', () => {
+describe('Sovläget i Kvällstugan', () => {
 	it('håller tillståndet lokalt: ingen persistens, ingen DB, ingen endpoint', () => {
 		expect(route).toContain("let sleepStage = $state<SleepStage>('closed')");
 		// Steg, timer och uppspelning sparas aldrig. Enda undantaget är
@@ -47,7 +47,7 @@ describe('Sovläget i Kvällsstugan', () => {
 		expect(route).toContain('min-height: 44px;');
 	});
 
-	it('behöver ingen separat utvecklingsgenväg i Kvällsstugan', () => {
+	it('behöver ingen separat utvecklingsgenväg i Kvällstugan', () => {
 		expect(route).not.toContain("import { dev } from '$app/environment'");
 		expect(route).not.toContain('sleep-dev-trigger');
 		expect(route).not.toContain('Öppna Sovläge (dev)');
@@ -78,7 +78,7 @@ describe('Sovläget i Kvällsstugan', () => {
 	});
 
 	it('beskriver Sovläget för skärmläsare, inte bara visuellt', () => {
-		expect(route).toContain('Sovläge i Kvällsstugan: rummet är nedsläckt');
+		expect(route).toContain('Sovläge i Kvällstugan: rummet är nedsläckt');
 		// sceneLabel läser isSleepMode, som därför måste deklareras före den.
 		expect(route.indexOf('const isSleepMode')).toBeLessThan(route.indexOf('const sceneLabel'));
 	});

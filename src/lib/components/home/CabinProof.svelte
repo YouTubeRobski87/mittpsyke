@@ -1,5 +1,5 @@
 <script lang="ts">
-	// Publik proof-of-product för Kvällsstugan. Steg 1 är detsamma som i den
+	// Publik proof-of-product för Kvällstugan. Steg 1 är detsamma som i den
 	// inloggade vyn, men helt statiskt: ingen auth, inget API, ingen sparning.
 	// Det är en bild av produkten byggd av DOM i stället för en skärmdump, så
 	// den skalar och följer temat.
@@ -8,7 +8,7 @@
 	//
 	//   scene - landskapet utifrån, utan stegkort. Ligger i heron och bär
 	//           stämning, inte bevis.
-	//   card  - stegkortet plus bildtexten. Ligger i Kvällsstugans sektion,
+	//   card  - stegkortet plus bildtexten. Ligger i Kvällstugans sektion,
 	//           där interiörbilden redan är sektionens scen.
 	//
 	// Tidigare låg kortet som ett överlägg ovanpå hero-scenen och doldes med
@@ -22,7 +22,7 @@
 	// incheckningen - så den publika proofen aldrig kan visa något annat än vad
 	// användaren faktiskt möter. Inget här är klickbart, inget är märkt upp som
 	// en kontroll, och inget är format som en knapp: alternativen läses som en
-	// uppräkning. Vägen till den riktiga incheckningen ligger i Kvällsstugans
+	// uppräkning. Vägen till den riktiga incheckningen ligger i Kvällstugans
 	// egen sektion på startsidan, inte inuti exemplet.
 	import { EVENING_THEMES } from '$lib/evening-checkin';
 	// Solnedgångsvarianten av landskapsscenen: samma plats som den inloggade
@@ -94,18 +94,18 @@
 	</div>
 
 	<!-- Svarar på besökarens fråga "kan jag använda det här?" direkt vid kortet:
-		 nej, det är ett exempel, och svaren ges i Kvällsstugan. Länken dit står
+		 nej, det är ett exempel, och svaren ges i Kvällstugan. Länken dit står
 		 direkt efter i startsidans sektion, inte inuti exemplet. Ligger i samma
 		 figure som kortet, så kopplingen är explicit i markupen och blir
 		 figurens tillgängliga namn. -->
 	<figcaption class="cabin-proof-caption">
-		Här är det bara ett exempel. Du svarar i Kvällsstugan.
+		Här är det bara ett exempel. Du svarar i Kvällstugan.
 	</figcaption>
 </figure>
 {/if}
 
 <style>
-	/* Färger och former är hämtade från EveningCheckinFlow och Kvällsstugans
+	/* Färger och former är hämtade från EveningCheckinFlow och Kvällstugans
 	   scen, inte från startsidans blå palett - proofen ska se ut som produkten. */
 	.cabin-proof {
 		display: grid;
