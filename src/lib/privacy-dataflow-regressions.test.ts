@@ -2,7 +2,11 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
 	getAnalyticsCampaignFields,
+	getAnalyticsLandingPageParams,
 	getAnalyticsPageFields,
+	getAnalyticsPageTitle,
+	sanitizeAnalyticsHref,
+	sanitizeAnalyticsPath,
 	sanitizeAnalyticsReferrer
 } from './analytics';
 import { consumeDiaryCheckinPrefill, writeDiaryCheckinPrefill } from './diary-draft';
@@ -101,6 +105,87 @@ describe('privacy-safe navigation and analytics', () => {
 		expect(analytics).toMatch(
 			/gtag\('set', \{\s*page_location,\s*page_referrer:[^}]*\.\.\.getAnalyticsCampaignFields\(url\)\s*\}\)/
 		);
+	});
+
+	describe('chattens hälsoämne når aldrig GA', () => {
+		// /chat/angest bar tidigare en Google Ads-konvertering (ads_conversion_Ångest_1)
+		// via en GA4-regel på sökvägen. GA ska bara se att chatten öppnades.
+		const TOPIC_SLUGS = ['angest', 'depression', 'tvangstankar', 'stress', 'relationer', 'somn', 'Trauma'];
+		const TOPIC_WORDS = /angest|ångest|depression|tvangstankar|tvångstankar|trauma|relationer|somn|sömn/i;
+		const CHAT_TITLE = 'Samtalsstöd – chatta anonymt | MittPsyke';
+
+		it('page_view: sökväg och sidadress blir /chat', () => {
+			for (const slug of TOPIC_SLUGS) {
+				const url = new URL(`https://mittpsyke.se/chat/${slug}?id=1#svar`);
+				expect(sanitizeAnalyticsPath(url.pathname)).toBe('/chat');
+				expect(getAnalyticsPageFields(url)).toEqual({
+					page_path: '/chat',
+					page_location: 'https://mittpsyke.se/chat'
+				});
+			}
+		});
+
+		it('referrer: en chattsida som föregående sida blir /chat', () => {
+			for (const slug of TOPIC_SLUGS) {
+				expect(sanitizeAnalyticsReferrer(`https://mittpsyke.se/chat/${slug}?id=1`)).toBe(
+					'https://mittpsyke.se/chat'
+				);
+			}
+		});
+
+		it('sidtitel: dt och page_title bär inte ämnet', () => {
+			// /chat/angest heter "Samtalsstöd för ångest – chatta anonymt".
+			const topicTitle = 'Samtalsstöd för ångest – chatta anonymt | MittPsyke';
+			expect(getAnalyticsPageTitle('/chat/angest', topicTitle)).toBe(CHAT_TITLE);
+			expect(getAnalyticsPageTitle('/chat', 'Chatten')).toBe('Chatten');
+			expect(getAnalyticsPageTitle('/guider/angest', 'Ångest | MittPsyke')).toBe('Ångest | MittPsyke');
+		});
+
+		it('landing_page_view: sökväg och titel saneras', () => {
+			for (const slug of TOPIC_SLUGS) {
+				const params = getAnalyticsLandingPageParams({
+					page_path: `/chat/${slug}`,
+					page_title: `Samtalsstöd för ${slug} | MittPsyke`
+				});
+				expect(params).toEqual({ page_path: '/chat', page_title: CHAT_TITLE });
+				expect(JSON.stringify(params)).not.toMatch(TOPIC_WORDS);
+			}
+		});
+
+		it('internal_link_clicked och home_cta_click: länkmålet blir /chat utan query', () => {
+			for (const slug of TOPIC_SLUGS) {
+				expect(sanitizeAnalyticsHref(`/chat/${slug}`)).toBe('/chat');
+				expect(sanitizeAnalyticsHref(`/chat/${slug}?id=1#svar`)).toBe('/chat');
+				expect(sanitizeAnalyticsHref(`https://mittpsyke.se/chat/${slug}`)).toBe('/chat');
+				expect(sanitizeAnalyticsHref(`https://www.mittpsyke.se/chat/${slug}`)).toBe('/chat');
+			}
+			expect(sanitizeAnalyticsHref('/dagbok?action=new')).toBe('/dagbok');
+			expect(sanitizeAnalyticsHref('https://stodlinjer.se/akut?x=1')).toBe('https://stodlinjer.se/akut');
+		});
+
+		it('lämnar andra sidor orörda, även de som liknar chattens adress', () => {
+			expect(sanitizeAnalyticsPath('/chat')).toBe('/chat');
+			expect(sanitizeAnalyticsPath('/chatta-anonymt')).toBe('/chatta-anonymt');
+			expect(sanitizeAnalyticsPath('/guider/angest')).toBe('/guider/angest');
+		});
+
+		it('varje väg in i GA använder saneringen, och inget event bär ämne', () => {
+			const analytics = projectFile('./analytics.ts');
+			// Eventparametrar: inget topic-fält, inga ämnesbärande eventnamn.
+			expect(analytics).not.toMatch(/\btopic\s*:/);
+			expect(analytics).not.toMatch(/ai_chat_started_with_topic|ai_topic_shortcut_selected/);
+			// dt/dl/dr: den globala sidkontexten sätter sanerad titel, adress och referrer.
+			expect(analytics).toMatch(
+				/gtag\('set', \{\s*page_location,\s*page_referrer:[^}]*page_title: getAnalyticsPageTitle\(url\.pathname, document\.title\)/
+			);
+			// page_view, landing_page_view, internal_link_clicked och home_cta_click.
+			expect(analytics).toMatch(
+				/gtag\('event', 'page_view', \{\s*\.\.\.getAnalyticsPageFields\(url\),\s*page_title: getAnalyticsPageTitle\(url\.pathname, document\.title\)/
+			);
+			expect(analytics).toContain("trackEvent('landing_page_view', getAnalyticsLandingPageParams(params))");
+			expect(analytics).toContain('destination: sanitizeAnalyticsHref(params.destination)');
+			expect(analytics).toContain('href: sanitizeAnalyticsHref(params.href)');
+		});
 	});
 
 	it('keeps search text out of active URLs, caches, and analytics payloads', () => {

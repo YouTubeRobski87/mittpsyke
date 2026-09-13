@@ -20,9 +20,6 @@ type EventName =
 	| 'forum_reply_created'
 	| 'chat_started'
 	| 'chat_message_sent'
-	| 'ai_chat_started_free_text'
-	| 'ai_chat_started_with_topic'
-	| 'ai_topic_shortcut_selected'
 	| 'return_visit'
 	| 'streak_day_reached'
 	| 'milestone_reached'
@@ -239,21 +236,43 @@ export function trackPageView(url: URL) {
 	void sendPageView(url);
 }
 
+/**
+ * Chattens ämnesadresser (/chat/angest, /chat/depression …) avslöjar vilket
+ * hälsoämne besökaren valt. GA får bara veta att chatten öppnades. En regel i
+ * GA4 byggde tidigare en Google Ads-konvertering på just /chat/a-sökvägen.
+ */
+export function sanitizeAnalyticsPath(pathname: string) {
+	return /^\/chat\/./i.test(pathname) ? '/chat' : pathname;
+}
+
+// Samma titel som /chat har, så att GA räknar alla chattsidor som en sida.
+const ANALYTICS_CHAT_TITLE = 'Samtalsstöd – chatta anonymt | MittPsyke';
+
+/**
+ * Sidtiteln följer med som dt på varje event och som page_title. /chat/angest
+ * har titeln "Samtalsstöd för ångest …", så titeln saneras på samma sidor som
+ * sökvägen.
+ */
+export function getAnalyticsPageTitle(pathname: string, title: string) {
+	return sanitizeAnalyticsPath(pathname) === pathname ? title : ANALYTICS_CHAT_TITLE;
+}
+
 /** Känslig fritext och identifierare i query/hash får aldrig skickas till GA. */
 export function getAnalyticsPageFields(url: URL) {
+	const pagePath = sanitizeAnalyticsPath(url.pathname);
 	return {
-		page_path: url.pathname,
-		page_location: `${url.origin}${url.pathname}`
+		page_path: pagePath,
+		page_location: `${url.origin}${pagePath}`
 	};
 }
 
-/** Referrer saneras likadant: bara origin och sökväg, aldrig query eller hash. */
+/** Referrer saneras likadant: bara origin och sökväg, aldrig query, hash eller chattämne. */
 export function sanitizeAnalyticsReferrer(referrer: string) {
 	if (!referrer) return '';
 
 	try {
 		const url = new URL(referrer);
-		return `${url.origin}${url.pathname}`;
+		return `${url.origin}${sanitizeAnalyticsPath(url.pathname)}`;
 	} catch {
 		return '';
 	}
@@ -308,6 +327,7 @@ function setSanitizedPageContext(gtag: (...args: any[]) => void, url: URL) {
 	gtag('set', {
 		page_location,
 		page_referrer: currentPageLocation ?? sanitizeAnalyticsReferrer(document.referrer),
+		page_title: getAnalyticsPageTitle(url.pathname, document.title),
 		...getAnalyticsCampaignFields(url)
 	});
 	currentPageLocation = page_location;
@@ -325,7 +345,7 @@ async function sendPageView(url: URL) {
 	setSanitizedPageContext(gtag, url);
 	gtag('event', 'page_view', {
 		...getAnalyticsPageFields(url),
-		page_title: document.title
+		page_title: getAnalyticsPageTitle(url.pathname, document.title)
 	});
 }
 
@@ -451,8 +471,16 @@ export function trackAuthCompletedFromPendingState(onSignUpCompleted?: () => voi
 	}
 }
 
+/** Landningssidans sökväg och titel saneras som page_view, så chattämnet aldrig följer med. */
+export function getAnalyticsLandingPageParams(params: LandingPageViewParams): LandingPageViewParams {
+	return {
+		page_path: sanitizeAnalyticsPath(params.page_path),
+		page_title: getAnalyticsPageTitle(params.page_path, params.page_title)
+	};
+}
+
 export function trackLandingPageView(params: LandingPageViewParams) {
-	trackEvent('landing_page_view', params);
+	trackEvent('landing_page_view', getAnalyticsLandingPageParams(params));
 }
 
 export function trackArticleView(params: ArticleViewParams) {
@@ -524,24 +552,6 @@ export function trackChatMessageSent() {
 	trackEvent('chat_message_sent');
 }
 
-// Chattingången. Skickar aldrig med användarens text - bara längden och den
-// eventuella ämnesgenvägens id, som är ett fast värde ur en känd lista.
-export function trackAiChatStarted(params: { topicId: string | null; textLength: number }) {
-	if (params.topicId) {
-		trackEvent('ai_chat_started_with_topic', {
-			topic: params.topicId,
-			textLength: params.textLength
-		});
-		return;
-	}
-
-	trackEvent('ai_chat_started_free_text', { textLength: params.textLength });
-}
-
-export function trackAiTopicShortcutSelected(topicId: string) {
-	trackEvent('ai_topic_shortcut_selected', { topic: topicId });
-}
-
 export function trackReturnVisit() {
 	trackEvent('return_visit');
 }
@@ -583,8 +593,22 @@ export function trackHeroCtaClicked() {
 	trackEvent('hero_cta_clicked');
 }
 
+/**
+ * Länkmål i event (internal_link_clicked, home_cta_click) saneras som
+ * sidadressen: bara sökvägen, utan query och hash, och chattämnet blir /chat.
+ */
+export function sanitizeAnalyticsHref(href: string) {
+	try {
+		const url = new URL(href, 'https://mittpsyke.se');
+		const path = sanitizeAnalyticsPath(url.pathname);
+		return PRODUCTION_HOSTS.has(url.hostname) ? path : `${url.origin}${path}`;
+	} catch {
+		return '';
+	}
+}
+
 export function trackInternalLinkClicked(params: InternalLinkClickedParams) {
-	trackEvent('internal_link_clicked', params);
+	trackEvent('internal_link_clicked', { destination: sanitizeAnalyticsHref(params.destination) });
 }
 
 export function trackSearchUsed(params: SearchUsedParams) {
@@ -695,7 +719,7 @@ export function trackHomeCtaClick(params: { section: string; cta: string; href: 
 	trackEvent('home_cta_click', {
 		section: params.section,
 		cta: params.cta,
-		href: params.href
+		href: sanitizeAnalyticsHref(params.href)
 	});
 }
 
