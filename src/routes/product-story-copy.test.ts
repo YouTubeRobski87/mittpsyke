@@ -10,7 +10,7 @@ const layout = projectFile('./+layout.svelte');
 
 describe('MittPsykes produktberättelse och dataflöden', () => {
 	it('beskriver skrivande, sparande och mönster som produktens sammanhang', () => {
-		expect(aboutPage).toContain('skriva, spara det man vill och se vad som återkommer över tid');
+		expect(aboutPage.replace(/\s+/g, ' ')).toContain('en lugn plats för att skriva av sig, reflektera och kunna återvända till sina egna ord över tid');
 		expect(aboutPage).toContain('Mitt Hem');
 		expect(aboutPage).toContain('Kvällstugan');
 		expect(aboutPage).toContain('Balder är MittPsykes enda följeslagare.');
@@ -20,7 +20,7 @@ describe('MittPsykes produktberättelse och dataflöden', () => {
 	it('gör inte ett val mellan äldre samtalsspår obligatoriskt', () => {
 		expect(chatPage).toContain("page.params.category ?? 'samtal'");
 		expect(normalizeCategory(undefined)).toBe(NEUTRAL_CATEGORY);
-		expect(aboutPage).toContain('öppna AI-chatten utan att välja tema');
+		expect(aboutPage.replace(/\s+/g, ' ')).toContain('Du kan öppna chatten utan konto och utan att välja tema.');
 		expect(aboutPage).not.toContain('Ångest, Depression eller Trauma');
 	});
 
@@ -57,6 +57,35 @@ describe('MittPsykes produktberättelse och dataflöden', () => {
 		expect(text).toContain('Han påverkas inte av hur du mår');
 		expect(text).toContain('Svaren skapas av AI, kan bli fel och ersätter inte vård eller en människa att prata med.');
 		expect(text).not.toMatch(/profilbild|avatar|Kvällslugn|Kvällsstugan|hjälper dig|må bättre|vad som påverkar dig/i);
+	});
+
+	it('följer produktidentiteten på Om MittPsyke: varför, kärnan, delarna, gränser, integritet', () => {
+		const order = [
+			'<h2 id="why-title">Varför MittPsyke finns</h2>',
+			'<h2 id="core-title">Kärnan</h2>',
+			'<h2 id="parts-title">Delarna</h2>',
+			'<h2 id="limits-title">Vad MittPsyke inte är</h2>',
+			'<h2 id="privacy-title">Integritet och kontroll</h2>',
+			'<h2 id="company-title">Vem står bakom MittPsyke</h2>'
+		].map((heading) => aboutPage.indexOf(heading));
+		expect(order.every((index) => index > -1)).toBe(true);
+		expect([...order].sort((a, b) => a - b)).toEqual(order);
+
+		const text = aboutPage.replace(/\s+/g, ' ');
+		for (const part of ['Dagboken', 'Kvällstugan och Kvällsincheckningen', 'Balder', 'AI-chatten, om du vill']) {
+			expect(aboutPage).toContain(`<h3>${part}</h3>`);
+		}
+		for (const limit of ['Inte vård eller akuthjälp.', 'Inte terapi.', 'Ingen diagnos.', 'Ingen prestationsmätning.', 'Ingen streak.']) {
+			expect(text).toContain(`<strong>${limit}</strong>`);
+		}
+		expect(aboutPage).toContain('<a href="/integritet">Läs integritetspolicyn</a>');
+		// Chatten är en av fyra delar, inte positioneringen.
+		expect(text).not.toMatch(/AI-baserat (stöd|samtalsstöd)|Trygg chat|KBT|psykoedukation|grounding|Kvällslugn|Kvällsstugan|profilbild|avatar/i);
+		// Synlig text, utan skript, stilar, kommentarer och attribut.
+		const visible = aboutPage
+			.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!--[\s\S]*?-->/g, '')
+			.replace(/<[^>]+>/g, ' ');
+		expect((visible.match(/chatt/gi) ?? []).length).toBeLessThanOrEqual(4);
 	});
 
 	it('beskriver inte den lokala dagboken som AI-driven i global metadata', () => {

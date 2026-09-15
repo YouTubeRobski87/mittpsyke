@@ -2,7 +2,13 @@
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
-	import ResearchEvidenceCard from '$lib/components/ResearchEvidenceCard.svelte';
+	import { dataflowCopy } from '$lib/dataflow-copy';
+
+	// Sidan följer produktidentiteten: en plats för att skriva, återvända och se
+	// vad som återkommer i sina egna ord. Ordningen är varför, kärnan, delarna,
+	// vad MittPsyke inte är, integritet och vem som står bakom. Chatten är en av
+	// fyra delar, inte positioneringen. Dataflöden läses ur $lib/dataflow-copy
+	// så att sidan aldrig säger något annat än integritetspolicyn.
 </script>
 
 <SEO canonical="https://mittpsyke.se/om-mittpsyke" />
@@ -11,9 +17,10 @@
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
 		'@type': 'AboutPage',
-		name: 'Om MittPsyke – Skapad av erfarenhet, inte teori',
+		name: 'Om MittPsyke – en plats för dina egna ord över tid',
 		url: 'https://mittpsyke.se/om-mittpsyke',
-		description: 'MittPsyke skapades av Robert Claesson – av egna erfarenheter av psykisk ohälsa och återhämtning.',
+		description:
+			'MittPsyke är en lugn plats för att skriva, spara det du vill, komma tillbaka och se vad som återkommer i dina egna ord.',
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
@@ -22,410 +29,154 @@
 	<div class="page-container">
 		<Breadcrumbs items={[{ label: 'Om MittPsyke' }]} />
 
-		<!-- 1) Hero -->
 		<header class="hero">
 			<h1>Om MittPsyke</h1>
 			<p>
-				MittPsyke är en svensk plattform för självreflektion och digitalt stöd, skapad för människor som
-				lever med psykisk belastning i olika former. Tanken är att erbjuda ett tryggt och tillgängligt
-				rum där det går att skriva, spara det man vill och se vad som återkommer över tid —
-				utan att behöva prestera eller förklara allt från början.
+				MittPsyke är en lugn plats för att skriva av sig, reflektera och kunna återvända till sina egna
+				ord över tid. Du behöver inte veta vad du vill säga, och du behöver inte prestera något.
 			</p>
 		</header>
 
-		<section class="audience-section" aria-labelledby="audience-title">
-			<div class="audience-heading">
-				<h2 id="audience-title">Vem är MittPsyke till för?</h2>
-				<p>
-					MittPsyke är till för dig som vill stanna upp, sätta ord på det som känns svårt och få
-					mer struktur i vardagen. Du kan använda plattformen oavsett om du har kontakt med
-					vården, väntar på stöd eller bara vill börja förstå ditt mående bättre. Här finns inga
-					krav på prestation eller snabba svar – du tar det i din egen takt.
-				</p>
-			</div>
-
-			<div class="audience-grid">
-				<article class="audience-card">
-					<h3>Reflektera och skapa struktur</h3>
-					<p>Sortera tankar, skriv dagbok och få bättre överblick över hur du mår.</p>
-				</article>
-				<article class="audience-card">
-					<h3>Ett stöd mellan vårdkontakter</h3>
-					<p>
-						Använd MittPsyke för reflektion och kontinuitet mellan samtal eller andra
-						vårdkontakter. Plattformen ersätter inte professionell vård.
-					</p>
-				</article>
-				<article class="audience-card">
-					<h3>Ett första steg</h3>
-					<p>
-						Börja utforska ditt mående i en trygg miljö innan du känner dig redo att prata med
-						någon annan.
-					</p>
-				</article>
-				<article class="audience-card">
-					<h3>Följ din utveckling</h3>
-					<p>
-						Återvänd till samma digitala rum, upptäck mönster och följ förändringar i ditt mående
-						över tid.
-					</p>
-				</article>
-			</div>
-
-			<aside class="organization-note" aria-labelledby="organization-title">
-				<h3 id="organization-title">För organisationer och föreningar</h3>
-				<p>
-					MittPsyke kan även anpassas för organisationer, företag och föreningar som vill
-					erbjuda ett frivilligt digitalt stöd för psykiskt välbefinnande. Lösningen bygger
-					alltid på integritet, frivillighet och tydliga gränser mot vård och behandling.
-				</p>
-				<a href="/for-organisationer">Läs om MittPsyke för organisationer</a>
-			</aside>
-		</section>
-
-		<section class="privacy-summary" aria-labelledby="privacy-summary-title">
-			<div class="privacy-summary-heading">
-				<span class="privacy-summary-icon" aria-hidden="true">🔒</span>
-				<div>
-					<p class="privacy-summary-label">Integritet</p>
-					<h2 id="privacy-summary-title">Integritet och dataskydd</h2>
-				</div>
-			</div>
-
-			<div class="privacy-summary-copy">
-				<p>
-					Integritet är en av MittPsykes viktigaste grundprinciper. Plattformen är utformad för
-					att ge användaren kontroll över sin egen information och möjlighet att använda
-					tjänsten på ett sätt som känns tryggt.
-				</p>
-				<p>
-					Du kan utforska delar av MittPsyke utan att skapa ett konto. För den som vill följa
-					sin utveckling över tid finns möjlighet att skapa ett konto och spara samtal,
-					dagboksanteckningar och andra personliga uppgifter.
-				</p>
-				<p>
-					All behandling av personuppgifter sker i enlighet med gällande dataskyddslagstiftning
-					och beskrivs närmare i MittPsykes integritetspolicy.
-				</p>
-				<p>Användaren har kontroll över vad som delas och vad som sparas i tjänsten.</p>
-				<p>
-					Vid användning inom företag, organisationer eller föreningar bygger lösningen alltid
-					på frivillighet, integritet och tydliga gränser mellan digitalt stöd och vård eller
-					behandling.
-				</p>
-			</div>
-
-			<a class="privacy-summary-link" href="/integritet">Läs vår integritetspolicy</a>
-		</section>
-
-		<section class="trust-overview" aria-label="Snabbt om MittPsyke">
-			<h2>Snabbt om MittPsyke</h2>
-			<ul>
-				<li><strong>Är detta vård?</strong> Nej. MittPsyke är ett digitalt stöd för skrivande, reflektion och AI-chatt, inte vård, diagnos, behandling eller akuthjälp.</li>
-				<li><strong>Vad används tjänsten till?</strong> Ett första steg för reflektion och struktur i vardagen när du vill börja någonstans.</li>
-				<li><strong>Vad gäller i akut läge?</strong> Ring 112 vid akut fara. För vårdråd, kontakta 1177.</li>
-				<li><strong>Vem står bakom?</strong> MittPsyke drivs av Robert Claesson som enskild näringsverksamhet (org.nr 198712284895).</li>
-					<li><strong>Hur kontaktar man er?</strong> <a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a></li>
-			</ul>
-		</section>
-
-		<section class="section" id="metod">
-			<h2>Metod och förhållningssätt</h2>
+		<!-- 1. Varför MittPsyke finns -->
+		<section class="section" aria-labelledby="why-title">
+			<h2 id="why-title">Varför MittPsyke finns</h2>
 			<p>
-				MittPsyke använder ett lugnt, stödjande och reflekterande samtalsupplägg. Svaren är utformade
-				för att hjälpa användaren att sätta ord på det som känns svårt, sortera tankar, göra
-				överväldigande mer greppbart och hitta nästa lilla steg.
+				Det som känns rörigt blir ofta lite lättare att se när det står i ord, och ännu lättare när
+				man kan gå tillbaka och läsa det igen. MittPsyke finns för att de orden ska få ligga kvar – så
+				att det som återkommer över veckor och månader blir synligt i din egen takt.
 			</p>
-			<p>
-				Samtalsstödet kan innehålla inslag som påminner om psykoedukation, grounding, mindfulnessnära
-				uppmärksamhet och KBT-inspirerad struktur, men ersätter inte terapi eller annan professionell vård.
-			</p>
-			<ul>
-				<li><strong>Traumamedvetet och lågtröskligt bemötande</strong> – möta dig utan krav på förklaring eller prestation.</li>
-				<li><strong>Stöd för reflektion och lugn</strong> – hjälpa dig att sätta ord på det som känns och sortera tankar.</li>
-				<li><strong>Grounding och struktur</strong> – lugnande samtalsstöd med fokus på nästa lilla steg.</li>
-				<li><strong>Inte vård, diagnos eller behandling</strong> – tjänsten följer inte ett specifikt terapeutiskt protokoll och är inte evidensbaserad behandling i klinisk mening.</li>
-			</ul>
-
-			<p class="crisis-note">
-				MittPsyke kan vid vissa tecken på akut kris visa ett särskilt säkerhetssvar med hänvisning till akut hjälp. Tjänsten är inte en akuttjänst och ska inte användas som enda stöd i en nödsituation.
-			</p>
+			<figure class="founder-note">
+				<blockquote>
+					<p>
+						MittPsyke föddes ur en tid i mitt liv då jag själv mådde väldigt dåligt och hade svårt att
+						få det stöd jag behövde. Att sätta ord på tankar och känslor blev ett första steg – inte en
+						lösning på allt, men ett sätt att inte vara helt ensam i det som kändes tungt. Därför
+						skapade jag MittPsyke.
+					</p>
+				</blockquote>
+				<figcaption>Robban (Robert Claesson), som driver MittPsyke</figcaption>
+			</figure>
 		</section>
 
-		<ResearchEvidenceCard />
-
-		<section class="section" id="innehall">
-			<h2>Innehåll och kvalitet</h2>
-			<p>
-				MittPsykes guider och texter är skrivna för att vara begripliga, lugna och stödjande –
-				utan medicinsk jargong eller onödig komplexitet.
-			</p>
-			<p>
-				Innehållet tas fram och underhålls av Robert Claesson, grundare av MittPsyke. Det
-				beskrivs inte som medicinskt granskat eftersom MittPsyke i nuläget inte har en namngiven
-				medicinsk granskare eller klinisk redaktion.
-			</p>
-			<ul>
+		<!-- 2. Kärnan -->
+		<section class="section" aria-labelledby="core-title">
+			<h2 id="core-title">Kärnan</h2>
+			<ol class="steps" role="list">
 				<li>
-					<strong>Hur tas innehållet fram?</strong><br />
-					Guiderna utgår från tillgänglig och välkänd information om psykisk hälsa. Relevanta externa
-					källor – som 1177 och Folkhälsomyndigheten – anges direkt i varje guide.
-				</li>
-				<li>
-					<strong>Uppdateras innehållet?</strong><br />
-					Ja. Guider granskas och uppdateras löpande. Senast uppdaterat-datum visas i botten av varje
-					guide.
-				</li>
-				<li>
-					<strong>Ersätter innehållet vård?</strong><br />
-					Nej. Allt innehåll är till för reflektion och vägledning, inte vård, diagnos eller behandling.
-				</li>
-				<li>
-					<strong>Fel eller förbättringsförslag?</strong><br />
-					Hör av dig till
-						<a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a> – vi tar emot rättelser och
-					förbättringsförslag löpande.
-				</li>
-			</ul>
-		</section>
-
-		<!-- 2) Personlig story -->
-		<section class="story-section">
-			<div class="story-inner">
-				<div class="story-label">GRUNDAREN BERÄTTAR</div>
-				<h2 class="story-heading">Varför MittPsyke finns</h2>
-
-				<div class="story-text">
-					<p>
-						MittPsyke föddes ur en tid i mitt liv då jag själv mådde väldigt dåligt och hade svårt att få det stöd jag behövde. När hjälpen kändes långt borta började jag småprata med AI. Det som först bara var några enkla samtal blev med tiden ett sätt att sätta ord på tankar, känslor och sådant som annars var svårt att bära ensam.
-					</p>
-					<p>
-						Det var inte en lösning på allt. Men det blev ett första steg. Ett sätt att känna sig hörd, att stanna upp, att reflektera och att inte vara helt ensam i det som kändes tungt.
-					</p>
-					<p>
-						Den erfarenheten stannade kvar i mig. Jag tänkte att om ett sådant stöd kunde hjälpa mig att ta mig vidare, så borde fler människor få samma möjlighet. Därför skapade jag MittPsyke.
-					</p>
-					<p>
-						Min vision är enkel: att erbjuda en trygg, personlig och tillgänglig plats där man kan skriva av sig, tänka klart och få stöd i stunden. En plats som känns som ens egen. Utan krav, utan dömande och med låg tröskel att börja.
-					</p>
-					<p>
-						MittPsyke ersätter inte vård eller akut hjälp. Men det kan vara ett första steg, ett komplement och en plats för reflektion när man behöver någonstans att börja.
-					</p>
-
-					<blockquote class="story-quote">
-						"Om MittPsyke kan ge någon annan samma känsla av att bli tagen på allvar som jag själv en gång behövde, då har det redan fyllt ett viktigt syfte."
-						<cite>— Robban (Robert Claesson), grundare av MittPsyke</cite>
-					</blockquote>
-				</div>
-			</div>
-		</section>
-
-		<div class="text-block">
-			<section class="section">
-				<h2>Trygghet, ansvar och metod</h2>
-				<p>
-					MittPsyke är skapat ur egen erfarenhet av psykisk belastning, men tjänsten bygger också på tydliga gränser. Syftet är att erbjuda AI-baserat stöd för reflektion, lugn och struktur i vardagen — inte att ställa diagnoser, ge akutvård eller ersätta kontakt med legitimerad vårdpersonal.
-				</p>
-				<ul>
-					<li>
-						<strong>Tydliga ramar</strong><br />
-						MittPsyke är till för samtalsstöd, egen reflektion och vardagsnära vägledning. Tjänsten är inte avsedd att ersätta vård, behandling eller professionell bedömning och ska inte vara enda underlag för medicinska beslut.
-					</li>
-					<li>
-						<strong>Ansvar och öppenhet</strong><br />
-						Det ska vara tydligt för användaren vad tjänsten är till för, vilka begränsningar som finns och när annan hjälp behövs. Därför finns också tydlig ansvarsinfo och hänvisningar vidare.
-					</li>
-					<li>
-						<strong>Lugn och respektfull metod</strong><br />
-						Samtalen är utformade för att möta människor med lugn, respekt och låg tröskel. Fokus ligger på att hjälpa användaren att stanna upp, sätta ord på det som känns och få struktur i stunden.
-					</li>
-					<li>
-						<strong>När annan hjälp behövs</strong><br />
-						Vid akut fara, allvarlig psykisk kris eller behov av medicinsk bedömning ska användaren alltid vända sig till vården, 1177 eller 112 beroende på situation.
-					</li>
-				</ul>
-				<p>
-					<a href="/ansvar">Läs mer i ansvarsinformationen</a>
-				</p>
-			</section>
-
-			<!-- 3) Vad ar MittPsyke -->
-			<section class="section">
-				<h2>Vad är MittPsyke?</h2>
-				<p>
-					Plattformen fungerar som vardagsnära stöd för reflektion — också för dig som har, väntar på
-					eller har haft kontakt med vården. I centrum finns en egen plats där du kan skriva, spara det
-					du vill och se vad som återkommer. AI-chatten är en av flera vägar till stöd och reflektion.
-				</p>
-				<p>
-					Med konto samlas det du väljer att spara i Mitt Hem. Där finns bland annat dagboken,
-					Kvällstugan och möjligheten att se mönster över tid. Balder är MittPsykes enda följeslagare.
-					Han finns med i Mitt Hem och Kvällstugan som en lugn närvaro som följer tiden, årstiden
-					och platsen tillsammans med dig. Han är ingen mätare på hur du mår och inget spel att
-					klara av. Du behöver inte prestera något för honom. Målet med MittPsyke är inte att
-					ersätta professionell behandling, utan att göra det lättare att reflektera, sortera tankar
-					och vid behov hitta vidare till rätt resurser.
-				</p>
-			</section>
-
-		</div>
-
-		<!-- 5) Cards -->
-		<section class="section">
-			<h2>Vad du kan göra här</h2>
-			<div class="feature-grid">
-				<article class="feature-card">
-					<h3>Dagbok</h3>
-					<p>
-						Skriv reflektioner i vardagen och bygg en personlig historik av det som varit viktigt för
-						dig.
-					</p>
-				</article>
-				<article class="feature-card">
-					<h3>Statistik</h3>
-					<p>
-						Få mer kontinuitet över tid genom att kunna se mönster i dina anteckningar och
-						reflektioner.
-					</p>
-				</article>
-				<article class="feature-card">
-					<h3>Trygg chat</h3>
-					<p>
-						Samtala i ett AI-baserat stöd som är utformat för att svara med lugn, respekt och
-						empati.
-					</p>
-				</article>
-			</div>
-		</section>
-
-		<!-- 6) Hur det funkar -->
-		<section class="section">
-			<h2>Hur det funkar</h2>
-			<ol class="steps">
-				<li>
-					<span class="step-number">1</span>
+					<span class="step-number" aria-hidden="true">1</span>
 					<div>
-						<h3>Börja där det passar</h3>
-						<p>
-							Skriv lokalt utan konto, öppna AI-chatten utan att välja tema eller börja med en guide
-							eller övning.
-						</p>
+						<h3>Skriv.</h3>
+						<p>Några ord eller en hel sida. Det finns inget rätt sätt.</p>
 					</div>
 				</li>
 				<li>
-					<span class="step-number">2</span>
+					<span class="step-number" aria-hidden="true">2</span>
 					<div>
-						<h3>Reflektera i din takt</h3>
-						<p>
-							Stanna upp, sortera tankar och få stöd i stunden utan att behöva prestera eller
-							förklara allt från början.
-						</p>
+						<h3>Spara det du vill.</h3>
+						<p>Utan konto stannar texten i din webbläsare. Med konto sparar du det du väljer.</p>
 					</div>
 				</li>
 				<li>
-					<span class="step-number">3</span>
+					<span class="step-number" aria-hidden="true">3</span>
 					<div>
-						<h3>Spara det du vill</h3>
-						<p>
-							Med konto kan du spara dagbok, samtal och incheckningar och återvända till Mitt Hem för
-							att se vad som återkommer över tid.
-						</p>
+						<h3>Kom tillbaka när du vill.</h3>
+						<p>Ingenting börjar om för att det gått en tid.</p>
+					</div>
+				</li>
+				<li>
+					<span class="step-number" aria-hidden="true">4</span>
+					<div>
+						<h3>Se vad som återkommer.</h3>
+						<p>Dina egna ord sammanställda i Framsteg – ingen mätning av hur du sköter dig.</p>
 					</div>
 				</li>
 			</ol>
 		</section>
 
-		<div class="text-block">
-			<!-- 7) Trygghet och integritet -->
-			<section class="section">
-				<h2>Trygghet och integritet</h2>
-				<p>
-					MittPsykes värdegrund bygger på integritet, frivillighet och mänsklig sårbarhet.
-					Användaren ska kunna mötas utan dömande ton, utan krav på att må bättre snabbt och
-					utan känslan av att bli reducerad till ett symptom.
-				</p>
-				<p>
-					Du kan börja utan konto om du vill ta ett försiktigt första steg. För den som önskar
-					mer kontinuitet finns möjlighet till inloggning, där samtal kan sparas över tid. Vissa tekniska uppgifter hanteras enligt integritetspolicyn.
-				</p>
-				<p>
-					Designfilosofin är avskalad, mjuk och icke-klinisk — för att minska stress, undvika onödiga
-					distraktioner och skapa en känsla av närvaro.
-				</p>
-			</section>
-		</div>
+		<!-- 3. Delarna -->
+		<section class="section" aria-labelledby="parts-title">
+			<h2 id="parts-title">Delarna</h2>
+			<div class="parts">
+				<article class="part">
+					<h3>Dagboken</h3>
+					<p>
+						Där du skriver, kort eller långt. Det du sparar samlas i Mitt Hem och är underlaget när
+						Framsteg visar vad som återkommer.
+					</p>
+				</article>
+				<article class="part">
+					<h3>Kvällstugan och Kvällsincheckningen</h3>
+					<p>
+						Kvällstugan är platsen där dagen får landa. Där gör du Kvällsincheckningen: stäm av kvällen
+						och lägg undan det du inte behöver bära vidare just nu.
+					</p>
+				</article>
+				<article class="part">
+					<h3>Balder</h3>
+					<p>
+						Balder är MittPsykes enda följeslagare. Han finns med i Mitt Hem och Kvällstugan som en
+						lugn närvaro som följer tiden, årstiden och platsen. Han är ingen mätare på hur du mår och
+						inget spel att klara av.
+					</p>
+				</article>
+				<article class="part">
+					<h3>AI-chatten, om du vill</h3>
+					<p>
+						Ett valfritt verktyg för den som hellre vill prata fram tankarna. Du kan öppna chatten utan
+						konto och utan att välja tema. Svaren skapas av AI, kan bli fel och ersätter inte vård eller
+						en människa.
+					</p>
+				</article>
+			</div>
+			<p class="more-link"><a href="/sa-fungerar-mittpsyke">Så fungerar MittPsyke steg för steg</a></p>
+		</section>
 
-		<!-- 8) Callout -->
-		<aside class="callout" aria-label="Viktigt att veta">
-			<h2>Viktigt att veta</h2>
-			<p>Vid akut fara, ring 112. För vårdråd, kontakta 1177. Läs mer om begränsningar och ansvar innan du använder tjänsten.</p>
-			<a class="callout-link" href="/ansvar">Gå till Ansvarsinfo</a>
-		</aside>
-
-		<!-- 9) Kontakt och lankar -->
-		<section class="section links-section">
-			<h2>Kontakt och viktiga länkar</h2>
-			<p>Här hittar du vägar in till tjänsten och till information om ansvar, integritet och akut stöd.</p>
+		<!-- 4. Vad MittPsyke inte är -->
+		<section class="section limits" aria-labelledby="limits-title">
+			<h2 id="limits-title">Vad MittPsyke inte är</h2>
 			<ul>
-				<li><a href="/ansvar">Ansvarsinfo</a></li>
-				<li><a href="/integritet">Integritetspolicy</a></li>
-				<li><a href="/chat">Öppna chatten</a></li>
-				<li><a href="/dagbok">Läs om dagboken</a></li>
-				<li><a href="/digital-dagbok-for-maende">Digital dagbok för mående</a></li>
-				<li><a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a></li>
 				<li>
-					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">
-						Akut hjälp (Stödlinjer)
-					</a>
+					<strong>Inte vård eller akuthjälp.</strong> Vid akut fara, ring <a href="tel:112">112</a>. För
+					vårdråd, kontakta <a href="https://www.1177.se" rel="noopener noreferrer">1177</a>. Vid tecken
+					på akut kris visar chatten ett säkerhetssvar med hänvisning till akut hjälp.
 				</li>
+				<li><strong>Inte terapi.</strong> Ingen behandling eller terapeutisk metod följs här.</li>
+				<li><strong>Ingen diagnos.</strong> Ingenting på MittPsyke bedömer eller sätter namn på hur du mår.</li>
+				<li><strong>Ingen prestationsmätning.</strong> Det du skriver betygsätts inte.</li>
+				<li><strong>Ingen streak.</strong> Det gör inget om du är borta ett tag.</li>
 			</ul>
+			<p><a href="/ansvar">Läs mer i ansvarsinformationen</a></p>
 		</section>
 
-		<!-- 10) Verksamhet och utveckling -->
-		<section class="section" id="verksamhet">
-			<h2>Om verksamheten</h2>
-			<p>
-				MittPsyke är en digital plattform under utveckling som syftar till att erbjuda verktyg
-				för självreflektion, mental återhämtning och informationsstöd kring psykisk hälsa.
-			</p>
-			<p>
-				Plattformen utvecklas och drivs självständigt av Robert Claesson och är en del av en
-				verksamhet inriktad på utveckling av digitala tjänster, webbapplikationer och
-				informationsplattformar på internet.
-			</p>
-			<p>
-				Verksamheten omfattar utveckling, drift och vidareutveckling av digitala tjänster,
-				däribland webbplattformar som MittPsyke och informationssajten
-				<a href="https://stodlinjer.se" target="_blank" rel="noopener">stodlinjer.se</a>.
-			</p>
-			<p>
-				Målsättningen är att på sikt erbjuda digitala funktioner, samarbeten och tjänster
-				kopplade till dessa plattformar.
-			</p>
-		</section>
-
-		<!-- 11) Tjänster och samarbeten -->
-		<section class="section" id="tjanster">
-			<h2>Tjänster och samarbeten</h2>
-			<p>
-				Verksamheten erbjuder och utvecklar tjänster inom följande områden:
-			</p>
+		<!-- 5. Integritet och kontroll -->
+		<section class="section" aria-labelledby="privacy-title">
+			<h2 id="privacy-title">Integritet och kontroll</h2>
 			<ul>
-				<li>Digitala verktyg och plattformar för psykisk hälsa och självreflektion</li>
-				<li>Utveckling och drift av webbplattformar och webbapplikationer</li>
-				<li>Samarbeten med organisationer och verksamheter inom psykisk hälsa</li>
-				<li>Informationsplattformar och digitala guider</li>
+				<li><strong>Utan konto:</strong> {dataflowCopy.anonymousDiary.short}</li>
+				<li><strong>Med konto:</strong> bara det du själv väljer att spara sparas.</li>
+				<li><strong>AI i dagboken:</strong> {dataflowCopy.savedDiary.aiTransfer}</li>
+				<li>Du kan exportera din data och radera ditt konto i Inställningar.</li>
 			</ul>
-			<p>
-					För samarbeten eller frågor kring plattformen, kontakta
-					<a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a>.
-			</p>
+			<p><a href="/integritet">Läs integritetspolicyn</a></p>
 		</section>
 
-		<!-- 12) Företagsinformation -->
-		<section class="section company-section" aria-labelledby="foretagsinformation">
-			<h2 id="foretagsinformation">Företagsinformation</h2>
-			<p>MittPsyke drivs som enskild näringsverksamhet.</p>
+		<!-- 6. Vem står bakom -->
+		<section class="section company-section" aria-labelledby="company-title">
+			<h2 id="company-title">Vem står bakom MittPsyke</h2>
+			<p>
+				MittPsyke utvecklas och drivs av Robert Claesson som enskild näringsverksamhet. Verksamheten
+				omfattar utveckling och drift av digitala tjänster och informationsplattformar, bland annat
+				MittPsyke och <a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stodlinjer.se</a>,
+				och samarbeten med organisationer inom psykisk hälsa.
+			</p>
+			<p>
+				Guiderna skrivs och uppdateras löpande av Robert. De är inte medicinskt granskade, och externa
+				källor som 1177 och Folkhälsomyndigheten anges i varje guide. Hittar du ett fel? Hör av dig.
+			</p>
+			<p>
+				MittPsyke kan också erbjudas frivilligt via organisationer och föreningar.
+				<a href="/for-organisationer">Läs om MittPsyke för organisationer</a>
+			</p>
 
 			<dl class="company-list">
 				<div class="company-row">
@@ -444,20 +195,24 @@
 					<dt>Ansvarig:</dt>
 					<dd>Robert "Robban" Claesson</dd>
 				</div>
+				<div class="company-row">
+					<dt>E-post:</dt>
+					<dd><a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a></dd>
+				</div>
 			</dl>
-
-			<h3>Kontakt</h3>
-			<address class="company-address">
-				<p>
-						<strong>E-post:</strong>
-						<a href={PUBLIC_CONTACT_MAILTO}>{PUBLIC_CONTACT_EMAIL}</a>
-					</p>
-				<p>
-					<strong>Webbplats:</strong>
-					<a href="https://mittpsyke.se" target="_blank" rel="noopener noreferrer">https://mittpsyke.se</a>
-				</p>
-			</address>
 		</section>
+
+		<nav class="section more-links" aria-label="Läs mer">
+			<h2>Läs mer</h2>
+			<ul role="list">
+				<li><a href="/sa-fungerar-mittpsyke">Så fungerar MittPsyke</a></li>
+				<li><a href="/digital-dagbok-for-maende">Digital dagbok för mående</a></li>
+				<li><a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a></li>
+				<li><a href="/ansvar">Ansvarsinfo</a></li>
+				<li><a href="/integritet">Integritetspolicy</a></li>
+				<li><a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Akut hjälp (Stödlinjer)</a></li>
+			</ul>
+		</nav>
 	</div>
 </main>
 
@@ -473,178 +228,14 @@
 		gap: clamp(2rem, 3.5vw, 2.5rem);
 	}
 
-	.text-block {
+	.hero,
+	.section {
 		max-width: 720px;
+		min-width: 0;
 	}
 
 	.hero {
-		max-width: 720px;
 		padding: clamp(1rem, 2vw, 1.25rem) 0 0.2rem;
-	}
-
-	.trust-overview {
-		max-width: 720px;
-		padding: 1rem;
-		border-radius: var(--radius-card);
-		border: 1px solid rgba(15, 23, 42, 0.1);
-		background: rgba(248, 250, 252, 0.82);
-	}
-
-	.audience-section {
-		max-width: 840px;
-	}
-
-	.audience-heading {
-		max-width: 720px;
-	}
-
-	.audience-heading h2 {
-		margin: 0;
-		color: var(--primary);
-		font-size: clamp(1.55rem, 1.35rem + 1vw, 1.9rem);
-		font-weight: 700;
-		line-height: 1.15;
-	}
-
-	.audience-heading > p {
-		margin-top: 0.8rem;
-	}
-
-	.audience-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.85rem;
-		margin-top: 1.25rem;
-	}
-
-	.audience-card {
-		padding: 1rem 1rem 1.05rem;
-		border: 1px solid rgba(15, 23, 42, 0.1);
-		border-radius: var(--radius-card);
-		background: rgba(248, 250, 252, 0.78);
-	}
-
-	.audience-card p {
-		margin-top: 0.45rem;
-		font-size: clamp(0.98rem, 0.95rem + 0.25vw, 1.05rem);
-		line-height: 1.6;
-	}
-
-	.organization-note {
-		margin-top: 1rem;
-		padding: 1rem 1.05rem;
-		border-left: 3px solid rgba(15, 118, 110, 0.4);
-		border-radius: var(--radius-card);
-		background: rgba(226, 240, 236, 0.5);
-	}
-
-	.organization-note p {
-		margin-top: 0.45rem;
-		font-size: clamp(0.96rem, 0.93rem + 0.25vw, 1.03rem);
-		line-height: 1.6;
-	}
-
-	.organization-note a {
-		display: inline-block;
-		margin-top: 0.75rem;
-		font-family: var(--font-heading);
-		font-size: 0.94rem;
-		font-weight: 600;
-		color: #145a54;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	.privacy-summary {
-		max-width: 720px;
-		padding: clamp(1rem, 2.5vw, 1.35rem);
-		border: 1px solid rgba(15, 23, 42, 0.1);
-		border-radius: var(--radius-card);
-		background: rgba(248, 250, 252, 0.62);
-	}
-
-	.privacy-summary-heading {
-		display: flex;
-		gap: 0.75rem;
-		align-items: flex-start;
-	}
-
-	.privacy-summary-icon {
-		display: inline-grid;
-		place-items: center;
-		flex: 0 0 auto;
-		width: 2.35rem;
-		height: 2.35rem;
-		border-radius: var(--radius-pill);
-		background: rgba(15, 118, 110, 0.1);
-		font-size: 1rem;
-	}
-
-	.privacy-summary-label {
-		margin: 0 0 0.18rem;
-		color: #145a54;
-		font-family: var(--font-heading);
-		font-size: 0.78rem;
-		font-weight: 700;
-		letter-spacing: 0.07em;
-		line-height: 1.2;
-		text-transform: uppercase;
-	}
-
-	.privacy-summary h2 {
-		margin: 0;
-		color: var(--primary);
-		font-size: clamp(1.35rem, 1.2rem + 0.75vw, 1.65rem);
-		font-weight: 700;
-		line-height: 1.15;
-	}
-
-	.privacy-summary-copy {
-		margin-top: 0.9rem;
-	}
-
-	.privacy-summary-copy p {
-		font-size: clamp(0.96rem, 0.93rem + 0.25vw, 1.03rem);
-		line-height: 1.65;
-	}
-
-	.privacy-summary-copy p + p {
-		margin-top: 0.7rem;
-	}
-
-	.privacy-summary-link {
-		display: inline-block;
-		margin-top: 0.85rem;
-		color: #145a54;
-		font-family: var(--font-heading);
-		font-size: 0.94rem;
-		font-weight: 600;
-		text-decoration: underline;
-		text-underline-offset: 3px;
-	}
-
-	.trust-overview h2 {
-		font-size: 1.2rem;
-		font-weight: 700;
-		line-height: 1.2;
-		margin-bottom: 0.55rem;
-		color: var(--primary);
-	}
-
-	.trust-overview ul {
-		margin: 0;
-		padding-left: 1.2rem;
-		display: grid;
-		gap: 0.4rem;
-	}
-
-	.trust-overview li {
-		font-size: clamp(0.98rem, 0.94rem + 0.35vw, 1.05rem);
-		line-height: 1.65;
-	}
-
-	.section {
-		max-width: 720px;
 	}
 
 	h1,
@@ -656,20 +247,17 @@
 	}
 
 	h1 {
-		font-family: var(--font-heading);
 		font-size: clamp(1.8rem, 1.45rem + 1.8vw, 2.2rem);
 		font-weight: 850;
 		letter-spacing: -0.025em;
 		line-height: 1.08;
-		margin-bottom: 1.5rem;
+		margin-bottom: 1.25rem;
 	}
 
 	.section > h2 {
 		font-size: 1.6rem;
 		font-weight: 700;
-		letter-spacing: -0.02em;
 		line-height: 1.12;
-		margin-top: 3rem;
 		margin-bottom: 1rem;
 		color: var(--primary);
 	}
@@ -681,7 +269,6 @@
 		height: 3px;
 		margin-top: 0.45rem;
 		border-radius: var(--radius-pill);
-		background: rgba(15, 118, 110, 0.28);
 		background: color-mix(in srgb, var(--primary) 32%, transparent);
 	}
 
@@ -699,105 +286,48 @@
 		font-size: clamp(1rem, 0.95rem + 0.45vw, 1.125rem);
 		line-height: 1.7;
 		letter-spacing: -0.005em;
+		overflow-wrap: break-word;
 	}
 
 	p {
 		margin: 0;
 	}
 
-	.section p + p {
+	.section p + p,
+	.section ul + p {
 		margin-top: 0.95rem;
 	}
 
 	.section ul {
-		margin: 0.6rem 0 0;
+		margin: 0;
 		padding-left: 1.2rem;
 		display: grid;
-		gap: 0.35rem;
+		gap: 0.5rem;
 	}
 
-	/* Story section */
-	.story-section {
-		max-width: 720px;
+	.section a {
+		text-decoration: underline;
+		text-underline-offset: 3px;
 	}
 
-	.story-inner {
-		background: linear-gradient(135deg, rgba(163, 193, 173, 0.15) 0%, rgba(195, 230, 203, 0.1) 100%);
-		border: 1px solid rgba(15, 118, 110, 0.15);
+	.founder-note {
+		margin: 1.25rem 0 0;
+		padding: clamp(1rem, 2.5vw, 1.35rem);
 		border-left: 4px solid var(--primary);
 		border-radius: var(--radius-card);
-		padding: clamp(1.5rem, 3vw, 2.2rem);
+		background: rgba(163, 193, 173, 0.12);
 	}
 
-	.story-label {
+	.founder-note blockquote {
+		margin: 0;
+	}
+
+	.founder-note figcaption {
+		margin-top: 0.75rem;
 		font-family: var(--font-heading);
-		font-size: 0.8rem;
-		font-weight: 600;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--primary);
-		margin-bottom: 0.6rem;
-		opacity: 0.85;
-	}
-
-	.story-heading {
-		font-family: var(--font-heading);
-		font-size: clamp(1.4rem, 1.2rem + 1vw, 1.75rem);
-		font-weight: 750;
-		letter-spacing: -0.02em;
-		line-height: 1.12;
-		color: var(--primary);
-		margin-bottom: 1.4rem;
-	}
-
-	.story-text p {
-		font-size: clamp(1rem, 0.95rem + 0.45vw, 1.1rem);
-		line-height: 1.75;
-		color: #2d3748;
-	}
-
-	.story-text p + p {
-		margin-top: 1rem;
-	}
-
-	.story-quote {
-		margin: 1.8rem 0 0;
-		padding: 1.2rem 1.4rem;
-		background: rgba(255, 255, 255, 0.6);
-		border-radius: calc(var(--radius-card) - 2px);
-		border: 1px solid rgba(15, 118, 110, 0.12);
-		font-style: italic;
-		font-size: clamp(1rem, 0.95rem + 0.3vw, 1.05rem);
-		line-height: 1.65;
-		color: #2d3748;
-	}
-
-	.story-quote cite {
-		display: block;
-		margin-top: 0.8rem;
-		font-style: normal;
 		font-size: 0.9rem;
 		font-weight: 600;
 		color: var(--primary);
-		opacity: 0.85;
-	}
-
-	.feature-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 0.85rem;
-	}
-
-	.feature-card {
-		border: 1px solid rgba(15, 23, 42, 0.1);
-		border-radius: var(--radius-card);
-		padding: 1rem 1rem 1.05rem;
-		background: rgba(248, 250, 252, 0.78);
-	}
-
-	.feature-card p {
-		font-size: clamp(1rem, 0.96rem + 0.3vw, 1.05rem);
-		line-height: 1.65;
 	}
 
 	.steps {
@@ -806,6 +336,10 @@
 		padding: 0;
 		display: grid;
 		gap: 0.7rem;
+	}
+
+	.section .steps {
+		padding-left: 0;
 	}
 
 	.steps li {
@@ -831,64 +365,39 @@
 		font-family: var(--font-heading);
 		font-weight: 700;
 		font-size: 0.95rem;
-		letter-spacing: -0.01em;
 		margin-top: 0.05rem;
 	}
 
-	.callout {
-		max-width: 720px;
+	.parts {
+		display: grid;
+		gap: 0.85rem;
+	}
+
+	.part {
+		border: 1px solid rgba(15, 23, 42, 0.1);
+		border-radius: var(--radius-card);
+		padding: 1rem 1rem 1.05rem;
+		background: rgba(248, 250, 252, 0.78);
+		min-width: 0;
+	}
+
+	.more-link {
+		margin-top: 1rem;
+	}
+
+	.limits {
+		padding: clamp(1rem, 2.5vw, 1.35rem);
 		border: 1px solid rgba(15, 23, 42, 0.12);
 		border-radius: var(--radius-card);
-		padding: 1.05rem;
 		background: rgba(226, 240, 236, 0.6);
 	}
 
-	.callout h2 {
-		margin-bottom: 0.45rem;
-	}
-
-	.callout p {
-		margin-bottom: 0.85rem;
-	}
-
-	.callout-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.45rem 0.8rem;
-		border-radius: var(--radius-pill);
-		border: 1px solid rgba(20, 90, 84, 0.24);
-		font-family: var(--font-heading);
-		font-weight: 500;
-		font-size: 0.95rem;
-		color: #145a54;
-		background: rgba(255, 255, 255, 0.75);
-	}
-
-	.links-section ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: grid;
-		gap: 0.65rem;
-	}
-
-	.links-section p {
-		margin-bottom: 0.8rem;
-	}
-
-	.links-section a {
-		text-decoration: underline;
-		text-underline-offset: 2px;
-	}
-
-	.company-section h3 {
-		margin-top: 1rem;
-		margin-bottom: 0.45rem;
+	.limits > h2 {
+		margin-top: 0;
 	}
 
 	.company-list {
-		margin: 0.55rem 0 0;
+		margin: 1rem 0 0;
 		display: grid;
 		gap: 0.45rem;
 	}
@@ -906,45 +415,27 @@
 
 	.company-list dd {
 		margin: 0;
+		overflow-wrap: anywhere;
 	}
 
-	.company-address {
-		margin: 0.4rem 0 0;
-		font-style: normal;
-		display: grid;
-		gap: 0.35rem;
-	}
-
-	.company-address p {
-		margin: 0;
+	.more-links ul {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.25rem;
 	}
 
 	@media (min-width: 760px) {
-		.audience-grid {
+		.steps,
+		.parts {
 			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-
-		.feature-grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-		}
-
-		.steps {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-		}
-
-		.steps li {
-			grid-template-columns: 1fr;
-			gap: 0.6rem;
 		}
 	}
 
 	@media (max-width: 640px) {
 		.page {
 			padding: 2rem 1rem 2.8rem;
-		}
-
-		.trust-overview {
-			padding: 0.9rem;
 		}
 
 		p,
@@ -958,60 +449,28 @@
 		}
 	}
 
-	:global(.dark) .feature-card,
-	:global(.dark) .audience-card,
 	:global(.dark) .steps li,
-	:global(.dark) .callout {
+	:global(.dark) .part,
+	:global(.dark) .limits {
 		background: #1a1a1a;
 		color: #f5f5f5;
 		border: 1px solid rgba(255, 255, 255, 0.08);
 	}
 
-	:global(.dark) .trust-overview {
-		background: #1a1a1a;
-		border-color: rgba(255, 255, 255, 0.08);
-	}
-
-	:global(.dark) .privacy-summary {
-		background: rgba(255, 255, 255, 0.035);
-		border-color: rgba(255, 255, 255, 0.08);
-	}
-
-	:global(.dark) .privacy-summary-icon {
-		background: rgba(134, 223, 214, 0.12);
-	}
-
-	:global(.dark) .privacy-summary-label,
-	:global(.dark) .privacy-summary-link {
-		color: #86dfd6;
-	}
-
-	:global(.dark) .organization-note {
-		background: rgba(15, 118, 110, 0.12);
-		border-left-color: rgba(134, 223, 214, 0.5);
-	}
-
-	:global(.dark) .organization-note a {
-		color: #86dfd6;
-	}
-
-	:global(.dark) .feature-card h3,
-	:global(.dark) .audience-card h3,
 	:global(.dark) .steps li h3,
-	:global(.dark) .callout h2 {
+	:global(.dark) .part h3 {
 		color: #ffffff;
 	}
 
-	:global(.dark) .feature-card p,
-	:global(.dark) .audience-card p,
 	:global(.dark) .steps li p,
-	:global(.dark) .callout p {
+	:global(.dark) .part p,
+	:global(.dark) .limits li,
+	:global(.dark) .limits p {
 		color: rgba(255, 255, 255, 0.85);
 	}
 
 	:global(.dark) .hero h1,
-	:global(.dark) .section > h2,
-	:global(.dark) .links-section h2 {
+	:global(.dark) .section > h2 {
 		color: #86dfd6;
 	}
 
@@ -1019,29 +478,11 @@
 		background: rgba(134, 223, 214, 0.5);
 	}
 
-	:global(.dark) .story-inner {
-		background: linear-gradient(135deg, rgba(15, 118, 110, 0.12) 0%, rgba(15, 118, 110, 0.06) 100%);
-		border-color: rgba(134, 223, 214, 0.2);
+	:global(.dark) .founder-note {
+		background: rgba(15, 118, 110, 0.12);
 	}
 
-	:global(.dark) .story-text p {
-		color: rgba(255, 255, 255, 0.85);
-	}
-
-	:global(.dark) .story-quote {
-		background: rgba(255, 255, 255, 0.05);
-		color: rgba(255, 255, 255, 0.85);
-		border-color: rgba(134, 223, 214, 0.15);
-	}
-
-	.crisis-note {
-		margin-top: 1rem;
-		padding: 0.75rem 1rem;
-		border-radius: var(--radius-card);
-		border-left: 3px solid rgba(15, 118, 110, 0.4);
-		background: rgba(226, 240, 236, 0.5);
-		font-size: clamp(0.95rem, 0.92rem + 0.25vw, 1rem);
-		line-height: 1.6;
-		color: #2d3748;
+	:global(.dark) .founder-note figcaption {
+		color: #86dfd6;
 	}
 </style>

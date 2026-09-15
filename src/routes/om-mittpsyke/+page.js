@@ -1,7 +1,7 @@
 export const load = () => {
   return {
-    title: 'Om MittPsyke – Skapad av erfarenhet, inte teori',
+    title: 'Om MittPsyke – en plats för dina egna ord över tid',
     description:
-      'MittPsyke skapades av Robert Claesson – av egna erfarenheter av psykisk ohälsa och återhämtning. Läs om varför MittPsyke finns och hur tjänsten fungerar.'
+      'En lugn plats för att skriva, spara det du vill, komma tillbaka och se vad som återkommer i dina egna ord. Om delarna, gränserna och vem som står bakom.'
   };
 };
