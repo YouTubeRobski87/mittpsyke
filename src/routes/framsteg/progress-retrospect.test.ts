@@ -7,7 +7,6 @@ import { describe, expect, it } from 'vitest';
 const read = (path: string) => readFileSync(path, 'utf8');
 const route = read('src/routes/framsteg/+page.svelte');
 const card = read('src/lib/components/progress/LighterDaysCard.svelte');
-const preview = read('src/lib/components/progress/ProgressExamplePreview.svelte');
 const insightsEndpoint = read('src/routes/api/diary/insights/+server.ts');
 const summaryEndpoint = read('src/routes/api/diary/insights/summary/+server.ts');
 
@@ -79,15 +78,7 @@ describe('kortet "Det som ofta fanns med under lättare dagar"', () => {
 });
 
 describe('förhandsvisningen för utloggade', () => {
-	it('är ett tydligt märkt, påhittat exempel', () => {
-		expect(preview).toContain('<h2 id="example-preview-heading">Så här kan det se ut efter en månad</h2>');
-		expect(preview).toContain('<p class="example-badge">Exempel</p>');
-		expect(preview).toContain('Påhittat exempel.');
-		expect(preview).toContain('Exempeltext: {item.excerpt}');
-		// Inga riktiga datum som kan misstas för användarens egna.
-		expect(preview).not.toMatch(/20\d\d-\d\d-\d\d|\d{1,2} (januari|februari|mars|april|maj|juni|juli|augusti|september|oktober|november|december)/);
-	});
-
+	// Själva exemplet renderas och granskas i src/lib/progress-example.test.ts.
 	it('ersätter de suddiga korten', () => {
 		expect(route).toContain('<ProgressExamplePreview />');
 		expect(route).not.toContain('account-preview-content');

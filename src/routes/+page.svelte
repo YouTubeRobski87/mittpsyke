@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import CabinProof from '$lib/components/home/CabinProof.svelte';
+	import ProgressExamplePreview from '$lib/components/progress/ProgressExamplePreview.svelte';
 	import SignedInHome from '$lib/components/home/SignedInHome.svelte';
 	import { trackHomeCtaClick } from '$lib/analytics';
 	import type { PageData } from './$types';
@@ -151,6 +152,12 @@
 					<p>Dina egna ord sammanställda — ingen mätning av hur du sköter dig.</p>
 				</li>
 			</ol>
+			<!-- Steg 4 i praktiken. Ett märkt, påhittat exempel på vad "se vad som
+				 återkommer" betyder, så att en ny besökare ser det utan konto och
+				 utan veckor av egna inlägg. Ingen AI och inga användardata. -->
+			<div class="how-example">
+				<ProgressExamplePreview headingLevel={3} context="home" />
+			</div>
 		</div>
 	</section>
 
@@ -531,6 +538,20 @@
 		.how-steps {
 			grid-template-columns: repeat(4, minmax(0, 1fr));
 		}
+	}
+
+	/* Exemplet under stegen får startsidans mörka palett i stället för appens
+	   tema, så att det hör ihop med sektionen runt omkring. */
+	.how-example {
+		--example-surface: var(--home-dark-bg-soft);
+		--example-card: rgba(148, 163, 184, 0.06);
+		--example-text: var(--home-text-strong);
+		--example-muted: var(--home-text-muted-strong);
+		--example-border: rgba(148, 163, 184, 0.32);
+		--example-badge-bg: var(--home-text-cool);
+		--example-badge-fg: var(--home-dark-bg-important);
+		max-width: 44rem;
+		margin-top: clamp(1.75rem, 3.6vw, 2.5rem);
 	}
 
 	/* ── Hero ── */
