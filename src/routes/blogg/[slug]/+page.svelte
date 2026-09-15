@@ -1,7 +1,11 @@
 <script lang="ts">
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import { trackArticleView } from '$lib/analytics';
+	import { buildAuthorJsonLd, EDITORIAL_TEAM_NAME } from '$lib/editorial';
+
+	const SORO_ARTICLE_AUTHOR = EDITORIAL_TEAM_NAME;
 
 	let { data } = $props();
 
@@ -17,11 +21,10 @@
 		datePublished: article.isoDate,
 		dateModified: article.isoDate,
 		inLanguage: 'sv-SE',
-		author: {
-			'@type': 'Person',
-			name: 'Robert Claesson',
-			url: 'https://mittpsyke.se/om-mittpsyke'
-		},
+		// Soros metadata innehåller ingen skribent, så artiklarna står på
+		// redaktionen - samma avsändare som sidans byline visar. Ett personnamn
+		// här skulle påstå mer än vi vet om texten.
+		author: buildAuthorJsonLd(SORO_ARTICLE_AUTHOR),
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
@@ -60,6 +63,7 @@
 		<h1>{article.title}</h1>
 		<p class="lead">{article.excerpt}</p>
 		<p class="meta">Publicerad {article.date}</p>
+		<EditorialByline author={SORO_ARTICLE_AUTHOR} />
 	</header>
 
 	{#if article.image}

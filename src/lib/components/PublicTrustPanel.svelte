@@ -1,4 +1,6 @@
 <script lang="ts">
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
+
 	type TrustSource = {
 		label: string;
 		href: string;
@@ -14,6 +16,7 @@
 
 <section class="trust-panel" aria-label="Trygg information och källor">
 	<p class="updated-date">Senast uppdaterad: {updatedDate}</p>
+	<EditorialByline />
 	<p class="trust-copy">
 		MittPsyke är en lugn första ingång för reflektion och stöd i egen takt. Innehållet ersätter
 		inte vård, diagnos eller behandling.

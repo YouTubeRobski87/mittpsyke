@@ -1,4 +1,5 @@
 ﻿<script lang="ts">
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 	import type { SourceItem } from '$lib/seo-kit/content';
 
 	type Props = {
@@ -49,6 +50,8 @@
 	{#if updatedAt}
 		<p class="meta">Senast uppdaterad: {formatDate(updatedAt)}</p>
 	{/if}
+
+	<EditorialByline />
 
 	<h2>Källor och kvalitet</h2>
 	<p class="note">

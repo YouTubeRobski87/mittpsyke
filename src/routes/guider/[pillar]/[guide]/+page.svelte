@@ -2,6 +2,8 @@
 	import { page } from '$app/stores';
 	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 	import ContentTrustBlock from '$lib/components/ContentTrustBlock.svelte';
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
+	import { buildAuthorJsonLd, FOUNDER_NAME } from '$lib/editorial';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
@@ -33,12 +35,17 @@
 	const publishedAt = $derived(displayDates.publishedAt);
 	const updatedAt = $derived(displayDates.updatedAt);
 
+	// Guiderna skrivs och underhålls av grundaren, vilket också står på
+	// "Om skaparen" och i den redaktionella metoden.
+	const GUIDE_AUTHOR_NAME = FOUNDER_NAME;
+
 	const articleSchema = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'WebPage',
 		headline: data.guide.title,
 		description: data.guide.seoDescription ?? data.guide.description,
 		url: `${PUBLIC_SITE_ORIGIN}${$page.url.pathname}`,
+		author: buildAuthorJsonLd(GUIDE_AUTHOR_NAME),
 		publisher: {
 			'@type': 'Organization',
 			name: 'MittPsyke',
@@ -126,7 +133,9 @@
 	<div class="article-meta mt-4" aria-label="Guideinformation">
 		{#if publishedAt}<p>Publicerad: {publishedAt}</p>{/if}
 		{#if updatedAt}<p>Senast uppdaterad: {updatedAt}</p>{/if}
-		<p>Författare: MittPsyke</p>
+		<!-- Samma avsändare som guidens JSON-LD. Granskningsstatusen står i
+		     källblocket längst ner, så den upprepas inte här. -->
+		<EditorialByline author={GUIDE_AUTHOR_NAME} showStatus={false} />
 	</div>
 
 	{#if data.guide.content}

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 
 	// Reflektionsövningen sparas bara i användarens egen webbläsare.
 	// Ingenting skickas någonsin till servern - texten kan vara mycket privat.
@@ -421,6 +422,7 @@
 
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 31 juli 2026</p>
+			<EditorialByline />
 			<h2>Källor</h2>
 			<ul>
 				<li>

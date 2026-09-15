@@ -9,13 +9,11 @@
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
-		'@type': 'MedicalWebPage',
+		'@type': 'WebPage',
 		name: 'Samtalsstöd vid trauma – Bearbeta i din egen takt',
 		url: 'https://mittpsyke.se/trauma',
 		description: 'Vi erbjuder samtalsstöd vid trauma i ett tryggt rum där du kan börja utan konto och reflektera i din egen takt.',
-		about: { '@type': 'MedicalCondition', name: 'Trauma' },
-		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
-		specialty: 'https://schema.org/Psychiatric',
+		about: { '@type': 'Thing', name: 'Trauma' },
 		dateModified: '2026-03-14',
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}

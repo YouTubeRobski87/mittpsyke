@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 </script>
 
 <SEO canonical="https://mittpsyke.se/sovproblem" />
@@ -8,13 +9,11 @@
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
-		'@type': 'MedicalWebPage',
+		'@type': 'WebPage',
 		name: 'Sömnproblem – samtalsstöd och stöd i stunden',
 		url: 'https://mittpsyke.se/sovproblem',
 		description: 'Kan du inte sova? Prata anonymt med AI-baserat samtalsstöd om vad som håller dig vaken. Lugnt, tillgängligt och utan krav.',
-		about: { '@type': 'MedicalCondition', name: 'Sömnproblem' },
-		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
-		specialty: 'https://schema.org/Psychiatric',
+		about: { '@type': 'Thing', name: 'Sömnproblem' },
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
@@ -70,6 +69,11 @@
 				{ title: 'Kan inte sova av stress – vad som händer och vad som hjälper', href: '/guider/sovproblem/kan-inte-sova-stress' }
 			]}
 		/>
+
+		<!-- Sidan har inget granskningsdatum, så bara statusen visas. -->
+		<section class="source-block" aria-label="Om innehållet">
+			<EditorialByline />
+		</section>
 	</div>
 </main>
 

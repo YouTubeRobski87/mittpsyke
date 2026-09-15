@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import { dataflowCopy } from '$lib/dataflow-copy';
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 </script>
 
 <SEO canonical="https://mittpsyke.se/ai-samtalsstod-online" />
@@ -77,6 +78,7 @@
 		<!-- Källor och uppdatering -->
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
+			<EditorialByline />
 			<h2>Källor</h2>
 			<ul>
 				<li><a href="https://www.1177.se/liv--halsa/psykisk-halsa/" target="_blank" rel="noopener noreferrer">Psykisk hälsa – 1177 Vårdguiden</a></li>

@@ -9,13 +9,11 @@
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
-		'@type': 'MedicalWebPage',
+		'@type': 'WebPage',
 		name: 'Stöd vid stress online – prata anonymt',
 		url: 'https://mittpsyke.se/stress',
 		description: 'Känner du dig överväldigad av stress? Få anonymt samtalsstöd online dygnet runt – utan väntetid och utan bedömning.',
-		about: { '@type': 'MedicalCondition', name: 'Stress' },
-		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
-		specialty: 'https://schema.org/Psychiatric',
+		about: { '@type': 'Thing', name: 'Stress' },
 		dateModified: '2026-03-14',
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}

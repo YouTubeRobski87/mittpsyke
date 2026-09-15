@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 </script>
 
 <SEO canonical="https://mittpsyke.se/sjalvkansla" />
@@ -8,13 +9,11 @@
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
-		'@type': 'MedicalWebPage',
+		'@type': 'WebPage',
 		name: 'Självkänsla – samtalsstöd och stöd i din takt',
 		url: 'https://mittpsyke.se/sjalvkansla',
 		description: 'Låg självkänsla är tyst men tung. Prata anonymt och utforska din relation till dig själv – utan dömande ton, utan krav.',
-		about: { '@type': 'MedicalCondition', name: 'Låg självkänsla' },
-		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
-		specialty: 'https://schema.org/Psychiatric',
+		about: { '@type': 'Thing', name: 'Låg självkänsla' },
 		dateModified: '2026-03-14',
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
@@ -68,6 +67,7 @@
 		<!-- Källor och uppdatering -->
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
+			<EditorialByline />
 			<h2>Källor</h2>
 			<ul>
 				<li><a href="https://www.1177.se/liv--halsa/psykisk-halsa/sjalvkansla/" target="_blank" rel="noopener noreferrer">Självkänsla – 1177 Vårdguiden</a></li>

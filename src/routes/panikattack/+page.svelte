@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 </script>
 
 <SEO canonical="https://mittpsyke.se/panikattack" />
@@ -8,13 +9,11 @@
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
-		'@type': 'MedicalWebPage',
+		'@type': 'WebPage',
 		name: 'Hjälp vid panikattacker – prata anonymt',
 		url: 'https://mittpsyke.se/panikattack',
 		description: 'Få stöd för panikattacker och plötslig rädsla. Prata anonymt med AI-baserat samtalsstöd dygnet runt.',
-		about: { '@type': 'MedicalCondition', name: 'Panikattack' },
-		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
-		specialty: 'https://schema.org/Psychiatric',
+		about: { '@type': 'Thing', name: 'Panikattack' },
 		dateModified: '2026-03-14',
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
@@ -89,6 +88,7 @@
 		/>
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
+			<EditorialByline />
 			<h2>Källor</h2>
 			<ul>
 				<li><a href="https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/" target="_blank" rel="noopener noreferrer">Ångest – 1177 Vårdguiden</a></li>

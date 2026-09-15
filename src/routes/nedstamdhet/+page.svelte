@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 </script>
 
 <SEO canonical="https://mittpsyke.se/nedstamdhet" />
@@ -8,13 +9,11 @@
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
-		'@type': 'MedicalWebPage',
+		'@type': 'WebPage',
 		name: 'Samtalsstöd vid nedstämdhet – prata anonymt',
 		url: 'https://mittpsyke.se/nedstamdhet',
 		description: 'Känner du dig nedstämd utan att veta varför? Få anonymt samtalsstöd online dygnet runt – ett tryggt rum att prata i.',
-		about: { '@type': 'MedicalCondition', name: 'Nedstämdhet' },
-		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
-		specialty: 'https://schema.org/Psychiatric',
+		about: { '@type': 'Thing', name: 'Nedstämdhet' },
 		dateModified: '2026-03-14',
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
@@ -74,6 +73,7 @@
 		<!-- Källor och uppdatering -->
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
+			<EditorialByline />
 			<h2>Källor</h2>
 			<ul>
 				<li><a href="https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/depression/" target="_blank" rel="noopener noreferrer">Depression – 1177 Vårdguiden</a></li>

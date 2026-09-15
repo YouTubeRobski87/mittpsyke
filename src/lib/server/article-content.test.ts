@@ -37,7 +37,7 @@ describe('parseArticleFrontmatter', () => {
 		expect(article).toMatchObject({
 			title: 'Artikel',
 			description: '',
-			author: 'MittPsyke',
+			author: 'MittPsyke-redaktionen',
 			image: undefined,
 			date: null,
 			updated: null,

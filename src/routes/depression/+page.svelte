@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import TopicGuideSection from '$lib/components/TopicGuideSection.svelte';
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 </script>
 
 <SEO canonical="https://mittpsyke.se/depression" />
@@ -8,13 +9,11 @@
 <svelte:head>
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
-		'@type': 'MedicalWebPage',
+		'@type': 'WebPage',
 		name: 'Hjälp vid depression – prata anonymt',
 		url: 'https://mittpsyke.se/depression',
 		description: 'Få stöd för depression och tomhet. Prata anonymt med AI-baserat samtalsstöd dygnet runt.',
-		about: { '@type': 'MedicalCondition', name: 'Depression' },
-		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
-		specialty: 'https://schema.org/Psychiatric',
+		about: { '@type': 'Thing', name: 'Depression' },
 		dateModified: '2026-03-14',
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
@@ -77,6 +76,7 @@
 		/>
 		<section class="source-block" aria-label="Källor och uppdatering">
 			<p class="updated-date">Senast uppdaterad: 14 mars 2026</p>
+			<EditorialByline />
 			<h2>Källor</h2>
 			<ul>
 				<li><a href="https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/depression/depression/" target="_blank" rel="noopener noreferrer">Depression – 1177 Vårdguiden</a></li>

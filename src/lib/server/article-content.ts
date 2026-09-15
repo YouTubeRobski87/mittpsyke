@@ -6,9 +6,12 @@ import { getToolBySlug } from '$lib/data/seo-architecture';
 import { getPortalByKey } from '$lib/data/portals';
 import { CHAT_CATEGORY_TO_SLUG, CHAT_SLUG_TO_CATEGORY } from '$lib/data/chat-slugs';
 import { PUBLIC_SITE_ORIGIN } from '$lib/seo';
+import { buildAuthorJsonLd, EDITORIAL_TEAM_NAME, normalizeAuthorName } from '$lib/editorial';
 
 const DEFAULT_ARTICLE_TITLE = 'Artikel';
-const DEFAULT_ARTICLE_AUTHOR = 'MittPsyke';
+// Utan namngiven skribent står redaktionen som avsändare, samma namn som
+// artikelsidan visar.
+const DEFAULT_ARTICLE_AUTHOR = EDITORIAL_TEAM_NAME;
 const MISSING_DATE_LABEL = 'Datum saknas';
 
 function getOptionalString(value: unknown, fallback = '') {
@@ -59,7 +62,10 @@ const articleSchema = z.object({
 	imageAlt: z.preprocess((value) => getOptionalString(value) || undefined, z.string().optional()),
 	date: z.preprocess(getOptionalDate, z.date().nullable()),
 	updated: z.preprocess(getOptionalDate, z.date().nullable()),
-	author: z.preprocess((value) => getOptionalString(value, DEFAULT_ARTICLE_AUTHOR), z.string()),
+	author: z.preprocess(
+		(value) => normalizeAuthorName(getOptionalString(value, DEFAULT_ARTICLE_AUTHOR)),
+		z.string()
+	),
 	collection: z.string().min(1),
 	tags: z.preprocess(
 		(value) => (Array.isArray(value) ? value.map((tag) => getOptionalString(tag)).filter(Boolean) : []),
@@ -583,7 +589,9 @@ export function buildArticleJsonLd(article: Article, topic: Pick<ArticleTopic, '
 		datePublished: article.date,
 		dateModified: article.updated ?? article.date,
 		inLanguage: 'sv-SE' as const,
-		author: { '@type': 'Person' as const, name: article.author },
+		// Person bara för den namngivna grundaren, annars redaktionen som
+		// Organization. Samma namn som artikelsidans byline visar.
+		author: buildAuthorJsonLd(article.author),
 		publisher: {
 			'@type': 'Organization' as const,
 			name: 'MittPsyke',
@@ -605,7 +613,11 @@ export const articleJsonLdSchema = z.object({
 	datePublished: z.string().refine((value) => !Number.isNaN(Date.parse(value)), 'ogiltigt datum'),
 	dateModified: z.string().refine((value) => !Number.isNaN(Date.parse(value)), 'ogiltigt datum'),
 	inLanguage: z.literal('sv-SE'),
-	author: z.object({ '@type': z.literal('Person'), name: z.string().min(1) }),
+	author: z.object({
+		'@type': z.enum(['Person', 'Organization']),
+		name: z.string().min(1),
+		url: z.string().url()
+	}),
 	publisher: z.object({
 		'@type': z.literal('Organization'),
 		name: z.string().min(1),

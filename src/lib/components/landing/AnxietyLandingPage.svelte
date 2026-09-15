@@ -99,11 +99,11 @@
 	<meta name="twitter:description" content={data.seoMeta} />
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
-		'@type': 'MedicalWebPage',
+		'@type': 'WebPage',
 		name: data.seoTitle,
 		url: data.canonicalUrl,
 		description: data.seoMeta,
-		about: { '@type': 'MedicalCondition', name: 'Ångest' },
+		about: { '@type': 'Thing', name: 'Ångest' },
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>

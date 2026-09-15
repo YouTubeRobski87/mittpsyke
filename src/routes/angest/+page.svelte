@@ -6,6 +6,7 @@
 		trackHeroCtaPrimaryClick,
 		trackHeroCtaSecondaryClick
 	} from '$lib/analytics';
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -100,13 +101,11 @@
 	{/if}
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
-		'@type': 'MedicalWebPage',
+		'@type': 'WebPage',
 		name: data.content.h1_heading,
 		url: 'https://mittpsyke.se/angest',
 		description: data.description,
-		about: { '@type': 'MedicalCondition', name: 'Ångest' },
-		medicalAudience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
-		specialty: 'https://schema.org/Psychiatric',
+		about: { '@type': 'Thing', name: 'Ångest' },
 		dateModified: data.lastUpdated,
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
@@ -231,6 +230,7 @@
 
 	<section class="sources">
 		<p class="updated">Senast uppdaterad: {new Date(data.lastUpdated).toLocaleDateString('sv-SE')}</p>
+		<EditorialByline />
 		<h2>Källor och vidare stöd</h2>
 		<ul>
 			<li>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+	import EditorialByline from '$lib/components/EditorialByline.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 
 	let { data } = $props();
@@ -40,6 +41,8 @@
 		<p class="lead">{article.description}</p>
 		<p class="meta">Publicerad {article.dateLabel}{article.updatedLabel ? ` · Uppdaterad ${article.updatedLabel}` : ''}</p>
 		{#if article.readingTime}<p class="meta">{article.readingTime}</p>{/if}
+		<!-- Samma avsändare som artikelns JSON-LD, plus granskningsstatus. -->
+		<EditorialByline author={article.author} />
 	</header>
 
 	{#if article.image}
