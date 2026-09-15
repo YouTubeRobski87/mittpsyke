@@ -213,7 +213,8 @@
 	</section>
 
 	<!-- 4. Kvällstugan -->
-	<section class="home-section section-alt" aria-labelledby="evening-title">
+	<!-- id:t är målet för gästens "Kvällstugan" i mobilmenyn. -->
+	<section id="kvallstugan" class="home-section section-alt" aria-labelledby="evening-title">
 		<div class="home-inner evening-inner">
 			<div class="narrow">
 				<h2 id="evening-title">Kvällsincheckning</h2>

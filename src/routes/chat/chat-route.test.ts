@@ -37,7 +37,8 @@ describe('direkt ingång till den befintliga chatten', () => {
 	});
 
 	it('låter huvudnavigationen och produktlänkar öppna /chat med chattlayout', () => {
-		expect(layout.match(/\{ href: '\/chat', label: 'Chatta' \}/g)).toHaveLength(2);
+		// Desktop för gäst och inloggad, plus mobilmenyn för gäst och inloggad.
+		expect(layout.match(/\{ href: '\/chat', label: 'Chatta' \}/g)).toHaveLength(4);
 		expect(layout).toContain("page.url.pathname === '/chat' || page.url.pathname.startsWith('/chat/')");
 		for (const path of ['../../lib/components/home/SignedInHome.svelte', '../dashboard/+page.svelte', '../ai-samtalsstod-online/+page.svelte']) {
 			expect(read(path)).toContain('href="/chat"');
@@ -210,29 +211,19 @@ describe('direkt ingång till den befintliga chatten', () => {
 		expect(chatWindow).not.toMatch(/hasSensitiveDataConsent = consentStatusKnown/);
 	});
 
-	it('ger Chatta en egen snabblänk i mobilens sidhuvud för både gäst och inloggad', () => {
+	it('behåller Chatta i mobilmenyn för både gäst och inloggad, men inte som snabblänk', () => {
+		// Mobilens direktingång är Skriv (se mobile-navigation.test.ts). Chatten
+		// ska fortfarande gå att nå med två tryck: meny, sedan Chatta.
 		const quickNav = layout.slice(
 			layout.indexOf('<nav class="mobile-quick-nav"'),
 			layout.indexOf('</nav>', layout.indexOf('<nav class="mobile-quick-nav"'))
 		);
-		expect(quickNav).toContain("navItem.href === '/chat'");
-		expect(quickNav).toContain('primaryNavItems.slice(0, 3)');
-		expect(quickNav).toContain("class:mobile-quick-link-chat={item.href === '/chat'}");
+		expect(quickNav).not.toContain('/chat');
 
-		// På telefon döljs gästens övriga snabblänkar, men aldrig Chatta.
-		const phone = layout.slice(layout.indexOf('@media (max-width: 640px)'));
-		expect(phone).toContain(
-			'.mobile-quick-nav:not(.mobile-quick-nav-signed) .mobile-quick-link:not(.mobile-quick-link-chat)'
-		);
-		expect(phone.slice(0, phone.indexOf('.site-header-inner'))).not.toMatch(
-			/\.mobile-quick-nav\s*\{\s*display:\s*none/
-		);
-
-		// På de smalaste skärmarna står bara Chatta kvar, så ordmärket inte klipps.
-		const narrow = layout.slice(layout.indexOf('@media (max-width: 370px)'));
-		expect(narrow.slice(0, narrow.indexOf('.site-header-inner'))).toContain(
-			'.mobile-quick-link:not(.mobile-quick-link-chat)'
-		);
+		for (const list of ['mobileGuestPrimaryNavItems', 'mobileSignedInSecondaryNavItems']) {
+			const start = layout.indexOf(`const ${list}: NavItem[] = [`);
+			expect(layout.slice(start, layout.indexOf('];', start))).toContain("{ href: '/chat', label: 'Chatta' }");
+		}
 	});
 
 	it('låter ämnessidornas chatt-CTA öppna ämnets eget spår', () => {

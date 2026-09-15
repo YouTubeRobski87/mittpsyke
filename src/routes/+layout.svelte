@@ -71,7 +71,42 @@
 		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' }
 	];
 
-	const mobileSupplementalNavItems: NavItem[] = [
+	// Mobilens navigering följer kärnprodukten: att skriva är den tydliga
+	// direktingången, chatten finns kvar men längre ner. Desktopnavigeringen
+	// ovan är oförändrad. Varje funktion har en rad, och det övriga läsbara
+	// ligger indraget under "Läs" och i sidfoten.
+	const GUEST_WRITE_NAV_ITEM: NavItem = { href: '/dagbok?action=new', label: 'Skriv' };
+	const SIGNED_IN_WRITE_NAV_ITEM: NavItem = { href: '/dagbok/checkin', label: 'Skriv' };
+	const MOBILE_READ_NAV_ITEM: NavItem = { href: '/guider', label: 'Läs' };
+	const MOBILE_ABOUT_NAV_ITEM: NavItem = { href: '/om-mittpsyke', label: 'Om MittPsyke' };
+
+	// Kvällstugan kräver konto. Gästen kommer i stället till startsidans avsnitt
+	// som förklarar den och har sin egen väg in via inloggningen.
+	const mobileGuestPrimaryNavItems: NavItem[] = [
+		GUEST_WRITE_NAV_ITEM,
+		{ href: '/#kvallstugan', label: 'Kvällstugan' },
+		{ href: '/chat', label: 'Chatta' },
+		MOBILE_READ_NAV_ITEM,
+		MOBILE_ABOUT_NAV_ITEM
+	];
+
+	const mobileSignedInPrimaryNavItems: NavItem[] = [
+		{ href: '/dashboard', label: 'Mitt Hem' },
+		SIGNED_IN_WRITE_NAV_ITEM,
+		{ href: '/dashboard/kvallsstugan', label: 'Kvällstugan' },
+		{ href: '/framsteg', label: 'Framsteg' },
+		MOBILE_READ_NAV_ITEM
+	];
+
+	const mobileSignedInSecondaryNavItems: NavItem[] = [
+		{ href: '/chat', label: 'Chatta' },
+		MOBILE_ABOUT_NAV_ITEM,
+		{ href: '/dashboard/installningar', label: 'Inställningar' }
+	];
+
+	const mobileReadSubNavItems: NavItem[] = [
+		{ href: '/blogg', label: 'Artiklar' },
+		{ href: '/anonyma-berattelser', label: 'Berättelser' },
 		{ href: '/ovningar', label: 'Övningar' }
 	];
 
@@ -86,25 +121,14 @@
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
 
-	const mobileSignedInGeneralNavItems: NavItem[] = [
-		...signedInPortalNavItems,
-		{ href: '/guider', label: 'Guider' },
-		{ href: '/ovningar', label: 'Övningar' },
-		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
-		{ href: '/om-skaparen', label: 'Om skaparen' },
-		{ href: PUBLIC_CONTACT_MAILTO, label: 'Kontakt' }
-	];
-
-	const mobileGuestGeneralNavItems: NavItem[] = [
-		...primaryNavItems
-	];
-
 	const guestSecondaryNavItems: NavItem[] = [
 		{ href: 'https://stodlinjer.se', label: 'Akut hjälp', external: true }
 	];
 
 	function isActive(href: string): boolean {
 		const path = page.url.pathname;
+		// Ett ankare på startsidan är en genväg till ett avsnitt, inte en egen sida.
+		if (href.startsWith('/#')) return false;
 		const normalizedHref = href.split('#')[0].split('?')[0];
 
 		if (normalizedHref === '/dashboard') {
@@ -125,6 +149,13 @@
 		return normalizedHref === '/'
 			? path === '/'
 			: path === normalizedHref || path.startsWith(normalizedHref + '/');
+	}
+
+	// I mobilen har Kvällstugan en egen rad, så Mitt Hem markeras inte samtidigt
+	// när man står i stugan. Desktop saknar raden och behåller isActive som den är.
+	function isMobileActive(href: string): boolean {
+		if (href === '/dashboard' && page.url.pathname.startsWith('/dashboard/kvallsstugan')) return false;
+		return isActive(href);
 	}
 
 	function normalizeText(value: unknown): string | null {
@@ -209,6 +240,7 @@
 	let user = $state<User | null>(null);
 	let displayName = $state<string | null>(null);
 	let mobileMenuOpen = $state(false);
+	let mobileMenuButtonRef = $state<HTMLButtonElement | null>(null);
 	let mobileSearchOpen = $state(false);
 	let profilePanelOpen = $state(false);
 	let analyticsEnabled = $state(false);
@@ -241,6 +273,7 @@
 	// Serverns getUser() vet redan svaret vid SSR, så den gäller tills klienten
 	// tagit över (som behövs för in- och utloggning utan omladdning).
 	const currentUser = $derived(clientAuthResolved ? user : serverUser);
+	const mobileWriteNavItem = $derived(currentUser ? SIGNED_IN_WRITE_NAV_ITEM : GUEST_WRITE_NAV_ITEM);
 
 	const profileName = $derived(getProfileName(displayName, currentUser));
 	const memberSinceLabel = $derived(getMemberSinceLabel(currentUser?.created_at));
@@ -638,6 +671,21 @@
 		};
 	});
 
+	// Mobilmenyn stängs med Escape som profilpanelen, och fokus går tillbaka
+	// till menyknappen så tangentbordet inte hamnar i ingenstans.
+	$effect(() => {
+		if (!browser || !mobileMenuOpen) return;
+
+		const onKeyDown = (event: KeyboardEvent) => {
+			if (event.key !== 'Escape') return;
+			mobileMenuOpen = false;
+			mobileMenuButtonRef?.focus();
+		};
+
+		document.addEventListener('keydown', onKeyDown);
+		return () => document.removeEventListener('keydown', onKeyDown);
+	});
+
 	$effect(() => {
 		if (!browser || !profilePanelOpen) return;
 
@@ -790,22 +838,34 @@
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
-				<nav class="mobile-quick-nav" class:mobile-quick-nav-signed={Boolean(currentUser)} aria-label="Snabbnavigering">
-					{#each (currentUser ? signedInPortalNavItems.filter((navItem) => navItem.href === '/' || navItem.href === '/chat') : primaryNavItems.slice(0, 3)) as item}
+				<!-- Mobilens direktingång är Skriv, för både gäst och inloggad. Den
+				     inloggade har Mitt Hem bredvid när bredden räcker. Chatten nås
+				     via menyn. -->
+				<nav class="mobile-quick-nav" aria-label="Snabbnavigering">
+					{#if currentUser}
 						<a
-							href={item.href}
-							class="mobile-quick-link"
-							class:mobile-quick-link-articles={item.href === '/blogg'}
-							class:mobile-quick-link-chat={item.href === '/chat'}
+							href="/dashboard"
+							class="mobile-quick-link mobile-quick-link-home"
 							onclick={() => {
 								mobileMenuOpen = false;
 								profilePanelOpen = false;
 							}}
-							aria-current={isActive(item.href) ? 'page' : undefined}
+							aria-current={isMobileActive('/dashboard') ? 'page' : undefined}
 						>
-							{item.label}
+							Mitt Hem
 						</a>
-					{/each}
+					{/if}
+					<a
+						href={mobileWriteNavItem.href}
+						class="mobile-quick-link mobile-quick-link-write"
+						onclick={() => {
+							mobileMenuOpen = false;
+							profilePanelOpen = false;
+						}}
+						aria-current={isMobileActive(mobileWriteNavItem.href) ? 'page' : undefined}
+					>
+						{mobileWriteNavItem.label}
+					</a>
 				</nav>
 				<a
 					href="/sok"
@@ -900,6 +960,7 @@
 
 				<button
 					type="button"
+					bind:this={mobileMenuButtonRef}
 					class="mobile-menu-button lg:hidden inline-flex items-center justify-center rounded-md px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
 					aria-label="Öppna meny"
 					aria-expanded={mobileMenuOpen}
@@ -947,25 +1008,37 @@
 
 		{#if mobileMenuOpen}
 			<div id="mobile-menu" class="mobile-menu-panel lg:hidden px-5 py-3" role="navigation" aria-label="Mobilmeny">
-				{#each (currentUser ? mobileSignedInGeneralNavItems : mobileGuestGeneralNavItems) as item}
+				{#snippet mobileMenuLink(item: NavItem, extraClass: string)}
 					<a
 						href={item.href}
-						class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
+						class="mobile-menu-link {extraClass} text-sm transition-opacity {isMobileActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
+						target={item.external ? '_blank' : undefined}
+						rel={item.external ? 'noopener noreferrer' : undefined}
 						onclick={() => (mobileMenuOpen = false)}
-						aria-current={isActive(item.href) ? 'page' : undefined}
+						aria-current={isMobileActive(item.href) ? 'page' : undefined}
 					>
 						{item.label}
 					</a>
+				{/snippet}
+				<!-- Huvudvägarna först, i kärnproduktens ordning. Det läsbara ligger
+				     indraget under Läs. Efter strecket kommer det som är sekundärt. -->
+				{#each (currentUser ? mobileSignedInPrimaryNavItems : mobileGuestPrimaryNavItems) as item}
+					{@render mobileMenuLink(item, item === mobileWriteNavItem ? 'mobile-menu-link-write' : '')}
+					{#if item === MOBILE_READ_NAV_ITEM}
+						{#each mobileReadSubNavItems as subItem}
+							{@render mobileMenuLink(subItem, 'mobile-menu-sub-link')}
+						{/each}
+					{/if}
 				{/each}
-				<a href="/sok" class="mobile-menu-link mobile-menu-search-link text-sm transition-opacity {isActive('/sok') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-label="Sök på MittPsyke" aria-current={isActive('/sok') ? 'page' : undefined}>
+				{#if currentUser}
+					{#each mobileSignedInSecondaryNavItems as item, index}
+						{@render mobileMenuLink(item, index === 0 ? 'mobile-menu-group-start' : '')}
+					{/each}
+				{/if}
+				<a href="/sok" class="mobile-menu-link mobile-menu-search-link text-sm transition-opacity {currentUser ? '' : 'mobile-menu-group-start'} {isActive('/sok') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-label="Sök på MittPsyke" aria-current={isActive('/sok') ? 'page' : undefined}>
 					<Search size={16} aria-hidden="true" />
 					<span>Sök</span>
 				</a>
-				{#if !currentUser}
-					{#each mobileSupplementalNavItems as item}
-						<a href={item.href} class="mobile-menu-link mobile-menu-sub-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
-					{/each}
-				{/if}
 				{#if currentUser}
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
 					<button
@@ -974,18 +1047,8 @@
 					>Logga ut</button>
 				{:else}
 					{#each guestSecondaryNavItems as item}
-						<a
-							href={item.href}
-							class="mobile-menu-link text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
-							target={item.external ? '_blank' : undefined}
-							rel={item.external ? 'noopener noreferrer' : undefined}
-							onclick={() => (mobileMenuOpen = false)}
-							aria-current={isActive(item.href) ? 'page' : undefined}
-						>
-							{item.label}
-						</a>
+						{@render mobileMenuLink(item, '')}
 					{/each}
-					<a href={PUBLIC_CONTACT_MAILTO} class="mobile-menu-link text-sm opacity-80 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Kontakt</a>
 					<a href="/login" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Logga in</a>
 					<a href="/register" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Registrera</a>
 				{/if}
@@ -1410,7 +1473,8 @@
 		border: 0;
 	}
 
-	.mobile-menu-sub-link {
+	/* Dubbel klass, så mobilens padding-regel längre ner inte tar bort indraget. */
+	.mobile-menu-link.mobile-menu-sub-link {
 		padding-left: 0.9rem;
 		opacity: 0.78;
 	}
@@ -1470,22 +1534,45 @@
 		color: hsl(var(--foreground) / 0.96);
 	}
 
-	.mobile-quick-link-chat {
-		flex-shrink: 0;
-		font-weight: 650;
-	}
-
-	.mobile-quick-link-articles {
-		min-width: 0;
-		flex-shrink: 1;
-		font-size: 0.74rem;
-		opacity: 0.86;
-	}
-
 	:global(.dark) .mobile-quick-link:hover,
 	:global(.dark) .mobile-quick-link:focus-visible,
 	:global(.dark) .mobile-quick-link[aria-current='page'] {
 		background: var(--layout-menu-dark-hover);
+	}
+
+	/* Skriv är mobilens direktingång: den enda snabblänken med kant och ton,
+	   så den syns först utan att bli en skrikig knapp. */
+	.mobile-quick-link-write,
+	:global(.dark) .mobile-quick-link-write {
+		flex-shrink: 0;
+		padding: 0 0.85rem;
+		border: 1px solid rgba(var(--primary-dark-rgb), 0.5);
+		background: var(--primary-dark-soft);
+		color: var(--primary-dark);
+		font-weight: 680;
+	}
+
+	.mobile-quick-link-write:hover,
+	.mobile-quick-link-write:focus-visible,
+	.mobile-quick-link-write[aria-current='page'],
+	:global(.dark) .mobile-quick-link-write:hover,
+	:global(.dark) .mobile-quick-link-write:focus-visible,
+	:global(.dark) .mobile-quick-link-write[aria-current='page'] {
+		border-color: rgba(var(--primary-dark-rgb), 0.8);
+		background: var(--primary-dark-soft-hover);
+		color: var(--primary-dark);
+	}
+
+	.mobile-menu-link-write {
+		color: var(--primary-dark);
+		font-weight: 650;
+	}
+
+	/* Strecket skiljer huvudvägarna från det sekundära utan ett nytt element. */
+	.mobile-menu-link.mobile-menu-group-start {
+		margin-top: 0.45rem;
+		padding-top: 0.6rem;
+		border-top: 1px solid var(--layout-menu-dark-border);
 	}
 
 	:global(.dark) .mobile-menu-button,
@@ -1729,7 +1816,10 @@
 		}
 
 		.mobile-menu-panel {
-			max-height: calc(100svh - 3.4rem);
+			/* Mobilheadern är ~61 px hög, så 3.4rem lät panelens nederkant hamna
+			   utanför skärmen. Cookiebannerns höjd dras av, så att Logga in och
+			   Registrera inte hamnar bakom den innan besökaren har valt. */
+			max-height: calc(100svh - 4rem - var(--cookie-banner-space, 0px));
 			padding: 0.65rem 0.75rem !important;
 		}
 
@@ -1767,12 +1857,6 @@
 	}
 
 	@media (max-width: 640px) {
-		/* På telefon får bara Chatta plats bland gästens snabblänkar. Den ska
-		 * nås med ett tryck, precis som i desktopnavigeringen. */
-		.mobile-quick-nav:not(.mobile-quick-nav-signed) .mobile-quick-link:not(.mobile-quick-link-chat) {
-			display: none;
-		}
-
 		.site-header-inner {
 			padding: 0.4rem 0.65rem;
 			gap: 0.4rem;
@@ -1784,10 +1868,9 @@
 	}
 
 	@media (max-width: 370px) {
-		/* Här räcker bredden inte till både Översikt och Chatta utan att
-		 * ordmärket klipps. Översikt leder till samma sida som ordmärket, så
-		 * bara Chatta står kvar. */
-		.mobile-quick-link:not(.mobile-quick-link-chat) {
+		/* Här räcker bredden inte till både Mitt Hem och Skriv utan att
+		 * ordmärket klipps. Skriv står kvar, Mitt Hem finns först i menyn. */
+		.mobile-quick-link-home {
 			display: none;
 		}
 
