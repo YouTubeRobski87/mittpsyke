@@ -79,7 +79,6 @@
 
 		const tickColor = readCssColor('--muted-foreground', '#888');
 		const gridColor = readCssColor('--border', 'rgba(0,0,0,0.07)');
-		const isDark = document.documentElement.classList.contains('dark');
 
 		const context = canvasEl.getContext('2d');
 		if (!context) return;
@@ -115,7 +114,7 @@
 						pointHoverRadius: 7,
 						// Punkter färgade efter humörnivå
 						pointBackgroundColor: (ctx: any) => moodColor(ctx.parsed?.y ?? 5),
-						pointBorderColor: isDark ? '#1e2428' : '#ffffff',
+						pointBorderColor: '#1e2428',
 						pointBorderWidth: 2,
 						pointHoverBorderWidth: 2.5
 					}
@@ -128,11 +127,11 @@
 				plugins: {
 					legend: { display: false },
 					tooltip: {
-						backgroundColor: isDark ? '#1e2428' : '#ffffff',
-						borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+						backgroundColor: '#1e2428',
+						borderColor: 'rgba(255,255,255,0.1)',
 						borderWidth: 1,
-						titleColor: isDark ? '#f0f0f0' : '#1a1a1a',
-						bodyColor: isDark ? '#ccc' : '#444',
+						titleColor: '#f0f0f0',
+						bodyColor: '#ccc',
 						padding: 10,
 						cornerRadius: 10,
 						callbacks: {

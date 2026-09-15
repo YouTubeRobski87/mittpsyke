@@ -454,6 +454,11 @@
 		position: relative;
 		aspect-ratio: 16 / 9;
 		min-height: 220px;
+		/* Som grid-objekt sträcks scenen inte ut när den har aspect-ratio: bredden
+		   räknades ur min-höjden (180 px × 16/9 = 320 px på mobil), och scenen
+		   stack ut ur sin 299 px breda spalt på 320 px skärmar. Med en bestämd
+		   bredd blir det i stället höjden som får ge efter för min-height. */
+		width: 100%;
 		overflow: hidden;
 		border: 1px solid rgb(92 72 47 / 0.26);
 		border-radius: 1.25rem;

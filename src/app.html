@@ -1,5 +1,7 @@
 <!doctype html>
-<html lang="sv">
+<!-- MittPsyke har bara mörkt tema. Klassen och color-scheme står statiskt här,
+     så att sidan är mörk redan innan CSS och JS har laddats. -->
+<html lang="sv" class="dark" style="color-scheme: dark; background-color: #11151d">
   <head>
     <meta charset="utf-8" />
     <!-- interactive-widget=resizes-content: utan den krymper Android Chrome bara
@@ -13,7 +15,8 @@
       name="viewport"
       content="width=device-width, initial-scale=1, interactive-widget=resizes-content"
     />
-    <meta name="theme-color" content="#0f172a" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#11151d" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="MittPsyke" />
     <meta name="ahrefs-site-verification" content="946a8ac0fc228ee9187b2fa72e3acf033de144bf52409cc3cf6ca5c2c65e7aea" />
@@ -22,13 +25,21 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="%sveltekit.assets%/site.webmanifest" />
     <link rel="stylesheet" href="%sveltekit.assets%/assets/recursive/fonts.css" />
+    <!-- Mörk grund före första målningen: gäller även medan app.css laddas och
+         på sidor som ännu inte hydrerats. Samma färg som --background i app.css. -->
+    <style>
+      html,
+      body {
+        background-color: #11151d;
+        color: #f2f2f2;
+        color-scheme: dark;
+      }
+    </style>
     <script>
-      // Flash prevention: apply theme before first paint
+      // Användarens accentfärg (Personalisera portalen) före första målningen.
+      // Ljust/mörkt väljs inte här: MittPsyke är alltid mörkt.
       (function() {
         try {
-          var mode = localStorage.getItem('theme-mode');
-          var isDark = mode === 'dark';
-          document.documentElement.classList.toggle('dark', isDark);
           var theme = localStorage.getItem('mittpsyke:theme');
           if (theme) {
             var themes = {

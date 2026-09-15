@@ -16,7 +16,6 @@
 		trackPageView,
 		disableAnalytics
 	} from '$lib/analytics';
-	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
@@ -898,9 +897,6 @@
 						</div>
 					{/if}
 
-					<div class="hidden md:block">
-						<ThemeToggle />
-					</div>
 
 				<button
 					type="button"
@@ -993,9 +989,6 @@
 					<a href="/login" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Logga in</a>
 					<a href="/register" class="mobile-menu-link text-sm opacity-85 hover:opacity-100 hover:underline transition-opacity" onclick={() => (mobileMenuOpen = false)}>Registrera</a>
 				{/if}
-				<div class="mobile-menu-theme md:hidden">
-					<ThemeToggle />
-				</div>
 				<p class="mobile-menu-help pt-1 text-xs opacity-60">Vid akut fara: ring 112</p>
 			</div>
 		{/if}
@@ -1498,10 +1491,6 @@
 	:global(.dark) .mobile-menu-button,
 	:global(.dark) .mobile-menu-panel {
 		border-color: var(--layout-menu-dark-border);
-	}
-
-	.mobile-menu-theme {
-		margin-top: 0.45rem;
 	}
 
 	.brand-link {

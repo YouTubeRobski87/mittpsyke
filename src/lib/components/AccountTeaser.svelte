@@ -62,11 +62,11 @@
 		gap: 1.1rem;
 		padding: clamp(1.1rem, 2vw, 1.45rem);
 		border-radius: 8px;
-		border: 1px solid rgba(81, 105, 80, 0.16);
-		background:
-			linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(248, 244, 232, 0.68)),
-			rgba(255, 255, 255, 0.72);
-		box-shadow: 0 16px 38px rgba(69, 83, 61, 0.08);
+		/* Mörka ytor ur appens tokens. Kortet var byggt för ljust läge och blev
+		   nästan oläsligt när texten följde det permanenta mörka temat. */
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface) / 0.9);
+		box-shadow: 0 16px 38px rgba(0, 0, 0, 0.28);
 		backdrop-filter: blur(18px);
 		color: hsl(var(--foreground));
 	}
@@ -75,11 +75,8 @@
 		gap: 0.85rem;
 		max-width: min(28rem, 100%);
 		padding: clamp(0.95rem, 2vw, 1.2rem);
-		border-color: rgba(85, 124, 104, 0.18);
-		background:
-			linear-gradient(135deg, rgba(255, 255, 255, 0.74), rgba(250, 246, 236, 0.58)),
-			rgba(255, 255, 255, 0.62);
-		box-shadow: 0 18px 44px rgba(54, 72, 52, 0.14);
+		background: hsl(var(--surface) / 0.94);
+		box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
 	}
 
 	.teaser-copy {
@@ -151,9 +148,9 @@
 	}
 
 	.secondary-action {
-		border: 1px solid rgba(85, 124, 104, 0.2);
-		background: rgba(255, 255, 255, 0.52);
-		color: #405b4e;
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-soft));
+		color: hsl(var(--foreground));
 	}
 
 	.open-links {
@@ -168,8 +165,8 @@
 		min-height: 4.9rem;
 		padding: 0.8rem;
 		border-radius: 8px;
-		border: 1px solid rgba(85, 124, 104, 0.13);
-		background: rgba(255, 255, 255, 0.48);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-soft) / 0.7);
 		color: inherit;
 		text-decoration: none;
 	}

@@ -93,6 +93,10 @@
 	}
 
 	a {
+		/* På pekskärmar får länken 44 px minsta höjd (app.css). Texten centreras
+		   i den ytan, annars hamnade "Hem" ~12 px över resten av raden. */
+		display: inline-flex;
+		align-items: center;
 		color: inherit;
 		text-decoration: underline;
 		text-underline-offset: 0.18em;

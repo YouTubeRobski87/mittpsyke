@@ -1598,8 +1598,10 @@
 		border-color: hsl(var(--error-foreground) / 0.35);
 	}
 
+	/* Egen mörkröd yta: --error-foreground är en ljus textfärg i det mörka
+	   temat och gav vit text på ljusrosa (ca 1,6:1). Här ~6:1. */
 	.danger-btn {
-		background: hsl(var(--error-foreground));
+		background: #b3261e;
 		color: #fff;
 		border-color: transparent;
 		margin-top: 0.8rem;

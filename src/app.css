@@ -8,7 +8,9 @@
 }
 
 :root {
-	color-scheme: light;
+	/* MittPsyke har bara mörkt tema. <html> bär också klassen dark (app.html), så
+	   komponenternas .dark-regler och Tailwinds dark:-variant gäller alltid. */
+	color-scheme: dark;
 	/* Yta som den fixerade cookiebannern upptar längst ned. Sätts av
 	 * CookieBanner medan den visas och tas bort när den stängs, så sidan får
 	 * tillbaka utrymmet. 0 när ingen banner finns. */
@@ -22,23 +24,20 @@
 	--font-heading: 'Recursive H', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-body: 'Recursive T', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	--font-main: var(--font-body);
-	--background: 48 38% 98%;
-	--surface: 0 0% 100%;
-	--surface-muted: 38 30% 95%;
-	--surface-soft: 210 32% 96%;
-	--foreground: 240 10% 4%;
+	--background: 222 26% 9%;
+	--surface: 222 18% 13%;
+	--surface-muted: 222 14% 16%;
+	--surface-soft: 217 26% 16%;
+	--foreground: 0 0% 95%;
 	/* Motparten till --muted-foreground. Alias till --surface-muted så att dova
 	   ytor och dov text hämtar sin färg ur samma palett. */
 	--muted: var(--surface-muted);
-	/* 44% i stället för 46%: på de tonade ytorna (--surface-soft, --surface-muted)
-	   gav 46% 4,40–4,43:1, alltså strax under WCAG AA för brödtext. 44% ger
-	   minst 4,73:1 mot samtliga ljusa ytor. Mörkt läge har ett eget värde. */
-	--muted-foreground: 240 4% 44%;
-	--border: 240 6% 90%;
-	--success-surface: 211 62% 95%;
-	--success-foreground: 214 47% 32%;
-	--error-surface: 0 70% 96%;
-	--error-foreground: 0 58% 40%;
+	--muted-foreground: 240 5% 65%;
+	--border: 220 10% 24%;
+	--success-surface: 214 34% 20%;
+	--success-foreground: 203 88% 80%;
+	--error-surface: 0 26% 19%;
+	--error-foreground: 0 60% 83%;
 	--primary: #436e8f;
 	--primary-rgb: 67, 110, 143;
 	--focus-ring: rgba(var(--primary-rgb), 0.35);
@@ -53,11 +52,11 @@
 	--shadow-color: rgba(0, 0, 0, 0.06);
 	--border-subtle: rgba(0, 0, 0, 0.08);
 	--border-subtle-inverted: rgba(255, 255, 255, 0.1);
-	--dashboard-bg-accent: rgba(var(--primary-rgb), 0.1);
-	--dashboard-bg-start: hsl(var(--background));
-	--dashboard-bg-end: hsl(var(--surface-soft));
-	--dashboard-bg-overlay-start: hsl(var(--background) / 0.76);
-	--dashboard-bg-overlay-end: hsl(var(--surface-soft) / 0.86);
+	--dashboard-bg-accent: rgba(30, 64, 175, 0.1);
+	--dashboard-bg-start: rgba(15, 23, 42, 0.96);
+	--dashboard-bg-end: rgba(8, 13, 23, 0.98);
+	--dashboard-bg-overlay-start: rgba(8, 13, 23, 0.66);
+	--dashboard-bg-overlay-end: rgba(8, 13, 23, 0.88);
 	--chat-input-bg-dark: #0f0f0f;
 	--color-bg: hsl(var(--background));
 	--color-bg-soft: hsl(var(--surface-soft));
@@ -75,11 +74,11 @@
 	--color-warning: #b45309;
 	--color-focus: var(--focus-ring);
 	--color-dashboard-bg: var(--dashboard-bg-end);
-	--color-dashboard-surface: hsl(var(--surface) / 0.78);
-	--color-dashboard-surface-strong: hsl(var(--surface));
-	--color-dashboard-border: color-mix(in srgb, hsl(var(--border)) 72%, var(--primary) 28%);
-	--color-dashboard-text: hsl(var(--foreground));
-	--color-dashboard-text-muted: hsl(var(--muted-foreground));
+	--color-dashboard-surface: rgba(15, 23, 42, 0.72);
+	--color-dashboard-surface-strong: rgba(15, 23, 42, 0.92);
+	--color-dashboard-border: rgba(96, 165, 250, 0.28);
+	--color-dashboard-text: #f8fafc;
+	--color-dashboard-text-muted: #cbd5e1;
 	--layout-maintenance-bg: #0f172a;
 	--layout-maintenance-surface: rgba(255, 255, 255, 0.03);
 	--layout-maintenance-border: rgba(255, 255, 255, 0.06);
@@ -119,32 +118,6 @@
 	--radius-card: 14px;
 	--radius-input: 12px;
 	--radius-pill: 999px;
-}
-
-.dark {
-	color-scheme: dark;
-	--background: 222 26% 9%;
-	--surface: 222 18% 13%;
-	--surface-muted: 222 14% 16%;
-	--surface-soft: 217 26% 16%;
-	--foreground: 0 0% 95%;
-	--muted: var(--surface-muted);
-	--muted-foreground: 240 5% 65%;
-	--border: 220 10% 24%;
-	--success-surface: 214 34% 20%;
-	--success-foreground: 203 88% 80%;
-	--error-surface: 0 26% 19%;
-	--error-foreground: 0 60% 83%;
-	--dashboard-bg-accent: rgba(30, 64, 175, 0.1);
-	--dashboard-bg-start: rgba(15, 23, 42, 0.96);
-	--dashboard-bg-end: rgba(8, 13, 23, 0.98);
-	--dashboard-bg-overlay-start: rgba(8, 13, 23, 0.66);
-	--dashboard-bg-overlay-end: rgba(8, 13, 23, 0.88);
-	--color-dashboard-surface: rgba(15, 23, 42, 0.72);
-	--color-dashboard-surface-strong: rgba(15, 23, 42, 0.92);
-	--color-dashboard-border: rgba(96, 165, 250, 0.28);
-	--color-dashboard-text: #f8fafc;
-	--color-dashboard-text-muted: #cbd5e1;
 }
 
 * {
@@ -227,6 +200,25 @@ input,
 textarea,
 select {
 	font: inherit;
+}
+
+/* Webbläsarens autofyll målar annars fältet ljust (Chrome) eller gult, vilket
+   blir en vit blixt i det mörka temat. Inset-skuggan täcker den färgen. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+	-webkit-text-fill-color: hsl(var(--foreground));
+	caret-color: hsl(var(--foreground));
+	box-shadow: 0 0 0 1000px hsl(var(--surface)) inset;
+	transition: background-color 9999s ease-out 0s;
+}
+
+/* Rullgardinsmenyernas alternativ ärver inte alltid color-scheme i Windows. */
+select option {
+	background-color: hsl(var(--surface));
+	color: hsl(var(--foreground));
 }
 
 a:focus-visible,

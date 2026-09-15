@@ -26,15 +26,17 @@ function pngSize(relativePath: string) {
 }
 
 describe('PWA-metadata', () => {
-	it('har ett installerbart manifest med befintliga designfärger', () => {
+	it('har ett installerbart manifest i det mörka temats färger', () => {
 		expect(manifest).toMatchObject({
 			name: 'MittPsyke',
 			short_name: 'MittPsyke',
 			start_url: '/',
 			scope: '/',
 			display: 'standalone',
-			background_color: '#fafafa',
-			theme_color: '#0f172a'
+			// Samma mörka grund som app.html, så startskärmen i installerat läge
+			// aldrig blinkar vitt.
+			background_color: '#11151d',
+			theme_color: '#11151d'
 		});
 	});
 
@@ -53,7 +55,7 @@ describe('PWA-metadata', () => {
 
 	it('länkar manifest, tema och iOS-metadata globalt', () => {
 		expect(appHtml).toContain('<link rel="manifest" href="%sveltekit.assets%/site.webmanifest" />');
-		expect(appHtml).toContain('<meta name="theme-color" content="#0f172a" />');
+		expect(appHtml).toContain('<meta name="theme-color" content="#11151d" />');
 		expect(appHtml).toContain('<meta name="apple-mobile-web-app-capable" content="yes" />');
 		expect(appHtml).toContain('<meta name="apple-mobile-web-app-title" content="MittPsyke" />');
 		expect(appHtml).toContain('<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />');
