@@ -59,7 +59,7 @@ describe('Framstegsscenen runt stuglänken', () => {
 			expect(route.slice(index, index + 120), layer).toContain('aria-hidden="true"');
 		}
 		// Den synliga scenbilden beskriver motivet men är inte en egen länk.
-		expect(route).toContain("'Du sitter vid sjön tillsammans med en björn, med stugan och lägerelden i närheten.'");
+		expect(route).toContain("'Du sitter vid sjön tillsammans med följeslagaren Balder, med stugan och lägerelden i närheten.'");
 		expect(route).toContain("'Du sitter vid sjön, med stugan och lägerelden i närheten.'");
 	});
 

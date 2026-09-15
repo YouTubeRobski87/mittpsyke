@@ -49,11 +49,11 @@
 				</a>
 			</div>
 
-			<aside class="companion-note" aria-label="Din plats">
+			<aside class="companion-note" aria-label="Balder, din följeslagare">
 				<CompanionAvatar size="xl" decorative />
 				<div>
-					<p>Din plats finns kvar.</p>
-					<span>Du kan gå vidare i din takt.</span>
+					<p>Balder, din följeslagare.</p>
+					<span>En lugn närvaro i Mitt Hem och Kvällstugan, utan krav på prestation.</span>
 				</div>
 			</aside>
 		</section>
@@ -86,7 +86,7 @@
 						<span class="place-icon"><House size={20} aria-hidden="true" /></span>
 						<span>
 							<strong>Mitt Hem</strong>
-							<small>Din levande plats och följeslagaren.</small>
+							<small>Din plats tillsammans med Balder.</small>
 						</span>
 						<ArrowRight size={20} aria-hidden="true" />
 					</span>

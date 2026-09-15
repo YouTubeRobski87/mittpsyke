@@ -63,7 +63,7 @@ describe('Hero-scenen (scene)', () => {
 		expect(body).toContain('/images/avatars/presets/bear-sitting-back.png');
 		// Lagret är dekor ovanpå scenen - bakgrundsbildens alt bär beskrivningen.
 		expect(body).toMatch(/<img[^>]*class="cabin-proof-bear[^"]*"[^>]*alt=""/);
-		expect(body).toContain('en person och en björn sitter tillsammans vid en lägereld');
+		expect(body).toContain('en person och följeslagaren Balder sitter tillsammans vid en lägereld');
 		expect(body).toContain('blickar ut över sjön');
 		expect(body).toContain('solen står lågt');
 	});

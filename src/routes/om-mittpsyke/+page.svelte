@@ -259,7 +259,10 @@
 				</p>
 				<p>
 					Med konto samlas det du väljer att spara i Mitt Hem. Där finns bland annat dagboken,
-					Kvällstugan, Följeslagaren och möjligheten att se mönster över tid. Målet är inte att
+					Kvällstugan och möjligheten att se mönster över tid. Balder är MittPsykes enda följeslagare.
+					Han finns med i Mitt Hem och Kvällstugan som en lugn närvaro som följer tiden, årstiden
+					och platsen tillsammans med dig. Han är ingen mätare på hur du mår och inget spel att
+					klara av. Du behöver inte prestera något för honom. Målet med MittPsyke är inte att
 					ersätta professionell behandling, utan att göra det lättare att reflektera, sortera tankar
 					och vid behov hitta vidare till rätt resurser.
 				</p>

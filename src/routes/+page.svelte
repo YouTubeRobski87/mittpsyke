@@ -166,7 +166,7 @@
 					 scroll-padding-top på html i app.css. -->
 				<h2 id="map-title" tabindex="-1">Så ser platsen ut</h2>
 				<p>
-					Tre ställen, inte fler. Du behöver inte lära dig något system: det handlar om att skriva,
+					Här finns Mitt Hem, Kvällstugan och Balder. Du behöver inte lära dig något system: det handlar om att skriva,
 					svara kort när du orkar, och hitta tillbaka till det du lämnat.
 				</p>
 			</div>
@@ -188,10 +188,10 @@
 					</p>
 				</li>
 				<li>
-					<h3>Följeslagaren</h3>
+					<h3>Balder, vår enda följeslagare</h3>
 					<p>
-						Björnen Balder, ungefär som en profilbild – fast den syns i platsen när du loggar in.
-						Den ber dig aldrig om något, och står kvar som du lämnade den.
+						Balder är en lugn följeslagare som finns med i Mitt Hem och Kvällstugan.
+						Ingen streak, ingen prestation — bara en närvaro som följer platsen över tid.
 					</p>
 				</li>
 			</ul>

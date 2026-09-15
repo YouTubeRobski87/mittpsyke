@@ -13,7 +13,7 @@ describe('MittPsykes produktberättelse och dataflöden', () => {
 		expect(aboutPage).toContain('skriva, spara det man vill och se vad som återkommer över tid');
 		expect(aboutPage).toContain('Mitt Hem');
 		expect(aboutPage).toContain('Kvällstugan');
-		expect(aboutPage).toContain('Följeslagaren');
+		expect(aboutPage).toContain('Balder är MittPsykes enda följeslagare.');
 		expect(aboutPage).not.toContain('I centrum finns ett AI-baserat samtalsstöd');
 	});
 

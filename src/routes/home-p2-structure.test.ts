@@ -75,9 +75,9 @@ describe('Startsidans P2-struktur', () => {
 
 	it('har platskartan efter stegen och chatten som en fjärde, kort rad utanför ställena', () => {
 		const map = sectionOf('map-title');
-		expect(map).toContain('Tre ställen, inte fler.');
+		expect(map).toContain('Här finns Mitt Hem, Kvällstugan och Balder.');
 		expect([...map.matchAll(/<li>/g)]).toHaveLength(3);
-		for (const place of ['Mitt Hem', 'Kvällstugan', 'Följeslagaren']) {
+		for (const place of ['Mitt Hem', 'Kvällstugan', 'Balder, vår enda följeslagare']) {
 			expect(map).toContain(`<h3>${place}</h3>`);
 		}
 		// Kortvarianten av Kvällsincheckningens copy.
@@ -85,7 +85,9 @@ describe('Startsidans P2-struktur', () => {
 			'Här gör du Kvällsincheckningen: stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.'
 		);
 		// Det finns inget val av följeslagare längre.
-		expect(map).toContain('Björnen Balder');
+		expect(map.replace(/\s+/g, ' ')).toContain(
+			'Balder är en lugn följeslagare som finns med i Mitt Hem och Kvällstugan. Ingen streak, ingen prestation — bara en närvaro som följer platsen över tid.'
+		);
 		expect(map).not.toContain('Ett djur du väljer själv');
 		expect(body).not.toContain('Inget måste besvaras');
 		const tool = map.slice(map.indexOf('place-map-tool'));

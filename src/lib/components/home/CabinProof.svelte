@@ -48,7 +48,7 @@
 			srcset={PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET}
 			sizes="(max-width: 759px) calc(100vw - 2.5rem), (min-width: 900px) 60vw, 520px"
 			src={PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_FALLBACK}
-			alt="Platsen utifrån i solnedgången: en person och en björn sitter tillsammans vid en lägereld på stranden och blickar ut över sjön, stugan lyser i skogsbrynet och solen står lågt över bergen."
+			alt="Platsen utifrån i solnedgången: en person och följeslagaren Balder sitter tillsammans vid en lägereld på stranden och blickar ut över sjön, stugan lyser i skogsbrynet och solen står lågt över bergen."
 			width="1672"
 			height="941"
 			loading={priority ? 'eager' : 'lazy'}

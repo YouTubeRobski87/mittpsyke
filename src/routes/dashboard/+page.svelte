@@ -56,7 +56,7 @@
 
   // Den rena scenvarianten behåller det nya stugperspektivet utan det djur som
   // fanns inbakat i originalet. CompanionPose är fortfarande det enda lagret
-  // som visar användarens valda följeslagare.
+  // som visar följeslagaren Balder.
   const DASHBOARD_HERO_IMAGE = '/images/scenes/dashboard-cabin-view-clean.webp';
   const DASHBOARD_HERO_SRCSET = [
     '/images/scenes/dashboard-cabin-view-clean-800.webp 800w',
@@ -286,7 +286,7 @@
             <House size={32} aria-hidden="true" />
             <h1 id="dashboard-title">Mitt Hem</h1>
           </div>
-          <p>Din personliga plats för reflektion, närvaro och utveckling.</p>
+          <p>Balder är din följeslagare i MittPsyke. Han finns med i Mitt Hem och Kvällstugan och påverkas inte av hur du mår. Det finns ingen streak och inget att prestera – han är bara en lugn närvaro som följer tiden, årstiden och platsen tillsammans med dig.</p>
         </div>
 
         <div class="topbar-actions" aria-label="Kontroller">
@@ -626,10 +626,18 @@
 
   .topbar {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
     gap: 2rem;
     padding-bottom: 0.1rem;
+  }
+
+  /* Textspalten får aldrig pressas smal av kontrollerna. Ryms de inte bredvid
+     varandra hamnar kontrollerna på en egen rad under undertexten. */
+  .topbar > :first-child {
+    flex: 1 1 17rem;
+    min-width: 0;
   }
 
   .topbar h1 {
@@ -651,9 +659,12 @@
   }
 
   .topbar p {
+    /* Undertexten presenterar Balder i tre meningar; hålls till läsbar radlängd. */
+    max-width: 62ch;
     margin: 0.45rem 0 0;
     color: var(--mp-text-dim);
     font-size: 1.05rem;
+    line-height: 1.55;
   }
 
   .topbar-actions {

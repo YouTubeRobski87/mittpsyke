@@ -1147,7 +1147,7 @@
 							sizes="(max-width: 640px) calc(100vw - 28px), (max-width: 980px) calc(100vw - 44px), (max-width: 1216px) calc(100vw - 96px), 1120px"
 							src={visibleSceneSources.fallback}
 							alt={isAnonymous
-								? 'Du sitter vid sjön tillsammans med en björn, med stugan och lägerelden i närheten.'
+								? 'Du sitter vid sjön tillsammans med följeslagaren Balder, med stugan och lägerelden i närheten.'
 								: 'Du sitter vid sjön, med stugan och lägerelden i närheten.'}
 							width="1672"
 							height="941"
@@ -1205,7 +1205,7 @@
 				<h2>Din plats idag</h2>
 				<p>
 					{isAnonymous
-						? 'Här vid stranden finns stugan, lägerelden och björnen som en stilla del av platsen.'
+						? 'Här vid stranden finns stugan, lägerelden och följeslagaren Balder, en lugn närvaro som följer platsen över tid.'
 						: `Du och ${sceneCompanionName} sitter stilla vid stranden och blickar ut över sjön.`}
 				</p>
 				<p class="companion-reflection">{worldReturnCopy ?? livingWorldReflectionCopy}</p>

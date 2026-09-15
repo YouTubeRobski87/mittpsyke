@@ -375,9 +375,9 @@
 			<SleepModePanel bind:stage={sleepStage} />
 
 			<section class="evening-reassurance" aria-labelledby="evening-reassurance-title">
-				<h2 id="evening-reassurance-title">Du är på en trygg plats</h2>
-				<p>Här inne får du stanna upp, andas och lyssna in hur du har det just nu.</p>
-				<p>Det finns inget rätt eller fel – bara du och en stund av lugn.</p>
+				<h2 id="evening-reassurance-title">Balder, din följeslagare</h2>
+				<p>Balder är din följeslagare i MittPsyke. Han finns med i Mitt Hem och Kvällstugan och påverkas inte av hur du mår. Det finns ingen streak och inget att prestera – han är bara en lugn närvaro som följer tiden, årstiden och platsen tillsammans med dig.</p>
+				<p>Här får dagen landa i din egen takt.</p>
 			</section>
 		</div>
 
