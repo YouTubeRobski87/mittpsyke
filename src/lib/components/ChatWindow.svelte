@@ -2,7 +2,7 @@
 	import { browser, dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { Square, Volume2 } from 'lucide-svelte';
+	import { Bot, Square, Volume2 } from 'lucide-svelte';
 	import { containsCrisisSignal, containsThirdPartyRiskSignal } from '$lib/ai/safety';
 	import { SWEDISH_LOCALE, selectVoiceForLang, waitForVoiceForLang } from '$lib/ai/speech';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
@@ -901,6 +901,12 @@
 </script>
 
 <div class="chat-container flex flex-col h-[calc(100vh-175px)] max-w-2xl mx-auto">
+	<!-- Alltid synlig, i alla chattvyer: ingen ska kunna tro att svaren kommer
+	     från en människa. En rad, så den inte tar plats från samtalet. -->
+	<p class="ai-notice px-4" data-testid="chat-ai-notice">
+		<Bot size={14} aria-hidden="true" />
+		<span>Du chattar med en AI, inte en människa.</span>
+	</p>
 	<div class="chat-toolbar px-4 pb-1">
 		{#if historyNoticeVisible && messages.length > 0}
 			<span class="history-notice">{HISTORY_NOTICE}</span>
@@ -927,14 +933,17 @@
 	>
 		{#if messages.length === 0}
 			<div class="text-center mt-2">
-				<p class="text-sm opacity-60">Skriv något så börjar vi prata. Allt sker utan dömande.</p>
+				<p class="chat-empty-copy text-sm opacity-70">
+					AI-stödet kan hjälpa dig att resonera och sätta ord på det du tänker. Det ersätter inte vård
+					eller en människa att prata med.
+				</p>
 			</div>
 		{/if}
 
 		{#each messages as msg, i}
 			<div class="space-y-1">
 				{#if msg.role === 'assistant'}
-					<div class="text-xs opacity-55 px-1 text-left">✦ Mitt stöd</div>
+					<div class="assistant-label text-xs opacity-70 px-1 text-left">✦ AI-stöd</div>
 				{/if}
 
 				<div class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'}">
@@ -983,7 +992,7 @@
 		{#if sending}
 			<div class="flex justify-start" role="status" aria-live="polite" aria-label="Väntar på AI-svar">
 				<div class="bg-black/5 dark:bg-white/10 px-4 py-3 rounded-[var(--radius-card)] rounded-bl-md text-sm opacity-60">
-					Mitt stöd tar en stund och formulerar ett svar…
+					AI-stödet formulerar ett svar…
 				</div>
 			</div>
 		{/if}
@@ -1032,7 +1041,7 @@
 		{:else if !hasSensitiveDataConsent}
 			<div class="mb-3">
 				<ConsentGate
-					title="Innan du börjar chatta"
+					title="Innan du chattar med AI"
 					dataLabel="Meddelanden du väljer att skicka i chatten"
 					serviceLabel="MittPsyke och OpenAI för att skapa ett svar"
 					requireExplicitConfirmation
@@ -1305,6 +1314,30 @@
 		max-height: none;
 		min-width: 0;
 		overflow: hidden;
+	}
+
+	.ai-notice {
+		display: flex;
+		flex: 0 0 auto;
+		align-items: center;
+		gap: 0.35rem;
+		margin: 0;
+		padding-top: 0.15rem;
+		color: hsl(var(--foreground) / 0.82);
+		font-size: 0.75rem;
+		font-weight: 600;
+		line-height: 1.3;
+	}
+
+	.ai-notice :global(svg) {
+		flex: 0 0 auto;
+		opacity: 0.8;
+	}
+
+	.chat-empty-copy {
+		max-width: 34rem;
+		margin: 0 auto;
+		line-height: 1.55;
 	}
 
 	.chat-toolbar {
