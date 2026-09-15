@@ -31,6 +31,34 @@ describe('MittPsykes produktberättelse och dataflöden', () => {
 		expect(howPage).not.toContain('Anonymt läge och konto');
 	});
 
+	it('lägger kärnloopen först på Så fungerar MittPsyke och chatten sist bland delarna', () => {
+		const order = [
+			'<h3>Skriv.</h3>',
+			'<h3>Spara det du vill.</h3>',
+			'<h3>Kom tillbaka när du vill.</h3>',
+			'<h3>Se vad som återkommer.</h3>',
+			'<h3>Dagboken</h3>',
+			'<h3>Kvällstugan och Kvällsincheckningen</h3>',
+			'<h3>Balder, din följeslagare</h3>',
+			'<h3>Chatten – ett valfritt AI-verktyg</h3>',
+			'<h2 id="limits-title">Det här är MittPsyke inte</h2>'
+		].map((heading) => howPage.indexOf(heading));
+
+		expect(order.every((index) => index > -1)).toBe(true);
+		expect([...order].sort((a, b) => a - b)).toEqual(order);
+		// AI nämns inte före kärnloopen.
+		expect(howPage.indexOf('AI', howPage.indexOf('<main'))).toBeGreaterThan(order[3]);
+	});
+
+	it('beskriver Kvällstugan, Balder och chatten konkret och utan löften', () => {
+		const text = howPage.replace(/\s+/g, ' ');
+		expect(text).toContain('Där inne finns Kvällsincheckningen: fyra korta steg');
+		expect(text).toContain('Balder är MittPsykes enda följeslagare.');
+		expect(text).toContain('Han påverkas inte av hur du mår');
+		expect(text).toContain('Svaren skapas av AI, kan bli fel och ersätter inte vård eller en människa att prata med.');
+		expect(text).not.toMatch(/profilbild|avatar|Kvällslugn|Kvällsstugan|hjälper dig|må bättre|vad som påverkar dig/i);
+	});
+
 	it('beskriver inte den lokala dagboken som AI-driven i global metadata', () => {
 		expect(layout).toContain('självreflektion, dagbok och AI-baserat samtalsstöd');
 		expect(layout).toContain('dagbok, reflektion, mönster över tid och AI-chatt');

@@ -2,15 +2,21 @@
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { dataflowCopy } from '$lib/dataflow-copy';
+
+	// Sidan följer samma kärnloop som startsidan: skriv, spara det du vill, kom
+	// tillbaka, se vad som återkommer. Delarna förklaras först efter loopen, och
+	// chatten sist, eftersom den är ett valfritt verktyg och inte produkten.
+	// Dataflödena läses ur $lib/dataflow-copy så att sidan aldrig säger något
+	// annat än integritetspolicyn.
 </script>
 
 <SEO canonical="https://mittpsyke.se/sa-fungerar-mittpsyke" />
 
 <svelte:head>
-	<title>Så fungerar MittPsyke | Skrivande, reflektion och AI-stöd</title>
+	<title>Så fungerar MittPsyke | Skriv och se vad som återkommer</title>
 	<meta
 		name="description"
-		content="Läs hur lokalt skrivande, AI-chatt, sparande och mönster över tid fungerar i MittPsyke och vad tjänsten inte ersätter."
+		content="Skriv, spara det du vill, kom tillbaka när du vill och se vad som återkommer. Om dagboken, Kvällstugan, följeslagaren Balder och den valfria AI-chatten."
 	/>
 </svelte:head>
 
@@ -18,95 +24,109 @@
 	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Så fungerar MittPsyke' }]} />
 
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Så fungerar MittPsyke</h1>
-	<p class="opacity-80 leading-relaxed mb-4">
-		MittPsyke är en lugn plats för att skriva av sig, sortera tankar och reflektera i
-		egen takt. Du kan börja enkelt, utan att behöva veta exakt vad du vill säga.
+	<p class="how-lead">
+		MittPsyke bygger på dina egna ord över tid. Du skriver, sparar det du vill och kommer tillbaka
+		när det passar – utan prestation och utan bedömning.
 	</p>
 
-	<section class="how-quick" aria-label="Kort sammanfattning">
-		<h2 class="text-lg font-semibold mt-0 mb-2">Kort sammanfattning</h2>
-		<ul>
-			<li>MittPsyke är ett digitalt stöd för att skriva av sig och reflektera i lugn takt.</li>
-			<li>Du kan skriva lokalt utan konto eller välja att chatta med AI utan konto.</li>
-			<li>Konto används om du vill spara historik, dagbok eller måendemönster över tid.</li>
-			<li>Tjänsten är inte vård, diagnos, behandling, terapi eller akuthjälp.</li>
-		</ul>
+	<section aria-labelledby="loop-title">
+		<h2 id="loop-title">Fyra steg</h2>
+		<ol class="how-loop" role="list">
+			<li>
+				<h3>Skriv.</h3>
+				<p>Några ord eller en hel sida. Det finns inget rätt sätt.</p>
+			</li>
+			<li>
+				<h3>Spara det du vill.</h3>
+				<p>Utan konto stannar texten i din webbläsare. Med konto sparas bara det du väljer att spara.</p>
+			</li>
+			<li>
+				<h3>Kom tillbaka när du vill.</h3>
+				<p>Ingenting börjar om för att det gått en tid, och det finns ingen streak att hålla.</p>
+			</li>
+			<li>
+				<h3>Se vad som återkommer.</h3>
+				<p>
+					I Framsteg sammanställs dina egna ord och humörvärden över tid. Ett tema visas först när det
+					har återkommit minst 3 gånger under minst 2 olika veckor.
+				</p>
+			</li>
+		</ol>
 	</section>
 
-	<h2 class="text-lg font-semibold mt-8 mb-2">Hur det fungerar steg för steg</h2>
-	<ol class="opacity-80 leading-relaxed mb-3 list-decimal pl-6 space-y-2">
-		<li>Du väljer om du vill skriva lokalt, chatta med AI, läsa guider eller göra övningar.</li>
-		<li>AI-stödet kan hjälpa till med varsamma frågor, spegling av text och mer struktur.</li>
-		<li>Du styr själv takt, innehåll och hur mycket du vill dela.</li>
-		<li>Du kan fortsätta utan konto eller skapa konto om du vill spara och komma tillbaka senare.</li>
-	</ol>
+	<section aria-labelledby="parts-title">
+		<h2 id="parts-title">Delarna</h2>
 
-	<h2 class="text-lg font-semibold mt-8 mb-2">Hur AI används</h2>
-	<p class="opacity-80 leading-relaxed mb-3">
-		AI används för textbaserat reflektionsstöd. Det kan hjälpa dig att formulera tankar,
-		sortera det som känns rörigt och ställa lugna följdfrågor när du kör fast.
-	</p>
-	<p class="opacity-80 leading-relaxed mb-3">
-		AI kan också ha fel, missa saker eller svara ofullständigt. Svaren ska därför inte
-		ses som professionella råd, diagnos eller behandlingsplan. De är stöd för reflektion,
-		inte vård.
-	</p>
+		<div class="how-part">
+			<h3>Dagboken</h3>
+			<p>
+				Här skriver du, kort eller långt. {dataflowCopy.anonymousDiary.short} Med konto sparas ett
+				inlägg först när du väljer att spara det. {dataflowCopy.savedDiary.storage}
+			</p>
+		</div>
 
-	<h2 class="text-lg font-semibold mt-8 mb-2">Utan konto: lokalt skrivande och AI-chatt</h2>
-	<p class="opacity-80 leading-relaxed mb-3">
-		<strong>Lokalt skrivande:</strong> {dataflowCopy.anonymousDiary.short}
-	</p>
-	<p class="opacity-80 leading-relaxed mb-3">
-		<strong>AI-chatt utan konto:</strong> {dataflowCopy.guestChat.aiTransfer}
-		{dataflowCopy.guestChat.retention}
-	</p>
-	<p class="opacity-80 leading-relaxed mb-3">
-		Med konto kan du spara anteckningar, dagbok, historik och återvända till ditt eget
-		material över tid. Läs mer om hur uppgifter hanteras i
-		<a href="/integritet" class="underline hover:no-underline">integritetspolicyn</a>.
-	</p>
+		<div class="how-part">
+			<h3>Kvällstugan och Kvällsincheckningen</h3>
+			<p>
+				Kvällstugan är platsen där dagen får landa. Där inne finns Kvällsincheckningen: fyra korta
+				steg där du väljer hur kvällen känns, kan skriva vad som tar mest plats och sedan bestämmer
+				vad du vill göra med det för ikväll. Till sist väljer du om du vill spara incheckningen eller
+				avsluta utan att spara. Kvällstugan nås från Mitt Hem när du är inloggad.
+			</p>
+		</div>
 
-	<h2 class="text-lg font-semibold mt-8 mb-2">Dagbok, måendelogg och historik</h2>
-	<p class="opacity-80 leading-relaxed mb-3">
-		Dagboken är din egen plats för reflektion. Du kan skriva kort eller långt, ofta eller
-		sällan, beroende på vad som passar dig just nu.
-	</p>
-	<p class="opacity-80 leading-relaxed mb-3">
-		Måendelogg och humörspårning kan hjälpa dig att se mönster över tid. Sparade
-		anteckningar och reflektionshistorik kan göra det lättare att märka vad som påverkar
-		dig, utan att du behöver dra stora slutsatser direkt.
-	</p>
+		<div class="how-part">
+			<h3>Balder, din följeslagare</h3>
+			<p>
+				Balder är MittPsykes enda följeslagare. Han finns med i Mitt Hem och Kvällstugan så att
+				platsen känns bekant när du kommer tillbaka. Han påverkas inte av hur du mår, och det finns
+				ingen streak och inget att prestera – han är bara en lugn närvaro som följer tiden, årstiden
+				och platsen tillsammans med dig.
+			</p>
+		</div>
 
-	<h2 class="text-lg font-semibold mt-8 mb-2">När MittPsyke inte räcker</h2>
-	<p class="opacity-80 leading-relaxed mb-3">
-		MittPsyke kan vara ett första steg, men ersätter inte rätt hjälp när sådan behövs.
-		Vid akut fara ska du ringa <a href="tel:112" class="underline hover:no-underline">112</a>.
-		För vårdråd kan du kontakta
-		<a href="https://www.1177.se" class="underline hover:no-underline">1177</a>.
-	</p>
-	<p class="opacity-80 leading-relaxed mb-3">
-		Vid stark oro, långvarigt dåligt mående eller behov av behandling bör du söka
-		professionell hjälp. Det går att använda MittPsyke som stöd i vardagen och samtidigt
-		ta kontakt med vården eller en annan trygg person.
-	</p>
+		<div class="how-part">
+			<h3>Chatten – ett valfritt AI-verktyg</h3>
+			<p>
+				Vill du hellre prata fram tankarna finns en chatt. Svaren skapas av AI, kan bli fel och
+				ersätter inte vård eller en människa att prata med. Du kan använda MittPsyke helt utan den.
+			</p>
+			<p>
+				{dataflowCopy.guestChat.aiTransfer} Utan konto: {dataflowCopy.guestChat.retention}
+			</p>
+		</div>
+	</section>
 
-	<h2 class="text-lg font-semibold mt-8 mb-2">Trygghet och integritet</h2>
-	<p class="opacity-80 leading-relaxed mb-3">
-		Du kan läsa mer om hur MittPsyke hanterar integritet, ansvar, cookies, villkor och
-		tillgänglighet på sidorna nedan.
-	</p>
-	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2">
-		<li><a href="/integritet" class="underline hover:no-underline">Integritet</a></li>
-		<li><a href="/ansvar" class="underline hover:no-underline">Ansvar</a></li>
-		<li><a href="/kontakt-och-villkor" class="underline hover:no-underline">Kontakt och villkor</a></li>
-		<li><a href="/cookies-och-leverantorer" class="underline hover:no-underline">Cookies och leverantörer</a></li>
-		<li><a href="/tillganglighet" class="underline hover:no-underline">Tillgänglighet</a></li>
-	</ul>
+	<section aria-labelledby="limits-title" class="how-limits">
+		<h2 id="limits-title">Det här är MittPsyke inte</h2>
+		<p>
+			MittPsyke är inte vård, diagnos, behandling eller akuthjälp. Vid akut fara, ring
+			<a href="tel:112">112</a>. För vårdråd, kontakta
+			<a href="https://www.1177.se" rel="noopener noreferrer">1177</a>. Fler stödlinjer finns på
+			<a href="https://stodlinjer.se" rel="noopener noreferrer">stodlinjer.se</a>.
+		</p>
+	</section>
+
+	<nav class="how-more" aria-label="Läs mer">
+		<h2>Läs mer</h2>
+		<ul role="list">
+			<li><a href="/integritet">Integritet</a></li>
+			<li><a href="/ansvar">Ansvar</a></li>
+			<li><a href="/kontakt-och-villkor">Kontakt och villkor</a></li>
+			<li><a href="/cookies-och-leverantorer">Cookies och leverantörer</a></li>
+			<li><a href="/tillganglighet">Tillgänglighet</a></li>
+		</ul>
+	</nav>
 </main>
 
 <style>
 	.how-content {
 		max-width: 720px;
+	}
+
+	.how-content section,
+	.how-more {
+		margin-top: 2.25rem;
 	}
 
 	.how-content p,
@@ -115,10 +135,12 @@
 		font-weight: 400;
 		line-height: 1.7;
 		letter-spacing: -0.005em;
+		overflow-wrap: break-word;
 	}
 
 	.how-content p {
-		margin-bottom: 1rem;
+		margin: 0 0 1rem;
+		opacity: 0.85;
 	}
 
 	.how-content h1 {
@@ -129,29 +151,97 @@
 	}
 
 	.how-content h2 {
+		margin: 0 0 0.75rem;
 		font-family: var(--font-heading);
+		font-size: 1.25rem;
 		font-weight: 700;
 		letter-spacing: -0.02em;
 		line-height: 1.15;
 	}
 
-	.how-quick {
-		margin-top: 1.1rem;
-		padding: 1rem;
+	.how-content h3 {
+		margin: 0 0 0.3rem;
+		font-family: var(--font-heading);
+		font-size: 1.05rem;
+		font-weight: 700;
+		letter-spacing: -0.01em;
+	}
+
+	.how-lead {
+		font-size: 1.08rem;
+	}
+
+	.how-content a {
+		text-decoration: underline;
+		text-underline-offset: 0.18em;
+	}
+
+	.how-content a:hover {
+		text-decoration: none;
+	}
+
+	/* Samma form som startsidans steg: numrerade, med en linje till vänster. */
+	.how-loop {
+		display: grid;
+		gap: 1.1rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		counter-reset: how-step;
+	}
+
+	.how-loop li {
+		padding-left: 1rem;
+		border-left: 2px solid hsl(var(--border));
+	}
+
+	.how-loop li::before {
+		counter-increment: how-step;
+		content: counter(how-step) / '';
+		display: block;
+		margin-bottom: 0.15rem;
+		font-family: var(--font-heading);
+		font-size: 0.82rem;
+		font-weight: 700;
+		opacity: 0.7;
+	}
+
+	.how-loop p {
+		margin-bottom: 0;
+	}
+
+	.how-part + .how-part {
+		margin-top: 1.5rem;
+	}
+
+	.how-limits {
+		padding: 1rem 1.1rem;
 		border-radius: var(--radius-card);
 		border: 1px solid hsl(var(--border));
 		background: hsl(var(--surface-soft));
 	}
 
-	.how-quick ul {
-		margin: 0.55rem 0 0;
-		padding-left: 1.1rem;
-		display: grid;
-		gap: 0.35rem;
+	.how-limits p {
+		margin-bottom: 0;
+	}
+
+	.how-more ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.25rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	@media (min-width: 700px) {
+		.how-loop {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 	}
 
 	@media (max-width: 640px) {
-		.how-quick {
+		.how-limits {
 			padding: 0.9rem;
 		}
 	}
