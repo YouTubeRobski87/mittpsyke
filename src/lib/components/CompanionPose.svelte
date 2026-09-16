@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
 	import { getCompanionDisplayState } from '$lib/companionStateMachine';
 	import {
 		getCompanionAbsenceMs,
 		getCompanionBasePose,
+		getCompanionInitialBasePose,
+		getCompanionInitialScenePosition,
 		getCompanionLastSeenAt,
 		getCompanionOverlayPose,
 		getCompanionPoseDaypart,
@@ -81,10 +83,29 @@
 	} = $props();
 
 	const motionAwareness = createMotionAwareness();
-	let localBasePose = $state<CompanionPose | null>(null);
-	let localPosition = $state<CompanionScenePosition | null>(null);
+
+	// SSR-säkert starttillstånd. getCompanionBasePose/getCompanionScenePosition
+	// kräver browser-storage eller Math.random för det riktiga, viktade valet,
+	// så utan det här poppade Balder in tomhänt efter hydrering - se
+	// getCompanionInitialBasePose. Samma dagpart/scen/preferens-regler
+	// används, bara determinstiskt: SSR och klientens första render landar
+	// därför på exakt samma pose och position, och onMount → refreshBasePose
+	// tar sedan över det riktiga, viktade/ihågkomna valet precis som förut.
+	// untrack: det här är avsiktligt bara startvärdet, inte en reaktiv koppling
+	// till props - precis som det gamla null-startvärdet inte var det.
+	const initialDate = new Date();
+	const initialDaypart = getCompanionPoseDaypart(initialDate);
+	const initialBasePose = untrack(
+		() => providedBasePose ?? getCompanionInitialBasePose(initialDate, companionId, scene, posePreference)
+	);
+	const initialPosition = untrack(
+		() => providedPosition ?? getCompanionInitialScenePosition(initialBasePose, initialDate, companionId, scene)
+	);
+
+	let localBasePose = $state<CompanionPose | null>(initialBasePose);
+	let localPosition = $state<CompanionScenePosition | null>(initialPosition);
 	let overlayPose = $state<CompanionPose | null>(null);
-	let daypart = $state<CompanionPoseDaypart>('day');
+	let daypart = $state<CompanionPoseDaypart>(initialDaypart);
 	let baseFrameIndex = $state(0);
 	let overlayFrameIndex = $state(0);
 

@@ -149,15 +149,22 @@ export function getCompanionPoseDaypart(date = new Date()) {
 	return getPoseDaypart(date);
 }
 
-export function getCompanionBasePose(
-	date = new Date(),
-	storage: Storage | null = null,
-	companionId: CompanionId = 'bear',
-	scene: CompanionSceneContext | null = null,
-	preference: CompanionPosePreference = 'default'
-): CompanionPose {
+type CandidateBasePoses = {
+	daypart: CompanionPoseDaypart;
+	availablePoses: CompanionPose[];
+	fallbackPose: CompanionPose;
+};
+
+// Delas av getCompanionBasePose och getCompanionInitialBasePose, så de två
+// alltid ser exakt samma kandidatlista för samma indata - bara slumpsteget
+// (getWeightedPose) och storage-uppslaget skiljer dem åt.
+function resolveCandidateBasePoses(
+	date: Date,
+	companionId: CompanionId,
+	scene: CompanionSceneContext | null,
+	preference: CompanionPosePreference
+): CandidateBasePoses {
 	const daypart = getPoseDaypart(date);
-	const now = date.getTime();
 	const allAvailablePoses = COMPANION_POSES.filter(
 		(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.dayparts.includes(daypart) && poseHasAvailablePosition(daypart, pose, scene)
 	);
@@ -174,7 +181,18 @@ export function getCompanionBasePose(
 				: defaultPoses.length
 					? defaultPoses
 					: allAvailablePoses;
-	const fallbackPose = getFallbackPose(companionId, availablePoses);
+	return { daypart, availablePoses, fallbackPose: getFallbackPose(companionId, availablePoses) };
+}
+
+export function getCompanionBasePose(
+	date = new Date(),
+	storage: Storage | null = null,
+	companionId: CompanionId = 'bear',
+	scene: CompanionSceneContext | null = null,
+	preference: CompanionPosePreference = 'default'
+): CompanionPose {
+	const { daypart, availablePoses, fallbackPose } = resolveCandidateBasePoses(date, companionId, scene, preference);
+	const now = date.getTime();
 	const storedState = storage ? parseStoredState(storage.getItem(storageKeyFor(companionId, preference))) : null;
 	if (storedState && storedState.daypart === daypart && storedState.expiresAt > now) {
 		const storedPose = COMPANION_POSES.find(
@@ -215,6 +233,51 @@ export function getCompanionScenePosition(
 		storage.setItem(positionStorageKeyFor(companionId, scene, preference), JSON.stringify({ positionId: nextPosition.id, poseId: fallbackPose.id, daypart, expiresAt: Math.max(poseExpiry, getNextExpiry(now)) }));
 	}
 	return nextPosition;
+}
+
+/**
+ * Deterministisk startpose för servergenererad HTML.
+ *
+ * getCompanionBasePose kräver antingen localStorage (för att komma ihåg
+ * förra valet) eller Math.random (för det viktade valet) - båda saknas vid
+ * SSR, så Balder saknades helt i första paint och poppade in efter
+ * hydrering. Den här funktionen använder samma dagpart/scen/preferens-regler
+ * (resolveCandidateBasePoses) men utan slump: precis som getFallbackPose
+ * pekar den alltid på kandidatlistans första pose, som per
+ * companionPoseManifest.ts alltid är companionens lugnaste stående/sittande
+ * läge för den aktuella dagparten.
+ *
+ * Avsedd som det synkrona starttillståndet för $state i CompanionPose.svelte
+ * - inte som ersättning för getCompanionBasePose, som fortfarande äger det
+ * riktiga, viktade/ihågkomna valet så snart onMount kört klientsidan.
+ */
+export function getCompanionInitialBasePose(
+	date = new Date(),
+	companionId: CompanionId = 'bear',
+	scene: CompanionSceneContext | null = null,
+	preference: CompanionPosePreference = 'default'
+): CompanionPose {
+	const { availablePoses, fallbackPose } = resolveCandidateBasePoses(date, companionId, scene, preference);
+	return availablePoses[0] ?? fallbackPose;
+}
+
+/**
+ * Deterministisk motsvarighet till getCompanionScenePosition, av samma skäl
+ * och för samma SSR-tillfälle som getCompanionInitialBasePose ovan.
+ */
+export function getCompanionInitialScenePosition(
+	pose: CompanionPose,
+	date = new Date(),
+	companionId: CompanionId = pose.companionId,
+	scene: CompanionSceneContext | null = null
+): CompanionScenePosition {
+	const daypart = getPoseDaypart(date);
+	const availablePositions = getAvailablePositions(daypart, pose.id, scene);
+	return (
+		availablePositions[0] ??
+		COMPANION_SCENE_POSITIONS.find((position) => position.id === 'foreground-right') ??
+		COMPANION_SCENE_POSITIONS[0]
+	);
 }
 
 export function getCompanionOverlayPose(

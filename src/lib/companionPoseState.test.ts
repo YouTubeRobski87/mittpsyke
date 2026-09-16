@@ -4,6 +4,8 @@ import {
 	COMPANION_RETURN_ABSENCE_THRESHOLD_MS,
 	getCompanionAbsenceMs,
 	getCompanionBasePose,
+	getCompanionInitialBasePose,
+	getCompanionInitialScenePosition,
 	getCompanionScenePosition,
 	getMsUntilNextCompanionPoseCheck,
 	isReflectionSaveWithinReactionWindow,
@@ -104,6 +106,69 @@ describe('getCompanionBasePose', () => {
 		for (const daypart of DAYPARTS) {
 			const pose = getCompanionBasePose(DAYPART_DATES[daypart], null, 'bear', 'progress', 'resting');
 			expect(expectedPoseIds[daypart]).toContain(pose.id);
+		}
+	});
+});
+
+describe('getCompanionInitialBasePose', () => {
+	// SSR-startvärdet för CompanionPose.svelte. Måste alltid ge en riktig,
+	// för dagparten giltig pose - annars saknas Balder i servergenererad HTML
+	// igen, precis som innan den här funktionen fanns.
+
+	it('returnerar aldrig null och alltid en pose giltig för dagparten', () => {
+		for (const daypart of DAYPARTS) {
+			const pose = getCompanionInitialBasePose(DAYPART_DATES[daypart], 'bear');
+			expect(pose).toBeDefined();
+			expect(pose.companionId).toBe('bear');
+			expect(pose.dayparts).toContain(daypart);
+		}
+	});
+
+	it('är deterministisk - samma indata ger alltid samma pose, ingen slump', () => {
+		for (const date of Object.values(DAYPART_DATES)) {
+			const first = getCompanionInitialBasePose(date, 'bear', 'dashboard');
+			for (let i = 0; i < 10; i += 1) {
+				expect(getCompanionInitialBasePose(date, 'bear', 'dashboard').id).toBe(first.id);
+			}
+		}
+	});
+
+	it('ger den sovande posen på natten, precis som den riktiga klientvalet', () => {
+		expect(getCompanionInitialBasePose(DAYPART_DATES.night, 'bear').id).toBe('bear-sleeping');
+	});
+
+	it('utesluter den bortvända posen ur default-rotationen, precis som getCompanionBasePose', () => {
+		for (const date of Object.values(DAYPART_DATES)) {
+			expect(getCompanionInitialBasePose(date, 'bear').id).not.toBe('bear-sitting-away');
+		}
+	});
+
+	it('respekterar stugprofilens lugna poser', () => {
+		const calmPoseIds = new Set(['bear-sitting', 'bear-sitting-away', 'bear-sleeping']);
+		for (const date of Object.values(DAYPART_DATES)) {
+			const pose = getCompanionInitialBasePose(date, 'bear', 'dashboard', 'calm');
+			expect(calmPoseIds.has(pose.id)).toBe(true);
+		}
+	});
+});
+
+describe('getCompanionInitialScenePosition', () => {
+	it('returnerar aldrig null och matchar alltid den givna posen', () => {
+		for (const date of Object.values(DAYPART_DATES)) {
+			const pose = getCompanionInitialBasePose(date, 'bear', 'dashboard');
+			const position = getCompanionInitialScenePosition(pose, date, 'bear', 'dashboard');
+			expect(position).toBeDefined();
+			expect(position.allowedPoseIds).toContain(pose.id);
+			expect(COMPANION_SCENE_CONTEXT_POSITION_IDS.dashboard).toContain(position.id);
+		}
+	});
+
+	it('är deterministisk', () => {
+		const date = DAYPART_DATES.day;
+		const pose = getCompanionInitialBasePose(date, 'bear', 'dashboard');
+		const first = getCompanionInitialScenePosition(pose, date, 'bear', 'dashboard');
+		for (let i = 0; i < 10; i += 1) {
+			expect(getCompanionInitialScenePosition(pose, date, 'bear', 'dashboard').id).toBe(first.id);
 		}
 	});
 });

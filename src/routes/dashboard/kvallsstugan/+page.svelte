@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
+	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import EveningCheckinFlow from '$lib/components/evening/EveningCheckinFlow.svelte';
@@ -105,14 +105,6 @@
 		};
 	}>();
 	let sceneDate = $state(new Date());
-	let checkinStarted = $state(false);
-	let checkinRegion: HTMLDivElement;
-
-	async function startCheckin() {
-		checkinStarted = true;
-		await tick();
-		checkinRegion?.focus();
-	}
 	let completionSignal = $state(0);
 	let savedInteriorMemory = $state<EveningInteriorMemory | null>(null);
 	let interiorMemoryIntroduction = $state(0);
@@ -390,17 +382,13 @@
 		</div>
 
 		<div class="evening-flow-column" class:is-dimmed={isSleepMode}>
-			<div class="evening-flow-wrap" role="region" aria-labelledby="evening-flow-label" aria-describedby="evening-flow-intro" bind:this={checkinRegion} tabindex="-1">
+			<div class="evening-flow-wrap" role="region" aria-labelledby="evening-flow-label" aria-describedby="evening-flow-intro" tabindex="-1">
 				<p class="evening-flow-label" id="evening-flow-label">Kvällsincheckning</p>
 				<p class="evening-flow-intro" id="evening-flow-intro">
 					En kort stund för att landa i hur kvällen känns, sätta ord på det som tar mest plats och
 					välja vad du vill bära vidare — eller lägga undan för ikväll.
 				</p>
-				{#if checkinStarted}
-					<EveningCheckinFlow oncomplete={handleComplete} />
-				{:else}
-					<button class="evening-start" type="button" onclick={startCheckin}>Starta Kvällsincheckning</button>
-				{/if}
+				<EveningCheckinFlow oncomplete={handleComplete} />
 			</div>
 			<p class="evening-privacy">
 				Dina svar sparas bara om du väljer att spara dem.
@@ -435,20 +423,7 @@
 	}
 	.evening-exit:hover, .evening-exit:focus-visible { text-decoration: underline; text-underline-offset: 0.18em; }
 	.evening-exit:focus-visible,
-	.evening-start:focus-visible,
 	.evening-flow-wrap:focus-visible { outline: 2px solid #f5c878; outline-offset: 3px; }
-	.evening-start {
-		min-height: 44px;
-		max-width: 100%;
-		padding: 0.8rem 1.1rem;
-		border: 1px solid #efc171;
-		border-radius: 0.8rem;
-		background: #efc171;
-		color: #2b2116;
-		font: inherit;
-		font-weight: 650;
-		cursor: pointer;
-	}
 
 	.evening-header { margin: 1rem 0 1.15rem; }
 	.evening-flow-label {
