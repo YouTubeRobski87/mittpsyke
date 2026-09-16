@@ -37,13 +37,13 @@ const positionStorageKeyFor = (
 	preference: CompanionPosePreference = 'default'
 ) => `mittpsyke:companion-position:${companionId}:${scene ?? 'any'}:${preference}:v1`;
 
-const CALM_POSE_IDS = new Set(['bear-sitting', 'bear-sleeping']);
+const CALM_POSE_IDS = new Set(['bear-sitting', 'bear-sitting-away', 'bear-sleeping']);
 
 // Används där följeslagaren delar en stilla stund med personen i scenen.
 // Bara poser som faktiskt sitter, ligger eller sover får väljas; om en
 // följeslagare saknar sådan bild för aktuell dygnsdel faller valet mjukt
 // tillbaka till dess vanliga lugna pose.
-const RESTING_POSE_IDS = new Set(['bear-sitting', 'bear-sleeping']);
+const RESTING_POSE_IDS = new Set(['bear-sitting', 'bear-sitting-away', 'bear-sleeping']);
 
 function getPoseDaypart(date: Date): CompanionPoseDaypart {
 	const state = getProgressCompanionDayState(date);

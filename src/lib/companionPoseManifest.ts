@@ -91,6 +91,21 @@ export const BEAR_COMPANION_POSES = [
 		sceneAdjustment: { scale: 0.78, y: 2 }
 	},
 	{
+		// Sittande sedd bakifrån: Balder sitter kvar bredvid personen och tittar
+		// ut över scenen. Tänkt för kväll, återblick och andra stilla lägen -
+		// silhuetten är avslappnad och vänd bort från betraktaren, inte alert.
+		id: 'bear-sitting-away',
+		companionId: 'bear',
+		role: 'base',
+		// Natten lämnas åt den sovande posen: där är sömn det enda som gäller,
+		// och två möjliga nattposer hade gjort valet slumpmässigt.
+		dayparts: ['day', 'evening'],
+		frames: [{ src: bearPoseSrc('bear-sitting-back.png') }],
+		alt: `Din följeslagare, ${BEAR_DISPLAY_NAME}, sitter vänd mot utsikten.`,
+		weight: 2.2,
+		sceneAdjustment: { scale: 0.74, y: 2 }
+	},
+	{
 		id: 'bear-sleeping',
 		companionId: 'bear',
 		role: 'base',

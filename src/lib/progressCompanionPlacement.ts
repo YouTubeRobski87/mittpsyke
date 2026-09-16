@@ -160,7 +160,18 @@ type CompanionArtBounds = {
  */
 const PROGRESS_POSE_ART_BOUNDS: Record<string, CompanionArtBounds> = {
 	// bear-sitting.png
-	'bear-sitting': { canvasWidth: 768, canvasHeight: 512, left: 151, top: 41, right: 601, bottom: 489 }
+	'bear-sitting': { canvasWidth: 768, canvasHeight: 512, left: 151, top: 41, right: 601, bottom: 489 },
+	// bear-sitting-back.png. Uppmätt alfabox: kroppen börjar 186 px in och
+	// tassarna slutar 496 px ned, så markpunkten hamnar där björnen faktiskt
+	// sitter och inte i canvasens tomma marginal.
+	'bear-sitting-away': {
+		canvasWidth: 768,
+		canvasHeight: 512,
+		left: 186,
+		top: 19,
+		right: 578,
+		bottom: 496
+	}
 };
 
 /**

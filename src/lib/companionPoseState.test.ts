@@ -87,7 +87,7 @@ describe('getCompanionBasePose', () => {
 	});
 
 	it('använder bara lugna björnposer i stugprofilen', () => {
-		const calmPoseIds = new Set(['bear-sitting', 'bear-sleeping']);
+		const calmPoseIds = new Set(['bear-sitting', 'bear-sitting-away', 'bear-sleeping']);
 		for (const date of Object.values(DAYPART_DATES)) {
 			const pose = getCompanionBasePose(date, null, 'bear', 'dashboard', 'calm');
 			expect(calmPoseIds.has(pose.id)).toBe(true);
@@ -96,8 +96,8 @@ describe('getCompanionBasePose', () => {
 
 	it('uses a sitting or resting pose in the progress scene', () => {
 		const expectedPoseIds: Record<CompanionPoseDaypart, string[]> = {
-			day: ['bear-sitting'],
-			evening: ['bear-sitting'],
+			day: ['bear-sitting', 'bear-sitting-away'],
+			evening: ['bear-sitting', 'bear-sitting-away'],
 			night: ['bear-sleeping']
 		};
 
