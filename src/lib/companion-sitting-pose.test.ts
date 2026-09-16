@@ -45,7 +45,9 @@ describe('den sittande, bortvända posen', () => {
 	});
 
 	it('lämnar natten åt den sovande posen, så nattvalet förblir entydigt', () => {
-		const nightPoses = BEAR_COMPANION_POSES.filter((item) => item.dayparts.includes('night'));
+		const nightPoses = BEAR_COMPANION_POSES.filter((item) =>
+			(item.dayparts as readonly string[]).includes('night')
+		);
 		expect(nightPoses.map((item) => item.id)).toEqual(['bear-sleeping']);
 	});
 });
