@@ -91,9 +91,8 @@
 	];
 
 	const mobileSignedInPrimaryNavItems: NavItem[] = [
-		{ href: '/dashboard', label: 'Mitt Hem' },
+		{ href: '/dashboard/kvallsstugan', label: 'Mitt Hem' },
 		SIGNED_IN_WRITE_NAV_ITEM,
-		{ href: '/dashboard/kvallsstugan', label: 'Kvällstugan' },
 		{ href: '/framsteg', label: 'Framsteg' },
 		MOBILE_READ_NAV_ITEM
 	];
@@ -112,7 +111,7 @@
 
 	const signedInPortalNavItems: NavItem[] = [
 		{ href: '/', label: 'Översikt' },
-		{ href: '/dashboard', label: 'Mitt Hem' },
+		{ href: '/dashboard/kvallsstugan', label: 'Mitt Hem' },
 		{ href: '/framsteg', label: 'Framsteg' },
 		{ href: '/dagbok/checkin', label: 'Dagbok' },
 		{ href: '/chat', label: 'Chatta' },
@@ -149,13 +148,6 @@
 		return normalizedHref === '/'
 			? path === '/'
 			: path === normalizedHref || path.startsWith(normalizedHref + '/');
-	}
-
-	// I mobilen har Kvällstugan en egen rad, så Mitt Hem markeras inte samtidigt
-	// när man står i stugan. Desktop saknar raden och behåller isActive som den är.
-	function isMobileActive(href: string): boolean {
-		if (href === '/dashboard' && page.url.pathname.startsWith('/dashboard/kvallsstugan')) return false;
-		return isActive(href);
 	}
 
 	function normalizeText(value: unknown): string | null {
@@ -844,13 +836,13 @@
 				<nav class="mobile-quick-nav" aria-label="Snabbnavigering">
 					{#if currentUser}
 						<a
-							href="/dashboard"
+							href="/dashboard/kvallsstugan"
 							class="mobile-quick-link mobile-quick-link-home"
 							onclick={() => {
 								mobileMenuOpen = false;
 								profilePanelOpen = false;
 							}}
-							aria-current={isMobileActive('/dashboard') ? 'page' : undefined}
+							aria-current={isActive('/dashboard/kvallsstugan') ? 'page' : undefined}
 						>
 							Mitt Hem
 						</a>
@@ -862,7 +854,7 @@
 							mobileMenuOpen = false;
 							profilePanelOpen = false;
 						}}
-						aria-current={isMobileActive(mobileWriteNavItem.href) ? 'page' : undefined}
+						aria-current={isActive(mobileWriteNavItem.href) ? 'page' : undefined}
 					>
 						{mobileWriteNavItem.label}
 					</a>
@@ -1011,11 +1003,11 @@
 				{#snippet mobileMenuLink(item: NavItem, extraClass: string)}
 					<a
 						href={item.href}
-						class="mobile-menu-link {extraClass} text-sm transition-opacity {isMobileActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
+						class="mobile-menu-link {extraClass} text-sm transition-opacity {isActive(item.href) ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}"
 						target={item.external ? '_blank' : undefined}
 						rel={item.external ? 'noopener noreferrer' : undefined}
 						onclick={() => (mobileMenuOpen = false)}
-						aria-current={isMobileActive(item.href) ? 'page' : undefined}
+						aria-current={isActive(item.href) ? 'page' : undefined}
 					>
 						{item.label}
 					</a>

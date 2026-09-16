@@ -24,16 +24,14 @@ describe('inloggad startsida', () => {
 		expect(body).not.toContain('Kvällslugn');
 		expect(body).toContain('Artiklar');
 
-		for (const href of [
-			'/dashboard',
-			'/chat',
-			'/framsteg',
-			'/dagbok',
-			'/dashboard/kvallsstugan',
-			'/blogg'
-		]) {
+		// Mitt Hem-kortet går numera direkt till Kvällstugan, precis som
+		// navigeringen i +layout.svelte - se home-redirect.test.ts. De två
+		// korten (Mitt Hem och Kvällstugan) delar därför medvetet samma href.
+		for (const href of ['/chat', '/framsteg', '/dagbok', '/dashboard/kvallsstugan', '/blogg']) {
 			expect(body).toContain(`href="${href}"`);
 		}
+		const kvallstuganHrefCount = body.split('href="/dashboard/kvallsstugan"').length - 1;
+		expect(kvallstuganHrefCount).toBe(2);
 	});
 
 	it('har ett lugnt empty state utan påhittad personlig signal', () => {

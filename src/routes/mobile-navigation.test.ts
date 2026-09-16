@@ -63,13 +63,15 @@ describe('mobilmenyn för utloggade', () => {
 });
 
 describe('mobilmenyn för inloggade', () => {
-	it('prioriterar Mitt Hem, Skriv, Kvällstugan, Framsteg och Läs', () => {
+	it('prioriterar Mitt Hem, Skriv, Framsteg och Läs', () => {
 		const primary = navList('mobileSignedInPrimaryNavItems');
-		expect(labels(primary)).toEqual(['Mitt Hem', 'Skriv', 'Kvällstugan', 'Framsteg', 'Läs']);
+		expect(labels(primary)).toEqual(['Mitt Hem', 'Skriv', 'Framsteg', 'Läs']);
+		// Mitt Hem går direkt till Kvällstugan (se navigation.test.ts). Det
+		// fanns tidigare en separat Kvällstugan-rad med samma mål, men den var
+		// bara en dubblett och är borttagen.
 		expect(primary.map((item) => item.href)).toEqual([
-			'/dashboard',
-			'/dagbok/checkin',
 			'/dashboard/kvallsstugan',
+			'/dagbok/checkin',
 			'/framsteg',
 			'/guider'
 		]);
@@ -80,11 +82,14 @@ describe('mobilmenyn för inloggade', () => {
 		expect(mobileMenu).toMatch(/mobileSignedInSecondaryNavItems as item, index\}\s*\{@render mobileMenuLink\(item, index === 0 \? 'mobile-menu-group-start'/);
 	});
 
-	it('markerar inte Mitt Hem som aktiv när man står i Kvällstugan', () => {
-		expect(layout).toMatch(
-			/function isMobileActive\(href: string\): boolean \{\s*if \(href === '\/dashboard' && page\.url\.pathname\.startsWith\('\/dashboard\/kvallsstugan'\)\) return false;/
-		);
-		expect(mobileMenu).not.toMatch(/aria-current=\{isActive\(item\.href\)/);
+	it('Mitt Hem markeras aktiv i Kvällstugan, eftersom det är samma route', () => {
+		// isMobileActive fanns bara för att skilja Mitt Hem från en separat
+		// Kvällstugan-rad med samma mål. Den raden är borta, så all
+		// aktiv-markering går nu via den vanliga isActive.
+		expect(layout).not.toContain('function isMobileActive');
+		const primary = navList('mobileSignedInPrimaryNavItems');
+		const mittHem = primary.find((item) => item.label === 'Mitt Hem');
+		expect(mittHem?.href).toBe('/dashboard/kvallsstugan');
 	});
 });
 
@@ -101,7 +106,7 @@ describe('inga dubbla vägar och få toppnivålänkar', () => {
 
 	it('har högst fem huvudvägar och lägger det övriga läsbara indraget under Läs', () => {
 		expect(navList('mobileGuestPrimaryNavItems')).toHaveLength(5);
-		expect(navList('mobileSignedInPrimaryNavItems')).toHaveLength(5);
+		expect(navList('mobileSignedInPrimaryNavItems')).toHaveLength(4);
 		expect(labels(navList('mobileReadSubNavItems'))).toEqual(['Artiklar', 'Berättelser', 'Övningar']);
 		expect(mobileMenu).toMatch(/\{#if item === MOBILE_READ_NAV_ITEM\}\s*\{#each mobileReadSubNavItems as subItem\}\s*\{@render mobileMenuLink\(subItem, 'mobile-menu-sub-link'\)\}/);
 		// Översikt är samma sida som ordmärket och står inte i mobilmenyn.
@@ -113,7 +118,7 @@ describe('snabblänken i mobilens sidhuvud', () => {
 	it('är Skriv för alla, med Mitt Hem bredvid för inloggade, och aldrig chatten', () => {
 		expect(quickNav).toContain('class="mobile-quick-link mobile-quick-link-write"');
 		expect(quickNav).toContain('href={mobileWriteNavItem.href}');
-		expect(quickNav).toMatch(/\{#if currentUser\}\s*<a\s+href="\/dashboard"\s+class="mobile-quick-link mobile-quick-link-home"/);
+		expect(quickNav).toMatch(/\{#if currentUser\}\s*<a\s+href="\/dashboard\/kvallsstugan"\s+class="mobile-quick-link mobile-quick-link-home"/);
 		expect(quickNav).not.toContain('/chat');
 		expect(layout).toContain(
 			'const mobileWriteNavItem = $derived(currentUser ? SIGNED_IN_WRITE_NAV_ITEM : GUEST_WRITE_NAV_ITEM);'

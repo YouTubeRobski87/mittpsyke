@@ -72,7 +72,7 @@
 			</div>
 
 			<div class="places-layout">
-				<a class="home-place" href="/dashboard">
+				<a class="home-place" href="/dashboard/kvallsstugan">
 					<img
 						src="/images/scenes/dashboard-cabin-close-800.webp"
 						alt=""
