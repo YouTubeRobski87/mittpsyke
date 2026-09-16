@@ -45,6 +45,11 @@ const CALM_POSE_IDS = new Set(['bear-sitting', 'bear-sitting-away', 'bear-sleepi
 // tillbaka till dess vanliga lugna pose.
 const RESTING_POSE_IDS = new Set(['bear-sitting', 'bear-sitting-away', 'bear-sleeping']);
 
+// Poser som bara hör hemma i lugna/vilande lägen och i den bortvända scenen -
+// inte i den allmänna rotationen på Mitt Hem, där man hälsar på Balder ansikte
+// mot ansikte. Den bortvända sittposen skulle där vända ryggen till.
+const DEFAULT_EXCLUDED_POSE_IDS = new Set(['bear-sitting-away']);
+
 function getPoseDaypart(date: Date): CompanionPoseDaypart {
 	const state = getProgressCompanionDayState(date);
 	if (state === 'evening') return 'evening';
@@ -158,19 +163,27 @@ export function getCompanionBasePose(
 	);
 	const calmPoses = allAvailablePoses.filter((pose) => CALM_POSE_IDS.has(pose.id));
 	const restingPoses = allAvailablePoses.filter((pose) => RESTING_POSE_IDS.has(pose.id));
+	// Default-rotationen håller den bortvända posen borta; calm/resting behåller
+	// den, och Framsteg-scenen väljer den ändå direkt via getProgressScenePoseId.
+	const defaultPoses = allAvailablePoses.filter((pose) => !DEFAULT_EXCLUDED_POSE_IDS.has(pose.id));
 	const availablePoses =
 		preference === 'resting' && restingPoses.length
 			? restingPoses
 			: preference === 'calm' && calmPoses.length
 				? calmPoses
-				: allAvailablePoses;
+				: defaultPoses.length
+					? defaultPoses
+					: allAvailablePoses;
 	const fallbackPose = getFallbackPose(companionId, availablePoses);
 	const storedState = storage ? parseStoredState(storage.getItem(storageKeyFor(companionId, preference))) : null;
 	if (storedState && storedState.daypart === daypart && storedState.expiresAt > now) {
 		const storedPose = COMPANION_POSES.find(
 			(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.id === storedState.poseId && pose.dayparts.includes(daypart)
 		);
-		if (storedPose && poseHasAvailablePosition(daypart, storedPose, scene)) return storedPose;
+		const storedAllowedForPreference =
+			preference !== 'default' || !DEFAULT_EXCLUDED_POSE_IDS.has(storedState.poseId);
+		if (storedPose && storedAllowedForPreference && poseHasAvailablePosition(daypart, storedPose, scene))
+			return storedPose;
 	}
 
 	const nextPose = getWeightedPose(availablePoses.length ? availablePoses : [fallbackPose]);

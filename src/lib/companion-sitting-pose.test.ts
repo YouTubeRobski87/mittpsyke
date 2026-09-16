@@ -88,6 +88,18 @@ describe('var posen används', () => {
 		expect(getProgressScenePose('bear')?.id).toBe(SITTING_AWAY);
 	});
 
+	it('håller den bortvända posen borta från Mitt Hems allmänna rotation', () => {
+		// Mitt Hem hälsar på Balder ansikte mot ansikte (default), så där ska
+		// ryggtavlan aldrig dyka upp - men front-sittposen får fortfarande synas.
+		const seen = new Set<string>();
+		for (let attempt = 0; attempt < 400; attempt += 1) {
+			seen.add(getCompanionBasePose(day, null, 'bear', 'dashboard', 'default').id);
+			seen.add(getCompanionBasePose(evening, null, 'bear', 'dashboard', 'default').id);
+		}
+		expect(seen.has(SITTING_AWAY), 'default rotation ska inte visa ryggtavlan').toBe(false);
+		expect(seen.has('bear-sitting'), 'front-sittposen ska fortfarande kunna synas').toBe(true);
+	});
+
 	it('lämnar natten åt sömnen även i vilande läge', () => {
 		for (let attempt = 0; attempt < 50; attempt += 1) {
 			expect(getCompanionBasePose(night, null, 'bear', 'dashboard', 'resting').id).toBe(
