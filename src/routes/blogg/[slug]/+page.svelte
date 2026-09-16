@@ -63,7 +63,9 @@
 		<h1>{article.title}</h1>
 		<p class="lead">{article.excerpt}</p>
 		<p class="meta">Publicerad {article.date}</p>
-		<EditorialByline author={SORO_ARTICLE_AUTHOR} />
+		<!-- Soro-artiklarna har ingen verifierad mänsklig granskning, så de får
+		     bara den neutrala statusen - aldrig "redaktionellt granskad". -->
+		<EditorialByline author={SORO_ARTICLE_AUTHOR} status="unverified" />
 	</header>
 
 	{#if article.image}

@@ -6,7 +6,15 @@
 // används i sidans text och i JSON-LD, så att schemat aldrig säger mer än det
 // läsaren faktiskt ser.
 
+/** Används bara där en människa faktiskt har läst och kvalitetssäkrat texten. */
 export const EDITORIAL_REVIEW_STATUS = 'Redaktionellt granskad, ej medicinskt faktagranskad';
+
+/**
+ * För innehåll utan verifierad mänsklig granskning. Säger bara det vi vet
+ * säkert - att ingen medicinsk faktagranskning har gjorts - och påstår
+ * ingen redaktionell granskning.
+ */
+export const UNVERIFIED_REVIEW_STATUS = 'Ej medicinskt faktagranskad';
 export const EDITORIAL_METHOD_HREF = '/redaktionell-metod';
 export const EDITORIAL_METHOD_LABEL = 'Redaktionell metod';
 

@@ -3,24 +3,35 @@
 		EDITORIAL_METHOD_HREF,
 		EDITORIAL_METHOD_LABEL,
 		EDITORIAL_REVIEW_STATUS,
+		UNVERIFIED_REVIEW_STATUS,
 		normalizeAuthorName
 	} from '$lib/editorial';
 
 	// Visar samma avsändare som sidans JSON-LD, plus granskningsstatusen.
-	// Utan författare (t.ex. på ämnessidor) visas bara statusen. showStatus
-	// stängs av där statusen redan står i sidans källblock, så att den inte
-	// upprepas på samma sida.
-	type Props = { author?: string; showStatus?: boolean };
+	// Utan författare (t.ex. på ämnessidor) visas bara statusen.
+	//
+	// status:
+	//   'editorial'  - en människa har läst och kvalitetssäkrat texten
+	//   'unverified' - ingen verifierad granskning; bara det vi vet säkert sägs
+	//   'none'       - statusen står redan i sidans källblock längre ner
+	type Props = { author?: string; status?: 'editorial' | 'unverified' | 'none' };
 
-	let { author, showStatus = true }: Props = $props();
+	let { author, status = 'editorial' }: Props = $props();
 
 	const displayAuthor = $derived(author ? normalizeAuthorName(author) : null);
+	const statusText = $derived(
+		status === 'editorial'
+			? EDITORIAL_REVIEW_STATUS
+			: status === 'unverified'
+				? UNVERIFIED_REVIEW_STATUS
+				: null
+	);
 </script>
 
 <p class="editorial-byline" data-testid="editorial-byline">
 	{#if displayAuthor}<span class="byline-author">Av {displayAuthor}</span>{/if}
-	{#if showStatus}
-		<span class="byline-status">{EDITORIAL_REVIEW_STATUS}.</span>
+	{#if statusText}
+		<span class="byline-status">{statusText}.</span>
 		<a class="byline-link" href={EDITORIAL_METHOD_HREF}>{EDITORIAL_METHOD_LABEL}</a>
 	{/if}
 </p>

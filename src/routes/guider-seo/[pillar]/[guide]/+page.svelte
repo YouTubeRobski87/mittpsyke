@@ -23,33 +23,6 @@
 
 	const pillarRoute = $derived(pillarRoutes[data.pillar.slug] ?? null);
 
-	const jsonLdArticle = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'Article',
-		headline: data.guide.title,
-		description: data.guide.seoDescription ?? data.guide.description,
-		url: `https://mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`,
-		dateModified: data.guide.updatedAt ?? undefined,
-		author: [
-			{
-				'@type': 'Organization',
-				name: 'MittPsyke',
-				url: 'https://mittpsyke.se'
-			},
-			{
-				'@type': 'Person',
-				name: 'Robert Claesson',
-				jobTitle: 'Grundare',
-				url: 'https://mittpsyke.se/om-mittpsyke'
-			}
-		],
-		publisher: {
-			'@type': 'Organization',
-			name: 'MittPsyke',
-			url: 'https://mittpsyke.se'
-		},
-		inLanguage: 'sv-SE'
-	});
 
 	function markdownToHtml(md: string): string {
 		return md
@@ -68,43 +41,7 @@
 			.replace(/<p[^>]*><\/p>/g, '');
 	}
 
-	const jsonLdFaq = $derived(
-		data.guide.faqs?.length
-			? {
-					'@context': 'https://schema.org',
-					'@type': 'FAQPage',
-					mainEntity: data.guide.faqs.map((faq: { question: string; answer: string }) => ({
-						'@type': 'Question',
-						name: faq.question,
-						acceptedAnswer: {
-							'@type': 'Answer',
-							text: faq.answer
-						}
-					}))
-				}
-			: null
-	);
 
-	const jsonLdBreadcrumb = $derived({
-		'@context': 'https://schema.org',
-		'@type': 'BreadcrumbList',
-		itemListElement: [
-			{ '@type': 'ListItem', position: 1, name: 'Hem', item: 'https://mittpsyke.se' },
-			{ '@type': 'ListItem', position: 2, name: 'Guider', item: 'https://mittpsyke.se/guider' },
-			{
-				'@type': 'ListItem',
-				position: 3,
-				name: data.pillar.title || data.pillar.slug || 'Sida',
-				item: `https://mittpsyke.se/guider/${data.pillar.slug}`
-			},
-			{
-				'@type': 'ListItem',
-				position: 4,
-				name: data.guide.title || data.guide.slug || 'Artikel',
-				item: `https://mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`
-			}
-		]
-	});
 </script>
 
 <SEO canonical={`https://mittpsyke.se/guider/${data.pillar.slug}/${data.guide.slug}`} />
@@ -113,11 +50,6 @@
 	<title>{data.guide.seoTitle ?? buildTitle(data.guide.title)}</title>
 	<meta name="description" content={data.guide.seoDescription ?? data.guide.description} />
 	<meta name="robots" content="noindex, follow" />
-	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdArticle)}<\/script>`}
-	{@html `<script type="application/ld+json">${JSON.stringify(jsonLdBreadcrumb)}<\/script>`}
-	{#if jsonLdFaq}
-		{@html `<script type="application/ld+json">${JSON.stringify(jsonLdFaq)}<\/script>`}
-	{/if}
 </svelte:head>
 
 <main class="mx-auto max-w-3xl px-4 py-10">

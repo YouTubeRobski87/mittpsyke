@@ -18,21 +18,38 @@
 		contentLinkHref = '/sa-arbetar-vi-med-innehall'
 	}: Props = $props();
 
-	const requiredReferences: SourceItem[] = [
-		{
-			label: 'Socialstyrelsen riktlinjer',
-			url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/regler-och-riktlinjer/'
-		}
-	];
-
+	// Sidan listar bara de källor den faktiskt använder. Tidigare lades en
+	// generell Socialstyrelsen-länk till överallt, vilket påstod ett underlag
+	// som inte gick att styrka per sida.
 	const references = $derived.by(() => {
 		const seen = new Set<string>();
-		return [...sources, ...requiredReferences].filter((source) => {
+		return sources.filter((source) => {
 			const key = source.label.toLowerCase();
 			if (seen.has(key)) return false;
 			seen.add(key);
 			return true;
 		});
+	});
+
+	// Påståendet om underlaget byggs av de källor som faktiskt finns på sidan,
+	// så att ingen guide säger 1177, Socialstyrelsen eller Folkhälsomyndigheten
+	// utan att ha dem bland sina källor.
+	const NAMED_SOURCES: { match: RegExp; name: string }[] = [
+		{ match: /1177\.se/i, name: '1177' },
+		{ match: /socialstyrelsen\.se/i, name: 'Socialstyrelsen' },
+		{ match: /folkhalsomyndigheten\.se/i, name: 'Folkhälsomyndigheten' }
+	];
+
+	const sourceClaim = $derived.by(() => {
+		const names = NAMED_SOURCES.filter(({ match }) =>
+			references.some((source) => match.test(source.url))
+		).map(({ name }) => name);
+
+		if (names.length === 0) return null;
+
+		const list =
+			names.length === 1 ? names[0] : `${names.slice(0, -1).join(', ')} och ${names.at(-1)}`;
+		return `Innehållet på denna sida är sammanställt utifrån information från ${list}.`;
 	});
 
 	function formatDate(iso: string): string {
@@ -54,10 +71,11 @@
 	<EditorialByline />
 
 	<h2>Källor och kvalitet</h2>
-	<p class="note">
-		Innehållet på denna sida är sammanställt utifrån information från 1177,
-		Folkhälsomyndigheten, Socialstyrelsen och andra offentliga kunskapskällor.
-	</p>
+	{#if sourceClaim}
+		<p class="note">{sourceClaim}</p>
+	{:else if references.length === 0}
+		<p class="note">Den här sidan har inga namngivna externa källor.</p>
+	{/if}
 
 	{#if references.length}
 		<h3>Referenser</h3>

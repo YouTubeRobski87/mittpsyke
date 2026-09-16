@@ -135,7 +135,7 @@
 		{#if updatedAt}<p>Senast uppdaterad: {updatedAt}</p>{/if}
 		<!-- Samma avsändare som guidens JSON-LD. Granskningsstatusen står i
 		     källblocket längst ner, så den upprepas inte här. -->
-		<EditorialByline author={GUIDE_AUTHOR_NAME} showStatus={false} />
+		<EditorialByline author={GUIDE_AUTHOR_NAME} status="none" />
 	</div>
 
 	{#if data.guide.content}
