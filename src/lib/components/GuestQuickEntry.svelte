@@ -26,6 +26,11 @@
 		writeCurrentLocalEntryId,
 		type LocalDiaryEntry
 	} from '$lib/diary-local-history';
+	import {
+		buildLocalRetrospect,
+		describeLocalTheme,
+		type LocalRetrospectTheme
+	} from '$lib/diary-local-retrospect';
 	import { dataflowCopy } from '$lib/dataflow-copy';
 	import { scrollIntoViewWithMotionPreference } from '$lib/scroll';
 
@@ -45,6 +50,10 @@
 	let localEntries = $state<LocalDiaryEntry[]>([]);
 	let currentEntryId = $state<string | null>(null);
 	let confirmClearAll = $state(false);
+	// Återblicken räknas fram lokalt ur listan ovan, utan AI eller nätverk.
+	const retrospect = $derived(buildLocalRetrospect(localEntries));
+	let openEvidenceFor = $state<string | null>(null);
+
 	// Sant när webbläsaren nekade lagring (full kvot eller blockerad lagring).
 	// Skrivandet fortsätter i minnet, men användaren ska veta om risken.
 	let storageFailed = $state(false);
@@ -122,6 +131,16 @@
 		textareaEl?.focus();
 	}
 
+	function toggleEvidence(theme: LocalRetrospectTheme) {
+		openEvidenceFor = openEvidenceFor === theme.stem ? null : theme.stem;
+	}
+
+	/** Öppnar originalinlägget bakom ett utdrag i underlaget. */
+	function openEntryById(entryId: string) {
+		const match = localEntries.find((item) => item.id === entryId);
+		if (match) openLocalEntry(match);
+	}
+
 	function clearAllLocalEntries() {
 		// Rensar historiken och alla utkastnycklar, även den äldre
 		// `mittpsyke_temp_entry`. Annars hade migreringen kunnat lyfta tillbaka
@@ -129,6 +148,7 @@
 		clearAllLocalDiaryData();
 		localEntries = [];
 		storageFailed = false;
+		openEvidenceFor = null;
 		currentEntryId = null;
 		entry = '';
 		lastSavedValue = '';
@@ -330,6 +350,58 @@
 				Rensa texten
 			</button>
 		</div>
+
+		{#if retrospect.status !== 'not-enough'}
+			<!-- Lokal återblick. Räknas i webbläsaren ur inläggen nedan: inget
+			     API, ingen AI, ingen text i något event. -->
+			<section class="local-retrospect" aria-labelledby="local-retrospect-heading">
+				<h3 id="local-retrospect-heading">Det som återkommer i dina ord</h3>
+				<p class="local-history-note">
+					Återblicken beräknas bara i den här webbläsaren. Innehållet i dina texter skickas inte
+					för att skapa återblicken.
+				</p>
+
+				{#if retrospect.status === 'no-theme'}
+					<p class="retrospect-empty">Det finns ännu inget tydligt återkommande tema.</p>
+				{:else}
+					<ul class="retrospect-list">
+						{#each retrospect.themes as theme (theme.stem)}
+							<li class="retrospect-theme">
+								<p class="retrospect-line">{describeLocalTheme(theme, retrospect.entryCount)}</p>
+								<button
+									type="button"
+									class="clear-entry-link"
+									aria-expanded={openEvidenceFor === theme.stem}
+									onclick={() => toggleEvidence(theme)}
+								>
+									{openEvidenceFor === theme.stem ? 'Dölj underlaget' : 'Visa underlaget'}
+								</button>
+
+								{#if openEvidenceFor === theme.stem}
+									<ul class="retrospect-evidence">
+										{#each theme.occurrences as occurrence (occurrence.entryId)}
+											<li>
+												<span class="local-history-date">
+													{formatLocalEntryDate(occurrence.updatedAt)}
+												</span>
+												<span class="retrospect-excerpt">{occurrence.excerpt}</span>
+												<button
+													type="button"
+													class="clear-entry-link"
+													onclick={() => openEntryById(occurrence.entryId)}
+												>
+													Öppna inlägget
+												</button>
+											</li>
+										{/each}
+									</ul>
+								{/if}
+							</li>
+						{/each}
+					</ul>
+				{/if}
+			</section>
+		{/if}
 
 		{#if localEntries.length > 0}
 			<section class="local-history" aria-labelledby="local-history-heading">
@@ -551,6 +623,72 @@
 
 	.entry-action-primary:hover {
 		border-color: hsl(var(--foreground) / 0.55);
+	}
+
+	/* Lokal återblick: lugn text, inga siffror i fetstil eller diagram. */
+	.local-retrospect {
+		display: grid;
+		gap: 0.6rem;
+		padding-top: 0.9rem;
+		border-top: 1px solid hsl(var(--border));
+	}
+
+	.local-retrospect h3 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: 1rem;
+		letter-spacing: -0.01em;
+	}
+
+	.retrospect-empty {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.92rem;
+		line-height: 1.55;
+	}
+
+	.retrospect-list {
+		display: grid;
+		gap: 0.8rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.retrospect-theme {
+		display: grid;
+		gap: 0.35rem;
+		justify-items: start;
+	}
+
+	.retrospect-line {
+		margin: 0;
+		font-size: 0.95rem;
+		line-height: 1.55;
+	}
+
+	.retrospect-evidence {
+		display: grid;
+		gap: 0.5rem;
+		width: 100%;
+		margin: 0.2rem 0 0;
+		padding: 0.6rem 0.7rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: var(--radius-input, 0.75rem);
+		background: hsl(var(--surface-soft));
+		list-style: none;
+	}
+
+	.retrospect-evidence li {
+		display: grid;
+		gap: 0.25rem;
+		justify-items: start;
+	}
+
+	.retrospect-excerpt {
+		font-size: 0.9rem;
+		line-height: 1.5;
+		overflow-wrap: anywhere;
 	}
 
 	/* Lokal historik: en lugn lista, inte ett arkiv. */

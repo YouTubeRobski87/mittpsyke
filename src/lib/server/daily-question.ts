@@ -1,5 +1,6 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { callClaude } from './ai/anthropic';
+import { DAILY_QUESTION_STOP_WORDS } from '$lib/swedish-stop-words';
 
 type MoodTrend = 'stabil' | 'stigande' | 'fallande' | 'svängig' | null;
 
@@ -113,38 +114,8 @@ const CRISIS_KEYWORDS = [
 	'vill inte finnas'
 ];
 
-const STOP_WORDS = new Set([
-	'och',
-	'att',
-	'det',
-	'som',
-	'jag',
-	'har',
-	'var',
-	'för',
-	'med',
-	'men',
-	'den',
-	'här',
-	'ett',
-	'min',
-	'mig',
-	'dig',
-	'du',
-	'till',
-	'inte',
-	'bara',
-	'kan',
-	'från',
-	'över',
-	'idag',
-	'känns',
-	'kände',
-	'känna',
-	'vara',
-	'blev',
-	'när'
-]);
+// Stopporden ligger i $lib/swedish-stop-words, samma uppsättning som förut.
+const STOP_WORDS = DAILY_QUESTION_STOP_WORDS;
 
 export function getStockholmDateKey(date = new Date()) {
 	return stockholmDateFormatter.format(date);
