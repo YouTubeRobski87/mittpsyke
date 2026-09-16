@@ -52,6 +52,7 @@
   import { getDashboardImageAnchors } from '$lib/world/dashboardSceneAnchors';
   import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
   import { readDiaryDraft } from '$lib/diary-draft';
+  import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';
 
 
   // Den rena scenvarianten behåller det nya stugperspektivet utan det djur som
@@ -295,6 +296,10 @@
           {/if}
         </div>
       </header>
+
+      {#if !isAnonymous}
+        <LocalEntriesImportPrompt />
+      {/if}
 
       <div
         class="dashboard-body"

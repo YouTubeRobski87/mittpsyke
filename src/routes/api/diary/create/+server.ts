@@ -92,6 +92,19 @@ function validateBody(input: unknown): { ok: true; data: CreateDiaryRequestBody 
 		return { ok: false, error: 'Field "daily_question_id" must be a valid UUID or null.' };
 	}
 
+	if (
+		body.local_import_id !== undefined &&
+		body.local_import_id !== null &&
+		typeof body.local_import_id !== 'string'
+	) {
+		return { ok: false, error: 'Field "local_import_id" must be a string or null.' };
+	}
+
+	const localImportId = body.local_import_id?.trim() || null;
+	if (localImportId && localImportId.length > 200) {
+		return { ok: false, error: 'Field "local_import_id" is too long.' };
+	}
+
 	return {
 		ok: true,
 		data: {
@@ -101,7 +114,8 @@ function validateBody(input: unknown): { ok: true; data: CreateDiaryRequestBody 
 			image_url: body.image_url ?? null,
 			video_path: body.video_path ?? null,
 			prompt_question: body.prompt_question?.trim() || null,
-			daily_question_id: dailyQuestionId
+			daily_question_id: dailyQuestionId,
+			local_import_id: localImportId
 		}
 	};
 }
@@ -169,6 +183,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 	}
 
+	const SELECT_COLUMNS =
+		'id, user_id, text, mood, tags, image_url, video_path, prompt_question, daily_question_id, created_at';
+
 	const { data: inserted, error: insertError } = await supabase
 		.from('diary')
 		.insert({
@@ -179,9 +196,10 @@ export const POST: RequestHandler = async ({ request }) => {
 			image_url: validated.data.image_url,
 			video_path: validated.data.video_path,
 			prompt_question: validated.data.prompt_question,
-			daily_question_id: dailyQuestionId
+			daily_question_id: dailyQuestionId,
+			local_import_id: validated.data.local_import_id
 		})
-		.select('id, user_id, text, mood, tags, image_url, video_path, prompt_question, daily_question_id, created_at')
+		.select(SELECT_COLUMNS)
 		.single();
 
 	if (!insertError && inserted) {
@@ -215,6 +233,25 @@ export const POST: RequestHandler = async ({ request }) => {
 		};
 
 		return json(response, { status: 200 });
+	}
+
+	// Idempotent import: samma lokala inlägg (local_import_id) har redan
+	// importerats en gång, så det partiella unika indexet i databasen gav ett
+	// dubblettfel. Det räknas som lyckat - den befintliga raden skickas
+	// tillbaka i stället för att skapa en till. Ingen AI/analys/analytics körs
+	// om, eftersom ingen ny rad faktiskt skapades.
+	if (insertError?.code === '23505' && validated.data.local_import_id) {
+		const { data: existing } = await supabase
+			.from('diary')
+			.select(SELECT_COLUMNS)
+			.eq('user_id', user.id)
+			.eq('local_import_id', validated.data.local_import_id)
+			.maybeSingle();
+
+		if (existing) {
+			const response: CreateDiarySuccessResponse = { success: true, diary: existing as DiaryRecord };
+			return json(response, { status: 200 });
+		}
 	}
 
 	// We intentionally do not insert into legacy journal_entries anymore.

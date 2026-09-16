@@ -21,6 +21,12 @@ export interface CreateDiaryRequestBody {
 	video_path?: string | null;
 	prompt_question?: string | null;
 	daily_question_id?: string | null;
+	/**
+	 * LocalDiaryEntry.id för ett inlägg som importeras från lokal historik.
+	 * Sätts aldrig av vanliga manuella sparningar. Gör importen idempotent:
+	 * samma id kan aldrig skapa två dagboksrader hos samma användare.
+	 */
+	local_import_id?: string | null;
 }
 
 export interface DiaryRecord {
