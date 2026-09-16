@@ -23,7 +23,7 @@ relatedArticles:
   - title: Ångest på kvällen – varför det ofta blir värre
     url: /guider/angest/angest-pa-kvallen
   - title: Ältande på kvällen – varför tankarna blir starkare i sängen
-    url: /guider/sovproblem/altande-pa-kvallen
+    url: /guider/overtankande/sluta-overtanka-pa-kvallen
 draft: false
 ---
 
@@ -53,7 +53,7 @@ Dämpa ljuset och välj något lågintensivt. Det kan vara en dusch, en varm dry
 
 ### Möt tankarna utan att förhandla hela natten
 
-Om en tanke återkommer kan du prova: “Det här är en tanke jag har när jag är trött.” Skriv ner den om den känns viktig och bestäm att du får återvända till den i morgon. Läs mer om [när tankarna inte stannar](/guider/angest/nar-tankarna-inte-stannar) om du fastnar i loopar.
+Om en tanke återkommer kan du prova: “Det här är en tanke jag har när jag är trött.” Skriv ner den om den känns viktig och bestäm att du får återvända till den i morgon. Läs mer om [när tankarna inte stannar](/guider/overtankande/sluta-overtanka-pa-kvallen) om du fastnar i loopar.
 
 ### Ta en lugn paus om det låser sig
 

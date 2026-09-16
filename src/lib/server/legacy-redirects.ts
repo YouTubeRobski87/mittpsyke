@@ -23,5 +23,23 @@ export const legacyBlogRedirects: Record<string, string> = {
 	'/blogg/anonym-hjalp-for-oro': '/hjalp-mot-oro-online',
 	'/blogg/hur-fungerar-humordagbok': '/blogg/humorsparning-online',
 	'/blogg/psykisk-ohalsa-stod-hjalp-sverige': '/blogg/hjaelp-vid-psykisk-ohaelsa',
-	'/blogg/kbt-vid-angest': '/guider/kbt/kbt-vid-angest'
+	'/blogg/kbt-vid-angest': '/guider/kbt/kbt-vid-angest',
+	// Kvällsklustret: Soro-artiklar som svarade på samma sökintention som
+	// guiderna nedan. Guiden är målsidan, artikeln pekar dit.
+	'/blogg/kvallsangest': '/guider/angest/angest-pa-kvallen',
+	'/blogg/oro-pa-kvallar': '/guider/angest/hjalp-vid-oro-pa-kvallen',
+	'/blogg/oro-infor-natten': '/guider/sovproblem/svart-att-somna-angest'
+};
+
+/**
+ * Kvällsguider som slagits ihop med en starkare målsida. Innehållet har
+ * flyttats dit, så den gamla adressen ska leda vidare i stället för att
+ * försvinna. Används av hooks.server.ts för 301-svaret.
+ */
+export const mergedGuideRedirects: Record<string, string> = {
+	'/guider/angest/angest-och-somn': '/guider/sovproblem/svart-att-somna-angest',
+	'/guider/angest/nar-tankarna-inte-stannar': '/guider/overtankande/sluta-overtanka-pa-kvallen',
+	'/guider/stress/mycket-tankar-pa-kvallen': '/guider/overtankande/sluta-overtanka-pa-kvallen',
+	'/guider/sovproblem/altande-pa-kvallen': '/guider/overtankande/sluta-overtanka-pa-kvallen',
+	'/guider/sovproblem/nattlig-oro': '/guider/angest/vaknar-med-angest'
 };

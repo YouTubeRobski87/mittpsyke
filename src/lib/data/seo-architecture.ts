@@ -40,7 +40,7 @@ export const pillars: Pillar[] = [
 		toolSlugs: ['grounding-5-4-3-2-1', '4-7-8-andning', 'cbt-katastroftankar'],
 		relatedArticles: [
 			{ title: 'Panikattack eller ångest – vad är skillnaden?', href: '/guider/angest/panikangest-och-kroppen' },
-			{ title: 'Ångest på kvällen – varför det ofta blir värre', href: '/guider/angest/angest-och-somn' },
+			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider/sovproblem/svart-att-somna-angest' },
 			{ title: 'Undvikande och hur det håller ångesten vid liv', href: '/guider/trauma/undvikande-efter-trauma' },
 			{ title: 'Kroppen vid ångest – symtom du kan lära dig förstå', href: '/guider/angest/panikangest-och-kroppen' }
 		]
@@ -99,7 +99,7 @@ export const pillars: Pillar[] = [
 		toolSlugs: ['4-7-8-andning', 'body-scan', 'dagens-avslut-reflektion'],
 		relatedArticles: [
 			{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider/sovproblem/stress-och-somn' },
-			{ title: 'Ältande på kvällen – varför tankarna blir starkare i sängen', href: '/guider/sovproblem/altande-pa-kvallen' },
+			{ title: 'Sluta övertänka på kvällen – tips för lugna kvällar', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' },
 			{ title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget', href: '/guider/sovproblem/trott-men-uppvarvad' },
 			{ title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet', href: '/guider/sovproblem/somnbrist-och-maendet' }
 		]

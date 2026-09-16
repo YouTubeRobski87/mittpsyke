@@ -34,7 +34,19 @@ export type Guide = {
 	updatedAt?: string;
 	sources?: SourceItem[];
 	content?: string;
+	/** Kvälls- och nattguider som visar en lågmäld länk till Kvällstugan. */
+	eveningSupport?: boolean;
 };
+
+/** Guiderna i kvällsklustret, i den ordning de svarar på olika frågor. */
+export const EVENING_CLUSTER_GUIDES = [
+	'angest/angest-pa-kvallen',
+	'angest/hjalp-vid-oro-pa-kvallen',
+	'angest/vaknar-med-angest',
+	'sovproblem/svart-att-somna-angest',
+	'overtankande/sluta-overtanka-pa-kvallen',
+	'panikattack/panikattacker-pa-natten'
+] as const;
 
 export type SeoLandingSection = {
 	heading: string;
@@ -201,8 +213,8 @@ export const guides: Guide[] = [
 				href: '/guider/angest/orostankar'
 			},
 			{
-				title: 'Ångest och sömn – varför natten kan bli svårare',
-				href: '/guider/angest/angest-och-somn'
+				title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren',
+				href: '/guider/sovproblem/svart-att-somna-angest'
 			},
 			{
 				title: 'Social ångest – rädslan för att bli bedömd av andra',
@@ -249,8 +261,8 @@ export const guides: Guide[] = [
 				href: '/guider/angest/orostankar'
 			},
 			{
-				title: 'Ångest och sömn – varför natten kan bli svårare',
-				href: '/guider/angest/angest-och-somn'
+				title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren',
+				href: '/guider/sovproblem/svart-att-somna-angest'
 			}
 		],
 	},
@@ -293,60 +305,8 @@ export const guides: Guide[] = [
 				href: '/guider/angest/panikangest-och-kroppen'
 			},
 			{
-				title: 'Ångest och sömn - varför natten kan bli svårare',
-				href: '/guider/angest/angest-och-somn'
-			}
-		],
-	},
-	{
-		pillarSlug: 'angest',
-		slug: 'angest-och-somn',
-		title: 'Ångest och sömn - varför natten kan bli svårare',
-		description: 'Om hur ångest ofta blir tydligare på kvällen och kan göra det svårt att somna eller sova lugnt.',
-		updatedAt: '2026-03-14',
-		sources: [
-			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		],
-		faqs: [
-			{
-				question: 'Varför blir ångesten starkare på natten?',
-				answer: 'När tempot sjunker och intrycken minskar får känslor och tankar ofta mer plats, vilket kan göra ångesten tydligare.'
-			},
-			{
-				question: 'Kan ångest väcka mig under natten?',
-				answer: 'Ja, vissa vaknar med hjärtklappning, oro eller stark kroppslig anspänning mitt i natten.'
-			},
-			{
-				question: 'Gör dålig sömn ångesten värre?',
-				answer: 'Ofta ja. Sömnbrist kan göra nervsystemet mer känsligt och det kan bli svårare att hantera oro dagen efter.'
-			},
-			{
-				question: 'Vad kan hjälpa mest?',
-				answer: 'Att minska pressen kring sömnen och samtidigt få stöd i det som skapar ångesten brukar vara viktigare än att bara försöka sova mer.'
-			}
-		],
-		relatedArticles: [
-			{
-				title: 'Tecken på ångest',
-				href: '/guider/angest/tecken'
-			},
-			{
-				title: 'Varför kan jag inte sova',
-				href: '/guider/sovproblem/orsaker'
-			},
-			{
-				title: 'Stress och sömn – när kroppen inte kan varva ner',
-				href: '/guider/sovproblem/stress-och-somn'
-			},
-			{
-				title: 'Hjälp vid oro på kvällen – vad du kan göra just nu',
-				href: '/guider/angest/hjalp-vid-oro-pa-kvallen'
-			},
-			{
-				title: 'Kvällsångest – varför får jag ångest på kvällen?',
-				href: '/guider/angest/angest-pa-kvallen'
+				title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren',
+				href: '/guider/sovproblem/svart-att-somna-angest'
 			}
 		],
 	},
@@ -878,8 +838,8 @@ export const guides: Guide[] = [
 				href: '/guider/sovproblem/stress-och-somn'
 			},
 			{
-				title: 'Ältande på kvällen – varför tankarna blir starkare i sängen',
-				href: '/guider/sovproblem/altande-pa-kvallen'
+				title: 'Sluta övertänka på kvällen – tips för lugna kvällar',
+				href: '/guider/overtankande/sluta-overtanka-pa-kvallen'
 			},
 			{
 				title: 'Trött men uppvarvad – när kroppen vill sova men hjärnan inte släpper taget',
@@ -923,40 +883,6 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'När kroppen säger ifrån vid stress', href: '/guider/stress/nar-kroppen-sager-ifran-stress' },
 			{ title: 'Trött men uppvarvad på kvällen', href: '/guider/sovproblem/trott-men-uppvarvad' }
-		],
-	},
-	{
-		pillarSlug: 'sovproblem',
-		slug: 'altande-pa-kvallen',
-		title: 'Ältande på kvällen – varför tankarna blir starkare i sängen',
-		description: 'Om varför tankar ofta tar mer plats på kvällen och hur ältande kan hålla dig vaken.',
-		updatedAt: '2026-03-14',
-		sources: [
-			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
-			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		],
-		faqs: [
-			{
-				question: 'Varför börjar jag tänka mer just när jag lägger mig?',
-				answer: 'När det blir tyst omkring dig för hjärnan mer utrymme, och oro eller obearbetade intryck kan bli tydligare.'
-			},
-			{
-				question: 'Är ältande samma sak som problemlösning?',
-				answer: 'Inte riktigt. Ältande känns ofta som att tankarna går i cirklar utan att leda till ett tydligt svar eller beslut.'
-			},
-			{
-				question: 'Kan kvällsoro göra att jag somnar senare?',
-				answer: 'Ja, mental aktivering på kvällen kan göra det svårare att komma ner i ro och släppa taget om dagen.'
-			},
-			{
-				question: 'Vad kan hjälpa när tankarna snurrar i sängen?',
-				answer: 'Det kan hjälpa att sätta ord på tankarna tidigare på kvällen eller använda en lugn rutin som markerar att dagen är slut.'
-			}
-		],
-		relatedArticles: [
-			{ title: 'Sluta övertänka på kvällen', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' },
-			{ title: 'Stress och sömn', href: '/guider/sovproblem/stress-och-somn' }
 		],
 	},
 	{
@@ -1362,13 +1288,14 @@ export const guides: Guide[] = [
 		relatedArticles: [
 			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' },
 			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider/angest/overtankande-hjalp' },
-			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider/angest/nar-tankarna-inte-stannar' },
+			{ title: 'Sluta övertänka på kvällen – tips för lugna kvällar', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' },
 			{ title: 'Varför orkar jag ingenting? – om utmattning och energibrist', href: '/guider/stress/varfor-orkar-jag-ingenting' }
 		],
 	},
 	{
 		pillarSlug: 'angest',
 		slug: 'angest-pa-kvallen',
+		eveningSupport: true,
 		nextStepTool: '4-7-8-andning',
 		title: 'Kvällsångest – varför får jag ångest på kvällen?',
 		description:
@@ -1472,8 +1399,8 @@ När det snurrar mycket på kvällen kan det hjälpa att skriva av sig. Börja l
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider/angest/angest-och-somn' },
-			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider/angest/hjalp-vid-oro-pa-kvallen' },
+			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider/sovproblem/svart-att-somna-angest' },
+			{ title: 'Oro på kvällen – tre saker att göra just nu', href: '/guider/angest/hjalp-vid-oro-pa-kvallen' },
 			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' },
 			{ title: 'Vaknar med ångest – när morgonen börjar tungt', href: '/guider/angest/vaknar-med-angest' },
 			{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider/sovproblem/stress-och-somn' }
@@ -1482,14 +1409,20 @@ När det snurrar mycket på kvällen kan det hjälpa att skriva av sig. Börja l
 	{
 		pillarSlug: 'angest',
 		slug: 'hjalp-vid-oro-pa-kvallen',
+		eveningSupport: true,
 		nextStepTool: '4-7-8-andning',
-		title: 'Hjälp vid oro på kvällen – vad du kan göra just nu',
-		description: 'Varför ångesten och oron ofta ökar på kvällen – och tre enkla saker som faktiskt hjälper.',
-		content: `## Varför kvällen kan kännas tyngst
+		// Repositionerad: den här sidan svarar bara på "vad gör jag just nu?".
+		// Förklaringen av varför kvällen blir svårare bor på pelarsidan
+		// /guider/angest/angest-pa-kvallen, så att sidorna inte konkurrerar.
+		title: 'Oro på kvällen – tre saker att göra just nu',
+		seoTitle: 'Oro på kvällen: tre saker att göra just nu | MittPsyke',
+		description: 'Tre enkla steg du kan ta direkt när oron växer på kvällen, och vad du gör om det inte räcker.',
+		seoDescription: 'Växer oron nu på kvällen? Tre konkreta steg att göra direkt, och vad du gör om det återkommer.',
+		content: `## Om oron är stark just nu
 
-Under dagen är hjärnan sysselsatt. Jobb, samtal, uppgifter – det finns hela tiden något att fokusera på. Men när kvällen kommer och det tystnar, tar hjärnan ofta chansen att bearbeta allt som inte hanns med under dagen.
+Börja här och läs vidare sedan. De tre stegen nedan tar några minuter och kräver ingen förberedelse.
 
-Det är inte ett tecken på svaghet. Det är inte för att du "övertänker". Det är hjärnan som gör sitt jobb – men på fel tid.
+Vill du i stället förstå varför kvällen ofta blir tyngre finns förklaringen i <a href="/guider/angest/angest-pa-kvallen">kvällsångest – varför får jag ångest på kvällen?</a>.
 
 ## Tre saker som faktiskt hjälper
 
@@ -1535,14 +1468,15 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider/angest/angest-pa-kvallen' },
-			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider/sovproblem/nattlig-oro' },
+			{ title: 'Kvällsångest – varför får jag ångest på kvällen?', href: '/guider/angest/angest-pa-kvallen' },
+			{ title: 'Vaknar med ångest på natten – varför händer det?', href: '/guider/angest/vaknar-med-angest' },
 			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' }
 		],
 	},
 	{
 		pillarSlug: 'angest',
 		slug: 'vaknar-med-angest',
+		eveningSupport: true,
 		nextStepTool: 'grounding-5-4-3-2-1',
 		title: 'Vaknar med ångest på natten – varför händer det?',
 		description:
@@ -1584,7 +1518,7 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 
 		Att vakna med ångest behöver inte betyda att du har haft en panikattack. Ibland handlar det mer om oro som blir tydlig när du vaknar, eller om tankar som snabbt tar fart. En panikattack brukar upplevas som mer plötslig och intensiv, men gränsen är inte alltid lätt att dra själv.
 
-		Om du framför allt märker att ångesten växer redan under kvällen eller när du ska lägga dig kan <a href="/guider/angest/angest-pa-kvallen">ångest på kvällen</a> vara en mer träffsäker fördjupning. Om natten ofta fylls av tankar och det är svårt att hitta tillbaka till sömnen kan du också läsa om <a href="/guider/sovproblem/nattlig-oro">nattlig oro</a> och <a href="/guider/angest/angest-och-somn">ångest och sömn</a>.
+		Om du framför allt märker att ångesten växer redan under kvällen eller när du ska lägga dig kan <a href="/guider/angest/angest-pa-kvallen">ångest på kvällen</a> vara en mer träffsäker fördjupning. Om natten ofta fylls av tankar och det är svårt att hitta tillbaka till sömnen kan du också läsa om <a href="/guider/angest/vaknar-med-angest">nattlig oro</a> och <a href="/guider/sovproblem/svart-att-somna-angest">ångest och sömn</a>.
 
 		## Om det händer återkommande
 
@@ -1622,15 +1556,24 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 				answer: 'Försök orientera dig lugnt, rikta uppmärksamheten mot något konkret och låt andningen vara mjuk. Målet behöver inte vara att bli helt lugn direkt, utan att göra stunden lite mer hanterbar.'
 			},
 			{
+				// Från den hopslagna guiden "Nattlig oro".
+				question: 'Ska jag stiga upp om jag inte somnar om?',
+				answer: 'Om du legat vaken mer än 20 minuter kan det hjälpa att gå upp, göra något mycket lugnt i svagt ljus och sedan försöka igen.'
+			},
+			{
+				question: 'Kan nattlig oro bli ett mönster?',
+				answer: 'Ja, om man börjar oroa sig för sömnen i sig kan det bli en ond cirkel. Att bryta kopplingen mellan sängen och oron är ett viktigt steg.'
+			},
+			{
 				question: 'När bör jag söka vård?',
 				answer: 'Kontakta vårdcentralen om ångesten återkommer och påverkar vardagen. Ring 1177 för råd. Vid direkt fara för livet, eller vid exempelvis bröstsmärta, svår andnöd eller svimning, ska du söka akut hjälp via 112.'
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider/angest/angest-pa-kvallen' },
-			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider/sovproblem/nattlig-oro' },
+			{ title: 'Kvällsångest – varför får jag ångest på kvällen?', href: '/guider/angest/angest-pa-kvallen' },
+			{ title: 'Oro på kvällen – tre saker att göra just nu', href: '/guider/angest/hjalp-vid-oro-pa-kvallen' },
 			{ title: 'Panikattacker på natten – varför händer det och vad du kan göra', href: '/guider/panikattack/panikattacker-pa-natten' },
-			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider/angest/angest-och-somn' }
+			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider/sovproblem/svart-att-somna-angest' }
 		],
 	},
 	{
@@ -1770,46 +1713,10 @@ Om oron börjar påverka sömnen regelbundet är det ett tecken på att du fört
 		],
 		relatedArticles: [
 			{ title: 'Kan inte sluta tänka – när tankarna bara snurrar', href: '/guider/angest/kan-inte-sluta-tanka' },
-			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider/angest/nar-tankarna-inte-stannar' },
+			{ title: 'Sluta övertänka på kvällen – tips för lugna kvällar', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' },
 			{ title: 'Orostankar som snurrar – när hjärnan inte kan stänga av', href: '/guider/angest/orostankar' }
 		],
 	},
-	{
-		pillarSlug: 'angest',
-		slug: 'nar-tankarna-inte-stannar',
-		title: 'När tankarna inte stannar – att hitta ro på kvällen',
-		description: 'Om varför kvällen kan fyllas av tankar och hur du kan skapa mer ro inför sömnen.',
-		updatedAt: '2026-03-14',
-		sources: [
-			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		],
-		faqs: [
-			{
-				question: 'Varför är det svårast att stänga av på kvällen?',
-				answer: 'Utan dagens intryck att fokusera på får hjärnan plötsligt tid att bearbeta det som legat och väntade. Tankarna fyller ut tystnaden.'
-			},
-			{
-				question: 'Hjälper det att tvinga sig att inte tänka?',
-				answer: 'Sällan. Att kämpa mot tankar gör dem ofta starkare. Att i stället ge dem ett specifikt utrymme – t.ex. en orosstund tidigare på kvällen – kan fungera bättre.'
-			},
-			{
-				question: 'Vad är en orosstund?',
-				answer: 'En avsatt tid på 15–20 minuter tidigare på kvällen då du aktivt tänker igenom det som oroar. Utanför den tiden skjuter du upp grubblandet.'
-			},
-			{
-				question: 'Vad mer kan hjälpa?',
-				answer: 'Att skriva ner tankar i en dagbok, ha en lugn nedvarvningsrutin och undvika stimulerande innehåll nära läggdags.'
-			}
-		],
-		relatedArticles: [
-			{ title: 'Övertänkande – hjälp när hjärnan kör på för högt varv', href: '/guider/angest/overtankande-hjalp' },
-			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider/angest/angest-pa-kvallen' },
-			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider/sovproblem/nattlig-oro' }
-		],
-	},
-
 	// === NYA GUIDER: STRESS (8) ===
 	{
 		pillarSlug: 'stress',
@@ -2156,48 +2063,11 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 		],
 		relatedArticles: [
 			{ title: 'Stressad hela tiden – om kronisk stress och hur du bryter mönstret', href: '/guider/stress/stressad-hela-tiden' },
-			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider/angest/angest-pa-kvallen' },
+			{ title: 'Kvällsångest – varför får jag ångest på kvällen?', href: '/guider/angest/angest-pa-kvallen' },
 			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider/sovproblem/kan-inte-sova-stress' },
-			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider/angest/hjalp-vid-oro-pa-kvallen' }
+			{ title: 'Oro på kvällen – tre saker att göra just nu', href: '/guider/angest/hjalp-vid-oro-pa-kvallen' }
 		],
 	},
-	{
-		pillarSlug: 'stress',
-		slug: 'mycket-tankar-pa-kvallen',
-		nextStepTool: 'andning-4-7-8',
-		title: 'Mycket tankar på kvällen – när hjärnan inte vill stänga av',
-		description: 'Om varför kvällen fylls av tankar och oro, och hur du kan skapa mer ro inför sömnen.',
-		updatedAt: '2026-03-14',
-		sources: [
-			{ label: 'Stress – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/stress/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' },
-			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' }
-		],
-		faqs: [
-			{
-				question: 'Varför exploderar tankarna på kvällen?',
-				answer: 'Dagen är full av distraktioner. På kvällen, när det tystnar, får hjärnan plötsligt tid att ta upp allt det den lade åt sidan under dagen.'
-			},
-			{
-				question: 'Är kvällstankar ett tecken på stress?',
-				answer: 'Ofta ja. Hjärnan bearbetar det den inte hann med under dagen. Det är inte konstigt, men kan bli utmattande.'
-			},
-			{
-				question: 'Vad kan jag göra för att dämpa det?',
-				answer: 'Att skriva ner det du bär på i en dagbok, ha en avsatt "tanketid" tidigare på kvällen och skapa en lugn övergångsritual hjälper hjärnan att landa.'
-			},
-			{
-				question: 'Hjälper telefonen att distrahera mig?',
-				answer: 'Inte alltid. Skärmar håller hjärnan aktiv och kan göra det svårare att somna. Lugna aktiviteter utan skärm fungerar bättre för att landa.'
-			}
-		],
-		relatedArticles: [
-			{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider/stress/kan-inte-varva-ner' },
-			{ title: 'När tankarna inte stannar – att hitta ro på kvällen', href: '/guider/angest/nar-tankarna-inte-stannar' },
-			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider/sovproblem/nattlig-oro' }
-		],
-	},
-
 	// === NYA GUIDER: ENSAMHET (4) ===
 	{
 		pillarSlug: 'ensamhet',
@@ -2384,6 +2254,7 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 	{
 		pillarSlug: 'sovproblem',
 		slug: 'svart-att-somna-angest',
+		eveningSupport: true,
 		nextStepTool: '4-7-8-andning',
 		title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren',
 		description: 'Om kopplingen mellan ångest och sömnsvårigheter och hur du kan göra det lättare att somna.',
@@ -2393,10 +2264,41 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
 			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
 		],
+		// Innehållet är hopslaget från den tidigare guiden "Ångest och sömn",
+		// som svarade på samma fråga om läggdags och natt.
+		content: `## Varför natten kan bli svårare
+
+När tempot sjunker och intrycken minskar får tankar och känslor mer plats. Det som gick att skjuta undan under dagen blir tydligare i sängen, och kroppen kan vara kvar i beredskap fast du är trött.
+
+## När sömnkravet blir en egen oro
+
+Vetskapen om att du behöver sova gör varje vaken minut till en påminnelse om att det inte går. Pressen att somna håller uppe samma anspänning som håller dig vaken.
+
+Sömnbrist kan i sin tur göra nervsystemet känsligare, så att oron blir svårare att bära dagen efter. Därför brukar det hjälpa mer att ta hand om både sömnen och det som skapar ångesten än att bara försöka sova mer.
+
+## Vad som brukar hjälpa
+
+Sänk kravet på att somna. Att vila utan att sova är också vila.
+
+Ge oron en egen tid tidigare på kvällen, i stället för i sängen.
+
+Rikta uppmärksamheten mot kroppen, till exempel lugn magandning, hellre än mot tankarna.
+
+Om du legat vaken länge kan det hjälpa att gå upp en stund i svagt ljus och försöka igen efteråt.
+
+Om sömnen varit svår under en längre tid, eller om ångesten påverkar vardagen, är det klokt att ta upp det med vården.`,
 		faqs: [
 			{
 				question: 'Varför ökar ångesten när jag försöker sova?',
 				answer: 'Tystnaden och bristen på distraktioner ger ångesten mer utrymme. Kroppen är trött men sinnet håller beredskapen uppe.'
+			},
+			{
+				question: 'Kan ångest väcka mig under natten?',
+				answer: 'Ja, vissa vaknar med hjärtklappning, oro eller stark kroppslig anspänning mitt i natten.'
+			},
+			{
+				question: 'Gör dålig sömn ångesten värre?',
+				answer: 'Ofta ja. Sömnbrist kan göra nervsystemet mer känsligt och det kan bli svårare att hantera oro dagen efter.'
 			},
 			{
 				question: 'Vad hjälper direkt i stunden?',
@@ -2412,48 +2314,11 @@ Du behöver inte ha nått botten för att det ska vara okej att be om hjälp.`,
 			}
 		],
 		relatedArticles: [
-			{ title: 'Ångest och sömn – varför natten kan bli svårare', href: '/guider/angest/angest-och-somn' },
+			{ title: 'Kvällsångest – varför får jag ångest på kvällen?', href: '/guider/angest/angest-pa-kvallen' },
 			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider/sovproblem/kan-inte-sova-stress' },
-			{ title: 'Nattlig oro – att vakna med tankar som inte ger ro', href: '/guider/sovproblem/nattlig-oro' }
+			{ title: 'Vaknar med ångest på natten – varför händer det?', href: '/guider/angest/vaknar-med-angest' }
 		],
 	},
-	{
-		pillarSlug: 'sovproblem',
-		slug: 'nattlig-oro',
-		title: 'Nattlig oro – att vakna med tankar som inte ger ro',
-		description: 'Om att vakna mitt i natten med oro och tankar, och vad du kan göra för att hitta tillbaka till sömnen.',
-		updatedAt: '2026-03-14',
-		sources: [
-			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
-			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
-			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
-		],
-		faqs: [
-			{
-				question: 'Varför vaknar jag av oro mitt i natten?',
-				answer: 'Sömnens lätta faser sker under andra halvan av natten. Oro och stress kan göra att hjärnan aktiveras i dessa faser och inte hittar tillbaka till djupsömn.'
-			},
-			{
-				question: 'Vad ska jag göra när jag vaknar och oroar mig?',
-				answer: 'Undvik att kolla klockan. Lägg handen på magen, andas lugnt och försök inte tvinga fram sömnen. Acceptans brukar fungera bättre än kamp.'
-			},
-			{
-				question: 'Ska jag stiga upp om jag inte somnar?',
-				answer: 'Om du legat vaken mer än 20 minuter kan det hjälpa att gå upp, göra något mycket lugnt i svagt ljus och sedan försöka igen.'
-			},
-			{
-				question: 'Kan nattlig oro bli kronisk?',
-				answer: 'Ja, om man börjar oroa sig för sömnen i sig skapas en ond cirkel. Att bryta kopplingen sängen = oro är ett viktigt steg.'
-			}
-		],
-		relatedArticles: [
-			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider/sovproblem/svart-att-somna-angest' },
-			{ title: 'Kan inte sova av stress – när kroppen inte ger sig', href: '/guider/sovproblem/kan-inte-sova-stress' },
-			{ title: 'Ångest på kvällen – varför det ökar när dagen tar slut', href: '/guider/angest/angest-pa-kvallen' },
-			{ title: 'Hjälp vid oro på kvällen – vad du kan göra just nu', href: '/guider/angest/hjalp-vid-oro-pa-kvallen' }
-		],
-	},
-
 	// === NYA GUIDER: SJÄLVKÄNSLA (5) ===
 	{
 		pillarSlug: 'sjalvkansla',
@@ -3691,6 +3556,7 @@ Relaterade guider: <a href="/guider/panikattack/ta-dig-igenom-en-panikattack">ta
 	{
 		pillarSlug: 'panikattack',
 		slug: 'panikattacker-pa-natten',
+		eveningSupport: true,
 		nextStepTool: 'body-scan',
 		title: 'Panikattacker på natten – varför händer det och vad du kan göra',
 		description:
@@ -3878,6 +3744,7 @@ Relaterade guider: <a href="/guider/depression">/guider/depression</a>
 	{
 		pillarSlug: 'overtankande',
 		slug: 'sluta-overtanka-pa-kvallen',
+		eveningSupport: true,
 		nextStepTool: 'dagens-avslut-reflektion',
 		title: 'Sluta övertänka på kvällen – tips för lugna kvällar',
 		description:
@@ -3925,14 +3792,41 @@ Relaterade guider: <a href="/guider/sovproblem">/guider/sovproblem</a>
 
 Övningslänkar: <a href="/ovningar/dagens-avslut-reflektion">/ovningar/dagens-avslut-reflektion</a>, <a href="/ovningar/4-7-8-andning">/ovningar/4-7-8-andning</a>`,
 		updatedAt: '2026-04-12',
+		// Källorna och frågorna nedan kommer från de hopslagna guiderna
+		// "Ältande på kvällen", "När tankarna inte stannar" och "Mycket tankar
+		// på kvällen", som svarade på samma fråga om tankar vid läggdags.
+		sources: [
+			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnsvarigheter/' },
+			{ label: 'Sömnen är viktig för hälsan – 1177 Vårdguiden', url: 'https://www.1177.se/liv--halsa/stresshantering-och-somn/somnen-ar-viktig-for-din-halsa/' },
+			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
+		],
 		faqs: [
 			{
-				question: 'Sluta övertänka på kvällen – tips för lugna kvällar',
+				question: 'Varför exploderar tankarna just när jag lägger mig?',
 				answer:
-					'Kvällen är hjärnans bästa tid för grubblande. Under dagen har du distraktioner. Men när du lägger dig och det blir tyst finns det inget som konkurrerar med tankarna. Allt du tryckt undan under dagen bubblar upp. Det är inte ett tecken på att något är fel med dig — det är ett tecken på att din hjärna äntligen har utrymme att bearbeta.'
+					'Under dagen finns distraktioner som konkurrerar med tankarna. När det blir tyst får hjärnan utrymme att ta upp det den lade åt sidan. Det är inte ett tecken på att något är fel med dig.'
+			},
+			{
+				question: 'Är ältande samma sak som problemlösning?',
+				answer:
+					'Inte riktigt. Ältande känns ofta som att tankarna går i cirklar utan att leda till ett tydligt svar eller beslut.'
+			},
+			{
+				question: 'Hjälper det att tvinga sig att inte tänka?',
+				answer:
+					'Sällan. Att kämpa mot tankar gör dem ofta starkare. Att ge dem ett eget utrymme tidigare på kvällen, till exempel en orosstund på 15–20 minuter, brukar fungera bättre.'
+			},
+			{
+				question: 'Hjälper telefonen att distrahera mig?',
+				answer:
+					'Inte alltid. Skärmar håller hjärnan aktiv och kan göra det svårare att somna. Lugna aktiviteter utan skärm fungerar oftast bättre för att landa.'
 			}
 		],
-		relatedArticles: [{ title: 'Sömnproblem', href: '/guider/sovproblem' }]
+		relatedArticles: [
+			{ title: 'Sömnproblem', href: '/guider/sovproblem' },
+			{ title: 'Kvällsångest – varför får jag ångest på kvällen?', href: '/guider/angest/angest-pa-kvallen' },
+			{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider/sovproblem/svart-att-somna-angest' }
+		]
 	},
 	{
 		pillarSlug: 'overtankande',
@@ -4188,7 +4082,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				body: 'Ångest kan märkas inför sociala situationer, när du ska sova, när något är oklart eller när kroppen redan är trött och stressad. För vissa kommer den i tydliga toppar, som vid panikattack. För andra ligger den mer som en ständig vaksamhet i bakgrunden.',
 				links: [
 					{ title: 'Panikattack – hjälp direkt när kroppen larmar', href: '/guider/angest/panikattack-hjalp' },
-					{ title: 'Ångest och sömn - varför natten kan bli svårare', href: '/guider/angest/angest-och-somn' },
+					{ title: 'Svårt att somna av ångest – när oron tar sig in i sängkammaren', href: '/guider/sovproblem/svart-att-somna-angest' },
 					{ title: 'Social ångest - rädslan för att bli bedömd av andra', href: '/guider/angest/social-angest' }
 				]
 			},
@@ -4288,7 +4182,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				body: 'I tankarna kan stress märkas som rastlöshet, irritation, tunnelseende, grubblande eller en känsla av att aldrig riktigt bli klar. I kroppen kan det kännas som spända muskler, hjärtklappning, trötthet, huvudvärk, magbesvär eller att det är svårt att varva ner. I beteenden syns stress ofta som att man kör på fast man är slut, skjuter upp återhämtning eller blir mer kort i tonen än man egentligen vill.',
 				links: [
 					{ title: 'Kan inte varva ner – om stress som sitter kvar i kroppen', href: '/guider/stress/kan-inte-varva-ner' },
-					{ title: 'Mycket tankar på kvällen – när hjärnan inte vill stänga av', href: '/guider/stress/mycket-tankar-pa-kvallen' }
+					{ title: 'Sluta övertänka på kvällen – tips för lugna kvällar', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' }
 				]
 			},
 			{
@@ -4556,7 +4450,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				links: [
 					{ title: 'Skriv ned tankarna i dagboken', href: '/dagbok' },
 					{ title: 'KBT-dagbok eller fritt skrivande', href: '/blogg/kbt-dagbok-vs-fri-journalforing' },
-					{ title: 'Ältande på kvällen', href: '/guider/sovproblem/altande-pa-kvallen' }
+					{ title: 'Sluta övertänka på kvällen – tips för lugna kvällar', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' }
 				]
 			}
 		],
@@ -4588,7 +4482,7 @@ export const pillarLandingPages: Partial<Record<Pillar['slug'], SeoLandingPage>>
 				body: 'Att vara utmattad men ändå inte kunna somna är ett vanligt mönster. Det beror ofta på ett aktiverat nervsystem som inte fått signal om att det är tryggt att vila.',
 				links: [
 					{ title: 'Trött men uppvarvad – vad det beror på', href: '/guider/sovproblem/trott-men-uppvarvad' },
-					{ title: 'Ältande på kvällen – när tankarna tar över', href: '/guider/sovproblem/altande-pa-kvallen' }
+					{ title: 'Sluta övertänka på kvällen – tips för lugna kvällar', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' }
 				]
 			},
 			{

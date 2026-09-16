@@ -4,6 +4,7 @@ import { redirect, type Handle } from '@sveltejs/kit'
 import { sequence } from '@sveltejs/kit/hooks'
 import { getSessionUser } from '$lib/server/admin-auth'
 import { getGuideBySlugs, getPillarBySlug } from '$lib/seo-kit/content'
+import { legacyBlogRedirects, mergedGuideRedirects } from '$lib/server/legacy-redirects'
 import { normalizeStructuredDataSiteUrls } from '$lib/seo'
 
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
@@ -29,31 +30,9 @@ function normalizeStructuredDataUrls(html: string): string {
 	})
 }
 
-// Gamla bloggslugg som flyttats till egna sidor (eller saknar Soro-artikel) → 301
-const legacyBlogRedirects: Record<string, string> = {
-	'/blogg/digital-dagbok-for-maende': '/digital-dagbok-for-maende',
-	'/blogg/psykiskt-stod-online': '/psykiskt-stod-online',
-	'/blogg/humorsparning': '/humorsparning',
-	'/blogg/humorsparning-app-psykisk-halsa': '/humorsparning',
-	'/blogg/skriva-dagbok-online': '/dagbok',
-	'/blogg/att-skriva-av-sig-anonymt-online': '/anonym-dagbok-online',
-	'/blogg/ovningar-for-att-lugna-tankarna': '/ovningar',
-	'/blogg/stod-utan-konto-online': '/chatta-anonymt',
-	'/blogg/textbaserat-samtalsstod-vid-oro': '/hjalp-mot-oro-online',
-	'/blogg/nar-soka-vard-for-psykiskt-maende': '/ansvar',
-	'/blogg/hur-sortera-tankar-vid-stress': '/stod-vid-stress-online',
-	'/blogg/mans-psykiska-halsa': '/blogg/varfor-syns-inte-man-i-samtalet-om-psykisk-ohalsa',
-	'/blogg/integritet-i-appar-for-mental-halsa': '/blogg/s%C3%A4kra-maendedata-tjanster',
-	'/blogg/anonymt-stod-vs-vardkontakt': '/anonymt-samtalstod-online',
-	'/blogg/reflektionsfragor-for-psykiskt-maende': '/blogg/vad-ska-jag-skriva-i-dagbok',
-	'/blogg/hjalp-att-satta-ord-pa-kanslor': '/blogg/guide-till-battre-kansloverblick',
-	'/blogg/ai-dagbok': '/blogg/ai-hjalper-dig-bearbeta-kanslor',
-	'/blogg/textstod-eller-terapi-online-vad-passar-dig': '/blogg/ar-textstod-lika-hjalpsamt-som-samtal',
-	'/blogg/anonym-hjalp-for-oro': '/hjalp-mot-oro-online',
-	'/blogg/hur-fungerar-humordagbok': '/blogg/humorsparning-online',
-	'/blogg/psykisk-ohalsa-stod-hjalp-sverige': '/blogg/hjaelp-vid-psykisk-ohaelsa',
-	'/blogg/kbt-vid-angest': '/guider/kbt/kbt-vid-angest'
-}
+// Bloggens 301-karta och kvällsklustrets hopslagna guider delas med sitemapen
+// ($lib/server/legacy-redirects), så att en omdirigerad adress aldrig annonseras
+// som indexerbar. Tidigare fanns en egen kopia här som kunde glida isär.
 
 const legacyPageRedirects: Record<string, string> = {
 	'/hem': '/dashboard',
@@ -94,6 +73,12 @@ const legacyPathRedirects: Handle = async ({ event, resolve }) => {
 	const legacyBlogTarget = legacyBlogRedirects[url.pathname]
 	if (legacyBlogTarget) {
 		throw redirect(301, legacyBlogTarget)
+	}
+
+	// Kvällsguider som slagits ihop: innehållet finns kvar på målsidan.
+	const mergedGuideTarget = mergedGuideRedirects[normalizedPathname]
+	if (mergedGuideTarget) {
+		throw redirect(301, mergedGuideTarget)
 	}
 
 	if (normalizedPathname === '/guider-seo' || normalizedPathname.startsWith('/guider-seo/')) {

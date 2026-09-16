@@ -72,7 +72,7 @@ Det finns inget rätt svar. Om sängen just då känns för laddad kan du sitta 
 
 ### Kan jag göra något mellan nätterna?
 
-Ja. En kort notering i dagboken om när det hände, hur det kändes och vad som hjälpte kan ge underlag för dig själv eller vården. Du kan också läsa om [ångest och sömn](/guider/angest/angest-och-somn).
+Ja. En kort notering i dagboken om när det hände, hur det kändes och vad som hjälpte kan ge underlag för dig själv eller vården. Du kan också läsa om [ångest och sömn](/guider/sovproblem/svart-att-somna-angest).
 
 ## Källor
 

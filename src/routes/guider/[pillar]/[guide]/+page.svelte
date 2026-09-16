@@ -39,6 +39,9 @@
 	// "Om skaparen" och i den redaktionella metoden.
 	const GUIDE_AUTHOR_NAME = FOUNDER_NAME;
 
+	// Samma väg in som startsidan använder: inloggningen bär målet vidare.
+	const EVENING_CHECKIN_HREF = '/login?redirect=/dashboard/kvallsstugan';
+
 	const articleSchema = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'WebPage',
@@ -166,6 +169,17 @@
 		</ul>
 	{/if}
 
+	{#if data.guide.eveningSupport}
+		<!-- Lågmäld väg in i produkten för kvälls- och nattguiderna. En textlänk,
+		     ingen knapp och inget löfte - chatten är fortfarande inte förvalet. -->
+		<section class="evening-support mt-8" aria-label="Inför kvällen">
+			<p class="guide-copy leading-relaxed">
+				I Kvällstugan kan du stämma av kvällen och lägga undan det du inte behöver bära vidare just
+				nu. <a href={EVENING_CHECKIN_HREF}>Öppna kvällsincheckningen</a>.
+			</p>
+		</section>
+	{/if}
+
 	<div class="mt-10">
 		<GuideActionCta
 			pillarSlug={data.pillar.slug}
@@ -201,6 +215,17 @@
 <style>
 	.nasta-steg {
 		background: rgba(67, 110, 143, 0.04);
+	}
+
+	/* Lågmäld ton: en indragen rad, inte ett erbjudande. */
+	.evening-support {
+		padding-left: 0.9rem;
+		border-left: 2px solid hsl(var(--border));
+	}
+
+	.evening-support a {
+		text-decoration: underline;
+		text-underline-offset: 0.18em;
 	}
 
 	.guide-ingress,

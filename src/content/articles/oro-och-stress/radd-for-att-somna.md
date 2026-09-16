@@ -21,7 +21,7 @@ relatedArticles:
   - title: Varför blir tankarna värre när det blir tyst?
     url: /blogg/amne/oro-och-stress/varfor-blir-tankarna-varre-nar-det-blir-tyst
   - title: Ångest och sömn – varför natten kan bli svårare
-    url: /guider/angest/angest-och-somn
+    url: /guider/sovproblem/svart-att-somna-angest
   - title: Sluta övertänka på kvällen – tips för lugna kvällar
     url: /guider/overtankande/sluta-overtanka-pa-kvallen
 draft: false

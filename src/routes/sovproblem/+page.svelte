@@ -62,9 +62,9 @@
 			articleLinks={[
 				{ title: 'Varför kan jag inte sova? Vanliga orsaker till sömnproblem', href: '/guider/sovproblem/orsaker' },
 				{ title: 'Stress och sömn – när kroppen inte kan varva ner', href: '/guider/sovproblem/stress-och-somn' },
-				{ title: 'Ältande på kvällen – varför tankarna blir starkare i sängen', href: '/guider/sovproblem/altande-pa-kvallen' },
+				{ title: 'Sluta övertänka på kvällen – tips för lugna kvällar', href: '/guider/overtankande/sluta-overtanka-pa-kvallen' },
 				{ title: 'När sömnbrist påverkar måendet – oro, irritation och nedstämdhet', href: '/guider/sovproblem/somnbrist-och-maendet' },
-				{ title: 'Nattlig oro – tankar som tar över i mörkret', href: '/guider/sovproblem/nattlig-oro' },
+				{ title: 'Vaknar med ångest på natten – varför händer det?', href: '/guider/angest/vaknar-med-angest' },
 				{ title: 'Svårt att somna vid ångest – när kroppen inte kan slappna av', href: '/guider/sovproblem/svart-att-somna-angest' },
 				{ title: 'Kan inte sova av stress – vad som händer och vad som hjälper', href: '/guider/sovproblem/kan-inte-sova-stress' }
 			]}
