@@ -23,8 +23,11 @@ export const DIARY_DRAFT_KEY = 'mittpsyke_guest_entry';
  */
 export const LEGACY_DIARY_DRAFT_KEY = 'mittpsyke_temp_entry';
 
-/** Tidpunkt för senaste sparning. Ren metadata, aldrig text. */
-const DIARY_DRAFT_SAVED_AT_KEY = 'mittpsyke_guest_entry_saved_at';
+/**
+ * Tidpunkt för senaste sparning. Ren metadata, aldrig text. Exporteras så att
+ * den lokala historiken kan behålla tidpunkten när ett gammalt utkast migreras.
+ */
+export const DIARY_DRAFT_SAVED_AT_KEY = 'mittpsyke_guest_entry_saved_at';
 
 /**
  * Överlämning från startsidans hero till skrivytan. Ligger i sessionStorage

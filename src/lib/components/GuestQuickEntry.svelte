@@ -14,6 +14,17 @@
 		readDiaryDraft,
 		writeDiaryDraft
 	} from '$lib/diary-draft';
+	import {
+		clearLocalEntries,
+		formatLocalEntryDate,
+		localEntryPreview,
+		migrateDraftIntoLocalEntries,
+		readCurrentLocalEntryId,
+		readLocalEntries,
+		saveLocalEntry,
+		writeCurrentLocalEntryId,
+		type LocalDiaryEntry
+	} from '$lib/diary-local-history';
 	import { dataflowCopy } from '$lib/dataflow-copy';
 	import { scrollIntoViewWithMotionPreference } from '$lib/scroll';
 
@@ -29,6 +40,10 @@
 	];
 
 	let entry = $state('');
+	// Lokal historik: inläggen ligger bara i den här webbläsaren.
+	let localEntries = $state<LocalDiaryEntry[]>([]);
+	let currentEntryId = $state<string | null>(null);
+	let confirmClearAll = $state(false);
 	let savedEntryFromPreviousVisit = $state('');
 	let showSavedEntryPrompt = $state(false);
 	let saveStatus = $state<'idle' | 'saved'>('idle');
@@ -47,15 +62,70 @@
 
 		if (entry.trim().length === 0) {
 			clearDiaryDraft();
+			// Ett tomrensat inlägg ska inte ligga kvar som en blank rad i listan.
+			saveLocalEntry({ id: currentEntryId, text: '' });
+			currentEntryId = null;
+			writeCurrentLocalEntryId(null);
 		} else {
 			writeDiaryDraft(entry);
+			const saved = saveLocalEntry({ id: currentEntryId, text: entry });
+			currentEntryId = saved?.id ?? null;
+			writeCurrentLocalEntryId(currentEntryId);
 			if (!hasCompletedTracking) {
 				hasCompletedTracking = true;
 				trackAnonymousWriteCompletedFromText(entry);
 			}
 		}
+		localEntries = readLocalEntries();
 		lastSavedValue = entry;
 		saveStatus = 'saved';
+	}
+
+	/** Lägger undan det som skrivits och öppnar en tom yta. */
+	function startNewEntry() {
+		persistIfDirty();
+		entry = '';
+		lastSavedValue = '';
+		currentEntryId = null;
+		writeCurrentLocalEntryId(null);
+		clearDiaryDraft();
+		savedEntryFromPreviousVisit = '';
+		showSavedEntryPrompt = false;
+		confirmClearAll = false;
+		saveStatus = 'idle';
+		localEntries = readLocalEntries();
+		textareaEl?.focus();
+	}
+
+	/** Öppnar ett tidigare lokalt inlägg för att läsa eller skriva vidare. */
+	function openLocalEntry(item: LocalDiaryEntry) {
+		persistIfDirty();
+		entry = item.text;
+		lastSavedValue = item.text;
+		currentEntryId = item.id;
+		writeCurrentLocalEntryId(item.id);
+		// Utkastnyckeln bär det som är öppet, så /register och den inloggade
+		// dagboken ser samma text som skrivytan.
+		writeDiaryDraft(item.text);
+		savedEntryFromPreviousVisit = '';
+		showSavedEntryPrompt = false;
+		confirmClearAll = false;
+		saveStatus = 'saved';
+		textareaEl?.focus();
+	}
+
+	function clearAllLocalEntries() {
+		clearLocalEntries();
+		clearDiaryDraft();
+		localEntries = [];
+		currentEntryId = null;
+		entry = '';
+		lastSavedValue = '';
+		savedEntryFromPreviousVisit = '';
+		showSavedEntryPrompt = false;
+		confirmClearAll = false;
+		saveStatus = 'idle';
+		textareaEl?.focus();
 	}
 
 	function applyStarter(prefix: string) {
@@ -118,6 +188,12 @@
 
 	onMount(() => {
 		if (!browser) return;
+
+		// Ett utkast från tiden före den lokala historiken lyfts in som ett
+		// första inlägg. Utkastnyckeln lämnas orörd, så ingenting går förlorat.
+		migrateDraftIntoLocalEntries();
+		localEntries = readLocalEntries();
+		currentEntryId = readCurrentLocalEntryId();
 
 		// Text skriven i startsidans hero följer med hit och fylls i direkt. Den
 		// är inte ett "tidigare besök" och ska därför inte ligga bakom en fråga.
@@ -229,9 +305,65 @@
 			aria-label="Din snabbanteckning"
 		></textarea>
 
-		<button type="button" class="clear-entry-link" onclick={() => clearSavedEntry()}>
-			Rensa texten
-		</button>
+		<div class="entry-actions">
+			<button type="button" class="entry-action-primary" onclick={startNewEntry}>
+				Nytt inlägg
+			</button>
+			<button type="button" class="clear-entry-link" onclick={() => clearSavedEntry()}>
+				Rensa texten
+			</button>
+		</div>
+
+		{#if localEntries.length > 0}
+			<section class="local-history" aria-labelledby="local-history-heading">
+				<h3 id="local-history-heading">Dina senaste inlägg på den här enheten</h3>
+				<p class="local-history-note">
+					De här inläggen finns bara i den här webbläsaren. Den som har tillgång till enheten kan
+					också kunna läsa dem.
+				</p>
+
+				<ul class="local-history-list">
+					{#each localEntries as item (item.id)}
+						<li>
+							<button
+								type="button"
+								class="local-history-item"
+								class:is-open={item.id === currentEntryId}
+								aria-current={item.id === currentEntryId ? 'true' : undefined}
+								onclick={() => openLocalEntry(item)}
+							>
+								<span class="local-history-date">
+									{formatLocalEntryDate(item.updatedAt)}
+									{#if item.id === currentEntryId}<span class="local-history-open">Öppet nu</span>{/if}
+								</span>
+								<span class="local-history-preview">{localEntryPreview(item.text)}</span>
+							</button>
+						</li>
+					{/each}
+				</ul>
+
+				<div class="local-history-footer">
+					{#if confirmClearAll}
+						<p class="local-history-confirm" role="status" aria-live="polite">
+							Vill du ta bort alla {localEntries.length} inlägg från den här webbläsaren? Det går inte
+							att ångra.
+						</p>
+						<div class="local-history-confirm-actions">
+							<button type="button" class="confirm-destructive" onclick={clearAllLocalEntries}>
+								Ja, rensa allt
+							</button>
+							<button type="button" class="confirm-cancel" onclick={() => (confirmClearAll = false)}>
+								Avbryt
+							</button>
+						</div>
+					{:else}
+						<button type="button" class="clear-entry-link" onclick={() => (confirmClearAll = true)}>
+							Rensa allt
+						</button>
+					{/if}
+				</div>
+			</section>
+		{/if}
 
 		<footer class="guest-entry-footer" bind:this={accountOfferEl}>
 			<div class="account-offer">
@@ -367,6 +499,142 @@
 	textarea:focus {
 		outline: 2px solid var(--primary);
 		outline-offset: 2px;
+	}
+
+	.entry-actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.6rem 1rem;
+	}
+
+	.entry-action-primary {
+		min-height: 44px;
+		padding: 0.5rem 1.1rem;
+		border: 1px solid hsl(var(--foreground) / 0.32);
+		border-radius: var(--radius-pill);
+		background: hsl(var(--surface-soft));
+		color: hsl(var(--foreground));
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.entry-action-primary:hover {
+		border-color: hsl(var(--foreground) / 0.55);
+	}
+
+	/* Lokal historik: en lugn lista, inte ett arkiv. */
+	.local-history {
+		display: grid;
+		gap: 0.6rem;
+		padding-top: 0.9rem;
+		border-top: 1px solid hsl(var(--border));
+	}
+
+	.local-history h3 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: 1rem;
+		letter-spacing: -0.01em;
+	}
+
+	.local-history-note {
+		margin: 0;
+		max-width: 62ch;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.86rem;
+		line-height: 1.55;
+	}
+
+	.local-history-list {
+		display: grid;
+		gap: 0.45rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.local-history-item {
+		display: grid;
+		gap: 0.2rem;
+		width: 100%;
+		min-height: 44px;
+		padding: 0.55rem 0.7rem;
+		border: 1px solid hsl(var(--border));
+		border-radius: var(--radius-input, 0.75rem);
+		background: hsl(var(--surface-soft));
+		color: inherit;
+		font: inherit;
+		text-align: left;
+		cursor: pointer;
+	}
+
+	.local-history-item:hover {
+		border-color: hsl(var(--foreground) / 0.35);
+	}
+
+	.local-history-item.is-open {
+		border-color: var(--primary-dark);
+	}
+
+	.local-history-date {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.4rem;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.78rem;
+	}
+
+	.local-history-open {
+		padding: 0.05rem 0.45rem;
+		border-radius: var(--radius-pill);
+		background: var(--primary-dark-soft);
+		color: var(--primary-dark);
+		font-size: 0.72rem;
+		font-weight: 600;
+	}
+
+	.local-history-preview {
+		font-size: 0.92rem;
+		line-height: 1.5;
+		overflow-wrap: anywhere;
+	}
+
+	.local-history-footer {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.local-history-confirm {
+		margin: 0;
+		max-width: 62ch;
+		font-size: 0.88rem;
+		line-height: 1.55;
+	}
+
+	.local-history-confirm-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.confirm-destructive,
+	.confirm-cancel {
+		min-height: 44px;
+		padding: 0.45rem 1rem;
+		border-radius: var(--radius-pill);
+		border: 1px solid hsl(var(--foreground) / 0.32);
+		background: hsl(var(--surface-soft));
+		color: hsl(var(--foreground));
+		font: inherit;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.confirm-destructive {
+		border-color: hsl(var(--foreground) / 0.5);
 	}
 
 	.clear-entry-link {
