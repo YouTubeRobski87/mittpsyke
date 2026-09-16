@@ -16,8 +16,8 @@ faqs:
   - question: När ska jag ringa 112?
     answer: Ring 112 vid hjärtklappning tillsammans med bröstsmärta, svår andnöd eller svimning.
 relatedArticles:
-  - title: Kvällsångest och nattångest – översikt och stöd
-    url: /blogg/amne/oro-och-stress/kvallsangest-och-nattangest
+  - title: Kvällsångest – varför får jag ångest på kvällen?
+    url: /guider/angest/angest-pa-kvallen
   - title: Vaknar med panik på natten – varför händer det?
     url: /blogg/amne/oro-och-stress/vaknar-med-panik-pa-natten
   - title: Panikattack – hjälp direkt när kroppen larmar

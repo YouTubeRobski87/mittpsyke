@@ -161,15 +161,20 @@ Gemensam layout sätter också `og:site_name` = `MittPsyke`, `og:image` = `https
 
 ## Viktiga utgående interna länkar
 
+Uppdaterade 2026-09-16, se ändringsloggen längst ner.
+
 | Mål | Ankartext / placering |
 | --- | --- |
 | `/guider` | `Guider` i brödsmulan |
 | `/guider/angest` | `Ångest` i brödsmulan och `Se alla guider inom ångest` |
-| `/guider/angest/angest-och-somn` | `Ångest och sömn – varför natten kan bli svårare` |
-| `/guider/angest/hjalp-vid-oro-pa-kvallen` | `Hjälp vid oro på kvällen – vad du kan göra just nu` |
+| `/guider/sovproblem/svart-att-somna-angest` | `Svårt att somna av ångest – när oron tar sig in i sängkammaren` |
+| `/guider/angest/hjalp-vid-oro-pa-kvallen` | `Oro på kvällen – tre saker att göra just nu` |
 | `/guider/angest/orostankar` | `Orostankar som snurrar – när hjärnan inte kan stänga av` |
-| `/guider/angest/vaknar-med-angest` | `Vaknar med ångest – när morgonen börjar tungt` |
+| `/guider/angest/vaknar-med-angest` | `Vaknar med ångest på natten – varför händer det?` |
 | `/guider/sovproblem/stress-och-somn` | `Stress och sömn – när kroppen inte kan varva ner` |
+| `/blogg/amne/oro-och-stress/*` | Fem artiklar i blocket `Läs vidare` (panik på natten, läggdags, hjärtklappning, rädd för att somna, tankar i tystnaden) |
+| `/login?redirect=/dashboard/kvallsstugan` | `Öppna kvällsincheckningen` i kvällsblocket |
+| `/redaktionell-metod` | `Redaktionell metod` i bylinen |
 | `/chat/angest` | Kortet `Chatta anonymt nu` |
 | `/dagbok` | Kortet `Skriv i dagboken` |
 | `/ovningar/4-7-8-andning` | Kortet `Gör en enkel övning` / `Prova: 4-7-8 andning` |
@@ -182,18 +187,22 @@ Gemensam navigation och footer tillför dessutom de generella interna målen fö
 
 ## Viktiga repository-kontrollerade inkommande länkar
 
+Uppdaterade 2026-09-16, se ändringsloggen längst ner.
+
 | Källa | Nuvarande koppling |
 | --- | --- |
 | `/guider/angest` | Den dynamiska ämnessidan renderar hela listan från `getGuidesForPillar('angest')`; denna guide finns i listan med sin titel och URL. |
-| `/guider/angest/angest-och-somn` | Relaterad guide med titeln `Kvällsångest – varför får jag ångest på kvällen?` till denna URL. |
-| `/guider/angest/hjalp-vid-oro-pa-kvallen` | Relaterad guide med ankartexten `Ångest på kvällen – varför det ökar när dagen tar slut`. |
-| `/guider/angest/nar-tankarna-inte-stannar` | Relaterad guide med samma ankartext. |
+| `/guider/angest/hjalp-vid-oro-pa-kvallen` | Relaterad guide med ankartexten `Kvällsångest – varför får jag ångest på kvällen?`. |
+| `/guider/angest/vaknar-med-angest` | Relaterad guide med samma ankartext. |
+| `/guider/sovproblem/svart-att-somna-angest` | Relaterad guide med samma ankartext. |
+| `/guider/overtankande/sluta-overtanka-pa-kvallen` | Relaterad guide med samma ankartext. |
 | `/guider/stress/tecken-pa-mental-overbelastning` | Relaterad guide med samma ankartext. |
-| `/guider/sovproblem/nattlig-oro` | Relaterad guide med samma ankartext. |
-| `/blogg/kvallasangest` | Direktlänk med texten `fördjupade guide om ångest på kvällen`. |
+| `/blogg/amne/oro-och-stress/angest-nar-man-ska-lagga-sig` | Relaterad artikel i frontmatter. |
+| `/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv` | Prosalänk i artikeltexten. |
 | `/guider-seo/angest/angest-pa-kvallen` | Äldre URL redirectar `301` till denna URL. |
+| `/blogg/kvallsangest`, `/blogg/kvallasangest`, `/blogg/amne/oro-och-stress/kvallsangest-och-nattangest` | Samtliga redirectar `301` direkt hit, utan kedja. |
 
-De data-drivna guideinterna länkarna kommer från `src/lib/seo-kit/content.ts`; den direkta blogglänken finns i `src/routes/blogg/kvallasangest/+page.svelte`.
+De data-drivna guideinterna länkarna kommer från `src/lib/seo-kit/content.ts`; redirectkartan ligger i `src/lib/server/legacy-redirects.ts` och delas av `src/hooks.server.ts` och sitemapen.
 
 ## Google Search Console baseline
 
@@ -232,5 +241,17 @@ Behandla särskilt ändringar av följande som potentiellt högpåverkande:
 - större interna länkar, både från och till sidan.
 
 Regeln är: **BASELINE FIRST → CHANGE SECOND → MEASURE AFTERWARD.**
+
+## Ändringslogg efter snapshoten
+
+Siffrorna under *Google Search Console baseline* är oförändrade och gäller fortfarande 2026-08-21. Avsnitten om länkar ovan är däremot uppdaterade, eftersom sidans omgivning har ändrats.
+
+**2026-09-16 – kvällsklustret konsoliderades.** Fem tunna kvällsguider slogs ihop med starkare målsidor och `301`-redirectas nu (`/guider/angest/angest-och-somn`, `/guider/angest/nar-tankarna-inte-stannar`, `/guider/stress/mycket-tankar-pa-kvallen`, `/guider/sovproblem/altande-pa-kvallen`, `/guider/sovproblem/nattlig-oro`). Denna sida är klustrets pelare för frågan *varför*; `/guider/angest/hjalp-vid-oro-pa-kvallen` repositionerades till akutfrågan *vad gör jag just nu* och heter nu `Oro på kvällen – tre saker att göra just nu`.
+
+**2026-09-16 – artikeln om kvälls- och nattångest slogs ihop hit.** `/blogg/amne/oro-och-stress/kvallsangest-och-nattangest` konkurrerade om samma huvudterm med samma title, H1 och description, men utan egen Search Console-historik. Artikeln är borttagen och redirectar `301` hit, liksom `/blogg/kvallasangest` och Soro-artikeln `/blogg/kvallsangest`. Följande flyttades in i den här sidan: grounding 5-4-3-2-1, orostid, att inte kämpa mot ångesten i sängen, den förutsägbara kvällsrutinen, djuplänken till 1177 om paniksyndrom, frågan om att följa mönster över tid samt ett `Läs vidare`-block till artikelklustrets fem sidor.
+
+**2026-09-16 – övriga ändringar som rör sidans signaler.** Sidan visar nu `Av Robert Claesson` i stället för `Författare: MittPsyke`, har granskningsstatusen `Redaktionellt granskad, ej medicinskt faktagranskad` i källblocket, en lågmäld länk till Kvällstugan, och en extra källa (1177 om paniksyndrom). FAQ har gått från sex till sju frågor. Titel, H1, canonical, robots och URL är oförändrade sedan snapshoten.
+
+Nästa mätning bör jämföra klick, visningar, CTR och position för `kvällsångest`, `ångest på kvällen` och `varför får jag ångest på kvällen` mot tabellen ovan.
 
 Det betyder inte att dessa delar aldrig får ändras. Syftet är kontrollerad iteration, inte permanent bevarande.

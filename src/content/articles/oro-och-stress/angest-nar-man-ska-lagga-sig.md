@@ -16,11 +16,11 @@ faqs:
   - question: Är det bättre att försöka somna direkt?
     answer: För många hjälper det att minska kampen. Om sängen känns för laddad kan en kort, lugn paus utanför sovrummet vara skonsammare än att pressa fram sömn.
 relatedArticles:
-  - title: Kvällsångest och nattångest – översikt och stöd
-    url: /blogg/amne/oro-och-stress/kvallsangest-och-nattangest
+  - title: Vaknar med ångest på natten – varför händer det?
+    url: /guider/angest/vaknar-med-angest
   - title: Rädd för att somna – när tankarna inte vill släppa taget
     url: /blogg/amne/oro-och-stress/radd-for-att-somna
-  - title: Ångest på kvällen – varför det ofta blir värre
+  - title: Kvällsångest – varför får jag ångest på kvällen?
     url: /guider/angest/angest-pa-kvallen
   - title: Ältande på kvällen – varför tankarna blir starkare i sängen
     url: /guider/overtankande/sluta-overtanka-pa-kvallen

@@ -27,6 +27,11 @@ export const legacyBlogRedirects: Record<string, string> = {
 	// Kvällsklustret: Soro-artiklar som svarade på samma sökintention som
 	// guiderna nedan. Guiden är målsidan, artikeln pekar dit.
 	'/blogg/kvallsangest': '/guider/angest/angest-pa-kvallen',
+	// Artikeln "Kvällsångest och nattångest" svarade på samma fråga som guiden
+	// och är hopslagen med den. Den gamla blogg-URL:en pekade hit; båda leder nu
+	// direkt till guiden, utan kedja.
+	'/blogg/kvallasangest': '/guider/angest/angest-pa-kvallen',
+	'/blogg/amne/oro-och-stress/kvallsangest-och-nattangest': '/guider/angest/angest-pa-kvallen',
 	'/blogg/oro-pa-kvallar': '/guider/angest/hjalp-vid-oro-pa-kvallen',
 	'/blogg/oro-infor-natten': '/guider/sovproblem/svart-att-somna-angest'
 };

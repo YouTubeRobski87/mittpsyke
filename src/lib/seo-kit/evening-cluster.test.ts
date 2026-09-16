@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { EVENING_CLUSTER_GUIDES, guides } from '$lib/seo-kit/content';
@@ -127,6 +127,70 @@ describe('målsidorna bär innehållet de tog över', () => {
 		expect(block).not.toContain('/chat');
 		// Ingen hård konverteringscopy.
 		expect(block).not.toMatch(/gratis|kom igång nu|skapa konto|prova nu/i);
+	});
+});
+
+describe('artikeln om kvälls- och nattångest är hopslagen med pelaren', () => {
+	const PILLAR = '/guider/angest/angest-pa-kvallen';
+	const pillar = guides.find((guide) => guide.slug === 'angest-pa-kvallen');
+
+	it('finns inte kvar som egen artikel', () => {
+		expect(
+			existsSync(join(process.cwd(), 'src/content/articles/oro-och-stress/kvallsangest-och-nattangest.md'))
+		).toBe(false);
+	});
+
+	it('låter alla kvällsångest-varianter leda direkt till pelaren, utan kedja', () => {
+		for (const from of [
+			'/blogg/amne/oro-och-stress/kvallsangest-och-nattangest',
+			'/blogg/kvallasangest',
+			'/blogg/kvallsangest'
+		]) {
+			expect(legacyBlogRedirects[from], from).toBe(PILLAR);
+			// Målet får inte själv vara en omdirigerad adress.
+			expect(legacyBlogRedirects[PILLAR]).toBeUndefined();
+			expect(mergedGuideRedirects[PILLAR]).toBeUndefined();
+		}
+	});
+
+	it('bär artikelns unika innehåll', () => {
+		const content = pillar?.content ?? '';
+		expect(content).toContain('5-4-3-2-1');
+		expect(content).toContain('Ge oron en egen tid tidigare på kvällen');
+		expect(content).toContain('Sängen behöver inte bli platsen där du kämpar');
+		expect(content).toContain('Låt kvällen bli förutsägbar');
+		expect(content).toContain('paniksyndrom');
+		expect(pillar?.sources?.some((source) => source.url.includes('paniksyndrom'))).toBe(true);
+		expect(pillar?.faqs.some((faq) => faq.question === 'Kan jag följa mönster över tid?')).toBe(true);
+	});
+
+	it('behåller ingången till systerartiklarna', () => {
+		const content = pillar?.content ?? '';
+		for (const slug of [
+			'vaknar-med-panik-pa-natten',
+			'angest-nar-man-ska-lagga-sig',
+			'hjartklappning-pa-kvallen',
+			'radd-for-att-somna',
+			'varfor-blir-tankarna-varre-nar-det-blir-tyst'
+		]) {
+			expect(content, slug).toContain(`/blogg/amne/oro-och-stress/${slug}`);
+		}
+	});
+
+	it('har inga interna länkar kvar till den hopslagna artikeln', () => {
+		const files = [
+			...readdirSync(join(process.cwd(), 'src/content/articles/oro-och-stress'))
+				.filter((name) => name.endsWith('.md'))
+				.map((name) => join('src/content/articles/oro-och-stress', name)),
+			'src/lib/seo-kit/content.ts',
+			'src/lib/data/seo-architecture.ts'
+		];
+
+		for (const file of files) {
+			expect(readFileSync(join(process.cwd(), file), 'utf8'), file).not.toContain(
+				'kvallsangest-och-nattangest'
+			);
+		}
 	});
 });
 

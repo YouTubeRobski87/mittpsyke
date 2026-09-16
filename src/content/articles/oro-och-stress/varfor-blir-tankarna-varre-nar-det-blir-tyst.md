@@ -16,8 +16,8 @@ faqs:
   - question: Vad kan jag göra när tankarna snurrar?
     answer: Försök att märka tanken, rikta dig mot något konkret och skriv ner det som behöver få vänta till i morgon.
 relatedArticles:
-  - title: Kvällsångest och nattångest – översikt och stöd
-    url: /blogg/amne/oro-och-stress/kvallsangest-och-nattangest
+  - title: Kvällsångest – varför får jag ångest på kvällen?
+    url: /guider/angest/angest-pa-kvallen
   - title: Rädd för att somna – när tankarna inte vill släppa taget
     url: /blogg/amne/oro-och-stress/radd-for-att-somna
   - title: Fast i negativa tankar – när hjärnan fastnar i ett spår

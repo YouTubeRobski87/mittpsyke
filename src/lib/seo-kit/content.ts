@@ -1341,7 +1341,7 @@ Många beskriver det som att allt "landar" på kvällen. Det är inte ovanligt o
 
 Vetskapen om att man borde sova men inte kan det skapar lätt en ond cirkel. Oron för att inte somna gör kroppen mer vaken. Kroppen som är vaken gör det svårare att somna. Och ju längre natten drar ut, desto mer stress byggs upp inför morgondagen.
 
-En del vaknar också med ångest mitt i natten. Det kan kännas skrämmande, men är ofta samma stressystem som fortfarande är aktiverat.
+En del vaknar också med ångest mitt i natten. Det kan kännas skrämmande, men är ofta samma stressystem som fortfarande är aktiverat. Om uppvaknandet mest handlar om en akut kroppslig reaktion med hjärtklappning och stark rädsla beskriver <a href="https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/paniksyndrom/" target="_blank" rel="noopener noreferrer">1177 paniksyndrom</a> hur det kan yttra sig.
 
 Det kan också handla om oro för vad nästa dag innebär – möten, krav, sociala situationer eller helt enkelt känslan av att inte orka. Den oron kan i sig räcka för att aktivera ångesten.
 
@@ -1350,11 +1350,16 @@ Det kan också handla om oro för vad nästa dag innebär – möten, krav, soci
 Det finns inga snabba lösningar som fungerar för alla, men det finns saker som kan göra kvällen lite lättare:
 
 - **Sänk kraven på kvällen.** Kvällen behöver inte vara produktiv. Att bara vara räcker.
-- **Skriv av dig i några minuter.** Att flytta tankarna ur huvudet och ner på papper kan minska deras intensitet. Du behöver inte skriva snyggt eller strukturerat.
+- **Skriv av dig i några minuter.** Att flytta tankarna ur huvudet och ner på papper kan minska deras intensitet. Ett konkret upplägg är tio minuter om det som känns tyngst, avslutat med en mening om vad du behöver i morgon – inte i dag.
+- **Ge oron en egen tid tidigare på kvällen.** Avsätt till exempel tjugo minuter vid sjutiden åt det som oroar. När tankarna kommer klockan elva blir det lättare att säga: det där har jag redan tagit hand om i dag.
 - **Minska input en stund.** Skärmar, nyheter och sociala medier kan hålla nervsystemet aktiverat. En kort paus kan göra skillnad.
 - **Prova en enkel andningsövning.** Till exempel 4-7-8-andning: andas in i 4 sekunder, håll i 7, andas ut i 8. Det aktiverar kroppens eget lugn.
+- **Använd kroppen när tankarna redan dragit iväg.** När ångesten är igång hjälper det sällan att tänka sig ur den. Prova 5-4-3-2-1: namnge fem saker du ser, fyra du hör, tre du känner mot kroppen, två dofter och en smak. Sätt fötterna i golvet och låt uppmärksamheten komma tillbaka till rummet.
+- **Låt kvällen bli förutsägbar.** Samma tider, dämpad belysning och ingen jobbmejl sista timmen signalerar till nervsystemet att dagen är slut. Rutinen behöver inte vara avancerad, bara igenkännbar.
 - **Kort guidad nedvarvning eller meditation.** Även fem minuter kan hjälpa kroppen att förstå att dagen är slut.
 - **Påminn dig om att känslan kan vara tillfällig.** Ångest på kvällen känns ofta absolut i stunden – men den brukar se annorlunda ut på morgonen.
+
+Om du legat vaken länge och ångesten bara växer kan det hjälpa att gå upp en stund. Gå till ett annat rum, gör något lugnt i svagt ljus och gå tillbaka när tröttheten kommer. Sängen behöver inte bli platsen där du kämpar med tankarna.
 
 ## När kan det vara bra att söka mer stöd?
 
@@ -1364,10 +1369,20 @@ Om kvällsångesten kommer ofta, påverkar din sömn eller vardag på ett sätt 
 
 Kvällsångest är vanligt. Det betyder inte att du är svag eller att något är trasigt. Det är en reaktion som många delar, och det finns sätt att möta den som inte kräver stora insatser. Börja med det som känns möjligt, i din egen takt.
 
-När det snurrar mycket på kvällen kan det hjälpa att skriva av sig. Börja lugnt och anonymt, i din egen takt.`,
+När det snurrar mycket på kvällen kan det hjälpa att skriva av sig. Börja lugnt och anonymt, i din egen takt.
+
+## Läs vidare
+
+- <a href="/blogg/amne/oro-och-stress/vaknar-med-panik-pa-natten">Vaknar med panik på natten – varför händer det?</a>
+- <a href="/blogg/amne/oro-och-stress/angest-nar-man-ska-lagga-sig">Ångest när man ska lägga sig – varför blir det värre på kvällen?</a>
+- <a href="/blogg/amne/oro-och-stress/hjartklappning-pa-kvallen">Hjärtklappning på kvällen – kan det bero på ångest?</a>
+- <a href="/blogg/amne/oro-och-stress/radd-for-att-somna">Rädd för att somna – när tankarna inte vill släppa taget</a>
+- <a href="/blogg/amne/oro-och-stress/varfor-blir-tankarna-varre-nar-det-blir-tyst">Varför blir tankarna värre när det blir tyst?</a>`,
 		updatedAt: '2026-03-31',
 		sources: [
 			{ label: 'Ångest – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/' },
+			// Följde med från den hopslagna artikeln om kvälls- och nattångest.
+			{ label: 'Paniksyndrom – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/psykiska-sjukdomar-och-besvar/angest/paniksyndrom/' },
 			{ label: 'Sömnsvårigheter – 1177 Vårdguiden', url: 'https://www.1177.se/sjukdomar--besvar/hjarna-och-nerver/somn/somnsvarigheter/' },
 			{ label: 'Psykisk hälsa och suicidprevention – Socialstyrelsen', url: 'https://www.socialstyrelsen.se/kunskapsstod-och-regler/omraden/psykisk-ohalsa/' },
 			{ label: 'Psykisk hälsa – Folkhälsomyndigheten', url: 'https://www.folkhalsomyndigheten.se/vara-amnesomraden/psykisk-halsa/' }
@@ -1392,6 +1407,11 @@ När det snurrar mycket på kvällen kan det hjälpa att skriva av sig. Börja l
 			{
 				question: 'Varför kan dödsångest kännas starkare på kvällen?',
 				answer: 'När det blir tyst och du är trött får existentiella tankar ofta mer utrymme. Det betyder inte att du är i fara, men det kan kännas väldigt starkt i stunden.'
+			},
+			{
+				// Från den hopslagna artikeln: knyter ihop kvällen med återblicken.
+				question: 'Kan jag följa mönster över tid?',
+				answer: 'Ja. Korta anteckningar om tid, sammanhang och vad som hjälpte kan ge dig en mer nyanserad bild. Mönster är information, inte ett betyg.'
 			},
 			{
 				question: 'När bör jag söka hjälp för kvällsångest?',

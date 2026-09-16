@@ -16,8 +16,8 @@ faqs:
   - question: När ska jag söka akut hjälp?
     answer: Ring 112 vid bröstsmärta, svår andnöd, svimning eller om du är i direkt fara. Ring 1177 om du behöver sjukvårdsrådgivning.
 relatedArticles:
-  - title: Kvällsångest och nattångest – översikt och stöd
-    url: /blogg/amne/oro-och-stress/kvallsangest-och-nattangest
+  - title: Kvällsångest – varför får jag ångest på kvällen?
+    url: /guider/angest/angest-pa-kvallen
   - title: Ångest när man ska lägga sig – varför blir det värre på kvällen?
     url: /blogg/amne/oro-och-stress/angest-nar-man-ska-lagga-sig
   - title: Panikattack eller ångest – vad är skillnaden?

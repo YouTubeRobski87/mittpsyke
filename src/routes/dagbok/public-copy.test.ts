@@ -56,8 +56,8 @@ describe('publik dagbok: utkast, kontosparande och integritet', () => {
 		expect(body).toContain('MittPsykes system och Supabase');
 		expect(body).toContain('AI-reflektioner är valfria och kräver separat samtycke');
 		expect(body).toContain('href="/integritet"');
-		for (const text of [body, source('../blogg/kvallasangest/+page.svelte')]) {
-			expect(text).not.toMatch(/ingen annan kan läsa|ingen kan se|endast du|ingen tredje part|skickas aldrig|helt anonym|Nej\. Dina dagboksinlägg är privata för dig/i);
-		}
+		// Kontrollerade tidigare även /blogg/kvallasangest. Den sidan är borttagen
+		// och redirectar till kvällsguiden, så bara dagbokssidan är kvar att vakta.
+		expect(body).not.toMatch(/ingen annan kan läsa|ingen kan se|endast du|ingen tredje part|skickas aldrig|helt anonym|Nej\. Dina dagboksinlägg är privata för dig/i);
 	});
 });
