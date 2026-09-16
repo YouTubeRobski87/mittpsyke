@@ -1,12 +1,17 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { render } from 'svelte/server';
-import { describe, expect, it } from 'vitest';
-import ChatWindow from './ChatWindow.svelte';
+import { describe, expect, it, vi } from 'vitest';
 
 // Chatten ska aldrig kunna misstas för en människa. Vyn säger det rakt ut,
 // varje svar är märkt som AI-stöd, och den gamla etiketten "Mitt stöd" får
 // inte komma tillbaka någonstans där användaren ser den.
+
+// ChatWindow renderar RecentConversations, som skapar en riktig Supabase-klient
+// vid import. Utan mock kastar den i CI, där PUBLIC_SUPABASE_URL/ANON_KEY inte
+// är satta - samma mönster som entry.test.ts redan använder för +page.svelte.
+vi.mock('$lib/supabase', () => ({ supabase: { auth: { getSession: vi.fn() } } }));
+const { default: ChatWindow } = await import('./ChatWindow.svelte');
 
 function text(html: string) {
 	return html.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();

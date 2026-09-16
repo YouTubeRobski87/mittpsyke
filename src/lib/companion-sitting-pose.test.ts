@@ -54,9 +54,15 @@ describe('den sittande, bortvända posen', () => {
 
 describe('var posen används', () => {
 	// Kvällen, då stugan och återblicken är som lugnast.
-	const evening = new Date('2026-09-16T19:30:00');
-	const day = new Date('2026-09-16T12:00:00');
-	const night = new Date('2026-09-16T23:30:00');
+	//
+	// Tiderna skrivs med explicit +02:00 (svensk sommartid i september).
+	// getProgressCompanionLocalTime tolkar alltid Europe/Stockholm, men en
+	// datumsträng utan offset tolkas som CI-körarens egen systemtid (UTC på
+	// GitHub Actions) - två timmars skillnad flyttade kvällsklockan över
+	// gränsen till natt och gjorde testet grönt lokalt men rött i CI.
+	const evening = new Date('2026-09-16T19:30:00+02:00');
+	const day = new Date('2026-09-16T12:00:00+02:00');
+	const night = new Date('2026-09-16T23:30:00+02:00');
 
 	it('kan väljas i stugans lugna och vilande lägen', () => {
 		const calm = new Set<string>();
