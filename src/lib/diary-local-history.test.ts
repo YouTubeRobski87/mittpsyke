@@ -5,6 +5,7 @@ import {
 	CURRENT_LOCAL_ENTRY_KEY,
 	LOCAL_ENTRIES_KEY,
 	MAX_LOCAL_ENTRIES,
+	clearAllLocalDiaryData,
 	clearLocalEntries,
 	deleteLocalEntry,
 	localEntryPreview,
@@ -53,8 +54,8 @@ describe('flera lokala inlägg', () => {
 	});
 
 	it('uppdaterar ett befintligt inlägg i stället för att skapa ett nytt', () => {
-		const first = saveLocalEntry({ text: 'Börjar skriva', now: 1_000 }, storage);
-		const updated = saveLocalEntry({ id: first?.id, text: 'Börjar skriva mer', now: 2_000 }, storage);
+		const { entry: first } = saveLocalEntry({ text: 'Börjar skriva', now: 1_000 }, storage);
+		const { entry: updated } = saveLocalEntry({ id: first?.id, text: 'Börjar skriva mer', now: 2_000 }, storage);
 
 		expect(updated?.id).toBe(first?.id);
 		expect(updated?.createdAt).toBe(1_000);
@@ -64,8 +65,8 @@ describe('flera lokala inlägg', () => {
 	});
 
 	it('sparar inte tom text och tar bort ett tomrensat inlägg', () => {
-		const entry = saveLocalEntry({ text: 'Något', now: 1_000 }, storage);
-		expect(saveLocalEntry({ text: '   ', now: 2_000 }, storage)).toBeNull();
+		const { entry } = saveLocalEntry({ text: 'Något', now: 1_000 }, storage);
+		expect(saveLocalEntry({ text: '   ', now: 2_000 }, storage).entry).toBeNull();
 		expect(readLocalEntries(storage)).toHaveLength(1);
 
 		saveLocalEntry({ id: entry?.id, text: '', now: 3_000 }, storage);
@@ -94,7 +95,7 @@ describe('flera lokala inlägg', () => {
 	});
 
 	it('kommer ihåg vilket inlägg som är öppet', () => {
-		const entry = saveLocalEntry({ text: 'Öppet', now: 1_000 }, storage);
+		const { entry } = saveLocalEntry({ text: 'Öppet', now: 1_000 }, storage);
 		writeCurrentLocalEntryId(entry?.id ?? null, storage);
 		expect(readCurrentLocalEntryId(storage)).toBe(entry?.id);
 
@@ -143,17 +144,95 @@ describe('migrering av det gamla enskilda utkastet', () => {
 	});
 });
 
+describe('lagringsfel sväljs inte', () => {
+	function blockedStorage() {
+		const store = new Map<string, string>();
+		return {
+			getItem: (key: string) => store.get(key) ?? null,
+			setItem: () => {
+				throw new DOMException('QuotaExceededError');
+			},
+			removeItem: (key: string) => void store.delete(key)
+		};
+	}
+
+	it('rapporterar att inlägget inte kunde sparas', () => {
+		const result = saveLocalEntry({ text: 'Får inte plats', now: 1_000 }, blockedStorage());
+
+		expect(result.stored).toBe(false);
+		// Texten finns kvar i minnet, så skrivandet kan fortsätta.
+		expect(result.entry?.text).toBe('Får inte plats');
+	});
+
+	it('rapporterar att det gick bra när lagringen fungerar', () => {
+		expect(saveLocalEntry({ text: 'Får plats', now: 1_000 }, storage).stored).toBe(true);
+	});
+
+	it('visar en icke-blockerande varning i skrivytan', () => {
+		const guestEntry = readFileSync(
+			join(process.cwd(), 'src/lib/components/GuestQuickEntry.svelte'),
+			'utf8'
+		);
+
+		expect(guestEntry).toContain(
+			'Det gick inte att spara lokalt. Texten finns kvar här, men kan försvinna om sidan stängs.'
+		);
+		expect(guestEntry).toContain('storageFailed = !draftStored || !saved.stored;');
+		expect(guestEntry).toMatch(/\{#if storageFailed\}[\s\S]{0,120}role="status"/);
+		// Varningen får inte vara en dialog eller blockera textytan.
+		expect(guestEntry).not.toMatch(/window\.alert|role="alertdialog"|disabled=\{storageFailed\}/);
+	});
+});
+
 describe('rensa', () => {
 	it('tar bort ett enskilt inlägg', () => {
-		const first = saveLocalEntry({ text: 'Ett', now: 1_000 }, storage);
+		const { entry: first } = saveLocalEntry({ text: 'Ett', now: 1_000 }, storage);
 		saveLocalEntry({ text: 'Två', now: 2_000 }, storage);
 
 		deleteLocalEntry(first?.id ?? '', storage);
 		expect(readLocalEntries(storage).map((entry) => entry.text)).toEqual(['Två']);
 	});
 
+	it('rensar allt lokalt, inklusive den äldre nyckeln mittpsyke_temp_entry', () => {
+		saveLocalEntry({ text: 'Ett inlägg', now: 1_000 }, storage);
+		writeCurrentLocalEntryId('någon-id', storage);
+		storage.setItem(DIARY_DRAFT_KEY, 'Aktuellt utkast');
+		storage.setItem(LEGACY_DIARY_DRAFT_KEY, 'Gammal text från chatten');
+		storage.setItem(DIARY_DRAFT_SAVED_AT_KEY, '1700000000000');
+
+		clearAllLocalDiaryData(storage);
+
+		expect(storage.raw.size).toBe(0);
+		for (const key of [
+			LOCAL_ENTRIES_KEY,
+			CURRENT_LOCAL_ENTRY_KEY,
+			DIARY_DRAFT_KEY,
+			LEGACY_DIARY_DRAFT_KEY,
+			DIARY_DRAFT_SAVED_AT_KEY
+		]) {
+			expect(storage.getItem(key), key).toBeNull();
+		}
+	});
+
+	it('låter inte rensad text komma tillbaka vid nästa sidladdning', () => {
+		storage.setItem(LEGACY_DIARY_DRAFT_KEY, 'Text som ska bort');
+		migrateDraftIntoLocalEntries(storage, 1_000);
+		expect(readLocalEntries(storage)).toHaveLength(1);
+
+		clearAllLocalDiaryData(storage);
+
+		// Sidladdning nummer två: migreringen körs igen mot samma lagring.
+		expect(migrateDraftIntoLocalEntries(storage, 2_000)).toBeNull();
+		expect(readLocalEntries(storage)).toEqual([]);
+		expect(readCurrentLocalEntryId(storage)).toBeNull();
+
+		// Och en tredje gång, för säkerhets skull.
+		migrateDraftIntoLocalEntries(storage, 3_000);
+		expect(readLocalEntries(storage)).toEqual([]);
+	});
+
 	it('rensar hela historiken och vilket inlägg som var öppet', () => {
-		const entry = saveLocalEntry({ text: 'Allt detta', now: 1_000 }, storage);
+		const { entry } = saveLocalEntry({ text: 'Allt detta', now: 1_000 }, storage);
 		writeCurrentLocalEntryId(entry?.id ?? null, storage);
 
 		clearLocalEntries(storage);
@@ -213,6 +292,17 @@ describe('skrivytan och den inloggade dagboken', () => {
 		expect(guestEntry).toContain('Ja, rensa allt');
 		expect(guestEntry).toContain('onclick={clearAllLocalEntries}');
 		expect(guestEntry).toContain('onclick={() => openLocalEntry(item)}');
+	});
+
+	it('säger i copyn hur många inlägg som sparas, hämtat ur konstanten', () => {
+		expect(guestEntry).toContain('De {MAX_LOCAL_ENTRIES} senaste sparas, äldre faller bort.');
+		expect(guestEntry).toContain('MAX_LOCAL_ENTRIES');
+		expect(MAX_LOCAL_ENTRIES).toBe(12);
+	});
+
+	it('rensar allt via den gemensamma funktionen, inte bara historiken', () => {
+		expect(guestEntry).toContain('clearAllLocalDiaryData();');
+		expect(guestEntry).not.toContain('clearLocalEntries();');
 	});
 
 	it('säger var inläggen finns och vem som kan läsa dem', () => {

@@ -60,12 +60,18 @@ function read(storage: StorageLike | null, key: string): string | null {
 	}
 }
 
-function write(storage: StorageLike | null, key: string, value: string) {
-	if (!storage) return;
+/**
+ * Returnerar om skrivningen gick igenom. Full kvot eller blockerad lagring
+ * får aldrig stoppa skrivandet, men felet ska synas för användaren i stället
+ * för att tyst svälja texten.
+ */
+function write(storage: StorageLike | null, key: string, value: string): boolean {
+	if (!storage) return false;
 	try {
 		storage.setItem(key, value);
+		return true;
 	} catch {
-		// Full kvot eller blockerad lagring får aldrig stoppa skrivandet.
+		return false;
 	}
 }
 
@@ -123,8 +129,8 @@ export function readLocalEntries(storage: StorageLike | null = defaultStorage())
 
 function writeEntries(storage: StorageLike | null, entries: LocalDiaryEntry[]) {
 	const capped = sortNewestFirst(entries).slice(0, MAX_LOCAL_ENTRIES);
-	write(storage, LOCAL_ENTRIES_KEY, JSON.stringify(capped));
-	return capped;
+	const stored = write(storage, LOCAL_ENTRIES_KEY, JSON.stringify(capped));
+	return { entries: capped, stored };
 }
 
 /**
@@ -135,19 +141,18 @@ function writeEntries(storage: StorageLike | null, entries: LocalDiaryEntry[]) {
 export function saveLocalEntry(
 	input: { id?: string | null; text: string; now?: number },
 	storage: StorageLike | null = defaultStorage()
-): LocalDiaryEntry | null {
+): { entry: LocalDiaryEntry | null; stored: boolean } {
 	const text = input.text.trim();
 	const now = input.now ?? Date.now();
 	const entries = readLocalEntries(storage);
 
 	if (!text) {
-		if (input.id) {
-			writeEntries(
-				storage,
-				entries.filter((entry) => entry.id !== input.id)
-			);
-		}
-		return null;
+		if (!input.id) return { entry: null, stored: true };
+		const { stored } = writeEntries(
+			storage,
+			entries.filter((entry) => entry.id !== input.id)
+		);
+		return { entry: null, stored };
 	}
 
 	const existing = input.id ? entries.find((entry) => entry.id === input.id) : undefined;
@@ -156,8 +161,8 @@ export function saveLocalEntry(
 		: { id: input.id || createLocalEntryId(), createdAt: now, updatedAt: now, text };
 
 	const next = [entry, ...entries.filter((item) => item.id !== entry.id)];
-	writeEntries(storage, next);
-	return entry;
+	const { stored } = writeEntries(storage, next);
+	return { entry, stored };
 }
 
 export function deleteLocalEntry(id: string, storage: StorageLike | null = defaultStorage()) {
@@ -172,6 +177,18 @@ export function deleteLocalEntry(id: string, storage: StorageLike | null = defau
 export function clearLocalEntries(storage: StorageLike | null = defaultStorage()) {
 	remove(storage, LOCAL_ENTRIES_KEY);
 	remove(storage, CURRENT_LOCAL_ENTRY_KEY);
+}
+
+/**
+ * "Rensa allt" i skrivytan. Tar bort historiken och samtliga utkastnycklar,
+ * inklusive den äldre `mittpsyke_temp_entry`. Annars hade migreringen kunnat
+ * lyfta tillbaka den gamla texten som ett nytt inlägg vid nästa sidladdning.
+ */
+export function clearAllLocalDiaryData(storage: StorageLike | null = defaultStorage()) {
+	clearLocalEntries(storage);
+	remove(storage, DIARY_DRAFT_KEY);
+	remove(storage, LEGACY_DIARY_DRAFT_KEY);
+	remove(storage, DIARY_DRAFT_SAVED_AT_KEY);
 }
 
 export function readCurrentLocalEntryId(

@@ -15,7 +15,8 @@
 		writeDiaryDraft
 	} from '$lib/diary-draft';
 	import {
-		clearLocalEntries,
+		MAX_LOCAL_ENTRIES,
+		clearAllLocalDiaryData,
 		formatLocalEntryDate,
 		localEntryPreview,
 		migrateDraftIntoLocalEntries,
@@ -44,6 +45,9 @@
 	let localEntries = $state<LocalDiaryEntry[]>([]);
 	let currentEntryId = $state<string | null>(null);
 	let confirmClearAll = $state(false);
+	// Sant när webbläsaren nekade lagring (full kvot eller blockerad lagring).
+	// Skrivandet fortsätter i minnet, men användaren ska veta om risken.
+	let storageFailed = $state(false);
 	let savedEntryFromPreviousVisit = $state('');
 	let showSavedEntryPrompt = $state(false);
 	let saveStatus = $state<'idle' | 'saved'>('idle');
@@ -66,11 +70,15 @@
 			saveLocalEntry({ id: currentEntryId, text: '' });
 			currentEntryId = null;
 			writeCurrentLocalEntryId(null);
+			storageFailed = false;
 		} else {
-			writeDiaryDraft(entry);
+			const draftStored = writeDiaryDraft(entry);
 			const saved = saveLocalEntry({ id: currentEntryId, text: entry });
-			currentEntryId = saved?.id ?? null;
+			currentEntryId = saved.entry?.id ?? null;
 			writeCurrentLocalEntryId(currentEntryId);
+			// Nekad lagring sväljs inte tyst: texten finns kvar i vyn, men den
+			// överlever inte att sidan stängs.
+			storageFailed = !draftStored || !saved.stored;
 			if (!hasCompletedTracking) {
 				hasCompletedTracking = true;
 				trackAnonymousWriteCompletedFromText(entry);
@@ -115,9 +123,12 @@
 	}
 
 	function clearAllLocalEntries() {
-		clearLocalEntries();
-		clearDiaryDraft();
+		// Rensar historiken och alla utkastnycklar, även den äldre
+		// `mittpsyke_temp_entry`. Annars hade migreringen kunnat lyfta tillbaka
+		// den gamla texten vid nästa sidladdning.
+		clearAllLocalDiaryData();
 		localEntries = [];
+		storageFailed = false;
 		currentEntryId = null;
 		entry = '';
 		lastSavedValue = '';
@@ -305,6 +316,12 @@
 			aria-label="Din snabbanteckning"
 		></textarea>
 
+		{#if storageFailed}
+			<p class="storage-warning" role="status" aria-live="polite">
+				Det gick inte att spara lokalt. Texten finns kvar här, men kan försvinna om sidan stängs.
+			</p>
+		{/if}
+
 		<div class="entry-actions">
 			<button type="button" class="entry-action-primary" onclick={startNewEntry}>
 				Nytt inlägg
@@ -319,7 +336,7 @@
 				<h3 id="local-history-heading">Dina senaste inlägg på den här enheten</h3>
 				<p class="local-history-note">
 					De här inläggen finns bara i den här webbläsaren. Den som har tillgång till enheten kan
-					också kunna läsa dem.
+					också kunna läsa dem. De {MAX_LOCAL_ENTRIES} senaste sparas, äldre faller bort.
 				</p>
 
 				<ul class="local-history-list">
@@ -499,6 +516,18 @@
 	textarea:focus {
 		outline: 2px solid var(--primary);
 		outline-offset: 2px;
+	}
+
+	/* Varning, inte ett stopp: skrivytan fungerar vidare under den. */
+	.storage-warning {
+		margin: 0;
+		padding: 0.5rem 0.7rem;
+		border: 1px solid hsl(var(--foreground) / 0.28);
+		border-radius: var(--radius-input, 0.75rem);
+		background: hsl(var(--surface-soft));
+		color: hsl(var(--foreground) / 0.88);
+		font-size: 0.86rem;
+		line-height: 1.5;
 	}
 
 	.entry-actions {

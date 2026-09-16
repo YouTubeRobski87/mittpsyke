@@ -50,12 +50,15 @@ function readLocal(key: string): string | null {
 	}
 }
 
-function writeLocal(key: string, value: string) {
-	if (!browser) return;
+/** Returnerar om skrivningen gick igenom. Lagring får aldrig blockera skrivandet,
+ *  men ett misslyckande ska gå att visa för användaren. */
+function writeLocal(key: string, value: string): boolean {
+	if (!browser) return false;
 	try {
 		window.localStorage.setItem(key, value);
+		return true;
 	} catch {
-		// Lagring får aldrig blockera skrivandet.
+		return false;
 	}
 }
 
@@ -98,15 +101,16 @@ export function readDiaryDraft(): string {
 	return parseDiaryDraft(readLocal(LEGACY_DIARY_DRAFT_KEY));
 }
 
-export function writeDiaryDraft(text: string) {
+export function writeDiaryDraft(text: string): boolean {
 	const trimmed = text.trim();
 	if (!trimmed) {
 		clearDiaryDraft();
-		return;
+		return true;
 	}
 
-	writeLocal(DIARY_DRAFT_KEY, text);
+	const stored = writeLocal(DIARY_DRAFT_KEY, text);
 	writeLocal(DIARY_DRAFT_SAVED_AT_KEY, String(Date.now()));
+	return stored;
 }
 
 /** Rensar båda nycklarna så att inget utkast blir kvar och dyker upp igen. */
