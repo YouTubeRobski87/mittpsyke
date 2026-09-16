@@ -35,17 +35,9 @@
 		'/images/scenes/cabin-interior-evening-resting-veranda-v1.webp 1672w'
 	].join(', ');
 
-	// Sovlägets golvbädd.
-	//
-	// null = ingen godkänd asset finns. Den levererade filen underkändes vid
-	// verifiering (helt rum i stället för urklippt bädd, genomgående ~94 %
-	// alfa) - se docs/sovlage-asset-spec.md. Så länge konstanten är null
-	// renderas ingen bädd. Sovläge är ändå nåbart via den tydligt märkta
-	// scen-hotspoten nedan; när rätt asset finns läggs den under samma hotspot.
-	//
-	// När en korrekt urklippt WebP finns är det här den enda rad som behöver
-	// ändras: sätt sökvägen, så följer bild, hotspot och Sovläge med.
-	const FLOOR_BED_ASSET: string | null = null;
+	// Sovsäcken är ett permanent scenobjekt och delar placeringsram med sin
+	// hotspot. Den är inte kopplad till progression eller EveningInteriorMemory.
+	const SLEEPING_BAG_ASSET = '/images/evening/interior/sleeping-bag-v1.webp';
 
 	// Verandan är samma plats, sedd utifrån dörren. Den ligger i samma
 	// scencontainer som interiören och delar dygnsrytm och world-state - det är
@@ -272,30 +264,23 @@
 					draggable="false"
 				/>
 			{/if}
-			<!-- Golvbädden och dess hotspot. Till skillnad från matta, filt och
-			     bok är den inte kopplad till EveningInteriorMemory: sovplatsen
-			     är permanent och kräver ingen progression. Därför finns här
-			     heller ingen introduktionsanimation - bädden dyker aldrig upp,
-			     den har alltid funnits. Placeringen följer
-			     docs/sovlage-asset-spec.md avsnitt 3. -->
-			{#if FLOOR_BED_ASSET}
-				<img
-					class="interior-floor-bed"
-					src={FLOOR_BED_ASSET}
-					alt=""
-					aria-hidden="true"
-					draggable="false"
-				/>
-			{/if}
+			<!-- Sovsäcken är permanent och kräver ingen progression. Bild och
+			     hotspot delar samma ram, så träffytan följer objektet när scenen
+			     skalar. -->
+			<img
+				class="interior-sleeping-bag sleeping-bag-placement"
+				src={SLEEPING_BAG_ASSET}
+				alt=""
+				aria-hidden="true"
+				draggable="false"
+			/>
 			{#if sleepStage === 'closed'}
 				<button
-					class="scene-object scene-object-bed"
+					class="scene-object scene-object-bed sleeping-bag-placement"
 					type="button"
 					aria-label="Öppna Sovläge"
 					onclick={openSleepMode}
-				>
-					<span class="scene-object-label" aria-hidden="true">Sovläge</span>
-				</button>
+				></button>
 			{/if}
 			{#if hasInteriorBlanket}
 				<img
@@ -547,40 +532,19 @@
 	/* Ligger över boken på fönsterbänken, med lite marginal så den går att träffa
 	   på mobil. Krockar inte med dörrytorna till vänster. */
 	.scene-object-book { left: 59%; top: 58.5%; width: 8%; height: 9.5%; }
-	/* Bädden. Ytan täcker medvetet inte hela madrassen: följeslagaren står på
-	   x 10-36 % och boken har sin yta från x 59 %, så hotspoten håller sig
-	   mellan dem. Då kan ett klick på djuret aldrig starta Sovläge. */
+	/* Bilden och knappen använder exakt samma ram. Sovsäcken börjar där
+	   följeslagarens yta slutar och ligger under bokens höjd, så objekten får
+	   inga överlappande klickytor. */
+	.sleeping-bag-placement {
+		left: 36%;
+		bottom: 2%;
+		width: 28%;
+		aspect-ratio: 1408 / 623;
+	}
 	.scene-object-bed {
-		left: 38%;
-		top: 72%;
-		width: 19%;
-		height: 22%;
 		padding: 0;
 		border: 0;
 		background: transparent;
-		color: #f7e7c7;
-		font: inherit;
-	}
-	.scene-object-label {
-		position: absolute;
-		left: 50%;
-		bottom: 0.45rem;
-		transform: translateX(-50%);
-		padding: 0.25rem 0.55rem;
-		border: 1px solid rgb(245 200 120 / 0.32);
-		border-radius: 999px;
-		background: rgb(31 22 18 / 0.76);
-		box-shadow: 0 5px 16px rgb(18 12 10 / 0.3);
-		font-size: clamp(0.68rem, 1.6vw, 0.78rem);
-		font-weight: 700;
-		line-height: 1.2;
-		white-space: nowrap;
-		transition: background-color 200ms ease, border-color 200ms ease;
-	}
-	.scene-object-bed:hover .scene-object-label,
-	.scene-object-bed:focus-visible .scene-object-label {
-		border-color: rgb(255 214 150 / 0.72);
-		background: rgb(53 36 27 / 0.9);
 	}
 
 	/* Dörröppningen enligt docs/veranda-asset-spec.md: x 4,5-20,5 %, y 3-66,5 %. */
@@ -652,17 +616,13 @@
 		user-select: none;
 	}
 	.interior-memory-rug.introducing { animation: interior-rug-arrive 1.8s ease-out both; }
-	/* Golvbädden ligger på samma z-index som mattan men senare i DOM, så den
-	   målas ovanpå den - fysiskt korrekt, bädden står på mattan. Kvar under
-	   lampskenet (z 2) och följeslagaren (z 3). Måtten kommer från
-	   docs/sovlage-asset-spec.md; toppkanten faller ut av assetens egen
-	   proportion (2,26:1) och får aldrig gå över y 68 %. */
-	.interior-floor-bed {
+	/* Sovsäcken ligger på samma z-index som mattan men senare i DOM, så den
+	   målas ovanpå den. Den ligger kvar under lampskenet (z 2), följeslagaren
+	   (z 3) och sin egen hotspot (z 4). */
+	.interior-sleeping-bag {
 		position: absolute;
 		z-index: 1;
-		left: 20%;
-		bottom: -1%;
-		width: 42%;
+		height: auto;
 		pointer-events: none;
 		user-select: none;
 	}
@@ -714,7 +674,7 @@
 	.evening-scene[data-sleep='on'] .interior-memory-rug,
 	.evening-scene[data-sleep='on'] .interior-memory-blanket,
 	.evening-scene[data-sleep='on'] .interior-memory-book,
-	.evening-scene[data-sleep='on'] .interior-floor-bed {
+	.evening-scene[data-sleep='on'] .interior-sleeping-bag {
 		filter: brightness(0.7);
 	}
 	.evening-scene-image,
@@ -722,7 +682,7 @@
 	.interior-memory-rug,
 	.interior-memory-blanket,
 	.interior-memory-book,
-	.interior-floor-bed {
+	.interior-sleeping-bag {
 		transition: filter 900ms ease;
 	}
 
@@ -848,7 +808,7 @@
 		.interior-memory-rug,
 		.interior-memory-blanket,
 		.interior-memory-book,
-		.interior-floor-bed,
+		.interior-sleeping-bag,
 		.sleep-focus,
 		.evening-flow-column { transition: none; }
 	}

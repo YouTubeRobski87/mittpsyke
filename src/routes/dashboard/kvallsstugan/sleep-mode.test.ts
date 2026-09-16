@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -24,23 +24,33 @@ describe('Sovläget i Kvällstugan', () => {
 		expect(panel).not.toMatch(/fetch\(|supabase/);
 	});
 
-	it('håller den underkända bädden borta men gör Sovläge synligt och nåbart', () => {
-		expect(route).toContain('const FLOOR_BED_ASSET: string | null = null');
-		expect(route).toContain('{#if FLOOR_BED_ASSET}');
+	it('visar en sovsäck och gör Sovläge nåbart genom den', () => {
+		expect(route).toContain(
+			"const SLEEPING_BAG_ASSET = '/images/evening/interior/sleeping-bag-v1.webp'"
+		);
+		expect(route).toContain('class="interior-sleeping-bag sleeping-bag-placement"');
+		expect(
+			existsSync(
+				join(process.cwd(), 'static/images/evening/interior/sleeping-bag-v1.webp')
+			)
+		).toBe(true);
 		// Den underkända asseten får inte refereras från produktionskoden.
 		expect(route).not.toContain('floor-bed.webp');
 		expect(route).not.toContain('floor-bed-master.png');
 		expect(route).toContain("{#if sleepStage === 'closed'}");
 		expect(route).toContain('aria-label="Öppna Sovläge"');
-		expect(route).toContain('<span class="scene-object-label" aria-hidden="true">Sovläge</span>');
+		expect(route).not.toContain('scene-object-label');
 	});
 
-	it('lägger bäddens hotspot mellan följeslagaren och boken', () => {
+	it('låter sovsäck och hotspot dela samma placering', () => {
 		expect(route).toMatch(
-			/\.scene-object-bed\s*\{[\s\S]*?left: 38%;[\s\S]*?top: 72%;[\s\S]*?width: 19%;[\s\S]*?height: 22%;/
+			/\.sleeping-bag-placement\s*\{[\s\S]*?left: 36%;[\s\S]*?bottom: 2%;[\s\S]*?width: 28%;[\s\S]*?aspect-ratio: 1408 \/ 623;/
+		);
+		expect(route).toContain(
+			'class="scene-object scene-object-bed sleeping-bag-placement"'
 		);
 		expect(route).toContain('aria-label="Öppna Sovläge"');
-		// Följeslagaren står på x 10-36 % och bokens yta börjar på x 59 %.
+		// Följeslagaren slutar på x 36 %. Boken ligger högre i scenen.
 		expect(route).toContain('.scene-object-book { left: 59%; top: 58.5%; width: 8%; height: 9.5%; }');
 		// Delar den tysta ytans träffytegolv på 44 px med dörrarna och boken.
 		expect(route).toContain('min-width: 44px;');
