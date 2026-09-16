@@ -105,11 +105,11 @@ describe('Mitt Hem som navigationsnav', () => {
 		}
 		expect(cabinLink).toContain('href="/dashboard/kvallsstugan"');
 		expect(progressLink).toContain('href="/framsteg"');
-		expect(eveningSource).toContain('<a class="evening-back" href="/dashboard">← Till Mitt Hem</a>');
+		expect(eveningSource).toContain('<a class="evening-exit" href="/framsteg" aria-label="Gå ut till Framsteg">Gå ut</a>');
 	});
 
 	it('behåller Kvällstugans auth-guard för både utloggade och anonyma användare', () => {
 		expect(eveningServerSource).toContain('if (!user || user.is_anonymous)');
-		expect(eveningServerSource).toContain("throw redirect(303, '/login')");
+		expect(eveningServerSource).toContain("throw redirect(303, '/login?redirect=/dashboard/kvallsstugan')");
 	});
 });

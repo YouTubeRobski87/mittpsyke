@@ -6,7 +6,7 @@
 	import { supabase } from '$lib/supabase';
 	import { canUseGoogleOAuth, getStableOAuthCallbackUrl } from '$lib/auth-redirect';
 	import { clearPendingAuthFunnel, markLoginStarted } from '$lib/analytics';
-	import { withSafeRedirect } from '$lib/safe-redirect';
+	import { safeInternalRedirect, withSafeRedirect } from '$lib/safe-redirect';
 	import { page } from '$app/state';
 
 	let { form }: { form: ActionData } = $props();
@@ -52,7 +52,7 @@
 		const { error } = await supabase.auth.signInWithOAuth({
 			provider: 'google',
 			options: {
-				redirectTo: getStableOAuthCallbackUrl('/dashboard')
+				redirectTo: getStableOAuthCallbackUrl(safeInternalRedirect(page.url.searchParams.get('redirect')))
 			}
 		});
 

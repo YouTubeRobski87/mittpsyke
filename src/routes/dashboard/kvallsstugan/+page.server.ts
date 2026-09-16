@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	} = await locals.supabase.auth.getUser();
 
 	if (!user || user.is_anonymous) {
-		throw redirect(303, '/login');
+		throw redirect(303, '/login?redirect=/dashboard/kvallsstugan');
 	}
 
 	const [companionDaily, interiorMemory] = await Promise.all([

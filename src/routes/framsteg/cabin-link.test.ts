@@ -10,16 +10,21 @@ const cabinLink = route.slice(
 	route.indexOf('></a>', route.indexOf('class="progress-cabin-link"'))
 );
 
-describe('genvägen hem via stugan', () => {
-	it('är en riktig länk till Mitt Hem, inte en JS-knapp', () => {
-		expect(cabinLink).toContain('href="/dashboard"');
+describe('genvägen via stugan', () => {
+	it('går direkt till Kvällstugan för inloggade och behåller gästens Mitt Hem', () => {
+		expect(cabinLink).toContain("href={isAnonymous ? '/dashboard' : '/dashboard/kvallsstugan'}");
 		// En vanlig <a> räcker: ingen onclick, ingen goto, inget tangentbordshack.
 		expect(cabinLink).not.toMatch(/onclick|on:click|goto\(/);
 		expect(route).toMatch(/<a\s+[^>]*class="progress-cabin-link"/s);
 	});
 
 	it('har ett tydligt accessible name', () => {
-		expect(cabinLink).toContain('aria-label="Gå till Mitt Hem"');
+		expect(cabinLink).toContain("aria-label={isAnonymous ? 'Gå till Mitt Hem' : 'Gå in i Kvällstugan'}");
+	});
+
+	it('har en synlig ingång även utan att man hittar bildens hotspot', () => {
+		expect(route).toContain('<a class="cabin-entry-link" href="/dashboard/kvallsstugan">Kvällstugan</a>');
+		expect(route).toContain('.cabin-entry-link:focus-visible');
 	});
 
 	it('bär ingen synlig textetikett ovanpå bilden', () => {
@@ -79,9 +84,11 @@ describe('Framstegsscenen runt stuglänken', () => {
 		expect(route).toContain('return fullSceneMarks.filter((mark) => narrowMarkIds.has(mark.id))');
 	});
 
-	it('har bara en länk till Mitt Hem i scenen', () => {
+	it('låter inloggade gå in via både stugmotivet och den synliga länken', () => {
 		const scene = route.slice(route.indexOf('class="companion-media"'), route.indexOf('class="framsteg-layout'));
 
-		expect(scene.match(/href="\/dashboard"/g) ?? []).toHaveLength(1);
+		expect(scene).toContain("href={isAnonymous ? '/dashboard' : '/dashboard/kvallsstugan'}");
+		expect(scene.match(/href="\/dashboard\/kvallsstugan"/g) ?? []).toHaveLength(1);
+		expect(scene).not.toContain('href="/dashboard"');
 	});
 });

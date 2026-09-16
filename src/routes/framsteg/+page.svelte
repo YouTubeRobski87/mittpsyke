@@ -1175,12 +1175,12 @@
 						{/each}
 					{/if}
 				{#if cabinPlacement}
-					<!-- Stugan är inbakad i scenbilden, så genvägen hem är en osynlig
-						 länk lagd exakt över motivet. Ingen knapp, ingen etikett. -->
+					<!-- Stugan leder direkt in för inloggade. Gästens förhandsvisning
+						 behåller sin väg till Mitt Hem. -->
 					<a
 						class="progress-cabin-link"
-						href="/dashboard"
-						aria-label="Gå till Mitt Hem"
+						href={isAnonymous ? '/dashboard' : '/dashboard/kvallsstugan'}
+						aria-label={isAnonymous ? 'Gå till Mitt Hem' : 'Gå in i Kvällstugan'}
 						data-testid="progress-cabin-link"
 					></a>
 				{/if}
@@ -1209,6 +1209,9 @@
 						: `Du och ${sceneCompanionName} sitter stilla vid stranden och blickar ut över sjön.`}
 				</p>
 				<p class="companion-reflection">{worldReturnCopy ?? livingWorldReflectionCopy}</p>
+				{#if !isAnonymous}
+					<a class="cabin-entry-link" href="/dashboard/kvallsstugan">Kvällstugan</a>
+				{/if}
 			</div>
 					</section>
 	<div class="framsteg-layout framsteg-layout-v2">
@@ -1784,6 +1787,17 @@
 </main>
 
 <style>
+	.cabin-entry-link {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		color: inherit;
+		text-underline-offset: 0.2em;
+	}
+	.cabin-entry-link:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 3px;
+	}
 	.journey-container { display: grid; gap: 20px; }
 
 	.framsteg-page {

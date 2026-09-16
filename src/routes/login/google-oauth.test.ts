@@ -12,7 +12,7 @@ describe('Google-inloggning', () => {
 
 	it('startar den befintliga Google-OAuth-funktionen med den centrala callbacken', () => {
 		expect(loginSource).toContain("provider: 'google'");
-		expect(loginSource).toContain("redirectTo: getStableOAuthCallbackUrl('/dashboard')");
+		expect(loginSource).toContain("redirectTo: getStableOAuthCallbackUrl(safeInternalRedirect(page.url.searchParams.get('redirect')))");
 	});
 
 	it('pekar fallback-länken mot den kanoniska apex-domänen', () => {
