@@ -57,7 +57,7 @@
 		const { error } = await supabase.auth.signInWithOAuth({
 			provider: 'google',
 			options: {
-				redirectTo: getStableOAuthCallbackUrl('/dashboard')
+				redirectTo: getStableOAuthCallbackUrl('/dashboard/kvallsstugan')
 			}
 		});
 

@@ -31,10 +31,10 @@ describe('safeInternalRedirect', () => {
 	});
 
 	it('faller tillbaka när parametern saknas eller är tom', () => {
-		expect(safeInternalRedirect(null)).toBe('/dashboard');
-		expect(safeInternalRedirect(undefined)).toBe('/dashboard');
-		expect(safeInternalRedirect('')).toBe('/dashboard');
-		expect(safeInternalRedirect('   ')).toBe('/dashboard');
+		expect(safeInternalRedirect(null)).toBe('/dashboard/kvallsstugan');
+		expect(safeInternalRedirect(undefined)).toBe('/dashboard/kvallsstugan');
+		expect(safeInternalRedirect('')).toBe('/dashboard/kvallsstugan');
+		expect(safeInternalRedirect('   ')).toBe('/dashboard/kvallsstugan');
 	});
 
 	it('respekterar en egen fallback', () => {
@@ -44,29 +44,29 @@ describe('safeInternalRedirect', () => {
 	// Kärnan i skyddet: inloggningssidan får aldrig kunna skicka en användare
 	// vidare till en annan domän direkt efter att lösenordet skrivits in.
 	it('avvisar absoluta URL:er', () => {
-		expect(safeInternalRedirect('https://evil.tld')).toBe('/dashboard');
-		expect(safeInternalRedirect('http://evil.tld/admin')).toBe('/dashboard');
-		expect(safeInternalRedirect('javascript:alert(1)')).toBe('/dashboard');
-		expect(safeInternalRedirect('data:text/html,x')).toBe('/dashboard');
+		expect(safeInternalRedirect('https://evil.tld')).toBe('/dashboard/kvallsstugan');
+		expect(safeInternalRedirect('http://evil.tld/admin')).toBe('/dashboard/kvallsstugan');
+		expect(safeInternalRedirect('javascript:alert(1)')).toBe('/dashboard/kvallsstugan');
+		expect(safeInternalRedirect('data:text/html,x')).toBe('/dashboard/kvallsstugan');
 	});
 
 	it('avvisar protokollrelativa sökvägar', () => {
-		expect(safeInternalRedirect('//evil.tld')).toBe('/dashboard');
-		expect(safeInternalRedirect('//evil.tld/admin')).toBe('/dashboard');
+		expect(safeInternalRedirect('//evil.tld')).toBe('/dashboard/kvallsstugan');
+		expect(safeInternalRedirect('//evil.tld/admin')).toBe('/dashboard/kvallsstugan');
 	});
 
 	it('avvisar backslash-varianten som webbläsare normaliserar till //', () => {
-		expect(safeInternalRedirect('/' + BACKSLASH + 'evil.tld')).toBe('/dashboard');
-		expect(safeInternalRedirect('/' + BACKSLASH + BACKSLASH + 'evil.tld')).toBe('/dashboard');
+		expect(safeInternalRedirect('/' + BACKSLASH + 'evil.tld')).toBe('/dashboard/kvallsstugan');
+		expect(safeInternalRedirect('/' + BACKSLASH + BACKSLASH + 'evil.tld')).toBe('/dashboard/kvallsstugan');
 	});
 
 	it('avvisar relativa sökvägar utan inledande slash', () => {
-		expect(safeInternalRedirect('admin')).toBe('/dashboard');
-		expect(safeInternalRedirect('../admin')).toBe('/dashboard');
+		expect(safeInternalRedirect('admin')).toBe('/dashboard/kvallsstugan');
+		expect(safeInternalRedirect('../admin')).toBe('/dashboard/kvallsstugan');
 	});
 
 	it('avvisar kontrolltecken som kan injicera i Location-headern', () => {
-		expect(safeInternalRedirect('/admin' + NEWLINE + 'Set-Cookie: a=b')).toBe('/dashboard');
-		expect(safeInternalRedirect('/admin' + NUL)).toBe('/dashboard');
+		expect(safeInternalRedirect('/admin' + NEWLINE + 'Set-Cookie: a=b')).toBe('/dashboard/kvallsstugan');
+		expect(safeInternalRedirect('/admin' + NUL)).toBe('/dashboard/kvallsstugan');
 	});
 });

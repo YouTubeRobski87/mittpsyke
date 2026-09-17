@@ -35,7 +35,7 @@ function normalizeStructuredDataUrls(html: string): string {
 // som indexerbar. Tidigare fanns en egen kopia här som kunde glida isär.
 
 const legacyPageRedirects: Record<string, string> = {
-	'/hem': '/dashboard',
+	'/hem': '/dashboard/kvallsstugan',
 	'/anonymt-samtalsstod-online': '/anonymt-samtalstod-online',
 	'/guider-seo/nedstamdhet': '/guider/depression',
 	'/guider-seo/somnproblem': '/guider/sovproblem',

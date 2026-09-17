@@ -84,7 +84,19 @@ describe('nästa steg i avslutet', () => {
 		expect(nextBlock).not.toMatch(/fetch\(|openai|anthropic|generate/i);
 	});
 
-	it('behåller vägen tillbaka till Mitt Hem', () => {
-		expect(flow).toContain('href="/dashboard"');
+	it('stänger avslutet lokalt i stället för att länka till gamla /dashboard', () => {
+		// Kvällstugan är själv Mitt Hem, så en länk dit hade bara navigerat till
+		// samma sida som knappen redan visas på.
+		expect(flow).not.toContain('href="/dashboard"');
+		expect(flow).not.toContain('Till Mitt Hem');
+		expect(flow).toContain("let closed = $state(false);");
+		expect(flow).toContain('onclick={() => (closed = true)}');
+		expect(flow).toContain('Du är kvar i Kvällstugan.');
+		// Ingen navigation, inget nätverk, ingen lagring, ingen mätning.
+		const closeButton = flow.slice(
+			flow.lastIndexOf('{#if closed}'),
+			flow.indexOf('{/if}', flow.lastIndexOf('{#if closed}'))
+		);
+		expect(closeButton).not.toMatch(/href=|goto\(|fetch\(|localStorage|track|analytics/i);
 	});
 });

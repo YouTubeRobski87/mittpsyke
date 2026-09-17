@@ -29,11 +29,13 @@ describe('lokalt dagboksutkast efter registrering', () => {
 		expect(registerPage).toContain('const storedDraft = readDiaryDraft();');
 		expect(registerAction).not.toMatch(/from\(['"]diary['"]\)|\/api\/diary|writeDiaryDraft|clearDiaryDraft/);
 		// Utkastvägen (/register?fromDiary=true) bär ingen ?redirect=, så den
-		// landar fortfarande på Mitt Hem där "Fortsätt skriva" visas. Ett mål
-		// från /login (t.ex. Kvällstugan) följs bara när det finns.
+		// landar numera i Kvällstugan i stället för på gamla dashboarden. Ett
+		// mål från /login (t.ex. Kvällstugan) följs bara när det finns.
 		expect(guestEntry).not.toContain('/register?fromDiary=true&redirect');
 		expect(registerAction).toContain('throw redirect(303, safeInternalRedirect(redirectParam))');
-		expect(safeInternalRedirect(new URLSearchParams('fromDiary=true').get('redirect'))).toBe('/dashboard');
+		expect(safeInternalRedirect(new URLSearchParams('fromDiary=true').get('redirect'))).toBe(
+			'/dashboard/kvallsstugan'
+		);
 	});
 
 	it('visar en kontinuitetsväg bara för en inloggad användare med lokalt utkast', () => {

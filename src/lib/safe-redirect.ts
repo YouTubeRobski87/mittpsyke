@@ -10,7 +10,7 @@
  * Avvisas: absoluta URL:er, protokollrelativa (`//evil.tld`), backslash-varianter
  * som vissa webbläsare normaliserar till `//`, och kontrolltecken.
  */
-const DEFAULT_DESTINATION = '/dashboard';
+const DEFAULT_DESTINATION = '/dashboard/kvallsstugan';
 
 // Kontrolltecken (inkl. radbrytningar) hör inte hemma i en sökväg och kan
 // användas för injektion i Location-headern. Kontrolleras via teckenkod i

@@ -48,6 +48,11 @@
 	// Rent lokalt val. Att stanna kvar sparas inte, mäts inte och navigerar
 	// ingenstans - det tystar bara nästa steg för den här stunden.
 	let stayingHere = $state(false);
+	// Avslutet hade tidigare en hemlänk till gamla dashboarden. Sedan
+	// Kvällstugan själv blev startplatsen skulle den länken bara ha navigerat
+	// till samma route den redan visas på, så den ersätts av ett rent lokalt
+	// stäng-val i stället - ingen navigation, ingen sparning, ingen mätning.
+	let closed = $state(false);
 
 	function goToStep(next: Step) {
 		step = next;
@@ -281,7 +286,17 @@
 				{#if saveError}
 					<p class="evening-error" role="alert">{saveError}</p>
 				{/if}
-				<a class="evening-home-link" href="/dashboard">Till Mitt Hem</a>
+				<!-- Den här knappen visas redan på Kvällstugan, som är Mitt Hem - en
+				     länk dit hade bara navigerat till samma sida. Stäng är därför ett
+				     rent lokalt val som tystar avslutet utan att lämna stugan, samma
+				     mönster som "Bara vara här en stund" ovan. -->
+				{#if closed}
+					<p class="evening-closed" role="status">Du är kvar i Kvällstugan.</p>
+				{:else}
+					<button class="evening-home-link" type="button" onclick={() => (closed = true)}>
+						Stäng
+					</button>
+				{/if}
 			</div>
 		{/if}
 	</section>
@@ -435,9 +450,20 @@
 		justify-content: center;
 		width: fit-content;
 		margin-top: 0.45rem;
+		padding: 0;
+		border: 0;
+		background: transparent;
 		color: #f7f3eb;
 		text-decoration: underline;
 		text-underline-offset: 0.18em;
+		cursor: pointer;
+	}
+
+	.evening-closed {
+		margin-top: 0.45rem;
+		color: rgb(240 235 225 / 0.82);
+		font-size: 0.94rem;
+		line-height: 1.5;
 	}
 
 	/* Nästa steg. Lågmält och likvärdigt: inget alternativ är visuellt

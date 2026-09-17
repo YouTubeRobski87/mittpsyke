@@ -64,7 +64,7 @@ describe('GA4 sign_up efter registrering', () => {
 
 		await expect(actions.default(event as never)).rejects.toMatchObject({
 			status: 303,
-			location: '/dashboard'
+			location: '/dashboard/kvallsstugan'
 		});
 
 		expect(event.cookies.set).toHaveBeenCalledTimes(1);
@@ -110,7 +110,7 @@ describe('GA4 sign_up efter registrering', () => {
 		for (const search of ['?redirect=https%3A%2F%2Fevil.tld', '?redirect=%2F%2Fevil.tld']) {
 			await expect(actions.default(registrationEvent({ search }) as never)).rejects.toMatchObject({
 				status: 303,
-				location: '/dashboard'
+				location: '/dashboard/kvallsstugan'
 			});
 		}
 	});

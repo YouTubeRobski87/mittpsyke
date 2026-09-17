@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
+	import DraftContinuityCard from '$lib/components/DraftContinuityCard.svelte';
 	import EveningCheckinFlow from '$lib/components/evening/EveningCheckinFlow.svelte';
 	import SleepModePanel from '$lib/components/evening/SleepModePanel.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
@@ -367,6 +368,7 @@
 		</div>
 
 		<div class="evening-flow-column" class:is-dimmed={isSleepMode}>
+			<DraftContinuityCard />
 			<div class="evening-flow-wrap" role="region" aria-labelledby="evening-flow-label" aria-describedby="evening-flow-intro" tabindex="-1">
 				<p class="evening-flow-label" id="evening-flow-label">Kvällsincheckning</p>
 				<p class="evening-flow-intro" id="evening-flow-intro">
