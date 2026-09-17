@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest';
 import { safeInternalRedirect } from '$lib/safe-redirect';
 
 const workspace = process.cwd();
-const dashboard = readFileSync(join(workspace, 'src/routes/dashboard/+page.svelte'), 'utf8');
 const guestEntry = readFileSync(join(workspace, 'src/lib/components/GuestQuickEntry.svelte'), 'utf8');
 const registerPage = readFileSync(join(workspace, 'src/routes/register/+page.svelte'), 'utf8');
 const registerAction = readFileSync(join(workspace, 'src/routes/register/+page.server.ts'), 'utf8');
@@ -38,25 +37,14 @@ describe('lokalt dagboksutkast efter registrering', () => {
 		);
 	});
 
-	it('visar en kontinuitetsväg bara för en inloggad användare med lokalt utkast', () => {
-		expect(dashboard).toContain('hasLocalDraftToResume = !isAnonymous && Boolean(readDiaryDraft());');
-		expect(dashboard).toContain('{#if hasLocalDraftToResume}');
-		expect(dashboard).toContain('Ditt utkast finns kvar');
-		expect(dashboard).toContain("'/dagbok/checkin#skriv-sjalv'");
-		expect(dashboard).toContain("'Fortsätt skriva'");
-	});
-
-	it('behåller normalläget utan utkast och påstår aldrig att utkastet är sparat', () => {
-		expect(dashboard).toContain('<p class="home-card-lead">Hur har du det idag?</p>');
-		expect(dashboard).toContain("'Skriv i dagboken'");
-		expect(dashboard).not.toMatch(/utkast(?:et)? (?:är|har blivit) sparat/i);
-	});
-
-	it('öppnar editorn med utkastet utan att exponera texten på dashboarden', () => {
+	// Kontinuitetskortet ("Ditt utkast finns kvar") låg tidigare inline på
+	// gamla /dashboard (nu borttagen). Det lever numera i den delade
+	// DraftContinuityCard.svelte, testad separat för Kvällstugan - se
+	// src/lib/components/draft-continuity-card.test.ts och
+	// src/routes/dashboard/kvallsstugan/*.
+	it('öppnar editorn med utkastet via hash-ankaret', () => {
 		expect(diaryPage).toContain('draftText = readDiaryDraft();');
 		expect(diaryPage).toContain("window.location.hash === '#skriv-sjalv'");
 		expect(diaryPage).toContain('await openWriteEditor();');
-		expect(dashboard).not.toContain('{readDiaryDraft()}');
-		expect(dashboard).not.toContain('{draftText}');
 	});
 });

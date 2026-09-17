@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from 'svelte/server';
 import CompanionPose from './CompanionPose.svelte';
 
-// Regressionsskydd för hydration-glitchen på Mitt Hem: Balder saknades helt
+// Regressionsskydd för hydration-glitchen på gamla /dashboard: Balder saknades helt
 // i servergenererad HTML eftersom localBasePose/localPosition startade som
 // null och sattes först i onMount (som aldrig körs vid SSR). Han poppade
 // därför in synligt en liten stund efter att sidan blivit interaktiv.
@@ -36,7 +36,7 @@ function renderAtTime(iso: string) {
 	}
 }
 
-describe('CompanionPose SSR-render på Mitt Hem', () => {
+describe('CompanionPose SSR-render på gamla /dashboard', () => {
 	it.each(Object.entries(DAYPART_TIMES))(
 		'servergenererad HTML innehåller en riktig Balder-bild (%s)',
 		(_daypart, iso) => {

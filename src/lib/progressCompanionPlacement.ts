@@ -128,7 +128,7 @@ export function getProgressCabinPlacementStyle(input: ProgressSceneGeometryInput
  * INGET djur. Följeslagaren, björnen Balder, ritas som ett eget lager ovanpå.
  *
  * Endast den primära följeslagaren renderas här. Visitor och Friend hör hemma
- * på Mitt Hem och återinförs medvetet inte i den här vyn.
+ * på gamla /dashboard och återinförs medvetet inte i den här vyn.
  * ---------------------------------------------------------------------- */
 
 /**

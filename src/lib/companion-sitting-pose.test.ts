@@ -94,8 +94,8 @@ describe('var posen används', () => {
 		expect(getProgressScenePose('bear')?.id).toBe(SITTING_AWAY);
 	});
 
-	it('håller den bortvända posen borta från Mitt Hems allmänna rotation', () => {
-		// Mitt Hem hälsar på Balder ansikte mot ansikte (default), så där ska
+	it('håller den bortvända posen borta från gamla /dashboards allmänna rotation', () => {
+		// Gamla /dashboard hälsar på Balder ansikte mot ansikte (default), så där ska
 		// ryggtavlan aldrig dyka upp - men front-sittposen får fortfarande synas.
 		const seen = new Set<string>();
 		for (let attempt = 0; attempt < 400; attempt += 1) {

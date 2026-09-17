@@ -90,7 +90,7 @@
 		transform-origin: 50% 100%;
 		/* Alltid under huvudföljeslagaren. Vännen får aldrig konkurrera visuellt
 		   med följeslagaren.
-		   Ett steg under --scene-ambient, inte på samma nivå: i Mitt Hems hero
+		   Ett steg under --scene-ambient, inte på samma nivå: i gamla /dashboards hero
 		   får posen z-index calc(--companion-z + 1), och med följeslagaren på
 		   --companion-z: 1 hamnade den på 2 - exakt samma som vännen. Vid lika
 		   z-index avgör DOM-ordningen, och eftersom CompanionFriend renderas
@@ -147,7 +147,7 @@
 	   scenen och följeslagaren mörknade, och djuret lyste ut ur bilden.
 	   Värdena speglar CompanionPose --companion-grade för respektive tid, med
 	   ett snäpp lägre ljushet så vännen förblir mindre framträdande än följeslagaren.
-	   Graderingen ärvs från scenens data-time; Mitt Hems hero sätter inget
+	   Graderingen ärvs från scenens data-time; gamla /dashboards hero sätter inget
 	   data-time och håller därför både följeslagare och vän i dagsläge. */
 	:global(.companion-media[data-time='evening']) .companion-friend {
 		--friend-grade: saturate(0.68) contrast(0.88) brightness(0.86) sepia(0.18)
@@ -164,7 +164,7 @@
 	}
 
 	/* Basbredden är kalibrerad per scen mot hur stor följeslagaren faktiskt
-	   renderas där, inte mot scenens bredd. Följeslagaren är stor i Mitt Hems hero men
+	   renderas där, inte mot scenens bredd. Följeslagaren är stor i gamla /dashboards hero men
 	   liten och tillbakadragen i Framstegs banner, så samma procenttal ger helt
 	   olika maktförhållande mellan djuren. Framsteg behöver därför ett mycket
 	   lägre tal för att följeslagaren ska förbli det primära djuret: med 22 %

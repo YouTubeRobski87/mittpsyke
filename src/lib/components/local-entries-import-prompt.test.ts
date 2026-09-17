@@ -7,7 +7,6 @@ const component = readFileSync(
 	join(workspace, 'src/lib/components/LocalEntriesImportPrompt.svelte'),
 	'utf8'
 );
-const dashboard = readFileSync(join(workspace, 'src/routes/dashboard/+page.svelte'), 'utf8');
 const kvallsstugan = readFileSync(
 	join(workspace, 'src/routes/dashboard/kvallsstugan/+page.svelte'),
 	'utf8'
@@ -18,15 +17,11 @@ const kvallsstuganServer = readFileSync(
 );
 
 describe('import av lokal historik till kontot', () => {
-	it('visas bara för en inloggad användare på dashboarden', () => {
-		expect(dashboard).toContain("import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';");
-		expect(dashboard).toMatch(/\{#if !isAnonymous\}\s*<LocalEntriesImportPrompt \/>/);
-	});
-
-	// Flyttad hit i samband med att Mitt Hem blev Kvällstugan. Ingen egen
-	// isAnonymous-koll behövs: Kvällstugans server-load redirectar redan bort
-	// utloggade och anonyma besökare innan sidan renderas.
-	it('finns nu också i Kvällstugan, som redan bara nås inloggad', () => {
+	// Flyttad hit från gamla /dashboard (nu borttagen) i samband med att Mitt
+	// Hem blev Kvällstugan. Ingen egen isAnonymous-koll behövs: Kvällstugans
+	// server-load redirectar redan bort utloggade och anonyma besökare innan
+	// sidan renderas.
+	it('finns i Kvällstugan, som redan bara nås inloggad', () => {
 		expect(kvallsstugan).toContain(
 			"import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';"
 		);

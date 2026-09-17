@@ -1,7 +1,7 @@
 /**
  * Bildankrad geometri för scener som visas med `object-fit: cover`.
  *
- * Bakgrunden i Mitt Hem är ett foto som beskärs av `cover`, medan
+ * Bakgrunden i t.ex. gamla /dashboard är ett foto som beskärs av `cover`, medan
  * världslagren i AmbientWorld ligger i procent av scenrutan. De två
  * koordinatsystemen glider isär så fort rutans proportioner ändras: månen
  * hamnar framför träden, och lövverket uppe till höger svajar över öppet

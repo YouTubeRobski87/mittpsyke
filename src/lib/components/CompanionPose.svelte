@@ -78,7 +78,7 @@
 		bondLevel?: CompanionBondLevel;
 		behaviourProfile?: CompanionBehaviourProfile;
 		posePreference?: CompanionPosePreference;
-		// Mitt Hem opt-in: andra vyer behåller sitt befintliga beteende.
+		// Gamla /dashboard opt-in: andra vyer behåller sitt befintliga beteende.
 		returnContextEnabled?: boolean;
 	} = $props();
 
@@ -116,7 +116,7 @@
 	// rörelser och lagrar aldrig en exakt frånvarotid i komponentens UI.
 	let returnContext: ReturnContext = 'first_visit';
 	// Behåll tidigare riktade returgest i vyer som ännu inte använder Return
-	// Context; Mitt Hem tar i stället den lugnare, viktade vägen ovan.
+	// Context; gamla /dashboard tar i stället den lugnare, viktade vägen ovan.
 	let legacyReturnGestureAvailable = false;
 	// Sant en gång per montering om en reflektion sparades nyligen (se
 	// diary-events.ts + companionPoseState.ts). Till skillnad från den lokala
@@ -282,7 +282,7 @@
 	onMount(() => {
 		refreshBasePose();
 
-		// Läs och skriv en gång per faktisk montering. På Mitt Hem markeras
+		// Läs och skriv en gång per faktisk montering. På gamla /dashboard markeras
 		// samma session explicit som kontinuerlig navigation, inte som en
 		// återkomst. Övriga vyer behåller sin tidigare återkomstsignal.
 		const seenNow = new Date();

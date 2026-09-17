@@ -169,7 +169,7 @@ describe('tillfalliga companion-besok', () => {
 		expect(afterStableWindow.visitorType).toBe('sleeping');
 	});
 
-	it('anvander separata landpositioner for sovbesok och behaller besoket mellan Mitt Hem och Framsteg', () => {
+	it('anvander separata landpositioner for sovbesok och behaller besoket mellan gamla /dashboard och Framsteg', () => {
 		const storage = new MemoryStorage();
 		const dashboardVisit = getCompanionVisitorState(SLEEPING_BEAR, now, storage, alwaysVisit);
 		const progressVisit = getCompanionVisitorState(SLEEPING_BEAR, now + 1_000, storage, () => 0.99);
@@ -185,7 +185,7 @@ describe('tillfalliga companion-besok', () => {
 	});
 
 	// Gransvardena ar uppmatta mot scenbilden (dashboard-lakeside-world) genom
-	// hjaltens faktiska beskarning: pa Mitt Hem borjar landet vid x ~52 % for
+	// hjaltens faktiska beskarning: pa gamla /dashboard borjar landet vid x ~52 % for
 	// container-y over 88 %, pa Framsteg vid x ~62 %. Bada vakna positionerna
 	// lag tidigare utanfor de banden, det vill saga i sjon.
 	it('placerar aven det vakna besoket pa land i bada scenerna', () => {

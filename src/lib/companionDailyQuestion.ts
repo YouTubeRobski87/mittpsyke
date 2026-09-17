@@ -1,5 +1,6 @@
 // Följeslagarens dagliga fråga. Ren, delad modul: både servern (som väljer och
-// sparar dagens fråga) och Mitt Hem (som visar den) läser samma frågebank här.
+// sparar dagens fråga) och ytorna som visar den (Kvällstugan, dagens Mitt Hem,
+// samt gamla /dashboard) läser samma frågebank här.
 //
 // Modulen känner inte till databasen, användaren eller UI:t - den vet bara
 // vilka frågor som finns, vilken av dem en viss dag hör till, och vad

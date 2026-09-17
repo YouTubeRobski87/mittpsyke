@@ -2,9 +2,9 @@
 	// Världens korta svar när användaren reflekterat: en mjuk ljus-/luftpust som
 	// drar lågt genom scenen och försvinner. Rent kosmetisk, ingen belöning.
 	//
-	// Egen komponent i stället för AmbientWorld: på Mitt Hem är hela det lagret
-	// medvetet dolt (se .hero-living-world i dashboard/+page.svelte), så det finns
-	// ingen synlig vegetation eller lövlager att förstärka i den här scenen.
+	// Egen komponent i stället för AmbientWorld: på gamla /dashboard (borttagen
+	// route) var hela det lagret medvetet dolt, så det fanns ingen synlig
+	// vegetation eller lövlager att förstärka i den scenen.
 	// Komponenten lånar därför AmbientWorlds visuella språk - blurrad gradient,
 	// soft-light, bara transform och opacity - utan att röra dess lager.
 	import { createMotionAwareness } from '$lib/motionAwareness.svelte';

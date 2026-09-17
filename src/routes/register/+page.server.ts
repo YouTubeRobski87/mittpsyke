@@ -41,7 +41,7 @@ export const actions: Actions = {
 
 		// Formuläret postar till aktuell URL, så en ?redirect= som följt med
 		// från /login finns här. Samma validering som inloggningen använder;
-		// utan parameter blir destinationen /dashboard som tidigare.
+		// utan parameter blir destinationen Kvällstugan (safeInternalRedirects fallback).
 		const redirectParam = url.searchParams.get('redirect');
 
 		if (signInError) {

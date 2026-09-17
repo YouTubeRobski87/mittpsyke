@@ -129,8 +129,10 @@ The product should make this feel discovered, not announced.
 
 Nuvarande läge:
 - Dagboksvolym styr `growthLevel` (0–4, via `getGrowthLevel` i `src/lib/worldScene.ts`).
-- `growthLevel` påverkar världen på Mitt Hem (`/dashboard`) och Framsteg (`/framsteg`):
-  beständig växtlighet (foliage/gräs/canopy) primärt, drift/fjäril/fågel sekundärt på högre nivåer.
+- `growthLevel` påverkar världen på Framsteg (`/framsteg`) och på gamla `/dashboard` (legacy route,
+  301-redirectas till Kvällstugan): beständig växtlighet (foliage/gräs/canopy) primärt,
+  drift/fjäril/fågel sekundärt på högre nivåer. Kvällstugan (`/dashboard/kvallsstugan`, dagens Mitt
+  Hem) använder medvetet inte `growthLevel` i sin scen.
 - Reflektionsraden under bilden förklarar kopplingen (`src/lib/livingWorldCopy.ts`):
   "Din plats har vuxit i takt med dina N sparade reflektioner."
 - `relationshipStage` styr följeslagaren separat och blandas aldrig ihop med `growthLevel`.

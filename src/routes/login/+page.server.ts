@@ -20,8 +20,8 @@ export const actions: Actions = {
 
 		// Skyddade sidor skickar hit med ?redirect=<sökväg>. Parametern
 		// ignorerades tidigare, så den som skickades hit från /admin hamnade
-		// ändå på /dashboard. safeInternalRedirect avvisar externa mål, så
-		// parametern inte kan användas som open redirect.
+		// ändå på Kvällstugan (safeInternalRedirects fallback). safeInternalRedirect
+		// avvisar externa mål, så parametern inte kan användas som open redirect.
 		throw redirect(303, safeInternalRedirect(url.searchParams.get('redirect')));
 	}
 };

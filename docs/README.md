@@ -43,18 +43,20 @@ Never introduce components that conflict with this reference.
 
 ## 01-dashboard-current-target.png
 
-Purpose
+> Legacy. Shows the layout of the old `/dashboard` page, not current Mitt Hem. `/dashboard` is now a
+> legacy route that 301-redirects to Kvällstugan (`/dashboard/kvallsstugan`); see
+> `docs/references/README.md` for the full picture, including `MittHem.png`.
 
-Shows the desired layout for "Mitt Hem".
+Purpose (historical)
+
+Showed the desired layout for the old `/dashboard` page.
 
 Use for:
-- hero proportions
-- dashboard spacing
-- card hierarchy
-- balance
-- whitespace
+- legacy dashboard hero proportions
+- legacy dashboard spacing
+- legacy dashboard card hierarchy
 
-This image has priority over new design ideas.
+Not a target for new Mitt Hem/Kvällstugan design ideas.
 
 ---
 
@@ -62,7 +64,7 @@ This image has priority over new design ideas.
 
 Purpose
 
-Long-term dashboard vision.
+Long-term vision for the home experience (Mitt Hem / Kvällstugan).
 
 Use for:
 - emotional feeling

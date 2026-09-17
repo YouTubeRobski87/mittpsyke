@@ -96,7 +96,8 @@ Teknisk riktning finns i `docs/COMPANION_SYSTEM.md`. Där produktbeslutet ovan o
 
 ## Kvällstugan
 
-Platsen där dagen landar heter **Kvällstugan**. Man går in i den från stugan på Mitt Hem.
+Platsen där dagen landar heter **Kvällstugan**, på routen `/dashboard/kvallsstugan`. Det är samma
+plats som **Mitt Hem** — inte en andra plats man navigerar till, utan hemmet sett i sin kvällsform.
 
 Funktionen där inne heter **Kvällsincheckning**: en kort, frivillig incheckning när dagen är slut.
 
@@ -253,11 +254,14 @@ Before changing UI, inspect:
 Priority order:
 
 1. `docs/references/00-design-system.png`
-2. `docs/references/01-dashboard-current-target.png`
-3. `docs/references/02-home-vision-bear.png`
-4. `docs/references/03-companion-world-reference.png`
-5. `docs/references/04-hero-bear-scene.png`
+2. `docs/references/02-home-vision-bear.png`
+3. `docs/references/03-companion-world-reference.png`
+4. `docs/references/04-hero-bear-scene.png`
 
-The first two references are the strongest source of truth for interface work.
+`00-design-system.png` is the strongest source of truth for interface work. `docs/references/MittHem.png`
+and `docs/references/01-dashboard-current-target.png` are legacy history for the old `/dashboard`
+page's layout, despite the former's filename — not targets for current Mitt Hem/Kvällstugan work.
+For that, look at the shipped route (`src/routes/dashboard/kvallsstugan/`). See
+`docs/references/README.md` for details.
 
 Referenserna 3–5 visar björnen, som också är MittPsykes enda följeslagare. Läs dem som referens för världen, bildutsnittet och stämningen.

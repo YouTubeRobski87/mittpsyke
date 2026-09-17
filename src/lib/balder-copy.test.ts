@@ -19,7 +19,6 @@ const SHORT =
 
 const PAGES = {
 	home: 'src/routes/+page.svelte',
-	dashboard: 'src/routes/dashboard/+page.svelte',
 	evening: 'src/routes/dashboard/kvallsstugan/+page.svelte',
 	about: 'src/routes/om-mittpsyke/+page.svelte',
 	signedInHome: 'src/lib/components/home/SignedInHome.svelte',
@@ -47,8 +46,7 @@ describe('Balder presenteras likadant överallt', () => {
 		expect(home).toContain(SHORT);
 	});
 
-	it('använder kärntexten i Mitt Hem och Kvällstugan', () => {
-		expect(read(PAGES.dashboard)).toContain(CORE);
+	it('använder kärntexten i Kvällstugan', () => {
 		expect(read(PAGES.evening)).toContain(CORE);
 		expect(read(PAGES.evening)).toContain('<h2 id="evening-reassurance-title">Balder, din följeslagare</h2>');
 	});

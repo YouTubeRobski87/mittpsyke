@@ -5,7 +5,10 @@ MittPsyke ska kännas varmt, tryggt, enkelt och premium — aldrig kliniskt, str
 Always inspect:
 
 1. `docs/references/00-design-system.png`
-2. `docs/references/01-dashboard-current-target.png`
+2. For Mitt Hem/Kvällstugan work, the shipped route itself (`src/routes/dashboard/kvallsstugan/`) —
+   `docs/references/MittHem.png` and `docs/references/01-dashboard-current-target.png` are legacy
+   history for the old `/dashboard` page (see "Dashboard rules" below and
+   `docs/references/README.md`), not current targets, despite the filename of the former.
 
 ## Core feeling
 

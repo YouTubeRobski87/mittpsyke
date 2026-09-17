@@ -46,8 +46,8 @@ const CALM_POSE_IDS = new Set(['bear-sitting', 'bear-sitting-away', 'bear-sleepi
 const RESTING_POSE_IDS = new Set(['bear-sitting', 'bear-sitting-away', 'bear-sleeping']);
 
 // Poser som bara hör hemma i lugna/vilande lägen och i den bortvända scenen -
-// inte i den allmänna rotationen på Mitt Hem, där man hälsar på Balder ansikte
-// mot ansikte. Den bortvända sittposen skulle där vända ryggen till.
+// inte i den allmänna rotationen på gamla /dashboard, där man hälsar på Balder
+// ansikte mot ansikte. Den bortvända sittposen skulle där vända ryggen till.
 const DEFAULT_EXCLUDED_POSE_IDS = new Set(['bear-sitting-away']);
 
 function getPoseDaypart(date: Date): CompanionPoseDaypart {

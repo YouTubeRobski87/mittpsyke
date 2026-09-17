@@ -156,14 +156,6 @@ describe('Framstegs fullständiga dygnsscener', () => {
 		expect(route).toContain('prepareSceneTransition(sceneBand)');
 	});
 
-	it('låter dashboardens dynamiska companion-system vara kvar', () => {
-		const dashboard = readFileSync(join(process.cwd(), 'src/routes/dashboard/+page.svelte'), 'utf8');
-
-		expect(dashboard).toContain('<CompanionPose');
-		expect(dashboard).toContain('<CompanionVisitor');
-		expect(dashboard).toContain('<CompanionFriend');
-		expect(dashboard).toContain('<AmbientWorld');
-	});
 });
 
 describe('etikett och alt', () => {

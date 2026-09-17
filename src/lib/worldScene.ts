@@ -325,9 +325,9 @@ const baseEffects: LivingWorldEffect[] = [
 		// Framstegsscenen (progress-lake-bear) är personens rygg, inte sjön -
 		// en ljus ring mot mörk jacka blev scenens tydligaste artefakt.
 		//
-		// De här vattenringarna renderas i dag bara av Framsteg: Mitt Hem
-		// utelämnar water ur visibleEffects och Kvällstugan stänger av det via
-		// features och ritar sina egna ringar lokalt. Framstegs scenruta är
+		// De här vattenringarna renderas i dag bara av Framsteg: gamla /dashboard
+		// utelämnar water ur visibleEffects och Kvällstugan (dagens Mitt Hem)
+		// stänger av det via features och ritar sina egna ringar lokalt. Framstegs scenruta är
 		// låst till bildens proportioner (aspect-ratio 1672/941 + object-fit:
 		// contain), så procenten här är samma procent i bilden på alla bredder.
 		id: 'water-ripple-loop-three',

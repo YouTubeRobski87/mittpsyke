@@ -9,32 +9,31 @@ They are design references for humans and AI agents.
 ## Reading order
 
 1. `00-design-system.png`
-2. `MittHem.png`
-3. `01-dashboard-current-target.png`
-4. `02-home-vision-bear.png`
-5. `03-companion-world-reference.png`
-6. `04-hero-bear-scene.png`
+2. `02-home-vision-bear.png`
+3. `03-companion-world-reference.png`
+4. `04-hero-bear-scene.png`
+5. `MittHem.png` — legacy, see note below
+6. `01-dashboard-current-target.png` — legacy, see note below
 
-The first two references are the strongest source of truth for interface work.
+`00-design-system.png` is the strongest source of truth for interface work. `MittHem.png` and
+`01-dashboard-current-target.png` depict the old `/dashboard` page and are historical only — not
+targets for current Mitt Hem (Kvällstugan) work. See their entries below for details.
 
 ## MittHem.png
 
-Purpose: Current layout target for “Mitt Hem” (/dashboard).
+> Legacy. Depicts the old `/dashboard` grid layout (hero, “Ditt nuläge”, two cards, “Utforska
+> vidare”, privacy row) from before Kvällstugan became Mitt Hem. `/dashboard` is now a legacy route
+> that 301-redirects to Kvällstugan (`/dashboard/kvallsstugan`), which does not use this layout.
+> Kept for historical reference and for the still-live `01-dashboard-current-target.png` comparison
+> below — not a target for current Mitt Hem work. For Mitt Hem/Kvällstugan UI work, look at the
+> shipped route instead.
 
-Use for the wide desktop grid: world across two of three column tracks, “Ditt
-nuläge” in the third, two equal cards plus “Utforska vidare” on the row below,
-privacy row full width at the bottom.
+Purpose (historical): layout target for the old `/dashboard` page.
 
-Rule: This supersedes `01-dashboard-current-target.png` for dashboard layout,
-grid proportions and information density. `01` is still valid for card styling,
-hero proportions and the overall calm feel — but its full-width hero with a 3+2
-card stack is no longer the layout we build.
+Use for: understanding the previous dashboard grid, card styling and information density, if ever
+touching the legacy `/dashboard` files that still exist on disk.
 
-Note: the hero in this reference is an aspirational scene with the companion on
-the left. The shipped scene (`dashboard-lakeside-world.webp`) has its land and
-companion on the right, so the hero copy sits on the left instead of mirrored.
-The copy width is bound by `COMPANION_DASHBOARD_COPY_SAFE_WIDTH_PCT`, not by
-where any one animal happens to stand.
+Rule: Do not use this as a target for Kvällstugan or any current Mitt Hem work.
 
 ## 00-design-system.png
 
@@ -46,19 +45,24 @@ Rule: Never introduce UI that conflicts with this reference unless explicitly in
 
 ## 01-dashboard-current-target.png
 
-Purpose: Shows the desired layout and feel for “Mitt Hem”.
+> Legacy, same status as `MittHem.png` above: shows the old `/dashboard` layout, not current Mitt
+> Hem. `/dashboard` still exists as a redirecting legacy route; this is not the primary visual
+> target for Mitt Hem/Kvällstugan work anymore.
 
-Use for dashboard layout, hero proportions, card hierarchy, spacing, balance, calm visual density and sidebar treatment.
+Purpose (historical): showed the desired layout and feel for the old `/dashboard` page.
 
-Rule: This is the primary visual target for dashboard-related changes.
+Use for: legacy dashboard card styling, hero proportions and the overall calm feel, if ever touching
+`src/routes/dashboard/+page.svelte` before it is removed.
 
 ## 02-home-vision-bear.png
 
-Purpose: Shows the long-term vision for the dashboard with the bear companion.
+Purpose: Shows the long-term emotional vision for the home experience (Mitt Hem / Kvällstugan) with
+the bear companion.
 
 Use for emotional tone, companion placement, hero composition, warm atmosphere and premium product feel.
 
-Rule: Use as vision, not as an exact implementation requirement.
+Rule: Use as vision, not as an exact implementation requirement. Applies to Kvällstugan
+(`/dashboard/kvallsstugan`), today’s Mitt Hem — not the legacy `/dashboard` route.
 
 ## 03-companion-world-reference.png
 

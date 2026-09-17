@@ -41,9 +41,10 @@ export const legacyPageRedirects: Record<string, string> = {
 	'/hem': '/dashboard/kvallsstugan',
 	// Exakt pathname bara: legacyPageRedirects slår upp mot normalizedPathname
 	// med ett objekt, så '/dashboard/installningar', '/dashboard/kvallsstugan'
-	// m.fl. underroutes matchar aldrig den här nyckeln. Routen finns kvar
-	// tekniskt (dashboard/+page.svelte + +page.server.ts) tills den raderas i
-	// ett separat, senare steg.
+	// m.fl. underroutes matchar aldrig den här nyckeln. Den gamla renderade
+	// sidan (dashboard/+page.svelte + +page.server.ts) är borttagen - den här
+	// redirecten är permanent legacy-skydd mot bokmärken, gamla länkar och
+	// redan indexerade sökträffar.
 	'/dashboard': '/dashboard/kvallsstugan',
 	'/anonymt-samtalsstod-online': '/anonymt-samtalstod-online',
 	'/guider-seo/nedstamdhet': '/guider/depression',

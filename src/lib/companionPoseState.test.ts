@@ -13,8 +13,6 @@ import {
 	recordCompanionSeen
 } from './companionPoseState';
 import {
-	DASHBOARD_CABIN_COMPANION_PLACEMENTS,
-	DASHBOARD_CABIN_COPY_SAFE_START_PCT,
 	BEAR_SCENE_PLACEMENTS,
 	COMPANION_POSES,
 	COMPANION_SCENE_CONTEXT_POSITION_IDS,
@@ -220,10 +218,6 @@ describe('björnen är den enda följeslagaren', () => {
 		}
 	});
 
-	it('har bara en dashboardplacering, björnens', () => {
-		expect(Object.keys(DASHBOARD_CABIN_COMPANION_PLACEMENTS)).toEqual(['bear']);
-	});
-
 	it('har bara scenpositioner som björnen faktiskt kan stå i', () => {
 		const bearPoseIds = new Set(COMPANION_POSES.map((pose) => pose.id));
 		for (const position of COMPANION_SCENE_POSITIONS) {
@@ -235,48 +229,6 @@ describe('björnen är den enda följeslagaren', () => {
 	});
 });
 
-// Hjältetexten på Mitt Hem ligger till höger och får inte kollidera med
-// björnen. Den vet inget om var djuret står - den litar på
-// DASHBOARD_CABIN_COPY_SAFE_START_PCT. Faller testet ska texten flyttas, inte
-// konstanten ändras.
-describe('dashboardscenens fria yta för hjältetexten', () => {
-	// 39 % är CompanionPose.sveltes största möjliga bredd på desktop, 50 % i
-	// mobilbredden (@media (max-width: 620px)).
-	const POSE_WIDTH_PCT = 39;
-	const COMPACT_POSE_WIDTH_PCT = 50;
-
-	function easternmostCompanionEdge(widthPct: number, compact: boolean) {
-		const bear = DASHBOARD_CABIN_COMPANION_PLACEMENTS.bear;
-		const placementScale = compact ? (bear.compact?.scale ?? bear.scale) : bear.scale;
-		const placementX = compact ? (bear.compact?.x ?? bear.x) : bear.x;
-		let edge = 0;
-		for (const position of COMPANION_SCENE_POSITIONS) {
-			if (!COMPANION_SCENE_CONTEXT_POSITION_IDS.dashboard.includes(position.id)) continue;
-			for (const pose of COMPANION_POSES) {
-				if (pose.role !== 'base' || !position.allowedPoseIds.includes(pose.id)) continue;
-				const scale = position.scale * (pose.sceneAdjustment?.scale ?? 1) * placementScale;
-				const centerX = placementX + (pose.sceneAdjustment?.x ?? 0);
-				edge = Math.max(edge, centerX + (widthPct / 2) * scale);
-			}
-		}
-		return edge;
-	}
-
-	it('behåller björnens dashboardankare', () => {
-		const bear = DASHBOARD_CABIN_COMPANION_PLACEMENTS.bear;
-		expect(bear).toMatchObject({ scale: 0.68, x: 35, y: 94 });
-		expect(bear.compact).toEqual({ scale: 0.72, x: 31, y: 92 });
-	});
-
-	it('lämnar hjältetextens yta fri för varje tillåten pose och position', () => {
-		expect(easternmostCompanionEdge(POSE_WIDTH_PCT, false)).toBeLessThanOrEqual(
-			DASHBOARD_CABIN_COPY_SAFE_START_PCT
-		);
-		expect(easternmostCompanionEdge(COMPACT_POSE_WIDTH_PCT, true)).toBeLessThanOrEqual(
-			DASHBOARD_CABIN_COPY_SAFE_START_PCT
-		);
-	});
-});
 
 describe('björnens ankare på Framsteg', () => {
 	it('placerar björnen på en fri markyta framför och till vänster om personen', () => {

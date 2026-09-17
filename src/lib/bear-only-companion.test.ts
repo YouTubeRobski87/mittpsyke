@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { COMPANION, COMPANION_PORTRAIT_IMAGE } from './progressCompanion';
-import { COMPANION_POSES, DASHBOARD_CABIN_COMPANION_PLACEMENTS } from './companionPoseManifest';
+import { COMPANION_POSES } from './companionPoseManifest';
 import { getCompanionVisitorAsset, getCompanionVisitorState } from './companionVisitor';
 
 // Björnen är MittPsykes enda följeslagare. Räven får bara komma på besök,
@@ -43,9 +43,8 @@ describe('björnen är den enda följeslagaren', () => {
 		expect(existsSync(join(ROOT, 'static', COMPANION_PORTRAIT_IMAGE))).toBe(true);
 	});
 
-	it('har bara björnposer och björnplacering i manifestet', () => {
+	it('har bara björnposer i manifestet', () => {
 		expect(new Set(COMPANION_POSES.map((pose) => pose.companionId))).toEqual(new Set(['bear']));
-		expect(Object.keys(DASHBOARD_CABIN_COMPANION_PLACEMENTS)).toEqual(['bear']);
 		for (const frame of COMPANION_POSES.flatMap((pose) => pose.frames)) {
 			expect(existsSync(join(ROOT, 'static', frame.src)), frame.src).toBe(true);
 		}
@@ -104,15 +103,6 @@ describe('Kvällstugan och Kvällsincheckning', () => {
 
 	it('behåller den befintliga routen', () => {
 		expect(existsSync(join(ROOT, 'src/routes/dashboard/kvallsstugan/+page.svelte'))).toBe(true);
-		expect(read('src/routes/dashboard/+page.svelte')).toContain('href="/dashboard/kvallsstugan"');
-	});
-
-	it('använder Kvällstugan i ingången på Mitt Hem och på inloggad startsida', () => {
-		const dashboard = read('src/routes/dashboard/+page.svelte');
-		expect(dashboard).toContain("'Kvällstugan – logga in för att använda.");
-		expect(dashboard).toContain("'Gå in i Kvällstugan.");
-		expect(dashboard).toContain('<span>Kvällstugan</span>');
-		expect(read('src/lib/components/home/SignedInHome.svelte')).toContain('<strong>Kvällstugan</strong>');
 	});
 
 	// Det användarsynliga namnet stavas med ett s: Kvällstugan. Routen

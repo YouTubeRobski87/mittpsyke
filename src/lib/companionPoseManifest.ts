@@ -156,29 +156,6 @@ export const BEAR_SCENE_PLACEMENTS = {
 	}
 } as const;
 
-/**
- * Mitt Hem ligger vid stugan, inte ute i den breda sjövyn. Detta är enbart
- * scengeometri för den befintliga dashboard-vyn: poseval, positionernas
- * lagring och companion-state fortsätter använda samma `dashboard`-kontext.
- */
-export const DASHBOARD_CABIN_COMPANION_PLACEMENTS: Record<
-	CompanionId,
-	CompanionPlacement
-> = {
-	// Björnens breda canvas har genomskinlig marginal under tassarna. Ett eget
-	// dashboardankare håller därför den synliga kroppen mindre och tassarna på
-	// den sluttande marken vid verandan, utan att ändra poser eller andra vyer.
-	bear: {
-		scale: 0.68,
-		x: 35,
-		y: 94,
-		compact: { scale: 0.72, x: 31, y: 92 }
-	}
-};
-
-/** Startpunkten för Mitt Hems högra textyta i stugscenen. */
-export const DASHBOARD_CABIN_COPY_SAFE_START_PCT = 54;
-
 export const COMPANION_POSES: readonly CompanionPose[] = [...BEAR_COMPANION_POSES];
 
 export const COMPANION_SCENE_POSITIONS: readonly CompanionScenePosition[] = [
@@ -209,20 +186,6 @@ export const COMPANION_SCENE_CONTEXT_POSITION_IDS: Record<
 	dashboard: ['foreground-right'],
 	progress: ['foreground-right']
 };
-
-/**
- * Andel av dashboardhjältens bredd, räknat från vänsterkanten, som garanterat
- * är fri från både följeslagare och besökare. Hjältetexten får aldrig bli
- * bredare än så.
- *
- * Värdet är inte godtyckligt och får inte höjas på känsla: testet i
- * companionPoseState.test.ts räknar fram den västligaste kant någon tillåten
- * dashboardposition kan nå (idag det vakna besöket på x 52 %) och faller om en
- * ny position, pose eller placement skulle krympa marginalen under det här
- * talet. Hjältetexten vet alltså ingenting om var djuret står - den vet bara
- * hur mycket yta scenen lovar att lämna ifred.
- */
-export const COMPANION_DASHBOARD_COPY_SAFE_WIDTH_PCT = 40;
 
 export const COMPANION_POSE_CHANGE_MIN_MS = 20 * 60 * 1000;
 export const COMPANION_POSE_CHANGE_MAX_MS = 40 * 60 * 1000;

@@ -71,7 +71,7 @@
 				Kvällstugan är platsen där dagen får landa. Där inne finns Kvällsincheckningen: fyra korta
 				steg där du väljer hur kvällen känns, kan skriva vad som tar mest plats och sedan bestämmer
 				vad du vill göra med det för ikväll. Till sist väljer du om du vill spara incheckningen eller
-				avsluta utan att spara. Kvällstugan nås från Mitt Hem när du är inloggad.
+				avsluta utan att spara. Du gör den i Kvällstugan när du har loggat in.
 			</p>
 		</div>
 

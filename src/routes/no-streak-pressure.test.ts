@@ -2,14 +2,13 @@
 // på streaks, prestation eller skuld över missade dagar (docs/NORTH_STAR.md,
 // "Ingen skuld").
 //
-// Testet vaktar de två ytor en inloggad användare möter först: Mitt Hem och
-// Framsteg. Det granskar renderad copy, inte kommentarer - kommentarerna
-// förklarar med flit vad som togs bort och varför, och ska inte kunna få testet
-// att falla.
+// Testet vaktar Framsteg. Det granskar renderad copy, inte kommentarer -
+// kommentarerna förklarar med flit vad som togs bort och varför, och ska inte
+// kunna få testet att falla.
 //
-// Neutral historik är inte det testet är emot. "Texter skrivna", "Dagar med
-// avtryck" och "Den här veckan" beskriver vad som hänt utan att göra en obruten
-// rad till ett resultat, och de assertas som kvarvarande nedan.
+// Neutral historik är inte det testet är emot. "Dagar med avtryck" och "Den
+// här veckan" beskriver vad som hänt utan att göra en obruten rad till ett
+// resultat, och de assertas som kvarvarande nedan.
 
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -23,15 +22,9 @@ function renderedSource(path: string): string {
 		.join('\n');
 }
 
-const dashboardPage = renderedSource('./dashboard/+page.svelte');
-const dashboardServer = renderedSource('./dashboard/+page.server.ts');
 const framstegPage = renderedSource('./framsteg/+page.svelte');
 
-const SURFACES = [
-	['Mitt Hem', dashboardPage],
-	['Mitt Hem (server)', dashboardServer],
-	['Framsteg', framstegPage]
-] as const;
+const SURFACES = [['Framsteg', framstegPage]] as const;
 
 /**
  * Renderade etiketter som presenterar ett antal sammanhängande dagar.
@@ -101,32 +94,6 @@ describe('inga streak-etiketter i renderad copy', () => {
 	}
 });
 
-describe('Mitt Hem efter ändringen', () => {
-	it('renderar inte currentStreak', () => {
-		expect(dashboardPage).not.toContain('progressPreview.currentStreak');
-	});
-
-	it('behåller de neutrala historiktalen', () => {
-		expect(dashboardPage).toContain('{progressPreview.totalEntries}');
-		expect(dashboardPage).toContain('<small>Texter skrivna</small>');
-		expect(dashboardPage).toContain('{progressPreview.weeklyEntries}');
-		expect(dashboardPage).toContain('<small>Den här veckan</small>');
-	});
-
-	it('bygger sammanfattningen ur den testade copymodulen', () => {
-		expect(dashboardServer).toContain(
-			"import { buildProgressSummary } from '$lib/dashboard-progress-summary'"
-		);
-		expect(dashboardServer).toContain('buildProgressSummary(weeklyEntries, totalEntries)');
-	});
-
-	it('säger inte längre att användaren hittat en rytm', () => {
-		expect(dashboardServer).not.toContain('nära i tid');
-		expect(dashboardServer).not.toContain('hittat en rytm');
-		expect(dashboardServer).not.toContain('håller kontakt med dig själv');
-	});
-});
-
 describe('Framsteg efter ändringen', () => {
 	it('renderar inte currentStreak', () => {
 		expect(framstegPage).not.toContain('streakData.currentStreak}');
@@ -155,12 +122,6 @@ describe('Framsteg efter ändringen', () => {
 });
 
 describe('underliggande data behålls', () => {
-	it('Mitt Hem räknar fortfarande sammanhängande dagar och skickar med värdet', () => {
-		expect(dashboardServer).toContain('function buildCurrentStreak(');
-		expect(dashboardServer).toContain('const currentStreak = buildCurrentStreak(streakEntries)');
-		expect(dashboardServer).toContain('currentStreak,');
-	});
-
 	it('Framsteg hämtar fortfarande streak-endpointen och använder den för senaste aktivitet', () => {
 		expect(framstegPage).toContain("fetch('/api/diary/streak'");
 		expect(framstegPage).toContain('streakData.lastEntryDaysAgo');

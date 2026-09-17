@@ -40,7 +40,7 @@ describe('direkt ingång till den befintliga chatten', () => {
 		// Desktop för gäst och inloggad, plus mobilmenyn för gäst och inloggad.
 		expect(layout.match(/\{ href: '\/chat', label: 'Chatta' \}/g)).toHaveLength(4);
 		expect(layout).toContain("page.url.pathname === '/chat' || page.url.pathname.startsWith('/chat/')");
-		for (const path of ['../../lib/components/home/SignedInHome.svelte', '../dashboard/+page.svelte', '../ai-samtalsstod-online/+page.svelte']) {
+		for (const path of ['../../lib/components/home/SignedInHome.svelte', '../ai-samtalsstod-online/+page.svelte']) {
 			expect(read(path)).toContain('href="/chat"');
 		}
 	});

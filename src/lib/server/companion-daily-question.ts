@@ -17,8 +17,9 @@ type CompanionDailyRow = {
 type PostgrestErrorLike = { code?: string | null; message?: string | null } | null;
 
 /**
- * Tabellen kan saknas tills migrationen körts. Då ska Mitt Hem ladda precis som
- * förut, bara utan dagens fråga - aldrig ett fel för användaren.
+ * Tabellen kan saknas tills migrationen körts. Då ska anropande sida (Kvällstugan,
+ * Framsteg, gamla /dashboard) ladda precis som förut, bara utan dagens fråga -
+ * aldrig ett fel för användaren.
  */
 function isMissingTableError(error: PostgrestErrorLike): boolean {
 	if (!error) return false;

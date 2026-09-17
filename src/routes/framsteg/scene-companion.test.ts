@@ -48,12 +48,4 @@ describe('Framstegs scen och följeslagare', () => {
 		expect(scene).toContain('progress-ripple progress-ripple--two');
 		expect(scene).toContain('class="progress-cabin-link"');
 	});
-
-	it('rör inte dashboardens globala companion-system', () => {
-		const dashboard = readFileSync(join(process.cwd(), 'src/routes/dashboard/+page.svelte'), 'utf8');
-		expect(dashboard).toContain('<CompanionPose');
-		expect(dashboard).toContain('<CompanionVisitor');
-		expect(dashboard).toContain('<CompanionFriend');
-		expect(dashboard).toContain('<AmbientWorld');
-	});
 });

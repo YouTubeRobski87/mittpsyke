@@ -18,7 +18,6 @@ const LONG =
 const home = read('src/routes/+page.svelte');
 const evening = read('src/routes/dashboard/kvallsstugan/+page.svelte');
 const signedInHome = read('src/lib/components/home/SignedInHome.svelte');
-const dashboard = read('src/routes/dashboard/+page.svelte');
 const cabinProof = read('src/lib/components/home/CabinProof.svelte');
 const flow = read('src/lib/components/evening/EveningCheckinFlow.svelte');
 
@@ -32,8 +31,6 @@ describe('Kvällsincheckningens copy', () => {
 	it('använder den korta varianten i kort och ingångar', () => {
 		expect(signedInHome).toContain(`<small>${SHORT}</small>`);
 		expect(home).toContain(`Här gör du Kvällsincheckningen: ${SHORT.charAt(0).toLowerCase()}${SHORT.slice(1)}`);
-		expect(dashboard).toContain(`'Gå in i Kvällstugan. ${SHORT}'`);
-		expect(dashboard).toContain(`'Kvällstugan – logga in för att använda. ${SHORT}'`);
 	});
 
 	it('förklarar funktionen med den längre varianten på startsidan', () => {

@@ -130,11 +130,6 @@
 		if (href.startsWith('/#')) return false;
 		const normalizedHref = href.split('#')[0].split('?')[0];
 
-		if (normalizedHref === '/dashboard') {
-			return path === '/dashboard' ||
-				(path.startsWith('/dashboard/') && !path.startsWith('/dashboard/installningar'));
-		}
-
 		if (normalizedHref === '/dashboard/installningar') {
 			return path === '/dashboard/installningar';
 		}
@@ -224,7 +219,6 @@
 		)
 	);
 	const isProductPage = $derived(
-		page.url.pathname === '/dashboard' ||
 		page.url.pathname.startsWith('/dashboard/') ||
 		page.url.pathname === '/framsteg'
 	);
