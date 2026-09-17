@@ -62,9 +62,11 @@ Avoid:
 
 ## Dashboard rules
 
-The dashboard is “Mitt Hem”.
+“Mitt Hem” is Kvällstugan (`/dashboard/kvallsstugan`), not the legacy `/dashboard` route. The legacy
+route still exists technically but is no longer linked to as a normal destination — do not reintroduce
+copy, links or navigation that present `/dashboard` itself as the user’s home, room or primary portal.
 
-It should be the emotional center of the product.
+Mitt Hem should be the emotional center of the product.
 
 The hero scene is the soul of the page. Do not reduce it to a decorative banner.
 

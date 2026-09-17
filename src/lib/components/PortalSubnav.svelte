@@ -1,5 +1,5 @@
 <script lang="ts">
-	type PortalTab = 'dashboard' | 'dagbok' | 'framsteg' | 'gemenskap' | 'installningar';
+	type PortalTab = 'hem' | 'dagbok' | 'framsteg' | 'gemenskap' | 'installningar';
 
 	interface TabItem {
 		key: PortalTab;
@@ -7,8 +7,10 @@
 		href: string;
 	}
 
+	// "Mitt rum" pekade tidigare på gamla /dashboard. Mitt Hem är numera
+	// Kvällstugan, så fliken pekar dit i stället - se inga-tva-hem-instruktionen.
 	const tabs: TabItem[] = [
-		{ key: 'dashboard', label: 'Mitt rum', href: '/dashboard' },
+		{ key: 'hem', label: 'Mitt Hem', href: '/dashboard/kvallsstugan' },
 		{ key: 'dagbok', label: 'Dagbok', href: '/dagbok/checkin' },
 		{ key: 'framsteg', label: 'Framsteg', href: '/framsteg' },
 		{ key: 'installningar', label: 'Inställningar', href: '/dashboard/installningar' }

@@ -60,7 +60,7 @@
 <main class="auth-page spegel-page">
 	<div class="spegel-column">
 		<PortalSubnav
-			active="dashboard"
+			active="hem"
 			title="Spegelvattnet"
 			description="En stilla veckospegling av det du själv har skrivit."
 		/>
@@ -71,7 +71,7 @@
 					<p class="spegel-kicker">Spegelvattnet</p>
 					<h2>Spegelvattnet är stilla.</h2>
 					<p>Det fylls på när du skrivit lite mer.</p>
-					<a href="/dashboard" class="auth-button">Till Mitt rum</a>
+					<a href="/dashboard/kvallsstugan" class="auth-button">Till Mitt Hem</a>
 				</section>
 			{:else if reflection.status === 'paused'}
 				<section class="spegel-shell spegel-empty">
@@ -117,7 +117,7 @@
 
 					<div class="spegel-actions">
 						<a href={diaryHref} class="auth-button primary" onclick={prepareDiaryQuestion}>Skriv om det här</a>
-						<a href="/dashboard" class="auth-button">Stäng</a>
+						<a href="/dashboard/kvallsstugan" class="auth-button">Stäng</a>
 					</div>
 				</article>
 			{/if}
