@@ -11,8 +11,8 @@ const cabinLink = route.slice(
 );
 
 describe('genvägen via stugan', () => {
-	it('går direkt till Kvällstugan för inloggade och behåller gästens Mitt Hem', () => {
-		expect(cabinLink).toContain("href={isAnonymous ? '/dashboard' : '/dashboard/kvallsstugan'}");
+	it('går direkt till Kvällstugan för inloggade och till startsidan för gäster', () => {
+		expect(cabinLink).toContain("href={isAnonymous ? '/' : '/dashboard/kvallsstugan'}");
 		// En vanlig <a> räcker: ingen onclick, ingen goto, inget tangentbordshack.
 		expect(cabinLink).not.toMatch(/onclick|on:click|goto\(/);
 		expect(route).toMatch(/<a\s+[^>]*class="progress-cabin-link"/s);
@@ -87,8 +87,9 @@ describe('Framstegsscenen runt stuglänken', () => {
 	it('låter inloggade gå in via både stugmotivet och den synliga länken', () => {
 		const scene = route.slice(route.indexOf('class="companion-media"'), route.indexOf('class="framsteg-layout'));
 
-		expect(scene).toContain("href={isAnonymous ? '/dashboard' : '/dashboard/kvallsstugan'}");
+		expect(scene).toContain("href={isAnonymous ? '/' : '/dashboard/kvallsstugan'}");
 		expect(scene.match(/href="\/dashboard\/kvallsstugan"/g) ?? []).toHaveLength(1);
 		expect(scene).not.toContain('href="/dashboard"');
+		expect(scene).not.toContain("'/dashboard'");
 	});
 });

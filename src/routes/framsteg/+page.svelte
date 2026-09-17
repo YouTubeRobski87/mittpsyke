@@ -1175,11 +1175,13 @@
 						{/each}
 					{/if}
 				{#if cabinPlacement}
-					<!-- Stugan leder direkt in för inloggade. Gästens förhandsvisning
-						 behåller sin väg till Mitt Hem. -->
+					<!-- Stugan leder direkt in för inloggade. Gamla /dashboard gav gästen
+						 en levande förhandsvisning, men den ytan avvecklas - så gästen
+						 leds i stället till startsidan, som redan förklarar Mitt Hem och
+						 Kvällstugan utan att kräva inloggning. -->
 					<a
 						class="progress-cabin-link"
-						href={isAnonymous ? '/dashboard' : '/dashboard/kvallsstugan'}
+						href={isAnonymous ? '/' : '/dashboard/kvallsstugan'}
 						aria-label={isAnonymous ? 'Gå till Mitt Hem' : 'Gå in i Kvällstugan'}
 						data-testid="progress-cabin-link"
 					></a>

@@ -8,11 +8,30 @@ const component = readFileSync(
 	'utf8'
 );
 const dashboard = readFileSync(join(workspace, 'src/routes/dashboard/+page.svelte'), 'utf8');
+const kvallsstugan = readFileSync(
+	join(workspace, 'src/routes/dashboard/kvallsstugan/+page.svelte'),
+	'utf8'
+);
+const kvallsstuganServer = readFileSync(
+	join(workspace, 'src/routes/dashboard/kvallsstugan/+page.server.ts'),
+	'utf8'
+);
 
 describe('import av lokal historik till kontot', () => {
 	it('visas bara för en inloggad användare på dashboarden', () => {
 		expect(dashboard).toContain("import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';");
 		expect(dashboard).toMatch(/\{#if !isAnonymous\}\s*<LocalEntriesImportPrompt \/>/);
+	});
+
+	// Flyttad hit i samband med att Mitt Hem blev Kvällstugan. Ingen egen
+	// isAnonymous-koll behövs: Kvällstugans server-load redirectar redan bort
+	// utloggade och anonyma besökare innan sidan renderas.
+	it('finns nu också i Kvällstugan, som redan bara nås inloggad', () => {
+		expect(kvallsstugan).toContain(
+			"import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';"
+		);
+		expect(kvallsstugan).toContain('<LocalEntriesImportPrompt />');
+		expect(kvallsstuganServer).toContain('if (!user || user.is_anonymous)');
 	});
 
 	it('läser lokala inlägg vid mount, men skickar ingen nätverksrequest automatiskt', () => {

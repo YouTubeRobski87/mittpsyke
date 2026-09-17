@@ -3,10 +3,14 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import DraftContinuityCard from '$lib/components/DraftContinuityCard.svelte';
+	import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';
 	import EveningCheckinFlow from '$lib/components/evening/EveningCheckinFlow.svelte';
 	import SleepModePanel from '$lib/components/evening/SleepModePanel.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
+	import CompanionDailyCard from '$lib/components/world/CompanionDailyCard.svelte';
+	import CompanionWorldResponse from '$lib/components/world/CompanionWorldResponse.svelte';
 	import WaterLayer from '$lib/components/world/WaterLayer.svelte';
+	import { createCompanionDailyQuestionState } from '$lib/companionDailyQuestionState.svelte';
 	import type { SleepStage } from '$lib/evening-sleep-mode';
 	import type { CompanionPosePreference } from '$lib/companionPoseState';
 	import {
@@ -162,6 +166,19 @@
 	const companionBondLevel = $derived(
 		getCompanionBondLevel(getCompanionBond(data.companionDaily?.answeredDayCount ?? 0))
 	);
+
+	// Samma dagliga fråga som tidigare bara fanns på Mitt Hem (gamla /dashboard),
+	// flyttad hit via den delade hooken - se companionDailyQuestionState.svelte.ts.
+	const dailyQuestion = createCompanionDailyQuestionState(() => data.companionDaily);
+
+	async function respondToDailyQuestion(answerId: string | null) {
+		if (answerId) {
+			// Följeslagaren reagerar direkt, precis som ett svar på checkin-flödet -
+			// samma greetingReaction-signal, inget nytt separat spår.
+			completionSignal += 1;
+		}
+		await dailyQuestion.respond(answerId);
+	}
 	const worldScene = $derived<LivingWorldScene>(
 		getLivingWorldScene({
 			date: sceneDate,
@@ -220,6 +237,12 @@
 		<h1 id="evening-title">Kvällstugan</h1>
 		<span>En stund där dagen får landa.</span>
 	</header>
+
+	<!-- Samma engångserbjudande som tidigare bara fanns på Mitt Hem (gamla
+	     /dashboard): importera lokal historik till kontot. Ingen egen villkorslogik
+	     här - komponenten döljer sig själv helt tills den faktiskt hittar lokala
+	     inlägg, och Kvällstugan är redan alltid inloggad (server-guarden ovan). -->
+	<LocalEntriesImportPrompt />
 
 	<div class="evening-experience">
 		<div class="evening-scene-column">
@@ -316,6 +339,9 @@
 				behaviourProfile="quiet"
 				posePreference={sleepPosePreference}
 			/>
+			<!-- Samma kosmetiska "pust" som tidigare bara syntes på Mitt Hem efter ett
+			     svar på dagens fråga. Ren dekoration, ingen egen state. -->
+			<CompanionWorldResponse class="evening-world-response" signal={dailyQuestion.worldResponseSignal} />
 			{#if hasVeranda && !isVerandaView}
 				<!-- Tyst hotspot över verandadörren. Ingen synlig knapp, ingen
 				     markering - dörren är sin egen affordans. -->
@@ -357,6 +383,22 @@
 		     pointer-events: none, så dörr- och bokytorna under är oförändrade. -->
 		<div class="sleep-focus" aria-hidden="true"></div>
 		</section>
+
+			<!-- Samma dagliga fråga som tidigare bara gick att svara på från Mitt Hem
+			     (gamla /dashboard). Kortet ligger strax under scenen, aldrig som en
+			     modal ovanpå den - och finns bara i DOM:en den dag frågan är
+			     obesvarad, precis som förut. -->
+			{#if dailyQuestion.show && dailyQuestion.question}
+				<CompanionDailyCard
+					question={dailyQuestion.question}
+					companionName={COMPANION.name}
+					busy={dailyQuestion.busy}
+					onanswer={(answerId) => respondToDailyQuestion(answerId)}
+					onskip={() => respondToDailyQuestion(null)}
+				/>
+			{:else if dailyQuestion.reaction}
+				<p class="daily-question-reaction" role="status" aria-live="polite">{dailyQuestion.reaction}</p>
+			{/if}
 
 			<SleepModePanel bind:stage={sleepStage} />
 
@@ -590,6 +632,11 @@
 		margin: 0;
 	}
 	.evening-scene :global(.interior-companion[data-companion='bear']) { left: 8%; bottom: 1%; width: min(30%, 280px); }
+	/* Samma djupband som lampskenet: bakom följeslagaren (z 3), framför
+	   scenbilden. Rent kosmetiskt, precis som på Mitt Hem tidigare. */
+	.evening-scene :global(.evening-world-response) {
+		z-index: 1;
+	}
 	/* Det enda bestående avtrycket i rummet. Boken vilar på den smala
 	   träfönsterbänken direkt till vänster om sidobordet: en fri horisontell
 	   yta nära lampan. Den ligger under lampskenet och bakom följeslagaren. */
@@ -713,6 +760,19 @@
 		width: min(100% - 1.5rem, 44rem);
 		margin: 0 auto;
 	}
+	/* Följeslagarens svar på dagens fråga. Ersätter kortet så fort ett svar är
+	   skickat, precis som på Mitt Hem tidigare - aldrig samtidigt som kortet. */
+	.daily-question-reaction {
+		margin: 0;
+		padding: clamp(0.75rem, 1.2vw, 1rem) clamp(0.85rem, 1.4vw, 1.15rem);
+		border: 1px solid rgba(160, 188, 220, 0.18);
+		border-radius: 16px;
+		background: rgba(17, 27, 43, 0.88);
+		color: #f4f1e9;
+		font-size: 0.94rem;
+		line-height: 1.4;
+	}
+
 	.evening-reassurance {
 		padding: clamp(1rem, 2.4vw, 1.45rem);
 		border: 1px solid rgb(237 222 194 / 0.12);
