@@ -391,7 +391,6 @@
 			{#if dailyQuestion.show && dailyQuestion.question}
 				<CompanionDailyCard
 					question={dailyQuestion.question}
-					companionName={COMPANION.name}
 					busy={dailyQuestion.busy}
 					onanswer={(answerId) => respondToDailyQuestion(answerId)}
 					onskip={() => respondToDailyQuestion(null)}

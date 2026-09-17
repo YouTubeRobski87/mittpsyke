@@ -33,7 +33,7 @@ export const MAX_COMPANION_DAILY_ANSWERS = 4;
 export const MAX_COMPANION_DAILY_ANSWER_LABEL_LENGTH = 26;
 export const MAX_COMPANION_DAILY_QUESTION_TEXT_LENGTH = 64;
 
-/** Hur länge följeslagarens reaktion syns innan bubblan tonar bort. */
+/** Hur länge reaktionstexten syns innan den tonar bort. */
 export const COMPANION_DAILY_REACTION_DURATION_MS = 5_200;
 
 const STOCKHOLM_TIME_ZONE = 'Europe/Stockholm';

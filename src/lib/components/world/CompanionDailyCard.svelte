@@ -1,25 +1,23 @@
 <script lang="ts">
 	import type { CompanionDailyQuestion } from '$lib/companionDailyQuestion';
 
-	// Kompakt svarskort under scenen. Kortet håller bara svarsalternativen -
-	// själva frågan står i följeslagarens talbubbla i världen, så det här aldrig
-	// läses som ett formulär. Ingen modal, ingen overlay: världen syns hela tiden.
+	// Kompakt svarskort under scenen, fristående från följeslagaren - inte en
+	// replik eller pratbubbla från honom. Ingen modal, ingen overlay: världen
+	// syns hela tiden.
 	let {
 		question,
-		companionName = 'Din följeslagare',
 		busy = false,
 		onanswer,
 		onskip
 	}: {
 		question: CompanionDailyQuestion;
-		companionName?: string;
 		busy?: boolean;
 		onanswer: (answerId: string) => void;
 		onskip: () => void;
 	} = $props();
 </script>
 
-<section class="companion-daily" aria-label={`Fråga från ${companionName}`}>
+<section class="companion-daily" aria-label="Dagens fråga">
 	<p class="companion-daily-question">{question.text}</p>
 	<div class="companion-daily-answers">
 		{#each question.answers as answer (answer.id)}
@@ -47,22 +45,6 @@
 		border-radius: 16px;
 		background: rgba(17, 27, 43, 0.88);
 		box-shadow: 0 14px 36px rgba(69, 83, 61, 0.07);
-	}
-
-	/* Liten spets uppåt mot scenen ovanför. Den sitter i höjd med följeslagarens
-	   plats i stugscenen (x ~35 %), så kortet läses som djurets replik och inte
-	   som ett formulär från systemet. Rent dekorativ. */
-	.companion-daily::before {
-		content: '';
-		position: absolute;
-		top: -6px;
-		left: 32%;
-		width: 11px;
-		height: 11px;
-		border-top: 1px solid rgba(160, 188, 220, 0.18);
-		border-left: 1px solid rgba(160, 188, 220, 0.18);
-		background: rgba(17, 27, 43, 0.88);
-		transform: rotate(45deg);
 	}
 
 	.companion-daily-question {
