@@ -34,8 +34,17 @@ function normalizeStructuredDataUrls(html: string): string {
 // ($lib/server/legacy-redirects), så att en omdirigerad adress aldrig annonseras
 // som indexerbar. Tidigare fanns en egen kopia här som kunde glida isär.
 
-const legacyPageRedirects: Record<string, string> = {
+// Exporterad (bara den här kartan, inte hela handlern) så att redirect-målen
+// går att verifiera direkt i tester utan att mocka Supabase eller resolve-
+// kedjan - se hooks.server.test.ts.
+export const legacyPageRedirects: Record<string, string> = {
 	'/hem': '/dashboard/kvallsstugan',
+	// Exakt pathname bara: legacyPageRedirects slår upp mot normalizedPathname
+	// med ett objekt, så '/dashboard/installningar', '/dashboard/kvallsstugan'
+	// m.fl. underroutes matchar aldrig den här nyckeln. Routen finns kvar
+	// tekniskt (dashboard/+page.svelte + +page.server.ts) tills den raderas i
+	// ett separat, senare steg.
+	'/dashboard': '/dashboard/kvallsstugan',
 	'/anonymt-samtalsstod-online': '/anonymt-samtalstod-online',
 	'/guider-seo/nedstamdhet': '/guider/depression',
 	'/guider-seo/somnproblem': '/guider/sovproblem',
@@ -61,7 +70,10 @@ function getLegacyGuideRedirectTarget(pathname: string): string | null {
 	return guide ? `/guider/${pillar.slug}/${guide.slug}` : null
 }
 
-const legacyPathRedirects: Handle = async ({ event, resolve }) => {
+// Exporterad av samma skäl som legacyPageRedirects ovan: sequence() kräver
+// SvelteKits interna request store (satt upp av den riktiga request-hanteraren),
+// så handlern testas direkt i stället för via den sammansatta `handle`.
+export const legacyPathRedirects: Handle = async ({ event, resolve }) => {
 	const { url } = event
 	const normalizedPathname = url.pathname === '/' ? '/' : url.pathname.replace(/\/+$/, '')
 
