@@ -84,6 +84,13 @@
 		animation: waterRing var(--duration, 4800ms) ease-out var(--delay, 0ms) infinite;
 	}
 
+	/* Framstegs ringar: samma ringfas som waterRing, men följd av en lång vila så
+	   sjön inte spelar en loop. Kvällstugan använder vanliga .water-ripple-loop
+	   och påverkas inte. */
+	.water-ripple-sporadic {
+		animation-name: waterRingSporadic;
+	}
+
 	@keyframes waterSurfaceDrift {
 		0%,
 		24% {
@@ -141,6 +148,32 @@
 			opacity: calc(var(--opacity, 0.16) * 0.4);
 			transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 1.22));
 		}
+		100% {
+			opacity: 0;
+			transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 1.34));
+		}
+	}
+
+	/* waterRings procentsteg (0/14/46/78/100) komprimerade till cykelns första
+	   28 %, därefter osynlig vila. Med 13-17,5 s cykel blir ringfasen 3,6-4,9 s,
+	   ungefär som de tidigare kontinuerliga 4,2-5 s-looparna. */
+	@keyframes waterRingSporadic {
+		0% {
+			opacity: 0;
+			transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 0.64));
+		}
+		3.9% {
+			opacity: var(--opacity, 0.16);
+		}
+		12.9% {
+			opacity: var(--opacity, 0.16);
+			transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 1.05));
+		}
+		21.8% {
+			opacity: calc(var(--opacity, 0.16) * 0.4);
+			transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 1.22));
+		}
+		28%,
 		100% {
 			opacity: 0;
 			transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 1.34));

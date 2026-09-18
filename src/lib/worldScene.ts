@@ -285,20 +285,24 @@ const baseEffects: LivingWorldEffect[] = [
 		delayMs: 0,
 		opacity: 0.26
 	},
-	// Kontinuerligt upprepade vattenringar - den tydligaste "vattnet rör sig"-
-	// signalen, eftersom en ring är en otvetydig vattenform (till skillnad från
-	// en abstrakt glimt/sken). Loopar hela tiden i stället för att vänta på
-	// den slumpmässiga shore-ripple-händelsen. Se .water-ripple-loop.
+	// Återkommande vattenringar - den tydligaste "vattnet rör sig"-signalen,
+	// eftersom en ring är en otvetydig vattenform (till skillnad från en abstrakt
+	// glimt/sken). Sporadiska, inte kontinuerliga: varje ring expanderar under de
+	// första 28 % av sin cykel och vilar sedan osynlig resten (se
+	// .water-ripple-sporadic i WaterLayer.svelte). Cyklerna 13 / 15 / 17,5 s ger
+	// aktiva faser på ca 3,6 / 4,2 / 4,9 s. Delays förskjuter starterna (0 s,
+	// 5 s, 9,5 s efter sidladdning) och de ojämna perioderna gör att ringarna
+	// sedan glider isär i stället för att synka.
 	{
 		id: 'water-ripple-loop-one',
 		kind: 'water',
 		enabled: true,
-		className: 'water-ripple-loop',
+		className: 'water-ripple-loop water-ripple-sporadic',
 		x: 51,
 		y: 60,
 		width: 9,
 		height: 3.1,
-		durationMs: 4_200,
+		durationMs: 13_000,
 		delayMs: 0,
 		opacity: 0.75,
 		scale: 1
@@ -307,13 +311,13 @@ const baseEffects: LivingWorldEffect[] = [
 		id: 'water-ripple-loop-two',
 		kind: 'water',
 		enabled: true,
-		className: 'water-ripple-loop',
+		className: 'water-ripple-loop water-ripple-sporadic',
 		x: 35,
 		y: 64,
 		width: 7.5,
 		height: 2.6,
-		durationMs: 5_000,
-		delayMs: -1_700,
+		durationMs: 15_000,
+		delayMs: -5_500,
 		opacity: 0.65,
 		scale: 0.82
 	},
@@ -331,13 +335,13 @@ const baseEffects: LivingWorldEffect[] = [
 		id: 'water-ripple-loop-three',
 		kind: 'water',
 		enabled: true,
-		className: 'water-ripple-loop',
+		className: 'water-ripple-loop water-ripple-sporadic',
 		x: 22,
 		y: 65,
 		width: 7,
 		height: 2.4,
-		durationMs: 4_600,
-		delayMs: -2_900,
+		durationMs: 17_500,
+		delayMs: -12_500,
 		opacity: 0.6,
 		scale: 0.75
 	},
