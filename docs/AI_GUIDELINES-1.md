@@ -112,18 +112,16 @@ huvudprodukten. Så beskrivs den redan korrekt idag på
 `src/routes/sa-fungerar-mittpsyke/+page.svelte` ("Chatten – ett valfritt
 AI-verktyg"). Ny copy om chatten ska hålla samma linje.
 
-## Storify - AI-utkast, inte automatiskt sparat
+## Känd avvikelse
 
-`src/routes/api/storify/generate` och `src/routes/api/storify/chat` (ytan
-`src/routes/dagars-avtryck/`) låter AI skriva ett förslag till
-dagboksinlägg - antingen direkt från en kort beskrivning, eller från en
-AI-ledd intervju. Det var produktens tydligaste exempel på precis det den
-här principen säger att AI inte ska göra, så 2026-09-18 togs ett uttryckligt
-produktbeslut: resultatet visas som ett redigerbart utkast och sparas
-aldrig automatiskt. Användaren läser, redigerar vid behov och trycker själv
-på "Spara till Mina inlägg" innan något hamnar i dagboken - annars går det
-bara att kasta utkastet (`src/routes/dagars-avtryck/+page.svelte`,
-`handleSaveEntry`). Funktionen är fortsatt samtyckesskyddad. Det gör
-Storify till exempel (3) i den tredelade distinktionen ovan - en
-AI-tolkning som användaren själv godkänner - i stället för AI som fyller i
-dagboken åt någon. Se `docs/ai/inventory.md` för tekniska detaljer.
+`src/routes/api/storify/generate` och `src/routes/api/storify/chat`
+(ytan `src/routes/dagars-avtryck/`) låter AI skriva ett fullständigt
+dagboksinlägg åt användaren - antingen direkt från en kort beskrivning, eller
+från en AI-ledd intervju. Det är produktens tydligaste exempel på precis det
+den här principen säger att AI inte ska göra ("fylla i dagboken",
+"generera känslor eller reflektioner åt användaren"). Funktionen är
+konsekvent samtyckesskyddad och väl testad, så det är ett medvetet byggt
+flöde, inte en glidning - men den behöver ett uttryckligt produktbeslut
+(behålla, göra om till ett redigerbart utkast, eller ta bort) innan den kan
+sägas följa principen ovan. Se `docs/ai/inventory.md` för fler tekniska
+detaljer.

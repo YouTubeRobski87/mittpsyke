@@ -1,6 +1,9 @@
 # AI-inventering
 
-Senast kartlagd: 2026-09-04. Detta ar en teknisk inventering, inte en juridisk bedomning.
+Senast kartlagd: 2026-09-04, kompletterad 2026-09-18. Detta ar en teknisk
+inventering, inte en juridisk bedomning. Produktprincipen for AI finns i
+`docs/AI_GUIDELINES.md` - las den forst; kolumnen Bedomning nedan borjar
+namna den dar en yta avviker.
 
 Veckosammanfattningen (`/api/diary/weekly-summary`) ar borttagen. Den hade ingen
 konsument, fragade efter kolumner som inte finns i `diary`, och tackte inget som
@@ -15,7 +18,7 @@ Framstegs analys inte redan tacker.
 | Daglig fraga | `src/lib/server/daily-question.ts`, `src/routes/api/daily-question/` | Begransad dagboks- och maendekontext; har eget krisskydd. | Visas i check-in. | Verifierat: krissignal hanteras utan vanlig fraga. |
 | Spegelvattnet | `src/lib/server/spegelvattnet.ts`, `src/routes/api/spegelvattnet/` | Historik for den funktionen. | Funktionsspecifik UI. | Behover separat UX-granskning for AI-markning och radering. |
 | Berattelser | `src/routes/api/stories/submit/+server.ts` | Inskickad berattelsetext. | Anvandaren initierar inskick. | Verifierad AI-anropplats; publicerings-/moderationsflode bor granskas separat. |
-| Storify | `src/routes/api/storify/chat/+server.ts`, `generate/+server.ts` | Funktionsspecifik samtalstext. | Separat flode. | Behover separat produktagarskap innan integritetscopy andras. |
+| Storify | `src/routes/api/storify/chat/+server.ts`, `generate/+server.ts`, `src/routes/dagars-avtryck/+page.svelte` | Funktionsspecifik samtalstext. | Separat flode. | Behover separat produktagarskap innan integritetscopy andras. Uppdaterad 2026-09-18 for att folja `docs/AI_GUIDELINES.md`: AI-texten sparas inte langre automatiskt efter generering - anvandaren ser ett redigerbart utkast i `dagars-avtryck/+page.svelte` och maste sjalv trycka "Spara till Mina inlagg" (`handleSaveEntry`) innan nagot hamnar i dagboken. |
 | Sok och indexering | `src/routes/api/search/+server.ts`, `api/cron/reindex-search/+server.ts` | Sokfragor respektive publicerat innehall. | Sok ar en tydlig anvandarinitierad funktion. | Inte en personlig AI-yta; embeddings anvands. |
 | Admin- och integrationsfunktioner | `src/routes/admin/+page.server.ts`, `src/lib/server/ai/anthropic.ts`, `api/horoscope/+server.ts` | Varierar per funktion. | Inte fullt inventerade som anvandarytor i denna andring. | Osakerhet tydligt markerad; kravs riktad kartlaggning innan copy eller dataflode andras. |
 

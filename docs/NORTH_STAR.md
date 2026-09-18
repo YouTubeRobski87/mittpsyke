@@ -33,7 +33,7 @@ Verktyget ska tjäna användarens tillstånd, inte jaga användarens uppmärksam
 
 Det gäller hela MittPsyke, inte bara världen:
 
-- AI:n ska hjälpa, inte imponera.
+- AI:n ska hjälpa, inte imponera. Fullständig princip: `docs/AI_GUIDELINES.md`.
 - Dagboken ska bjuda in, inte pressa användaren att skriva mer än hen vill.
 - Statistik ska hjälpa användaren förstå, inte få hen att prestera.
 - Världen ska påminna om att användaren varit där, inte kräva att hen kommer tillbaka.

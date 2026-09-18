@@ -78,6 +78,7 @@
 
 	let isSaved = $state(false);
 	let saveError = $state('');
+	let saving = $state(false);
 
 	// --- Inläggslist ---
 
@@ -159,6 +160,7 @@
 		generateError = '';
 		isSaved = false;
 		saveError = '';
+		saving = false;
 	}
 
 	// --- Streaming-chatt ---
@@ -316,19 +318,23 @@
 		generating = false;
 		phase = 'result';
 
-		// Spara automatiskt efter generering
-		await autoSave(token);
+		// Sparas inte automatiskt. Utkastet ska kunna läsas igenom och
+		// redigeras innan användaren själv väljer att spara det - se
+		// docs/AI_GUIDELINES.md ("AI ska inte fylla i dagboken").
 	}
 
-	async function autoSave(existingToken?: string) {
-		const token = existingToken ?? (await getToken());
-		if (!token) {
-			console.error('[autoSave] Ingen token – sessionen har gått ut.');
-			saveError = 'Inlägget genererades men kunde inte sparas eftersom sessionen har gått ut.';
+	async function handleSaveEntry() {
+		saveError = '';
+		if (!generatedEntry.trim()) {
+			saveError = 'Utkastet är tomt – skriv något innan du sparar.';
 			return;
 		}
-		if (!generatedEntry) {
-			console.error('[autoSave] generatedEntry är tomt – inget att spara.');
+
+		saving = true;
+		const token = await getToken();
+		if (!token) {
+			saving = false;
+			saveError = 'Sessionen har gått ut. Ladda om sidan och försök igen.';
 			return;
 		}
 
@@ -347,6 +353,7 @@
 		});
 
 		const resBody = await res.json().catch(() => ({})) as { ok?: boolean; error?: string };
+		saving = false;
 
 		if (res.ok) {
 			isSaved = true;
@@ -360,8 +367,8 @@
 			};
 			entries = [newEntry, ...entries];
 		} else {
-			console.error('[autoSave] Misslyckades. Status:', res.status, '| Fel:', resBody.error);
-			saveError = 'Inlägget genererades men kunde inte sparas.';
+			console.error('[handleSaveEntry] Misslyckades. Status:', res.status, '| Fel:', resBody.error);
+			saveError = 'Kunde inte spara inlägget just nu.';
 		}
 	}
 
@@ -614,13 +621,24 @@
 			{:else if phase === 'result'}
 				<section class="auth-panel auth-panel-accent result-panel">
 					<div class="result-header">
-						<p class="entry-kicker">Ditt dagboksinlägg</p>
+						<p class="entry-kicker">AI:ns utkast till dagboksinlägg</p>
 						<span class="tone-badge">{getToneLabel(generatedTone || selectedTone)}</span>
 					</div>
 
-					<div class="entry-text">
-						{generatedEntry}
-					</div>
+					{#if !isSaved}
+						<p class="draft-hint auth-muted">
+							Läs igenom och redigera gärna innan du sparar. Det här är AI:ns tolkning av det
+							du berättade - det sparas inte förrän du själv trycker Spara.
+						</p>
+					{/if}
+
+					<textarea
+						class="entry-textarea"
+						bind:value={generatedEntry}
+						readonly={isSaved}
+						rows={8}
+						aria-label="Utkast till dagboksinlägg, redigerbart innan du sparar"
+					></textarea>
 
 					<div class="result-status">
 						{#if isSaved}
@@ -631,8 +649,17 @@
 					</div>
 
 					<div class="result-actions">
-						<button class="auth-button primary" onclick={resetInterview}>
-							Ny intervju
+						{#if !isSaved}
+							<button
+								class="auth-button primary"
+								onclick={handleSaveEntry}
+								disabled={saving || !generatedEntry.trim()}
+							>
+								{saving ? 'Sparar...' : 'Spara till Mina inlägg'}
+							</button>
+						{/if}
+						<button class="auth-button back-btn" onclick={resetInterview}>
+							{isSaved ? 'Ny intervju' : 'Kasta utkastet och börja om'}
 						</button>
 					</div>
 				</section>
@@ -1051,9 +1078,37 @@
 		color: hsl(var(--muted-foreground));
 	}
 
-	.entry-text {
+	.draft-hint {
+		margin: 0;
+		font-size: 0.85rem;
+		line-height: 1.5;
+	}
+
+	.entry-textarea {
+		width: 100%;
+		min-height: 10rem;
+		padding: 0.75rem 0.9rem;
+		border-radius: var(--radius-input);
+		border: 1px solid hsl(var(--border));
+		background: hsl(var(--surface-muted));
+		color: hsl(var(--foreground));
+		font-family: inherit;
+		font-size: 1rem;
 		line-height: 1.75;
-		white-space: pre-wrap;
+		resize: vertical;
+	}
+
+	.entry-textarea:focus {
+		outline: none;
+		border-color: hsl(var(--muted-foreground) / 0.5);
+	}
+
+	.entry-textarea:read-only {
+		background: transparent;
+		border-color: transparent;
+		padding-left: 0;
+		padding-right: 0;
+		resize: none;
 	}
 
 	.result-status {
