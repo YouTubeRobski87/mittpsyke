@@ -22,9 +22,9 @@ function atStockholm(hour: number, minute: number): Date {
 	return new Date(Date.UTC(2026, 0, 15, hour - 1, minute));
 }
 
-/** Morgon och natt har egna relights av sjöbilden; övriga spann delar solnedgången. */
+/** Varje spann utom eftermiddagen har en egen relight; eftermiddagen visar originalets solnedgång. */
 function sceneBaseFor(band: ProgressSceneBand, base: string): string {
-	return band === 'morning' || band === 'night' ? `${base}-${band}` : base;
+	return band === 'afternoon' ? base : `${base}-${band}`;
 }
 
 describe('getProgressSceneBand - tidsgränser', () => {
@@ -86,13 +86,14 @@ describe('varje spann pekar på den responsiva sjöscenen', () => {
 		}
 	});
 
-	it('delar solnedgångsbilden mellan dag, eftermiddag och kväll; morgon och natt har egna', () => {
-		const sunset = (['day', 'afternoon', 'evening'] as const).map(
+	it('visar originalets solnedgång bara på eftermiddagen; varje annat spann har en egen bild', () => {
+		const sunset = PROGRESS_SCENE_SOURCES.afternoon.srcset;
+		expect(sunset).toContain('/images/scenes/progress-lake-bear.webp 1672w');
+		const own = (['morning', 'day', 'evening', 'night'] as const).map(
 			(band) => PROGRESS_SCENE_SOURCES[band].srcset
 		);
-		expect(new Set(sunset).size).toBe(1);
-		for (const band of ['morning', 'night'] as const) {
-			expect(PROGRESS_SCENE_SOURCES[band].srcset).not.toBe(sunset[0]);
+		expect(new Set([sunset, ...own]).size).toBe(5);
+		for (const band of ['morning', 'day', 'evening', 'night'] as const) {
 			expect(PROGRESS_SCENE_SOURCES[band].srcset).toContain(`progress-lake-bear-${band}`);
 		}
 	});

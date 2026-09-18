@@ -5,6 +5,8 @@ Användning (från repots rot):
     python scripts/scene-relight.py              # alla faser
     python scripts/scene-relight.py night        # bara natt
     python scripts/scene-relight.py morning      # bara morgon
+    python scripts/scene-relight.py day          # bara dag
+    python scripts/scene-relight.py evening      # bara kväll
 
 Kräver Pillow och numpy (`pip install pillow numpy`).
 
@@ -16,7 +18,8 @@ och skriver, bredvid dem, för varje fas <fas>:
     progress-lake-bear-<fas>.webp, -1200.webp, -800.webp
     progress-lake-<fas>.webp,      -1200.webp, -800.webp
 
-Varje fas är en egen funktion (relight_night, relight_morning) som bara delar
+Varje fas är en egen funktion (relight_night, relight_morning, relight_day,
+relight_evening) som bara delar
 masker och hjälpfunktioner - att justera en fas ändrar aldrig en annan fas
 utdata.
 
@@ -186,7 +189,129 @@ def relight_morning(src: np.ndarray) -> Image.Image:
     return to_image(out)
 
 
-PHASES = {"night": relight_night, "morning": relight_morning}
+# --- Dag --------------------------------------------------------------------
+# Solen står högt, utanför bild. Samma sol- och strimzoner som morgonen tar
+# bort solnedgångens sol och dess pelare i sjön; sjön speglar i stället himlen.
+
+
+def relight_day(src: np.ndarray) -> Image.Image:
+    r, b = src[..., 0], src[..., 2]
+    lum = 0.2126 * r + 0.7152 * src[..., 1] + 0.0722 * b
+
+    # 1. Highlights-komprimering, mildare än morgonens: dagsljuset är ljust,
+    #    men solskivan och strimman i sjön får inte vara kvar.
+    k = 0.4 + 2.0 * np.maximum(sun_zone, lake_streak_zone * 0.8)
+    lum_n = lum * (1 + k * 0.4) / (1 + k * lum)
+
+    # 2. Neutral vitbalans: solnedgångens orange dras mot neutralt dagsljus.
+    #    Mer av originalfärgen än morgonen - gräs och träd ska vara gröna -
+    #    men med rött kraftigt minskat, och nästan ingen färg i sol-/strimzonerna.
+    #    Mellantonerna lyfts lite (gamma 0.9): solnedgångens förgrund är mörk,
+    #    mitt på dagen ligger den i fullt ljus.
+    base_lum = 0.02 + 0.97 * np.power(lum_n, 0.9)
+    tint = np.array([0.96, 1.0, 1.05], np.float32)
+    sun_streak = np.maximum(sun_zone, lake_streak_zone)
+    # Himlen och bergen bar solnedgångens rosa/lila glöd - där tas färgen
+    # nästan helt bort, annars läser dagen som skymning.
+    keep = 0.62 * (1 - 0.8 * sun_streak) * (1 - 0.7 * sky_weight)
+    chroma = (src - lum[..., None]) * keep[..., None]
+    chroma[..., 0] *= 0.45  # bort från solnedgångens orange
+    chroma[..., 1] *= 1.1  # lite mer grönska
+    out = base_lum[..., None] * tint + chroma
+
+    # 3. Himmelsgradient: klar, lugn blå himmel - mättad överst, ljusare mot
+    #    horisonten. Molnen behåller sin form som ljusare partier. Bara där
+    #    originalet faktiskt är ljus himmel, som på morgonen.
+    t = yy / 330
+    sky_col = np.stack([0.4 + 0.3 * t, 0.58 + 0.22 * t, 0.83 + 0.07 * t], -1)
+    cloud_light = smooth(lum, 0.55, 0.9)[..., None] * 0.28
+    sky_mix = (sky_weight * smooth(lum, 0.28, 0.5))[..., None] * 0.72
+    out = out * (1 - sky_mix) + (sky_col + cloud_light) * sky_mix
+
+    # 4. Sjön speglar himlen där solstrimman låg: en sval, ljusblå spegling i
+    #    stället för en ljus pelare.
+    lake_sky = np.array([0.5, 0.62, 0.74], np.float32)
+    reflect = (lake_streak_zone * 0.3)[..., None]
+    out = out * (1 - reflect) + lake_sky * (0.6 + 0.4 * base_lum[..., None]) * reflect
+
+    # 5. Lätt luftperspektiv över berg och bortre skog - mycket mindre än
+    #    morgonens dis, och ingen dimma på sjön.
+    haze_col = np.array([0.72, 0.8, 0.88], np.float32)
+    haze = (distance_haze * 0.09)[..., None]
+    out = out * (1 - haze) + haze_col * haze
+
+    # 6. Varma ljuskällor: elden syns även i dagsljus, fönstren knappt - ett
+    #    tänt fönster mitt på dagen ska inte dra blicken.
+    warmth = smooth(r - b, 0.18, 0.45) * smooth(lum, 0.35, 0.75)
+    glow = (warmth * np.maximum(cabin_zone * 0.2, fire_zone))[..., None] * 0.5
+    out = out * (1 - glow) + src * glow
+
+    return to_image(out)
+
+
+# --- Kväll ------------------------------------------------------------------
+# Blåtimmen efter solnedgången: solen har gått ner bakom bergen där den stod
+# (sun_zone), så bara en svag restglöd ligger kvar vid horisonten där. Ljuset
+# ligger mellan eftermiddagens solnedgång och natten, och stugan och elden
+# börjar bära mer av ljuset.
+
+
+def relight_evening(src: np.ndarray) -> Image.Image:
+    r, b = src[..., 0], src[..., 2]
+    lum = 0.2126 * r + 0.7152 * src[..., 1] + 0.0722 * b
+
+    # 1. Highlights-komprimering: solskivan och solstrimman i sjön tas bort,
+    #    hårdare inom sol- och strimzonerna.
+    k = 1.2 + 2.4 * np.maximum(sun_zone, lake_streak_zone * 0.85)
+    lum_n = lum * (1 + k * 0.3) / (1 + k * lum)
+
+    # 2. Skymningens grundton: lägre exponering och något kallare omgivningsljus.
+    #    Mindre originalfärg än dagen, och solnedgångens orange dras mot neutralt.
+    ev_lum = np.power(lum_n, 1.08) * 0.72
+    tint = np.array([0.84, 0.9, 1.1], np.float32)
+    sun_streak = np.maximum(sun_zone, lake_streak_zone)
+    keep = 0.34 * (1 - 0.8 * sun_streak) * (1 - 0.6 * sky_weight)
+    chroma = (src - lum[..., None]) * keep[..., None]
+    chroma[..., 0] *= 0.6
+    out = ev_lum[..., None] * tint + chroma
+
+    # 3. Himmelsgradient: djup blå-lila överst, ljusare och svagt varm mot
+    #    horisonten. Restglöden ligger där solen gick ner (sun_zone), inte över
+    #    hela himlen. Bara på pixlar som är ljus himmel i originalet.
+    t = yy / 330
+    sky_col = np.stack([0.16 + 0.26 * t, 0.17 + 0.2 * t, 0.34 + 0.16 * t], -1)
+    afterglow = np.array([0.62, 0.44, 0.38], np.float32) * (sun_zone * 0.7 * t)[..., None]
+    sky_mix = (sky_weight * smooth(lum, 0.28, 0.5))[..., None] * 0.62
+    out = out * (1 - sky_mix) + (sky_col + afterglow + ev_lum[..., None] * 0.3) * sky_mix
+
+    # 4. Sjön: där solstrimman låg speglar den nu skymningshimlen - mörkare och
+    #    utan pelare.
+    lake_dusk = np.array([0.2, 0.22, 0.34], np.float32)
+    reflect = (lake_streak_zone * 0.35)[..., None]
+    out = out * (1 - reflect) + lake_dusk * (0.7 + 0.6 * ev_lum[..., None]) * reflect
+
+    # 5. Varma maskade ljuskällor: fönster, dörr, deras spegling och elden
+    #    framträder tydligare än på dagen men lågmält (80 % av nattens styrka).
+    warmth = smooth(r - b, 0.18, 0.45) * smooth(lum, 0.35, 0.75)
+    glow = (warmth * light_zone)[..., None] * 0.8
+    warm_keep = src * np.array([1.0, 0.84, 0.64], np.float32) * 0.9
+    out = out * (1 - glow) + warm_keep * glow
+
+    # 6. Eldsken: samma mjuka avfall som natten men svagare - omgivningsljuset
+    #    finns fortfarande kvar, så elden lyser inte upp lika mycket.
+    dist = np.hypot(xx - 1555, (yy - 800) / 0.8)
+    spill = np.exp(-((dist / 330) ** 2)) * 0.32 * smooth(lum, 0.05, 0.5)
+    out = out + (src * np.array([0.55, 0.36, 0.2], np.float32)) * spill[..., None]
+
+    return to_image(out)
+
+
+PHASES = {
+    "night": relight_night,
+    "morning": relight_morning,
+    "day": relight_day,
+    "evening": relight_evening,
+}
 
 
 def main(phases: list[str]) -> None:

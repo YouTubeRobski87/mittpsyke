@@ -17,8 +17,8 @@ describe('Framstegs scen och följeslagare', () => {
 	it('använder björnscenen endast i den anonyma förhandsvisningen', () => {
 		expect(route).toContain('data.isAnonymous ? PROGRESS_SCENE_SOURCES : PROGRESS_COMPANION_SCENE_SOURCES');
 		for (const band of PROGRESS_SCENE_BANDS) {
-			// Morgon och natt använder relights av samma par (scripts/scene-relight.py).
-			const suffix = band === 'morning' || band === 'night' ? `-${band}` : '';
+			// Alla spann utom eftermiddagen använder relights av samma par (scripts/scene-relight.py).
+			const suffix = band === 'afternoon' ? '' : `-${band}`;
 			expect(PROGRESS_SCENE_SOURCES[band].fallback).toContain(`progress-lake-bear${suffix}-800.webp`);
 			expect(PROGRESS_COMPANION_SCENE_SOURCES[band].fallback).toContain(`progress-lake${suffix}-800.webp`);
 		}

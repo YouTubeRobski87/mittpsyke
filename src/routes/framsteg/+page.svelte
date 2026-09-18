@@ -2506,8 +2506,11 @@
 		background: linear-gradient(180deg, rgb(255 168 104 / 0.06) 0%, rgb(97 46 29 / 0.16) 35%, rgb(11 15 23 / 0.68) 100%);
 	}
 
+	/* Kvällsbilden är redan skymningsmörk, så toningen ligger mellan
+	   eftermiddagens och nattens - tillräcklig för copyn, utan att dubbelmörka
+	   elden, björnen och personen i nederkanten. */
 	.companion-media[data-time='evening']::after {
-		background: linear-gradient(180deg, rgb(2 13 31 / 0.2) 0%, rgb(2 10 25 / 0.54) 34%, rgb(2 8 20 / 0.88) 100%);
+		background: linear-gradient(180deg, rgb(2 10 25 / 0.06) 0%, rgb(2 10 25 / 0.3) 38%, rgb(2 8 20 / 0.76) 100%);
 	}
 
 	/* Nattbilden är redan mörk, så toningen behöver bara bära copyn i nederkanten -
@@ -2526,9 +2529,9 @@
 
 	   Effektiv ljusnivå = 1 - opacity * (1 - färgkanal). Värdena ger ungefär:
 	     morgon  0 %: morgonbilden bär själv den svala tonen
-	     dag     0 %, neutral
+	     dag     0 %: dagbilden är redan neutral
 	     sen em  ca -4 %, svagt varmt
-	     kväll   ca -9 %, varmare
+	     kväll   0 %: kvällsbilden bär själv skymningen
 	     natt    0 %: nattbilden bär själv natten, ingen dubbel mörkläggning
 	   Alla faser använder multiply, så ett fasbyte är en ren färg-/opacitets-
 	   övergång (10 s) utan hopp i blandningsläge. Ingen animation: reduced
@@ -2556,8 +2559,7 @@
 	}
 
 	.companion-media[data-time='evening'] .progress-scene-tone {
-		background-color: rgb(222 186 160);
-		opacity: 0.36;
+		opacity: 0;
 	}
 
 	.companion-media[data-time='night'] .progress-scene-tone {
@@ -2601,6 +2603,20 @@
 	.companion-media[data-time='night'] .progress-ripple {
 		--progress-ripple-peak-opacity: 0.085;
 		--progress-ripple-fade-opacity: 0.025;
+	}
+
+	/* Kvällen ligger mellan eftermiddag och natt. Solen har gått ner, så
+	   glimten - en solreflex - får bara en svag rest, och vattenytans ljusa
+	   ränder dämpas så sjön inte får en strimma eller slöja. Ringar och dimma
+	   ser redan rätt ut mot kvällsbilden och lämnas orörda. */
+	.companion-media[data-time='evening'] :global(.water-glint) {
+		/* Ca 30 %. Samma blur som i WaterLayer, eftersom filter ersätts i sin helhet. */
+		filter: blur(clamp(10px, 1.5vw, 22px)) opacity(0.3);
+	}
+
+	.companion-media[data-time='evening'] :global(.water-surface) {
+		/* Ca 55 %, mellan eftermiddagens 100 % och nattens 30 %. */
+		opacity: calc(var(--opacity, 0.34) * 0.55);
 	}
 
 	/* Genvägen hem till stugan. Ytan följer bildens scengeometri via
