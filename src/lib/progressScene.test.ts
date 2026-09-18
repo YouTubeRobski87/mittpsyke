@@ -22,9 +22,14 @@ function atStockholm(hour: number, minute: number): Date {
 	return new Date(Date.UTC(2026, 0, 15, hour - 1, minute));
 }
 
+/** Natten har en egen relight av sjöbilden; övriga spann delar solnedgången. */
+function sceneBaseFor(band: ProgressSceneBand, base: string): string {
+	return band === 'night' ? `${base}-night` : base;
+}
+
 describe('getProgressSceneBand - tidsgränser', () => {
 	it.each([
-		['04:59', 4, 59, 'evening'],
+		['04:59', 4, 59, 'night'],
 		['05:00', 5, 0, 'morning'],
 		['09:59', 9, 59, 'morning'],
 		['10:00', 10, 0, 'day'],
@@ -32,7 +37,10 @@ describe('getProgressSceneBand - tidsgränser', () => {
 		['17:00', 17, 0, 'afternoon'],
 		['19:59', 19, 59, 'afternoon'],
 		['20:00', 20, 0, 'evening'],
-		['23:59', 23, 59, 'evening']
+		['22:59', 22, 59, 'evening'],
+		['23:00', 23, 0, 'night'],
+		['23:59', 23, 59, 'night'],
+		['00:30', 0, 30, 'night']
 	] as const)('%s ger %s', (_label, hour, minute, expected) => {
 		expect(getProgressSceneBand(atStockholm(hour, minute))).toBe(expected);
 	});
@@ -53,14 +61,14 @@ describe('varje spann pekar på den responsiva sjöscenen', () => {
 	it.each(PROGRESS_SCENE_BANDS)('%s har tre storlekar som finns på disk', (band) => {
 		const { fallback, srcset } = PROGRESS_SCENE_SOURCES[band];
 
-		// Fallback ska vara den minsta varianten, inte fullbredd.
-		expect(fallback).toBe('/images/scenes/progress-lake-bear-800.webp');
+		const base = sceneBaseFor(band, '/images/scenes/progress-lake-bear');
 
-		const expected = [
-			'/images/scenes/progress-lake-bear-800.webp 800w',
-			'/images/scenes/progress-lake-bear-1200.webp 1200w',
-			'/images/scenes/progress-lake-bear.webp 1672w'
-		].join(', ');
+		// Fallback ska vara den minsta varianten, inte fullbredd.
+		expect(fallback).toBe(`${base}-800.webp`);
+
+		const expected = [`${base}-800.webp 800w`, `${base}-1200.webp 1200w`, `${base}.webp 1672w`].join(
+			', '
+		);
 		expect(srcset).toBe(expected);
 
 		for (const entry of srcset.split(', ')) {
@@ -78,9 +86,13 @@ describe('varje spann pekar på den responsiva sjöscenen', () => {
 		}
 	});
 
-	it('behåller samma komposition genom alla dygnsspann', () => {
-		const all = PROGRESS_SCENE_BANDS.map((band) => PROGRESS_SCENE_SOURCES[band].srcset);
-		expect(new Set(all).size).toBe(1);
+	it('delar solnedgångsbilden mellan alla spann utom natten, som har sin egen', () => {
+		const daylight = PROGRESS_SCENE_BANDS.filter((band) => band !== 'night').map(
+			(band) => PROGRESS_SCENE_SOURCES[band].srcset
+		);
+		expect(new Set(daylight).size).toBe(1);
+		expect(PROGRESS_SCENE_SOURCES.night.srcset).not.toBe(daylight[0]);
+		expect(PROGRESS_SCENE_SOURCES.night.srcset).toContain('progress-lake-bear-night');
 	});
 });
 
@@ -109,8 +121,9 @@ describe('Framstegs fullständiga dygnsscener', () => {
 	it('håller den artneutrala bilden för inloggade följeslagare på disk', () => {
 		for (const band of PROGRESS_SCENE_BANDS) {
 			const { fallback, srcset } = PROGRESS_COMPANION_SCENE_SOURCES[band];
-			expect(fallback).toBe('/images/scenes/progress-lake-800.webp');
-			expect(srcset).toContain('/images/scenes/progress-lake.webp 1672w');
+			const base = sceneBaseFor(band, '/images/scenes/progress-lake');
+			expect(fallback).toBe(`${base}-800.webp`);
+			expect(srcset).toContain(`${base}.webp 1672w`);
 		}
 	});
 
@@ -163,17 +176,21 @@ describe('etikett och alt', () => {
 		['morning', 'Morgon'],
 		['day', 'Dag'],
 		['afternoon', 'Eftermiddag'],
-		['evening', 'Kväll']
+		['evening', 'Kväll'],
+		['night', 'Natt']
 	] as const)('%s får etiketten %s', (band, label) => {
 		expect(getProgressSceneLabel(band as ProgressSceneBand)).toBe(label);
 	});
 
-	it('bilden är fast medan etiketten följer rätt spann vid varje timme', () => {
+	it('bild och etikett följer rätt spann vid varje timme', () => {
 		for (let hour = 0; hour < 24; hour += 1) {
 			const band = getProgressSceneBand(atStockholm(hour, 15));
-			expect(PROGRESS_SCENE_SOURCES[band].srcset).toContain('progress-lake-bear-800.webp');
+			const base = sceneBaseFor(band, 'progress-lake-bear');
+			expect(PROGRESS_SCENE_SOURCES[band].srcset).toContain(`${base}-800.webp`);
 			expect(getProgressSceneLabel(band)).toBe(
-				{ morning: 'Morgon', day: 'Dag', afternoon: 'Eftermiddag', evening: 'Kväll' }[band]
+				{ morning: 'Morgon', day: 'Dag', afternoon: 'Eftermiddag', evening: 'Kväll', night: 'Natt' }[
+					band
+				]
 			);
 		}
 	});
@@ -213,7 +230,9 @@ describe('Framstegs mjuka scenbyte', () => {
 	});
 
 	it('har en lugn men begränsad överlappningstid', () => {
-		expect(PROGRESS_SCENE_CROSSFADE_MS).toBeGreaterThanOrEqual(700);
-		expect(PROGRESS_SCENE_CROSSFADE_MS).toBeLessThanOrEqual(1_200);
+		// Natt- och kvällsbilden skiljer sig kraftigt i ljus - bytet ska vara en
+		// lugn övergång på några sekunder, aldrig ett hopp och aldrig en halv minut.
+		expect(PROGRESS_SCENE_CROSSFADE_MS).toBeGreaterThanOrEqual(5_000);
+		expect(PROGRESS_SCENE_CROSSFADE_MS).toBeLessThanOrEqual(8_000);
 	});
 });

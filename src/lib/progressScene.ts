@@ -7,13 +7,16 @@ import { getProgressCompanionLocalTime } from '$lib/progressCompanion';
  * Kvällstugan (dagens Mitt Hem). Här behövs presentationsnamnen morgon/dag/eftermiddag/kväll,
  * och scenpresentationen hör bara hemma på Framsteg.
  *
- * Gränserna är identiska med den delade helperns - bara benämningen skiljer:
+ * De fyra första gränserna delas med den delade helpern - bara benämningen
+ * skiljer. Framstegs kvällsband delas dessutom i kväll och natt, eftersom
+ * natten har en egen scenbild:
  *   morning   05:00-09:59
  *   day       10:00-16:59
  *   afternoon 17:00-19:59  (delad helper kallar detta 'evening')
- *   evening   20:00-04:59  (delad helper kallar detta 'night')
+ *   evening   20:00-22:59  (delad helper: 'night')
+ *   night     23:00-04:59  (delad helper: 'night')
  */
-export type ProgressSceneBand = 'morning' | 'day' | 'afternoon' | 'evening';
+export type ProgressSceneBand = 'morning' | 'day' | 'afternoon' | 'evening' | 'night';
 
 export type ProgressSceneTransitionState = {
 	visibleBand: ProgressSceneBand;
@@ -21,10 +24,14 @@ export type ProgressSceneTransitionState = {
 	outgoingBand: ProgressSceneBand | null;
 };
 
-/** Tiden som två befintliga landskapsbilder får överlappa vid ett fasbyte. */
-export const PROGRESS_SCENE_CROSSFADE_MS = 1_000;
+/**
+ * Tiden som två landskapsbilder får överlappa vid ett fasbyte. Kvällens
+ * solnedgång och nattbilden skiljer sig kraftigt i ljus, så bytet får ta sex
+ * sekunder - som när ljuset faktiskt sjunker - i stället för att hoppa.
+ */
+export const PROGRESS_SCENE_CROSSFADE_MS = 6_000;
 
-export const PROGRESS_SCENE_BANDS = ['morning', 'day', 'afternoon', 'evening'] as const;
+export const PROGRESS_SCENE_BANDS = ['morning', 'day', 'afternoon', 'evening', 'night'] as const;
 
 // En statisk komposition: sjö, berg, stuga, människa, björn, lägereld, ryggsäck
 // och mugg. Björnen är en del av Framstegsscenen, inte användarens följeslagare.
@@ -49,6 +56,10 @@ function sourcesForProgressLake(base: string) {
 
 const PROGRESS_LAKE_SOURCES = sourcesForProgressLake(SCENE_BASE);
 const PROGRESS_COMPANION_LAKE_SOURCES = sourcesForProgressLake(COMPANION_SCENE_BASE);
+// Nattvarianterna är en per-pixel-relight av samma bilder (scripts/night-relight.py),
+// så kompositionen och alla scenkoordinater är oförändrade.
+const PROGRESS_LAKE_NIGHT_SOURCES = sourcesForProgressLake(`${SCENE_BASE}-night`);
+const PROGRESS_COMPANION_LAKE_NIGHT_SOURCES = sourcesForProgressLake(`${COMPANION_SCENE_BASE}-night`);
 
 export const PROGRESS_SCENE_SOURCES: Record<
 	ProgressSceneBand,
@@ -57,7 +68,8 @@ export const PROGRESS_SCENE_SOURCES: Record<
 	morning: PROGRESS_LAKE_SOURCES,
 	day: PROGRESS_LAKE_SOURCES,
 	afternoon: PROGRESS_LAKE_SOURCES,
-	evening: PROGRESS_LAKE_SOURCES
+	evening: PROGRESS_LAKE_SOURCES,
+	night: PROGRESS_LAKE_NIGHT_SOURCES
 };
 
 /** Den inloggade användarens följeslagare behöver den artneutrala bilden. */
@@ -68,14 +80,16 @@ export const PROGRESS_COMPANION_SCENE_SOURCES: Record<
 	morning: PROGRESS_COMPANION_LAKE_SOURCES,
 	day: PROGRESS_COMPANION_LAKE_SOURCES,
 	afternoon: PROGRESS_COMPANION_LAKE_SOURCES,
-	evening: PROGRESS_COMPANION_LAKE_SOURCES
+	evening: PROGRESS_COMPANION_LAKE_SOURCES,
+	night: PROGRESS_COMPANION_LAKE_NIGHT_SOURCES
 };
 
 const SCENE_LABELS: Record<ProgressSceneBand, string> = {
 	morning: 'Morgon',
 	day: 'Dag',
 	afternoon: 'Eftermiddag',
-	evening: 'Kväll'
+	evening: 'Kväll',
+	night: 'Natt'
 };
 
 export function getProgressSceneBand(date = new Date()): ProgressSceneBand {
@@ -89,7 +103,8 @@ export function getProgressSceneBand(date = new Date()): ProgressSceneBand {
 	if (hour >= 5 && hour < 10) return 'morning';
 	if (hour >= 10 && hour < 17) return 'day';
 	if (hour >= 17 && hour < 20) return 'afternoon';
-	return 'evening';
+	if (hour >= 20 && hour < 23) return 'evening';
+	return 'night';
 }
 
 export function getProgressSceneLabel(band: ProgressSceneBand): string {

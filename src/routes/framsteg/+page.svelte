@@ -105,8 +105,8 @@
 
 	let season = $state<ProgressCompanionSeason>(getProgressCompanionSeason());
 	let timeOfDay = $state<CompanionTimeOfDay>(getProgressCompanionDayState());
-	// Tidsläget styr etikett och lokala ambient-toner. Den responsiva sjöbilden
-	// behåller samma komposition genom alla spann.
+	// Tidsläget styr etikett, scenbild och lokala ambient-toner. Nattbilden är en
+	// relight av samma sjöbild, så kompositionen är densamma genom alla spann.
 	let sceneBand = $state<ProgressSceneBand>(getProgressSceneBand());
 	let sceneTransition = $state<ProgressSceneTransitionState>({
 		visibleBand: getProgressSceneBand(),
@@ -1199,6 +1199,8 @@
 				{/if}
 				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
 				<WorldMarks class="progress-world-marks" marks={worldMarks} {visitSeed} />
+				<!-- Statisk dygnston över bild, värld och följeslagare - se .progress-scene-tone. -->
+				<span class="progress-scene-tone" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
 			</div>
@@ -2505,6 +2507,100 @@
 
 	.companion-media[data-time='evening']::after {
 		background: linear-gradient(180deg, rgb(2 13 31 / 0.2) 0%, rgb(2 10 25 / 0.54) 34%, rgb(2 8 20 / 0.88) 100%);
+	}
+
+	/* Nattbilden är redan mörk, så toningen behöver bara bära copyn i nederkanten -
+	   inte mörka ner scenen en gång till. */
+	.companion-media[data-time='night']::after {
+		background: linear-gradient(180deg, transparent 0%, rgb(2 8 20 / 0.28) 40%, rgb(2 8 20 / 0.74) 100%);
+	}
+
+	/* Dygnston: en enda statisk färgyta i multiply över bild, ambientlager och
+	   följeslagare, så allt i scenen får samma ljus och Balder aldrig blir
+	   spotlightad mot en mörkare bakgrund. Ligger på förgrundsnivån men målas före
+	   ::after, så läsbarhetstoningen och copyn påverkas inte.
+
+	   Tonen följer den SYNLIGA bilden (data-time sätts först när nästa bild
+	   laddat), så ton och bild byter alltid tillsammans.
+
+	   Effektiv ljusnivå = 1 - opacity * (1 - färgkanal). Värdena ger ungefär:
+	     morgon  ca -2 %, svalt och mjukt
+	     dag     0 %, neutral
+	     sen em  ca -4 %, svagt varmt
+	     kväll   ca -9 %, varmare
+	     natt    0 %: nattbilden bär själv natten, ingen dubbel mörkläggning
+	   Alla faser använder multiply, så ett fasbyte är en ren färg-/opacitets-
+	   övergång (10 s) utan hopp i blandningsläge. Ingen animation: reduced
+	   motion lämnar tonen orörd. */
+	.progress-scene-tone {
+		position: absolute;
+		inset: 0;
+		z-index: var(--scene-foreground);
+		pointer-events: none;
+		background-color: rgb(255 255 255);
+		mix-blend-mode: multiply;
+		opacity: 0;
+		transition:
+			background-color 10s ease,
+			opacity 10s ease;
+	}
+
+	.companion-media[data-time='morning'] .progress-scene-tone {
+		background-color: rgb(214 224 240);
+		opacity: 0.2;
+	}
+
+	.companion-media[data-time='afternoon'] .progress-scene-tone {
+		background-color: rgb(255 220 184);
+		opacity: 0.28;
+	}
+
+	.companion-media[data-time='evening'] .progress-scene-tone {
+		background-color: rgb(222 186 160);
+		opacity: 0.36;
+	}
+
+	.companion-media[data-time='night'] .progress-scene-tone {
+		opacity: 0;
+	}
+
+	/* Nattens världslager. Lagren är avstämda mot solnedgångsbilden; ovanpå den
+	   mörka nattbilden blev vattenytans ljusa ränder en strimma över sjön och
+	   glimten en mjölkig slöja. Styrs av den synliga scenbilden (data-time), inte
+	   av AmbientWorlds timeOfDay - den senare kallar redan 20:00 för natt, medan
+	   nattbilden först visas 23:00.
+
+	   Lagren animerar själva sin opacity via --opacity (inline), så dämpningen
+	   görs med filter: opacity(), som multipliceras ovanpå animationen. Varje
+	   regel upprepar lagrets egen blur, eftersom filter ersätts i sin helhet. */
+	.companion-media[data-time='night'] :global(.water-glint) {
+		/* Ingen sol och ingen måne på himlen - inget att spegla. */
+		display: none;
+	}
+
+	.companion-media[data-time='night'] :global(.water-surface) {
+		/* Ca 30 %. Opaciteten animeras inte här, så den kan sättas direkt. */
+		opacity: calc(var(--opacity, 0.34) * 0.3);
+	}
+
+	.companion-media[data-time='night'] :global(.water-ripple-loop) {
+		/* Ca 50 %: ringarna kommer fortfarande sporadiskt, men lyser inte vitt. */
+		filter: blur(0.3px) opacity(0.5);
+	}
+
+	.companion-media[data-time='night'] :global(.world-event-water),
+	.companion-media[data-time='night'] :global(.world-presence-sign) {
+		filter: opacity(0.5);
+	}
+
+	.companion-media[data-time='night'] :global(.world-mist) {
+		/* Ca 60 %. */
+		filter: blur(12px) opacity(0.6);
+	}
+
+	.companion-media[data-time='night'] .progress-ripple {
+		--progress-ripple-peak-opacity: 0.085;
+		--progress-ripple-fade-opacity: 0.025;
 	}
 
 	/* Genvägen hem till stugan. Ytan följer bildens scengeometri via
