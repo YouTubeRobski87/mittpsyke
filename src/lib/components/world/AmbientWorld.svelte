@@ -367,8 +367,10 @@
 	.living-world[data-time='day'] .world-mist { filter: blur(14px); }
 	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.5px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) ease-in-out var(--delay, 0ms) infinite; }
 	/* Samma lövverksanimation som vanligt, bara tillfälligt snabbare när den
-	   deterministiska eventplanen valt en vindpust. */
-	.is-wind-event .world-foliage { animation-duration: 11s; }
+	   deterministiska eventplanen valt en vindpust. 16s, inte 11s: cykeln
+	   innehåller numera två perioder, så varje enskild rörelse blir lika lugn
+	   som den enda pusten var tidigare. */
+	.is-wind-event .world-foliage { animation-duration: 16s; }
 	.is-wind-event .canopy-right { animation-duration: 5.5s; }
 	/* Beständig markvegetation för Growth Garden. Samma foliage-lager och
 	   vindanimation som övrig värld, med små, låga former i strandperspektiv. */
@@ -407,7 +409,17 @@
 	@keyframes worldLightShift { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(calc(2.2% * (0.4 + var(--depth, 0.5))), calc(1.6% * (0.4 + var(--depth, 0.5))), 0) scale(1.035); } }
 	@keyframes cloudDrift { 0%, 8%, 100% { opacity: 0; transform: translate3d(calc(-10% + var(--cloud-offset-x, 0%)), var(--cloud-offset-y, 0%), 0) scale(var(--scale, 1)); } 18%, 72% { opacity: calc(var(--opacity, 0.1) * var(--cloud-layer-opacity, 1)); } 86% { opacity: 0; transform: translate3d(calc((12% + (28% * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)) + var(--cloud-offset-x, 0%)), calc(-3% + var(--cloud-offset-y, 0%)), 0) scale(var(--scale, 1)); } }
 	@keyframes mistDrift { 0%, 100% { opacity: calc(var(--opacity, 0.14) * 0.34); transform: translate3d(-4%, 0, 0) scaleX(0.94); } 48% { opacity: var(--opacity, 0.14); } 74% { opacity: calc(var(--opacity, 0.14) * 0.62); transform: translate3d(calc(5% * (0.5 + var(--depth, 0.5))), calc(-4% * (0.5 + var(--depth, 0.5))), 0) scaleX(1.08); } }
-	@keyframes foliageBreathe { 0%, 24%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); } 58% { transform: rotate(calc((2deg + (2.4deg * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)))) translate3d(calc(1.6% * var(--world-wind, 0.18)), -0.8%, 0); } }
+	/* Vinden kommer i perioder i stället för en likadan svallrörelse per varv: en
+	   svag period, stiltje, sedan en starkare - med toppen kvar på exakt samma
+	   amplitud som tidigare, så scenen varierar utan att bli tydligare. Lagren
+	   har olika duration (28-46s) och negativa delays i worldScene, så perioderna
+	   infaller osynkat mellan dem. */
+	@keyframes foliageBreathe {
+		0%, 14%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); }
+		31% { transform: rotate(calc((0.7deg + (0.9deg * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)))) translate3d(calc(0.5% * var(--world-wind, 0.18)), -0.25%, 0); }
+		46%, 58% { transform: rotate(0deg) translate3d(0, 0, 0); }
+		78% { transform: rotate(calc((2deg + (2.4deg * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)))) translate3d(calc(1.6% * var(--world-wind, 0.18)), -0.8%, 0); }
+	}
 	/* Svag, ojämn vindpust i grenen - ojämna procentsteg och skilda +/- värden
 	   (inte ett symmetriskt fram-och-tillbaka) så det inte känns mekaniskt
 	   loopat. Börjar och slutar i samma läge så loopen inte hackar till. */
