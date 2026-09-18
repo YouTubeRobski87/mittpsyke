@@ -16,7 +16,7 @@
 		grantSensitiveConsent
 	} from '$lib/consent';
 	import { supabase } from '$lib/supabase';
-	import { writeDiaryCheckinPrefill } from '$lib/diary-draft';
+	import { buildCheckinDiaryContent } from '$lib/checkin-diary-content';
 	import { notifyDiaryEntriesChanged } from '$lib/diary-events';
 
 	const moodOptions = [
@@ -75,6 +75,10 @@
 	let reflection = '';
 	let reflectionError = '';
 	let generatingReflection = false;
+	// AI-reflektionen visas alltid, men följer bara med i det sparade inlägget
+	// om användaren själv aktivt väljer det. Av som standard: användarens egna
+	// svar sparas oförändrade oavsett detta val.
+	let includeReflectionInDiary = false;
 	let savingToDiary = false;
 	let saveError = '';
 	let authLoading = true;
@@ -239,44 +243,19 @@
 		}
 	}
 
-	function formatSelectedList(items: string[]) {
-		if (items.length === 0) return '- Inget valt';
-		return items.map((item) => `- ${item}`).join('\n');
-	}
-
-	function formatSingleValue(value: string) {
-		return value ? `- ${value}` : '- Inget valt';
-	}
-
 	function buildDiaryContent() {
-		const ownWords = [moodFreeText.trim(), factorFreeText.trim()].filter(Boolean);
-
-		const blocks = [
-			'Guidad incheckning',
-			'',
-			'Hur jag mår just nu:',
-			formatSelectedList(selectedMoods),
-			'',
-			'Vad som påverkar:',
-			formatSelectedList(selectedFactors),
-			'',
-			'Hur länge det har känts så:',
-			formatSingleValue(selectedDuration),
-			'',
-			'Gjort för mig själv idag:',
-			formatSelectedList(selectedSelfCare),
-			'',
-			'Vad som skulle hjälpa just nu:',
-			formatSelectedList(selectedHelp)
-		];
-
-		if (ownWords.length > 0) {
-			blocks.push('', 'Egna ord:', ownWords.join('\n'));
-		}
-
-		blocks.push('', 'MittPsyke-reflektion:', reflection || reflectionFallback);
-
-		return blocks.join('\n');
+		return buildCheckinDiaryContent({
+			selectedMoods,
+			selectedFactors,
+			selectedDuration,
+			selectedSelfCare,
+			selectedHelp,
+			moodFreeText,
+			factorFreeText,
+			reflection: reflection || reflectionFallback,
+			// AI-reflektionen följer bara med när användaren själv valt det.
+			includeReflection: includeReflectionInDiary
+		});
 	}
 
 	async function saveToDiary() {
@@ -372,8 +351,10 @@
 	}
 
 	function continueToDiaryWriting() {
-		const prefill = (reflection || reflectionFallback).trim();
-		writeDiaryCheckinPrefill(prefill);
+		// Dagboken öppnas tom. MittPsykes reflektion fördes tidigare in här som
+		// prefill, men då hamnade AI-text i ett nytt inlägg utan sin märkning och
+		// såg ut som användarens egna ord. Reflektionen får läsas ovan och kan
+		// aktivt väljas in i det sparade incheckningsinlägget - inget annat.
 		void goto('/dagbok/checkin#skriv-sjalv');
 	}
 
@@ -666,6 +647,11 @@
 								<p>{reflection || reflectionFallback}</p>
 							</div>
 
+							<label class="reflection-include">
+								<input type="checkbox" bind:checked={includeReflectionInDiary} />
+								<span>Ta med MittPsykes reflektion i dagboksinlägget</span>
+							</label>
+
 							{#if saveError}
 								<p class="text-sm error-copy">{saveError}</p>
 							{/if}
@@ -885,6 +871,27 @@
 		font-size: 0.95rem;
 		line-height: 1.7;
 		white-space: pre-wrap;
+	}
+
+	/* Ett lugnt, frivilligt val - inte en samtyckesruta. */
+	.reflection-include {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.6rem;
+		min-height: 44px;
+		padding: 0.25rem 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.92rem;
+		line-height: 1.55;
+		cursor: pointer;
+	}
+
+	.reflection-include input {
+		width: 1.1rem;
+		height: 1.1rem;
+		margin-top: 0.2rem;
+		flex-shrink: 0;
+		cursor: pointer;
 	}
 
 	.error-copy {
