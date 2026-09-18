@@ -205,12 +205,6 @@ describe('getLivingWorldScene - växtnivå styr scenen', () => {
 		expect(butterflyEvent?.enabled).toBe(false);
 	});
 
-	it('höstlövet förblir årstidsstyrt, oberoende av växtnivå', () => {
-		const autumnLow = getLivingWorldScene({ season: 'autumn', timeOfDay: 'day', growthLevel: 0 });
-		const leaf = autumnLow.events.find((e) => e.kind === 'leaf');
-		expect(leaf?.enabled).toBe(true);
-	});
-
 	it('saknad växtnivå faller tillbaka till nivå 0 (inget sekundärt liv)', () => {
 		const scene = getLivingWorldScene({ ...fixed });
 		expect(scene.features.drift).toBe(false);

@@ -45,7 +45,7 @@ export type LivingWorldEffect = {
 
 export type LivingWorldEvent = {
 	id: string;
-	kind: Extract<LivingWorldEffectKind, 'water' | 'bird' | 'butterfly' | 'leaf'>;
+	kind: Extract<LivingWorldEffectKind, 'water' | 'bird' | 'butterfly'>;
 	enabled: boolean;
 	chance: number;
 	durationMs: [number, number];
@@ -551,16 +551,6 @@ const baseEvents: Omit<LivingWorldEvent, 'enabled'>[] = [
 			{ x: 16, y: 66, scale: 0.9, opacity: 0.42 },
 			{ x: 29, y: 72, scale: 0.72, opacity: 0.32 }
 		]
-	},
-	{
-		id: 'autumn-leaf',
-		kind: 'leaf',
-		chance: 0.08,
-		durationMs: [5_500, 7_500],
-		positions: [
-			{ x: 77, y: 9, scale: 0.9, opacity: 0.4 },
-			{ x: 67, y: 16, scale: 0.7, opacity: 0.3 }
-		]
 	}
 ];
 
@@ -724,8 +714,7 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 		...event,
 		enabled:
 			(event.kind !== 'bird' || (timeOfDay !== 'night' && season !== 'winter')) &&
-			(event.kind !== 'butterfly' || (isDaylight && (season === 'spring' || season === 'summer'))) &&
-			(event.kind !== 'leaf' || season === 'autumn')
+			(event.kind !== 'butterfly' || (isDaylight && (season === 'spring' || season === 'summer')))
 	}));
 
 	return { season, timeOfDay, localDateKey, localTimeMinutes, wind, growthLevel: growth.level, effects, events, features };
