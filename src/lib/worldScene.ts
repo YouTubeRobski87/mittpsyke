@@ -13,7 +13,6 @@ export type LivingWorldEffectKind =
 	| 'mist'
 	| 'bird'
 	| 'butterfly'
-	| 'leaf'
 	| 'cloud'
 	| 'moon'
 	| 'sun'
@@ -95,7 +94,6 @@ const ALL_FEATURES: Record<LivingWorldEffectKind, boolean> = {
 	mist: true,
 	bird: true,
 	butterfly: true,
-	leaf: true,
 	cloud: true,
 	moon: true,
 	sun: true,

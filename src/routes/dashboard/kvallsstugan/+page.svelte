@@ -187,7 +187,6 @@
 				foliage: false,
 				bird: false,
 				butterfly: false,
-				leaf: false,
 				cloud: true,
 				drift: false
 			}

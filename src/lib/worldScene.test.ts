@@ -91,7 +91,7 @@ describe('growthWorldmask - sekundära lager per nivå', () => {
 	it('gaten är aldrig satt på de beständiga baslagren', () => {
 		for (let level = 0 as WorldGrowthLevel; level <= 4; level = (level + 1) as WorldGrowthLevel) {
 			const { features } = growthWorldMask(level);
-			for (const kind of [...PERSISTENT_BASE_KINDS, 'leaf', 'cloud'] as LivingWorldEffectKind[]) {
+			for (const kind of [...PERSISTENT_BASE_KINDS, 'cloud'] as LivingWorldEffectKind[]) {
 				expect(features[kind]).toBeUndefined();
 			}
 		}
