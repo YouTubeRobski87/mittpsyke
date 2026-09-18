@@ -56,8 +56,13 @@ function sourcesForProgressLake(base: string) {
 
 const PROGRESS_LAKE_SOURCES = sourcesForProgressLake(SCENE_BASE);
 const PROGRESS_COMPANION_LAKE_SOURCES = sourcesForProgressLake(COMPANION_SCENE_BASE);
-// Nattvarianterna är en per-pixel-relight av samma bilder (scripts/night-relight.py),
-// så kompositionen och alla scenkoordinater är oförändrade.
+// Morgon- och nattvarianterna är per-pixel-relights av samma bilder
+// (scripts/scene-relight.py), så kompositionen och alla scenkoordinater är
+// oförändrade. Dag, eftermiddag och kväll delar solnedgången tills egna bilder finns.
+const PROGRESS_LAKE_MORNING_SOURCES = sourcesForProgressLake(`${SCENE_BASE}-morning`);
+const PROGRESS_COMPANION_LAKE_MORNING_SOURCES = sourcesForProgressLake(
+	`${COMPANION_SCENE_BASE}-morning`
+);
 const PROGRESS_LAKE_NIGHT_SOURCES = sourcesForProgressLake(`${SCENE_BASE}-night`);
 const PROGRESS_COMPANION_LAKE_NIGHT_SOURCES = sourcesForProgressLake(`${COMPANION_SCENE_BASE}-night`);
 
@@ -65,7 +70,7 @@ export const PROGRESS_SCENE_SOURCES: Record<
 	ProgressSceneBand,
 	{ fallback: string; srcset: string }
 > = {
-	morning: PROGRESS_LAKE_SOURCES,
+	morning: PROGRESS_LAKE_MORNING_SOURCES,
 	day: PROGRESS_LAKE_SOURCES,
 	afternoon: PROGRESS_LAKE_SOURCES,
 	evening: PROGRESS_LAKE_SOURCES,
@@ -77,7 +82,7 @@ export const PROGRESS_COMPANION_SCENE_SOURCES: Record<
 	ProgressSceneBand,
 	{ fallback: string; srcset: string }
 > = {
-	morning: PROGRESS_COMPANION_LAKE_SOURCES,
+	morning: PROGRESS_COMPANION_LAKE_MORNING_SOURCES,
 	day: PROGRESS_COMPANION_LAKE_SOURCES,
 	afternoon: PROGRESS_COMPANION_LAKE_SOURCES,
 	evening: PROGRESS_COMPANION_LAKE_SOURCES,

@@ -105,8 +105,9 @@
 
 	let season = $state<ProgressCompanionSeason>(getProgressCompanionSeason());
 	let timeOfDay = $state<CompanionTimeOfDay>(getProgressCompanionDayState());
-	// Tidsläget styr etikett, scenbild och lokala ambient-toner. Nattbilden är en
-	// relight av samma sjöbild, så kompositionen är densamma genom alla spann.
+	// Tidsläget styr etikett, scenbild och lokala ambient-toner. Morgon- och
+	// nattbilden är relights av samma sjöbild, så kompositionen är densamma
+	// genom alla spann.
 	let sceneBand = $state<ProgressSceneBand>(getProgressSceneBand());
 	let sceneTransition = $state<ProgressSceneTransitionState>({
 		visibleBand: getProgressSceneBand(),
@@ -2524,7 +2525,7 @@
 	   laddat), så ton och bild byter alltid tillsammans.
 
 	   Effektiv ljusnivå = 1 - opacity * (1 - färgkanal). Värdena ger ungefär:
-	     morgon  ca -2 %, svalt och mjukt
+	     morgon  0 %: morgonbilden bär själv den svala tonen
 	     dag     0 %, neutral
 	     sen em  ca -4 %, svagt varmt
 	     kväll   ca -9 %, varmare
@@ -2546,8 +2547,7 @@
 	}
 
 	.companion-media[data-time='morning'] .progress-scene-tone {
-		background-color: rgb(214 224 240);
-		opacity: 0.2;
+		opacity: 0;
 	}
 
 	.companion-media[data-time='afternoon'] .progress-scene-tone {
