@@ -31,7 +31,7 @@ Live ska fungera som ett röstsamtal: användaren pratar och AI svarar med röst
 | Samtycke | [ai-consent.ts](../src/lib/server/ai-consent.ts) använder serverägda `user_ai_consents`, exakt scope/version och avvisar vid saknat, återkallat eller felaktigt samtycke samt DB-fel. Chatt, dagboksreflektion, veckosammanfattning och dagens fråga har skilda scope. | Återanvänd tabellen och hjälparna. Mikrofontillstånd och ett gammalt textchattsamtycke är inte ett nytt samtycke till ljudbehandling eller sparning. |
 | Supabase/media | [diary.sql](../supabase/diary.sql) anger ägarstyrd RLS. Extra fält finns för bild, video och frågeursprung. [diary_video.sql](../supabase/diary_video.sql) beskriver privat video. [diary_image_url.sql](../supabase/diary_image_url.sql) och [upload](../src/routes/api/diary/upload/+server.ts) avser publika bilder. | Ljudlagring för live saknas. Bildbucket och bildendpoint är inte en mall för känsligt ljud. Verifiera verkliga grants, RLS och buckets innan framtida driftsättning. |
 
-Sökning i `src`, `docs` och `supabase` hittade ingen separat live-route, WebRTC-/WebSocket-session eller kontinuerlig röstsamtalstjänst. `VideoRecorder.svelte` är videoinspelning, inte AI-live. `tests/ai-evals/live-*` betyder tester mot en riktig modell, inte live-röstsamtal. Storify har ett transkriptbaserat dagboksflöde men andra instruktioner och en separat providerkoppling; det ska inte återanvändas som live-sammanfattare.
+Sökning i `src`, `docs` och `supabase` hittade ingen separat live-route, WebRTC-/WebSocket-session eller kontinuerlig röstsamtalstjänst. `VideoRecorder.svelte` är videoinspelning, inte AI-live. `tests/ai-evals/live-*` betyder tester mot en riktig modell, inte live-röstsamtal. Storify hade ett transkriptbaserat dagboksflöde men är borttaget sedan 2026-09-18; det finns alltså ingen sådan kod att återanvända som live-sammanfattare.
 
 ## 3. Minsta framtida arkitektur
 
@@ -92,7 +92,7 @@ Exempel med underlaget ”Jag sov dåligt i natt. Jag känner mig trött. Jag tr
 
 Inte: ”Sömnbristen gjorde dig nedstämd, men familjen hjälpte dig att återhämta dig.”
 
-Använd ett separat use case `live-summary` inom det befintliga AI-lagret, exempelvis `src/lib/server/ai/live-summary.ts`, via `AITextProvider`. Återanvänd gemensamma säkerhetsinstruktioner men inte dagboksreflektionens instruktion att spegla känslor eller Storifys berättarröst.
+Använd ett separat use case `live-summary` inom det befintliga AI-lagret, exempelvis `src/lib/server/ai/live-summary.ts`, via `AITextProvider`. Återanvänd gemensamma säkerhetsinstruktioner men inte dagboksreflektionens instruktion att spegla känslor.
 
 Ett tillfälligt resultatkontrakt kan vara:
 

@@ -357,28 +357,6 @@ describe('det gamla forumet är inte publikt läsbart', () => {
 });
 
 describe('server-owned AI consent boundaries', () => {
-	it('gates both Storify provider routes before Anthropic', () => {
-		for (const path of [
-			'../routes/api/storify/chat/+server.ts',
-			'../routes/api/storify/generate/+server.ts'
-		]) {
-			const source = projectFile(path);
-			const consent = source.indexOf('hasStorifyAiConsent(serviceClient, user.id)');
-			const provider = source.indexOf("fetch('https://api.anthropic.com/v1/messages'");
-			expect(consent).toBeGreaterThan(-1);
-			expect(provider).toBeGreaterThan(consent);
-			expect(source).not.toMatch(/console\.error\([^\n]*await anthropicResponse\.text\(\)/);
-		}
-	});
-
-	it('keeps Storify consent separate from diary reflection consent', () => {
-		const helper = projectFile('./server/storify-ai-consent.ts');
-		const migration = projectFile('../../supabase/migrations/20260905130000_add_storify_ai_consent_scope.sql');
-		expect(helper).toContain("STORIFY_AI_CONSENT_SCOPE = 'diary_ai_storify'");
-		expect(helper).not.toContain('diary_ai_reflection');
-		expect(migration).toContain("'diary_ai_storify'");
-	});
-
 	it('gates Spegelvattnet before diary content is loaded', () => {
 		const source = projectFile('./server/spegelvattnet.ts');
 		const consent = source.indexOf('hasWeeklySummaryAiConsent(supabase, userId)');

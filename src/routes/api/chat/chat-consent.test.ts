@@ -326,7 +326,6 @@ describe('scope-avgränsning', () => {
 
 	it('bumpar bara chattens samtyckesversion, inga andra', async () => {
 		expect((await import('$lib/server/diary-ai-consent')).DIARY_AI_CONSENT_POLICY_VERSION).toBe('diary-ai-v1');
-		expect((await import('$lib/server/storify-ai-consent')).STORIFY_AI_CONSENT_POLICY_VERSION).toBe('diary-storify-v1');
 		expect((await import('$lib/server/weekly-summary-ai-consent')).WEEKLY_SUMMARY_AI_CONSENT_POLICY_VERSION).toBe('weekly-summary-v1');
 		expect((await import('$lib/server/daily-question-ai-consent')).DAILY_QUESTION_AI_CONSENT_POLICY_VERSION).toBe('diary-daily-question-v1');
 		expect((await import('$lib/consent')).HEALTH_CONSENT_VERSION).toBe('2026-04-29');

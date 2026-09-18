@@ -112,16 +112,11 @@ huvudprodukten. Så beskrivs den redan korrekt idag på
 `src/routes/sa-fungerar-mittpsyke/+page.svelte` ("Chatten – ett valfritt
 AI-verktyg"). Ny copy om chatten ska hålla samma linje.
 
-## Känd avvikelse
+## Känd avvikelse - åtgärdad
 
-`src/routes/api/storify/generate` och `src/routes/api/storify/chat`
-(ytan `src/routes/dagars-avtryck/`) låter AI skriva ett fullständigt
-dagboksinlägg åt användaren - antingen direkt från en kort beskrivning, eller
-från en AI-ledd intervju. Det är produktens tydligaste exempel på precis det
-den här principen säger att AI inte ska göra ("fylla i dagboken",
-"generera känslor eller reflektioner åt användaren"). Funktionen är
-konsekvent samtyckesskyddad och väl testad, så det är ett medvetet byggt
-flöde, inte en glidning - men den behöver ett uttryckligt produktbeslut
-(behålla, göra om till ett redigerbart utkast, eller ta bort) innan den kan
-sägas följa principen ovan. Se `docs/ai/inventory.md` för fler tekniska
-detaljer.
+Storify (ytan `src/routes/dagars-avtryck/` och endpointerna under
+`src/routes/api/storify/`) lät AI skriva ett fullständigt dagboksinlägg åt
+användaren. Det var produktens tydligaste exempel på precis det den här
+principen säger att AI inte ska göra ("fylla i dagboken", "generera känslor
+eller reflektioner åt användaren"). Produktbeslutet blev att ta bort
+funktionen, och den är borttagen sedan 2026-09-18. Se `docs/ai/inventory.md`.

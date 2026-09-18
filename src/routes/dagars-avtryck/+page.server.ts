@@ -1,35 +1,10 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-type StorifyEntry = {
-	id: string;
-	content: string;
-	tone: string | null;
-	mood_emojis: string[] | null;
-	created_at: string;
-};
-
-export const load: PageServerLoad = async ({ locals }) => {
-	const {
-		data: { user }
-	} = await locals.supabase.auth.getUser();
-
-	if (!user) {
-		throw redirect(303, '/login');
-	}
-
-	const { data: entries, error } = await locals.supabase
-		.from('storify_entries')
-		.select('id, content, tone, mood_emojis, created_at')
-		.eq('user_id', user.id)
-		.order('created_at', { ascending: false })
-		.limit(20);
-
-	if (error) {
-		console.error('Fel vid hämtning av storify_entries:', error);
-	}
-
-	return {
-		entries: (entries ?? []) as StorifyEntry[]
-	};
+// Sidan var Storifys yta (AI-intervju → AI-skrivet dagboksinlägg) och är
+// borttagen. Routen finns kvar enbart som redirect, så att gamla bokmärken
+// landar i dagboken i stället för i en 404. Barnrouten /dagars-avtryck/checkin
+// är den guidade incheckningen och berörs inte.
+export const load: PageServerLoad = () => {
+	redirect(307, '/dagbok/checkin');
 };

@@ -3,14 +3,8 @@ import { env } from '$env/dynamic/private';
 import { CLAUDE_MODELS, estimateCostUsd, type ClaudeModel } from './models';
 
 // Gemensamt lager för alla Claude-anrop. Ersätter den handskrivna fetch-plumbing
-// som tidigare låg duplicerad i daily-question, spegelvattnet, admin och storify
+// som tidigare låg duplicerad i daily-question, spegelvattnet och admin
 // — inklusive två separata kopior av samma extractAnthropicText.
-
-/**
- * Vilken nyckel ett anrop ska använda. Storify har en egen nyckel så att dess
- * förbrukning går att skilja från resten av plattformens.
- */
-export type ClaudeCredential = 'default' | 'storify';
 
 function normalizeApiKey(value: string | undefined): string | null {
 	if (!value) return null;
@@ -19,16 +13,14 @@ function normalizeApiKey(value: string | undefined): string | null {
 	return normalized || null;
 }
 
-function resolveApiKey(credential: ClaudeCredential): string | null {
-	if (credential === 'storify') {
-		return normalizeApiKey(env.STORIFY_API_KEY);
-	}
-
+function resolveApiKey(): string | null {
+	// STORIFY_API_KEY ligger kvar sist i kedjan: Storify är borttaget, men
+	// nyckeln kan fortfarande vara den enda som är satt i driftsmiljön.
 	return normalizeApiKey(env.ANTHROPIC_API_KEY || env.CLAUDE_API_KEY || env.STORIFY_API_KEY);
 }
 
-function createClient(credential: ClaudeCredential, timeoutMs: number): Anthropic | null {
-	const apiKey = resolveApiKey(credential);
+function createClient(timeoutMs: number): Anthropic | null {
+	const apiKey = resolveApiKey();
 	if (!apiKey) return null;
 
 	// SDK:ns timeout anges i millisekunder i TypeScript.
@@ -93,7 +85,6 @@ export type ClaudeRequest = {
 	 */
 	maxTokens: number;
 	timeoutMs?: number;
-	credential?: ClaudeCredential;
 	/**
 	 * Styr hur djupt modellen tänker. 'low' håller latensen nere för korta,
 	 * väldefinierade uppgifter; höj för uppgifter som kräver mer resonemang.
@@ -111,7 +102,7 @@ const DEFAULT_TIMEOUT_MS = 20_000;
 export async function callClaude(request: ClaudeRequest): Promise<string | null> {
 	const model = request.model ?? CLAUDE_MODELS.deep;
 	const timeoutMs = request.timeoutMs ?? DEFAULT_TIMEOUT_MS;
-	const client = createClient(request.credential ?? 'default', timeoutMs);
+	const client = createClient(timeoutMs);
 
 	if (!client) {
 		console.error(`[ai:error] ${request.label} saknar API-nyckel`);
@@ -159,7 +150,7 @@ export async function* streamClaudeText(
 ): AsyncGenerator<string, void, unknown> {
 	const model = request.model ?? CLAUDE_MODELS.deep;
 	const timeoutMs = request.timeoutMs ?? DEFAULT_TIMEOUT_MS;
-	const client = createClient(request.credential ?? 'default', timeoutMs);
+	const client = createClient(timeoutMs);
 
 	if (!client) {
 		throw new Error(`${request.label} saknar API-nyckel`);

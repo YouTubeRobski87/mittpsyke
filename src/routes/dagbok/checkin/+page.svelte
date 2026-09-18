@@ -108,7 +108,6 @@
 	const DIARY_IMAGE_COMPRESSED_TYPE = 'image/jpeg';
 	const fallbackDailyQuestion = 'Vad behöver få lite mer plats hos dig idag?';
 	const entriesPerPage = 10;
-	const showGuidedDiaryPath = false;
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -1322,15 +1321,6 @@
 						<span class="diary-path-title">Skriv själv</span>
 						<span class="diary-path-copy">Fri text i din egen takt, direkt i dagboken.</span>
 					</div>
-					{#if showGuidedDiaryPath}
-						<div class="diary-path-card diary-path-card--preview diary-path-card--guided">
-							<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
-								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-							</span>
-							<span class="diary-path-title">Dagbok med olika stilar</span>
-							<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
-						</div>
-					{/if}
 				</div>
 			</section>
 
@@ -1411,17 +1401,6 @@
 								Svara på dagens fråga
 							</button>
 						</div>
-						{#if showGuidedDiaryPath}
-							<div class="diary-path-grid diary-path-grid--single mt-3">
-								<a href="/dagars-avtryck" class="diary-path-card diary-path-card--guided">
-									<span class="path-icon-wrap path-icon-wrap--guided" aria-hidden="true">
-										<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-									</span>
-									<span class="diary-path-title">Dagbok med olika stilar</span>
-									<span class="diary-path-copy">Välj en röst som guidar dig vidare med frågor i lugn takt.</span>
-								</a>
-							</div>
-						{/if}
 					</section>
 
 					<!-- Hämtar sin egen data från stats-timeline/heatmap, eftersom
@@ -2494,15 +2473,6 @@
 	}
 
 	/* Blå — Dagbok med olika stilar */
-	.diary-path-card--guided {
-		background:
-			linear-gradient(135deg, rgba(248, 250, 252, 0.92), rgba(241, 245, 249, 0.88)),
-			hsl(222 32% 97%);
-		border-color: rgba(148, 163, 184, 0.32);
-		border-left: 3px solid rgba(129, 140, 248, 0.42);
-		box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
-	}
-
 	.diary-path-card--preview {
 		cursor: default;
 	}
@@ -2510,12 +2480,6 @@
 	.diary-path-card--write:hover:not(.diary-path-card--preview) {
 		border-color: hsl(214 78% 68%);
 		box-shadow: 0 14px 30px hsl(214 72% 44% / 0.18);
-		transform: translateY(-1px);
-	}
-
-	.diary-path-card--guided:hover:not(.diary-path-card--preview) {
-		border-color: rgba(129, 140, 248, 0.5);
-		box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
 		transform: translateY(-1px);
 	}
 
@@ -2539,11 +2503,6 @@
 	.path-icon-wrap--write {
 		background: hsl(214 82% 92%);
 		color: hsl(214 68% 36%);
-	}
-
-	.path-icon-wrap--guided {
-		background: hsl(232 34% 94%);
-		color: hsl(230 34% 42%);
 	}
 
 	.diary-path-badge {
@@ -2580,15 +2539,6 @@
 		box-shadow: 0 16px 34px rgba(37, 99, 235, 0.22);
 	}
 
-	:global(.dark) .diary-path-card--guided {
-		background:
-			linear-gradient(135deg, rgba(30, 41, 59, 0.78), rgba(15, 23, 42, 0.9)),
-			hsl(222 24% 13%);
-		border-color: rgba(148, 163, 184, 0.22);
-		border-left: 3px solid rgba(129, 140, 248, 0.45);
-		box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
-	}
-
 	:global(.dark) .daily-question-panel {
 		border-color: rgba(96, 165, 250, 0.2);
 		background:
@@ -2599,11 +2549,6 @@
 	:global(.dark) .path-icon-wrap--write {
 		background: hsl(214 34% 22%);
 		color: hsl(214 78% 72%);
-	}
-
-	:global(.dark) .path-icon-wrap--guided {
-		background: hsl(232 22% 20%);
-		color: hsl(232 48% 76%);
 	}
 
 	:global(.dark) .diary-path-badge {

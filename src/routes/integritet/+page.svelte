@@ -127,8 +127,8 @@
 		kaka som upphör av sig själv inom ett dygn, och försvinner direkt om du rensar webbläsarens kakor.
 		Är du inloggad återkallar du i stället i
 		<a href="/dashboard/installningar" class="underline hover:no-underline">kontoinställningarna</a>,
-		där du var för sig kan dra tillbaka samtycket för känsliga uppgifter, dagbokens AI-reflektioner,
-		Dagens fråga och Storify. Återkallar du samtycket för känsliga uppgifter stängs även AI-chatten
+		där du var för sig kan dra tillbaka samtycket för känsliga uppgifter, dagbokens AI-reflektioner
+		och Dagens fråga. Återkallar du samtycket för känsliga uppgifter stängs även AI-chatten
 		tills du lämnar ett nytt samtycke.
 	</p>
 
