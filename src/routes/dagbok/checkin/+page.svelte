@@ -1428,9 +1428,9 @@
 					     `entries` bara är den paginerade listan. -->
 					<DiaryMoodTimeline />
 
-					<section class="auth-panel daily-question-panel" aria-label="Dagens fråga">
+					<section class="auth-panel daily-question-panel" aria-label="En fråga att skriva utifrån">
 						<div>
-							<p class="daily-question-kicker">Dagens fråga</p>
+							<p class="daily-question-kicker">En fråga att skriva utifrån</p>
 							{#if dailyQuestionLoading && !dailyQuestion && !draftPromptQuestion}
 								<div class="daily-question-skeleton" aria-label="Hämtar dagens fråga"></div>
 							{:else}
@@ -1524,7 +1524,7 @@
 							<div class="editor-card">
 								{#if hasPromptQuestion}
 									<div class="editor-prompt-question">
-										<p class="editor-prompt-label">Dagens fråga</p>
+										<p class="editor-prompt-label">En fråga att skriva utifrån</p>
 										<blockquote>{draftPromptQuestion}</blockquote>
 									</div>
 								{/if}
