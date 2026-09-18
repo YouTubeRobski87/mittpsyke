@@ -10,7 +10,12 @@ import {
 	sanitizeAnalyticsReferrer,
 	shouldLoadAhrefs
 } from './analytics';
-import { consumeDiaryCheckinPrefill, writeDiaryCheckinPrefill } from './diary-draft';
+import {
+	consumeDiaryCheckinPrefill,
+	consumeDiaryPromptHandoff,
+	writeDiaryCheckinPrefill,
+	writeDiaryPromptHandoff
+} from './diary-draft';
 
 const projectFile = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
@@ -29,6 +34,22 @@ describe('privacy-safe navigation and analytics', () => {
 		writeDiaryCheckinPrefill('  Ofarlig testtext  ', storage);
 		expect(consumeDiaryCheckinPrefill(storage)).toBe('Ofarlig testtext');
 		expect(consumeDiaryCheckinPrefill(storage)).toBe('');
+	});
+
+	it('hands a write prompt (Spegelvattnets fråga) over once, separate from prefill text', () => {
+		const storage = memoryStorage();
+		writeDiaryPromptHandoff('  Vad vill du ta med dig från veckan?  ', storage);
+		expect(consumeDiaryPromptHandoff(storage)).toBe('Vad vill du ta med dig från veckan?');
+		// Engångsvärde: en andra läsning ger inget.
+		expect(consumeDiaryPromptHandoff(storage)).toBe('');
+		// Skild nyckel från den fria textprefillen.
+		expect(consumeDiaryCheckinPrefill(storage)).toBe('');
+	});
+
+	it('skriver aldrig en tom eller bara-blanksteg-fråga till prompt-handoffen', () => {
+		const storage = memoryStorage();
+		writeDiaryPromptHandoff('   ', storage);
+		expect(consumeDiaryPromptHandoff(storage)).toBe('');
 	});
 
 	it('strips query strings and fragments from GA page fields', () => {

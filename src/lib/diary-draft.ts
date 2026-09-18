@@ -38,6 +38,13 @@ const DIARY_DRAFT_HANDOFF_KEY = 'mittpsyke_diary_draft_handoff';
 /** Engångsöverlämning till den inloggade dagbokseditorn, utan URL-läckage. */
 const DIARY_CHECKIN_PREFILL_KEY = 'mittpsyke_diary_checkin_prefill';
 
+/**
+ * Engångsöverlämning av en skrivfråga (t.ex. från Spegelvattnet) som ska visas
+ * separat i editorn som kontext — aldrig skrivas in i textfältet. Skild från
+ * `DIARY_CHECKIN_PREFILL_KEY`, som bär användarens egna ord.
+ */
+const DIARY_PROMPT_HANDOFF_KEY = 'mittpsyke_diary_prompt_handoff';
+
 type SessionStorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
 function readLocal(key: string): string | null {
@@ -183,6 +190,38 @@ export function consumeDiaryCheckinPrefill(
 	try {
 		const value = storage.getItem(DIARY_CHECKIN_PREFILL_KEY);
 		storage.removeItem(DIARY_CHECKIN_PREFILL_KEY);
+		return value?.trim() ?? '';
+	} catch {
+		return '';
+	}
+}
+
+/**
+ * Lämnar över en skrivfråga till dagbokseditorn, utan query string, historik
+ * eller referrer. Frågan visas som separat kontext i editorn — den skrivs
+ * aldrig in i textfältet, så den sparas bara om användaren själv skriver in
+ * den. Värdet är flikbundet och konsumeras en gång.
+ */
+export function writeDiaryPromptHandoff(
+	question: string,
+	storage: SessionStorageLike | null = browser ? window.sessionStorage : null
+) {
+	const trimmed = question.trim();
+	if (!trimmed || !storage) return;
+	try {
+		storage.setItem(DIARY_PROMPT_HANDOFF_KEY, trimmed);
+	} catch {
+		// Om sessionStorage saknas navigerar användaren vidare utan frågan.
+	}
+}
+
+export function consumeDiaryPromptHandoff(
+	storage: SessionStorageLike | null = browser ? window.sessionStorage : null
+): string {
+	if (!storage) return '';
+	try {
+		const value = storage.getItem(DIARY_PROMPT_HANDOFF_KEY);
+		storage.removeItem(DIARY_PROMPT_HANDOFF_KEY);
 		return value?.trim() ?? '';
 	} catch {
 		return '';

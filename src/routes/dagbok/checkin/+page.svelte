@@ -20,7 +20,12 @@
 	import VideoRecorder from '$lib/components/VideoRecorder.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
 	import { scrollIntoViewWithMotionPreference } from '$lib/scroll';
-	import { clearDiaryDraft, consumeDiaryCheckinPrefill, readDiaryDraft } from '$lib/diary-draft';
+	import {
+		clearDiaryDraft,
+		consumeDiaryCheckinPrefill,
+		consumeDiaryPromptHandoff,
+		readDiaryDraft
+	} from '$lib/diary-draft';
 	import {
 		awardMilestone,
 		consumePendingMilestone,
@@ -1171,7 +1176,10 @@
 
 		const prefill =
 			consumeDiaryCheckinPrefill() || $page.url.searchParams.get('prefill')?.trim() || '';
-		const promptQuestion = $page.url.searchParams.get('prompt')?.trim();
+		// Spegelvattnets fråga (och andra skrivfrågor utan URL) tas emot här. Den
+		// visas som separat kontext i editorn nedan — aldrig som `prefill`-text.
+		const promptQuestion =
+			consumeDiaryPromptHandoff() || $page.url.searchParams.get('prompt')?.trim();
 		const promptDailyQuestionId = $page.url.searchParams.get('daily_question_id')?.trim();
 		let shouldOpenWriteEditor = false;
 		if (prefill) {

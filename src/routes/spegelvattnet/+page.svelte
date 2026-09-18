@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
-	import { writeDiaryCheckinPrefill } from '$lib/diary-draft';
+	import { writeDiaryPromptHandoff } from '$lib/diary-draft';
 
 	type Reflection = {
 		id: string;
@@ -30,7 +30,9 @@
 	const diaryHref = '/dagbok/checkin#skriv-sjalv';
 
 	function prepareDiaryQuestion() {
-		writeDiaryCheckinPrefill(`${openQuestion}\n\n`);
+		// Frågan ska inspirera, inte bli en del av användarens egen text — den
+		// visas separat i editorn i stället för att skrivas in i textfältet.
+		writeDiaryPromptHandoff(openQuestion);
 	}
 	const weekLabel = $derived(reflection ? formatWeekLabel(reflection.week_start) : '');
 
