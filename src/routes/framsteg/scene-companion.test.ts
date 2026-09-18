@@ -50,4 +50,17 @@ describe('Framstegs scen och följeslagare', () => {
 		expect(scene).toContain('progress-ripple progress-ripple--two');
 		expect(scene).toContain('class="progress-cabin-link"');
 	});
+
+	it('låter stugans fönsterljus vara ett osynligt lager, bara på kväll och natt', () => {
+		// Eget dekorativt lager - aldrig en del av klickytan och aldrig klickbart.
+		expect(scene).toContain('<span class="progress-cabin-light" aria-hidden="true"></span>');
+		const light = route.slice(route.indexOf('.progress-cabin-light {'));
+		expect(light).toContain('pointer-events: none;');
+		expect(route).toContain(".companion-media[data-time='evening'] .progress-cabin-light,");
+		expect(route).toContain(".companion-media[data-time='night'] .progress-cabin-light {");
+		// Reduced motion: ingen variation, bara en statisk nivå.
+		expect(route).toMatch(
+			/@media \(prefers-reduced-motion: reduce\) \{\s*\.progress-cabin-light \{[\s\S]*?animation: none;/
+		);
+	});
 });

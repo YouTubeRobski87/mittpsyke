@@ -1175,6 +1175,9 @@
 							/>
 						{/each}
 					{/if}
+				<!-- Stugans fönsterljus andas svagt på kväll och natt. Eget, osynligt
+					 lager i bildens procent - rör aldrig klickytan nedan. -->
+				<span class="progress-cabin-light" aria-hidden="true"></span>
 				{#if cabinPlacement}
 					<!-- Stugan leder direkt in för inloggade. Gamla /dashboard gav gästen
 						 en levande förhandsvisning, men den ytan avvecklas - så gästen
@@ -2617,6 +2620,101 @@
 	.companion-media[data-time='evening'] :global(.water-surface) {
 		/* Ca 55 %, mellan eftermiddagens 100 % och nattens 30 %. */
 		opacity: calc(var(--opacity, 0.34) * 0.55);
+	}
+
+	/* Stugans fönsterljus: ljuset är redan inbakat i kvälls- och nattbilderna.
+	   Det här lagret lägger bara till en mycket svag, långsam variation ovanpå,
+	   så stugan känns bebodd - inget blinkande, ingen glöd utanför stugan.
+
+	   Positionerna är procent av originalbilden (1672x941). Scenrutan är låst
+	   till bildens proportioner, så procenten stämmer på alla bredder och ljuset
+	   blir aldrig starkare relativt scenen på mobil. Ellipsernas radier är
+	   mindre än fönstren, så ljuset stannar inom glaset.
+	     vänster fönster  x 188-204, y 345-369   (::before)
+	     litet fönster    x 248-258, y 345-367   (::after)
+	     dörr             x 264-286, y 341-392   (::after)
+	     höger fönster    x 288-296, y 354-369   (::after)
+	     farstubron       x 267-350, y 399-411   (::after, dörrens sken)
+
+	   Screen-blandningen ligger på själva lagret (det har egen z-index och blir
+	   annars en isolerad grupp). Lagrets opacitet tonar in/ut med fasen på samma
+	   tid som scenbytet; pseudo-elementen står för den långsamma variationen.
+	   pointer-events: none och ingen egen yta - klickytan påverkas inte. */
+	.progress-cabin-light {
+		position: absolute;
+		inset: 0;
+		z-index: var(--scene-midground);
+		pointer-events: none;
+		mix-blend-mode: screen;
+		opacity: 0;
+		transition: opacity var(--progress-scene-crossfade-duration, 6000ms) ease;
+	}
+
+	.companion-media[data-time='evening'] .progress-cabin-light,
+	.companion-media[data-time='night'] .progress-cabin-light {
+		opacity: 1;
+	}
+
+	.progress-cabin-light::before,
+	.progress-cabin-light::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		opacity: 0.7;
+	}
+
+	.progress-cabin-light::before {
+		background: radial-gradient(
+			0.46% 1.2% at 11.72% 37.94%,
+			rgb(255 200 130 / 0.2),
+			rgb(255 200 130 / 0.12) 55%,
+			transparent
+		);
+		animation: cabinWindowLight 29s ease-in-out -7s infinite;
+	}
+
+	.progress-cabin-light::after {
+		background:
+			radial-gradient(0.28% 1.1% at 15.13% 37.83%, rgb(255 200 130 / 0.2), rgb(255 200 130 / 0.12) 55%, transparent),
+			radial-gradient(0.62% 2.6% at 16.45% 38.95%, rgb(255 200 130 / 0.2), rgb(255 200 130 / 0.12) 55%, transparent),
+			radial-gradient(0.22% 0.75% at 17.46% 38.42%, rgb(255 200 130 / 0.18), rgb(255 200 130 / 0.1) 55%, transparent),
+			radial-gradient(2.4% 0.7% at 18.42% 43.04%, rgb(255 200 130 / 0.12), rgb(255 200 130 / 0.06) 55%, transparent);
+		animation: cabinWindowLight 23s ease-in-out -15s infinite;
+	}
+
+	/* Ojämna steg och långa platåer, så det aldrig blir en jämn puls: ljuset
+	   ligger nästan stilla, stiger lite, dröjer, sjunker. 0 % och 100 % är lika. */
+	@keyframes cabinWindowLight {
+		0%,
+		14% {
+			opacity: 0.62;
+		}
+		33% {
+			opacity: 0.9;
+		}
+		44%,
+		58% {
+			opacity: 0.84;
+		}
+		76% {
+			opacity: 0.5;
+		}
+		100% {
+			opacity: 0.62;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.progress-cabin-light {
+			transition: none;
+		}
+
+		/* Ingen variation - bara en statisk, lågmäld varm nivå. */
+		.progress-cabin-light::before,
+		.progress-cabin-light::after {
+			animation: none;
+			opacity: 0.7;
+		}
 	}
 
 	/* Genvägen hem till stugan. Ytan följer bildens scengeometri via
