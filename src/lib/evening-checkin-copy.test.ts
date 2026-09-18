@@ -52,4 +52,11 @@ describe('Kvällsincheckningens copy', () => {
 			expect(copy).not.toMatch(forbidden);
 		}
 	});
+
+	it('lovar ingen återblick som produkten inte har', () => {
+		// Incheckningens tema, tanke och kvällsval läses i dag inte av Framsteg
+		// eller någon annan analys. Copyn beskriver sparvalet, inte en payoff.
+		expect(flow).not.toContain('kan få betydelse när du tittar tillbaka');
+		expect(flow).toContain('Ingenting sparas förrän du själv väljer det.');
+	});
 });

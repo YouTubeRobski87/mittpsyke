@@ -177,7 +177,9 @@
 		{#if step === 1}
 			<div class="evening-step-content">
 				<h2 id="evening-flow-title" bind:this={stepHeading} tabindex="-1">Hur är det ikväll?</h2>
-				<p class="evening-hint">Det du väljer att spara här kan få betydelse när du tittar tillbaka.</p>
+				<!-- Beskriver bara det som faktiskt händer. Innehållet läses i dag inte av
+					 någon återblick, så texten lovar ingen - se evening-checkin-copy.test.ts. -->
+				<p class="evening-hint">Ingenting sparas förrän du själv väljer det.</p>
 				<div class="evening-options" aria-label="Välj det som passar bäst">
 					{#each EVENING_THEMES as theme}
 						<button
