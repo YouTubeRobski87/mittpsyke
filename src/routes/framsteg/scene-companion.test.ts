@@ -64,6 +64,36 @@ describe('Framstegs scen och följeslagare', () => {
 		);
 	});
 
+	it('graderar följeslagaren efter scenens ljus på kväll och natt', () => {
+		// CompanionPose.svelte har egna dygnsgrader, men routens egen regel för
+		// .companion-pose-image är mer specifik och vinner. Utan raderna nedan
+		// blir Balder dagsljusbelyst i en mörk scen - en ljus fläck, tydligast
+		// med den ljusa bear-sleeping.png som är den enda nattposen. Vid natt är
+		// dessutom .progress-scene-tone opacity 0, så inget annat lager mörkar
+		// honom.
+		for (const band of ['evening', 'night']) {
+			expect(route).toContain(
+				`.companion-media[data-time='${band}'] :global(.progress-companion-pose) {`
+			);
+		}
+
+		// Graderingen skrivs som variabel, inte som filter: annars krävs en
+		// specificitetsstrid mot regeln som sätter filter på bilden.
+		const grades = route.slice(route.indexOf(".companion-media[data-time='evening'] :global(.progress-companion-pose) {"));
+		expect(grades.slice(0, 400)).toContain('--companion-grade:');
+
+		// Kvällen ska vara mörkare än grundgraderingen, och natten mörkast.
+		const brightnessFor = (selector: string) => {
+			const rule = route.slice(route.indexOf(selector));
+			return Number(rule.slice(0, 600).match(/brightness\(([\d.]+)\)/)?.[1]);
+		};
+		const day = brightnessFor('.companion-media :global(.progress-companion-pose) {');
+		const evening = brightnessFor(".companion-media[data-time='evening'] :global(.progress-companion-pose) {");
+		const night = brightnessFor(".companion-media[data-time='night'] :global(.progress-companion-pose) {");
+		expect(evening).toBeLessThan(day);
+		expect(night).toBeLessThan(evening);
+	});
+
 	it('matar världen med dagboksdagar, aldrig med humör', () => {
 		const world = route.slice(route.indexOf('const worldPresence = $derived('), route.indexOf('const worldStage ='));
 		expect(world).toContain('activityDays: data.diaryActivityDays');

@@ -2910,6 +2910,25 @@
 		--companion-grade: saturate(0.72) contrast(0.9) brightness(0.92) sepia(0.12);
 	}
 
+	/* Balder följer scenens ljus på kvällen och natten.
+	   CompanionPose.svelte har egna dygnsgrader, men regeln nedan
+	   (.companion-media ... .companion-pose-image) är mer specifik och vinner,
+	   så utan de här raderna blir han dagsljusbelyst dygnet runt. Vid natt är
+	   dessutom .progress-scene-tone opacity 0, så inget annat lager mörkar
+	   honom - han blev en ljus fläck i en mörk scen, tydligast med den ljusa
+	   bear-sleeping.png som är den enda nattposen.
+	   Variabeln skrivs om i stället för filtret: då behövs ingen
+	   specificitetsstrid med regeln nedan, bara ett attribut extra.
+	   Dagens band (morgon, dag, eftermiddag) lämnas orörda - där ligger
+	   grundgraderingen redan rätt mot bilden. */
+	.companion-media[data-time='evening'] :global(.progress-companion-pose) {
+		--companion-grade: saturate(0.6) contrast(0.9) brightness(0.62) sepia(0.14);
+	}
+
+	.companion-media[data-time='night'] :global(.progress-companion-pose) {
+		--companion-grade: saturate(0.46) contrast(0.88) brightness(0.38) sepia(0.12);
+	}
+
 	.companion-media :global(.progress-companion-pose[data-companion] .companion-pose-image) {
 		filter: var(--companion-grade) drop-shadow(0 8px 10px rgb(32 26 16 / 0.28));
 		-webkit-mask-image: none;
