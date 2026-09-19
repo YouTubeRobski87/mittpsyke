@@ -80,7 +80,9 @@ describe('Framstegsscenen runt stuglänken', () => {
 	});
 
 	it('behåller WorldMarks på samma bildkoordinater när mobilscenen inte beskärs', () => {
-		expect(route).toContain('const fullSceneMarks = getWorldMarks(worldPresence, { timeOfDay })');
+		expect(route).toContain(
+			'const fullSceneMarks = getWorldMarks(worldPresence, { timeOfDay, unlocked: unlockedWorldMarks })'
+		);
 		expect(route).toContain('return fullSceneMarks.filter((mark) => narrowMarkIds.has(mark.id))');
 	});
 

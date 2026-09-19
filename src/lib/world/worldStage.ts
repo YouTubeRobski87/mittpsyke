@@ -22,8 +22,6 @@ export type WorldStage = 0 | 1 | 2 | 3 | 4 | 5;
 export interface WorldPresenceInput {
 	/** Sparade dagbokstexter, hela historiken. */
 	entryCount?: unknown;
-	/** Måenderegistreringar, hela historiken. */
-	moodEntryCount?: unknown;
 	/** Besvarade följeslagarfrågor. */
 	reflectionCount?: unknown;
 	/** Unika dagar med någon aktivitet. */
@@ -38,19 +36,21 @@ export interface WorldPresenceInput {
 
 export interface WorldPresence {
 	entryCount: number;
-	moodEntryCount: number;
 	reflectionCount: number;
 	activeDays: number;
 	activeWeeks: number;
 	activeMonths: number;
 	accountAgeDays: number;
-	/** Summan av allt användaren faktiskt lämnat efter sig. */
+	/**
+	 * Summan av de handlingar användaren faktiskt gjort: sparade dagboksinlägg
+	 * och besvarade följeslagarfrågor. Ett humörvärde är en egenskap hos ett
+	 * inlägg, inte en egen handling, och räknas därför inte en gång till.
+	 */
 	registrationCount: number;
 }
 
 export const EMPTY_WORLD_PRESENCE: WorldPresence = {
 	entryCount: 0,
-	moodEntryCount: 0,
 	reflectionCount: 0,
 	activeDays: 0,
 	activeWeeks: 0,
@@ -66,17 +66,15 @@ function toCount(value: unknown): number {
 
 export function normalizeWorldPresence(input: WorldPresenceInput | null | undefined): WorldPresence {
 	const entryCount = toCount(input?.entryCount);
-	const moodEntryCount = toCount(input?.moodEntryCount);
 	const reflectionCount = toCount(input?.reflectionCount);
 	return {
 		entryCount,
-		moodEntryCount,
 		reflectionCount,
 		activeDays: toCount(input?.activeDays),
 		activeWeeks: toCount(input?.activeWeeks),
 		activeMonths: toCount(input?.activeMonths),
 		accountAgeDays: toCount(input?.accountAgeDays),
-		registrationCount: entryCount + moodEntryCount + reflectionCount
+		registrationCount: entryCount + reflectionCount
 	};
 }
 
@@ -100,15 +98,14 @@ function isoWeekKey(dateKey: string): string | null {
 }
 
 /**
- * Slår ihop de datakällor Framsteg redan har till ett närvarounderlag. Dagar,
- * veckor och månader räknas på unionen av skrivdagar och måendedagar, så en dag
- * med bara en registrering räknas lika mycket som en dag med en lång text.
+ * Slår ihop Framstegs underlag till ett närvarounderlag. Dagar, veckor och
+ * månader räknas på dagar med minst ett sparat dagboksinlägg (`activityDays`,
+ * datum -> antal inlägg). Humörvärde krävs inte, och flera inlägg samma dag är
+ * en aktiv dag. Humör går aldrig in här (regel 1 ovan).
  */
 export function buildWorldPresence(input: {
-	heatmapData?: Record<string, number> | null;
-	moodDates?: readonly string[] | null;
+	activityDays?: Record<string, number> | null;
 	entryCount?: unknown;
-	moodEntryCount?: unknown;
 	reflectionCount?: unknown;
 	accountCreatedAt?: string | Date | null;
 	now?: Date;
@@ -116,13 +113,10 @@ export function buildWorldPresence(input: {
 	const now = input.now ?? new Date();
 	const days = new Set<string>();
 
-	for (const [dateKey, count] of Object.entries(input.heatmapData ?? {})) {
+	for (const [dateKey, count] of Object.entries(input.activityDays ?? {})) {
 		if (!DATE_PATTERN.test(dateKey)) continue;
 		if (!Number.isFinite(count) || count <= 0) continue;
 		days.add(dateKey);
-	}
-	for (const dateKey of input.moodDates ?? []) {
-		if (typeof dateKey === 'string' && DATE_PATTERN.test(dateKey)) days.add(dateKey);
 	}
 
 	const weeks = new Set<string>();
@@ -135,7 +129,6 @@ export function buildWorldPresence(input: {
 
 	return normalizeWorldPresence({
 		entryCount: input.entryCount,
-		moodEntryCount: input.moodEntryCount,
 		reflectionCount: input.reflectionCount,
 		activeDays: days.size,
 		activeWeeks: weeks.size,
@@ -378,6 +371,24 @@ export interface WorldMarkOptions {
 	/** Seed för besökets små variationer. Utelämnad = inga förskjutningar alls. */
 	visitSeed?: string | null;
 	narrow?: boolean;
+	/**
+	 * Spår som redan vuxit fram tidigare (se $lib/world/worldProgress). De visas
+	 * även om dagens underlag inte längre når villkoret - världen är kumulativ
+	 * och ett spår låser sig aldrig igen. Natt- och smalvy-reglerna gäller ändå,
+	 * eftersom de avgör var spåret får synas, inte om det finns.
+	 */
+	unlocked?: Iterable<WorldMarkId>;
+}
+
+/** Alla spår som finns, i renderingsordning. */
+export const WORLD_MARK_IDS: readonly WorldMarkId[] = WORLD_MARK_DEFINITIONS.map((mark) => mark.id);
+
+/**
+ * Spåren som dagens underlag ger rätt till, oberoende av tid på dygnet och
+ * vybredd. Det är vad som räknas som "upplåst" och sparas beständigt.
+ */
+export function getEligibleWorldMarkIds(presence: WorldPresence): WorldMarkId[] {
+	return WORLD_MARK_DEFINITIONS.filter((mark) => mark.appears(presence)).map((mark) => mark.id);
 }
 
 function hash(value: string): number {
@@ -417,8 +428,9 @@ export function getWorldMarks(
 	presence: WorldPresence,
 	options: WorldMarkOptions = {}
 ): WorldMark[] {
+	const unlocked = new Set(options.unlocked ?? []);
 	return WORLD_MARK_DEFINITIONS.filter((mark) => {
-		if (!mark.appears(presence)) return false;
+		if (!mark.appears(presence) && !unlocked.has(mark.id)) return false;
 		if (mark.nightOnly && options.timeOfDay !== 'night') return false;
 		if (mark.hideOnNarrow && options.narrow) return false;
 		return true;

@@ -37,12 +37,10 @@ function createStorage(initial: Record<string, string> = {}): WorldVisitStorageL
 }
 
 describe('närvarounderlaget', () => {
-	it('räknar dagar, veckor och månader på både skrivdagar och måendedagar', () => {
+	it('räknar dagar, veckor och månader på dagar med sparade dagboksinlägg', () => {
 		const result = buildWorldPresence({
-			heatmapData: { '2026-08-03': 2, '2026-08-04': 1, '2026-07-20': 1 },
-			moodDates: ['2026-08-04', '2026-08-11', '2026-06-02'],
-			entryCount: 4,
-			moodEntryCount: 3,
+			activityDays: { '2026-06-02': 1, '2026-07-20': 1, '2026-08-03': 2, '2026-08-04': 1, '2026-08-11': 1 },
+			entryCount: 6,
 			reflectionCount: 2,
 			accountCreatedAt: '2026-05-01T00:00:00.000Z',
 			now: new Date('2026-08-21T12:00:00.000Z')
@@ -51,20 +49,49 @@ describe('närvarounderlaget', () => {
 		expect(result.activeDays).toBe(5);
 		expect(result.activeWeeks).toBe(4);
 		expect(result.activeMonths).toBe(3);
-		expect(result.registrationCount).toBe(9);
+		expect(result.registrationCount).toBe(8);
 		expect(result.accountAgeDays).toBe(112);
 	});
 
 	it('ignorerar skräpvärden i stället för att välta', () => {
 		const result = buildWorldPresence({
-			heatmapData: { 'inte-ett-datum': 3, '2026-08-03': 0, '2026-08-04': 1 },
-			moodDates: ['x', '2026-08-04'],
+			activityDays: { 'inte-ett-datum': 3, '2026-08-03': 0, '2026-08-04': 1 },
 			entryCount: -5,
-			moodEntryCount: Number.NaN,
+			reflectionCount: Number.NaN,
 			accountCreatedAt: 'trasigt'
 		});
 
-		expect(result).toMatchObject({ activeDays: 1, entryCount: 0, moodEntryCount: 0, accountAgeDays: 0 });
+		expect(result).toMatchObject({ activeDays: 1, entryCount: 0, reflectionCount: 0, accountAgeDays: 0 });
+	});
+
+	// Regression: världen läste tidigare aktiva dagar bara från humördatum, så
+	// inlägg utan humörvärde räknades aldrig som återkomst.
+	it('räknar ett inlägg utan humörvärde som en aktiv dag', () => {
+		const result = buildWorldPresence({ activityDays: { '2026-09-01': 1 }, entryCount: 1 });
+
+		expect(result.activeDays).toBe(1);
+		expect(result.activeWeeks).toBe(1);
+		expect(getWorldStage(result)).toBe(1);
+	});
+
+	it('räknar flera inlägg samma dag som en aktiv dag', () => {
+		const result = buildWorldPresence({ activityDays: { '2026-09-01': 2 }, entryCount: 2 });
+
+		expect(result.activeDays).toBe(1);
+		expect(result.registrationCount).toBe(2);
+	});
+
+	// Regression: registrationCount var tidigare inlägg + humörvärden + svar, så
+	// ett inlägg med humörvärde gav två poäng för samma handling.
+	it('ger ett inlägg med humörvärde exakt en registrering', () => {
+		const result = normalizeWorldPresence({ entryCount: 10 });
+
+		expect(result.registrationCount).toBe(10);
+		expect(Object.keys(result)).not.toContain('moodEntryCount');
+	});
+
+	it('räknar svar på dagens fråga som egna registreringar', () => {
+		expect(normalizeWorldPresence({ entryCount: 10, reflectionCount: 6 }).registrationCount).toBe(16);
 	});
 
 	it('ger ett tomt underlag utan data alls', () => {
@@ -78,7 +105,7 @@ describe('miljöstadiet', () => {
 	it('börjar på noll och tar första steget vid första aktiviteten', () => {
 		expect(getWorldStage(presence())).toBe(0);
 		expect(getWorldStage(presence({ activeDays: 1 }))).toBe(1);
-		expect(getWorldStage(presence({ moodEntryCount: 1 }))).toBe(1);
+		expect(getWorldStage(presence({ reflectionCount: 1 }))).toBe(1);
 	});
 
 	it('följer kontinuitet, inte sammanhängande streaks', () => {

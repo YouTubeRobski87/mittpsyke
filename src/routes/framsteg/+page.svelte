@@ -49,7 +49,9 @@
 		getWorldReturnCopy,
 		getWorldStage,
 		readLastVisit,
-		recordVisit
+		recordVisit,
+		type WorldMarkId,
+		type WorldStage
 	} from '$lib/world/worldStage';
 	import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
 	import {
@@ -281,6 +283,8 @@
 		profileTheme?: keyof typeof THEMES | null;
 		companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
 		companionDaily?: { answeredDayCount: number } | null;
+		diaryActivityDays?: Record<string, number>;
+		worldProgress?: { marks: WorldMarkId[]; stage: WorldStage } | null;
 		isAnonymous?: boolean;
 		/** Kontots skapandedatum. En av världens tidssignaler, aldrig visad som siffra. */
 		accountCreatedAt?: string | null;
@@ -463,20 +467,27 @@
 
 	// ── Världens långsamma utveckling ──
 	// Underlaget är enbart tid, återkomst och aktivitet. Inga humörvärden går in
-	// här: hur användaren mår får aldrig avgöra hur platsen ser ut.
+	// här: hur användaren mår får aldrig avgöra hur platsen ser ut, och ett
+	// humörvärde ger ingen extra tillväxt ovanpå inlägget det hör till.
+	// Aktiva dagar kommer från serverns dagboksdatum - varje dag med minst ett
+	// sparat inlägg räknas, med eller utan humörvärde.
 	const worldPresence = $derived(
 		isAnonymous
 			? buildWorldPresence({})
 			: buildWorldPresence({
-					heatmapData: loadedHeatmapData,
-					moodDates: loadedMoodSamples.map((sample) => sample.date),
+					activityDays: data.diaryActivityDays ?? {},
 					entryCount,
-					moodEntryCount: loadedMoodSamples.length,
 					reflectionCount: data.companionDaily?.answeredDayCount ?? 0,
 					accountCreatedAt: data.accountCreatedAt ?? null
 				})
 	);
-	const worldStage = $derived(getWorldStage(worldPresence));
+	// Världen är kumulativ: det sparade stadiet är ett golv och sparade spår
+	// finns kvar även om dagens underlag inte längre når villkoret
+	// ($lib/world/worldProgress, synkas i +page.server.ts).
+	const worldStage = $derived(
+		Math.max(getWorldStage(worldPresence), data.worldProgress?.stage ?? 0) as WorldStage
+	);
+	const unlockedWorldMarks = $derived(data.worldProgress?.marks ?? []);
 	// Ett besök ger samma små förskjutningar hela vägen; nästa besök ger andra.
 	let visitSeed = $state<string | null>(null);
 	let daysSinceLastVisit = $state<number | null>(null);
@@ -487,13 +498,15 @@
 	// brytpunkt i stället för att ligga på en fast pixelposition.
 	let sceneEl = $state<HTMLElement | null>(null);
 	const worldMarks = $derived.by(() => {
-		const fullSceneMarks = getWorldMarks(worldPresence, { timeOfDay });
+		const fullSceneMarks = getWorldMarks(worldPresence, { timeOfDay, unlocked: unlockedWorldMarks });
 		if (!isNarrowViewport) return fullSceneMarks;
 
 		// Mobilreglerna avgör fortfarande vilka små spår som får plats, men deras
 		// gamla crop-koordinater ska inte användas när hela sjöbilden visas.
 		const narrowMarkIds = new Set(
-			getWorldMarks(worldPresence, { timeOfDay, narrow: true }).map((mark) => mark.id)
+			getWorldMarks(worldPresence, { timeOfDay, narrow: true, unlocked: unlockedWorldMarks }).map(
+				(mark) => mark.id
+			)
 		);
 		return fullSceneMarks.filter((mark) => narrowMarkIds.has(mark.id));
 	});
@@ -523,7 +536,12 @@
 			features: { cloud: false, sun: false, moon: false }
 		})
 	);
-	const heatmapData = $derived(isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : loadedHeatmapData);
+	// Aktiv dag = minst ett sparat dagboksinlägg, samma källa som världen. Den
+	// gamla heatmapen hämtas inte längre och var därför alltid tom här, så
+	// "Vad det här bygger på" räknade bara dagar med humörvärde.
+	const heatmapData = $derived(
+		isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : (data.diaryActivityDays ?? {})
+	);
 	const moodSamples = $derived(loadedMoodSamples);
 	const moodTimeline = $derived(buildMoodTimelineView(moodSamples, selectedPeriod));
 	const periodAnalysis = $derived(buildPeriodAnalysis(moodSamples, selectedPeriod));

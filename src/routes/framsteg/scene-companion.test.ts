@@ -63,4 +63,24 @@ describe('Framstegs scen och följeslagare', () => {
 			/@media \(prefers-reduced-motion: reduce\) \{\s*\.progress-cabin-light \{[\s\S]*?animation: none;/
 		);
 	});
+
+	it('matar världen med dagboksdagar, aldrig med humör', () => {
+		const world = route.slice(route.indexOf('const worldPresence = $derived('), route.indexOf('const worldStage ='));
+		expect(world).toContain('activityDays: data.diaryActivityDays');
+		expect(world).not.toContain('moodDates');
+		expect(world).not.toContain('moodEntryCount');
+		expect(world).not.toContain('loadedMoodSamples');
+	});
+	it('räknar aktiva dagar i "Vad det här bygger på" på samma dagboksdagar som världen', () => {
+		expect(route).toContain('const heatmapData = $derived(');
+		const source = route.slice(route.indexOf('const heatmapData = $derived('), route.indexOf('const historyActivity ='));
+		expect(source).toContain('data.diaryActivityDays');
+		expect(source).not.toContain('loadedHeatmapData');
+		expect(route).toContain('buildHistoryActivity(heatmapData, moodSamples, selectedPeriod)');
+	});
+
+	it('låter sparade spår och sparat stadie finnas kvar i världen', () => {
+		expect(route).toContain('unlocked: unlockedWorldMarks');
+		expect(route).toContain('data.worldProgress?.stage ?? 0');
+	});
 });
