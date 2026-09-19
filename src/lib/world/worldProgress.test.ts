@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest';
 import {
 	WORLD_PROGRESS_METADATA_KEY,
 	WORLD_PROGRESS_VERSION,
+	WORLD_PROGRESS_V1_CUTOFF,
 	buildLegacyWorldPresence,
 	readWorldProgressState,
 	resolveWorldProgress,
+	shouldRunLegacyMigration,
 	type WorldProgressState
 } from './worldProgress';
 import { buildWorldPresence, getWorldMarks, getWorldStage, type WorldMarkId } from './worldStage';
@@ -153,5 +155,68 @@ describe('det sparade tillståndet', () => {
 			[WORLD_PROGRESS_METADATA_KEY]: { version: 1, marks: ['mushrooms', 'unicorn', 7], stage: 12 }
 		});
 		expect(state).toEqual({ version: 1, marks: ['mushrooms'], stage: 0 });
+	});
+});
+
+describe('shouldRunLegacyMigration', () => {
+	const cutoff = new Date('2026-09-01T00:00:00Z');
+
+	it('kör migrationen för konton skapade före lanseringen', () => {
+		expect(shouldRunLegacyMigration({ accountCreatedAt: '2026-08-31T23:59:59.999Z', cutoff })).toBe(
+			true
+		);
+	});
+
+	it('hoppar över migrationen för konton skapade efter lanseringen', () => {
+		expect(shouldRunLegacyMigration({ accountCreatedAt: '2026-09-01T00:00:00.001Z', cutoff })).toBe(
+			false
+		);
+	});
+
+	it('räknar exakt på gränsen som nytt konto, och gör det likadant varje gång', () => {
+		const exact = { accountCreatedAt: '2026-09-01T00:00:00.000Z', cutoff };
+		expect(shouldRunLegacyMigration(exact)).toBe(false);
+		expect(shouldRunLegacyMigration(exact)).toBe(false);
+		// Samma tidpunkt uttryckt i en annan tidszon ger samma svar: jämförelsen
+		// sker på absolut tid, inte på lokal kalenderdag.
+		expect(shouldRunLegacyMigration({ accountCreatedAt: '2026-09-01T02:00:00.000+02:00', cutoff })).toBe(
+			false
+		);
+		expect(shouldRunLegacyMigration({ accountCreatedAt: new Date('2026-09-01T00:00:00Z'), cutoff })).toBe(
+			false
+		);
+	});
+
+	it('kör migrationen när cutoffen inte är satt ännu', () => {
+		expect(shouldRunLegacyMigration({ accountCreatedAt: '2026-09-10T08:00:00Z', cutoff: null })).toBe(
+			true
+		);
+		expect(shouldRunLegacyMigration({ accountCreatedAt: '2026-09-10T08:00:00Z' })).toBe(true);
+	});
+
+	it('kör migrationen när kontots ålder inte går att fastställa', () => {
+		expect(shouldRunLegacyMigration({ accountCreatedAt: null, cutoff })).toBe(true);
+		expect(shouldRunLegacyMigration({ accountCreatedAt: 'inte ett datum', cutoff })).toBe(true);
+		expect(shouldRunLegacyMigration({ cutoff })).toBe(true);
+	});
+
+	it('cutoff-konstanten är satt till en giltig tidpunkt', () => {
+		expect(WORLD_PROGRESS_V1_CUTOFF).not.toBeNull();
+		expect(Number.isNaN((WORLD_PROGRESS_V1_CUTOFF as Date).getTime())).toBe(false);
+	});
+
+	// Samma tre fall som ovan, men mot det konstantvärde produktionen faktiskt
+	// kör på - inte mot en injicerad testtidpunkt.
+	it('det verkliga konstantvärdet delar konton på rätt sida gränsen', () => {
+		const live = WORLD_PROGRESS_V1_CUTOFF as Date;
+		const at = (offsetMs: number) => new Date(live.getTime() + offsetMs).toISOString();
+
+		expect(shouldRunLegacyMigration({ accountCreatedAt: at(-1), cutoff: live })).toBe(true);
+		expect(shouldRunLegacyMigration({ accountCreatedAt: at(0), cutoff: live })).toBe(false);
+		expect(shouldRunLegacyMigration({ accountCreatedAt: at(1), cutoff: live })).toBe(false);
+		// Ett konto från långt före lanseringen migreras fortfarande.
+		expect(shouldRunLegacyMigration({ accountCreatedAt: '2026-01-15T09:00:00Z', cutoff: live })).toBe(
+			true
+		);
 	});
 });

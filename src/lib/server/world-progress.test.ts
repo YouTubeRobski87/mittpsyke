@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { syncWorldProgress } from './world-progress';
-import { WORLD_PROGRESS_METADATA_KEY } from '$lib/world/worldProgress';
+import { WORLD_PROGRESS_METADATA_KEY, WORLD_PROGRESS_V1_CUTOFF } from '$lib/world/worldProgress';
 import { buildWorldPresence } from '$lib/world/worldStage';
 
 /** Supabase-attrapp: räknar diary-läsningar och fångar sparningar. */
@@ -51,11 +51,14 @@ function scenarioD() {
 	return { moodRows, activityDays, entryCount: 14, reflectionCount: 4 };
 }
 
-const user = (metadata: Record<string, unknown> = {}) => ({
+const user = (metadata: Record<string, unknown> = {}, createdAt = '2026-08-20T10:00:00.000Z') => ({
 	id: 'user-1',
 	user_metadata: metadata,
-	created_at: '2026-08-20T10:00:00.000Z'
+	created_at: createdAt
 });
+
+/** Lanseringstidpunkt i testerna. Produktionen kör på WORLD_PROGRESS_V1_CUTOFF. */
+const CUTOFF = new Date('2026-09-01T00:00:00Z');
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -132,5 +135,153 @@ describe('syncWorldProgress', () => {
 		});
 
 		expect(state.marks).toContain('mushrooms');
+	});
+});
+
+/**
+ * Migrations-cutoffen. Alla fall nedan kör samma underlag (scenario D), så den
+ * enda skillnaden mellan ett gammalt och ett nytt konto är kontots ålder.
+ * Svampen kräver 25 registreringar och är därför facit: den nya modellen ger 18
+ * och når den inte, den gamla ger 28 och gör det.
+ *
+ * Underlaget hålls medvetet identiskt även för det nya kontot, trots att dess
+ * dagar då ligger före kontots created_at. Det isolerar cutoffen som den enda
+ * variabeln; hur dagarna räknas testas i worldStage.test.ts.
+ */
+describe('syncWorldProgress - migrations-cutoff', () => {
+	function runScenarioD(createdAt: string, metadata: Record<string, unknown> = {}) {
+		const d = scenarioD();
+		const fake = fakeSupabase({ moodRows: d.moodRows });
+		const now = new Date('2026-09-19T12:00:00Z');
+		return {
+			...fake,
+			d,
+			state: syncWorldProgress({
+				supabase: fake.client,
+				user: user(metadata, createdAt),
+				presence: buildWorldPresence({
+					activityDays: d.activityDays,
+					entryCount: d.entryCount,
+					reflectionCount: d.reflectionCount,
+					accountCreatedAt: createdAt,
+					now
+				}),
+				entryCount: d.entryCount,
+				reflectionCount: d.reflectionCount,
+				now,
+				cutoff: CUTOFF
+			})
+		};
+	}
+
+	it('gammalt konto utan tillstånd: migrationen körs och den gamla modellen läses', async () => {
+		const run = runScenarioD('2026-08-20T10:00:00.000Z');
+		const state = await run.state;
+
+		expect(run.reads).toEqual(['diary']);
+		expect(state.marks).toContain('mushrooms');
+		expect(run.saves).toHaveLength(1);
+	});
+
+	it('nytt konto utan tillstånd: ingen humördata läses över huvud taget', async () => {
+		const run = runScenarioD('2026-09-10T08:00:00.000Z');
+		await run.state;
+
+		expect(run.reads).toEqual([]);
+	});
+
+	it('gammalt konto behåller spår som bara den gamla modellen gav', async () => {
+		const state = await runScenarioD('2026-08-20T10:00:00.000Z').state;
+
+		// 18 registreringar räcker inte i den nya modellen; spåret ärvs.
+		expect(state.marks).toContain('mushrooms');
+		expect(state.stage).toBe(4);
+	});
+
+	it('nytt konto får bara spår som den nya modellen ger', async () => {
+		const state = await runScenarioD('2026-09-10T08:00:00.000Z').state;
+
+		expect(state.marks).not.toContain('mushrooms');
+		// Exakt de spår scenario D ger utan humördubbelräkningen, i renderingsordning.
+		expect(state.marks).toEqual([
+			'still-birds',
+			'lantern',
+			'resting-seat',
+			'first-bloom',
+			'shore-stone',
+			'shore-path'
+		]);
+		// Nya modellen sparas ändå, så nästa besök har ett tillstånd att växa från.
+		expect(state.stage).toBe(4);
+	});
+
+	/**
+	 * Utan `cutoff`-argument faller syncWorldProgress igenom till konstanten, så
+	 * det här är vägen produktionen faktiskt tar.
+	 */
+	it('konstantvärdet gäller när ingen cutoff skickas in', async () => {
+		const live = WORLD_PROGRESS_V1_CUTOFF as Date;
+		const d = scenarioD();
+
+		for (const [label, createdAt, expectedReads] of [
+			['före', new Date(live.getTime() - 1).toISOString(), ['diary']],
+			['exakt', live.toISOString(), []],
+			['efter', new Date(live.getTime() + 1).toISOString(), []]
+		] as const) {
+			const fake = fakeSupabase({ moodRows: d.moodRows });
+			await syncWorldProgress({
+				supabase: fake.client,
+				user: user({}, createdAt),
+				presence: buildWorldPresence({
+					activityDays: d.activityDays,
+					entryCount: d.entryCount,
+					reflectionCount: d.reflectionCount
+				}),
+				entryCount: d.entryCount,
+				reflectionCount: d.reflectionCount
+			});
+
+			expect(fake.reads, label).toEqual(expectedReads);
+		}
+	});
+
+	it('nytt konto sparar sitt tillstånd trots att migrationen hoppades över', async () => {
+		const run = runScenarioD('2026-09-10T08:00:00.000Z');
+		const state = await run.state;
+
+		expect(run.saves).toHaveLength(1);
+		expect(run.saves[0][WORLD_PROGRESS_METADATA_KEY]).toEqual(state);
+	});
+
+	it('befintligt tillstånd ger ingen humörläsning, oavsett kontots ålder', async () => {
+		const stored = { version: 1, marks: ['mushrooms'], stage: 4 };
+
+		for (const createdAt of ['2026-08-20T10:00:00.000Z', '2026-09-10T08:00:00.000Z']) {
+			const run = runScenarioD(createdAt, { [WORLD_PROGRESS_METADATA_KEY]: stored });
+			const state = await run.state;
+
+			expect(run.reads, createdAt).toEqual([]);
+			expect(state.marks, createdAt).toContain('mushrooms');
+		}
+	});
+
+	it('gammalt konto vars humörläsning misslyckas sparar fortfarande ingenting', async () => {
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+		const d = scenarioD();
+		const { client, reads, saves } = fakeSupabase({ moodError: true });
+
+		const state = await syncWorldProgress({
+			supabase: client,
+			user: user({}, '2026-08-20T10:00:00.000Z'),
+			presence: buildWorldPresence({ activityDays: d.activityDays, entryCount: d.entryCount, reflectionCount: d.reflectionCount }),
+			entryCount: d.entryCount,
+			reflectionCount: d.reflectionCount,
+			cutoff: CUTOFF
+		});
+
+		// Försöket gjordes, men utan underlag får migrationen inte räknas som klar.
+		expect(reads).toEqual(['diary']);
+		expect(saves).toEqual([]);
+		expect(state.marks).toContain('shore-stone');
 	});
 });

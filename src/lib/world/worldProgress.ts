@@ -17,6 +17,10 @@
 // tillståndet saknas räknas därför också den gamla modellen en enda gång, och
 // unionen sparas. Därefter läses den gamla modellen aldrig mer - humör ger
 // ingen progression framåt.
+//
+// Migrationen gäller bara konton som hann finnas under den gamla modellen. Ett
+// konto som skapas efter lanseringen har aldrig sett den gamla världen, och ska
+// därför inte heller ärva dess dubbelräkning - se WORLD_PROGRESS_V1_CUTOFF.
 
 import {
 	WORLD_MARK_IDS,
@@ -38,6 +42,46 @@ export interface WorldProgressState {
 	marks: WorldMarkId[];
 	/** Det högsta miljöstadiet som nåtts. */
 	stage: WorldStage;
+}
+
+/**
+ * Tidpunkten då den nya världsmodellen gick live, i UTC.
+ *
+ * Konton skapade FÖRE den här tidpunkten kan ha hunnit få progression enligt
+ * den gamla humörmodellen, och migreras därför via unionen. Konton skapade
+ * EFTER den startar direkt på den nya modellen och läser aldrig humördata.
+ *
+ * Värdet är release-tidpunkten för den nya modellen. Det ändras aldrig i
+ * efterhand: en senareläggning skulle köra migrationen på nytt för konton som
+ * redan migrerats, och en tidigareläggning skulle neka migrationen åt konton
+ * som hann växa under den gamla modellen.
+ */
+export const WORLD_PROGRESS_V1_CUTOFF: Date | null = new Date('2026-09-19T00:45:31Z');
+
+/**
+ * Avgör om den gamla humörmodellen får läsas för ett konto utan sparat
+ * tillstånd. Jämförelsen sker på absolut tid (epoch-millisekunder), så den är
+ * oberoende av tidszon; `created_at` från Supabase är UTC (timestamptz).
+ *
+ * Exakt på gränsen räknas kontot som nytt (`>=` ger ingen migration), så
+ * gränsvärdet har ett enda definierat utfall.
+ *
+ * Kan kontots ålder inte fastställas - saknad eller trasig tidsstämpel - körs
+ * migrationen. Det är den riktning som aldrig tar bort något som redan syns.
+ */
+export function shouldRunLegacyMigration(input: {
+	accountCreatedAt?: string | Date | null;
+	cutoff?: Date | null;
+}): boolean {
+	const cutoff = input.cutoff ?? null;
+	if (!cutoff || Number.isNaN(cutoff.getTime())) return true;
+
+	const raw = input.accountCreatedAt;
+	if (!raw) return true;
+	const created = raw instanceof Date ? raw : new Date(raw);
+	if (Number.isNaN(created.getTime())) return true;
+
+	return created.getTime() < cutoff.getTime();
 }
 
 const KNOWN_MARKS = new Set<string>(WORLD_MARK_IDS);
