@@ -57,14 +57,62 @@ function getPoseDaypart(date: Date): CompanionPoseDaypart {
 	return 'day';
 }
 
-function getWeightedPose(poses: CompanionPose[]): CompanionPose {
-	const totalWeight = poses.reduce((sum, pose) => sum + (pose.weight ?? 1), 0);
+/** Minsta gemensamma nämnare för något som roterar viktat: ett id och en vikt. */
+export type WeightedRotationChoice = { id: string; weight?: number };
+
+export function getWeightedChoice<T extends WeightedRotationChoice>(choices: T[]): T {
+	const totalWeight = choices.reduce((sum, choice) => sum + (choice.weight ?? 1), 0);
 	let cursor = Math.random() * totalWeight;
-	for (const pose of poses) {
-		cursor -= pose.weight ?? 1;
-		if (cursor <= 0) return pose;
+	for (const choice of choices) {
+		cursor -= choice.weight ?? 1;
+		if (cursor <= 0) return choice;
 	}
-	return poses[0];
+	return choices[0];
+}
+
+/**
+ * Den gemensamma rotationsregeln: behåll förra valet tills det gått ut, byt
+ * annars viktat och lägg undan det nya valet med en ny utgångstid.
+ *
+ * Både basposen (getCompanionBasePose nedan) och Framstegs scenplatser
+ * (progressCompanionPlacement.ts) roterar likadant - samma 20-40-minuters-
+ * fönster, samma dagpartsspärr, samma lagringsformat. Regeln bor här så att
+ * det bara finns EN sådan rotation i världen, inte två som kan glida isär.
+ *
+ * `resolveStored` slår upp ett lagrat id och får returnera null när valet inte
+ * längre är giltigt (t.ex. en pose som inte hör hemma i den här dagparten).
+ */
+export function pickPersistedRotation<T extends WeightedRotationChoice>({
+	candidates,
+	fallback,
+	storageKey,
+	now,
+	daypart,
+	storage,
+	resolveStored
+}: {
+	candidates: T[];
+	fallback: T;
+	storageKey: string;
+	now: number;
+	daypart: CompanionPoseDaypart;
+	storage: Storage | null;
+	resolveStored: (id: string) => T | null;
+}): T {
+	const storedState = storage ? parseStoredState(storage.getItem(storageKey)) : null;
+	if (storedState && storedState.daypart === daypart && storedState.expiresAt > now) {
+		const stored = resolveStored(storedState.poseId);
+		if (stored) return stored;
+	}
+
+	const next = getWeightedChoice(candidates.length ? candidates : [fallback]);
+	if (storage) {
+		storage.setItem(
+			storageKey,
+			JSON.stringify({ poseId: next.id, daypart, expiresAt: getNextExpiry(now) })
+		);
+	}
+	return next;
 }
 
 function getWeightedPosition(positions: CompanionScenePosition[]): CompanionScenePosition {
@@ -171,7 +219,8 @@ function resolveCandidateBasePoses(
 	const calmPoses = allAvailablePoses.filter((pose) => CALM_POSE_IDS.has(pose.id));
 	const restingPoses = allAvailablePoses.filter((pose) => RESTING_POSE_IDS.has(pose.id));
 	// Default-rotationen håller den bortvända posen borta; calm/resting behåller
-	// den, och Framsteg-scenen väljer den ändå direkt via getProgressScenePoseId.
+	// den, och Framsteg-scenen har sin egen kuraterade platslista
+	// (progressCompanionPlacement.ts) där den bortvända posen ingår.
 	const defaultPoses = allAvailablePoses.filter((pose) => !DEFAULT_EXCLUDED_POSE_IDS.has(pose.id));
 	const availablePoses =
 		preference === 'resting' && restingPoses.length
@@ -192,21 +241,24 @@ export function getCompanionBasePose(
 	preference: CompanionPosePreference = 'default'
 ): CompanionPose {
 	const { daypart, availablePoses, fallbackPose } = resolveCandidateBasePoses(date, companionId, scene, preference);
-	const now = date.getTime();
-	const storedState = storage ? parseStoredState(storage.getItem(storageKeyFor(companionId, preference))) : null;
-	if (storedState && storedState.daypart === daypart && storedState.expiresAt > now) {
-		const storedPose = COMPANION_POSES.find(
-			(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.id === storedState.poseId && pose.dayparts.includes(daypart)
-		);
-		const storedAllowedForPreference =
-			preference !== 'default' || !DEFAULT_EXCLUDED_POSE_IDS.has(storedState.poseId);
-		if (storedPose && storedAllowedForPreference && poseHasAvailablePosition(daypart, storedPose, scene))
-			return storedPose;
-	}
 
-	const nextPose = getWeightedPose(availablePoses.length ? availablePoses : [fallbackPose]);
-	if (storage) storage.setItem(storageKeyFor(companionId, preference), JSON.stringify({ poseId: nextPose.id, daypart, expiresAt: getNextExpiry(now) }));
-	return nextPose;
+	return pickPersistedRotation({
+		candidates: availablePoses,
+		fallback: fallbackPose,
+		storageKey: storageKeyFor(companionId, preference),
+		now: date.getTime(),
+		daypart,
+		storage,
+		resolveStored: (poseId) => {
+			const storedPose = COMPANION_POSES.find(
+				(pose) => pose.role === 'base' && belongsToCompanion(pose, companionId) && pose.id === poseId && pose.dayparts.includes(daypart)
+			);
+			const storedAllowedForPreference =
+				preference !== 'default' || !DEFAULT_EXCLUDED_POSE_IDS.has(poseId);
+			if (!storedPose || !storedAllowedForPreference) return null;
+			return poseHasAvailablePosition(daypart, storedPose, scene) ? storedPose : null;
+		}
+	});
 }
 
 export function getCompanionScenePosition(

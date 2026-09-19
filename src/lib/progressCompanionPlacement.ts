@@ -1,4 +1,11 @@
-import { COMPANION_POSES, type CompanionId, type CompanionPose } from '$lib/companionPoseManifest';
+import {
+	COMPANION_POSES,
+	type CompanionId,
+	type CompanionPose,
+	type CompanionPoseDaypart
+} from '$lib/companionPoseManifest';
+import { getCompanionPoseDaypart, pickPersistedRotation } from '$lib/companionPoseState';
+import { COMPANION } from '$lib/progressCompanion';
 
 /** Originalmåtten för Framstegs sjöscen. */
 export const PROGRESS_SCENE_IMAGE_SIZE = { width: 1672, height: 941 } as const;
@@ -129,6 +136,10 @@ export function getProgressCabinPlacementStyle(input: ProgressSceneGeometryInput
  *
  * Endast den primära följeslagaren renderas här. Visitor och Friend hör hemma
  * på gamla /dashboard och återinförs medvetet inte i den här vyn.
+ *
+ * Balder roterar mellan ett fåtal kuraterade PLATSER (PROGRESS_SCENE_SPOTS) -
+ * pose plus uppmätt markpunkt och storlek. Han är ingen guide och inget som
+ * uppträder: han är på platsen, och platsen får se olika ut.
  * ---------------------------------------------------------------------- */
 
 /**
@@ -138,7 +149,7 @@ export function getProgressCabinPlacementStyle(input: ProgressSceneGeometryInput
  * En gemensam `translate(-50%, -100%)` ankrar dukens nederkant, inte djurets
  * tassar - utan uppmätt yta svävar björnen eller sjunker genom marken.
  */
-type CompanionArtBounds = {
+export type CompanionArtBounds = {
 	canvasWidth: number;
 	canvasHeight: number;
 	left: number;
@@ -155,11 +166,11 @@ type CompanionArtBounds = {
  * runt motivet skulle annars räknas som kropp och göra djuret för litet och
  * svävande.
  *
- * Lägg till en rad här när en ny pose ska kunna användas i scenen - det är allt
- * som krävs, se getProgressScenePoseId nedan.
+ * En pose kan bara användas i scenen om den har en rad här OCH en plats i
+ * PROGRESS_SCENE_SPOTS nedan.
  */
-const PROGRESS_POSE_ART_BOUNDS: Record<string, CompanionArtBounds> = {
-	// bear-sitting.png
+export const PROGRESS_POSE_ART_BOUNDS: Record<string, CompanionArtBounds> = {
+	// bear-sitting.png. Sittande i halvprofil.
 	'bear-sitting': { canvasWidth: 768, canvasHeight: 512, left: 151, top: 41, right: 601, bottom: 489 },
 	// bear-sitting-back.png. Uppmätt alfabox: kroppen börjar 186 px in och
 	// tassarna slutar 496 px ned, så markpunkten hamnar där björnen faktiskt
@@ -171,60 +182,195 @@ const PROGRESS_POSE_ART_BOUNDS: Record<string, CompanionArtBounds> = {
 		top: 19,
 		right: 578,
 		bottom: 496
-	}
+	},
+	// bear-standing.png. Stående på alla fyra.
+	'bear-standing': { canvasWidth: 768, canvasHeight: 512, left: 250, top: 37, right: 672, bottom: 491 },
+	// bear-sleeping.png. Hopkurad och liggande - låg och bred, därav den lilla
+	// motivhöjden i platserna nedan.
+	'bear-sleeping': { canvasWidth: 768, canvasHeight: 512, left: 140, top: 142, right: 702, bottom: 387 }
+	// bear-stretching.png är medvetet inte med: motivet är en gäspning med vidöppet
+	// gap. I scenens skala läses det som att björnen ryter eller uppträder, inte
+	// som en lugn närvaro. Se docs-noteringen i PROGRESS_SCENE_SPOTS.
 };
 
 /**
- * Den lugna pose björnen visar i scenen: sittande, tills en bortvänd sittpose
- * finns (se getProgressScenePoseId).
- */
-const PROGRESS_PREFERRED_SCENE_POSE: Record<CompanionId, string> = {
-	bear: 'bear-sitting'
-};
-
-/**
- * Följeslagarens plats i ORIGINALBILDENS koordinater.
- *
- * `groundX` är markpunkten och `motifHeight` djurets synliga höjd, båda i
- * originalbildens pixlar. Människan sitter med marklinje vid y 742 och är 255 px
- * hög sittande; höjden nedan är satt som andel av det måttet så storleks-
- * förhållandet blir verkligt.
- *
- * `groundX` ligger till höger om muggen i motivet (x 1105-1155), så att
- * björnens kropp börjar först efter muggen i stället för att täcka den.
+ * Marklinjen på gräsbanken bredvid personen - den plats björnen har haft sedan
+ * tidigare, och referenspunkten som de övriga platserna nedan är mätta mot.
  */
 export const PROGRESS_COMPANION_GROUND_Y = 752;
 
-type ProgressSceneCompanionSpec = { groundX: number; motifHeight: number };
-
-const PROGRESS_SCENE_COMPANIONS: Record<CompanionId, ProgressSceneCompanionSpec> = {
-	bear: { groundX: 1272, motifHeight: 180 }
+/**
+ * En kuraterad plats i Framstegsscenen: en pose PLUS var och hur stor den är.
+ *
+ * Poserna får alltså inte samma x/y/skala. Varje plats är uppmätt i
+ * ORIGINALBILDENS koordinater (1672x941) och visuellt kontrollerad mot
+ * sjöscenen i alla dygnsspann:
+ *
+ * - `groundX`/`groundY` är markpunkten: där tassarna ska landa.
+ * - `motifHeight` är motivets synliga höjd på den punkten. Den följer scenens
+ *   perspektiv: allt som står längre bort (lägre `groundY`) blir mindre.
+ *   Skalan utgår från den ursprungliga platsen - 180 px hög sittande björn vid
+ *   marklinjen 752 - och alla poser delar samma verkliga kroppsstorlek, så en
+ *   liggande björn blir låg utan att bli en annan björn.
+ *
+ * Det här är inget nytt posesystem: poserna själva bor kvar i
+ * companionPoseManifest.ts och rotationsregeln i companionPoseState.ts. Det
+ * enda som är nytt här är scengeometrin, som bara Framsteg känner till.
+ */
+export type ProgressSceneSpot = {
+	id: string;
+	poseId: string;
+	groundX: number;
+	groundY: number;
+	motifHeight: number;
+	dayparts: readonly CompanionPoseDaypart[];
+	weight: number;
+	/**
+	 * Den enda meningen som säger var Balder är just nu. Den bor tillsammans
+	 * med platsen så att en ny plats aldrig kan läggas till utan sin text - och
+	 * så att texten aldrig kan beskriva något annat än det bilden visar.
+	 *
+	 * Den konstaterar var han är. Den tolkar honom inte, tilltalar inte
+	 * användaren och ber inte om något.
+	 */
+	presence: string;
 };
 
 /**
- * Pose-ID:t som björnen visar i scenen. En bortvänd sittpose vinner så fort en
- * sådan finns i manifestet OCH har en uppmätt alfayta ovan - då byts posen in
- * utan att något annat behöver ändras.
+ * Balders kuraterade platser vid sjön.
+ *
+ * Ordningen spelar roll: den första platsen för en dagpart är den som
+ * servern renderar (se getProgressInitialSceneSpot), så den ska vara ett
+ * lugnt, alltid-rimligt grundläge.
+ *
+ * Vikterna är satta så att den bortvända posen finns kvar utan att dominera:
+ * de två bortvända platserna delar ungefär en tredjedel av dagen och kvällen
+ * mellan sig, resten är sida, stående och vila.
  */
-export function getProgressScenePoseId(companionId: CompanionId): string {
-	const away = COMPANION_POSES.find(
-		(pose) =>
-			pose.companionId === companionId &&
-			pose.role === 'base' &&
-			pose.id.includes('sitting-away') &&
-			PROGRESS_POSE_ART_BOUNDS[pose.id] !== undefined
-	);
+const BEAR_NAME = COMPANION.name;
 
-	return away?.id ?? PROGRESS_PREFERRED_SCENE_POSE[companionId];
+export const PROGRESS_SCENE_SPOTS: readonly ProgressSceneSpot[] = [
+	{
+		// Nere vid strandkanten, vänd mot sjön. Samma stilla ögonblick som förut,
+		// men vid vattnet i stället för uppe på banken.
+		id: 'strandkant-sittande-bortvand',
+		poseId: 'bear-sitting-away',
+		groundX: 1340,
+		groundY: 706,
+		motifHeight: 154,
+		dayparts: ['day', 'evening'],
+		weight: 1.2,
+		presence: `${BEAR_NAME} har gått ner till vattenbrynet och sitter vänd mot sjön.`
+	},
+	{
+		// Sittande i halvprofil på banken: han är med i samma stund som personen,
+		// men vänder inte ryggen till.
+		id: 'bank-sittande-sida',
+		poseId: 'bear-sitting',
+		groundX: 1300,
+		groundY: 758,
+		motifHeight: 172,
+		dayparts: ['day', 'evening'],
+		weight: 1.6,
+		presence: `${BEAR_NAME} sitter en bit bort på stranden, vänd åt sidan.`
+	},
+	{
+		// Stående nere vid vattenbrynet, med tassarna på de våta stenarna.
+		id: 'strandkant-staende',
+		poseId: 'bear-standing',
+		groundX: 1330,
+		groundY: 706,
+		motifHeight: 147,
+		dayparts: ['day', 'evening'],
+		weight: 1.5,
+		presence: `${BEAR_NAME} står nere vid vattenbrynet, stilla.`
+	},
+	{
+		// Den ursprungliga platsen: sittande bredvid personen, vänd mot utsikten.
+		id: 'bank-sittande-bortvand',
+		poseId: 'bear-sitting-away',
+		groundX: 1272,
+		groundY: PROGRESS_COMPANION_GROUND_Y,
+		motifHeight: 180,
+		dayparts: ['day', 'evening'],
+		weight: 1,
+		presence: `Du och ${BEAR_NAME} sitter stilla vid stranden och blickar ut över sjön.`
+	},
+	{
+		// Stående uppe på gräsbanken. Bara dagtid - på kvällen tar vilan över.
+		id: 'bank-staende',
+		poseId: 'bear-standing',
+		groundX: 1288,
+		groundY: 754,
+		motifHeight: 168,
+		dayparts: ['day'],
+		weight: 1.2,
+		presence: `${BEAR_NAME} står en bit bort på stranden och ser ut över sjön.`
+	},
+	{
+		// Liggande och vilande intill elden. Samma bild bär både kvällens vila och
+		// nattens sömn - det är samma björn som lagt sig ned.
+		id: 'bank-vilande',
+		poseId: 'bear-sleeping',
+		groundX: 1300,
+		groundY: 768,
+		motifHeight: 97,
+		dayparts: ['evening', 'night'],
+		weight: 1.3,
+		presence: `${BEAR_NAME} har lagt sig ned intill elden och vilar.`
+	}
+];
+
+const PROGRESS_SPOT_STORAGE_KEY = `mittpsyke:progress-scene-spot:${COMPANION.id}:v1`;
+
+/** Platserna som hör hemma i en viss dagpart. */
+export function getProgressSceneSpots(daypart: CompanionPoseDaypart): ProgressSceneSpot[] {
+	return PROGRESS_SCENE_SPOTS.filter((spot) => spot.dayparts.includes(daypart));
 }
 
-/** Poseobjektet ur manifestet, eller null om ID:t inte går att slå upp. */
-export function getProgressScenePose(companionId: CompanionId): CompanionPose | null {
-	const poseId = getProgressScenePoseId(companionId);
+/**
+ * Deterministiskt startläge för servergenererad HTML och klientens första
+ * render - samma skäl och samma mönster som getCompanionInitialBasePose:
+ * utan localStorage och Math.random måste SSR och hydrering landa på exakt
+ * samma plats, annars hoppar Balder synligt när sidan blir interaktiv.
+ */
+export function getProgressInitialSceneSpot(date = new Date()): ProgressSceneSpot {
+	const daypart = getCompanionPoseDaypart(date);
+	return getProgressSceneSpots(daypart)[0] ?? PROGRESS_SCENE_SPOTS[0];
+}
+
+/**
+ * Det riktiga, viktade och ihågkomna valet. Använder samma rotationsregel som
+ * basposen (pickPersistedRotation): platsen ligger kvar i 20-40 minuter innan
+ * den får bytas, så scenen förändras i den takt en plats förändras - inte i
+ * den takt en sida ritas om.
+ */
+export function getProgressSceneSpot(
+	date = new Date(),
+	storage: Storage | null = null
+): ProgressSceneSpot {
+	const daypart = getCompanionPoseDaypart(date);
+	const candidates = getProgressSceneSpots(daypart);
+
+	return pickPersistedRotation({
+		candidates,
+		fallback: candidates[0] ?? PROGRESS_SCENE_SPOTS[0],
+		storageKey: PROGRESS_SPOT_STORAGE_KEY,
+		now: date.getTime(),
+		daypart,
+		storage,
+		resolveStored: (spotId) => candidates.find((spot) => spot.id === spotId) ?? null
+	});
+}
+
+/** Poseobjektet ur manifestet för en plats, eller null om ID:t inte går att slå upp. */
+export function getProgressScenePose(
+	spot: ProgressSceneSpot,
+	companionId: CompanionId = 'bear'
+): CompanionPose | null {
 	return (
-		COMPANION_POSES.find(
-			(pose) => pose.id === poseId && pose.companionId === companionId
-		) ?? null
+		COMPANION_POSES.find((pose) => pose.id === spot.poseId && pose.companionId === companionId) ??
+		null
 	);
 }
 
@@ -249,14 +395,14 @@ export type ProgressCompanionPlacement = {
  * ändrar storlek - den följer motivet i stället för containern.
  */
 export function getProgressCompanionPlacement(
-	input: ProgressSceneGeometryInput & { companionId: CompanionId }
+	input: ProgressSceneGeometryInput & { spot: ProgressSceneSpot }
 ): ProgressCompanionPlacement | null {
 	const geometry = getSceneGeometry(input);
 	if (!geometry) return null;
 
-	const spec = PROGRESS_SCENE_COMPANIONS[input.companionId];
-	const bounds = PROGRESS_POSE_ART_BOUNDS[getProgressScenePoseId(input.companionId)];
-	if (!spec || !bounds) return null;
+	const spec = input.spot;
+	const bounds = PROGRESS_POSE_ART_BOUNDS[spec.poseId];
+	if (!bounds) return null;
 
 	const motifWidth = bounds.right - bounds.left;
 	const motifHeight = bounds.bottom - bounds.top;
@@ -266,9 +412,10 @@ export function getProgressCompanionPlacement(
 	const scaleX = renderedWidth / PROGRESS_SCENE_IMAGE_SIZE.width;
 	const scaleY = renderedHeight / PROGRESS_SCENE_IMAGE_SIZE.height;
 
-	// Markpunkten, översatt från originalbilden till den renderade ytan.
+	// Markpunkten, översatt från originalbilden till den renderade ytan. Både x
+	// och y kommer från platsen, så strandkanten och banken kan ha olika höjd.
 	const groundX = offsetX + spec.groundX * scaleX;
-	const groundY = offsetY + PROGRESS_COMPANION_GROUND_Y * scaleY;
+	const groundY = offsetY + spec.groundY * scaleY;
 
 	// Elementet är större än motivet i exakt den mån duken har tomma marginaler.
 	const height = (spec.motifHeight * scaleY * bounds.canvasHeight) / motifHeight;
@@ -283,7 +430,7 @@ export function getProgressCompanionPlacement(
 }
 
 export function getProgressCompanionPlacementStyle(
-	input: ProgressSceneGeometryInput & { companionId: CompanionId }
+	input: ProgressSceneGeometryInput & { spot: ProgressSceneSpot }
 ): string {
 	const placement = getProgressCompanionPlacement(input);
 	if (!placement) return '';

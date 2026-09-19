@@ -36,8 +36,11 @@
 		getProgressCabinPlacement,
 		getProgressCabinPlacementStyle,
 		getProgressCompanionPlacementStyle,
+		getProgressInitialSceneSpot,
+		getProgressSceneSpot,
 		getProgressScenePose,
-		type ProgressCabinPlacement
+		type ProgressCabinPlacement,
+		type ProgressSceneSpot
 	} from '$lib/progressCompanionPlacement';
 	import { getGardenGrowthPoints, getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
 	import WorldMarks from '$lib/components/world/WorldMarks.svelte';
@@ -150,8 +153,11 @@
 	});
 
 	const sceneCompanionId: CompanionId = COMPANION.id;
-	const scenePose = getProgressScenePose(sceneCompanionId);
-	const sceneCompanionName = COMPANION.name;
+	// Balders plats vid sjön: vilken pose OCH var han står/sitter/ligger. Startar
+	// på det deterministiska SSR-läget så server och första klientrender är
+	// identiska, och byts till det riktiga, ihågkomna valet i onMount.
+	let sceneSpot = $state<ProgressSceneSpot>(getProgressInitialSceneSpot());
+	const scenePose = $derived(getProgressScenePose(sceneSpot, sceneCompanionId));
 
 	let cabinPlacementStyle = $state('');
 	let companionPlacementStyle = $state('');
@@ -683,7 +689,7 @@
 		cabinPlacementStyle = getProgressCabinPlacementStyle(input);
 		companionPlacementStyle = data.isAnonymous
 			? ''
-			: getProgressCompanionPlacementStyle({ ...input, companionId: sceneCompanionId });
+			: getProgressCompanionPlacementStyle({ ...input, spot: sceneSpot });
 	}
 
 	function chooseSupportTopic(topic: string) {
@@ -953,6 +959,11 @@
 			sceneResizeObserver?.disconnect();
 		};
 
+		// Balder flyttar sig inte för den som bett om minskad rörelse. Platsen
+		// hämtas ändå en gång vid montering - det är att komma ihåg var han var,
+		// inte en rörelse.
+		const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
 		const updateSceneTimeOfDay = () => {
 			const now = new Date();
 			timeOfDay = getProgressCompanionDayState(now);
@@ -960,8 +971,19 @@
 			season = getProgressCompanionSeason(now);
 		};
 		updateSceneTimeOfDay();
+
+		// Det riktiga platsvalet: ihågkommet i 20-40 minuter, därefter ett nytt
+		// viktat val. Rotationsregeln bor i companionPoseState.ts och delas med
+		// basposen, så det finns bara en takt i världen.
+		sceneSpot = getProgressSceneSpot(new Date(), window.localStorage);
+		const rotateSceneSpot = () => {
+			if (reducedMotionQuery.matches) return;
+			sceneSpot = getProgressSceneSpot(new Date(), window.localStorage);
+		};
+		const sceneSpotTimer = window.setInterval(rotateSceneSpot, 60 * 1000);
 		const companionTimeTimer = window.setInterval(updateSceneTimeOfDay, 60 * 1000);
 		const cleanupSceneWatchers = () => {
+			window.clearInterval(sceneSpotTimer);
 			window.clearInterval(companionTimeTimer);
 			if (clearSceneTransitionTimer !== null) window.clearTimeout(clearSceneTransitionTimer);
 			cleanupNarrowQuery();
@@ -1012,10 +1034,11 @@
 		};
 	});
 
-	// Ytan mäts om så fort scenrutan byts ut. Storleksändringar fångas av
-	// ResizeObservern.
+	// Ytan mäts om så fort scenrutan byts ut eller Balder flyttar till en annan
+	// plats. Storleksändringar fångas av ResizeObservern.
 	$effect(() => {
 		const renderedSceneEl = sceneEl;
+		void sceneSpot;
 		updateProgressScenePlacement(renderedSceneEl);
 	});
 
@@ -1250,7 +1273,7 @@
 				<p>
 					{isAnonymous
 						? 'Här vid stranden finns stugan, lägerelden och följeslagaren Balder, en lugn närvaro som följer platsen över tid.'
-						: `Du och ${sceneCompanionName} sitter stilla vid stranden och blickar ut över sjön.`}
+						: sceneSpot.presence}
 				</p>
 				<p class="companion-reflection">{worldReturnCopy ?? livingWorldReflectionCopy}</p>
 				{#if !isAnonymous}

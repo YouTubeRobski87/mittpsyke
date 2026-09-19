@@ -4,11 +4,11 @@ import { describe, expect, it } from 'vitest';
 import { BEAR_COMPANION_POSES, COMPANION_POSES } from '$lib/companionPoseManifest';
 import { getCompanionBasePose } from '$lib/companionPoseState';
 import {
-	PROGRESS_COMPANION_GROUND_Y,
+	PROGRESS_POSE_ART_BOUNDS,
 	PROGRESS_SCENE_IMAGE_SIZE,
+	PROGRESS_SCENE_SPOTS,
 	getProgressCompanionPlacement,
-	getProgressScenePose,
-	getProgressScenePoseId
+	getProgressSceneSpots
 } from '$lib/progressCompanionPlacement';
 
 // Balder ska kunna sitta stilla och titta ut över scenen, inte bara stå.
@@ -89,9 +89,13 @@ describe('var posen används', () => {
 		}
 	});
 
-	it('är den pose Framsteg-scenen väljer, eftersom den är bortvänd', () => {
-		expect(getProgressScenePoseId('bear')).toBe(SITTING_AWAY);
-		expect(getProgressScenePose('bear')?.id).toBe(SITTING_AWAY);
+	it('finns kvar bland Framstegs kuraterade platser, men bara som en av flera', () => {
+		const dayPoseIds = getProgressSceneSpots('day').map((spot) => spot.poseId);
+		expect(dayPoseIds).toContain(SITTING_AWAY);
+		// Den får inte vara det enda Framsteg kan visa - det var precis det som
+		// gjorde scenen statisk.
+		expect(new Set(dayPoseIds).size).toBeGreaterThan(1);
+		expect(dayPoseIds.filter((id) => id === SITTING_AWAY).length).toBeLessThan(dayPoseIds.length);
 	});
 
 	it('håller den bortvända posen borta från gamla /dashboards allmänna rotation', () => {
@@ -117,52 +121,62 @@ describe('var posen används', () => {
 
 describe('placeringen i Framsteg-scenen', () => {
 	const box = { containerWidth: 1120, containerHeight: 630 };
+	const sceneScale = Math.min(
+		box.containerWidth / PROGRESS_SCENE_IMAGE_SIZE.width,
+		box.containerHeight / PROGRESS_SCENE_IMAGE_SIZE.height
+	);
+	const offsetY = (box.containerHeight - PROGRESS_SCENE_IMAGE_SIZE.height * sceneScale) / 2;
 
-	it('sätter tassarna på marklinjen, inte svävande', () => {
-		const placement = getProgressCompanionPlacement({ ...box, companionId: 'bear' });
-		expect(placement).not.toBeNull();
-		if (!placement) return;
+	it.each(PROGRESS_SCENE_SPOTS.map((spot) => [spot.id, spot] as const))(
+		'sätter tassarna på platsens egen marklinje, inte svävande (%s)',
+		(_id, spot) => {
+			const placement = getProgressCompanionPlacement({ ...box, spot });
+			expect(placement).not.toBeNull();
+			if (!placement) return;
 
-		// Bildens nederkant för motivet ska hamna på scenens marklinje.
-		const scale = Math.min(
-			box.containerWidth / PROGRESS_SCENE_IMAGE_SIZE.width,
-			box.containerHeight / PROGRESS_SCENE_IMAGE_SIZE.height
-		);
-		const offsetY = (box.containerHeight - PROGRESS_SCENE_IMAGE_SIZE.height * scale) / 2;
-		const groundY = offsetY + PROGRESS_COMPANION_GROUND_Y * scale;
-		const motifBottom = placement.top + (placement.height * 496) / 512;
+			const bounds = PROGRESS_POSE_ART_BOUNDS[spot.poseId];
+			const groundY = offsetY + spot.groundY * sceneScale;
+			const motifBottom = placement.top + (placement.height * bounds.bottom) / bounds.canvasHeight;
 
-		expect(Math.abs(motifBottom - groundY)).toBeLessThan(1);
-	});
+			expect(Math.abs(motifBottom - groundY)).toBeLessThan(1);
+		}
+	);
 
-	it('håller en rimlig storlek mot personen i scenen', () => {
-		const placement = getProgressCompanionPlacement({ ...box, companionId: 'bear' });
-		if (!placement) return;
+	it.each(PROGRESS_SCENE_SPOTS.map((spot) => [spot.id, spot] as const))(
+		'ger motivet exakt den höjd platsen är uppmätt för (%s)',
+		(_id, spot) => {
+			const placement = getProgressCompanionPlacement({ ...box, spot });
+			if (!placement) return;
 
-		const scale = Math.min(
-			box.containerWidth / PROGRESS_SCENE_IMAGE_SIZE.width,
-			box.containerHeight / PROGRESS_SCENE_IMAGE_SIZE.height
-		);
-		// Motivet är satt till 180 px i originalbilden, mot personens 255 px
-		// sittande höjd. Kontrollen fångar en pose som råkar bli dubbelt så stor.
-		const motifHeight = (placement.height * (496 - 19)) / 512;
-		expect(motifHeight).toBeGreaterThan(150 * scale);
-		expect(motifHeight).toBeLessThan(210 * scale);
-	});
+			const bounds = PROGRESS_POSE_ART_BOUNDS[spot.poseId];
+			const motifHeight =
+				(placement.height * (bounds.bottom - bounds.top)) / bounds.canvasHeight;
+
+			expect(motifHeight).toBeCloseTo(spot.motifHeight * sceneScale, 3);
+			// Personen sitter 255 px hög i originalbilden. Ingen plats får ge en
+			// björn som är större än personen eller så liten att han försvinner.
+			expect(spot.motifHeight).toBeGreaterThan(80);
+			expect(spot.motifHeight).toBeLessThan(255);
+		}
+	);
 
 	it('ligger inom scenytan i både desktop- och mobilmått', () => {
 		for (const viewport of [
 			{ containerWidth: 1120, containerHeight: 630 },
 			{ containerWidth: 347, containerHeight: 231 }
 		]) {
-			const placement = getProgressCompanionPlacement({ ...viewport, companionId: 'bear' });
-			expect(placement, JSON.stringify(viewport)).not.toBeNull();
-			if (!placement) continue;
+			for (const spot of PROGRESS_SCENE_SPOTS) {
+				const placement = getProgressCompanionPlacement({ ...viewport, spot });
+				expect(placement, `${spot.id} ${JSON.stringify(viewport)}`).not.toBeNull();
+				if (!placement) continue;
 
-			expect(placement.left).toBeGreaterThan(-placement.width);
-			expect(placement.left + placement.width).toBeLessThan(viewport.containerWidth + placement.width);
-			expect(placement.top).toBeGreaterThan(-placement.height);
-			expect(placement.height).toBeGreaterThan(0);
+				expect(placement.left).toBeGreaterThan(-placement.width);
+				expect(placement.left + placement.width).toBeLessThan(
+					viewport.containerWidth + placement.width
+				);
+				expect(placement.top).toBeGreaterThan(-placement.height);
+				expect(placement.height).toBeGreaterThan(0);
+			}
 		}
 	});
 });
