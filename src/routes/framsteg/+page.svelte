@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
@@ -38,6 +38,7 @@
 		getProgressCompanionPlacementStyle,
 		getProgressInitialSceneSpot,
 		getProgressSceneSpot,
+		getProgressSceneSpotById,
 		getProgressScenePose,
 		type ProgressCabinPlacement,
 		type ProgressSceneSpot
@@ -153,10 +154,17 @@
 	});
 
 	const sceneCompanionId: CompanionId = COMPANION.id;
-	// Balders plats vid sjön: vilken pose OCH var han står/sitter/ligger. Startar
-	// på det deterministiska SSR-läget så server och första klientrender är
-	// identiska, och byts till det riktiga, ihågkomna valet i onMount.
-	let sceneSpot = $state<ProgressSceneSpot>(getProgressInitialSceneSpot());
+	// Balders plats vid sjön: vilken pose OCH var han står/sitter/ligger.
+	// Startvärdet är serverns val (data.initialSceneSpotId), inte ett eget
+	// tidsberoende val - annars kan klienten hamna i en annan dagpart än
+	// servern, och Svelte skriver aldrig om en bilds `src` under hydrering.
+	// Då skulle bilden visa serverns pose medan data-pose och texten visar
+	// klientens. Det riktiga, ihågkomna valet tas sedan i onMount.
+	// untrack: det här är avsiktligt bara startvärdet. Rotationen nedan äger
+	// platsen efter montering, precis som CompanionPose gör med sin baspose.
+	let sceneSpot = $state<ProgressSceneSpot>(
+		untrack(() => getProgressSceneSpotById(data.initialSceneSpotId) ?? getProgressInitialSceneSpot())
+	);
 	const scenePose = $derived(getProgressScenePose(sceneSpot, sceneCompanionId));
 
 	let cabinPlacementStyle = $state('');
@@ -295,6 +303,8 @@
 		profileTheme?: keyof typeof THEMES | null;
 		companionRelationshipStage?: 0 | 1 | 2 | 3 | 4;
 		companionDaily?: { answeredDayCount: number } | null;
+		// Balders startplats, vald på servern så hydreringen är överens.
+		initialSceneSpotId?: string;
 		diaryActivityDays?: Record<string, number>;
 		worldProgress?: { marks: WorldMarkId[]; stage: WorldStage } | null;
 		isAnonymous?: boolean;

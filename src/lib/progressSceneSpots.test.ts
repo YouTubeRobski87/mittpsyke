@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { COMPANION_POSES } from '$lib/companionPoseManifest';
@@ -9,6 +9,7 @@ import {
 	getProgressInitialSceneSpot,
 	getProgressSceneSpot,
 	getProgressSceneSpots,
+	getProgressSceneSpotById,
 	getProgressScenePose
 } from '$lib/progressCompanionPlacement';
 
@@ -102,7 +103,12 @@ describe('Framstegs kuraterade platser', () => {
 		expect(dayPoses).toContain('bear-sitting');
 		expect(dayPoses).toContain('bear-sitting-away');
 		expect(dayPoses).toContain('bear-standing');
-		expect(getProgressSceneSpots('evening').map((spot) => spot.poseId)).toContain('bear-sleeping');
+		// Vilan hör till 'night' (20-05), alltså scenens kväll och natt. I
+		// poseordlistans 'evening' (17-20) är scenen fortfarande fullt dagsljus.
+		expect(getProgressSceneSpots('night').map((spot) => spot.poseId)).toContain('bear-sleeping');
+		expect(getProgressSceneSpots('evening').map((spot) => spot.poseId)).not.toContain(
+			'bear-sleeping'
+		);
 
 		// Minst en plats ska ligga nere vid vattenbrynet, högre upp i bilden än
 		// gräsbanken bredvid personen.
@@ -165,6 +171,29 @@ describe('Framstegs kuraterade platser', () => {
 		for (let attempt = 0; attempt < 50; attempt += 1) {
 			expect(getProgressSceneSpot(DAY, storage).id).toBe(first.id);
 		}
+	});
+
+	it('slår upp en plats på id, och avvisar okända id', () => {
+		for (const spot of PROGRESS_SCENE_SPOTS) {
+			expect(getProgressSceneSpotById(spot.id)).toBe(spot);
+		}
+		expect(getProgressSceneSpotById('finns-inte')).toBeNull();
+		expect(getProgressSceneSpotById(null)).toBeNull();
+		expect(getProgressSceneSpotById(undefined)).toBeNull();
+	});
+
+	// Regression: startplatsen är tidsberoende. Väljer klienten själv kan den
+	// hamna i en annan dagpart än servern, och Svelte skriver aldrig om en
+	// bilds `src` under hydrering (den antar att server och klient är
+	// överens). Bilden fastnade då på serverns pose medan data-pose och texten
+	// visade klientens - Balder "låg och vilade" i en sittande bild.
+	it('låter servern välja startplatsen och klienten läsa den ur data', () => {
+		const loader = readFileSync(join(ROOT, 'src/routes/framsteg/+page.server.ts'), 'utf8');
+		expect(loader).toContain('getProgressInitialSceneSpot');
+		expect(loader).toContain('initialSceneSpotId');
+
+		const route = readFileSync(join(ROOT, 'src/routes/framsteg/+page.svelte'), 'utf8');
+		expect(route).toContain('getProgressSceneSpotById(data.initialSceneSpotId)');
 	});
 
 	it('ger samma startläge i SSR och första klientrender', () => {

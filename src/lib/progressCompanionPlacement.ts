@@ -308,14 +308,22 @@ export const PROGRESS_SCENE_SPOTS: readonly ProgressSceneSpot[] = [
 		presence: `${BEAR_NAME} står en bit bort på stranden och ser ut över sjön.`
 	},
 	{
-		// Liggande och vilande intill elden. Samma bild bär både kvällens vila och
-		// nattens sömn - det är samma björn som lagt sig ned.
+		// Liggande och vilande intill elden.
+		//
+		// Endast 'night'. Poseordlistan och scenens dygnsband är förskjutna mot
+		// varandra: poseordlistans 'evening' är 17-20, vilket scenen kallar
+		// EFTERMIDDAG och renderar i fullt dagsljus (se
+		// getProgressCompanionDayStateLabel och getProgressSceneBand). En
+		// hopkurad, sovande björn i eftermiddagssol läser som fel tid på dygnet.
+		// Poseordlistans 'night' är 20-05, alltså scenens kväll och natt - då
+		// ligger han i skymning och eldsken, vilket är det enda läge bilden
+		// faktiskt bär.
 		id: 'bank-vilande',
 		poseId: 'bear-sleeping',
 		groundX: 1300,
 		groundY: 768,
 		motifHeight: 97,
-		dayparts: ['evening', 'night'],
+		dayparts: ['night'],
 		weight: 1.3,
 		presence: `${BEAR_NAME} har lagt sig ned intill elden och vilar.`
 	}
@@ -333,10 +341,24 @@ export function getProgressSceneSpots(daypart: CompanionPoseDaypart): ProgressSc
  * render - samma skäl och samma mönster som getCompanionInitialBasePose:
  * utan localStorage och Math.random måste SSR och hydrering landa på exakt
  * samma plats, annars hoppar Balder synligt när sidan blir interaktiv.
+ *
+ * VIKTIGT: klienten får INTE anropa den här på egen hand för sitt startvärde.
+ * Funktionen är tidsberoende, och om servern och klienten hamnar i olika
+ * dagpartier (dygnsgränsen passeras mellan render och hydrering) blir posen
+ * och bilden olika. Svelte skriver medvetet aldrig om `src` under hydrering -
+ * den antar att server och klient är överens - så bilden fastnar då på
+ * serverns pose medan resten av vyn visar en annan. Servern väljer därför
+ * platsen och skickar med dess id; se `initialSceneSpotId` i routens laddare.
  */
 export function getProgressInitialSceneSpot(date = new Date()): ProgressSceneSpot {
 	const daypart = getCompanionPoseDaypart(date);
 	return getProgressSceneSpots(daypart)[0] ?? PROGRESS_SCENE_SPOTS[0];
+}
+
+/** Slår upp en plats på id, för startvärdet som servern skickat med. */
+export function getProgressSceneSpotById(id: string | null | undefined): ProgressSceneSpot | null {
+	if (!id) return null;
+	return PROGRESS_SCENE_SPOTS.find((spot) => spot.id === id) ?? null;
 }
 
 /**

@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { THEMES } from '$lib/theme';
+import { getProgressInitialSceneSpot } from '$lib/progressCompanionPlacement';
 import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
 import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
 import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
@@ -13,9 +14,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 		data: { user }
 	} = await locals.supabase.auth.getUser();
 
+	// Balders startplats väljs på servern och följer med till klienten. Den är
+	// tidsberoende, och hydreringen kräver att server och klient är överens -
+	// se getProgressInitialSceneSpot.
+	const initialSceneSpotId = getProgressInitialSceneSpot().id;
+
 	if (!user) {
 		return {
 			isAnonymous: true,
+			initialSceneSpotId,
 			accountCreatedAt: null,
 			streak: { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 },
 			milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
@@ -63,6 +70,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		isAnonymous: false,
+		initialSceneSpotId,
 		// Kontots ålder är en av världens tidssignaler. Den läses här i stället
 		// för via ett extra anrop; user finns redan.
 		accountCreatedAt: user.created_at ?? null,
