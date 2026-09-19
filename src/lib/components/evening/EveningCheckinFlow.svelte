@@ -177,8 +177,8 @@
 		{#if step === 1}
 			<div class="evening-step-content">
 				<h2 id="evening-flow-title" bind:this={stepHeading} tabindex="-1">Hur är det ikväll?</h2>
-				<!-- Beskriver bara det som faktiskt händer. Innehållet läses i dag inte av
-					 någon återblick, så texten lovar ingen - se evening-checkin-copy.test.ts. -->
+				<!-- Beskriver bara det som faktiskt händer. Payoffen nämns först vid
+					 sparvalet nedan, där den är relevant - se evening-checkin-copy.test.ts. -->
 				<p class="evening-hint">Ingenting sparas förrän du själv väljer det.</p>
 				<div class="evening-options" aria-label="Välj det som passar bäst">
 					{#each EVENING_THEMES as theme}
@@ -276,6 +276,13 @@
 					</div>
 				{:else}
 					<p class="evening-hint">Inget sparas om du avslutar utan att spara.</p>
+					<!-- Sant sedan "Kvällar över tid" finns på Framsteg: sparade kvällar
+					     räknas där på tema och kvällsval. Formuleringen lovar ingen
+					     insikt, bara att det som återkommer kan bli synligt. Tanken du
+					     skriver läses inte av den sektionen. -->
+					<p class="evening-hint">
+						Sparade kvällar samlas i Framsteg, där det som återkommer kan börja synas med tiden.
+					</p>
 					<div class="evening-actions evening-actions--stacked">
 						<button class="evening-primary" type="button" disabled={saving} onclick={saveAndFinish}>
 							{saving ? 'Sparar…' : 'Spara kvällsincheckningen'}

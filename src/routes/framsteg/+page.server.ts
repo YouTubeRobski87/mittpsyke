@@ -4,6 +4,7 @@ import { getCompanionRelationshipStageForUser } from '$lib/server/companion-pres
 import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
 import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
 import { loadDiaryActivityDays } from '$lib/server/diary-activity-days';
+import { loadEveningPatternRows } from '$lib/server/evening-checkin';
 import { syncWorldProgress } from '$lib/server/world-progress';
 import { buildWorldPresence } from '$lib/world/worldStage';
 
@@ -28,16 +29,20 @@ export const load: PageServerLoad = async ({ locals }) => {
 			profileTheme: null,
 			companionRelationshipStage: 0,
 			diaryActivityDays: {},
-			worldProgress: null
+			worldProgress: null,
+			eveningPatternRows: []
 		};
 	}
 
 	const userMetadata = (user.user_metadata ?? {}) as Record<string, unknown>;
-	const [entryCount, companionDaily, diaryActivityDays] = await Promise.all([
+	const [entryCount, companionDaily, diaryActivityDays, eveningPatternRows] = await Promise.all([
 		loadDiaryEntryCount(locals.supabase, user.id),
 		loadCompanionDailyState(locals.supabase, user.id),
 		// Världens aktiva dagar: dagar med minst ett sparat inlägg, humör krävs inte.
-		loadDiaryActivityDays(locals.supabase, user.id)
+		loadDiaryActivityDays(locals.supabase, user.id),
+		// "Kvällar över tid". Egen dataväg, aldrig sammanblandad med dagbokens
+		// humörvärden, och utan kvällens fritext.
+		loadEveningPatternRows(locals.supabase, user.id)
 	]);
 
 	// Världens beständiga progression: det som redan vuxit fram låses aldrig
@@ -77,6 +82,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		companionRelationshipStage: await getCompanionRelationshipStageForUser(locals.supabase, user.id),
 		companionDaily,
 		diaryActivityDays,
-		worldProgress
+		worldProgress,
+		eveningPatternRows
 	};
 };

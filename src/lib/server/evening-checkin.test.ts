@@ -2,9 +2,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { EVENING_CHECKIN_FLOW_VERSION, type EveningCheckinInput } from '$lib/evening-checkin';
 import {
+	EVENING_PATTERN_ROW_LIMIT,
 	getEveningCheckinDate,
 	hasSavedEveningCheckin,
 	loadEveningInteriorMemory,
+	loadEveningPatternRows,
 	saveEveningCheckin
 } from './evening-checkin';
 
@@ -172,5 +174,75 @@ describe('saveEveningCheckin loggar databasfel utan att läcka innehåll', () =>
 		expect(serialised).not.toContain(input.thought);
 		expect(serialised).not.toContain('Failing row contains');
 		expect(serialised).not.toContain('details');
+	});
+});
+
+describe('loadEveningPatternRows', () => {
+	/** Fångar exakt vad frågan begär, så kolumnlistan och fönstret går att granska. */
+	function fakeClient(result: { data?: unknown; error?: { message: string } | null } = {}) {
+		const query: Record<string, unknown> = {};
+		const builder = {
+			select: (columns: string) => {
+				query.columns = columns;
+				return builder;
+			},
+			eq: (column: string, value: unknown) => {
+				query[column] = value;
+				return builder;
+			},
+			gte: (column: string, value: unknown) => {
+				query.gteColumn = column;
+				query.gteValue = value;
+				return builder;
+			},
+			order: () => builder,
+			limit: (value: number) => {
+				query.limit = value;
+				return Promise.resolve({ data: result.data ?? [], error: result.error ?? null });
+			}
+		};
+		const client = {
+			from: (table: string) => {
+				query.table = table;
+				return builder;
+			}
+		} as unknown as SupabaseClient;
+		return { client, query };
+	}
+
+	it('hämtar bara de tre strukturfälten, aldrig fritexten', async () => {
+		const { client, query } = fakeClient();
+
+		await loadEveningPatternRows(client, 'user-1', new Date('2026-09-19T20:00:00.000Z'));
+
+		expect(query.table).toBe('evening_checkins');
+		expect(query.columns).toBe('theme_id, parking_bucket, checkin_date');
+		expect(String(query.columns)).not.toContain('thought');
+		expect(query.user_id).toBe('user-1');
+	});
+
+	it('begränsar läsningen till det fönster sektionen kan använda', async () => {
+		const { client, query } = fakeClient();
+
+		await loadEveningPatternRows(client, 'user-1', new Date('2026-09-19T20:00:00.000Z'));
+
+		// Svensk kalenderdag minus EVENING_PATTERN_WINDOW_DAYS.
+		expect(query.gteColumn).toBe('checkin_date');
+		expect(query.gteValue).toBe('2025-09-19');
+		expect(query.limit).toBe(EVENING_PATTERN_ROW_LIMIT);
+	});
+
+	it('ger en tom lista utan användare, utan att fråga databasen', async () => {
+		const { client, query } = fakeClient();
+
+		expect(await loadEveningPatternRows(client, null)).toEqual([]);
+		expect(query.table).toBeUndefined();
+	});
+
+	it('ger en tom lista i stället för att välta när läsningen misslyckas', async () => {
+		vi.spyOn(console, 'error').mockImplementation(() => {});
+		const { client } = fakeClient({ data: null, error: { message: 'nere' } });
+
+		expect(await loadEveningPatternRows(client, 'user-1')).toEqual([]);
 	});
 });

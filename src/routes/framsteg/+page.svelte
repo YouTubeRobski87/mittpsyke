@@ -99,7 +99,13 @@
 		type SupportSuggestion,
 		type SupportView
 	} from '$lib/progress-support';
-	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart, ChevronDown } from 'lucide-svelte';
+	import {
+		buildEveningPatterns,
+		EVENING_THIN_COPY,
+		type EveningPatternRow
+	} from '$lib/evening-patterns';
+	import { stockholmTodayKey } from '$lib/stockholm-date';
+	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart, ChevronDown, Moon } from 'lucide-svelte';
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -542,6 +548,18 @@
 	const heatmapData = $derived(
 		isAnonymous ? ANONYMOUS_PREVIEW_HEATMAP : (data.diaryActivityDays ?? {})
 	);
+
+	// ── Kvällar över tid ──
+	// Egen dataväg: kvällsincheckningarnas struktur, aldrig dagbokens humör och
+	// aldrig kvällens fritext. Räknas om lokalt när perioden byts - servern har
+	// redan hämtat alla rader som ryms i det längsta fönstret.
+	const eveningPatterns = $derived(
+		buildEveningPatterns(isAnonymous ? [] : ((data.eveningPatternRows ?? []) as EveningPatternRow[]), {
+			period: selectedPeriod,
+			today: stockholmTodayKey()
+		})
+	);
+
 	const moodSamples = $derived(loadedMoodSamples);
 	const moodTimeline = $derived(buildMoodTimelineView(moodSamples, selectedPeriod));
 	const periodAnalysis = $derived(buildPeriodAnalysis(moodSamples, selectedPeriod));
@@ -1563,6 +1581,26 @@
 				</section>
 			{/if}
 
+			{#if !isAnonymous}
+				<!-- Kvällsincheckningens egen återblick. Strukturen i kvällarna, aldrig
+				     tanken användaren skrev och aldrig ihopvägd med dagbokens humör -
+				     en kväll har inget siffervärde för mående (se evening-patterns.ts). -->
+				<section class="card reflection-card evening-patterns-card" aria-labelledby="evening-patterns-heading" data-testid="evening-patterns">
+					<div class="card-header">
+						<div class="icon-badge milestone-leaf"><Moon size={24} /></div>
+						<h2 id="evening-patterns-heading">Kvällar över tid</h2>
+					</div>
+					<p class="reflection-copy">{eveningPatterns.intro}</p>
+					{#if eveningPatterns.observations.length > 0}
+						{#each eveningPatterns.observations as observation (observation.id)}
+							<p class="reflection-copy">{observation.text}</p>
+						{/each}
+					{:else if eveningPatterns.level !== 'empty'}
+						<p class="reflection-copy">{EVENING_THIN_COPY}</p>
+					{/if}
+				</section>
+			{/if}
+
 			<section class="card garden-presence-card" aria-labelledby="garden-presence-heading">
 				<div class="card-header">
 					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
@@ -1591,6 +1629,16 @@
 					<p class="reflection-copy">
 						Här samlas underlaget som korten ovan vilar på. Det fylls på av det du själv väljer att
 						spara i dagboken.
+					</p>
+				{/if}
+				<!-- Kvällarna räknas för sig och står utanför valet ovan: den som bara
+				     gjort kvällsincheckningar ska också se sitt underlag. Raden utelämnas
+				     helt vid noll kvällar - en nolla här vore bara en tom påminnelse. -->
+				{#if eveningPatterns.eveningCount > 0}
+					<p class="reflection-copy">
+						Kvällar över tid bygger på {eveningPatterns.eveningCount}
+						{eveningPatterns.eveningCount === 1 ? 'sparad kvällsincheckning' : 'sparade kvällsincheckningar'}
+						i den valda perioden. De räknas för sig, skilt från dagbokens inlägg och humörvärden.
 					</p>
 				{/if}
 			</section>

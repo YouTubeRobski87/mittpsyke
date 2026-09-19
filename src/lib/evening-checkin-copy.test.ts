@@ -53,10 +53,21 @@ describe('Kvällsincheckningens copy', () => {
 		}
 	});
 
-	it('lovar ingen återblick som produkten inte har', () => {
-		// Incheckningens tema, tanke och kvällsval läses i dag inte av Framsteg
-		// eller någon annan analys. Copyn beskriver sparvalet, inte en payoff.
+	it('beskriver den återblick som faktiskt finns, utan att lova en insikt', () => {
+		// Sedan "Kvällar över tid" finns på Framsteg räknas tema och kvällsval
+		// där. Copyn får därför nämna payoffen - men bara som något som KAN bli
+		// synligt, och bara vid sparvalet. Den gamla, vagare formuleringen är
+		// fortsatt borta: den lovade betydelse utan att säga av vad.
 		expect(flow).not.toContain('kan få betydelse när du tittar tillbaka');
 		expect(flow).toContain('Ingenting sparas förrän du själv väljer det.');
+		expect(flow).toContain(
+			'Sparade kvällar samlas i Framsteg, där det som återkommer kan börja synas med tiden.'
+		);
+	});
+
+	it('lovar ingen läsning av kvällens fritext', () => {
+		// "Kvällar över tid" läser theme_id, parking_bucket och checkin_date -
+		// aldrig `thought`. Copyn får därför inte antyda att texten analyseras.
+		expect(flow).not.toMatch(/analyserar? (det )?du skriv|tolkar din text|läser din tanke/i);
 	});
 });
