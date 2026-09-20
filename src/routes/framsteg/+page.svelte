@@ -2698,8 +2698,8 @@
 	}
 
 	.companion-media[data-time='night'] :global(.world-mist) {
-		/* Ca 60 %. */
-		filter: blur(12px) opacity(0.6);
+		/* Natten behåller en svag kall dis utan att skriva över varje bands egen blur. */
+		--mist-scene-level: 0.62;
 	}
 
 	.companion-media[data-time='night'] .progress-ripple {

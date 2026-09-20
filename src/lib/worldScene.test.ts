@@ -152,6 +152,25 @@ describe('getLivingWorldScene - växtnivå styr scenen', () => {
 		expect(kinds.has('drift')).toBe(false);
 	});
 
+	it('ger sjödimman tydlig dygnshierarki och tre osynkade band', () => {
+		const mist = (timeOfDay: 'morning' | 'day' | 'evening' | 'night') =>
+			getLivingWorldScene({ season: 'autumn', timeOfDay }).effects.filter(
+				(effect) => effect.kind === 'mist'
+			);
+
+		const morning = mist('morning');
+		const day = mist('day');
+		const evening = mist('evening');
+		const night = mist('night');
+
+		expect(morning).toHaveLength(3);
+		expect(new Set(morning.map((effect) => effect.durationMs)).size).toBe(3);
+		expect(morning.map((effect) => effect.height)).toEqual([8, 6, 7]);
+		expect(morning[0].opacity).toBeGreaterThan(night[0].opacity ?? 0);
+		expect(night[0].opacity).toBeGreaterThan(evening[0].opacity ?? 0);
+		expect(evening[0].opacity).toBeGreaterThan(day[0].opacity ?? 0);
+	});
+
 	it('drift finns på nivå 4 men inte på nivå 1 (sekundär signal)', () => {
 		expect(enabledPersistentKinds(1).has('drift')).toBe(false);
 		expect(enabledPersistentKinds(4).has('drift')).toBe(true);

@@ -363,8 +363,42 @@
 			transparent 78%
 		);
 	}
-	.world-mist { border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(255, 251, 236, 0.52), rgba(226, 245, 255, 0.36), transparent); filter: blur(12px); mix-blend-mode: soft-light; animation: mistDrift var(--duration, 118000ms) ease-in-out var(--delay, 0ms) infinite; }
-	.living-world[data-time='day'] .world-mist { filter: blur(14px); }
+	/* Låg sjödimma i flera brutna band. Radiella fält ger mjuka luckor mellan
+	   sjoken, så vattenytan aldrig täcks av en jämn rektangulär hinna. */
+	.world-mist {
+		--mist-scene-level: 1;
+		--mist-drift: 5%;
+		--mist-rise: -1.2%;
+		border-radius: 48% 58% 46% 54% / 62% 48% 57% 43%;
+		background:
+			radial-gradient(ellipse at 17% 58%, rgba(238, 245, 239, 0.5) 0 16%, transparent 43%),
+			radial-gradient(ellipse at 48% 42%, rgba(229, 240, 237, 0.42) 0 19%, transparent 48%),
+			radial-gradient(ellipse at 79% 62%, rgba(215, 231, 232, 0.34) 0 14%, transparent 42%);
+		filter: blur(8px);
+		mix-blend-mode: soft-light;
+		animation: mistDrift var(--duration, 126000ms) cubic-bezier(0.42, 0, 0.3, 1) var(--delay, 0ms) infinite;
+	}
+	.mist-two {
+		--mist-drift: 3.6%;
+		--mist-rise: -0.7%;
+		filter: blur(10px);
+	}
+	.mist-three {
+		--mist-drift: 6.4%;
+		--mist-rise: -1.6%;
+		background:
+			radial-gradient(ellipse at 23% 52%, rgba(224, 235, 232, 0.34) 0 15%, transparent 44%),
+			radial-gradient(ellipse at 67% 58%, rgba(211, 227, 229, 0.28) 0 18%, transparent 49%);
+		filter: blur(7px);
+	}
+	.living-world[data-time='day'] .world-mist { filter: blur(10px); }
+	.living-world[data-time='night'] .world-mist {
+		background:
+			radial-gradient(ellipse at 17% 58%, rgba(178, 196, 207, 0.4) 0 16%, transparent 43%),
+			radial-gradient(ellipse at 48% 42%, rgba(163, 184, 200, 0.34) 0 19%, transparent 48%),
+			radial-gradient(ellipse at 79% 62%, rgba(145, 169, 188, 0.28) 0 14%, transparent 42%);
+		mix-blend-mode: screen;
+	}
 	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.35px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) cubic-bezier(0.42, 0, 0.24, 1) var(--delay, 0ms) infinite; }
 	/* Samma lövverksanimation som vanligt, bara tillfälligt snabbare när den
 	   deterministiska eventplanen valt en vindpust. */
@@ -420,7 +454,24 @@
 	   $lib/worldScene för djupordningen. */
 	@keyframes worldLightShift { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(calc(2.2% * (0.4 + var(--depth, 0.5))), calc(1.6% * (0.4 + var(--depth, 0.5))), 0) scale(1.035); } }
 	@keyframes cloudDrift { 0%, 8%, 100% { opacity: 0; transform: translate3d(calc(-10% + var(--cloud-offset-x, 0%)), var(--cloud-offset-y, 0%), 0) scale(var(--scale, 1)); } 18%, 72% { opacity: calc(var(--opacity, 0.1) * var(--cloud-layer-opacity, 1)); } 86% { opacity: 0; transform: translate3d(calc((12% + (28% * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)) + var(--cloud-offset-x, 0%)), calc(-3% + var(--cloud-offset-y, 0%)), 0) scale(var(--scale, 1)); } }
-	@keyframes mistDrift { 0%, 100% { opacity: calc(var(--opacity, 0.14) * 0.34); transform: translate3d(-4%, 0, 0) scaleX(0.94); } 48% { opacity: var(--opacity, 0.14); } 74% { opacity: calc(var(--opacity, 0.14) * 0.62); transform: translate3d(calc(5% * (0.5 + var(--depth, 0.5))), calc(-4% * (0.5 + var(--depth, 0.5))), 0) scaleX(1.08); } }
+	@keyframes mistDrift {
+		0%, 14%, 100% {
+			opacity: calc(var(--opacity, 0.14) * var(--mist-scene-level) * 0.3);
+			transform: translate3d(-2.8%, 0, 0) scaleX(0.98);
+		}
+		36% {
+			opacity: calc(var(--opacity, 0.14) * var(--mist-scene-level) * 0.72);
+			transform: translate3d(calc(var(--mist-drift) * 0.28), -0.25%, 0) scaleX(1.015);
+		}
+		52%, 67% {
+			opacity: calc(var(--opacity, 0.14) * var(--mist-scene-level) * 0.94);
+			transform: translate3d(calc(var(--mist-drift) * (0.5 + var(--depth, 0.5))), var(--mist-rise), 0) scaleX(1.035);
+		}
+		86% {
+			opacity: calc(var(--opacity, 0.14) * var(--mist-scene-level) * 0.46);
+			transform: translate3d(calc(var(--mist-drift) * 0.44), -0.35%, 0) scaleX(1.01);
+		}
+	}
 	/* Vinden kommer i perioder i stället för en likadan svallrörelse per varv: en
 	   svag period, stiltje, sedan en tydligare men fortfarande lågmäld pust. Lagren
 	   har olika duration (29-43s) och negativa delays i worldScene, så perioderna
@@ -451,7 +502,8 @@
 		.world-effect { animation: none !important; transform: none !important; }
 		.world-moon, .world-sun { transform: translate3d(-50%, -50%, 0) !important; }
 		.world-bird, .world-butterfly, .world-drift, .world-event-water, .world-presence-sign { opacity: 0 !important; }
-		.world-light, .world-mist, .world-foliage { opacity: calc(var(--opacity, 0.12) * 0.5); }
+		.world-light, .world-foliage { opacity: calc(var(--opacity, 0.12) * 0.5); }
+		.world-mist { opacity: calc(var(--opacity, 0.12) * var(--mist-scene-level, 1) * 0.62); }
 		.world-cloud { opacity: calc(var(--opacity, 0.12) * var(--cloud-layer-opacity, 1) * 0.5); }
 	}
 
