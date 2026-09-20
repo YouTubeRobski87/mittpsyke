@@ -365,23 +365,37 @@
 	}
 	.world-mist { border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(255, 251, 236, 0.52), rgba(226, 245, 255, 0.36), transparent); filter: blur(12px); mix-blend-mode: soft-light; animation: mistDrift var(--duration, 118000ms) ease-in-out var(--delay, 0ms) infinite; }
 	.living-world[data-time='day'] .world-mist { filter: blur(14px); }
-	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.5px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) ease-in-out var(--delay, 0ms) infinite; }
+	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.35px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) cubic-bezier(0.42, 0, 0.24, 1) var(--delay, 0ms) infinite; }
 	/* Samma lövverksanimation som vanligt, bara tillfälligt snabbare när den
-	   deterministiska eventplanen valt en vindpust. 16s, inte 11s: cykeln
-	   innehåller numera två perioder, så varje enskild rörelse blir lika lugn
-	   som den enda pusten var tidigare. */
-	.is-wind-event .world-foliage { animation-duration: 16s; }
-	.is-wind-event .canopy-right { animation-duration: 5.5s; }
+	   deterministiska eventplanen valt en vindpust. */
+	.is-wind-event .world-foliage { animation-duration: 12s; }
+	.is-wind-event .canopy-right { animation-duration: 9s; }
+	/* Baslagren behöver läsa som växtlighet, inte som en grön färgdis. Smala,
+	   halvtransparenta bladstråk sitter i samma befintliga rektanglar och följer
+	   därför samma rotpunkt och djupmodell som tidigare. */
+	.grass-left,
+	.grass-bank {
+		background:
+			linear-gradient(76deg, transparent 47%, rgba(103, 143, 83, 0.5) 49% 51%, transparent 53%) 0 100% / 29px 36% repeat-x,
+			linear-gradient(103deg, transparent 47%, rgba(126, 157, 91, 0.42) 49% 51%, transparent 53%) 11px 100% / 43px 29% repeat-x,
+			radial-gradient(ellipse at 20% 94%, rgba(76, 116, 68, 0.3) 0 11%, transparent 19%),
+			linear-gradient(180deg, transparent 69%, rgba(65, 103, 65, 0.25) 100%);
+	}
+	.grass-left { transform-origin: 26% 100%; }
+	.grass-bank { transform-origin: 64% 100%; }
+	.progress-living-world .grass-left,
+	.progress-living-world .grass-bank { opacity: calc(var(--opacity, 0.2) * 1.12); }
 	/* Beständig markvegetation för Growth Garden. Samma foliage-lager och
 	   vindanimation som övrig värld, med små, låga former i strandperspektiv. */
-	.shore-sprigs { background: radial-gradient(ellipse at 18% 90%, rgba(83, 124, 73, 0.65) 0 16%, transparent 19%), radial-gradient(ellipse at 42% 77%, rgba(119, 151, 88, 0.58) 0 13%, transparent 17%), radial-gradient(ellipse at 68% 88%, rgba(77, 112, 70, 0.58) 0 18%, transparent 22%), linear-gradient(180deg, transparent 35%, rgba(73, 109, 66, 0.34) 100%); }
-	.bank-groundcover { background: radial-gradient(ellipse at 14% 85%, rgba(74, 113, 68, 0.72) 0 15%, transparent 19%), radial-gradient(ellipse at 36% 68%, rgba(122, 149, 84, 0.52) 0 12%, transparent 16%), radial-gradient(ellipse at 62% 83%, rgba(92, 132, 74, 0.62) 0 19%, transparent 24%), radial-gradient(ellipse at 84% 72%, rgba(133, 157, 91, 0.44) 0 10%, transparent 15%), linear-gradient(180deg, transparent 26%, rgba(62, 101, 62, 0.4) 100%); }
-	.shore-understory { background: radial-gradient(ellipse at 17% 84%, rgba(70, 110, 65, 0.7) 0 17%, transparent 21%), radial-gradient(ellipse at 43% 62%, rgba(125, 151, 87, 0.56) 0 13%, transparent 17%), radial-gradient(ellipse at 74% 82%, rgba(86, 125, 69, 0.68) 0 21%, transparent 26%), linear-gradient(180deg, transparent 22%, rgba(60, 96, 60, 0.42) 100%); }
-	.settled-foreground { background: radial-gradient(ellipse at 12% 90%, rgba(68, 105, 64, 0.78) 0 19%, transparent 23%), radial-gradient(ellipse at 35% 72%, rgba(115, 142, 79, 0.54) 0 13%, transparent 17%), radial-gradient(ellipse at 60% 85%, rgba(77, 118, 66, 0.72) 0 20%, transparent 25%), radial-gradient(ellipse at 86% 77%, rgba(130, 149, 84, 0.46) 0 11%, transparent 16%), linear-gradient(180deg, transparent 25%, rgba(58, 92, 59, 0.46) 100%); }
+	.shore-sprigs { transform-origin: 42% 100%; background: radial-gradient(ellipse at 18% 90%, rgba(83, 124, 73, 0.65) 0 16%, transparent 19%), radial-gradient(ellipse at 42% 77%, rgba(119, 151, 88, 0.58) 0 13%, transparent 17%), radial-gradient(ellipse at 68% 88%, rgba(77, 112, 70, 0.58) 0 18%, transparent 22%), linear-gradient(180deg, transparent 35%, rgba(73, 109, 66, 0.34) 100%); }
+	.bank-groundcover { transform-origin: 56% 100%; background: radial-gradient(ellipse at 14% 85%, rgba(74, 113, 68, 0.72) 0 15%, transparent 19%), radial-gradient(ellipse at 36% 68%, rgba(122, 149, 84, 0.52) 0 12%, transparent 16%), radial-gradient(ellipse at 62% 83%, rgba(92, 132, 74, 0.62) 0 19%, transparent 24%), radial-gradient(ellipse at 84% 72%, rgba(133, 157, 91, 0.44) 0 10%, transparent 15%), linear-gradient(180deg, transparent 26%, rgba(62, 101, 62, 0.4) 100%); }
+	.shore-understory { transform-origin: 68% 100%; background: radial-gradient(ellipse at 17% 84%, rgba(70, 110, 65, 0.7) 0 17%, transparent 21%), radial-gradient(ellipse at 43% 62%, rgba(125, 151, 87, 0.56) 0 13%, transparent 17%), radial-gradient(ellipse at 74% 82%, rgba(86, 125, 69, 0.68) 0 21%, transparent 26%), linear-gradient(180deg, transparent 22%, rgba(60, 96, 60, 0.42) 100%); }
+	.settled-foreground { transform-origin: 58% 100%; background: radial-gradient(ellipse at 12% 90%, rgba(68, 105, 64, 0.78) 0 19%, transparent 23%), radial-gradient(ellipse at 35% 72%, rgba(115, 142, 79, 0.54) 0 13%, transparent 17%), radial-gradient(ellipse at 60% 85%, rgba(77, 118, 66, 0.72) 0 20%, transparent 25%), radial-gradient(ellipse at 86% 77%, rgba(130, 149, 84, 0.46) 0 11%, transparent 16%), linear-gradient(180deg, transparent 25%, rgba(58, 92, 59, 0.46) 100%); }
 	/* Ligger ovanpå den fotografiska grenen uppe till höger (companion-hero-scene) -
 	   transform-origin nära bildens överkant, dvs där grenen kommer in i bild, inte
 	   mitt i klungan, så rörelsen ser ut som en gren som svajar, inte hela trädet. */
-	.canopy-right { transform-origin: 78% 0%; background: radial-gradient(ellipse at 40% 15%, rgba(133, 154, 80, 0.2), transparent 60%), radial-gradient(ellipse at 72% 35%, rgba(87, 126, 74, 0.16), transparent 62%); filter: blur(1px); animation: canopySway var(--duration, 7400ms) cubic-bezier(0.42, 0, 0.24, 1) var(--delay, 0ms) infinite; }
+	.canopy-right { transform-origin: 78% 0%; background: radial-gradient(ellipse at 40% 15%, rgba(133, 154, 80, 0.24), transparent 60%), radial-gradient(ellipse at 72% 35%, rgba(87, 126, 74, 0.2), transparent 62%); filter: blur(0.7px); animation: canopySway var(--duration, 33000ms) cubic-bezier(0.42, 0, 0.24, 1) var(--delay, 0ms) infinite; }
+	.progress-living-world .canopy-right { opacity: calc(var(--opacity, 0.16) * 1.08); }
 
 	.world-drift { border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.4) 45%, transparent 72%); filter: blur(0.5px); mix-blend-mode: screen; opacity: 0; animation: driftFloat var(--duration, 13000ms) ease-in-out var(--delay, 0ms) infinite; }
 	/* Driftpartiklarna är avsedda som små ljus i dags-/skymningsvärlden, men
@@ -408,26 +422,22 @@
 	@keyframes cloudDrift { 0%, 8%, 100% { opacity: 0; transform: translate3d(calc(-10% + var(--cloud-offset-x, 0%)), var(--cloud-offset-y, 0%), 0) scale(var(--scale, 1)); } 18%, 72% { opacity: calc(var(--opacity, 0.1) * var(--cloud-layer-opacity, 1)); } 86% { opacity: 0; transform: translate3d(calc((12% + (28% * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)) + var(--cloud-offset-x, 0%)), calc(-3% + var(--cloud-offset-y, 0%)), 0) scale(var(--scale, 1)); } }
 	@keyframes mistDrift { 0%, 100% { opacity: calc(var(--opacity, 0.14) * 0.34); transform: translate3d(-4%, 0, 0) scaleX(0.94); } 48% { opacity: var(--opacity, 0.14); } 74% { opacity: calc(var(--opacity, 0.14) * 0.62); transform: translate3d(calc(5% * (0.5 + var(--depth, 0.5))), calc(-4% * (0.5 + var(--depth, 0.5))), 0) scaleX(1.08); } }
 	/* Vinden kommer i perioder i stället för en likadan svallrörelse per varv: en
-	   svag period, stiltje, sedan en starkare - med toppen kvar på exakt samma
-	   amplitud som tidigare, så scenen varierar utan att bli tydligare. Lagren
-	   har olika duration (28-46s) och negativa delays i worldScene, så perioderna
+	   svag period, stiltje, sedan en tydligare men fortfarande lågmäld pust. Lagren
+	   har olika duration (29-43s) och negativa delays i worldScene, så perioderna
 	   infaller osynkat mellan dem. */
 	@keyframes foliageBreathe {
-		0%, 14%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); }
-		31% { transform: rotate(calc((0.7deg + (0.9deg * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)))) translate3d(calc(0.5% * var(--world-wind, 0.18)), -0.25%, 0); }
-		46%, 58% { transform: rotate(0deg) translate3d(0, 0, 0); }
-		78% { transform: rotate(calc((2deg + (2.4deg * var(--world-wind, 0.18))) * (0.5 + var(--depth, 0.5)))) translate3d(calc(1.6% * var(--world-wind, 0.18)), -0.8%, 0); }
+		0%, 18%, 46%, 58%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); }
+		31% { transform: rotate(calc(-0.62deg * (0.55 + var(--depth, 0.5)))) translate3d(calc(-0.82px * (0.55 + var(--depth, 0.5))), -0.2px, 0); }
+		74%, 82% { transform: rotate(calc((-1.9deg - (0.8deg * var(--world-wind, 0.18))) * (0.55 + var(--depth, 0.5)))) translate3d(calc((-1.8px - (1.8px * var(--world-wind, 0.18))) * (0.55 + var(--depth, 0.5))), -0.55px, 0); }
 	}
 	/* Svag, ojämn vindpust i grenen - ojämna procentsteg och skilda +/- värden
 	   (inte ett symmetriskt fram-och-tillbaka) så det inte känns mekaniskt
 	   loopat. Börjar och slutar i samma läge så loopen inte hackar till. */
 	@keyframes canopySway {
-		0% { transform: rotate(0deg) translate3d(0, 0, 0); }
-		22% { transform: rotate(0.55deg) translate3d(1.4px, -0.6px, 0); }
-		47% { transform: rotate(-0.35deg) translate3d(-1.8px, 0.3px, 0); }
-		68% { transform: rotate(0.75deg) translate3d(2.2px, -1px, 0); }
-		85% { transform: rotate(-0.2deg) translate3d(-1px, 0.2px, 0); }
-		100% { transform: rotate(0deg) translate3d(0, 0, 0); }
+		0%, 20%, 48%, 60%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); }
+		34% { transform: rotate(-0.22deg) translate3d(-0.7px, 0.15px, 0); }
+		74%, 80% { transform: rotate(-0.68deg) translate3d(-2.1px, 0.55px, 0); }
+		88% { transform: rotate(0.14deg) translate3d(0.45px, -0.1px, 0); }
 	}
 	/* Långsamt svävande ljuspartiklar i övre delen av scenen - synliga inom några sekunder, hela tiden. */
 	@keyframes driftFloat { 0% { opacity: 0; transform: translate3d(0, 8%, 0) scale(0.8); } 12% { opacity: var(--opacity, 0.5); } 50% { transform: translate3d(calc(3% * (0.5 + var(--depth, 0.5))), calc(-10% * (0.5 + var(--depth, 0.5))), 0) scale(1.08); opacity: calc(var(--opacity, 0.5) * 0.8); } 88% { opacity: var(--opacity, 0.5); } 100% { opacity: 0; transform: translate3d(calc(-2.5% * (0.5 + var(--depth, 0.5))), calc(-22% * (0.5 + var(--depth, 0.5))), 0) scale(0.85); } }

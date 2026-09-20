@@ -2579,7 +2579,7 @@
 		filter: blur(1.5px);
 		opacity: 0.48;
 		transform-origin: 72% 0%;
-		animation: progressCanopyDrift 8.5s ease-in-out infinite alternate;
+		animation: progressCanopyDrift 37s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-media::after {
@@ -3223,11 +3223,21 @@
 	}
 
 	@keyframes progressCanopyDrift {
-		0% {
+		0%,
+		22%,
+		54%,
+		100% {
 			transform: translate3d(0, 0, 0) rotate(0deg);
 		}
-		100% {
-			transform: translate3d(-2px, 1px, 0) rotate(-0.7deg);
+		38% {
+			transform: translate3d(-0.45px, 0.15px, 0) rotate(-0.12deg);
+		}
+		76%,
+		82% {
+			transform: translate3d(-1.45px, 0.55px, 0) rotate(-0.46deg);
+		}
+		90% {
+			transform: translate3d(0.3px, -0.1px, 0) rotate(0.09deg);
 		}
 	}
 

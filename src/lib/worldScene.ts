@@ -354,7 +354,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 70,
 		width: 20,
 		height: 24,
-		durationMs: 28_000,
+		durationMs: 34_000,
 		delayMs: -7_000,
 		opacity: 0.3
 	},
@@ -367,7 +367,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 63,
 		width: 23,
 		height: 28,
-		durationMs: 36_000,
+		durationMs: 41_000,
 		delayMs: -20_000,
 		opacity: 0.26
 	},
@@ -384,7 +384,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 0,
 		width: 24,
 		height: 22,
-		durationMs: 7_400,
+		durationMs: 33_000,
 		delayMs: -2_600,
 		opacity: 0.22
 	},
@@ -400,7 +400,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 76,
 		width: 16,
 		height: 14,
-		durationMs: 31_000,
+		durationMs: 29_000,
 		delayMs: -11_000,
 		opacity: 0.18
 	},
@@ -414,7 +414,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 72,
 		width: 17,
 		height: 18,
-		durationMs: 38_000,
+		durationMs: 37_000,
 		delayMs: -23_000,
 		opacity: 0.17
 	},
@@ -428,7 +428,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 76,
 		width: 15,
 		height: 17,
-		durationMs: 42_000,
+		durationMs: 43_000,
 		delayMs: -16_000,
 		opacity: 0.16
 	},
@@ -442,7 +442,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 84,
 		width: 19,
 		height: 13,
-		durationMs: 46_000,
+		durationMs: 31_000,
 		delayMs: -29_000,
 		opacity: 0.14
 	},

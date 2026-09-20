@@ -69,7 +69,9 @@
 				shape: Math.floor(between(0, 3)),
 				color: Math.floor(between(0, 4)),
 				durationMs: between(seasonProfile.duration[0], seasonProfile.duration[1]) * (1.12 - depth * 0.18),
-				drift: between(1.4, 5.2) * depth * sessionCharacter.driftFactor * (Math.random() < 0.68 ? -1 : 1),
+				// Samma vänsterbias som vegetationen. Pendlingen går fortfarande kort
+				// åt motsatt håll tidigt i banan, men nettovinden motsäger inte gräset.
+				drift: between(-5.2, -1.4) * depth * sessionCharacter.driftFactor,
 				// Fallhöjd i rem, inte procent: procent i translate3d räknas mot
 				// lövets egen (mycket lilla) höjd och skulle knappt flytta det alls.
 				fall: between(9, 15) * (0.7 + depth * 0.5) * sessionCharacter.amplitudeFactor,
