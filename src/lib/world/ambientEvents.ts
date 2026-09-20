@@ -3,6 +3,7 @@ import type { WorldGrowthLevel } from '$lib/worldScene';
 
 export type AmbientEventKind = 'bird' | 'butterfly' | 'water' | 'wind';
 export type AmbientEventContext = 'dashboard' | 'cabin' | 'progress';
+export type ProgressFaunaPhase = 'morning' | 'day' | 'afternoon' | 'evening' | 'night';
 
 export type AmbientEventPlan = {
 	id: string;
@@ -19,6 +20,21 @@ export type AmbientEventPlanInput = {
 	season: ProgressCompanionSeason;
 	growthLevel: WorldGrowthLevel;
 	context: AmbientEventContext;
+	reducedMotion?: boolean;
+	availableKinds: readonly AmbientEventKind[];
+};
+
+export type ProgressFaunaPlan = AmbientEventPlan & {
+	delayMs: number;
+	flockSize: 1 | 2 | 3;
+};
+
+export type ProgressFaunaPlanInput = {
+	sessionSeed: string;
+	sequence: number;
+	phase: ProgressFaunaPhase;
+	season: ProgressCompanionSeason;
+	growthLevel: WorldGrowthLevel;
 	reducedMotion?: boolean;
 	availableKinds: readonly AmbientEventKind[];
 };
@@ -56,6 +72,63 @@ function getDurationMs(kind: AmbientEventKind, random: number): number {
 	if (kind === 'butterfly') return 6_500 + Math.round(random * 2_500);
 	if (kind === 'wind') return 7_000 + Math.round(random * 4_000);
 	return 3_800 + Math.round(random * 2_000);
+}
+
+/**
+ * Framstegs återkommande men glest placerade fauna. Den befintliga
+ * 30-minutersplanen behålls för vatten/vind och andra vyer; här får bara fågel
+ * eller fjäril ett nytt deterministiskt tillfälle efter 45-120 sekunder.
+ */
+export function getProgressFaunaPlan(input: ProgressFaunaPlanInput): ProgressFaunaPlan | null {
+	if (input.reducedMotion || input.phase === 'night') return null;
+
+	const birdsAvailable = input.availableKinds.includes('bird');
+	const butterfliesAvailable =
+		input.availableKinds.includes('butterfly') &&
+		input.phase !== 'evening' &&
+		(input.season === 'spring' || input.season === 'summer');
+	if (!birdsAvailable && !butterfliesAvailable) return null;
+
+	const seed = `${input.sessionSeed}:progress-fauna:${input.sequence}:${input.phase}:${input.season}:${input.growthLevel}`;
+	const delayFloor = input.phase === 'day' ? 45_000 : input.phase === 'evening' ? 88_000 : 55_000;
+	const delayCeiling = input.phase === 'day' ? 95_000 : 120_000;
+	const delayMs = delayFloor + Math.round(hash(`${seed}:delay`) * (delayCeiling - delayFloor));
+
+	// Kväll och vinter får ofta ett helt tomt tillfälle. Övriga dagsfaser har i
+	// stället sin stillhet i den 45-120 sekunder långa väntan mellan passagerna.
+	const occurrenceChance =
+		input.season === 'winter' ? 0.12 : input.phase === 'evening' ? 0.18 : 1;
+	if (hash(`${seed}:occurrence`) >= occurrenceChance) {
+		return {
+			id: `progress-fauna:${input.sequence}:rest`,
+			kind: 'bird',
+			positionIndex: 0,
+			durationMs: 0,
+			delayMs,
+			flockSize: 1
+		};
+	}
+
+	const butterflyShare =
+		!butterfliesAvailable ? 0 : input.phase === 'day' ? 0.34 : input.phase === 'morning' ? 0.22 : 0.14;
+	const kind: 'bird' | 'butterfly' =
+		butterfliesAvailable && (!birdsAvailable || hash(`${seed}:kind`) < butterflyShare)
+			? 'butterfly'
+			: 'bird';
+	const durationRandom = hash(`${seed}:duration`);
+	const durationMs =
+		kind === 'bird'
+			? 15_000 + Math.round(durationRandom * 7_000)
+			: 8_000 + Math.round(durationRandom * 4_000);
+
+	return {
+		id: `progress-fauna:${input.sequence}:${kind}`,
+		kind,
+		positionIndex: Math.floor(hash(`${seed}:position`) * 2),
+		durationMs,
+		delayMs,
+		flockSize: kind === 'bird' ? ((1 + Math.floor(hash(`${seed}:flock`) * 3)) as 1 | 2 | 3) : 1
+	};
 }
 
 /**

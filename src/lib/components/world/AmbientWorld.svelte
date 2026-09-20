@@ -23,14 +23,17 @@
 	import { getCloudSessionVariation } from '$lib/world/sessionVariation';
 	import {
 		getAmbientEventPlan,
+		getProgressFaunaPlan,
 		type AmbientEventContext,
-		type AmbientEventKind
+		type AmbientEventKind,
+		type ProgressFaunaPhase,
+		type ProgressFaunaPlan
 	} from '$lib/world/ambientEvents';
 	import type { CompanionRelationshipStage } from '$lib/companionRelationship';
 	import WaterLayer from './WaterLayer.svelte';
 	import LeafLayer from './LeafLayer.svelte';
 
-	type ActiveWorldEvent = LivingWorldEffect & { eventId: string; planId: string };
+	type ActiveWorldEvent = LivingWorldEffect & { eventId: string; planId: string; flockSize?: 1 | 2 | 3 };
 
 	let {
 		scene = getLivingWorldScene(),
@@ -38,6 +41,8 @@
 		visibleEffects,
 		visibleEventKinds,
 		eventContext = 'progress',
+		recurringFauna = false,
+		faunaPhase,
 		eventsBlocked = false,
 		imageAnchors,
 		class: className = ''
@@ -47,6 +52,8 @@
 		visibleEffects?: readonly LivingWorldEffectKind[];
 		visibleEventKinds?: readonly AmbientEventKind[];
 		eventContext?: AmbientEventContext;
+		recurringFauna?: boolean;
+		faunaPhase?: ProgressFaunaPhase;
 		eventsBlocked?: boolean;
 		/**
 		 * Bildankrade lager, per effekt-id. Ett ankare uttrycks som andelar av
@@ -64,10 +71,12 @@
 
 	const motion = createMotionAwareness();
 	let activeEvent = $state<ActiveWorldEvent | null>(null);
+	let activeFauna = $state<ActiveWorldEvent | null>(null);
 	let activeWindEvent = $state(false);
 	let sessionSeed = $state<string | null>(null);
 	let handledPlanId = $state<string | null>(null);
 	let clearEventTimer: number | null = null;
+	let faunaTimer: number | null = null;
 
 	const classes = $derived(`living-world ${className}`.trim());
 	const isVisibleEffect = (kind: LivingWorldEffectKind) =>
@@ -95,10 +104,22 @@
 			.filter((event) => event.enabled)
 			.map((event) => event.kind as AmbientEventKind);
 		if (isVisibleEffect('foliage')) worldKinds.push('wind');
-		return visibleEventKinds === undefined
+		const visibleKinds = visibleEventKinds === undefined
 			? worldKinds
 			: worldKinds.filter((kind) => visibleEventKinds.includes(kind));
+		return recurringFauna
+			? visibleKinds.filter((kind) => kind !== 'bird' && kind !== 'butterfly')
+			: visibleKinds;
 	});
+	const availableFaunaKinds = $derived(
+		scene.events
+			.filter(
+				(event) =>
+					(event.kind === 'bird' || event.kind === 'butterfly') &&
+					(visibleEventKinds === undefined || visibleEventKinds.includes(event.kind))
+			)
+			.map((event) => event.kind as AmbientEventKind)
+	);
 	const ambientPlan = $derived(
 		sessionSeed
 			? getAmbientEventPlan({
@@ -140,11 +161,12 @@
 
 	function createActiveEvent(
 		event: LivingWorldEvent,
-		plan: NonNullable<typeof ambientPlan>
+		plan: NonNullable<typeof ambientPlan> | ProgressFaunaPlan,
+		flockSize: 1 | 2 | 3 = 1
 	): ActiveWorldEvent {
 		const position = event.positions[plan.positionIndex % event.positions.length];
 		const durationMs = plan.durationMs;
-		const size = event.kind === 'water' ? 9 : event.kind === 'bird' ? 2.2 : 1;
+		const size = event.kind === 'water' ? 9 : event.kind === 'bird' ? (flockSize > 1 ? 4.8 : 2.2) : 1;
 
 		return {
 			id: plan.id,
@@ -159,7 +181,8 @@
 			height: event.kind === 'water' ? size * 0.34 : size,
 			durationMs,
 			opacity: position.opacity,
-			scale: position.scale
+			scale: event.kind === 'bird' && 'delayMs' in plan ? 1 : position.scale,
+			flockSize
 		};
 	}
 
@@ -168,6 +191,12 @@
 		clearEventTimer = null;
 		activeEvent = null;
 		activeWindEvent = false;
+	}
+
+	function clearFauna() {
+		if (faunaTimer !== null) window.clearTimeout(faunaTimer);
+		faunaTimer = null;
+		activeFauna = null;
 	}
 
 	function getSessionSeed() {
@@ -181,7 +210,10 @@
 
 	onMount(() => {
 		sessionSeed = getSessionSeed();
-		return clearActiveEvent;
+		return () => {
+			clearActiveEvent();
+			clearFauna();
+		};
 	});
 
 	// Samma session, samma 30-minutersfönster och samma världstid ger samma
@@ -211,6 +243,60 @@
 
 		clearEventTimer = window.setTimeout(clearActiveEvent, plan.durationMs);
 	});
+
+	$effect(() => {
+		const seed = sessionSeed;
+		const active = motion.isActive;
+		const reduced = motion.reducedMotion;
+		const phase = faunaPhase ?? scene.timeOfDay;
+		const season = scene.season;
+		const growthLevel = scene.growthLevel;
+		const kinds = availableFaunaKinds;
+
+		clearFauna();
+		if (!recurringFauna || !seed || !active || reduced || eventsBlocked) return;
+
+		let cancelled = false;
+		let sequence = 0;
+		const queueNext = () => {
+			if (cancelled) return;
+			const plan = getProgressFaunaPlan({
+				sessionSeed: seed,
+				sequence,
+				phase,
+				season,
+				growthLevel,
+				reducedMotion: reduced,
+				availableKinds: kinds
+			});
+			if (!plan) return;
+
+			faunaTimer = window.setTimeout(() => {
+				if (cancelled) return;
+				sequence += 1;
+				if (plan.durationMs === 0) {
+					queueNext();
+					return;
+				}
+				const event = scene.events.find((candidate) => candidate.kind === plan.kind);
+				if (!event) {
+					queueNext();
+					return;
+				}
+				activeFauna = createActiveEvent(event, plan, plan.flockSize);
+				faunaTimer = window.setTimeout(() => {
+					activeFauna = null;
+					queueNext();
+				}, plan.durationMs);
+			}, plan.delayMs);
+		};
+
+		queueNext();
+		return () => {
+			cancelled = true;
+			clearFauna();
+		};
+	});
 </script>
 
 <div
@@ -236,6 +322,19 @@
 			class={`world-effect world-${activeEvent.kind} ${activeEvent.className ?? ''}`.trim()}
 			style={effectStyle(activeEvent)}
 		></span>
+	{/if}
+
+	{#if activeFauna}
+		<span
+			class={`world-effect world-${activeFauna.kind} world-fauna-recurring ${activeFauna.className ?? ''}`.trim()}
+			style={effectStyle(activeFauna)}
+		>
+			{#if activeFauna.kind === 'bird'}
+				{#each Array(activeFauna.flockSize ?? 1) as _}
+					<i class="bird-silhouette"></i>
+				{/each}
+			{/if}
+		</span>
 	{/if}
 
 	<WaterLayer effects={waterEffects} />
@@ -438,15 +537,23 @@
 	.progress-living-world[data-time='night'] .world-drift { display: none; }
 	.world-event-water { border-radius: 50%; border: 1px solid rgba(235, 248, 246, 0.42); transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 0.64)); animation: waterRing var(--duration, 4800ms) ease-out both; }
 	.world-bird { transform: translate3d(0, 0, 0) scale(var(--scale, 0.75)); }
-	.world-bird::before, .world-bird::after { content: ''; position: absolute; top: 34%; width: 50%; height: 42%; border-top: 1.5px solid rgba(36, 49, 45, 0.42); border-radius: 999px 999px 0 0; }
-	.world-bird::before { left: 0; transform: rotate(-13deg); }
-	.world-bird::after { right: 0; transform: rotate(13deg); }
+	.world-bird:not(.world-fauna-recurring)::before, .world-bird:not(.world-fauna-recurring)::after { content: ''; position: absolute; top: 34%; width: 50%; height: 42%; border-top: 1.5px solid rgba(36, 49, 45, 0.42); border-radius: 999px 999px 0 0; }
+	.world-bird:not(.world-fauna-recurring)::before { left: 0; transform: rotate(-13deg); }
+	.world-bird:not(.world-fauna-recurring)::after { right: 0; transform: rotate(13deg); }
+	.world-fauna-recurring .bird-silhouette { position: absolute; left: 4%; top: 44%; width: clamp(5px, 22%, 9px); aspect-ratio: 2 / 1; }
+	.world-fauna-recurring .bird-silhouette::before, .world-fauna-recurring .bird-silhouette::after { content: ''; position: absolute; top: 18%; width: 54%; height: 58%; border-top: 1.2px solid rgba(30, 43, 43, 0.58); border-radius: 999px 999px 0 0; }
+	.world-fauna-recurring .bird-silhouette::before { left: 0; transform: rotate(-15deg); }
+	.world-fauna-recurring .bird-silhouette::after { right: 0; transform: rotate(15deg); }
+	.world-fauna-recurring .bird-silhouette:nth-child(2) { left: 39%; top: 64%; transform: scale(0.82); }
+	.world-fauna-recurring .bird-silhouette:nth-child(3) { left: 72%; top: 24%; transform: scale(0.68); }
 	.world-event-bird { animation: birdGlide var(--duration, 10000ms) ease-in-out both; }
+	.world-fauna-recurring.world-event-bird { animation-name: progressBirdGlide; }
 	.world-butterfly { border-radius: 50%; transform: translate3d(0, 0, 0) scale(var(--scale, 1)); }
 	.world-butterfly::before, .world-butterfly::after { content: ''; position: absolute; top: 18%; width: 45%; height: 58%; border-radius: 70% 30% 70% 30%; background: rgba(245, 196, 135, 0.42); filter: blur(0.2px); }
 	.world-butterfly::before { left: 0; transform-origin: 100% 60%; animation: butterflyWing 980ms ease-in-out infinite alternate; }
 	.world-butterfly::after { right: 0; transform: scaleX(-1); transform-origin: 0 60%; animation: butterflyWing 980ms ease-in-out 160ms infinite alternate; }
 	.world-event-butterfly { animation: butterflyPass var(--duration, 7000ms) ease-in-out both; }
+	.world-fauna-recurring.world-event-butterfly { animation-name: progressButterflyPass; }
 	.world-presence-sign { position: absolute; left: 61%; top: 66%; width: clamp(22px, 4.4%, 46px); height: clamp(5px, 0.8%, 8px); border-radius: 50%; border: 1px solid rgba(228, 239, 218, 0.18); opacity: 0; transform: translate3d(-50%, -50%, 0) scale(0.6); animation: presenceRipple 29s ease-out 9s infinite; }
 
 	/* Parallax: --depth (0 = längst bort, 1 = närmast) skalar rörelselängden, så
@@ -494,7 +601,9 @@
 	@keyframes driftFloat { 0% { opacity: 0; transform: translate3d(0, 8%, 0) scale(0.8); } 12% { opacity: var(--opacity, 0.5); } 50% { transform: translate3d(calc(3% * (0.5 + var(--depth, 0.5))), calc(-10% * (0.5 + var(--depth, 0.5))), 0) scale(1.08); opacity: calc(var(--opacity, 0.5) * 0.8); } 88% { opacity: var(--opacity, 0.5); } 100% { opacity: 0; transform: translate3d(calc(-2.5% * (0.5 + var(--depth, 0.5))), calc(-22% * (0.5 + var(--depth, 0.5))), 0) scale(0.85); } }
 	@keyframes waterRing { 0% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 0.64)); } 14% { opacity: var(--opacity, 0.16); } 46% { opacity: var(--opacity, 0.16); transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 1.05)); } 78% { opacity: calc(var(--opacity, 0.16) * 0.4); transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 1.22)); } 100% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 1.34)); } }
 	@keyframes birdGlide { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(var(--scale, 0.75)); } 12% { opacity: var(--opacity, 0.18); } 82% { opacity: calc(var(--opacity, 0.18) * 0.65); transform: translate3d(92vw, -2.2rem, 0) scale(var(--scale, 0.75)); } 100% { opacity: 0; transform: translate3d(108vw, -2.8rem, 0) scale(var(--scale, 0.75)); } }
+	@keyframes progressBirdGlide { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(var(--scale, 0.75)); } 12% { opacity: var(--opacity, 0.18); transform: translate3d(9vw, -0.2rem, 0) scale(var(--scale, 0.75)); } 38% { opacity: calc(var(--opacity, 0.18) * 0.9); transform: translate3d(34vw, -0.8rem, 0) scale(var(--scale, 0.75)); } 67% { opacity: calc(var(--opacity, 0.18) * 0.76); transform: translate3d(64vw, -0.45rem, 0) scale(var(--scale, 0.75)); } 88% { opacity: calc(var(--opacity, 0.18) * 0.5); transform: translate3d(88vw, -1.35rem, 0) scale(var(--scale, 0.75)); } 100% { opacity: 0; transform: translate3d(104vw, -1.1rem, 0) scale(var(--scale, 0.75)); } }
 	@keyframes butterflyPass { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(var(--scale, 1)) rotate(-5deg); } 12% { opacity: var(--opacity, 0.24); } 80% { opacity: calc(var(--opacity, 0.24) * 0.72); transform: translate3d(18vw, -4.4rem, 0) scale(var(--scale, 1)) rotate(8deg); } 100% { opacity: 0; transform: translate3d(26vw, -3.2rem, 0) scale(var(--scale, 1)) rotate(-3deg); } }
+	@keyframes progressButterflyPass { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(var(--scale, 1)) rotate(-5deg); } 14% { opacity: var(--opacity, 0.24); transform: translate3d(2.5vw, -0.7rem, 0) scale(var(--scale, 1)) rotate(4deg); } 37% { transform: translate3d(7vw, -2.1rem, 0) scale(var(--scale, 1)) rotate(-7deg); } 61% { opacity: calc(var(--opacity, 0.24) * 0.86); transform: translate3d(12vw, -1.35rem, 0) scale(var(--scale, 1)) rotate(8deg); } 82% { transform: translate3d(18vw, -3rem, 0) scale(var(--scale, 1)) rotate(-4deg); } 100% { opacity: 0; transform: translate3d(23vw, -2.35rem, 0) scale(var(--scale, 1)) rotate(3deg); } }
 	@keyframes butterflyWing { from { transform: rotateY(0deg) rotate(8deg); } to { transform: rotateY(54deg) rotate(-6deg); } }
 	@keyframes presenceRipple { 0%, 48%, 100% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(0.6); } 56% { opacity: 0.18; } 78% { opacity: 0.03; transform: translate3d(-50%, -50%, 0) scale(1.28); } }
 

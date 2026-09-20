@@ -1270,7 +1270,13 @@
 						decorative
 					/>
 				{/if}
-				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
+				<AmbientWorld
+					scene={livingWorldScene}
+					class="progress-living-world"
+					relationshipStage={isAnonymous ? 0 : companionRelationshipStage}
+					recurringFauna
+					faunaPhase={sceneTransition.visibleBand}
+				/>
 				<WorldMarks class="progress-world-marks" marks={worldMarks} {visitSeed} />
 				<!-- Statisk dygnston över bild, värld och följeslagare - se .progress-scene-tone. -->
 				<span class="progress-scene-tone" aria-hidden="true"></span>
