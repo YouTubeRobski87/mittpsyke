@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { getAmbientEventPlan, type AmbientEventPlanInput } from './ambientEvents';
+import {
+	getAmbientEventPlan,
+	getProgressFaunaPlan,
+	type AmbientEventPlanInput,
+	type ProgressFaunaPlanInput
+} from './ambientEvents';
 import { getReturnContext } from '$lib/returnContext';
 
 const baseInput: AmbientEventPlanInput = {
@@ -85,5 +90,64 @@ describe('getAmbientEventPlan', () => {
 			})
 		).toBe('longer_return');
 		expect(plansFor(2).some((plan) => plan === null)).toBe(true);
+	});
+});
+
+describe('getProgressFaunaPlan', () => {
+	const faunaInput: ProgressFaunaPlanInput = {
+		sessionSeed: 'fauna-session',
+		sequence: 0,
+		phase: 'day',
+		season: 'summer',
+		growthLevel: 2,
+		availableKinds: ['bird', 'butterfly']
+	};
+
+	it('lägger dagsfauna 45-120 sekunder bort och håller passagen lugn', () => {
+		for (let sequence = 0; sequence < 40; sequence += 1) {
+			const plan = getProgressFaunaPlan({ ...faunaInput, sequence });
+			expect(plan).not.toBeNull();
+			expect(plan!.delayMs).toBeGreaterThanOrEqual(45_000);
+			expect(plan!.delayMs).toBeLessThanOrEqual(120_000);
+			expect(plan!.durationMs).toBeGreaterThanOrEqual(plan!.kind === 'bird' ? 15_000 : 8_000);
+			expect(plan!.durationMs).toBeLessThanOrEqual(plan!.kind === 'bird' ? 22_000 : 12_000);
+		}
+	});
+
+	it('tillåter bara fåglar under höst och aldrig fauna på natten', () => {
+		for (let sequence = 0; sequence < 24; sequence += 1) {
+			expect(getProgressFaunaPlan({ ...faunaInput, sequence, season: 'autumn' })?.kind).toBe('bird');
+			expect(getProgressFaunaPlan({ ...faunaInput, sequence, phase: 'night' })).toBeNull();
+		}
+	});
+
+	it('stänger av all återkommande fauna vid reduced motion', () => {
+		expect(getProgressFaunaPlan({ ...faunaInput, reducedMotion: true })).toBeNull();
+	});
+
+	it('gör kväll och vinter mycket glesa utan fjärilar', () => {
+		const evening = Array.from({ length: 80 }, (_, sequence) =>
+			getProgressFaunaPlan({ ...faunaInput, sequence, phase: 'evening' })
+		);
+		const winter = Array.from({ length: 80 }, (_, sequence) =>
+			getProgressFaunaPlan({ ...faunaInput, sequence, season: 'winter' })
+		);
+		for (const plans of [evening, winter]) {
+			expect(plans.filter((plan) => plan?.durationMs === 0).length).toBeGreaterThan(50);
+			expect(plans.filter((plan) => (plan?.durationMs ?? 0) > 0).every((plan) => plan?.kind === 'bird')).toBe(true);
+		}
+	});
+
+	it('ger en till tre fåglar och högst en faunatyp per tillfälle', () => {
+		const birds = Array.from({ length: 50 }, (_, sequence) =>
+			getProgressFaunaPlan({
+				...faunaInput,
+				sequence,
+				season: 'autumn',
+				availableKinds: ['bird']
+			})
+		);
+		expect(new Set(birds.map((plan) => plan?.flockSize))).toEqual(new Set([1, 2, 3]));
+		expect(birds.every((plan) => plan?.kind === 'bird')).toBe(true);
 	});
 });

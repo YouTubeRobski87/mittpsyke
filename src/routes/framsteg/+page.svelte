@@ -1283,7 +1283,13 @@
 						decorative
 					/>
 				{/if}
-				<AmbientWorld scene={livingWorldScene} class="progress-living-world" relationshipStage={isAnonymous ? 0 : companionRelationshipStage} />
+				<AmbientWorld
+					scene={livingWorldScene}
+					class="progress-living-world"
+					relationshipStage={isAnonymous ? 0 : companionRelationshipStage}
+					recurringFauna
+					faunaPhase={sceneTransition.visibleBand}
+				/>
 				<WorldMarks class="progress-world-marks" marks={worldMarks} {visitSeed} />
 				<!-- Statisk dygnston över bild, värld och följeslagare - se .progress-scene-tone. -->
 				<span class="progress-scene-tone" aria-hidden="true"></span>
@@ -2592,7 +2598,7 @@
 		filter: blur(1.5px);
 		opacity: 0.48;
 		transform-origin: 72% 0%;
-		animation: progressCanopyDrift 8.5s ease-in-out infinite alternate;
+		animation: progressCanopyDrift 37s cubic-bezier(0.42, 0, 0.24, 1) infinite;
 	}
 
 	.companion-media::after {
@@ -2711,8 +2717,8 @@
 	}
 
 	.companion-media[data-time='night'] :global(.world-mist) {
-		/* Ca 60 %. */
-		filter: blur(12px) opacity(0.6);
+		/* Natten behåller en svag kall dis utan att skriva över varje bands egen blur. */
+		--mist-scene-level: 0.62;
 	}
 
 	.companion-media[data-time='night'] .progress-ripple {
@@ -3236,11 +3242,21 @@
 	}
 
 	@keyframes progressCanopyDrift {
-		0% {
+		0%,
+		22%,
+		54%,
+		100% {
 			transform: translate3d(0, 0, 0) rotate(0deg);
 		}
-		100% {
-			transform: translate3d(-2px, 1px, 0) rotate(-0.7deg);
+		38% {
+			transform: translate3d(-0.45px, 0.15px, 0) rotate(-0.12deg);
+		}
+		76%,
+		82% {
+			transform: translate3d(-1.45px, 0.55px, 0) rotate(-0.46deg);
+		}
+		90% {
+			transform: translate3d(0.3px, -0.1px, 0) rotate(0.09deg);
 		}
 	}
 

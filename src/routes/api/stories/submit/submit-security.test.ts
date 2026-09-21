@@ -7,6 +7,7 @@ const insertCalls: Record<string, unknown>[] = [];
 const equalityCalls: Array<[string, unknown]> = [];
 let rateLimitCount = 0;
 let serviceClientCalls = 0;
+let moderationCalls = 0;
 
 vi.mock('$env/dynamic/private', () => ({ env: mockEnv }));
 vi.mock('$env/dynamic/public', () => ({ env: {} }));
@@ -15,8 +16,11 @@ vi.mock('openai', () => ({
 	default: class {
 		chat = {
 			completions: {
-				create: vi.fn().mockResolvedValue({
-					choices: [{ message: { content: '{"action":"approve","reason":null}' } }]
+				create: vi.fn().mockImplementation(() => {
+					moderationCalls += 1;
+					return Promise.resolve({
+						choices: [{ message: { content: '{"action":"approve","reason":null}' } }]
+					});
 				})
 			}
 		};
@@ -61,6 +65,7 @@ function validStoryForm() {
 	const loadedAt = Date.now() - 4_000;
 	const form = new FormData();
 	form.set('content', 'En tillräckligt lång berättelse för att passera valideringen utan problem.');
+	form.set('ai_processing_consent', 'accepted');
 	form.set('story_loaded_at', String(loadedAt));
 	form.set('story_load_token', createStoryLoadToken(loadedAt));
 	return form;
@@ -82,11 +87,27 @@ beforeEach(() => {
 	equalityCalls.length = 0;
 	rateLimitCount = 0;
 	serviceClientCalls = 0;
+	moderationCalls = 0;
 	for (const key of Object.keys(mockEnv)) delete mockEnv[key];
 	mockEnv.STORY_RATE_LIMIT_SALT = VALID_SALT;
 });
 
 describe('inlämning av anonym berättelse', () => {
+	it('skickar inget till OpenAI eller databasen utan uttryckligt AI-godkännande', async () => {
+		const form = validStoryForm();
+		form.delete('ai_processing_consent');
+
+		const response = await submit(form);
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toEqual({
+			message: 'Godkänn AI-granskningen för att skicka berättelsen.'
+		});
+		expect(serviceClientCalls).toBe(0);
+		expect(moderationCalls).toBe(0);
+		expect(insertCalls).toHaveLength(0);
+	});
+
 	it('använder och sparar samma hash för rate limiting utan att spara rå IP', async () => {
 		const clientIp = '203.0.113.42';
 		const response = await submit(validStoryForm(), clientIp);

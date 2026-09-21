@@ -11,7 +11,8 @@ import { SENSITIVE_CONSENT_HEADER, SENSITIVE_CONSENT_VERSION } from '$lib/consen
 const mocks = vi.hoisted(() => ({
 	createClient: vi.fn(),
 	recordCurrentCompanionPresence: vi.fn(),
-	recordDiaryFunnelEvents: vi.fn()
+	recordDiaryFunnelEvents: vi.fn(),
+	recordMeaningfulReflectionMilestones: vi.fn()
 }));
 
 vi.mock('@supabase/supabase-js', () => ({ createClient: mocks.createClient }));
@@ -21,7 +22,8 @@ vi.mock('$lib/server/companion-presence', () => ({
 }));
 
 vi.mock('$lib/server/funnel-events', () => ({
-	recordDiaryFunnelEvents: mocks.recordDiaryFunnelEvents
+	recordDiaryFunnelEvents: mocks.recordDiaryFunnelEvents,
+	recordMeaningfulReflectionMilestones: mocks.recordMeaningfulReflectionMilestones
 }));
 
 vi.mock('$env/dynamic/private', () => ({
@@ -53,7 +55,10 @@ type InsertOutcome = {
 function mockSupabase(outcome: InsertOutcome) {
 	mocks.createClient.mockReturnValue({
 		auth: {
-			getUser: vi.fn().mockResolvedValue({ data: { user: { id: USER_ID } }, error: null })
+			getUser: vi.fn().mockResolvedValue({
+				data: { user: { id: USER_ID, created_at: '2026-05-01T09:00:00Z' } },
+				error: null
+			})
 		},
 		from: () => ({
 			insert: () => ({
@@ -85,6 +90,7 @@ beforeEach(() => {
 	vi.clearAllMocks();
 	mocks.recordCurrentCompanionPresence.mockResolvedValue(true);
 	mocks.recordDiaryFunnelEvents.mockResolvedValue([]);
+	mocks.recordMeaningfulReflectionMilestones.mockResolvedValue({ status: 'no_milestone' });
 	vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
@@ -96,6 +102,11 @@ describe('POST /api/diary/create — funnel events', () => {
 
 		expect(response.status).toBe(200);
 		expect(mocks.recordDiaryFunnelEvents).toHaveBeenCalledTimes(1);
+		expect(mocks.recordMeaningfulReflectionMilestones).toHaveBeenCalledWith({
+			userId: USER_ID,
+			userCreatedAt: '2026-05-01T09:00:00Z',
+			actionOccurredAt: '2026-05-04T09:00:00Z'
+		});
 
 		const [, userId, inserted] = mocks.recordDiaryFunnelEvents.mock.calls[0];
 		expect(userId).toBe(USER_ID);
@@ -120,6 +131,17 @@ describe('POST /api/diary/create — funnel events', () => {
 
 		expect(response.status).toBe(403);
 		expect(mocks.recordDiaryFunnelEvents).not.toHaveBeenCalled();
+		expect(mocks.recordMeaningfulReflectionMilestones).not.toHaveBeenCalled();
+	});
+
+	it('dagbokssparningen lyckas även om retention-helpern kastar', async () => {
+		mockSupabase({ data: SAVED_ROW, error: null });
+		mocks.recordMeaningfulReflectionMilestones.mockRejectedValue(new Error('retention nere'));
+
+		const response = await post();
+
+		expect(response.status).toBe(200);
+		expect((await response.json()) as { success: boolean }).toMatchObject({ success: true });
 	});
 
 	it('I. dagbokssparningen lyckas även om funnel-skrivningen kastar', async () => {

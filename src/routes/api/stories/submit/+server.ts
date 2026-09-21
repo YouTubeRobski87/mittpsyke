@@ -90,6 +90,7 @@ export const POST: RequestHandler = async (event) => {
 	const form = await event.request.formData();
 	const honeypot = normalizeOptionalValue(form.get('company'));
 	const content = normalizeOptionalValue(form.get('content')) ?? '';
+	const aiProcessingConsent = normalizeOptionalValue(form.get('ai_processing_consent'));
 	const ageRange = normalizeOptionalValue(form.get('age_range'));
 	const gender = normalizeOptionalValue(form.get('gender'));
 	const emotionEmoji = normalizeOptionalValue(form.get('emotion_emoji'));
@@ -115,6 +116,16 @@ export const POST: RequestHandler = async (event) => {
 	if (content.length < MIN_CONTENT_LENGTH || content.length > MAX_CONTENT_LENGTH) {
 		return json(
 			{ message: `Berättelsen behöver vara mellan ${MIN_CONTENT_LENGTH} och ${MAX_CONTENT_LENGTH} tecken.` },
+			{ status: 400 }
+		);
+	}
+
+	// Berättelsen kan innehålla känsliga uppgifter om psykisk hälsa och skickas
+	// till OpenAI för förmoderering. Ett vanligt submit räcker därför inte som
+	// godkännande: användaren måste aktivt ha valt den separata kontrollen.
+	if (aiProcessingConsent !== 'accepted') {
+		return json(
+			{ message: 'Godkänn AI-granskningen för att skicka berättelsen.' },
 			{ status: 400 }
 		);
 	}

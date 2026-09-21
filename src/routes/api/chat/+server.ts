@@ -31,6 +31,7 @@ import {
 	type AIMessage,
 	type AITextRequest
 } from '$lib/server/ai/text-generation';
+import { recordMeaningfulReflectionMilestones } from '$lib/server/funnel-events';
 import { buildSupportChatSafetyInstructions } from '$lib/server/ai/safety-instructions';
 import { RateLimiter } from '$lib/server/rate-limit';
 import { buildTopicHintInstruction, getTopicHint } from '$lib/ai/chat-topics';
@@ -690,6 +691,19 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 					return errorResponse('Not allowed to save message.', 403);
 				}
 				return errorResponse('Could not save message.', 500);
+			}
+
+			// Ett sparat verkligt användarmeddelande är en meaningful reflection.
+			// Det räknas direkt efter lyckad insert och är därför oberoende av om
+			// det efterföljande AI-svaret lyckas. Helpern är fail-safe.
+			try {
+				await recordMeaningfulReflectionMilestones({
+					userId: user.id,
+					userCreatedAt: user.created_at,
+					actionOccurredAt: new Date().toISOString()
+				});
+			} catch (retentionError) {
+				console.error('[chat] kunde inte skriva retentionmilestones:', retentionError);
 			}
 
 			const promptHistory = getChatContextMessages(previousMessages, CHAT_CONTEXT_LIMIT);

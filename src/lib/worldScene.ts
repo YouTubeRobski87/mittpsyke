@@ -229,12 +229,12 @@ const baseEffects: LivingWorldEffect[] = [
 		kind: 'mist',
 		enabled: true,
 		className: 'mist-one',
-		x: -10,
-		y: 50,
-		width: 118,
-		height: 15,
-		durationMs: 118_000,
-		delayMs: -12_000,
+		x: -4,
+		y: 51,
+		width: 88,
+		height: 8,
+		durationMs: 126_000,
+		delayMs: -37_000,
 		opacity: 0.18
 	},
 	{
@@ -242,13 +242,26 @@ const baseEffects: LivingWorldEffect[] = [
 		kind: 'mist',
 		enabled: true,
 		className: 'mist-two',
-		x: -15,
-		y: 57,
-		width: 122,
-		height: 13,
-		durationMs: 146_000,
-		delayMs: -44_000,
+		x: 9,
+		y: 48,
+		width: 72,
+		height: 6,
+		durationMs: 149_000,
+		delayMs: -91_000,
 		opacity: 0.12
+	},
+	{
+		id: 'mist-three',
+		kind: 'mist',
+		enabled: true,
+		className: 'mist-three',
+		x: 31,
+		y: 59,
+		width: 62,
+		height: 7,
+		durationMs: 97_000,
+		delayMs: -53_000,
+		opacity: 0.08
 	},
 	{
 		id: 'water-surface',
@@ -354,7 +367,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 70,
 		width: 20,
 		height: 24,
-		durationMs: 28_000,
+		durationMs: 34_000,
 		delayMs: -7_000,
 		opacity: 0.3
 	},
@@ -367,7 +380,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 63,
 		width: 23,
 		height: 28,
-		durationMs: 36_000,
+		durationMs: 41_000,
 		delayMs: -20_000,
 		opacity: 0.26
 	},
@@ -384,7 +397,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 0,
 		width: 24,
 		height: 22,
-		durationMs: 7_400,
+		durationMs: 33_000,
 		delayMs: -2_600,
 		opacity: 0.22
 	},
@@ -400,7 +413,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 76,
 		width: 16,
 		height: 14,
-		durationMs: 31_000,
+		durationMs: 29_000,
 		delayMs: -11_000,
 		opacity: 0.18
 	},
@@ -414,7 +427,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 72,
 		width: 17,
 		height: 18,
-		durationMs: 38_000,
+		durationMs: 37_000,
 		delayMs: -23_000,
 		opacity: 0.17
 	},
@@ -428,7 +441,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 76,
 		width: 15,
 		height: 17,
-		durationMs: 42_000,
+		durationMs: 43_000,
 		delayMs: -16_000,
 		opacity: 0.16
 	},
@@ -442,7 +455,7 @@ const baseEffects: LivingWorldEffect[] = [
 		y: 84,
 		width: 19,
 		height: 13,
-		durationMs: 46_000,
+		durationMs: 31_000,
 		delayMs: -29_000,
 		opacity: 0.14
 	},
@@ -500,8 +513,9 @@ const EFFECT_DEPTHS: Record<string, number> = {
 	moon: 0.08,
 	'cloud-back': 0.1,
 	'cloud-front': 0.2,
-	'mist-two': 0.22,
-	'mist-one': 0.32,
+	'mist-two': 0.2,
+	'mist-one': 0.31,
+	'mist-three': 0.38,
 	'water-surface': 0.4,
 	'water-glint': 0.45,
 	'water-ripple-loop-three': 0.42,
@@ -557,10 +571,10 @@ const baseEvents: Omit<LivingWorldEvent, 'enabled'>[] = [
 ];
 
 function getMistOpacity(timeOfDay: ProgressCompanionDayState): number {
-	if (timeOfDay === 'morning') return 0.3;
-	if (timeOfDay === 'evening') return 0.27;
-	if (timeOfDay === 'night') return 0.29;
-	return 0.24;
+	if (timeOfDay === 'morning') return 0.34;
+	if (timeOfDay === 'evening') return 0.18;
+	if (timeOfDay === 'night') return 0.21;
+	return 0.08;
 }
 
 export type MoonPosition = { x: number; y: number };
@@ -673,7 +687,8 @@ export function getLivingWorldScene(input: LivingWorldSceneInput = {}): LivingWo
 		}
 
 		if (next.kind === 'mist') {
-			next.opacity = mistOpacity * (effect.id === 'mist-two' ? 0.72 : 1);
+			next.opacity =
+				mistOpacity * (effect.id === 'mist-two' ? 0.62 : effect.id === 'mist-three' ? 0.42 : 1);
 		}
 
 		// Den beständiga växtligheten skalas av växtnivån - den primära, alltid
