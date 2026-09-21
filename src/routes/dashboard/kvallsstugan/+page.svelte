@@ -245,6 +245,7 @@
 
 	<div class="evening-experience">
 		<div class="evening-scene-column">
+		<div class="evening-intro-layout">
 		<section class="evening-scene" data-time={dayState} data-view={sceneView} data-sleep={isSleepMode ? 'on' : 'off'} style={getEveningLampCssVariables(dayState)} aria-label={sceneLabel}>
 		<div class="scene-layer" class:is-active={!isVerandaView} aria-hidden={isVerandaView}>
 			<img
@@ -383,6 +384,13 @@
 		<div class="sleep-focus" aria-hidden="true"></div>
 		</section>
 
+			<section class="evening-reassurance" aria-labelledby="evening-reassurance-title">
+				<h2 id="evening-reassurance-title">Balder, din följeslagare</h2>
+				<p>Balder är din följeslagare i MittPsyke. Han finns med i Mitt Hem och Kvällstugan och påverkas inte av hur du mår. Det finns ingen streak och inget att prestera – han är bara en lugn närvaro som följer tiden, årstiden och platsen tillsammans med dig.</p>
+				<p>Här får dagen landa i din egen takt.</p>
+			</section>
+		</div>
+
 			<!-- Samma dagliga fråga som tidigare bara gick att svara på från Mitt Hem
 			     (gamla /dashboard). Kortet ligger strax under scenen, aldrig som en
 			     modal ovanpå den - och finns bara i DOM:en den dag frågan är
@@ -399,12 +407,6 @@
 			{/if}
 
 			<SleepModePanel bind:stage={sleepStage} />
-
-			<section class="evening-reassurance" aria-labelledby="evening-reassurance-title">
-				<h2 id="evening-reassurance-title">Balder, din följeslagare</h2>
-				<p>Balder är din följeslagare i MittPsyke. Han finns med i Mitt Hem och Kvällstugan och påverkas inte av hur du mår. Det finns ingen streak och inget att prestera – han är bara en lugn närvaro som följer tiden, årstiden och platsen tillsammans med dig.</p>
-				<p>Här får dagen landa i din egen takt.</p>
-			</section>
 		</div>
 
 		<div class="evening-flow-column" class:is-dimmed={isSleepMode}>
@@ -432,7 +434,7 @@
 
 <style>
 	.evening-page {
-		width: min(100% - 2rem, 92rem);
+		width: min(100% - 2rem, 80rem);
 		margin: 0 auto;
 		padding: clamp(0.9rem, 3vw, 1.6rem) 0 2.8rem;
 		font-family: var(--font-body);
@@ -733,7 +735,7 @@
 		transition: filter 900ms ease;
 	}
 
-	/* Högerspalten tonas ned men förblir nåbar: den som vill checka in mitt i
+	/* Incheckningen tonas ned men förblir nåbar: den som vill checka in mitt i
 	   Sovläge ska kunna göra det, och pointer-events: none hade dessutom låst
 	   ut tangentbordsnavigering. */
 	.evening-flow-column {
@@ -744,6 +746,10 @@
 
 	.evening-experience {
 		display: grid;
+		gap: clamp(1.5rem, 3vw, 2.5rem);
+	}
+	.evening-intro-layout {
+		display: grid;
 		gap: 1rem;
 	}
 	.evening-scene-column,
@@ -752,10 +758,14 @@
 		gap: 1rem;
 		min-width: 0;
 	}
+	.evening-flow-column {
+		width: min(100%, 58rem);
+		margin: 0 auto;
+	}
 	.evening-flow-wrap {
 		position: relative;
 		z-index: 4;
-		width: min(100% - 1.5rem, 44rem);
+		width: 100%;
 		margin: 0 auto;
 	}
 	/* Följeslagarens svar på dagens fråga. Ersätter kortet så fort ett svar är
@@ -842,14 +852,10 @@
 	}
 
 	@media (min-width: 900px) {
-		.evening-experience {
-			grid-template-columns: minmax(0, 1.55fr) minmax(20rem, 0.9fr);
-			align-items: start;
+		.evening-intro-layout {
+			grid-template-columns: minmax(0, 1.45fr) minmax(20rem, 0.85fr);
+			align-items: stretch;
 			gap: clamp(1.25rem, 3vw, 2rem);
-		}
-		.evening-flow-wrap {
-			width: 100%;
-			margin: 0;
 		}
 	}
 
