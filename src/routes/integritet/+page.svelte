@@ -121,6 +121,7 @@
 		<li><strong>Cookie-bannern</strong> — innan analysverktyg aktiveras.</li>
 		<li><strong>Kontoskapande</strong> — när du registrerar dig godkänner du att kontouppgifter sparas.</li>
 		<li><strong>AI-funktioner</strong> — innan du skickar ett chattmeddelande eller aktivt använder AI på sparad dagbokstext ber vi om samtycke till den behandlingen (artikel 9 GDPR). Att skriva ett anonymt, lokalt dagboksutkast startar inte AI-behandling.</li>
+		<li><strong>Anonyma berättelser</strong> — innan du skickar en berättelse ber vi separat om godkännande att skicka texten till OpenAI för en första AI-granskning före manuell granskning.</li>
 	</ul>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Du kan <strong>när som helst återkalla</strong> ett samtycke. Samtycket för anonym chatt ligger i en
@@ -141,6 +142,7 @@
 		<li>Uppgifter i kontoinställningar, till exempel tilltalsnamn och val kring påminnelser eller utskick.</li>
 		<li>Tekniska uppgifter som behövs för funktion, säkerhet, missbruksförebyggande arbete och stabil drift.</li>
 		<li>Uppgifter om användning av AI-funktioner när du aktivt väljer att använda dem.</li>
+		<li>Anonyma berättelser som du väljer att skicka in, samt en hash av IP-adressen för att begränsa spam och koppla samman bidrag från samma IP-adress.</li>
 		<li>Pseudonymiserade användningshändelser, se <a href="#handelser" class="underline hover:no-underline">användningshändelser</a>.</li>
 		<li>En e-postadress som du själv kontrollerar i <a href="/dataintrang" class="underline hover:no-underline">dataintrångskontrollen</a>.</li>
 	</ul>
@@ -409,6 +411,7 @@
 			<li><strong>Render:</strong> kör MittPsykes server och hanterar tekniska loggar som behövs för drift och säkerhet.</li>
 			<li><strong>Cloudflare:</strong> förmedlar trafiken till och från mittpsyke.se och skyddar sajten. Det innebär att tekniska uppgifter som IP-adress och sidförfrågningar passerar Cloudflare.</li>
 			<li><strong>OpenAI:</strong> AI-funktioner som chatt, AI-minnet och aktivt valda AI-funktioner för sparad dagbokstext. {dataflowCopy.providerRetention}</li>
+			<li><strong>OpenAI för anonyma berättelser:</strong> en första AI-granskning av berättelsetext som du uttryckligen har godkänt att skicka. Berättelsen granskas därefter manuellt före eventuell publicering.</li>
 			<li><strong>Anthropic:</strong> den guidade dagboken och vissa sammanfattningar, efter ett funktionsspecifikt samtycke.</li>
 			<li><strong>Din webbläsares taligenkänning:</strong> när du använder Prata in, se <a href="#diktering" class="underline hover:no-underline">diktering</a>. Leverantören beror på webbläsare och enhet.</li>
 			<li><strong>Have I Been Pwned:</strong> när du själv kontrollerar en e-postadress, se <a href="#dataintrang" class="underline hover:no-underline">dataintrångskontrollen</a>.</li>

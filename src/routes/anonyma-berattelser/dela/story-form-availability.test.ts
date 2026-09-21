@@ -42,6 +42,14 @@ describe('formuläret för anonyma berättelser', () => {
 		expect(data.loadToken).toMatch(/^[a-f0-9]{64}$/);
 	});
 
+	it('kräver ett separat godkännande innan berättelsen skickas till OpenAI', () => {
+		expect(sharePage).toContain('skickas till OpenAI för en första AI-granskning');
+		expect(sharePage).toMatch(
+			/<input type="checkbox" name="ai_processing_consent" value="accepted" required \/>/
+		);
+		expect(sharePage).toContain('Jag godkänner att MittPsyke skickar min berättelse till OpenAI');
+	});
+
 	it.each([
 		['saknad', undefined],
 		['för kort', 'too-short'],

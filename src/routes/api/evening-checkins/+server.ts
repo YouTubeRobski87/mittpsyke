@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { validateEveningCheckinInput } from '$lib/evening-checkin';
 import { loadEveningInteriorMemory, saveEveningCheckin } from '$lib/server/evening-checkin';
+import { recordMeaningfulReflectionMilestones } from '$lib/server/funnel-events';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -33,6 +34,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const result = await saveEveningCheckin(locals.supabase, user.id, validated.data);
 	if (!result.ok) {
 		return json({ error: 'Kunde inte spara kvällsincheckningen just nu.' }, { status: 500 });
+	}
+
+	try {
+		await recordMeaningfulReflectionMilestones({
+			userId: user.id,
+			userCreatedAt: user.created_at,
+			actionOccurredAt: result.checkin.created_at
+		});
+	} catch (retentionError) {
+		console.error('[evening-checkin] kunde inte skriva retentionmilestones:', retentionError);
 	}
 
 	const interiorMemory = await loadEveningInteriorMemory(locals.supabase, user.id);

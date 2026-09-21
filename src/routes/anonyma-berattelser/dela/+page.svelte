@@ -61,7 +61,8 @@
 		<p class="intro">
 			Du kan skicka in utan konto. För att begränsa spam sparar vi en hash av din IP-adress
 			tillsammans med berättelsen. Hashen kan koppla samman flera bidrag från samma IP-adress.
-			Berättelsen läses av vår AI och därefter manuellt innan publicering.
+			Berättelsen skickas till OpenAI för en första AI-granskning och granskas därefter
+			manuellt innan eventuell publicering.
 		</p>
 
 		<form class="story-form" method="POST" action="/api/stories/submit" onsubmit={handleSubmit}>
@@ -120,6 +121,14 @@
 					/>
 				</label>
 			</div>
+
+			<label class="consent-choice">
+				<input type="checkbox" name="ai_processing_consent" value="accepted" required />
+				<span>
+					Jag godkänner att MittPsyke skickar min berättelse till OpenAI för en första
+					AI-granskning innan den granskas manuellt.
+				</span>
+			</label>
 
 			<p class="fine-print">
 				MittPsyke är inte vård, diagnos, behandling, terapi eller akuthjälp. Vid akut fara:
@@ -216,6 +225,19 @@
 	.optional-grid {
 		display: grid;
 		gap: 1rem;
+	}
+
+	.consent-choice {
+		grid-template-columns: auto 1fr;
+		align-items: start;
+		font-weight: 500;
+		line-height: 1.55;
+	}
+
+	.consent-choice input {
+		width: 1.1rem;
+		height: 1.1rem;
+		margin-top: 0.2rem;
 	}
 
 	button {

@@ -122,6 +122,12 @@ describe('integritetspolicyn speglar faktisk databehandling', () => {
 		expect(policyText).not.toMatch(/GDPR-compliant|100\s*%\s*anonym|ingen data lämnar EU|ingen tredje part/i);
 	});
 
+	it('beskriver OpenAI-granskning och IP-hash för anonyma berättelser', () => {
+		expect(policyText).toContain('Anonyma berättelser');
+		expect(policyText).toContain('skicka texten till OpenAI för en första AI-granskning');
+		expect(policyText).toContain('en hash av IP-adressen');
+	});
+
 	it('beskriver MittPsyke som skrivande och reflektion, inte som ett AI-baserat samtalsstöd', () => {
 		expect(policyText).not.toContain('AI-baserat samtalsstöd');
 	});

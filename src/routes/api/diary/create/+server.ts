@@ -4,7 +4,10 @@ import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { hasSensitiveConsentHeader } from '$lib/consent';
 import { recordCurrentCompanionPresence } from '$lib/server/companion-presence';
-import { recordDiaryFunnelEvents } from '$lib/server/funnel-events';
+import {
+	recordDiaryFunnelEvents,
+	recordMeaningfulReflectionMilestones
+} from '$lib/server/funnel-events';
 import type { RequestHandler } from './$types';
 import type {
 	CreateDiaryErrorResponse,
@@ -225,6 +228,16 @@ export const POST: RequestHandler = async ({ request }) => {
 			});
 		} catch (funnelError) {
 			console.error('Could not record funnel events after diary save:', funnelError);
+		}
+
+		try {
+			await recordMeaningfulReflectionMilestones({
+				userId: user.id,
+				userCreatedAt: user.created_at,
+				actionOccurredAt: savedDiary.created_at
+			});
+		} catch (retentionError) {
+			console.error('Could not record retention milestones after diary save:', retentionError);
 		}
 
 		const response: CreateDiarySuccessResponse = {

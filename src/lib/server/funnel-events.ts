@@ -16,11 +16,18 @@ import { createHmac } from 'node:crypto';
 import { env } from '$env/dynamic/private';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createServiceClient, isMissingTableError } from '$lib/server/supabase-admin';
-import { toStockholmDateKey } from '$lib/stockholm-date';
+import { shiftDateKey, toStockholmDateKey } from '$lib/stockholm-date';
 
 export const FUNNEL_EVENT_NAMES = ['first_entry_saved', 'second_active_day'] as const;
+export const RETENTION_EVENT_NAMES = [
+	'first_meaningful_reflection',
+	'w1_return',
+	'w4_return'
+] as const;
 
-export type FunnelEventName = (typeof FUNNEL_EVENT_NAMES)[number];
+export type FunnelEventName =
+	| (typeof FUNNEL_EVENT_NAMES)[number]
+	| (typeof RETENTION_EVENT_NAMES)[number];
 
 export type FunnelWriteStatus =
 	| 'written'
@@ -47,7 +54,10 @@ export type FunnelWriteResult = {
  */
 const ALLOWED_PROPERTIES: Record<FunnelEventName, readonly string[]> = {
 	first_entry_saved: [],
-	second_active_day: []
+	second_active_day: [],
+	first_meaningful_reflection: [],
+	w1_return: [],
+	w4_return: []
 };
 
 /** Skalära värden är det enda properties någonsin får innehålla. */
@@ -61,6 +71,9 @@ const MAX_PROPERTY_STRING_LENGTH = 64;
  * samma hash på två ställen och därmed gå att korsreferera.
  */
 const USER_REF_DOMAIN = 'product_funnel_events:v1';
+const RETENTION_ACTIVATION_EVENT = 'first_meaningful_reflection' as const;
+const RETENTION_COHORT_MAX_FUTURE_SKEW_MS = 5 * 60 * 1000;
+const ISO_TIMESTAMP_WITH_ZONE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
 
 /**
  * Serverhemlighet för pseudonymiseringen. Dedikerad, utan fallback-kedja.
@@ -109,8 +122,60 @@ export function createUserRef(userId: string): string | null {
 	return createHmac('sha256', salt).update(`${USER_REF_DOMAIN}:${trimmed}`).digest('hex');
 }
 
+/**
+ * Retentionkohorten konfigureras i driftmiljön och är alltid prospektiv.
+ * Fem minuters framtida tolerans tillåter normalt klockskew vid deployment;
+ * längre fram än så behandlas som felkonfiguration.
+ */
+export function getRetentionCohortStart(now = new Date()): Date | null {
+	const raw = env.RETENTION_COHORT_START?.trim() ?? '';
+	if (!ISO_TIMESTAMP_WITH_ZONE.test(raw)) return null;
+
+	const parsed = new Date(raw);
+	if (Number.isNaN(parsed.getTime())) return null;
+	if (parsed.getTime() > now.getTime() + RETENTION_COHORT_MAX_FUTURE_SKEW_MS) return null;
+	return parsed;
+}
+
+export function isRetentionCohortEligible(
+	userCreatedAt: string,
+	actionOccurredAt: string,
+	now = new Date()
+) {
+	const cohortStart = getRetentionCohortStart(now);
+	const createdAt = new Date(userCreatedAt);
+	const actionAt = new Date(actionOccurredAt);
+
+	if (!cohortStart || Number.isNaN(createdAt.getTime()) || Number.isNaN(actionAt.getTime())) {
+		return false;
+	}
+
+	return createdAt.getTime() >= cohortStart.getTime() && createdAt.getTime() <= actionAt.getTime();
+}
+
+/** Kalenderfönster i Stockholm. Activation-dagen är dag 0. */
+export function resolveRetentionMilestone(
+	activationOccurredAt: string,
+	actionOccurredAt: string
+): 'w1_return' | 'w4_return' | null {
+	const activationDay = toStockholmDateKey(activationOccurredAt);
+	const actionDay = toStockholmDateKey(actionOccurredAt);
+	if (!activationDay || !actionDay) return null;
+
+	for (const day of [6, 7, 8]) {
+		if (shiftDateKey(activationDay, day) === actionDay) return 'w1_return';
+	}
+	for (let day = 27; day <= 34; day += 1) {
+		if (shiftDateKey(activationDay, day) === actionDay) return 'w4_return';
+	}
+	return null;
+}
+
 export function isFunnelEventName(value: unknown): value is FunnelEventName {
-	return typeof value === 'string' && FUNNEL_EVENT_NAMES.includes(value as FunnelEventName);
+	return (
+		typeof value === 'string' &&
+		([...FUNNEL_EVENT_NAMES, ...RETENTION_EVENT_NAMES] as readonly string[]).includes(value)
+	);
 }
 
 /**
@@ -298,6 +363,168 @@ export async function recordFunnelEvent(input: {
 			error instanceof Error ? error.message : 'okänt fel'
 		);
 		return { status: 'failed', eventName };
+	}
+}
+
+type RetentionActivationRead =
+	| { status: 'found'; occurredAt: string }
+	| { status: 'missing' }
+	| { status: 'missing_table' }
+	| { status: 'failed' };
+
+type RetentionMilestoneResult = {
+	status:
+		| 'activation_written'
+		| 'activation_duplicate'
+		| 'milestone_written'
+		| 'milestone_duplicate'
+		| 'no_milestone'
+		| 'ineligible'
+		| 'skipped_no_salt'
+		| 'skipped_no_service_client'
+		| 'skipped_missing_table'
+		| 'failed';
+	eventName?: 'first_meaningful_reflection' | 'w1_return' | 'w4_return';
+	activationOccurredAt?: string;
+};
+
+function retentionRow(userRef: string, eventName: FunnelEventName) {
+	return {
+		event_name: eventName,
+		user_ref: userRef,
+		is_internal: resolveIsInternal(),
+		properties: {}
+	};
+}
+
+async function readRetentionActivation(
+	client: SupabaseClient,
+	userRef: string
+): Promise<RetentionActivationRead> {
+	try {
+		const { data, error } = await client
+			.from('product_funnel_events')
+			.select('occurred_at')
+			.eq('user_ref', userRef)
+			.eq('event_name', RETENTION_ACTIVATION_EVENT)
+			.maybeSingle<{ occurred_at: string }>();
+
+		if (error) {
+			if (isMissingTableError(error, 'product_funnel_events')) return { status: 'missing_table' };
+			console.error('[retention] kunde inte läsa activation:', error.code ?? error.message);
+			return { status: 'failed' };
+		}
+
+		return data?.occurred_at
+			? { status: 'found', occurredAt: data.occurred_at }
+			: { status: 'missing' };
+	} catch (error) {
+		console.error(
+			'[retention] oväntat fel vid activation-läsning:',
+			error instanceof Error ? error.message : 'okänt fel'
+		);
+		return { status: 'failed' };
+	}
+}
+
+/**
+ * Gemensam server-only väg för activation, W1 och W4.
+ *
+ * Anropas först efter en lyckad produktinsert. Funktionen tar bara identitet,
+ * kontots serververifierade created_at och den lyckade handlingens
+ * serververifierade tidpunkt. Den kastar aldrig till kärnflödet.
+ */
+export async function recordMeaningfulReflectionMilestones(input: {
+	userId: string;
+	userCreatedAt: string;
+	actionOccurredAt: string;
+}): Promise<RetentionMilestoneResult> {
+	try {
+		if (!isRetentionCohortEligible(input.userCreatedAt, input.actionOccurredAt)) {
+			return { status: 'ineligible' };
+		}
+
+		const userRef = createUserRef(input.userId);
+		if (!userRef) return { status: 'skipped_no_salt' };
+
+		const admin = createServiceClient();
+		if (!admin) return { status: 'skipped_no_service_client' };
+
+		let activation = await readRetentionActivation(admin, userRef);
+		if (activation.status === 'missing_table') return { status: 'skipped_missing_table' };
+		if (activation.status === 'failed') return { status: 'failed' };
+
+		if (activation.status === 'missing') {
+			const { data, error } = await admin
+				.from('product_funnel_events')
+				.insert(retentionRow(userRef, RETENTION_ACTIVATION_EVENT))
+				.select('occurred_at')
+				.single<{ occurred_at: string }>();
+
+			if (!error && data?.occurred_at) {
+				return {
+					status: 'activation_written',
+					eventName: RETENTION_ACTIVATION_EVENT,
+					activationOccurredAt: data.occurred_at
+				};
+			}
+
+			if (error?.code !== UNIQUE_VIOLATION) {
+				if (error && isMissingTableError(error, 'product_funnel_events')) {
+					return { status: 'skipped_missing_table' };
+				}
+				if (error) console.error('[retention] kunde inte skriva activation:', error.code ?? error.message);
+				return { status: 'failed' };
+			}
+
+			// Ett samtidigt första event vann unique-racet. Läs dess faktiska
+			// DB-tid så båda anropen fortsätter med exakt samma baseline.
+			activation = await readRetentionActivation(admin, userRef);
+			if (activation.status === 'missing_table') return { status: 'skipped_missing_table' };
+			if (activation.status !== 'found') return { status: 'failed' };
+		}
+
+		const milestone = resolveRetentionMilestone(
+			activation.occurredAt,
+			input.actionOccurredAt
+		);
+		if (!milestone) {
+			return {
+				status: activation.status === 'found' ? 'no_milestone' : 'activation_duplicate',
+				activationOccurredAt: activation.occurredAt
+			};
+		}
+
+		const { error } = await admin
+			.from('product_funnel_events')
+			.insert(retentionRow(userRef, milestone));
+
+		if (!error) {
+			return {
+				status: 'milestone_written',
+				eventName: milestone,
+				activationOccurredAt: activation.occurredAt
+			};
+		}
+		if (error.code === UNIQUE_VIOLATION) {
+			return {
+				status: 'milestone_duplicate',
+				eventName: milestone,
+				activationOccurredAt: activation.occurredAt
+			};
+		}
+		if (isMissingTableError(error, 'product_funnel_events')) {
+			return { status: 'skipped_missing_table' };
+		}
+
+		console.error('[retention] kunde inte skriva milestone:', error.code ?? error.message);
+		return { status: 'failed' };
+	} catch (error) {
+		console.error(
+			'[retention] oväntat fel:',
+			error instanceof Error ? error.message : 'okänt fel'
+		);
+		return { status: 'failed' };
 	}
 }
 
