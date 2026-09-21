@@ -120,9 +120,20 @@
 	// Tidsläget styr etikett, scenbild och lokala ambient-toner. Morgon- och
 	// nattbilden är relights av samma sjöbild, så kompositionen är densamma
 	// genom alla spann.
-	let sceneBand = $state<ProgressSceneBand>(getProgressSceneBand());
+	// Startbandet kommer från servern (data.initialSceneBand), inte från ett
+	// eget anrop till getProgressSceneBand(). Räknade server och klient bandet
+	// var för sig kunde de hamna på varsin sida om en fasgräns, och Svelte
+	// skriver aldrig om en bilds src/srcset under hydrering - den antar att
+	// server och klient är överens. Då blev data-time och etiketten klientens
+	// band medan bilden satt kvar på serverns, permanent: $effect nedan ser
+	// sceneBand === visibleBand och förbereder därför aldrig någon övergång.
+	// untrack: avsiktligt bara startvärdet. Minutuppdateringen i onMount äger
+	// bandet efter montering och kör ett vanligt crossfade om tiden hunnit
+	// passera en gräns.
+	const initialSceneBand = untrack(() => data.initialSceneBand ?? getProgressSceneBand());
+	let sceneBand = $state<ProgressSceneBand>(initialSceneBand);
 	let sceneTransition = $state<ProgressSceneTransitionState>({
-		visibleBand: getProgressSceneBand(),
+		visibleBand: initialSceneBand,
 		pendingBand: null,
 		outgoingBand: null
 	});
@@ -305,6 +316,8 @@
 		companionDaily?: { answeredDayCount: number } | null;
 		// Balders startplats, vald på servern så hydreringen är överens.
 		initialSceneSpotId?: string;
+		// Scenens dygnsband vid render, av samma skäl.
+		initialSceneBand?: ProgressSceneBand;
 		diaryActivityDays?: Record<string, number>;
 		worldProgress?: { marks: WorldMarkId[]; stage: WorldStage } | null;
 		isAnonymous?: boolean;

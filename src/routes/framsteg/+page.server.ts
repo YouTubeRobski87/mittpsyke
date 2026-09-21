@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { THEMES } from '$lib/theme';
 import { getProgressInitialSceneSpot } from '$lib/progressCompanionPlacement';
+import { getProgressSceneBand } from '$lib/progressScene';
 import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
 import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
 import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
@@ -19,10 +20,20 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// se getProgressInitialSceneSpot.
 	const initialSceneSpotId = getProgressInitialSceneSpot().id;
 
+	// Samma sak för scenens dygnsband, och av exakt samma skäl: bandet avgör
+	// vilken scenbild som renderas, och Svelte skriver aldrig om en bilds
+	// src/srcset under hydrering. Räknade server och klient bandet var för sig
+	// kunde de hamna på varsin sida om en fasgräns - då stod data-time och
+	// etiketten på klientens band medan bilden satt kvar på serverns, utan att
+	// något någonsin rättade det. Klienten startar därför från det här värdet
+	// och låter sedan sin minutuppdatering ta över.
+	const initialSceneBand = getProgressSceneBand();
+
 	if (!user) {
 		return {
 			isAnonymous: true,
 			initialSceneSpotId,
+			initialSceneBand,
 			accountCreatedAt: null,
 			streak: { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 },
 			milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
@@ -71,6 +82,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	return {
 		isAnonymous: false,
 		initialSceneSpotId,
+		initialSceneBand,
 		// Kontots ålder är en av världens tidssignaler. Den läses här i stället
 		// för via ett extra anrop; user finns redan.
 		accountCreatedAt: user.created_at ?? null,
