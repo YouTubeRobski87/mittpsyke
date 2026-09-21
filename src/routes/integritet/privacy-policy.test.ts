@@ -78,11 +78,30 @@ describe('integritetspolicyn speglar faktisk databehandling', () => {
 		const funnel = read('../../lib/server/funnel-events.ts');
 
 		expect(funnel).toContain("FUNNEL_EVENT_NAMES = ['first_entry_saved', 'second_active_day']");
+		expect(funnel).toContain("'first_meaningful_reflection'");
+		expect(funnel).toContain("'w1_return'");
+		expect(funnel).toContain("'w4_return'");
 		expect(funnel).toContain("createHmac('sha256', salt)");
 		expect(policy).toContain('id="handelser"');
-		expect(policyText).toContain('HMAC');
+		expect(policyText).toContain('servergenererad pseudonym');
+		expect(policyText).toContain('hash av ditt användar-id med en hemlig nyckel på servern');
 		expect(policyText).toContain('pseudonymisering, inte en anonymisering');
-		expect(policyText).toMatch(/Dagbokstext, chattinnehåll,\s*humörvärden och andra uppgifter om hälsa ingår aldrig/);
+		expect(policyText).toMatch(
+			/Dagbokstext, chattmeddelanden, kvällsincheckningens text, humörvärden, ämnen eller diagnoser, AI-svar, e-post och rått användar-id ingår aldrig/
+		);
+	});
+
+	it('beskriver den prospektiva mätningen av meningsfull användning och återkomst', () => {
+		expect(policyText).toContain('användare med konto som omfattas av mätningen');
+		expect(policyText).toContain('ett dagboksinlägg');
+		expect(policyText).toContain('ett verkligt användarmeddelande i en inloggad chatt');
+		expect(policyText).toContain('en kvällsincheckning faktiskt har sparats');
+		expect(policyText).toMatch(/börjar använda tjänsten och återkommer över tid/);
+		expect(policyText).toMatch(/första meningsfulla användningen.*ungefär vecka 1 och vecka 4/);
+		expect(policyText).toContain('Mätningen börjar när funktionen aktiveras');
+		expect(policyText).toContain('Äldre användning analyseras inte bakåt');
+		expect(policyText).not.toMatch(/registrerar servern två händelser/i);
+		expect(policyText).not.toMatch(/två dagbokshändelser/i);
 	});
 
 	it('beskriver export och radering utan motsägelser', () => {
@@ -113,7 +132,8 @@ describe('integritetspolicyn speglar faktisk databehandling', () => {
 	});
 
 	it('har aktuellt datum', () => {
-		expect(policyText).toContain('Senast uppdaterad: 13 september 2026');
+		expect(policyText).toContain('Senast uppdaterad: 21 september 2026');
+		expect(policyText).not.toContain('13 september 2026');
 		expect(policyText).not.toContain('10 juni 2026');
 	});
 

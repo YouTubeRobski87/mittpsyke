@@ -228,16 +228,23 @@
 	<section id="handelser" class="scroll-mt-6" aria-label="Användningshändelser">
 		<h2 class="text-lg font-semibold mt-8 mb-2">Användningshändelser på servern</h2>
 		<p class="opacity-80 leading-relaxed mb-3">
-			För att förstå om dagboken används och om människor kommer tillbaka registrerar servern två händelser
-			när du är inloggad och sparar dagboksinlägg: att ett första inlägg har sparats och att du har varit aktiv
-			en andra dag.
+			För att förstå om människor börjar använda tjänsten och återkommer över tid kan servern
+			registrera pseudonymiserade användningshändelser för användare med konto som omfattas av mätningen.
+			En händelse skapas först efter att ett dagboksinlägg, ett verkligt användarmeddelande i en inloggad
+			chatt eller en kvällsincheckning faktiskt har sparats. Mätningen visar den första meningsfulla
+			användningen och om användaren återkommer ungefär vecka 1 och vecka 4.
+		</p>
+		<p class="opacity-80 leading-relaxed mb-3">
+			Mätningen börjar när funktionen aktiveras. Äldre användning analyseras inte bakåt för att skapa
+			dessa händelser.
 		</p>
 		<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
-			<li>En händelse består av händelsens namn, en tidpunkt och en pseudonym. <strong>Dagbokstext, chattinnehåll,
-				humörvärden och andra uppgifter om hälsa ingår aldrig.</strong></li>
-			<li>Pseudonymen räknas fram ur ditt användar-id med en hemlig nyckel (HMAC), så varken id eller e-post står
-				i klartext. Det är en pseudonymisering, inte en anonymisering: MittPsyke kan räkna fram samma pseudonym
-				igen från ett känt användar-id.</li>
+			<li>En händelse består av ett fast händelsenamn, en tidpunkt och en servergenererad pseudonym.
+				<strong>Dagbokstext, chattmeddelanden, kvällsincheckningens text, humörvärden, ämnen eller diagnoser,
+				AI-svar, e-post och rått användar-id ingår aldrig.</strong></li>
+			<li>Pseudonymen skapas som en hash av ditt användar-id med en hemlig nyckel på servern, så varken id eller
+				e-post står i klartext. Det är en pseudonymisering, inte en anonymisering: MittPsyke kan räkna fram
+				samma pseudonym igen från ett känt användar-id.</li>
 			<li>Händelserna lagras i Supabase inom EU. De raderas inte när kontot raderas, men kan då inte längre
 				kopplas till ett konto i MittPsyke.</li>
 		</ul>
@@ -499,5 +506,5 @@
 		Vi strävar efter att svara inom 30 dagar.
 	</p>
 
-	<p class="opacity-60 text-sm mt-10">Senast uppdaterad: 13 september 2026</p>
+	<p class="opacity-60 text-sm mt-10">Senast uppdaterad: 21 september 2026</p>
 </main>
