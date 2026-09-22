@@ -30,10 +30,10 @@ describe('direkt in i Kvällstugan', () => {
 
 		expect(introMarkup).toContain('class="evening-scene"');
 		expect(introMarkup).toContain('class="evening-reassurance"');
-		expect(introMarkup).toContain('class="evening-intro-copy"');
-		expect(introMarkup).toContain('<CompanionDailyCard');
+		expect(introMarkup).toMatch(/class="evening-reassurance"[\s\S]*class="evening-intro-daily"[\s\S]*<CompanionDailyCard/);
 		expect(flowStart).toBeGreaterThan(introStart);
 		expect(pageSource).toContain('width: min(100%, 58rem);');
+		expect(pageSource).toMatch(/\.evening-intro-daily\s*\{\s*grid-column: 1 \/ -1;/);
 		expect(pageSource).toMatch(
 			/\.evening-intro-layout\s*\{[\s\S]*?grid-template-columns: minmax\(0, 1\.15fr\) minmax\(20rem, 0\.85fr\)/
 		);
