@@ -384,27 +384,29 @@
 		<div class="sleep-focus" aria-hidden="true"></div>
 		</section>
 
-			<section class="evening-reassurance" aria-labelledby="evening-reassurance-title">
-				<h2 id="evening-reassurance-title">Balder, din följeslagare</h2>
-				<p>Balder är din följeslagare i MittPsyke. Han finns med i Mitt Hem och Kvällstugan och påverkas inte av hur du mår. Det finns ingen streak och inget att prestera – han är bara en lugn närvaro som följer tiden, årstiden och platsen tillsammans med dig.</p>
-				<p>Här får dagen landa i din egen takt.</p>
-			</section>
-		</div>
+			<div class="evening-intro-copy">
+				<section class="evening-reassurance" aria-labelledby="evening-reassurance-title">
+					<h2 id="evening-reassurance-title">Balder, din följeslagare</h2>
+					<p>Balder är din följeslagare i MittPsyke. Han finns med i Mitt Hem och Kvällstugan och påverkas inte av hur du mår. Det finns ingen streak och inget att prestera – han är bara en lugn närvaro som följer tiden, årstiden och platsen tillsammans med dig.</p>
+					<p>Här får dagen landa i din egen takt.</p>
+				</section>
 
-			<!-- Samma dagliga fråga som tidigare bara gick att svara på från Mitt Hem
-			     (gamla /dashboard). Kortet ligger strax under scenen, aldrig som en
-			     modal ovanpå den - och finns bara i DOM:en den dag frågan är
-			     obesvarad, precis som förut. -->
-			{#if dailyQuestion.show && dailyQuestion.question}
-				<CompanionDailyCard
-					question={dailyQuestion.question}
-					busy={dailyQuestion.busy}
-					onanswer={(answerId) => respondToDailyQuestion(answerId)}
-					onskip={() => respondToDailyQuestion(null)}
-				/>
-			{:else if dailyQuestion.reaction}
-				<p class="daily-question-reaction" role="status" aria-live="polite">{dailyQuestion.reaction}</p>
-			{/if}
+				<!-- Samma dagliga fråga som tidigare bara gick att svara på från Mitt Hem
+				     (gamla /dashboard). Kortet hör till samma introduktion som scenen och
+				     följeslagartexten, aldrig som en modal ovanpå den - och finns bara i
+				     DOM:en den dag frågan är obesvarad, precis som förut. -->
+				{#if dailyQuestion.show && dailyQuestion.question}
+					<CompanionDailyCard
+						question={dailyQuestion.question}
+						busy={dailyQuestion.busy}
+						onanswer={(answerId) => respondToDailyQuestion(answerId)}
+						onskip={() => respondToDailyQuestion(null)}
+					/>
+				{:else if dailyQuestion.reaction}
+					<p class="daily-question-reaction" role="status" aria-live="polite">{dailyQuestion.reaction}</p>
+				{/if}
+			</div>
+		</div>
 
 			<SleepModePanel bind:stage={sleepStage} />
 		</div>
@@ -752,6 +754,12 @@
 		display: grid;
 		gap: 1rem;
 	}
+	.evening-intro-copy {
+		display: grid;
+		align-content: start;
+		gap: 1rem;
+		min-width: 0;
+	}
 	.evening-scene-column,
 	.evening-flow-column {
 		display: grid;
@@ -853,9 +861,9 @@
 
 	@media (min-width: 900px) {
 		.evening-intro-layout {
-			grid-template-columns: minmax(0, 1.45fr) minmax(20rem, 0.85fr);
-			align-items: stretch;
-			gap: clamp(1.25rem, 3vw, 2rem);
+			grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 0.85fr);
+			align-items: start;
+			gap: clamp(1rem, 2vw, 1.5rem);
 		}
 	}
 
