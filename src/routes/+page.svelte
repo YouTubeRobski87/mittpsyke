@@ -118,7 +118,51 @@
 		</div>
 	</section>
 
-	<!-- 2. Så fungerar det. Ersätter de två tidigare sektionerna "Skillnaden mot
+	<!-- 2. Den levande platsen, före den längre genomgången av hur skrivandet fungerar. -->
+	<section class="home-section living-world-section" aria-labelledby="living-world-title">
+		<div class="home-inner living-world-layout">
+			<div class="living-world-copy">
+				<h2 id="living-world-title">En plats som förändras med dig</h2>
+				<p>
+					I Framsteg är sjön och stugan samma bekanta plats, men ljuset skiftar under dagen.
+					Balder kan sitta en stund eller vila. När du skriver och återkommer kan små detaljer
+					växa fram i landskapet.
+				</p>
+				<ul class="living-world-points">
+					<li>Samma plats i morgonljus, dagsljus, kväll och natt.</li>
+					<li>Balder kan sitta, sträcka sig eller vila.</li>
+					<li>Växtlighet och små spår kan förändras efter hand.</li>
+					<li>Ibland passerar fåglar eller, under rätt årstid och tid på dagen, fjärilar.</li>
+				</ul>
+			</div>
+			<div class="living-world-scenes" aria-label="Samma sjöscen i dagsljus och på natten">
+				<figure>
+					<img
+						src="/images/scenes/progress-lake-day-800.webp"
+						alt="Sjöscenen i dagsljus, med stugan och en person vid vattnet."
+						width="800"
+						height="450"
+						loading="lazy"
+						decoding="async"
+					/>
+					<figcaption>Dag</figcaption>
+				</figure>
+				<figure>
+					<img
+						src="/images/scenes/progress-lake-night-800.webp"
+						alt="Samma sjöscen på natten, med ljus från stugan och lägerelden."
+						width="800"
+						height="450"
+						loading="lazy"
+						decoding="async"
+					/>
+					<figcaption>Natt</figcaption>
+				</figure>
+			</div>
+		</div>
+	</section>
+
+	<!-- 3. Så fungerar det. Ersätter de två tidigare sektionerna "Skillnaden mot
 		 ett anteckningsblock" och "Efter ett tag syns mönstren", som sa halva
 		 berättelsen var. Stegen är kontrollerade mot produkten: steg 2 säger vad
 		 som gäller utan konto (GuestQuickEntry autosparar till localStorage,
@@ -161,7 +205,7 @@
 		</div>
 	</section>
 
-	<!-- 3. Platsens karta. Ligger efter stegen så besökaren först vet hur det
+	<!-- 4. Platsens karta. Ligger efter stegen så besökaren först vet hur det
 		 fungerar och sedan var det händer. -->
 	<section class="home-section" aria-labelledby="map-title">
 		<div class="home-inner">
@@ -212,7 +256,7 @@
 		</div>
 	</section>
 
-	<!-- 4. Kvällstugan -->
+	<!-- 5. Kvällstugan -->
 	<!-- id:t är målet för gästens "Kvällstugan" i mobilmenyn. -->
 	<section id="kvallstugan" class="home-section section-alt" aria-labelledby="evening-title">
 		<div class="home-inner evening-inner">
@@ -420,6 +464,58 @@
 		font-size: 0.98rem;
 		line-height: 1.65;
 		color: var(--home-text-muted-strong);
+	}
+
+	/* En sammanhållen jämförelse av två bilder från den riktiga Framstegsscenen. */
+	.living-world-section {
+		padding-block: clamp(1.75rem, 4vw, 3rem);
+		border-top: 1px solid rgba(148, 163, 184, 0.14);
+	}
+
+	.living-world-copy {
+		max-width: 42rem;
+	}
+
+	.living-world-points {
+		display: grid;
+		gap: 0.35rem;
+		margin: 1rem 0 0;
+		padding-left: 1.2rem;
+		color: var(--home-text-muted-strong);
+		font-size: 0.92rem;
+		line-height: 1.55;
+	}
+
+	.living-world-points li::marker {
+		color: var(--home-text-cool);
+	}
+
+	.living-world-scenes {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: clamp(0.5rem, 1.5vw, 0.9rem);
+		margin-top: 1.4rem;
+	}
+
+	.living-world-scenes figure {
+		min-width: 0;
+		margin: 0;
+	}
+
+	.living-world-scenes img {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
+		border-radius: 0.75rem;
+	}
+
+	.living-world-scenes figcaption {
+		margin-top: 0.4rem;
+		color: var(--home-text-muted);
+		font-size: 0.8rem;
+		text-align: center;
 	}
 
 	.lead {
@@ -705,6 +801,17 @@
 
 	/* ── Responsivt ── */
 	@media (min-width: 900px) {
+		.living-world-layout {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			gap: clamp(2rem, 4vw, 3.5rem);
+			align-items: center;
+		}
+
+		.living-world-scenes {
+			margin-top: 0;
+		}
+
 		.hero-grid {
 			grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
 			gap: clamp(2rem, 3vw, 2.75rem);
