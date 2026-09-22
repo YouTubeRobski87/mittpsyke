@@ -35,8 +35,8 @@ describe('direkt in i Kvällstugan', () => {
 		expect(pageSource).toMatch(
 			/\.evening-intro-layout\s*\{[\s\S]*?grid-template-columns: minmax\(0, 1\.45fr\) minmax\(20rem, 0\.85fr\)/
 		);
-		expect(pageSource).not.toMatch(
-			/\.evening-experience\s*\{[\s\S]*?grid-template-columns:/
-		);
+		const eveningExperienceRule = pageSource.match(/\.evening-experience\s*\{([^}]*)\}/)?.[1];
+		expect(eveningExperienceRule).toBeDefined();
+		expect(eveningExperienceRule).not.toContain('grid-template-columns:');
 	});
 });
