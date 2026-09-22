@@ -30,7 +30,7 @@ Kör den verkligt konfigurerade providern endast när du uttryckligen vill mäta
 npm run ai:eval:live
 ```
 
-Kommandot failar före scenarioanrop om `OPENAI_API_KEY` saknas. Endast de 24 syntetiska fixtures under den här katalogen skickas, och rapporten sparas som standard i den git-ignorerade katalogen `artifacts/`. Krisfall stoppas av samma deterministiska guard som produkten och rapporteras med `Provider called: false`.
+Kommandot failar före scenarioanrop om `OPENAI_API_KEY` saknas. Endast de 25 syntetiska fixtures under den här katalogen skickas, och rapporten sparas som standard i den git-ignorerade katalogen `artifacts/`. Krisfall stoppas av samma deterministiska guard som produkten och rapporteras med `Provider called: false`.
 
 ## Causality / correlation guard
 

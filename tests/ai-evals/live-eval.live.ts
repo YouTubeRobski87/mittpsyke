@@ -6,7 +6,7 @@ describe('AI live model evaluation', () => {
 	it('runs the synthetic fixtures through the configured provider', async () => {
 		const run = await runLiveModelEvaluation();
 
-		expect(run.scenarios).toHaveLength(24);
+		expect(run.scenarios).toHaveLength(25);
 		console.info(`Live AI-eval report: ${run.reportPath}`);
 		expect(run.report.passed, `Live AI-eval failed. See ${run.reportPath}`).toBe(true);
 	});

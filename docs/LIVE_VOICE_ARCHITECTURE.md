@@ -157,6 +157,12 @@ Håll isär tre beslut:
 
 Scope-namnen är planerade och kräver senare en migration som utökar tabellens tillåtna scope utan att ta bort de fyra befintliga. Använd samma RLS/grantsmodell, inga klientskrivningar i consenttabellen och ingen backfill av godkännanden. Consentmetadata innehåller inte samtalsinnehåll eller en lista över genomförda live-samtal.
 
+### Behörighetsmodell och observerbarhet
+
+En framtida liveimplementation ska följa least privilege. Applikationen och servern äger behörigheter; modellen får varken tilldela sig själv tillgång, utöka ett scope eller återaktivera en rättighet som användaren har återkallat. Varje session får bara tillgång till de verktyg som det aktuella, uttryckligen godkända behovet kräver. Saknad, inaktuell eller återkallad rättighet och fel i behörighetskontrollen ska ge fail-closed, stoppa fortsatt behandling och säkert avbryta mikrofon, uppspelning och transport. Explicit återkallelse ska kunna ske även under en aktiv session.
+
+Systemåtgärder och behörighetsbeslut ska kunna observeras och auditeras utan att logga rått ljud, transkript, promptar, sammanfattningsutkast eller annat känsligt användarinnehåll. Använd i första hand teknisk metadata, exempelvis åtgärdstyp, scope, tillåtet/nekat, tidsstämpel, anonymt korrelations-ID och säker felkod. En auditlogg är inte ett alternativt samtalsminne och får inte ge modellen nya rättigheter.
+
 För gäster: live kan senare erbjudas med samma flyktiga princip och en egen signerad, ändamålsbunden samtyckescookie enligt befintligt anonymt consentmönster. Konto krävs för att spara i kontots dagbok. Bär inte med osparat liveunderlag genom registreringsflödets lokala autosparande. Första sparversionen kan begränsas till redan inloggade; ett avbrutet gästflöde ska inte rädda texten i bakgrunden.
 
 Humördata läser sedan endast beständiga, användaravgränsade `diary`-rader via befintlig insights-/tidslinjeväg. Inget behov finns av att fråga live-sessioner, ljudtabell, Storage eller chattabeller. Behåll verifierad auth, ägarfilter, RLS, valda fält, periodgräns och radtak. RLS och grants ska verifieras var för sig före lansering. [Supabase: Row Level Security](https://supabase.com/docs/guides/database/postgres/row-level-security).

@@ -79,6 +79,31 @@ export const MOOD_TARGETS: readonly RegExp[] = [
 ];
 
 /**
+ * Förändringsord som kan bära samma betydelse som ett explicit måendeord, men
+ * bara när meningen också nämner en hälsorelaterad samtidighetsfaktor. Den
+ * dubbla grinden undviker att vanliga formuleringar om andra förändringar
+ * felaktigt klassas som påståenden om användarens mående.
+ */
+const CHANGE_TARGETS: readonly RegExp[] = [
+	/\bforsamring(en)?\b/,
+	/\bforbattring(en)?\b/,
+	/\bforandring(en)?\b/
+];
+
+const HEALTH_CONTEXT_FACTORS: readonly RegExp[] = [
+	/\bmedicin(andring(en)?|en|er)?\b/,
+	/\blakemed(el|let|elsandring(en)?)\b/,
+	/\bsomn(en)?\b/,
+	/\bsovit\b/,
+	/\bstress(en)?\b/,
+	/\brelations?(problem(en)?)?\b/,
+	/\bbrak(et)?\b/,
+	/\bjobb(et)?\b/
+];
+
+const IMPLICIT_CAUSAL_REFERENCES: readonly RegExp[] = [/\b(det|detta) (beror|berodde) pa\b/];
+
+/**
  * Epistemiska hedgar. En kausal formulering som bevarar osäkerhet bryter inte
  * mot regeln — det är precis vad regeln kräver när kausalt underlag saknas.
  */
@@ -100,6 +125,9 @@ export const UNCERTAINTY_HEDGES: readonly RegExp[] = [
 	/\binte sakert\b/,
 	/\bingen sakerhet\b/,
 	/\bbehover inte betyda\b/,
+	/\bbetyder inte (automatiskt )?att\b/,
+	/\bvisar inte (att|i sig)\b/,
+	/\binte i sig\b/,
 	/\bsager inget om\b/,
 	/\bhypotes\b/,
 	/\bgissning\b/
@@ -133,13 +161,22 @@ function matches(patterns: readonly RegExp[], text: string): boolean {
  * Returnerar de satser som gör ett kausalt anspråk på användarens mående utan
  * bevarad osäkerhet. Tom lista = inget att invända mot.
  */
-export function findCausalMoodClaims(text: string): string[] {
+export function findCausalMoodClaims(text: string, evidence = ''): string[] {
 	const offending: string[] = [];
+	const normalizedEvidence = normalized(evidence);
+	const evidenceDescribesMoodChange =
+		matches(MOOD_TARGETS, normalizedEvidence) || matches(CHANGE_TARGETS, normalizedEvidence);
 
 	for (const sentence of splitSentences(text)) {
-		// Måendeordet får stå var som helst i meningen: "Du mår sämre. Det beror
-		// på jobbet." är två meningar, men inom en mening hör de ihop.
-		if (!matches(MOOD_TARGETS, sentence)) continue;
+		const explicitMoodTarget = matches(MOOD_TARGETS, sentence);
+		const healthRelatedChange =
+			matches(CHANGE_TARGETS, sentence) && matches(HEALTH_CONTEXT_FACTORS, sentence);
+		const implicitReferenceToEvidence =
+			evidenceDescribesMoodChange &&
+			matches(IMPLICIT_CAUSAL_REFERENCES, sentence) &&
+			matches(HEALTH_CONTEXT_FACTORS, sentence);
+
+		if (!explicitMoodTarget && !healthRelatedChange && !implicitReferenceToEvidence) continue;
 
 		for (const clause of splitClauses(sentence)) {
 			if (!matches(CAUSAL_MARKERS, clause)) continue;
