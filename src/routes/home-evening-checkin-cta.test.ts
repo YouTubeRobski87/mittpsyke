@@ -33,7 +33,7 @@ describe('Kvällstugan-sektionen på den publika startsidan', () => {
 	it('har akutvägen i trygghetssektionen i stället för bredvid CTA:n', () => {
 		const evening = publicHome.slice(
 			publicHome.indexOf('evening-inner'),
-			publicHome.indexOf('<!-- 5.')
+			publicHome.indexOf('<!-- 5. Läsning')
 		);
 		expect(evening).not.toContain('href={SUPPORT_LINES_URL}');
 		expect(evening).not.toContain('Behöver du akut stöd?');
@@ -49,7 +49,7 @@ describe('Kvällstugan-sektionen på den publika startsidan', () => {
 	it('visar stegkortet här i stället för som överlägg i heron', () => {
 		const evening = publicHome.slice(
 			publicHome.indexOf('evening-inner'),
-			publicHome.indexOf('<!-- 5.')
+			publicHome.indexOf('<!-- 5. Läsning')
 		);
 		expect(evening).toContain('<CabinProof variant="card" />');
 	});

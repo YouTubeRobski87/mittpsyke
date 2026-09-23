@@ -29,6 +29,7 @@ const sectionOf = (id: string) => {
 describe('Startsidans P2-struktur', () => {
 	it('har sektionerna i den nya ordningen', () => {
 		expect(h2s).toEqual([
+			'Din värld stannar inte här',
 			'Fyra steg, och sedan börjar det om',
 			'Så ser platsen ut',
 			'Kvällsincheckning',
@@ -36,6 +37,28 @@ describe('Startsidans P2-struktur', () => {
 			'Vad det här är och inte är',
 			'Börja med en mening'
 		]);
+	});
+
+	it('visar tidigt hur världen, återhämtningen och den egna resan hänger ihop', () => {
+		const world = sectionOf('living-world-title');
+		expect(body.indexOf('aria-labelledby="living-world-title"')).toBeLessThan(
+			body.indexOf('aria-labelledby="how-title"')
+		);
+		expect(world).toContain('Mer än en chatt');
+		expect(world).toContain('Det du ser idag är bara början.');
+		expect(world).toContain('<ol class="world-journey"');
+		for (const chapter of ['Den levande världen', 'Lugn och återhämtning', 'Din utveckling']) {
+			expect(world).toContain(chapter);
+		}
+		for (const concreteExample of [
+			'Lugn musik',
+			'Meditation och övningar',
+			'Sovläge',
+			'Mående och mönster över tid'
+		]) {
+			expect(world).toContain(concreteExample);
+		}
+		expect(world).toContain('href="/register">Utforska din värld</a>');
 	});
 
 	it('har en hel rubrikhierarki utan tomma eller dubblerade rubriker', () => {

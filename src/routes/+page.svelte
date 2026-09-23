@@ -118,25 +118,25 @@
 		</div>
 	</section>
 
-	<!-- 2. Den levande platsen, före den längre genomgången av hur skrivandet fungerar. -->
+	<!-- 2. Produktens fortsättning, före den längre genomgången av skrivandet.
+		 De tre delarna är en sammanhängande resa, inte en feature-lista: platsen
+		 lever, där finns återhämtning, och det användaren sparar går att följa. -->
 	<section class="home-section living-world-section" aria-labelledby="living-world-title">
-		<div class="home-inner living-world-layout">
-			<div class="living-world-copy">
-				<h2 id="living-world-title">En plats som förändras med dig</h2>
+		<div class="home-inner">
+			<div class="living-world-intro">
+				<p class="section-kicker">Mer än en chatt</p>
+				<h2 id="living-world-title">Din värld stannar inte här</h2>
 				<p>
-					I Framsteg är sjön och stugan samma bekanta plats, men ljuset skiftar under dagen.
-					Balder kan sitta en stund eller vila. När du skriver och återkommer kan små detaljer
-					växa fram i landskapet.
+					MittPsyke är en plats som lever och växer med dig. Med ett konto öppnas fler
+					platser, verktyg och upplevelser, samtidigt som du kan följa hur ditt mående
+					förändras över tid.
 				</p>
-				<ul class="living-world-points">
-					<li>Samma plats i morgonljus, dagsljus, kväll och natt.</li>
-					<li>Balder kan sitta, sträcka sig eller vila.</li>
-					<li>Växtlighet och små spår kan förändras efter hand.</li>
-					<li>Ibland passerar fåglar eller, under rätt årstid och tid på dagen, fjärilar.</li>
-				</ul>
+				<p class="living-world-promise">Det du ser idag är bara början.</p>
 			</div>
-			<div class="living-world-scenes" aria-label="Samma sjöscen i dagsljus och på natten">
-				<figure>
+
+			<ol class="world-journey" aria-label="En värld och resa som fortsätter">
+				<li class="journey-chapter journey-chapter--world">
+					<div class="journey-visual scene-pair" aria-label="Samma plats i dagsljus och på natten">
 					<img
 						src="/images/scenes/progress-lake-day-800.webp"
 						alt="Sjöscenen i dagsljus, med stugan och en person vid vattnet."
@@ -145,19 +145,75 @@
 						loading="lazy"
 						decoding="async"
 					/>
-					<figcaption>Dag</figcaption>
-				</figure>
-				<figure>
 					<img
 						src="/images/scenes/progress-lake-night-800.webp"
-						alt="Samma sjöscen på natten, med ljus från stugan och lägerelden."
+						alt=""
 						width="800"
 						height="450"
 						loading="lazy"
 						decoding="async"
 					/>
-					<figcaption>Natt</figcaption>
-				</figure>
+					</div>
+					<div class="journey-copy">
+						<p class="journey-step">01 · Den levande världen</p>
+						<h3>En plats att återvända till</h3>
+						<p>Ljuset skiftar, Balder rör sig och små detaljer kan växa fram i landskapet.</p>
+						<ul aria-label="Exempel från den levande världen">
+							<li>🍃 Miljön förändras</li>
+							<li>✨ Fler delar kan tillkomma</li>
+						</ul>
+					</div>
+				</li>
+
+				<li class="journey-chapter journey-chapter--rest">
+					<figure class="journey-visual">
+						<img
+							src="/images/scenes/cabin-interior-evening-resting-v1-800.webp"
+							alt="En varm och stilla stuginteriör vid sjön på kvällen."
+							width="800"
+							height="450"
+							loading="lazy"
+							decoding="async"
+						/>
+					</figure>
+					<div class="journey-copy">
+						<p class="journey-step">02 · Lugn och återhämtning</p>
+						<h3>Fler sätt att landa</h3>
+						<p>Välj det som passar stunden: lyssna, gör en övning eller var kvar i lugnet.</p>
+						<ul aria-label="Verktyg för lugn och återhämtning">
+							<li>🎵 Lugn musik</li>
+							<li>🧘 Meditation och övningar</li>
+							<li>🌙 Sovläge</li>
+						</ul>
+					</div>
+				</li>
+
+				<li class="journey-chapter journey-chapter--progress">
+					<figure class="journey-visual">
+						<img
+							src="/images/scenes/progress-cabin-lakeside-afternoon-800.webp"
+							alt="Stugan och sjön längre fram på dagen, med mer växtlighet runt platsen."
+							width="800"
+							height="450"
+							loading="lazy"
+							decoding="async"
+						/>
+					</figure>
+					<div class="journey-copy">
+						<p class="journey-step">03 · Din utveckling</p>
+						<h3>Se din egen resa över tid</h3>
+						<p>Det du väljer att spara kan hjälpa dig att se återkommande teman och förändringar.</p>
+						<ul aria-label="Sätt att följa sin utveckling">
+							<li>🌱 Framsteg utan poäng eller streaks</li>
+							<li>📈 Mående och mönster över tid</li>
+						</ul>
+					</div>
+				</li>
+			</ol>
+
+			<div class="living-world-action">
+				<a class="cta-primary" href={REGISTER_DESTINATION}>Utforska din värld</a>
+				<p>Skapa konto för att spara och hitta tillbaka till din plats.</p>
 			</div>
 		</div>
 	</section>
@@ -356,8 +412,8 @@
 		</div>
 	</section>
 
-	<!-- 7. Avslutande CTA. Kontot erbjuds först här, efter att sidan förklarat
-		 vad det ger. Mikrotexten är kontrollerad mot produkten: registreringen
+	<!-- 7. Avslutande CTA. Kontot erbjuds igen här, efter att sidan förklarat
+		 hela flödet. Mikrotexten är kontrollerad mot produkten: registreringen
 		 visar gästens utkast, och med konto sparas inlägg så att de går att se
 		 tillbaka på. Skrivandet utan konto är fortfarande den primära vägen. -->
 	<section class="home-section section-alt" aria-labelledby="closing-title">
@@ -466,56 +522,128 @@
 		color: var(--home-text-muted-strong);
 	}
 
-	/* En sammanhållen jämförelse av två bilder från den riktiga Framstegsscenen. */
+	/* En sammanhängande resa genom riktiga produktmiljöer. */
 	.living-world-section {
-		padding-block: clamp(1.75rem, 4vw, 3rem);
+		padding-block: clamp(2.5rem, 6vw, 4.75rem);
 		border-top: 1px solid rgba(148, 163, 184, 0.14);
+		background:
+			radial-gradient(circle at 80% 10%, rgba(77, 125, 111, 0.16), transparent 32rem),
+			var(--home-section-bg);
 	}
 
-	.living-world-copy {
-		max-width: 42rem;
+	.living-world-intro {
+		max-width: 47rem;
 	}
 
-	.living-world-points {
+	.section-kicker,
+	.home-section .section-kicker {
+		margin: 0 0 0.55rem;
+		color: #9ccbb7;
+		font-size: 0.78rem;
+		font-weight: 750;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.living-world-promise,
+	.home-section .living-world-promise {
+		color: var(--home-text-strong);
+		font-family: var(--font-heading);
+		font-weight: 700;
+	}
+
+	.world-journey {
 		display: grid;
-		gap: 0.35rem;
-		margin: 1rem 0 0;
-		padding-left: 1.2rem;
-		color: var(--home-text-muted-strong);
-		font-size: 0.92rem;
-		line-height: 1.55;
+		gap: clamp(1.5rem, 4vw, 2.5rem);
+		margin: clamp(2rem, 5vw, 3.5rem) 0 0;
+		padding: 0;
+		list-style: none;
 	}
 
-	.living-world-points li::marker {
-		color: var(--home-text-cool);
-	}
-
-	.living-world-scenes {
+	.journey-chapter {
 		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: clamp(0.5rem, 1.5vw, 0.9rem);
-		margin-top: 1.4rem;
+		gap: 1.25rem;
+		min-width: 0;
+		padding: 1rem;
+		border: 1px solid rgba(156, 203, 183, 0.16);
+		border-radius: 1.15rem;
+		background: rgba(10, 20, 30, 0.34);
+		box-shadow: 0 18px 40px rgba(4, 10, 18, 0.13);
 	}
 
-	.living-world-scenes figure {
+	.journey-visual {
 		min-width: 0;
 		margin: 0;
+		overflow: hidden;
+		border-radius: 0.8rem;
 	}
 
-	.living-world-scenes img {
+	.journey-visual img {
 		display: block;
 		width: 100%;
 		height: auto;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 0.75rem;
 	}
 
-	.living-world-scenes figcaption {
-		margin-top: 0.4rem;
-		color: var(--home-text-muted);
-		font-size: 0.8rem;
-		text-align: center;
+	.scene-pair {
+		display: grid;
+		grid-template-columns: 3fr 2fr;
+		gap: 0.35rem;
+		background: #0a121c;
+	}
+
+	.scene-pair img {
+		height: 100%;
+	}
+
+	.journey-step,
+	.home-section .journey-step {
+		margin: 0 0 0.45rem;
+		color: #9ccbb7;
+		font-size: 0.75rem;
+		font-weight: 750;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
+	.journey-copy h3 {
+		margin: 0;
+		color: var(--home-text-strong);
+		font-family: var(--font-heading);
+		font-size: 1.2rem;
+	}
+
+	.journey-copy ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.45rem;
+		margin: 0.9rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.journey-copy li {
+		padding: 0.38rem 0.65rem;
+		border: 1px solid rgba(156, 203, 183, 0.18);
+		border-radius: 999px;
+		background: rgba(156, 203, 183, 0.07);
+		color: var(--home-text-soft);
+		font-size: 0.78rem;
+		line-height: 1.35;
+	}
+
+	.living-world-action {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem 1rem;
+		margin-top: clamp(1.75rem, 4vw, 2.75rem);
+	}
+
+	.home-section .living-world-action p {
+		margin: 0;
+		font-size: 0.86rem;
 	}
 
 	.lead {
@@ -801,15 +929,13 @@
 
 	/* ── Responsivt ── */
 	@media (min-width: 900px) {
-		.living-world-layout {
-			display: grid;
-			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-			gap: clamp(2rem, 4vw, 3.5rem);
-			align-items: center;
+		.world-journey {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			align-items: stretch;
 		}
 
-		.living-world-scenes {
-			margin-top: 0;
+		.journey-chapter {
+			grid-template-rows: auto 1fr;
 		}
 
 		.hero-grid {
