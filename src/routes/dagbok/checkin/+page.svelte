@@ -50,6 +50,7 @@
 		DIARY_ENTRY_PAGE_SIZE,
 		loadDiaryEntriesPage,
 		notifyDiaryEntriesChanged,
+		pageAfterLoadingMore,
 		type DiaryEntry
 	} from '$lib/state/diary';
 	import { recordSuccessfulReflectionSave } from '$lib/diary-events';
@@ -475,12 +476,14 @@
 
 		loadingMoreEntries = true;
 		loadError = '';
+		const previousCount = entries.length;
 
 		try {
 			await loadEntries({
 				force: true,
-				limit: entries.length + DIARY_ENTRY_PAGE_SIZE
+				limit: previousCount + DIARY_ENTRY_PAGE_SIZE
 			});
+			currentPage = pageAfterLoadingMore(previousCount, entries.length, entriesPerPage, currentPage);
 		} catch (error) {
 			loadError = error instanceof Error ? error.message : 'Kunde inte hämta fler inlägg just nu.';
 		} finally {

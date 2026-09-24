@@ -103,6 +103,21 @@ function isMissingTableError(
 	);
 }
 
+/**
+ * Vilken listsida som ska visas efter "Visa fler inlägg". Utan hopp låg de nya
+ * inläggen på sidor användaren inte stod på, och klicket såg ut att inte göra
+ * något. Kom inga nya inlägg behålls nuvarande sida.
+ */
+export function pageAfterLoadingMore(
+	previousCount: number,
+	nextCount: number,
+	entriesPerPage: number,
+	currentPage: number
+): number {
+	if (nextCount <= previousCount || entriesPerPage < 1) return currentPage;
+	return Math.floor(previousCount / entriesPerPage) + 1;
+}
+
 function normalizeLimit(limit?: number) {
 	return Math.max(
 		DIARY_ENTRY_PAGE_SIZE,
