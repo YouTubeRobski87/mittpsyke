@@ -423,10 +423,10 @@
 			<div class="closing-actions">
 				<a class="cta-primary" href={ANONYMOUS_WRITE_DESTINATION}>Börja skriva</a>
 				<a class="cta-secondary" href={REGISTER_DESTINATION}>
-					Skapa konto för att spara <span aria-hidden="true">→</span>
+					Skapa konto och följ över tid <span aria-hidden="true">→</span>
 				</a>
 			</div>
-			<p class="cta-micro">Med konto kan du spara det du skrivit och se tillbaka på det senare.</p>
+			<p class="cta-micro">Med konto kan du samla det du väljer att spara och se vad som återkommer eller förändras.</p>
 		</div>
 	</section>
 </main>

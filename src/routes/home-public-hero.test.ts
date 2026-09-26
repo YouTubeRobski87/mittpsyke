@@ -65,6 +65,10 @@ describe('Den publika startsidans hero', () => {
 		expect(livingWorld).toContain('Utforska din värld');
 		const closing = publicHome.slice(publicHome.indexOf('aria-labelledby="closing-title"'));
 		expect(closing).toContain('href={REGISTER_DESTINATION}');
+		expect(closing).toContain('Skapa konto och följ över tid');
+		expect(closing).toContain(
+			'Med konto kan du samla det du väljer att spara och se vad som återkommer eller förändras.'
+		);
 		expect(publicHome).not.toContain('Skapa en plats för att spara det du skriver');
 	});
 

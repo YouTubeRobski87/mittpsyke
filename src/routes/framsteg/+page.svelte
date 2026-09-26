@@ -1171,11 +1171,12 @@
 				{#if isAnonymous}
 					<a class="home-return-link" href="/">&larr; Till startsidan</a>
 				{/if}
-				<h1>Framsteg</h1>
+				<p class="auth-eyebrow">Framsteg</p>
+				<h1>Se ditt mående över tid</h1>
 				<p>
 					{isAnonymous
-						? 'En förhandsvisning av hur flera sparade stunder kan göra sådant som återkommer eller förändras lättare att se.'
-						: 'När flera stunder finns kvar kan sådant som återkommer eller förändras bli lättare att se.'}
+						? 'En förhandsvisning av hur sparade stunder kan göra förändringar och återkommande teman lättare att se.'
+						: 'Se hur du har mått, vad som återkommer och vad som har förändrats — utifrån det du själv har sparat.'}
 				</p>
 			</div>
 		</header>
@@ -1189,6 +1190,15 @@
 				<section class="auth-panel auth-panel-error error-state">
 					<p>{error}</p>
 					<small>Försök att ladda sidan igen</small>
+				</section>
+			{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0}
+				<section class="card empty-state" aria-labelledby="progress-empty-heading">
+					<h2 id="progress-empty-heading">Din utveckling börjar här</h2>
+					<p>
+						När du sparar stunder i dagboken kan förändringar och sådant som återkommer börja
+						synas här. Återvänd när det hjälper dig — det finns inget att hålla igång.
+					</p>
+					<a href="/dagbok/checkin" class="auth-button primary">Skriv i dagboken</a>
 				</section>
 			{:else}
 				<div class="progress-content">
@@ -1964,6 +1974,16 @@
 
 	.framsteg-page .auth-hero {
 		padding: 0.25rem 0;
+	}
+
+	.framsteg-page .auth-eyebrow {
+		margin: 0 0 0.35rem;
+		font-family: var(--font-heading);
+		font-size: 0.76rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-dashboard-text-muted);
 	}
 
 	.framsteg-layout {

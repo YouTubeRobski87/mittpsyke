@@ -24,8 +24,9 @@ describe('publik dagbok: utkast, kontosparande och integritet', () => {
 
 	it('skiljer registrering från att aktivt spara ett kontoinlägg', () => {
 		const text = plainText(render(Page).body);
-		expect(text).toContain('Skapa konto för att spara inlägg');
-		expect(text).toMatch(/blir ett dagboksinlägg först när du.*väljer att spara/);
+		expect(text).toContain('Fortsätt härifrån och se ditt mående över tid.');
+		expect(text).toContain('Skapa konto och fortsätt');
+		expect(text).toMatch(/Utkastet stannar lokalt tills du själv sparar det i dagboken/);
 		expect(text).not.toContain('Med ett konto sparas det du skriver');
 		const guest = source('../../lib/components/GuestQuickEntry.svelte');
 		expect(guest).toMatch(/aria-live="polite">Lokalt utkast<\/span>/);
@@ -33,6 +34,8 @@ describe('publik dagbok: utkast, kontosparande och integritet', () => {
 		const register = source('../register/+page.svelte');
 		expect(register).toContain('Utkastet stannar i den här webbläsaren');
 		expect(register).toContain('väljer att spara i dagboken');
+		expect(register).toContain('Skapa konto och se ditt mående över tid');
+		expect(register).toContain('Kontot är frivilligt.');
 	});
 
 	it('ger samma korrekta FAQ-svar i sidan och dess strukturerade data', () => {

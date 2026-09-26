@@ -28,8 +28,8 @@
 	const primaryLabel = $derived(hasEntries ? 'Skriv en stund' : 'Skriv din första rad');
 	const signal = $derived(
 		overview.entryCount === 1
-			? 'En sparad text finns kvar när du vill återvända till den.'
-			: `${overview.entryCount} sparade texter finns kvar när du vill återvända till dem.`
+			? 'Din första sparade text finns kvar. Med fler stunder kan förändringar börja bli lättare att se.'
+			: `${overview.entryCount} sparade texter finns samlade när du vill se tillbaka över tid.`
 	);
 </script>
 
@@ -105,7 +105,7 @@
 					<div class="route-grid" aria-label="Fler platser i MittPsyke">
 						<a href="/framsteg">
 							<TrendingUp size={19} aria-hidden="true" />
-							<span><strong>Framsteg</strong><small>Se vad som tar form över tid.</small></span>
+							<span><strong>Framsteg</strong><small>Se hur ditt mående förändras och vad som återkommer över tid.</small></span>
 						</a>
 						<a href="/dagbok">
 							<BookOpen size={19} aria-hidden="true" />

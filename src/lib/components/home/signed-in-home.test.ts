@@ -14,10 +14,11 @@ describe('inloggad startsida', () => {
 		});
 
 		expect(body).toContain('Välkommen tillbaka, Maja');
-		expect(body).toContain('3 sparade texter finns kvar när du vill återvända till dem.');
+		expect(body).toContain('3 sparade texter finns samlade när du vill se tillbaka över tid.');
 		expect(body).toContain('Mitt Hem');
 		expect(body).toContain('Chatten');
 		expect(body).toContain('Framsteg');
+		expect(body).toContain('Se hur ditt mående förändras och vad som återkommer över tid.');
 		expect(body).toContain('Dagbok');
 		expect(body).toContain('>Kvällstugan</strong>');
 		expect(body).toContain('Stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.');
@@ -46,5 +47,6 @@ describe('inloggad startsida', () => {
 
 		expect(body).toContain('Skriv din första rad');
 		expect(body).not.toContain('sparade texter finns kvar');
+		expect(body).toContain('Se hur ditt mående förändras och vad som återkommer över tid.');
 	});
 });

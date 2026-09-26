@@ -14,6 +14,33 @@ const analysisBlock = route.slice(
 	route.indexOf('{#if showSupportCard}')
 );
 
+const currentEmptyState = route.slice(
+	route.indexOf('{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0}'),
+	route.indexOf('{:else}', route.indexOf('{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0}'))
+);
+
+describe('Framstegs första blick', () => {
+	it('gör kärnlöftet till sidans huvudrubrik', () => {
+		expect(route).toContain('<p class="auth-eyebrow">Framsteg</p>');
+		expect(route).toContain('<h1>Se ditt mående över tid</h1>');
+	});
+
+	it('visar ett enda lugnt nästa steg när ingen historik finns', () => {
+		expect(currentEmptyState).toContain('Din utveckling börjar här');
+		expect(currentEmptyState).toContain('det finns inget att hålla igång');
+		expect(currentEmptyState).toContain('href="/dagbok/checkin"');
+		expect(currentEmptyState).toContain('Skriv i dagboken');
+		expect(currentEmptyState).not.toContain('RecentPeriodChart');
+		expect(currentEmptyState).not.toContain('ConsentGate');
+	});
+
+	it('låter den anonyma, tydligt märkta förhandsvisningen vara kvar', () => {
+		expect(route).toContain('{#if isAnonymous}');
+		expect(route).toContain('<ProgressExamplePreview />');
+		expect(route).toContain('<AccountTeaser variant="progress" />');
+	});
+});
+
 describe('Framstegsanalysens presentation', () => {
 	it('beskriver en månad utan mående som saknat måendeunderlag, inte som avsaknad av aktivitet', () => {
 		expect(route).toContain('<span>Inget mående registrerat</span>');

@@ -149,9 +149,11 @@ describe('Startsidans P2-struktur', () => {
 		expect(body.lastIndexOf('<section')).toBe(closingStart);
 		expect(closing).toContain('Du behöver inte veta vad du vill säga innan du börjar.');
 		expect(closing).toMatch(/class="cta-primary" href="\/dagbok\?action=new"[^>]*>Börja skriva<\/a>/);
-		expect(closing).toMatch(/class="cta-secondary" href="\/register"[^>]*>\s*Skapa konto för att spara/);
+		expect(closing).toMatch(/class="cta-secondary" href="\/register"[^>]*>\s*Skapa konto och följ över tid/);
 		expect(closing.indexOf('Börja skriva')).toBeLessThan(closing.indexOf('Skapa konto'));
-		expect(closing).toContain('Med konto kan du spara det du skrivit och se tillbaka på det senare.');
+		expect(closing).toContain(
+			'Med konto kan du samla det du väljer att spara och se vad som återkommer eller förändras.'
+		);
 	});
 
 	it('har inte kvar de sektioner som slogs ihop', () => {

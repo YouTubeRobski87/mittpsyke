@@ -456,15 +456,15 @@
 
 		<footer class="guest-entry-footer" bind:this={accountOfferEl}>
 			<div class="account-offer">
-				<p class="account-offer-title">Vill du spara ett dagboksinlägg på ditt konto?</p>
+				<p class="account-offer-title">Fortsätt härifrån och se ditt mående över tid.</p>
 				<p class="account-offer-text">
-					Utkastet stannar lokalt när du skapar konto. Det blir ett dagboksinlägg först när du
-					är inloggad och väljer att spara i dagboken.
+					Med ett konto kan du samla det du väljer att spara och börja se vad som återkommer
+					eller förändras. Utkastet stannar lokalt tills du själv sparar det i dagboken.
 				</p>
 			</div>
 			<div class="actions">
 				<a class="primary-action" href="/register?fromDiary=true" onclick={saveAndCreateAccount}
-					>Skapa konto för att spara inlägg</a
+					>Skapa konto och fortsätt</a
 				>
 			</div>
 			<span class="char-count" aria-hidden="true">{charCount} tecken</span>

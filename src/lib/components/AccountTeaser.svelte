@@ -4,6 +4,14 @@
 
 	const titleId = `account-teaser-title-${variant}`;
 	const isOverlay = mode === 'overlay';
+	const title =
+		variant === 'progress'
+			? 'Fortsätt härifrån och börja se din utveckling över tid.'
+			: 'Skapa ett konto när du vill spara det du lämnar här.';
+	const description =
+		variant === 'progress'
+			? 'Med ett konto kan du spara det du väljer och se vad som återkommer eller förändras när du kommer tillbaka.'
+			: 'Då kan dina texter och din plats finnas kvar när du vill återvända.';
 	const secondaryAction =
 		isOverlay
 			? { href: '/', label: 'Till startsidan' }
@@ -35,8 +43,8 @@
 <section class="account-teaser" class:account-teaser--overlay={isOverlay} aria-labelledby={titleId}>
 	<div class="teaser-copy">
 		<p class="eyebrow">När du vill spara platsen</p>
-		<h2 id={titleId}>Skapa ett konto när du vill spara det du lämnar här.</h2>
-		<p>Då kan dina texter och din plats finnas kvar när du vill återvända.</p>
+		<h2 id={titleId}>{title}</h2>
+		<p>{description}</p>
 	</div>
 
 	<div class="account-actions" aria-label="Kontolänkar">

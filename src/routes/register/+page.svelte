@@ -78,10 +78,11 @@
 
 <main class="container max-w-sm py-12">
 	<h1 class="text-2xl font-bold mb-3">
-		{showPreview ? 'Fortsätt med ditt utkast' : 'Skapa konto för att spara och följa över tid'}
+		{showPreview ? 'Fortsätt härifrån och följ över tid' : 'Skapa konto och se ditt mående över tid'}
 	</h1>
 	<p class="text-sm opacity-70 mb-6">
-		Konto är valfritt, men gör det lättare att spara historik, följa ditt mående och komma tillbaka i din egen takt.
+		Med ett konto kan du samla det du väljer att spara, se vad som återkommer och följa
+		förändringar över tid. Kontot är frivilligt.
 	</p>
 
 	{#if showPreview && tempEntryPreview}
