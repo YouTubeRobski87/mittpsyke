@@ -20,20 +20,17 @@ create index if not exists community_comments_user_id_created_at_idx
 
 alter table public.community_comments enable row level security;
 
+-- Klientrollen ser bara egna kommentarer. Andras kommentarer läses av servern
+-- med service role. Se migrations/20260926120000_restrict_cross_user_reads.sql.
 drop policy if exists "community_comments_select_authenticated" on public.community_comments;
-create policy "community_comments_select_authenticated"
+drop policy if exists "community_comments_select_own" on public.community_comments;
+create policy "community_comments_select_own"
 	on public.community_comments
 	for select
-	using (
-		auth.role() = 'authenticated'
-		and deleted_at is null
-		and exists (
-			select 1
-			from public.community_posts post
-			where post.id = post_id
-				and post.deleted_at is null
-		)
-	);
+	to authenticated
+	using ((select auth.uid()) = user_id and deleted_at is null);
+
+revoke all on table public.community_comments from anon;
 
 drop policy if exists "community_comments_insert_authenticated" on public.community_comments;
 create policy "community_comments_insert_authenticated"

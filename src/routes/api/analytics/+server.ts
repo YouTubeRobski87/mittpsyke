@@ -155,9 +155,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ ok: false, error: 'Kunde inte spara analytics-eventet.' }, { status: 500 });
 	}
 
+	// analytics_events är server-only: klientrollerna saknar både policy och
+	// behörighet, eftersom raderna innehåller user_id och session_id. Utan
+	// service role skrivs inget alls, i stället för att falla tillbaka på
+	// användarens klient.
 	const admin = createServiceClient();
-	const insertClient = admin ?? locals.supabase;
-	const { error: insertError } = await insertClient.from('analytics_events').insert({
+	if (!admin) {
+		return json(
+			{ ok: true, countersUpdated: false, skipped: true, message: 'Analytics-lagring är inte konfigurerad.' },
+			{ status: 202 }
+		);
+	}
+	const { error: insertError } = await admin.from('analytics_events').insert({
 		landing_page_id: resolvedLandingPage.id,
 		ab_test_id: abTestId,
 		event_type: eventType,

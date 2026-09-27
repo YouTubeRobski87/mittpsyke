@@ -24,14 +24,18 @@ create unique index if not exists community_posts_unique_active_diary_entry_idx
 
 alter table public.community_posts enable row level security;
 
+-- Klientrollen ser bara egna rader. Flödet läses av servern med service role
+-- så user_id aldrig kan kopplas till ett anonymt visat inlägg. Se
+-- migrations/20260926120000_restrict_cross_user_reads.sql.
 drop policy if exists "community_posts_select_authenticated" on public.community_posts;
-create policy "community_posts_select_authenticated"
+drop policy if exists "community_posts_select_own" on public.community_posts;
+create policy "community_posts_select_own"
 	on public.community_posts
 	for select
-	using (
-		auth.role() = 'authenticated'
-		and deleted_at is null
-	);
+	to authenticated
+	using ((select auth.uid()) = user_id and deleted_at is null);
+
+revoke all on table public.community_posts from anon;
 
 drop policy if exists "community_posts_insert_own" on public.community_posts;
 create policy "community_posts_insert_own"

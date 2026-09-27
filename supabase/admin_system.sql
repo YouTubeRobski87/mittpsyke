@@ -211,15 +211,11 @@ drop policy if exists "analytics_events_insert_all" on public.analytics_events;
 drop policy if exists "analytics_events_update_admin" on public.analytics_events;
 drop policy if exists "analytics_events_delete_admin" on public.analytics_events;
 
-create policy "analytics_events_select_all"
-on public.analytics_events
-for select
-using (true);
-
-create policy "analytics_events_insert_all"
-on public.analytics_events
-for insert
-with check (true);
+-- analytics_events är server-only: raderna innehåller user_id och session_id
+-- och skrivs bara av /api/analytics med service role. Inga select/insert-
+-- policyer och inga tabellbehörigheter för klientrollerna. Se
+-- migrations/20260926120000_restrict_cross_user_reads.sql.
+revoke all on table public.analytics_events from anon, authenticated;
 
 create policy "analytics_events_update_admin"
 on public.analytics_events

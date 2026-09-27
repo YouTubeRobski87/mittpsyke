@@ -25,7 +25,7 @@ export function loadEvalScenarios(): EvalScenario[] {
  * ett tal som räknas fram automatiskt hade skyddat mot ingenting. Höj det bara
  * tillsammans med ett nytt scenario som faktiskt granskats.
  */
-const EXPECTED_SYNTHETIC_FIXTURES = 25;
+const EXPECTED_SYNTHETIC_FIXTURES = 26;
 
 export function assertSyntheticEvalFixtures(scenarios: readonly EvalScenario[]) {
 	if (scenarios.length !== EXPECTED_SYNTHETIC_FIXTURES) {

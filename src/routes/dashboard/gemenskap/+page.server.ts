@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { createServiceClient } from '$lib/server/supabase-admin';
 
 const PAGE_SIZE = 10;
 
@@ -49,7 +50,28 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	}
 
 	const requestedPage = parsePageParam(url.searchParams.get('page'));
-	const { count, error: countError } = await locals.supabase
+
+	// Flödet visar andras inlägg anonymt. RLS släpper bara igenom egna rader
+	// för klientrollen, annars hade vem som helst med ett konto kunnat läsa
+	// user_id direkt via Supabase-API:t och koppla det till ett anonymt inlägg.
+	// Läsningen görs därför med service role här på servern, och user_id
+	// används bara för att räkna ut isOwnPost - det skickas aldrig till klienten.
+	const serviceClient = createServiceClient();
+	if (!serviceClient) {
+		console.error('Gemenskap: saknar SUPABASE_SERVICE_ROLE_KEY/SERVICE_ROLE_KEY.');
+		return {
+			title: 'Gemenskap',
+			description: 'En lugn och anonym plats för igenkänning, stöd och varsam bekräftelse.',
+			items: [] as CommunityPost[],
+			currentPage: 1,
+			totalPages: 1,
+			totalItems: 0,
+			hasPreviousPage: false,
+			hasNextPage: false
+		};
+	}
+
+	const { count, error: countError } = await serviceClient
 		.from('community_posts')
 		.select('id', { count: 'exact', head: true })
 		.is('deleted_at', null);
@@ -64,7 +86,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const from = (currentPage - 1) * PAGE_SIZE;
 	const to = from + PAGE_SIZE - 1;
 
-	const { data: postsData, error: postsError } = await locals.supabase
+	const { data: postsData, error: postsError } = await serviceClient
 		.from('community_posts')
 		.select('id, content, mood, created_at, diary_entry_id, user_id')
 		.is('deleted_at', null)

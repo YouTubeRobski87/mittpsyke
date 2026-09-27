@@ -115,7 +115,18 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('Unauthorized.', 401);
 	}
 
-	const { data: post, error: postError } = await supabase
+	// Andras inlägg är inte läsbara för klientrollen (RLS släpper bara igenom
+	// egna rader, så user_id aldrig kan kopplas till ett anonymt visat inlägg).
+	// Uppslaget och skrivningen görs därför med service role, efter att
+	// användaren verifierats ovan. user_id kommer alltid från auth, aldrig från
+	// request-body.
+	const serviceClient = createAdminServiceClient();
+	if (!serviceClient) {
+		console.error('Missing SUPABASE_SERVICE_ROLE_KEY/SERVICE_ROLE_KEY for community comments.');
+		return errorResponse('Server configuration error.', 500);
+	}
+
+	const { data: post, error: postError } = await serviceClient
 		.from('community_posts')
 		.select('id, user_id')
 		.eq('id', validated.data.postId)
@@ -142,7 +153,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return errorResponse('Du kan inte svara på ditt eget inlägg i den här versionen.', 403);
 	}
 
-	const { data: insertedComment, error: insertError } = await supabase
+	const { data: insertedComment, error: insertError } = await serviceClient
 		.from('community_comments')
 		.insert({
 			post_id: validated.data.postId,
@@ -180,28 +191,21 @@ export const POST: RequestHandler = async ({ request }) => {
 	// Lågmäld notis till ägaren av inlägget.
 	// Notis är extra funktionalitet: kommentaren ska ändå lyckas om notis-insert fallerar.
 	if (post.user_id && post.user_id !== user.id) {
-		const serviceClient = createAdminServiceClient();
-		if (serviceClient) {
-			const { error: notificationError } = await serviceClient.from('notifications').insert({
-				user_id: post.user_id,
-				type: 'community_reply',
-				title: 'Du har fått ett svar i Gemenskapen',
-				body: 'Någon har svarat på ditt inlägg.',
-				link: `/dashboard/gemenskap#post-${validated.data.postId}`,
-				is_read: false,
-				actor_user_id: user.id
-			});
+		const { error: notificationError } = await serviceClient.from('notifications').insert({
+			user_id: post.user_id,
+			type: 'community_reply',
+			title: 'Du har fått ett svar i Gemenskapen',
+			body: 'Någon har svarat på ditt inlägg.',
+			link: `/dashboard/gemenskap#post-${validated.data.postId}`,
+			is_read: false,
+			actor_user_id: user.id
+		});
 
-			if (notificationError) {
-				if (isMissingTableError(notificationError, 'notifications')) {
-					console.error('Notifications table missing while creating community reply notification.');
-				}
-				console.error('Failed to create community reply notification:', notificationError);
+		if (notificationError) {
+			if (isMissingTableError(notificationError, 'notifications')) {
+				console.error('Notifications table missing while creating community reply notification.');
 			}
-		} else {
-			console.error(
-				'Skipped community reply notification: missing SUPABASE_SERVICE_ROLE_KEY/SERVICE_ROLE_KEY or Supabase URL.'
-			);
+			console.error('Failed to create community reply notification:', notificationError);
 		}
 	}
 
@@ -228,7 +232,35 @@ export const GET: RequestHandler = async ({ url, request, locals }) => {
 		return json({ success: false, error: 'Saknar giltig inloggning.' }, { status: 401 });
 	}
 
-	const { data: commentsData, error: commentsError } = await locals.supabase
+	// Samma gräns som i POST: andras kommentarer läses bara via servern, och
+	// user_id lämnar aldrig databasen i det här svaret.
+	const serviceClient = createAdminServiceClient();
+	if (!serviceClient) {
+		console.error('Missing SUPABASE_SERVICE_ROLE_KEY/SERVICE_ROLE_KEY for community comments.');
+		return json({ success: false, error: 'Kunde inte läsa svar just nu.' }, { status: 500 });
+	}
+
+	const { data: activePost, error: activePostError } = await serviceClient
+		.from('community_posts')
+		.select('id')
+		.eq('id', postId)
+		.is('deleted_at', null)
+		.maybeSingle();
+
+	if (isMissingTableError(activePostError, 'community_posts')) {
+		return json({ success: true, comments: [] }, { status: 200 });
+	}
+
+	if (activePostError) {
+		console.error('Failed to load community post for comments:', activePostError);
+		return json({ success: false, error: 'Kunde inte läsa svar just nu.' }, { status: 500 });
+	}
+
+	if (!activePost) {
+		return json({ success: true, comments: [] }, { status: 200 });
+	}
+
+	const { data: commentsData, error: commentsError } = await serviceClient
 		.from('community_comments')
 		.select('id, post_id, body, created_at')
 		.eq('post_id', postId)
