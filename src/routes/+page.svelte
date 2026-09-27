@@ -118,9 +118,53 @@
 		</div>
 	</section>
 
-	<!-- 2. Produktens fortsättning, före den längre genomgången av skrivandet.
-		 De tre delarna är en sammanhängande resa, inte en feature-lista: platsen
-		 lever, där finns återhämtning, och det användaren sparar går att följa. -->
+	<!-- 2. Kärnloopen kommer direkt efter heron, innan den levande världen
+		 introduceras. Ersätter de två tidigare sektionerna "Skillnaden mot
+		 ett anteckningsblock" och "Efter ett tag syns mönstren", som sa halva
+		 berättelsen var. Stegen är kontrollerade mot produkten: steg 2 säger vad
+		 som gäller utan konto (GuestQuickEntry autosparar till localStorage,
+		 diary-draft.ts) och med konto (inlägg sparas bara när du väljer det). -->
+	<section class="home-section section-alt" aria-labelledby="how-title">
+		<div class="home-inner">
+			<div class="narrow">
+				<h2 id="how-title">Fyra steg, och sedan börjar det om</h2>
+				<p>
+					I ett anteckningsblock ligger det du skrivit kvar, men du får själv leta upp det. Här möter
+					det dig igen.
+				</p>
+			</div>
+			<!-- role="list" behåller listsemantiken i Safari, som annars tappar den
+				 när list-style tas bort. -->
+			<ol class="place-map how-steps" role="list">
+				<li>
+					<h3>Skriv.</h3>
+					<p>Några ord eller en hel sida. Det finns inget rätt sätt.</p>
+				</li>
+				<li>
+					<h3>Spara det du vill.</h3>
+					<p>Utan konto stannar texten i din webbläsare. Med konto sparar du det du väljer.</p>
+				</li>
+				<li>
+					<h3>Kom tillbaka när du vill.</h3>
+					<p>Ingenting börjar om för att det gått en tid.</p>
+				</li>
+				<li>
+					<h3>Se vad som återkommer.</h3>
+					<p>Dina egna ord sammanställda — ingen mätning av hur du sköter dig.</p>
+				</li>
+			</ol>
+			<!-- Steg 4 i praktiken. Ett märkt, påhittat exempel på vad "se vad som
+				 återkommer" betyder, så att en ny besökare ser det utan konto och
+				 utan veckor av egna inlägg. Ingen AI och inga användardata. -->
+			<div class="how-example">
+				<ProgressExamplePreview headingLevel={3} context="home" />
+			</div>
+		</div>
+	</section>
+
+	<!-- 3. Det personliga och levande lagret runt kärnloopen. De tre delarna är
+		 en sammanhängande resa, inte en feature-lista: platsen lever, där finns
+		 återhämtning, och det användaren sparar går att följa. -->
 	<section class="home-section living-world-section" aria-labelledby="living-world-title">
 		<div class="home-inner">
 			<div class="living-world-intro">
@@ -214,49 +258,6 @@
 			<div class="living-world-action">
 				<a class="cta-primary" href={REGISTER_DESTINATION}>Utforska din värld</a>
 				<p>Skapa konto för att spara och hitta tillbaka till din plats.</p>
-			</div>
-		</div>
-	</section>
-
-	<!-- 3. Så fungerar det. Ersätter de två tidigare sektionerna "Skillnaden mot
-		 ett anteckningsblock" och "Efter ett tag syns mönstren", som sa halva
-		 berättelsen var. Stegen är kontrollerade mot produkten: steg 2 säger vad
-		 som gäller utan konto (GuestQuickEntry autosparar till localStorage,
-		 diary-draft.ts) och med konto (inlägg sparas bara när du väljer det). -->
-	<section class="home-section section-alt" aria-labelledby="how-title">
-		<div class="home-inner">
-			<div class="narrow">
-				<h2 id="how-title">Fyra steg, och sedan börjar det om</h2>
-				<p>
-					I ett anteckningsblock ligger det du skrivit kvar, men du får själv leta upp det. Här möter
-					det dig igen.
-				</p>
-			</div>
-			<!-- role="list" behåller listsemantiken i Safari, som annars tappar den
-				 när list-style tas bort. -->
-			<ol class="place-map how-steps" role="list">
-				<li>
-					<h3>Skriv.</h3>
-					<p>Några ord eller en hel sida. Det finns inget rätt sätt.</p>
-				</li>
-				<li>
-					<h3>Spara det du vill.</h3>
-					<p>Utan konto stannar texten i din webbläsare. Med konto sparar du det du väljer.</p>
-				</li>
-				<li>
-					<h3>Kom tillbaka när du vill.</h3>
-					<p>Ingenting börjar om för att det gått en tid.</p>
-				</li>
-				<li>
-					<h3>Se vad som återkommer.</h3>
-					<p>Dina egna ord sammanställda — ingen mätning av hur du sköter dig.</p>
-				</li>
-			</ol>
-			<!-- Steg 4 i praktiken. Ett märkt, påhittat exempel på vad "se vad som
-				 återkommer" betyder, så att en ny besökare ser det utan konto och
-				 utan veckor av egna inlägg. Ingen AI och inga användardata. -->
-			<div class="how-example">
-				<ProgressExamplePreview headingLevel={3} context="home" />
 			</div>
 		</div>
 	</section>

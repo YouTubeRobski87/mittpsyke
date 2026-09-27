@@ -58,9 +58,10 @@ describe('Den publika startsidans hero', () => {
 		expect(hero).not.toContain('/register');
 		expect(hero).not.toContain('REGISTER_DESTINATION');
 		expect(publicHome.match(/href=\{REGISTER_DESTINATION\}/g)).toHaveLength(2);
+		const livingWorldStart = publicHome.indexOf('aria-labelledby="living-world-title"');
 		const livingWorld = publicHome.slice(
-			publicHome.indexOf('aria-labelledby="living-world-title"'),
-			publicHome.indexOf('aria-labelledby="how-title"')
+			livingWorldStart,
+			publicHome.indexOf('</section>', livingWorldStart)
 		);
 		expect(livingWorld).toContain('Utforska din värld');
 		const closing = publicHome.slice(publicHome.indexOf('aria-labelledby="closing-title"'));

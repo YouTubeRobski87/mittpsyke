@@ -4,9 +4,10 @@ import { describe, expect, it } from 'vitest';
 import Page from './+page.svelte';
 
 // P2 för den publika startsidan: färre sektioner, tydligare ordning.
-// Hero -> Så fungerar det -> platsen (+ chatten som rad) -> Kvällstugan ->
-// guider -> trygghet -> avslutande CTA. Testerna läser den renderade sidan,
-// så ordningen och rubrikerna är det besökaren faktiskt får.
+// Hero -> kärnloop och mönsterexempel -> den levande världen -> platsen
+// (+ chatten som rad) -> Kvällstugan -> guider -> trygghet -> avslutande CTA.
+// Testerna läser den renderade sidan, så ordningen och rubrikerna är det
+// besökaren faktiskt får.
 // Sveltes scope-klasser (svelte-xxxx) tas bort så att testerna läser
 // markupen och inte en hash som byts vid varje stiländring.
 const body = render(Page, {
@@ -29,8 +30,8 @@ const sectionOf = (id: string) => {
 describe('Startsidans P2-struktur', () => {
 	it('har sektionerna i den nya ordningen', () => {
 		expect(h2s).toEqual([
-			'Din värld stannar inte här',
 			'Fyra steg, och sedan börjar det om',
+			'Din värld stannar inte här',
 			'Så ser platsen ut',
 			'Kvällsincheckning',
 			'Guider när du behöver ord',
@@ -39,10 +40,10 @@ describe('Startsidans P2-struktur', () => {
 		]);
 	});
 
-	it('visar tidigt hur världen, återhämtningen och den egna resan hänger ihop', () => {
+	it('introducerar världen först efter kärnloopen och mönsterexemplet', () => {
 		const world = sectionOf('living-world-title');
-		expect(body.indexOf('aria-labelledby="living-world-title"')).toBeLessThan(
-			body.indexOf('aria-labelledby="how-title"')
+		expect(body.indexOf('aria-labelledby="how-title"')).toBeLessThan(
+			body.indexOf('aria-labelledby="living-world-title"')
 		);
 		expect(world).toContain('Mer än en chatt');
 		expect(world).toContain('Det du ser idag är bara början.');
@@ -69,7 +70,7 @@ describe('Startsidans P2-struktur', () => {
 		expect(headings[1].level).toBe(2);
 	});
 
-	it('lägger "Så fungerar det" direkt efter heron med fyra steg i en ordnad lista', () => {
+	it('lägger kärnloopen direkt efter heron med fyra steg i en ordnad lista', () => {
 		const how = sectionOf('how-title');
 		expect(body.indexOf('aria-labelledby="how-title"')).toBeLessThan(
 			body.indexOf('aria-labelledby="map-title"')
