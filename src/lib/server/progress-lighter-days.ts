@@ -6,7 +6,7 @@
 // språkmodell är inblandad, och ingen text säger att ett tema orsakar något:
 // den säger bara att temat fanns med.
 
-import { containsAcuteCrisisPhrase, containsThirdPartyRiskPhrase } from '$lib/ai/crisis-keywords';
+import { containsSensitiveContentPhrase } from '$lib/ai/crisis-keywords';
 import { TOPICS, type DiaryInsightRow } from '$lib/server/diary-insight-analysis';
 import {
 	LOW_CONFIDENCE_ENTRY_LIMIT,
@@ -72,7 +72,7 @@ function median(values: number[]): number | null {
 }
 
 function isSafeToShow(sentence: string): boolean {
-	return !containsAcuteCrisisPhrase(sentence) && !containsThirdPartyRiskPhrase(sentence);
+	return !containsSensitiveContentPhrase(sentence);
 }
 
 /**

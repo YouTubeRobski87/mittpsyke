@@ -8,7 +8,7 @@
 // Sambanden hämtas från buildTopicMoodAssociations. Ett förslag skapas bara
 // när ett tema har en jämförelsegrupp och skiljer sig tydligt från den.
 
-import { containsAcuteCrisisPhrase, containsThirdPartyRiskPhrase } from '$lib/ai/crisis-keywords';
+import { containsSensitiveContentPhrase } from '$lib/ai/crisis-keywords';
 import {
 	MOOD_ASSOCIATION_THRESHOLD,
 	TOPICS,
@@ -110,14 +110,14 @@ export function hasRecentRiskSignal(entries: PreparedEntry[], now: Date): boolea
 	const latest = entries.slice(-SAFETY_RECENT_ENTRIES);
 	const candidates = new Set([...recent, ...latest]);
 	for (const entry of candidates) {
-		if (containsAcuteCrisisPhrase(entry.text) || containsThirdPartyRiskPhrase(entry.text)) return true;
+		if (containsSensitiveContentPhrase(entry.text)) return true;
 	}
 	return false;
 }
 
 /** Ett citat får aldrig bära krisinnehåll vidare till en förslagsruta. */
 function isQuoteSafe(sentence: string): boolean {
-	return !containsAcuteCrisisPhrase(sentence) && !containsThirdPartyRiskPhrase(sentence);
+	return !containsSensitiveContentPhrase(sentence);
 }
 
 function findTopicKeywords(topicLabel: string, topics: { label: string; keywords: string[] }[]): string[] {
