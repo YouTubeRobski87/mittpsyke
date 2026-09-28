@@ -1,7 +1,7 @@
 // src/lib/ai/crisis-keywords.ts
 //
-// Enda källan för krisorddetektering i hela appen. Används åt två håll som
-// ställer motsatta krav, och därför finns två listor:
+// Enda källan för krisorddetektering i hela appen. Används åt tre håll som
+// ställer olika krav, och därför finns flera listor:
 //
 // 1. ACUTE_CRISIS_PHRASES — den auktoritativa spärren. En träff kortsluter
 //    chatten: inget AI-anrop görs och användaren får CRISIS_RESPONSE i stället
@@ -10,11 +10,16 @@
 //    stödnivåer. Här kostar ett falsklarm ett samtal som aldrig blev av, så
 //    listan hålls smal och entydig.
 //
-// 2. SENSITIVE_CONTENT_PHRASES — dämpningsfiltret. En träff döljer ett citat
+// 2. ELEVATED_DISTRESS_PHRASES — förhöjd stödnivå i chatten. En träff bryter
+//    inte samtalet; ChatWindow visar en varm panel med stödlinjer. Här hör de
+//    fraser hemma som lyftes ur den akuta listan för att de var för breda att
+//    blockera med, men som fortfarande betyder att någon bär mycket.
+//
+// 3. SENSITIVE_CONTENT_PHRASES — dämpningsfiltret. En träff döljer ett citat
 //    i dagbokens förslag och på Framsteg. Här är ett falsklarm harmlöst medan
-//    en miss släpper fram krisinnehåll i en förslagsruta, så listan är bred och
-//    innehåller även uttryck för tyngd som inte i sig motiverar att ett samtal
-//    bryts.
+//    en miss släpper fram krisinnehåll i en förslagsruta, så listan är en
+//    övermängd av de två ovan plus några fraser som är för vardagliga även
+//    för den varma panelen.
 //
 // Risk mot en själv och risk mot någon annan hålls isär eftersom de kräver
 // olika svarstext (CRISIS_RESPONSE respektive THIRD_PARTY_RISK_RESPONSE). Ett
@@ -103,10 +108,11 @@ export const THIRD_PARTY_RISK_PHRASES = Object.freeze([
 ]);
 
 // Uttryck för tyngd, hopplöshet och utmattning. De säger inte att någon är i
-// akut fara, så de får inte bryta ett samtal — men de gör ett citat olämpligt
-// att lyfta fram i en förslagsruta. Flera låg tidigare i den akuta listan och
-// blockerade chatten för meningar som "jag orkar inte mer med plugget".
-const ELEVATED_DISTRESS_PHRASES = Object.freeze([
+// akut fara, så de får inte bryta ett samtal — men de höjer stödpanelen och
+// gör ett citat olämpligt att lyfta fram. Flera låg tidigare i den akuta
+// listan och blockerade chatten för meningar som "jag orkar inte mer med
+// plugget".
+export const ELEVATED_DISTRESS_PHRASES = Object.freeze([
 	'orkar inte mer',
 	'kan inte fortsatta',
 	'klarar inte mer',
@@ -121,18 +127,39 @@ const ELEVATED_DISTRESS_PHRASES = Object.freeze([
 	'ge upp hoppet',
 	'gett upp hoppet',
 	'ger upp hoppet',
-	'vill forsvinna',
+	'vill forsvinna'
+]);
+
+// För breda även för den varma panelen: "ta tabletter mot huvudvärken" eller
+// "hoppa av utbildningen" ska varken bryta samtalet eller visa stödlinjer.
+// De döljer bara citat, så krisinnehåll inte läcker in i en förslagsruta.
+const SUPPRESSION_ONLY_PHRASES = Object.freeze([
 	'hoppa av',
 	'sista chansen',
 	'ta tabletter',
 	'ta piller'
 ]);
 
+// ChatWindow-only. Inte kris, inte dämpning — bara att någon bär mycket just
+// nu eller ber om en människa. "orkar inte" är medvetet bredare än "orkar
+// inte mer"; den akuta kontrollen körs först och fångar "orkar inte leva".
+const ELEVATED_PRESENCE_PHRASES = Object.freeze([
+	'for mycket',
+	'ensam*',
+	'kan inte mer',
+	'orkar inte',
+	'prata med nagon',
+	'prata med en manniska',
+	'text racker inte',
+	'texten racker inte'
+]);
+
 /** Allt som aldrig får lyftas fram som citat. Är alltid en övermängd av den akuta listan. */
 export const SENSITIVE_CONTENT_PHRASES = Object.freeze([
 	...ACUTE_CRISIS_PHRASES,
 	...THIRD_PARTY_RISK_PHRASES,
-	...ELEVATED_DISTRESS_PHRASES
+	...ELEVATED_DISTRESS_PHRASES,
+	...SUPPRESSION_ONLY_PHRASES
 ]);
 
 export function normalizeForCrisisMatch(text: string): string {
@@ -158,6 +185,8 @@ function buildPhrasePattern(phrase: string): RegExp {
 
 const ACUTE_PATTERNS = ACUTE_CRISIS_PHRASES.map(buildPhrasePattern);
 const THIRD_PARTY_PATTERNS = THIRD_PARTY_RISK_PHRASES.map(buildPhrasePattern);
+const ELEVATED_DISTRESS_PATTERNS = ELEVATED_DISTRESS_PHRASES.map(buildPhrasePattern);
+const ELEVATED_PRESENCE_PATTERNS = ELEVATED_PRESENCE_PHRASES.map(buildPhrasePattern);
 const SENSITIVE_PATTERNS = SENSITIVE_CONTENT_PHRASES.map(buildPhrasePattern);
 
 function matchesAny(text: string, patterns: readonly RegExp[]): boolean {
@@ -179,4 +208,14 @@ export function containsThirdPartyRiskPhrase(text: string): boolean {
 /** Bred kontroll för dämpning. Bryter aldrig ett samtal, döljer bara innehåll. */
 export function containsSensitiveContentPhrase(text: string): boolean {
 	return matchesAny(text, SENSITIVE_PATTERNS);
+}
+
+/** Tyngd som höjer chattens stödpanel. Bryter aldrig ett samtal. */
+export function containsElevatedDistressPhrase(text: string): boolean {
+	return matchesAny(text, ELEVATED_DISTRESS_PATTERNS);
+}
+
+/** Närvarosignaler i chatten: ensamhet, överväldigande, önskan om en människa. */
+export function containsElevatedPresencePhrase(text: string): boolean {
+	return matchesAny(text, ELEVATED_PRESENCE_PATTERNS);
 }

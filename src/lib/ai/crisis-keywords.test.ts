@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
 	containsAcuteCrisisPhrase,
+	containsElevatedDistressPhrase,
+	containsElevatedPresencePhrase,
 	containsSensitiveContentPhrase,
 	containsThirdPartyRiskPhrase,
 	normalizeForCrisisMatch
@@ -145,6 +147,10 @@ describe('gränsen mellan orkar-fraserna', () => {
 	it('"orkar inte mer" gör det inte', () => {
 		expect(containsAcuteCrisisPhrase('Jag orkar inte mer med plugget just nu')).toBe(false);
 	});
+
+	it('"orkar inte mer" höjer däremot stödnivån', () => {
+		expect(containsElevatedDistressPhrase('Jag orkar inte mer med plugget just nu')).toBe(true);
+	});
 });
 
 // ---------------------------------------------------------------------------
@@ -211,5 +217,48 @@ describe('dämpningsfiltret behåller bred täckning', () => {
 		for (const text of [...måsteFångas, ...accepteradeFalsklarm]) {
 			expect(containsSensitiveContentPhrase(text)).toBe(true);
 		}
+	});
+});
+
+// ---------------------------------------------------------------------------
+// Förhöjd stödnivå: de urlyfta fraserna ska synas i chatten, inte tystas.
+// ---------------------------------------------------------------------------
+
+describe('förhöjd tyngd i chatten', () => {
+	it.each([
+		'Jag orkar inte mer med plugget just nu',
+		'Jag kan inte fortsätta så här med den här chefen',
+		'Det känns som att ingen bryr sig om mig på jobbet',
+		'Jag har gett upp allt',
+		'Det finns inget hopp längre',
+		'Jag vill försvinna in i en bok en stund'
+	])('höjer panelen: %s', (text) => {
+		expect(containsElevatedDistressPhrase(text)).toBe(true);
+		expect(containsAcuteCrisisPhrase(text)).toBe(false);
+	});
+
+	it.each([
+		'Jag funderar på att hoppa av utbildningen',
+		'Det här är sista chansen att söka till utbildningen',
+		'Läkaren sa att jag ska ta tabletter mot huvudvärken',
+		'Jag glömmer alltid att ta piller på morgonen'
+	])('dämpas men höjer inte panelen: %s', (text) => {
+		expect(containsSensitiveContentPhrase(text)).toBe(true);
+		expect(containsElevatedDistressPhrase(text)).toBe(false);
+		expect(containsAcuteCrisisPhrase(text)).toBe(false);
+	});
+});
+
+describe('närvarofraser i chatten', () => {
+	it.each(['Jag känner mig ensam', 'Allt är för mycket just nu', 'Text räcker inte längre'])(
+		'höjer panelen utan att dämpa citat: %s',
+		(text) => {
+			expect(containsElevatedPresencePhrase(text)).toBe(true);
+			expect(containsSensitiveContentPhrase(text)).toBe(false);
+		}
+	);
+
+	it('träffar inte ensam inuti gemensam', () => {
+		expect(containsElevatedPresencePhrase('Vi har en gemensam plan för kvällen')).toBe(false);
 	});
 });

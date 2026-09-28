@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { Bot, Square, Volume2 } from 'lucide-svelte';
-	import { containsCrisisSignal, containsThirdPartyRiskSignal } from '$lib/ai/safety';
+	import { resolveChatSupportLevel } from '$lib/ai/safety';
 	import { SWEDISH_LOCALE, selectVoiceForLang, waitForVoiceForLang } from '$lib/ai/speech';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import RecentConversations from '$lib/components/RecentConversations.svelte';
@@ -107,26 +107,6 @@
 		'Hjälp mig hitta ett litet nästa steg'
 	];
 
-	const elevatedSupportKeywords = [
-		'för mycket',
-		'for mycket',
-		'hopplös',
-		'orkar inte',
-		'hopplös',
-		'hopplöst',
-		'hopplost',
-		'ensam',
-		'kan inte mer',
-		'prata med någon',
-		'prata med nagon',
-		'prata med en människa',
-		'prata med en manniska',
-		'text räcker inte',
-		'text racker inte',
-		'texten räcker inte',
-		'texten racker inte'
-	];
-
 	let chatTopic = $derived(getChatTopic(category));
 	let inputLength = $derived(input.length);
 	let showStarterSuggestions = $derived(
@@ -148,18 +128,7 @@
 	}
 
 	function supportLevel() {
-		const text = latestUserMessageContent();
-		if (!text) return 'standard';
-		if (containsCrisisSignal(text)) {
-			return 'acute';
-		}
-		if (containsThirdPartyRiskSignal(text)) {
-			return 'acute-third-party';
-		}
-		if (elevatedSupportKeywords.some((keyword) => text.includes(keyword))) {
-			return 'elevated';
-		}
-		return 'standard';
+		return resolveChatSupportLevel(latestUserMessageContent());
 	}
 
 	let currentSupportLevel = $derived(supportLevel());
