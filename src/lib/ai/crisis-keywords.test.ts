@@ -93,6 +93,11 @@ const fårInteFångas = [
 	'Det känns som att ingen bryr sig om mig på jobbet',
 	// 'vill forsvinna'
 	'Jag vill försvinna in i en bok en stund',
+	// 'vill do' matchade tidigare som substräng inuti längre ord. Den första
+	// meningen är ett av de sämsta tänkbara falsklarmen: någon formulerar att
+	// de döljer hur de mår, och möts av en telefonlista.
+	'Jag vill dölja hur jag mår för mina vänner',
+	'Jag vill dokumentera mina känslor i dagboken',
 	// 'ge upp allt'
 	'Jag är inte redo att ge upp allt jag byggt upp',
 	// 'inget hopp'
