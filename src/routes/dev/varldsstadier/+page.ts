@@ -1,5 +1,4 @@
 import { error } from '@sveltejs/kit';
-import { dev } from '$app/environment';
 import {
 	buildWorldPresence,
 	getEligibleWorldMarkIds,
@@ -14,9 +13,10 @@ import type { PageLoad } from './$types';
 // den riktiga Framsteg-komponenten med ett syntetiskt konto per stadium.
 // Samma komponent, samma CSS och samma scen - bara underlaget skiljer.
 //
-// Den finns bara i utvecklingsläge: i ett produktionsbygge är `dev` falskt och
-// sidan svarar 404 innan något renderas. Ingen serverrendering, så allt räknas
-// mot webbläsarens klocka (som QA-skriptet låser).
+// Vem som får se sidan avgörs i +page.server.ts (öppen i dev, bara admin i
+// produktion). Den här laddaren körs först när den spärren släppt igenom.
+// Ingen serverrendering, så allt räknas mot webbläsarens klocka (som
+// QA-skriptet låser).
 export const ssr = false;
 
 /** Fast QA-tid. Skriptet låser webbläsarens klocka till samma ögonblick. */
@@ -63,8 +63,6 @@ function dateKey(date: Date): string {
 }
 
 export const load: PageLoad = ({ url }) => {
-	if (!dev) throw error(404, 'Not found');
-
 	const key = url.searchParams.get('fixture') ?? '0';
 	const fixture = FIXTURES[key];
 	if (!fixture) throw error(404, 'Okänd fixture');
