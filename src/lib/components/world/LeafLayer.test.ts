@@ -19,4 +19,11 @@ describe('LeafLayer', () => {
 		expect(source).toContain('between(18, 22)');
 		expect(source).toContain('opacity: [0.72, 0.9]');
 	});
+
+	it('släpper högst tre löv per vindpust, en gång per pust', () => {
+		expect(source).toContain('const count = Math.min(3, Math.max(1, Math.round(current.count)));');
+		expect(source).toContain('if (!current || current.id === releasedGustId) return;');
+		// Pusten går genom samma spawn som pulsen, så reduced motion och dold flik gäller även här.
+		expect(source).toContain('if (!motion.isActive || motion.reducedMotion) return;');
+	});
 });

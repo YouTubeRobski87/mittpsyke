@@ -30,3 +30,41 @@ describe('AmbientWorld vegetation wind', () => {
 		);
 	});
 });
+
+describe('AmbientWorld ambient director', () => {
+	const directorEffect = ambientSource.slice(
+		ambientSource.indexOf('const stop = startAmbientDirector') - 700,
+		ambientSource.indexOf('</script>')
+	);
+
+	it('startar bara directorn när fliken är synlig och rörelse är tillåten', () => {
+		expect(directorEffect).toContain('const active = motion.isActive;');
+		expect(directorEffect).toContain(
+			'if (!recurringFauna || !seed || !active || reduced || eventsBlocked) return;'
+		);
+		expect(directorEffect).toContain("isVisible: () => document.visibilityState === 'visible'");
+	});
+
+	it('stoppar directorn och rensar händelser när komponenten förstörs', () => {
+		expect(directorEffect).toMatch(/return \(\) => \{\s*stop\(\);\s*clearDirectorEvents\(\);/);
+	});
+
+	// Att byta animation-duration mitt i en loop får lagret att hoppa. Pusten
+	// ska läggas ovanpå med de fristående rotate/translate-egenskaperna.
+	it('låter vindpusten luta vegetationen utan att röra dess animation', () => {
+		expect(ambientSource).not.toMatch(/\.is-wind-event[^{]*\{[^}]*animation-duration/);
+		expect(ambientSource).toMatch(/\.is-wind-event \.world-foliage \{[^}]*rotate:/);
+	});
+
+	it('döljer molnljus och kvällsliv vid reduced motion', () => {
+		expect(ambientSource).toMatch(
+			/@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.world-cloud-light, \.world-evening-life \{ display: none; \}/
+		);
+	});
+
+	it('ger fönsterplanen varken fauna eller vind när directorn äger dem', () => {
+		expect(ambientSource).toContain(
+			"visibleKinds.filter((kind) => kind !== 'bird' && kind !== 'butterfly' && kind !== 'wind')"
+		);
+	});
+});

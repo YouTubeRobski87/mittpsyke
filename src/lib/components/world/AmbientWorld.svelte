@@ -23,11 +23,12 @@
 	import { getCloudSessionVariation } from '$lib/world/sessionVariation';
 	import {
 		getAmbientEventPlan,
-		getProgressFaunaPlan,
+		startAmbientDirector,
+		type AmbientDirectorEvent,
+		type AmbientDirectorKind,
 		type AmbientEventContext,
 		type AmbientEventKind,
-		type ProgressFaunaPhase,
-		type ProgressFaunaPlan
+		type ProgressFaunaPhase
 	} from '$lib/world/ambientEvents';
 	import type { CompanionRelationshipStage } from '$lib/companionRelationship';
 	import WaterLayer from './WaterLayer.svelte';
@@ -52,6 +53,10 @@
 		visibleEffects?: readonly LivingWorldEffectKind[];
 		visibleEventKinds?: readonly AmbientEventKind[];
 		eventContext?: AmbientEventContext;
+		/**
+		 * Slår på ambient director: en gemensam, gles tidslinje för fauna,
+		 * vindpustar, molnljus och kvällsliv (se $lib/world/ambientEvents).
+		 */
 		recurringFauna?: boolean;
 		faunaPhase?: ProgressFaunaPhase;
 		eventsBlocked?: boolean;
@@ -73,10 +78,11 @@
 	let activeEvent = $state<ActiveWorldEvent | null>(null);
 	let activeFauna = $state<ActiveWorldEvent | null>(null);
 	let activeWindEvent = $state(false);
+	// Directorns vindpust, molnljus eller kvällsliv. Fauna ligger i activeFauna.
+	let activeMoment = $state<AmbientDirectorEvent | null>(null);
 	let sessionSeed = $state<string | null>(null);
 	let handledPlanId = $state<string | null>(null);
 	let clearEventTimer: number | null = null;
-	let faunaTimer: number | null = null;
 
 	const classes = $derived(`living-world ${className}`.trim());
 	const isVisibleEffect = (kind: LivingWorldEffectKind) =>
@@ -107,18 +113,28 @@
 		const visibleKinds = visibleEventKinds === undefined
 			? worldKinds
 			: worldKinds.filter((kind) => visibleEventKinds.includes(kind));
+		// Med directorn ägs fauna och vind av dess tidslinje, inte av fönsterplanen.
 		return recurringFauna
-			? visibleKinds.filter((kind) => kind !== 'bird' && kind !== 'butterfly')
+			? visibleKinds.filter((kind) => kind !== 'bird' && kind !== 'butterfly' && kind !== 'wind')
 			: visibleKinds;
 	});
-	const availableFaunaKinds = $derived(
-		scene.events
+	const availableDirectorKinds = $derived.by(() => {
+		const kinds: AmbientDirectorKind[] = scene.events
 			.filter(
 				(event) =>
 					(event.kind === 'bird' || event.kind === 'butterfly') &&
 					(visibleEventKinds === undefined || visibleEventKinds.includes(event.kind))
 			)
-			.map((event) => event.kind as AmbientEventKind)
+			.map((event) => event.kind as 'bird' | 'butterfly');
+		if (isVisibleEffect('foliage')) kinds.push('wind');
+		kinds.push('cloud-light', 'evening-life');
+		return kinds;
+	});
+	// Både fönsterplanens och directorns vindpust går genom samma lager.
+	const gustActive = $derived(activeWindEvent || activeMoment?.kind === 'wind');
+	const gustStrength = $derived(activeMoment?.kind === 'wind' ? activeMoment.intensity : 0.7);
+	const leafGust = $derived(
+		activeMoment?.kind === 'wind' ? { id: activeMoment.id, count: activeMoment.count } : null
 	);
 	const ambientPlan = $derived(
 		sessionSeed
@@ -161,8 +177,9 @@
 
 	function createActiveEvent(
 		event: LivingWorldEvent,
-		plan: NonNullable<typeof ambientPlan> | ProgressFaunaPlan,
-		flockSize: 1 | 2 | 3 = 1
+		plan: { id: string; positionIndex: number; durationMs: number },
+		flockSize: 1 | 2 | 3 = 1,
+		recurring = false
 	): ActiveWorldEvent {
 		const position = event.positions[plan.positionIndex % event.positions.length];
 		const durationMs = plan.durationMs;
@@ -181,7 +198,7 @@
 			height: event.kind === 'water' ? size * 0.34 : size,
 			durationMs,
 			opacity: position.opacity,
-			scale: event.kind === 'bird' && 'delayMs' in plan ? 1 : position.scale,
+			scale: event.kind === 'bird' && recurring ? 1 : position.scale,
 			flockSize
 		};
 	}
@@ -193,10 +210,9 @@
 		activeWindEvent = false;
 	}
 
-	function clearFauna() {
-		if (faunaTimer !== null) window.clearTimeout(faunaTimer);
-		faunaTimer = null;
+	function clearDirectorEvents() {
 		activeFauna = null;
+		activeMoment = null;
 	}
 
 	function getSessionSeed() {
@@ -212,7 +228,7 @@
 		sessionSeed = getSessionSeed();
 		return () => {
 			clearActiveEvent();
-			clearFauna();
+			clearDirectorEvents();
 		};
 	});
 
@@ -244,6 +260,8 @@
 		clearEventTimer = window.setTimeout(clearActiveEvent, plan.durationMs);
 	});
 
+	// Directorn startas om när fliken döljs/visas, fasen byter eller reduced
+	// motion ändras. Stoppfunktionen rensar dess enda väntande timer.
 	$effect(() => {
 		const seed = sessionSeed;
 		const active = motion.isActive;
@@ -251,50 +269,28 @@
 		const phase = faunaPhase ?? scene.timeOfDay;
 		const season = scene.season;
 		const growthLevel = scene.growthLevel;
-		const kinds = availableFaunaKinds;
+		const kinds = availableDirectorKinds;
 
-		clearFauna();
+		clearDirectorEvents();
 		if (!recurringFauna || !seed || !active || reduced || eventsBlocked) return;
 
-		let cancelled = false;
-		let sequence = 0;
-		const queueNext = () => {
-			if (cancelled) return;
-			const plan = getProgressFaunaPlan({
-				sessionSeed: seed,
-				sequence,
-				phase,
-				season,
-				growthLevel,
-				reducedMotion: reduced,
-				availableKinds: kinds
-			});
-			if (!plan) return;
-
-			faunaTimer = window.setTimeout(() => {
-				if (cancelled) return;
-				sequence += 1;
-				if (plan.durationMs === 0) {
-					queueNext();
+		const stop = startAmbientDirector({
+			input: { sessionSeed: seed, phase, season, growthLevel, reducedMotion: reduced, availableKinds: kinds },
+			isVisible: () => document.visibilityState === 'visible',
+			onEvent: (event) => {
+				if (event.kind === 'bird' || event.kind === 'butterfly') {
+					const worldEvent = scene.events.find((candidate) => candidate.kind === event.kind);
+					if (worldEvent) activeFauna = createActiveEvent(worldEvent, event, event.count, true);
 					return;
 				}
-				const event = scene.events.find((candidate) => candidate.kind === plan.kind);
-				if (!event) {
-					queueNext();
-					return;
-				}
-				activeFauna = createActiveEvent(event, plan, plan.flockSize);
-				faunaTimer = window.setTimeout(() => {
-					activeFauna = null;
-					queueNext();
-				}, plan.durationMs);
-			}, plan.delayMs);
-		};
+				activeMoment = event;
+			},
+			onEventEnd: () => clearDirectorEvents()
+		});
 
-		queueNext();
 		return () => {
-			cancelled = true;
-			clearFauna();
+			stop();
+			clearDirectorEvents();
 		};
 	});
 </script>
@@ -302,10 +298,10 @@
 <div
 	class={classes}
 	class:is-paused={!motion.isActive || motion.reducedMotion}
-	class:is-wind-event={activeWindEvent}
+	class:is-wind-event={gustActive}
 	data-season={scene.season}
 	data-time={scene.timeOfDay}
-	style={`--world-wind: ${scene.wind}`}
+	style={`--world-wind: ${scene.wind}; --gust-strength: ${gustStrength}`}
 	aria-hidden="true"
 >
 	{#each skyEffects as effect (effect.id)}
@@ -316,6 +312,14 @@
 			style={styleForEffect(effect)}
 		></span>
 	{/each}
+
+	{#if activeMoment?.kind === 'cloud-light'}
+		<!-- En molnskugga som glider förbi: ett lager, bara opacity och transform. -->
+		<span
+			class="world-cloud-light"
+			style={`--duration: ${activeMoment.durationMs}ms; --intensity: ${activeMoment.intensity}`}
+		></span>
+	{/if}
 
 	{#if activeEvent && (activeEvent.kind === 'bird' || activeEvent.kind === 'butterfly')}
 		<span
@@ -354,8 +358,20 @@
 		></span>
 	{/each}
 
+	{#if activeMoment?.kind === 'evening-life'}
+		<span
+			class="world-evening-life"
+			data-position={activeMoment.positionIndex}
+			style={`--duration: ${activeMoment.durationMs}ms`}
+		>
+			{#each Array(activeMoment.count) as _}
+				<i></i>
+			{/each}
+		</span>
+	{/if}
+
 	{#if isVisibleEffect('foliage') && sessionSeed}
-		<LeafLayer season={scene.season} {sessionSeed} />
+		<LeafLayer season={scene.season} {sessionSeed} gust={leafGust} />
 	{/if}
 
 	{#if relationshipStage >= 1 && isVisibleEffect('water')}
@@ -499,10 +515,17 @@
 		mix-blend-mode: screen;
 	}
 	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.35px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) cubic-bezier(0.42, 0, 0.24, 1) var(--delay, 0ms) infinite; }
-	/* Samma lövverksanimation som vanligt, bara tillfälligt snabbare när den
-	   deterministiska eventplanen valt en vindpust. */
-	.is-wind-event .world-foliage { animation-duration: 12s; }
-	.is-wind-event .canopy-right { animation-duration: 9s; }
+	/* Vindpust: de fristående egenskaperna rotate/translate läggs ovanpå den
+	   löpande transform-animationen. Animationen startas aldrig om eller byter
+	   takt (att ändra animation-duration mitt i en loop får lagret att hoppa).
+	   Pusten lutar in snabbare än den släpper. */
+	.world-foliage { transition: rotate 3200ms cubic-bezier(0.33, 0, 0.2, 1), translate 3200ms cubic-bezier(0.33, 0, 0.2, 1); }
+	.is-wind-event .world-foliage {
+		rotate: calc(-1.1deg * var(--gust-strength, 0.7) * (0.55 + var(--depth, 0.5)));
+		translate: calc(-1.4px * var(--gust-strength, 0.7) * (0.55 + var(--depth, 0.5))) 0;
+		transition-duration: 1800ms;
+	}
+	.is-wind-event .canopy-right { rotate: calc(-0.45deg * var(--gust-strength, 0.7)); }
 	/* Baslagren behöver läsa som växtlighet, inte som en grön färgdis. Smala,
 	   halvtransparenta bladstråk sitter i samma befintliga rektanglar och följer
 	   därför samma rotpunkt och djupmodell som tidigare. */
@@ -554,6 +577,16 @@
 	.world-butterfly::after { right: 0; transform: scaleX(-1); transform-origin: 0 60%; animation: butterflyWing 980ms ease-in-out 160ms infinite alternate; }
 	.world-event-butterfly { animation: butterflyPass var(--duration, 7000ms) ease-in-out both; }
 	.world-fauna-recurring.world-event-butterfly { animation-name: progressButterflyPass; }
+	/* Molnljus: en mjuk skugga som sveper över scenen i några sekunder och
+	   sänker ljuset lite. Ingen blend-mode eller filter över hela scenen. */
+	.world-cloud-light { position: absolute; inset: -10% -40%; pointer-events: none; opacity: 0; background: radial-gradient(ellipse 42% 72% at 50% 44%, rgba(34, 48, 58, 0.55), rgba(34, 48, 58, 0.18) 48%, transparent 74%); animation: cloudLightPass var(--duration, 11000ms) ease-in-out both; }
+	/* Kvällsliv: två-tre små varma punkter som tonar in, driver en bit och tonar
+	   ut en gång. Ingen blinkande loop - det ska aldrig läsas som glitter. */
+	.world-evening-life { position: absolute; left: 60%; top: 63%; width: clamp(56px, 15%, 140px); height: clamp(28px, 8%, 64px); pointer-events: none; }
+	.world-evening-life[data-position='1'] { left: 26%; top: 69%; }
+	.world-evening-life i { position: absolute; left: 12%; top: 62%; width: 3px; height: 3px; border-radius: 50%; background: rgba(255, 228, 166, 0.9); box-shadow: 0 0 4px rgba(255, 214, 140, 0.4); opacity: 0; animation: eveningMote var(--duration, 16000ms) ease-in-out both; }
+	.world-evening-life i:nth-child(2) { left: 54%; top: 20%; animation-duration: calc(var(--duration, 16000ms) * 0.78); animation-delay: calc(var(--duration, 16000ms) * 0.16); }
+	.world-evening-life i:nth-child(3) { left: 86%; top: 74%; width: 2px; height: 2px; animation-duration: calc(var(--duration, 16000ms) * 0.66); animation-delay: calc(var(--duration, 16000ms) * 0.28); }
 	.world-presence-sign { position: absolute; left: 61%; top: 66%; width: clamp(22px, 4.4%, 46px); height: clamp(5px, 0.8%, 8px); border-radius: 50%; border: 1px solid rgba(228, 239, 218, 0.18); opacity: 0; transform: translate3d(-50%, -50%, 0) scale(0.6); animation: presenceRipple 29s ease-out 9s infinite; }
 
 	/* Parallax: --depth (0 = längst bort, 1 = närmast) skalar rörelselängden, så
@@ -605,10 +638,13 @@
 	@keyframes butterflyPass { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(var(--scale, 1)) rotate(-5deg); } 12% { opacity: var(--opacity, 0.24); } 80% { opacity: calc(var(--opacity, 0.24) * 0.72); transform: translate3d(18vw, -4.4rem, 0) scale(var(--scale, 1)) rotate(8deg); } 100% { opacity: 0; transform: translate3d(26vw, -3.2rem, 0) scale(var(--scale, 1)) rotate(-3deg); } }
 	@keyframes progressButterflyPass { 0% { opacity: 0; transform: translate3d(0, 0, 0) scale(var(--scale, 1)) rotate(-5deg); } 14% { opacity: var(--opacity, 0.24); transform: translate3d(2.5vw, -0.7rem, 0) scale(var(--scale, 1)) rotate(4deg); } 37% { transform: translate3d(7vw, -2.1rem, 0) scale(var(--scale, 1)) rotate(-7deg); } 61% { opacity: calc(var(--opacity, 0.24) * 0.86); transform: translate3d(12vw, -1.35rem, 0) scale(var(--scale, 1)) rotate(8deg); } 82% { transform: translate3d(18vw, -3rem, 0) scale(var(--scale, 1)) rotate(-4deg); } 100% { opacity: 0; transform: translate3d(23vw, -2.35rem, 0) scale(var(--scale, 1)) rotate(3deg); } }
 	@keyframes butterflyWing { from { transform: rotateY(0deg) rotate(8deg); } to { transform: rotateY(54deg) rotate(-6deg); } }
+	@keyframes cloudLightPass { 0% { opacity: 0; transform: translate3d(-18%, 0, 0); } 32%, 62% { opacity: calc(0.2 * var(--intensity, 0.8)); } 100% { opacity: 0; transform: translate3d(18%, 0, 0); } }
+	@keyframes eveningMote { 0% { opacity: 0; transform: translate3d(0, 0, 0); } 30%, 64% { opacity: 0.5; } 100% { opacity: 0; transform: translate3d(9px, -12px, 0); } }
 	@keyframes presenceRipple { 0%, 48%, 100% { opacity: 0; transform: translate3d(-50%, -50%, 0) scale(0.6); } 56% { opacity: 0.18; } 78% { opacity: 0.03; transform: translate3d(-50%, -50%, 0) scale(1.28); } }
 
 	@media (prefers-reduced-motion: reduce) {
-		.world-effect { animation: none !important; transform: none !important; }
+		.world-effect { animation: none !important; transform: none !important; rotate: none !important; translate: none !important; transition: none !important; }
+		.world-cloud-light, .world-evening-life { display: none; }
 		.world-moon, .world-sun { transform: translate3d(-50%, -50%, 0) !important; }
 		.world-bird, .world-butterfly, .world-drift, .world-event-water, .world-presence-sign { opacity: 0 !important; }
 		.world-light, .world-foliage { opacity: calc(var(--opacity, 0.12) * 0.5); }

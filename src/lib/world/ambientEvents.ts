@@ -131,6 +131,220 @@ export function getProgressFaunaPlan(input: ProgressFaunaPlanInput): ProgressFau
 	};
 }
 
+// ── Ambient director ────────────────────────────────────────────────────
+// Framstegs enda tidslinje för sällsynta händelser. Den bygger på faunaplanen
+// ovan: varje tillfälle är fortfarande 45-120 sekunder bort och ofta tomt. När
+// nedkylningen för tydliga händelser har löpt ut byts ett tillfälle mot en
+// vindpust eller ett molnljus. Allt ligger i en kedja, så två händelser kan
+// aldrig pågå samtidigt.
+
+export type AmbientMomentKind = 'wind' | 'cloud-light' | 'evening-life';
+export type AmbientDirectorKind = 'bird' | 'butterfly' | AmbientMomentKind;
+
+export type AmbientDirectorEvent = {
+	id: string;
+	kind: AmbientDirectorKind;
+	/** Tydliga händelser har egen nedkylning, små följer faunarytmen. */
+	tier: 'minor' | 'major';
+	durationMs: number;
+	/** 0.55-1. Skalar hur tydligt vindpusten eller molnskuggan märks. */
+	intensity: number;
+	positionIndex: number;
+	/** Fåglar i flocken, ljuspunkter i kvällslivet eller löv som släpper i vinden. */
+	count: 1 | 2 | 3;
+};
+
+export type AmbientDirectorState = {
+	sequence: number;
+	/** Planerad tid sedan start, i ms, fram till slutet av senaste tillfället. */
+	elapsedMs: number;
+	nextMajorAtMs: number;
+};
+
+export type AmbientDirectorInput = {
+	sessionSeed: string;
+	phase: ProgressFaunaPhase;
+	season: ProgressCompanionSeason;
+	growthLevel: WorldGrowthLevel;
+	reducedMotion?: boolean;
+	availableKinds: readonly AmbientDirectorKind[];
+};
+
+export type AmbientDirectorStep = {
+	delayMs: number;
+	/** Null är ett medvetet tomt tillfälle. */
+	event: AmbientDirectorEvent | null;
+	nextState: AmbientDirectorState;
+};
+
+/** Första tydliga händelsen väntar, så sidan inte känns som en animationsdemo. */
+export const AMBIENT_FIRST_MAJOR_MS = [120_000, 210_000] as const;
+/** Nedkylning mellan tydliga händelser, räknat från slutet av den förra. */
+export const AMBIENT_MAJOR_COOLDOWN_MS = [120_000, 300_000] as const;
+
+function between(range: readonly [number, number], random: number): number {
+	return range[0] + Math.round(random * (range[1] - range[0]));
+}
+
+export function createAmbientDirectorState(sessionSeed: string): AmbientDirectorState {
+	return {
+		sequence: 0,
+		elapsedMs: 0,
+		nextMajorAtMs: between(AMBIENT_FIRST_MAJOR_MS, hash(`${sessionSeed}:ambient-first-major`))
+	};
+}
+
+/**
+ * Nästa tillfälle i tidslinjen. Ren funktion: samma tillstånd och indata ger
+ * samma steg. Null betyder att världen ska vara stilla tills fas eller
+ * rörelseinställning ändras - natten och reduced motion får inga händelser.
+ */
+export function planNextAmbientEvent(
+	state: AmbientDirectorState,
+	input: AmbientDirectorInput
+): AmbientDirectorStep | null {
+	if (input.reducedMotion || input.phase === 'night') return null;
+
+	const seed = `${input.sessionSeed}:ambient-director:${state.sequence}:${input.phase}:${input.season}`;
+	const faunaPlan = getProgressFaunaPlan({
+		sessionSeed: input.sessionSeed,
+		sequence: state.sequence,
+		phase: input.phase,
+		season: input.season,
+		growthLevel: input.growthLevel,
+		availableKinds: input.availableKinds.filter(
+			(kind): kind is 'bird' | 'butterfly' => kind === 'bird' || kind === 'butterfly'
+		)
+	});
+	// Utan fauna i vyn behåller tidslinjen ändå samma glesa takt.
+	const delayMs = faunaPlan?.delayMs ?? between([45_000, 120_000], hash(`${seed}:delay`));
+	const startMs = state.elapsedMs + delayMs;
+
+	const majorKinds = (['wind', 'cloud-light'] as const).filter(
+		(kind) =>
+			input.availableKinds.includes(kind) &&
+			// En molnskugga läses bara i dagsljus.
+			(kind !== 'cloud-light' || input.phase !== 'evening')
+	);
+
+	let event: AmbientDirectorEvent | null = null;
+	if (startMs >= state.nextMajorAtMs && majorKinds.length > 0) {
+		const kind = majorKinds[Math.floor(hash(`${seed}:major-kind`) * majorKinds.length)];
+		const leafRandom = hash(`${seed}:leaves`);
+		event = {
+			id: `ambient-director:${state.sequence}:${kind}`,
+			kind,
+			tier: 'major',
+			durationMs: between(
+				kind === 'wind' ? [8_000, 11_000] : [9_000, 13_000],
+				hash(`${seed}:duration`)
+			),
+			intensity: 0.55 + Math.round(hash(`${seed}:intensity`) * 45) / 100,
+			positionIndex: 0,
+			// Hösten släpper två-tre löv, övriga årstider ett-två.
+			count: (input.season === 'autumn' ? 2 + Math.floor(leafRandom * 2) : 1 + Math.floor(leafRandom * 2)) as
+				| 1
+				| 2
+				| 3
+		};
+	} else if (faunaPlan && faunaPlan.durationMs > 0) {
+		event = {
+			id: faunaPlan.id,
+			kind: faunaPlan.kind as 'bird' | 'butterfly',
+			tier: 'minor',
+			durationMs: faunaPlan.durationMs,
+			intensity: 1,
+			positionIndex: faunaPlan.positionIndex,
+			count: faunaPlan.flockSize
+		};
+	} else if (
+		input.phase === 'evening' &&
+		(input.season === 'spring' || input.season === 'summer') &&
+		input.availableKinds.includes('evening-life') &&
+		hash(`${seed}:evening-life`) < 0.4
+	) {
+		// Kvällslivet får bara låna kvällens tomma tillfällen, aldrig tränga ut fauna.
+		event = {
+			id: `ambient-director:${state.sequence}:evening-life`,
+			kind: 'evening-life',
+			tier: 'minor',
+			durationMs: between([14_000, 20_000], hash(`${seed}:duration`)),
+			intensity: 1,
+			positionIndex: Math.floor(hash(`${seed}:position`) * 2),
+			count: (2 + Math.floor(hash(`${seed}:count`) * 2)) as 2 | 3
+		};
+	}
+
+	const endMs = startMs + (event?.durationMs ?? 0);
+	return {
+		delayMs,
+		event,
+		nextState: {
+			sequence: state.sequence + 1,
+			elapsedMs: endMs,
+			nextMajorAtMs:
+				event?.tier === 'major'
+					? endMs + between(AMBIENT_MAJOR_COOLDOWN_MS, hash(`${seed}:cooldown`))
+					: state.nextMajorAtMs
+		}
+	};
+}
+
+type TimerHandle = ReturnType<typeof setTimeout>;
+
+export type AmbientDirectorRunOptions = {
+	input: AmbientDirectorInput;
+	onEvent: (event: AmbientDirectorEvent) => void;
+	onEventEnd: (event: AmbientDirectorEvent) => void;
+	/** Ett tillfälle som infaller när sidan är dold hoppas över. */
+	isVisible?: () => boolean;
+	setTimer?: (callback: () => void, ms: number) => TimerHandle;
+	clearTimer?: (handle: TimerHandle) => void;
+};
+
+/**
+ * Kör tidslinjen med en enda timer i taget. Returnerar en stoppfunktion som
+ * rensar den väntande timern; efter stopp anropas inga callbacks.
+ */
+export function startAmbientDirector(options: AmbientDirectorRunOptions): () => void {
+	const setTimer = options.setTimer ?? ((callback, ms) => setTimeout(callback, ms));
+	const clearTimer = options.clearTimer ?? ((handle) => clearTimeout(handle));
+	let state = createAmbientDirectorState(options.input.sessionSeed);
+	let timer: TimerHandle | null = null;
+	let stopped = false;
+
+	const queueNext = () => {
+		if (stopped) return;
+		const step = planNextAmbientEvent(state, options.input);
+		if (!step) return;
+		state = step.nextState;
+
+		timer = setTimer(() => {
+			timer = null;
+			if (stopped) return;
+			const event = step.event;
+			if (!event || (options.isVisible && !options.isVisible())) {
+				queueNext();
+				return;
+			}
+			options.onEvent(event);
+			timer = setTimer(() => {
+				timer = null;
+				if (stopped) return;
+				options.onEventEnd(event);
+				queueNext();
+			}, event.durationMs);
+		}, step.delayMs);
+	};
+
+	queueNext();
+	return () => {
+		stopped = true;
+		if (timer !== null) clearTimer(timer);
+		timer = null;
+	};
+}
+
 /**
  * En ren, deterministisk plan per sessionsseed och 30-minutersfönster. De
  * flesta fönster blir medvetet tomma; det finns aldrig mer än ett event i en

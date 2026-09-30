@@ -5,11 +5,21 @@
 	//
 	// Byggd för att kunna få syskon: en SnowLayer eller PetalLayer kan följa exakt
 	// samma mönster (säsongsstyrd täthet + fall-keyframes med parallaxdjup).
+	import { untrack } from 'svelte';
 	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
 	import type { ProgressCompanionSeason } from '$lib/progressCompanion';
 	import { getLeafSessionCharacter } from '$lib/world/sessionVariation';
 
-	let { season = 'summer', sessionSeed }: { season?: ProgressCompanionSeason; sessionSeed: string } = $props();
+	let {
+		season = 'summer',
+		sessionSeed,
+		gust = null
+	}: {
+		season?: ProgressCompanionSeason;
+		sessionSeed: string;
+		/** En vindpust från AmbientWorlds director släpper 1-3 extra löv, en gång per id. */
+		gust?: { id: string; count: number } | null;
+	} = $props();
 
 	type FallingLeaf = {
 		key: number;
@@ -29,6 +39,7 @@
 	const motion = createMotionAwareness();
 	let leaves = $state<FallingLeaf[]>([]);
 	let nextKey = 0;
+	let releasedGustId: string | null = null;
 
 	// Hösten får fler och tydligare löv; övriga säsonger enstaka och blekare, så
 	// scenen aldrig känns helt stilla men heller inte fel för årstiden.
@@ -45,11 +56,11 @@
 		return min + Math.random() * (max - min);
 	}
 
-	function spawnLeaves() {
+	function spawnLeaves(countOverride?: number) {
 		if (!motion.isActive || motion.reducedMotion) return;
 
 		const [minCount, maxCount] = seasonProfile.count;
-		const count = Math.round(between(minCount, maxCount));
+		const count = countOverride ?? Math.round(between(minCount, maxCount));
 		const spawned: FallingLeaf[] = [];
 
 		for (let i = 0; i < count; i += 1) {
@@ -89,6 +100,15 @@
 			leaves = leaves.filter((leaf) => !spawnedKeys.has(leaf.key));
 		}, longest + 400);
 	}
+
+	$effect(() => {
+		const current = gust;
+		if (!current || current.id === releasedGustId) return;
+		releasedGustId = current.id;
+		const count = Math.min(3, Math.max(1, Math.round(current.count)));
+		// untrack: effekten ska bara reagera på en ny pust, inte på lövlistan.
+		untrack(() => spawnLeaves(count));
+	});
 
 	// Startas om när fliken döljs/visas eller reduced-motion ändras - samma
 	// mönster som den ambienta händelseloopen i AmbientWorld.
