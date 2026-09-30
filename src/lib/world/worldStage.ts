@@ -187,6 +187,11 @@ export type WorldMarkId =
 	| 'night-glow'
 	| 'first-bloom'
 	| 'hearth-stones'
+	| 'woodpile'
+	| 'jetty-posts'
+	| 'jetty'
+	| 'rowboat'
+	| 'jetty-light'
 	| 'companion';
 
 export interface WorldMark {
@@ -224,7 +229,22 @@ export interface WorldMark {
 
 type WorldMarkDefinition = WorldMark & {
 	appears: (presence: WorldPresence) => boolean;
+	/**
+	 * Ett tidigare skede av samma föremål. Det ritas inte när det här spåret
+	 * finns, men ligger kvar som upplåst - stolparna blir en brygga, de
+	 * försvinner inte.
+	 */
+	replaces?: WorldMarkId;
 };
+
+/**
+ * Så många aktiva kalendermånader, och minst så lång tid sedan kontot skapades.
+ * Kalendermånader ensamma räcker inte: två veckor över ett månadsskifte blir
+ * två månader. Båda räknarna kan bara växa, så villkoret sjunker aldrig.
+ */
+function livedMonths(presence: WorldPresence, months: number): boolean {
+	return presence.activeMonths >= months && presence.accountAgeDays >= Math.round((months - 1) * 30.4) + 14;
+}
 
 /**
  * Ordningen är den ordning spåren renderas i, dvs bakifrån och fram. Texterna
@@ -280,6 +300,69 @@ const WORLD_MARK_DEFINITIONS: readonly WorldMarkDefinition[] = [
 		nightOnly: true,
 		hideOnNarrow: true,
 		appears: (presence) => presence.registrationCount >= 50 || presence.activeMonths >= 4
+	},
+	// ── Platsen tar form ──
+	// Den långsamma serien vid stugans strand. Vegetationen är full efter någon
+	// månad; de här föremålen fortsätter över ett år. Villkoren är aktiva
+	// månader - någon som skriver en gång i månaden kommer lika långt som den
+	// som skriver varje dag - eller många registreringar för den som skriver tätt.
+	// De ritas som tydliga former, inte som opacitet, så en återkomst efter
+	// veckor eller månader faktiskt syns.
+	{
+		id: 'woodpile',
+		label: 'Vedtraven',
+		revealText: 'Staplad för många kvällar.',
+		x: 21.6,
+		y: 39.4,
+		width: 3.2,
+		height: 2.4,
+		depth: 0.5,
+		appears: (presence) => livedMonths(presence, 9) || presence.registrationCount >= 220
+	},
+	{
+		id: 'jetty-posts',
+		label: 'Stolparna',
+		revealText: 'Någon har börjat bygga här.',
+		x: 24.5,
+		y: 45.4,
+		width: 7,
+		height: 6.4,
+		depth: 0.55,
+		appears: (presence) => livedMonths(presence, 2) || presence.registrationCount >= 40
+	},
+	{
+		id: 'jetty',
+		label: 'Bryggan',
+		revealText: 'Den blev klar en bit i taget.',
+		x: 24.5,
+		y: 45.4,
+		width: 7,
+		height: 6.4,
+		depth: 0.55,
+		replaces: 'jetty-posts',
+		appears: (presence) => livedMonths(presence, 4) || presence.registrationCount >= 80
+	},
+	{
+		id: 'rowboat',
+		label: 'Ekan',
+		revealText: 'Den ligger förtöjd. Ingen brådska.',
+		x: 29.9,
+		y: 49.7,
+		width: 3.2,
+		height: 1.5,
+		depth: 0.58,
+		appears: (presence) => livedMonths(presence, 6) || presence.registrationCount >= 140
+	},
+	{
+		id: 'jetty-light',
+		label: 'Ljuset på bryggan',
+		revealText: 'Någon har hängt upp det för kvällarna.',
+		x: 30.3,
+		y: 46.1,
+		width: 1.3,
+		height: 3.4,
+		depth: 0.56,
+		appears: (presence) => livedMonths(presence, 12) || presence.registrationCount >= 320
 	},
 	{
 		id: 'lantern',
@@ -429,12 +512,23 @@ export function getWorldMarks(
 	options: WorldMarkOptions = {}
 ): WorldMark[] {
 	const unlocked = new Set(options.unlocked ?? []);
+	const present = new Set(
+		WORLD_MARK_DEFINITIONS.filter((mark) => mark.appears(presence) || unlocked.has(mark.id)).map(
+			(mark) => mark.id
+		)
+	);
+	// Ett tidigare skede ritas inte när det har ersatts av nästa.
+	const replaced = new Set(
+		WORLD_MARK_DEFINITIONS.filter((mark) => mark.replaces && present.has(mark.id)).map(
+			(mark) => mark.replaces
+		)
+	);
 	return WORLD_MARK_DEFINITIONS.filter((mark) => {
-		if (!mark.appears(presence) && !unlocked.has(mark.id)) return false;
+		if (!present.has(mark.id) || replaced.has(mark.id)) return false;
 		if (mark.nightOnly && options.timeOfDay !== 'night') return false;
 		if (mark.hideOnNarrow && options.narrow) return false;
 		return true;
-	}).map(({ appears: _appears, ...mark }) => {
+	}).map(({ appears: _appears, replaces: _replaces, ...mark }) => {
 		if (!options.narrow) return mark;
 		return {
 			...mark,

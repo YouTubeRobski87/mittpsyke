@@ -119,10 +119,13 @@
 			: visibleKinds;
 	});
 	const availableDirectorKinds = $derived.by(() => {
+		// scene.features bär växtnivåns spärr (fjärilar från nivå 3, fåglar från
+		// 4), så en ny plats är stillare och faunan hittar dit med tiden.
 		const kinds: AmbientDirectorKind[] = scene.events
 			.filter(
 				(event) =>
 					(event.kind === 'bird' || event.kind === 'butterfly') &&
+					scene.features[event.kind] &&
 					(visibleEventKinds === undefined || visibleEventKinds.includes(event.kind))
 			)
 			.map((event) => event.kind as 'bird' | 'butterfly');

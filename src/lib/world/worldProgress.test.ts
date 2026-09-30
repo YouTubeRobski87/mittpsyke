@@ -156,6 +156,37 @@ describe('det sparade tillståndet', () => {
 		});
 		expect(state).toEqual({ version: 1, marks: ['mushrooms'], stage: 0 });
 	});
+	// Serien "platsen tar form" lever i samma tillstånd. Ett konto som sparats
+	// innan serien fanns får den när underlaget räcker, och behåller den sedan.
+	it('sparar långtidsseriens föremål och behåller dem', () => {
+		const stored: WorldProgressState = {
+			version: WORLD_PROGRESS_VERSION,
+			marks: ['lantern', 'shore-stone', 'shore-path'],
+			stage: 5
+		};
+		const longHistory = buildWorldPresence({
+			activityDays: Object.fromEntries(
+				Array.from({ length: 26 }, (_, week) => [
+					new Date(NOW.getTime() - week * 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+					1
+				])
+			),
+			entryCount: 26,
+			accountCreatedAt: new Date(NOW.getTime() - 182 * 24 * 60 * 60 * 1000),
+			now: NOW
+		});
+
+		const grown = resolveWorldProgress({ stored, presence: longHistory });
+		expect(grown.changed).toBe(true);
+		expect(grown.state.marks).toEqual(expect.arrayContaining(['jetty-posts', 'jetty', 'rowboat']));
+
+		const reread = readWorldProgressState({ [WORLD_PROGRESS_METADATA_KEY]: grown.state });
+		const afterDeletion = resolveWorldProgress({
+			stored: reread,
+			presence: buildWorldPresence({ entryCount: 1, now: NOW })
+		});
+		expect(afterDeletion.state.marks).toEqual(expect.arrayContaining(['jetty', 'rowboat']));
+	});
 });
 
 describe('shouldRunLegacyMigration', () => {

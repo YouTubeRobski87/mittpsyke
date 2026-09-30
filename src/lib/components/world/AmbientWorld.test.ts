@@ -62,6 +62,15 @@ describe('AmbientWorld ambient director', () => {
 		);
 	});
 
+	// Växtnivån spärrar fjärilar (nivå 3) och fåglar (nivå 4) via scene.features.
+	// Directorn måste respektera spärren, annars är en ny plats lika full av
+	// fauna som en gammal och den förändringen går förlorad.
+	it('låter faunan följa växtnivåns spärr', () => {
+		expect(ambientSource).toMatch(
+			/const kinds: AmbientDirectorKind\[\] = scene\.events[\s\S]*?scene\.features\[event\.kind\] &&/
+		);
+	});
+
 	it('ger fönsterplanen varken fauna eller vind när directorn äger dem', () => {
 		expect(ambientSource).toContain(
 			"visibleKinds.filter((kind) => kind !== 'bird' && kind !== 'butterfly' && kind !== 'wind')"

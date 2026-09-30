@@ -14,7 +14,7 @@ const pageSource = readFileSync(join(process.cwd(), 'src/routes/dev/varldsstadie
 
 type HarnessData = {
 	fixtureKeys: string[];
-	progress: { worldProgress: { stage: number } };
+	progress: { worldProgress: { stage: number; marks: string[] } };
 };
 
 function run(fixture: string): HarnessData {
@@ -59,5 +59,13 @@ describe('QA-harness för världsstadier', () => {
 
 	it('visar att ett gammalt konto med lite historik ändå hamnar på stadium 4', () => {
 		expect(run('gammalt').progress.worldProgress.stage).toBe(4);
+	});
+
+	it('visar hur platsen fortsätter ta form efter stadium 5', () => {
+		expect(run('4').progress.worldProgress.marks).not.toContain('jetty-posts');
+		expect(run('tva-manader').progress.worldProgress.marks).toContain('jetty-posts');
+		expect(run('halvar').progress.worldProgress.marks).toEqual(expect.arrayContaining(['jetty', 'rowboat']));
+		expect(run('nio-manader').progress.worldProgress.marks).toContain('woodpile');
+		expect(run('5').progress.worldProgress.marks).toContain('jetty-light');
 	});
 });

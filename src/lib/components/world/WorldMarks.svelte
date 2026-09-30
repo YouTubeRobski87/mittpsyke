@@ -55,7 +55,47 @@
 				aria-pressed={revealedId === mark.id}
 				aria-label={mark.label}
 				onclick={() => toggle(mark)}
-			></button>
+			>
+				<!-- Platsen tar form: föremål med egen siluett i stället för en
+					 gradient, så att de går att se och känna igen över tid. -->
+				{#if mark.id === 'jetty-posts' || mark.id === 'jetty'}
+					<!-- Bryggan pekar ut från stranden mot betraktaren och blir
+						 bredare närmast, samma perspektiv som målningen. -->
+					<svg class="mark-shape" viewBox="0 0 100 52" preserveAspectRatio="none" aria-hidden="true">
+						{#if mark.id === 'jetty'}
+							<path class="mark-reflection" d="M44 31v9M63 42v8M91 35v8" />
+							<path class="jetty-post" d="M44 25v7M63 41v6M91 34v6" />
+							<path class="jetty-deck" d="M8 7 27 4.5 92 33.5 62 41.5Z" />
+							<path class="jetty-planks" d="M21 12.2 34.5 8.4M34 18.6 50 13.8M47 25 66 19.2M58 32 80 25.4" />
+						{:else}
+							<path class="mark-reflection" d="M24 18v7M44 29v8M63 40v8" />
+							<path class="jetty-post" d="M24 10v9M44 21v9" />
+							<path class="jetty-post jetty-post--short" d="M63 34v7" />
+							<path class="jetty-beam" d="M9 7.5 26 11.5" />
+						{/if}
+					</svg>
+				{:else if mark.id === 'rowboat'}
+					<svg class="mark-shape" viewBox="0 0 42 14" preserveAspectRatio="none" aria-hidden="true">
+						<path class="mark-reflection boat-reflection" d="M8 10.5Q21 13 35 10.5" />
+						<path class="boat-hull" d="M1.5 3.6Q21 2.2 40.5 3.6L35 10Q21 11.8 7 10Z" />
+						<path class="boat-rim" d="M3 4.2Q21 3 39 4.2" />
+						<path class="boat-thwart" d="M17 4.4v4.6M26 4.4v4.6" />
+					</svg>
+				{:else if mark.id === 'woodpile'}
+					<svg class="mark-shape" viewBox="0 0 32 18" preserveAspectRatio="none" aria-hidden="true">
+						<path class="woodpile-back" d="M1 17V5.5L31 4.5V17Z" />
+						{#each [[5, 14], [11, 14], [17, 14], [23, 14], [28, 14], [8, 9.5], [14, 9.5], [20, 9.5], [26, 9.5], [11, 5.5], [18, 5.5], [24, 5.5]] as [cx, cy]}
+							<ellipse class="woodpile-log" cx={cx} cy={cy} rx="2.8" ry="2.2" />
+						{/each}
+					</svg>
+				{:else if mark.id === 'jetty-light'}
+					<svg class="mark-shape" viewBox="0 0 14 34" preserveAspectRatio="none" aria-hidden="true">
+						<circle class="jetty-light-glow" cx="7" cy="7" r="6.5" />
+						<path class="jetty-post" d="M7 9v24" />
+						<rect class="jetty-light-lamp" x="5" y="5" width="4" height="4.6" rx="1" />
+					</svg>
+				{/if}
+			</button>
 		{/each}
 
 		<p class="world-mark-caption" role="status" aria-live="polite">
@@ -206,6 +246,89 @@
 			radial-gradient(ellipse at 82% 52%, rgba(188, 160, 132, 0.6) 0 20%, transparent 34%);
 		filter: blur(0.4px);
 	}
+
+	/* ── Platsen tar form ──
+	   Byggda föremål vid stugans strand. De är tydligare än övriga spår - de
+	   ska synas vid en återkomst - men har scenens dova, väderbitna trätoner
+	   och en lätt oskärpa så de sitter i målningen i stället för ovanpå den. */
+	.world-mark-woodpile,
+	.world-mark-jetty-posts,
+	.world-mark-jetty,
+	.world-mark-rowboat,
+	.world-mark-jetty-light {
+		--mark-opacity: 0.9;
+		filter: blur(0.35px);
+	}
+
+	.mark-shape {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		pointer-events: none;
+	}
+
+	.mark-shape path,
+	.mark-shape rect {
+		vector-effect: non-scaling-stroke;
+	}
+
+	/* Trätonerna följer dygnet via scenens data-time, så föremålen mörknar med
+	   målningen i stället för att lysa upp i skymningen. */
+	.world-marks {
+		--wood-top: rgb(118 101 80);
+		--wood-edge: rgb(62 52 41);
+		--wood-post: rgb(58 48 38);
+		--wood-beam: rgb(92 78 62);
+		--hull: rgb(76 60 47);
+		--hull-rim: rgb(118 100 80);
+		--log-end: rgb(152 126 96);
+		--log-stack: rgb(70 56 42);
+		--lamp-glow: rgb(255 214 150 / 0.22);
+	}
+	:global([data-time='evening']) .world-marks {
+		--wood-top: rgb(74 64 54);
+		--wood-edge: rgb(38 33 28);
+		--wood-post: rgb(34 29 24);
+		--wood-beam: rgb(58 50 42);
+		--hull: rgb(50 41 34);
+		--hull-rim: rgb(80 69 58);
+		--log-end: rgb(98 82 64);
+		--log-stack: rgb(42 35 28);
+		--lamp-glow: rgb(255 214 150 / 0.4);
+	}
+	:global([data-time='night']) .world-marks {
+		--wood-top: rgb(52 52 56);
+		--wood-edge: rgb(26 26 30);
+		--wood-post: rgb(24 24 28);
+		--wood-beam: rgb(42 42 46);
+		--hull: rgb(36 35 38);
+		--hull-rim: rgb(58 58 62);
+		--log-end: rgb(70 66 62);
+		--log-stack: rgb(30 28 28);
+		--lamp-glow: rgb(255 214 150 / 0.48);
+	}
+
+	.jetty-deck { fill: var(--wood-top); stroke: var(--wood-edge); stroke-width: 0.8px; }
+	.jetty-planks { fill: none; stroke: var(--wood-edge); stroke-opacity: 0.7; stroke-width: 0.8px; }
+	.jetty-post { fill: none; stroke: var(--wood-post); stroke-width: 2px; stroke-linecap: round; }
+	.jetty-post--short { stroke-width: 1.6px; }
+	.jetty-beam { fill: none; stroke: var(--wood-beam); stroke-width: 1.6px; stroke-linecap: round; }
+	/* Spegling i vattnet: samma former, svagare och mjukare. */
+	.mark-reflection { fill: none; stroke: var(--wood-post); stroke-opacity: 0.28; stroke-width: 1.6px; stroke-linecap: round; }
+
+	.boat-hull { fill: var(--hull); stroke: var(--wood-edge); stroke-width: 0.8px; }
+	.boat-rim { fill: none; stroke: var(--hull-rim); stroke-width: 0.9px; }
+	.boat-thwart { fill: none; stroke: var(--wood-edge); stroke-width: 0.9px; }
+	.boat-reflection { stroke-opacity: 0.22; stroke-width: 2px; }
+
+	.woodpile-back { fill: var(--log-stack); }
+	.woodpile-log { fill: var(--log-end); stroke: var(--wood-edge); stroke-width: 0.7px; }
+
+	.jetty-light-lamp { fill: rgb(255 222 160); stroke: var(--wood-post); stroke-width: 0.7px; }
+	.jetty-light-glow { fill: var(--lamp-glow); }
+	.world-mark-jetty-light { animation: markGlow 8.5s ease-in-out infinite; }
 
 	.world-mark-shore-stone {
 		--mark-opacity: 0.4;

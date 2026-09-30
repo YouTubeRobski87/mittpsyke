@@ -43,6 +43,20 @@ const FIXTURES: Record<string, Fixture> = {
 	'3': { label: 'Stadium 3 - två veckor', entryDaysAgo: range(7, 2), reflectionCount: 1, accountAgeDays: 14 },
 	'4': { label: 'Stadium 4 - en månad', entryDaysAgo: range(10, 3), reflectionCount: 3, accountAgeDays: 30 },
 	'5': { label: 'Stadium 5 - ett år', entryDaysAgo: range(150, 2.4), reflectionCount: 40, accountAgeDays: 365 },
+	// Långtidsserien: efter stadium 5 fortsätter platsen att ta form över månader.
+	'tva-manader': {
+		label: 'Två månader, två gånger i veckan',
+		entryDaysAgo: range(16, 3.5),
+		reflectionCount: 4,
+		accountAgeDays: 60
+	},
+	halvar: { label: 'Ett halvår, en gång i veckan', entryDaysAgo: range(26, 7), reflectionCount: 6, accountAgeDays: 182 },
+	'nio-manader': {
+		label: 'Nio månader, en gång i veckan',
+		entryDaysAgo: range(39, 7),
+		reflectionCount: 8,
+		accountAgeDays: 273
+	},
 	gammalt: {
 		label: 'Gammalt konto, 150 dagar, två inlägg',
 		entryDaysAgo: [40, 110],

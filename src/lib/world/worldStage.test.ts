@@ -7,6 +7,7 @@ import {
 	buildWorldPresence,
 	getAccountAgeDays,
 	getDaysSinceLastVisit,
+	getEligibleWorldMarkIds,
 	getWorldGrowthLevel,
 	getWorldMarkVariation,
 	getWorldMarks,
@@ -290,5 +291,90 @@ describe('återkomst efter frånvaro', () => {
 	it('tål en trasig eller framtidsdaterad stämpel', () => {
 		expect(readLastVisit(createStorage({ [WORLD_LAST_VISIT_STORAGE_KEY]: 'inte-ett-datum' }))).toBeNull();
 		expect(getDaysSinceLastVisit(new Date('2026-09-01T00:00:00.000Z'), now)).toBeNull();
+	});
+});
+
+describe('platsen tar form över månader', () => {
+	const NOW = new Date('2026-07-10T12:00:00Z');
+	const DAY_MS = 24 * 60 * 60 * 1000;
+	const SERIES = ['jetty-posts', 'jetty', 'rowboat', 'woodpile', 'jetty-light'] as const;
+
+	/** En verklig historik: ett inlägg var `everyDays` dag sedan kontot skapades. */
+	function history(accountAgeDays: number, everyDays: number): WorldPresence {
+		const activityDays: Record<string, number> = {};
+		for (let daysAgo = 0; daysAgo <= accountAgeDays; daysAgo += everyDays) {
+			activityDays[new Date(NOW.getTime() - daysAgo * DAY_MS).toISOString().slice(0, 10)] = 1;
+		}
+		return buildWorldPresence({
+			activityDays,
+			entryCount: Object.keys(activityDays).length,
+			accountCreatedAt: new Date(NOW.getTime() - accountAgeDays * DAY_MS),
+			now: NOW
+		});
+	}
+
+	function seriesFor(value: WorldPresence): string[] {
+		return getWorldMarks(value)
+			.map((mark) => mark.id)
+			.filter((id) => (SERIES as readonly string[]).includes(id));
+	}
+
+	// Kärnan i V2: vegetationen är full efter någon månad, men platsen ska
+	// fortsätta förändras synligt för den som kommer tillbaka länge.
+	it('fortsätter växa under hela första året för den som skriver varje vecka', () => {
+		expect(seriesFor(history(30, 7))).toEqual([]);
+		expect(seriesFor(history(60, 7))).toEqual(['jetty-posts']);
+		expect(seriesFor(history(120, 7))).toEqual(['jetty']);
+		expect(seriesFor(history(180, 7))).toEqual(['jetty', 'rowboat']);
+		expect(seriesFor(history(270, 7))).toEqual(['woodpile', 'jetty', 'rowboat']);
+		expect(seriesFor(history(365, 7))).toEqual(['woodpile', 'jetty', 'rowboat', 'jetty-light']);
+	});
+
+	it('låter den som skriver en gång i månaden komma lika långt', () => {
+		expect(seriesFor(history(365, 30))).toEqual(['woodpile', 'jetty', 'rowboat', 'jetty-light']);
+	});
+
+	it('ger inget för två veckor som råkar gå över ett månadsskifte', () => {
+		const shortSpan = buildWorldPresence({
+			activityDays: { '2026-06-26': 1, '2026-06-30': 1, '2026-07-03': 1, '2026-07-08': 1 },
+			entryCount: 4,
+			accountCreatedAt: '2026-06-26T08:00:00Z',
+			now: NOW
+		});
+		expect(shortSpan.activeMonths).toBe(2);
+		expect(seriesFor(shortSpan)).toEqual([]);
+	});
+
+	it('ger inget för ett gammalt konto som nästan aldrig skrivit', () => {
+		expect(seriesFor(presence({ accountAgeDays: 400, activeMonths: 1, activeDays: 2, entryCount: 2 }))).toEqual(
+			[]
+		);
+	});
+
+	it('låter bryggan ersätta stolparna utan att låsa dem igen', () => {
+		const jettyTime = history(120, 7);
+		expect(getEligibleWorldMarkIds(jettyTime)).toEqual(
+			expect.arrayContaining(['jetty-posts', 'jetty'])
+		);
+		// Ett sparat tillstånd med båda ritar bara bryggan, även om dagens
+		// underlag (t.ex. efter raderade inlägg) inte längre räcker till något.
+		const ids = getWorldMarks(EMPTY_WORLD_PRESENCE, { unlocked: ['jetty-posts', 'jetty'] }).map(
+			(mark) => mark.id
+		);
+		expect(ids).toContain('jetty');
+		expect(ids).not.toContain('jetty-posts');
+	});
+
+	it('visar serien även i smala vyer, där de flesta små spåren faller bort', () => {
+		const year = history(365, 7);
+		const narrow = getWorldMarks(year, { narrow: true }).map((mark) => mark.id);
+		for (const id of ['jetty', 'rowboat', 'woodpile', 'jetty-light']) expect(narrow).toContain(id);
+	});
+
+	it('förklarar aldrig varför föremålen finns där', () => {
+		for (const mark of getWorldMarks(history(365, 7))) {
+			expect(mark.revealText.length).toBeLessThanOrEqual(60);
+			expect(mark.revealText).not.toMatch(/nivå|poäng|dagar i rad|streak|upplåst|grattis|\d/i);
+		}
 	});
 });
