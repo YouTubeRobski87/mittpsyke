@@ -33,10 +33,12 @@ export const PROGRESS_SCENE_CROSSFADE_MS = 6_000;
 
 export const PROGRESS_SCENE_BANDS = ['morning', 'day', 'afternoon', 'evening', 'night'] as const;
 
-// En statisk komposition: sjö, berg, stuga, människa, björn, lägereld, ryggsäck
-// och mugg. Björnen är en del av Framstegsscenen, inte användarens följeslagare.
+// Gästscenen behåller björn, människa och övriga motiv inbakade. Den inloggade
+// scenen använder i stället en ren bakgrund; människan renderas som ett separat,
+// route-lokalt lager på /framsteg. Björnen i gästscenen är en del av platsen,
+// inte användarens följeslagare.
 const SCENE_BASE = '/images/scenes/progress-lake-bear';
-const COMPANION_SCENE_BASE = '/images/scenes/progress-lake';
+const COMPANION_SCENE_BASE = '/images/scenes/progress-lake-empty';
 
 function sourcesForProgressLake(base: string) {
 	return {

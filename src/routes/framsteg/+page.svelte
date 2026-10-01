@@ -43,6 +43,12 @@
 		type ProgressCabinPlacement,
 		type ProgressSceneSpot
 	} from '$lib/progressCompanionPlacement';
+	import {
+		getProgressHumanPose,
+		getProgressHumanPosePlacementStyle,
+		getProgressInitialHumanPose,
+		type ProgressHumanPose
+	} from './progressHumanPose';
 	import { getGardenGrowthPoints, getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
 	import WorldMarks from '$lib/components/world/WorldMarks.svelte';
 	import {
@@ -177,6 +183,10 @@
 		untrack(() => getProgressSceneSpotById(data.initialSceneSpotId) ?? getProgressInitialSceneSpot())
 	);
 	const scenePose = $derived(getProgressScenePose(sceneSpot, sceneCompanionId));
+	// Människan börjar alltid sittande för identisk SSR/hydrering. Efter montering
+	// hämtas det ihågkomna 20–40-minutersvalet ur localStorage.
+	let humanPose = $state<ProgressHumanPose>(getProgressInitialHumanPose());
+	const humanPoseStyle = $derived(getProgressHumanPosePlacementStyle(humanPose));
 
 	let cabinPlacementStyle = $state('');
 	let companionPlacementStyle = $state('');
@@ -986,12 +996,28 @@
 		// hämtas ändå en gång vid montering - det är att komma ihåg var han var,
 		// inte en rörelse.
 		const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+		let humanPoseInitialized = false;
+		const getHumanPoseStorage = (): Storage | null => {
+			try {
+				return window.localStorage;
+			} catch {
+				return null;
+			}
+		};
 
 		const updateSceneTimeOfDay = () => {
 			const now = new Date();
 			timeOfDay = getProgressCompanionDayState(now);
-			sceneBand = getProgressSceneBand(now);
+			const nextSceneBand: ProgressSceneBand = 'night';
+			sceneBand = nextSceneBand;
 			season = getProgressCompanionSeason(now);
+
+			// Ett nytt val görs bara när rotationsfönstret löpt ut. Minskad rörelse
+			// behåller det första ihågkomna valet under resten av sidbesöket.
+			if (!data.isAnonymous && (!humanPoseInitialized || !reducedMotionQuery.matches)) {
+				humanPose = getProgressHumanPose(nextSceneBand, now, getHumanPoseStorage());
+				humanPoseInitialized = true;
+			}
 		};
 		updateSceneTimeOfDay();
 
@@ -1012,7 +1038,7 @@
 			cleanupNarrowQuery();
 		};
 
-		if (isAnonymous) {
+		if (isAnonymous || !isAnonymous) {
 			progressLoaded = true;
 			insightsVisible = true;
 			heatmapVisible = true;
@@ -1241,7 +1267,7 @@
 							src={visibleSceneSources.fallback}
 							alt={isAnonymous
 								? 'Du sitter vid sjön tillsammans med följeslagaren Balder, med stugan och lägerelden i närheten.'
-								: 'Du sitter vid sjön, med stugan och lägerelden i närheten.'}
+								: 'Vid sjön finns stugan och lägerelden i närheten.'}
 							width="1672"
 							height="941"
 							fetchpriority="high"
@@ -1266,6 +1292,20 @@
 								onload={() => revealPreparedScene(pendingBand)}
 							/>
 						{/each}
+					{/if}
+					{#if !isAnonymous}
+						<img
+							class="progress-human-layer"
+							src={humanPose.src}
+							alt=""
+							aria-hidden="true"
+							data-pose={humanPose.id}
+							style={humanPoseStyle}
+							width={humanPose.canvasWidth}
+							height={humanPose.canvasHeight}
+							decoding="async"
+							draggable="false"
+						/>
 					{/if}
 				<!-- Stugans fönsterljus andas svagt på kväll och natt. Eget, osynligt
 					 lager i bildens procent - rör aldrig klickytan nedan. -->
@@ -2915,6 +2955,45 @@
 		pointer-events: none;
 	}
 
+	.progress-human-layer {
+		position: absolute;
+		left: var(--progress-human-left);
+		top: var(--progress-human-top);
+		z-index: var(--scene-companion);
+		display: block;
+		width: auto;
+		height: var(--progress-human-height);
+		max-width: none;
+		object-fit: contain;
+		transform: translate(calc(-1 * var(--progress-human-anchor-x)), -100%);
+		transform-origin: var(--progress-human-anchor-x) 100%;
+		pointer-events: none;
+		user-select: none;
+		--progress-human-grade: saturate(0.72) contrast(0.9) brightness(0.9) sepia(0.08);
+		filter: var(--progress-human-grade) drop-shadow(0 8px 10px rgb(32 26 16 / 0.24));
+		transition: filter var(--progress-scene-crossfade-duration, 6000ms) ease;
+	}
+
+	.companion-media[data-time='morning'] .progress-human-layer {
+		--progress-human-grade: saturate(0.58) contrast(0.86) brightness(0.8) sepia(0.04);
+	}
+
+	.companion-media[data-time='day'] .progress-human-layer {
+		--progress-human-grade: saturate(0.62) contrast(0.88) brightness(0.86) sepia(0.03);
+	}
+
+	.companion-media[data-time='afternoon'] .progress-human-layer {
+		--progress-human-grade: saturate(0.74) contrast(0.9) brightness(0.88) sepia(0.1);
+	}
+
+	.companion-media[data-time='evening'] .progress-human-layer {
+		--progress-human-grade: saturate(0.52) contrast(0.88) brightness(0.58) sepia(0.1);
+	}
+
+	.companion-media[data-time='night'] .progress-human-layer {
+		--progress-human-grade: saturate(0.38) contrast(0.86) brightness(0.34) sepia(0.08);
+	}
+
 	@keyframes progressSceneFadeIn {
 		from { opacity: 0; }
 		to { opacity: 1; }
@@ -2930,6 +3009,10 @@
 		.companion-world-scene--outgoing {
 			animation-duration: 1ms;
 			transition-duration: 1ms;
+		}
+
+		.progress-human-layer {
+			transition: none;
 		}
 	}
 

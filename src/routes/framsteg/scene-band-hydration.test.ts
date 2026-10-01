@@ -77,8 +77,8 @@ describe('startbandet och dess bild hör ihop', () => {
 	it.each(PROGRESS_SCENE_BANDS)('den inloggades bild motsvarar bandet %s', (band) => {
 		const sources = PROGRESS_COMPANION_SCENE_SOURCES[band];
 		const suffix = band === 'afternoon' ? '' : `-${band}`;
-		expect(sources.fallback).toBe(`/images/scenes/progress-lake${suffix}-800.webp`);
-		expect(sources.srcset.split(', ').every((entry) => entry.includes(`progress-lake${suffix}`))).toBe(true);
+		expect(sources.fallback).toBe(`/images/scenes/progress-lake-empty${suffix}-800.webp`);
+		expect(sources.srcset.split(', ').every((entry) => entry.includes(`progress-lake-empty${suffix}`))).toBe(true);
 		// Gäst och inloggad får aldrig samma bild: björnen är inbränd i gästens.
 		expect(sources.fallback).not.toBe(PROGRESS_SCENE_SOURCES[band].fallback);
 	});
@@ -161,7 +161,8 @@ describe('minutuppdateringen fungerar efter hydrering', () => {
 	);
 
 	it('behåller minutintervallet som driver bytet', () => {
-		expect(route).toContain('sceneBand = getProgressSceneBand(now);');
+		expect(route).toContain('const nextSceneBand = getProgressSceneBand(now);');
+		expect(route).toContain('sceneBand = nextSceneBand;');
 		expect(route).toContain('window.setInterval(updateSceneTimeOfDay, 60 * 1000)');
 		expect(route).toContain('prepareSceneTransition(sceneBand);');
 	});

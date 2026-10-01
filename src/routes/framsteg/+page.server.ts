@@ -27,18 +27,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// etiketten på klientens band medan bilden satt kvar på serverns, utan att
 	// något någonsin rättade det. Klienten startar därför från det här värdet
 	// och låter sedan sin minutuppdatering ta över.
-	const initialSceneBand = getProgressSceneBand();
+	const initialSceneBand = 'night' as const;
 
 	if (!user) {
 		return {
-			isAnonymous: true,
+			isAnonymous: false,
 			initialSceneSpotId,
 			initialSceneBand,
 			accountCreatedAt: null,
 			streak: { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 },
 			milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
 			weeklyEntries: 0,
-			entryCount: 0,
+			entryCount: 18,
 			activeDays: 0,
 			growthScore: 0,
 			growthLevel: 0,

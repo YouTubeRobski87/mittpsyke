@@ -124,7 +124,7 @@ describe('Framstegs fullständiga dygnsscener', () => {
 	it('håller den artneutrala bilden för inloggade följeslagare på disk', () => {
 		for (const band of PROGRESS_SCENE_BANDS) {
 			const { fallback, srcset } = PROGRESS_COMPANION_SCENE_SOURCES[band];
-			const base = sceneBaseFor(band, '/images/scenes/progress-lake');
+			const base = sceneBaseFor(band, '/images/scenes/progress-lake-empty');
 			expect(fallback).toBe(`${base}-800.webp`);
 			expect(srcset).toContain(`${base}.webp 1672w`);
 		}
@@ -141,12 +141,11 @@ describe('Framstegs fullständiga dygnsscener', () => {
 		expect(route).toContain('1120px');
 	});
 
-	it('renderar ingen äldre separat person- eller eldgrupp ovanpå scenbilden', () => {
+	it('renderar ingen äldre separat eldgrupp ovanpå scenbilden', () => {
 		const route = readFileSync(join(process.cwd(), 'src/routes/framsteg/+page.svelte'), 'utf8');
 
-		// Sjöscenen innehåller redan människan, björnen, elden och deras markkontakt.
-		// Campfire är en separat frilagd grupp och får därför inte monteras i just
-		// Framsteg-heron, oavsett vilket dygnsspann som väljs.
+		// Lägerelden finns redan i bakgrunden. Campfire är en separat frilagd grupp
+		// och får därför inte monteras i Framsteg-heron.
 		expect(route).not.toContain("import Campfire from '$lib/components/world/Campfire.svelte'");
 		expect(route).not.toContain('<Campfire');
 	});

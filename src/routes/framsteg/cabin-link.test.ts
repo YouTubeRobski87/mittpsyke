@@ -65,7 +65,7 @@ describe('Framstegsscenen runt stuglänken', () => {
 		}
 		// Den synliga scenbilden beskriver motivet men är inte en egen länk.
 		expect(route).toContain("'Du sitter vid sjön tillsammans med följeslagaren Balder, med stugan och lägerelden i närheten.'");
-		expect(route).toContain("'Du sitter vid sjön, med stugan och lägerelden i närheten.'");
+		expect(route).toContain("'Vid sjön finns stugan och lägerelden i närheten.'");
 	});
 
 	it('behåller den inloggades följeslagare men inga visitor eller friend', () => {

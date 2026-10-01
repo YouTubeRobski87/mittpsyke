@@ -20,7 +20,7 @@ describe('Framstegs scen och följeslagare', () => {
 			// Alla spann utom eftermiddagen använder relights av samma par (scripts/scene-relight.py).
 			const suffix = band === 'afternoon' ? '' : `-${band}`;
 			expect(PROGRESS_SCENE_SOURCES[band].fallback).toContain(`progress-lake-bear${suffix}-800.webp`);
-			expect(PROGRESS_COMPANION_SCENE_SOURCES[band].fallback).toContain(`progress-lake${suffix}-800.webp`);
+			expect(PROGRESS_COMPANION_SCENE_SOURCES[band].fallback).toContain(`progress-lake-empty${suffix}-800.webp`);
 		}
 	});
 
@@ -41,6 +41,35 @@ describe('Framstegs scen och följeslagare', () => {
 		expect(scene).toContain('companionId={sceneCompanionId}');
 		expect(route).not.toContain('<CompanionVisitor');
 		expect(route).not.toContain('<CompanionFriend');
+	});
+
+	it('renderar människan som ett eget dekorativt lager endast för inloggade', () => {
+		expect(scene).toMatch(/\{#if !isAnonymous\}[\s\S]*?class="progress-human-layer"/);
+		expect(scene.match(/class="progress-human-layer"/g) ?? []).toHaveLength(1);
+		expect(scene).toContain('data-pose={humanPose.id}');
+		expect(scene).toContain('aria-hidden="true"');
+
+		const humanLayerRule = route.slice(route.indexOf('.progress-human-layer {'));
+		expect(humanLayerRule.slice(0, 900)).toContain('position: absolute;');
+		expect(humanLayerRule.slice(0, 900)).toContain('pointer-events: none;');
+		expect(humanLayerRule.slice(0, 900)).toContain('z-index: var(--scene-companion);');
+	});
+
+	it('låter posevalet bero endast på dygnsband, tid och lokal lagring', () => {
+		expect(route).toContain('getProgressHumanPose(nextSceneBand, now, getHumanPoseStorage())');
+		const update = route.slice(
+			route.indexOf('const updateSceneTimeOfDay ='),
+			route.indexOf('updateSceneTimeOfDay();')
+		);
+		expect(update).not.toContain('diary');
+		expect(update).not.toContain('mood');
+		expect(update).not.toContain('analysis');
+	});
+
+	it('refererar aldrig till source-PNG-filer i produktionskoden', () => {
+		expect(route).not.toContain('-source.png');
+		const poseModule = readFileSync(join(process.cwd(), 'src/routes/framsteg/progressHumanPose.ts'), 'utf8');
+		expect(poseModule).not.toContain('-source.png');
 	});
 
 	it('behåller world-lager och stuglänk i båda lägena', () => {
