@@ -30,9 +30,7 @@ export class OpenAITextProvider implements AITextProvider {
 		};
 		try {
 			const completion = await this.client.chat.completions.create(
-			usesLegacyMaxTokensField(request.purpose)
-					? { ...common, max_tokens: request.maxOutputTokens }
-					: { ...common, max_completion_tokens: request.maxOutputTokens },
+				{ ...common, max_completion_tokens: request.maxOutputTokens },
 				{ timeout: request.timeoutMs }
 			);
 			const text = completion.choices[0]?.message?.content?.trim();
@@ -45,12 +43,9 @@ export class OpenAITextProvider implements AITextProvider {
 	}
 }
 
-// Kvar för diary-narrative, som fortfarande skickar max_tokens i stället för
-// max_completion_tokens. Grenen för weekly-summary togs bort tillsammans med
-// den funktionen.
-function usesLegacyMaxTokensField(purpose: AITextProviderRequest['purpose']): boolean {
-	return purpose === 'diary-narrative';
-}
+// Alla nuvarande textsyften använder max_completion_tokens. Det håller adaptern
+// kompatibel när OPENAI_CHAT_MODEL pekar på GPT-5-serien och undviker att ett
+// enskilt produktflöde fastnar på det äldre max_tokens-fältet.
 
 export function normalizeOpenAIError(error: unknown): AITextGenerationError {
 	if (error instanceof AITextGenerationError) return error;

@@ -54,10 +54,8 @@ describe('AI:s textgenereringslager', () => {
 		const create = vi.fn().mockResolvedValue({ choices: [{ message: { content: 'Adapter-svar' } }] });
 		const provider = new OpenAITextProvider({ chat: { completions: { create } } } as never);
 
-		// diary-narrative är kvar som det syfte som fortfarande använder det äldre
-		// max_tokens-fältet. Testet låg tidigare på weekly-summary; egenskapen som
-		// vaktas - att kontraktet översätts till adapterns fält och central timeout
-		// - är densamma.
+		// Alla textsyften använder det moderna max_completion_tokens-fältet så att
+		// samma produktkod fungerar även när OPENAI_CHAT_MODEL pekar på GPT-5-serien.
 		const text = await provider.generate({
 			...getAIModelConfiguration('diary-narrative'),
 			purpose: 'diary-narrative',
@@ -68,7 +66,10 @@ describe('AI:s textgenereringslager', () => {
 
 		expect(text).toBe('Adapter-svar');
 		expect(create).toHaveBeenCalledWith(
-			expect.objectContaining({ model: getAIModelConfiguration('diary-narrative').model, max_tokens: 900 }),
+			expect.objectContaining({
+				model: getAIModelConfiguration('diary-narrative').model,
+				max_completion_tokens: 900
+			}),
 			{ timeout: 20_000 }
 		);
 	});
