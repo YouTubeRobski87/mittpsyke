@@ -44,13 +44,18 @@ Du får teman med färdigräknade siffror och en numrerad lista med utdrag ur an
 
 Regler:
 - Skriv högst ${MAX_SUMMARY_STATEMENTS} korta påståenden.
+- Börja med det tydligaste övergripande temat i utdragen, inte med en uppräkning av enskilda datum.
+- Lyft återkommande mönster, förändring eller kontinuitet över tid när minst två utdrag stödjer det.
+- Skilj tydligt mellan observation och försiktig tolkning. Använd ord som "återkommer", "framstår som" eller "tyder på" när betydelsen inte uttrycks direkt.
 - Varje påstående ska bygga på ett eller flera numrerade utdrag och ange deras nummer i "sources".
 - Citera gärna korta delar av utdragen ordagrant inom citattecken. Hitta aldrig på citat.
-- Beskriv bara vad som fanns med i inläggen och när. Aldrig varför.
+- Beskriv vad som fanns med i inläggen, när det återkom och vilken försiktig betydelse som rimligen stöds av formuleringarna. Aldrig varför något hände.
 - Påstå aldrig orsak ("ledde till", "på grund av", "hjälper dig", "gör att").
 - Säg aldrig vem användaren är ("du är ..."), tolka aldrig personlighet och nämn aldrig diagnoser eller symtom.
 - Inga råd, ingen terapi, inga värderingar.
 - Använd bara siffrorna som står i underlaget. Räkna inte fram egna.
+- Låt datumen fungera som underlag för mönstret i stället för att dominera texten.
+- Avsluta gärna med en kort sammanfattande mening om vad perioden verkar präglas av, men bara om utdragen tydligt stödjer det.
 
 Returnera endast JSON: {"statements":[{"text":"...","sources":[1,2]}]}`;
 
