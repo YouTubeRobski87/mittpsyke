@@ -1008,7 +1008,7 @@
 		const updateSceneTimeOfDay = () => {
 			const now = new Date();
 			timeOfDay = getProgressCompanionDayState(now);
-			const nextSceneBand: ProgressSceneBand = 'night';
+			const nextSceneBand = getProgressSceneBand(now);
 			sceneBand = nextSceneBand;
 			season = getProgressCompanionSeason(now);
 
@@ -1038,7 +1038,7 @@
 			cleanupNarrowQuery();
 		};
 
-		if (isAnonymous || !isAnonymous) {
+		if (isAnonymous) {
 			progressLoaded = true;
 			insightsVisible = true;
 			heatmapVisible = true;

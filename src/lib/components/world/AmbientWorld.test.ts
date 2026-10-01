@@ -9,7 +9,7 @@ const progressSource = readFileSync(
 
 describe('AmbientWorld vegetation wind', () => {
 	it('ger befintliga gräslager växtsilhuetter med rotförankrad rörelse', () => {
-		expect(ambientSource).toContain('.grass-left,\n\t.grass-bank');
+		expect(ambientSource).toMatch(/\.grass-left,\r?\n\t\.grass-bank/);
 		expect(ambientSource).toContain('.grass-left { transform-origin: 26% 100%; }');
 		expect(ambientSource).toContain('.grass-bank { transform-origin: 64% 100%; }');
 		expect(ambientSource).toContain('calc(-0.82px * (0.55 + var(--depth, 0.5)))');
