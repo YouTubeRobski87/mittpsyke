@@ -1022,7 +1022,7 @@
 			return cleanupSceneWatchers;
 		}
 
-		void loadMoodTimeline();
+		void loadProgressData();
 		hasSensitiveDataConsent = hasSensitiveConsent();
 		if (browser) {
 			localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
