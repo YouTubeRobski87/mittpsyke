@@ -3,10 +3,11 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
 	DEFAULT_EVENING_MUSIC_ID,
+	EVENING_MUSIC_CONTINUATIONS,
 	EVENING_MUSIC_TRACKS,
 	getEveningMusicTrack,
-	parseEveningMusicLoop,
-	serializeEveningMusicLoop
+	getNextEveningMusicTrack,
+	parseEveningMusicContinuation
 } from './evening-music-sources';
 
 describe('Musikspåren i Sovläge', () => {
@@ -87,18 +88,29 @@ describe('Musikspåren i Sovläge', () => {
 			expect(track.audioSrc).not.toContain('/meditations/');
 		}
 	});
+
+	it('återanvänder spårens ordning när nästa låt ska starta', () => {
+		expect(getNextEveningMusicTrack('stilla-sjo')?.id).toBe('mjuka-andetag');
+		expect(getNextEveningMusicTrack('kvar-i-mitt-huvud')?.id).toBe('stilla-sjo');
+		expect(getNextEveningMusicTrack('finns-inte')).toBeNull();
+	});
 });
 
-describe('upprepningsvalet för musiken i Sovläge', () => {
-	it('är av som standard och för okända värden', () => {
-		expect(parseEveningMusicLoop(null)).toBe(false);
-		expect(parseEveningMusicLoop('')).toBe(false);
-		expect(parseEveningMusicLoop('true')).toBe(false);
-		expect(parseEveningMusicLoop('off')).toBe(false);
+describe('fortsättningsvalet för musiken i Sovläge', () => {
+	it('erbjuder exakt de tre användarnära valen', () => {
+		expect(EVENING_MUSIC_CONTINUATIONS.map((option) => option.label)).toEqual([
+			'Upprepa låten',
+			'Spela nästa automatiskt',
+			'Stäng av efter den här låten'
+		]);
 	});
 
-	it('sparas och läses tillbaka oförändrat', () => {
-		expect(parseEveningMusicLoop(serializeEveningMusicLoop(true))).toBe(true);
-		expect(parseEveningMusicLoop(serializeEveningMusicLoop(false))).toBe(false);
+	it('stänger av efter låten som standard och migrerar det gamla upprepningsvalet', () => {
+		expect(parseEveningMusicContinuation(null)).toBe('stop');
+		expect(parseEveningMusicContinuation('')).toBe('stop');
+		expect(parseEveningMusicContinuation('off')).toBe('stop');
+		expect(parseEveningMusicContinuation('on')).toBe('repeat');
+		expect(parseEveningMusicContinuation('repeat')).toBe('repeat');
+		expect(parseEveningMusicContinuation('next')).toBe('next');
 	});
 });

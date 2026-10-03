@@ -17,7 +17,7 @@ describe('Sovläget i Kvällstugan', () => {
 	it('håller tillståndet lokalt: ingen persistens, ingen DB, ingen endpoint', () => {
 		expect(route).toContain("let sleepStage = $state<SleepStage>('closed')");
 		// Steg, timer och uppspelning sparas aldrig. Enda undantaget är
-		// användarens upprepningsval för musiken, som ligger i
+		// användarens fortsättningsval för musiken, som ligger i
 		// evening-music-sources och aldrig rör panelens tillstånd.
 		const sleepCode = route + panel;
 		expect(sleepCode).not.toMatch(/localStorage|sessionStorage/);
@@ -114,9 +114,10 @@ describe('Sovlägets panel', () => {
 	});
 
 	it('startar aldrig ljud utan ett uttryckligt val', () => {
-		// Uppspelningen skapas först i startSleep, som bara nås via längdvalet.
+		// Musik startar först från fortsättningsvalet; övrigt ljud från längdvalet.
 		expect(panel).toContain('async function startSleep(lengthId: SleepLengthId)');
 		expect(panel).toContain('onclick={() => startSleep(option.id)}');
+		expect(panel).toContain('onclick={() => chooseMusicContinuation(option.id)}');
 		expect(panel).not.toMatch(/autoplay|onMount\(\s*\(\)\s*=>\s*playback/);
 	});
 
@@ -129,17 +130,6 @@ describe('Sovlägets panel', () => {
 	});
 
 	it('spelar musik som ljudfil, aldrig via talsyntes, och loopar bara efter eget val', () => {
-		expect(panel).toContain("if (source === 'music')");
-
-		const musicBranch = panel.slice(
-			panel.indexOf("if (source === 'music')"),
-			panel.indexOf('if (meditation?.audioSrc)')
-		);
-		expect(musicBranch).toContain('playSelectedMusic();');
-		expect(musicBranch).toContain('return;');
-		expect(musicBranch).not.toContain('createBrowserSpeechEngine');
-		expect(musicBranch).not.toContain('createTtsPlayback');
-
 		const playMusic = panel.slice(
 			panel.indexOf('function playSelectedMusic()'),
 			panel.indexOf('function switchMusic(')
@@ -147,10 +137,9 @@ describe('Sovlägets panel', () => {
 		expect(playMusic).toContain('const track = getEveningMusicTrack(musicId);');
 		expect(playMusic).toContain('createAudioFilePlayback(track.audioSrc, {');
 		expect(playMusic).not.toContain('createBrowserSpeechEngine');
-		// Upprepning är av som standard och styrs bara av användarens val.
 		// Panelen sätter aldrig elementets loop själv – det gör adaptern.
-		expect(panel).toContain('let musicLoop = $state(false);');
-		expect(playMusic).toContain('loop: musicLoop,');
+		expect(panel).toContain("let musicContinuation = $state<EveningMusicContinuationId>('stop');");
+		expect(playMusic).toContain("loop: musicContinuation === 'repeat',");
 		expect(panel).not.toMatch(/\.loop\s*=|loop=\{?true|loop:\s*true/);
 	});
 
@@ -176,7 +165,7 @@ describe('Sovlägets panel', () => {
 		expect(switchMusic.indexOf('stopPlayback();')).toBeLessThan(
 			switchMusic.indexOf('playSelectedMusic();')
 		);
-		// Klockan fortsätter; stunden börjar inte om.
+		// Bytet skapar aldrig någon timer för musik.
 		expect(switchMusic).not.toContain('createSleepTimer');
 	});
 
@@ -186,26 +175,50 @@ describe('Sovlägets panel', () => {
 		expect(endSleep.slice(0, 200)).toContain('stopPlayback();');
 	});
 
-	it('låter användaren slå på och av upprepning av musiken och sparar valet lokalt', () => {
-		expect(panel).toContain('aria-pressed={musicLoop}');
-		expect(panel).toContain("Upprepa låten: {musicLoop ? 'på' : 'av'}");
-		expect(panel).toContain('playback?.setLoop?.(musicLoop);');
-		expect(panel).toContain('writeEveningMusicLoop(musicLoop);');
-		// Knappen visas bara för musik, aldrig för meditation eller tystnad.
-		expect(panel.match(/\{#if source === 'music'\}\s*\{@render musicLoopToggle\(\)\}/g)).toHaveLength(2);
+	it('ersätter musikens tidsval med tre tydliga fortsättningsval', () => {
+		expect(panel).toContain('aria-label="Välj hur musiken ska fortsätta"');
+		expect(panel).toContain('{#each EVENING_MUSIC_CONTINUATIONS as option (option.id)}');
+		expect(panel).toContain('aria-pressed={musicContinuation === option.id}');
+		expect(panel).toContain('onclick={() => chooseMusicContinuation(option.id)}');
+		expect(panel).not.toContain('musicLoopToggle');
+
+		const musicChoices = panel.slice(
+			panel.indexOf("{#if source === 'music'}", panel.indexOf("{:else if stage === 'length'}")),
+			panel.indexOf('{:else}', panel.indexOf("{:else if stage === 'length'}"))
+		);
+		expect(musicChoices).not.toContain('SLEEP_LENGTHS');
+		expect(musicChoices).not.toContain('10 min');
+		expect(musicChoices).not.toContain('20 min');
+		expect(musicChoices).not.toContain('30 min');
 	});
 
-	it('startar aldrig musiken när upprepningsvalet läses in', () => {
+	it('startar aldrig musiken när fortsättningsvalet läses in', () => {
 		const loadEffect = panel.slice(
-			panel.indexOf('musicLoop = readEveningMusicLoop();'),
-			panel.indexOf('function toggleMusicLoop')
+			panel.indexOf('musicContinuation = readEveningMusicContinuation();'),
+			panel.indexOf('function chooseMusicContinuation')
 		);
 		expect(loadEffect).not.toMatch(/start\(|resume\(|play\(/);
-		const toggle = panel.slice(
-			panel.indexOf('function toggleMusicLoop'),
-			panel.indexOf('function toggleMusicLoop') + 400
+	});
+
+	it('ändrar fortsättningssätt utan att starta om en pågående låt', () => {
+		const chooseContinuation = panel.slice(
+			panel.indexOf('function chooseMusicContinuation'),
+			panel.indexOf('// Läser speltiden', panel.indexOf('function chooseMusicContinuation'))
 		);
-		expect(toggle).not.toMatch(/\.start\(|\.resume\(|\.play\(/);
+		expect(chooseContinuation).toContain("playback?.setLoop?.(next === 'repeat');");
+		expect(chooseContinuation).toContain('writeEveningMusicContinuation(next);');
+		expect(chooseContinuation).not.toContain('stopPlayback();');
+	});
+
+	it('startar nästa befintliga musikspår när låten slutar och valet är nästa', () => {
+		expect(panel).toContain('const nextTrack = getNextEveningMusicTrack(musicId);');
+		expect(panel).toContain("if (next === 'ended' && musicContinuation === 'next') playNextMusicTrack();");
+		const nextTrack = panel.slice(
+			panel.indexOf('function playNextMusicTrack()'),
+			panel.indexOf('function handleMusicPlaybackStatus')
+		);
+		expect(nextTrack).toContain('musicId = nextTrack.id;');
+		expect(nextTrack).toContain('playSelectedMusic();');
 	});
 
 	it('spelar inspelade meditationer som ljudfil och aldrig via talsyntes', () => {

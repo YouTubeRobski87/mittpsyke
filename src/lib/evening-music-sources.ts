@@ -13,6 +13,20 @@ export type EveningMusicTrack = {
 	audioSrc: string;
 };
 
+export type EveningMusicContinuationId = 'repeat' | 'next' | 'stop';
+
+export type EveningMusicContinuationOption = {
+	id: EveningMusicContinuationId;
+	label: string;
+	hint: string;
+};
+
+export const EVENING_MUSIC_CONTINUATIONS: readonly EveningMusicContinuationOption[] = [
+	{ id: 'repeat', label: 'Upprepa låten', hint: 'Samma låt börjar om när den är slut.' },
+	{ id: 'next', label: 'Spela nästa automatiskt', hint: 'Nästa låt i listan börjar av sig själv.' },
+	{ id: 'stop', label: 'Stäng av efter den här låten', hint: 'Musiken stannar när låten är slut.' }
+];
+
 /**
  * Sökvägarna följer samma två regler som de inspelade meditationerna:
  *
@@ -30,11 +44,8 @@ function musicPath(fileName: string): string {
 /**
  * Spåren i den ordning de visas i Sovläge.
  *
- * Inget spår loopar som standard. Spåren är några minuter långa medan
- * stunderna är 10, 20 eller 30 minuter, så musiken tar slut innan stunden gör
- * det – samma beteende som meditationerna: spåret tar slut, stunden fortsätter
- * i tystnad. Den som hellre vill ha musik hela stunden kan själv slå på
- * upprepning i Sovläge; valet sparas lokalt.
+ * Spåren återanvänds som en liten ordnad lista när användaren väljer att nästa
+ * låt ska börja automatiskt. Ingen separat spellista eller kö behövs.
  */
 export const EVENING_MUSIC_TRACKS: readonly EveningMusicTrack[] = [
 	{
@@ -71,31 +82,35 @@ export function getEveningMusicTrack(id: string): EveningMusicTrack | null {
 	return EVENING_MUSIC_TRACKS.find((track) => track.id === id) ?? null;
 }
 
-/** localStorage-nyckel för upprepningsvalet. Sparar bara valet, aldrig uppspelning. */
-export const EVENING_MUSIC_LOOP_STORAGE_KEY = 'mittpsyke:sleep-music-loop';
-
-/** Allt utom ett uttryckligt "on" betyder av, även trasiga eller gamla värden. */
-export function parseEveningMusicLoop(raw: string | null): boolean {
-	return raw === 'on';
+export function getNextEveningMusicTrack(id: string): EveningMusicTrack | null {
+	const currentIndex = EVENING_MUSIC_TRACKS.findIndex((track) => track.id === id);
+	if (currentIndex < 0 || EVENING_MUSIC_TRACKS.length === 0) return null;
+	return EVENING_MUSIC_TRACKS[(currentIndex + 1) % EVENING_MUSIC_TRACKS.length] ?? null;
 }
 
-export function serializeEveningMusicLoop(loop: boolean): string {
-	return loop ? 'on' : 'off';
+/** Samma nyckel som det tidigare av/på-valet, så gamla val kan migreras lugnt. */
+export const EVENING_MUSIC_CONTINUATION_STORAGE_KEY = 'mittpsyke:sleep-music-loop';
+
+export function parseEveningMusicContinuation(raw: string | null): EveningMusicContinuationId {
+	if (raw === 'repeat' || raw === 'on') return 'repeat';
+	if (raw === 'next') return 'next';
+	return 'stop';
 }
 
-/** Läser valet i webbläsaren. Blockerad lagring eller SSR ger av. */
-export function readEveningMusicLoop(): boolean {
+export function readEveningMusicContinuation(): EveningMusicContinuationId {
 	try {
-		return parseEveningMusicLoop(localStorage.getItem(EVENING_MUSIC_LOOP_STORAGE_KEY));
+		return parseEveningMusicContinuation(
+			localStorage.getItem(EVENING_MUSIC_CONTINUATION_STORAGE_KEY)
+		);
 	} catch {
-		return false;
+		return 'stop';
 	}
 }
 
-/** Sparar valet. Blockerad lagring gör att valet bara gäller besöket. */
-export function writeEveningMusicLoop(loop: boolean): void {
+/** Sparar bara fortsättningsvalet, aldrig uppspelning eller lyssningshistorik. */
+export function writeEveningMusicContinuation(continuation: EveningMusicContinuationId): void {
 	try {
-		localStorage.setItem(EVENING_MUSIC_LOOP_STORAGE_KEY, serializeEveningMusicLoop(loop));
+		localStorage.setItem(EVENING_MUSIC_CONTINUATION_STORAGE_KEY, continuation);
 	} catch {
 		// Privat läge eller full lagring – inget att göra.
 	}

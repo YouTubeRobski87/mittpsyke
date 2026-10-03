@@ -1,5 +1,5 @@
 <script module lang="ts">
-	export type MotifId = 'flower' | 'cabin';
+	export type MotifId = 'flower' | 'cabin' | 'leaf';
 
 	export type ColoringState = {
 		fills: Record<MotifId, Record<string, string>>;
@@ -19,7 +19,15 @@
 			'leafLeft',
 			'leafRight'
 		],
-		cabin: ['moon', 'roof', 'wall', 'door', 'windowLeft', 'windowRight', 'pineLeft', 'pineRight']
+		cabin: ['moon', 'roof', 'wall', 'door', 'windowLeft', 'windowRight', 'pineLeft', 'pineRight'],
+		leaf: [
+			'upperLeft',
+			'upperRight',
+			'middleLeft',
+			'middleRight',
+			'lowerLeft',
+			'lowerRight'
+		]
 	};
 
 	function blankFills(motif: MotifId) {
@@ -30,9 +38,10 @@
 		return {
 			fills: {
 				flower: blankFills('flower'),
-				cabin: blankFills('cabin')
+				cabin: blankFills('cabin'),
+				leaf: blankFills('leaf')
 			},
-			history: { flower: [], cabin: [] }
+			history: { flower: [], cabin: [], leaf: [] }
 		};
 	}
 
@@ -92,7 +101,8 @@
 
 	const motifNames: Record<MotifId, string> = {
 		flower: 'Blomman',
-		cabin: 'Kvällstugan'
+		cabin: 'Kvällstugan',
+		leaf: 'Lövet'
 	};
 
 	let selectedMotif = $state<MotifId>('flower');
@@ -180,6 +190,12 @@
 	</div>
 
 	<p class="status" aria-live="polite">{status}</p>
+	{#if selectedMotif === 'leaf'}
+		<div class="leaf-guidance">
+			<p>Ta ett lugnt andetag innan du börjar.</p>
+			<p>Lägg märke till färgen du väljer. Du behöver inte göra det fint eller färdigt.</p>
+		</div>
+	{/if}
 
 	<div class="canvas">
 		{#if selectedMotif === 'flower'}
@@ -202,7 +218,7 @@
 				<path class="paintable" d="M158 205C124 182 93 197 89 230C119 236 145 226 158 205Z" fill={coloringState.fills.flower.leafLeft} role="button" tabindex="0" aria-label={partLabel('leafLeft', 'Vänstra bladet')} onclick={() => paintPart('leafLeft', 'Vänstra bladet')} onkeydown={(event) => handlePartKeydown(event, 'leafLeft', 'Vänstra bladet')} />
 				<path class="paintable" d="M163 220C190 193 224 200 235 231C207 243 181 237 163 220Z" fill={coloringState.fills.flower.leafRight} role="button" tabindex="0" aria-label={partLabel('leafRight', 'Högra bladet')} onclick={() => paintPart('leafRight', 'Högra bladet')} onkeydown={(event) => handlePartKeydown(event, 'leafRight', 'Högra bladet')} />
 			</svg>
-		{:else}
+		{:else if selectedMotif === 'cabin'}
 			<!-- Cabin motif -->
 			<svg viewBox="0 0 360 280" role="group" aria-labelledby="cabin-title cabin-description">
 				<title id="cabin-title">Kvällstugan och månen att färglägga</title>
@@ -226,6 +242,28 @@
 				<path class="paintable" d="M266 226H301L292 202H300L285 170L271 202H279Z" fill={coloringState.fills.cabin.pineRight} role="button" tabindex="0" aria-label={partLabel('pineRight', 'Högra granen')} onclick={() => paintPart('pineRight', 'Högra granen')} onkeydown={(event) => handlePartKeydown(event, 'pineRight', 'Högra granen')} />
 			</svg>
 			<!-- End cabin motif -->
+		{:else}
+			<!-- Leaf motif -->
+			<svg viewBox="0 0 360 300" role="group" aria-labelledby="leaf-title leaf-description">
+				<title id="leaf-title">Ett stort löv att färglägga</title>
+				<desc id="leaf-description">Välj en färg och använd lövets delar som knappar. Du kan också nå dem med tabbtangenten.</desc>
+
+				<rect class="leaf-sky" x="16" y="14" width="328" height="258" rx="28" />
+				<path class="leaf-ground leaf-ground-back" d="M16 218C76 183 126 202 174 221C224 241 278 189 344 211V272H16Z" />
+				<path class="leaf-ground leaf-ground-front" d="M16 242C79 218 128 234 178 246C235 260 287 222 344 235V272H16Z" />
+				<circle class="leaf-light" cx="291" cy="61" r="19" />
+
+				<path class="paintable" d="M180 38C147 49 120 75 105 108C130 109 157 94 180 72Z" fill={coloringState.fills.leaf.upperLeft} role="button" tabindex="0" aria-label={partLabel('upperLeft', 'Lövets övre vänstra del')} onclick={() => paintPart('upperLeft', 'Lövets övre vänstra del')} onkeydown={(event) => handlePartKeydown(event, 'upperLeft', 'Lövets övre vänstra del')} />
+				<path class="paintable" d="M180 38C213 49 240 75 255 108C230 109 203 94 180 72Z" fill={coloringState.fills.leaf.upperRight} role="button" tabindex="0" aria-label={partLabel('upperRight', 'Lövets övre högra del')} onclick={() => paintPart('upperRight', 'Lövets övre högra del')} onkeydown={(event) => handlePartKeydown(event, 'upperRight', 'Lövets övre högra del')} />
+				<path class="paintable" d="M105 108C94 135 97 165 111 190C136 176 158 151 180 118V72C157 94 130 109 105 108Z" fill={coloringState.fills.leaf.middleLeft} role="button" tabindex="0" aria-label={partLabel('middleLeft', 'Lövets mellersta vänstra del')} onclick={() => paintPart('middleLeft', 'Lövets mellersta vänstra del')} onkeydown={(event) => handlePartKeydown(event, 'middleLeft', 'Lövets mellersta vänstra del')} />
+				<path class="paintable" d="M255 108C266 135 263 165 249 190C224 176 202 151 180 118V72C203 94 230 109 255 108Z" fill={coloringState.fills.leaf.middleRight} role="button" tabindex="0" aria-label={partLabel('middleRight', 'Lövets mellersta högra del')} onclick={() => paintPart('middleRight', 'Lövets mellersta högra del')} onkeydown={(event) => handlePartKeydown(event, 'middleRight', 'Lövets mellersta högra del')} />
+				<path class="paintable" d="M111 190C130 220 153 240 180 247V118C158 151 136 176 111 190Z" fill={coloringState.fills.leaf.lowerLeft} role="button" tabindex="0" aria-label={partLabel('lowerLeft', 'Lövets nedre vänstra del')} onclick={() => paintPart('lowerLeft', 'Lövets nedre vänstra del')} onkeydown={(event) => handlePartKeydown(event, 'lowerLeft', 'Lövets nedre vänstra del')} />
+				<path class="paintable" d="M249 190C230 220 207 240 180 247V118C202 151 224 176 249 190Z" fill={coloringState.fills.leaf.lowerRight} role="button" tabindex="0" aria-label={partLabel('lowerRight', 'Lövets nedre högra del')} onclick={() => paintPart('lowerRight', 'Lövets nedre högra del')} onkeydown={(event) => handlePartKeydown(event, 'lowerRight', 'Lövets nedre högra del')} />
+				<path class="leaf-stem" d="M171 232C174 250 168 265 153 278L168 284C185 268 191 251 188 232Z" />
+
+				<path class="leaf-vein" d="M180 49V242M180 84L134 74M180 121L108 116M180 163L121 181M180 84L226 74M180 121L252 116M180 163L239 181" />
+			</svg>
+			<!-- End leaf motif -->
 		{/if}
 	</div>
 
@@ -278,6 +316,9 @@
 	.reset-button:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.35); outline-offset: 2px; }
 
 	.status { min-height: 1.5rem; margin: 0.8rem 0 0; font-size: 0.88rem; color: #526158; }
+	.leaf-guidance { max-width: 31rem; margin: 0.65rem auto 0; padding: 0.75rem 0.9rem; border-left: 3px solid rgba(62, 101, 75, 0.36); border-radius: 0 12px 12px 0; background: rgba(235, 242, 232, 0.72); color: #3f5145; }
+	.leaf-guidance p { margin: 0; line-height: 1.55; }
+	.leaf-guidance p + p { margin-top: 0.25rem; }
 	.canvas { max-width: 31rem; margin: 0.75rem auto 0; padding: clamp(0.35rem, 2vw, 0.8rem); border: 1px solid rgba(57, 83, 65, 0.14); border-radius: 20px; background: rgba(255, 255, 255, 0.7); }
 	.canvas svg { display: block; width: 100%; height: auto; }
 
@@ -289,6 +330,13 @@
 	.hill-front { fill: #b9cfb2; }
 	.stem { fill: none; stroke: #607d62; stroke-width: 8; stroke-linecap: round; }
 	.lake-line { fill: none; stroke: #8ca8a4; stroke-width: 3; stroke-linecap: round; opacity: 0.7; pointer-events: none; }
+	.leaf-sky { fill: #edf2ea; }
+	.leaf-ground { pointer-events: none; }
+	.leaf-ground-back { fill: #d8e3d1; }
+	.leaf-ground-front { fill: #c0d1b8; }
+	.leaf-light { fill: #e9c979; opacity: 0.34; pointer-events: none; }
+	.leaf-vein { fill: none; stroke: #526958; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; opacity: 0.8; pointer-events: none; }
+	.leaf-stem { fill: #fffaf2; stroke: #526958; stroke-width: 2.5; stroke-linejoin: round; pointer-events: none; }
 
 	.paintable {
 		stroke: #526958;
@@ -312,6 +360,7 @@
 	:global(.dark) .exercise-intro p,
 	:global(.dark) .motif-picker p,
 	:global(.dark) .status { color: #c3d0c6; }
+	:global(.dark) .leaf-guidance { border-left-color: rgba(169, 203, 176, 0.46); background: rgba(37, 51, 42, 0.72); color: #d9e5dc; }
 	:global(.dark) .motif-button,
 	:global(.dark) .color-button,
 	:global(.dark) .undo-button,

@@ -2,11 +2,10 @@
 //
 // Fyra regler bär hela filen:
 //
-// 1. Ingenting startar av sig självt. Varje steg kräver ett uttryckligt val,
-//    och ljud spelas aldrig förrän användaren valt både källa och längd.
-// 2. Ingenting sparas. Sovläge lever bara i den öppna vyn – ingen DB, ingen
-//    ny datainsamling. Enda undantaget är användarens upprepningsval för
-//    musiken, en inställning som ligger i evening-music-sources.
+// 1. Ingenting startar av sig självt. Varje steg kräver ett uttryckligt val:
+//    musik startar efter ett fortsättningsval, övriga källor efter ett tidsval.
+// 2. Ingenting sparas i backend. Sovläge lever i den öppna vyn; enda undantaget
+//    är musikens fortsättningsval i lokal lagring, se evening-music-sources.
 // 3. Tiden räknas mot tidsstämplar, aldrig mot en tickräknare. En strypt
 //    bakgrundsflik ska inte kunna få sessionen att glida.
 // 4. Copyn beskriver vad användaren valt. Den lovar aldrig sömn, effekt eller
@@ -173,6 +172,7 @@ export function getSleepStageHeading(stage: SleepStage, source: SleepSourceId | 
 	if (stage === 'music') return 'Vilken musik vill du lyssna på?';
 	if (stage === 'meditation') return 'Vilken vill du lyssna på?';
 	if (stage === 'length') {
+		if (source === 'music') return 'Hur vill du lyssna?';
 		return source === 'silence' ? 'Hur länge vill du ha tyst?' : 'Hur länge vill du lyssna?';
 	}
 	if (stage === 'active') return 'Du ligger kvar i stugan.';
