@@ -3,6 +3,7 @@
 	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
+	import WorldColoringExercise from '$lib/components/WorldColoringExercise.svelte';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
@@ -80,6 +81,12 @@
 					<li>{step}</li>
 				{/each}
 			</ol>
+		</section>
+	{/if}
+
+	{#if data.tool.slug === 'mala-i-varlden'}
+		<section class="block interactive-block">
+			<WorldColoringExercise />
 		</section>
 	{/if}
 
@@ -178,6 +185,11 @@
 	.block p {
 		margin: 0.65rem 0 0;
 		line-height: 1.65;
+	}
+
+	.interactive-block {
+		padding: 0;
+		overflow: hidden;
 	}
 
 	.block a {

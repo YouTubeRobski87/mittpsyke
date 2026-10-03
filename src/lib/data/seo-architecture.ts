@@ -59,7 +59,12 @@ export const pillars: Pillar[] = [
 			'Stress och sömnproblem',
 			'När ska man söka professionell hjälp?'
 		],
-		toolSlugs: ['dagens-avslut-reflektion', 'tacksamhetsovning', 'daglig-reflektionsmall'],
+		toolSlugs: [
+			'dagens-avslut-reflektion',
+			'tacksamhetsovning',
+			'daglig-reflektionsmall',
+			'mala-i-varlden'
+		],
 		relatedArticles: [
 			{ title: 'Gränssättning – varför det är svårt och hur du börjar', href: '/guider/sjalvkansla/gransen-och-sjalvkansla' }
 		]
@@ -185,6 +190,25 @@ export const pillars: Pillar[] = [
 ];
 
 export const tools: Tool[] = [
+	{
+		slug: 'mala-i-varlden',
+		title: 'Måla i världen',
+		description: 'En lugn kreativ övning där användaren färglägger ett motiv från den levande världen i sin egen takt.',
+		purpose: 'Att ge en lugn stund av närvaro genom en enkel kreativ aktivitet. Här finns inget att prestera och inget resultat som behöver bli på ett visst sätt.',
+		steps: [
+			'Välj en färg som känns bra just nu.',
+			'Tryck på en del av motivet för att fylla den med färgen.',
+			'Byt färg när du vill och fortsätt i din egen takt.',
+			'Pausa gärna och lägg märke till färgerna, formerna och andetaget.',
+			'Avsluta när det känns lagom. Motivet behöver inte bli färdigt.'
+		],
+		reflections: [
+			'Var det någon färg du drogs till lite extra?',
+			'Hur kändes det att göra något utan krav på resultat?',
+			'Vill du stanna kvar i känslan en liten stund?'
+		],
+		pillarSlug: 'stress-utmattning'
+	},
 	{
 		slug: 'skrivovningar-sjalvkansla',
 		title: '3 skrivövningar för självkänsla',
