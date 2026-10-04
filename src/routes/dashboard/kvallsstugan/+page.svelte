@@ -274,7 +274,6 @@
 </svelte:head>
 
 <main class="evening-page" aria-labelledby="evening-title">
-	<a class="evening-exit" href="/framsteg" aria-label="Gå ut till Framsteg">Gå ut</a>
 	<header class="evening-header">
 		<h1 id="evening-title">Kvällstugan</h1>
 		<span>En stund där dagen får landa.</span>
@@ -290,6 +289,10 @@
 		<div class="evening-scene-column">
 		<div class="evening-intro-layout">
 		<section class="evening-scene" data-time={dayState} data-view={sceneView} data-sleep={isSleepMode ? 'on' : 'off'} style={getEveningLampCssVariables(dayState)} aria-label={sceneLabel}>
+		<a class="evening-exit" href="/framsteg">
+			<span class="evening-exit-icon" aria-hidden="true">←</span>
+			<span>Lämna Kvällstugan</span>
+		</a>
 		<div class="scene-layer" class:is-active={!isVerandaView} aria-hidden={isVerandaView}>
 			<img
 				class="evening-scene-image"
@@ -466,6 +469,7 @@
 						<WorldColoringExercise
 							showIntro={false}
 							onCreativeMoment={registerWorldColoringMoment}
+							onDone={closeColoringActivity}
 						/>
 					</section>
 				{:else}
@@ -530,16 +534,31 @@
 	}
 
 	.evening-exit {
+		position: absolute;
+		z-index: 6;
+		top: clamp(0.55rem, 1.8vw, 0.85rem);
+		right: clamp(0.55rem, 1.8vw, 0.85rem);
 		display: inline-flex;
+		gap: 0.4rem;
 		min-height: 44px;
 		min-width: 44px;
+		max-width: calc(100% - 1.1rem);
 		align-items: center;
-		color: hsl(var(--foreground));
-		font-size: 0.9rem;
+		justify-content: center;
+		padding: 0.5rem 0.78rem;
+		border: 1px solid rgb(247 226 194 / 0.34);
+		border-radius: 999px;
+		background: rgb(20 18 20 / 0.78);
+		box-shadow: 0 4px 16px rgb(8 6 6 / 0.18);
+		color: #f7f3eb;
+		font-size: clamp(0.78rem, 2.4vw, 0.9rem);
 		font-weight: 650;
+		line-height: 1.2;
 		text-decoration: none;
+		backdrop-filter: blur(8px);
 	}
-	.evening-exit:hover, .evening-exit:focus-visible { text-decoration: underline; text-underline-offset: 0.18em; }
+	.evening-exit:hover { border-color: rgb(247 226 194 / 0.58); background: rgb(35 29 29 / 0.9); }
+	.evening-exit-icon { flex: 0 0 auto; font-size: 1rem; line-height: 1; }
 	.evening-exit:focus-visible,
 	.evening-flow-wrap:focus-visible { outline: 2px solid #f5c878; outline-offset: 3px; }
 

@@ -54,6 +54,19 @@ describe('Måla i världen', () => {
 		expect(body).toContain('Lövet');
 	});
 
+	it('visar en lugn avslutningsknapp när värden skickar en avslutningscallback', () => {
+		const { body } = render(WorldColoringExercise, { props: { onDone: () => undefined } });
+		const actions = componentSource.slice(
+			componentSource.indexOf('<div class="actions">'),
+			componentSource.indexOf('</div>', componentSource.indexOf('<div class="actions">'))
+		);
+
+		expect(body).toContain('Klar för nu');
+		expect(actions).toContain('<button type="button" class="done-button" onclick={onDone}>Klar för nu</button>');
+		expect(actions).not.toMatch(/onCreativeMoment|registerColoringChange|creative_moments/);
+		expect(componentSource).toContain('.done-button:focus-visible');
+	});
+
 	it('behåller separat färgläggning och historik vid motivbyte', () => {
 		let state = createColoringState();
 		state = paintColoringPart(state, 'flower', 'petalTop', '#8db7c7');
@@ -162,12 +175,13 @@ describe('Måla i världen', () => {
 		expect(session.registerColoringChange(false)).toBe(false);
 	});
 
-	it('låter motivbyte, ångra och återställ vara separata från registreringen', () => {
+	it('låter motivbyte, ångra och återställ vara separata från registrering och avslut', () => {
 		for (const functionName of ['selectMotif', 'undoLatest', 'resetDrawing']) {
 			const start = componentSource.indexOf(`function ${functionName}`);
 			const end = componentSource.indexOf('\n\t}', start) + 3;
 			expect(componentSource.slice(start, end)).not.toContain('onCreativeMoment');
 			expect(componentSource.slice(start, end)).not.toContain('registerColoringChange');
+			expect(componentSource.slice(start, end)).not.toContain('onDone');
 		}
 
 		const paintPart = componentSource.slice(

@@ -11,6 +11,10 @@ const panel = readFileSync(
 	join(process.cwd(), 'src/lib/components/evening/SleepModePanel.svelte'),
 	'utf8'
 );
+const coloringExercise = readFileSync(
+	join(process.cwd(), 'src/lib/components/WorldColoringExercise.svelte'),
+	'utf8'
+);
 const sleepMode = readFileSync(join(process.cwd(), 'src/lib/evening-sleep-mode.ts'), 'utf8');
 
 describe('Måla i världen i Kvällstugan', () => {
@@ -24,18 +28,22 @@ describe('Måla i världen i Kvällstugan', () => {
 	});
 
 	it('öppnar den befintliga målkomponenten med rätt copy och alla tre motiv', () => {
-		const { body } = render(WorldColoringExercise, { props: { showIntro: false } });
+		const { body } = render(WorldColoringExercise, {
+			props: { showIntro: false, onDone: () => undefined }
+		});
 
 		expect(route).toContain("import WorldColoringExercise from '$lib/components/WorldColoringExercise.svelte'");
 		expect(route).toContain('onColoring={openColoringActivity}');
 		expect(route).toContain('isColoringActivity = true;');
 		expect(route).toContain('<WorldColoringExercise');
 		expect(route).toContain('showIntro={false}');
+		expect(route).toContain('onDone={closeColoringActivity}');
 		expect(route).toContain('Måla i världen');
 		expect(route).toContain('Måla i din egen takt. Du behöver inte göra färdigt.');
 		expect(body).toContain('Blomman');
 		expect(body).toContain('Kvällstugan');
 		expect(body).toContain('Lövet');
+		expect(body).toContain('Klar för nu');
 	});
 
 	it('går tillbaka till aktivitetsvalet och flyttar fokus mellan vyerna', () => {
@@ -49,6 +57,25 @@ describe('Måla i världen i Kvällstugan', () => {
 		expect(closeColoring).toContain("sleepStage = 'source';");
 		expect(route).toContain('void tick().then(() => coloringHeading?.focus())');
 		expect(panel).toContain('void tick().then(() => heading?.focus())');
+	});
+
+	it('låter Klar för nu återanvända tillbaka-navigationen utan ny registrering', () => {
+		const closeColoring = route.slice(
+			route.indexOf('function closeColoringActivity()'),
+			route.indexOf('async function registerWorldColoringMoment()')
+		);
+
+		expect(route).toContain('onDone={closeColoringActivity}');
+		expect(closeColoring).toContain('isColoringActivity = false;');
+		expect(closeColoring).toContain("sleepStage = 'source';");
+		expect(closeColoring).not.toMatch(/creative|record|supabase|fetch|progress/i);
+	});
+
+	it('skiljer Klar för nu från kontrollen som lämnar hela Kvällstugan', () => {
+		expect(coloringExercise).toContain('<button type="button" class="done-button" onclick={onDone}>Klar för nu</button>');
+		expect(route).toContain('<a class="evening-exit" href="/framsteg">');
+		expect(route).toContain('<span>Lämna Kvällstugan</span>');
+		expect(route).not.toContain('href="/dashboard"');
 	});
 
 	it('behåller musik, meditation och tystnad som de enda sleep sources', () => {

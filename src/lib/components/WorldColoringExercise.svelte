@@ -103,8 +103,9 @@
 </script>
 
 <script lang="ts">
-	let { onCreativeMoment, showIntro = true }: {
+	let { onCreativeMoment, onDone, showIntro = true }: {
 		onCreativeMoment?: () => void | Promise<void>;
+		onDone?: () => void;
 		showIntro?: boolean;
 	} = $props();
 
@@ -287,6 +288,9 @@
 	<div class="actions">
 		<button type="button" class="undo-button" disabled={!canUndo} onclick={undoLatest}>Ångra senaste</button>
 		<button type="button" class="reset-button" onclick={resetDrawing}>Återställ</button>
+		{#if onDone}
+			<button type="button" class="done-button" onclick={onDone}>Klar för nu</button>
+		{/if}
 	</div>
 </div>
 
@@ -330,7 +334,8 @@
 	.motif-button:focus-visible,
 	.color-button:focus-visible,
 	.undo-button:focus-visible,
-	.reset-button:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.35); outline-offset: 2px; }
+	.reset-button:focus-visible,
+	.done-button:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.35); outline-offset: 2px; }
 
 	.status { min-height: 1.5rem; margin: 0.8rem 0 0; font-size: 0.88rem; color: #526158; }
 	.canvas { max-width: 31rem; margin: 0.75rem auto 0; padding: clamp(0.35rem, 2vw, 0.8rem); border: 1px solid rgba(57, 83, 65, 0.14); border-radius: 20px; background: rgba(255, 255, 255, 0.7); }
@@ -365,10 +370,13 @@
 
 	.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.55rem; margin-top: 0.85rem; }
 	.undo-button,
-	.reset-button { min-height: 2.75rem; padding: 0.55rem 1rem; border: 1px solid rgba(57, 83, 65, 0.28); border-radius: 999px; background: #ffffff; color: #314638; font: inherit; font-weight: 600; cursor: pointer; }
+	.reset-button,
+	.done-button { min-height: 2.75rem; padding: 0.55rem 1rem; border: 1px solid rgba(57, 83, 65, 0.28); border-radius: 999px; background: #ffffff; color: #314638; font: inherit; font-weight: 600; cursor: pointer; }
 	.undo-button:hover:not(:disabled),
 	.reset-button:hover { background: #f3f6f1; }
 	.undo-button:disabled { cursor: default; opacity: 0.48; }
+	.done-button { border-color: rgba(62, 101, 75, 0.42); background: #e8f0e6; color: #294032; }
+	.done-button:hover { background: #dce9d9; }
 
 	:global(.dark) .coloring-exercise { background: radial-gradient(circle at 88% 8%, rgba(233, 201, 121, 0.08), transparent 25%), linear-gradient(180deg, #111827 0%, #152019 100%); }
 	:global(.dark) .exercise-intro p,
@@ -382,6 +390,8 @@
 	:global(.dark) .color-button:hover,
 	:global(.dark) .undo-button:hover:not(:disabled),
 	:global(.dark) .reset-button:hover { background: #25332a; }
+	:global(.dark) .done-button { border-color: rgba(169, 203, 176, 0.46); background: #294332; color: #edf5ef; }
+	:global(.dark) .done-button:hover { background: #34543e; }
 	:global(.dark) .motif-button.selected,
 	:global(.dark) .color-button.selected { border-color: #a9cbb0; box-shadow: 0 0 0 2px rgba(169, 203, 176, 0.2); }
 	:global(.dark) .canvas { border-color: rgba(196, 219, 201, 0.18); background: rgba(17, 24, 39, 0.7); }

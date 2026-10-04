@@ -16,11 +16,24 @@ describe('direkt in i Kvällstugan', () => {
 		} } });
 		expect(body).toContain('data-view="interior"');
 		expect(body).toContain('cabin-interior-evening-resting-veranda-v1.webp');
-		expect(body).toContain('href="/framsteg" aria-label="Gå ut till Framsteg">Gå ut</a>');
+		expect(body).toContain('href="/framsteg"');
+		expect(body).toContain('Lämna Kvällstugan');
 		expect(body).toContain('Starta kvällsincheckningen');
 		expect(body).toContain('Vill inte svara');
 		expect(body).toContain('Frågorna öppnas bara om du själv vill börja.');
 		expect(body).not.toContain('Laddar kvällsincheckningen');
+	});
+
+	it('visar en tydlig scenkontroll som faktiskt lämnar Kvällstugan', () => {
+		const sceneStart = pageSource.indexOf('<section class="evening-scene"');
+		const exitStart = pageSource.indexOf('<a class="evening-exit"', sceneStart);
+		const firstSceneLayer = pageSource.indexOf('<div class="scene-layer"', sceneStart);
+
+		expect(exitStart).toBeGreaterThan(sceneStart);
+		expect(exitStart).toBeLessThan(firstSceneLayer);
+		expect(pageSource.slice(exitStart, firstSceneLayer)).toContain('href="/framsteg"');
+		expect(pageSource.slice(exitStart, firstSceneLayer)).toContain('Lämna Kvällstugan');
+		expect(pageSource).toMatch(/\.evening-exit\s*\{[\s\S]*?position: absolute;[\s\S]*?min-height: 44px;[\s\S]*?max-width: calc\(100% - 1\.1rem\);/);
 	});
 
 	it('låter användaren avstå lokalt utan sparning eller tracking', () => {
