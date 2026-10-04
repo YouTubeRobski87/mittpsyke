@@ -4,6 +4,7 @@ import { render } from 'svelte/server';
 import { getToolBySlug } from '$lib/data/seo-architecture';
 import WorldColoringExercise, {
 	blankColor,
+	createCreativeMomentSession,
 	createColoringState,
 	paintColoringPart,
 	resetColoringMotif,
@@ -141,6 +142,31 @@ describe('Måla i världen', () => {
 
 	it('integreras bara på den nya övningssidan', () => {
 		expect(routeSource).toContain("data.tool.slug === 'mala-i-varlden'");
-		expect(routeSource).toContain('<WorldColoringExercise />');
+		expect(routeSource).toContain('<WorldColoringExercise onCreativeMoment={registerWorldColoringMoment} />');
+	});
+
+	it('registrerar bara den första faktiska färgläggningen i komponentens session', () => {
+		const session = createCreativeMomentSession();
+
+		expect(session.registerColoringChange(false)).toBe(false);
+		expect(session.registerColoringChange(true)).toBe(true);
+		expect(session.registerColoringChange(true)).toBe(false);
+		expect(session.registerColoringChange(false)).toBe(false);
+	});
+
+	it('låter motivbyte, ångra och återställ vara separata från registreringen', () => {
+		for (const functionName of ['selectMotif', 'undoLatest', 'resetDrawing']) {
+			const start = componentSource.indexOf(`function ${functionName}`);
+			const end = componentSource.indexOf('\n\t}', start) + 3;
+			expect(componentSource.slice(start, end)).not.toContain('onCreativeMoment');
+			expect(componentSource.slice(start, end)).not.toContain('registerColoringChange');
+		}
+
+		const paintPart = componentSource.slice(
+			componentSource.indexOf('function paintPart'),
+			componentSource.indexOf('function handlePartKeydown')
+		);
+		expect(paintPart).toContain('nextState !== coloringState');
+		expect(paintPart).toContain('if (shouldRecord) void onCreativeMoment?.();');
 	});
 });

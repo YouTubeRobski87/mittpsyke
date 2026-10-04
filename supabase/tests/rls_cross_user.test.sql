@@ -10,7 +10,7 @@
 
 begin;
 
-select plan(78);
+select plan(84);
 
 -- ── Testanvändare ────────────────────────────────────────────────────────
 -- A = '…0a', B = '…0b'. Seed sker som tabellägare (förbi RLS).
@@ -64,6 +64,8 @@ insert into public.messages (id, conversation_id, role, content) values
   ('10000000-0000-4000-8000-000000000004', '10000000-0000-4000-8000-000000000003', 'user', 'A privat');
 insert into public.evening_checkins (id, user_id, theme_id, parking_bucket, flow_version) values
   ('10000000-0000-4000-8000-000000000005', '00000000-0000-4000-8000-00000000000a', 'other', 'tomorrow', 'evening-calm-v1');
+insert into public.creative_moments (id, user_id, activity_type, session_id) values
+  ('10000000-0000-4000-8000-000000000012', '00000000-0000-4000-8000-00000000000a', 'world_coloring', '20000000-0000-4000-8000-000000000001');
 insert into public.companion_daily_answers (user_id, answer_date, question_id, answer_id) values
   ('00000000-0000-4000-8000-00000000000a', current_date, 'q', 'a');
 insert into public.user_memories (id, user_id, content) values
@@ -165,6 +167,27 @@ select is(pg_temp.try('authenticated', '00000000-0000-4000-8000-00000000000b',
 select ok(pg_temp.try('anon', null,
   $q$select count(*) from public.evening_checkins$q$) in ('0', 'denied'),
   'evening_checkins: anon får 0 rader');
+
+-- ── Kreativa stunder ────────────────────────────────────────────────────
+select is(pg_temp.try('authenticated', '00000000-0000-4000-8000-00000000000a',
+  $q$select count(*) from public.creative_moments where id = '10000000-0000-4000-8000-000000000012'$q$), '1',
+  'creative_moments: A läser egen rad');
+select is(pg_temp.try('authenticated', '00000000-0000-4000-8000-00000000000b',
+  $q$select count(*) from public.creative_moments where id = '10000000-0000-4000-8000-000000000012'$q$), '0',
+  'creative_moments: B läser inte A');
+select is(pg_temp.try('authenticated', '00000000-0000-4000-8000-00000000000b',
+  $q$insert into public.creative_moments (user_id, activity_type, session_id) values ('00000000-0000-4000-8000-00000000000a', 'world_coloring', '20000000-0000-4000-8000-000000000002')$q$), 'denied',
+  'creative_moments: B kan inte skapa rad med user_id=A');
+select is(pg_temp.try('authenticated', '00000000-0000-4000-8000-00000000000a',
+  $q$insert into public.creative_moments (user_id, activity_type, session_id) values ('00000000-0000-4000-8000-00000000000a', 'world_coloring', '20000000-0000-4000-8000-000000000003')$q$), '1',
+  'creative_moments: A kan skapa egen rad');
+select ok(pg_temp.try('anon', null,
+  $q$select count(*) from public.creative_moments$q$) in ('0', 'denied'),
+  'creative_moments: anon får 0 rader');
+select is(pg_temp.try('authenticated', '00000000-0000-4000-8000-00000000000a',
+  $q$insert into public.creative_moments (user_id, activity_type, session_id) values ('00000000-0000-4000-8000-00000000000a', 'world_coloring', '20000000-0000-4000-8000-000000000001')$q$), 'error:23505',
+  'creative_moments: samma session kan inte dubbelregistreras');
+
 select is(pg_temp.try('authenticated', '00000000-0000-4000-8000-00000000000b',
   $q$select count(*) from public.companion_daily_answers where user_id = '00000000-0000-4000-8000-00000000000a'$q$), '0',
   'companion_daily_answers: B läser inte A');

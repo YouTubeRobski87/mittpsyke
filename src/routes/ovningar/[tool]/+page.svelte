@@ -4,6 +4,8 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import WorldColoringExercise from '$lib/components/WorldColoringExercise.svelte';
+	import { recordCreativeMoment } from '$lib/creative-moments';
+	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
@@ -19,6 +21,16 @@
 			? guideHrefByPillar[data.pillar.slug]
 			: `/guider/${data.pillar.slug}`
 	);
+
+	let creativeMomentSessionId: string | null = null;
+
+	async function registerWorldColoringMoment() {
+		creativeMomentSessionId ??= crypto.randomUUID();
+		const result = await recordCreativeMoment(supabase, creativeMomentSessionId);
+		if (!result.ok && result.reason === 'save_failed') {
+			console.error('[creative-moments] kunde inte spara stund', result.error?.message);
+		}
+	}
 </script>
 
 <SEO canonical={`https://mittpsyke.se${$page.url.pathname}`} />
@@ -86,7 +98,7 @@
 
 	{#if data.tool.slug === 'mala-i-varlden'}
 		<section class="block interactive-block">
-			<WorldColoringExercise />
+			<WorldColoringExercise onCreativeMoment={registerWorldColoringMoment} />
 		</section>
 	{/if}
 

@@ -15,8 +15,8 @@ const analysisBlock = route.slice(
 );
 
 const currentEmptyState = route.slice(
-	route.indexOf('{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0}'),
-	route.indexOf('{:else}', route.indexOf('{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0}'))
+	route.indexOf('{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0 && creativeMomentCount === 0}'),
+	route.indexOf('{:else}', route.indexOf('{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0 && creativeMomentCount === 0}'))
 );
 
 describe('Framstegs första blick', () => {

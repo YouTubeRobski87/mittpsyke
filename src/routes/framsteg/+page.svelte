@@ -93,6 +93,7 @@
 		EMPTY_MOOD_COPY
 	} from '$lib/progress-reflection';
 	import { buildWeekSummary } from '$lib/progress-week-summary';
+	import { getCreativeMomentCopy } from '$lib/creative-moments';
 	import { buildHalfYearView } from '$lib/progress-half-year';
 	import {
 		EMPTY_SUPPORT_VIEW,
@@ -316,6 +317,7 @@
 		milestones: MilestonesResponse | null;
 		weeklyEntries: number;
 		entryCount: number;
+		creativeMomentCount?: number;
 		activeDays: number;
 		growthScore: number;
 		growthLevel: number;
@@ -505,6 +507,8 @@
 	const weeklyEntries = $derived(isAnonymous ? 3 : loadedWeeklyEntries);
 	// Samma serverkälla som Dashboard: alla sparade rader i diary, utan tidsgräns.
 	const entryCount = $derived(data.entryCount ?? 0);
+	const creativeMomentCount = $derived(data.creativeMomentCount ?? 0);
+	const creativeMomentCopy = $derived(getCreativeMomentCopy(creativeMomentCount));
 	const livingWorldReflectionCopy = $derived(
 		getLivingWorldReflectionCopy(isAnonymous ? undefined : entryCount)
 	);
@@ -1190,6 +1194,21 @@
 <SEO canonical="https://mittpsyke.se/framsteg" />
 <CompanionPresenceTracker enabled={!data.isAnonymous} />
 
+{#snippet creativeMomentsCard()}
+	<section
+		class="card creative-moments-card"
+		aria-labelledby="creative-moments-heading"
+		data-testid="creative-moments"
+	>
+		<div class="card-header creative-moments-header">
+			<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
+			<h2 id="creative-moments-heading">Kreativa stunder</h2>
+		</div>
+		<p class="creative-moments-copy">{creativeMomentCopy}</p>
+		<p class="creative-moments-note">Här räknas bara att stunden ägde rum. Inga motiv eller färger sparas.</p>
+	</section>
+{/snippet}
+
 <main class="auth-page framsteg-page" style={themeStyle}>
 	<div class="auth-shell framsteg-shell">
 		<header class="auth-hero">
@@ -1217,15 +1236,18 @@
 					<p>{error}</p>
 					<small>Försök att ladda sidan igen</small>
 				</section>
-			{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0}
-				<section class="card empty-state" aria-labelledby="progress-empty-heading">
-					<h2 id="progress-empty-heading">Din utveckling börjar här</h2>
-					<p>
-						När du sparar stunder i dagboken kan förändringar och sådant som återkommer börja
-						synas här. Återvänd när det hjälper dig — det finns inget att hålla igång.
-					</p>
-					<a href="/dagbok/checkin" class="auth-button primary">Skriv i dagboken</a>
-				</section>
+			{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0 && creativeMomentCount === 0}
+				<div class="progress-content">
+					<section class="card empty-state" aria-labelledby="progress-empty-heading">
+						<h2 id="progress-empty-heading">Din utveckling börjar här</h2>
+						<p>
+							När du sparar stunder i dagboken kan förändringar och sådant som återkommer börja
+							synas här. Återvänd när det hjälper dig — det finns inget att hålla igång.
+						</p>
+						<a href="/dagbok/checkin" class="auth-button primary">Skriv i dagboken</a>
+					</section>
+					{@render creativeMomentsCard()}
+				</div>
 			{:else}
 				<div class="progress-content">
 					<section
@@ -1386,6 +1408,8 @@
 					</p>
 				{/if}
 			</section>
+
+			{@render creativeMomentsCard()}
 
 			<section class="card recent-card" aria-labelledby="mood-history-heading" data-testid="mood-history">
 				<div class="card-header">
@@ -3247,6 +3271,19 @@
 		color: hsl(var(--muted-foreground));
 		font-size: 0.95rem;
 		line-height: 1.6;
+	}
+	.creative-moments-header { margin-bottom: 0.9rem; }
+	.creative-moments-copy {
+		margin: 0;
+		color: hsl(var(--foreground));
+		font-size: 1rem;
+		line-height: 1.65;
+	}
+	.creative-moments-note {
+		margin: 0.55rem 0 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.88rem;
+		line-height: 1.55;
 	}
 	.icon-badge { width: 3.2rem; height: 3.2rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
 	.progress-summary-card { min-height: 25rem; }

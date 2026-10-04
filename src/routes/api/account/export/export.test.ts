@@ -33,6 +33,7 @@ const TABLE_ROWS: Record<string, Record<string, unknown>[]> = {
 		{ id: 'd2', user_id: 'user-2', created_at: '2026-02-02T10:00:00.000Z', text: 'ANNAN ANVÄNDARE', mood: '3', tags: null }
 	],
 	evening_checkins: [{ id: 'e1', user_id: 'user-1', thought: 'Kvällstanke', theme_id: 'tomorrow' }],
+	creative_moments: [{ id: 'cm1', user_id: 'user-1', activity_type: 'world_coloring', occurred_at: '2026-02-01T10:00:00.000Z' }],
 	companion_daily_answers: [{ user_id: 'user-1', answer_date: '2026-02-01', question_id: 'q1' }],
 	daily_movement: [{ id: 'm1', user_id: 'user-1', entry_date: '2026-02-01', step_count: 4200 }],
 	weekly_reflections: [{ id: 'w1', user_id: 'user-1', week_start: '2026-02-01', words: [] }],
@@ -187,7 +188,7 @@ describe('innehållet', () => {
 		mockSupabase();
 		const body = await (await call(request())).json();
 
-		expect(body.export_version).toBe('2');
+		expect(body.export_version).toBe('3');
 		expect(typeof body.exported_at).toBe('string');
 		expect(Object.keys(body.data).sort()).toEqual(
 			[
@@ -200,6 +201,7 @@ describe('innehållet', () => {
 				'gemenskapskommentarer',
 				'installningar',
 				'konto',
+				'kreativa_stunder',
 				'kvallsincheckningar',
 				'rorelse',
 				'sms_installningar',

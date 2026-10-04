@@ -22,12 +22,13 @@ import type { RequestHandler } from './$types';
 
 // SvelteKit tillåter bara HTTP-verb och _-prefixade namn som named exports i
 // +server-filer. Understrecket är alltså krav, inte stil.
-export const _EXPORT_VERSION = '2';
+export const _EXPORT_VERSION = '3';
 
 /** Tabeller som exporteras, med de kolumner användaren själv har skapat. */
 const EXPORT_TABLES = [
 	{ key: 'dagboksinlagg', table: 'diary', columns: 'id, created_at, text, mood, tags, prompt_question, image_url, video_path', orderBy: 'created_at' },
 	{ key: 'kvallsincheckningar', table: 'evening_checkins', columns: 'id, created_at, checkin_date, theme_id, thought, parking_bucket', orderBy: 'created_at' },
+	{ key: 'kreativa_stunder', table: 'creative_moments', columns: 'id, activity_type, occurred_at', orderBy: 'occurred_at' },
 	{ key: 'foljeslagarsvar', table: 'companion_daily_answers', columns: 'answer_date, question_id, answer_id, created_at', orderBy: 'answer_date' },
 	{ key: 'rorelse', table: 'daily_movement', columns: 'id, entry_date, step_count, cycled_today, cycled_km, created_at, updated_at', orderBy: 'entry_date' },
 	{ key: 'veckoreflektioner', table: 'weekly_reflections', columns: 'id, week_start, words, quoted_sentence, movement, open_question, status, created_at', orderBy: 'week_start' },
@@ -56,7 +57,7 @@ const METADATA_FIELDS = [
 	'ai_diary_context_enabled'
 ] as const;
 
-// Ett exportanrop gör 8-9 databasfrågor och bygger hela svaret i minnet. Det är
+// Ett exportanrop gör flera databasfrågor och bygger hela svaret i minnet. Det är
 // en användarinitierad nedladdning som ingen har legitim anledning att köra mer
 // än ett fåtal gånger per minut, så fönstret hålls snävt. Nyckeln är det
 // verifierade user-id:t från auth.getUser(), aldrig något klienten kan styra.

@@ -4,6 +4,7 @@ import { getProgressInitialSceneSpot } from '$lib/progressCompanionPlacement';
 import { getProgressSceneBand } from '$lib/progressScene';
 import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
 import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
+import { loadCreativeMomentCount } from '$lib/server/creative-moments';
 import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
 import { loadDiaryActivityDays } from '$lib/server/diary-activity-days';
 import { loadEveningPatternRows } from '$lib/server/evening-checkin';
@@ -39,6 +40,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
 			weeklyEntries: 0,
 			entryCount: 0,
+			creativeMomentCount: 0,
 			activeDays: 0,
 			growthScore: 0,
 			growthLevel: 0,
@@ -53,14 +55,15 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	const userMetadata = (user.user_metadata ?? {}) as Record<string, unknown>;
-	const [entryCount, companionDaily, diaryActivityDays, eveningPatternRows] = await Promise.all([
+	const [entryCount, companionDaily, diaryActivityDays, eveningPatternRows, creativeMomentCount] = await Promise.all([
 		loadDiaryEntryCount(locals.supabase, user.id),
 		loadCompanionDailyState(locals.supabase, user.id),
 		// Världens aktiva dagar: dagar med minst ett sparat inlägg, humör krävs inte.
 		loadDiaryActivityDays(locals.supabase, user.id),
 		// "Kvällar över tid". Egen dataväg, aldrig sammanblandad med dagbokens
 		// humörvärden, och utan kvällens fritext.
-		loadEveningPatternRows(locals.supabase, user.id)
+		loadEveningPatternRows(locals.supabase, user.id),
+		loadCreativeMomentCount(locals.supabase, user.id)
 	]);
 
 	// Världens beständiga progression: det som redan vuxit fram låses aldrig
@@ -90,6 +93,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		milestones: { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 },
 		weeklyEntries: 0,
 		entryCount,
+		creativeMomentCount,
 		activeDays: 0,
 		growthScore: 0,
 		growthLevel: 0,

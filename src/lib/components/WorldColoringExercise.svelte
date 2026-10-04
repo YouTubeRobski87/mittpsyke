@@ -88,9 +88,23 @@
 			history: { ...state.history, [motif]: [] }
 		};
 	}
+
+	export function createCreativeMomentSession() {
+		let hasRecorded = false;
+
+		return {
+			registerColoringChange(changed: boolean) {
+				if (!changed || hasRecorded) return false;
+				hasRecorded = true;
+				return true;
+			}
+		};
+	}
 </script>
 
 <script lang="ts">
+	let { onCreativeMoment }: { onCreativeMoment?: () => void | Promise<void> } = $props();
+
 	const palette = [
 		{ name: 'Dimmig blå', value: '#8db7c7' },
 		{ name: 'Salviagrön', value: '#91ad86' },
@@ -109,6 +123,7 @@
 	let selectedColor = $state<string>(palette[0].value);
 	let coloringState = $state<ColoringState>(createColoringState());
 	let status = $state(`Vald färg: ${palette[0].name}.`);
+	const creativeMomentSession = createCreativeMomentSession();
 	const canUndo = $derived(coloringState.history[selectedMotif].length > 0);
 
 	function getColorName(value: string) {
@@ -126,7 +141,10 @@
 	}
 
 	function paintPart(part: string, label: string) {
-		coloringState = paintColoringPart(coloringState, selectedMotif, part, selectedColor);
+		const nextState = paintColoringPart(coloringState, selectedMotif, part, selectedColor);
+		const shouldRecord = creativeMomentSession.registerColoringChange(nextState !== coloringState);
+		coloringState = nextState;
+		if (shouldRecord) void onCreativeMoment?.();
 		status = `${label} har fått färgen ${getColorName(selectedColor).toLowerCase()}.`;
 	}
 
