@@ -23,6 +23,11 @@ describe('Kreativa stunder i Framsteg', () => {
 		expect(card).toContain('Inga motiv eller färger sparas.');
 	});
 
+	it('länkar målningen till Kvällstugans aktivitetsval', () => {
+		expect(card).toContain('href="/dashboard/kvallsstugan#evening-activities"');
+		expect(card).toContain('Måla i världen i Kvällstugan');
+	});
+
 	it('introducerar ingen prestation, procent, streak eller poäng i sektionen', () => {
 		const visibleCopy = card.replace(/<[^>]+>/g, ' ').replace(/\{[^}]+\}/g, ' ');
 		expect(visibleCopy).not.toMatch(/procent|%|streak|poäng|score|målning|slutförd|badge|ranking/i);

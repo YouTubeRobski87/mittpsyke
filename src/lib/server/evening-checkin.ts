@@ -24,20 +24,47 @@ export type SaveEveningCheckinResult =
 	| { ok: true; checkin: { id: string; created_at: string; checkin_date: string } }
 	| { ok: false };
 
-/** Läser enbart de servervaliderade svenska kalenderdagarna, aldrig fritext. */
-export async function loadEveningInteriorMemory(
+export type EveningCheckinOverview = {
+	interiorMemory: EveningInteriorMemory;
+	hasCheckinToday: boolean;
+};
+
+/**
+ * Läser enbart de servervaliderade svenska kalenderdagarna, aldrig fritext.
+ * Samma fråga ger både inredningsminnet och om kvällens incheckning redan är
+ * sparad, så sidan inte behöver fråga databasen två gånger.
+ */
+export async function loadEveningCheckinOverview(
 	supabase: SupabaseClient,
-	userId: string | null | undefined
-): Promise<EveningInteriorMemory> {
-	if (!userId) return EMPTY_EVENING_INTERIOR_MEMORY;
+	userId: string | null | undefined,
+	now = new Date()
+): Promise<EveningCheckinOverview> {
+	if (!userId) {
+		return { interiorMemory: EMPTY_EVENING_INTERIOR_MEMORY, hasCheckinToday: false };
+	}
 
 	const { data, error } = await supabase
 		.from(TABLE)
 		.select('checkin_date')
 		.eq('user_id', userId);
 
-	if (error || !data) return EMPTY_EVENING_INTERIOR_MEMORY;
-	return getEveningInteriorMemory(data.map((checkin) => checkin.checkin_date));
+	if (error || !data) {
+		return { interiorMemory: EMPTY_EVENING_INTERIOR_MEMORY, hasCheckinToday: false };
+	}
+
+	const checkinDates = data.map((checkin) => checkin.checkin_date);
+	return {
+		interiorMemory: getEveningInteriorMemory(checkinDates),
+		hasCheckinToday: checkinDates.includes(getEveningCheckinDate(now))
+	};
+}
+
+/** V1-kompatibel läsning för anrop som bara behöver inredningsminnet. */
+export async function loadEveningInteriorMemory(
+	supabase: SupabaseClient,
+	userId: string | null | undefined
+): Promise<EveningInteriorMemory> {
+	return (await loadEveningCheckinOverview(supabase, userId)).interiorMemory;
 }
 
 /**

@@ -45,6 +45,15 @@ describe('Måla i världen', () => {
 		expect(componentSource).toContain('@media (prefers-reduced-motion: reduce)');
 	});
 
+	it('kan bäddas in med sidans egen rubrik utan att dubblera introduktionen', () => {
+		const { body } = render(WorldColoringExercise, { props: { showIntro: false } });
+
+		expect(body).not.toContain('Välj en färg och börja där du vill');
+		expect(body).toContain('Blomman');
+		expect(body).toContain('Kvällstugan');
+		expect(body).toContain('Lövet');
+	});
+
 	it('behåller separat färgläggning och historik vid motivbyte', () => {
 		let state = createColoringState();
 		state = paintColoringPart(state, 'flower', 'petalTop', '#8db7c7');
@@ -105,14 +114,13 @@ describe('Måla i världen', () => {
 		expect(cabinSource.match(/onkeydown=\{\(event\) => handlePartKeydown/g)).toHaveLength(8);
 	});
 
-	it('ger Lövet stora klick- och tangentbordsstyrda delar med lugn inramning', () => {
+	it('ger Lövet stora klick- och tangentbordsstyrda delar utan extra meditationscopy', () => {
 		const leafSource = componentSource
 			.split('<!-- Leaf motif -->')[1]
 			.split('<!-- End leaf motif -->')[0];
 
-		expect(componentSource).toContain("{#if selectedMotif === 'leaf'}");
-		expect(componentSource).toContain('Ta ett lugnt andetag innan du börjar.');
-		expect(componentSource).toContain('Lägg märke till färgen du väljer.');
+		expect(componentSource).not.toContain('Ta ett lugnt andetag innan du börjar.');
+		expect(componentSource).not.toContain('Lägg märke till färgen du väljer.');
 		expect(leafSource).toContain('Ett stort löv att färglägga');
 		expect(leafSource.match(/class="paintable"/g)).toHaveLength(6);
 		expect(leafSource.match(/role="button"/g)).toHaveLength(6);

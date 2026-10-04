@@ -37,7 +37,7 @@ describe('Sovläget i Kvällstugan', () => {
 		// Den underkända asseten får inte refereras från produktionskoden.
 		expect(route).not.toContain('floor-bed.webp');
 		expect(route).not.toContain('floor-bed-master.png');
-		expect(route).toContain("{#if sleepStage === 'closed'}");
+		expect(route).toContain("{#if sleepStage === 'closed' && !isColoringActivity}");
 		expect(route).toContain('aria-label="Öppna Sovläge"');
 		expect(route).not.toContain('scene-object-label');
 	});
@@ -106,7 +106,9 @@ describe('Sovläget i Kvällstugan', () => {
 
 describe('Sovlägets panel', () => {
 	it('ligger i normalt flöde under scenen, inte som overlay i 16:9-rutan', () => {
-		expect(route).toContain('<SleepModePanel bind:stage={sleepStage} />');
+		expect(route).toContain(
+			'<SleepModePanel bind:stage={sleepStage} onColoring={openColoringActivity} />'
+		);
 		// Panelen ligger i scenkolumnen men utanför <section class="evening-scene">.
 		const sceneEnd = route.indexOf('</section>', route.indexOf('class="evening-scene"'));
 		expect(route.indexOf('<SleepModePanel')).toBeGreaterThan(sceneEnd);

@@ -9,8 +9,13 @@ import { GET } from '../../auth/callback/+server';
 
 vi.mock('$env/dynamic/public', () => ({ env: {} }));
 vi.mock('$lib/server/companion-daily-question', () => ({ loadCompanionDailyState: vi.fn(async () => null) }));
-vi.mock('$lib/server/evening-checkin', () => ({ loadEveningInteriorMemory: vi.fn(async () => EMPTY_EVENING_INTERIOR_MEMORY) }));
-const { loadEveningInteriorMemory } = await import('$lib/server/evening-checkin');
+vi.mock('$lib/server/evening-checkin', () => ({
+	loadEveningCheckinOverview: vi.fn(async () => ({
+		interiorMemory: EMPTY_EVENING_INTERIOR_MEMORY,
+		hasCheckinToday: false
+	}))
+}));
+const { loadEveningCheckinOverview } = await import('$lib/server/evening-checkin');
 
 const destination = '/dashboard/kvallsstugan';
 const signedIn = { id: 'test-user', is_anonymous: false } as User;
@@ -23,11 +28,15 @@ beforeEach(() => vi.clearAllMocks());
 describe('Kvällstugans navigation genom inloggning', () => {
 	it.each([null, { ...signedIn, is_anonymous: true }])('bevarar destinationen och läser inte stugdata för gästen', async (user) => {
 		await expect(load(cabinEvent(user))).rejects.toMatchObject({ status: 303, location: `/login?redirect=${destination}` });
-		expect(loadEveningInteriorMemory).not.toHaveBeenCalled();
+		expect(loadEveningCheckinOverview).not.toHaveBeenCalled();
 	});
 
 	it('släpper in ett vanligt konto direkt utan ytterligare redirect', async () => {
-		await expect(load(cabinEvent(signedIn))).resolves.toEqual({ companionDaily: null, interiorMemory: EMPTY_EVENING_INTERIOR_MEMORY });
+		await expect(load(cabinEvent(signedIn))).resolves.toEqual({
+			companionDaily: null,
+			interiorMemory: EMPTY_EVENING_INTERIOR_MEMORY,
+			hasEveningCheckinToday: false
+		});
 	});
 
 	it('återvänder efter lösenordsinloggning och kan ladda stugan utan loop', async () => {

@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import DraftContinuityCard from '$lib/components/DraftContinuityCard.svelte';
 	import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';
 	import EveningCheckinFlow from '$lib/components/evening/EveningCheckinFlow.svelte';
 	import SleepModePanel from '$lib/components/evening/SleepModePanel.svelte';
+	import WorldColoringExercise from '$lib/components/WorldColoringExercise.svelte';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
 	import CompanionDailyCard from '$lib/components/world/CompanionDailyCard.svelte';
 	import CompanionWorldResponse from '$lib/components/world/CompanionWorldResponse.svelte';
@@ -29,6 +30,8 @@
 	import { getEveningLampCssVariables } from '$lib/evening-lamp';
 	import type { CompanionDailyState } from '$lib/companionDailyQuestion';
 	import { getCompanionBond, getCompanionBondLevel } from '$lib/companionBond';
+	import { recordCreativeMoment } from '$lib/creative-moments';
+	import { supabase } from '$lib/supabase';
 
 	// Kvällstugan har en egen scenbild: personen är inbakad i soffan i samma
 	// perspektiv som möbeln. Därmed behöver vi inte lägga en frilagd kropp ovanpå
@@ -99,6 +102,7 @@
 		data: {
 			companionDaily: CompanionDailyState | null;
 			interiorMemory: EveningInteriorMemory;
+			hasEveningCheckinToday?: boolean;
 		};
 	}>();
 	let sceneDate = $state(new Date());
@@ -107,12 +111,16 @@
 	let interiorMemoryIntroduction = $state(0);
 	let interiorRugIntroduction = $state(0);
 	let interiorBlanketIntroduction = $state(0);
+	let checkinStarted = $state(false);
+	let checkinDeclined = $state(false);
+	let eveningFlowRegion = $state<HTMLElement | null>(null);
 	let dayState = $state<ProgressCompanionDayState>(getProgressCompanionDayState());
 	const interiorMemory = $derived(savedInteriorMemory ?? data.interiorMemory);
 	const hasInteriorBook = $derived(interiorMemory.hasBook);
 	const hasInteriorRug = $derived(interiorMemory.hasRug);
 	const hasInteriorBlanket = $derived(interiorMemory.hasBlanket);
 	const hasVeranda = $derived(interiorMemory.hasVeranda);
+	const hasEveningCheckinToday = $derived(data.hasEveningCheckinToday ?? false);
 
 	// Lokal scenvy. Ingen route, ingen DB, ingen ny progression - så att
 	// Kvällsincheckningens flöde och check-in-state överlever att man går ut och in.
@@ -125,6 +133,9 @@
 	//
 	// Deklareras före sceneLabel, som beskriver Sovläget för skärmläsare.
 	let sleepStage = $state<SleepStage>('closed');
+	let isColoringActivity = $state(false);
+	let coloringHeading = $state<HTMLElement | null>(null);
+	let creativeMomentSessionId: string | null = null;
 	const isSleepMode = $derived(sleepStage === 'active');
 
 	const sceneLabel = $derived(
@@ -148,7 +159,38 @@
 	);
 
 	function openSleepMode() {
+		isColoringActivity = false;
 		if (sleepStage === 'closed') sleepStage = 'source';
+	}
+
+	function openColoringActivity() {
+		sleepStage = 'closed';
+		isColoringActivity = true;
+		void tick().then(() => coloringHeading?.focus());
+	}
+
+	function closeColoringActivity() {
+		isColoringActivity = false;
+		sleepStage = 'source';
+	}
+
+	async function registerWorldColoringMoment() {
+		creativeMomentSessionId ??= crypto.randomUUID();
+		const result = await recordCreativeMoment(supabase, creativeMomentSessionId);
+		if (!result.ok && result.reason === 'save_failed') {
+			console.error('[creative-moments] kunde inte spara stund', result.error?.message);
+		}
+	}
+
+	function startEveningCheckin() {
+		checkinStarted = true;
+		void tick().then(() => eveningFlowRegion?.focus());
+	}
+
+	function declineEveningCheckin() {
+		// Rent lokalt för den öppna sidan: inget sparas, mäts eller påverkar världen.
+		checkinDeclined = true;
+		void tick().then(() => eveningFlowRegion?.focus());
 	}
 
 	function setSceneView(next: SceneView) {
@@ -215,6 +257,7 @@
 	}
 
 	onMount(() => {
+		if (window.location.hash === '#evening-activities') sleepStage = 'source';
 		const timer = window.setInterval(() => {
 			sceneDate = new Date();
 			dayState = getProgressCompanionDayState(sceneDate);
@@ -298,7 +341,7 @@
 				aria-hidden="true"
 				draggable="false"
 			/>
-			{#if sleepStage === 'closed'}
+			{#if sleepStage === 'closed' && !isColoringActivity}
 				<button
 					class="scene-object scene-object-bed sleeping-bag-placement"
 					type="button"
@@ -408,18 +451,62 @@
 			{/if}
 		</div>
 
-			<SleepModePanel bind:stage={sleepStage} />
+			<div id="evening-activities">
+				{#if isColoringActivity}
+					<section class="coloring-activity" aria-labelledby="coloring-activity-title">
+						<header class="coloring-activity-header">
+							<button class="coloring-back" type="button" onclick={closeColoringActivity}>
+								Tillbaka till aktiviteter
+							</button>
+							<h2 id="coloring-activity-title" bind:this={coloringHeading} tabindex="-1">
+								Måla i världen
+							</h2>
+							<p>Måla i din egen takt. Du behöver inte göra färdigt.</p>
+						</header>
+						<WorldColoringExercise
+							showIntro={false}
+							onCreativeMoment={registerWorldColoringMoment}
+						/>
+					</section>
+				{:else}
+					<SleepModePanel bind:stage={sleepStage} onColoring={openColoringActivity} />
+				{/if}
+			</div>
 		</div>
 
 		<div class="evening-flow-column" class:is-dimmed={isSleepMode}>
 			<DraftContinuityCard />
-			<div class="evening-flow-wrap" role="region" aria-labelledby="evening-flow-label" aria-describedby="evening-flow-intro" tabindex="-1">
+			<div bind:this={eveningFlowRegion} class="evening-flow-wrap" role="region" aria-labelledby="evening-flow-label" aria-describedby="evening-flow-intro" tabindex="-1">
 				<p class="evening-flow-label" id="evening-flow-label">Kvällsincheckning</p>
 				<p class="evening-flow-intro" id="evening-flow-intro">
 					En kort stund för att landa i hur kvällen känns, sätta ord på det som tar mest plats och
 					välja vad du vill bära vidare — eller lägga undan för ikväll.
 				</p>
-				<EveningCheckinFlow oncomplete={handleComplete} />
+				{#if hasEveningCheckinToday}
+					<div class="evening-checkin-entry" role="status">
+						<h2>Du har redan checkat in ikväll.</h2>
+						<p>Du kan stanna kvar i stugan utan att göra något mer.</p>
+					</div>
+				{:else if checkinDeclined}
+					<div class="evening-checkin-entry" role="status">
+						<h2>Det är helt okej.</h2>
+						<p>Du behöver inte svara. Du kan bara vara här en stund.</p>
+					</div>
+				{:else if checkinStarted}
+					<EveningCheckinFlow oncomplete={handleComplete} />
+				{:else}
+					<div class="evening-checkin-entry">
+						<p>Frågorna öppnas bara om du själv vill börja.</p>
+						<div class="evening-checkin-actions">
+							<button class="evening-checkin-start" type="button" onclick={startEveningCheckin}>
+								Starta kvällsincheckningen
+							</button>
+							<button class="evening-checkin-decline" type="button" onclick={declineEveningCheckin}>
+								Vill inte svara
+							</button>
+						</div>
+					</div>
+				{/if}
 			</div>
 			<p class="evening-privacy">
 				Dina svar sparas bara om du väljer att spara dem.
@@ -473,6 +560,62 @@
 		font-size: 0.95rem;
 		line-height: 1.5;
 		overflow-wrap: break-word;
+	}
+	.evening-checkin-entry {
+		display: grid;
+		gap: 0.7rem;
+		padding: clamp(1rem, 3vw, 1.25rem);
+		border: 1px solid rgb(237 222 194 / 0.22);
+		border-radius: 1rem;
+		background: rgb(255 255 255 / 0.04);
+		color: #f7f3eb;
+	}
+	.evening-checkin-entry h2,
+	.evening-checkin-entry p { margin: 0; }
+	.evening-checkin-entry h2 {
+		font-family: var(--font-heading);
+		font-size: 1.1rem;
+		line-height: 1.35;
+	}
+	.evening-checkin-entry p { line-height: 1.55; }
+	.evening-checkin-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.65rem;
+		align-items: center;
+	}
+	.evening-checkin-start {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: fit-content;
+		min-height: 44px;
+		padding: 0.65rem 1rem;
+		border: 1px solid #efc171;
+		border-radius: 0.8rem;
+		background: #efc171;
+		color: #2b2116;
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	.evening-checkin-start:hover { background: #f7d28f; }
+	.evening-checkin-decline {
+		min-height: 44px;
+		padding: 0.65rem 1rem;
+		border: 1px solid rgb(237 222 194 / 0.34);
+		border-radius: 0.8rem;
+		background: transparent;
+		color: #f7f3eb;
+		font: inherit;
+		font-weight: 650;
+		cursor: pointer;
+	}
+	.evening-checkin-decline:hover { background: rgb(255 255 255 / 0.07); }
+	.evening-checkin-start:focus-visible,
+	.evening-checkin-decline:focus-visible {
+		outline: 2px solid #f5c878;
+		outline-offset: 3px;
 	}
 	.evening-header h1 {
 		margin: 0;
@@ -745,6 +888,43 @@
 	}
 	.evening-flow-column.is-dimmed { opacity: 0.42; }
 	.evening-flow-column.is-dimmed:focus-within { opacity: 1; }
+	.coloring-activity {
+		overflow: hidden;
+		border: 1px solid rgb(237 222 194 / 0.28);
+		border-radius: 1.2rem;
+		background: #fbfcf8;
+		box-shadow: 0 18px 42px rgb(22 15 12 / 0.28);
+	}
+	.coloring-activity-header {
+		display: grid;
+		gap: 0.65rem;
+		padding: clamp(1rem, 4vw, 1.4rem);
+		background: linear-gradient(145deg, rgb(55 38 29 / 0.98), rgb(28 23 22 / 0.98));
+		color: #f7f3eb;
+	}
+	.coloring-activity-header h2,
+	.coloring-activity-header p { margin: 0; }
+	.coloring-activity-header h2 {
+		font-family: var(--font-heading);
+		font-size: clamp(1.35rem, 4vw, 1.7rem);
+		line-height: 1.2;
+	}
+	.coloring-activity-header p { color: rgb(240 235 225 / 0.82); line-height: 1.55; }
+	.coloring-activity-header h2:focus-visible,
+	.coloring-back:focus-visible { outline: 2px solid #f5c878; outline-offset: 3px; }
+	.coloring-back {
+		width: fit-content;
+		min-height: 44px;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		color: rgb(240 235 225 / 0.86);
+		font: inherit;
+		font-weight: 650;
+		text-decoration: underline;
+		text-underline-offset: 0.18em;
+		cursor: pointer;
+	}
 
 	.evening-experience {
 		display: grid;

@@ -8,19 +8,45 @@ const { default: Page } = await import('./+page.svelte');
 const pageSource = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
 
 describe('direkt in i Kvällstugan', () => {
-	it('serverrenderar insidan, utgången och incheckningsflödet direkt - ingen mellanlandning', () => {
+	it('serverrenderar insidan och låter användaren själv öppna incheckningen', () => {
 		const { body } = render(Page, { props: { data: {
 			companionDaily: null,
-			interiorMemory: EMPTY_EVENING_INTERIOR_MEMORY
+			interiorMemory: EMPTY_EVENING_INTERIOR_MEMORY,
+			hasEveningCheckinToday: false
 		} } });
 		expect(body).toContain('data-view="interior"');
 		expect(body).toContain('cabin-interior-evening-resting-veranda-v1.webp');
 		expect(body).toContain('href="/framsteg" aria-label="Gå ut till Framsteg">Gå ut</a>');
-		// Ingen knapp att klicka igenom - EveningCheckinFlow monteras direkt.
-		expect(body).not.toContain('Starta Kvällsincheckning');
-		// Konsentläget avgörs i onMount, som aldrig körs vid SSR. Att det syns
-		// här är alltså den riktiga hydreringsövergången, inte en mellanlandning.
-		expect(body).toContain('Laddar kvällsincheckningen');
+		expect(body).toContain('Starta kvällsincheckningen');
+		expect(body).toContain('Vill inte svara');
+		expect(body).toContain('Frågorna öppnas bara om du själv vill börja.');
+		expect(body).not.toContain('Laddar kvällsincheckningen');
+	});
+
+	it('låter användaren avstå lokalt utan sparning eller tracking', () => {
+		const declineHandler = pageSource.slice(
+			pageSource.indexOf('function declineEveningCheckin()'),
+			pageSource.indexOf('function setSceneView')
+		);
+
+		expect(pageSource).toContain('onclick={declineEveningCheckin}');
+		expect(pageSource).toContain('Du behöver inte svara. Du kan bara vara här en stund.');
+		expect(declineHandler).toContain('checkinDeclined = true;');
+		expect(declineHandler).not.toMatch(/fetch|supabase|localStorage|sessionStorage|track|analytics/i);
+	});
+
+	it('visar ett lugnt klart-läge efter en redan sparad incheckning samma kväll', () => {
+		const { body } = render(Page, { props: { data: {
+			companionDaily: null,
+			interiorMemory: EMPTY_EVENING_INTERIOR_MEMORY,
+			hasEveningCheckinToday: true
+		} } });
+
+		expect(body).toContain('Du har redan checkat in ikväll.');
+		expect(body).toContain('Du kan stanna kvar i stugan utan att göra något mer.');
+		expect(body).not.toContain('Starta kvällsincheckningen');
+		expect(body).not.toContain('Vill inte svara');
+		expect(body).not.toContain('Laddar kvällsincheckningen');
 	});
 
 	it('håller bilden och introduktionen tillsammans och lägger incheckningen under', () => {

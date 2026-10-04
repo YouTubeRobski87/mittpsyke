@@ -103,7 +103,10 @@
 </script>
 
 <script lang="ts">
-	let { onCreativeMoment }: { onCreativeMoment?: () => void | Promise<void> } = $props();
+	let { onCreativeMoment, showIntro = true }: {
+		onCreativeMoment?: () => void | Promise<void>;
+		showIntro?: boolean;
+	} = $props();
 
 	const palette = [
 		{ name: 'Dimmig blå', value: '#8db7c7' },
@@ -171,10 +174,12 @@
 </script>
 
 <div class="coloring-exercise">
-	<div class="exercise-intro">
-		<h2>Välj en färg och börja där du vill</h2>
-		<p>Du behöver inte göra det fint, färdigt eller perfekt. Låt färgerna få ta plats i sin egen takt.</p>
-	</div>
+	{#if showIntro}
+		<div class="exercise-intro">
+			<h2>Välj en färg och börja där du vill</h2>
+			<p>Du behöver inte göra det fint, färdigt eller perfekt. Låt färgerna få ta plats i sin egen takt.</p>
+		</div>
+	{/if}
 
 	<div class="motif-picker" aria-labelledby="motif-picker-label">
 		<p id="motif-picker-label">Välj motiv</p>
@@ -208,12 +213,6 @@
 	</div>
 
 	<p class="status" aria-live="polite">{status}</p>
-	{#if selectedMotif === 'leaf'}
-		<div class="leaf-guidance">
-			<p>Ta ett lugnt andetag innan du börjar.</p>
-			<p>Lägg märke till färgen du väljer. Du behöver inte göra det fint eller färdigt.</p>
-		</div>
-	{/if}
 
 	<div class="canvas">
 		{#if selectedMotif === 'flower'}
@@ -334,9 +333,6 @@
 	.reset-button:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.35); outline-offset: 2px; }
 
 	.status { min-height: 1.5rem; margin: 0.8rem 0 0; font-size: 0.88rem; color: #526158; }
-	.leaf-guidance { max-width: 31rem; margin: 0.65rem auto 0; padding: 0.75rem 0.9rem; border-left: 3px solid rgba(62, 101, 75, 0.36); border-radius: 0 12px 12px 0; background: rgba(235, 242, 232, 0.72); color: #3f5145; }
-	.leaf-guidance p { margin: 0; line-height: 1.55; }
-	.leaf-guidance p + p { margin-top: 0.25rem; }
 	.canvas { max-width: 31rem; margin: 0.75rem auto 0; padding: clamp(0.35rem, 2vw, 0.8rem); border: 1px solid rgba(57, 83, 65, 0.14); border-radius: 20px; background: rgba(255, 255, 255, 0.7); }
 	.canvas svg { display: block; width: 100%; height: auto; }
 
@@ -378,7 +374,6 @@
 	:global(.dark) .exercise-intro p,
 	:global(.dark) .motif-picker p,
 	:global(.dark) .status { color: #c3d0c6; }
-	:global(.dark) .leaf-guidance { border-left-color: rgba(169, 203, 176, 0.46); background: rgba(37, 51, 42, 0.72); color: #d9e5dc; }
 	:global(.dark) .motif-button,
 	:global(.dark) .color-button,
 	:global(.dark) .undo-button,

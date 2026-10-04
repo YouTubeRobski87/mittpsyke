@@ -1206,6 +1206,9 @@
 		</div>
 		<p class="creative-moments-copy">{creativeMomentCopy}</p>
 		<p class="creative-moments-note">Här räknas bara att stunden ägde rum. Inga motiv eller färger sparas.</p>
+		<a class="creative-moments-link" href="/dashboard/kvallsstugan#evening-activities">
+			Måla i världen i Kvällstugan
+		</a>
 	</section>
 {/snippet}
 
@@ -3284,6 +3287,20 @@
 		color: hsl(var(--muted-foreground));
 		font-size: 0.88rem;
 		line-height: 1.55;
+	}
+	.creative-moments-link {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		margin-top: 0.55rem;
+		color: var(--theme-accent, #557c68);
+		font-weight: 650;
+		text-underline-offset: 0.18em;
+	}
+	.creative-moments-link:focus-visible {
+		outline: 2px solid var(--theme-accent, #557c68);
+		outline-offset: 3px;
+		border-radius: 0.25rem;
 	}
 	.icon-badge { width: 3.2rem; height: 3.2rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
 	.progress-summary-card { min-height: 25rem; }

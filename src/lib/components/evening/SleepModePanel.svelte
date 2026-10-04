@@ -62,7 +62,11 @@
 	// Steget är bindbart så att routen både kan öppna Sovläge (från en framtida
 	// bädd-hotspot) och läsa av när det är aktivt, utan att panelen behöver
 	// exponera något eget event-API.
-	let { stage = $bindable('closed' as SleepStage) } = $props<{ stage?: SleepStage }>();
+	let { stage = $bindable('closed' as SleepStage), onColoring } = $props<{
+		stage?: SleepStage;
+		/** Separat lugn aktivitet i samma valyta, men aldrig en SleepSourceId. */
+		onColoring?: () => void;
+	}>();
 
 	const meditations = getEveningMeditations();
 
@@ -368,9 +372,15 @@
 				<h2 id="sleep-panel-title" bind:this={heading} tabindex="-1">
 					{getSleepStageHeading(stage, source)}
 				</h2>
-				<p class="sleep-hint">Du väljer själv. Inget ljud startar förrän du har valt.</p>
-				<div class="sleep-options" aria-label="Välj vad som ska höras">
+				<p class="sleep-hint">Du väljer själv. Ingenting startar förrän du har valt.</p>
+				<div class="sleep-options" aria-label="Välj en lugn aktivitet">
 					{#each SLEEP_SOURCES as option (option.id)}
+						{#if option.id === 'silence' && onColoring}
+							<button type="button" onclick={onColoring}>
+								<span class="sleep-option-label">Måla i världen</span>
+								<span class="sleep-option-hint">Välj färger och motiv i din egen takt</span>
+							</button>
+						{/if}
 						<button type="button" onclick={() => chooseSource(option.id)}>
 							<span class="sleep-option-label">{option.label}</span>
 							<span class="sleep-option-hint">{option.hint}</span>

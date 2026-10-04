@@ -5,6 +5,7 @@ import {
 	EVENING_PATTERN_ROW_LIMIT,
 	getEveningCheckinDate,
 	hasSavedEveningCheckin,
+	loadEveningCheckinOverview,
 	loadEveningInteriorMemory,
 	loadEveningPatternRows,
 	saveEveningCheckin
@@ -89,6 +90,21 @@ describe('saveEveningCheckin', () => {
 		} as unknown as SupabaseClient;
 
 		expect(await hasSavedEveningCheckin(hasCheckinClient, 'user-1')).toBe(true);
+		expect(
+			await loadEveningCheckinOverview(
+				hasCheckinClient,
+				'user-1',
+				new Date('2026-08-11T20:00:00.000Z')
+			)
+		).toEqual({
+			interiorMemory: {
+				hasBook: true,
+				hasRug: false,
+				hasBlanket: false,
+				hasVeranda: false
+			},
+			hasCheckinToday: true
+		});
 		expect(await loadEveningInteriorMemory(hasCheckinClient, 'user-1')).toEqual({
 			hasBook: true,
 			hasRug: false,
@@ -102,6 +118,15 @@ describe('saveEveningCheckin', () => {
 			hasVeranda: false
 		});
 		expect(await hasSavedEveningCheckin(failedClient, 'user-1')).toBe(false);
+		expect(await loadEveningCheckinOverview(failedClient, 'user-1')).toEqual({
+			interiorMemory: {
+				hasBook: false,
+				hasRug: false,
+				hasBlanket: false,
+				hasVeranda: false
+			},
+			hasCheckinToday: false
+		});
 		expect(await hasSavedEveningCheckin(hasCheckinClient, null)).toBe(false);
 	});
 
