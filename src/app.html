@@ -61,6 +61,14 @@
         } catch(e) {}
       })();
     </script>
+    <!-- TILLFÄLLIGT (okt 2026): Similarwebs GA-koppling letar efter GA-taggen i sidans
+         HTML. Riktiga gtag laddas först efter samtycke (src/lib/analytics.ts), så den
+         hittas inte. type="text/plain" gör att blocket aldrig körs och att inget
+         anrop görs till Google – det står bara här som text. Ta bort när Similarweb
+         har godkänt kopplingen. -->
+    <script type="text/plain" id="ga-verification" data-src="https://www.googletagmanager.com/gtag/js?id=G-8XG01VCB5N">
+      gtag('config', 'G-8XG01VCB5N');
+    </script>
     %sveltekit.head%
   </head>
   <body data-sveltekit-prerender="false">
