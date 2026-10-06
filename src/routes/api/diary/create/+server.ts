@@ -234,7 +234,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			await recordMeaningfulReflectionMilestones({
 				userId: user.id,
 				userCreatedAt: user.created_at,
-				actionOccurredAt: savedDiary.created_at
+				actionOccurredAt: savedDiary.created_at,
+				activityType: 'diary'
 			});
 		} catch (retentionError) {
 			console.error('Could not record retention milestones after diary save:', retentionError);

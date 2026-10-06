@@ -462,6 +462,15 @@ describe('recordFunnelEvent', () => {
 		expect(insertCalls[0].is_internal).toBe(false);
 	});
 
+	it('markerar endast serverkonfigurerade interna användare', async () => {
+		mockEnv.FUNNEL_INTERNAL_USER_IDS = `annan-anvandare, ${USER_ID.toUpperCase()}`;
+
+		const result = await recordFunnelEvent({ eventName: 'first_entry_saved', userId: USER_ID });
+
+		expect(result.status).toBe('written');
+		expect(insertCalls[0].is_internal).toBe(true);
+	});
+
 	it('H. unique_violation behandlas som duplicate, inte som fel', async () => {
 		insertResult = { error: { code: '23505', message: 'duplicate key value' } };
 

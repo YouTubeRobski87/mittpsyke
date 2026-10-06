@@ -700,7 +700,8 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 				await recordMeaningfulReflectionMilestones({
 					userId: user.id,
 					userCreatedAt: user.created_at,
-					actionOccurredAt: new Date().toISOString()
+					actionOccurredAt: new Date().toISOString(),
+					activityType: 'authenticated_chat'
 				});
 			} catch (retentionError) {
 				console.error('[chat] kunde inte skriva retentionmilestones:', retentionError);

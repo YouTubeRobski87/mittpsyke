@@ -85,14 +85,21 @@ vi.mock('$lib/server/supabase-admin', async (importOriginal) => ({
 	createServiceClient: () => (serviceClientAvailable ? fakeServiceClient() : null)
 }));
 
+const funnelEvents = await import('./funnel-events');
 const {
 	createUserRef,
 	getRetentionCohortStart,
 	isRetentionCohortEligible,
-	recordMeaningfulReflectionMilestones,
 	resolveRetentionMilestone,
 	sanitizeFunnelProperties
-} = await import('./funnel-events');
+} = funnelEvents;
+
+type MilestoneInput = Parameters<typeof funnelEvents.recordMeaningfulReflectionMilestones>[0];
+function recordMeaningfulReflectionMilestones(
+	input: Omit<MilestoneInput, 'activityType'> & { activityType?: MilestoneInput['activityType'] }
+) {
+	return funnelEvents.recordMeaningfulReflectionMilestones({ activityType: 'diary', ...input });
+}
 
 const USER_ID = '11111111-2222-4333-8444-555555555555';
 const COHORT_START = '2026-09-20T00:00:00Z';
@@ -162,11 +169,16 @@ describe('activation och cross-feature milestones', () => {
 		expect(insertedPayloads).toHaveLength(0);
 	});
 
-	it.each(['diary', 'chat', 'evening'] as const)('första %s-reflection skapar activation', async () => {
+	it.each([
+		['diary', 'diary'],
+		['chat', 'authenticated_chat'],
+		['evening', 'evening_checkin']
+	] as const)('första %s-reflection skapar activation med fast aktivitetstyp', async (_label, activityType) => {
 		const result = await recordMeaningfulReflectionMilestones({
 			userId: USER_ID,
 			userCreatedAt: COHORT_START,
-			actionOccurredAt: '2026-09-21T10:00:00Z'
+			actionOccurredAt: '2026-09-21T10:00:00Z',
+			activityType
 		});
 
 		expect(result).toMatchObject({
@@ -174,6 +186,7 @@ describe('activation och cross-feature milestones', () => {
 			eventName: 'first_meaningful_reflection',
 			activationOccurredAt: activationInsertAt
 		});
+		expect(insertedPayloads[0].properties).toEqual({ activity_type: activityType });
 	});
 
 	it('diary activation kan följas av chat W1', async () => {
@@ -261,11 +274,20 @@ describe('activation och cross-feature milestones', () => {
 });
 
 describe('privacy och failure behavior', () => {
-	it('nya events har alltid tomma properties och ingen rå identitet eller text', async () => {
+	it('nya events lagrar bara fast aktivitetstyp och ingen rå identitet eller text', async () => {
 		const forbidden = { text: 'privat text', mood: 2, topic: 'diagnos', surface: 'chat' };
 		for (const event of ['first_meaningful_reflection', 'w1_return', 'w4_return'] as const) {
 			expect(sanitizeFunnelProperties(event, forbidden)).toEqual({});
 		}
+		expect(
+			sanitizeFunnelProperties('first_meaningful_reflection', {
+				activity_type: 'authenticated_chat',
+				text: 'privat text'
+			})
+		).toEqual({ activity_type: 'authenticated_chat' });
+		expect(
+			sanitizeFunnelProperties('first_meaningful_reflection', { activity_type: 'fri text' })
+		).toEqual({});
 
 		await recordMeaningfulReflectionMilestones({
 			userId: USER_ID,
@@ -275,7 +297,7 @@ describe('privacy och failure behavior', () => {
 		const serialized = JSON.stringify(insertedPayloads);
 		expect(serialized).not.toContain(USER_ID);
 		expect(serialized).not.toContain('privat text');
-		expect(insertedPayloads[0]).toMatchObject({ properties: {} });
+		expect(insertedPayloads[0]).toMatchObject({ properties: { activity_type: 'diary' } });
 		expect(insertedPayloads[0]).not.toHaveProperty('user_id');
 	});
 
@@ -350,6 +372,9 @@ describe('integration och migration', () => {
 			expect(call).toContain('userCreatedAt: user.created_at');
 			expect(call).not.toMatch(/text|message|mood|tags|theme|parking|topic|content|reply/i);
 		}
+		expect(diary).toContain("activityType: 'diary'");
+		expect(chat).toContain("activityType: 'authenticated_chat'");
+		expect(evening).toContain("activityType: 'evening_checkin'");
 
 		expect(diary).toMatch(/try \{\s*await recordMeaningfulReflectionMilestones[\s\S]*?catch \(retentionError\)/);
 		expect(chat).toMatch(/try \{\s*await recordMeaningfulReflectionMilestones[\s\S]*?catch \(retentionError\)/);

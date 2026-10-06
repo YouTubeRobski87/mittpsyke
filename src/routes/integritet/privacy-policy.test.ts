@@ -89,6 +89,8 @@ describe('integritetspolicyn speglar faktisk databehandling', () => {
 		expect(policyText).toMatch(
 			/Dagbokstext, chattmeddelanden, kvällsincheckningens text, humörvärden, ämnen eller diagnoser, AI-svar, e-post och rått användar-id ingår aldrig/
 		);
+		expect(policyText).toContain('fast aktivitetstyp: dagbok, inloggad chatt');
+		expect(policyText).toContain('eller kvällsincheckning');
 	});
 
 	it('beskriver den prospektiva mätningen av meningsfull användning och återkomst', () => {

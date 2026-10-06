@@ -240,6 +240,8 @@
 		</p>
 		<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2.5">
 			<li>En händelse består av ett fast händelsenamn, en tidpunkt och en servergenererad pseudonym.
+				För den första meningsfulla användningen sparas också en fast aktivitetstyp: dagbok, inloggad chatt
+				eller kvällsincheckning.
 				<strong>Dagbokstext, chattmeddelanden, kvällsincheckningens text, humörvärden, ämnen eller diagnoser,
 				AI-svar, e-post och rått användar-id ingår aldrig.</strong></li>
 			<li>Pseudonymen skapas som en hash av ditt användar-id med en hemlig nyckel på servern, så varken id eller

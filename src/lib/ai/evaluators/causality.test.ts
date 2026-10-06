@@ -173,9 +173,10 @@ describe('guardens avgränsning', () => {
 
 	it('rapporterar den fällande satsen så att felet går att åtgärda', () => {
 		const { issues } = blocks('Du mår sämre på grund av dina relationsproblem.');
+		const causalityIssue = issues.find((issue) => issue.includes('kausalt ansprak')) ?? '';
 
-		expect(issues[0]).toContain('kausalt ansprak');
-		expect(issues[0]).toContain('pa grund av');
+		expect(causalityIssue).toContain('kausalt ansprak');
+		expect(causalityIssue).toContain('pa grund av');
 	});
 });
 

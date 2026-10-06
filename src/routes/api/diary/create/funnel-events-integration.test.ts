@@ -105,7 +105,8 @@ describe('POST /api/diary/create — funnel events', () => {
 		expect(mocks.recordMeaningfulReflectionMilestones).toHaveBeenCalledWith({
 			userId: USER_ID,
 			userCreatedAt: '2026-05-01T09:00:00Z',
-			actionOccurredAt: '2026-05-04T09:00:00Z'
+			actionOccurredAt: '2026-05-04T09:00:00Z',
+			activityType: 'diary'
 		});
 
 		const [, userId, inserted] = mocks.recordDiaryFunnelEvents.mock.calls[0];

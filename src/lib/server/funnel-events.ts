@@ -29,6 +29,14 @@ export type FunnelEventName =
 	| (typeof FUNNEL_EVENT_NAMES)[number]
 	| (typeof RETENTION_EVENT_NAMES)[number];
 
+export const MEANINGFUL_ACTIVITY_TYPES = [
+	'diary',
+	'authenticated_chat',
+	'evening_checkin'
+] as const;
+
+export type MeaningfulActivityType = (typeof MEANINGFUL_ACTIVITY_TYPES)[number];
+
 export type FunnelWriteStatus =
 	| 'written'
 	| 'duplicate'
@@ -44,9 +52,9 @@ export type FunnelWriteResult = {
 };
 
 /**
- * Tillåtna properties per event. Båda listorna är avsiktligt tomma i Pass A:
- * varken "aktiverade användaren?" eller "kom hen tillbaka en andra dag?" kräver
- * någon extra metadata för att besvaras, och mindre data är alltid att föredra.
+	 * Tillåtna properties per event. Bara activation får en fast, innehållsfri
+	 * aktivitetstyp så att första användningsvägen kan jämföras. Övriga listor
+	 * är tomma; mindre data är alltid att föredra.
  *
  * Listan är den enda vägen in i properties-kolumnen. Allt som inte står här
  * tas bort innan skrivning, så en framtida anropare inte kan råka skicka in
@@ -55,7 +63,7 @@ export type FunnelWriteResult = {
 const ALLOWED_PROPERTIES: Record<FunnelEventName, readonly string[]> = {
 	first_entry_saved: [],
 	second_active_day: [],
-	first_meaningful_reflection: [],
+	first_meaningful_reflection: ['activity_type'],
 	w1_return: [],
 	w4_return: []
 };
@@ -195,6 +203,16 @@ export function sanitizeFunnelProperties(
 	for (const key of allowed) {
 		const value = input[key];
 
+		if (key === 'activity_type') {
+			if (
+				typeof value === 'string' &&
+				(MEANINGFUL_ACTIVITY_TYPES as readonly string[]).includes(value)
+			) {
+				result[key] = value;
+			}
+			continue;
+		}
+
 		if (typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value))) {
 			result[key] = value;
 			continue;
@@ -280,20 +298,22 @@ export function resolveDiaryFunnelEvents(input: DiaryFunnelInput): FunnelEventNa
 /**
  * Avgör om kontot är ett internt test-/utvecklarkonto.
  *
- * Ingen serverkontrollerad mekanism för detta finns ännu. ADMIN_USER_IDS duger
+ * Källan är en separat serverkontrollerad allowlist. ADMIN_USER_IDS återanvänds
  * inte: admin och intern testare är olika begrepp, och en admin som använder
  * produkten på riktigt ska räknas som en vanlig användare. E-postadress,
- * e-postdomän, user_metadata och klientflaggor är uteslutna - de två första
- * hör inte hemma i produktkod, de två sista kan användaren själv skriva.
- *
- * Fram till dess är alla rader is_internal = false. Att införa
- * INTERNAL_USER_IDS kräver deploymentkonfiguration och hör till ett senare pass.
- *
- * Läs alltså inte false som "extern användare". Det betyder bara att frågan
- * inte ställs ännu, och funnel-siffrorna innehåller därmed intern trafik.
+ * e-postdomän, user_metadata och klientflaggor används aldrig.
  */
-function resolveIsInternal(): boolean {
-	return false;
+function getConfiguredInternalUserIds(): Set<string> {
+	return new Set(
+		(env.FUNNEL_INTERNAL_USER_IDS ?? '')
+			.split(',')
+			.map((value) => value.trim().toLowerCase())
+			.filter(Boolean)
+	);
+}
+
+export function isInternalFunnelUser(userId: string): boolean {
+	return getConfiguredInternalUserIds().has(userId.trim().toLowerCase());
 }
 
 /** Postgres unique_violation. */
@@ -334,7 +354,7 @@ export async function recordFunnelEvent(input: {
 		const { error } = await admin.from('product_funnel_events').insert({
 			event_name: eventName,
 			user_ref: userRef,
-			is_internal: resolveIsInternal(),
+			is_internal: isInternalFunnelUser(input.userId),
 			properties: sanitizeFunnelProperties(eventName, input.properties)
 		});
 
@@ -388,12 +408,17 @@ type RetentionMilestoneResult = {
 	activationOccurredAt?: string;
 };
 
-function retentionRow(userRef: string, eventName: FunnelEventName) {
+function retentionRow(
+	userRef: string,
+	eventName: FunnelEventName,
+	userId: string,
+	properties?: Record<string, unknown>
+) {
 	return {
 		event_name: eventName,
 		user_ref: userRef,
-		is_internal: resolveIsInternal(),
-		properties: {}
+		is_internal: isInternalFunnelUser(userId),
+		properties: sanitizeFunnelProperties(eventName, properties)
 	};
 }
 
@@ -438,6 +463,7 @@ export async function recordMeaningfulReflectionMilestones(input: {
 	userId: string;
 	userCreatedAt: string;
 	actionOccurredAt: string;
+	activityType: MeaningfulActivityType;
 }): Promise<RetentionMilestoneResult> {
 	try {
 		if (!isRetentionCohortEligible(input.userCreatedAt, input.actionOccurredAt)) {
@@ -457,7 +483,11 @@ export async function recordMeaningfulReflectionMilestones(input: {
 		if (activation.status === 'missing') {
 			const { data, error } = await admin
 				.from('product_funnel_events')
-				.insert(retentionRow(userRef, RETENTION_ACTIVATION_EVENT))
+				.insert(
+					retentionRow(userRef, RETENTION_ACTIVATION_EVENT, input.userId, {
+						activity_type: input.activityType
+					})
+				)
 				.select('occurred_at')
 				.single<{ occurred_at: string }>();
 
@@ -497,7 +527,7 @@ export async function recordMeaningfulReflectionMilestones(input: {
 
 		const { error } = await admin
 			.from('product_funnel_events')
-			.insert(retentionRow(userRef, milestone));
+			.insert(retentionRow(userRef, milestone, input.userId));
 
 		if (!error) {
 			return {

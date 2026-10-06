@@ -40,7 +40,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		await recordMeaningfulReflectionMilestones({
 			userId: user.id,
 			userCreatedAt: user.created_at,
-			actionOccurredAt: result.checkin.created_at
+			actionOccurredAt: result.checkin.created_at,
+			activityType: 'evening_checkin'
 		});
 	} catch (retentionError) {
 		console.error('[evening-checkin] kunde inte skriva retentionmilestones:', retentionError);
