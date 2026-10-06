@@ -1,5 +1,6 @@
 <script lang="ts">
 	import EditorialByline from '$lib/components/EditorialByline.svelte';
+	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import { trackArticleView } from '$lib/analytics';
@@ -78,6 +79,10 @@
 			<p>Vill du hellre börja direkt? Du kan <a href="/chatta-anonymt">öppna den anonyma chatten</a> i lugn takt hos MittPsyke.</p>
 		{/if}
 	</div>
+
+	<!-- Artikeln slutade tidigare utan väg vidare och utan akutrad. Samma
+	     kompakta nästa steg som övriga guider: chatt, dagbok, övning, stödlinjer. -->
+	<GuideActionCta chatHref="/chat" layout="compact" />
 </article>
 
 <style>

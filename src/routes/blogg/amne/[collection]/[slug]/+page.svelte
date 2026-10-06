@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import EditorialByline from '$lib/components/EditorialByline.svelte';
+	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 
 	let { data } = $props();
@@ -68,6 +69,9 @@
 			<ul>{#each article.relatedArticles as related}<li><a href={related.url}>{related.title}</a></li>{/each}</ul>
 		</section>
 	{/if}
+
+	<!-- Samma kompakta nästa steg som övriga guider, efter läs vidare-länkarna. -->
+	<GuideActionCta chatHref="/chat" layout="compact" />
 </article>
 
 <style>
