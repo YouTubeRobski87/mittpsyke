@@ -42,14 +42,35 @@
 	function toggle(mark: WorldMark) {
 		revealedId = revealedId === mark.id ? null : mark.id;
 	}
+
+	// Träffytorna ritas i ett eget lager under formerna. Där två ytor möts
+	// vinner det minsta spåret, eftersom det är svårast att träffa - de stora
+	// har ändå sin egen synliga form att trycka på. Ordningen påverkar inte
+	// tangentbordet: lagret är aria-hidden och knapparna nedan står kvar i
+	// samma ordning som förut.
+	const hitOrder = $derived([...marks].sort((a, b) => b.width * b.height - a.width * a.height));
 </script>
 
 {#if marks.length > 0}
 	<div class={`world-marks ${className}`.trim()} class:is-paused={motion.reducedMotion}>
+		<!-- Osynliga beröringsytor, minst 44 × 44 px och centrerade över varje
+			 spår. Bara för pekare och finger; knappen ovanför är den riktiga
+			 kontrollen för tangentbord och skärmläsare. -->
+		{#each hitOrder as mark (mark.id)}
+			<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+			<span
+				class="world-mark-hit"
+				data-mark-hit={mark.id}
+				style={markStyle(mark)}
+				aria-hidden="true"
+				onclick={() => toggle(mark)}
+			></span>
+		{/each}
 		{#each marks as mark (mark.id)}
 			<button
 				type="button"
 				class={`world-mark world-mark-${mark.id}`}
+				data-mark={mark.id}
 				class:is-invisible={mark.invisible}
 				style={markStyle(mark)}
 				aria-pressed={revealedId === mark.id}
@@ -126,27 +147,36 @@
 		border: 0;
 		background: transparent;
 		/* app.css sätter 44 px minsta träffyta på alla knappar vid pointer: coarse.
-		   Här skulle det blåsa upp själva formen, så måttet flyttas till ::before
-		   nedan i stället - träffytan blir densamma, spåret behåller sin storlek. */
+		   Här skulle det blåsa upp själva formen, så måttet ligger i stället på
+		   .world-mark-hit nedan - träffytan blir densamma, spåret behåller sin storlek. */
 		min-width: 0;
 		min-height: 0;
 		opacity: calc(var(--mark-opacity, 0.4) * var(--variation-opacity, 1));
 		pointer-events: auto;
 		cursor: pointer;
+		/* Formerna ligger ovanför alla beröringsytor, så den synliga formen
+		   alltid träffar sitt eget spår - även där en granne har sin yta. */
+		z-index: 2;
 		/* Beröringsytan är större än formen, utan att formen växer. */
 		outline-offset: 6px;
 	}
 
 	/* Spåren är avsiktligt små. Beröringsytan hålls ändå minst 44 px i båda
-	   riktningarna, centrerad över formen, utan att formen växer. */
-	.world-mark::before {
-		content: '';
+	   riktningarna, centrerad över formen, utan att formen växer. Den låg
+	   tidigare som ::before på själva knappen, men då låg en senare knapps yta
+	   ovanpå en tidigare knapps form: på 320 px gick Bryggan och Stenen knappt
+	   att träffa, eftersom Lyktan och Stigen täckte dem. */
+	.world-mark-hit {
 		position: absolute;
-		left: 50%;
-		top: 50%;
-		width: max(100%, 44px);
-		height: max(100%, 44px);
+		left: calc(var(--x, 0%) + var(--w, 2%) / 2);
+		top: calc(var(--y, 0%) + var(--h, 2%) / 2);
+		width: max(var(--w, 2%), 44px);
+		height: max(var(--h, 2%), 44px);
 		transform: translate(-50%, -50%);
+		z-index: 1;
+		pointer-events: auto;
+		cursor: pointer;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.world-mark:focus-visible {
