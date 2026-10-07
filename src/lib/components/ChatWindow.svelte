@@ -1511,6 +1511,9 @@
 	}
 
 	.human-support-button {
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.75rem;
 		font-size: 0.74rem;
 		color: rgba(15, 23, 42, 0.48);
 		text-decoration: underline;

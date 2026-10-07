@@ -150,6 +150,11 @@ describe('menyns beteende', () => {
 	it('hamnar inte bakom cookiebannern', () => {
 		expect(layout).toContain('max-height: calc(100svh - 4rem - var(--cookie-banner-space, 0px));');
 	});
+
+	it('ger varje menyrad en tryckyta på minst 44 px', () => {
+		expect(layout).toMatch(/\.mobile-menu-link \{[\s\S]*?min-height: 2\.75rem;/);
+		expect(layout).toMatch(/\.mobile-menu-link \{[\s\S]*?align-items: center;/);
+	});
 });
 
 describe('desktopnavigeringen', () => {

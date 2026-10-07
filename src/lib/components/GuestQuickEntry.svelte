@@ -32,7 +32,6 @@
 		type LocalRetrospectTheme
 	} from '$lib/diary-local-retrospect';
 	import { dataflowCopy } from '$lib/dataflow-copy';
-	import { scrollIntoViewWithMotionPreference } from '$lib/scroll';
 
 	const AUTOSAVE_INTERVAL_MS = 3000;
 
@@ -243,10 +242,11 @@
 			}
 		}
 
-		// Auto-scroll till komponenten efter kort fördröjning
+		// CTA:n lovar att användaren ska börja skriva. På mobil blev själva
+		// textfältet tidigare kvar under viewporten eftersom komponentens överkant
+		// skrollades fram och fokus sedan förbjöds att flytta vyn.
 		const scrollTimer = setTimeout(() => {
-			if (containerEl) scrollIntoViewWithMotionPreference(containerEl, { block: 'start' });
-			textareaEl?.focus({ preventScroll: true });
+			textareaEl?.focus();
 		}, 100);
 
 		// Auto-save var 3:e sekund
@@ -549,7 +549,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 2.4rem;
+		min-height: 2.75rem;
 		padding: 0.55rem 0.9rem;
 		border-radius: var(--radius-pill);
 		font-family: var(--font-heading);
@@ -805,6 +805,9 @@
 	}
 
 	.clear-entry-link {
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.75rem;
 		justify-self: start;
 		border: 0;
 		background: transparent;
@@ -846,7 +849,7 @@
 	}
 
 	.starter-chip {
-		min-height: 2.2rem;
+		min-height: 2.75rem;
 		padding: 0.4rem 0.75rem;
 		border-radius: var(--radius-pill);
 		border: 1px solid hsl(var(--border));

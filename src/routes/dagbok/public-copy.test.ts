@@ -63,4 +63,13 @@ describe('publik dagbok: utkast, kontosparande och integritet', () => {
 		// och redirectar till kvällsguiden, så bara dagbokssidan är kvar att vakta.
 		expect(body).not.toMatch(/ingen annan kan läsa|ingen kan se|endast du|ingen tredje part|skickas aldrig|helt anonym|Nej\. Dina dagboksinlägg är privata för dig/i);
 	});
+
+	it('för skrivfältet i bild och behåller minst 44 px på skrivkontrollerna', () => {
+		const guest = source('../../lib/components/GuestQuickEntry.svelte');
+		expect(guest).toMatch(/const scrollTimer = setTimeout\(\(\) => \{\s*textareaEl\?\.focus\(\);/);
+		expect(guest).not.toContain('focus({ preventScroll: true })');
+		expect(guest).toMatch(/\.starter-chip \{[\s\S]*?min-height: 2\.75rem;/);
+		expect(guest).toMatch(/\.prompt-primary-action,[\s\S]*?min-height: 2\.75rem;/);
+		expect(guest).toMatch(/\.clear-entry-link \{[\s\S]*?min-height: 2\.75rem;/);
+	});
 });

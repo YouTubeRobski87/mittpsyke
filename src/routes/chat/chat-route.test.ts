@@ -62,6 +62,11 @@ describe('direkt ingång till den befintliga chatten', () => {
 		expect(chatWindow).toContain('if (!hasSensitiveDataConsent)');
 	});
 
+	it('ger den diskreta vägen till mänskligt stöd en fullstor tryckyta', () => {
+		expect(chatWindow).toMatch(/\.human-support-button \{[\s\S]*?min-height: 2\.75rem;/);
+		expect(chatWindow).toMatch(/\.human-support-button \{[\s\S]*?display: inline-flex;/);
+	});
+
 	it('har exakt ett samtyckesbeslut, och det är det serververifierade', () => {
 		// Helskärmsrutan framför chatten är borta. Kvar finns ConsentGate inne i
 		// ChatWindow, och den enda vägen till hasSensitiveDataConsent = true går

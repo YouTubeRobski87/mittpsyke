@@ -1449,8 +1449,10 @@
 	}
 
 	.mobile-menu-link {
-		display: block;
+		display: flex;
+		align-items: center;
 		width: 100%;
+		min-height: 2.75rem;
 		margin: 0;
 		padding: 0.38rem 0;
 		line-height: 1.35;
