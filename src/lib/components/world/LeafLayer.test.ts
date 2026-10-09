@@ -11,19 +11,16 @@ describe('LeafLayer', () => {
 		expect(source).not.toContain('filter: blur');
 	});
 
-	it('behåller lugna men synliga höstintervall och storlekar', () => {
-		expect(source).toContain('minGapMs: 8_000, maxGapMs: 15_000');
-		expect(source).toContain('duration: [6_000, 12_000]');
-		expect(source).toContain('between(8, 12)');
-		expect(source).toContain('between(12, 18)');
-		expect(source).toContain('between(18, 22)');
-		expect(source).toContain('opacity: [0.72, 0.9]');
+	it('behåller lugna men synliga höstlöv och storlekar', () => {
+		expect(source).toContain('getFallingLeafVariation(sessionSeed, eventId, season)');
+		expect(source).not.toContain('Math.random()');
 	});
 
-	it('släpper högst tre löv per vindpust, en gång per pust', () => {
-		expect(source).toContain('const count = Math.min(3, Math.max(1, Math.round(current.count)));');
+	it('släpper exakt ett löv per sällsynt vindpust, en gång per pust', () => {
+		expect(source).toContain('untrack(() => spawnLeaf(current.id));');
 		expect(source).toContain('if (!current || current.id === releasedGustId) return;');
-		// Pusten går genom samma spawn som pulsen, så reduced motion och dold flik gäller även här.
+		// Den gemensamma spawnen respekterar både reduced motion och dold flik.
 		expect(source).toContain('if (!motion.isActive || motion.reducedMotion) return;');
+		expect(source).not.toContain('schedule(true)');
 	});
 });

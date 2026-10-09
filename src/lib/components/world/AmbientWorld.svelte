@@ -20,7 +20,10 @@
 		imageAnchorStyle,
 		type ImageAnchor
 	} from '$lib/world/coverGeometry';
-	import { getCloudSessionVariation } from '$lib/world/sessionVariation';
+	import {
+		getCloudSessionVariation,
+		getFoliageLayerVariation
+	} from '$lib/world/sessionVariation';
 	import {
 		getAmbientEventPlan,
 		startAmbientDirector,
@@ -85,6 +88,9 @@
 	let clearEventTimer: number | null = null;
 
 	const classes = $derived(`living-world ${className}`.trim());
+	// Datum + vy ger samma fas på server och klient. Till skillnad från
+	// sessionSeed introducerar det därför inget animationshopp vid hydration.
+	const sceneVariationSeed = $derived(`${eventContext}:${scene.localDateKey}:${scene.season}`);
 	const isVisibleEffect = (kind: LivingWorldEffectKind) =>
 		visibleEffects === undefined || visibleEffects.includes(kind);
 	const enabledEffects = $derived(
@@ -166,16 +172,33 @@
 		const baseStyle = anchor
 			? `${effectStyle(effect)}; ${imageAnchorStyle(anchor)}`
 			: effectStyle(effect);
-		if (effect.kind !== 'cloud' || !sessionSeed) return baseStyle;
+		const styles = [baseStyle];
 
-		const variation = getCloudSessionVariation(sessionSeed, effect.id, effect);
-		return [
-			baseStyle,
-			`--cloud-offset-x: ${variation.offsetX.toFixed(2)}%`,
-			`--cloud-offset-y: ${variation.offsetY.toFixed(2)}%`,
-			`--cloud-duration: ${variation.durationMs}ms`,
-			`--cloud-delay: ${variation.delayMs}ms`
-		].join('; ');
+		if (effect.kind === 'cloud' && sessionSeed) {
+			const variation = getCloudSessionVariation(sessionSeed, effect.id, effect);
+			styles.push(
+				`--cloud-offset-x: ${variation.offsetX.toFixed(2)}%`,
+				`--cloud-offset-y: ${variation.offsetY.toFixed(2)}%`,
+				`--cloud-duration: ${variation.durationMs}ms`,
+				`--cloud-delay: ${variation.delayMs}ms`
+			);
+		}
+
+		if (effect.kind === 'foliage') {
+			const variation = getFoliageLayerVariation(
+				sceneVariationSeed,
+				effect.id,
+				effect,
+				scene.wind
+			);
+			styles.push(
+				`--foliage-duration: ${variation.durationMs}ms`,
+				`--foliage-delay: ${variation.delayMs}ms`,
+				`--wind-amplitude: ${variation.amplitude.toFixed(3)}`
+			);
+		}
+
+		return styles.join('; ');
 	}
 
 	function createActiveEvent(
@@ -344,7 +367,7 @@
 		</span>
 	{/if}
 
-	<WaterLayer effects={waterEffects} />
+	<WaterLayer effects={waterEffects} variationSeed={sceneVariationSeed} wind={scene.wind} />
 	{#if activeEvent?.kind === 'water'}
 		<span
 			class={`world-effect world-${activeEvent.kind} ${activeEvent.className ?? ''}`.trim()}
@@ -517,7 +540,7 @@
 			radial-gradient(ellipse at 79% 62%, rgba(145, 169, 188, 0.28) 0 14%, transparent 42%);
 		mix-blend-mode: screen;
 	}
-	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.35px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--duration, 52000ms) cubic-bezier(0.42, 0, 0.24, 1) var(--delay, 0ms) infinite; }
+	.world-foliage { transform-origin: 50% 100%; background: radial-gradient(ellipse at 24% 88%, rgba(111, 148, 94, 0.34), transparent 46%), radial-gradient(ellipse at 60% 82%, rgba(151, 177, 102, 0.2), transparent 52%), linear-gradient(180deg, transparent 14%, rgba(89, 131, 83, 0.13), transparent 76%); filter: blur(0.35px); opacity: var(--opacity, 0.14); animation: foliageBreathe var(--foliage-duration, var(--duration, 52000ms)) cubic-bezier(0.42, 0, 0.24, 1) var(--foliage-delay, var(--delay, 0ms)) infinite; }
 	/* Vindpust: de fristående egenskaperna rotate/translate läggs ovanpå den
 	   löpande transform-animationen. Animationen startas aldrig om eller byter
 	   takt (att ändra animation-duration mitt i en loop får lagret att hoppa).
@@ -553,7 +576,7 @@
 	/* Ligger ovanpå den fotografiska grenen uppe till höger (companion-hero-scene) -
 	   transform-origin nära bildens överkant, dvs där grenen kommer in i bild, inte
 	   mitt i klungan, så rörelsen ser ut som en gren som svajar, inte hela trädet. */
-	.canopy-right { transform-origin: 78% 0%; background: radial-gradient(ellipse at 40% 15%, rgba(133, 154, 80, 0.24), transparent 60%), radial-gradient(ellipse at 72% 35%, rgba(87, 126, 74, 0.2), transparent 62%); filter: blur(0.7px); animation: canopySway var(--duration, 33000ms) cubic-bezier(0.42, 0, 0.24, 1) var(--delay, 0ms) infinite; }
+	.canopy-right { transform-origin: 78% 0%; background: radial-gradient(ellipse at 40% 15%, rgba(133, 154, 80, 0.24), transparent 60%), radial-gradient(ellipse at 72% 35%, rgba(87, 126, 74, 0.2), transparent 62%); filter: blur(0.7px); animation: canopySway var(--foliage-duration, var(--duration, 33000ms)) cubic-bezier(0.42, 0, 0.24, 1) var(--foliage-delay, var(--delay, 0ms)) infinite; }
 	.progress-living-world .canopy-right { opacity: calc(var(--opacity, 0.16) * 1.08); }
 
 	.world-drift { border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.4) 45%, transparent 72%); filter: blur(0.5px); mix-blend-mode: screen; opacity: 0; animation: driftFloat var(--duration, 13000ms) ease-in-out var(--delay, 0ms) infinite; }
@@ -621,17 +644,17 @@
 	   infaller osynkat mellan dem. */
 	@keyframes foliageBreathe {
 		0%, 18%, 46%, 58%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); }
-		31% { transform: rotate(calc(-0.62deg * (0.55 + var(--depth, 0.5)))) translate3d(calc(-0.82px * (0.55 + var(--depth, 0.5))), -0.2px, 0); }
-		74%, 82% { transform: rotate(calc((-1.9deg - (0.8deg * var(--world-wind, 0.18))) * (0.55 + var(--depth, 0.5)))) translate3d(calc((-1.8px - (1.8px * var(--world-wind, 0.18))) * (0.55 + var(--depth, 0.5))), -0.55px, 0); }
+		31% { transform: rotate(calc(-0.62deg * (0.55 + var(--depth, 0.5)) * var(--wind-amplitude, 1))) translate3d(calc(-0.82px * (0.55 + var(--depth, 0.5)) * var(--wind-amplitude, 1)), -0.2px, 0); }
+		74%, 82% { transform: rotate(calc((-1.9deg - (0.8deg * var(--world-wind, 0.18))) * (0.55 + var(--depth, 0.5)) * var(--wind-amplitude, 1))) translate3d(calc((-1.8px - (1.8px * var(--world-wind, 0.18))) * (0.55 + var(--depth, 0.5)) * var(--wind-amplitude, 1)), -0.55px, 0); }
 	}
 	/* Svag, ojämn vindpust i grenen - ojämna procentsteg och skilda +/- värden
 	   (inte ett symmetriskt fram-och-tillbaka) så det inte känns mekaniskt
 	   loopat. Börjar och slutar i samma läge så loopen inte hackar till. */
 	@keyframes canopySway {
 		0%, 20%, 48%, 60%, 100% { transform: rotate(0deg) translate3d(0, 0, 0); }
-		34% { transform: rotate(-0.22deg) translate3d(-0.7px, 0.15px, 0); }
-		74%, 80% { transform: rotate(-0.68deg) translate3d(-2.1px, 0.55px, 0); }
-		88% { transform: rotate(0.14deg) translate3d(0.45px, -0.1px, 0); }
+		34% { transform: rotate(calc(-0.22deg * var(--wind-amplitude, 1))) translate3d(calc(-0.7px * var(--wind-amplitude, 1)), 0.15px, 0); }
+		74%, 80% { transform: rotate(calc(-0.68deg * var(--wind-amplitude, 1))) translate3d(calc(-2.1px * var(--wind-amplitude, 1)), 0.55px, 0); }
+		88% { transform: rotate(calc(0.14deg * var(--wind-amplitude, 1))) translate3d(calc(0.45px * var(--wind-amplitude, 1)), -0.1px, 0); }
 	}
 	/* Långsamt svävande ljuspartiklar i övre delen av scenen - synliga inom några sekunder, hela tiden. */
 	@keyframes driftFloat { 0% { opacity: 0; transform: translate3d(0, 8%, 0) scale(0.8); } 12% { opacity: var(--opacity, 0.5); } 50% { transform: translate3d(calc(3% * (0.5 + var(--depth, 0.5))), calc(-10% * (0.5 + var(--depth, 0.5))), 0) scale(1.08); opacity: calc(var(--opacity, 0.5) * 0.8); } 88% { opacity: var(--opacity, 0.5); } 100% { opacity: 0; transform: translate3d(calc(-2.5% * (0.5 + var(--depth, 0.5))), calc(-22% * (0.5 + var(--depth, 0.5))), 0) scale(0.85); } }

@@ -1,14 +1,14 @@
 <script lang="ts">
-	// Enstaka löv som faller genom scenen. Egen schemaläggning (30-90s) i stället
-	// för den generella händelseloopen, så det blir en pålitlig, lugn puls
-	// oavsett vilka andra naturhändelser som råkar väljas.
+	// Ett enstaka löv som kan falla genom scenen när AmbientWorlds befintliga,
+	// sällsynta vindhändelse inträffar. Ingen egen timer: händelserna ligger kvar
+	// på världens gemensamma tidslinje och kan därför inte staplas på varandra.
 	//
 	// Byggd för att kunna få syskon: en SnowLayer eller PetalLayer kan följa exakt
 	// samma mönster (säsongsstyrd täthet + fall-keyframes med parallaxdjup).
 	import { untrack } from 'svelte';
 	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
 	import type { ProgressCompanionSeason } from '$lib/progressCompanion';
-	import { getLeafSessionCharacter } from '$lib/world/sessionVariation';
+	import { getFallingLeafVariation } from '$lib/world/sessionVariation';
 
 	let {
 		season = 'summer',
@@ -17,7 +17,7 @@
 	}: {
 		season?: ProgressCompanionSeason;
 		sessionSeed: string;
-		/** En vindpust från AmbientWorlds director släpper 1-3 extra löv, en gång per id. */
+		/** En vindpust från AmbientWorlds director släpper ett löv, en gång per id. */
 		gust?: { id: string; count: number } | null;
 	} = $props();
 
@@ -41,60 +41,15 @@
 	let nextKey = 0;
 	let releasedGustId: string | null = null;
 
-	// Hösten får fler och tydligare löv; övriga säsonger enstaka och blekare, så
-	// scenen aldrig känns helt stilla men heller inte fel för årstiden.
-	const seasonProfile = $derived(
-		season === 'autumn'
-			? { count: [1, 2] as const, opacity: [0.72, 0.9] as const, minGapMs: 8_000, maxGapMs: 15_000, duration: [6_000, 12_000] as const }
-			: season === 'winter'
-				? { count: [1, 1] as const, opacity: [0.12, 0.18] as const, minGapMs: 55_000, maxGapMs: 95_000, duration: [11_000, 17_000] as const }
-				: { count: [1, 1] as const, opacity: [0.56, 0.7] as const, minGapMs: 28_000, maxGapMs: 58_000, duration: [9_000, 15_000] as const }
-	);
-	const sessionCharacter = $derived(getLeafSessionCharacter(sessionSeed));
-
-	function between(min: number, max: number) {
-		return min + Math.random() * (max - min);
-	}
-
-	function spawnLeaves(countOverride?: number) {
+	function spawnLeaf(eventId: string) {
 		if (!motion.isActive || motion.reducedMotion) return;
 
-		const [minCount, maxCount] = seasonProfile.count;
-		const count = countOverride ?? Math.round(between(minCount, maxCount));
-		const spawned: FallingLeaf[] = [];
-
-		for (let i = 0; i < count; i += 1) {
-			// Djupet styr både storlek, fallhastighet och opacitet, så ett löv
-			// långt bak faller långsammare och blekare än ett nära - samma
-			// parallaxprincip som de statiska lagren.
-			const depth = between(0.45, 1);
-			const sizeTier = season === 'autumn' && i === 0 ? between(0.18, 1) : Math.random();
-			const size = sizeTier < 0.18 ? between(8, 12) : sizeTier < 0.78 ? between(12, 18) : between(18, 22);
-			spawned.push({
-				key: nextKey++,
-				// Håller sig till lövverkets sida av scenen (uppe till höger) så
-				// löven aldrig faller över texten till vänster.
-				x: between(sessionCharacter.spawnMinX, sessionCharacter.spawnMaxX),
-				y: between(2, 16),
-				size,
-				shape: Math.floor(between(0, 3)),
-				color: Math.floor(between(0, 4)),
-				durationMs: between(seasonProfile.duration[0], seasonProfile.duration[1]) * (1.12 - depth * 0.18),
-				// Samma vänsterbias som vegetationen. Pendlingen går fortfarande kort
-				// åt motsatt håll tidigt i banan, men nettovinden motsäger inte gräset.
-				drift: between(-5.2, -1.4) * depth * sessionCharacter.driftFactor,
-				// Fallhöjd i rem, inte procent: procent i translate3d räknas mot
-				// lövets egen (mycket lilla) höjd och skulle knappt flytta det alls.
-				fall: between(9, 15) * (0.7 + depth * 0.5) * sessionCharacter.amplitudeFactor,
-				spin: between(120, 310) * (Math.random() < 0.5 ? -1 : 1),
-				opacity: between(seasonProfile.opacity[0], seasonProfile.opacity[1]),
-				depth
-			});
-		}
+		const variation = getFallingLeafVariation(sessionSeed, eventId, season);
+		const spawned: FallingLeaf[] = [{ key: nextKey++, ...variation }];
 
 		leaves = [...leaves, ...spawned];
 
-		const longest = Math.max(...spawned.map((leaf) => leaf.durationMs));
+		const longest = variation.durationMs;
 		const spawnedKeys = new Set(spawned.map((leaf) => leaf.key));
 		window.setTimeout(() => {
 			leaves = leaves.filter((leaf) => !spawnedKeys.has(leaf.key));
@@ -105,40 +60,9 @@
 		const current = gust;
 		if (!current || current.id === releasedGustId) return;
 		releasedGustId = current.id;
-		const count = Math.min(3, Math.max(1, Math.round(current.count)));
-		// untrack: effekten ska bara reagera på en ny pust, inte på lövlistan.
-		untrack(() => spawnLeaves(count));
-	});
-
-	// Startas om när fliken döljs/visas eller reduced-motion ändras - samma
-	// mönster som den ambienta händelseloopen i AmbientWorld.
-	$effect(() => {
-		const active = motion.isActive;
-		const reduced = motion.reducedMotion;
-		const profile = seasonProfile;
-		const character = sessionCharacter;
-
-		if (!active || reduced) {
-			leaves = [];
-			return;
-		}
-
-		let timer: number | null = null;
-		const schedule = (initial = false) => {
-			const delay = initial
-				? character.initialDelayMs
-				: between(profile.minGapMs, profile.maxGapMs) * character.intervalFactor;
-			timer = window.setTimeout(() => {
-				spawnLeaves();
-				schedule();
-			}, delay);
-		};
-
-		schedule(true);
-
-		return () => {
-			if (timer !== null) window.clearTimeout(timer);
-		};
+		// Exakt ett löv: det här är den valda sällsynta världshändelsen, inte en
+		// väderpartikeleffekt. untrack gör att effekten bara reagerar på en ny pust.
+		untrack(() => spawnLeaf(current.id));
 	});
 </script>
 

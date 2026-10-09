@@ -12,7 +12,9 @@ describe('AmbientWorld vegetation wind', () => {
 		expect(ambientSource).toMatch(/\.grass-left,\r?\n\t\.grass-bank/);
 		expect(ambientSource).toContain('.grass-left { transform-origin: 26% 100%; }');
 		expect(ambientSource).toContain('.grass-bank { transform-origin: 64% 100%; }');
-		expect(ambientSource).toContain('calc(-0.82px * (0.55 + var(--depth, 0.5)))');
+		expect(ambientSource).toContain(
+			'calc(-0.82px * (0.55 + var(--depth, 0.5)) * var(--wind-amplitude, 1))'
+		);
 	});
 
 	it('har stiltje och en separat lågmäld pust i vegetationscykeln', () => {

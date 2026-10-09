@@ -4,12 +4,30 @@
 	// (worldScene.ts) - den här komponenten äger bara utseendet och rörelsen.
 	import type { LivingWorldEffect } from '$lib/worldScene';
 	import { effectStyle } from '$lib/world/effectStyle';
+	import { getWaterLayerVariation } from '$lib/world/sessionVariation';
 
-	let { effects }: { effects: LivingWorldEffect[] } = $props();
+	let {
+		effects,
+		variationSeed,
+		wind = 0.18
+	}: { effects: LivingWorldEffect[]; variationSeed?: string; wind?: number } = $props();
+
+	function styleForWater(effect: LivingWorldEffect) {
+		const baseStyle = effectStyle(effect);
+		if (!variationSeed) return baseStyle;
+
+		const variation = getWaterLayerVariation(variationSeed, effect.id, effect, wind);
+		return [
+			baseStyle,
+			`--water-duration: ${variation.durationMs}ms`,
+			`--water-delay: ${variation.delayMs}ms`,
+			`--water-motion: ${variation.motion.toFixed(3)}`
+		].join('; ');
+	}
 </script>
 
 {#each effects as effect (effect.id)}
-	<span class={`world-effect world-water ${effect.className ?? ''}`.trim()} style={effectStyle(effect)}
+	<span class={`world-effect world-water ${effect.className ?? ''}`.trim()} style={styleForWater(effect)}
 	></span>
 {/each}
 
@@ -41,7 +59,7 @@
 		transform-origin: 50% 50%;
 		-webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 80%, transparent);
 		mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 80%, transparent);
-		animation: waterSurfaceDrift var(--duration, 64000ms) ease-in-out var(--delay, 0ms) infinite alternate;
+		animation: waterSurfaceDrift var(--water-duration, var(--duration, 64000ms)) ease-in-out var(--water-delay, var(--delay, 0ms)) infinite alternate;
 	}
 
 	/* Ett varmt, diffust solnedgångssken på vattenytan - ambient ljus, inte en
@@ -69,7 +87,7 @@
 		filter: blur(clamp(10px, 1.5vw, 22px));
 		mix-blend-mode: screen;
 		opacity: 0;
-		animation: waterGlintSweep var(--duration, 34000ms) ease-in-out var(--delay, 0ms) infinite;
+		animation: waterGlintSweep var(--water-duration, var(--duration, 34000ms)) ease-in-out var(--water-delay, var(--delay, 0ms)) infinite;
 	}
 
 	/* Kontinuerligt upprepade ringar - en ring är en otvetydig vattenform (till
@@ -81,7 +99,7 @@
 		background: radial-gradient(circle at center, rgba(255, 255, 255, 0.55), transparent 68%);
 		filter: blur(0.3px);
 		transform: translate3d(-50%, -50%, 0) scale(calc(var(--scale, 1) * 0.64));
-		animation: waterRing var(--duration, 4800ms) ease-out var(--delay, 0ms) infinite;
+		animation: waterRing var(--water-duration, var(--duration, 4800ms)) ease-out var(--water-delay, var(--delay, 0ms)) infinite;
 	}
 
 	/* Framstegs ringar: samma ringfas som waterRing, men följd av en lång vila så
@@ -94,11 +112,11 @@
 	@keyframes waterSurfaceDrift {
 		0%,
 		24% {
-			transform: translate3d(-1.8%, 0, 0) scaleX(1.03);
+			transform: translate3d(calc(-1.8% * var(--water-motion, 1)), 0, 0) scaleX(1.03);
 		}
 		62%,
 		100% {
-			transform: translate3d(calc(3.6% + (2% * var(--world-wind, 0.18))), -0.9%, 0) scaleX(1.07);
+			transform: translate3d(calc((3.6% + (2% * var(--world-wind, 0.18))) * var(--water-motion, 1)), -0.9%, 0) scaleX(1.07);
 		}
 	}
 

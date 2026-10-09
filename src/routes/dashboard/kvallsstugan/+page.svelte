@@ -321,7 +321,11 @@
 			     att inga animationer fortsätter bakom en osynlig yta. -->
 			{#if !isSleepMode}
 				<div class="cabin-lake-view" aria-hidden="true">
-					<WaterLayer effects={LAKE_RIPPLES} />
+					<WaterLayer
+						effects={LAKE_RIPPLES}
+						variationSeed={`cabin:${worldScene.localDateKey}`}
+						wind={worldScene.wind}
+					/>
 				</div>
 			{/if}
 			{#if hasInteriorRug}
