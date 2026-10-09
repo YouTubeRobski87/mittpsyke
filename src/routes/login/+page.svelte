@@ -13,6 +13,9 @@
 	// Den som saknar konto ska inte tappa målet (t.ex. Kvällstugan) på vägen
 	// via registreringen.
 	const registerHref = $derived(withSafeRedirect('/register', page.url.searchParams.get('redirect')));
+	const isEveningCabinRedirect = $derived(
+		page.url.searchParams.get('redirect') === '/dashboard/kvallsstugan'
+	);
 	let loading = $state(false);
 	let oauthLoading = $state(false);
 	let oauthError = $state('');
@@ -73,6 +76,12 @@
 
 <section class="container max-w-sm py-16">
 	<h1 class="text-2xl font-bold text-center mb-6">Logga in</h1>
+	{#if isEveningCabinRedirect}
+		<p class="mb-6 text-center text-sm leading-relaxed opacity-75">
+			Logga in för att öppna Kvällsstugan.
+			<span class="block">Du kommer tillbaka dit efter inloggningen.</span>
+		</p>
+	{/if}
 
 	<form method="POST" novalidate use:enhance={() => {
 		loading = true;

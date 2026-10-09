@@ -175,7 +175,7 @@ describe('Startsidans P2-struktur', () => {
 		const hero = sectionOf('hero-title');
 		expect(hero).not.toContain('class="eyebrow"');
 		expect(hero.match(/class="cta-primary"/g)).toHaveLength(1);
-		expect(hero).toContain('Se platsen');
+		expect(hero).toContain('Se hur platsen lever');
 		expect(hero).toContain('Inget konto behövs. Texten stannar i din webbläsare.');
 		expect(hero).toContain('cabin-proof--scene');
 		expect(sectionOf('evening-title')).toContain('cabin-proof--card');

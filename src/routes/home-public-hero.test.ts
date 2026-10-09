@@ -34,16 +34,16 @@ describe('Den publika startsidans hero', () => {
 	// innan besökaren vet vad hon väljer mellan. Nu är den ett ankare som
 	// stannar på sidan.
 	it('har en sekundär som stannar på sidan i stället för att kräva konto', () => {
-		expect(page).toContain("const PLACE_MAP_ANCHOR = '#map-title';");
+		expect(page).toContain("const LIVING_WORLD_ANCHOR = '#living-world-title';");
 		expect(hero).toMatch(
-			/class="cta-secondary"\s+href=\{PLACE_MAP_ANCHOR\}\s+onclick=\{scrollToPlaceMap\}/
+			/class="cta-secondary"\s+href=\{LIVING_WORLD_ANCHOR\}\s+onclick=\{scrollToLivingWorld\}/
 		);
-		expect(hero).toContain('Se platsen');
+		expect(hero).toContain('Se hur platsen lever');
 		// href ligger kvar så hoppet fungerar utan JS, men scrollen sköts i JS:
 		// webbläsarens hash-navigering gör inget alls vid ett andra klick på
 		// samma hash, så länken blev död efter första användningen.
 		expect(page).toContain("target.scrollIntoView({ block: 'start' })");
-		expect(page).toContain("trackHomeCta('hero', 'se_platsen', PLACE_MAP_ANCHOR)");
+		expect(page).toContain("trackHomeCta('hero', 'se_platsen', LIVING_WORLD_ANCHOR)");
 		// app.css äger både offset och mjuk scroll. Sätts något av det här igen
 		// adderas det ovanpå och rubriken hamnar dubbelt så långt ner.
 		// Deklarationen, inte ordet - kommentaren intill förklarar varför den
@@ -76,21 +76,17 @@ describe('Den publika startsidans hero', () => {
 	// Ankaret måste gå till en rubrik som finns, annars scrollar klicket
 	// ingenstans. tabindex flyttar tangentbordsfokus med scrollen.
 	it('har ett ankarmål som existerar och tar emot tangentbordsfokus', () => {
-		expect(publicHome).toContain('<h2 id="map-title" tabindex="-1">');
+		expect(publicHome).toContain('<h2 id="living-world-title" tabindex="-1">');
+		expect(page).toContain("document.getElementById('living-world-title')");
 	});
 
-	// Länktexten lovade tidigare "Så fungerar det" men landade på rubriken
-	// "Så ser platsen ut". Ankaret går fortfarande till platskartan (inte till
-	// stegsektionen), så texten följer målet - inte tvärtom.
-	it('lovar i länktexten det som målrubriken faktiskt säger', () => {
-		expect(publicHome).toContain('<h2 id="map-title" tabindex="-1">Så ser platsen ut</h2>');
-
-		// Bara länkens egen text. "Så fungerar det" finns kvar som aria-label
-		// på pilraden längre ner i heron, vilket är en annan sak.
+	it('beskriver den levande destinationen i CTA-texten', () => {
+		expect(publicHome).toContain(
+			'<h2 id="living-world-title" tabindex="-1">Din värld stannar inte här</h2>'
+		);
 		const secondary = hero.slice(hero.indexOf('class="cta-secondary"'));
 		const linkText = secondary.slice(0, secondary.indexOf('</a>'));
-		expect(linkText).toContain('Se platsen');
-		expect(linkText).not.toContain('Så fungerar det');
+		expect(linkText).toContain('Se hur platsen lever');
 	});
 
 	// Formuleringen är kontrollerad mot diary-draft.ts: anonyma utkast skrivs

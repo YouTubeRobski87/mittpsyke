@@ -16,10 +16,9 @@
 	// trots att den kostar besökaren ett konto. Den finns kvar i headern och
 	// har sin plats i avslutande CTA, efter att sidan förklarat vad kontot ger.
 	//
-	// Länktexten följer målrubriken ("Så ser platsen ut"), inte tvärtom. En
-	// länk som lovar "Så fungerar det" och landar på en rubrik som säger något
-	// annat bryter förväntan direkt efter första klicket.
-	const PLACE_MAP_ANCHOR = '#map-title';
+	// Den publika Living World-sektionen visar hur platsen lever innan konto
+	// efterfrågas. Hero-sekundären stannar därför på sidan och landar där.
+	const LIVING_WORLD_ANCHOR = '#living-world-title';
 	// Den riktiga kvällsincheckningen ligger i Kvällstugan och kräver konto.
 	// Den publika startsidan visas bara för utloggade, så länken går via
 	// inloggningen med ?redirect= - samma mönster som övriga skyddade sidor -
@@ -41,7 +40,7 @@
 
 	/**
 	 * Hero-ankaret sköts i JS, för att webbläsarens hash-navigering bara
-	 * fungerar en gång: efter första klicket är hashen redan `#map-title`,
+	 * fungerar en gång: efter första klicket är hashen redan `#living-world-title`,
 	 * ingen navigering utlöses, och besökaren som scrollat upp igen möter en
 	 * död länk. scrollIntoView kan köras hur många gånger som helst.
 	 *
@@ -49,10 +48,11 @@
 	 * sticky headern kommer från scroll-padding-top på html i app.css och
 	 * respekteras av båda vägarna - den ska inte upprepas här.
 	 */
-	function scrollToPlaceMap(event: MouseEvent) {
-		trackHomeCta('hero', 'se_platsen', PLACE_MAP_ANCHOR);
+	function scrollToLivingWorld(event: MouseEvent) {
+		// Behåll det befintliga analytics-id:t; bara målet och den synliga copyn ändras.
+		trackHomeCta('hero', 'se_platsen', LIVING_WORLD_ANCHOR);
 
-		const target = document.getElementById('map-title');
+		const target = document.getElementById('living-world-title');
 		if (!target) return;
 
 		event.preventDefault();
@@ -90,8 +90,8 @@
 					>
 						Börja skriva
 					</a>
-					<a class="cta-secondary" href={PLACE_MAP_ANCHOR} onclick={scrollToPlaceMap}>
-						Se platsen <span aria-hidden="true">↓</span>
+					<a class="cta-secondary" href={LIVING_WORLD_ANCHOR} onclick={scrollToLivingWorld}>
+						Se hur platsen lever <span aria-hidden="true">↓</span>
 					</a>
 				</div>
 				<!-- Ligger direkt under CTA-raden, där den sänker tröskeln för att
@@ -169,7 +169,7 @@
 		<div class="home-inner">
 			<div class="living-world-intro">
 				<p class="section-kicker">Mer än en chatt</p>
-				<h2 id="living-world-title">Din värld stannar inte här</h2>
+				<h2 id="living-world-title" tabindex="-1">Din värld stannar inte här</h2>
 				<p>
 					MittPsyke är en plats som lever och växer med dig. Med ett konto öppnas fler
 					platser, verktyg och upplevelser, samtidigt som du kan följa hur ditt mående
@@ -681,8 +681,9 @@
 	   html för den sticky headern, safe-area inräknad. En marginal här hade
 	   adderats ovanpå den och lagt rubriken dubbelt så långt ner. */
 
-	/* Programmatiskt fokusmål, inte en kontroll - ingen synlig ring behövs när
-	   fokus flyttas hit av ankaret. Rubriken är aldrig nåbar med Tab. */
+	/* Programmatiska fokusmål, inte kontroller - ingen synlig ring behövs när
+	   fokus flyttas hit av ett ankare. Rubrikerna är aldrig nåbara med Tab. */
+	#living-world-title:focus,
 	#map-title:focus {
 		outline: none;
 	}
