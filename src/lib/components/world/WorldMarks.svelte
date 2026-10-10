@@ -71,6 +71,7 @@
 				type="button"
 				class={`world-mark world-mark-${mark.id}`}
 				data-mark={mark.id}
+				data-path-presence={mark.pathPresence}
 				class:is-invisible={mark.invisible}
 				style={markStyle(mark)}
 				aria-pressed={revealedId === mark.id}
@@ -368,10 +369,21 @@
 	}
 
 	.world-mark-shore-path {
-		--mark-opacity: 0.3;
+		--mark-opacity: 0.18;
 		border-radius: 999px;
-		background: linear-gradient(90deg, transparent, rgba(178, 160, 136, 0.5) 34%, rgba(168, 150, 128, 0.42) 66%, transparent);
+		background: linear-gradient(90deg, transparent, rgba(178, 160, 136, 0.42) 34%, rgba(168, 150, 128, 0.34) 66%, transparent);
+		filter: blur(3px);
+	}
+
+	.world-mark-shore-path[data-path-presence='2'] {
+		--mark-opacity: 0.26;
 		filter: blur(2.5px);
+	}
+
+	.world-mark-shore-path[data-path-presence='3'] {
+		--mark-opacity: 0.34;
+		background: linear-gradient(90deg, transparent, rgba(188, 169, 144, 0.54) 30%, rgba(174, 155, 132, 0.48) 70%, transparent);
+		filter: blur(2px);
 	}
 
 	/* Rätt bakom copyn i scenen sitter redan text, så raden hamnar uppe till

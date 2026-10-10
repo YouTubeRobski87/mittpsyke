@@ -9,6 +9,7 @@ import {
 	getDaysSinceLastVisit,
 	getEligibleWorldMarkIds,
 	getWorldGrowthLevel,
+	getWorldPathPresence,
 	getWorldMarkVariation,
 	getWorldMarks,
 	getWorldReturnCopy,
@@ -17,6 +18,7 @@ import {
 	readLastVisit,
 	recordVisit,
 	type WorldPresence,
+	type WorldPresenceInput,
 	type WorldVisitStorageLike
 } from './worldStage';
 
@@ -100,6 +102,19 @@ describe('närvarounderlaget', () => {
 		expect(normalizeWorldPresence(null)).toEqual(EMPTY_WORLD_PRESENCE);
 		expect(getAccountAgeDays(null)).toBe(0);
 	});
+
+	it('ignorerar känsliga extrafält i närvarounderlaget', () => {
+		const withSensitiveShapedExtras = {
+			activeDays: 3,
+			mood: 'ledsen',
+			diaryText: 'privat text',
+			diagnosis: 'privat uppgift'
+		} as unknown as WorldPresenceInput;
+
+		expect(normalizeWorldPresence(withSensitiveShapedExtras)).toEqual(
+			normalizeWorldPresence({ activeDays: 3 })
+		);
+	});
 });
 
 describe('miljöstadiet', () => {
@@ -140,7 +155,7 @@ describe('spåren i scenen', () => {
 	});
 
 	it('lägger till spår efter hand utan att ta bort tidigare', () => {
-		const early = getWorldMarks(presence({ activeDays: 1 })).map((mark) => mark.id);
+		const early = getWorldMarks(presence({ activeDays: 3 })).map((mark) => mark.id);
 		const later = getWorldMarks(presence({ activeDays: 9, activeWeeks: 4, entryCount: 12 })).map(
 			(mark) => mark.id
 		);
@@ -149,6 +164,31 @@ describe('spåren i scenen', () => {
 		for (const id of early) expect(later).toContain(id);
 		expect(later.length).toBeGreaterThan(early.length);
 		expect(later).toContain('lantern');
+	});
+
+	it('gör stigen tydligare i fyra kumulativa närvarolägen utan streak eller reset', () => {
+		expect(getWorldPathPresence(presence())).toBe(0);
+		expect(getWorldPathPresence(presence({ activeDays: 1 }))).toBe(1);
+		expect(getWorldPathPresence(presence({ activeDays: 3 }))).toBe(2);
+		expect(getWorldPathPresence(presence({ activeDays: 7 }))).toBe(3);
+		expect(
+			getWorldPathPresence(
+				buildWorldPresence({ activityDays: { '2026-09-01': 1 }, entryCount: 1 })
+			)
+		).toBe(1);
+		expect(getWorldPathPresence(presence({ activeDays: 3, accountAgeDays: 400 }))).toBe(2);
+
+		const mark = getWorldMarks(presence({ activeDays: 7 })).find((item) => item.id === 'shore-path');
+		expect(mark?.pathPresence).toBe(3);
+	});
+
+	it('låter Balders sten bygga enbart på objektiv återkommande aktivitet', () => {
+		expect(getWorldMarks(presence({ activeDays: 2 }))).not.toEqual(
+			expect.arrayContaining([expect.objectContaining({ id: 'shore-stone' })])
+		);
+		const stone = getWorldMarks(presence({ activeDays: 3 })).find((mark) => mark.id === 'shore-stone');
+		expect(stone).toMatchObject({ label: 'Balders sten' });
+		expect(stone?.revealText).not.toMatch(/humör|diagnos|svår kväll|trauma|dagbokstext/i);
 	});
 
 	it('behåller spåren efter ett långt uppehåll', () => {

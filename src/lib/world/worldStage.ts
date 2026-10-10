@@ -19,6 +19,12 @@ import type { ProgressCompanionDayState } from '$lib/progressCompanion';
 /** Internt miljöstadie. Visas aldrig för användaren. */
 export type WorldStage = 0 | 1 | 2 | 3 | 4 | 5;
 
+/**
+ * Hur tydligt den befintliga stigen syns. Noll betyder att inget spår ännu
+ * finns; övriga steg är en rent visuell signal som aldrig visas som nivå.
+ */
+export type WorldPathPresence = 0 | 1 | 2 | 3;
+
 export interface WorldPresenceInput {
 	/** Sparade dagbokstexter, hela historiken. */
 	entryCount?: unknown;
@@ -174,6 +180,18 @@ export function getWorldGrowthLevel(stage: WorldStage): 0 | 1 | 2 | 3 | 4 {
 	return Math.min(stage, 4) as 0 | 1 | 2 | 3 | 4;
 }
 
+/**
+ * Kumulativ närvaro -> hur tydligt stigen syns. Bara objektiva räknare används,
+ * aldrig text, humör eller dagar i följd. Ett uppehåll kan därför inte göra
+ * stigen svagare eller återställa den.
+ */
+export function getWorldPathPresence(presence: WorldPresence): WorldPathPresence {
+	if (presence.activeDays >= 7) return 3;
+	if (presence.activeDays >= 3) return 2;
+	if (presence.activeDays >= 1 || presence.registrationCount >= 1) return 1;
+	return 0;
+}
+
 // ── Spåren i scenen ──
 
 export type WorldMarkId =
@@ -225,6 +243,8 @@ export interface WorldMark {
 	 * Spårlagret ritar då ingen egen form.
 	 */
 	invisible?: boolean;
+	/** Endast för stigen: intern visuell styrka, aldrig användarsynlig nivå. */
+	pathPresence?: WorldPathPresence;
 }
 
 type WorldMarkDefinition = WorldMark & {
@@ -427,14 +447,14 @@ const WORLD_MARK_DEFINITIONS: readonly WorldMarkDefinition[] = [
 	},
 	{
 		id: 'shore-stone',
-		label: 'Stenen',
-		revealText: 'Den har legat här sedan första gången.',
+		label: 'Balders sten',
+		revealText: 'Balders sten ligger kvar nära vattnet.',
 		x: 92,
 		y: 66,
 		width: 4.2,
 		height: 2.1,
 		depth: 0.8,
-		appears: (presence) => presence.activeDays >= 1 || presence.registrationCount >= 1
+		appears: (presence) => presence.activeDays >= 3
 	},
 	{
 		id: 'shore-path',
@@ -445,7 +465,7 @@ const WORLD_MARK_DEFINITIONS: readonly WorldMarkDefinition[] = [
 		width: 16,
 		height: 3,
 		depth: 0.86,
-		appears: (presence) => presence.activeDays >= 3
+		appears: (presence) => getWorldPathPresence(presence) > 0
 	}
 ];
 
@@ -529,9 +549,13 @@ export function getWorldMarks(
 		if (mark.hideOnNarrow && options.narrow) return false;
 		return true;
 	}).map(({ appears: _appears, replaces: _replaces, ...mark }) => {
-		if (!options.narrow) return mark;
+		const visibleMark =
+			mark.id === 'shore-path'
+				? { ...mark, pathPresence: getWorldPathPresence(presence) }
+				: mark;
+		if (!options.narrow) return visibleMark;
 		return {
-			...mark,
+			...visibleMark,
 			x: mark.narrowX ?? mark.x,
 			y: mark.narrowY ?? mark.y,
 			width: mark.narrowWidth ?? mark.width,

@@ -118,7 +118,7 @@ describe('syncWorldProgress', () => {
 		});
 
 		expect(saves).toEqual([]);
-		expect(state.marks).toContain('shore-stone');
+		expect(state.marks).toContain('shore-path');
 	});
 
 	it('visar unionen även om sparningen misslyckas', async () => {
