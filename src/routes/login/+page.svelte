@@ -78,7 +78,7 @@
 	<h1 class="text-2xl font-bold text-center mb-6">Logga in</h1>
 	{#if isEveningCabinRedirect}
 		<p class="mb-6 text-center text-sm leading-relaxed opacity-75">
-			Logga in för att öppna Kvällsstugan.
+			Logga in för att öppna Kvällstugan.
 			<span class="block">Du kommer tillbaka dit efter inloggningen.</span>
 		</p>
 	{/if}

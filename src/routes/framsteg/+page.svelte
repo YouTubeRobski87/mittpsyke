@@ -10,6 +10,7 @@
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import LighterDaysCard from '$lib/components/progress/LighterDaysCard.svelte';
 	import ProgressExamplePreview from '$lib/components/progress/ProgressExamplePreview.svelte';
+	import FramstegComprehensionCard from '$lib/components/progress/FramstegComprehensionCard.svelte';
 	import type { LighterDaysView } from '$lib/progress-lighter-days-types';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
 	import {
@@ -1771,6 +1772,7 @@
 					</p>
 				{/if}
 			</section>
+			<FramstegComprehensionCard enabled={!isAnonymous} />
 			{/if}
 		</div>
 	</div>

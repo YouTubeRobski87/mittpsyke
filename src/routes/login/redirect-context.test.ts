@@ -4,12 +4,12 @@ import { describe, expect, it } from 'vitest';
 const loginSource = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
 
 describe('redirect-kontext på inloggningen', () => {
-	it('visar Kvällsstugan-kontext bara för den exakta Kvällsstugan-redirecten', () => {
+	it('visar Kvällstugan-kontext bara för den exakta Kvällstugan-redirecten', () => {
 		expect(loginSource).toContain(
 			"page.url.searchParams.get('redirect') === '/dashboard/kvallsstugan'"
 		);
 		expect(loginSource).toMatch(
-			/\{#if isEveningCabinRedirect\}[\s\S]*?Logga in för att öppna Kvällsstugan\.[\s\S]*?Du kommer tillbaka dit efter inloggningen\.[\s\S]*?\{\/if\}/
+			/\{#if isEveningCabinRedirect\}[\s\S]*?Logga in för att öppna Kvällstugan\.[\s\S]*?Du kommer tillbaka dit efter inloggningen\.[\s\S]*?\{\/if\}/
 		);
 	});
 
