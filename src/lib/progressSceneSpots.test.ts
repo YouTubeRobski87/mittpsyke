@@ -9,6 +9,7 @@ import {
 	getProgressInitialSceneSpot,
 	getProgressSceneSpot,
 	getProgressSceneSpots,
+	getProgressSceneSpotsForEnvironment,
 	getProgressSceneSpotById,
 	getProgressScenePose
 } from '$lib/progressCompanionPlacement';
@@ -28,6 +29,10 @@ const ROOT = process.cwd();
 const DAY = new Date('2026-09-16T12:00:00+02:00');
 const EVENING = new Date('2026-09-16T19:30:00+02:00');
 const NIGHT = new Date('2026-09-16T23:30:00+02:00');
+const MORNING = new Date('2026-07-16T07:30:00+02:00');
+const SUMMER_DAY = new Date('2026-07-16T13:30:00+02:00');
+const SUMMER_EVENING = new Date('2026-07-16T18:30:00+02:00');
+const WINTER_DAY = new Date('2026-01-16T13:30:00+01:00');
 
 class MemoryStorage implements Storage {
 	private store = new Map<string, string>();
@@ -124,6 +129,54 @@ describe('Framstegs kuraterade platser', () => {
 		}
 	});
 
+	it('väljer lugna morgonplatser skilda från sommarkvällens vattenkant', () => {
+		const morning = getProgressSceneSpotsForEnvironment(MORNING).map((spot) => spot.id);
+		const evening = getProgressSceneSpotsForEnvironment(SUMMER_EVENING).map((spot) => spot.id);
+
+		expect(morning).toEqual([
+			'bank-sittande-sida',
+			'bank-staende',
+			'bank-sittande-bortvand'
+		]);
+		expect(evening).toEqual([
+			'strandkant-sittande-bortvand',
+			'strandkant-staende',
+			'bank-sittande-sida'
+		]);
+	});
+
+	it('håller dagen till högst fyra kuraterade platser', () => {
+		const day = getProgressSceneSpotsForEnvironment(SUMMER_DAY);
+		expect(day).toHaveLength(4);
+		expect(day.every((spot) => spot.dayparts.includes('day'))).toBe(true);
+		expect(getProgressSceneSpotsForEnvironment(SUMMER_DAY)).toEqual(day);
+	});
+
+	it('låter inte relation, dagbok eller progression styra miljöurvalet', () => {
+		const source = readFileSync(join(ROOT, 'src/lib/progressCompanionPlacement.ts'), 'utf8');
+		const selector = source.slice(
+			source.indexOf('export function getProgressSceneSpotsForEnvironment'),
+			source.indexOf('/**\n * Deterministiskt startläge')
+		);
+		expect(selector).not.toMatch(/relationship|bond|entry|diary|growth|progression|mood/i);
+	});
+
+	it('håller Balder på banken under vintern', () => {
+		const winter = getProgressSceneSpotsForEnvironment(WINTER_DAY);
+		expect(winter.map((spot) => spot.id)).toEqual([
+			'bank-sittande-sida',
+			'bank-sittande-bortvand',
+			'bank-staende'
+		]);
+		expect(winter.every((spot) => !spot.id.startsWith('strandkant-'))).toBe(true);
+	});
+
+	it('låter natten välja endast den befintliga sovplatsen', () => {
+		expect(getProgressSceneSpotsForEnvironment(NIGHT).map((spot) => spot.id)).toEqual([
+			'bank-vilande'
+		]);
+	});
+
 	it('låter den bortvända posen finnas kvar utan att dominera', () => {
 		for (const daypart of ['day', 'evening'] as const) {
 			const spots = getProgressSceneSpots(daypart);
@@ -162,7 +215,7 @@ describe('Framstegs kuraterade platser', () => {
 		for (let attempt = 0; attempt < 400; attempt += 1) {
 			seen.add(getProgressSceneSpot(DAY, null).id);
 		}
-		expect(seen.size).toBe(getProgressSceneSpots('day').length);
+		expect(seen.size).toBe(getProgressSceneSpotsForEnvironment(DAY).length);
 	});
 
 	it('står stilla tills den ihågkomna platsen gått ut', () => {

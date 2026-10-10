@@ -22,41 +22,14 @@ This is home.
 
 ## Layer 2 — The companion
 
-The companion represents presence and identity.
+Balder, the bear, is MittPsyke's only companion. There is no companion choice.
+He is warm, safe, grounded and a little philosophical. He may sit for long
+stretches, blink slowly, shift his weight, look toward the lake or sleep at
+night, but should never demand attention or perform like a mascot.
 
-Examples:
-
-- fox sitting calmly
-- bear resting by the tree
-- owl sitting in the tree
-- deer looking toward the lake
-
-The companion should not demand attention. It should simply be there.
-
-## The companion system
-
-There is no single companion. There is a **companion system**.
-
-Fox, bear and future animals are different companions in the same world, built on the same foundation. They are not competing directions — they are different ways of being someone who is simply there.
-
-The fox is the first fully developed companion. The bear is to receive the same capabilities. New animals must be addable without rewriting the architecture.
-
-### Same foundation, different temperament
-
-Every companion shares the same behaviour system: the same pose layers (base pose, short overlay gesture, subtle motion), the same slow cadence, and the same rules for what is allowed to move.
-
-What differs is **temperament** — how often the companion changes pose, how much it moves, and which parts of the day it is most present.
-
-| Companion | Temperament |
-| --- | --- |
-| Fox | Curious. Moves more, looks toward the lake, blinks often. |
-| Bear | Warm, safe, grounded, a little philosophical. Sits for long stretches, moves sparingly, radiates calm. Can blink slowly, shift its weight, look up toward the sky or hold a grass straw. |
-| Owl | Most present in the evening and at night. Observes its surroundings. |
-| Deer | Cautious. Appears more rarely and moves softly. |
-
-Choosing a companion is therefore choosing a mood, not choosing a skin.
-
-No companion is a mascot that performs. Motion stays quiet for all of them.
+Other animals may appear only as temporary visitors. The fox, birds and any
+future animals may pass through or rest briefly, but they never replace Balder,
+become selectable or gain a companion relationship.
 
 Technical direction: `docs/COMPANION_SYSTEM.md`.
 
@@ -164,4 +137,6 @@ Always inspect:
 - `docs/references/04-hero-bear-scene.png`
 - `docs/references/02-home-vision-bear.png`
 
-These references happen to show the bear, since they predate the companion system. Read them as references for **the world, the framing and the mood** — not as a statement that the bear is the companion. The same scene should hold any companion.
+These references show Balder, MittPsyke's only companion. Read them as references
+for **the world, the framing and the mood**. Other animals may appear only as
+temporary visitors.

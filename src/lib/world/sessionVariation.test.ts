@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+	canReleaseFallingLeaf,
 	getCloudSessionVariation,
 	getFallingLeafVariation,
 	getFoliageLayerVariation,
@@ -8,6 +9,62 @@ import {
 } from './sessionVariation';
 
 describe('sessionvariation för den levande världen', () => {
+	it('släpper fallande löv bara vid höstlig vind och tillåten rörelse', () => {
+		const autumnPlans = Array.from({ length: 80 }, (_, index) =>
+			canReleaseFallingLeaf({
+				season: 'autumn',
+				sessionSeed: `session-${index}`,
+				eventId: 'wind-1',
+				motionActive: true,
+				reducedMotion: false
+			})
+		);
+		expect(autumnPlans).toContain(true);
+		expect(autumnPlans).toContain(false);
+		expect(autumnPlans.filter(Boolean).length).toBeLessThan(40);
+		expect(autumnPlans).toEqual(
+			Array.from({ length: 80 }, (_, index) =>
+				canReleaseFallingLeaf({
+					season: 'autumn',
+					sessionSeed: `session-${index}`,
+					eventId: 'wind-1',
+					motionActive: true,
+					reducedMotion: false
+				})
+			)
+		);
+
+		for (const season of ['spring', 'summer', 'winter'] as const) {
+			expect(
+				canReleaseFallingLeaf({
+					season,
+					sessionSeed: 'session-a',
+					eventId: 'wind-1',
+					motionActive: true,
+					reducedMotion: false
+				})
+			).toBe(false);
+		}
+		expect(
+			canReleaseFallingLeaf({
+				season: 'autumn',
+				sessionSeed: 'session-a',
+				eventId: null,
+				motionActive: true,
+				reducedMotion: false
+			})
+		).toBe(false);
+		expect(
+			canReleaseFallingLeaf({
+				season: 'autumn',
+				sessionSeed: 'session-a',
+				eventId: 'wind-1',
+				motionActive: true,
+				reducedMotion: true
+			})
+		).toBe(false);
+	});
+
 	it('ger samma molnvariation för samma sessionsseed och lager', () => {
 		const input = { durationMs: 96_000, delayMs: -18_000 };
 		expect(getCloudSessionVariation('session-a', 'cloud-back', input)).toEqual(

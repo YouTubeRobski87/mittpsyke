@@ -20,7 +20,8 @@ describe('LeafLayer', () => {
 		expect(source).toContain('untrack(() => spawnLeaf(current.id));');
 		expect(source).toContain('if (!current || current.id === releasedGustId) return;');
 		// Den gemensamma spawnen respekterar både reduced motion och dold flik.
-		expect(source).toContain('if (!motion.isActive || motion.reducedMotion) return;');
+		expect(source).toContain('canReleaseFallingLeaf({');
 		expect(source).not.toContain('schedule(true)');
+		expect(source).not.toMatch(/localStorage|sessionStorage/);
 	});
 });

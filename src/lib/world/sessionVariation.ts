@@ -139,6 +139,28 @@ export type FallingLeafVariation = {
 	depth: number;
 };
 
+export type FallingLeafEligibilityInput = {
+	season: ProgressCompanionSeason;
+	sessionSeed: string;
+	eventId?: string | null;
+	motionActive: boolean;
+	reducedMotion: boolean;
+};
+
+/**
+ * Ett fallande löv hör bara till en faktisk höstlig vindpust. Funktionen är
+ * ren och använder varken besökshistorik, progression eller lagrad state.
+ */
+export function canReleaseFallingLeaf(input: FallingLeafEligibilityInput): boolean {
+	return (
+		input.season === 'autumn' &&
+		Boolean(input.eventId) &&
+		input.motionActive &&
+		!input.reducedMotion &&
+		hash(`${input.sessionSeed}:${input.eventId}:falling-leaf:eligible`) < 0.35
+	);
+}
+
 /** Ett enda lövs bana, helt stabil för samma session och ambient-event. */
 export function getFallingLeafVariation(
 	seed: string,

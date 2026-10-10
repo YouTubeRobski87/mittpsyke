@@ -8,7 +8,10 @@
 	import { untrack } from 'svelte';
 	import { createMotionAwareness } from '$lib/motionAwareness.svelte';
 	import type { ProgressCompanionSeason } from '$lib/progressCompanion';
-	import { getFallingLeafVariation } from '$lib/world/sessionVariation';
+	import {
+		canReleaseFallingLeaf,
+		getFallingLeafVariation
+	} from '$lib/world/sessionVariation';
 
 	let {
 		season = 'summer',
@@ -42,7 +45,15 @@
 	let releasedGustId: string | null = null;
 
 	function spawnLeaf(eventId: string) {
-		if (!motion.isActive || motion.reducedMotion) return;
+		if (
+			!canReleaseFallingLeaf({
+				season,
+				sessionSeed,
+				eventId,
+				motionActive: motion.isActive,
+				reducedMotion: motion.reducedMotion
+			})
+		) return;
 
 		const variation = getFallingLeafVariation(sessionSeed, eventId, season);
 		const spawned: FallingLeaf[] = [{ key: nextKey++, ...variation }];

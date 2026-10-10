@@ -86,6 +86,13 @@ describe('björnen är den enda följeslagaren', () => {
 		const foxFiles = SOURCE_FILES.filter((file) => /['"]fox['"]/.test(read(file)));
 		expect(foxFiles).toEqual(['src/lib/companionVisitor.ts']);
 	});
+
+	it('beskriver Balder som enda följeslagare även i Companion World', () => {
+		const companionWorld = read('docs/COMPANION_WORLD.md');
+		expect(companionWorld).toContain("Balder, the bear, is MittPsyke's only companion.");
+		expect(companionWorld).toContain('Other animals may appear only as temporary visitors.');
+		expect(companionWorld).not.toMatch(/There is no single companion|Choosing a companion/i);
+	});
 });
 
 describe('Kvällstugan och Kvällsincheckning', () => {

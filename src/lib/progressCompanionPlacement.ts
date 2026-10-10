@@ -5,7 +5,11 @@ import {
 	type CompanionPoseDaypart
 } from '$lib/companionPoseManifest';
 import { getCompanionPoseDaypart, pickPersistedRotation } from '$lib/companionPoseState';
-import { COMPANION } from '$lib/progressCompanion';
+import {
+	COMPANION,
+	getProgressCompanionDayState,
+	getProgressCompanionSeason
+} from '$lib/progressCompanion';
 
 /** Originalmåtten för Framstegs sjöscen. */
 export const PROGRESS_SCENE_IMAGE_SIZE = { width: 1672, height: 941 } as const;
@@ -337,6 +341,41 @@ export function getProgressSceneSpots(daypart: CompanionPoseDaypart): ProgressSc
 }
 
 /**
+ * Miljön väljer bland de redan kuraterade platserna; posen följer med platsen
+ * eftersom varje PNG har en egen uppmätt alfayta och markpunkt. Regeln använder
+ * bara världens befintliga tid och årstid — aldrig relation eller progression.
+ */
+export function getProgressSceneSpotsForEnvironment(date = new Date()): ProgressSceneSpot[] {
+	const timeOfDay = getProgressCompanionDayState(date);
+	const season = getProgressCompanionSeason(date);
+	const daypart = getCompanionPoseDaypart(date);
+	const available = getProgressSceneSpots(daypart);
+
+	const preferredIds =
+		timeOfDay === 'night'
+			? ['bank-vilande']
+			: season === 'winter'
+				? ['bank-sittande-sida', 'bank-sittande-bortvand', 'bank-staende']
+				: timeOfDay === 'morning'
+					? ['bank-sittande-sida', 'bank-staende', 'bank-sittande-bortvand']
+					: timeOfDay === 'evening' && season === 'summer'
+						? ['strandkant-sittande-bortvand', 'strandkant-staende', 'bank-sittande-sida']
+						: timeOfDay === 'evening'
+							? ['bank-sittande-sida', 'bank-sittande-bortvand', 'strandkant-sittande-bortvand']
+							: [
+									'strandkant-sittande-bortvand',
+									'bank-sittande-sida',
+									'strandkant-staende',
+									'bank-staende'
+								];
+
+	const selected = preferredIds
+		.map((id) => available.find((spot) => spot.id === id))
+		.filter((spot): spot is ProgressSceneSpot => Boolean(spot));
+	return selected.length ? selected : available.slice(0, 4);
+}
+
+/**
  * Deterministiskt startläge för servergenererad HTML och klientens första
  * render - samma skäl och samma mönster som getCompanionInitialBasePose:
  * utan localStorage och Math.random måste SSR och hydrering landa på exakt
@@ -351,8 +390,7 @@ export function getProgressSceneSpots(daypart: CompanionPoseDaypart): ProgressSc
  * platsen och skickar med dess id; se `initialSceneSpotId` i routens laddare.
  */
 export function getProgressInitialSceneSpot(date = new Date()): ProgressSceneSpot {
-	const daypart = getCompanionPoseDaypart(date);
-	return getProgressSceneSpots(daypart)[0] ?? PROGRESS_SCENE_SPOTS[0];
+	return getProgressSceneSpotsForEnvironment(date)[0] ?? PROGRESS_SCENE_SPOTS[0];
 }
 
 /** Slår upp en plats på id, för startvärdet som servern skickat med. */
@@ -372,7 +410,7 @@ export function getProgressSceneSpot(
 	storage: Storage | null = null
 ): ProgressSceneSpot {
 	const daypart = getCompanionPoseDaypart(date);
-	const candidates = getProgressSceneSpots(daypart);
+	const candidates = getProgressSceneSpotsForEnvironment(date);
 
 	return pickPersistedRotation({
 		candidates,

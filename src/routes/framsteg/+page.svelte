@@ -13,6 +13,7 @@
 	import FramstegComprehensionCard from '$lib/components/progress/FramstegComprehensionCard.svelte';
 	import type { LighterDaysView } from '$lib/progress-lighter-days-types';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
+	import ReturnTransientLayer from '$lib/components/world/ReturnTransientLayer.svelte';
 	import {
 		PROGRESS_COMPANION_SCENE_SOURCES,
 		PROGRESS_SCENE_SOURCES,
@@ -1366,6 +1367,7 @@
 					recurringFauna
 					faunaPhase={sceneTransition.visibleBand}
 				/>
+				<ReturnTransientLayer {daysSinceLastVisit} {season} {timeOfDay} {visitSeed} />
 				<WorldMarks class="progress-world-marks" marks={worldMarks} {visitSeed} />
 				<!-- Statisk dygnston över bild, värld och följeslagare - se .progress-scene-tone. -->
 				<span class="progress-scene-tone" aria-hidden="true"></span>
