@@ -206,6 +206,9 @@ describe('inga siffror, ingen skuld, ingen beständighet', () => {
 		const scene = route.slice(route.indexOf('class="companion-media"'), route.indexOf('class="framsteg-layout'));
 		expect(scene).toContain('<WorldReturnTraces');
 		expect(scene).not.toMatch(/medan du var borta|du har varit borta|dagar sedan|streak/i);
-		expect(scene).not.toMatch(/daysSinceLastVisit|absenceBand/);
+		// Frånvaron får skickas vidare som prop till dekorativa lager, men aldrig
+		// renderas som text. Taggarna tas bort så bara synligt innehåll granskas.
+		const visibleMarkup = scene.replace(/<[^>]*>/g, '');
+		expect(visibleMarkup).not.toMatch(/daysSinceLastVisit|absenceBand/);
 	});
 });
