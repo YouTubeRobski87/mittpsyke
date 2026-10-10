@@ -52,6 +52,12 @@
 	} from './progressHumanPose';
 	import { getGardenGrowthPoints, getLivingWorldScene, getGrowthLevel } from '$lib/worldScene';
 	import WorldMarks from '$lib/components/world/WorldMarks.svelte';
+	import WorldReturnTraces from '$lib/components/world/WorldReturnTraces.svelte';
+	import {
+		getWorldAbsenceBand,
+		resolveSessionWorldReturnTraces,
+		type WorldReturnTraceId
+	} from '$lib/world/returnTraces';
 	import {
 		buildWorldPresence,
 		getDaysSinceLastVisit,
@@ -541,6 +547,9 @@
 	// Ett besök ger samma små förskjutningar hela vägen; nästa besök ger andra.
 	let visitSeed = $state<string | null>(null);
 	let daysSinceLastVisit = $state<number | null>(null);
+	// Förgängliga återkomsttecken (V3.3). Väljs en gång per session och hålls
+	// sedan stilla - se $lib/world/returnTraces. Tomt på servern och för gäster.
+	let returnTraces = $state<WorldReturnTraceId[]>([]);
 	// Serverrenderingen utgår från den breda scenen. De minsta spåren tas bort
 	// först när klienten vet att vyn faktiskt är smal.
 	let isNarrowViewport = $state(false);
@@ -696,6 +705,7 @@
 		const now = new Date();
 		daysSinceLastVisit = getDaysSinceLastVisit(readLastVisit(window.localStorage), now);
 		recordVisit(window.localStorage, now);
+		initReturnTraces(now);
 
 		const seedKey = 'mittpsyke:world-visit-seed:v1';
 		const existing = window.sessionStorage.getItem(seedKey);
@@ -706,6 +716,26 @@
 		const seed = window.crypto.randomUUID();
 		window.sessionStorage.setItem(seedKey, seed);
 		visitSeed = seed;
+	}
+
+	/**
+	 * Läser bara frånvarobandet, årstiden och dygnsdelen. Valet sparas i
+	 * sessionen så att en navigering tillbaka hit inom samma flik visar samma
+	 * tecken, även om förra besöket nyss skrivits över ovan.
+	 */
+	function initReturnTraces(now: Date) {
+		if (isAnonymous) return;
+		let sessionStorage: Storage | null = null;
+		try {
+			sessionStorage = window.sessionStorage;
+		} catch {
+			sessionStorage = null;
+		}
+		returnTraces = resolveSessionWorldReturnTraces(sessionStorage, {
+			absenceBand: getWorldAbsenceBand(daysSinceLastVisit),
+			season: getProgressCompanionSeason(now),
+			timeOfDay: getProgressCompanionDayState(now)
+		});
 	}
 
 	function respondToSuggestion(suggestion: SupportSuggestion, response: SupportResponse) {
@@ -1366,11 +1396,16 @@
 					recurringFauna
 					faunaPhase={sceneTransition.visibleBand}
 				/>
+				<WorldReturnTraces class="progress-return-traces" traces={returnTraces} seed={visitSeed} />
 				<WorldMarks class="progress-world-marks" marks={worldMarks} {visitSeed} />
 				<!-- Statisk dygnston över bild, värld och följeslagare - se .progress-scene-tone. -->
 				<span class="progress-scene-tone" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--one" aria-hidden="true"></span>
 				<span class="progress-ripple progress-ripple--two" aria-hidden="true"></span>
+				{#if returnTraces.includes('still-water-ring')}
+					<!-- Förgängligt återkomsttecken: en tredje, långsammare ring på samma vatten. -->
+					<span class="progress-ripple progress-ripple--three" aria-hidden="true" data-return-trace="still-water-ring"></span>
+				{/if}
 			</div>
 			<div class="companion-copy">
 				<span class="companion-eyebrow">{getProgressSceneLabel(sceneTransition.visibleBand)}</span>
@@ -3136,10 +3171,25 @@
 		animation-delay: -8.8s;
 	}
 
+	/* Återkomstens stilla ring: längre cykel och fas än de två ordinarie, så
+	   den aldrig pulserar i takt med dem. */
+	.progress-ripple--three {
+		left: 52.5%;
+		top: 61.5%;
+		width: clamp(30px, 5.6%, 50px);
+		animation-duration: 21s;
+		animation-delay: -14.2s;
+	}
+
 	/* Spåren hör till scenens omgivning: ovanpå bakgrunden och de beständiga
 	   lagren, men alltid bakom bildens huvudmotiv och texten. */
 	.companion-media :global(.progress-world-marks) {
 		--world-marks-z: var(--scene-ambient);
+	}
+
+	/* Återkomsttecknen ligger i samma djupband som spåren, bakom copyn. */
+	.companion-media :global(.progress-return-traces) {
+		--world-return-traces-z: var(--scene-ambient);
 	}
 
 	.companion-copy {
