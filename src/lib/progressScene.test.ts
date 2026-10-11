@@ -58,6 +58,30 @@ describe('getProgressSceneBand - tidsgränser', () => {
 });
 
 describe('varje spann pekar på den responsiva sjöscenen', () => {
+	it('har den nya godkända eftermiddagsbakgrunden i alla responsiva storlekar', () => {
+		const sources = PROGRESS_COMPANION_SCENE_SOURCES.afternoon;
+		expect(sources.srcset).toContain('/images/scenes/progress-lake-empty-800.webp 800w');
+		expect(sources.srcset).toContain('/images/scenes/progress-lake-empty-1200.webp 1200w');
+		expect(sources.srcset).toContain('/images/scenes/progress-lake-empty.webp 1672w');
+	});
+
+	it('har separata inloggade relights för varje daypart', () => {
+		for (const band of ['morning', 'day', 'evening', 'night'] as const) {
+			const { fallback, srcset } = PROGRESS_COMPANION_SCENE_SOURCES[band];
+			expect(fallback).toContain(`progress-lake-empty-${band}-800.webp`);
+			expect(srcset).toContain(`progress-lake-empty-${band}-800.webp 800w`);
+			expect(srcset).toContain(`progress-lake-empty-${band}-1200.webp 1200w`);
+			expect(srcset).toContain(`progress-lake-empty-${band}.webp 1672w`);
+		}
+	});
+
+	it('lämnar gästscenernas inbakade Balder-assets separata', () => {
+		for (const band of PROGRESS_SCENE_BANDS) {
+			expect(PROGRESS_SCENE_SOURCES[band].srcset).toContain('progress-lake-bear');
+			expect(PROGRESS_SCENE_SOURCES[band].srcset).not.toContain('progress-lake-empty');
+		}
+	});
+
 	it.each(PROGRESS_SCENE_BANDS)('%s har tre storlekar som finns på disk', (band) => {
 		const { fallback, srcset } = PROGRESS_SCENE_SOURCES[band];
 

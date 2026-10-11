@@ -69,7 +69,7 @@ function getSceneGeometry({
  * Stugans yta i ORIGINALBILDENS koordinater (procent). Uppmätt mot sjöscenen: tak,
  * väggar och farstubro, utan att nå vattnet eller trädlinjen bakom.
  */
-export const PROGRESS_CABIN_SOURCE_BOX = { x: 6.5, y: 28, width: 16, height: 19 } as const;
+export const PROGRESS_CABIN_SOURCE_BOX = { x: 3, y: 8, width: 26, height: 42 } as const;
 
 /** Minsta synliga motivyta respektive färdiga interaktiva träffyta. */
 const MIN_CABIN_VISIBLE_SIZE = 24;
@@ -201,7 +201,7 @@ export const PROGRESS_POSE_ART_BOUNDS: Record<string, CompanionArtBounds> = {
  * Marklinjen på gräsbanken bredvid personen - den plats björnen har haft sedan
  * tidigare, och referenspunkten som de övriga platserna nedan är mätta mot.
  */
-export const PROGRESS_COMPANION_GROUND_Y = 752;
+export const PROGRESS_COMPANION_GROUND_Y = 735;
 
 /**
  * En kuraterad plats i Framstegsscenen: en pose PLUS var och hur stor den är.
@@ -259,8 +259,8 @@ export const PROGRESS_SCENE_SPOTS: readonly ProgressSceneSpot[] = [
 		// men vid vattnet i stället för uppe på banken.
 		id: 'strandkant-sittande-bortvand',
 		poseId: 'bear-sitting-away',
-		groundX: 1340,
-		groundY: 706,
+		groundX: 1250,
+		groundY: 700,
 		motifHeight: 154,
 		dayparts: ['day', 'evening'],
 		weight: 1.2,
@@ -271,8 +271,8 @@ export const PROGRESS_SCENE_SPOTS: readonly ProgressSceneSpot[] = [
 		// men vänder inte ryggen till.
 		id: 'bank-sittande-sida',
 		poseId: 'bear-sitting',
-		groundX: 1300,
-		groundY: 758,
+		groundX: 1240,
+		groundY: 735,
 		motifHeight: 172,
 		dayparts: ['day', 'evening'],
 		weight: 1.6,
@@ -282,8 +282,8 @@ export const PROGRESS_SCENE_SPOTS: readonly ProgressSceneSpot[] = [
 		// Stående nere vid vattenbrynet, med tassarna på de våta stenarna.
 		id: 'strandkant-staende',
 		poseId: 'bear-standing',
-		groundX: 1330,
-		groundY: 706,
+		groundX: 1260,
+		groundY: 700,
 		motifHeight: 147,
 		dayparts: ['day', 'evening'],
 		weight: 1.5,
@@ -293,8 +293,8 @@ export const PROGRESS_SCENE_SPOTS: readonly ProgressSceneSpot[] = [
 		// Den ursprungliga platsen: sittande bredvid personen, vänd mot utsikten.
 		id: 'bank-sittande-bortvand',
 		poseId: 'bear-sitting-away',
-		groundX: 1272,
-		groundY: PROGRESS_COMPANION_GROUND_Y,
+		groundX: 1240,
+		groundY: 735,
 		motifHeight: 180,
 		dayparts: ['day', 'evening'],
 		weight: 1,
@@ -304,8 +304,8 @@ export const PROGRESS_SCENE_SPOTS: readonly ProgressSceneSpot[] = [
 		// Stående uppe på gräsbanken. Bara dagtid - på kvällen tar vilan över.
 		id: 'bank-staende',
 		poseId: 'bear-standing',
-		groundX: 1288,
-		groundY: 754,
+		groundX: 1250,
+		groundY: 735,
 		motifHeight: 168,
 		dayparts: ['day'],
 		weight: 1.2,
@@ -324,8 +324,8 @@ export const PROGRESS_SCENE_SPOTS: readonly ProgressSceneSpot[] = [
 		// faktiskt bär.
 		id: 'bank-vilande',
 		poseId: 'bear-sleeping',
-		groundX: 1300,
-		groundY: 768,
+		groundX: 1240,
+		groundY: 742,
 		motifHeight: 97,
 		dayparts: ['night'],
 		weight: 1.3,

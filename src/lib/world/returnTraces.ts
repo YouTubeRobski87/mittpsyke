@@ -107,7 +107,7 @@ export interface GatheredLeaf {
  * Ytan ligger ovanför scenens textblock och vänster om bryggans stolpar, och
  * undviker lägerelden nere till höger där löv vare sig syns eller hör hemma.
  */
-const LEAF_AREA = { minX: 10, maxX: 21, minY: 43.5, maxY: 47 } as const;
+const LEAF_AREA = { minX: 16, maxX: 38, minY: 48, maxY: 62 } as const;
 export const GATHERED_LEAF_COUNT = 6;
 
 /**

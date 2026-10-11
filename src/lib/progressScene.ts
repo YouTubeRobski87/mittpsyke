@@ -58,9 +58,9 @@ function sourcesForProgressLake(base: string) {
 
 const PROGRESS_LAKE_SOURCES = sourcesForProgressLake(SCENE_BASE);
 const PROGRESS_COMPANION_LAKE_SOURCES = sourcesForProgressLake(COMPANION_SCENE_BASE);
-// Morgon-, dag-, kvälls- och nattvarianterna är per-pixel-relights av samma bilder
-// (scripts/scene-relight.py), så kompositionen och alla scenkoordinater är
-// oförändrade. Bara eftermiddagen använder originalets solnedgång.
+// Morgon-, dag-, kvälls- och nattvarianterna är visuella relights av samma
+// komposition, så scenkoordinaterna är oförändrade. Eftermiddagen behåller den
+// godkända varma originaltonen.
 const PROGRESS_LAKE_DAY_SOURCES = sourcesForProgressLake(`${SCENE_BASE}-day`);
 const PROGRESS_LAKE_EVENING_SOURCES = sourcesForProgressLake(`${SCENE_BASE}-evening`);
 const PROGRESS_COMPANION_LAKE_DAY_SOURCES = sourcesForProgressLake(`${COMPANION_SCENE_BASE}-day`);

@@ -70,7 +70,7 @@ export function getReturnTransients(input: {
 		const count = band === 'longer' ? 5 : 3;
 		return [{
 			kind: 'gathered-leaves',
-			items: itemsFor(`${input.visitSeed}:return-leaves`, count, { x: [80.5, 88], y: [77, 82] })
+			items: itemsFor(`${input.visitSeed}:return-leaves`, count, { x: [34, 52], y: [58, 72] })
 		}];
 	}
 
@@ -81,7 +81,7 @@ export function getReturnTransients(input: {
 	) {
 		return [{
 			kind: 'animal-tracks',
-			items: itemsFor(`${input.visitSeed}:return-tracks`, 4, { x: [74, 83], y: [72, 79] })
+			items: itemsFor(`${input.visitSeed}:return-tracks`, 4, { x: [58, 72], y: [62, 74] })
 		}];
 	}
 

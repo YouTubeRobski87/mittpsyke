@@ -3159,14 +3159,14 @@
 	}
 
 	.progress-ripple--one {
-		left: 49%;
-		top: 56%;
+		left: 63%;
+		top: 47%;
 		animation-delay: -2.4s;
 	}
 
 	.progress-ripple--two {
-		left: 56%;
-		top: 59%;
+		left: 74%;
+		top: 51%;
 		width: clamp(26px, 5%, 46px);
 		opacity: 0;
 		animation-duration: 16.5s;
@@ -3176,8 +3176,8 @@
 	/* Återkomstens stilla ring: längre cykel och fas än de två ordinarie, så
 	   den aldrig pulserar i takt med dem. */
 	.progress-ripple--three {
-		left: 52.5%;
-		top: 61.5%;
+		left: 57%;
+		top: 44%;
 		width: clamp(30px, 5.6%, 50px);
 		animation-duration: 21s;
 		animation-delay: -14.2s;

@@ -191,6 +191,18 @@ describe('spåren i scenen', () => {
 		expect(stone?.revealText).not.toMatch(/humör|diagnos|svår kväll|trauma|dagbokstext/i);
 	});
 
+	it('placerar stig och Balders sten i den nya markkompositionens zoner', () => {
+		const rich = getWorldMarks(presence({ activeDays: 7 }));
+		const stone = rich.find((mark) => mark.id === 'shore-stone');
+		const path = rich.find((mark) => mark.id === 'shore-path');
+		expect(stone).toMatchObject({ x: 58, y: 60 });
+		expect(path).toMatchObject({ x: 30, y: 64, width: 38 });
+		expect(stone!.x).toBeGreaterThan(50);
+		expect(stone!.x + stone!.width).toBeLessThan(70);
+		expect(path!.x).toBeGreaterThan(20);
+		expect(path!.x + path!.width).toBeLessThan(75);
+	});
+
 	it('behåller spåren efter ett långt uppehåll', () => {
 		const active = presence({ activeDays: 30, activeWeeks: 9, activeMonths: 4, entryCount: 40 });
 

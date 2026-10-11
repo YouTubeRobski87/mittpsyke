@@ -103,6 +103,15 @@ describe('Framstegs kuraterade platser', () => {
 		expect(getProgressSceneSpots('evening').length).toBeGreaterThanOrEqual(4);
 	});
 
+	it('håller Balder inom den centrala scenzonen i den nya bakgrunden', () => {
+		for (const spot of PROGRESS_SCENE_SPOTS) {
+			expect(spot.groundX).toBeGreaterThanOrEqual(1100);
+			expect(spot.groundX).toBeLessThanOrEqual(1340);
+			expect(spot.groundY).toBeGreaterThanOrEqual(690);
+			expect(spot.groundY).toBeLessThanOrEqual(750);
+		}
+	});
+
 	it('täcker de lugna lägena: sittande, stående, vilande och nere vid vattnet', () => {
 		const dayPoses = new Set(getProgressSceneSpots('day').map((spot) => spot.poseId));
 		expect(dayPoses).toContain('bear-sitting');

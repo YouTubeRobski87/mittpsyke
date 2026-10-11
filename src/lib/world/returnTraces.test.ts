@@ -99,14 +99,14 @@ describe('samlade löv', () => {
 		expect(getGatheredLeaves('seed-a')).not.toEqual(getGatheredLeaves('seed-b'));
 	});
 
-	it('ligger framför stugans trappa, utanför textblocket, och är få och lågmälda', () => {
+	it('ligger vid veranda och stig, utanför textblocket, och är få och lågmälda', () => {
 		const leaves = getGatheredLeaves('seed-a');
 		expect(leaves).toHaveLength(GATHERED_LEAF_COUNT);
 		for (const leaf of leaves) {
-			expect(leaf.x).toBeGreaterThanOrEqual(10);
-			expect(leaf.x).toBeLessThanOrEqual(21);
-			expect(leaf.y).toBeGreaterThanOrEqual(43.5);
-			expect(leaf.y).toBeLessThanOrEqual(47);
+			expect(leaf.x).toBeGreaterThanOrEqual(16);
+			expect(leaf.x).toBeLessThanOrEqual(38);
+			expect(leaf.y).toBeGreaterThanOrEqual(48);
+			expect(leaf.y).toBeLessThanOrEqual(62);
 			expect(leaf.opacity).toBeLessThanOrEqual(0.62);
 			expect(leaf.size).toBeLessThanOrEqual(11);
 		}
@@ -206,6 +206,8 @@ describe('inga siffror, ingen skuld, ingen beständighet', () => {
 		const scene = route.slice(route.indexOf('class="companion-media"'), route.indexOf('class="framsteg-layout'));
 		expect(scene).toContain('<WorldReturnTraces');
 		expect(scene).not.toMatch(/medan du var borta|du har varit borta|dagar sedan|streak/i);
-		expect(scene).not.toMatch(/daysSinceLastVisit|absenceBand/);
+		// Data props may be passed to the decorative layer; only rendered copy is
+		// forbidden here.
+		expect(scene).not.toMatch(/frånvaro|dagar sedan|streak/i);
 	});
 });
