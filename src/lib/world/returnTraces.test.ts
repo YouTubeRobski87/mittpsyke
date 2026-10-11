@@ -207,7 +207,9 @@ describe('inga siffror, ingen skuld, ingen beständighet', () => {
 		expect(scene).toContain('<WorldReturnTraces');
 		expect(scene).not.toMatch(/medan du var borta|du har varit borta|dagar sedan|streak/i);
 		// Data props may be passed to the decorative layer; only rendered copy is
-		// forbidden here.
+		// forbidden here. Tags are stripped so only visible content is checked.
+		const visibleMarkup = scene.replace(/<[^>]*>/g, '');
 		expect(scene).not.toMatch(/frånvaro|dagar sedan|streak/i);
+		expect(visibleMarkup).not.toMatch(/daysSinceLastVisit|absenceBand/);
 	});
 });
