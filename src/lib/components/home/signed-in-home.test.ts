@@ -24,6 +24,8 @@ describe('inloggad startsida', () => {
 		expect(body).toContain('Stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.');
 		expect(body).not.toContain('Kvällslugn');
 		expect(body).toContain('Artiklar');
+		expect(body).toContain('loading="eager"');
+		expect(body).toContain('fetchpriority="high"');
 
 		// Mitt Hem-kortet går numera direkt till Kvällstugan, precis som
 		// navigeringen i +layout.svelte - se home-redirect.test.ts. De två

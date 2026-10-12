@@ -27,7 +27,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
 
 		return {
-			title: 'MittPsyke',
+			title: 'Mitt hem',
 			description: 'En lugn översikt över dina platser i MittPsyke.',
 			isSignedInHome: true,
 			homeOverview: {

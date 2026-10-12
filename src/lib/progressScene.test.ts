@@ -35,14 +35,25 @@ describe('getProgressSceneBand - tidsgränser', () => {
 		['10:00', 10, 0, 'day'],
 		['16:59', 16, 59, 'day'],
 		['17:00', 17, 0, 'afternoon'],
-		['19:59', 19, 59, 'afternoon'],
-		['20:00', 20, 0, 'evening'],
+		['18:59', 18, 59, 'afternoon'],
+		['19:00', 19, 0, 'evening'],
 		['22:59', 22, 59, 'evening'],
 		['23:00', 23, 0, 'night'],
 		['23:59', 23, 59, 'night'],
 		['00:30', 0, 30, 'night']
 	] as const)('%s ger %s', (_label, hour, minute, expected) => {
 		expect(getProgressSceneBand(atStockholm(hour, minute))).toBe(expected);
+	});
+
+	it.each([
+		['07:00', 7, 'morning'],
+		['12:00', 12, 'day'],
+		['17:00', 17, 'afternoon'],
+		['19:00', 19, 'evening'],
+		['23:00', 23, 'night']
+	] as const)('följer svensk tid i oktober vid %s', (_label, hour, expected) => {
+		const instant = new Date(Date.UTC(2026, 9, 12, hour - 2));
+		expect(getProgressSceneBand(instant)).toBe(expected);
 	});
 
 	it('täcker dygnets alla timmar utan lucka', () => {

@@ -45,7 +45,8 @@
 			class="companion-portrait-photo"
 			src={COMPANION_PORTRAIT_IMAGE}
 			alt=""
-			loading="lazy"
+			loading={size === 'xl' ? 'eager' : 'lazy'}
+			fetchpriority={size === 'xl' ? 'high' : 'auto'}
 			decoding="async"
 			onerror={() => (portraitFailed = true)}
 		/>

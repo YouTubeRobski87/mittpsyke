@@ -1049,12 +1049,6 @@
 		</main>
 
 		{#if !isProductPage && !isChat}
-			<section class="site-disclaimer mt-6 px-5">
-				<p class="mx-auto max-w-4xl text-center text-xs sm:text-sm opacity-70 leading-relaxed">
-					{GENERAL_SAFETY_COPY} Vid akut fara ring 112 &middot; Vårdråd 1177.
-				</p>
-			</section>
-
 	<footer class="site-footer mt-12">
 		<div class="footer-inner">
 			<div class="footer-grid">
@@ -1254,7 +1248,9 @@
 		padding: 0;
 		cursor: pointer;
 		text-align: left;
-		font: inherit;
+		font-family: inherit;
+		font-size: 0.84rem;
+		line-height: 1.5;
 	}
 
 	.footer-company {

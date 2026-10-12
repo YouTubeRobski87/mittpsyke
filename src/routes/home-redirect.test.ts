@@ -49,6 +49,7 @@ describe('Startsidan för inloggade', () => {
 		const data = await runLoad(signedIn);
 
 		expect(data.isSignedInHome).toBe(true);
+		expect(data.title).toBe('Mitt hem');
 		expect(data.homeOverview).toEqual({
 			displayName: null,
 			entryCount: 3

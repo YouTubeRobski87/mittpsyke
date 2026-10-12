@@ -681,6 +681,20 @@
 	const supportSuggestions = $derived(
 		selectVisibleSuggestions(supportView, supportPreferences, { rotation: supportRotation })
 	);
+	const hasConcretePersonalAnalysis = $derived(
+		moodTimeline.hasChart ||
+		(progressAnalysis?.insights.length ?? 0) > 0 ||
+		supportSuggestions.length > 0 ||
+		eveningPatterns.observations.length > 0
+	);
+	const showLowDataOverview = $derived(
+		!isAnonymous &&
+		hasSensitiveDataConsent &&
+		!moodTimelineLoading &&
+		!insightsLoading &&
+		!insightsError &&
+		!hasConcretePersonalAnalysis
+	);
 	const supportExampleTopics = $derived(getExampleTopics(supportView));
 	const supportExamples = $derived(getExamplesForTopic(supportView, supportSelectedTopic));
 	// Vid akut risk visas ingenting. Sektionen är vardagligt reflektionsstöd och
@@ -688,7 +702,10 @@
 	// Ett misslyckat anrop får inte läsas som att underlaget saknas, så kortet
 	// döljs hellre än att visa "vi lär fortfarande känna dina mönster".
 	const showSupportCard = $derived(
-		!supportView.withheldForSafety && !insightsError && (isAnonymous || hasSensitiveDataConsent)
+		!supportView.withheldForSafety &&
+		!insightsError &&
+		(isAnonymous || hasSensitiveDataConsent) &&
+		!showLowDataOverview
 	);
 
 	function supportStorage() {
@@ -1223,6 +1240,10 @@
 </script>
 
 <SEO canonical="https://mittpsyke.se/framsteg" />
+<svelte:head>
+	<title>Framsteg | MittPsyke</title>
+	<meta name="robots" content="noindex, nofollow" />
+</svelte:head>
 <CompanionPresenceTracker enabled={!data.isAnonymous} />
 
 {#snippet creativeMomentsCard()}
@@ -1433,7 +1454,20 @@
 			     svarar på "hur har den senaste tiden sett ut?". Kurvan och analysen
 			     under är fördjupningen. Inget här är beroende av AI eller samtycke -
 			     det räknas fram ur humörvärden som redan är hämtade. -->
-			<section class="card week-summary-card" aria-labelledby="week-summary-heading" data-testid="week-summary">
+			{#if showLowDataOverview}
+				<section class="card low-data-overview" aria-labelledby="low-data-heading" data-testid="low-data-overview">
+					<div class="card-header">
+						<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
+						<h2 id="low-data-heading">Det får ta lite tid</h2>
+					</div>
+					<p class="reflection-copy">
+						Det finns ännu inte tillräckligt med sparat underlag för att visa personliga mönster.
+						När något konkret börjar synas samlas det här — utan att dagar du inte skriver räknas som sämre.
+					</p>
+				</section>
+			{/if}
+
+			<section class="card week-summary-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="week-summary-heading" data-testid="week-summary">
 				<div class="card-header">
 					<div class="icon-badge heat"><Calendar size={24} /></div>
 					<h2 id="week-summary-heading">Den senaste veckan</h2>
@@ -1450,7 +1484,7 @@
 
 			{@render creativeMomentsCard()}
 
-			<section class="card recent-card" aria-labelledby="mood-history-heading" data-testid="mood-history">
+			<section class="card recent-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="mood-history-heading" data-testid="mood-history">
 				<div class="card-header">
 					<div class="icon-badge heat"><TrendingUp size={24} /></div>
 					<h2 id="mood-history-heading">Senaste tiden</h2>
@@ -1486,7 +1520,7 @@
 				{/if}
 			</section>
 
-			<section class="card reflection-card analysis-card" aria-labelledby="analysis-heading" data-testid="mood-analysis">
+			<section class="card reflection-card analysis-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="analysis-heading" data-testid="mood-analysis">
 				<div class="card-header">
 					<div class="icon-badge insight"><Lightbulb size={24} /></div>
 					<h2 id="analysis-heading">Det som börjar synas</h2>
@@ -1641,7 +1675,7 @@
 			</section>
 
 			{#if !isAnonymous && hasSensitiveDataConsent}
-				<section class="card reflection-card lighter-days-card" aria-labelledby="lighter-days-heading" data-testid="lighter-days">
+				<section class="card reflection-card lighter-days-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="lighter-days-heading" data-testid="lighter-days">
 					<LighterDaysCard
 						view={lighterDaysView}
 						loading={insightsLoading}
@@ -1750,7 +1784,7 @@
 				<!-- Kvällsincheckningens egen återblick. Strukturen i kvällarna, aldrig
 				     tanken användaren skrev och aldrig ihopvägd med dagbokens humör -
 				     en kväll har inget siffervärde för mående (se evening-patterns.ts). -->
-				<section class="card reflection-card evening-patterns-card" aria-labelledby="evening-patterns-heading" data-testid="evening-patterns">
+				<section class="card reflection-card evening-patterns-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="evening-patterns-heading" data-testid="evening-patterns">
 					<div class="card-header">
 						<div class="icon-badge milestone-leaf"><Moon size={24} /></div>
 						<h2 id="evening-patterns-heading">Kvällar över tid</h2>
@@ -1766,7 +1800,7 @@
 				</section>
 			{/if}
 
-			<section class="card garden-presence-card" aria-labelledby="garden-presence-heading">
+			<section class="card garden-presence-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="garden-presence-heading">
 				<div class="card-header">
 					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
 					<h2 id="garden-presence-heading">Vad det här bygger på</h2>
@@ -2027,6 +2061,10 @@
 </main>
 
 <style>
+	[data-low-data-hidden='true'] {
+		display: none !important;
+	}
+
 	.cabin-entry-link {
 		display: inline-flex;
 		align-items: center;
@@ -2099,7 +2137,7 @@
 
 	.framsteg-layout-v2 {
 		grid-template-columns: minmax(0, 1fr);
-		max-width: 860px;
+		max-width: none;
 	}
 
 	.reflection-card,

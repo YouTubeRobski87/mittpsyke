@@ -221,6 +221,7 @@
 
 	.companion-note :global(.companion-avatar) {
 		flex: 0 0 auto;
+		--companion-avatar-size: 5rem;
 	}
 
 	.companion-note p {
@@ -433,6 +434,10 @@
 
 		.route-grid a {
 			min-height: auto;
+		}
+
+		.companion-note :global(.companion-avatar) {
+			--companion-avatar-size: 4rem;
 		}
 	}
 

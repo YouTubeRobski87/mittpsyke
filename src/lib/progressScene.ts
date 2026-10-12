@@ -12,8 +12,8 @@ import { getProgressCompanionLocalTime } from '$lib/progressCompanion';
  * natten har en egen scenbild:
  *   morning   05:00-09:59
  *   day       10:00-16:59
- *   afternoon 17:00-19:59  (delad helper kallar detta 'evening')
- *   evening   20:00-22:59  (delad helper: 'night')
+ *   afternoon 17:00-18:59  (delad helper kallar detta 'evening')
+ *   evening   19:00-22:59  (delad helper: 'night')
  *   night     23:00-04:59  (delad helper: 'night')
  */
 export type ProgressSceneBand = 'morning' | 'day' | 'afternoon' | 'evening' | 'night';
@@ -115,8 +115,8 @@ export function getProgressSceneBand(date = new Date()): ProgressSceneBand {
 	if (!Number.isFinite(hour)) return 'day';
 	if (hour >= 5 && hour < 10) return 'morning';
 	if (hour >= 10 && hour < 17) return 'day';
-	if (hour >= 17 && hour < 20) return 'afternoon';
-	if (hour >= 20 && hour < 23) return 'evening';
+	if (hour >= 17 && hour < 19) return 'afternoon';
+	if (hour >= 19 && hour < 23) return 'evening';
 	return 'night';
 }
 

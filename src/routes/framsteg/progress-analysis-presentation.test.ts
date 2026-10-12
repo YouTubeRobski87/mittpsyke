@@ -23,6 +23,14 @@ describe('Framstegs första blick', () => {
 	it('gör kärnlöftet till sidans huvudrubrik', () => {
 		expect(route).toContain('<p class="auth-eyebrow">Framsteg</p>');
 		expect(route).toContain('<h1>Se ditt mående över tid</h1>');
+		expect(route).toContain('<title>Framsteg | MittPsyke</title>');
+	});
+
+	it('samlar lågt underlag i en lugn modul och döljer tomma analyskort', () => {
+		expect(route).toContain('data-testid="low-data-overview"');
+		expect(route).toContain('Det får ta lite tid');
+		expect(route).toContain('data-low-data-hidden={showLowDataOverview}');
+		expect(route).toContain("[data-low-data-hidden='true']");
 	});
 
 	it('visar ett enda lugnt nästa steg när ingen historik finns', () => {

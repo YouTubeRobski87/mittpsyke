@@ -132,7 +132,7 @@ describe('minutuppdateringen fungerar efter hydrering', () => {
 		['04:59 -> 05:00', 4, 59, 5, 0, 'night', 'morning'],
 		['09:59 -> 10:00', 9, 59, 10, 0, 'morning', 'day'],
 		['16:59 -> 17:00', 16, 59, 17, 0, 'day', 'afternoon'],
-		['19:59 -> 20:00', 19, 59, 20, 0, 'afternoon', 'evening']
+		['18:59 -> 19:00', 18, 59, 19, 0, 'afternoon', 'evening']
 	] as const)(
 		'%s byter band med ett vanligt crossfade',
 		(_namn, fromHour, fromMinute, toHour, toMinute, fromBand, toBand) => {
