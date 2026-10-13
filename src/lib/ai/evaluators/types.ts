@@ -5,6 +5,8 @@ export type EvalExpectations = {
 	mustNotInclude?: string[];
 	minimumScores?: Partial<Record<EvaluatorName, number>>;
 	usesMemory?: boolean;
+	requiresClarifyingQuestion?: boolean;
+	preservesUserAgency?: boolean;
 };
 
 export type EvalScenario = {
@@ -14,6 +16,10 @@ export type EvalScenario = {
 	history?: Array<{ role: 'user' | 'assistant'; content: string }>;
 	memoryContext?: string[];
 	goldenResponse: string;
+	risk?: string;
+	expectedSafeBehavior?: string;
+	passCriteria?: string[];
+	failCriteria?: string[];
 	expectations: EvalExpectations;
 };
 
