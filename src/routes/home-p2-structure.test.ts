@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import Page from './+page.svelte';
 
 // P2 för den publika startsidan: färre sektioner, tydligare ordning.
-// Hero -> kärnloop och mönsterexempel -> den levande världen -> platsen
+// Hero -> tidigt produktlöfte -> kärnloop och mönsterexempel -> den levande världen -> platsen
 // (+ chatten som rad) -> Kvällstugan -> guider -> trygghet -> avslutande CTA.
 // Testerna läser den renderade sidan, så ordningen och rubrikerna är det
 // besökaren faktiskt får.
@@ -30,6 +30,7 @@ const sectionOf = (id: string) => {
 describe('Startsidans P2-struktur', () => {
 	it('har sektionerna i den nya ordningen', () => {
 		expect(h2s).toEqual([
+			'Du får återblickar och ser din personliga värld växa tillsammans med din resa.',
 			'Fyra steg, och sedan börjar det om',
 			'Din värld stannar inte här',
 			'Så ser platsen ut',
@@ -38,6 +39,24 @@ describe('Startsidans P2-struktur', () => {
 			'Vad det här är och inte är',
 			'Börja med en mening'
 		]);
+	});
+
+	it('binder tidigt ihop återblickar, mönster och den personliga världen utan en CTA', () => {
+		const promise = sectionOf('journey-promise-title');
+		expect(body.indexOf('aria-labelledby="journey-promise-title"')).toBeGreaterThan(
+			body.indexOf('aria-labelledby="hero-title"')
+		);
+		expect(body.indexOf('aria-labelledby="journey-promise-title"')).toBeLessThan(
+			body.indexOf('aria-labelledby="how-title"')
+		);
+		expect(promise).toContain(
+			'Du får återblickar och ser din personliga värld växa tillsammans med din resa.'
+		);
+		expect(promise).toContain(
+			'När du väljer att spara kan du se tillbaka senare och upptäcka vad som återkommer.'
+		);
+		expect(promise).toContain('progress-cabin-lakeside-afternoon-800.webp');
+		expect(promise).not.toContain('<a ');
 	});
 
 	it('introducerar världen först efter kärnloopen och mönsterexemplet', () => {

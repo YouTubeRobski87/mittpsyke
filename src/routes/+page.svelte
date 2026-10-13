@@ -118,7 +118,34 @@
 		</div>
 	</section>
 
-	<!-- 2. Kärnloopen kommer direkt efter heron, innan den levande världen
+	<!-- 2. Ett tidigt, stilla produktlöfte som binder ihop återblickar,
+		 mönster och den levande världen. Scenen är ett befintligt Framsteg-
+		 motiv, inte en ny eller frikopplad marknadsillustration. -->
+	<section class="home-section journey-promise-section" aria-labelledby="journey-promise-title">
+		<div class="home-inner journey-promise-inner">
+			<div class="journey-promise-copy">
+				<p class="section-kicker">Över tid</p>
+				<h2 id="journey-promise-title">
+					Du får återblickar och ser din personliga värld växa tillsammans med din resa.
+				</h2>
+				<p>När du väljer att spara kan du se tillbaka senare och upptäcka vad som återkommer.</p>
+			</div>
+			<figure class="journey-promise-visual">
+				<img
+					srcset="/images/scenes/progress-cabin-lakeside-afternoon-800.webp 800w, /images/scenes/progress-cabin-lakeside-afternoon-1200.webp 1200w, /images/scenes/progress-cabin-lakeside-afternoon.webp 1672w"
+					sizes="(max-width: 899px) calc(100vw - 2.5rem), 48vw"
+					src="/images/scenes/progress-cabin-lakeside-afternoon-800.webp"
+					alt="En stilla sjö, en stuga och växtlighet som visar hur den personliga världen kan utvecklas över tid."
+					width="1672"
+					height="941"
+					loading="lazy"
+					decoding="async"
+				/>
+			</figure>
+		</div>
+	</section>
+
+	<!-- 3. Kärnloopen kommer direkt efter det tidiga produktlöftet, innan den levande världen
 		 introduceras. Ersätter de två tidigare sektionerna "Skillnaden mot
 		 ett anteckningsblock" och "Efter ett tag syns mönstren", som sa halva
 		 berättelsen var. Stegen är kontrollerade mot produkten: steg 2 säger vad
@@ -162,7 +189,7 @@
 		</div>
 	</section>
 
-	<!-- 3. Det personliga och levande lagret runt kärnloopen. De tre delarna är
+	<!-- 4. Det personliga och levande lagret runt kärnloopen. De tre delarna är
 		 en sammanhängande resa, inte en feature-lista: platsen lever, där finns
 		 återhämtning, och det användaren sparar går att följa. -->
 	<section class="home-section living-world-section" aria-labelledby="living-world-title">
@@ -171,9 +198,8 @@
 				<p class="section-kicker">Mer än en chatt</p>
 				<h2 id="living-world-title" tabindex="-1">Din värld stannar inte här</h2>
 				<p>
-					MittPsyke är en plats som lever och växer med dig. Med ett konto öppnas fler
-					platser, verktyg och upplevelser, samtidigt som du kan följa hur ditt mående
-					förändras över tid.
+					Med ett konto öppnas fler platser, verktyg och upplevelser. Här ser du några av
+					miljöerna som väntar och hur de hör ihop med reflektion och återhämtning.
 				</p>
 				<p class="living-world-promise">Det du ser idag är bara början.</p>
 			</div>
@@ -521,6 +547,45 @@
 		font-size: 0.98rem;
 		line-height: 1.65;
 		color: var(--home-text-muted-strong);
+	}
+
+	/* Det centrala löftet får stor typografi och luft, men ingen kortyta,
+	   knapp eller effekt som gör att det läses som en annons. */
+	.journey-promise-section {
+		padding-block: clamp(2.6rem, 6vw, 4.5rem);
+		border-block: 1px solid rgba(156, 203, 183, 0.14);
+		background: var(--home-section-bg-soft);
+	}
+
+	.journey-promise-inner {
+		display: grid;
+		gap: clamp(1.5rem, 4vw, 3rem);
+		align-items: center;
+	}
+
+	.journey-promise-copy {
+		max-width: 42rem;
+	}
+
+	.journey-promise-copy h2 {
+		font-size: clamp(1.75rem, 4vw, 2.75rem);
+		font-weight: 650;
+		line-height: 1.15;
+	}
+
+	.journey-promise-visual {
+		margin: 0;
+		overflow: hidden;
+		border-radius: 1rem;
+		box-shadow: 0 18px 42px rgba(4, 10, 18, 0.16);
+	}
+
+	.journey-promise-visual img {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
 	}
 
 	/* En sammanhängande resa genom riktiga produktmiljöer. */
@@ -931,6 +996,10 @@
 
 	/* ── Responsivt ── */
 	@media (min-width: 900px) {
+		.journey-promise-inner {
+			grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+		}
+
 		.world-journey {
 			grid-template-columns: repeat(3, minmax(0, 1fr));
 			align-items: stretch;
