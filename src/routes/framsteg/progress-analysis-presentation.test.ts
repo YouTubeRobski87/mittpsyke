@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { PERIOD_OPTIONS } from '$lib/progress-recent-period';
+import { getProgressLowDataCopy } from '$lib/progress-low-data-copy';
 
 const route = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
 
@@ -28,9 +29,44 @@ describe('Framstegs första blick', () => {
 
 	it('samlar lågt underlag i en lugn modul och döljer tomma analyskort', () => {
 		expect(route).toContain('data-testid="low-data-overview"');
-		expect(route).toContain('Det får ta lite tid');
+		expect(route).toContain('{lowDataCopy.heading}');
+		expect(route).toContain('{lowDataCopy.description}');
 		expect(route).toContain('data-low-data-hidden={showLowDataOverview}');
 		expect(route).toContain("[data-low-data-hidden='true']");
+	});
+
+	it('beskriver ett enda sparat inlägg utan att påstå att ett mönster finns', () => {
+		const copy = getProgressLowDataCopy(1);
+
+		expect(copy.heading).toBe('Din första text finns med');
+		expect(copy.description).toContain(
+			'Det är för tidigt att visa ett mönster, men texten finns med i underlaget här.'
+		);
+		expect(copy.description).not.toMatch(/har hittat|vi ser att|ditt mående har|beror på/i);
+	});
+
+	it('beskriver flera sparade texter med en saklig pluralvariant', () => {
+		const copy = getProgressLowDataCopy(2);
+
+		expect(copy.heading).toBe('Dina texter finns med');
+		expect(copy.description).toContain(
+			'Det är fortfarande för tidigt att visa ett mönster, men dina sparade texter finns med i underlaget här.'
+		);
+		expect(copy.description).not.toMatch(/har hittat|vi ser att|ditt mående har|beror på/i);
+	});
+
+	it('visar inga nollor eller påhittade observationer i lågdataläget', () => {
+		const lowDataBlock = route.slice(
+			route.indexOf('<section class="card low-data-overview"'),
+			route.indexOf('<section class="card week-summary-card"')
+		);
+
+		expect(lowDataBlock).not.toMatch(/0 dagar|0 veckor/i);
+		expect(lowDataBlock).not.toMatch(/har hittat|vi ser att|ditt mående har|beror på/i);
+		for (const count of [0, 1, 2]) {
+			const copy = getProgressLowDataCopy(count);
+			expect(`${copy.heading} ${copy.description}`).not.toMatch(/0 dagar|0 veckor/i);
+		}
 	});
 
 	it('visar ett enda lugnt nästa steg när ingen historik finns', () => {

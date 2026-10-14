@@ -100,6 +100,7 @@
 		EMPTY_MOOD_COPY
 	} from '$lib/progress-reflection';
 	import { buildWeekSummary } from '$lib/progress-week-summary';
+	import { getProgressLowDataCopy } from '$lib/progress-low-data-copy';
 	import { getCreativeMomentCopy } from '$lib/creative-moments';
 	import { buildHalfYearView } from '$lib/progress-half-year';
 	import {
@@ -695,6 +696,7 @@
 		!insightsError &&
 		!hasConcretePersonalAnalysis
 	);
+	const lowDataCopy = $derived(getProgressLowDataCopy(entryCount));
 	const supportExampleTopics = $derived(getExampleTopics(supportView));
 	const supportExamples = $derived(getExamplesForTopic(supportView, supportSelectedTopic));
 	// Vid akut risk visas ingenting. Sektionen är vardagligt reflektionsstöd och
@@ -1458,12 +1460,9 @@
 				<section class="card low-data-overview" aria-labelledby="low-data-heading" data-testid="low-data-overview">
 					<div class="card-header">
 						<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
-						<h2 id="low-data-heading">Det får ta lite tid</h2>
+						<h2 id="low-data-heading">{lowDataCopy.heading}</h2>
 					</div>
-					<p class="reflection-copy">
-						Det finns ännu inte tillräckligt med sparat underlag för att visa personliga mönster.
-						När något konkret börjar synas samlas det här — utan att dagar du inte skriver räknas som sämre.
-					</p>
+					<p class="reflection-copy">{lowDataCopy.description}</p>
 				</section>
 			{/if}
 

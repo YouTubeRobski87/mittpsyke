@@ -382,7 +382,7 @@
 		});
 	}
 
-	function showManualDiaryMilestoneToast(userId: string | null | undefined, savedEntryId?: string | null) {
+	function recordManualDiaryMilestone(userId: string | null | undefined, savedEntryId?: string | null) {
 		const milestoneKey = getMilestoneStorageKey(firstDiaryEntryMilestone.id, userId);
 		const earnedMilestonesKey = getEarnedMilestonesStorageKey(userId);
 
@@ -423,23 +423,25 @@
 		}
 
 		if (dev) {
-			console.debug('[milestone] toast branch reached');
+			console.debug('[milestone] silent milestone branch reached');
 			console.debug('[milestone] earned before', loadEarnedMilestones(userId));
-			console.debug('[milestone] triggering toast');
 		}
 		const nextMilestones = awardFirstDiaryEntryMilestone(userId);
 		if (dev) {
 			console.debug('[milestone] earned after', nextMilestones);
 			console.debug('[milestone] localStorage raw', window.localStorage.getItem(earnedMilestonesKey));
 		}
-		activeMilestoneToast = firstDiaryEntryMilestone;
+		// Milstolpen finns kvar i dagbokens historik, men sparbekräftelsen är den
+		// huvudsakliga återkopplingen efter en manuell sparning. En samtidig toast
+		// skulle konkurrera med den lugna överlämningen till Framsteg.
 		markMilestoneSeen(firstDiaryEntryMilestone.id, userId);
 		logMilestoneDebug({
 			milestoneKey,
 			alreadyShown,
 			previousCount: null,
 			savedEntryId,
-			toastTriggered: true,
+			toastTriggered: false,
+			reason: 'save confirmation is primary',
 			source: 'manual diary save success'
 		});
 	}
@@ -1113,7 +1115,7 @@
 				return;
 			}
 
-			showManualDiaryMilestoneToast(getMilestoneUserId(), payload?.diary?.id ?? null);
+			recordManualDiaryMilestone(getMilestoneUserId(), payload?.diary?.id ?? null);
 
 			if (typeof window !== 'undefined') {
 				// Rensar båda nycklarna så att ett sparat inlägg inte dyker upp som utkast igen.
@@ -1641,24 +1643,19 @@
 
 					{#if draftSuccess && !draftText}
 						<section class="auth-panel auth-panel-success">
-							<h2 class="text-base font-semibold">{draftSuccess}</h2>
+							<h2 class="text-base font-semibold">Inlägget är sparat</h2>
 							<p class="mt-2 text-sm">
-								Ditt inlägg finns kvar här. Nästa lilla steg kan vara att skriva några ord till nu,
-								eller komma tillbaka senare och fortsätta där du slutade.
-							</p>
-							<p class="mt-2 text-sm auth-muted">
-								Det här är din privata plats för tankar.
+								Din text är nu en del av underlaget i Framsteg. När något faktiskt återkommer eller
+								förändras visas det där – inte innan.
 							</p>
 							<div class="actions-row mt-3">
-								<button type="button" class="auth-button primary" onclick={openWriteEditor}>
-									Skriv några ord till
-								</button>
+								<a href="/framsteg" class="auth-button primary">Gå till Framsteg</a>
 								<button type="button" class="auth-button" onclick={openLatestEntries}>
 									Se inlägget
 								</button>
-								{#if hasSavedEntries}
-					<a href="/dagbok/checkin#senaste-inlagg" class="auth-button">Se dina senaste inlägg</a>
-								{/if}
+								<button type="button" class="auth-button save-again-action" onclick={openWriteEditor}>
+									Skriv igen
+								</button>
 							</div>
 						</section>
 					{/if}
@@ -2796,6 +2793,14 @@
 
 	.editor-secondary {
 		background: hsl(var(--surface-soft));
+	}
+
+	.save-again-action {
+		border-color: transparent;
+		background: transparent;
+		color: hsl(var(--muted-foreground));
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
 	}
 
 	.diary-flow {
