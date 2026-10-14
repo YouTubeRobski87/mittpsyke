@@ -19,6 +19,14 @@ const currentEmptyState = route.slice(
 	route.indexOf('{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0 && creativeMomentCount === 0}'),
 	route.indexOf('{:else}', route.indexOf('{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0 && creativeMomentCount === 0}'))
 );
+const populatedProgressState = route.slice(
+	route.indexOf('{:else}', route.indexOf('creativeMomentCount === 0')),
+	route.indexOf('{#if false}')
+);
+const lowDataWorldCopy = route.slice(
+	route.indexOf('{#if showLowDataOverview}', route.indexOf('<div class="companion-copy">')),
+	route.indexOf('{:else}', route.indexOf('{#if showLowDataOverview}', route.indexOf('<div class="companion-copy">')))
+);
 
 describe('Framstegs första blick', () => {
 	it('gör kärnlöftet till sidans huvudrubrik', () => {
@@ -33,6 +41,33 @@ describe('Framstegs första blick', () => {
 		expect(route).toContain('{lowDataCopy.description}');
 		expect(route).toContain('data-low-data-hidden={showLowDataOverview}');
 		expect(route).toContain("[data-low-data-hidden='true']");
+	});
+
+	it('visar underlagskortet före Living World-scenen när underlaget är tunt', () => {
+		const lowDataCard = populatedProgressState.indexOf('data-testid="low-data-overview"');
+		const livingWorldScene = populatedProgressState.indexOf('class="companion-banner"');
+
+		expect(lowDataCard).toBeGreaterThan(-1);
+		expect(livingWorldScene).toBeGreaterThan(lowDataCard);
+		expect(populatedProgressState).toContain('{#if showLowDataOverview}');
+		expect(populatedProgressState).toContain('data-low-data-secondary={showLowDataOverview}');
+	});
+
+	it('behåller Living World i samma innehållsflöde när konkreta observationer finns', () => {
+		const livingWorldScene = populatedProgressState.indexOf('class="companion-banner"');
+		const observations = populatedProgressState.indexOf('<div class="framsteg-layout framsteg-layout-v2">');
+
+		expect(route).toContain('const showLowDataOverview = $derived(');
+		expect(route).toContain('!hasConcretePersonalAnalysis');
+		expect(livingWorldScene).toBeGreaterThan(-1);
+		expect(observations).toBeGreaterThan(livingWorldScene);
+	});
+
+	it('använder kontinuitetsspråk i scenen vid tunt underlag', () => {
+		expect(lowDataWorldCopy).toContain('Din plats finns kvar');
+		expect(lowDataWorldCopy).toContain('ett lugnt lager runt det du sparar och reflekterar över');
+		expect(lowDataWorldCopy).not.toMatch(/har vuxit|låst upp|belöning|prestation/i);
+		expect(lowDataWorldCopy).not.toMatch(/har hittat|vi ser att|ditt mående har|beror på/i);
 	});
 
 	it('beskriver ett enda sparat inlägg utan att påstå att ett mönster finns', () => {

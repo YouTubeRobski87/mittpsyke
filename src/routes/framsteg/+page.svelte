@@ -1307,9 +1307,21 @@
 				</div>
 			{:else}
 				<div class="progress-content">
+					{#if showLowDataOverview}
+						<!-- Vid tunt underlag kommer den sakliga förklaringen först. Scenen
+						     finns kvar som en lugn fortsättning, inte som huvudfeedback. -->
+						<section class="card low-data-overview" aria-labelledby="low-data-heading" data-testid="low-data-overview">
+							<div class="card-header">
+								<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
+								<h2 id="low-data-heading">{lowDataCopy.heading}</h2>
+							</div>
+							<p class="reflection-copy">{lowDataCopy.description}</p>
+						</section>
+					{/if}
 					<section
 						class="companion-banner"
 						aria-label={`Sjöscen, ${getProgressSceneLabel(sceneTransition.visibleBand)}`}
+						data-low-data-secondary={showLowDataOverview}
 					>
 			<div
 				class="companion-media"
@@ -1432,13 +1444,19 @@
 			</div>
 			<div class="companion-copy">
 				<span class="companion-eyebrow">{getProgressSceneLabel(sceneTransition.visibleBand)}</span>
-				<h2>Din plats idag</h2>
-				<p>
-					{isAnonymous
-						? 'Här vid stranden finns stugan, lägerelden och följeslagaren Balder, en lugn närvaro som följer platsen över tid.'
-						: sceneSpot.presence}
-				</p>
-				<p class="companion-reflection">{worldReturnCopy ?? livingWorldReflectionCopy}</p>
+				{#if showLowDataOverview}
+					<h2>Din plats finns kvar</h2>
+					<p>Världen finns här som ett lugnt lager runt det du sparar och reflekterar över.</p>
+					<p class="companion-reflection">Du behöver inte hålla något igång för att platsen ska finnas kvar.</p>
+				{:else}
+					<h2>Din plats idag</h2>
+					<p>
+						{isAnonymous
+							? 'Här vid stranden finns stugan, lägerelden och följeslagaren Balder, en lugn närvaro som följer platsen över tid.'
+							: sceneSpot.presence}
+					</p>
+					<p class="companion-reflection">{worldReturnCopy ?? livingWorldReflectionCopy}</p>
+				{/if}
 				{#if !isAnonymous}
 					<a class="cabin-entry-link" href="/dashboard/kvallsstugan">Kvällstugan</a>
 				{/if}
@@ -1456,16 +1474,6 @@
 			     svarar på "hur har den senaste tiden sett ut?". Kurvan och analysen
 			     under är fördjupningen. Inget här är beroende av AI eller samtycke -
 			     det räknas fram ur humörvärden som redan är hämtade. -->
-			{#if showLowDataOverview}
-				<section class="card low-data-overview" aria-labelledby="low-data-heading" data-testid="low-data-overview">
-					<div class="card-header">
-						<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
-						<h2 id="low-data-heading">{lowDataCopy.heading}</h2>
-					</div>
-					<p class="reflection-copy">{lowDataCopy.description}</p>
-				</section>
-			{/if}
-
 			<section class="card week-summary-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="week-summary-heading" data-testid="week-summary">
 				<div class="card-header">
 					<div class="icon-badge heat"><Calendar size={24} /></div>
