@@ -42,7 +42,7 @@
 				<p class="returning-lead">
 					Allt behöver inte få plats på en gång. Välj det som passar just nu.
 				</p>
-				<a class="primary-action" href="/dagbok?action=new">
+				<a class="primary-action" href="/dagbok/checkin#skriv-sjalv">
 					<PenLine size={18} aria-hidden="true" />
 					{primaryLabel}
 					<ArrowRight size={18} aria-hidden="true" />

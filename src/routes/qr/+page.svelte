@@ -59,7 +59,7 @@
 			</p>
 
 			<div class="hero__actions">
-				<a class="button button--primary" href="/skriv" onclick={handlePrimaryClick}>
+				<a class="button button--primary" href="/dagbok?action=new" onclick={handlePrimaryClick}>
 					Börja skriva anonymt
 				</a>
 				<a class="button button--ghost" href="/register" onclick={handleSecondaryClick}>

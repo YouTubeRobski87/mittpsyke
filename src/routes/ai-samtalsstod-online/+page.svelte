@@ -18,7 +18,7 @@
 			</p>
 			<p>
 				<a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a> eller
-				<a href="/skriv">skriva av dig i en digital dagbok</a>.
+				<a href="/dagbok?action=new">skriva av dig i en digital dagbok</a>.
 			</p>
 		</header>
 

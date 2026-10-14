@@ -76,7 +76,7 @@
 	// ovan är oförändrad. Varje funktion har en rad, och det övriga läsbara
 	// ligger indraget under "Läs" och i sidfoten.
 	const GUEST_WRITE_NAV_ITEM: NavItem = { href: '/dagbok?action=new', label: 'Skriv' };
-	const SIGNED_IN_WRITE_NAV_ITEM: NavItem = { href: '/dagbok/checkin', label: 'Skriv' };
+	const SIGNED_IN_WRITE_NAV_ITEM: NavItem = { href: '/dagbok/checkin#skriv-sjalv', label: 'Skriv' };
 	const MOBILE_READ_NAV_ITEM: NavItem = { href: '/guider', label: 'Läs' };
 	const MOBILE_ABOUT_NAV_ITEM: NavItem = { href: '/om-mittpsyke', label: 'Om MittPsyke' };
 

@@ -1,7 +1,7 @@
 <section class="safety-strip" aria-label="Trygghetsinformation">
 	<ul class="safety-list">
 		<li class="safety-item">
-			<a class="safety-item-link" href="/skriv">
+			<a class="safety-item-link" href="/dagbok?action=new">
 				<p class="safety-label">Börja anonymt</p>
 				<p class="safety-copy">Du kan skriva direkt utan konto och komma igång i din egen takt.</p>
 			</a>

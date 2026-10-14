@@ -26,6 +26,7 @@ describe('inloggad startsida', () => {
 		expect(body).toContain('Artiklar');
 		expect(body).toContain('loading="eager"');
 		expect(body).toContain('fetchpriority="high"');
+		expect(body).toContain('href="/dagbok/checkin#skriv-sjalv"');
 
 		// Mitt Hem-kortet går numera direkt till Kvällstugan, precis som
 		// navigeringen i +layout.svelte - se home-redirect.test.ts. De två
@@ -48,6 +49,7 @@ describe('inloggad startsida', () => {
 		});
 
 		expect(body).toContain('Skriv din första rad');
+		expect(body).toContain('href="/dagbok/checkin#skriv-sjalv"');
 		expect(body).not.toContain('sparade texter finns kvar');
 		expect(body).toContain('Se hur ditt mående förändras och vad som återkommer över tid.');
 	});

@@ -25,7 +25,7 @@
 				Inget konto behövs.
 			</p>
 			<div class="cta-group">
-				<a href="/skriv" class="cta-primary">Börja skriva anonymt</a>
+				<a href="/dagbok?action=new" class="cta-primary">Börja skriva anonymt</a>
 				<a href="/register" class="cta-secondary">Skapa gratis konto</a>
 			</div>
 		</div>
@@ -104,7 +104,7 @@
 	<section class="final-cta">
 		<h2>Redo att ta första steget?</h2>
 		<p>Du behöver inte ha alla svar. Bara börja skriva.</p>
-		<a href="/skriv" class="cta-primary cta-large">Börja skriva nu</a>
+		<a href="/dagbok?action=new" class="cta-primary cta-large">Börja skriva nu</a>
 	</section>
 
 	<!-- Säkerhetsinfo -->

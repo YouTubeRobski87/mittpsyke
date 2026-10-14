@@ -4,11 +4,12 @@ import { describe, expect, it } from 'vitest';
 const projectFile = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
 describe('skillnaden mellan lokalt skrivande och AI-chatt', () => {
-	it('/skriv namnger och förklarar de två flödena var för sig', () => {
+	it('/skriv visar den lokala skrivytan direkt och förklarar AI-alternativet separat', () => {
 		const source = projectFile('./+page.svelte');
 
-		expect(source).toContain('Skriv lokalt utan konto');
-		expect(source).toContain('Chatta med AI utan konto');
+		expect(source).toContain('<GuestQuickEntry />');
+		expect(source).toContain('<h1>Börja skriva direkt</h1>');
+		expect(source).toContain('Öppna AI-chatten');
 		expect(source).toContain('dataflowCopy.anonymousDiary.short');
 		expect(source).toContain('dataflowCopy.guestChat.aiTransfer');
 		expect(source).not.toContain('Skriv av dig anonymt</h1>');

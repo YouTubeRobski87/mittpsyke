@@ -874,7 +874,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			'Chatten är en ingång. Vill du läsa mer först, eller skriva i egen takt utan att få svar, finns det plats för det också.'
 		],
 		nextStepLinks: [
-			{ href: '/skriv', label: 'Skriv av dig anonymt' },
+			{ href: '/dagbok?action=new', label: 'Skriv av dig anonymt' },
 			{ href: '/chat', label: 'Öppna chatten' },
 			{ href: '/om-mittpsyke', label: 'Läs om MittPsyke' }
 		],

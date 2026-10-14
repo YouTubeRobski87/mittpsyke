@@ -24,7 +24,7 @@
 		ctaLabel = 'Prova MittPsyke gratis',
 		ctaBody =
 			'Vill du testa i praktiken? Börja skriva i lugn takt och se vad som hjälper dig att förstå ditt mående över tid.',
-		ctaSecondaryHref = '/skriv',
+		ctaSecondaryHref = '/dagbok?action=new',
 		ctaSecondaryLabel = 'Börja anonymt'
 	}: BlogArticleProps = $props();
 </script>

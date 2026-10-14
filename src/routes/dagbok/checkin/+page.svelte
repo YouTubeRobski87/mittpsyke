@@ -1633,7 +1633,7 @@
 								{savingDraft ? 'Sparar...' : uploadingImage ? 'Väntar på bild...' : uploadingVideo ? 'Väntar på video...' : 'Spara inlägg'}
 							</button>
 
-							<a href="/skriv" class="auth-button editor-secondary">
+							<a href="/dagbok/checkin" class="auth-button editor-secondary">
 								Fortsätt skriva senare
 							</a>
 						</div>
@@ -1670,9 +1670,9 @@
 						<section class="auth-panel">
 							<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
 							<p class="mt-2 text-sm auth-muted">Det räcker med några ord. Skriv i lugn och ro, i din egen takt.</p>
-							<a href="/skriv" class="auth-button mt-4">
+							<button type="button" class="auth-button mt-4" onclick={openWriteEditor}>
 								Skriv första inlägget
-							</a>
+							</button>
 						</section>
 					{:else}
 						<div class="diary-flow" id="senaste-inlagg">

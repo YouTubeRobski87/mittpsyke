@@ -102,7 +102,7 @@ describe('landningsvarianten för /chatta-anonymt', () => {
 			'/blogg/chatta-anonymt-utan-konto',
 			'/anonym-dagbok-online',
 			'/dagbok',
-			'/skriv',
+			'/dagbok?action=new',
 			'/om-mittpsyke'
 		]) {
 			expect(targets).toContain(expected);

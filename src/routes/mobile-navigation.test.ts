@@ -71,7 +71,7 @@ describe('mobilmenyn för inloggade', () => {
 		// bara en dubblett och är borttagen.
 		expect(primary.map((item) => item.href)).toEqual([
 			'/dashboard/kvallsstugan',
-			'/dagbok/checkin',
+			'/dagbok/checkin#skriv-sjalv',
 			'/framsteg',
 			'/guider'
 		]);
