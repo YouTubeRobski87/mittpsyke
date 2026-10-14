@@ -42,6 +42,21 @@ Beslutstest inför varje ny idé:
 
 > Passar detta MittPsyke för att det hjälper användaren – eller för att det fångar mer uppmärksamhet?
 
+## Living World är ett sekundärt lager
+
+Dagboken och användarens egen reflektion är primära. Living World finns för att
+stödja reflektionen efteråt, skapa lugn och kontinuitet och visa varsamma spår
+av återkomst.
+
+Världen får inte konkurrera med skrivandet, kännas som gamification eller skapa
+känslan att användaren skriver för att låsa upp visuella belöningar. Förändringar
+i världen ska vara lågmälda nog att kunna upptäckas utan att bli ett mål i sig.
+
+Praktiskt beslutstest:
+
+> Om en förändring gör att användaren tänker mer på scenen än på sin egen
+> reflektion ska den tonas ner, flyttas eller tas bort.
+
 ### Live-röstsamtal och minne
 
 Live är flyktigt. Dagboken är minnet. Humöranalysen använder bara material som användaren aktivt valt att spara.

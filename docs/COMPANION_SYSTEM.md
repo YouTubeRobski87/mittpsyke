@@ -1,6 +1,6 @@
-# COMPANION SYSTEM — designförslag
+# COMPANION SYSTEM — arkiverat designförslag
 
-> Status: **förslag, inte implementerat.** Beskriver hur det befintliga
+> Status: **arkiverat förslag, inte aktuell produktinriktning och inte implementerat.** Beskriver hur det befintliga
 > följeslagarsystemet växer till ett generellt Companion-system där räv, björn,
 > uggla och hjort är olika följeslagare i samma arkitektur.
 
