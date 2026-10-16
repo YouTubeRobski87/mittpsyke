@@ -7,12 +7,12 @@
 		href: string;
 	}
 
-	// "Mitt rum" pekade tidigare på gamla /dashboard. Mitt Hem är numera
-	// Kvällstugan, så fliken pekar dit i stället - se inga-tva-hem-instruktionen.
+	// Kärnnyttan kommer först. Kvällstugan är samma plats som Mitt Hem, men den
+	// mer precisa etiketten undviker två namn på samma destination i navigationen.
 	const tabs: TabItem[] = [
-		{ key: 'hem', label: 'Mitt Hem', href: '/dashboard/kvallsstugan' },
 		{ key: 'dagbok', label: 'Dagbok', href: '/dagbok/checkin' },
 		{ key: 'framsteg', label: 'Framsteg', href: '/framsteg' },
+		{ key: 'hem', label: 'Kvällstugan', href: '/dashboard/kvallsstugan' },
 		{ key: 'installningar', label: 'Inställningar', href: '/dashboard/installningar' }
 	];
 

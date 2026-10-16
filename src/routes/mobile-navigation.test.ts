@@ -1,13 +1,13 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
-// Mobilnavigeringen ska spegla kärnprodukten: Skriv är den tydliga
-// direktingången, chatten finns kvar men dominerar inte. Desktopnavigeringen
-// är oförändrad. Testerna läser layoutens källkod, som övriga layouttester.
+// Navigationen ska spegla kärnprodukten: Skriv/Dagbok och Framsteg kommer
+// först, chatten finns kvar men dominerar inte. Testerna läser layoutens
+// källkod, som övriga layouttester.
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const layout = read('./+layout.svelte');
-const home = read('./+page.svelte');
+const portalSubnav = read('../lib/components/PortalSubnav.svelte');
 
 type NavEntry = { href: string; label: string };
 
@@ -37,21 +37,22 @@ const quickNav = layout.slice(
 const mobileMenu = layout.slice(layout.indexOf('<div id="mobile-menu"'), layout.indexOf('Vid akut fara: ring 112'));
 
 describe('mobilmenyn för utloggade', () => {
-	it('prioriterar Skriv, Kvällstugan, Chatta, Läs och Om MittPsyke i den ordningen', () => {
+	it('prioriterar Skriv, Framsteg och därefter den sekundära chatten', () => {
 		expect(labels(navList('mobileGuestPrimaryNavItems'))).toEqual([
 			'Skriv',
-			'Kvällstugan',
+			'Framsteg',
 			'Chatta',
 			'Läs',
-			'Om MittPsyke'
+			'Så fungerar det'
 		]);
 	});
 
-	it('skickar Skriv direkt till en ny text och Kvällstugan till startsidans förklaring', () => {
-		const [write, evening] = navList('mobileGuestPrimaryNavItems');
+	it('skickar Skriv direkt till en ny text och visar produktnyttan utan en mellanväg', () => {
+		const [write, progress, chat, , how] = navList('mobileGuestPrimaryNavItems');
 		expect(write.href).toBe('/dagbok?action=new');
-		expect(evening.href).toBe('/#kvallstugan');
-		expect(home).toMatch(/<section id="kvallstugan"[^>]*aria-labelledby="evening-title"/);
+		expect(progress.href).toBe('/framsteg');
+		expect(chat.href).toBe('/chat');
+		expect(how.href).toBe('/sa-fungerar-mittpsyke');
 	});
 
 	it('avslutar med Sök, akut hjälp och Logga in', () => {
@@ -63,33 +64,32 @@ describe('mobilmenyn för utloggade', () => {
 });
 
 describe('mobilmenyn för inloggade', () => {
-	it('prioriterar Mitt Hem, Skriv, Framsteg och Läs', () => {
+	it('prioriterar Skriv, Framsteg och Kvällstugan i kärnordning', () => {
 		const primary = navList('mobileSignedInPrimaryNavItems');
-		expect(labels(primary)).toEqual(['Mitt Hem', 'Skriv', 'Framsteg', 'Läs']);
-		// Mitt Hem går direkt till Kvällstugan (se navigation.test.ts). Det
-		// fanns tidigare en separat Kvällstugan-rad med samma mål, men den var
-		// bara en dubblett och är borttagen.
+		expect(labels(primary)).toEqual(['Skriv', 'Framsteg', 'Kvällstugan']);
 		expect(primary.map((item) => item.href)).toEqual([
-			'/dashboard/kvallsstugan',
 			'/dagbok/checkin#skriv-sjalv',
 			'/framsteg',
-			'/guider'
+			'/dashboard/kvallsstugan'
 		]);
 	});
 
-	it('lägger Chatta efter strecket, bland det sekundära', () => {
-		expect(labels(navList('mobileSignedInSecondaryNavItems'))).toEqual(['Chatta', 'Om MittPsyke', 'Inställningar']);
+	it('lägger Chatta först efter strecket och läsinnehållet därefter', () => {
+		expect(labels(navList('mobileSignedInSecondaryNavItems'))).toEqual([
+			'Chatta',
+			'Läs',
+			'Om MittPsyke',
+			'Inställningar'
+		]);
 		expect(mobileMenu).toMatch(/mobileSignedInSecondaryNavItems as item, index\}\s*\{@render mobileMenuLink\(item, index === 0 \? 'mobile-menu-group-start'/);
+		expect(mobileMenu).toMatch(/mobileSignedInSecondaryNavItems as item, index\}[\s\S]*?item === MOBILE_READ_NAV_ITEM[\s\S]*?mobileReadSubNavItems as subItem/);
 	});
 
-	it('Mitt Hem markeras aktiv i Kvällstugan, eftersom det är samma route', () => {
-		// isMobileActive fanns bara för att skilja Mitt Hem från en separat
-		// Kvällstugan-rad med samma mål. Den raden är borta, så all
-		// aktiv-markering går nu via den vanliga isActive.
+	it('Kvällstugan använder den vanliga aktiva route-markeringen', () => {
 		expect(layout).not.toContain('function isMobileActive');
 		const primary = navList('mobileSignedInPrimaryNavItems');
-		const mittHem = primary.find((item) => item.label === 'Mitt Hem');
-		expect(mittHem?.href).toBe('/dashboard/kvallsstugan');
+		const evening = primary.find((item) => item.label === 'Kvällstugan');
+		expect(evening?.href).toBe('/dashboard/kvallsstugan');
 	});
 });
 
@@ -106,7 +106,7 @@ describe('inga dubbla vägar och få toppnivålänkar', () => {
 
 	it('har högst fem huvudvägar och lägger det övriga läsbara indraget under Läs', () => {
 		expect(navList('mobileGuestPrimaryNavItems')).toHaveLength(5);
-		expect(navList('mobileSignedInPrimaryNavItems')).toHaveLength(4);
+		expect(navList('mobileSignedInPrimaryNavItems')).toHaveLength(3);
 		expect(labels(navList('mobileReadSubNavItems'))).toEqual(['Artiklar', 'Berättelser', 'Övningar']);
 		expect(mobileMenu).toMatch(/\{#if item === MOBILE_READ_NAV_ITEM\}\s*\{#each mobileReadSubNavItems as subItem\}\s*\{@render mobileMenuLink\(subItem, 'mobile-menu-sub-link'\)\}/);
 		// Översikt är samma sida som ordmärket och står inte i mobilmenyn.
@@ -115,20 +115,18 @@ describe('inga dubbla vägar och få toppnivålänkar', () => {
 });
 
 describe('snabblänken i mobilens sidhuvud', () => {
-	it('är Skriv för alla, med Mitt Hem bredvid för inloggade, och aldrig chatten', () => {
+	it('är bara Skriv för alla och ger inte upplevelselagret samma visuella vikt', () => {
 		expect(quickNav).toContain('class="mobile-quick-link mobile-quick-link-write"');
 		expect(quickNav).toContain('href={mobileWriteNavItem.href}');
-		expect(quickNav).toMatch(/\{#if currentUser\}\s*<a\s+href="\/dashboard\/kvallsstugan"\s+class="mobile-quick-link mobile-quick-link-home"/);
+		expect(quickNav).not.toContain('/dashboard/kvallsstugan');
 		expect(quickNav).not.toContain('/chat');
 		expect(layout).toContain(
 			'const mobileWriteNavItem = $derived(currentUser ? SIGNED_IN_WRITE_NAV_ITEM : GUEST_WRITE_NAV_ITEM);'
 		);
 	});
 
-	it('döljer bara Mitt Hem på de smalaste skärmarna, Skriv står alltid kvar', () => {
-		const narrow = layout.slice(layout.indexOf('@media (max-width: 370px)'));
-		const hidden = narrow.slice(0, narrow.indexOf('.site-header-inner'));
-		expect(hidden).toMatch(/\.mobile-quick-link-home \{\s*display: none;/);
+	it('låter Skriv stå kvar även på de smalaste skärmarna', () => {
+		expect(layout).not.toContain('mobile-quick-link-home');
 		expect(layout).not.toMatch(/\.mobile-quick-link-write[^{]*\{\s*display: none/);
 	});
 
@@ -158,16 +156,51 @@ describe('menyns beteende', () => {
 });
 
 describe('desktopnavigeringen', () => {
-	it('är oförändrad', () => {
+	it('börjar med kärnnyttan publikt och samlar läsinnehåll', () => {
 		expect(layout).toContain('{#each (currentUser ? signedInPortalNavItems : primaryNavItems) as item}');
 		expect(labels(navList('primaryNavItems'))).toEqual([
 			'Dagbok',
+			'Framsteg',
 			'Chatta',
-			'Guider',
-			'Artiklar',
-			'Berättelser',
-			'Om MittPsyke',
-			'Om skaparen'
+			'Läs',
+			'Så fungerar det'
 		]);
+	});
+
+	it('ordnar inloggade vägar efter Dagbok, Framsteg, Kvällstugan och Chatta', () => {
+		expect(labels(navList('signedInPortalNavItems'))).toEqual([
+			'Dagbok',
+			'Framsteg',
+			'Kvällstugan',
+			'Chatta',
+			'Läs',
+			'Inställningar'
+		]);
+	});
+});
+
+describe('inloggade undersidor', () => {
+	it('använder samma kärnordning och samma namn för Kvällstugan', () => {
+		const tabs = [...portalSubnav.matchAll(/\{ key: '[^']+', label: '([^']+)', href: '([^']+)' \}/g)].map(
+			([, label, href]) => ({ label, href })
+		);
+		expect(tabs).toEqual([
+			{ label: 'Dagbok', href: '/dagbok/checkin' },
+			{ label: 'Framsteg', href: '/framsteg' },
+			{ label: 'Kvällstugan', href: '/dashboard/kvallsstugan' },
+			{ label: 'Inställningar', href: '/dashboard/installningar' }
+		]);
+	});
+});
+
+describe('sidfoten', () => {
+	it('börjar med Dagbok och Framsteg och lyfter inte frysta sidospår', () => {
+		const serviceStart = layout.indexOf('<p class="footer-col-heading">Tjänsten</p>');
+		const serviceEnd = layout.indexOf('</div>', serviceStart);
+		const service = layout.slice(serviceStart, serviceEnd);
+		expect(service.indexOf('>Dagbok</a>')).toBeLessThan(service.indexOf('>Framsteg</a>'));
+		expect(service.indexOf('>Framsteg</a>')).toBeLessThan(service.indexOf('>Chatta anonymt</a>'));
+		expect(service).not.toContain('Humörspårning');
+		expect(service).not.toContain('Premium');
 	});
 });

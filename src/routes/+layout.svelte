@@ -54,20 +54,16 @@
 
 	const primaryNavItems: NavItem[] = [
 		{ href: '/dagbok', label: 'Dagbok' },
+		{ href: '/framsteg', label: 'Framsteg' },
 		{ href: '/chat', label: 'Chatta' },
-		{ href: '/guider', label: 'Guider' },
-		{ href: '/blogg', label: 'Artiklar' },
-		{ href: '/anonyma-berattelser', label: 'Berättelser' },
-		{ href: '/om-mittpsyke', label: 'Om MittPsyke' },
-		{ href: '/om-skaparen', label: 'Om skaparen' }
+		{ href: '/guider', label: 'Läs' },
+		{ href: '/sa-fungerar-mittpsyke', label: 'Så fungerar det' }
 	];
 
 	const guideNavItems: NavItem[] = [
-		{
-			href: '/guider#besvar-och-kanslor',
-			label: 'Besvär & känslor',
-			description: 'Förstå vanliga besvär'
-		},
+		{ href: '/guider', label: 'Guider', description: 'Förstå besvär och känslor' },
+		{ href: '/blogg', label: 'Artiklar', description: 'Läs kunskap och perspektiv' },
+		{ href: '/anonyma-berattelser', label: 'Berättelser', description: 'Ta del av andras ord' },
 		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' }
 	];
 
@@ -80,25 +76,25 @@
 	const MOBILE_READ_NAV_ITEM: NavItem = { href: '/guider', label: 'Läs' };
 	const MOBILE_ABOUT_NAV_ITEM: NavItem = { href: '/om-mittpsyke', label: 'Om MittPsyke' };
 
-	// Kvällstugan kräver konto. Gästen kommer i stället till startsidans avsnitt
-	// som förklarar den och har sin egen väg in via inloggningen.
+	const MOBILE_HOW_NAV_ITEM: NavItem = { href: '/sa-fungerar-mittpsyke', label: 'Så fungerar det' };
+
 	const mobileGuestPrimaryNavItems: NavItem[] = [
 		GUEST_WRITE_NAV_ITEM,
-		{ href: '/#kvallstugan', label: 'Kvällstugan' },
+		{ href: '/framsteg', label: 'Framsteg' },
 		{ href: '/chat', label: 'Chatta' },
 		MOBILE_READ_NAV_ITEM,
-		MOBILE_ABOUT_NAV_ITEM
+		MOBILE_HOW_NAV_ITEM
 	];
 
 	const mobileSignedInPrimaryNavItems: NavItem[] = [
-		{ href: '/dashboard/kvallsstugan', label: 'Mitt Hem' },
 		SIGNED_IN_WRITE_NAV_ITEM,
 		{ href: '/framsteg', label: 'Framsteg' },
-		MOBILE_READ_NAV_ITEM
+		{ href: '/dashboard/kvallsstugan', label: 'Kvällstugan' }
 	];
 
 	const mobileSignedInSecondaryNavItems: NavItem[] = [
 		{ href: '/chat', label: 'Chatta' },
+		MOBILE_READ_NAV_ITEM,
 		MOBILE_ABOUT_NAV_ITEM,
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
@@ -110,13 +106,11 @@
 	];
 
 	const signedInPortalNavItems: NavItem[] = [
-		{ href: '/', label: 'Översikt' },
-		{ href: '/dashboard/kvallsstugan', label: 'Mitt Hem' },
-		{ href: '/framsteg', label: 'Framsteg' },
 		{ href: '/dagbok/checkin', label: 'Dagbok' },
+		{ href: '/framsteg', label: 'Framsteg' },
+		{ href: '/dashboard/kvallsstugan', label: 'Kvällstugan' },
 		{ href: '/chat', label: 'Chatta' },
-		{ href: '/blogg', label: 'Artiklar' },
-		{ href: '/anonyma-berattelser', label: 'Berättelser' },
+		{ href: '/guider', label: 'Läs' },
 		{ href: '/dashboard/installningar', label: 'Inställningar' }
 	];
 
@@ -824,23 +818,9 @@
 			</div>
 
 			<div class="flex shrink-0 items-center gap-1 md:gap-3">
-				<!-- Mobilens direktingång är Skriv, för både gäst och inloggad. Den
-				     inloggade har Mitt Hem bredvid när bredden räcker. Chatten nås
-				     via menyn. -->
+				<!-- Mobilens enda direktingång är kärnhandlingen Skriv, för både gäst
+				     och inloggad. Övriga vägar ligger i menyn i produktens ordning. -->
 				<nav class="mobile-quick-nav" aria-label="Snabbnavigering">
-					{#if currentUser}
-						<a
-							href="/dashboard/kvallsstugan"
-							class="mobile-quick-link mobile-quick-link-home"
-							onclick={() => {
-								mobileMenuOpen = false;
-								profilePanelOpen = false;
-							}}
-							aria-current={isActive('/dashboard/kvallsstugan') ? 'page' : undefined}
-						>
-							Mitt Hem
-						</a>
-					{/if}
 					<a
 						href={mobileWriteNavItem.href}
 						class="mobile-quick-link mobile-quick-link-write"
@@ -1019,6 +999,11 @@
 				{#if currentUser}
 					{#each mobileSignedInSecondaryNavItems as item, index}
 						{@render mobileMenuLink(item, index === 0 ? 'mobile-menu-group-start' : '')}
+						{#if item === MOBILE_READ_NAV_ITEM}
+							{#each mobileReadSubNavItems as subItem}
+								{@render mobileMenuLink(subItem, 'mobile-menu-sub-link')}
+							{/each}
+						{/if}
 					{/each}
 				{/if}
 				<a href="/sok" class="mobile-menu-link mobile-menu-search-link text-sm transition-opacity {currentUser ? '' : 'mobile-menu-group-start'} {isActive('/sok') ? 'opacity-100 underline' : 'opacity-80 hover:opacity-100 hover:underline'}" onclick={() => (mobileMenuOpen = false)} aria-label="Sök på MittPsyke" aria-current={isActive('/sok') ? 'page' : undefined}>
@@ -1055,14 +1040,13 @@
 				<!-- Kolumn 1: Tjänsten -->
 				<div class="footer-col">
 					<p class="footer-col-heading">Tjänsten</p>
-					<a href="/chat" class="footer-link">Chatta anonymt</a>
 					<a href="/dagbok" class="footer-link">Dagbok</a>
+					<a href="/framsteg" class="footer-link">Framsteg</a>
+					<a href="/chat" class="footer-link">Chatta anonymt</a>
 					<a href="/ovningar" class="footer-link">Övningar</a>
 					<a href="/guider" class="footer-link">Guider</a>
 					<a href="/blogg" class="footer-link">Artiklar</a>
 					<a href="/anonyma-berattelser" class="footer-link">Berättelser</a>
-					<a href="/humorsparning" class="footer-link">Humörspårning</a>
-					<a href="/premium" class="footer-link">Premium</a>
 				</div>
 
 				<!-- Kolumn 2: Om MittPsyke -->
@@ -1852,12 +1836,6 @@
 	}
 
 	@media (max-width: 370px) {
-		/* Här räcker bredden inte till både Mitt Hem och Skriv utan att
-		 * ordmärket klipps. Skriv står kvar, Mitt Hem finns först i menyn. */
-		.mobile-quick-link-home {
-			display: none;
-		}
-
 		.site-header-inner {
 			padding-inline: 0.55rem;
 			gap: 0.35rem;
