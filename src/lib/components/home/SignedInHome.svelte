@@ -1,8 +1,6 @@
 <script lang="ts">
 	import {
 		ArrowRight,
-		BookOpen,
-		House,
 		MessageCircle,
 		MoonStar,
 		Newspaper,
@@ -72,9 +70,9 @@
 			</div>
 
 			<div class="places-layout">
-				<a class="home-place" href="/dashboard/kvallsstugan">
+				<a class="home-place" href="/framsteg">
 					<img
-						src="/images/scenes/dashboard-cabin-close-800.webp"
+						src="/images/scenes/progress-cabin-lakeside-afternoon-800.webp"
 						alt=""
 						width="800"
 						height="450"
@@ -83,37 +81,24 @@
 					/>
 					<span class="home-place-shade" aria-hidden="true"></span>
 					<span class="place-copy">
-						<span class="place-icon"><House size={20} aria-hidden="true" /></span>
+						<span class="place-icon"><TrendingUp size={20} aria-hidden="true" /></span>
 						<span>
-							<strong>Mitt Hem</strong>
-							<small>Din plats tillsammans med Balder.</small>
+							<strong>Framsteg</strong>
+							<small>Se hur ditt mående förändras och vad som återkommer över tid.</small>
 						</span>
 						<ArrowRight size={20} aria-hidden="true" />
 					</span>
 				</a>
 
 				<div class="other-places">
-					<a class="chat-place" href="/chat">
-						<span class="place-icon"><MessageCircle size={21} aria-hidden="true" /></span>
-						<span>
-							<strong>Chatten</strong>
-							<small>Prata en stund när det hjälper att sortera.</small>
-						</span>
-						<ArrowRight size={19} aria-hidden="true" />
-					</a>
-
 					<div class="route-grid" aria-label="Fler platser i MittPsyke">
-						<a href="/framsteg">
-							<TrendingUp size={19} aria-hidden="true" />
-							<span><strong>Framsteg</strong><small>Se hur ditt mående förändras och vad som återkommer över tid.</small></span>
-						</a>
-						<a href="/dagbok">
-							<BookOpen size={19} aria-hidden="true" />
-							<span><strong>Dagbok</strong><small>Skriv, reflektera och återvänd.</small></span>
-						</a>
 						<a href="/dashboard/kvallsstugan">
 							<MoonStar size={19} aria-hidden="true" />
 							<span><strong>Kvällstugan</strong><small>Stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.</small></span>
+						</a>
+						<a href="/chat">
+							<MessageCircle size={19} aria-hidden="true" />
+							<span><strong>Chatta</strong><small>Prata en stund när det hjälper att sortera.</small></span>
 						</a>
 						<a href="/blogg">
 							<Newspaper size={19} aria-hidden="true" />
@@ -268,7 +253,6 @@
 	}
 
 	.home-place,
-	.chat-place,
 	.route-grid a {
 		position: relative;
 		min-width: 0;
@@ -313,7 +297,6 @@
 	}
 
 	.place-copy strong,
-	.chat-place strong,
 	.route-grid strong {
 		display: block;
 		font-family: var(--font-heading);
@@ -322,7 +305,6 @@
 	}
 
 	.place-copy small,
-	.chat-place small,
 	.route-grid small {
 		display: block;
 		margin-top: 0.15rem;
@@ -345,22 +327,6 @@
 	.other-places {
 		display: grid;
 		gap: 1rem;
-	}
-
-	.chat-place {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr) auto;
-		gap: 0.8rem;
-		align-items: center;
-		padding: 1.1rem 1.2rem;
-		background: color-mix(in srgb, var(--color-dashboard-surface-strong) 87%, var(--color-primary) 13%);
-		color: var(--color-dashboard-text);
-	}
-
-	.chat-place .place-icon {
-		border-color: var(--primary-border-soft);
-		background: var(--primary-soft);
-		color: var(--color-primary);
 	}
 
 	.route-grid {
@@ -386,8 +352,6 @@
 
 	.home-place:hover,
 	.home-place:focus-visible,
-	.chat-place:hover,
-	.chat-place:focus-visible,
 	.route-grid a:hover,
 	.route-grid a:focus-visible {
 		border-color: var(--primary-border-soft);
@@ -456,7 +420,6 @@
 	@media (prefers-reduced-motion: reduce) {
 		.primary-action,
 		.home-place,
-		.chat-place,
 		.route-grid a {
 			transition: none;
 			transform: none !important;

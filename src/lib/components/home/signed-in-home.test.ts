@@ -3,7 +3,7 @@ import { render } from 'svelte/server';
 import SignedInHome from './SignedInHome.svelte';
 
 describe('inloggad startsida', () => {
-	it('visar användarens översikt med produktens sex huvuddestinationer', () => {
+	it('visar användarens översikt med kärnnyttan före stöd och upplevelselager', () => {
 		const { body } = render(SignedInHome, {
 			props: {
 				overview: {
@@ -15,11 +15,9 @@ describe('inloggad startsida', () => {
 
 		expect(body).toContain('Välkommen tillbaka, Maja');
 		expect(body).toContain('3 sparade texter finns samlade när du vill se tillbaka över tid.');
-		expect(body).toContain('Mitt Hem');
-		expect(body).toContain('Chatten');
+		expect(body).toContain('Chatta');
 		expect(body).toContain('Framsteg');
 		expect(body).toContain('Se hur ditt mående förändras och vad som återkommer över tid.');
-		expect(body).toContain('Dagbok');
 		expect(body).toContain('>Kvällstugan</strong>');
 		expect(body).toContain('Stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.');
 		expect(body).not.toContain('Kvällslugn');
@@ -28,14 +26,12 @@ describe('inloggad startsida', () => {
 		expect(body).toContain('fetchpriority="high"');
 		expect(body).toContain('href="/dagbok/checkin#skriv-sjalv"');
 
-		// Mitt Hem-kortet går numera direkt till Kvällstugan, precis som
-		// navigeringen i +layout.svelte - se home-redirect.test.ts. De två
-		// korten (Mitt Hem och Kvällstugan) delar därför medvetet samma href.
-		for (const href of ['/chat', '/framsteg', '/dagbok', '/dashboard/kvallsstugan', '/blogg']) {
+		for (const href of ['/chat', '/framsteg', '/dashboard/kvallsstugan', '/blogg']) {
 			expect(body).toContain(`href="${href}"`);
 		}
-		const kvallstuganHrefCount = body.split('href="/dashboard/kvallsstugan"').length - 1;
-		expect(kvallstuganHrefCount).toBe(2);
+		expect(body.split('href="/dashboard/kvallsstugan"').length - 1).toBe(1);
+		expect(body.indexOf('href="/framsteg"')).toBeLessThan(body.indexOf('href="/dashboard/kvallsstugan"'));
+		expect(body.indexOf('href="/framsteg"')).toBeLessThan(body.indexOf('href="/chat"'));
 	});
 
 	it('har ett lugnt empty state utan påhittad personlig signal', () => {

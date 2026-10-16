@@ -67,10 +67,9 @@
 		{ href: '/ovningar', label: 'Övningar', description: 'Prova lugna verktyg' }
 	];
 
-	// Mobilens navigering följer kärnprodukten: att skriva är den tydliga
-	// direktingången, chatten finns kvar men längre ner. Desktopnavigeringen
-	// ovan är oförändrad. Varje funktion har en rad, och det övriga läsbara
-	// ligger indraget under "Läs" och i sidfoten.
+	// Navigationen följer kärnprodukten: att skriva är den tydliga
+	// direktingången, Framsteg kommer därefter och chatten finns kvar utan att
+	// dominera. Det övriga läsbara ligger samlat under "Läs" och i sidfoten.
 	const GUEST_WRITE_NAV_ITEM: NavItem = { href: '/dagbok?action=new', label: 'Skriv' };
 	const SIGNED_IN_WRITE_NAV_ITEM: NavItem = { href: '/dagbok/checkin#skriv-sjalv', label: 'Skriv' };
 	const MOBILE_READ_NAV_ITEM: NavItem = { href: '/guider', label: 'Läs' };
