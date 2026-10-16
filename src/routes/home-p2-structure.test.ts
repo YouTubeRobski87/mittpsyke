@@ -194,8 +194,10 @@ describe('Startsidans P2-struktur', () => {
 		const hero = sectionOf('hero-title');
 		expect(hero).not.toContain('class="eyebrow"');
 		expect(hero.match(/class="cta-primary"/g)).toHaveLength(1);
-		expect(hero).toContain('Se hur platsen lever');
-		expect(hero).toContain('Inget konto behövs. Texten stannar i din webbläsare.');
+		expect(hero).toContain('<a class="cta-secondary" href="/chat">Chatta</a>');
+		expect(hero).toContain(
+			'Inget konto behövs. Dagboksutkast stannar i din webbläsare; gästchatten sparas inte.'
+		);
 		expect(hero).toContain('cabin-proof--scene');
 		expect(sectionOf('evening-title')).toContain('cabin-proof--card');
 	});

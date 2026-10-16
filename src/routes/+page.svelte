@@ -11,14 +11,9 @@
 	// Anonyma skrivytan är kvar som destination - den är ett val inne i
 	// produkten, inte startsidans löfte.
 	const ANONYMOUS_WRITE_DESTINATION = '/dagbok?action=new';
-	// Hero-sekundären är ett ankare inom sidan, inte en andra destination.
-	// Registreringen låg här tidigare och konkurrerade med den primära CTA:n
-	// trots att den kostar besökaren ett konto. Den finns kvar i headern och
-	// har sin plats i avslutande CTA, efter att sidan förklarat vad kontot ger.
-	//
-	// Den publika Living World-sektionen visar hur platsen lever innan konto
-	// efterfrågas. Hero-sekundären stannar därför på sidan och landar där.
-	const LIVING_WORLD_ANCHOR = '#living-world-title';
+	// Chatten är redan den riktiga, neutrala chattytan. Den ska vara lika direkt
+	// från startsidan som skrivytan, utan en förklarande mellanvy.
+	const ANONYMOUS_CHAT_DESTINATION = '/chat';
 	// Den riktiga kvällsincheckningen ligger i Kvällstugan och kräver konto.
 	// Den publika startsidan visas bara för utloggade, så länken går via
 	// inloggningen med ?redirect= - samma mönster som övriga skyddade sidor -
@@ -38,32 +33,6 @@
 		trackHomeCtaClick({ section, cta, href });
 	}
 
-	/**
-	 * Hero-ankaret sköts i JS, för att webbläsarens hash-navigering bara
-	 * fungerar en gång: efter första klicket är hashen redan `#living-world-title`,
-	 * ingen navigering utlöses, och besökaren som scrollat upp igen möter en
-	 * död länk. scrollIntoView kan köras hur många gånger som helst.
-	 *
-	 * href ligger kvar, så hoppet fungerar även utan JS. Offseten mot den
-	 * sticky headern kommer från scroll-padding-top på html i app.css och
-	 * respekteras av båda vägarna - den ska inte upprepas här.
-	 */
-	function scrollToLivingWorld(event: MouseEvent) {
-		// Behåll det befintliga analytics-id:t; bara målet och den synliga copyn ändras.
-		trackHomeCta('hero', 'se_platsen', LIVING_WORLD_ANCHOR);
-
-		const target = document.getElementById('living-world-title');
-		if (!target) return;
-
-		event.preventDefault();
-
-		// Ingen behavior anges medvetet: app.css styr mjuk scroll via
-		// html[data-smooth-scroll] bakom prefers-reduced-motion. Ett explicit
-		// 'smooth' här hade kringgått båda grindarna.
-		target.scrollIntoView({ block: 'start' });
-		// preventScroll: fokus ska inte konkurrera med scrollen.
-		target.focus({ preventScroll: true });
-	}
 </script>
 
 <SEO canonical="https://mittpsyke.se/" />
@@ -90,8 +59,12 @@
 					>
 						Börja skriva
 					</a>
-					<a class="cta-secondary" href={LIVING_WORLD_ANCHOR} onclick={scrollToLivingWorld}>
-						Se hur platsen lever <span aria-hidden="true">↓</span>
+					<a
+						class="cta-secondary"
+						href={ANONYMOUS_CHAT_DESTINATION}
+						onclick={() => trackHomeCta('hero', 'chatta', ANONYMOUS_CHAT_DESTINATION)}
+					>
+						Chatta
 					</a>
 				</div>
 				<!-- Ligger direkt under CTA-raden, där den sänker tröskeln för att
@@ -100,7 +73,9 @@
 					 Formuleringen är kontrollerad mot implementationen: anonyma
 					 utkast skrivs bara till localStorage i diary-draft.ts och
 					 skickas aldrig till servern. -->
-				<p class="cta-micro">Inget konto behövs. Texten stannar i din webbläsare.</p>
+				<p class="cta-micro">
+					Inget konto behövs. Dagboksutkast stannar i din webbläsare; gästchatten sparas inte.
+				</p>
 				<p class="product-path" aria-label="Så fungerar det: skriv, spara det du vill och se vad som återkommer.">
 					<span aria-hidden="true">Skriv → spara det du vill → se vad som återkommer</span>
 				</p>

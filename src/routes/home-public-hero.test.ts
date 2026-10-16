@@ -29,27 +29,14 @@ describe('Den publika startsidans hero', () => {
 		expect(hero).toContain('Börja skriva');
 	});
 
-	// Den sekundära var tidigare /register. Den kostar besökaren ett konto och
-	// konkurrerade därmed med en primär CTA som inte kostar något - ett val
-	// innan besökaren vet vad hon väljer mellan. Nu är den ett ankare som
-	// stannar på sidan.
-	it('har en sekundär som stannar på sidan i stället för att kräva konto', () => {
-		expect(page).toContain("const LIVING_WORLD_ANCHOR = '#living-world-title';");
+	it('låter den andra direkta vägen öppna den riktiga chatten utan mellanvy', () => {
+		expect(page).toContain("const ANONYMOUS_CHAT_DESTINATION = '/chat';");
 		expect(hero).toMatch(
-			/class="cta-secondary"\s+href=\{LIVING_WORLD_ANCHOR\}\s+onclick=\{scrollToLivingWorld\}/
+			/class="cta-secondary"\s+href=\{ANONYMOUS_CHAT_DESTINATION\}\s+onclick=\{\(\) => trackHomeCta\('hero', 'chatta', ANONYMOUS_CHAT_DESTINATION\)\}/
 		);
-		expect(hero).toContain('Se hur platsen lever');
-		// href ligger kvar så hoppet fungerar utan JS, men scrollen sköts i JS:
-		// webbläsarens hash-navigering gör inget alls vid ett andra klick på
-		// samma hash, så länken blev död efter första användningen.
-		expect(page).toContain("target.scrollIntoView({ block: 'start' })");
-		expect(page).toContain("trackHomeCta('hero', 'se_platsen', LIVING_WORLD_ANCHOR)");
-		// app.css äger både offset och mjuk scroll. Sätts något av det här igen
-		// adderas det ovanpå och rubriken hamnar dubbelt så långt ner.
-		// Deklarationen, inte ordet - kommentaren intill förklarar varför den
-		// inte ska finnas.
-		expect(page).not.toMatch(/scroll-margin-top\s*:/);
-		expect(page).not.toMatch(/behavior:\s*'smooth'/);
+		expect(hero).toContain('Chatta');
+		expect(hero).not.toContain('Se hur platsen lever');
+		expect(hero).not.toContain('/register');
 	});
 
 	// Registreringen hör hemma i avslutande CTA, efter att sidan förklarat vad
@@ -73,26 +60,18 @@ describe('Den publika startsidans hero', () => {
 		expect(publicHome).not.toContain('Skapa en plats för att spara det du skriver');
 	});
 
-	// Ankaret måste gå till en rubrik som finns, annars scrollar klicket
-	// ingenstans. tabindex flyttar tangentbordsfokus med scrollen.
-	it('har ett ankarmål som existerar och tar emot tangentbordsfokus', () => {
-		expect(publicHome).toContain('<h2 id="living-world-title" tabindex="-1">');
-		expect(page).toContain("document.getElementById('living-world-title')");
-	});
-
-	it('beskriver den levande destinationen i CTA-texten', () => {
+	it('behåller rubriken för den levande världen i sidans fortsatta berättelse', () => {
 		expect(publicHome).toContain(
 			'<h2 id="living-world-title" tabindex="-1">Din värld stannar inte här</h2>'
 		);
-		const secondary = hero.slice(hero.indexOf('class="cta-secondary"'));
-		const linkText = secondary.slice(0, secondary.indexOf('</a>'));
-		expect(linkText).toContain('Se hur platsen lever');
 	});
 
 	// Formuleringen är kontrollerad mot diary-draft.ts: anonyma utkast skrivs
 	// bara till localStorage och skickas aldrig till servern.
-	it('säger tröskeln direkt under CTA-raden i stället för i en egen sektion', () => {
-		expect(hero).toContain('Inget konto behövs. Texten stannar i din webbläsare.');
+	it('förklarar diskret skillnaden mellan dagboksutkast och gästchatt', () => {
+		expect(hero).toContain(
+			'Inget konto behövs. Dagboksutkast stannar i din webbläsare; gästchatten sparas inte.'
+		);
 		// Markup, inte fritext: rubrikens namn nämns i kommentaren som
 		// dokumenterar varför sektionen togs bort.
 		expect(publicHome).not.toContain('id="anonymous-title"');
