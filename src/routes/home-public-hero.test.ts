@@ -7,15 +7,16 @@ const hero = publicHome.slice(0, publicHome.indexOf('<!-- 2.'));
 
 describe('Den publika startsidans hero', () => {
 	it('förklarar skrivande, kontinuitet och mönster direkt i den publika grenen', () => {
-		expect(publicHome).toContain('Skriv av dig. Se mönster över tid.');
+		expect(publicHome).toContain('Se hur ditt mående förändras över tid.');
 		expect(publicHome).toContain(
-			'MittPsyke är ett digitalt stöd där du kan skriva, reflektera och följa hur du har det över'
+			'Skriv av dig, reflektera och upptäck vad som återkommer i dina egna ord.'
 		);
+		expect(publicHome).toContain('hjälper dig att förstå ditt mående över tid, i din takt.');
 		expect(publicHome).toContain('Skriv → spara det du vill → se vad som återkommer');
 	});
 
-	// Eyebrown sa ordagrant samma sak som H1 ("Skriv, reflektera och se mönster
-	// över tid" / "Skriv av dig. Se mönster över tid.") och låg raden ovanför.
+	// Eyebrown sa samma sak som H1 och låg raden ovanför. Hero-copy ska börja
+	// direkt med nyttan, utan en extra etikett som skjuter ner huvudbudskapet.
 	// Två rader, ett budskap, på den skärm där raderna är dyrast.
 	it('upprepar inte H1 i en eyebrow ovanför den', () => {
 		expect(hero).not.toContain('Skriv, reflektera och se mönster över tid');
@@ -70,8 +71,9 @@ describe('Den publika startsidans hero', () => {
 	// bara till localStorage och skickas aldrig till servern.
 	it('förklarar diskret skillnaden mellan dagboksutkast och gästchatt', () => {
 		expect(hero).toContain(
-			'Inget konto behövs. Dagboksutkast stannar i din webbläsare; gästchatten sparas inte.'
+			'Skriv anonymt i din dagbok eller chatta direkt utan konto. Dagboksutkast sparas lokalt i'
 		);
+		expect(hero).toContain('din webbläsare; gästchatten sparas inte.');
 		// Markup, inte fritext: rubrikens namn nämns i kommentaren som
 		// dokumenterar varför sektionen togs bort.
 		expect(publicHome).not.toContain('id="anonymous-title"');

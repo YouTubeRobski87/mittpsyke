@@ -45,11 +45,10 @@
 	<section class="home-hero" aria-labelledby="hero-title">
 		<div class="home-inner hero-grid">
 			<div class="hero-copy">
-				<h1 id="hero-title">Skriv av dig. Se mönster över tid.</h1>
+				<h1 id="hero-title">Se hur ditt mående förändras över tid.</h1>
 				<p class="lead">
-					MittPsyke är ett digitalt stöd där du kan skriva, reflektera och följa hur du har det över
-					tid. Det du väljer att spara finns kvar när du återvänder, så att återkommande tankar och
-					förändringar blir lättare att upptäcka.
+					Skriv av dig, reflektera och upptäck vad som återkommer i dina egna ord. MittPsyke
+					hjälper dig att förstå ditt mående över tid, i din takt.
 				</p>
 				<div class="hero-actions">
 					<a
@@ -74,7 +73,8 @@
 					 utkast skrivs bara till localStorage i diary-draft.ts och
 					 skickas aldrig till servern. -->
 				<p class="cta-micro">
-					Inget konto behövs. Dagboksutkast stannar i din webbläsare; gästchatten sparas inte.
+					Skriv anonymt i din dagbok eller chatta direkt utan konto. Dagboksutkast sparas lokalt i
+					din webbläsare; gästchatten sparas inte.
 				</p>
 				<p class="product-path" aria-label="Så fungerar det: skriv, spara det du vill och se vad som återkommer.">
 					<span aria-hidden="true">Skriv → spara det du vill → se vad som återkommer</span>
