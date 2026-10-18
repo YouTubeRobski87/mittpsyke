@@ -94,14 +94,14 @@ function authClient(user: { id: string; user_metadata?: unknown } | null) {
 		}
 
 		if (table === 'messages') {
+			const historyQuery = {
+				order: vi.fn(() => historyQuery),
+				limit: vi.fn().mockResolvedValue({ data: [], error: null })
+			};
 			return {
 				insert: insertMessage,
 				select: vi.fn(() => ({
-					eq: vi.fn(() => ({
-						order: vi.fn(() => ({
-							limit: vi.fn().mockResolvedValue({ data: [], error: null })
-						}))
-					}))
+					eq: vi.fn(() => historyQuery)
 				}))
 			};
 		}

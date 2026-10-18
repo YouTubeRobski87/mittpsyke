@@ -668,8 +668,9 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 				.from('messages')
 				.select('role, content')
 				.eq('conversation_id', conversationId)
-				.order('created_at', { ascending: true })
-				.limit(20);
+				.order('created_at', { ascending: false })
+				.order('id', { ascending: false })
+				.limit(CHAT_CONTEXT_LIMIT);
 
 			if (previousMessagesError) {
 				console.error('Failed to load conversation history:', previousMessagesError);
@@ -707,7 +708,14 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 				console.error('[chat] kunde inte skriva retentionmilestones:', retentionError);
 			}
 
-			const promptHistory = getChatContextMessages(previousMessages, CHAT_CONTEXT_LIMIT);
+			// Databasen returnerar de senaste raderna först så att limit faktiskt
+			// avgränsar till aktuell historik. Modellen och minnesflödet får dem
+			// därefter i kronologisk ordning, äldst först.
+			const chronologicalPreviousMessages = [...(previousMessages ?? [])].reverse();
+			const promptHistory = getChatContextMessages(
+				chronologicalPreviousMessages,
+				CHAT_CONTEXT_LIMIT
+			);
 
 			const contextSource = contextMessages.length > 0 ? 'client' : 'database';
 			const modelContext =
@@ -774,7 +782,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 			}
 
 			// Uppdatera användarminnet i bakgrunden (best effort, blockerar inte svaret).
-			const priorRows = (previousMessages ?? []) as Array<{ role: string; content: string }>;
+			const priorRows = chronologicalPreviousMessages as Array<{ role: string; content: string }>;
 			const memoryHistory: MemoryHistoryMessage[] = [
 				...priorRows
 					.filter((row) => row.role === 'user' || row.role === 'assistant')
