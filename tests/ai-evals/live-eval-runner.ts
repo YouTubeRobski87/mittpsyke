@@ -80,9 +80,11 @@ function formatLiveReport(run: Omit<LiveEvalRun, 'reportPath'>) {
 		lines.push(`- Live response: ${item.response || '(inget svar)'}`);
 		if (item.failure) lines.push(`- Failure: ${item.failure}`);
 		if (evaluation) {
-			lines.push(`- Eval: ${evaluation.passed ? 'PASS' : 'FAIL'} (${evaluation.overall * 10}%)`);
+			lines.push(`- Eval: ${evaluation.passed ? 'PASS' : 'FAIL'} (heuristiskt bedömarsnitt ${evaluation.overall}/10)`);
 			for (const result of evaluation.results) {
-				lines.push(`  - ${result.name}: ${result.score}/10${result.hardFail ? ' hard fail' : ''}${result.issues.length ? ` - ${result.issues.join(' ')}` : ''}`);
+				lines.push(
+					`  - ${result.name}: ${result.score}/10${result.hardFail ? ' hard fail' : ''}${result.issues.length ? ` - ${result.issues.join(' ')}` : ''}`
+				);
 			}
 		}
 		lines.push('');
@@ -127,14 +129,18 @@ export async function runLiveModelEvaluation(options: LiveEvalOptions = {}): Pro
 	}
 
 	const byId = new Map(liveResults.map((item) => [item.scenario.id, item]));
-	const report = await runAiEvaluations(
-		scenarios,
-		(scenario) => byId.get(scenario.id)?.response ?? '',
-		{ model: providerName }
-	);
+	const report = await runAiEvaluations(scenarios, (scenario) => byId.get(scenario.id)?.response ?? '', {
+		model: providerName,
+		mode: 'model-generated'
+	});
 	const shouldWriteReport = options.writeReport ?? true;
-	const reportPath = shouldWriteReport ? options.reportPath ?? defaultReportPath() : null;
-	const run = { provider: providerName, report, scenarios: liveResults, reportPath };
+	const reportPath = shouldWriteReport ? (options.reportPath ?? defaultReportPath()) : null;
+	const run = {
+		provider: providerName,
+		report,
+		scenarios: liveResults,
+		reportPath
+	};
 
 	if (reportPath) {
 		await mkdir(dirname(reportPath), { recursive: true });
