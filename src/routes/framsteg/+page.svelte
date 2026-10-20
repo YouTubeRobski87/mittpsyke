@@ -1738,7 +1738,7 @@
 
 						{#if supportView.breathingRoom.length > 0}
 							<div class="analysis-section">
-								<h3>Det som verkar ge lite andrum</h3>
+								<h3>Teman under dagar med högre registrerat mående</h3>
 								<ul class="support-topics">
 									{#each supportView.breathingRoom as topic}
 										<li>
@@ -1763,7 +1763,7 @@
 								aria-expanded={supportExamplesOpen}
 								onclick={toggleSupportExamples}
 							>
-								{supportExamplesOpen ? 'Dölj det som hjälpt tidigare' : 'Visa vad som hjälpt tidigare'}
+								{supportExamplesOpen ? 'Dölj tidigare anteckningar' : 'Utforska vad du har skrivit tidigare'}
 							</button>
 							{#if supportExamplesOpen}
 								{#if supportExamples.length > 0}

@@ -50,7 +50,7 @@ export interface SupportView {
 	/** Sant när den senaste tiden ligger lågt. Styr ton och hur många förslag som visas. */
 	heavyPeriod: boolean;
 	suggestions: SupportSuggestion[];
-	/** Teman som återkommer i lättare perioder. Visas som "Det som verkar ge lite andrum". */
+	/** Teman som återkommer under dagar med högre registrerat mående. */
 	breathingRoom: string[];
 	examples: SupportExample[];
 }

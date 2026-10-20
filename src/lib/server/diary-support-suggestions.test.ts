@@ -27,6 +27,25 @@ function walkHistory(): DiaryInsightRow[] {
 }
 
 describe('underlagskravet', () => {
+	it('skapar inte ett promenadförslag från flera anteckningar under samma dag', () => {
+		const rows: DiaryInsightRow[] = [
+			...Array.from({ length: 4 }, (_, index) => ({
+				created_at: `2026-08-01T${String(8 + index).padStart(2, '0')}:00:00.000Z`,
+				mood: 9,
+				text: 'Promenad i parken.'
+			})),
+			...Array.from({ length: 4 }, (_, index) => ({
+				created_at: `2026-08-${String(2 + index).padStart(2, '0')}T12:00:00.000Z`,
+				mood: 3,
+				text: 'En vanlig dag hemma.'
+			}))
+		];
+		const view = buildSupportView(rows, { now: NOW });
+
+		expect(view.suggestions.some((item) => item.topicLabel === 'Motion')).toBe(false);
+		expect(view.breathingRoom).not.toContain('Motion');
+	});
+
 	it('sprider inte generiska ord till stödförslag', () => {
 		const generic = ['Det är mycket på bordet.', 'Jag vill läsa en bok.', 'Jag var ute en stund.', 'Okej.'];
 		const rows: DiaryInsightRow[] = Array.from({ length: 12 }, (_, index) => ({
@@ -68,7 +87,7 @@ describe('underlagskravet', () => {
 		expect(view.learning).toBe(false);
 		expect(walk).toBeDefined();
 		expect(walk?.topicLabel).toBe('Motion');
-		expect(walk?.evidence).toMatch(/humörsnitt/);
+		expect(walk?.evidence).toMatch(/dagar med registrerat humör/);
 		expect(view.breathingRoom).toContain('Motion');
 	});
 });

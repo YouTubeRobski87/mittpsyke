@@ -158,6 +158,11 @@ describe('anteckningen räknas fram ur data, inte ur temats position', () => {
 			expect(source).not.toContain('Det som verkar hjälpa');
 			expect(source).not.toMatch(/NOTES\[index\]/);
 		}
+		const progressPage = sources[2];
+		expect(progressPage).toContain('Teman under dagar med högre registrerat mående');
+		expect(progressPage).toContain('Utforska vad du har skrivit tidigare');
+		expect(progressPage).not.toContain('Det som verkar ge lite andrum');
+		expect(progressPage).not.toContain('vad som hjälpt tidigare');
 	});
 });
 
