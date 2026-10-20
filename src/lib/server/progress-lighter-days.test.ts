@@ -19,6 +19,17 @@ function baseline(prefix = 'b'): LighterDaysRow[] {
 }
 
 describe('tröskeln: minst 3 förekomster under minst 2 veckor', () => {
+	it('sprider inte generiska ord till lättare dagars teman', () => {
+		const rows = [
+			entry('g1', '2026-06-02', 8, 'Det är mycket på bordet.'),
+			entry('g2', '2026-06-10', 8, 'Jag vill läsa en bok.'),
+			entry('g3', '2026-06-18', 8, 'Jag var ute en stund och allt kändes okej.'),
+			...baseline()
+		];
+
+		expect(buildLighterDaysView(rows, 30, {}, NOW).themes).toEqual([]);
+	});
+
 	it('visar ett tema med 3 förekomster spridda över 2 veckor', () => {
 		const rows = [
 			entry('p1', '2026-06-02', 8, 'Tog en promenad i kvarteret.'),

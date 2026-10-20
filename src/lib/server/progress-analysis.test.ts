@@ -55,6 +55,15 @@ describe('Framstegsanalysens skala och riktning', () => {
 });
 
 describe('Framstegsanalysens temaunderlag', () => {
+	it('sprider inte generiska ord till teman eller humörsamband', () => {
+		const generic = ['Det är mycket på bordet.', 'Jag vill läsa en bok.', 'Jag var ute en stund.', 'Okej.'];
+		const rows = days('2026-07-18', [8, 8, 8, 8, 4, 4, 4, 4], (index) => generic[index % generic.length]);
+		const analysis = buildProgressAnalysis(rows, 30, NOW);
+
+		expect(analysis.themes).toEqual([]);
+		expect(analysis.themeMoodAssociations).toEqual([]);
+	});
+
 	it('identifierar en robust tema × mående-association utan kausal formulering', () => {
 		const rows: DiaryInsightRow[] = [
 			...days('2026-07-18', [3, 3, 3, 3, 3, 3], () => 'Stress och press tar mycket plats i dag.'),

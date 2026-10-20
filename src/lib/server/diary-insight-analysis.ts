@@ -33,26 +33,59 @@ const MIN_ASSOCIATION_COMPARISON_ENTRIES = 3;
 export const MOOD_ASSOCIATION_THRESHOLD = 0.75;
 
 export const TOPICS: TopicDefinition[] = [
-	{ label: 'Barnen', keywords: ['barn', 'son', 'dotter', 'familj', 'förälder', 'föräldra'] },
-	{ label: 'Stress', keywords: ['stress', 'stressad', 'press', 'mycket', 'överväldig', 'hinner', 'måste'] },
-	{ label: 'Sömn', keywords: ['sömn', 'sover', 'sova', 'trött', 'vaken', 'natt', 'somna'] },
-	{ label: 'Arbete', keywords: ['jobb', 'jobbet', 'arbete', 'kollega', 'möte', 'chef'] },
-	{ label: 'Motion', keywords: ['motion', 'träning', 'promenad', 'spring', 'gym', 'rörelse'] },
-	{ label: 'Relationer', keywords: ['relation', 'partner', 'vän', 'vänner', 'mamma', 'pappa', 'sambo'] },
-	{ label: 'Framtiden', keywords: ['framtid', 'senare', 'projekt', 'plan', 'hoppas', 'vill', 'dröm'] },
-	{ label: 'Oro', keywords: ['oro', 'orolig', 'ångest', 'rädd', 'nervös', 'grubblar'] },
-	{ label: 'Återhämtning', keywords: ['vila', 'återhämt', 'paus', 'lugn', 'andas', 'landat'] },
-	{ label: 'Självmedkänsla', keywords: ['snäll mot mig', 'okej', 'räcker', 'förlåta', 'mildare'] },
-	{ label: 'Tacksamhet', keywords: ['tacksam', 'glad för', 'fint', 'värme', 'lättnad'] },
-	{ label: 'Ekonomi', keywords: ['ekonomi', 'pengar', 'räkning', 'räkningar', 'skuld', 'lön'] },
+	{ label: 'Barnen', keywords: ['barn', 'barnen', 'barnet', 'son', 'sonen', 'dotter', 'dottern', 'familj', 'familjen', 'förälder', 'föräldrar', 'föräldraskap'] },
+	{ label: 'Stress', keywords: ['stress', 'stressen', 'stressad', 'stressigt', 'stressande', 'pressad', 'pressat', 'pressande', 'under press', 'överväldigad', 'överväldigande'] },
+	{ label: 'Sömn', keywords: ['sömn', 'sömnen', 'sömnproblem', 'sover', 'sovit', 'sova', 'trött', 'trötthet', 'vaken', 'vaknade', 'somna', 'somnade'] },
+	{ label: 'Arbete', keywords: ['jobb', 'jobbet', 'jobba', 'jobbar', 'arbete', 'arbetet', 'arbetsdag', 'kollega', 'kollegor', 'chef', 'chefen'] },
+	{ label: 'Motion', keywords: ['motion', 'träning', 'tränar', 'tränade', 'promenad', 'promenaden', 'promenader', 'promenerar', 'promenerade', 'springa', 'sprang', 'jogga', 'joggade', 'gym', 'gymmet'] },
+	{ label: 'Relationer', keywords: ['relation', 'relationen', 'relationer', 'partner', 'vän', 'vännen', 'vänner', 'mamma', 'pappa', 'sambo'] },
+	{ label: 'Framtiden', keywords: ['framtid', 'framtiden', 'plan', 'planer', 'planera', 'planerat', 'hoppas'] },
+	{ label: 'Oro', keywords: ['oro', 'orolig', 'oroligt', 'ångest', 'rädd', 'nervös', 'grubblar', 'grubblade'] },
+	{ label: 'Återhämtning', keywords: ['vila', 'vilade', 'vilar', 'återhämtning', 'återhämtade', 'paus', 'lugn', 'lugnt'] },
+	{ label: 'Självmedkänsla', keywords: ['snäll mot mig själv', 'vara snäll mot mig', 'det får räcka', 'förlåta mig själv', 'mildare mot mig själv'] },
+	{ label: 'Tacksamhet', keywords: ['tacksam', 'tacksamhet', 'glad för'] },
+	{ label: 'Ekonomi', keywords: ['ekonomi', 'ekonomin', 'pengar', 'räkningar', 'betala räkning', 'betala räkningar', 'skulder', 'lön', 'lönen'] },
 	{ label: 'Ensamhet', keywords: ['ensam', 'ensamhet', 'isolerad', 'isolation'] },
-	{ label: 'Konflikter', keywords: ['bråk', 'konflikt', 'gräl', 'osams', 'tjafs'] },
-	{ label: 'Natur', keywords: ['natur', 'skog', 'sjö', 'ute', 'utomhus', 'park'] },
-	{ label: 'Struktur', keywords: ['rutin', 'rutiner', 'struktur', 'planering', 'planerat'] },
-	{ label: 'Social kontakt', keywords: ['umgås', 'umgänge', 'träffa', 'sällskap', 'prata med'] },
-	{ label: 'Kreativitet', keywords: ['kreativ', 'skapande', 'måla', 'målar', 'målade', 'musik', 'sjunga', 'pyssel', 'fotografera'] },
-	{ label: 'MittPsyke', keywords: ['mittpsyke', 'dagbok', 'skriva', 'reflektion'] }
+	{ label: 'Konflikter', keywords: ['bråk', 'konflikt', 'konflikter', 'gräl', 'osams', 'tjafs'] },
+	{ label: 'Natur', keywords: ['natur', 'naturen', 'skog', 'skogen', 'sjö', 'sjön', 'utomhus', 'park', 'parken'] },
+	{ label: 'Struktur', keywords: ['rutin', 'rutinen', 'rutiner', 'struktur', 'planering', 'planerat'] },
+	{ label: 'Social kontakt', keywords: ['umgås', 'umgänge', 'träffa en vän', 'träffa vänner'] },
+	{ label: 'Kreativitet', keywords: ['kreativ', 'kreativitet', 'skapande', 'måla', 'målar', 'målade', 'sjunga', 'pyssel', 'fotografera'] },
+	{ label: 'MittPsyke', keywords: ['mittpsyke', 'dagbok', 'dagboken'] }
 ];
+
+const NEGATION_WORDS = new Set(['inte', 'ingen', 'inget', 'inga', 'aldrig', 'varken', 'utan', 'knappast']);
+
+function escapeRegExp(value: string): string {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Matchar hela svenska ord/fraser och avstår vid en närliggande tydlig negation. */
+export function hasTopicKeyword(text: string, keywords: readonly string[]): boolean {
+	const normalized = text.toLocaleLowerCase('sv-SE');
+	for (const keyword of keywords) {
+		const pattern = new RegExp(`(?:^|[^\\p{L}\\p{N}])(${escapeRegExp(keyword.toLocaleLowerCase('sv-SE'))})(?=$|[^\\p{L}\\p{N}])`, 'gu');
+		for (const match of normalized.matchAll(pattern)) {
+			const matchStart = (match.index ?? 0) + match[0].length - match[1].length;
+			const precedingText = normalized.slice(0, matchStart).split(/[.!?;:\n]/).at(-1) ?? '';
+			const precedingWords = precedingText.match(/[\p{L}\p{N}]+/gu)?.slice(-5) ?? [];
+			if (!precedingWords.some((word) => NEGATION_WORDS.has(word))) return true;
+		}
+	}
+	return false;
+}
+
+export function detectTopicHits(text: string): Map<string, number> {
+	const hits = new Map<string, number>();
+	for (const topic of TOPICS) {
+		if (hasTopicKeyword(text, topic.keywords)) hits.set(topic.label, 1);
+	}
+	return hits;
+}
+
+export function detectTopicLabels(text: string): string[] {
+	return [...detectTopicHits(text).keys()];
+}
 
 function parseMood(value: unknown): number | null {
 	if (typeof value === 'number' && Number.isFinite(value)) return value;
@@ -72,15 +105,6 @@ export function formatDate(date: Date | null) {
 	return new Intl.DateTimeFormat('sv-SE', { year: 'numeric', month: 'short', day: 'numeric' }).format(date);
 }
 
-function countTopicHits(text: string) {
-	const hits = new Map<string, number>();
-	for (const topic of TOPICS) {
-		const count = topic.keywords.reduce((sum, keyword) => sum + (text.includes(keyword) ? 1 : 0), 0);
-		if (count > 0) hits.set(topic.label, count);
-	}
-	return hits;
-}
-
 export function prepareEntries(rows: DiaryInsightRow[]): PreparedEntry[] {
 	return rows
 		.map((row) => {
@@ -94,7 +118,7 @@ export function prepareEntries(rows: DiaryInsightRow[]): PreparedEntry[] {
 				mood: parseMood(row.mood),
 				text,
 				wordCount: text.split(/\s+/).filter(Boolean).length,
-				topicHits: countTopicHits(text.toLowerCase())
+				topicHits: detectTopicHits(text)
 			};
 		})
 		.filter((entry): entry is PreparedEntry => entry !== null)

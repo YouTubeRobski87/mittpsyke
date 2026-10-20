@@ -67,6 +67,18 @@ describe('varje påstående måste gå att spåra', () => {
 		expect(parseLighterDaysSummary(raw, sources)).toEqual([]);
 	});
 
+	it('dokumenterar att ett giltigt källnummer inte semantiskt verifierar påståendet', () => {
+		const raw = JSON.stringify({
+			statements: [{ text: 'Arbete förekom under perioden.', sources: [1] }]
+		});
+		const [statement] = parseLighterDaysSummary(raw, sources);
+
+		// Detta är en karakterisering av den kvarvarande P1-bristen, inte en säkerhetsgaranti:
+		// parsern accepterar texten trots att källan bara beskriver en promenad.
+		expect(statement.text).toBe('Arbete förekom under perioden.');
+		expect(statement.sources[0].excerpt).toBe('En promenad till affären.');
+	});
+
 	it('kastar identitets-, diagnos- och orsakspåståenden även med giltiga källor', () => {
 		const raw = JSON.stringify({
 			statements: [

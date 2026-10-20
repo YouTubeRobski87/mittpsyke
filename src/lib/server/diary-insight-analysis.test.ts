@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as insightAnalysis from './diary-insight-analysis';
-import { buildTopicMoodAssociations, prepareEntries, type DiaryInsightRow } from './diary-insight-analysis';
+import { buildTopicMoodAssociations, detectTopicLabels, prepareEntries, type DiaryInsightRow } from './diary-insight-analysis';
 
 function rows(
 	count: number,
@@ -16,6 +16,27 @@ function rows(
 }
 
 describe('tema och humör i dagboksinläggen', () => {
+	it('låter inte generiska ord ensamma skapa teman', () => {
+		for (const text of ['Det är mycket på bordet.', 'Jag vill läsa en bok.', 'Jag var ute en stund.', 'Okej.']) {
+			expect(detectTopicLabels(text), text).toEqual([]);
+		}
+	});
+
+	it('matchar hela svenska ord i stället för delsträngar', () => {
+		expect(detectTopicLabels('Jag sökte äventyr på söndagen och fick sparken.')).toEqual([]);
+		expect(detectTopicLabels('Jag tog en promenad i skogen efter jobbet.')).toEqual(['Arbete', 'Motion', 'Natur']);
+	});
+
+	it('avstår vid tydligt negerade teman men hittar ett senare uttryckligt omnämnande', () => {
+		expect(detectTopicLabels('Jag är inte stressad och känner ingen oro. Det blev ingen promenad.')).toEqual([]);
+		expect(detectTopicLabels('Jag är inte stressad idag. Stressen var däremot tydlig igår.')).toEqual(['Stress']);
+	});
+
+	it('kräver en otvetydig fras för självmedkänsla', () => {
+		expect(detectTopicLabels('Det känns okej.')).toEqual([]);
+		expect(detectTopicLabels('Jag försöker vara snäll mot mig själv.')).toEqual(['Självmedkänsla']);
+	});
+
 	it('kopplar bara teman till måendet när jämförelsegruppen är tillräcklig', () => {
 		const entries = prepareEntries([
 			...rows(4, 1, 3, 'Stress och ekonomi känns tungt i dag.'),

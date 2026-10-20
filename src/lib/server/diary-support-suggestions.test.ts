@@ -27,6 +27,19 @@ function walkHistory(): DiaryInsightRow[] {
 }
 
 describe('underlagskravet', () => {
+	it('sprider inte generiska ord till stödförslag', () => {
+		const generic = ['Det är mycket på bordet.', 'Jag vill läsa en bok.', 'Jag var ute en stund.', 'Okej.'];
+		const rows: DiaryInsightRow[] = Array.from({ length: 12 }, (_, index) => ({
+			created_at: dayBefore(index + 1),
+			mood: index < 6 ? 8 : 4,
+			text: generic[index % generic.length]
+		}));
+		const view = buildSupportView(rows, { now: NOW });
+
+		expect(view.breathingRoom).toEqual([]);
+		expect(view.suggestions.some((item) => item.topicLabel === 'Natur')).toBe(false);
+	});
+
 	it('skapar inga förslag alls när historiken är för kort', () => {
 		const rows: DiaryInsightRow[] = [
 			{ created_at: dayBefore(1), mood: 7, text: 'En promenad idag.' },
@@ -127,7 +140,7 @@ describe('säkerhetsspärren', () => {
 describe('exempel ur den egna historiken', () => {
 	it('citerar bara meningen där temat faktiskt nämns', () => {
 		expect(
-			extractTopicSentence('Vaknade sent. Efter promenaden kändes det lite lättare än på morgonen.', ['promenad'])
+			extractTopicSentence('Vaknade sent. Efter promenaden kändes det lite lättare än på morgonen.', ['promenad', 'promenaden'])
 		).toBe('Efter promenaden kändes det lite lättare än på morgonen.');
 	});
 

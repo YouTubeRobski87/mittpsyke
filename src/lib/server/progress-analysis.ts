@@ -1,5 +1,5 @@
 import { shiftDateKey, stockholmTodayKey, toStockholmDateKey } from '$lib/stockholm-date';
-import { TOPICS, type DiaryInsightRow } from '$lib/server/diary-insight-analysis';
+import { TOPICS, detectTopicLabels, type DiaryInsightRow } from '$lib/server/diary-insight-analysis';
 import {
 	getThemeDisplayLabel,
 	isThemeHidden,
@@ -177,12 +177,12 @@ function confidence(count: number, difference: number): Exclude<AnalysisConfiden
 
 /** Only exact, known tag labels supplement the existing conservative keyword themes. */
 export function detectThemes(text: string, tags: string[] | null | undefined): string[] {
-	const normalizedText = text.toLocaleLowerCase('sv-SE');
 	const normalizedTags = new Set((tags ?? []).filter((tag): tag is string => typeof tag === 'string').map((tag) => tag.trim().toLocaleLowerCase('sv-SE')));
-	return TOPICS.filter((topic) => {
-		const label = topic.label.toLocaleLowerCase('sv-SE');
-		return topic.keywords.some((keyword) => normalizedText.includes(keyword)) || normalizedTags.has(label);
-	}).map((topic) => topic.label);
+	const detected = new Set(detectTopicLabels(text));
+	for (const topic of TOPICS) {
+		if (normalizedTags.has(topic.label.toLocaleLowerCase('sv-SE'))) detected.add(topic.label);
+	}
+	return TOPICS.map((topic) => topic.label).filter((label) => detected.has(label));
 }
 
 export function getProgressPeriodBounds(periodDays: ProgressPeriodDays, now: Date = new Date()) {

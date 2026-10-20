@@ -14,6 +14,7 @@ import {
 	TOPICS,
 	buildTopicMoodAssociations,
 	formatDate,
+	hasTopicKeyword,
 	prepareEntries,
 	type DiaryInsightRow,
 	type PreparedEntry
@@ -134,11 +135,8 @@ export function extractTopicSentence(text: string, keywords: string[]): string |
 		.split(/(?<=[.!?])\s+|\n+/)
 		.map((sentence) => sentence.trim())
 		.filter(Boolean);
-	const lowered = keywords.map((keyword) => keyword.toLowerCase());
-
 	for (const sentence of sentences) {
-		const normalized = sentence.toLowerCase();
-		if (!lowered.some((keyword) => normalized.includes(keyword))) continue;
+		if (!hasTopicKeyword(sentence, keywords)) continue;
 		if (sentence.length < MIN_QUOTE_LENGTH) continue;
 		if (sentence.length > MAX_QUOTE_LENGTH) continue;
 		if (!isQuoteSafe(sentence)) continue;
