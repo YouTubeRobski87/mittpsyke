@@ -33,13 +33,15 @@ describe('AI-sammanfattningens underlag', () => {
 			expect(original?.text).toContain(source.excerpt);
 		}
 		const request = buildLighterDaysSummaryRequest(view, sources);
+		const systemInstructions = request.systemInstructions;
+		if (!systemInstructions) throw new Error('Sammanfattningens request måste innehålla systeminstruktioner.');
 		const prompt = request.messages.map((message) => message.content).join('\n');
 		expect(prompt).toContain('[1]');
 		// Inlägg utan temat (jämförelsegruppen) skickas aldrig.
 		expect(prompt).not.toContain('Vanlig dag hemma.');
-		expect(request.systemInstructions.join('\n')).toContain('återkommande mönster, förändring eller kontinuitet över tid');
-		expect(request.systemInstructions.join('\n')).toContain('inte med en uppräkning av enskilda datum');
-		expect(request.systemInstructions.join('\n')).toContain('observation och försiktig tolkning');
+		expect(systemInstructions.join('\n')).toContain('återkommande mönster, förändring eller kontinuitet över tid');
+		expect(systemInstructions.join('\n')).toContain('inte med en uppräkning av enskilda datum');
+		expect(systemInstructions.join('\n')).toContain('observation och försiktig tolkning');
 		expect(request.outputFormat).toBe('json_object');
 	});
 });
