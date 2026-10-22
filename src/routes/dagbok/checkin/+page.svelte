@@ -54,11 +54,21 @@
 		type DiaryEntry
 	} from '$lib/state/diary';
 	import { recordSuccessfulReflectionSave } from '$lib/diary-events';
+	import {
+		LOAD_RETRY_LABEL,
+		NOTES_LOAD_ERROR_MESSAGE,
+		NOTES_LOADING_MESSAGE,
+		initialLoadState,
+		loadStateAfterClientFetch,
+		type LoadState,
+		type LoadStatus
+	} from '$lib/load-state';
 	import type { Session, User } from '@supabase/supabase-js';
 
 	type PageData = {
 		entries?: DiaryEntry[];
 		hasMoreEntries?: boolean;
+		entriesStatus?: LoadStatus;
 		session?: Session | null;
 	};
 
@@ -113,6 +123,8 @@
 	let { data } = $props<{ data: PageData }>();
 
 	let entries = $state<DiaryEntry[]>([]);
+	// Skiljer "inga inlägg" från "kunde inte hämta". Tomt läge visas bara i 'ready'.
+	let entriesState = $state<LoadState>('loading');
 	let loading = $state(false);
 	let loadingMoreEntries = $state(false);
 	let hasMoreEntries = $state(false);
@@ -209,6 +221,9 @@
 		entries = data.entries ?? [];
 		hasMoreEntries = data.hasMoreEntries ?? false;
 		sessionUser = data.session?.user ?? null;
+		// Serverfel: klienten försöker igen i initializeDiary och visar laddning
+		// under tiden, aldrig tomt läge.
+		entriesState = initialLoadState(data.entriesStatus);
 	});
 
 	function formatDate(value: string | null): string {
@@ -487,9 +502,22 @@
 			});
 			currentPage = pageAfterLoadingMore(previousCount, entries.length, entriesPerPage, currentPage);
 		} catch (error) {
-			loadError = error instanceof Error ? error.message : 'Kunde inte hämta fler inlägg just nu.';
+			console.error('Dagbok: kunde inte hämta fler inlägg', error);
+			loadError = 'Kunde inte hämta fler inlägg just nu. Försök igen om en liten stund.';
 		} finally {
 			loadingMoreEntries = false;
+		}
+	}
+
+	/** Ny hämtning efter ett fel. Listan visas först när hämtningen faktiskt lyckats. */
+	async function retryLoadEntries() {
+		entriesState = 'loading';
+		try {
+			await loadEntries({ force: true });
+			entriesState = loadStateAfterClientFetch('loading', true);
+		} catch (error) {
+			console.error('Dagbok: kunde inte hämta inlägg', error);
+			entriesState = loadStateAfterClientFetch('loading', false);
 		}
 	}
 
@@ -1164,6 +1192,7 @@
 		if (!sessionUser) {
 			entries = [];
 			hasMoreEntries = false;
+			entriesState = 'ready';
 			loading = false;
 			return;
 		}
@@ -1213,10 +1242,22 @@
 			await openWriteEditor();
 		}
 
-		try {
-			if (entries.length === 0) {
+		// Inläggen hämtas i ett eget try, så att ett fel här aldrig blandas ihop
+		// med milstolparna nedan och aldrig visas som en tom dagbok.
+		if (entries.length === 0 || entriesState !== 'ready') {
+			// Har servern redan bekräftat en tom lista är den tomma listan sann,
+			// och en misslyckad extra kontroll här ska inte göra den till ett fel.
+			const stateBeforeFetch = entriesState;
+			try {
 				await loadEntries();
+				entriesState = loadStateAfterClientFetch(stateBeforeFetch, true);
+			} catch (error) {
+				console.error('Dagbok: kunde inte hämta inlägg', error);
+				entriesState = loadStateAfterClientFetch(stateBeforeFetch, false);
 			}
+		}
+
+		try {
 			const milestoneUserId = getMilestoneUserId();
 			const pendingMilestone = consumePendingMilestone(milestoneUserId);
 			if (pendingMilestone === 'first_diary_entry') {
@@ -1227,7 +1268,8 @@
 				});
 			}
 		} catch (error) {
-			loadError = error instanceof Error ? error.message : 'Kunde inte ladda dagboken just nu.';
+			// Gäller bara milstolpen. Inläggen hanteras ovan och påverkas inte.
+			console.error('Dagbok: kunde inte visa milstolpe', error);
 		} finally {
 			loading = false;
 		}
@@ -1666,7 +1708,18 @@
 						</section>
 					{/if}
 
-					{#if entries.length === 0}
+					{#if entriesState === 'error'}
+						<section class="auth-panel auth-panel-error" role="alert" data-testid="diary-entries-error">
+							<p class="text-sm">{NOTES_LOAD_ERROR_MESSAGE}</p>
+							<button type="button" class="auth-button mt-3" onclick={retryLoadEntries}>
+								{LOAD_RETRY_LABEL}
+							</button>
+						</section>
+					{:else if entriesState === 'loading'}
+						<section class="auth-panel" aria-busy="true" data-testid="diary-entries-loading">
+							<p class="text-sm auth-muted">{NOTES_LOADING_MESSAGE}</p>
+						</section>
+					{:else if entries.length === 0}
 						<section class="auth-panel">
 							<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
 							<p class="mt-2 text-sm auth-muted">Det räcker med några ord. Skriv i lugn och ro, i din egen takt.</p>

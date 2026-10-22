@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import type { LoadStatus } from '$lib/load-state';
 import type { PageServerLoad } from './$types';
 
 type DiaryEntry = {
@@ -54,6 +55,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	let entries: DiaryEntry[] = [];
 	let hasMoreEntries = false;
+	// En tom lista får inte betyda "kunde inte hämta". Felet följer med till
+	// klienten så att den kan försöka igen i stället för att visa tomt läge.
+	let entriesStatus: LoadStatus = 'ready';
 
 	const diaryQuery = await locals.supabase
 		.from('diary')
@@ -83,8 +87,14 @@ export const load: PageServerLoad = async ({ locals }) => {
 			}));
 			hasMoreEntries = mappedEntries.length > INITIAL_DIARY_ENTRY_LIMIT;
 			entries = mappedEntries.slice(0, INITIAL_DIARY_ENTRY_LIMIT);
+		} else {
+			console.error('Dagbok: kunde inte läsa journal_entries', { code: legacyQuery.error.code });
+			entriesStatus = 'error';
 		}
-	} else if (!diaryQuery.error) {
+	} else if (diaryQuery.error) {
+		console.error('Dagbok: kunde inte läsa diary', { code: diaryQuery.error.code });
+		entriesStatus = 'error';
+	} else {
 		const mappedEntries = (diaryQuery.data ?? []).map((row) => ({
 			id: typeof row.id === 'string' ? row.id : '',
 			content: typeof row.text === 'string' ? row.text : '',
@@ -105,6 +115,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		noindex: true,
 		isLoggedIn: true,
 		entries,
-		hasMoreEntries
+		hasMoreEntries,
+		entriesStatus
 	};
 };
