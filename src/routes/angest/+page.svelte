@@ -108,7 +108,7 @@
 		about: { '@type': 'Thing', name: 'Ångest' },
 		dateModified: data.lastUpdated,
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
-	})}<\/script>`}
+	}).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029')}<\/script>`}
 </svelte:head>
 
 <main class="landing-page">
