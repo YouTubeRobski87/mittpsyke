@@ -486,6 +486,9 @@
 		const page = await loadDiaryEntriesPage(userId, options);
 		entries = page.entries;
 		hasMoreEntries = page.hasMore;
+		// En lyckad hämtning, oavsett varifrån (sparande, ändring, nytt försök),
+		// ger en lista som stämmer. Ett tidigare fel får inte dölja den.
+		entriesState = 'ready';
 	}
 
 	async function loadMoreEntries() {

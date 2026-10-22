@@ -193,6 +193,17 @@ describe('dagbokens mall', () => {
 		expect(errorBranch).not.toMatch(/error\.message|loadError/);
 	});
 
+	// Regression: efter ett fel och ett lyckat sparande låg listan kvar dold
+	// bakom felrutan, eftersom bara de nya försöken satte tillståndet.
+	it('varje lyckad hämtning av inläggen lämnar feltillståndet', () => {
+		const start = source.indexOf('async function loadEntries(');
+		const body = source.slice(start, source.indexOf('\n\t}\n', start));
+		const assignment = body.indexOf('entries = page.entries;');
+
+		expect(assignment).toBeGreaterThan(-1);
+		expect(body.indexOf("entriesState = 'ready';", assignment)).toBeGreaterThan(assignment);
+	});
+
 	it('skrivfältet ligger utanför kedjan, så det går att skriva även vid fel', () => {
 		const editorIndex = template.indexOf('onclick={saveDraftToDiary}');
 
