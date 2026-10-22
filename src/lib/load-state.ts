@@ -32,9 +32,15 @@ export function initialLoadState(status: LoadStatus | undefined): LoadState {
 
 /**
  * Tillståndet efter klientens egen hämtning. Ett misslyckande blir `error`,
- * utom när servern redan bekräftat listan: då är den listan fortfarande sann.
+ * utom när servern redan bekräftat listan, eller när en senare hämtning (t.ex.
+ * efter ett sparande) hunnit lyckas medan den här pågick: då är den listan
+ * fortfarande sann och ett gammalt fel får inte dölja den.
  */
-export function loadStateAfterClientFetch(previous: LoadState, succeeded: boolean): LoadState {
-	if (succeeded) return 'ready';
+export function loadStateAfterClientFetch(
+	previous: LoadState,
+	succeeded: boolean,
+	newerLoadSucceeded = false
+): LoadState {
+	if (succeeded || newerLoadSucceeded) return 'ready';
 	return previous === 'ready' ? 'ready' : 'error';
 }

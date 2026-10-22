@@ -125,6 +125,9 @@
 	let entries = $state<DiaryEntry[]>([]);
 	// Skiljer "inga inlägg" från "kunde inte hämta". Tomt läge visas bara i 'ready'.
 	let entriesState = $state<LoadState>('loading');
+	// Räknar lyckade hämtningar, så att ett fel från en äldre, långsam hämtning
+	// inte kan ta tillbaka en lista som en nyare hämtning redan visat.
+	let successfulEntryLoads = 0;
 	let loading = $state(false);
 	let loadingMoreEntries = $state(false);
 	let hasMoreEntries = $state(false);
@@ -486,6 +489,7 @@
 		const page = await loadDiaryEntriesPage(userId, options);
 		entries = page.entries;
 		hasMoreEntries = page.hasMore;
+		successfulEntryLoads += 1;
 		// En lyckad hämtning, oavsett varifrån (sparande, ändring, nytt försök),
 		// ger en lista som stämmer. Ett tidigare fel får inte dölja den.
 		entriesState = 'ready';
@@ -515,12 +519,17 @@
 	/** Ny hämtning efter ett fel. Listan visas först när hämtningen faktiskt lyckats. */
 	async function retryLoadEntries() {
 		entriesState = 'loading';
+		const loadsBefore = successfulEntryLoads;
 		try {
 			await loadEntries({ force: true });
 			entriesState = loadStateAfterClientFetch('loading', true);
 		} catch (error) {
 			console.error('Dagbok: kunde inte hämta inlägg', error);
-			entriesState = loadStateAfterClientFetch('loading', false);
+			entriesState = loadStateAfterClientFetch(
+				'loading',
+				false,
+				successfulEntryLoads !== loadsBefore
+			);
 		}
 	}
 
@@ -1251,12 +1260,17 @@
 			// Har servern redan bekräftat en tom lista är den tomma listan sann,
 			// och en misslyckad extra kontroll här ska inte göra den till ett fel.
 			const stateBeforeFetch = entriesState;
+			const loadsBefore = successfulEntryLoads;
 			try {
 				await loadEntries();
 				entriesState = loadStateAfterClientFetch(stateBeforeFetch, true);
 			} catch (error) {
 				console.error('Dagbok: kunde inte hämta inlägg', error);
-				entriesState = loadStateAfterClientFetch(stateBeforeFetch, false);
+				entriesState = loadStateAfterClientFetch(
+					stateBeforeFetch,
+					false,
+					successfulEntryLoads !== loadsBefore
+				);
 			}
 		}
 

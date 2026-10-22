@@ -128,6 +128,17 @@ describe('klientens tillstånd', () => {
 		expect(loadStateAfterClientFetch('ready', false)).toBe('ready');
 	});
 
+	// Regression: en långsam automatisk omhämtning kunde fallera efter att ett
+	// sparande redan laddat om listan, och då dölja det sparade inlägget igen.
+	it('ett gammalt fel döljer inte en lista som en nyare hämtning visat', () => {
+		expect(loadStateAfterClientFetch('loading', false, true)).toBe('ready');
+	});
+
+	it('båda felvägarna i sidan tar hänsyn till nyare lyckade hämtningar', () => {
+		const failureCalls = source.match(/loadStateAfterClientFetch\(\s*[^,]+,\s*false,\s*successfulEntryLoads !== loadsBefore\s*\)/g);
+		expect(failureCalls).toHaveLength(2);
+	});
+
 	it('feltexten lovar inte mer än vi vet', () => {
 		expect(NOTES_LOAD_ERROR_MESSAGE).toBe(
 			'Vi kunde inte visa dina anteckningar just nu. Det betyder inte att de har raderats. Försök igen om en liten stund.'
