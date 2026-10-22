@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "vite dev",
-    "prebuild": "npm run test",
+    "prebuild": "npm run test:unit",
     "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run",
+    "test:unit": "vitest run --exclude \"tests/**/*.browser.test.ts\"",
+    "test:browser": "vitest run --reporter=verbose browser.test",
     "ai:eval": "vitest run tests/ai-evals/eval-suite.test.ts",
     "ai:eval:live": "vitest run --config tests/ai-evals/live-eval.vitest.config.ts"
   },

@@ -15,8 +15,12 @@ npm run preview    # Preview production build locally
 npm run check      # Type-check (svelte-kit sync + svelte-check)
 ```
 
-`npm run test` kör Vitest (`src/**/*.test.ts`). Det körs automatiskt som `prebuild`,
-så `npm run build` misslyckas om något test faller. Ingen linter är konfigurerad.
+`npm run test` kör hela Vitest-sviten (`src/**/*.test.ts` och `tests/**/*.test.ts`).
+`prebuild` kör `npm run test:unit`, dvs allt utom `*.browser.test.ts`, så
+`npm run build` misslyckas om något av dem faller men kräver ingen Chrome (Render
+saknar Chrome). Webbläsartesterna (DOMPurify-saneringen i riktig Chromium) körs med
+`npm run test:browser` som eget, obligatoriskt steg i GitHub CI; lokalt behövs Chrome
+eller `CHROME_BIN`. Ingen linter är konfigurerad.
 
 Innehållsvalideringen ligger i testerna: `src/lib/server/article-content.test.ts`
 kontrollerar frontmatter, metadata, interna länkar och JSON-LD för varje

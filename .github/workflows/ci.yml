@@ -32,4 +32,15 @@ jobs:
           path: artifacts/ai-evaluation-report.md
           if-no-files-found: warn
       - run: npm run check
+      # Säkerhetstestet för dagbokens HTML-sanering kräver riktig Chromium och
+      # körs därför här, inte i produktionsbygget (Render saknar Chrome). Steget
+      # blir rött om Chrome saknas, om filtret inte hittar testet eller om en
+      # assertion fallerar. Versionsraden visar i loggen att Chrome faktiskt fanns.
+      - name: Chromium security test (DOMPurify)
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: |
+          "$CHROME_BIN" --version
+          npm run test:browser
+      # prebuild kör test:unit, dvs alla tester utom webbläsartesterna ovan.
       - run: npm run build
