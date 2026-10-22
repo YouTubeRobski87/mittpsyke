@@ -243,7 +243,11 @@ function logAIError(
 		guest: context.guest,
 		category: context.category,
 		conversationId: context.conversationId,
-		code: error.code
+		code: error.code,
+		// Leverantörens status och korta felkod skiljer t.ex. slut på kvot
+		// (insufficient_quota) från verklig belastning. Ingen fritext loggas.
+		providerStatus: error.providerStatus,
+		providerCode: error.providerCode
 	});
 }
 
@@ -811,7 +815,9 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 	} catch (err) {
 		console.error('Chat API error:', {
 			errorType: err instanceof Error ? err.name : typeof err,
-			code: err instanceof AITextGenerationError ? err.code : undefined
+			code: err instanceof AITextGenerationError ? err.code : undefined,
+			providerStatus: err instanceof AITextGenerationError ? err.providerStatus : undefined,
+			providerCode: err instanceof AITextGenerationError ? err.providerCode : undefined
 		});
 
 		// Lugna, konkreta svenska felmeddelanden istället för ett generiskt
@@ -822,6 +828,11 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 		}
 		if (err instanceof AITextGenerationError && err.code === 'rate_limit') {
 			return errorResponse('Tjänsten är hårt belastad just nu. Vänta en liten stund och försök igen.', 503);
+		}
+		// Slut på leverantörens kvot är inte överbelastning och går inte över av
+		// att vänta en stund. Neutral text utan leverantörsdetaljer.
+		if (err instanceof AITextGenerationError && err.code === 'quota') {
+			return errorResponse('Chatten är tillfälligt otillgänglig. Försök gärna igen senare.', 503);
 		}
 		return errorResponse('Något gick fel just nu. Försök gärna igen om en liten stund.', 500);
 	}
