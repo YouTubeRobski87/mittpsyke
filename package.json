@@ -34,7 +34,7 @@
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.57.4",
     "chart.js": "^4.5.1",
-    "dompurify": "^3.3.2",
+    "dompurify": "^3.4.17",
     "encoding": "^0.1.13",
     "gray-matter": "^4.0.3",
     "jspdf": "^4.1.0",
