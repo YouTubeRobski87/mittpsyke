@@ -33,5 +33,11 @@ describe('/blogg/amne/medicin-och-halsa/adhd-lakemedel-och-dodlighet', () => {
 			updatedLabel: null
 		});
 		expect(result.article.content).not.toContain('<h2>ADHD-läkemedel kopplas');
+		expect(result.article.content).toContain('<strong>Av Jess Cockerill</strong>');
+		expect(result.article.content).toContain('<strong>Tillsammans omfattar data mer än 15,9 miljoner deltagare</strong>');
+		expect(result.article.content).toContain('<blockquote>');
+		expect(result.article.content).not.toContain('<pre>');
+		expect(result.article.content).not.toMatch(/\+\+|\*\*###/);
+		expect(result.article.content.match(/<h2>/g)).toHaveLength(2);
 	});
 });

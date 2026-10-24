@@ -17,7 +17,7 @@ draft: false
 
 # ADHD-läkemedel kopplas till lägre risk för tidig död i stor studie
 
-Skrivet den 20 oktober 2026 ++Av Jess Cockerill
+Skrivet den 20 oktober 2026 **Av Jess Cockerill**
 
 Källhänvisning i slutet av artikeln
 
@@ -33,7 +33,7 @@ Ett tappat fokus kan leda till trafikolyckor; ett missat läkarbesök kan fördr
 
 I det allra allvarligaste läget står personer med ADHD inför en högre risk för en för tidig död.
 
-### En stor översiktsstudie publicerad i *JAMA Network Open* ger starka nya belägg för sambandet mellan ADHD och dödlighet oavsett orsak, liksom dödlighet i självmord, skador eller naturliga orsaker
+## En stor översiktsstudie publicerad i *JAMA Network Open* ger starka nya belägg för sambandet mellan ADHD och dödlighet oavsett orsak, liksom dödlighet i självmord, skador eller naturliga orsaker
 
 Översikten tyder också på att ADHD-medicinering kan minska risken för tidig död bland dem som lever med tillståndet.
 
@@ -41,17 +41,15 @@ Forskare från flera institutioner i Storbritannien granskade 19 befintliga stud
 
 Men samtliga undersökte dödlighetsmönster relaterade till ADHD eller dess behandling.
 
-++**Tillsammans omfattar data mer än 15,9 miljoner deltagare**++ – en urvalsstorlek som forskare sällan kan uppnå i en enskild studie. Att slå samman resultat från flera studier hjälper forskare att identifiera mönster som är mindre benägna att uppstå på grund av rena slumpfaktorer.
+**Tillsammans omfattar data mer än 15,9 miljoner deltagare** – en urvalsstorlek som forskare sällan kan uppnå i en enskild studie. Att slå samman resultat från flera studier hjälper forskare att identifiera mönster som är mindre benägna att uppstå på grund av rena slumpfaktorer.
 
 Det är därför översikter och metaanalyser av det här slaget är så värdefulla: Forskare kan titta tvärs över flera studier för att hitta rådande trender eller potentiella avvikare i forskningen.
 
 Data från 12 av dessa studier slogs samman för att beräkna riskkvoter (hazard ratios) baserat på dödsstatistik för personer med och utan ADHD.
 
-### Resultaten understryker riskerna med att lämna ADHD odiagnostiserad eller obehandlad
+## Resultaten understryker riskerna med att lämna ADHD odiagnostiserad eller obehandlad
 
-```text
-Personer med ADHD hade en 70 procent högre risk att dö oavsett orsak jämfört med personer utan tillståndet.
-```
+> Personer med ADHD hade en 70 procent högre risk att dö oavsett orsak jämfört med personer utan tillståndet.
 
 Risken att dö i självmord var 90 procent högre bland personer med ADHD. Deras risk att dö av oavsiktliga eller avsiktliga skador var 50 procent högre, och till och med risken att dö av naturliga orsaker var 30 procent högre.
 

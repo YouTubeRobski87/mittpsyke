@@ -75,15 +75,18 @@
 </article>
 
 <style>
-	.article-page { max-width: 820px; margin: 0 auto; padding: clamp(2rem, 6vw, 3rem) clamp(1rem, 4vw, 1.4rem) 4rem; }
+	.article-page { width: 100%; max-width: 820px; min-width: 0; margin: 0 auto; padding: clamp(2rem, 6vw, 3rem) clamp(1rem, 4vw, 1.4rem) 4rem; }
+	.article-page > header, .article-section { min-width: 0; max-width: 100%; }
+	.article-page :global(.breadcrumbs li), .article-page :global(.breadcrumbs a), .article-page :global(.breadcrumbs span[aria-current='page']) { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
 	.back-link { display: inline-flex; margin: 1.2rem 0; font-family: var(--font-heading); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; opacity: .78; }
 	.eyebrow, h1, .lead, .meta { margin: 0; }
 	.eyebrow { color: #60a5fa; font-family: var(--font-heading); font-size: .82rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-	h1 { margin-top: .55rem; font-family: var(--font-heading); font-size: clamp(1.95rem, 1.55rem + 2.2vw, 2.6rem); line-height: 1.08; }
-	.lead { margin-top: .9rem; font-size: clamp(1.03rem, .99rem + .5vw, 1.16rem); line-height: 1.72; opacity: .88; }
+	h1 { margin-top: .55rem; font-family: var(--font-heading); font-size: clamp(1.95rem, 1.55rem + 2.2vw, 2.6rem); line-height: 1.08; overflow-wrap: anywhere; }
+	.lead { margin-top: .9rem; font-size: clamp(1.03rem, .99rem + .5vw, 1.16rem); line-height: 1.72; overflow-wrap: anywhere; opacity: .88; }
 	.meta { margin-top: .7rem; font-size: .9rem; opacity: .64; }
-	.featured-image { display: block; width: 100%; max-height: 460px; margin-top: 1.35rem; border-radius: var(--radius-card); object-fit: cover; }
-	.article-content { display: grid; gap: 1.15rem; max-width: 70ch; margin-top: 1.65rem; overflow-wrap: anywhere; word-break: break-word; }
+	.featured-image { display: block; width: 100%; max-width: 100%; height: auto; max-height: 460px; margin-top: 1.35rem; border-radius: var(--radius-card); object-fit: cover; }
+	.article-content { display: grid; gap: 1.15rem; width: 100%; max-width: 70ch; min-width: 0; margin-top: 1.65rem; overflow-wrap: anywhere; word-break: break-word; }
+	.article-content > :global(*) { min-width: 0; max-width: 100%; }
 	.article-content :global(h2), .article-section h2 { margin: 1.1rem 0 0; color: #2563eb; font-family: var(--font-heading); font-size: clamp(1.38rem, 1.2rem + .7vw, 1.62rem); line-height: 1.2; }
 	.article-content :global(h3) { margin: .85rem 0 0; font-family: var(--font-heading); font-size: clamp(1.12rem, 1.05rem + .35vw, 1.28rem); line-height: 1.3; }
 	.article-content :global(p), .article-content :global(li), .article-section li { margin: 0; font-size: clamp(1rem, .96rem + .35vw, 1.08rem); line-height: 1.75; }
@@ -91,6 +94,9 @@
 	.article-content :global(a), .article-section a { color: #2563eb; font-weight: 600; overflow-wrap: anywhere; text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
 	.article-content :global(a:hover), .article-content :global(a:focus-visible), .article-section a:hover, .article-section a:focus-visible { color: #1d4ed8; outline: 2px solid currentColor; outline-offset: 3px; }
 	.article-content :global(blockquote) { margin: 0; padding: .35rem 0 .35rem 1rem; border-left: 3px solid #60a5fa; color: inherit; font-size: clamp(1rem, .96rem + .35vw, 1.08rem); font-style: italic; line-height: 1.75; opacity: .9; }
+	.article-content :global(img) { display: block; width: auto; max-width: 100%; height: auto; }
+	.article-content :global(pre) { width: 100%; max-width: 100%; min-width: 0; margin: 0; padding: .9rem 1rem; overflow-x: auto; border-radius: var(--radius-input); background: hsl(var(--surface-soft)); white-space: pre-wrap; overflow-wrap: anywhere; }
+	.article-content :global(code) { overflow-wrap: anywhere; word-break: break-word; }
 	.article-content :global(hr) { width: 100%; height: 1px; margin: .5rem 0; border: 0; background: hsl(var(--border)); }
 	.article-content :global(table) { display: block; width: 100%; max-width: 100%; overflow: auto; -webkit-overflow-scrolling: touch; border-collapse: collapse; border: 1px solid hsl(var(--border)); border-radius: var(--radius-card); font-size: clamp(.92rem, .89rem + .2vw, 1rem); }
 	.article-content :global(th), .article-content :global(td) { padding: 10px 12px; min-width: 9rem; line-height: 1.5; text-align: left; overflow-wrap: normal; word-break: normal; white-space: normal; border: 1px solid hsl(var(--border)); }
