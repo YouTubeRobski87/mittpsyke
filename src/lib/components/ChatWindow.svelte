@@ -7,6 +7,7 @@
 	import { SWEDISH_LOCALE, selectVoiceForLang, waitForVoiceForLang } from '$lib/ai/speech';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import { requestChatAiConsent } from '$lib/chat/consent-client';
+	import { CONVERSATION_UNAVAILABLE_CODE } from '$lib/chat/chat-error-codes';
 	import RecentConversations from '$lib/components/RecentConversations.svelte';
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
 	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
@@ -97,6 +98,8 @@
 	const GENERIC_CHAT_ERROR = 'Något gick fel. Försök igen om en stund.';
 	const CONSENT_REQUIRED_ERROR =
 		'Ditt samtycke behöver bekräftas igen innan chatten kan svara.';
+	const CONVERSATION_UNAVAILABLE_ERROR =
+		'Samtalet kunde inte öppnas. Skicka ditt meddelande igen så startar ett nytt samtal.';
 	const HISTORY_NOTICE = 'Tidigare samtal är laddat.';
 	const legacyGuestHistoryTopics = ['angest', 'nedstamdhet', 'stress-oro', 'allmant'] as const;
 	const autoReadStorageKey = 'mittpsyke:chat-auto-read-replies';
@@ -669,8 +672,16 @@
 				if (res.status === 413 || data?.code === 'MESSAGE_TOO_LONG') {
 					throw new Error(LONG_MESSAGE_ERROR);
 				}
+				// 403 som gäller själva samtalet (t.ex. ett gammalt samtals-id).
+				// Samtycket är inte problemet, så rutan visas inte. Nästa
+				// meddelande startar ett nytt samtal.
+				if (res.status === 403 && data?.code === CONVERSATION_UNAVAILABLE_CODE) {
+					conversationId = null;
+					throw new Error(CONVERSATION_UNAVAILABLE_ERROR);
+				}
 				// Samtycket saknas, har gått ut eller är återkallat. Visa rutan
-				// igen i stället för ett tekniskt felmeddelande.
+				// igen i stället för ett tekniskt felmeddelande. Alla andra 403
+				// hamnar här, så ett okänt fall låser chatten (fail-closed).
 				if (res.status === 403) {
 					requireConsentAgain();
 					throw new Error(CONSENT_REQUIRED_ERROR);
