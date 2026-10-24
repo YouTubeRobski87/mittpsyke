@@ -10,6 +10,12 @@
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import LighterDaysCard from '$lib/components/progress/LighterDaysCard.svelte';
 	import ProgressExamplePreview from '$lib/components/progress/ProgressExamplePreview.svelte';
+	import RecurringThemesCard from '$lib/components/progress/RecurringThemesCard.svelte';
+	import {
+		RECURRING_THEME_THRESHOLD_COPY,
+		withoutRecurringThemeInsight,
+		type RecurringTheme
+	} from '$lib/progress-recurring-themes';
 	import FramstegComprehensionCard from '$lib/components/progress/FramstegComprehensionCard.svelte';
 	import type { LighterDaysView } from '$lib/progress-lighter-days-types';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
@@ -298,6 +304,8 @@
 		monthly: { month: string; label: string; entryCount: number; activeDays: number; status: 'sufficient' | 'thin' | 'missing'; mean: number | null; median: number | null; standardDeviation: number | null }[];
 		insights: ProgressInsight[];
 		halfYearSummary: ProgressInsight[];
+		// Högst tre återkommande teman med datum och ordagranna utdrag.
+		recurringThemes?: RecurringTheme[];
 		relevantEntryCount?: number;
 		lowConfidence?: boolean;
 	}
@@ -625,10 +633,25 @@
 	// senaste veckan, som annars inte hade någon yta alls på sidan.
 	const weekSummary = $derived(buildWeekSummary(moodSamples));
 	const progressAnalysis = $derived(loadedInsightsData?.analysis ?? null);
+	// Användarens egna ord först: återkommande teman får ett eget kort före
+	// humörkurvan. Servern har redan godkänt dem med samma trösklar som resten
+	// av analysen, så här väljs inget ut - bara det som skickats visas.
+	const recurringThemes = $derived(progressAnalysis?.recurringThemes ?? []);
+	const showRecurringThemes = $derived(
+		!isAnonymous &&
+		hasSensitiveDataConsent &&
+		!insightsLoading &&
+		!insightsError &&
+		recurringThemes.length > 0
+	);
 	// Servern har redan sorterat och begränsat listan. De här två vyerna delar
-	// därför samma data utan någon egen klientrangordning.
-	const primaryInsight = $derived(progressAnalysis?.insights[0] ?? null);
-	const remainingInsights = $derived(progressAnalysis?.insights.slice(1) ?? []);
+	// därför samma data utan någon egen klientrangordning. Temainsikten tas
+	// bara bort när samma tema redan visas i kortet ovan.
+	const moodInsights = $derived(
+		withoutRecurringThemeInsight(progressAnalysis?.insights ?? [], showRecurringThemes)
+	);
+	const primaryInsight = $derived(moodInsights[0] ?? null);
+	const remainingInsights = $derived(moodInsights.slice(1));
 	const analysisPeriodSummary = $derived.by(() => {
 		if (!progressAnalysis) return null;
 		const count = progressAnalysis.coverage.entryCount;
@@ -685,6 +708,7 @@
 	const hasConcretePersonalAnalysis = $derived(
 		moodTimeline.hasChart ||
 		(progressAnalysis?.insights.length ?? 0) > 0 ||
+		recurringThemes.length > 0 ||
 		supportSuggestions.length > 0 ||
 		eveningPatterns.observations.length > 0
 	);
@@ -1316,6 +1340,7 @@
 								<h2 id="low-data-heading">{lowDataCopy.heading}</h2>
 							</div>
 							<p class="reflection-copy">{lowDataCopy.description}</p>
+							<p class="reflection-copy" data-testid="low-data-theme-threshold">{RECURRING_THEME_THRESHOLD_COPY}</p>
 						</section>
 					{/if}
 					<section
@@ -1489,6 +1514,15 @@
 				{/if}
 			</section>
 
+			<!-- Egna ord före humörkurvan: det som återkommer i det användaren själv
+			     skrivit, med datum och ordagranna utdrag. Visas bara när servern
+			     skickat teman som klarat trösklarna. -->
+			{#if showRecurringThemes && progressAnalysis}
+				<section class="card reflection-card recurring-themes-card" aria-labelledby="recurring-themes-heading" data-testid="recurring-themes">
+					<RecurringThemesCard themes={recurringThemes} periodLabel={progressAnalysis.periodLabel} />
+				</section>
+			{/if}
+
 			{@render creativeMomentsCard()}
 
 			<section class="card recent-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="mood-history-heading" data-testid="mood-history">
@@ -1530,7 +1564,7 @@
 			<section class="card reflection-card analysis-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="analysis-heading" data-testid="mood-analysis">
 				<div class="card-header">
 					<div class="icon-badge insight"><Lightbulb size={24} /></div>
-					<h2 id="analysis-heading">Det som börjar synas</h2>
+					<h2 id="analysis-heading">Humör och mönster över tid</h2>
 				</div>
 				<p class="analysis-intro">Samband som går att räkna fram ur dina egna registreringar.</p>
 				{#if progressAnalysis?.lowConfidence && !insightsLoading && !insightsError && (isAnonymous || hasSensitiveDataConsent)}
@@ -1555,7 +1589,7 @@
 					{/if}
 					{#if primaryInsight}
 						<section class="analysis-primary-insight" aria-labelledby="primary-insight-heading">
-							<h3 id="primary-insight-heading">Det viktigaste just nu</h3>
+							<h3 id="primary-insight-heading">Det som syns tydligast i perioden</h3>
 							<p class="analysis-primary-title">{primaryInsight.title}</p>
 							<p class="analysis-primary-conclusion">{primaryInsight.description}</p>
 							<button
@@ -1626,7 +1660,9 @@
 							{#if sparseMonthCopy}<p class="analysis-coverage-note">{sparseMonthCopy}</p>{/if}
 						</section>
 					{/if}
-					{#if progressAnalysis.insights.length === 0}
+					{#if moodInsights.length === 0 && showRecurringThemes}
+						<p class="reflection-copy">Utöver temana ovan syns inget tydligt mönster i registreringarna ännu. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
+					{:else if moodInsights.length === 0}
 						<p class="reflection-copy">Inget tydligt mönster syns ännu i den här perioden. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
 					{:else if remainingInsights.length > 0}
 						<ul class="analysis-grid">
@@ -1651,6 +1687,12 @@
 								</li>
 							{/each}
 						</ul>
+					{/if}
+
+					{#if recurringThemes.length === 0}
+						<!-- Utan återkommande teman: en lugn förklaring av när de kan synas,
+						     med samma trösklar som analysen. Ingen uppmaning att skriva mer. -->
+						<p class="analysis-coverage-note" data-testid="analysis-theme-threshold">{RECURRING_THEME_THRESHOLD_COPY}</p>
 					{/if}
 
 					<button
