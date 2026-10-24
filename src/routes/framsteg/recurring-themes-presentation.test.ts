@@ -109,9 +109,30 @@ describe('kortet med återkommande teman', () => {
 describe('kortets dataflöde', () => {
 	it('skickar inga utdrag vidare: inga anrop, ingen spårning, ingen text i länkar', () => {
 		expect(cardSource).not.toMatch(/fetch\(|gtag|track[A-Z]|sendBeacon|localStorage|sessionStorage/);
-		// Den enda länken är fast och bär varken text, datum eller id.
+		// Länkarna är antingen fasta eller byggs av anteckningens id, aldrig av text eller datum.
 		const hrefs = [...cardSource.matchAll(/href=("[^"]*"|\{[^}]*\})/g)].map((match) => match[1]);
-		expect(hrefs).toEqual(['"/dagbok"']);
+		expect(hrefs).toEqual([
+			'{diaryEntryHref(quote.entryId)}',
+			'{diaryEntryHref(item.entryId)}',
+			'"/dagbok"'
+		]);
+	});
+
+	it('länkar varje utdrag till sin anteckning i Dagboken med bara id:t', () => {
+		const renderedHrefs = [...body.matchAll(/href="([^"]*)"/g)].map((match) => match[1]);
+		expect(renderedHrefs).toEqual(['/dagbok/checkin?anteckning=s3', '/dagbok/checkin?anteckning=s2']);
+		expect(visibleText(body)).toContain('Läs hela anteckningen');
+	});
+
+	it('visar ingen länk för ett utdrag som saknar id', () => {
+		const withoutIds = render(RecurringThemesCard, {
+			props: {
+				themes: [theme({ evidence: theme().evidence.map((item) => ({ ...item, entryId: null })) })],
+				periodLabel: 'den senaste månaden'
+			}
+		}).body;
+		expect(withoutIds).not.toContain('anteckning=');
+		expect(visibleText(withoutIds)).not.toContain('Läs hela anteckningen');
 	});
 
 	it('spårar bara antal insikter, aldrig teman eller utdrag', () => {
