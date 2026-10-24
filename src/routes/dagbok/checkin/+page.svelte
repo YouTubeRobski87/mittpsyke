@@ -17,6 +17,8 @@
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
+	import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';
+	import { confirmLocalTextSaved, type LocalDiaryEntry } from '$lib/diary-local-history';
 	import VideoRecorder from '$lib/components/VideoRecorder.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
 	import { scrollIntoViewWithMotionPreference } from '$lib/scroll';
@@ -48,6 +50,7 @@
 	import {
 		DIARY_ENTRY_PAGE_SIZE,
 		DIARY_LIST_REFRESH_NOTICE,
+		LOCAL_IMPORT_LIST_REFRESH_NOTICE,
 		loadDiaryEntriesPage,
 		notifyDiaryEntriesChanged,
 		pageAfterLoadingMore,
@@ -488,6 +491,29 @@
 			reason: 'save confirmation is primary',
 			source: 'manual diary save success'
 		});
+	}
+
+	// Monteras om när en lokal text sparats via skrivfältet, så att importrutan
+	// läser om den lokala historiken och inte erbjuder samma text igen.
+	let localImportKey = $state(0);
+	let localImportListNotice = $state('');
+	// Medan en import pågår kan skrivfältet inte spara, och tvärtom. Annars kunde
+	// samma återställda text sparas två gånger samtidigt.
+	let localImporting = $state(false);
+
+	// Lokala inlägg som just sparats till kontot från importrutan. Listan
+	// hämtas om, och om samma text låg kvar som utkast i skrivfältet töms det,
+	// så att den inte kan sparas en gång till. Importen är redan bekräftad, så
+	// ett fel vid omladdningen visas bara som ett besked om listan.
+	async function handleLocalEntriesImported(imported: LocalDiaryEntry[]) {
+		const importedTexts = new Set(imported.map((item) => item.text.trim()));
+		if (importedTexts.has(draftText.trim())) draftText = '';
+		localImportListNotice = '';
+		const listRefreshed = await refreshAfterConfirmedChange(() =>
+			loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
+		);
+		if (!listRefreshed) localImportListNotice = LOCAL_IMPORT_LIST_REFRESH_NOTICE;
+		notifyDiaryEntriesChanged();
 	}
 
 	async function loadEntries(options: { force?: boolean; limit?: number } = {}) {
@@ -1100,7 +1126,7 @@
 	}
 
 	async function saveDraftToDiary() {
-		if (!draftText.trim() || savingDraft) return;
+		if (!draftText.trim() || savingDraft || localImporting) return;
 		draftError = '';
 		draftSuccess = '';
 		draftListNotice = '';
@@ -1116,6 +1142,10 @@
 		// Sätts så fort servern bekräftat sparandet. Efter det får ett fel bara
 		// gälla det som händer efteråt, aldrig visas som ett misslyckat sparande.
 		let saveConfirmed = false;
+		// Texten som faktiskt skickas. Samma ögonblicksbild används för att
+		// stämma av mot lokala gästinlägg efteråt, även om fältet ändrats medan
+		// sessionen eller en video hämtades.
+		let submittedText = '';
 
 		try {
 			const { data } = await supabase.auth.getSession();
@@ -1144,6 +1174,7 @@
 				}
 			}
 
+			submittedText = draftText.trim();
 			const response = await fetch('/api/diary/create', {
 				method: 'POST',
 				headers: {
@@ -1152,7 +1183,7 @@
 					Authorization: `Bearer ${session.access_token}`
 				},
 				body: JSON.stringify({
-					text: draftText.trim(),
+					text: submittedText,
 					mood: draftMood || null,
 					image_url: draftImageUrl,
 					video_path: videoPath,
@@ -1189,6 +1220,9 @@
 			if (typeof window !== 'undefined') {
 				// Rensar båda nycklarna så att ett sparat inlägg inte dyker upp som utkast igen.
 				clearDiaryDraft();
+				// Ett lokalt gästinlägg med samma text finns nu i kontot och ska inte
+				// kunna importeras en gång till.
+				if (confirmLocalTextSaved(submittedText) > 0) localImportKey += 1;
 
 				const url = new URL(window.location.href);
 				if (url.searchParams.has('prefill')) {
@@ -1458,6 +1492,22 @@
 			</div>
 		{:else}
 		<div class="auth-shell">
+			<!-- Den som skapat konto från gästens skrivyta landar här. Lokala inlägg
+			     sparas bara efter ett aktivt val, och rutan har sitt eget samtycke. -->
+			{#if sessionUser && !sessionUser.is_anonymous}
+				{#key localImportKey}
+					<LocalEntriesImportPrompt
+						onImported={handleLocalEntriesImported}
+						onImportingChange={(importing) => (localImporting = importing)}
+						busy={savingDraft}
+					/>
+				{/key}
+				{#if localImportListNotice}
+					<p class="auth-muted text-sm" role="status" data-testid="local-import-list-notice">
+						{localImportListNotice}
+					</p>
+				{/if}
+			{/if}
 			<div class="diary-layout">
 				<div class="diary-main">
 					<!-- Startpanelen ligger först i huvudkolumnen: valet av hur dagen ska
@@ -1728,7 +1778,7 @@
 								type="button"
 								class="auth-button primary editor-primary"
 								onclick={saveDraftToDiary}
-								disabled={savingDraft || uploadingImage || uploadingVideo || !draftText.trim()}
+								disabled={savingDraft || localImporting || uploadingImage || uploadingVideo || !draftText.trim()}
 							>
 								{savingDraft ? 'Sparar...' : uploadingImage ? 'Väntar på bild...' : uploadingVideo ? 'Väntar på video...' : 'Spara inlägg'}
 							</button>

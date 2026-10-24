@@ -319,8 +319,9 @@ describe('skrivytan och den inloggade dagboken', () => {
 
 	it('lämnar den inloggade dagboken och registreringen orörda', () => {
 		// Ingen automatisk migrering till konto: texten fylls i och användaren
-		// väljer själv att spara, precis som före den lokala historiken.
-		expect(diaryCheckin).not.toContain('diary-local-history');
+		// väljer själv att spara. Dagboken visar importrutan, men läser eller
+		// rensar aldrig den lokala historiken själv.
+		expect(diaryCheckin).not.toMatch(/readLocalEntries|migrateDraftIntoLocalEntries|clearLocalEntries|clearAllLocalDiaryData|deleteLocalEntry/);
 		expect(registerPage).not.toContain('diary-local-history');
 		expect(registerPage).toContain('const storedDraft = readDiaryDraft();');
 		expect(diaryCheckin).toContain('draftText = readDiaryDraft();');

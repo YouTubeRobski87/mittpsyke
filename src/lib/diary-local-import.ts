@@ -44,3 +44,58 @@ export function partitionLocalEntriesForImport(
 export function buildLocalImportRequestBody(entry: LocalDiaryEntry): CreateDiaryRequestBody {
 	return { text: entry.text, local_import_id: entry.id };
 }
+
+export type LocalImportOutcome = {
+	imported: LocalDiaryEntry[];
+	failed: LocalDiaryEntry[];
+};
+
+/**
+ * Sparar de valda inläggen ett i taget. `send` returnerar true bara när
+ * servern bekräftat att inlägget finns i kontot. Först då anropas
+ * `onConfirmed`, som tar bort det lokalt. Ett avvisat svar, ett nätverksfel
+ * eller en avbruten sida lämnar inlägget orört, och tack vare
+ * `local_import_id` kan samma inlägg skickas igen utan att bli två rader.
+ */
+export async function importLocalEntries(
+	toImport: LocalDiaryEntry[],
+	send: (body: CreateDiaryRequestBody) => Promise<boolean>,
+	onConfirmed: (entry: LocalDiaryEntry) => void
+): Promise<LocalImportOutcome> {
+	const imported: LocalDiaryEntry[] = [];
+	const failed: LocalDiaryEntry[] = [];
+
+	for (const entry of toImport) {
+		let confirmed = false;
+		try {
+			confirmed = await send(buildLocalImportRequestBody(entry));
+		} catch {
+			confirmed = false;
+		}
+
+		if (confirmed) {
+			onConfirmed(entry);
+			imported.push(entry);
+		} else {
+			failed.push(entry);
+		}
+	}
+
+	return { imported, failed };
+}
+
+/** Lugnt besked efter en import. Misslyckade inlägg sägs alltid ut. */
+export function describeLocalImportOutcome({ imported, failed }: LocalImportOutcome): string {
+	const parts: string[] = [];
+	if (imported.length > 0) {
+		parts.push(
+			`${imported.length} ${imported.length === 1 ? 'inlägg sparat' : 'inlägg sparade'} till ditt konto.`
+		);
+	}
+	if (failed.length > 0) {
+		parts.push(
+			`${failed.length} inlägg kunde inte sparas och ligger kvar på den här enheten. Försök igen.`
+		);
+	}
+	return parts.join(' ');
+}

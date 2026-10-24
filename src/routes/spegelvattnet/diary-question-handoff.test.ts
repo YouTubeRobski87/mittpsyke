@@ -95,7 +95,9 @@ describe('Dagbokseditorn håller frågan skild från användarens egna ord', () 
 			dagbokCheckin.indexOf("fetch('/api/diary/create'"),
 			dagbokCheckin.indexOf("fetch('/api/diary/create'") + 800
 		);
-		expect(saveCall).toContain('text: draftText.trim(),');
+		// Texten är en ögonblicksbild av bara användarens egna ord.
+		expect(saveCall).toContain('text: submittedText,');
+		expect(dagbokCheckin).toContain('submittedText = draftText.trim();');
 		expect(saveCall).toContain('prompt_question: draftPromptQuestion || null,');
 		// Texten som sparas får aldrig byggas ihop med frågan.
 		expect(saveCall).not.toMatch(/text:\s*`[^`]*draftPromptQuestion/);
