@@ -1,8 +1,11 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { createServiceClient } from '$lib/server/supabase-admin';
+import type { LoadStatus } from '$lib/load-state';
 
 const PAGE_SIZE = 10;
+const TITLE = 'Gemenskap';
+const DESCRIPTION = 'En lugn och anonym plats för igenkänning, stöd och varsam bekräftelse.';
 
 type CommunityPost = {
 	id: string;
@@ -40,6 +43,22 @@ function parsePageParam(value: string | null) {
 	return Math.floor(page);
 }
 
+/** Hämtningen misslyckades. Ingen lista och inget antal, så sidan kan inte visa tomt läge. */
+function errorResult() {
+	const status: LoadStatus = 'error';
+	return {
+		status,
+		title: TITLE,
+		description: DESCRIPTION,
+		items: [] as CommunityPost[],
+		currentPage: 1,
+		totalPages: 1,
+		totalItems: 0,
+		hasPreviousPage: false,
+		hasNextPage: false
+	};
+}
+
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const {
 		data: { user }
@@ -59,16 +78,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const serviceClient = createServiceClient();
 	if (!serviceClient) {
 		console.error('Gemenskap: saknar SUPABASE_SERVICE_ROLE_KEY/SERVICE_ROLE_KEY.');
-		return {
-			title: 'Gemenskap',
-			description: 'En lugn och anonym plats för igenkänning, stöd och varsam bekräftelse.',
-			items: [] as CommunityPost[],
-			currentPage: 1,
-			totalPages: 1,
-			totalItems: 0,
-			hasPreviousPage: false,
-			hasNextPage: false
-		};
+		return errorResult();
 	}
 
 	const { count, error: countError } = await serviceClient
@@ -76,8 +86,11 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.select('id', { count: 'exact', head: true })
 		.is('deleted_at', null);
 
+	// En saknad tabell betyder att flödet inte finns i miljön, och visas som tomt.
+	// Alla andra fel får aldrig se ut som en tom Gemenskap.
 	if (countError && !isMissingTableError(countError, 'community_posts')) {
 		console.error('Gemenskap count error:', countError);
+		return errorResult();
 	}
 
 	const totalItems = countError ? 0 : count ?? 0;
@@ -97,6 +110,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	if (postsError && !isMissingTableError(postsError, 'community_posts')) {
 		console.error('Gemenskap load error:', postsError);
+		return errorResult();
 	} else if (postsData) {
 		items = postsData
 			.map((row) => ({
@@ -115,9 +129,11 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.filter((row) => row.id.length > 0 && row.content.trim().length > 0);
 	}
 
+	const status: LoadStatus = 'ready';
 	return {
-		title: 'Gemenskap',
-		description: 'En lugn och anonym plats för igenkänning, stöd och varsam bekräftelse.',
+		status,
+		title: TITLE,
+		description: DESCRIPTION,
 		items,
 		currentPage,
 		totalPages,
