@@ -21,8 +21,6 @@ type EventName =
 	| 'chat_started'
 	| 'chat_message_sent'
 	| 'return_visit'
-	| 'streak_day_reached'
-	| 'milestone_reached'
 	| 'hero_cta_clicked'
 	| 'internal_link_clicked'
 	| 'search_used'
@@ -71,8 +69,6 @@ type ArticleViewParams = { article_slug: string; category: string };
 type GuideViewParams = { guide_slug: string; category: string };
 type LandingPageViewParams = { page_path: string; page_title: string };
 type WordCountParams = { word_count: number };
-type StreakDayReachedParams = { streak_length: number };
-type MilestoneReachedParams = { milestone_name: string };
 type InternalLinkClickedParams = { destination: string };
 type SearchUsedParams = { query_length: number };
 type LandingPageEventParams = Record<string, string | number | boolean | null>;
@@ -96,8 +92,6 @@ const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
 const FUNNEL_LANDING_VIEW_SESSION_KEY = 'mittpsyke:funnel-landing-page-viewed';
 const AUTH_FUNNEL_SESSION_KEY = 'mittpsyke:auth-funnel-started';
 const RETURN_VISIT_STORAGE_KEY = 'mittpsyke:last-analytics-visit-at';
-const TRACKED_STREAKS_STORAGE_KEY = 'mittpsyke:tracked-streak-days';
-const TRACKED_MILESTONES_STORAGE_KEY = 'mittpsyke:tracked-milestones';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const AUTH_FUNNEL_MAX_AGE_MS = 60 * 60 * 1000;
 const GTAG_SCRIPT_ID = 'mittpsyke-gtag';
@@ -450,28 +444,6 @@ function removeSessionValue(key: string) {
 	}
 }
 
-function readStorageSet(key: string) {
-	if (!browser) return new Set<string>();
-
-	try {
-		const raw = window.localStorage.getItem(key);
-		const parsed = raw ? JSON.parse(raw) : [];
-		return new Set(Array.isArray(parsed) ? parsed.filter((value) => typeof value === 'string') : []);
-	} catch {
-		return new Set<string>();
-	}
-}
-
-function writeStorageSet(key: string, values: Set<string>) {
-	if (!browser) return;
-
-	try {
-		window.localStorage.setItem(key, JSON.stringify([...values]));
-	} catch {
-		// Storage can fail in private mode. Analytics must stay best effort.
-	}
-}
-
 function markAuthFunnelStarted(type: 'signup' | 'login') {
 	writeSessionValue(AUTH_FUNNEL_SESSION_KEY, JSON.stringify({ type, at: Date.now() }));
 }
@@ -613,39 +585,6 @@ export function trackChatMessageSent() {
 
 export function trackReturnVisit() {
 	trackEvent('return_visit');
-}
-
-export function trackStreakDayReached(params: StreakDayReachedParams) {
-	trackEvent('streak_day_reached', params);
-}
-
-export function trackStreakDayReachedOnce(streakLength: number) {
-	if (!Number.isFinite(streakLength) || streakLength < 1) return;
-
-	const normalized = Math.floor(streakLength);
-	const key = String(normalized);
-	const tracked = readStorageSet(TRACKED_STREAKS_STORAGE_KEY);
-	if (tracked.has(key)) return;
-
-	tracked.add(key);
-	writeStorageSet(TRACKED_STREAKS_STORAGE_KEY, tracked);
-	trackStreakDayReached({ streak_length: normalized });
-}
-
-export function trackMilestoneReached(params: MilestoneReachedParams) {
-	trackEvent('milestone_reached', params);
-}
-
-export function trackMilestoneReachedOnce(milestoneName: string) {
-	const normalized = milestoneName.trim();
-	if (!normalized) return;
-
-	const tracked = readStorageSet(TRACKED_MILESTONES_STORAGE_KEY);
-	if (tracked.has(normalized)) return;
-
-	tracked.add(normalized);
-	writeStorageSet(TRACKED_MILESTONES_STORAGE_KEY, tracked);
-	trackMilestoneReached({ milestone_name: normalized });
 }
 
 export function trackHeroCtaClicked() {

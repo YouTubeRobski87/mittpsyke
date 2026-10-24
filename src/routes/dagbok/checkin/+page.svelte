@@ -35,7 +35,6 @@
 		hasSeenMilestone,
 		loadEarnedMilestones,
 		markMilestoneSeen,
-		type EarnedMilestone,
 		type MilestoneId
 	} from '$lib/milestone-state';
 	import {
@@ -165,7 +164,6 @@
 	// får betyda att själva sparandet misslyckades.
 	let draftListNotice = $state('');
 	let savingDraft = $state(false);
-	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
 	let hasPromptQuestion = $derived(draftPromptQuestion.trim().length > 0);
 	let dailyQuestionPanelQuestion = $derived(
@@ -242,7 +240,6 @@
 		return linkedEntry.status === 'found' && linkedEntry.entry.id === entryId;
 	}
 	let activeMilestoneToast = $state<ActiveMilestoneToast | null>(null);
-	let earnedMilestones = $state<EarnedMilestone[]>([]);
 
 	$effect(() => {
 		entries = data.entries ?? [];
@@ -381,25 +378,8 @@
 		return sessionUser?.id ?? null;
 	}
 
-	function refreshEarnedMilestones(userId: string | null | undefined = sessionUser?.id) {
-		if (!browser) return;
-		earnedMilestones = loadEarnedMilestones(userId);
-	}
-
 	function awardFirstDiaryEntryMilestone(userId: string | null | undefined = getMilestoneUserId()) {
-		const nextMilestones = awardMilestone(firstDiaryEntryMilestoneRecord, userId);
-		earnedMilestones = [...nextMilestones];
-		return nextMilestones;
-	}
-
-	function formatMilestoneDate(value: string): string {
-		const date = new Date(value);
-		if (Number.isNaN(date.getTime())) return 'Intjänad nyligen';
-		return `Intjänad ${date.toLocaleDateString('sv-SE', {
-			day: 'numeric',
-			month: 'long',
-			year: 'numeric'
-		})}`;
+		return awardMilestone(firstDiaryEntryMilestoneRecord, userId);
 	}
 
 	function showMilestoneOnce(
@@ -507,19 +487,6 @@
 			reason: 'save confirmation is primary',
 			source: 'manual diary save success'
 		});
-	}
-
-	function countEntriesThisWeek(source: DiaryEntry[]): number {
-		const cutoff = new Date();
-		cutoff.setDate(cutoff.getDate() - 6);
-		cutoff.setHours(0, 0, 0, 0);
-
-		return source.filter((entry) => {
-			if (!entry.created_at) return false;
-			const created = new Date(entry.created_at);
-			if (Number.isNaN(created.getTime())) return false;
-			return created >= cutoff;
-		}).length;
 	}
 
 	async function loadEntries(options: { force?: boolean; limit?: number } = {}) {
@@ -1375,13 +1342,11 @@
 			supabase.auth.getSession().then(({ data: sessionData }) => {
 				sessionUser = sessionData.session?.user ?? null;
 				hasHealthDataConsent = hasSensitiveConsent(sessionData.session?.user.user_metadata);
-				refreshEarnedMilestones(getMilestoneUserId());
 				void initializeDiary();
 			});
 		} else {
 			sessionUser = data.session.user;
 			hasHealthDataConsent = hasSensitiveConsent(data.session.user.user_metadata);
-			refreshEarnedMilestones(getMilestoneUserId());
 			void initializeDiary();
 		}
 
@@ -1389,7 +1354,6 @@
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			sessionUser = session?.user ?? null;
-			refreshEarnedMilestones(getMilestoneUserId());
 			if (hasSensitiveConsent(session?.user.user_metadata)) {
 				hasHealthDataConsent = true;
 			}
@@ -2114,40 +2078,6 @@
 				</div>
 
 				<aside class="diary-side">
-					<section class="auth-panel diary-week-panel">
-						<div class="week-head">
-							<h3 class="text-sm font-semibold">Denna vecka</h3>
-							<p class="text-xs auth-muted">Liten översikt i lugn takt</p>
-						</div>
-						<p class="week-count">{weeklyEntryCount}</p>
-						<p class="text-xs auth-muted">inlägg senaste 7 dagarna</p>
-					</section>
-
-					<section class="auth-panel diary-milestones-panel" aria-labelledby="diary-milestones-title">
-						<div class="milestones-head">
-							<h3 id="diary-milestones-title" class="text-sm font-semibold">Milstolpar</h3>
-							<p class="text-xs auth-muted">Små steg du redan har tagit</p>
-						</div>
-						{#if dev}
-							<p class="milestones-debug auth-muted">earnedMilestones.length: {earnedMilestones.length}</p>
-						{/if}
-						{#if earnedMilestones.length === 0}
-							<p class="milestones-empty auth-muted">
-								Dina framsteg visas här när du använder dagboken.
-							</p>
-						{:else}
-							<div class="milestones-list">
-								{#each earnedMilestones as milestone (milestone.id)}
-									<article class="milestone-card">
-										<h4>{milestone.title}</h4>
-										<p>{milestone.description}</p>
-										<time datetime={milestone.earnedAt}>{formatMilestoneDate(milestone.earnedAt)}</time>
-									</article>
-								{/each}
-							</div>
-						{/if}
-					</section>
-
 					<div class="diary-side-calendar">
 						<DiaryCalendar entries={entries} onDaySelect={handleCalendarDaySelect} />
 					</div>
@@ -3134,75 +3064,7 @@
 		font-size: 0.82rem;
 	}
 
-	.diary-week-panel {
-		display: grid;
-		gap: 0.65rem;
-		border-color: rgba(129, 140, 248, 0.22);
-		background:
-			linear-gradient(145deg, rgba(99, 102, 241, 0.09), rgba(143, 227, 166, 0.06)),
-			hsl(var(--surface));
-	}
-
 	/* ── Kompakt kalender i sidebaren ── */
-	.diary-milestones-panel {
-		display: grid;
-		gap: 0.7rem;
-		border-color: rgba(143, 227, 166, 0.18);
-		background:
-			linear-gradient(145deg, rgba(143, 227, 166, 0.07), rgba(96, 165, 250, 0.05)),
-			hsl(var(--surface));
-	}
-
-	.milestones-head h3,
-	.milestones-head p,
-	.milestones-debug,
-	.milestones-empty {
-		margin: 0;
-	}
-
-	.milestones-debug {
-		font-size: 0.72rem;
-	}
-
-	.milestones-list {
-		display: grid;
-		gap: 0.55rem;
-	}
-
-	.milestone-card {
-		display: grid;
-		gap: 0.2rem;
-		padding: 0.72rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: var(--radius-input);
-		background: rgba(255, 255, 255, 0.035);
-	}
-
-	.milestone-card h4,
-	.milestone-card p {
-		margin: 0;
-	}
-
-	.milestone-card h4 {
-		font-size: 0.95rem;
-		font-weight: 700;
-		line-height: 1.3;
-		color: hsl(var(--foreground));
-	}
-
-	.milestone-card p {
-		font-size: 0.84rem;
-		line-height: 1.5;
-		color: hsl(var(--muted-foreground));
-	}
-
-	.milestone-card time {
-		margin-top: 0.1rem;
-		font-size: 0.74rem;
-		font-weight: 700;
-		color: hsl(var(--muted-foreground));
-	}
-
 	.diary-side-calendar {
 		position: relative;
 		width: 100%;
@@ -3272,19 +3134,6 @@
 
 	.diary-side-calendar :global(.cal-clear-btn) {
 		font-size: 0.74rem;
-	}
-
-	.week-head h3,
-	.week-head p {
-		margin: 0;
-	}
-
-	.week-count {
-		margin: 0;
-		font-family: var(--font-heading);
-		font-size: 1.9rem;
-		line-height: 1;
-		letter-spacing: -0.02em;
 	}
 
 	.diary-entries {
@@ -3740,8 +3589,7 @@
 		.editor-support,
 		.editor-note,
 		.mood-meaning,
-		.mood-anchors,
-		.week-head p {
+		.mood-anchors {
 			display: none;
 		}
 
@@ -3917,14 +3765,6 @@
 
 		:global(.diary-calendar) {
 			gap: 0.45rem;
-		}
-
-		.diary-side .auth-panel {
-			padding: 0.72rem;
-		}
-
-		.week-count {
-			font-size: 1.45rem;
 		}
 
 		.diary-entries {
