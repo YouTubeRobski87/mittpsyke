@@ -17,6 +17,10 @@ export type LoadState = 'loading' | LoadStatus;
 export const NOTES_LOAD_ERROR_MESSAGE =
 	'Vi kunde inte visa dina anteckningar just nu. Det betyder inte att de har raderats. Försök igen om en liten stund.';
 
+/** Visas när Gemenskapens flöde inte kunde hämtas. Säger inget om orsaken. */
+export const COMMUNITY_LOAD_ERROR_MESSAGE =
+	'Vi kunde inte hämta Gemenskapen just nu. Försök igen om en liten stund.';
+
 export const NOTES_LOADING_MESSAGE = 'Hämtar dina anteckningar…';
 
 export const LOAD_RETRY_LABEL = 'Försök igen';
