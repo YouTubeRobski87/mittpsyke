@@ -18,9 +18,9 @@ draft: false
 
 ## ADHD-läkemedel kan minska risken för tidig död, visar en stor studie visar en omfattande studie med omfattande 15,9 miljoner deltagare
 
-*Skrivet den 20 oktober 2026 ++Av Jess Cockerill++*
+Skrivet den 20 oktober 2026 ++Av Jess Cockerill
 
-*Källhänvisning i slutet av artikeln*
+Källhänvisning i slutet av artikeln
 
 Metylfenidat är ett av de vanligaste förskrivna läkemedlen för ADHD. (Sponge/Wikimedia, CC BY-SA 3.0)
 
