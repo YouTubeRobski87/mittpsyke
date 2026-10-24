@@ -55,6 +55,7 @@
 		type DiaryEntry
 	} from '$lib/state/diary';
 	import { recordSuccessfulReflectionSave } from '$lib/diary-events';
+	import { RECURRING_THEME_TIMING_COPY } from '$lib/progress-recurring-themes';
 	import {
 		LINKED_ENTRY_MISSING_MESSAGE,
 		diaryEntryElementId,
@@ -1747,6 +1748,7 @@
 								Din text är nu en del av underlaget i Framsteg. När något faktiskt återkommer eller
 								förändras visas det där – inte innan.
 							</p>
+							<p class="mt-2 text-sm" data-testid="save-theme-timing">{RECURRING_THEME_TIMING_COPY}</p>
 							{#if draftListNotice}
 								<p class="mt-2 text-sm" data-testid="diary-list-refresh-notice">{draftListNotice}</p>
 							{/if}
