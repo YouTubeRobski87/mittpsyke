@@ -8,7 +8,7 @@ const successBlock = route.slice(
 );
 const manualMilestoneBlock = route.slice(
 	route.indexOf('function recordManualDiaryMilestone'),
-	route.indexOf('function countEntriesThisWeek')
+	route.indexOf('async function loadEntries')
 );
 
 describe('dagbokens sparbekräftelse', () => {
@@ -17,6 +17,8 @@ describe('dagbokens sparbekräftelse', () => {
 		expect(successBlock).toContain('Din text är nu en del av underlaget i Framsteg.');
 		expect(successBlock).toContain('När något faktiskt återkommer eller');
 		expect(successBlock).toContain('förändras visas det där – inte innan.');
+		// Säger när något kan synas, med samma trösklar som analysen.
+		expect(successBlock).toContain('{RECURRING_THEME_TIMING_COPY}');
 	});
 
 	it('gör Framsteg till primär handling och behåller lugna alternativ', () => {

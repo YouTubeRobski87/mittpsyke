@@ -84,7 +84,7 @@
 						<span class="place-icon"><TrendingUp size={20} aria-hidden="true" /></span>
 						<span>
 							<strong>Framsteg</strong>
-							<small>Se hur ditt mående förändras och vad som återkommer över tid.</small>
+							<small>Se vad som återkommer i det du skrivit, över tid.</small>
 						</span>
 						<ArrowRight size={20} aria-hidden="true" />
 					</span>

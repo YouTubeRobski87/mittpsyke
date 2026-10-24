@@ -45,10 +45,10 @@
 	<section class="home-hero" aria-labelledby="hero-title">
 		<div class="home-inner hero-grid">
 			<div class="hero-copy">
-				<h1 id="hero-title">Se hur ditt mående förändras över tid.</h1>
+				<h1 id="hero-title">Se vad som återkommer i det du skriver.</h1>
 				<p class="lead">
-					Skriv av dig, reflektera och upptäck vad som återkommer i dina egna ord. MittPsyke
-					hjälper dig att förstå ditt mående över tid, i din takt.
+					Skriv av dig och spara det du vill. Med tiden samlar MittPsyke det som återkommer i
+					dina egna ord, i din egen takt.
 				</p>
 				<div class="hero-actions">
 					<a

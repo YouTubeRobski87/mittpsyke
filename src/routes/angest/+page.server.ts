@@ -8,6 +8,7 @@ import {
 	type LandingPageRecord
 } from '$lib/server/admin-system';
 import { createServiceClient } from '$lib/server/supabase-admin';
+import { sanitizeCmsHtml } from '$lib/server/cms-html';
 
 const AB_COOKIE_NAME = 'mittpsyke-angst-variant';
 
@@ -100,6 +101,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		page,
 		content: {
 			...content,
+			html_content: sanitizeCmsHtml(content.html_content),
 			cta_text: ctaText
 		},
 		abTest,

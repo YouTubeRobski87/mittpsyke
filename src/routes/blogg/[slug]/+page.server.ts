@@ -2,6 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { SORO_TOKEN } from '$lib/soro';
 import { canonicalUrl } from '$lib/seo';
 import { legacyBlogRedirects } from '$lib/server/legacy-redirects';
+import { sanitizeCmsHtml } from '$lib/server/cms-html';
 import { fetchSoroArticles, fetchSoroResponse, normalizeSoroArticleSlug } from '$lib/server/soro-articles';
 import type { PageServerLoad } from './$types';
 
@@ -178,14 +179,14 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 	const normalizedSlug = normalizeSoroArticleSlug(article.slug);
 	const title = LOCAL_TITLE_BY_SLUG.get(normalizedSlug) ?? (article.title || 'Artikel');
 	const excerpt = LOCAL_EXCERPT_BY_SLUG.get(normalizedSlug) ?? article.excerpt;
-	const content = fixProtocolLessLinks(
+	const content = sanitizeCmsHtml(fixProtocolLessLinks(
 		normalizeContentHeadings(
 			normalizedSlug === 'psykisk-ohalsa-unga'
 				? normalizeYoungMentalHealthArticleContent(contentPayload.content)
 				: contentPayload.content,
 			title
 		)
-	);
+	));
 
 	const featuredImage = LOCAL_FEATURED_IMAGE_BY_SLUG.get(normalizedSlug) ?? article.imageUrl;
 	const ogImage = featuredImage
