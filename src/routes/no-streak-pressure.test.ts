@@ -6,9 +6,10 @@
 // kommentarerna förklarar med flit vad som togs bort och varför, och ska inte
 // kunna få testet att falla.
 //
-// Neutral historik är inte det testet är emot. "Dagar med avtryck" och "Den
-// här veckan" beskriver vad som hänt utan att göra en obruten rad till ett
-// resultat, och de assertas som kvarvarande nedan.
+// Det dolda blocket med veckosammanfattning, lugn överblick och milstolpar
+// togs bort helt (värdegranskningen, förslag 3). Testet vaktar att det inte
+// kommer tillbaka och att streak- och milstolpshändelser inte längre skickas
+// till Google Analytics.
 
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -99,33 +100,22 @@ describe('Framsteg efter ändringen', () => {
 		expect(framstegPage).not.toContain('streakData.currentStreak}');
 	});
 
-	it('behåller neutral historik som redan fanns', () => {
-		expect(framstegPage).toContain('<span class="summary-stat-label">Dagar med avtryck</span>');
-		expect(framstegPage).toContain('<span class="summary-stat-label">Den här veckan</span>');
-		expect(framstegPage).toContain('Senaste gången du skrev');
+	it('har inget dolt block kvar', () => {
+		expect(framstegPage).not.toContain('{#if false}');
 	});
 
-	it('pekar aldrig ut ett antal sammanhängande dagar som nästa steg', () => {
-		expect(framstegPage).toContain(
-			"milestonesData.nextMilestone.metric !== 'longestStreak'"
-		);
-		expect(framstegPage).toContain('{#if nextMilestone}');
-		expect(framstegPage).not.toContain('{#if milestonesData.nextMilestone}');
-	});
-
-	it('mjukar fortfarande milstolpar som bygger på sammanhängande dagar', () => {
-		// Uppnådda milstolpar får synas, men beskrivs som återkomst - inte som en
-		// obruten rad. Regeln togs inte bort av den här ändringen.
-		expect(framstegPage).toContain("if (milestone.metric === 'longestStreak')");
-		expect(framstegPage).toContain("'Du har återvänt hit'");
+	it('visar inga milstolpar eller veckoräkning', () => {
+		expect(framstegPage).not.toContain('milestones-card');
+		expect(framstegPage).not.toContain('Det som långsamt kan växa fram');
+		expect(framstegPage).not.toContain('weeklySummaryText');
+		expect(framstegPage).not.toContain('incheckningar den här veckan');
+		expect(framstegPage).not.toContain('Lugn överblick');
 	});
 });
 
 describe('underliggande data behålls', () => {
-	it('Framsteg hämtar fortfarande streak-endpointen och använder den för senaste aktivitet', () => {
+	it('Framsteg hämtar fortfarande streak-endpointen', () => {
 		expect(framstegPage).toContain("fetch('/api/diary/streak'");
-		expect(framstegPage).toContain('streakData.lastEntryDaysAgo');
-		expect(framstegPage).toContain('trackStreakDayReachedOnce');
 	});
 
 	it('streak-endpointen är orörd och svarar med samma fält', () => {
@@ -137,5 +127,19 @@ describe('underliggande data behålls', () => {
 		expect(endpoint).toContain('longestStreak: number;');
 		expect(endpoint).toContain('lastEntryDate: string | null;');
 		expect(endpoint).toContain('lastEntryDaysAgo: number;');
+	});
+});
+
+describe('inga streak- eller milstolpshändelser till analys', () => {
+	const analytics = readFileSync(new URL('../lib/analytics.ts', import.meta.url), 'utf8');
+
+	it('analysmodulen saknar händelserna', () => {
+		expect(analytics).not.toContain('streak_day_reached');
+		expect(analytics).not.toContain('milestone_reached');
+	});
+
+	it('Framsteg anropar inga streak- eller milstolpsspårningar', () => {
+		expect(framstegPage).not.toContain('trackStreakDayReached');
+		expect(framstegPage).not.toContain('trackMilestoneReached');
 	});
 });
