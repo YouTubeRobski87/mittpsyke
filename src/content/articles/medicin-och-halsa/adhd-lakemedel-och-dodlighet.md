@@ -1,13 +1,12 @@
 ---
 type: article
-title: ADHD-läkemedel kan minska risken för tidig död, visar en stor studie visar en omfattande studie med omfattande 15,9 miljoner deltagare
-description: ADHD-läkemedel kan minska risken för tidig död, visar en stor studie visar en omfattande studie med omfattande 15,9 miljoner deltagare. 70 procent högre risk att dö oavsett orsak jämfört med personer utan tillståndet.
+title: ADHD-läkemedel kopplas till lägre risk för tidig död i stor studie
+description: En omfattande forskningsöversikt med nästan 16 miljoner deltagare visar samband mellan ADHD, ökad dödlighet och lägre dödlighet vid läkemedelsbehandling. Resultaten visar samband, inte bevisade orsakssamband.
 image: /uploads/ADHD-lakemedel-och-minskad-dodlighet.png
-imageAlt: -
-date: 2026-20-20
-updated: 2026-07-31
+imageAlt: Illustration om ADHD-läkemedel och forskning kring dödlighet
+date: 2026-10-20
 author: Robert Claesson
-collection: Medicin-och-hälsa
+collection: medicin-och-halsa
 tags: [adhd , Samsjuklighet, NPF, Neuropsykiatriska funktionsnedsättningar]
 readingTime: 5 min läsning
 faqs:
@@ -16,7 +15,7 @@ relatedArticles:
 draft: false
 ---
 
-## ADHD-läkemedel kan minska risken för tidig död, visar en stor studie visar en omfattande studie med omfattande 15,9 miljoner deltagare
+# ADHD-läkemedel kopplas till lägre risk för tidig död i stor studie
 
 Skrivet den 20 oktober 2026 ++Av Jess Cockerill
 
