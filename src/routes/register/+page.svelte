@@ -12,7 +12,7 @@
 	import { supabase } from '$lib/supabase';
 	import { canUseGoogleOAuth, getStableOAuthCallbackUrl } from '$lib/auth-redirect';
 	import { readDiaryDraft } from '$lib/diary-draft';
-	import { withSafeRedirect } from '$lib/safe-redirect';
+	import { safeInternalRedirect, withSafeRedirect } from '$lib/safe-redirect';
 	import { page } from '$app/state';
 	import type { ActionData } from './$types';
 
@@ -57,7 +57,11 @@
 		const { error } = await supabase.auth.signInWithOAuth({
 			provider: 'google',
 			options: {
-				redirectTo: getStableOAuthCallbackUrl('/dashboard/kvallsstugan')
+				// Samma destination som formuläret: en giltig ?redirect= följer med,
+				// annars Kvällstugan (safeInternalRedirects fallback).
+				redirectTo: getStableOAuthCallbackUrl(
+					safeInternalRedirect(page.url.searchParams.get('redirect'))
+				)
 			}
 		});
 

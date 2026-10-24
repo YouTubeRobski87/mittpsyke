@@ -1,17 +1,12 @@
 import { redirect } from '@sveltejs/kit';
+import { safeInternalRedirect } from '$lib/safe-redirect';
 import type { RequestHandler } from './$types';
-
-function normalizeNext(next: string | null) {
-	if (!next || !next.startsWith('/') || next.startsWith('//')) {
-		return '/dashboard/kvallsstugan';
-	}
-
-	return next;
-}
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const code = url.searchParams.get('code');
-	const next = normalizeNext(url.searchParams.get('next'));
+	// Samma validering som inloggning och registrering, så att även
+	// backslash-varianter och kontrolltecken avvisas.
+	const next = safeInternalRedirect(url.searchParams.get('next'));
 
 	if (code) {
 		const { error } = await locals.supabase.auth.exchangeCodeForSession(code);

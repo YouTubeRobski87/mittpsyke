@@ -52,6 +52,8 @@ export type RecurringTheme = {
 
 /** Förklaringen till när teman kan börja synas. Lugn, och aldrig en uppmaning. */
 export const RECURRING_THEME_THRESHOLD_COPY = `När ett tema återkommer i minst ${MIN_THEME_COUNT} anteckningar under minst ${MIN_THEME_WEEKS} olika veckor kan det börja synas här. Du behöver inte skriva varje dag.`;
+/** Samma regel i gästens kontoerbjudande, för inlägg som importeras till kontot. */
+export const ACCOUNT_THEME_RULE_COPY = `När dina lokala inlägg är importerade visas ett tema när det funnits i minst ${MIN_THEME_COUNT} anteckningar under minst ${MIN_THEME_WEEKS} olika veckor.`;
 /** Samma regel sagd från Dagboken, där "här" inte är Framsteg. */
 export const RECURRING_THEME_TIMING_COPY = `Ett tema visas i Framsteg när det funnits i minst ${MIN_THEME_COUNT} anteckningar under minst ${MIN_THEME_WEEKS} olika veckor. Du behöver inte skriva varje dag.`;
 

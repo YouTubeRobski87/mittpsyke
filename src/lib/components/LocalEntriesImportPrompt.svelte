@@ -12,13 +12,17 @@
 	import type { Session } from '@supabase/supabase-js';
 	import { supabase } from '$lib/supabase';
 	import {
-		deleteLocalEntry,
+		confirmLocalEntryImported,
 		formatLocalEntryDate,
 		localEntryPreview,
 		readLocalEntries,
 		type LocalDiaryEntry
 	} from '$lib/diary-local-history';
-	import { buildLocalImportRequestBody, partitionLocalEntriesForImport } from '$lib/diary-local-import';
+	import {
+		describeLocalImportOutcome,
+		importLocalEntries,
+		partitionLocalEntriesForImport
+	} from '$lib/diary-local-import';
 	import {
 		SENSITIVE_CONSENT_HEADER,
 		SENSITIVE_CONSENT_VERSION,
@@ -26,6 +30,10 @@
 		hasSensitiveConsent
 	} from '$lib/consent';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
+
+	// Valfri: sidan som visar rutan kan uppdatera sin egen vy efter importen,
+	// t.ex. Dagbokens lista och skrivfält.
+	let { onImported }: { onImported?: (imported: LocalDiaryEntry[]) => void } = $props();
 
 	let ready = $state(false);
 	let entries = $state<LocalDiaryEntry[]>([]);
@@ -89,10 +97,9 @@
 		}
 
 		const { toImport } = partitionLocalEntriesForImport(entries, selected);
-		let importedCount = 0;
-
-		for (const item of toImport) {
-			try {
+		const outcome = await importLocalEntries(
+			toImport,
+			async (body) => {
 				const response = await fetch('/api/diary/create', {
 					method: 'POST',
 					headers: {
@@ -100,30 +107,25 @@
 						[SENSITIVE_CONSENT_HEADER]: SENSITIVE_CONSENT_VERSION,
 						Authorization: `Bearer ${session.access_token}`
 					},
-					body: JSON.stringify(buildLocalImportRequestBody(item))
+					body: JSON.stringify(body)
 				});
 				const result: { success?: boolean } | null = await response.json().catch(() => null);
-
-				if (response.ok && result?.success) {
-					// Bara det som faktiskt sparades i kontot tas bort lokalt. Övriga
-					// inlägg - avvalda eller misslyckade - ligger kvar orörda.
-					deleteLocalEntry(item.id);
-					importedCount += 1;
-					const next = new Set(selected);
-					next.delete(item.id);
-					selected = next;
-				}
-			} catch {
-				// Nätverksfel: inlägget lämnas kvar lokalt så det går att försöka igen.
+				return response.ok && result?.success === true;
+			},
+			(item) => {
+				// Bara det som faktiskt sparades i kontot tas bort lokalt. Övriga
+				// inlägg - avvalda eller misslyckade - ligger kvar orörda.
+				confirmLocalEntryImported(item);
+				const next = new Set(selected);
+				next.delete(item.id);
+				selected = next;
 			}
-		}
+		);
 
 		entries = readLocalEntries();
 		importing = false;
-		resultMessage =
-			importedCount > 0
-				? `${importedCount} ${importedCount === 1 ? 'inlägg sparat' : 'inlägg sparade'} till ditt konto.`
-				: 'Inget inlägg kunde sparas just nu. Försök igen.';
+		resultMessage = describeLocalImportOutcome(outcome);
+		if (outcome.imported.length > 0) onImported?.(outcome.imported);
 	}
 
 	function dismiss() {

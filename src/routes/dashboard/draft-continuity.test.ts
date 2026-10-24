@@ -13,14 +13,16 @@ describe('lokalt dagboksutkast efter registrering', () => {
 	it('sparar anonymtext före vanlig navigation till registreringen', () => {
 		expect(guestEntry).toContain('onDestroy(() => {');
 		expect(guestEntry).toMatch(/onDestroy\(\(\) => \{[\s\S]{0,180}?persistIfDirty\(\);/);
-		expect(guestEntry).toContain('href="/register?fromDiary=true"');
+		expect(guestEntry).toContain('href={CREATE_ACCOUNT_FROM_DIARY_HREF}');
+		// Klicket sparar direkt, utan att vänta på autosparningen.
+		expect(guestEntry).toMatch(/function saveAndCreateAccount\(\) \{\s*persistIfDirty\(\);/);
 	});
 
 	// Besökaren skriver redan utan konto och texten autosparas lokalt, så
 	// "Fortsätt utan konto" gjorde inget synligt. Kontoerbjudandet står kvar.
 	it('har bara kontots CTA i skrivytans fot, ingen "Fortsätt utan konto"', () => {
 		expect(guestEntry).not.toContain('Fortsätt utan konto');
-		expect(guestEntry).toContain('Fortsätt härifrån och se ditt mående över tid.');
+		expect(guestEntry).toContain('Spara det du skrivit och se vad som återkommer.');
 		expect(guestEntry).toContain('Skapa konto och fortsätt');
 		expect(guestEntry).toContain('saveTimer = setInterval(persistIfDirty, AUTOSAVE_INTERVAL_MS);');
 	});
@@ -28,12 +30,12 @@ describe('lokalt dagboksutkast efter registrering', () => {
 	it('registreringen läser utkastet men skapar inget dagboksinlägg', () => {
 		expect(registerPage).toContain('const storedDraft = readDiaryDraft();');
 		expect(registerAction).not.toMatch(/from\(['"]diary['"]\)|\/api\/diary|writeDiaryDraft|clearDiaryDraft/);
-		// Utkastvägen (/register?fromDiary=true) bär ingen ?redirect=, så den
-		// landar numera i Kvällstugan i stället för på gamla dashboarden. Ett
-		// mål från /login (t.ex. Kvällstugan) följs bara när det finns.
-		expect(guestEntry).not.toContain('/register?fromDiary=true&redirect');
+		// Utkastvägen bär ?redirect=/dagbok/checkin, så den som skapar konto från
+		// skrivytan kommer tillbaka till Dagboken. Utan parameter blir det
+		// fortfarande Kvällstugan.
+		expect(guestEntry).not.toContain('fromDiary');
 		expect(registerAction).toContain('throw redirect(303, safeInternalRedirect(redirectParam))');
-		expect(safeInternalRedirect(new URLSearchParams('fromDiary=true').get('redirect'))).toBe(
+		expect(safeInternalRedirect(new URLSearchParams('').get('redirect'))).toBe(
 			'/dashboard/kvallsstugan'
 		);
 	});

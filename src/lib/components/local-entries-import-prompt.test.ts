@@ -51,9 +51,12 @@ describe('import av lokal historik till kontot', () => {
 	});
 
 	it('raderar bara det inlägg som faktiskt sparades, i success-grenen', () => {
-		expect(component).toMatch(
-			/if \(response\.ok && result\?\.success\) \{\s*\/\/[^\n]*\n[^\n]*\n\s*deleteLocalEntry\(item\.id\);/
-		);
+		// Själva regeln testas beteendemässigt i diary-local-import.test.ts.
+		// Här vaktas att komponenten bara rensar lokalt i bekräftelse-callbacken
+		// och bara räknar ett svar som bekräftat när servern sagt success.
+		expect(component).toContain('return response.ok && result?.success === true;');
+		expect(component).toMatch(/\(item\) => \{\s*\/\/[^\n]*\n[^\n]*\n\s*confirmLocalEntryImported\(item\);/);
+		expect(component).not.toContain('deleteLocalEntry');
 	});
 
 	it('förklarar kort att lokala inlägg hittills bara funnits i webbläsaren', () => {

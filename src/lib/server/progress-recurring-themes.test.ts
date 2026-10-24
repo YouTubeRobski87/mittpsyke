@@ -12,6 +12,7 @@ import {
 	MIN_THEME_WEEKS,
 	RECURRING_THEME_THRESHOLD_COPY,
 	RECURRING_THEME_TIMING_COPY,
+	ACCOUNT_THEME_RULE_COPY,
 	previewQuotes,
 	recurringThemeCountCopy,
 	recurringThemeEvidenceCopy,
@@ -250,6 +251,14 @@ describe('förklaringen av när teman kan synas', () => {
 	it('är lugn, utan krav, diagnos eller orsak', () => {
 		expect(findForbiddenProgressPhrase(RECURRING_THEME_THRESHOLD_COPY)).toBeNull();
 		expect(RECURRING_THEME_THRESHOLD_COPY).not.toMatch(/skriv mer|måste|borde|fortsätt skriva/i);
+	});
+
+	it('kontoerbjudandets variant säger samma trösklar och är lika lugn', () => {
+		expect(ACCOUNT_THEME_RULE_COPY).toBe(
+			`När dina lokala inlägg är importerade visas ett tema när det funnits i minst ${MIN_THEME_COUNT} anteckningar under minst ${MIN_THEME_WEEKS} olika veckor.`
+		);
+		expect(findForbiddenProgressPhrase(ACCOUNT_THEME_RULE_COPY)).toBeNull();
+		expect(ACCOUNT_THEME_RULE_COPY).not.toMatch(/skriv mer|måste|borde|fortsätt skriva/i);
 	});
 
 	it('Dagbokens variant säger samma trösklar och är lika lugn', () => {

@@ -173,6 +173,34 @@ export function deleteLocalEntry(id: string, storage: StorageLike | null = defau
 	);
 }
 
+/**
+ * Tar bort ett lokalt inlägg först när servern har bekräftat att det finns i
+ * kontot. Om inlägget också ligger kvar som utkast (samma text) tas utkastet
+ * bort, annars kunde migreringen ovan lyfta in det igen som ett nytt lokalt
+ * inlägg med nytt id, och en ny import hade då skapat en dubblett. Ett utkast
+ * med annan text rörs inte.
+ */
+export function confirmLocalEntryImported(
+	entry: Pick<LocalDiaryEntry, 'id' | 'text'>,
+	storage: StorageLike | null = defaultStorage()
+) {
+	deleteLocalEntry(entry.id, storage);
+	if (readCurrentLocalEntryId(storage) === entry.id) {
+		remove(storage, CURRENT_LOCAL_ENTRY_KEY);
+	}
+
+	const importedText = entry.text.trim();
+	const draftKeys = [DIARY_DRAFT_KEY, LEGACY_DIARY_DRAFT_KEY];
+	if (draftKeys.some((key) => parseDiaryDraft(read(storage, key)) === importedText)) {
+		for (const key of draftKeys) {
+			if (parseDiaryDraft(read(storage, key)) === importedText) remove(storage, key);
+		}
+		if (!read(storage, DIARY_DRAFT_KEY) && !read(storage, LEGACY_DIARY_DRAFT_KEY)) {
+			remove(storage, DIARY_DRAFT_SAVED_AT_KEY);
+		}
+	}
+}
+
 /** Tar bort hela den lokala historiken, inklusive vilket inlägg som var öppet. */
 export function clearLocalEntries(storage: StorageLike | null = defaultStorage()) {
 	remove(storage, LOCAL_ENTRIES_KEY);

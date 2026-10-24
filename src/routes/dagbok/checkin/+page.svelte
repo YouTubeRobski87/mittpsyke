@@ -17,6 +17,8 @@
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
+	import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';
+	import type { LocalDiaryEntry } from '$lib/diary-local-history';
 	import VideoRecorder from '$lib/components/VideoRecorder.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
 	import { scrollIntoViewWithMotionPreference } from '$lib/scroll';
@@ -488,6 +490,15 @@
 			reason: 'save confirmation is primary',
 			source: 'manual diary save success'
 		});
+	}
+
+	// Lokala inlägg som just sparats till kontot från importrutan. Listan
+	// hämtas om, och om samma text låg kvar som utkast i skrivfältet töms det,
+	// så att den inte kan sparas en gång till.
+	function handleLocalEntriesImported(imported: LocalDiaryEntry[]) {
+		const importedTexts = new Set(imported.map((item) => item.text.trim()));
+		if (importedTexts.has(draftText.trim())) draftText = '';
+		void loadEntries({ force: true });
 	}
 
 	async function loadEntries(options: { force?: boolean; limit?: number } = {}) {
@@ -1458,6 +1469,11 @@
 			</div>
 		{:else}
 		<div class="auth-shell">
+			<!-- Den som skapat konto från gästens skrivyta landar här. Lokala inlägg
+			     sparas bara efter ett aktivt val, och rutan har sitt eget samtycke. -->
+			{#if sessionUser && !sessionUser.is_anonymous}
+				<LocalEntriesImportPrompt onImported={handleLocalEntriesImported} />
+			{/if}
 			<div class="diary-layout">
 				<div class="diary-main">
 					<!-- Startpanelen ligger först i huvudkolumnen: valet av hur dagen ska

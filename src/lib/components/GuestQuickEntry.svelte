@@ -32,6 +32,8 @@
 		type LocalRetrospectTheme
 	} from '$lib/diary-local-retrospect';
 	import { dataflowCopy } from '$lib/dataflow-copy';
+	import { CREATE_ACCOUNT_FROM_DIARY_HREF } from '$lib/diary-account-handoff';
+	import { ACCOUNT_THEME_RULE_COPY } from '$lib/progress-recurring-themes';
 
 	const AUTOSAVE_INTERVAL_MS = 3000;
 
@@ -198,7 +200,10 @@
 		textareaEl?.focus();
 	}
 
+	// Det som skrivits sparas lokalt innan sidan lämnas, så att inget hänger på
+	// autosparningen hinner köra. Avbryts registreringen finns allt kvar här.
 	function saveAndCreateAccount() {
+		persistIfDirty();
 	}
 
 	function clearSavedEntry(options: { keepCurrentText?: boolean } = {}) {
@@ -456,14 +461,15 @@
 
 		<footer class="guest-entry-footer" bind:this={accountOfferEl}>
 			<div class="account-offer">
-				<p class="account-offer-title">Fortsätt härifrån och se ditt mående över tid.</p>
+				<p class="account-offer-title">Spara det du skrivit och se vad som återkommer.</p>
 				<p class="account-offer-text">
 					Med ett konto kan du samla det du väljer att spara och börja se vad som återkommer
 					eller förändras. Utkastet stannar lokalt tills du själv sparar det i dagboken.
 				</p>
+				<p class="account-offer-text">{ACCOUNT_THEME_RULE_COPY}</p>
 			</div>
 			<div class="actions">
-				<a class="primary-action" href="/register?fromDiary=true" onclick={saveAndCreateAccount}
+				<a class="primary-action" href={CREATE_ACCOUNT_FROM_DIARY_HREF} onclick={saveAndCreateAccount}
 					>Skapa konto och fortsätt</a
 				>
 			</div>
