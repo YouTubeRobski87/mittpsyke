@@ -3,6 +3,8 @@
 	import { onMount, untrack } from 'svelte';
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
+	import { invalidateAll } from '$app/navigation';
+	import { LOAD_RETRY_LABEL, PROGRESS_LOAD_ERROR_MESSAGE, type LoadStatus } from '$lib/load-state';
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
@@ -328,6 +330,8 @@
 		milestones: MilestonesResponse | null;
 		weeklyEntries: number;
 		entryCount: number;
+		// 'error' när servern inte kunde läsa antalet inlägg. Saknas = 'ready'.
+		entriesStatus?: LoadStatus;
 		creativeMomentCount?: number;
 		activeDays: number;
 		growthScore: number;
@@ -498,6 +502,17 @@
 	let insightsVisible = $state(false);
 	// Samma serverkälla som Dashboard: alla sparade rader i diary, utan tidsgräns.
 	const entryCount = $derived(data.entryCount ?? 0);
+	const entriesLoadFailed = $derived(data.entriesStatus === 'error');
+	let entriesRetrying = $state(false);
+
+	async function retryEntriesLoad() {
+		entriesRetrying = true;
+		try {
+			await invalidateAll();
+		} finally {
+			entriesRetrying = false;
+		}
+	}
 	const creativeMomentCount = $derived(data.creativeMomentCount ?? 0);
 	const creativeMomentCopy = $derived(getCreativeMomentCopy(creativeMomentCount));
 	const livingWorldReflectionCopy = $derived(
@@ -1169,6 +1184,24 @@
 				<section class="auth-panel auth-panel-error error-state">
 					<p>{error}</p>
 					<small>Försök att ladda sidan igen</small>
+				</section>
+			{:else if !isAnonymous && entriesLoadFailed}
+				<!-- Ett läsfel får aldrig se ut som tomt läge: antalet 0 kommer då
+				     från felet, inte från att användaren saknar anteckningar. -->
+				<section
+					class="auth-panel auth-panel-error error-state"
+					role="alert"
+					data-testid="progress-load-error"
+				>
+					<p>{PROGRESS_LOAD_ERROR_MESSAGE}</p>
+					<button
+						type="button"
+						class="auth-button"
+						onclick={retryEntriesLoad}
+						disabled={entriesRetrying}
+					>
+						{entriesRetrying ? 'Hämtar…' : LOAD_RETRY_LABEL}
+					</button>
 				</section>
 			{:else if !isAnonymous && entryCount === 0 && eveningPatterns.eveningCount === 0 && creativeMomentCount === 0}
 				<div class="progress-content">

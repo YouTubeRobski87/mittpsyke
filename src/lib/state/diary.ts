@@ -122,6 +122,10 @@ export function pageAfterLoadingMore(
 export const DIARY_LIST_REFRESH_NOTICE =
 	'Inlägget är sparat. Listan kunde inte uppdateras just nu, den visas när du laddar om sidan.';
 
+/** Samma besked efter en bekräftad import av lokala inlägg. */
+export const LOCAL_IMPORT_LIST_REFRESH_NOTICE =
+	'Inläggen är sparade i ditt konto. Listan kunde inte uppdateras just nu, de visas när du laddar om sidan.';
+
 /**
  * Laddar om listan efter en ändring som servern redan bekräftat (sparande,
  * redigering, borttagning). Ett fel här gäller bara listan, aldrig själva

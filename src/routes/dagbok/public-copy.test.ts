@@ -24,7 +24,7 @@ describe('publik dagbok: utkast, kontosparande och integritet', () => {
 
 	it('skiljer registrering från att aktivt spara ett kontoinlägg', () => {
 		const text = plainText(render(Page).body);
-		expect(text).toContain('Fortsätt härifrån och se ditt mående över tid.');
+		expect(text).toContain('Spara det du skrivit och se vad som återkommer.');
 		expect(text).toContain('Skapa konto och fortsätt');
 		expect(text).toMatch(/Utkastet stannar lokalt tills du själv sparar det i dagboken/);
 		expect(text).not.toContain('Med ett konto sparas det du skriver');

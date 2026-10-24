@@ -21,6 +21,13 @@ export const NOTES_LOAD_ERROR_MESSAGE =
 export const COMMUNITY_LOAD_ERROR_MESSAGE =
 	'Vi kunde inte hämta Gemenskapen just nu. Försök igen om en liten stund.';
 
+/**
+ * Visas på Framsteg när antalet sparade inlägg inte kunde läsas. Lovar inte
+ * mer än vi vet, precis som texten för anteckningar.
+ */
+export const PROGRESS_LOAD_ERROR_MESSAGE =
+	'Vi kunde inte hämta dina framsteg just nu. Det betyder inte att dina anteckningar har raderats. Försök igen om en liten stund.';
+
 export const NOTES_LOADING_MESSAGE = 'Hämtar dina anteckningar…';
 
 export const LOAD_RETRY_LABEL = 'Försök igen';

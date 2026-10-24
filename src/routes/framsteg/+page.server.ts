@@ -5,7 +5,7 @@ import { getProgressSceneBand } from '$lib/progressScene';
 import { getCompanionRelationshipStageForUser } from '$lib/server/companion-presence';
 import { loadCompanionDailyState } from '$lib/server/companion-daily-question';
 import { loadCreativeMomentCount } from '$lib/server/creative-moments';
-import { loadDiaryEntryCount } from '$lib/server/diary-entry-count';
+import { loadDiaryEntryCountResult } from '$lib/server/diary-entry-count';
 import { loadDiaryActivityDays } from '$lib/server/diary-activity-days';
 import { loadEveningPatternRows } from '$lib/server/evening-checkin';
 import { syncWorldProgress } from '$lib/server/world-progress';
@@ -33,6 +33,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	if (!user) {
 		return {
 			isAnonymous: true,
+			entriesStatus: 'ready' as const,
 			initialSceneSpotId,
 			initialSceneBand,
 			accountCreatedAt: null,
@@ -55,8 +56,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	const userMetadata = (user.user_metadata ?? {}) as Record<string, unknown>;
-	const [entryCount, companionDaily, diaryActivityDays, eveningPatternRows, creativeMomentCount] = await Promise.all([
-		loadDiaryEntryCount(locals.supabase, user.id),
+	const [entryCountResult, companionDaily, diaryActivityDays, eveningPatternRows, creativeMomentCount] = await Promise.all([
+		// Status följer med så att sidan kan skilja ett läsfel från noll inlägg.
+		loadDiaryEntryCountResult(locals.supabase, user.id),
 		loadCompanionDailyState(locals.supabase, user.id),
 		// Världens aktiva dagar: dagar med minst ett sparat inlägg, humör krävs inte.
 		loadDiaryActivityDays(locals.supabase, user.id),
@@ -65,6 +67,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 		loadEveningPatternRows(locals.supabase, user.id),
 		loadCreativeMomentCount(locals.supabase, user.id)
 	]);
+
+	const entryCount = entryCountResult.count;
 
 	// Världens beständiga progression: det som redan vuxit fram låses aldrig
 	// igen, och stadiet sjunker aldrig. Samma underlag som sidan räknar på.
@@ -84,6 +88,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	return {
 		isAnonymous: false,
+		// 'error' när antalet inlägg inte kunde läsas. Då visar sidan en felruta
+		// i stället för tomt läge ("Din utveckling börjar här").
+		entriesStatus: entryCountResult.status,
 		initialSceneSpotId,
 		initialSceneBand,
 		// Kontots ålder är en av världens tidssignaler. Den läses här i stället
