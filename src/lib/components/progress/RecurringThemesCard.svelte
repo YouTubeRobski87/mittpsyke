@@ -7,10 +7,12 @@
 	// ingen text säger vad ett tema betyder eller orsakar - bara att det nämns.
 	//
 	// Utdragen renderas alltid som text, aldrig som HTML. Inget av dem lämnar
-	// sidan: inga utdrag i länkar, URL:er eller analyshändelser.
+	// sidan: inga utdrag i länkar, URL:er eller analyshändelser. Länken till
+	// anteckningen i Dagboken bär bara dess id.
 	//
 	// Kortets ram (klassen .card) ägs av Framsteg-sidan, som lägger komponenten
 	// i en <section aria-labelledby="recurring-themes-heading">.
+	import { diaryEntryHref } from '$lib/diary-entry-link';
 	import {
 		previewQuotes,
 		recurringThemeCountCopy,
@@ -57,6 +59,13 @@
 							<li>
 								<blockquote>{quote.excerpt}</blockquote>
 								<time datetime={quote.date}>{quote.dateLabel}</time>
+								{#if diaryEntryHref(quote.entryId)}
+									<a
+										class="recurring-theme-entry-link"
+										href={diaryEntryHref(quote.entryId)}
+										aria-label={`Läs hela anteckningen från ${quote.dateLabel}`}
+									>Läs hela anteckningen</a>
+								{/if}
 							</li>
 						{/each}
 					</ul>
@@ -83,6 +92,13 @@
 										<blockquote>{item.excerpt}</blockquote>
 									{:else}
 										<small>Utdraget visas inte här. Anteckningen finns kvar i din dagbok.</small>
+									{/if}
+									{#if diaryEntryHref(item.entryId)}
+										<a
+											class="recurring-theme-entry-link"
+											href={diaryEntryHref(item.entryId)}
+											aria-label={`Läs hela anteckningen från ${item.dateLabel}`}
+										>Läs hela anteckningen</a>
 									{/if}
 								</li>
 							{/each}
@@ -188,6 +204,10 @@
 		padding-left: 0.75rem;
 	}
 
+	.recurring-theme-quotes .recurring-theme-entry-link {
+		margin-left: 0.75rem;
+	}
+
 	.recurring-theme-evidence time {
 		font-weight: 600;
 		color: hsl(var(--foreground));
@@ -212,6 +232,20 @@
 
 	.recurring-theme-action:focus-visible,
 	.recurring-theme-link:focus-visible {
+		outline: 2px solid hsl(var(--ring, var(--primary)));
+		outline-offset: 2px;
+	}
+
+	.recurring-theme-entry-link {
+		display: inline-block;
+		margin-top: 0.3rem;
+		font-size: 0.88rem;
+		color: hsl(var(--primary));
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
+	.recurring-theme-entry-link:focus-visible {
 		outline: 2px solid hsl(var(--ring, var(--primary)));
 		outline-offset: 2px;
 	}

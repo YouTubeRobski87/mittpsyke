@@ -57,6 +57,12 @@
 	} from '$lib/state/diary';
 	import { recordSuccessfulReflectionSave } from '$lib/diary-events';
 	import {
+		LINKED_ENTRY_MISSING_MESSAGE,
+		diaryEntryElementId,
+		linkedEntryPlacement,
+		pageForEntry
+	} from '$lib/diary-entry-link';
+	import {
 		LOAD_RETRY_LABEL,
 		NOTES_LOAD_ERROR_MESSAGE,
 		NOTES_LOADING_MESSAGE,
@@ -222,6 +228,19 @@
 	let deleteErrorMessage = $state('');
 	let canRenderMarkdown = $state(false);
 	let expandedEntryId = $state('');
+	// Anteckningen en länk från Framsteg pekar ut. Den öppnas i listan när den
+	// finns där, annars visas den för sig överst.
+	let linkedEntry = $derived(data.linkedEntry ?? { status: 'none' as const });
+	// Tas den länkade anteckningen bort här ska den inte dyka upp igen överst.
+	let linkedEntryRemoved = $state(false);
+	let linkedPlacement = $derived(
+		linkedEntryRemoved ? 'none' : linkedEntryPlacement(linkedEntry, entries)
+	);
+	let linkedEntryFocused = false;
+
+	function isLinkedEntry(entryId: string): boolean {
+		return linkedEntry.status === 'found' && linkedEntry.entry.id === entryId;
+	}
 	let activeMilestoneToast = $state<ActiveMilestoneToast | null>(null);
 	let earnedMilestones = $state<EarnedMilestone[]>([]);
 
@@ -289,6 +308,27 @@
 		const text = plainDiaryText(getEntryDisplayContent(entry));
 		if (!text) return 'Inget textinnehåll ännu.';
 		return text.length > 180 ? `${text.slice(0, 177).trim()}...` : text;
+	}
+
+	/** Öppnar den länkade anteckningen i listan och skrollar dit, en gång. */
+	async function focusLinkedEntry() {
+		if (linkedEntryFocused || linkedEntry.status !== 'found') return;
+		linkedEntryFocused = true;
+		const entryId = linkedEntry.entry.id;
+		const targetPage = pageForEntry(entries, entryId, entriesPerPage);
+		if (targetPage === null) {
+			// Visas för sig överst i stället.
+			await tick();
+			const separate = document.getElementById('lankad-anteckning');
+			if (separate) scrollIntoViewWithMotionPreference(separate, { block: 'start' });
+			return;
+		}
+		calendarFilterDate = null;
+		currentPage = targetPage;
+		expandedEntryId = entryId;
+		await tick();
+		const element = document.getElementById(diaryEntryElementId(entryId));
+		if (element) scrollIntoViewWithMotionPreference(element, { block: 'start' });
 	}
 
 	function toggleEntryExpanded(entryId: string) {
@@ -663,6 +703,7 @@
 			if (!response.ok || !payload?.success) {
 				if (response.status === 404) {
 					entries = entries.filter((e) => e.id !== entry.id);
+					if (isLinkedEntry(entry.id)) linkedEntryRemoved = true;
 					confirmingDeleteEntryId = '';
 					await refreshAfterConfirmedChange(() =>
 						loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
@@ -675,6 +716,7 @@
 			}
 
 			entries = entries.filter((e) => e.id !== entry.id);
+			if (isLinkedEntry(entry.id)) linkedEntryRemoved = true;
 			trackDiaryEntryDeleted();
 			confirmingDeleteEntryId = '';
 			// Borttagningen är bekräftad och inlägget redan borta ur listan.
@@ -1306,6 +1348,8 @@
 			}
 		}
 
+		if (entriesState === 'ready') await focusLinkedEntry();
+
 		try {
 			const milestoneUserId = getMilestoneUserId();
 			const pendingMilestone = consumePendingMilestone(milestoneUserId);
@@ -1762,6 +1806,63 @@
 						</section>
 					{/if}
 
+					{#if entriesState === 'ready' && linkedPlacement === 'separate' && linkedEntry.status === 'found'}
+						{@const linked = linkedEntry.entry}
+						<section
+							class="auth-panel linked-entry"
+							id="lankad-anteckning"
+							aria-labelledby="lankad-anteckning-rubrik"
+							data-testid="linked-entry"
+						>
+							<p class="linked-entry-label auth-muted" id="lankad-anteckning-rubrik">
+								Anteckningen du öppnade från Framsteg
+							</p>
+							<div class="entry-teaser-meta">
+								<p class="entry-date">{formatDate(linked.created_at)}</p>
+								{#if linked.mood}
+									<p class="entry-mood auth-muted">Humör: {linked.mood}/10</p>
+								{/if}
+							</div>
+							{#if getEntryPromptQuestion(linked)}
+								<div class="entry-prompt-question">
+									<p>Dagens fråga:</p>
+									<blockquote>{getEntryPromptQuestion(linked)}</blockquote>
+								</div>
+							{/if}
+							{#if canRenderMarkdown}
+								<div class="entry-markdown text-sm">
+									{@html renderDiaryMarkdown(getEntryDisplayContent(linked))}
+								</div>
+							{:else}
+								<p class="entry-fulltext">{getEntryDisplayContent(linked)}</p>
+							{/if}
+							{#if linked.image_url}
+								<img src={linked.image_url} alt="Bild till dagboksinlägg" class="entry-image" loading="lazy" />
+							{/if}
+							{#if linked.video_path}
+								{#if videoSignedUrls[linked.id]}
+									<!-- svelte-ignore a11y_media_has_caption -->
+									<video src={videoSignedUrls[linked.id]} controls playsinline class="entry-image"></video>
+								{:else}
+									<button
+										type="button"
+										class="entry-action-btn"
+										onclick={() => loadVideoUrl(linked.id, linked.video_path!)}
+										disabled={loadingVideoUrls[linked.id]}
+									>
+										{loadingVideoUrls[linked.id] ? 'Laddar video...' : 'Visa video'}
+									</button>
+								{/if}
+							{/if}
+							<a class="linked-entry-back" href="/framsteg">Tillbaka till Framsteg</a>
+						</section>
+					{:else if entriesState === 'ready' && linkedPlacement === 'missing'}
+						<section class="auth-panel" data-testid="linked-entry-missing">
+							<p class="text-sm">{LINKED_ENTRY_MISSING_MESSAGE}</p>
+							<a class="linked-entry-back" href="/framsteg">Tillbaka till Framsteg</a>
+						</section>
+					{/if}
+
 					{#if entriesState === 'error'}
 						<section class="auth-panel auth-panel-error" role="alert" data-testid="diary-entries-error">
 							<p class="text-sm">{NOTES_LOAD_ERROR_MESSAGE}</p>
@@ -1798,6 +1899,7 @@
 									<article
 										class="auth-panel diary-entry"
 										class:diary-entry--expanded={expandedEntryId === entry.id}
+										id={diaryEntryElementId(entry.id)}
 									>
 										<div class="entry-teaser-meta">
 											<p class="entry-date">{formatDate(entry.created_at)}</p>
@@ -1917,6 +2019,9 @@
 											>
 												{expandedEntryId === entry.id ? 'Visa mindre' : 'Läs vidare'}
 											</button>
+											{#if linkedPlacement === 'list' && isLinkedEntry(entry.id)}
+												<a class="linked-entry-back" href="/framsteg">Tillbaka till Framsteg</a>
+											{/if}
 
 											<div class="entry-actions">
 												<button
@@ -3308,6 +3413,27 @@
 
 	.entry-excerpt {
 		color: hsl(var(--muted-foreground));
+	}
+
+	.linked-entry {
+		display: grid;
+		gap: 0.6rem;
+	}
+
+	.linked-entry-label {
+		margin: 0;
+		font-size: 0.82rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+	}
+
+	.linked-entry-back {
+		display: inline-block;
+		margin-top: 0.5rem;
+		font-size: 0.9rem;
+		color: hsl(var(--primary));
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
 	}
 
 	.entry-read-more {
