@@ -368,6 +368,17 @@ describe('scope-avgränsning', () => {
 			.join('\n');
 
 		expect(code).not.toContain('user_ai_consents');
-		expect(code).toContain("fetch('/api/consent/chat-ai'");
+		// Samtycket går via endpointen, genom den gemensamma klientfunktionen.
+		expect(code).toContain('await requestChatAiConsent(');
+		const consentClient = readFileSync(
+			new URL('../../../lib/chat/consent-client.ts', import.meta.url),
+			'utf8'
+		);
+		const clientCode = consentClient
+			.split('\n')
+			.filter((line) => !line.trim().startsWith('//'))
+			.join('\n');
+		expect(clientCode).not.toContain('user_ai_consents');
+		expect(clientCode).toContain("CHAT_AI_CONSENT_ENDPOINT = '/api/consent/chat-ai'");
 	});
 });
