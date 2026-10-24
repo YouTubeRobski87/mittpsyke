@@ -35,7 +35,6 @@
 		hasSeenMilestone,
 		loadEarnedMilestones,
 		markMilestoneSeen,
-		type EarnedMilestone,
 		type MilestoneId
 	} from '$lib/milestone-state';
 	import {
@@ -48,17 +47,36 @@
 	import { supabase } from '$lib/supabase';
 	import {
 		DIARY_ENTRY_PAGE_SIZE,
+		DIARY_LIST_REFRESH_NOTICE,
 		loadDiaryEntriesPage,
 		notifyDiaryEntriesChanged,
 		pageAfterLoadingMore,
+		refreshAfterConfirmedChange,
 		type DiaryEntry
 	} from '$lib/state/diary';
 	import { recordSuccessfulReflectionSave } from '$lib/diary-events';
+	import { RECURRING_THEME_TIMING_COPY } from '$lib/progress-recurring-themes';
+	import {
+		LINKED_ENTRY_MISSING_MESSAGE,
+		diaryEntryElementId,
+		linkedEntryPlacement,
+		pageForEntry
+	} from '$lib/diary-entry-link';
+	import {
+		LOAD_RETRY_LABEL,
+		NOTES_LOAD_ERROR_MESSAGE,
+		NOTES_LOADING_MESSAGE,
+		initialLoadState,
+		loadStateAfterClientFetch,
+		type LoadState,
+		type LoadStatus
+	} from '$lib/load-state';
 	import type { Session, User } from '@supabase/supabase-js';
 
 	type PageData = {
 		entries?: DiaryEntry[];
 		hasMoreEntries?: boolean;
+		entriesStatus?: LoadStatus;
 		session?: Session | null;
 	};
 
@@ -113,6 +131,11 @@
 	let { data } = $props<{ data: PageData }>();
 
 	let entries = $state<DiaryEntry[]>([]);
+	// Skiljer "inga inlägg" från "kunde inte hämta". Tomt läge visas bara i 'ready'.
+	let entriesState = $state<LoadState>('loading');
+	// Räknar lyckade hämtningar, så att ett fel från en äldre, långsam hämtning
+	// inte kan ta tillbaka en lista som en nyare hämtning redan visat.
+	let successfulEntryLoads = 0;
 	let loading = $state(false);
 	let loadingMoreEntries = $state(false);
 	let hasMoreEntries = $state(false);
@@ -138,8 +161,10 @@
 	let draftMoodPreview = $state(5);
 	let draftError = $state('');
 	let draftSuccess = $state('');
+	// Sparat men listan kunde inte laddas om. Skiljs från draftError, som bara
+	// får betyda att själva sparandet misslyckades.
+	let draftListNotice = $state('');
 	let savingDraft = $state(false);
-	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
 	let hasPromptQuestion = $derived(draftPromptQuestion.trim().length > 0);
 	let dailyQuestionPanelQuestion = $derived(
@@ -202,13 +227,28 @@
 	let deleteErrorMessage = $state('');
 	let canRenderMarkdown = $state(false);
 	let expandedEntryId = $state('');
+	// Anteckningen en länk från Framsteg pekar ut. Den öppnas i listan när den
+	// finns där, annars visas den för sig överst.
+	let linkedEntry = $derived(data.linkedEntry ?? { status: 'none' as const });
+	// Tas den länkade anteckningen bort här ska den inte dyka upp igen överst.
+	let linkedEntryRemoved = $state(false);
+	let linkedPlacement = $derived(
+		linkedEntryRemoved ? 'none' : linkedEntryPlacement(linkedEntry, entries)
+	);
+	let linkedEntryFocused = false;
+
+	function isLinkedEntry(entryId: string): boolean {
+		return linkedEntry.status === 'found' && linkedEntry.entry.id === entryId;
+	}
 	let activeMilestoneToast = $state<ActiveMilestoneToast | null>(null);
-	let earnedMilestones = $state<EarnedMilestone[]>([]);
 
 	$effect(() => {
 		entries = data.entries ?? [];
 		hasMoreEntries = data.hasMoreEntries ?? false;
 		sessionUser = data.session?.user ?? null;
+		// Serverfel: klienten försöker igen i initializeDiary och visar laddning
+		// under tiden, aldrig tomt läge.
+		entriesState = initialLoadState(data.entriesStatus);
 	});
 
 	function formatDate(value: string | null): string {
@@ -268,6 +308,27 @@
 		return text.length > 180 ? `${text.slice(0, 177).trim()}...` : text;
 	}
 
+	/** Öppnar den länkade anteckningen i listan och skrollar dit, en gång. */
+	async function focusLinkedEntry() {
+		if (linkedEntryFocused || linkedEntry.status !== 'found') return;
+		linkedEntryFocused = true;
+		const entryId = linkedEntry.entry.id;
+		const targetPage = pageForEntry(entries, entryId, entriesPerPage);
+		if (targetPage === null) {
+			// Visas för sig överst i stället.
+			await tick();
+			const separate = document.getElementById('lankad-anteckning');
+			if (separate) scrollIntoViewWithMotionPreference(separate, { block: 'start' });
+			return;
+		}
+		calendarFilterDate = null;
+		currentPage = targetPage;
+		expandedEntryId = entryId;
+		await tick();
+		const element = document.getElementById(diaryEntryElementId(entryId));
+		if (element) scrollIntoViewWithMotionPreference(element, { block: 'start' });
+	}
+
 	function toggleEntryExpanded(entryId: string) {
 		expandedEntryId = expandedEntryId === entryId ? '' : entryId;
 	}
@@ -318,25 +379,8 @@
 		return sessionUser?.id ?? null;
 	}
 
-	function refreshEarnedMilestones(userId: string | null | undefined = sessionUser?.id) {
-		if (!browser) return;
-		earnedMilestones = loadEarnedMilestones(userId);
-	}
-
 	function awardFirstDiaryEntryMilestone(userId: string | null | undefined = getMilestoneUserId()) {
-		const nextMilestones = awardMilestone(firstDiaryEntryMilestoneRecord, userId);
-		earnedMilestones = [...nextMilestones];
-		return nextMilestones;
-	}
-
-	function formatMilestoneDate(value: string): string {
-		const date = new Date(value);
-		if (Number.isNaN(date.getTime())) return 'Intjänad nyligen';
-		return `Intjänad ${date.toLocaleDateString('sv-SE', {
-			day: 'numeric',
-			month: 'long',
-			year: 'numeric'
-		})}`;
+		return awardMilestone(firstDiaryEntryMilestoneRecord, userId);
 	}
 
 	function showMilestoneOnce(
@@ -446,19 +490,6 @@
 		});
 	}
 
-	function countEntriesThisWeek(source: DiaryEntry[]): number {
-		const cutoff = new Date();
-		cutoff.setDate(cutoff.getDate() - 6);
-		cutoff.setHours(0, 0, 0, 0);
-
-		return source.filter((entry) => {
-			if (!entry.created_at) return false;
-			const created = new Date(entry.created_at);
-			if (Number.isNaN(created.getTime())) return false;
-			return created >= cutoff;
-		}).length;
-	}
-
 	async function loadEntries(options: { force?: boolean; limit?: number } = {}) {
 		const { data } = await supabase.auth.getSession();
 		const userId = data.session?.user?.id;
@@ -471,6 +502,10 @@
 		const page = await loadDiaryEntriesPage(userId, options);
 		entries = page.entries;
 		hasMoreEntries = page.hasMore;
+		successfulEntryLoads += 1;
+		// En lyckad hämtning, oavsett varifrån (sparande, ändring, nytt försök),
+		// ger en lista som stämmer. Ett tidigare fel får inte dölja den.
+		entriesState = 'ready';
 	}
 
 	async function loadMoreEntries() {
@@ -487,9 +522,27 @@
 			});
 			currentPage = pageAfterLoadingMore(previousCount, entries.length, entriesPerPage, currentPage);
 		} catch (error) {
-			loadError = error instanceof Error ? error.message : 'Kunde inte hämta fler inlägg just nu.';
+			console.error('Dagbok: kunde inte hämta fler inlägg', error);
+			loadError = 'Kunde inte hämta fler inlägg just nu. Försök igen om en liten stund.';
 		} finally {
 			loadingMoreEntries = false;
+		}
+	}
+
+	/** Ny hämtning efter ett fel. Listan visas först när hämtningen faktiskt lyckats. */
+	async function retryLoadEntries() {
+		entriesState = 'loading';
+		const loadsBefore = successfulEntryLoads;
+		try {
+			await loadEntries({ force: true });
+			entriesState = loadStateAfterClientFetch('loading', true);
+		} catch (error) {
+			console.error('Dagbok: kunde inte hämta inlägg', error);
+			entriesState = loadStateAfterClientFetch(
+				'loading',
+				false,
+				successfulEntryLoads !== loadsBefore
+			);
 		}
 	}
 
@@ -563,7 +616,11 @@
 			editingEntryId = '';
 			editingText = '';
 			editingMood = '';
-			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
+			// Ändringen är sparad och syns redan i listan ovan. Ett fel vid
+			// omladdningen får inte visas som att ändringen misslyckades.
+			await refreshAfterConfirmedChange(() =>
+				loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
+			);
 		} catch (error) {
 			editError = error instanceof Error ? error.message : 'Kunde inte spara ändringen just nu.';
 		} finally {
@@ -614,8 +671,11 @@
 			if (!response.ok || !payload?.success) {
 				if (response.status === 404) {
 					entries = entries.filter((e) => e.id !== entry.id);
+					if (isLinkedEntry(entry.id)) linkedEntryRemoved = true;
 					confirmingDeleteEntryId = '';
-					await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
+					await refreshAfterConfirmedChange(() =>
+						loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
+					);
 					return;
 				}
 				deleteErrorEntryId = entry.id;
@@ -624,9 +684,13 @@
 			}
 
 			entries = entries.filter((e) => e.id !== entry.id);
+			if (isLinkedEntry(entry.id)) linkedEntryRemoved = true;
 			trackDiaryEntryDeleted();
 			confirmingDeleteEntryId = '';
-			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
+			// Borttagningen är bekräftad och inlägget redan borta ur listan.
+			await refreshAfterConfirmedChange(() =>
+				loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
+			);
 		} catch (error) {
 			deleteErrorEntryId = entry.id;
 			deleteErrorMessage =
@@ -1039,6 +1103,7 @@
 		if (!draftText.trim() || savingDraft) return;
 		draftError = '';
 		draftSuccess = '';
+		draftListNotice = '';
 		if (!hasHealthDataConsent) {
 			draftError = 'Du behöver samtycka innan du kan spara i dagboken.';
 			return;
@@ -1048,6 +1113,9 @@
 			return;
 		}
 		savingDraft = true;
+		// Sätts så fort servern bekräftat sparandet. Efter det får ett fel bara
+		// gälla det som händer efteråt, aldrig visas som ett misslyckat sparande.
+		let saveConfirmed = false;
 
 		try {
 			const { data } = await supabase.auth.getSession();
@@ -1115,6 +1183,7 @@
 				return;
 			}
 
+			saveConfirmed = true;
 			recordManualDiaryMilestone(getMilestoneUserId(), payload?.diary?.id ?? null);
 
 			if (typeof window !== 'undefined') {
@@ -1149,12 +1218,25 @@
 			uploadImageError = '';
 			clearVideoState();
 			draftSuccess = 'Inlägget är sparat';
-			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
+			// Sparandet är bekräftat av servern. Från och med här får inget
+			// visas som att det misslyckades, även om listan inte kan laddas om.
+			const listRefreshed = await refreshAfterConfirmedChange(() =>
+				loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
+			);
+			if (!listRefreshed) draftListNotice = DIARY_LIST_REFRESH_NOTICE;
 			notifyDiaryEntriesChanged();
 			recordSuccessfulReflectionSave();
 			currentPage = 1;
 		} catch (error) {
-			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
+			if (saveConfirmed) {
+				console.error('Dagbok: fel efter bekräftat sparande', error);
+				// Texten finns redan sparad. Tömt fält hindrar att den sparas två gånger.
+				draftText = '';
+				draftSuccess = 'Inlägget är sparat';
+				draftListNotice = DIARY_LIST_REFRESH_NOTICE;
+			} else {
+				draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
+			}
 		} finally {
 			savingDraft = false;
 		}
@@ -1164,6 +1246,7 @@
 		if (!sessionUser) {
 			entries = [];
 			hasMoreEntries = false;
+			entriesState = 'ready';
 			loading = false;
 			return;
 		}
@@ -1213,10 +1296,29 @@
 			await openWriteEditor();
 		}
 
-		try {
-			if (entries.length === 0) {
+		// Inläggen hämtas i ett eget try, så att ett fel här aldrig blandas ihop
+		// med milstolparna nedan och aldrig visas som en tom dagbok.
+		if (entries.length === 0 || entriesState !== 'ready') {
+			// Har servern redan bekräftat en tom lista är den tomma listan sann,
+			// och en misslyckad extra kontroll här ska inte göra den till ett fel.
+			const stateBeforeFetch = entriesState;
+			const loadsBefore = successfulEntryLoads;
+			try {
 				await loadEntries();
+				entriesState = loadStateAfterClientFetch(stateBeforeFetch, true);
+			} catch (error) {
+				console.error('Dagbok: kunde inte hämta inlägg', error);
+				entriesState = loadStateAfterClientFetch(
+					stateBeforeFetch,
+					false,
+					successfulEntryLoads !== loadsBefore
+				);
 			}
+		}
+
+		if (entriesState === 'ready') await focusLinkedEntry();
+
+		try {
 			const milestoneUserId = getMilestoneUserId();
 			const pendingMilestone = consumePendingMilestone(milestoneUserId);
 			if (pendingMilestone === 'first_diary_entry') {
@@ -1227,7 +1329,8 @@
 				});
 			}
 		} catch (error) {
-			loadError = error instanceof Error ? error.message : 'Kunde inte ladda dagboken just nu.';
+			// Gäller bara milstolpen. Inläggen hanteras ovan och påverkas inte.
+			console.error('Dagbok: kunde inte visa milstolpe', error);
 		} finally {
 			loading = false;
 		}
@@ -1240,13 +1343,11 @@
 			supabase.auth.getSession().then(({ data: sessionData }) => {
 				sessionUser = sessionData.session?.user ?? null;
 				hasHealthDataConsent = hasSensitiveConsent(sessionData.session?.user.user_metadata);
-				refreshEarnedMilestones(getMilestoneUserId());
 				void initializeDiary();
 			});
 		} else {
 			sessionUser = data.session.user;
 			hasHealthDataConsent = hasSensitiveConsent(data.session.user.user_metadata);
-			refreshEarnedMilestones(getMilestoneUserId());
 			void initializeDiary();
 		}
 
@@ -1254,7 +1355,6 @@
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((_event, session) => {
 			sessionUser = session?.user ?? null;
-			refreshEarnedMilestones(getMilestoneUserId());
 			if (hasSensitiveConsent(session?.user.user_metadata)) {
 				hasHealthDataConsent = true;
 			}
@@ -1648,11 +1748,17 @@
 								Din text är nu en del av underlaget i Framsteg. När något faktiskt återkommer eller
 								förändras visas det där – inte innan.
 							</p>
+							<p class="mt-2 text-sm" data-testid="save-theme-timing">{RECURRING_THEME_TIMING_COPY}</p>
+							{#if draftListNotice}
+								<p class="mt-2 text-sm" data-testid="diary-list-refresh-notice">{draftListNotice}</p>
+							{/if}
 							<div class="actions-row mt-3">
 								<a href="/framsteg" class="auth-button primary">Gå till Framsteg</a>
-								<button type="button" class="auth-button" onclick={openLatestEntries}>
-									Se inlägget
-								</button>
+								{#if !draftListNotice}
+									<button type="button" class="auth-button" onclick={openLatestEntries}>
+										Se inlägget
+									</button>
+								{/if}
 								<button type="button" class="auth-button save-again-action" onclick={openWriteEditor}>
 									Skriv igen
 								</button>
@@ -1666,7 +1772,75 @@
 						</section>
 					{/if}
 
-					{#if entries.length === 0}
+					{#if entriesState === 'ready' && linkedPlacement === 'separate' && linkedEntry.status === 'found'}
+						{@const linked = linkedEntry.entry}
+						<section
+							class="auth-panel linked-entry"
+							id="lankad-anteckning"
+							aria-labelledby="lankad-anteckning-rubrik"
+							data-testid="linked-entry"
+						>
+							<p class="linked-entry-label auth-muted" id="lankad-anteckning-rubrik">
+								Anteckningen du öppnade från Framsteg
+							</p>
+							<div class="entry-teaser-meta">
+								<p class="entry-date">{formatDate(linked.created_at)}</p>
+								{#if linked.mood}
+									<p class="entry-mood auth-muted">Humör: {linked.mood}/10</p>
+								{/if}
+							</div>
+							{#if getEntryPromptQuestion(linked)}
+								<div class="entry-prompt-question">
+									<p>Dagens fråga:</p>
+									<blockquote>{getEntryPromptQuestion(linked)}</blockquote>
+								</div>
+							{/if}
+							{#if canRenderMarkdown}
+								<div class="entry-markdown text-sm">
+									{@html renderDiaryMarkdown(getEntryDisplayContent(linked))}
+								</div>
+							{:else}
+								<p class="entry-fulltext">{getEntryDisplayContent(linked)}</p>
+							{/if}
+							{#if linked.image_url}
+								<img src={linked.image_url} alt="Bild till dagboksinlägg" class="entry-image" loading="lazy" />
+							{/if}
+							{#if linked.video_path}
+								{#if videoSignedUrls[linked.id]}
+									<!-- svelte-ignore a11y_media_has_caption -->
+									<video src={videoSignedUrls[linked.id]} controls playsinline class="entry-image"></video>
+								{:else}
+									<button
+										type="button"
+										class="entry-action-btn"
+										onclick={() => loadVideoUrl(linked.id, linked.video_path!)}
+										disabled={loadingVideoUrls[linked.id]}
+									>
+										{loadingVideoUrls[linked.id] ? 'Laddar video...' : 'Visa video'}
+									</button>
+								{/if}
+							{/if}
+							<a class="linked-entry-back" href="/framsteg">Tillbaka till Framsteg</a>
+						</section>
+					{:else if entriesState === 'ready' && linkedPlacement === 'missing'}
+						<section class="auth-panel" data-testid="linked-entry-missing">
+							<p class="text-sm">{LINKED_ENTRY_MISSING_MESSAGE}</p>
+							<a class="linked-entry-back" href="/framsteg">Tillbaka till Framsteg</a>
+						</section>
+					{/if}
+
+					{#if entriesState === 'error'}
+						<section class="auth-panel auth-panel-error" role="alert" data-testid="diary-entries-error">
+							<p class="text-sm">{NOTES_LOAD_ERROR_MESSAGE}</p>
+							<button type="button" class="auth-button mt-3" onclick={retryLoadEntries}>
+								{LOAD_RETRY_LABEL}
+							</button>
+						</section>
+					{:else if entriesState === 'loading'}
+						<section class="auth-panel" aria-busy="true" data-testid="diary-entries-loading">
+							<p class="text-sm auth-muted">{NOTES_LOADING_MESSAGE}</p>
+						</section>
+					{:else if entries.length === 0}
 						<section class="auth-panel">
 							<h2 class="text-lg font-semibold">Din dagbok börjar här</h2>
 							<p class="mt-2 text-sm auth-muted">Det räcker med några ord. Skriv i lugn och ro, i din egen takt.</p>
@@ -1691,6 +1865,7 @@
 									<article
 										class="auth-panel diary-entry"
 										class:diary-entry--expanded={expandedEntryId === entry.id}
+										id={diaryEntryElementId(entry.id)}
 									>
 										<div class="entry-teaser-meta">
 											<p class="entry-date">{formatDate(entry.created_at)}</p>
@@ -1810,6 +1985,9 @@
 											>
 												{expandedEntryId === entry.id ? 'Visa mindre' : 'Läs vidare'}
 											</button>
+											{#if linkedPlacement === 'list' && isLinkedEntry(entry.id)}
+												<a class="linked-entry-back" href="/framsteg">Tillbaka till Framsteg</a>
+											{/if}
 
 											<div class="entry-actions">
 												<button
@@ -1902,40 +2080,6 @@
 				</div>
 
 				<aside class="diary-side">
-					<section class="auth-panel diary-week-panel">
-						<div class="week-head">
-							<h3 class="text-sm font-semibold">Denna vecka</h3>
-							<p class="text-xs auth-muted">Liten översikt i lugn takt</p>
-						</div>
-						<p class="week-count">{weeklyEntryCount}</p>
-						<p class="text-xs auth-muted">inlägg senaste 7 dagarna</p>
-					</section>
-
-					<section class="auth-panel diary-milestones-panel" aria-labelledby="diary-milestones-title">
-						<div class="milestones-head">
-							<h3 id="diary-milestones-title" class="text-sm font-semibold">Milstolpar</h3>
-							<p class="text-xs auth-muted">Små steg du redan har tagit</p>
-						</div>
-						{#if dev}
-							<p class="milestones-debug auth-muted">earnedMilestones.length: {earnedMilestones.length}</p>
-						{/if}
-						{#if earnedMilestones.length === 0}
-							<p class="milestones-empty auth-muted">
-								Dina framsteg visas här när du använder dagboken.
-							</p>
-						{:else}
-							<div class="milestones-list">
-								{#each earnedMilestones as milestone (milestone.id)}
-									<article class="milestone-card">
-										<h4>{milestone.title}</h4>
-										<p>{milestone.description}</p>
-										<time datetime={milestone.earnedAt}>{formatMilestoneDate(milestone.earnedAt)}</time>
-									</article>
-								{/each}
-							</div>
-						{/if}
-					</section>
-
 					<div class="diary-side-calendar">
 						<DiaryCalendar entries={entries} onDaySelect={handleCalendarDaySelect} />
 					</div>
@@ -2922,75 +3066,7 @@
 		font-size: 0.82rem;
 	}
 
-	.diary-week-panel {
-		display: grid;
-		gap: 0.65rem;
-		border-color: rgba(129, 140, 248, 0.22);
-		background:
-			linear-gradient(145deg, rgba(99, 102, 241, 0.09), rgba(143, 227, 166, 0.06)),
-			hsl(var(--surface));
-	}
-
 	/* ── Kompakt kalender i sidebaren ── */
-	.diary-milestones-panel {
-		display: grid;
-		gap: 0.7rem;
-		border-color: rgba(143, 227, 166, 0.18);
-		background:
-			linear-gradient(145deg, rgba(143, 227, 166, 0.07), rgba(96, 165, 250, 0.05)),
-			hsl(var(--surface));
-	}
-
-	.milestones-head h3,
-	.milestones-head p,
-	.milestones-debug,
-	.milestones-empty {
-		margin: 0;
-	}
-
-	.milestones-debug {
-		font-size: 0.72rem;
-	}
-
-	.milestones-list {
-		display: grid;
-		gap: 0.55rem;
-	}
-
-	.milestone-card {
-		display: grid;
-		gap: 0.2rem;
-		padding: 0.72rem;
-		border: 1px solid rgba(255, 255, 255, 0.08);
-		border-radius: var(--radius-input);
-		background: rgba(255, 255, 255, 0.035);
-	}
-
-	.milestone-card h4,
-	.milestone-card p {
-		margin: 0;
-	}
-
-	.milestone-card h4 {
-		font-size: 0.95rem;
-		font-weight: 700;
-		line-height: 1.3;
-		color: hsl(var(--foreground));
-	}
-
-	.milestone-card p {
-		font-size: 0.84rem;
-		line-height: 1.5;
-		color: hsl(var(--muted-foreground));
-	}
-
-	.milestone-card time {
-		margin-top: 0.1rem;
-		font-size: 0.74rem;
-		font-weight: 700;
-		color: hsl(var(--muted-foreground));
-	}
-
 	.diary-side-calendar {
 		position: relative;
 		width: 100%;
@@ -3060,19 +3136,6 @@
 
 	.diary-side-calendar :global(.cal-clear-btn) {
 		font-size: 0.74rem;
-	}
-
-	.week-head h3,
-	.week-head p {
-		margin: 0;
-	}
-
-	.week-count {
-		margin: 0;
-		font-family: var(--font-heading);
-		font-size: 1.9rem;
-		line-height: 1;
-		letter-spacing: -0.02em;
 	}
 
 	.diary-entries {
@@ -3201,6 +3264,27 @@
 
 	.entry-excerpt {
 		color: hsl(var(--muted-foreground));
+	}
+
+	.linked-entry {
+		display: grid;
+		gap: 0.6rem;
+	}
+
+	.linked-entry-label {
+		margin: 0;
+		font-size: 0.82rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+	}
+
+	.linked-entry-back {
+		display: inline-block;
+		margin-top: 0.5rem;
+		font-size: 0.9rem;
+		color: hsl(var(--primary));
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
 	}
 
 	.entry-read-more {
@@ -3507,8 +3591,7 @@
 		.editor-support,
 		.editor-note,
 		.mood-meaning,
-		.mood-anchors,
-		.week-head p {
+		.mood-anchors {
 			display: none;
 		}
 
@@ -3684,14 +3767,6 @@
 
 		:global(.diary-calendar) {
 			gap: 0.45rem;
-		}
-
-		.diary-side .auth-panel {
-			padding: 0.72rem;
-		}
-
-		.week-count {
-			font-size: 1.45rem;
 		}
 
 		.diary-entries {

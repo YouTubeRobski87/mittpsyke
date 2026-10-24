@@ -4,12 +4,17 @@
 	import { THEMES, THEME_STORAGE_KEY, getCachedTheme } from '$lib/theme';
 	import { browser } from '$app/environment';
 	import AccountTeaser from '$lib/components/AccountTeaser.svelte';
-	import ActivityHeatmap from '$lib/components/ActivityHeatmap.svelte';
 	import CompanionPose from '$lib/components/CompanionPose.svelte';
 	import CompanionPresenceTracker from '$lib/components/CompanionPresenceTracker.svelte';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import LighterDaysCard from '$lib/components/progress/LighterDaysCard.svelte';
 	import ProgressExamplePreview from '$lib/components/progress/ProgressExamplePreview.svelte';
+	import RecurringThemesCard from '$lib/components/progress/RecurringThemesCard.svelte';
+	import {
+		RECURRING_THEME_THRESHOLD_COPY,
+		withoutRecurringThemeInsight,
+		type RecurringTheme
+	} from '$lib/progress-recurring-themes';
 	import FramstegComprehensionCard from '$lib/components/progress/FramstegComprehensionCard.svelte';
 	import type { LighterDaysView } from '$lib/progress-lighter-days-types';
 	import AmbientWorld from '$lib/components/world/AmbientWorld.svelte';
@@ -73,9 +78,7 @@
 	import { getLivingWorldReflectionCopy } from '$lib/livingWorldCopy';
 	import {
 		trackInsightOpened,
-		trackMilestoneReachedOnce,
-		trackProgressViewOpened,
-		trackStreakDayReachedOnce
+		trackProgressViewOpened
 	} from '$lib/analytics';
 	import {
 		SENSITIVE_CONSENT_HEADER,
@@ -86,10 +89,8 @@
 	import { supabase } from '$lib/supabase';
 	import RecentPeriodChart from '$lib/components/RecentPeriodChart.svelte';
 	import {
-		buildRecentPeriodView,
 		buildHistoryActivity,
 		toMoodSamples,
-		CHART_FALLBACK_COPY,
 		type ChartPoint,
 		type MoodSample,
 		type PeriodDays
@@ -124,7 +125,7 @@
 		type EveningPatternRow
 	} from '$lib/evening-patterns';
 	import { stockholmTodayKey } from '$lib/stockholm-date';
-	import { Leaf, TrendingUp, Lightbulb, Calendar, Heart, ChevronDown, Moon } from 'lucide-svelte';
+	import { Leaf, TrendingUp, Lightbulb, Calendar, Moon } from 'lucide-svelte';
 
 	let { data } = $props<{ data: PageData }>();
 
@@ -298,6 +299,8 @@
 		monthly: { month: string; label: string; entryCount: number; activeDays: number; status: 'sufficient' | 'thin' | 'missing'; mean: number | null; median: number | null; standardDeviation: number | null }[];
 		insights: ProgressInsight[];
 		halfYearSummary: ProgressInsight[];
+		// Högst tre återkommande teman med datum och ordagranna utdrag.
+		recurringThemes?: RecurringTheme[];
 		relevantEntryCount?: number;
 		lowConfidence?: boolean;
 	}
@@ -482,7 +485,6 @@
 	let moodTimelineLoading = $state(false);
 	let selectedPeriod = $state<PeriodDays>(30);
 	let selectedMoodPoint = $state<ChartPoint | null>(null);
-	let historyOpen = $state(false);
 	let heatmapError = $state('');
 	let progressLoading = $state(false);
 	let progressLoaded = $state(false);
@@ -494,25 +496,6 @@
 	let insightsError = $state('');
 	let hasSensitiveDataConsent = $state(browser ? hasSensitiveConsent() : false);
 	let insightsVisible = $state(false);
-	let heatmapVisible = $state(false);
-	let heatmapCardEl = $state<HTMLElement | null>(null);
-	const streakData = $derived(
-		loadedStreakData ?? { currentStreak: 0, longestStreak: 0, lastEntryDate: null, lastEntryDaysAgo: 0 }
-	);
-	const milestonesData = $derived(
-		loadedMilestonesData ?? { achieved: [], sections: [], nextMilestone: null, totalEntries: 0 }
-	);
-	// "Det som långsamt kan växa fram" får aldrig peka ut ett antal
-	// sammanhängande dagar. En obruten rad som nästa steg är ett användningsmål,
-	// inte en observation - och en dag utan inlägg blir då ett misslyckande.
-	// Milstolpen finns kvar i listan och kan fortfarande uppnås; den lyfts bara
-	// inte fram som något att sträva mot.
-	const nextMilestone = $derived(
-		milestonesData.nextMilestone && milestonesData.nextMilestone.metric !== 'longestStreak'
-			? milestonesData.nextMilestone
-			: null
-	);
-	const weeklyEntries = $derived(isAnonymous ? 3 : loadedWeeklyEntries);
 	// Samma serverkälla som Dashboard: alla sparade rader i diary, utan tidsgräns.
 	const entryCount = $derived(data.entryCount ?? 0);
 	const creativeMomentCount = $derived(data.creativeMomentCount ?? 0);
@@ -625,10 +608,25 @@
 	// senaste veckan, som annars inte hade någon yta alls på sidan.
 	const weekSummary = $derived(buildWeekSummary(moodSamples));
 	const progressAnalysis = $derived(loadedInsightsData?.analysis ?? null);
+	// Användarens egna ord först: återkommande teman får ett eget kort före
+	// humörkurvan. Servern har redan godkänt dem med samma trösklar som resten
+	// av analysen, så här väljs inget ut - bara det som skickats visas.
+	const recurringThemes = $derived(progressAnalysis?.recurringThemes ?? []);
+	const showRecurringThemes = $derived(
+		!isAnonymous &&
+		hasSensitiveDataConsent &&
+		!insightsLoading &&
+		!insightsError &&
+		recurringThemes.length > 0
+	);
 	// Servern har redan sorterat och begränsat listan. De här två vyerna delar
-	// därför samma data utan någon egen klientrangordning.
-	const primaryInsight = $derived(progressAnalysis?.insights[0] ?? null);
-	const remainingInsights = $derived(progressAnalysis?.insights.slice(1) ?? []);
+	// därför samma data utan någon egen klientrangordning. Temainsikten tas
+	// bara bort när samma tema redan visas i kortet ovan.
+	const moodInsights = $derived(
+		withoutRecurringThemeInsight(progressAnalysis?.insights ?? [], showRecurringThemes)
+	);
+	const primaryInsight = $derived(moodInsights[0] ?? null);
+	const remainingInsights = $derived(moodInsights.slice(1));
 	const analysisPeriodSummary = $derived.by(() => {
 		if (!progressAnalysis) return null;
 		const count = progressAnalysis.coverage.entryCount;
@@ -685,6 +683,7 @@
 	const hasConcretePersonalAnalysis = $derived(
 		moodTimeline.hasChart ||
 		(progressAnalysis?.insights.length ?? 0) > 0 ||
+		recurringThemes.length > 0 ||
 		supportSuggestions.length > 0 ||
 		eveningPatterns.observations.length > 0
 	);
@@ -803,98 +802,8 @@
 		if (!isAnonymous && hasSensitiveDataConsent && insightsVisible) void loadInsights();
 	}
 
-	// Hela sektionen "Din senaste tid" byggs av redan hämtad data.
-	const recentPeriod = $derived(
-		buildRecentPeriodView({
-			samples: moodSamples,
-			heatmapData,
-			themes: null,
-			hasConsent: isAnonymous || hasSensitiveDataConsent,
-			periodDays: selectedPeriod
-		})
-	);
-	const shouldShowHeatmap = $derived(isAnonymous || heatmapVisible);
 	let loading = $derived(progressLoading && !progressLoaded);
 	let error = $derived(progressError);
-
-	// ── Weekly summary copy (no AI, just warm text) ──
-	const weeklySummaryText = $derived.by(() => {
-		if (isAnonymous) {
-			return 'Här kan en mjuk veckosammanfattning visas när dagboken börjar få återkommande rader.';
-		}
-
-		if (weeklyEntries === 0) return 'Du har inte checkat in den här veckan än — och det är helt okej.';
-		if (weeklyEntries === 1) return 'Du har checkat in en gång den här veckan. Det räcker fint.';
-		if (weeklyEntries === 2) return 'Två incheckningar den här veckan — du tar hand om dig.';
-		if (weeklyEntries <= 4) return `${weeklyEntries} incheckningar den här veckan. Du fortsätter komma tillbaka, i din takt.`;
-		return `${weeklyEntries} incheckningar den här veckan — du har verkligen tagit dig tid för dig själv.`;
-	});
-
-	const weeklyEncouragement = $derived.by(() => {
-		if (isAnonymous) return 'Varje rad kan räknas, även när den är kort.';
-
-		if (weeklyEntries >= 1) return 'Varje rad räknas, även när den är kort.';
-		return 'Det finns inget som måste vara perfekt för att räknas.';
-	});
-
-	const latestEntryText = $derived.by(() => {
-		if (!streakData?.lastEntryDate) return 'Inte ännu';
-		if (streakData.lastEntryDaysAgo <= 0) return 'Idag';
-		if (streakData.lastEntryDaysAgo === 1) return 'Igår';
-		return `${streakData.lastEntryDaysAgo} dagar sedan`;
-	});
-
-	function softMilestoneTitle(milestone: Milestone) {
-		if (!milestone.achieved) return 'Får växa fram senare';
-
-		if (milestone.metric === 'longestStreak') {
-			return isAnonymous ? 'Återbesök gör platsen mer levande' : 'Du har återvänt hit';
-		}
-		if (milestone.metric === 'daysSinceJoined') return 'Platsen finns kvar över tid';
-		if (milestone.metric === 'maxWordsInEntry' || milestone.metric === 'maxWordsInDay') {
-			return 'En tanke fick ta mer plats';
-		}
-		if (milestone.metric === 'totalWords') return 'Många ord har fått landa';
-		if (milestone.metric === 'totalEntries' && milestone.threshold <= 10) return 'Ett varsamt avtryck';
-		if (milestone.metric === 'totalEntries' && milestone.threshold < 100) return 'Fler stunder fick plats';
-		return isAnonymous ? 'Trädgården kan växa lite till' : 'Din trädgård har vuxit lite till';
-	}
-
-	function softMilestoneDescription(milestone: Milestone) {
-		if (!milestone.achieved) {
-			return 'Det här får vila tills det blir en naturlig del av din plats.';
-		}
-
-		const source = milestone.description ?? milestone.text;
-		const softened = source
-			.replace(/^\d+\s+(inlägg|dagar i rad|dagar|ord)\.?\s*/i, '')
-			.replace(/^Över\s+\d+\s+ord\s+i\s+ett\s+inlägg\.?\s*/i, '')
-			.replace(/^\d+\s+ord\s+på\s+en\s+dag\.?\s*/i, '')
-			.replace(/^\d+\s+skrivna\s+ord\.?\s*/i, '')
-			.trim();
-
-		return softened || 'Din trädgård har vuxit lite till.';
-	}
-
-	function nextMilestoneCopy(milestone: Milestone) {
-		const softened = softMilestoneDescription({ ...milestone, achieved: true });
-		if (softened !== milestone.text) return softened;
-		return isAnonymous
-			? 'Trädgården kan växa lite till när återbesöken blir fler.'
-			: 'Din trädgård kan växa lite till när du återvänder.';
-	}
-
-	// ── Reflection prompts (rotate based on day) ──
-	const reflections = [
-		'Vad har hjälpt dig mest den senaste tiden?',
-		'Finns det något du vill ta med dig in i nästa vecka?',
-		'Vad har du gjort för dig själv idag?',
-		'Finns det något du vill släppa taget om?',
-		'Vad gör dig lugn just nu?',
-		'Hur vill du att kommande vecka ska kännas?',
-		'Vad är du tacksam för just nu?'
-	];
-	const todayReflection = reflections[new Date().getDay()];
 
 	function startOfWeekKey() {
 		const now = new Date();
@@ -923,13 +832,6 @@
 		loadedGrowthScore = loadedEntryCount + loadedActiveDays * 3;
 		loadedGrowthLevel = getGrowthLevel(loadedEntryCount);
 		progressLoaded = true;
-
-		if (loadedStreakData?.currentStreak) {
-			trackStreakDayReachedOnce(loadedStreakData.currentStreak);
-		}
-		for (const milestone of loadedMilestonesData?.achieved ?? []) {
-			trackMilestoneReachedOnce(milestone.title ?? milestone.text);
-		}
 	}
 
 	async function loadProgressData() {
@@ -1095,7 +997,6 @@
 		if (isAnonymous) {
 			progressLoaded = true;
 			insightsVisible = true;
-			heatmapVisible = true;
 			if (browser) {
 				localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
 			}
@@ -1108,33 +1009,9 @@
 			localStorage.setItem(THEME_STORAGE_KEY, profileTheme);
 		}
 		insightsVisible = true;
-		heatmapVisible = true;
 		maybeLoadInsights();
 
-		if (typeof IntersectionObserver === 'undefined') {
-			return cleanupSceneWatchers;
-		}
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					if (!entry.isIntersecting) continue;
-
-					if (entry.target === heatmapCardEl) {
-						heatmapVisible = true;
-						observer.unobserve(entry.target);
-					}
-				}
-			},
-			{ rootMargin: '180px 0px' }
-		);
-
-		if (heatmapCardEl) observer.observe(heatmapCardEl);
-
-		return () => {
-			observer.disconnect();
-			cleanupSceneWatchers();
-		};
+		return cleanupSceneWatchers;
 	});
 
 	// Ytan mäts om så fort scenrutan byts ut eller Balder flyttar till en annan
@@ -1274,11 +1151,11 @@
 					<a class="home-return-link" href="/">&larr; Till startsidan</a>
 				{/if}
 				<p class="auth-eyebrow">Framsteg</p>
-				<h1>Se ditt mående över tid</h1>
+				<h1>Din historia, i dina egna ord</h1>
 				<p>
 					{isAnonymous
 						? 'En förhandsvisning av hur sparade stunder kan göra förändringar och återkommande teman lättare att se.'
-						: 'Se hur du har mått, vad som återkommer och vad som har förändrats — utifrån det du själv har sparat.'}
+						: 'Vad som återkommer och vad som har förändrats, utifrån det du själv har sparat.'}
 				</p>
 			</div>
 		</header>
@@ -1316,6 +1193,7 @@
 								<h2 id="low-data-heading">{lowDataCopy.heading}</h2>
 							</div>
 							<p class="reflection-copy">{lowDataCopy.description}</p>
+							<p class="reflection-copy" data-testid="low-data-theme-threshold">{RECURRING_THEME_THRESHOLD_COPY}</p>
 						</section>
 					{/if}
 					<section
@@ -1489,6 +1367,15 @@
 				{/if}
 			</section>
 
+			<!-- Egna ord före humörkurvan: det som återkommer i det användaren själv
+			     skrivit, med datum och ordagranna utdrag. Visas bara när servern
+			     skickat teman som klarat trösklarna. -->
+			{#if showRecurringThemes && progressAnalysis}
+				<section class="card reflection-card recurring-themes-card" aria-labelledby="recurring-themes-heading" data-testid="recurring-themes">
+					<RecurringThemesCard themes={recurringThemes} periodLabel={progressAnalysis.periodLabel} />
+				</section>
+			{/if}
+
 			{@render creativeMomentsCard()}
 
 			<section class="card recent-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="mood-history-heading" data-testid="mood-history">
@@ -1530,7 +1417,7 @@
 			<section class="card reflection-card analysis-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="analysis-heading" data-testid="mood-analysis">
 				<div class="card-header">
 					<div class="icon-badge insight"><Lightbulb size={24} /></div>
-					<h2 id="analysis-heading">Det som börjar synas</h2>
+					<h2 id="analysis-heading">Humör och mönster över tid</h2>
 				</div>
 				<p class="analysis-intro">Samband som går att räkna fram ur dina egna registreringar.</p>
 				{#if progressAnalysis?.lowConfidence && !insightsLoading && !insightsError && (isAnonymous || hasSensitiveDataConsent)}
@@ -1555,7 +1442,7 @@
 					{/if}
 					{#if primaryInsight}
 						<section class="analysis-primary-insight" aria-labelledby="primary-insight-heading">
-							<h3 id="primary-insight-heading">Det viktigaste just nu</h3>
+							<h3 id="primary-insight-heading">Det som syns tydligast i perioden</h3>
 							<p class="analysis-primary-title">{primaryInsight.title}</p>
 							<p class="analysis-primary-conclusion">{primaryInsight.description}</p>
 							<button
@@ -1626,7 +1513,9 @@
 							{#if sparseMonthCopy}<p class="analysis-coverage-note">{sparseMonthCopy}</p>{/if}
 						</section>
 					{/if}
-					{#if progressAnalysis.insights.length === 0}
+					{#if moodInsights.length === 0 && showRecurringThemes}
+						<p class="reflection-copy">Utöver temana ovan syns inget tydligt mönster i registreringarna ännu. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
+					{:else if moodInsights.length === 0}
 						<p class="reflection-copy">Inget tydligt mönster syns ännu i den här perioden. Det är okej — underlaget kan vara för glest eller för jämnt för en försiktig slutsats.</p>
 					{:else if remainingInsights.length > 0}
 						<ul class="analysis-grid">
@@ -1651,6 +1540,12 @@
 								</li>
 							{/each}
 						</ul>
+					{/if}
+
+					{#if recurringThemes.length === 0}
+						<!-- Utan återkommande teman: en lugn förklaring av när de kan synas,
+						     med samma trösklar som analysen. Ingen uppmaning att skriva mer. -->
+						<p class="analysis-coverage-note" data-testid="analysis-theme-threshold">{RECURRING_THEME_THRESHOLD_COPY}</p>
 					{/if}
 
 					<button
@@ -1852,215 +1747,6 @@
 			{/if}
 		</div>
 	</div>
-
-	{#if false}
-	<div class="framsteg-layout">
-	<div class="framsteg-main">
-
-		<!-- ── Din senaste tid ── -->
-		<section class="card recent-card" bind:this={heatmapCardEl} aria-labelledby="recent-period-heading">
-			<div class="card-header">
-				<div class="icon-badge heat"><TrendingUp size={24} /></div>
-				<h2 id="recent-period-heading">Din senaste tid</h2>
-			</div>
-			<p class="recent-intro">
-				Kurvan visar det humör du själv noterat i dagboken, på en skala från 1 tungt till 10
-				ljusare. Texten under är observationer ur din egen data, inte en bedömning.
-			</p>
-
-			<RecentPeriodChart
-				points={recentPeriod.points}
-				period={selectedPeriod}
-				onSelectPeriod={(value) => (selectedPeriod = value)}
-				textAlternative={recentPeriod.textAlternative}
-				hasChart={recentPeriod.hasChart}
-				fallbackText={CHART_FALLBACK_COPY}
-			/>
-
-			<!-- Utan kurva står samma förklaring redan i grafytan. -->
-			{#if recentPeriod.hasChart}
-				<p class="recent-summary">{recentPeriod.summary}</p>
-			{/if}
-
-			<ul class="observation-list">
-				{#each recentPeriod.observations as observation (observation.id)}
-					<li class="observation">
-						<span class="observation-label">{observation.label}</span>
-						<span class="observation-text">{observation.text}</span>
-					</li>
-				{/each}
-			</ul>
-
-			<!-- Skrivhistoriken är fördjupning, inte huvudbudskap. Stängd som standard. -->
-			<div class="history-disclosure">
-				<button
-					type="button"
-					class="history-toggle"
-					aria-expanded={historyOpen}
-					aria-controls="framsteg-writing-history"
-					onclick={() => (historyOpen = !historyOpen)}
-				>
-					<span>{historyOpen ? 'Dölj skrivhistorik' : 'Visa skrivhistorik'}</span>
-					<ChevronDown size={18} class="history-chevron" aria-hidden="true" />
-				</button>
-				<div
-					id="framsteg-writing-history"
-					class="history-panel"
-					role="region"
-					aria-label="Skrivhistorik"
-				>
-					{#if historyOpen && shouldShowHeatmap}
-						<p class="history-description">
-							Varje markering är en dag du skrev. Färgen visar hur många inlägg dagen fick.
-						</p>
-						<ActivityHeatmap data={heatmapData} error={heatmapError} />
-					{/if}
-				</div>
-			</div>
-		</section>
-
-		<!-- Den äldre "Dina AI-insikter"-ytan låg här. Den läste aiSummary, bestDay,
-		     worstDay och insights ur svaret, och de fälten slutade skickas när
-		     analysen blev serverlokal och periodmedveten. Analysen visas nu enbart
-		     i "Det som börjar synas" ovanför, som läser analysis. -->
-
-		<!-- ── Lugn dataöverblick ── -->
-		{#if streakData || milestonesData}
-			<section class="card overview-card">
-				<h2 class="overview-heading">Lugn överblick</h2>
-				<div class="overview-grid">
-					{#if milestonesData}
-						<div class="overview-item">
-							<div class="overview-number">{milestonesData.totalEntries}</div>
-							<div class="overview-label">Texter skrivna</div>
-						</div>
-					{/if}
-					<div class="overview-item">
-						<div class="overview-number">{activeDays}</div>
-						<div class="overview-label">Dagar med avtryck</div>
-					</div>
-					{#if streakData}
-						<div class="overview-item">
-							<div class="overview-number overview-number--text">{latestEntryText}</div>
-							<div class="overview-label">
-								{isAnonymous ? 'Exempel på senaste anteckning' : 'Senaste gången du skrev'}
-							</div>
-						</div>
-					{/if}
-				</div>
-			</section>
-		{/if}
-
-		<!-- ── Mjuk veckosammanfattning ── -->
-		<section class="card summary-card">
-			<div class="card-header">
-				<div class="icon-badge week"><Heart size={24} /></div>
-				<h2>Den här veckan</h2>
-			</div>
-			<p class="summary-text">{weeklySummaryText}</p>
-			<p class="encouragement">{weeklyEncouragement}</p>
-		</section>
-
-		<!-- ── Milstolpar ── -->
-		{#if milestonesData}
-			<section class="card milestones-card">
-				<div class="card-header">
-					<div class="icon-badge milestone-leaf"><Leaf size={24} /></div>
-					<div>
-						<h2>Små tecken på omsorg</h2>
-						<p class="card-intro">
-							{isAnonymous
-								? 'Små tecken på hur återbesök, reflektioner och tid kan få synas i platsen.'
-								: 'Små tecken på att du har återvänt, reflekterat och gett dig själv plats över tid.'}
-						</p>
-					</div>
-				</div>
-				{#each milestonesData.sections as section}
-					<div class="milestones-section">
-						<h3 class="milestones-section-title">{section.title}</h3>
-						<div class="milestones-grid">
-							{#each section.milestones as milestone}
-								<div class="milestone {milestone.achieved ? 'achieved' : 'resting'}">
-									<div class="milestone-mark" aria-hidden="true"></div>
-									<div class="milestone-copy">
-										<h4>{softMilestoneTitle(milestone)}</h4>
-										<p>{softMilestoneDescription(milestone)}</p>
-									</div>
-								</div>
-							{/each}
-						</div>
-					</div>
-				{/each}
-				{#if nextMilestone}
-					<div class="next-milestone">
-						<div class="next-header"><Calendar size={18} /><span>Det som långsamt kan växa fram</span></div>
-						<h3>{isAnonymous ? 'Trädgården kan få plats för mer ljus.' : 'Din trädgård har plats för mer ljus.'}</h3>
-						<!-- Icke-null-assertion som tidigare: $derived narrowar inte in i
-						     blocket, men {#if nextMilestone} garanterar värdet här. -->
-						<p>{nextMilestoneCopy(nextMilestone!)}</p>
-						<small>
-							{isAnonymous
-								? 'Ingen brådska. Platsen kan växa när återbesöken blir fler.'
-								: 'Ingen brådska. Den här platsen växer när du återvänder.'}
-						</small>
-					</div>
-				{:else}
-					<div class="next-milestone">
-						<div class="next-header"><Calendar size={18} /><span>Det som långsamt kan växa fram</span></div>
-						<p>
-							{isAnonymous
-								? 'Här kan platsen visa att inget behöver jagas. Den får växa i lugn takt.'
-								: 'Det finns inget mer du behöver jaga. Fortsätt återvända när det hjälper dig.'}
-						</p>
-					</div>
-				{/if}
-			</section>
-		{/if}
-
-		<!-- ── Tom state ── -->
-		{#if entryCount === 0}
-			<section class="card empty-state">
-				<h2>Börja där du är</h2>
-				<p>Du behöver inte ha kommit någonstans för att börja se mönster. Skriv en rad idag, så får platsen sitt första lilla ljus.</p>
-				<a href="/dagbok/checkin" class="auth-button primary">Skriv en rad</a>
-			</section>
-		{/if}
-			</div>
-
-			<aside class="framsteg-column">
-				
-				<section class="card progress-summary-card">
-					<div class="card-header">
-						<div class="icon-badge week"><Leaf size={24} /></div>
-						<h2>Framsteg</h2>
-					</div>
-					<div class="summary-stats">
-						<div class="summary-stat">
-							<span class="summary-stat-number">{entryCount}</span>
-							<span class="summary-stat-label">Texter skrivna</span>
-						</div>
-						<div class="summary-stat">
-							<span class="summary-stat-number">{activeDays}</span>
-							<span class="summary-stat-label">Dagar med avtryck</span>
-						</div>
-						<!-- Här låg "Dagar i följd". Framsteg ska visa vad som förändras
-						     över tid, inte hur oavbrutet tjänsten öppnats. "Dagar med
-						     avtryck" ovan är samma sorts historik utan att göra en obruten
-						     rad till ett resultat. Fyra rutor fyller rutnätets två kolumner
-						     jämnt, så tillväxtrutan behöver inte längre spänna över bredden. -->
-						<div class="summary-stat">
-							<span class="summary-stat-number">{weeklyEntries}</span>
-							<span class="summary-stat-label">Den här veckan</span>
-						</div>
-						<div class="summary-stat">
-							<span class="summary-stat-number">{growthLevel}</span>
-							<span class="summary-stat-label">Trädgården växer</span>
-						</div>
-					</div>
-				</section>
-			</aside>
-		</div>
-	{/if}
 				</div>
 			{/if}
 		</div>
@@ -2714,14 +2400,6 @@
 		min-width: 0;
 	}
 
-	.framsteg-column {
-		display: grid;
-		gap: 1rem;
-		align-content: start;
-		position: sticky;
-		top: 1rem;
-	}
-
 	.companion-banner {
 		position: relative;
 		overflow: hidden;
@@ -3272,35 +2950,6 @@
 		line-height: 1.4;
 	}
 
-	.summary-stats {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 0.75rem;
-		margin-top: 0.5rem;
-	}
-
-	.summary-stat {
-		display: flex;
-		flex-direction: column;
-		gap: 0.2rem;
-		padding: 1rem 1.1rem;
-		border-radius: 12px;
-		background: color-mix(in srgb, var(--color-dashboard-surface-strong, #ffffff) 70%, transparent);
-		border: 1px solid var(--color-dashboard-border);
-	}
-
-	.summary-stat-number {
-		font-size: 1.6rem;
-		font-weight: 700;
-		line-height: 1.1;
-		color: var(--color-dashboard-text);
-	}
-
-	.summary-stat-label {
-		font-size: 0.8rem;
-		color: var(--color-dashboard-text-muted);
-	}
-
 	@media (max-width: 980px) {
 		.framsteg-page {
 			padding: 24px 22px 20px;
@@ -3308,11 +2957,6 @@
 
 		.framsteg-layout {
 			grid-template-columns: 1fr;
-		}
-
-		.framsteg-column {
-			position: static;
-			order: -1;
 		}
 
 		.companion-media::after {
@@ -3365,13 +3009,6 @@
 	.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: color-mix(in srgb, var(--color-dashboard-border) 76%, var(--primary) 24%); }
 	.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.3rem; }
 	.card-header h2 { font-size: 1.45rem; margin: 0; color: hsl(var(--foreground)); }
-	.card-intro {
-		max-width: 42rem;
-		margin: 0.35rem 0 0;
-		color: hsl(var(--muted-foreground));
-		font-size: 0.95rem;
-		line-height: 1.6;
-	}
 	.creative-moments-header { margin-bottom: 0.9rem; }
 	.creative-moments-copy {
 		margin: 0;
@@ -3400,8 +3037,6 @@
 		border-radius: 0.25rem;
 	}
 	.icon-badge { width: 3.2rem; height: 3.2rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; }
-	.progress-summary-card { min-height: 25rem; }
-	.progress-summary-card { box-sizing: border-box; }
 
 	/* ── Din senaste tid ── */
 	.recent-card { min-width: 0; }
@@ -3420,79 +3055,6 @@
 		color: hsl(var(--foreground));
 		font-size: 1.05rem;
 		line-height: 1.6;
-	}
-
-	.observation-list {
-		display: grid;
-		gap: 0.75rem;
-		margin: 1.25rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.observation {
-		display: grid;
-		gap: 0.15rem;
-		padding-left: 0.9rem;
-		border-left: 2px solid color-mix(in srgb, var(--theme-accent, #557c68) 45%, transparent);
-	}
-
-	.observation-label {
-		color: hsl(var(--muted-foreground));
-		font-size: 0.82rem;
-		font-weight: 600;
-	}
-
-	.observation-text {
-		color: hsl(var(--foreground));
-		font-size: 0.98rem;
-		line-height: 1.55;
-	}
-
-	.history-disclosure {
-		margin-top: 1.75rem;
-		padding-top: 1.25rem;
-		border-top: 1px solid var(--color-dashboard-border);
-	}
-
-	.history-toggle {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.45rem;
-		min-height: 44px;
-		padding: 0 0.15rem;
-		border: 0;
-		background: none;
-		color: hsl(var(--muted-foreground));
-		font: inherit;
-		font-size: 0.92rem;
-		font-weight: 600;
-		cursor: pointer;
-	}
-
-	.history-toggle:hover { color: hsl(var(--foreground)); }
-
-	.history-toggle:focus-visible {
-		outline: 2px solid hsl(var(--foreground));
-		outline-offset: 3px;
-		border-radius: 0.35rem;
-	}
-
-	.history-toggle :global(.history-chevron) { flex-shrink: 0; }
-
-	.history-toggle[aria-expanded='true'] :global(.history-chevron) { transform: rotate(180deg); }
-
-	.history-panel:not(:empty) { margin-top: 1rem; }
-
-	.history-description {
-		margin: 0 0 0.9rem;
-		color: hsl(var(--muted-foreground));
-		font-size: 0.9rem;
-		line-height: 1.6;
-	}
-
-	@media (prefers-reduced-motion: no-preference) {
-		.history-toggle :global(.history-chevron) { transition: transform 180ms ease; }
 	}
 
 	@keyframes progressCanopyDrift {
@@ -3535,58 +3097,9 @@
 	}
 
 	/* Badge colors */
-	.icon-badge.week { background: var(--theme-accent, #436e8f); }
 	.icon-badge.milestone-leaf { background: linear-gradient(135deg, #7ea47c, #557c68); }
 	.icon-badge.heat { background: linear-gradient(135deg, #6bcf7f, #4caf50); }
 	.icon-badge.insight { background: linear-gradient(135deg, #667eea, #764ba2); }
-
-	/* Weekly summary */
-	.summary-card { background: var(--theme-bg, hsl(var(--surface-soft))); }
-	.summary-text { font-size: 1.1rem; color: hsl(var(--foreground)); line-height: 1.7; margin: 0 0 0.75rem 0; }
-	.encouragement { font-size: 0.95rem; color: hsl(var(--muted-foreground)); font-style: italic; margin: 0; }
-
-	/* Overview */
-	.overview-heading { font-size: 1.25rem; margin: 0 0 1.6rem 0; color: hsl(var(--foreground)); }
-	.overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.4rem; margin-bottom: 1rem; }
-	.overview-item { text-align: center; padding: 1rem 0.5rem; border-radius: 0.5rem; background: var(--theme-bg, hsl(var(--surface-soft))); }
-	.overview-number { font-size: 2.6rem; font-weight: 700; color: var(--theme-accent, #436e8f); }
-	.overview-number--text { font-size: 1.25rem; line-height: 1.2; }
-	.overview-label { font-size: 0.85rem; color: hsl(var(--muted-foreground)); margin-top: 0.3rem; }
-
-	/* Milestones */
-	.milestones-section + .milestones-section { margin-top: 1.2rem; }
-	.milestones-section-title {
-		margin: 0 0 0.65rem;
-		font-size: 1rem;
-		font-weight: 600;
-		letter-spacing: 0;
-		color: hsl(var(--foreground));
-	}
-	.milestones-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2rem; }
-	.milestone { min-height: 10rem; padding: 1.2rem; border-radius: 0.5rem; display: flex; align-items: flex-start; gap: 1rem; background: hsl(var(--surface-muted)); border: 1px solid var(--color-dashboard-border); transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
-	.milestone.achieved { background: var(--theme-bg, hsl(var(--success-surface))); border-color: var(--color-dashboard-border); }
-	.milestone.resting { opacity: 0.78; }
-	.milestone:hover { border-color: color-mix(in srgb, var(--color-dashboard-border) 72%, var(--theme-accent, #557c68) 28%); box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
-	.milestone-mark {
-		width: 1.65rem;
-		height: 1.65rem;
-		border-radius: 999px;
-		flex: 0 0 auto;
-		margin-top: 0.1rem;
-		background:
-			radial-gradient(circle at 35% 35%, rgba(255,255,255,0.55), transparent 38%),
-			linear-gradient(135deg, #b8c9a7, #6f8f73);
-		box-shadow: inset 0 -2px 5px rgba(38, 62, 42, 0.18);
-	}
-	.milestone-copy h4 { margin: 0 0 0.35rem; color: hsl(var(--foreground)); font-size: 0.98rem; font-weight: 650; }
-	.milestone-copy p { margin: 0; color: hsl(var(--muted-foreground)); font-size: 0.86rem; line-height: 1.5; }
-	.next-milestone { background: hsl(var(--surface-soft)); border: 1px solid var(--color-dashboard-border); padding: 1.5rem; border-radius: 0.5rem; margin-top: 1.5rem; }
-	.next-header { display: flex; align-items: center; gap: 0.5rem; color: var(--theme-accent, #557c68); font-weight: 600; margin-bottom: 0.75rem; }
-	.next-milestone h3 { margin: 0 0 0.45rem; color: hsl(var(--foreground)); font-size: 1.05rem; }
-	.next-milestone p { font-size: 1rem; color: hsl(var(--muted-foreground)); margin: 0.5rem 0 0.75rem 0; line-height: 1.6; }
-	.next-milestone small { color: hsl(var(--muted-foreground)); display: block; line-height: 1.5; }
-
-	/* Heatmap */
 
 	/* Empty state */
 	.empty-state { text-align: center; padding: 3rem 2rem; background: var(--theme-bg, hsl(var(--surface-soft))); border: 1px dashed var(--color-dashboard-border); }
@@ -3619,10 +3132,6 @@
 		.companion-copy p { font-size: clamp(0.78rem, 2.9vw, 0.84rem); line-height: 1.4; }
 		.companion-copy .companion-reflection { margin-top: 0.35rem; }
 		.card-header { flex-direction: column; align-items: flex-start; }
-		.progress-summary-card { min-height: 18rem; }
-		.milestones-grid { grid-template-columns: 1fr; }
-		.overview-grid { grid-template-columns: repeat(2, 1fr); }
-		.overview-number { font-size: 1.8rem; }
 		.icon-badge { width: 2.3rem; height: 2.3rem; }
 	}
 </style>

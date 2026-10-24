@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import type { LoadStatus } from '$lib/load-state';
 import type { PageServerLoad } from './$types';
 
 const PAGE_SIZE = 20;
@@ -30,6 +31,13 @@ function toSnippet(text: string, max = 180): string {
 	return normalized.length <= max ? normalized : normalized.slice(0, max).trimEnd() + '…';
 }
 
+/** Ogiltig eller saknad sidparameter blir sida 1. `Math.max(1, NaN)` är NaN. */
+function parsePageParam(value: string | null) {
+	const page = Number(value ?? '1');
+	if (!Number.isFinite(page) || page < 1) return 1;
+	return Math.floor(page);
+}
+
 export type InlaggEntry = {
 	id: string;
 	title: string;
@@ -44,7 +52,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	} = await locals.supabase.auth.getUser();
 	if (!user) throw redirect(303, '/login');
 
-	const page = Math.max(1, parseInt(url.searchParams.get('page') ?? '1', 10));
+	const page = parsePageParam(url.searchParams.get('page'));
 	const from = (page - 1) * PAGE_SIZE;
 	const to = from + PAGE_SIZE - 1;
 
@@ -61,8 +69,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			.eq('user_id', user.id)
 	]);
 
-	if (entriesResult.error) {
-		console.error('Inlägg load error:', entriesResult.error);
+	// Ett läsfel får aldrig visas som "inga inlägg" eller "0 sparade dagboksrader".
+	if (entriesResult.error || countResult.error) {
+		console.error('Inlägg load error:', {
+			entries: entriesResult.error?.code,
+			count: countResult.error?.code
+		});
+		const status: LoadStatus = 'error';
+		return { status, entries: [] as InlaggEntry[], page, totalPages: 1, total: 0 };
 	}
 
 	const entries: InlaggEntry[] = (entriesResult.data ?? []).map((row) => {
@@ -82,5 +96,6 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const total = countResult.count ?? 0;
 	const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-	return { entries, page, totalPages, total };
+	const status: LoadStatus = 'ready';
+	return { status, entries, page, totalPages, total };
 };

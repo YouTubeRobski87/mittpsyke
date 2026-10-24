@@ -7,11 +7,9 @@ const hero = publicHome.slice(0, publicHome.indexOf('<!-- 2.'));
 
 describe('Den publika startsidans hero', () => {
 	it('förklarar skrivande, kontinuitet och mönster direkt i den publika grenen', () => {
-		expect(publicHome).toContain('Se hur ditt mående förändras över tid.');
-		expect(publicHome).toContain(
-			'Skriv av dig, reflektera och upptäck vad som återkommer i dina egna ord.'
-		);
-		expect(publicHome).toContain('hjälper dig att förstå ditt mående över tid, i din takt.');
+		expect(publicHome).toContain('Se vad som återkommer i det du skriver.');
+		expect(publicHome).toContain('Skriv av dig och spara det du vill.');
+		expect(publicHome).toContain('dina egna ord, i din egen takt.');
 		expect(publicHome).toContain('Skriv → spara det du vill → se vad som återkommer');
 	});
 

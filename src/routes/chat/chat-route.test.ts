@@ -76,10 +76,16 @@ describe('direkt ingång till den befintliga chatten', () => {
 		expect(chatWindow.match(/<ConsentGate\b/g)).toHaveLength(1);
 
 		for (const match of chatWindow.matchAll(/hasSensitiveDataConsent = (.+);/g)) {
-			expect(['$state(false)', 'false', 'response.ok', "payload.status === 'granted'"]).toContain(
+			expect(['$state(false)', 'false', 'true', "payload.status === 'granted'"]).toContain(
 				match[1]
 			);
 		}
+		// Den enda direkta upplåsningen står omedelbart efter samtyckesbegäran,
+		// som kastar vid allt annat än serverns OK (se consent-client.test.ts).
+		expect(chatWindow.match(/hasSensitiveDataConsent = true;/g)).toHaveLength(1);
+		expect(chatWindow).toMatch(
+			/await requestChatAiConsent\(fetch, session\?\.access_token \?\? null\);\s*hasSensitiveDataConsent = true;/
+		);
 	});
 
 	it('kräver fortfarande en aktiv kryssruta innan samtycket kan lämnas', () => {
@@ -122,10 +128,17 @@ describe('direkt ingång till den befintliga chatten', () => {
 			chatWindow.indexOf('function requireConsentAgain()')
 		);
 
-		expect(accept.match(/grantSensitiveConsent\(\)/g)).toHaveLength(2);
-		expect(accept).toContain('if (response.ok) grantSensitiveConsent();');
-		// grantSensitiveConsent får aldrig ligga före fetch-anropet i någon gren.
-		expect(accept.indexOf('grantSensitiveConsent()')).toBeGreaterThan(accept.indexOf('fetch('));
+		// En gemensam väg för gäst och inloggad: begäran kastar vid allt annat än
+		// serverns ja (se consent-client.test.ts), så raderna efter den nås bara
+		// när samtycket beviljats.
+		const request = accept.indexOf('await requestChatAiConsent(fetch, session?.access_token ?? null);');
+		expect(request).toBeGreaterThan(-1);
+		expect(accept).not.toContain('fetch(');
+		expect(accept.match(/grantSensitiveConsent\(\)/g)).toHaveLength(1);
+		// Varken den lokala posten eller upplåsningen får ligga före begäran.
+		expect(accept.indexOf('grantSensitiveConsent()')).toBeGreaterThan(request);
+		expect(accept.indexOf('hasSensitiveDataConsent = true')).toBeGreaterThan(request);
+		expect(accept).not.toMatch(/catch|hasSensitiveDataConsent = response/);
 	});
 
 	it('läser ingen hero-handoff och kan inte autoskicka något åt användaren', () => {

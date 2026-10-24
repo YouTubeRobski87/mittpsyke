@@ -56,10 +56,17 @@ describe('inloggad dagbok: ingång till guidad incheckning', () => {
 		expect(source).not.toContain('moodGraphPoints');
 	});
 
-	it('behåller räknaren för inlägg senaste 7 dagarna', () => {
-		expect(source).toContain('inlägg senaste 7 dagarna');
-		expect(source).toContain('{weeklyEntryCount}');
-		expect(source).toContain('countEntriesThisWeek');
+	// Sidokolumnen räknar inte längre inlägg eller visar milstolpar
+	// (värdegranskningen, förslag 3). Kalendern finns kvar.
+	it('sidokolumnen har varken veckoräknare eller milstolpar', () => {
+		const side = source.slice(source.indexOf('<aside class="diary-side">'));
+
+		expect(source).not.toContain('inlägg senaste 7 dagarna');
+		expect(source).not.toContain('weeklyEntryCount');
+		expect(source).not.toContain('countEntriesThisWeek');
+		expect(source).not.toContain('Denna vecka');
+		expect(source).not.toContain('diary-milestones-panel');
+		expect(side).toContain('<DiaryCalendar');
 	});
 
 	// Startpanelen ska ligga först i huvudkolumnen, före "Ditt mående över tid".

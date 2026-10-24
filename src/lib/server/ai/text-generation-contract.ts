@@ -38,12 +38,30 @@ export interface AITextProvider {
 	generate(request: AITextProviderRequest): Promise<string>;
 }
 
+/**
+ * Leverantörens HTTP-status och korta felkod (t.ex. 'insufficient_quota'),
+ * enbart för serverloggen. Aldrig fritext, nycklar eller innehåll.
+ */
+export type AIProviderDiagnostics = {
+	providerStatus?: number;
+	providerCode?: string;
+};
+
 export class AITextGenerationError extends Error {
+	public readonly providerStatus?: number;
+	public readonly providerCode?: string;
+
 	constructor(
-		public readonly code: 'configuration' | 'timeout' | 'rate_limit' | 'provider' | 'empty_response',
-		message: string
+		// 'quota': leverantörens kvot eller fakturering är slut. Skiljs från
+		// 'rate_limit' eftersom båda kommer som HTTP 429 men bara det ena går
+		// över av att vänta en stund.
+		public readonly code: 'configuration' | 'timeout' | 'rate_limit' | 'quota' | 'provider' | 'empty_response',
+		message: string,
+		diagnostics: AIProviderDiagnostics = {}
 	) {
 		super(message);
 		this.name = 'AITextGenerationError';
+		this.providerStatus = diagnostics.providerStatus;
+		this.providerCode = diagnostics.providerCode;
 	}
 }
