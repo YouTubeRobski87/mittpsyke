@@ -1,8 +1,11 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import EntryCard from '$lib/components/EntryCard.svelte';
+	import { LOAD_RETRY_LABEL, NOTES_LOAD_ERROR_MESSAGE, type LoadStatus } from '$lib/load-state';
 	import type { InlaggEntry } from './+page.server';
 
 	type PageData = {
+		status: LoadStatus;
 		entries: InlaggEntry[];
 		page: number;
 		totalPages: number;
@@ -10,6 +13,16 @@
 	};
 
 	let { data } = $props<{ data: PageData }>();
+	let retrying = $state(false);
+
+	async function retry() {
+		retrying = true;
+		try {
+			await invalidateAll();
+		} finally {
+			retrying = false;
+		}
+	}
 </script>
 
 <div class="mp-dashboard">
@@ -19,12 +32,21 @@
 				<div>
 					<div class="kicker">Dina anteckningar</div>
 					<h1>Inlägg</h1>
-					<p class="lead">{data.total} sparade dagboksrader</p>
+					{#if data.status === 'ready'}
+						<p class="lead">{data.total} sparade dagboksrader</p>
+					{/if}
 				</div>
 				<a href="/dagbok/checkin#skriv-sjalv" class="btn btn-primary">+ Nytt inlägg</a>
 			</header>
 
-			{#if data.entries.length === 0}
+			{#if data.status === 'error'}
+				<div class="empty" role="alert" data-testid="inlagg-load-error">
+					<p>{NOTES_LOAD_ERROR_MESSAGE}</p>
+					<button type="button" class="btn btn-primary" onclick={retry} disabled={retrying}>
+						{retrying ? 'Hämtar…' : LOAD_RETRY_LABEL}
+					</button>
+				</div>
+			{:else if data.entries.length === 0}
 				<div class="empty">
 					<p>Du har inga inlägg än. Skriv ditt första avtryck.</p>
 					<a href="/dagbok/checkin#skriv-sjalv" class="btn btn-primary">Börja skriva</a>
