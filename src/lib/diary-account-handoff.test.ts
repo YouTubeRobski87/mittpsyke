@@ -116,7 +116,7 @@ describe('Google-inloggning följer samma säkra redirect', () => {
 
 	it('Dagboken visar importrutan oavsett hur kontot skapades', () => {
 		const diary = read('src/routes/dagbok/checkin/+page.svelte');
-		expect(diary).toContain('<LocalEntriesImportPrompt onImported={handleLocalEntriesImported} />');
+		expect(diary).toContain('onImported={handleLocalEntriesImported}');
 		expect(diary).toContain('{#if sessionUser && !sessionUser.is_anonymous}');
 		// Rutan har sitt eget samtycke och en aktiv knapp, inget sparas automatiskt.
 		const prompt = read('src/lib/components/LocalEntriesImportPrompt.svelte');
@@ -285,6 +285,19 @@ describe('återförsök skapar inga dubbletter', () => {
 		expect(diary).toMatch(/submittedText = draftText\.trim\(\);\s*const response = await fetch\('\/api\/diary\/create'/);
 		expect(diary).toContain('text: submittedText,');
 		expect(diary).toContain('{#key localImportKey}');
+	});
+
+	it('import och skrivfältets sparning kan inte köra samtidigt', () => {
+		const diary = read('src/routes/dagbok/checkin/+page.svelte');
+		const prompt = read('src/lib/components/LocalEntriesImportPrompt.svelte');
+		expect(diary).toContain('onImportingChange={(importing) => (localImporting = importing)}');
+		expect(diary).toContain('busy={savingDraft}');
+		expect(diary).toContain('if (!draftText.trim() || savingDraft || localImporting) return;');
+		expect(diary).toContain('disabled={savingDraft || localImporting ||');
+		expect(prompt).toContain('if (importing || busy || selectedCount === 0) return;');
+		expect(prompt).toContain('disabled={importing || busy || selectedCount === 0}');
+		// Låset släpps i alla utgångar ur importen.
+		expect(prompt.match(/onImportingChange\?\.\(false\)/g)).toHaveLength(2);
 	});
 
 	it('en text som ändrats före sparningen lämnar det lokala inlägget kvar', () => {

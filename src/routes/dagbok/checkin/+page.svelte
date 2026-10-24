@@ -497,6 +497,9 @@
 	// läser om den lokala historiken och inte erbjuder samma text igen.
 	let localImportKey = $state(0);
 	let localImportListNotice = $state('');
+	// Medan en import pågår kan skrivfältet inte spara, och tvärtom. Annars kunde
+	// samma återställda text sparas två gånger samtidigt.
+	let localImporting = $state(false);
 
 	// Lokala inlägg som just sparats till kontot från importrutan. Listan
 	// hämtas om, och om samma text låg kvar som utkast i skrivfältet töms det,
@@ -1123,7 +1126,7 @@
 	}
 
 	async function saveDraftToDiary() {
-		if (!draftText.trim() || savingDraft) return;
+		if (!draftText.trim() || savingDraft || localImporting) return;
 		draftError = '';
 		draftSuccess = '';
 		draftListNotice = '';
@@ -1493,7 +1496,11 @@
 			     sparas bara efter ett aktivt val, och rutan har sitt eget samtycke. -->
 			{#if sessionUser && !sessionUser.is_anonymous}
 				{#key localImportKey}
-					<LocalEntriesImportPrompt onImported={handleLocalEntriesImported} />
+					<LocalEntriesImportPrompt
+						onImported={handleLocalEntriesImported}
+						onImportingChange={(importing) => (localImporting = importing)}
+						busy={savingDraft}
+					/>
 				{/key}
 				{#if localImportListNotice}
 					<p class="auth-muted text-sm" role="status" data-testid="local-import-list-notice">
@@ -1771,7 +1778,7 @@
 								type="button"
 								class="auth-button primary editor-primary"
 								onclick={saveDraftToDiary}
-								disabled={savingDraft || uploadingImage || uploadingVideo || !draftText.trim()}
+								disabled={savingDraft || localImporting || uploadingImage || uploadingVideo || !draftText.trim()}
 							>
 								{savingDraft ? 'Sparar...' : uploadingImage ? 'Väntar på bild...' : uploadingVideo ? 'Väntar på video...' : 'Spara inlägg'}
 							</button>

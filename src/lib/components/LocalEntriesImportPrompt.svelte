@@ -33,7 +33,17 @@
 
 	// Valfri: sidan som visar rutan kan uppdatera sin egen vy efter importen,
 	// t.ex. Dagbokens lista och skrivfält.
-	let { onImported }: { onImported?: (imported: LocalDiaryEntry[]) => void } = $props();
+	// `busy` och `onImportingChange` låter sidan hindra att samma text sparas
+	// samtidigt via sidans eget skrivfält och via importen.
+	let {
+		onImported,
+		onImportingChange,
+		busy = false
+	}: {
+		onImported?: (imported: LocalDiaryEntry[]) => void;
+		onImportingChange?: (importing: boolean) => void;
+		busy?: boolean;
+	} = $props();
 
 	let ready = $state(false);
 	let entries = $state<LocalDiaryEntry[]>([]);
@@ -83,8 +93,9 @@
 	}
 
 	async function importSelected() {
-		if (importing || selectedCount === 0) return;
+		if (importing || busy || selectedCount === 0) return;
 		importing = true;
+		onImportingChange?.(true);
 		errorMessage = '';
 		resultMessage = '';
 
@@ -93,6 +104,7 @@
 		if (!session?.access_token) {
 			errorMessage = 'Logga in för att spara till kontot.';
 			importing = false;
+			onImportingChange?.(false);
 			return;
 		}
 
@@ -124,6 +136,7 @@
 
 		entries = readLocalEntries();
 		importing = false;
+		onImportingChange?.(false);
 		resultMessage = describeLocalImportOutcome(outcome);
 		if (outcome.imported.length > 0) onImported?.(outcome.imported);
 	}
@@ -179,7 +192,7 @@
 					type="button"
 					class="local-import-primary"
 					onclick={importSelected}
-					disabled={importing || selectedCount === 0}
+					disabled={importing || busy || selectedCount === 0}
 				>
 					{importing ? 'Sparar...' : `Spara valda (${selectedCount})`}
 				</button>

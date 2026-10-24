@@ -39,7 +39,8 @@ describe('import av lokal historik till kontot', () => {
 	});
 
 	it('inget importeras utan aktivt val - knappen är spärrad utan urval', () => {
-		expect(component).toContain('disabled={importing || selectedCount === 0}');
+		expect(component).toContain('disabled={importing || busy || selectedCount === 0}');
+		expect(component).toContain('if (importing || busy || selectedCount === 0) return;');
 		expect(component).toContain('const selectedCount = $derived(selected.size);');
 	});
 
