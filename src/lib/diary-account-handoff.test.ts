@@ -8,6 +8,7 @@ import { CREATE_ACCOUNT_FROM_DIARY_HREF, DIARY_AFTER_SIGNUP_PATH } from '$lib/di
 import {
 	CURRENT_LOCAL_ENTRY_KEY,
 	confirmLocalEntryImported,
+	confirmLocalTextSaved,
 	migrateDraftIntoLocalEntries,
 	readLocalEntries,
 	saveLocalEntry,
@@ -263,6 +264,42 @@ describe('återförsök skapar inga dubbletter', () => {
 		confirmLocalEntryImported(entry, storage);
 
 		expect(storage.getItem(DIARY_DRAFT_KEY)).toBe('Något nytt jag skriver');
+	});
+
+	it('en text som sparats via Dagbokens skrivfält kan inte importeras igen', () => {
+		const storage = fakeStorage();
+		const saved = saveLocalEntry({ text: 'Sparad i skrivfältet', now: 1_000 }, storage).entry!;
+		const other = saveLocalEntry({ text: 'Något annat', now: 2_000 }, storage).entry!;
+		writeCurrentLocalEntryId(saved.id, storage);
+		storage.setItem(DIARY_DRAFT_KEY, 'Sparad i skrivfältet');
+
+		expect(confirmLocalTextSaved('  Sparad i skrivfältet ', storage)).toBe(1);
+
+		expect(readLocalEntries(storage).map((entry) => entry.id)).toEqual([other.id]);
+		expect(storage.getItem(DIARY_DRAFT_KEY)).toBeNull();
+		expect(migrateDraftIntoLocalEntries(storage, 5_000)).toBeNull();
+		// Importrutan monteras om och läser den lokala historiken på nytt.
+		const diary = read('src/routes/dagbok/checkin/+page.svelte');
+		expect(diary).toContain('if (confirmLocalTextSaved(savedText) > 0) localImportKey += 1;');
+		expect(diary).toContain('{#key localImportKey}');
+	});
+
+	it('en text som ändrats före sparningen lämnar det lokala inlägget kvar', () => {
+		const storage = fakeStorage();
+		saveLocalEntry({ text: 'Original', now: 1_000 }, storage);
+		expect(confirmLocalTextSaved('Original, med ett tillägg', storage)).toBe(0);
+		expect(readLocalEntries(storage)).toHaveLength(1);
+	});
+
+	it('ett fel vid omladdning av listan efter importen visas som besked, inte som misslyckad import', () => {
+		const diary = read('src/routes/dagbok/checkin/+page.svelte');
+		const handler = diary.slice(
+			diary.indexOf('async function handleLocalEntriesImported'),
+			diary.indexOf('async function loadEntries')
+		);
+		expect(handler).toContain('await refreshAfterConfirmedChange(');
+		expect(handler).toContain('if (!listRefreshed) localImportListNotice = LOCAL_IMPORT_LIST_REFRESH_NOTICE;');
+		expect(handler).not.toContain('void loadEntries');
 	});
 
 	it('Dagbokens skrivfält töms om det bär den text som just importerades', () => {

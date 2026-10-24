@@ -18,7 +18,7 @@
 	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';
-	import type { LocalDiaryEntry } from '$lib/diary-local-history';
+	import { confirmLocalTextSaved, type LocalDiaryEntry } from '$lib/diary-local-history';
 	import VideoRecorder from '$lib/components/VideoRecorder.svelte';
 	import { renderDiaryMarkdown } from '$lib/markdown';
 	import { scrollIntoViewWithMotionPreference } from '$lib/scroll';
@@ -50,6 +50,7 @@
 	import {
 		DIARY_ENTRY_PAGE_SIZE,
 		DIARY_LIST_REFRESH_NOTICE,
+		LOCAL_IMPORT_LIST_REFRESH_NOTICE,
 		loadDiaryEntriesPage,
 		notifyDiaryEntriesChanged,
 		pageAfterLoadingMore,
@@ -492,13 +493,24 @@
 		});
 	}
 
+	// Monteras om när en lokal text sparats via skrivfältet, så att importrutan
+	// läser om den lokala historiken och inte erbjuder samma text igen.
+	let localImportKey = $state(0);
+	let localImportListNotice = $state('');
+
 	// Lokala inlägg som just sparats till kontot från importrutan. Listan
 	// hämtas om, och om samma text låg kvar som utkast i skrivfältet töms det,
-	// så att den inte kan sparas en gång till.
-	function handleLocalEntriesImported(imported: LocalDiaryEntry[]) {
+	// så att den inte kan sparas en gång till. Importen är redan bekräftad, så
+	// ett fel vid omladdningen visas bara som ett besked om listan.
+	async function handleLocalEntriesImported(imported: LocalDiaryEntry[]) {
 		const importedTexts = new Set(imported.map((item) => item.text.trim()));
 		if (importedTexts.has(draftText.trim())) draftText = '';
-		void loadEntries({ force: true });
+		localImportListNotice = '';
+		const listRefreshed = await refreshAfterConfirmedChange(() =>
+			loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
+		);
+		if (!listRefreshed) localImportListNotice = LOCAL_IMPORT_LIST_REFRESH_NOTICE;
+		notifyDiaryEntriesChanged();
 	}
 
 	async function loadEntries(options: { force?: boolean; limit?: number } = {}) {
@@ -1124,6 +1136,7 @@
 			return;
 		}
 		savingDraft = true;
+		const savedText = draftText.trim();
 		// Sätts så fort servern bekräftat sparandet. Efter det får ett fel bara
 		// gälla det som händer efteråt, aldrig visas som ett misslyckat sparande.
 		let saveConfirmed = false;
@@ -1200,6 +1213,9 @@
 			if (typeof window !== 'undefined') {
 				// Rensar båda nycklarna så att ett sparat inlägg inte dyker upp som utkast igen.
 				clearDiaryDraft();
+				// Ett lokalt gästinlägg med samma text finns nu i kontot och ska inte
+				// kunna importeras en gång till.
+				if (confirmLocalTextSaved(savedText) > 0) localImportKey += 1;
 
 				const url = new URL(window.location.href);
 				if (url.searchParams.has('prefill')) {
@@ -1472,7 +1488,14 @@
 			<!-- Den som skapat konto från gästens skrivyta landar här. Lokala inlägg
 			     sparas bara efter ett aktivt val, och rutan har sitt eget samtycke. -->
 			{#if sessionUser && !sessionUser.is_anonymous}
-				<LocalEntriesImportPrompt onImported={handleLocalEntriesImported} />
+				{#key localImportKey}
+					<LocalEntriesImportPrompt onImported={handleLocalEntriesImported} />
+				{/key}
+				{#if localImportListNotice}
+					<p class="auth-muted text-sm" role="status" data-testid="local-import-list-notice">
+						{localImportListNotice}
+					</p>
+				{/if}
 			{/if}
 			<div class="diary-layout">
 				<div class="diary-main">

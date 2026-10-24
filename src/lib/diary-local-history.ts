@@ -201,6 +201,24 @@ export function confirmLocalEntryImported(
 	}
 }
 
+/**
+ * Samma sak när texten sparats den vanliga vägen i Dagbokens skrivfält i
+ * stället för via importrutan. Lokala inlägg med exakt den texten finns då
+ * redan i kontot och tas bort, så att de inte kan sparas en gång till. Ett
+ * inlägg vars text ändrats före sparningen rörs inte. Returnerar antalet.
+ */
+export function confirmLocalTextSaved(
+	text: string,
+	storage: StorageLike | null = defaultStorage()
+): number {
+	const savedText = text.trim();
+	if (!savedText) return 0;
+
+	const matching = readLocalEntries(storage).filter((entry) => entry.text.trim() === savedText);
+	for (const entry of matching) confirmLocalEntryImported(entry, storage);
+	return matching.length;
+}
+
 /** Tar bort hela den lokala historiken, inklusive vilket inlägg som var öppet. */
 export function clearLocalEntries(storage: StorageLike | null = defaultStorage()) {
 	remove(storage, LOCAL_ENTRIES_KEY);
