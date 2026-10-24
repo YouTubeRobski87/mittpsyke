@@ -1136,10 +1136,13 @@
 			return;
 		}
 		savingDraft = true;
-		const savedText = draftText.trim();
 		// Sätts så fort servern bekräftat sparandet. Efter det får ett fel bara
 		// gälla det som händer efteråt, aldrig visas som ett misslyckat sparande.
 		let saveConfirmed = false;
+		// Texten som faktiskt skickas. Samma ögonblicksbild används för att
+		// stämma av mot lokala gästinlägg efteråt, även om fältet ändrats medan
+		// sessionen eller en video hämtades.
+		let submittedText = '';
 
 		try {
 			const { data } = await supabase.auth.getSession();
@@ -1168,6 +1171,7 @@
 				}
 			}
 
+			submittedText = draftText.trim();
 			const response = await fetch('/api/diary/create', {
 				method: 'POST',
 				headers: {
@@ -1176,7 +1180,7 @@
 					Authorization: `Bearer ${session.access_token}`
 				},
 				body: JSON.stringify({
-					text: draftText.trim(),
+					text: submittedText,
 					mood: draftMood || null,
 					image_url: draftImageUrl,
 					video_path: videoPath,
@@ -1215,7 +1219,7 @@
 				clearDiaryDraft();
 				// Ett lokalt gästinlägg med samma text finns nu i kontot och ska inte
 				// kunna importeras en gång till.
-				if (confirmLocalTextSaved(savedText) > 0) localImportKey += 1;
+				if (confirmLocalTextSaved(submittedText) > 0) localImportKey += 1;
 
 				const url = new URL(window.location.href);
 				if (url.searchParams.has('prefill')) {

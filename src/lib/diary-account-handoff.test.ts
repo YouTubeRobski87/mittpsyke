@@ -280,7 +280,10 @@ describe('återförsök skapar inga dubbletter', () => {
 		expect(migrateDraftIntoLocalEntries(storage, 5_000)).toBeNull();
 		// Importrutan monteras om och läser den lokala historiken på nytt.
 		const diary = read('src/routes/dagbok/checkin/+page.svelte');
-		expect(diary).toContain('if (confirmLocalTextSaved(savedText) > 0) localImportKey += 1;');
+		expect(diary).toContain('if (confirmLocalTextSaved(submittedText) > 0) localImportKey += 1;');
+		// Samma ögonblicksbild skickas till servern och stäms av lokalt.
+		expect(diary).toMatch(/submittedText = draftText\.trim\(\);\s*const response = await fetch\('\/api\/diary\/create'/);
+		expect(diary).toContain('text: submittedText,');
 		expect(diary).toContain('{#key localImportKey}');
 	});
 
