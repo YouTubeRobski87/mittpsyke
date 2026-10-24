@@ -5,6 +5,14 @@ import {
 	isThemeHidden,
 	type ProgressThemeOverrides
 } from '$lib/progress-theme-overrides';
+import {
+	MAX_RECURRING_THEMES,
+	MAX_RECURRING_THEME_EVIDENCE,
+	MIN_THEME_COUNT,
+	MIN_THEME_WEEKS,
+	type RecurringTheme
+} from '$lib/progress-recurring-themes';
+import { extractThemeExcerpt, toEntryId } from '$lib/server/progress-theme-excerpt';
 
 export type ProgressPeriodDays = 30 | 90 | 180;
 export type AnalysisConfidence = 'strong' | 'moderate' | 'weak' | 'insufficient';
@@ -13,9 +21,9 @@ export type TrendDirection = 'clearly-higher' | 'somewhat-higher' | 'unchanged' 
 export const MIN_TREND_SAMPLES_PER_SEGMENT = 4;
 export const MIN_MONTH_SAMPLES = 4;
 export const MIN_MONTH_ACTIVE_DAYS = 3;
-export const MIN_THEME_COUNT = 3;
-/** Ett tema visas först när det förekommer under minst så här många olika veckor. */
-export const MIN_THEME_WEEKS = 2;
+// Ett tema visas först när det förekommer minst MIN_THEME_COUNT gånger under
+// minst MIN_THEME_WEEKS olika veckor. Trösklarna delas med sidans förklaring.
+export { MIN_THEME_COUNT, MIN_THEME_WEEKS };
 /** Under så här många inlägg med både text och humör märks återblicken "Låg säkerhet". */
 export const LOW_CONFIDENCE_ENTRY_LIMIT = 10;
 export const MIN_THEME_ASSOCIATION_DAYS = 4;
@@ -24,7 +32,14 @@ export const MIN_WEEKDAY_SAMPLES = 5;
 export const MEANINGFUL_MOOD_DIFFERENCE = 0.6;
 
 type MoodRecord = { date: string; mood: number };
-type TextRecord = { date: string; themes: string[] };
+/**
+ * En anteckning med text. entryId och text stannar på servern; ut går bara
+ * id, datum och ett ordagrant utdrag för de teman som faktiskt visas.
+ */
+type TextRecord = { date: string; entryId: string | null; text: string; themeIds: string[]; themes: string[] };
+
+/** Raderna bär sitt id, så att varje utdrag kan knytas till rätt anteckning. */
+export type ProgressAnalysisRow = DiaryInsightRow & { id?: string | number | null };
 
 export type ProgressInsight = {
 
@@ -121,6 +136,12 @@ export type ProgressAnalysis = {
 	monthly: MonthlyMood[];
 	periods: { best: { start: string; end: string; mean: number; count: number } | null; worst: { start: string; end: string; mean: number; count: number } | null };
 	themes: { label: string; count: number; weekCount: number; firstHalfCount: number; secondHalfCount: number }[];
+	/**
+	 * Högst tre av temana ovan, i samma ordning, med datum och de anteckningar
+	 * de bygger på. Samma trösklar som themes: inget tema visas här som inte
+	 * redan klarat dem.
+	 */
+	recurringThemes: RecurringTheme[];
 	themeMoodAssociations: ThemeMoodAssociation[];
 	recovery: { lowCount: number; followedCount: number; recoveredCount: number; confidence: AnalysisConfidence };
 	weekdayPattern: { weekday: string; difference: number; count: number; confidence: Exclude<AnalysisConfidence, 'insufficient'> } | null;
@@ -171,6 +192,7 @@ function weekday(date: string): number {
 }
 function monthLabel(month: string): string { return new Intl.DateTimeFormat('sv-SE', { month: 'long', year: 'numeric' }).format(new Date(`${month}-01T12:00:00Z`)); }
 function dateLabel(date: string): string { return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long' }).format(new Date(`${date}T12:00:00Z`)); }
+function fullDateLabel(date: string): string { return new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${date}T12:00:00Z`)); }
 function confidence(count: number, difference: number): Exclude<AnalysisConfidence, 'insufficient'> {
 	return count >= 8 && Math.abs(difference) >= 1 ? 'strong' : 'moderate';
 }
@@ -190,7 +212,7 @@ export function getProgressPeriodBounds(periodDays: ProgressPeriodDays, now: Dat
 	return { start: shiftDateKey(end, -(periodDays - 1)), end };
 }
 
-export function filterProgressRows(rows: DiaryInsightRow[], periodDays: ProgressPeriodDays, now: Date = new Date()): DiaryInsightRow[] {
+export function filterProgressRows<T extends DiaryInsightRow>(rows: T[], periodDays: ProgressPeriodDays, now: Date = new Date()): T[] {
 	const { start, end } = getProgressPeriodBounds(periodDays, now);
 	return rows.filter((row) => {
 		const date = toStockholmDateKey(row.created_at);
@@ -203,7 +225,7 @@ export function filterProgressRows(rows: DiaryInsightRow[], periodDays: Progress
  * de aldrig når någon slutsats. Omdöpta teman får användarens eget namn i all
  * text som byggs längre ned.
  */
-function prepare(rows: DiaryInsightRow[], overrides: ProgressThemeOverrides = {}) {
+function prepare(rows: ProgressAnalysisRow[], overrides: ProgressThemeOverrides = {}) {
 	const moods: MoodRecord[] = [];
 	const texts: TextRecord[] = [];
 	const activeDays = new Set<string>();
@@ -216,11 +238,13 @@ function prepare(rows: DiaryInsightRow[], overrides: ProgressThemeOverrides = {}
 		if (mood !== null) moods.push({ date, mood });
 		const text = typeof row.text === 'string' ? row.text.trim() : '';
 		if (text) {
+			const themeIds = detectThemes(text, row.tags).filter((id) => !isThemeHidden(overrides, id));
 			texts.push({
 				date,
-				themes: detectThemes(text, row.tags)
-					.filter((id) => !isThemeHidden(overrides, id))
-					.map((id) => getThemeDisplayLabel(overrides, id))
+				entryId: toEntryId(row.id),
+				text,
+				themeIds,
+				themes: themeIds.map((id) => getThemeDisplayLabel(overrides, id))
 			});
 			if (mood !== null) relevantEntryCount += 1;
 		}
@@ -400,8 +424,44 @@ function buildLongPeriodSummary(
 	return 'Ditt halvår ser ganska stabilt ut i de registreringar som har tillräckligt underlag.';
 }
 
+/**
+ * Knyter ett redan godkänt tema till exakt de anteckningar som räknades in.
+ * Urvalet är samma som i räkningen (temats visningsnamn finns i anteckningen),
+ * så antal, datum och utdrag kan aldrig gå isär.
+ */
+function buildRecurringTheme(
+	theme: ProgressAnalysis['themes'][number],
+	texts: TextRecord[]
+): RecurringTheme | null {
+	const matching = texts.filter((text) => text.themes.includes(theme.label));
+	if (matching.length === 0) return null;
+	const newestFirst = [...matching].sort((a, b) => b.date.localeCompare(a.date));
+	const idFor = (text: TextRecord) => text.themeIds[text.themes.indexOf(theme.label)];
+	const firstDate = matching[0].date;
+	const lastDate = matching.at(-1)!.date;
+	return {
+		id: idFor(matching[0]),
+		label: theme.label,
+		count: theme.count,
+		textEntryCount: texts.length,
+		weekCount: theme.weekCount,
+		firstHalfCount: theme.firstHalfCount,
+		secondHalfCount: theme.secondHalfCount,
+		firstDate,
+		lastDate,
+		firstDateLabel: fullDateLabel(firstDate),
+		lastDateLabel: fullDateLabel(lastDate),
+		evidence: newestFirst.slice(0, MAX_RECURRING_THEME_EVIDENCE).map((text) => ({
+			entryId: text.entryId,
+			date: text.date,
+			dateLabel: fullDateLabel(text.date),
+			excerpt: extractThemeExcerpt(text.text, idFor(text))
+		}))
+	};
+}
+
 export function buildProgressAnalysis(
-	rows: DiaryInsightRow[],
+	rows: ProgressAnalysisRow[],
 	periodDays: ProgressPeriodDays,
 	now: Date = new Date(),
 	options: { truncated?: boolean; themeOverrides?: ProgressThemeOverrides } = {}
@@ -484,6 +544,10 @@ export function buildProgressAnalysis(
 		.filter(([, value]) => value.count >= MIN_THEME_COUNT && value.weeks.size >= MIN_THEME_WEEKS)
 		.sort((a, b) => b[1].count - a[1].count)
 		.map(([label, value]) => ({ label, count: value.count, weekCount: value.weeks.size, firstHalfCount: value.first, secondHalfCount: value.second }));
+	const recurringThemes = themes
+		.slice(0, MAX_RECURRING_THEMES)
+		.map((theme) => buildRecurringTheme(theme, texts))
+		.filter((theme): theme is RecurringTheme => theme !== null);
 	if (themes[0]) insights.push(insight('theme', 'recurring', `${themes[0].label} återkommer i dina texter`, `Temat finns i ${themes[0].count} av dina sparade texter ${periodLabel(periodDays)}.`, `${themes[0].label} förekommer i ${themes[0].firstHalfCount} texter i början och ${themes[0].secondHalfCount} senare i perioden.`, themes[0].count, themes[0].count / Math.max(texts.length, 1), 82));
 	if (periodDays >= 90) for (const theme of themes) {
 		const firstTotal = texts.filter((item) => item.date < splitDate).length;
@@ -543,5 +607,5 @@ export function buildProgressAnalysis(
 	}
 
 	const ranked = insights.sort((a, b) => b.rank - a.rank || (a.confidence === 'strong' ? -1 : 1)).filter((item, index, all) => all.findIndex((other) => other.category === item.category) === index).slice(0, periodDays === 30 ? 3 : 4);
-	return { periodDays, periodLabel: periodLabel(periodDays), longPeriodSummary: buildLongPeriodSummary(periodDays, coverage, trend, variability), coverage, moodSummary, trend, variability, recentComparison, monthly, periods, themes, themeMoodAssociations: associations, recovery, weekdayPattern, insights: ranked, halfYearSummary: periodDays === 180 ? ranked.slice(0, 4) : [], relevantEntryCount, lowConfidence: relevantEntryCount < LOW_CONFIDENCE_ENTRY_LIMIT };
+	return { periodDays, periodLabel: periodLabel(periodDays), longPeriodSummary: buildLongPeriodSummary(periodDays, coverage, trend, variability), coverage, moodSummary, trend, variability, recentComparison, monthly, periods, themes, recurringThemes, themeMoodAssociations: associations, recovery, weekdayPattern, insights: ranked, halfYearSummary: periodDays === 180 ? ranked.slice(0, 4) : [], relevantEntryCount, lowConfidence: relevantEntryCount < LOW_CONFIDENCE_ENTRY_LIMIT };
 }

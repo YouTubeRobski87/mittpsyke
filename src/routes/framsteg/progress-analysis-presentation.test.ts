@@ -8,7 +8,7 @@ const route = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
 // Enbart halvårsblocket, inte hela analyssektionen.
 const halfYearBlock = route.slice(
 	route.indexOf('{#if selectedPeriod === 180 && halfYear}'),
-	route.indexOf('{#if progressAnalysis.insights.length === 0}')
+	route.indexOf('{#if moodInsights.length === 0 && showRecurringThemes}')
 );
 const analysisBlock = route.slice(
 	route.indexOf('<section class="card reflection-card analysis-card"'),
@@ -168,8 +168,8 @@ describe('halvårsvyns informationshierarki', () => {
 
 	it('visar högst fyra insikter, i den ordning servern rangordnat dem', () => {
 		// Servern kapar listan till fyra; vyn lägger inte till egna kort.
-		expect(route).toContain('const primaryInsight = $derived(progressAnalysis?.insights[0] ?? null);');
-		expect(route).toContain('const remainingInsights = $derived(progressAnalysis?.insights.slice(1) ?? []);');
+		expect(route).toContain('const primaryInsight = $derived(moodInsights[0] ?? null);');
+		expect(route).toContain('const remainingInsights = $derived(moodInsights.slice(1));');
 		expect(halfYearBlock).not.toContain('analysis-tile');
 	});
 
@@ -189,12 +189,14 @@ describe('halvårsvyns informationshierarki', () => {
 	});
 });
 
-describe('periodens viktigaste insikt', () => {
-	it('lyfter den första redan rankade insikten med en tydlig arbetsrubrik', () => {
+describe('periodens tydligaste insikt', () => {
+	it('lyfter den första redan rankade insikten med en rubrik som inte värderar', () => {
 		const primaryIndex = analysisBlock.indexOf('{#if primaryInsight}');
 
 		expect(primaryIndex).toBeGreaterThan(-1);
-		expect(analysisBlock).toContain('<h3 id="primary-insight-heading">Det viktigaste just nu</h3>');
+		expect(analysisBlock).toContain('<h3 id="primary-insight-heading">Det som syns tydligast i perioden</h3>');
+		// Systemet vet inte vad som är viktigast i någons liv.
+		expect(route).not.toContain('Det viktigaste just nu');
 		expect(analysisBlock).toContain('{primaryInsight.title}');
 		expect(analysisBlock).toContain('{primaryInsight.description}');
 	});
@@ -206,12 +208,12 @@ describe('periodens viktigaste insikt', () => {
 
 	it('behåller serverns ordning för återstående insikter', () => {
 		// slice(1) tar bara bort den redan visade förstainsikten; den sorterar inte om resten.
-		expect(route).toContain('const remainingInsights = $derived(progressAnalysis?.insights.slice(1) ?? []);');
+		expect(route).toContain('const remainingInsights = $derived(moodInsights.slice(1));');
 		expect(analysisBlock).toContain('{#each remainingInsights as item (item.id)}');
 	});
 
 	it('saknar rubriken när analysen inte har någon kvalificerad insikt', () => {
-		const emptyIndex = analysisBlock.indexOf('{#if progressAnalysis.insights.length === 0}');
+		const emptyIndex = analysisBlock.indexOf('{:else if moodInsights.length === 0}');
 		const primaryIndex = analysisBlock.indexOf('{#if primaryInsight}');
 
 		expect(emptyIndex).toBeGreaterThan(primaryIndex);
@@ -221,7 +223,7 @@ describe('periodens viktigaste insikt', () => {
 	it('respekterar tunt underlag utan att skapa en egen insikt', () => {
 		expect(analysisBlock).toContain('{#if progressAnalysis.coverage.truncated}');
 		expect(analysisBlock).toContain('Analysen bygger på en begränsad del av periodens anteckningar.');
-		expect(route).toContain('progressAnalysis?.insights[0] ?? null');
+		expect(route).toContain('withoutRecurringThemeInsight(progressAnalysis?.insights ?? [], showRecurringThemes)');
 	});
 
 	it('visar inte rubriken före samtyckesgrinden eller vid API-fel', () => {
@@ -237,7 +239,7 @@ describe('periodens viktigaste insikt', () => {
 
 	it.each([30, 90, 180])('använder samma presentationsväg för %i dagar', (period) => {
 		expect(PERIOD_OPTIONS.map((option) => option.value)).toContain(period);
-		expect(route).toContain('const primaryInsight = $derived(progressAnalysis?.insights[0] ?? null);');
+		expect(route).toContain('const primaryInsight = $derived(moodInsights[0] ?? null);');
 	});
 });
 
@@ -281,9 +283,11 @@ describe('underlagskortet', () => {
 // Överblicken högst upp ska svara på "hur har den senaste veckan sett ut?" utan
 // AI, utan samtycke och utan periodval. Den ersätter inget - den gör bara den
 // frågan möjlig att besvara, eftersom kortaste periodval är 30 dagar.
+// Bara veckokortet. Temakortet med egna ord ligger direkt efter och har sin
+// egen samtyckesgrind.
 const weekBlock = route.slice(
 	route.indexOf('<section class="card week-summary-card"'),
-	route.indexOf('<section class="card recent-card"')
+	route.indexOf('</section>', route.indexOf('<section class="card week-summary-card"'))
 );
 
 describe('veckoöverblicken', () => {
