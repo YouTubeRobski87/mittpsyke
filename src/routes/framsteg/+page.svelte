@@ -1151,11 +1151,11 @@
 					<a class="home-return-link" href="/">&larr; Till startsidan</a>
 				{/if}
 				<p class="auth-eyebrow">Framsteg</p>
-				<h1>Se ditt mående över tid</h1>
+				<h1>Din historia, i dina egna ord</h1>
 				<p>
 					{isAnonymous
 						? 'En förhandsvisning av hur sparade stunder kan göra förändringar och återkommande teman lättare att se.'
-						: 'Se hur du har mått, vad som återkommer och vad som har förändrats — utifrån det du själv har sparat.'}
+						: 'Vad som återkommer och vad som har förändrats, utifrån det du själv har sparat.'}
 				</p>
 			</div>
 		</header>

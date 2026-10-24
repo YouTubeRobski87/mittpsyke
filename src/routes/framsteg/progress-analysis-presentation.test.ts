@@ -31,7 +31,7 @@ const lowDataWorldCopy = route.slice(
 describe('Framstegs första blick', () => {
 	it('gör kärnlöftet till sidans huvudrubrik', () => {
 		expect(route).toContain('<p class="auth-eyebrow">Framsteg</p>');
-		expect(route).toContain('<h1>Se ditt mående över tid</h1>');
+		expect(route).toContain('<h1>Din historia, i dina egna ord</h1>');
 		expect(route).toContain('<title>Framsteg | MittPsyke</title>');
 	});
 
