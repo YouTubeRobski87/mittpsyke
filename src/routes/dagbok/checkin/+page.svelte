@@ -48,9 +48,11 @@
 	import { supabase } from '$lib/supabase';
 	import {
 		DIARY_ENTRY_PAGE_SIZE,
+		DIARY_LIST_REFRESH_NOTICE,
 		loadDiaryEntriesPage,
 		notifyDiaryEntriesChanged,
 		pageAfterLoadingMore,
+		refreshAfterConfirmedChange,
 		type DiaryEntry
 	} from '$lib/state/diary';
 	import { recordSuccessfulReflectionSave } from '$lib/diary-events';
@@ -153,6 +155,9 @@
 	let draftMoodPreview = $state(5);
 	let draftError = $state('');
 	let draftSuccess = $state('');
+	// Sparat men listan kunde inte laddas om. Skiljs från draftError, som bara
+	// får betyda att själva sparandet misslyckades.
+	let draftListNotice = $state('');
 	let savingDraft = $state(false);
 	let weeklyEntryCount = $derived.by(() => countEntriesThisWeek(entries));
 	let hasDraftToResume = $derived(draftText.trim().length > 0);
@@ -603,7 +608,11 @@
 			editingEntryId = '';
 			editingText = '';
 			editingMood = '';
-			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
+			// Ändringen är sparad och syns redan i listan ovan. Ett fel vid
+			// omladdningen får inte visas som att ändringen misslyckades.
+			await refreshAfterConfirmedChange(() =>
+				loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
+			);
 		} catch (error) {
 			editError = error instanceof Error ? error.message : 'Kunde inte spara ändringen just nu.';
 		} finally {
@@ -655,7 +664,9 @@
 				if (response.status === 404) {
 					entries = entries.filter((e) => e.id !== entry.id);
 					confirmingDeleteEntryId = '';
-					await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
+					await refreshAfterConfirmedChange(() =>
+						loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
+					);
 					return;
 				}
 				deleteErrorEntryId = entry.id;
@@ -666,7 +677,10 @@
 			entries = entries.filter((e) => e.id !== entry.id);
 			trackDiaryEntryDeleted();
 			confirmingDeleteEntryId = '';
-			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
+			// Borttagningen är bekräftad och inlägget redan borta ur listan.
+			await refreshAfterConfirmedChange(() =>
+				loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
+			);
 		} catch (error) {
 			deleteErrorEntryId = entry.id;
 			deleteErrorMessage =
@@ -1079,6 +1093,7 @@
 		if (!draftText.trim() || savingDraft) return;
 		draftError = '';
 		draftSuccess = '';
+		draftListNotice = '';
 		if (!hasHealthDataConsent) {
 			draftError = 'Du behöver samtycka innan du kan spara i dagboken.';
 			return;
@@ -1088,6 +1103,9 @@
 			return;
 		}
 		savingDraft = true;
+		// Sätts så fort servern bekräftat sparandet. Efter det får ett fel bara
+		// gälla det som händer efteråt, aldrig visas som ett misslyckat sparande.
+		let saveConfirmed = false;
 
 		try {
 			const { data } = await supabase.auth.getSession();
@@ -1155,6 +1173,7 @@
 				return;
 			}
 
+			saveConfirmed = true;
 			recordManualDiaryMilestone(getMilestoneUserId(), payload?.diary?.id ?? null);
 
 			if (typeof window !== 'undefined') {
@@ -1189,12 +1208,25 @@
 			uploadImageError = '';
 			clearVideoState();
 			draftSuccess = 'Inlägget är sparat';
-			await loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) });
+			// Sparandet är bekräftat av servern. Från och med här får inget
+			// visas som att det misslyckades, även om listan inte kan laddas om.
+			const listRefreshed = await refreshAfterConfirmedChange(() =>
+				loadEntries({ force: true, limit: Math.max(entries.length, DIARY_ENTRY_PAGE_SIZE) })
+			);
+			if (!listRefreshed) draftListNotice = DIARY_LIST_REFRESH_NOTICE;
 			notifyDiaryEntriesChanged();
 			recordSuccessfulReflectionSave();
 			currentPage = 1;
 		} catch (error) {
-			draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
+			if (saveConfirmed) {
+				console.error('Dagbok: fel efter bekräftat sparande', error);
+				// Texten finns redan sparad. Tömt fält hindrar att den sparas två gånger.
+				draftText = '';
+				draftSuccess = 'Inlägget är sparat';
+				draftListNotice = DIARY_LIST_REFRESH_NOTICE;
+			} else {
+				draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
+			}
 		} finally {
 			savingDraft = false;
 		}
@@ -1707,11 +1739,16 @@
 								Din text är nu en del av underlaget i Framsteg. När något faktiskt återkommer eller
 								förändras visas det där – inte innan.
 							</p>
+							{#if draftListNotice}
+								<p class="mt-2 text-sm" data-testid="diary-list-refresh-notice">{draftListNotice}</p>
+							{/if}
 							<div class="actions-row mt-3">
 								<a href="/framsteg" class="auth-button primary">Gå till Framsteg</a>
-								<button type="button" class="auth-button" onclick={openLatestEntries}>
-									Se inlägget
-								</button>
+								{#if !draftListNotice}
+									<button type="button" class="auth-button" onclick={openLatestEntries}>
+										Se inlägget
+									</button>
+								{/if}
 								<button type="button" class="auth-button save-again-action" onclick={openWriteEditor}>
 									Skriv igen
 								</button>
