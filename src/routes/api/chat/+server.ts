@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+import { CONVERSATION_UNAVAILABLE_CODE } from '$lib/chat/chat-error-codes';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { hasHealthConsentInMetadata, hasSensitiveConsentHeader } from '$lib/consent';
@@ -614,13 +615,17 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 				if (existingConversationError) {
 					console.error('Failed to verify conversation:', existingConversationError);
 					if (existingConversationError.code === '42501') {
-						return errorResponse('Not allowed to access this conversation.', 403);
+						return errorResponse('Not allowed to access this conversation.', 403, {
+							code: CONVERSATION_UNAVAILABLE_CODE
+						});
 					}
 					return errorResponse('Could not validate conversation.', 500);
 				}
 
 				if (!existingConversation) {
-					return errorResponse('Conversation not found for this user.', 403);
+					return errorResponse('Conversation not found for this user.', 403, {
+						code: CONVERSATION_UNAVAILABLE_CODE
+					});
 				}
 
 				const conversation = existingConversation as ConversationRow;
@@ -660,7 +665,9 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 				if (createConversationError || !createdConversation) {
 					console.error('Failed to create conversation:', createConversationError);
 					if (createConversationError?.code === '42501') {
-						return errorResponse('Not allowed to create conversation.', 403);
+						return errorResponse('Not allowed to create conversation.', 403, {
+							code: CONVERSATION_UNAVAILABLE_CODE
+						});
 					}
 					return errorResponse('Could not create conversation.', 500);
 				}
@@ -679,7 +686,9 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 			if (previousMessagesError) {
 				console.error('Failed to load conversation history:', previousMessagesError);
 				if (previousMessagesError.code === '42501') {
-					return errorResponse('Not allowed to read conversation history.', 403);
+					return errorResponse('Not allowed to read conversation history.', 403, {
+						code: CONVERSATION_UNAVAILABLE_CODE
+					});
 				}
 				return errorResponse('Could not load conversation history.', 500);
 			}
@@ -693,7 +702,9 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 			if (userMessageError) {
 				console.error('Failed to save user message:', userMessageError);
 				if (userMessageError.code === '42501') {
-					return errorResponse('Not allowed to save message.', 403);
+					return errorResponse('Not allowed to save message.', 403, {
+						code: CONVERSATION_UNAVAILABLE_CODE
+					});
 				}
 				return errorResponse('Could not save message.', 500);
 			}
@@ -780,7 +791,9 @@ export const POST: RequestHandler = async ({ request, getClientAddress, cookies 
 			if (assistantMessageError) {
 				console.error('Failed to save assistant message:', assistantMessageError);
 				if (assistantMessageError.code === '42501') {
-					return errorResponse('Not allowed to save message.', 403);
+					return errorResponse('Not allowed to save message.', 403, {
+						code: CONVERSATION_UNAVAILABLE_CODE
+					});
 				}
 				return errorResponse('Could not save message.', 500);
 			}
