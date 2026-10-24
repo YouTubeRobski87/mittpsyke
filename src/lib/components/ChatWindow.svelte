@@ -6,6 +6,7 @@
 	import { resolveChatSupportLevel } from '$lib/ai/safety';
 	import { SWEDISH_LOCALE, selectVoiceForLang, waitForVoiceForLang } from '$lib/ai/speech';
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
+	import { requestChatAiConsent } from '$lib/chat/consent-client';
 	import RecentConversations from '$lib/components/RecentConversations.svelte';
 	import VoiceInput from '$lib/components/VoiceInput.svelte';
 	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
@@ -828,34 +829,20 @@
 			data: { session }
 		} = await supabase.auth.getSession();
 
-		if (session) {
-			const response = await fetch('/api/consent/chat-ai', {
-				method: 'POST',
-				headers: { Authorization: `Bearer ${session.access_token}` }
-			});
+		// Kastar vid felsvar och nätverksfel. ConsentGate fångar felet och visar
+		// sitt meddelande, och chatten förblir låst (fail-closed). Inget nedan
+		// körs förrän servern beviljat samtycket.
+		await requestChatAiConsent(fetch, session?.access_token ?? null);
+		hasSensitiveDataConsent = true;
 
-			hasSensitiveDataConsent = response.ok;
-
-			// localStorage och user_metadata skrivs kvar för äldre ytor
-			// (analys, framsteg, insikter, incheckningen), men är inte
-			// auktorisation för AI-anropet. Skrivs först när servern beviljat,
-			// så en avvisad begäran aldrig lämnar en lokal post efter sig.
-			if (response.ok) {
-				const consent = grantSensitiveConsent();
-				void persistUserConsent(consent);
-			}
-			return;
-		}
-
-		// Gäst: servern utfärdar den signerade cookien. Först när den är satt
-		// betraktas samtycket som aktivt - ingen lokal genväg.
-		const response = await fetch('/api/consent/chat-ai/anonymous', { method: 'POST' });
-		hasSensitiveDataConsent = response.ok;
-
-		// Gästens lokala post skrevs tidigare av helskärmsrutan på /chat. Den är
-		// borta, så den skrivs här i stället - annars skulle en gäst som
-		// samtyckt i chatten tillfrågas igen på de äldre ytorna.
-		if (response.ok) grantSensitiveConsent();
+		// localStorage och user_metadata skrivs kvar för äldre ytor
+		// (analys, framsteg, insikter, incheckningen), men är inte
+		// auktorisation för AI-anropet. Skrivs först när servern beviljat,
+		// så en avvisad begäran aldrig lämnar en lokal post efter sig.
+		// Gästens lokala post behövs så att en gäst som samtyckt i chatten inte
+		// tillfrågas igen på de äldre ytorna.
+		const consent = grantSensitiveConsent();
+		if (session) void persistUserConsent(consent);
 	}
 
 	/**
