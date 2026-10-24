@@ -10,6 +10,7 @@
 	// AI-sammanfattningen körs bara när användaren trycker på knappen.
 	import ConsentGate from '$lib/components/ConsentGate.svelte';
 	import { supabase } from '$lib/supabase';
+	import { diaryEntryHref } from '$lib/diary-entry-link';
 	import { SENSITIVE_CONSENT_HEADER, SENSITIVE_CONSENT_VERSION } from '$lib/consent';
 	import {
 		MAX_THEME_LABEL_LENGTH,
@@ -297,6 +298,13 @@
 											{:else}
 												<small>Utdraget visas inte här. Inlägget finns kvar i din dagbok.</small>
 											{/if}
+											{#if diaryEntryHref(item.entryId)}
+												<a
+													class="lighter-days-entry-link"
+													href={diaryEntryHref(item.entryId)}
+													aria-label={`Läs hela anteckningen från ${item.dateLabel}`}
+												>Läs hela anteckningen</a>
+											{/if}
 										</li>
 									{/each}
 								</ul>
@@ -489,6 +497,20 @@
 	}
 
 	.lighter-days-action:focus-visible,
+	.lighter-days-entry-link {
+		display: inline-block;
+		margin-top: 0.3rem;
+		font-size: 0.88rem;
+		color: hsl(var(--primary));
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
+	.lighter-days-entry-link:focus-visible {
+		outline: 2px solid hsl(var(--ring, var(--primary)));
+		outline-offset: 2px;
+	}
+
 	.lighter-days-link:focus-visible {
 		outline: 2px solid hsl(var(--ring, var(--primary)));
 		outline-offset: 2px;

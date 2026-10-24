@@ -118,6 +118,26 @@ export function pageAfterLoadingMore(
 	return Math.floor(previousCount / entriesPerPage) + 1;
 }
 
+/** Visas när sparandet är bekräftat men listan inte kunde laddas om efteråt. */
+export const DIARY_LIST_REFRESH_NOTICE =
+	'Inlägget är sparat. Listan kunde inte uppdateras just nu, den visas när du laddar om sidan.';
+
+/**
+ * Laddar om listan efter en ändring som servern redan bekräftat (sparande,
+ * redigering, borttagning). Ett fel här gäller bara listan, aldrig själva
+ * ändringen, och kastas därför inte vidare till ändringens felhantering.
+ * Annars skulle ett lyckat sparande kunna visas som misslyckat och skrivas igen.
+ */
+export async function refreshAfterConfirmedChange(refresh: () => Promise<void>): Promise<boolean> {
+	try {
+		await refresh();
+		return true;
+	} catch (error) {
+		console.error('Dagbok: listan kunde inte laddas om efter en bekräftad ändring', error);
+		return false;
+	}
+}
+
 function normalizeLimit(limit?: number) {
 	return Math.max(
 		DIARY_ENTRY_PAGE_SIZE,

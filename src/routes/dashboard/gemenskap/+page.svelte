@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { invalidateAll } from '$app/navigation';
 	import SEO from '$lib/components/SEO.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
 	import { trackForumReplyCreated } from '$lib/analytics';
 	import { supabase } from '$lib/supabase';
+	import { COMMUNITY_LOAD_ERROR_MESSAGE, LOAD_RETRY_LABEL, type LoadStatus } from '$lib/load-state';
 	import type {
 		CreateCommunityCommentSuccessResponse,
 		CreateCommunityUnshareSuccessResponse
@@ -37,6 +39,7 @@
 		data
 	}: {
 		data: {
+			status?: LoadStatus;
 			items?: CommunityPost[];
 			currentPage?: number;
 			totalPages?: number;
@@ -45,6 +48,8 @@
 			hasNextPage?: boolean;
 		};
 	} = $props();
+	// Saknas status (äldre data) gäller det tidigare beteendet.
+	const loadStatus = $derived<LoadStatus>(data.status ?? 'ready');
 	const initialPosts = $derived(data.items ?? []);
 	const currentPage = $derived(data.currentPage ?? 1);
 	const totalPages = $derived(data.totalPages ?? 1);
@@ -74,6 +79,17 @@
 	$effect(() => {
 		posts = [...initialPosts];
 	});
+
+	let retryingFeed = $state(false);
+
+	async function retryLoadFeed() {
+		retryingFeed = true;
+		try {
+			await invalidateAll();
+		} finally {
+			retryingFeed = false;
+		}
+	}
 
 	function formatPublishedAt(value: string | null): string {
 		if (!value) return 'Nyligen';
@@ -531,7 +547,19 @@
 			<p class="feed-notice {feedNoticeType}">{feedNotice}</p>
 		{/if}
 
-		{#if posts.length > 0}
+		{#if loadStatus === 'error'}
+			<section class="auth-panel empty-panel" role="alert" data-testid="gemenskap-load-error">
+				<p>{COMMUNITY_LOAD_ERROR_MESSAGE}</p>
+				<button
+					type="button"
+					class="auth-button primary"
+					onclick={retryLoadFeed}
+					disabled={retryingFeed}
+				>
+					{retryingFeed ? 'Hämtar…' : LOAD_RETRY_LABEL}
+				</button>
+			</section>
+		{:else if posts.length > 0}
 			<section class="auth-panel feed-panel">
 				<h2>Senaste från Gemenskapen</h2>
 				<p class="feed-intro">
@@ -806,7 +834,7 @@
 			</section>
 		{/if}
 
-		{#if posts.length === 0}
+		{#if loadStatus === 'ready' && posts.length === 0}
 			<section class="auth-panel future-panel">
 				<h2>Kommer i nästa steg</h2>
 				<div class="future-list" role="list">

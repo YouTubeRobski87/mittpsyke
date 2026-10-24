@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private';
 import OpenAI from 'openai';
 import {
 	AITextGenerationError,
+	type AIProviderDiagnostics,
 	type AITextProvider,
 	type AITextProviderRequest
 } from '../text-generation-contract';
@@ -53,10 +54,35 @@ export function normalizeOpenAIError(error: unknown): AITextGenerationError {
 	if (error instanceof OpenAI.APIConnectionTimeoutError || name === 'APIConnectionTimeoutError') {
 		return new AITextGenerationError('timeout', 'AI-anropet tog för lång tid.');
 	}
+	const diagnostics = providerDiagnostics(error);
 	if (error instanceof OpenAI.RateLimitError || name === 'RateLimitError') {
-		return new AITextGenerationError('rate_limit', 'AI-tjänsten är tillfälligt hårt belastad.');
+		// OpenAI svarar 429 även när kvoten eller faktureringen är slut. Det går
+		// inte över av att vänta, så det får inte visas som överbelastning.
+		if (diagnostics.providerCode === 'insufficient_quota') {
+			return new AITextGenerationError('quota', 'AI-tjänstens kvot är slut.', diagnostics);
+		}
+		return new AITextGenerationError('rate_limit', 'AI-tjänsten är tillfälligt hårt belastad.', diagnostics);
 	}
-	return new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.');
+	return new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.', diagnostics);
+}
+
+const PROVIDER_CODE_PATTERN = /^[a-z0-9_.-]{1,64}$/i;
+
+/**
+ * Plockar ut status och felkod ur ett SDK-fel för serverloggen. Felkoden
+ * godtas bara som en kort identifierare - leverantörens fritext kan innehålla
+ * nyckelfragment eller kontouppgifter och följer aldrig med.
+ */
+function providerDiagnostics(error: unknown): AIProviderDiagnostics {
+	if (!error || typeof error !== 'object') return {};
+	const { status, code, type } = error as { status?: unknown; code?: unknown; type?: unknown };
+	const providerCode = [code, type].find(
+		(value): value is string => typeof value === 'string' && PROVIDER_CODE_PATTERN.test(value)
+	);
+	return {
+		providerStatus: Number.isInteger(status) && (status as number) >= 100 && (status as number) <= 599 ? (status as number) : undefined,
+		providerCode
+	};
 }
 
 function normalizeApiKey(value: string | undefined): string | null {
