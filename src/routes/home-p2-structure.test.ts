@@ -134,9 +134,9 @@ describe('Startsidans P2-struktur', () => {
 		expect(map).not.toContain('Ett djur du väljer själv');
 		expect(body).not.toContain('Inget måste besvaras');
 		const tool = map.slice(map.indexOf('place-map-tool'));
-		expect(tool).toContain('<h3>Chatten</h3>');
+		expect(tool).toContain('<h3>Anonym chatt</h3>');
 		expect(tool).toContain(
-			'Vill du hellre prata fram tankarna finns en chatt. Du kan använda MittPsyke helt utan den.'
+			'Vill du hellre prata fram tankarna finns en anonym chattfunktion, utan konto. Du kan använda MittPsyke helt utan den.'
 		);
 		// Chatten är en rad i kartan, inte en egen sektion och ingen länk som
 		// drar produktberättelsen mot /chat.

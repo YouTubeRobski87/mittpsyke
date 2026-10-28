@@ -41,7 +41,7 @@ describe('Startsidan för inloggade', () => {
 	it('visar den publika startsidan för den som inte är inloggad', async () => {
 		const data = await runLoad(null);
 
-		expect(data.title).toBe('En lugn plats att återvända till');
+		expect(data.title).toBe('Dagbok och reflektionsverktyg för ditt mående');
 		expect(data.isSignedInHome).toBe(false);
 	});
 
@@ -60,7 +60,7 @@ describe('Startsidan för inloggade', () => {
 		// "Skriv först, utan konto" vänder sig till just de här sessionerna.
 		const data = await runLoad(guest);
 
-		expect(data.title).toBe('En lugn plats att återvända till');
+		expect(data.title).toBe('Dagbok och reflektionsverktyg för ditt mående');
 		expect(data.isSignedInHome).toBe(false);
 	});
 

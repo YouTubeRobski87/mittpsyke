@@ -16,7 +16,7 @@
 	<title>Så fungerar MittPsyke | Skriv och se vad som återkommer</title>
 	<meta
 		name="description"
-		content="Skriv, spara det du vill, kom tillbaka när du vill och se vad som återkommer. Om dagboken, Kvällstugan, följeslagaren Balder och den valfria AI-chatten."
+		content="MittPsyke är ett reflektionsverktyg: skriv, spara det du vill och se vad som återkommer. Om dagboken, Kvällstugan, Balder och den valfria AI-chatten."
 	/>
 </svelte:head>
 
