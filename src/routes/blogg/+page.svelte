@@ -13,7 +13,7 @@
 	<title>Artiklar om psykiskt mående | MittPsyke</title>
 	<meta
 		name="description"
-		content="Läs artiklar om att skriva av sig, psykiskt mående, oro, stress och återhämtning i din egen takt."
+		content="Artiklar om att skriva dagbok, reflektera, oro, stress och återhämtning, och om hur skrivandet kan bli ett stöd för ditt mående."
 	/>
 	<meta property="og:type" content="website" />
 </svelte:head>

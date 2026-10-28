@@ -6,10 +6,10 @@
 <SEO canonical="https://mittpsyke.se/digital-dagbok-for-maende" />
 
 <svelte:head>
-	<title>Digital dagbok för mående – skriv och följ över tid | MittPsyke</title>
+	<title>Digital dagbok för mående – ett enkelt dagboksverktyg | MittPsyke</title>
 	<meta
 		name="description"
-		content="Använd en digital dagbok för mående för att skriva av dig, se mönster och följa små steg över tid."
+		content="Ett enkelt dagboksverktyg för ditt mående. Skriv av dig, se mönster och följ små steg över tid, med eller utan konto."
 	/>
 	<meta property="og:title" content="Digital dagbok för mående | MittPsyke" />
 	<meta
@@ -35,7 +35,7 @@
 		<section class="section">
 			<h2>När skrivande hjälper dig att landa</h2>
 			<p>
-				Dagboken är till för reflektion, inte prestation. Du kan skriva kort eller långt, följa känslor
+				Dagboken är ett dagboksverktyg för reflektion, inte prestation. Du kan skriva kort eller långt, följa känslor
 				över tid och återvända när du behöver.
 			</p>
 		</section>
