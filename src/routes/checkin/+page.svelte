@@ -45,7 +45,7 @@
     <meta name="robots" content="noindex" />
 </svelte:head>
 
-<main class="checkin-container">
+<div class="checkin-container">
     <h1>Snabb check-in</h1>
     <p class="intro">Tre korta frågor. Det räcker med några ord.</p>
     
@@ -67,7 +67,7 @@
     <button class="submit-btn" on:click={submit} disabled={!canSubmit} style="background-color: {themeColor}">
         Spara check-in
     </button>
-</main>
+</div>
 
 <style>
     .checkin-container {

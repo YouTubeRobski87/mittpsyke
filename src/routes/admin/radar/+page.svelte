@@ -37,7 +37,7 @@
 <SEO canonical="https://mittpsyke.se/admin/radar" />
 <svelte:head><title>Radar | Admin | MittPsyke</title><meta name="robots" content="noindex, nofollow" /></svelte:head>
 
-<main class="radar-shell">
+<div class="radar-shell">
 	<header class="hero">
 		<div><p class="eyebrow">MittPsyke Admin</p><h1>Radar</h1><p>En lugn överblick över relevanta teknik- och forskningsflöden.</p></div>
 		<a href="/admin">Till adminöversikt</a>
@@ -117,7 +117,7 @@
 		<section class="section"><div class="section-heading"><h2>Källor</h2><p>Endast godkända externa flöden.</p></div><ul class="compact-list">{#each data.sources as source}<li><div><strong>{sourceLabel(source)}</strong><span>{source.category}</span></div><span>{source.enabled ? 'Aktiv' : 'Pausad'} · kontrollerad {formatDateTime(source.last_checked_at)}</span></li>{/each}</ul></section>
 		<section class="section"><div class="section-heading"><h2>Körningar</h2><p>Dagligen 06:15 UTC.</p></div><ul class="compact-list">{#each data.runs as run}<li><div><strong>{run.status === 'completed' ? 'Genomförd' : run.status}</strong><span>{formatDateTime(run.started_at)}</span></div><span>{run.sources_checked} källor · {run.findings_saved} sparade</span></li>{/each}</ul></section>
 	</div>
-</main>
+</div>
 
 <style>
 	.radar-shell { width: min(1100px, calc(100% - 2rem)); margin: 0 auto; padding: 2rem 0 4rem; overflow-x: clip; }

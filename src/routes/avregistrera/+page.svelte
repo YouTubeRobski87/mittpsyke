@@ -19,7 +19,7 @@
 	/>
 </svelte:head>
 
-<main class="unsubscribe-page container">
+<div class="unsubscribe-page container">
 	<section class="panel">
 		<h1>Avregistrering</h1>
 		<p class="lead">
@@ -64,7 +64,7 @@
 				<a class="ghost-btn" href="/login">Logga in for kontoradering</a>
 			{/if}
 		</section>
-	</main>
+	</div>
 
 <style>
 	.unsubscribe-page {

@@ -19,7 +19,7 @@
 	})}<\/script>`}
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<header class="hero">
 			<h1>Självkänsla – ett rum att utforska dig själv</h1>
@@ -77,7 +77,7 @@
 		</section>
 
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

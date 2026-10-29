@@ -20,7 +20,7 @@
 	/>
 </svelte:head>
 
-<main class="how-content mx-auto w-full px-5 py-10">
+<div class="how-content mx-auto w-full px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Så fungerar MittPsyke' }]} />
 
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Så fungerar MittPsyke</h1>
@@ -117,7 +117,7 @@
 			<li><a href="/tillganglighet">Tillgänglighet</a></li>
 		</ul>
 	</nav>
-</main>
+</div>
 
 <style>
 	.how-content {

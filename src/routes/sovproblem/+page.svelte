@@ -18,7 +18,7 @@
 	})}<\/script>`}
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<header class="hero">
 			<h1>Sömnproblem – stöd när natten känns lång</h1>
@@ -75,7 +75,7 @@
 			<EditorialByline />
 		</section>
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

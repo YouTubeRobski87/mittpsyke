@@ -16,7 +16,7 @@
 	canonical={`https://mittpsyke.se${$page.url.pathname}`}
 />
 
-<main class="container tools-page">
+<div class="container tools-page">
 	<Breadcrumbs items={[{ label: 'Övningar' }]} />
 
 	<header class="intro">
@@ -47,7 +47,7 @@
 			</a>
 		{/each}
 	</section>
-</main>
+</div>
 
 <style>
 	.tools-page {

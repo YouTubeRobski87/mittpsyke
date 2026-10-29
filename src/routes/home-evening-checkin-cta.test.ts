@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const page = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
-const publicHome = page.slice(page.indexOf('{:else}'), page.indexOf('</main>'));
+const publicHome = page.slice(page.indexOf('{:else}'), page.lastIndexOf('</div>', page.indexOf('<style')));
 
 describe('Kvällstugan-sektionen på den publika startsidan', () => {
 	it('leder vidare till den riktiga incheckningen via inloggningen', () => {

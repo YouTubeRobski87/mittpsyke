@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const page = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
-const publicHome = page.slice(page.indexOf('{:else}'), page.indexOf('</main>'));
+const publicHome = page.slice(page.indexOf('{:else}'), page.lastIndexOf('</div>', page.indexOf('<style')));
 const hero = publicHome.slice(0, publicHome.indexOf('<!-- 2.'));
 
 describe('Den publika startsidans hero', () => {

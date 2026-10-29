@@ -80,7 +80,7 @@
 	{@html `<script type="application/ld+json">${JSON.stringify(faqSchema)}<\/script>`}
 </svelte:head>
 
-<main class="guide-page">
+<div class="guide-page">
 	<article class="guide-article">
 		<header class="guide-header">
 			<p class="eyebrow">Guide</p>
@@ -241,7 +241,7 @@
 			</div>
 		</section>
 	</article>
-</main>
+</div>
 
 <style>
 	.guide-page {

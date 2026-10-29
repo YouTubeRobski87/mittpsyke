@@ -25,7 +25,7 @@
 	})}<\/script>`}
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<Breadcrumbs items={[{ label: 'Om MittPsyke' }]} />
 
@@ -214,7 +214,7 @@
 			</ul>
 		</nav>
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

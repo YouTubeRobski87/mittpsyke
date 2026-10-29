@@ -1158,7 +1158,7 @@
 	</section>
 {/snippet}
 
-<main class="auth-page framsteg-page" style={themeStyle}>
+<div class="auth-page framsteg-page" style={themeStyle}>
 	<div class="auth-shell framsteg-shell">
 		<header class="auth-hero">
 			<div>
@@ -1784,7 +1784,7 @@
 			{/if}
 		</div>
 	</div>
-</main>
+</div>
 
 <style>
 	[data-low-data-hidden='true'] {

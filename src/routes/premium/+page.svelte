@@ -20,7 +20,7 @@
 
 <SEO canonical="https://mittpsyke.se/premium" />
 
-<main class="premium-page">
+<div class="premium-page">
 	<Breadcrumbs items={[{ label: 'Premium' }]} />
 
 	<header class="premium-hero">
@@ -79,7 +79,7 @@
 	</section>
 
 	<p class="support-note">MittPsyke ersätter inte vård. Vid akut fara: 112. För vårdråd: 1177.</p>
-</main>
+</div>
 
 <style>
 	.premium-page {

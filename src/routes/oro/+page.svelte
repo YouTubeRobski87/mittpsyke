@@ -19,7 +19,7 @@
 	})}<\/script>`}
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<!-- Hero Section -->
 		<header class="hero">
@@ -87,7 +87,7 @@
 		</section>
 
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

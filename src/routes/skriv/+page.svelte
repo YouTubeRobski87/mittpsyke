@@ -12,7 +12,7 @@
 
 <SEO canonical="https://mittpsyke.se/skriv" />
 
-<main class="write-page">
+<div class="write-page">
 	<header class="write-intro">
 		<h1>Börja skriva direkt</h1>
 		<p>Du behöver inget konto. {dataflowCopy.anonymousDiary.short}</p>
@@ -32,7 +32,7 @@
 		MittPsyke är stöd i text, inte vård eller akuthjälp. Vid akut fara: 112. För vårdråd:
 		1177. För vidare stöd: Stödlinjer.se.
 	</p>
-</main>
+</div>
 
 <style>
 	.write-page {

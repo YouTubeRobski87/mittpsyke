@@ -655,7 +655,7 @@
 	<title>Kontoinställningar - MittPsyke</title>
 </svelte:head>
 
-<main class="auth-page">
+<div class="auth-page">
 	<PortalSubnav
 		active="installningar"
 		title="Kontoinställningar"
@@ -1084,7 +1084,7 @@
 
 		{/if}
 	</div>
-</main>
+</div>
 
 <style>
 	.settings-page {

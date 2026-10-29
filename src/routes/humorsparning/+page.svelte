@@ -62,7 +62,7 @@
 
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<Breadcrumbs items={[{ label: 'Funktioner', href: '/#innehall' }, { label: 'Humörspårning' }]} />
 
@@ -126,7 +126,7 @@
 
 		<GuideActionCta chatHref="/chat" exerciseHref="/ovningar" exerciseLabel="Se övningar för mer balans" layout="compact" />
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

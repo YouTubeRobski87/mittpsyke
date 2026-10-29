@@ -16,7 +16,7 @@
 	/>
 </svelte:head>
 
-<main class="terms-content mx-auto w-full px-5 py-10">
+<div class="terms-content mx-auto w-full px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Kontakt och villkor' }]} />
 
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Kontakt och villkor</h1>
@@ -103,7 +103,7 @@
 		<a href="/tillganglighet" class="underline hover:no-underline">tillgänglighet</a> och
 		<a href="/redaktionell-metod" class="underline hover:no-underline">redaktionell metod</a>.
 	</p>
-</main>
+</div>
 
 <style>
 	.terms-content {

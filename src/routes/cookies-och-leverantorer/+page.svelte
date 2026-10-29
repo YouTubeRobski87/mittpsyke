@@ -14,7 +14,7 @@
 	/>
 </svelte:head>
 
-<main class="cookies-content mx-auto w-full px-5 py-10">
+<div class="cookies-content mx-auto w-full px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Cookies och leverantörer' }]} />
 
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Cookies och leverantörer</h1>
@@ -148,7 +148,7 @@
 		<a href="/ansvar" class="underline hover:no-underline">ansvar</a> och
 		<a href="/tillganglighet" class="underline hover:no-underline">tillgänglighet</a>.
 	</p>
-</main>
+</div>
 
 <style>
 	.cookies-content {

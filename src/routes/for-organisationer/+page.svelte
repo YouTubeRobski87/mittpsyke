@@ -16,7 +16,7 @@
 	/>
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<Breadcrumbs items={[{ label: 'För organisationer' }]} />
 
@@ -107,7 +107,7 @@
 			<a class="button button-primary" href={contactHref}>Kontakta MittPsyke</a>
 		</section>
 	</div>
-</main>
+</div>
 
 <style>
 	.page { padding: clamp(2rem, 6vw, 4.5rem) 1.25rem clamp(3.5rem, 8vw, 6rem); }

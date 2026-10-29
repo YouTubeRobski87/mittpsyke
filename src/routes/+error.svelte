@@ -7,7 +7,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="error-page">
+<div class="error-page">
 	<div class="error-inner">
 		<p class="error-code">{page.status}</p>
 		<h1 class="error-heading">
@@ -46,7 +46,7 @@
 			<p>Vid akut fara: <a href="tel:112">ring 112</a>. Vårdråd: <a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Mer stöd: <a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Stödlinjer.se</a>.</p>
 		</div>
 	</div>
-</main>
+</div>
 
 <style>
 	.error-page {

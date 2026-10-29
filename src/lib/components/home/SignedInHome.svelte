@@ -31,7 +31,7 @@
 	);
 </script>
 
-<main class="signed-home" aria-labelledby="signed-home-title">
+<section class="signed-home" aria-labelledby="signed-home-title">
 	<div class="signed-home-inner">
 		<section class="returning" aria-labelledby="signed-home-title">
 			<div class="returning-copy">
@@ -109,7 +109,7 @@
 			</div>
 		</section>
 	</div>
-</main>
+</section>
 
 <style>
 	.signed-home {

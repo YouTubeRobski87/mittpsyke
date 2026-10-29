@@ -58,7 +58,7 @@
 	<GuestQuickEntry />
 {/if}
 
-	<main class="seo-diary-page">
+	<div class="seo-diary-page">
 		<section class="content-grid">
 			<article class="body-card">
 				<p class="eyebrow">Vad dagboken är</p>
@@ -132,7 +132,7 @@
 			Dagboken är ett stöd för reflektion, inte vård eller behandling. Vid akut fara: 112.
 			För vårdråd: 1177.
 		</p>
-	</main>
+	</div>
 
 <style>
 	.seo-diary-page {

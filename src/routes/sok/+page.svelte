@@ -210,7 +210,7 @@
 	}
 </script>
 
-<main class="search-page">
+<div class="search-page">
 	<header class="search-hero">
 		<h1>Sök på MittPsyke</h1>
 		<p>Hitta guider, artiklar och stöd om psykiskt mående i lugn takt.</p>
@@ -296,7 +296,7 @@
 	{:else}
 		<p class="hint">Skriv ett ord eller en fras för att börja söka.</p>
 	{/if}
-</main>
+</div>
 
 <style>
 	.search-page {

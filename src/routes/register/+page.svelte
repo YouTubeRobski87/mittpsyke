@@ -80,7 +80,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="container max-w-sm py-12">
+<div class="container max-w-sm py-12">
 	<h1 class="text-2xl font-bold mb-3">
 		{showPreview ? 'Fortsätt härifrån och följ över tid' : 'Skapa konto och se ditt mående över tid'}
 	</h1>
@@ -191,4 +191,4 @@
 	<p class="text-center text-xs mt-3 opacity-60">
 		Läs hur integritet och data hanteras i <a href="/integritet" class="underline">integritetspolicyn</a>.
 	</p>
-</main>
+</div>

@@ -30,7 +30,7 @@
 	secondaryLabel="Så fungerar dagboken"
 />
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 
 		<section class="section">
@@ -78,7 +78,7 @@
 			<p>Börja med några få rader. Det räcker långt som första steg.</p>
 		</section>
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

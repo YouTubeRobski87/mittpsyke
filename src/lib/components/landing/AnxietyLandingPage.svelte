@@ -108,7 +108,7 @@
 	})}<\/script>`}
 </svelte:head>
 
-<main class="landing-page">
+<div class="landing-page">
 	<section class="hero">
 		<div class="hero__copy">
 			<p class="hero__eyebrow">Stöd vid ångest</p>
@@ -211,7 +211,7 @@
 			{/each}
 		</div>
 	</section>
-</main>
+</div>
 
 <style>
 	.landing-page {

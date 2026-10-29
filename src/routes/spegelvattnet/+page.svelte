@@ -59,7 +59,7 @@
 
 <SEO canonical="https://mittpsyke.se/spegelvattnet" />
 
-<main class="auth-page spegel-page">
+<div class="auth-page spegel-page">
 	<div class="spegel-column">
 		<PortalSubnav
 			active="hem"
@@ -125,7 +125,7 @@
 			{/if}
 		</div>
 	</div>
-</main>
+</div>
 
 <style>
 	.spegel-page {

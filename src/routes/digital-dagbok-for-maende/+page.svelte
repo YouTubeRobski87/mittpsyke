@@ -29,7 +29,7 @@
 	secondaryLabel="Så fungerar dagboken"
 />
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 
 		<section class="section">
@@ -74,7 +74,7 @@
 			<p>Ja. Många använder dagboken för att skriva av sig och chatten för att reflektera vidare.</p>
 		</section>
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

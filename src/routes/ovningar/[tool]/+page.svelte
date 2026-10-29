@@ -48,7 +48,7 @@
 	]}
 />
 
-<main class="container tool-page">
+<div class="container tool-page">
 	<nav class="crumbs" aria-label="Breadcrumb">
 		<a href="/">Hem</a>
 		<span>/</span>
@@ -130,7 +130,7 @@
 			</p>
 		{/if}
 	</section>
-</main>
+</div>
 
 <style>
 	.tool-page {
