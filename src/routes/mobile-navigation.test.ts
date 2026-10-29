@@ -34,6 +34,27 @@ const quickNav = layout.slice(
 	layout.indexOf('<nav class="mobile-quick-nav"'),
 	layout.indexOf('</nav>', layout.indexOf('<nav class="mobile-quick-nav"'))
 );
+// aria-controls får bara peka på en panel som faktiskt finns i DOM:en. Mobilmenyn
+// och profilpanelen renderas bara när de är öppna.
+describe('ARIA-referenser och knappar i layouten', () => {
+	// Booleska påståenden: ett fel ska inte skriva ut hela layoutkällan i loggen.
+	const has = (text: string) => layout.includes(text);
+
+	it('sätter aria-controls för mobilmeny och profilpanel endast när panelen är öppen', () => {
+		expect(has("aria-controls={mobileMenuOpen ? 'mobile-menu' : undefined}"), 'villkorad aria-controls för mobilmenyn').toBe(true);
+		expect(has("aria-controls={profilePanelOpen ? 'header-profile-panel' : undefined}"), 'villkorad aria-controls för profilpanelen').toBe(true);
+		expect(/\{#if mobileMenuOpen\}\s*<div id="mobile-menu"/.test(layout), 'mobilmenyn renderas villkorat').toBe(true);
+		expect(/\{#if profilePanelOpen\}\s*<div\s+id="header-profile-panel"/.test(layout), 'profilpanelen renderas villkorat').toBe(true);
+		expect(has('aria-controls="mobile-menu"'), 'ovillkorad aria-controls för mobilmenyn').toBe(false);
+		expect(has('aria-controls="header-profile-panel"'), 'ovillkorad aria-controls för profilpanelen').toBe(false);
+	});
+
+	it('ger cookieinställningsknappen type="button"', () => {
+		const cookieButton = /<button type="button" onclick=\{\(\) => cookieBannerOpen\.set\(true\)\}[^>]*>Cookieinställningar<\/button>/;
+		expect(cookieButton.test(layout), 'cookieknappen har type="button"').toBe(true);
+	});
+});
+
 const mobileMenu = layout.slice(layout.indexOf('<div id="mobile-menu"'), layout.indexOf('Vid akut fara: ring 112'));
 
 describe('mobilmenyn för utloggade', () => {
