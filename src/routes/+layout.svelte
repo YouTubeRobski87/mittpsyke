@@ -181,8 +181,7 @@
 			'@type': 'Person',
 			name: 'Robert Claesson'
 		},
-		areaServed: { '@type': 'Country', name: 'Sverige' },
-		identifier: '198712284895'
+		areaServed: { '@type': 'Country', name: 'Sverige' }
 	};
 
 	const webApplicationJsonLd = {
@@ -858,7 +857,7 @@
 									aria-label="Öppna profilmeny"
 									aria-haspopup="dialog"
 									aria-expanded={profilePanelOpen}
-									aria-controls="header-profile-panel"
+									aria-controls={profilePanelOpen ? 'header-profile-panel' : undefined}
 									aria-describedby="diary-count-tooltip"
 									onclick={toggleProfilePanel}
 								>
@@ -929,7 +928,7 @@
 					class="mobile-menu-button lg:hidden inline-flex items-center justify-center rounded-md px-2.5 py-2 text-sm opacity-80 hover:opacity-100 transition-opacity"
 					aria-label="Öppna meny"
 					aria-expanded={mobileMenuOpen}
-					aria-controls="mobile-menu"
+					aria-controls={mobileMenuOpen ? 'mobile-menu' : undefined}
 						onclick={() => {
 							profilePanelOpen = false;
 							mobileMenuOpen = !mobileMenuOpen;
@@ -1067,7 +1066,7 @@
 					<a href="/integritet" class="footer-link">Integritetspolicy</a>
 					<a href="/cookies-och-leverantorer" class="footer-link">Cookies och leverantörer</a>
 					<a href="/tillganglighet" class="footer-link">Tillgänglighet</a>
-					<button onclick={() => cookieBannerOpen.set(true)} class="footer-link footer-link-btn">Cookieinställningar</button>
+					<button type="button" onclick={() => cookieBannerOpen.set(true)} class="footer-link footer-link-btn">Cookieinställningar</button>
 					<a href="/sok" class="footer-link">Sök</a>
 				</div>
 
