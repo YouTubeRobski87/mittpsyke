@@ -122,7 +122,7 @@
 	{/if}
 </svelte:head>
 
-<main class="mx-auto max-w-3xl px-4 py-10">
+<div class="mx-auto max-w-3xl px-4 py-10">
 	<nav class="mb-5 text-sm opacity-75" aria-label="Brödsmulor">
 		<a class="hover:underline" href="/guider">Guider</a>
 		<span> / </span>
@@ -210,7 +210,7 @@
 		updatedAt={updatedAt}
 		sources={data.guide.sources}
 	/>
-</main>
+</div>
 
 <style>
 	.nasta-steg {

@@ -63,7 +63,7 @@
 
 <div class="mp-dashboard">
 	<div class="shell">
-		<main class="main">
+		<div class="main">
 			<header class="page-header">
 				<div>
 					<div class="kicker">AI-insikter</div>
@@ -92,7 +92,7 @@
 			{:else}
 				<DiaryNarrativeInsights {narrative} />
 			{/if}
-		</main>
+		</div>
 	</div>
 </div>
 

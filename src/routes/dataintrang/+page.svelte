@@ -3,7 +3,7 @@
 	import HibpEmailCheck from '$lib/components/HibpEmailCheck.svelte';
 </script>
 
-<main class="dataintrang-page mx-auto w-full px-5 py-10">
+<div class="dataintrang-page mx-auto w-full px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Hem', href: '/' }, { label: 'Dataintrång' }]} />
 
 	<h1>Kontrollera e-post vid dataintrång</h1>
@@ -14,7 +14,7 @@
 	</p>
 
 	<HibpEmailCheck />
-</main>
+</div>
 
 <style>
 	.dataintrang-page {

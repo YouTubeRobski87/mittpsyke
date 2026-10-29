@@ -18,7 +18,7 @@
 	<meta property="og:type" content="website" />
 </svelte:head>
 
-<main class="blog-page">
+<div class="blog-page">
 	<Breadcrumbs items={[{ label: 'Artiklar' }]} />
 
 	<section class="blog-hero">
@@ -107,7 +107,7 @@
 			</div>
 		{/if}
 	</section>
-</main>
+</div>
 
 <style>
 	.blog-page {

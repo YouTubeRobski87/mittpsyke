@@ -8,7 +8,7 @@
 
 <SEO {canonical} />
 
-<main class="topic-page">
+<div class="topic-page">
 	<Breadcrumbs items={[{ label: 'Artiklar', href: '/blogg' }, { label: data.topic.label }]} />
 	<header>
 		<p class="eyebrow">Artikelämne</p>
@@ -26,7 +26,7 @@
 			</li>
 		{/each}
 	</ul>
-</main>
+</div>
 
 <style>
 	.topic-page { max-width: 900px; margin: 0 auto; padding: clamp(2rem, 6vw, 3.2rem) clamp(1rem, 4vw, 1.4rem) 4rem; }

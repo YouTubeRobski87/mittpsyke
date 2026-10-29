@@ -21,7 +21,7 @@
 
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<header class="hero">
 			<h1>Hjälp vid ångest online</h1>
@@ -103,7 +103,7 @@
 		/>
 
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

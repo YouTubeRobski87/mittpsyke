@@ -12,7 +12,7 @@
 	/>
 </svelte:head>
 
-<main class="soro-page">
+<div class="soro-page">
 	<section class="soro-panel" aria-labelledby="soro-heading">
 		<div class="soro-header">
 			<p class="eyebrow">MittPsyke</p>
@@ -20,7 +20,7 @@
 			<p>Fördjupande texter om psykiskt välmående, reflektion och stöd i vardagen.</p>
 		</div>
 	</section>
-</main>
+</div>
 
 <style>
 	.soro-page {

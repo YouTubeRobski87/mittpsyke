@@ -25,7 +25,7 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<main class="share-page">
+<div class="share-page">
 	<div class="share-card">
 		<div class="share-logo">
 			<span class="logo-text">MittPsyke</span>
@@ -71,7 +71,7 @@
 
 		<p class="share-domain">www.mittpsyke.se</p>
 	</div>
-</main>
+</div>
 
 <style>
 	.share-page {

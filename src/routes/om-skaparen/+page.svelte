@@ -34,7 +34,7 @@
 	{@html `<script type="application/ld+json">${JSON.stringify(structuredData)}<\/script>`}
 </svelte:head>
 
-<main class="creator-content mx-auto w-full px-5 py-10">
+<div class="creator-content mx-auto w-full px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Om skaparen' }]} />
 
 	<header class="creator-hero">
@@ -104,7 +104,7 @@
 			<li><a href="/integritet">Integritet</a></li>
 		</ul>
 	</nav>
-</main>
+</div>
 
 <style>
 	.creator-content {

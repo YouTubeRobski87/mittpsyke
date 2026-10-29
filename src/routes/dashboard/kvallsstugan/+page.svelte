@@ -273,7 +273,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="evening-page" aria-labelledby="evening-title">
+<section class="evening-page" aria-labelledby="evening-title">
 	<header class="evening-header">
 		<h1 id="evening-title">Kvällstugan</h1>
 		<span>En stund där dagen får landa.</span>
@@ -527,7 +527,7 @@
 		<summary>Behöver du akut stöd?</summary>
 		<p>Vid akut fara, ring <a href="tel:112">112</a>. För vårdråd, ring <a href="https://www.1177.se" rel="noopener noreferrer" target="_blank">1177</a>. Du hittar fler stödvägar på <a href="https://stodlinjer.se" rel="noopener noreferrer" target="_blank">stodlinjer.se</a>.</p>
 	</details>
-</main>
+</section>
 
 <style>
 	.evening-page {

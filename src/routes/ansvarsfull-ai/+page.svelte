@@ -18,7 +18,7 @@
 	/>
 </svelte:head>
 
-<main class="ai-content mx-auto w-full px-5 py-10">
+<div class="ai-content mx-auto w-full px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Ansvarsfull AI' }]} />
 
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Ansvarsfull AI</h1>
@@ -103,7 +103,7 @@
 		<a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a>.
 		Din feedback används för att göra säkerhetsarbetet bättre.
 	</p>
-</main>
+</div>
 
 <style>
 	.ai-content {

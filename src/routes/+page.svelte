@@ -40,7 +40,7 @@
 {#if data.isSignedInHome}
 	<SignedInHome overview={data.homeOverview} />
 {:else}
-<main class="home">
+<div class="home">
 	<!-- 1. Hero -->
 	<section class="home-hero" aria-labelledby="hero-title">
 		<div class="home-inner hero-grid">
@@ -431,7 +431,7 @@
 			<p class="cta-micro">Med konto kan du samla det du väljer att spara och se vad som återkommer eller förändras.</p>
 		</div>
 	</section>
-</main>
+</div>
 {/if}
 
 <style>

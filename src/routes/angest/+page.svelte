@@ -111,7 +111,7 @@
 	}).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029')}<\/script>`}
 </svelte:head>
 
-<main class="landing-page">
+<div class="landing-page">
 	<section class="hero">
 		<div class="hero-copy">
 			<p class="eyebrow">Stöd vid ångest</p>
@@ -262,7 +262,7 @@
 			</li>
 		</ul>
 	</section>
-</main>
+</div>
 
 <style>
 	.landing-page {

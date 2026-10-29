@@ -194,7 +194,7 @@
 	})}<\/script>`}
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<header class="hero">
 			<h1>När familjen är i kris men du själv hamnar utanför</h1>
@@ -437,7 +437,7 @@
 			</ul>
 		</section>
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

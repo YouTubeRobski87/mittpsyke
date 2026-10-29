@@ -14,7 +14,7 @@
 	/>
 </svelte:head>
 
-<main class="ansvar-content mx-auto w-full px-5 py-10">
+<div class="ansvar-content mx-auto w-full px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Ansvar' }]} />
 
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Ansvarsinfo</h1>
@@ -79,7 +79,7 @@
 		Om du har frågor om ansvar och hur tjänsten fungerar kan du kontakta oss på
 		<a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a>.
 	</p>
-</main>
+</div>
 
 <style>
 	.ansvar-content {

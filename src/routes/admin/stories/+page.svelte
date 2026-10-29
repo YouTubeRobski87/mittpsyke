@@ -68,7 +68,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="admin-stories">
+<div class="admin-stories">
 	<header class="hero">
 		<div>
 			<p class="eyebrow">MittPsyke Admin</p>
@@ -150,7 +150,7 @@
 			{/each}
 		</section>
 	{/if}
-</main>
+</div>
 
 <style>
 	.admin-stories {
