@@ -6,9 +6,14 @@ import { getSessionUser } from '$lib/server/admin-auth'
 import { getGuideBySlugs, getPillarBySlug } from '$lib/seo-kit/content'
 import { legacyBlogRedirects, mergedGuideRedirects } from '$lib/server/legacy-redirects'
 import { normalizeStructuredDataSiteUrls } from '$lib/seo'
+import { warnAboutUnexpectedPublicEnv } from '$lib/server/public-env'
 
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''
+
+// Körs en gång när servern startar: okända PUBLIC_*-variabler syns annars i
+// varje sidas HTML utan att någon märker det. Loggar bara namnen.
+warnAboutUnexpectedPublicEnv(publicEnv)
 
 const metaDescriptionPattern = /<meta\s+name=(["'])description\1[^>]*>/gi
 const jsonLdScriptPattern = /(<script\s+type=(["'])application\/ld\+json\2[^>]*>)([\s\S]*?)(<\/script>)/gi
