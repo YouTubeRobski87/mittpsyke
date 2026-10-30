@@ -40,7 +40,7 @@
 {#if data.isSignedInHome}
 	<SignedInHome overview={data.homeOverview} />
 {:else}
-<main class="home">
+<div class="home">
 	<!-- 1. Hero -->
 	<section class="home-hero" aria-labelledby="hero-title">
 		<div class="home-inner hero-grid">
@@ -132,7 +132,7 @@
 				<h2 id="how-title">Fyra steg, och sedan börjar det om</h2>
 				<p>
 					I ett anteckningsblock ligger det du skrivit kvar, men du får själv leta upp det. Här möter
-					det dig igen.
+					det dig igen, och dagboken blir ett reflektionsverktyg över tid.
 				</p>
 			</div>
 			<!-- role="list" behåller listsemantiken i Safari, som annars tappar den
@@ -308,8 +308,8 @@
 				 ställena, så "Tre ställen, inte fler" stämmer fortfarande. Den ligger
 				 som en fjärde rad i samma form, men får aldrig bära berättelsen. -->
 			<div class="place-map-tool">
-				<h3>Chatten</h3>
-				<p>Vill du hellre prata fram tankarna finns en chatt. Du kan använda MittPsyke helt utan den.</p>
+				<h3>Anonym chatt</h3>
+				<p>Vill du hellre prata fram tankarna finns en anonym chattfunktion, utan konto. Du kan använda MittPsyke helt utan den.</p>
 			</div>
 		</div>
 	</section>
@@ -431,7 +431,7 @@
 			<p class="cta-micro">Med konto kan du samla det du väljer att spara och se vad som återkommer eller förändras.</p>
 		</div>
 	</section>
-</main>
+</div>
 {/if}
 
 <style>

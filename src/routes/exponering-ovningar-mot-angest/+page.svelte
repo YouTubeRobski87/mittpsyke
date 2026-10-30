@@ -21,7 +21,7 @@
 
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<header class="hero">
 			<h1>Exponering övningar mot ångest</h1>
@@ -89,7 +89,7 @@
 		</section>
 
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

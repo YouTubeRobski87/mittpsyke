@@ -799,7 +799,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 	'chatta-anonymt': {
 		title: 'Chatta anonymt utan konto – börja direkt | MittPsyke',
 		description:
-			'Chatta anonymt utan konto hos MittPsyke. Skriv av dig, sortera tankar och få stöd i lugn takt – utan registrering eller krav.',
+			'MittPsykes anonyma chattfunktion fungerar direkt i webbläsaren, utan konto. Skriv av dig och sortera tankar i lugn takt.',
 		canonical: canonical('/chatta-anonymt'),
 		ogTitle: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
 		ogDescription:
@@ -882,6 +882,10 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			{
 				question: 'Kan jag chatta anonymt utan konto?',
 				answer: 'Ja. Du kan börja direkt utan att registrera dig eller uppge några uppgifter.'
+			},
+			{
+				question: 'Hur fungerar den anonyma chattfunktionen?',
+				answer: 'Du skriver utan att logga in och får ett AI-genererat svar. MittPsyke sparar inte gästchatten, den finns bara kvar medan sidan är öppen.'
 			},
 			{
 				question: 'Kan jag chatta med någon om det som känns tungt?',

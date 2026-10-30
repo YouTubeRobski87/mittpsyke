@@ -54,7 +54,7 @@
 	/>
 </svelte:head>
 
-<main class="story-form-page mx-auto w-full px-5 py-10">
+<div class="story-form-page mx-auto w-full px-5 py-10">
 	<a class="back-link" href="/anonyma-berattelser">Till anonyma berättelser</a>
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Dela en anonym berättelse</h1>
 	{#if data.formAvailable}
@@ -146,7 +146,7 @@
 	{:else}
 		<p class="empty" role="status">{FORM_UNAVAILABLE_MESSAGE}</p>
 	{/if}
-</main>
+</div>
 
 <style>
 	.story-form-page {

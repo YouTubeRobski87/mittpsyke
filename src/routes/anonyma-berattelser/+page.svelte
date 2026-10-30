@@ -98,7 +98,7 @@
 	{@html `<script type="application/ld+json">${jsonLdScript}<\/script>`}
 </svelte:head>
 
-<main class="stories-page mx-auto w-full px-5 py-10">
+<div class="stories-page mx-auto w-full px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Berättelser' }]} />
 
 	<section class="stories-hero">
@@ -158,7 +158,7 @@
 			</nav>
 		{/if}
 	{/if}
-</main>
+</div>
 
 <style>
 	.stories-page {

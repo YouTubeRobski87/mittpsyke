@@ -35,7 +35,7 @@
 
 <div class="mp-dashboard">
 	<div class="shell">
-		<main class="main">
+		<div class="main">
 			<header class="page-header">
 				<div>
 					<div class="kicker">Lär dig mer</div>
@@ -64,7 +64,7 @@
 					</div>
 				</section>
 			{/each}
-		</main>
+		</div>
 	</div>
 </div>
 

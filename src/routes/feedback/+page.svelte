@@ -38,7 +38,7 @@
 	/>
 </svelte:head>
 
-<main class="feedback-page">
+<div class="feedback-page">
 	<div class="feedback-shell">
 		<header class="feedback-intro">
 			<h1>Hjälp oss förbättra MittPsyke</h1>
@@ -151,7 +151,7 @@
 			{/if}
 		</section>
 	</div>
-</main>
+</div>
 
 <style>
 	.feedback-page {

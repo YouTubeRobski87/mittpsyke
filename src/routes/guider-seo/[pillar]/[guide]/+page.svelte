@@ -52,7 +52,7 @@
 	<meta name="robots" content="noindex, follow" />
 </svelte:head>
 
-<main class="mx-auto max-w-3xl px-4 py-10">
+<div class="mx-auto max-w-3xl px-4 py-10">
 	<nav class="mb-5 text-sm opacity-75" aria-label="Brödsmulor">
 		<a class="hover:underline" href="/guider">Guider</a>
 		<span> / </span>
@@ -113,7 +113,7 @@
 	{#if data.guide.sources?.length || data.guide.updatedAt}
 		<ContentTrustBlock updatedAt={data.guide.updatedAt} sources={data.guide.sources} />
 	{/if}
-</main>
+</div>
 
 <style>
 	.nasta-steg {

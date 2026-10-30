@@ -521,7 +521,7 @@
 
 <SEO canonical="https://mittpsyke.se/dashboard/gemenskap" />
 
-<main class="auth-page">
+<div class="auth-page">
 	<PortalSubnav
 		active="gemenskap"
 		title="Du är inte ensam"
@@ -859,7 +859,7 @@
 			</section>
 		{/if}
 	</div>
-</main>
+</div>
 
 <style>
 	.community-page {

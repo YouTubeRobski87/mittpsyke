@@ -407,7 +407,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="auth-page">
+<div class="auth-page">
 	<PortalSubnav
 		active="dagbok"
 		title="Guidad incheckning"
@@ -683,7 +683,7 @@
 			</section>
 		{/if}
 	</div>
-</main>
+</div>
 
 <style>
 	.checkin-shell {

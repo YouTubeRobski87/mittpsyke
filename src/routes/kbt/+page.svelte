@@ -16,7 +16,7 @@
 
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<!-- Hero-sektion -->
 		<header class="hero">
@@ -95,7 +95,7 @@
 			</ul>
 		</section>
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

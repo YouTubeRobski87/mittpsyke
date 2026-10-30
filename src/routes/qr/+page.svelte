@@ -49,7 +49,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="qr-landing">
+<div class="qr-landing">
 	<section class="hero" aria-labelledby="qr-hero-title">
 		<div class="hero__copy">
 			<p class="hero__eyebrow">Du hittade hit via QR-koden</p>
@@ -118,7 +118,7 @@
 			<HomeSafetyStrip />
 		</div>
 	</section>
-</main>
+</div>
 
 <style>
 	.qr-landing {

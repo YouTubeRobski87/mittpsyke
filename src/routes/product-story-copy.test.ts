@@ -47,7 +47,7 @@ describe('MittPsykes produktberättelse och dataflöden', () => {
 		expect(order.every((index) => index > -1)).toBe(true);
 		expect([...order].sort((a, b) => a - b)).toEqual(order);
 		// AI nämns inte före kärnloopen.
-		expect(howPage.indexOf('AI', howPage.indexOf('<main'))).toBeGreaterThan(order[3]);
+		expect(howPage.indexOf('AI', howPage.indexOf('<div class="how-content'))).toBeGreaterThan(order[3]);
 	});
 
 	it('beskriver Kvällstugan, Balder och chatten konkret och utan löften', () => {

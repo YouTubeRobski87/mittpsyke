@@ -52,7 +52,7 @@
 	const hasSingleGuide = $derived(guides.length === 1);
 </script>
 
-<main class="guide-page mx-auto max-w-3xl px-4 py-10">
+<div class="guide-page mx-auto max-w-3xl px-4 py-10">
 	<nav class="guide-breadcrumb text-sm" aria-label="Brödsmulor">
 		<a class="guide-link hover:underline" href="/guider">Guider</a>
 	</nav>
@@ -157,7 +157,7 @@
 		updatedAt={updatedAt}
 		sources={landing?.sources}
 	/>
-</main>
+</div>
 
 <style>
 	.guide-page {

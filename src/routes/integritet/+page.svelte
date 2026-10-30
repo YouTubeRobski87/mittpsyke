@@ -15,7 +15,7 @@
 	/>
 </svelte:head>
 
-<main class="mx-auto w-full max-w-3xl px-5 py-10">
+<div class="mx-auto w-full max-w-3xl px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Integritet' }]} />
 
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Integritetspolicy</h1>
@@ -509,4 +509,4 @@
 	</p>
 
 	<p class="opacity-60 text-sm mt-10">Senast uppdaterad: 21 september 2026</p>
-</main>
+</div>

@@ -14,7 +14,7 @@
 	/>
 </svelte:head>
 
-<main class="method-content mx-auto w-full px-5 py-10">
+<div class="method-content mx-auto w-full px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Redaktionell metod' }]} />
 
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Redaktionell metod</h1>
@@ -91,7 +91,7 @@
 		Om du ser något som verkar fel, för otydligt eller behöver formuleras tryggare kan du kontakta
 		oss på <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a>.
 	</p>
-</main>
+</div>
 
 <style>
 	.method-content {

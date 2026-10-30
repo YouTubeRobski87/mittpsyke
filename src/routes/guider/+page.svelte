@@ -22,7 +22,7 @@
 	canonical={`https://mittpsyke.se${$page.url.pathname}`}
 />
 
-<main class="container guides-page">
+<div class="container guides-page">
 	<Breadcrumbs items={[{ label: 'Guider' }]} />
 
 	<header class="intro">
@@ -43,7 +43,7 @@
 			</a>
 		{/each}
 	</section>
-</main>
+</div>
 
 <style>
 	.guides-page {

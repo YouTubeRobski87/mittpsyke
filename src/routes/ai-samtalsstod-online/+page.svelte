@@ -6,7 +6,7 @@
 
 <SEO canonical="https://mittpsyke.se/ai-samtalsstod-online" />
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<header class="hero">
 			<h1>AI-samtalsstöd online och lokal dagbok</h1>
@@ -88,7 +88,7 @@
 		</section>
 
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

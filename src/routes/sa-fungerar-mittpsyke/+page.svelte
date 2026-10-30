@@ -16,11 +16,11 @@
 	<title>Så fungerar MittPsyke | Skriv och se vad som återkommer</title>
 	<meta
 		name="description"
-		content="Skriv, spara det du vill, kom tillbaka när du vill och se vad som återkommer. Om dagboken, Kvällstugan, följeslagaren Balder och den valfria AI-chatten."
+		content="MittPsyke är ett reflektionsverktyg: skriv, spara det du vill och se vad som återkommer. Om dagboken, Kvällstugan, Balder och den valfria AI-chatten."
 	/>
 </svelte:head>
 
-<main class="how-content mx-auto w-full px-5 py-10">
+<div class="how-content mx-auto w-full px-5 py-10">
 	<Breadcrumbs items={[{ label: 'Om MittPsyke', href: '/om-mittpsyke' }, { label: 'Så fungerar MittPsyke' }]} />
 
 	<h1 class="text-2xl sm:text-3xl font-semibold mb-4">Så fungerar MittPsyke</h1>
@@ -117,7 +117,7 @@
 			<li><a href="/tillganglighet">Tillgänglighet</a></li>
 		</ul>
 	</nav>
-</main>
+</div>
 
 <style>
 	.how-content {

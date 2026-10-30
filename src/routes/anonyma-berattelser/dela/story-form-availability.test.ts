@@ -19,7 +19,7 @@ const runLoad = async (): Promise<StoryFormLoad> =>
 
 // Markup i den yttre {:else}-grenen - det är allt användaren ser utan giltig konfiguration.
 const elseIndex = sharePage.lastIndexOf('{:else}');
-const unavailableBranch = sharePage.slice(elseIndex, sharePage.indexOf('</main>', elseIndex));
+const unavailableBranch = sharePage.slice(elseIndex, sharePage.indexOf('{/if}', elseIndex));
 
 let errorSpy: ReturnType<typeof vi.spyOn>;
 

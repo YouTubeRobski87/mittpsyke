@@ -14,7 +14,7 @@
 	<meta name="robots" content="noindex, follow" />
 </svelte:head>
 
-<main>
+<div>
 	<h1>Guider SEO</h1>
 	<ul>
 		{#each data.pillars as pillar}
@@ -23,4 +23,4 @@
 			</li>
 		{/each}
 	</ul>
-</main>
+</div>

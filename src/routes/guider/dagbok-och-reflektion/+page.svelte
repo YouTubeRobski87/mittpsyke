@@ -76,7 +76,7 @@
 	secondaryLabel="Se framsteg"
 />
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<section class="section">
 			<h2>Varför dagbok och reflektion fungerar</h2>
@@ -151,7 +151,7 @@
 			MittPsyke ersätter inte vård. Vid akut fara: 112. För vårdråd: 1177.
 		</p>
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

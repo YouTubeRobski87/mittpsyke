@@ -1422,7 +1422,7 @@
 	}}
 />
 
-<main class="auth-page">
+<div class="auth-page">
 	{#if loading}
 		<div class="auth-shell">
 			<section class="auth-panel">
@@ -2147,7 +2147,7 @@
 		</div>
 		{/if}
 	{/if}
-</main>
+</div>
 
 <style>
 	.diary-layout {

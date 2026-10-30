@@ -8,5 +8,6 @@ export const load: PageServerLoad = async ({ fetch, setHeaders }) => {
 		'cache-control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600'
 	});
 
-	return { articles, loadError };
+	// Interna sökresultat ska inte indexeras av sökmotorer.
+	return { articles, loadError, noindex: true };
 };

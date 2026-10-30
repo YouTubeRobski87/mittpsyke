@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 // fortfarande huvudvarumärket.
 
 const source = readFileSync(new URL('./+page.svelte', import.meta.url), 'utf8');
-const markup = source.slice(source.indexOf('<main'), source.indexOf('</main>'));
+const markup = source.slice(source.indexOf('<div class="creator-content'), source.lastIndexOf('</div>'));
 const visible = markup
 	.replace(/<!--[\s\S]*?-->/g, '')
 	.replace(/<[^>]+>/g, ' ')

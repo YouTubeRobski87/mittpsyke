@@ -39,9 +39,9 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	}
 
 	return {
-		title: 'En lugn plats att återvända till',
+		title: 'Dagbok och reflektionsverktyg för ditt mående',
 		description:
-			'MittPsyke är en personlig plats för självreflektion. Skriv, checka in och följ hur du har det över tid – i din takt, med eller utan konto. Inte vård, behandling eller akuthjälp.',
+			'Ett lugnt dagboksverktyg för ditt mående. Skriv, gör en kvällsincheckning och se vad som återkommer över tid, med eller utan konto. Inte vård eller akuthjälp.',
 		isSignedInHome: false
 	};
 };

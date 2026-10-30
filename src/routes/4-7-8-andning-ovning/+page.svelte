@@ -15,7 +15,7 @@
 	<meta name="twitter:card" content="summary" />
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<header class="hero">
 			<h1>4-7-8 andning övning</h1>
@@ -71,7 +71,7 @@
 			<p>Nej. MittPsyke är ett digitalt samtalsstöd och ett komplement till vård.</p>
 		</section>
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

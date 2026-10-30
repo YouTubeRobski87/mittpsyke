@@ -113,7 +113,9 @@ describe('landningsvarianten för /chatta-anonymt', () => {
 		expect(config.title).toBe('Chatta anonymt utan konto – börja direkt | MittPsyke');
 		expect(config.canonical).toBe('https://mittpsyke.se/chatta-anonymt');
 		expect(config.faqSchema).toBe(true);
-		expect(config.faq).toHaveLength(3);
+		expect(config.faq).toHaveLength(4);
 		expect(config.faq[0].question).toBe('Kan jag chatta anonymt utan konto?');
+		// Frågan om chattfunktionen bär sökordet "anonym chattfunktion".
+		expect(config.faq[1].question).toBe('Hur fungerar den anonyma chattfunktionen?');
 	});
 });

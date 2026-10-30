@@ -47,22 +47,22 @@
 <SEO canonical="https://mittpsyke.se/humorsparning" />
 
 <svelte:head>
-	<title>Humörspårning & aktivitetsheatmap – MittPsyke</title>
+	<title>Humörspårning – följ och mät dina känslor över tid | MittPsyke</title>
 	<meta
 		name="description"
-		content="Följ dina känslor över tid med visuell humörspårning och lugna insikter. Se mönster i ditt mående med MittPsyke."
+		content="En enkel mätning av känslor, utan press. Följ ditt humör över tid, se mönster i ditt mående och få lugna insikter."
 	/>
-	<meta property="og:title" content="Humörspårning & aktivitetsheatmap – MittPsyke" />
+	<meta property="og:title" content="Humörspårning – följ och mät dina känslor över tid | MittPsyke" />
 	<meta
 		property="og:description"
-		content="Följ dina känslor över tid med visuell humörspårning och lugna insikter. Se mönster i ditt mående med MittPsyke."
+		content="En enkel mätning av känslor, utan press. Följ ditt humör över tid, se mönster i ditt mående och få lugna insikter."
 	/>
 	<meta property="og:type" content="website" />
 	<meta name="twitter:card" content="summary" />
 
 </svelte:head>
 
-<main class="page">
+<div class="page">
 	<div class="page-container">
 		<Breadcrumbs items={[{ label: 'Funktioner', href: '/#innehall' }, { label: 'Humörspårning' }]} />
 
@@ -126,7 +126,7 @@
 
 		<GuideActionCta chatHref="/chat" exerciseHref="/ovningar" exerciseLabel="Se övningar för mer balans" layout="compact" />
 	</div>
-</main>
+</div>
 
 <style>
 	.page {

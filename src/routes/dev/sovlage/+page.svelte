@@ -14,7 +14,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="harness">
+<div class="harness">
 	<h1>QA: Sovläge</h1>
 	<p class="harness-note">
 		Utvecklingsharness. Rutan nedan står för Kvällstugans scen och speglar bara dimningen –
@@ -34,7 +34,7 @@
 	{/if}
 
 	<SleepModePanel bind:stage />
-</main>
+</div>
 
 <style>
 	.harness {

@@ -125,7 +125,7 @@
 	{@html faqJsonLdTag}
 </svelte:head>
 
-<main class="page" class:landing={isLanding}>
+<div class="page" class:landing={isLanding}>
 	<div class="page-container">
 		<header class="hero">
 			{#if config.eyebrow}
@@ -252,7 +252,7 @@
 
 		<PublicTrustPanel updatedDate={config.updatedDate} sources={config.sources} />
 	</div>
-</main>
+</div>
 
 <style>
 	.page {
