@@ -118,6 +118,7 @@ describe('snabblänken i mobilens sidhuvud', () => {
 	it('är bara Skriv för alla och ger inte upplevelselagret samma visuella vikt', () => {
 		expect(quickNav).toContain('class="mobile-quick-link mobile-quick-link-write"');
 		expect(quickNav).toContain('href={mobileWriteNavItem.href}');
+		expect(quickNav).toContain('<PenLine size={15} aria-hidden="true" />');
 		expect(quickNav).not.toContain('/dashboard/kvallsstugan');
 		expect(quickNav).not.toContain('/chat');
 		expect(layout).toContain(
@@ -190,6 +191,11 @@ describe('inloggade undersidor', () => {
 			{ label: 'Kvällstugan', href: '/dashboard/kvallsstugan' },
 			{ label: 'Inställningar', href: '/dashboard/installningar' }
 		]);
+	});
+
+	it('behåller portalraden under desktop men döljer den när huvudnavigationen visas', () => {
+		expect(portalSubnav).toMatch(/@media \(min-width: 1024px\)[\s\S]*?\.auth-subnav \{[\s\S]*?display: none;/);
+		expect(portalSubnav).toContain('<nav class="auth-subnav" aria-label="Portalnavigering">');
 	});
 });
 

@@ -193,6 +193,11 @@
 		box-shadow: 0 10px 22px rgba(var(--primary-rgb), 0.26);
 	}
 
+	.primary-action:focus-visible {
+		outline: 3px solid rgba(var(--primary-rgb), 0.34);
+		outline-offset: 2px;
+	}
+
 	.companion-note {
 		display: flex;
 		align-items: center;

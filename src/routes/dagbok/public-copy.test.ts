@@ -10,7 +10,8 @@ vi.mock('$app/stores', () => ({
 }));
 
 const source = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
-const plainText = (html: string) => html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+const plainText = (html: string) =>
+	html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').replace(/\s+([.,])/g, '$1');
 
 describe('publik dagbok: utkast, kontosparande och integritet', () => {
 	it('visar skrivytan utan konto och förklarar lokal lagring och dess begränsningar', () => {
@@ -54,11 +55,13 @@ describe('publik dagbok: utkast, kontosparande och integritet', () => {
 		expect(body).not.toContain('Du kan läsa om funktionen utan att logga in');
 	});
 
-	it('förklarar system- och leverantörsbehandling utan absoluta åtkomstlöften', () => {
+	it('beskriver dagboksinlägg utan absoluta åtkomstlöften och länkar till policyn', () => {
 		const body = render(Page).body;
-		expect(body).toContain('MittPsykes system och Supabase');
-		expect(body).toContain('AI-reflektioner är valfria och kräver separat samtycke');
+		expect(plainText(body)).toContain(
+			'Dina dagboksinlägg är inte offentliga. Hur uppgifterna lagras och behandlas beskriver vi i integritetspolicyn.'
+		);
 		expect(body).toContain('href="/integritet"');
+		expect(body).not.toContain('MittPsykes system och Supabase');
 		// Kontrollerade tidigare även /blogg/kvallasangest. Den sidan är borttagen
 		// och redirectar till kvällsguiden, så bara dagbokssidan är kvar att vakta.
 		expect(body).not.toMatch(/ingen annan kan läsa|ingen kan se|endast du|ingen tredje part|skickas aldrig|helt anonym|Nej\. Dina dagboksinlägg är privata för dig/i);

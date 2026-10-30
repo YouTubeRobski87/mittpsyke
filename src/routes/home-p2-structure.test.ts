@@ -103,7 +103,7 @@ describe('Startsidans P2-struktur', () => {
 		);
 		expect(steps).toEqual([
 			['Skriv.', 'Några ord eller en hel sida. Det finns inget rätt sätt.'],
-			['Spara det du vill.', 'Utan konto stannar texten i din webbläsare. Med konto sparar du det du väljer.'],
+			['Spara det du vill.', 'Du kan börja skriva utan konto. Då stannar texten i den här webbläsaren. Med konto kan du spara det du väljer och följa mönster över tid.'],
 			['Kom tillbaka när du vill.', 'Ingenting börjar om för att det gått en tid.'],
 			['Se vad som återkommer.', 'Dina egna ord sammanställda — ingen mätning av hur du sköter dig.']
 		]);

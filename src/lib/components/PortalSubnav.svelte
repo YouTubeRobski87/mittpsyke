@@ -50,3 +50,14 @@
 		</div>
 	</header>
 </div>
+
+<style>
+	/* Från desktopbrytpunkten visar sidhuvudet redan samma destinationslänkar.
+	   Under den finns portalraden kvar som en direkt, tangentbordsnavigerbar väg
+	   mellan kärnsidorna. */
+	@media (min-width: 1024px) {
+		.auth-subnav {
+			display: none;
+		}
+	}
+</style>

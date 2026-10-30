@@ -144,7 +144,7 @@
 				</li>
 				<li>
 					<h3>Spara det du vill.</h3>
-					<p>Utan konto stannar texten i din webbläsare. Med konto sparar du det du väljer.</p>
+					<p>Du kan börja skriva utan konto. Då stannar texten i den här webbläsaren. Med konto kan du spara det du väljer och följa mönster över tid.</p>
 				</li>
 				<li>
 					<h3>Kom tillbaka när du vill.</h3>

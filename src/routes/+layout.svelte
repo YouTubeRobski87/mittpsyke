@@ -19,7 +19,7 @@
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Search } from 'lucide-svelte';
+	import { PenLine, Search } from 'lucide-svelte';
 	import { DIARY_ENTRIES_CHANGED_EVENT } from '$lib/diary-events';
 	import {
 		ANALYTICS_CONSENT_EVENT,
@@ -829,6 +829,7 @@
 						}}
 						aria-current={isActive(mobileWriteNavItem.href) ? 'page' : undefined}
 					>
+						<PenLine size={15} aria-hidden="true" />
 						{mobileWriteNavItem.label}
 					</a>
 				</nav>
@@ -1481,6 +1482,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		gap: 0.38rem;
 		min-height: 2.75rem;
 		padding: 0 0.48rem;
 		border-radius: 999px;
@@ -1528,6 +1530,11 @@
 		border-color: rgba(var(--primary-dark-rgb), 0.8);
 		background: var(--primary-dark-soft-hover);
 		color: var(--primary-dark);
+	}
+
+	.mobile-quick-link-write:focus-visible {
+		outline: 3px solid rgba(var(--primary-rgb), 0.34);
+		outline-offset: 2px;
 	}
 
 	.mobile-menu-link-write {
