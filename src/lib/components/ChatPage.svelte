@@ -155,6 +155,7 @@
 		category={category}
 		initialMessages={initialMessages}
 		initialConversationId={initialConversationId}
+		initialConsentMissing={page.data.chatConsentHint === 'missing'}
 	/>
 </div>
 
