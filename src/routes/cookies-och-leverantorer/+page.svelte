@@ -83,7 +83,7 @@
 		</section>
 		<section class="provider-card" aria-label="Render">
 			<h3 class="text-base font-semibold mt-0 mb-2">Render</h3>
-			<p>Kör MittPsykes server.</p>
+			<p>Kör MittPsykes server. Servern körs inom EU (Frankfurt).</p>
 			<p>Kan behandla tekniska loggar som behövs för drift och säkerhet.</p>
 		</section>
 		<section class="provider-card" aria-label="Cloudflare">
@@ -95,11 +95,13 @@
 			<h3 class="text-base font-semibold mt-0 mb-2">OpenAI</h3>
 			<p>AI-funktioner som chatt, chattens AI-minne, reflektioner och vissa dagboksrelaterade svar.</p>
 			<p>Kan behandla text du skickar till AI-funktioner. Hur länge OpenAI behåller den texten styrs av OpenAI:s egna villkor för deras API.</p>
+			<p>Företaget har sitt säte i USA, och texten kan behandlas utanför EU.</p>
 		</section>
 		<section class="provider-card" aria-label="Anthropic">
 			<h3 class="text-base font-semibold mt-0 mb-2">Anthropic</h3>
 			<p>Den guidade dagboken och vissa sammanfattningar använder Claude för att skapa frågor och dagbokstext.</p>
 			<p>Kan behandla den text du aktivt skickar efter att du har gett samtycke för funktionen.</p>
+			<p>Företaget har sitt säte i USA, och texten kan behandlas utanför EU.</p>
 		</section>
 		<section class="provider-card" aria-label="Soro">
 			<h3 class="text-base font-semibold mt-0 mb-2">Soro</h3>

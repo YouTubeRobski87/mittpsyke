@@ -92,6 +92,25 @@ describe('trust pages', () => {
 		expect(ahrefsRow).not.toContain('Berättigat intresse');
 	});
 
+	// Punkt 6 i helhetsanalysen 2026-10-31. Bara bekräftade platser står med:
+	// Render och Supabase i Frankfurt (Robbans skärmbilder från båda
+	// tjänsterna). För AI-leverantörerna står bara att de har säte i USA och
+	// att texten kan behandlas utanför EU, ingen överföringsgrund som inte är
+	// bekräftad.
+	it('names confirmed locations and says AI text may leave the EU', () => {
+		const source = projectFile('./cookies-och-leverantorer/+page.svelte');
+		const card = (name: string) => {
+			const start = source.indexOf(`aria-label="${name}"`);
+			return source.slice(start, source.indexOf('</section>', start));
+		};
+		expect(card('Render')).toContain('Servern körs inom EU (Frankfurt).');
+		expect(card('Supabase')).toContain('Data lagras inom EU (Frankfurt).');
+		for (const provider of ['OpenAI', 'Anthropic']) {
+			expect(card(provider)).toContain('Företaget har sitt säte i USA, och texten kan behandlas utanför EU.');
+		}
+		expect(source).not.toMatch(/Data Privacy Framework|standardavtalsklausuler|nolllagring|Zero Data Retention/i);
+	});
+
 	// Publika förtroendesidor ska tala om användarens data, inte om hur
 	// kodbasen granskats.
 	it('keeps internal audit register off the public trust pages', () => {
