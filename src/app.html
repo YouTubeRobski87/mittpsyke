@@ -1,16 +1,7 @@
 <!doctype html>
-<!-- MittPsyke har bara mörkt tema. Klassen och color-scheme står statiskt här,
-     så att sidan är mörk redan innan CSS och JS har laddats. -->
 <html lang="sv" class="dark" style="color-scheme: dark; background-color: #11151d">
   <head>
     <meta charset="utf-8" />
-    <!-- interactive-widget=resizes-content: utan den krymper Android Chrome bara
-         den VISUELLA viewporten när tangentbordet öppnas, medan layoutviewporten
-         och därmed dvh/vh behåller hela skärmhöjden. Chatten trodde då att den
-         hade 800 px att fördela när bara ~475 px syntes, och webbläsaren fick
-         lösa det genom att scrolla fram textfältet - vilket skar av innehållet
-         ovanför. Med resizes-content krymper layouten på riktigt och flexkolumnen
-         fördelar den yta som faktiskt syns. -->
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, interactive-widget=resizes-content"
@@ -24,13 +15,8 @@
     <link rel="icon" type="image/png" href="/logo-192.png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="%sveltekit.assets%/site.webmanifest" />
-    <!-- Brödtextens typsnitt hämtas direkt, inte först när fonts.css lästs. Annars
-         byts reservtypsnittet ut efter första målningen och text bryts om, vilket
-         flyttade chattens samtyckesruta (CLS). Bara den vikt som används överallt. -->
     <link rel="preload" href="%sveltekit.assets%/assets/recursive/fonts/recursive-t/RecursiveT-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="%sveltekit.assets%/assets/recursive/fonts.css" />
-    <!-- Mörk grund före första målningen: gäller även medan app.css laddas och
-         på sidor som ännu inte hydrerats. Samma färg som --background i app.css. -->
     <style>
       html,
       body {
@@ -40,8 +26,6 @@
       }
     </style>
     <script>
-      // Användarens accentfärg (Personalisera portalen) före första målningen.
-      // Ljust/mörkt väljs inte här: MittPsyke är alltid mörkt.
       (function() {
         try {
           var theme = localStorage.getItem('mittpsyke:theme');
@@ -65,11 +49,6 @@
         } catch(e) {}
       })();
     </script>
-    <!-- TILLFÄLLIGT (okt 2026): Similarwebs GA-koppling letar efter GA-taggen i sidans
-         HTML. Riktiga gtag laddas först efter samtycke (src/lib/analytics.ts), så den
-         hittas inte. type="text/plain" gör att blocket aldrig körs och att inget
-         anrop görs till Google – det står bara här som text. Ta bort när Similarweb
-         har godkänt kopplingen. -->
     <script type="text/plain" id="ga-verification" data-src="https://www.googletagmanager.com/gtag/js?id=G-8XG01VCB5N">
       gtag('config', 'G-8XG01VCB5N');
     </script>
