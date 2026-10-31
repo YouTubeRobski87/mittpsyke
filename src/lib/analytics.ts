@@ -83,11 +83,11 @@ type LandingPageEventPayload = {
 
 const PUBLIC_GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID;
 export const GA_MEASUREMENT_ID = PUBLIC_GA_MEASUREMENT_ID;
-export const PUBLIC_VERCEL_ENV = env.PUBLIC_VERCEL_ENV || '';
 const PRODUCTION_HOSTS = new Set(['mittpsyke.se', 'www.mittpsyke.se']);
+// Statistik körs bara i webbläsaren och bara på produktionsdomänen. På servern
+// är den alltid avstängd; all spårning sker efter hydrering och samtycke.
 export const ANALYTICS_ENABLED =
-	Boolean(GA_MEASUREMENT_ID) &&
-	(browser ? PRODUCTION_HOSTS.has(window.location.hostname) : PUBLIC_VERCEL_ENV === 'production');
+	Boolean(GA_MEASUREMENT_ID) && browser && PRODUCTION_HOSTS.has(window.location.hostname);
 const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
 const FUNNEL_LANDING_VIEW_SESSION_KEY = 'mittpsyke:funnel-landing-page-viewed';
 const AUTH_FUNNEL_SESSION_KEY = 'mittpsyke:auth-funnel-started';
