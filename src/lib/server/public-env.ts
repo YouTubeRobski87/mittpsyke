@@ -9,8 +9,7 @@ export const ALLOWED_PUBLIC_ENV_KEYS: readonly string[] = [
 	'PUBLIC_GA_MEASUREMENT_ID',
 	'PUBLIC_SITE_URL',
 	'PUBLIC_SUPABASE_ANON_KEY',
-	'PUBLIC_SUPABASE_URL',
-	'PUBLIC_VERCEL_ENV'
+	'PUBLIC_SUPABASE_URL'
 ];
 
 /** Namnen (aldrig värdena) på PUBLIC_*-variabler som inte står i listan. */
