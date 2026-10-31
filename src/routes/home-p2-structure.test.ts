@@ -4,8 +4,9 @@ import { describe, expect, it } from 'vitest';
 import Page from './+page.svelte';
 
 // P2 för den publika startsidan: färre sektioner, tydligare ordning.
-// Hero -> tidigt produktlöfte -> kärnloop och mönsterexempel -> den levande världen -> platsen
-// (+ chatten som rad) -> Kvällstugan -> guider -> trygghet -> avslutande CTA.
+// Hero -> kärnloop och mönsterexempel -> vad kontot ger -> Kvällstugan -> guider ->
+// trygghet -> avslutande CTA. Kontosektionen ersätter sedan 2026-10-31 de tre
+// sektionerna "Över tid", "Din värld stannar inte här" och "Så ser platsen ut".
 // Testerna läser den renderade sidan, så ordningen och rubrikerna är det
 // besökaren faktiskt får.
 // Sveltes scope-klasser (svelte-xxxx) tas bort så att testerna läser
@@ -30,10 +31,8 @@ const sectionOf = (id: string) => {
 describe('Startsidans P2-struktur', () => {
 	it('har sektionerna i den nya ordningen', () => {
 		expect(h2s).toEqual([
-			'Du får återblickar och ser din personliga värld växa tillsammans med din resa.',
 			'Fyra steg, och sedan börjar det om',
-			'Din värld stannar inte här',
-			'Så ser platsen ut',
+			'En lugn plats att komma tillbaka till',
 			'Kvällsincheckning',
 			'Guider när du behöver ord',
 			'Vad det här är och inte är',
@@ -41,44 +40,38 @@ describe('Startsidans P2-struktur', () => {
 		]);
 	});
 
-	it('binder tidigt ihop återblickar, mönster och den personliga världen utan en CTA', () => {
-		const promise = sectionOf('journey-promise-title');
-		expect(body.indexOf('aria-labelledby="journey-promise-title"')).toBeGreaterThan(
-			body.indexOf('aria-labelledby="hero-title"')
+	it('samlar vad kontot ger i en lugn sektion efter kärnloopen', () => {
+		const account = sectionOf('account-title');
+		expect(body.indexOf('aria-labelledby="how-title"')).toBeLessThan(
+			body.indexOf('aria-labelledby="account-title"')
 		);
-		expect(body.indexOf('aria-labelledby="journey-promise-title"')).toBeLessThan(
-			body.indexOf('aria-labelledby="how-title"')
+		expect(body.indexOf('aria-labelledby="account-title"')).toBeLessThan(
+			body.indexOf('aria-labelledby="evening-title"')
 		);
-		expect(promise).toContain(
-			'Du får återblickar och ser din personliga värld växa tillsammans med din resa.'
+		expect(account).toContain('Med konto');
+		const places = [...account.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(([, text]) =>
+			text.replace(/\s+/g, ' ').trim()
 		);
-		expect(promise).toContain(
-			'När du väljer att spara kan du se tillbaka senare och upptäcka vad som återkommer.'
-		);
-		expect(promise).toContain('progress-cabin-lakeside-afternoon-800.webp');
-		expect(promise).not.toContain('<a ');
+		expect(places).toEqual([
+			'Mitt Hem samlar det du har sparat.',
+			'I Kvällstugan gör du Kvällsincheckningen: stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.',
+			'Balder är en lugn följeslagare som finns med i Mitt Hem och Kvällstugan. Ingen streak, ingen prestation — bara en närvaro som följer platsen över tid.',
+			'I Framsteg ser du teman som återkommer, i dina egna ord.'
+		]);
+		expect(account).toMatch(/class="cta-secondary account-cta" href="\/register"[^>]*>Skapa konto<\/a>/);
+		expect(account).toContain('progress-lake-day-800.webp');
+		expect(account).not.toContain('progress-cabin-lakeside-afternoon');
 	});
 
-	it('introducerar världen först efter kärnloopen och mönsterexemplet', () => {
-		const world = sectionOf('living-world-title');
-		expect(body.indexOf('aria-labelledby="how-title"')).toBeLessThan(
-			body.indexOf('aria-labelledby="living-world-title"')
-		);
-		expect(world).toContain('Mer än en chatt');
-		expect(world).toContain('Det du ser idag är bara början.');
-		expect(world).toContain('<ol class="world-journey"');
-		for (const chapter of ['Den levande världen', 'Lugn och återhämtning', 'Din utveckling']) {
-			expect(world).toContain(chapter);
+	// Punkt 2 och 3 i helhetsanalysen 2026-10-31: stugbilden fanns flera gånger
+	// och listorna hade emojis och spelord som skavde mot löftet om att man
+	// inte behöver prestera.
+	it('visar stugbilden en gång och har inga emojis eller spelord', () => {
+		expect(body.match(/<img[^>]*src="\/images\/scenes\/progress-cabin-lakeside-afternoon-800\.webp"/g)).toHaveLength(1);
+		expect(body).not.toMatch(/\p{Extended_Pictographic}/u);
+		for (const phrase of ['Det du ser idag är bara början', 'Utforska din värld', 'Din värld stannar inte här']) {
+			expect(body).not.toContain(phrase);
 		}
-		for (const concreteExample of [
-			'Lugn musik',
-			'Meditation och övningar',
-			'Sovläge',
-			'Mående och mönster över tid'
-		]) {
-			expect(world).toContain(concreteExample);
-		}
-		expect(world).toContain('href="/register">Utforska din värld</a>');
 	});
 
 	it('har en hel rubrikhierarki utan tomma eller dubblerade rubriker', () => {
@@ -92,7 +85,7 @@ describe('Startsidans P2-struktur', () => {
 	it('lägger kärnloopen direkt efter heron med fyra steg i en ordnad lista', () => {
 		const how = sectionOf('how-title');
 		expect(body.indexOf('aria-labelledby="how-title"')).toBeLessThan(
-			body.indexOf('aria-labelledby="map-title"')
+			body.indexOf('aria-labelledby="account-title"')
 		);
 		expect(how).toContain(
 			'I ett anteckningsblock ligger det du skrivit kvar, men du får själv leta upp det. Här möter'
@@ -114,34 +107,6 @@ describe('Startsidans P2-struktur', () => {
 	// och vid beforeunload. Formuleringen får inte komma tillbaka.
 	it('lovar inte att osparad text försvinner när fliken stängs', () => {
 		expect(body).not.toContain('försvinner när du stänger fliken');
-	});
-
-	it('har platskartan efter stegen och chatten som en fjärde, kort rad utanför ställena', () => {
-		const map = sectionOf('map-title');
-		expect(map).toContain('Här finns Mitt Hem, Kvällstugan och Balder.');
-		expect([...map.matchAll(/<li>/g)]).toHaveLength(3);
-		for (const place of ['Mitt Hem', 'Kvällstugan', 'Balder, vår enda följeslagare']) {
-			expect(map).toContain(`<h3>${place}</h3>`);
-		}
-		// Kortvarianten av Kvällsincheckningens copy.
-		expect(map.replace(/\s+/g, ' ')).toContain(
-			'Här gör du Kvällsincheckningen: stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.'
-		);
-		// Det finns inget val av följeslagare längre.
-		expect(map.replace(/\s+/g, ' ')).toContain(
-			'Balder är en lugn följeslagare som finns med i Mitt Hem och Kvällstugan. Ingen streak, ingen prestation — bara en närvaro som följer platsen över tid.'
-		);
-		expect(map).not.toContain('Ett djur du väljer själv');
-		expect(body).not.toContain('Inget måste besvaras');
-		const tool = map.slice(map.indexOf('place-map-tool'));
-		expect(tool).toContain('<h3>Anonym chatt</h3>');
-		expect(tool).toContain(
-			'Vill du hellre prata fram tankarna finns en anonym chattfunktion, utan konto. Du kan använda MittPsyke helt utan den.'
-		);
-		// Chatten är en rad i kartan, inte en egen sektion och ingen länk som
-		// drar produktberättelsen mot /chat.
-		expect(tool).not.toContain('href=');
-		expect(body).not.toContain('Hjälp att sortera, när du vill ha det');
 	});
 
 	it('har exakt en trygghetssektion med avsändare, gränser, akutvägar och integritetslänk', () => {
@@ -184,7 +149,10 @@ describe('Startsidans P2-struktur', () => {
 			'id="difference-title"',
 			'id="over-time-title"',
 			'id="behind-title"',
-			'id="chat-title"'
+			'id="chat-title"',
+			'id="journey-promise-title"',
+			'id="living-world-title"',
+			'id="map-title"'
 		]) {
 			expect(body).not.toContain(removed);
 		}

@@ -44,12 +44,9 @@ describe('Den publika startsidans hero', () => {
 		expect(hero).not.toContain('/register');
 		expect(hero).not.toContain('REGISTER_DESTINATION');
 		expect(publicHome.match(/href=\{REGISTER_DESTINATION\}/g)).toHaveLength(2);
-		const livingWorldStart = publicHome.indexOf('aria-labelledby="living-world-title"');
-		const livingWorld = publicHome.slice(
-			livingWorldStart,
-			publicHome.indexOf('</section>', livingWorldStart)
-		);
-		expect(livingWorld).toContain('Utforska din värld');
+		const accountStart = publicHome.indexOf('aria-labelledby="account-title"');
+		const account = publicHome.slice(accountStart, publicHome.indexOf('</section>', accountStart));
+		expect(account).toContain('href={REGISTER_DESTINATION}>Skapa konto</a>');
 		const closing = publicHome.slice(publicHome.indexOf('aria-labelledby="closing-title"'));
 		expect(closing).toContain('href={REGISTER_DESTINATION}');
 		expect(closing).toContain('Skapa konto och följ över tid');
@@ -57,12 +54,6 @@ describe('Den publika startsidans hero', () => {
 			'Med konto kan du samla det du väljer att spara och se vad som återkommer eller förändras.'
 		);
 		expect(publicHome).not.toContain('Skapa en plats för att spara det du skriver');
-	});
-
-	it('behåller rubriken för den levande världen i sidans fortsatta berättelse', () => {
-		expect(publicHome).toContain(
-			'<h2 id="living-world-title" tabindex="-1">Din värld stannar inte här</h2>'
-		);
 	});
 
 	// Formuleringen är kontrollerad mot diary-draft.ts: anonyma utkast skrivs

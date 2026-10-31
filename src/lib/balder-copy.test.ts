@@ -42,7 +42,6 @@ function balderCopy(path: string): string[] {
 describe('Balder presenteras likadant överallt', () => {
 	it('använder kortvarianten på startsidan', () => {
 		const home = read(PAGES.home);
-		expect(home).toContain('<h3>Balder, vår enda följeslagare</h3>');
 		expect(home).toContain(SHORT);
 	});
 

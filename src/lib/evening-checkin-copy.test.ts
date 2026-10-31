@@ -30,7 +30,7 @@ describe('Kvällsincheckningens copy', () => {
 
 	it('använder den korta varianten i kort och ingångar', () => {
 		expect(signedInHome).toContain(`<small>${SHORT}</small>`);
-		expect(home).toContain(`Här gör du Kvällsincheckningen: ${SHORT.charAt(0).toLowerCase()}${SHORT.slice(1)}`);
+		expect(home).toContain(`I Kvällstugan gör du Kvällsincheckningen: ${SHORT.charAt(0).toLowerCase()}${SHORT.slice(1)}`);
 	});
 
 	it('förklarar funktionen med den längre varianten på startsidan', () => {
