@@ -1557,6 +1557,9 @@
 						</div>
 					</section>
 
+					<!-- Måendekortet och dagens fråga delar rad från 1024 px. Under det är
+					     omslaget display: contents, så mobilvyn är oförändrad. -->
+					<div class="diary-prompt-row">
 					<section class="auth-panel progress-handoff" aria-labelledby="progress-handoff-title">
 						<div class="progress-handoff-icon" aria-hidden="true">
 							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1633,6 +1636,7 @@
 							{dailyQuestionCtaLabel}
 						</button>
 					</section>
+					</div>
 
 					{#if showWriteEditor}
 					<section
@@ -3904,9 +3908,75 @@
 		}
 	}
 
-	@media (min-width: 1400px) {
-		.diary-entries {
+	.diary-prompt-row {
+		display: contents;
+	}
+
+	/* Desktop från 1024 px (lg): bara översikten blir bredare. Allt under
+	 * brytpunkten ser ut som tidigare. Den delade .auth-shell i app.css rörs
+	 * inte, bredden gäller bara sidor som har dagbokens layout. */
+	@media (min-width: 1024px) {
+		:global(.auth-page:has(.diary-layout) .auth-shell) {
+			max-width: 1240px;
+		}
+
+		.diary-prompt-row {
+			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
+			align-items: stretch;
+			gap: 0.85rem;
+		}
+
+		/* I halv bredd får knappen en egen rad, som i mobilvyn. */
+		.progress-handoff {
+			grid-template-columns: auto minmax(0, 1fr);
+			align-content: start;
+		}
+
+		.progress-handoff-action {
+			grid-column: 1 / -1;
+			justify-self: start;
+		}
+
+		.daily-question-panel {
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: flex-start;
+		}
+
+		/* Korten sträcks inte till grannkortets höjd. Det var det som gav
+		 * tomma luckor mellan texten och knapparna. */
+		.diary-entries {
+			align-items: start;
+		}
+
+		.diary-entry {
+			align-content: start;
+		}
+
+		.entry-excerpt {
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 3;
+			line-clamp: 3;
+			overflow: hidden;
+		}
+
+		/* Skrivfältet och läsvyn behåller en smal läsbredd, cirka 70 tecken. */
+		.diary-editor-panel,
+		.linked-entry {
+			width: 100%;
+			max-width: 70ch;
+		}
+
+		.diary-entry--expanded > * {
+			max-width: 70ch;
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.diary-entries {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
 		}
 	}
 </style>
