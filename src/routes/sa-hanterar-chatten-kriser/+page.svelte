@@ -112,10 +112,12 @@
 		</li>
 		<li>Servern sparar inte meddelandet eller säkerhetssvaret bland chattens sparade meddelanden.</li>
 		<li>
-			Båda visas ändå i chattfönstret. Är du inloggad ingår de i chatthistoriken som chattfönstret
-			sparar i din webbläsare och i ditt konto, precis som dina andra meddelanden. Du kan ta bort den
-			med Rensa historik. Som gäst sparas chatten inte i någon beständig historik. Den finns bara kvar
-			tills du laddar om sidan eller lämnar chatten.
+			Båda visas ändå i chattfönstret. Är du inloggad sparas chatthistoriken i din webbläsare.
+			Chattfönstret försöker även synka historiken till ditt konto. Om synkningen misslyckas finns den
+			lokala kopian kvar, men den senaste versionen av historiken har då inte sparats i kontot. Du kan
+			använda Rensa historik för att ta bort den lokala kopian och försöka radera den från kontot. Som
+			gäst sparas chatten inte i någon beständig historik. Den finns bara kvar tills du laddar om sidan
+			eller lämnar chatten.
 		</li>
 		<li>
 			Du får ett fast svar som hänvisar till 112, Mind Självmordslinjen 90101, 1177 och

@@ -67,16 +67,49 @@ describe('/sa-hanterar-chatten-kriser', () => {
 		);
 		const guestReturn = persist.indexOf('if (!userId) return;');
 		expect(guestReturn).toBeGreaterThan(0);
-		expect(persist.indexOf('writeLocalHistory(normalized, userId)')).toBeGreaterThan(guestReturn);
-		expect(persist.indexOf(".from('chat_history').upsert(")).toBeGreaterThan(guestReturn);
+		const localWrite = persist.indexOf('writeLocalHistory(normalized, userId)');
+		const upsert = persist.indexOf(".from('chat_history').upsert(");
+		expect(localWrite).toBeGreaterThan(guestReturn);
+		expect(upsert).toBeGreaterThan(guestReturn);
 		expect(chatWindow).toMatch(/void persistHistory\(messages, persistenceUserId\)/);
 		expect(chatWindow).toContain('Rensa historik');
+
+		// Synken till kontot är ett försök: den lokala kopian skrivs före upsert,
+		// och ett fel fångas och lämnar den lokala kopian kvar (skrivs igen).
+		expect(localWrite).toBeLessThan(upsert);
+		const syncFailure = persist.slice(persist.indexOf('} catch (error) {', upsert));
+		expect(syncFailure).toMatch(/^\} catch \(error\) \{[\s\S]*?writeLocalHistory\(normalized, userId\);/);
+		expect(syncFailure).not.toMatch(/removeStorageValue|writeLocalHistory\(\[\]/);
+
+		// Rensa historik tar bort den lokala kopian och försöker radera i kontot;
+		// ett fel vid raderingen loggas men stoppar inte rensningen.
+		const clear = chatWindow.slice(
+			chatWindow.indexOf('async function clearHistory()'),
+			chatWindow.indexOf('async function clearHistory()') + 1200
+		);
+		expect(clear).toContain('writeLocalHistory([], persistenceUserId);');
+		expect(clear).toContain("await deletePersistedChatHistory(persistenceUserId, 'clear-history');");
+		const remove = chatWindow.slice(
+			chatWindow.indexOf('async function deletePersistedChatHistory('),
+			chatWindow.indexOf('async function loadPersistedHistory(')
+		);
+		expect(remove).toContain(".from('chat_history')");
+		expect(remove).toMatch(/if \(error\) \{\s*logChatCleanupError/);
 
 		// Sidan beskriver båda flödena och upprepar inte det felaktiga påståendet.
 		expect(page).not.toContain('sparas inte i samtalshistoriken, inte heller om du är inloggad');
 		expect(page).toContain('Servern sparar inte meddelandet eller säkerhetssvaret');
-		expect(page).toMatch(/Är du inloggad ingår de i chatthistoriken[\s\S]*i din webbläsare och i ditt konto/);
-		expect(page).toMatch(/Som gäst sparas chatten inte i någon beständig historik/);
+		expect(page).toContain('Är du inloggad sparas chatthistoriken i din webbläsare.');
+		expect(page).toMatch(/Chattfönstret försöker även synka historiken till ditt\s+konto\./);
+		expect(page).toMatch(/Om synkningen misslyckas finns den\s+lokala kopian kvar/);
+		expect(page).toMatch(/ta bort den lokala kopian och försöka radera den från kontot/);
+		expect(page).toMatch(/Som\s+gäst sparas chatten inte i någon beständig historik/);
+
+		// Varken den ursprungliga eller den första rättade formuleringen får komma
+		// tillbaka: båda påstod något om kontot som inte alltid stämmer.
+		const flat = page.replace(/\s+/g, ' ');
+		expect(flat).not.toContain('sparas inte i samtalshistoriken, inte heller om du är inloggad');
+		expect(flat).not.toContain('sparar i din webbläsare och i ditt konto');
 	});
 
 	it('beskriver att krismeddelandet kan följa med som sammanhang till AI:n senare', () => {
