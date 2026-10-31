@@ -71,10 +71,19 @@
 					 längre ner, alltså långt efter att beslutet redan fattats.
 					 Formuleringen är kontrollerad mot implementationen: anonyma
 					 utkast skrivs bara till localStorage i diary-draft.ts och
-					 skickas aldrig till servern. -->
+					 skickas aldrig till servern. Gästchatten skickas till OpenAI
+					 via /api/chat men skrivs inte till Supabase, localStorage
+					 eller loggar (persistHistory i ChatWindow.svelte avbryter
+					 utan inloggning; gästgrenen returnerar conversationId: null
+					 och loggar bara roller och textlängder). -->
 				<p class="cta-micro">
 					Skriv anonymt i din dagbok eller chatta direkt utan konto. Dagboksutkast sparas lokalt i
-					din webbläsare; gästchatten sparas inte.
+					din webbläsare.
+				</p>
+				<p class="cta-micro">
+					Din gästchatt sparas inte på MittPsyke.
+					När du skickar ett meddelande överförs texten till OpenAI för att behandlas och generera ett svar.
+					MittPsyke sparar inte innehållet i din gästchatt.
 				</p>
 				<p class="product-path" aria-label="Så fungerar det: skriv, spara det du vill och se vad som återkommer.">
 					<span aria-hidden="true">Skriv → spara det du vill → se vad som återkommer</span>
