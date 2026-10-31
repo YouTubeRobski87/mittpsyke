@@ -43,6 +43,25 @@ describe('trust pages', () => {
 		);
 	});
 
+	// Snabböverblicken ska säga samma sak som avsnittet längre ner: det är en
+	// fast regel på servern som avgör, före anropet till AI-modellen. Den
+	// gamla meningen "innan någon AI kopplas in" kunde läsas som att AI aldrig
+	// får se meddelandet, vilket inte stämmer när det följer med som sammanhang.
+	it('describes the crisis check as a fixed server rule in the quick overview', () => {
+		const source = projectFile('./ansvarsfull-ai/+page.svelte');
+		const overview = source.slice(source.indexOf('class="ai-quick"'), source.indexOf('</section>'));
+		expect(overview).not.toContain('innan någon AI kopplas in');
+		expect(overview).toContain('fångas av en fast regel på servern innan AI-modellen anropas');
+	});
+
+	// Krissidan förklarar spärren och vad den inte fångar. Den ska gå att hitta
+	// från varje sida, inte bara via en länk längre ner på /ansvarsfull-ai.
+	it('links the crisis page from the site footer', () => {
+		const layout = projectFile('./+layout.svelte');
+		const footer = layout.slice(layout.indexOf('<footer class="site-footer'), layout.indexOf('</footer>'));
+		expect(footer).toContain('<a href="/sa-hanterar-chatten-kriser" class="footer-link">Så hanterar chatten kriser</a>');
+	});
+
 	it('describes guest chat as unstored on the responsible-AI page', () => {
 		const source = projectFile('./ansvarsfull-ai/+page.svelte');
 		expect(source).toContain('dataflowCopy.guestChat.retention');

@@ -31,7 +31,7 @@
 	<section class="ai-quick" aria-label="Snabb överblick">
 		<h2 class="text-lg font-semibold mt-0 mb-2">Snabb överblick</h2>
 		<ul>
-			<li><strong>Säkerhet först.</strong> Tecken på akut kris fångas upp innan någon AI kopplas in.</li>
+			<li><strong>Säkerhet först.</strong> Tydliga tecken på akut kris fångas av en fast regel på servern innan AI-modellen anropas.</li>
 			<li><strong>Ingen diagnos.</strong> AI:n ställer inte diagnos och ger inga medicinska beslut.</li>
 			<li><strong>Mänskligt ansvar.</strong> Redaktionen, inte AI:n, ansvarar för innehåll och gränser.</li>
 		</ul>
