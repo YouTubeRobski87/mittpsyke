@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { NEUTRAL_CATEGORY, normalizeCategory } from '$lib/ai/chat-categories';
+import { positioningCopy } from '$lib/positioning-copy';
 
 const projectFile = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const aboutPage = projectFile('./om-mittpsyke/+page.svelte');
@@ -89,9 +90,13 @@ describe('MittPsykes produktberättelse och dataflöden', () => {
 	});
 
 	it('beskriver inte den lokala dagboken som AI-driven i global metadata', () => {
-		expect(layout).toContain('självreflektion, dagbok och AI-baserat samtalsstöd');
-		expect(layout).toContain('dagbok, reflektion, mönster över tid och AI-chatt');
+		// Den globala beskrivningen kommer från positioningCopy: dagboken först,
+		// chatten som ett valfritt tillägg, aldrig en AI-driven dagbok.
+		expect(layout.match(/description: positioningCopy\.structuredData/g)).toHaveLength(2);
+		expect(positioningCopy.structuredData).toContain('Kravlös digital dagbok');
+		expect(positioningCopy.structuredData).toContain('Med valfri AI-chatt');
 		expect(layout).not.toContain('AI-driven dagbok');
+		expect(positioningCopy.structuredData).not.toMatch(/AI-driven/i);
 	});
 
 	it('behåller tydliga vård- och säkerhetsgränser', () => {

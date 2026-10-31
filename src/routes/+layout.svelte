@@ -30,6 +30,7 @@
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';
 	import { canonicalUrl, PUBLIC_SITE_ORIGIN } from '$lib/seo';
+	import { positioningCopy } from '$lib/positioning-copy';
 	import { page } from '$app/state';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
@@ -175,7 +176,7 @@
 		name: 'MittPsyke',
 		url: PUBLIC_SITE_ORIGIN,
 		email: PUBLIC_CONTACT_EMAIL,
-		description: 'Svensk plattform för självreflektion, dagbok och AI-baserat samtalsstöd.',
+		description: positioningCopy.structuredData,
 		logo: canonicalUrl('/logo.png'),
 		founder: {
 			'@type': 'Person',
@@ -189,7 +190,7 @@
 		'@type': 'WebApplication',
 		name: 'MittPsyke',
 		url: PUBLIC_SITE_ORIGIN,
-		description: 'Digitalt stöd för dagbok, reflektion, mönster över tid och AI-chatt på svenska',
+		description: positioningCopy.structuredData,
 		applicationCategory: 'HealthApplication',
 		inLanguage: 'sv',
 		offers: {
