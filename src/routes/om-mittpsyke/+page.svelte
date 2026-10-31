@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
+	import InBrief from '$lib/components/InBrief.svelte';
+	import { positioningCopy } from '$lib/positioning-copy';
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO, PUBLIC_POSTAL_ADDRESS } from '$lib/contact';
 	import { dataflowCopy } from '$lib/dataflow-copy';
 
@@ -19,8 +21,7 @@
 		'@type': 'AboutPage',
 		name: 'Om MittPsyke – en plats för dina egna ord över tid',
 		url: 'https://mittpsyke.se/om-mittpsyke',
-		description:
-			'MittPsyke är en lugn plats för att skriva, spara det du vill, komma tillbaka och se vad som återkommer i dina egna ord.',
+		description: positioningCopy.core,
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
@@ -36,6 +37,11 @@
 				ord över tid. Du behöver inte veta vad du vill säga, och du behöver inte prestera något.
 			</p>
 		</header>
+
+		<InBrief
+			lead={positioningCopy.core}
+			extra="MittPsyke drivs av Robban (Robert Claesson) i Sverige."
+		/>
 
 		<!-- 1. Varför MittPsyke finns -->
 		<section class="section" aria-labelledby="why-title">
