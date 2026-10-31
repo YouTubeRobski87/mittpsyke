@@ -1077,6 +1077,7 @@
 				<div class="footer-col">
 					<p class="footer-col-heading footer-col-heading--emergency">Vid akut läge</p>
 					<a href="tel:112" class="footer-link footer-emergency-link">Ring 112</a>
+					<a href="tel:90101" class="footer-link footer-emergency-link">Självmordslinjen 90101</a>
 					<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer" class="footer-link">Vårdråd 1177</a>
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="footer-link footer-emergency-link">Stödlinjer.se</a>
 					<div class="footer-company">

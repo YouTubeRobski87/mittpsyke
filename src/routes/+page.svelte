@@ -412,7 +412,8 @@
 				Tjänsten är svensk och byggd av Robert Claesson, som också driver Stödlinjer.se.
 			</p>
 			<p class="safety">
-				Vid akut fara: <a href="tel:112">112</a>. Vårdråd:
+				Vid akut fara: <a href="tel:112">112</a>. Tankar på självmord: Mind Självmordslinjen
+				<a href="tel:90101">90101</a>, dygnet runt. Vårdråd:
 				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>. Fler
 				stödlinjer:
 				<a href={SUPPORT_LINES_URL} target="_blank" rel="noopener noreferrer" onclick={() => trackHomeCta('bakom', 'stodlinjer', SUPPORT_LINES_URL)}>Stödlinjer.se</a>

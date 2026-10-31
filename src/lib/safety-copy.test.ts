@@ -11,6 +11,18 @@ const chatWindow = readFileSync(new URL('./components/ChatWindow.svelte', import
 const layout = readFileSync(new URL('../routes/+layout.svelte', import.meta.url), 'utf8');
 
 describe('generell trygghetscopy', () => {
+
+	// Mind Självmordslinjen ska nås direkt, utan omvägen via Stödlinjer.se:
+	// i sidfoten på varje sida, i startsidans trygghetssektion och i
+	// trygghetsremsan på kampanjsidorna. Samma nummer som krissvaren.
+	it('visar Mind Självmordslinjen 90101 i sidfoten, på startsidan och i trygghetsremsan', () => {
+		const homePage = readFileSync(new URL('../routes/+page.svelte', import.meta.url), 'utf8');
+		const footer = layout.slice(layout.indexOf('<footer class="site-footer'), layout.indexOf('</footer>'));
+		expect(footer).toContain('href="tel:90101"');
+		expect(homePage).toContain('href="tel:90101"');
+		expect(homeSafetyStrip).toContain('href="tel:90101"');
+		expect(CRISIS_RESPONSE).toContain('90101');
+	});
 	it('har en lugn och tydlig gräns för MittPsykes roll', () => {
 		expect(GENERAL_SAFETY_COPY).toBe(
 			'MittPsyke är ett stöd för reflektion i egen takt. Det ersätter inte vård eller behandling.'
