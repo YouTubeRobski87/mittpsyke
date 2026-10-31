@@ -41,13 +41,18 @@
 	<p class="opacity-80 leading-relaxed mb-3">
 		Varje meddelande du skickar i chatten kontrolleras först mot ett separat säkerhetslager som
 		letar efter tecken på akut kris. Den kontrollen är alltid det första som händer, oavsett vad du
-		skriver, och avgör svaret direkt utan att skicka meddelandet vidare till AI-modellen. Vid
-		tydliga krissignaler får du istället information om 112, 1177 och stödlinjer.se.
+		skriver. Vid tydliga krissignaler skickas meddelandet inte till AI-modellen för att skapa ett
+		svar. Du får istället ett fast säkerhetssvar med information om 112, 1177 och stödlinjer.se.
 	</p>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Det betyder att AI-modellen aldrig är den enda instansen mellan ett meddelande och ett
 		krissvar. Säkerhetskontrollen körs på servern och kan inte kringgås av hur AI:n väljer att
 		svara.
+	</p>
+	<p class="opacity-80 leading-relaxed mb-3">
+		När du skriver nästa gång skickar chattfönstret med upp till tio av de senaste meddelandena som
+		sammanhang, och då kan krismeddelandet och säkerhetssvaret följa med till AI-modellen. Det gäller
+		både gäster och inloggade.
 	</p>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Hur spärren fungerar i detalj, och vad den inte fångar, beskrivs på

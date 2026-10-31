@@ -24,6 +24,25 @@ describe('trust pages', () => {
 	// databasskrivning och med conversationId: null. Sidan påstod tidigare att
 	// samtalet "sparas separat som ett gästsamtal", vilket beskrev en arkitektur
 	// som tagits bort. Bind påståendet till den verifierade dataflödestexten.
+	// Krisspärren skickar inte det träffade meddelandet till AI-modellen, men
+	// ChatWindow skickar med upp till tio senaste meddelanden (CHAT_CONTEXT_LIMIT)
+	// som sammanhang i nästa anrop. Sidan får inte påstå att meddelandet aldrig
+	// når AI-modellen.
+	it('describes crisis messages as possible AI context on the responsible-AI page', () => {
+		const source = projectFile('./ansvarsfull-ai/+page.svelte');
+		const text = source.replace(/\s+/g, ' ');
+		expect(text).not.toMatch(/utan att skicka meddelandet vidare till AI-modellen/);
+		expect(text).toContain('skickas meddelandet inte till AI-modellen för att skapa ett svar');
+		expect(text).toContain('upp till tio av de senaste meddelandena som sammanhang');
+		expect(text).toContain('krismeddelandet och säkerhetssvaret följa med till AI-modellen');
+		expect(text).toContain('både gäster och inloggade');
+
+		expect(projectFile('../lib/state/chat-memory.ts')).toMatch(/CHAT_CONTEXT_LIMIT = 10;/);
+		expect(projectFile('../lib/components/ChatWindow.svelte')).toMatch(
+			/sanitizeChatMessages\(\s*messages,\s*CHAT_CONTEXT_LIMIT\s*\)/
+		);
+	});
+
 	it('describes guest chat as unstored on the responsible-AI page', () => {
 		const source = projectFile('./ansvarsfull-ai/+page.svelte');
 		expect(source).toContain('dataflowCopy.guestChat.retention');
