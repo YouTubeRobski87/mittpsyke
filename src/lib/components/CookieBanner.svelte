@@ -48,6 +48,12 @@
 		// innehållet i glipan under bannern.
 		const measure = () => {
 			const rect = element.getBoundingClientRect();
+			// Dold banner (se tangentbordsregeln i stilen) tar ingen plats. Utan
+			// det här skulle rect.top vara 0 och hela viewporten reserveras.
+			if (rect.height === 0) {
+				setBannerSpace(0);
+				return;
+			}
 			setBannerSpace(Math.max(0, window.innerHeight - rect.top));
 		};
 
@@ -131,6 +137,16 @@
 		color: hsl(var(--foreground));
 		font-size: 0.875rem;
 		box-shadow: 0 12px 32px rgb(0 0 0 / 0.45);
+	}
+
+	/* Med tangentbordet uppe i chatten (data-keyboard-open sätts bara där) döljs
+	 * bannern tills tangentbordet stängs. Den är fixerad i botten och låg annars
+	 * över textfältet, och dess reserverade yta (padding på .chat-input-extras)
+	 * kan inte krympas av flexlayouten - textfältet trycktes ut under kanten.
+	 * Inget val sparas: analys laddas fortfarande bara efter "Acceptera analys",
+	 * och bannern visas igen så fort tangentbordet stängs. */
+	:global(html[data-keyboard-open='true']) .cookie-banner {
+		display: none;
 	}
 
 	.cookie-banner-text {
