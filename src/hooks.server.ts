@@ -58,7 +58,9 @@ export const legacyPageRedirects: Record<string, string> = {
 	'/samtalsstod-vid-trauma': '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma',
 	'/ai': '/skriv',
 	'/b': '/chat/nedstamdhet',
-	'/e': '/chat/trauma'
+	'/e': '/chat/trauma',
+	// Vanlig gissning på villkorssidan. Villkoren finns på /kontakt-och-villkor.
+	'/villkor': '/kontakt-och-villkor'
 }
 
 function getLegacyGuideRedirectTarget(pathname: string): string | null {

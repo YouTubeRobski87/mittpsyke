@@ -103,7 +103,7 @@ describe('Startsidans P2-struktur', () => {
 		);
 		expect(steps).toEqual([
 			['Skriv.', 'Några ord eller en hel sida. Det finns inget rätt sätt.'],
-			['Spara det du vill.', 'Utan konto stannar texten i din webbläsare. Med konto sparar du det du väljer.'],
+			['Spara det du vill.', 'Du kan börja skriva utan konto. Då stannar texten i den här webbläsaren. Med konto kan du spara det du väljer och följa mönster över tid.'],
 			['Kom tillbaka när du vill.', 'Ingenting börjar om för att det gått en tid.'],
 			['Se vad som återkommer.', 'Dina egna ord sammanställda — ingen mätning av hur du sköter dig.']
 		]);
@@ -198,7 +198,14 @@ describe('Startsidans P2-struktur', () => {
 		expect(hero).toContain(
 			'Skriv anonymt i din dagbok eller chatta direkt utan konto. Dagboksutkast sparas lokalt i'
 		);
-		expect(hero).toContain('din webbläsare; gästchatten sparas inte.');
+		expect(hero).toContain('din webbläsare.');
+		// Gästchatten lämnar webbläsaren: texten går till OpenAI men sparas inte av MittPsyke.
+		expect(hero).toContain('Din gästchatt sparas inte på MittPsyke.');
+		expect(hero).toContain(
+			'När du skickar ett meddelande överförs texten till OpenAI för att behandlas och generera ett svar.'
+		);
+		expect(hero).toContain('MittPsyke sparar inte innehållet i din gästchatt.');
+		expect(hero).not.toContain('gästchatten sparas inte.');
 		expect(hero).toContain('cabin-proof--scene');
 		expect(sectionOf('evening-title')).toContain('cabin-proof--card');
 	});

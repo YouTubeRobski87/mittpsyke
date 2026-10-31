@@ -19,7 +19,7 @@
 	import { getCachedTheme, getThemeColors, THEME_STORAGE_KEY } from '$lib/theme';
 	import CookieBanner from '$lib/components/CookieBanner.svelte';
 	import UserAvatar from '$lib/components/UserAvatar.svelte';
-	import { Search } from 'lucide-svelte';
+	import { PenLine, Search } from 'lucide-svelte';
 	import { DIARY_ENTRIES_CHANGED_EVENT } from '$lib/diary-events';
 	import {
 		ANALYTICS_CONSENT_EVENT,
@@ -828,6 +828,7 @@
 						}}
 						aria-current={isActive(mobileWriteNavItem.href) ? 'page' : undefined}
 					>
+						<PenLine size={15} aria-hidden="true" />
 						{mobileWriteNavItem.label}
 					</a>
 				</nav>
@@ -1053,6 +1054,7 @@
 					<a href="/om-mittpsyke" class="footer-link">Om tjänsten</a>
 					<a href="/om-skaparen" class="footer-link">Om skaparen</a>
 					<a href="/sa-fungerar-mittpsyke" class="footer-link">Så fungerar det</a>
+					<a href="/for-organisationer" class="footer-link">För organisationer</a>
 					<a href="/redaktionell-metod" class="footer-link">Redaktionell metod</a>
 					<a href="/ansvarsfull-ai" class="footer-link">Ansvarsfull AI</a>
 					<a href="/ansvar" class="footer-link">Ansvar</a>
@@ -1247,6 +1249,12 @@
 		color: inherit;
 	}
 
+	/* .footer-company är redan nedtonad. Utan detta multipliceras opaciteten
+	   med .footer-link och länkarna hamnar på 2,8:1 i kontrast. */
+	.footer-company .footer-link {
+		opacity: 1;
+	}
+
 	.footer-company a:hover {
 		opacity: 1;
 		text-decoration: underline;
@@ -1258,7 +1266,7 @@
 		border-top: 1px solid var(--layout-footer-border);
 		text-align: center;
 		font-size: 0.78rem;
-		opacity: 0.45;
+		opacity: 0.55;
 	}
 
 	.footer-emergency-link {
@@ -1480,6 +1488,7 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		gap: 0.38rem;
 		min-height: 2.75rem;
 		padding: 0 0.48rem;
 		border-radius: 999px;
@@ -1527,6 +1536,11 @@
 		border-color: rgba(var(--primary-dark-rgb), 0.8);
 		background: var(--primary-dark-soft-hover);
 		color: var(--primary-dark);
+	}
+
+	.mobile-quick-link-write:focus-visible {
+		outline: 3px solid rgba(var(--primary-rgb), 0.34);
+		outline-offset: 2px;
 	}
 
 	.mobile-menu-link-write {

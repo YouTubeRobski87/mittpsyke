@@ -69,14 +69,18 @@ describe('inloggad dagbok: ingång till guidad incheckning', () => {
 		expect(side).toContain('<DiaryCalendar');
 	});
 
-	// Startpanelen ska ligga först i huvudkolumnen, före "Ditt mående över tid".
+	// Startpanelen ska ligga först i huvudkolumnen, före den kompakta vägen till Framsteg.
 	// DOM-ordningen styr både desktop och mobil här, eftersom kolumnerna staplas.
-	it('startpanelen kommer före måendetidslinjen', () => {
+	it('startpanelen kommer före den kompakta Framsteg-länken', () => {
 		const startPanelIndex = source.indexOf('diary-paths--signed-in');
-		const moodTimelineIndex = source.indexOf('<DiaryMoodTimeline');
+		const progressHandoffIndex = source.indexOf('<section class="auth-panel progress-handoff"');
 
-		expect(moodTimelineIndex).toBeGreaterThan(-1);
-		expect(startPanelIndex).toBeLessThan(moodTimelineIndex);
+		expect(progressHandoffIndex).toBeGreaterThan(-1);
+		expect(startPanelIndex).toBeLessThan(progressHandoffIndex);
+		expect(source).not.toContain('<DiaryMoodTimeline');
+		expect(source).not.toContain("import DiaryMoodTimeline");
+		expect(source).toContain('Se registrerat mående, återkommande teman och förändringar i Framsteg.');
+		expect(source).toContain('href="/framsteg">Öppna Framsteg</a>');
 	});
 
 	// Ordning i panelen: Skriv fritt → Guidad incheckning → inspiration.

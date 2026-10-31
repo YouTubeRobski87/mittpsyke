@@ -15,7 +15,6 @@
 	import { DAILY_QUESTION_CONSENT_COPY } from '$lib/daily-question-consent-copy';
 	import MilestoneToast from '$lib/components/MilestoneToast.svelte';
 	import PortalSubnav from '$lib/components/PortalSubnav.svelte';
-	import DiaryMoodTimeline from '$lib/components/DiaryMoodTimeline.svelte';
 	import DiaryCalendar from '$lib/components/DiaryCalendar.svelte';
 	import LocalEntriesImportPrompt from '$lib/components/LocalEntriesImportPrompt.svelte';
 	import { confirmLocalTextSaved, type LocalDiaryEntry } from '$lib/diary-local-history';
@@ -1558,9 +1557,19 @@
 						</div>
 					</section>
 
-					<!-- Hämtar sin egen data från stats-timeline/heatmap, eftersom
-					     `entries` bara är den paginerade listan. -->
-					<DiaryMoodTimeline />
+					<section class="auth-panel progress-handoff" aria-labelledby="progress-handoff-title">
+						<div class="progress-handoff-icon" aria-hidden="true">
+							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M3 3v18h18" />
+								<path d="m7 16 4-4 3 3 5-6" />
+							</svg>
+						</div>
+						<div class="progress-handoff-copy">
+							<h2 id="progress-handoff-title">Ditt mående över tid</h2>
+							<p>Se registrerat mående, återkommande teman och förändringar i Framsteg.</p>
+						</div>
+						<a class="auth-button progress-handoff-action" href="/framsteg">Öppna Framsteg</a>
+					</section>
 
 					<section class="auth-panel daily-question-panel" aria-label="En fråga att skriva utifrån">
 						<div>
@@ -2435,6 +2444,50 @@
 	.diary-paths--signed-in .diary-start-secondary-action {
 		min-height: 2.75rem;
 		padding: 0.45rem 0.15rem;
+	}
+
+	.progress-handoff {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 0.85rem;
+		padding: 1rem 1.1rem;
+		background: hsl(var(--surface-soft));
+	}
+
+	.progress-handoff-icon {
+		display: grid;
+		width: 2.55rem;
+		height: 2.55rem;
+		place-items: center;
+		border-radius: 0.85rem;
+		background: var(--primary-soft);
+		color: var(--primary);
+	}
+
+	.progress-handoff-copy {
+		min-width: 0;
+	}
+
+	.progress-handoff-copy h2,
+	.progress-handoff-copy p {
+		margin: 0;
+	}
+
+	.progress-handoff-copy h2 {
+		font-size: 1.02rem;
+	}
+
+	.progress-handoff-copy p {
+		margin-top: 0.22rem;
+		font-size: 0.88rem;
+		line-height: 1.5;
+		color: hsl(var(--muted-foreground));
+	}
+
+	.progress-handoff-action {
+		min-height: 2.75rem;
+		white-space: nowrap;
 	}
 
 	:global(.dark) .diary-paths--signed-in {
@@ -3798,21 +3851,14 @@
 			min-width: 0;
 		}
 
-		:global(.mood-timeline-panel) {
-			gap: 0.55rem;
+		.progress-handoff {
+			grid-template-columns: auto minmax(0, 1fr);
+			padding: 0.85rem;
 		}
 
-		:global(.mood-timeline-panel .timeline-copy p),
-		:global(.mood-timeline-panel .timeline-summary),
-		:global(.mood-timeline-panel .timeline-note),
-		:global(.mood-timeline-panel .timeline-supportive),
-		:global(.mood-timeline-panel .timeline-empty p + p) {
-			display: none;
-		}
-
-		:global(.mood-timeline-panel .timeline-filter-button) {
-			padding: 0.32rem 0.58rem;
-			font-size: 0.78rem;
+		.progress-handoff-action {
+			grid-column: 1 / -1;
+			width: 100%;
 		}
 
 		:global(.diary-calendar) {

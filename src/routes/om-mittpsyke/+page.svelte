@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
-	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO, PUBLIC_POSTAL_ADDRESS } from '$lib/contact';
 	import { dataflowCopy } from '$lib/dataflow-copy';
 
 	// Sidan följer produktidentiteten: en plats för att skriva, återvända och se
@@ -73,7 +73,7 @@
 					<span class="step-number" aria-hidden="true">2</span>
 					<div>
 						<h3>Spara det du vill.</h3>
-						<p>Utan konto stannar texten i din webbläsare. Med konto sparar du det du väljer.</p>
+						<p>Du kan börja skriva utan konto. Då stannar texten i den här webbläsaren. Med konto kan du spara det du väljer och följa mönster över tid.</p>
 					</div>
 				</li>
 				<li>
@@ -186,6 +186,10 @@
 				<div class="company-row">
 					<dt>Organisationsnummer:</dt>
 					<dd>198712284895</dd>
+				</div>
+				<div class="company-row">
+					<dt>Adress:</dt>
+					<dd>{PUBLIC_POSTAL_ADDRESS}</dd>
 				</div>
 				<div class="company-row">
 					<dt>Verksamhetsform:</dt>

@@ -28,8 +28,8 @@
 
 	const heroBenefits = [
 		'Skriv av dig när tankarna snurrar',
-		'Följ mående och små skiften',
-		'Se mönster över tid'
+		'Hitta en fråga att börja med',
+		'Läs tidigare anteckningar när du vill'
 	];
 
 	// Standard-subtitle beror på variant
@@ -37,7 +37,7 @@
 			subtitle ??
 			(variant === 'diary-landing'
 				? dataflowCopy.anonymousDiary.short
-				: 'Skriv ett lokalt utkast utan konto. Med konto kan du spara dagboksinlägg och följa ditt mående över tid.')
+				: 'Du kan börja skriva utan konto. Då stannar texten i den här webbläsaren. Med konto kan du spara det du väljer och följa mönster över tid.')
 	);
 
 	function handleCtaClick() {
