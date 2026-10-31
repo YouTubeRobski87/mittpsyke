@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
-	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO, PUBLIC_POSTAL_ADDRESS } from '$lib/contact';
 	import { dataflowCopy } from '$lib/dataflow-copy';
 </script>
 
@@ -76,6 +76,7 @@
 		<ul class="opacity-80 leading-relaxed list-none space-y-1.5 text-sm">
 			<li><strong>Företag:</strong> MittPsyke (Enskild näringsverksamhet)</li>
 			<li><strong>Organisationsnummer:</strong> 198712284895</li>
+			<li><strong>Adress:</strong> {PUBLIC_POSTAL_ADDRESS}</li>
 			<li><strong>Grundare:</strong> Robert Claesson</li>
 			<li><strong>E-post:</strong> <a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a></li>
 		</ul>
@@ -503,6 +504,7 @@
 	<ul class="opacity-80 leading-relaxed mb-3 list-none space-y-1.5">
 		<li><a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a></li>
 		<li>MittPsyke, Org.nr: 198712284895</li>
+		<li>{PUBLIC_POSTAL_ADDRESS}</li>
 	</ul>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Vi strävar efter att svara inom 30 dagar.
