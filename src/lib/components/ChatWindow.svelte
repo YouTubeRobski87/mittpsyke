@@ -31,7 +31,7 @@
 		sanitizeChatMessages
 	} from '$lib/state/chat-memory';
 	import { supabase } from '$lib/supabase';
-	import { onMount, tick } from 'svelte';
+	import { onMount, tick, untrack } from 'svelte';
 	import type { ChatMessage } from '$lib/types';
 	import type { Session } from '@supabase/supabase-js';
 
@@ -46,11 +46,14 @@
 	let {
 		category,
 		initialMessages = [],
-		initialConversationId = null
+		initialConversationId = null,
+		initialConsentMissing = false
 	}: {
 		category: string;
 		initialMessages?: ChatMessage[];
 		initialConversationId?: string | null;
+		/** Servern vet redan att samtycke saknas (gäst utan samtyckescookie). */
+		initialConsentMissing?: boolean;
 	} = $props();
 
 	let messages = $state<ChatMessage[]>([]);
@@ -68,7 +71,9 @@
 	// Blir sant när servern har svarat på samtyckesfrågan (eller efter en
 	// reservtid). Förhindrar att samtyckesrutan blinkar upp för den som redan
 	// har samtyckt. Låser aldrig upp chatten - det gör bara hasSensitiveDataConsent.
-	let consentStatusKnown = $state(false);
+	// Startar som sant när servern redan vet att samtycke saknas, så att rutan
+	// finns i den serverrenderade HTML:en och inte flyttar sidan efter laddning.
+	let consentStatusKnown = $state(untrack(() => initialConsentMissing));
 	let conversationId = $state<string | null>(null);
 	let historyNoticeVisible = $state(false);
 	let persistenceReady = $state(false);
@@ -1513,7 +1518,8 @@
 		align-items: center;
 		min-height: 2.75rem;
 		font-size: 0.74rem;
-		color: rgba(15, 23, 42, 0.48);
+		/* Diskret men läsbar: minst 4,5:1 mot bakgrunden (WCAG 1.4.3). */
+		color: rgba(15, 23, 42, 0.68);
 		text-decoration: underline;
 		text-underline-offset: 2px;
 		background: none;
@@ -1701,7 +1707,11 @@
 	}
 
 	:global(.dark) .human-support-button {
-		color: rgba(226, 232, 240, 0.38);
+		color: rgba(226, 232, 240, 0.6);
+	}
+
+	:global(.dark) .human-support-button:hover {
+		color: rgba(226, 232, 240, 0.85);
 	}
 
 	:global(.dark) .human-support-button:hover {

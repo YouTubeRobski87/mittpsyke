@@ -74,7 +74,11 @@
     url('./fonts/recursive-t/RecursiveT-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  /* Brödtexten: optional i stället för swap. Typsnittet förladdas i app.html
+     och används när det hinner fram före första målningen. Annars behålls
+     reservtypsnittet på den sidvisningen, så att texten inte bryts om och
+     flyttar sidan (CLS). Nästa sida använder det cachade typsnittet. */
+  font-display: optional;
 }
 
 @font-face {

@@ -244,6 +244,12 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			priority: '0.3'
 		},
 		{
+			path: '/sa-hanterar-chatten-kriser',
+			lastmod: getContentLastmod('src/routes/sa-hanterar-chatten-kriser/+page.svelte', LEGAL_LASTMOD),
+			changefreq: 'yearly',
+			priority: '0.3'
+		},
+		{
 			path: '/tillganglighet',
 			lastmod: getContentLastmod('src/routes/tillganglighet/+page.svelte', LEGAL_LASTMOD),
 			changefreq: 'yearly',

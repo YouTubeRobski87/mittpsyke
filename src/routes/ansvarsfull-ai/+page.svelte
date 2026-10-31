@@ -49,6 +49,10 @@
 		krissvar. Säkerhetskontrollen körs på servern och kan inte kringgås av hur AI:n väljer att
 		svara.
 	</p>
+	<p class="opacity-80 leading-relaxed mb-3">
+		Hur spärren fungerar i detalj, och vad den inte fångar, beskrivs på
+		<a href="/sa-hanterar-chatten-kriser" class="underline underline-offset-2">Så hanterar chatten kriser</a>.
+	</p>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Vad AI-modellen gör och inte gör</h2>
 	<p class="opacity-80 leading-relaxed mb-3">

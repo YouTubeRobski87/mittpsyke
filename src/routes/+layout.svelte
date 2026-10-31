@@ -1249,6 +1249,12 @@
 		color: inherit;
 	}
 
+	/* .footer-company är redan nedtonad. Utan detta multipliceras opaciteten
+	   med .footer-link och länkarna hamnar på 2,8:1 i kontrast. */
+	.footer-company .footer-link {
+		opacity: 1;
+	}
+
 	.footer-company a:hover {
 		opacity: 1;
 		text-decoration: underline;
@@ -1260,7 +1266,7 @@
 		border-top: 1px solid var(--layout-footer-border);
 		text-align: center;
 		font-size: 0.78rem;
-		opacity: 0.45;
+		opacity: 0.55;
 	}
 
 	.footer-emergency-link {

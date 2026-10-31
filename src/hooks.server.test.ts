@@ -68,3 +68,21 @@ describe('legacyPathRedirects - gamla /dashboard', () => {
 		}
 	});
 });
+
+describe('legacyPathRedirects - /villkor', () => {
+	it('redirectar /villkor och /villkor/ permanent till /kontakt-och-villkor', async () => {
+		for (const pathname of ['/villkor', '/villkor/']) {
+			const resolve = vi.fn(async () => new Response('unused'));
+			await expect(
+				legacyPathRedirects({ event: requestEvent(pathname), resolve } as never)
+			).rejects.toMatchObject({ status: 301, location: '/kontakt-och-villkor' });
+			expect(resolve, pathname).not.toHaveBeenCalled();
+		}
+	});
+
+	it('rör inte /kontakt-och-villkor', async () => {
+		const resolve = vi.fn(async () => new Response('ok'));
+		await legacyPathRedirects({ event: requestEvent('/kontakt-och-villkor'), resolve } as never);
+		expect(resolve).toHaveBeenCalledTimes(1);
+	});
+});
