@@ -10,6 +10,8 @@
 	//                      rate limit och AI-anrop)
 	//   stödpanelerna      $lib/ai/safety.ts, ChatWindow.svelte
 	//   dagboken           routes/api/diary/{reflect,checkin-reflection,insights/summary}
+	//   chatthistoriken    ChatWindow.svelte (persistHistory: localStorage och
+	//                      chat_history för inloggade, inget för gäster)
 	// Ändras spärren ska sidan ändras i samma PR. Se crisis-page.test.ts.
 </script>
 
@@ -102,8 +104,19 @@
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Vad som händer vid en träff</h2>
 	<ul class="opacity-80 leading-relaxed mb-3 list-disc pl-6 space-y-2">
-		<li>Meddelandet skickas inte till AI-modellen.</li>
-		<li>Meddelandet sparas inte i samtalshistoriken, inte heller om du är inloggad.</li>
+		<li>
+			Meddelandet skickas inte till AI-modellen för att skapa ett svar. När du skriver nästa gång
+			skickar chattfönstret med upp till tio av de senaste meddelandena som sammanhang, och då kan
+			krismeddelandet och säkerhetssvaret följa med till AI-modellen. Det gäller både gäster och
+			inloggade.
+		</li>
+		<li>Servern sparar inte meddelandet eller säkerhetssvaret bland chattens sparade meddelanden.</li>
+		<li>
+			Båda visas ändå i chattfönstret. Är du inloggad ingår de i chatthistoriken som chattfönstret
+			sparar i din webbläsare och i ditt konto, precis som dina andra meddelanden. Du kan ta bort den
+			med Rensa historik. Som gäst sparas chatten inte i någon beständig historik. Den finns bara kvar
+			tills du laddar om sidan eller lämnar chatten.
+		</li>
 		<li>
 			Du får ett fast svar som hänvisar till 112, Mind Självmordslinjen 90101, 1177 och
 			Stödlinjer.se. Gäller det risk mot någon annan hänvisar svaret till 112, 1177 och Stödlinjer.se.
