@@ -10,9 +10,13 @@ export const positioningCopy = {
 	/** Kärnmeningen. Används nästan ordagrant i "I korthet"-rutorna. */
 	core:
 		'MittPsyke är en kravlös digital dagbok på svenska. Du skriver i din egen takt, och med tiden visar MittPsyke vad som återkommer i dina egna ord. Det finns inga streaks eller poäng, och ingenting börjar om om du har varit borta.',
-	/** Avgränsningen ska alltid stå nära kärnmeningen. */
+	/**
+	 * Avgränsningen ska alltid stå nära kärnmeningen. Samma hänvisningar som
+	 * startsidan: 90101 bara för tankar på självmord, övrigt stöd till 1177 och
+	 * stodlinjer.se.
+	 */
 	boundary:
-		'MittPsyke är inte vård eller akuthjälp. Vid akut fara, ring 112. Behöver du prata med någon, ring Självmordslinjen på 90101.',
+		'MittPsyke är inte vård eller akuthjälp. Vid akut fara, ring 112. Vid tankar på självmord, ring Mind Självmordslinjen på 90101, dygnet runt. Vårdråd får du på 1177, och fler stödlinjer finns på stodlinjer.se.',
 	/** Kort beskrivning för strukturerad data (Organization, WebApplication). */
 	structuredData:
 		'Kravlös digital dagbok på svenska för självreflektion: skriv i din egen takt och se vad som återkommer i dina egna ord. Med valfri AI-chatt. Inte vård.'
