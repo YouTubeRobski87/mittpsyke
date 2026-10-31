@@ -41,7 +41,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	return {
 		title: 'Dagbok och reflektionsverktyg för ditt mående',
 		description:
-			'Ett lugnt dagboksverktyg för ditt mående. Skriv, gör en kvällsincheckning och se vad som återkommer över tid, med eller utan konto. Inte vård eller akuthjälp.',
+			'En kravlös digital dagbok för ditt mående. Skriv, gör en kvällsincheckning och se vad som återkommer över tid, utan streaks eller poäng. Inte vård eller akuthjälp.',
 		isSignedInHome: false
 	};
 };

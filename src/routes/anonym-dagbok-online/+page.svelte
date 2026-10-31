@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import DiaryHero from '$lib/components/DiaryHero.svelte';
+	import InBrief from '$lib/components/InBrief.svelte';
 	import { dataflowCopy } from '$lib/dataflow-copy';
 </script>
 
@@ -32,6 +33,9 @@
 
 <div class="page">
 	<div class="page-container">
+		<InBrief
+			lead={`Skriv anonymt i en kravlös digital dagbok. ${dataflowCopy.anonymousDiary.short}`}
+		/>
 
 		<section class="section">
 			<h2>När du bara vill skriva av dig</h2>
