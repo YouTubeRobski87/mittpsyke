@@ -17,7 +17,8 @@
 		<li class="safety-item">
 			<p class="safety-label">Vid akut läge</p>
 			<p class="safety-copy">
-				<a href="tel:112">Ring 112</a>, kontakta
+				<a href="tel:112">Ring 112</a>, Självmordslinjen
+				<a href="tel:90101">90101</a>, kontakta
 				<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer">1177</a>
 				eller se
 				<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">stödlinjer</a>.
