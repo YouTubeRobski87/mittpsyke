@@ -180,3 +180,50 @@ describe('introtexten syns helt ovanför samtyckesrutan på mobil', () => {
 		expect(consentGate).toMatch(/\.consent-actions\s*\{[^}]*position:\s*sticky;[^}]*bottom:\s*0/);
 	});
 });
+
+/**
+ * Tom chatt efter samtycke på låga skärmar (320×568 och lägre). Länk, snabbval
+ * och röstpanel tog ~280 px och listan fick 27-47 px, så introtexten klipptes.
+ * Medan chatten är tom blir chattytan en enda skrollyta med textfältet fast i
+ * botten. Med tangentbordet uppe går textfältet före introtexten.
+ */
+describe('introtexten syns helt i en tom chatt efter samtycke på mobil', () => {
+	const mobileBlock = chatWindowCode.slice(chatWindowCode.indexOf('@media (max-width: 768px)'));
+
+	it('gäller bara tom chatt utan samtyckesruta', () => {
+		expect(chatWindowCode).toContain(
+			'class:empty-chat-view={!consentGateVisible && messages.length === 0}'
+		);
+	});
+
+	it('låter listan ta minst sin innehållshöjd och chattytan skrolla', () => {
+		expect(mobileBlock).toMatch(/\.empty-chat-view\s*\{[^}]*overflow-y:\s*auto/);
+		expect(mobileBlock).toMatch(/\.empty-chat-view \.chat-messages\s*\{[^}]*flex:\s*1 0 auto/);
+		expect(mobileBlock).toMatch(
+			/\.empty-chat-view \.chat-input-area,\s*\.empty-chat-view \.chat-input-extras\s*\{[^}]*flex:\s*0 0 auto;[^}]*overflow:\s*visible/
+		);
+	});
+
+	it('håller AI-raden överst och textfältet i botten', () => {
+		expect(mobileBlock).toMatch(
+			/\.empty-chat-view \.ai-notice\s*\{[^}]*position:\s*sticky;[^}]*top:\s*0;[^}]*z-index:\s*31/
+		);
+		expect(mobileBlock).toMatch(
+			/\.empty-chat-view \.composer-row\s*\{[^}]*position:\s*sticky;[^}]*bottom:\s*0/
+		);
+	});
+
+	it('låter textfältet gå före introtexten med tangentbordet uppe', () => {
+		const kb = ":global(html[data-keyboard-open='true']) .empty-chat-view";
+		expect(mobileBlock).toContain(`${kb} {\n\t\t\toverflow-y: hidden;`);
+		expect(mobileBlock).toMatch(
+			/html\[data-keyboard-open='true'\]\) \.empty-chat-view \.chat-messages\s*\{[^}]*flex:\s*1 1 auto;[^}]*min-height:\s*0;[^}]*overflow-y:\s*auto/
+		);
+		expect(mobileBlock).toMatch(
+			/html\[data-keyboard-open='true'\]\) \.empty-chat-view \.chat-input-extras\s*\{[^}]*overflow-y:\s*auto/
+		);
+		expect(mobileBlock).toMatch(
+			/html\[data-keyboard-open='true'\]\) \.empty-chat-view \.composer-row\s*\{[^}]*position:\s*static/
+		);
+	});
+});
