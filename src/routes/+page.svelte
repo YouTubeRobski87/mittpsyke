@@ -102,35 +102,8 @@
 		</div>
 	</section>
 
-	<!-- 2. Ett tidigt, stilla produktlöfte som binder ihop återblickar,
-		 mönster och den levande världen. Scenen är ett befintligt Framsteg-
-		 motiv, inte en ny eller frikopplad marknadsillustration. -->
-	<section class="home-section journey-promise-section" aria-labelledby="journey-promise-title">
-		<div class="home-inner journey-promise-inner">
-			<div class="journey-promise-copy">
-				<p class="section-kicker">Över tid</p>
-				<h2 id="journey-promise-title">
-					Du får återblickar och ser din personliga värld växa tillsammans med din resa.
-				</h2>
-				<p>När du väljer att spara kan du se tillbaka senare och upptäcka vad som återkommer.</p>
-			</div>
-			<figure class="journey-promise-visual">
-				<img
-					srcset="/images/scenes/progress-cabin-lakeside-afternoon-800.webp 800w, /images/scenes/progress-cabin-lakeside-afternoon-1200.webp 1200w, /images/scenes/progress-cabin-lakeside-afternoon.webp 1672w"
-					sizes="(max-width: 899px) calc(100vw - 2.5rem), 48vw"
-					src="/images/scenes/progress-cabin-lakeside-afternoon-800.webp"
-					alt="En stilla sjö, en stuga och växtlighet som visar hur den personliga världen kan utvecklas över tid."
-					width="1672"
-					height="941"
-					loading="lazy"
-					decoding="async"
-				/>
-			</figure>
-		</div>
-	</section>
-
-	<!-- 3. Kärnloopen kommer direkt efter det tidiga produktlöftet, innan den levande världen
-		 introduceras. Ersätter de två tidigare sektionerna "Skillnaden mot
+	<!-- 2. Kärnloopen kommer direkt efter heron, före kontosektionen.
+		 Ersätter de två tidigare sektionerna "Skillnaden mot
 		 ett anteckningsblock" och "Efter ett tag syns mönstren", som sa halva
 		 berättelsen var. Stegen är kontrollerade mot produkten: steg 2 säger vad
 		 som gäller utan konto (GuestQuickEntry autosparar till localStorage,
@@ -173,157 +146,49 @@
 		</div>
 	</section>
 
-	<!-- 4. Det personliga och levande lagret runt kärnloopen. De tre delarna är
-		 en sammanhängande resa, inte en feature-lista: platsen lever, där finns
-		 återhämtning, och det användaren sparar går att följa. -->
-	<section class="home-section living-world-section" aria-labelledby="living-world-title">
-		<div class="home-inner">
-			<div class="living-world-intro">
-				<p class="section-kicker">Mer än en chatt</p>
-				<h2 id="living-world-title" tabindex="-1">Din värld stannar inte här</h2>
-				<p>
-					Med ett konto öppnas fler platser, verktyg och upplevelser. Här ser du några av
-					miljöerna som väntar och hur de hör ihop med reflektion och återhämtning.
-				</p>
-				<p class="living-world-promise">Det du ser idag är bara början.</p>
+	<!-- 3. Vad kontot ger. Ersätter de tidigare sektionerna "Över tid", "Din
+		 värld stannar inte här" och "Så ser platsen ut", som tillsammans
+		 introducerade för många begrepp för en förstagångsbesökare. Platserna
+		 står här med en rad var, utan emojis eller spelord. Bilden är en annan
+		 än heroens, så stugbilden från eftermiddagen syns bara en gång. -->
+	<section class="home-section journey-promise-section" aria-labelledby="account-title">
+		<div class="home-inner journey-promise-inner">
+			<div class="journey-promise-copy">
+				<p class="section-kicker">Med konto</p>
+				<h2 id="account-title">En lugn plats att komma tillbaka till</h2>
+				<p>Med ett konto kan du spara det du skriver och se tillbaka senare, i din egen takt.</p>
+				<!-- Platserna beskrivs med samma korta formuleringar som i resten av
+					 produkten (balder-copy.test.ts, evening-checkin-copy.test.ts). -->
+				<ul class="account-places" role="list">
+					<li>Mitt Hem samlar det du har sparat.</li>
+					<li>
+						I Kvällstugan gör du Kvällsincheckningen: stäm av kvällen och lägg undan det du inte
+						behöver bära vidare just nu.
+					</li>
+					<li>
+						Balder är en lugn följeslagare som finns med i Mitt Hem och Kvällstugan. Ingen streak,
+						ingen prestation — bara en närvaro som följer platsen över tid.
+					</li>
+					<li>I Framsteg ser du teman som återkommer, i dina egna ord.</li>
+				</ul>
+				<a class="cta-secondary account-cta" href={REGISTER_DESTINATION}>Skapa konto</a>
 			</div>
-
-			<ol class="world-journey" aria-label="En värld och resa som fortsätter">
-				<li class="journey-chapter journey-chapter--world">
-					<div class="journey-visual scene-pair" aria-label="Samma plats i dagsljus och på natten">
-					<img
-						src="/images/scenes/progress-lake-day-800.webp"
-						alt="Sjöscenen i dagsljus, med stugan och en person vid vattnet."
-						width="800"
-						height="450"
-						loading="lazy"
-						decoding="async"
-					/>
-					<img
-						src="/images/scenes/progress-lake-night-800.webp"
-						alt=""
-						width="800"
-						height="450"
-						loading="lazy"
-						decoding="async"
-					/>
-					</div>
-					<div class="journey-copy">
-						<p class="journey-step">01 · Den levande världen</p>
-						<h3>En plats att återvända till</h3>
-						<p>Ljuset skiftar, Balder rör sig och små detaljer kan växa fram i landskapet.</p>
-						<ul aria-label="Exempel från den levande världen">
-							<li>🍃 Miljön förändras</li>
-							<li>✨ Fler delar kan tillkomma</li>
-						</ul>
-					</div>
-				</li>
-
-				<li class="journey-chapter journey-chapter--rest">
-					<figure class="journey-visual">
-						<img
-							src="/images/scenes/cabin-interior-evening-resting-v1-800.webp"
-							alt="En varm och stilla stuginteriör vid sjön på kvällen."
-							width="800"
-							height="450"
-							loading="lazy"
-							decoding="async"
-						/>
-					</figure>
-					<div class="journey-copy">
-						<p class="journey-step">02 · Lugn och återhämtning</p>
-						<h3>Fler sätt att landa</h3>
-						<p>Välj det som passar stunden: lyssna, gör en övning eller var kvar i lugnet.</p>
-						<ul aria-label="Verktyg för lugn och återhämtning">
-							<li>🎵 Lugn musik</li>
-							<li>🧘 Meditation och övningar</li>
-							<li>🌙 Sovläge</li>
-						</ul>
-					</div>
-				</li>
-
-				<li class="journey-chapter journey-chapter--progress">
-					<figure class="journey-visual">
-						<img
-							src="/images/scenes/progress-cabin-lakeside-afternoon-800.webp"
-							alt="Stugan och sjön längre fram på dagen, med mer växtlighet runt platsen."
-							width="800"
-							height="450"
-							loading="lazy"
-							decoding="async"
-						/>
-					</figure>
-					<div class="journey-copy">
-						<p class="journey-step">03 · Din utveckling</p>
-						<h3>Se din egen resa över tid</h3>
-						<p>Det du väljer att spara kan hjälpa dig att se återkommande teman och förändringar.</p>
-						<ul aria-label="Sätt att följa sin utveckling">
-							<li>🌱 Framsteg utan poäng eller streaks</li>
-							<li>📈 Mående och mönster över tid</li>
-						</ul>
-					</div>
-				</li>
-			</ol>
-
-			<div class="living-world-action">
-				<a class="cta-primary" href={REGISTER_DESTINATION}>Utforska din värld</a>
-				<p>Skapa konto för att spara och hitta tillbaka till din plats.</p>
-			</div>
+			<figure class="journey-promise-visual">
+				<img
+					srcset="/images/scenes/progress-lake-day-800.webp 800w, /images/scenes/progress-lake-day-1200.webp 1200w, /images/scenes/progress-lake-day.webp 1672w"
+					sizes="(max-width: 899px) calc(100vw - 2.5rem), 48vw"
+					src="/images/scenes/progress-lake-day-800.webp"
+					alt="En stilla fjällsjö i morgonljus med en stuga vid stranden och en lägereld i förgrunden."
+					width="1672"
+					height="941"
+					loading="lazy"
+					decoding="async"
+				/>
+			</figure>
 		</div>
 	</section>
 
-	<!-- 4. Platsens karta. Ligger efter stegen så besökaren först vet hur det
-		 fungerar och sedan var det händer. -->
-	<section class="home-section" aria-labelledby="map-title">
-		<div class="home-inner">
-			<div class="narrow">
-				<!-- Mål för hero-ankaret. tabindex="-1" gör att tangentbordsfokus
-					 faktiskt flyttas hit vid hopp - utan den scrollar sidan men
-					 fokus står kvar i heron, så nästa Tab fortsätter från fel
-					 ställe. Avståndet till den sticky headern kommer från
-					 scroll-padding-top på html i app.css. -->
-				<h2 id="map-title" tabindex="-1">Så ser platsen ut</h2>
-				<p>
-					Här finns Mitt Hem, Kvällstugan och Balder. Du behöver inte lära dig något system: det handlar om att skriva,
-					svara kort när du orkar, och hitta tillbaka till det du lämnat.
-				</p>
-			</div>
-			<ul class="place-map">
-				<li>
-					<h3>Mitt Hem</h3>
-					<p>
-						Din utgångspunkt. Det du skrivit, hur du haft det, allt samlat på ett ställe. Härifrån
-						går du vidare dit du vill.
-					</p>
-				</li>
-				<li>
-					<h3>Kvällstugan</h3>
-					<!-- Kort varianten av Kvällsincheckningens copy. Detaljerna om stegen
-						 står i Kvällstugans egen sektion längre ner. -->
-					<p>
-						Här gör du Kvällsincheckningen: stäm av kvällen och lägg undan det du inte behöver bära
-						vidare just nu.
-					</p>
-				</li>
-				<li>
-					<h3>Balder, vår enda följeslagare</h3>
-					<p>
-						Balder är en lugn följeslagare som finns med i Mitt Hem och Kvällstugan.
-						Ingen streak, ingen prestation — bara en närvaro som följer platsen över tid.
-					</p>
-				</li>
-			</ul>
-			<!-- Chatten står utanför listan: den är ett verktyg, inte ett av de tre
-				 ställena, så "Tre ställen, inte fler" stämmer fortfarande. Den ligger
-				 som en fjärde rad i samma form, men får aldrig bära berättelsen. -->
-			<div class="place-map-tool">
-				<h3>Anonym chatt</h3>
-				<p>Vill du hellre prata fram tankarna finns en anonym chattfunktion, utan konto. Du kan använda MittPsyke helt utan den.</p>
-			</div>
-		</div>
-	</section>
-
-	<!-- 5. Kvällstugan -->
+	<!-- 4. Kvällstugan -->
 	<!-- id:t är målet för gästens "Kvällstugan" i mobilmenyn. -->
 	<section id="kvallstugan" class="home-section section-alt" aria-labelledby="evening-title">
 		<div class="home-inner evening-inner">
@@ -573,17 +438,25 @@
 		object-fit: cover;
 	}
 
-	/* En sammanhängande resa genom riktiga produktmiljöer. */
-	.living-world-section {
-		padding-block: clamp(2.5rem, 6vw, 4.75rem);
-		border-top: 1px solid rgba(148, 163, 184, 0.14);
-		background:
-			radial-gradient(circle at 80% 10%, rgba(77, 125, 111, 0.16), transparent 32rem),
-			var(--home-section-bg);
+	/* Platserna i kontosektionen: en rad var, samma vänsterlinje som stegen. */
+	.account-places {
+		display: grid;
+		gap: 0.6rem;
+		margin: 1.25rem 0 0;
+		padding: 0;
+		list-style: none;
 	}
 
-	.living-world-intro {
-		max-width: 47rem;
+	.account-places li {
+		padding-left: 0.9rem;
+		border-left: 1px solid rgba(148, 163, 184, 0.22);
+		color: var(--home-text-muted);
+		line-height: 1.6;
+	}
+
+	.account-cta {
+		display: inline-flex;
+		margin-top: 1.5rem;
 	}
 
 	.section-kicker,
@@ -594,107 +467,6 @@
 		font-weight: 750;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
-	}
-
-	.living-world-promise,
-	.home-section .living-world-promise {
-		color: var(--home-text-strong);
-		font-family: var(--font-heading);
-		font-weight: 700;
-	}
-
-	.world-journey {
-		display: grid;
-		gap: clamp(1.5rem, 4vw, 2.5rem);
-		margin: clamp(2rem, 5vw, 3.5rem) 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.journey-chapter {
-		display: grid;
-		gap: 1.25rem;
-		min-width: 0;
-		padding: 1rem;
-		border: 1px solid rgba(156, 203, 183, 0.16);
-		border-radius: 1.15rem;
-		background: rgba(10, 20, 30, 0.34);
-		box-shadow: 0 18px 40px rgba(4, 10, 18, 0.13);
-	}
-
-	.journey-visual {
-		min-width: 0;
-		margin: 0;
-		overflow: hidden;
-		border-radius: 0.8rem;
-	}
-
-	.journey-visual img {
-		display: block;
-		width: 100%;
-		height: auto;
-		aspect-ratio: 16 / 9;
-		object-fit: cover;
-	}
-
-	.scene-pair {
-		display: grid;
-		grid-template-columns: 3fr 2fr;
-		gap: 0.35rem;
-		background: #0a121c;
-	}
-
-	.scene-pair img {
-		height: 100%;
-	}
-
-	.journey-step,
-	.home-section .journey-step {
-		margin: 0 0 0.45rem;
-		color: #9ccbb7;
-		font-size: 0.75rem;
-		font-weight: 750;
-		letter-spacing: 0.07em;
-		text-transform: uppercase;
-	}
-
-	.journey-copy h3 {
-		margin: 0;
-		color: var(--home-text-strong);
-		font-family: var(--font-heading);
-		font-size: 1.2rem;
-	}
-
-	.journey-copy ul {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.45rem;
-		margin: 0.9rem 0 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.journey-copy li {
-		padding: 0.38rem 0.65rem;
-		border: 1px solid rgba(156, 203, 183, 0.18);
-		border-radius: 999px;
-		background: rgba(156, 203, 183, 0.07);
-		color: var(--home-text-soft);
-		font-size: 0.78rem;
-		line-height: 1.35;
-	}
-
-	.living-world-action {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.75rem 1rem;
-		margin-top: clamp(1.75rem, 4vw, 2.75rem);
-	}
-
-	.home-section .living-world-action p {
-		margin: 0;
-		font-size: 0.86rem;
 	}
 
 	.lead {
@@ -731,13 +503,6 @@
 	   html för den sticky headern, safe-area inräknad. En marginal här hade
 	   adderats ovanpå den och lagt rubriken dubbelt så långt ner. */
 
-	/* Programmatiska fokusmål, inte kontroller - ingen synlig ring behövs när
-	   fokus flyttas hit av ett ankare. Rubrikerna är aldrig nåbara med Tab. */
-	#living-world-title:focus,
-	#map-title:focus {
-		outline: none;
-	}
-
 	.place-map {
 		display: grid;
 		gap: clamp(1rem, 2.4vw, 1.5rem);
@@ -746,22 +511,13 @@
 		list-style: none;
 	}
 
-	/* Medvetet utan ikoner, siffror och ramar: korten ska läsas som tre platser,
-	   inte som en funktionslista. Linjen till vänster är hela markeringen. */
-	.place-map li,
-	.place-map-tool {
+	/* Medvetet utan ikoner och ramar. Linjen till vänster är hela markeringen. */
+	.place-map li {
 		padding-left: clamp(0.9rem, 1.6vw, 1.15rem);
 		border-left: 1px solid rgba(148, 163, 184, 0.22);
 	}
 
-	/* Chatten som fjärde rad: samma form som ställena, men under dem och i
-	   full bredd - ett verktyg bland flera, inte en fjärde plats. */
-	.place-map-tool {
-		margin-top: clamp(1rem, 2.4vw, 1.5rem);
-	}
-
-	.place-map h3,
-	.place-map-tool h3 {
+	.place-map h3 {
 		margin: 0;
 		font-family: var(--font-heading);
 		font-size: 1.05rem;
@@ -770,8 +526,7 @@
 		color: var(--home-text-strong);
 	}
 
-	.place-map p,
-	.place-map-tool p {
+	.place-map p {
 		margin: 0.45rem 0 0;
 		font-size: 0.95rem;
 		line-height: 1.65;
@@ -983,15 +738,6 @@
 	@media (min-width: 900px) {
 		.journey-promise-inner {
 			grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-		}
-
-		.world-journey {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
-			align-items: stretch;
-		}
-
-		.journey-chapter {
-			grid-template-rows: auto 1fr;
 		}
 
 		.hero-grid {
