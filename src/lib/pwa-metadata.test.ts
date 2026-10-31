@@ -62,6 +62,19 @@ describe('PWA-metadata', () => {
 		expect(appHtml).toContain('<link rel="icon" type="image/png" href="/logo-192.png" sizes="192x192" />');
 	});
 
+	// Webbläsare och sökmotorer frågar efter /favicon.ico oavsett länktaggarna.
+	// Utan filen blev det ett 404 i loggen för varje ny besökare.
+	it('har en favicon.ico i roten med små standardstorlekar', () => {
+		const icon = readFileSync(join(staticRoot, 'favicon.ico'));
+		// ICO-huvud: reserverat 0, typ 1 (ikon), antal bilder.
+		expect(icon.readUInt16LE(0)).toBe(0);
+		expect(icon.readUInt16LE(2)).toBe(1);
+		const count = icon.readUInt16LE(4);
+		const sizes = Array.from({ length: count }, (_, index) => icon[6 + index * 16] || 256);
+		expect(sizes).toEqual(expect.arrayContaining([16, 32]));
+		expect(icon.length).toBeLessThan(20_000);
+	});
+
 	it('introducerar ingen service worker eller cachelogik', () => {
 		expect(existsSync(join(workspace, 'src/service-worker.ts'))).toBe(false);
 		expect(existsSync(join(workspace, 'src/service-worker.js'))).toBe(false);
