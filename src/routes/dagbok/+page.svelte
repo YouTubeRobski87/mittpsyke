@@ -6,6 +6,7 @@
 
 	// Visa snabbantecknings-yta direkt om användaren kommer in via CTA
 	const showQuickEntry = $derived($page.url.searchParams.get('action') === 'new');
+	const privacyFaqQuestion = 'Kan någon annan läsa mina inlägg?';
 
 	const faqItems = [
 		{
@@ -14,9 +15,9 @@
 				'Ja. Du kan skriva ett lokalt utkast gratis utan konto. För att spara dagboksinlägg på ditt konto och följa ditt mående över tid behöver du logga in.'
 		},
 		{
-			question: 'Kan någon annan läsa mina inlägg?',
+			question: privacyFaqQuestion,
 			answer:
-				'Lokala utkast finns i din webbläsare och kan läsas av någon som har tillgång till den. Kontoinlägg behandlas av MittPsykes system och Supabase. AI-reflektioner är valfria och kräver separat samtycke. Läs mer i integritetspolicyn.'
+				'Dina dagboksinlägg är inte offentliga. Hur uppgifterna lagras och behandlas beskriver vi i integritetspolicyn.'
 		},
 		{
 			question: 'Behöver jag skapa ett konto?',
@@ -48,7 +49,7 @@
 <DiaryHero
 	variant="diary-main"
 	title="Dagbok för tankar, känslor och mönster"
-	lead="Skriv av dig, följ hur måendet skiftar och kom tillbaka när du vill förstå mer."
+	lead="Skriv av dig, hitta inspiration och kom tillbaka till tidigare anteckningar när du vill."
 	ctaLabel="Börja skriva"
 	secondaryHref="/framsteg"
 	secondaryLabel="Se framsteg"
@@ -64,13 +65,12 @@
 				<p class="eyebrow">Vad dagboken är</p>
 				<h2>En privat plats där tankar får landa</h2>
 				<p>
-					När du skriver får du en plats där tankar, känslor och återkommande mönster kan landa.
-					Med konto kan du spara dagboksinlägg. Du kan också välja att få AI-genererade
-					reflektioner efter separat samtycke.
+					Du kan börja skriva utan konto. Då stannar texten i den här webbläsaren. Med konto
+					kan du spara det du väljer och följa mönster över tid.
 				</p>
 				<p>
-					Med konto kan du också följa en enkel stämningslogg och se framsteg över tid. Det gör det lättare att
-					upptäcka vad som återkommer, vad som hjälper och hur ditt mående faktiskt förändras.
+					I <a href="/framsteg">Framsteg</a> kan du se registrerat mående, återkommande teman och
+					förändringar i det du valt att spara.
 				</p>
 			</article>
 
@@ -98,16 +98,16 @@
 					<p>Ge plats åt det som snurrar, utan krav på att formulera allt perfekt.</p>
 				</article>
 				<article class="benefit-card">
-					<h3>Följ ditt mående</h3>
-					<p>Lägg märke till hur dagar skiftar och vad som påverkar dig i vardagen.</p>
+					<h3>Hitta inspiration</h3>
+					<p>Ta hjälp av en lugn fråga när det är svårt att veta var du ska börja.</p>
 				</article>
 				<article class="benefit-card">
-					<h3>Se mönster över tid</h3>
-					<p>Upptäck återkommande teman, små framsteg och sådant som hjälper.</p>
+					<h3>Läs tidigare anteckningar</h3>
+					<p>Gå tillbaka till det du valt att spara när du vill läsa igen.</p>
 				</article>
 				<article class="benefit-card">
-					<h3>Privat och tryggt</h3>
-					<p>Du väljer själv vad du vill skriva. Läs om lagring, åtkomst och AI i <a href="/integritet">integritetspolicyn</a>.</p>
+					<h3>Hitta med kalendern</h3>
+					<p>Använd kalendern för att hitta sparade anteckningar från en viss dag.</p>
 				</article>
 			</div>
 		</section>
@@ -122,7 +122,14 @@
 				{#each faqItems as item}
 					<article class="faq-item">
 						<h3>{item.question}</h3>
-						<p>{item.answer}</p>
+						{#if item.question === privacyFaqQuestion}
+							<p>
+								Dina dagboksinlägg är inte offentliga. Hur uppgifterna lagras och behandlas beskriver vi i
+								<a href="/integritet">integritetspolicyn</a>.
+							</p>
+						{:else}
+							<p>{item.answer}</p>
+						{/if}
 					</article>
 				{/each}
 			</div>
