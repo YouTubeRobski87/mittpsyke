@@ -6,7 +6,7 @@ import { POSITIONING_TERM, positioningCopy } from '$lib/positioning-copy';
 
 // Nyckelsidorna ska beskriva MittPsyke med samma ord, "kravlös digital dagbok",
 // så att sökmotorer och AI-tjänster kan återge tjänsten korrekt. Avgränsningen
-// (inte vård, 112, 90101) ska alltid stå i samma ruta som beskrivningen.
+// (inte vård, 112, 90101 vid tankar på självmord, 1177, stodlinjer.se) ska alltid stå i samma ruta som beskrivningen.
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8');
 
@@ -31,6 +31,13 @@ describe('gemensam positionering', () => {
 		expect(positioningCopy.boundary).toContain('inte vård eller akuthjälp');
 		expect(positioningCopy.boundary).toContain('112');
 		expect(positioningCopy.boundary).toContain('90101');
+	});
+
+	it('hänvisar bara till Självmordslinjen vid tankar på självmord', () => {
+		expect(positioningCopy.boundary).toContain('Vid tankar på självmord, ring Mind Självmordslinjen på 90101');
+		expect(positioningCopy.boundary).not.toMatch(/prata med någon/i);
+		expect(positioningCopy.boundary).toContain('1177');
+		expect(positioningCopy.boundary).toContain('stodlinjer.se');
 	});
 
 	it('"I korthet" renderar sidans text tillsammans med avgränsningen', () => {
