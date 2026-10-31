@@ -129,3 +129,54 @@ describe('snabbvalen skapar ingen horisontell overflow', () => {
 		expect(chatWindowCode).toMatch(/\.starter-chip\s*\{[^}]*scroll-snap-align:\s*start/);
 	});
 });
+
+/**
+ * Samtyckesvyn på mobil. Meddelandelistan har flex-basis 0 och krympte till
+ * ~27 px bredvid samtyckesrutan, så introtexten ("AI-stödet kan hjälpa dig …")
+ * klipptes mitt i en rad. I samtyckesvyn utan meddelanden tar listan sin
+ * innehållshöjd och hela chattytan blir en enda skrollyta.
+ */
+describe('introtexten syns helt ovanför samtyckesrutan på mobil', () => {
+	const mobileBlock = chatWindowCode.slice(chatWindowCode.indexOf('@media (max-width: 768px)'));
+
+	it('markerar samtyckesvyn med samma villkor som visar ConsentGate', () => {
+		expect(chatWindowCode).toContain(
+			'const consentGateVisible = $derived(consentStatusKnown && !hasSensitiveDataConsent)'
+		);
+		expect(chatWindowCode).toContain(
+			'class:consent-intro-view={consentGateVisible && messages.length === 0}'
+		);
+		// Mallen visar rutan när status är känd och samtycke saknas.
+		expect(chatWindowCode).toMatch(
+			/\{#if !hasSensitiveDataConsent && !consentStatusKnown\}[\s\S]*?\{:else if !hasSensitiveDataConsent\}[\s\S]*?<ConsentGate/
+		);
+	});
+
+	it('låter listan ta sin innehållshöjd i stället för att klippa texten', () => {
+		expect(mobileBlock).toMatch(
+			/\.consent-intro-view \.chat-messages,\s*\.consent-intro-view \.chat-input-area,\s*\.consent-intro-view \.chat-input-extras\s*\{[^}]*flex:\s*0 0 auto;[^}]*overflow:\s*visible/
+		);
+	});
+
+	it('gör chattytan till enda skrollytan i samtyckesvyn', () => {
+		expect(mobileBlock).toMatch(/\.consent-intro-view\s*\{[^}]*overflow-y:\s*auto/);
+	});
+
+	it('håller AI-raden synlig ovanför inmatningsytan när vyn skrollar', () => {
+		// .chat-input-area har z-index: 30 i app.css.
+		expect(mobileBlock).toMatch(
+			/\.consent-intro-view \.ai-notice\s*\{[^}]*position:\s*sticky;[^}]*top:\s*0;[^}]*z-index:\s*31;[^}]*background:\s*hsl\(var\(--background\)\)/
+		);
+		expect(readFileSync(join(process.cwd(), 'src/app.css'), 'utf8')).toMatch(
+			/\.chat-input-area\s*\{[^}]*z-index:\s*30;/
+		);
+	});
+
+	it('behåller kryssrutan och knappen fasta i botten av samtyckesrutan', () => {
+		const consentGate = readFileSync(
+			join(process.cwd(), 'src/lib/components/ConsentGate.svelte'),
+			'utf8'
+		);
+		expect(consentGate).toMatch(/\.consent-actions\s*\{[^}]*position:\s*sticky;[^}]*bottom:\s*0/);
+	});
+});

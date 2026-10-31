@@ -74,6 +74,8 @@
 	// Startar som sant när servern redan vet att samtycke saknas, så att rutan
 	// finns i den serverrenderade HTML:en och inte flyttar sidan efter laddning.
 	let consentStatusKnown = $state(untrack(() => initialConsentMissing));
+	// Samma villkor som visar ConsentGate i mallen. Används bara för layouten.
+	const consentGateVisible = $derived(consentStatusKnown && !hasSensitiveDataConsent);
 	let conversationId = $state<string | null>(null);
 	let historyNoticeVisible = $state(false);
 	let persistenceReady = $state(false);
@@ -872,7 +874,10 @@
 
 </script>
 
-<div class="chat-container flex flex-col h-[calc(100vh-175px)] max-w-2xl mx-auto">
+<div
+	class="chat-container flex flex-col h-[calc(100vh-175px)] max-w-2xl mx-auto"
+	class:consent-intro-view={consentGateVisible && messages.length === 0}
+>
 	<!-- Alltid synlig, i alla chattvyer: ingen ska kunna tro att svaren kommer
 	     från en människa. En rad, så den inte tar plats från samtalet. -->
 	<p class="ai-notice px-4" data-testid="chat-ai-notice">
@@ -1825,6 +1830,36 @@
 			overflow-x: hidden;
 			overscroll-behavior: contain;
 			-webkit-overflow-scrolling: touch;
+		}
+
+		/* Samtyckesvyn utan meddelanden: introtexten ska kunna läsas i sin helhet
+		 * innan användaren tar ställning. Annars har meddelandelistan flex-basis 0
+		 * och krymper till ~27 px bredvid samtyckesrutan, så texten klipps mitt i
+		 * en rad.
+		 *
+		 * I den här vyn finns inget skrivfält och inget tangentbord, så hela
+		 * chattytan får bli en enda skrollyta: introtexten och samtyckestexten
+		 * läses i ett flöde, AI-raden ligger kvar överst och kryssrutan och
+		 * knappen (.consent-actions, sticky) ligger kvar i botten. */
+		.consent-intro-view {
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		/* Över .chat-input-area, som har z-index: 30 i app.css. */
+		.consent-intro-view .ai-notice {
+			position: sticky;
+			top: 0;
+			z-index: 31;
+			background: hsl(var(--background));
+		}
+
+		.consent-intro-view .chat-messages,
+		.consent-intro-view .chat-input-area,
+		.consent-intro-view .chat-input-extras {
+			flex: 0 0 auto;
+			overflow: visible;
 		}
 
 		:global(.message-bubble) {
