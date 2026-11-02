@@ -1,10 +1,24 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import WorldColoringExercise from '$lib/components/WorldColoringExercise.svelte';
 	import { recordCreativeMoment } from '$lib/creative-moments';
+	import {
+		trackExerciseNextStepClicked,
+		trackExerciseOpened,
+		trackExerciseReachedEnd
+	} from '$lib/analytics';
+	import {
+		buildExerciseEndParams,
+		buildExerciseNextStepParams,
+		buildExerciseOpenedParams,
+		type ExerciseNextStepTarget,
+		type ExerciseOpenedParams
+	} from '$lib/exercise-analytics';
+	import { ANALYTICS_CONSENT_EVENT, hasAnalyticsConsent } from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
 
@@ -23,6 +37,86 @@
 	);
 
 	let creativeMomentSessionId: string | null = null;
+
+	// Mätning: bara övningens slug och fasta källor/mål skickas (exercise-analytics.ts).
+	// afterNavigate körs även när man går från en övning till en annan, där
+	// komponenten återanvänds och onMount inte körs igen.
+	//
+	// Har besökaren inte samtyckt ännu sparas händelsen i minnet och skickas om
+	// samtycket ges medan besökaren är kvar på samma övning. Annars skulle
+	// den första övningen i ett besök aldrig räknas, eftersom cookiebannern
+	// besvaras efter att sidan öppnats. Inget sparas i webbläsarens lagring.
+	type PendingExerciseEvents = {
+		slug: string;
+		opened: ExerciseOpenedParams | null;
+		reachedEnd: boolean;
+	};
+	let pending: PendingExerciseEvents | null = null;
+
+	afterNavigate(({ from, to }) => {
+		if (from?.url && to?.url && from.url.pathname === to.url.pathname) return;
+		const params = buildExerciseOpenedParams(data.tool.slug, from?.url?.pathname);
+		pending = null;
+		if (!params) return;
+		if (hasAnalyticsConsent()) {
+			trackExerciseOpened(params);
+		} else {
+			pending = { slug: data.tool.slug, opened: params, reachedEnd: false };
+		}
+	});
+
+	function sendReachedEnd(slug: string) {
+		const params = buildExerciseEndParams(slug);
+		if (!params) return;
+		if (hasAnalyticsConsent()) {
+			trackExerciseReachedEnd(params);
+		} else if (pending?.slug === slug) {
+			pending.reachedEnd = true;
+		}
+	}
+
+	$effect(() => {
+		function handleConsentChange() {
+			if (!pending || !hasAnalyticsConsent()) return;
+			const { slug, opened, reachedEnd } = pending;
+			pending = null;
+			// Vänta ett varv så att layoutens sidvisning, som skickas på samma
+			// samtyckeshändelse, hamnar före övningens händelser.
+			setTimeout(() => {
+				if (slug !== data.tool.slug) return;
+				if (opened) trackExerciseOpened(opened);
+				if (reachedEnd) sendReachedEnd(slug);
+			}, 0);
+		}
+		window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+		return () => window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+	});
+
+	let stepsList = $state<HTMLElement | null>(null);
+	let reflectionsList = $state<HTMLElement | null>(null);
+
+	// Slutet räknas som nått när den sista reflektionsfrågan (eller det sista
+	// steget, om frågor saknas) syns i vyn, inte redan när rubriken gör det.
+	// En gång per övning och sidvisning.
+	$effect(() => {
+		const slug = data.tool.slug;
+		const list = reflectionsList ?? stepsList;
+		const endItem = list?.lastElementChild ?? list;
+		if (!endItem || typeof IntersectionObserver === 'undefined') return;
+
+		const observer = new IntersectionObserver((entries) => {
+			if (!entries.some((entry) => entry.isIntersecting)) return;
+			observer.disconnect();
+			sendReachedEnd(slug);
+		});
+		observer.observe(endItem);
+		return () => observer.disconnect();
+	});
+
+	function trackNextStep(target: ExerciseNextStepTarget) {
+		const params = buildExerciseNextStepParams(data.tool.slug, target);
+		if (params) trackExerciseNextStepClicked(params);
+	}
 
 	async function registerWorldColoringMoment() {
 		creativeMomentSessionId ??= crypto.randomUUID();
@@ -72,7 +166,7 @@
 			<h2>Guide i samma område</h2>
 			<p>
 				Övningen hör ihop med guiden
-				<a href={guideHref}>{data.pillar.title}</a>
+				<a href={guideHref} onclick={() => trackNextStep('guide')}>{data.pillar.title}</a>
 				om du vill ha mer bakgrund och fler steg.
 			</p>
 		</section>
@@ -88,7 +182,7 @@
 	{#if data.tool.steps && data.tool.steps.length > 0}
 		<section class="block">
 			<h2>Gör så här</h2>
-			<ol class="step-list">
+			<ol class="step-list" bind:this={stepsList}>
 				{#each data.tool.steps as step}
 					<li>{step}</li>
 				{/each}
@@ -105,7 +199,7 @@
 	{#if data.tool.reflections && data.tool.reflections.length > 0}
 		<section class="block">
 			<h2>Reflektera efteråt</h2>
-			<ul class="reflect-list">
+			<ul class="reflect-list" bind:this={reflectionsList}>
 				{#each data.tool.reflections as question}
 					<li>{question}</li>
 				{/each}
@@ -119,13 +213,18 @@
 			<p>Om du vill fortsätta i samma område kan du prova någon av de här övningarna.</p>
 			<ul class="link-list">
 				{#each data.relatedTools as relatedTool}
-					<li><a href={`/ovningar/${relatedTool.slug}`}>{relatedTool.title}</a></li>
+					<li>
+							<a
+								href={`/ovningar/${relatedTool.slug}`}
+								onclick={() => trackNextStep('related_exercise')}>{relatedTool.title}</a
+							>
+						</li>
 				{/each}
 			</ul>
 		{:else}
 			<p>
 				Det finns inga fler övningar i det här området just nu. Gå gärna vidare till
-				<a href="/ovningar">övningsöversikten</a>
+				<a href="/ovningar" onclick={() => trackNextStep('overview')}>övningsöversikten</a>
 				för fler lugna nästa steg.
 			</p>
 		{/if}
