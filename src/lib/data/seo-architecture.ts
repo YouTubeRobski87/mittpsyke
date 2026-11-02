@@ -233,7 +233,7 @@ export const tools: Tool[] = [
 	{
 		slug: 'mala-i-varlden',
 		title: 'Måla i världen',
-		description: 'En lugn kreativ övning där användaren färglägger ett motiv från den levande världen i sin egen takt.',
+		description: 'En lugn kreativ övning där du färglägger ett motiv från den levande världen i din egen takt.',
 		purpose: 'Att ge en lugn stund av närvaro genom en enkel kreativ aktivitet. Här finns inget att prestera och inget resultat som behöver bli på ett visst sätt.',
 		steps: [
 			'Välj en färg som känns bra just nu.',
@@ -299,9 +299,9 @@ export const tools: Tool[] = [
 		slug: 'daglig-reflektionsmall',
 		title: 'Daglig reflektionsmall',
 		description: 'Kort daglig check-in för tankar, känslor och behov.',
-		purpose: 'En kort daglig incheck-in hjälper dig att märka vad du faktiskt bär på – innan det hopar sig. Övningen tar 5–10 minuter och fungerar bäst om du gör den vid ungefär samma tid varje dag.',
+		purpose: 'En kort daglig check-in hjälper dig att märka vad du faktiskt bär på – innan det hopar sig. Övningen tar 5–10 minuter, och du gör den när det passar dig.',
 		steps: [
-			'Avsätt 5–10 minuter, helst vid samma tid varje dag. Morgon eller kväll fungerar lika bra.',
+			'Avsätt 5–10 minuter när det passar dig. Morgon eller kväll fungerar lika bra.',
 			'Kroppen: Hur känns kroppen just nu? Spänning, trötthet, rastlöshet? Var i kroppen märks det tydligast?',
 			'Känslan: Vad är den starkaste känslan du bär på just nu? Ge den ett namn – oro, lättnad, tristess, hopp.',
 			'Tanken: Finns det en återkommande tanke idag? Skriv ned den utan att bedöma den.',
@@ -345,7 +345,7 @@ export const tools: Tool[] = [
 	},
 	{
 		slug: 'sjalvmedkansla-ovning',
-		title: 'Självmedkänsla - guidad övning',
+		title: 'Självmedkänsla: guidad övning',
 		description: 'Varsam övning för att möta självkritik med medkänsla.',
 		purpose: 'Självmedkänsla är inte att skona sig – det är att möta sig själv med samma vänlighet man skulle ge en vän. Den här övningen är inspirerad av Kristin Neffs forskning och tar ungefär 10 minuter.',
 		steps: [
@@ -369,7 +369,7 @@ export const tools: Tool[] = [
 		slug: 'grounding-5-4-3-2-1',
 		title: 'Grounding 5-4-3-2-1',
 		description: 'Snabb övning för att landa i kroppen när stressen stiger.',
-		purpose: 'Den här tekniken hjälper dig att flytta fokus från ångests tankar till vad som faktiskt finns runt dig just nu. Den tar under 2 minuter och fungerar var du än befinner dig.',
+		purpose: 'Den här tekniken hjälper dig att flytta fokus från oroliga tankar till vad som faktiskt finns runt dig just nu. Den tar under 2 minuter och fungerar var du än befinner dig.',
 		steps: [
 			'Ta ett djupt andetag och tillåt dig att sakta ned. Du behöver inte förändra hur du mår – bara observera.',
 			'5 saker du SER: Nämn fem saker du kan se runt dig just nu. Var specifik – färg, form, storlek.',
@@ -421,7 +421,7 @@ export const tools: Tool[] = [
 			'Känsla: Skriv ned vilken känsla det väckte. Undvik tolkningar som "attackerad" eller "ignorerad" – använd grundkänslor: ledsen, rädd, ensam, irriterad, besviken.',
 			'Behov: Vad behöver du? Trygghet, respekt, förståelse, uppskattning, ärlighet, närvaro?',
 			'Önskemål: Formulera ett konkret, genomförbart önskemål för framtiden. "Kan du…" eller "Jag skulle uppskatta om…"',
-			'Sätt ihop de fyra delarna till en mening och läs den högt för dig själv. Hör den ut. Ändra det som inte stämmer.'
+			'Sätt ihop de fyra delarna till en mening och läs den högt för dig själv. Lyssna på hur den låter och ändra det som inte stämmer.'
 		],
 		reflections: [
 			'Vilken av de fyra delarna var svårast att formulera?',
@@ -441,7 +441,7 @@ export const tools: Tool[] = [
 		steps: [
 			'Ta 10–15 minuter utan avbrott. Stäng telefonen.',
 			'Lista 10–15 värden: Skriv ned allt som känns viktigt – gemenskap, frihet, ärlighet, skapande, trygghet, hälsa, rättvisa, kärlek, lärande, mod, enkelhet, närvaro…',
-			'Välj de fem viktigaste. Stryk igenom resten utan att ångra dig. Det är en övning i prioritering, inte uteslutning.',
+			'Välj de fem viktigaste. Det är okej om det känns svårt att välja bort – det är en övning i prioritering, inte uteslutning.',
 			'Rangordna de fem. Vilket värde är mest grundläggande för vem du vill vara?',
 			'Granska din vardag: Lever du i linje med dina tre topp-värden? Var är gapet störst – och vad håller dig där?',
 			'Skriv ett litet konkret steg som för dig närmre ett av värdena den här veckan. Hur litet som helst.'
@@ -460,12 +460,12 @@ export const tools: Tool[] = [
 		slug: '4-7-8-andning',
 		title: '4-7-8 andning',
 		description: 'En enkel andningsteknik för att varva ned nervsystemet.',
-		purpose: 'Tekniken utvecklades av läkaren Andrew Weil och aktiverar det parasympatiska nervsystemet – kroppens eget bromssystem. Den tar under 2 minuter och kan användas var som helst.',
+		purpose: 'Tekniken har gjorts känd av läkaren Andrew Weil. Långsam andning med lång utandning kan hjälpa kroppen att varva ned. Den tar under 2 minuter och kan användas var som helst.',
 		steps: [
 			'Sätt dig bekvämt med rak rygg, eller lägg dig ned. Stäng ögonen om det känns bra.',
 			'Andas ut helt genom munnen med ett tyst, mjukt pust – töm lungorna ordentligt.',
 			'Stäng munnen och andas in tyst genom näsan medan du räknar till 4.',
-			'Håll andan och räkna till 7. Håll det mjukt – ingen anspänning.',
+			'Håll andan och räkna till 7. Håll det mjukt – ingen anspänning. Känns det obehagligt kan du korta pausen eller andas som vanligt.',
 			'Andas ut helt genom munnen med ett hörbart "pust" medan du räknar till 8.',
 			'Det är en cykel klar. Upprepa 3–4 gånger totalt.',
 			'Sitt stilla en stund efteråt. Märk hur kroppen och andetaget känns nu.'
@@ -483,7 +483,7 @@ export const tools: Tool[] = [
 		slug: 'body-scan',
 		title: 'Body scan meditation',
 		description: 'Stegvis kroppsskanning för närvaro och avslappning.',
-		purpose: 'Body scan är en mindfulnessövning som hjälper dig att komma i kontakt med kroppen utan att kräva att den ska förändras. Den minskar spänningar och tränar närvaro. Övningen tar 10–15 minuter.',
+		purpose: 'Body scan är en mindfulnessövning som hjälper dig att komma i kontakt med kroppen utan att kräva att den ska förändras. Den kan hjälpa dig att släppa lite spänning och tränar närvaro. Övningen tar 10–15 minuter.',
 		steps: [
 			'Lägg dig ned eller sätt dig bekvämt. Stäng ögonen. Ta tre djupa andetag och tillåt kroppen att tynglas ned.',
 			'Börja med fötterna: Märk förnimmelserna i fötterna och tårna – tyngd, värme, kontakt med underlaget. Andas in mot dem, andas ut.',
@@ -506,7 +506,7 @@ export const tools: Tool[] = [
 		slug: 'katastrofgranskning',
 		title: 'Katastrofgranskning',
 		description: 'Utvärdera värsta scenariot och sannolikare utfall.',
-		purpose: 'Den här övningen låter dig titta rakt på det du är rädd för i stället för att undvika det. Forskning visar att vi ofta överskattar sannolikheten för det värsta – och underskattar vår förmåga att hantera det.',
+		purpose: 'Den här övningen låter dig titta rakt på det du är rädd för i stället för att undvika det. Det är vanligt att överskatta sannolikheten för det värsta – och underskatta sin förmåga att hantera det.',
 		steps: [
 			'Identifiera scenariot: Vad är det värsta du är rädd ska hända? Skriv ned det konkret.',
 			'Skatta sannolikheten: Hur troligt är det på en skala 0–100 %? Var ärlig mot dig själv.',
@@ -528,20 +528,20 @@ export const tools: Tool[] = [
 	},
 	{
 		slug: 'tacksamhetsovning',
-		title: 'Tacksamhetsövning för utmattning',
-		description: 'Kort daglig rutin för att uppmärksamma återhämtning.',
+		title: 'Tacksamhetsövning för tunga perioder',
+		description: 'Kort skrivövning för att också märka det som fungerar.',
 		purpose: 'Vid utmattning och depression är det lätt att fokus fastnar på allt som är tungt. Den här övningen tränar hjärnan att också märka det som faktiskt fungerar – utan att förneka det som är svårt.',
 		steps: [
-			'Välj en fast tid varje dag – helst kvällstid. Tre till fem minuter räcker.',
+			'Välj en stund som passar dig, gärna på kvällen. Tre till fem minuter räcker.',
 			'Skriv ned tre saker från dagen du är tacksam för. De behöver inte vara stora – en kopp te, ett leende från någon, att du kom upp ur sängen.',
-			'Skriv ned en sak du klarade av idag. Hur liten den än är – det räknas.',
+			'Skriv ned en sak du klarade av idag. Den får vara hur liten som helst.',
 			'Skriv ned en sak du ser fram emot imorgon. Det kan vara hur litet som helst.',
 			'Läs igenom det du skrivit. Stanna ett ögonblick vid varje punkt och låt det landa.'
 		],
 		reflections: [
 			'Vad var lättast att hitta tacksamhet för?',
 			'Är det svårt att erkänna att du klarat av saker? Vad berättar det?',
-			'Märker du en förändring i stämningen när du gjort övningen ett par dagar i rad?'
+			'Märker du någon skillnad i stämningen när du gjort övningen några gånger?'
 		],
 		pillarSlug: 'depression',
 		need: 'skriva',
@@ -550,7 +550,7 @@ export const tools: Tool[] = [
 	},
 	{
 		slug: 'dagens-avslut-reflektion',
-		title: 'Avslutning av dagen - reflektionsmall',
+		title: 'Avslutning av dagen: reflektionsmall',
 		description: 'Kvällsmall för att släppa dagen och stänga mentalt.',
 		purpose: 'När dagen aldrig riktigt stängs bär hjärnan den med sig in i natten. Den här mallen hjälper dig att aktivt lägga dagen bakom dig och gå in i kvällen med lite mer lätthet.',
 		steps: [
@@ -579,9 +579,9 @@ export const tools: Tool[] = [
 		steps: [
 			'Rita tre nivåer: Tryggt, Lagom utmaning och För svårt just nu.',
 			'Skriv 2–3 sociala situationer i varje nivå – till exempel stå i kön, säga en mening i ett möte, eller hälsa på grannen.',
-			'Välj en situation från Lagom utmaning som du kan göra inom 24 timmar.',
+			'Välj en situation från Lagom utmaning som du vill prova snart, när det passar dig.',
 			'Bestäm ett tydligt mikrosteg – till exempel: säga en mening i gruppen eller ställa en kort fråga.',
-			'Genomför steget och stanna kvar i situationen en kort stund i stället för att lämna direkt.',
+			'Genomför steget och stanna kvar i situationen en kort stund i stället för att lämna direkt. Blir det för mycket är det okej att gå tillbaka till en tryggare nivå.',
 			'Upprepa samma nivå 2–3 gånger innan du går vidare till nästa steg i cirkeln.'
 		],
 		reflections: [
