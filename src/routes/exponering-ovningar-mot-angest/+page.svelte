@@ -32,7 +32,7 @@
 		</header>
 
 		<div class="cta-container">
-			<a class="cta-button" href="/ovningar">Se övningar</a>
+			<a class="cta-button" href="/ovningar/trygghetscirkel-exponering">Prova exponering i små steg</a>
 			<a class="cta-button ghost" href="/hjalp-vid-angest-online">Läs om hjälp vid ångest</a>
 		</div>
 
@@ -61,7 +61,7 @@
 				som känns möjligt just nu.
 			</p>
 			<p class="links-row">
-				<a href="/ovningar">Prova en övning</a>
+				<a href="/ovningar/trygghetscirkel-exponering">Prova en övning</a>
 				<a href="/chat/angest">Starta samtal</a>
 				<a href="/dagbok">Skriv i dagboken</a>
 			</p>

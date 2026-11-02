@@ -3,9 +3,11 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import { page } from '$app/stores';
 	import SeoHead from '$lib/components/SeoHead.svelte';
-	import { pillars, tools } from '$lib/data/seo-architecture';
+	import { formatToolMinutes, getToolsByNeed } from '$lib/data/seo-architecture';
 
-	const pillarLabelBySlug = Object.fromEntries(pillars.map((pillar) => [pillar.slug, pillar.title]));
+	// Övningarna visas efter behov, så att den som mår dåligt hittar något som
+	// passar utan att läsa igenom alla. Längd och skrivande syns på kortet.
+	const groups = getToolsByNeed();
 </script>
 
 <SEO canonical="https://mittpsyke.se/ovningar" />
@@ -28,24 +30,35 @@
 		</p>
 	</header>
 
-	<section class="links-block" aria-label="Börja här om du söker övningar mot ångest">
-		<p class="links-title">Om du söker övningar mot ångest kan du börja här:</p>
+	{#each groups as group (group.id)}
+		<section class="need-group" aria-labelledby={`behov-${group.id}`}>
+			<h2 id={`behov-${group.id}`}>{group.title}</h2>
+			<p class="need-description">{group.description}</p>
+			<ul class="grid">
+				{#each group.tools as tool (tool.slug)}
+					<li>
+						<a class="card" href={`/ovningar/${tool.slug}`}>
+							<h3>{tool.title}</h3>
+							<p>{tool.description}</p>
+							<span class="meta">
+								{formatToolMinutes(tool)}{#if tool.involvesWriting}<span aria-hidden="true">&nbsp;·&nbsp;</span
+									><span class="sr-only">, </span>Med skrivande{/if}
+							</span>
+						</a>
+					</li>
+				{/each}
+			</ul>
+		</section>
+	{/each}
+
+	<section class="links-block" aria-labelledby="las-mer-angest">
+		<h2 id="las-mer-angest" class="links-title">Läs mer om övningar mot ångest</h2>
 		<div class="links-list">
 			<a href="/andningsovningar-mot-angest">Andningsövningar mot ångest</a>
 			<a href="/ovningar-mot-angest-online">Övningar mot ångest online</a>
 			<a href="/4-7-8-andning-ovning">4-7-8 andning</a>
 			<a href="/exponering-ovningar-mot-angest">Exponeringsövningar mot ångest</a>
 		</div>
-	</section>
-
-	<section class="grid" aria-label="Alla övningar">
-		{#each tools as tool}
-			<a class="card" href={`/ovningar/${tool.slug}`}>
-				<h2>{tool.title}</h2>
-				<p>{tool.description}</p>
-				<span class="meta">För {pillarLabelBySlug[tool.pillarSlug]}</span>
-			</a>
-		{/each}
 	</section>
 </div>
 
@@ -70,8 +83,25 @@
 		font-size: 0.94rem;
 	}
 
+	.need-group {
+		margin-top: 2.2rem;
+	}
+
+	.need-group h2 {
+		margin: 0;
+		font-size: 1.3rem;
+		line-height: 1.35;
+	}
+
+	.need-description {
+		margin: 0.4rem 0 0;
+		max-width: 62ch;
+		line-height: 1.6;
+		opacity: 0.84;
+	}
+
 	.links-block {
-		margin-top: 1.4rem;
+		margin-top: 2.6rem;
 		max-width: 62ch;
 		padding: 0.95rem 1rem;
 		border-radius: var(--radius-card);
@@ -81,6 +111,7 @@
 
 	.links-title {
 		margin: 0;
+		line-height: 1.4;
 		font-size: 0.95rem;
 		font-weight: 600;
 		opacity: 0.88;
@@ -113,13 +144,20 @@
 	}
 
 	.grid {
-		margin-top: 1.6rem;
+		margin: 0.9rem 0 0;
+		padding: 0;
+		list-style: none;
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 		gap: 1.05rem;
 	}
 
+	.grid li {
+		display: flex;
+	}
+
 	.card {
+		flex: 1;
 		display: flex;
 		flex-direction: column;
 		padding: 1.1rem 1rem 1rem;
@@ -142,7 +180,7 @@
 		outline-offset: 3px;
 	}
 
-	.card h2 {
+	.card h3 {
 		margin: 0;
 		font-size: 1.04rem;
 		line-height: 1.35;
@@ -161,15 +199,20 @@
 	}
 
 	.meta {
-		display: inline-flex;
-		align-self: flex-start;
-		margin-top: 0.9rem;
-		padding: 0.34rem 0.58rem;
-		border-radius: 999px;
-		border: 1px solid rgba(37, 99, 235, 0.16);
-		background: rgba(37, 99, 235, 0.1);
-		color: #1d4ed8;
-		font-size: 0.82rem;
+		margin-top: auto;
+		padding-top: 0.8rem;
+		font-size: 0.86rem;
+		opacity: 0.86;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.card {
+			transition: none;
+		}
+
+		.card:hover {
+			transform: none;
+		}
 	}
 
 	:global(.dark) .links-block {
@@ -199,12 +242,6 @@
 		border-color: rgba(147, 197, 253, 0.34);
 		background: #172033;
 		box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
-	}
-
-	:global(.dark) .meta {
-		border-color: rgba(147, 197, 253, 0.22);
-		background: rgba(37, 99, 235, 0.18);
-		color: #bfdbfe;
 	}
 
 	@media (max-width: 640px) {
