@@ -7,7 +7,12 @@ import { describe, expect, it, vi } from 'vitest';
 // direkt med ett minimalt event.
 vi.mock('$env/dynamic/public', () => ({ env: {} }));
 
-const { legacyPathRedirects, legacyPageRedirects } = await import('./hooks.server');
+const {
+	legacyPathRedirects,
+	legacyPageRedirects,
+	dedupeMetaDescriptions,
+	DEDUPED_META_DESCRIPTION_PLACEHOLDER
+} = await import('./hooks.server');
 
 function requestEvent(pathname: string) {
 	return { url: new URL(`http://localhost${pathname}`) } as never;
@@ -84,5 +89,34 @@ describe('legacyPathRedirects - /villkor', () => {
 		const resolve = vi.fn(async () => new Response('ok'));
 		await legacyPathRedirects({ event: requestEvent('/kontakt-och-villkor'), resolve } as never);
 		expect(resolve).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('dedupeMetaDescriptions', () => {
+	it('behåller bara den sista metabeskrivningen', () => {
+		const html =
+			'<head><meta name="description" content="Layout"/> <meta name="author" content="MittPsyke"/> <meta name="description" content="Sida"/></head>';
+		const result = dedupeMetaDescriptions(html);
+
+		expect(result.match(/<meta\s+name="description"/g)).toHaveLength(1);
+		expect(result).toContain('content="Sida"');
+		expect(result).not.toContain('content="Layout"');
+	});
+
+	it('behåller antalet noder så att Svelte kan hydrera sidhuvudet', () => {
+		// Hydreringen går nod för nod. Om dubbletten bara togs bort glider
+		// resten ur fas och sidhuvudet byggs om, med dubbel JSON-LD som följd.
+		const html =
+			'<meta name="description" content="Layout"/> <meta name="author" content="MittPsyke"/> <meta name="description" content="Sida"/>';
+		const countElements = (value: string) => (value.match(/<meta\b/g) ?? []).length;
+		const result = dedupeMetaDescriptions(html);
+
+		expect(countElements(result)).toBe(countElements(html));
+		expect(result.startsWith(DEDUPED_META_DESCRIPTION_PLACEHOLDER)).toBe(true);
+	});
+
+	it('lämnar sidor med en enda metabeskrivning orörda', () => {
+		const html = '<meta name="description" content="Bara en"/>';
+		expect(dedupeMetaDescriptions(html)).toBe(html);
 	});
 });
