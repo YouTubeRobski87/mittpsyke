@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { getPillarBySlug, getToolBySlug, getToolsForPillar } from '$lib/data/seo-architecture';
+import { getPillarBySlug, getRelatedTools, getToolBySlug } from '$lib/data/seo-architecture';
 
 export function load({ params }) {
 	const tool = getToolBySlug(params.tool);
@@ -14,9 +14,7 @@ export function load({ params }) {
 		throw error(500, 'Kunde inte hitta tillhörande guide');
 	}
 
-	const relatedTools = getToolsForPillar(tool.pillarSlug).filter(
-		(candidate) => candidate.slug !== tool.slug
-	);
+	const relatedTools = getRelatedTools(tool);
 
 	return {
 		tool,

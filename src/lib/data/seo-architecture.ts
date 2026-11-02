@@ -630,3 +630,27 @@ export function getToolsByNeed() {
 export function getToolsForPillar(pillarSlug: string): Tool[] {
 	return tools.filter((tool) => tool.pillarSlug === pillarSlug);
 }
+
+/**
+ * Relaterade övningar: först de i samma område, sedan områdets egna
+ * rekommendationer (toolSlugs). Övningar som är ensamma i sitt område fick
+ * tidigare inga förslag alls och slutade i en återvändsgränd.
+ */
+export function getRelatedTools(tool: Tool, limit = 4): Tool[] {
+	const pillar = getPillarBySlug(tool.pillarSlug);
+	const candidates = [
+		...getToolsForPillar(tool.pillarSlug),
+		...(pillar?.toolSlugs ?? [])
+			.map((slug) => getToolBySlug(slug))
+			.filter((candidate): candidate is Tool => candidate !== undefined)
+	];
+	const seen = new Set<string>([tool.slug]);
+	const related: Tool[] = [];
+	for (const candidate of candidates) {
+		if (seen.has(candidate.slug)) continue;
+		seen.add(candidate.slug);
+		related.push(candidate);
+		if (related.length === limit) break;
+	}
+	return related;
+}

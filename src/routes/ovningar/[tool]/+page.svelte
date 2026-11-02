@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
-	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import WorldColoringExercise from '$lib/components/WorldColoringExercise.svelte';
@@ -19,6 +19,7 @@
 		type ExerciseOpenedParams
 	} from '$lib/exercise-analytics';
 	import { ANALYTICS_CONSENT_EVENT, hasAnalyticsConsent } from '$lib/consent';
+	import { formatToolMinutes } from '$lib/data/seo-architecture';
 	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
 
@@ -35,6 +36,12 @@
 			? guideHrefByPillar[data.pillar.slug]
 			: `/guider/${data.pillar.slug}`
 	);
+
+	// Avslutningen leder till Dagboken utan förifylld text. Inloggade skickas
+	// direkt till skrivfältet i incheckningen, eftersom /dagbok annars
+	// omdirigerar dit ändå. Kvällstugan finns bara för inloggade.
+	const isSignedIn = $derived(Boolean($page.data.authenticatedUser));
+	const diaryHref = $derived(isSignedIn ? '/dagbok/checkin#skriv-sjalv' : '/dagbok?action=new');
 
 	let creativeMomentSessionId: string | null = null;
 
@@ -134,43 +141,20 @@
 	description={data.tool.description}
 	canonical={`https://mittpsyke.se${$page.url.pathname}`}
 />
-<BreadcrumbSchema
-	crumbs={[
-		{ name: 'Hem', url: '/' },
-		{ name: 'Övningar', url: '/ovningar' },
-		{ name: data.tool.title, url: $page.url.pathname }
-	]}
-/>
-
 <div class="container tool-page">
-	<nav class="crumbs" aria-label="Breadcrumb">
-		<a href="/">Hem</a>
-		<span>/</span>
-		<a href="/ovningar">Övningar</a>
-		<span>/</span>
-		<span>{data.tool.title}</span>
-	</nav>
+	<Breadcrumbs items={[{ label: 'Övningar', href: '/ovningar' }, { label: data.tool.title }]} />
 
 	<header class="intro">
 		<h1>{data.tool.title}</h1>
+		<p class="meta">
+			{formatToolMinutes(data.tool)}{#if data.tool.involvesWriting}&nbsp;·&nbsp;<span class="sr-only">, </span>Med skrivande{/if}
+		</p>
 		<p>{data.tool.description}</p>
+		<p class="note">
+			Ett stöd för lugn och reflektion, inte vård eller behandling. Känns något för starkt kan du
+			pausa när du vill.
+		</p>
 	</header>
-
-	<section class="info-box" aria-label="Om övningen">
-		<p><strong>Sammanställt av MittPsyke.</strong> Övningen är ett stöd för reflektion och lugn i vardagen.</p>
-		<p>Den ersätter inte vård, diagnos eller behandling. Om något känns för starkt kan du pausa och välja ett mindre steg.</p>
-	</section>
-
-	{#if guideHref}
-		<section class="block">
-			<h2>Guide i samma område</h2>
-			<p>
-				Övningen hör ihop med guiden
-				<a href={guideHref} onclick={() => trackNextStep('guide')}>{data.pillar.title}</a>
-				om du vill ha mer bakgrund och fler steg.
-			</p>
-		</section>
-	{/if}
 
 	{#if data.tool.purpose}
 		<section class="block">
@@ -207,28 +191,55 @@
 		</section>
 	{/if}
 
-	<section class="block">
-		<h2>{data.relatedTools.length > 0 ? 'Fler övningar i samma område' : 'Nästa steg'}</h2>
-		{#if data.relatedTools.length > 0}
-			<p>Om du vill fortsätta i samma område kan du prova någon av de här övningarna.</p>
+	<section class="block closing" aria-labelledby="closing-heading">
+		<h2 id="closing-heading">När du är klar</h2>
+		<p>
+			Det räcker så här. Du behöver inte göra något mer. Vill du minnas något från övningen kan du
+			skriva några rader, men det är helt frivilligt.
+		</p>
+		<ul class="next-links">
+			<li>
+				<a href={diaryHref} onclick={() => trackNextStep('diary')}>Skriv en rad i Dagboken</a>
+			</li>
+			{#if isSignedIn}
+				<li>
+					<a href="/dashboard/kvallsstugan" onclick={() => trackNextStep('evening')}
+						>Gå till Kvällstugan</a
+					>
+				</li>
+			{/if}
+			<li>
+				<a href="/ovningar" onclick={() => trackNextStep('overview')}>Tillbaka till övningarna</a>
+			</li>
+		</ul>
+	</section>
+
+	{#if data.relatedTools.length > 0}
+		<section class="block">
+			<h2>Fler övningar i samma område</h2>
 			<ul class="link-list">
 				{#each data.relatedTools as relatedTool}
 					<li>
-							<a
-								href={`/ovningar/${relatedTool.slug}`}
-								onclick={() => trackNextStep('related_exercise')}>{relatedTool.title}</a
-							>
-						</li>
+						<a
+							href={`/ovningar/${relatedTool.slug}`}
+							onclick={() => trackNextStep('related_exercise')}>{relatedTool.title}</a
+						>
+						<span class="link-meta">{formatToolMinutes(relatedTool)}</span>
+					</li>
 				{/each}
 			</ul>
-		{:else}
+		</section>
+	{/if}
+
+	{#if guideHref}
+		<section class="block">
+			<h2>Guide i samma område</h2>
 			<p>
-				Det finns inga fler övningar i det här området just nu. Gå gärna vidare till
-				<a href="/ovningar" onclick={() => trackNextStep('overview')}>övningsöversikten</a>
-				för fler lugna nästa steg.
+				Vill du ha mer bakgrund finns guiden
+				<a href={guideHref} onclick={() => trackNextStep('guide')}>{data.pillar.title}</a>.
 			</p>
-		{/if}
-	</section>
+		</section>
+	{/if}
 </div>
 
 <style>
@@ -236,16 +247,8 @@
 		padding: 1.25rem 1.25rem 3.5rem;
 	}
 
-	.crumbs {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.35rem;
-		font-size: 0.84rem;
-		opacity: 0.72;
-	}
-
 	.intro {
-		margin-top: 0.9rem;
+		margin-top: 0;
 	}
 
 	.intro h1 {
@@ -268,23 +271,37 @@
 		background: #fbfcfd;
 	}
 
-	.info-box {
-		margin-top: 1rem;
-		padding: 0.95rem 1rem;
-		border-radius: var(--radius-card);
-		border: 1px solid rgba(37, 99, 235, 0.14);
-		background: #f4f7ff;
+	.intro .meta {
+		margin-top: 0.4rem;
+		font-size: 0.92rem;
+		font-weight: 600;
+		opacity: 0.78;
 	}
 
-	.info-box p {
-		margin: 0;
-		font-size: 0.93rem;
-		line-height: 1.6;
-		opacity: 0.84;
+	.intro .note {
+		font-size: 0.9rem;
+		opacity: 0.72;
 	}
 
-	.info-box p + p {
-		margin-top: 0.45rem;
+	.next-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.25rem;
+		margin: 0.8rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.next-links a {
+		display: inline-block;
+		padding: 0.35rem 0;
+	}
+
+	.link-meta {
+		display: block;
+		margin-top: 0.15rem;
+		font-size: 0.85rem;
+		opacity: 0.72;
 	}
 
 	.block h2 {
@@ -382,11 +399,6 @@
 		border-color: rgba(96, 165, 250, 0.18);
 	}
 
-	:global(.dark) .info-box {
-		background: #172033;
-		border-color: rgba(96, 165, 250, 0.18);
-	}
-
 	:global(.dark) .step-list li,
 	:global(.dark) .link-list li,
 	:global(.dark) .reflect-list li {
@@ -404,8 +416,7 @@
 			padding: 1.1rem 1rem 3rem;
 		}
 
-		.block,
-		.info-box {
+		.block {
 			padding: 0.95rem 0.9rem;
 		}
 
