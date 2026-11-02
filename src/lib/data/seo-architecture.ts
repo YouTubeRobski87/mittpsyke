@@ -12,6 +12,40 @@ export type Pillar = {
 	relatedArticles?: RelatedArticle[];
 };
 
+/**
+ * Behovsgrupperna på /ovningar, i visningsordning. Robban godkände namnen
+ * 2026-11-02. Varje övning hör till exakt en grupp.
+ */
+export const exerciseNeeds = [
+	{
+		id: 'just-nu',
+		title: 'Just nu, när det känns mycket',
+		description: 'Korta övningar som går att göra direkt, utan papper.'
+	},
+	{
+		id: 'tankar',
+		title: 'När tankarna snurrar',
+		description: 'Frågor och steg som ger oron något konkret att hålla i.'
+	},
+	{
+		id: 'skriva',
+		title: 'När du vill skriva',
+		description: 'Mallar för att sätta ord på det du bär på.'
+	},
+	{
+		id: 'natten',
+		title: 'Inför natten',
+		description: 'För att varva ned och lägga dagen bakom dig.'
+	},
+	{
+		id: 'riktning',
+		title: 'Relationer och riktning',
+		description: 'För samtal, värderingar och små steg mot andra.'
+	}
+] as const;
+
+export type ExerciseNeedId = (typeof exerciseNeeds)[number]['id'];
+
 export type Tool = {
 	slug: string;
 	title: string;
@@ -20,6 +54,12 @@ export type Tool = {
 	steps?: string[];
 	reflections?: string[];
 	pillarSlug: string;
+	/** Behovsgruppen övningen visas under på /ovningar. */
+	need: ExerciseNeedId;
+	/** Ungefärlig tid i minuter. Saknas när övningen inte har någon given längd. */
+	minutes?: { min: number; max?: number };
+	/** Sant när stegen ber dig skriva eller rita. */
+	involvesWriting?: boolean;
 };
 
 export const pillars: Pillar[] = [
@@ -207,7 +247,8 @@ export const tools: Tool[] = [
 			'Hur kändes det att göra något utan krav på resultat?',
 			'Vill du stanna kvar i känslan en liten stund?'
 		],
-		pillarSlug: 'stress-utmattning'
+		pillarSlug: 'stress-utmattning',
+		need: 'just-nu'
 	},
 	{
 		slug: 'skrivovningar-sjalvkansla',
@@ -226,7 +267,10 @@ export const tools: Tool[] = [
 			'Finns det en mening du skrivit som du vill bära med dig?',
 			'Hur skulle du se på en vän som delade exakt det du skrivit?'
 		],
-		pillarSlug: 'sjalvkansla'
+		pillarSlug: 'sjalvkansla',
+		need: 'skriva',
+		minutes: { min: 10 },
+		involvesWriting: true
 	},
 	{
 		slug: 'cbt-katastroftankar',
@@ -246,7 +290,10 @@ export const tools: Tool[] = [
 			'Vilken del av övningen var svårast att göra ärligt?',
 			'Är det en situation du vill ta upp i MittPsykes chatt eller dagbok?'
 		],
-		pillarSlug: 'angest'
+		pillarSlug: 'angest',
+		need: 'tankar',
+		minutes: { min: 10, max: 15 },
+		involvesWriting: true
 	},
 	{
 		slug: 'daglig-reflektionsmall',
@@ -266,7 +313,10 @@ export const tools: Tool[] = [
 			'Märker du ett mönster i vad du behöver mest?',
 			'Hur kändes det att ta en stund enbart för dig själv?'
 		],
-		pillarSlug: 'stress-utmattning'
+		pillarSlug: 'stress-utmattning',
+		need: 'skriva',
+		minutes: { min: 5, max: 10 },
+		involvesWriting: true
 	},
 	{
 		slug: 'sju-fragor-vid-oro',
@@ -288,7 +338,10 @@ export const tools: Tool[] = [
 			'Är det en handling du kan ta i dag – hur liten den än är?',
 			'Var oron kopplad till ett djupare behov – trygghet, kontroll, tillhörighet?'
 		],
-		pillarSlug: 'overtankande'
+		pillarSlug: 'overtankande',
+		need: 'tankar',
+		minutes: { min: 10 },
+		involvesWriting: true
 	},
 	{
 		slug: 'sjalvmedkansla-ovning',
@@ -308,7 +361,9 @@ export const tools: Tool[] = [
 			'Märkte du motstånd? Vad sa motståndets röst?',
 			'Vad är en liten sak du kan göra för dig själv idag med lite mer omsorg?'
 		],
-		pillarSlug: 'sjalvkansla'
+		pillarSlug: 'sjalvkansla',
+		need: 'just-nu',
+		minutes: { min: 10 }
 	},
 	{
 		slug: 'grounding-5-4-3-2-1',
@@ -329,7 +384,9 @@ export const tools: Tool[] = [
 			'Vilket sinne var lättast att fokusera på? Vilket var svårast?',
 			'Kan du använda en kortversion av övningen nästa gång ångesten stiger?'
 		],
-		pillarSlug: 'angest'
+		pillarSlug: 'angest',
+		need: 'just-nu',
+		minutes: { min: 2 }
 	},
 	{
 		slug: 'tankefallor-kartlaggning',
@@ -348,7 +405,10 @@ export const tools: Tool[] = [
 			'Vad utlöste situationen – finns det ett återkommande mönster?',
 			'Hur kan du påminna dig om den här övningen nästa gång tanken dyker upp i stunden?'
 		],
-		pillarSlug: 'overtankande'
+		pillarSlug: 'overtankande',
+		need: 'tankar',
+		minutes: { min: 10 },
+		involvesWriting: true
 	},
 	{
 		slug: 'icke-valdsam-kommunikation',
@@ -368,7 +428,10 @@ export const tools: Tool[] = [
 			'Kände du motstånd mot att uttrycka ett behov? Vad sa motståndet?',
 			'Vill du använda den här mallen som förberedelse inför ett verkligt samtal?'
 		],
-		pillarSlug: 'relationsproblem'
+		pillarSlug: 'relationsproblem',
+		need: 'riktning',
+		minutes: { min: 15 },
+		involvesWriting: true
 	},
 	{
 		slug: 'vardekartlaggning',
@@ -388,7 +451,10 @@ export const tools: Tool[] = [
 			'Finns det ett värde du rangordnar lågt fast det egentligen är viktigt för dig?',
 			'Vilket steg känns mest angeläget att ta den närmaste veckan?'
 		],
-		pillarSlug: 'existentiell-oro'
+		pillarSlug: 'existentiell-oro',
+		need: 'riktning',
+		minutes: { min: 10, max: 15 },
+		involvesWriting: true
 	},
 	{
 		slug: '4-7-8-andning',
@@ -409,7 +475,9 @@ export const tools: Tool[] = [
 			'Vilken del var svårast – hålla andan, eller räkna ut andningarna?',
 			'I vilket läge vill du prova den här tekniken nästa gång – insomnande, social oro eller akut stress?'
 		],
-		pillarSlug: 'angest'
+		pillarSlug: 'angest',
+		need: 'just-nu',
+		minutes: { min: 2 }
 	},
 	{
 		slug: 'body-scan',
@@ -430,7 +498,9 @@ export const tools: Tool[] = [
 			'Hur förändrades kontakten med kroppen under övningens gång?',
 			'Kan du ta med en 2-minutersversion av det här in i vardagen – vid skrivbordet eller innan du somnar?'
 		],
-		pillarSlug: 'stress-utmattning'
+		pillarSlug: 'stress-utmattning',
+		need: 'natten',
+		minutes: { min: 10, max: 15 }
 	},
 	{
 		slug: 'katastrofgranskning',
@@ -451,7 +521,10 @@ export const tools: Tool[] = [
 			'Vilket av de sannolika utfallen är lättast att börja ta tag i?',
 			'Är det något i övningen du vill fortsätta fundera på i dagboken eller chatten?'
 		],
-		pillarSlug: 'angest'
+		pillarSlug: 'angest',
+		need: 'tankar',
+		minutes: { min: 10, max: 15 },
+		involvesWriting: true
 	},
 	{
 		slug: 'tacksamhetsovning',
@@ -470,7 +543,10 @@ export const tools: Tool[] = [
 			'Är det svårt att erkänna att du klarat av saker? Vad berättar det?',
 			'Märker du en förändring i stämningen när du gjort övningen ett par dagar i rad?'
 		],
-		pillarSlug: 'depression'
+		pillarSlug: 'depression',
+		need: 'skriva',
+		minutes: { min: 3, max: 5 },
+		involvesWriting: true
 	},
 	{
 		slug: 'dagens-avslut-reflektion',
@@ -490,7 +566,10 @@ export const tools: Tool[] = [
 			'Finns det en sak från idag du kan bära med dig som styrka till imorgon?',
 			'Hur kändes det att aktivt välja att stänga dagen?'
 		],
-		pillarSlug: 'stress-utmattning'
+		pillarSlug: 'stress-utmattning',
+		need: 'natten',
+		minutes: { min: 10, max: 20 },
+		involvesWriting: true
 	},
 	{
 		slug: 'trygghetscirkel-exponering',
@@ -510,7 +589,10 @@ export const tools: Tool[] = [
 			'Vad kändes mest utmanande, och vad hjälpte dig att stanna kvar?',
 			'Vilket nästa lilla steg vill du prova nästa gång?'
 		],
-		pillarSlug: 'social-angest'
+		pillarSlug: 'social-angest',
+		need: 'riktning',
+		minutes: { min: 10 },
+		involvesWriting: true
 	}
 ];
 
@@ -520,6 +602,29 @@ export function getPillarBySlug(slug: string): Pillar | undefined {
 
 export function getToolBySlug(slug: string): Tool | undefined {
 	return tools.find((tool) => tool.slug === slug);
+}
+
+/** Längden som kort text, t.ex. "2 min" eller "10–15 min". */
+export function formatToolMinutes(tool: Tool): string {
+	if (!tool.minutes) return 'I din egen takt';
+	const { min, max } = tool.minutes;
+	return max ? `${min}–${max} min` : `${min} min`;
+}
+
+/**
+ * Övningarna grupperade efter behov, i gruppernas ordning. Inom en grupp kommer
+ * de kortaste först, och övningar utan given längd sist. Tomma grupper utelämnas.
+ */
+export function getToolsByNeed() {
+	const sortKey = (tool: Tool) => tool.minutes?.min ?? Number.POSITIVE_INFINITY;
+	return exerciseNeeds
+		.map((need) => ({
+			...need,
+			tools: tools
+				.filter((tool) => tool.need === need.id)
+				.sort((a, b) => sortKey(a) - sortKey(b))
+		}))
+		.filter((group) => group.tools.length > 0);
 }
 
 export function getToolsForPillar(pillarSlug: string): Tool[] {
