@@ -13,7 +13,7 @@ const EXERCISE_IDS = new Set(tools.map((tool) => tool.slug));
 export type ExerciseSource = 'overview' | 'related' | 'evening' | 'guide' | 'other';
 
 /** Vart besökaren gick från övningens slut. Fast lista. */
-export type ExerciseNextStepTarget = 'related_exercise' | 'overview' | 'guide';
+export type ExerciseNextStepTarget = 'related_exercise' | 'overview' | 'guide' | 'diary' | 'evening';
 
 export type ExerciseOpenedParams = { exercise_id: string; source: ExerciseSource };
 export type ExerciseEndParams = { exercise_id: string };
