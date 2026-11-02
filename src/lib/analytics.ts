@@ -1,6 +1,11 @@
 import { browser, dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { hasAnalyticsConsent } from '$lib/consent';
+import type {
+	ExerciseEndParams,
+	ExerciseNextStepParams,
+	ExerciseOpenedParams
+} from '$lib/exercise-analytics';
 
 type EventName =
 	| 'page_view'
@@ -62,7 +67,10 @@ type EventName =
 	| 'insight_opened'
 	| 'chat_open'
 	| 'first_message_sent'
-	| 'starter_chip_clicked';
+	| 'starter_chip_clicked'
+	| 'exercise_opened'
+	| 'exercise_reached_end'
+	| 'exercise_next_step_clicked';
 
 type EventParams = Record<string, string | number | boolean>;
 type ArticleViewParams = { article_slug: string; category: string };
@@ -795,6 +803,22 @@ export function trackInsightOpened(params: {
 		has_summary: params.has_summary,
 		pattern_count: params.pattern_count
 	});
+}
+
+// ── Övningsdelen ────────────────────────────────────────────────────────────
+// Parametrarna byggs och valideras i exercise-analytics.ts. Bara fasta värden,
+// aldrig fritext, svar, skattningar eller inloggat tillstånd.
+
+export function trackExerciseOpened(params: ExerciseOpenedParams) {
+	trackEvent('exercise_opened', { exercise_id: params.exercise_id, source: params.source });
+}
+
+export function trackExerciseReachedEnd(params: ExerciseEndParams) {
+	trackEvent('exercise_reached_end', { exercise_id: params.exercise_id });
+}
+
+export function trackExerciseNextStepClicked(params: ExerciseNextStepParams) {
+	trackEvent('exercise_next_step_clicked', { exercise_id: params.exercise_id, target: params.target });
 }
 
 function getLandingSessionId() {

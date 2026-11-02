@@ -1,10 +1,22 @@
 <script lang="ts">
+	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/stores';
 	import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
 	import WorldColoringExercise from '$lib/components/WorldColoringExercise.svelte';
 	import { recordCreativeMoment } from '$lib/creative-moments';
+	import {
+		trackExerciseNextStepClicked,
+		trackExerciseOpened,
+		trackExerciseReachedEnd
+	} from '$lib/analytics';
+	import {
+		buildExerciseEndParams,
+		buildExerciseNextStepParams,
+		buildExerciseOpenedParams,
+		type ExerciseNextStepTarget
+	} from '$lib/exercise-analytics';
 	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
 
@@ -23,6 +35,40 @@
 	);
 
 	let creativeMomentSessionId: string | null = null;
+
+	// Mätning: bara övningens slug och fasta källor/mål skickas (exercise-analytics.ts).
+	// afterNavigate körs även när man går från en övning till en annan, där
+	// komponenten återanvänds och onMount inte körs igen.
+	afterNavigate(({ from, to }) => {
+		if (from?.url && to?.url && from.url.pathname === to.url.pathname) return;
+		const params = buildExerciseOpenedParams(data.tool.slug, from?.url?.pathname);
+		if (params) trackExerciseOpened(params);
+	});
+
+	let stepsSection = $state<HTMLElement | null>(null);
+	let reflectionsSection = $state<HTMLElement | null>(null);
+
+	// Slutet räknas som nått när reflektionsfrågorna (eller stegen, om frågor
+	// saknas) syns i vyn. En gång per övning och sidvisning.
+	$effect(() => {
+		const slug = data.tool.slug;
+		const endSection = reflectionsSection ?? stepsSection;
+		if (!endSection || typeof IntersectionObserver === 'undefined') return;
+
+		const observer = new IntersectionObserver((entries) => {
+			if (!entries.some((entry) => entry.isIntersecting)) return;
+			observer.disconnect();
+			const params = buildExerciseEndParams(slug);
+			if (params) trackExerciseReachedEnd(params);
+		});
+		observer.observe(endSection);
+		return () => observer.disconnect();
+	});
+
+	function trackNextStep(target: ExerciseNextStepTarget) {
+		const params = buildExerciseNextStepParams(data.tool.slug, target);
+		if (params) trackExerciseNextStepClicked(params);
+	}
 
 	async function registerWorldColoringMoment() {
 		creativeMomentSessionId ??= crypto.randomUUID();
@@ -72,7 +118,7 @@
 			<h2>Guide i samma område</h2>
 			<p>
 				Övningen hör ihop med guiden
-				<a href={guideHref}>{data.pillar.title}</a>
+				<a href={guideHref} onclick={() => trackNextStep('guide')}>{data.pillar.title}</a>
 				om du vill ha mer bakgrund och fler steg.
 			</p>
 		</section>
@@ -86,7 +132,7 @@
 	{/if}
 
 	{#if data.tool.steps && data.tool.steps.length > 0}
-		<section class="block">
+		<section class="block" bind:this={stepsSection}>
 			<h2>Gör så här</h2>
 			<ol class="step-list">
 				{#each data.tool.steps as step}
@@ -103,7 +149,7 @@
 	{/if}
 
 	{#if data.tool.reflections && data.tool.reflections.length > 0}
-		<section class="block">
+		<section class="block" bind:this={reflectionsSection}>
 			<h2>Reflektera efteråt</h2>
 			<ul class="reflect-list">
 				{#each data.tool.reflections as question}
@@ -119,13 +165,18 @@
 			<p>Om du vill fortsätta i samma område kan du prova någon av de här övningarna.</p>
 			<ul class="link-list">
 				{#each data.relatedTools as relatedTool}
-					<li><a href={`/ovningar/${relatedTool.slug}`}>{relatedTool.title}</a></li>
+					<li>
+							<a
+								href={`/ovningar/${relatedTool.slug}`}
+								onclick={() => trackNextStep('related_exercise')}>{relatedTool.title}</a
+							>
+						</li>
 				{/each}
 			</ul>
 		{:else}
 			<p>
 				Det finns inga fler övningar i det här området just nu. Gå gärna vidare till
-				<a href="/ovningar">övningsöversikten</a>
+				<a href="/ovningar" onclick={() => trackNextStep('overview')}>övningsöversikten</a>
 				för fler lugna nästa steg.
 			</p>
 		{/if}
