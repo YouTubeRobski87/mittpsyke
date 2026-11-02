@@ -15,8 +15,10 @@
 		buildExerciseEndParams,
 		buildExerciseNextStepParams,
 		buildExerciseOpenedParams,
-		type ExerciseNextStepTarget
+		type ExerciseNextStepTarget,
+		type ExerciseOpenedParams
 	} from '$lib/exercise-analytics';
+	import { ANALYTICS_CONSENT_EVENT, hasAnalyticsConsent } from '$lib/consent';
 	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
 
@@ -39,29 +41,75 @@
 	// Mätning: bara övningens slug och fasta källor/mål skickas (exercise-analytics.ts).
 	// afterNavigate körs även när man går från en övning till en annan, där
 	// komponenten återanvänds och onMount inte körs igen.
+	//
+	// Har besökaren inte samtyckt ännu sparas händelsen i minnet och skickas om
+	// samtycket ges medan besökaren är kvar på samma övning. Annars skulle
+	// den första övningen i ett besök aldrig räknas, eftersom cookiebannern
+	// besvaras efter att sidan öppnats. Inget sparas i webbläsarens lagring.
+	type PendingExerciseEvents = {
+		slug: string;
+		opened: ExerciseOpenedParams | null;
+		reachedEnd: boolean;
+	};
+	let pending: PendingExerciseEvents | null = null;
+
 	afterNavigate(({ from, to }) => {
 		if (from?.url && to?.url && from.url.pathname === to.url.pathname) return;
 		const params = buildExerciseOpenedParams(data.tool.slug, from?.url?.pathname);
-		if (params) trackExerciseOpened(params);
+		pending = null;
+		if (!params) return;
+		if (hasAnalyticsConsent()) {
+			trackExerciseOpened(params);
+		} else {
+			pending = { slug: data.tool.slug, opened: params, reachedEnd: false };
+		}
 	});
 
-	let stepsSection = $state<HTMLElement | null>(null);
-	let reflectionsSection = $state<HTMLElement | null>(null);
+	function sendReachedEnd(slug: string) {
+		const params = buildExerciseEndParams(slug);
+		if (!params) return;
+		if (hasAnalyticsConsent()) {
+			trackExerciseReachedEnd(params);
+		} else if (pending?.slug === slug) {
+			pending.reachedEnd = true;
+		}
+	}
 
-	// Slutet räknas som nått när reflektionsfrågorna (eller stegen, om frågor
-	// saknas) syns i vyn. En gång per övning och sidvisning.
+	$effect(() => {
+		function handleConsentChange() {
+			if (!pending || !hasAnalyticsConsent()) return;
+			const { slug, opened, reachedEnd } = pending;
+			pending = null;
+			// Vänta ett varv så att layoutens sidvisning, som skickas på samma
+			// samtyckeshändelse, hamnar före övningens händelser.
+			setTimeout(() => {
+				if (slug !== data.tool.slug) return;
+				if (opened) trackExerciseOpened(opened);
+				if (reachedEnd) sendReachedEnd(slug);
+			}, 0);
+		}
+		window.addEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+		return () => window.removeEventListener(ANALYTICS_CONSENT_EVENT, handleConsentChange);
+	});
+
+	let stepsList = $state<HTMLElement | null>(null);
+	let reflectionsList = $state<HTMLElement | null>(null);
+
+	// Slutet räknas som nått när den sista reflektionsfrågan (eller det sista
+	// steget, om frågor saknas) syns i vyn, inte redan när rubriken gör det.
+	// En gång per övning och sidvisning.
 	$effect(() => {
 		const slug = data.tool.slug;
-		const endSection = reflectionsSection ?? stepsSection;
-		if (!endSection || typeof IntersectionObserver === 'undefined') return;
+		const list = reflectionsList ?? stepsList;
+		const endItem = list?.lastElementChild ?? list;
+		if (!endItem || typeof IntersectionObserver === 'undefined') return;
 
 		const observer = new IntersectionObserver((entries) => {
 			if (!entries.some((entry) => entry.isIntersecting)) return;
 			observer.disconnect();
-			const params = buildExerciseEndParams(slug);
-			if (params) trackExerciseReachedEnd(params);
+			sendReachedEnd(slug);
 		});
-		observer.observe(endSection);
+		observer.observe(endItem);
 		return () => observer.disconnect();
 	});
 
@@ -132,9 +180,9 @@
 	{/if}
 
 	{#if data.tool.steps && data.tool.steps.length > 0}
-		<section class="block" bind:this={stepsSection}>
+		<section class="block">
 			<h2>Gör så här</h2>
-			<ol class="step-list">
+			<ol class="step-list" bind:this={stepsList}>
 				{#each data.tool.steps as step}
 					<li>{step}</li>
 				{/each}
@@ -149,9 +197,9 @@
 	{/if}
 
 	{#if data.tool.reflections && data.tool.reflections.length > 0}
-		<section class="block" bind:this={reflectionsSection}>
+		<section class="block">
 			<h2>Reflektera efteråt</h2>
-			<ul class="reflect-list">
+			<ul class="reflect-list" bind:this={reflectionsList}>
 				{#each data.tool.reflections as question}
 					<li>{question}</li>
 				{/each}

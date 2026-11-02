@@ -89,7 +89,7 @@ describe('kopplingen i analytics.ts och på övningssidan', () => {
 	it('bygger alla övningsevent via de validerande funktionerna', () => {
 		const script = page.slice(0, page.indexOf('</script>'));
 		for (const call of script.matchAll(/trackExercise\w+\(([^)]*)\)/g)) {
-			expect(call[1]).toBe('params');
+			expect(['params', 'opened']).toContain(call[1]);
 		}
 		// Inget innehåll ur övningen eller kontot får hamna i mätningen.
 		expect(script).not.toMatch(/trackExercise\w+\([^)]*(title|steps|reflections|purpose|session|user)/);
