@@ -4,8 +4,6 @@
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import SeoHead from '$lib/components/SeoHead.svelte';
-	import WorldColoringExercise from '$lib/components/WorldColoringExercise.svelte';
-	import { recordCreativeMoment } from '$lib/creative-moments';
 	import {
 		trackExerciseNextStepClicked,
 		trackExerciseOpened,
@@ -20,7 +18,6 @@
 	} from '$lib/exercise-analytics';
 	import { ANALYTICS_CONSENT_EVENT, hasAnalyticsConsent } from '$lib/consent';
 	import { formatToolMinutes } from '$lib/data/seo-architecture';
-	import { supabase } from '$lib/supabase';
 	import type { PageData } from './$types';
 
 	let { data } = $props<{ data: PageData }>();
@@ -125,8 +122,34 @@
 		if (params) trackExerciseNextStepClicked(params);
 	}
 
+	// Målarytan och sparandet av kreativa stunder behövs bara på Måla i världen.
+	// De laddas därför först där, så att övriga övningssidor slipper koden.
+	type ColoringComponent = typeof import('$lib/components/WorldColoringExercise.svelte').default;
+	let WorldColoringExercise = $state<ColoringComponent | null>(null);
+
+	$effect(() => {
+		if (data.tool.slug !== 'mala-i-varlden' || WorldColoringExercise) return;
+		void import('$lib/components/WorldColoringExercise.svelte').then((module) => {
+			WorldColoringExercise = module.default;
+		});
+	});
+
+	let closingHeading = $state<HTMLElement | null>(null);
+
+	// "Klar för nu" i målarytan leder vidare till sidans lugna avslutning.
+	function goToClosing() {
+		if (!closingHeading) return;
+		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		closingHeading.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+		closingHeading.focus({ preventScroll: true });
+	}
+
 	async function registerWorldColoringMoment() {
 		creativeMomentSessionId ??= crypto.randomUUID();
+		const [{ recordCreativeMoment }, { supabase }] = await Promise.all([
+			import('$lib/creative-moments'),
+			import('$lib/supabase')
+		]);
 		const result = await recordCreativeMoment(supabase, creativeMomentSessionId);
 		if (!result.ok && result.reason === 'save_failed') {
 			console.error('[creative-moments] kunde inte spara stund', result.error?.message);
@@ -175,8 +198,17 @@
 	{/if}
 
 	{#if data.tool.slug === 'mala-i-varlden'}
-		<section class="block interactive-block">
-			<WorldColoringExercise onCreativeMoment={registerWorldColoringMoment} />
+		<section class="block interactive-block" aria-labelledby="coloring-heading">
+			<h2 id="coloring-heading" class="interactive-heading">Måla här</h2>
+			{#if WorldColoringExercise}
+				<WorldColoringExercise
+					showIntro={false}
+					onCreativeMoment={registerWorldColoringMoment}
+					onDone={goToClosing}
+				/>
+			{:else}
+				<p class="interactive-loading">Målarytan laddas…</p>
+			{/if}
 		</section>
 	{/if}
 
@@ -192,7 +224,7 @@
 	{/if}
 
 	<section class="block closing" aria-labelledby="closing-heading">
-		<h2 id="closing-heading">När du är klar</h2>
+		<h2 id="closing-heading" tabindex="-1" bind:this={closingHeading}>När du är klar</h2>
 		<p>
 			Det räcker så här. Du behöver inte göra något mer. Vill du minnas något från övningen kan du
 			skriva några rader, men det är helt frivilligt.
@@ -318,6 +350,25 @@
 	.interactive-block {
 		padding: 0;
 		overflow: hidden;
+	}
+
+	.interactive-heading {
+		padding: 1rem 1rem 0;
+	}
+
+	.interactive-loading {
+		min-height: 24rem;
+		padding: 0 1rem 1rem;
+		opacity: 0.72;
+	}
+
+	#closing-heading:focus {
+		outline: none;
+	}
+
+	#closing-heading:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 4px;
 	}
 
 	.block a {
