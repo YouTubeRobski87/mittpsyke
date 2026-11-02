@@ -18,14 +18,22 @@ warnAboutUnexpectedPublicEnv(publicEnv)
 const metaDescriptionPattern = /<meta\s+name=(["'])description\1[^>]*>/gi
 const jsonLdScriptPattern = /(<script\s+type=(["'])application\/ld\+json\2[^>]*>)([\s\S]*?)(<\/script>)/gi
 
-function dedupeMetaDescriptions(html: string): string {
+// Ersätter dubbletten med en neutral meta i stället för att ta bort den.
+// Svelte hydrerar sidhuvudet nod för nod efter position: saknas en nod som
+// komponenten renderade glider resten ur fas, hydreringen ger upp
+// (hydration_mismatch) och sidhuvudet byggs om i klienten, så att t.ex.
+// brödsmulornas JSON-LD hamnar två gånger i DOM:en. Platshållaren har inget
+// name och räknas därför inte som en metabeskrivning av sökmotorer.
+export const DEDUPED_META_DESCRIPTION_PLACEHOLDER = '<meta data-deduped-description="">'
+
+export function dedupeMetaDescriptions(html: string): string {
 	const matches = [...html.matchAll(metaDescriptionPattern)]
 	if (matches.length <= 1) return html
 
 	const keepIndex = matches[matches.length - 1].index
 	return html.replace(metaDescriptionPattern, (match: string, ...args: unknown[]) => {
 		const offset = args[args.length - 2]
-		return offset === keepIndex ? match : ''
+		return offset === keepIndex ? match : DEDUPED_META_DESCRIPTION_PLACEHOLDER
 	})
 }
 
