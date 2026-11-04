@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import OpenAI from 'openai';
+import { normalizeOpenAIError } from '$lib/server/ai/providers/openai-text-provider';
+import { classifyAIFailure } from '$lib/server/ai/text-generation-contract';
 import { RateLimiter } from '$lib/server/rate-limit';
 import type { RequestHandler } from './$types';
 
@@ -76,7 +78,15 @@ Avsluta gärna med en liten uppmuntrande tanke.`.trim()
 		}
 		return json({ text });
 	} catch (err) {
-		console.error('Horoscope API error:', err);
+		// Bara felkod och status loggas, aldrig leverantörens fritext.
+		const aiError = normalizeOpenAIError(err);
+		console.error(classifyAIFailure(aiError) === 'configuration' ? '[ai:config]' : '[ai:error]', {
+			label: 'horoscope',
+			kind: classifyAIFailure(aiError),
+			code: aiError.code,
+			providerStatus: aiError.providerStatus,
+			providerCode: aiError.providerCode
+		});
 		return json({ error: 'Could not generate horoscope' }, { status: 500 });
 	}
 };
