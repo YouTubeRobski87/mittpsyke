@@ -3,6 +3,7 @@ import {
 	createDefaultTextProvider,
 	hasOpenAITextProviderConfiguration
 } from './providers/openai-text-provider';
+import { validateOpenAITextModel } from './providers/openai-model-capabilities';
 import {
 	AITextGenerationError,
 	type AIModelConfiguration,
@@ -45,6 +46,34 @@ const modelConfigurations: Record<AITextPurpose, AIModelConfiguration> = {
 		maxOutputTokens: 400
 	}
 };
+
+/**
+ * Granskar de upplösta modellvalen en gång när modulen laddas. Felet stoppar
+ * inte uppstarten - anropet för det syftet ger ett konfigurationsfel i stället -
+ * men raden gör ett felaktigt modellval synligt direkt efter en deploy. Ett
+ * syntaktiskt ogiltigt värde loggas inte, eftersom det kan vara en felinklistrad
+ * nyckel.
+ */
+export function reportModelConfigurationProblems(
+	configurations: Readonly<Record<string, AIModelConfiguration>> = modelConfigurations
+): number {
+	let problems = 0;
+	for (const [purpose, configuration] of Object.entries(configurations)) {
+		if (!configuration.model) continue;
+		const validation = validateOpenAITextModel(configuration.model);
+		if (validation.ok) continue;
+		problems += 1;
+		console.error('[ai:config]', {
+			purpose,
+			model: validation.reason === 'invalid_model_id' ? null : configuration.model,
+			kind: 'configuration',
+			providerCode: validation.reason
+		});
+	}
+	return problems;
+}
+
+reportModelConfigurationProblems();
 
 /**
  * Composition root for the currently configured text provider. Product code

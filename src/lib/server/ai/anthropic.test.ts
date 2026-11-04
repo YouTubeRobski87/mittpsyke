@@ -4,7 +4,11 @@ import { CLAUDE_MODELS } from './models';
 const mocks = vi.hoisted(() => ({ create: vi.fn(), stream: vi.fn(), client: vi.fn(), env: { ANTHROPIC_API_KEY: 'synthetic-test-key' } }));
 vi.mock('$env/dynamic/private', () => ({ env: mocks.env }));
 vi.mock('@anthropic-ai/sdk', () => {
-	class APIError extends Error {}
+	class APIError extends Error {
+		constructor(public status?: number, public error?: unknown, message?: string) {
+			super(message);
+		}
+	}
 	class Anthropic {
 		static APIError = APIError;
 		messages = { create: mocks.create, stream: mocks.stream };
@@ -74,4 +78,79 @@ it('behåller uttrycklig timeout och tokentak', async () => {
 	await callClaude({ ...request, timeoutMs: 15_000, maxTokens: 4000 });
 	expect(mocks.client).toHaveBeenCalledWith(expect.objectContaining({ timeout: 15_000 }));
 	expect(mocks.create.mock.calls[0][0].max_tokens).toBe(4000);
+});
+
+describe('Claude-kapaciteter och säker felhantering (etapp 2)', () => {
+	it('har en kapacitetsrad för varje registrerad modell', async () => {
+		const { CLAUDE_MODEL_CAPABILITIES } = await import('./anthropic');
+		expect(Object.keys(CLAUDE_MODEL_CAPABILITIES).sort()).toEqual(Object.values(CLAUDE_MODELS).sort());
+	});
+
+	it('skickar aldrig temperature, top_p eller top_k till Claude', async () => {
+		for (const model of Object.values(CLAUDE_MODELS)) {
+			mocks.create.mockClear();
+			await callClaude({ ...request, model });
+			const sent = mocks.create.mock.calls[0][0];
+			for (const key of ['temperature', 'top_p', 'top_k', 'budget_tokens']) expect(sent).not.toHaveProperty(key);
+		}
+	});
+
+	it('returnerar ett klippt svar som förut men loggar stoppskälet utan text', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		mocks.create.mockResolvedValueOnce({ ...response, content: [{ type: 'text', text: 'Syntetiskt halvt' }], stop_reason: 'max_tokens' });
+		await expect(callClaude(request)).resolves.toBe('Syntetiskt halvt');
+		expect(warn).toHaveBeenCalledWith('[ai:truncated]', { label: 'synthetic-test', model: CLAUDE_MODELS.deep, stopReason: 'max_tokens', hasText: true });
+		expect(JSON.stringify(warn.mock.calls)).not.toContain('Syntetiskt halvt');
+	});
+
+	it('loggar inte stoppskäl för fullständiga svar', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		await callClaude(request);
+		expect(warn).not.toHaveBeenCalled();
+	});
+
+	it('loggar okända fel utan fritext och märker saknad nyckel som konfigurationsfel', async () => {
+		const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+		mocks.create.mockRejectedValueOnce(new Error('Syntetisk fritext med sk-ant-hemlig'));
+		await expect(callClaude(request)).resolves.toBeNull();
+		expect(JSON.stringify(error.mock.calls)).not.toContain('sk-ant-hemlig');
+
+		mocks.env.ANTHROPIC_API_KEY = '';
+		await expect(callClaude(request)).resolves.toBeNull();
+		expect(error).toHaveBeenCalledWith('[ai:config]', expect.objectContaining({ kind: 'configuration', providerCode: 'missing_api_key' }));
+	});
+
+	it('loggar strömfel utan fritext och kastar fortfarande vidare', async () => {
+		const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+		mocks.stream.mockImplementationOnce(() => ({
+			async *[Symbol.asyncIterator]() {
+				throw new Error('Syntetisk timeout med användartext');
+			}
+		}));
+		await expect(collect()).rejects.toThrow('Syntetisk timeout');
+		expect(JSON.stringify(error.mock.calls)).not.toContain('användartext');
+	});
+
+	it('loggar trunkerade strömmar', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		mocks.stream.mockImplementationOnce(() => ({
+			async *[Symbol.asyncIterator]() {
+				yield { type: 'content_block_delta', delta: { type: 'text_delta', text: 'Svar' } };
+			},
+			finalMessage: vi.fn().mockResolvedValue({ ...response, stop_reason: 'max_tokens' })
+		}));
+		await expect(collect()).resolves.toEqual(['Svar']);
+		expect(warn).toHaveBeenCalledWith('[ai:truncated]', expect.objectContaining({ stopReason: 'max_tokens' }));
+	});
+});
+
+it('loggar API-fel med status och feltyp men utan leverantörens fritext', async () => {
+	const error = vi.spyOn(console, 'error').mockImplementation(() => {});
+	const { default: Anthropic } = await import('@anthropic-ai/sdk');
+	// Samma argumentordning som SDK:ts APIError: status, svarskropp, meddelande, headers.
+	const apiError = new Anthropic.APIError(404, { error: { type: 'not_found_error' } }, 'Fritext sk-ant-hemlig', new Headers());
+	mocks.create.mockRejectedValueOnce(apiError);
+	await expect(callClaude(request)).resolves.toBeNull();
+	expect(error).toHaveBeenCalledWith('[ai:config]', expect.objectContaining({ kind: 'configuration', providerStatus: 404, providerCode: 'not_found_error' }));
+	expect(JSON.stringify(error.mock.calls)).not.toContain('sk-ant-hemlig');
 });

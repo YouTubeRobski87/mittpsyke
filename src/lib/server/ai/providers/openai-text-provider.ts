@@ -6,36 +6,101 @@ import {
 	type AITextProvider,
 	type AITextProviderRequest
 } from '../text-generation-contract';
+import { validateOpenAITextModel, type OpenAIModelValidation } from './openai-model-capabilities';
+
+export {
+	OPENAI_TEXT_MODEL_CAPABILITIES,
+	validateOpenAITextModel,
+	type OpenAIModelValidation,
+	type OpenAITextModelCapabilities
+} from './openai-model-capabilities';
 
 type OpenAIClient = Pick<OpenAI, 'chat'>;
+
+export type OpenAIChatParams = {
+	model: string;
+	messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
+	max_completion_tokens: number;
+	temperature?: number;
+	frequency_penalty?: number;
+	presence_penalty?: number;
+	response_format?: { type: 'json_object' };
+};
+
+/**
+ * Bygger Chat Completions-parametrarna utifrån modellens granskade egenskaper.
+ * Kastar ett konfigurationsfel för otillåtna modeller och för JSON-läge som
+ * modellen saknar stöd för - JSON-läget kan inte tyst släppas eftersom
+ * anropsställena tolkar svaret som JSON.
+ */
+export function buildOpenAIChatParams(
+	request: AITextProviderRequest,
+	validation: OpenAIModelValidation = validateOpenAITextModel(request.model)
+): OpenAIChatParams {
+	if (!validation.ok) {
+		throw new AITextGenerationError('configuration', 'AI-modellen är inte godkänd för MittPsyke.', {
+			providerCode: validation.reason
+		});
+	}
+	const { capabilities } = validation;
+	if (request.outputFormat === 'json_object' && !capabilities.jsonObject) {
+		throw new AITextGenerationError('configuration', 'AI-modellen saknar stöd för JSON-svar.', {
+			providerCode: 'json_object_unsupported'
+		});
+	}
+
+	const messages = [
+		...(request.systemInstructions ?? [])
+			.filter(Boolean)
+			.map((content) => ({ role: 'system' as const, content })),
+		...request.messages
+	];
+
+	return {
+		model: request.model,
+		messages,
+		...(capabilities.temperature && request.temperature !== undefined ? { temperature: request.temperature } : {}),
+		...(capabilities.penalties && request.frequencyPenalty !== undefined
+			? { frequency_penalty: request.frequencyPenalty }
+			: {}),
+		...(capabilities.penalties && request.presencePenalty !== undefined
+			? { presence_penalty: request.presencePenalty }
+			: {}),
+		...(request.outputFormat === 'json_object' ? { response_format: { type: 'json_object' as const } } : {}),
+		max_completion_tokens: request.maxOutputTokens
+	};
+}
 
 /** Maps MittPsyke's neutral text request to the OpenAI chat-completions API. */
 export class OpenAITextProvider implements AITextProvider {
 	constructor(private readonly client: OpenAIClient) {}
 
 	async generate(request: AITextProviderRequest): Promise<string> {
-		const messages = [
-			...(request.systemInstructions ?? [])
-				.filter(Boolean)
-				.map((content) => ({ role: 'system' as const, content })),
-			...request.messages
-		];
-
-		const common = {
-			model: request.model,
-			messages,
-			temperature: request.temperature,
-			frequency_penalty: request.frequencyPenalty,
-			presence_penalty: request.presencePenalty,
-			...(request.outputFormat === 'json_object' ? { response_format: { type: 'json_object' as const } } : {})
-		};
+		// Valideringen ligger före try-blocket: ett konfigurationsfel ska inte
+		// passera leverantörsfelmappningen och se ut som ett tillfälligt fel.
+		const params = buildOpenAIChatParams(request);
 		try {
-			const completion = await this.client.chat.completions.create(
-				{ ...common, max_completion_tokens: request.maxOutputTokens },
-				{ timeout: request.timeoutMs }
-			);
-			const text = completion.choices[0]?.message?.content?.trim();
-			if (!text) throw new AITextGenerationError('empty_response', 'AI-svaret saknade text.');
+			const completion = await this.client.chat.completions.create(params, { timeout: request.timeoutMs });
+			const choice = completion.choices[0];
+			const text = choice?.message?.content?.trim();
+			if (choice?.finish_reason === 'length') {
+				// Svaret klipptes vid tokentaket. Texten returneras som tidigare,
+				// men loggen visar att budgeten är för snäv för modellen.
+				console.warn('[ai:truncated]', {
+					purpose: request.purpose,
+					model: request.model,
+					finishReason: 'length',
+					hasText: Boolean(text)
+				});
+			}
+			if (!text) {
+				const providerCode = choice?.message?.refusal
+					? 'refusal'
+					: choice?.finish_reason === 'length' || choice?.finish_reason === 'content_filter'
+						? choice.finish_reason
+						: undefined;
+				throw new AITextGenerationError('empty_response', 'AI-svaret saknade text.', { providerCode });
+			}
 
 			return text;
 		} catch (error) {
@@ -45,8 +110,7 @@ export class OpenAITextProvider implements AITextProvider {
 }
 
 // Alla nuvarande textsyften använder max_completion_tokens. Det håller adaptern
-// kompatibel när OPENAI_CHAT_MODEL pekar på GPT-5-serien och undviker att ett
-// enskilt produktflöde fastnar på det äldre max_tokens-fältet.
+// kompatibel med GPT-5-serien och undviker det äldre, avvecklade max_tokens-fältet.
 
 export function normalizeOpenAIError(error: unknown): AITextGenerationError {
 	if (error instanceof AITextGenerationError) return error;
