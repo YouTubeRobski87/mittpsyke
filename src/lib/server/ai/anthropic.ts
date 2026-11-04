@@ -94,6 +94,22 @@ export type ClaudeRequest = {
 
 const DEFAULT_TIMEOUT_MS = 20_000;
 
+// Uttryckliga kapabiliteter för de registrerade modellerna. Nya modeller måste
+// granskas här; Haiku 4.5 stöder varken adaptive thinking eller output_config.effort.
+const SUPPORTS_ADAPTIVE_THINKING: Record<ClaudeModel, boolean> = {
+	'claude-opus-5': true,
+	'claude-haiku-4-5': false
+};
+
+function thinkingOptions(model: ClaudeModel, effort: ClaudeRequest['effort']): {
+	thinking?: { type: 'adaptive' };
+	output_config?: { effort: 'low' | 'medium' | 'high' };
+} {
+	return SUPPORTS_ADAPTIVE_THINKING[model]
+		? { thinking: { type: 'adaptive' }, output_config: { effort: effort ?? 'low' } }
+		: {};
+}
+
 /**
  * Kör ett Claude-anrop och returnerar texten, eller null om anropet misslyckas
  * eller ingen nyckel är konfigurerad. Kastar aldrig — anropsställena har alla
@@ -118,8 +134,7 @@ export async function callClaude(request: ClaudeRequest): Promise<string | null>
 			max_tokens: request.maxTokens,
 			system: request.system,
 			messages,
-			thinking: { type: 'adaptive' },
-			output_config: { effort: request.effort ?? 'low' }
+			...thinkingOptions(model, request.effort)
 		});
 
 		logUsage(request.label, model, response.usage);
@@ -161,8 +176,7 @@ export async function* streamClaudeText(
 		max_tokens: request.maxTokens,
 		system: request.system,
 		messages: request.messages,
-		thinking: { type: 'adaptive' },
-		output_config: { effort: request.effort ?? 'low' }
+		...thinkingOptions(model, request.effort)
 	});
 
 	try {
