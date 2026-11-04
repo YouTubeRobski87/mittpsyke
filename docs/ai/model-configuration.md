@@ -30,8 +30,10 @@ och JSON-läge får skickas. Godkända i dag: `gpt-4o-mini`, `gpt-4o-mini-2024-0
 densamma som före etapp 2 (testat i `openai-model-capabilities.test.ts`).
 
 - Ett syntaktiskt ogiltigt värde (blanksteg i mitten, citattecken, kontrolltecken)
-  ger `invalid_model_id`. Värdet loggas inte, eftersom det kan vara en felinklistrad nyckel.
+  ger `invalid_model_id`.
 - Ett okänt eller ännu inte granskat ID ger `model_not_allowed`. Inget anrop görs.
+- Ett avvisat värde loggas aldrig, oavsett orsak, eftersom även en kort nyckel kan
+  se ut som ett giltigt modell-ID. Bara godkända modell-ID förekommer i loggen.
 - Båda är konfigurationsfel (`code: 'configuration'`). De loggas med prefixet
   `[ai:config]` dels en gång när servern startar, dels vid varje anrop.
   Tillfälliga fel loggas med `[ai:error]` och `kind: 'transient'`.

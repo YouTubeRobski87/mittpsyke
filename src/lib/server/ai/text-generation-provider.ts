@@ -51,8 +51,8 @@ const modelConfigurations: Record<AITextPurpose, AIModelConfiguration> = {
  * Granskar de upplösta modellvalen en gång när modulen laddas. Felet stoppar
  * inte uppstarten - anropet för det syftet ger ett konfigurationsfel i stället -
  * men raden gör ett felaktigt modellval synligt direkt efter en deploy. Ett
- * syntaktiskt ogiltigt värde loggas inte, eftersom det kan vara en felinklistrad
- * nyckel.
+ * värde som inte är godkänt loggas aldrig: även en kort nyckel kan se ut som
+ * ett giltigt modell-ID.
  */
 export function reportModelConfigurationProblems(
 	configurations: Readonly<Record<string, AIModelConfiguration>> = modelConfigurations
@@ -65,7 +65,7 @@ export function reportModelConfigurationProblems(
 		problems += 1;
 		console.error('[ai:config]', {
 			purpose,
-			model: validation.reason === 'invalid_model_id' ? null : configuration.model,
+			model: null,
 			kind: 'configuration',
 			providerCode: validation.reason
 		});

@@ -97,6 +97,16 @@ describe('gemensam felloggning i textlagret', () => {
 		expect(errorSpy).toHaveBeenCalledWith('[ai:config]', expect.objectContaining({ model: null, providerCode: 'invalid_model_id' }));
 	});
 
+	it('loggar inte en kort nyckel som råkar se ut som ett giltigt modell-ID', async () => {
+		const keyLike = 'sk-' + 'a1b2c3d4'.repeat(6);
+		env.OPENAI_DIARY_REFLECTION_MODEL = keyLike;
+		env.OPENAI_API_KEY = 'synthetic-test-key';
+		const { generateAIText } = await generator();
+		await expect(generateAIText(request)).rejects.toMatchObject({ code: 'configuration', providerCode: 'model_not_allowed' });
+		expect(JSON.stringify(errorSpy.mock.calls)).not.toContain(keyLike);
+		expect(errorSpy).toHaveBeenCalledWith('[ai:config]', expect.objectContaining({ model: null, providerCode: 'model_not_allowed' }));
+	});
+
 	it('loggar saknad nyckel som konfigurationsfel', async () => {
 		const { generateAIText } = await generator();
 		await expect(generateAIText(request)).rejects.toMatchObject({ code: 'configuration' });
@@ -126,7 +136,7 @@ describe('granskning av modellval vid uppstart', () => {
 		expect(errorSpy).toHaveBeenCalledTimes(1);
 		expect(errorSpy).toHaveBeenCalledWith('[ai:config]', {
 			purpose: 'user-memory',
-			model: 'gpt-9-imaginary',
+			model: null,
 			kind: 'configuration',
 			providerCode: 'model_not_allowed'
 		});

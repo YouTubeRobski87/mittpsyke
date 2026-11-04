@@ -2,6 +2,7 @@ import {
 	createConfiguredTextProvider,
 	getConfiguredAIModelConfiguration
 } from './text-generation-provider';
+import { validateOpenAITextModel } from './providers/openai-model-capabilities';
 import {
 	AITextGenerationError,
 	classifyAIFailure,
@@ -47,8 +48,8 @@ export function logAITextFailure(purpose: string, model: string | null, error: A
 	const kind = classifyAIFailure(error);
 	console.error(kind === 'configuration' ? '[ai:config]' : '[ai:error]', {
 		purpose,
-		// Ett syntaktiskt ogiltigt modellvärde kan vara en felinklistrad nyckel.
-		model: error.providerCode === 'invalid_model_id' ? null : model,
+		// Bara godkända modell-ID loggas. Ett okänt värde kan vara en felinklistrad nyckel.
+		model: model && validateOpenAITextModel(model).ok ? model : null,
 		kind,
 		code: error.code,
 		providerStatus: error.providerStatus,
