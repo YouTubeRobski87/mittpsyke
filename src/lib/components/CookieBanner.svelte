@@ -192,6 +192,32 @@
 	/* Fokus: sajtens globala ring (app.css, #7dd3fc på mörk yta, ~11:1) gäller
 	   båda valen likadant. Ingen egen regel här, så de kan inte glida isär. */
 
+	/* Smala skärmar. Med staplade knappar tog bannern 229 av 664 px (34 %) på en
+	 * vanlig telefon. Knapparna står nu sida vid sida och texten är något
+	 * mindre. Texten, knapparna och valen är desamma, och båda valen har
+	 * fortfarande samma stil och storlek. */
+	@media (max-width: 639px) {
+		.cookie-banner {
+			gap: 0.45rem;
+			padding: 0.65rem 0.85rem;
+		}
+
+		.cookie-banner-text {
+			font-size: 0.8rem;
+			line-height: 1.45;
+		}
+
+		.cookie-banner-actions {
+			flex-direction: row;
+		}
+
+		.cookie-choice {
+			padding: 0.5rem 0.5rem;
+			font-size: 0.82rem;
+			min-height: 44px;
+		}
+	}
+
 	@media (min-width: 640px) {
 		.cookie-banner {
 			bottom: 1rem;
