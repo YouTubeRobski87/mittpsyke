@@ -176,7 +176,7 @@ export type CompanionArtBounds = {
 export const PROGRESS_POSE_ART_BOUNDS: Record<string, CompanionArtBounds> = {
 	// bear-sitting.png. Sittande i halvprofil.
 	'bear-sitting': { canvasWidth: 768, canvasHeight: 512, left: 151, top: 41, right: 601, bottom: 489 },
-	// bear-sitting-back.png. Uppmätt alfabox: kroppen börjar 186 px in och
+	// bear-sitting-back.webp (samma alfakanal som PNG-originalet). Uppmätt alfabox: kroppen börjar 186 px in och
 	// tassarna slutar 496 px ned, så markpunkten hamnar där björnen faktiskt
 	// sitter och inte i canvasens tomma marginal.
 	'bear-sitting-away': {
