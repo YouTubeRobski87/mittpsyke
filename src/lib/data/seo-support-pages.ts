@@ -7,9 +7,9 @@ const updatedDate = '4 april 2026';
 
 export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 	'anonymt-samtalstod-online': {
-		title: 'Anonymt samtalsstöd online – trygg start | MittPsyke',
+		title: 'Anonymt samtalsstöd online med AI – trygg start | MittPsyke',
 		description:
-			'Utforska anonymt samtalsstöd online när du vill börja varsamt. Läs om låg tröskel, reflektion i text, vad stödet kan hjälpa med och hur det skiljer sig från vård.',
+			'Anonymt samtalsstöd online med AI när du vill börja varsamt. Läs om låg tröskel, reflektion i text, vad AI-stödet kan hjälpa med och hur det skiljer sig från vård.',
 		canonical: canonical('/anonymt-samtalstod-online'),
 		ogTitle: 'Anonymt samtalsstöd online | MittPsyke',
 		ogDescription:
@@ -42,7 +42,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		resourceListTitle: 'Det här kan du göra vidare på MittPsyke',
 		resourceListItems: [
 			{ href: '/chatta-anonymt', label: 'Chatta anonymt utan konto', description: 'om du vill börja direkt och prata anonymt i text.' },
-			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill förstå hur ett anonymt samtal brukar börja.' },
+			{ href: '/chatta-anonymt-med-nagon', label: 'Anonym chatt med AI', description: 'om du vill förstå hur ett anonymt samtal brukar börja.' },
 			{ href: '/chattstod-psykisk-ohalsa', label: 'Läs om chattstöd vid psykisk ohälsa', description: 'för att få en bredare bild av hur textbaserat stöd kan hjälpa tidigt.' },
 			{ href: '/prata-anonymt-online', label: 'Prata anonymt online', description: 'om du vill läsa mer om vad du kan ta upp och hur du kommer igång.' },
 			{ href: '/dagbok', label: 'Använd dagboken', description: 'när det känns lättare att skriva för dig själv först.' }
@@ -84,12 +84,12 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		description:
 			'Så fungerar anonym chatt med AI-stöd hos MittPsyke: vad som brukar hända i samtalet, hur AI:n kan hjälpa dig reflektera och vad du kan förvänta dig.',
 		canonical: canonical('/chatta-anonymt-med-nagon'),
-		ogTitle: 'Chatta anonymt med någon | MittPsyke',
+		ogTitle: 'Chatta anonymt med AI | MittPsyke',
 		ogDescription:
-			'En genomgång av hur anonym chatt kan fungera när du behöver börja enkelt och utan press.',
-		h1: 'Chatta anonymt med någon utan konto',
+			'En genomgång av hur anonym chatt med AI kan fungera när du behöver börja enkelt och utan press.',
+		h1: 'Chatta anonymt med AI, utan konto',
 		lead:
-			'När något känns svårt kan text vara en enklare start än att prata högt. Här kan du chatta anonymt med någon utan konto, börja direkt och få en tydlig bild av hur samtalet fungerar. Du behöver inte formulera allt perfekt från start.',
+			'När något känns svårt kan text vara en enklare start än att prata högt. Här chattar du anonymt med en AI, inte med en människa. Du behöver inget konto, kan börja direkt och få en tydlig bild av hur samtalet fungerar. Vill du hellre prata med en människa finns stödlinjer samlade på stodlinjer.se.',
 		primaryCta: { href: '/chat', label: 'Öppna chatten' },
 		secondaryCta: { href: '/prata-anonymt-online', label: 'Läs om att prata anonymt' },
 		sections: [
@@ -156,9 +156,9 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'chattstod-psykisk-ohalsa': {
-		title: 'Chattstöd vid psykisk ohälsa | Tidigt stöd online | MittPsyke',
+		title: 'AI-chattstöd vid psykisk ohälsa | Tidigt stöd online | MittPsyke',
 		description:
-			'Förstå vad psykisk ohälsa kan innebära i vardagen och hur chattstöd kan hjälpa tidigt när du vill sätta ord på det som känns tungt.',
+			'Förstå vad psykisk ohälsa kan innebära i vardagen och hur chattstöd med AI kan hjälpa tidigt när du vill sätta ord på det som känns tungt.',
 		canonical: canonical('/chattstod-psykisk-ohalsa'),
 		ogTitle: 'Chattstöd vid psykisk ohälsa | MittPsyke',
 		ogDescription:
@@ -190,7 +190,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		],
 		resourceListTitle: 'Stöd som kan passa beroende på vad som känns närmast',
 		resourceListItems: [
-			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill läsa mer om hur själva samtalet brukar fungera.' },
+			{ href: '/chatta-anonymt-med-nagon', label: 'Anonym chatt med AI', description: 'om du vill läsa mer om hur själva samtalet brukar fungera.' },
 			{ href: '/hjalp-mot-oro-online', label: 'Hjälp mot oro online', description: 'om det framför allt är grubbel, rastlöshet eller framtidstankar som tar plats.' },
 			{ href: '/hjalp-vid-depression-online', label: 'Hjälp vid depression online', description: 'om tyngd, låg ork och nedstämdhet är det som dominerar.' },
 			{ href: '/stod-vid-stress-online', label: 'Stöd vid stress online', description: 'om kroppen och vardagen känns överbelastade.' }
@@ -444,7 +444,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 	'psykiskt-stod-online': {
 		title: 'Psykiskt stöd online | Vad digitalt stöd är och inte är | MittPsyke',
 		description:
-			'Läs vad digitalt psykiskt stöd online kan vara, vilka fördelar och begränsningar som finns och när det fungerar som en bra första ingång.',
+			'Läs vad digitalt psykiskt stöd online kan vara, för- och nackdelar och när det passar som första ingång. MittPsykes chatt är en AI, inte en människa.',
 		canonical: canonical('/psykiskt-stod-online'),
 		ogTitle: 'Psykiskt stöd online | MittPsyke',
 		ogDescription:
@@ -515,7 +515,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 	'prata-anonymt-online': {
 		title: 'Prata anonymt online | Hur du börjar och vad du kan ta upp | MittPsyke',
 		description:
-			'Läs varför anonymitet kan hjälpa, vad du kan prata om i ett anonymt stöd och hur du kommer igång när du vill börja utan press.',
+			'Läs varför anonymitet kan hjälpa, vad du kan ta upp och hur du kommer igång utan press. MittPsykes chatt är en AI, inte en människa.',
 		canonical: canonical('/prata-anonymt-online'),
 		ogTitle: 'Prata anonymt online | MittPsyke',
 		ogDescription:
@@ -547,7 +547,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		],
 		resourceListTitle: 'Sidor som kan hjälpa dig vidare',
 		resourceListItems: [
-			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill läsa mer om hur ett anonymt samtal brukar fungera.' },
+			{ href: '/chatta-anonymt-med-nagon', label: 'Anonym chatt med AI', description: 'om du vill läsa mer om hur ett anonymt samtal brukar fungera.' },
 			{ href: '/anonymt-samtalstod-online', label: 'Anonymt samtalsstöd online', description: 'för en djupare genomgång av varför låg tröskel kan spela stor roll.' },
 			{ href: '/chattstod-psykisk-ohalsa', label: 'Chattstöd vid psykisk ohälsa', description: 'om du vill förstå hur stöd i text kan hjälpa tidigt.' },
 			{ href: '/dagbok', label: 'Dagbok', description: 'om du vill börja skriva för dig själv innan du öppnar ett samtal.' }
@@ -584,9 +584,9 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'samtalsstod-utan-vantetid': {
-		title: 'Samtalsstöd utan väntetid | När du behöver börja nu | MittPsyke',
+		title: 'Samtalsstöd utan väntetid | AI-chatt när du vill börja nu | MittPsyke',
 		description:
-			'Läs om hur digitalt samtalsstöd kan fylla ett gap när vårdköer eller trösklar gör att hjälpen känns långt bort, och vad som skiljer det från traditionell vård.',
+			'Läs hur AI-baserat samtalsstöd kan fylla ett gap när vårdköer eller trösklar gör att hjälpen känns långt bort, och vad som skiljer det från vård.',
 		canonical: canonical('/samtalsstod-utan-vantetid'),
 		ogTitle: 'Samtalsstöd utan väntetid | MittPsyke',
 		ogDescription:
@@ -797,15 +797,15 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		]
 	},
 	'chatta-anonymt': {
-		title: 'Chatta anonymt utan konto – börja direkt | MittPsyke',
+		title: 'Chatta anonymt utan konto – AI-chatt direkt | MittPsyke',
 		description:
-			'MittPsykes anonyma chattfunktion fungerar direkt i webbläsaren, utan konto. Skriv av dig och sortera tankar i lugn takt.',
+			'Chatta anonymt med MittPsykes AI direkt i webbläsaren, utan konto. Du skriver med en AI, inte en människa. Skriv av dig och sortera tankar i lugn takt.',
 		canonical: canonical('/chatta-anonymt'),
-		ogTitle: 'Chatta anonymt utan konto | Börja direkt i webbläsaren | MittPsyke',
+		ogTitle: 'Chatta anonymt utan konto | AI-chatt i webbläsaren | MittPsyke',
 		ogDescription:
-			'Börja chatta anonymt utan konto. Få lugnt stöd i text direkt i webbläsaren.',
+			'Börja chatta anonymt med AI utan konto. Få lugnt stöd i text direkt i webbläsaren.',
 		variant: 'landing',
-		h1: 'Chatta anonymt – skriv det som snurrar',
+		h1: 'Chatta anonymt med AI – skriv det som snurrar',
 		lead:
 			'Du behöver inget konto. Skriv anonymt om det som känns tungt just nu och få ett svar direkt från MittPsykes AI.',
 		// Trygghetspunkterna motsvarar gästflödet i `api/chat/+server.ts`: ingen
@@ -819,7 +819,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			},
 			{ label: 'Du chattar med AI', body: 'Inte med en människa.' }
 		],
-		primaryCta: { href: '/chat', label: 'Börja skriva' },
+		primaryCta: { href: '/chat', label: 'Börja chatta' },
 		ctaNote:
 			'Innan första meddelandet får du en kort ruta om hur AI-chatten fungerar och vad som händer med det du skriver.',
 		howItWorksTitle: 'Så fungerar det',
@@ -864,7 +864,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		resourceListItems: [
 			{ href: '/prata-anonymt-online', label: 'Prata anonymt online', description: 'om du vill läsa mer om hur anonymt samtalsstöd fungerar.' },
 			{ href: '/anonymt-samtalstod-online', label: 'Anonymt samtalsstöd online', description: 'om du vill förstå varför låg tröskel kan göra det lättare att börja.' },
-			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill få en tydligare bild av hur själva samtalet brukar gå till.' },
+			{ href: '/chatta-anonymt-med-nagon', label: 'Anonym chatt med AI', description: 'om du vill få en tydligare bild av hur själva samtalet brukar gå till.' },
 			{ href: '/blogg/chatta-anonymt-utan-konto', label: 'Läs mer om att chatta anonymt utan konto', description: 'om du vill förstå upplägget innan du börjar.' },
 			{ href: '/anonym-dagbok-online', label: 'Anonym dagbok online', description: 'om du vill börja med egen reflektion i text innan eller efter chatten.' },
 			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva vidare över tid när du känner dig redo.' }
@@ -889,7 +889,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 			},
 			{
 				question: 'Kan jag chatta med någon om det som känns tungt?',
-				answer: 'Ja. Du kan prata anonymt i text om ångest, stress, nedstämdhet eller något annat som känns tungt just nu.'
+				answer: 'Ja, med MittPsykes AI. Du chattar inte med en människa. Du kan skriva anonymt om ångest, stress, nedstämdhet eller något annat som känns tungt just nu. Vill du hellre prata med en människa finns stödlinjer samlade på stodlinjer.se.'
 			},
 			{
 				question: 'Är detta vård eller stöd i text?',
@@ -939,7 +939,7 @@ export const seoSupportPages: Record<string, SeoSupportPageConfig> = {
 		],
 		resourceListTitle: 'Sidor som passar bra tillsammans med anonym chatt',
 		resourceListItems: [
-			{ href: '/chatta-anonymt-med-nagon', label: 'Chatta anonymt med någon', description: 'om du vill läsa mer om hur själva samtalet brukar gå till.' },
+			{ href: '/chatta-anonymt-med-nagon', label: 'Anonym chatt med AI', description: 'om du vill läsa mer om hur själva samtalet brukar gå till.' },
 			{ href: '/anonymt-samtalstod-online', label: 'Anonymt samtalsstöd online', description: 'för en bredare bild av varför låg tröskel kan göra stor skillnad.' },
 			{ href: '/dagbok', label: 'Dagboken', description: 'om du vill skriva vidare efter chatten och få mer kontinuitet.' },
 			{ href: '/guider', label: 'Guider', description: 'om du vill förstå mer om det du känner efter att du har börjat sätta ord på det.' }
