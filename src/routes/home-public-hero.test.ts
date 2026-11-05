@@ -59,16 +59,11 @@ describe('Den publika startsidans hero', () => {
 	// Formuleringen är kontrollerad mot diary-draft.ts: anonyma utkast skrivs
 	// bara till localStorage och skickas aldrig till servern.
 	it('förklarar diskret skillnaden mellan dagboksutkast och gästchatt', () => {
-		expect(hero).toContain(
-			'Skriv anonymt i din dagbok eller chatta direkt utan konto. Dagboksutkast sparas lokalt i'
-		);
-		expect(hero).toContain('din webbläsare.');
+		expect(hero).toContain('Inget konto behövs. Dagboksutkast sparas lokalt i din webbläsare.');
 		// Gästchatten lämnar webbläsaren: texten går till OpenAI men sparas inte av MittPsyke.
-		expect(hero).toContain('Din gästchatt sparas inte på MittPsyke.');
-		expect(hero).toContain(
-			'När du skickar ett meddelande överförs texten till OpenAI för att behandlas och generera ett svar.'
-		);
+		expect(hero).toContain('I gästchatten överförs\n\t\t\t\t\ttexten till OpenAI för att generera ett svar');
 		expect(hero).toContain('MittPsyke sparar inte innehållet i din gästchatt.');
+		expect(hero).toContain('href={PRIVACY_DESTINATION}>Läs mer</a>');
 		expect(hero).not.toContain('gästchatten sparas inte.');
 		// Markup, inte fritext: rubrikens namn nämns i kommentaren som
 		// dokumenterar varför sektionen togs bort.
