@@ -17,7 +17,7 @@
 				Här kan du använda en digital dagbok, få stöd i dina tankar eller bara vara i det som känns, utan press.
 			</p>
 			<p>
-				<a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a> eller
+				<a href="/chatta-anonymt-med-nagon">Chatta anonymt med AI</a> eller
 				<a href="/dagbok?action=new">skriva av dig i en digital dagbok</a>.
 			</p>
 		</header>
