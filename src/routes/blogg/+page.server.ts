@@ -2,6 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { getArticleDateLabel, getPublishedArticles } from '$lib/server/article-content';
 import { normalizeSoroArticleSlug, fetchSoroArticles } from '$lib/server/soro-articles';
 import { featuredPages } from '$lib/data/featured-pages';
+import { buildBlogIndexSeo } from '$lib/server/blog-index-seo';
 import type { PageServerLoad } from './$types';
 
 // Samma format som artiklarnas datumetikett (se formatDate i article-content).
@@ -168,6 +169,7 @@ export const load: PageServerLoad = async ({ url, fetch, setHeaders }) => {
 		description:
 			'Artiklar om dagboksskrivande, mental hälsa och självreflektion. Lär dig mer om hur skrivande kan förbättra ditt mående.',
 		articles: paginatedArticles,
+		seo: buildBlogIndexSeo(currentPage, totalPages),
 		pagination: {
 			currentPage,
 			totalPages,
