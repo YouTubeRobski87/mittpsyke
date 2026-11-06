@@ -25,7 +25,7 @@ describe('den sittande, bortvända posen', () => {
 		expect(pose?.companionId).toBe('bear');
 		expect(pose?.role).toBe('base');
 		expect(pose?.frames).toHaveLength(1);
-		expect(pose?.frames[0].src).toBe('/images/avatars/presets/bear-sitting-back.png');
+		expect(pose?.frames[0].src).toBe('/images/avatars/presets/bear-sitting-back.webp');
 	});
 
 	it('pekar på en bild som faktiskt finns', () => {

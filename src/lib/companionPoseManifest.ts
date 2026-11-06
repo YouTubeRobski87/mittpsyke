@@ -100,7 +100,7 @@ export const BEAR_COMPANION_POSES = [
 		// Natten lämnas åt den sovande posen: där är sömn det enda som gäller,
 		// och två möjliga nattposer hade gjort valet slumpmässigt.
 		dayparts: ['day', 'evening'],
-		frames: [{ src: bearPoseSrc('bear-sitting-back.png') }],
+		frames: [{ src: bearPoseSrc('bear-sitting-back.webp') }],
 		alt: `Din följeslagare, ${BEAR_DISPLAY_NAME}, sitter vänd mot utsikten.`,
 		weight: 2.2,
 		sceneAdjustment: { scale: 0.74, y: 2 }
