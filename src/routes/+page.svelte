@@ -101,6 +101,14 @@
 					<span aria-hidden="true">Skriv → spara det du vill → se vad som återkommer</span>
 				</p>
 				<p class="promise">Du behöver inte prestera något här. Inget bryts om du är borta.</p>
+				<!-- Kopplingen till systersajten. Ligger sist här i stället för under
+					 knapparna: där blev den två rader på mobil och tryckte ned stugbilden
+					 49 px (390 × 664), vilket åt upp en del av vinsten från #109. Här står
+					 den efter bilden på mobil och under texten på bred skärm. -->
+				<p class="partner-line">
+					MittPsyke och <a class="cta-micro-link" href="https://stodlinjer.se/">Stödlinjer.se</a> – två
+					kompletterande vägar till stöd.
+				</p>
 				<!-- Gränsdragningen ("inte vård", 112) står samlad i trygghetssektionen
 					 längre ner, och layoutens sidfot upprepar 112/1177 på varje sida. -->
 			</div>
@@ -677,6 +685,16 @@
 		text-decoration: underline;
 		text-underline-offset: 3px;
 		white-space: nowrap;
+	}
+
+	/* Samarbetsraden: samma dämpade ton som mikrotexten, något mindre, så att
+	   den läses som en upplysning och aldrig konkurrerar med knapparna. */
+	.partner-line {
+		margin: 0.6rem 0 0;
+		max-width: 42ch;
+		font-size: 0.8rem;
+		line-height: 1.55;
+		color: var(--home-text-muted);
 	}
 
 	/* ── Avslutande CTA ── */
