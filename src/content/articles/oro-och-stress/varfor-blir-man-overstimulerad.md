@@ -87,6 +87,14 @@ Det går sällan att ta bort alla intryck, men det går ofta att minska trycket 
 
 Ingen av delarna löser allt på egen hand, men tillsammans kan de minska hur ofta dagen känns övermäktig.
 
+## När överstimulering hänger ihop med hur du mår
+
+Överstimulering är ingen diagnos, men många blir lättare överstimulerade när de mår psykiskt dåligt. Vid långvarig stress, utmattning, ångest eller nedstämdhet, och efter svåra upplevelser, är nervsystemet ofta redan på helspänn. Då räcker det med mindre för att det ska bli för mycket. Vid utmattningssyndrom är det till exempel vanligt att bli väldigt känslig för ljud.
+
+Många med ADHD eller autism beskriver också att intryck snabbt blir övermäktiga – ljud, ljus, rörelse och flera saker som händer samtidigt. Vid autism kan man reagera starkt på sinnesintryck, och miljöer med många intryck kan bli överväldigande. Att bli överstimulerad betyder inte i sig att du har något av detta.
+
+Läs mer: [Tecken på mental överbelastning](/guider/stress/tecken-pa-mental-overbelastning) · [Utmattad mentalt](/guider/stress/utmattad-mentalt) · [Ångest](/angest)
+
 ## Det handlar inte om att tåla mindre
 
 Att bli lättare överstimulerad än andra betyder inte att man klarar mindre av livet. Det kan snarare handla om att nervsystemet reagerar tidigare och tydligare på mängden intryck, vilket också kan gå hand i hand med att lägga märke till mycket, känna djupt eller vara noggrann. Du kan läsa mer om det sambandet i [Är du högkänslig? När känslighet är en styrka – inte en svaghet](/blogg/amne/oro-och-stress/ar-du-hogkanslig).
@@ -96,5 +104,9 @@ Orsakerna bakom överstimulering kan också se olika ut från person till person
 ## Ett lugnt nästa steg
 
 Nästa gång dagen känns övermäktig, prova att fråga dig själv vilka intryck som faktiskt har staplats på varandra. Du behöver inte lösa allt på en gång. Att ta bort eller sänka ett enda intryck – ljudet, ljuset, eller bara några tysta minuter för dig själv – kan vara nog för att ge hjärnan lite andrum. Vill du gå vidare och läsa om olika sätt att återhämta sig efter en tung dag finns mer i [hur återhämtning fungerar när hjärnan fått för många intryck](/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck).
+
+## Källor
+
+1177 beskriver att man vid utmattningssyndrom kan bli väldigt känslig för ljud, och att man vid autism kan reagera starkt på sinnesintryck som ljud och ljus. Läs mer hos [1177 om utmattningssyndrom](https://www.1177.se/sjukdomar--besvar/hjarna-och-nerver/utmattningssyndrom/), [1177 om autism](https://www.1177.se/sjukdomar--besvar/hjarna-och-nerver/neuropsykiatriska-funktionsnedsattningar/autism/) och [1177 om adhd](https://www.1177.se/sjukdomar--besvar/hjarna-och-nerver/neuropsykiatriska-funktionsnedsattningar/adhd/).
 
 Av MittPsyke-redaktionen
