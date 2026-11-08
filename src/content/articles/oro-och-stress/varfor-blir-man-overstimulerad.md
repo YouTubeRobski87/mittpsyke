@@ -93,7 +93,7 @@ Ingen av delarna löser allt på egen hand, men tillsammans kan de minska hur of
 
 Många med ADHD eller autism beskriver också att intryck snabbt blir övermäktiga – ljud, ljus, rörelse och flera saker som händer samtidigt. Vid autism kan man reagera starkt på sinnesintryck, och miljöer med många intryck kan bli överväldigande. Att bli överstimulerad betyder inte i sig att du har något av detta.
 
-Läs mer: [Tecken på mental överbelastning](/guider/stress/tecken-pa-mental-overbelastning) · [Utmattad mentalt](/guider/stress/utmattad-mentalt) · [Ångest](/angest)
+Läs mer: [Tecken på mental överbelastning](/guider/stress/tecken-pa-mental-overbelastning) · [Utmattad mentalt](/guider/stress/utmattad-mentalt) · [Ångest](/angest) · [Forskning om ADHD-läkemedel](/blogg/amne/medicin-och-halsa/adhd-lakemedel-och-dodlighet)
 
 ## Det handlar inte om att tåla mindre
 
