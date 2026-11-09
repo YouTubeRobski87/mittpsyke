@@ -1,4 +1,5 @@
 ---
+collection: "medicin-och-halsa"
 title: "ADHD och sömn: när den biologiska klockan går i otakt"
 description: "Varför är det så svårt att somna i tid vid ADHD? Vi går igenom forskningen om sömn, kvällspigghet och dygnsrytm – utan att skuldbelägga."
 date: 2026-11-10
