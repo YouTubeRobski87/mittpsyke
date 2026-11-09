@@ -31,7 +31,7 @@
 	<section class="ai-quick" aria-label="Snabb överblick">
 		<h2 class="text-lg font-semibold mt-0 mb-2">Snabb överblick</h2>
 		<ul>
-			<li><strong>Säkerhet först.</strong> Tecken på akut kris fångas upp innan någon AI kopplas in.</li>
+			<li><strong>Säkerhet först.</strong> Tydliga tecken på akut kris fångas av en fast regel på servern innan AI-modellen anropas.</li>
 			<li><strong>Ingen diagnos.</strong> AI:n ställer inte diagnos och ger inga medicinska beslut.</li>
 			<li><strong>Mänskligt ansvar.</strong> Redaktionen, inte AI:n, ansvarar för innehåll och gränser.</li>
 		</ul>
@@ -41,13 +41,22 @@
 	<p class="opacity-80 leading-relaxed mb-3">
 		Varje meddelande du skickar i chatten kontrolleras först mot ett separat säkerhetslager som
 		letar efter tecken på akut kris. Den kontrollen är alltid det första som händer, oavsett vad du
-		skriver, och avgör svaret direkt utan att skicka meddelandet vidare till AI-modellen. Vid
-		tydliga krissignaler får du istället information om 112, 1177 och stödlinjer.se.
+		skriver. Vid tydliga krissignaler skickas meddelandet inte till AI-modellen för att skapa ett
+		svar. Du får istället ett fast säkerhetssvar med information om 112, 1177 och stödlinjer.se.
 	</p>
 	<p class="opacity-80 leading-relaxed mb-3">
 		Det betyder att AI-modellen aldrig är den enda instansen mellan ett meddelande och ett
 		krissvar. Säkerhetskontrollen körs på servern och kan inte kringgås av hur AI:n väljer att
 		svara.
+	</p>
+	<p class="opacity-80 leading-relaxed mb-3">
+		När du skriver nästa gång skickar chattfönstret med upp till tio av de senaste meddelandena som
+		sammanhang, och då kan krismeddelandet och säkerhetssvaret följa med till AI-modellen. Det gäller
+		både gäster och inloggade.
+	</p>
+	<p class="opacity-80 leading-relaxed mb-3">
+		Hur spärren fungerar i detalj, och vad den inte fångar, beskrivs på
+		<a href="/sa-hanterar-chatten-kriser" class="underline underline-offset-2">Så hanterar chatten kriser</a>.
 	</p>
 
 	<h2 class="text-lg font-semibold mt-8 mb-2">Vad AI-modellen gör och inte gör</h2>

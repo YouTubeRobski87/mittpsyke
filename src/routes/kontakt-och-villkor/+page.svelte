@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
-	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO, PUBLIC_POSTAL_ADDRESS } from '$lib/contact';
 
 	const organizationNumber = '198712284895';
 </script>
@@ -39,6 +39,7 @@
 	<ul class="opacity-80 leading-relaxed mb-3 list-none pl-0 space-y-1.5">
 		<li><strong>Verksamhet:</strong> MittPsyke</li>
 		<li><strong>Organisationsnummer:</strong> {organizationNumber}</li>
+		<li><strong>Adress:</strong> {PUBLIC_POSTAL_ADDRESS}</li>
 		<li>
 			<strong>E-post:</strong>
 			<a href={PUBLIC_CONTACT_MAILTO} class="underline hover:no-underline">{PUBLIC_CONTACT_EMAIL}</a>

@@ -30,6 +30,7 @@
 	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
 	import { GENERAL_SAFETY_COPY } from '$lib/safety-copy';
 	import { canonicalUrl, PUBLIC_SITE_ORIGIN } from '$lib/seo';
+	import { positioningCopy } from '$lib/positioning-copy';
 	import { page } from '$app/state';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
@@ -175,7 +176,7 @@
 		name: 'MittPsyke',
 		url: PUBLIC_SITE_ORIGIN,
 		email: PUBLIC_CONTACT_EMAIL,
-		description: 'Svensk plattform för självreflektion, dagbok och AI-baserat samtalsstöd.',
+		description: positioningCopy.structuredData,
 		logo: canonicalUrl('/logo.png'),
 		founder: {
 			'@type': 'Person',
@@ -189,7 +190,7 @@
 		'@type': 'WebApplication',
 		name: 'MittPsyke',
 		url: PUBLIC_SITE_ORIGIN,
-		description: 'Digitalt stöd för dagbok, reflektion, mönster över tid och AI-chatt på svenska',
+		description: positioningCopy.structuredData,
 		applicationCategory: 'HealthApplication',
 		inLanguage: 'sv',
 		offers: {
@@ -1054,8 +1055,10 @@
 					<a href="/om-mittpsyke" class="footer-link">Om tjänsten</a>
 					<a href="/om-skaparen" class="footer-link">Om skaparen</a>
 					<a href="/sa-fungerar-mittpsyke" class="footer-link">Så fungerar det</a>
+					<a href="/for-organisationer" class="footer-link">För organisationer</a>
 					<a href="/redaktionell-metod" class="footer-link">Redaktionell metod</a>
 					<a href="/ansvarsfull-ai" class="footer-link">Ansvarsfull AI</a>
+					<a href="/sa-hanterar-chatten-kriser" class="footer-link">Så hanterar chatten kriser</a>
 					<a href="/ansvar" class="footer-link">Ansvar</a>
 					<a href="/feedback" class="footer-link">Feedback</a>
 					<a href="/kontakt-och-villkor" class="footer-link">Kontakt och villkor</a>
@@ -1075,6 +1078,7 @@
 				<div class="footer-col">
 					<p class="footer-col-heading footer-col-heading--emergency">Vid akut läge</p>
 					<a href="tel:112" class="footer-link footer-emergency-link">Ring 112</a>
+					<a href="tel:90101" class="footer-link footer-emergency-link">Självmordslinjen 90101</a>
 					<a href="https://www.1177.se" target="_blank" rel="noopener noreferrer" class="footer-link">Vårdråd 1177</a>
 					<a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer" class="footer-link footer-emergency-link">Stödlinjer.se</a>
 					<div class="footer-company">
@@ -1248,6 +1252,12 @@
 		color: inherit;
 	}
 
+	/* .footer-company är redan nedtonad. Utan detta multipliceras opaciteten
+	   med .footer-link och länkarna hamnar på 2,8:1 i kontrast. */
+	.footer-company .footer-link {
+		opacity: 1;
+	}
+
 	.footer-company a:hover {
 		opacity: 1;
 		text-decoration: underline;
@@ -1259,7 +1269,7 @@
 		border-top: 1px solid var(--layout-footer-border);
 		text-align: center;
 		font-size: 0.78rem;
-		opacity: 0.45;
+		opacity: 0.55;
 	}
 
 	.footer-emergency-link {

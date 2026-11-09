@@ -182,7 +182,7 @@
 		</div>
 	{/if}
 
-	<div class="motif-picker" aria-labelledby="motif-picker-label">
+	<div class="motif-picker" role="group" aria-labelledby="motif-picker-label">
 		<p id="motif-picker-label">Välj motiv</p>
 		<div class="motif-buttons">
 			{#each Object.entries(motifNames) as [motif, name]}
@@ -197,7 +197,7 @@
 		</div>
 	</div>
 
-	<div class="palette" aria-label="Välj färg">
+	<div class="palette" role="group" aria-label="Välj färg">
 		{#each palette as color}
 			<button
 				type="button"

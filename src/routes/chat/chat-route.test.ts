@@ -213,7 +213,13 @@ describe('direkt ingång till den befintliga chatten', () => {
 	it('visar inte samtyckesrutan förrän servern svarat, men låser inte heller upp chatten', () => {
 		// Den som redan samtyckt ska inte mötas av samtyckestexten under tiden
 		// statusen hämtas. Grinden visas bara när statusen är känd och saknas.
-		expect(chatWindow).toContain('let consentStatusKnown = $state(false);');
+		// Enda undantaget: servern vet redan att samtycke saknas (gäst utan
+		// samtyckescookie, se chat-consent-hint.test.ts). Då är statusen känd
+		// från start och rutan finns i serverrenderad HTML, utan layoutskifte.
+		expect(chatWindow).toContain('let consentStatusKnown = $state(untrack(() => initialConsentMissing));');
+		expect(chatWindow).toContain('initialConsentMissing = false');
+		expect(chatPage).toContain("initialConsentMissing={page.data.chatConsentHint === 'missing'}");
+		expect(chatWindow).not.toMatch(/hasSensitiveDataConsent = \$state\((?!false\))/);
 		expect(chatWindow).toContain('{#if !hasSensitiveDataConsent && !consentStatusKnown}');
 		expect(chatWindow).toMatch(/\{:else if !hasSensitiveDataConsent\}\s*<div class="mb-3">\s*<ConsentGate/);
 

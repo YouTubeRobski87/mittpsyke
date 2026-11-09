@@ -2,6 +2,7 @@
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
+	import InBrief from '$lib/components/InBrief.svelte';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 
@@ -66,6 +67,10 @@
 				din egen takt och följa hur känslor och teman förändras vecka för vecka.
 			</p>
 		</header>
+
+		<InBrief
+			lead="Att skriva dagbok kan ge överblick över tankar och känslor. MittPsyke är en kravlös digital dagbok där du kan göra det i din egen takt."
+		/>
 
 		<div class="cta-container" aria-label="Starta med dagboksskrivande">
 			{#if loggedIn}

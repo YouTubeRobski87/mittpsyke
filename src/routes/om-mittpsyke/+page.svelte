@@ -1,7 +1,9 @@
 <script lang="ts">
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
-	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import InBrief from '$lib/components/InBrief.svelte';
+	import { positioningCopy } from '$lib/positioning-copy';
+	import { PUBLIC_CONTACT_EMAIL, PUBLIC_CONTACT_MAILTO, PUBLIC_POSTAL_ADDRESS } from '$lib/contact';
 	import { dataflowCopy } from '$lib/dataflow-copy';
 
 	// Sidan följer produktidentiteten: en plats för att skriva, återvända och se
@@ -19,8 +21,7 @@
 		'@type': 'AboutPage',
 		name: 'Om MittPsyke – en plats för dina egna ord över tid',
 		url: 'https://mittpsyke.se/om-mittpsyke',
-		description:
-			'MittPsyke är en lugn plats för att skriva, spara det du vill, komma tillbaka och se vad som återkommer i dina egna ord.',
+		description: positioningCopy.core,
 		publisher: { '@type': 'Organization', name: 'MittPsyke', url: 'https://mittpsyke.se' }
 	})}<\/script>`}
 </svelte:head>
@@ -36,6 +37,11 @@
 				ord över tid. Du behöver inte veta vad du vill säga, och du behöver inte prestera något.
 			</p>
 		</header>
+
+		<InBrief
+			lead={positioningCopy.core}
+			extra="MittPsyke drivs av Robban (Robert Claesson) i Sverige."
+		/>
 
 		<!-- 1. Varför MittPsyke finns -->
 		<section class="section" aria-labelledby="why-title">
@@ -188,6 +194,10 @@
 					<dd>198712284895</dd>
 				</div>
 				<div class="company-row">
+					<dt>Adress:</dt>
+					<dd>{PUBLIC_POSTAL_ADDRESS}</dd>
+				</div>
+				<div class="company-row">
 					<dt>Verksamhetsform:</dt>
 					<dd>Enskild näringsverksamhet</dd>
 				</div>
@@ -207,7 +217,7 @@
 			<ul role="list">
 				<li><a href="/sa-fungerar-mittpsyke">Så fungerar MittPsyke</a></li>
 				<li><a href="/digital-dagbok-for-maende">Digital dagbok för mående</a></li>
-				<li><a href="/chatta-anonymt-med-nagon">Chatta anonymt med någon</a></li>
+				<li><a href="/chatta-anonymt-med-nagon">Anonym chatt med AI</a></li>
 				<li><a href="/ansvar">Ansvarsinfo</a></li>
 				<li><a href="/integritet">Integritetspolicy</a></li>
 				<li><a href="https://stodlinjer.se" target="_blank" rel="noopener noreferrer">Akut hjälp (Stödlinjer)</a></li>

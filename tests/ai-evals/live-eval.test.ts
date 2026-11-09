@@ -28,7 +28,8 @@ describe('live AI-eval', () => {
 		})
 		);
 		expect(run.scenarios).toHaveLength(ALL_SCENARIOS);
-		expect(run.scenarios.filter((item) => item.deterministic)).toHaveLength(4);
+		// Fem krisfall: de fyra ursprungliga och crisis-informal-no-diacritics (etapp 2).
+		expect(run.scenarios.filter((item) => item.deterministic)).toHaveLength(5);
 	});
 
 	it('failar före scenarioanrop när provider saknar konfiguration', () => {

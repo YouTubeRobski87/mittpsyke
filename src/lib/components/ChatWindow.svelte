@@ -31,7 +31,7 @@
 		sanitizeChatMessages
 	} from '$lib/state/chat-memory';
 	import { supabase } from '$lib/supabase';
-	import { onMount, tick } from 'svelte';
+	import { onMount, tick, untrack } from 'svelte';
 	import type { ChatMessage } from '$lib/types';
 	import type { Session } from '@supabase/supabase-js';
 
@@ -46,11 +46,14 @@
 	let {
 		category,
 		initialMessages = [],
-		initialConversationId = null
+		initialConversationId = null,
+		initialConsentMissing = false
 	}: {
 		category: string;
 		initialMessages?: ChatMessage[];
 		initialConversationId?: string | null;
+		/** Servern vet redan att samtycke saknas (gäst utan samtyckescookie). */
+		initialConsentMissing?: boolean;
 	} = $props();
 
 	let messages = $state<ChatMessage[]>([]);
@@ -68,7 +71,11 @@
 	// Blir sant när servern har svarat på samtyckesfrågan (eller efter en
 	// reservtid). Förhindrar att samtyckesrutan blinkar upp för den som redan
 	// har samtyckt. Låser aldrig upp chatten - det gör bara hasSensitiveDataConsent.
-	let consentStatusKnown = $state(false);
+	// Startar som sant när servern redan vet att samtycke saknas, så att rutan
+	// finns i den serverrenderade HTML:en och inte flyttar sidan efter laddning.
+	let consentStatusKnown = $state(untrack(() => initialConsentMissing));
+	// Samma villkor som visar ConsentGate i mallen. Används bara för layouten.
+	const consentGateVisible = $derived(consentStatusKnown && !hasSensitiveDataConsent);
 	let conversationId = $state<string | null>(null);
 	let historyNoticeVisible = $state(false);
 	let persistenceReady = $state(false);
@@ -867,7 +874,11 @@
 
 </script>
 
-<div class="chat-container flex flex-col h-[calc(100vh-175px)] max-w-2xl mx-auto">
+<div
+	class="chat-container flex flex-col h-[calc(100vh-175px)] max-w-2xl mx-auto"
+	class:consent-intro-view={consentGateVisible && messages.length === 0}
+	class:empty-chat-view={!consentGateVisible && messages.length === 0}
+>
 	<!-- Alltid synlig, i alla chattvyer: ingen ska kunna tro att svaren kommer
 	     från en människa. En rad, så den inte tar plats från samtalet. -->
 	<p class="ai-notice px-4" data-testid="chat-ai-notice">
@@ -1513,7 +1524,8 @@
 		align-items: center;
 		min-height: 2.75rem;
 		font-size: 0.74rem;
-		color: rgba(15, 23, 42, 0.48);
+		/* Diskret men läsbar: minst 4,5:1 mot bakgrunden (WCAG 1.4.3). */
+		color: rgba(15, 23, 42, 0.68);
 		text-decoration: underline;
 		text-underline-offset: 2px;
 		background: none;
@@ -1701,7 +1713,11 @@
 	}
 
 	:global(.dark) .human-support-button {
-		color: rgba(226, 232, 240, 0.38);
+		color: rgba(226, 232, 240, 0.6);
+	}
+
+	:global(.dark) .human-support-button:hover {
+		color: rgba(226, 232, 240, 0.85);
 	}
 
 	:global(.dark) .human-support-button:hover {
@@ -1815,6 +1831,112 @@
 			overflow-x: hidden;
 			overscroll-behavior: contain;
 			-webkit-overflow-scrolling: touch;
+		}
+
+		/* Samtyckesvyn utan meddelanden: introtexten ska kunna läsas i sin helhet
+		 * innan användaren tar ställning. Annars har meddelandelistan flex-basis 0
+		 * och krymper till ~27 px bredvid samtyckesrutan, så texten klipps mitt i
+		 * en rad.
+		 *
+		 * I den här vyn finns inget skrivfält och inget tangentbord, så hela
+		 * chattytan får bli en enda skrollyta: introtexten och samtyckestexten
+		 * läses i ett flöde, AI-raden ligger kvar överst och kryssrutan och
+		 * knappen (.consent-actions, sticky) ligger kvar i botten. */
+		.consent-intro-view {
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		/* Över .chat-input-area, som har z-index: 30 i app.css. */
+		.consent-intro-view .ai-notice {
+			position: sticky;
+			top: 0;
+			z-index: 31;
+			background: hsl(var(--background));
+		}
+
+		.consent-intro-view .chat-messages,
+		.consent-intro-view .chat-input-area,
+		.consent-intro-view .chat-input-extras {
+			flex: 0 0 auto;
+			overflow: visible;
+		}
+
+		/* Tom chatt efter samtycke: samma problem på riktigt låga skärmar
+		 * (320×568 och lägre). Länken till mänskligt stöd, snabbvalen och
+		 * röstpanelen tar ~280 px, och listan med flex-basis 0 fick bara det som
+		 * blev över (27-47 px), så introtexten klipptes. Att i stället låta
+		 * .chat-input-extras skrolla klipper röstpanelen mitt i knappen.
+		 *
+		 * Så länge chatten är tom finns inget samtal att skrolla i listan. Då blir
+		 * hela chattytan en enda skrollyta, som i samtyckesvyn: listan tar minst
+		 * sin innehållshöjd och växer när det finns plats, AI-raden ligger kvar
+		 * överst och textfältet med skicka-knappen ligger kvar i botten. Med
+		 * första meddelandet tas klassen bort och den vanliga layouten gäller. */
+		.empty-chat-view {
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.empty-chat-view .ai-notice {
+			position: sticky;
+			top: 0;
+			z-index: 31;
+			background: hsl(var(--background));
+		}
+
+		.empty-chat-view .chat-messages {
+			flex: 1 0 auto;
+			overflow: visible;
+		}
+
+		.empty-chat-view .chat-input-area,
+		.empty-chat-view .chat-input-extras {
+			flex: 0 0 auto;
+			overflow: visible;
+		}
+
+		.empty-chat-view .composer-row {
+			position: sticky;
+			bottom: 0;
+			z-index: 1;
+			padding-bottom: 0.5rem;
+		}
+
+		/* Med tangentbordet uppe räcker höjden inte för en klistrad textruta:
+		 * den kan inte flyttas ovanför inmatningsytans överkant och hamnar då
+		 * delvis utanför. Här gäller i stället samma prioritet som i ett pågående
+		 * samtal - textfältet står fast i flödet och extras-rutan är den som ger
+		 * efter och skrollar. */
+		:global(html[data-keyboard-open='true']) .empty-chat-view {
+			overflow-y: hidden;
+		}
+
+		/* Ryms inte både introtexten och textfältet (t.ex. 320 px bred skärm
+		 * med tangentbord) går textfältet först: listan får då krympa och
+		 * skrolla, men utgår fortfarande från sin innehållshöjd. */
+		:global(html[data-keyboard-open='true']) .empty-chat-view .chat-messages {
+			flex: 1 1 auto;
+			min-height: 0;
+			overflow-y: auto;
+		}
+
+		:global(html[data-keyboard-open='true']) .empty-chat-view .chat-input-area {
+			flex: 0 1 auto;
+			min-height: 0;
+		}
+
+		:global(html[data-keyboard-open='true']) .empty-chat-view .chat-input-extras {
+			flex: 0 1 auto;
+			min-height: 0;
+			overflow-y: auto;
+		}
+
+		:global(html[data-keyboard-open='true']) .empty-chat-view .composer-row {
+			position: static;
+			padding-bottom: 0;
 		}
 
 		:global(.message-bubble) {

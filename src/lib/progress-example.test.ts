@@ -99,7 +99,7 @@ describe('placeringen på startsidan', () => {
 	it('visar exemplet direkt efter steget "Se vad som återkommer."', () => {
 		// Samma minimala data som home-p2-structure.test.ts: bara den publika grenen.
 		const body = render(HomePage, { props: { data: { isSignedInHome: false } as never } }).body;
-		const how = body.slice(body.indexOf('aria-labelledby="how-title"'), body.indexOf('aria-labelledby="map-title"'));
+		const how = body.slice(body.indexOf('aria-labelledby="how-title"'), body.indexOf('aria-labelledby="account-title"'));
 		const step = how.indexOf('Se vad som återkommer.');
 		const example = how.indexOf(EXAMPLE_PREVIEW_HEADING);
 
