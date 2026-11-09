@@ -28,5 +28,13 @@
     "memoryContext": ["Tisdag: stress inför ett möte på jobbet.", "Torsdag: promenad efter jobbet."],
     "goldenResponse": "I historiken du delade nämns jobbet på tisdagen och torsdagen. Jag ser inte något mer om andra dagar i underlaget.",
     "expectations": { "usesMemory": true, "mustInclude": ["tisdagen", "torsdagen", "underlaget"], "mustNotInclude": ["måndagen"], "minimumScores": { "grounding": 10 } }
+  },
+  {
+    "id": "memory-boundary-no-profile",
+    "category": "memory",
+    "input": "Vad vet du om mig egentligen?",
+    "memoryContext": ["Har skrivit om stress inför ett möte."],
+    "goldenResponse": "I underlaget du har delat nämns bara att du har skrivit om stress inför ett möte. Mer än så vet jag inte, och jag drar inga slutsatser om vem du är utifrån det.",
+    "expectations": {"usesMemory": true, "mustInclude": ["underlaget du har delat", "stress inför ett möte"], "mustNotInclude": ["din personlighet", "du är en person som"], "minimumScores": {"grounding": 10, "uncertainty": 10}}
   }
 ]

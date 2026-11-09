@@ -2,6 +2,8 @@
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { dataflowCopy } from '$lib/dataflow-copy';
+	import InBrief from '$lib/components/InBrief.svelte';
+	import { positioningCopy } from '$lib/positioning-copy';
 
 	// Sidan följer samma kärnloop som startsidan: skriv, spara det du vill, kom
 	// tillbaka, se vad som återkommer. Delarna förklaras först efter loopen, och
@@ -16,7 +18,7 @@
 	<title>Så fungerar MittPsyke | Skriv och se vad som återkommer</title>
 	<meta
 		name="description"
-		content="MittPsyke är ett reflektionsverktyg: skriv, spara det du vill och se vad som återkommer. Om dagboken, Kvällstugan, Balder och den valfria AI-chatten."
+		content="MittPsyke är en kravlös digital dagbok och ett reflektionsverktyg: skriv, spara det du vill och se vad som återkommer. Om dagboken, Kvällstugan, Balder och den valfria AI-chatten."
 	/>
 </svelte:head>
 
@@ -28,6 +30,13 @@
 		MittPsyke bygger på dina egna ord över tid. Du skriver, sparar det du vill och kommer tillbaka
 		när det passar – utan prestation och utan bedömning.
 	</p>
+
+	<div class="how-brief">
+		<InBrief
+			lead={positioningCopy.core}
+			extra="Du kan börja utan konto. Med konto sparas det du väljer, och i Framsteg visas ett tema först när det har återkommit minst 3 gånger under minst 2 olika veckor."
+		/>
+	</div>
 
 	<section aria-labelledby="loop-title">
 		<h2 id="loop-title">Fyra steg</h2>
@@ -169,6 +178,10 @@
 
 	.how-lead {
 		font-size: 1.08rem;
+	}
+
+	.how-brief {
+		margin-top: 1.5rem;
 	}
 
 	.how-content a {

@@ -12,6 +12,40 @@ export type Pillar = {
 	relatedArticles?: RelatedArticle[];
 };
 
+/**
+ * Behovsgrupperna på /ovningar, i visningsordning. Robban godkände namnen
+ * 2026-11-02. Varje övning hör till exakt en grupp.
+ */
+export const exerciseNeeds = [
+	{
+		id: 'just-nu',
+		title: 'Just nu, när det känns mycket',
+		description: 'Korta övningar som går att göra direkt, utan papper.'
+	},
+	{
+		id: 'tankar',
+		title: 'När tankarna snurrar',
+		description: 'Frågor och steg som ger oron något konkret att hålla i.'
+	},
+	{
+		id: 'skriva',
+		title: 'När du vill skriva',
+		description: 'Mallar för att sätta ord på det du bär på.'
+	},
+	{
+		id: 'natten',
+		title: 'Inför natten',
+		description: 'För att varva ned och lägga dagen bakom dig.'
+	},
+	{
+		id: 'riktning',
+		title: 'Relationer och riktning',
+		description: 'För samtal, värderingar och små steg mot andra.'
+	}
+] as const;
+
+export type ExerciseNeedId = (typeof exerciseNeeds)[number]['id'];
+
 export type Tool = {
 	slug: string;
 	title: string;
@@ -20,6 +54,12 @@ export type Tool = {
 	steps?: string[];
 	reflections?: string[];
 	pillarSlug: string;
+	/** Behovsgruppen övningen visas under på /ovningar. */
+	need: ExerciseNeedId;
+	/** Ungefärlig tid i minuter. Saknas när övningen inte har någon given längd. */
+	minutes?: { min: number; max?: number };
+	/** Sant när stegen ber dig skriva eller rita. */
+	involvesWriting?: boolean;
 };
 
 export const pillars: Pillar[] = [
@@ -193,7 +233,7 @@ export const tools: Tool[] = [
 	{
 		slug: 'mala-i-varlden',
 		title: 'Måla i världen',
-		description: 'En lugn kreativ övning där användaren färglägger ett motiv från den levande världen i sin egen takt.',
+		description: 'En lugn kreativ övning där du färglägger ett motiv från den levande världen i din egen takt.',
 		purpose: 'Att ge en lugn stund av närvaro genom en enkel kreativ aktivitet. Här finns inget att prestera och inget resultat som behöver bli på ett visst sätt.',
 		steps: [
 			'Välj en färg som känns bra just nu.',
@@ -207,7 +247,8 @@ export const tools: Tool[] = [
 			'Hur kändes det att göra något utan krav på resultat?',
 			'Vill du stanna kvar i känslan en liten stund?'
 		],
-		pillarSlug: 'stress-utmattning'
+		pillarSlug: 'stress-utmattning',
+		need: 'just-nu'
 	},
 	{
 		slug: 'skrivovningar-sjalvkansla',
@@ -226,7 +267,10 @@ export const tools: Tool[] = [
 			'Finns det en mening du skrivit som du vill bära med dig?',
 			'Hur skulle du se på en vän som delade exakt det du skrivit?'
 		],
-		pillarSlug: 'sjalvkansla'
+		pillarSlug: 'sjalvkansla',
+		need: 'skriva',
+		minutes: { min: 10 },
+		involvesWriting: true
 	},
 	{
 		slug: 'cbt-katastroftankar',
@@ -246,15 +290,18 @@ export const tools: Tool[] = [
 			'Vilken del av övningen var svårast att göra ärligt?',
 			'Är det en situation du vill ta upp i MittPsykes chatt eller dagbok?'
 		],
-		pillarSlug: 'angest'
+		pillarSlug: 'angest',
+		need: 'tankar',
+		minutes: { min: 10, max: 15 },
+		involvesWriting: true
 	},
 	{
 		slug: 'daglig-reflektionsmall',
 		title: 'Daglig reflektionsmall',
 		description: 'Kort daglig check-in för tankar, känslor och behov.',
-		purpose: 'En kort daglig incheck-in hjälper dig att märka vad du faktiskt bär på – innan det hopar sig. Övningen tar 5–10 minuter och fungerar bäst om du gör den vid ungefär samma tid varje dag.',
+		purpose: 'En kort daglig check-in hjälper dig att märka vad du faktiskt bär på – innan det hopar sig. Övningen tar 5–10 minuter, och du gör den när det passar dig.',
 		steps: [
-			'Avsätt 5–10 minuter, helst vid samma tid varje dag. Morgon eller kväll fungerar lika bra.',
+			'Avsätt 5–10 minuter när det passar dig. Morgon eller kväll fungerar lika bra.',
 			'Kroppen: Hur känns kroppen just nu? Spänning, trötthet, rastlöshet? Var i kroppen märks det tydligast?',
 			'Känslan: Vad är den starkaste känslan du bär på just nu? Ge den ett namn – oro, lättnad, tristess, hopp.',
 			'Tanken: Finns det en återkommande tanke idag? Skriv ned den utan att bedöma den.',
@@ -266,7 +313,10 @@ export const tools: Tool[] = [
 			'Märker du ett mönster i vad du behöver mest?',
 			'Hur kändes det att ta en stund enbart för dig själv?'
 		],
-		pillarSlug: 'stress-utmattning'
+		pillarSlug: 'stress-utmattning',
+		need: 'skriva',
+		minutes: { min: 5, max: 10 },
+		involvesWriting: true
 	},
 	{
 		slug: 'sju-fragor-vid-oro',
@@ -288,11 +338,14 @@ export const tools: Tool[] = [
 			'Är det en handling du kan ta i dag – hur liten den än är?',
 			'Var oron kopplad till ett djupare behov – trygghet, kontroll, tillhörighet?'
 		],
-		pillarSlug: 'overtankande'
+		pillarSlug: 'overtankande',
+		need: 'tankar',
+		minutes: { min: 10 },
+		involvesWriting: true
 	},
 	{
 		slug: 'sjalvmedkansla-ovning',
-		title: 'Självmedkänsla - guidad övning',
+		title: 'Självmedkänsla: guidad övning',
 		description: 'Varsam övning för att möta självkritik med medkänsla.',
 		purpose: 'Självmedkänsla är inte att skona sig – det är att möta sig själv med samma vänlighet man skulle ge en vän. Den här övningen är inspirerad av Kristin Neffs forskning och tar ungefär 10 minuter.',
 		steps: [
@@ -308,13 +361,15 @@ export const tools: Tool[] = [
 			'Märkte du motstånd? Vad sa motståndets röst?',
 			'Vad är en liten sak du kan göra för dig själv idag med lite mer omsorg?'
 		],
-		pillarSlug: 'sjalvkansla'
+		pillarSlug: 'sjalvkansla',
+		need: 'just-nu',
+		minutes: { min: 10 }
 	},
 	{
 		slug: 'grounding-5-4-3-2-1',
 		title: 'Grounding 5-4-3-2-1',
 		description: 'Snabb övning för att landa i kroppen när stressen stiger.',
-		purpose: 'Den här tekniken hjälper dig att flytta fokus från ångests tankar till vad som faktiskt finns runt dig just nu. Den tar under 2 minuter och fungerar var du än befinner dig.',
+		purpose: 'Den här tekniken hjälper dig att flytta fokus från oroliga tankar till vad som faktiskt finns runt dig just nu. Den tar under 2 minuter och fungerar var du än befinner dig.',
 		steps: [
 			'Ta ett djupt andetag och tillåt dig att sakta ned. Du behöver inte förändra hur du mår – bara observera.',
 			'5 saker du SER: Nämn fem saker du kan se runt dig just nu. Var specifik – färg, form, storlek.',
@@ -329,7 +384,9 @@ export const tools: Tool[] = [
 			'Vilket sinne var lättast att fokusera på? Vilket var svårast?',
 			'Kan du använda en kortversion av övningen nästa gång ångesten stiger?'
 		],
-		pillarSlug: 'angest'
+		pillarSlug: 'angest',
+		need: 'just-nu',
+		minutes: { min: 2 }
 	},
 	{
 		slug: 'tankefallor-kartlaggning',
@@ -348,7 +405,10 @@ export const tools: Tool[] = [
 			'Vad utlöste situationen – finns det ett återkommande mönster?',
 			'Hur kan du påminna dig om den här övningen nästa gång tanken dyker upp i stunden?'
 		],
-		pillarSlug: 'overtankande'
+		pillarSlug: 'overtankande',
+		need: 'tankar',
+		minutes: { min: 10 },
+		involvesWriting: true
 	},
 	{
 		slug: 'icke-valdsam-kommunikation',
@@ -361,14 +421,17 @@ export const tools: Tool[] = [
 			'Känsla: Skriv ned vilken känsla det väckte. Undvik tolkningar som "attackerad" eller "ignorerad" – använd grundkänslor: ledsen, rädd, ensam, irriterad, besviken.',
 			'Behov: Vad behöver du? Trygghet, respekt, förståelse, uppskattning, ärlighet, närvaro?',
 			'Önskemål: Formulera ett konkret, genomförbart önskemål för framtiden. "Kan du…" eller "Jag skulle uppskatta om…"',
-			'Sätt ihop de fyra delarna till en mening och läs den högt för dig själv. Hör den ut. Ändra det som inte stämmer.'
+			'Sätt ihop de fyra delarna till en mening och läs den högt för dig själv. Lyssna på hur den låter och ändra det som inte stämmer.'
 		],
 		reflections: [
 			'Vilken av de fyra delarna var svårast att formulera?',
 			'Kände du motstånd mot att uttrycka ett behov? Vad sa motståndet?',
 			'Vill du använda den här mallen som förberedelse inför ett verkligt samtal?'
 		],
-		pillarSlug: 'relationsproblem'
+		pillarSlug: 'relationsproblem',
+		need: 'riktning',
+		minutes: { min: 15 },
+		involvesWriting: true
 	},
 	{
 		slug: 'vardekartlaggning',
@@ -378,7 +441,7 @@ export const tools: Tool[] = [
 		steps: [
 			'Ta 10–15 minuter utan avbrott. Stäng telefonen.',
 			'Lista 10–15 värden: Skriv ned allt som känns viktigt – gemenskap, frihet, ärlighet, skapande, trygghet, hälsa, rättvisa, kärlek, lärande, mod, enkelhet, närvaro…',
-			'Välj de fem viktigaste. Stryk igenom resten utan att ångra dig. Det är en övning i prioritering, inte uteslutning.',
+			'Välj de fem viktigaste. Det är okej om det känns svårt att välja bort – det är en övning i prioritering, inte uteslutning.',
 			'Rangordna de fem. Vilket värde är mest grundläggande för vem du vill vara?',
 			'Granska din vardag: Lever du i linje med dina tre topp-värden? Var är gapet störst – och vad håller dig där?',
 			'Skriv ett litet konkret steg som för dig närmre ett av värdena den här veckan. Hur litet som helst.'
@@ -388,18 +451,21 @@ export const tools: Tool[] = [
 			'Finns det ett värde du rangordnar lågt fast det egentligen är viktigt för dig?',
 			'Vilket steg känns mest angeläget att ta den närmaste veckan?'
 		],
-		pillarSlug: 'existentiell-oro'
+		pillarSlug: 'existentiell-oro',
+		need: 'riktning',
+		minutes: { min: 10, max: 15 },
+		involvesWriting: true
 	},
 	{
 		slug: '4-7-8-andning',
 		title: '4-7-8 andning',
 		description: 'En enkel andningsteknik för att varva ned nervsystemet.',
-		purpose: 'Tekniken utvecklades av läkaren Andrew Weil och aktiverar det parasympatiska nervsystemet – kroppens eget bromssystem. Den tar under 2 minuter och kan användas var som helst.',
+		purpose: 'Tekniken har gjorts känd av läkaren Andrew Weil. Långsam andning med lång utandning kan hjälpa kroppen att varva ned. Den tar under 2 minuter och kan användas var som helst.',
 		steps: [
 			'Sätt dig bekvämt med rak rygg, eller lägg dig ned. Stäng ögonen om det känns bra.',
 			'Andas ut helt genom munnen med ett tyst, mjukt pust – töm lungorna ordentligt.',
 			'Stäng munnen och andas in tyst genom näsan medan du räknar till 4.',
-			'Håll andan och räkna till 7. Håll det mjukt – ingen anspänning.',
+			'Håll andan och räkna till 7. Håll det mjukt – ingen anspänning. Känns det obehagligt kan du korta pausen eller andas som vanligt.',
 			'Andas ut helt genom munnen med ett hörbart "pust" medan du räknar till 8.',
 			'Det är en cykel klar. Upprepa 3–4 gånger totalt.',
 			'Sitt stilla en stund efteråt. Märk hur kroppen och andetaget känns nu.'
@@ -409,13 +475,15 @@ export const tools: Tool[] = [
 			'Vilken del var svårast – hålla andan, eller räkna ut andningarna?',
 			'I vilket läge vill du prova den här tekniken nästa gång – insomnande, social oro eller akut stress?'
 		],
-		pillarSlug: 'angest'
+		pillarSlug: 'angest',
+		need: 'just-nu',
+		minutes: { min: 2 }
 	},
 	{
 		slug: 'body-scan',
 		title: 'Body scan meditation',
 		description: 'Stegvis kroppsskanning för närvaro och avslappning.',
-		purpose: 'Body scan är en mindfulnessövning som hjälper dig att komma i kontakt med kroppen utan att kräva att den ska förändras. Den minskar spänningar och tränar närvaro. Övningen tar 10–15 minuter.',
+		purpose: 'Body scan är en mindfulnessövning som hjälper dig att komma i kontakt med kroppen utan att kräva att den ska förändras. Den kan hjälpa dig att släppa lite spänning och tränar närvaro. Övningen tar 10–15 minuter.',
 		steps: [
 			'Lägg dig ned eller sätt dig bekvämt. Stäng ögonen. Ta tre djupa andetag och tillåt kroppen att tynglas ned.',
 			'Börja med fötterna: Märk förnimmelserna i fötterna och tårna – tyngd, värme, kontakt med underlaget. Andas in mot dem, andas ut.',
@@ -430,13 +498,15 @@ export const tools: Tool[] = [
 			'Hur förändrades kontakten med kroppen under övningens gång?',
 			'Kan du ta med en 2-minutersversion av det här in i vardagen – vid skrivbordet eller innan du somnar?'
 		],
-		pillarSlug: 'stress-utmattning'
+		pillarSlug: 'stress-utmattning',
+		need: 'natten',
+		minutes: { min: 10, max: 15 }
 	},
 	{
 		slug: 'katastrofgranskning',
 		title: 'Katastrofgranskning',
 		description: 'Utvärdera värsta scenariot och sannolikare utfall.',
-		purpose: 'Den här övningen låter dig titta rakt på det du är rädd för i stället för att undvika det. Forskning visar att vi ofta överskattar sannolikheten för det värsta – och underskattar vår förmåga att hantera det.',
+		purpose: 'Den här övningen låter dig titta rakt på det du är rädd för i stället för att undvika det. Det är vanligt att överskatta sannolikheten för det värsta – och underskatta sin förmåga att hantera det.',
 		steps: [
 			'Identifiera scenariot: Vad är det värsta du är rädd ska hända? Skriv ned det konkret.',
 			'Skatta sannolikheten: Hur troligt är det på en skala 0–100 %? Var ärlig mot dig själv.',
@@ -451,30 +521,36 @@ export const tools: Tool[] = [
 			'Vilket av de sannolika utfallen är lättast att börja ta tag i?',
 			'Är det något i övningen du vill fortsätta fundera på i dagboken eller chatten?'
 		],
-		pillarSlug: 'angest'
+		pillarSlug: 'angest',
+		need: 'tankar',
+		minutes: { min: 10, max: 15 },
+		involvesWriting: true
 	},
 	{
 		slug: 'tacksamhetsovning',
-		title: 'Tacksamhetsövning för utmattning',
-		description: 'Kort daglig rutin för att uppmärksamma återhämtning.',
+		title: 'Tacksamhetsövning för tunga perioder',
+		description: 'Kort skrivövning för att också märka det som fungerar.',
 		purpose: 'Vid utmattning och depression är det lätt att fokus fastnar på allt som är tungt. Den här övningen tränar hjärnan att också märka det som faktiskt fungerar – utan att förneka det som är svårt.',
 		steps: [
-			'Välj en fast tid varje dag – helst kvällstid. Tre till fem minuter räcker.',
+			'Välj en stund som passar dig, gärna på kvällen. Tre till fem minuter räcker.',
 			'Skriv ned tre saker från dagen du är tacksam för. De behöver inte vara stora – en kopp te, ett leende från någon, att du kom upp ur sängen.',
-			'Skriv ned en sak du klarade av idag. Hur liten den än är – det räknas.',
+			'Skriv ned en sak du klarade av idag. Den får vara hur liten som helst.',
 			'Skriv ned en sak du ser fram emot imorgon. Det kan vara hur litet som helst.',
 			'Läs igenom det du skrivit. Stanna ett ögonblick vid varje punkt och låt det landa.'
 		],
 		reflections: [
 			'Vad var lättast att hitta tacksamhet för?',
 			'Är det svårt att erkänna att du klarat av saker? Vad berättar det?',
-			'Märker du en förändring i stämningen när du gjort övningen ett par dagar i rad?'
+			'Märker du någon skillnad i stämningen när du gjort övningen några gånger?'
 		],
-		pillarSlug: 'depression'
+		pillarSlug: 'depression',
+		need: 'skriva',
+		minutes: { min: 3, max: 5 },
+		involvesWriting: true
 	},
 	{
 		slug: 'dagens-avslut-reflektion',
-		title: 'Avslutning av dagen - reflektionsmall',
+		title: 'Avslutning av dagen: reflektionsmall',
 		description: 'Kvällsmall för att släppa dagen och stänga mentalt.',
 		purpose: 'När dagen aldrig riktigt stängs bär hjärnan den med sig in i natten. Den här mallen hjälper dig att aktivt lägga dagen bakom dig och gå in i kvällen med lite mer lätthet.',
 		steps: [
@@ -490,7 +566,10 @@ export const tools: Tool[] = [
 			'Finns det en sak från idag du kan bära med dig som styrka till imorgon?',
 			'Hur kändes det att aktivt välja att stänga dagen?'
 		],
-		pillarSlug: 'stress-utmattning'
+		pillarSlug: 'stress-utmattning',
+		need: 'natten',
+		minutes: { min: 10, max: 20 },
+		involvesWriting: true
 	},
 	{
 		slug: 'trygghetscirkel-exponering',
@@ -500,9 +579,9 @@ export const tools: Tool[] = [
 		steps: [
 			'Rita tre nivåer: Tryggt, Lagom utmaning och För svårt just nu.',
 			'Skriv 2–3 sociala situationer i varje nivå – till exempel stå i kön, säga en mening i ett möte, eller hälsa på grannen.',
-			'Välj en situation från Lagom utmaning som du kan göra inom 24 timmar.',
+			'Välj en situation från Lagom utmaning som du vill prova snart, när det passar dig.',
 			'Bestäm ett tydligt mikrosteg – till exempel: säga en mening i gruppen eller ställa en kort fråga.',
-			'Genomför steget och stanna kvar i situationen en kort stund i stället för att lämna direkt.',
+			'Genomför steget och stanna kvar i situationen en kort stund i stället för att lämna direkt. Blir det för mycket är det okej att gå tillbaka till en tryggare nivå.',
 			'Upprepa samma nivå 2–3 gånger innan du går vidare till nästa steg i cirkeln.'
 		],
 		reflections: [
@@ -510,7 +589,10 @@ export const tools: Tool[] = [
 			'Vad kändes mest utmanande, och vad hjälpte dig att stanna kvar?',
 			'Vilket nästa lilla steg vill du prova nästa gång?'
 		],
-		pillarSlug: 'social-angest'
+		pillarSlug: 'social-angest',
+		need: 'riktning',
+		minutes: { min: 10 },
+		involvesWriting: true
 	}
 ];
 
@@ -522,6 +604,53 @@ export function getToolBySlug(slug: string): Tool | undefined {
 	return tools.find((tool) => tool.slug === slug);
 }
 
+/** Längden som kort text, t.ex. "2 min" eller "10–15 min". */
+export function formatToolMinutes(tool: Tool): string {
+	if (!tool.minutes) return 'I din egen takt';
+	const { min, max } = tool.minutes;
+	return max ? `${min}–${max} min` : `${min} min`;
+}
+
+/**
+ * Övningarna grupperade efter behov, i gruppernas ordning. Inom en grupp kommer
+ * de kortaste först, och övningar utan given längd sist. Tomma grupper utelämnas.
+ */
+export function getToolsByNeed() {
+	const sortKey = (tool: Tool) => tool.minutes?.min ?? Number.POSITIVE_INFINITY;
+	return exerciseNeeds
+		.map((need) => ({
+			...need,
+			tools: tools
+				.filter((tool) => tool.need === need.id)
+				.sort((a, b) => sortKey(a) - sortKey(b))
+		}))
+		.filter((group) => group.tools.length > 0);
+}
+
 export function getToolsForPillar(pillarSlug: string): Tool[] {
 	return tools.filter((tool) => tool.pillarSlug === pillarSlug);
+}
+
+/**
+ * Relaterade övningar: först de i samma område, sedan områdets egna
+ * rekommendationer (toolSlugs). Övningar som är ensamma i sitt område fick
+ * tidigare inga förslag alls och slutade i en återvändsgränd.
+ */
+export function getRelatedTools(tool: Tool, limit = 4): Tool[] {
+	const pillar = getPillarBySlug(tool.pillarSlug);
+	const candidates = [
+		...getToolsForPillar(tool.pillarSlug),
+		...(pillar?.toolSlugs ?? [])
+			.map((slug) => getToolBySlug(slug))
+			.filter((candidate): candidate is Tool => candidate !== undefined)
+	];
+	const seen = new Set<string>([tool.slug]);
+	const related: Tool[] = [];
+	for (const candidate of candidates) {
+		if (seen.has(candidate.slug)) continue;
+		seen.add(candidate.slug);
+		related.push(candidate);
+		if (related.length === limit) break;
+	}
+	return related;
 }

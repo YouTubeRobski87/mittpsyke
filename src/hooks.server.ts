@@ -6,21 +6,34 @@ import { getSessionUser } from '$lib/server/admin-auth'
 import { getGuideBySlugs, getPillarBySlug } from '$lib/seo-kit/content'
 import { legacyBlogRedirects, mergedGuideRedirects } from '$lib/server/legacy-redirects'
 import { normalizeStructuredDataSiteUrls } from '$lib/seo'
+import { warnAboutUnexpectedPublicEnv } from '$lib/server/public-env'
 
 const supabaseUrl = publicEnv.PUBLIC_SUPABASE_URL ?? ''
 const supabaseAnonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY ?? ''
 
+// Körs en gång när servern startar: okända PUBLIC_*-variabler syns annars i
+// varje sidas HTML utan att någon märker det. Loggar bara namnen.
+warnAboutUnexpectedPublicEnv(publicEnv)
+
 const metaDescriptionPattern = /<meta\s+name=(["'])description\1[^>]*>/gi
 const jsonLdScriptPattern = /(<script\s+type=(["'])application\/ld\+json\2[^>]*>)([\s\S]*?)(<\/script>)/gi
 
-function dedupeMetaDescriptions(html: string): string {
+// Ersätter dubbletten med en neutral meta i stället för att ta bort den.
+// Svelte hydrerar sidhuvudet nod för nod efter position: saknas en nod som
+// komponenten renderade glider resten ur fas, hydreringen ger upp
+// (hydration_mismatch) och sidhuvudet byggs om i klienten, så att t.ex.
+// brödsmulornas JSON-LD hamnar två gånger i DOM:en. Platshållaren har inget
+// name och räknas därför inte som en metabeskrivning av sökmotorer.
+export const DEDUPED_META_DESCRIPTION_PLACEHOLDER = '<meta data-deduped-description="">'
+
+export function dedupeMetaDescriptions(html: string): string {
 	const matches = [...html.matchAll(metaDescriptionPattern)]
 	if (matches.length <= 1) return html
 
 	const keepIndex = matches[matches.length - 1].index
 	return html.replace(metaDescriptionPattern, (match: string, ...args: unknown[]) => {
 		const offset = args[args.length - 2]
-		return offset === keepIndex ? match : ''
+		return offset === keepIndex ? match : DEDUPED_META_DESCRIPTION_PLACEHOLDER
 	})
 }
 
@@ -53,7 +66,9 @@ export const legacyPageRedirects: Record<string, string> = {
 	'/samtalsstod-vid-trauma': '/samtalsstod-utan-vantetid/samtalsstod-vid-trauma',
 	'/ai': '/skriv',
 	'/b': '/chat/nedstamdhet',
-	'/e': '/chat/trauma'
+	'/e': '/chat/trauma',
+	// Vanlig gissning på villkorssidan. Villkoren finns på /kontakt-och-villkor.
+	'/villkor': '/kontakt-och-villkor'
 }
 
 function getLegacyGuideRedirectTarget(pathname: string): string | null {

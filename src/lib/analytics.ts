@@ -1,6 +1,11 @@
 import { browser, dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { hasAnalyticsConsent } from '$lib/consent';
+import type {
+	ExerciseEndParams,
+	ExerciseNextStepParams,
+	ExerciseOpenedParams
+} from '$lib/exercise-analytics';
 
 type EventName =
 	| 'page_view'
@@ -62,7 +67,10 @@ type EventName =
 	| 'insight_opened'
 	| 'chat_open'
 	| 'first_message_sent'
-	| 'starter_chip_clicked';
+	| 'starter_chip_clicked'
+	| 'exercise_opened'
+	| 'exercise_reached_end'
+	| 'exercise_next_step_clicked';
 
 type EventParams = Record<string, string | number | boolean>;
 type ArticleViewParams = { article_slug: string; category: string };
@@ -83,11 +91,11 @@ type LandingPageEventPayload = {
 
 const PUBLIC_GA_MEASUREMENT_ID = env.PUBLIC_GA_MEASUREMENT_ID;
 export const GA_MEASUREMENT_ID = PUBLIC_GA_MEASUREMENT_ID;
-export const PUBLIC_VERCEL_ENV = env.PUBLIC_VERCEL_ENV || '';
 const PRODUCTION_HOSTS = new Set(['mittpsyke.se', 'www.mittpsyke.se']);
+// Statistik körs bara i webbläsaren och bara på produktionsdomänen. På servern
+// är den alltid avstängd; all spårning sker efter hydrering och samtycke.
 export const ANALYTICS_ENABLED =
-	Boolean(GA_MEASUREMENT_ID) &&
-	(browser ? PRODUCTION_HOSTS.has(window.location.hostname) : PUBLIC_VERCEL_ENV === 'production');
+	Boolean(GA_MEASUREMENT_ID) && browser && PRODUCTION_HOSTS.has(window.location.hostname);
 const LANDING_SESSION_STORAGE_KEY = 'mittpsyke:landing-session-id';
 const FUNNEL_LANDING_VIEW_SESSION_KEY = 'mittpsyke:funnel-landing-page-viewed';
 const AUTH_FUNNEL_SESSION_KEY = 'mittpsyke:auth-funnel-started';
@@ -795,6 +803,22 @@ export function trackInsightOpened(params: {
 		has_summary: params.has_summary,
 		pattern_count: params.pattern_count
 	});
+}
+
+// ── Övningsdelen ────────────────────────────────────────────────────────────
+// Parametrarna byggs och valideras i exercise-analytics.ts. Bara fasta värden,
+// aldrig fritext, svar, skattningar eller inloggat tillstånd.
+
+export function trackExerciseOpened(params: ExerciseOpenedParams) {
+	trackEvent('exercise_opened', { exercise_id: params.exercise_id, source: params.source });
+}
+
+export function trackExerciseReachedEnd(params: ExerciseEndParams) {
+	trackEvent('exercise_reached_end', { exercise_id: params.exercise_id });
+}
+
+export function trackExerciseNextStepClicked(params: ExerciseNextStepParams) {
+	trackEvent('exercise_next_step_clicked', { exercise_id: params.exercise_id, target: params.target });
 }
 
 function getLandingSessionId() {

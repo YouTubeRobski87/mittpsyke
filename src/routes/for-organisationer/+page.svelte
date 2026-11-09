@@ -2,6 +2,7 @@
 	import SEO from '$lib/components/SEO.svelte';
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import { PUBLIC_CONTACT_MAILTO } from '$lib/contact';
+	import { dataflowCopy } from '$lib/dataflow-copy';
 
 	const contactHref = `${PUBLIC_CONTACT_MAILTO}?subject=${encodeURIComponent('Förfrågan från organisation')}`;
 </script>
@@ -77,6 +78,64 @@
 				<article class="card"><h3>Ett stöd mellan steg</h3><p>MittPsyke kan vara en plats för självreflektion och ett komplement när professionell vård behövs eller redan finns.</p></article>
 				<article class="card"><h3>Öppen avsändare</h3><p>MittPsyke är byggt ur egen erfarenhet och med tydlig information om vem som står bakom.</p></article>
 			</div>
+		</section>
+
+		<section class="section" aria-labelledby="ai-data-title">
+			<h2 id="ai-data-title">AI och datalagring</h2>
+			<p>
+				Så här fungerar AI-funktionerna och lagringen i dag. Samma uppgifter finns, mer utförligt, i
+				integritetspolicyn.
+			</p>
+			<div class="card-grid data-grid">
+				<article class="card">
+					<h3>AI-leverantörer</h3>
+					<p>
+						<strong>OpenAI</strong> skapar svaren i chatten, AI-minnet och de AI-funktioner som användaren
+						aktivt väljer för sparad dagbokstext. <strong>Anthropic</strong> används för den guidade dagboken
+						och vissa sammanfattningar, efter ett eget samtycke för den funktionen.
+					</p>
+				</article>
+				<article class="card">
+					<h3>Utan konto</h3>
+					<p>{dataflowCopy.guestChat.retention} {dataflowCopy.guestChat.aiTransfer}</p>
+				</article>
+				<article class="card">
+					<h3>Med konto</h3>
+					<p>
+						Sparade chattar, dagbokstexter och kontouppgifter lagras i Supabase inom EU (Frankfurt) tills
+						användaren raderar dem eller kontot. Sparad dagbokstext skickas till en AI-leverantör först när
+						användaren aktivt använder en AI-funktion och har gett samtycke.
+					</p>
+				</article>
+				<article class="card">
+					<h3>Drift och överföring</h3>
+					<p>
+						Render kör servern och Cloudflare förmedlar och skyddar trafiken. {dataflowCopy.providerRetention}
+						När en leverantör behandlar uppgifter utanför EU/EES kan EU-kommissionens standardavtalsklausuler
+						vara skyddsmekanismen.
+					</p>
+				</article>
+				<article class="card">
+					<h3>Säkerhetslager i chatten</h3>
+					<p>
+						Varje chattmeddelande kontrolleras först av ett separat säkerhetslager på servern. Vid tydliga
+						krissignaler svarar MittPsyke med hänvisning till 112, 1177 och stödlinjer, utan att meddelandet
+						skickas till AI-modellen.
+					</p>
+				</article>
+				<article class="card">
+					<h3>Vad organisationen ser</h3>
+					<p>
+						En organisation som erbjuder MittPsyke får inte tillgång till vad enskilda personer skriver.
+						Det finns i dag ingen funktion för det.
+					</p>
+				</article>
+			</div>
+			<nav class="related-links" aria-label="Mer om AI och data">
+				<a href="/integritet">Integritetspolicy</a>
+				<a href="/cookies-och-leverantorer">Cookies och leverantörer</a>
+				<a href="/ansvarsfull-ai">Ansvarsfull AI</a>
+			</nav>
 		</section>
 
 		<section class="section privacy-section" aria-labelledby="privacy-title">

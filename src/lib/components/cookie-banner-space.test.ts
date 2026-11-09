@@ -101,3 +101,31 @@ describe('avgränsningar', () => {
 		expect(banner).not.toMatch(/healthConsent|chat-ai|diary_ai|user_ai_consents/i);
 	});
 });
+
+// Med tangentbordet uppe i chatten låg bannern över textfältet, och dess yta
+// (padding på .chat-input-extras) kan inte krympas av flexlayouten, så
+// textfältet trycktes ut under kanten på 320-375 px.
+describe('bannern viker undan medan tangentbordet är uppe', () => {
+	it('döljs när data-keyboard-open är satt', () => {
+		expect(banner).toMatch(
+			/:global\(html\[data-keyboard-open='true'\]\) \.cookie-banner\s*\{\s*display:\s*none;/
+		);
+	});
+
+	it('reserverar ingen yta när den är dold', () => {
+		const measure = banner.slice(banner.indexOf('const measure = () =>'));
+		expect(measure).toMatch(/if \(rect\.height === 0\) \{\s*setBannerSpace\(0\);\s*return;/);
+		// Kontrollen måste komma före beräkningen mot rect.top, annars blir ytan
+		// hela viewporthöjden.
+		expect(measure.indexOf('rect.height === 0')).toBeLessThan(
+			measure.indexOf('window.innerHeight - rect.top')
+		);
+	});
+
+	it('ändrar inte samtyckesvalen', () => {
+		const style = banner.slice(banner.indexOf("html[data-keyboard-open='true']) .cookie-banner"));
+		expect(style.slice(0, 80)).not.toContain('grantAnalyticsConsent');
+		expect(banner).toContain('onclick={decline}>Bara nödvändiga</button>');
+		expect(banner).toContain('onclick={accept}>Acceptera analys</button>');
+	});
+});

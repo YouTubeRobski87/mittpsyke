@@ -44,12 +44,9 @@ describe('Den publika startsidans hero', () => {
 		expect(hero).not.toContain('/register');
 		expect(hero).not.toContain('REGISTER_DESTINATION');
 		expect(publicHome.match(/href=\{REGISTER_DESTINATION\}/g)).toHaveLength(2);
-		const livingWorldStart = publicHome.indexOf('aria-labelledby="living-world-title"');
-		const livingWorld = publicHome.slice(
-			livingWorldStart,
-			publicHome.indexOf('</section>', livingWorldStart)
-		);
-		expect(livingWorld).toContain('Utforska din värld');
+		const accountStart = publicHome.indexOf('aria-labelledby="account-title"');
+		const account = publicHome.slice(accountStart, publicHome.indexOf('</section>', accountStart));
+		expect(account).toContain('href={REGISTER_DESTINATION}>Skapa konto</a>');
 		const closing = publicHome.slice(publicHome.indexOf('aria-labelledby="closing-title"'));
 		expect(closing).toContain('href={REGISTER_DESTINATION}');
 		expect(closing).toContain('Skapa konto och följ över tid');
@@ -59,19 +56,15 @@ describe('Den publika startsidans hero', () => {
 		expect(publicHome).not.toContain('Skapa en plats för att spara det du skriver');
 	});
 
-	it('behåller rubriken för den levande världen i sidans fortsatta berättelse', () => {
-		expect(publicHome).toContain(
-			'<h2 id="living-world-title" tabindex="-1">Din värld stannar inte här</h2>'
-		);
-	});
-
 	// Formuleringen är kontrollerad mot diary-draft.ts: anonyma utkast skrivs
 	// bara till localStorage och skickas aldrig till servern.
 	it('förklarar diskret skillnaden mellan dagboksutkast och gästchatt', () => {
-		expect(hero).toContain(
-			'Skriv anonymt i din dagbok eller chatta direkt utan konto. Dagboksutkast sparas lokalt i'
-		);
-		expect(hero).toContain('din webbläsare; gästchatten sparas inte.');
+		expect(hero).toContain('Inget konto behövs. Dagboksutkast sparas lokalt i din webbläsare.');
+		// Gästchatten lämnar webbläsaren: texten går till OpenAI men sparas inte av MittPsyke.
+		expect(hero).toContain('I gästchatten överförs\n\t\t\t\t\ttexten till OpenAI för att generera ett svar');
+		expect(hero).toContain('MittPsyke sparar inte innehållet i din gästchatt.');
+		expect(hero).toContain('href={PRIVACY_DESTINATION}>Läs mer</a>');
+		expect(hero).not.toContain('gästchatten sparas inte.');
 		// Markup, inte fritext: rubrikens namn nämns i kommentaren som
 		// dokumenterar varför sektionen togs bort.
 		expect(publicHome).not.toContain('id="anonymous-title"');

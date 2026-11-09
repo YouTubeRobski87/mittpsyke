@@ -163,7 +163,26 @@ describe('Måla i världen', () => {
 
 	it('integreras bara på den nya övningssidan', () => {
 		expect(routeSource).toContain("data.tool.slug === 'mala-i-varlden'");
-		expect(routeSource).toContain('<WorldColoringExercise onCreativeMoment={registerWorldColoringMoment} />');
+		expect(routeSource).toMatch(
+			/<WorldColoringExercise\s+showIntro=\{false\}\s+onCreativeMoment=\{registerWorldColoringMoment\}\s+onDone=\{goToClosing\}/
+		);
+	});
+
+	it('laddar målarytan och sparandet bara på Måla i världen', () => {
+		// Inga statiska importer, så att övriga övningssidor slipper koden.
+		expect(routeSource).not.toMatch(/^\s*import WorldColoringExercise/m);
+		expect(routeSource).not.toMatch(/^\s*import \{ (recordCreativeMoment|supabase) \}/m);
+		expect(routeSource).toContain("import('$lib/components/WorldColoringExercise.svelte')");
+	});
+
+	it('leder "Klar för nu" till sidans avslutning', () => {
+		expect(routeSource).toContain('function goToClosing()');
+		expect(routeSource).toContain('bind:this={closingHeading}');
+	});
+
+	it('grupperar motiv- och färgval för skärmläsare', () => {
+		expect(componentSource).toContain('class="motif-picker" role="group"');
+		expect(componentSource).toContain('class="palette" role="group" aria-label="Välj färg"');
 	});
 
 	it('registrerar bara den första faktiska färgläggningen i komponentens session', () => {

@@ -129,3 +129,101 @@ describe('snabbvalen skapar ingen horisontell overflow', () => {
 		expect(chatWindowCode).toMatch(/\.starter-chip\s*\{[^}]*scroll-snap-align:\s*start/);
 	});
 });
+
+/**
+ * Samtyckesvyn på mobil. Meddelandelistan har flex-basis 0 och krympte till
+ * ~27 px bredvid samtyckesrutan, så introtexten ("AI-stödet kan hjälpa dig …")
+ * klipptes mitt i en rad. I samtyckesvyn utan meddelanden tar listan sin
+ * innehållshöjd och hela chattytan blir en enda skrollyta.
+ */
+describe('introtexten syns helt ovanför samtyckesrutan på mobil', () => {
+	const mobileBlock = chatWindowCode.slice(chatWindowCode.indexOf('@media (max-width: 768px)'));
+
+	it('markerar samtyckesvyn med samma villkor som visar ConsentGate', () => {
+		expect(chatWindowCode).toContain(
+			'const consentGateVisible = $derived(consentStatusKnown && !hasSensitiveDataConsent)'
+		);
+		expect(chatWindowCode).toContain(
+			'class:consent-intro-view={consentGateVisible && messages.length === 0}'
+		);
+		// Mallen visar rutan när status är känd och samtycke saknas.
+		expect(chatWindowCode).toMatch(
+			/\{#if !hasSensitiveDataConsent && !consentStatusKnown\}[\s\S]*?\{:else if !hasSensitiveDataConsent\}[\s\S]*?<ConsentGate/
+		);
+	});
+
+	it('låter listan ta sin innehållshöjd i stället för att klippa texten', () => {
+		expect(mobileBlock).toMatch(
+			/\.consent-intro-view \.chat-messages,\s*\.consent-intro-view \.chat-input-area,\s*\.consent-intro-view \.chat-input-extras\s*\{[^}]*flex:\s*0 0 auto;[^}]*overflow:\s*visible/
+		);
+	});
+
+	it('gör chattytan till enda skrollytan i samtyckesvyn', () => {
+		expect(mobileBlock).toMatch(/\.consent-intro-view\s*\{[^}]*overflow-y:\s*auto/);
+	});
+
+	it('håller AI-raden synlig ovanför inmatningsytan när vyn skrollar', () => {
+		// .chat-input-area har z-index: 30 i app.css.
+		expect(mobileBlock).toMatch(
+			/\.consent-intro-view \.ai-notice\s*\{[^}]*position:\s*sticky;[^}]*top:\s*0;[^}]*z-index:\s*31;[^}]*background:\s*hsl\(var\(--background\)\)/
+		);
+		expect(readFileSync(join(process.cwd(), 'src/app.css'), 'utf8')).toMatch(
+			/\.chat-input-area\s*\{[^}]*z-index:\s*30;/
+		);
+	});
+
+	it('behåller kryssrutan och knappen fasta i botten av samtyckesrutan', () => {
+		const consentGate = readFileSync(
+			join(process.cwd(), 'src/lib/components/ConsentGate.svelte'),
+			'utf8'
+		);
+		expect(consentGate).toMatch(/\.consent-actions\s*\{[^}]*position:\s*sticky;[^}]*bottom:\s*0/);
+	});
+});
+
+/**
+ * Tom chatt efter samtycke på låga skärmar (320×568 och lägre). Länk, snabbval
+ * och röstpanel tog ~280 px och listan fick 27-47 px, så introtexten klipptes.
+ * Medan chatten är tom blir chattytan en enda skrollyta med textfältet fast i
+ * botten. Med tangentbordet uppe går textfältet före introtexten.
+ */
+describe('introtexten syns helt i en tom chatt efter samtycke på mobil', () => {
+	const mobileBlock = chatWindowCode.slice(chatWindowCode.indexOf('@media (max-width: 768px)'));
+
+	it('gäller bara tom chatt utan samtyckesruta', () => {
+		expect(chatWindowCode).toContain(
+			'class:empty-chat-view={!consentGateVisible && messages.length === 0}'
+		);
+	});
+
+	it('låter listan ta minst sin innehållshöjd och chattytan skrolla', () => {
+		expect(mobileBlock).toMatch(/\.empty-chat-view\s*\{[^}]*overflow-y:\s*auto/);
+		expect(mobileBlock).toMatch(/\.empty-chat-view \.chat-messages\s*\{[^}]*flex:\s*1 0 auto/);
+		expect(mobileBlock).toMatch(
+			/\.empty-chat-view \.chat-input-area,\s*\.empty-chat-view \.chat-input-extras\s*\{[^}]*flex:\s*0 0 auto;[^}]*overflow:\s*visible/
+		);
+	});
+
+	it('håller AI-raden överst och textfältet i botten', () => {
+		expect(mobileBlock).toMatch(
+			/\.empty-chat-view \.ai-notice\s*\{[^}]*position:\s*sticky;[^}]*top:\s*0;[^}]*z-index:\s*31/
+		);
+		expect(mobileBlock).toMatch(
+			/\.empty-chat-view \.composer-row\s*\{[^}]*position:\s*sticky;[^}]*bottom:\s*0/
+		);
+	});
+
+	it('låter textfältet gå före introtexten med tangentbordet uppe', () => {
+		const kb = ":global(html[data-keyboard-open='true']) .empty-chat-view";
+		expect(mobileBlock).toContain(`${kb} {\n\t\t\toverflow-y: hidden;`);
+		expect(mobileBlock).toMatch(
+			/html\[data-keyboard-open='true'\]\) \.empty-chat-view \.chat-messages\s*\{[^}]*flex:\s*1 1 auto;[^}]*min-height:\s*0;[^}]*overflow-y:\s*auto/
+		);
+		expect(mobileBlock).toMatch(
+			/html\[data-keyboard-open='true'\]\) \.empty-chat-view \.chat-input-extras\s*\{[^}]*overflow-y:\s*auto/
+		);
+		expect(mobileBlock).toMatch(
+			/html\[data-keyboard-open='true'\]\) \.empty-chat-view \.composer-row\s*\{[^}]*position:\s*static/
+		);
+	});
+});

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import DiaryHero from '$lib/components/DiaryHero.svelte';
+	import InBrief from '$lib/components/InBrief.svelte';
 </script>
 
 <SEO canonical="https://mittpsyke.se/digital-dagbok-for-maende" />
@@ -9,7 +10,7 @@
 	<title>Digital dagbok för mående – ett enkelt dagboksverktyg | MittPsyke</title>
 	<meta
 		name="description"
-		content="Ett enkelt dagboksverktyg för ditt mående. Skriv av dig, se mönster och följ små steg över tid, med eller utan konto."
+		content="En kravlös digital dagbok för ditt mående. Skriv av dig och se vad som återkommer över tid, med eller utan konto. Inga streaks att hålla."
 	/>
 	<meta property="og:title" content="Digital dagbok för mående | MittPsyke" />
 	<meta
@@ -31,6 +32,9 @@
 
 <div class="page">
 	<div class="page-container">
+		<InBrief
+			lead="MittPsyke är en kravlös digital dagbok. Du kan skriva direkt utan konto och välja senare om du vill spara. Det finns inga streaks att hålla och inget som börjar om."
+		/>
 
 		<section class="section">
 			<h2>När skrivande hjälper dig att landa</h2>

@@ -7,14 +7,11 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<SEO canonical="https://mittpsyke.se/blogg" />
+<SEO canonical={data.seo.canonicalPath} preserveSearch />
 
 <svelte:head>
-	<title>Artiklar om psykiskt mående | MittPsyke</title>
-	<meta
-		name="description"
-		content="Artiklar om att skriva dagbok, reflektera, oro, stress och återhämtning, och om hur skrivandet kan bli ett stöd för ditt mående."
-	/>
+	<title>{data.seo.title}</title>
+	<meta name="description" content={data.seo.description} />
 	<meta property="og:type" content="website" />
 </svelte:head>
 
