@@ -63,7 +63,7 @@
 						href={ANONYMOUS_CHAT_DESTINATION}
 						onclick={() => trackHomeCta('hero', 'chatta', ANONYMOUS_CHAT_DESTINATION)}
 					>
-						Chatta
+						Chatta med AI
 					</a>
 				</div>
 				<!-- Ligger direkt under CTA-raden, där den sänker tröskeln för att
