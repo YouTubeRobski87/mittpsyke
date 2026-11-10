@@ -162,7 +162,7 @@ describe('Startsidans P2-struktur', () => {
 		const hero = sectionOf('hero-title');
 		expect(hero).not.toContain('class="eyebrow"');
 		expect(hero.match(/class="cta-primary"/g)).toHaveLength(1);
-		expect(hero).toContain('<a class="cta-secondary" href="/chat">Chatta</a>');
+		expect(hero).toContain('<a class="cta-secondary" href="/chat">Chatta med AI</a>');
 		expect(hero).toContain('Inget konto behövs. Dagboksutkast sparas lokalt i din webbläsare.');
 		// Gästchatten lämnar webbläsaren: texten går till OpenAI men sparas inte av MittPsyke.
 		expect(hero).toContain('I gästchatten överförs\n\t\t\t\t\ttexten till OpenAI för att generera ett svar');
