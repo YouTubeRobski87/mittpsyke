@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
 	articleJsonLdSchema,
@@ -117,6 +119,21 @@ describe('every article file in src/content/articles', () => {
 				.map((link) => `${link.sourcePath} → "${link.linkTitle}" (${link.url}) ${link.reason}`)
 				.join('\n')
 		).toEqual([]);
+	});
+
+	it('has an image that exists in static/ when it points to a local file', () => {
+		// Render kör Linux och skiljer på stora och små bokstäver, så sökvägen i
+		// frontmatter måste matcha filnamnet exakt (t.ex. /uploads, inte /UPLOADS).
+		const missing = results.flatMap((result) => {
+			if (!result.valid || result.article.draft) return [];
+			const image = result.article.image;
+			if (!image || !image.startsWith('/') || image.startsWith('//')) return [];
+
+			const filePath = join(process.cwd(), 'static', decodeURI(image));
+			return existsSync(filePath) ? [] : [`${result.path}: "${image}" finns inte i static/`];
+		});
+
+		expect(missing, missing.join('\n')).toEqual([]);
 	});
 
 	it('has no broken links written directly in the article body', () => {
