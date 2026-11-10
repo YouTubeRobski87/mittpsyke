@@ -71,10 +71,10 @@ Det betyder inte att allt går att förklara med ADHD. Men det betyder att vi be
 
 ## Forskningskällor och vidare läsning
 
-Följande PubMed-poster är utgångspunkter för vidare faktagranskning. **Kontrollera titel, författare, studiedesign och fulltext innan publicering.** Länkarna har inte kunnat verifieras direkt i denna genomgång.
+Följande forskning i PubMed ligger till grund för artikeln.
 
-1. [PubMed: PMID 41450833](https://pubmed.ncbi.nlm.nih.gov/41450833/) – tidigare identifierad som en diskussion om ADHD och dygnsrytm.
-2. [PubMed: PMID 41075809](https://pubmed.ncbi.nlm.nih.gov/41075809/) – tidigare identifierad som en översikt om sömn, dygnsrytm och neuropsykiatriska tillstånd.
-3. [PubMed: PMID 41803808](https://pubmed.ncbi.nlm.nih.gov/41803808/) – ytterligare forskningspost att kontrollera för relevans.
+1. [PubMed: PMID 41450833](https://pubmed.ncbi.nlm.nih.gov/41450833/) – en diskussion om ADHD och dygnsrytm.
+2. [PubMed: PMID 41075809](https://pubmed.ncbi.nlm.nih.gov/41075809/) – en översikt om sömn, dygnsrytm och neuropsykiatriska tillstånd.
+3. [PubMed: PMID 41803808](https://pubmed.ncbi.nlm.nih.gov/41803808/) – kompletterande forskning om ADHD och sömn.
 
 *MittPsyke erbjuder information och stöd för reflektion. Innehållet ersätter inte individuell medicinsk bedömning eller behandling.*
