@@ -2,7 +2,7 @@
 collection: "medicin-och-halsa"
 title: "ADHD och sömn: när den biologiska klockan går i otakt"
 description: "Varför är det så svårt att somna i tid vid ADHD? Vi går igenom forskningen om sömn, kvällspigghet och dygnsrytm – utan att skuldbelägga."
-image: /UPLOADS/Sömnlös-natt-med-ADHD-och-katt.png
+image: /uploads/somnlos-natt-med-adhd-och-katt.webp
 imageAlt: "Man med hörlurar ligger vaken på natten bredvid en sovande katt. En lysande hjärna med texten ADHD, en klocka och en måne symboliserar sömnsvårigheter och dygnsrytm."
 date: 2026-11-10
 tags:
