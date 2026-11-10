@@ -282,7 +282,8 @@ describe('återförsök skapar inga dubbletter', () => {
 		const diary = read('src/routes/dagbok/checkin/+page.svelte');
 		expect(diary).toContain('if (confirmLocalTextSaved(submittedText) > 0) localImportKey += 1;');
 		// Samma ögonblicksbild skickas till servern och stäms av lokalt.
-		expect(diary).toMatch(/submittedText = draftText\.trim\(\);\s*const response = await fetch\('\/api\/diary\/create'/);
+		expect(diary).toContain('text: draftText,');
+		expect(diary).toContain('const submittedText = submitted.text.trim();');
 		expect(diary).toContain('text: submittedText,');
 		expect(diary).toContain('{#key localImportKey}');
 	});
@@ -291,9 +292,9 @@ describe('återförsök skapar inga dubbletter', () => {
 		const diary = read('src/routes/dagbok/checkin/+page.svelte');
 		const prompt = read('src/lib/components/LocalEntriesImportPrompt.svelte');
 		expect(diary).toContain('onImportingChange={(importing) => (localImporting = importing)}');
-		expect(diary).toContain('busy={savingDraft}');
-		expect(diary).toContain('if (!draftText.trim() || savingDraft || localImporting) return;');
-		expect(diary).toContain('disabled={savingDraft || localImporting ||');
+		expect(diary).toContain('busy={editorLocked}');
+		expect(diary).toContain('if (!draftText.trim() || editorLocked || localImporting) return;');
+		expect(diary).toContain('disabled={editorLocked || localImporting ||');
 		expect(prompt).toContain('if (importing || busy || selectedCount === 0) return;');
 		expect(prompt).toContain('disabled={importing || busy || selectedCount === 0}');
 		// Låset släpps i alla utgångar ur importen.

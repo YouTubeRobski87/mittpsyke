@@ -1,7 +1,9 @@
 <script lang="ts">
 	import SEO from '$lib/components/SEO.svelte';
 	import { browser, dev } from '$app/environment';
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { beforeNavigate, goto, replaceState } from '$app/navigation';
+	import { getContext, onDestroy, onMount, tick } from 'svelte';
+	import { DIARY_LEAVE_CONTEXT, type DiaryLeaveContext } from '$lib/diary-leave-context';
 	import { page } from '$app/stores';
 	import {
 		countWords,
@@ -176,6 +178,15 @@
 	let hasSavedEntries = $derived(entries.length > 0);
 	let showWriteEditor = $state(false);
 	let draftTextarea = $state<HTMLTextAreaElement | null>(null);
+	let writeEditorOpener: HTMLElement | null = null;
+	let leaveDialog: HTMLDialogElement;
+	let stayButton: HTMLButtonElement;
+	let leaveAction: (() => void) | undefined;
+	let leaveFocus: HTMLElement | null = null;
+	const diaryLeave = getContext<DiaryLeaveContext | undefined>(DIARY_LEAVE_CONTEXT);
+	const editorLocked = $derived(savingDraft || Boolean(diaryLeave?.logoutPending));
+	const unconfirmedSaveNotice =
+		'Vi kunde inte bekräfta om inlägget sparades. Texten finns kvar här. Kontrollera dagboken i en annan flik innan du sparar igen.';
 	let writeEditorPanel = $state<HTMLElement | null>(null);
 	let hasHealthDataConsent = $state(false);
 	let currentPage = $state(1);
@@ -211,6 +222,9 @@
 	// sparas — på så vis blir inga föräldralösa filer kvar om användaren lämnar sidan.
 	let showVideoRecorder = $state(false);
 	let draftVideoBlob = $state<Blob | null>(null);
+	const hasUnsavedDraft = $derived(showWriteEditor && Boolean(
+		draftText || draftMood || draftImagePreviewUrl || draftImageUrl || showVideoRecorder || draftVideoBlob
+	));
 	let uploadingVideo = $state(false);
 	let uploadVideoError = $state('');
 	// Signerade videolänkar per inlägg-id (laddas vid expand)
@@ -352,6 +366,7 @@
 	}
 
 	function handleMoodInput(event: Event) {
+		if (editorLocked) return;
 		const value = Number((event.currentTarget as HTMLInputElement).value);
 		if (!Number.isFinite(value)) return;
 		draftMoodPreview = value;
@@ -823,6 +838,7 @@
 
 	// Hanterar val av bild — visar lokal förhandsvisning och skickar till /api/diary/upload
 	async function handleImageSelect(event: Event) {
+		if (editorLocked) return;
 		const input = event.currentTarget as HTMLInputElement;
 		const file = input.files?.[0] ?? null;
 		if (!file) return;
@@ -940,6 +956,7 @@
 
 	// Anropas när användaren klickar "Spela in igen" i inspelaren
 	function handleVideoReset() {
+		if (editorLocked) return;
 		draftVideoBlob = null;
 		uploadVideoError = '';
 	}
@@ -947,19 +964,19 @@
 	// Inspelaren skickar den färdiga videon hit — vi sparar bara blobben i minnet.
 	// Själva uppladdningen sker i uploadDraftVideo() när inlägget sparas.
 	function handleVideoRecorded(blob: Blob) {
+		if (editorLocked) return;
 		uploadVideoError = '';
 		draftVideoBlob = blob;
 	}
 
 	// Laddar upp den inspelade videon och returnerar storage-sökvägen.
 	// Kastar vid fel så att anroparen kan avbryta sparandet.
-	async function uploadDraftVideo(userId: string): Promise<string> {
-		if (!draftVideoBlob) throw new Error('Ingen video att ladda upp.');
-		const ext = draftVideoBlob.type.includes('mp4') ? 'mp4' : 'webm';
+	async function uploadDraftVideo(userId: string, video: Blob): Promise<string> {
+		const ext = video.type.includes('mp4') ? 'mp4' : 'webm';
 		const path = `${userId}/${crypto.randomUUID()}.${ext}`;
 		const { error } = await supabase.storage
 			.from('diary-videos')
-			.upload(path, draftVideoBlob, { contentType: draftVideoBlob.type });
+			.upload(path, video, { contentType: video.type });
 		if (error) throw error;
 		return path;
 	}
@@ -1025,10 +1042,89 @@
 	}
 
 	async function openWriteEditor() {
+		if (editorLocked) return;
+		if (!showWriteEditor && document.activeElement instanceof HTMLElement) {
+			writeEditorOpener = document.activeElement;
+		}
 		showWriteEditor = true;
 		await tick();
 		await focusWriteEditor();
 	}
+
+	function resetDraft() {
+		draftText = '';
+		draftPromptQuestion = '';
+		draftDailyQuestionId = null;
+		clearMoodSelection();
+		clearDraftImage();
+		clearVideoState();
+	}
+
+	function clearDraftUrl() {
+		const url = new URL(location.href);
+		const keys = ['prefill', 'prompt', 'daily_question_id'];
+		if (!keys.some((key) => url.searchParams.has(key))) return;
+		for (const key of keys) url.searchParams.delete(key);
+		replaceState(url, $page.state);
+	}
+
+	function confirmLeave(leave: () => void) {
+		if (leaveDialog.open) return;
+		if (!hasUnsavedDraft) {
+			leave();
+			return;
+		}
+		if (savingDraft) return;
+		leaveFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		leaveAction = leave;
+		leaveDialog.showModal();
+		stayButton.focus();
+	}
+
+	function closeLeaveDialog(discard: boolean) {
+		const leave = leaveAction;
+		leaveAction = undefined;
+		leaveDialog.close();
+		if (!discard) {
+			(leaveFocus?.isConnected ? leaveFocus : draftTextarea)?.focus();
+			leaveFocus = null;
+			return;
+		}
+		leaveFocus = null;
+		resetDraft();
+		draftError = '';
+		clearDraftUrl();
+		leave?.();
+	}
+
+	function closeWriteEditor() {
+		confirmLeave(async () => {
+			showWriteEditor = false;
+			draftError = '';
+			await tick();
+			writeEditorOpener?.focus();
+		});
+	}
+
+	beforeNavigate((navigation) => {
+		if (!hasUnsavedDraft) return;
+		navigation.cancel();
+		// SvelteKit använder webbläsarens standardvarning vid omladdning och stängning.
+		if (navigation.type === 'leave' || !navigation.to || savingDraft) return;
+
+		const { to, type, delta, willUnload } = navigation;
+		if (type === 'popstate' && delta) {
+			// Vänta på att SvelteKit återställer historikpositionen efter cancel().
+			window.addEventListener('popstate', () => {
+				confirmLeave(() => history.go(delta));
+			}, { once: true });
+		} else {
+			confirmLeave(() => {
+				if (willUnload) location.assign(to.url);
+				else void goto(to.url);
+			});
+		}
+	});
 
 	function applyDailyQuestion(payload: DailyQuestionPayload) {
 		dailyQuestionNeedsGeneration = Boolean(payload.needsGeneration);
@@ -1109,6 +1205,7 @@
 	}
 
 	async function answerDailyQuestion() {
+		if (editorLocked) return;
 		draftPromptQuestion = dailyQuestionPanelQuestion;
 		draftDailyQuestionId = dailyQuestionId;
 		await openWriteEditor();
@@ -1125,7 +1222,8 @@
 	}
 
 	async function saveDraftToDiary() {
-		if (!draftText.trim() || savingDraft || localImporting) return;
+		if (!draftText.trim() || editorLocked || localImporting) return;
+		if (showVideoRecorder && !draftVideoBlob) return;
 		draftError = '';
 		draftSuccess = '';
 		draftListNotice = '';
@@ -1138,13 +1236,18 @@
 			return;
 		}
 		savingDraft = true;
-		// Sätts så fort servern bekräftat sparandet. Efter det får ett fel bara
-		// gälla det som händer efteråt, aldrig visas som ett misslyckat sparande.
+		if (document.activeElement === draftTextarea) draftTextarea?.blur();
+		const submitted = {
+			text: draftText,
+			mood: draftMood,
+			image: draftImageUrl,
+			video: draftVideoBlob,
+			prompt: draftPromptQuestion,
+			questionId: draftDailyQuestionId
+		};
+		const submittedText = submitted.text.trim();
+		let postStarted = false;
 		let saveConfirmed = false;
-		// Texten som faktiskt skickas. Samma ögonblicksbild används för att
-		// stämma av mot lokala gästinlägg efteråt, även om fältet ändrats medan
-		// sessionen eller en video hämtades.
-		let submittedText = '';
 
 		try {
 			const { data } = await supabase.auth.getSession();
@@ -1160,10 +1263,10 @@
 			// Ladda upp videon (om någon spelats in) precis innan inlägget skapas.
 			// Misslyckas uppladdningen avbryter vi sparandet och inget föräldralöst skapas.
 			let videoPath: string | null = null;
-			if (draftVideoBlob) {
+			if (submitted.video) {
 				uploadingVideo = true;
 				try {
-					videoPath = await uploadDraftVideo(session.user.id);
+					videoPath = await uploadDraftVideo(session.user.id, submitted.video);
 				} catch (err) {
 					draftError =
 						err instanceof Error ? err.message : 'Kunde inte ladda upp videon. Försök igen.';
@@ -1173,7 +1276,7 @@
 				}
 			}
 
-			submittedText = draftText.trim();
+			postStarted = true;
 			const response = await fetch('/api/diary/create', {
 				method: 'POST',
 				headers: {
@@ -1183,19 +1286,24 @@
 				},
 				body: JSON.stringify({
 					text: submittedText,
-					mood: draftMood || null,
-					image_url: draftImageUrl,
+					mood: submitted.mood || null,
+					image_url: submitted.image,
 					video_path: videoPath,
-					prompt_question: draftPromptQuestion || null,
-					daily_question_id: draftDailyQuestionId
+					prompt_question: submitted.prompt || null,
+					daily_question_id: submitted.questionId
 				})
 			});
 
 			const payload = (await response.json().catch(() => null)) as {
+				success?: boolean;
 				error?: string;
 				diary?: { id?: string | null };
 			} | null;
 			if (!response.ok) {
+				if (payload?.success !== false) {
+					draftError = unconfirmedSaveNotice;
+					return;
+				}
 				// Inlägget kunde inte sparas — städa bort videon vi just laddade upp.
 				if (videoPath) {
 					supabase.storage.from('diary-videos').remove([videoPath]).catch(() => {});
@@ -1213,44 +1321,29 @@
 				return;
 			}
 
-			saveConfirmed = true;
-			recordManualDiaryMilestone(getMilestoneUserId(), payload?.diary?.id ?? null);
-
-			if (typeof window !== 'undefined') {
-				// Rensar båda nycklarna så att ett sparat inlägg inte dyker upp som utkast igen.
-				clearDiaryDraft();
-				// Ett lokalt gästinlägg med samma text finns nu i kontot och ska inte
-				// kunna importeras en gång till.
-				if (confirmLocalTextSaved(submittedText) > 0) localImportKey += 1;
-
-				const url = new URL(window.location.href);
-				if (url.searchParams.has('prefill')) {
-					url.searchParams.delete('prefill');
-					url.searchParams.delete('prompt');
-					url.searchParams.delete('daily_question_id');
-					const query = url.searchParams.toString();
-					window.history.replaceState({}, '', `${url.pathname}${query ? `?${query}` : ''}${url.hash}`);
-				}
-				if (url.searchParams.has('prompt') || url.searchParams.has('daily_question_id')) {
-					url.searchParams.delete('prompt');
-					url.searchParams.delete('daily_question_id');
-					const query = url.searchParams.toString();
-					window.history.replaceState({}, '', `${url.pathname}${query ? `?${query}` : ''}${url.hash}`);
-				}
+			if (payload?.success !== true || !payload.diary?.id) {
+				draftError = unconfirmedSaveNotice;
+				return;
 			}
-
-			const savedDraftText = draftText.trim();
-			trackDiaryEntryCreated({ word_count: countWords(savedDraftText) });
-
-			draftText = '';
-			draftPromptQuestion = '';
-			draftDailyQuestionId = null;
-			draftMood = '';
-			draftMoodPreview = 5;
-			clearDraftImage();
-			uploadImageError = '';
-			clearVideoState();
+			saveConfirmed = true;
 			draftSuccess = 'Inlägget är sparat';
+			if (
+				draftText === submitted.text &&
+				draftMood === submitted.mood &&
+				draftImageUrl === submitted.image &&
+				draftVideoBlob === submitted.video &&
+				draftPromptQuestion === submitted.prompt &&
+				draftDailyQuestionId === submitted.questionId
+			) {
+				resetDraft();
+			}
+			recordManualDiaryMilestone(getMilestoneUserId(), payload.diary.id);
+
+			// Samma städning av överlämnade gästutkast som före ändringen.
+			clearDiaryDraft();
+			if (confirmLocalTextSaved(submittedText) > 0) localImportKey += 1;
+			clearDraftUrl();
+			trackDiaryEntryCreated({ word_count: countWords(submittedText) });
 			// Sparandet är bekräftat av servern. Från och med här får inget
 			// visas som att det misslyckades, även om listan inte kan laddas om.
 			const listRefreshed = await refreshAfterConfirmedChange(() =>
@@ -1263,12 +1356,12 @@
 		} catch (error) {
 			if (saveConfirmed) {
 				console.error('Dagbok: fel efter bekräftat sparande', error);
-				// Texten finns redan sparad. Tömt fält hindrar att den sparas två gånger.
-				draftText = '';
 				draftSuccess = 'Inlägget är sparat';
 				draftListNotice = DIARY_LIST_REFRESH_NOTICE;
 			} else {
-				draftError = error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
+				draftError = postStarted
+					? unconfirmedSaveNotice
+					: error instanceof Error ? error.message : 'Kunde inte spara inlägget just nu.';
 			}
 		} finally {
 			savingDraft = false;
@@ -1370,6 +1463,7 @@
 	}
 
 	onMount(() => {
+		if (diaryLeave) diaryLeave.confirmLeave = confirmLeave;
 		canRenderMarkdown = true;
 
 		if (!data.session) {
@@ -1393,7 +1487,10 @@
 			}
 		});
 
-		return () => subscription.unsubscribe();
+		return () => {
+			if (diaryLeave?.confirmLeave === confirmLeave) delete diaryLeave.confirmLeave;
+			subscription.unsubscribe();
+		};
 	});
 
 	$effect(() => {
@@ -1498,7 +1595,7 @@
 					<LocalEntriesImportPrompt
 						onImported={handleLocalEntriesImported}
 						onImportingChange={(importing) => (localImporting = importing)}
-						busy={savingDraft}
+						busy={editorLocked}
 					/>
 				{/key}
 				{#if localImportListNotice}
@@ -1550,7 +1647,7 @@
 								type="button"
 								class="diary-start-secondary-action"
 								onclick={answerDailyQuestion}
-								disabled={dailyQuestionLoading && !dailyQuestion && !draftPromptQuestion}
+								disabled={editorLocked || (dailyQuestionLoading && !dailyQuestion && !draftPromptQuestion)}
 							>
 								Svara på dagens fråga
 							</button>
@@ -1631,7 +1728,7 @@
 							type="button"
 							class="auth-button primary"
 							onclick={answerDailyQuestion}
-							disabled={dailyQuestionLoading && !dailyQuestion && !draftPromptQuestion}
+							disabled={editorLocked || (dailyQuestionLoading && !dailyQuestion && !draftPromptQuestion)}
 						>
 							{dailyQuestionCtaLabel}
 						</button>
@@ -1668,7 +1765,7 @@
 									{new Date().toLocaleDateString('sv-SE', { weekday: 'long', day: 'numeric', month: 'long' })}
 								</p>
 							</header>
-							<div class="editor-card">
+							<fieldset class="editor-card" disabled={editorLocked}>
 								{#if hasPromptQuestion}
 									<div class="editor-prompt-question">
 										<p class="editor-prompt-label">En fråga att skriva utifrån</p>
@@ -1706,6 +1803,7 @@
 						<textarea
 							bind:this={draftTextarea}
 							bind:value={draftText}
+							aria-label="Dagbokstext"
 							rows={8}
 							class="diary-input diary-input--editor"
 							placeholder={hasPromptQuestion ? 'Skriv ditt svar här...' : 'Skriv några ord...'}
@@ -1776,29 +1874,30 @@
 								</button>
 							{/if}
 						</div>
-							</div>
+							</fieldset>
 
 						<p class="editor-note auth-muted">
 							När du sparar finns inlägget kvar i din dagbok, så att du kan fortsätta senare i din egen takt.
 						</p>
 
 						{#if draftError}
-							<p class="mt-3 text-sm error-copy">{draftError}</p>
+							<p class="mt-3 text-sm error-copy" role="alert">{draftError}</p>
 						{/if}
 
+						<p class="editor-save-status" role="status">{savingDraft ? (draftSuccess ? 'Sparat. Uppdaterar listan…' : 'Sparar inlägget…') : ''}</p>
 						<div class="actions-row editor-actions">
 							<button
 								type="button"
 								class="auth-button primary editor-primary"
 								onclick={saveDraftToDiary}
-								disabled={savingDraft || localImporting || uploadingImage || uploadingVideo || !draftText.trim()}
+								disabled={editorLocked || localImporting || uploadingImage || (showVideoRecorder && !draftVideoBlob) || !draftText.trim()}
 							>
-								{savingDraft ? 'Sparar...' : uploadingImage ? 'Väntar på bild...' : uploadingVideo ? 'Väntar på video...' : 'Spara inlägg'}
+								{savingDraft ? (draftSuccess ? 'Sparat' : 'Sparar…') : uploadingImage ? 'Väntar på bild...' : uploadingVideo ? 'Väntar på video...' : 'Spara inlägg'}
 							</button>
 
-							<a href="/dagbok/checkin" class="auth-button editor-secondary">
-								Fortsätt skriva senare
-							</a>
+							<button type="button" class="auth-button editor-secondary" onclick={closeWriteEditor} disabled={editorLocked}>
+								Stäng skrivytan
+							</button>
 						</div>
 						</div>
 					</section>
@@ -2153,7 +2252,53 @@
 	{/if}
 </div>
 
+<dialog
+	bind:this={leaveDialog}
+	class="auth-panel diary-leave-dialog"
+	aria-labelledby="diary-leave-title"
+	aria-describedby="diary-leave-description"
+	oncancel={(event) => {
+		event.preventDefault();
+		closeLeaveDialog(false);
+	}}
+>
+	<h2 id="diary-leave-title">Vill du lämna skrivytan?</h2>
+	<p id="diary-leave-description">Du har osparade ändringar. De försvinner om du lämnar.</p>
+	<div class="diary-leave-actions">
+		<button type="button" bind:this={stayButton} class="auth-button primary" onclick={() => closeLeaveDialog(false)}>
+			Fortsätt skriva
+		</button>
+		<button type="button" class="auth-button" onclick={() => closeLeaveDialog(true)}>
+			Lämna utan att spara
+		</button>
+	</div>
+</dialog>
+
 <style>
+	.diary-leave-dialog {
+		width: min(calc(100% - 2rem), 28rem);
+		max-height: calc(100dvh - 2rem);
+		margin: auto;
+		overflow: auto;
+		color: inherit;
+	}
+	.diary-leave-dialog::backdrop {
+		background: rgb(0 0 0 / 55%);
+	}
+	.diary-leave-dialog h2 {
+		font-weight: 600;
+	}
+	.diary-leave-dialog p {
+		margin-block: 0.75rem 1rem;
+	}
+	.diary-leave-actions {
+		display: grid;
+		gap: 0.5rem;
+	}
+	.editor-save-status:not(:empty) {
+		margin-block: 0.75rem;
+	}
+
 	.diary-layout {
 		display: grid;
 		gap: 1rem;
@@ -2639,6 +2784,9 @@
 	}
 
 	.editor-card {
+		min-inline-size: 0;
+		margin: 0;
+		padding: 0;
 		display: grid;
 		gap: 0;
 		border-radius: calc(var(--radius-card) + 2px);
