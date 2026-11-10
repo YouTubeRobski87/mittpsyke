@@ -77,12 +77,4 @@ Följande PubMed-poster är utgångspunkter för vidare faktagranskning. **Kontr
 2. [PubMed: PMID 41075809](https://pubmed.ncbi.nlm.nih.gov/41075809/) – tidigare identifierad som en översikt om sömn, dygnsrytm och neuropsykiatriska tillstånd.
 3. [PubMed: PMID 41803808](https://pubmed.ncbi.nlm.nih.gov/41803808/) – ytterligare forskningspost att kontrollera för relevans.
 
-### Redaktörens kontrollista före publicering
-
-- Bekräfta att de tre PubMed-länkarna leder till de studier som avses.
-- Lägg till korrekta artikelrubriker, författare och publiceringsår.
-- Kontrollera om uppgifter om melatoninets tidpunkt gäller vuxna, barn eller särskilda undergrupper.
-- Undvik siffror som ”80 procent” eller ”90 minuter” utan att ange exakt studie, population och osäkerhet.
-- Kontrollera att artikeln inte överlappar en redan publicerad text på MittPsyke.
-
 *MittPsyke erbjuder information och stöd för reflektion. Innehållet ersätter inte individuell medicinsk bedömning eller behandling.*
