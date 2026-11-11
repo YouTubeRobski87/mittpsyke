@@ -16,6 +16,9 @@ describe('/blogg/amne/medicin-och-halsa/adhd-lakemedel-och-dodlighet', () => {
 				dateLabel: string;
 				updatedLabel: string | null;
 				content: string;
+				author: string;
+				references: Array<{ label: string; url: string }>;
+				relatedArticles: Array<{ title: string; url: string }>;
 			};
 			topic: { slug: string; label: string; icon: string };
 		};
@@ -33,7 +36,23 @@ describe('/blogg/amne/medicin-och-halsa/adhd-lakemedel-och-dodlighet', () => {
 			updatedLabel: null
 		});
 		expect(result.article.content).not.toContain('<h2>ADHD-läkemedel kopplas');
-		expect(result.article.content).toContain('<strong>Av Jess Cockerill</strong>');
+		// Texten bygger på en ScienceAlert-artikel: redaktionen står som avsändare
+		// och originalet anges tydligt, utan spårningsparametrar i länken.
+		expect(result.article.author).toBe('MittPsyke-redaktionen');
+		expect(result.article.content).toContain('bygger på Jess Cockerills artikel i ScienceAlert');
+		expect(result.article.content).not.toContain('<strong>Av Jess Cockerill</strong>');
+		expect(result.article.content).not.toContain('fbclid');
+		expect(result.article.references).toEqual([
+			expect.objectContaining({
+				url: 'https://www.sciencealert.com/adhd-drugs-may-reduce-the-risk-of-early-death-major-study-finds'
+			})
+		]);
+		// Läs vidare-länken saknade tidigare adress och försvann tyst.
+		expect(result.article.relatedArticles.map((related) => related.url)).toEqual([
+			'/blogg/amne/medicin-och-halsa/adhd-somn-dygnsrytm-mittpsyke',
+			'/blogg/amne/oro-och-stress/varfor-blir-man-overstimulerad',
+			'/blogg/amne/Psykvården/samsjuklighetsreformen-vad-innebar-den-for-dig'
+		]);
 		expect(result.article.content).toContain('<strong>Tillsammans omfattar data mer än 15,9 miljoner deltagare</strong>');
 		expect(result.article.content).toContain('<blockquote>');
 		expect(result.article.content).not.toContain('<pre>');
