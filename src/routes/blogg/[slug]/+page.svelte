@@ -1,16 +1,27 @@
 <script lang="ts">
+	import ArticleEarlyStep from '$lib/components/ArticleEarlyStep.svelte';
 	import EditorialByline from '$lib/components/EditorialByline.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import { trackArticleView } from '$lib/analytics';
 	import { buildAuthorJsonLd, EDITORIAL_TEAM_NAME } from '$lib/editorial';
+	import { getArticleTopic } from '$lib/article-topic';
+	import { getArticleNextStep, splitArticleContent } from '$lib/article-next-step';
 
 	const SORO_ARTICLE_AUTHOR = EDITORIAL_TEAM_NAME;
 
 	let { data } = $props();
 
 	const article = $derived(data.article);
+	const relatedReading = $derived(data.relatedReading ?? []);
+	// Akutsidan ska bara peka mot hjälp nu, så den får varken delad text
+	// eller ämnesanpassat nästa steg.
+	const isCrisisPage = $derived(article.slug === 'vid-akut-kris-ring-nu');
+	const nextStep = $derived(getArticleNextStep(getArticleTopic(article.slug)));
+	const contentParts = $derived(
+		isCrisisPage ? { before: article.content, after: '' } : splitArticleContent(article.content)
+	);
 	const canonical = $derived(data.canonical);
 	const ogImage = $derived(article.image ?? 'https://mittpsyke.se/og-image.png');
 	const schema = $derived({
@@ -74,15 +85,42 @@
 	{/if}
 
 	<div class="article-content">
-		{@html article.content}
+		{@html contentParts.before}
+		{#if contentParts.after}
+			<ArticleEarlyStep step={nextStep.early} />
+			{@html contentParts.after}
+		{/if}
 		{#if article.slug === 'chatta-anonymt-utan-konto'}
 			<p>Vill du hellre börja direkt? Du kan <a href="/chatta-anonymt">öppna den anonyma chatten</a> i lugn takt hos MittPsyke.</p>
 		{/if}
 	</div>
 
+	<!-- Soro-artiklarna saknar egna relaterade länkar. Tre ämnesnära guider
+	     eller övningar ger den som läst klart något att fortsätta med. -->
+	{#if relatedReading.length > 0}
+		<section class="related-reading" aria-labelledby="related-reading-heading">
+			<h2 id="related-reading-heading">Läs vidare</h2>
+			<ul>
+				{#each relatedReading as link (link.url)}
+					<li><a href={link.url}>{link.title}</a></li>
+				{/each}
+			</ul>
+		</section>
+	{/if}
+
 	<!-- Artikeln slutade tidigare utan väg vidare och utan akutrad. Samma
 	     kompakta nästa steg som övriga guider: chatt, dagbok, övning, stödlinjer. -->
-	<GuideActionCta chatHref="/chat" layout="compact" />
+	{#if isCrisisPage}
+		<GuideActionCta chatHref="/chat" layout="compact" />
+	{:else}
+		<GuideActionCta
+			pillarSlug={nextStep.pillarSlug}
+			chatHref="/chat"
+			exerciseHref={nextStep.exerciseHref}
+			exerciseLabel={nextStep.exerciseLabel}
+			layout="compact"
+		/>
+	{/if}
 </article>
 
 <style>
@@ -188,6 +226,58 @@
 	}
 
 	:global(.dark) .article-content :global(h2) {
+		color: #93c5fd;
+	}
+
+	/* Mobil: mindre luft ovanför rubriken så att ingressen syns på första
+	   skärmen, även med cookierutan framme. */
+	@media (max-width: 640px) {
+		.soro-article {
+			padding-top: 1.25rem;
+		}
+
+		.back-link {
+			margin-bottom: 0.8rem;
+		}
+	}
+
+	.related-reading {
+		max-width: 720px;
+		margin-top: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid hsl(var(--border));
+	}
+
+	.related-reading h2 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: clamp(1.38rem, 1.2rem + 0.7vw, 1.62rem);
+		line-height: 1.2;
+		color: #2563eb;
+	}
+
+	.related-reading ul {
+		margin: 0.75rem 0 0;
+		padding-left: 1.2rem;
+		display: grid;
+		gap: 0.6rem;
+	}
+
+	.related-reading li {
+		font-size: clamp(1rem, 0.96rem + 0.35vw, 1.08rem);
+		line-height: 1.6;
+	}
+
+	.related-reading a {
+		color: #2563eb;
+		font-weight: 600;
+		text-decoration: underline;
+		text-decoration-thickness: 1.5px;
+		text-underline-offset: 2px;
+	}
+
+	:global(.dark) .related-reading h2,
+	:global(.dark) .related-reading a {
 		color: #93c5fd;
 	}
 </style>
