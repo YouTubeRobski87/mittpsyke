@@ -229,6 +229,18 @@
 		color: #93c5fd;
 	}
 
+	/* Mobil: mindre luft ovanför rubriken så att ingressen syns på första
+	   skärmen, även med cookierutan framme. */
+	@media (max-width: 640px) {
+		.soro-article {
+			padding-top: 1.25rem;
+		}
+
+		.back-link {
+			margin-bottom: 0.8rem;
+		}
+	}
+
 	.related-reading {
 		max-width: 720px;
 		margin-top: 2rem;
