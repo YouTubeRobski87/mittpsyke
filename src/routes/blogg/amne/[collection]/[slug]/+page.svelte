@@ -40,7 +40,8 @@
 
 <article class="article-page">
 	<Breadcrumbs items={[{ label: 'Artiklar', href: '/blogg' }, { label: topic.label, href: `/blogg/amne/${topic.slug}` }, { label: article.title }]} />
-	<a class="back-link" href={`/blogg/amne/${topic.slug}`}>Tillbaka till {topic.label.toLowerCase()}</a>
+	<!-- Brödsmulorna länkar redan till ämnet, så en separat tillbaka-länk
+	     tog bara plats ovanför rubriken på mobil. -->
 	<header>
 		<p class="eyebrow">{article.type === 'guide' ? 'Guide' : 'Artikel'} · {topic.label}</p>
 		<h1>{article.title}</h1>
@@ -95,7 +96,14 @@
 	.article-page { width: 100%; max-width: 820px; min-width: 0; margin: 0 auto; padding: clamp(2rem, 6vw, 3rem) clamp(1rem, 4vw, 1.4rem) 4rem; }
 	.article-page > header, .article-section { min-width: 0; max-width: 100%; }
 	.article-page :global(.breadcrumbs li), .article-page :global(.breadcrumbs a), .article-page :global(.breadcrumbs span[aria-current='page']) { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
-	.back-link { display: inline-flex; margin: 1.2rem 0; font-family: var(--font-heading); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; opacity: .78; }
+	/* Mobil: rubrik och ingress ska synas på första skärmen, även med cookierutan
+	   framme. Sista brödsmulan är samma text som rubriken och döljs bara visuellt;
+	   BreadcrumbList-JSON-LD byggs från datat och påverkas inte. */
+	@media (max-width: 640px) {
+		.article-page { padding-top: 1.25rem; }
+		.article-page :global(.breadcrumbs) { margin-bottom: .75rem; }
+		.article-page :global(.breadcrumbs li:last-child) { display: none; }
+	}
 	.eyebrow, h1, .lead, .meta { margin: 0; }
 	.eyebrow { color: #60a5fa; font-family: var(--font-heading); font-size: .82rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 	h1 { margin-top: .55rem; font-family: var(--font-heading); font-size: clamp(1.95rem, 1.55rem + 2.2vw, 2.6rem); line-height: 1.08; overflow-wrap: anywhere; }
