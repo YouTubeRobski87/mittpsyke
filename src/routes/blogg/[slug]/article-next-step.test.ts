@@ -52,6 +52,34 @@ describe('/blogg/[slug] efter artikeltexten', () => {
 		expect(body).not.toContain('related-reading-heading');
 	});
 
+	it('visar en kort ämnesrad en bit in i en lång artikel', () => {
+		const long = [1, 2, 3, 4, 5, 6].map((n) => `<h2>Avsnitt ${n}</h2><p>Text ${n}.</p>`).join('');
+		const { body } = render(Page, {
+			props: { data: { ...data, article: { ...data.article, slug: 'overtanker-allt', content: long } } } as never
+		});
+		const early = body.indexOf('aria-label="Ett litet nästa steg"');
+		expect(early, 'raden saknas').toBeGreaterThan(-1);
+		expect(early).toBeGreaterThan(body.indexOf('Avsnitt 2'));
+		expect(early).toBeLessThan(body.indexOf('Avsnitt 3'));
+		expect(body).toContain('href="/ovningar/tankefallor-kartlaggning"');
+		expect(body).toContain('Nästa steg vid övertänkande');
+	});
+
+	it('visar ingen ämnesrad i en kort artikel', () => {
+		const { body } = render(Page, { props: { data } as never });
+		expect(body).not.toContain('Ett litet nästa steg');
+	});
+
+	it('lämnar akutsidan utan ämnesrad och med den generella rutan', () => {
+		const long = [1, 2, 3, 4, 5, 6].map((n) => `<h2>Avsnitt ${n}</h2><p>Text ${n}.</p>`).join('');
+		const { body } = render(Page, {
+			props: { data: { ...data, article: { ...data.article, slug: 'vid-akut-kris-ring-nu', content: long } } } as never
+		});
+		expect(body).not.toContain('Ett litet nästa steg');
+		expect(body).toContain('Nästa steg i lugn takt');
+		expect(body).toContain('href="tel:112"');
+	});
+
 	it('visar akutraden efter artikeln', () => {
 		const tail = afterArticle();
 		expect(tail).toContain('href="tel:112"');

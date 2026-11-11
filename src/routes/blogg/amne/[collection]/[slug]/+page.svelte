@@ -1,12 +1,17 @@
 <script lang="ts">
+	import ArticleEarlyStep from '$lib/components/ArticleEarlyStep.svelte';
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import EditorialByline from '$lib/components/EditorialByline.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import SEO from '$lib/components/SEO.svelte';
+	import { getArticleTopic } from '$lib/article-topic';
+	import { getArticleNextStep, splitArticleContent } from '$lib/article-next-step';
 
 	let { data } = $props();
 	const article = $derived(data.article);
 	const topic = $derived(data.topic);
+	const nextStep = $derived(getArticleNextStep(getArticleTopic(article.slug, article.collection)));
+	const contentParts = $derived(splitArticleContent(article.content));
 	const canonical = $derived(`https://mittpsyke.se${article.url}`);
 	const jsonLd = $derived(JSON.stringify(data.jsonLd).replace(/</g, '\\u003c'));
 	const faqJsonLd = $derived(
@@ -50,7 +55,13 @@
 		<img class="featured-image" src={article.image} alt={article.imageAlt ?? article.title} loading="eager" decoding="async" />
 	{/if}
 
-	<div class="article-content">{@html article.content}</div>
+	<div class="article-content">
+		{@html contentParts.before}
+		{#if contentParts.after}
+			<ArticleEarlyStep step={nextStep.early} />
+			{@html contentParts.after}
+		{/if}
+	</div>
 
 	{#if article.references.length > 0}
 		<section class="article-section" aria-labelledby="references-heading">
@@ -71,7 +82,13 @@
 	{/if}
 
 	<!-- Samma kompakta nästa steg som övriga guider, efter läs vidare-länkarna. -->
-	<GuideActionCta chatHref="/chat" layout="compact" />
+	<GuideActionCta
+		pillarSlug={nextStep.pillarSlug}
+		chatHref="/chat"
+		exerciseHref={nextStep.exerciseHref}
+		exerciseLabel={nextStep.exerciseLabel}
+		layout="compact"
+	/>
 </article>
 
 <style>
