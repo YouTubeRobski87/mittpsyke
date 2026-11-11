@@ -171,6 +171,12 @@ const BY_SLUG: Record<string, RelatedReadingLink[]> = {
 	],
 	'hjalp-med-bostad-av-socialen': [LINKS.rattigheterSocialtjansten, LINKS.familjenIKris, LINKS.overvaldigad],
 	'skalig-levnadsniva-i-praktiken': [LINKS.rattigheterSocialtjansten, LINKS.familjenIKris, LINKS.stressadHelaTiden],
+	'rattigheter-vid-missbruk': [LINKS.rattigheterSocialtjansten, LINKS.forstaStegBeroende, LINKS.viljaSluta],
+	'socialtjanstens-ansvar-missbruk': [
+		LINKS.rattigheterSocialtjansten,
+		LINKS.forstaStegBeroende,
+		LINKS.viljaSluta
+	],
 	'satta-granser': [LINKS.granserUtanSamvete, LINKS.granserOchSjalvkansla, LINKS.ickeValdsamKommunikation],
 	'svart-att-saga-nej': [LINKS.granserUtanSamvete, LINKS.granserOchSjalvkansla, LINKS.ickeValdsamKommunikation],
 	'overtanker-allt': [LINKS.hjarnanILoopar, LINKS.overtankaPaKvallen, LINKS.tankefallor],
@@ -192,8 +198,9 @@ const BY_TOPIC: Array<{ pattern: RegExp; links: RelatedReadingLink[] }> = [
 		links: [LINKS.forstaStegBeroende, LINKS.viljaSluta, LINKS.brukForAttStaUt]
 	},
 	{
-		// "man"/"mans" som eget ord, så att t.ex. "maende" inte räknas.
-		pattern: /(^|-)mans?(-|$)/,
+		// "man" är oftast det generella pronomenet ("vad gör man när …"), så
+		// bara "mans" och uttryckliga formuleringar om män räknas.
+		pattern: /(^|-)mans(-|$)|^man-star-|-for-man(-|$)|syns-inte-man-/,
 		links: [LINKS.mansEnsamhet, LINKS.manOchKvinnor, LINKS.kannerMigEnsam]
 	},
 	{

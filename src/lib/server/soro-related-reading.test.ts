@@ -42,9 +42,30 @@ describe('getSoroRelatedReading', () => {
 		expect(getSoroRelatedReading('mans-psykiska-halsa-sverige')[0].url).toContain('mans-ensamhet');
 	});
 
-	it('räknar inte "maende" som en artikel om män', () => {
-		const urls = getSoroRelatedReading('folja-sitt-maende-over-tid').map((l) => l.url);
-		expect(urls.some((url) => url.includes('mans-ensamhet'))).toBe(false);
+	it('känner igen artiklarna om män', () => {
+		for (const slug of [
+			'mans-psykiska-halsa-sverige',
+			'man-star-for-70-procent-av-alla-sjalvmord-i-sverige',
+			'hjalplinjer-for-man-vilka-finns',
+			'varfor-syns-inte-man-i-samtalet-om-psykisk-ohalsa'
+		]) {
+			expect(getSoroRelatedReading(slug)[0].url, slug).toContain('mans-ensamhet');
+		}
+	});
+
+	it('räknar inte pronomenet "man" eller "maende" som en artikel om män', () => {
+		for (const slug of [
+			'folja-sitt-maende-over-tid',
+			'vad-gor-man-nar-allt-kanns-rorigt',
+			'kan-man-fa-stod-anonymt',
+			'maste-man-skapa-konto'
+		]) {
+			const urls = getSoroRelatedReading(slug).map((l) => l.url);
+			expect(urls.some((url) => url.includes('mans-ensamhet')), slug).toBe(false);
+		}
+		expect(getSoroRelatedReading('vad-gor-man-nar-allt-kanns-rorigt')[0].url).toBe(
+			'/guider/overtankande/varfor-hjarnan-fastnar-i-loopar'
+		);
 	});
 
 	it('ger alltid högst tre länkar och en standarduppsättning för okända artiklar', () => {
