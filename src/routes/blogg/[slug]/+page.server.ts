@@ -4,6 +4,7 @@ import { canonicalUrl } from '$lib/seo';
 import { legacyBlogRedirects } from '$lib/server/legacy-redirects';
 import { sanitizeCmsHtml } from '$lib/server/cms-html';
 import { fetchSoroArticles, fetchSoroResponse, normalizeSoroArticleSlug } from '$lib/server/soro-articles';
+import { getSoroRelatedReading } from '$lib/server/soro-related-reading';
 import type { PageServerLoad } from './$types';
 
 const CACHE_CONTROL = 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400';
@@ -206,6 +207,7 @@ export const load: PageServerLoad = async ({ fetch, params, setHeaders }) => {
 			excerpt,
 			image: featuredImage,
 			content
-		}
+		},
+		relatedReading: getSoroRelatedReading(normalizedSlug)
 	};
 };
