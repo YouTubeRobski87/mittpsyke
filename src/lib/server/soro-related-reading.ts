@@ -7,6 +7,8 @@
 // de finns; Soro-artiklar länkas inte, eftersom de kan försvinna utan att
 // bygget märker det.
 
+import { getArticleTopic, type ArticleTopic } from '$lib/article-topic';
+
 export type RelatedReadingLink = {
 	title: string;
 	url: string;
@@ -190,40 +192,16 @@ const BY_SLUG: Record<string, RelatedReadingLink[]> = {
 	]
 };
 
-// Övriga artiklar matchas på ord i slugen. Första träffen vinner, så de
-// smalaste ämnena står först.
-const BY_TOPIC: Array<{ pattern: RegExp; links: RelatedReadingLink[] }> = [
-	{
-		pattern: /missbruk|beroende/,
-		links: [LINKS.forstaStegBeroende, LINKS.viljaSluta, LINKS.brukForAttStaUt]
-	},
-	{
-		// "man" är oftast det generella pronomenet ("vad gör man när …"), så
-		// bara "mans" och uttryckliga formuleringar om män räknas.
-		pattern: /(^|-)mans(-|$)|^man-star-|-for-man(-|$)|syns-inte-man-/,
-		links: [LINKS.mansEnsamhet, LINKS.manOchKvinnor, LINKS.kannerMigEnsam]
-	},
-	{
-		pattern: /ensam/,
-		links: [LINKS.kannerMigEnsam, LINKS.tomhetskansla, LINKS.mansEnsamhet]
-	},
-	{
-		pattern: /dagbok|skriv|journal|humor|maendelogg|reflektion|kansloverblick|kanslolagen|folja/,
-		links: [LINKS.dagligReflektion, LINKS.dagensAvslut, LINKS.digitalDagbok]
-	},
-	{
-		pattern: /tank|grubbl|snurrar|rorig|kaos/,
-		links: [LINKS.hjarnanILoopar, LINKS.kanInteSlutaTanka, LINKS.tankefallor]
-	},
-	{
-		pattern: /stress|varva|kvall|aterhamt|overbelastning/,
-		links: [LINKS.kanInteVarvaNer, LINKS.aterhamtaMentalt, LINKS.bodyScan]
-	},
-	{
-		pattern: /oro|angest/,
-		links: [LINKS.orostankar, LINKS.angestIKroppen, LINKS.grounding]
-	}
-];
+// Övriga artiklar får länkar efter ämnet som slugen pekar på.
+const BY_TOPIC: Partial<Record<ArticleTopic, RelatedReadingLink[]>> = {
+	beroende: [LINKS.forstaStegBeroende, LINKS.viljaSluta, LINKS.brukForAttStaUt],
+	man: [LINKS.mansEnsamhet, LINKS.manOchKvinnor, LINKS.kannerMigEnsam],
+	ensamhet: [LINKS.kannerMigEnsam, LINKS.tomhetskansla, LINKS.mansEnsamhet],
+	dagbok: [LINKS.dagligReflektion, LINKS.dagensAvslut, LINKS.digitalDagbok],
+	tankar: [LINKS.hjarnanILoopar, LINKS.kanInteSlutaTanka, LINKS.tankefallor],
+	stress: [LINKS.kanInteVarvaNer, LINKS.aterhamtaMentalt, LINKS.bodyScan],
+	oro: [LINKS.orostankar, LINKS.angestIKroppen, LINKS.grounding]
+};
 
 const DEFAULT_LINKS: RelatedReadingLink[] = [LINKS.orostankar, LINKS.overvaldigad, LINKS.grounding];
 
@@ -233,8 +211,7 @@ const WITHOUT_RELATED_READING = new Set(['vid-akut-kris-ring-nu']);
 export function getSoroRelatedReading(slug: string): RelatedReadingLink[] {
 	if (WITHOUT_RELATED_READING.has(slug)) return [];
 
-	const links =
-		BY_SLUG[slug] ?? BY_TOPIC.find(({ pattern }) => pattern.test(slug))?.links ?? DEFAULT_LINKS;
+	const links = BY_SLUG[slug] ?? BY_TOPIC[getArticleTopic(slug)] ?? DEFAULT_LINKS;
 
 	return links.slice(0, MAX_LINKS);
 }

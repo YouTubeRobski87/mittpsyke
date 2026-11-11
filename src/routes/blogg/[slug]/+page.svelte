@@ -1,10 +1,13 @@
 <script lang="ts">
+	import ArticleEarlyStep from '$lib/components/ArticleEarlyStep.svelte';
 	import EditorialByline from '$lib/components/EditorialByline.svelte';
 	import GuideActionCta from '$lib/components/GuideActionCta.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import { onMount } from 'svelte';
 	import { trackArticleView } from '$lib/analytics';
 	import { buildAuthorJsonLd, EDITORIAL_TEAM_NAME } from '$lib/editorial';
+	import { getArticleTopic } from '$lib/article-topic';
+	import { getArticleNextStep, splitArticleContent } from '$lib/article-next-step';
 
 	const SORO_ARTICLE_AUTHOR = EDITORIAL_TEAM_NAME;
 
@@ -12,6 +15,13 @@
 
 	const article = $derived(data.article);
 	const relatedReading = $derived(data.relatedReading ?? []);
+	// Akutsidan ska bara peka mot hjälp nu, så den får varken delad text
+	// eller ämnesanpassat nästa steg.
+	const isCrisisPage = $derived(article.slug === 'vid-akut-kris-ring-nu');
+	const nextStep = $derived(getArticleNextStep(getArticleTopic(article.slug)));
+	const contentParts = $derived(
+		isCrisisPage ? { before: article.content, after: '' } : splitArticleContent(article.content)
+	);
 	const canonical = $derived(data.canonical);
 	const ogImage = $derived(article.image ?? 'https://mittpsyke.se/og-image.png');
 	const schema = $derived({
@@ -75,7 +85,11 @@
 	{/if}
 
 	<div class="article-content">
-		{@html article.content}
+		{@html contentParts.before}
+		{#if contentParts.after}
+			<ArticleEarlyStep step={nextStep.early} />
+			{@html contentParts.after}
+		{/if}
 		{#if article.slug === 'chatta-anonymt-utan-konto'}
 			<p>Vill du hellre börja direkt? Du kan <a href="/chatta-anonymt">öppna den anonyma chatten</a> i lugn takt hos MittPsyke.</p>
 		{/if}
@@ -96,7 +110,17 @@
 
 	<!-- Artikeln slutade tidigare utan väg vidare och utan akutrad. Samma
 	     kompakta nästa steg som övriga guider: chatt, dagbok, övning, stödlinjer. -->
-	<GuideActionCta chatHref="/chat" layout="compact" />
+	{#if isCrisisPage}
+		<GuideActionCta chatHref="/chat" layout="compact" />
+	{:else}
+		<GuideActionCta
+			pillarSlug={nextStep.pillarSlug}
+			chatHref="/chat"
+			exerciseHref={nextStep.exerciseHref}
+			exerciseLabel={nextStep.exerciseLabel}
+			layout="compact"
+		/>
+	{/if}
 </article>
 
 <style>
