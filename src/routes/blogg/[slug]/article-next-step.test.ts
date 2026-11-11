@@ -10,6 +10,7 @@ vi.mock('$app/state', () => ({
 // ska ha en lugn väg vidare och en akutrad, i den ordningen.
 describe('/blogg/[slug] efter artikeltexten', () => {
 	const data = {
+		relatedReading: [{ title: 'Orostankar som snurrar', url: '/guider/angest/orostankar' }],
 		canonical: 'https://mittpsyke.se/blogg/testartikel',
 		article: {
 			slug: 'testartikel',
@@ -36,6 +37,19 @@ describe('/blogg/[slug] efter artikeltexten', () => {
 		expect(tail).toContain('href="/dagbok"');
 		expect(tail).toContain('href="/ovningar"');
 		expect(tail).toContain('href="https://stodlinjer.se"');
+	});
+
+	it('visar Läs vidare efter texten och före nästa steg', () => {
+		const tail = afterArticle();
+		const related = tail.indexOf('id="related-reading-heading"');
+		expect(related, 'Läs vidare saknas').toBeGreaterThan(-1);
+		expect(tail).toContain('href="/guider/angest/orostankar"');
+		expect(related).toBeLessThan(tail.indexOf('aria-label="Nästa steg"'));
+	});
+
+	it('visar ingen tom Läs vidare när artikeln saknar länkar', () => {
+		const { body } = render(Page, { props: { data: { ...data, relatedReading: [] } } as never });
+		expect(body).not.toContain('related-reading-heading');
 	});
 
 	it('visar akutraden efter artikeln', () => {

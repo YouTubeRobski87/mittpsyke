@@ -11,6 +11,7 @@
 	let { data } = $props();
 
 	const article = $derived(data.article);
+	const relatedReading = $derived(data.relatedReading ?? []);
 	const canonical = $derived(data.canonical);
 	const ogImage = $derived(article.image ?? 'https://mittpsyke.se/og-image.png');
 	const schema = $derived({
@@ -79,6 +80,19 @@
 			<p>Vill du hellre börja direkt? Du kan <a href="/chatta-anonymt">öppna den anonyma chatten</a> i lugn takt hos MittPsyke.</p>
 		{/if}
 	</div>
+
+	<!-- Soro-artiklarna saknar egna relaterade länkar. Tre ämnesnära guider
+	     eller övningar ger den som läst klart något att fortsätta med. -->
+	{#if relatedReading.length > 0}
+		<section class="related-reading" aria-labelledby="related-reading-heading">
+			<h2 id="related-reading-heading">Läs vidare</h2>
+			<ul>
+				{#each relatedReading as link (link.url)}
+					<li><a href={link.url}>{link.title}</a></li>
+				{/each}
+			</ul>
+		</section>
+	{/if}
 
 	<!-- Artikeln slutade tidigare utan väg vidare och utan akutrad. Samma
 	     kompakta nästa steg som övriga guider: chatt, dagbok, övning, stödlinjer. -->
@@ -188,6 +202,46 @@
 	}
 
 	:global(.dark) .article-content :global(h2) {
+		color: #93c5fd;
+	}
+
+	.related-reading {
+		max-width: 720px;
+		margin-top: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid hsl(var(--border));
+	}
+
+	.related-reading h2 {
+		margin: 0;
+		font-family: var(--font-heading);
+		font-size: clamp(1.38rem, 1.2rem + 0.7vw, 1.62rem);
+		line-height: 1.2;
+		color: #2563eb;
+	}
+
+	.related-reading ul {
+		margin: 0.75rem 0 0;
+		padding-left: 1.2rem;
+		display: grid;
+		gap: 0.6rem;
+	}
+
+	.related-reading li {
+		font-size: clamp(1rem, 0.96rem + 0.35vw, 1.08rem);
+		line-height: 1.6;
+	}
+
+	.related-reading a {
+		color: #2563eb;
+		font-weight: 600;
+		text-decoration: underline;
+		text-decoration-thickness: 1.5px;
+		text-underline-offset: 2px;
+	}
+
+	:global(.dark) .related-reading h2,
+	:global(.dark) .related-reading a {
 		color: #93c5fd;
 	}
 </style>
