@@ -5,23 +5,27 @@ description: En omfattande forskningsöversikt med nästan 16 miljoner deltagare
 image: /uploads/ADHD-lakemedel-och-minskad-dodlighet.png
 imageAlt: Illustration om ADHD-läkemedel och forskning kring dödlighet
 date: 2026-10-20
-author: Robert Claesson
+author: MittPsyke-redaktionen
 collection: medicin-och-halsa
 tags: [adhd , Samsjuklighet, NPF, Neuropsykiatriska funktionsnedsättningar]
 readingTime: 5 min läsning
 faqs:
+references:
+  - label: "ScienceAlert: ADHD Drugs May Reduce The Risk of Early Death, Major Study Finds (Jess Cockerill, 20 oktober 2026)"
+    url: https://www.sciencealert.com/adhd-drugs-may-reduce-the-risk-of-early-death-major-study-finds
 relatedArticles:
+  - title: "ADHD och sömn: när den biologiska klockan går i otakt"
+    url: /blogg/amne/medicin-och-halsa/adhd-somn-dygnsrytm-mittpsyke
+  - title: Överstimulerad – vad betyder det och varför händer det?
+    url: /blogg/amne/oro-och-stress/varfor-blir-man-overstimulerad
   - title: Samsjuklighetsreformen – vad innebär den för dig som lever med samsjuklighet?
+    url: /blogg/amne/Psykvården/samsjuklighetsreformen-vad-innebar-den-for-dig
 draft: false
 ---
 
 # ADHD-läkemedel kopplas till lägre risk för tidig död i stor studie
 
-Skrivet den 20 oktober 2026 **Av Jess Cockerill**
-
-Källhänvisning i slutet av artikeln
-
-Metylfenidat är ett av de vanligaste förskrivna läkemedlen för ADHD. (Sponge/Wikimedia, CC BY-SA 3.0)
+*Den här artikeln bygger på Jess Cockerills artikel i ScienceAlert den 20 oktober 2026, i svensk översättning av MittPsyke-redaktionen. Länk till originalet finns under Källor.*
 
 Personer med ADHD kämpar med mer än bara problem med uppmärksamhet, fokus och impulser: Det är ett allvarligt tillstånd som kan förkorta en människas liv med flera år.
 
@@ -69,5 +73,4 @@ Författarna såg också stor variation mellan studierna, vilket kan vara relate
 
 "*Befintliga belägg tyder på att det finns flera faktorer som kan öka risken för dödlighetsutfall hos personer med ADHD. Detta förstärker vikten av stöd för att hantera hälsorisker i denna grupp samt uppmärksamhet på att hantera strukturella faktorer till dålig hälsa som drabbar personer med ADHD i oproportionerlig grad*", konkluderar författarna.  
 
-*Denna artikel har faktagranskats och redigerats av Peter Dockrill.*  
-Källa: *[Science Alert ADHD Drugs May Reduce The Risk of Early Death, Major Study Finds - 20 October 2026](https://www.sciencealert.com/adhd-drugs-may-reduce-the-risk-of-early-death-major-study-finds?fbclid=Iwb21leAVIbphjbGNrBUhuS2V4dG4DYWVtAjExAHBkb2YFc3J0YwZhcHBfaWQMMzUwNjg1NTMxNzI4AAEeLHFH6LwKF3lc6YxM3b4BefvIlkSYWQJ-yGJcPzSHQflQllYIpJU_2rigjIE_aem_I6HW3z9RkCgNH-TFiUQSSg)*
+*Originalartikeln faktagranskades och redigerades av Peter Dockrill på ScienceAlert.*
