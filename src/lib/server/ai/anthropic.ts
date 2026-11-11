@@ -52,14 +52,51 @@ function logUsage(label: string, model: ClaudeModel, usage: UsageLike) {
 	);
 }
 
-function logError(label: string, error: unknown) {
+// Statusar som kräver en ändring i konfigurationen (nyckel, behörighet,
+// avvecklad modell) och inte går över av att vänta.
+const CONFIGURATION_STATUSES = new Set([401, 403, 404]);
+const ERROR_TYPE_PATTERN = /^[a-z0-9_.-]{1,64}$/i;
+
+/**
+ * Plockar ut leverantörens korta feltyp (t.ex. 'not_found_error') ur svaret.
+ * Fritextmeddelandet loggas aldrig: det kan innehålla delar av requesten.
+ */
+function anthropicErrorType(error: InstanceType<typeof Anthropic.APIError>): string | undefined {
+	const body = (error as { error?: unknown }).error;
+	const nested = body && typeof body === 'object' ? (body as { error?: unknown }).error : undefined;
+	const type = nested && typeof nested === 'object' ? (nested as { type?: unknown }).type : undefined;
+	return typeof type === 'string' && ERROR_TYPE_PATTERN.test(type) ? type : undefined;
+}
+
+function logError(label: string, model: ClaudeModel, error: unknown) {
 	if (error instanceof Anthropic.APIError) {
 		// status särskiljer avvecklad modell (404) från kvot (429) och nyckelfel (401).
-		console.error(`[ai:error] ${label}`, error.status, error.name, error.message);
+		const status = typeof error.status === 'number' ? error.status : undefined;
+		const configuration = status !== undefined && CONFIGURATION_STATUSES.has(status);
+		console.error(configuration ? '[ai:config]' : '[ai:error]', {
+			label,
+			model,
+			kind: configuration ? 'configuration' : status === undefined || status === 429 || status >= 500 ? 'transient' : 'request',
+			providerStatus: status,
+			providerCode: anthropicErrorType(error),
+			errorName: error.name
+		});
 		return;
 	}
 
-	console.error(`[ai:error] ${label}`, error);
+	// Okända fel kan bära godtycklig text; bara feltypens namn loggas.
+	console.error('[ai:error]', { label, model, kind: 'unknown', errorName: error instanceof Error ? error.name : typeof error });
+}
+
+/**
+ * Loggar stoppskäl som betyder att svaret är ofullständigt. Texten returneras
+ * som tidigare - anropsställena validerar själva och har reservsvar - men ett
+ * för snävt tokentak eller för långt underlag syns nu i loggen.
+ */
+function logIncompleteStop(label: string, model: ClaudeModel, stopReason: string | null | undefined, hasText: boolean) {
+	if (stopReason === 'max_tokens' || stopReason === 'model_context_window_exceeded' || stopReason === 'pause_turn') {
+		console.warn('[ai:truncated]', { label, model, stopReason, hasText });
+	}
 }
 
 /** Plockar ut all textinnehåll ur ett svar och slår ihop det. */
@@ -94,6 +131,41 @@ export type ClaudeRequest = {
 
 const DEFAULT_TIMEOUT_MS = 20_000;
 
+type ClaudeEffort = NonNullable<ClaudeRequest['effort']>;
+
+/**
+ * Uttryckliga kapabiliteter för de registrerade modellerna. Nya modeller måste
+ * granskas här - en modell som saknas i tabellen går inte att typa in i
+ * CLAUDE_MODELS utan att TypeScript kräver en rad.
+ *
+ * - claude-opus-5: adaptive thinking (på som standard), effort low-max.
+ *   Sampling (temperature/top_p/top_k) stöds inte och skickas aldrig.
+ * - claude-haiku-4-5: varken adaptive thinking eller effort. Extended thinking
+ *   med budget_tokens finns men används inte.
+ *
+ * Kontrollerat mot Anthropics dokumentation 2026-11-04, se
+ * docs/ai/AI-modelljamforelse-2026.md.
+ */
+export const CLAUDE_MODEL_CAPABILITIES: Record<
+	ClaudeModel,
+	{ thinking: 'adaptive' | 'none'; effortLevels: readonly ClaudeEffort[] }
+> = {
+	'claude-opus-5': { thinking: 'adaptive', effortLevels: ['low', 'medium', 'high'] },
+	'claude-haiku-4-5': { thinking: 'none', effortLevels: [] }
+};
+
+export function thinkingOptions(model: ClaudeModel, effort: ClaudeRequest['effort']): {
+	thinking?: { type: 'adaptive' };
+	output_config?: { effort: ClaudeEffort };
+} {
+	const capabilities = CLAUDE_MODEL_CAPABILITIES[model];
+	if (capabilities.thinking !== 'adaptive') return {};
+	const requested = effort ?? 'low';
+	// En effortnivå som modellen inte stöder skickas inte; standardnivån low används.
+	const supported = capabilities.effortLevels.includes(requested) ? requested : 'low';
+	return { thinking: { type: 'adaptive' }, output_config: { effort: supported } };
+}
+
 /**
  * Kör ett Claude-anrop och returnerar texten, eller null om anropet misslyckas
  * eller ingen nyckel är konfigurerad. Kastar aldrig — anropsställena har alla
@@ -105,7 +177,7 @@ export async function callClaude(request: ClaudeRequest): Promise<string | null>
 	const client = createClient(timeoutMs);
 
 	if (!client) {
-		console.error(`[ai:error] ${request.label} saknar API-nyckel`);
+		console.error('[ai:config]', { label: request.label, model, kind: 'configuration', providerCode: 'missing_api_key' });
 		return null;
 	}
 
@@ -118,8 +190,7 @@ export async function callClaude(request: ClaudeRequest): Promise<string | null>
 			max_tokens: request.maxTokens,
 			system: request.system,
 			messages,
-			thinking: { type: 'adaptive' },
-			output_config: { effort: request.effort ?? 'low' }
+			...thinkingOptions(model, request.effort)
 		});
 
 		logUsage(request.label, model, response.usage);
@@ -129,9 +200,11 @@ export async function callClaude(request: ClaudeRequest): Promise<string | null>
 			return null;
 		}
 
-		return extractText(response.content);
+		const text = extractText(response.content);
+		logIncompleteStop(request.label, model, response.stop_reason, Boolean(text));
+		return text;
 	} catch (error) {
-		logError(request.label, error);
+		logError(request.label, model, error);
 		return null;
 	}
 }
@@ -161,8 +234,7 @@ export async function* streamClaudeText(
 		max_tokens: request.maxTokens,
 		system: request.system,
 		messages: request.messages,
-		thinking: { type: 'adaptive' },
-		output_config: { effort: request.effort ?? 'low' }
+		...thinkingOptions(model, request.effort)
 	});
 
 	try {
@@ -174,8 +246,9 @@ export async function* streamClaudeText(
 
 		const finalMessage = await stream.finalMessage();
 		logUsage(request.label, model, finalMessage.usage);
+		logIncompleteStop(request.label, model, finalMessage.stop_reason, true);
 	} catch (error) {
-		logError(request.label, error);
+		logError(request.label, model, error);
 		throw error;
 	}
 }

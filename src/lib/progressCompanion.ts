@@ -102,7 +102,7 @@ export const PROGRESS_CABIN_LAKESIDE_SUNSET_SCENE_SRCSET = [
  * att ändra companion-preseten som används i den inloggade upplevelsen.
  */
 export const PROGRESS_COMPANION_BEAR_BACK_SITTING_IMAGE =
-	'/images/avatars/presets/bear-sitting-back.png';
+	'/images/avatars/presets/bear-sitting-back.webp';
 
 
 /** Frilagt porträttfoto av Balder för profilkorten. */

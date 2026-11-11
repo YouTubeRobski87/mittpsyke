@@ -139,3 +139,14 @@ describe('/blogg index-laddaren', () => {
 		);
 	});
 });
+
+describe('bloggindexets canonical', () => {
+	it('låter laddaren ge varje sida sin egen canonical utan andra parametrar', async () => {
+		const firstPage = (await load(createEvent(1))) as { seo: { canonicalPath: string } };
+		expect(firstPage.seo.canonicalPath).toBe('/blogg');
+
+		const secondPage = (await load(createEvent(2))) as { seo: { canonicalPath: string; title: string } };
+		expect(secondPage.seo.canonicalPath).toBe('/blogg?page=2');
+		expect(secondPage.seo.title).toContain('sida 2');
+	});
+});

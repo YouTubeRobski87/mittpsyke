@@ -1,6 +1,8 @@
 <script lang="ts">
 	import '../app.css';
 	import { browser } from '$app/environment';
+	import { setContext } from 'svelte';
+	import { DIARY_LEAVE_CONTEXT, type DiaryLeaveContext } from '$lib/diary-leave-context';
 	import { afterNavigate, beforeNavigate, onNavigate } from '$app/navigation';
 	import {
 		ANALYTICS_ENABLED,
@@ -371,12 +373,35 @@
 		};
 	});
 
-	async function logout() {
-		const supabase = await getSupabaseClient();
-		if (!supabase) return;
+	let logoutPending = $state(false);
+	let logoutError = $state('');
+	const diaryLeave = setContext<DiaryLeaveContext>(DIARY_LEAVE_CONTEXT, {
+		get logoutPending() { return logoutPending; }
+	});
+
+	function logout() {
+		if (logoutPending) return;
+		const leave = () => void finishLogout();
+		if (diaryLeave.confirmLeave) diaryLeave.confirmLeave(leave);
+		else leave();
+	}
+
+	async function finishLogout() {
+		if (logoutPending) return;
+		logoutPending = true;
+		logoutError = '';
 		profilePanelOpen = false;
-		await supabase.auth.signOut();
-		window.location.href = '/login';
+		mobileMenuOpen = false;
+		try {
+			const supabase = await getSupabaseClient();
+			if (!supabase) throw new Error('Missing auth client');
+			const { error } = await supabase.auth.signOut();
+			if (error) throw error;
+			window.location.href = '/login';
+		} catch {
+			logoutPending = false;
+			logoutError = 'Utloggningen kunde inte bekräftas. Försök igen.';
+		}
 	}
 
 	function toggleProfilePanel() {
@@ -916,7 +941,7 @@
 										<a href="/dagbok/checkin" class="profile-panel-link" onclick={closeProfilePanel}>Fortsätt i dagboken</a>
 										<a href="/chat" class="profile-panel-link" onclick={closeProfilePanel}>Starta chat</a>
 										<a href="/dashboard/installningar" class="profile-panel-link" onclick={closeProfilePanel}>Inställningar</a>
-										<button type="button" class="profile-panel-link" onclick={logout}>Logga ut</button>
+										<button type="button" class="profile-panel-link" onclick={logout} disabled={logoutPending}>Logga ut</button>
 									</div>
 								</div>
 							{/if}
@@ -1013,7 +1038,7 @@
 				{#if currentUser}
 					<p class="mobile-menu-greeting text-sm opacity-60">{displayName ? `Välkommen, ${displayName}` : 'Välkommen tillbaka'}</p>
 					<button
-						onclick={() => { mobileMenuOpen = false; logout(); }}
+						onclick={logout} disabled={logoutPending}
 						class="mobile-menu-link text-sm opacity-70 hover:opacity-100 hover:underline transition-opacity"
 					>Logga ut</button>
 				{:else}
@@ -1026,6 +1051,8 @@
 				<p class="mobile-menu-help pt-1 text-xs opacity-60">Vid akut fara: ring 112</p>
 			</div>
 		{/if}
+		<p class="logout-message" role="status">{logoutPending ? 'Loggar ut…' : ''}</p>
+		<p class="logout-message" role="alert">{logoutError}</p>
 		</header>
 
 	<div class="app-shell" class:is-chat-page={isChat}>
@@ -1106,6 +1133,12 @@
 {/if}
 
 <style>
+	.logout-message:not(:empty) {
+		padding: 0.5rem 1.25rem;
+		border-top: 1px solid hsl(var(--border));
+		font-size: 0.875rem;
+	}
+
 	:global(#main-content.chat-main) {
 		margin-top: 0 !important;
 	}

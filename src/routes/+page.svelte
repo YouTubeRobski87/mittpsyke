@@ -63,7 +63,7 @@
 						href={ANONYMOUS_CHAT_DESTINATION}
 						onclick={() => trackHomeCta('hero', 'chatta', ANONYMOUS_CHAT_DESTINATION)}
 					>
-						Chatta
+						Chatta med AI
 					</a>
 				</div>
 				<!-- Ligger direkt under CTA-raden, där den sänker tröskeln för att
@@ -76,21 +76,14 @@
 					 eller loggar (persistHistory i ChatWindow.svelte avbryter
 					 utan inloggning; gästgrenen returnerar conversationId: null
 					 och loggar bara roller och textlängder). -->
+				<!-- Ett stycke i stället för två: samma fakta (lokalt utkast, gästchatten
+					 går till OpenAI, MittPsyke sparar den inte) men kortare, så att bilden
+					 hamnar högre upp på mobil. Detaljerna finns bakom "Läs mer". -->
 				<p class="cta-micro">
-					Skriv anonymt i din dagbok eller chatta direkt utan konto. Dagboksutkast sparas lokalt i
-					din webbläsare.
+					Inget konto behövs. Dagboksutkast sparas lokalt i din webbläsare. I gästchatten överförs
+					texten till OpenAI för att generera ett svar, och MittPsyke sparar inte innehållet i din gästchatt.
+					<a class="cta-micro-link" href={PRIVACY_DESTINATION}>Läs mer</a>
 				</p>
-				<p class="cta-micro">
-					Din gästchatt sparas inte på MittPsyke.
-					När du skickar ett meddelande överförs texten till OpenAI för att behandlas och generera ett svar.
-					MittPsyke sparar inte innehållet i din gästchatt.
-				</p>
-				<p class="product-path" aria-label="Så fungerar det: skriv, spara det du vill och se vad som återkommer.">
-					<span aria-hidden="true">Skriv → spara det du vill → se vad som återkommer</span>
-				</p>
-				<p class="promise">Du behöver inte prestera något här. Inget bryts om du är borta.</p>
-				<!-- Gränsdragningen ("inte vård", 112) står samlad i trygghetssektionen
-					 längre ner, och layoutens sidfot upprepar 112/1177 på varje sida. -->
 			</div>
 
 			<!-- Bara scenen. Stegkortet har flyttat till Kvällstugan, så heron
@@ -98,6 +91,26 @@
 				 elden i någon bredd. -->
 			<div class="hero-proof">
 				<CabinProof variant="scene" priority />
+			</div>
+
+			<!-- Flödesraden och löftet ligger efter scenen i DOM:en, så att bilden
+				 kommer direkt efter knapparna på mobil. På bred skärm placerar
+				 grid-areas dem under texten i vänsterkolumnen som tidigare. -->
+			<div class="hero-after">
+				<p class="product-path" aria-label="Så fungerar det: skriv, spara det du vill och se vad som återkommer.">
+					<span aria-hidden="true">Skriv → spara det du vill → se vad som återkommer</span>
+				</p>
+				<p class="promise">Du behöver inte prestera något här. Inget bryts om du är borta.</p>
+				<!-- Kopplingen till systersajten. Ligger sist här i stället för under
+					 knapparna: där blev den två rader på mobil och tryckte ned stugbilden
+					 49 px (390 × 664), vilket åt upp en del av vinsten från #109. Här står
+					 den efter bilden på mobil och under texten på bred skärm. -->
+				<p class="partner-line">
+					MittPsyke och <a class="cta-micro-link" href="https://stodlinjer.se/">Stödlinjer.se</a> – två
+					kompletterande vägar till stöd.
+				</p>
+				<!-- Gränsdragningen ("inte vård", 112) står samlad i trygghetssektionen
+					 längre ner, och layoutens sidfot upprepar 112/1177 på varje sida. -->
 			</div>
 		</div>
 	</section>
@@ -603,8 +616,15 @@
 
 	/* Läsbredden hålls kvar nära den tidigare (~506px) även när kolumnen växer,
 	   så rubrik → ingress → CTA behåller sin hierarki. */
-	.hero-copy {
+	.hero-copy,
+	.hero-after {
 		max-width: 30rem;
+	}
+
+	/* På mobil står flödesraden och löftet under bilden. Marginalen uppåt
+	   ersätter den som .product-path hade mot texten ovanför. */
+	.hero-after .product-path {
+		margin-top: 0;
 	}
 
 	.hero-actions {
@@ -656,6 +676,23 @@
 		margin: 0.5rem 0 0;
 		max-width: 42ch;
 		font-size: 0.86rem;
+		line-height: 1.55;
+		color: var(--home-text-muted);
+	}
+
+	.cta-micro-link {
+		color: var(--home-link);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		white-space: nowrap;
+	}
+
+	/* Samarbetsraden: samma dämpade ton som mikrotexten, något mindre, så att
+	   den läses som en upplysning och aldrig konkurrerar med knapparna. */
+	.partner-line {
+		margin: 0.6rem 0 0;
+		max-width: 42ch;
+		font-size: 0.8rem;
 		line-height: 1.55;
 		color: var(--home-text-muted);
 	}
@@ -742,7 +779,32 @@
 
 		.hero-grid {
 			grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-			gap: clamp(2rem, 3vw, 2.75rem);
+			grid-template-areas:
+				'copy proof'
+				'after proof';
+			column-gap: clamp(2rem, 3vw, 2.75rem);
+			row-gap: 0;
+		}
+
+		/* Texten och raderna under den läses som ett block i vänsterkolumnen,
+		   centrerat mot bilden som förut. */
+		.hero-copy {
+			grid-area: copy;
+			align-self: end;
+		}
+
+		.hero-proof {
+			grid-area: proof;
+			align-self: center;
+		}
+
+		.hero-after {
+			grid-area: after;
+			align-self: start;
+		}
+
+		.hero-after .product-path {
+			margin-top: 1rem;
 		}
 
 		/* Textsektionerna låg tidigare som en 46rem-kolumn centrerad i

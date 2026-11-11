@@ -2,8 +2,10 @@ import {
 	createConfiguredTextProvider,
 	getConfiguredAIModelConfiguration
 } from './text-generation-provider';
+import { validateOpenAITextModel } from './providers/openai-model-capabilities';
 import {
 	AITextGenerationError,
+	classifyAIFailure,
 	type AIModelConfiguration,
 	type AITextProvider,
 	type AITextProviderRequest,
@@ -13,6 +15,8 @@ import {
 
 export {
 	AITextGenerationError,
+	classifyAIFailure,
+	type AIFailureKind,
 	type AIMessage,
 	type AIModelConfiguration,
 	type AITextProvider,
@@ -33,14 +37,46 @@ export function normalizeAIError(error: unknown): AITextGenerationError {
 	return new AITextGenerationError('provider', 'AI-tjänsten kunde inte svara.');
 }
 
-export function createAITextGenerator(provider: AITextProvider = createConfiguredTextProvider()) {
+/**
+ * En gemensam, sökbar loggrad för varje misslyckat textanrop. Flera
+ * anropsställen svarar med ett reservsvar, och utan den här raden syns ett
+ * återkommande konfigurationsfel inte alls. Konfigurationsfel loggas med eget
+ * prefix så att de kan larmas separat från tillfälliga leverantörsfel.
+ * Bara syfte, modell-ID, felkoder och status loggas - aldrig innehåll.
+ */
+export function logAITextFailure(purpose: string, model: string | null, error: AITextGenerationError) {
+	const kind = classifyAIFailure(error);
+	console.error(kind === 'configuration' ? '[ai:config]' : '[ai:error]', {
+		purpose,
+		// Bara godkända modell-ID loggas. Ett okänt värde kan vara en felinklistrad nyckel.
+		model: model && validateOpenAITextModel(model).ok ? model : null,
+		kind,
+		code: error.code,
+		providerStatus: error.providerStatus,
+		providerCode: error.providerCode
+	});
+}
+
+export function createAITextGenerator(provider?: AITextProvider) {
 	return async (request: AITextRequest): Promise<AITextResponse> => {
-		const configuration = getAIModelConfiguration(request.purpose);
+		let configuration: AIModelConfiguration;
+		let activeProvider: AITextProvider;
 		try {
-			const text = await provider.generate({ ...request, ...configuration });
+			configuration = getAIModelConfiguration(request.purpose);
+			// Saknad nyckel är också ett konfigurationsfel och ska synas i samma loggrad.
+			activeProvider = provider ?? createConfiguredTextProvider();
+		} catch (error) {
+			const normalized = normalizeAIError(error);
+			logAITextFailure(request.purpose, null, normalized);
+			throw normalized;
+		}
+		try {
+			const text = await activeProvider.generate({ ...request, ...configuration });
 			return { text, model: configuration.model };
 		} catch (error) {
-			throw normalizeAIError(error);
+			const normalized = normalizeAIError(error);
+			logAITextFailure(request.purpose, configuration.model, normalized);
+			throw normalized;
 		}
 	};
 }

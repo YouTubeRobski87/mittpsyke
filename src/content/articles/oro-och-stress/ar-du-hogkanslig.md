@@ -18,7 +18,7 @@ tags:
   - återhämtning
 readingTime: 7 min läsning
 relatedArticles:
-  - title: Varför blir vissa människor lätt överstimulerade?
+  - title: Överstimulerad – vad betyder det och varför händer det?
     url: https://mittpsyke.se/blogg/amne/oro-och-stress/varfor-blir-man-overstimulerad
   - title: Empati – när omtanke blir en styrka och en belastning
     url: https://mittpsyke.se/blogg/amne/oro-och-stress/empati-styrka-och-belastning

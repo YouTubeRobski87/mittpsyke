@@ -1,13 +1,13 @@
 ---
 type: article
-title: Varför blir vissa människor lätt överstimulerade?
-description: Ljud, människor, skärmar och krav kan ibland bli för mycket. Läs
-  om överstimulering, vanliga signaler och hur du kan hjälpa hjärnan att
-  varva ner.
+title: Överstimulerad – vad betyder det och varför händer det?
+description: Att vara överstimulerad betyder att hjärnan fått fler intryck än
+  den hinner bearbeta. Läs om vanliga orsaker, signaler och hur du kan hjälpa
+  hjärnan att varva ner.
 image: /uploads/varfor-blir-man-overstimulerad.png
 imageAlt: En person tar en lugn paus från en miljö med många ljud och intryck.
 date: 2026-07-26
-updated: 2026-07-26
+updated: 2026-11-08
 author: MittPsyke redaktion
 collection: oro-och-stress
 tags:
@@ -25,9 +25,11 @@ relatedArticles:
     url: https://mittpsyke.se/blogg/amne/oro-och-stress/oro-eller-stress-varfor-kroppen-gar-pa-hogvarv
 draft: false
 ---
-# Varför blir vissa människor lätt överstimulerade?
+# Överstimulerad – vad betyder det och varför händer det?
 
-Ibland räcker det med en vanlig dag – pendling, öppet kontorslandskap, notiser, ett par snabba beslut – för att kroppen plötsligt känns spänd och tankarna svåra att samla. Det kan vara ett tecken på överstimulering: att mängden intryck blivit större än det just då finns förmåga att bearbeta.
+Att vara överstimulerad betyder att hjärnan och kroppen har fått fler intryck – ljud, ljus, människor, information och beslut – än de hinner bearbeta i stunden. Det brukar märkas som trötthet, irritation, svårt att tänka klart eller ett starkt behov av att dra sig undan.
+
+Ibland räcker det med en vanlig dag – pendling, öppet kontorslandskap, notiser, ett par snabba beslut – för att kroppen plötsligt känns spänd och tankarna svåra att samla. Det kan vara ett tecken på just överstimulering.
 
 Alla kan bli överstimulerade om intrycken blir tillräckligt många. För vissa händer det oftare, eller efter mindre än vad som kanske "borde" krävas. Det är inte ett tecken på svaghet, utan snarare på att nervsystemet har fått mer att hantera än det hinner sortera i stunden.
 
@@ -85,6 +87,14 @@ Det går sällan att ta bort alla intryck, men det går ofta att minska trycket 
 
 Ingen av delarna löser allt på egen hand, men tillsammans kan de minska hur ofta dagen känns övermäktig.
 
+## När överstimulering hänger ihop med hur du mår
+
+Överstimulering är ingen diagnos, men många blir lättare överstimulerade när de mår psykiskt dåligt. Vid långvarig stress, utmattning, ångest eller nedstämdhet, och efter svåra upplevelser, är nervsystemet ofta redan på helspänn. Då räcker det med mindre för att det ska bli för mycket. Vid utmattningssyndrom är det till exempel vanligt att bli väldigt känslig för ljud.
+
+Många med ADHD eller autism beskriver också att intryck snabbt blir övermäktiga – ljud, ljus, rörelse och flera saker som händer samtidigt. Vid autism kan man reagera starkt på sinnesintryck, och miljöer med många intryck kan bli överväldigande. Att bli överstimulerad betyder inte i sig att du har något av detta.
+
+Läs mer: [Tecken på mental överbelastning](/guider/stress/tecken-pa-mental-overbelastning) · [Utmattad mentalt](/guider/stress/utmattad-mentalt) · [Ångest](/angest) · [Forskning om ADHD-läkemedel](/blogg/amne/medicin-och-halsa/adhd-lakemedel-och-dodlighet)
+
 ## Det handlar inte om att tåla mindre
 
 Att bli lättare överstimulerad än andra betyder inte att man klarar mindre av livet. Det kan snarare handla om att nervsystemet reagerar tidigare och tydligare på mängden intryck, vilket också kan gå hand i hand med att lägga märke till mycket, känna djupt eller vara noggrann. Du kan läsa mer om det sambandet i [Är du högkänslig? När känslighet är en styrka – inte en svaghet](/blogg/amne/oro-och-stress/ar-du-hogkanslig).
@@ -94,5 +104,9 @@ Orsakerna bakom överstimulering kan också se olika ut från person till person
 ## Ett lugnt nästa steg
 
 Nästa gång dagen känns övermäktig, prova att fråga dig själv vilka intryck som faktiskt har staplats på varandra. Du behöver inte lösa allt på en gång. Att ta bort eller sänka ett enda intryck – ljudet, ljuset, eller bara några tysta minuter för dig själv – kan vara nog för att ge hjärnan lite andrum. Vill du gå vidare och läsa om olika sätt att återhämta sig efter en tung dag finns mer i [hur återhämtning fungerar när hjärnan fått för många intryck](/blogg/amne/oro-och-stress/aterhamtning-efter-manga-intryck).
+
+## Källor
+
+1177 beskriver att man vid utmattningssyndrom kan bli väldigt känslig för ljud, och att man vid autism kan reagera starkt på sinnesintryck som ljud och ljus. Läs mer hos [1177 om utmattningssyndrom](https://www.1177.se/sjukdomar--besvar/hjarna-och-nerver/utmattningssyndrom/), [1177 om autism](https://www.1177.se/sjukdomar--besvar/hjarna-och-nerver/neuropsykiatriska-funktionsnedsattningar/autism/) och [1177 om adhd](https://www.1177.se/sjukdomar--besvar/hjarna-och-nerver/neuropsykiatriska-funktionsnedsattningar/adhd/).
 
 Av MittPsyke-redaktionen

@@ -1,4 +1,6 @@
 import OpenAI from 'openai';
+import { normalizeOpenAIError } from '$lib/server/ai/providers/openai-text-provider';
+import { classifyAIFailure } from '$lib/server/ai/text-generation-contract';
 import { env } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 import { isAgeRange, isGender } from '$lib/data/anonymous-stories';
@@ -81,7 +83,15 @@ async function moderateStory(content: string): Promise<ModerationResult> {
 
 		return parseModerationResponse(response.choices[0]?.message?.content);
 	} catch (error) {
-		console.error('Story moderation error:', error);
+		// Bara felkod och status loggas, aldrig leverantörens fritext.
+		const aiError = normalizeOpenAIError(error);
+		console.error(classifyAIFailure(aiError) === 'configuration' ? '[ai:config]' : '[ai:error]', {
+			label: 'story-moderation',
+			kind: classifyAIFailure(aiError),
+			code: aiError.code,
+			providerStatus: aiError.providerStatus,
+			providerCode: aiError.providerCode
+		});
 		return { action: 'flag', reason: 'AI-förmoderering kunde inte köras.' };
 	}
 }

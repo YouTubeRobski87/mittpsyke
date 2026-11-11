@@ -35,7 +35,8 @@ describe('landningsvarianten för /chatta-anonymt', () => {
 
 	it('leder besökaren till chatten', () => {
 		expect(config.primaryCta.href).toBe('/chat');
-		expect(config.primaryCta.label).toBe('Börja skriva');
+		// Knappen leder till chatten och ska säga det, inte "Börja skriva".
+		expect(config.primaryCta.label).toBe('Börja chatta');
 	});
 
 	it('hämtar AI- och lagringsstegen ur den verifierade dataflödescopyn', () => {
@@ -110,12 +111,64 @@ describe('landningsvarianten för /chatta-anonymt', () => {
 	});
 
 	it('behåller metadata och FAQ-schemat från baselinen', () => {
-		expect(config.title).toBe('Chatta anonymt utan konto – börja direkt | MittPsyke');
+		expect(config.title).toBe('Chatta anonymt utan konto – AI-chatt direkt | MittPsyke');
 		expect(config.canonical).toBe('https://mittpsyke.se/chatta-anonymt');
 		expect(config.faqSchema).toBe(true);
 		expect(config.faq).toHaveLength(4);
 		expect(config.faq[0].question).toBe('Kan jag chatta anonymt utan konto?');
 		// Frågan om chattfunktionen bär sökordet "anonym chattfunktion".
 		expect(config.faq[1].question).toBe('Hur fungerar den anonyma chattfunktionen?');
+	});
+});
+
+// Den som söker "anonym chatt" eller "chatta med någon" letar ofta efter en
+// människa. Chatt- och stödsidorna ska därför säga redan i sökresultatet att
+// det är en AI som svarar.
+describe('chatt- och stödsidorna säger att chatten är en AI', () => {
+	const CHAT_PAGE_KEYS = [
+		'chatta-anonymt',
+		'chatta-anonymt-med-nagon',
+		'anonymt-samtalstod-online',
+		'chattstod-psykisk-ohalsa',
+		'samtalsstod-utan-vantetid',
+		'prata-anonymt-online',
+		'psykiskt-stod-online'
+	];
+
+	it.each(CHAT_PAGE_KEYS)('%s nämner AI i title eller description', (key) => {
+		const config = seoSupportPages[key];
+
+		expect(config, `${key} saknas`).toBeDefined();
+		expect(`${config.title} ${config.description}`).toMatch(/\bAI\b/);
+	});
+
+	it('/chatta-anonymt-med-nagon lovar inte en människa i rubriken', () => {
+		const config = seoSupportPages['chatta-anonymt-med-nagon'];
+
+		expect(config.h1).toMatch(/\bAI\b/);
+		expect(config.h1).not.toMatch(/med någon/i);
+		expect(config.lead).toMatch(/inte med en människa/);
+	});
+
+	it('/chatta-anonymt svarar inte bara "Ja" på frågan om att chatta med någon', () => {
+		const answer = seoSupportPages['chatta-anonymt'].faq.find((item) =>
+			/chatta med någon/i.test(item.question)
+		)?.answer;
+
+		expect(answer).toMatch(/AI/);
+		expect(answer).toMatch(/inte med en människa/);
+	});
+
+	it('länkar inte till chattsidan med texten "med någon"', () => {
+		for (const [key, page] of Object.entries(seoSupportPages)) {
+			const labels = [
+				...page.resourceListItems.map((item) => item.label),
+				...page.nextStepLinks.map((link) => link.label)
+			];
+
+			for (const label of labels) {
+				expect(label, `${key}: "${label}"`).not.toMatch(/chatta anonymt med någon/i);
+			}
+		}
 	});
 });

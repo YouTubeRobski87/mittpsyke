@@ -17,7 +17,7 @@ tags:
   - högkänslighet
 readingTime: 7 min läsning
 relatedArticles:
-  - title: Varför blir vissa människor lätt överstimulerade?
+  - title: Överstimulerad – vad betyder det och varför händer det?
     url: https://mittpsyke.se/blogg/amne/oro-och-stress/varfor-blir-man-overstimulerad
   - title: Är du högkänslig? När känslighet är en styrka – inte en svaghet
     url: https://mittpsyke.se/blogg/amne/oro-och-stress/ar-du-hogkanslig
