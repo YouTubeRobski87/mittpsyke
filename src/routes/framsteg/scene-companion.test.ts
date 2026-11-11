@@ -138,6 +138,23 @@ describe('Framstegs scen och följeslagare', () => {
 		expect(route).toContain('buildHistoryActivity(heatmapData, moodSamples, selectedPeriod)');
 	});
 
+	it('mäter om scenen när den ändrar storlek, även när den renderas efter laddningen', () => {
+		// Scenrutan finns inte i onMount för inloggade (den ligger bakom
+		// laddningsläget). Observern måste därför kopplas i en effekt som följer
+		// sceneEl, annars ligger Balder kvar på gamla mått när telefonen vrids.
+		const mount = route.slice(route.indexOf('onMount('), route.indexOf('return cleanupSceneWatchers;\n\t});'));
+		expect(mount).not.toContain('new ResizeObserver');
+		expect(route).toMatch(
+			/\$effect\(\(\) => \{\s*const renderedSceneEl = sceneEl;[\s\S]{0,160}new ResizeObserver\(\(\) => updateProgressScenePlacement\(renderedSceneEl\)\)[\s\S]{0,120}observer\.disconnect\(\)/
+		);
+	});
+
+	it('låter inte scenen fylla hela skärmen på en liggande telefon', () => {
+		expect(route).toMatch(
+			/@media \(orientation: landscape\) and \(max-height: 520px\) \{\s*\.companion-banner \{\s*max-width: calc\(72svh \* 1672 \/ 941\);/
+		);
+	});
+
 	it('låter sparade spår och sparat stadie finnas kvar i världen', () => {
 		expect(route).toContain('unlocked: unlockedWorldMarks');
 		expect(route).toContain('data.worldProgress?.stage ?? 0');

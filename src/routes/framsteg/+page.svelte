@@ -947,20 +947,10 @@
 		};
 		narrowQuery.addEventListener('change', onNarrowChange);
 
-		// Scenen ändrar storlek när bilden laddats och vid varje omritning. En
-		// ResizeObserver håller stugans klickyta i synk med den renderade scenen.
-		const sceneResizeObserver =
-			typeof ResizeObserver !== 'undefined' && sceneEl
-			? new ResizeObserver(() => {
-					updateProgressScenePlacement();
-				})
-				: null;
-		if (sceneResizeObserver && sceneEl) sceneResizeObserver.observe(sceneEl);
 		updateProgressScenePlacement();
 
 		const cleanupNarrowQuery = () => {
 			narrowQuery.removeEventListener('change', onNarrowChange);
-			sceneResizeObserver?.disconnect();
 		};
 
 		// Balder flyttar sig inte för den som bett om minskad rörelse. Platsen
@@ -1030,11 +1020,24 @@
 	});
 
 	// Ytan mäts om så fort scenrutan byts ut eller Balder flyttar till en annan
-	// plats. Storleksändringar fångas av ResizeObservern.
+	// plats. Storleksändringar fångas av ResizeObservern nedan.
 	$effect(() => {
 		const renderedSceneEl = sceneEl;
 		void sceneSpot;
 		updateProgressScenePlacement(renderedSceneEl);
+	});
+
+	// Scenen ändrar storlek när bilden laddats, när telefonen vrids och vid
+	// varje omritning. Observern kopplas här och inte i onMount: för inloggade
+	// renderas scenrutan först när laddningen är klar, så i onMount finns den
+	// inte än. Utan observer låg Balder och stugans klickyta kvar på måtten
+	// från första mätningen - vreds telefonen hamnade han uppe bland träden.
+	$effect(() => {
+		const renderedSceneEl = sceneEl;
+		if (!renderedSceneEl || typeof ResizeObserver === 'undefined') return;
+		const observer = new ResizeObserver(() => updateProgressScenePlacement(renderedSceneEl));
+		observer.observe(renderedSceneEl);
+		return () => observer.disconnect();
 	});
 
 	$effect(() => {
@@ -2439,6 +2442,17 @@
 		border: 1px solid color-mix(in srgb, var(--color-dashboard-border) 82%, transparent);
 		border-radius: 14px;
 		background: #0d1727;
+	}
+
+	/* Liggande telefon: scenen är 16:9 och fyllde annars hela skärmen, så att
+	   inget av sidans innehåll syntes. Bredden begränsas så att höjden blir
+	   högst cirka tre fjärdedelar av skärmen. Allt i scenen är placerat i
+	   procent och följer därför med i samma proportioner. */
+	@media (orientation: landscape) and (max-height: 520px) {
+		.companion-banner {
+			max-width: calc(72svh * 1672 / 941);
+			margin-inline: auto;
+		}
 	}
 
 	.companion-media {
