@@ -31,6 +31,7 @@
 		describeLocalTheme,
 		type LocalRetrospectTheme
 	} from '$lib/diary-local-retrospect';
+	import { describeLocalDraftStatus, describeRetrospectThreshold } from '$lib/guest-entry-feedback';
 	import { dataflowCopy } from '$lib/dataflow-copy';
 	import { CREATE_ACCOUNT_FROM_DIARY_HREF } from '$lib/diary-account-handoff';
 	import { ACCOUNT_THEME_RULE_COPY } from '$lib/progress-recurring-themes';
@@ -61,6 +62,11 @@
 	let savedEntryFromPreviousVisit = $state('');
 	let showSavedEntryPrompt = $state(false);
 	let saveStatus = $state<'idle' | 'saved'>('idle');
+	// Statusraden under skrivytan. Den ligger kvar medan användaren skriver
+	// vidare, till skillnad från märket i rubriken som blinkar av och på.
+	let draftOnDevice = $state(false);
+	let draftSavedAt = $state<number | null>(null);
+	const retrospectThresholdCopy = $derived(describeRetrospectThreshold(retrospect));
 	let containerEl = $state<HTMLElement | null>(null);
 	let textareaEl = $state<HTMLTextAreaElement | null>(null);
 	let accountOfferEl = $state<HTMLElement | null>(null);
@@ -81,6 +87,8 @@
 			currentEntryId = null;
 			writeCurrentLocalEntryId(null);
 			storageFailed = false;
+			draftOnDevice = false;
+			draftSavedAt = null;
 		} else {
 			const draftStored = writeDiaryDraft(entry);
 			const saved = saveLocalEntry({ id: currentEntryId, text: entry });
@@ -89,6 +97,7 @@
 			// Nekad lagring sväljs inte tyst: texten finns kvar i vyn, men den
 			// överlever inte att sidan stängs.
 			storageFailed = !draftStored || !saved.stored;
+			markDraftStored(storageFailed ? null : Date.now(), !storageFailed);
 			if (!hasCompletedTracking) {
 				hasCompletedTracking = true;
 				trackAnonymousWriteCompletedFromText(entry);
@@ -97,6 +106,11 @@
 		localEntries = readLocalEntries();
 		lastSavedValue = entry;
 		saveStatus = 'saved';
+	}
+
+	function markDraftStored(savedAt: number | null, stored = true) {
+		draftOnDevice = stored;
+		draftSavedAt = stored ? savedAt : null;
 	}
 
 	/** Lägger undan det som skrivits och öppnar en tom yta. */
@@ -111,6 +125,7 @@
 		showSavedEntryPrompt = false;
 		confirmClearAll = false;
 		saveStatus = 'idle';
+		markDraftStored(null, false);
 		localEntries = readLocalEntries();
 		textareaEl?.focus();
 	}
@@ -129,6 +144,7 @@
 		showSavedEntryPrompt = false;
 		confirmClearAll = false;
 		saveStatus = 'saved';
+		markDraftStored(item.updatedAt);
 		textareaEl?.focus();
 	}
 
@@ -157,6 +173,7 @@
 		showSavedEntryPrompt = false;
 		confirmClearAll = false;
 		saveStatus = 'idle';
+		markDraftStored(null, false);
 		textareaEl?.focus();
 	}
 
@@ -197,6 +214,9 @@
 		savedEntryFromPreviousVisit = '';
 		showSavedEntryPrompt = false;
 		saveStatus = entry.trim().length > 0 ? 'saved' : 'idle';
+		// Klockslaget för det tidigare besöket visas inte: raden säger bara
+		// att utkastet finns här.
+		markDraftStored(null, entry.trim().length > 0);
 		textareaEl?.focus();
 	}
 
@@ -218,6 +238,7 @@
 		showSavedEntryPrompt = false;
 		lastSavedValue = options.keepCurrentText ? '' : entry;
 		saveStatus = 'idle';
+		markDraftStored(null, false);
 		textareaEl?.focus();
 	}
 
@@ -345,6 +366,10 @@
 			<p class="storage-warning" role="status" aria-live="polite">
 				Det gick inte att spara lokalt. Texten finns kvar här, men kan försvinna om sidan stängs.
 			</p>
+		{:else if draftOnDevice && entry.trim().length > 0}
+			<!-- Ligger under skrivytan så att den syns medan man skriver på en
+			     liten skärm. Märket i rubriken sköter uppläsningen. -->
+			<p class="draft-status">{describeLocalDraftStatus(draftSavedAt)}</p>
 		{/if}
 
 		<div class="entry-actions">
@@ -355,6 +380,10 @@
 				Rensa texten
 			</button>
 		</div>
+
+		{#if retrospectThresholdCopy}
+			<p class="retrospect-threshold">{retrospectThresholdCopy}</p>
+		{/if}
 
 		{#if retrospect.status !== 'not-enough'}
 			<!-- Lokal återblick. Räknas i webbläsaren ur inläggen nedan: inget
@@ -606,6 +635,19 @@
 		color: hsl(var(--foreground) / 0.88);
 		font-size: 0.86rem;
 		line-height: 1.5;
+	}
+
+	.draft-status,
+	.retrospect-threshold {
+		margin: 0;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.86rem;
+		line-height: 1.5;
+	}
+
+	.retrospect-threshold {
+		padding-top: 0.9rem;
+		border-top: 1px solid hsl(var(--border));
 	}
 
 	.entry-actions {
