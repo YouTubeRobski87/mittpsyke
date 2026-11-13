@@ -23,7 +23,7 @@ function text(html: string) {
 	return html.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-const home = render(ProgressExamplePreview, { props: { headingLevel: 3, context: 'home' } }).body;
+const home = render(ProgressExamplePreview, { props: { context: 'home' } }).body;
 const progress = render(ProgressExamplePreview, { props: {} }).body;
 
 describe('exemplet är omisskännligt ett exempel', () => {
@@ -33,11 +33,11 @@ describe('exemplet är omisskännligt ett exempel', () => {
 			expect(visible).toContain(EXAMPLE_PREVIEW_HEADING);
 			expect(visible).toContain('Exempel');
 			expect(visible).toContain('Påhittat exempel.');
-			expect(visible).toContain('inte dina och kommer inte från någon riktig person');
-			expect(visible).toContain('Exempel · Det som återkommer');
+			if (name === 'Framsteg') expect(visible).toContain('inte dina och kommer inte från någon riktig person');
+			if (name === 'Framsteg') expect(visible).toContain('Exempel · Det som återkommer');
 			// Varje citat är märkt och varje dag heter "Exempeldag".
 			for (const quote of RECURRING_THEME_EXAMPLE.quotes) {
-				expect(visible).toContain(`${quote.day} Exempeltext: ${quote.text}`);
+				expect(visible).toContain(`Exempeltext: ${quote.text}`);
 			}
 			expect(visible).not.toMatch(REAL_DATE);
 		});
@@ -55,8 +55,8 @@ describe('exemplet är omisskännligt ett exempel', () => {
 	});
 
 	it('följer sidans rubrikhierarki', () => {
-		expect(home).toMatch(/<h3[^>]*id="example-preview-heading-home"[^>]*>\s*Så här kan det se ut efter en månad/);
-		expect(home).toMatch(/<h4[^>]*class="example-card-title[^"]*"[^>]*>\s*Sömn/);
+		expect(home).toMatch(/<h2[^>]*id="example-preview-heading-home"[^>]*>\s*Så här kan det se ut efter en månad/);
+		expect(text(home)).toContain('Sömn återkom i 6 av 14 anteckningar under en månad.');
 		expect(progress).toMatch(/<h2[^>]*id="example-preview-heading-progress"/);
 	});
 });
@@ -96,15 +96,16 @@ describe('exemplet visar något konkret och sant mot produkten', () => {
 });
 
 describe('placeringen på startsidan', () => {
-	it('visar exemplet direkt efter steget "Se vad som återkommer."', () => {
-		// Samma minimala data som home-p2-structure.test.ts: bara den publika grenen.
+	it('visar ett sömnexempel direkt efter heron och förklarar vad kontot ger', () => {
 		const body = render(HomePage, { props: { data: { isSignedInHome: false } as never } }).body;
-		const how = body.slice(body.indexOf('aria-labelledby="how-title"'), body.indexOf('aria-labelledby="account-title"'));
-		const step = how.indexOf('Se vad som återkommer.');
-		const example = how.indexOf(EXAMPLE_PREVIEW_HEADING);
+		const heroEnd = body.indexOf('</section>', body.indexOf('aria-labelledby="hero-title"'));
+		const howStart = body.indexOf('aria-labelledby="how-title"');
+		const introduction = body.slice(heroEnd, howStart);
 
-		expect(step).toBeGreaterThan(-1);
-		expect(example).toBeGreaterThan(step);
-		expect(how).toContain('data-context="home"');
+		expect(introduction).toContain('data-context="home"');
+		expect(introduction).toContain(EXAMPLE_PREVIEW_HEADING);
+		expect(introduction).toMatch(/<a href="\/framsteg"[^>]*>Återblick<\/a>/);
+		expect(text(introduction)).toContain('Din egen återblick kräver konto och bygger på anteckningar du sparar.');
+		expect(body.match(/data-context="home"/g)).toHaveLength(1);
 	});
 });

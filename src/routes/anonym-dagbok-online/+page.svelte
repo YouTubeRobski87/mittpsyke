@@ -49,7 +49,7 @@
 			<h2>Vad MittPsyke erbjuder</h2>
 			<ul>
 				<li><a href="/digital-dagbok-for-maende">Digital dagbok för mående</a> när du vill ha mer struktur.</li>
-				<li><a href="/framsteg">Framsteg</a> för att se återkommande mönster över tid.</li>
+				<li><a href="/framsteg">Återblick</a> för att se hur återkommande teman kan se ut. Din egen återblick kräver konto och sparade anteckningar.</li>
 				<li><a href="/chatta-anonymt">Chatta anonymt utan konto</a> när du vill reflektera vidare i samtal.</li>
 				<li><a href="/hjalp-vid-angest-online">Hjälp vid ångest online</a> och <a href="/om-mittpsyke">Om MittPsyke</a> om du vill läsa vidare.</li>
 			</ul>
@@ -67,7 +67,7 @@
 			</p>
 			<p class="links-row">
 				<a href="/dagbok?action=new">Börja skriva anonym dagbok</a>
-				<a href="/framsteg">Se framsteg</a>
+				<a href="/framsteg">Se återblick</a>
 				<a href="/register">Skapa konto</a>
 			</p>
 		</section>

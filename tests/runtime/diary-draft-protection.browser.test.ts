@@ -163,7 +163,8 @@ beforeAll(async () => {
 		logLevel: 'error',
 		server: { host: '127.0.0.1', port: 0 },
 		optimizeDeps: { entries: [
-			'src/routes/+layout.svelte', 'src/routes/dagbok/checkin/+page.svelte',
+			'src/routes/+layout.svelte', 'src/routes/+page.svelte', 'src/routes/dagbok/checkin/+page.svelte',
+			'src/routes/chat/+page.svelte',
 			'src/routes/dagbok/+page.svelte', 'src/routes/integritet/+page.svelte', 'src/routes/login/+page.svelte'
 		] },
 		plugins: [{
@@ -467,3 +468,40 @@ it('skyddar utloggning före signOut och låter gästen återuppta lokalt utkast
 	expect(await value('textarea')).toBe(text);
 	expect(nativeDialogs).toBe(0);
 }, 45000);
+
+
+it('låter gästen skriva direkt från startsidan och hitta tillbaka till utkastet på mobil och dator', async () => {
+	const guestField = '#guest-entry textarea';
+	const sentence = 'I dag gick jag till biblioteket.';
+	await evaluate("document.cookie = 'test-signed-out=yes; path=/'");
+	for (const [width, height] of [[390, 844], [1440, 900]]) {
+		await cdp('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: width < 600 });
+		await go('/');
+		await evaluate('localStorage.clear()');
+		await until(() => bodyIncludes('Chatta med AI'), 'public home');
+		await click('.hero-actions .cta-primary');
+		await until(() => evaluate(`document.activeElement === document.querySelector('${guestField}')`), 'focused guest field');
+		await until(() => evaluate(`(() => {
+			const rect = document.activeElement.getBoundingClientRect();
+			const header = document.querySelector('.site-header').getBoundingClientRect();
+			return rect.top >= header.bottom && rect.bottom <= visualViewport.height
+				&& document.documentElement.scrollWidth <= innerWidth;
+		})()`), `visible guest field at ${width}px`);
+		await cdp('Input.insertText', { text: sentence });
+		await until(() => evaluate(`localStorage.getItem('mittpsyke_guest_entry') === ${JSON.stringify(sentence)}`), 'guest draft saved');
+		await cdp('Page.reload');
+		await until(() => bodyIncludes('Fortsätt där jag var'), 'guest draft recovery');
+		await button('Fortsätt där jag var');
+		await until(async () => await value(guestField) === sentence, 'restored sentence');
+
+		await go('/');
+		await click('.hero-chat-choice a[href="/chat"]');
+		await until(() => evaluate("location.pathname === '/chat'"), 'guest chat route');
+		await until(() => bodyIncludes('Jag samtycker och vill fortsätta'), 'guest chat consent');
+
+		await go('/');
+		await click('.evening-actions a');
+		await until(() => evaluate(`location.pathname === '/login' &&
+			new URLSearchParams(location.search).get('redirect') === '/dashboard/kvallsstugan'`), 'evening check-in login');
+	}
+}, 90000);

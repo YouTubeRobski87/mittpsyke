@@ -26,14 +26,15 @@ describe('Den publika startsidans hero', () => {
 			/class="cta-primary"\s+href=\{ANONYMOUS_WRITE_DESTINATION\}\s+onclick=\{\(\) => trackHomeCta\('hero', 'skriv_utan_konto', ANONYMOUS_WRITE_DESTINATION\)\}/
 		);
 		expect(hero).toContain('Börja skriva');
+		expect(page).toContain("const ANONYMOUS_WRITE_DESTINATION = '/dagbok?action=new';");
 	});
 
 	it('låter den andra direkta vägen öppna den riktiga chatten utan mellanvy', () => {
 		expect(page).toContain("const ANONYMOUS_CHAT_DESTINATION = '/chat';");
 		expect(hero).toMatch(
-			/class="cta-secondary"\s+href=\{ANONYMOUS_CHAT_DESTINATION\}\s+onclick=\{\(\) => trackHomeCta\('hero', 'chatta', ANONYMOUS_CHAT_DESTINATION\)\}/
+			/class="cta-secondary"\s+href=\{ANONYMOUS_CHAT_DESTINATION\}\s+aria-describedby="hero-chat-info"\s+onclick=\{\(\) => trackHomeCta\('hero', 'chatta', ANONYMOUS_CHAT_DESTINATION\)\}/
 		);
-		expect(hero).toContain('Chatta');
+		expect(hero).toContain('Chatta med AI');
 		expect(hero).not.toContain('Se hur platsen lever');
 		expect(hero).not.toContain('/register');
 	});
@@ -59,10 +60,10 @@ describe('Den publika startsidans hero', () => {
 	// Formuleringen är kontrollerad mot diary-draft.ts: anonyma utkast skrivs
 	// bara till localStorage och skickas aldrig till servern.
 	it('förklarar diskret skillnaden mellan dagboksutkast och gästchatt', () => {
-		expect(hero).toContain('Inget konto behövs. Dagboksutkast sparas lokalt i din webbläsare.');
+		expect(hero).toContain('Skriv utan konto. När lokal lagring är tillgänglig sparas ditt utkast i den här webbläsaren.');
 		// Gästchatten lämnar webbläsaren: texten går till OpenAI men sparas inte av MittPsyke.
-		expect(hero).toContain('I gästchatten överförs\n\t\t\t\t\ttexten till OpenAI för att generera ett svar');
-		expect(hero).toContain('MittPsyke sparar inte innehållet i din gästchatt.');
+		expect(hero).toContain('Meddelanden du skickar i gästchatten går till OpenAI för att skapa ett svar.');
+		expect(hero).toContain('MittPsyke sparar inte innehållet i gästchatten.');
 		expect(hero).toContain('href={PRIVACY_DESTINATION}>Läs mer</a>');
 		expect(hero).not.toContain('gästchatten sparas inte.');
 		// Markup, inte fritext: rubrikens namn nämns i kommentaren som

@@ -20,9 +20,9 @@
 		headingLevel = 2,
 		context = 'progress'
 	}: {
-		/** 3 på startsidan, där exemplet ligger under sektionens egen h2. */
+		/** 2 för en fristående sektion, 3 under en befintlig rubrik. */
 		headingLevel?: 2 | 3;
-		/** 'home' visar bara "Det som återkommer"; 'progress' även lättare dagar. */
+		/** 'home' visar ett kort sömnexempel och 'progress' visar hela exemplet. */
 		context?: 'home' | 'progress';
 	} = $props();
 
@@ -42,30 +42,44 @@
 	<svelte:element this={headingTag} id={headingId} class="example-heading">
 		{EXAMPLE_PREVIEW_HEADING}
 	</svelte:element>
-	<p class="example-disclaimer">
-		Påhittat exempel. Siffrorna och texterna nedan är inte dina och kommer inte från någon riktig
-		person. Med ett konto bygger återblicken bara på det du själv sparar.
-	</p>
+	{#if context === 'home'}
+		<p class="example-disclaimer">
+			Påhittat exempel. {RECURRING_THEME_EXAMPLE.label} återkom i {RECURRING_THEME_EXAMPLE.count} av
+			{RECURRING_THEME_EXAMPLE.total} anteckningar under en månad.
+		</p>
+		<ul class="example-evidence" aria-label="Exempelmeningar om sömn">
+			{#each RECURRING_THEME_EXAMPLE.quotes as quote (quote.day)}
+				<li><blockquote>Exempeltext: {quote.text}</blockquote></li>
+			{/each}
+		</ul>
+		<p class="example-footnote">
+			I <a href="/framsteg">Återblick</a> kan du se teman som återkommer i dina egna ord.
+			Din egen återblick kräver konto och bygger på anteckningar du sparar.
+		</p>
+	{:else}
+		<p class="example-disclaimer">
+			Påhittat exempel. Siffrorna och texterna nedan är inte dina och kommer inte från någon riktig
+			person. Med ett konto bygger återblicken bara på det du själv sparar.
+		</p>
 
-	<div class="example-cards">
-		<div class="example-card">
-			<p class="example-card-label">Exempel · Det som återkommer</p>
-			<svelte:element this={cardHeadingTag} class="example-card-title">
-				{RECURRING_THEME_EXAMPLE.label}
-			</svelte:element>
-			<p class="example-note">{RECURRING_THEME_EXAMPLE_COUNT}</p>
-			<p class="example-comparison">{RECURRING_THEME_EXAMPLE_OBSERVATION}</p>
-			<ul class="example-evidence" aria-label="Exempelmeningar där temat nämndes">
-				{#each RECURRING_THEME_EXAMPLE.quotes as quote (quote.day)}
-					<li>
-						<strong>{quote.day}</strong>
-						<blockquote>Exempeltext: {quote.text}</blockquote>
-					</li>
-				{/each}
-			</ul>
-		</div>
+		<div class="example-cards">
+			<div class="example-card">
+				<p class="example-card-label">Exempel · Det som återkommer</p>
+				<svelte:element this={cardHeadingTag} class="example-card-title">
+					{RECURRING_THEME_EXAMPLE.label}
+				</svelte:element>
+				<p class="example-note">{RECURRING_THEME_EXAMPLE_COUNT}</p>
+				<p class="example-comparison">{RECURRING_THEME_EXAMPLE_OBSERVATION}</p>
+				<ul class="example-evidence" aria-label="Exempelmeningar där temat nämndes">
+					{#each RECURRING_THEME_EXAMPLE.quotes as quote (quote.day)}
+						<li>
+							<strong>{quote.day}</strong>
+							<blockquote>Exempeltext: {quote.text}</blockquote>
+						</li>
+					{/each}
+				</ul>
+			</div>
 
-		{#if context === 'progress'}
 			<div class="example-card">
 				<p class="example-card-label">Exempel · Det som ofta fanns med under lättare dagar</p>
 				<svelte:element this={cardHeadingTag} class="example-card-title">
@@ -93,21 +107,22 @@
 					</ul>
 				{/if}
 			</div>
-		{/if}
-	</div>
+		</div>
 
-	<p class="example-footnote">
-		{#if context === 'home'}
-			Ett tema visas först när det har återkommit minst 3 gånger under minst 2 olika veckor. Det är
-			dina egna ord över tid – ingen poäng och ingen bedömning.
-		{:else}
+		<p class="example-footnote">
 			I din egen återblick visar "Visa underlaget" dina egna inlägg med datum, och du kan byta namn på
 			ett tema eller ta bort det. Dina inlägg ändras aldrig.
-		{/if}
-	</p>
+		</p>
+	{/if}
 </section>
 
 <style>
+	.example-footnote a {
+		color: var(--ex-fg);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+
 	/* Färgerna går via --example-*, så att en sida med egen palett (startsidan)
 	   kan ge exemplet sina färger. Utan dem gäller appens tema. */
 	.example-preview {

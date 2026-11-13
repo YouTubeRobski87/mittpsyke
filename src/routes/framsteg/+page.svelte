@@ -1138,7 +1138,7 @@
 
 <SEO canonical="https://mittpsyke.se/framsteg" />
 <svelte:head>
-	<title>Framsteg | MittPsyke</title>
+	<title>{isAnonymous ? 'Återblick' : 'Framsteg'} | MittPsyke</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 <CompanionPresenceTracker enabled={!data.isAnonymous} />
@@ -1168,11 +1168,11 @@
 				{#if isAnonymous}
 					<a class="home-return-link" href="/">&larr; Till startsidan</a>
 				{/if}
-				<p class="auth-eyebrow">Framsteg</p>
+				<p class="auth-eyebrow">{isAnonymous ? 'Återblick' : 'Framsteg'}</p>
 				<h1>Din historia, i dina egna ord</h1>
 				<p>
 					{isAnonymous
-						? 'En förhandsvisning av hur sparade stunder kan göra förändringar och återkommande teman lättare att se.'
+						? 'Se ett exempel på hur teman kan återkomma. Din egen återblick kräver konto och bygger på anteckningar du sparar.'
 						: 'Vad som återkommer och vad som har förändrats, utifrån det du själv har sparat.'}
 				</p>
 			</div>
