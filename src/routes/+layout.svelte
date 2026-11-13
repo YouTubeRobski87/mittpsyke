@@ -57,7 +57,7 @@
 
 	const primaryNavItems: NavItem[] = [
 		{ href: '/dagbok', label: 'Dagbok' },
-		{ href: '/framsteg', label: 'Framsteg' },
+		{ href: '/framsteg', label: 'Återblick' },
 		{ href: '/chat', label: 'Chatta' },
 		{ href: '/guider', label: 'Läs' },
 		{ href: '/sa-fungerar-mittpsyke', label: 'Så fungerar det' }
@@ -82,7 +82,7 @@
 
 	const mobileGuestPrimaryNavItems: NavItem[] = [
 		GUEST_WRITE_NAV_ITEM,
-		{ href: '/framsteg', label: 'Framsteg' },
+		{ href: '/framsteg', label: 'Återblick' },
 		{ href: '/chat', label: 'Chatta' },
 		MOBILE_READ_NAV_ITEM,
 		MOBILE_HOW_NAV_ITEM
@@ -1068,7 +1068,7 @@
 				<div class="footer-col">
 					<p class="footer-col-heading">Tjänsten</p>
 					<a href="/dagbok" class="footer-link">Dagbok</a>
-					<a href="/framsteg" class="footer-link">Framsteg</a>
+					<a href="/framsteg" class="footer-link">{currentUser ? 'Framsteg' : 'Återblick'}</a>
 					<a href="/chat" class="footer-link">Chatta anonymt</a>
 					<a href="/ovningar" class="footer-link">Övningar</a>
 					<a href="/guider" class="footer-link">Guider</a>

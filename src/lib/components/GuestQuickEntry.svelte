@@ -272,7 +272,8 @@
 		// textfältet tidigare kvar under viewporten eftersom komponentens överkant
 		// skrollades fram och fokus sedan förbjöds att flytta vyn.
 		const scrollTimer = setTimeout(() => {
-			textareaEl?.focus();
+			textareaEl?.focus({ preventScroll: true });
+			textareaEl?.scrollIntoView({ block: 'center', behavior: 'instant' });
 		}, 100);
 
 		// Auto-save var 3:e sekund

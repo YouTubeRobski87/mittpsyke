@@ -34,7 +34,7 @@
 	<div class="how-brief">
 		<InBrief
 			lead={positioningCopy.core}
-			extra="Du kan börja utan konto. Med konto sparas det du väljer, och i Framsteg visas ett tema först när det har återkommit minst 3 gånger under minst 2 olika veckor."
+			extra="Du kan börja utan konto. Med konto sparas det du väljer, och i Återblick visas ett tema först när det har återkommit minst 3 gånger under minst 2 olika veckor."
 		/>
 	</div>
 
@@ -56,7 +56,7 @@
 			<li>
 				<h3>Se vad som återkommer.</h3>
 				<p>
-					I Framsteg sammanställs dina egna ord och humörvärden över tid. Ett tema visas först när det
+					Med konto kan du i <a href="/framsteg">Återblick</a> se teman i dina sparade anteckningar. Ett tema visas först när det
 					har återkommit minst 3 gånger under minst 2 olika veckor.
 				</p>
 			</li>

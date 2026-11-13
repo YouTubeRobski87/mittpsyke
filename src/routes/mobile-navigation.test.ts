@@ -58,10 +58,10 @@ describe('ARIA-referenser och knappar i layouten', () => {
 const mobileMenu = layout.slice(layout.indexOf('<div id="mobile-menu"'), layout.indexOf('Vid akut fara: ring 112'));
 
 describe('mobilmenyn för utloggade', () => {
-	it('prioriterar Skriv, Framsteg och därefter den sekundära chatten', () => {
+	it('prioriterar Skriv, Återblick och därefter den sekundära chatten', () => {
 		expect(labels(navList('mobileGuestPrimaryNavItems'))).toEqual([
 			'Skriv',
-			'Framsteg',
+			'Återblick',
 			'Chatta',
 			'Läs',
 			'Så fungerar det'
@@ -182,7 +182,7 @@ describe('desktopnavigeringen', () => {
 		expect(layout).toContain('{#each (currentUser ? signedInPortalNavItems : primaryNavItems) as item}');
 		expect(labels(navList('primaryNavItems'))).toEqual([
 			'Dagbok',
-			'Framsteg',
+			'Återblick',
 			'Chatta',
 			'Läs',
 			'Så fungerar det'
@@ -221,12 +221,12 @@ describe('inloggade undersidor', () => {
 });
 
 describe('sidfoten', () => {
-	it('börjar med Dagbok och Framsteg och lyfter inte frysta sidospår', () => {
+	it('börjar med Dagbok och länken till återblicken och lyfter inte frysta sidospår', () => {
 		const serviceStart = layout.indexOf('<p class="footer-col-heading">Tjänsten</p>');
 		const serviceEnd = layout.indexOf('</div>', serviceStart);
 		const service = layout.slice(serviceStart, serviceEnd);
-		expect(service.indexOf('>Dagbok</a>')).toBeLessThan(service.indexOf('>Framsteg</a>'));
-		expect(service.indexOf('>Framsteg</a>')).toBeLessThan(service.indexOf('>Chatta anonymt</a>'));
+		expect(service.indexOf('>Dagbok</a>')).toBeLessThan(service.indexOf('>{currentUser ? \'Framsteg\' : \'Återblick\'}</a>'));
+		expect(service.indexOf('>{currentUser ? \'Framsteg\' : \'Återblick\'}</a>')).toBeLessThan(service.indexOf('>Chatta anonymt</a>'));
 		expect(service).not.toContain('Humörspårning');
 		expect(service).not.toContain('Premium');
 	});

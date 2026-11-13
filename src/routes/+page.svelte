@@ -51,39 +51,34 @@
 					dina egna ord, i din egen takt.
 				</p>
 				<div class="hero-actions">
-					<a
-						class="cta-primary"
-						href={ANONYMOUS_WRITE_DESTINATION}
-						onclick={() => trackHomeCta('hero', 'skriv_utan_konto', ANONYMOUS_WRITE_DESTINATION)}
-					>
-						Börja skriva
-					</a>
-					<a
-						class="cta-secondary"
-						href={ANONYMOUS_CHAT_DESTINATION}
-						onclick={() => trackHomeCta('hero', 'chatta', ANONYMOUS_CHAT_DESTINATION)}
-					>
-						Chatta med AI
-					</a>
+					<div class="hero-write-choice">
+						<a
+							class="cta-primary"
+							href={ANONYMOUS_WRITE_DESTINATION}
+							onclick={() => trackHomeCta('hero', 'skriv_utan_konto', ANONYMOUS_WRITE_DESTINATION)}
+						>
+							Börja skriva
+						</a>
+						<p class="cta-micro">
+							Skriv utan konto. När lokal lagring är tillgänglig sparas ditt utkast i den här webbläsaren.
+						</p>
+					</div>
+					<div class="hero-chat-choice">
+						<a
+							class="cta-secondary"
+							href={ANONYMOUS_CHAT_DESTINATION}
+							aria-describedby="hero-chat-info"
+							onclick={() => trackHomeCta('hero', 'chatta', ANONYMOUS_CHAT_DESTINATION)}
+						>
+							Chatta med AI
+						</a>
+						<p id="hero-chat-info" class="cta-micro">
+							Meddelanden du skickar i gästchatten går till OpenAI för att skapa ett svar.
+							MittPsyke sparar inte innehållet i gästchatten.
+							<a class="cta-micro-link" href={PRIVACY_DESTINATION}>Läs mer</a>
+						</p>
+					</div>
 				</div>
-				<!-- Ligger direkt under CTA-raden, där den sänker tröskeln för att
-					 klicka. Samma sak stod tidigare i en egen sektion fem skärmar
-					 längre ner, alltså långt efter att beslutet redan fattats.
-					 Formuleringen är kontrollerad mot implementationen: anonyma
-					 utkast skrivs bara till localStorage i diary-draft.ts och
-					 skickas aldrig till servern. Gästchatten skickas till OpenAI
-					 via /api/chat men skrivs inte till Supabase, localStorage
-					 eller loggar (persistHistory i ChatWindow.svelte avbryter
-					 utan inloggning; gästgrenen returnerar conversationId: null
-					 och loggar bara roller och textlängder). -->
-				<!-- Ett stycke i stället för två: samma fakta (lokalt utkast, gästchatten
-					 går till OpenAI, MittPsyke sparar den inte) men kortare, så att bilden
-					 hamnar högre upp på mobil. Detaljerna finns bakom "Läs mer". -->
-				<p class="cta-micro">
-					Inget konto behövs. Dagboksutkast sparas lokalt i din webbläsare. I gästchatten överförs
-					texten till OpenAI för att generera ett svar, och MittPsyke sparar inte innehållet i din gästchatt.
-					<a class="cta-micro-link" href={PRIVACY_DESTINATION}>Läs mer</a>
-				</p>
 			</div>
 
 			<!-- Bara scenen. Stegkortet har flyttat till Kvällstugan, så heron
@@ -114,6 +109,12 @@
 			</div>
 		</div>
 	</section>
+
+	<div class="home-example-band">
+		<div class="home-inner home-example">
+			<ProgressExamplePreview context="home" />
+		</div>
+	</div>
 
 	<!-- 2. Kärnloopen kommer direkt efter heron, före kontosektionen.
 		 Ersätter de två tidigare sektionerna "Skillnaden mot
@@ -150,12 +151,6 @@
 					<p>Dina egna ord sammanställda — ingen mätning av hur du sköter dig.</p>
 				</li>
 			</ol>
-			<!-- Steg 4 i praktiken. Ett märkt, påhittat exempel på vad "se vad som
-				 återkommer" betyder, så att en ny besökare ser det utan konto och
-				 utan veckor av egna inlägg. Ingen AI och inga användardata. -->
-			<div class="how-example">
-				<ProgressExamplePreview headingLevel={3} context="home" />
-			</div>
 		</div>
 	</section>
 
@@ -182,7 +177,7 @@
 						Balder är en lugn följeslagare som finns med i Mitt Hem och Kvällstugan. Ingen streak,
 						ingen prestation — bara en närvaro som följer platsen över tid.
 					</li>
-					<li>I Framsteg ser du teman som återkommer, i dina egna ord.</li>
+					<li>I <a class="cta-micro-link" href="/framsteg">Återblick</a> ser du teman som återkommer i dina sparade anteckningar.</li>
 				</ul>
 				<a class="cta-secondary account-cta" href={REGISTER_DESTINATION}>Skapa konto</a>
 			</div>
@@ -246,7 +241,7 @@
 					onclick={() =>
 						trackHomeCta('kvallsstugan', 'oppna_kvallsincheckningen', EVENING_CHECKIN_DESTINATION)}
 				>
-					Öppna kvällsincheckningen <span aria-hidden="true">→</span>
+					Logga in för att checka in <span aria-hidden="true">→</span>
 				</a>
 				<!-- Stödlänken till Stödlinjer.se låg tidigare här. Akutvägarna står
 					 nu samlade i trygghetssektionen längre ner. -->
@@ -585,9 +580,12 @@
 		}
 	}
 
-	/* Exemplet under stegen får startsidans mörka palett i stället för appens
-	   tema, så att det hör ihop med sektionen runt omkring. */
-	.how-example {
+	.home-example-band {
+		padding: 0 1.25rem clamp(1.75rem, 3.6vw, 2.5rem);
+		background: var(--home-section-bg);
+	}
+
+	.home-example {
 		--example-surface: var(--home-dark-bg-soft);
 		--example-card: rgba(148, 163, 184, 0.06);
 		--example-text: var(--home-text-strong);
@@ -596,7 +594,7 @@
 		--example-badge-bg: var(--home-text-cool);
 		--example-badge-fg: var(--home-dark-bg-important);
 		max-width: 44rem;
-		margin-top: clamp(1.75rem, 3.6vw, 2.5rem);
+		margin-inline: auto;
 	}
 
 	/* ── Hero ── */
@@ -630,8 +628,8 @@
 	.hero-actions {
 		display: flex;
 		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.75rem 1.1rem;
+		align-items: flex-start;
+		gap: 0.5rem 1.1rem;
 		margin-top: 1.5rem;
 	}
 
@@ -668,6 +666,16 @@
 		padding: 0.7rem 0.25rem;
 		color: var(--home-link);
 		text-underline-offset: 3px;
+	}
+
+	.hero-write-choice,
+	.hero-chat-choice {
+		flex: 1 1 9rem;
+		min-width: 0;
+	}
+
+	.hero-chat-choice .cta-micro {
+		margin: 0;
 	}
 
 	/* Ligger under CTA-raden och ska läsas efter knappen, inte konkurrera med

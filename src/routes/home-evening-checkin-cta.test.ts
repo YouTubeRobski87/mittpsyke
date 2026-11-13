@@ -12,7 +12,7 @@ describe('Kvällstugan-sektionen på den publika startsidan', () => {
 		expect(publicHome).toMatch(
 			/class="text-link"\s+href=\{EVENING_CHECKIN_DESTINATION\}/
 		);
-		expect(publicHome).toContain('Öppna kvällsincheckningen');
+		expect(publicHome).toContain('Logga in för att checka in');
 	});
 
 	it('säger var incheckningen görs, så CTA:n inte överraskar med inloggning', () => {

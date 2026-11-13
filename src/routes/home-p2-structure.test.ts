@@ -31,6 +31,7 @@ const sectionOf = (id: string) => {
 describe('Startsidans P2-struktur', () => {
 	it('har sektionerna i den nya ordningen', () => {
 		expect(h2s).toEqual([
+			'Så här kan det se ut efter en månad',
 			'Fyra steg, och sedan börjar det om',
 			'En lugn plats att komma tillbaka till',
 			'Kvällsincheckning',
@@ -56,7 +57,7 @@ describe('Startsidans P2-struktur', () => {
 			'Mitt Hem samlar det du har sparat.',
 			'I Kvällstugan gör du Kvällsincheckningen: stäm av kvällen och lägg undan det du inte behöver bära vidare just nu.',
 			'Balder är en lugn följeslagare som finns med i Mitt Hem och Kvällstugan. Ingen streak, ingen prestation — bara en närvaro som följer platsen över tid.',
-			'I Framsteg ser du teman som återkommer, i dina egna ord.'
+			'I <a class="cta-micro-link" href="/framsteg">Återblick</a> ser du teman som återkommer i dina sparade anteckningar.'
 		]);
 		expect(account).toMatch(/class="cta-secondary account-cta" href="\/register"[^>]*>Skapa konto<\/a>/);
 		expect(account).toContain('progress-lake-day-800.webp');
@@ -82,7 +83,7 @@ describe('Startsidans P2-struktur', () => {
 		expect(headings[1].level).toBe(2);
 	});
 
-	it('lägger kärnloopen direkt efter heron med fyra steg i en ordnad lista', () => {
+	it('lägger fyra steg i en ordnad lista före kontosektionen', () => {
 		const how = sectionOf('how-title');
 		expect(body.indexOf('aria-labelledby="how-title"')).toBeLessThan(
 			body.indexOf('aria-labelledby="account-title"')
@@ -162,11 +163,11 @@ describe('Startsidans P2-struktur', () => {
 		const hero = sectionOf('hero-title');
 		expect(hero).not.toContain('class="eyebrow"');
 		expect(hero.match(/class="cta-primary"/g)).toHaveLength(1);
-		expect(hero).toContain('<a class="cta-secondary" href="/chat">Chatta med AI</a>');
-		expect(hero).toContain('Inget konto behövs. Dagboksutkast sparas lokalt i din webbläsare.');
+		expect(hero).toContain('<a class="cta-secondary" href="/chat" aria-describedby="hero-chat-info">Chatta med AI</a>');
+		expect(hero).toContain('Skriv utan konto. När lokal lagring är tillgänglig sparas ditt utkast i den här webbläsaren.');
 		// Gästchatten lämnar webbläsaren: texten går till OpenAI men sparas inte av MittPsyke.
-		expect(hero).toContain('I gästchatten överförs\n\t\t\t\t\ttexten till OpenAI för att generera ett svar');
-		expect(hero).toContain('MittPsyke sparar inte innehållet i din gästchatt.');
+		expect(hero).toContain('Meddelanden du skickar i gästchatten går till OpenAI för att skapa ett svar.');
+		expect(hero).toContain('MittPsyke sparar inte innehållet i gästchatten.');
 		expect(hero).toContain('href="/integritet">Läs mer</a>');
 		expect(hero).not.toContain('gästchatten sparas inte.');
 		expect(hero).toContain('cabin-proof--scene');

@@ -52,7 +52,7 @@
 	lead="Skriv av dig, hitta inspiration och kom tillbaka till tidigare anteckningar när du vill."
 	ctaLabel="Börja skriva"
 	secondaryHref="/framsteg"
-	secondaryLabel="Se framsteg"
+	secondaryLabel="Se återblick"
 />
 
 {#if showQuickEntry}
@@ -69,8 +69,8 @@
 					kan du spara det du väljer och följa mönster över tid.
 				</p>
 				<p>
-					I <a href="/framsteg">Framsteg</a> kan du se registrerat mående, återkommande teman och
-					förändringar i det du valt att spara.
+					Med konto kan du i <a href="/framsteg">Återblick</a> se återkommande teman och
+					förändringar i dina sparade anteckningar.
 				</p>
 			</article>
 
