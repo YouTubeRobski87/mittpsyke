@@ -928,7 +928,7 @@
 					<div
 						class="message-bubble max-w-[80%] px-4 py-3 rounded-[var(--radius-card)] text-sm leading-relaxed
 							{msg.role === 'user'
-								? 'bg-[var(--primary)] text-white rounded-br-md'
+								? 'user-bubble rounded-br-md'
 								: msg.crisis
 									? 'bg-rose-50 dark:bg-rose-900/30 border border-rose-300 dark:border-rose-700 rounded-bl-md crisis-message'
 									: 'bg-black/5 dark:bg-white/10 rounded-bl-md'}"
@@ -1166,7 +1166,7 @@
 					}}
 					onkeydown={handleKeydown}
 					aria-label="Skriv ditt meddelande"
-					placeholder={sending ? 'Väntar lugnt på svar…' : 'Skriv det som är i huvudet just nu...'}
+					placeholder={sending ? 'Väntar på svar…' : 'Skriv här…'}
 					aria-describedby={chatError ? 'chat-safety-note chat-error-text' : 'chat-safety-note'}
 					aria-invalid={chatError.length > 0}
 					aria-busy={sending}
@@ -1180,8 +1180,7 @@
 					type="button"
 					onclick={send}
 					disabled={sending || voiceBusy || !input.trim()}
-					class="send-button px-5 py-3 rounded-[var(--radius-input)] bg-[var(--primary)] text-white text-sm font-medium
-						disabled:opacity-40 transition-opacity"
+					class="send-button px-5 py-3 rounded-[var(--radius-input)] text-sm font-medium"
 					aria-label={sending ? 'Väntar på AI-svar' : 'Skicka meddelandet'}
 				>
 					{sending ? 'Väntar…' : 'Skicka'}
@@ -1253,11 +1252,6 @@
 							<p>Av som standard. Du kan också välja Lyssna vid ett enskilt svar.</p>
 						{/if}
 					</div>
-					<p class="privacy-note-inline">
-						{isAnonymous
-							? `${dataflowCopy.guestChat.retention} ${dataflowCopy.guestChat.aiTransfer}`
-							: `${dataflowCopy.accountChat.storage} ${dataflowCopy.accountChat.retention}`}
-					</p>
 					<div class="settings-links">
 						<a
 							href="https://stodlinjer.se"
@@ -1274,7 +1268,24 @@
 						>
 							Kontakta oss
 						</a>
+						<a href="/integritet" class="settings-link">Integritetspolicy</a>
 					</div>
+					<!-- Kort besked i klartext först. Den fullständiga, tekniskt
+					     exakta beskrivningen finns kvar oförändrad i den utfällbara
+					     delen, så att den inte dominerar en liten skärm. -->
+					<p class="privacy-note-inline">
+						{isAnonymous
+							? 'MittPsyke sparar inte samtalet. Det försvinner när du lämnar eller laddar om sidan. Det du skickar går till OpenAI för att ett svar ska kunna skapas.'
+							: 'Dina meddelanden sparas på ditt konto tills du raderar kontot.'}
+					</p>
+					<details class="privacy-details">
+						<summary>Så hanteras dina meddelanden</summary>
+						<p>
+							{isAnonymous
+								? `${dataflowCopy.guestChat.retention} ${dataflowCopy.guestChat.aiTransfer}`
+								: `${dataflowCopy.accountChat.storage} ${dataflowCopy.accountChat.retention}`}
+						</p>
+					</details>
 				</div>
 			{/if}
 		{/if}
@@ -1523,7 +1534,7 @@
 		display: inline-flex;
 		align-items: center;
 		min-height: 2.75rem;
-		font-size: 0.74rem;
+		font-size: 0.8rem;
 		/* Diskret men läsbar: minst 4,5:1 mot bakgrunden (WCAG 1.4.3). */
 		color: rgba(15, 23, 42, 0.68);
 		text-decoration: underline;
@@ -1572,14 +1583,13 @@
 	}
 
 	.char-count {
-		font-size: 0.68rem;
-		opacity: 0.42;
+		font-size: 0.75rem;
 		font-variant-numeric: tabular-nums;
 	}
 
 	.settings-toggle {
-		font-size: 0.72rem;
-		color: rgba(15, 23, 42, 0.45);
+		font-size: 0.8rem;
+		color: rgba(15, 23, 42, 0.72);
 		text-decoration: underline;
 		text-underline-offset: 2px;
 		background: none;
@@ -1634,9 +1644,9 @@
 	.speech-setting p,
 	.chat-setting p {
 		margin: 0 0 0 1.48rem;
-		font-size: 0.69rem;
-		line-height: 1.4;
-		opacity: 0.58;
+		font-size: 0.75rem;
+		line-height: 1.45;
+		color: rgba(15, 23, 42, 0.72);
 	}
 
 	.speech-setting.unsupported label {
@@ -1644,11 +1654,25 @@
 		opacity: 0.55;
 	}
 
-	.privacy-note-inline {
+	.privacy-note-inline,
+	.privacy-details {
 		margin: 0;
-		font-size: 0.69rem;
-		line-height: 1.4;
-		opacity: 0.52;
+		font-size: 0.78rem;
+		line-height: 1.5;
+		color: rgba(15, 23, 42, 0.76);
+	}
+
+	.privacy-details summary {
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.75rem;
+		cursor: pointer;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+	}
+
+	.privacy-details p {
+		margin: 0;
 	}
 
 	.settings-links {
@@ -1658,8 +1682,11 @@
 	}
 
 	.settings-link {
-		font-size: 0.72rem;
-		color: rgba(15, 23, 42, 0.55);
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.75rem;
+		font-size: 0.8rem;
+		color: rgba(15, 23, 42, 0.76);
 		text-decoration: underline;
 		text-underline-offset: 2px;
 		transition: color 0.15s;
@@ -1713,15 +1740,11 @@
 	}
 
 	:global(.dark) .human-support-button {
-		color: rgba(226, 232, 240, 0.6);
+		color: rgba(226, 232, 240, 0.82);
 	}
 
 	:global(.dark) .human-support-button:hover {
-		color: rgba(226, 232, 240, 0.85);
-	}
-
-	:global(.dark) .human-support-button:hover {
-		color: rgba(226, 232, 240, 0.68);
+		color: rgba(226, 232, 240, 0.96);
 	}
 
 	:global(.dark) .starter-chip {
@@ -1732,12 +1755,17 @@
 
 	:global(.dark) .settings-toggle,
 	:global(.dark) .settings-link {
-		color: rgba(226, 232, 240, 0.42);
+		color: rgba(226, 232, 240, 0.82);
 	}
 
 	:global(.dark) .settings-toggle:hover,
 	:global(.dark) .settings-link:hover {
-		color: rgba(226, 232, 240, 0.72);
+		color: rgba(226, 232, 240, 0.96);
+	}
+
+	:global(.dark) .speech-setting p,
+	:global(.dark) .chat-setting p {
+		color: rgba(226, 232, 240, 0.74);
 	}
 
 	:global(.dark) .settings-panel {
@@ -1749,12 +1777,13 @@
 		color: rgba(226, 232, 240, 0.86);
 	}
 
-	:global(.dark) .privacy-note-inline {
-		color: rgba(226, 232, 240, 0.48);
+	:global(.dark) .privacy-note-inline,
+	:global(.dark) .privacy-details {
+		color: rgba(226, 232, 240, 0.8);
 	}
 
 	:global(.dark) .char-count {
-		color: rgba(226, 232, 240, 0.38);
+		color: rgba(226, 232, 240, 0.68);
 	}
 
 	:global(.crisis-message) {
@@ -1795,9 +1824,50 @@
 		overflow-wrap: anywhere;
 	}
 
+	/* Fylld accentyta med vit text. --primary följer användarens färgtema, och
+	 * de ljusare temana (Sand, Lavendel, Havsblå, Salvia) gav vit text under
+	 * 4,5:1. Accenten mörkas därför mot navy här, så att kontrasten håller i
+	 * alla teman utan att temat tappar sin färg. */
+	.chat-container {
+		--chat-accent-fill: color-mix(in srgb, var(--primary) 62%, #0b1220);
+	}
+
+	:global(.user-bubble) {
+		background: var(--chat-accent-fill);
+		color: #fff;
+	}
+
 	.send-button {
 		flex: 0 0 auto;
 		min-height: 2.75rem;
+		border: 1px solid transparent;
+		background: var(--chat-accent-fill);
+		color: #fff;
+		transition: background-color 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+	}
+
+	/* Inaktiv knapp är en egen, läsbar yta i stället för samma knapp med låg
+	 * opacitet: skillnaden mot aktiv syns på formen, inte bara på styrkan. */
+	.send-button:disabled {
+		border-color: rgba(15, 23, 42, 0.16);
+		background: transparent;
+		color: rgba(15, 23, 42, 0.62);
+		cursor: not-allowed;
+	}
+
+	:global(.dark) .send-button:disabled {
+		border-color: rgba(255, 255, 255, 0.16);
+		background: rgba(255, 255, 255, 0.04);
+		color: rgba(226, 232, 240, 0.7);
+	}
+
+	.composer-row textarea::placeholder {
+		color: rgba(15, 23, 42, 0.6);
+		opacity: 1;
+	}
+
+	:global(.dark) .composer-row textarea::placeholder {
+		color: rgba(226, 232, 240, 0.7);
 	}
 
 	@media (max-width: 768px) {
@@ -1816,8 +1886,8 @@
 		}
 
 		.clear-history-button {
-			padding: 0.26rem 0.55rem;
-			font-size: 0.7rem;
+			padding: 0.3rem 0.6rem;
+			font-size: 0.76rem;
 		}
 
 		/* flex-basis 0: meddelandelistan tar det utrymme som blir över när
@@ -1939,9 +2009,38 @@
 			padding-bottom: 0;
 		}
 
+		/* Samtalet är det viktigaste på en liten skärm: 1rem (17 px) i
+		 * bubblorna, och bubblan får använda nästan hela bredden. */
 		:global(.message-bubble) {
-			max-width: 90%;
+			max-width: 92%;
 			padding: 0.6rem 0.85rem;
+			font-size: 1rem;
+			line-height: 1.5;
+		}
+
+		/* Minst 16 px i skrivfältet, annars zoomar iOS in sidan vid fokus.
+		 * flex-basis i rem: vid normal textstorlek ryms fältet bredvid knappen,
+		 * men med kraftigt förstorad text (200 %) bryter knappen ner under
+		 * fältet i stället för att pressa ihop det till en smal spalt. */
+		.composer-row {
+			flex-wrap: wrap;
+		}
+
+		.composer-row textarea {
+			flex: 1 1 10rem;
+			font-size: 1rem;
+		}
+
+		.send-button {
+			margin-left: auto;
+		}
+
+		.send-button {
+			font-size: 1rem;
+		}
+
+		.human-support-link {
+			margin: 0;
 		}
 
 		/* Inmatningsytan tar den höjd innehållet behöver och inget mer.
@@ -1993,10 +2092,18 @@
 			display: none;
 		}
 
+		/* Panelen öppnas av användaren själv och får då ta plats. Det tidigare
+		 * taket på 20dvh gav en skrollruta på ett par rader, där integritets-
+		 * texten och länkarna inte gick att läsa i ett svep. */
 		.settings-panel {
 			min-height: 0;
-			max-height: min(20dvh, 10rem);
+			max-height: min(45dvh, 22rem);
 			overflow-y: auto;
+		}
+
+		/* Med tangentbordet uppe gäller samtal och skrivfält först. */
+		:global(html[data-keyboard-open='true']) .settings-panel {
+			max-height: min(20dvh, 10rem);
 		}
 
 		.composer-row,
@@ -2036,6 +2143,10 @@
 			-webkit-overflow-scrolling: touch;
 			padding-bottom: 0.1rem;
 			scrollbar-width: none;
+			/* Tonar ut högerkanten så att ett förslag som fortsätter utanför
+			 * skärmen läses som "det finns mer", inte som avklippt text. */
+			padding-right: 1.5rem;
+			mask-image: linear-gradient(to right, #000 calc(100% - 1.75rem), transparent);
 		}
 
 		.chips-row::-webkit-scrollbar {
@@ -2044,15 +2155,21 @@
 
 		.starter-chip {
 			flex: 0 0 auto;
-			max-width: 72vw;
+			max-width: none;
 			scroll-snap-align: start;
-			padding: 0.36rem 0.65rem;
-			font-size: 0.76rem;
+			min-height: 2.25rem;
+			padding: 0.36rem 0.75rem;
+			font-size: 0.82rem;
 			white-space: nowrap;
 		}
 
 		.settings-footer {
-			margin-top: 0.35rem;
+			margin-top: 0.1rem;
+		}
+
+		/* 44 px träffyta på pekskärm. */
+		.settings-toggle {
+			min-height: 2.75rem;
 		}
 	}
 

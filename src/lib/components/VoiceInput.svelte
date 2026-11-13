@@ -403,7 +403,7 @@
 	.microphone-button:disabled,
 	.clear-button:disabled {
 		cursor: not-allowed;
-		opacity: 0.46;
+		opacity: 0.7;
 	}
 
 	.microphone-button:focus-visible,
@@ -471,7 +471,7 @@
 
 	:global(.dark) .first-time-help,
 	:global(.dark) .status-row {
-		color: rgba(226, 232, 240, 0.72);
+		color: rgba(226, 232, 240, 0.82);
 	}
 
 	:global(.dark) .microphone-button {
@@ -534,7 +534,30 @@
 		.first-time-help,
 		.status-row,
 		.privacy-note {
-			font-size: 0.7rem;
+			font-size: 0.78rem;
+		}
+
+		/* Knapp och status på samma rad, så att panelen inte tar två rader av
+		 * samtalets höjd. Statusraden bryter ner under knapparna först när den
+		 * inte får plats bredvid dem (t.ex. med "Rensa text" på 320 px). */
+		.voice-card {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 0.35rem 0.6rem;
+		}
+
+		.first-time-help {
+			flex: 1 0 100%;
+		}
+
+		.voice-controls {
+			flex: 0 0 auto;
+		}
+
+		.status-row {
+			flex: 1 1 9rem;
+			min-width: 0;
 		}
 	}
 
