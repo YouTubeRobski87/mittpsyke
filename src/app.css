@@ -57,7 +57,9 @@
 	--dashboard-bg-end: rgba(8, 13, 23, 0.98);
 	--dashboard-bg-overlay-start: rgba(8, 13, 23, 0.66);
 	--dashboard-bg-overlay-end: rgba(8, 13, 23, 0.88);
-	--chat-input-bg-dark: #0f0f0f;
+	/* Samma navy som sidan. Tidigare #0f0f0f: en nästan svart platta som bröt
+	   mot resten av gränssnittet och sänkte kontrasten för texten ovanpå. */
+	--chat-input-bg-dark: hsl(var(--background));
 	--color-bg: hsl(var(--background));
 	--color-bg-soft: hsl(var(--surface-soft));
 	--color-surface: hsl(var(--surface));
