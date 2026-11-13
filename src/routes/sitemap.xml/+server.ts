@@ -159,6 +159,16 @@ export const GET: RequestHandler = async ({ fetch }) => {
 			priority: '0.9'
 		},
 		{
+			// Innehållet byts en gång i månaden och ligger i datafilen, inte i sidan.
+			path: '/manadens-ord',
+			lastmod: getContentLastmod(
+				['src/lib/data/manadens-ord.ts', 'src/routes/manadens-ord/+page.svelte'],
+				STATIC_CONTENT_LASTMOD
+			),
+			changefreq: 'monthly',
+			priority: '0.6'
+		},
+		{
 			path: '/anonyma-berattelser',
 			lastmod: getContentLastmod(
 				['src/routes/anonyma-berattelser/+page.svelte', 'src/routes/anonyma-berattelser/+page.server.ts'],

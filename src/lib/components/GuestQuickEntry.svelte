@@ -10,6 +10,7 @@
 	import {
 		clearDiaryDraft,
 		consumeDiaryDraftHandoff,
+		consumeDiaryPromptHandoff,
 		getDaysSinceDiaryDraftSaved,
 		readDiaryDraft,
 		writeDiaryDraft
@@ -62,6 +63,10 @@
 	let savedEntryFromPreviousVisit = $state('');
 	let showSavedEntryPrompt = $state(false);
 	let saveStatus = $state<'idle' | 'saved'>('idle');
+	// En skrivfråga som följt med hit, t.ex. från Månadens ord. Den visas som
+	// en egen rad ovanför skrivytan och skrivs aldrig in i textfältet, så den
+	// kan varken skriva över ett utkast eller sparas av misstag.
+	let promptQuestion = $state('');
 	// Statusraden under skrivytan. Den ligger kvar medan användaren skriver
 	// vidare, till skillnad från märket i rubriken som blinkar av och på.
 	let draftOnDevice = $state(false);
@@ -251,6 +256,11 @@
 		localEntries = readLocalEntries();
 		currentEntryId = readCurrentLocalEntryId();
 
+		// Samma engångsöverlämning som den inloggade editorn tar emot från
+		// Spegelvattnet: sessionStorage, aldrig URL:en. Utkastet nedan hanteras
+		// precis som vanligt oavsett om en fråga följde med.
+		promptQuestion = consumeDiaryPromptHandoff();
+
 		// Text skriven i startsidans hero följer med hit och fylls i direkt. Den
 		// är inte ett "tidigare besök" och ska därför inte ligga bakom en fråga.
 		const handoff = consumeDiaryDraftHandoff();
@@ -354,6 +364,25 @@
 			</div>
 		</div>
 
+		{#if promptQuestion}
+			<div class="prompt-question">
+				<p id="guest-entry-prompt-question">
+					<span class="prompt-question-label">En fråga, om du vill ha en:</span>
+					{promptQuestion}
+				</p>
+				<button
+					type="button"
+					class="prompt-question-dismiss"
+					onclick={() => {
+						promptQuestion = '';
+						textareaEl?.focus();
+					}}
+				>
+					Dölj frågan
+				</button>
+			</div>
+		{/if}
+
 		<textarea
 			bind:this={textareaEl}
 			bind:value={entry}
@@ -361,6 +390,7 @@
 			placeholder="Några rader räcker."
 			rows="8"
 			aria-label="Din snabbanteckning"
+			aria-describedby={promptQuestion ? 'guest-entry-prompt-question' : undefined}
 		></textarea>
 
 		{#if storageFailed}
@@ -883,6 +913,43 @@
 	.starters {
 		display: grid;
 		gap: 0.5rem;
+	}
+
+	/* Skrivfrågan: en lugn rad, inte en ruta som kräver svar. */
+	.prompt-question {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.4rem 1rem;
+		padding: 0.7rem 0.9rem;
+		border-left: 3px solid var(--theme-accent, var(--primary));
+		border-radius: 0 0.75rem 0.75rem 0;
+		background: hsl(var(--surface-soft));
+	}
+
+	.prompt-question p {
+		flex: 1 1 14rem;
+		margin: 0;
+		line-height: 1.5;
+	}
+
+	.prompt-question-label {
+		display: block;
+		color: hsl(var(--muted-foreground));
+		font-size: 0.82rem;
+	}
+
+	.prompt-question-dismiss {
+		min-height: 2.75rem;
+		padding: 0 0.25rem;
+		border: none;
+		background: none;
+		color: hsl(var(--foreground) / 0.82);
+		font-size: 0.86rem;
+		text-decoration: underline;
+		text-underline-offset: 2px;
+		cursor: pointer;
 	}
 
 	.starters-label {
