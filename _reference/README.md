@@ -97,7 +97,7 @@ No more staring at a blank page – just answer a few questions and get a beauti
 | 🌤️ Weather   | [SMHI Open Data](https://opendata.smhi.se)                               |
 | 📦 Build     | [Vite 7.x](https://vitejs.dev)                                           |
 | 📱 Mobile    | [Capacitor 8.x](https://capacitorjs.com)                                 |
-| 🚀 Hosting   | [Vercel](https://vercel.com)                                             |
+| 🚀 Hosting   | Render Blueprint (Node), see `render.yaml`; deployment status unverified |
 
 ---
 

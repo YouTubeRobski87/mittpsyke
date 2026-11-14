@@ -8,7 +8,7 @@ import { Capacitor } from '@capacitor/core';
  * since there's no server bundled with the app.
  *
  * Set VITE_API_BASE_URL in your .env file to your deployed backend URL:
- * VITE_API_BASE_URL=https://your-app.vercel.app
+ * VITE_API_BASE_URL=https://api.example.com
  */
 
 function getApiBaseUrl(): string {
@@ -22,7 +22,7 @@ function getApiBaseUrl(): string {
 		if (!backendUrl) {
 			console.warn(
 				'VITE_API_BASE_URL not set. API calls will fail in native app. ' +
-					'Set this to your deployed backend URL (e.g., https://your-app.vercel.app)'
+					'Set this to your deployed backend URL (e.g., https://api.example.com)'
 			);
 			return '';
 		}

@@ -75,7 +75,7 @@ Chart.js installerat
 
 Lucide används för ikoner
 
-Vercel deploy
+Aktuell webbhosting (verifierad 14 november 2026): Render med SvelteKit adapter-node.
 
 Fokus på trygg UX
 
