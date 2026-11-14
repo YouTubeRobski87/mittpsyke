@@ -103,7 +103,7 @@ export async function checkChatRateLimit(identifier: string): Promise<RateLimitR
 
 // Extract IP from SvelteKit request
 export function getClientIdentifier(request: Request): string {
-	// Vercel sets x-forwarded-for header
+	// A reverse proxy can set the x-forwarded-for header
 	const forwarded = request.headers.get('x-forwarded-for');
 	if (forwarded) {
 		return forwarded.split(',')[0].trim();
