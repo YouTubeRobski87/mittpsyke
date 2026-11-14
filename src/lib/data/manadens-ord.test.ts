@@ -132,6 +132,15 @@ describe('sidan och vägen till dagboken', () => {
 		expect(route).toContain('if (isSignedIn && readDiaryDraft().trim().length > 0) return;');
 	});
 
+	it('läser inloggningen från det fält rotlayouten faktiskt lämnar', () => {
+		// Sidan läste först `page.data.session`, som inte finns. Alla behandlades
+		// då som utloggade: fel länk, fel text och ingen utkastkontroll.
+		const layoutServer = read('src/routes/+layout.server.ts');
+		expect(layoutServer).toContain('authenticatedUser:');
+		expect(route).toContain('Boolean(page.data.authenticatedUser)');
+		expect(route).not.toContain('page.data.session');
+	});
+
 	it('kräver varken konto, spårning eller AI', () => {
 		for (const source of [route, server]) {
 			expect(source).not.toMatch(/\$lib\/analytics|track[A-Z]\w+\(/);
