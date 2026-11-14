@@ -97,6 +97,14 @@ describe('vilket ord som visas', () => {
 		expect(getCurrentMonthlyWord(new Date('2026-11-13T12:00:00Z'))?.word).toBe('Återhämtning');
 	});
 
+	it('byter till de godkända orden när deras månad börjar, inte tidigare', () => {
+		expect(getCurrentMonthlyWord(new Date('2026-11-30T20:00:00Z'))?.word).toBe('Återhämtning');
+		expect(getCurrentMonthlyWord(new Date('2026-12-01T08:00:00Z'))?.word).toBe('Gränser');
+		expect(getCurrentMonthlyWord(new Date('2027-01-01T08:00:00Z'))?.word).toBe('Tålamod');
+		// Efter januari finns inget nytt ord än: det senaste ligger kvar.
+		expect(getCurrentMonthlyWord(new Date('2027-02-10T08:00:00Z'))?.word).toBe('Tålamod');
+	});
+
 	it('skriver månaden på svenska', () => {
 		expect(formatMonthLabel('2026-11')).toBe('november 2026');
 		expect(formatMonthLabel('2027-01')).toBe('januari 2027');
@@ -107,6 +115,12 @@ describe('sidan och vägen till dagboken', () => {
 	const route = read('src/routes/manadens-ord/+page.svelte');
 	const server = read('src/routes/manadens-ord/+page.server.ts');
 	const guestEntry = read('src/lib/components/GuestQuickEntry.svelte');
+
+	it('går att hitta från sidfoten på alla sidor', () => {
+		expect(read('src/routes/+layout.svelte')).toContain(
+			'<a href="/manadens-ord" class="footer-link">Månadens ord</a>'
+		);
+	});
 
 	it('lämnar över frågan via sessionStorage, aldrig i URL:en', () => {
 		expect(route).toContain('writeDiaryPromptHandoff(data.entry.question)');

@@ -40,7 +40,7 @@ export const MONTHLY_WORDS: readonly MonthlyWord[] = [
 			'En gräns behöver inte vara ett nej till någon annan. Den kan vara ett ja till något eget: en tid, en ork, en tystnad. De flesta gränser märks först när de saknas.',
 		question: 'Var i din vardag skulle det få finnas lite mer plats för dig?',
 		articlePath: '/blogg/amne/oro-och-stress/satta-granser-utan-daligt-samvete',
-		published: false
+		published: true
 	},
 	{
 		month: '2027-01',
@@ -49,7 +49,7 @@ export const MONTHLY_WORDS: readonly MonthlyWord[] = [
 			'Vissa saker rör sig långsammare än vi vill. Det betyder inte att de står stilla. Tålamod är ofta bara att låta något ta den tid det tar.',
 		question: 'Vad i ditt liv får ta den tid det behöver?',
 		articlePath: '/blogg/amne/sjalvkansla-och-sjalvbild/hard-mot-sig-sjalv',
-		published: false
+		published: true
 	}
 ];
 

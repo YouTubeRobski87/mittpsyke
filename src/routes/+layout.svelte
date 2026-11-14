@@ -1074,6 +1074,7 @@
 					<a href="/guider" class="footer-link">Guider</a>
 					<a href="/blogg" class="footer-link">Artiklar</a>
 					<a href="/anonyma-berattelser" class="footer-link">Berättelser</a>
+					<a href="/manadens-ord" class="footer-link">Månadens ord</a>
 				</div>
 
 				<!-- Kolumn 2: Om MittPsyke -->
