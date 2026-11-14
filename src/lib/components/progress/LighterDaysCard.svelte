@@ -183,9 +183,9 @@
 	}
 
 	function summaryEmptyCopy(reason: SummaryResponse['reason']) {
-		if (reason === 'withheld') return 'Sammanfattningen görs inte för det här underlaget. Inläggen och siffrorna ovan finns kvar.';
+		if (reason === 'withheld') return 'Sammanfattningen görs inte för det här underlaget. Inläggen och siffrorna nedan finns kvar.';
 		if (reason === 'no-sources') return 'Det finns inga utdrag att sammanfatta ännu.';
-		return 'Det gick inte att skapa en sammanfattning där varje del går att spåra till dina inlägg. Siffrorna ovan gäller fortfarande.';
+		return 'Det gick inte att skapa en sammanfattning där varje del går att spåra till dina inlägg. Siffrorna nedan gäller fortfarande.';
 	}
 </script>
 
@@ -213,6 +213,10 @@
 				Perioden har {view.relevantEntryCount} inlägg med både text och humör. Med färre än 10
 				är underlaget litet, så läs det som enstaka spår snarare än mönster.
 			</p>
+		{/if}
+
+		{#if hasThemes}
+			{@render aiSummary()}
 		{/if}
 
 		{#if receipt}
@@ -341,11 +345,13 @@
 
 		<p class="lighter-days-basis">{view.basis}</p>
 
-		{#if hasThemes}
+		<!-- AI-delen är oförändrad men ritas överst i kortet (se @render ovan),
+		     så att den går att hitta utan att skrolla förbi alla teman. -->
+		{#snippet aiSummary()}
 			<div class="lighter-days-ai">
 				{#if summary.status === 'idle' || summary.status === 'error'}
 					<p class="lighter-days-muted">
-						Vill du kan en AI formulera en kort sammanfattning av utdragen ovan. Den körs bara om du
+						Vill du kan en AI formulera en kort sammanfattning av utdragen nedan. Den körs bara om du
 						trycker på knappen, och varje mening visar vilka inlägg den bygger på.
 					</p>
 					<button type="button" class="lighter-days-action" onclick={runSummary} data-testid="lighter-days-ai-button">
@@ -382,7 +388,7 @@
 					</section>
 				{/if}
 			</div>
-		{/if}
+		{/snippet}
 	{/if}
 </div>
 
@@ -621,10 +627,11 @@
 		font-size: 0.9rem;
 	}
 
+	/* Ligger överst i kortet, före temana: avgränsas nedåt i stället för uppåt. */
 	.lighter-days-ai {
-		margin-top: 1.2rem;
-		padding-top: 1rem;
-		border-top: 1px solid hsl(var(--border));
+		margin: 0.4rem 0 1.2rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid hsl(var(--border));
 	}
 
 	.lighter-days-ai h3 {

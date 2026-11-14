@@ -1384,10 +1384,28 @@
 				<ProgressExamplePreview />
 				<AccountTeaser variant="progress" />
 			{:else}
-			<!-- Överblicken ligger först: den ska gå att läsa på några sekunder och
-			     svarar på "hur har den senaste tiden sett ut?". Kurvan och analysen
-			     under är fördjupningen. Inget här är beroende av AI eller samtycke -
-			     det räknas fram ur humörvärden som redan är hämtade. -->
+			<!-- Den personliga återblicken ligger direkt under scenen: teman ur
+			     användarens egna texter och, längst ned i kortet, den frivilliga
+			     AI-sammanfattningen. Kortet låg tidigare efter analysen och var
+			     svårt att hitta. Det är samma komponent med samma villkor - bara
+			     platsen är ändrad. AI körs fortfarande först när användaren själv
+			     trycker på knappen och har samtyckt. -->
+			{#if !isAnonymous && hasSensitiveDataConsent}
+				<section class="card reflection-card lighter-days-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="lighter-days-heading" data-testid="lighter-days">
+					<p class="auth-eyebrow">Din personliga återblick</p>
+					<LighterDaysCard
+						view={lighterDaysView}
+						loading={insightsLoading}
+						failed={Boolean(insightsError)}
+						onChanged={loadInsights}
+					/>
+				</section>
+			{/if}
+
+			<!-- Veckoöverblicken ska gå att läsa på några sekunder och svarar på
+			     "hur har den senaste tiden sett ut?". Kurvan och analysen under är
+			     fördjupningen. Inget här är beroende av AI eller samtycke - det
+			     räknas fram ur humörvärden som redan är hämtade. -->
 			<section class="card week-summary-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="week-summary-heading" data-testid="week-summary">
 				<div class="card-header">
 					<div class="icon-badge heat"><Calendar size={24} /></div>
@@ -1611,17 +1629,6 @@
 					<p class="reflection-copy">Det finns ännu inte tillräckligt med data för en personlig analys.</p>
 				{/if}
 			</section>
-
-			{#if !isAnonymous && hasSensitiveDataConsent}
-				<section class="card reflection-card lighter-days-card" data-low-data-hidden={showLowDataOverview} aria-labelledby="lighter-days-heading" data-testid="lighter-days">
-					<LighterDaysCard
-						view={lighterDaysView}
-						loading={insightsLoading}
-						failed={Boolean(insightsError)}
-						onChanged={loadInsights}
-					/>
-				</section>
-			{/if}
 
 			{#if showSupportCard}
 				<section class="card reflection-card support-card" aria-labelledby="support-heading" data-testid="support-suggestions">

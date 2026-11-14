@@ -46,6 +46,20 @@ describe('AI-sammanfattningen körs bara efter aktivt val', () => {
 });
 
 describe('kortet "Det som ofta fanns med under lättare dagar"', () => {
+	it('ritar AI-delen överst i kortet, en gång, och bara när det finns teman', () => {
+		// AI-delen låg sist i kortet, under alla teman. Den ritas nu före
+		// temalistan så att knappen går att hitta. Markupen är densamma.
+		const render = card.indexOf('{@render aiSummary()}');
+		expect(render).toBeGreaterThan(-1);
+		expect(render).toBeLessThan(card.indexOf('<ul class="lighter-days-list">'));
+		expect(card.slice(card.lastIndexOf('{#if', render), render)).toContain('{#if hasThemes}');
+		expect(card.match(/\{@render aiSummary\(\)\}/g)).toHaveLength(1);
+		expect(card.match(/data-testid="lighter-days-ai-button"/g)).toHaveLength(1);
+		// Knappen startar fortfarande sammanfattningen - inget körs av sig självt.
+		expect(card).toContain('onclick={runSummary} data-testid="lighter-days-ai-button"');
+		expect(card).not.toMatch(/\$effect\([^)]*\{[^}]*runSummary\(/);
+	});
+
 	it('har den nya rubriken och ingen gammal', () => {
 		expect(card).toContain('<h2 id="lighter-days-heading">Det som ofta fanns med under lättare dagar</h2>');
 		for (const source of [card, route]) expect(source).not.toContain('Det som verkar hjälpa');
