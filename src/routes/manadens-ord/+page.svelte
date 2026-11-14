@@ -11,7 +11,10 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const isSignedIn = $derived(Boolean(page.data.session));
+	// Rotlayouten lämnar den inloggade användaren som `authenticatedUser`. Sidan
+	// läste tidigare `session`, ett fält som inte finns, och behandlade därför
+	// alla som utloggade.
+	const isSignedIn = $derived(Boolean(page.data.authenticatedUser));
 	const diaryHref = $derived(isSignedIn ? '/dagbok/checkin#skriv-sjalv' : '/dagbok?action=new');
 
 	/**
