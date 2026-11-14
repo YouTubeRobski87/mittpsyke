@@ -165,7 +165,21 @@ describe('Framstegs ordning med egna ord först', () => {
 		expect(themes).toBeGreaterThan(intro);
 		expect(moodHistory).toBeGreaterThan(themes);
 		expect(analysis).toBeGreaterThan(moodHistory);
-		expect(lighterDays).toBeGreaterThan(analysis);
+		// Den personliga återblicken (med den frivilliga AI-sammanfattningen)
+		// låg tidigare efter analysen. Den ligger nu först under scenen, före
+		// veckoöverblicken, så att den går att hitta.
+		expect(lighterDays).toBeGreaterThan(-1);
+		expect(lighterDays).toBeLessThan(intro);
+	});
+
+	it('har den personliga återblicken en enda gång, med samma villkor som förut', () => {
+		expect(route.match(/<LighterDaysCard/g)).toHaveLength(1);
+		expect(route.match(/data-testid="lighter-days"/g)).toHaveLength(1);
+		const before = route.slice(0, route.indexOf('data-testid="lighter-days"'));
+		expect(before.slice(before.lastIndexOf('{#if'))).toContain(
+			'{#if !isAnonymous && hasSensitiveDataConsent}'
+		);
+		expect(route).toContain('<p class="auth-eyebrow">Din personliga återblick</p>');
 	});
 
 	it('visar temakortet bara inloggad, med samtycke och när servern skickat teman', () => {
